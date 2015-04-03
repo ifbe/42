@@ -1,0 +1,138 @@
+一.wrap(与系统等环境打交道)
+
+1.硬盘相关
+{
+	i.运行前，选定磁盘
+	__attribute__((constructor)) void initdisk()
+
+	ii.运行中，提供函数
+	void disk(QWORD in)
+	void getaddrofdiskinfo(unsigned long long* p)
+	void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
+	int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+
+	iii.结束时，释放磁盘
+	__attribute__((destructor)) void freedisk()
+}
+2.内存相关
+{
+	i.运行前，申请内存
+	__attribute__((constructor)) void initmemory()
+
+	ii.运行中，提供函数
+	void getaddroffs(unsigned long long* p)
+	void getaddrofdir(unsigned long long* p)
+	void getaddrofbuffer(unsigned long long* p)
+
+	iii.结束时，释放磁盘
+	__attribute__((destructor)) void freedisk()
+}
+3.其他一些额外的小东西
+{
+}
+
+
+
+
+二.fs(文件系统相关)
+1.ext
+{
+	i.初始化这些变量，后面自己要用
+	static QWORD directorybuffer;
+	static QWORD readbuffer;
+	static QWORD inodebuffer;
+
+	static QWORD block0;
+	static QWORD blocksize;
+	static QWORD groupsize;
+	static QWORD inodepergroup;
+	static QWORD inodesize;
+
+	ii.运行时，提供函数给其他人使用
+	static int ext_explain(inode)
+	static int ext_cd(BYTE* addr)
+	static void ext_load(BYTE* addr,QWORD offset)
+}
+2.fat
+{
+	i.初始化这些变量，后面自己要用
+	static QWORD fatbuffer;				//fat表
+	static QWORD readbuffer;			//一般使用
+	static QWORD directorybuffer;		//目录专用
+
+	static QWORD fat0;			//fat表所在扇区
+	static QWORD fatsize;		//fat表总共的扇区数量
+	static QWORD cluster0;		//0号簇所在扇区
+	static QWORD clustersize;	//每个簇的扇区数量
+
+	ii.运行时，提供函数给其他人使用
+	static int fat_explain(inode)
+	static int fat_cd(BYTE* addr)
+	static void fat_load(BYTE* addr,QWORD offset)
+}
+3.hfs
+{
+	i.初始化这些变量，后面自己要用
+	static QWORD readbuffer;
+	static QWORD directorybuffer;
+	static QWORD catalogbuffer;
+
+	static QWORD block0;
+	static QWORD blocksize;
+
+	static QWORD catalogsector;
+	static QWORD nodesize;
+
+	static QWORD rootnode;
+	static QWORD firstleafnode;
+
+	ii.运行时，提供函数给其他人使用
+	static int hfs_explain(inode)
+	static int hfs_cd(BYTE* addr)
+	static void hfs_load(BYTE* addr,QWORD offset)
+}
+4.ntfs
+{
+	i.初始化这些变量，后面自己要用
+	static QWORD directorybuffer;
+	static QWORD readbuffer;
+	static QWORD mftbuffer;
+
+	static QWORD diskaddr;
+	static QWORD ntfssector;
+	static QWORD clustersize;
+	static QWORD mftcluster;
+
+	static QWORD pwd[10];
+	static int ntfspwd;
+
+	ii.运行时，提供函数给其他人使用
+	static int ntfs_explain(inode)
+	static int ntfs_cd(BYTE* addr)
+	static void ntfs_load(BYTE* addr,QWORD offset)
+}
+
+
+
+
+三.main(程序的界面相关)
+1.annoying.c
+{
+	void holyshit(sector,count,where,wantwhere,towhere)
+	int compare(unsigned char* first,unsigned char* second)
+	void printmemory(QWORD addr,QWORD size)
+	void blank2zero(QWORD* name)
+	void zero2blank(QWORD* name)
+	void small2capital(QWORD* name)
+	void str2data(BYTE* str,QWORD* data)
+	void anscii2dec(BYTE* second,QWORD* decimal)
+	void anscii2hex(BYTE* second,QWORD* hex)
+	void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
+}
+2.parttable.c
+{
+	void explainparttable(QWORD readbuffer)
+	getaddrofparttable(unsigned long long* p)
+}
+3.master.c
+4.graphic.c
