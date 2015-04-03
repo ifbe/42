@@ -193,11 +193,11 @@ void string(int x,int y,char* p)
     x++;
     }
 }
+/*
 void say(char* p,...)
 {
 	asm("jmp printf");
 }
-/*
 void say(char* p,...)
 {
 	register unsigned long long rsi asm("rsi");

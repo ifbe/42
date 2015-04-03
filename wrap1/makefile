@@ -1,50 +1,42 @@
 binary:
-	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 annoying.c
-	gcc -c -fPIC -O2 ext.c
-	gcc -c -fPIC -O2 fat.c
-	gcc -c -fPIC -O2 hfs.c
-	gcc -c -fPIC -O2 ntfs.c
-	rm -f main.a
-	ar crs main.a master.o ext.o fat.o hfs.o ntfs.o
+	gcc -c -fPIC -O2 anscii.c
+	gcc -c -fPIC -O2 cmpsb.c
+	gcc -c -fPIC -O2 holyshit.c
+	gcc -c -fPIC -O2 printmemory.c
+	rm -f wrap1.a
+	ar crs wrap1.a annoying.o anscii.o cmpsb.o holyshit.o printmemory.o
 crosscompile:
-	x86_64-elf-gcc -c -fPIC -O2 master.c
 	x86_64-elf-gcc -c -fPIC -O2 annoying.c
-	x86_64-elf-gcc -c -fPIC -O2 ext.c
-	x86_64-elf-gcc -c -fPIC -O2 fat.c
-	x86_64-elf-gcc -c -fPIC -O2 hfs.c
-	x86_64-elf-gcc -c -fPIC -O2 ntfs.c
-	rm -f main.a
-	ar crs main.a master.o ext.o fat.o hfs.o ntfs.o
+	x86_64-elf-gcc -c -fPIC -O2 anscii.c
+	x86_64-elf-gcc -c -fPIC -O2 cmpsb.c
+	x86_64-elf-gcc -c -fPIC -O2 holyshit.c
+	x86_64-elf-gcc -c -fPIC -O2 printmemory.c
+	rm -f wrap1.a
+	ar crs wrap1.a annoying.o anscii.o cmpsb.o holyshit.o printmemory.o
 linux:
-	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 annoying.c
-	gcc -c -fPIC -O2 ext.c
-	gcc -c -fPIC -O2 fat.c
-	gcc -c -fPIC -O2 hfs.c
-	gcc -c -fPIC -O2 ntfs.c
-	rm -f main.a
-	ar crs main.a master.o annoying.o ext.o fat.o hfs.o ntfs.o
+	gcc -c -fPIC -O2 anscii.c
+	gcc -c -fPIC -O2 cmpsb.c
+	gcc -c -fPIC -O2 holyshit.c
+	gcc -c -fPIC -O2 printmemory.c
+	rm -f wrap1.a
+	ar crs wrap1.a annoying.o anscii.o cmpsb.o holyshit.o printmemory.o
 mac:
-	gcc -c -fPIC -O2 master.c
-	gcc -c -fPIC -O2 annoying.c
-	gcc -c -fPIC -O2 ext.c
-	gcc -c -fPIC -O2 fat.c
-	gcc -c -fPIC -O2 hfs.c
-	gcc -c -fPIC -O2 ntfs.c
-	rm -f main.a
-	ar crs main.a master.o annoying.o ext.o fat.o hfs.o ntfs.o
+	clang -c -fPIC -O2 annoying.c
+	clang -c -fPIC -O2 anscii.c
+	clang -c -fPIC -O2 cmpsb.c
+	clang -c -fPIC -O2 holyshit.c
+	clang -c -fPIC -O2 printmemory.c
+	rm -f wrap1.a
+	ar crs wrap1.a annoying.o anscii.o cmpsb.o holyshit.o printmemory.o
 win:
-	gcc -c -O2 master.c
 	gcc -c -O2 annoying.c
-	gcc -c -O2 parttable.c
-	rm -f main.a
-	ar crs main.a master.o annoying.o parttable.o
-win-graphic:
-	gcc -c -O2 graphic.c
-	gcc -c -O2 annoying.c
-	gcc -c -O2 parttable.c
-	rm -f main.a
-	ar crs main.a graphic.o annoying.o parttable.o
+	gcc -c -O2 anscii.c
+	gcc -c -O2 cmpsb.c
+	gcc -c -O2 holyshit.c
+	gcc -c -O2 printmemory.c
+	rm -f wrap1.a
+	ar crs wrap1.a annoying.o anscii.o cmpsb.o holyshit.o printmemory.o
 clean:
 	rm -f *.o *.a
