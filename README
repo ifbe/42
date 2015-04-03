@@ -1,43 +1,43 @@
-Ò».wrap(ÓëÏµÍ³µÈ»·¾³´ò½»µÀ)
+ï»¿ä¸€.wrap(ä¸ç³»ç»Ÿç­‰ç¯å¢ƒæ‰“äº¤é“)
 
-1.Ó²ÅÌÏà¹Ø
+1.ç¡¬ç›˜ç›¸å…³
 {
-	i.ÔËĞĞÇ°£¬Ñ¡¶¨´ÅÅÌ
+	i.è¿è¡Œå‰ï¼Œé€‰å®šç£ç›˜
 	__attribute__((constructor)) void initdisk()
 
-	ii.ÔËĞĞÖĞ£¬Ìá¹©º¯Êı
+	ii.è¿è¡Œä¸­ï¼Œæä¾›å‡½æ•°
 	void disk(QWORD in)
 	void getaddrofdiskinfo(unsigned long long* p)
 	void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 	int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 
-	iii.½áÊøÊ±£¬ÊÍ·Å´ÅÅÌ
+	iii.ç»“æŸæ—¶ï¼Œé‡Šæ”¾ç£ç›˜
 	__attribute__((destructor)) void freedisk()
 }
-2.ÄÚ´æÏà¹Ø
+2.å†…å­˜ç›¸å…³
 {
-	i.ÔËĞĞÇ°£¬ÉêÇëÄÚ´æ
+	i.è¿è¡Œå‰ï¼Œç”³è¯·å†…å­˜
 	__attribute__((constructor)) void initmemory()
 
-	ii.ÔËĞĞÖĞ£¬Ìá¹©º¯Êı
+	ii.è¿è¡Œä¸­ï¼Œæä¾›å‡½æ•°
 	void getaddroffs(unsigned long long* p)
 	void getaddrofdir(unsigned long long* p)
 	void getaddrofbuffer(unsigned long long* p)
 
-	iii.½áÊøÊ±£¬ÊÍ·Å´ÅÅÌ
+	iii.ç»“æŸæ—¶ï¼Œé‡Šæ”¾ç£ç›˜
 	__attribute__((destructor)) void freedisk()
 }
-3.ÆäËûÒ»Ğ©¶îÍâµÄĞ¡¶«Î÷
+3.å…¶ä»–ä¸€äº›é¢å¤–çš„å°ä¸œè¥¿
 {
 }
 
 
 
 
-¶ş.fs(ÎÄ¼şÏµÍ³Ïà¹Ø)
+äºŒ.fs(æ–‡ä»¶ç³»ç»Ÿç›¸å…³)
 1.ext
 {
-	i.³õÊ¼»¯ÕâĞ©±äÁ¿£¬ºóÃæ×Ô¼ºÒªÓÃ
+	i.åˆå§‹åŒ–è¿™äº›å˜é‡ï¼Œåé¢è‡ªå·±è¦ç”¨
 	static QWORD directorybuffer;
 	static QWORD readbuffer;
 	static QWORD inodebuffer;
@@ -48,31 +48,31 @@
 	static QWORD inodepergroup;
 	static QWORD inodesize;
 
-	ii.ÔËĞĞÊ±£¬Ìá¹©º¯Êı¸øÆäËûÈËÊ¹ÓÃ
+	ii.è¿è¡Œæ—¶ï¼Œæä¾›å‡½æ•°ç»™å…¶ä»–äººä½¿ç”¨
 	static int ext_explain(inode)
 	static int ext_cd(BYTE* addr)
 	static void ext_load(BYTE* addr,QWORD offset)
 }
 2.fat
 {
-	i.³õÊ¼»¯ÕâĞ©±äÁ¿£¬ºóÃæ×Ô¼ºÒªÓÃ
-	static QWORD fatbuffer;				//fat±í
-	static QWORD readbuffer;			//Ò»°ãÊ¹ÓÃ
-	static QWORD directorybuffer;		//Ä¿Â¼×¨ÓÃ
+	i.åˆå§‹åŒ–è¿™äº›å˜é‡ï¼Œåé¢è‡ªå·±è¦ç”¨
+	static QWORD fatbuffer;				//fatè¡¨
+	static QWORD readbuffer;			//ä¸€èˆ¬ä½¿ç”¨
+	static QWORD directorybuffer;		//ç›®å½•ä¸“ç”¨
 
-	static QWORD fat0;			//fat±íËùÔÚÉÈÇø
-	static QWORD fatsize;		//fat±í×Ü¹²µÄÉÈÇøÊıÁ¿
-	static QWORD cluster0;		//0ºÅ´ØËùÔÚÉÈÇø
-	static QWORD clustersize;	//Ã¿¸ö´ØµÄÉÈÇøÊıÁ¿
+	static QWORD fat0;			//fatè¡¨æ‰€åœ¨æ‰‡åŒº
+	static QWORD fatsize;		//fatè¡¨æ€»å…±çš„æ‰‡åŒºæ•°é‡
+	static QWORD cluster0;		//0å·ç°‡æ‰€åœ¨æ‰‡åŒº
+	static QWORD clustersize;	//æ¯ä¸ªç°‡çš„æ‰‡åŒºæ•°é‡
 
-	ii.ÔËĞĞÊ±£¬Ìá¹©º¯Êı¸øÆäËûÈËÊ¹ÓÃ
+	ii.è¿è¡Œæ—¶ï¼Œæä¾›å‡½æ•°ç»™å…¶ä»–äººä½¿ç”¨
 	static int fat_explain(inode)
 	static int fat_cd(BYTE* addr)
 	static void fat_load(BYTE* addr,QWORD offset)
 }
 3.hfs
 {
-	i.³õÊ¼»¯ÕâĞ©±äÁ¿£¬ºóÃæ×Ô¼ºÒªÓÃ
+	i.åˆå§‹åŒ–è¿™äº›å˜é‡ï¼Œåé¢è‡ªå·±è¦ç”¨
 	static QWORD readbuffer;
 	static QWORD directorybuffer;
 	static QWORD catalogbuffer;
@@ -86,14 +86,14 @@
 	static QWORD rootnode;
 	static QWORD firstleafnode;
 
-	ii.ÔËĞĞÊ±£¬Ìá¹©º¯Êı¸øÆäËûÈËÊ¹ÓÃ
+	ii.è¿è¡Œæ—¶ï¼Œæä¾›å‡½æ•°ç»™å…¶ä»–äººä½¿ç”¨
 	static int hfs_explain(inode)
 	static int hfs_cd(BYTE* addr)
 	static void hfs_load(BYTE* addr,QWORD offset)
 }
 4.ntfs
 {
-	i.³õÊ¼»¯ÕâĞ©±äÁ¿£¬ºóÃæ×Ô¼ºÒªÓÃ
+	i.åˆå§‹åŒ–è¿™äº›å˜é‡ï¼Œåé¢è‡ªå·±è¦ç”¨
 	static QWORD directorybuffer;
 	static QWORD readbuffer;
 	static QWORD mftbuffer;
@@ -106,7 +106,7 @@
 	static QWORD pwd[10];
 	static int ntfspwd;
 
-	ii.ÔËĞĞÊ±£¬Ìá¹©º¯Êı¸øÆäËûÈËÊ¹ÓÃ
+	ii.è¿è¡Œæ—¶ï¼Œæä¾›å‡½æ•°ç»™å…¶ä»–äººä½¿ç”¨
 	static int ntfs_explain(inode)
 	static int ntfs_cd(BYTE* addr)
 	static void ntfs_load(BYTE* addr,QWORD offset)
@@ -115,7 +115,7 @@
 
 
 
-Èı.main(³ÌĞòµÄ½çÃæÏà¹Ø)
+ä¸‰.main(ç¨‹åºçš„ç•Œé¢ç›¸å…³)
 1.annoying.c
 {
 	void holyshit(sector,count,where,wantwhere,towhere)
