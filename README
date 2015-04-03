@@ -1,4 +1,12 @@
-﻿一.wrap(与系统等环境打交道)
+﻿wrap:只能从系统得到的函数
+wrap1:在系统给予资源的基础上，提供更干净的函数给main用
+main:真正的逻辑部分
+main1:附属部分
+
+
+
+
+一.wrap(与系统等环境打交道)
 
 1.硬盘相关
 {
@@ -29,12 +37,50 @@
 }
 3.其他一些额外的小东西
 {
+	比如uac(向用户申请管理员权限)
 }
 
 
 
 
-二.fs(文件系统相关)
+二.wrap1(程序的界面相关)
+1.annoying.c
+{
+	void holyshit(sector,count,where,wantwhere,towhere)
+	int compare(unsigned char* first,unsigned char* second)
+	void printmemory(QWORD addr,QWORD size)
+	void blank2zero(QWORD* name)
+	void zero2blank(QWORD* name)
+	void small2capital(QWORD* name)
+	void str2data(BYTE* str,QWORD* data)
+	void anscii2dec(BYTE* second,QWORD* decimal)
+	void anscii2hex(BYTE* second,QWORD* hex)
+	void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
+}
+2.anscii.c
+{
+	void anscii(int x,int y,char ch)
+	void decimal(int x,int y,unsigned long long z)
+	void string(int x,int y,char* p)
+	void say(char* p,...)
+}
+
+
+
+
+三.main
+1.master	终端界面
+2.graphic	图形界面
+
+
+
+
+四.main1(文件系统相关)
+0.parttable
+{
+	void explainparttable(QWORD readbuffer)
+	getaddrofparttable(unsigned long long* p)
+}
 1.ext
 {
 	i.初始化这些变量，后面自己要用
@@ -111,28 +157,3 @@
 	static int ntfs_cd(BYTE* addr)
 	static void ntfs_load(BYTE* addr,QWORD offset)
 }
-
-
-
-
-三.main(程序的界面相关)
-1.annoying.c
-{
-	void holyshit(sector,count,where,wantwhere,towhere)
-	int compare(unsigned char* first,unsigned char* second)
-	void printmemory(QWORD addr,QWORD size)
-	void blank2zero(QWORD* name)
-	void zero2blank(QWORD* name)
-	void small2capital(QWORD* name)
-	void str2data(BYTE* str,QWORD* data)
-	void anscii2dec(BYTE* second,QWORD* decimal)
-	void anscii2hex(BYTE* second,QWORD* hex)
-	void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
-}
-2.parttable.c
-{
-	void explainparttable(QWORD readbuffer)
-	getaddrofparttable(unsigned long long* p)
-}
-3.master.c
-4.graphic.c

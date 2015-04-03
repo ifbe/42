@@ -35,18 +35,16 @@ mac:
 	rm -f main.a
 	ar crs main.a master.o annoying.o ext.o fat.o hfs.o ntfs.o
 win:
-	gcc -c -O2 ext.c
-	gcc -c -O2 fat.c
-	gcc -c -O2 hfs.c
-	gcc -c -O2 ntfs.c
-	rm -f fs.a
-	ar crs fs.a ext.o fat.o hfs.o ntfs.o
+	gcc -c -O2 master.c
+	gcc -c -O2 annoying.c
+	gcc -c -O2 parttable.c
+	rm -f main.a
+	ar crs main.a master.o annoying.o parttable.o
 win-graphic:
-	gcc -c -O2 ext.c
-	gcc -c -O2 fat.c
-	gcc -c -O2 hfs.c
-	gcc -c -O2 ntfs.c
-	rm -f fs.a
-	ar crs fs.a ext.o fat.o hfs.o ntfs.o
+	gcc -c -O2 graphic.c
+	gcc -c -O2 annoying.c
+	gcc -c -O2 parttable.c
+	rm -f main.a
+	ar crs main.a graphic.o annoying.o parttable.o
 clean:
 	rm -f *.o *.a
