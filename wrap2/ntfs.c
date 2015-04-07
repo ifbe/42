@@ -560,9 +560,9 @@ int mountntfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	*loadfunc=(QWORD)ntfs_load;
 
 	//拿到并准备好可用的内存地址
-	getaddrofbuffer(&readbuffer);
-	getaddrofdir(&directorybuffer);
-	getaddroffs(&mftbuffer);
+	whereisbuffer(&readbuffer);
+	whereisdir(&directorybuffer);
+	whereisfsbuf(&mftbuffer);
 
 	//记下第一扇区号
 	ntfssector=sector;

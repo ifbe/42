@@ -1,3 +1,0 @@
-#include <winuser.h>
-1 RT_MANIFEST uac.manifest
-#define RT_MANIFEST 24

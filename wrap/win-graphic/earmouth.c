@@ -3,10 +3,7 @@
 
 
 
-void say(char* p,...)
-{
-	asm("jmp printf");
-}
+#define say printf
 void waitinput(char* p)
 {
 	int i;

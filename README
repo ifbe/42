@@ -10,7 +10,6 @@ wrap:只需要，而且必须，从系统手上，拿到这些东西
 
 
 
-
 main(程序的界面相关)
 1.master	终端界面
 2.graphic	图形界面
@@ -26,6 +25,9 @@ wrap2:真正的逻辑部分
 0.parttable
 {
 	void explainparttable(QWORD readbuffer)
+	QWORD explaingpt(QWORD readbuffer)
+	QWORD explainmbr(readbuffer)
+
 	getaddrofparttable(unsigned long long* p)
 }
 1.ext
@@ -45,6 +47,7 @@ wrap2:真正的逻辑部分
 	static int ext_explain(inode)
 	static int ext_cd(BYTE* addr)
 	static void ext_load(BYTE* addr,QWORD offset)
+	int mountext(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 }
 2.fat
 {
@@ -62,6 +65,7 @@ wrap2:真正的逻辑部分
 	static int fat_explain(inode)
 	static int fat_cd(BYTE* addr)
 	static void fat_load(BYTE* addr,QWORD offset)
+	int mountfat(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 }
 3.hfs
 {
@@ -83,6 +87,7 @@ wrap2:真正的逻辑部分
 	static int hfs_explain(inode)
 	static int hfs_cd(BYTE* addr)
 	static void hfs_load(BYTE* addr,QWORD offset)
+	int mounthfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 }
 4.ntfs
 {
@@ -103,6 +108,7 @@ wrap2:真正的逻辑部分
 	static int ntfs_explain(inode)
 	static int ntfs_cd(BYTE* addr)
 	static void ntfs_load(BYTE* addr,QWORD offset)
+	int mountntfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 }
 
 
@@ -113,11 +119,8 @@ wrap2:真正的逻辑部分
 
 
 wrap1
-1.annoying.c
+1.annoying
 {
-	void holyshit(sector,count,where,wantwhere,towhere)
-	int compare(unsigned char* first,unsigned char* second)
-	void printmemory(QWORD addr,QWORD size)
 	void blank2zero(QWORD* name)
 	void zero2blank(QWORD* name)
 	void small2capital(QWORD* name)
@@ -126,12 +129,24 @@ wrap1
 	void anscii2hex(BYTE* second,QWORD* hex)
 	void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 }
-2.anscii.c
+2.anscii
 {
 	void anscii(int x,int y,char ch)
 	void decimal(int x,int y,unsigned long long z)
 	void string(int x,int y,char* p)
 	void say(char* p,...)
+}
+3.cmpsb
+{
+	int compare(unsigned char* first,unsigned char* second)
+}
+4.holyshit
+{
+	void holyshit(sector,count,where,wantwhere,towhere)
+}
+5.printmemory
+{
+	void printmemory(QWORD addr,QWORD size)
 }
 
 

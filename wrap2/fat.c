@@ -369,9 +369,9 @@ static int fat32_cd(BYTE* addr)
 int mountfat(QWORD firstsector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 {
 	//准备好可用的内存地址
-	getaddrofbuffer(&readbuffer);
-	getaddrofdir(&directorybuffer);
-	getaddroffs(&fatbuffer);
+	whereisbuffer(&readbuffer);
+	whereisdir(&directorybuffer);
+	whereisfsbuf(&fatbuffer);
 
 	//读取pbr
 	//say("partition sector:%x\n",firstsector);

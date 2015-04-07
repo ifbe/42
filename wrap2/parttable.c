@@ -1,31 +1,50 @@
-#define BYTE unsigned char
+﻿#define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
 
-//ÿ0x40���ֽ���һ�����̷�����¼�����������ֹ�����������ͷ������ֵ���Ϣ
+//每0x40个字节是一个当前目录表
+struct dirbuffer
+{
+	BYTE name[16];		//[+0,0x7]:起始lba
+	QWORD specialid;	//[+0x20,0x2f]:分区类型anscii
+	QWORD unused1;
+	QWORD type;			//[+0x10,0x1f]:末尾lba
+	QWORD unused2;
+	QWORD size;			//[0x30,0x3f]:分区名字
+	QWORD unused3;
+};
+static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
+
+//每0x40个字节是一个磁盘分区记录，里面包含起止扇区分区类型分区名字等信息
 struct mystruct
 {
-	unsigned long long startlba;	//[+0,0x7]:��ʼlba
-	unsigned long long endlba;	//[+0x8,0xf]:ĩβlba
-	unsigned long long parttype;	//[+0x10,0x17]:��������anscii
-	unsigned long long partname;	//[0x18,0x1f]:��������
-	unsigned long long a[4];	//[0x20,0x3f]:unused
+	unsigned long long startlba;	//[+0,0x7]:起始lba
+	unsigned long long endlba;		//[+0x8,0xf]:末尾lba
+	unsigned long long parttype;	//[+0x10,0x17]:分区类型anscii
+	unsigned long long partname;	//[0x18,0x1f]:分区名字
+	unsigned long long a[4];		//[0x20,0x3f]:unused
 };
 static struct mystruct mytable[128];		//0x40*0x80=0x2000
 
+static QWORD readbuffer;		//读缓冲区的地址，缓冲区64k大小
+static QWORD explainfunc;
+static QWORD cdfunc;
+static QWORD loadfunc;//调用的cd和load函数所在的内存地址
 
 
 
-//�Ӵ��̶�������������[+0x400,+0x4400]=0x80��*ÿ��0x80
-//[+0,+0xf]:����guid			raw[0],raw[1]
-//[+0x10,+0x1f]:����guid		raw[2],raw[3]
-//[+0x20,+0x27]:��ʼlba			raw[4]
-//[+0x28,+0x2f]:ĩβlba			raw[5]
-//[+0x30,+0x37]:���Ա�ǩ		raw[6]
-//[+0x38,+0x7f]:����			raw[7]~raw[0xf]
-QWORD explaingpt(QWORD readbuffer)
+
+
+//从磁盘读出来的数据在[+0x400,+0x4400]=0x80个*每个0x80
+//[+0,+0xf]:类型guid			raw[0],raw[1]
+//[+0x10,+0x1f]:分区guid		raw[2],raw[3]
+//[+0x20,+0x27]:起始lba			raw[4]
+//[+0x28,+0x2f]:末尾lba			raw[5]
+//[+0x30,+0x37]:属性标签		raw[6]
+//[+0x38,+0x7f]:名字			raw[7]~raw[0xf]
+QWORD explaingpt()
 {
 	say("gpt disk\n");
 	QWORD* raw=(QWORD*)(readbuffer+0x400);
@@ -74,16 +93,14 @@ QWORD explaingpt(QWORD readbuffer)
 		dst++;
 	}
 }
-
-
-//�Ӵ��̶�������������[+0x1be,+0x1fd]ÿ��0x10�ܹ�4��
-//[+0]:����
-//[+0x1,+0x3]:��ʼ��ͷ��������
-//[+0x4]:��������
-//[+0x5,+0x7]:������ͷ��������
-//[+0x8,+0xb]:��ʼlba
-//[+0xc,+0xf]:��С
-QWORD explainmbr(readbuffer)
+//从磁盘读出来的数据在[+0x1be,+0x1fd]每个0x10总共4个
+//[+0]:活动标记
+//[+0x1,+0x3]:开始磁头柱面扇区
+//[+0x4]:分区类型
+//[+0x5,+0x7]:结束磁头柱面扇区
+//[+0x8,+0xb]:起始lba
+//[+0xc,+0xf]:大小
+QWORD explainmbr()
 {
 	say("mbr disk\n",0);
 	QWORD raw=readbuffer+0x1be;
@@ -127,40 +144,123 @@ QWORD explainmbr(readbuffer)
 		dst++;
 	}
 }
-
-
-
-
-
-
-
-
-void explainparttable(QWORD readbuffer)
+void explainparttable()
 {
-	//����
+	//清理
 	BYTE* memory;
 	int i;
 	memory=(BYTE*)(mytable);
 	for(i=0;i<0x2000;i++) memory[i]=0;
 
-	//����ǰ64������
+	//读出前64个扇区
 	if(*(WORD*)(readbuffer+0x1fe)!=0xAA55)
 	{
 		say("bad disk\n");
 		return;
 	}
 
-	//���ͷ�����
+	//解释分区表
 	if(*(QWORD*)(readbuffer+0x200)==0x5452415020494645)
 	{
-		explaingpt(readbuffer);
+		explaingpt();
 	}
 	else
 	{
-		explainmbr(readbuffer);
+		explainmbr();
 	}
 }
-getaddrofparttable(unsigned long long* p)
+//if(in=0)：只读取分区表
+//else if(收到的地址里面是0xffffffffffffffff)：只读取分区表
+//else if(收到的地址里面是数字)：挂载这一分区
+int mount(QWORD choose,QWORD in)
+{
+	//地址在哪儿，忘记了或者没听就再问一遍
+	if(readbuffer==0)
+	{
+		whereisbuffer(&readbuffer);
+		whereisdir(&dir);
+	}
+
+	//大于0x80，只打印一遍认出来的分区
+	if(choose == 0)
+	{
+		readdisk(readbuffer,0,0,64);
+		explainparttable();
+		return -1;
+	}
+
+	//得到编号，然后得到分区位置，然后挂载
+	QWORD type=mytable[in].parttype;
+	QWORD start=mytable[in].startlba;
+	if(type == 0x747865)
+	{
+		mountext(start,&explainfunc,&cdfunc,&loadfunc);
+	}
+	else if(type == 0x746166)
+	{
+		mountfat(start,&explainfunc,&cdfunc,&loadfunc);
+	}
+	else if(type == 0x736668)
+	{
+		mounthfs(start,&explainfunc,&cdfunc,&loadfunc);
+	}
+	else if(type == 0x7366746e)
+	{
+		mountntfs(start,&explainfunc,&cdfunc,&loadfunc);
+	}
+	return 1;
+}
+void explain(QWORD addr)
+{
+	//接收到的anscii转数字
+	QWORD number;
+	anscii2hex(addr,&number);
+
+	//解释(几号文件)
+	((int (*)())(explainfunc))(number);
+}
+void cd(QWORD addr)
+{
+	say("i am in\n");
+	((int (*)())(cdfunc))(addr);
+}
+int load(QWORD addr)
+{
+	//寻找这个文件名，主要为了得到size
+	int i;
+	for(i=0;i<0x40;i++)
+	{
+		if(compare(addr,(char*)(&dir[i]))==0)break;
+	}
+	if(i==0x40)
+	{
+		say("file not found\n");
+		return -1;
+	}
+	say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
+		(char*)(&dir[i]),dir[i].specialid,dir[i].type,dir[i].size);
+
+	//现在分段读取保存
+	QWORD totalsize=dir[i].size;
+	QWORD temp;
+	if(totalsize>0x100000)say("warning:large file\n");
+	for(temp=0;temp<totalsize/0x100000;temp++)
+	{
+		((int (*)())(loadfunc))(addr,temp*0x100000);			//
+		mem2file(readbuffer,addr,temp*0x100000,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+	}
+	((int (*)())(loadfunc))(addr,temp*0x100000);			//
+	mem2file(readbuffer,addr,temp*0x100000,totalsize%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+}
+
+
+
+
+
+
+
+
+whereisparttable(unsigned long long* p)
 {
 	*p=(unsigned long long)mytable;
 }

@@ -563,9 +563,9 @@ int mounthfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	*loadfunc=(QWORD)hfs_load;
 
 	//准备好可用的内存地址
-	getaddrofbuffer(&readbuffer);
-	getaddrofdir(&directorybuffer);
-	getaddroffs(&catalogbuffer);
+	whereisbuffer(&readbuffer);
+	whereisdir(&directorybuffer);
+	whereisfsbuf(&catalogbuffer);
 
 	//读分区前8扇区，总共0x1000字节(其实只要分区内2号和3号扇区)
 	readdisk(readbuffer,sector,0,0x8);	//0x1000

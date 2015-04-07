@@ -2,73 +2,70 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+#include "struct.h"
 
 
-//每0x40字节存放分区的基本信息
-struct diskinfo
-{
-	BYTE path[0x20];
-	BYTE name[0x20];
-};
+
 static struct diskinfo* diskinfo;
-
-//每0x40字节存放分区的基本信息
-struct mytable
-{
-	QWORD startlba;	//[+0,0x7]:起始lba
-	QWORD endlba;	//[+0x8,0xf]:末尾lba
-	QWORD parttype;	//[+0x10,0x17]:分区类型anscii
-	QWORD partname;	//[0x18,0x1f]:分区名字
-	QWORD a[4];	//[0x20,0x3f]:unused
-};
 static struct mytable* mytable;
-
-//每0x40个字节是一个当前目录表
-struct dirbuffer
-{
-	unsigned long long name;	//[+0,0x7]:起始lba
-	unsigned long long unused;
-	unsigned long long specialid;	//[+0x20,0x2f]:分区类型anscii
-	unsigned long long unused1;
-	unsigned long long type;	//[+0x10,0x1f]:末尾lba
-	unsigned long long unused2;
-	unsigned long long size;	//[0x30,0x3f]:分区名字
-	unsigned long long unused3;
-};
 static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
 
-//读缓冲区的地址，缓冲区64k大小
-static QWORD readbuffer;
 
-//键盘输入专用
-static BYTE buffer[128];
+static QWORD readbuffer;//读缓冲区的地址，缓冲区64k大小
+
+static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
 
-//调用的cd和load函数所在的内存地址
-static QWORD explainfunc,cdfunc,loadfunc;
+static QWORD explainfunc,cdfunc,loadfunc;//调用的cd和load函数所在的内存地址
 
 
 
 
-//[fedcba9876543210,ffffffffffffffff]，就只需要打印已经认出的分区
-//[0,fedcba9876543210)，收到一个地址，那个地方是一堆数字
+void changedisk(QWORD in)
+{
+	if(*(DWORD*)in==0xffffffff)
+	{
+		disk(0xffffffffffffffff);
+	}
+	else
+	{
+		int i;
+		anscii2hex(in,&i);
+		if(i<0xa)
+		{
+			disk(i);
+		}
+		else disk(in);
+	}
+}
+//if(in=0)：只读取分区表
+//else if(收到的地址里面是0xffffffffffffffff)：只读取分区表
+//else if(收到的地址里面是数字)：挂载这一分区
 static int mount(QWORD in)
 {
-	if(in >= 0xfedcba9876543210)
+	if(in<0x80)
 	{
 		readdisk(readbuffer,0,0,64);
 		explainparttable(readbuffer);
 		return -1;
 	}
-	if(in > 0xff) return -2;
+
+	int i;
+	anscii2hex(in,&i);
+	if(i>0xa)
+	{
+		readdisk(readbuffer,0,0,64);
+		explainparttable(readbuffer);
+		return -2;
+	}
 
 	//得到编号，然后得到分区位置，然后挂载
-	QWORD type=mytable[in].parttype;
-	QWORD start=mytable[in].startlba;
+	QWORD type=mytable[i].parttype;
+	QWORD start=mytable[i].startlba;
 	if( (start==0) )
 	{
-		say("impossible partition:%llx\n",in);
-		return;
+		say("impossible partition:%llx\n",i);
+		return -3;
 	}
 	if(type == 0x747865)
 	{
@@ -140,6 +137,17 @@ static int ls()
 	}
 	say("\n");
 }
+void help()
+{
+	say("disk                    (list disks)\n");
+	say("disk ?                  (choose a disk)\n");
+	say("disk ?:\\\\name.format    (use an image file as disk)\n");
+	say("mount                   (list partitions)\n");
+	say("mount ?                 (choose a partition)\n");
+	say("explain ?               (explain inode/cluster/cnid/mft)\n");
+	say("cd dirname              (change directory)\n");
+	say("load filename           (load this file)\n");
+}
 
 
 
@@ -186,9 +194,6 @@ void main()
 	getaddrofdir(&dir);
 	getaddrofbuffer(&readbuffer);
 	say("%llx,%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir,readbuffer);
-
-	//初始化一下parttable.c需要的变量
-	mount(0xffffffffffffffff);
 
 	while(1)
 	{

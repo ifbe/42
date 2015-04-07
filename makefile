@@ -14,8 +14,8 @@ win:
 	make -s -C wrap2 win
 	make -s -C wrap1 win
 	make -s -C wrap win
-	gcc main/main.a wrap/uac.res \
-	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a \
+	gcc main/main.a \
+	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
 	-L d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\lib \
 	-lmingw32 -lSDL2main -lSDL2 \
@@ -27,8 +27,8 @@ win-graphic:
 	make -s -C wrap2 win
 	make -s -C wrap1 win
 	make -s -C wrap win-graphic
-	gcc main/main.a wrap/uac.res \
-	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a \
+	gcc main/main.a \
+	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
 	-L d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\lib \
 	-lmingw32 -lSDL2main -lSDL2 \

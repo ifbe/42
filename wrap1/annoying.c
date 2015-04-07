@@ -74,14 +74,20 @@ void anscii2dec(BYTE* second,QWORD* decimal)
 	}
 }
 //anscii码转换成一个16进制数字，比如anscii码串为0x36,0x61,转换后得到hex=0x6a
-void anscii2hex(BYTE* second,QWORD* hex)
+int anscii2hex(BYTE* second,QWORD* hex)
 {
 	*hex=0;
 	int i;
 	for(i=0;i<8;i++)
 	{
-		if(second[i]<=0x20) break;
 		//say("%x\n",second[i]);
+		//1.如果小于0x20，那就是结束了
+		if(second[i]<=0x20) break;
+
+		//2.如果大于0x80，那就返回错误
+		if(second[i]>=0x80) return -1;
+
+		//3.如果是正常值
 		*hex=(*hex)<<4;
 		if(second[i]>=0x61 && second[i]<=0x66)
 		{

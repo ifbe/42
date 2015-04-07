@@ -1,18 +1,24 @@
 ﻿#include<stdlib.h>
-unsigned char* fsbuf;		//文件系统读取代码需要的内部缓冲
-unsigned char* dirbuf;		//存储翻译之后的(目录名,索引号)
 unsigned char* readbuf;		//读出来的数据存放的地址
+unsigned char* dirbuf;		//存储翻译之后的(目录名,索引号)
+unsigned char* fsbuf;		//文件系统读取代码需要的内部缓冲
+unsigned char* logbuf;
+unsigned char* screenbuf;
 __attribute__((constructor)) void initmemory()
 {
-	fsbuf=(unsigned char*)malloc(0x100000);
-	dirbuf=(unsigned char*)malloc(0x100000);
 	readbuf=(unsigned char*)malloc(0x100000);
+	dirbuf=(unsigned char*)malloc(0x100000);
+	fsbuf=(unsigned char*)malloc(0x100000);
+	logbuf=(unsigned char*)malloc(0x100000);
+	screenbuf=(unsigned char*)malloc(1024*1024*4);
 }
 __attribute__((destructor)) void freememory()
 {
-	free(fsbuf);
-	free(dirbuf);
 	free(readbuf);
+	free(dirbuf);
+	free(fsbuf);
+	free(logbuf);
+	free(screenbuf);
 }
 
 
@@ -22,15 +28,23 @@ __attribute__((destructor)) void freememory()
 
 
 
-void getaddroffs(unsigned long long* p)
+void whereisbuffer(unsigned long long* p)
 {
-	*p=(unsigned long long)fsbuf;
+	*p=(unsigned long long)readbuf;
 }
-void getaddrofdir(unsigned long long* p)
+void whereisdir(unsigned long long* p)
 {
 	*p=(unsigned long long)dirbuf;
 }
-void getaddrofbuffer(unsigned long long* p)
+void whereisfsbuf(unsigned long long* p)
 {
-	*p=(unsigned long long)readbuf;
+	*p=(unsigned long long)fsbuf;
+}
+void whereislogbuf(unsigned long long* p)
+{
+	*p=(unsigned long long)logbuf;
+}
+void whereisscreenbuf(unsigned long long* p)
+{
+	*p=(unsigned long long)screenbuf;
 }

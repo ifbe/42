@@ -16,7 +16,6 @@ struct diskinfo
 static struct diskinfo diskinfo[10];
 
 HANDLE hDev;
-
 static BYTE tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 
@@ -82,22 +81,14 @@ __attribute__((destructor)) void freedisk()
 
 
 
-void getaddrofdiskinfo(unsigned long long* p)
+void disk(QWORD choose,QWORD in)
 {
-	*p=(unsigned long long)diskinfo;
-}
-//[fedcba9876543210,ffffffffffffffff]，就只需要打印已经认出的分区
-//[0,ff]，是一个数字，从表里取出这一号
-//[100,fedcba9876......]，收到一个地址，可能要把d:\image\name.format当作硬盘
-void disk(QWORD in)
-{
-	//say("%llx\n",in);
-	if(in >= 0xfedcba9876543210)	//是0xffffffffffffffff，就只扫描一遍然后打印一遍了事
+	if(choose == 0)	//只扫描一遍然后打印一遍了事
 	{
 		enumeratedisk();
 		return;
 	}
-	else if(in<0xa)		//是数字
+	else if(choose == 1)		//0，1，2，3这种数字
 	{
 		//先关掉原先已经打开的磁盘
 		CloseHandle(hDev);
@@ -105,7 +96,7 @@ void disk(QWORD in)
 		//选定这个磁盘
 		hDev=CreateFile((BYTE*)diskinfo+in*0x40,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	}
-	else		//如果是一个地址，那里放着虚拟磁盘文件的位置字符串比如x:\where\wow\haha.img
+	else if(choose == 2)		//比如x:\where\wow\haha.img的首地址
 	{
 		HANDLE temphandle=CreateFile((BYTE*)in,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 		if(temphandle != INVALID_HANDLE_VALUE)
@@ -181,4 +172,12 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 	WriteFile(hFile,memaddr,count,&dwBytesWritten,NULL);
 
 	CloseHandle(hFile);
+}
+
+
+
+
+void whereisdiskinfo(unsigned long long* p)
+{
+	*p=(unsigned long long)diskinfo;
 }

@@ -343,9 +343,9 @@ int mountext(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	*loadfunc=(QWORD)ext_load;
 
 	//准备好可用的内存地址
-	getaddrofbuffer(&readbuffer);
-	getaddrofdir(&directorybuffer);
-	getaddroffs(&inodebuffer);
+	whereisbuffer(&readbuffer);
+	whereisdir(&directorybuffer);
+	whereisfsbuf(&inodebuffer);
 	block0=sector;				//say("ext sector:%x\n",sector);
 
 	//读分区前8扇区，总共0x1000字节
