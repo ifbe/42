@@ -37,7 +37,7 @@ __attribute__((constructor)) void initsdl()
   SDL_Init(SDL_INIT_EVERYTHING);
   window=SDL_CreateWindow("My Game Window",
                           SDL_WINDOWPOS_UNDEFINED,
-                          16,
+                          SDL_WINDOWPOS_UNDEFINED,
                           width,height,
                           SDL_WINDOW_OPENGL);
   renderer= SDL_CreateRenderer(window, -1, 0);

@@ -184,6 +184,20 @@ void decimal(int x,int y,unsigned long long z)
         anscii(x+i,y,ch);
         }
 }
+void hexadecimal(int x,int y,unsigned long long z)
+{
+	char ch;
+	int i=0;
+
+	for(i=7;i>=0;i--)
+	{
+		ch=(char)(z&0x0000000f);
+		if(ch<=9)ch+=0x30;
+		else if(ch<=0xf)ch+=0x37;
+		anscii(x+i,y,ch);
+		z=z>>4;
+	}
+}
 void string(int x,int y,char* p)
 {
     while(*p!='\0')
@@ -193,15 +207,3 @@ void string(int x,int y,char* p)
     x++;
     }
 }
-/*
-void say(char* p,...)
-{
-	asm("jmp printf");
-}
-void say(char* p,...)
-{
-	register unsigned long long rsi asm("rsi");
-	unsigned long long first=rsi;
-	char* journal=(char*)0x40000;
-}
-*/

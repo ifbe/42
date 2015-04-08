@@ -10,130 +10,46 @@ static struct diskinfo* diskinfo;
 static struct mytable* mytable;
 static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
 
-
-static QWORD readbuffer;//读缓冲区的地址，缓冲区64k大小
+static BYTE* buf1d;
+static BYTE* buf2d;
 
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
 
-static QWORD explainfunc,cdfunc,loadfunc;//调用的cd和load函数所在的内存地址
 
 
-
-
-void changedisk(QWORD in)
+static int listdisk()
 {
-	if(*(DWORD*)in==0xffffffff)
-	{
-		disk(0xffffffffffffffff);
-	}
-	else
-	{
-		int i;
-		anscii2hex(in,&i);
-		if(i<0xa)
-		{
-			disk(i);
-		}
-		else disk(in);
-	}
-}
-//if(in=0)：只读取分区表
-//else if(收到的地址里面是0xffffffffffffffff)：只读取分区表
-//else if(收到的地址里面是数字)：挂载这一分区
-static int mount(QWORD in)
-{
-	if(in<0x80)
-	{
-		readdisk(readbuffer,0,0,64);
-		explainparttable(readbuffer);
-		return -1;
-	}
-
 	int i;
-	anscii2hex(in,&i);
-	if(i>0xa)
-	{
-		readdisk(readbuffer,0,0,64);
-		explainparttable(readbuffer);
-		return -2;
-	}
-
-	//得到编号，然后得到分区位置，然后挂载
-	QWORD type=mytable[i].parttype;
-	QWORD start=mytable[i].startlba;
-	if( (start==0) )
-	{
-		say("impossible partition:%llx\n",i);
-		return -3;
-	}
-	if(type == 0x747865)
-	{
-		mountext(start,&explainfunc,&cdfunc,&loadfunc);
-	}
-	else if(type == 0x746166)
-	{
-		mountfat(start,&explainfunc,&cdfunc,&loadfunc);
-	}
-	else if(type == 0x736668)
-	{
-		mounthfs(start,&explainfunc,&cdfunc,&loadfunc);
-	}
-	else if(type == 0x7366746e)
-	{
-		mountntfs(start,&explainfunc,&cdfunc,&loadfunc);
-	}
-	return 1;
-}
-static int explain(QWORD addr)
-{
-	//接收到的anscii转数字
-	QWORD number;
-	anscii2hex(addr,&number);
-
-	//解释(几号文件)
-	((int (*)())(explainfunc))(number);
-}
-static int cd(addr)
-{
-	say("i am in\n");
-	((int (*)())(cdfunc))(addr);
-}
-static int load(addr)
-{
-	//寻找这个文件名，主要为了得到size
-	int i;
+	say("path            detail\n");
 	for(i=0;i<0x40;i++)
 	{
-		if(compare(addr,(char*)(&dir[i]))==0)break;
+		if(diskinfo[i].path==0)break;
+		say("%-16.16s    %-16.16s\n",&diskinfo[i].path,diskinfo[i].name);
 	}
-	if(i==0x40)
-	{
-		say("file not found\n");
-		return -1;
-	}
-	say("%-16.16s    %-16llx    %-16llx    %-16llx\n",(char*)(&dir[i]),dir[i].specialid,dir[i].type,dir[i].size);
-
-	//现在分段读取保存
-	QWORD totalsize=dir[i].size;
-	QWORD temp;
-	if(totalsize>0x100000)say("warning:large file\n");
-	for(temp=0;temp<totalsize/0x100000;temp++)
-	{
-		((int (*)())(loadfunc))(addr,temp*0x100000);			//
-		mem2file(readbuffer,addr,temp*0x100000,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
-	}
-	((int (*)())(loadfunc))(addr,temp*0x100000);			//
-	mem2file(readbuffer,addr,temp*0x100000,totalsize%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+	say("\n");
 }
-static int ls()
+static int listpartition()
+{
+	int i;
+	say("partition             detail\n");
+	for(i=0;i<0x40;i++)
+	{
+		if(mytable[i].startlba==0)break;
+		say("%-16llx    %-16llx    %-16llx    %-16llx\n",
+			mytable[i].startlba,mytable[i].endlba,mytable[i].type,mytable[i].name);
+	}
+	say("\n");
+}
+static int listfile()
 {
 	int i;
 	say("name                special id          type                size\n");
 	for(i=0;i<0x40;i++)
 	{
 		if(dir[i].name==0)break;
-		say("%-16.16s    %-16llx    %-16llx    %-16llx\n",(char*)(&dir[i]),dir[i].specialid,dir[i].type,dir[i].size);
+		say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
+			(char*)(&dir[i]),dir[i].specialid,dir[i].type,dir[i].size);
 	}
 	say("\n");
 }
@@ -152,36 +68,102 @@ void help()
 
 
 
-//
-static int tag=0;
-void printworld()
+void d1()
 {
-	writetitle(buffer);
-	//清屏，上面一排，分隔线
+}
+void d2()
+{
+	//
+	disk(1,1);
+	mount(0,0);
+
+	char* p;
+	int x,y;
+
+//每个分区里面的文件和文件夹
+	p=(char*)dir;
+	for(y=0;y<2;y++)
+	{
+		for(x=0;x<0x40;x++)
+		{
+			anscii(x,10+y,p[0x40*y+x]);
+		}
+	}
+
+//仔细看每一个磁盘由很多分区构成
+	//1.最大扇区号是几
+	QWORD maxsector=0;
+	p=(char*)mytable;
+	for(x=0;x<16;x++)
+	{
+		QWORD temp=*(QWORD*)(p+x*0x40+0x10);
+		if(temp == 0)break;
+		if(temp>=maxsector)maxsector=temp;
+	}
+	//2.标记头尾
+	p=(char*)mytable;
+	for(y=0;y<8;y++)
+	{
+		hexadecimal(0,20+y,*(QWORD*)(p+0x40*y));
+		hexadecimal(8,20+y,*(QWORD*)(p+0x40*y+8));
+		for(x=0x10;x<0x20;x++)
+		{
+			anscii(x,20+y,p[0x40*y+x]);
+		}
+	}
+	for(x=100;x<900;x++)
+	{
+		point(x+64,320,0xff0000);
+	}
+
+//各种磁盘
+	p=(char*)diskinfo;
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<0x40;x++)
+		{
+			anscii(x,30+y,p[0x40*y+x]);
+		}
+	}
+}
+static int tag=1;
+void tagcontect()
+{
+	//画分隔线，写标签名
 	int i,j;
-	for(i=0;i<640;i++)
-		for(j=0;j<32;j++)
+	for(j=0;j<32;j++)
+		for(i=0;i<1024;i++)
 			point(i,j,0xffffffff);
 	for(j=0;j<32;j++)
 	{
-		point(80,j,0);
 		point(160,j,0);
-		point(240,j,0);
 		point(320,j,0);
 	}
 
-	//本程序的大概标签式结构，标签含义，标签内的颜色
-	DWORD color=0xfeffefcf>>(tag*5);
-	for(i=tag*80;i<tag*80+80;i++)
-		for(j=0;j<32;j++)
+	//清屏
+	DWORD color=0xff<<(tag*8);
+	for(j=0;j<32;j++)
+		for(i=tag*160;i<tag*160+160;i++)
 			point(i,j,color);
-	for(i=0;i<640;i++)
-		for(j=32;j<640;j++)
+	for(j=32;j<640;j++)
+		for(i=0;i<1024;i++)
 			point(i,j,color);
-	string(0,0,"1.disk");
-	string(10,0,"2.part");
-	string(20,0,"3.file");
-	string(30,0,"4.detail");
+
+	//名称
+	string(0,0,"journal");
+	string(20,0,"graphic");
+}
+void printworld()
+{
+	//input
+	writetitle(buffer);
+
+	//基本内容
+	tagcontect();
+
+	//具体内容
+	if(tag==0) d1();
+	if(tag==1) d2();
 
 	//写屏
 	writescreen();
@@ -189,11 +171,11 @@ void printworld()
 void main()
 {
 	//已申请到的内存在哪
-	getaddrofdiskinfo(&diskinfo);
-	getaddrofparttable(&mytable);
-	getaddrofdir(&dir);
-	getaddrofbuffer(&readbuffer);
-	say("%llx,%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir,readbuffer);
+	whereisdiskinfo(&diskinfo);
+	whereisparttable(&mytable);
+	whereisdir(&dir);
+	//say("%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir);
+
 
 	while(1)
 	{
@@ -237,7 +219,7 @@ void main()
 				//
 				if( (y<48) && (x<320) )
 				{
-					tag=x/80;
+					tag=x/160;
 				}
 				break;
 			}

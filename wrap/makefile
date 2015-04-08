@@ -39,10 +39,11 @@ win:
 win-graphic:
 	windres --input-format=rc -O coff -i windows/uac.rc -o uac.res
 	gcc -c -O2 windows/disk.c
+	gcc -c -O2 win-graphic/2d.c
 	gcc -c -O2 win-graphic/earmouth.c
 	gcc -c -O2 win-graphic/memory.c
 	gcc -c -O2 win-graphic/sdl.c -I d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\include
 	rm -f wrap.a
-	ar crs wrap.a disk.o earmouth.o memory.o sdl.o
+	ar crs wrap.a disk.o 2d.o earmouth.o memory.o sdl.o
 clean:
 	rm -f *.o *.a *.res
