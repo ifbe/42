@@ -161,35 +161,44 @@ void anscii(int x,int y,char ch)
 }
 void decimal(int x,int y,unsigned long long z)
 {
-        char ch;
-        int i=0;
-        unsigned long long temp;
+	char ch;
+	int i=0;
+	unsigned long long temp;
 
-        if(z<0){
-        anscii(x,y,'-');
-        x++;
-        z=-z;
-        }
+	if(z<0)
+	{
+		anscii(x,y,'-');
+		x++;
+		z=-z;
+	}
 
-        temp=z;
-        while(temp>=10){
+	temp=z;
+	while(temp>=10)
+	{
         temp=temp/10;
         i++;
-        }
+	}
 
-        for(;i>=0;i--)
-        {
-        ch=(char)(z%10);
-        z=z/10;
-        anscii(x+i,y,ch);
-        }
+	for(;i>=0;i--)
+	{
+		ch=(char)(z%10);
+		z=z/10;
+		anscii(x+i,y,ch);
+	}
 }
 void hexadecimal(int x,int y,unsigned long long z)
 {
 	char ch;
 	int i=0;
 
-	for(i=7;i>=0;i--)
+	unsigned long long temp=z;
+	while(1)
+	{
+		if(temp<0x10)break;
+		temp=temp>>4;
+		i++;
+	}
+	for(;i>=0;i--)
 	{
 		ch=(char)(z&0x0000000f);
 		if(ch<=9)ch+=0x30;

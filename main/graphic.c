@@ -71,6 +71,47 @@ void help()
 void d1()
 {
 }
+void printbitmap(QWORD start,QWORD end,QWORD typestr)
+{	//point(x,320+y,color)
+
+	int x;
+	int y;
+	QWORD linecount=0;
+	QWORD color=start;
+	QWORD startx,starty,endx,endy;
+	while(1)		//一行行得
+	{
+		//得到这一轮的开始与结束
+		starty=320+start/1024*16;
+		endy=starty+16;
+		startx=start%1024;
+		if(end<linecount*1024)
+		{
+			//这行就结束的话
+			endx=end%1024;
+		}
+		else
+		{
+			endx=1023;
+		}
+
+		//按照得到的坐标打印就行
+		for(x=startx;x<=endx;x++)
+		{
+			for(y=starty;y<endy;y++)
+			{
+				point(x,y,color);
+			}
+		}
+
+		//下一个start，或者已经结束了就break
+		linecount++;
+		start=linecount*1024;
+		if(start>end)break;
+	}
+
+	//
+}
 void d2()
 {
 	//
@@ -78,9 +119,8 @@ void d2()
 	mount(0,0);
 
 	char* p;
-	int x,y;
-
-//每个分区里面的文件和文件夹
+	QWORD x,y;
+//三.每个分区里面的文件和文件夹
 	p=(char*)dir;
 	for(y=0;y<2;y++)
 	{
@@ -90,33 +130,55 @@ void d2()
 		}
 	}
 
-//仔细看每一个磁盘由很多分区构成
+//二.仔细看每一个磁盘由很多分区构成
 	//1.最大扇区号是几
-	QWORD maxsector=0;
 	p=(char*)mytable;
+	QWORD temp;
+
+	QWORD maxsector=0;
 	for(x=0;x<16;x++)
 	{
-		QWORD temp=*(QWORD*)(p+x*0x40+0x10);
+		temp=*(QWORD*)(p+x*0x40+8);
 		if(temp == 0)break;
-		if(temp>=maxsector)maxsector=temp;
+		if(temp>maxsector)maxsector=temp;
 	}
-	//2.标记头尾
+	say("%x\n",maxsector);
+	QWORD displaymax=1;
+	for(x=0;x<64;x++)
+	{
+		say("%x\n",maxsector);
+		if(maxsector <= 0)break;
+		else
+		{
+			maxsector>>=1;
+			displaymax<<=1;
+		}
+	}
+	say("%x\n",displaymax);
+
+	//3.标记头尾
 	p=(char*)mytable;
 	for(y=0;y<8;y++)
 	{
-		hexadecimal(0,20+y,*(QWORD*)(p+0x40*y));
-		hexadecimal(8,20+y,*(QWORD*)(p+0x40*y+8));
-		for(x=0x10;x<0x20;x++)
-		{
-			anscii(x,20+y,p[0x40*y+x]);
-		}
-	}
-	for(x=100;x<900;x++)
-	{
-		point(x+64,320,0xff0000);
+		//算出开始扇区结束扇区
+		QWORD startsec=*(QWORD*)(p+0x40*y);
+		if(startsec==0)break;
+		QWORD endsec=*(QWORD*)(p+0x40*y+8);
+		QWORD typestr=(QWORD)&p[0x40*y+0x10];
+
+		//
+		QWORD start=((double)(startsec*10240)/(double)displaymax);
+		hexadecimal(start/8,20,startsec);
+		QWORD end=((double)(endsec*10240)/(double)displaymax);
+		hexadecimal(end/8,21,endsec);
+
+		say("[%llx,%llx],%s,[%x,%x]\n",startsec,endsec,typestr,start,end);
+
+		//打印硬盘的大致图像
+		printbitmap(start,end,typestr);
 	}
 
-//各种磁盘
+//一.各种磁盘
 	p=(char*)diskinfo;
 	for(y=0;y<3;y++)
 	{
@@ -131,10 +193,10 @@ void tagcontect()
 {
 	//画分隔线，写标签名
 	int i,j;
-	for(j=0;j<32;j++)
+	for(j=640-32;j<640;j++)
 		for(i=0;i<1024;i++)
 			point(i,j,0xffffffff);
-	for(j=0;j<32;j++)
+	for(j=0;j<640-32;j++)
 	{
 		point(160,j,0);
 		point(320,j,0);
@@ -142,16 +204,16 @@ void tagcontect()
 
 	//清屏
 	DWORD color=0xff<<(tag*8);
-	for(j=0;j<32;j++)
-		for(i=tag*160;i<tag*160+160;i++)
-			point(i,j,color);
-	for(j=32;j<640;j++)
+	for(j=0;j<640-32;j++)
 		for(i=0;i<1024;i++)
+			point(i,j,color);
+	for(j=640-32;j<640;j++)
+		for(i=tag*160;i<tag*160+160;i++)
 			point(i,j,color);
 
 	//名称
-	string(0,0,"journal");
-	string(20,0,"graphic");
+	string(0,39,"journal");
+	string(20,39,"graphic");
 }
 void printworld()
 {
@@ -217,7 +279,7 @@ void main()
 				say("(%d,%d)\n",x,y);
 
 				//
-				if( (y<48) && (x<320) )
+				if( (y>640-32) && (x<320) )
 				{
 					tag=x/160;
 				}
