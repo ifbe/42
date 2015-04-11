@@ -68,24 +68,46 @@ void help()
 
 
 
-void d1()
+void printlog()
 {
 }
-void printbitmap(QWORD start,QWORD end,QWORD typestr)
-{	//point(x,320+y,color)
+void printdisk()
+{
+	disk(0,0);
 
+	char* p;
+	QWORD x,y;
+//一.各种磁盘
+	p=(char*)diskinfo;
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<0x40;x++)
+		{
+			anscii(x,y,p[0x40*y+x]);
+		}
+	}
+}
+void printbitmap(QWORD start,QWORD end,QWORD typestr)
+{
 	int x;
 	int y;
-	QWORD linecount=0;
-	QWORD color=start;
-	QWORD startx,starty,endx,endy;
+
+	//
+	QWORD starty=start/1024*16;
+	QWORD startx=start%1024;
+	QWORD endy=starty+0xf;
+	QWORD endx;
+	QWORD color=start*0xfedcba/1024/36;
+	QWORD nextline=(start/1024)*1024+1024;
+	QWORD this=start;
+	QWORD isfirst=1;
 	while(1)		//一行行得
 	{
 		//得到这一轮的开始与结束
-		starty=320+start/1024*16;
-		endy=starty+16;
-		startx=start%1024;
-		if(end<linecount*1024)
+		starty=this/1024*16;
+		startx=this%1024;
+		endy=starty+15;
+		if(end<nextline)
 		{
 			//这行就结束的话
 			endx=end%1024;
@@ -94,25 +116,48 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 		{
 			endx=1023;
 		}
+		for(y=endy-16;y<endy;y++)
+		{
+			point(startx,y,0xff0000);
+			point(endx,y,0xff0000);
+		}
+		say("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
 
 		//按照得到的坐标打印就行
-		for(x=startx;x<=endx;x++)
+		if(isfirst)
 		{
-			for(y=starty;y<endy;y++)
+			for(x=startx;x<endx;x++)
+			{
+				point(x,starty,0xff0000);
+			}
+			isfirst=0;
+		}
+		for(x=startx+1;x<endx;x++)
+		{
+			for(y=starty+1;y<=endy+1;y++)
 			{
 				point(x,y,color);
 			}
 		}
 
 		//下一个start，或者已经结束了就break
-		linecount++;
-		start=linecount*1024;
-		if(start>end)break;
+		this=nextline;
+		if(this>end)break;
+		nextline+=1024;
+		if(nextline>1024*36)break;
+	}
+	for(x=startx+1;x<endx;x++)
+	{
+		point(x,endy+1,0xff0000);
 	}
 
 	//
+	//say("start:%x,end:%x,average:%x\n",start,end,(start+end)/2);
+	x=((start+end)/2)%1024/8;
+	y=(start+end)/2/1024;
+	string(x,y,(char*)typestr);
 }
-void d2()
+void printpartition()
 {
 	//
 	disk(1,1);
@@ -120,15 +165,6 @@ void d2()
 
 	char* p;
 	QWORD x,y;
-//三.每个分区里面的文件和文件夹
-	p=(char*)dir;
-	for(y=0;y<2;y++)
-	{
-		for(x=0;x<0x40;x++)
-		{
-			anscii(x,10+y,p[0x40*y+x]);
-		}
-	}
 
 //二.仔细看每一个磁盘由很多分区构成
 	//1.最大扇区号是几
@@ -146,7 +182,7 @@ void d2()
 	QWORD displaymax=1;
 	for(x=0;x<64;x++)
 	{
-		say("%x\n",maxsector);
+		//say("%x\n",maxsector);
 		if(maxsector <= 0)break;
 		else
 		{
@@ -167,10 +203,10 @@ void d2()
 		QWORD typestr=(QWORD)&p[0x40*y+0x10];
 
 		//
-		QWORD start=((double)(startsec*10240)/(double)displaymax);
-		hexadecimal(start/8,20,startsec);
-		QWORD end=((double)(endsec*10240)/(double)displaymax);
-		hexadecimal(end/8,21,endsec);
+		QWORD start=((double)(startsec*1024*36)/(double)displaymax);
+		//hexadecimal(start/8,20,startsec);
+		QWORD end=((double)(endsec*1024*36)/(double)displaymax);
+		//hexadecimal(end/8,21,endsec);
 
 		say("[%llx,%llx],%s,[%x,%x]\n",startsec,endsec,typestr,start,end);
 
@@ -178,17 +214,23 @@ void d2()
 		printbitmap(start,end,typestr);
 	}
 
-//一.各种磁盘
-	p=(char*)diskinfo;
-	for(y=0;y<3;y++)
+}
+void printfile()
+{
+	char* p;
+	QWORD x,y;
+	
+//三.每个分区里面的文件和文件夹
+	p=(char*)dir;
+	for(y=0;y<2;y++)
 	{
 		for(x=0;x<0x40;x++)
 		{
-			anscii(x,30+y,p[0x40*y+x]);
+			anscii(x,10+y,p[0x40*y+x]);
 		}
 	}
 }
-static int tag=1;
+static int tag=2;
 void tagcontect()
 {
 	//画分隔线，写标签名
@@ -203,7 +245,7 @@ void tagcontect()
 	}
 
 	//清屏
-	DWORD color=0xff<<(tag*8);
+	DWORD color=0xff<<(tag*3);
 	for(j=0;j<640-32;j++)
 		for(i=0;i<1024;i++)
 			point(i,j,color);
@@ -213,7 +255,9 @@ void tagcontect()
 
 	//名称
 	string(0,39,"journal");
-	string(20,39,"graphic");
+	string(20,39,"disk");
+	string(40,39,"partition");
+	string(60,39,"file");
 }
 void printworld()
 {
@@ -224,8 +268,10 @@ void printworld()
 	tagcontect();
 
 	//具体内容
-	if(tag==0) d1();
-	if(tag==1) d2();
+	if(tag==0) printlog();
+	if(tag==1) printdisk();
+	if(tag==2) printpartition();
+	if(tag==3) printfile();
 
 	//写屏
 	writescreen();
@@ -279,7 +325,7 @@ void main()
 				say("(%d,%d)\n",x,y);
 
 				//
-				if( (y>640-32) && (x<320) )
+				if( (y>640-32) && (x<640) )
 				{
 					tag=x/160;
 				}
