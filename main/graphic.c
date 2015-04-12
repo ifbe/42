@@ -5,16 +5,17 @@
 #include "struct.h"
 
 
-
+//3张表的位置
 static struct diskinfo* diskinfo;
 static struct mytable* mytable;
 static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
-
-static BYTE* buf1d;
-static BYTE* buf2d;
-
+//log位置
+static BYTE* logbuf;
+//键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
+//标签
+static int tag=0;
 
 
 
@@ -70,6 +71,23 @@ void help()
 
 void printlog()
 {
+	int x,y;
+	//出
+	for(y=0;y<30;y++)
+	{
+		//*(QWORD*)(logbuf+0x80*y)=0x0030313233343536;
+		string(0,y,logbuf+0x80*y);
+	}
+
+	//入
+	for(x=256;x<768;x++)
+	{
+		for(y=640-64;y<640-48;y++)
+		{
+			point(x,y,0x88888888);
+		}
+	}
+	string(32,36,buffer);
 }
 void printdisk()
 {
@@ -230,7 +248,6 @@ void printfile()
 		}
 	}
 }
-static int tag=2;
 void tagcontect()
 {
 	//画分隔线，写标签名
@@ -245,7 +262,9 @@ void tagcontect()
 	}
 
 	//清屏
-	DWORD color=0xff<<(tag*3);
+	DWORD color;
+	//color=0xff<<(tag*3);
+	color=0x44444444;
 	for(j=0;j<640-32;j++)
 		for(i=0;i<1024;i++)
 			point(i,j,color);
@@ -261,9 +280,6 @@ void tagcontect()
 }
 void printworld()
 {
-	//input
-	writetitle(buffer);
-
 	//基本内容
 	tagcontect();
 
@@ -282,6 +298,8 @@ void main()
 	whereisdiskinfo(&diskinfo);
 	whereisparttable(&mytable);
 	whereisdir(&dir);
+
+	whereislogbuf(&logbuf);
 	//say("%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir);
 
 

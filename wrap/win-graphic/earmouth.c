@@ -6,17 +6,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-static unsigned char* buf1d;
-static QWORD offset;
+static unsigned char* logbuf;
+static QWORD inneroffset;
 
 
 __attribute__((constructor)) void initlog()
 {
-	buf1d=(unsigned char*)malloc(0x100000);
+	logbuf=(unsigned char*)malloc(0x100000);
 }
 __attribute__((destructor)) void destorylog()
 {
-	free(buf1d);
+	free(logbuf);
 }
 
 
@@ -26,16 +26,10 @@ __attribute__((destructor)) void destorylog()
 
 
 
-
-void say(char* p,...)
+void whereislogbuf(unsigned long long* p)
 {
-	asm("jmp printf");
+	*p=(unsigned long long)logbuf;
 }/*
-void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
-{
-	sprintf(buf1d+offset,rcx,rdx,r8);
-	offset+=0x80;
-}*/
 void waitinput(char* p)
 {
 	int i;
@@ -45,4 +39,28 @@ void waitinput(char* p)
 		gets(p);
 		if( p[0] != 0 )break;
 	}
+}*/
+void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
+{
+	printf(rcx,rdx,r8,r9);
+/*
+	int i=0;
+	while(1)
+	{
+		if(rcx[i]==0)break;
+		else logbuf[inneroffset+i]=rcx[i];
+
+		i++;
+	}
+*/
+	int i=0;
+	while(1)
+	{
+		if(rcx[i] == 0)break;
+		int huanhang;
+		snprintf(logbuf+inneroffset,0x80,rcx,rdx,r8,r9);
+		
+	}
+	inneroffset=(inneroffset+0x80)%0x100000;
+	//printf("inneroffset:%llx\n",inneroffset);
 }
