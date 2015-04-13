@@ -73,6 +73,13 @@ void printlog()
 {
 	int x,y;
 	//出
+	for(x=0;x<1000;x++)
+	{
+		for(y=0;y<480;y++)
+		{
+			point(x,y,0x88888888);
+		}
+	}
 	for(y=0;y<30;y++)
 	{
 		//*(QWORD*)(logbuf+0x80*y)=0x0030313233343536;
@@ -80,7 +87,7 @@ void printlog()
 	}
 
 	//入
-	for(x=256;x<768;x++)
+	for(x=256;x<1024;x++)
 	{
 		for(y=640-64;y<640-48;y++)
 		{

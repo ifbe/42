@@ -35,7 +35,7 @@ __attribute__((constructor)) void initsdl()
 {
   //准备sdl
   SDL_Init(SDL_INIT_EVERYTHING);
-  window=SDL_CreateWindow("My Game Window",
+  window=SDL_CreateWindow("bigger on the inside",
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,
                           width,height,
@@ -71,10 +71,6 @@ __attribute__((destructor)) void destorysdl()
 
 
 
-void writetitle(char* p)
-{
-	SDL_SetWindowTitle(window,p);
-}
 void writescreen()
 {
   //画texture？

@@ -7,7 +7,8 @@
 #include<stdlib.h>
 
 static unsigned char* logbuf;
-static QWORD inneroffset;
+static QWORD offsetx=0;
+static QWORD offsety=0;
 
 
 __attribute__((constructor)) void initlog()
@@ -29,38 +30,37 @@ __attribute__((destructor)) void destorylog()
 void whereislogbuf(unsigned long long* p)
 {
 	*p=(unsigned long long)logbuf;
-}/*
-void waitinput(char* p)
-{
-	int i;
-	for(i=0;i<128;i++)p[i]=0;
-	while(1)
-	{
-		gets(p);
-		if( p[0] != 0 )break;
-	}
-}*/
+}
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
 	printf(rcx,rdx,r8,r9);
-/*
-	int i=0;
-	while(1)
-	{
-		if(rcx[i]==0)break;
-		else logbuf[inneroffset+i]=rcx[i];
 
-		i++;
-	}
-*/
-	int i=0;
-	while(1)
+	int start=0;
+	int temp=0;
+	while(1)			//举例“123443%d\n\n    44532”
 	{
-		if(rcx[i] == 0)break;
-		int huanhang;
-		snprintf(logbuf+inneroffset,0x80,rcx,rdx,r8,r9);
-		
+		if(rcx[temp] == 0)		//0
+		{
+			int writecount=snprintf(logbuf+offsety+offsetx,0x80-offsetx,
+					rcx+start,rdx,r8,r9);
+
+			offsetx+=writecount;
+
+			break;
+		}
+		if( rcx[temp] < 0x10)	//"\n":0xa?		0xd?
+		{
+			snprintf(logbuf+offsety+offsetx,0x80-offsetx,
+					rcx+start,rdx,r8,r9);
+
+			offsetx=0;
+			offsety=(offsety+0x80)%0x100000;
+			temp+=1;
+			start=temp;
+
+			continue;
+		}
+		temp++;
 	}
-	inneroffset=(inneroffset+0x80)%0x100000;
-	//printf("inneroffset:%llx\n",inneroffset);
+
 }
