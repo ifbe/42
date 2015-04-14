@@ -31,10 +31,10 @@ void printlog()
 		}
 	}
 	//出
-	for(y=0;y<30;y++)
+	for(y=0;y<36;y++)
 	{
 		//*(QWORD*)(logbuf+0x80*y)=0x0030313233343536;
-		string(0,y,logbuf+0x80*y);
+		string(0,y,logbuf+logoffset+0x80*y);
 	}
 	//入
 	string(0,36,buffer);
@@ -50,7 +50,6 @@ void printdisk()
 		}
 	}
 
-	disk(0,0);
 	char* p=(char*)diskinfo;
 	for(y=0;y<3;y++)
 	{
@@ -67,18 +66,19 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 	QWORD startx=start%1024;
 	QWORD endy=starty+0xf;
 	QWORD endx;
-
-	int x,y;
 	QWORD color=start*0xfedcba/1024/36;
 	QWORD nextline=(start/1024)*1024+1024;
 	QWORD this=start;
 	QWORD isfirst=1;
+	int x,y;
+
+	//具体内容
 	while(1)		//一行行得
 	{
 		//得到这一轮的开始与结束
 		starty=this/1024*16;
 		startx=this%1024;
-		endy=starty+15;
+		endy=starty+0x10;
 		if(end<nextline)
 		{
 			//这行就结束的话
@@ -88,28 +88,28 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 		{
 			endx=1023;
 		}
-		for(y=endy-16;y<endy;y++)
+		say("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
+
+		//按照得到的坐标打印就行
+		for(y=starty;y<endy;y++)			//左右边界线
 		{
 			point(startx,y,0xff0000);
 			point(endx,y,0xff0000);
 		}
-		say("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
-
-		//按照得到的坐标打印就行
-		if(isfirst)
+		for(x=startx+1;x<endx;x++)		//体
+		{
+			for(y=starty;y<endy;y++)
+			{
+				point(x,y,color);
+			}
+		}
+		if(isfirst)			//顶部边界线
 		{
 			for(x=startx;x<endx;x++)
 			{
 				point(x,starty,0xff0000);
 			}
 			isfirst=0;
-		}
-		for(x=startx+1;x<endx;x++)
-		{
-			for(y=starty+1;y<=endy+1;y++)
-			{
-				point(x,y,color);
-			}
 		}
 
 		//下一个start，或者已经结束了就break
@@ -118,12 +118,18 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 		nextline+=1024;
 		if(nextline>1024*36)break;
 	}
-	for(x=startx+1;x<endx;x++)
+
+	//框框
+	for(x=startx+1;x<endx;x++)		//下部边界线
 	{
-		point(x,endy+1,0xff0000);
+		point(x,endy-1,0xff0000);
+	}
+	for(x=endx;x<1024;x++)
+	{
+		point(x,endy-16,0xff0000);
 	}
 
-	//
+	//字符串
 	//say("start:%x,end:%x,average:%x\n",start,end,(start+end)/2);
 	x=((start+end)/2)%1024/8;
 	y=(start+end)/2/1024;
@@ -131,10 +137,6 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 }
 void printpartition()
 {
-	//
-	disk(1,1);
-	mount(0,0);
-
 	char* p;
 	QWORD x,y;
 	for(x=0;x<1024;x++)
@@ -205,7 +207,7 @@ void printfile()
 			point(x,y,0x88888888);
 		}
 	}
-	
+
 //三.每个分区里面的文件和文件夹
 	p=(char*)dir;
 	for(y=0;y<2;y++)
@@ -264,6 +266,10 @@ void main()
 	whereisdir(&dir);
 	whereislogbuf(&logbuf);
 
+	//
+	disk(1,1);
+	mount(0,0);
+
 	while(1)
 	{
 		//1.这次显示啥
@@ -289,6 +295,22 @@ void main()
 						bufcount--;
 						buffer[bufcount]=0;
 					}
+				}
+				else if(key==0x40000050)	//left	0x4b
+				{
+					if(tag>0)tag--;
+				}
+				else if(key==0x4000004f)	//right	0x4d
+				{
+					if(tag<3)tag++;
+				}
+				else if(key==0x40000052)	//up	0x48
+				{
+					if(logoffset>0x80)	logoffset-=0x80;
+				}
+				else if(key==0x40000051)	//down	0x50
+				{
+					logoffset=(logoffset+0x80)%0x100000;
 				}
 				else
 				{

@@ -17,7 +17,7 @@ win:
 	gcc main/main.a \
 	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
-	-L d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\lib \
+	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
@@ -30,7 +30,7 @@ win-gui:
 	gcc main/main.a \
 	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
-	-L d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\lib \
+	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
