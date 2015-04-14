@@ -64,79 +64,67 @@ void help()
 
 
 
-void main()
+void command(char* buffer)
+{
+	//
+	BYTE* arg0;
+	BYTE* arg1;
+	QWORD choose;
+	QWORD value;
+
+	//处理
+	buf2arg(buffer,&arg0,&arg1);
+	if(*(DWORD*)arg1==0xffffffff){choose=value=0;}		//仅显示信息
+	else
+	{
+		anscii2hex(arg1,&value);
+		if(value<0x10)	choose=1;		//传进去0，1，2，3这种数字
+
+		//
+		else
+		{
+			choose=2;		//传进去的是字符串首地址
+			value=(QWORD)arg1;
+		}
+	}
+	say("%llx,%llx,%llx\n",arg0,arg1,value);
+
+	//实际干活
+	if(compare( arg0 , "ls" ) == 0)
+	{
+		listfile();
+	}
+	else if(compare( arg0 , "explain" ) == 0)
+	{
+		explain(value);
+	}
+	else if(compare( arg0 , "load" ) == 0)
+	{
+		load(arg1);			//读出文件(文件名字符串的地址)
+	}
+	else if(compare( arg0 , "cd" ) == 0)
+	{
+		cd(arg1);			//进入目录(目录名字符串的地址)
+	}
+	else if(compare( arg0 , "mount" ) == 0)
+	{
+		mount(choose,value);
+	}
+	else if(compare( arg0 , "disk" ) == 0)
+	{
+		disk(choose,value);
+		mount(0,0);		//只检查分区表并打印
+	}
+	else
+	{
+		help();
+	}
+}
+void initmaster()
 {
 	//已申请到的内存在哪
 	whereisdiskinfo(&diskinfo);
 	whereisparttable(&mytable);
 	whereisdir(&dir);
 	//say("%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir);
-
-	//
-	BYTE* arg0;
-	BYTE* arg1;
-	QWORD choose;
-	QWORD value;
-	while(1)
-	{
-		//1.等输入，再把这段里面所有的0x20变成0
-		waitinput(buffer);
-		buf2arg(buffer,&arg0,&arg1);
-		//printmemory(buffer,0x80);
-
-
-		//2.分析输入，要干什么
-		if(*(DWORD*)arg1==0xffffffff){choose=value=0;}		//仅显示信息
-		else
-		{
-			anscii2hex(arg1,&value);
-			if(value<0x10)	choose=1;		//传进去0，1，2，3这种数字
-
-			//
-			else
-			{
-				choose=2;		//传进去的是字符串首地址
-				value=(QWORD)arg1;
-			}
-		}
-		say("%llx,%llx,%llx\n",arg0,arg1,value);
-
-
-		//3.具体做什么事
-		if(compare( arg0 , "exit" ) == 0)
-		{
-			break;
-			//exit
-		}
-		else if(compare( arg0 , "ls" ) == 0)
-		{
-			listfile();
-		}
-		else if(compare( arg0 , "explain" ) == 0)
-		{
-			explain(value);
-		}
-		else if(compare( arg0 , "load" ) == 0)
-		{
-			load(arg1);			//读出文件(文件名字符串的地址)
-		}
-		else if(compare( arg0 , "cd" ) == 0)
-		{
-			cd(arg1);			//进入目录(目录名字符串的地址)
-		}
-		else if(compare( arg0 , "mount" ) == 0)
-		{
-			mount(choose,value);
-		}
-		else if(compare( arg0 , "disk" ) == 0)
-		{
-			disk(choose,value);
-			mount(0,0);		//只检查分区表并打印
-		}
-		else
-		{
-			help();
-		}
-
-	}//while(1)循环
 }

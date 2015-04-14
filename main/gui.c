@@ -2,69 +2,20 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-#include "struct.h"
 
 
 //3张表的位置
 static struct diskinfo* diskinfo;
 static struct mytable* mytable;
 static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
-//log位置
-static BYTE* logbuf;
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
+//log位置
+static BYTE* logbuf;
+static QWORD logoffset;
 //标签
 static int tag=0;
-
-
-
-static int listdisk()
-{
-	int i;
-	say("path            detail\n");
-	for(i=0;i<0x40;i++)
-	{
-		if(diskinfo[i].path==0)break;
-		say("%-16.16s    %-16.16s\n",&diskinfo[i].path,diskinfo[i].name);
-	}
-	say("\n");
-}
-static int listpartition()
-{
-	int i;
-	say("partition             detail\n");
-	for(i=0;i<0x40;i++)
-	{
-		if(mytable[i].startlba==0)break;
-		say("%-16llx    %-16llx    %-16llx    %-16llx\n",
-			mytable[i].startlba,mytable[i].endlba,mytable[i].type,mytable[i].name);
-	}
-	say("\n");
-}
-static int listfile()
-{
-	int i;
-	say("name                special id          type                size\n");
-	for(i=0;i<0x40;i++)
-	{
-		if(dir[i].name==0)break;
-		say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
-			(char*)(&dir[i]),dir[i].specialid,dir[i].type,dir[i].size);
-	}
-	say("\n");
-}
-void help()
-{
-	say("disk                    (list disks)\n");
-	say("disk ?                  (choose a disk)\n");
-	say("disk ?:\\\\name.format    (use an image file as disk)\n");
-	say("mount                   (list partitions)\n");
-	say("mount ?                 (choose a partition)\n");
-	say("explain ?               (explain inode/cluster/cnid/mft)\n");
-	say("cd dirname              (change directory)\n");
-	say("load filename           (load this file)\n");
-}
 
 
 
@@ -72,38 +23,35 @@ void help()
 void printlog()
 {
 	int x,y;
-	//出
-	for(x=0;x<1000;x++)
+	for(x=0;x<1024;x++)
 	{
-		for(y=0;y<480;y++)
+		for(y=0;y<640-64;y++)
 		{
 			point(x,y,0x88888888);
 		}
 	}
+	//出
 	for(y=0;y<30;y++)
 	{
 		//*(QWORD*)(logbuf+0x80*y)=0x0030313233343536;
 		string(0,y,logbuf+0x80*y);
 	}
-
 	//入
-	for(x=256;x<1024;x++)
+	string(0,36,buffer);
+}
+void printdisk()
+{
+	int x,y;
+	for(x=0;x<1024;x++)
 	{
-		for(y=640-64;y<640-48;y++)
+		for(y=0;y<640-64;y++)
 		{
 			point(x,y,0x88888888);
 		}
 	}
-	string(32,36,buffer);
-}
-void printdisk()
-{
-	disk(0,0);
 
-	char* p;
-	QWORD x,y;
-//一.各种磁盘
-	p=(char*)diskinfo;
+	disk(0,0);
+	char* p=(char*)diskinfo;
 	for(y=0;y<3;y++)
 	{
 		for(x=0;x<0x40;x++)
@@ -114,14 +62,13 @@ void printdisk()
 }
 void printbitmap(QWORD start,QWORD end,QWORD typestr)
 {
-	int x;
-	int y;
-
 	//
 	QWORD starty=start/1024*16;
 	QWORD startx=start%1024;
 	QWORD endy=starty+0xf;
 	QWORD endx;
+
+	int x,y;
 	QWORD color=start*0xfedcba/1024/36;
 	QWORD nextline=(start/1024)*1024+1024;
 	QWORD this=start;
@@ -190,6 +137,13 @@ void printpartition()
 
 	char* p;
 	QWORD x,y;
+	for(x=0;x<1024;x++)
+	{
+		for(y=0;y<640-64;y++)
+		{
+			point(x,y,0x88888888);
+		}
+	}
 
 //二.仔细看每一个磁盘由很多分区构成
 	//1.最大扇区号是几
@@ -244,6 +198,13 @@ void printfile()
 {
 	char* p;
 	QWORD x,y;
+	for(x=0;x<1024;x++)
+	{
+		for(y=0;y<640-64;y++)
+		{
+			point(x,y,0x88888888);
+		}
+	}
 	
 //三.每个分区里面的文件和文件夹
 	p=(char*)dir;
@@ -262,17 +223,12 @@ void tagcontect()
 	for(j=640-32;j<640;j++)
 		for(i=0;i<1024;i++)
 			point(i,j,0xffffffff);
-	for(j=0;j<640-32;j++)
-	{
-		point(160,j,0);
-		point(320,j,0);
-	}
 
 	//清屏
 	DWORD color;
 	//color=0xff<<(tag*3);
 	color=0x44444444;
-	for(j=0;j<640-32;j++)
+	for(j=640-64;j<640-32;j++)
 		for(i=0;i<1024;i++)
 			point(i,j,color);
 	for(j=640-32;j<640;j++)
@@ -301,14 +257,12 @@ void printworld()
 }
 void main()
 {
-	//已申请到的内存在哪
+	initmaster();
+
 	whereisdiskinfo(&diskinfo);
 	whereisparttable(&mytable);
 	whereisdir(&dir);
-
 	whereislogbuf(&logbuf);
-	//say("%llx,%llx,%llx\n",(QWORD)diskinfo,(QWORD)mytable,(QWORD)dir);
-
 
 	while(1)
 	{

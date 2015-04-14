@@ -22,11 +22,11 @@ win:
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
 	-lshell32 -lversion -luuid
-win-graphic:
-	make -s -C main win-graphic
+win-gui:
+	make -s -C main gui
 	make -s -C wrap2 win
 	make -s -C wrap1 win
-	make -s -C wrap win-graphic
+	make -s -C wrap win-gui
 	gcc main/main.a \
 	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \

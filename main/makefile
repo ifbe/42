@@ -1,10 +1,10 @@
 win:
-	gcc -c -O2 master.c
+	gcc -c -O2 cli.c
 	rm -f main.a
-	ar crs main.a master.o
-win-graphic:
-	gcc -c -O2 graphic.c
+	ar crs main.a cli.o
+gui:
+	gcc -c -O2 gui.c
 	rm -f main.a
-	ar crs main.a graphic.o
+	ar crs main.a gui.o
 clean:
 	rm -f *.o *.a

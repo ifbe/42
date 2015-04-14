@@ -34,11 +34,3 @@ void whereisfsbuf(unsigned long long* p)
 {
 	*p=(unsigned long long)fsbuf;
 }
-void whereislogbuf(unsigned long long* p)
-{
-	*p=(unsigned long long)logbuf;
-}
-void whereisscreenbuf(unsigned long long* p)
-{
-	*p=(unsigned long long)screenbuf;
-}

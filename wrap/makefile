@@ -29,20 +29,20 @@ mac:
 	ar crs wrap.a screen.o sdl.o
 .PHONY:win
 win:
-	windres --input-format=rc -O coff -i windows/uac.rc -o uac.res
-	gcc -c -O2 windows/disk.c
-	gcc -c -O2 windows/earmouth.c
-	gcc -c -O2 windows/memory.c
+	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	gcc -c -O2 win/disk.c
+	gcc -c -O2 win/earmouth.c
+	gcc -c -O2 win/memory.c
 	rm -f wrap.a
 	ar crs wrap.a disk.o earmouth.o memory.o
-.PHONY:win-graphic
-win-graphic:
-	windres --input-format=rc -O coff -i windows/uac.rc -o uac.res
-	gcc -c -O2 windows/disk.c
-	gcc -c -O2 win-graphic/2d.c
-	gcc -c -O2 win-graphic/earmouth.c
-	gcc -c -O2 win-graphic/memory.c
-	gcc -c -O2 win-graphic/sdl.c -I d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\include
+.PHONY:win-gui
+win-gui:
+	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	gcc -c -O2 win/disk.c
+	gcc -c -O2 win-gui/2d.c
+	gcc -c -O2 win-gui/earmouth.c
+	gcc -c -O2 win-gui/memory.c
+	gcc -c -O2 win-gui/sdl.c -I d:\msys\lib\SDL2-2.0.3\x86_64-w64-mingw32\include
 	rm -f wrap.a
 	ar crs wrap.a disk.o 2d.o earmouth.o memory.o sdl.o
 clean:
