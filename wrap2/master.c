@@ -15,7 +15,6 @@ static QWORD realworld;
 	//[+0x30000,+0xfffff]:未用
 	static QWORD buffer3;
 
-
 //[0m,1m)[1m,2m)[2m,3m)[3m,4m)
 static QWORD logicworld;
 	//往这儿读，只临时用一下（当心别人也用）
@@ -25,7 +24,6 @@ static QWORD logicworld;
 	//缓存几千几万个fat/mft/btnode/inode
 	static QWORD fsbuffer;
 	//[0x300000,0x3fffff]:未用
-
 
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
 int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
@@ -38,11 +36,28 @@ int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x
 
 
 
+
+
+void hello()
+{
+	readdisk(readbuffer,0,0,64);
+	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
+	{
+		say("disk or image\n");
+		explainparttable(readbuffer,buffer0);
+	}
+}
+
+
 int searchthis(char* name,QWORD* addr)
 {
+	//printmemory(dirbuffer,0x1000);
+	//say("i am in\n");
+
 	QWORD temp=dirbuffer;
 	for(;temp<dirbuffer+0x1000;temp+=0x40)
 	{
+		//say("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
 		if( compare( name , (char*)temp ) == 0 )
 		{
 			*addr=temp;
@@ -56,15 +71,6 @@ int searchthis(char* name,QWORD* addr)
 }
 
 
-void hello()
-{
-	readdisk(readbuffer,0,0,64);
-	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
-	{
-		say("disk or image\n");
-		explainparttable(readbuffer,buffer0);
-	}
-}
 int mount(QWORD in)
 {
 	//搞谁，是啥
@@ -90,9 +96,11 @@ int mount(QWORD in)
 	}
 
 	//给函数指针赋值
-	explain=(void*)(this+0x20);
-	cd=(void*)(this+0x28);
-	load=(void*)(this+0x30);
+	explain=(void*)( *(QWORD*)(this+0x20) );
+	cd=(void*)( *(QWORD*)(this+0x28) );
+	load=(void*)( *(QWORD*)(this+0x30) );
+
+	printmemory(this,0x40);
 }
 
 
@@ -102,7 +110,7 @@ void command(char* buffer)
 	BYTE* arg0;
 	BYTE* arg1;
 	buf2arg(buffer,&arg0,&arg1);
-	say("%llx,%llx\n",arg0,arg1);
+	//say("%llx,%llx\n",arg0,arg1);
 	if(arg0==0)return;
 
 
@@ -142,11 +150,11 @@ void command(char* buffer)
 		QWORD value;
 		anscii2hex(arg1,&value);
 
+		say("explainer@%llx\n",explain);
 		explain(value);
 	}
 	else if(compare( arg0 , "cd" ) == 0)
 	{
-		//say("i am in\n");
 		QWORD addr;
 		if( searchthis(arg1,&addr) < 0 )return;		//没找到
 
@@ -182,11 +190,11 @@ void command(char* buffer)
 	{
 		say("name                special id          type                size\n");
 		QWORD addr=dirbuffer;
-		for(;addr<dirbuffer+0x1000;dirbuffer+=0x40)
+		for(;addr<dirbuffer+0x1000;addr+=0x40)
 		{
-			if(*(QWORD*)(dirbuffer)==0)break;
+			if(*(QWORD*)addr==0)break;
 			say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
-			(char*)dirbuffer,*(QWORD*)(dirbuffer+0x10),*(QWORD*)(dirbuffer+0x20),*(QWORD*)(dirbuffer+0x30));
+			(char*)addr,*(QWORD*)(addr+0x10),*(QWORD*)(addr+0x20),*(QWORD*)(addr+0x30));
 		}
 		say("\n");
 	}

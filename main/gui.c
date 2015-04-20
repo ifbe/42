@@ -4,10 +4,27 @@
 #define QWORD unsigned long long
 
 
-//3张表的位置
-static struct diskinfo* diskinfo;
-static struct mytable* mytable;
-static struct dirbuffer* dir;	//dir=“目录名缓冲区”的内存地址（dir[0],dir[1],dir[2]是这个内存地址里面的第0，1，2字节快）
+//[buffer0][buffer1][buffer2]......[buffer15]
+static QWORD realworld;
+	//1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
+	static QWORD buffer0;
+	//1个分区(或者某格式的文件) = 很多个区域(头/索引区/数据区/尾)
+	static QWORD buffer1;
+	//1个索引(mft/inode/btnode) = 很多信息(名字，唯一id，时间，扇区位置等)
+	static QWORD buffer2;
+	//[+0x30000,+0xfffff]:未用
+	static QWORD buffer3;
+
+//[0m,1m)[1m,2m)[2m,3m)[3m,4m)
+static QWORD logicworld;
+	//往这儿读，只临时用一下（当心别人也用）
+	static QWORD readbuffer;
+	//名，id，种类，大小
+	static QWORD dirbuffer;
+	//缓存几千几万个fat/mft/btnode/inode
+	static QWORD fsbuffer;
+	//[0x300000,0x3fffff]:未用
+
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
@@ -55,7 +72,7 @@ void printdisk()
 	{
 		for(x=0;x<0x40;x++)
 		{
-			anscii(x,y,p[0x40*y+x]);
+			anscii(x,y,p[0x100*y+x]);
 		}
 	}
 }
@@ -261,10 +278,16 @@ void main()
 {
 	initmaster();
 
-	whereisdiskinfo(&diskinfo);
-	whereisparttable(&mytable);
-	whereisdir(&dir);
-	whereislogbuf(&logbuf);
+	whereisrealworld(&realworld);
+	buffer0=realworld;
+	buffer1=realworld+0x10000;
+	buffer2=realworld+0x20000;
+	buffer3=realworld+0x30000;
+
+	whereislogicworld(&logicworld);
+	readbuffer=logicworld;
+	dirbuffer=logicworld+0x100000;
+	fsbuffer=logicworld+0x200000;
 
 	//
 	disk(1,1);

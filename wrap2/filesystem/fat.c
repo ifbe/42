@@ -270,6 +270,7 @@ static int fat32_cd(QWORD id)
 
 int mountfat(QWORD in,QWORD out)
 {
+	say("%llx\n",(QWORD)fat32_explain);
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	QWORD firstsector=*(QWORD*)in;
 	whereislogicworld(&readbuffer);
