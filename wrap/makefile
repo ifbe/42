@@ -39,9 +39,9 @@ win:
 win-gui:
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -c -O2 win/disk.c
+	gcc -c -O2 win/memory.c
 	gcc -c -O2 win-gui/2d.c
 	gcc -c -O2 win-gui/earmouth.c
-	gcc -c -O2 win-gui/memory.c
 	gcc -c -O2 win-gui/sdl.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
 	rm -f wrap.a
 	ar crs wrap.a disk.o 2d.o earmouth.o memory.o sdl.o

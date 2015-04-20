@@ -475,103 +475,38 @@ static void ntfs_explain(QWORD mftnum)
 }
 
 
-static int ntfs_cd(BYTE* addr)
+static int ntfs_cd(QWORD id)
 {
-	//QWORD name;
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	QWORD mftnumber;
-	int i;
-
-	if(addr[0]=='/')			//	/
-	{
-		mftnumber=5;
-	}
-	else if(addr[0]=='.')
-	{
-		if(addr[1]=='.')		//	..
-		{
-			if(ntfspwd>0) ntfspwd--;
-			mftnumber=pwd[ntfspwd];
-		}
-		else					//	.
-		{
-			return;
-		}
-	}
-	else
-	{
-		for(i=0;i<0x200;i+=4)
-		{
-			if( compare(&table[i],addr) == 0 )
-			{
-				mftnumber=table[i+2];
-				say("mftnum:%x\n",mftnumber);
-				if(ntfspwd<10) ntfspwd++;
-				pwd[ntfspwd]=mftnumber;
-			}
-		}
-	}
-	if(mftnumber == 0)
-	{
-		say("not found:%s\n",addr);
-		return -1;
-	}
-
-	//开搞
-	explainmft(mftnumber,0);
-	return 1;
+	explainmft(id,0);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
 }
 
 
-static int ntfs_load(BYTE* addr,QWORD offset)
+static int ntfs_load(QWORD id,QWORD offset)
 {
-	//QWORD name;
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	QWORD mftnumber;
-	int i;
-
-	for(i=0;i<0x200;i+=4)
-	{
-		if( compare(&table[i],addr) == 0 )
-		{
-			mftnumber=table[i+2];
-			say("mftnum:%x\n",mftnumber);
-			if(ntfspwd<10) ntfspwd++;
-			pwd[ntfspwd]=mftnumber;
-		}
-	}
-	if(mftnumber == 0)
-	{
-		say("not found:%s\n",addr);
-		return -1;
-	}
-
-	//开搞
-	explainmft(mftnumber,offset);
-	return 1;
+	explainmft(id,offset);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
 }
 
 
-int mountntfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
+int mountntfs(QWORD in,QWORD out)
 {
-	//返回cd和load函数的地址
-	*explainfunc=(QWORD)ntfs_explain;
-	*cdfunc=(QWORD)ntfs_cd;
-	*loadfunc=(QWORD)ntfs_load;
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	ntfssector=*(QWORD*)in;
+	whereislogicworld(&readbuffer);
+	directorybuffer=readbuffer+0x100000;
+	mftbuffer=readbuffer+0x200000;
+	say("ntfs sector:%x\n",ntfssector);
 
-	//拿到并准备好可用的内存地址
-	whereisbuffer(&readbuffer);
-	whereisdir(&directorybuffer);
-	whereisfsbuf(&mftbuffer);
-
-	//记下第一扇区号
-	ntfssector=sector;
-	say("ntfs sector:%x\n",sector);
+	//上报3个函数的地址
+	*(QWORD*)(in+0x20)=(QWORD)ntfs_explain;
+	*(QWORD*)(in+0x28)=(QWORD)ntfs_cd;
+	*(QWORD*)(in+0x30)=(QWORD)ntfs_load;
 
 	//读PBR，失败就返回
-	//diskaddr=*(QWORD*)(0x200000+8);		//不用管
-	readdisk(readbuffer,sector,diskaddr,1);
-	//say("%llx\n",*(QWORD*)readbuffer);
+	readdisk(readbuffer,ntfssector,0,1);
 	if( *(DWORD*)(readbuffer+3) != 0x5346544e ) return -1;
 
 	//变量
@@ -592,7 +527,7 @@ int mountntfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	//cd /
 	pwd[0]=5;
 	ntfspwd=0;
-	ntfs_cd("/");
+	ntfs_cd(5);
 
 	return 0;
 }

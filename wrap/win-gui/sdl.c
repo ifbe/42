@@ -35,7 +35,7 @@ __attribute__((constructor)) void initsdl()
 {
   //准备sdl
   SDL_Init(SDL_INIT_EVERYTHING);
-  window=SDL_CreateWindow("bigger on the inside",
+  window=SDL_CreateWindow("日天",
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,
                           width,height,

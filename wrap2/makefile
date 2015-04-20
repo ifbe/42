@@ -36,12 +36,17 @@ mac:
 	ar crs wrap2.a master.o parttable.o ext.o fat.o hfs.o ntfs.o
 win:
 	gcc -c -O2 master.c
-	gcc -c -O2 parttable.c
-	gcc -c -O2 ext.c
-	gcc -c -O2 fat.c
-	gcc -c -O2 hfs.c
-	gcc -c -O2 ntfs.c
+	gcc -c -O2 partitiontable/parttable.c
+	gcc -c -O2 partitiontable/gpt.c
+	gcc -c -O2 partitiontable/mbr.c
+	gcc -c -O2 filesystem/ext.c
+	gcc -c -O2 filesystem/fat.c
+	gcc -c -O2 filesystem/hfs.c
+	gcc -c -O2 filesystem/ntfs.c
 	rm -f wrap2.a
-	ar crs wrap2.a master.o parttable.o ext.o fat.o hfs.o ntfs.o
+	ar crs wrap2.a \
+	master.o \
+	parttable.o gpt.o mbr.o \
+	ext.o fat.o hfs.o ntfs.o
 clean:
 	rm -f *.o *.a

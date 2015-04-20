@@ -10,10 +10,10 @@
 //每0x40字节存放分区的基本信息
 struct diskinfo
 {
-	unsigned char path[0x20];
-	unsigned char name[0x20];
+	unsigned char path[0x80];
+	unsigned char name[0x80];
 };
-static struct diskinfo diskinfo[10];
+static struct diskinfo diskinfo[16];
 
 HANDLE hDev;
 static BYTE tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
@@ -27,7 +27,7 @@ static void enumeratedisk()
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	DWORD i=0;
 	char* p=(char*)diskinfo;
-	for(i=0;i<0x40*10;i++)
+	for(i=0;i<0x1000;i++)
 	{
 		//全部清零
 		p[i]=0;
@@ -67,10 +67,8 @@ __attribute__((constructor)) void initdisk()
 	{
 		if(diskinfo[i].path[0]==0)continue;
 		hDev=CreateFile((BYTE*)diskinfo+i*0x40,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		if(hDev == INVALID_HANDLE_VALUE)
-		{
-			printf("can't open first disk\n");
-		}
+		if(hDev == INVALID_HANDLE_VALUE) printf("can't open first disk\n");
+		break;
 	}
 }
 __attribute__((destructor)) void freedisk()
@@ -81,39 +79,38 @@ __attribute__((destructor)) void freedisk()
 
 
 
-void disk(QWORD choose,QWORD in)
+void disk(QWORD in)
 {
-	if(choose == 0)	//只扫描一遍然后打印一遍了事
+	//传进来0，只扫描一遍然后打印一遍了事
+	if(in == 0)
 	{
 		enumeratedisk();
 		return;
 	}
-	else if(choose == 1)		//0，1，2，3这种数字
-	{
-		//先关掉原先已经打开的磁盘
-		CloseHandle(hDev);
 
-		//选定这个磁盘
-		hDev=CreateFile((BYTE*)diskinfo+in*0x40,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-	}
-	else if(choose == 2)		//比如x:\where\wow\haha.img的首地址
+	//传进来一个路径，那后面的操作都是对它进行
+	char* path;
+	BYTE firstone=*(BYTE*)in;
+	if( firstone <=0x39 )		//0,1,2,3,4等等......
 	{
-		HANDLE temphandle=CreateFile((BYTE*)in,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		if(temphandle != INVALID_HANDLE_VALUE)
-		{
-			//测试成功
-			printf("%s\n",in);
-			CloseHandle(temphandle);
-
-			//关掉原先已经打开的磁盘，然后把这个虚拟磁盘文件当成硬盘来用并且选定
-			CloseHandle(hDev);
-			hDev=CreateFile((BYTE*)in,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		}
-		else
-		{
-			printf("failed\n");
-		}
+		printf("here1\n");
+		path=diskinfo[firstone-0x30].path;
 	}
+	else		//比如d:\image\name.img
+	{
+		printf("here2\n");
+		path=(char*)in;
+	}
+
+	//测试能否成功打开
+	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+	if(temphandle == INVALID_HANDLE_VALUE) return;
+	CloseHandle(temphandle);
+
+	//关掉原先已经打开的磁盘，然后把这个虚拟磁盘文件当成硬盘来用并且选定
+	CloseHandle(hDev);
+	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+
 }
 //内存地址，第一扇区，请无视，总字节数
 void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)

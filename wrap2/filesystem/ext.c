@@ -270,88 +270,36 @@ static int ext_explain(inode)
 }
 
 
-static int ext_cd(BYTE* addr)
+static int ext_cd(QWORD id)
 {
-	//QWORD name;
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	int i;
-
-	QWORD number=0;
-	if(addr[0]=='/')
-	{
-		number=2;
-	}
-	else
-	{
-		for(i=0;i<0x200;i+=4)
-		{
-			if( compare(&table[i],addr) == 0 )
-			{
-				number=table[i+2];
-				//say("number:%x",number);
-				break;
-			}
-		}
-	}
-	if(number == 0)
-	{
-		say("not found:%s\n",addr);
-		return -1;
-	}
-
 	//开搞
-	int result=explaininode(number,0);
+	int result=explaininode(id,0);
 	if(result>0)explaindirectory();
 	return 1;
 }
 
 
-static void ext_load(BYTE* addr,QWORD offset)
+static void ext_load(QWORD id,QWORD offset)
 {
-	QWORD name;
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	int i;
-	QWORD number=0;
-
-	//处理名字
-	str2data(addr,&name);
-	blank2zero(&name);
-
-	for(i=0;i<0x200;i+=4)
-	{
-		if(table[i] == name)
-		{
-			number=table[i+2];
-			break;
-		}
-	}
-	if(number == 0)
-	{
-		say("not found\n");
-		return;
-	}
-
-	explaininode(number,offset);
+	explaininode(id,offset);
 }
 
 
-int mountext(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
+int mountext(QWORD in,QWORD out)
 {
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	block0=*(QWORD*)in;				//say("ext sector:%x\n",sector);
+	whereislogicworld(&readbuffer);
+	directorybuffer=readbuffer+0x100000;
+	inodebuffer=readbuffer+0x200000;
+
 	//返回cd和load函数的地址
-	*explainfunc=(QWORD)ext_explain;
-	*cdfunc=(QWORD)ext_cd;
-	*loadfunc=(QWORD)ext_load;
+	*(QWORD*)(in+0x20)=(QWORD)ext_explain;
+	*(QWORD*)(in+0x28)=(QWORD)ext_cd;
+	*(QWORD*)(in+0x30)=(QWORD)ext_load;
 
-	//准备好可用的内存地址
-	whereisbuffer(&readbuffer);
-	whereisdir(&directorybuffer);
-	whereisfsbuf(&inodebuffer);
-	block0=sector;				//say("ext sector:%x\n",sector);
-
-	//读分区前8扇区，总共0x1000字节
+	//读分区前8扇区，检查magic值
 	readdisk(readbuffer,block0,diskaddr,0x8);	//0x1000
-
-	//检查magic值
 	if( *(WORD*)(readbuffer+0x438) != 0xef53 ) return;
 
 	//变量们
@@ -369,7 +317,7 @@ int mountext(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	firstinodeincache=0xffffffff;
 
 	//cd /
-	ext_cd("/");
+	ext_cd(2);
 
 	return 0;
 }

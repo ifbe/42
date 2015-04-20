@@ -101,14 +101,12 @@ int anscii2hex(BYTE* second,QWORD* hex)
 }
 void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 {
-	//开始的时候尾巴处写满0xffffffff,然后first和second都指向尾巴
-	*(QWORD*)(buffer+0x78)=0xffffffffffffffff;
-	*first=*second=(QWORD)(buffer+0x78);
+	*first=*second=0;
 
 	//
 	int i;
 	int howmany=0;
-	for(i=0;i<0x78;i++)
+	for(i=0;i<0x80;i++)
 	{
 		if( buffer[i] <= 0x20 )
 		{
@@ -116,15 +114,14 @@ void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 		}
 		if( buffer[i] > 0x20 )
 		{
-			if(i == 0)
+			if(i == 0)		//buffer里第一个，不可能是second
 			{
 				*first=(QWORD)&buffer[i];
-				//say("%llx\n",*first);
 				howmany++;
 			}
 			else
 			{
-				if( buffer[i-1] == 0 )
+				if( buffer[i-1] == 0 )	//前面有0说明这是边界
 				{
 					if( howmany == 0 )
 					{
@@ -133,12 +130,10 @@ void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 					}
 					else if( howmany == 1 )
 					{
-						say("here:%x\n",howmany);
 						*second=(QWORD)&buffer[i];
 					}
-				}//if前一个是0
-
-			}//else这不是buffer里面第一个
+				}
+			}
 
 		}//if这个是正常字符
 

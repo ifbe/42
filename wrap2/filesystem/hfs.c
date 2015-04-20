@@ -129,6 +129,8 @@ explainleafnode()
 	}//while结束
 
 }//函数结束
+
+
 //（只用来调试）解释某个节点
 static void hfs_explain(QWORD number)
 {
@@ -343,41 +345,14 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 	}//大while(1)循环
 
 }//函数结束
+
+
 //所谓cd，就是把fathercnid=want的那些记录，翻译成容易看懂的格式：名字，id，种类，大小
-static int hfs_cd(BYTE* addr)
+static int hfs_cd(QWORD id)
 {
-	//1.检查文件夹名字来寻找cnid，如果没有这个文件夹那么不管了返回
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	QWORD wantcnid=0;
-	int i;
-	if(addr[0]=='/')
-	{
-		//1，2这种肯定在第一个叶节点（吧）
-		wantcnid=2;
-	}
-	else
-	{
-		for(i=0;i<0x200;i+=4)
-		{
-			if( compare(&table[i],addr) == 0 )
-			{
-				wantcnid=table[i+2];
-				break;
-			}
-		}
-	}
-	if(wantcnid==0)
-	{
-		say("not found:%s\n",addr);
-		return -1;
-	}
-
-
-
-
 	//2.已经知道了目录的cnid号，那么需要从b树里面找到节点号和节点内偏移
 	QWORD foundnode;
-	if(wantcnid==2)
+	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
 		readdisk(readbuffer,catalogsector+firstleafnode*nodesize,0,nodesize);
@@ -385,21 +360,19 @@ static int hfs_cd(BYTE* addr)
 	}
 	else
 	{
-		foundnode=searchbtreeforcnid(rootnode,wantcnid);
+		foundnode=searchbtreeforcnid(rootnode,id);
 		if( foundnode <= 0 )		//offset值不可能小于e
 		{
 			say("this cnid isn't in btree\n");
 			return -2;
 		}
-		say("found:%llx@node:%llx\n",wantcnid,foundnode);
+		say("found:%llx@node:%llx\n",id,foundnode);
 	}
-
-
 
 
 	//3.既然上面找到了，那么就逐个翻译吧
 	//（temp2那个返回值是为了省事给hfs_load函数准备的，但是hfs_cd只用它来判断搜索成功失败）
-	explaindirectory(foundnode,wantcnid);
+	explaindirectory(foundnode,id);
 }
 
 
@@ -478,30 +451,9 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 	}//大while(1)循环
 
 }
-static int hfs_load(BYTE* addr,QWORD wantwhere)
+static int hfs_load(QWORD id,QWORD wantwhere)
 {
-	//1.在自己的表里面搜索到这个文件名对应的cnid号
-	QWORD* table=(QWORD*)(directorybuffer);	//一定要括号
-	QWORD wantcnid=0;
-	int i;
-	for(i=0;i<0x200;i+=4)
-	{
-		if( compare(&table[i],addr) == 0 )
-		{
-			wantcnid=table[i+2];
-			break;
-		}
-	}
-	if(wantcnid==0)
-	{
-		say("not found:%s\n",addr);
-		return -1;
-	}
-
-
-
-
-	//2.搜索b树搜索key，只能找它爸，没办法直接找到它！
+	//搜索b树找它爸，没办法直接找到它！
 	QWORD fathercnid=*(DWORD*)(directorybuffer+0x10);
 	QWORD foundnode=searchbtreeforcnid(rootnode,fathercnid);
 	if(foundnode <= 0)
@@ -509,13 +461,11 @@ static int hfs_load(BYTE* addr,QWORD wantwhere)
 		say("not found\n");
 		return;
 	}
-	say("found:%llx@node:%llx\n",wantcnid,foundnode);
+	say("found:%llx@node:%llx\n",id,foundnode);
 
 
-
-
-	//3.从这个节点开始，record，的data部分，的fork信息里面，找到东西
-	explainfile(fathercnid,wantcnid,foundnode,wantwhere);
+	//3.从他爹开始，record，的data部分，的fork信息里面，找到东西
+	explainfile(fathercnid,id,foundnode,wantwhere);
 }
 
 
@@ -553,22 +503,21 @@ void printhead()
 	say("    sector:%llx,%lld\n",sector,sector);
 	say("    count:%llx\n",blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x574) ) );
 }
-int mounthfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
+int mounthfs(QWORD in,QWORD out)
 {
-	block0=sector;
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	block0=*(QWORD*)in;
+	whereislogicworld(&readbuffer);
+	directorybuffer=readbuffer+0x100000;
+	catalogbuffer=readbuffer+0x200000;
 
-	//返回cd和load函数的地址
-	*explainfunc=(QWORD)hfs_explain;
-	*cdfunc=(QWORD)hfs_cd;
-	*loadfunc=(QWORD)hfs_load;
-
-	//准备好可用的内存地址
-	whereisbuffer(&readbuffer);
-	whereisdir(&directorybuffer);
-	whereisfsbuf(&catalogbuffer);
+	//上报3个函数的地址
+	*(QWORD*)(in+0x20)=(QWORD)hfs_explain;
+	*(QWORD*)(in+0x28)=(QWORD)hfs_cd;
+	*(QWORD*)(in+0x30)=(QWORD)hfs_load;
 
 	//读分区前8扇区，总共0x1000字节(其实只要分区内2号和3号扇区)
-	readdisk(readbuffer,sector,0,0x8);	//0x1000
+	readdisk(readbuffer,block0,0,0x8);	//0x1000
 	printmemory(readbuffer+0x400,0x200);
 	printhead();
 	if( *(WORD*)(readbuffer+0x400) == 0x2b48 )say("hfs+\n");
@@ -587,6 +536,6 @@ int mounthfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	say("rootnode:%x\n",rootnode);
 	say("firstleafnode:%x\n",firstleafnode);
 
-	hfs_cd("/");
+	hfs_cd(2);
 	return 0;
 }

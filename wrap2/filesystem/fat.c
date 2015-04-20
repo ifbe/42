@@ -121,26 +121,10 @@ static int fat16_data(QWORD dest,QWORD cluster)
 	return rdi-dest;
 }
 //接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat16_load(BYTE* addr,QWORD offset)
+static void fat16_load(QWORD id,QWORD offset)
 {
-//1:文件名转换成首簇号
-	//1.2:在directorybuffer里面搜索
-	QWORD p=directorybuffer;
-	for(;p<(directorybuffer+0x40000);p+=0x40)
-	{
-		if(compare(addr,p)==0) break;
-	}
-	if(p==directorybuffer+0x40000)
-	{
-		say("file not found,bye!\n");
-		return;
-	}
-
-	//1.3:搜到了就取出首簇号
-	QWORD cluster=*(QWORD*)(p+0x10);	//fat16,only 16bit
-
-
-//2.从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
+//从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
+	QWORD cluster=id;
 	QWORD temp=0;
 	while(1)
 	{
@@ -152,8 +136,7 @@ static void fat16_load(BYTE* addr,QWORD offset)
 		cluster=(QWORD)(*(WORD*)(fatbuffer+2*cluster));
 	}
 
-
-//3.开始读
+//然后读
 	fat16_data(readbuffer,cluster);
 }
 static void fat16_root()
@@ -175,46 +158,17 @@ static void fat16_root()
 
 	say("\n");
 }
-static int fat16_cd(BYTE* addr)
+static int fat16_cd(QWORD id)
 {
-	QWORD directory=0;
-	QWORD p=directorybuffer;
-	int i;
-
-
-	//是根目录或者首簇号为0就直接调用fat16_root()，否则得到首簇号完事
-	directory=0;
-	if( addr[0] != 0x2f)
-	{
-		for(;p<directorybuffer+0x800;p+=0x40)
-		{
-			if(compare(p,addr)==0)
-			{
-				if( *(BYTE*)(p+0x20)&0x10) break;
-			}
-		}
-		if(p==directorybuffer+0x800)		//太大的目录会出问题
-		{
-			say("directory not found\n");
-			return -1;
-		}
-		directory=*(QWORD*)(p+0x10); //fat16,only 16bit
-	}
-	if(directory==0)
-	{
-		fat16_root();
-		return 0;
-	}
-
 	//清理
+	int i;
 	BYTE* memory=(BYTE*)(directorybuffer);
 	for(i=0;i<0x40000;i++) memory[i]=0;
 
 	//读取,转换
-	fat16_data(readbuffer,directory);
+	fat16_data(readbuffer,id);
 	explaindirectory();
 
-	return 1;
 }
 
 
@@ -273,36 +227,14 @@ static void fat32_data(QWORD dest,QWORD cluster)		//destine,clusternum
 	say("\n");
 }
 //接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat32_load(BYTE* addr,QWORD offset)
+static void fat32_load(QWORD id,QWORD offset)
 {
-//1:文件名转换成首簇号
-	//1.2:在directorybuffer里面搜索
-	QWORD p=directorybuffer;
-	for(;p<directorybuffer+clustersize*0x200;p+=0x40)
-	{
-		if(compare(addr,p)==0)break;
-	}
-	if(p==directorybuffer+clustersize*0x200)
-	{
-		say("file not found,bye!\n");
-		return;
-	}
-
-	//1.3:搜到了就取出首簇号
-	QWORD cluster=*(QWORD*)(p+0x10);
-
-
-//2.从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
-	//cluster=???
-
-
-//3.开始读
-	fat32_data(readbuffer,cluster);
+	fat32_data(readbuffer,id);
 }
 static void fat32_root()
 {
-	BYTE* memory=(BYTE*)(readbuffer);
 	int i;
+	BYTE* memory=(BYTE*)(readbuffer);
 	for(i=0;i<0x40000;i++) memory[i]=0;
 
 	//fat32
@@ -315,45 +247,15 @@ static void fat32_root()
 	readdisk(readbuffer,cluster0+clustersize*2,diskaddr,32);
 	explaindirectory();
 }
-static int fat32_cd(BYTE* addr)
+static int fat32_cd(QWORD id)
 {
-//1:文件名转换成首簇号
-	//1.1:把字符串转换成fat16喜欢的格式
-	QWORD name=0;
-	QWORD directory=0;
-	QWORD p=directorybuffer;
-	int i;
-
-	//搜索
-	directory=0;
-	if(addr[0] != 0x2f)
-	{
-		for(;p<directorybuffer+clustersize*0x200;p+=0x40)
-		{
-		    if(compare(addr,p)==0)		//相同
-			{
-				if( *(BYTE*)(p+0x20)&0x10) break;	//并且是目录
-		    }
-		}
-		if(p==directorybuffer+clustersize*0x200)	//到尾了都没找到
-		{
-			say("directory not found!%x\n",p);
-			return -1;
-		}
-		directory=*(QWORD*)(p+0x10); //high 16bit
-	}
-	if(directory==0)
-	{
-		fat32_root();
-		return 0;
-	}
-
 	//清理
+	int i;
 	BYTE* memory=(BYTE*)(directorybuffer);
 	for(i=0;i<0x40000;i++) memory[i]=0;
 
 	//读取，转换
-	fat32_data(readbuffer,directory);
+	fat32_data(readbuffer,id);
 	explaindirectory();
 
 	return 1;
@@ -366,12 +268,13 @@ static int fat32_cd(BYTE* addr)
 
 
 
-int mountfat(QWORD firstsector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
+int mountfat(QWORD in,QWORD out)
 {
-	//准备好可用的内存地址
-	whereisbuffer(&readbuffer);
-	whereisdir(&directorybuffer);
-	whereisfsbuf(&fatbuffer);
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	QWORD firstsector=*(QWORD*)in;
+	whereislogicworld(&readbuffer);
+	directorybuffer=readbuffer+0x100000;
+	fatbuffer=readbuffer+0x200000;
 
 	//读取pbr
 	//say("partition sector:%x\n",firstsector);
@@ -398,11 +301,11 @@ int mountfat(QWORD firstsector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 	else similarity--;
 	if(similarity==48)		//这是fat16
 	{
-		//返回cd和load函数的地址给老大master用
+		//上报3个函数的地址
 		say("fat16\n");
-		*explainfunc=(QWORD)fat16_explain;
-		*cdfunc=(QWORD)fat16_cd;
-		*loadfunc=(QWORD)fat16_load;
+		*(QWORD*)(in+0x20)=(QWORD)fat16_explain;
+		*(QWORD*)(in+0x28)=(QWORD)fat16_cd;
+		*(QWORD*)(in+0x30)=(QWORD)fat16_load;
 
 		//准备本程序需要的变量
 		//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
@@ -417,15 +320,15 @@ int mountfat(QWORD firstsector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 		say("\n");
 
 		//change directory /
-		fat16_cd("/");
+		fat16_root();
 	}
 	else if(similarity==52)		//这是fat16
 	{
-		//返回cd和load函数的地址给老大master用
+		//上报3个函数的地址
 		say("fat32\n");
-		*explainfunc=(QWORD)fat32_explain;
-		*cdfunc=(QWORD)fat32_cd;
-		*loadfunc=(QWORD)fat32_load;
+		*(QWORD*)(in+0x20)=(QWORD)fat32_explain;
+		*(QWORD*)(in+0x28)=(QWORD)fat32_cd;
+		*(QWORD*)(in+0x30)=(QWORD)fat32_load;
 
 		//准备本程序需要的变量
 		//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
@@ -440,7 +343,7 @@ int mountfat(QWORD firstsector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
 		say("\n");
 
 		//change directory /
-		fat32_cd("/");
+		fat32_root();
 	}
 	else
 	{
