@@ -1,190 +1,91 @@
-﻿main:程序界面
-wrap2:真正的逻辑部分
-wrap1:拿到了想要的东西，用这些来提供更多工具
-wrap:只需要，而且必须，从系统手上，拿到这些东西
+
+
+                                  wrap,main
+------------------------------------------------------------------------------
+            wrap2                     >222222222222222222                    |
+                                      |    2222         2                    |
+                                      |       222       commandline interface|
+                                      |          22     1        0           |
+                                      |             2 1         0            |
+                                      |         11    2        0             |
+                                      |     111        2      0              |
+            +wrap1                    >1111              2  0                |
+                                      |     111           20                 |
+                                      |          11     0  2                 |
+                                      |             0  1    2                |
+                                      |          00       1 2                |
+                                      |       000           graphic interface|
+                                      |    0000             0                |
+            +wrap0                    >0000000000000000000000                |
+------------------------------------------------------------------------------
 
 
 
 
+                                  wrap=wrap0,wrap1,wrap2......
+-------------------------------------------------------------------------------
+       /  \   \ \                     -                                       |
+    /|  \  \  /   \  \                -                                       |
+   /   \   \  | /  \  /               w                                       |
+  /  \/   /\| \    /  \               r    ????_explain()                     |
+ |    program core    /               a    ????_cd()                          |
+ |\   \\     \   /    \               p    ????_load()                        |
+  \ \   | \ \ \ \\ |\  /              2                                       |
+    \  |/ \ \ |   /                   -                                       |
+-------------------------------------------------------------------------------
+       |        |                     -    blank2zero()  small2capital()      |
+       |        |                     -    anscii2hex()  str2data()           |
+       |        |                     w    buf2arg()                          |
+       | common |                     r                                       |
+       |library |                     a    anscii()  string()  say()          |
+       |        |                     p                                       |
+       |        |                     1    compare()                          |
+       |        |                     |    holyshit()    printmemory()        |
+-------------------------------------------------------------------------------
+       / | | \  |                     w    point()     writescreen()          |
+      /  system  \                    r    disk()    readdisk()               |
+     /  abstract   \                  a                                       |
+    /   /  |    \    \                p                                       |
+linux mac win android ios             0    where()                            |
+-------------------------------------------------------------------------------
 
 
 
 
-main(程序的界面相关)
-1.master	终端界面
-2.graphic	图形界面
-
-
-
-
-
-
-
-
-wrap2:真正的逻辑部分
-0.parttable
-{
-	void explainparttable(QWORD readbuffer)
-	QWORD explaingpt(QWORD readbuffer)
-	QWORD explainmbr(readbuffer)
-
-	getaddrofparttable(unsigned long long* p)
-}
-1.ext
-{
-	i.初始化这些变量，后面自己要用
-	static QWORD directorybuffer;
-	static QWORD readbuffer;
-	static QWORD inodebuffer;
-
-	static QWORD block0;
-	static QWORD blocksize;
-	static QWORD groupsize;
-	static QWORD inodepergroup;
-	static QWORD inodesize;
-
-	ii.运行时，提供函数给其他人使用
-	static int ext_explain(inode)
-	static int ext_cd(BYTE* addr)
-	static void ext_load(BYTE* addr,QWORD offset)
-	int mountext(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
-}
-2.fat
-{
-	i.初始化这些变量，后面自己要用
-	static QWORD fatbuffer;				//fat表
-	static QWORD readbuffer;			//一般使用
-	static QWORD directorybuffer;		//目录专用
-
-	static QWORD fat0;			//fat表所在扇区
-	static QWORD fatsize;		//fat表总共的扇区数量
-	static QWORD cluster0;		//0号簇所在扇区
-	static QWORD clustersize;	//每个簇的扇区数量
-
-	ii.运行时，提供函数给其他人使用
-	static int fat_explain(inode)
-	static int fat_cd(BYTE* addr)
-	static void fat_load(BYTE* addr,QWORD offset)
-	int mountfat(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
-}
-3.hfs
-{
-	i.初始化这些变量，后面自己要用
-	static QWORD readbuffer;
-	static QWORD directorybuffer;
-	static QWORD catalogbuffer;
-
-	static QWORD block0;
-	static QWORD blocksize;
-
-	static QWORD catalogsector;
-	static QWORD nodesize;
-
-	static QWORD rootnode;
-	static QWORD firstleafnode;
-
-	ii.运行时，提供函数给其他人使用
-	static int hfs_explain(inode)
-	static int hfs_cd(BYTE* addr)
-	static void hfs_load(BYTE* addr,QWORD offset)
-	int mounthfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
-}
-4.ntfs
-{
-	i.初始化这些变量，后面自己要用
-	static QWORD directorybuffer;
-	static QWORD readbuffer;
-	static QWORD mftbuffer;
-
-	static QWORD diskaddr;
-	static QWORD ntfssector;
-	static QWORD clustersize;
-	static QWORD mftcluster;
-
-	static QWORD pwd[10];
-	static int ntfspwd;
-
-	ii.运行时，提供函数给其他人使用
-	static int ntfs_explain(inode)
-	static int ntfs_cd(BYTE* addr)
-	static void ntfs_load(BYTE* addr,QWORD offset)
-	int mountntfs(QWORD sector,QWORD* explainfunc,QWORD* cdfunc,QWORD* loadfunc)
-}
-
-
-
-
-
-
-
-
-wrap1
-1.annoying
-{
-	void blank2zero(QWORD* name)
-	void zero2blank(QWORD* name)
-	void small2capital(QWORD* name)
-	void str2data(BYTE* str,QWORD* data)
-	void anscii2dec(BYTE* second,QWORD* decimal)
-	void anscii2hex(BYTE* second,QWORD* hex)
-	void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
-}
-2.anscii
-{
-	void anscii(int x,int y,char ch)
-	void decimal(int x,int y,unsigned long long z)
-	void string(int x,int y,char* p)
-	void say(char* p,...)
-}
-3.cmpsb
-{
-	int compare(unsigned char* first,unsigned char* second)
-}
-4.holyshit
-{
-	void holyshit(sector,count,where,wantwhere,towhere)
-}
-5.printmemory
-{
-	void printmemory(QWORD addr,QWORD size)
-}
-
-
-
-
-
-
-
-
-wrap:只需要，而且必须，从系统手上，拿到这些东西
-1.硬盘相关
-{
-	i.运行前，选定磁盘
-	__attribute__((constructor)) void initdisk()
-
-	ii.运行中，提供函数
-	void disk(QWORD in)
-	void getaddrofdiskinfo(unsigned long long* p)
-	void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
-	int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
-
-	iii.结束时，释放磁盘
-	__attribute__((destructor)) void freedisk()
-}
-2.内存相关
-{
-	i.运行前，申请内存
-	__attribute__((constructor)) void initmemory()
-
-	ii.运行中，提供函数
-	void getaddroffs(unsigned long long* p)
-	void getaddrofdir(unsigned long long* p)
-	void getaddrofbuffer(unsigned long long* p)
-
-	iii.结束时，释放磁盘
-	__attribute__((destructor)) void freedisk()
-}
-3.其他一些额外的小东西
-{
-	比如uac(向用户申请管理员权限)
-}
+                                 wrap2=pt+fs+......
+-------------------------------------------------------------------------------
+partitiontable                        |                                       |
+        gpt.c                         |                                       |
+        mbr.c                         |                                       |
+        ......                        |                 all                   |
+filesystem                            |                 of                    |
+        ext.c                         |                these                  |
+        fat.c                         |              functions                |
+        hfs.c                         |                 are                   |
+        ntfs.c                        |                                       |
+        ......                        |                                       |
+compress                              |                                       |
+        zip.c                         |                                       |
+        7z.c                          |explainxxxx(QWORD inaddr,QWORD outaddr)|
+        rar.c                         |//0x10000                              |
+        ......                        |inaddr=addr of raw source in memory    |
+video                                 |outaddr=somestruct[0x400]              |
+        mp4.c                         |                                       |
+        mkv.c                         |                                       |
+        ......                        |                                       |
+audio                                 |                                       |
+        mp3.c                         |[0x40*x+0,0x40*x+0xf]:        start    |
+        wav.c                         |[0x40*x+0x10,0x40*x+0x1f]:     end     |
+        ......                        |[0x40*x+0x20,0x40*x+0x2f]:    detail1  |
+ethernet                              |[0x40*x+0x30,0x40*x+0x3f]:    detail2  |
+        ip.c                          |                                       |
+        icmp.c                        |                                       |
+        udp.c                         |                                       |
+        tcp.c                         |                                       |
+        ......                        |                                       |
+special                               |                                       |
+        apic.c                        |                                       |
+        cpu.c                         |                                       |
+        ......                        |                                       |
+master.c                              |                                       |
+-------------------------------------------------------------------------------
