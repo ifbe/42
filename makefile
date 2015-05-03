@@ -1,52 +1,30 @@
-﻿linux:
-	make -s -C wrap linux
+﻿binary:
+	make -s -C main binary
+	make -s -C wrap binary
+crosscompile:
+	make -s -C main crosscompile
+	make -s -C wrap crosscompile
+linux:
 	make -s -C main linux
-	gcc main/main.a wrap/wrap.a \
-	-lSDL2 -lm
+	make -s -C wrap linux
 mac:
-	make -s -C wrap mac
 	make -s -C main mac
-	gcc main/color.o main/anscii.o \
-	-L /usr/local/Cellar/sdl2/2.0.3/lib \
-	wrap/wrap.a -lSDL2 -lm
+	make -s -C wrap mac
 win:
-	make -s -C main win
+	make -s -C main cli
 	make -s -C wrap2 win
 	make -s -C wrap1 win
 	make -s -C wrap win
-	gcc main/main.a \
-	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
-	-Wl,--no-undefined -static -static-libgcc \
-	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
-	-lmingw32 -lSDL2main -lSDL2 \
-	-lm -ldinput8 -ldxguid -ldxerr8 \
-	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid
-win-gui:
+win+api:
 	make -s -C main gui
 	make -s -C wrap2 win
 	make -s -C wrap1 win
-	make -s -C wrap win-gui
-	gcc main/main.a \
-	wrap2/wrap2.a wrap1/wrap1.a wrap/wrap.a wrap/uac.res \
-	-Wl,--no-undefined -static -static-libgcc \
-	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
-	-lmingw32 -lSDL2main -lSDL2 \
-	-lm -ldinput8 -ldxguid -ldxerr8 \
-	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid
-binary:
-	make -s -C wrap binary
-	make -s -C main binary
-	ld -T link.ld -o color.bin wrap/start.o \
-	main/color.o main/anscii.o \
-	wrap/wrap
-crosscompile:
-	make -s -C wrap crosscompile
-	make -s -C main crosscompile
-	x86_64-elf-ld -T link.ld -o color.bin wrap/start.o \
-	main/color.o main/anscii.o \
-	wrap/wrap.a
+	make -s -C wrap win+api
+win+sdl:
+	make -s -C main gui
+	make -s -C wrap2 win
+	make -s -C wrap1 win
+	make -s -C wrap win+sdl
 qemu:
 	cp ../../../core/core.bin test.img    #first64k
 	dd if=color.bin of=test.img bs=65536 seek=1 conv=notrunc    #real bin

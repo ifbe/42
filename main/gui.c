@@ -4,6 +4,13 @@
 #define QWORD unsigned long long
 
 
+//log位置
+static BYTE* logbuf;
+static QWORD logoffset;
+
+//硬盘信息
+static BYTE* diskinfo;
+
 //[buffer0][buffer1][buffer2]......[buffer15]
 static QWORD realworld;
 	//1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
@@ -28,9 +35,6 @@ static QWORD logicworld;
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
-//log位置
-static BYTE* logbuf;
-static QWORD logoffset;
 //标签
 static int tag=0;
 
@@ -163,10 +167,10 @@ void printpartition()
 			point(x,y,0x88888888);
 		}
 	}
-
+/*
 //二.仔细看每一个磁盘由很多分区构成
 	//1.最大扇区号是几
-	p=(char*)mytable;
+	p=(char*)buffer0;
 	QWORD temp;
 
 	QWORD maxsector=0;
@@ -191,7 +195,7 @@ void printpartition()
 	say("%x\n",displaymax);
 
 	//3.标记头尾
-	p=(char*)mytable;
+	p=(char*)buffer0;
 	for(y=0;y<8;y++)
 	{
 		//算出开始扇区结束扇区
@@ -211,6 +215,19 @@ void printpartition()
 		//打印硬盘的大致图像
 		printbitmap(start,end,typestr);
 	}
+*/
+	p=(char*)buffer0;
+	for(y=0;y<20;y++)
+	{
+		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
+		hexadecimal(0x8,y,*(QWORD*)(buffer0+y*0x40+0x8));
+		hexadecimal(0x10,y,*(QWORD*)(buffer0+y*0x40+0x10));
+		hexadecimal(0x18,y,*(QWORD*)(buffer0+y*0x40+0x18));
+		hexadecimal(0x20,y,*(QWORD*)(buffer0+y*0x40+0x20));
+		hexadecimal(0x28,y,*(QWORD*)(buffer0+y*0x40+0x28));
+		hexadecimal(0x30,y,*(QWORD*)(buffer0+y*0x40+0x30));
+		hexadecimal(0x38,y,*(QWORD*)(buffer0+y*0x40+0x38));
+	}
 
 }
 void printfile()
@@ -226,7 +243,7 @@ void printfile()
 	}
 
 //三.每个分区里面的文件和文件夹
-	p=(char*)dir;
+	p=(char*)dirbuffer;
 	for(y=0;y<2;y++)
 	{
 		for(x=0;x<0x40;x++)
@@ -266,10 +283,10 @@ void printworld()
 	tagcontect();
 
 	//具体内容
-	if(tag==0) printlog();
+	//if(tag==0) printlog();
 	if(tag==1) printdisk();
 	if(tag==2) printpartition();
-	if(tag==3) printfile();
+	//if(tag==3) printfile();
 
 	//写屏
 	writescreen();
@@ -277,6 +294,8 @@ void printworld()
 void main()
 {
 	initmaster();
+
+	whereisdiskinfo(&diskinfo);
 
 	whereisrealworld(&realworld);
 	buffer0=realworld;
@@ -288,10 +307,6 @@ void main()
 	readbuffer=logicworld;
 	dirbuffer=logicworld+0x100000;
 	fsbuffer=logicworld+0x200000;
-
-	//
-	disk(1,1);
-	mount(0,0);
 
 	while(1)
 	{
