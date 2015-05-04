@@ -62,7 +62,14 @@ void writescreen()
 			DIB_RGB_COLORS);		//颜色格式
 	//printf("result:%x\n",result);
 }
+
+
+
+
 // Step 3: the Window Procedure
+int solved=1;
+int my1;
+int my2;
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
@@ -115,7 +122,19 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			} 
-			break; 
+			break;
+		}
+		case WM_KEYDOWN:		//键盘点下
+		{
+			solved=0;
+			my1=2;
+			my2=wparam;
+		}
+		case WM_LBUTTONDOWN:		//鼠标左键点下
+		{
+			solved=0;
+			my1=3;
+			my2=lparam;
 		}
 		case WM_PAINT:		//显示
 		{
@@ -133,47 +152,27 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			break;
 		}
     }
+
     return DefWindowProc(window, msg, wparam, lparam);
 }
-//自定义的种类码，不是sdl的不要混淆
-//0:退出
-//1:键盘按下
-//2:键盘松开
-//3:鼠标按下
-//4:鼠标松开
-//5:鼠标移动
-//0xff:时间
 int waitevent(unsigned long long* first,unsigned long long* second)
 {
-/*
 	while(GetMessage(&msg,NULL,0,0))
 	{
+		//交给WindowProc，试着处理看看
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-	}
-*/
-	int result;
-	while(1)
-	{
-		//等消息
-		result=GetMessage(&msg,NULL,0,0);
 
-		//如果是WMQUIT就退出，不退出就翻译msg
-		if(result==0)
+		//WindowProc处理不了，交给用户来处理
+		if(solved==0)
 		{
-			*first=0;
+			*first=my1;
+			*second=my2;
+			solved=1;
 			return;
 		}
-		TranslateMessage(&msg);
-
-		//普通消息
-		DispatchMessage(&msg);
 	}
 }
-
-
-
-
 
 
 
