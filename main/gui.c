@@ -35,13 +35,15 @@ static QWORD logicworld;
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
-//标签
+//显示什么
 static int tag=0;
+static int complex=0;
 
 
 
 
-void printlog()
+//-----------------------log--------------------------
+void printlog0()
 {
 	int x,y;
 	for(x=0;x<1024;x++)
@@ -60,7 +62,21 @@ void printlog()
 	//入
 	string(0,36,buffer);
 }
-void printdisk()
+void printlog1()
+{
+	
+}
+void printlog2()
+{
+	
+}
+//-------------------------------------------------------
+
+
+
+
+//----------------------disk---------------------------
+void printdisk0()
 {
 	int x,y;
 	for(x=0;x<1024;x++)
@@ -78,6 +94,44 @@ void printdisk()
 		{
 			anscii(x,y,p[0x100*y+x]);
 		}
+	}
+}
+void printdisk1()
+{
+}
+void printdisk2()
+{
+	
+}
+//-------------------------------------------
+
+
+
+
+//-------------------------------------------
+void printpartition0()
+{
+	char* p;
+	QWORD x,y;
+	for(x=0;x<1024;x++)
+	{
+		for(y=0;y<640-64;y++)
+		{
+			point(x,y,0x88888888);
+		}
+	}
+
+	p=(char*)buffer0;
+	for(y=0;y<20;y++)
+	{
+		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
+		hexadecimal(0x8,y,*(QWORD*)(buffer0+y*0x40+0x8));
+		hexadecimal(0x10,y,*(QWORD*)(buffer0+y*0x40+0x10));
+		hexadecimal(0x18,y,*(QWORD*)(buffer0+y*0x40+0x18));
+		hexadecimal(0x20,y,*(QWORD*)(buffer0+y*0x40+0x20));
+		hexadecimal(0x28,y,*(QWORD*)(buffer0+y*0x40+0x28));
+		hexadecimal(0x30,y,*(QWORD*)(buffer0+y*0x40+0x30));
+		hexadecimal(0x38,y,*(QWORD*)(buffer0+y*0x40+0x38));
 	}
 }
 void printbitmap(QWORD start,QWORD end,QWORD typestr)
@@ -156,7 +210,7 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 	y=(start+end)/2/1024;
 	string(x,y,(char*)typestr);
 }
-void printpartition()
+void printpartition1()
 {
 	char* p;
 	QWORD x,y;
@@ -167,7 +221,7 @@ void printpartition()
 			point(x,y,0x88888888);
 		}
 	}
-/*
+
 //二.仔细看每一个磁盘由很多分区构成
 	//1.最大扇区号是几
 	p=(char*)buffer0;
@@ -215,22 +269,18 @@ void printpartition()
 		//打印硬盘的大致图像
 		printbitmap(start,end,typestr);
 	}
-*/
-	p=(char*)buffer0;
-	for(y=0;y<20;y++)
-	{
-		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
-		hexadecimal(0x8,y,*(QWORD*)(buffer0+y*0x40+0x8));
-		hexadecimal(0x10,y,*(QWORD*)(buffer0+y*0x40+0x10));
-		hexadecimal(0x18,y,*(QWORD*)(buffer0+y*0x40+0x18));
-		hexadecimal(0x20,y,*(QWORD*)(buffer0+y*0x40+0x20));
-		hexadecimal(0x28,y,*(QWORD*)(buffer0+y*0x40+0x28));
-		hexadecimal(0x30,y,*(QWORD*)(buffer0+y*0x40+0x30));
-		hexadecimal(0x38,y,*(QWORD*)(buffer0+y*0x40+0x38));
-	}
-
 }
-void printfile()
+void printpartition2()
+{
+	
+}
+//------------------------------------------------
+
+
+
+
+//-----------------------file-------------------------
+void printfile0()
 {
 	char* p;
 	QWORD x,y;
@@ -252,6 +302,19 @@ void printfile()
 		}
 	}
 }
+void printfile1()
+{
+	
+}
+void printfile2()
+{
+	
+}
+//------------------------------------------------
+
+
+
+
 void tagcontect()
 {
 	//画分隔线，写标签名
@@ -283,9 +346,51 @@ void printworld()
 	tagcontect();
 
 	//具体内容
-	//if(tag==0) printlog();
-	if(tag==1) printdisk();
-	if(tag==2) printpartition();
+	if(tag==0)
+	{
+		if(complex==0)
+		{
+			printlog0();
+		}
+		else if(complex==1)
+		{
+			printlog1();
+		}
+		else
+		{
+			printlog2();
+		}
+	}
+	if(tag==1)
+	{
+		if(complex==0)
+		{
+			printdisk0();
+		}
+		else if(complex==1)
+		{
+			printdisk1();
+		}
+		else
+		{
+			printdisk2();
+		}
+	}
+	if(tag==2)
+	{
+		if(complex==0)
+		{
+			printpartition0();
+		}
+		else if(complex==1)
+		{
+			printpartition1();
+		}
+		else
+		{
+			printpartition2();
+		}
+	}
 	//if(tag==3) printfile();
 
 	//写屏
@@ -296,14 +401,13 @@ void main()
 	initmaster();
 
 	whereisdiskinfo(&diskinfo);
-
+	whereislogbuf(&logbuf);
 	whereisrealworld(&realworld);
+	whereislogicworld(&logicworld);
 	buffer0=realworld;
 	buffer1=realworld+0x10000;
 	buffer2=realworld+0x20000;
 	buffer3=realworld+0x30000;
-
-	whereislogicworld(&logicworld);
 	readbuffer=logicworld;
 	dirbuffer=logicworld+0x100000;
 	fsbuffer=logicworld+0x200000;
