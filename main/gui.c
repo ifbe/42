@@ -4,13 +4,6 @@
 #define QWORD unsigned long long
 
 
-//log位置
-static BYTE* logbuf;
-static QWORD logoffset;
-
-//硬盘信息
-static BYTE* diskinfo;
-
 //[buffer0][buffer1][buffer2]......[buffer15]
 static QWORD realworld;
 	//1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
@@ -32,9 +25,16 @@ static QWORD logicworld;
 	static QWORD fsbuffer;
 	//[0x300000,0x3fffff]:未用
 
+//硬盘信息
+static BYTE* diskinfo;
+
+//log位置
+static BYTE* logbuf;
+
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
+
 //显示什么
 static int tag=0;
 static int complex=0;
@@ -45,14 +45,26 @@ static int complex=0;
 //-----------------------log--------------------------
 void printlog0()
 {
-	int y;
-	//出
-	for(y=0;y<36;y++)
+	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
+	int linenum=offsety/0x80;
+	if(offsety<0x80*36)		//[0,0x80*35]
 	{
-		//*(QWORD*)(logbuf+0x80*y)=0x0030313233343536;
-		string(0,y,logbuf+logoffset+0x80*y);
+		int y;
+		for(y=0;y<linenum;y++)
+		{
+			string(0,y,logbuf+0x80*y);
+		}
 	}
-	//入
+	else
+	{
+		int y;
+		for(y=0;y<36;y++)
+		{
+			string(0,y,logbuf+offsety+0x80*(y-36));
+		}
+	}
+
+	//键盘输入区
 	string(0,36,buffer);
 }
 void printlog1()
@@ -73,12 +85,10 @@ void printdisk0()
 {
 	int x,y;
 	char* p=(char*)diskinfo;
-	for(y=0;y<3;y++)
+	for(y=0;y<16;y++)
 	{
-		for(x=0;x<0x40;x++)
-		{
-			anscii(x,y,p[0x100*y+x]);
-		}
+		if(*(DWORD*)(diskinfo+0x100*y) == 0)break;
+		string(0,y,diskinfo+0x100*y);
 	}
 }
 void printdisk1()
@@ -100,6 +110,7 @@ void printpartition0()
 	char* p=(char*)buffer0;
 	for(y=0;y<20;y++)
 	{
+		if(*(QWORD*)(buffer0+y*0x40) == 0)break;
 		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
 		hexadecimal(0x8,y,*(QWORD*)(buffer0+y*0x40+0x8));
 		hexadecimal(0x10,y,*(QWORD*)(buffer0+y*0x40+0x10));
@@ -273,61 +284,46 @@ void printfile2()
 
 
 
-void tagcontect()
+void background()
 {
-	//画分隔线，写标签名
 	QWORD x,y;
-	for(y=640-32;y<640;y++)
-		for(x=0;x<1024;x++)
-			point(x,y,0xffffffff);
 
 	//清屏
-	DWORD color;
-	color=0x44444444;
-	for(y=640-64;y<640-32;y++)
-		for(x=0;x<1024;x++)
-			point(x,y,color);
-	for(y=640-32;y<640;y++)
-		for(x=tag*160;x<tag*160+160;x++)
-			point(x,y,color);
-
-	color=0x88888888;
-	for(x=0;x<1024;x++)
+	for(y=0;y<640;y++)
 	{
-		for(y=0;y<640-64;y++)
+		for(x=0;x<1024;x++)
 		{
-			point(x,y,color);
+			point(x,y,0x88888888);
 		}
 	}
+}
+void foreground()
+{
+	QWORD x,y;
 
-	//名称
-	string(0,39,"journal");
-	string(20,39,"disk");
-	string(40,39,"partition");
-	string(60,39,"file");
+	//[608,639]:低栏颜色
+	for(y=640-128;y<640;y++)
+		for(x=1024-128;x<1024;x++)
+			point(x,y,0xffffffff);
+
+	//+涂黑选中项
+	for(y=640-16-tag*16;y<640-tag*16;y++)
+		for(x=1024-128;x<1024;x++)
+			point(x,y,0x44444444);
+
+	//+写标签名
+	string(112,32,"console");
+	string(112,35,"/file");
+	string(112,36,"/part");
+	string(112,39,"/disk");
 }
 void printworld()
 {
-	//基本内容
-	tagcontect();
+	//1：背景
+	background();
 
-	//具体内容
+	//2：具体内容
 	if(tag==0)
-	{
-		if(complex==0)
-		{
-			printlog0();
-		}
-		else if(complex==1)
-		{
-			printlog1();
-		}
-		else
-		{
-			printlog2();
-		}
-	}
-	if(tag==1)
 	{
 		if(complex==0)
 		{
@@ -342,7 +338,7 @@ void printworld()
 			printdisk2();
 		}
 	}
-	if(tag==2)
+	if(tag==1)
 	{
 		if(complex==0)
 		{
@@ -357,9 +353,27 @@ void printworld()
 			printpartition2();
 		}
 	}
-	//if(tag==3) printfile();
+	//if(tag==2) printfile();
+	if(tag==7)
+	{
+		if(complex==0)
+		{
+			printlog0();
+		}
+		else if(complex==1)
+		{
+			printlog1();
+		}
+		else
+		{
+			printlog2();
+		}
+	}
 
-	//写屏
+	//3：前面板
+	foreground();
+
+	//4：写屏
 	writescreen();
 }
 void main()
@@ -413,18 +427,13 @@ void main()
 				{
 					if(tag<3)tag++;
 				}
-				else if(key==0x40000052)	//up	0x48
-				{
-					if(logoffset>0x80)	logoffset-=0x80;
-				}
-				else if(key==0x40000051)	//down	0x50
-				{
-					logoffset=(logoffset+0x80)%0x100000;
-				}
 				else
 				{
-					buffer[bufcount]=key&0xff;
-					bufcount++;
+					if(bufcount<0x80)
+					{
+						buffer[bufcount]=key&0xff;
+						bufcount++;
+					}
 				}
 				break;
 			}
@@ -435,9 +444,9 @@ void main()
 				say("mouse:(%d,%d)\n",x,y);
 
 				//
-				if( (y>640-32) && (x<640) )
+				if( (y>640-128) && (x>1024-128) )
 				{
-					tag=x/160;
+					tag=(640-y)/16;
 				}
 				break;
 			}

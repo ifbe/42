@@ -7,8 +7,6 @@
 #include<stdlib.h>
 
 static unsigned char* logbuf;
-static QWORD offsetx=0;
-static QWORD offsety=0;
 
 
 __attribute__((constructor)) void initlog()
@@ -37,24 +35,30 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 	int start=0;
 	int temp=0;
+	QWORD offsety;
+	QWORD offsetx;
 	while(1)			//举例“123443%d\n\n    44532”
 	{
 		if(rcx[temp] == 0)		//0
 		{
+			offsety=*(DWORD*)(logbuf+0xffff0);
+			offsetx=*(DWORD*)(logbuf+0xffff8);
 			int writecount=snprintf(logbuf+offsety+offsetx,0x80-offsetx,
 					rcx+start,rdx,r8,r9);
 
-			offsetx+=writecount;
+			*(DWORD*)(logbuf+0xffff8)+=writecount;
 
 			break;
 		}
 		if( rcx[temp] < 0x10)	//"\n":0xa?		0xd?
 		{
+			offsety=*(DWORD*)(logbuf+0xffff0);
+			offsetx=*(DWORD*)(logbuf+0xffff8);
 			snprintf(logbuf+offsety+offsetx,0x80-offsetx,
 					rcx+start,rdx,r8,r9);
 
-			offsetx=0;
-			offsety=(offsety+0x80)%0x100000;
+			*(DWORD*)(logbuf+0xffff8)=0;
+			*(DWORD*)(logbuf+0xffff0)=(offsety+0x80)%0xffff0;
 			temp+=1;
 			start=temp;
 
