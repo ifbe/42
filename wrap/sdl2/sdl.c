@@ -111,7 +111,7 @@ int waitevent(unsigned int* type,unsigned int* value)
 					int x=event.button.x;
 					int y=event.button.y;
 
-					*type=3;
+					*type=2;
 					*value=x+(y<<16);
 					return;
 				}

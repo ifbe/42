@@ -8,9 +8,6 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1234
 #define menu2 0x5678
-#define	BSWAP_8(x)	((x) & 0xff)
-#define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
-#define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 
 
 int width=1024;
@@ -127,14 +124,16 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_KEYDOWN:		//键盘点下
 		{
 			solved=0;
-			my1=2;
+			my1=1;
 			my2=wparam;
+			break;
 		}
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			solved=0;
-			my1=3;
+			my1=2;
 			my2=lparam;
+			break;
 		}
 		case WM_PAINT:		//显示
 		{

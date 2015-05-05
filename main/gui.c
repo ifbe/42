@@ -45,14 +45,7 @@ static int complex=0;
 //-----------------------log--------------------------
 void printlog0()
 {
-	int x,y;
-	for(x=0;x<1024;x++)
-	{
-		for(y=0;y<640-64;y++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
+	int y;
 	//出
 	for(y=0;y<36;y++)
 	{
@@ -79,14 +72,6 @@ void printlog2()
 void printdisk0()
 {
 	int x,y;
-	for(x=0;x<1024;x++)
-	{
-		for(y=0;y<640-64;y++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
-
 	char* p=(char*)diskinfo;
 	for(y=0;y<3;y++)
 	{
@@ -111,17 +96,8 @@ void printdisk2()
 //-------------------------------------------
 void printpartition0()
 {
-	char* p;
-	QWORD x,y;
-	for(x=0;x<1024;x++)
-	{
-		for(y=0;y<640-64;y++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
-
-	p=(char*)buffer0;
+	int x,y;
+	char* p=(char*)buffer0;
 	for(y=0;y<20;y++)
 	{
 		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
@@ -212,19 +188,8 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 }
 void printpartition1()
 {
-	char* p;
-	QWORD x,y;
-	for(x=0;x<1024;x++)
-	{
-		for(y=0;y<640-64;y++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
-
-//二.仔细看每一个磁盘由很多分区构成
-	//1.最大扇区号是几
-	p=(char*)buffer0;
+	int x,y;
+	char* p=(char*)buffer0;
 	QWORD temp;
 
 	QWORD maxsector=0;
@@ -282,15 +247,8 @@ void printpartition2()
 //-----------------------file-------------------------
 void printfile0()
 {
+	int x,y;
 	char* p;
-	QWORD x,y;
-	for(x=0;x<1024;x++)
-	{
-		for(y=0;y<640-64;y++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
 
 //三.每个分区里面的文件和文件夹
 	p=(char*)dirbuffer;
@@ -318,21 +276,29 @@ void printfile2()
 void tagcontect()
 {
 	//画分隔线，写标签名
-	int i,j;
-	for(j=640-32;j<640;j++)
-		for(i=0;i<1024;i++)
-			point(i,j,0xffffffff);
+	QWORD x,y;
+	for(y=640-32;y<640;y++)
+		for(x=0;x<1024;x++)
+			point(x,y,0xffffffff);
 
 	//清屏
 	DWORD color;
-	//color=0xff<<(tag*3);
 	color=0x44444444;
-	for(j=640-64;j<640-32;j++)
-		for(i=0;i<1024;i++)
-			point(i,j,color);
-	for(j=640-32;j<640;j++)
-		for(i=tag*160;i<tag*160+160;i++)
-			point(i,j,color);
+	for(y=640-64;y<640-32;y++)
+		for(x=0;x<1024;x++)
+			point(x,y,color);
+	for(y=640-32;y<640;y++)
+		for(x=tag*160;x<tag*160+160;x++)
+			point(x,y,color);
+
+	color=0x88888888;
+	for(x=0;x<1024;x++)
+	{
+		for(y=0;y<640-64;y++)
+		{
+			point(x,y,color);
+		}
+	}
 
 	//名称
 	string(0,39,"journal");
@@ -421,7 +387,7 @@ void main()
 		DWORD type=0;
 		DWORD key=0;
 		waitevent(&type,&key);
-		//say("%x\n",key);
+		//say("type=%x,key=%x\n",type,key);
 
 		//3.干啥事
 		switch(type)
@@ -429,6 +395,7 @@ void main()
 			case 0:return;
 			case 1:
 			{
+				say("keyboard:%x\n",key);
 				if(key==0x1b)return;
 				else if(key==0x8)
 				{
@@ -461,11 +428,11 @@ void main()
 				}
 				break;
 			}
-			case 3:
+			case 2:
 			{
 				int x=key&0xffff;
 				int y=(key>>16)&0xffff;
-				say("(%d,%d)\n",x,y);
+				say("mouse:(%d,%d)\n",x,y);
 
 				//
 				if( (y>640-32) && (x<640) )
