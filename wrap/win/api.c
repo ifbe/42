@@ -67,6 +67,8 @@ void writescreen()
 int solved=1;
 int my1;
 int my2;
+static POINT pt, pe;
+static RECT rt, re;
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
@@ -119,40 +121,77 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			} 
-			break;
+			return 0;
 		}
 		case WM_KEYDOWN:		//键盘点下
 		{
 			solved=0;
 			my1=1;
 			my2=wparam;
-			break;
+			return 0;
 		}
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			solved=0;
 			my1=2;
 			my2=lparam;
-			break;
+			return 0;
 		}
+		case WM_RBUTTONDOWN:
+		{
+			SetCapture(window);                         // 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
+			GetCursorPos(&pt);                         // 获取鼠标光标指针当前位置
+			GetWindowRect(window,&rt);   // 获取窗口位置与大小
+			re.right=rt.right-rt.left;               // 保存窗口宽度
+			re.bottom=rt.bottom-rt.top; // 保存窗口高度
+			return 0;
+		}
+		case WM_RBUTTONUP:
+		{
+			ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			return 0;
+		}
+		case WM_MOUSEMOVE:
+		{
+			GetCursorPos(&pe);                              // 获取光标指针的新位置
+			if(wparam==MK_RBUTTON)               // 当鼠标右键按下
+			{
+				re.left=rt.left+(pe.x - pt.x);    // 窗口新的水平位置
+				re.top =rt.top+(pe.y - pt.y); // 窗口新的垂直位置
+				MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
+			}
+			return 0;
+		}
+		/*
+		case WM_NCACTIVATE:
+		case WM_NCPAINT:
+		{
+			HDC titledc=GetDCEx(window,(HRGN)wparam,DCX_WINDOW|DCX_INTERSECTRGN|DCX_CACHE);
+			if(titledc)
+			{
+				TextOut(titledc,40,8,"abcd",4);
+				ReleaseDC(window,titledc);
+			}
+			return 1;
+		}
+		*/
 		case WM_PAINT:		//显示
 		{
 			writescreen();
-			break;
+			return DefWindowProc(window, msg, wparam, lparam);
 		}
 		case WM_DESTROY:		//摧毁
 		{
 			//Shell_NotifyIcon(NIM_DELETE, &nid);
 			//ReleaseDC(window,fakedc);  
-			ReleaseDC(window,realdc);
-			free(mypixel);
-			Shell_NotifyIcon(NIM_DELETE, &nid);
 			PostQuitMessage(0);
-			break;
+			return 0;
 		}
-    }
-
-    return DefWindowProc(window, msg, wparam, lparam);
+		default:
+		{
+			return DefWindowProc(window, msg, wparam, lparam);
+		}
+	}
 }
 int waitevent(unsigned long long* first,unsigned long long* second)
 {
@@ -194,11 +233,20 @@ int initwindow()
     wc.lpszClassName=AppTitle;
     if (!RegisterClass(&wc)) return 0;
 
-    window = CreateWindow(AppTitle,AppTitle,
+    /*
+	window = CreateWindow(AppTitle,AppTitle,
 				WS_OVERLAPPEDWINDOW,
-				CW_USEDEFAULT,CW_USEDEFAULT,width,height+40,
+				CW_USEDEFAULT,CW_USEDEFAULT,width,height,
+				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
+	*/
+    window = CreateWindow(AppTitle,AppTitle,
+				WS_POPUP,
+				100,100,width,height,
 				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
     if (!window) return 0;
+
+	SetWindowLong(window, GWL_STYLE, WS_POPUP | WS_MINIMIZEBOX);
+	SetWindowLong(window, GWL_EXSTYLE, 0 );
 
 	//fakedc=CreateCompatibleDC(NULL);
 	//HBITMAP bmp = CreateCompatibleBitmap(realdc,width,height);
@@ -248,11 +296,11 @@ __attribute__((constructor)) void initsdl()
 	//准备beforemain
 	initwindow();
 
-	//托盘
-	inittray();
-
 	//dib
 	initdib();
+
+	//托盘
+	inittray();
 
 	//拿dc
 	realdc=GetDC(window);
@@ -266,5 +314,9 @@ __attribute__((destructor)) void destorysdl()
 	//释放点阵
 	free(mypixel);
 
-	//释放sdl
+	//释放dc
+	ReleaseDC(window,realdc);
+
+	//释放托盘
+	Shell_NotifyIcon(NIM_DELETE, &nid);
 }

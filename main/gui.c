@@ -302,20 +302,30 @@ void foreground()
 	QWORD x,y;
 
 	//[608,639]:低栏颜色
-	for(y=640-128;y<640;y++)
-		for(x=1024-128;x<1024;x++)
+	for(y=640-32;y<640;y++)
+		for(x=0;x<1024;x++)
 			point(x,y,0xffffffff);
+	
+	//低栏分界线
+	for(y=640-32;y<640;y++)
+		for(x=512;x<1024;x+=64)
+		point(x,y,0);
 
 	//+涂黑选中项
-	for(y=640-16-tag*16;y<640-tag*16;y++)
-		for(x=1024-128;x<1024;x++)
+	for(y=640-32;y<640;y++)
+		for(x=64*tag;x<64*(tag+1);x++)
 			point(x,y,0x44444444);
 
 	//+写标签名
-	string(112,32,"console");
-	string(112,35,"/file");
-	string(112,36,"/part");
-	string(112,39,"/disk");
+	string(0,39,"console");
+	string(8,39,"1d");
+	string(16,39,"2d");
+	string(24,39,"3d");
+	string(56,39,"...");
+
+	string(64,39,"/file");
+	string(72,39,"/part");
+	string(80,39,"/disk");
 }
 void printworld()
 {
@@ -324,6 +334,21 @@ void printworld()
 
 	//2：具体内容
 	if(tag==0)
+	{
+		if(complex==0)
+		{
+			printlog0();
+		}
+		else if(complex==1)
+		{
+			printlog1();
+		}
+		else
+		{
+			printlog2();
+		}
+	}
+	if(tag==7)
 	{
 		if(complex==0)
 		{
@@ -338,7 +363,7 @@ void printworld()
 			printdisk2();
 		}
 	}
-	if(tag==1)
+	if(tag==8)
 	{
 		if(complex==0)
 		{
@@ -354,21 +379,6 @@ void printworld()
 		}
 	}
 	//if(tag==2) printfile();
-	if(tag==7)
-	{
-		if(complex==0)
-		{
-			printlog0();
-		}
-		else if(complex==1)
-		{
-			printlog1();
-		}
-		else
-		{
-			printlog2();
-		}
-	}
 
 	//3：前面板
 	foreground();
@@ -444,9 +454,9 @@ void main()
 				say("mouse:(%d,%d)\n",x,y);
 
 				//
-				if( (y>640-128) && (x>1024-128) )
+				if(y>640-32)
 				{
-					tag=(640-y)/16;
+					tag=x/64;
 				}
 				break;
 			}
