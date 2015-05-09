@@ -123,6 +123,22 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			} 
 			return 0;
 		}
+		case WM_KEYDOWN:
+		{
+			switch(wparam)
+			{
+				case VK_UP:
+				case VK_LEFT:
+				case VK_RIGHT:
+				case VK_DOWN:
+				{
+					solved=0;
+					my1=1;
+					my2=wparam;
+				}
+			}
+			return 0;
+		}
 		case WM_CHAR:		//键盘点下
 		{
 			solved=0;
@@ -195,6 +211,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 }
 int waitevent(unsigned long long* first,unsigned long long* second)
 {
+	//收得到就一直收+处理
 	while(GetMessage(&msg,NULL,0,0))
 	{
 		//交给WindowProc，试着处理看看
@@ -210,6 +227,9 @@ int waitevent(unsigned long long* first,unsigned long long* second)
 			return;
 		}
 	}
+
+	//收不到就返回失败消息
+	*first=0;
 }
 
 
