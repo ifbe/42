@@ -41,7 +41,7 @@ static void enumeratedisk()
 		{
 			//
 			CloseHandle(temphandle);
-			printf("%d    \\\\.\\PHYSICALDRIVE%d\n",i,i);
+			//printf("%d    \\\\.\\PHYSICALDRIVE%d\n",i,i);
 
 			//打开成功的，path才会不等于0
 			int j=0;

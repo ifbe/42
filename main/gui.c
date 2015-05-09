@@ -1,11 +1,13 @@
-﻿#define BYTE unsigned char
+#define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
 
+//-----------------------------global variety--------------------------------
 //[buffer0][buffer1][buffer2]......[buffer15]
 static QWORD realworld;
+
 	//1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
 	static QWORD buffer0;
 	//1个分区(或者某格式的文件) = 很多个区域(头/索引区/数据区/尾)
@@ -17,6 +19,7 @@ static QWORD realworld;
 
 //[0m,1m)[1m,2m)[2m,3m)[3m,4m)
 static QWORD logicworld;
+
 	//往这儿读，只临时用一下（当心别人也用）
 	static QWORD readbuffer;
 	//名，id，种类，大小
@@ -36,13 +39,18 @@ static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
 
 //显示什么
-static int tag=0;
-static int complex=0;
+static int tag=1;			//主体显示啥
+static int complex=0;		//主体华丽程度
+//---------------------------global variety----------------------------
 
 
 
 
-//-----------------------log--------------------------
+
+
+
+
+//--------------------------------detail:log--------------------------------
 void printlog0()
 {
 	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
@@ -75,12 +83,12 @@ void printlog2()
 {
 	
 }
-//-------------------------------------------------------
+//--------------------------------detail:log--------------------------------
 
 
 
 
-//----------------------disk---------------------------
+//--------------------------------detail:disk--------------------------------
 void printdisk0()
 {
 	int x,y;
@@ -98,12 +106,12 @@ void printdisk2()
 {
 	
 }
-//-------------------------------------------
+//--------------------------------detail:disk--------------------------------
 
 
 
 
-//-------------------------------------------
+//------------------------------detail:partition-----------------------------
 void printpartition0()
 {
 	int x,y;
@@ -250,12 +258,12 @@ void printpartition2()
 {
 	
 }
-//------------------------------------------------
+//------------------------------detail:partition-----------------------------
 
 
 
 
-//-----------------------file-------------------------
+//------------------------------detail:file-----------------------------
 void printfile0()
 {
 	int x,y;
@@ -279,11 +287,16 @@ void printfile2()
 {
 	
 }
-//------------------------------------------------
+//------------------------------detail:file-----------------------------
 
 
 
 
+
+
+
+
+//-------------------------------display-----------------------------------
 void background()
 {
 	QWORD x,y;
@@ -303,67 +316,33 @@ void foreground()
 
 	//[608,639]:低栏颜色
 	for(y=640-32;y<640;y++)
-		for(x=0;x<1024;x++)
+		for(x=64;x<1024-64;x++)
 			point(x,y,0xffffffff);
-	
+
 	//低栏分界线
 	for(y=640-32;y<640;y++)
-		for(x=512;x<1024;x+=64)
+		for(x=64;x<1024-64;x+=64)
 		point(x,y,0);
 
 	//+涂黑选中项
-	for(y=640-32;y<640;y++)
-		for(x=64*tag;x<64*(tag+1);x++)
-			point(x,y,0x44444444);
+	if( (tag>0) && (tag<15) )
+	{
+		for(y=640-32;y<640;y++)
+			for(x=64*tag;x<64*(tag+1);x++)
+				point(x,y,0x44444444);
+	}
 
 	//+写标签名
-	string(0,39,"console");
-	string(8,39,"1d");
-	string(16,39,"2d");
-	string(24,39,"3d");
-	string(56,39,"...");
-
-	string(64,39,"/file");
-	string(72,39,"/part");
-	string(80,39,"/disk");
+	string(8,39,"/part");
+	string(16,39,"/file");
 }
 void printworld()
 {
-	//1：背景
+//1：背景
 	background();
 
-	//2：具体内容
-	if(tag==0)
-	{
-		if(complex==0)
-		{
-			printlog0();
-		}
-		else if(complex==1)
-		{
-			printlog1();
-		}
-		else
-		{
-			printlog2();
-		}
-	}
-	if(tag==7)
-	{
-		if(complex==0)
-		{
-			printdisk0();
-		}
-		else if(complex==1)
-		{
-			printdisk1();
-		}
-		else
-		{
-			printdisk2();
-		}
-	}
-	if(tag==8)
+//2：具体内容
+	if(tag==1)
 	{
 		if(complex==0)
 		{
@@ -379,19 +358,157 @@ void printworld()
 		}
 	}
 	//if(tag==2) printfile();
+	if(tag==14)
+	{
+		if(complex==0)
+		{
+			printdisk0();
+		}
+		else if(complex==1)
+		{
+			printdisk1();
+		}
+		else
+		{
+			printdisk2();
+		}
+	}
+	if(tag==15)
+	{
+		if(complex==0)
+		{
+			printlog0();
+		}
+		else if(complex==1)
+		{
+			printlog1();
+		}
+		else
+		{
+			printlog2();
+		}
+	}
 
-	//3：前面板
+//3：四个角上的点
 	foreground();
+
+//4.四个点
+	int x,y;
+	for(x=0;x<16;x++)
+	{
+		point(x,0,0xffffff);
+		point(x,15,0xffffff);
+	}
+	for(y=0;y<16;y++)
+	{
+		point(0,y,0xffffff);
+		point(15,y,0xffffff);
+	}
+
+	//右上角
+	for(x=1024-16;x<1024;x++)
+		for(y=0;y<16;y++)
+			point(x,y,0xff0000);
+
+	//左下角
+	for(x=0;x<16;x++)
+		for(y=640-16;y<640;y++)
+			point(x,y,0xff);
+
+	//右下角
+	for(x=1024-16;x<1024;x++)
+		for(y=640-16;y<640;y++)
+			point(x,y,0xff00);
 
 	//4：写屏
 	writescreen();
 }
+//-------------------------------display-----------------------------------
+
+
+
+
+
+
+
+
+//-------------------------process input--------------------------------
+void clicked(int x,int y)
+{
+	say("mouse:(%d,%d)\n",x,y);
+
+	//
+	if(y>640-32)
+	{
+		if(x<16)
+		{
+			tag=0;
+		}
+		else if(x>1024-16)
+		{
+			tag=15;
+		}
+		else if( (x>64) && (x<1024-64) )
+		{
+			tag=x/64;
+		}
+	}
+}
+void pressed(int key)
+{
+	say("keyboard:%x\n",key);
+	if(key==0xd)
+	{
+		command(buffer);
+
+		int i;
+		bufcount=0;
+		for(i=0;i<128;i++)
+		{
+			buffer[i]=0;
+		}
+	}
+	else if(key==0x8)		//backspace
+	{
+		if(bufcount!=0)
+		{
+			bufcount--;
+			buffer[bufcount]=0;
+		}
+	}
+	else if(key==0x40000050)	//left	0x4b
+	{
+		if(tag>0)tag--;
+	}
+	else if(key==0x4000004f)	//right	0x4d
+	{
+		if(tag<3)tag++;
+	}
+	else
+	{
+		if(bufcount<0x80)
+		{
+			buffer[bufcount]=key&0xff;
+			bufcount++;
+		}
+	}
+}
+//-------------------------process input--------------------------------
+
+
+
+
+
+
+
+
 void main()
 {
 	initmaster();
 
-	whereisdiskinfo(&diskinfo);
 	whereislogbuf(&logbuf);
+	whereisdiskinfo(&diskinfo);
+
 	whereisrealworld(&realworld);
 	whereislogicworld(&logicworld);
 	buffer0=realworld;
@@ -417,49 +534,24 @@ void main()
 		switch(type)
 		{
 			case 0:return;
-			case 1:
+			case 1:				//键盘
 			{
-				say("keyboard:%x\n",key);
 				if(key==0x1b)return;
-				else if(key==0x8)
-				{
-					if(bufcount!=0)
-					{
-						bufcount--;
-						buffer[bufcount]=0;
-					}
-				}
-				else if(key==0x40000050)	//left	0x4b
-				{
-					if(tag>0)tag--;
-				}
-				else if(key==0x4000004f)	//right	0x4d
-				{
-					if(tag<3)tag++;
-				}
-				else
-				{
-					if(bufcount<0x80)
-					{
-						buffer[bufcount]=key&0xff;
-						bufcount++;
-					}
-				}
+
+				pressed(key);
+
 				break;
 			}
-			case 2:
+			case 2:				//鼠标
 			{
 				int x=key&0xffff;
 				int y=(key>>16)&0xffff;
-				say("mouse:(%d,%d)\n",x,y);
 
-				//
-				if(y>640-32)
-				{
-					tag=x/64;
-				}
+				if( (x>1024-32) && (y<32) )return;
+				clicked(x,y);
+
 				break;
 			}
-		}
+		}//switch
 	}//while(1)
 }

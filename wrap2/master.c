@@ -25,6 +25,10 @@ static QWORD logicworld;
 	static QWORD fsbuffer;
 	//[0x300000,0x3fffff]:未用
 
+//硬盘信息
+static BYTE* diskinfo;
+
+//3大函数的位置
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
 int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
 int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x100000);
@@ -110,8 +114,8 @@ void command(char* buffer)
 	BYTE* arg0;
 	BYTE* arg1;
 	buf2arg(buffer,&arg0,&arg1);
-	//say("%llx,%llx\n",arg0,arg1);
 	if(arg0==0)return;
+	//say("%llx,%llx\n",arg0,arg1);
 
 
 
@@ -128,6 +132,15 @@ void command(char* buffer)
 	else if(compare( arg0 , "disk" ) == 0)
 	{
 		disk(arg1);			//第几个功能，数值或者地址
+
+		char* p=(char*)diskinfo;
+		int i;
+		for(i=0;i<16;i++)
+		{
+			if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
+			say("%s\n",diskinfo+0x100*i);
+		}
+
 		hello();
 	}
 	else if(compare( arg0 , "mount" ) == 0)
@@ -209,13 +222,17 @@ void command(char* buffer)
 
 void initmaster()
 {
-	//现实世界和逻辑世界在哪里
+	//油腻的师姐在哪里
+	whereisdiskinfo(&diskinfo);
+
+	//现实世界在哪里
 	whereisrealworld(&realworld);
 	buffer0=realworld;
 	buffer1=realworld+0x10000;
 	buffer2=realworld+0x20000;
 	buffer3=realworld+0x30000;
 
+	//逻辑世界在哪里
 	whereislogicworld(&logicworld);
 	readbuffer=logicworld;
 	dirbuffer=logicworld+0x100000;

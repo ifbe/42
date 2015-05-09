@@ -1,4 +1,4 @@
-﻿#include<stdio.h>
+#include<stdio.h>
 #include<stdlib.h>
 
 #include<windows.h>
@@ -123,7 +123,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			} 
 			return 0;
 		}
-		case WM_KEYDOWN:		//键盘点下
+		case WM_CHAR:		//键盘点下
 		{
 			solved=0;
 			my1=1;
