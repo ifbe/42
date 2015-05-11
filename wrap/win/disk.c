@@ -10,8 +10,10 @@
 //每0x40字节存放分区的基本信息
 struct diskinfo
 {
-	unsigned char path[0x80];
-	unsigned char name[0x80];
+	unsigned char path[0x40];
+	unsigned char name[0x40];
+	unsigned char sn[0x40];
+	unsigned char unused[0x40];
 };
 static struct diskinfo diskinfo[16];
 
@@ -34,11 +36,22 @@ static void enumeratedisk()
 	}
 	for(i=0;i<10;i++)
 	{
-		//printf("%d\n",i);
 		tempname[17]=0x30+i;
 		HANDLE temphandle=CreateFile(tempname,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
+			/*
+			unsigned long long returncount;
+			DeviceIoControl(temphandle,			//HANDLE hDevice, 
+							IOCTL_XXX,			//DWORD dwIoControlCode, 
+							NULL,				//LPVOID lpInBuffer, 
+							0,					//DWORD nInBufferSize, 
+							diskinfo[i].sn,		//LPVOID lpOutBuffer, 
+							0x40,				//DWORD nOutBufferSize, 
+							&returncount,			//LPDWORD lpBytesReturned, 
+							0);			//LPOVERLAPPED lpOverlapped
+			*/
+
 			//
 			CloseHandle(temphandle);
 			//printf("%d    \\\\.\\PHYSICALDRIVE%d\n",i,i);
@@ -66,8 +79,15 @@ __attribute__((constructor)) void initdisk()
 	for(i=0;i<10;i++)
 	{
 		if(diskinfo[i].path[0]==0)continue;
-		hDev=CreateFile((BYTE*)diskinfo+i*0x40,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		if(hDev == INVALID_HANDLE_VALUE) printf("can't open first disk\n");
+		hDev=CreateFile((BYTE*)diskinfo+i*0x100,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+		if(hDev == INVALID_HANDLE_VALUE)
+		{
+			printf("can't open first disk\n");
+		}
+		else
+		{
+			memcpy((BYTE*)diskinfo+0xf00,(BYTE*)diskinfo+i*0x100,0x100);
+		}
 		break;
 	}
 }

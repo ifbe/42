@@ -53,11 +53,31 @@ static int complex=0;		//主体华丽程度
 //--------------------------------detail:log--------------------------------
 void printlog0()
 {
+	//背景
+	int x,y;
+	unsigned int color,i=0;
+	for(y=0;y<640-32;y++)
+	{
+		for(x=0;x<768;x++)
+		{
+			point(x,y,0xcccccccc);
+		}
+	}
+	for(y=640-32;y<640-16;y++)
+	{
+		color=0xcc+0x11111100*((15-i)*3/4);		//绿
+		for(x=0;x<32-i;x++)
+		{
+			point(x,y,color);
+		}
+		i++;
+	}
+
+	//内容
 	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
 	int linenum=offsety/0x80;
 	if(offsety<0x80*36)		//[0,0x80*35]
 	{
-		int y;
 		for(y=0;y<linenum;y++)
 		{
 			string(0,y,logbuf+0x80*y);
@@ -65,7 +85,6 @@ void printlog0()
 	}
 	else
 	{
-		int y;
 		for(y=0;y<36;y++)
 		{
 			string(0,y,logbuf+offsety+0x80*(y-36));
@@ -73,7 +92,32 @@ void printlog0()
 	}
 
 	//键盘输入区
+	for(x=0;x<768-16;x++)
+		for(y=640-64;y<640-48;y++)
+			point(x,y,0xffffffff);
 	string(0,36,buffer);
+
+	//框框
+	for(x=0;x<768;x++)
+	{
+		point(x,0,0xcc);
+	}
+	for(x=32;x<768;x++)
+	{
+		point(x,640-33,0xcc);
+	}
+	for(y=0;y<640-16;y++)
+	{
+		point(0,y,0xcc);
+	}
+	for(y=0;y<640-32;y++)
+	{
+		point(767,y,0xcc);
+	}
+	for(x=16;x<32;x++)
+	{
+		point(x,640-x,0xcc);
+	}
 }
 void printlog1()
 {
@@ -91,12 +135,73 @@ void printlog2()
 //--------------------------------detail:disk--------------------------------
 void printdisk0()
 {
+	//背景
 	int x,y;
-	char* p=(char*)diskinfo;
-	for(y=0;y<16;y++)
+	unsigned int color,i=0;
+	for(y=0;y<640-32;y++)
 	{
-		if(*(DWORD*)(diskinfo+0x100*y) == 0)break;
-		string(0,y,diskinfo+0x100*y);
+		for(x=256;x<1024;x++)
+		{
+			point(x,y,0xcccccccc);
+		}
+	}
+	for(y=640-32;y<640-16;y++)
+	{
+		color=0xcc00+0x11110011*((15-i)*3/4);		//绿
+		for(x=1024-32+i;x<1024;x++)
+		{
+			point(x,y,color);
+		}
+		i++;
+	}
+
+	//内容
+	char* p=(char*)diskinfo;
+	for(i=0;i<10;i++)
+	{
+		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
+
+		for(x=512;x<768;x++)
+		{
+			for(y=64*i;y<64*i+48;y++)
+			{
+				point(x,y,0xffffffff);
+			}
+		}
+		string(0x40,4*i,diskinfo+0x100*i);
+		string(0x40,4*i+1,diskinfo+0x100*i+0x80);
+	}
+
+	//选了谁
+	for(x=512;x<768;x++)
+	{
+		for(y=640-64;y<640-32;y++)
+		{
+			point(x,y,0xffffffff);
+		}
+	}
+	string(0x40,36,diskinfo);
+
+	//框框
+	for(x=256;x<1024;x++)
+	{
+		point(x,0,0xcc00);
+	}
+	for(x=256;x<1024-32;x++)
+	{
+		point(x,640-33,0xcc00);
+	}
+	for(y=0;y<640-32;y++)
+	{
+		point(256,y,0xcc00);
+	}
+	for(y=0;y<640-16;y++)
+	{
+		point(1023,y,0xcc00);
+	}
+	for(x=0;x<16;x++)
+	{
+		point(x+1024-32,x+640-32,0xcc00);
 	}
 }
 void printdisk1()
@@ -310,39 +415,40 @@ void background()
 		}
 	}
 }
-void foreground()
+void content()
 {
-	QWORD x,y;
-
-	//[608,639]:低栏颜色
-	for(y=640-32;y<640;y++)
-		for(x=64;x<1024-64;x++)
-			point(x,y,0xffffffff);
-
-	//低栏分界线
-	for(y=640-32;y<640;y++)
-		for(x=64;x<1024-64;x+=64)
-		point(x,y,0);
-
-	//+涂黑选中项
-	if( (tag>0) && (tag<15) )
-	{
-		for(y=640-32;y<640;y++)
-			for(x=64*tag;x<64*(tag+1);x++)
-				point(x,y,0x44444444);
-	}
-
-	//+写标签名
-	string(8,39,"/part");
-	string(16,39,"/file");
-}
-void printworld()
-{
-//1：背景
-	background();
-
 //2：具体内容
-	if(tag==1)
+	if(tag==0)
+	{
+		if(complex==0)
+		{
+			printlog0();
+		}
+		else if(complex==1)
+		{
+			printlog1();
+		}
+		else
+		{
+			printlog2();
+		}
+	}
+	else if(tag==15)
+	{
+		if(complex==0)
+		{
+			printdisk0();
+		}
+		else if(complex==1)
+		{
+			printdisk1();
+		}
+		else
+		{
+			printdisk2();
+		}
+	}
+	else if(tag==1)
 	{
 		if(complex==0)
 		{
@@ -358,42 +464,35 @@ void printworld()
 		}
 	}
 	//if(tag==2) printfile();
-	if(tag==14)
+
+}
+void foreground()
+{
+	QWORD x,y;
+
+	//[608,639]:低栏颜色
+	for(y=640-16;y<640;y++)
+		for(x=256;x<768;x++)
+			point(x,y,0xffffffff);
+
+	//低栏分界线
+	for(y=640-16;y<640;y++)
+		for(x=256;x<768;x+=64)
+		point(x,y,0);
+
+	//+涂黑选中项
+	if( (tag>0) && (tag<15) )
 	{
-		if(complex==0)
-		{
-			printdisk0();
-		}
-		else if(complex==1)
-		{
-			printdisk1();
-		}
-		else
-		{
-			printdisk2();
-		}
-	}
-	if(tag==15)
-	{
-		if(complex==0)
-		{
-			printlog0();
-		}
-		else if(complex==1)
-		{
-			printlog1();
-		}
-		else
-		{
-			printlog2();
-		}
+		for(y=640-16;y<640;y++)
+			for(x=64*tag+192;x<64*tag+256;x++)
+				point(x,y,0x44444444);
 	}
 
-//3：四个角上的点
-	foreground();
+	//+写标签名
+	string(32,39,"/part");
+	string(40,39,"/file");
 
-//4.四个点
-	int x,y;
+	//4个角落
 	for(x=0;x<16;x++)
 	{
 		point(x,0,0xffffff);
@@ -419,9 +518,6 @@ void printworld()
 	for(x=1024-16;x<1024;x++)
 		for(y=640-16;y<640;y++)
 			point(x,y,0xff00);
-
-	//4：写屏
-	writescreen();
 }
 //-------------------------------display-----------------------------------
 
@@ -438,7 +534,7 @@ void clicked(int x,int y)
 	say("mouse:(%d,%d)\n",x,y);
 
 	//
-	if(y>640-32)
+	if(y>640-16)
 	{
 		if(x<16)
 		{
@@ -448,9 +544,9 @@ void clicked(int x,int y)
 		{
 			tag=15;
 		}
-		else if( (x>64) && (x<1024-64) )
+		else if( (x>256) && (x<768) )
 		{
-			tag=x/64;
+			tag=x/64-3;
 		}
 	}
 }
@@ -522,7 +618,10 @@ void main()
 	while(1)
 	{
 		//1.这次显示啥
-		printworld();
+		background();		//背景
+		content();			//内容
+		foreground();		//选项
+		writescreen();		//写屏
 
 		//2.等事件
 		DWORD type=0;
@@ -547,7 +646,7 @@ void main()
 				int x=key&0xffff;
 				int y=(key>>16)&0xffff;
 
-				if( (x>1024-32) && (y<32) )return;
+				if( (x>1024-16) && (y<16) )return;
 				clicked(x,y);
 
 				break;
