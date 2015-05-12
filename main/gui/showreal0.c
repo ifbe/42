@@ -1,0 +1,185 @@
+#define BYTE unsigned char
+#define WORD unsigned short
+#define DWORD unsigned int
+#define QWORD unsigned long long
+
+static QWORD buffer0;
+
+static int complex=0;		//主体华丽程度
+
+
+
+
+void initreal0(QWORD in)
+{
+	buffer0=in;
+}
+void printpartition0()
+{
+	int x,y;
+
+	for(y=0;y<20;y++)
+	{
+		if(*(QWORD*)(buffer0+y*0x40) == 0)break;
+		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
+		hexadecimal(16,y,*(QWORD*)(buffer0+y*0x40+0x8));
+		string(32,y,buffer0+y*0x40+0x10);
+		hexadecimal(48,y,*(QWORD*)(buffer0+y*0x40+0x18));
+		hexadecimal(64,y,*(QWORD*)(buffer0+y*0x40+0x20));
+		hexadecimal(80,y,*(QWORD*)(buffer0+y*0x40+0x28));
+		hexadecimal(96,y,*(QWORD*)(buffer0+y*0x40+0x30));
+		hexadecimal(112,y,*(QWORD*)(buffer0+y*0x40+0x38));
+	}
+}
+void printbitmap(QWORD start,QWORD end,QWORD typestr)
+{
+	//
+	QWORD starty=start/1024*16;
+	QWORD startx=start%1024;
+	QWORD endy=starty+0xf;
+	QWORD endx;
+	QWORD color=start*0xfedcba/1024/36;
+	QWORD nextline=(start/1024)*1024+1024;
+	QWORD this=start;
+	QWORD isfirst=1;
+	int x,y;
+
+	//具体内容
+	while(1)		//一行行得
+	{
+		//得到这一轮的开始与结束
+		starty=this/1024*16;
+		startx=this%1024;
+		endy=starty+0x10;
+		if(end<nextline)
+		{
+			//这行就结束的话
+			endx=end%1024;
+		}
+		else
+		{
+			endx=1023;
+		}
+		say("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
+
+		//按照得到的坐标打印就行
+		for(y=starty;y<endy;y++)			//左右边界线
+		{
+			point(startx,y,0xff0000);
+			point(endx,y,0xff0000);
+		}
+		for(x=startx+1;x<endx;x++)		//体
+		{
+			for(y=starty;y<endy;y++)
+			{
+				point(x,y,color);
+			}
+		}
+		if(isfirst)			//顶部边界线
+		{
+			for(x=startx;x<endx;x++)
+			{
+				point(x,starty,0xff0000);
+			}
+			isfirst=0;
+		}
+
+		//下一个start，或者已经结束了就break
+		this=nextline;
+		if(this>end)break;
+		nextline+=1024;
+		if(nextline>1024*36)break;
+	}
+
+	//框框
+	for(x=startx+1;x<endx;x++)		//下部边界线
+	{
+		point(x,endy-1,0xff0000);
+	}
+	for(x=endx;x<1024;x++)
+	{
+		point(x,endy-16,0xff0000);
+	}
+
+	//字符串
+	//say("start:%x,end:%x,average:%x\n",start,end,(start+end)/2);
+	x=((start+end)/2)%1024/8;
+	y=(start+end)/2/1024;
+	string(x,y,(char*)typestr);
+}
+void printpartition1()
+{
+	int x,y;
+	char* p=(char*)buffer0;
+	QWORD temp;
+
+	QWORD maxsector=0;
+	for(x=0;x<16;x++)
+	{
+		temp=*(QWORD*)(p+x*0x40+8);
+		if(temp == 0)break;
+		if(temp>maxsector)maxsector=temp;
+	}
+	say("%x\n",maxsector);
+	QWORD displaymax=1;
+	for(x=0;x<64;x++)
+	{
+		//say("%x\n",maxsector);
+		if(maxsector <= 0)break;
+		else
+		{
+			maxsector>>=1;
+			displaymax<<=1;
+		}
+	}
+	say("%x\n",displaymax);
+
+	//3.标记头尾
+	p=(char*)buffer0;
+	for(y=0;y<8;y++)
+	{
+		//算出开始扇区结束扇区
+		QWORD startsec=*(QWORD*)(p+0x40*y);
+		if(startsec==0)break;
+		QWORD endsec=*(QWORD*)(p+0x40*y+8);
+		QWORD typestr=(QWORD)&p[0x40*y+0x10];
+
+		//
+		QWORD start=((double)(startsec*1024*36)/(double)displaymax);
+		//hexadecimal(start/8,20,startsec);
+		QWORD end=((double)(endsec*1024*36)/(double)displaymax);
+		//hexadecimal(end/8,21,endsec);
+
+		say("[%llx,%llx],%s,[%x,%x]\n",startsec,endsec,typestr,start,end);
+
+		//打印硬盘的大致图像
+		printbitmap(start,end,typestr);
+	}
+}
+void printpartition2()
+{
+	
+}
+void printpartition()
+{
+	if(complex==0)
+	{
+		printpartition0();
+	}
+	else if(complex==1)
+	{
+		printpartition1();
+	}
+	else
+	{
+		printpartition2();
+	}
+}
+mouseinputforpartition()
+{
+	
+}
+kbdinputforpartition()
+{
+	
+}
