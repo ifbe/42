@@ -3,12 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
+static int realorlogic=1;;
 static int tag=0;			//主体显示啥
 
 
 
 
-void background()
+void backgroundforreal()
 {
 	QWORD x,y;
 
@@ -21,36 +22,56 @@ void background()
 		}
 	}
 
-	//[608,639]:低栏颜色与低栏分界线
-	for(y=640-16;y<640;y++)
-		for(x=256;x<768;x++)
-			point(x,y,0xffffffff);
-	for(y=640-16;y<640;y++)
-		for(x=256;x<768;x+=64)
-		point(x,y,0);
+		//[608,639]:低栏颜色与低栏分界线
+		for(y=640-16;y<640;y++)
+			for(x=256;x<768;x++)
+				point(x,y,0xffffffff);
+		for(y=640-16;y<640;y++)
+			for(x=256;x<768;x+=64)
+				point(x,y,0);
 
-	//+涂黑选中项
-	for(y=0;y<640-32;y++)
+		//+涂黑选中项
+		for(y=0;y<640-32;y++)
+			for(x=0;x<1024;x++)
+				point(x,y,0xcccccccc);
+		for(y=640-32;y<640;y++)
+			for(x=64*tag+256;x<64*tag+320;x++)
+				point(x,y,0xcccccccc);
+
+		//+写标签名
+		string(32,39,"0");
+		string(40,39,"1");
+		string(48,39,"2");
+		string(56,39,"3");
+
+}
+void backgroundforlogic()
+{
+	QWORD x,y;
+
+	//清屏
+	for(y=0;y<640;y++)
+	{
 		for(x=0;x<1024;x++)
-			point(x,y,0xcccccccc);
-	for(y=640-32;y<640;y++)
-		for(x=64*tag+256;x<64*tag+320;x++)
-			point(x,y,0xcccccccc);
-
-	//+写标签名
-	string(32,39,"/part");
-	string(40,39,"/file");
-
+		{
+			point(x,y,0x88888888);
+		}
+	}
 }
 void content()
 {
 	//
-	if(tag==0)
+	if(realorlogic==0)
 	{
+		//
+		backgroundforreal();
+
+		//
 		printpartition();
 	}
-	else if(tag==1)
+	else
 	{
+		backgroundforlogic();
 		printfile();
 	}
 
@@ -97,7 +118,7 @@ void main()
 	whereisrealworld(&realworld);
 	whereislogicworld(&logicworld);
 
-	initreal0(realworld+0x10000);
+	initreal0(realworld);
 	initlogic0(logicworld+0x100000);
 	initdiskman();
 	initconsole();
@@ -106,7 +127,6 @@ void main()
 	while(1)
 	{
 		//1.这次显示啥
-		background();		//背景
 		content();			//内容
 		foreground();		//四点
 		writescreen();		//写屏
@@ -126,7 +146,11 @@ void main()
 				if(key==0x1b)return;
 				say("keyboard:%x\n",key);
 
-				if(key==0x25)	//left	0x4b
+				if(key==0x9)
+				{
+					realorlogic^=1;
+				}
+				else if(key==0x25)	//left	0x4b
 				{
 					if(tag>0)tag--;
 				}
@@ -153,8 +177,8 @@ void main()
 				//最下面两行，控制面板
 				if(y>640-16)
 				{
-					if(x<16) touchconsole();
-					else if(x>1024-16) touchdisk();
+					if(x<16) touchdisk();
+					else if(x>1024-16) touchconsole();
 					else if( (x>256) && (x<768) )
 					{
 						tag=x/64-4;

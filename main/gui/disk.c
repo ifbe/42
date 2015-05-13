@@ -28,15 +28,15 @@ void printdisk0()
 	unsigned int color,i=0;
 	for(y=0;y<640-32;y++)
 	{
-		for(x=256;x<1024;x++)
+		for(x=0;x<768;x++)
 		{
 			point(x,y,0xcccccccc);
 		}
 	}
 	for(y=640-32;y<640-16;y++)
 	{
-		color=0xcc00+0x11110011*((15-i)*3/4);		//绿
-		for(x=1024-32+i;x<1024;x++)
+		color=0xcc+0x11111100*((15-i)*3/4);		//绿
+		for(x=0;x<32-i;x++)
 		{
 			point(x,y,color);
 		}
@@ -49,48 +49,49 @@ void printdisk0()
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
-		for(x=512;x<768;x++)
+		for(x=256;x<512;x++)
 		{
 			for(y=64*i;y<64*i+48;y++)
 			{
 				point(x,y,0xffffffff);
 			}
 		}
-		string(0x40,4*i,diskinfo+0x100*i);
-		string(0x40,4*i+1,diskinfo+0x100*i+0x80);
+		string(0x20,4*i,diskinfo+0x100*i);
+		string(0x20,4*i+1,diskinfo+0x100*i+0x80);
 	}
 
 	//选了谁
-	for(x=512;x<768;x++)
+	for(x=256;x<512;x++)
 	{
 		for(y=640-64;y<640-32;y++)
 		{
 			point(x,y,0xffffffff);
 		}
 	}
-	string(0x40,36,diskinfo);
+	string(0x20,36,diskinfo);
 
 	//框框
-	for(x=256;x<1024;x++)
+	for(x=0;x<768;x++)
 	{
-		point(x,0,0xcc00);
+		point(x,0,0xcc);
 	}
-	for(x=256;x<1024-32;x++)
+	for(x=32;x<768;x++)
 	{
-		point(x,640-33,0xcc00);
-	}
-	for(y=0;y<640-32;y++)
-	{
-		point(256,y,0xcc00);
+		point(x,640-33,0xcc);
 	}
 	for(y=0;y<640-16;y++)
 	{
-		point(1023,y,0xcc00);
+		point(0,y,0xcc);
 	}
-	for(x=0;x<16;x++)
+	for(y=0;y<640-32;y++)
 	{
-		point(x+1024-32,x+640-32,0xcc00);
+		point(767,y,0xcc);
 	}
+	for(x=16;x<32;x++)
+	{
+		point(x,640-x,0xcc);
+	}
+
 }
 void printdisk1()
 {
