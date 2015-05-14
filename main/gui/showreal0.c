@@ -5,15 +5,65 @@
 
 static QWORD buffer0;
 
+static int tag=0;
 static int complex=0;		//主体华丽程度
 
 
 
 
-void initreal0(QWORD in)
+void real0init(QWORD in)
 {
 	buffer0=in;
 }
+void real0mouse(int x,int y)
+{
+	if( (x>256) && (x<768) )
+	{
+		tag=x/64-4;		//比例尺
+	}
+}
+void real0kbd(int key)
+{
+	if(key==0x25)	//left	0x4b
+	{
+		if(tag>0)tag--;
+	}
+	else if(key==0x27)	//right	0x4d
+	{
+		if(tag<7)tag++;
+	}
+}
+void real0background()
+{
+	QWORD x,y;
+	
+	//[608,639]:低栏颜色与低栏分界线
+	//for(y=640-16;y<640;y++)
+	//	for(x=256;x<768;x++)
+	//		point(x,y,0xffffffff);
+	for(y=640-16;y<640;y++)
+		for(x=320;x<768;x+=64)
+			point(x,y,0);
+
+	//+涂黑选中项
+	for(y=640-16;y<640;y++)
+		for(x=64*tag+256;x<64*tag+320;x++)
+			point(x,y,0x44444444);
+
+	//+写标签名
+	string(32,39,"-");
+	string(40,39,"   1    ");
+	string(48,39,"   2    ");
+	string(56,39,"   3    ");
+	string(64,39,"   4    ");
+	string(72,39,"   5    ");
+	string(80,39,"   6    ");
+	string(88,39,"       +");
+}
+
+
+
+
 void printpartition0()
 {
 	int x,y;
@@ -160,8 +210,10 @@ void printpartition2()
 {
 	
 }
-void printpartition()
+void real0()
 {
+	real0background();
+
 	if(complex==0)
 	{
 		printpartition0();
@@ -174,12 +226,4 @@ void printpartition()
 	{
 		printpartition2();
 	}
-}
-mouseinputforpartition()
-{
-	
-}
-kbdinputforpartition()
-{
-	
 }

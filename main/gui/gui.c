@@ -3,17 +3,15 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-static int realorlogic=1;;
-static int tag=0;			//主体显示啥
+static int realorlogic=0;
 
 
 
 
-void backgroundforreal()
+void clearscreen()
 {
-	QWORD x,y;
-
 	//清屏
+	int x,y;
 	for(y=0;y<640;y++)
 	{
 		for(x=0;x<1024;x++)
@@ -21,63 +19,6 @@ void backgroundforreal()
 			point(x,y,0x88888888);
 		}
 	}
-
-		//[608,639]:低栏颜色与低栏分界线
-		for(y=640-16;y<640;y++)
-			for(x=256;x<768;x++)
-				point(x,y,0xffffffff);
-		for(y=640-16;y<640;y++)
-			for(x=256;x<768;x+=64)
-				point(x,y,0);
-
-		//+涂黑选中项
-		for(y=0;y<640-32;y++)
-			for(x=0;x<1024;x++)
-				point(x,y,0xcccccccc);
-		for(y=640-32;y<640;y++)
-			for(x=64*tag+256;x<64*tag+320;x++)
-				point(x,y,0xcccccccc);
-
-		//+写标签名
-		string(32,39,"0");
-		string(40,39,"1");
-		string(48,39,"2");
-		string(56,39,"3");
-
-}
-void backgroundforlogic()
-{
-	QWORD x,y;
-
-	//清屏
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0x88888888);
-		}
-	}
-}
-void content()
-{
-	//
-	if(realorlogic==0)
-	{
-		//
-		backgroundforreal();
-
-		//
-		printpartition();
-	}
-	else
-	{
-		backgroundforlogic();
-		printfile();
-	}
-
-	//
-	printlog();
-	printdisk();
 }
 void foreground()
 {
@@ -111,6 +52,20 @@ void foreground()
 		for(y=640-16;y<640;y++)
 			point(x,y,0xff00);
 }
+void printworld()
+{
+	clearscreen();
+
+	//
+	if(realorlogic==0)real0();
+	else logic0();
+
+	//
+	printlog();
+	printdisk();
+
+	foreground();		//四点
+}
 void main()
 {
 	QWORD realworld;
@@ -118,8 +73,8 @@ void main()
 	whereisrealworld(&realworld);
 	whereislogicworld(&logicworld);
 
-	initreal0(realworld);
-	initlogic0(logicworld+0x100000);
+	real0init(realworld);
+	logic0init(logicworld+0x100000);
 	initdiskman();
 	initconsole();
 	initmaster();
@@ -127,8 +82,7 @@ void main()
 	while(1)
 	{
 		//1.这次显示啥
-		content();			//内容
-		foreground();		//四点
+		printworld();			//内容
 		writescreen();		//写屏
 
 		//2.等事件
@@ -146,18 +100,8 @@ void main()
 				if(key==0x1b)return;
 				say("keyboard:%x\n",key);
 
-				if(key==0x25)	//left	0x4b
-				{
-					if(tag>0)tag--;
-				}
-				else if(key==0x27)	//right	0x4d
-				{
-					if(tag<7)tag++;
-				}
-				else
-				{
-					if(tag==0)loginput(key);
-				}
+				//loginput(key);
+				real0kbd(key);
 
 				break;
 			}
@@ -167,27 +111,17 @@ void main()
 				int y=(key>>16)&0xffff;
 				say("mouse:(%d,%d)\n",x,y);
 
-				//点了右上角退出
 				if(y<16)
 				{
-					if(x>1024-16) return;
-					else if(x<16) touchconsole();
+					if(x>1024-16) return;			//右上
+					else if(x<16) touchconsole();	//左上
 				}
 				//最下面两行，控制面板
 				else if(y>640-16)
 				{
-					if(x<16) touchdisk();
-					else if(x>1024-16)
-					{
-						realorlogic^=1;
-					}
-				}
-				else
-				{
-					tag=x/64-4;
-					if(tag==1) mouseinputforpartition(x,y);
-					else if(tag==2) mouseinputforfile(x,y);
-					else if(tag==15) mouseinputfordisk(x,y);
+					if(x<16) touchdisk();			//左下
+					else if(x>1024-16)realorlogic^=1;	//右下
+					else real0mouse(x,y);
 				}
 
 				break;
