@@ -146,11 +146,7 @@ void main()
 				if(key==0x1b)return;
 				say("keyboard:%x\n",key);
 
-				if(key==0x9)
-				{
-					realorlogic^=1;
-				}
-				else if(key==0x25)	//left	0x4b
+				if(key==0x25)	//left	0x4b
 				{
 					if(tag>0)tag--;
 				}
@@ -169,25 +165,26 @@ void main()
 			{
 				int x=key&0xffff;
 				int y=(key>>16)&0xffff;
-
-				//点了右上角退出
-				if( (x>1024-16) && (y<16) )return;
 				say("mouse:(%d,%d)\n",x,y);
 
+				//点了右上角退出
+				if(y<16)
+				{
+					if(x>1024-16) return;
+					else if(x<16) touchconsole();
+				}
 				//最下面两行，控制面板
-				if(y>640-16)
+				else if(y>640-16)
 				{
 					if(x<16) touchdisk();
-					else if(x>1024-16) touchconsole();
-					else if( (x>256) && (x<768) )
+					else if(x>1024-16)
 					{
-						tag=x/64-4;
+						realorlogic^=1;
 					}
 				}
-
-				//其他的前面的几十行
 				else
 				{
+					tag=x/64-4;
 					if(tag==1) mouseinputforpartition(x,y);
 					else if(tag==2) mouseinputforfile(x,y);
 					else if(tag==15) mouseinputfordisk(x,y);
