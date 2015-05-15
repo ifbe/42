@@ -19,9 +19,8 @@ void initconsole()
 {
 	whereislogbuf(&logbuf);
 }
-void printlog0()
+void consolebg()
 {
-	//背景
 	int x,y;
 	unsigned int color,i=0;
 	for(y=0;y<640;y++)
@@ -31,6 +30,27 @@ void printlog0()
 			point(x,y,0xcccccccc);
 		}
 	}
+	//左上
+	//for(y=0;y<32;y++)
+		//for(x=0;x<32-y;x++)
+			//point(x,y,0);
+	//右上
+	for(y=0;y<32;y++)
+		for(x=1024-32+y;x<1024;x++)
+			point(x,y,0);
+	//左下
+	for(x=0;x<32;x++)
+		for(y=640-32+x;y<640;y++)
+			point(x,y,0);
+	//右下
+	for(y=0;y<32;y++)
+		for(x=1024-y;x<1024;x++)
+			point(x,640-32+y,0);
+}
+void printlog0()
+{
+	//背景
+	int x,y;
 
 	//内容
 	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
@@ -66,6 +86,8 @@ void printlog2()
 }
 void printlog()
 {
+	consolebg();
+
 	if(complex==0)
 	{
 		printlog0();
