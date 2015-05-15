@@ -36,13 +36,52 @@ void real0kbd(int key)
 void real0background()
 {
 	QWORD x,y;
+	unsigned int color,i=0;
+	for(y=0;y<640-32;y++)
+	{
+		for(x=0;x<768;x++)
+		{
+			point(x,y,0xcccccccc);
+		}
+	}
+	for(y=640-32;y<640-16;y++)
+	{
+		color=0xcc+0x11111100*((15-i)*3/4);		//绿
+		for(x=0;x<32-i;x++)
+		{
+			point(x,y,color);
+		}
+		i++;
+	}
+	//框框
+	for(x=0;x<768;x++)
+	{
+		point(x,0,0xcc);
+	}
+	for(x=32;x<768;x++)
+	{
+		point(x,640-33,0xcc);
+	}
+	for(y=0;y<640-16;y++)
+	{
+		point(0,y,0xcc);
+	}
+	for(y=0;y<640-32;y++)
+	{
+		point(767,y,0xcc);
+	}
+	for(x=16;x<32;x++)
+	{
+		point(x,640-x,0xcc);
+	}
+
 	
 	//[608,639]:低栏颜色与低栏分界线
 	//for(y=640-16;y<640;y++)
 	//	for(x=256;x<768;x++)
 	//		point(x,y,0xffffffff);
 	for(y=640-16;y<640;y++)
-		for(x=320;x<768;x+=64)
+		for(x=256;x<=768;x+=64)
 			point(x,y,0);
 
 	//+涂黑选中项
@@ -51,14 +90,16 @@ void real0background()
 			point(x,y,0x44444444);
 
 	//+写标签名
-	string(32,39,"-");
+	string(24,39,"-");
+	string(32,39,"   0    ");
 	string(40,39,"   1    ");
 	string(48,39,"   2    ");
 	string(56,39,"   3    ");
 	string(64,39,"   4    ");
 	string(72,39,"   5    ");
 	string(80,39,"   6    ");
-	string(88,39,"       +");
+	string(88,39,"   7    ");
+	string(96,39,"       +");
 }
 
 

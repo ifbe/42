@@ -26,6 +26,45 @@ void logic0background()
 {
 	//清屏
 	QWORD x,y;
+	unsigned int color,i=0;
+	for(y=0;y<640-32;y++)
+	{
+		for(x=256;x<1024;x++)
+		{
+			point(x,y,0xcccccccc);
+		}
+	}
+	for(y=640-32;y<640-16;y++)
+	{
+		color=0xcccccccc-0x11110011*(i*3/4);		//绿
+		for(x=1024-32+i;x<1024;x++)
+		{
+			point(x,y,color);
+		}
+		i++;
+	}
+	for(x=256;x<1024;x++)
+	{
+		point(x,0,0xcc00);
+	}
+	for(x=256;x<1024-32;x++)
+	{
+		point(x,640-33,0xcc00);
+	}
+	for(y=0;y<640-16;y++)
+	{
+		point(1023,y,0xcc00);
+	}
+	for(y=0;y<640-32;y++)
+	{
+		point(256,y,0xcc00);
+	}
+	for(x=16;x<32;x++)
+	{
+		point(1024-x,640-x,0xcc00);
+	}
+
+	/*
 	for(x=256;x<768;x++)
 	{
 		for(y=0;y<16;y++)
@@ -48,6 +87,7 @@ void logic0background()
 			point(x,y,0x01234567);
 		}
 	}
+	*/
 }
 
 

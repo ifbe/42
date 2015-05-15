@@ -11,15 +11,10 @@ static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
 
 //
-static int showconsole=0;
 static int complex=0;		//主体华丽程度
 
 
 
-void touchconsole()
-{
-	showconsole^=1;
-}
 void initconsole()
 {
 	whereislogbuf(&logbuf);
@@ -83,8 +78,6 @@ void printlog2()
 }
 void printlog()
 {
-	if(showconsole==0)return;
-
 	if(complex==0)
 	{
 		printlog0();
