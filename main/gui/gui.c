@@ -13,75 +13,75 @@ static char showlogic=0;
 
 void printworld()
 {
-	//背景色
 	int x,y;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0x44444444);
-		}
-	}
-
 	//主界面显示什么
 	if(showreal==1)
 	{
 		real0();
 	}
-	if(showlogic==1)
+	else if(showlogic==1)
 	{
 		logic0();
 	}
-	if(showconsole==1)
+	else if(showconsole==1)
 	{
 		printlog();
 	}
-	if(showclose==1)
+	else if(showclose==1)
 	{
 		printdisk();
 	}
+	else
+	{
+		//背景色
+		for(y=0;y<640;y++)
+		{
+			for(x=0;x<1024;x++)
+			{
+				point(x,y,0x44444444);
+			}
+		}
 
+		//左上角
+		for(x=16;x<80;x++)
+			for(y=0;y<16;y++)
+				point(x,y,0x77777777);
+		string(2,0,"console");
+		//右上角
+		for(x=1024-80;x<1024-16;x++)
+			for(y=0;y<16;y++)
+				point(x,y,0x770000);
+		string(0x78,0,"close");
+		//左下角
+		for(x=16;x<80;x++)
+			for(y=640-16;y<640;y++)
+				point(x,y,0x77);
+		string(2,39,"real");
+		//右下角
+		for(x=1024-80;x<1024-16;x++)
+			for(y=640-16;y<640;y++)
+				point(x,y,0x7700);
+		string(0x78,39,"logical");
+
+		//
+		printdisk();
+	}
 	//左上角
-	/*
 	for(x=0;x<16;x++)
-	{
-		point(x,0,0xffffff);
-		point(x,15,0xffffff);
-	}
-	for(y=0;y<16;y++)
-	{
-		point(0,y,0xffffff);
-		point(15,y,0xffffff);
-	}
-	*/
-	string(0,0,"console");
-
-	//右上角
-	for(x=1024-64;x<1024;x++)
 		for(y=0;y<16;y++)
-			point(x,y,0x770000);
+			point(x,y,0xffffffff);
+	//右上角
 	for(x=1024-16;x<1024;x++)
 		for(y=0;y<16;y++)
 			point(x,y,0xff0000);
-	string(0x78,0,"close");
-
 	//左下角
-	for(x=0;x<64;x++)
-		for(y=640-16;y<640;y++)
-			point(x,y,0x77);
 	for(x=0;x<16;x++)
 		for(y=640-16;y<640;y++)
 			point(x,y,0xff);
-	string(0,39,"real");
-
 	//右下角
-	for(x=1024-64;x<1024;x++)
-		for(y=640-16;y<640;y++)
-			point(x,y,0x7700);
 	for(x=1024-16;x<1024;x++)
 		for(y=640-16;y<640;y++)
 			point(x,y,0xff00);
-	string(0x78,39,"logical");
 }
 void main()
 {

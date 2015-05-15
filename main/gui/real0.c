@@ -37,13 +37,14 @@ void real0background()
 {
 	QWORD x,y;
 	unsigned int color,i=0;
-	for(y=0;y<640-32;y++)
+	for(y=0;y<640;y++)
 	{
-		for(x=0;x<768;x++)
+		for(x=0;x<1024;x++)
 		{
 			point(x,y,0xcccccccc);
 		}
 	}
+	/*
 	for(y=640-32;y<640-16;y++)
 	{
 		color=0xcc+0x11111100*((15-i)*3/4);		//绿
@@ -53,28 +54,41 @@ void real0background()
 		}
 		i++;
 	}
+	*/
 	//框框
-	for(x=0;x<768;x++)
+	for(x=0;x<1024;x++)
 	{
 		point(x,0,0xcc);
+		point(x,639,0xcc);
 	}
-	for(x=32;x<768;x++)
-	{
-		point(x,640-33,0xcc);
-	}
-	for(y=0;y<640-16;y++)
+	for(y=0;y<640;y++)
 	{
 		point(0,y,0xcc);
+		point(1023,y,0xcc);
 	}
-	for(y=0;y<640-32;y++)
-	{
-		point(767,y,0xcc);
-	}
+	/*
 	for(x=16;x<32;x++)
 	{
-		point(x,640-x,0xcc);
+		point(x,639-x,0xcc);
 	}
+	*/
 
+	//左上
+	for(y=0;y<32;y++)
+		for(x=0;x<32-y;x++)
+			point(x,y,0);
+	//右上
+	for(y=0;y<32;y++)
+		for(x=1024-32+y;x<1024;x++)
+			point(x,y,0);
+	//左下
+	//for(x=0;x<32;x++)
+	//	for(y=640-32;y<640;y++)
+	//		point(x,y,0xff);
+	//右下
+	for(y=0;y<32;y++)
+		for(x=1024-y;x<1024;x++)
+			point(x,640-32+y,0);
 	
 	//[608,639]:低栏颜色与低栏分界线
 	//for(y=640-16;y<640;y++)

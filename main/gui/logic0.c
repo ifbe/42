@@ -24,16 +24,28 @@ void logic0kbd()
 }
 void logic0background()
 {
-	//清屏
 	QWORD x,y;
 	unsigned int color,i=0;
-	for(y=0;y<640-32;y++)
+	//清屏
+	for(y=0;y<640;y++)
 	{
-		for(x=256;x<1024;x++)
+		for(x=0;x<1024;x++)
 		{
 			point(x,y,0xcccccccc);
 		}
 	}
+	//框
+	for(x=0;x<1024;x++)
+	{
+		point(x,0,0xcc00);
+		point(x,639,0xcc00);
+	}
+	for(y=0;y<640;y++)
+	{
+		point(0,y,0xcc00);
+		point(1023,y,0xcc00);
+	}
+	/*
 	for(y=640-32;y<640-16;y++)
 	{
 		color=0xcccccccc-0x11110011*(i*3/4);		//绿
@@ -43,27 +55,27 @@ void logic0background()
 		}
 		i++;
 	}
-	for(x=256;x<1024;x++)
-	{
-		point(x,0,0xcc00);
-	}
-	for(x=256;x<1024-32;x++)
-	{
-		point(x,640-33,0xcc00);
-	}
-	for(y=0;y<640-16;y++)
-	{
-		point(1023,y,0xcc00);
-	}
-	for(y=0;y<640-32;y++)
-	{
-		point(256,y,0xcc00);
-	}
 	for(x=16;x<32;x++)
 	{
 		point(1024-x,640-x,0xcc00);
 	}
-
+	*/
+	//左上
+	for(y=0;y<32;y++)
+		for(x=0;x<32-y;x++)
+			point(x,y,0);
+	//右上
+	for(y=0;y<32;y++)
+		for(x=1024-32+y;x<1024;x++)
+			point(x,y,0);
+	//左下
+	for(x=0;x<32;x++)
+		for(y=640-32+x;y<640;y++)
+			point(x,y,0);
+	//右下
+	//for(y=640-32;y<640;y++)
+	//	for(x=1024-32;x<1024;x++)
+	//		point(x,y,0xff00);
 	/*
 	for(x=256;x<768;x++)
 	{

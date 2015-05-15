@@ -24,9 +24,9 @@ void printlog0()
 	//背景
 	int x,y;
 	unsigned int color,i=0;
-	for(y=0;y<640-32;y++)
+	for(y=0;y<640;y++)
 	{
-		for(x=0;x<768;x++)
+		for(x=0;x<1024;x++)
 		{
 			point(x,y,0xcccccccc);
 		}
@@ -55,18 +55,6 @@ void printlog0()
 		for(y=640-64;y<640-48;y++)
 			point(x,y,0xffffffff);
 	string(0,36,buffer);
-
-	//框框
-	for(x=0;x<768;x++)
-	{
-		point(x,0,0xcc00);
-		point(x,640-33,0xcc00);
-	}
-	for(y=0;y<640-32;y++)
-	{
-		point(0,y,0xcc00);
-		point(767,y,0xcc00);
-	}
 }
 void printlog1()
 {
