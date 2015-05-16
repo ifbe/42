@@ -108,10 +108,7 @@ void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 	int howmany=0;
 	for(i=0;i<0x80;i++)
 	{
-		if( buffer[i] <= 0x20 )
-		{
-			buffer[i]=0;
-		}
+		if( buffer[i] <= 0x20 )buffer[i]=0;
 		if( buffer[i] > 0x20 )
 		{
 			if(i == 0)		//buffer里第一个，不可能是second

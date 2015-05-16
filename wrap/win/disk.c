@@ -113,19 +113,23 @@ void disk(QWORD in)
 	BYTE firstone=*(BYTE*)in;
 	if( firstone <=0x39 )		//0,1,2,3,4等等......
 	{
-		printf("here1\n");
 		path=diskinfo[firstone-0x30].path;
+		say("here1:%s\n",path);
 	}
 	else		//比如d:\image\name.img
 	{
-		printf("here2\n");
 		path=(char*)in;
+		say("here2:%s\n",path);
 	}
 
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-	if(temphandle == INVALID_HANDLE_VALUE) return;
-	CloseHandle(temphandle);
+	if(temphandle == INVALID_HANDLE_VALUE)
+	{
+		say("cannot open\n");
+		return;
+	}
+	else CloseHandle(temphandle);
 
 	//关掉原先已经打开的磁盘，然后把这个虚拟磁盘文件当成硬盘来用并且选定
 	CloseHandle(hDev);

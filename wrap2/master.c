@@ -51,6 +51,29 @@ void hello()
 		explainparttable(readbuffer,buffer0);
 	}
 }
+void initmaster()
+{
+	//油腻的师姐在哪里
+	whereisdiskinfo(&diskinfo);
+
+	//现实世界在哪里
+	whereisrealworld(&realworld);
+	buffer0=realworld;
+	buffer1=realworld+0x10000;
+	buffer2=realworld+0x20000;
+	buffer3=realworld+0x30000;
+
+	//逻辑世界在哪里
+	whereislogicworld(&logicworld);
+	readbuffer=logicworld;
+	dirbuffer=logicworld+0x100000;
+	fsbuffer=logicworld+0x200000;
+
+	//你是个什么玩意喂(--!)
+	hello();
+}
+
+
 
 
 int searchthis(char* name,QWORD* addr)
@@ -73,8 +96,6 @@ int searchthis(char* name,QWORD* addr)
 	say("file not found\n");
 	return -1;
 }
-
-
 int mount(QWORD in)
 {
 	//搞谁，是啥
@@ -108,18 +129,10 @@ int mount(QWORD in)
 }
 
 
-void command(char* buffer)
+
+
+void realcommand(char* arg0,char* arg1)
 {
-//-----------------1.把收到的命令检查并翻译一遍-------------------
-	BYTE* arg0;
-	BYTE* arg1;
-	buf2arg(buffer,&arg0,&arg1);
-	if(arg0==0)return;
-	//say("%llx,%llx\n",arg0,arg1);
-
-
-
-
 //----------------------2.实际的活都找专人来干-----------------------------
 	if(compare( arg0 , "help" ) == 0)
 	{
@@ -216,28 +229,15 @@ void command(char* buffer)
 		say("what?\n");
 	}
 }
-
-
-
-
-void initmaster()
+void command(char* buffer)
 {
-	//油腻的师姐在哪里
-	whereisdiskinfo(&diskinfo);
+	
+//-----------------1.把收到的命令检查并翻译一遍-------------------
+	BYTE* arg0;
+	BYTE* arg1;
+	buf2arg(buffer,&arg0,&arg1);
+	say("%llx,%llx\n",arg0,arg1);
 
-	//现实世界在哪里
-	whereisrealworld(&realworld);
-	buffer0=realworld;
-	buffer1=realworld+0x10000;
-	buffer2=realworld+0x20000;
-	buffer3=realworld+0x30000;
-
-	//逻辑世界在哪里
-	whereislogicworld(&logicworld);
-	readbuffer=logicworld;
-	dirbuffer=logicworld+0x100000;
-	fsbuffer=logicworld+0x200000;
-
-	//你是个什么玩意喂(--!)
-	hello();
+	if(arg0==0)return;
+	else realcommand(arg0,arg1);
 }

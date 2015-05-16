@@ -34,14 +34,8 @@ void printworld()
 	}
 	else
 	{
-		//背景色
-		for(y=0;y<640;y++)
-		{
-			for(x=0;x<1024;x++)
-			{
-				point(x,y,0x44444444);
-			}
-		}
+		//
+		printdisk();
 
 		//左上角
 		for(x=16;x<80;x++)
@@ -63,9 +57,6 @@ void printworld()
 			for(y=640-16;y<640;y++)
 				point(x,y,0x7700);
 		string(0x78,39,"logical");
-
-		//
-		printdisk();
 	}
 	//左上角
 	for(x=0;x<16;x++)
@@ -119,8 +110,8 @@ void main()
 				say("keyboard:%x\n",key);
 
 				if(what==1)real0kbd(key);
-				if(what==2)logic0kbd(key);
-				if(what==3)loginput(key);
+				else if(what==2)logic0kbd(key);
+				else if(what==3)loginput(key);
 
 				break;
 			}
@@ -162,8 +153,9 @@ void main()
 
 				//上面只判断了四个角落，是那里的话就不会运行到这里
 				//这里不能else，否则上下两条的不会传给下面的函数
-				if(what==1)real0mouse(x,y);
-				if(what==2)logic0mouse(x,y);
+				if(what==0)disk_mouse(x,y);
+				else if(what==1)real0mouse(x,y);
+				else if(what==2)logic0mouse(x,y);
 
 				break;
 			}//case 2
