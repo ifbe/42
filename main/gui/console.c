@@ -71,10 +71,10 @@ void printlog0()
 	}
 
 	//键盘输入区
-	for(x=0;x<512;x++)
-		for(y=640-64;y<640-48;y++)
+	for(x=256;x<768;x++)
+		for(y=640-16;y<640;y++)
 			point(x,y,0xffffffff);
-	string(0,36,buffer);
+	string(0x20,39,buffer);
 }
 void printlog1()
 {

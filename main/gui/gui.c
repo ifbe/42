@@ -3,10 +3,11 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-static char showclose=0;
-static char showconsole=0;
-static char showreal=0;
-static char showlogic=0;
+static char what=0;
+//static char showclose=0;
+//static char showconsole=0;
+//static char showreal=0;
+//static char showlogic=0;
 
 
 
@@ -15,19 +16,19 @@ void printworld()
 {
 	int x,y;
 	//主界面显示什么
-	if(showreal==1)
+	if(what==1)
 	{
 		real0();
 	}
-	else if(showlogic==1)
+	else if(what==2)
 	{
 		logic0();
 	}
-	else if(showconsole==1)
+	else if(what==3)
 	{
 		printlog();
 	}
-	else if(showclose==1)
+	else if(what==4)
 	{
 		printdisk();
 	}
@@ -117,8 +118,9 @@ void main()
 				if(key==0x1b)return;
 				say("keyboard:%x\n",key);
 
-				//loginput(key);
-				real0kbd(key);
+				if(what==1)real0kbd(key);
+				if(what==2)logic0kbd(key);
+				if(what==3)loginput(key);
 
 				break;
 			}
@@ -128,21 +130,43 @@ void main()
 				int y=(key>>16)&0xffff;
 				say("mouse:(%d,%d)\n",x,y);
 
-				if(y<16)
+				//四个角落
+				if(y>640-16)
 				{
-					if(x>1024-16) return;				//右上
-					else if(x<16) showconsole^=1;		//左上
+					if(x<16) //showreal^=1;				//左下
+					{
+						if(what==1)what=0;
+						else what=1;
+
+						break;
+					}
+					else if(x>1024-16)//showlogic^=1;		//右下
+					{
+						if(what==2)what=0;
+						else what=2;
+
+						break;
+					}
 				}
-				//最下面两行，控制面板
-				else if(y>640-16)
+				else if(y<16)
 				{
-					if(x<16) showreal^=1;				//左下
-					else if(x>1024-16)showlogic^=1;		//右下
-					else real0mouse(x,y);
+					if(x<16) //showconsole^=1;		//左上
+					{
+						if(what==3)what=0;
+						else what=3;
+
+						break;
+					}
+					else if(x>1024-16) return;				//右上
 				}
 
+				//上面只判断了四个角落，是那里的话就不会运行到这里
+				//这里不能else，否则上下两条的不会传给下面的函数
+				if(what==1)real0mouse(x,y);
+				if(what==2)logic0mouse(x,y);
+
 				break;
-			}
+			}//case 2
 		}//switch
 	}//while(1)
 }
