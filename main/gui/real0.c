@@ -11,9 +11,9 @@ static int complex=0;		//主体华丽程度
 
 
 
-void real0init(QWORD in)
+void real0init()
 {
-	buffer0=in;
+	whereisrealworld(&buffer0);
 }
 void real0mouse(int x,int y)
 {
@@ -114,6 +114,36 @@ void real0background()
 	string(80,39,"   6    ");
 	string(88,39,"   7    ");
 	string(96,39,"       +");
+
+	//框框
+	for(x=0;x<1024;x++)
+	{
+		point(x,32,0xff);
+		point(x,48,0xff);
+		point(x,64,0xff);
+		point(x,80,0xff);
+		point(x,96,0xff);
+		point(x,112,0xff);
+		point(x,128,0xff);
+	}
+	for(y=0;y<512;y++)
+	{
+		point(128,y,0xff);
+		point(256,y,0xff);
+		point(384,y,0xff);
+		point(512,y,0xff);
+		point(640,y,0xff);
+		point(768,y,0xff);
+		point(896,y,0xff);
+	}
+	string(4+0,0,"start");
+	string(4+16,0,"end");
+	string(4+32,0,"type");
+	string(4+48,0,"reserved");
+	string(4+64,0,"explain");
+	string(4+80,0,"cd");
+	string(4+96,0,"load");
+	string(4+112,0,"reserved");
 }
 
 
@@ -126,14 +156,14 @@ void printpartition0()
 	for(y=0;y<20;y++)
 	{
 		if(*(QWORD*)(buffer0+y*0x40) == 0)break;
-		hexadecimal(0,y,*(QWORD*)(buffer0+y*0x40));
-		hexadecimal(16,y,*(QWORD*)(buffer0+y*0x40+0x8));
-		string(32,y,buffer0+y*0x40+0x10);
-		hexadecimal(48,y,*(QWORD*)(buffer0+y*0x40+0x18));
-		hexadecimal(64,y,*(QWORD*)(buffer0+y*0x40+0x20));
-		hexadecimal(80,y,*(QWORD*)(buffer0+y*0x40+0x28));
-		hexadecimal(96,y,*(QWORD*)(buffer0+y*0x40+0x30));
-		hexadecimal(112,y,*(QWORD*)(buffer0+y*0x40+0x38));
+		hexadecimal(0,y+2,*(QWORD*)(buffer0+y*0x40));
+		hexadecimal(16,y+2,*(QWORD*)(buffer0+y*0x40+0x8));
+		string(32,y+2,buffer0+y*0x40+0x10);
+		hexadecimal(48,y+2,*(QWORD*)(buffer0+y*0x40+0x18));
+		hexadecimal(64,y+2,*(QWORD*)(buffer0+y*0x40+0x20));
+		hexadecimal(80,y+2,*(QWORD*)(buffer0+y*0x40+0x28));
+		hexadecimal(96,y+2,*(QWORD*)(buffer0+y*0x40+0x30));
+		hexadecimal(112,y+2,*(QWORD*)(buffer0+y*0x40+0x38));
 	}
 }
 void printbitmap(QWORD start,QWORD end,QWORD typestr)

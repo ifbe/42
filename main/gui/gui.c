@@ -77,16 +77,14 @@ void printworld()
 }
 void main()
 {
-	QWORD realworld;
-	QWORD logicworld;
-	whereisrealworld(&realworld);
-	whereislogicworld(&logicworld);
+	initmaster();
 
-	real0init(realworld);
-	logic0init(logicworld+0x100000);
 	initdiskman();
 	initconsole();
-	initmaster();
+
+	real0init();
+	logic0init();
+
 
 	while(1)
 	{
@@ -106,9 +104,9 @@ void main()
 			case 0:return;
 			case 1:				//键盘
 			{
-				if(key==0x1b)return;
 				say("keyboard:%x\n",key);
 
+				if(key==0x1b)what=0;
 				if(what==1)real0kbd(key);
 				else if(what==2)logic0kbd(key);
 				else if(what==3)loginput(key);

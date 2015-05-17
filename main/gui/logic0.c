@@ -3,6 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
+static QWORD partbuffer;
 static QWORD dirbuffer;
 
 static int complex=0;		//主体华丽程度
@@ -10,9 +11,12 @@ static int complex=0;		//主体华丽程度
 
 
 
-void logic0init(QWORD in)
+void logic0init()
 {
-	dirbuffer=in;
+	whereisrealworld(&partbuffer);
+
+	whereislogicworld(&dirbuffer);
+	dirbuffer+=0x100000;
 }
 void logic0mouse()
 {
@@ -34,7 +38,7 @@ void logic0background()
 			point(x,y,0xcccccccc);
 		}
 	}
-	//框
+	//外框
 	for(x=0;x<1024;x++)
 	{
 		point(x,0,0xcc00);
@@ -45,21 +49,19 @@ void logic0background()
 		point(0,y,0xcc00);
 		point(1023,y,0xcc00);
 	}
-	/*
-	for(y=640-32;y<640-16;y++)
+
+	//内框
+	for(x=256;x<768;x++)
 	{
-		color=0xcccccccc-0x11110011*(i*3/4);		//绿
-		for(x=1024-32+i;x<1024;x++)
-		{
-			point(x,y,color);
-		}
-		i++;
+		point(x,32,0xcc00);
+		point(x,640-32,0xcc00);
 	}
-	for(x=16;x<32;x++)
+	for(y=32;y<640-32;y++)
 	{
-		point(1024-x,640-x,0xcc00);
+		point(256,y,0xcc00);
+		point(767,y,0xcc00);
 	}
-	*/
+
 	//左上
 	for(y=0;y<32;y++)
 		for(x=0;x<32-y;x++)
@@ -76,30 +78,33 @@ void logic0background()
 	//for(y=640-32;y<640;y++)
 	//	for(x=1024-32;x<1024;x++)
 	//		point(x,y,0xff00);
-	/*
-	for(x=256;x<768;x++)
+}
+logic0part()
+{
+	//kuang
+	int x,y,i;
+	for(x=0;x<128;x++)
 	{
-		for(y=0;y<16;y++)
-		{
-			point(x,y,0xfedcba98);
-		}
-		for(y=640-16;y<640;y++)
-		{
-			point(x,y,0xfedcba98);
-		}
+		point(x,32,0xcc00);
+		point(x,640-32,0xcc00);
 	}
-	for(y=128;y<640-128;y++)
+	for(y=32;y<640-32;y++)
 	{
-		for(x=0;x<16;x++)
-		{
-			point(x,y,0x01234567);
-		}
-		for(x=1024-16;x<1024;x++)
-		{
-			point(x,y,0x01234567);
-		}
+		point(0,y,0xcc00);
+		point(127,y,0xcc00);
 	}
-	*/
+
+	//分区内容
+	QWORD start;
+	for(i=0;i<128;i++)
+	{
+		//break?
+		start=*(QWORD*)(partbuffer+i*0x40);
+		if(start==0)break;
+
+		//打印
+		hexadecimal(0,2,start);
+	}
 }
 
 
@@ -119,10 +124,10 @@ void printfile0()
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;
-		string(32,y+1,p+0x40*y);
-		hexadecimal(48,y+1,*(QWORD*)(p+0x40*y+0x10));
-		hexadecimal(64,y+1,*(QWORD*)(p+0x40*y+0x20));
-		hexadecimal(80,y+1,*(QWORD*)(p+0x40*y+0x30));
+		string(32,y+2,p+0x40*y);
+		hexadecimal(48,y+2,*(QWORD*)(p+0x40*y+0x10));
+		hexadecimal(64,y+2,*(QWORD*)(p+0x40*y+0x20));
+		hexadecimal(80,y+2,*(QWORD*)(p+0x40*y+0x30));
 	}
 }
 void printfile1()
@@ -136,6 +141,7 @@ void printfile2()
 void logic0()
 {
 	logic0background();
+	logic0part();
 
 	//-------------------
 	if(complex==0)
