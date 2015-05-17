@@ -95,6 +95,7 @@ logic0part()
 	}
 
 	//分区内容
+	DWORD color;
 	QWORD start;
 	for(i=0;i<128;i++)
 	{
@@ -103,7 +104,15 @@ logic0part()
 		if(start==0)break;
 
 		//打印
-		hexadecimal(0,2,start);
+		color=~start;
+		for(y=32+i*32;y<64+i*32;y++)
+		{
+			for(x=0;x<128;x++)
+			{
+				point(x,y,color);
+			}
+		}
+		hexadecimal(0,2+2*i,start);
 	}
 }
 
