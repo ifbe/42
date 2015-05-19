@@ -6,6 +6,8 @@
 static QWORD partbuffer;
 static QWORD dirbuffer;
 
+static char choosepart=0;
+static char choosefile=0;
 static int complex=0;		//主体华丽程度
 
 
@@ -18,9 +20,20 @@ void logic0init()
 	whereislogicworld(&dirbuffer);
 	dirbuffer+=0x100000;
 }
-void logic0mouse()
+void logic0mouse(int x,int y)
 {
-	
+	if(x<128)
+	{
+		if(y>32)
+		{
+			if(y<512)
+			{
+				choosepart=(y-32)/32;
+				QWORD arg1=0x30+choosepart;
+				realcommand("mount",&arg1);
+			}
+		}
+	}
 }
 void logic0kbd()
 {
@@ -113,6 +126,15 @@ logic0part()
 			}
 		}
 		hexadecimal(0,2+2*i,start);
+	}
+
+	//选中
+	for(y=32+choosepart*32;y<64+choosepart*32;y+=2)
+	{
+		for(x=0;x<128;x+=2)
+		{
+			point(x,y,0);
+		}
 	}
 }
 

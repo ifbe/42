@@ -69,7 +69,6 @@ void printdisk0()
 {
 	//背景
 	char* p=(char*)diskinfo;
-	unsigned long long color;
 	int x,y,i;
 
 	//内容
@@ -77,18 +76,23 @@ void printdisk0()
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
-		if(i==choose)color=0xfedcba98;
-		else color=0xffffffff;
-
 		for(y=80+64*i;y<128+64*i;y++)
 		{
 			for(x=256;x<768;x++)
 			{
-				point(x,y,color);
+				point(x,y,0xffffffff);
 			}
 		}
 		string(0x20,6+4*i,diskinfo+0x100*i);
 		string(0x20,7+4*i,diskinfo+0x100*i+0x80);
+	}
+	//选中
+	for(y=80+64*choose;y<128+64*choose;y+=2)
+	{
+		for(x=256;x<768;x+=2)
+		{
+			point(x,y,0);
+		}
 	}
 
 	//手工输入
