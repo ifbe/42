@@ -22,6 +22,17 @@ void logic0init()
 }
 void logic0mouse(int x,int y)
 {
+	if(y>320-128)
+	{
+		if(y<320+128)
+		{
+			if(x<64)
+			{
+				killmehelpit(2,0);
+				return;
+			}
+		}
+	}
 	if(x<128)
 	{
 		if(y>32)
@@ -91,6 +102,12 @@ void logic0background()
 	//for(y=640-32;y<640;y++)
 	//	for(x=1024-32;x<1024;x++)
 	//		point(x,y,0xff00);
+
+	//左箭头
+	for(y=320-128;y<320+128;y++)
+		for(x=0;x<64;x++)
+			point(x,y,0xffffffff);
+	string(0,20,"main");
 }
 logic0part()
 {

@@ -21,18 +21,40 @@ disk_mouse(int x,int y)
 {
 	int val=0;
 
-	if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
+	if(y>320-128)
 	{
-		if(y<512)
+		if(y<320+128)
 		{
-			val=(y-64)/16;
-			if( (val%4) != 0 )		//val=4n不行，val=4n+1,4n+2,4n+3都可以
+			if(x<64)
 			{
-				choose=val/4;
+				killmehelpit(0,1);
+				return;
+			}
+			if(x>1024-64)
+			{
+				killmehelpit(0,2);
+				return;
+			}
+		}
+	}
+	if(x>256)
+	{
+		if(x<768)
+		{
+			if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
+			{
+				if(y<512)
+				{
+					val=(y-64)/16;
+					if( (val%4) != 0 )		//val=4n不行，val=4n+1,4n+2,4n+3都可以
+					{
+						choose=val/4;
 
-				char* arg0="disk";
-				DWORD arg1=0x30+choose;
-				realcommand(arg0,&arg1);
+						char* arg0="disk";
+						DWORD arg1=0x30+choose;
+						realcommand(arg0,&arg1);
+					}
+				}
 			}
 		}
 	}
@@ -47,9 +69,16 @@ disk_bg()
 	//背景色
 	for(y=0;y<640;y++)
 	{
-		for(x=0;x<1024;x++)
+		for(x=0;x<512;x++)
 		{
-			point(x,y,0x88888888);
+			point(x,y,0x7f+0x010100*(x/4));
+		}
+	}
+	for(y=0;y<640;y++)
+	{
+		for(x=512;x<1024;x++)
+		{
+			point(x,y,0x7f00+0x010001*((1023-x)/4));
 		}
 	}
 
@@ -64,6 +93,33 @@ disk_bg()
 	{
 		point(x,512,0xffffffff);
 	}
+
+	//左上角
+	for(x=16;x<80;x++)
+		for(y=0;y<16;y++)
+			point(x,y,0x77777777);
+	string(2,0,"console");
+	//右上角
+	for(x=1024-80;x<1024-16;x++)
+		for(y=0;y<16;y++)
+			point(x,y,0x770000);
+	string(0x78,0,"close");
+	//左箭头
+	//for(x=16;x<80;x++)
+		//for(y=640-16;y<640;y++)
+			//point(x,y,0x77);
+	for(y=320-128;y<320+128;y++)
+		for(x=0;x<64;x++)
+			point(x,y,0xff);
+	string(0,20,"real");
+	//右箭头
+	//for(x=1024-80;x<1024-16;x++)
+		//for(y=640-16;y<640;y++)
+			//point(x,y,0x7700);
+	for(y=320-128;y<320+128;y++)
+		for(x=1024-64;x<1024;x++)
+			point(x,y,0xff00);
+	string(0x78,20,"logical");
 }
 void printdisk0()
 {

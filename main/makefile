@@ -7,13 +7,10 @@ win:
 gui:
 	gcc -c -O2 gui/gui.c
 	gcc -c -O2 gui/console.c
-	gcc -c -O2 gui/disk.c
-	gcc -c -O2 gui/real0.c
-	gcc -c -O2 gui/real1.c
-	gcc -c -O2 gui/real2.c
-	gcc -c -O2 gui/real3.c
-	gcc -c -O2 gui/logic0.c
+	gcc -c -O2 gui/left.c
+	gcc -c -O2 gui/middle.c
+	gcc -c -O2 gui/right.c
 	rm -f main.a
-	ar crs main.a gui.o console.o disk.o real0.o logic0.o
+	ar crs main.a gui.o console.o left.o middle.o right.o
 clean:
 	rm -f *.o *.a

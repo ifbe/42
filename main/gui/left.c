@@ -17,6 +17,17 @@ void real0init()
 }
 void real0mouse(int x,int y)
 {
+	if(y>320-128)
+	{
+		if(y<320+128)
+		{
+			if(x>1024-64)
+			{
+				killmehelpit(1,0);
+				return;
+			}
+		}
+	}
 	if( (x>256) && (x<768) )
 	{
 		tag=x/64-4;		//比例尺
@@ -144,6 +155,12 @@ void real0background()
 	string(4+80,0,"cd");
 	string(4+96,0,"load");
 	string(4+112,0,"reserved");
+
+	//右箭头
+	for(y=320-128;y<320+128;y++)
+		for(x=1024-64;x<1024;x++)
+			point(x,y,0xffffffff);
+	string(0x78,20,"main");
 }
 
 
