@@ -207,6 +207,31 @@ void hexadecimal(int x,int y,unsigned long long z)
 		z=z>>4;
 	}
 }
+void hexadecimal1234(int x,int y,unsigned int z)
+{
+	char fullbyte,ch;
+	int i;
+
+	for(i=0;i<4;i++)
+	{
+		fullbyte=z&0xff;
+		if(fullbyte == 0)continue;
+
+		//¸ß°ë×Ö½Ú
+		ch=fullbyte>>4;
+		ch+=0x30;
+		if(ch>0x39)ch+=0x7;
+		anscii(x+2*i,y,ch);
+
+		//µÍ°ë×Ö½Ú
+		ch=fullbyte&0xf;
+		ch+=0x30;
+		if(ch>0x39)ch+=0x7;
+		anscii(x+2*i+1,y,ch);
+
+		z=z>>8;
+	}
+}
 void string(int x,int y,char* p)
 {
     while(*p!='\0')

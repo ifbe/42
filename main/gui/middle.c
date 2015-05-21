@@ -13,7 +13,7 @@ static int complex=0;		//主体华丽程度
 
 
 
-void initdiskman()
+void diskinit()
 {
 	whereisdiskinfo(&diskinfo);
 }
@@ -25,12 +25,12 @@ disk_mouse(int x,int y)
 	{
 		if(y<320+128)
 		{
-			if(x<64)
+			if(x<32)
 			{
 				killmehelpit(0,1);
 				return;
 			}
-			if(x>1024-64)
+			if(x>1024-32)
 			{
 				killmehelpit(0,2);
 				return;
@@ -65,8 +65,41 @@ disk_kbd()
 disk_bg()
 {
 	int x,y;
+	DWORD color;
 
 	//背景色
+	for(y=0;y<640;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			point(x,y,0xc0c0c0c0);
+		}
+	}
+	/*
+	//上下
+	for(y=0;y<16;y++)
+	{
+		color=0x0c0c0c*y;
+
+		for(x=y;x<1024-y;x++)
+		{
+			point(x,y,color);
+			point(x,639-y,color);
+		}
+	}
+	//左右
+	for(x=0;x<16;x++)
+	{
+		color=0x0c0c0c*x;
+
+		for(y=x;y<640-x;y++)
+		{
+			point(x,y,color);
+			point(1023-x,y,color);
+		}
+	}
+	*/
+	/*
 	for(y=0;y<640;y++)
 	{
 		for(x=0;x<512;x++)
@@ -81,6 +114,7 @@ disk_bg()
 			point(x,y,0x7f00+0x010001*((1023-x)/4));
 		}
 	}
+	*/
 
 	string(0x30,3,"i can recognize these disks");
 	for(x=128;x<1024-128;x++)
@@ -98,26 +132,36 @@ disk_bg()
 	for(x=16;x<80;x++)
 		for(y=0;y<16;y++)
 			point(x,y,0x77777777);
-	string(2,0,"console");
+	string(2,0,"");
 	//右上角
 	for(x=1024-80;x<1024-16;x++)
 		for(y=0;y<16;y++)
 			point(x,y,0x770000);
 	string(0x78,0,"close");
+	//左下角
+	for(x=16;x<80;x++)
+		for(y=640-16;y<640;y++)
+			point(x,y,0x77);
+	string(2,39,"hex");
+	//右下角
+	for(x=1024-80;x<1024-16;x++)
+		for(y=640-16;y<640;y++)
+			point(x,y,0x7700);
+	string(0x78,39,"console");
 	//左箭头
 	//for(x=16;x<80;x++)
 		//for(y=640-16;y<640;y++)
 			//point(x,y,0x77);
-	for(y=320-128;y<320+128;y++)
-		for(x=0;x<64;x++)
+	for(x=0;x<32;x++)
+		for(y=320-4*x;y<320+4*x;y++)
 			point(x,y,0xff);
 	string(0,20,"real");
 	//右箭头
 	//for(x=1024-80;x<1024-16;x++)
 		//for(y=640-16;y<640;y++)
 			//point(x,y,0x7700);
-	for(y=320-128;y<320+128;y++)
-		for(x=1024-64;x<1024;x++)
+	for(x=1024-32;x<1024;x++)
+		for(y=320-(1024-x)*4;y<320+(1024-x)*4;y++)
 			point(x,y,0xff00);
 	string(0x78,20,"logical");
 }

@@ -30,7 +30,11 @@ void printworld()
 	}
 	else if(what==3)
 	{
-		printlog();
+		hex();
+	}
+	else if(what==4)
+	{
+		console();
 	}
 	else
 	{
@@ -38,25 +42,31 @@ void printworld()
 		printdisk();
 	}
 	//左上角
-	for(x=0;x<16;x++)
-		for(y=0;y<16;y++)
+	for(y=0;y<16;y++)
+		for(x=0;x<16;x++)
 			point(x,y,0xffffffff);
 	//右上角
-	for(x=1024-16;x<1024;x++)
-		for(y=0;y<16;y++)
+	for(y=0;y<16;y++)
+		for(x=1024-16;x<1024;x++)
 			point(x,y,0xff0000);
-	/*
-	*/
+	//左下角
+	for(y=640-16;y<640;y++)
+		for(x=0;x<16;x++)
+			point(x,y,0xff);
+	//右下角
+	for(y=640-16;y<640;y++)
+		for(x=1024-16;x<1024;x++)
+			point(x,y,0xff00);
 }
 void main()
 {
 	initmaster();
 
-	initdiskman();
-	initconsole();
-
-	real0init();
-	logic0init();
+	diskinit();			//0
+	real0init();		//1
+	logic0init();		//2
+	hexinit();			//3
+	consoleinit();		//4
 
 
 	while(1)
@@ -88,8 +98,11 @@ void main()
 				//logic0在干活就交给logic0
 				else if(what==2)logic0kbd(key);
 
+				//hex在干活就交给hex
+				else if(what==3)hexkbd(key);
+
 				//console在干活就交给console
-				else if(what==3)loginput(key);
+				else if(what==4)consolekbd(key);
 
 				break;
 			}
@@ -102,6 +115,10 @@ void main()
 				//四个角落
 				if(y<16)
 				{
+					if(x>1024-16) return;				//右上
+				}
+				if(y>640-16)
+				{
 					if(x<16) //showconsole^=1;		//左上
 					{
 						if(what==3)what=0;
@@ -109,10 +126,16 @@ void main()
 
 						break;
 					}
-					else if(x>1024-16) return;				//右上
+					else if(x>1024-16)
+					{
+						if(what==4)what=0;
+						else what=4;
+
+						break;
+					}
 				}
 
-				//
+				//主界面就交给主界面
 				if(what==0)disk_mouse(x,y);
 
 				//real0在干活就交给real0
@@ -121,26 +144,11 @@ void main()
 				//logic0在干活就交给logic0
 				else if(what==2)logic0mouse(x,y);
 
+				//logic0在干活就交给logic0
+				else if(what==3)hexmouse(x,y);
+
 				//console在干活就交给console
-				/*
-				if( (y>320-128) && (y<320+128) )
-				{
-					if(x<64) //showreal^=1;				//左下
-					{
-						if(what==1)what=0;
-						else what=1;
-
-						break;
-					}
-					else if(x>1024-64)//showlogic^=1;		//右下
-					{
-						if(what==2)what=0;
-						else what=2;
-
-						break;
-					}
-				}
-				*/
+				//else if(what==4)consolemouse(x,y);
 
 				break;
 			}//case 2

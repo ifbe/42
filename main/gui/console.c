@@ -15,93 +15,11 @@ static int complex=0;		//主体华丽程度
 
 
 
-void initconsole()
+void consoleinit()
 {
 	whereislogbuf(&logbuf);
 }
-void consolebg()
-{
-	int x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xcccccccc);
-		}
-	}
-	//左上
-	//for(y=0;y<32;y++)
-		//for(x=0;x<32-y;x++)
-			//point(x,y,0);
-	//右上
-	for(y=0;y<32;y++)
-		for(x=1024-32+y;x<1024;x++)
-			point(x,y,0);
-	//左下
-	for(x=0;x<32;x++)
-		for(y=640-32+x;y<640;y++)
-			point(x,y,0);
-	//右下
-	for(y=0;y<32;y++)
-		for(x=1024-y;x<1024;x++)
-			point(x,640-32+y,0);
-}
-void printlog0()
-{
-	//背景
-	int x,y;
-
-	//内容
-	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
-	int linenum=offsety/0x80;
-	if(offsety<0x80*36)		//[0,0x80*35]
-	{
-		for(y=0;y<linenum;y++)
-		{
-			string(0,y,logbuf+0x80*y);
-		}
-	}
-	else
-	{
-		for(y=0;y<36;y++)
-		{
-			string(0,y,logbuf+offsety+0x80*(y-36));
-		}
-	}
-
-	//键盘输入区
-	for(x=256;x<768;x++)
-		for(y=640-16;y<640;y++)
-			point(x,y,0xffffffff);
-	string(0x20,39,buffer);
-}
-void printlog1()
-{
-	
-}
-void printlog2()
-{
-	
-}
-void printlog()
-{
-	consolebg();
-
-	if(complex==0)
-	{
-		printlog0();
-	}
-	else if(complex==1)
-	{
-		printlog1();
-	}
-	else
-	{
-		printlog2();
-	}
-}
-loginput(key)
+consolekbd(key)
 {
 	if(key==0xd)
 	{
@@ -129,5 +47,111 @@ loginput(key)
 			buffer[bufcount]=key&0xff;
 			bufcount++;
 		}
+	}
+}
+void consolebg()
+{
+	int x,y;
+	unsigned int color,i=0;
+	for(y=0;y<640;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			point(x,y,0xe0e0e0);
+		}
+	}
+	//上下
+	for(y=0;y<16;y++)
+	{
+		color=(QWORD)y*0x0e0e0e;
+
+		for(x=y;x<1024-y;x++)
+		{
+			point(x,y,color);
+			point(x,639-y,color);
+		}
+	}
+	//左右
+	for(x=0;x<16;x++)
+	{
+		color=(QWORD)x*0x0e0e0e;
+
+		for(y=x;y<640-x;y++)
+		{
+			point(x,y,color);
+			point(1023-x,y,color);
+		}
+	}
+	/*
+	//左上
+	for(y=0;y<32;y++)
+		for(x=0;x<32-y;x++)
+			point(x,y,0);
+	//右上
+	for(y=0;y<32;y++)
+		for(x=1024-32+y;x<1024;x++)
+			point(x,y,0);
+	//左下
+	for(x=0;x<32;x++)
+		for(y=640-32+x;y<640;y++)
+			point(x,y,0);
+	//右下
+	for(y=0;y<32;y++)
+		for(x=1024-y;x<1024;x++)
+			point(x,640-32+y,0);
+	*/
+}
+void printconsole0()
+{
+	//背景
+	int x,y;
+
+	//内容
+	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
+	int linenum=offsety/0x80;
+	if(offsety<0x80*36)		//[0,0x80*35]
+	{
+		for(y=0;y<linenum;y++)
+		{
+			string(0,y+2,logbuf+0x80*y);
+		}
+	}
+	else
+	{
+		for(y=0;y<36;y++)
+		{
+			string(0,y+2,logbuf+offsety+0x80*(y-36));
+		}
+	}
+
+	//键盘输入区
+	//for(x=256;x<768;x++)
+		//for(y=640-16;y<640;y++)
+			//point(x,y,0xffffffff);
+	string(0x2,39,buffer);
+}
+void printconsole1()
+{
+	
+}
+void printconsole2()
+{
+	
+}
+void console()
+{
+	consolebg();
+
+	if(complex==0)
+	{
+		printconsole0();
+	}
+	else if(complex==1)
+	{
+		printconsole1();
+	}
+	else
+	{
+		printconsole2();
 	}
 }

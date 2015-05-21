@@ -21,7 +21,7 @@ void real0mouse(int x,int y)
 	{
 		if(y<320+128)
 		{
-			if(x>1024-64)
+			if(x>1024-32)
 			{
 				killmehelpit(1,0);
 				return;
@@ -83,7 +83,7 @@ void real0background()
 		point(x,639-x,0xcc);
 	}
 	*/
-
+/*
 	//左上
 	for(y=0;y<32;y++)
 		for(x=0;x<32-y;x++)
@@ -100,7 +100,7 @@ void real0background()
 	for(y=0;y<32;y++)
 		for(x=1024-y;x<1024;x++)
 			point(x,640-32+y,0);
-	
+*/
 	//[608,639]:低栏颜色与低栏分界线
 	//for(y=640-16;y<640;y++)
 	//	for(x=256;x<768;x++)
@@ -157,10 +157,10 @@ void real0background()
 	string(4+112,0,"reserved");
 
 	//右箭头
-	for(y=320-128;y<320+128;y++)
-		for(x=1024-64;x<1024;x++)
+	for(x=1024-32;x<1024;x++)
+		for(y=320-(1024-x)*4;y<320+(1024-x)*4;y++)
 			point(x,y,0xffffffff);
-	string(0x78,20,"main");
+	string(0x7c,20,"main");
 }
 
 

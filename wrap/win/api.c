@@ -265,8 +265,12 @@ int initwindow()
 				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
     if (!window) return 0;
 
-	SetWindowLong(window, GWL_STYLE, WS_POPUP | WS_MINIMIZEBOX);
-	SetWindowLong(window, GWL_EXSTYLE, 0 );
+	LONG t = GetWindowLong(window, GWL_EXSTYLE);
+	SetWindowLong(window, GWL_STYLE, t | WS_POPUP | WS_MINIMIZEBOX);
+
+	t = GetWindowLong(window, GWL_EXSTYLE);
+	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(window, 0, 0xc0, LWA_ALPHA);  
 
 	//fakedc=CreateCompatibleDC(NULL);
 	//HBITMAP bmp = CreateCompatibleBitmap(realdc,width,height);
