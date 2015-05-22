@@ -75,15 +75,15 @@ void logic0background()
 	}
 
 	//内框
-	for(x=256;x<768;x++)
+	for(x=128;x<1024-128;x++)
 	{
 		point(x,32,0xcc00);
 		point(x,640-32,0xcc00);
 	}
 	for(y=32;y<640-32;y++)
 	{
-		point(256,y,0xcc00);
-		point(767,y,0xcc00);
+		point(128,y,0xcc00);
+		point(1023-128,y,0xcc00);
 	}
 /*
 	//左上
@@ -165,17 +165,25 @@ void printfile0()
 
 //三.每个分区里面的文件和文件夹
 	p=(char*)dirbuffer;
-	string(32,0,"name");
-	string(48,0,"id");
-	string(64,0,"type");
-	string(80,0,"size");
+	string(0x10+0xa,0,"name");	//0x10+0x18*0+0xa
+	string(0x28+0xa,0,"id");	//0x10+0x18*1+0xa
+	string(0x40+0xa,0,"type");	//0x10+0x18*2+0xa
+	string(0x58+0xa,0,"size");	//0x10+0x18*3+0xa
+	for(y=16;y<32;y++)
+	{
+		point(0x10*8,y,0);
+		point((0x10+0x18)*8,y,0);
+		point((0x10+0x18*2)*8,y,0);
+		point((0x10+0x18*3)*8,y,0);
+		point((0x10+0x18*4)*8,y,0);
+	}
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;
-		string(32,y+2,p+0x40*y);
-		hexadecimal(48,y+2,*(QWORD*)(p+0x40*y+0x10));
-		hexadecimal(64,y+2,*(QWORD*)(p+0x40*y+0x20));
-		hexadecimal(80,y+2,*(QWORD*)(p+0x40*y+0x30));
+		string(0x10+0xa,y+2,p+0x40*y);
+		hexadecimal(0x28+0xa,y+2,*(QWORD*)(p+0x40*y+0x10));
+		hexadecimal(0x40+0xa,y+2,*(QWORD*)(p+0x40*y+0x20));
+		hexadecimal(0x58+0xa,y+2,*(QWORD*)(p+0x40*y+0x30));
 	}
 }
 void printfile1()

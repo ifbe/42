@@ -68,13 +68,90 @@ disk_bg()
 	DWORD color;
 
 	//背景色
+	/*
+	for(y=0;y<256;y++)		//上
+	{
+		color=0x010101*(y*3/4);
+		for(x=0;x<1024;x++)
+		{
+			point(x,y,color);
+		}
+	}
+	for(y=0;y<256;y++)		//下
+	{
+		color=0x010101*(y*3/4);
+		for(x=0;x<1024;x++)
+		{
+			point(x,639-y,color);
+		}
+	}*/
 	for(y=0;y<640;y++)
 	{
 		for(x=0;x<1024;x++)
 		{
-			point(x,y,0xc0c0c0c0);
+			point(x,y,0);
 		}
 	}
+	for(x=0;x<256;x++)		//左
+	{
+		color=0xc0+0x010100*(x*3/4);
+
+		for(y=x;y<640-x;y++)
+		{
+			point(x,y,color);
+		}
+	}
+	for(x=0;x<256;x++)		//右
+	{
+		color=0xc000+0x010001*(x*3/4);
+
+		for(y=x;y<640-x;y++)
+		{
+			point(1023-x,y,color);
+		}
+	}
+	for(y=256;y<320;y++)		//横
+	{
+		color=0x010101*( (y-256)*0xff/(320-256) );
+		for(x=256;x<1024-256;x++)
+		{
+			point(x,y,color);
+			point(x,639-y,color);
+		}
+	}
+	/*
+	for(x=0;x<64;x++)		//竖
+	{
+		color=0x040404*x;
+		for(y=64;y<256;y++)
+		{
+			point(512-64+x,y,color);
+			point(511+64-x,y,color);
+		}
+		for(y=320+64;y<640-64;y++)
+		{
+			point(512-64+x,y,color);
+			point(511+64-x,y,color);
+		}
+	}
+	for(x=0;x<64;x++)		//竖
+	{
+		color=0x040404*x;
+		for(y=256;y<320-64+x;y++)
+		{
+			point(512-64+x,y,color);
+			point(511+64-x,y,color);
+		}
+		for(y=320+64-x;y<640-256;y++)
+		{
+			point(512-64+x,y,color);
+			point(511+64-x,y,color);
+		}
+	}
+	*/
+
+	string(0x10,10,"i can recognize these disks");
+	string(0x10,33,"u can choose a specific one");
 	/*
 	//上下
 	for(y=0;y<16;y++)
@@ -115,18 +192,6 @@ disk_bg()
 		}
 	}
 	*/
-
-	string(0x30,3,"i can recognize these disks");
-	for(x=128;x<1024-128;x++)
-	{
-		point(x,64,0xffffffff);
-	}
-
-	string(0x30,31,"u can choose a specific one");
-	for(x=128;x<1024-128;x++)
-	{
-		point(x,512,0xffffffff);
-	}
 
 	//左上角
 	for(x=16;x<80;x++)
@@ -196,7 +261,7 @@ void printdisk0()
 	}
 
 	//手工输入
-	for(y=512+16;y<512+64;y++)
+	for(y=512;y<512+48;y++)
 	{
 		for(x=256;x<768;x++)
 		{
