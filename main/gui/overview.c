@@ -36,44 +36,60 @@ void overview()
 		}
 	}
 	//5个框
-	for(y=80;y<240;y++)
+	for(y=320-128;y<320+128;y++)
 	{
 		for(x=0;x<256;x++)
 		{
 			point(x,y,0xff00ff);
 		}
 	}
-	string(0x10,10,"left");
-	for(y=80;y<240;y++)
+	string(0x10,20,"left");
+	for(y=320-128;y<320+128;y++)
 	{
 		for(x=512-128;x<512+128;x++)
 		{
-			point(x,y,0xffffff);
+			point(x,y,0x44444444);
 		}
 	}
-	string(0x40,10,"middle");
-	for(y=80;y<240;y++)
+	string(0x40,20,"middle");
+	for(y=320-128;y<320+128;y++)
 	{
-		for(x=768;x<1024;x++)
+		for(x=1024-256;x<1024;x++)
 		{
 			point(x,y,0xffff);
 		}
 	}
-	string(0x70,10,"right");
-	for(y=400;y<560;y++)
+	string(0x70,20,"right");
+	for(y=0;y<128;y++)
 	{
-		for(x=128;x<256+128;x++)
+		for(x=0;x<128;x++)
+		{
+			point(x,y,0xffffffff);
+		}
+	}
+	string(0,5,"overview");
+	for(y=0;y<128;y++)
+	{
+		for(x=896;x<1024;x++)
+		{
+			point(x,y,0xff0000);
+		}
+	}
+	string(0x70,5,"close");
+	for(y=640-128;y<640;y++)
+	{
+		for(x=0;x<128;x++)
 		{
 			point(x,y,0xff);
 		}
 	}
-	string(0x20,30,"hex");
-	for(y=400;y<560;y++)
+	string(0,35,"hex");
+	for(y=640-128;y<640;y++)
 	{
-		for(x=768-128;x<768+128;x++)
+		for(x=896;x<1024;x++)
 		{
 			point(x,y,0xff00);
 		}
 	}
-	string(0x60,30,"console");
+	string(0x70,35,"console");
 }
