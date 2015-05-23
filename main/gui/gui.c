@@ -36,6 +36,10 @@ void printworld()
 	{
 		console();
 	}
+	else if(what==5)
+	{
+		overview();
+	}
 	else
 	{
 		//
@@ -116,6 +120,13 @@ void main()
 				if(y<16)
 				{
 					if(x>1024-16) return;				//右上
+					if(x<16)
+					{
+						if(what==5)what=0;
+						else what=5;
+
+						break;
+					}
 				}
 				if(y>640-16)
 				{
