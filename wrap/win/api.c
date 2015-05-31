@@ -17,7 +17,6 @@ unsigned int* mypixel;
 HWND window;
 HDC realdc;
 BITMAPINFO info;
-MSG msg;
 NOTIFYICONDATA nid;     //托盘属性 
 HMENU hMenu;            //托盘菜单 
 
@@ -212,6 +211,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 int waitevent(unsigned long long* first,unsigned long long* second)
 {
 	//收得到就一直收+处理
+	MSG msg;
 	while(GetMessage(&msg,NULL,0,0))
 	{
 		//交给WindowProc，试着处理看看

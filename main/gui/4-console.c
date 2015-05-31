@@ -82,24 +82,6 @@ void consolebg()
 			point(1023-x,y,color);
 		}
 	}
-	/*
-	//左上
-	for(y=0;y<32;y++)
-		for(x=0;x<32-y;x++)
-			point(x,y,0);
-	//右上
-	for(y=0;y<32;y++)
-		for(x=1024-32+y;x<1024;x++)
-			point(x,y,0);
-	//左下
-	for(x=0;x<32;x++)
-		for(y=640-32+x;y<640;y++)
-			point(x,y,0);
-	//右下
-	for(y=0;y<32;y++)
-		for(x=1024-y;x<1024;x++)
-			point(x,640-32+y,0);
-	*/
 }
 void printconsole0()
 {
@@ -125,10 +107,10 @@ void printconsole0()
 	}
 
 	//键盘输入区
-	//for(x=256;x<768;x++)
-		//for(y=640-16;y<640;y++)
-			//point(x,y,0xffffffff);
-	string(0x2,39,buffer);
+	for(y=640-16;y<640;y++)
+		for(x=128;x<896;x++)
+			point(x,y,0xffffffff);
+	string(0x10,39,buffer);
 }
 void printconsole1()
 {

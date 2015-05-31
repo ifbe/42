@@ -20,6 +20,10 @@ void printworld()
 {
 	int x,y;
 	//主界面显示什么
+	if(what==0)
+	{
+		printdisk();
+	}
 	if(what==1)
 	{
 		real0();
@@ -40,27 +44,34 @@ void printworld()
 	{
 		overview();
 	}
-	else
-	{
-		//
-		printdisk();
-	}
-	//左上角
-	for(y=0;y<16;y++)
-		for(x=0;x<16;x++)
-			point(x,y,0xffffffff);
+
 	//右上角
 	for(y=0;y<16;y++)
-		for(x=1024-16;x<1024;x++)
-			point(x,y,0xff0000);
-	//左下角
+	{
+		point(1023,y,0xff0000);
+		point(1023-16,y,0xff0000);
+	}
+	for(x=1024-16;x<1024;x++)
+	{
+		point(x,0,0xff0000);
+		point(x,15,0xff0000);
+	}
+	//左上角
 	for(y=640-16;y<640;y++)
+	{
 		for(x=0;x<16;x++)
 			point(x,y,0xff);
-	//右下角
-	for(y=640-16;y<640;y++)
-		for(x=1024-16;x<1024;x++)
+		for(x=16;x<32;x++)
 			point(x,y,0xff00);
+		for(x=32;x<48;x++)
+			point(x,y,0xff0000);
+		for(x=48;x<64;x++)
+			point(x,y,0xff00ff);
+		for(x=64;x<80;x++)
+			point(x,y,0xffff);
+		for(x=80;x<96;x++)
+			point(x,y,0xffff00);
+	}
 }
 void main()
 {
@@ -117,30 +128,47 @@ void main()
 				say("mouse:(%d,%d)\n",x,y);
 
 				//四个角落
-				if(y<16)
+				if( (y<16) && (x>1024-16) )return;				//右上
+				if(y>640-16)
 				{
-					if(x>1024-16) return;				//右上
 					if(x<16)
 					{
-						if(what==5)what=0;
-						else what=5;
+						what=0;
 
 						break;
 					}
-				}
-				if(y>640-16)
-				{
-					if(x<16) //showconsole^=1;		//左上
+					else if(x<32)
+					{
+						if(what==1)what=0;
+						else what=1;
+
+						break;
+					}
+					else if(x<48) //showconsole^=1;		//左上
+					{
+						if(what==2)what=0;
+						else what=2;
+
+						break;
+					}
+					else if(x<64)
 					{
 						if(what==3)what=0;
 						else what=3;
 
 						break;
 					}
-					else if(x>1024-16)
+					else if(x<80)
 					{
 						if(what==4)what=0;
 						else what=4;
+
+						break;
+					}
+					else if(x<96)
+					{
+						if(what==5)what=0;
+						else what=5;
 
 						break;
 					}
