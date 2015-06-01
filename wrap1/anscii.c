@@ -218,7 +218,7 @@ void hexadecimal1234(int x,int y,unsigned int z)
 		if(fullbyte == 0)continue;
 
 		//¸ß°ë×Ö½Ú
-		ch=fullbyte>>4;
+		ch=(fullbyte>>4)&0xf;
 		ch+=0x30;
 		if(ch>0x39)ch+=0x7;
 		anscii(x+2*i,y,ch);

@@ -48,26 +48,6 @@ void real0background()
 			point(1023-x,y,color);
 		}
 	}
-	/*
-	QWORD x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xcccccccc);
-		}
-	}
-	for(y=640-32;y<640-16;y++)
-	{
-		color=0xcc+0x11111100*((15-i)*3/4);		//绿
-		for(x=0;x<32-i;x++)
-		{
-			point(x,y,color);
-		}
-		i++;
-	}
-	*/
 	//框框
 	for(x=0;x<1024;x++)
 	{
@@ -79,34 +59,6 @@ void real0background()
 		point(0,y,0xcc);
 		point(1023,y,0xcc);
 	}
-	/*
-	for(x=16;x<32;x++)
-	{
-		point(x,639-x,0xcc);
-	}
-	*/
-/*
-	//左上
-	for(y=0;y<32;y++)
-		for(x=0;x<32-y;x++)
-			point(x,y,0);
-	//右上
-	for(y=0;y<32;y++)
-		for(x=1024-32+y;x<1024;x++)
-			point(x,y,0);
-	//左下
-	//for(x=0;x<32;x++)
-	//	for(y=640-32;y<640;y++)
-	//		point(x,y,0xff);
-	//右下
-	for(y=0;y<32;y++)
-		for(x=1024-y;x<1024;x++)
-			point(x,640-32+y,0);
-*/
-	//[608,639]:低栏颜色与低栏分界线
-	//for(y=640-16;y<640;y++)
-	//	for(x=256;x<768;x++)
-	//		point(x,y,0xffffffff);
 	for(y=640-16;y<640;y++)
 		for(x=256;x<=768;x+=64)
 			point(x,y,0);
@@ -138,8 +90,10 @@ void real0background()
 		point(x,96,0xff);
 		point(x,112,0xff);
 		point(x,128,0xff);
+
+		point(x,640-32,0xff);
 	}
-	for(y=0;y<512;y++)
+	for(y=32;y<640-32;y++)
 	{
 		point(128,y,0xff);
 		point(256,y,0xff);
@@ -158,11 +112,13 @@ void real0background()
 	string(4+96,0,"load");
 	string(4+112,0,"reserved");
 
+	/*
 	//右箭头
 	for(x=1024-32;x<1024;x++)
 		for(y=320-(1024-x)*4;y<320+(1024-x)*4;y++)
 			point(x,y,0xffffffff);
 	string(0x7c,20,"main");
+	*/
 }
 
 
@@ -348,6 +304,7 @@ void real0message(DWORD type,DWORD key)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
+		/*
 		if(y>320-128)
 		{
 			if(y<320+128)
@@ -358,10 +315,13 @@ void real0message(DWORD type,DWORD key)
 					return;
 				}
 			}
-		}
-		if( (x>256) && (x<768) )
+		}*/
+		if(y>640-16)
 		{
-			tag=x/64-4;		//比例尺
+			if( (x>256) && (x<768) )
+			{
+				tag=x/64-4;		//比例尺
+			}
 		}
 	}
 }

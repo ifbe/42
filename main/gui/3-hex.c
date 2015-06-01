@@ -4,14 +4,24 @@
 #define QWORD unsigned long long
 
 //log位置
-static QWORD logbuf;
-static int px=0,py=0;
+static QWORD baseaddr;
+static QWORD offset;
 
+//位置
+static int px=0;
+static int py=0;
+
+//键盘输入
+static BYTE buffer[128];//键盘输入专用
+static bufcount=0;
 
 
 void hexinit()
 {
-	whereislogbuf(&logbuf);
+	//whereisrealworld(&baseaddr);
+	baseaddr=0x400000;
+	baseaddr&=0xfffffffffffffffc;
+	offset=0;
 }
 void hexbg()
 {
@@ -46,20 +56,6 @@ void hexbg()
 			point(1023-x,y,color);
 		}
 	}
-	for(y=16;y<640;y+=16)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xff);
-		}
-	}
-	for(x=16;x<1024;x+=16)
-	{
-		for(y=0;y<640;y++)
-		{
-			point(x,y,0xff);
-		}
-	}
 	/*
 	//左上
 	for(y=0;y<32;y++)
@@ -81,48 +77,70 @@ void hexbg()
 }
 void printhex0()
 {
-	DWORD value;
+	//写字
 	int x,y;
-
-	//第一个框框
-	int thisx=px*16;
-	int thisy=py*16;
-	for(y=thisy;y<thisy+16;y++)
+	DWORD value;
+	for(y=16;y<640;y+=16)
 	{
-		for(x=thisx;x<thisx+16;x++)
+		for(x=0;x<1024;x++)
 		{
 			point(x,y,0xff);
 		}
 	}
-
-	//写字
+	for(x=16;x<1024;x+=16)
+	{
+		for(y=0;y<640;y++)
+		{
+			point(x,y,0xff);
+		}
+	}
 	for(y=0;y<40;y++)
 	{
 		for(x=0;x<0x40;x+=4)
 		{
-			value=*(DWORD*)(logbuf+y*0x40+x);
+			value=*(DWORD*)(baseaddr+offset+y*0x40+x);
 			hexadecimal1234(2*x,y,value);
 		}
 	}
 
-	//详细
-	if(thisx>768-16)thisx-=256+16;
-	if(thisy>640-256-16)thisy-=256+16;
-	for(y=thisy+16;y<thisy+256+16;y++)
+}
+void printfloat()
+{
+	//详细:选中的点
+	int x,y;
+	for(y=16*py;y<16*py+16;y++)
 	{
-		for(x=thisx+16;x<thisx+256+16;x++)
+		for(x=16*px;x<16*px+16;x++)
+		{
+			point(x,y,0xff);
+		}
+	}
+	//256*256的详情框
+	int thisx=px*16+16;
+	int thisy=py*16+16;
+	if(thisx>768)thisx-=256+16;
+	if(thisy>640-256)thisy-=256+16;
+	for(y=thisy;y<thisy+256;y++)
+	{
+		for(x=thisx;x<thisx+256;x++)
 		{
 			point(x,y,0xffffffff);
 		}
 	}
+	//详情内容文字
+	string(thisx/8,thisy/16,"address:");
+	string(thisx/8,1+thisy/16,"data:");
+	string(thisx/8,8+thisy/16,"realworld:");
+	string(thisx/8,9+thisy/16,"logicworld:");
+	string(thisx/8,10+thisy/16,"1234:");
+	string(thisx/8,11+thisy/16,"12351234:");
 
-	QWORD address=logbuf+py*0x40+px;
-	DWORD data=*(DWORD*)((logbuf+py*0x40+px)&0xfffffffffffffffc);
+	QWORD address=baseaddr+offset+py*0x40+px;
+	DWORD data=*(DWORD*)(address&0xfffffffffffffffc);
 	data=( data >> ( ( address & (QWORD)0x3 ) * 8) ) & 0xff;
-	string(2+thisx/8,1+thisy/16,"address:");
-	hexadecimal(2+16+thisx/8,1+thisy/16,address);
-	string(2+thisx/8,2+thisy/16,"data:");
-	hexadecimal(2+16+thisx/8,2+thisy/16,data);
+	hexadecimal(16+thisx/8,thisy/16,address);
+	hexadecimal(16+thisx/8,1+thisy/16,data);
+	string(16+thisx/8,11+thisy/16,buffer);
 }
 void printhex1()
 {
@@ -137,6 +155,8 @@ void hex()
 	hexbg();
 
 	printhex0();
+
+	printfloat();
 }
 void hexmessage(DWORD type,DWORD key)
 {
@@ -158,6 +178,37 @@ void hexmessage(DWORD type,DWORD key)
 		{
 			if(py<39)py++;
 		}
+		else if(key==0xd)
+		{
+			//
+			//command(buffer);
+			baseaddr=0x600000;
+			offset=0;
+
+			//清空
+			int i;
+			for(i=0;i<128;i++)
+			{
+				buffer[i]=0;
+			}
+			bufcount=0;
+		}
+		else if(key==0x8)		//backspace
+		{
+			if(bufcount!=0)
+			{
+				bufcount--;
+				buffer[bufcount]=0;
+			}
+		}
+		else
+		{
+			if(bufcount<0x80)
+			{
+				buffer[bufcount]=key&0xff;
+				bufcount++;
+			}
+		}
 	}
 	else if(type==2)
 	{
@@ -168,6 +219,14 @@ void hexmessage(DWORD type,DWORD key)
 	}
 	else if(type==3)
 	{
-		
+		if(key<0xff0000)
+		{
+			if(offset>=0x40)offset-=0x40;
+		}
+		else if(key>0xff0000)
+		{
+			//if(offset<0x100000-0xa00)offset+=0x40;
+			offset+=0x40;
+		}
 	}
 }

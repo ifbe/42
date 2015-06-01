@@ -76,29 +76,6 @@ void logic0background()
 		point(128,y,0xcc00);
 		point(1023-128,y,0xcc00);
 	}
-/*
-	//左上
-	for(y=0;y<32;y++)
-		for(x=0;x<32-y;x++)
-			point(x,y,0);
-	//右上
-	for(y=0;y<32;y++)
-		for(x=1024-32+y;x<1024;x++)
-			point(x,y,0);
-	//左下
-	for(x=0;x<32;x++)
-		for(y=640-32+x;y<640;y++)
-			point(x,y,0);
-	//右下
-	//for(y=640-32;y<640;y++)
-	//	for(x=1024-32;x<1024;x++)
-	//		point(x,y,0xff00);
-*/
-	//左箭头
-	for(x=0;x<32;x++)
-		for(y=320-4*x;y<320+4*x;y++)
-			point(x,y,0xffffffff);
-	string(0,20,"main");
 }
 logic0part()
 {
@@ -176,6 +153,15 @@ void printfile0()
 		hexadecimal(0x40+0xa,y+2,*(QWORD*)(p+0x40*y+0x20));
 		hexadecimal(0x58+0xa,y+2,*(QWORD*)(p+0x40*y+0x30));
 	}
+
+	//选中
+	for(y=32+choosefile*16;y<48+choosefile*16;y+=2)
+	{
+		for(x=0x80;x<0x380;x+=2)
+		{
+			point(x,y,0);
+		}
+	}
 }
 void printfile1()
 {
@@ -210,6 +196,7 @@ void logic0message(DWORD type,DWORD key)
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
+	/*
 	if(y>320-128)
 	{
 		if(y<320+128)
@@ -221,15 +208,20 @@ void logic0message(DWORD type,DWORD key)
 			}
 		}
 	}
-	if(x<128)
+	*/
+	if(y>32)
 	{
-		if(y>32)
+		if(y<512)
 		{
-			if(y<512)
+			if(x<128)
 			{
 				choosepart=(y-32)/32;
 				QWORD arg1=0x30+choosepart;
 				realcommand("mount",&arg1);
+			}
+			else if(x<1024-128)
+			{
+				choosefile=(y-32)/16;
 			}
 		}
 	}

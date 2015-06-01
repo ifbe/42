@@ -51,219 +51,15 @@ disk_bg()
 		}
 	}
 	/*
-	int x,y,i;
-	DWORD color;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0);
-		}
-	}
-	for(y=0;y<640;y++)
-	{
-		for(x=y-576;x<=y+960;x+=64)
-		{
-			if( (x>=0) && (x<1024) )
-			{
-				point(x,y,0xffffffff);
-				point(x,639-y,0xffffffff);
-			}
-		}
-	}
-	for(x=0;x<256;x++)
-	{
-		color=0xff00ff-0x010001*x;
-		for(y=64;y<576;y++)		//左
-		{
-			point(x,y,color);
-		}
-	}
-	for(x=0;x<256;x++)
-	{
-		color=0xffff00-0x010100*x;
-		for(y=64;y<576;y++)		//右
-		{
-			point(1023-x,y,color);
-		}
-	}
-	*/
-
-	//背景色
-	/*
-	for(y=0;y<256;y++)		//上
-	{
-		color=0x010101*(y*3/4);
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,color);
-		}
-	}
-	for(y=0;y<256;y++)		//下
-	{
-		color=0x010101*(y*3/4);
-		for(x=0;x<1024;x++)
-		{
-			point(x,639-y,color);
-		}
-	}*/
-	/*
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0);
-		}
-	}
-	for(x=0;x<256;x++)		//左
-	{
-		color=0xc0+0x010100*(x*3/4);
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-		}
-	}
-	for(x=0;x<256;x++)		//右
-	{
-		color=0xc000+0x010001*(x*3/4);
-
-		for(y=x;y<640-x;y++)
-		{
-			point(1023-x,y,color);
-		}
-	}
-	for(y=256;y<320;y++)		//横
-	{
-		color=0x010101*( (y-256)*0xff/(320-256) );
-		for(x=256;x<1024-256;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}*/
-	/*
-	for(x=0;x<64;x++)		//竖
-	{
-		color=0x040404*x;
-		for(y=64;y<256;y++)
-		{
-			point(512-64+x,y,color);
-			point(511+64-x,y,color);
-		}
-		for(y=320+64;y<640-64;y++)
-		{
-			point(512-64+x,y,color);
-			point(511+64-x,y,color);
-		}
-	}
-	for(x=0;x<64;x++)		//竖
-	{
-		color=0x040404*x;
-		for(y=256;y<320-64+x;y++)
-		{
-			point(512-64+x,y,color);
-			point(511+64-x,y,color);
-		}
-		for(y=320+64-x;y<640-256;y++)
-		{
-			point(512-64+x,y,color);
-			point(511+64-x,y,color);
-		}
-	}
-	*/
-
-	/*
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=0x0c0c0c*y;
-
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=0x0c0c0c*x;
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
-	}
-	*/
-	/*
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<512;x++)
-		{
-			point(x,y,0x7f+0x010100*(x/4));
-		}
-	}
-	for(y=0;y<640;y++)
-	{
-		for(x=512;x<1024;x++)
-		{
-			point(x,y,0x7f00+0x010001*((1023-x)/4));
-		}
-	}
-	*/
-	/*
-	for(x=192;x<832;x++)
-	{
-		point(x,0,0xffffffff);
-		point(x,639,0xffffffff);
-	}
-	for(y=0;y<640;y++)
-	{
-		point(192,y,0xffffffff);
-		point(831,y,0xffffffff);
-	}
-	*/
-
-	/*
-	//左上角
-	for(x=16;x<80;x++)
-		for(y=0;y<16;y++)
-			point(x,y,0x77777777);
-	string(2,0,"");
-	//右上角
-	for(x=1024-80;x<1024-16;x++)
-		for(y=0;y<16;y++)
-			point(x,y,0x770000);
-	string(0x78,0,"close");
-	//左下角
-	for(x=16;x<80;x++)
-		for(y=640-16;y<640;y++)
-			point(x,y,0x77);
-	string(2,39,"hex");
-	//右下角
-	for(x=1024-80;x<1024-16;x++)
-		for(y=640-16;y<640;y++)
-			point(x,y,0x7700);
-	string(0x78,39,"console");
-	*/
-	//左箭头
-	//for(x=16;x<80;x++)
-		//for(y=640-16;y<640;y++)
-			//point(x,y,0x77);
 	for(x=0;x<32;x++)
 		for(y=320-4*x;y<320+4*x;y++)
 			point(x,y,0xff00ff);
 	string(0,20,"real");
-	//右箭头
-	//for(x=1024-80;x<1024-16;x++)
-		//for(y=640-16;y<640;y++)
-			//point(x,y,0x7700);
 	for(x=1024-32;x<1024;x++)
 		for(y=320-(1024-x)*4;y<320+(1024-x)*4;y++)
 			point(x,y,0xffff00);
 	string(0x78,20,"logical");
+	*/
 }
 void printdisk0()
 {
@@ -339,6 +135,7 @@ diskmessage(DWORD type,DWORD key)
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
 	int val=0;
+	/*
 	if(y>320-128)
 	{
 		if(y<320+128)
@@ -355,6 +152,7 @@ diskmessage(DWORD type,DWORD key)
 			}
 		}
 	}
+	*/
 	if(x>256)
 	{
 		if(x<768)

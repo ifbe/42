@@ -102,8 +102,11 @@ void main()
 		int y=(key>>16)&0xffff;
 		if(type==1)
 		{
-			if(key==0x1b)what=0;		//不管谁在干活，按下esc就显示主屏
-			continue;
+			if(key==0x1b)
+			{
+				what=0;		//不管谁在干活，按下esc就显示主屏
+				continue;
+			}
 		}
 		if(type==2)
 		{
