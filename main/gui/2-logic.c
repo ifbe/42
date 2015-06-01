@@ -20,36 +20,6 @@ void logic0init()
 	whereislogicworld(&dirbuffer);
 	dirbuffer+=0x100000;
 }
-void logic0mouse(int x,int y)
-{
-	if(y>320-128)
-	{
-		if(y<320+128)
-		{
-			if(x<32)
-			{
-				killmehelpit(2,0);
-				return;
-			}
-		}
-	}
-	if(x<128)
-	{
-		if(y>32)
-		{
-			if(y<512)
-			{
-				choosepart=(y-32)/32;
-				QWORD arg1=0x30+choosepart;
-				realcommand("mount",&arg1);
-			}
-		}
-	}
-}
-void logic0kbd()
-{
-	
-}
 void logic0background()
 {
 	int x,y;
@@ -232,5 +202,35 @@ void logic0()
 	else
 	{
 		printfile2();
+	}
+}
+void logic0message(DWORD type,DWORD key)
+{
+	if(type!=2)return;
+
+	int x=key&0xffff;
+	int y=(key>>16)&0xffff;
+	if(y>320-128)
+	{
+		if(y<320+128)
+		{
+			if(x<32)
+			{
+				killmehelpit(2,0);
+				return;
+			}
+		}
+	}
+	if(x<128)
+	{
+		if(y>32)
+		{
+			if(y<512)
+			{
+				choosepart=(y-32)/32;
+				QWORD arg1=0x30+choosepart;
+				realcommand("mount",&arg1);
+			}
+		}
 	}
 }

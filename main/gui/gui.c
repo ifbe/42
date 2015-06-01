@@ -94,103 +94,74 @@ void main()
 		DWORD type=0;
 		DWORD key=0;
 		waitevent(&type,&key);
-		//say("type=%x,key=%x\n",type,key);
+		say("type=%x,key=%x\n",type,key);
+		if(type==0)return;
 
 		//3.干啥事
-		switch(type)
+		int x=key&0xffff;			//四个角落
+		int y=(key>>16)&0xffff;
+		if(type==1)
 		{
-			case 0:return;
-			case 1:				//键盘
+			if(key==0x1b)what=0;		//不管谁在干活，按下esc就显示主屏
+			continue;
+		}
+		if(type==2)
+		{
+			if( (y<16) && (x>1024-16) )return;				//右上
+			if(y>640-16)
 			{
-				say("keyboard:%x\n",key);
-
-				//不管谁在干活，按下esc就显示主屏
-				if(key==0x1b)what=0;
-
-				//real0在干活就交给real0
-				if(what==1)real0kbd(key);
-
-				//logic0在干活就交给logic0
-				else if(what==2)logic0kbd(key);
-
-				//hex在干活就交给hex
-				else if(what==3)hexkbd(key);
-
-				//console在干活就交给console
-				else if(what==4)consolekbd(key);
-
-				break;
-			}
-			case 2:				//鼠标
-			{
-				int x=key&0xffff;
-				int y=(key>>16)&0xffff;
-				say("mouse:(%d,%d)\n",x,y);
-
-				//四个角落
-				if( (y<16) && (x>1024-16) )return;				//右上
-				if(y>640-16)
+				if(x<16)
 				{
-					if(x<16)
-					{
-						what=0;
-
-						break;
-					}
-					else if(x<32)
-					{
-						if(what==1)what=0;
-						else what=1;
-
-						break;
-					}
-					else if(x<48) //showconsole^=1;		//左上
-					{
-						if(what==2)what=0;
-						else what=2;
-
-						break;
-					}
-					else if(x<64)
-					{
-						if(what==3)what=0;
-						else what=3;
-
-						break;
-					}
-					else if(x<80)
-					{
-						if(what==4)what=0;
-						else what=4;
-
-						break;
-					}
-					else if(x<96)
-					{
-						if(what==5)what=0;
-						else what=5;
-
-						break;
-					}
+					what=0;
+					continue;
 				}
+				else if(x<32)
+				{
+					if(what==1)what=0;
+					else what=1;
+					continue;
+				}
+				else if(x<48) //showconsole^=1;		//左上
+				{
+					if(what==2)what=0;
+					else what=2;
+					continue;
+				}
+				else if(x<64)
+				{
+					if(what==3)what=0;
+					else what=3;
+					continue;
+				}
+				else if(x<80)
+				{
+					if(what==4)what=0;
+					else what=4;
+					continue;
+				}
+				else if(x<96)
+				{
+					if(what==5)what=0;
+					else what=5;
+					continue;
+				}
+			}
+		}
 
-				//主界面就交给主界面
-				if(what==0)disk_mouse(x,y);
+		//disk在干活就交给disk
+		if(what==0)diskmessage(type,key);
 
-				//real0在干活就交给real0
-				else if(what==1)real0mouse(x,y);
+		//real0在干活就交给real0
+		else if(what==1)real0message(type,key);
 
-				//logic0在干活就交给logic0
-				else if(what==2)logic0mouse(x,y);
+		//logic0在干活就交给logic0
+		else if(what==2)logic0message(type,key);
 
-				//logic0在干活就交给logic0
-				else if(what==3)hexmouse(x,y);
+		//hex在干活就交给hex
+		else if(what==3)hexmessage(type,key);
 
-				//console在干活就交给console
-				//else if(what==4)consolemouse(x,y);
+		//console在干活就交给console
+		else if(what==4)consolemessage(type,key);
 
-				break;
-			}//case 2
-		}//switch
 	}//while(1)
 }

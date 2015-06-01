@@ -19,36 +19,6 @@ void consoleinit()
 {
 	whereislogbuf(&logbuf);
 }
-consolekbd(key)
-{
-	if(key==0xd)
-	{
-		command(buffer);
-
-		int i;
-		bufcount=0;
-		for(i=0;i<128;i++)
-		{
-			buffer[i]=0;
-		}
-	}
-	else if(key==0x8)		//backspace
-	{
-		if(bufcount!=0)
-		{
-			bufcount--;
-			buffer[bufcount]=0;
-		}
-	}
-	else
-	{
-		if(bufcount<0x80)
-		{
-			buffer[bufcount]=key&0xff;
-			bufcount++;
-		}
-	}
-}
 void consolebg()
 {
 	int x,y;
@@ -135,5 +105,37 @@ void console()
 	else
 	{
 		printconsole2();
+	}
+}
+consolemessage(DWORD type,DWORD key)
+{
+	if(type!=1)return;
+
+	if(key==0xd)
+	{
+		command(buffer);
+
+		int i;
+		bufcount=0;
+		for(i=0;i<128;i++)
+		{
+			buffer[i]=0;
+		}
+	}
+	else if(key==0x8)		//backspace
+	{
+		if(bufcount!=0)
+		{
+			bufcount--;
+			buffer[bufcount]=0;
+		}
+	}
+	else
+	{
+		if(bufcount<0x80)
+		{
+			buffer[bufcount]=key&0xff;
+			bufcount++;
+		}
 	}
 }

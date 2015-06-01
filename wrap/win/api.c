@@ -152,6 +152,13 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			my2=lparam;
 			return 0;
 		}
+		case WM_MOUSEWHEEL:
+		{
+			solved=0;
+			my1=3;
+			my2=wparam;
+			return 0;
+		}
 		case WM_RBUTTONDOWN:
 		{
 			SetCapture(window);                         // 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)

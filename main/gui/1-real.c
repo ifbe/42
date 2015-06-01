@@ -15,35 +15,6 @@ void real0init()
 {
 	whereisrealworld(&buffer0);
 }
-void real0mouse(int x,int y)
-{
-	if(y>320-128)
-	{
-		if(y<320+128)
-		{
-			if(x>1024-32)
-			{
-				killmehelpit(1,0);
-				return;
-			}
-		}
-	}
-	if( (x>256) && (x<768) )
-	{
-		tag=x/64-4;		//比例尺
-	}
-}
-void real0kbd(int key)
-{
-	if(key==0x25)	//left	0x4b
-	{
-		if(tag>0)tag--;
-	}
-	else if(key==0x27)	//right	0x4d
-	{
-		if(tag<7)tag++;
-	}
-}
 void real0background()
 {
 	int x,y;
@@ -358,5 +329,39 @@ void real0()
 	else
 	{
 		printpartition2();
+	}
+}
+void real0message(DWORD type,DWORD key)
+{
+	if(type==1)
+	{
+		if(key==0x25)	//left	0x4b
+		{
+			if(tag>0)tag--;
+		}
+		else if(key==0x27)	//right	0x4d
+		{
+			if(tag<7)tag++;
+		}
+	}
+	if(type==2)
+	{
+		int x=key&0xffff;
+		int y=(key>>16)&0xffff;
+		if(y>320-128)
+		{
+			if(y<320+128)
+			{
+				if(x>1024-32)
+				{
+					killmehelpit(1,0);
+					return;
+				}
+			}
+		}
+		if( (x>256) && (x<768) )
+		{
+			tag=x/64-4;		//比例尺
+		}
 	}
 }

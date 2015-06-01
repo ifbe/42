@@ -17,51 +17,6 @@ void diskinit()
 {
 	whereisdiskinfo(&diskinfo);
 }
-disk_mouse(int x,int y)
-{
-	int val=0;
-
-	if(y>320-128)
-	{
-		if(y<320+128)
-		{
-			if(x<32)
-			{
-				killmehelpit(0,1);
-				return;
-			}
-			if(x>1024-32)
-			{
-				killmehelpit(0,2);
-				return;
-			}
-		}
-	}
-	if(x>256)
-	{
-		if(x<768)
-		{
-			if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
-			{
-				if(y<512)
-				{
-					val=(y-64)/16;
-					if( (val%4) != 0 )		//val=4n不行，val=4n+1,4n+2,4n+3都可以
-					{
-						choose=val/4;
-
-						char* arg0="disk";
-						DWORD arg1=0x30+choose;
-						realcommand(arg0,&arg1);
-					}
-				}
-			}
-		}
-	}
-}
-disk_kbd()
-{
-}
 disk_bg()
 {
 	int x,y;
@@ -375,5 +330,50 @@ void printdisk()
 	else
 	{
 		printdisk2();
+	}
+}
+diskmessage(DWORD type,DWORD key)
+{
+	if(type!=2)return;
+
+	int x=key&0xffff;
+	int y=(key>>16)&0xffff;
+	int val=0;
+	if(y>320-128)
+	{
+		if(y<320+128)
+		{
+			if(x<32)
+			{
+				killmehelpit(0,1);
+				return;
+			}
+			if(x>1024-32)
+			{
+				killmehelpit(0,2);
+				return;
+			}
+		}
+	}
+	if(x>256)
+	{
+		if(x<768)
+		{
+			if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
+			{
+				if(y<512)
+				{
+					val=(y-64)/16;
+					if( (val%4) != 0 )		//val=4n不行，val=4n+1,4n+2,4n+3都可以
+					{
+						choose=val/4;
+
+						char* arg0="disk";
+						DWORD arg1=0x30+choose;
+						realcommand(arg0,&arg1);
+					}
+				}
+			}
+		}
 	}
 }

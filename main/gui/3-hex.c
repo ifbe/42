@@ -13,30 +13,6 @@ void hexinit()
 {
 	whereislogbuf(&logbuf);
 }
-void hexkbd(key)
-{
-	if(key==0x25)	//left	0x4b
-	{
-		if(px>0)px--;
-	}
-	else if(key==0x27)	//right	0x4d
-	{
-		if(px<0x3f)px++;
-	}
-	else if(key==0x26)	//up	0x4b
-	{
-		if(py>0)py--;
-	}
-	else if(key==0x28)	//down	0x4d
-	{
-		if(py<39)py++;
-	}
-}
-void hexmouse(int x,int y)
-{
-	px=x/(1024/0x40);
-	py=y/(640/40);
-}
 void hexbg()
 {
 	int x,y;
@@ -161,4 +137,37 @@ void hex()
 	hexbg();
 
 	printhex0();
+}
+void hexmessage(DWORD type,DWORD key)
+{
+	if(type==1)
+	{
+		if(key==0x25)	//left	0x4b
+		{
+			if(px>0)px--;
+		}
+		else if(key==0x27)	//right	0x4d
+		{
+			if(px<0x3f)px++;
+		}
+		else if(key==0x26)	//up	0x4b
+		{
+			if(py>0)py--;
+		}
+		else if(key==0x28)	//down	0x4d
+		{
+			if(py<39)py++;
+		}
+	}
+	else if(type==2)
+	{
+		int x=key&0xffff;
+		int y=(key>>16)&0xffff;
+		px=x/(1024/0x40);
+		py=y/(640/40);
+	}
+	else if(type==3)
+	{
+		
+	}
 }
