@@ -125,7 +125,7 @@ int mount(QWORD in)
 	cd=(void*)( *(QWORD*)(this+0x28) );
 	load=(void*)( *(QWORD*)(this+0x30) );
 
-	printmemory(this,0x40);
+	//printmemory(this,0x40);
 }
 
 

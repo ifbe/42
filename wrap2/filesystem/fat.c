@@ -21,6 +21,7 @@ static QWORD directorybuffer;		//目录专用
 
 //disk
 static QWORD diskaddr;
+QWORD firstsector;
 static QWORD fat0;			//fat表所在扇区
 static QWORD fatsize;		//fat表总共的扇区数量
 static QWORD cluster0;		//0号簇所在扇区
@@ -268,22 +269,46 @@ static int fat32_cd(QWORD id)
 
 
 
+void explainfat16head()
+{
+	//准备本程序需要的变量
+	//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
+	fatsize=(QWORD)( *(WORD*)(readbuffer+0x16) );
+	say("fatsize:%x\n",fatsize);
+	fat0=firstsector + (QWORD)( *(WORD*)(readbuffer+0xe) );
+	say("fat0:%x\n",fat0);
+	clustersize=(QWORD)( *(BYTE*)(readbuffer+0xd) );
+	say("clustersize:%x\n",clustersize);
+	cluster0=fat0+fatsize*2+32-clustersize*2;
+	say("cluster0:%x\n",cluster0);
+}
+void explainfat32head()
+{
+	//准备本程序需要的变量
+	//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
+	fatsize=(QWORD)( *(DWORD*)(readbuffer+0x24) );
+	say("fatsize:%x\n",fatsize);
+	fat0=firstsector + (QWORD)( *(WORD*)(readbuffer+0xe) );
+	say("fat0:%x\n",fat0);
+	clustersize=(QWORD)( *(BYTE*)(readbuffer+0xd) );
+	say("clustersize:%x\n",clustersize);
+	cluster0=fat0+fatsize*2-clustersize*2;
+	say("cluster0:%x\n",cluster0);
+}
 int mountfat(QWORD in,QWORD out)
 {
-	say("%llx\n",(QWORD)fat32_explain);
+	//say("%llx\n",(QWORD)fat32_explain);
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	QWORD firstsector=*(QWORD*)in;
 	whereislogicworld(&readbuffer);
 	directorybuffer=readbuffer+0x100000;
 	fatbuffer=readbuffer+0x200000;
+	firstsector=*(QWORD*)in;
 
 	//读取pbr
 	//say("partition sector:%x\n",firstsector);
 	//diskaddr=*(QWORD*)(0x200000+8);
 	readdisk(readbuffer,firstsector,diskaddr,1); //pbr
-
-	//检查分区问题，有就滚
-	if( *(WORD*)(readbuffer+0xb) !=0x200)
+	if( *(WORD*)(readbuffer+0xb) !=0x200)	//检查分区问题，有就滚
 	{
 		say("not 512B per sector,bye!\n");
 		return -1;
@@ -293,9 +318,7 @@ int mountfat(QWORD in,QWORD out)
 		say("not 2 fat,bye!\n");
 		return -2;
 	}
-
-	//检查fat版本
-	int similarity=50;
+	int similarity=50;		//检查fat版本
 	if( *(WORD*)(readbuffer+0x11) == 0) similarity++;         //fat32为0
 	else similarity--;
 	if( *(WORD*)(readbuffer+0x16) ==0) similarity++;         //fat32为0
@@ -308,17 +331,8 @@ int mountfat(QWORD in,QWORD out)
 		*(QWORD*)(in+0x28)=(QWORD)fat16_cd;
 		*(QWORD*)(in+0x30)=(QWORD)fat16_load;
 
-		//准备本程序需要的变量
-		//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
-		fatsize=(QWORD)( *(WORD*)(readbuffer+0x16) );
-		say("fatsize:%x\n",fatsize);
-		fat0=firstsector + (QWORD)( *(WORD*)(readbuffer+0xe) );
-		say("fat0:%x\n",fat0);
-		clustersize=(QWORD)( *(BYTE*)(readbuffer+0xd) );
-		say("clustersize:%x\n",clustersize);
-		cluster0=fat0+fatsize*2+32-clustersize*2;
-		say("cluster0:%x\n",cluster0);
-		say("\n");
+		//
+		explainfat16head(readbuffer,out);
 
 		//change directory /
 		fat16_root();
@@ -331,17 +345,8 @@ int mountfat(QWORD in,QWORD out)
 		*(QWORD*)(in+0x28)=(QWORD)fat32_cd;
 		*(QWORD*)(in+0x30)=(QWORD)fat32_load;
 
-		//准备本程序需要的变量
-		//QWORD firstsector=(QWORD)( *(DWORD*)(readbuffer+0x1c) );
-		fatsize=(QWORD)( *(DWORD*)(readbuffer+0x24) );
-		say("fatsize:%x\n",fatsize);
-		fat0=firstsector + (QWORD)( *(WORD*)(readbuffer+0xe) );
-		say("fat0:%x\n",fat0);
-		clustersize=(QWORD)( *(BYTE*)(readbuffer+0xd) );
-		say("clustersize:%x\n",clustersize);
-		cluster0=fat0+fatsize*2-clustersize*2;
-		say("cluster0:%x\n",cluster0);
-		say("\n");
+		//
+		explainfat32head();
 
 		//change directory /
 		fat32_root();

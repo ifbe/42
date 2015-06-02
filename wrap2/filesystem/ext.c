@@ -285,6 +285,25 @@ static void ext_load(QWORD id,QWORD offset)
 }
 
 
+
+
+
+
+
+
+void explainexthead(QWORD in,QWORD out)
+{
+	//变量们
+	blocksize=*(DWORD*)(in+0x418);
+	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
+	say("sectorperblock:%x\n",blocksize);
+	groupsize=( *(DWORD*)(in+0x420) )*blocksize;	//每组多少扇区
+	say("sectorpergroup:%x\n",groupsize);
+	inodepergroup=*(DWORD*)(in+0x428);		//每组多少个inode
+	say("inodepergroup:%x\n",inodepergroup);
+	inodesize=*(WORD*)(in+0x458);		//每inode多少字节
+	say("byteperinode:%x\n",inodesize);
+}
 int mountext(QWORD in,QWORD out)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
@@ -301,22 +320,10 @@ int mountext(QWORD in,QWORD out)
 	//读分区前8扇区，检查magic值
 	readdisk(readbuffer,block0,diskaddr,0x8);	//0x1000
 	if( *(WORD*)(readbuffer+0x438) != 0xef53 ) return;
-
-	//变量们
-	blocksize=*(DWORD*)(readbuffer+0x418);
-	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
-	say("sectorperblock:%x\n",blocksize);
-	groupsize=( *(DWORD*)(readbuffer+0x420) )*blocksize;	//每组多少扇区
-	say("sectorpergroup:%x\n",groupsize);
-	inodepergroup=*(DWORD*)(readbuffer+0x428);		//每组多少个inode
-	say("inodepergroup:%x\n",inodepergroup);
-	inodesize=*(WORD*)(readbuffer+0x458);		//每inode多少字节
-	say("byteperinode:%x\n",inodesize);
-
-	//inode table缓存
-	firstinodeincache=0xffffffff;
+	explainexthead(readbuffer,out);
 
 	//cd /
+	firstinodeincache=0xffffffff;
 	ext_cd(2);
 
 	return 0;

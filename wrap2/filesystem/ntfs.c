@@ -491,6 +491,33 @@ static int ntfs_load(QWORD id,QWORD offset)
 }
 
 
+
+
+
+
+
+
+void explainntfshead(QWORD in,QWORD out)
+{
+	clustersize=(QWORD)( *(BYTE*)(in+0xd) );
+	*(QWORD*)(out)=0xd;
+	*(QWORD*)(out+8)=0xd;
+	*(QWORD*)(out+0x10)=clustersize;
+	say("clustersize:%x\n",clustersize);
+
+	mftcluster= *(QWORD*)(in+0x30);
+	*(QWORD*)(out+0x40)=0x30;
+	*(QWORD*)(out+0x48)=0x37;
+	*(QWORD*)(out+0x50)=mftcluster;
+	say("mftcluster:%x\n",mftcluster);
+
+	QWORD indexsize=(QWORD)( *(BYTE*)(in+0x44) );
+	*(QWORD*)(out+0x80)=0x44;
+	*(QWORD*)(out+0x88)=0x44;
+	*(QWORD*)(out+0x90)=indexsize;
+	indexsize=clustersize * indexsize;
+	say("indexsize:%x\n",indexsize);
+}
 int mountntfs(QWORD in,QWORD out)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
@@ -505,26 +532,17 @@ int mountntfs(QWORD in,QWORD out)
 	*(QWORD*)(in+0x28)=(QWORD)ntfs_cd;
 	*(QWORD*)(in+0x30)=(QWORD)ntfs_load;
 
-	//读PBR，失败就返回
+	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
 	readdisk(readbuffer,ntfssector,0,1);
 	if( *(DWORD*)(readbuffer+3) != 0x5346544e ) return -1;
-
-	//变量
-	clustersize=(QWORD)( *(BYTE*)(readbuffer+0xd) );
-	say("clustersize:%x\n",clustersize);
-	mftcluster= *(QWORD*)(readbuffer+0x30);
-	say("mftcluster:%x\n",mftcluster);
-	QWORD indexsize=clustersize * (QWORD)( *(BYTE*)(readbuffer+0x44) );
-	say("indexsize:%x\n",indexsize);
+	explainntfshead(readbuffer,out);
 
 	//保存开头几个mft
 	readdisk(mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
 	//printmemory(mft0,0x400);
 
-	//
-	firstmftincache=0xffffffff;		//no mft cache yet
-
 	//cd /
+	firstmftincache=0xffffffff;		//no mft cache yet
 	pwd[0]=5;
 	ntfspwd=0;
 	ntfs_cd(5);

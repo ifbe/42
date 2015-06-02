@@ -99,18 +99,20 @@ void real0background()
 void printpartition0()
 {
 	int x,y;
+	QWORD p;
 
+	if(tag<7) p=buffer0+0x10000*tag;
 	for(y=0;y<20;y++)
 	{
-		if(*(QWORD*)(buffer0+y*0x40) == 0)break;
-		hexadecimal(0,y+2,*(QWORD*)(buffer0+y*0x40));
-		hexadecimal(16,y+2,*(QWORD*)(buffer0+y*0x40+0x8));
-		string(32,y+2,buffer0+y*0x40+0x10);
-		hexadecimal(48,y+2,*(QWORD*)(buffer0+y*0x40+0x18));
-		hexadecimal(64,y+2,*(QWORD*)(buffer0+y*0x40+0x20));
-		hexadecimal(80,y+2,*(QWORD*)(buffer0+y*0x40+0x28));
-		hexadecimal(96,y+2,*(QWORD*)(buffer0+y*0x40+0x30));
-		hexadecimal(112,y+2,*(QWORD*)(buffer0+y*0x40+0x38));
+		if(*(QWORD*)(p+y*0x40) == 0)break;
+		hexadecimal(0,y+2,*(QWORD*)(p+y*0x40));
+		hexadecimal(16,y+2,*(QWORD*)(p+y*0x40+0x8));
+		string(32,y+2,p+y*0x40+0x10);
+		hexadecimal(48,y+2,*(QWORD*)(p+y*0x40+0x18));
+		hexadecimal(64,y+2,*(QWORD*)(p+y*0x40+0x20));
+		hexadecimal(80,y+2,*(QWORD*)(p+y*0x40+0x28));
+		hexadecimal(96,y+2,*(QWORD*)(p+y*0x40+0x30));
+		hexadecimal(112,y+2,*(QWORD*)(p+y*0x40+0x38));
 	}
 }
 void printbitmap(QWORD start,QWORD end,QWORD typestr)
