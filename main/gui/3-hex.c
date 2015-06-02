@@ -23,58 +23,6 @@ void hexinit()
 	baseaddr&=0xfffffffffffffffc;
 	offset=0;
 }
-void hexbg()
-{
-	int x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xe0e0e0);
-		}
-	}
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=(QWORD)y*0x0e0e0e;
-
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=(QWORD)x*0x0e0e0e;
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
-	}
-	/*
-	//左上
-	for(y=0;y<32;y++)
-		for(x=0;x<32-y;x++)
-			point(x,y,0);
-	//右上
-	for(y=0;y<32;y++)
-		for(x=1024-32+y;x<1024;x++)
-			point(x,y,0);
-	//左下
-	for(x=0;x<32;x++)
-		for(y=640-32+x;y<640;y++)
-			point(x,y,0);
-	//右下
-	for(y=0;y<32;y++)
-		for(x=1024-y;x<1024;x++)
-			point(x,640-32+y,0);
-	*/
-}
 void printhex0()
 {
 	//写字
@@ -152,7 +100,7 @@ void printhex2()
 }
 void hex()
 {
-	hexbg();
+	background0();
 
 	printhex0();
 
@@ -165,18 +113,26 @@ void hexmessage(DWORD type,DWORD key)
 		if(key==0x25)	//left	0x4b
 		{
 			if(px>0)px--;
+			else{
+				if(offset>=0xa00)offset-=0xa00;
+			}
 		}
 		else if(key==0x27)	//right	0x4d
 		{
 			if(px<0x3f)px++;
+			else offset+=0xa00;
 		}
 		else if(key==0x26)	//up	0x4b
 		{
 			if(py>0)py--;
+			else{
+				if(offset>=0x40)offset-=0x40;
+			}
 		}
 		else if(key==0x28)	//down	0x4d
 		{
 			if(py<39)py++;
+			else offset+=0x40;
 		}
 		else if(key==0xd)
 		{

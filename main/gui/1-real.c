@@ -18,36 +18,8 @@ void real0init()
 void real0background()
 {
 	int x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xe0e0e0);
-		}
-	}
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=(QWORD)y*0x0e0e0e;
+	background0();
 
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=(QWORD)x*0x0e0e0e;
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
-	}
 	//框框
 	for(x=0;x<1024;x++)
 	{

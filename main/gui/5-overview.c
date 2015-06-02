@@ -5,36 +5,32 @@
 void overview()
 {
 	int x,y;
-	DWORD color;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xe0e0e0e0);
-		}
-	}
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=(QWORD)y*0x0e0e0e;
+	background0();
 
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=(QWORD)x*0x0e0e0e;
+	//外面的口
+	for(y=128;y<640-128;y++)point(256,y,0);
+	for(y=128;y<640-128;y++)point(767,y,0);
+	for(x=256;x<768;x++)point(x,128,0);
+	for(x=256;x<768;x++)point(x,639-128,0);
 
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
+	//撇捺
+	for(y=0;y<128;y++)
+	{
+		point(512-64-y,y+128+64,0);
+		point(512+64+y,y+128+64,0);
 	}
+
+	//里面的口
+	for(y=320;y<320+128;y++)point(256+128,y,0);
+	for(y=320;y<320+128;y++)point(767-128,y,0);
+	for(x=256+128;x<768-128;x++)point(x,320,0);
+	for(x=256+128;x<768-128;x++)point(x,320+128,0);
+}
+/*
+void overview()
+{
+	int x,y;
+	background0();
 	//5个框
 	for(y=320-128;y<320+128;y++)
 	{
@@ -92,4 +88,4 @@ void overview()
 		}
 	}
 	string(0x70,35,"console");
-}
+}*/

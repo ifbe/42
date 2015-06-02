@@ -19,40 +19,6 @@ void consoleinit()
 {
 	whereislogbuf(&logbuf);
 }
-void consolebg()
-{
-	int x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xe0e0e0);
-		}
-	}
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=(QWORD)y*0x0e0e0e;
-
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=(QWORD)x*0x0e0e0e;
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
-	}
-}
 void printconsole0()
 {
 	//背景
@@ -80,6 +46,16 @@ void printconsole0()
 	for(y=640-16;y<640;y++)
 		for(x=128;x<896;x++)
 			point(x,y,0xffffffff);
+	for(y=640-16;y<640;y++)
+	{
+		point(128,y,0);
+		point(895,y,0);
+	}
+	for(x=128;x<896;x++)
+	{
+		point(x,639-16,0);
+		point(x,639,0);
+	}
 	string(0x10,39,buffer);
 }
 void printconsole1()
@@ -92,7 +68,7 @@ void printconsole2()
 }
 void console()
 {
-	consolebg();
+	background0();
 
 	if(complex==0)
 	{

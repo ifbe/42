@@ -17,50 +17,6 @@ void diskinit()
 {
 	whereisdiskinfo(&diskinfo);
 }
-disk_bg()
-{
-	int x,y;
-	unsigned int color,i=0;
-	for(y=0;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xe0e0e0);
-		}
-	}
-	//上下
-	for(y=0;y<16;y++)
-	{
-		color=(QWORD)y*0x0e0e0e;
-
-		for(x=y;x<1024-y;x++)
-		{
-			point(x,y,color);
-			point(x,639-y,color);
-		}
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		color=(QWORD)x*0x0e0e0e;
-
-		for(y=x;y<640-x;y++)
-		{
-			point(x,y,color);
-			point(1023-x,y,color);
-		}
-	}
-	/*
-	for(x=0;x<32;x++)
-		for(y=320-4*x;y<320+4*x;y++)
-			point(x,y,0xff00ff);
-	string(0,20,"real");
-	for(x=1024-32;x<1024;x++)
-		for(y=320-(1024-x)*4;y<320+(1024-x)*4;y++)
-			point(x,y,0xffff00);
-	string(0x78,20,"logical");
-	*/
-}
 void printdisk0()
 {
 	//背景
@@ -113,7 +69,7 @@ void printdisk2()
 }
 void printdisk()
 {
-	disk_bg();
+	background0();
 
 	if(complex==0)
 	{
