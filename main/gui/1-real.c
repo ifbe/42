@@ -75,14 +75,14 @@ void real0background()
 		point(768,y,0xff);
 		point(896,y,0xff);
 	}
-	string(4+0,0,"start");
-	string(4+16,0,"end");
-	string(4+32,0,"type");
-	string(4+48,0,"reserved");
-	string(4+64,0,"explain");
-	string(4+80,0,"cd");
-	string(4+96,0,"load");
-	string(4+112,0,"reserved");
+	string(4+0,1,"start");
+	string(4+16,1,"end");
+	string(4+32,1,"type");
+	string(4+48,1,"reserved");
+	string(4+64,1,"explain");
+	string(4+80,1,"cd");
+	string(4+96,1,"load");
+	string(4+112,1,"reserved");
 
 	/*
 	//右箭头

@@ -170,6 +170,14 @@ void hexmessage(DWORD type,DWORD key)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
+
+		//（特殊的）点了方向箭头
+		//if(offset>=0x40)offset-=0x40;		//上
+		//offset+=0x40;						//下
+		//if(offset>=0xa00)offset-=0xa00;		//左
+		//offset+=0xa00;						//右
+
+		//（普通的）选择了某个字节
 		px=x/(1024/0x40);
 		py=y/(640/40);
 	}

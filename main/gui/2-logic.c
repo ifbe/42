@@ -72,6 +72,7 @@ logic0part()
 			}
 		}
 		hexadecimal(16*i,38,start);
+		string(16*i,39,partbuffer+i*0x40+0x10);
 	}
 
 	//选中
@@ -94,10 +95,10 @@ void printfile0()
 
 //三.每个分区里面的文件和文件夹
 	p=(char*)dirbuffer;
-	string(0x10,0,"name");
-	string(0x30,0,"id");
-	string(0x50,0,"type");
-	string(0x70,0,"size");
+	string(0x10,1,"name");
+	string(0x30,1,"id");
+	string(0x50,1,"type");
+	string(0x70,1,"size");
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;

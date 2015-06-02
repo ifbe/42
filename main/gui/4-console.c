@@ -31,14 +31,14 @@ void printconsole0()
 	{
 		for(y=0;y<linenum;y++)
 		{
-			string(0,y+2,logbuf+0x80*y);
+			string(0,y,logbuf+0x80*y);
 		}
 	}
 	else
 	{
 		for(y=0;y<36;y++)
 		{
-			string(0,y+2,logbuf+offsety+0x80*(y-36));
+			string(0,y,logbuf+offsety+0x80*(y-36));
 		}
 	}
 

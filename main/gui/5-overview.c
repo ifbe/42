@@ -5,9 +5,16 @@
 void overview()
 {
 	int x,y;
-	background0();
+	//background0();
 
 	//外面的口
+	for(y=128;y<640-128;y++)
+	{
+		for(x=256;x<768;x++)
+		{
+			point(x,y,0xffff00);
+		}
+	}
 	for(y=128;y<640-128;y++)point(256,y,0);
 	for(y=128;y<640-128;y++)point(767,y,0);
 	for(x=256;x<768;x++)point(x,128,0);
@@ -21,71 +28,42 @@ void overview()
 	}
 
 	//里面的口
-	for(y=320;y<320+128;y++)point(256+128,y,0);
-	for(y=320;y<320+128;y++)point(767-128,y,0);
-	for(x=256+128;x<768-128;x++)point(x,320,0);
-	for(x=256+128;x<768-128;x++)point(x,320+128,0);
-}
-/*
-void overview()
-{
-	int x,y;
-	background0();
-	//5个框
-	for(y=320-128;y<320+128;y++)
+	for(y=320;y<320+128;y++)
 	{
-		for(x=0;x<256;x++)
-		{
-			point(x,y,0xff00ff);
-		}
-	}
-	string(0x10,20,"left");
-	for(y=320-128;y<320+128;y++)
-	{
-		for(x=512-128;x<512+128;x++)
-		{
-			point(x,y,0x44444444);
-		}
-	}
-	string(0x40,20,"middle");
-	for(y=320-128;y<320+128;y++)
-	{
-		for(x=1024-256;x<1024;x++)
+		for(x=256+128;x<768-128;x++)
 		{
 			point(x,y,0xffff);
 		}
 	}
-	string(0x70,20,"right");
-	for(y=0;y<128;y++)
+	for(y=320;y<320+128;y++)point(256+128,y,0);
+	for(y=320;y<320+128;y++)point(767-128,y,0);
+	for(x=256+128;x<768-128;x++)point(x,320,0);
+	for(x=256+128;x<768-128;x++)point(x,320+128,0);
+
+	//
+	string(0x38,8,"every where to live");
+	string(0x38,24,"only here to die");
+}
+void overviewmessage(DWORD type,DWORD key)
+{
+	if(type==2)
 	{
-		for(x=0;x<128;x++)
+		int x=key&0xffff;
+		int y=(key>>16)&0xffff;
+		if(x>256+128)
 		{
-			point(x,y,0xffffffff);
+			if(x<768-128)
+			{
+				if(y>320)
+				{
+					if(y<320+128)
+					{
+						chooseoperator(0xff);		//请求退出
+						return;
+					}
+				}
+			}
 		}
+		chooseoperator(0x80);		//请求前一个
 	}
-	string(0,5,"overview");
-	for(y=0;y<128;y++)
-	{
-		for(x=896;x<1024;x++)
-		{
-			point(x,y,0xff0000);
-		}
-	}
-	string(0x70,5,"close");
-	for(y=640-128;y<640;y++)
-	{
-		for(x=0;x<128;x++)
-		{
-			point(x,y,0xff);
-		}
-	}
-	string(0,35,"hex");
-	for(y=640-128;y<640;y++)
-	{
-		for(x=896;x<1024;x++)
-		{
-			point(x,y,0xff00);
-		}
-	}
-	string(0x70,35,"console");
-}*/
+}
