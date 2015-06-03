@@ -295,13 +295,32 @@ void explainexthead(QWORD in,QWORD out)
 {
 	//变量们
 	blocksize=*(DWORD*)(in+0x418);
+	*(QWORD*)(out)=0x418;
+	*(QWORD*)(out+8)=0x41b;
+	*(QWORD*)(out+0x10)=blocksize;
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
 	say("sectorperblock:%x\n",blocksize);
-	groupsize=( *(DWORD*)(in+0x420) )*blocksize;	//每组多少扇区
+
+	//每组多少扇区
+	groupsize=*(DWORD*)(in+0x420);
+	*(QWORD*)(out+0x40)=0x420;
+	*(QWORD*)(out+0x48)=0x423;
+	*(QWORD*)(out+0x50)=groupsize;
+	groupsize=groupsize*blocksize;
 	say("sectorpergroup:%x\n",groupsize);
-	inodepergroup=*(DWORD*)(in+0x428);		//每组多少个inode
+
+	//每组多少个inode
+	inodepergroup=*(DWORD*)(in+0x428);
+	*(QWORD*)(out+0x80)=0x428;
+	*(QWORD*)(out+0x88)=0x42b;
+	*(QWORD*)(out+0x90)=inodepergroup;
 	say("inodepergroup:%x\n",inodepergroup);
-	inodesize=*(WORD*)(in+0x458);		//每inode多少字节
+
+	//每inode多少字节
+	inodesize=*(WORD*)(in+0x458);
+	*(QWORD*)(out+0xc0)=0x458;
+	*(QWORD*)(out+0xc8)=0x459;
+	*(QWORD*)(out+0xd0)=inodesize;
 	say("byteperinode:%x\n",inodesize);
 }
 int mountext(QWORD in,QWORD out)

@@ -7,12 +7,13 @@ win:
 gui:
 	gcc -c -O2 gui/gui.c
 	gcc -c -O2 gui/0-disk.c
-	gcc -c -O2 gui/1-real.c
+	gcc -c -O2 gui/0-overview.c
+	gcc -c -O2 gui/1-hex.c
+	gcc -c -O2 gui/1-console.c
+	gcc -c -O2 gui/2-real.c
 	gcc -c -O2 gui/2-logic.c
-	gcc -c -O2 gui/3-hex.c
-	gcc -c -O2 gui/4-console.c
-	gcc -c -O2 gui/5-overview.c
+	gcc -c -O2 gui/3-d.c
 	rm -f main.a
-	ar crs main.a gui.o 0-disk.o 1-real.o 2-logic.o 3-hex.o 4-console.o 5-overview.o
+	ar crs main.a gui.o 0-disk.o 0-overview.o 1-hex.o 1-console.o 2-real.o 2-logic.o 3-d.o
 clean:
 	rm -f *.o *.a

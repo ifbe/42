@@ -29,155 +29,173 @@ void chooseoperator(BYTE want)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 void printworld()
 {
 	int x,y;
 	//主界面显示什么
 	switch(what&0xff)
 	{
-		case 0:
-		{
-			overview();
-			break;
-		}
-		case 1:
-		{
-			printdisk();
-			break;
-		}
-		case 2:
-		{
-			real0();
-			break;
-		}
-		case 3:
-		{
-			logic0();
-			break;
-		}
-		case 4:
-		{
-			hex();
-			break;
-		}
-		case 5:
-		{
-			console();
-			break;
-		}
+		case 0:overview();break;
+		case 1:printdisk();break;
+		case 0x10:hex();break;
+		case 0x11:console();break;
+		case 0x20:real0();break;
+		case 0x21:logic0();break;
 	}
 
 	//右上角
 	for(x=1024-16;x<1024;x++)
 	{
 		for(y=0;y<16;y++)
-			point(x,y,0xffff00);
-		anscii(0x7f,0,'0');
+			point(x,y,0xff0000);
+		string(0x7e,0,"0o");
 
 		for(y=16;y<32;y++)
-			point(x,y,0xff);
-		anscii(0x7f,1,'1');
+			point(x,y,0xffff);
+		string(0x7e,1,"0d");
 
 		for(y=32;y<48;y++)
 			point(x,y,0xff00);
-		anscii(0x7f,2,'2');
+		string(0x7e,2,"1h");
 
 		for(y=48;y<64;y++)
-			point(x,y,0xff0000);
-		anscii(0x7f,3,'3');
+			point(x,y,0xff00ff);
+		string(0x7e,3,"1c");
 
 		for(y=64;y<80;y++)
-			point(x,y,0xff00ff);
-		anscii(0x7f,4,'4');
+			point(x,y,0xff);
+		string(0x7e,4,"2r");
 
 		for(y=80;y<96;y++)
 			point(x,y,0xffff);
-		anscii(0x7f,5,'5');
+		string(0x7e,5,"2l");
+
+		for(y=96;y<112;y++)
+			point(x,y,0);
+		string(0x7e,6,"3d");
 	}
 }
+void processmessage(DWORD type,DWORD key)
+{
+	if(type==1)
+	{
+		//按下esc
+		if(key==0x1b)
+		{
+			if(what!=0)chooseoperator(0);
+			else chooseoperator(0x80);
+			return;
+		}
+	}
+	if(type==2)
+	{
+		int x=key&0xffff;			//四个角落
+		int y=(key>>16)&0xffff;
+		if(x>1024-16)
+		{
+			if(y<16)				//右上
+			{
+				chooseoperator(0);
+				return;
+			}
+			else if(y<32)
+			{
+				chooseoperator(1);
+				return;
+			}
+			else if(y<48)
+			{
+				chooseoperator(0x10);
+				return;
+			}
+			else if(y<64) //showconsole^=1;		//左上
+			{
+				chooseoperator(0x11);
+				return;
+			}
+			else if(y<80)
+			{
+				chooseoperator(0x20);
+				return;
+			}
+			else if(y<96)
+			{
+				chooseoperator(0x21);
+				return;
+			}
+			else if(y<112)
+			{
+				chooseoperator(0x30);
+				return;
+			}
+		}
+	}
+
+	//其余所有消息，谁在干活就交给谁
+	if(what==0)overviewmessage(type,key);		//点了叉
+	else if(what==1)diskmessage(type,key);		//磁盘
+	else if(what==0x10)hexmessage(type,key);		//hex在干活就交给hex
+	else if(what==0x11)consolemessage(type,key);		//console在干活就交给console
+	else if(what==0x20)real0message(type,key);		//real0在干活就交给real0
+	else if(what==0x21)logic0message(type,key);		//logic0在干活就交给logic0
+	//else if(what==0x30)coolmessage(type,key);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void main()
 {
-	initmaster();
-
 						//0
-	diskinit();			//1
-	real0init();		//2
-	logic0init();		//3
-	hexinit();			//4
-	consoleinit();		//5
+	diskinit();			//0
 
+	hexinit();			//1
+	consoleinit();		//1
+
+	real0init();		//2
+	logic0init();		//2
+
+	initmaster();
 
 	while(1)
 	{
-		//1.这次显示啥
-		printworld();			//内容
-		writescreen();		//写屏
+		//1.先在内存里画画，然后一次性写到窗口内
+		printworld();
+		writescreen();
 
-		//2.等事件
+		//2.等事件，是退出消息就退出
 		DWORD type=0;
 		DWORD key=0;
 		waitevent(&type,&key);
 		say("type=%x,key=%x\n",type,key);
 		if(type==0)return;
 
-		//3.干啥事，首先处理掉特殊一些的消息
-		int x=key&0xffff;			//四个角落
-		int y=(key>>16)&0xffff;
-		if(type==1)
-		{
-			//按下esc
-			if(key==0x1b)
-			{
-				if(what!=0)chooseoperator(0);
-				else chooseoperator(0x80);
-				continue;
-			}
-		}
-		if(type==2)
-		{
-			if(x>1024-16)
-			{
-				if(y<16)				//右上
-				{
-					chooseoperator(0);
-					continue;
-				}
-				else if(y<32)
-				{
-					chooseoperator(1);
-					continue;
-				}
-				else if(y<48)
-				{
-					chooseoperator(2);
-					continue;
-				}
-				else if(y<64) //showconsole^=1;		//左上
-				{
-					chooseoperator(3);
-					continue;
-				}
-				else if(y<80)
-				{
-					chooseoperator(4);
-					continue;
-				}
-				else if(y<96)
-				{
-					chooseoperator(5);
-					continue;
-				}
-			}
-		}
-
-		//其余所有消息，谁在干活就交给谁
-		if(what==0)overviewmessage(type,key);		//点了叉
-		else if(what==1)diskmessage(type,key);		//磁盘
-		else if(what==2)real0message(type,key);		//real0在干活就交给real0
-		else if(what==3)logic0message(type,key);		//logic0在干活就交给logic0
-		else if(what==4)hexmessage(type,key);		//hex在干活就交给hex
-		else if(what==5)consolemessage(type,key);		//console在干活就交给console
-
-		if( (what&0xff) == 0xff )return;		//要求自杀，就让它死
-	}//while(1)
+		//3.处理事件，如果要求自杀就让它死
+		processmessage(type,key);
+		if( (what&0xff) == 0xff )return;
+	}
 }

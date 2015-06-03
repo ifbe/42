@@ -477,56 +477,101 @@ static int hfs_load(QWORD id,QWORD wantwhere)
 
 void explainhfshead(QWORD in,QWORD out)
 {
-	printmemory(readbuffer+0x400,0x200);
-	QWORD sector;
-	say("allocation\n");
-	say("    size:%llx\n",BSWAP_64(*(QWORD*)(readbuffer+0x470) ) );
-	say("    clumpsize:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x478) ) );
-	say("    totalblocks:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x47c) ) );
-
-	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x480) );
-	say("    sector:%llx,%lld\n",sector,sector);
-	say("    count:%llx\n",blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x484) ) );
-	say("extents overflow\n");
-	say("    size:%llx\n",BSWAP_64(*(QWORD*)(readbuffer+0x4c0) ) );
-	say("    clumpsize:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x4c8) ) );
-	say("    totalblocks:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x4cc) ) );
-
-	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x4d0) );
-	say("    sector:%llx,%lld\n",sector,sector);
-	say("    count:%llx\n",blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x4d4) ) );
-	say("catalog\n");
-	say("    size:%llx\n",BSWAP_64(*(QWORD*)(readbuffer+0x510) ) );
-	say("    clumpsize:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x518) ) );
-	say("    totalblocks:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x51c) ) );
-
-	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x520) );
-	say("    sector:%llx,%lld\n",sector,sector);
-	say("    count:%llx\n",blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x524) ) );
-	say("attribute\n");
-	say("    size:%llx\n",BSWAP_64(*(QWORD*)(readbuffer+0x560) ) );
-	say("    clumpsize:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x568) ) );
-	say("    totalblocks:%llx\n",BSWAP_32(*(DWORD*)(readbuffer+0x56c) ) );
-
-	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x570) );
-	say("    sector:%llx,%lld\n",sector,sector);
-	say("    count:%llx\n",blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x574) ) );
-
-	//--------
+	//printmemory(readbuffer+0x400,0x200);
 	if( *(WORD*)(readbuffer+0x400) == 0x2b48 )say("hfs+\n");
 	else if( *(WORD*)(readbuffer+0x400) == 0x5848 )say("hfsx\n");
 	blocksize=BSWAP_32( *(DWORD*)(readbuffer+0x428) )/0x200;
-	catalogsector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x520) );
 	say("blocksize:%x\n",blocksize);
-	say("catalogsector:%llx\n",catalogsector);
 
-	//读catalog的第0个node，得到nodesize
-	readdisk(readbuffer,catalogsector,0,0x8);	//0x1000
-	nodesize=BSWAP_16( *(WORD*)(readbuffer+0x20) )/0x200;
-	rootnode=BSWAP_32(*(DWORD*)(readbuffer+0x10) );
-	firstleafnode=BSWAP_32(*(DWORD*)(readbuffer+0x18) );
+	//111111111111111111111
+	QWORD size=BSWAP_64(*(QWORD*)(readbuffer+0x470) );
+	QWORD clumpsize=BSWAP_32(*(DWORD*)(readbuffer+0x478) );
+	QWORD totalblock=BSWAP_32(*(DWORD*)(readbuffer+0x47c) );
+	QWORD sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x480) );
+	QWORD count=blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x484) );
+	*(QWORD*)(out)=0x470;
+	*(QWORD*)(out+8)=0x4bf;
+	*(QWORD*)(out+0x10)=sector;
+	say("allocation\n");
+	say("    size:%llx\n",size);
+	say("    clumpsize:%llx\n",clumpsize);
+	say("    totalblocks:%llx\n",totalblock);
+	say("    sector:%llx\n",sector);
+	say("    count:%llx\n",count);
+
+	//22222222222222222222
+	size=BSWAP_64(*(QWORD*)(readbuffer+0x4c0) );
+	clumpsize=BSWAP_32(*(DWORD*)(readbuffer+0x4c8) );
+	totalblock=BSWAP_32(*(DWORD*)(readbuffer+0x4cc) );
+	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x4d0) );
+	count=blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x4d4) );
+	*(QWORD*)(out+0x40)=0x4c0;
+	*(QWORD*)(out+0x48)=0x50f;
+	*(QWORD*)(out+0x50)=sector;
+	say("extents overflow\n");
+	say("    size:%llx\n",size);
+	say("    clumpsize:%llx\n",clumpsize);
+	say("    totalblocks:%llx\n",totalblock);
+	say("    sector:%llx\n",sector);
+	say("    count:%llx\n",count);
+
+	//3333333333333333333333
+	size=BSWAP_64(*(QWORD*)(readbuffer+0x510) );
+	clumpsize=BSWAP_32(*(DWORD*)(readbuffer+0x518) );
+	totalblock=BSWAP_32(*(DWORD*)(readbuffer+0x51c) );
+	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x520) );
+	count=blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x524) );
+	*(QWORD*)(out+0x80)=0x510;
+	*(QWORD*)(out+0x88)=0x55f;
+	*(QWORD*)(out+0x90)=sector;
+	say("catalog\n");
+	say("    size:%llx\n",size);
+	say("    clumpsize:%llx\n",clumpsize);
+	say("    totalblocks:%llx\n",totalblock);
+	say("    sector:%llx\n",sector);
+	say("    count:%llx\n",count);
+	catalogsector=sector;
+
+	//444444444444444444444
+	size=BSWAP_64(*(QWORD*)(readbuffer+0x560) );
+	clumpsize=BSWAP_32(*(DWORD*)(readbuffer+0x568) );
+	totalblock=BSWAP_32(*(DWORD*)(readbuffer+0x56c) );
+	sector=block0+8*BSWAP_32(*(DWORD*)(readbuffer+0x570) );
+	count=blocksize*BSWAP_32(*(DWORD*)(readbuffer+0x574) );
+	*(QWORD*)(out+0xc0)=0x560;
+	*(QWORD*)(out+0xc8)=0x5af;
+	*(QWORD*)(out+0xd0)=sector;
+	say("attribute\n");
+	say("    size:%llx\n",size);
+	say("    clumpsize:%llx\n",clumpsize);
+	say("    totalblocks:%llx\n",totalblock);
+	say("    sector:%llx\n",sector);
+	say("    count:%llx\n",count);
+
+	//555555555555
+}
+void explaincatalog(QWORD in,QWORD out)
+{
+	//nodesize
+	nodesize=BSWAP_16( *(WORD*)(readbuffer+0x20) );
+	*(QWORD*)(out+0x100)=0x20;
+	*(QWORD*)(out+0x108)=0x21;
+	*(QWORD*)(out+0x110)=nodesize;
+	nodesize=nodesize/0x200;
 	say("nodesize:%x\n",nodesize);
+
+	//rootnode
+	rootnode=BSWAP_32(*(DWORD*)(readbuffer+0x10) );
+	*(QWORD*)(out+0x140)=0x10;
+	*(QWORD*)(out+0x148)=0x13;
+	*(QWORD*)(out+0x150)=rootnode;
 	say("rootnode:%x\n",rootnode);
+
+	//firstleafnode
+	firstleafnode=BSWAP_32(*(DWORD*)(readbuffer+0x18) );
+	*(QWORD*)(out+0x180)=0x18;
+	*(QWORD*)(out+0x188)=0x1b;
+	*(QWORD*)(out+0x190)=firstleafnode;
 	say("firstleafnode:%x\n",firstleafnode);
 }
 int mounthfs(QWORD in,QWORD out)
@@ -545,6 +590,10 @@ int mounthfs(QWORD in,QWORD out)
 	//读分区前8扇区，总共0x1000字节(其实只要分区内2号和3号扇区)
 	readdisk(readbuffer,block0,0,0x8);	//0x1000
 	explainhfshead(readbuffer,out);
+
+	//读catalog的第0个node，再分析这东西
+	readdisk(readbuffer,catalogsector,0,0x8);	//0x1000
+	explaincatalog(readbuffer,out);
 
 	//进入根目录
 	hfs_cd(2);
