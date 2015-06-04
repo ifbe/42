@@ -54,15 +54,53 @@ void printhex0()
 }
 void printfloat()
 {
-	//详细:选中的点
-	int x,y;
+	//dword框
+	int x,y;			//x<0xff
 	for(y=16*py;y<16*py+16;y++)
 	{
-		for(x=16*px;x<16*px+16;x++)
-		{
-			point(x,y,0xff);
-		}
+		point(16*(px&0xfc),y,0xff);
+		point(16*(px&0xfc)+1,y,0xff);
+		point(16*(px&0xfc)+62,y,0xff);
+		point(16*(px&0xfc)+63,y,0xff);
 	}
+	for(x=16*(px&0xfc);x<16*(px&0xfc)+64;x++)
+	{
+		point(x,16*py,0xff);
+		point(x,16*py+1,0xff);
+		point(x,16*py+0xf-1,0xff);
+		point(x,16*py+0xf,0xff);
+	}
+	//word框
+	for(y=16*py+2;y<16*py+14;y++)
+	{
+		point(16*(px&0xfe)+2,y,0xff00);
+		point(16*(px&0xfe)+3,y,0xff00);
+		point(16*(px&0xfe)+31-3,y,0xff00);
+		point(16*(px&0xfe)+31-2,y,0xff00);
+	}
+	for(x=16*(px&0xfe)+2;x<16*(px&0xfe)+30;x++)
+	{
+		point(x,16*py+2,0xff00);
+		point(x,16*py+3,0xff00);
+		point(x,16*py+0xf-3,0xff00);
+		point(x,16*py+0xf-2,0xff00);
+	}
+	//byte框
+	for(y=16*py+4;y<16*py+12;y++)
+	{
+		point(16*px+4,y,0xff0000);
+		point(16*px+5,y,0xff0000);
+		point(16*px+15-5,y,0xff0000);
+		point(16*px+15-4,y,0xff0000);
+	}
+	for(x=16*px+4;x<16*px+12;x++)
+	{
+		point(x,16*py+4,0xff0000);
+		point(x,16*py+5,0xff0000);
+		point(x,16*py+0xf-5,0xff0000);
+		point(x,16*py+0xf-4,0xff0000);
+	}
+
 	//256*256的详情框
 	int thisx=px*16+16;
 	int thisy=py*16+16;
@@ -75,20 +113,65 @@ void printfloat()
 			point(x,y,0xffffffff);
 		}
 	}
-	//详情内容文字
-	string(thisx/8,thisy/16,"address:");
-	string(thisx/8,1+thisy/16,"data:");
-	string(thisx/8,8+thisy/16,"realworld:");
-	string(thisx/8,9+thisy/16,"logicworld:");
-	string(thisx/8,10+thisy/16,"1234:");
-	string(thisx/8,11+thisy/16,"12351234:");
 
-	QWORD address=baseaddr+offset+py*0x40+px;
-	DWORD data=*(DWORD*)(address&0xfffffffffffffffc);
-	data=( data >> ( ( address & (QWORD)0x3 ) * 8) ) & 0xff;
-	hexadecimal(16+thisx/8,thisy/16,address);
-	hexadecimal(16+thisx/8,1+thisy/16,data);
-	string(16+thisx/8,11+thisy/16,buffer);
+	//数据
+	QWORD thisaddr=(baseaddr+offset+py*0x40+px);
+	QWORD position=thisaddr & 0x3;		//0,1,2,3
+
+	DWORD data32=*(DWORD*)(thisaddr & 0xfffffffffffffffc);
+	string(thisx/8,thisy/16,"data:");
+	string(16+thisx/8,thisy/16,"   ,   ,   ,  ");
+	hexadecimal(16+thisx/8,thisy/16,data32&0xff);
+	hexadecimal(20+thisx/8,thisy/16,(data32>>8)&0xff);
+	hexadecimal(24+thisx/8,thisy/16,(data32>>16)&0xff);
+	hexadecimal(28+thisx/8,thisy/16,(data32>>24)&0xff);
+
+	string(thisx/8,1+thisy/16,"dword:");
+	hexadecimal(16+thisx/8,1+thisy/16,data32);
+
+	WORD data16=( data32 >> ( (position/2) << 4 ) ) & 0xffff;
+	string(thisx/8,2+thisy/16,"word:");
+	hexadecimal(16+thisx/8,2+thisy/16,data16);
+
+	BYTE data8=( data32 >> (position*8) ) & 0xff;
+	string(thisx/8,3+thisy/16,"byte:");
+	hexadecimal(16+thisx/8,3+thisy/16,data8);
+
+	string(thisx/8,4+thisy/16,"ansciistring:");
+	string(16+thisx/8,4+thisy/16,thisaddr);
+
+	//横线
+	for(x=0;x<256;x++)point(thisx+x,thisy+128,0);
+
+	//地址，偏移，y，x
+	string(thisx/8,8+thisy/16,"base:");
+	hexadecimal(16+thisx/8,8+thisy/16,baseaddr);
+
+	string(thisx/8,9+thisy/16,"offset:");
+	anscii(15+thisx/8,9+thisy/16,'+');
+	hexadecimal(16+thisx/8,9+thisy/16,offset);
+
+	string(thisx/8,10+thisy/16,"y:");
+	anscii(15+thisx/8,10+thisy/16,'+');
+	hexadecimal(16+thisx/8,10+thisy/16,py);
+	string(18+thisx/8,10+thisy/16,"*40");
+	string(26+thisx/8,10+thisy/16,"(    )");
+	hexadecimal(27+thisx/8,10+thisy/16,0x40*py);
+
+	string(thisx/8,11+thisy/16,"x:");
+	anscii(15+thisx/8,11+thisy/16,'+');
+	hexadecimal(16+thisx/8,11+thisy/16,px);
+
+	for(x=thisx+128;x<thisx+256;x++)
+	{
+		point(x,thisy+192,0);
+	}
+	anscii(15+thisx/8,12+thisy/16,'=');
+	hexadecimal(16+thisx/8,12+thisy/16,baseaddr+offset+py*0x40+px);
+
+	//手工输入区域
+	string(16+thisx/8,15+thisy/16,buffer);
+
 }
 void printhex1()
 {

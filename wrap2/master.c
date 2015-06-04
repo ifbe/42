@@ -144,8 +144,10 @@ void realcommand(char* arg0,char* arg1)
 	}
 	else if(compare( arg0 , "disk" ) == 0)
 	{
-		disk(arg1);			//第几个功能，数值或者地址
+		//选磁盘
+		disk(arg1);
 
+		//只是打印一遍扫描到的磁盘信息
 		char* p=(char*)diskinfo;
 		int i;
 		for(i=0;i<16;i++)
@@ -154,6 +156,11 @@ void realcommand(char* arg0,char* arg1)
 			say("%s\n",diskinfo+0x100*i);
 		}
 
+		//清理内存
+		p=(char*)realworld;
+		for(i=0;i<0x100000;i++) p[i]=0;
+
+		//检查这是个什么玩意
 		hello();
 	}
 	else if(compare( arg0 , "mount" ) == 0)
@@ -165,9 +172,16 @@ void realcommand(char* arg0,char* arg1)
 		}
 		else
 		{
+			//清理buffer1
+			char* p=(char*)buffer1;
+			int i;
+			for(i=0;i<0x10000;i++) p[i]=0;
+
+			//字符串转值
 			QWORD value;
 			anscii2hex(arg1,&value);
 
+			//挂载选定分区
 			mount(value);		//第几个功能，字符串地址
 		}
 	}

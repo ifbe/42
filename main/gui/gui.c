@@ -53,38 +53,42 @@ void printworld()
 		case 0x11:console();break;
 		case 0x20:real0();break;
 		case 0x21:logic0();break;
+		case 0x30:tempprint();break;
 	}
 
 	//右上角
 	for(x=1024-16;x<1024;x++)
 	{
 		for(y=0;y<16;y++)
-			point(x,y,0xff0000);
+			point(x,y,0);
 		string(0x7e,0,"0o");
 
 		for(y=16;y<32;y++)
-			point(x,y,0xffff);
+			point(x,y,0xffffff);
 		string(0x7e,1,"0d");
-
-		for(y=32;y<48;y++)
-			point(x,y,0xff00);
-		string(0x7e,2,"1h");
-
-		for(y=48;y<64;y++)
-			point(x,y,0xff00ff);
-		string(0x7e,3,"1c");
 
 		for(y=64;y<80;y++)
 			point(x,y,0xff);
-		string(0x7e,4,"2r");
+		string(0x7e,4,"1h");
 
 		for(y=80;y<96;y++)
-			point(x,y,0xffff);
-		string(0x7e,5,"2l");
+			point(x,y,0xffff00);
+		string(0x7e,5,"1c");
 
-		for(y=96;y<112;y++)
-			point(x,y,0);
-		string(0x7e,6,"3d");
+		for(y=128;y<144;y++)
+			point(x,y,0xff00);
+		string(0x7e,8,"2r");
+
+		for(y=144;y<160;y++)
+			point(x,y,0xff00ff);
+		string(0x7e,9,"2l");
+
+		for(y=192;y<208;y++)
+			point(x,y,0xff0000);
+		string(0x7e,0xc,"3d");
+
+		for(y=208;y<224;y++)
+			point(x,y,0xffff);
 	}
 }
 void processmessage(DWORD type,DWORD key)
@@ -115,27 +119,33 @@ void processmessage(DWORD type,DWORD key)
 				chooseoperator(1);
 				return;
 			}
-			else if(y<48)
+			else if(y<64)
+			{}
+			else if(y<80)
 			{
 				chooseoperator(0x10);
 				return;
 			}
-			else if(y<64) //showconsole^=1;		//左上
+			else if(y<96) //showconsole^=1;		//左上
 			{
 				chooseoperator(0x11);
 				return;
 			}
-			else if(y<80)
+			else if(y<128)
+			{}
+			else if(y<144)
 			{
 				chooseoperator(0x20);
 				return;
 			}
-			else if(y<96)
+			else if(y<160)
 			{
 				chooseoperator(0x21);
 				return;
 			}
-			else if(y<112)
+			else if(y<192)
+			{}
+			else if(y<208)
 			{
 				chooseoperator(0x30);
 				return;
@@ -150,7 +160,7 @@ void processmessage(DWORD type,DWORD key)
 	else if(what==0x11)consolemessage(type,key);		//console在干活就交给console
 	else if(what==0x20)real0message(type,key);		//real0在干活就交给real0
 	else if(what==0x21)logic0message(type,key);		//logic0在干活就交给logic0
-	//else if(what==0x30)coolmessage(type,key);
+	//else if(what==0x30)tempmessage(type,key);
 }
 
 
@@ -191,8 +201,8 @@ void main()
 		DWORD type=0;
 		DWORD key=0;
 		waitevent(&type,&key);
-		say("type=%x,key=%x\n",type,key);
 		if(type==0)return;
+		//say("type=%x,key=%x\n",type,key);
 
 		//3.处理事件，如果要求自杀就让它死
 		processmessage(type,key);

@@ -41,7 +41,7 @@ void overview()
 	for(x=256+128;x<768-128;x++)point(x,320+128,0);
 
 	//
-	string(0x38,8,"every where to live");
+	string(0x38,16,"every where to live");
 	string(0x38,24,"only here to die");
 }
 void overviewmessage(DWORD type,DWORD key)

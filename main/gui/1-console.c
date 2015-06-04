@@ -5,6 +5,7 @@
 
 //log位置
 static BYTE* logbuf;
+static QWORD offset=0;
 
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
@@ -21,25 +22,18 @@ void consoleinit()
 }
 void printconsole0()
 {
-	//背景
+	//显示哪儿开始的一块
 	int x,y;
 
-	//内容
-	QWORD offsety=*(DWORD*)(logbuf+0xffff0);
-	int linenum=offsety/0x80;
-	if(offsety<0x80*36)		//[0,0x80*35]
+	//
+	DWORD temp=*(DWORD*)(logbuf+0xffff0);
+	QWORD showaddr=temp-offset;				//代表末尾位置而不是开头
+	if(showaddr<0x80*38)showaddr=0x80*38;
+
+	//总共38行，必须保证showaddr>=0x80*38
+	for(y=0;y<38;y++)
 	{
-		for(y=0;y<linenum;y++)
-		{
-			string(0,y,logbuf+0x80*y);
-		}
-	}
-	else
-	{
-		for(y=0;y<36;y++)
-		{
-			string(0,y,logbuf+offsety+0x80*(y-36));
-		}
+		string(0,y,logbuf+showaddr+0x80*(y-38));
 	}
 
 	//键盘输入区
@@ -85,33 +79,49 @@ void console()
 }
 consolemessage(DWORD type,DWORD key)
 {
-	if(type!=1)return;
-
-	if(key==0xd)
+	if(type==1)
 	{
-		command(buffer);
-
-		int i;
-		bufcount=0;
-		for(i=0;i<128;i++)
+		if(key==0xd)
 		{
-			buffer[i]=0;
+			command(buffer);
+
+			int i;
+			bufcount=0;
+			for(i=0;i<128;i++)
+			{
+				buffer[i]=0;
+			}
+		}
+		else if(key==0x8)		//backspace
+		{
+			if(bufcount!=0)
+			{
+				bufcount--;
+				buffer[bufcount]=0;
+			}
+		}
+		else
+		{
+			if(bufcount<0x80)
+			{
+				buffer[bufcount]=key&0xff;
+				bufcount++;
+			}
 		}
 	}
-	else if(key==0x8)		//backspace
+	else if(type==3)
 	{
-		if(bufcount!=0)
+		if(key<0xff0000)		//滚轮上
 		{
-			bufcount--;
-			buffer[bufcount]=0;
+			DWORD temp=*(DWORD*)(logbuf+0xffff0);
+			if(temp>=0x80*38)		//不够一页不用上翻
+			{
+				if(offset<temp-0x80*38)offset+=0x80;
+			}
 		}
-	}
-	else
-	{
-		if(bufcount<0x80)
+		else if(key>0xff0000)	//滚轮下
 		{
-			buffer[bufcount]=key&0xff;
-			bufcount++;
+			if(offset>=0x80)offset-=0x80;
 		}
 	}
 }

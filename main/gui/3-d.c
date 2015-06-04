@@ -4,11 +4,14 @@
 #define QWORD unsigned long long
 
 
-coolprint()
+tempprint()
 {
-	
+	int x,y;
+	for(y=0;y<200;y++)
+		for(x=0;x<512;x++)
+			point(x,y,0x456789ab);
 }
-coolmessage(DWORD type,DWORD key)
+tempmessage(DWORD type,DWORD key)
 {
 	
 }

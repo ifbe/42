@@ -22,6 +22,14 @@ void printdisk0()
 	//背景
 	char* p=(char*)diskinfo;
 	int x,y,i;
+
+	for(y=64;y<640-64;y++)
+	{
+		for(x=128;x<896;x++)
+		{
+			point(x,y,0xffffff);
+		}
+	}
 	string(0x10,10,"i can recognize these disks");
 	string(0x10,33,"u can choose a specific one");
 
@@ -69,8 +77,6 @@ void printdisk2()
 }
 void printdisk()
 {
-	background0();
-
 	if(complex==0)
 	{
 		printdisk0();
