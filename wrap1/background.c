@@ -20,10 +20,8 @@ void background1()
 	}
 
 	//上下
-	DWORD b=thatcolor&0xff;
-	DWORD g=(thatcolor>>8)&0xff;
-	DWORD r=(thatcolor>>16)&0xff;
-	thatcolor=(b>>4)+( (g>>4) << 8 )+( (r>>4) << 16 );
+	thatcolor=0xfdfdfd;		//这个颜色挺好看的
+	//say("thatcolor:%x\n",thatcolor);
 	for(y=0;y<16;y++)
 	{
 		DWORD color=(QWORD)y*thatcolor;
@@ -48,7 +46,7 @@ void background1()
 		}
 	}
 }
-void background0()
+void background2()
 {
 	DWORD thatcolor=0xe0e0e0;
 	DWORD* screenbuf;
@@ -62,8 +60,10 @@ void background0()
 	}
 
 	//上下
-	thatcolor=0xfdfdfd;		//这个颜色挺好看的
-	//say("thatcolor:%x\n",thatcolor);
+	DWORD b=thatcolor&0xff;
+	DWORD g=(thatcolor>>8)&0xff;
+	DWORD r=(thatcolor>>16)&0xff;
+	thatcolor=(b>>4)+( (g>>4) << 8 )+( (r>>4) << 16 );
 	for(y=0;y<16;y++)
 	{
 		DWORD color=(QWORD)y*thatcolor;

@@ -18,7 +18,7 @@ void real0init()
 void real0background()
 {
 	int x,y;
-	background0();
+	background2();
 
 	//框框
 	for(x=0;x<1024;x++)

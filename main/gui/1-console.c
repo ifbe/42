@@ -28,29 +28,50 @@ void printconsole0()
 	//
 	DWORD temp=*(DWORD*)(logbuf+0xffff0);
 	QWORD showaddr=temp-offset;				//代表末尾位置而不是开头
-	if(showaddr<0x80*38)showaddr=0x80*38;
+	if(showaddr<0x80*40)showaddr=0x80*40;
 
-	//总共38行，必须保证showaddr>=0x80*38
-	for(y=0;y<38;y++)
+	//总共38行，必须保证showaddr>=0x80*40
+	for(y=0;y<40;y++)
 	{
-		string(0,y,logbuf+showaddr+0x80*(y-38));
+		string(0,y,logbuf+showaddr+0x80*(y-40));
 	}
 
 	//键盘输入区
 	for(y=640-16;y<640;y++)
-		for(x=128;x<896;x++)
+		for(x=256;x<768;x++)
 			point(x,y,0xffffffff);
 	for(y=640-16;y<640;y++)
 	{
-		point(128,y,0);
-		point(895,y,0);
+		point(256,y,0xff);
+		point(767,y,0xff);
 	}
-	for(x=128;x<896;x++)
+	for(x=256;x<768;x++)
 	{
-		point(x,639-16,0);
-		point(x,639,0);
+		point(x,639-16,0xff);
+		point(x,639,0xff);
 	}
-	string(0x10,39,buffer);
+	string(0x20,39,buffer);
+
+	//位置
+	if(temp>=0x80*40)
+	{
+		for(y=64;y<640-64;y++)
+		{
+			for(x=1024-80;x<1024-64;x++)
+			{
+				point(x,y,0x44444488);
+			}
+		}
+		QWORD end=64+(640-64*2)*showaddr/temp;			//temp变量=max
+		QWORD start=end-(640-64*2)*0x80*40/temp;
+		for(y=start;y<end;y++)
+		{
+			for(x=1024-80+4;x<1024-64-4;x++)
+			{
+				point(x,y,0xccccccff);
+			}
+		}
+	}
 }
 void printconsole1()
 {
@@ -62,7 +83,7 @@ void printconsole2()
 }
 void console()
 {
-	background0();
+	background1();
 
 	if(complex==0)
 	{
@@ -114,9 +135,9 @@ consolemessage(DWORD type,DWORD key)
 		if(key<0xff0000)		//滚轮上
 		{
 			DWORD temp=*(DWORD*)(logbuf+0xffff0);
-			if(temp>=0x80*38)		//不够一页不用上翻
+			if(temp>=0x80*40)		//不够一页不用上翻
 			{
-				if(offset<temp-0x80*38)offset+=0x80;
+				if(offset<temp-0x80*40)offset+=0x80;
 			}
 		}
 		else if(key>0xff0000)	//滚轮下

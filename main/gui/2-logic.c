@@ -23,7 +23,7 @@ void logic0init()
 void logic0background()
 {
 	int x,y;
-	background0();
+	background2();
 
 	//外框
 	/*

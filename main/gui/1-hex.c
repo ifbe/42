@@ -183,7 +183,7 @@ void printhex2()
 }
 void hex()
 {
-	background0();
+	background1();
 
 	printhex0();
 
