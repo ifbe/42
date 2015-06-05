@@ -39,14 +39,14 @@ void logic0background()
 	}*/
 	for(y=0;y<32;y++)
 	{
-		point(0x100,y,0);
-		point(0x200,y,0);
-		point(0x300,y,0);
+		point(0x100,y,0xff00);
+		point(0x200,y,0xff00);
+		point(0x300,y,0xff00);
 	}
 	for(x=0;x<1024;x++)
 	{
-		point(x,0x20,0);
-		point(x,639-32,0);
+		point(x,0x20,0xff00);
+		point(x,639-32,0xff00);
 	}
 }
 logic0part()

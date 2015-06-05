@@ -21,19 +21,9 @@ void real0background()
 	background2();
 
 	//框框
-	for(x=0;x<1024;x++)
-	{
-		point(x,0,0xcc);
-		point(x,639,0xcc);
-	}
-	for(y=0;y<640;y++)
-	{
-		point(0,y,0xcc);
-		point(1023,y,0xcc);
-	}
 	for(y=640-16;y<640;y++)
 		for(x=256;x<=768;x+=64)
-			point(x,y,0);
+			point(x,y,0xff00);
 
 	//+涂黑选中项
 	for(y=640-16;y<640;y++)
@@ -55,25 +45,25 @@ void real0background()
 	//框框
 	for(x=0;x<1024;x++)
 	{
-		point(x,32,0xff);
-		point(x,48,0xff);
-		point(x,64,0xff);
-		point(x,80,0xff);
-		point(x,96,0xff);
-		point(x,112,0xff);
-		point(x,128,0xff);
+		point(x,32,0xff00);
+		point(x,48,0xff00);
+		point(x,64,0xff00);
+		point(x,80,0xff00);
+		point(x,96,0xff00);
+		point(x,112,0xff00);
+		point(x,128,0xff00);
 
-		point(x,640-32,0xff);
+		point(x,640-32,0xff00);
 	}
 	for(y=32;y<640-32;y++)
 	{
-		point(128,y,0xff);
-		point(256,y,0xff);
-		point(384,y,0xff);
-		point(512,y,0xff);
-		point(640,y,0xff);
-		point(768,y,0xff);
-		point(896,y,0xff);
+		point(128,y,0xff00);
+		point(256,y,0xff00);
+		point(384,y,0xff00);
+		point(512,y,0xff00);
+		point(640,y,0xff00);
+		point(768,y,0xff00);
+		point(896,y,0xff00);
 	}
 	string(4+0,1,"start");
 	string(4+16,1,"end");

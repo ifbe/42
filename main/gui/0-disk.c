@@ -23,50 +23,55 @@ void printdisk0()
 	char* p=(char*)diskinfo;
 	int x,y,i;
 
-	for(y=64;y<640-64;y++)
+	for(y=128;y<640-128;y++)
 	{
-		for(x=128;x<896;x++)
+		for(x=256;x<768;x++)
 		{
 			point(x,y,0xffffff);
 		}
 	}
-	string(0x10,10,"i can recognize these disks");
-	string(0x10,33,"u can choose a specific one");
+	for(y=128;y<640-128;y++)point(256,y,0);
+	for(y=128;y<640-128;y++)point(767,y,0);
+	for(x=256;x<768;x++)point(x,128,0);
+	for(x=256;x<768;x++)point(x,639-128,0);
 
 	//内容
 	for(i=0;i<10;i++)
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
-		for(y=80+64*i;y<128+64*i;y++)
+		for(y=128+32*i+1;y<160+32*i-1;y++)
 		{
-			for(x=256;x<768;x++)
+			for(x=512;x<768;x++)
 			{
-				point(x,y,0xffffffff);
+				point(x,y,0xff);
 			}
 		}
-		string(0x20,6+4*i,diskinfo+0x100*i);
-		string(0x20,7+4*i,diskinfo+0x100*i+0x80);
+		string(0x40,8+i*2,diskinfo+0x100*i);
+		//string(0x40,8+i,diskinfo+0x100*i+0x80);
 	}
 	//选中
-	for(y=80+64*choose;y<128+64*choose;y+=2)
+	for(y=128+32*choose;y<160+32*choose;y+=2)
 	{
-		for(x=256;x<768;x+=2)
+		for(x=512;x<768;x+=2)
 		{
 			point(x,y,0);
 		}
 	}
 
 	//手工输入
-	for(y=512;y<512+48;y++)
+	for(y=512-48;y<512;y++)
 	{
 		for(x=256;x<768;x++)
 		{
 			point(x,y,0xffffffff);
 		}
 	}
-	string(0x20,32+2,diskinfo);
+	string(0x20,31,diskinfo);
 
+	//----------------
+	string(0x30,8,"i can recognize these disks");
+	string(0x30,33,"u can choose a specific one");
 }
 void printdisk1()
 {
@@ -96,42 +101,23 @@ diskmessage(DWORD type,DWORD key)
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
-	int val=0;
-	/*
-	if(y>320-128)
-	{
-		if(y<320+128)
-		{
-			if(x<32)
-			{
-				killmehelpit(0,1);
-				return;
-			}
-			if(x>1024-32)
-			{
-				killmehelpit(0,2);
-				return;
-			}
-		}
-	}
-	*/
 	if(x>256)
 	{
 		if(x<768)
 		{
-			if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
+			if(y>128)		//[80,128),[144,192),[208,256),[272,320)......
 			{
 				if(y<512)
 				{
-					val=(y-64)/16;
-					if( (val%4) != 0 )		//val=4n不行，val=4n+1,4n+2,4n+3都可以
-					{
-						choose=val/4;
-
+					//int val=(y-128)/16;
+					//if( ( (val%4) == 1 ) | ( (val%4) == 2 ) )
+					//{
+					//	choose=val/4;
+						choose=(y-128)/32;
 						char* arg0="disk";
 						DWORD arg1=0x30+choose;
 						realcommand(arg0,&arg1);
-					}
+					//}
 				}
 			}
 		}

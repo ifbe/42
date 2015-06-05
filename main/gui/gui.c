@@ -60,7 +60,7 @@ void printworld()
 	for(x=1024-16;x<1024;x++)
 	{
 		for(y=0;y<16;y++)
-			point(x,y,0);
+			point(x,y,0x44444444);
 		string(0x7e,0,"0o");
 
 		for(y=16;y<32;y++)
