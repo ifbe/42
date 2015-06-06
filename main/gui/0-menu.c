@@ -5,10 +5,10 @@
 
 //硬盘信息
 static BYTE* diskinfo;
+static BYTE* processinfo;
 
 //
 static int choose=0;
-static int complex=0;		//主体华丽程度
 
 
 
@@ -16,85 +16,101 @@ static int complex=0;		//主体华丽程度
 void diskinit()
 {
 	whereisdiskinfo(&diskinfo);
+	whereisprocessinfo(&processinfo);
 }
-void printdisk0()
+void menubg()
 {
 	//背景
-	char* p=(char*)diskinfo;
-	int x,y,i;
+	int x,y;
 
-	for(y=128;y<640-128;y++)
+	for(y=64;y<640-64;y++)
 	{
 		for(x=256;x<768;x++)
 		{
 			point(x,y,0xffffff);
 		}
 	}
-	for(y=128;y<640-128;y++)
+	for(y=64;y<640-64;y++)
 	{
 		point(256,y,0);
 		point(767,y,0);
 	}
 	for(x=256;x<768;x++)
 	{
-		point(x,128,0);
-		point(x,639-128,0);
+		point(x,64,0);
+		point(x,639-64,0);
 	}
 	//
 	for(x=256;x<768;x++)point(x,320,0);
+}
 
+
+void printdisk0()
+{
 	//内容
-	string(0x30,0xa,"disk:");
+	//string(0x30,0xa,"disk:");
+	int x,y,i;
 	for(i=0;i<10;i++)
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
-		for(y=128+32*i+4;y<160+32*i-4;y++)
+		for(y=65+16*i;y<79+16*i;y++)
 		{
-			for(x=512;x<768;x++)
+			for(x=256;x<768;x++)
 			{
-				point(x,y,0xff);
+				point(x,y,0x88888888);
 			}
 		}
-		string(0x40,8+i*2,diskinfo+0x100*i);
+		string(0x20,4+i,diskinfo+0x100*i);
 		//string(0x40,8+i,diskinfo+0x100*i+0x80);
 	}
 	//选中
-	for(y=128+32*choose;y<160+32*choose;y+=2)
+	for(y=65+16*choose;y<79+16*choose;y+=2)
 	{
-		for(x=512;x<768;x+=2)
+		for(x=256;x<768;x+=2)
 		{
 			point(x,y,0);
 		}
 	}
 
 	//手工输入
-	string(0x40,19,diskinfo);
+	string(0x20,19,diskinfo);
 
 }
-void printdisk1()
+void printprocess0()
 {
+	int x,y,i;
+	for(i=0;i<10;i++)
+	{
+		if(*(DWORD*)(processinfo+0x80*i) == 0)break;
+
+		for(y=321+16*i;y<335+16*i;y++)
+		{
+			for(x=256;x<768;x++)
+			{
+				point(x,y,0x88888888);
+			}
+		}
+		string(0x20,20+i,processinfo+0x80*i);
+	}
+	//选中
+	/*
+	for(y=321+16*choose;y<335+16*choose;y+=2)
+	{
+		for(x=256;x<768;x+=2)
+		{
+			point(x,y,0);
+		}
+	}
+	*/
 }
-void printdisk2()
+void menu()
 {
-	
+	menubg();
+	printdisk0();
+	printprocess0();
 }
-void printdisk()
-{
-	if(complex==0)
-	{
-		printdisk0();
-	}
-	else if(complex==1)
-	{
-		printdisk1();
-	}
-	else
-	{
-		printdisk2();
-	}
-}
-diskmessage(DWORD type,DWORD key)
+menumessage(DWORD type,DWORD key)
 {
 	if(type!=2)return;
 
@@ -104,7 +120,7 @@ diskmessage(DWORD type,DWORD key)
 	{
 		if(x<768)
 		{
-			if(y>128)		//[80,128),[144,192),[208,256),[272,320)......
+			if(y>64)		//[80,128),[144,192),[208,256),[272,320)......
 			{
 				if(y<320)
 				{
@@ -112,7 +128,7 @@ diskmessage(DWORD type,DWORD key)
 					//if( ( (val%4) == 1 ) | ( (val%4) == 2 ) )
 					//{
 					//	choose=val/4;
-						choose=(y-128)/32;
+						choose=(y-64)/16;
 						char* arg0="disk";
 						DWORD arg1=0x30+choose;
 						realcommand(arg0,&arg1);

@@ -43,8 +43,8 @@ mac:
 .PHONY:win
 win:
 	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/memory.c
 	gcc -c -O2 win/log.c
+	gcc -c -O2 win/memory.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
 	../main/main.a \
@@ -53,22 +53,23 @@ win:
 	disk.o memory.o log.o uac.res
 .PHONY:win+api
 win+api:
-	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/memory.c
-	gcc -c -O2 win/journal.c
 	gcc -c -O2 win/api.c
+	gcc -c -O2 win/disk.c
+	gcc -c -O2 win/journal.c
+	gcc -c -O2 win/memory.c
+	gcc -c -O2 win/process.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -mwindows -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	disk.o memory.o journal.o api.o uac.res \
+	api.o disk.o journal.o memory.o process.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
 win+sdl:
 	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/memory.c
 	gcc -c -O2 win/journal.c
+	gcc -c -O2 win/memory.c
 	gcc -c -O2 sdl2/sdl.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
