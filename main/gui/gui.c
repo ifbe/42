@@ -11,7 +11,7 @@
 //0x30:
 //0x31:
 static showmenu=1;
-static DWORD what=0x10;
+static DWORD what=0;
 
 
 

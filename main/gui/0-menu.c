@@ -40,28 +40,36 @@ void menubg()
 		point(x,64,0);
 		point(x,639-64,0);
 	}
-	//
-	for(x=256;x<768;x++)point(x,320,0);
+
 }
 
 
 void printdisk0()
 {
 	//内容
-	//string(0x30,0xa,"disk:");
 	int x,y,i;
+	for(y=64;y<80;y++)
+	{
+		for(x=256;x<768;x++)
+		{
+			point(x,y,0xff);
+		}
+	}
+	string(0x20,4,"----process----");
+
+	//
 	for(i=0;i<10;i++)
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
 		for(y=65+16*i;y<79+16*i;y++)
 		{
-			for(x=256;x<768;x++)
+			for(x=256+64;x<768-64;x++)
 			{
 				point(x,y,0x88888888);
 			}
 		}
-		string(0x20,4+i,diskinfo+0x100*i);
+		string(0x28,4+i,diskinfo+0x100*i);
 		//string(0x40,8+i,diskinfo+0x100*i+0x80);
 	}
 	//选中
@@ -79,19 +87,30 @@ void printdisk0()
 }
 void printprocess0()
 {
+	//中间一条横线
 	int x,y,i;
+	for(y=320;y<336;y++)
+	{
+		for(x=256;x<768;x++)
+		{
+			point(x,y,0xff);
+		}
+	}
+	string(0x20,20,"----process----");
+
+	//
 	for(i=0;i<10;i++)
 	{
 		if(*(DWORD*)(processinfo+0x80*i) == 0)break;
 
 		for(y=321+16*i;y<335+16*i;y++)
 		{
-			for(x=256;x<768;x++)
+			for(x=256+64;x<768-64;x++)
 			{
 				point(x,y,0x88888888);
 			}
 		}
-		string(0x20,20+i,processinfo+0x80*i);
+		string(0x28,20+i,processinfo+0x80*i);
 	}
 	//选中
 	/*
@@ -104,11 +123,26 @@ void printprocess0()
 	}
 	*/
 }
+void exitbutton()
+{
+	//最后的退出按钮
+	int x,y;
+	for(y=512+32;y<512+64;y++)
+	{
+		for(x=512-64;x<512+64;x++)
+		{
+			point(x,y,0xff0000);
+		}
+	}
+	string(0x3e,34,"exit");
+	string(0x3c,35,"program");
+}
 void menu()
 {
 	menubg();
 	printdisk0();
 	printprocess0();
+	exitbutton();
 }
 menumessage(DWORD type,DWORD key)
 {
@@ -133,6 +167,19 @@ menumessage(DWORD type,DWORD key)
 						DWORD arg1=0x30+choose;
 						realcommand(arg0,&arg1);
 					//}
+				}
+			}
+		}
+	}
+	if(y>512+32)
+	{
+		if(y<512+64)
+		{
+			if(x>512-64)
+			{
+				if(x<512+64)
+				{
+					die();
 				}
 			}
 		}
