@@ -5,7 +5,7 @@
 void overview()
 {
 	int x,y;
-	//background0();
+	background3();
 
 	//外面的口
 	for(y=128;y<640-128;y++)
@@ -15,10 +15,16 @@ void overview()
 			point(x,y,0xffff00);
 		}
 	}
-	for(y=128;y<640-128;y++)point(256,y,0);
-	for(y=128;y<640-128;y++)point(767,y,0);
-	for(x=256;x<768;x++)point(x,128,0);
-	for(x=256;x<768;x++)point(x,639-128,0);
+	for(y=128;y<640-128;y++)
+	{
+		point(256,y,0);
+		point(767,y,0);
+	}
+	for(x=256;x<768;x++)
+	{
+		point(x,128,0);
+		point(x,639-128,0);
+	}
 
 	//撇捺
 	for(y=0;y<128;y++)

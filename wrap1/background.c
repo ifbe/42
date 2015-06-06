@@ -88,3 +88,15 @@ void background2()
 		}
 	}
 }
+void background3()
+{
+	DWORD* screenbuf;
+	whereisscreenbuf(&screenbuf);
+
+	//用指定颜色清屏
+	int x,y;
+	for(x=0;x<1024*640;x++)
+	{
+		screenbuf[x]=0x456789ab;
+	}
+}

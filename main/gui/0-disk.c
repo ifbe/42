@@ -30,17 +30,26 @@ void printdisk0()
 			point(x,y,0xffffff);
 		}
 	}
-	for(y=128;y<640-128;y++)point(256,y,0);
-	for(y=128;y<640-128;y++)point(767,y,0);
-	for(x=256;x<768;x++)point(x,128,0);
-	for(x=256;x<768;x++)point(x,639-128,0);
+	for(y=128;y<640-128;y++)
+	{
+		point(256,y,0);
+		point(767,y,0);
+	}
+	for(x=256;x<768;x++)
+	{
+		point(x,128,0);
+		point(x,639-128,0);
+	}
+	//
+	for(x=256;x<768;x++)point(x,320,0);
 
 	//内容
+	string(0x30,0xa,"disk:");
 	for(i=0;i<10;i++)
 	{
 		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
 
-		for(y=128+32*i+1;y<160+32*i-1;y++)
+		for(y=128+32*i+4;y<160+32*i-4;y++)
 		{
 			for(x=512;x<768;x++)
 			{
@@ -60,18 +69,8 @@ void printdisk0()
 	}
 
 	//手工输入
-	for(y=512-48;y<512;y++)
-	{
-		for(x=256;x<768;x++)
-		{
-			point(x,y,0xffffffff);
-		}
-	}
-	string(0x20,31,diskinfo);
+	string(0x40,19,diskinfo);
 
-	//----------------
-	string(0x30,8,"i can recognize these disks");
-	string(0x30,33,"u can choose a specific one");
 }
 void printdisk1()
 {
@@ -107,7 +106,7 @@ diskmessage(DWORD type,DWORD key)
 		{
 			if(y>128)		//[80,128),[144,192),[208,256),[272,320)......
 			{
-				if(y<512)
+				if(y<320)
 				{
 					//int val=(y-128)/16;
 					//if( ( (val%4) == 1 ) | ( (val%4) == 2 ) )

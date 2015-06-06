@@ -7,9 +7,17 @@
 tempprint()
 {
 	int x,y;
-	for(y=0;y<200;y++)
-		for(x=0;x<512;x++)
-			point(x,y,0x456789ab);
+	background3();
+	for(y=-250;y<250;y++)
+	{
+		for(x=-250;x<250;x++)
+		{
+			if(x*x+y*y<=62500)
+			{
+				draw(x,y,0xffffffff);
+			}
+		}
+	}
 }
 tempmessage(DWORD type,DWORD key)
 {
