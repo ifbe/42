@@ -70,5 +70,5 @@ void holyshit(sector,count,where,wantwhere,towhere)
 	}
 
 	say("sector:%x,count:%x,where:%x,want:%x,to:%x,rdi=%x,rsi=:%x,rcx=%x\n",sector,count,where,wantwhere,towhere,rdi,rsi,rcx);
-	readdisk(rdi,rsi,0,rcx);
+	readmemory(rdi,rsi,0,rcx);
 }

@@ -50,6 +50,7 @@ void small2capital(QWORD* name)
                 }
         }
 }
+/*
 //比如0x36，0x38,0x37,0x39,转换后得到data=0x39373836
 void str2data(BYTE* str,QWORD* data)
 {
@@ -61,7 +62,8 @@ void str2data(BYTE* str,QWORD* data)
 		*data+=((QWORD)str[i])<<(i*8);
 	}
 }
-//anscii码转换成一个数字，比如anscii码串为0x36,0x33,转换后得到decimal=32
+*/
+//anscii码转换成一个数字，比如anscii码串为0x36,0x33,转换后得到decimal=36
 void anscii2dec(BYTE* second,QWORD* decimal)
 {
 	*decimal=0;
@@ -74,28 +76,28 @@ void anscii2dec(BYTE* second,QWORD* decimal)
 	}
 }
 //anscii码转换成一个16进制数字，比如anscii码串为0x36,0x61,转换后得到hex=0x6a
-int anscii2hex(BYTE* second,QWORD* hex)
+int anscii2hex(BYTE* source,QWORD* hex)
 {
 	*hex=0;
 	int i;
 	for(i=0;i<8;i++)
 	{
-		//say("%x\n",second[i]);
+		//say("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了
-		if(second[i]<=0x20) break;
+		if(source[i]<=0x20) break;
 
 		//2.如果大于0x80，那就返回错误
-		if(second[i]>=0x80) return -1;
+		if(source[i]>=0x80) return -1;
 
 		//3.如果是正常值
 		*hex=(*hex)<<4;
-		if(second[i]>=0x61 && second[i]<=0x66)
+		if(source[i]>=0x61 && source[i]<=0x66)
 		{
-			*hex+=second[i]-0x61+10;
+			*hex+=source[i]-0x61+10;
 		}
-		else if(second[i]>=0x30 && second[i]<=0x39)
+		else if(source[i]>=0x30 && source[i]<=0x39)
 		{
-			*hex+=second[i]-0x30;
+			*hex+=source[i]-0x30;
 		}
 	}
 }

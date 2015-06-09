@@ -94,7 +94,7 @@ void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
 		{
 			//读进内存
 			//传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
-			//readdisk(rdi,ntfssector+offset,diskaddr,count);
+			//readmemory(rdi,ntfssector+offset,diskaddr,count);
 			holyshit(ntfssector+offset,count,logicpos,want,targetaddr);
 		}
 		//准备下一轮
@@ -533,12 +533,12 @@ int mountntfs(QWORD in,QWORD out)
 	*(QWORD*)(in+0x30)=(QWORD)ntfs_load;
 
 	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
-	readdisk(readbuffer,ntfssector,0,1);
+	readmemory(readbuffer,ntfssector,0,1);
 	if( *(DWORD*)(readbuffer+3) != 0x5346544e ) return -1;
 	explainntfshead(readbuffer,out);
 
 	//保存开头几个mft
-	readdisk(mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
+	readmemory(mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
 	//printmemory(mft0,0x400);
 
 	//cd /

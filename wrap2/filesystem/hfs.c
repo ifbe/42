@@ -135,7 +135,7 @@ explainleafnode()
 static void hfs_explain(QWORD number)
 {
 	say("%llx@%llx\n",number,catalogsector+nodesize*number);
-	readdisk(readbuffer,catalogsector+nodesize*number,0,nodesize);	//0x1000
+	readmemory(readbuffer,catalogsector+nodesize*number,0,nodesize);	//0x1000
 	printmemory(readbuffer,0x1000);
 
 	//1.解释节点头
@@ -175,7 +175,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 	say("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
-	readdisk(readbuffer,catalogsector+nodenum*nodesize,0,nodesize);
+	readmemory(readbuffer,catalogsector+nodenum*nodesize,0,nodesize);
 	BYTE type=*(BYTE*)(readbuffer+8);
 
 	//节点内每一个record找一遍，找本节点内第一个的偏移
@@ -198,7 +198,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 
 			//临时读下一个到readbuffer+0x8000那里(节点最大不超过0x8000吧)
 			//读这个临时节点的第一个记录看看，能确定下来目前的最后一个record就是想要的
-			readdisk(readbuffer+0x8000,catalogsector+temptempnodenum*nodesize,0,nodesize);
+			readmemory(readbuffer+0x8000,catalogsector+temptempnodenum*nodesize,0,nodesize);
 			QWORD temptempkey=BSWAP_32(*(DWORD*)(readbuffer+0x8000+0x10));
 
 			//
@@ -297,7 +297,7 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 			if(nodenum==0)break;
 			say("next node:%x\n",nodenum);
 
-			readdisk(readbuffer,catalogsector+nodenum*nodesize,0,nodesize);
+			readmemory(readbuffer,catalogsector+nodenum*nodesize,0,nodesize);
 			totalrecords=BSWAP_16(*(WORD*)(readbuffer+0xa));
 			temp=0;
 			continue;
@@ -355,7 +355,7 @@ static int hfs_cd(QWORD id)
 	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
-		readdisk(readbuffer,catalogsector+firstleafnode*nodesize,0,nodesize);
+		readmemory(readbuffer,catalogsector+firstleafnode*nodesize,0,nodesize);
 		foundnode=firstleafnode;
 	}
 	else
@@ -381,7 +381,7 @@ static int hfs_cd(QWORD id)
 //传进来的是：本文件父目录的cnid，本文件的cnid，节点号，想要的文件内部偏移
 void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 {
-	readdisk(catalogbuffer,catalogsector+nodenum*nodesize,0,nodesize);
+	readmemory(catalogbuffer,catalogsector+nodenum*nodesize,0,nodesize);
 	QWORD rdi=readbuffer;
 	int i;
 	//清理内存
@@ -588,11 +588,11 @@ int mounthfs(QWORD in,QWORD out)
 	*(QWORD*)(in+0x30)=(QWORD)hfs_load;
 
 	//读分区前8扇区，总共0x1000字节(其实只要分区内2号和3号扇区)
-	readdisk(readbuffer,block0,0,0x8);	//0x1000
+	readmemory(readbuffer,block0,0,0x8);	//0x1000
 	explainhfshead(readbuffer,out);
 
 	//读catalog的第0个node，再分析这东西
-	readdisk(readbuffer,catalogsector,0,0x8);	//0x1000
+	readmemory(readbuffer,catalogsector,0,0x8);	//0x1000
 	explaincatalog(readbuffer,out);
 
 	//进入根目录

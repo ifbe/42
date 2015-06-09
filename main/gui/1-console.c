@@ -98,19 +98,27 @@ void console()
 		printconsole2();
 	}
 }
-consolemessage(DWORD type,DWORD key)
+void consolemessage(DWORD type,DWORD key)
 {
 	if(type==1)
 	{
 		if(key==0xd)
 		{
-			command(buffer);
-
-			int i;
-			bufcount=0;
-			for(i=0;i<128;i++)
+			if(compare( buffer , "exit" ) == 0)
 			{
-				buffer[i]=0;
+				die();
+				return;
+			}
+			else
+			{
+				command(buffer);
+
+				int i;
+				bufcount=0;
+				for(i=0;i<128;i++)
+				{
+					buffer[i]=0;
+				}
 			}
 		}
 		else if(key==0x8)		//backspace

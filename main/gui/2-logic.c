@@ -166,8 +166,7 @@ void logic0message(DWORD type,DWORD key)
 	if(y>639-32)		//选分区
 	{
 		choosepart=x/128;
-		QWORD arg1=0x30+choosepart;
-		realcommand("mount",&arg1);
+		mount(choosepart);
 	}
 	else if(y>32)		//选文件
 	{

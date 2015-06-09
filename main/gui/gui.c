@@ -10,11 +10,16 @@
 //0x21:
 //0x30:
 //0x31:
-static showmenu=1;
-static DWORD what=0;
+static DWORD what=0x11;
 
 
 
+
+static showmenu=0;
+void hidemenu()
+{
+	showmenu=0;
+}
 
 
 

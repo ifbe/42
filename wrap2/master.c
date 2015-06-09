@@ -42,9 +42,9 @@ int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x
 
 
 
-void hello()
+void hello()		//看这是什么，再看分块
 {
-	readdisk(readbuffer,0,0,64);
+	readmemory(readbuffer,0,0,64);
 	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
 	{
 		say("disk or image\n");
@@ -98,6 +98,11 @@ int searchthis(char* name,QWORD* addr)
 }
 int mount(QWORD in)
 {
+	//清理buffer1
+	char* p=(char*)buffer1;
+	int i;
+	for(i=0;i<0x10000;i++) p[i]=0;
+
 	//搞谁，是啥
 	QWORD this=buffer0+in*0x40;
 	QWORD type=*(QWORD*)(this+0x10);
@@ -127,41 +132,73 @@ int mount(QWORD in)
 
 	//printmemory(this,0x40);
 }
-
-
-
-
-void realcommand(char* arg0,char* arg1)
+void choosefocus(QWORD value)
 {
+	//清理内存
+	char* p=(char*)realworld;
+	int i;
+	for(i=0;i<0x100000;i++) p[i]=0;
+
+	//检查这是个什么玩意
+	focus(value);
+	hello();
+}
+
+
+
+
+
+
+
+
+void command(char* buffer)
+{
+//-----------------1.把收到的命令检查并翻译一遍-------------------
+	BYTE* arg0;
+	BYTE* arg1;
+	buf2arg(buffer,&arg0,&arg1);
+	if(arg0==0)return;
+	//say("%llx,%llx\n",arg0,arg1);
+
+
+
+
 //----------------------2.实际的活都找专人来干-----------------------------
 	if(compare( arg0 , "help" ) == 0)
 	{
-		say("disk ?                  (choose a disk)\n");
+		say("focus ?                 (choose a disk)\n");
 		say("mount ?                 (choose a partition)\n");
 		say("explain ?               (explain inode/cluster/cnid/mft)\n");
 		say("cd dirname              (change directory)\n");
 		say("load filename           (load this file)\n");
 	}
-	else if(compare( arg0 , "disk" ) == 0)
+	else if(compare( arg0 , "focus" ) == 0)
 	{
-		//选磁盘
-		disk(arg1);
-
-		//只是打印一遍扫描到的磁盘信息
-		char* p=(char*)diskinfo;
-		int i;
-		for(i=0;i<16;i++)
+		if( (QWORD)arg1 == 0 )
 		{
-			if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
-			say("%s\n",diskinfo+0x100*i);
+			//只是打印一遍扫描到的磁盘信息
+			char* p=(char*)diskinfo;
+			int i=0;
+
+			listall();
+			while(1)
+			{
+				//先检查
+				if( *(DWORD*)(diskinfo+i) == 0 )break;
+				if(i>100*0x100)break;
+
+				//再打印
+				say("%s\n",diskinfo+i);
+				i+=0x100;
+			}
 		}
-
-		//清理内存
-		p=(char*)realworld;
-		for(i=0;i<0x100000;i++) p[i]=0;
-
-		//检查这是个什么玩意
-		hello();
+		else
+		{
+			//选择磁盘
+			QWORD value;
+			anscii2hex(arg1,&value);
+			if(value<100)choosefocus(value);
+		}
 	}
 	else if(compare( arg0 , "mount" ) == 0)
 	{
@@ -172,11 +209,6 @@ void realcommand(char* arg0,char* arg1)
 		}
 		else
 		{
-			//清理buffer1
-			char* p=(char*)buffer1;
-			int i;
-			for(i=0;i<0x10000;i++) p[i]=0;
-
 			//字符串转值
 			QWORD value;
 			anscii2hex(arg1,&value);
@@ -242,16 +274,4 @@ void realcommand(char* arg0,char* arg1)
 	{
 		say("what?\n");
 	}
-}
-void command(char* buffer)
-{
-	
-//-----------------1.把收到的命令检查并翻译一遍-------------------
-	BYTE* arg0;
-	BYTE* arg1;
-	buf2arg(buffer,&arg0,&arg1);
-	say("%llx,%llx\n",arg0,arg1);
-
-	if(arg0==0)return;
-	else realcommand(arg0,arg1);
 }

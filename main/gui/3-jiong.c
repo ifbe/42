@@ -58,23 +58,4 @@ void jiong()
 }
 void overviewmessage(DWORD type,DWORD key)
 {
-	if(type==2)
-	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-		if(x>256+128)
-		{
-			if(x<768-128)
-			{
-				if(y>320)
-				{
-					if(y<320+128)
-					{
-						die();
-						return;
-					}
-				}
-			}
-		}
-	}
 }

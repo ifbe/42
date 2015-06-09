@@ -61,7 +61,7 @@ static QWORD whichblock(QWORD groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readdisk(blockrecord,sector,diskaddr,1);
+	readmemory(blockrecord,sector,diskaddr,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	QWORD addr=(QWORD)blockrecord+8+(groupnum*0x20)%0x200;
@@ -108,7 +108,7 @@ static QWORD checkcacheforinode(QWORD wanted)
 
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
-	    readdisk(rdi,where,diskaddr,count*inodesize/0x200);	//注意！！！！inodepergroup奇葩时这里出问题
+	    readmemory(rdi,where,diskaddr,count*inodesize/0x200);	//注意！！！！inodepergroup奇葩时这里出问题
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;				//注意！！！！inodepergroup奇葩时这里出问题
@@ -204,7 +204,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 			temp=block0+(*(DWORD*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-		        readdisk(rdi,temp,diskaddr,blocksize);
+		        readmemory(rdi,temp,diskaddr,blocksize);
 			rdi+=0x200*blocksize;
 		}
 
@@ -337,7 +337,7 @@ int mountext(QWORD in,QWORD out)
 	*(QWORD*)(in+0x30)=(QWORD)ext_load;
 
 	//读分区前8扇区，检查magic值
-	readdisk(readbuffer,block0,diskaddr,0x8);	//0x1000
+	readmemory(readbuffer,block0,diskaddr,0x8);	//0x1000
 	if( *(WORD*)(readbuffer+0x438) != 0xef53 ) return;
 	explainexthead(readbuffer,out);
 

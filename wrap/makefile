@@ -57,13 +57,12 @@ win+api:
 	gcc -c -O2 win/disk.c
 	gcc -c -O2 win/journal.c
 	gcc -c -O2 win/memory.c
-	gcc -c -O2 win/process.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -mwindows -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	api.o disk.o journal.o memory.o process.o uac.res \
+	api.o disk.o journal.o memory.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
 win+sdl:

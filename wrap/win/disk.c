@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <tlhelp32.h>
 
 #define QWORD unsigned long long
 #define DWORD unsigned int
@@ -15,7 +16,7 @@ struct diskinfo
 	unsigned char sn[0x40];
 	unsigned char unused[0x40];
 };
-static struct diskinfo diskinfo[16];
+static struct diskinfo diskinfo[100];
 
 HANDLE hDev;
 static BYTE tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
@@ -69,10 +70,54 @@ static void enumeratedisk()
 		}
 	}//10个记录
 }
+void enumerateprocess()
+{
+	//只需列出进程名字和编号
+	PROCESSENTRY32 proc;
+	HANDLE pHandle;
+	proc.dwSize = sizeof(PROCESSENTRY32);
+	pHandle = CreateToolhelp32Snapshot(0x2,0x0);
+	if(pHandle==INVALID_HANDLE_VALUE){
+		return;
+	}
+
+	//找位置，跟在后面
+	char* p=(char*)diskinfo;
+	int i=0;
+	while(1)
+	{
+		if( p[i] == 0 )break;
+		else i+=0x100;
+	}
+
+	//写内容
+	printf("%-40s%-20s\n","proc.szExeFile","proc.th32ProcessID");
+	while( Process32Next(pHandle,&proc) )
+	{
+		printf("%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
+		sprintf((char*)diskinfo+i,"%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
+		i+=0x100;
+		if(i>0x100*100)break;
+	}
+	CloseHandle(pHandle);
+	return;
+}
+void listall()
+{
+	//清理
+	char* p=(char*)diskinfo;
+	int i;
+	for(i=0;i<100*0x100;i++)p[i]=0;
+
+	//扫描
+	enumeratedisk();
+	enumerateprocess();
+
+}
 __attribute__((constructor)) void initdisk()
 {
-	//只enumerate一遍，其他什么都不做
-	enumeratedisk();
+	//列出
+	listall();
 
 	//打开找到的第一个硬盘并且选择它
 	int i;
@@ -99,45 +144,64 @@ __attribute__((destructor)) void freedisk()
 
 
 
-void disk(QWORD in)
+
+
+
+
+
+
+
+
+
+
+
+
+void whereisdiskinfo(unsigned long long* p)
 {
-	//传进来0，只扫描一遍然后打印一遍了事
-	if(in == 0)
+	*p=(unsigned long long)diskinfo;
+}
+void focus(QWORD in)
+{
+	//第1种可能：传进来的是个文件的地址
+	if( in >100 )
 	{
-		enumeratedisk();
-		return;
-	}
-
-	//传进来一个路径，那后面的操作都是对它进行
-	char* path;
-	BYTE firstone=*(BYTE*)in;
-	if( firstone <=0x39 )		//0,1,2,3,4等等......
-	{
-		path=diskinfo[firstone-0x30].path;
-		say("here1:%s\n",path);
-	}
-	else		//比如d:\image\name.img
-	{
-		path=(char*)in;
+		//比如d:\image\name.img
+		char* path=(char*)in;
 		say("here2:%s\n",path);
-	}
 
-	//测试能否成功打开
-	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-	if(temphandle == INVALID_HANDLE_VALUE)
-	{
-		say("cannot open\n");
 		return;
 	}
-	else CloseHandle(temphandle);
 
-	//关掉原先已经打开的磁盘，然后把这个虚拟磁盘文件当成硬盘来用并且选定
-	CloseHandle(hDev);
-	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 
+
+
+	//第2种可能：传进来的是个硬盘
+	char* path=diskinfo[in].path;
+	if(*(DWORD*)path == 0x5c2e5c5c)		//选择的是硬盘
+	{
+		//测试能否成功打开
+		HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+		if(temphandle == INVALID_HANDLE_VALUE)
+		{
+			say("cannot open\n");
+			return;
+		}
+		else CloseHandle(temphandle);
+
+		//关掉原先已经打开的磁盘，然后把这个虚拟磁盘文件当成硬盘来用并且选定
+		CloseHandle(hDev);
+		hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+
+		return;
+	}
+
+
+
+
+	//第3种可能：传进来的是某个进程的虚拟内存
 }
 //内存地址，第一扇区，请无视，总字节数
-void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
+void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 {
 	LARGE_INTEGER li;
 	li.QuadPart = startsector*512;
@@ -193,12 +257,4 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 	WriteFile(hFile,memaddr,count,&dwBytesWritten,NULL);
 
 	CloseHandle(hFile);
-}
-
-
-
-
-void whereisdiskinfo(unsigned long long* p)
-{
-	*p=(unsigned long long)diskinfo;
 }
