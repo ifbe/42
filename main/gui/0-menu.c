@@ -105,7 +105,7 @@ menumessage(DWORD type,DWORD key)
 				if(y<512)
 				{
 					choose=(y-128)/16;
-					choosefocus(choose);
+					focus(choose);
 
 					return;
 				}

@@ -42,14 +42,21 @@ int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x
 
 
 
-void hello()		//看这是什么，再看分块
+void hello()		//你究竟是个什么？
 {
+	//读最开始的64个扇区（0x8000字节）来初步确定
 	readmemory(readbuffer,0,0,64);
+
+	//检查是不是磁盘（末尾有没有0x55，0xaa这个标志）
 	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
 	{
 		say("disk or image\n");
 		explainparttable(readbuffer,buffer0);
 	}
+
+	//可能是内存？
+	else
+	{}
 }
 void initmaster()
 {
@@ -132,15 +139,18 @@ int mount(QWORD in)
 
 	//printmemory(this,0x40);
 }
-void choosefocus(QWORD value)
+void focus(QWORD value)
 {
 	//清理内存
-	char* p=(char*)realworld;
+	char* p;
 	int i;
+	p=(char*)realworld;
 	for(i=0;i<0x100000;i++) p[i]=0;
+	p=(char*)logicworld;
+	for(i=0;i<0x400000;i++) p[i]=0;
 
 	//检查这是个什么玩意
-	focus(value);
+	choosetarget(value);
 	hello();
 }
 
@@ -192,12 +202,16 @@ void command(char* buffer)
 				i+=0x100;
 			}
 		}
-		else
+		else if( *(DWORD*)arg1 < 0xffff )	//'9','9'=0x3939
 		{
 			//选择磁盘
 			QWORD value;
 			anscii2hex(arg1,&value);
-			if(value<100)choosefocus(value);
+			if(value<100)focus(value);
+		}
+		else
+		{
+			focus((QWORD)arg1);
 		}
 	}
 	else if(compare( arg0 , "mount" ) == 0)
