@@ -234,10 +234,13 @@ void hexadecimal1234(int x,int y,unsigned int z)
 }
 void string(int x,int y,char* p)
 {
-    while(*p!='\0')
+    while(1)
     {
-    anscii(x,y,*p);
-    p++;
-    x++;
+		if( *p == 0x0 )break;
+		if(x>=0x80)break;
+
+		anscii(x,y,*p);
+		p++;
+		x++;
     }
 }

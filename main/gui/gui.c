@@ -10,7 +10,7 @@
 //0x21:
 //0x30:
 //0x31:
-static DWORD what=0x11;
+static DWORD what=0x10;
 
 
 

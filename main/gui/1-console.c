@@ -102,7 +102,7 @@ void consolemessage(DWORD type,DWORD key)
 {
 	if(type==1)
 	{
-		if(key==0xd)
+		if(key==0xd)		//回车
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
@@ -111,14 +111,18 @@ void consolemessage(DWORD type,DWORD key)
 			}
 			else
 			{
-				command(buffer);
-
-				int i;
-				bufcount=0;
-				for(i=0;i<128;i++)
+				if( ( (*(QWORD*)buffer)&0xffffffffffff ) == 0x207375636f66 )	//"focus "
 				{
-					buffer[i]=0;
+					hexinit();
 				}
+				command(buffer);
+			}
+
+			int i;
+			bufcount=0;
+			for(i=0;i<128;i++)
+			{
+				buffer[i]=0;
 			}
 		}
 		else if(key==0x8)		//backspace
