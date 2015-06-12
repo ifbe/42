@@ -10,6 +10,9 @@ static int bufcount=0;
 //显示区域是0x1000，那么缓冲区就要0x2000以上
 static BYTE databuffer[0x2000];
 
+//
+static int printmethod=0;
+
 //浮动窗口位置
 static int thisx;
 static int thisy;
@@ -94,14 +97,81 @@ void hexbg()
 			point(x,y,0xff0000);
 		}
 	}
+}
+void printhex0()
+{
+	//把想要的部分读进来
+	QWORD readwhere=readornotread(baseaddr+offset);
+	int x,y;
 
-
+	//一整页
+	if(printmethod==0)
+	{
+		for(y=0;y<40;y++)
+		{
+			for(x=0;x<0x40;x+=4)
+			{
+				DWORD value=*(DWORD*)(readwhere+y*0x40+x);
+				hexadecimal1234(2*x,y,value);
+			}
+		}
+	}
+	else if(printmethod==1)
+	{
+		for(y=0;y<40;y++)
+		{
+			for(x=0;x<0x40;x+=4)
+			{
+				DWORD value=*(DWORD*)(readwhere+y*0x40+x);
+				anscii(2*x,y,value&0xff);
+				anscii(2*x+2,y,(value>>8)&0xff);
+				anscii(2*x+4,y,(value>>16)&0xff);
+				anscii(2*x+6,y,(value>>24)&0xff);
+			}
+		}
+	}
+	else if(printmethod==2)
+	{
+		
+	}
+}
+void kuangbg()
+{
 	//256*256的详情框
+	int x,y;
 	for(y=thisy;y<thisy+256;y++)
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
 			point(x,y,0xffffffff);
+		}
+	}
+	for(y=thisy+128;y<thisy+192;y++)
+	{
+		for(x=thisx;x<thisx+128;x++)
+		{
+			point(x,y,0xff);
+		}
+	}
+	for(y=thisy+128;y<thisy+192;y++)
+	{
+		for(x=thisx+128;x<thisx+256;x++)
+		{
+			point(x,y,0xff00);
+		}
+	}
+	for(y=thisy+192;y<thisy+256;y++)
+	{
+		for(x=thisx;x<thisx+128;x++)
+		{
+			point(x,y,0xff0000);
+		}
+	}
+	for(y=thisy+192;y<thisy+256;y++)
+	{
+		for(x=thisx+128;x<thisx+256;x++)
+		{
+			point(x,y,0xffffff);
 		}
 	}
 	//横线
@@ -111,30 +181,46 @@ void hexbg()
 	{
 		point(x,thisy+192,0);
 	}
-}
-void printhex0()
-{
-	//把想要的部分读进来
-	int x,y;
 
-	QWORD readwhere=readornotread(baseaddr+offset);
+	//四个功能
+	string(thisx/8,8+thisy/16,"hex");
+	string(16+thisx/8,8+thisy/16,"anscii");
+	string(thisx/8,0xc+thisy/16,"utf8");
+	string(16+thisx/8,0xc+thisy/16,"reserved");
+}
+void kuangcontent()
+{
+	/*
 	QWORD thisaddr=readwhere+py*0x40+px;
 	QWORD position=thisaddr & 0x3;		//0,1,2,3
 
 	DWORD data32=*(DWORD*)(thisaddr & 0xfffffffffffffffc);
 	WORD data16=( data32 >> ( (position/2) << 4 ) ) & 0xffff;
 	BYTE data8=( data32 >> (position*8) ) & 0xff;
+	*/
+	//baseaddr
+	string(thisx/8,thisy/16,"base:");
+	hexadecimal(16+thisx/8,thisy/16,baseaddr);
+	//offset
+	string(thisx/8,1+thisy/16,"offset:");
+	anscii(15+thisx/8,1+thisy/16,'+');
+	hexadecimal(16+thisx/8,1+thisy/16,offset);
+	//y
+	string(thisx/8,2+thisy/16,"y:");
+	anscii(15+thisx/8,2+thisy/16,'+');
+	hexadecimal(16+thisx/8,2+thisy/16,py);
+	string(18+thisx/8,2+thisy/16,"*40");
+	string(26+thisx/8,2+thisy/16,"(    )");
+	hexadecimal(27+thisx/8,2+thisy/16,0x40*py);
+	//x
+	string(thisx/8,3+thisy/16,"x:");
+	anscii(15+thisx/8,3+thisy/16,'+');
+	hexadecimal(16+thisx/8,3+thisy/16,px);
+	//baseaddr+offset+y*0x40+x
+	anscii(15+thisx/8,4+thisy/16,'=');
+	hexadecimal(16+thisx/8,4+thisy/16,baseaddr+offset+py*0x40+px);
 
-
-	//一整页
-	for(y=0;y<40;y++)
-	{
-		for(x=0;x<0x40;x+=4)
-		{
-			DWORD value=*(DWORD*)(readwhere+y*0x40+x);
-			hexadecimal1234(2*x,y,value);
-		}
-	}
+	/*
 	//hex
 	string(thisx/8,thisy/16,"data:");
 	string(16+thisx/8,thisy/16,"   ,   ,   ,  ");
@@ -154,28 +240,7 @@ void printhex0()
 	//string
 	string(thisx/8,4+thisy/16,"ansciistring:");
 	string(16+thisx/8,4+thisy/16,thisaddr);
-	//baseaddr
-	string(thisx/8,8+thisy/16,"base:");
-	hexadecimal(16+thisx/8,8+thisy/16,baseaddr);
-	//offset
-	string(thisx/8,9+thisy/16,"offset:");
-	anscii(15+thisx/8,9+thisy/16,'+');
-	hexadecimal(16+thisx/8,9+thisy/16,offset);
-	//y
-	string(thisx/8,10+thisy/16,"y:");
-	anscii(15+thisx/8,10+thisy/16,'+');
-	hexadecimal(16+thisx/8,10+thisy/16,py);
-	string(18+thisx/8,10+thisy/16,"*40");
-	string(26+thisx/8,10+thisy/16,"(    )");
-	hexadecimal(27+thisx/8,10+thisy/16,0x40*py);
-	//x
-	string(thisx/8,11+thisy/16,"x:");
-	anscii(15+thisx/8,11+thisy/16,'+');
-	hexadecimal(16+thisx/8,11+thisy/16,px);
-	//baseaddr+offset+y*0x40+x
-	anscii(15+thisx/8,12+thisy/16,'=');
-	hexadecimal(16+thisx/8,12+thisy/16,baseaddr+offset+py*0x40+px);
-
+	*/
 	//手工输入区域
 	//string(16+thisx/8,15+thisy/16,buffer);
 }
@@ -188,6 +253,8 @@ void hex()
 
 	hexbg();
 	printhex0();
+	kuangbg();
+	kuangcontent();
 }
 void hexmessage(DWORD type,DWORD key)
 {
@@ -253,13 +320,29 @@ void hexmessage(DWORD type,DWORD key)
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
 
-		//（特殊的）点了方向箭头
-		//if(offset>=0x40)offset-=0x40;		//上
-		//offset+=0x40;						//下
-		//if(offset>=0xa00)offset-=0xa00;		//左
-		//offset+=0xa00;						//右
+		//浮动框
+		if(x>=thisx)
+		{
+			if(x<thisx+256)
+			{
+				if(y>=thisy)
+				{
+					if(y<thisy+256)
+					{
+						int tempx=(x-thisx)/128;
+						int tempy=(y-thisy)/64;
 
-		//（普通的）选择了某个字节
+						if(tempx==0&&tempy==2)printmethod=0;
+						if(tempx==1&&tempy==2)printmethod=1;
+						if(tempx==0&&tempy==3)printmethod=2;
+
+						return;
+					}
+				}
+			}
+		}
+
+		//浮动框以外的
 		px=x/(1024/0x40);
 		py=y/(640/40);
 	}
