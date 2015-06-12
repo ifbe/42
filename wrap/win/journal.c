@@ -7,28 +7,13 @@
 #include<stdlib.h>
 
 static unsigned char* logbuf;
-
-
-__attribute__((constructor)) void initlog()
+void initlog()
 {
-	logbuf=(unsigned char*)malloc(0x100000);
-}
-__attribute__((destructor)) void destorylog()
-{
-	free(logbuf);
+	whereislogbuf(&logbuf);
 }
 
 
 
-
-
-
-
-
-void whereislogbuf(unsigned long long* p)
-{
-	*p=(unsigned long long)logbuf;
-}
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
 	printf(rcx,rdx,r8,r9);

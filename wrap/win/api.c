@@ -322,7 +322,8 @@ void initdib()
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
-__attribute__((constructor)) void initsdl()
+//__attribute__((constructor)) void initsdl()
+void makewindow()
 {
 	//准备beforemain
 	initwindow();
@@ -340,7 +341,8 @@ __attribute__((constructor)) void initsdl()
 	mypixel=(unsigned int*)malloc(width*height*4);
 
 }
-__attribute__((destructor)) void destorysdl()
+//__attribute__((destructor)) void destorysdl()
+void killwindow()
 {
 	//释放点阵
 	free(mypixel);

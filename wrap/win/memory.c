@@ -3,6 +3,12 @@
 
 
 
+static unsigned char* diskbuf;
+
+
+static unsigned char* logbuf;
+
+
 static unsigned char* realworld;
 	//buffer0@[+0,+0xffff]:		1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
 	//buffer1@[+0x10000,+0x1ffff]:		1个分区(或者某格式的文件) = 很多个区域(头/索引区/数据区/尾)
@@ -19,13 +25,19 @@ static unsigned char* logicworld;
 
 
 
-__attribute__((constructor)) void initmemory()
+//__attribute__((constructor)) void initmemory()
+void makememory()
 {
+	logbuf=(unsigned char*)malloc(0x100000);
+	diskbuf=(unsigned char*)malloc(0x100*100);
 	realworld =(unsigned char*)malloc(0x100000);		//1M
 	logicworld=(unsigned char*)malloc(0x400000);		//4M
 }
-__attribute__((destructor)) void freememory()
+//__attribute__((destructor)) void freememory()
+void killmemory()
 {
+	free(logbuf);
+	free(diskbuf);
 	free(realworld);
 	free(logicworld);
 }
@@ -33,6 +45,14 @@ __attribute__((destructor)) void freememory()
 
 
 
+void whereisdiskinfo(unsigned long long* p)
+{
+	*p=(unsigned long long)diskbuf;
+}
+void whereislogbuf(unsigned long long* p)
+{
+	*p=(unsigned long long)logbuf;
+}
 void whereisrealworld(unsigned long long* p)
 {
 	*p=(unsigned long long)realworld;

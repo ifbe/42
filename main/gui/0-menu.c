@@ -12,7 +12,7 @@ static QWORD choose=0;
 
 
 
-void diskinit()
+void menuinit()
 {
 	whereisdiskinfo(&diskinfo);
 }

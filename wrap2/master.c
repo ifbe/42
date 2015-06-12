@@ -56,7 +56,9 @@ void hello()		//你究竟是个什么？
 
 	//可能是内存？
 	else
-	{}
+	{
+		say("don't know\n");
+	}
 }
 void initmaster()
 {

@@ -178,11 +178,9 @@ void main()
 {
 	initmaster();
 
-	diskinit();			//0
-
+	menuinit();			//0
 	hexinit();			//1
 	consoleinit();		//1
-
 	real0init();		//2
 	logic0init();		//2
 

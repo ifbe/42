@@ -3,10 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-//log位置
-static QWORD baseaddr;
-static QWORD offset;
-
 //位置
 static int px=0;
 static int py=0;
@@ -15,13 +11,31 @@ static int py=0;
 static BYTE buffer[128];//键盘输入专用
 static bufcount=0;
 
+static BYTE databuffer[0x2000];
+
+//log位置
+static QWORD baseaddr;
+static QWORD offset;
+
+//
+static QWORD whereinbuffer;
+void readornotread()
+{
+	
+}
+
+
+
 
 void hexinit()
 {
 	//whereisrealworld(&baseaddr);
-	baseaddr=0x400000;
-	baseaddr&=0xfffffffffffffffc;
+	int i;
+	for(i=0;i<0x2000;i++)databuffer[i]=0;
+
+	baseaddr=(QWORD)databuffer;
 	offset=0;
+	readmemory(databuffer, 0, 0, 0x2000/0x200);
 }
 void printhex0()
 {
@@ -46,7 +60,10 @@ void printhex0()
 	{
 		for(x=0;x<0x40;x+=4)
 		{
-			value=*(DWORD*)(baseaddr+offset+y*0x40+x);
+			QWORD addr=baseaddr+offset+y*0x40+x;
+
+			value=*(DWORD*)addr;
+
 			hexadecimal1234(2*x,y,value);
 		}
 	}
@@ -70,6 +87,7 @@ void printfloat()
 		point(x,16*py+0xf-1,0xff);
 		point(x,16*py+0xf,0xff);
 	}
+	/*
 	//word框
 	for(y=16*py+2;y<16*py+14;y++)
 	{
@@ -85,6 +103,7 @@ void printfloat()
 		point(x,16*py+0xf-3,0xff00);
 		point(x,16*py+0xf-2,0xff00);
 	}
+	*/
 	//byte框
 	for(y=16*py+4;y<16*py+12;y++)
 	{
@@ -113,6 +132,9 @@ void printfloat()
 			point(x,y,0xffffffff);
 		}
 	}
+	//横线
+	for(x=0;x<256;x++)point(thisx+x,thisy+128,0);
+
 
 	//数据
 	QWORD thisaddr=(baseaddr+offset+py*0x40+px);
@@ -139,9 +161,6 @@ void printfloat()
 
 	string(thisx/8,4+thisy/16,"ansciistring:");
 	string(16+thisx/8,4+thisy/16,thisaddr);
-
-	//横线
-	for(x=0;x<256;x++)point(thisx+x,thisy+128,0);
 
 	//地址，偏移，y，x
 	string(thisx/8,8+thisy/16,"base:");
@@ -219,11 +238,6 @@ void hexmessage(DWORD type,DWORD key)
 		}
 		else if(key==0xd)
 		{
-			//
-			//command(buffer);
-			baseaddr=0x600000;
-			offset=0;
-
 			//清空
 			int i;
 			for(i=0;i<128;i++)
