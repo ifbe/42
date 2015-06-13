@@ -292,8 +292,10 @@ void InitUIPIFilter()
         if(proc)
 		{
 			proc(WM_COPYDATA,1);
-			proc(WM_DROPFILES,1);			
+			proc(WM_DROPFILES,1);
+			proc(0x0049, 1);
 		}
+		else say("can't drag");
     }
 }
 void inittray()

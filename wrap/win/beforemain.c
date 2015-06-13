@@ -93,14 +93,14 @@ __attribute__((constructor)) void initroot()
 	//日志，放第二个，必须!必须!必须!重要说3遍!
 	initlog();
 
+	//必须在log之后不管几个
+	initwindow();
+
 	//只是拿地址
 	initdisk();
 
 	//只是拿地址
 	initprocess();
-
-	//必须在log之后不管几个
-	initwindow();
 
 	//列出所有能发现的
 	whereisdiskinfo(&diskinfo);		//必须!

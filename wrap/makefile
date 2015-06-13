@@ -53,18 +53,18 @@ win:
 	disk.o memory.o log.o uac.res
 .PHONY:win+api
 win+api:
-	gcc -c -O2 win/beforemain.c
-	gcc -c -O2 win/api.c
 	gcc -c -O2 win/memory.c
 	gcc -c -O2 win/journal.c
+	gcc -c -O2 win/window.c
 	gcc -c -O2 win/disk.c
 	gcc -c -O2 win/process.c
+	gcc -c -O2 win/beforemain.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -mwindows -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	beforemain.o api.o memory.o journal.o disk.o process.o uac.res \
+	memory.o journal.o window.o disk.o process.o beforemain.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
 win+sdl:
