@@ -53,7 +53,7 @@ win:
 	disk.o memory.o log.o uac.res
 .PHONY:win+api
 win+api:
-	gcc -c -O2 win/winmain.c
+	gcc -c -O2 win/beforemain.c
 	gcc -c -O2 win/api.c
 	gcc -c -O2 win/memory.c
 	gcc -c -O2 win/journal.c
@@ -64,7 +64,7 @@ win+api:
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	winmain.o api.o memory.o journal.o disk.o process.o uac.res \
+	beforemain.o api.o memory.o journal.o disk.o process.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
 win+sdl:

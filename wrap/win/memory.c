@@ -26,7 +26,7 @@ static unsigned char* logicworld;
 
 
 //__attribute__((constructor)) void initmemory()
-void makememory()
+void initmemory()
 {
 	logbuf=(unsigned char*)malloc(0x100000);
 	diskbuf=(unsigned char*)malloc(0x100*100);

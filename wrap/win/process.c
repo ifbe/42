@@ -57,4 +57,5 @@ void myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
 void initprocess()
 {
 	whereisdiskinfo(&diskinfo);
+	say("inited process\n");
 }

@@ -7,11 +7,6 @@
 #include<stdlib.h>
 
 static unsigned char* logbuf;
-void initlog()
-{
-	whereislogbuf(&logbuf);
-}
-
 
 
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
@@ -52,4 +47,17 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 		temp++;
 	}
 
+}
+
+
+
+
+
+
+
+
+void initlog()
+{
+	whereislogbuf(&logbuf);
+	say("inited log\n",0,0,0);
 }

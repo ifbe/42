@@ -52,8 +52,6 @@ void enumeratedisk()
 }
 void choosedisk(char* path)
 {
-	say("path:%s\n",path);
-
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
@@ -64,33 +62,27 @@ void choosedisk(char* path)
 	else CloseHandle(temphandle);
 
 	//关掉原先已经打开的，然后打开这个
-	CloseHandle(hDev);
+	if(hDev!=NULL)CloseHandle(hDev);
 	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 
 	return;
 }
-//__attribute__((constructor)) void initdisk()
-void openfirst()
-{
-	//打开找到的第一个硬盘并且选择它
-	int i;
-	char* p=(char*)diskinfo;
-	for(i=0;i<10;i++)
-	{
-		if(p[i*0x100]==0)continue;
 
-		hDev=CreateFile((BYTE*)diskinfo+i*0x100,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		if(hDev == INVALID_HANDLE_VALUE)
-		{
-			printf("can't open first disk\n");
-		}
-		else
-		{
-			memcpy((BYTE*)diskinfo+0xf00,(BYTE*)diskinfo+i*0x100,0x100);
-		}
-		break;
-	}
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //内存地址，第一扇区，请无视，总字节数
 void readdisk(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 {
@@ -134,4 +126,5 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 void initdisk()
 {
 	whereisdiskinfo(&diskinfo);
+	say("inited disk\n");
 }

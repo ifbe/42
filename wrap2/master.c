@@ -50,7 +50,7 @@ void hello()		//你究竟是个什么？
 	//检查是不是磁盘（末尾有没有0x55，0xaa这个标志）
 	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
 	{
-		say("disk or image\n");
+		say("it's disk\n");
 		explainparttable(readbuffer,buffer0);
 	}
 
@@ -170,7 +170,6 @@ void command(char* buffer)
 	BYTE* arg1;
 	buf2arg(buffer,&arg0,&arg1);
 	if(arg0==0)return;
-	//say("%llx,%llx\n",arg0,arg1);
 
 
 
@@ -288,6 +287,6 @@ void command(char* buffer)
 	}
 	else
 	{
-		say("what?\n");
+		say("%s\n",arg0);
 	}
 }

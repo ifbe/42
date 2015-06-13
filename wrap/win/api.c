@@ -119,7 +119,22 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					}
 					break;
 				}
-			} 
+			}
+			//say("tray:\n");
+			return 0;
+		}
+		case WM_DROPFILES:
+		{
+			HDROP hDrop = (HDROP)wparam;
+			UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
+			int i;
+			char path[MAX_PATH];
+			for (i = 0; i < nFileNum; i++)  
+			{
+				DragQueryFile(hDrop, i, path, MAX_PATH);//获得拖曳的文件名
+			}
+			say("drag:%s\n",path);
+			DragFinish(hDrop);      //释放hDrop
 			return 0;
 		}
 		case WM_KEYDOWN:
@@ -184,19 +199,6 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			return 0;
 		}
-		/*
-		case WM_NCACTIVATE:
-		case WM_NCPAINT:
-		{
-			HDC titledc=GetDCEx(window,(HRGN)wparam,DCX_WINDOW|DCX_INTERSECTRGN|DCX_CACHE);
-			if(titledc)
-			{
-				TextOut(titledc,40,8,"abcd",4);
-				ReleaseDC(window,titledc);
-			}
-			return 1;
-		}
-		*/
 		case WM_PAINT:		//显示
 		{
 			writescreen();
@@ -243,7 +245,7 @@ int waitevent(unsigned long long* first,unsigned long long* second)
 
 
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
-int initwindow()
+int initmywindow()
 {
     //Step 1: Registering the Window Class+Creating the Window
     char *AppTitle="i am groot!";
@@ -260,31 +262,39 @@ int initwindow()
     wc.lpszClassName=AppTitle;
     if (!RegisterClass(&wc)) return 0;
 
-    /*
-	window = CreateWindow(AppTitle,AppTitle,
-				WS_OVERLAPPEDWINDOW,
-				CW_USEDEFAULT,CW_USEDEFAULT,width,height,
-				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
-	*/
+	//创建窗口
     window = CreateWindow(AppTitle,AppTitle,
 				WS_POPUP,
 				100,100,width,height,
 				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
     if (!window) return 0;
 
+	//可以最小化
 	LONG t = GetWindowLong(window, GWL_EXSTYLE);
 	SetWindowLong(window, GWL_STYLE, t | WS_POPUP | WS_MINIMIZEBOX);
 
+	//透明
 	t = GetWindowLong(window, GWL_EXSTYLE);
 	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
 	SetLayeredWindowAttributes(window, 0, 0xc0, LWA_ALPHA);  
 
-	//fakedc=CreateCompatibleDC(NULL);
-	//HBITMAP bmp = CreateCompatibleBitmap(realdc,width,height);
-	//SelectObject(fakedc,bmp);
-
+	//显示窗口
     ShowWindow(window,SW_SHOW);			//nCmdShow);
     UpdateWindow(window);
+}
+void InitUIPIFilter()
+{
+    typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,DWORD);
+    HMODULE hUser = LoadLibraryA("user32.dll");
+    if (hUser)
+    {
+        ChangeWindowMessageFilterProc proc = (ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
+        if(proc)
+		{
+			proc(WM_COPYDATA,1);
+			proc(WM_DROPFILES,1);			
+		}
+    }
 }
 void inittray()
 {	
@@ -323,16 +333,20 @@ void initdib()
 	info.bmiColors[0].rgbReserved=255;
 }
 //__attribute__((constructor)) void initsdl()
-void makewindow()
+void initwindow()
 {
 	//准备beforemain
-	initwindow();
+	initmywindow();
 
-	//dib
-	initdib();
+	//允许拖拽
+	DragAcceptFiles(window, TRUE);
+	InitUIPIFilter();
 
 	//托盘
 	inittray();
+
+	//dib
+	initdib();
 
 	//拿dc
 	realdc=GetDC(window);
@@ -340,6 +354,7 @@ void makewindow()
 	//准备rgb点阵
 	mypixel=(unsigned int*)malloc(width*height*4);
 
+	say("inited window\n");
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindow()
