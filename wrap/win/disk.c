@@ -52,11 +52,12 @@ void enumeratedisk()
 }
 void choosedisk(char* path)
 {
+	//say("choosedisk:%s\n",path);
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
 	{
-		say("cannot open\n");
+		say("cannot open:%s\n",path);
 		return;
 	}
 	else CloseHandle(temphandle);

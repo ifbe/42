@@ -88,9 +88,9 @@ void printworld()
 		string(0x7e,0xd,"3j");
 	}
 }
-void processmessage(DWORD type,DWORD key)
+void processmessage(QWORD type,QWORD key)
 {
-	if(type==1)
+	if(type==1)		//1是键盘
 	{
 		//按下esc
 		if(key==0x1b)
@@ -99,7 +99,7 @@ void processmessage(DWORD type,DWORD key)
 			return;
 		}
 	}
-	if(type==2)
+	if(type==2)		//2是鼠标
 	{
 		int x=key&0xffff;			//四个角落
 		int y=(key>>16)&0xffff;
@@ -191,8 +191,8 @@ void main()
 		writescreen();
 
 		//2.等事件，是退出消息就退出
-		DWORD type=0;
-		DWORD key=0;
+		QWORD type=0;
+		QWORD key=0;
 		waitevent(&type,&key);
 		if(type==0)return;
 		//say("type=%x,key=%x\n",type,key);

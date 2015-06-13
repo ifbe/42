@@ -5,14 +5,18 @@
 #include<Commctrl.h>
 #include<Winuser.h>
 
+#define QWORD unsigned long long
+#define DWORD unsigned int
+
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1234
 #define menu2 0x5678
 
 
-int width=1024;
-int height=640;
-unsigned int* mypixel;
+static int width=1024;
+static int height=640;
+static unsigned int* mypixel;
+static char dragpath[MAX_PATH];
 
 HWND window;
 HDC realdc;
@@ -64,8 +68,8 @@ void writescreen()
 
 // Step 3: the Window Procedure
 int solved=1;
-int my1;
-int my2;
+QWORD my1;
+QWORD my2;
 static POINT pt, pe;
 static RECT rt, re;
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -128,13 +132,16 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			HDROP hDrop = (HDROP)wparam;
 			UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
 			int i;
-			char path[MAX_PATH];
 			for (i = 0; i < nFileNum; i++)  
 			{
-				DragQueryFile(hDrop, i, path, MAX_PATH);//获得拖曳的文件名
+				DragQueryFile(hDrop, i, dragpath, MAX_PATH);//获得拖曳的文件名
 			}
-			say("drag:%s\n",path);
 			DragFinish(hDrop);      //释放hDrop
+
+			say("drag:%s\n",dragpath);
+			solved=0;
+			my1=4;
+			my2=(QWORD)dragpath;
 			return 0;
 		}
 		case WM_KEYDOWN:
@@ -217,7 +224,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 	}
 }
-int waitevent(unsigned long long* first,unsigned long long* second)
+int waitevent(QWORD* first,QWORD* second)
 {
 	//收得到就一直收+处理
 	MSG msg;

@@ -105,8 +105,8 @@ menumessage(DWORD type,DWORD key)
 				if(y<512)
 				{
 					choose=(y-128)/16;
-					hexinit();
 					focus(choose);
+					hexinit();
 
 					return;
 				}

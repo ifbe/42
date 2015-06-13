@@ -256,7 +256,7 @@ void hex()
 	kuangbg();
 	kuangcontent();
 }
-void hexmessage(DWORD type,DWORD key)
+void hexmessage(QWORD type,QWORD key)
 {
 	if(type==1)
 	{
@@ -357,5 +357,11 @@ void hexmessage(DWORD type,DWORD key)
 			//if(offset<0x2000-0xa00)offset+=0x40;
 			offset+=0x40;
 		}
+	}
+	else if(type==4)
+	{
+		//say("debuging::::::::%s\n",(char*)key);
+		focus(key);
+		hexinit();
 	}
 }
