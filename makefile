@@ -1,14 +1,12 @@
-﻿binary:
-	make -s -C main binary
-	make -s -C wrap binary
-crosscompile:
-	make -s -C main crosscompile
-	make -s -C wrap crosscompile
-linux:
-	make -s -C main linux
+﻿linux:
+	make -s -C main cli
+	make -s -C wrap2 linux
+	make -s -C wrap1 linux
 	make -s -C wrap linux
 mac:
 	make -s -C main mac
+	make -s -C wrap2 mac
+	make -s -C wrap1 mac
 	make -s -C wrap mac
 win:
 	make -s -C main cli

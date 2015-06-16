@@ -1,5 +1,5 @@
 .PHONY:win
-win:
+cli:
 	gcc -c -O2 cli.c
 	rm -f main.a
 	ar crs main.a cli.o
