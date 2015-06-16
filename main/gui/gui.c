@@ -90,7 +90,14 @@ void printworld()
 }
 void processmessage(QWORD type,QWORD key)
 {
-	if(type==1)		//1是键盘
+	if(type==0x656c6966706f7264)		//dropfile
+	{
+		//say("debuging::::::::%s\n",(char*)key);
+		focus(key);
+		hexinit();
+		return;
+	}
+	else if(type==0x64626b)		//1是键盘
 	{
 		//按下esc
 		if(key==0x1b)
@@ -99,7 +106,7 @@ void processmessage(QWORD type,QWORD key)
 			return;
 		}
 	}
-	if(type==2)		//2是鼠标
+	else if(type==0x7466656c6563696d)		//2是鼠标
 	{
 		int x=key&0xffff;			//四个角落
 		int y=(key>>16)&0xffff;
@@ -176,7 +183,9 @@ void processmessage(QWORD type,QWORD key)
 
 void main()
 {
-	initmaster();
+						//wrap自动初始化不用管
+						//wrap是库函数不用初始化
+	initmaster();		//wrap2手动初始化
 
 	menuinit();			//0
 	hexinit();			//1

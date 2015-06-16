@@ -19,7 +19,7 @@ tempprint()
 		}
 	}
 }
-tempmessage(DWORD type,DWORD key)
+tempmessage(QWORD type,QWORD key)
 {
 	
 }

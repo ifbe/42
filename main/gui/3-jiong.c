@@ -56,6 +56,6 @@ void jiong()
 	string(0x38,16,"every where to live");
 	string(0x38,24,"only here to die");
 }
-void overviewmessage(DWORD type,DWORD key)
+void overviewmessage(QWORD type,QWORD key)
 {
 }

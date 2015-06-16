@@ -140,7 +140,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			say("drag:%s\n",dragpath);
 			solved=0;
-			my1=4;
+			my1=0x656c6966706f7264;	//elifpord	//dropfile	//4;
 			my2=(QWORD)dragpath;
 			return 0;
 		}
@@ -154,7 +154,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case VK_DOWN:
 				{
 					solved=0;
-					my1=1;
+					my1=0x776f727261;   //worra //arrow;	//1;
 					my2=wparam;
 				}
 			}
@@ -163,21 +163,21 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_CHAR:		//键盘点下
 		{
 			solved=0;
-			my1=1;
+			my1=0x64626b;		//dbk	//kbd	//1;
 			my2=wparam;
 			return 0;
 		}
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			solved=0;
-			my1=2;
+			my1=0x7466656c6563696d;		//tfelecim//miceleft	//2;
 			my2=lparam;
 			return 0;
 		}
 		case WM_MOUSEWHEEL:
 		{
 			solved=0;
-			my1=3;
+			my1=0x6c65656877;		//wheel	//3;
 			my2=wparam;
 			return 0;
 		}

@@ -144,25 +144,13 @@ void logic0()
 		printfile2();
 	}
 }
-void logic0message(DWORD type,DWORD key)
+void logic0message(QWORD type,QWORD key)
 {
-	if(type!=2)return;
+	//if(type!=2)return;
+	if(type!=0x7466656c6563696d)return;
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
-	/*
-	if(y>320-128)
-	{
-		if(y<320+128)
-		{
-			if(x<32)
-			{
-				killmehelpit(2,0);
-				return;
-			}
-		}
-	}
-	*/
 	if(y>639-32)		//选分区
 	{
 		choosepart=x/128;

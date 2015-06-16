@@ -98,9 +98,9 @@ void console()
 		printconsole2();
 	}
 }
-void consolemessage(DWORD type,DWORD key)
+void consolemessage(QWORD type,QWORD key)
 {
-	if(type==1)
+	if(type==0x64626b)		//键盘
 	{
 		if(key==0xd)		//回车
 		{
@@ -142,7 +142,7 @@ void consolemessage(DWORD type,DWORD key)
 			}
 		}
 	}
-	else if(type==3)
+	else if(type==0x6c65656877)
 	{
 		if(key<0xff0000)		//滚轮上
 		{

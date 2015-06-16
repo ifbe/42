@@ -90,9 +90,9 @@ void menu()
 	//printprocess0();
 	exitbutton();
 }
-menumessage(DWORD type,DWORD key)
+menumessage(QWORD type,QWORD key)
 {
-	if(type!=2)return;
+	if(type!=0x7466656c6563696d)return;		//不是鼠标
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;

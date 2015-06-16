@@ -258,7 +258,7 @@ void hex()
 }
 void hexmessage(QWORD type,QWORD key)
 {
-	if(type==1)
+	if(type==0x776f727261)		//方向键
 	{
 		if(key==0x25)	//left	0x4b
 		{
@@ -286,36 +286,8 @@ void hexmessage(QWORD type,QWORD key)
 			if(py<39)py++;
 			else offset+=0x40;
 		}
-		/*
-		else if(key==0xd)
-		{
-			//清空
-			int i;
-			for(i=0;i<128;i++)
-			{
-				buffer[i]=0;
-			}
-			bufcount=0;
-		}
-		else if(key==0x8)		//backspace
-		{
-			if(bufcount!=0)
-			{
-				bufcount--;
-				buffer[bufcount]=0;
-			}
-		}
-		else
-		{
-			if(bufcount<0x80)
-			{
-				buffer[bufcount]=key&0xff;
-				bufcount++;
-			}
-		}
-		*/
 	}
-	else if(type==2)
+	else if(type==0x7466656c6563696d)		//鼠标
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
@@ -346,7 +318,7 @@ void hexmessage(QWORD type,QWORD key)
 		px=x/(1024/0x40);
 		py=y/(640/40);
 	}
-	else if(type==3)
+	else if(type==0x6c65656877)		//滚轮
 	{
 		if(key<0xff0000)
 		{
@@ -357,11 +329,5 @@ void hexmessage(QWORD type,QWORD key)
 			//if(offset<0x2000-0xa00)offset+=0x40;
 			offset+=0x40;
 		}
-	}
-	else if(type==4)
-	{
-		//say("debuging::::::::%s\n",(char*)key);
-		focus(key);
-		hexinit();
 	}
 }

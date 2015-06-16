@@ -251,9 +251,9 @@ void real0()
 		printpartition2();
 	}
 }
-void real0message(DWORD type,DWORD key)
+void real0message(QWORD type,QWORD key)
 {
-	if(type==1)
+	if(type==0x776f727261)
 	{
 		if(key==0x25)	//left	0x4b
 		{
@@ -264,22 +264,10 @@ void real0message(DWORD type,DWORD key)
 			if(tag<7)tag++;
 		}
 	}
-	if(type==2)
+	if(type==0x7466656c6563696d)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
-		/*
-		if(y>320-128)
-		{
-			if(y<320+128)
-			{
-				if(x>1024-32)
-				{
-					killmehelpit(1,0);
-					return;
-				}
-			}
-		}*/
 		if(y>640-16)
 		{
 			if( (x>256) && (x<768) )
