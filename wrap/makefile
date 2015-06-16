@@ -1,33 +1,26 @@
-﻿.PHONY:binary
-binary:
-	gcc -c -fPIC -O2 bare/start.c
-	gcc -c -fPIC -O2 bare/screen.c
-	gcc -c -fPIC -O2 bare/random.c
-	gcc -c -fPIC -O2 bare/input.c
-	ld -T link.ld -o a.bin wrap/start.o \
-	../main/main.a \
-	screen.o random.o input.o
-.PHONY:crosscompile
-crosscompile:
-	x86_64-elf-gcc -c -fPIC -O2 bare/start.c
-	x86_64-elf-gcc -c -fPIC -O2 bare/screen.c
-	x86_64-elf-gcc -c -fPIC -O2 bare/random.c
-	x86_64-elf-gcc -c -fPIC -O2 bare/input.c
-	x86_64-elf-ld -T link.ld -o a.bin wrap/start.o \
+﻿.PHONY:linux+console
+linux+console:
+	gcc -c -O2 win/memory.c
+	gcc -c -O2 win/log.c
+	gcc -c -O2 win/disk.c
+	gcc -c -fPIC -O2 linux/beforemain.c
+	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	gcc -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	screen.o random.o input.o
+	memory.o log.o disk.o uac.res
 .PHONY:linux
 linux:
-	gcc -c -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE -O2 linux/disk.c
-	gcc -c -fPIC -O2 linux/log.c
 	gcc -c -fPIC -O2 linux/memory.c
+	gcc -c -fPIC -O2 linux/journal.c
+	gcc -c -fPIC -O2 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE linux/disk.c
+	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	disk.o log.o memory.o \
+	memory.o journal.o disk.o beforemain.o \
 	-lSDL2 -lm
 .PHONY:mac
 mac:
@@ -40,17 +33,17 @@ mac:
 	disk.o log.o memory.o \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm
-.PHONY:win
-win:
-	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/log.c
+.PHONY:win+console
+win+console:
 	gcc -c -O2 win/memory.c
+	gcc -c -O2 win/log.c
+	gcc -c -O2 win/disk.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	disk.o memory.o log.o uac.res
+	memory.o log.o disk.o uac.res
 .PHONY:win+api
 win+api:
 	gcc -c -O2 win/memory.c
