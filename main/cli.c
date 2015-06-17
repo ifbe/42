@@ -14,7 +14,6 @@ void main()
 	{
 		//1.等输入，再把这段里面所有的0x20变成0
 		waitinput(buffer);
-		//printmemory(buffer,0x80);
 
 		if(compare(buffer, "exit" ) == 0)break;
 		else command(buffer);

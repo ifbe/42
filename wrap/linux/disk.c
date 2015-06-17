@@ -23,8 +23,8 @@
 
 
 static BYTE* diskinfo;
+static int fd=-1;
 static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
-int fd;
 
 void enumeratedisk()
 {
@@ -36,13 +36,13 @@ void enumeratedisk()
 	}
 
 	//enumerate
-	FILE* tempfd;
+	int tempfd;
 	for(i=0;i<10;i++)
 	{
 		diskname[7]=i+'a';
-		printf(diskname);
+		printf("diskname:%s\n",diskname);
 		tempfd = open(diskname,O_RDONLY | O_LARGEFILE);
-		if(tempfd != NULL)
+		if(tempfd != -1)
 		{
 			printf("%d    %s\n",i,diskname);
 			close(tempfd);
@@ -63,7 +63,7 @@ void choosedisk(char* wantpath)
 	//int tempfd=open();
 
 	//realopen
-	//if(fd!=0)open();
+	//if(fd!=-1)open();
 }
 void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
