@@ -87,5 +87,6 @@ __attribute__((constructor)) void initroot()
 __attribute__((destructor)) void killroot()
 {
 	//清理
+	//killdisk();
 	killmemory();
 }

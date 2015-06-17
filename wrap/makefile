@@ -10,7 +10,19 @@ linux:
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o log.o disk.o beforemain.o \
+	memory.o log.o disk.o beforemain.o
+.PHONY:linux+sdl
+linux+sdl:
+	gcc -c -fPIC -O2 memory/memory.c
+	gcc -c -fPIC -O2 memory/journal.c
+	gcc -c -fPIC -O2 sdl2/sdl.c
+	gcc -c -fPIC -O2 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE linux/disk.c
+	gcc -c -fPIC -O2 console/beforemain.c
+	gcc -o ../a.out \
+	../main/main.a \
+	../wrap2/wrap2.a \
+	../wrap1/wrap1.a \
+	memory.o journal.o sdl2.o disk.o beforemain.o \
 	-lSDL2 -lm
 .PHONY:mac+sdl
 mac+sdl:

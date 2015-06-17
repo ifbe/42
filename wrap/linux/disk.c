@@ -18,67 +18,52 @@
 
 #define QWORD unsigned long long
 #define DWORD unsigned int
+#define WORD unsigned short
+#define BYTE unsigned char
 
+
+static BYTE* diskinfo;
 static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
-static char status[10];
 int fd;
 
-/*
-static void enumeratedisk()
+void enumeratedisk()
 {
-	printf(diskname);
+	//clean
+	int i=0,j=0;
+	for(i=0;i<0x100*10;i++)
+	{
+		diskinfo[i]=0;
+	}
 
+	//enumerate
 	FILE* tempfd;
-	char i=0;
 	for(i=0;i<10;i++)
 	{
 		diskname[7]=i+'a';
 		printf(diskname);
-		fd = open(diskname, );
-		if(fd != NULL)
+		tempfd = open(diskname,O_RDONLY | O_LARGEFILE);
+		if(tempfd != NULL)
 		{
-			close(tempfd);
-			status[i]=1;
 			printf("%d    %s\n",i,diskname);
+			close(tempfd);
+
+			*(QWORD*)(diskinfo+0x100*j)=*(QWORD*)diskname;
+			*(WORD*)(diskinfo+0x100*j+8)=*(WORD*)(diskname+8);
+			j++;
 		}
-		else
-		{
-			status[i]=0;
-		}
 	}
 }
-*/
-__attribute__((constructor)) void initdisk()
+
+
+
+
+void choosedisk(char* wantpath)
 {
-	fd = open(diskname,O_RDONLY | O_LARGEFILE);
-}
-__attribute__((destructor)) void destorydisk()
-{
-	close(fd);
-}
+	//testopen
+	//int tempfd=open();
 
-
-
-
-void disk(QWORD addr)
-{
-	//如果是空的，那就只扫描一遍有哪些物理磁盘然后打印一遍就返回不往下走
-	if(*(DWORD*)addr == 0xffffffff)
-	{
-		//enumeratedisk();
-		return;
-	}
-
-	//收到的地址里面究竟是些什么
-	QWORD i=*(DWORD*)addr;
-
-	//如果是小于10的数字
-	if(i<10)
-	{
-	}
-	else
-	{
-	}
+	//realopen
+	//if(fd!=0)open();
 }
 void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
@@ -95,4 +80,21 @@ void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 {
 
+}
+
+
+
+
+
+
+
+
+void initdisk()
+{
+	whereisdiskinfo(&diskinfo);
+	say("inited disk\n");
+}
+void destorydisk()
+{
+	close(fd);
 }
