@@ -1,26 +1,16 @@
-﻿.PHONY:linux+console
-linux+console:
-	gcc -c -O2 win/memory.c
-	gcc -c -O2 win/log.c
-	gcc -c -O2 win/disk.c
-	gcc -c -fPIC -O2 linux/beforemain.c
-	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
-	gcc -o ../a.exe \
-	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
-	memory.o log.o disk.o uac.res
+﻿all:
+	echo "what?"
 .PHONY:linux
 linux:
-	gcc -c -fPIC -O2 linux/memory.c
-	gcc -c -fPIC -O2 linux/journal.c
+	gcc -c -fPIC -O2 console/memory.c
+	gcc -c -fPIC -O2 console/log.c
 	gcc -c -fPIC -O2 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE linux/disk.c
-	gcc -c -fPIC -O2 linux/beforemain.c
+	gcc -c -fPIC -O2 console/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o journal.o disk.o beforemain.o \
+	memory.o log.o disk.o beforemain.o \
 	-lSDL2 -lm
 .PHONY:mac
 mac:
@@ -33,8 +23,8 @@ mac:
 	disk.o log.o memory.o \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm
-.PHONY:win+console
-win+console:
+.PHONY:win
+win:
 	gcc -c -O2 win/memory.c
 	gcc -c -O2 win/log.c
 	gcc -c -O2 win/disk.c

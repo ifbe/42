@@ -1,10 +1,12 @@
-﻿linux:
+﻿all:
+	echo "what?"
+linux:
 	make -s -C main cli
 	make -s -C wrap2 linux
 	make -s -C wrap1 linux
 	make -s -C wrap linux
 mac:
-	make -s -C main mac
+	make -s -C main cli
 	make -s -C wrap2 mac
 	make -s -C wrap1 mac
 	make -s -C wrap mac
