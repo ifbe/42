@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 #define QWORD unsigned long long
 #define DWORD unsigned int
@@ -74,6 +75,9 @@ __attribute__((constructor)) void initroot()
 	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
 	initmemory();		//只有这里不能用say();
 
+	say("beforemain(){\n");
+	say("inited memory\n");
+
 	//只是拿地址
 	initdisk();
 
@@ -81,8 +85,45 @@ __attribute__((constructor)) void initroot()
 	whereisdiskinfo(&diskinfo);		//必须!
 	listall();
 
-	//默认打开扫描到的第一个磁盘
-	choosetarget(0);
+	//cmdline
+	char buffer[100];
+	int temp;
+	for(temp=0;temp<100;temp++)buffer[temp]=0;
+	temp=open("/proc/self/cmdline",O_RDONLY);
+	if(temp==-1)say("error reading cmd line\n");
+	else
+	{
+		read(temp,buffer,100);
+		close(temp);
+		//printmemory(buffer,100);
+		say("cmdline:%s\n",buffer);
+	}
+
+	//choose
+	int signal=0;
+	for(temp=0;temp<100;temp++)
+	{
+		if(buffer[temp]==0)
+		{
+			signal=1;
+		}
+		else		//!=0
+		{
+			if(signal==1)
+			{
+				signal=2;
+				break;
+			}
+			//if(signal==0)donothing
+		}
+	}
+	say("arg0:%s,arg1:%s\n",buffer,buffer+temp);
+
+	//
+	if(signal==2)choosetarget((QWORD)buffer+temp);
+	else choosetarget(0);
+
+	say("}\n");
 }
 __attribute__((destructor)) void killroot()
 {

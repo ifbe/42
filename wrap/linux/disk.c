@@ -40,15 +40,15 @@ void enumeratedisk()
 	for(i=0;i<10;i++)
 	{
 		diskname[7]=i+'a';
-		printf("diskname:%s\n",diskname);
+		//printf("diskname:%s\n",diskname);
 		tempfd = open(diskname,O_RDONLY | O_LARGEFILE);
 		if(tempfd != -1)
 		{
-			printf("%d    %s\n",i,diskname);
+			printf("%s:%x\n",i,diskname,tempfd);
 			close(tempfd);
 
 			*(QWORD*)(diskinfo+0x100*j)=*(QWORD*)diskname;
-			*(WORD*)(diskinfo+0x100*j+8)=*(WORD*)(diskname+8);
+			*(WORD*)(diskinfo+0x100*j+8)=0;
 			j++;
 		}
 	}
@@ -60,10 +60,17 @@ void enumeratedisk()
 void choosedisk(char* wantpath)
 {
 	//testopen
-	//int tempfd=open();
+	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	if(tempfd == -1)
+	{
+		say("can't open:%s\n",wantpath);
+		return;
+	}
+	else close(tempfd);
 
 	//realopen
-	//if(fd!=-1)open();
+	if(fd!=-1)close(fd);
+	open(wantpath,O_RDONLY | O_LARGEFILE);
 }
 void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {

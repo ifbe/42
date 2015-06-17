@@ -4,7 +4,7 @@
 linux:
 	gcc -c -fPIC -O2 memory/memory.c
 	gcc -c -fPIC -O2 memory/log.c
-	gcc -c -fPIC -O2 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE linux/disk.c
+	gcc -c -fPIC -O2 linux/disk.c
 	gcc -c -fPIC -O2 console/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \

@@ -75,6 +75,9 @@ __attribute__((constructor)) void initroot()
 	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
 	initmemory();		//只有这里不能用say();
 
+	say("beforemain(){\n");
+	say("inited memory\n");
+
 	//日志，放第二个，必须!必须!必须!重要说3遍!
 	initlog();
 
@@ -91,6 +94,8 @@ __attribute__((constructor)) void initroot()
 	//"d:\code\file\a.exe"
 	//比如上面这种，就默认打开扫描到的第一个磁盘
 	choosetarget(0);
+
+	say("}\n");
 }
 __attribute__((destructor)) void killroot()
 {
