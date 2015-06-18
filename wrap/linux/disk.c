@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #define QWORD unsigned long long
 #define DWORD unsigned int
@@ -23,7 +24,7 @@
 
 
 static BYTE* diskinfo;
-static int fd=-1;
+static int thisfd=-1;
 static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
 
 void enumeratedisk()
@@ -41,7 +42,7 @@ void enumeratedisk()
 	{
 		diskname[7]=i+'a';
 		//printf("diskname:%s\n",diskname);
-		tempfd = open(diskname,O_RDONLY | O_LARGEFILE);
+		tempfd = open(diskname,O_RDONLY);
 		if(tempfd != -1)
 		{
 			printf("%s:%x\n",i,diskname,tempfd);
@@ -60,7 +61,7 @@ void enumeratedisk()
 void choosedisk(char* wantpath)
 {
 	//testopen
-	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	int tempfd=open(wantpath,O_RDONLY);
 	if(tempfd == -1)
 	{
 		say("can't open:%s\n",wantpath);
@@ -69,20 +70,30 @@ void choosedisk(char* wantpath)
 	else close(tempfd);
 
 	//realopen
-	if(fd!=-1)close(fd);
-	open(wantpath,O_RDONLY | O_LARGEFILE);
+	if(thisfd!=-1)close(thisfd);
+	//open(wantpath,O_RDONLY | O_LARGEFILE);
+	thisfd=open(wantpath,O_RDONLY);
+	if(thisfd == -1)
+	{
+		say("can't open:%s\n",wantpath);
+	}
 }
 void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
-	int result;
-	//printf("read to %llx,from %llx,result:%d\n",buf,sector,result);
-
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
-	result=lseek64(fd,sector*0x200,SEEK_SET);
-	printf("seek:%llx\n",result);
+	int result;
+	result=lseek64(thisfd,sector*0x200,SEEK_SET);
+	if(result==-1)
+	{
+		say("errno:%d,seek:%x\n",errno,sector);
+		return;
+	}
 
-	result=read(fd,(void*)buf,count*0x200);
-	printf("read:%llx\n",result);
+	result=read(thisfd,(void*)buf,count*0x200);
+	if(result==-1)
+	{
+		say("errno:%d,read:%d\n",errno,count);
+	}
 }
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 {
@@ -103,5 +114,5 @@ void initdisk()
 }
 void destorydisk()
 {
-	close(fd);
+	close(thisfd);
 }

@@ -38,12 +38,9 @@ void choosetarget(QWORD in)
 		char* path=(char*)(diskinfo+0x100*in);
 
 		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
-		if( *(DWORD*)path == 0x5c2e5c5c )
-		{
-			say("disk:%s\n",path);
-			type=2;
-			choosedisk(path);
-		}
+		say("disk:%s\n",path);
+		type=2;
+		choosedisk(path);
 	}
 }
 //内存地址，第一扇区，请无视，总字节数
