@@ -71,8 +71,8 @@ void choosedisk(char* wantpath)
 
 	//realopen
 	if(thisfd!=-1)close(thisfd);
-	//open(wantpath,O_RDONLY | O_LARGEFILE);
-	thisfd=open(wantpath,O_RDONLY);
+	//thisfd=open(wantpath,O_RDONLY);
+	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(thisfd == -1)
 	{
 		say("can't open:%s\n",wantpath);
@@ -85,14 +85,14 @@ void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
-		say("errno:%d,seek:%x\n",errno,sector);
+		say("(seek)errno:%d,%llx,%llx\n",errno,sector,count);
 		return;
 	}
 
 	result=read(thisfd,(void*)buf,count*0x200);
 	if(result==-1)
 	{
-		say("errno:%d,read:%d\n",errno,count);
+		say("(read)errno:%d,%llx,%llx\n",errno,sector,count);
 	}
 }
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
