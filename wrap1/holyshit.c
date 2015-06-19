@@ -34,7 +34,7 @@
 //5:             |  [where,]              |           //传进来一块，全要
 //6:             |  [---where,------------|----]      //传进来一块，后面不要
 
-void holyshit(sector,count,where,wantwhere,towhere)
+void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere)
 {
 	//关键:读到哪儿，读哪号扇区，读几个扇区
 	QWORD rdi=0;
@@ -69,6 +69,8 @@ void holyshit(sector,count,where,wantwhere,towhere)
 		}
 	}
 
-	say("sector:%x,count:%x,where:%x,want:%x,to:%x,rdi=%x,rsi=:%x,rcx=%x\n",sector,count,where,wantwhere,towhere,rdi,rsi,rcx);
 	readmemory(rdi,rsi,0,rcx);
+	say("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
+	say("want:%llx,to:%llx\n",wantwhere,towhere);
+	say("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
 }
