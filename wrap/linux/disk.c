@@ -85,14 +85,14 @@ void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
-		say("(seek)errno:%d,%llx,%llx\n",errno,sector,count);
+		say("errno:%d,seek:%llx\n",errno,sector);
 		return;
 	}
 
 	result=read(thisfd,(void*)buf,count*0x200);
 	if(result==-1)
 	{
-		say("(read)errno:%d,%llx,%llx\n",errno,sector,count);
+		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
 	}
 }
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)

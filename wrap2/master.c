@@ -215,6 +215,16 @@ void command(char* buffer)
 			focus((QWORD)arg1);
 		}
 	}
+	else if(compare( arg0 , "show" ) == 0)
+	{
+
+		QWORD value;
+		anscii2hex(arg1,&value);
+		
+		readmemory(readbuffer,value,0,8);
+		printmemory(readbuffer,0x1000);
+		say("above is:%x,%x\n",value,value+7);
+	}
 	else if(compare( arg0 , "mount" ) == 0)
 	{
 		if(arg1==0)
