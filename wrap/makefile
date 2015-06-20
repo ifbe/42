@@ -5,19 +5,19 @@ linux:
 	gcc -c -fPIC -O2 memory/memory.c
 	gcc -c -fPIC -O2 memory/log.c
 	gcc -c -fPIC -O2 linux/disk.c
-	gcc -c -fPIC -O2 console/beforemain.c
+	gcc -c -fPIC -O2 linux/beforemain-cli.c
 	gcc -o ../a.out \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o log.o disk.o beforemain.o
+	memory.o log.o disk.o beforemain-cli.o
 .PHONY:linux+sdl
 linux+sdl:
 	gcc -c -fPIC -O2 memory/memory.c
 	gcc -c -fPIC -O2 memory/journal.c
 	gcc -c -fPIC -O2 sdl2/sdl.c
-	gcc -c -fPIC -O2 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE linux/disk.c
-	gcc -c -fPIC -O2 console/beforemain.c
+	gcc -c -fPIC -O2 linux/disk.c
+	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
 	../wrap2/wrap2.a \
@@ -43,13 +43,13 @@ win:
 	gcc -c -O2 memory/log.c
 	gcc -c -O2 win/disk.c
 	gcc -c -O2 win/process.c
-	gcc -c -O2 console/beforemain.c
+	gcc -c -O2 win/beforemain-cli.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o log.o disk.o process.o beforemain.o uac.res
+	memory.o log.o disk.o process.o beforemain-cli.o uac.res
 .PHONY:win+api
 win+api:
 	gcc -c -O2 memory/memory.c
