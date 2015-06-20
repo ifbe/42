@@ -72,14 +72,12 @@ void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 
 __attribute__((constructor)) void initroot()
 {
-	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
-	initmemory();		//只有这里不能用say();
+	initmemory();	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
+	initlog();	//日志，放第二个，必须!必须!必须!重要说3遍!
 
 	say("beforemain(){\n");
 	say("inited memory\n");
-
-	//日志，放第二个，必须!必须!必须!重要说3遍!
-	initlog();
+	say("inited log\n");
 
 	//必须在log之后不管几个
 	initwindow();

@@ -59,5 +59,4 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 void initlog()
 {
 	whereislogbuf(&logbuf);
-	say("inited log\n",0,0,0);
 }
