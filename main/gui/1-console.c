@@ -9,10 +9,21 @@ static QWORD offset=0;
 
 //键盘输入
 static BYTE buffer[128];//键盘输入专用
-static bufcount=0;
+static int bufcount=0;
 
 //
 static int complex=0;		//主体华丽程度
+
+
+void whereislogbuf(void* in);
+void background1();
+void hexinit();
+void die();
+void command(char* in);
+void point(int x,int y,DWORD color);
+void string(int x,int y,char* str);
+int compare(char* first,char* second);
+
 
 
 

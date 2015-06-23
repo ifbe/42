@@ -11,6 +11,15 @@ static char choosefile=0;
 static int complex=0;		//主体华丽程度
 
 
+void whereisrealworld(QWORD* in);
+void whereislogicworld(QWORD* in);
+void background2();
+void point(int x,int y,DWORD color);
+void string(int x,int y,char* str);
+void hexadecimal(int x,int y,QWORD in);
+void mount(QWORD in);
+
+
 
 
 void logic0init()
@@ -49,7 +58,7 @@ void logic0background()
 		point(x,639-32,0xff00);
 	}
 }
-logic0part()
+void logic0part()
 {
 	int x,y,i;
 
@@ -72,7 +81,7 @@ logic0part()
 			}
 		}
 		hexadecimal(16*i,38,start);
-		string(16*i,39,partbuffer+i*0x40+0x10);
+		string(16*i,39,(char*)partbuffer+i*0x40+0x10);
 	}
 
 	//选中

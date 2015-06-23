@@ -9,6 +9,14 @@ static int tag=0;
 static int complex=0;		//主体华丽程度
 
 
+void whereisrealworld(QWORD* in);
+void background2();
+void point(int x,int y,DWORD color);
+void hexadecimal(int x,int y,QWORD data);
+void string(int x,int y,char* str);
+void say(char* fmt,...);
+
+
 
 
 void real0init()
@@ -97,7 +105,7 @@ void printpartition0()
 		if(*(QWORD*)(p+y*0x40) == 0)break;
 		hexadecimal(0,y+2,*(QWORD*)(p+y*0x40));
 		hexadecimal(16,y+2,*(QWORD*)(p+y*0x40+0x8));
-		string(32,y+2,p+y*0x40+0x10);
+		string(32,y+2,(char*)p+y*0x40+0x10);
 		hexadecimal(48,y+2,*(QWORD*)(p+y*0x40+0x18));
 		hexadecimal(64,y+2,*(QWORD*)(p+y*0x40+0x20));
 		hexadecimal(80,y+2,*(QWORD*)(p+y*0x40+0x28));

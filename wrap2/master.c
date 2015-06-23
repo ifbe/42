@@ -34,10 +34,26 @@ int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
 int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x100000);
 
 
+void whereisdiskinfo(QWORD* in);
+void whereisrealworld(QWORD* in);
+void whereislogicworld(QWORD* in);
 
+void mountext(QWORD first,QWORD second);
+void mountfat(QWORD first,QWORD second);
+void mounthfs(QWORD first,QWORD second);
+void mountntfs(QWORD first,QWORD second);
 
+void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
+void anscii2hex(char* str,QWORD* value);
+void buf2arg(char* buf,BYTE** first,BYTE** second);
+int compare(char* first,char* second);
 
-
+void listall();
+void choosetarget(QWORD in);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void printmemory(QWORD addr,int count);
+void say(char* str,...);
+void explainparttable(QWORD first,QWORD second);
 
 
 
@@ -63,7 +79,7 @@ void hello()		//你究竟是个什么？
 void initmaster()
 {
 	//油腻的师姐在哪里
-	whereisdiskinfo(&diskinfo);
+	whereisdiskinfo((QWORD*)&diskinfo);
 
 	//现实世界在哪里
 	whereisrealworld(&realworld);

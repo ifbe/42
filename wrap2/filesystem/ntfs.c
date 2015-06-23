@@ -18,8 +18,14 @@ static QWORD mftcluster;
 //ntfs...............
 static QWORD pwd[10];
 static int ntfspwd;
-void printmemory(QWORD addr,QWORD size);
 
+
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void say(char* fmt,...);
 
 
 
@@ -538,7 +544,7 @@ int mountntfs(QWORD in,QWORD out)
 	explainntfshead(readbuffer,out);
 
 	//保存开头几个mft
-	readmemory(mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
+	readmemory((QWORD)mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
 	//printmemory(mft0,0x400);
 
 	//cd /

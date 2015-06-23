@@ -1,17 +1,7 @@
-﻿/*
-fat文件系统大概是下面这样：(比喻)
-1.一个首领-->图书馆大门-->一个扇区pbr
-2.两堆官员-->两本管理员记账本-->几个扇区的fat表，几个扇区的备份fat表
-3.很多个团队(每个队几个兵)-->很多个书架(每个书架一堆书)-->很多个簇(几个扇区一个簇)
-
-然后这个分区所有扇区=1+2+3
-*/
-
-#define BYTE unsigned char
+﻿#define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void printmemory(QWORD addr,QWORD size);
 
 
 //memory
@@ -26,6 +16,16 @@ static QWORD fat0;			//fat表所在扇区
 static QWORD fatsize;		//fat表总共的扇区数量
 static QWORD cluster0;		//0号簇所在扇区
 static QWORD clustersize;	//每个簇的扇区数量
+
+
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void say(char* fmt,...);
+
+
 
 
 //[0,0xf]:name

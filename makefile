@@ -5,6 +5,21 @@ linux:
 	make -s -C wrap2 linux
 	make -s -C wrap1 linux
 	make -s -C wrap linux
+linux+fb:
+	make -s -C main gui
+	make -s -C wrap2 linux
+	make -s -C wrap1 linux
+	make -s -C wrap linux+fb
+linux+gtk:
+	make -s -C main gui
+	make -s -C wrap2 linux
+	make -s -C wrap1 linux
+	make -s -C wrap linux+gtk
+linux+sdl:
+	make -s -C main gui
+	make -s -C wrap2 linux
+	make -s -C wrap1 linux
+	make -s -C wrap linux+sdl
 mac:
 	make -s -C main cli
 	make -s -C wrap2 mac

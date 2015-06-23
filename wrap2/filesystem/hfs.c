@@ -23,6 +23,14 @@ static QWORD rootnode;
 static QWORD firstleafnode;
 
 
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void say(char* fmt,...);
+
+
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +71,7 @@ void explainindexnode()
 	}
 }
 //（只用来调试）解释叶节点的record的data部分
-explainrecorddata(QWORD offset)
+void explainrecorddata(QWORD offset)
 {
 	switch( *(BYTE*)(readbuffer+offset+1) )
 	{
@@ -93,7 +101,7 @@ explainrecorddata(QWORD offset)
 	say("\n");
 }
 //（只用来调试）解释叶节点
-explainleafnode()
+void explainleafnode()
 {
 	//每个index和leaf节点尾巴上有，每个record的位置	//每个index和leaf节点尾巴上有，每个record的位置
 	int temp=nodesize*0x200;
@@ -451,7 +459,7 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 	}//大while(1)循环
 
 }
-static int hfs_load(QWORD id,QWORD wantwhere)
+static void hfs_load(QWORD id,QWORD wantwhere)
 {
 	//搜索b树找它爸，没办法直接找到它！
 	QWORD fathercnid=*(DWORD*)(directorybuffer+0x10);

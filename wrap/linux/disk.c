@@ -27,6 +27,12 @@ static BYTE* diskinfo;
 static int thisfd=-1;
 static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
 
+void whereisdiskinfo(BYTE** in);
+void say(char* fmt,...);
+
+
+
+
 void enumeratedisk()
 {
 	//clean

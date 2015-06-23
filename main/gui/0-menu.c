@@ -12,6 +12,17 @@ static QWORD choose=0;
 
 
 
+void whereisdiskinfo(BYTE** in);
+void point(int x,int y,int color);
+void string(int x,int y,char* str);
+void hidemenu();
+void focus(QWORD in);
+void die();
+void hexinit();
+
+
+
+
 void menuinit()
 {
 	whereisdiskinfo(&diskinfo);
@@ -90,7 +101,7 @@ void menu()
 	//printprocess0();
 	exitbutton();
 }
-menumessage(QWORD type,QWORD key)
+void menumessage(QWORD type,QWORD key)
 {
 	if(type!=0x7466656c6563696d)return;		//不是鼠标
 

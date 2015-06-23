@@ -4,6 +4,9 @@
 #define QWORD unsigned long long
 
 
+void say(char* fmt,...);
+
+
 
 
 //debug用，打印从addr开始的总共size个字节

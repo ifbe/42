@@ -16,6 +16,10 @@
 //[30,37]		explainfunc
 //[38,3f]		unused
 
+//用了别人的
+void explaingpt(QWORD rdi,QWORD rsi);
+void explainmbr(QWORD rdi,QWORD rsi);
+
 
 
 

@@ -23,6 +23,18 @@ static QWORD offset;
 static int py=0;
 static int px=0;
 
+
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void background1();
+void point(int x,int y,DWORD color);
+void anscii(int x,int y,char ch);
+void string(int x,int y,char* str);
+void hexadecimal(int x,int y,QWORD in);
+void hexadecimal1234(int x,int y,QWORD in);
+
+
+
+
 //
 static QWORD currentcache;
 QWORD readornotread(QWORD wantaddr)
@@ -40,7 +52,7 @@ QWORD readornotread(QWORD wantaddr)
 	QWORD roundnum=wantaddr & 0xfffffffffffff000;
 	if(roundnum!=currentcache)
 	{
-		readmemory(databuffer, roundnum/0x200, 0, 16);
+		readmemory((QWORD)databuffer, roundnum/0x200, 0, 16);
 		currentcache=roundnum;
 	}
 

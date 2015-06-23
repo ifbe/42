@@ -4,6 +4,10 @@
 #define QWORD unsigned long long
 
 
+void say(char* fmt,...);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+
+
 
 
 //------------------粗糙的打比方--------------------

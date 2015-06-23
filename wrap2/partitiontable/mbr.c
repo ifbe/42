@@ -11,6 +11,9 @@
 //[+0xc,+0xf]:大小
 
 
+//用了别人的
+void say(char* fmt,...);
+
 
 
 QWORD explainmbr(QWORD from,QWORD to)

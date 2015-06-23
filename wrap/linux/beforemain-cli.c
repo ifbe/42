@@ -13,6 +13,16 @@ QWORD diskinfo;
 int type=1;
 
 
+void whereisdiskinfo(QWORD* in);
+void initdisk();
+void initmemory();
+void killmemory();
+void enumeratedisk();
+void readdisk(QWORD buf,QWORD sector,QWORD dummy,QWORD count);
+void choosedisk(char* in);
+void say(char* fmt,...);
+
+
 
 
 void listall()
@@ -32,7 +42,7 @@ void choosetarget(QWORD in)
 		//第1种可能：文件的路径（比如d:\image\name.img）
 		say("file:%s\n",(char*)in);
 		type=1;
-		choosedisk(in);
+		choosedisk((char*)in);
 	}
 	else		//是一个数字
 	{
@@ -49,7 +59,7 @@ void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 {
 	if(type==1 | type==2)
 	{
-		readdisk(buf,startsector,buf,count);
+		readdisk(buf,startsector,0,count);
 	}
 }
 

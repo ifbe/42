@@ -13,9 +13,39 @@
 static DWORD what=0x10;
 
 
+void point(int x,int y,DWORD color);
+void string(int x,int y,char* str);
+void writescreen();
+void waitevent(QWORD* first,QWORD* second);
+
+void focus(QWORD in);
+void menu();
+void hex();
+void console();
+void real0();
+void logic0();
+void tempprint();
+void jiong();
+
+void initmaster();
+void menuinit();	//0
+void hexinit();		//1
+void consoleinit();	//1
+void real0init();	//2
+void logic0init();	//2
+
+void menumessage(QWORD type,QWORD key);
+void hexmessage(QWORD type,QWORD key);
+void consolemessage(QWORD type,QWORD key);
+void real0message(QWORD type,QWORD key);
+void logic0message(QWORD type,QWORD key);
+void tempmessage(QWORD type,QWORD key);
+void overviewmessage(QWORD type,QWORD key);
 
 
-static showmenu=0;
+
+
+static int showmenu=0;
 void hidemenu()
 {
 	showmenu=0;
@@ -24,7 +54,7 @@ void hidemenu()
 
 
 
-static living=1;
+static int living=1;
 void die()
 {
 	living=0;

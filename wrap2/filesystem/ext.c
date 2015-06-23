@@ -29,7 +29,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void printmemory(QWORD addr,QWORD size);
+
 
 //memory
 static QWORD directorybuffer;
@@ -43,6 +43,14 @@ static QWORD blocksize;
 static QWORD groupsize;
 static QWORD inodepergroup;
 static QWORD inodesize;
+
+
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void say(char* fmt,...);
 
 
 
@@ -61,7 +69,7 @@ static QWORD whichblock(QWORD groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readmemory(blockrecord,sector,diskaddr,1);
+	readmemory((QWORD)blockrecord,sector,diskaddr,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	QWORD addr=(QWORD)blockrecord+8+(groupnum*0x20)%0x200;
@@ -258,7 +266,7 @@ static void explaindirectory()
 }
 
 
-static int ext_explain(inode)
+static int ext_explain(QWORD inode)
 {
 	say("inode %x\n",inode);
 
@@ -338,7 +346,7 @@ int mountext(QWORD in,QWORD out)
 
 	//读分区前8扇区，检查magic值
 	readmemory(readbuffer,block0,diskaddr,0x8);	//0x1000
-	if( *(WORD*)(readbuffer+0x438) != 0xef53 ) return;
+	if( *(WORD*)(readbuffer+0x438) != 0xef53 ) return -1;
 	explainexthead(readbuffer,out);
 
 	//cd /

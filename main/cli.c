@@ -4,6 +4,11 @@
 #define QWORD unsigned long long
 static BYTE buffer[128];//键盘输入专用
 
+void initmaster();
+void waitinput(char* buffer);
+void command(char* buffer);
+int compare(char* first,char* second);
+
 
 
 

@@ -4,7 +4,13 @@
 #define QWORD unsigned long long
 
 
-tempprint()
+void background3();
+void draw(int x,int y,DWORD color);
+
+
+
+
+void tempprint()
 {
 	int x,y;
 	background3();
@@ -19,7 +25,7 @@ tempprint()
 		}
 	}
 }
-tempmessage(QWORD type,QWORD key)
+void tempmessage(QWORD type,QWORD key)
 {
 	
 }
