@@ -272,7 +272,7 @@ void real0message(QWORD type,QWORD key)
 			if(tag<7)tag++;
 		}
 	}
-	if(type==0x7466656c6563696d)
+	if(type==0x7466656c)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;

@@ -103,7 +103,7 @@ void menu()
 }
 void menumessage(QWORD type,QWORD key)
 {
-	if(type!=0x7466656c6563696d)return;		//不是鼠标
+	if(type!=0x7466656c)return;		//不是鼠标
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;

@@ -156,7 +156,7 @@ void logic0()
 void logic0message(QWORD type,QWORD key)
 {
 	//if(type!=2)return;
-	if(type!=0x7466656c6563696d)return;
+	if(type!=0x7466656c)return;
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;

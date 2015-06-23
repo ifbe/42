@@ -299,7 +299,7 @@ void hexmessage(QWORD type,QWORD key)
 			else offset+=0x40;
 		}
 	}
-	else if(type==0x7466656c6563696d)		//鼠标
+	else if(type==0x7466656c)		//鼠标
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;

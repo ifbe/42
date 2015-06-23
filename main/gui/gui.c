@@ -136,7 +136,7 @@ void processmessage(QWORD type,QWORD key)
 			return;
 		}
 	}
-	else if(type==0x7466656c6563696d)		//2是鼠标
+	else if(type==0x7466656c)		//2是鼠标
 	{
 		int x=key&0xffff;			//四个角落
 		int y=(key>>16)&0xffff;

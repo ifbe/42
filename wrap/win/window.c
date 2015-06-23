@@ -208,7 +208,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(rightdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
 			else
 			{
-				my1=0x7466656c6563696d;		//tfelecim//miceleft	//2;
+				my1=0x7466656c;		//tfel//left	//2;
 				my2=lparam;
 				solved=0;
 			}
@@ -220,7 +220,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(leftdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
 			else
 			{
-				my1=0x644674;
+				my1=0x7468676972;		//thgir	//right
 				my2=lparam;
 				solved=0;
 			}
