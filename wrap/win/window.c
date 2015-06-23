@@ -67,9 +67,11 @@ void writescreen()
 
 
 // Step 3: the Window Procedure
-int solved=1;
-QWORD my1;
-QWORD my2;
+static int solved=1;
+static QWORD my1;
+static QWORD my2;
+
+static leftdown=0,rightdown=0;
 static POINT pt, pe;
 static RECT rt, re;
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -139,9 +141,9 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			DragFinish(hDrop);      //释放hDrop
 
 			say("drag:%s\n",dragpath);
-			solved=0;
 			my1=0x656c6966706f7264;	//elifpord	//dropfile	//4;
 			my2=(QWORD)dragpath;
+			solved=0;
 			return 0;
 		}
 		case WM_KEYDOWN:
@@ -153,55 +155,84 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case VK_RIGHT:
 				case VK_DOWN:
 				{
-					solved=0;
 					my1=0x776f727261;   //worra //arrow;	//1;
 					my2=wparam;
+					solved=0;
 				}
 			}
 			return 0;
 		}
 		case WM_CHAR:		//键盘点下
 		{
-			solved=0;
 			my1=0x64626b;		//dbk	//kbd	//1;
 			my2=wparam;
-			return 0;
-		}
-		case WM_LBUTTONDOWN:		//鼠标左键点下
-		{
 			solved=0;
-			my1=0x7466656c6563696d;		//tfelecim//miceleft	//2;
-			my2=lparam;
 			return 0;
 		}
 		case WM_MOUSEWHEEL:
 		{
-			solved=0;
 			my1=0x6c65656877;		//wheel	//3;
 			my2=wparam;
+			solved=0;
+			return 0;
+		}
+		case WM_LBUTTONDOWN:		//鼠标左键点下
+		{
+			leftdown=1;
+			if(rightdown==1)
+			{
+				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
+				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+				GetWindowRect(window,&rt);   // 获取窗口位置与大小
+				re.right=rt.right-rt.left;               // 保存窗口宽度
+				re.bottom=rt.bottom-rt.top; // 保存窗口高度
+			}
 			return 0;
 		}
 		case WM_RBUTTONDOWN:
 		{
-			SetCapture(window);                         // 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
-			GetCursorPos(&pt);                         // 获取鼠标光标指针当前位置
-			GetWindowRect(window,&rt);   // 获取窗口位置与大小
-			re.right=rt.right-rt.left;               // 保存窗口宽度
-			re.bottom=rt.bottom-rt.top; // 保存窗口高度
+			rightdown=1;
+			if(leftdown==1)
+			{
+				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
+				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+				GetWindowRect(window,&rt);   // 获取窗口位置与大小
+				re.right=rt.right-rt.left;               // 保存窗口宽度
+				re.bottom=rt.bottom-rt.top; // 保存窗口高度
+			}
+			return 0;
+		}
+		case WM_LBUTTONUP:
+		{
+			leftdown=0;
+			if(rightdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			else
+			{
+				my1=0x7466656c6563696d;		//tfelecim//miceleft	//2;
+				my2=lparam;
+				solved=0;
+			}
 			return 0;
 		}
 		case WM_RBUTTONUP:
 		{
-			ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			rightdown=0;
+			if(leftdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			else
+			{
+				my1=0x644674;
+				my2=lparam;
+				solved=0;
+			}
 			return 0;
 		}
 		case WM_MOUSEMOVE:
 		{
-			GetCursorPos(&pe);                              // 获取光标指针的新位置
-			if(wparam==MK_RBUTTON)               // 当鼠标右键按下
+			if( (leftdown==1) && (rightdown==1) )	//左右一起按下
 			{
-				re.left=rt.left+(pe.x - pt.x);    // 窗口新的水平位置
-				re.top =rt.top+(pe.y - pt.y); // 窗口新的垂直位置
+				GetCursorPos(&pe);		// 获取光标指针的新位置
+				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
+				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
 				MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
 			}
 			return 0;
