@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 
 #define QWORD unsigned long long
 #define DWORD unsigned int
@@ -11,6 +14,18 @@ QWORD diskinfo;
 int type=1;
 
 
+void enumeratedisk();
+void choosedisk(char* path);
+void readdisk(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereisdiskinfo(QWORD* addr);
+void say(char* fmt,...);
+
+void initmemory();
+void initwindow();
+void initdisk();
+void initlog();
+void killwindow();
+void killmemory();
 
 
 void listall()
@@ -30,20 +45,16 @@ void choosetarget(QWORD in)
 		//第1种可能：文件的路径（比如d:\image\name.img）
 		say("file:%s\n",(char*)in);
 		type=1;
-		choosedisk(in);
+		choosedisk((char*)in);
 	}
 	else		//是一个数字
 	{
 		char* path=(char*)(diskinfo+0x100*in);
 
 		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
-		if( *(DWORD*)path == 0x5c2e5c5c )
-		{
-			say("disk:%s\n",path);
-			type=2;
-			choosedisk(path);
-		}
-
+		say("disk:%s\n",path);
+		type=2;
+		choosedisk(path);
 	}
 }
 //内存地址，第一扇区，请无视，总字节数
@@ -89,9 +100,43 @@ __attribute__((constructor)) void initroot()
 	whereisdiskinfo(&diskinfo);		//必须!
 	listall();
 
+        //cmdline
+	char buffer[100];
+	int temp;
+	for(temp=0;temp<100;temp++)buffer[temp]=0;
+	temp=open("/proc/self/cmdline",O_RDONLY);
+	if(temp==-1)say("error reading cmd line\n");
+	else
+	{
+		read(temp,buffer,100);
+		close(temp);
+		//printmemory(buffer,100);
+		say("cmdline:%s\n",buffer);
+	}
+
+	//
+	int signal=0;
+	for(temp=0;temp<100;temp++)
+	{
+		if(buffer[temp]==0)
+		{
+			signal=1;
+		}
+		else            //!=0
+		{
+			if(signal==1)
+			{
+				signal=2;
+				break;
+			}
+		}
+	}
+	say("arg0:%s,arg1:%s\n",buffer,buffer+temp);
+
 	//"d:\code\file\a.exe"
 	//比如上面这种，就默认打开扫描到的第一个磁盘
-	choosetarget(0);
+	if(signal==2)choosetarget((QWORD)buffer+temp);
+	else choosetarget(0);
 
 	say("}\n");
 }

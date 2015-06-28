@@ -9,6 +9,9 @@
 static unsigned char* logbuf;
 
 
+void whereislogbuf(BYTE** addr);
+
+
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
 	printf(rcx,rdx,r8,r9);
