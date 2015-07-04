@@ -23,18 +23,19 @@ linux+fb:
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
 	memory.o journal.o fb.o disk.o beforemain.o
-.PHONY:linux+gtk
-linux+gtk:
+.PHONY:linux+xlib
+linux+xlib:
 	gcc -c -fPIC -O2 memory/memory.c
 	gcc -c -fPIC -O2 memory/journal.c
-	gcc -c -fPIC -O2 linux/gtk.c `pkg-config --cflags --libs gtk+-3.0`
+	gcc -c -fPIC -O2 linux/xlib.c
 	gcc -c -fPIC -O2 linux/disk.c
 	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o journal.o gtk.o disk.o beforemain.o
+	memory.o journal.o xlib.o disk.o beforemain.o \
+	-lX11
 .PHONY:linux+sdl
 linux+sdl:
 	gcc -c -fPIC -O2 memory/memory.c

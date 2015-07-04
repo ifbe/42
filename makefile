@@ -10,11 +10,11 @@ linux+fb:
 	make -s -C wrap2 linux
 	make -s -C wrap1 linux
 	make -s -C wrap linux+fb
-linux+gtk:
+linux+xlib:
 	make -s -C main gui
 	make -s -C wrap2 linux
 	make -s -C wrap1 linux
-	make -s -C wrap linux+gtk
+	make -s -C wrap linux+xlib
 linux+sdl:
 	make -s -C main gui
 	make -s -C wrap2 linux
