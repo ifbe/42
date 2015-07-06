@@ -179,7 +179,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			leftdown=1;
-			if(rightdown==1)
+			if(rightdown>0)
 			{
 				leftdown=rightdown=0xff;
 				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
@@ -193,7 +193,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_RBUTTONDOWN:
 		{
 			rightdown=1;
-			if(leftdown==1)
+			if(leftdown>0)
 			{
 				leftdown=rightdown=0xff;
 				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
