@@ -16,6 +16,10 @@ void say(char* fmt,...);
 
 
 
+void explainebr(QWORD from,QWORD to)
+{
+	
+}
 QWORD explainmbr(QWORD from,QWORD to)
 {
 	say("mbr disk\n",0);
@@ -51,7 +55,17 @@ QWORD explainmbr(QWORD from,QWORD to)
 			*(QWORD*)(to+0x40*dst+0x10)=0x747865;
 			say("ext\n");
 		}
-		else say("unknown\n");
+		else if(temp==0x5)
+		{
+			*(QWORD*)(to+0x40*dst+0x10)=0x646e65747865;
+			say("extend\n");
+		}
+		else if(temp==0xf)
+		{
+			*(QWORD*)(to+0x40*dst+0x10)=0x3331646e65747865;
+			say("extend13\n");
+		}
+		else say("unknown:%x\n",temp);
 
 		//partname
 
