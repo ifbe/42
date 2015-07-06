@@ -181,6 +181,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			leftdown=1;
 			if(rightdown==1)
 			{
+				leftdown=rightdown=0xff;
 				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
 				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 				GetWindowRect(window,&rt);   // 获取窗口位置与大小
@@ -194,6 +195,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			rightdown=1;
 			if(leftdown==1)
 			{
+				leftdown=rightdown=0xff;
 				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
 				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 				GetWindowRect(window,&rt);   // 获取窗口位置与大小
@@ -204,31 +206,39 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		case WM_LBUTTONUP:
 		{
-			leftdown=0;
-			if(rightdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			else
+			if(leftdown==0xff)
+			{
+				if(rightdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			}
+			else if(leftdown==1)
 			{
 				my1=0x7466656c;		//tfel//left	//2;
 				my2=lparam;
 				solved=0;
 			}
+
+			leftdown=0;
 			return 0;
 		}
 		case WM_RBUTTONUP:
 		{
-			rightdown=0;
-			if(leftdown==1)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			else
+			if(rightdown==0xff)
+			{
+				if(leftdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			}
+			else if(rightdown==1)
 			{
 				my1=0x7468676972;		//thgir	//right
 				my2=lparam;
 				solved=0;
 			}
+
+			rightdown=0;
 			return 0;
 		}
 		case WM_MOUSEMOVE:
 		{
-			if( (leftdown==1) && (rightdown==1) )	//左右一起按下
+			if( (leftdown==0xff) && (rightdown==0xff) )	//左右一起按下
 			{
 				GetCursorPos(&pe);		// 获取光标指针的新位置
 				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
