@@ -14,6 +14,11 @@ char* diskinfo;
 
 
 
+void say(char* fmt,...);
+void whereisdiskinfo(char** in);
+
+
+
 
 void enumerateprocess()
 {

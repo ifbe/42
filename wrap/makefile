@@ -79,7 +79,7 @@ win:
 win+api:
 	gcc -c -O2 memory/memory.c
 	gcc -c -O2 memory/journal.c
-	gcc -c -O2 win/window.c
+	gcc -c -O2 win/api.c
 	gcc -c -O2 win/disk.c
 	gcc -c -O2 win/process.c
 	gcc -c -O2 win/beforemain.c
@@ -88,7 +88,7 @@ win+api:
 	../main/main.a \
 	../wrap2/wrap2.a \
 	../wrap1/wrap1.a \
-	memory.o journal.o window.o disk.o process.o beforemain.o uac.res \
+	memory.o journal.o api.o disk.o process.o beforemain.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
 win+sdl:

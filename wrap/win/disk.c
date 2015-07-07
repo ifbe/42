@@ -16,6 +16,12 @@ static BYTE tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D'
 
 
 
+void say(char* fmt,...);
+void whereisdiskinfo(char** in);
+
+
+
+
 void enumeratedisk()
 {
 	//printf("enu disk\n");

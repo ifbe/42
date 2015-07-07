@@ -14,6 +14,26 @@ int type=1;
 
 
 
+void whereisdiskinfo(QWORD* in);
+void enumeratedisk();
+void enumerateprocess();
+void choosedisk(char* in);
+void readdisk(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void myreadprocessmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+
+void say(char* fmt,...);
+void initmemory();
+void initlog();
+void initwindow();
+void initdisk();
+void initprocess();
+void killmemory();
+void killwindow();
+
+
+
+
+
 void listall()
 {
 	//清理
@@ -32,7 +52,7 @@ void choosetarget(QWORD in)
 		//第1种可能：文件的路径（比如d:\image\name.img）
 		say("file:%s\n",(char*)in);
 		type=1;
-		choosedisk(in);
+		choosedisk((char*)in);
 	}
 	else		//是一个数字
 	{

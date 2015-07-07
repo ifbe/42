@@ -34,14 +34,12 @@ int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
 int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x100000);
 
 
-void whereisdiskinfo(QWORD* in);
-void whereisrealworld(QWORD* in);
-void whereislogicworld(QWORD* in);
-
 void mountext(QWORD first,QWORD second);
 void mountfat(QWORD first,QWORD second);
 void mounthfs(QWORD first,QWORD second);
 void mountntfs(QWORD first,QWORD second);
+void inithello();
+void hello();
 
 void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 void anscii2hex(char* str,QWORD* value);
@@ -52,33 +50,18 @@ void listall();
 void choosetarget(QWORD in);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD addr,int count);
+
 void say(char* str,...);
-void explainparttable(QWORD first,QWORD second);
+void whereisdiskinfo(QWORD* in);
+void whereisrealworld(QWORD* in);
+void whereislogicworld(QWORD* in);
 
 
 
 
-void hello()		//你究竟是个什么？
+void initthisone()
 {
-	//读最开始的64个扇区（0x8000字节）来初步确定
-	readmemory(readbuffer,0,0,64);
-
-	//检查是不是磁盘（末尾有没有0x55，0xaa这个标志）
-	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
-	{
-		say("it's disk\n");
-		explainparttable(readbuffer,buffer0);
-	}
-
-	//可能是内存？
-	else
-	{
-		say("don't know\n");
-	}
-}
-void initmaster()
-{
-	//油腻的师姐在哪里
+	//所有磁盘信息在哪里
 	whereisdiskinfo((QWORD*)&diskinfo);
 
 	//现实世界在哪里
@@ -93,8 +76,11 @@ void initmaster()
 	readbuffer=logicworld;
 	dirbuffer=logicworld+0x100000;
 	fsbuffer=logicworld+0x200000;
-
-	//你是个什么玩意喂(--!)
+}
+void initmaster()
+{
+	initthisone();
+	inithello();
 	hello();
 }
 
@@ -233,7 +219,6 @@ void command(char* buffer)
 	}
 	else if(compare( arg0 , "show" ) == 0)
 	{
-
 		QWORD value;
 		anscii2hex(arg1,&value);
 		
