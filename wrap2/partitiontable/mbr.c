@@ -5,8 +5,6 @@
 
 
 //explainmbr和explainebr公用的变量
-static int src;
-static int dst;
 
 
 
@@ -19,15 +17,45 @@ void printmemory(QWORD start,QWORD count);
 
 
 
-//ebr:
-//
-void explainebr(QWORD buffer,QWORD to)
+//from：那一条长度为16B的项目的地址，to：希望的位置
+static void mbrrecord(QWORD from,QWORD* to)
 {
-	say("extend,src=%x,dst=%x\n",src,dst);
+	QWORD type=*(BYTE*)(from+4);
+	if(type==0)return;
 
-	QWORD startsector=*(DWORD*)(to+0x40*src);
-	readmemory(buffer,startsector,0,1);
-	printmemory(buffer,0x200);
+	//startsector,endsector
+	QWORD start=*(DWORD*)(from+8);
+	QWORD end=*(DWORD*)(from+0xc);
+	QWORD* addr=(QWORD*)(*to);
+	addr[0]=start;
+	addr[1]=end;
+
+	//parttype
+	if( type==0x4 | type==0x6 | type==0xb )
+	{
+		//say("fat\n");
+		addr[2]=0x746166;
+	}
+	else if( type==0x7 )
+	{
+		//say("ntfs\n");
+		addr[2]=0x7366746e;
+	}
+	else if( type==0x83 )
+	{
+		//say("ext\n");
+		addr[2]=0x747865;
+	}
+	else
+	{
+		//say("unknown:%x\n",type);
+		addr[2]=type;
+	}
+
+	//partname
+
+	//下一地址
+	*to+=0x40;
 }
 //mbr:					[+0x1be,+0x1fd],每个0x10,总共4个
 //[+0]:活动标记
@@ -38,60 +66,61 @@ void explainebr(QWORD buffer,QWORD to)
 //[+0xc,+0xf]:大小
 QWORD explainmbr(QWORD buffer,QWORD to)
 {
-	say("mbr disk\n",0);
-	dst=0;
+	say("mbr disk{\n",0);
 
-	//首先是主分区
-	QWORD temp;
-	for(src=0;src<4;src++)
-	{
-		temp=*(BYTE*)(buffer+(src*0x10)+0x1c2);
-		if(temp==0)continue;
-
-		//startsector,endsector
-		QWORD start=*(DWORD*)(buffer+(src*0x10)+0x1c6);
-		QWORD end=*(DWORD*)(buffer+(src*0x10)+0x1ca);
-		*(QWORD*)(to+0x40*dst)=start;
-		*(QWORD*)(to+0x40*dst+8)=end;
-
-		//parttype
-		say("%2d    ",dst);
-		say("[%8x,%8x]    ",start,end);
-		if( temp==0x4 | temp==0x6 | temp==0xb )
-		{
-			say("fat\n");
-			*(QWORD*)(to+0x40*dst+0x10)=0x746166;
-		}
-		else if( temp==0x7 )
-		{
-			say("ntfs\n");
-			*(QWORD*)(to+0x40*dst+0x10)=0x7366746e;
-		}
-		else if( temp==0x83 )
-		{
-			say("ext\n");
-			*(QWORD*)(to+0x40*dst+0x10)=0x747865;
-		}
-		else
-		{
-			say("????%4x\n",temp);
-			*(QWORD*)(to+0x40*dst+0x10)=(temp<<32)|0x3f3f3f3f;
-		}
-
-		//partname
-
-		//dst
-		dst++;
-	}
+	//首先是主分区，最多4个
+	QWORD toaddr=to;
+	mbrrecord(buffer+0x1be,&toaddr);
+	mbrrecord(buffer+0x1ce,&toaddr);
+	mbrrecord(buffer+0x1de,&toaddr);
+	mbrrecord(buffer+0x1ee,&toaddr);
 
 	//在这四个里面，寻找逻辑分区并解释
-	for(src=0;src<4;src++)
+	QWORD offset=0;
+	while(1)
 	{
-		temp=*(DWORD*)(to+0x40*src+0x10+4);
-		if( (temp==0x5) | (temp==0xf) )
+		QWORD start=*(QWORD*)(to+offset);
+		QWORD type=*(QWORD*)(to+offset+0x10);
+		if(type==0)break;		//到这就没东西了
+
+		if( type==5 | type==0xf )
 		{
-			*(QWORD*)(to+0x40*src+0x10)=0x646e65747865;	//既然懂了，现在就改
-			explainebr(buffer,to);
+			//say("sector:%x\n",*(DWORD*)(to+offset));
+			readmemory(buffer,*(DWORD*)(to+offset),0,1);
+			//printmemory(buffer+0x1be,0x40);
+
+			QWORD remember=toaddr;
+			mbrrecord(buffer+0x1be,&toaddr);
+			if(remember!=toaddr)
+			{
+				*(DWORD*)(remember+0)+=start;
+				//say("1st:%x\n",*(DWORD*)remember);
+			}
+
+			remember=toaddr;
+			mbrrecord(buffer+0x1ce,&toaddr);
+			if(remember!=toaddr)
+			{
+				*(DWORD*)(remember+0)+=start;
+				//say("2st:%x\n",*(DWORD*)remember);
+			}
 		}
+
+		//轮到下一个了
+		offset+=0x40;
 	}
+
+	//最后打印所有的
+	offset=0;
+	while(1)
+	{
+		QWORD addr=to+offset*0x40+0x10;
+		QWORD type=*(QWORD*)addr;
+		if(type==0)break;
+
+		say("%d:%s\n",offset,(char*)addr);
+
+		offset++;
+	}
+	say("}\n");
 }

@@ -3,6 +3,30 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
+void mountext(QWORD first,QWORD second);
+void mountfat(QWORD first,QWORD second);
+void mounthfs(QWORD first,QWORD second);
+void mountntfs(QWORD first,QWORD second);
+void inithello();
+void hello();
+
+void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
+void anscii2hex(char* str,QWORD* value);
+void buf2arg(char* buf,BYTE** first,BYTE** second);
+int compare(char* first,char* second);
+
+void listall();
+void choosetarget(QWORD in);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void printmemory(QWORD addr,int count);
+
+void say(char* str,...);
+void whereisdiskinfo(QWORD* in);
+void whereisrealworld(QWORD* in);
+void whereislogicworld(QWORD* in);
+
+
+
 
 //[buffer0][buffer1][buffer2]......[buffer15]
 static QWORD realworld;
@@ -32,29 +56,6 @@ static BYTE* diskinfo;
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
 int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
 int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x100000);
-
-
-void mountext(QWORD first,QWORD second);
-void mountfat(QWORD first,QWORD second);
-void mounthfs(QWORD first,QWORD second);
-void mountntfs(QWORD first,QWORD second);
-void inithello();
-void hello();
-
-void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
-void anscii2hex(char* str,QWORD* value);
-void buf2arg(char* buf,BYTE** first,BYTE** second);
-int compare(char* first,char* second);
-
-void listall();
-void choosetarget(QWORD in);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void printmemory(QWORD addr,int count);
-
-void say(char* str,...);
-void whereisdiskinfo(QWORD* in);
-void whereisrealworld(QWORD* in);
-void whereislogicworld(QWORD* in);
 
 
 
@@ -110,9 +111,12 @@ int searchthis(char* name,QWORD* addr)
 int mount(QWORD in)
 {
 	//清理buffer1
-	char* p=(char*)buffer1;
+	char* p;
 	int i;
+	p=(char*)buffer1;
 	for(i=0;i<0x10000;i++) p[i]=0;
+	p=(char*)logicworld;
+	for(i=0;i<0x400000;i++) p[i]=0;
 
 	//搞谁，是啥
 	QWORD this=buffer0+in*0x40;
