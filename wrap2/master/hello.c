@@ -15,7 +15,7 @@ void explaingpt(QWORD rdi,QWORD rsi);
 void explainmbr(QWORD rdi,QWORD rsi);
 
 void say(char* str,...);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereisrealworld(QWORD* in);
 void whereislogicworld(QWORD* in);
 
@@ -67,12 +67,15 @@ void explainprocess()
 void hello()		//你究竟是个什么？
 {
 	//读最开始的64个扇区（0x8000字节）来初步确定
-	readmemory(readbuffer,0,0,64);
-		//读不出来，可能是内存？
-
-	if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
+	int ret=readmemory(readbuffer,0,0,64);
+	if(ret<=0)
 	{
-		//末尾有0x55，0xaa这个标志，就当成磁盘
+		//读不出来，可能是内存？
+		say("it's memory?\n");
+	}
+	else if( *(WORD*)(readbuffer+0x1fe) == 0xaa55 )
+	{
+		//末尾有0x55，0xaa这个标志，这个是磁盘，或者要当成磁盘用
 		say("it's disk\n");
 		explainparttable(readbuffer,buffer0);
 	}

@@ -54,10 +54,15 @@ void enumerateprocess()
 	CloseHandle(temp);
 	return;
 }
-void myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
+void chooseprocess(QWORD pid)
 {
-	QWORD dwret = 0;
-	ReadProcessMemory(hDev,(char*)startaddr,(char*)buf,count,&dwret);
+	
+}
+QWORD myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
+{
+	QWORD bytesread = 0;
+	ReadProcessMemory(hDev,(char*)(startaddr*512),(char*)buf,count*0x200,&bytesread);
+	return bytesread;
 }
 void initprocess()
 {

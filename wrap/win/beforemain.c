@@ -18,8 +18,8 @@ void whereisdiskinfo(QWORD* in);
 void enumeratedisk();
 void enumerateprocess();
 void choosedisk(char* in);
-void readdisk(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void myreadprocessmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+QWORD readdisk(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+QWORD myreadprocessmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
 void say(char* fmt,...);
 void initmemory();
@@ -69,22 +69,22 @@ void choosetarget(QWORD in)
 		//第3种可能：是某个进程的虚拟内存（比如："a.exe"）
 		else
 		{
+			say("process pid:%x\n",in);
 			type=3;
-			say("process:\n");
 			//chooseprocess(number);
 		}
 	}
 }
 //内存地址，第一扇区，请无视，总字节数
-void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
+QWORD readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 {
 	if(type==1 | type==2)
 	{
-		readdisk(buf,startsector,buf,count);
+		return readdisk(buf,startsector,buf,count);
 	}
 	else if(type==3)
 	{
-		myreadprocessmemory(buf, startsector*0x200, buf, count*0x200 );
+		return myreadprocessmemory(buf, startsector*0x200, buf, count*0x200 );
 	}
 }
 

@@ -66,7 +66,7 @@ void choosetarget(QWORD in)
 		else
 		{
 			type=3;
-			say("process:\n");
+			say("process pid:\n");
 			//chooseprocess(number);
 		}
 	}
