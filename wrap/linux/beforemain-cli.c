@@ -80,10 +80,10 @@ void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 
 __attribute__((constructor)) void initroot()
 {
-	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
+	//初始化各个部分，放第一个，必须!必须!必须!
 	initmemory();
 
-	say("beforemain(){\n");
+	say("beforemain()\n{\n");
 	say("inited memory\n");
 
 	//只是拿地址
@@ -125,16 +125,18 @@ __attribute__((constructor)) void initroot()
 			//if(signal==0)donothing
 		}
 	}
-	say("arg0:%s,arg1:%s\n",buffer,buffer+temp);
+	//say("arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
 	//
 	if(signal==2)choosetarget((QWORD)buffer+temp);
 	else choosetarget(0);
 
-	say("}\n");
+	say("}\n\n");
 }
 __attribute__((destructor)) void killroot()
 {
+	say("after main\n{\n");
+	say("}\n");
 	//清理
 	//killdisk();
 	killmemory();

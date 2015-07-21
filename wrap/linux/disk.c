@@ -77,7 +77,6 @@ void choosedisk(char* wantpath)
 
 	//realopen
 	if(thisfd!=-1)close(thisfd);
-	//thisfd=open(wantpath,O_RDONLY);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(thisfd == -1)
 	{

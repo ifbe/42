@@ -83,10 +83,13 @@ void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
 
 __attribute__((constructor)) void initroot()
 {
-	initmemory();	//初始化各个部分，放第一个，必须!必须!必须!重要说3遍!
-	initlog();	//日志，放第二个，必须!必须!必须!重要说3遍!
+	//初始化各个部分，放第一个，必须!必须!必须!
+	//日志，放第二个，必须!必须!必须!
+	initmemory();
+	initlog();
 
-	say("beforemain(){\n");
+	//first "initmemory" and "initlog" , then "say"
+	say("beforemain()\n{\n");
 	say("inited memory\n");
 	say("inited log\n");
 
@@ -131,17 +134,20 @@ __attribute__((constructor)) void initroot()
 			}
 		}
 	}
-	say("arg0:%s,arg1:%s\n",buffer,buffer+temp);
+	//say("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
 	//"d:\code\file\a.exe"
 	//比如上面这种，就默认打开扫描到的第一个磁盘
 	if(signal==2)choosetarget((QWORD)buffer+temp);
 	else choosetarget(0);
 
-	say("}\n");
+	say("}\n\n");
 }
 __attribute__((destructor)) void killroot()
 {
+	say("after main()\n{\n");
+	say("}\n");
+
 	//清理
 	//killdisk();
 	killwindow();
