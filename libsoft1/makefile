@@ -7,8 +7,8 @@ binary:
 	gcc -c -fPIC -O2 fat.c
 	gcc -c -fPIC -O2 hfs.c
 	gcc -c -fPIC -O2 ntfs.c
-	rm -f wrap2.a
-	ar crs wrap2.a \
+	rm -f libsoft1.a
+	ar crs libsoft1.a \
 	master.o hello.o \
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
@@ -21,8 +21,8 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 fat.c
 	x86_64-elf-gcc -c -fPIC -O2 hfs.c
 	x86_64-elf-gcc -c -fPIC -O2 ntfs.c
-	rm -f wrap2.a
-	ar crs wrap2.a \
+	rm -f libsoft1.a
+	ar crs libsoft1.a \
 	master.o hello.o \
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
@@ -35,8 +35,8 @@ linux:
 	gcc -c -fPIC -O2 filesystem/fat.c
 	gcc -c -fPIC -O2 filesystem/hfs.c
 	gcc -c -fPIC -O2 filesystem/ntfs.c
-	rm -f wrap2.a
-	ar crs wrap2.a \
+	rm -f libsoft1.a
+	ar crs libsoft1.a \
 	master.o hello.o \
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
@@ -49,8 +49,8 @@ mac:
 	clang -c -fPIC -O2 filesystem/fat.c
 	clang -c -fPIC -O2 filesystem/hfs.c
 	clang -c -fPIC -O2 filesystem/ntfs.c
-	rm -f wrap2.a
-	ar crs wrap2.a \
+	rm -f libsoft1.a
+	ar crs libsoft1.a \
 	master.o hello.o \
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
@@ -63,8 +63,8 @@ win:
 	gcc -c -O2 filesystem/fat.c
 	gcc -c -O2 filesystem/hfs.c
 	gcc -c -O2 filesystem/ntfs.c
-	rm -f wrap2.a
-	ar crs wrap2.a \
+	rm -f libsoft1.a
+	ar crs libsoft1.a \
 	master.o hello.o \
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o

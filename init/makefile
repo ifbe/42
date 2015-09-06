@@ -8,8 +8,9 @@ linux:
 	gcc -c -fPIC -O2 linux/beforemain-cli.c
 	gcc -o ../a.out \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o log.o disk.o beforemain-cli.o
 .PHONY:linux+fb
 linux+fb:
@@ -20,8 +21,9 @@ linux+fb:
 	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o journal.o fb.o disk.o beforemain.o
 .PHONY:linux+xlib
 linux+xlib:
@@ -32,8 +34,9 @@ linux+xlib:
 	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o journal.o xlib.o disk.o beforemain.o \
 	-lX11
 .PHONY:linux+sdl
@@ -45,8 +48,9 @@ linux+sdl:
 	gcc -c -fPIC -O2 linux/beforemain.c
 	gcc -o ../a.out \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o journal.o sdl2.o disk.o beforemain.o \
 	-lSDL2 -lm
 .PHONY:mac+sdl
@@ -57,8 +61,9 @@ mac+sdl:
 	clang -c -O2 mac/beforemain.c
 	clang -o ../a.out \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o journal.o sdl.o beforemain.o \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm
@@ -72,8 +77,9 @@ win:
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o log.o disk.o process.o beforemain-cli.o uac.res
 .PHONY:win+api
 win+api:
@@ -86,8 +92,9 @@ win+api:
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -mwindows -o ../a.exe \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	memory.o journal.o api.o disk.o process.o beforemain.o uac.res \
 	-lgdi32
 .PHONY:win+sdl
@@ -102,8 +109,9 @@ win+sdl:
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
 	gcc -o ../a.exe \
 	../main/main.a \
-	../wrap2/wrap2.a \
-	../wrap1/wrap1.a \
+	../libsoft1/libsoft1.a \
+	../libsoft/libsoft.a \
+	../libhard1/libhard1.a \
 	disk.o earmouth.o memory.o sdl.o uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
 	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
