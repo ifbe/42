@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 
 
-void whereisscreenbuf(QWORD* in);
+QWORD whereisscreen();
 
 
 
@@ -12,8 +12,7 @@ void whereisscreenbuf(QWORD* in);
 void background1()
 {
 	DWORD thatcolor=0xe0e0e0;
-	DWORD* screenbuf;
-	whereisscreenbuf((QWORD*)&screenbuf);
+	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
 	int x,y;
@@ -52,8 +51,7 @@ void background1()
 void background2()
 {
 	DWORD thatcolor=0xe0e0e0;
-	DWORD* screenbuf;
-	whereisscreenbuf((QWORD*)&screenbuf);
+	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
 	int x,y;
@@ -93,8 +91,7 @@ void background2()
 }
 void background3()
 {
-	DWORD* screenbuf;
-	whereisscreenbuf((QWORD*)&screenbuf);
+	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
 	int x,y;

@@ -63,7 +63,7 @@ QWORD readornotread(QWORD wantaddr)
 
 
 
-void hexinit()
+void f1init()
 {
 	//whereisrealworld(&baseaddr);
 	int i;
@@ -256,7 +256,7 @@ void kuangcontent()
 	//手工输入区域
 	//string(16+thisx/8,15+thisy/16,buffer);
 }
-void hex()
+void f1show()
 {
 	thisx=px*16+16;
 	if(thisx>768)thisx-=256+16;
@@ -268,7 +268,7 @@ void hex()
 	kuangbg();
 	kuangcontent();
 }
-void hexmessage(QWORD type,QWORD key)
+void f1message(QWORD type,QWORD key)
 {
 	if(type==0x776f727261)		//方向键
 	{

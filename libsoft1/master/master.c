@@ -144,6 +144,7 @@ int mount(QWORD which)
 	}
 
 	//给函数指针赋值
+	if(this[4] < 0xffff)return;
 	explain=(void*)( this[4] );
 	cd=(void*)( this[5] );
 	load=(void*)( this[6] );

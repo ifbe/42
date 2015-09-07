@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-static QWORD partbuffer;
+//static QWORD partbuffer;
 static QWORD dirbuffer;
 
 static char choosepart=0;
@@ -11,8 +11,7 @@ static char choosefile=0;
 static int complex=0;		//主体华丽程度
 
 
-void whereisrealworld(QWORD* in);
-void whereislogicworld(QWORD* in);
+QWORD whereisworld();
 void background2();
 void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
@@ -22,12 +21,11 @@ void mount(QWORD in);
 
 
 
-void logic0init()
+void f2init()
 {
-	whereisrealworld(&partbuffer);
+	//whereisrealworld(&partbuffer);
 
-	whereislogicworld(&dirbuffer);
-	dirbuffer+=0x100000;
+	dirbuffer=whereisworld()+0x200000;
 }
 void logic0background()
 {
@@ -58,6 +56,7 @@ void logic0background()
 		point(x,639-32,0xff00);
 	}
 }
+/*
 void logic0part()
 {
 	int x,y,i;
@@ -92,7 +91,7 @@ void logic0part()
 			point(x,y,0);
 		}
 	}
-}
+}*/
 
 
 
@@ -134,10 +133,10 @@ void printfile2()
 {
 	
 }
-void logic0()
+void f2show()
 {
 	logic0background();
-	logic0part();
+	//logic0part();
 
 	//-------------------
 	if(complex==0)
@@ -153,7 +152,7 @@ void logic0()
 		printfile2();
 	}
 }
-void logic0message(QWORD type,QWORD key)
+void f2message(QWORD type,QWORD key)
 {
 	//if(type!=2)return;
 	if(type!=0x7466656c)return;

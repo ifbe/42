@@ -9,7 +9,6 @@
 static unsigned char* logbuf;
 
 
-void whereislogbuf(BYTE** addr);
 
 
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
@@ -49,7 +48,6 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 		}
 		temp++;
 	}
-
 }
 
 
@@ -59,7 +57,7 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 
 
-void initlog()
+void initlog(QWORD addr)
 {
-	whereislogbuf(&logbuf);
+	logbuf=(char*)addr;
 }

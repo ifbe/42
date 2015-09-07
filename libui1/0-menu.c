@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 
 //硬盘信息
-static BYTE* diskinfo;
+static QWORD diskinfo;
 
 //
 static QWORD choose=0;
@@ -12,20 +12,20 @@ static QWORD choose=0;
 
 
 
-void whereisdiskinfo(BYTE** in);
+QWORD whereisworld();
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
 void hidemenu();
-void focus(QWORD in);
+void choosetarget(QWORD in);
 void die();
-void hexinit();
+void f1init();
 
 
 
 
 void menuinit()
 {
-	whereisdiskinfo(&diskinfo);
+	diskinfo=whereisworld()+0x700000;
 }
 void menubg()
 {
@@ -68,7 +68,7 @@ void printdisk0()
 				point(x,y,0x88888888);
 			}
 		}
-		string(0x20,8+i,diskinfo+0x100*i);
+		string(0x20,8+i,(char*)diskinfo+0x100*i);
 		//string(0x40,8+i,diskinfo+0x100*i+0x80);
 	}
 	//选中
@@ -94,7 +94,7 @@ void exitbutton()
 	string(0x3e,34,"exit");
 	string(0x3c,35,"program");
 }
-void menu()
+void menushow()
 {
 	menubg();
 	printdisk0();
@@ -116,8 +116,8 @@ void menumessage(QWORD type,QWORD key)
 				if(y<512)
 				{
 					choose=(y-128)/16;
-					focus(choose);
-					hexinit();
+					choosetarget(choose);
+					f1init();
 
 					return;
 				}

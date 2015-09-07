@@ -57,6 +57,7 @@ __attribute__((destructor)) void killeverything()
 
 	killdisk();
 	killprocess();
+	killwindow();
 
 	free(world);
 	say("killed memory\n");

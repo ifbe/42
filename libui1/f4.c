@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 
 //log位置
-static BYTE* logbuf;
+static QWORD logbuf;
 static QWORD offset=0;
 
 //键盘输入
@@ -15,9 +15,9 @@ static int bufcount=0;
 static int complex=0;		//主体华丽程度
 
 
-void whereislogbuf(void* in);
+QWORD whereisworld();
 void background1();
-void hexinit();
+void f1init();
 void die();
 void command(char* in);
 void point(int x,int y,DWORD color);
@@ -27,9 +27,9 @@ int compare(char* first,char* second);
 
 
 
-void consoleinit()
+void f4init()
 {
-	whereislogbuf(&logbuf);
+	logbuf=whereisworld()+0x400000;
 }
 void printconsole0()
 {
@@ -44,7 +44,7 @@ void printconsole0()
 	//总共38行，必须保证showaddr>=0x80*40
 	for(y=0;y<40;y++)
 	{
-		string(0,y,logbuf+showaddr+0x80*(y-40));
+		string(0,y,(char*)logbuf+showaddr+0x80*(y-40));
 	}
 
 	//键盘输入区
@@ -92,7 +92,7 @@ void printconsole2()
 {
 	
 }
-void console()
+void f4show()
 {
 	background1();
 
@@ -109,9 +109,9 @@ void console()
 		printconsole2();
 	}
 }
-void consolemessage(QWORD type,QWORD key)
+void f4message(QWORD type,QWORD key)
 {
-	if(type==0x64626b)		//键盘
+	if(type==0x72616863)		//键盘
 	{
 		if(key==0xd)		//回车
 		{
@@ -124,7 +124,7 @@ void consolemessage(QWORD type,QWORD key)
 			{
 				if( ( (*(QWORD*)buffer)&0xffffffffffff ) == 0x207375636f66 )	//"focus "
 				{
-					hexinit();
+					f1init();
 				}
 				command(buffer);
 			}

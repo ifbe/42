@@ -45,10 +45,6 @@ void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
 }
-void whereisscreenbuf(unsigned long long* p)
-{
-	*p=(unsigned long long)mypixel;
-}
 void writescreen()
 {
 	//int result=SetDIBitsToDevice(realdc,
@@ -150,24 +146,40 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			switch(wparam)
 			{
-				case VK_UP:
-				case VK_LEFT:
-				case VK_RIGHT:
-				case VK_DOWN:
+				case VK_UP:				//up
+				case VK_LEFT:			//left
+				case VK_RIGHT:			//right
+				case VK_DOWN:			//down
+				case 0x70:				//f1
+				case 0x71:				//f2
+				case 0x72:				//f3
+				case 0x73:				//f4
 				{
-					my1=0x776f727261;   //worra //arrow;	//1;
+					my1=0x64626b;
 					my2=wparam;
 					solved=0;
+					break;
 				}
 			}
+			//say("key:%x\n",wparam);
 			return 0;
 		}
 		case WM_CHAR:		//键盘点下
 		{
-			my1=0x64626b;		//dbk	//kbd	//1;
-			my2=wparam;
-			solved=0;
-			return 0;
+			if(wparam==0x1b)
+			{
+				my1=0x64626b;		//dbk	//kbd	//1;
+				my2=wparam;
+				solved=0;
+				return 0;
+			}
+			else
+			{
+				my1=0x72616863;		//rahc	//char	//1;
+				my2=wparam;
+				solved=0;
+				return 0;
+			}
 		}
 		case WM_MOUSEWHEEL:
 		{
@@ -383,8 +395,12 @@ void initdib()
 	info.bmiColors[0].rgbReserved=255;
 }
 //__attribute__((constructor)) void initsdl()
-void initwindow()
+void initwindow(QWORD addr)
 {
+	//准备rgb点阵
+	//mypixel=(unsigned int*)malloc(width*height*4);
+	mypixel=(unsigned int*)addr;
+
 	//准备beforemain
 	initmywindow();
 
@@ -401,20 +417,18 @@ void initwindow()
 	//拿dc
 	realdc=GetDC(window);
 
-	//准备rgb点阵
-	mypixel=(unsigned int*)malloc(width*height*4);
-
 	say("inited window\n");
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindow()
 {
-	//释放点阵
-	free(mypixel);
-
 	//释放dc
 	ReleaseDC(window,realdc);
 
 	//释放托盘
 	Shell_NotifyIcon(NIM_DELETE, &nid);
+
+	//释放点阵
+	//free(mypixel);
+	say("killed window\n");
 }

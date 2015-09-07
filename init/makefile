@@ -56,15 +56,16 @@ mac+sdl:
 	ar crs init.a memory.o journal.o sdl.o beforemain.o
 .PHONY:win+api
 win+api:
-	gcc -c -O2 memory/memory.c
-	gcc -c -O2 memory/journal.c
-	gcc -c -O2 win/api.c
+	gcc -c -O2 win/commandline.c
+	gcc -c -O2 win/mem2file.c
 	gcc -c -O2 win/disk.c
 	gcc -c -O2 win/process.c
-	gcc -c -O2 win/beforemain.c
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	gcc -c -O2 win-gui/init.c
+	gcc -c -O2 win-gui/journal.c
+	gcc -c -O2 win-gui/api.c
 	rm -f init.a
-	ar crs init.a memory.o journal.o api.o disk.o process.o beforemain.o
+	ar crs init.a commandline.o mem2file.o disk.o process.o init.o journal.o api.o
 .PHONY:win+sdl
 win+sdl:
 	gcc -c -O2 memory/memory.c

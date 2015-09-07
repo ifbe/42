@@ -10,7 +10,7 @@
 //0x21:
 //0x30:
 //0x31:
-static DWORD what=0x10;
+static DWORD what=1;
 
 
 void point(int x,int y,DWORD color);
@@ -18,29 +18,28 @@ void string(int x,int y,char* str);
 void writescreen();
 void waitevent(QWORD* first,QWORD* second);
 
-void focus(QWORD in);
-void menu();
-void hex();
-void console();
-void real0();
-void logic0();
-void tempprint();
-void jiong();
-
+void choosetarget(QWORD in);
 void initmaster();
-void menuinit();	//0
-void hexinit();		//1
-void consoleinit();	//1
-void real0init();	//2
-void logic0init();	//2
 
+void menuinit();	//0
+void menushow();
 void menumessage(QWORD type,QWORD key);
-void hexmessage(QWORD type,QWORD key);
-void consolemessage(QWORD type,QWORD key);
-void real0message(QWORD type,QWORD key);
-void logic0message(QWORD type,QWORD key);
-void tempmessage(QWORD type,QWORD key);
-void overviewmessage(QWORD type,QWORD key);
+
+void f1init();
+void f1show();
+void f1message(QWORD type,QWORD key);
+
+void f2init();
+void f2show();
+void f2message(QWORD type,QWORD key);
+
+void f3init();
+void f3show();
+void f3message(QWORD type,QWORD key);
+
+void f4init();
+void f4show();
+void f4message(QWORD type,QWORD key);
 
 
 
@@ -70,17 +69,16 @@ void die()
 void printworld()
 {
 	int x,y;
+
 	//主界面显示什么
 	switch(what&0xff)
 	{
-		case 0x10:hex();break;
-		case 0x11:console();break;
-		case 0x20:real0();break;
-		case 0x21:logic0();break;
-		case 0x30:tempprint();break;
-		case 0x31:jiong();break;
+		case 1:f1show();break;
+		case 2:f2show();break;
+		case 3:f3show();break;
+		case 4:f4show();break;
 	}
-	if(showmenu==1)menu();
+	if(showmenu==1)menushow();
 
 	//右上角
 	for(x=1024-16;x<1024;x++)
@@ -123,16 +121,35 @@ void processmessage(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)		//dropfile
 	{
 		//say("debuging::::::::%s\n",(char*)key);
-		focus(key);
-		hexinit();
+		choosetarget(key);
+		f1init();
 		return;
 	}
-	else if(type==0x64626b)		//1是键盘
+	else if(type==0x64626b)		//kbd
 	{
-		//按下esc
-		if(key==0x1b)
+		if(key==0x1b)		//按下esc
 		{
 			showmenu^=1;
+			return;
+		}
+		if(key==0x70)		//f1
+		{
+			what=1;
+			return;
+		}
+		if(key==0x71)		//f2
+		{
+			what=2;
+			return;
+		}
+		if(key==0x72)
+		{
+			what=3;
+			return;
+		}
+		if(key==0x73)		//f4
+		{
+			what=4;
 			return;
 		}
 	}
@@ -147,53 +164,15 @@ void processmessage(QWORD type,QWORD key)
 				showmenu^=1;
 				return;
 			}
-			else if(y<64)
-			{}
-			else if(y<80)
-			{
-				what=0x10;
-				return;
-			}
-			else if(y<96) //showconsole^=1;		//左上
-			{
-				what=0x11;
-				return;
-			}
-			else if(y<128)
-			{}
-			else if(y<144)
-			{
-				what=0x20;
-				return;
-			}
-			else if(y<160)
-			{
-				what=0x21;
-				return;
-			}
-			else if(y<192)
-			{}
-			else if(y<208)
-			{
-				what=0x30;
-				return;
-			}
-			else if(y<224)
-			{
-				what=0x31;
-				return;
-			}
 		}
 	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(showmenu==1)menumessage(type,key);		//磁盘
-	else if(what==0x10)hexmessage(type,key);		//hex在干活就交给hex
-	else if(what==0x11)consolemessage(type,key);		//console在干活就交给console
-	else if(what==0x20)real0message(type,key);		//real0在干活就交给real0
-	else if(what==0x21)logic0message(type,key);		//logic0在干活就交给logic0
-	else if(what==0x30)tempmessage(type,key);
-	else if(what==0x31)overviewmessage(type,key);		//点了叉
+	else if(what==1)f1message(type,key);		//hex在干活就交给hex
+	else if(what==2)f2message(type,key);		//logic0在干活就交给logic0
+	else if(what==3)f3message(type,key);		//点了叉
+	else if(what==4)f4message(type,key);		//console在干活就交给console
 }
 
 
@@ -218,10 +197,10 @@ void main()
 	initmaster();		//wrap2手动初始化
 
 	menuinit();			//0
-	hexinit();			//1
-	consoleinit();		//1
-	real0init();		//2
-	logic0init();		//2
+	f1init();			//1
+	f2init();			//2
+	f3init();			//3
+	f4init();			//3
 
 	while(1)
 	{

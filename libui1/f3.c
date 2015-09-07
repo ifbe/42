@@ -11,7 +11,11 @@ void string(int x,int y,char* str);
 
 
 
-void jiong()
+void f3init()
+{
+	
+}
+void f3show()
 {
 	int x,y;
 	background3();
@@ -65,6 +69,6 @@ void jiong()
 	string(0x38,16,"every where to live");
 	string(0x38,24,"only here to die");
 }
-void overviewmessage(QWORD type,QWORD key)
+void f3message(QWORD type,QWORD key)
 {
 }
