@@ -75,16 +75,17 @@ void hello()		//你究竟是个什么？
 	else if( *(WORD*)(datahome+0x1fe) == 0xaa55 )
 	{
 		//末尾有0x55，0xaa这个标志，这个是磁盘，或者要当成磁盘用
-		say("it's disk\n");
-		cleanmemory(diskhome,0x400000);
 
 		//看看是什么类型，交给小弟处理
-		if(*(QWORD*)(datahome+0x200)==0x5452415020494645)
+		QWORD temp=*(QWORD*)(datahome+0x200);
+		if( temp == 0x5452415020494645 )
 		{
+			//cleanmemory(diskhome,0x400000);
 			explaingpt(datahome,diskhome);
 		}
 		else
 		{
+			//cleanmemory(diskhome,0x400000);
 			explainmbr(datahome,diskhome);
 		}
 	}
@@ -207,8 +208,8 @@ void command(char* buffer)
 		QWORD value;
 		hexstring2data(arg1,&value);
 		
-		readmemory(datahome,value,0,8);
-		printmemory(datahome,0x1000);
+		readmemory(datahome,value,0,1);
+		printmemory(datahome,0x200);
 		say("above is:%x,%x\n",value,value+7);
 	}
 	else if(compare( arg0 , "mount" ) == 0)

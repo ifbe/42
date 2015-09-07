@@ -77,4 +77,6 @@ void initprocess(QWORD addr)
 	say("inited process\n");
 }
 void killprocess()
-{}
+{
+	say("killed process\n");
+}

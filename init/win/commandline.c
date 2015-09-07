@@ -14,7 +14,7 @@ void explainarg()
 {
 	//拿到进程的输入arg,决定默认打开谁
 	char* inputarg=GetCommandLine();
-	say("%s\n",inputarg);
+	say("arg:%s\n",inputarg);
 
 	//
 	int i;

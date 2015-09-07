@@ -57,28 +57,8 @@ void disklist()
 		}
 	}//10个记录
 }
-void diskchoose(QWORD in)
+void diskchoose(char* path)
 {
-	char* path;
-	if( in >100 )		//是一个内存地址
-	{
-		//第1种可能：文件的路径（比如d:\image\name.img）
-		path=(char*)in;
-		say("file:%s\n",path);
-	}
-	else
-	{
-		path=(char*)(diskinfo+0x100*in);
-		if( *(DWORD*)path == 0x5c2e5c5c )		//是一个数字
-		{
-			//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
-			say("disk:%s\n",path);
-		}
-	}
-
-
-
-
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
@@ -119,4 +99,7 @@ void initdisk(QWORD addr)
 	say("inited disk\n");
 }
 void killdisk()
-{}
+{
+	if(hDev!=NULL)CloseHandle(hDev);
+	say("killed disk\n");
+}

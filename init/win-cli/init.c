@@ -5,12 +5,17 @@
 
 
 
+void disklist();
 void diskchoose(QWORD);
 void diskread(QWORD,QWORD,QWORD,QWORD);
 
-void initdisk(QWORD);
-void initprocess(QWORD);
 void explainarg();
+
+void initdisk(QWORD);
+void killdisk();
+
+void initprocess(QWORD);
+void killprocess();
 
 void say(char* , ...);
 
@@ -41,13 +46,22 @@ __attribute__((constructor)) void initeverything()
 	initprocess( (QWORD)world+0x700000 );
 
 	//不管是不是只有arg0
+	disklist();
 	explainarg();
 
 	say("}\n");
 }
-__attribute__((constructor)) void killeverything()
+__attribute__((destructor)) void killeverything()
 {
+	say("aftermain(){\n");
+
+	killdisk();
+	killprocess();
+
 	free(world);
+	say("killed memory\n");
+
+	say("}\n");
 }
 
 
@@ -78,9 +92,9 @@ void choosetarget(QWORD in)
 	}
 }
 //内存地址，第一扇区，请无视，总字节数
-void readmemory(QWORD buf,QWORD startsector,QWORD disk,DWORD count)
+void readmemory(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 {
-	diskread(buf,startsector,buf,count);
+	diskread(buf,startsector,0,count);
 }
 
 
