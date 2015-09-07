@@ -9,6 +9,17 @@ void say(char* fmt,...);
 
 
 
+void cleanmemory(QWORD addr,QWORD size)
+{
+	//清理
+	BYTE* memory=(BYTE*)addr;
+	int i=0;
+	for(i=0;i<0x400000;i++) memory[i]=0;
+}
+
+
+
+
 //debug用，打印从addr开始的总共size个字节
 void printmemory(QWORD addr,QWORD size)
 {

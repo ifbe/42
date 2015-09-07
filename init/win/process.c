@@ -15,12 +15,11 @@ char* diskinfo;
 
 
 void say(char* fmt,...);
-void whereisdiskinfo(char** in);
 
 
 
 
-void enumerateprocess()
+void listprocess()
 {
 	//只需列出进程名字和编号
 	HANDLE temp;
@@ -64,8 +63,18 @@ QWORD myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
 	ReadProcessMemory(hDev,(char*)(startaddr*512),(char*)buf,count*0x200,&bytesread);
 	return bytesread;
 }
-void initprocess()
+
+
+
+
+
+
+
+
+void initprocess(QWORD addr)
 {
-	whereisdiskinfo(&diskinfo);
+	diskinfo=(char*)addr;
 	say("inited process\n");
 }
+void killprocess()
+{}

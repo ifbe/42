@@ -3,54 +3,46 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-void mountext(QWORD first,QWORD second);
-void mountfat(QWORD first,QWORD second);
-void mounthfs(QWORD first,QWORD second);
-void mountntfs(QWORD first,QWORD second);
-void inithello();
-void hello();
+//in libsoft1/
+void mountext(QWORD,QWORD);
+void mountfat(QWORD,QWORD);
+void mounthfs(QWORD,QWORD);
+void mountntfs(QWORD,QWORD);
+void explaingpt(QWORD,QWORD);
+void explainmbr(QWORD,QWORD);
 
-void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
-void anscii2hex(char* str,QWORD* value);
-void buf2arg(char* buf,BYTE** first,BYTE** second);
-int compare(char* first,char* second);
+//in libsoft/
+void hexstring2data(char*,QWORD*);
+void buf2arg(char*,BYTE**,BYTE**);
+int compare(char*,char*);
+void printmemory(QWORD addr,int count);
+void cleanmemory(QWORD addr,int count);
 
+//in init/
+QWORD whereisworld();
+QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void listall();
 void choosetarget(QWORD in);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void printmemory(QWORD addr,int count);
 
 void say(char* str,...);
-void whereisdiskinfo(QWORD* in);
-void whereisrealworld(QWORD* in);
-void whereislogicworld(QWORD* in);
+void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
 
 
 
-//[buffer0][buffer1][buffer2]......[buffer15]
-static QWORD realworld;
-	//1个硬盘(或者虚拟磁盘文件) = 很多个分区(ext/fat/hfs/ntfs)
-	static QWORD buffer0;
-	//1个分区(或者某格式的文件) = 很多个区域(头/索引区/数据区/尾)
-	static QWORD buffer1;
-	//1个索引(mft/inode/btnode) = 很多信息(名字，唯一id，时间，扇区位置等)
-	static QWORD buffer2;
-	//[+0x30000,+0xfffff]:未用
-	static QWORD buffer3;
 
-//[0m,1m)[1m,2m)[2m,3m)[3m,4m)
-static QWORD logicworld;
-	//往这儿读，只临时用一下（当心别人也用）
-	static QWORD readbuffer;
-	//名，id，种类，大小
-	static QWORD dirbuffer;
-	//缓存几千几万个fat/mft/btnode/inode
-	static QWORD fsbuffer;
-	//[0x300000,0x3fffff]:未用
 
-//硬盘信息
-static BYTE* diskinfo;
+
+
+//每个1M
+static QWORD diskhome;		//+0m
+static QWORD fshome;		//+1m
+static QWORD dirhome;		//+2m
+static QWORD datahome;		//+3m
+static QWORD diskinfo;		//+7m
+
+
+
 
 //3大函数的位置
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
@@ -60,29 +52,47 @@ int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x
 
 
 
-void initthisone()
+//from:
+//只知道是一堆数据
+//to:					//[+0,+ffff],每个0x40,总共0x400个
+//[0,7]  		startlba
+//[8,f]  		endlba
+//[10,17]		type
+//[18,1f]		name
+//[20,27]		cdfunc
+//[28,2f]		loadfunc
+//[30,37]		explainfunc
+//[38,3f]		unused
+void hello()		//你究竟是个什么？
 {
-	//所有磁盘信息在哪里
-	whereisdiskinfo((QWORD*)&diskinfo);
+	//读最开始的64个扇区（0x8000字节）来初步确定
+	int ret=readmemory(datahome,0,0,64);
+	if(ret<=0)
+	{
+		//读不出来，可能是内存？
+		say("it's memory?\n");
+	}
+	else if( *(WORD*)(datahome+0x1fe) == 0xaa55 )
+	{
+		//末尾有0x55，0xaa这个标志，这个是磁盘，或者要当成磁盘用
+		say("it's disk\n");
+		cleanmemory(diskhome,0x400000);
 
-	//现实世界在哪里
-	whereisrealworld(&realworld);
-	buffer0=realworld;
-	buffer1=realworld+0x10000;
-	buffer2=realworld+0x20000;
-	buffer3=realworld+0x30000;
-
-	//逻辑世界在哪里
-	whereislogicworld(&logicworld);
-	readbuffer=logicworld;
-	dirbuffer=logicworld+0x100000;
-	fsbuffer=logicworld+0x200000;
-}
-void initmaster()
-{
-	initthisone();
-	inithello();
-	hello();
+		//看看是什么类型，交给小弟处理
+		if(*(QWORD*)(datahome+0x200)==0x5452415020494645)
+		{
+			explaingpt(datahome,diskhome);
+		}
+		else
+		{
+			explainmbr(datahome,diskhome);
+		}
+	}
+	else
+	{
+		//可能是zip,网络包,或者其他乱七八糟的结构
+		say("don't know\n");
+	}
 }
 
 
@@ -90,11 +100,8 @@ void initmaster()
 
 int searchthis(char* name,QWORD* addr)
 {
-	//printmemory(dirbuffer,0x1000);
-	//say("i am in\n");
-
-	QWORD temp=dirbuffer;
-	for(;temp<dirbuffer+0x1000;temp+=0x40)
+	QWORD temp=dirhome;
+	for(;temp<dirhome+0x1000;temp+=0x40)
 	{
 		//say("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
 		if( compare( name , (char*)temp ) == 0 )
@@ -108,58 +115,37 @@ int searchthis(char* name,QWORD* addr)
 	say("file not found\n");
 	return -1;
 }
-int mount(QWORD in)
+int mount(QWORD which)
 {
 	//清理buffer1
-	char* p;
-	int i;
-	p=(char*)buffer1;
-	for(i=0;i<0x10000;i++) p[i]=0;
-	p=(char*)logicworld;
-	for(i=0;i<0x400000;i++) p[i]=0;
+	cleanmemory(fshome,0x300000);
 
 	//搞谁，是啥
-	QWORD this=buffer0+in*0x40;
-	QWORD type=*(QWORD*)(this+0x10);
+	QWORD* this=(QWORD*)(diskhome+0x40*which);
+	QWORD type=this[2];
 
 	//不同种类的分区，不同的处理
 	if(type == 0x747865)		//ext
 	{
-		mountext(this,buffer1);
+		mountext(diskhome,which);
 	}
 	else if(type == 0x746166)		//fat
 	{
-		mountfat(this,buffer1);
+		mountfat(diskhome,which);
 	}
 	else if(type == 0x736668)		//hfs
 	{
-		mounthfs(this,buffer1);
+		mounthfs(diskhome,which);
 	}
 	else if(type == 0x7366746e)		//ntfs
 	{
-		mountntfs(this,buffer1);
+		mountntfs(diskhome,which);
 	}
 
 	//给函数指针赋值
-	explain=(void*)( *(QWORD*)(this+0x20) );
-	cd=(void*)( *(QWORD*)(this+0x28) );
-	load=(void*)( *(QWORD*)(this+0x30) );
-
-	//printmemory(this,0x40);
-}
-void focus(QWORD value)
-{
-	//清理内存
-	char* p;
-	int i;
-	p=(char*)realworld;
-	for(i=0;i<0x100000;i++) p[i]=0;
-	p=(char*)logicworld;
-	for(i=0;i<0x400000;i++) p[i]=0;
-
-	//检查这是个什么玩意
-	choosetarget(value);
-	hello();
+	explain=(void*)( this[4] );
+	cd=(void*)( this[5] );
+	load=(void*)( this[6] );
 }
 
 
@@ -183,21 +169,21 @@ void command(char* buffer)
 //----------------------2.实际的活都找专人来干-----------------------------
 	if(compare( arg0 , "help" ) == 0)
 	{
-		say("focus ?                 (choose a disk)\n");
+		say("pick ?                  (choose a disk)\n");
 		say("mount ?                 (choose a partition)\n");
 		say("explain ?               (explain inode/cluster/cnid/mft)\n");
 		say("cd dirname              (change directory)\n");
 		say("load filename           (load this file)\n");
 	}
-	else if(compare( arg0 , "focus" ) == 0)
+	else if(compare( arg0 , "pick" ) == 0)
 	{
+		cleanmemory(diskhome,0x400000);
 		if( (QWORD)arg1 == 0 )
 		{
 			//只是打印一遍扫描到的磁盘信息
 			char* p=(char*)diskinfo;
 			int i=0;
 
-			listall();
 			while(1)
 			{
 				//先检查
@@ -209,25 +195,20 @@ void command(char* buffer)
 				i+=0x100;
 			}
 		}
-		else if( *(DWORD*)arg1 < 0xffff )	//'9','9'=0x3939
-		{
-			//选择磁盘
-			QWORD value;
-			anscii2hex(arg1,&value);
-			if(value<100)focus(value);
-		}
 		else
 		{
-			focus((QWORD)arg1);
+			//检查这是个什么玩意
+			choosetarget((QWORD)arg1);
+			hello();
 		}
 	}
 	else if(compare( arg0 , "show" ) == 0)
 	{
 		QWORD value;
-		anscii2hex(arg1,&value);
+		hexstring2data(arg1,&value);
 		
-		readmemory(readbuffer,value,0,8);
-		printmemory(readbuffer,0x1000);
+		readmemory(datahome,value,0,8);
+		printmemory(datahome,0x1000);
 		say("above is:%x,%x\n",value,value+7);
 	}
 	else if(compare( arg0 , "mount" ) == 0)
@@ -241,7 +222,7 @@ void command(char* buffer)
 		{
 			//字符串转值
 			QWORD value;
-			anscii2hex(arg1,&value);
+			hexstring2data(arg1,&value);
 
 			//挂载选定分区
 			mount(value);		//第几个功能，字符串地址
@@ -250,7 +231,7 @@ void command(char* buffer)
 	else if(compare( arg0 , "explain" ) == 0)
 	{
 		QWORD value;
-		anscii2hex(arg1,&value);
+		hexstring2data(arg1,&value);
 
 		say("explainer@%llx\n",explain);
 		explain(value);
@@ -279,20 +260,20 @@ void command(char* buffer)
 		for(;temp<( size&0xfffffff00000 );temp+=0x100000)
 		{
 			load(id,temp);
-			mem2file(readbuffer,arg1,temp,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+			mem2file(datahome,arg1,temp,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 		}
 		//最后的零头(要是size=1m的整数倍，就没有零头)
 		if(temp<size)
 		{
 			load(id,temp);
-			mem2file(readbuffer,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+			mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 		}
 	}
 	else if(compare( arg0 , "ls" ) == 0)
 	{
 		say("name                special id          type                size\n");
-		QWORD addr=dirbuffer;
-		for(;addr<dirbuffer+0x1000;addr+=0x40)
+		QWORD addr=dirhome;
+		for(;addr<dirhome+0x1000;addr+=0x40)
 		{
 			if(*(QWORD*)addr==0)break;
 			say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
@@ -304,4 +285,18 @@ void command(char* buffer)
 	{
 		say("%s\n",arg0);
 	}
+}
+
+
+
+
+void initmaster()
+{
+	diskhome=whereisworld();
+	fshome=diskhome+0x100000;
+	dirhome=diskhome+0x200000;
+	datahome=diskhome+0x300000;
+
+	diskinfo=diskhome+0x700000;
+	hello();
 }

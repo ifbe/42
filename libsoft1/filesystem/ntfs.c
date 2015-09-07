@@ -5,9 +5,11 @@
 
 
 //memory
-static QWORD directorybuffer;
-static QWORD readbuffer;
+static QWORD diskhome;
+static QWORD fshome;
 static QWORD mftbuffer;
+static QWORD dirhome;
+static QWORD datahome;
 
 //disk
 static QWORD diskaddr;
@@ -164,7 +166,7 @@ void explain80(QWORD addr,QWORD want)	//file data
 		say("resident80@%x\n",addr);
 		DWORD length = *(DWORD*)(addr+0x10);
 		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
-		BYTE* rdi=(BYTE*)readbuffer;
+		BYTE* rdi=(BYTE*)datahome;
 		int i;
 		for(i=0;i<length;i++) rdi[i]=rsi[i];
 
@@ -173,7 +175,7 @@ void explain80(QWORD addr,QWORD want)	//file data
 	else
 	{
 		say("non resident80@%x\n",addr);
-		datarun(readbuffer,addr + (*(WORD*)(addr+0x20)) ,want);
+		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want);
 	}
 }
 
@@ -251,33 +253,33 @@ void explain90(QWORD addr)	//index root
 	//剩下的事(这块以后要改，排序什么的)
 	if( *(BYTE*)(addr+0xc) ==0 )	//是小索引
 	{
-		explainindex(directorybuffer,addr,size);
+		explainindex(dirhome,addr,size);
 	}
 	else				//是大索引
 	{
-		explainindex(directorybuffer,addr,size);
+		explainindex(dirhome,addr,size);
 	}
 }
 
 
 void explaina0(QWORD addr)	//index allocation
 {
-	//清理directorybuffer
+	//清理dirhome
 	BYTE* memory;
 	int i;
-	memory=(BYTE*)(readbuffer);
+	memory=(BYTE*)(datahome);
 	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
-	memory=(BYTE*)(directorybuffer);
+	memory=(BYTE*)(dirhome);
 	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
 
 	//读INDX进来
 	say("a0@%x{\n",addr);
-	datarun(readbuffer,addr + (*(QWORD*)(addr+0x20)) ,0);
-	//printmemory(readbuffer,0x1000);
+	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0);
+	//printmemory(datahome,0x1000);
 
 	//解释INDX成易懂的格式：名字，编号，类型，大小
-	QWORD p=readbuffer;
-	QWORD rdi=directorybuffer;
+	QWORD p=datahome;
+	QWORD rdi=dirhome;
 	while( *(DWORD*)p ==0x58444e49 )	//INDX
 	{
 		say("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
@@ -503,45 +505,48 @@ static int ntfs_load(QWORD id,QWORD offset)
 
 
 
-void explainntfshead(QWORD in,QWORD out)
+void explainntfshead(QWORD in,QWORD fshome)
 {
 	clustersize=(QWORD)( *(BYTE*)(in+0xd) );
-	*(QWORD*)(out)=0xd;
-	*(QWORD*)(out+8)=0xd;
-	*(QWORD*)(out+0x10)=clustersize;
+	*(QWORD*)(fshome)=0xd;
+	*(QWORD*)(fshome+8)=0xd;
+	*(QWORD*)(fshome+0x10)=clustersize;
 	say("clustersize:%x\n",clustersize);
 
 	mftcluster= *(QWORD*)(in+0x30);
-	*(QWORD*)(out+0x40)=0x30;
-	*(QWORD*)(out+0x48)=0x37;
-	*(QWORD*)(out+0x50)=mftcluster;
+	*(QWORD*)(fshome+0x40)=0x30;
+	*(QWORD*)(fshome+0x48)=0x37;
+	*(QWORD*)(fshome+0x50)=mftcluster;
 	say("mftcluster:%x\n",mftcluster);
 
 	QWORD indexsize=(QWORD)( *(BYTE*)(in+0x44) );
-	*(QWORD*)(out+0x80)=0x44;
-	*(QWORD*)(out+0x88)=0x44;
-	*(QWORD*)(out+0x90)=indexsize;
+	*(QWORD*)(fshome+0x80)=0x44;
+	*(QWORD*)(fshome+0x88)=0x44;
+	*(QWORD*)(fshome+0x90)=indexsize;
 	indexsize=clustersize * indexsize;
 	say("indexsize:%x\n",indexsize);
 }
-int mountntfs(QWORD in,QWORD out)
+int mountntfs(QWORD world,QWORD which)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	ntfssector=*(QWORD*)in;
-	whereislogicworld(&readbuffer);
-	directorybuffer=readbuffer+0x100000;
-	mftbuffer=readbuffer+0x200000;
+	diskhome=world;
+	fshome=world+0x100000;
+		mftbuffer=fshome+0x10000;
+	dirhome=world+0x200000;
+	datahome=world+0x300000;
 	say("ntfs sector:%x\n",ntfssector);
 
 	//上报3个函数的地址
-	*(QWORD*)(in+0x20)=(QWORD)ntfs_explain;
-	*(QWORD*)(in+0x28)=(QWORD)ntfs_cd;
-	*(QWORD*)(in+0x30)=(QWORD)ntfs_load;
+	QWORD* this=(QWORD*)(world+which*0x40);
+	ntfssector=this[0];
+	this[4]=(QWORD)ntfs_explain;
+	this[5]=(QWORD)ntfs_cd;
+	this[6]=(QWORD)ntfs_load;
 
 	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
-	readmemory(readbuffer,ntfssector,0,1);
-	if( *(DWORD*)(readbuffer+3) != 0x5346544e ) return -1;
-	explainntfshead(readbuffer,out);
+	readmemory(datahome,ntfssector,0,1);
+	if( *(DWORD*)(datahome+3) != 0x5346544e ) return -1;
+	explainntfshead(datahome,fshome);
 
 	//保存开头几个mft
 	readmemory((QWORD)mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
