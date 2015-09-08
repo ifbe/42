@@ -1,6 +1,6 @@
-﻿all:
+all:
 	echo "what?"
-linux:				#cli
+linux:								#cli
 	make -s -C main cli
 	make -s -C libsoft1 linux
 	make -s -C libsoft linux
@@ -10,7 +10,7 @@ linux:				#cli
 	libsoft1/libsoft1.a \
 	libsoft/libsoft.a \
 	init/init.a
-mac:				#cli
+mac:								#cli
 	make -s -C main cli
 	make -s -C libsoft1 mac
 	make -s -C libsoft mac
@@ -20,13 +20,12 @@ mac:				#cli
 	libsoft1/libsoft1.a \
 	libsoft/libsoft.a \
 	init/init.a
-win:				#cli
+win:								#cli
 	make -s -C main cli
 	make -s -C libsoft1 win
 	make -s -C libsoft win
 	make -s -C init win
-	gcc -o a.exe \
-	init/uac.res \
+	gcc -o a.exe init/uac.res \
 	main/main.a \
 	libsoft1/libsoft1.a \
 	libsoft/libsoft.a \
@@ -98,8 +97,7 @@ win+api:
 	make -s -C libsoft1 win
 	make -s -C libsoft win
 	make -s -C init win+api
-	gcc -mwindows -o a.exe \
-	init/uac.res \
+	gcc -o a.exe -mwindows init/uac.res \
 	main/main.a \
 	libui1/libui1.a \
 	libui/libui.a \

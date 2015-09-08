@@ -3,6 +3,35 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
+
+
+
+void menuinit();	//0
+void menushow();
+void menumessage(QWORD type,QWORD key);
+void f1init();
+void f1show();
+void f1message(QWORD type,QWORD key);
+void f2init();
+void f2show();
+void f2message(QWORD type,QWORD key);
+void f3init();
+void f3show();
+void f3message(QWORD type,QWORD key);
+void f4init();
+void f4show();
+void f4message(QWORD type,QWORD key);
+
+void point(int x,int y,DWORD color);
+void string(int x,int y,char* str);
+void writescreen();
+void waitevent(QWORD* first,QWORD* second);
+void choosetarget(QWORD in);
+void initmaster();
+
+
+
+
 //0:关闭确认
 //0x10:
 //0x11:
@@ -11,57 +40,20 @@
 //0x30:
 //0x31:
 static DWORD what=1;
-
-
-void point(int x,int y,DWORD color);
-void string(int x,int y,char* str);
-void writescreen();
-void waitevent(QWORD* first,QWORD* second);
-
-void choosetarget(QWORD in);
-void initmaster();
-
-void menuinit();	//0
-void menushow();
-void menumessage(QWORD type,QWORD key);
-
-void f1init();
-void f1show();
-void f1message(QWORD type,QWORD key);
-
-void f2init();
-void f2show();
-void f2message(QWORD type,QWORD key);
-
-void f3init();
-void f3show();
-void f3message(QWORD type,QWORD key);
-
-void f4init();
-void f4show();
-void f4message(QWORD type,QWORD key);
-
-
-
-
 static int showmenu=0;
+static int living=1;
+
+
+
+
 void hidemenu()
 {
 	showmenu=0;
 }
-
-
-
-
-static int living=1;
 void die()
 {
 	living=0;
 }
-
-
-
-
 
 
 
@@ -131,35 +123,15 @@ void processmessage(QWORD type,QWORD key)
 	}
 	else if(type==0x64626b)		//kbd
 	{
-		if(key==0x1b)		//按下esc
-		{
-			showmenu^=1;
-			return;
-		}
-		if(key==0x70)		//f1
-		{
-			what=1;
-			return;
-		}
-		if(key==0x71)		//f2
-		{
-			what=2;
-			return;
-		}
-		if(key==0x72)		//f3
-		{
-			what=3;
-			return;
-		}
-		if(key==0x73)		//f4
-		{
-			what=4;
-			return;
-		}
+		if(key==0x1b){showmenu^=1;return;}		//按下esc
+		if(key==0x70){what=1;return;}		//f1
+		if(key==0x71){what=2;return;}		//f2
+		if(key==0x72){what=3;return;}		//f3
+		if(key==0x73){what=4;return;}		//f4
 	}
-	else if(type==0x7466656c)		//2是鼠标
+	else if(type==0x7466656c)		//鼠标
 	{
-		int x=key&0xffff;			//四个角落
+		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
 		if(x>1024-16)
 		{
@@ -196,9 +168,7 @@ void processmessage(QWORD type,QWORD key)
 
 void main()
 {
-						//wrap自动初始化不用管
-						//wrap是库函数不用初始化
-	initmaster();		//wrap2手动初始化
+	initmaster();
 
 	menuinit();			//0
 	f1init();			//1
