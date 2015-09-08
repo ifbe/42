@@ -19,12 +19,24 @@ void killdisk();
 void initprocess(QWORD);
 void killprocess();
 
+void initwindow(QWORD);
+void killwindow();
+
+void initlog();
 void say(char* , ...);
 
 
 
 
 static unsigned char* world;
+	//[+0x000000,+0x0fffff]:		当前系统内有多少个能读写的东西
+
+	//[+0x100000,+0x1fffff]:		某个硬盘(或文件)的分区情况
+	//[+0x200000,+0x2fffff]:		某个分区的结构
+	//[+0x300000,+0x3fffff]:		当前目录里面的文件
+	//[+0x400000,+0x4fffff]:		buffer
+
+	//[+0x500000,+0x5fffff]:		终端
 static unsigned char* screen;
 
 
@@ -32,26 +44,30 @@ static unsigned char* screen;
 
 __attribute__((constructor)) void initeverything()
 {
+	//世界
 	int i;
-	world = (unsigned char*)malloc(0x800000);		//8M
+	world = (unsigned char*)malloc(0x600000);		//(1+4+1)MB
 	{
-		if(world==NULL)MessageBox(NULL, "Hello World, My Dear", "Hello Demo", MB_OK);
+		if(world==NULL)MessageBox(NULL, "can't allocmem for screen", "Hello Demo", MB_OK);
 	}
-	screen = (unsigned char*)malloc(0x1000000);		//16M
-	{
-		if(world==NULL)MessageBox(NULL, "Hello World, My Dear", "Hello Demo", MB_OK);
-	}
-	for(i=0;i<0x800000;i++)world[i]=0;
-	for(i=0;i<0x1000000;i++)screen[i]=0;
+	for(i=0;i<0x600000;i++)world[i]=0;
 
-	initlog(world+0x400000);
+	//屏幕
+	screen = (unsigned char*)malloc(0x400000);		//4M
+	{
+		if(world==NULL)MessageBox(NULL, "can't allocmem for screen", "Hello Demo", MB_OK);
+	}
+
+	//日志
+	initlog(world+0x500000);
 	say("beforemain(){\n");		//必须在log之后
 	say("inited memory\n");
 	say("inited log\n");
 
+	//初始化
+	initdisk( (QWORD)world );
+	initprocess( (QWORD)world );
 	initwindow((QWORD)screen);
-	initdisk( (QWORD)world+0x700000 );
-	initprocess( (QWORD)world+0x700000 );
 
 	//不管是不是只有arg0
 	disklist();
@@ -81,7 +97,7 @@ QWORD whereisworld()
 {
 	return (unsigned long long)world;
 }
-QWORD whereisscreen(unsigned long long* p)
+QWORD whereisscreen()
 {
 	return (unsigned long long)screen;
 }
@@ -95,7 +111,7 @@ void choosetarget(QWORD in)
 	}
 	else		//是一个数字
 	{
-		QWORD path=(QWORD)world+0x700000+0x100*in;
+		QWORD path=(QWORD)world+0x100*in;
 
 		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
 		if( *(DWORD*)path == 0x5c2e5c5c )

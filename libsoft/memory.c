@@ -14,7 +14,7 @@ void cleanmemory(QWORD addr,QWORD size)
 	//清理
 	BYTE* memory=(BYTE*)addr;
 	int i=0;
-	for(i=0;i<0x400000;i++) memory[i]=0;
+	for(i=0;i<size;i++) memory[i]=0;
 }
 
 

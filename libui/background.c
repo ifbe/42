@@ -50,7 +50,7 @@ void background1()
 }
 void background2()
 {
-	DWORD thatcolor=0xe0e0e0;
+	DWORD thatcolor=0xf0f0f0f0;
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
@@ -98,5 +98,17 @@ void background3()
 	for(x=0;x<1024*640;x++)
 	{
 		screenbuf[x]=0x456789ab;
+	}
+}
+
+void background4()
+{
+	DWORD* screenbuf=(DWORD*)whereisscreen();
+
+	//用指定颜色清屏
+	int x,y;
+	for(x=0;x<1024*640;x++)
+	{
+		screenbuf[x]=0x88888888;
 	}
 }

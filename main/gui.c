@@ -85,13 +85,16 @@ void printworld()
 	{
 		for(y=0;y<16;y++)
 			point(x,y,0xff0000);
+		/*
 		for(y=64;y<96;y++)
 			point(x,y,0xff);
 		for(y=128;y<160;y++)
 			point(x,y,0xff00);
 		for(y=192;y<224;y++)
 			point(x,y,0xff0000);
+		*/
 	}
+	/*
 	for(x=1024-8;x<1024;x++)
 	{
 		for(y=64;y<80;y++)
@@ -115,6 +118,7 @@ void printworld()
 			point(x,y,0xffff00);
 		string(0x7e,0xd,"3j");
 	}
+	*/
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -142,7 +146,7 @@ void processmessage(QWORD type,QWORD key)
 			what=2;
 			return;
 		}
-		if(key==0x72)
+		if(key==0x72)		//f3
 		{
 			what=3;
 			return;

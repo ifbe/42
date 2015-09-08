@@ -23,10 +23,6 @@ void f1init();
 
 
 
-void menuinit()
-{
-	diskinfo=whereisworld()+0x700000;
-}
 void menubg()
 {
 	//背景
@@ -94,6 +90,14 @@ void exitbutton()
 	string(0x3e,34,"exit");
 	string(0x3c,35,"program");
 }
+
+
+
+
+
+
+
+
 void menushow()
 {
 	menubg();
@@ -140,4 +144,16 @@ void menumessage(QWORD type,QWORD key)
 	}
 	hidemenu();
 	return;
+}
+
+
+
+
+
+
+
+
+void menuinit()
+{
+	diskinfo=whereisworld();
 }

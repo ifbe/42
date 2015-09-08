@@ -322,21 +322,21 @@ void explainfat32head(QWORD in,QWORD out)
 	cluster0=fat0+fatsize*2-clustersize*2;
 	say("cluster0:%x\n",cluster0);
 }*/
-int mountfat(QWORD world,QWORD which)
+int mountfat(QWORD addr,QWORD which)
 {
 	//say("%llx\n",(QWORD)fat32_explain);
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=world;
-	fshome=world+0x100000;
+	diskhome=addr;
+	fshome=addr+0x100000;
 		fatbuffer=fshome+0x10000;
-	dirhome=world+0x200000;
-	datahome=world+0x300000;
+	dirhome=addr+0x200000;
+	datahome=addr+0x300000;
 
 
 
 
 	//读取pbr
-	QWORD* this=(QWORD*)(world+which*0x40);
+	QWORD* this=(QWORD*)(diskhome+which*0x40);
 	firstsector=this[0];
 	readmemory(datahome,firstsector,0,1); //pbr
 	if( *(WORD*)(datahome+0xb) !=0x200)	//检查分区问题，有就滚

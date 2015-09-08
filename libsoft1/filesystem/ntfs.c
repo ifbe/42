@@ -526,18 +526,18 @@ void explainntfshead(QWORD in,QWORD fshome)
 	indexsize=clustersize * indexsize;
 	say("indexsize:%x\n",indexsize);
 }
-int mountntfs(QWORD world,QWORD which)
+int mountntfs(QWORD addr,QWORD which)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=world;
-	fshome=world+0x100000;
+	diskhome=addr;
+	fshome=addr+0x100000;
 		mftbuffer=fshome+0x10000;
-	dirhome=world+0x200000;
-	datahome=world+0x300000;
+	dirhome=addr+0x200000;
+	datahome=addr+0x300000;
 	say("ntfs sector:%x\n",ntfssector);
 
 	//上报3个函数的地址
-	QWORD* this=(QWORD*)(world+which*0x40);
+	QWORD* this=(QWORD*)(diskhome+which*0x40);
 	ntfssector=this[0];
 	this[4]=(QWORD)ntfs_explain;
 	this[5]=(QWORD)ntfs_cd;

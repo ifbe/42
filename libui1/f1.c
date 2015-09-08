@@ -63,26 +63,15 @@ QWORD readornotread(QWORD wantaddr)
 
 
 
-void f1init()
-{
-	//whereisrealworld(&baseaddr);
-	int i;
-	for(i=0;i<0x2000;i++)databuffer[i]=0;
-
-	baseaddr=0;
-	offset=0;
-	currentcache=0xffffffff;
-}
-void hexbg()
+void gridding()
 {
 	//横
 	int x,y;
-	background1();
 	for(y=16;y<640;y+=16)
 	{
 		for(x=0;x<1024;x++)
 		{
-			point(x,y,0xff);
+			point(x,y,0x808080);
 		}
 	}
 	//竖
@@ -90,23 +79,15 @@ void hexbg()
 	{
 		for(y=0;y<640;y++)
 		{
-			point(x,y,0xff);
-		}
-	}
-	//dword框
-	for(y=16*py;y<16*py+16;y++)
-	{
-		for(x=16*(px&0xfc);x<16*(px&0xfc)+64;x++)
-		{
-			point(x,y,0xff00);
+			point(x,y,0x808080);
 		}
 	}
 	//byte框
-	for(y=16*py+1;y<16*py+14;y++)
+	for(y=16*py;y<16*(py+1);y++)
 	{
-		for(x=16*px+1;x<16*px+14;x++)
+		for(x=16*px;x<16*(px+1);x++)
 		{
-			point(x,y,0xff0000);
+			point(x,y,0xffff);
 		}
 	}
 }
@@ -117,7 +98,7 @@ void printhex0()
 	int x,y;
 
 	//一整页
-	if(printmethod==0)
+	if(printmethod==0)			//hex
 	{
 		for(y=0;y<40;y++)
 		{
@@ -128,7 +109,7 @@ void printhex0()
 			}
 		}
 	}
-	else if(printmethod==1)
+	else if(printmethod==1)		//anscii
 	{
 		for(y=0;y<40;y++)
 		{
@@ -142,137 +123,86 @@ void printhex0()
 			}
 		}
 	}
-	else if(printmethod==2)
+	else if(printmethod==2)		//text editor
 	{
-		
+		char* this=(char*)readwhere;
+		int i=0;
+		x=y=0;
+		while(1)
+		{
+			if(this[i]==9)
+			{
+				anscii(x,y,0x20);
+				anscii(x+1,y,0x20);
+				anscii(x+2,y,0x20);
+				anscii(x+3,y,0x20);
+				x+=4;
+				if(x>=0x80){x=0;y++;}
+			}
+			else if(this[i]==0xa)
+			{
+				x=0;
+				y++;
+			}
+			else
+			{
+				anscii(x,y,this[i]);
+				x++;
+				if(x>=0x80){x=0;y++;}
+			}
+
+			i++;
+			if(y>=0x40)break;
+		}
 	}
 }
-void kuangbg()
+void floatarea()
 {
-	//256*256的详情框
+	//256*64的详情框
 	int x,y;
-	for(y=thisy;y<thisy+256;y++)
+	for(y=thisy;y<thisy+64;y++)
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
 			point(x,y,0xffffffff);
 		}
 	}
-	for(y=thisy+128;y<thisy+192;y++)
-	{
-		for(x=thisx;x<thisx+128;x++)
-		{
-			point(x,y,0xff);
-		}
-	}
-	for(y=thisy+128;y<thisy+192;y++)
-	{
-		for(x=thisx+128;x<thisx+256;x++)
-		{
-			point(x,y,0xff00);
-		}
-	}
-	for(y=thisy+192;y<thisy+256;y++)
-	{
-		for(x=thisx;x<thisx+128;x++)
-		{
-			point(x,y,0xff0000);
-		}
-	}
-	for(y=thisy+192;y<thisy+256;y++)
-	{
-		for(x=thisx+128;x<thisx+256;x++)
-		{
-			point(x,y,0xffffff);
-		}
-	}
-	//横线
-	for(x=0;x<256;x++)point(thisx+x,thisy+128,0);
-	//横线
-	for(x=thisx+128;x<thisx+256;x++)
-	{
-		point(x,thisy+192,0);
-	}
 
-	//四个功能
-	string(thisx/8,8+thisy/16,"hex");
-	string(16+thisx/8,8+thisy/16,"anscii");
-	string(thisx/8,0xc+thisy/16,"utf8");
-	string(16+thisx/8,0xc+thisy/16,"reserved");
-}
-void kuangcontent()
-{
-	/*
-	QWORD thisaddr=readwhere+py*0x40+px;
-	QWORD position=thisaddr & 0x3;		//0,1,2,3
-
-	DWORD data32=*(DWORD*)(thisaddr & 0xfffffffffffffffc);
-	WORD data16=( data32 >> ( (position/2) << 4 ) ) & 0xffff;
-	BYTE data8=( data32 >> (position*8) ) & 0xff;
-	*/
 	//baseaddr
 	string(thisx/8,thisy/16,"base:");
 	hexadecimal(16+thisx/8,thisy/16,baseaddr);
 	//offset
 	string(thisx/8,1+thisy/16,"offset:");
-	anscii(15+thisx/8,1+thisy/16,'+');
 	hexadecimal(16+thisx/8,1+thisy/16,offset);
 	//y
-	string(thisx/8,2+thisy/16,"y:");
-	anscii(15+thisx/8,2+thisy/16,'+');
-	hexadecimal(16+thisx/8,2+thisy/16,py);
-	string(18+thisx/8,2+thisy/16,"*40");
-	string(26+thisx/8,2+thisy/16,"(    )");
-	hexadecimal(27+thisx/8,2+thisy/16,0x40*py);
-	//x
-	string(thisx/8,3+thisy/16,"x:");
-	anscii(15+thisx/8,3+thisy/16,'+');
-	hexadecimal(16+thisx/8,3+thisy/16,px);
-	//baseaddr+offset+y*0x40+x
-	anscii(15+thisx/8,4+thisy/16,'=');
-	hexadecimal(16+thisx/8,4+thisy/16,baseaddr+offset+py*0x40+px);
-
-	/*
-	//hex
-	string(thisx/8,thisy/16,"data:");
-	string(16+thisx/8,thisy/16,"   ,   ,   ,  ");
-	hexadecimal(16+thisx/8,thisy/16,data32&0xff);
-	hexadecimal(20+thisx/8,thisy/16,(data32>>8)&0xff);
-	hexadecimal(24+thisx/8,thisy/16,(data32>>16)&0xff);
-	hexadecimal(28+thisx/8,thisy/16,(data32>>24)&0xff);
-	//dword
-	string(thisx/8,1+thisy/16,"dword:");
-	hexadecimal(16+thisx/8,1+thisy/16,data32);
-	//word
-	string(thisx/8,2+thisy/16,"word:");
-	hexadecimal(16+thisx/8,2+thisy/16,data16);
-	//byte
-	string(thisx/8,3+thisy/16,"byte:");
-	hexadecimal(16+thisx/8,3+thisy/16,data8);
-	//string
-	string(thisx/8,4+thisy/16,"ansciistring:");
-	string(16+thisx/8,4+thisy/16,thisaddr);
-	*/
-	//手工输入区域
-	//string(16+thisx/8,15+thisy/16,buffer);
+	string(thisx/8,2+thisy/16,"y,x:");
+	hexadecimal(16+thisx/8,2+thisy/16,(py<<16)+px);
 }
+
+
+
+
+
+
+
+
 void f1show()
 {
 	thisx=px*16+16;
 	if(thisx>768)thisx-=256+16;
 	thisy=py*16+16;
-	if(thisy>640-256)thisy-=256+16;
+	if(thisy>640-64)thisy-=64+16;
 
-	hexbg();
+	background1();
+	gridding();
 	printhex0();
-	kuangbg();
-	kuangcontent();
+	floatarea();
 }
 void f1message(QWORD type,QWORD key)
 {
-	if(type==0x776f727261)		//方向键
+	if(type==0x64626b)			//kbd
 	{
-		if(key==0x25)	//left	0x4b
+		if(key==0x25)			//left	0x4b
 		{
 			if(px>0)px--;
 			else
@@ -280,12 +210,12 @@ void f1message(QWORD type,QWORD key)
 				if(offset>=0x800)offset-=0x800;
 			}
 		}
-		else if(key==0x27)	//right	0x4d
+		else if(key==0x27)		//right	0x4d
 		{
 			if(px<0x3f)px++;
 			else offset+=0x800;
 		}
-		else if(key==0x26)	//up	0x4b
+		else if(key==0x26)		//up	0x4b
 		{
 			if(py>0)py--;
 			else
@@ -293,10 +223,17 @@ void f1message(QWORD type,QWORD key)
 				if(offset>=0x40)offset-=0x40;
 			}
 		}
-		else if(key==0x28)	//down	0x4d
+		else if(key==0x28)		//down	0x4d
 		{
 			if(py<39)py++;
 			else offset+=0x40;
+		}
+	}
+	else if(type==0x72616863)		//char
+	{
+		if(key==9)
+		{
+			printmethod=(printmethod+1)%3;
 		}
 	}
 	else if(type==0x7466656c)		//鼠标
@@ -311,16 +248,17 @@ void f1message(QWORD type,QWORD key)
 			{
 				if(y>=thisy)
 				{
-					if(y<thisy+256)
+					if(y<thisy+64)
 					{
+						return;
+						/*
 						int tempx=(x-thisx)/128;
 						int tempy=(y-thisy)/64;
 
 						if(tempx==0&&tempy==2)printmethod=0;
 						if(tempx==1&&tempy==2)printmethod=1;
 						if(tempx==0&&tempy==3)printmethod=2;
-
-						return;
+						*/
 					}
 				}
 			}
@@ -342,4 +280,22 @@ void f1message(QWORD type,QWORD key)
 			offset+=0x40;
 		}
 	}
+}
+
+
+
+
+
+
+
+
+void f1init()
+{
+	//whereisrealworld(&baseaddr);
+	int i;
+	for(i=0;i<0x2000;i++)databuffer[i]=0;
+
+	baseaddr=0;
+	offset=0;
+	currentcache=0xffffffff;
 }

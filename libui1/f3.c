@@ -11,10 +11,6 @@ void string(int x,int y,char* str);
 
 
 
-void f3init()
-{
-	
-}
 void f3show()
 {
 	int x,y;
@@ -71,4 +67,12 @@ void f3show()
 }
 void f3message(QWORD type,QWORD key)
 {
+}
+
+
+
+
+void f3init()
+{
+	
 }

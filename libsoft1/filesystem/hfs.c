@@ -584,17 +584,17 @@ void explaincatalog(QWORD in,QWORD fshome)
 	*(QWORD*)(fshome+0x190)=firstleafnode;
 	say("firstleafnode:%x\n",firstleafnode);
 }
-int mounthfs(QWORD world,QWORD which)
+int mounthfs(QWORD addr,QWORD which)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=world;
-	fshome=world+0x100000;
+	diskhome=addr;
+	fshome=addr+0x100000;
 		catalogbuffer=fshome+0x10000;
-	dirhome=world+0x200000;
-	datahome=world+0x300000;
+	dirhome=addr+0x200000;
+	datahome=addr+0x300000;
 
 	//上报3个函数的地址
-	QWORD* this=(QWORD*)(world+which*0x40);
+	QWORD* this=(QWORD*)(diskhome+which*0x40);
 	block0=this[0];
 	this[4]=(QWORD)hfs_explain;
 	this[5]=(QWORD)hfs_cd;

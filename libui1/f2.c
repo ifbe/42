@@ -3,47 +3,32 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-//static QWORD partbuffer;
-static QWORD dirbuffer;
-
-static char choosepart=0;
-static char choosefile=0;
-static int complex=0;		//主体华丽程度
 
 
-QWORD whereisworld();
+
 void background2();
 void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void mount(QWORD in);
+QWORD whereisworld();
 
 
 
 
-void f2init()
-{
-	//whereisrealworld(&partbuffer);
+//static QWORD partbuffer;
+static QWORD dirbuffer;
+static char choosepart=0;
+static char choosefile=0;
 
-	dirbuffer=whereisworld()+0x200000;
-}
-void logic0background()
+
+
+
+
+
+void kuangjia()
 {
 	int x,y;
-	background2();
-
-	//外框
-	/*
-	for(x=0;x<1024;x++)
-	{
-		point(x,0,0xcc00);
-		point(x,639,0xcc00);
-	}
-	for(y=0;y<640;y++)
-	{
-		point(0,y,0xcc00);
-		point(1023,y,0xcc00);
-	}*/
 	for(y=0;y<32;y++)
 	{
 		point(0x100,y,0xff00);
@@ -56,46 +41,6 @@ void logic0background()
 		point(x,639-32,0xff00);
 	}
 }
-/*
-void logic0part()
-{
-	int x,y,i;
-
-	//分区内容
-	DWORD color;
-	QWORD start;
-	for(i=0;i<8;i++)
-	{
-		//break?
-		start=*(QWORD*)(partbuffer+i*0x40);
-		if(start==0)break;
-
-		//打印
-		color=~start;
-		for(y=640-32;y<640;y++)
-		{
-			for(x=128*i;x<128*i+128;x++)
-			{
-				point(x,y,color);
-			}
-		}
-		hexadecimal(16*i,38,start);
-		string(16*i,39,(char*)partbuffer+i*0x40+0x10);
-	}
-
-	//选中
-	for(y=640-32;y<640;y+=2)
-	{
-		for(x=choosepart*128;x<choosepart*128+128;x+=2)
-		{
-			point(x,y,0);
-		}
-	}
-}*/
-
-
-
-
 void printfile0()
 {
 	int x,y;
@@ -125,32 +70,19 @@ void printfile0()
 		}
 	}
 }
-void printfile1()
-{
-	
-}
-void printfile2()
-{
-	
-}
+
+
+
+
+
+
+
+
 void f2show()
 {
-	logic0background();
-	//logic0part();
-
-	//-------------------
-	if(complex==0)
-	{
-		printfile0();
-	}
-	else if(complex==1)
-	{
-		printfile1();
-	}
-	else
-	{
-		printfile2();
-	}
+	background2();
+	kuangjia();
+	printfile0();
 }
 void f2message(QWORD type,QWORD key)
 {
@@ -168,4 +100,16 @@ void f2message(QWORD type,QWORD key)
 	{
 		choosefile=(y-32)/16;
 	}
+}
+
+
+
+
+
+
+
+
+void f2init()
+{
+	dirbuffer=whereisworld()+0x300000;
 }

@@ -1,3 +1,4 @@
+#include<stdio.h>
 #include<stdlib.h>
 #define QWORD unsigned long long
 #define DWORD unsigned int
@@ -23,27 +24,36 @@ void say(char* , ...);
 
 
 static unsigned char* world;
-	//[+0x000000,+0x0fffff]:		某个硬盘(或文件)的分区情况
-	//[+0x100000,+0x1fffff]:		某个分区的结构
-	//[+0x200000,+0x2fffff]:		当前目录里面的文件
-	//[+0x300000,+0x3fffff]:		buffer
-	//[+0x400000,+0x4fffff]:		终端
-	//[+0x500000,+0x5fffff]:		日志
-	
-	//[+0x700000,+0x7fffff]:		当前系统内有多少个能读写的东西
+	//[+0x000000,+0x0fffff]:		当前系统内有多少个能读写的东西
+
+	//[+0x100000,+0x1fffff]:		某个硬盘(或文件)的分区情况
+	//[+0x200000,+0x2fffff]:		某个分区的结构
+	//[+0x300000,+0x3fffff]:		当前目录里面的文件
+	//[+0x400000,+0x4fffff]:		buffer
+
+	//[+0x500000,+0x5fffff]:		终端
 
 
 
 
 __attribute__((constructor)) void initeverything()
 {
-	world = (unsigned char*)malloc(0x800000);		//8M
+	int i;
+	world = (unsigned char*)malloc(0x600000);		//(1+4+1)MB
+	{
+		if(world==NULL)
+		{
+			printf("can't allocmem for screen");
+			exit(-1);
+		}
+	}
+	for(i=0;i<0x600000;i++)world[i]=0;
 	say("beforemain(){\n");
 	say("inited memory\n");
 
 	//只是拿地址
-	initdisk( (QWORD)world+0x700000 );
-	initprocess( (QWORD)world+0x700000 );
+	initdisk( (QWORD)world );
+	initprocess( (QWORD)world );
 
 	//不管是不是只有arg0
 	disklist();
@@ -57,7 +67,6 @@ __attribute__((destructor)) void killeverything()
 
 	killdisk();
 	killprocess();
-	killwindow();
 
 	free(world);
 	say("killed memory\n");
@@ -82,7 +91,7 @@ void choosetarget(QWORD in)
 	}
 	else		//是一个数字
 	{
-		QWORD path=(QWORD)world+0x700000+0x100*in;
+		QWORD path=(QWORD)world+0x100*in;
 
 		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
 		if( *(DWORD*)path == 0x5c2e5c5c )

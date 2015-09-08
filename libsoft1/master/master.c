@@ -3,6 +3,9 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
+
+
+
 //in libsoft1/
 void mountext(QWORD,QWORD);
 void mountfat(QWORD,QWORD);
@@ -30,19 +33,12 @@ void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
 
 
-
-
-
-
 //每个1M
-static QWORD diskhome;		//+0m
-static QWORD fshome;		//+1m
-static QWORD dirhome;		//+2m
-static QWORD datahome;		//+3m
-static QWORD diskinfo;		//+7m
-
-
-
+static QWORD world;		//+7m
+static QWORD diskhome;		//+1m
+static QWORD fshome;		//+2m
+static QWORD dirhome;		//+3m
+static QWORD datahome;		//+4m
 
 //3大函数的位置
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
@@ -144,7 +140,7 @@ int mount(QWORD which)
 	}
 
 	//给函数指针赋值
-	if(this[4] < 0xffff)return;
+	if(this[4] < 0xffff)return -1;
 	explain=(void*)( this[4] );
 	cd=(void*)( this[5] );
 	load=(void*)( this[6] );
@@ -183,17 +179,17 @@ void command(char* buffer)
 		if( (QWORD)arg1 == 0 )
 		{
 			//只是打印一遍扫描到的磁盘信息
-			char* p=(char*)diskinfo;
+			char* p=(char*)world;
 			int i=0;
 
 			while(1)
 			{
 				//先检查
-				if( *(DWORD*)(diskinfo+i) == 0 )break;
+				if( *(DWORD*)(world+i) == 0 )break;
 				if(i>100*0x100)break;
 
 				//再打印
-				say("%s\n",diskinfo+i);
+				say("%s\n",world+i);
 				i+=0x100;
 			}
 		}
@@ -294,11 +290,12 @@ void command(char* buffer)
 
 void initmaster()
 {
-	diskhome=whereisworld();
-	fshome=diskhome+0x100000;
-	dirhome=diskhome+0x200000;
-	datahome=diskhome+0x300000;
+	world=whereisworld();
 
-	diskinfo=diskhome+0x700000;
+	diskhome=world+0x100000;
+	fshome=world+0x200000;
+	dirhome=world+0x300000;
+	datahome=world+0x400000;
+
 	hello();
 }

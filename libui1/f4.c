@@ -3,20 +3,11 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-//log位置
-static QWORD logbuf;
-static QWORD offset=0;
 
-//键盘输入
-static BYTE buffer[128];//键盘输入专用
-static int bufcount=0;
-
-//
-static int complex=0;		//主体华丽程度
 
 
 QWORD whereisworld();
-void background1();
+void background4();
 void f1init();
 void die();
 void command(char* in);
@@ -27,10 +18,17 @@ int compare(char* first,char* second);
 
 
 
-void f4init()
-{
-	logbuf=whereisworld()+0x400000;
-}
+//log位置
+static QWORD logbuf;
+static QWORD offset=0;
+
+//键盘输入
+static BYTE buffer[128];//键盘输入专用
+static int bufcount=0;
+
+
+
+
 void printconsole0()
 {
 	//显示哪儿开始的一块
@@ -84,30 +82,18 @@ void printconsole0()
 		}
 	}
 }
-void printconsole1()
-{
-	
-}
-void printconsole2()
-{
-	
-}
+
+
+
+
+
+
+
+
 void f4show()
 {
-	background1();
-
-	if(complex==0)
-	{
-		printconsole0();
-	}
-	else if(complex==1)
-	{
-		printconsole1();
-	}
-	else
-	{
-		printconsole2();
-	}
+	background4();
+	printconsole0();
 }
 void f4message(QWORD type,QWORD key)
 {
@@ -168,4 +154,16 @@ void f4message(QWORD type,QWORD key)
 			if(offset>=0x80)offset-=0x80;
 		}
 	}
+}
+
+
+
+
+
+
+
+
+void f4init()
+{
+	logbuf=whereisworld()+0x500000;
 }

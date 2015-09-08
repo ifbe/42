@@ -155,7 +155,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case 0x72:				//f3
 				case 0x73:				//f4
 				{
-					my1=0x64626b;
+					my1=0x64626b;		//kbd
 					my2=wparam;
 					solved=0;
 					break;
@@ -164,18 +164,18 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			//say("key:%x\n",wparam);
 			return 0;
 		}
-		case WM_CHAR:		//键盘点下
+		case WM_CHAR:
 		{
 			if(wparam==0x1b)
 			{
-				my1=0x64626b;		//dbk	//kbd	//1;
+				my1=0x64626b;			//kbd
 				my2=wparam;
 				solved=0;
 				return 0;
 			}
 			else
 			{
-				my1=0x72616863;		//rahc	//char	//1;
+				my1=0x72616863;			//char
 				my2=wparam;
 				solved=0;
 				return 0;
@@ -183,7 +183,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		case WM_MOUSEWHEEL:
 		{
-			my1=0x6c65656877;		//wheel	//3;
+			my1=0x6c65656877;			//wheel	//3;
 			my2=wparam;
 			solved=0;
 			return 0;
