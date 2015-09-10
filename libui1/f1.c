@@ -72,7 +72,7 @@ void gridding()
 	{
 		for(x=0;x<1024;x++)
 		{
-			point(x,y,0x808080);
+			point(x,y,0xff);
 		}
 	}
 	//竖
@@ -80,7 +80,7 @@ void gridding()
 	{
 		for(y=0;y<640;y++)
 		{
-			point(x,y,0x808080);
+			point(x,y,0xff);
 		}
 	}
 }
@@ -117,6 +117,7 @@ void printhex0()
 			}
 		}
 	}
+	/*
 	else if(printmethod==2)		//text editor
 	{
 		char* this=(char*)readwhere;
@@ -148,7 +149,7 @@ void printhex0()
 			i++;
 			if(y>=0x40)break;
 		}
-	}
+	}*/
 }
 void floatarea()
 {
@@ -165,26 +166,37 @@ void floatarea()
 		}
 	}
 
-	//256*64的详情框
+	//256*128的详情框
 	thisx+=16;
 	if(thisx>768)thisx -= (256+16);
 	thisy+=16;
-	if(thisy>=640-64+16)thisy -= (64+16);
+	if(thisy>=640-128+16)thisy -= (128+16);
 
-	for(y=thisy;y<thisy+64;y++)
+	for(y=thisy;y<thisy+128;y++)
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
-			point(x,y,0xffffffff);
+			point(x,y,0x77777777);
 		}
 	}
 
-	//base,offset
-	string(thisx/8,thisy/16,"base:");
-	hexadecimal(16+thisx/8,thisy/16,base);
+	//target,base,offset,data
+	int chx=thisx/8;
+	int chy=thisy/16;
 
-	string(thisx/8,1+thisy/16,"offset:");
-	hexadecimal(16+thisx/8,1+thisy/16,offset);
+	string(chx,chy,"target:");
+	string(16+chx,chy,"/dev/sda");
+
+	string(chx,1+chy,"base:");
+	hexadecimal(16+chx,1+chy,base);
+
+	string(chx,2+chy,"offset:");
+	hexadecimal(16+chx,2+chy,offset);
+
+	string(chx,3+chy,"data:");
+	hexadecimal(16+chx,3+chy,0x2333333);
+
+	string(chx,7+chy,buffer);
 }
 
 
@@ -237,9 +249,23 @@ void f1message(QWORD type,QWORD key)
 	}
 	else if(type==0x72616863)		//char
 	{
-		if(key==9)
+		if(key==9)					//tab
 		{
-			printmethod=(printmethod+1)%3;
+			printmethod=(printmethod+1)%2;
+		}
+		else if(key==0x1c){}		//enter
+		else if(key==0x8)			//backspace
+		{
+			if(bufcount!=0)bufcount--;
+			buffer[bufcount]=0;
+		}
+		else
+		{
+			if(bufcount<128)
+			{
+				buffer[bufcount]=key;
+				bufcount++;
+			}
 		}
 	}
 	else if(type==0x7466656c)		//鼠标
