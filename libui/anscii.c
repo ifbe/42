@@ -159,13 +159,63 @@ void anscii(int x,int y,char ch)
             temp=*p;
             temp=temp<<j;
             temp&=0x80;
-            if(temp!=0){
-                point(x+j,y+i,0);
+            if(temp!=0)
+			{
+                point(x+j,y+i,0xffffffff);
             }
+			//else point(x+j,y+i,0);
         }
     points++;
     }
 }
+void blackanscii(int x,int y,char ch)
+{
+    int i,j;
+    unsigned long long points=(unsigned long long)&ansciitable;
+    char temp;
+    char* p;
+
+	if(ch<0x20)ch=0x20;
+    points+=ch<<4;
+    x=8*x;
+    y=16*y;
+
+    for(i=0;i<16;i++)
+    {
+        p=(char*)points;
+        for(j=0;j<8;j++)
+        {
+            temp=*p;
+            temp=temp<<j;
+            temp&=0x80;
+            if(temp!=0)
+			{
+                point(x+j,y+i,0);
+            }
+			//else point(x+j,y+i,0);
+        }
+    points++;
+    }
+}
+
+
+
+void string(int x,int y,char* p)
+{
+    while(1)
+    {
+		if( *p == 0x0 )break;
+		if(x>=0x80)break;
+
+		anscii(x,y,*p);
+		p++;
+		x++;
+    }
+}
+
+
+
+
 void decimal(int x,int y,unsigned long long z)
 {
 	char ch;
@@ -193,6 +243,10 @@ void decimal(int x,int y,unsigned long long z)
 		anscii(x+i,y,ch);
 	}
 }
+
+
+
+
 void hexadecimal(int x,int y,unsigned long long z)
 {
 	char ch;
@@ -223,8 +277,8 @@ void hexadecimal1234(int x,int y,unsigned int z)
 	{
 		fullbyte=z&0xff;
 		z=z>>8;
-		if(fullbyte != 0)
-		{
+		//if(fullbyte != 0)
+		//{
 			//¸ß°ë×Ö½Ú
 			ch=(fullbyte>>4)&0xf;
 			ch+=0x30;
@@ -236,18 +290,6 @@ void hexadecimal1234(int x,int y,unsigned int z)
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
 			anscii(x+2*i+1,y,ch);
-		}
+		//}
 	}
-}
-void string(int x,int y,char* p)
-{
-    while(1)
-    {
-		if( *p == 0x0 )break;
-		if(x>=0x80)break;
-
-		anscii(x,y,*p);
-		p++;
-		x++;
-    }
 }

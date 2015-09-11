@@ -118,6 +118,27 @@ int hexstring2data(BYTE* source,QWORD* data)
 
 
 
+int data2hexstring(QWORD data,BYTE* string)
+{
+	int i;
+	unsigned char temp;
+	for(i=0;i<0x10;i++)string[i]=0x20;
+
+	for(i=0;i<0x10;i++)
+	{
+		if(data==0)break;
+		temp=data&0xf;
+		data>>=4;
+
+		temp+=0x30;
+		if(temp>=0x3a)temp+=7;
+		string[15-i]=temp;
+	}
+}
+
+
+
+
 void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 {
 	*first=*second=0;

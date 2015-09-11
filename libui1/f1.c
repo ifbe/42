@@ -2,31 +2,61 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+
+void die();
+
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void anscii(int x,int y,char ch);
+void blackanscii(int x,int y,char ch);
 void point(int x,int y,DWORD color);
 void background1();
+
+int compare(char*,char*);
+void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 QWORD whereisworld();
+QWORD whereisscreen();
 
 
 
-
-//键盘输入
-static BYTE buffer[128];		//键盘输入专用
-static int bufcount=0;
 
 //位置
 static QWORD base;		//显示区基地址
 static QWORD offset;
-static int thisx;			//浮动窗口位置
-static int thisy;
 
-//
+//data
 static BYTE* datahome;
 static int printmethod=0;
+
+//---------
+struct thisstruct{
+	QWORD targetstring;//=0x11223344;
+	QWORD targetstring1;//=0x31323334;
+	BYTE target[0x10];
+
+	QWORD basestring;//=0x11223344;
+	QWORD basestring1;//=0x31323334;
+	BYTE base[0x10];
+
+	QWORD offsetstring;//=0x11223344;
+	QWORD offsetstring1;//=0x31323334;
+	BYTE offset[0x10];
+
+	QWORD datastring;//=0x11223344;
+	QWORD datastring1;//=0x31323334;
+	BYTE data[0x10];
+
+	BYTE reserved[0x10*2*3];
+	BYTE input[0x10*2];
+};
+static int inputcount=0;
+static struct thisstruct haha;
+	//string(chx,chy,"target:");
+	//string(chx,1+chy,"base:");
+	//string(chx,2+chy,"offset:");
+	//string(chx,3+chy,"data:");
 
 
 
@@ -64,26 +94,7 @@ QWORD readornotread(QWORD wantaddr)
 
 
 
-void gridding()
-{
-	//横
-	int x,y;
-	for(y=16;y<640;y+=16)
-	{
-		for(x=0;x<1024;x++)
-		{
-			point(x,y,0xff);
-		}
-	}
-	//竖
-	for(x=16;x<1024;x+=16)
-	{
-		for(y=0;y<640;y++)
-		{
-			point(x,y,0xff);
-		}
-	}
-}
+
 void printhex0()
 {
 	//告诉这个函数想要什么地方,它会确保想要的地方已经在内存里
@@ -154,15 +165,16 @@ void printhex0()
 void floatarea()
 {
 	int x,y;
+	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//byte框
-	thisx=(offset&0x3f)*16;
-	thisy=(offset%0xa00)/0x40*16;
+	int thisx=(offset&0x3f)*16;
+	int thisy=(offset%0xa00)/0x40*16;
 	for(y=thisy;y<thisy+16;y++)
 	{
 		for(x=thisx;x<thisx+16;x++)
 		{
-			point(x,y,0xffff);
+			screenbuf[y*1024+x]=~screenbuf[y*1024+x];
 		}
 	}
 
@@ -176,27 +188,27 @@ void floatarea()
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
-			point(x,y,0x77777777);
+			screenbuf[y*1024+x]=0xffffffff;
 		}
 	}
+
+	//
+	data2hexstring(0x33333333,haha.target);
+	data2hexstring(base,haha.base);
+	data2hexstring(offset,haha.offset);
+	data2hexstring(0x2333333,haha.data);
 
 	//target,base,offset,data
 	int chx=thisx/8;
 	int chy=thisy/16;
-
-	string(chx,chy,"target:");
-	string(16+chx,chy,"/dev/sda");
-
-	string(chx,1+chy,"base:");
-	hexadecimal(16+chx,1+chy,base);
-
-	string(chx,2+chy,"offset:");
-	hexadecimal(16+chx,2+chy,offset);
-
-	string(chx,3+chy,"data:");
-	hexadecimal(16+chx,3+chy,0x2333333);
-
-	string(chx,7+chy,buffer);
+	char* ch=(char*)&haha;
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<32;x++)
+		{
+			blackanscii(chx+x,chy+y,ch[y*32+x]);
+		}
+	}
 }
 
 
@@ -208,9 +220,11 @@ void floatarea()
 
 void f1show()
 {
+	//
 	background1();
-	gridding();
 	printhex0();
+
+	//
 	floatarea();
 }
 void f1message(QWORD type,QWORD key)
@@ -238,7 +252,7 @@ void f1message(QWORD type,QWORD key)
 			if(offset>=0x40)offset-=0x40;
 			else
 			{
-				if(base>0x40)base-=0x40;
+				if(base>=0x40)base-=0x40;
 			}
 		}
 		else if(key==0x28)		//down	0x4d
@@ -253,18 +267,35 @@ void f1message(QWORD type,QWORD key)
 		{
 			printmethod=(printmethod+1)%2;
 		}
-		else if(key==0x1c){}		//enter
 		else if(key==0x8)			//backspace
 		{
-			if(bufcount!=0)bufcount--;
-			buffer[bufcount]=0;
+			if(inputcount!=0)inputcount--;
+			haha.input[inputcount]=0;
+		}
+		else if(key==0xd)			//enter
+		{
+			if(compare( haha.input , "exit" ) == 0)
+			{
+				die();
+				return;
+			}
+			else if(compare( haha.input , "addr" ) == 0)
+			{
+			}
+
+			//int i;
+			//inputcount=0;
+			//for(i=0;i<128;i++)
+			//{
+			//	haha.input[i]=0;
+			//}
 		}
 		else
 		{
-			if(bufcount<128)
+			if(inputcount<128)
 			{
-				buffer[bufcount]=key;
-				bufcount++;
+				haha.input[inputcount]=key;
+				inputcount++;
 			}
 		}
 	}
@@ -274,29 +305,6 @@ void f1message(QWORD type,QWORD key)
 		int y=(key>>16)&0xffff;
 		offset=(y/16*0x40)+(x/16);
 
-		/*
-		//浮动框
-		if(x>=thisx)
-		{
-			if(x<thisx+256)
-			{
-				if(y>=thisy)
-				{
-					if(y<thisy+64)
-					{
-						return;
-						int tempx=(x-thisx)/128;
-						int tempy=(y-thisy)/64;
-
-						if(tempx==0&&tempy==2)printmethod=0;
-						if(tempx==1&&tempy==2)printmethod=1;
-						if(tempx==0&&tempy==3)printmethod=2;
-					}
-				}
-			}
-		}
-		*/
-
 		//浮动框以外的
 		//px=x/(1024/0x40);
 		//py=y/(640/40);
@@ -305,7 +313,7 @@ void f1message(QWORD type,QWORD key)
 	{
 		if(key<0xff0000)
 		{
-			if(base>0x40)base-=0x40;
+			if(base>=0x40)base-=0x40;
 		}
 		else if(key>0xff0000)
 		{
@@ -326,6 +334,11 @@ void f1init()
 	int i;
 	datahome=(BYTE*)whereisworld()+0x400000;
 	for(i=0;i<0x2000;i++)datahome[i]=0;
+
+	haha.targetstring=0x3a746567726174;
+	haha.basestring=0x3a65736162;
+	haha.offsetstring=0x3a74657366666f;
+	haha.datastring=0x3a61746164;
 
 	base=0;
 	offset=0;
