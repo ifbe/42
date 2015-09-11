@@ -61,7 +61,7 @@ void printconsole0()
 	//}
 	string(0,39,"user:");
 	string(0x5,39,buffer);
-
+/*
 	//位置
 	if(temp>=0x80*40)
 	{
@@ -82,6 +82,7 @@ void printconsole0()
 			}
 		}
 	}
+*/
 }
 
 

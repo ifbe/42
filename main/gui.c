@@ -75,8 +75,8 @@ void printworld()
 	//右上角
 	for(x=1024-16;x<1024;x++)
 	{
-		for(y=0;y<16;y++)
-			point(x,y,0xff0000);
+		//for(y=0;y<16;y++)
+			//point(x,y,0xff0000);
 		/*
 		for(y=64;y<96;y++)
 			point(x,y,0xff);

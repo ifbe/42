@@ -122,7 +122,8 @@ int data2hexstring(QWORD data,BYTE* string)
 {
 	int i;
 	unsigned char temp;
-	for(i=0;i<0x10;i++)string[i]=0x20;
+	for(i=0;i<0xf;i++)string[i]=0x20;
+	string[15]=0x30;
 
 	for(i=0;i<0x10;i++)
 	{

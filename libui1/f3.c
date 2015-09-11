@@ -15,7 +15,7 @@ void f3show()
 {
 	int x,y;
 	background3();
-
+/*
 	//外面的口
 	for(y=64;y<640-64;y++)
 	{
@@ -60,7 +60,7 @@ void f3show()
 		point(x,320,0);
 		point(x,512,0);
 	}
-
+*/
 	//
 	string(0x38,16,"every where to live");
 	string(0x38,24,"only here to die");

@@ -23,7 +23,7 @@ void f1init();
 
 
 
-void menubg()
+/*void menubg()
 {
 	//背景
 	int x,y;
@@ -75,10 +75,11 @@ void printdisk0()
 			point(x,y,0);
 		}
 	}
-}
+}*/
 void exitbutton()
 {
 	//最后的退出按钮
+	/*
 	int x,y;
 	for(y=512+32;y<512+64;y++)
 	{
@@ -87,6 +88,7 @@ void exitbutton()
 			point(x,y,0xff0000);
 		}
 	}
+	*/
 	string(0x3e,34,"exit");
 	string(0x3c,35,"program");
 }
@@ -100,8 +102,8 @@ void exitbutton()
 
 void menushow()
 {
-	menubg();
-	printdisk0();
+	//menubg();
+	//printdisk0();
 	//printprocess0();
 	exitbutton();
 }

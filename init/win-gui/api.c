@@ -13,6 +13,13 @@
 #define menu2 0x5678
 
 
+
+
+void say(char* fmt,...);
+
+
+
+
 static int width=1024;
 static int height=640;
 static unsigned int* mypixel;
@@ -27,24 +34,14 @@ HMENU hMenu;            //托盘菜单
 
 
 
-
-
-
-
-void say(char* fmt,...);
-
-
-
-
-
-void point(int x,int y,int color)
+/*void point(int x,int y,int color)
 {
 	mypixel[y*width+x]=color;
 }
 void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
-}
+}*/
 void writescreen()
 {
 	//int result=SetDIBitsToDevice(realdc,

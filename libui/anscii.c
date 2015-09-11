@@ -1,6 +1,11 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-void point(int x,int y,DWORD color);
+
+
+
+
+QWORD whereisscreen();
+//void point(int x,int y,DWORD color);
 
 
 
@@ -139,41 +144,66 @@ static const unsigned char ansciitable[128*16]={
 
 
 
-void anscii(int x,int y,char ch)
+void anscii(int xxxx,int yyyy,char ch)
 {
-    int i,j;
+    int x,y;
+    unsigned char temp;
     unsigned long long points=(unsigned long long)&ansciitable;
-    char temp;
-    char* p;
+	DWORD* screen=(DWORD*)whereisscreen();
 
 	if(ch<0x20)ch=0x20;
     points+=ch<<4;
-    x=8*x;
-    y=16*y;
+    xxxx<<=3;
+    yyyy<<=4;
 
-    for(i=0;i<16;i++)
+    for(y=0;y<16;y++)
     {
-        p=(char*)points;
-        for(j=0;j<8;j++)
+		temp=*(char*)points;
+		points++;
+
+        for(x=0;x<8;x++)
         {
-            temp=*p;
-            temp=temp<<j;
-            temp&=0x80;
-            if(temp!=0)
+			if( (temp&0x80) != 0 )
 			{
-                point(x+j,y+i,0xffffffff);
+				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0xffffffff;
             }
-			//else point(x+j,y+i,0);
+			temp<<=1;
         }
-    points++;
     }
 }
+void blackanscii(int xxxx,int yyyy,char ch)
+{
+    int x,y;
+    char temp;
+    unsigned long long points=(unsigned long long)&ansciitable;
+	DWORD* screen=(DWORD*)whereisscreen();
+
+	if(ch<0x20)ch=0x20;
+    points+=ch<<4;
+    xxxx<<=3;
+    yyyy<<=4;
+
+    for(y=0;y<16;y++)
+    {
+		temp=*(char*)points;
+		points++;
+
+        for(x=0;x<8;x++)
+        {
+			if( (temp&0x80) != 0 )
+			{
+				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0;
+            }
+			temp<<=1;
+        }
+    }
+}
+/*
 void blackanscii(int x,int y,char ch)
 {
     int i,j;
-    unsigned long long points=(unsigned long long)&ansciitable;
     char temp;
-    char* p;
+    unsigned long long points=(unsigned long long)&ansciitable;
 
 	if(ch<0x20)ch=0x20;
     points+=ch<<4;
@@ -182,10 +212,9 @@ void blackanscii(int x,int y,char ch)
 
     for(i=0;i<16;i++)
     {
-        p=(char*)points;
         for(j=0;j<8;j++)
         {
-            temp=*p;
+            temp=*(char*)points;
             temp=temp<<j;
             temp&=0x80;
             if(temp!=0)
@@ -196,7 +225,7 @@ void blackanscii(int x,int y,char ch)
         }
     points++;
     }
-}
+}*/
 
 
 
@@ -270,7 +299,6 @@ void hexadecimal(int x,int y,unsigned long long z)
 }
 void hexadecimal1234(int x,int y,unsigned int z)
 {
-
 	char fullbyte,ch;
 	int i;
 	for(i=0;i<4;i++)
@@ -283,13 +311,13 @@ void hexadecimal1234(int x,int y,unsigned int z)
 			ch=(fullbyte>>4)&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			anscii(x+2*i,y,ch);
+			blackanscii(x+2*i,y,ch);
 
 			//µÍ°ë×Ö½Ú
 			ch=fullbyte&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			anscii(x+2*i+1,y,ch);
+			blackanscii(x+2*i+1,y,ch);
 		//}
 	}
 }

@@ -121,10 +121,10 @@ void printhex0()
 			for(x=0;x<0x40;x+=4)
 			{
 				DWORD value=*(DWORD*)(readwhere+y*0x40+x);
-				anscii(2*x,y,value&0xff);
-				anscii(2*x+2,y,(value>>8)&0xff);
-				anscii(2*x+4,y,(value>>16)&0xff);
-				anscii(2*x+6,y,(value>>24)&0xff);
+				blackanscii(2*x,y,value&0xff);
+				blackanscii(2*x+2,y,(value>>8)&0xff);
+				blackanscii(2*x+4,y,(value>>16)&0xff);
+				blackanscii(2*x+6,y,(value>>24)&0xff);
 			}
 		}
 	}

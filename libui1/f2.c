@@ -25,7 +25,7 @@ static char choosefile=0;
 
 
 
-
+/*
 void kuangjia()
 {
 	int x,y;
@@ -40,7 +40,7 @@ void kuangjia()
 		point(x,0x20,0xff00);
 		point(x,639-32,0xff00);
 	}
-}
+}*/
 void printfile0()
 {
 	int x,y;
@@ -60,7 +60,7 @@ void printfile0()
 		hexadecimal(0x50,y+2,*(QWORD*)(p+0x40*y+0x20));
 		hexadecimal(0x70,y+2,*(QWORD*)(p+0x40*y+0x30));
 	}
-
+/*
 	//选中
 	for(y=32+choosefile*16;y<48+choosefile*16;y+=2)
 	{
@@ -69,6 +69,7 @@ void printfile0()
 			point(x,y,0);
 		}
 	}
+*/
 }
 
 
@@ -81,7 +82,7 @@ void printfile0()
 void f2show()
 {
 	background2();
-	kuangjia();
+	//kuangjia();
 	printfile0();
 }
 void f2message(QWORD type,QWORD key)
