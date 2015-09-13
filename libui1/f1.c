@@ -188,7 +188,7 @@ void floatarea()
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
-			screenbuf[y*1024+x]=0xffffffff;
+			screenbuf[y*1024+x]=0xffff;
 		}
 	}
 

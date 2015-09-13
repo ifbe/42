@@ -42,45 +42,6 @@ void backgroundx()
 */
 }
 
-void background2()
-{
-	int x,y;
-	DWORD thatcolor=0xfedcba98;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
-
-	//用指定颜色清屏
-	for(x=0;x<1024*640;x++)
-	{
-		screenbuf[x]=thatcolor;
-	}
-/*
-	for(y=0;y<16;y++)	//上下
-	{
-		DWORD color=(QWORD)y*thatcolor;
-
-		//上，编译器会不会用rep stosd指令优化呢?
-		for(x=y;x<1024-y;x++)screenbuf[(y<<10) + x]=color;
-
-		//下
-		for(x=y;x<1024-y;x++)screenbuf[( (639-y) << 10 ) + x]=color;
-	}
-	for(x=0;x<16;x++)	//左右
-	{
-		DWORD color=(QWORD)x*thatcolor;
-
-		for(y=x;y<640-x;y++)
-		{
-			screenbuf[(y*1024)+x]=color;
-			screenbuf[(y*1024)+1023-x]=color;
-		}
-	}
-*/
-}
-
-
-
-
-
 
 
 
@@ -127,6 +88,68 @@ void background1()
 	}
 }
 
+
+
+
+
+
+void background2()
+{
+	int x,y;
+	DWORD* screenbuf=(DWORD*)whereisscreen();
+
+	//[512,640]
+	for(x=1024*512;x<1024*640;x++)
+	{
+		screenbuf[x]=0xfedcba98;
+	}
+
+	//[384,512]
+	for(x=1024*384;x<1024*512;x++)
+	{
+		screenbuf[x]=0xffffffff;
+	}
+
+	//[256,384]
+	for(x=1024*256;x<1024*384;x++)
+	{
+		screenbuf[x]=0xffff;
+	}
+
+	//[128,256]
+	for(x=1024*128;x<1024*256;x++)
+	{
+		screenbuf[x]=0xff00ff;
+	}
+
+	//0,128
+	for(x=1024*0;x<1024*128;x++)
+	{
+		screenbuf[x]=0xffff00;
+	}
+/*
+	for(y=0;y<16;y++)	//上下
+	{
+		DWORD color=(QWORD)y*thatcolor;
+
+		//上，编译器会不会用rep stosd指令优化呢?
+		for(x=y;x<1024-y;x++)screenbuf[(y<<10) + x]=color;
+
+		//下
+		for(x=y;x<1024-y;x++)screenbuf[( (639-y) << 10 ) + x]=color;
+	}
+	for(x=0;x<16;x++)	//左右
+	{
+		DWORD color=(QWORD)x*thatcolor;
+
+		for(y=x;y<640-x;y++)
+		{
+			screenbuf[(y*1024)+x]=color;
+			screenbuf[(y*1024)+1023-x]=color;
+		}
+	}
+*/
+}
 
 
 
