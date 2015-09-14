@@ -23,12 +23,17 @@
 #define BYTE unsigned char
 
 
+
+
+QWORD whereisworld();
+void say(char* fmt,...);
+
+
+
+
 static BYTE* diskinfo;
 static int thisfd=-1;
 static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
-
-void whereisdiskinfo(BYTE** in);
-void say(char* fmt,...);
 
 
 
@@ -51,7 +56,7 @@ void enumeratedisk()
 		tempfd = open(diskname,O_RDONLY);
 		if(tempfd != -1)
 		{
-			printf("%s:%x\n",i,diskname,tempfd);
+			printf("%d,%s:%x\n",i,diskname,tempfd);
 			close(tempfd);
 
 			*(QWORD*)(diskinfo+0x100*j)=*(QWORD*)diskname;
@@ -64,7 +69,7 @@ void enumeratedisk()
 
 
 
-void choosedisk(char* wantpath)
+void choosetarget(char* wantpath)
 {
 	//testopen
 	int tempfd=open(wantpath,O_RDONLY);
@@ -83,7 +88,7 @@ void choosedisk(char* wantpath)
 		say("can't open:%s\n",wantpath);
 	}
 }
-void readdisk(QWORD buf,QWORD sector,QWORD disk,DWORD count)
+void readmemory(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	int result;
@@ -114,10 +119,10 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 void initdisk()
 {
-	whereisdiskinfo(&diskinfo);
+	diskinfo=(void*)whereisworld();
 	say("inited disk\n");
 }
-void destorydisk()
+void killdisk()
 {
 	close(thisfd);
 }

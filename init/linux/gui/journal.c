@@ -6,10 +6,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+
+
+
 static unsigned char* logbuf;
 
 
-void whereislogbuf(BYTE** addr);
 
 
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
@@ -59,7 +61,7 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 
 
-void initlog()
+void initlog(unsigned long long in)
 {
-	whereislogbuf(&logbuf);
+	logbuf=(void*)in;
 }

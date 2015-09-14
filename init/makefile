@@ -2,21 +2,21 @@
 	echo "what?"
 .PHONY:linux
 linux:
-	gcc -c -fPIC -O2 memory/memory.c
-	gcc -c -fPIC -O2 memory/log.c
-	gcc -c -fPIC -O2 linux/disk.c
-	gcc -c -fPIC -O2 linux/beforemain-cli.c
+	gcc -c -fPIC -O2 linux/base/disk.c
+	gcc -c -fPIC -O2 linux/base/arg.c
+	gcc -c -fPIC -O2 linux/cli/init.c
+	gcc -c -fPIC -O2 linux/cli/log.c
 	rm -f init.a
-	ar crs init.a memory.o log.o disk.o beforemain-cli.o
+	ar crs init.a disk.o arg.o init.o log.o
 .PHONY:win
 win:
-	gcc -c -O2 win/commandline.c
-	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/mem2file.c
-	gcc -c -O2 win/process.c
-	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
-	gcc -c -O2 win-cli/init.c
-	gcc -c -O2 win-cli/log.c
+	windres --input-format=rc -O coff -i win/base/uac.rc -o uac.res
+	gcc -c -O2 win/base/commandline.c
+	gcc -c -O2 win/base/disk.c
+	gcc -c -O2 win/base/mem2file.c
+	gcc -c -O2 win/base/process.c
+	gcc -c -O2 win/cli/init.c
+	gcc -c -O2 win/cli/log.c
 	rm -f init.a
 	ar crs init.a commandline.o disk.o mem2file.o process.o init.o log.o
 .PHONY:linux+fb
@@ -30,13 +30,13 @@ linux+fb:
 	ar crs init.a memory.o journal.o fb.o disk.o beforemain.o
 .PHONY:linux+xlib
 linux+xlib:
-	gcc -c -fPIC -O2 memory/memory.c
-	gcc -c -fPIC -O2 memory/journal.c
-	gcc -c -fPIC -O2 linux/xlib.c
-	gcc -c -fPIC -O2 linux/disk.c
-	gcc -c -fPIC -O2 linux/beforemain.c
+	gcc -c -fPIC -O2 linux/base/disk.c
+	gcc -c -fPIC -O2 linux/base/arg.c
+	gcc -c -fPIC -O2 linux/gui/init.c
+	gcc -c -fPIC -O2 linux/gui/journal.c
+	gcc -c -fPIC -O2 linux/gui/xlib.c
 	rm -f init.a
-	ar crs init.a memory.o journal.o xlib.o disk.o beforemain.o
+	ar crs init.a disk.o arg.o init.o journal.o xlib.o
 .PHONY:linux+sdl
 linux+sdl:
 	gcc -c -fPIC -O2 memory/memory.c
@@ -56,14 +56,14 @@ mac+sdl:
 	ar crs init.a memory.o journal.o sdl.o beforemain.o
 .PHONY:win+api
 win+api:
-	gcc -c -O2 win/commandline.c
-	gcc -c -O2 win/mem2file.c
-	gcc -c -O2 win/disk.c
-	gcc -c -O2 win/process.c
-	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
-	gcc -c -O2 win-gui/init.c
-	gcc -c -O2 win-gui/journal.c
-	gcc -c -O2 win-gui/api.c
+	windres --input-format=rc -O coff -i win/base/uac.rc -o uac.res
+	gcc -c -O2 win/base/commandline.c
+	gcc -c -O2 win/base/mem2file.c
+	gcc -c -O2 win/base/disk.c
+	gcc -c -O2 win/base/process.c
+	gcc -c -O2 win/gui/init.c
+	gcc -c -O2 win/gui/journal.c
+	gcc -c -O2 win/gui/api.c
 	rm -f init.a
 	ar crs init.a commandline.o mem2file.o disk.o process.o init.o journal.o api.o
 .PHONY:win+sdl

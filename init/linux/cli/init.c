@@ -1,4 +1,7 @@
-﻿#include<stdlib.h>
+﻿#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
 
 
 
@@ -9,39 +12,33 @@ static unsigned char* screen;
 
 
 
-void initeverything()
+__attribute__((constructor)) void initeverything()
 {
-	world = (unsigned char*)malloc(0x800000);		//8M
-	screen = (unsigned char*)malloc(0x1000000);		//16M
-
+	world = (unsigned char*)malloc(0x600000);		//8M
 	say("beforemain(){\n");
 	say("inited memory\n");
 
 	//只是拿地址
 	initdisk();
-	listall();
+	enumeratedisk();
 
 	//initarg
-	initarg();
+	explainarg();
 
 	say("}\n");
 }
-void killeverything()
+__attribute__((destructor)) void killeverything()
 {
+	killdisk();
 	free(world);
-	free(screen);
 }
 
 
 
 
-void whereisworld(unsigned long long* p)
+unsigned long long whereisworld()
 {
-	*p=(unsigned long long)world;
-}
-void whereisscreen(unsigned long long* p)
-{
-	*p=(unsigned long long)screen;
+	return (unsigned long long)world;
 }
 /*
 static unsigned char* diskbuf;

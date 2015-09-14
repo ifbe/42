@@ -7,6 +7,7 @@
 
 
 QWORD whereisscreen();
+void blackstring(int x,int y,char* str);
 
 
 
@@ -98,35 +99,65 @@ void background2()
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
-	//[512,640]
-	for(x=1024*512;x<1024*640;x++)
+	//[0,128]
+	for(y=0;y<128;y++)
 	{
-		screenbuf[x]=0xfedcba98;
+		for(x=0;x<512;x++)
+		{
+			screenbuf[y*1024+x]=0xffff00;
+		}
 	}
-
-	//[384,512]
-	for(x=1024*384;x<1024*512;x++)
-	{
-		screenbuf[x]=0xffffffff;
-	}
-
-	//[256,384]
-	for(x=1024*256;x<1024*384;x++)
-	{
-		screenbuf[x]=0xffff;
-	}
+	blackstring(0,0,"data");
 
 	//[128,256]
-	for(x=1024*128;x<1024*256;x++)
+	for(y=128;y<256;y++)
 	{
-		screenbuf[x]=0xff00ff;
+		for(x=0;x<512;x++)
+		{
+			screenbuf[y*1024+x]=0xff00ff;
+		}
+	}
+	blackstring(0,8,"dir");
+
+	//[256,384]
+	for(y=256;y<384;y++)
+	{
+		for(x=0;x<512;x++)
+		{
+			screenbuf[y*1024+x]=0xffff;
+		}
+	}
+	blackstring(0,16,"fs");
+
+	//[384,512]
+	for(y=384;y<512;y++)
+	{
+		for(x=0;x<512;x++)
+		{
+			screenbuf[y*1024+x]=0xffffffff;
+		}
+	}
+	blackstring(0,24,"disk");
+
+	//[512,640]
+	for(y=512;y<640;y++)
+	{
+		for(x=0;x<512;x++)
+		{
+			screenbuf[y*1024+x]=0xfedcba98;
+		}
+	}
+	blackstring(0,32,"choose");
+
+	//[0,512]
+	for(y=0;y<640;y++)
+	{
+		for(x=512;x<1024;x++)
+		{
+			screenbuf[y*1024+x]=0xffffffff;
+		}
 	}
 
-	//0,128
-	for(x=1024*0;x<1024*128;x++)
-	{
-		screenbuf[x]=0xffff00;
-	}
 /*
 	for(y=0;y<16;y++)	//上下
 	{

@@ -15,17 +15,13 @@ Window win;
 GC gc;
 Atom wmDelete;
 
-DWORD* mypixel;
 int width=1024;
 int height=640;
 
 
 
 
-void whereisscreenbuf(QWORD* in)
-{
-	*in=(QWORD)mypixel;
-}
+/*
 void point(int x, int y, DWORD color)
 {
 	mypixel[y*width+x] = color;
@@ -33,7 +29,7 @@ void point(int x, int y, DWORD color)
 void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
-}
+}*/
 void writescreen()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
@@ -72,7 +68,7 @@ void waitevent(QWORD* first,QWORD* second)
 
 
 
-void initwindow()
+void initwindow(QWORD mypixel)
 {
 	//初始化
 	dsp = XOpenDisplay(NULL);
@@ -86,7 +82,6 @@ void initwindow()
 	}
 
 	//pixel,ximage,window,gc
-	mypixel=(DWORD*)malloc(width*height*4);
 	ximage=XCreateImage(dsp,visual,24,ZPixmap,0,(char*)mypixel,width,height,32,0);
 	win=XCreateSimpleWindow(dsp,RootWindow(dsp,0),0,0,width,height,1,0,0);
 	gc = XCreateGC(dsp, win, 0, NULL);
@@ -99,7 +94,6 @@ void initwindow()
 }
 void killwindow()
 {
-	free(mypixel);
 	XDestroyWindow(dsp, win);
 	XCloseDisplay(dsp);
 }

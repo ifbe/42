@@ -241,6 +241,18 @@ void string(int x,int y,char* p)
 		x++;
     }
 }
+void blackstring(int x,int y,char* p)
+{
+    while(1)
+    {
+		if( *p == 0x0 )break;
+		if(x>=0x80)break;
+
+		blackanscii(x,y,*p);
+		p++;
+		x++;
+    }
+}
 
 
 
