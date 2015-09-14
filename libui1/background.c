@@ -11,38 +11,31 @@ void blackstring(int x,int y,char* str);
 
 
 
-
-void backgroundx()
+void menubg()
 {
+	//背景
 	int x,y;
-	DWORD thatcolor=0;
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
-	//用指定颜色清屏
-	for(x=0;x<1024*640;x++)
+	for(y=64;y<640-64;y++)
 	{
-		screenbuf[x]=thatcolor;
-	}
-/*
-	//横
-	for(y=16;y<640;y+=16)
-	{
-		for(x=0;x<1024;x++)
+		for(x=256;x<768;x++)
 		{
-			screenbuf[(y<<10) + x]=0x44;
+			screenbuf[(y*1024)+x]=0x44444444;
 		}
 	}
-	//竖
-	for(x=16;x<1024;x+=16)
+	for(y=64;y<640-64;y++)
 	{
-		for(y=0;y<640;y++)
-		{
-			screenbuf[(y<<10) + x]=0x4400;
-		}
+		screenbuf[(y*1024)+256]=0;
+		screenbuf[(y*1024)+767]=0;
 	}
-*/
-}
+	for(x=256;x<768;x++)
+	{
+		screenbuf[(64*1024)+x]=0;
+		screenbuf[((639-64)*1024)+x]=0;
+	}
 
+}
 
 
 
@@ -99,64 +92,61 @@ void background2()
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
+	//bg
+	for(y=0;y<640*1024;y++)
+	{
+		screenbuf[y]=0xffffffff;
+	}
+
 	//[0,128]
 	for(y=0;y<128;y++)
 	{
-		for(x=0;x<512;x++)
-		{
-			screenbuf[y*1024+x]=0xffff00;
-		}
-	}
-	blackstring(0,0,"data");
-
-	//[128,256]
-	for(y=128;y<256;y++)
-	{
-		for(x=0;x<512;x++)
-		{
-			screenbuf[y*1024+x]=0xff00ff;
-		}
-	}
-	blackstring(0,8,"dir");
-
-	//[256,384]
-	for(y=256;y<384;y++)
-	{
-		for(x=0;x<512;x++)
+		for(x=384;x<640;x++)
 		{
 			screenbuf[y*1024+x]=0xffff;
 		}
 	}
-	blackstring(0,16,"fs");
+	blackstring(0x3c,0,"data");
+
+	//[128,256]
+	for(y=128;y<256;y++)
+	{
+		for(x=384;x<640;x++)
+		{
+			screenbuf[y*1024+x]=0x8a67f7;
+		}
+	}
+	blackstring(0x3c,8,"dir");
+
+	//[256,384]
+	for(y=256;y<384;y++)
+	{
+		for(x=384;x<640;x++)
+		{
+			screenbuf[y*1024+x]=0xe578bd;
+		}
+	}
+	blackstring(0x3c,16,"fs");
 
 	//[384,512]
 	for(y=384;y<512;y++)
 	{
-		for(x=0;x<512;x++)
+		for(x=384;x<640;x++)
 		{
-			screenbuf[y*1024+x]=0xffffffff;
+			screenbuf[y*1024+x]=0xff00;
 		}
 	}
-	blackstring(0,24,"disk");
+	blackstring(0x3c,24,"disk");
 
 	//[512,640]
 	for(y=512;y<640;y++)
 	{
-		for(x=0;x<512;x++)
+		for(x=0;x<1024;x++)
 		{
 			screenbuf[y*1024+x]=0xfedcba98;
 		}
 	}
-	blackstring(0,32,"choose");
-
-	//[0,512]
-	for(y=0;y<640;y++)
-	{
-		for(x=512;x<1024;x++)
-		{
-			screenbuf[y*1024+x]=0xffffffff;
-		}
-	}
+	blackstring(0x3c,32,"choose");
 
 /*
 	for(y=0;y<16;y++)	//上下

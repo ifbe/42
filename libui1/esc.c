@@ -12,43 +12,19 @@ static QWORD choose=0;
 
 
 
-QWORD whereisworld();
+void f1init();
+void menubg();
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
 void hidemenu();
 void choosetarget(QWORD in);
 void die();
-void f1init();
+QWORD whereisworld();
 
 
 
 
-/*void menubg()
-{
-	//背景
-	int x,y;
-
-	for(y=64;y<640-64;y++)
-	{
-		for(x=256;x<768;x++)
-		{
-			point(x,y,0xffffff);
-		}
-	}
-	for(y=64;y<640-64;y++)
-	{
-		point(256,y,0);
-		point(767,y,0);
-	}
-	for(x=256;x<768;x++)
-	{
-		point(x,64,0);
-		point(x,639-64,0);
-	}
-
-}
-
-
+/*
 void printdisk0()
 {
 	//内容
@@ -76,6 +52,10 @@ void printdisk0()
 		}
 	}
 }*/
+
+
+
+
 void exitbutton()
 {
 	//最后的退出按钮
@@ -102,7 +82,7 @@ void exitbutton()
 
 void menushow()
 {
-	//menubg();
+	menubg();
 	//printdisk0();
 	//printprocess0();
 	exitbutton();
