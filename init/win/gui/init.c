@@ -50,7 +50,7 @@ __attribute__((constructor)) void initeverything()
 {
 	//世界
 	int i;
-	world = (unsigned char*)malloc(0x600000);		//(1+4+1)MB
+	world = (unsigned char*)malloc(0x800000);		//(1+4+1)MB
 	{
 		if(world==NULL)MessageBox(NULL, "can't allocmem for screen", "Hello Demo", MB_OK);
 	}

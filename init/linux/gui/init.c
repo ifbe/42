@@ -14,8 +14,8 @@ static unsigned char* screen;
 
 __attribute__((constructor)) void initeverything()
 {
-	world = (unsigned char*)malloc(0x600000);		//8M
-	screen = (unsigned char*)malloc(0x600000);		//8M
+	world = (unsigned char*)malloc(0x800000);		//8M
+	screen = (unsigned char*)malloc(0x400000);		//8M
 
 	//
 	initlog(world+0x500000);
