@@ -9,6 +9,26 @@
 
 
 
+static char xlib2anscii[0x80]={
+0,0,0,0,		0,0,0,0,		0,0,'1','2',		'3','4','5','6',//0
+'7','8','9','0',	'-','=',0x8,0x9,	'q','w','e','r',	't','y','u','i',//0x10
+'o','p','[',']',	0xd,0,'a','s',		'd','f','g','h',	'j','k','l',';',//0x20
+'\'','`',0,'\\',	'z','x','c','v',	'b','n','m',',',	'.','/',0,'*',	//0x30
+0,' ',0,0,		0,0,0,0,		0,0,0,0,		0,0,0,'7',	//0x40
+'8','9','-','4',	'5','6','+','1',	'2','3','0','.',	0,0,0,0,	//0x50
+0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x60,0x6f
+0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
+};
+static char converttable[0x80]={
+0,0,0,0,		0,0,0,0,		0,0,'1','2',		'3','4','5','6',//0
+'7','8','9','0',	'-','=',0x8,0x9,	'q','w','e','r',	't','y','u','i',//0x10
+'o','p','[',']',	0xd,0xff,'a','s',	'd','f','g','h',	'j','k','l',';',//0x20
+'\'','`',0xff,'\\',	'z','x','c','v',	'b','n','m',',',	'.','/',0xff,'*',//0x30
+0xff,' ',0xff,0x70,	0x71,0x72,0x73,0x74,	0x75,0x76,0x77,0x78,	0x79,0xff,0xff,'7',//0x40
+'8','9','-','4',	'5','6','+','1',	'2','3','0','.',	0xff,0xff,0xff,0xff,//0x50
+0xff,0xff,0xff,0xff,	0,0,0,0,		0,0,0,0,		0,0,0,0x26,	//0x60,0x6f
+0,0x25,0x27,0,		0x28,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
+};
 Display* dsp;
 XImage* ximage;
 Window win;
@@ -34,7 +54,7 @@ void writescreen()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
-void waitevent(QWORD* first,QWORD* second)
+void waitevent(QWORD* my1,QWORD* my2)
 {
 	XEvent ev;
 	while(1)
@@ -44,19 +64,52 @@ void waitevent(QWORD* first,QWORD* second)
 		{
 			if (ev.xexpose.count == 0) writescreen();
 		}
-		else if(ev.type==ButtonPress)
-		{
-			writescreen();
-		}
-		else if(ev.type==KeyPress)
-		{
-			KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
-			if (ev.xkey.keycode == keyQ)break;
-			else writescreen();
-		}
 		else if(ev.type==ClientMessage)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)break;
+		}
+		else if(ev.type==ButtonPress)
+		{
+			if(ev.xbutton.button==Button1)
+			{
+				*my1=0x7466656c;
+				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+				return;
+			}
+			if(ev.xbutton.button==Button4)	//down
+			{
+				*my1=0x6c65656877;
+				*my2=0xff;
+				return;
+			}
+			if(ev.xbutton.button==Button5)	//up
+			{
+				*my1=0x6c65656877;
+				*my2=0xffffffff;
+				return;
+			}
+		}
+		else if(ev.type==KeyPress)
+		{
+			char temp;
+			//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
+			//if (ev.xkey.keycode == keyQ)break;
+			//printf("%x\n",ev.xkey.keycode);
+
+
+			//普通anscii码
+			temp=xlib2anscii[ev.xkey.keycode];
+			if(temp!=0)
+			{
+				*my1=0x72616863;
+				*my2=temp;
+				return;
+			}
+
+			//控制按键
+			*my1=0x64626b;
+			*my2=converttable[ev.xkey.keycode];
+			return;
 		}
 	}
 }

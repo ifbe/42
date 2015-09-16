@@ -8,6 +8,9 @@
 
 QWORD whereisscreen();
 void blackstring(int x,int y,char* str);
+void line(int,int,int,int);
+void rectangle(int,int,int,int);
+
 
 
 
@@ -46,20 +49,20 @@ void background1()
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
-	int x,y;
+	QWORD x,y;
 	for(x=0;x<1024*640;x++)
 	{
-		screenbuf[x]=thatcolor;
+		screenbuf[x]=0xf0f0f0f0;
 	}
 
 	//上下
-	DWORD b=thatcolor&0xff;
-	DWORD g=(thatcolor>>8)&0xff;
-	DWORD r=(thatcolor>>16)&0xff;
-	thatcolor=(b>>4)+( (g>>4) << 8 )+( (r>>4) << 16 );
+	//DWORD b=thatcolor&0xff;
+	//DWORD g=(thatcolor>>8)&0xff;
+	//DWORD r=(thatcolor>>16)&0xff;
+	//thatcolor=(b>>4)+( (g>>4) << 8 )+( (r>>4) << 16 );
 	for(y=0;y<16;y++)
 	{
-		DWORD color=(QWORD)y*thatcolor;
+		DWORD color=0x40404040+(0x0b0b0b0b*y);
 
 		//上，编译器会不会用rep stosd指令优化呢?
 		DWORD* p=screenbuf+y*1024;
@@ -72,7 +75,7 @@ void background1()
 	//左右
 	for(x=0;x<16;x++)
 	{
-		DWORD color=(QWORD)x*thatcolor;
+		DWORD color=0x40404040+(0x0b0b0b0b*x);
 
 		for(y=x;y<640-x;y++)
 		{
@@ -148,6 +151,8 @@ void background2()
 	}
 	blackstring(0x3c,32,"choose");
 
+	rectangle(932,234,27,99);
+	line(35,67,944,285);
 /*
 	for(y=0;y<16;y++)	//上下
 	{
