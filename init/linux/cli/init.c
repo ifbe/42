@@ -14,12 +14,12 @@ static unsigned char* screen;
 
 __attribute__((constructor)) void initeverything()
 {
-	world = (unsigned char*)malloc(0x600000);		//8M
+	world = (unsigned char*)malloc(0x800000);		//8M
 	say("beforemain(){\n");
 	say("inited memory\n");
 
 	//只是拿地址
-	initdisk();
+	initdisk(0x700000);
 	enumeratedisk();
 
 	//initarg

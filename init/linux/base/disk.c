@@ -25,7 +25,6 @@
 
 
 
-QWORD whereisworld();
 void say(char* fmt,...);
 
 
@@ -117,9 +116,9 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 
 
-void initdisk()
+void initdisk(QWORD addr)
 {
-	diskinfo=(void*)whereisworld();
+	diskinfo=(void*)addr;
 	say("inited disk\n");
 }
 void killdisk()

@@ -137,5 +137,5 @@ void menumessage(QWORD type,QWORD key)
 
 void menuinit()
 {
-	diskinfo=whereisworld();
+	diskinfo=whereisworld()+0x700000;
 }

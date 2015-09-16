@@ -18,12 +18,12 @@ __attribute__((constructor)) void initeverything()
 	screen = (unsigned char*)malloc(0x400000);		//8M
 
 	//
-	initlog(world+0x500000);
+	initlog(world+0x600000);
 	say("beforemain(){\n");
 	say("inited memory\n");
 
 	//只是拿地址
-	initdisk();
+	initdisk(0x700000);
 	enumeratedisk();
 
 	//

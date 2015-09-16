@@ -534,7 +534,6 @@ int mountntfs(QWORD addr,QWORD which)
 		mftbuffer=fshome+0x10000;
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
-	say("ntfs sector:%x\n",ntfssector);
 
 	//上报3个函数的地址
 	QWORD* this=(QWORD*)(diskhome+which*0x40);
@@ -542,6 +541,7 @@ int mountntfs(QWORD addr,QWORD which)
 	this[4]=(QWORD)ntfs_explain;
 	this[5]=(QWORD)ntfs_cd;
 	this[6]=(QWORD)ntfs_load;
+	say("ntfs sector:%x\n",ntfssector);
 
 	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
 	readmemory(datahome,ntfssector,0,1);

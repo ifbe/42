@@ -167,5 +167,5 @@ void f4message(QWORD type,QWORD key)
 
 void f4init()
 {
-	logbuf=whereisworld()+0x500000;
+	logbuf=whereisworld()+0x600000;
 }

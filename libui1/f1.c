@@ -332,7 +332,7 @@ void f1message(QWORD type,QWORD key)
 void f1init()
 {
 	int i;
-	datahome=(BYTE*)whereisworld()+0x400000;
+	datahome=(BYTE*)whereisworld()+0x300000;
 	for(i=0;i<0x2000;i++)datahome[i]=0;
 
 	haha.targetstring=0x3a746567726174;

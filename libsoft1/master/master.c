@@ -34,11 +34,11 @@ void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
 
 //每个1M
-static QWORD world;		//+7m
-static QWORD diskhome;		//+1m
-static QWORD fshome;		//+2m
-static QWORD dirhome;		//+3m
-static QWORD datahome;		//+4m
+static QWORD diskhome;		//+0m
+static QWORD fshome;		//+1m
+static QWORD dirhome;		//+2m
+static QWORD datahome;		//+3m
+static QWORD diskinfo;		//+7m
 
 //3大函数的位置
 int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
@@ -179,17 +179,17 @@ void command(char* buffer)
 		if( (QWORD)arg1 == 0 )
 		{
 			//只是打印一遍扫描到的磁盘信息
-			char* p=(char*)world;
+			char* p=(char*)diskinfo;
 			int i=0;
 
 			while(1)
 			{
 				//先检查
-				if( *(DWORD*)(world+i) == 0 )break;
+				if( *(DWORD*)(diskinfo+i) == 0 )break;
 				if(i>100*0x100)break;
 
 				//再打印
-				say("%s\n",world+i);
+				say("%s\n",diskinfo+i);
 				i+=0x100;
 			}
 		}
@@ -290,12 +290,13 @@ void command(char* buffer)
 
 void initmaster()
 {
-	world=whereisworld();
+	QWORD temp=whereisworld();
 
-	diskhome=world+0x100000;
-	fshome=world+0x200000;
-	dirhome=world+0x300000;
-	datahome=world+0x400000;
+	diskhome=temp+0;
+	fshome=temp+0x100000;
+	dirhome=temp+0x200000;
+	datahome=temp+0x300000;
+	diskinfo=temp+0x700000;
 
 	hello();
 }
