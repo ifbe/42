@@ -13,40 +13,44 @@ static unsigned char* logbuf;
 
 void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
-	printf(rcx,rdx,r8,r9);
-
-	int start=0;
-	int temp=0;
+	int dest=0;
+	int source=0;
 	QWORD offsety;
 	QWORD offsetx;
+	char* temp;
 	while(1)			//举例“123443%d\n\n    44532”
 	{
-		if(rcx[temp] == 0)		//0
+		if(rcx[source] == 0)		//0
 		{
 			offsety=*(DWORD*)(logbuf+0xffff0);
 			offsetx=*(DWORD*)(logbuf+0xffff8);
-			int writecount=snprintf(logbuf+offsety+offsetx,0x80-offsetx,
-					rcx+start,rdx,r8,r9);
 
+			temp=logbuf+offsety+offsetx;
+			*(QWORD*)temp=0x3031323334353637;
+			*(QWORD*)(temp+8)=0x3839414243444546;
+			*(QWORD*)(temp+0x10)=0x3031323334353637;
+			*(QWORD*)(temp+0x18)=0x2020202020202020;
+			int writecount=snprintf(temp+32,0x80-offsetx,
+					rcx+dest,rdx,r8,r9);
 			*(DWORD*)(logbuf+0xffff8)+=writecount;
 
 			break;
 		}
-		if( rcx[temp] < 0x10)	//"\n":0xa?		0xd?
+		if( rcx[source] < 0x10)	//"\n":0xa?		0xd?
 		{
 			offsety=*(DWORD*)(logbuf+0xffff0);
 			offsetx=*(DWORD*)(logbuf+0xffff8);
 			snprintf(logbuf+offsety+offsetx,0x80-offsetx,
-					rcx+start,rdx,r8,r9);
+					rcx+dest,rdx,r8,r9);
 
 			*(DWORD*)(logbuf+0xffff8)=0;
 			*(DWORD*)(logbuf+0xffff0)=(offsety+0x80)%0xffff0;
-			temp+=1;
-			start=temp;
+			source+=1;
+			dest=source;
 
 			continue;
 		}
-		temp++;
+		source++;
 	}
 }
 

@@ -6,20 +6,23 @@
 
 
 
-void menuinit();	//0
+void initmaster(QWORD);
+void menuinit(QWORD);	//0
+void f1init(QWORD);
+void f2init(QWORD);
+void f3init(QWORD);
+void f4init(QWORD);
+
 void menushow();
-void menumessage(QWORD type,QWORD key);
-void f1init();
 void f1show();
-void f1message(QWORD type,QWORD key);
-void f2init();
 void f2show();
-void f2message(QWORD type,QWORD key);
-void f3init();
 void f3show();
-void f3message(QWORD type,QWORD key);
-void f4init();
 void f4show();
+
+void menumessage(QWORD type,QWORD key);
+void f1message(QWORD type,QWORD key);
+void f2message(QWORD type,QWORD key);
+void f3message(QWORD type,QWORD key);
 void f4message(QWORD type,QWORD key);
 
 void point(int x,int y,DWORD color);
@@ -27,7 +30,8 @@ void string(int x,int y,char* str);
 void writescreen();
 void waitevent(QWORD* first,QWORD* second);
 void choosetarget(QWORD in);
-void initmaster();
+
+QWORD whereisworld();
 
 
 
@@ -118,7 +122,6 @@ void processmessage(QWORD type,QWORD key)
 	{
 		//say("debuging::::::::%s\n",(char*)key);
 		choosetarget(key);
-		f1init();
 		return;
 	}
 	else if(type==0x64626b)		//kbd
@@ -168,13 +171,14 @@ void processmessage(QWORD type,QWORD key)
 
 void main()
 {
-	initmaster();
+	QWORD world=whereisworld();
+	initmaster(world);
 
-	menuinit();			//0
-	f1init();			//1
-	f2init();			//2
-	f3init();			//3
-	f4init();			//3
+	menuinit(world);			//0
+	f1init(world);			//1
+	f2init(world);			//2
+	f3init(world);			//3
+	f4init(world);			//3
 
 	while(1)
 	{

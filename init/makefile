@@ -2,12 +2,13 @@
 	echo "what?"
 .PHONY:linux
 linux:
-	gcc -c -fPIC -O2 linux/base/disk.c
-	gcc -c -fPIC -O2 linux/base/arg.c
-	gcc -c -fPIC -O2 linux/cli/init.c
-	gcc -c -fPIC -O2 linux/cli/log.c
+	gcc -c -fPIC -O2 linux/world.c
+	gcc -c -fPIC -O2 linux/disk.c
+	gcc -c -fPIC -O2 linux/arg.c
+	gcc -c -fPIC -O2 linux/journal.c
+	gcc -c -fPIC -O2 linux/cli/cli.c
 	rm -f init.a
-	ar crs init.a disk.o arg.o init.o log.o
+	ar crs init.a world.o disk.o arg.o journal.o cli.o
 .PHONY:win
 win:
 	windres --input-format=rc -O coff -i win/base/uac.rc -o uac.res
@@ -30,13 +31,14 @@ linux+fb:
 	ar crs init.a memory.o journal.o fb.o disk.o beforemain.o
 .PHONY:linux+xlib
 linux+xlib:
-	gcc -c -fPIC -O2 linux/base/disk.c
-	gcc -c -fPIC -O2 linux/base/arg.c
-	gcc -c -fPIC -O2 linux/gui/init.c
-	gcc -c -fPIC -O2 linux/gui/journal.c
+	gcc -c -fPIC -O2 linux/world.c
+	gcc -c -fPIC -O2 linux/arg.c
+	gcc -c -fPIC -O2 linux/disk.c
+	gcc -c -fPIC -O2 linux/journal.c
+	gcc -c -fPIC -O2 linux/gui/gui.c
 	gcc -c -fPIC -O2 linux/gui/xlib.c
 	rm -f init.a
-	ar crs init.a disk.o arg.o init.o journal.o xlib.o
+	ar crs init.a world.o arg.o disk.o journal.o gui.o xlib.o
 .PHONY:linux+sdl
 linux+sdl:
 	gcc -c -fPIC -O2 memory/memory.c

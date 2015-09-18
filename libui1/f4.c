@@ -8,7 +8,7 @@ void die();
 
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
-void background4();
+void background4(QWORD,QWORD);
 
 int compare(char* first,char* second);
 void command(char* in);
@@ -29,73 +29,28 @@ static int bufcount=0;
 
 
 
-void printconsole0()
-{
-	//显示哪儿开始的一块
-	int x,y;
-
-	//
-	DWORD temp=*(DWORD*)(logbuf+0xffff0);
-	QWORD showaddr=temp-offset;				//代表末尾位置而不是开头
-	if(showaddr<0x80*40)showaddr=0x80*40;
-
-	//总共38行，必须保证showaddr>=0x80*40
-	for(y=0;y<40;y++)
-	{
-		string(0,y,(char*)logbuf+showaddr+0x80*(y-40));
-	}
-
-	//键盘输入区
-	//for(y=640-16;y<640;y++)
-	//	for(x=256;x<768;x++)
-	//		point(x,y,0xffffffff);
-	//for(y=640-16;y<640;y++)
-	//{
-	//	point(256,y,0xff);
-	//	point(767,y,0xff);
-	//}
-	//for(x=256;x<768;x++)
-	//{
-	//	point(x,639-16,0xff);
-	//	point(x,639,0xff);
-	//}
-	string(0,39,"user:");
-	string(0x5,39,buffer);
-/*
-	//位置
-	if(temp>=0x80*40)
-	{
-		for(y=64;y<640-64;y++)
-		{
-			for(x=1024-80;x<1024-64;x++)
-			{
-				point(x,y,0x44444488);
-			}
-		}
-		QWORD end=64+(640-64*2)*showaddr/temp;			//temp变量=max
-		QWORD start=end-(640-64*2)*0x80*40/temp;
-		for(y=start;y<end;y++)
-		{
-			for(x=1024-80+4;x<1024-64-4;x++)
-			{
-				point(x,y,0xccccccff);
-			}
-		}
-	}
-*/
-}
-
-
-
-
 
 
 
 
 void f4show()
 {
-	background4();
-	printconsole0();
+	//显示哪儿开始的一块
+	int x,y;
+	DWORD temp=*(DWORD*)(logbuf+0xffff0);
+	QWORD showaddr=temp-offset;				//代表末尾位置而不是开头
+	if(showaddr<0x80*39)showaddr=0x80*39;
+
+	//背景
+	background4(showaddr,temp);
+
+	//总共38行，必须保证showaddr>=0x80*39
+	for(y=0;y<39;y++)
+	{
+		string(0,y,(char*)logbuf+showaddr+0x80*(y-39));
+	}
+	string(0,39,"user:");
+	string(0x5,39,buffer);
 }
 void f4message(QWORD type,QWORD key)
 {
@@ -165,7 +120,7 @@ void f4message(QWORD type,QWORD key)
 
 
 
-void f4init()
+void f4init(QWORD world)
 {
-	logbuf=whereisworld()+0x600000;
+	logbuf=world+0x600000;
 }

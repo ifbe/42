@@ -110,7 +110,7 @@ void f2message(QWORD type,QWORD key)
 
 
 
-void f2init()
+void f2init(QWORD world)
 {
-	dirbuffer=whereisworld()+0x200000;
+	dirbuffer=world+0x200000;
 }

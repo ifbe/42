@@ -93,6 +93,7 @@ void menumessage(QWORD type,QWORD key)
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
+	/*
 	if(x>256)
 	{
 		if(x<768)
@@ -109,7 +110,7 @@ void menumessage(QWORD type,QWORD key)
 				}
 			}
 		}
-	}
+	}*/
 	if(y>512+32)
 	{
 		if(y<512+64)
@@ -135,7 +136,7 @@ void menumessage(QWORD type,QWORD key)
 
 
 
-void menuinit()
+void menuinit(QWORD world)
 {
-	diskinfo=whereisworld()+0x700000;
+	diskinfo=world+0x700000;
 }

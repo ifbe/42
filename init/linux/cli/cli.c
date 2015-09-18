@@ -1,8 +1,4 @@
 #include<stdio.h>
-void say(char* p,...)
-{
-        asm("jmp printf");
-}
 void waitinput(char* p)
 {
         int i;
@@ -16,4 +12,14 @@ void waitinput(char* p)
 	{
 		if(p[i]<=0xd)p[i]=0;
 	}
+}
+
+
+
+
+void initwindow()
+{
+}
+void killwindow()
+{
 }

@@ -72,7 +72,7 @@ void f3message(QWORD type,QWORD key)
 
 
 
-void f3init()
+void f3init(QWORD world)
 {
 	
 }

@@ -288,15 +288,14 @@ void command(char* buffer)
 
 
 
-void initmaster()
+void initmaster(QWORD world)
 {
-	QWORD temp=whereisworld();
+	diskhome=world+0;
+	fshome=world+0x100000;
+	dirhome=world+0x200000;
+	datahome=world+0x300000;
 
-	diskhome=temp+0;
-	fshome=temp+0x100000;
-	dirhome=temp+0x200000;
-	datahome=temp+0x300000;
-	diskinfo=temp+0x700000;
+	diskinfo=world+0x700000;
 
 	hello();
 }

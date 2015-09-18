@@ -202,14 +202,44 @@ void background3()
 
 
 
-void background4()
+void background4(QWORD showaddr,QWORD temp)
 {
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//用指定颜色清屏
 	int x,y;
-	for(x=0;x<1024*640;x++)
+	for(x=0;x<1024*624;x++)
 	{
 		screenbuf[x]=0;
+	}
+
+	for(y=624;y<640;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			screenbuf[(y*1024) + x]=(x/4)*0x01010101;
+		}
+	}
+
+	for(y=0;y<640;y++)
+	{
+		for(x=1024-16;x<1024;x++)
+		{
+			screenbuf[(y*1024) + x] = 0xffffff00+(y*0xff/640);//0x44444488;
+		}
+	}
+
+	//位置
+	if(temp>=0x80*40)
+	{
+		QWORD end=64+(640-64*2)*showaddr/temp;			//temp变量=max
+		QWORD start=end-(640-64*2)*0x80*40/temp;
+		for(y=start;y<end;y++)
+		{
+			for(x=1024-32+4;x<1024-16-4;x++)
+			{
+				screenbuf[(y*1024) + x] = 0xccccccff;
+			}
+		}
 	}
 }
