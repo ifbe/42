@@ -30,7 +30,7 @@ void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
 void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -59,16 +59,16 @@ void explainindexnode()
 		if(keylen==0)break;
 
 		//打印
-		say("@%x,len=%x,key=",offset,keylen);
+		diary("@%x,len=%x,key=",offset,keylen);
 
 		//
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%.2x ",*(BYTE*)(datahome+offset+2+i));
+			diary("%.2x ",*(BYTE*)(datahome+offset+2+i));
 		}
 		DWORD child=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen));
-		say(",child=%x\n",child);
+		diary(",child=%x\n",child);
 
 	}
 }
@@ -79,28 +79,28 @@ void explainrecorddata(QWORD offset)
 	{
 		case 1:			//folder
 		{
-			say("folder,");
-			say("cnid=%x,",BSWAP_32(*(DWORD*)(datahome+offset+8)));
+			diary("folder,");
+			diary("cnid=%x,",BSWAP_32(*(DWORD*)(datahome+offset+8)));
 			break;
 		}
 		case 2:			//file
 		{
-			say("file,");
-			say("cnid=%x,",BSWAP_32(*(DWORD*)(datahome+offset+8)));
+			diary("file,");
+			diary("cnid=%x,",BSWAP_32(*(DWORD*)(datahome+offset+8)));
 			break;
 		}
 		case 3:			//folderthread
 		{
-			say("folderthread,");
+			diary("folderthread,");
 			break;
 		}
 		case 4:			//filethread
 		{
-			say("filethread,");
+			diary("filethread,");
 			break;
 		}
 	}
-	say("\n");
+	diary("\n");
 }
 //（只用来调试）解释叶节点
 void explainleafnode()
@@ -123,15 +123,15 @@ void explainleafnode()
 
 		//key第一部分，father
 		DWORD father=BSWAP_32(*(DWORD*)(datahome+offset+2));
-		say("@%x,len=%x,father=%x,data:",offset,keylen,father);
+		diary("@%x,len=%x,father=%x,data:",offset,keylen,father);
 
 		//key后面的data
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%.2x ",*(BYTE*)(datahome+offset+2+keylen+i));
+			diary("%.2x ",*(BYTE*)(datahome+offset+2+keylen+i));
 		}
-		say("\n");
+		diary("\n");
 
 		//目录和文件
 		explainrecorddata(offset+2+keylen);
@@ -144,7 +144,7 @@ void explainleafnode()
 //（只用来调试）解释某个节点
 static void hfs_explain(QWORD number)
 {
-	say("%llx@%llx\n",number,catalogsector+nodesize*number);
+	diary("%llx@%llx\n",number,catalogsector+nodesize*number);
 	readmemory(datahome,catalogsector+nodesize*number,0,nodesize);	//0x1000
 	printmemory(datahome,0x1000);
 
@@ -152,7 +152,7 @@ static void hfs_explain(QWORD number)
 	DWORD rightbrother=BSWAP_32(*(DWORD*)datahome);
 	DWORD leftbrother=BSWAP_32(*(DWORD*)(datahome+4));
 	BYTE type=*(BYTE*)(datahome+8);
-	say("rightbro=%x,leftbro=%x,type:%x\n",rightbrother,leftbrother,type);
+	diary("rightbro=%x,leftbro=%x,type:%x\n",rightbrother,leftbrother,type);
 
 	//
 	if(type==1)
@@ -182,7 +182,7 @@ static void hfs_explain(QWORD number)
 //我会返回这一号cnid所在的叶子节点
 QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 {
-	say("enter node:%llx\n",nodenum);
+	diary("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
 	readmemory(datahome,catalogsector+nodenum*nodesize,0,nodesize);
@@ -212,7 +212,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 			QWORD temptempkey=BSWAP_32(*(DWORD*)(datahome+0x8000+0x10));
 
 			//
-			//say("temptempnode:%x,temptempkey:%x\n",temptempnodenum,temptempkey);
+			//diary("temptempnode:%x,temptempkey:%x\n",temptempnodenum,temptempkey);
 			if(wantcnid<=temptempkey)
 			{
 				candidatechosen=1;			//候选者选中信号1
@@ -226,7 +226,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 			WORD offset=BSWAP_16(*(WORD*)(datahome+nodesize*0x200-temp*2));
 			DWORD key=BSWAP_32(*(DWORD*)(datahome+offset+2));
 			int keylen=BSWAP_16(*(WORD*)(datahome+offset));
-			//say("%x@%x,%x\n",key,nodenum,offset);
+			//diary("%x@%x,%x\n",key,nodenum,offset);
 
 
 			//候选者
@@ -237,7 +237,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 				candidateoffset=offset;
 				candidatekey=key;
 				candidatechild=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen));
-				//say("candidatekey:%x,candidatechild:%x,@%x,%x\n",key,candidatechild,nodenum,offset);
+				//diary("candidatekey:%x,candidatechild:%x,@%x,%x\n",key,candidatechild,nodenum,offset);
 			}
 			else{candidatechosen=1;}			//候选者选中信号2
 		}
@@ -247,7 +247,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 		//2：当前这个已经大于等于想要的，所以候选者直接被选中
 		if(candidatechosen>0)
 		{
-			//say("the chosen one:%x,%x\n",nodenum,candidatekey);
+			//diary("the chosen one:%x,%x\n",nodenum,candidatekey);
 
 			//有问题的候选者退出
 			if(candidateoffset==-1)
@@ -259,7 +259,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 			//看节点类型分别处理（头节点和位图节点不可能被传进来吧？）
 			if(type==0xff)
 			{
-				//say("return %x\n",nodenum);
+				//diary("return %x\n",nodenum);
 				return nodenum;
 			}
 			if(type==0)
@@ -305,7 +305,7 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		{
 			nodenum=BSWAP_32(*(DWORD*)datahome);
 			if(nodenum==0)break;
-			say("next node:%x\n",nodenum);
+			diary("next node:%x\n",nodenum);
 
 			readmemory(datahome,catalogsector+nodenum*nodesize,0,nodesize);
 			totalrecords=BSWAP_16(*(WORD*)(datahome+0xa));
@@ -321,18 +321,18 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		DWORD key=BSWAP_32(*(DWORD*)(datahome+offset+2));
 		if(key>wantcnid)break;
 		if(key<wantcnid)continue;
-		//say("key:%x,in:%llx\n",key,nodenum);
+		//diary("key:%x,in:%llx\n",key,nodenum);
 
 		int keylen=BSWAP_16(*(WORD*)(datahome+offset));
 		//1.名字
 		WORD namelen=BSWAP_16(*(WORD*)(datahome+offset+6));
-		//say("%x@%x\n",namelen,offset);
+		//diary("%x@%x\n",namelen,offset);
 		if(namelen>=0xf)namelen=0xf;
 		i=0;
 		for(i=0;i<namelen;i++)	//namelength=*(byte*)(rsi+6)
 		{
 			*(BYTE*)(rdi+i)=*(BYTE*)(datahome+offset+9+i*2);
-			//say("%c",*(BYTE*)(datahome+offset+9+i*2));
+			//diary("%c",*(BYTE*)(datahome+offset+9+i*2));
 		}
 		//2.cnid号
 		*(QWORD*)(rdi+0x10)=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen+0x8));
@@ -373,10 +373,10 @@ static int hfs_cd(QWORD id)
 		foundnode=searchbtreeforcnid(rootnode,id);
 		if( foundnode <= 0 )		//offset值不可能小于e
 		{
-			say("this cnid isn't in btree\n");
+			diary("this cnid isn't in btree\n");
 			return -2;
 		}
-		say("found:%llx@node:%llx\n",id,foundnode);
+		diary("found:%llx@node:%llx\n",id,foundnode);
 	}
 
 
@@ -399,7 +399,7 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 	{
 		*(BYTE*)(rdi+i)=0;
 	}
-	say("father:%x,self:%x,node:%x,want:%x\n",fathercnid,wantcnid,nodenum,wantwhere);
+	diary("father:%x,self:%x,node:%x,want:%x\n",fathercnid,wantcnid,nodenum,wantwhere);
 
 
 	//然后是后面的记录
@@ -408,35 +408,35 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 	{
 		//每次进来直接减2
 		temp-=2;
-		//say("oh\n");
+		//diary("oh\n");
 
 		//这个节点结束了（1）
 		WORD offset=BSWAP_16(*(WORD*)(catalogbuffer+temp));
-		//say("oh 1:offset=%x\n",offset);
+		//diary("oh 1:offset=%x\n",offset);
 		if(offset>=temp)break;
 
 		//出毛病了，到指针最后一个都没找着（2）
 		int keylen=BSWAP_16(*(WORD*)(catalogbuffer+offset));
-		//say("oh 2:keylen=%x\n",keylen);
+		//diary("oh 2:keylen=%x\n",keylen);
 		if(keylen==0)return;
 
 		//比较fathercnid，要是不一样就跳过（3）
 		DWORD key=BSWAP_32(*(DWORD*)(catalogbuffer+offset+2));
-		//say("oh 3:key=%x\n",key);
+		//diary("oh 3:key=%x\n",key);
 		if(key!=fathercnid)continue;
 
 		//要是这个record不是文件，那就再跳过（4）
 		BYTE filetype=*(BYTE*)(catalogbuffer+offset+2+keylen+1);
-		//say("oh 4:type=:%x\n",filetype);
+		//diary("oh 4:type=:%x\n",filetype);
 		if(filetype!=2)continue;
 
 		//再看看文件cnid对不对，不对还跳过（5）
 		DWORD thiscnid=BSWAP_32(*(DWORD*)(catalogbuffer+offset+2+keylen+8));
-		//say("oh 5:self:%x\n",thiscnid);
+		//diary("oh 5:self:%x\n",thiscnid);
 		if(thiscnid!=wantcnid)continue;
 
 		//穿越重重阻碍，现在可以从datafork里面，找扇区号，和扇区数了
-		say("oh i am here!\n");
+		diary("oh i am here!\n");
 		QWORD forkaddr=catalogbuffer+offset+2+keylen+0x58+0x10;
 		QWORD logicwhere=0;
 		for(i=0;i<8;i++)
@@ -468,10 +468,10 @@ static void hfs_load(QWORD id,QWORD wantwhere)
 	QWORD foundnode=searchbtreeforcnid(rootnode,fathercnid);
 	if(foundnode <= 0)
 	{
-		say("not found\n");
+		diary("not found\n");
 		return;
 	}
-	say("found:%llx@node:%llx\n",id,foundnode);
+	diary("found:%llx@node:%llx\n",id,foundnode);
 
 
 	//3.从他爹开始，record，的data部分，的fork信息里面，找到东西
@@ -488,10 +488,10 @@ static void hfs_load(QWORD id,QWORD wantwhere)
 void explainhfshead(QWORD in,QWORD out)
 {
 	//printmemory(datahome+0x400,0x200);
-	if( *(WORD*)(datahome+0x400) == 0x2b48 )say("hfs+\n");
-	else if( *(WORD*)(datahome+0x400) == 0x5848 )say("hfsx\n");
+	if( *(WORD*)(datahome+0x400) == 0x2b48 )diary("hfs+\n");
+	else if( *(WORD*)(datahome+0x400) == 0x5848 )diary("hfsx\n");
 	blocksize=BSWAP_32( *(DWORD*)(datahome+0x428) )/0x200;
-	say("blocksize:%x\n",blocksize);
+	diary("blocksize:%x\n",blocksize);
 
 	//111111111111111111111
 	QWORD size=BSWAP_64(*(QWORD*)(datahome+0x470) );
@@ -502,12 +502,12 @@ void explainhfshead(QWORD in,QWORD out)
 	*(QWORD*)(fshome)=0x470;
 	*(QWORD*)(fshome+8)=0x4bf;
 	*(QWORD*)(fshome+0x10)=sector;
-	say("allocation\n");
-	say("    size:%llx\n",size);
-	say("    clumpsize:%llx\n",clumpsize);
-	say("    totalblocks:%llx\n",totalblock);
-	say("    sector:%llx\n",sector);
-	say("    count:%llx\n",count);
+	diary("allocation\n");
+	diary("    size:%llx\n",size);
+	diary("    clumpsize:%llx\n",clumpsize);
+	diary("    totalblocks:%llx\n",totalblock);
+	diary("    sector:%llx\n",sector);
+	diary("    count:%llx\n",count);
 
 	//22222222222222222222
 	size=BSWAP_64(*(QWORD*)(datahome+0x4c0) );
@@ -518,12 +518,12 @@ void explainhfshead(QWORD in,QWORD out)
 	*(QWORD*)(fshome+0x40)=0x4c0;
 	*(QWORD*)(fshome+0x48)=0x50f;
 	*(QWORD*)(fshome+0x50)=sector;
-	say("extents overflow\n");
-	say("    size:%llx\n",size);
-	say("    clumpsize:%llx\n",clumpsize);
-	say("    totalblocks:%llx\n",totalblock);
-	say("    sector:%llx\n",sector);
-	say("    count:%llx\n",count);
+	diary("extents overflow\n");
+	diary("    size:%llx\n",size);
+	diary("    clumpsize:%llx\n",clumpsize);
+	diary("    totalblocks:%llx\n",totalblock);
+	diary("    sector:%llx\n",sector);
+	diary("    count:%llx\n",count);
 
 	//3333333333333333333333
 	size=BSWAP_64(*(QWORD*)(datahome+0x510) );
@@ -534,12 +534,12 @@ void explainhfshead(QWORD in,QWORD out)
 	*(QWORD*)(fshome+0x80)=0x510;
 	*(QWORD*)(fshome+0x88)=0x55f;
 	*(QWORD*)(fshome+0x90)=sector;
-	say("catalog\n");
-	say("    size:%llx\n",size);
-	say("    clumpsize:%llx\n",clumpsize);
-	say("    totalblocks:%llx\n",totalblock);
-	say("    sector:%llx\n",sector);
-	say("    count:%llx\n",count);
+	diary("catalog\n");
+	diary("    size:%llx\n",size);
+	diary("    clumpsize:%llx\n",clumpsize);
+	diary("    totalblocks:%llx\n",totalblock);
+	diary("    sector:%llx\n",sector);
+	diary("    count:%llx\n",count);
 	catalogsector=sector;
 
 	//444444444444444444444
@@ -551,12 +551,12 @@ void explainhfshead(QWORD in,QWORD out)
 	*(QWORD*)(fshome+0xc0)=0x560;
 	*(QWORD*)(fshome+0xc8)=0x5af;
 	*(QWORD*)(fshome+0xd0)=sector;
-	say("attribute\n");
-	say("    size:%llx\n",size);
-	say("    clumpsize:%llx\n",clumpsize);
-	say("    totalblocks:%llx\n",totalblock);
-	say("    sector:%llx\n",sector);
-	say("    count:%llx\n",count);
+	diary("attribute\n");
+	diary("    size:%llx\n",size);
+	diary("    clumpsize:%llx\n",clumpsize);
+	diary("    totalblocks:%llx\n",totalblock);
+	diary("    sector:%llx\n",sector);
+	diary("    count:%llx\n",count);
 
 	//555555555555
 }
@@ -568,21 +568,21 @@ void explaincatalog(QWORD in,QWORD fshome)
 	*(QWORD*)(fshome+0x108)=0x21;
 	*(QWORD*)(fshome+0x110)=nodesize;
 	nodesize=nodesize/0x200;
-	say("nodesize:%x\n",nodesize);
+	diary("nodesize:%x\n",nodesize);
 
 	//rootnode
 	rootnode=BSWAP_32(*(DWORD*)(datahome+0x10) );
 	*(QWORD*)(fshome+0x140)=0x10;
 	*(QWORD*)(fshome+0x148)=0x13;
 	*(QWORD*)(fshome+0x150)=rootnode;
-	say("rootnode:%x\n",rootnode);
+	diary("rootnode:%x\n",rootnode);
 
 	//firstleafnode
 	firstleafnode=BSWAP_32(*(DWORD*)(datahome+0x18) );
 	*(QWORD*)(fshome+0x180)=0x18;
 	*(QWORD*)(fshome+0x188)=0x1b;
 	*(QWORD*)(fshome+0x190)=firstleafnode;
-	say("firstleafnode:%x\n",firstleafnode);
+	diary("firstleafnode:%x\n",firstleafnode);
 }
 int mounthfs(QWORD addr,QWORD which)
 {

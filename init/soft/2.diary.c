@@ -1,20 +1,16 @@
-﻿#define BYTE unsigned char
+﻿#include<stdio.h>
+#include<stdlib.h>
+
+#define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
-#include<stdio.h>
-#include<stdlib.h>
-
-
-
-
 static unsigned char* logbuf;
 
 
 
 
-void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
+void diary(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
 	printf(rcx,rdx,r8,r9);
 
@@ -61,7 +57,12 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 
 
-void initlog(unsigned long long in)
+void initlog(unsigned long long addr)
 {
-	logbuf=(void*)in;
+	//freopen("haha.log","rw",stdout);
+	logbuf=(void*)addr;
+}
+void killlog()
+{
+	//fclose(stdout);
 }

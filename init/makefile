@@ -1,25 +1,37 @@
-﻿all:
-	echo "what?"
+﻿what:
+	@echo "make what?"
 .PHONY:linux
 linux:
-	gcc -c -fPIC -O2 linux/world.c
-	gcc -c -fPIC -O2 linux/disk.c
-	gcc -c -fPIC -O2 linux/arg.c
-	gcc -c -fPIC -O2 linux/journal.c
-	gcc -c -fPIC -O2 linux/cli/cli.c
+	gcc -c -fPIC -O2 soft/world.c
+	gcc -c -fPIC -O2 soft/0.event.c
+	gcc -c -fPIC -O2 soft/1.say.c
+	gcc -c -fPIC -O2 soft/2.diary.c
+	gcc -c -fPIC -O2 soft/3.operator.c
+	gcc -c -fPIC -O2 soft/linux/file.c
+	gcc -c -fPIC -O2 soft/linux/arg.c
+	gcc -c -fPIC -O2 ui/linux/cli.c
 	rm -f init.a
-	ar crs init.a world.o disk.o arg.o journal.o cli.o
+	ar crs init.a \
+	world.o 0.event.o 1.say.o 2.diary.o 3.operator.o \
+	file.o arg.o \
+	cli.o
 .PHONY:win
 win:
-	windres --input-format=rc -O coff -i win/base/uac.rc -o uac.res
-	gcc -c -O2 win/base/commandline.c
-	gcc -c -O2 win/base/disk.c
-	gcc -c -O2 win/base/mem2file.c
-	gcc -c -O2 win/base/process.c
-	gcc -c -O2 win/cli/init.c
-	gcc -c -O2 win/cli/log.c
+	gcc -c -O2 soft/world.c
+	gcc -c -O2 soft/0.event.c
+	gcc -c -O2 soft/1.say.c
+	gcc -c -O2 soft/2.diary.c
+	gcc -c -O2 soft/3.operator.c
+	windres --input-format=rc -O coff -i soft/win/uac.rc -o uac.res
+	gcc -c -O2 soft/win/file.c
+	gcc -c -O2 soft/win/process.c
+	gcc -c -O2 soft/win/arg.c
+	gcc -c -O2 ui/win/cli.c
 	rm -f init.a
-	ar crs init.a commandline.o disk.o mem2file.o process.o init.o log.o
+	ar crs init.a \
+	world.o 0.event.o 1.say.o 2.diary.o 3.operator.o \
+	file.o process.o arg.o \
+	cli.o
 .PHONY:linux+fb
 linux+fb:
 	gcc -c -fPIC -O2 memory/memory.c
@@ -58,16 +70,22 @@ mac+sdl:
 	ar crs init.a memory.o journal.o sdl.o beforemain.o
 .PHONY:win+api
 win+api:
-	windres --input-format=rc -O coff -i win/base/uac.rc -o uac.res
-	gcc -c -O2 win/base/commandline.c
-	gcc -c -O2 win/base/mem2file.c
-	gcc -c -O2 win/base/disk.c
-	gcc -c -O2 win/base/process.c
-	gcc -c -O2 win/gui/init.c
-	gcc -c -O2 win/gui/journal.c
-	gcc -c -O2 win/gui/api.c
+	gcc -c -O2 soft/world.c
+	gcc -c -O2 soft/0.event.c
+	gcc -c -O2 soft/1.say.c
+	gcc -c -O2 soft/2.diary.c
+	gcc -c -O2 soft/3.operator.c
+	windres --input-format=rc -O coff -i soft/win/uac.rc -o uac.res
+	gcc -c -O2 soft/win/file.c
+	gcc -c -O2 soft/win/process.c
+	gcc -c -O2 soft/win/arg.c
+	gcc -c -O2 ui/screen.c
+	gcc -c -O2 ui/win/winapi.c
 	rm -f init.a
-	ar crs init.a commandline.o mem2file.o disk.o process.o init.o journal.o api.o
+	ar crs init.a \
+	world.o 0.event.o 1.say.o 2.diary.o 3.operator.o \
+	file.o process.o arg.o \
+	screen.o winapi.o
 .PHONY:win+sdl
 win+sdl:
 	gcc -c -O2 memory/memory.c

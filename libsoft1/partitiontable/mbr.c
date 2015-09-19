@@ -10,7 +10,7 @@
 
 
 //用了别人的
-void say(char* fmt,...);
+void diary(char* fmt,...);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD start,QWORD count);
 
@@ -33,22 +33,22 @@ static void mbrrecord(QWORD from,QWORD* to)
 	//parttype
 	if( type==0x4 | type==0x6 | type==0xb )
 	{
-		//say("fat\n");
+		//diary("fat\n");
 		addr[2]=0x746166;
 	}
 	else if( type==0x7 )
 	{
-		//say("ntfs\n");
+		//diary("ntfs\n");
 		addr[2]=0x7366746e;
 	}
 	else if( type==0x83 )
 	{
-		//say("ext\n");
+		//diary("ext\n");
 		addr[2]=0x747865;
 	}
 	else
 	{
-		//say("unknown:%x\n",type);
+		//diary("unknown:%x\n",type);
 		addr[2]=type;
 	}
 
@@ -66,7 +66,7 @@ static void mbrrecord(QWORD from,QWORD* to)
 //[+0xc,+0xf]:大小
 QWORD explainmbr(QWORD buffer,QWORD to)
 {
-	say("mbr disk{\n",0);
+	diary("mbr disk{\n",0);
 
 	//首先是主分区，最多4个
 	QWORD toaddr=to;
@@ -85,7 +85,7 @@ QWORD explainmbr(QWORD buffer,QWORD to)
 
 		if( type==5 | type==0xf )
 		{
-			//say("sector:%x\n",*(DWORD*)(to+offset));
+			//diary("sector:%x\n",*(DWORD*)(to+offset));
 			readmemory(buffer,*(DWORD*)(to+offset),0,1);
 			//printmemory(buffer+0x1be,0x40);
 
@@ -94,7 +94,7 @@ QWORD explainmbr(QWORD buffer,QWORD to)
 			if(remember!=toaddr)
 			{
 				*(DWORD*)(remember+0)+=start;
-				//say("1st:%x\n",*(DWORD*)remember);
+				//diary("1st:%x\n",*(DWORD*)remember);
 			}
 
 			remember=toaddr;
@@ -102,7 +102,7 @@ QWORD explainmbr(QWORD buffer,QWORD to)
 			if(remember!=toaddr)
 			{
 				*(DWORD*)(remember+0)+=start;
-				//say("2st:%x\n",*(DWORD*)remember);
+				//diary("2st:%x\n",*(DWORD*)remember);
 			}
 		}
 
@@ -118,9 +118,9 @@ QWORD explainmbr(QWORD buffer,QWORD to)
 		QWORD type=*(QWORD*)addr;
 		if(type==0)break;
 
-		say("%d:%s\n",offset,(char*)addr);
+		diary("%d:%s\n",offset,(char*)addr);
 
 		offset++;
 	}
-	say("}\n");
+	diary("}\n");
 }

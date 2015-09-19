@@ -14,7 +14,7 @@ char* diskinfo;
 
 
 
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -74,9 +74,9 @@ QWORD myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
 void initprocess(QWORD addr)
 {
 	diskinfo=(char*)addr;
-	say("inited process\n");
+	diary("inited process\n");
 }
 void killprocess()
 {
-	say("killed process\n");
+	diary("killed process\n");
 }

@@ -22,13 +22,15 @@ void printmemory(QWORD addr,int count);
 void cleanmemory(QWORD addr,int count);
 
 //in init/
-QWORD whereisworld();
-QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void listall();
-void choosetarget(QWORD in);
-
 void say(char* str,...);
+void diary(char* str,...);
+
+void choose(QWORD in);
+QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+QWORD writememory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+
 void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
+void file2mem(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
 
 
@@ -66,7 +68,7 @@ void hello()		//你究竟是个什么？
 	if(ret<=0)
 	{
 		//读不出来，可能是内存？
-		say("it's memory?\n");
+		diary("it's memory?\n");
 	}
 	else if( *(WORD*)(datahome+0x1fe) == 0xaa55 )
 	{
@@ -88,7 +90,7 @@ void hello()		//你究竟是个什么？
 	else
 	{
 		//可能是zip,网络包,或者其他乱七八糟的结构
-		say("don't know\n");
+		diary("don't know\n");
 	}
 }
 
@@ -100,7 +102,7 @@ int searchthis(char* name,QWORD* addr)
 	QWORD temp=dirhome;
 	for(;temp<dirhome+0x1000;temp+=0x40)
 	{
-		//say("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
+		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
 		if( compare( name , (char*)temp ) == 0 )
 		{
 			*addr=temp;
@@ -109,7 +111,7 @@ int searchthis(char* name,QWORD* addr)
 		}
 	}
 
-	say("file not found\n");
+	diary("file not found\n");
 	return -1;
 }
 int mount(QWORD which)
@@ -167,13 +169,13 @@ void command(char* buffer)
 //----------------------2.实际的活都找专人来干-----------------------------
 	if(compare( arg0 , "help" ) == 0)
 	{
-		say("pick ?                  (choose a disk)\n");
-		say("mount ?                 (choose a partition)\n");
-		say("explain ?               (explain inode/cluster/cnid/mft)\n");
-		say("cd dirname              (change directory)\n");
-		say("load filename           (load this file)\n");
+		diary("pick ?                  (choose a disk)\n");
+		diary("mount ?                 (choose a partition)\n");
+		diary("explain ?               (explain inode/cluster/cnid/mft)\n");
+		diary("cd dirname              (change directory)\n");
+		diary("load filename           (load this file)\n");
 	}
-	else if(compare( arg0 , "pick" ) == 0)
+	else if(compare( arg0 , "choose" ) == 0)
 	{
 		cleanmemory(diskhome,0x400000);
 		if( (QWORD)arg1 == 0 )
@@ -189,25 +191,25 @@ void command(char* buffer)
 				if(i>100*0x100)break;
 
 				//再打印
-				say("%s\n",diskinfo+i);
+				diary("%s\n",diskinfo+i);
 				i+=0x100;
 			}
 		}
 		else
 		{
 			//检查这是个什么玩意
-			choosetarget((QWORD)arg1);
+			choose((QWORD)arg1);
 			hello();
 		}
 	}
-	else if(compare( arg0 , "show" ) == 0)
+	else if(compare( arg0 , "read" ) == 0)
 	{
 		QWORD value;
 		hexstring2data(arg1,&value);
 		
 		readmemory(datahome,value,0,1);
 		printmemory(datahome,0x200);
-		say("above is:%x,%x\n",value,value+7);
+		diary("above is:%x,%x\n",value,value+7);
 	}
 	else if(compare( arg0 , "mount" ) == 0)
 	{
@@ -231,7 +233,7 @@ void command(char* buffer)
 		QWORD value;
 		hexstring2data(arg1,&value);
 
-		say("explainer@%llx\n",explain);
+		diary("explainer@%llx\n",explain);
 		explain(value);
 	}
 	else if(compare( arg0 , "cd" ) == 0)
@@ -242,6 +244,18 @@ void command(char* buffer)
 		//change directory
 		cd( *(QWORD*)(addr+0x10) );
 	}
+	else if(compare( arg0 , "ls" ) == 0)
+	{
+		diary("name                special id          type                size\n");
+		QWORD addr=dirhome;
+		for(;addr<dirhome+0x1000;addr+=0x40)
+		{
+			if(*(QWORD*)addr==0)break;
+			diary("%-16.16s    %-16llx    %-16llx    %-16llx\n",
+			(char*)addr,*(QWORD*)(addr+0x10),*(QWORD*)(addr+0x20),*(QWORD*)(addr+0x30));
+		}
+		diary("\n");
+	}
 	else if(compare( arg0 , "load" ) == 0)
 	{
 		//寻找这个文件名，得到id，type，size
@@ -250,7 +264,7 @@ void command(char* buffer)
 		QWORD id=*(QWORD*)(addr+0x10);
 		QWORD type=*(QWORD*)(addr+0x20);
 		QWORD size=*(QWORD*)(addr+0x30);
-		if(size>0x100000)say("warning:large file\n");
+		if(size>0x100000)diary("warning:large file\n");
 
 
 		QWORD temp=0;
@@ -267,21 +281,9 @@ void command(char* buffer)
 			mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 		}
 	}
-	else if(compare( arg0 , "ls" ) == 0)
-	{
-		say("name                special id          type                size\n");
-		QWORD addr=dirhome;
-		for(;addr<dirhome+0x1000;addr+=0x40)
-		{
-			if(*(QWORD*)addr==0)break;
-			say("%-16.16s    %-16llx    %-16llx    %-16llx\n",
-			(char*)addr,*(QWORD*)(addr+0x10),*(QWORD*)(addr+0x20),*(QWORD*)(addr+0x30));
-		}
-		say("\n");
-	}
 	else
 	{
-		say("%s\n",arg0);
+		diary("%s\n",arg0);
 	}
 }
 
@@ -296,6 +298,5 @@ void initmaster(QWORD world)
 	datahome=world+0x300000;
 
 	diskinfo=world+0x700000;
-
 	hello();
 }

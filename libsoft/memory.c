@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 
 
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -27,29 +27,29 @@ void printmemory(QWORD addr,QWORD size)
 	int i,j;
 
 	//1111111111111111111111
-	say("[----addr----]");
+	diary("[----addr----]");
 	for(i=0;i<=0xf;i++)
 	{
-		say("%2x ",i);
+		diary("%2x ",i);
 	}
-	say("[----anscii----]\n");
+	diary("[----anscii----]\n");
 
 	//2222222222222222222222222
 	for(j=0;j<size/16;j++)
 	{
-		if(j%16 == 0)say("%-14llx",addr+j*16);
-		else say("+%-13x",j*16);
+		if(j%16 == 0)diary("%-14llx",addr+j*16);
+		else diary("+%-13x",j*16);
 
 		for(i=0;i<=0xf;i++)
 		{
-			say("%.2x ",printaddr[16*j+i]);
+			diary("%.2x ",printaddr[16*j+i]);
 		}
 		for(i=0;i<=0xf;i++)
 		{
 			unsigned char ch=printaddr[16*j+i];
 			if( (ch>=0x80)|(ch<=0x20) )ch=0x20;
-			say("%c",ch);
+			diary("%c",ch);
 		}
-		say("\n",printaddr[16*j+15]);
+		diary("\n",printaddr[16*j+15]);
 	}
 }

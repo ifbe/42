@@ -15,7 +15,7 @@
 
 
 
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -119,7 +119,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			}
-			//say("tray:\n");
+			//diary("tray:\n");
 			return 0;
 		}
 		case WM_DROPFILES:
@@ -133,7 +133,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			say("drag:%s\n",dragpath);
+			diary("drag:%s\n",dragpath);
 			my1=0x656c6966706f7264;	//elifpord	//dropfile	//4;
 			my2=(QWORD)dragpath;
 			solved=0;
@@ -158,7 +158,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			}
-			//say("key:%x\n",wparam);
+			//diary("key:%x\n",wparam);
 			return 0;
 		}
 		case WM_CHAR:
@@ -352,7 +352,7 @@ void InitUIPIFilter()
 			proc(WM_DROPFILES,1);
 			proc(0x0049, 1);
 		}
-		else say("can't drag");
+		else diary("can't drag");
     }
 }
 void inittray()
@@ -414,7 +414,7 @@ void initwindow(QWORD addr)
 	//拿dc
 	realdc=GetDC(window);
 
-	say("inited window\n");
+	//diary("inited window\n");
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindow()
@@ -427,5 +427,5 @@ void killwindow()
 
 	//释放点阵
 	//free(mypixel);
-	say("killed window\n");
+	//diary("killed window\n");
 }

@@ -4,17 +4,19 @@
 #define QWORD unsigned long long
 static BYTE buffer[128];//键盘输入专用
 
-void initmaster();
-void waitinput(char* buffer);
 void command(char* buffer);
+void initmaster(QWORD addr);
 int compare(char* first,char* second);
+
+void waitinput(char* buffer);
+QWORD whereisworld();
 
 
 
 
 void main()
 {
-	initmaster();
+	initmaster(whereisworld());
 	while(1)
 	{
 		//1.等输入，再把这段里面所有的0x20变成0

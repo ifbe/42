@@ -51,7 +51,7 @@ void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
 void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -116,7 +116,7 @@ static QWORD checkcacheforinode(QWORD wanted)
 		if(count>0x400)count=0x400;			//这一组里剩余的太多的话，多余的不要
 
 		//read inode table
-		//say("inode:%x@%x\n",this,where);
+		//diary("inode:%x@%x\n",this,where);
 	    readmemory(rdi,where,0,count*inodesize/0x200);	//注意！！！！inodepergroup奇葩时这里出问题
 
 		//读满0x400个inode就走人
@@ -144,8 +144,8 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	WORD temp=(*(WORD*)rsi)&0xf000;
 	if(temp == 0xa000)
 	{
-		say((char*)(rsi+0x28));
-		say("(soft link)\n");
+		diary((char*)(rsi+0x28));
+		diary("(soft link)\n");
 		return -1;
 	}
 
@@ -199,8 +199,8 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	}
 	else		//ext2，3用老的直接间接块的方式
 	{
-	say("old@%x\n",rsi);
-	say("{\n");
+	diary("old@%x\n",rsi);
+	diary("{\n");
 /*
 	rsi+=0x28;
 	for(i=0;i<8;i++)
@@ -208,10 +208,10 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 		if(*(DWORD*)rsi != 0)
 		{
 			QWORD temp;
-			say("    pointer@%x\n",rsi);
+			diary("    pointer@%x\n",rsi);
 
 			temp=block0+(*(DWORD*)rsi)*blocksize;
-			say("sector:%x\n",temp);
+			diary("sector:%x\n",temp);
 
 		        readmemory(rdi,temp,0,blocksize);
 			rdi+=0x200*blocksize;
@@ -242,7 +242,7 @@ static void explaindirectory()
 		if(rsi>=datahome+0x100000)break;
 		if(*(DWORD*)rsi == 0)break;
 		if(*(WORD*)(rsi+4) == 0)break;
-		//say("%x\n",*(WORD*)(rsi+4));
+		//diary("%x\n",*(WORD*)(rsi+4));
 		//printmemory(rsi,0x10);
 
 		//1.名字
@@ -269,7 +269,7 @@ static void explaindirectory()
 
 static int ext_explain(QWORD inode)
 {
-	say("inode %x\n",inode);
+	diary("inode %x\n",inode);
 
 	//函数调用之后,rsi为所请求的inode的内存地址，
 	QWORD rsi=checkcacheforinode(inode);
@@ -308,7 +308,7 @@ void explainexthead(QWORD pbr,QWORD fshome)
 	*(QWORD*)(fshome+8)=0x41b;
 	*(QWORD*)(fshome+0x10)=blocksize;
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
-	say("sectorperblock:%x\n",blocksize);
+	diary("sectorperblock:%x\n",blocksize);
 
 	//每组多少扇区
 	groupsize=*(DWORD*)(pbr+0x420);
@@ -316,21 +316,21 @@ void explainexthead(QWORD pbr,QWORD fshome)
 	*(QWORD*)(fshome+0x48)=0x423;
 	*(QWORD*)(fshome+0x50)=groupsize;
 	groupsize=groupsize*blocksize;
-	say("sectorpergroup:%x\n",groupsize);
+	diary("sectorpergroup:%x\n",groupsize);
 
 	//每组多少个inode
 	inodepergroup=*(DWORD*)(pbr+0x428);
 	*(QWORD*)(fshome+0x80)=0x428;
 	*(QWORD*)(fshome+0x88)=0x42b;
 	*(QWORD*)(fshome+0x90)=inodepergroup;
-	say("inodepergroup:%x\n",inodepergroup);
+	diary("inodepergroup:%x\n",inodepergroup);
 
 	//每inode多少字节
 	inodesize=*(WORD*)(pbr+0x458);
 	*(QWORD*)(fshome+0xc0)=0x458;
 	*(QWORD*)(fshome+0xc8)=0x459;
 	*(QWORD*)(fshome+0xd0)=inodesize;
-	say("byteperinode:%x\n",inodesize);
+	diary("byteperinode:%x\n",inodesize);
 }
 int mountext(QWORD addr,QWORD which)
 {

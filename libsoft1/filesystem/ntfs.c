@@ -27,7 +27,7 @@ void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
 void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -50,7 +50,7 @@ void explainrun(QWORD runaddr,long long* offset,long long* count)
 	{
 		temp=(temp<<8)+(QWORD)run[i];
 	}
-	//say("runcount:%x\n",temp);
+	//diary("runcount:%x\n",temp);
 	*count=temp*clustersize;
 
 	//簇号
@@ -86,16 +86,16 @@ void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
 	while(1)
 	{
 		BYTE data= *(BYTE*)runaddr;
-		//say("%x\n",data);
+		//diary("%x\n",data);
 		if(data == 0) break;
 
 		//这个以及后面再也没有想要的了
-		//say("%x,%x\n",want+0x100000,logicpos);
+		//diary("%x,%x\n",want+0x100000,logicpos);
 		if(want+0x100000<=logicpos)break;
 
 		//拿到这一大块的扇区号和扇区数量
 		explainrun(runaddr,&offset,&count);
-		say("run@:%x,sector:%x,count:%x\n",runaddr,ntfssector+offset,count);
+		diary("run@:%x,sector:%x,count:%x\n",runaddr,ntfssector+offset,count);
 
 		//要是这个不要，看看下一个怎么样
 		if(logicpos+count*0x200>want)
@@ -117,7 +117,7 @@ static BYTE mft0[1024];
 static QWORD firstmftincache;
 QWORD checkcacheformft(QWORD mftnum)
 {
-	//say("checkcacheformft:%x\n",mftnum);
+	//diary("checkcacheformft:%x\n",mftnum);
 	//内存里已经是这几个的话就直接返回
 	//0xffffff00:0x100个,0x40000
 	QWORD thistime=mftnum&0xffffffffffffff00;
@@ -127,7 +127,7 @@ QWORD checkcacheformft(QWORD mftnum)
 	}
 
 	//开始找那一块地址并且读取
-	say("reloading mft:[%x,%x]\n",thistime,thistime+0xff);
+	diary("reloading mft:[%x,%x]\n",thistime,thistime+0xff);
 	QWORD offset=*(WORD*)(mft0+0x14);
 	while(1)
 	{
@@ -137,7 +137,7 @@ QWORD checkcacheformft(QWORD mftnum)
 		if(property == 0xffffffff)
 		{
 			//结束了，mft0里面没有80属性
-			say("can't find bakcuped mft\n",0);
+			diary("can't find bakcuped mft\n",0);
 			break;
 		}
 		if(property==0x80)
@@ -163,7 +163,7 @@ void explain80(QWORD addr,QWORD want)	//file data
 {
 	if( *(BYTE*)(addr+8) == 0 )
 	{
-		say("resident80@%x\n",addr);
+		diary("resident80@%x\n",addr);
 		DWORD length = *(DWORD*)(addr+0x10);
 		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
 		BYTE* rdi=(BYTE*)datahome;
@@ -174,7 +174,7 @@ void explain80(QWORD addr,QWORD want)	//file data
 	}
 	else
 	{
-		say("non resident80@%x\n",addr);
+		diary("non resident80@%x\n",addr);
 		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want);
 	}
 }
@@ -213,7 +213,7 @@ QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 			if(property == 0xffffffff)
 			{
 				//结束了，mft0里面没有80属性
-				say("error mft\n",0);
+				diary("error mft\n",0);
 				break;
 			}
 			if(property==0x30)
@@ -241,7 +241,7 @@ QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 
 void explain90(QWORD addr)	//index root
 {
-	say("90@%x\n",addr);
+	diary("90@%x\n",addr);
 
 	addr += *(WORD*)(addr+0x14);	//现在addr=属性体地址=索引根地址
 
@@ -273,7 +273,7 @@ void explaina0(QWORD addr)	//index allocation
 	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
 
 	//读INDX进来
-	say("a0@%x{\n",addr);
+	diary("a0@%x{\n",addr);
 	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0);
 	//printmemory(datahome,0x1000);
 
@@ -282,7 +282,7 @@ void explaina0(QWORD addr)	//index allocation
 	QWORD rdi=dirhome;
 	while( *(DWORD*)p ==0x58444e49 )	//INDX
 	{
-		say("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
+		diary("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
 		QWORD start=p + 0x18 + ( *(DWORD*)(p+0x18) );
 		QWORD count=p + ( *(DWORD*)(p+0x1c) )-start;
 
@@ -290,7 +290,7 @@ void explaina0(QWORD addr)	//index allocation
 		p+=0x1000;
 	}
 
-	say("}\n",0);
+	diary("}\n",0);
 }
 
 
@@ -384,7 +384,7 @@ void explainmft(QWORD mftnum,QWORD want)
     //不对就滚
 	if( *(DWORD*)mft !=0x454c4946 )
 	{
-		say("[mft]wrong:%x\n",mftnum);
+		diary("[mft]wrong:%x\n",mftnum);
 		return;
 	}
 
@@ -400,31 +400,31 @@ void explainmft(QWORD mftnum,QWORD want)
 		switch(property)
 		{
 			case 0x10:{	//standard information
-				say("10@%x\n",offset);
+				diary("10@%x\n",offset);
 				break;
 			}
 			case 0x20:{	//attribute list
-				say("20@%x\n",offset);
+				diary("20@%x\n",offset);
 				break;
 			}
 			case 0x30:{	//unicode name
-				say("30@%x\n",offset);
+				diary("30@%x\n",offset);
 				break;
 			}
 			case 0x40:{	//object id
-				say("40@%x\n",offset);
+				diary("40@%x\n",offset);
 				break;
 			}
 			case 0x50:{	//security descriptor
-				say("50@%x\n",offset);
+				diary("50@%x\n",offset);
 				break;
 			}
 			case 0x60:{	//volume name
-				say("60@%x\n",offset);
+				diary("60@%x\n",offset);
 				break;
 			}
 			case 0x70:{	//volumn information
-				say("70@%x\n",offset);
+				diary("70@%x\n",offset);
 				break;
 			}
 			case 0x80:{	//data
@@ -441,43 +441,43 @@ void explainmft(QWORD mftnum,QWORD want)
 				break;
 			}
 			case 0xb0:{	//bitmap
-				say("b0@%x\n",offset);
+				diary("b0@%x\n",offset);
 				break;
 			}
 			case 0xc0:{	//reparse point
-				say("c0@%x\n",offset);
+				diary("c0@%x\n",offset);
 				break;
 			}
 			case 0xd0:{	//ea information
-				say("d0@%x\n",offset);
+				diary("d0@%x\n",offset);
 				break;
 			}
 			case 0xe0:{	//ea
-				say("e0@%x\n",offset);
+				diary("e0@%x\n",offset);
 				break;
 			}
 			case 0xf0:{	//property set
-				say("f0@%x\n",offset);
+				diary("f0@%x\n",offset);
 				break;
 			}
 			case 0x100:{	//logged utility stream
-				say("100@%x\n",offset);
+				diary("100@%x\n",offset);
 				break;
 			}
 			default:{
-				say("unknown@%x\n",offset);
+				diary("unknown@%x\n",offset);
 				break;
 			}
 		}
 		offset += *(DWORD*)(offset+4);
 	}
-	say("\n");
+	diary("\n");
 }
 
 
 static void ntfs_explain(QWORD mftnum)
 {
-	say("mft %x\n",mftnum);
+	diary("mft %x\n",mftnum);
 	QWORD mft=checkcacheformft(mftnum);
 	printmemory(mft,0x400);
 }
@@ -511,20 +511,20 @@ void explainntfshead(QWORD in,QWORD fshome)
 	*(QWORD*)(fshome)=0xd;
 	*(QWORD*)(fshome+8)=0xd;
 	*(QWORD*)(fshome+0x10)=clustersize;
-	say("clustersize:%x\n",clustersize);
+	diary("clustersize:%x\n",clustersize);
 
 	mftcluster= *(QWORD*)(in+0x30);
 	*(QWORD*)(fshome+0x40)=0x30;
 	*(QWORD*)(fshome+0x48)=0x37;
 	*(QWORD*)(fshome+0x50)=mftcluster;
-	say("mftcluster:%x\n",mftcluster);
+	diary("mftcluster:%x\n",mftcluster);
 
 	QWORD indexsize=(QWORD)( *(BYTE*)(in+0x44) );
 	*(QWORD*)(fshome+0x80)=0x44;
 	*(QWORD*)(fshome+0x88)=0x44;
 	*(QWORD*)(fshome+0x90)=indexsize;
 	indexsize=clustersize * indexsize;
-	say("indexsize:%x\n",indexsize);
+	diary("indexsize:%x\n",indexsize);
 }
 int mountntfs(QWORD addr,QWORD which)
 {
@@ -541,7 +541,7 @@ int mountntfs(QWORD addr,QWORD which)
 	this[4]=(QWORD)ntfs_explain;
 	this[5]=(QWORD)ntfs_cd;
 	this[6]=(QWORD)ntfs_load;
-	say("ntfs sector:%x\n",ntfssector);
+	diary("ntfs sector:%x\n",ntfssector);
 
 	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
 	readmemory(datahome,ntfssector,0,1);

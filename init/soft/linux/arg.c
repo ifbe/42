@@ -17,18 +17,18 @@
 
 void explainarg()
 {
-        //cmdline
+	//cmdline
 	char buffer[100];
 	int temp;
 	for(temp=0;temp<100;temp++)buffer[temp]=0;
 	temp=open("/proc/self/cmdline",O_RDONLY);
-	if(temp==-1)say("error reading cmd line\n");
+	if(temp==-1)diary("error reading cmd line\n");
 	else
 	{
 		int i=read(temp,buffer,100);
 		close(temp);
 		//printmemory(buffer,100);
-		say("cmdline:%s\n",buffer);
+		diary("cmdline:%s\n",buffer);
 	}
 
 	//
@@ -48,8 +48,8 @@ void explainarg()
 			}
 		}
 	}
-	//say("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
+	//diary("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
-	if(signal==2)choosetarget((QWORD)buffer+temp);
-	else choosetarget("/dev/sda");
+	if(signal==2)choose((QWORD)buffer+temp);
+	else choose("/dev/sda");
 }

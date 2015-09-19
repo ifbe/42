@@ -14,7 +14,7 @@ void background2();
 void point(int x,int y,DWORD color);
 void hexadecimal(int x,int y,QWORD data);
 void string(int x,int y,char* str);
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -142,7 +142,7 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 		{
 			endx=1023;
 		}
-		say("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
+		diary("(%x,%x)->(%x,%x)\n",startx,starty,endx,endy);
 
 		//按照得到的坐标打印就行
 		for(y=starty;y<endy;y++)			//左右边界线
@@ -184,7 +184,7 @@ void printbitmap(QWORD start,QWORD end,QWORD typestr)
 	}
 
 	//字符串
-	//say("start:%x,end:%x,average:%x\n",start,end,(start+end)/2);
+	//diary("start:%x,end:%x,average:%x\n",start,end,(start+end)/2);
 	x=((start+end)/2)%1024/8;
 	y=(start+end)/2/1024;
 	string(x,y,(char*)typestr);
@@ -202,11 +202,11 @@ void printpartition1()
 		if(temp == 0)break;
 		if(temp>maxsector)maxsector=temp;
 	}
-	say("%x\n",maxsector);
+	diary("%x\n",maxsector);
 	QWORD displaymax=1;
 	for(x=0;x<64;x++)
 	{
-		//say("%x\n",maxsector);
+		//diary("%x\n",maxsector);
 		if(maxsector <= 0)break;
 		else
 		{
@@ -214,7 +214,7 @@ void printpartition1()
 			displaymax<<=1;
 		}
 	}
-	say("%x\n",displaymax);
+	diary("%x\n",displaymax);
 
 	//3.标记头尾
 	p=(char*)buffer0;
@@ -232,7 +232,7 @@ void printpartition1()
 		QWORD end=((double)(endsec*1024*36)/(double)displaymax);
 		//hexadecimal(end/8,21,endsec);
 
-		say("[%llx,%llx],%s,[%x,%x]\n",startsec,endsec,typestr,start,end);
+		diary("[%llx,%llx],%s,[%x,%x]\n",startsec,endsec,typestr,start,end);
 
 		//打印硬盘的大致图像
 		printbitmap(start,end,typestr);

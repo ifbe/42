@@ -14,11 +14,11 @@ static QWORD choose=0;
 
 void f1init();
 void menubg();
+void hidemenu();
+void die();
+
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
-void hidemenu();
-void choosetarget(QWORD in);
-void die();
 QWORD whereisworld();
 
 
@@ -93,24 +93,6 @@ void menumessage(QWORD type,QWORD key)
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
-	/*
-	if(x>256)
-	{
-		if(x<768)
-		{
-			if(y>128)		//[80,128),[144,192),[208,256),[272,320)......
-			{
-				if(y<512)
-				{
-					choose=(y-128)/16;
-					choosetarget(choose);
-					f1init();
-
-					return;
-				}
-			}
-		}
-	}*/
 	if(y>512+32)
 	{
 		if(y<512+64)

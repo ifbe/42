@@ -28,9 +28,9 @@ void f4message(QWORD type,QWORD key);
 void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
 void writescreen();
-void waitevent(QWORD* first,QWORD* second);
-void choosetarget(QWORD in);
 
+void choose(QWORD in);
+void waitevent(QWORD* first,QWORD* second);
 QWORD whereisworld();
 
 
@@ -120,8 +120,8 @@ void processmessage(QWORD type,QWORD key)
 {
 	if(type==0x656c6966706f7264)		//dropfile
 	{
-		//say("debuging::::::::%s\n",(char*)key);
-		choosetarget(key);
+		//diary("debuging::::::::%s\n",(char*)key);
+		choose(key);
 		return;
 	}
 	else if(type==0x64626b)		//kbd
@@ -191,7 +191,7 @@ void main()
 		QWORD key=0;
 		waitevent(&type,&key);
 		if(type==0)return;
-		//say("type=%x,key=%x\n",type,key);
+		//diary("type=%x,key=%x\n",type,key);
 
 		//3.处理事件，如果要求自杀就让它死
 		processmessage(type,key);

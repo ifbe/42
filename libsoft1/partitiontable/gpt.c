@@ -11,14 +11,14 @@
 //[+0x38,+0x7f]:名字
 
 //用了别人的
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
 
 QWORD explaingpt(QWORD from,QWORD to)
 {
-	say("gpt disk\n");
+	diary("gpt disk\n");
 	from+=0x400;
 
 	int src=0,dst=0;
@@ -31,8 +31,8 @@ QWORD explaingpt(QWORD from,QWORD to)
 		QWORD secondhalf=*(QWORD*)(from+0x80*src+8);
 		QWORD startlba=*(QWORD*)(from+0x80*src+0x20);
 		QWORD endlba=*(QWORD*)(from+0x80*src+0x28);
-		say("%2d    ",dst);
-		say("[%8x,%8x]    ",startlba,endlba);
+		diary("%2d    ",dst);
+		diary("[%8x,%8x]    ",startlba,endlba);
 
 
 
@@ -45,24 +45,24 @@ QWORD explaingpt(QWORD from,QWORD to)
 		if((firsthalf==0x477284830fc63daf)&&(secondhalf==0xe47d47d8693d798e))
 		{
 			*(QWORD*)(to+0x40*dst+0x10)=0x747865;		//ext
-			say("ext\n");
+			diary("ext\n");
 		}
 		else if((firsthalf==0x11d2f81fc12a7328)&&(secondhalf==0x3bc93ec9a0004bba))
 		{
 			*(QWORD*)(to+0x40*dst+0x10)=0x746166;		//fat
-			say("fat\n");
+			diary("fat\n");
 		}
 		else if((firsthalf==0x11aa000048465300)&&(secondhalf==0xacec4365300011aa))
 		{
 			*(QWORD*)(to+0x40*dst+0x10)=0x736668;		//hfs
-			say("hfs\n");
+			diary("hfs\n");
 		}
 		else if((firsthalf==0x4433b9e5ebd0a0a2)&&(secondhalf==0xc79926b7b668c087))
 		{
 			*(QWORD*)(to+0x40*dst+0x10)=0x7366746e;		//ntfs
-			say("ntfs\n");
+			diary("ntfs\n");
 		}
-		else say("unknown\n");
+		else diary("unknown\n");
 
 		//分区名
 

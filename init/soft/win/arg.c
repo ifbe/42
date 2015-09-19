@@ -4,8 +4,8 @@
 
 
 
-void say(char* fmt,...);
-void choosetarget(QWORD);
+void diary(char* fmt,...);
+void choose(QWORD);
 
 
 
@@ -14,7 +14,7 @@ void explainarg()
 {
 	//拿到进程的输入arg,决定默认打开谁
 	char* inputarg=GetCommandLine();
-	say("arg:%s\n",inputarg);
+	diary("arg:%s\n",inputarg);
 
 	//
 	int i;
@@ -46,12 +46,12 @@ void explainarg()
 	{
 		//"d:\code\file\a.exe"
 		//比如上面这种，就默认打开扫描到的第一个磁盘
-		choosetarget(0);
+		choose(0);
 	}
 	else
 	{
 		//"d:\code\file\a.exe" d:\code\1.txt
 		//比如上面这种，就默认打开d:\code\1.txt
-		choosetarget( (QWORD)(inputarg+i) );
+		choose( (QWORD)(inputarg+i) );
 	}
 }

@@ -25,7 +25,7 @@
 
 
 
-void say(char* fmt,...);
+void diary(char* fmt,...);
 
 
 
@@ -37,7 +37,24 @@ static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
 
 
 
-void enumeratedisk()
+//mem地址，file名字，文件内偏移，总字节数
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+{
+	return 0;
+}
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
+{
+	return 0;
+}
+
+
+
+
+
+
+
+
+void filelist()
 {
 	//clean
 	int i=0,j=0;
@@ -64,17 +81,13 @@ void enumeratedisk()
 		}
 	}
 }
-
-
-
-
-void choosetarget(char* wantpath)
+void filechoose(char* wantpath)
 {
 	//testopen
 	int tempfd=open(wantpath,O_RDONLY);
 	if(tempfd == -1)
 	{
-		say("can't open:%s\n",wantpath);
+		diary("can't open:%s\n",wantpath);
 		return;
 	}
 	else close(tempfd);
@@ -84,29 +97,30 @@ void choosetarget(char* wantpath)
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(thisfd == -1)
 	{
-		say("can't open:%s\n",wantpath);
+		diary("can't open:%s\n",wantpath);
 	}
 }
-void readmemory(QWORD buf,QWORD sector,QWORD disk,DWORD count)
+void fileread(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	int result;
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
-		say("errno:%d,seek:%llx\n",errno,sector);
+		diary("errno:%d,seek:%llx\n",errno,sector);
 		return;
 	}
 
 	result=read(thisfd,(void*)buf,count*0x200);
 	if(result==-1)
 	{
-		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+		diary("errno:%d,read:%llx,%llx\n",errno,sector,count);
 	}
 }
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+//来源内存地址，目的首扇区，无视，总字节数
+void filewrite(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 {
-
+	
 }
 
 
@@ -116,12 +130,14 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 
 
-void initdisk(QWORD addr)
+void fileinit(QWORD addr)
 {
+	diary("file initing\n");
+
 	diskinfo=(void*)addr;
-	say("inited disk\n");
+	filelist();
 }
-void killdisk()
+void filekill()
 {
-	close(thisfd);
+	if(thisfd != -1)close(thisfd);
 }

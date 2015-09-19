@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 
 
-void say(char* fmt,...);
+void diary(char* fmt,...);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
 
@@ -74,7 +74,7 @@ void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere
 	}
 
 	readmemory(rdi,rsi,0,rcx);
-	say("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
-	say("want:%llx,to:%llx\n",wantwhere,towhere);
-	say("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
+	diary("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
+	diary("want:%llx,to:%llx\n",wantwhere,towhere);
+	diary("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
 }

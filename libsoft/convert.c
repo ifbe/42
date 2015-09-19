@@ -67,7 +67,7 @@ int decstring2data(BYTE* source,QWORD* data)
 	int i;
 	for(i=0;i<8;i++)
 	{
-		//say("%x\n",source[i]);
+		//diary("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了
 		if(source[i]<=0x20) break;
 
@@ -94,7 +94,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 	int i;
 	for(i=0;i<8;i++)
 	{
-		//say("%x\n",source[i]);
+		//diary("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了
 		if(source[i]<=0x20) break;
 
