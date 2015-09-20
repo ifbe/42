@@ -2,21 +2,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
-//硬盘信息
-static QWORD diskinfo;
-
-//
-static QWORD choose=0;
-
-
-
-
 void f1init();
 void menubg();
 void hidemenu();
 void die();
 
+void rectangle(QWORD,QWORD,QWORD);
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
 QWORD whereisworld();
@@ -24,54 +15,9 @@ QWORD whereisworld();
 
 
 
-/*
-void printdisk0()
-{
-	//内容
-	int x,y,i;
-	for(i=0;i<24;i++)
-	{
-		if(*(DWORD*)(diskinfo+0x100*i) == 0)break;
-
-		for(y=127+16*i;y<143+16*i;y++)
-		{
-			for(x=256;x<768;x++)
-			{
-				point(x,y,0x88888888);
-			}
-		}
-		string(0x20,8+i,(char*)diskinfo+0x100*i);
-		//string(0x40,8+i,diskinfo+0x100*i+0x80);
-	}
-	//选中
-	for(y=127+16*choose;y<143+16*choose;y+=2)
-	{
-		for(x=256;x<768;x+=2)
-		{
-			point(x,y,0);
-		}
-	}
-}*/
-
-
-
-
-void exitbutton()
-{
-	//最后的退出按钮
-	/*
-	int x,y;
-	for(y=512+32;y<512+64;y++)
-	{
-		for(x=512-64;x<512+64;x++)
-		{
-			point(x,y,0xff0000);
-		}
-	}
-	*/
-	string(0x3e,34,"exit");
-	string(0x3c,35,"program");
-}
+//硬盘信息
+static QWORD diskinfo;
+static QWORD choose=0;
 
 
 
@@ -82,10 +28,12 @@ void exitbutton()
 
 void menushow()
 {
-	menubg();
-	//printdisk0();
-	//printprocess0();
-	exitbutton();
+	rectangle((256<<16)+  0 , (512<<16)+256  , 0xfefefefe);
+	rectangle((256<<16)+256 , (512<<16)+512  , 0x12121212);
+	rectangle((256<<16)+512 , (512<<16)+768  , 0x66666666);
+	rectangle((256<<16)+768 , (512<<16)+1024 , 0xbbbbbbbb);
+
+	string(0x3e,16,"exit");
 }
 void menumessage(QWORD type,QWORD key)
 {
@@ -93,9 +41,9 @@ void menumessage(QWORD type,QWORD key)
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
-	if(y>512+32)
+	if(y>256)
 	{
-		if(y<512+64)
+		if(y<256+64)
 		{
 			if(x>512-64)
 			{

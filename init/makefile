@@ -9,7 +9,7 @@ linux:
 	gcc -c -fPIC -O2 soft/3.operator.c
 	gcc -c -fPIC -O2 soft/linux/file.c
 	gcc -c -fPIC -O2 soft/linux/arg.c
-	gcc -c -fPIC -O2 ui/linux/cli.c
+	gcc -c -fPIC -O2 ui/cli.c
 	rm -f init.a
 	ar crs init.a \
 	world.o 0.event.o 1.say.o 2.diary.o 3.operator.o \
@@ -26,7 +26,7 @@ win:
 	gcc -c -O2 soft/win/file.c
 	gcc -c -O2 soft/win/process.c
 	gcc -c -O2 soft/win/arg.c
-	gcc -c -O2 ui/win/cli.c
+	gcc -c -O2 ui/cli.c
 	rm -f init.a
 	ar crs init.a \
 	world.o 0.event.o 1.say.o 2.diary.o 3.operator.o \

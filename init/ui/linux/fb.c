@@ -27,7 +27,7 @@ int onelinebytes=0;
 //自己的画板
 static unsigned int* mypixel=NULL;
 static int width=1024;
-static int height=640;
+static int height=768;
 
 
 

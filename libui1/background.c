@@ -8,37 +8,8 @@
 
 QWORD whereisscreen();
 void blackstring(int x,int y,char* str);
-void line(int,int,int,int);
-void rectangle(int,int,int,int);
-
-
-
-
-void menubg()
-{
-	//背景
-	int x,y;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
-
-	for(y=64;y<640-64;y++)
-	{
-		for(x=256;x<768;x++)
-		{
-			screenbuf[(y*1024)+x]=0x44444444;
-		}
-	}
-	for(y=64;y<640-64;y++)
-	{
-		screenbuf[(y*1024)+256]=0;
-		screenbuf[(y*1024)+767]=0;
-	}
-	for(x=256;x<768;x++)
-	{
-		screenbuf[(64*1024)+x]=0;
-		screenbuf[((639-64)*1024)+x]=0;
-	}
-
-}
+void line(QWORD,QWORD,QWORD);
+void rectangle(QWORD,QWORD,QWORD);
 
 
 
@@ -50,7 +21,7 @@ void background1()
 
 	//用指定颜色清屏
 	QWORD x,y;
-	for(x=0;x<1024*640;x++)
+	for(x=0;x<1024*768;x++)
 	{
 		screenbuf[x]=0xf0f0f0f0;
 	}
@@ -69,7 +40,7 @@ void background1()
 		for(x=y;x<1024-y;x++)p[x]=color;
 
 		//下
-		p=screenbuf+(639-y)*1024;
+		p=screenbuf+(767-y)*1024;
 		for(x=y;x<1024-y;x++)p[x]=color;
 	}
 	//左右
@@ -77,7 +48,7 @@ void background1()
 	{
 		DWORD color=0x40404040+(0x0b0b0b0b*x);
 
-		for(y=x;y<640-x;y++)
+		for(y=x;y<768-x;y++)
 		{
 			screenbuf[(y*1024)+x]=color;
 			screenbuf[(y*1024)+1023-x]=color;
@@ -96,11 +67,14 @@ void background2()
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
 	//bg
-	for(y=0;y<640*1024;y++)
+	for(y=0;y<768*1024;y++)
 	{
-		screenbuf[y]=0xffffffff;
+		screenbuf[y]=0;
 	}
 
+	line( (384<<16)+0 , (384<<16)+1023 , 0x01234567);
+	line( 512 , (767<<16)+512 , 0x01234567);
+/*
 	//[0,128]
 	for(y=0;y<128;y++)
 	{
@@ -150,9 +124,7 @@ void background2()
 		}
 	}
 	blackstring(0x3c,32,"choose");
-
-	rectangle(932,234,27,99);
-	line(35,67,944,285);
+*/
 /*
 	for(y=0;y<16;y++)	//上下
 	{
@@ -189,7 +161,7 @@ void background3()
 
 	//用指定颜色清屏
 	int x,y;
-	for(x=0;x<1024*640;x++)
+	for(x=0;x<1024*768;x++)
 	{
 		screenbuf[x]=0x456789ab;
 	}
@@ -204,28 +176,36 @@ void background3()
 
 void background4(QWORD showaddr,QWORD temp)
 {
+	//用指定颜色清屏
+	DWORD x,y,color;
 	DWORD* screenbuf=(DWORD*)whereisscreen();
 
-	//用指定颜色清屏
-	int x,y;
-	for(x=0;x<1024*624;x++)
+	for(x=0;x<1024*752;x++)
 	{
 		screenbuf[x]=0;
 	}
 
-	for(y=624;y<640;y++)
+	for(y=768-16;y<768;y++)
 	{
-		for(x=0;x<1024;x++)
+		for(x=0;x<512;x++)
 		{
-			screenbuf[(y*1024) + x]=(x/4)*0x01010101;
+			color=(x/2)*0x01010101;
+			screenbuf[(y*1024) + x]=color;
+			screenbuf[(y*1024) + 1023-x]=color;
 		}
 	}
 
-	for(y=0;y<640;y++)
+	for(y=0;y<384;y++)
 	{
+		color = y*0xff/384;//0x44444488;
+
 		for(x=1024-16;x<1024;x++)
 		{
-			screenbuf[(y*1024) + x] = 0xffffff00+(y*0xff/640);//0x44444488;
+			screenbuf[(y*1024) + x] = color;
+		}
+		for(x=1024-16;x<1024;x++)
+		{
+			screenbuf[((767-y)*1024) + x] = color;
 		}
 	}
 
@@ -236,9 +216,9 @@ void background4(QWORD showaddr,QWORD temp)
 		QWORD start=end-(640-64*2)*0x80*40/temp;
 		for(y=start;y<end;y++)
 		{
-			for(x=1024-32+4;x<1024-16-4;x++)
+			for(x=1024-16+4;x<1024-4;x++)
 			{
-				screenbuf[(y*1024) + x] = 0xccccccff;
+				screenbuf[(y*1024) + x] = 0x01234567;
 			}
 		}
 	}

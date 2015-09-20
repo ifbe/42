@@ -21,7 +21,7 @@ void diary(char* fmt,...);
 
 
 static int width=1024;
-static int height=640;
+static int height=768;
 static unsigned int* mypixel;
 static char dragpath[MAX_PATH];
 

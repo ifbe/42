@@ -71,14 +71,7 @@ void f4message(QWORD type,QWORD key)
 				die();
 				return;
 			}
-			else
-			{
-				//if( ( (*(QWORD*)buffer)&0xffffffffffff ) == 0x207375636f66 )	//"focus "
-				//{
-				//	f1init();
-				//}
-				command(buffer);
-			}
+			else command(buffer);
 
 			int i;
 			bufcount=0;
