@@ -27,3 +27,7 @@ unsigned long long whereisscreen()
 {
 	return screen;
 }
+unsigned long long howisscreen()
+{
+	return (768<<16) + 1024;
+}

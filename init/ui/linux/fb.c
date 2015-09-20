@@ -32,18 +32,6 @@ static int height=768;
 
 
 
-void whereisscreenbuf(QWORD* in)
-{
-	*in=(QWORD)mypixel;
-}
-void point(int x,int y,int color)
-{
-	mypixel[y*width+x]=color;
-}
-void draw(int x,int y,int color)
-{
-	point(x+(width/2),(height/2)-y-1,color);
-}
 void writescreen()
 {
 	int y;
@@ -149,7 +137,7 @@ void waitevent(QWORD* first,QWORD* second)
 
 
 //__attribute__((constructor)) void initfb()
-void initwindow()
+void initwindow(QWORD addr)
 {
 	//目的地
 	framebufferfp=open("/dev/fb0",O_RDWR);
@@ -197,13 +185,11 @@ void initwindow()
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 
 	//内存里的缓冲区
-	mypixel=(unsigned int*)malloc(width*height*4);
+	mypixel=(unsigned int*)addr;
 }
 //__attribute__((destructor)) void destoryfb()
 void killwindow()
 {
-	if(mypixel!=NULL)free(mypixel);
-
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 
