@@ -321,17 +321,13 @@ int initmywindow()
 
 	//创建窗口
     window = CreateWindow(AppTitle,AppTitle,
-				WS_POPUP,
-				100,100,width,height,
+				WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX,		//无边框
+				100,100,width+16,height+40,
 				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
     if (!window) return 0;
 
-	//可以最小化
-	LONG t = GetWindowLong(window, GWL_EXSTYLE);
-	SetWindowLong(window, GWL_STYLE, t | WS_POPUP | WS_MINIMIZEBOX);
-
 	//透明
-	t = GetWindowLong(window, GWL_EXSTYLE);
+	LONG t = GetWindowLong(window, GWL_EXSTYLE);
 	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
 	SetLayeredWindowAttributes(window, 0, 0xc0, LWA_ALPHA);  
 
@@ -356,7 +352,7 @@ void InitUIPIFilter()
     }
 }
 void inittray()
-{	
+{
     //Step 2:托盘
     nid.cbSize = sizeof(NOTIFYICONDATA); 
     nid.hWnd = window; 

@@ -8,7 +8,7 @@ void initin(unsigned long long);
 void initout(unsigned long long);
 void initlog(unsigned long long);
 void initlist(unsigned long long);
-void initscreen();
+void explainarg();
 
 
 

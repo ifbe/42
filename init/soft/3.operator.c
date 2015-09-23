@@ -2,6 +2,13 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void filechoose(QWORD);
+void fileread(QWORD,QWORD,QWORD,QWORD);
+void fileinit(QWORD);
+
+
+
+
 static unsigned char* listbuf;
 
 

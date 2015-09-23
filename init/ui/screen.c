@@ -1,5 +1,8 @@
+#define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
+void initwindow(QWORD);
+void killwindow();
 
 
 
