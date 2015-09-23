@@ -4,7 +4,7 @@
 
 
 
-QWORD whereisscreen();
+QWORD screendata();
 //void point(int x,int y,DWORD color);
 
 
@@ -149,7 +149,7 @@ void anscii(int xxxx,int yyyy,char ch)
     int x,y;
     unsigned char temp;
     unsigned long long points=(unsigned long long)&ansciitable;
-	DWORD* screen=(DWORD*)whereisscreen();
+	DWORD* screen=(DWORD*)screendata();
 
 	if(ch<0x20)ch=0x20;
     points+=ch<<4;
@@ -176,7 +176,7 @@ void blackanscii(int xxxx,int yyyy,char ch)
     int x,y;
     char temp;
     unsigned long long points=(unsigned long long)&ansciitable;
-	DWORD* screen=(DWORD*)whereisscreen();
+	DWORD* screen=(DWORD*)screendata();
 
 	if(ch<0x20)ch=0x20;
     points+=ch<<4;
@@ -257,11 +257,11 @@ void blackstring(int x,int y,char* p)
 
 
 
-void decimal(int x,int y,unsigned long long z)
+void decimal(int x,int y,long long z)
 {
 	char ch;
-	int i=0;
-	unsigned long long temp;
+	int i;
+	long long temp;
 
 	if(z<0)
 	{
@@ -270,9 +270,11 @@ void decimal(int x,int y,unsigned long long z)
 		z=-z;
 	}
 
+	i=0;
 	temp=z;
-	while(temp>=10)
+	while(1)
 	{
+		if(temp<10)break;
         temp=temp/10;
         i++;
 	}
@@ -280,8 +282,10 @@ void decimal(int x,int y,unsigned long long z)
 	for(;i>=0;i--)
 	{
 		ch=(char)(z%10);
-		z=z/10;
+		if(ch<=9)ch+=0x30;
+		else if(ch<=0xf)ch+=0x37;
 		anscii(x+i,y,ch);
+		z=z/10;
 	}
 }
 

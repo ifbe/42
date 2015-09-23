@@ -20,9 +20,10 @@ void diary(char* fmt,...);
 
 
 
-static int width=1024;
-static int height=768;
 static unsigned int* mypixel;
+static int width;
+static int height;
+
 static char dragpath[MAX_PATH];
 
 HWND window;
@@ -42,14 +43,20 @@ void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
 }*/
+QWORD currentresolution()
+{
+	return (height<<16)+width;
+}
 void writescreen()
 {
-	//int result=SetDIBitsToDevice(realdc,
+	int temp=height;
+	if(temp>1024)temp=1024;
+
 	SetDIBitsToDevice(realdc,
 			0,0,		//目标位置x,y
-			width,height,		//dib宽,高
+			1024,temp,		//dib宽,高
 			0,0,		//来源起始x,y
-			0,height,			//起始扫描线,数组中扫描线数量,
+			0,temp,			//起始扫描线,数组中扫描线数量,
 			mypixel,		//rbg颜色数组
 			&info,			//bitmapinfo
 			DIB_RGB_COLORS);		//颜色格式
@@ -75,7 +82,6 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			switch(lparam) 
 			{
-				
 				case WM_LBUTTONDBLCLK:		//双击
 				{
 					ShowWindow(window,SW_SHOW);
@@ -256,6 +262,16 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			return 0;
 		}
+		case WM_SIZE:
+		{
+			//diary("wparam:%llx,lparam:%llx\n",wparam,lparam);
+			my1=0x657a6973;		//tfel//left	//2;
+			my2=lparam-( (40<<16) + 16 );
+			width=lparam&0xffff;
+			height=(lparam>>16)&0xffff;
+			solved=0;
+			return DefWindowProc(window, msg, wparam, lparam);
+		}
 		case WM_PAINT:		//显示
 		{
 			writescreen();
@@ -387,12 +403,13 @@ void initdib()
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
-//__attribute__((constructor)) void initsdl()
-void initwindow(QWORD addr)
+void initwindow(QWORD addr,QWORD resolution)
 {
 	//准备rgb点阵
 	//mypixel=(unsigned int*)malloc(width*height*4);
 	mypixel=(unsigned int*)addr;
+	width=resolution&0xffff;
+	height=(resolution>>16)&0xffff;
 
 	//准备beforemain
 	initmywindow();

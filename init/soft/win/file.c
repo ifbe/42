@@ -94,13 +94,13 @@ void filelist()
 		}
 	}//10个记录
 }
-void filechoose(QWORD in)
+void filetarget(QWORD in)
 {
 	char* path;
 	if( in >100 )		//是一个内存地址
 	{
 		//第1种可能：文件的路径（比如d:\image\name.img）
-		//diary("file:%s\n",(char*)in);
+		diary("file:%s\n",(char*)in);
 		path=(char*)in;
 	}
 	else		//是一个数字

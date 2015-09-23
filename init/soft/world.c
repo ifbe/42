@@ -27,7 +27,7 @@ static char* world;
 
 
 
-__attribute__((constructor)) void initworld()
+__attribute__((constructor(101))) void initworld()
 {
 	int i;
 	world = (char*)malloc(0x800000);		//8M

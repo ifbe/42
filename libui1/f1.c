@@ -2,7 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
 void die();
 
 void hexadecimal(int x,int y,QWORD in);
@@ -16,8 +15,14 @@ void background1();
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+
 QWORD whereisworld();
-QWORD whereisscreen();
+QWORD screendata();
+QWORD screenresolution();
+
+
+
+
 
 
 
@@ -25,38 +30,21 @@ QWORD whereisscreen();
 //位置
 static QWORD base;		//显示区基地址
 static QWORD offset;
-
-//data
 static BYTE* datahome;
+
+//mainscreen
+static QWORD screenaddr;
+static int xsize;
+static int ysize;
 static int printmethod=0;
 
-//---------
-struct thisstruct{
-	QWORD targetstring;//=0x11223344;
-	QWORD targetstring1;//=0x31323334;
-	BYTE target[0x10];
-
-	QWORD basestring;//=0x11223344;
-	QWORD basestring1;//=0x31323334;
-	BYTE base[0x10];
-
-	QWORD offsetstring;//=0x11223344;
-	QWORD offsetstring1;//=0x31323334;
-	BYTE offset[0x10];
-
-	QWORD datastring;//=0x11223344;
-	QWORD datastring1;//=0x31323334;
-	BYTE data[0x10];
-
-	BYTE reserved[0x10*2*3];
-	BYTE input[0x10*2];
-};
+//flostarea
 static int inputcount=0;
-static struct thisstruct haha;
-	//string(chx,chy,"target:");
-	//string(chx,1+chy,"base:");
-	//string(chx,2+chy,"offset:");
-	//string(chx,3+chy,"data:");
+static BYTE haha[0x100];
+	//[0,0x1f]:target,value
+	//[0x20,0x3f]:base,value
+	//[0x40,0x5f]:offset,value
+	//[0x60,0x7f]:data,value
 
 
 
@@ -86,86 +74,59 @@ QWORD readornotread(QWORD wantaddr)
 
 	return (QWORD)datahome+(wantaddr-readwhere);
 }
-
-
-
-
-
-
-
-
-
-void printhex0()
+void foreground()
 {
-	//告诉这个函数想要什么地方,它会确保想要的地方已经在内存里
-	//返回的是请求的地方相对datahome的偏移
-	int x,y;
-	QWORD readwhere=readornotread(base);
-
 	//一整页
+	int x,y;
+	int xsize,ysize,xshift;
+	QWORD readwhere=readornotread(base);
+	QWORD temp=screenresolution();
+
+	ysize=( (temp>>16) & 0xffff ) >> 4;
+	if(ysize>0x40)ysize=0x40;
+
+	xsize=( temp & 0xffff ) >> 4;
+	if(xsize>1024)xsize=0x40;
+
+	xshift = xsize&0x3;
+	xsize &= 0xfffc;
+
+	//
 	if(printmethod==0)			//hex
 	{
-		for(y=0;y<40;y++)
+		for(y=0;y<ysize;y++)
 		{
-			for(x=0;x<0x40;x+=4)
+			for(x=0;x<xsize;x+=4)
 			{
-				DWORD value=*(DWORD*)(readwhere+y*0x40+x);
-				hexadecimal1234(2*x,y,value);
+				DWORD value=*(DWORD*)(readwhere+y*xsize+x);
+				hexadecimal1234(2*x+xshift,y,value);
 			}
 		}
 	}
 	else if(printmethod==1)		//anscii
 	{
-		for(y=0;y<40;y++)
+		for(y=0;y<ysize;y++)
 		{
-			for(x=0;x<0x40;x+=4)
+			for(x=0;x<xsize;x+=4)
 			{
-				DWORD value=*(DWORD*)(readwhere+y*0x40+x);
-				blackanscii(2*x,y,value&0xff);
-				blackanscii(2*x+2,y,(value>>8)&0xff);
-				blackanscii(2*x+4,y,(value>>16)&0xff);
-				blackanscii(2*x+6,y,(value>>24)&0xff);
+				DWORD value=*(DWORD*)(readwhere+y*xsize+x);
+				blackanscii(2*x+xshift,y,value&0xff);
+				blackanscii(2*x+2+xshift,y,(value>>8)&0xff);
+				blackanscii(2*x+4+xshift,y,(value>>16)&0xff);
+				blackanscii(2*x+6+xshift,y,(value>>24)&0xff);
 			}
 		}
 	}
-	/*
-	else if(printmethod==2)		//text editor
-	{
-		char* this=(char*)readwhere;
-		int i=0;
-		x=y=0;
-		while(1)
-		{
-			if(this[i]==9)
-			{
-				anscii(x,y,0x20);
-				anscii(x+1,y,0x20);
-				anscii(x+2,y,0x20);
-				anscii(x+3,y,0x20);
-				x+=4;
-				if(x>=0x80){x=0;y++;}
-			}
-			else if(this[i]==0xa)
-			{
-				x=0;
-				y++;
-			}
-			else
-			{
-				anscii(x,y,this[i]);
-				x++;
-				if(x>=0x80){x=0;y++;}
-			}
-
-			i++;
-			if(y>=0x40)break;
-		}
-	}*/
 }
 void floatarea()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
+	DWORD* screenbuf=(DWORD*)screendata();
+	QWORD temp=screenresolution();
+	int ysize=(temp>>16)&0xffff;
+	int xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
 
 	//byte框
 	int thisx=(offset&0x3f)*16;
@@ -193,20 +154,19 @@ void floatarea()
 	}
 
 	//
-	data2hexstring(0x33333333,haha.target);
-	data2hexstring(base,haha.base);
-	data2hexstring(offset,haha.offset);
-	data2hexstring(0x2333333,haha.data);
+	data2hexstring(0x33333333,haha+0x10);
+	data2hexstring(base,haha+0x30);
+	data2hexstring(offset,haha+0x50);
+	data2hexstring(0,haha+0x70);
 
 	//target,base,offset,data
 	int chx=thisx/8;
 	int chy=thisy/16;
-	char* ch=(char*)&haha;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<32;x++)
 		{
-			blackanscii(chx+x,chy+y,ch[y*32+x]);
+			blackanscii(chx+x,chy+y,haha[(y*32) + x]);
 		}
 	}
 }
@@ -220,9 +180,11 @@ void floatarea()
 
 void f1show()
 {
-	//
+	//背景
 	background1();
-	printhex0();
+
+	//
+	foreground();
 
 	//
 	floatarea();
@@ -270,31 +232,25 @@ void f1message(QWORD type,QWORD key)
 		else if(key==0x8)			//backspace
 		{
 			if(inputcount!=0)inputcount--;
-			haha.input[inputcount]=0;
+			haha[0x80+inputcount]=0;
 		}
 		else if(key==0xd)			//enter
 		{
-			if(compare( haha.input , "exit" ) == 0)
+			if(compare( haha+0x80 , "exit" ) == 0)
 			{
 				die();
 				return;
 			}
-			else if(compare( haha.input , "addr" ) == 0)
+			else if(compare( haha+0x80 , "addr" ) == 0)
 			{
 			}
 
-			//int i;
-			//inputcount=0;
-			//for(i=0;i<128;i++)
-			//{
-			//	haha.input[i]=0;
-			//}
 		}
 		else
 		{
 			if(inputcount<128)
 			{
-				haha.input[inputcount]=key;
+				haha[0x80+inputcount]=key;
 				inputcount++;
 			}
 		}
@@ -332,14 +288,19 @@ void f1message(QWORD type,QWORD key)
 void f1init(QWORD world)
 {
 	int i;
+
+	//
 	datahome=(BYTE*)world+0x300000;
 	for(i=0;i<0x2000;i++)datahome[i]=0;
 
-	haha.targetstring=0x3a746567726174;
-	haha.basestring=0x3a65736162;
-	haha.offsetstring=0x3a74657366666f;
-	haha.datastring=0x3a61746164;
+	//浮动框
+	for(i=0;i<0x100;i++)haha[i]=0;
+	*(QWORD*)haha=0x3a746567726174;
+	*(QWORD*)(haha+0x20)=0x3a65736162;
+	*(QWORD*)(haha+0x40)=0x3a74657366666f;
+	*(QWORD*)(haha+0x60)=0x3a61746164;
 
+	//文件内部偏移
 	base=0;
 	offset=0;
 	currentcache=0xffffffff;

@@ -2,7 +2,8 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void filechoose(QWORD);
+void filelist();
+void filetarget(QWORD);
 void fileread(QWORD,QWORD,QWORD,QWORD);
 void fileinit(QWORD);
 
@@ -16,11 +17,11 @@ static unsigned char* listbuf;
 
 void list()			//ls?
 {
-	
+	filelist();
 }
-void choose(QWORD what)		//choose?
+void target(QWORD what)		//choose是soft做的...名字不能一样...
 {
-	filechoose(what);
+	filetarget(what);
 }
 void readmemory(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
 {

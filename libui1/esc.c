@@ -17,7 +17,6 @@ QWORD whereisworld();
 
 //硬盘信息
 static QWORD diskinfo;
-static QWORD choose=0;
 
 
 

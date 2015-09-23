@@ -6,31 +6,32 @@
 
 
 
-QWORD whereisscreen();
 void blackstring(int x,int y,char* str);
 void line(QWORD,QWORD,QWORD);
 void rectangle(QWORD,QWORD,QWORD);
 
+QWORD screendata();
+QWORD screenresolution();
 
 
 
 void background1()
 {
-	DWORD thatcolor=0xf0f0f0f0;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
+	QWORD x,y;
+	DWORD* screenbuf=(DWORD*)screendata();
+	QWORD temp=screenresolution();
+	int ysize=(temp>>16)&0xffff;
+	int xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
 
 	//用指定颜色清屏
-	QWORD x,y;
-	for(x=0;x<1024*768;x++)
+	for(x=0;x<1024*ysize;x++)
 	{
 		screenbuf[x]=0xf0f0f0f0;
 	}
 
 	//上下
-	//DWORD b=thatcolor&0xff;
-	//DWORD g=(thatcolor>>8)&0xff;
-	//DWORD r=(thatcolor>>16)&0xff;
-	//thatcolor=(b>>4)+( (g>>4) << 8 )+( (r>>4) << 16 );
 	for(y=0;y<16;y++)
 	{
 		DWORD color=0x40404040+(0x0b0b0b0b*y);
@@ -40,7 +41,7 @@ void background1()
 		for(x=y;x<1024-y;x++)p[x]=color;
 
 		//下
-		p=screenbuf+(767-y)*1024;
+		p=screenbuf+(ysize-1-y)*1024;
 		for(x=y;x<1024-y;x++)p[x]=color;
 	}
 	//左右
@@ -48,10 +49,10 @@ void background1()
 	{
 		DWORD color=0x40404040+(0x0b0b0b0b*x);
 
-		for(y=x;y<768-x;y++)
+		for(y=x;y<ysize-x;y++)
 		{
 			screenbuf[(y*1024)+x]=color;
-			screenbuf[(y*1024)+1023-x]=color;
+			screenbuf[(y*1024)+xsize-1-x]=color;
 		}
 	}
 }
@@ -64,7 +65,7 @@ void background1()
 void background2()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
+	DWORD* screenbuf=(DWORD*)screendata();
 
 	//bg
 	for(y=0;y<768*1024;y++)
@@ -157,7 +158,7 @@ void background2()
 
 void background3()
 {
-	DWORD* screenbuf=(DWORD*)whereisscreen();
+	DWORD* screenbuf=(DWORD*)screendata();
 
 	//用指定颜色清屏
 	int x,y;
@@ -178,7 +179,7 @@ void background4(QWORD showaddr,QWORD temp)
 {
 	//用指定颜色清屏
 	DWORD x,y,color;
-	DWORD* screenbuf=(DWORD*)whereisscreen();
+	DWORD* screenbuf=(DWORD*)screendata();
 
 	for(x=0;x<1024*752;x++)
 	{

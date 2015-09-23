@@ -124,6 +124,11 @@ void processmessage(QWORD type,QWORD key)
 		choose(key);
 		return;
 	}
+	//else if(type==)		//xychange
+	//{
+		//change xsize,ysize
+		//return;
+	//}
 	else if(type==0x64626b)		//kbd
 	{
 		if(key==0x1b){showmenu^=1;return;}		//按下esc
@@ -174,7 +179,7 @@ void main()
 	QWORD world=whereisworld();
 	initmaster(world);
 
-	menuinit(world);			//0
+	menuinit(world);		//0
 	f1init(world);			//1
 	f2init(world);			//2
 	f3init(world);			//3

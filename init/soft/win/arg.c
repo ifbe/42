@@ -5,7 +5,7 @@
 
 
 void diary(char* fmt,...);
-void choose(QWORD);
+void target(QWORD);
 
 
 
@@ -46,12 +46,12 @@ void explainarg()
 	{
 		//"d:\code\file\a.exe"
 		//比如上面这种，就默认打开扫描到的第一个磁盘
-		choose(0);
+		target(0);
 	}
 	else
 	{
 		//"d:\code\file\a.exe" d:\code\1.txt
 		//比如上面这种，就默认打开d:\code\1.txt
-		choose( (QWORD)(inputarg+i) );
+		target( (QWORD)(inputarg+i) );
 	}
 }

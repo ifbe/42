@@ -25,9 +25,9 @@ void cleanmemory(QWORD addr,int count);
 void say(char* str,...);
 void diary(char* str,...);
 
-void choose(QWORD in);
 QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 QWORD writememory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void target(QWORD in);
 
 void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 void file2mem(QWORD memaddr,char* filename,QWORD offset,QWORD count);
@@ -147,6 +147,33 @@ int mount(QWORD which)
 	cd=(void*)( this[5] );
 	load=(void*)( this[6] );
 }
+void choose(QWORD arg1)
+{
+	cleanmemory(diskhome,0x400000);
+	if( (QWORD)arg1 == 0 )
+	{
+		//只是打印一遍扫描到的磁盘信息
+		char* p=(char*)diskinfo;
+		int i=0;
+
+		while(1)
+		{
+			//先检查
+			if( *(DWORD*)(diskinfo+i) == 0 )break;
+			if(i>100*0x100)break;
+
+			//再打印
+			diary("%s\n",diskinfo+i);
+			i+=0x100;
+		}
+	}
+	else
+	{
+		//检查这是个什么玩意
+		target(arg1);
+		hello();
+	}
+}
 
 
 
@@ -169,38 +196,17 @@ void command(char* buffer)
 //----------------------2.实际的活都找专人来干-----------------------------
 	if(compare( arg0 , "help" ) == 0)
 	{
-		diary("pick ?                  (choose a disk)\n");
-		diary("mount ?                 (choose a partition)\n");
-		diary("explain ?               (explain inode/cluster/cnid/mft)\n");
-		diary("cd dirname              (change directory)\n");
-		diary("load filename           (load this file)\n");
+		diary("list ?          (list all known)\n");
+		diary("choose ?        (choose a disk)\n");
+		diary("read ?          (hex print a physical sector)\n");
+		diary("mount ?         (choose a partition)\n");
+		diary("explain ?       (explain inode/cluster/cnid/mft)\n");
+		diary("cd dirname      (change directory)\n");
+		diary("load filename   (load this file)\n");
 	}
 	else if(compare( arg0 , "choose" ) == 0)
 	{
-		cleanmemory(diskhome,0x400000);
-		if( (QWORD)arg1 == 0 )
-		{
-			//只是打印一遍扫描到的磁盘信息
-			char* p=(char*)diskinfo;
-			int i=0;
-
-			while(1)
-			{
-				//先检查
-				if( *(DWORD*)(diskinfo+i) == 0 )break;
-				if(i>100*0x100)break;
-
-				//再打印
-				diary("%s\n",diskinfo+i);
-				i+=0x100;
-			}
-		}
-		else
-		{
-			//检查这是个什么玩意
-			choose((QWORD)arg1);
-			hello();
-		}
+		choose((QWORD)arg1);
 	}
 	else if(compare( arg0 , "read" ) == 0)
 	{

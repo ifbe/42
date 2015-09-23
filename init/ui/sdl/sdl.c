@@ -55,10 +55,8 @@ __attribute__((destructor)) void destorysdl()
 
 
 
-void whereisscreenbuf(unsigned long long* p)
-{
-	*p=(unsigned long long)mypixel;
-}
+
+/*
 void point(int x,int y,int color)
 {
 	mypixel[y*width+x]=color;
@@ -66,7 +64,7 @@ void point(int x,int y,int color)
 void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
-}
+}*/
 void writescreen()
 {
   //画texture？

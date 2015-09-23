@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-
-
 #define QWORD unsigned long long
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
+void target(QWORD);
 
 
 
@@ -50,6 +49,6 @@ void explainarg()
 	}
 	//diary("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
-	if(signal==2)choose((QWORD)buffer+temp);
-	else choose("/dev/sda");
+	if(signal==2)target((QWORD)buffer+temp);
+	else target("/dev/sda");
 }

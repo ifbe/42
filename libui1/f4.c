@@ -73,12 +73,8 @@ void f4message(QWORD type,QWORD key)
 			}
 			else command(buffer);
 
-			int i;
+			for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
 			bufcount=0;
-			for(i=0;i<128;i++)
-			{
-				buffer[i]=0;
-			}
 		}
 		else
 		{

@@ -81,7 +81,7 @@ void filelist()
 		}
 	}
 }
-void filechoose(char* wantpath)
+void filetarget(char* wantpath)
 {
 	//testopen
 	int tempfd=open(wantpath,O_RDONLY);

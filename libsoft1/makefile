@@ -1,5 +1,5 @@
 binary:
-	gcc -c -fPIC -O2 master/master.c
+	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 partitiontable/gpt.c
 	gcc -c -fPIC -O2 partitiontable/mbr.c
 	gcc -c -fPIC -O2 ext.c
@@ -12,7 +12,7 @@ binary:
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
 crosscompile:
-	x86_64-elf-gcc -c -fPIC -O2 master/master.c
+	x86_64-elf-gcc -c -fPIC -O2 master.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/gpt.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/mbr.c
 	x86_64-elf-gcc -c -fPIC -O2 ext.c
@@ -25,7 +25,7 @@ crosscompile:
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
 linux:
-	gcc -c -fPIC -O2 master/master.c
+	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 partitiontable/gpt.c
 	gcc -c -fPIC -O2 partitiontable/mbr.c
 	gcc -c -fPIC -O2 filesystem/ext.c
@@ -38,7 +38,7 @@ linux:
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
 mac:
-	clang -c -fPIC -O2 master/master.c
+	clang -c -fPIC -O2 master.c
 	clang -c -fPIC -O2 partitiontable/gpt.c
 	clang -c -fPIC -O2 partitiontable/mbr.c
 	clang -c -fPIC -O2 filesystem/ext.c
@@ -51,7 +51,7 @@ mac:
 	gpt.o mbr.o \
 	ext.o fat.o hfs.o ntfs.o
 win:
-	gcc -c -O2 master/master.c
+	gcc -c -O2 master.c
 	gcc -c -O2 partitiontable/gpt.c
 	gcc -c -O2 partitiontable/mbr.c
 	gcc -c -O2 filesystem/ext.c
