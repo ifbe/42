@@ -140,6 +140,50 @@ int data2hexstring(QWORD data,BYTE* string)
 
 
 
+int data2decimalstring(QWORD data,BYTE* string)
+{
+    unsigned long long temp;
+    int i,count;
+
+	count=0;
+    temp=(unsigned long long)data;
+    while(1)
+    {
+		if(temp<10)break;
+        temp/=10;
+        count++;
+    }
+
+    temp=(unsigned long long)data;
+	for(i=0;i<=count;i++)
+	{
+		string[count-i]=temp%10+0x30;
+		temp/=10;
+	}
+
+	return count;
+}
+void double2decimalstring(double data,BYTE* string)
+{
+	double temp;
+	int count;
+
+	//整数部分
+	count=data2decimalstring( (QWORD)data , string );
+
+	//小数点
+	string[count+1]='.';
+
+	//小数部分
+	temp=(double)(QWORD)data;
+	temp=data-temp;
+	temp=temp*10000000;
+	data2decimalstring( (QWORD)temp , string + count+2 );
+}
+
+
+
+
 void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 {
 	*first=*second=0;

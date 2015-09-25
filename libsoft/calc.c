@@ -1,4 +1,5 @@
 static char stack[128];
+static double stack2[20];
 
 
 
@@ -142,6 +143,10 @@ void infix2postfix(char* infix,char* postfix)
 				top++;                    //弹出左括号扔掉
 				break;
 			}
+			case ' ':
+			{
+				break;
+			}
 			default:		//数字直接输出
 			{
 				postfix[dest]=infix[source];
@@ -159,7 +164,6 @@ double calculator(char* postfix)
 	int num=0;
 	int top=0;
 	int temp;
-	double stack2[20];
 	for(temp=0;temp<20;temp++){stack2[temp]=0.00;}
 
 	while(num<127)

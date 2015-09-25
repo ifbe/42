@@ -8,8 +8,9 @@ void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 
-void infix2postfix(char* infix,char* postfix);
 double calculator(char* postfix);
+void infix2postfix(char* infix,char* postfix);
+void double2decimalstring(double,char*);
 
 QWORD whereisworld();
 
@@ -53,13 +54,16 @@ void printfile0()
 }
 void f2show()
 {
+	char table[100];
+
 	background2();
 
 	printfile0();
 
 	string(0,0,buffer);
 	string(0,1,postfix);
-	decimal(0,3,(QWORD)result);
+	double2decimalstring(result,table);
+	string(0,2,table);
 }
 void f2message(QWORD type,QWORD key)
 {
