@@ -65,22 +65,21 @@ int decstring2data(BYTE* source,QWORD* data)
 {
 	*data=0;
 	int i;
-	for(i=0;i<8;i++)
+	for(i=0;i<20;i++)		//64bit的最大数为20个阿拉伯数字
 	{
-		//diary("%x\n",source[i]);
-		//1.如果小于0x20，那就是结束了
-		if(source[i]<=0x20) break;
+		//1.如果大于0x80：		返回错误1
+		if(source[i]>=0x80) return 0;
 
-		//2.如果大于0x80，那就返回错误
-		if(source[i]>=0x80) return -1;
-
-		//3.如果是正常值
-		*data=(*data)*10;
-		if(source[i]>=0x30 && source[i]<=0x39)
+		//2.如果不是阿拉伯数字：	返回取得的总数量
+		//（可能是小数点，结束符，算数符号等）
+		if( (source[i]<0x30) | (source[i]>0x39) )
 		{
-			*data+=source[i]-0x30;
+			return i;
 		}
-		else return -2;
+
+		//3.如果是正常值：		先乘10，再加上这个值，然后搞下一个数
+		*data=(*data)*10;
+		*data+=source[i]-0x30;
 	}
 }
 

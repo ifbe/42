@@ -17,6 +17,10 @@ QWORD whereisworld();
 
 
 
+
+
+
+
 //
 static int count=0;
 
@@ -27,13 +31,6 @@ static double result;
 
 //
 static QWORD dirbuffer;
-
-
-
-
-
-
-
 
 
 
@@ -74,12 +71,10 @@ void f2message(QWORD type,QWORD key)
 			if(count!=0)count--;
 			buffer[count]=0;
 		}
-		else if(key==0xd)			//enter
+		else if(key==0xd)		//enter
 		{
 			//134+95*x+(70*44+f)*g ----> 134 95 x * + 70 44 * f + g * +
 			infix2postfix(buffer,postfix);
-
-			//
 			result=calculator(postfix);
 
 			for(count=0;count<127;count++) buffer[count]=0;

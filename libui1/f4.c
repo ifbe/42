@@ -111,5 +111,5 @@ void f4message(QWORD type,QWORD key)
 
 void f4init(QWORD world)
 {
-	logbuf=world+0x600000;
+	logbuf=world+0x500000;
 }
