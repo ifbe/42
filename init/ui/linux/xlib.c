@@ -50,6 +50,10 @@ void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
 }*/
+QWORD currentresolution()
+{
+	return (768<<16)+1024;
+}
 void writescreen()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 

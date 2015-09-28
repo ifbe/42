@@ -3,6 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 int decstring2data(BYTE* source,QWORD* data);
+void printmemory(char*,int);
 
 
 
@@ -116,13 +117,10 @@ double calculator(char* postfix,QWORD x,QWORD y)
 	double first,second,temp;
 
 	initstack2();
+	printmemory(postfix,128);
 
 	while(1)
 	{
-		if(source>=128)break;
-		if(postfix[source]<0x20)break;
-		//say("%c@%d\n",postfix[source],source);
-
 		//数字
 		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
 		{
@@ -135,7 +133,6 @@ double calculator(char* postfix,QWORD x,QWORD y)
 			if(postfix[source] == '.')
 			{
 				//say(".@%d\n",source);
-
 				source++;
 				count=decstring2data( postfix+source , &data );
 
@@ -160,90 +157,97 @@ double calculator(char* postfix,QWORD x,QWORD y)
 
 			push(first);
 		}//是数字
-		else 
+
+
+
+
+		else if(postfix[source] == '+')
 		{
-		switch(postfix[source])
+			pop(&second);
+			pop(&first);		//注意，栈，先进后出
+			temp = first + second;
+			push(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '-')
 		{
-			case '+':
-			{
-				pop(&second);
-				pop(&first);			//注意，栈，先进后出
-				temp = first + second;
-				push(temp);
+			pop(&second);
+			pop(&first);
+			temp=first-second;
+			push(temp);
 
-				//say("%llf + %llf = %llf\n",first,second,first+second);
-				break;
-			}
-			case '-':
-			{
-				pop(&second);
-				pop(&first);
-				temp=first-second;
-				push(temp);
-				break;
-			}
-			case '*':
-			{
-				pop(&second);
-				pop(&first);
-				temp=first*second;
-				push(temp);
-				break;
-			}
-			case '/':
-			{
-				pop(&second);
-				pop(&first);
-				temp=first/second;
-				push(temp);
-				break;
-			}
-			case '^': 	//指数		x^y
-			{
-				pop(&second);
-				pop(&first);
+			source++;
+		}
+		else if(postfix[source] == '*')
+		{
+			pop(&second);
+			pop(&first);
+			temp=first*second;
+			push(temp);
 
-				temp=1.00;
-				data=(QWORD)(second+0.000001);
-				if(data!=0) while(1)
-				{
-					temp*=first;
-					data--;
-					if(data==0)break;
-				}
-				push(temp);
-				break;
-			}
-			case '%': 	//取余		x%y
-			{
-				break;
-			}
-			case '!': 	//阶乘		x!
-			{
-				break;
-			}
-			case 'l':		//对数		xlogy
-			{
-				break;
-			}
-			case 's':
-			{
-				//根号		ysqrty
-				//正弦		sinx
-				break;
-			}
-			case 'c': 	//余弦		cosx
-			{
-				break;
-			}
-			case 't': 	//正切		tanx
-			{
-				break;
-			}
-		}//switch结束
-		source++;		//下一个
-		}//else结束
+			source++;
+		}
+		else if(postfix[source] == '/')
+		{
+			pop(&second);
+			pop(&first);
+			temp=first/second;
+			push(temp);
 
+			source++;
+		}
+		else if(postfix[source] == '^') 	//指数		x^y
+		{
+			pop(&second);
+			pop(&first);
+
+			temp=1.00;
+			data=(QWORD)(second+0.000001);
+			if(data!=0) while(1)
+			{
+				temp*=first;
+				data--;
+				if(data==0)break;
+			}
+			push(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '%') 	//取余		x%y
+		{
+			source++;
+		}
+		else if(postfix[source] == '!') 	//阶乘		x!
+		{
+			source++;
+		}
+		else if(postfix[source] == 'l')		//对数		xlogy
+		{
+			source++;
+		}
+		else if(postfix[source] == 's')
+		{
+			//根号		ysqrty
+			//正弦		sinx
+			source++;		//下一个
+		}
+		else if(postfix[source] == 'c') 	//余弦		cosx
+		{
+			source++;		//下一个
+		}
+		else if(postfix[source] == 't') 	//正切		tanx
+		{
+			source++;		//下一个
+		}
+
+
+
+
+		else source++;			//不加会死这儿
+
+		if(source>=128)break;
+		if(postfix[source]==0)break;
 	}//while结束
 
 	pop(&temp);

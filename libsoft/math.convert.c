@@ -2,44 +2,59 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void printmemory(char*,int);
 
 
 
 
-static char stack[128];
+struct mathnode{
+
+	DWORD type;
+	DWORD up;
+	DWORD left;
+	DWORD right;
+	union{
+		char datasize[16];
+		double floatpoint;
+		unsigned long long integear;
+	};
+};
+
+
+
+
 static int count=0;
+static DWORD stack[128];
 
 
 
 
-//¿ÕÕ»µÄÊ±ºòrspÖµ×î´ó:		rsp=0xa0000		(count=128)
-//ÂúÕ»µÄÊ±ºòrspÖµ×îĞ¡:		rsp=0x90000		(count=0)
+//ç©ºæ ˆçš„æ—¶å€™rspå€¼æœ€å¤§:		rsp=0xa0000		(count=128)
+//æ»¡æ ˆçš„æ—¶å€™rspå€¼æœ€å°:		rsp=0x90000		(count=0)
 static void initstack()
 {
 	count=128;
 }
-
 //push rax:
 //rsp-8,[rsp]=rax		(count--,stack[count]=data)
-static int push(char data)
+static int push(DWORD data)
 {
-	//ÂúÕ»
+	//æ»¡æ ˆ
 	if(count==0)return 0;
 
-	//count-1(rsp-8)£¬È»ºó·ÅÏÂÕâ¸öÊı×Ö
+	//count-1(rsp-8)ï¼Œç„¶åæ”¾ä¸‹è¿™ä¸ªæ•°å­—
 	count--;
 	stack[count]=data;
 	return 1;
 }
-
 //pop rax:
 //rax=[rsp],rsp+8		(data=stack[count],count++)
-static int pop(char* dest)
+static int pop(DWORD* dest)
 {
-	//¿ÕÕ»
+	//ç©ºæ ˆ
 	if(count>=128)return 0;
 
-	//ÄÃ³öµ±Ç°Êı×Ö£¬È»ºócount+1(rsp+8)
+	//æ‹¿å‡ºå½“å‰æ•°å­—ï¼Œç„¶åcount+1(rsp+8)
 	dest[0]=stack[count];
 	count++;
 	return 1;
@@ -70,11 +85,14 @@ void infix2postfix(char* infix,char* postfix)
 	int source;
 	int dest;
 
-	char stacktop;
 	int ret;
 	int compareresult;
 
+	DWORD stacktop;
+
 	initstack();
+	for(ret=0;ret<128;ret++)postfix[ret]=0;
+	printmemory(infix,128);
 
 	//
 	source=dest=0;
@@ -83,18 +101,19 @@ void infix2postfix(char* infix,char* postfix)
 		switch( infix[source] )
 		{
 			case '=':
-			case 0:		//½áÊøÁË£¬°ÑÕ»ÀïÄÜ°áµÄÈ«°á¹ıÈ¥ÍêÊÂ
+			case 0:		//ç»“æŸäº†ï¼ŒæŠŠæ ˆé‡Œèƒ½æ¬çš„å…¨æ¬è¿‡å»å®Œäº‹
 			{
 				while(1)
 				{
-					ret=pop(postfix+dest);
+					ret=pop(&stacktop);
 					if(ret<=0)return;
 
+					postfix[dest]=stacktop&0xff;
 					dest++;
 				}
 			}
 			case '(':
-			case '[':		//×óÀ¨ºÅÎŞÌõ¼ş½øÕ»
+			case '[':		//å·¦æ‹¬å·æ— æ¡ä»¶è¿›æ ˆ
 			{
 				push( '(' );
 				break;
@@ -107,69 +126,82 @@ void infix2postfix(char* infix,char* postfix)
 
 				while(1)
 				{
-					//½ĞÒ»¸ö³öÀ´
+					//å«ä¸€ä¸ªå‡ºæ¥
 					ret=pop(&stacktop);
 
-					//³öÎÊÌâÁË
+					//å‡ºé—®é¢˜äº†
 					if( ret<=0 )return;
 
-					//ÊÇ×óÀ¨ºÅµÄ»°Ö±½ÓÈÓµô£¬Õâ¸öÓÒÀ¨ºÅ¾Í´¦ÀíÍêÁË
+					//æ˜¯å·¦æ‹¬å·çš„è¯ç›´æ¥æ‰”æ‰ï¼Œè¿™ä¸ªå³æ‹¬å·å°±å¤„ç†å®Œäº†
 					if( stacktop == '(' )break;
 
-					//·ñÔò°Ñ¸Õ½Ğ³öÀ´µÄ·Å×ß£¬¼ÌĞø½ĞÏÂÒ»¸öÀ´´¦Àí
+					//å¦åˆ™æŠŠåˆšå«å‡ºæ¥çš„æ”¾èµ°ï¼Œç»§ç»­å«ä¸‹ä¸€ä¸ªæ¥å¤„ç†
 					else
 					{
-						postfix[dest]=stacktop;    //Ò»Ö±µ¯³öÖ±µ½Óöµ½×óÀ¨ºÅ»òÕß¿Õ¸ñ
+						postfix[dest]=stacktop;    //ç›´åˆ°é‡åˆ°å·¦æ‹¬å·æˆ–è€…ç©ºæ ¼
 						dest++;
 					}
 				}
 
 				break;
-			}//ÓÒÀ¨ºÅ
-			case '+':		//°Ñ%,^,/,*»»³öÈ¥£¬·ñÔò½øÕ»
+			}//å³æ‹¬å·
+			case '+':		//æŠŠ%,^,/,*æ¢å‡ºå»ï¼Œå¦åˆ™è¿›æ ˆ
 			case '-':
 			case '*':
 			case '/':
-			case '^':		//³Ë·½
-			case '%':		//È¡Óà
-			case '!':		//½×³Ë
+			case '^':		//ä¹˜æ–¹
+			case '%':		//å–ä½™
+			case '!':		//é˜¶ä¹˜
 			{
 				postfix[dest]=0x20;
 				dest++;
 
 				while(1)
 				{
-					//½ĞÒ»¸ö³öÀ´¸ú×Ô¼º±È
+					//å«ä¸€ä¸ªå‡ºæ¥è·Ÿè‡ªå·±æ¯”ï¼Œç©ºæ ˆå°±è‡ªå·±è¿›å»
 					ret=pop(&stacktop);
-					compareresult=operatorpriority(stacktop) - operatorpriority(infix[source]);
-
-					//¿ÕÕ»Ö±½Ó·Å£¬±È×Ô¼ºÈõ¾ÍÈÃËü¹ö»ØÕ»Àï£¬²¢ÇÒ×Ô¼ºÒ²½øÕ»ÍêÊÂ
-					if( (ret<=0) | (compareresult<0) )
+					if(ret==0)
 					{
-						push( stacktop );
 						push( infix[source] );
 						break;
 					}
-
-					//¸ú×Ô¼ºÒ»ÑùÈõ¼¦»òÕß±È×Ô¼ºÇ¿£¬¾ÍÈÃËüÏÈ×ßÈ»ºó×Ô¼º½øÈëÏÂ´ÎÑ­»·
 					else
 					{
-						postfix[dest]=stacktop;
-						dest++;
+						compareresult=operatorpriority(stacktop) - operatorpriority(infix[source]);
+						//æ¯”è‡ªå·±å¼±å°±è®©å®ƒæ»šå›æ ˆé‡Œï¼Œå¹¶ä¸”è‡ªå·±ä¹Ÿè¿›æ ˆå®Œäº‹
+						if(compareresult<0)
+						{
+							push( stacktop );
+							push( infix[source] );
+							break;
+						}
+
+						//å¦åˆ™è®©å®ƒå…ˆèµ°ç„¶åè‡ªå·±è¿›å…¥ä¸‹æ¬¡å¾ªç¯
+						else
+						{
+							postfix[dest]=stacktop;
+							dest++;
+						}
 					}
 
 				}//while
 
 				break;
-			}//+,-,*,/,%,^,log,sqrt,cos......
+			}//+,-,*,/,%,^
+			//case 'l':	log
+			//case 's'	sqrt
+			//case 'c'	cos
 			case ' ':
 			{
 				break;
 			}
-			default:		//Êı×ÖÖ±½ÓÊä³ö
+			default:		//æ•°å­—ç›´æ¥è¾“å‡º
 			{
-				postfix[dest]=infix[source];
-				dest++;
+				if(infix[source]>0x20)
+				{
+					postfix[dest]=infix[source];
+					dest++;
+				}
 				break;
 			}
 		}//switch
@@ -179,7 +211,78 @@ void infix2postfix(char* infix,char* postfix)
 
 	}//while(1)
 }
-void infix2binarytree(char* infix,char* postfix)
+
+
+
+
+
+
+
+/*
+void infix2node(char* infix,struct mathnode* node)
 {
-	
+	int source,dest;
+	source=dest=0;
+
+	while(1)
+	{
+		//å¦‚æœæ˜¯æ•°å­—
+		if( ( infix[source] >= 0x30 )&&( infix[source] <= 0x39 ) )
+		{
+
+		}
+
+		//ç¬¦å·
+		else
+		{
+		switch(infix[source])
+		{
+			case '+':
+			case '-':
+			case '*':
+			case '/':
+			{
+                                postfix[dest]=0x20;
+                                dest++;
+
+                                while(1)
+                                {
+                                        //å«ä¸€ä¸ªå‡ºæ¥è·Ÿè‡ªå·±æ¯”
+                                        ret=pop(&stacktop);
+                                        compareresult=operatorpriority(stacktop) - operatorpriority(infix[source]);
+
+                                        //ç©ºæ ˆç›´æ¥æ”¾ï¼Œæ¯”è‡ªå·±å¼±å°±è®©å®ƒæ»šå›æ ˆé‡Œï¼Œå¹¶ä¸”è‡ªå·±ä¹Ÿè¿›æ ˆå®Œäº‹
+                                        if( (ret<=0) | (compareresult<0) )
+                                        {
+                                                push( stacktop );
+                                                push( infix[source] );
+                                                break;
+                                        }
+
+                                        //è·Ÿè‡ªå·±ä¸€æ ·å¼±é¸¡æˆ–è€…æ¯”è‡ªå·±å¼ºï¼Œå°±è®©å®ƒå…ˆèµ°ç„¶åè‡ªå·±è¿›å…¥ä¸‹æ¬¡å¾ªç¯
+                                        else
+                                        {
+                                                postfix[dest]=stacktop;
+                                                dest++;
+                                        }
+
+                                }//while
+
+                                break;
+			}
+		}
+		}
+	}
 }
+
+
+
+
+
+
+
+
+void node2binarytree()
+{
+}
+*/

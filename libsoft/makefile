@@ -28,8 +28,8 @@ linux:
 	gcc -c -fPIC -O2 memory.c
 	rm -f libsoft.a
 	ar crs libsoft.a \
-	anscii.o anscii.convert.o \
 	math.o math.convert.o \
+	anscii.o anscii.convert.o \
 	memory.o
 mac:
 	clang -c -fPIC -O2 anscii.c

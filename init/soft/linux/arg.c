@@ -6,7 +6,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void target(QWORD);
+void target(char*);
 
 
 
@@ -49,6 +49,6 @@ void explainarg()
 	}
 	//diary("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
-	if(signal==2)target((QWORD)buffer+temp);
+	if(signal==2)target(buffer+temp);
 	else target("/dev/sda");
 }
