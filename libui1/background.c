@@ -62,7 +62,7 @@ void background1()
 
 
 
-void background2()
+void background3()
 {
 	int x,y;
 	DWORD* screenbuf=(DWORD*)screendata();
@@ -156,7 +156,7 @@ void background2()
 
 
 
-void background3()
+void background2()
 {
 	DWORD* screenbuf=(DWORD*)screendata();
 
@@ -164,7 +164,7 @@ void background3()
 	int x,y;
 	for(x=0;x<1024*768;x++)
 	{
-		screenbuf[x]=0x456789ab;
+		screenbuf[x]=0;
 	}
 }
 

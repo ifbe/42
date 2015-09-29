@@ -20,16 +20,20 @@ struct mathnode{
 
 void background2();
 
+void line(QWORD point1,QWORD point2,DWORD color);
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
+void anscii(int x,int y,int z);
 
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,struct mathnode** out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 
+void say(char*,...);
+void diary(char*,...);
 void printmemory(char*,int);
 QWORD whereisworld();
 
@@ -71,22 +75,14 @@ void printnode(int x,int y,int num)
 {
 	int left,right;
 	int offset,temp;
+	int thisx,thisy;
 
-	//self
-	if(node[num].type == 0x33323130)	//0,1,2,3...
-	{
-		printdouble(x/8,y*2,node[num].floatpoint);
-	}
-	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
-	{
-		anscii(x/8,y*2,node[num].integer & 0xff);
-	}
-	else
-	{
-		anscii(x/8,y*2,node[num].type & 0xff);
-	}
+	//拿
+	if(y>13)return;
+	left=node[num].left;
+	right=node[num].right;
 
-	//offset
+	//偏移
 	offset=1024;
 	temp=y+1;
 	while(1)
@@ -98,28 +94,48 @@ void printnode(int x,int y,int num)
 	}
 	//diary("offset=%d\n",offset);
 
+	//位置
+	thisx=x/8;
+	thisy=y*4;
+	if(node[ node[num].up ].left == num)	//是左边
+	{
+		if(node[num].left==0&&node[num].right==0)	//而且是叶子
+		{
+			if(y>=7)		//而且放不下了
+			{
+				thisy+=1;
+			}
+		}
+	}
+
+	//self
+	if(node[num].type == 0x33323130)	//0,1,2,3...
+	{
+		printdouble(thisx,thisy,node[num].floatpoint);
+	}
+	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
+	{
+		anscii(thisx,thisy,node[num].integer & 0xff);
+	}
+	else
+	{
+		anscii(thisx,thisy,node[num].type & 0xff);
+	}
+
 	//left
-	left=node[num].left;
 	if(left!=0&&left<128)
 	{
-		line( x+(32*y<<16) , (x-offset)+( (32*y+32)<<16) , 0xffffffff);
+		line( x+((64*y+16)<<16) , (x-offset)+( (64*y+64)<<16) , 0xffffffff);
 		printnode( x-offset , y+1 , left );
 	}
 
 	//right
-	right=node[num].right;
 	if(right!=0&&right<128)
 	{
-		line( x+(32*y<<16) , (x+offset)+( (32*y+32)<<16) , 0xffffffff);
+		line( x+((64*y+16)<<16) , (x+offset)+( (64*y+64)<<16) , 0xffffffff);
 		printnode( x+offset , y+1 , right );
 	}
-}
-void mathtree()
-{
-	int left=node[0].left;
-
-	left=node[0].left;
-	if(left!=0&&left<128) printnode(1024/2,1,left);
+	//diary("this=%d,left=%d,right=%d\n",num,left,right);
 }
 
 
@@ -127,12 +143,20 @@ void mathtree()
 
 void f2show()
 {
+	int temp;
 	background2();
 
 	string(0,0,buffer);
 	string(0,1,postfix);
 
-	if(node!=0)mathtree();
+	if(node!=0)
+	{
+		temp=node[0].left;
+		if(temp!=0&&temp<128)
+		{
+			printnode(1024/2,1,temp);
+		}
+	}
 }
 void f2message(QWORD type,QWORD key)
 {

@@ -4,6 +4,7 @@
 
 
 
+void double2decimalstring(double,char*);
 QWORD screendata();
 //void point(int x,int y,DWORD color);
 

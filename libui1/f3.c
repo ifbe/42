@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void background2();
+void background3();
 
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
@@ -35,7 +35,7 @@ static char result[128];
 
 void f3show()
 {
-	background2();
+	background3();
 
 	string(0,0,buffer);
 	string(0,1,postfix);

@@ -2,6 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+int decstring2data(char*,QWORD*);
 void printmemory(char*,int);
 void diary(char*,...);
 
@@ -41,7 +42,7 @@ static void initstack()
 //rsp-8,[rsp]=rax		(sp--,stack[sp]=data)
 static int push(DWORD data)
 {
-	//diary("push %d\n",data);
+	diary("push %d\n",data);
 
 	//满栈
 	if(sp==0)return 0;
@@ -62,7 +63,7 @@ static int pop(DWORD* dest)
 	dest[0]=stack[sp];
 	sp++;
 
-	//diary("pop %d\n",dest[0]);
+	diary("pop %d\n",dest[0]);
 	return 1;
 }
 
@@ -231,6 +232,7 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 {
 	int source;
 	int dest;
+	int haha;
 
 	QWORD data;
 	double float1,float2;
@@ -255,6 +257,7 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 		//第1种：常量
 		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
 		{
+			//diary("herehere!!!!\n");
 			//先拿整数部分
 			ret1 = decstring2data( postfix + source , &data );
 			source += ret1;
@@ -262,29 +265,29 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 			//如果有小数部分再拿上
 			if(postfix[source] == '.')
-                        {
-                                //say(".@%d\n",source);
-                                source++;
-                                ret1=decstring2data( postfix+source , &data );
+			{
+				//say(".@%d\n",source);
+				source++;
+				ret1=decstring2data( postfix+source , &data );
 
-                                if(ret1>0)
-                                {
-                                        source += ret1;
-                                        float2 = (double)data;
+				if(ret1>0)
+				{
+					source += ret1;
+					float2 = (double)data;
 
-                                        while(1)
-                                        {
-                                                float2 /= 10.00;
+					while(1)
+					{
+						float2 /= 10.00;
 
-                                                ret1--;
-                                                if(ret1==0)break;
-                                        }
+						ret1--;
+						if(ret1==0)break;
+					}
 
-                                        //加上小数
-                                        float1+=float2;
-                                }
+					//加上小数
+					float1+=float2;
+				}
 
-                        }
+			}
 
 			//造节点
 			node[dest].type=0x33323130;
@@ -322,13 +325,9 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 		//第3种：符号
 		else
 		{
-			//0：不正常，1：单操作数，2：默认双操作数，3：有三操作数的运算吗
-			int haha=2;
+			//0：不正常，1：单操作数，2：默认双操作数
+			haha=2;
 
-
-
-
-			//赋值
 			if(postfix[source]=='+')data='+';
 			else if(postfix[source]=='-')data='-';
 			else if(postfix[source]=='*')data='*';
@@ -393,6 +392,7 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 			//这是符号，所以对应的2个或1个数字可以滚了
 			if(haha>0)
 			{
+				//diary("haha:%d\n",haha);
 				if(haha == 2)
 				{
 					//拿出两个并且检查出错没有
@@ -434,7 +434,8 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 		}//else
 
 		//postfix字符串最大长度
-		if(source>128)break;
+		if(source>=128)break;
+		//if(postfix[source]==0)break;
 
 	}//while(1)
 
