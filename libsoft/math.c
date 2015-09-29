@@ -117,11 +117,10 @@ double calculator(char* postfix,QWORD x,QWORD y)
 	double first,second,temp;
 
 	initstack2();
-	printmemory(postfix,128);
 
 	while(1)
 	{
-		//数字
+		//第1种：常量
 		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
 		{
 			//先拿整数部分
@@ -155,12 +154,34 @@ double calculator(char* postfix,QWORD x,QWORD y)
 
 			}
 
+			//保存这个double值
 			push(first);
 		}//是数字
 
 
 
 
+		//第2种：变量
+		else if(postfix[source]=='x')
+		{
+			//push((double)x);
+			source++;
+		}
+		else if(postfix[source]=='y')
+		{
+			//push((double)y);
+			source++;
+		}
+		else if(postfix[source]=='z')
+		{
+			//push((double)z);
+			source++;
+		}
+
+
+
+
+		//第3种：单字节符号
 		else if(postfix[source] == '+')
 		{
 			pop(&second);
@@ -222,6 +243,11 @@ double calculator(char* postfix,QWORD x,QWORD y)
 		{
 			source++;
 		}
+
+
+
+
+		//第4种：多字节符号
 		else if(postfix[source] == 'l')		//对数		xlogy
 		{
 			source++;
@@ -240,14 +266,21 @@ double calculator(char* postfix,QWORD x,QWORD y)
 		{
 			source++;		//下一个
 		}
+		else
+		{
+			source++;			//其他不认识的不管，不加会死这儿
+		}
 
 
 
 
-		else source++;			//不加会死这儿
-
+		//检查退出while循环
 		if(source>=128)break;
 		if(postfix[source]==0)break;
+
+
+
+
 	}//while结束
 
 	pop(&temp);

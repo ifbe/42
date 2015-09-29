@@ -1,4 +1,4 @@
-﻿what:
+what:
 	@echo "make what?"
 .PHONY:linux
 linux:

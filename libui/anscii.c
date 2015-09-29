@@ -253,6 +253,12 @@ void blackstring(int x,int y,char* p)
 		x++;
     }
 }
+void printdouble(int x,int y,double z)
+{
+	char mystring[40];
+	double2decimalstring(z,mystring);
+	string(x,y,mystring);
+}
 
 
 

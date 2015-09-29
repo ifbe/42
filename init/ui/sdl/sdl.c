@@ -1,4 +1,4 @@
-﻿#include<stdlib.h>
+#include<stdlib.h>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_video.h"
 #undef main
