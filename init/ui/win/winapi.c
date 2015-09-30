@@ -426,8 +426,6 @@ void initwindow(QWORD addr,QWORD resolution)
 
 	//拿dc
 	realdc=GetDC(window);
-
-	//diary("inited window\n");
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindow()

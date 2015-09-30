@@ -1,57 +1,49 @@
+#include<stdio.h>
+#include<string.h>
 #include <windows.h>
 #define QWORD unsigned long long
-
-
-
-
+#define DWORD unsigned int
+#define WORD unsigned short
+#define BYTE unsigned char
+void printmemory(char*,int);
 void diary(char* fmt,...);
-void target(QWORD);
 
 
 
 
-void explainarg()
+char* explainarg()
 {
 	//拿到进程的输入arg,决定默认打开谁
 	char* inputarg=GetCommandLine();
-	diary("arg:%s\n",inputarg);
+
+	//第一个是双引号说明是双击打开的,没找不到其他办法......
+	if(inputarg[0]=='\"')
+	{
+		//如果是双击打开的就干掉终端
+		FreeConsole();
+		//HWND consolewindow=GetConsoleWindow();
+		//ShowWindow(consolewindow,SW_HIDE);
+	}
+	//否则就是在cmd里面打开的
+	else
+	{
+		//终端回来
+		AllocConsole();
+		freopen("CONIN$","r",stdin);
+		freopen("CONOUT$","w",stdout);
+		//HWND consolewindow=GetConsoleWindow();
+		//ShowWindow(consolewindow,SW_SHOW);
+	}
+	printmemory(inputarg,100);
 
 	//
 	int i;
-	int signal=0;
-	while(1)
+	for(i=0;i<100;i++)
 	{
-		if(inputarg[i]==0)break;
-		else if(inputarg[i]==0x22)
-		{
-			//记录引号的个数，引号出现在arg0
-			signal++;
-		}
-		else if(inputarg[i]==0x20)
-		{
-			//碰到两次引号之后出现空格，要注意了不出意外就是后面一个！
-			//要是多次空格保持不变0xff就行
-			if(signal==2)signal=0xff;
-		}
-		else
-		{
-			//不是引号不是空格的正常字符 && 此时有信号
-			//就能开干了
-			if(signal==0xff)break;
-		}
+		if(inputarg[i]==0)return 0;
+		if(inputarg[i]==0x20)break;
+	}
 
-		i++;
-	}
-	if(inputarg[i]==0)
-	{
-		//"d:\code\file\a.exe"
-		//比如上面这种，就默认打开扫描到的第一个磁盘
-		target(0);
-	}
-	else
-	{
-		//"d:\code\file\a.exe" d:\code\1.txt
-		//比如上面这种，就默认打开d:\code\1.txt
-		target( (QWORD)(inputarg+i) );
-	}
+	if(inputarg[i+2]<=0x20)return 0;
+	else return inputarg+i+2;	//两个空格
 }

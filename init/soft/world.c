@@ -4,11 +4,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+char* explainarg();
 void initin(unsigned long long);
 void initout(unsigned long long);
 void initlog(unsigned long long);
 void initlist(unsigned long long);
-void explainarg();
+void target(char*);
 
 
 
@@ -29,7 +30,11 @@ static char* world;
 
 __attribute__((constructor(101))) void initworld()
 {
+	//打开方式，打开目标（因为stdin和stdout的缘故，必须在其他init之前）
 	int i;
+	char* p=explainarg();
+
+	//8MB的世界
 	world = (char*)malloc(0x800000);		//8M
 	if(world == NULL)
 	{
@@ -53,8 +58,8 @@ __attribute__((constructor(101))) void initworld()
 	//init [+0x700000,+0x7fffff](mylist)		enumerate()
 	initlist((QWORD)world+0x700000);
 
-	//initarg
-	explainarg();
+	//选一个满意的目标就离开
+	target(p);
 }
 __attribute__((destructor)) void killworld()
 {

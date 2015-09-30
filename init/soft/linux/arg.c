@@ -6,49 +6,35 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void target(char*);
+void diary(char* fmt,...);
 
 
 
 
-
-
-
-void explainarg()
+static char buffer[100];
+char* explainarg()
 {
 	//cmdline
-	char buffer[100];
 	int temp;
 	for(temp=0;temp<100;temp++)buffer[temp]=0;
 	temp=open("/proc/self/cmdline",O_RDONLY);
 	if(temp==-1)diary("error reading cmd line\n");
 	else
 	{
+		memset(buffer,0,100);
 		int i=read(temp,buffer,100);
 		close(temp);
-		//printmemory(buffer,100);
-		diary("cmdline:%s\n",buffer);
+		printmemory(buffer,20);
+		//diary("cmdline:%s\n",buffer);
 	}
 
 	//
-	int signal=0;
 	for(temp=0;temp<100;temp++)
 	{
-		if(buffer[temp]==0)
-		{
-			signal=1;
-		}
-		else            //!=0
-		{
-			if(signal==1)
-			{
-				signal=2;
-				break;
-			}
-		}
+		if(buffer[temp]==0)break;
 	}
 	//diary("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
-	if(signal==2)target(buffer+temp);
-	else target("/dev/sda");
+	if( buffer[temp+1] != 0 )return buffer+temp+1;
+	else return "/dev/sda";
 }
