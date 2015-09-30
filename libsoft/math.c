@@ -8,6 +8,22 @@ void printmemory(char*,int);
 
 
 
+struct mathnode{
+
+        DWORD type;
+        DWORD up;
+        DWORD left;
+        DWORD right;
+        union{
+                char datasize[16];
+                double floatpoint;
+                unsigned long long integer;
+        };
+};
+
+
+
+
 static double stack2[20];
 static int count2=0;
 
@@ -288,3 +304,69 @@ double calculator(char* postfix,QWORD x,QWORD y)
 }
 
 
+
+
+double sketchpad(struct mathnode* node,int x,int y)
+{
+	int source=1;
+	double first,second,temp;
+	double result1,result2;
+	result1=0;
+	while(1)
+	{
+		if( node[source].type == 0x33323130 )	//0123...
+		{
+			push(node[source].floatpoint);
+		}
+		else if( node[source].type == 'x' )
+		{
+			push((double)x);
+		}
+		else if( node[source].type == 'y' )
+		{
+			push((double)y);
+		}
+		else if( node[source].type == 0x2f2a2d2b )		//+-*/...
+		{
+			if( node[source].integer == '+' )
+			{
+				pop(&second);
+				pop(&first);            //注意，栈，先进后出
+				push(first+second);
+			}
+			if( node[source].integer == '-' )
+			{
+				pop(&second);
+				pop(&first);            //注意，栈，先进后出
+				push(first-second);
+			}
+			if( node[source].integer == '*' )
+			{
+				pop(&second);
+				pop(&first);            //注意，栈，先进后出
+				push(first*second);
+			}
+			if( node[source].integer == '/' )
+			{
+				pop(&second);
+				pop(&first);            //注意，栈，先进后出
+				push(first/second);
+			}
+		}
+		else if( node[source].type == 0x3d)	//=
+		{
+			pop(&result1);
+		}
+		else if(node[source].type == 0)
+		{
+			pop(&result2);
+			result2-=result1;
+			break;
+		}
+
+		//
+		source++;
+	}
+
+	return result2;
+}

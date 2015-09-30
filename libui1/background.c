@@ -68,7 +68,7 @@ void background3()
 	DWORD* screenbuf=(DWORD*)screendata();
 
 	//bg
-	for(y=0;y<768*1024;y++)
+	for(y=0;y<32*1024;y++)
 	{
 		screenbuf[y]=0;
 	}

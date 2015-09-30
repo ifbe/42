@@ -12,8 +12,9 @@ static unsigned char* logbuf;
 
 void diary(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 {
+	asm("jmp printf");
+/*
 	printf(rcx,rdx,r8,r9);
-
 	int start=0;
 	int temp=0;
 	QWORD offsety;
@@ -47,7 +48,7 @@ void diary(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 		}
 		temp++;
 	}
-
+*/
 }
 
 

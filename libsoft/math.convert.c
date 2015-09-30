@@ -42,7 +42,7 @@ static void initstack()
 //rsp-8,[rsp]=rax		(sp--,stack[sp]=data)
 static int push(DWORD data)
 {
-	diary("push %d\n",data);
+	//diary("push %d\n",data);
 
 	//满栈
 	if(sp==0)return 0;
@@ -63,7 +63,7 @@ static int pop(DWORD* dest)
 	dest[0]=stack[sp];
 	sp++;
 
-	diary("pop %d\n",dest[0]);
+	//diary("pop %d\n",dest[0]);
 	return 1;
 }
 
@@ -106,7 +106,6 @@ void infix2postfix(char* infix,char* postfix)
 	{
 		switch( infix[source] )
 		{
-			case '=':
 			case 0:		//结束了，把栈里能搬的全搬过去完事
 			{
 				while(1)
@@ -117,6 +116,21 @@ void infix2postfix(char* infix,char* postfix)
 					postfix[dest]=stacktop&0xff;
 					dest++;
 				}
+			}
+			case '=':		//别急还有等式右边呢
+			{
+				while(1)
+				{
+					ret=pop(&stacktop);
+					if(ret<=0)break;
+
+					postfix[dest]=stacktop&0xff;
+					dest++;
+				}
+
+				postfix[dest]='=';
+				dest++;
+				break;
 			}
 			case '(':
 			case '[':		//左括号无条件进栈
@@ -243,8 +257,12 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 
 
-	//init
+	//rsp=128
 	initstack();
+	//====
+	node[0].type=0x3d3d3d3d;
+	//值为0代表算式如:"1+2*[9-6]",	非0代表等式如:"1+2*[9-6]=54.321/x^3"
+	node[0].integer=0;
 
 
 
@@ -254,8 +272,42 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 	dest = 1;		//这一号用掉了
 	while(1)
 	{
+		//结束符
+		if( postfix[source] == 0 )
+		{
+			node[dest].type=0;
+
+			pop(&first);
+			node[0].right=first;
+			break;
+		}
+
+
+
+
+		//等号
+		if( postfix[source] == '=' )
+		{
+			//等号节点，for fun
+                        node[dest].type='=';
+                        node[dest].left=0;
+                        node[dest].right=0;
+                        node[dest].integer=0;
+
+			//point zero to root
+			pop(&first);
+			node[0].left=first;
+			node[0].integer=dest;		//等号的位置
+
+			source++;
+			dest++;
+		}
+
+
+
+
 		//第1种：常量
-		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
+		else if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
 		{
 			//diary("herehere!!!!\n");
 			//先拿整数部分
@@ -441,14 +493,6 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 
 
-
-	//point zero to root
-	pop(&first);
-	node[0].type=0x21212121;
-	node[0].up=0;
-	node[0].left=first;
-	node[0].right=first;
-	node[0].integer=first;
 
 	//debug
 	printmemory((char*)node,0x20*16);

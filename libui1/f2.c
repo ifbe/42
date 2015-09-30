@@ -83,8 +83,8 @@ void printnode(int x,int y,int num)
 	right=node[num].right;
 
 	//偏移
-	offset=1024;
-	temp=y+1;
+	offset=256;
+	temp=y;
 	while(1)
 	{
 		offset >>= 1;
@@ -143,7 +143,7 @@ void printnode(int x,int y,int num)
 
 void f2show()
 {
-	int temp;
+	int left,right;
 	background2();
 
 	string(0,0,buffer);
@@ -151,10 +151,18 @@ void f2show()
 
 	if(node!=0)
 	{
-		temp=node[0].left;
-		if(temp!=0&&temp<128)
+		//等式左边
+		left=node[0].left;
+		if(left!=0&&left<128)
 		{
-			printnode(1024/2,1,temp);
+			printnode(256,1,left);
+		}
+
+		//等式右边
+		right=node[0].right;
+		if(right!=0&&right<128)
+		{
+			printnode(768,1,right);
 		}
 	}
 }

@@ -11,7 +11,6 @@ QWORD screenresolution();
 
 
 
-/*
 void point(int x,int y,int color)
 {
 	DWORD* screenbuf=(DWORD*)screendata();
@@ -20,8 +19,8 @@ void point(int x,int y,int color)
 void draw(int x,int y,int color)
 {
 	DWORD* screenbuf=(DWORD*)screendata();
-	screenbuf[ (x+512) + ((767-y)<<10) ] = color;
-}*/
+	screenbuf[ (x+512) + ((383-y)<<10) ] = color;
+}
 
 
 
