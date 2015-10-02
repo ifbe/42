@@ -97,8 +97,8 @@ win+api:
 	make -s -C libsoft1 win
 	make -s -C libsoft win
 	make -s -C init win+api
-	#gcc -o a.exe \
 	#gcc -o a.exe init/uac.res \
+	#gcc -o a.exe \
 	gcc -o a.exe -mwindows init/uac.res \
 	main/main.a \
 	libui1/libui1.a \

@@ -81,6 +81,8 @@ static int operatorpriority(QWORD operator)
 	else if(operator == '/' )return 2;
 	else if(operator == '^' )return 2;
 	else if(operator == '%' )return 2;
+
+	else return 9;
 }
 
 
@@ -208,9 +210,18 @@ void infix2postfix(char* infix,char* postfix)
 
 				break;
 			}//+,-,*,/,%,^
+			/*
+			case 'c':	//cos
+			{
+				if(infix[source+1]=='0' && infix[source+2]=='s')
+				{
+					source+=2;
+				}
+				break;
+			}
+			*/
 			//case 'l':	log
 			//case 's'	sqrt
-			//case 'c'	cos
 			case ' ':
 			{
 				break;

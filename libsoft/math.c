@@ -306,7 +306,7 @@ double calculator(char* postfix,QWORD x,QWORD y)
 
 
 
-double sketchpad(struct mathnode* node,int x,int y)
+double sketchpad(struct mathnode* node,double x,double y)
 {
 	int source=1;
 	double first,second,temp;
@@ -320,11 +320,11 @@ double sketchpad(struct mathnode* node,int x,int y)
 		}
 		else if( node[source].type == 'x' )
 		{
-			push((double)x);
+			push(x);
 		}
 		else if( node[source].type == 'y' )
 		{
-			push((double)y);
+			push(y);
 		}
 		else if( node[source].type == 0x2f2a2d2b )		//+-*/...
 		{
@@ -352,6 +352,16 @@ double sketchpad(struct mathnode* node,int x,int y)
 				pop(&first);            //注意，栈，先进后出
 				push(first/second);
 			}
+		}
+		else if( node[source].type == 0x736f63 )	//cos
+		{
+			pop(&first);
+			push( cosine(first) );
+		}
+		else if( node[source].type == 0x6e6973 )	//sin
+		{
+			pop(&first);
+			push( sine(first) );
 		}
 		else if( node[source].type == 0x3d)	//=
 		{
