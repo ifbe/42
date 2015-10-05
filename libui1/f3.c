@@ -37,10 +37,14 @@ QWORD whereisworld();
 
 
 //
+static int changed=0;
+static struct mathnode* node;
+
+//
 static char* datahome;
 static double scale;
-static double areax;
-static double areay;
+static double centerx;
+static double centery;
 
 //
 static int count=0;
@@ -55,21 +59,81 @@ static char result[128];
 //
 void f3show()
 {
-	background3();
+	int x,y;
+	int temp,counter;
+	double haha,first,second;
+	DWORD* screenbuf=(DWORD*)screendata();
 
+
+
+
+	//
+	background3();
 	string(0,0,buffer);
+	if(changed==0)return;
+	changed=0;
+
+
+
+
+	//
+	if(node[0].integer == 0)	//简单的算式
+	{
+		//计算器
+		haha=calculator(postfix,0,0);
+		double2decimalstring(haha,result);
+	}
+	else	//有等号的式子才要画图
+	{
+		//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
+		for(y=0;y<768;y++)		//只算符号并且保存
+		{
+			second=centery + (y-384)*scale;
+			for(x=0;x<1024;x++)
+			{
+				first=centerx + (x-512)*scale;
+				haha=sketchpad(node,first,second);
+
+				if(haha>0)datahome[1024*y+x]=1;
+				else datahome[1024*y+x]=-1;
+			}
+		}
+
+		//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
+		for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
+		{
+			temp=(767-y)<<10;
+			for(x=1;x<1023;x++)
+			{
+				counter=0;
+				if( datahome[ temp-1025 + x ] > 0 )counter--;
+				else counter++;
+
+				if( datahome[ temp-1023 + x ] > 0 )counter--;
+				else counter++;
+
+				if( datahome[ temp+1023 + x ] > 0 )counter--;
+				else counter++;
+
+				if( datahome[ temp+1025 + x ] > 0 )counter--;
+				else counter++;
+
+				//上下左右四点符号完全一样，说明没有点穿过
+				if( (counter==4) | (counter==-4) )screenbuf[y*1024+x]=0;
+				else screenbuf[y*1024+x]=0xffffffff;		//否则白色
+			}
+		}
+
+	}//else
+
+
+
 	string(0,1,postfix);
 
 	string(0,2,result);
 }
 void f3message(QWORD type,QWORD key)
 {
-	int x,y;
-	int temp,counter;
-	double haha,first,second;
-	struct mathnode* node;
-	DWORD* screenbuf=(DWORD*)screendata();
-
 	if(type==0x72616863)		//char
 	{
 		if(key==0x8)			//backspace
@@ -82,56 +146,10 @@ void f3message(QWORD type,QWORD key)
 			//134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
 			printmemory(buffer,128);
 			infix2postfix(buffer,postfix);
-
-			//几何画板
 			postfix2binarytree(postfix,&node);
-			if(node[0].integer == 0)	//简单的算式
-			{
-				//计算器
-				haha=calculator(postfix,0,0);
-				double2decimalstring(haha,result);
-			}
-			else	//有等号的式子才要画图
-			{
-				//逻辑(0,0)->(areax,areay),,,,(1023,767)->(areax+scale*1023,areay+scale*767)
-				for(y=0;y<768;y++)		//只算符号并且保存
-				{
-					second=areay + y*scale;
-					for(x=0;x<1024;x++)
-					{
-						first=areax + x*scale;
-						haha=sketchpad(node,first,second);
 
-						if(haha>0)datahome[1024*y+x]=1;
-						else datahome[1024*y+x]=-1;
-					}
-				}
-
-				//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
-				for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
-				{
-					temp=(767-y)<<10;
-					for(x=1;x<1023;x++)
-					{
-						counter=0;
-						if( datahome[ temp-1025 + x ] > 0 )counter--;
-						else counter++;
-
-						if( datahome[ temp-1023 + x ] > 0 )counter--;
-						else counter++;
-
-						if( datahome[ temp+1023 + x ] > 0 )counter--;
-						else counter++;
-
-						if( datahome[ temp+1025 + x ] > 0 )counter--;
-						else counter++;
-
-						//上下左右四点符号完全一样，说明没有点穿过
-						if( (counter==4) | (counter==-4) )screenbuf[y*1024+x]=0;
-						else screenbuf[y*1024+x]=0xffffffff;		//否则白色
-					}
-				}
-			}
+			//告诉打印员
+			changed=1;
 
 			//清空输入区
 			//for(count=0;count<127;count++) buffer[count]=0;
@@ -146,6 +164,19 @@ void f3message(QWORD type,QWORD key)
 			}
 		}
 	}
+	else if(type==0x6c65656877)		//滚轮
+	{
+		if(key<0xff0000)
+		{
+			scale/=1.2;
+		}
+		else if(key>0xff0000)
+		{
+			scale*=1.2;
+		}
+
+		changed=1;
+	}
 }
 
 
@@ -158,7 +189,7 @@ void f3message(QWORD type,QWORD key)
 void f3init(QWORD world)
 {
 	datahome=(char*)world+0x300000;
-	areax=-512;
-	areay=-383;
+	centerx=0.00;
+	centery=0.00;
 	scale=1.00;
 }

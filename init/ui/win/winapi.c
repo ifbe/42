@@ -184,6 +184,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				return 0;
 			}
 		}
+		//case WM_TOUCH:
+		//{
+		//	
+		//}
 		case WM_MOUSEWHEEL:
 		{
 			my1=0x6c65656877;			//wheel	//3;
