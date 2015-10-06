@@ -140,7 +140,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			DragFinish(hDrop);      //释放hDrop
 
 			diary("drag:%s\n",dragpath);
-			my1=0x656c6966706f7264;	//elifpord	//dropfile	//4;
+			my1=0x656c6966706f7264;		//'dropfile'
 			my2=(QWORD)dragpath;
 			solved=0;
 			return 0;
@@ -190,9 +190,57 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//}
 		case WM_MOUSEWHEEL:
 		{
-			my1=0x6c65656877;			//wheel	//3;
-			my2=wparam;
+			if( ((wparam>>16) & 0xffff ) < 0xf000 )
+			{
+				my1=0x6E6F7266207A7978;		//'xyz fron'
+			}
+			else my1=0x6B636162207A7978;		//'xyz back'
+
+			my2=lparam;
 			solved=0;
+			return 0;
+		}
+		case WM_MOUSEMOVE:
+		{
+			if( (leftdown==0xff) && (rightdown==0xff) )	//左右一起按下
+			{
+				GetCursorPos(&pe);		// 获取光标指针的新位置
+				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
+				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
+				MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
+			}
+			return 0;
+		}
+		case WM_LBUTTONUP:
+		{
+			if(leftdown==0xff)
+			{
+				if(rightdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			}
+			else if(leftdown==1)
+			{
+				my1=0x7466656C207A7978;		//'xyz left'
+				my2=lparam;
+				solved=0;
+			}
+
+			leftdown=0;
+			return 0;
+		}
+		case WM_RBUTTONUP:
+		{
+			if(rightdown==0xff)
+			{
+				if(leftdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
+			}
+			else if(rightdown==1)
+			{
+				my1=0x72676968207A7978;		//'xyz righ'
+				my2=lparam;
+				solved=0;
+			}
+
+			rightdown=0;
 			return 0;
 		}
 		case WM_LBUTTONDOWN:		//鼠标左键点下
@@ -220,49 +268,6 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				GetWindowRect(window,&rt);   // 获取窗口位置与大小
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
-			}
-			return 0;
-		}
-		case WM_LBUTTONUP:
-		{
-			if(leftdown==0xff)
-			{
-				if(rightdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			}
-			else if(leftdown==1)
-			{
-				my1=0x7466656c;		//tfel//left	//2;
-				my2=lparam;
-				solved=0;
-			}
-
-			leftdown=0;
-			return 0;
-		}
-		case WM_RBUTTONUP:
-		{
-			if(rightdown==0xff)
-			{
-				if(leftdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			}
-			else if(rightdown==1)
-			{
-				my1=0x7468676972;		//thgir	//right
-				my2=lparam;
-				solved=0;
-			}
-
-			rightdown=0;
-			return 0;
-		}
-		case WM_MOUSEMOVE:
-		{
-			if( (leftdown==0xff) && (rightdown==0xff) )	//左右一起按下
-			{
-				GetCursorPos(&pe);		// 获取光标指针的新位置
-				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
-				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
-				MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
 			}
 			return 0;
 		}

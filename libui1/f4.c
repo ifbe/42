@@ -54,7 +54,7 @@ void f4show()
 }
 void f4message(QWORD type,QWORD key)
 {
-	if(type==0x72616863)		//键盘
+	if(type==0x72616863)		//'kbd'
 	{
 		if(key==0x8)			//backspace
 		{
@@ -85,20 +85,17 @@ void f4message(QWORD type,QWORD key)
 			}
 		}
 	}
-	else if(type==0x6c65656877)
+	else if(type==0x6E6F7266207A7978)		//'xyz fron'
 	{
-		if(key<0xff0000)		//滚轮上
+		DWORD temp=*(DWORD*)(logbuf+0xffff0);
+		if(temp>=0x80*40)		//不够一页不用上翻
 		{
-			DWORD temp=*(DWORD*)(logbuf+0xffff0);
-			if(temp>=0x80*40)		//不够一页不用上翻
-			{
-				if(offset<temp-0x80*40)offset+=0x80;
-			}
+			if(offset<temp-0x80*40)offset+=0x80;
 		}
-		else if(key>0xff0000)	//滚轮下
-		{
-			if(offset>=0x80)offset-=0x80;
-		}
+	}
+	else if(type==0x6B636162207A7978)		//'xyz back'
+	{
+		if(offset>=0x80)offset-=0x80;
 	}
 }
 

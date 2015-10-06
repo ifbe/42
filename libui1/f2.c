@@ -168,7 +168,7 @@ void f2show()
 }
 void f2message(QWORD type,QWORD key)
 {
-	if(type==0x72616863)		//char
+	if(type==0x72616863)		//'char'
 	{
 		if(key==0x8)			//backspace
 		{

@@ -191,7 +191,7 @@ void f1show()
 }
 void f1message(QWORD type,QWORD key)
 {
-	if(type==0x64626b)			//kbd
+	if(type==0x64626b)			//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
 		{
@@ -223,7 +223,7 @@ void f1message(QWORD type,QWORD key)
 			else base+=0x40;
 		}
 	}
-	else if(type==0x72616863)		//char
+	else if(type==0x72616863)		//'char'
 	{
 		if(key==9)					//tab
 		{
@@ -255,7 +255,7 @@ void f1message(QWORD type,QWORD key)
 			}
 		}
 	}
-	else if(type==0x7466656c)		//鼠标
+	else if(type==0x7466656C207A7978)		//'xyz left'
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
@@ -265,16 +265,13 @@ void f1message(QWORD type,QWORD key)
 		//px=x/(1024/0x40);
 		//py=y/(640/40);
 	}
-	else if(type==0x6c65656877)		//滚轮
+	else if(type==0x6E6F7266207A7978)		//'xyz fron'
 	{
-		if(key<0xff0000)
-		{
-			if(base>=0x40)base-=0x40;
-		}
-		else if(key>0xff0000)
-		{
-			base+=0x40;
-		}
+		if(base>=0x40)base-=0x40;
+	}
+	else if(type==0x6B636162207A7978)		//'xyz back'
+	{
+		base+=0x40;
 	}
 }
 
