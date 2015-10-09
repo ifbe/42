@@ -64,7 +64,7 @@ void f3show()
 	int x,y;
 	double haha,first,second;	//只用在"带入坐标算结果"这一步
 	int temp,counter;			//只用在"由算出的结果得到图像"这一步
-	int wanggex,wanggey;		//只用在"画网格这一步"
+	int wanggex,wanggey,wanggesize;		//只用在"画网格这一步"
 	DWORD* screenbuf=(DWORD*)screendata();
 
 
@@ -133,15 +133,16 @@ void f3show()
 		//通过这两个值，得到最靠近屏幕中心的那个”网格上的横竖交汇点“
 		wanggex=512;
 		wanggey=384;
+		wanggesize=100;
 
 		for(y=0;y<768;y++)
 		{
-			for(x=wanggex-500;x<wanggex+500;x+=100)		//10行，100为间隔
+			for(x=wanggex-500;x<=wanggex+500;x+=wanggesize)
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
 		}
-		for(y=wanggey-300;y<wanggey+300;y+=100)		//10行，100为间隔
+		for(y=wanggey-300;y<=wanggey+300;y+=wanggesize)
 		{
 			for(x=0;x<1024;x++)
 			{

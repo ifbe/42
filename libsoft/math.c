@@ -62,6 +62,43 @@ static int pop(double* dest)
 
 
 
+/*
+double _pow(double a, double b) {
+    double c = 1;
+    for (int i=0; i<b; i++)
+        c *= a;
+    return c;
+}
+
+double _fact(double x) {
+    double ret = 1;
+    for (int i=1; i<=x; i++) 
+        ret *= i;
+    return ret;
+}
+
+double _sin(double x) {
+    double y = x;
+    double s = -1;
+    for (int i=3; i<=100; i+=2) {
+        y+=s*(_pow(x,i)/_fact(i));
+        s *= -1;
+    }  
+    return y;
+}
+double _cos(double x) {
+    double y = 1;
+    double s = -1;
+    for (int i=2; i<=100; i+=2) {
+        y+=s*(_pow(x,i)/_fact(i));
+        s *= -1;
+    }  
+    return y;
+}
+double _tan(double x) {
+     return (_sin(x)/_cos(x));  
+}
+
 
 
 
@@ -121,6 +158,166 @@ double squareroot(double x)
     }
 return ret;
 }
+*/
+
+
+
+
+
+
+
+
+double floor(double x)
+{
+	register long double value;
+
+	__volatile unsigned short int cw;
+	__volatile unsigned short int cwtmp;
+	__asm __volatile("fnstcw %0":"=m"(cw));
+	cwtmp = (cw & 0xf3ff) | 0x0400;
+
+	__asm __volatile("fldcw %0"::"m"(cwtmp));
+	__asm __volatile("frndint":"=t"(value):"0"(x));
+	__asm __volatile("fldcw %0"::"m"(cw));
+	return value;
+}
+
+
+
+
+double squareroot(double x)
+{
+	double result;
+	__asm __volatile__( "fsqrt"
+	                    : "=t"(result)
+	                    : "0"(x)
+	);
+	return result;
+}
+/*
+float squareroot(float val)
+{
+    float result;
+    __asm__ __volatile__ ( "fld %1;"
+                           "fsqrt;"
+                           "fstp %0;" 
+                           : "=g" (result) 
+                           : "g" (val)
+    );
+    return result ;
+}
+*/
+
+
+
+
+double sine(double x)
+{
+	double result;
+	__asm __volatile__( "fsin"
+	                    : "=t"(result)
+	                    : "0"(x)
+	);
+	return result;
+}
+/* Convert angle from degrees to radians and then calculate sin value */
+/*
+float sine(float degree)
+{
+    float result, two_right_angles = 180.0f ;
+    __asm__ __volatile__ ( "fld %1;"
+                           "fld %2;"
+                           "fldpi;"
+                           "fmul;"
+                           "fdiv;"
+                           "fsin;"
+                           "fstp %0;"
+                           : "=g" (result) 
+                           : "g" (two_right_angles), "g" (degree)
+    );
+    return result ;
+}
+*/
+
+
+
+
+double cosine(double x)
+{
+	double result;
+	__asm __volatile__( "fcos"
+	                    : "=t"(result)
+	                    : "0"(x)
+	);
+	return result;
+}
+/* Convert angle from degrees to radians and then calculate cos value */
+/*
+float cosine( float degree )
+{
+    float result, two_right_angles = 180.0f, radians ;
+    __asm__ __volatile__ ( "fld %1;"
+                           "fld %2;"
+                           "fldpi;"
+                           "fmul;"
+                           "fdiv;"
+                           "fstp %0;" 
+                           : "=g" (radians)
+                           : "g"(two_right_angles), "g" (degree)
+    );
+
+    __asm__ __volatile__ ( "fld %1;"
+                           "fcos;"
+                           "fstp %0;" 
+                           : "=g" (result)
+                           : "g" (radians)
+    );
+    return result ;
+}
+*/
+
+
+
+
+double myexp(double value, int exp)
+{
+	double temp, texp, temp2;
+	texp = exp;
+
+	__asm ("fscale " 
+		: "=u" (temp2), "=t" (temp) 
+		: "0" (texp), "1" (value)
+	);
+	return (temp);
+}
+
+
+
+
+double log2(double x)
+{
+	//return 1.00;		//........
+    register double result;
+    __asm __volatile__ ("fld1; fxch; fyl2x" 	//use instrucion,not algorithm
+                      : "=t" (result) 		//output
+                      : "0" (x) 		//input
+                      : "st(1)");		//clobbered register
+    return result;
+}
+double lg(double x)
+{
+	return log2(x)/log2(10);
+}
+double ln(double x)
+{
+	return log2(x) / log2(2.7182818284590452353602874713526624977572470936);
+}
+/*
+double log(double what,double y)	//y=10^x	->	x=log(10,y)
+{
+	return log2(y)/log2(what);
+}
+*/
 
 
 

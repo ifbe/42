@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #define QWORD unsigned long long
 #define DWORD unsigned int
 #define WORD unsigned short

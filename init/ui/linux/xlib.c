@@ -76,22 +76,20 @@ void waitevent(QWORD* my1,QWORD* my2)
 		{
 			if(ev.xbutton.button==Button1)
 			{
-				*my1=0x7466656c;
-				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
-				return;
+				*my1=0x7466656C207A7978;	//'xyz left'
 			}
-			if(ev.xbutton.button==Button4)	//down
+			else if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
-				*my1=0x6c65656877;
-				*my2=0xff;
-				return;
+				*my1=0x6E6F7266207A7978;
 			}
-			if(ev.xbutton.button==Button5)	//up
+			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
-				*my1=0x6c65656877;
-				*my2=0xffffffff;
-				return;
+				*my1=0x6B636162207A7978;
 			}
+			else *my1=0x66666666;
+
+			*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+			return;
 		}
 		else if(ev.type==KeyPress)
 		{
