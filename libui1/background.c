@@ -67,7 +67,12 @@ void background3()
 	int x,y;
 	DWORD* screenbuf=(DWORD*)screendata();
 
+	for(x=0;x<1024*768;x++)
+	{
+		screenbuf[x]=0;
+	}
 	//bg
+/*
 	for(y=0;y<64;y++)
 	{
 		for(x=0;x<512;x++)
@@ -75,7 +80,7 @@ void background3()
 			screenbuf[y*1024+x]=0x88888888;
 		}
 	}
-
+*/
 	//line( (384<<16)+0 , (384<<16)+1023 , 0x01234567);
 	//line( 512 , (767<<16)+512 , 0x01234567);
 /*

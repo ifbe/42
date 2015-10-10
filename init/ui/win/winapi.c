@@ -196,7 +196,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			else my1=0x6B636162207A7978;		//'xyz back'
 
-			my2=lparam;
+			GetCursorPos(&pt);
+			ScreenToClient(window, &pt);
+			my2=(pt.y<<16) + pt.x;
+
 			solved=0;
 			return 0;
 		}

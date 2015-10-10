@@ -2,66 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int decstring2data(BYTE* source,QWORD* data);
-void printmemory(char*,int);
-
-
-
-
-struct mathnode{
-
-        DWORD type;
-        DWORD up;
-        DWORD left;
-        DWORD right;
-        union{
-                char datasize[16];
-                double floatpoint;
-                unsigned long long integer;
-        };
-};
-
-
-
-
-static double stack2[20];
-static int count2=0;
-
-
-
-
-static void initstack2()
-{
-	count2=20;
-}
-static int push(double data)
-{
-	//say("push %llf\n",data);
-
-	//满栈
-	if(count2==0)return 0;
-
-	//count2-1(rsp-8)，然后放下这个数字
-	count2--;
-	stack2[count2]=data;
-	return 1;
-}
-static int pop(double* dest)
-{
-	//空栈
-	if(count2>=20)return 0;
-
-	//拿出当前数字，然后count2+1(rsp+8)
-	dest[0]=stack2[count2];
-	count2++;
-
-	//say("pop %llf\n",dest[0]);
-	return 1;
-}
-
-
-
-
 /*
 double _pow(double a, double b) {
     double c = 1;
@@ -159,41 +99,6 @@ double squareroot(double x)
 return ret;
 }
 */
-
-
-
-
-
-
-
-
-double floor(double x)
-{
-	register long double value;
-
-	__volatile unsigned short int cw;
-	__volatile unsigned short int cwtmp;
-	__asm __volatile("fnstcw %0":"=m"(cw));
-	cwtmp = (cw & 0xf3ff) | 0x0400;
-
-	__asm __volatile("fldcw %0"::"m"(cwtmp));
-	__asm __volatile("frndint":"=t"(value):"0"(x));
-	__asm __volatile("fldcw %0"::"m"(cw));
-	return value;
-}
-
-
-
-
-double squareroot(double x)
-{
-	double result;
-	__asm __volatile__( "fsqrt"
-	                    : "=t"(result)
-	                    : "0"(x)
-	);
-	return result;
-}
 /*
 float squareroot(float val)
 {
@@ -207,19 +112,6 @@ float squareroot(float val)
     return result ;
 }
 */
-
-
-
-
-double sine(double x)
-{
-	double result;
-	__asm __volatile__( "fsin"
-	                    : "=t"(result)
-	                    : "0"(x)
-	);
-	return result;
-}
 /* Convert angle from degrees to radians and then calculate sin value */
 /*
 float sine(float degree)
@@ -238,19 +130,6 @@ float sine(float degree)
     return result ;
 }
 */
-
-
-
-
-double cosine(double x)
-{
-	double result;
-	__asm __volatile__( "fcos"
-	                    : "=t"(result)
-	                    : "0"(x)
-	);
-	return result;
-}
 /* Convert angle from degrees to radians and then calculate cos value */
 /*
 float cosine( float degree )
@@ -279,14 +158,181 @@ float cosine( float degree )
 
 
 
-double myexp(double value, int exp)
+
+
+
+
+//绝对值
+double absolute(double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fabs"
+		:"=t" (result)
+		:"0" (x)
+	);
+	return result;
+}
+//取整
+double floor(double x)
+{
+	register long double value;
+
+	__volatile unsigned short int cw;
+	__volatile unsigned short int cwtmp;
+	__asm __volatile("fnstcw %0":"=m"(cw));
+	cwtmp = (cw & 0xf3ff) | 0x0400;
+
+	__asm __volatile("fldcw %0"::"m"(cwtmp));
+	__asm __volatile("frndint":"=t"(value):"0"(x));
+	__asm __volatile("fldcw %0"::"m"(cw));
+	return value;
+}
+
+
+
+
+//平方根
+double squareroot(double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fsqrt"
+		:"=t"(result)
+		:"0"(x)
+	);
+	return result;
+}
+
+
+
+
+//正弦
+double sine(double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fsin"
+		:"=t"(result)
+		:"0"(x)
+	);
+	return result;
+}
+//余弦
+double cosine(double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fcos"
+		:"=t"(result)
+		:"0"(x)
+	);
+	return result;
+}
+//正切
+double tan (double x)
+{
+	register double result;
+	register double __value2 __attribute__ ((unused));
+	__asm __volatile__
+	(
+		"fptan"
+		:"=t" (__value2), "=u" (result) 
+		:"0" (x)
+	);
+	return result;
+}
+
+
+
+
+double arcworker(double y, double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fpatan\n\t"
+		//"fldl %%st(0)"
+		:"=t" (result)
+		:"0" (x), "u" (y)
+	);
+	return result;
+}
+//反正弦
+double asin (double x)
+{
+	return arcworker (x, squareroot (1.0 - x * x));
+}
+//反余弦
+double acos (double x)
+{
+	return arcworker (squareroot (1.0 - x * x), x);
+}
+//反正切
+double atan (double x)
+{
+	register double result;
+	__asm __volatile__
+	(
+		"fld1\n\t"
+		"fpatan"
+		: "=t" (result)
+		: "0" (x)
+	);
+	return result;
+}
+
+
+
+
+//以2位底的对数
+double log2(double x)
+{
+	//return 1.00;		//........
+    register double result;
+    __asm __volatile__
+	(
+		"fld1; fxch; fyl2x" 	//use instrucion,not algorithm
+		:"=t" (result) 			//output
+		:"0" (x) 				//input
+		:"st(1)"				//clobbered register
+	);
+    return result;
+}
+//以10位底的对数
+double lg(double x)
+{
+	return log2(x)/log2(10);
+}
+//以e位底的对数
+double ln(double x)
+{
+	return log2(x) / log2(2.7182818284590452353602874713526624977572470936);
+}
+//其他对数
+double logarithm(double y,double base)	//y=base^x	->	x=log(y,base)
+{
+	return log2(y)/log2(base);
+}
+
+
+
+
+//result=value*(2^exp)
+double fscale(double value, int exp)
 {
 	double temp, texp, temp2;
 	texp = exp;
 
-	__asm ("fscale " 
-		: "=u" (temp2), "=t" (temp) 
-		: "0" (texp), "1" (value)
+	__asm __volatile__
+	(
+		"fscale " 
+		:"=u" (temp2), "=t" (temp) 
+		:"0" (texp), "1" (value)
 	);
 	return (temp);
 }
@@ -294,286 +340,83 @@ double myexp(double value, int exp)
 
 
 
-double log2(double x)
+//result=2^x-1+1
+double f2xm1(double x)
 {
-	//return 1.00;		//........
-    register double result;
-    __asm __volatile__ ("fld1; fxch; fyl2x" 	//use instrucion,not algorithm
-                      : "=t" (result) 		//output
-                      : "0" (x) 		//input
-                      : "st(1)");		//clobbered register
+	double result;
+	__asm __volatile__
+	(
+		"f2xm1"
+		:"=t" (result)
+		:"0" (x)
+	);
+	return result+1;
+}
+//result=x^y
+double power(double x, double y)
+{
+    float one = 1;
+    double result;
+    __asm __volatile__
+	(
+        "frndint\n"
+        ".byte 0xdc, 0xe9\n"
+        "fxch\n"
+        "fldl %[x]\n"
+        "fyl2x\n"
+        "f2xm1\n"
+        "fadds %[one]\n"
+        "fscale\n"
+        : "=t"(result)
+        : [x]"m"(x), "0"(y), "u"(y), [one]"m"(one)
+        : "%st(1)", "%st(7)"
+    );
     return result;
 }
-double lg(double x)
-{
-	return log2(x)/log2(10);
-}
-double ln(double x)
-{
-	return log2(x) / log2(2.7182818284590452353602874713526624977572470936);
-}
 /*
-double log(double what,double y)	//y=10^x	->	x=log(10,y)
+double pow (double x, double y)
 {
-	return log2(y)/log2(what);
-}
-*/
+	register double __value, __exponent;
+	long p = (long) y;
 
-
-
-
-double calculator(char* postfix,QWORD x,QWORD y)
-{
-	int source=0;
-	int count;
-	QWORD data;
-	double first,second,temp;
-
-	initstack2();
-
-	while(1)
+	if (x == 0.0 && y > 0.0)return 0.0;
+	if (y == (double) p)
 	{
-		//第1种：常量
-		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
+		double r = 1.0;
+		if (p == 0)return 1.0;
+		if (p < 0)
 		{
-			//先拿整数部分
-			count = decstring2data( postfix+source , &data );
-			source += count;
-			first = (double)data;
-
-			//检查有没有小数部分有就加上
-			if(postfix[source] == '.')
-			{
-				//say(".@%d\n",source);
-				source++;
-				count=decstring2data( postfix+source , &data );
-
-				if(count>0)
-				{
-					source += count;
-					temp = (double)data;
-
-					while(1)
-					{
-						temp /= 10.00;
-
-						count--;
-						if(count==0)break;
-					}
-
-					//加上小数
-					first+=temp;
-				}
-
-			}
-
-			//保存这个double值
-			push(first);
-		}//是数字
-
-
-
-
-		//第2种：变量
-		else if(postfix[source]=='x')
-		{
-			//push((double)x);
-			source++;
+			p = -p;
+			x = 1.0 / x;
 		}
-		else if(postfix[source]=='y')
+		while (1)
 		{
-			//push((double)y);
-			source++;
+			if (p & 1)
+			r *= x;
+			p >>= 1;
+			if (p == 0)return r;
+			x *= x;
 		}
-		else if(postfix[source]=='z')
-		{
-			//push((double)z);
-			source++;
-		}
-
-
-
-
-		//第3种：单字节符号
-		else if(postfix[source] == '+')
-		{
-			pop(&second);
-			pop(&first);		//注意，栈，先进后出
-			temp = first + second;
-			push(temp);
-
-			source++;
-		}
-		else if(postfix[source] == '-')
-		{
-			pop(&second);
-			pop(&first);
-			temp=first-second;
-			push(temp);
-
-			source++;
-		}
-		else if(postfix[source] == '*')
-		{
-			pop(&second);
-			pop(&first);
-			temp=first*second;
-			push(temp);
-
-			source++;
-		}
-		else if(postfix[source] == '/')
-		{
-			pop(&second);
-			pop(&first);
-			temp=first/second;
-			push(temp);
-
-			source++;
-		}
-		else if(postfix[source] == '^') 	//指数		x^y
-		{
-			pop(&second);
-			pop(&first);
-
-			temp=1.00;
-			data=(QWORD)(second+0.000001);
-			if(data!=0) while(1)
-			{
-				temp*=first;
-				data--;
-				if(data==0)break;
-			}
-			push(temp);
-
-			source++;
-		}
-		else if(postfix[source] == '%') 	//取余		x%y
-		{
-			source++;
-		}
-		else if(postfix[source] == '!') 	//阶乘		x!
-		{
-			source++;
-		}
-
-
-
-
-		//第4种：多字节符号
-		else if(postfix[source] == 'l')		//对数		xlogy
-		{
-			source++;
-		}
-		else if(postfix[source] == 's')
-		{
-			//根号		ysqrty
-			//正弦		sinx
-			source++;		//下一个
-		}
-		else if(postfix[source] == 'c') 	//余弦		cosx
-		{
-			source++;		//下一个
-		}
-		else if(postfix[source] == 't') 	//正切		tanx
-		{
-			source++;		//下一个
-		}
-		else
-		{
-			source++;			//其他不认识的不管，不加会死这儿
-		}
-
-
-
-
-		//检查退出while循环
-		if(source>=128)break;
-		if(postfix[source]==0)break;
-
-
-
-
-	}//while结束
-
-	pop(&temp);
-	return temp;
-}
-
-
-
-
-double sketchpad(struct mathnode* node,double x,double y)
-{
-	int source=1;
-	double first,second,temp;
-	double result1,result2;
-	result1=0;
-	while(1)
-	{
-		if( node[source].type == 0x33323130 )	//0123...
-		{
-			push(node[source].floatpoint);
-		}
-		else if( node[source].type == 'x' )
-		{
-			push(x);
-		}
-		else if( node[source].type == 'y' )
-		{
-			push(y);
-		}
-		else if( node[source].type == 0x2f2a2d2b )		//+-*/...
-		{
-			if( node[source].integer == '+' )
-			{
-				pop(&second);
-				pop(&first);            //注意，栈，先进后出
-				push(first+second);
-			}
-			if( node[source].integer == '-' )
-			{
-				pop(&second);
-				pop(&first);            //注意，栈，先进后出
-				push(first-second);
-			}
-			if( node[source].integer == '*' )
-			{
-				pop(&second);
-				pop(&first);            //注意，栈，先进后出
-				push(first*second);
-			}
-			if( node[source].integer == '/' )
-			{
-				pop(&second);
-				pop(&first);            //注意，栈，先进后出
-				push(first/second);
-			}
-		}
-		else if( node[source].type == 0x736f63 )	//cos
-		{
-			pop(&first);
-			push( cosine(first) );
-		}
-		else if( node[source].type == 0x6e6973 )	//sin
-		{
-			pop(&first);
-			push( sine(first) );
-		}
-		else if( node[source].type == 0x3d)	//=
-		{
-			pop(&result1);
-		}
-		else if(node[source].type == 0)
-		{
-			pop(&result2);
-			result2-=result1;
-			break;
-		}
-
-		//
-		source++;
+		//NOTREACHED
 	}
+	__asm __volatile__
+    (
+		"fmul	%%st(1)		# y * log2(x)\n\t"
+		"fstl	%%st(1)\n\t"
+		"frndint			# int(y * log2(x))\n\t"
+		"fxch\n\t"
+		"fsub	%%st(1)		# fract(y * log2(x))\n\t"
+		"f2xm1			# 2^(fract(y * log2(x))) - 1\n\t"
+		: "=t" (__value), "=u" (__exponent) 
+		:  "0" (__log2 (x)), "1" (y)
+	);
 
-	return result2;
-}
+	__value += 1.0;
+	__asm __volatile__
+	(
+		"fscale"
+		: "=t" (__value) 
+		: "0" (__value), "u" (__exponent)
+	);
+	return __value;
+}*/
