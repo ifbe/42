@@ -27,18 +27,21 @@ void printmemory(QWORD addr,QWORD size)
 	BYTE* printaddr=(BYTE*)addr;
 	int i,j;
 
-	//1111111111111111111111
-	diary("[----addr----]");
-	for(i=0;i<=0xf;i++)
+	//打印的很少就不显示这些了
+	if(size>0x10)
 	{
-		diary("%2x ",i);
+		diary("[----addr----]");
+		for(i=0;i<=0xf;i++)
+		{
+			diary("%2x ",i);
+		}
+		diary("[----anscii----]\n");
 	}
-	diary("[----anscii----]\n");
 
 	//2222222222222222222222222
 	for(j=0;j<size/16;j++)
 	{
-		if(j%16 == 0)diary("%-14llx",addr+j*16);
+		if(j%16 == 0)diary("@%-13llx",addr+j*16);
 		else diary("+%-13x",j*16);
 
 		for(i=0;i<=0xf;i++)
@@ -65,6 +68,8 @@ void printmemory(QWORD addr,QWORD size)
 //4:         [---|--where,----------------|----]      //传进来一块，前面不要，后面也不要
 //5:             |  [where,]              |           //传进来一块，全要
 //6:             |  [---where,------------|----]      //传进来一块，后面不要
+//来源物理扇区，来源扇区数量，来源代表哪里
+//目的内存地址，目的字节数量，目的需要哪里
 void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere)
 {
 	//关键:读到哪儿，读哪号扇区，读几个扇区
@@ -101,7 +106,7 @@ void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere
 	}
 
 	readmemory(rdi,rsi,0,rcx);
-	diary("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
-	diary("want:%llx,to:%llx\n",wantwhere,towhere);
-	diary("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
+	//diary("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
+	//diary("want:%llx,to:%llx\n",wantwhere,towhere);
+	//diary("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
 }

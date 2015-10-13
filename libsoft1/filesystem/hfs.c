@@ -344,15 +344,17 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		*(QWORD*)(rdi+0x10)=filetype;
 
 		//[0x20,0x3f]:名字
-		i=BSWAP_16(*(WORD*)(datahome+offset+6));
+		i=BSWAP_16(*(WORD*)(datahome+offset+6));	//namelength=*(byte*)(rsi+6)
 		//diary("%x@%x\n",i,offset);
-		if(i>=0x1f)i=0x1f;
-		for(;i>=0;i--)	//namelength=*(byte*)(rsi+6)
+		if(i>0x1f)i=0x1f;
+		//for(;i>=0;i--)
+		while(i>0)
 		{
+			i--;
 			*(BYTE*)(rdi+0x20+i)=*(BYTE*)(datahome+offset+9+i*2);
-			//diary("%c",*(BYTE*)(datahome+offset+9+i*2));
 		}
-		if(*(DWORD*)(rdi+0x20) == 0) *(DWORD*)rdi=0x3f3f3f3f;
+		//diary("%s\n",(char*)(rdi+0x20));
+		if(*(DWORD*)(rdi+0x20) == 0) *(DWORD*)(rdi+0x20)=0x3f3f3f3f;
 
 
 

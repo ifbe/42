@@ -5,14 +5,14 @@
 
 
 //memory
-static QWORD diskhome;
-static QWORD fshome;
-static QWORD mftbuffer;
-static QWORD dirhome;
-static QWORD datahome;
+static QWORD diskhome;			//[0x000000,0x0fffff]
+static QWORD fshome;			//[0x100000,0x10ffff]
+	static QWORD mft0;			//[0x110000,0x11ffff]
+	static QWORD mftbuffer;		//[0x120000,0x1fffff]
+static QWORD dirhome;			//[0x200000,0x2fffff]
+static QWORD datahome;			//[0x300000,0x3fffff]
 
 //disk
-static QWORD diskaddr;
 static QWORD ntfssector;
 static QWORD clustersize;
 static QWORD mftcluster;
@@ -51,7 +51,7 @@ void explainrun(QWORD runaddr,long long* offset,long long* count)
 		temp=(temp<<8)+(QWORD)run[i];
 	}
 	//diary("runcount:%x\n",temp);
-	*count=temp*clustersize;
+	*count=temp*clustersize*0x200;
 
 	//簇号
 	i=low4bit+high4bit;
@@ -77,13 +77,14 @@ void explainrun(QWORD runaddr,long long* offset,long long* count)
 
 
 //目的地是哪里，datarun那一串数字在哪里，你要的是哪里
-void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
+void datarun(QWORD targetaddr,QWORD runaddr,QWORD want,QWORD max)
 {
 	//变量们
 	long long offset=0;
 	QWORD count=0;
 	QWORD logicpos=0;
 
+	//printmemory(dirhome,0x40);
 	//每个run来一次
 	while(1)
 	{
@@ -93,31 +94,32 @@ void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
 
 		//这个以及后面再也没有想要的了
 		//diary("%x,%x\n",want+0x100000,logicpos);
-		if(want+0x100000<=logicpos)break;
+		if(want+0x80000<=logicpos)break;
 
 		//拿到这一大块的扇区号和扇区数量
 		explainrun(runaddr,&offset,&count);
-		diary("run@:%x,sector:%x,count:%x\n",runaddr,ntfssector+offset,count);
+		printmemory(runaddr,0x10);
+		diary("sector=%x,count=%x\n",ntfssector+offset,count);
 
 		//要是这个不要，看看下一个怎么样
-		if(logicpos+count*0x200>want)
+		if(logicpos+count>want)
 		{
 			//读进内存
 			//传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
 			//readmemory(rdi,ntfssector+offset,diskaddr,count);
-			holyshit(ntfssector+offset,count,logicpos,want,targetaddr);
+			holyshit(ntfssector+offset,count/0x200,logicpos,want,targetaddr);
 		}
 		//准备下一轮
 		runaddr= runaddr + 1 + (QWORD)(data & 0xf) + (QWORD)(data >> 4);
-		logicpos+=count*0x200;
+		logicpos+=count;
 	}
+	//printmemory(dirhome,0x40);
 }
 
 
 
 
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
-static BYTE mft0[1024];
 static QWORD firstmftincache;
 QWORD checkcacheformft(QWORD mftnum)
 {
@@ -151,7 +153,7 @@ QWORD checkcacheformft(QWORD mftnum)
 
 			QWORD temp=(QWORD)mft0+offset;
 			temp+=(*(QWORD*)(temp+0x20));
-			datarun(mftbuffer,temp,thistime*0x400);
+			datarun(mftbuffer,temp,thistime*0x400,0x80000);
 			firstmftincache=thistime;
 			break;
 		}
@@ -181,7 +183,7 @@ void explain80(QWORD addr,QWORD want)	//file data
 	else
 	{
 		diary("non resident80@%x\n",addr);
-		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want);
+		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want,0x80000);
 	}
 }
 
@@ -245,11 +247,17 @@ QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 			if(buffer[0x20+i]==0) break;
 			if(i>=0x20) break;
 		}
+		diary
+		(
+			"%llx,%llx,%llx,%s\n",
+			*(QWORD*)buffer,*(QWORD*)(buffer+8),*(QWORD*)(buffer+0x10),buffer+0x20
+		);
 
 		//下一个文件
 		temp+= *(WORD*)(temp+0x8);
 		buffer+=0x40;
 	}
+	//printmemory(rdi,0x200);
 	return (QWORD)buffer;
 }
 
@@ -289,7 +297,7 @@ void explaina0(QWORD addr)	//index allocation
 
 	//读INDX进来
 	diary("a0@%x{\n",addr);
-	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0);
+	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0 , 0x100000);
 	//printmemory(datahome,0x1000);
 
 	//解释INDX成易懂的格式：名字，编号，类型，大小
@@ -302,6 +310,7 @@ void explaina0(QWORD addr)	//index allocation
 		QWORD count=p + ( *(DWORD*)(p+0x1c) )-start;
 
 		rdi=explainindex(rdi,start,count);
+		//printmemory(dirhome,0x200);
 		p+=0x1000;
 	}
 
@@ -546,7 +555,8 @@ int mountntfs(QWORD addr,QWORD which)
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
 	fshome=addr+0x100000;
-		mftbuffer=fshome+0x10000;
+		mft0=fshome+0x10000;
+		mftbuffer=fshome+0x20000;
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
@@ -564,7 +574,7 @@ int mountntfs(QWORD addr,QWORD which)
 	explainntfshead(datahome,fshome);
 
 	//保存开头几个mft
-	readmemory((QWORD)mft0,ntfssector+mftcluster*clustersize,diskaddr,1);
+	readmemory((QWORD)mft0,ntfssector+mftcluster*clustersize,0,2);
 	//printmemory(mft0,0x400);
 
 	//cd /

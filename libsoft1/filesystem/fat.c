@@ -157,7 +157,7 @@ static void fat16_root()
 	//而数据区最大0xffff个簇记录*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	diary("reading whole fat table\n");
 	readmemory(fatbuffer,fat0,0,0x100);
-	printmemory(fatbuffer,0x1000);
+	//printmemory(fatbuffer,0x1000);
 
 	diary("cd %x\n",fat0+fatsize*2);
 	readmemory(datahome,fat0+fatsize*2,0,32);	//0x40000=0x20*0x200
