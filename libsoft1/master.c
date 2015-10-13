@@ -2,10 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
-
-
-
 //in libsoft1/
 void mountext(QWORD,QWORD);
 void mountfat(QWORD,QWORD);
@@ -43,9 +39,13 @@ static QWORD datahome;		//+3m
 static QWORD diskinfo;		//+7m
 
 //3大函数的位置
-int (*explain)(QWORD id);		//((int (*)(QWORD))(explain))(value);
-int (*cd)(QWORD id);		//((int (*)(QWORD))(cd))(arg1);
-int (*load)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(load))(arg1,temp*0x100000);
+int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
+int (*fscd)(QWORD id);		//((int (*)(QWORD))(fscd))(arg1);
+int (*fsload)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
+
+
+
+
 
 
 
@@ -93,61 +93,24 @@ void hello()		//你究竟是个什么？
 		diary("don't know\n");
 	}
 }
-
-
-
-
-int searchthis(char* name,QWORD* addr)
+int directread(char* arg1)
 {
-	QWORD temp=dirhome;
-	for(;temp<dirhome+0x1000;temp+=0x40)
-	{
-		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
-		if( compare( name , (char*)temp ) == 0 )
-		{
-			*addr=temp;
-			printmemory(temp,0x40);
-			return 0;
-		}
-	}
-
-	diary("file not found\n");
-	return -1;
+	QWORD value;
+	hexstring2data(arg1,&value);
+	
+	readmemory(datahome,value,0,1);
+	printmemory(datahome,0x200);
+	diary("above is:%x,%x\n",value,value+7);
 }
-int mount(QWORD which)
-{
-	//清理buffer1
-	cleanmemory(fshome,0x300000);
 
-	//搞谁，是啥
-	QWORD* this=(QWORD*)(diskhome+0x40*which);
-	QWORD type=this[2];
 
-	//不同种类的分区，不同的处理
-	if(type == 0x747865)		//ext
-	{
-		mountext(diskhome,which);
-	}
-	else if(type == 0x746166)		//fat
-	{
-		mountfat(diskhome,which);
-	}
-	else if(type == 0x736668)		//hfs
-	{
-		mounthfs(diskhome,which);
-	}
-	else if(type == 0x7366746e)		//ntfs
-	{
-		mountntfs(diskhome,which);
-	}
 
-	//给函数指针赋值
-	if(this[4] < 0xffff)return -1;
-	explain=(void*)( this[4] );
-	cd=(void*)( this[5] );
-	load=(void*)( this[6] );
-}
-void choose(QWORD arg1)
+
+
+
+
+
+void choose(char* arg1)
 {
 	cleanmemory(diskhome,0x400000);
 	if( (QWORD)arg1 == 0 )
@@ -170,8 +133,128 @@ void choose(QWORD arg1)
 	else
 	{
 		//检查这是个什么玩意
-		target(arg1);
+		target((QWORD)arg1);
 		hello();
+	}
+}
+int mount(char* arg1)
+{
+	if((QWORD)arg1==0)
+	{
+		hello();
+		return 1;
+	}
+
+	//else
+	QWORD which;
+	QWORD* this;
+
+	hexstring2data(arg1,&which);
+	this=(QWORD*)(diskhome+0x40*which);
+	cleanmemory(fshome,0x300000);
+
+	//不同种类的分区，不同的处理
+	if(this[2] == 0x747865)		//ext
+	{
+		mountext(diskhome,which);
+	}
+	else if(this[2] == 0x746166)		//fat
+	{
+		mountfat(diskhome,which);
+	}
+	else if(this[2] == 0x736668)		//hfs
+	{
+		mounthfs(diskhome,which);
+	}
+	else if(this[2] == 0x7366746e)		//ntfs
+	{
+		mountntfs(diskhome,which);
+	}
+
+	//给函数指针赋值
+	if(this[4] < 0xffff)return -1;
+	fsexplain=(void*)( this[4] );
+	fscd=(void*)( this[5] );
+	fsload=(void*)( this[6] );
+}
+int explain(char* arg1)
+{
+	QWORD value;
+	hexstring2data(arg1,&value);
+
+	diary("explainer@%llx\n",fsexplain);
+	fsexplain(value);
+}
+void ls(char* arg1)
+{
+	diary("id              size            type                name\n");
+	QWORD addr=dirhome;
+	for(;addr<dirhome+0x1000;addr+=0x40)
+	{
+		if(*(QWORD*)(addr+0x20)==0)break;
+		diary
+		(
+			"%-12llx    %-12llx    %-12x    %-31.31s\n",
+			*(QWORD*)(addr+0),*(QWORD*)(addr+8),*(QWORD*)(addr+0x10),(char*)(addr+0x20)
+		);
+	}
+	//printmemory(dirhome,0x1000);
+}
+
+
+
+
+
+
+
+
+int searchthis(char* name,QWORD* addr)
+{
+	QWORD temp=dirhome;
+	for(;temp<dirhome+0x1000;temp+=0x40)
+	{
+		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
+		if( compare( name , (char*)(temp+0x20) ) == 0 )
+		{
+			*addr=temp;
+			printmemory(temp,0x40);
+			return 0;
+		}
+	}
+
+	diary("file not found\n");
+	return -1;
+}
+int cd(char* arg1)
+{
+	QWORD addr;
+	if( searchthis(arg1,&addr) < 0 )return -1;		//没找到
+
+	//change directory
+	fscd( *(QWORD*)(addr+0) );
+}
+int load(char* arg1)
+{
+	//寻找这个文件名，得到id，type，size
+	QWORD addr;
+	if( searchthis(arg1,&addr) < 0 )return -1;
+
+	QWORD id=*(QWORD*)(addr+0);
+	QWORD size=*(QWORD*)(addr+8);
+	if(size>0x100000)diary("warning:large file\n");
+
+	QWORD temp=0;
+	//1m,1m,1m的整块搞
+	for(;temp<( size&0xfffffff00000 );temp+=0x100000)
+	{
+		fsload(id,temp);
+		mem2file(datahome,arg1,temp,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
+	}
+	//最后的零头(要是size=1m的整数倍，就没有零头)
+	if(temp<size)
+	{
+		fsload(id,temp);
+		mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 	}
 }
 
@@ -206,86 +289,31 @@ void command(char* buffer)
 	}
 	else if(compare( arg0 , "choose" ) == 0)
 	{
-		choose((QWORD)arg1);
+		choose(arg1);
 	}
 	else if(compare( arg0 , "read" ) == 0)
 	{
-		QWORD value;
-		hexstring2data(arg1,&value);
-		
-		readmemory(datahome,value,0,1);
-		printmemory(datahome,0x200);
-		diary("above is:%x,%x\n",value,value+7);
+		directread(arg1);
 	}
 	else if(compare( arg0 , "mount" ) == 0)
 	{
-		if(arg1==0)
-		{
-			hello();
-			return;
-		}
-		else
-		{
-			//字符串转值
-			QWORD value;
-			hexstring2data(arg1,&value);
-
-			//挂载选定分区
-			mount(value);		//第几个功能，字符串地址
-		}
-	}
-	else if(compare( arg0 , "explain" ) == 0)
-	{
-		QWORD value;
-		hexstring2data(arg1,&value);
-
-		diary("explainer@%llx\n",explain);
-		explain(value);
-	}
-	else if(compare( arg0 , "cd" ) == 0)
-	{
-		QWORD addr;
-		if( searchthis(arg1,&addr) < 0 )return;		//没找到
-
-		//change directory
-		cd( *(QWORD*)(addr+0x10) );
+		mount(arg1);
 	}
 	else if(compare( arg0 , "ls" ) == 0)
 	{
-		diary("name                special id          type                size\n");
-		QWORD addr=dirhome;
-		for(;addr<dirhome+0x1000;addr+=0x40)
-		{
-			if(*(QWORD*)addr==0)break;
-			diary("%-16.16s    %-16llx    %-16llx    %-16llx\n",
-			(char*)addr,*(QWORD*)(addr+0x10),*(QWORD*)(addr+0x20),*(QWORD*)(addr+0x30));
-		}
-		diary("\n");
+		ls(arg1);
+	}
+	else if(compare( arg0 , "explain" ) == 0)
+	{
+		explain(arg1);
+	}
+	else if(compare( arg0 , "cd" ) == 0)
+	{
+		cd(arg1);
 	}
 	else if(compare( arg0 , "load" ) == 0)
 	{
-		//寻找这个文件名，得到id，type，size
-		QWORD addr;
-		if( searchthis(arg1,&addr) < 0 )return;
-		QWORD id=*(QWORD*)(addr+0x10);
-		QWORD type=*(QWORD*)(addr+0x20);
-		QWORD size=*(QWORD*)(addr+0x30);
-		if(size>0x100000)diary("warning:large file\n");
-
-
-		QWORD temp=0;
-		//1m,1m,1m的整块搞
-		for(;temp<( size&0xfffffff00000 );temp+=0x100000)
-		{
-			load(id,temp);
-			mem2file(datahome,arg1,temp,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
-		}
-		//最后的零头(要是size=1m的整数倍，就没有零头)
-		if(temp<size)
-		{
-			load(id,temp);
-			mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
-		}
+		load(arg1);
 	}
 	else
 	{

@@ -1,40 +1,21 @@
-/*
-一.ext物理结构如下
-单独的每粒瓜子-->一个扇区(512或者4096字节？，硬盘读写的基本单位)
-很多粒装进一袋-->一个块(由几个扇区组成)
-很多袋装进一箱-->一个块组(由很多块组成)
-很多箱放满仓库-->一个分区(由很多块组组成)
-
-
-二.ext逻辑结构如下
-所有文件或者目录由inode记录管理，每个group一部分inode
-文件inode记录文件所有信息，如：大小，权限，位置，扇区数，等等
-找inode的方法是计算在第几组，计算它是组内第几个，然后读就行了
-找到inode就找到了文件或者目录项，得到大小，位置和扇区然后把文件从磁盘提取到内存即可
-
-
-三.具体某一种东西的结构
-什么是一个块组：(这里每个[]表示一个块):
-(第一组且每block扇区数2):		[bootsector]			[superblock]		[groupdescriptor0]	[groupdescriptor1]	[groupdescriptor2]......
-(第一组且每block扇区数4,8,16):	[bootsector+superblock]	[groupdescriptor0]	[groupdescriptor1]	[groupdescriptor2]	[groupdescriptor3]
-(其他组不管):					[superblock]			[groupdescriptor0]	[groupdescriptor1]	[groupdescriptor2]	[groupdescriptor3]
-
-什么是一个目录：
-[张三疯，1732号，120斤][李四合院，8号，99斤][王二百五十六，11130号，101斤][麻子，55号，115斤]
-
-什么是一个文件：
-床前明月光，自挂东南枝。谁知盘中餐，红掌拨清波。
-*/
 #define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void diary(char* fmt,...);
+
+
 
 
 //memory
 static QWORD diskhome;
 static QWORD fshome;
-	static QWORD inodebuffer;
+	static QWORD inodebuffer;	//故意空格的
 static QWORD dirhome;
 static QWORD datahome;
 
@@ -44,14 +25,6 @@ static QWORD blocksize;
 static QWORD groupsize;
 static QWORD inodepergroup;
 static QWORD inodesize;
-
-
-//用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
-void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void diary(char* fmt,...);
 
 
 
@@ -245,20 +218,23 @@ static void explaindirectory()
 		//diary("%x\n",*(WORD*)(rsi+4));
 		//printmemory(rsi,0x10);
 
-		//1.名字
+		//[0,7]inode号
+		QWORD thisinode=*(DWORD*)rsi;
+		*(QWORD*)(rdi+0)=thisinode;
+
+		//[8,f]:size，ext的目录表里面没有文件大小，需要到inode表里面寻找
+		QWORD inodeaddr=checkcacheforinode(thisinode);
+		*(QWORD*)(rdi+8)=*(DWORD*)(inodeaddr+4);
+
+		//[0x10,0x17]:type
+		*(QWORD*)(rdi+0x10)=*(BYTE*)(rsi+7);
+
+		//[0x20,0x3f]:名字
 		i=0;
 		for(i=0;i<*(BYTE*)(rsi+6);i++)	//namelength=*(byte*)(rsi+6)
 		{
-			*(BYTE*)(rdi+i)=*(BYTE*)(rsi+8+i);
+			*(BYTE*)(rdi+0x20+i)=*(BYTE*)(rsi+8+i);
 		}
-		//2.inode号
-		QWORD thisinode=*(DWORD*)rsi;
-		*(QWORD*)(rdi+0x10)=thisinode;
-		//3.type
-		*(QWORD*)(rdi+0x20)=*(BYTE*)(rsi+7);
-		//4.size，ext的目录表里面没有文件大小，需要到inode表里面寻找
-		QWORD inodeaddr=checkcacheforinode(thisinode);
-		*(QWORD*)(rdi+0x30)=*(DWORD*)(inodeaddr+4);
 
 		//最后指向下一个
 		rsi+=*(WORD*)(rsi+4);

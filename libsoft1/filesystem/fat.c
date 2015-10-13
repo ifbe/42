@@ -2,6 +2,14 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void diary(char* fmt,...);
+
+
 
 
 //memory
@@ -17,14 +25,6 @@ static QWORD fat0;			//fat表所在扇区
 static QWORD fatsize;		//fat表总共的扇区数量
 static QWORD cluster0;		//0号簇所在扇区
 static QWORD clustersize;	//每个簇的扇区数量
-
-
-//用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
-void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void diary(char* fmt,...);
 
 
 
@@ -46,8 +46,21 @@ static void explaindirectory()
 		if( rsi[0xb] !=0xf ){		//fat ignore
 		if( rsi[0] !=0xe5 ){		//not deleted
 		if( *(QWORD*)rsi !=0 ){		//have name
-			//name
-			j=0;
+
+			//[0,7]:cluster
+			QWORD temp;
+			temp=((QWORD)(*(WORD*)(rsi+0x14)))<<16; //high
+			temp+=(QWORD)(*(WORD*)(rsi+0x1a));  //low
+			*(QWORD*)(rdi+0)=temp;
+
+			//[0x8,0xf]:size
+			*(QWORD*)(rdi+8)=*(DWORD*)(rsi+0x1c);
+
+			//[0x10,0x17]:type
+			rdi[0x10]=rsi[0xb];
+
+			//[0x20,0x3f]:name
+			j=0x20;
 			for(i=0;i<8;i++)
 			{
 				if(rsi[i]!=0x20)
@@ -71,15 +84,6 @@ static void explaindirectory()
 					j++;
 				}
 			}
-			//cluster
-			QWORD temp;
-			temp=((QWORD)(*(WORD*)(rsi+0x14)))<<16; //high
-			temp+=(QWORD)(*(WORD*)(rsi+0x1a));  //low
-			*(QWORD*)(rdi+0x10)=temp;
-			//type
-			rdi[0x20]=rsi[0xb];
-			//size
-			*(QWORD*)(rdi+0x30)=*(DWORD*)(rsi+0x1c);
 			//
 			rdi+=0x40;
 		}

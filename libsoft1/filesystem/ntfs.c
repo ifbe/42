@@ -74,6 +74,8 @@ void explainrun(QWORD runaddr,long long* offset,long long* count)
 }
 
 
+
+
 //目的地是哪里，datarun那一串数字在哪里，你要的是哪里
 void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
 {
@@ -110,6 +112,8 @@ void datarun(QWORD targetaddr,QWORD runaddr,QWORD want)
 		logicpos+=count*0x200;
 	}
 }
+
+
 
 
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
@@ -159,6 +163,8 @@ QWORD checkcacheformft(QWORD mftnum)
 }
 
 
+
+
 void explain80(QWORD addr,QWORD want)	//file data
 {
 	if( *(BYTE*)(addr+8) == 0 )
@@ -180,7 +186,9 @@ void explain80(QWORD addr,QWORD want)	//file data
 }
 
 
-//输:(好看的数据)目标位置，(INDX里面诡异的数据)位置，字节数量
+
+
+//输入:(好看的数据)目标位置，(INDX里面诡异的数据)位置，字节数量
 //返回:下一次翻译到哪里(现在解释到了哪)
 QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 {
@@ -193,18 +201,12 @@ QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 		if( rsi+rcx <= temp) break;
 		if( *(DWORD*)(temp+8) <= 0x18 ) break;
 
-		//1.名字
-		for(i=0;i<*(BYTE*)(temp+0x50);i++)
-		{
-			if(i>=0x10) break;
-			buffer[i]= *(BYTE*)(temp+0x52+i*2);
-		}
-		//2.mft号
 		QWORD mftnum=(*(QWORD*)temp)&0xffffffffffff;
-		*(QWORD*)(buffer+0x10)=mftnum;
-		//3,4.从mft里面拿type和size
 		QWORD thismft=checkcacheformft(mftnum);
 		QWORD offset=*(WORD*)(thismft+0x14);
+
+		//[0,7]=mft号
+		*(QWORD*)(buffer+0)=mftnum;
 		while(1)
 		{
 			if(offset > 0x400) break;
@@ -223,12 +225,25 @@ QWORD explainindex(QWORD rdi,QWORD rsi,QWORD rcx)
 
 				QWORD property30body=thismft+offset;
 				property30body += *(WORD*)(property30body+0x14);
-				*(QWORD*)(buffer+0x20)=*(DWORD*)(property30body+0x38);
-				*(QWORD*)(buffer+0x30)=*(QWORD*)(property30body+0x30);
+
+				//[8,f]=size
+				*(QWORD*)(buffer+8)=*(QWORD*)(property30body+0x30);
+
+				//[10,17]=type
+				*(QWORD*)(buffer+0x10)=*(DWORD*)(property30body+0x38);
 				break;
 			}
 			//offset=下一个property地址
 			offset += *(DWORD*)(thismft+offset+4);
+		}
+
+		//[0x20,0x3f]名字
+		for(i=0;i<*(BYTE*)(temp+0x50);i++)
+		{
+			buffer[0x20+i]= *(BYTE*)(temp+0x52+i*2);
+
+			if(buffer[0x20+i]==0) break;
+			if(i>=0x20) break;
 		}
 
 		//下一个文件

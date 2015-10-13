@@ -57,48 +57,56 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 void filelist()
 {
 	//clean
-	int i=0,j=0;
-	for(i=0;i<0x100*10;i++)
+	int tempfd;
+	struct stat st;
+	QWORD source=0,dest=0;
+	for(dest=0;dest<0x100*10;dest++)
 	{
-		diskinfo[i]=0;
+		diskinfo[dest]=0;
 	}
 
 	//enumerate
-	int tempfd;
-	for(i=0;i<10;i++)
+	dest=(QWORD)diskinfo;
+	for(source=0;source<10;source++)
 	{
-		diskname[7]=i+'a';
+		diskname[7]=source+'a';
 		//printf("diskname:%s\n",diskname);
 		tempfd = open(diskname,O_RDONLY);
-		if(tempfd != -1)
+		if(tempfd == -1)break;
+		else
 		{
-			printf("%d,%s:%x\n",i,diskname,tempfd);
 			close(tempfd);
 
-			*(QWORD*)(diskinfo+0x100*j)=*(QWORD*)diskname;
-			*(WORD*)(diskinfo+0x100*j+8)=0;
-			j++;
+			//[0,7]:id
+			*(QWORD*)(dest+0)=source;
+
+			//[8,f]:size
+			stat(diskname,&st);
+			*(QWORD*)(dest+8)=st.st_size;
+
+			//[0x10,0xff(0x3f)]:name
+			*(QWORD*)(dest+0x10)=*(QWORD*)diskname;
+			*(WORD*)(dest+0x18)=0;
+
+			//next
+			printf( "%x,%x:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
+			dest += 0x100;
 		}
 	}
 }
 void filetarget(char* wantpath)
 {
 	//testopen
-	int tempfd=open(wantpath,O_RDONLY);
+	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
 		diary("can't open:%s\n",wantpath);
-		return;
 	}
 	else close(tempfd);
 
 	//realopen
 	if(thisfd!=-1)close(thisfd);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
-	if(thisfd == -1)
-	{
-		diary("can't open:%s\n",wantpath);
-	}
 }
 void fileread(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {

@@ -289,8 +289,11 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 	}
 
 	//第一个是当前目录信息（也就是.）
-	*(QWORD*)rdi='.';		//1.name
-	*(QWORD*)(rdi+0x10)=wantcnid;		//2.cnid
+	*(QWORD*)(rdi+0)=wantcnid;		//[0,7]=cnid
+	//*(QWORD*)(rdi+8)=0;		//[0,7]=size
+	//*(QWORD*)(rdi+0x10)=0;		//[0,7]=type
+	//*(QWORD*)(rdi+0x18)=0;		//[0,7]=?
+	*(QWORD*)(rdi+0x20)='.';		//[0x20,0x3f]=name
 	rdi+=0x40;
 
 	//这俩控制循环次数
@@ -323,38 +326,44 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		if(key<wantcnid)continue;
 		//diary("key:%x,in:%llx\n",key,nodenum);
 
+	
+
+
+		//[0,7]:cnid号
 		int keylen=BSWAP_16(*(WORD*)(datahome+offset));
-		//1.名字
-		WORD namelen=BSWAP_16(*(WORD*)(datahome+offset+6));
-		//diary("%x@%x\n",namelen,offset);
-		if(namelen>=0xf)namelen=0xf;
-		i=0;
-		for(i=0;i<namelen;i++)	//namelength=*(byte*)(rsi+6)
-		{
-			*(BYTE*)(rdi+i)=*(BYTE*)(datahome+offset+9+i*2);
-			//diary("%c",*(BYTE*)(datahome+offset+9+i*2));
-		}
-		//2.cnid号
-		*(QWORD*)(rdi+0x10)=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen+0x8));
-		//3.type
+		*(QWORD*)(rdi+0)=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen+0x8));
+
+		//[8,f]:size
 		QWORD filetype=BSWAP_16(*(WORD*)(datahome+offset+2+keylen));
-		*(QWORD*)(rdi+0x20)=filetype;
-		//4.size
 		if(filetype==2)
 		{
-			*(QWORD*)(rdi+0x30)=BSWAP_64(*(QWORD*)(datahome+offset+2+keylen+0x58));
+			*(QWORD*)(rdi+8)=BSWAP_64(*(QWORD*)(datahome+offset+2+keylen+0x58));
 		}
 
+		//[0x10,0x17]:type
+		*(QWORD*)(rdi+0x10)=filetype;
+
+		//[0x20,0x3f]:名字
+		i=BSWAP_16(*(WORD*)(datahome+offset+6));
+		//diary("%x@%x\n",i,offset);
+		if(i>=0x1f)i=0x1f;
+		for(;i>=0;i--)	//namelength=*(byte*)(rsi+6)
+		{
+			*(BYTE*)(rdi+0x20+i)=*(BYTE*)(datahome+offset+9+i*2);
+			//diary("%c",*(BYTE*)(datahome+offset+9+i*2));
+		}
+		if(*(DWORD*)(rdi+0x20) == 0) *(DWORD*)rdi=0x3f3f3f3f;
 
 
 
-		if(*(DWORD*)rdi == 0) *(DWORD*)rdi=0x3f3f3f3f;
 		rdi+=0x40;
 		if(rdi>=dirhome+0xfffc0)break;
 
 	}//大while(1)循环
 
 }//函数结束
+
+
 
 
 //所谓cd，就是把fathercnid=want的那些记录，翻译成容易看懂的格式：名字，id，种类，大小

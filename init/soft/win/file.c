@@ -59,38 +59,90 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 HANDLE hDev;
 char* fileinfo;
+static char tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
+static QWORD getsize(HANDLE hand,char* path,void* dest)
+{
+	//diary("%llx\n",*(QWORD*)path);
+	if( *(QWORD*)path == 0x737968505c2e5c5c )
+	{
+		//磁盘大小这么拿
+		GET_LENGTH_INFORMATION out;
+		DWORD count;
+		int ret;
+
+		//
+		ret=DeviceIoControl
+		(
+			hand,
+			IOCTL_DISK_GET_LENGTH_INFO,
+			NULL,
+			0,
+			&out,
+			sizeof(GET_LENGTH_INFORMATION),
+			(LPDWORD)&count,
+			NULL
+		);
+		if(ret==FALSE)
+		{
+			diary("can't get size:%llx\n",GetLastError());
+		}
+
+		//
+		*(QWORD*)dest=out.Length.QuadPart;
+	}
+	else
+	{
+		//文件大小这么拿
+		GetFileSizeEx( hand , (PLARGE_INTEGER)dest );
+	}
+}
 void filelist()
 {
 	//printf("enu file\n");
 	//暂时根本不管是什么，默认就是当前第一个硬盘
-	BYTE tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
-	DWORD i=0;
-	char* p=(char*)fileinfo;
-	for(i=0;i<0x10000;i++)
+	char* p;
+	QWORD source=0,dest=0;
+
+	//clear
+	p=(char*)fileinfo;
+	for(dest=0;dest<0x10000;dest++)
 	{
 		//全部清零
-		p[i]=0;
+		p[dest]=0;
 	}
-	for(i=0;i<10;i++)
+
+	//
+	dest=(QWORD)fileinfo;
+	for(source=0;source<10;source++)
 	{
-		tempname[17]=0x30+i;
+		tempname[17]=0x30+source;
 		HANDLE temphandle=CreateFile(tempname,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
-			//
-			CloseHandle(temphandle);
-			printf("%d    \\\\.\\PHYSICALDRIVE%d\n",i,i);
+			//[0,7]:id
+			*(QWORD*)(dest+0)=source;
 
-			//打开成功的，path才会不等于0
+			//[8,f]:size
+			getsize( temphandle , tempname , (void*)(dest+8) );
+
+			//[0x10,0xff(0x3f)]:name
 			int j;
+			p=(char*)(dest+0x10);
 			for(j=0;j<20;j++)
 			{
-				p[i*0x100+j]=tempname[j];
+				p[j]=tempname[j];
 			}
-		}
-		else
-		{
-			//printf("physicaldrive%d,GetLastError()=:%d\n",i,GetLastError());
+
+			//close
+			CloseHandle(temphandle);
+
+			//next
+			printf
+			(
+				"%llx    ,    %llx    :    %s\n" ,
+				*(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10)
+			);
+			dest += 0x100;
 		}
 	}//10个记录
 }
@@ -100,12 +152,11 @@ void filetarget(QWORD in)
 	if( in >100 )		//是一个内存地址
 	{
 		//第1种可能：文件的路径（比如d:\image\name.img）
-		diary("file:%s\n",(char*)in);
 		path=(char*)in;
 	}
 	else		//是一个数字
 	{
-		path=fileinfo+0x100*in;
+		path=fileinfo+0x100*in+0x10;
 
 		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
 		//if( *(DWORD*)path == 0x5c2e5c5c )
@@ -127,7 +178,11 @@ void filetarget(QWORD in)
 	if(hDev!=NULL)CloseHandle(hDev);
 	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 
-	return;
+	//size
+	QWORD size=0;
+	getsize(hDev,path,(void*)&size);
+
+	diary("(%s    ,    %llx)\n",path,size);
 }
 //目的内存地址，来源首扇区，无视，总字节数
 void fileread(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
