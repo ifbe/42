@@ -157,6 +157,7 @@ static void fat16_root()
 	//而数据区最大0xffff个簇记录*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	diary("reading whole fat table\n");
 	readmemory(fatbuffer,fat0,0,0x100);
+	printmemory(fatbuffer,0x1000);
 
 	diary("cd %x\n",fat0+fatsize*2);
 	readmemory(datahome,fat0+fatsize*2,0,32);	//0x40000=0x20*0x200
@@ -273,7 +274,6 @@ static int fat32_cd(QWORD id)
 
 
 
-/*
 void explainfat16head(QWORD in,QWORD out)
 {
 	//准备本程序需要的变量
@@ -325,7 +325,7 @@ void explainfat32head(QWORD in,QWORD out)
 
 	cluster0=fat0+fatsize*2-clustersize*2;
 	diary("cluster0:%x\n",cluster0);
-}*/
+}
 int mountfat(QWORD addr,QWORD which)
 {
 	//diary("%llx\n",(QWORD)fat32_explain);
@@ -372,7 +372,7 @@ int mountfat(QWORD addr,QWORD which)
 		this[6]=(QWORD)fat16_load;
 
 		//
-		//explainfat16head(datahome,out);
+		explainfat16head(datahome,fshome);
 
 		//change directory /
 		fat16_root();
@@ -386,7 +386,7 @@ int mountfat(QWORD addr,QWORD which)
 		this[6]=(QWORD)fat32_load;
 
 		//
-		//explainfat32head(datahome,out);
+		explainfat32head(datahome,fshome);
 
 		//change directory /
 		fat32_root();
