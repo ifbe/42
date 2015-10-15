@@ -205,22 +205,34 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		case WM_MOUSEMOVE:
 		{
-			if( (leftdown==0xff) && (rightdown==0xff) )	//左右一起按下
+			//diary("moving\n");
+			if(leftdown>0)
 			{
+				//diary("moving\n");
 				GetCursorPos(&pe);		// 获取光标指针的新位置
-				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
-				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
-				MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
+
+				if(rightdown==0xff)		//左右一起按下
+				{
+					re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
+					re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
+					MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
+				}
+
+				else		//只是左键在拖动
+				{
+					my1=0x65766F6D207A7978;		//'xyz move'
+					my2=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
+					solved=0;
+
+					//diary("%d,%d\n",pe.x,pe.y);
+					GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+				}
 			}
 			return 0;
 		}
 		case WM_LBUTTONUP:
 		{
-			if(leftdown==0xff)
-			{
-				if(rightdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			}
-			else if(leftdown==1)
+			if(leftdown==1)
 			{
 				my1=0x7466656C207A7978;		//'xyz left'
 				my2=lparam;
@@ -232,11 +244,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		case WM_RBUTTONUP:
 		{
-			if(rightdown==0xff)
-			{
-				if(leftdown==0xff)ReleaseCapture();            // 释放鼠标捕获，恢复正常状态
-			}
-			else if(rightdown==1)
+			if(rightdown==1)
 			{
 				my1=0x72676968207A7978;		//'xyz righ'
 				my2=lparam;
@@ -249,11 +257,11 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			leftdown=1;
+			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+
 			if(rightdown>0)
 			{
 				leftdown=rightdown=0xff;
-				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
-				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 				GetWindowRect(window,&rt);   // 获取窗口位置与大小
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
@@ -263,11 +271,11 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_RBUTTONDOWN:
 		{
 			rightdown=1;
+			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+
 			if(leftdown>0)
 			{
 				leftdown=rightdown=0xff;
-				SetCapture(window);		// 设置鼠标捕获(防止光标跑出窗口失去鼠标热点)
-				GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 				GetWindowRect(window,&rt);   // 获取窗口位置与大小
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度

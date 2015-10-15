@@ -255,12 +255,19 @@ void f3message(QWORD type,QWORD key)
 	}
 	else if(type==0x7466656C207A7978)		//'xyz left'
 	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-
 		//浮动框以外的
 		//px=x/(1024/0x40);
 		//py=y/(640/40);
+	}
+	else if(type==0x65766F6D207A7978)		//'xyz move'
+	{
+		int dx=(int)(short)(key&0xffff);
+		int dy=(int)(short)((key>>16)&0xffff);
+		diary("%d,%d\n",dx,dy);
+
+		centerx -= scale*dx;
+		centery += scale*dy;
+		changed=1;
 	}
 	else if(type==0x6E6F7266207A7978)		//'xyz fron'
 	{
@@ -287,6 +294,8 @@ void f3message(QWORD type,QWORD key)
 		scale*=1.2;
 		changed=1;
 	}
+	//else if(type==0x6B636162207A7978)		//'xyz ++++'
+	//else if(type==0x6B636162207A7978)		//'xyz ----'
 }
 
 
