@@ -6,6 +6,14 @@
 #define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
+//用了别人的
+void printmemory(QWORD addr,QWORD size);
+void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void whereislogicworld(QWORD* in);
+void holyshit(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
+void diary(char* fmt,...);
+
+
 
 
 //系统或者各种东西提供好的memory，这几个变量仅仅记录了位置
@@ -23,14 +31,6 @@ static QWORD nodesize;
 //记下几个节点号
 static QWORD rootnode;
 static QWORD firstleafnode;
-
-
-//用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
-void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
-void diary(char* fmt,...);
 
 
 
@@ -460,8 +460,14 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 			QWORD count=BSWAP_32(*(DWORD*)(forkaddr+4+i*0x50));
 			if(fileblock==0)break;
 
-			//蛋又碎了，传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
-			holyshit(fileblock*blocksize,count*blocksize,logicwhere,wantwhere,datahome);
+			//蛋又碎了，传进去的参数为：
+			//前三个：这一块的物理扇区号，扇区数，逻辑位置，
+			//后三个：目标位置，目标大小，需求位置
+			holyshit
+			(
+				fileblock*blocksize,count*blocksize,logicwhere,
+				datahome,0x80000,wantwhere
+			);
 
 			//下一块位置修改
 			logicwhere+=count*blocksize*0x200;

@@ -198,7 +198,7 @@ void ls(char* arg1)
 			*(QWORD*)(addr+0),*(QWORD*)(addr+8),*(QWORD*)(addr+0x10),(char*)(addr+0x20)
 		);
 	}
-	printmemory(dirhome,0x1000);
+	//printmemory(dirhome,0x1000);
 }
 
 

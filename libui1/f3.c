@@ -46,6 +46,9 @@ static char* datahome;
 static double scale;
 static double centerx;
 static double centery;
+		//datahome 里面存放计算得到的值的符号
+		//scale=“屏幕”上两个点对于“世界”上的距离
+		//centerxy = “屏幕”对应“世界”哪个点
 
 //
 static int count=0;
@@ -59,12 +62,33 @@ static char result[128];
 
 
 
+//得到haha：1<haha<10
+//得到counter：十的多少次方
+void kexuejishufa(double* haha,int* counter)
+{
+	if( (*haha) < 1.00 )
+	{
+		while( (*haha) < 1.00 )
+		{
+			(*haha) *= 10.00;
+			(*counter) --;
+		}
+	}
+	else
+	{
+		while( (*haha) > 10.00 )
+		{
+			(*haha) /= 10.00;
+			(*counter) ++;
+		}
+	}
+}
 //
 void f3show()
 {
-	int x,y;
-	double haha,first,second;	//只用在"带入坐标算结果"这一步
-	int temp,counter;			//只用在"由算出的结果得到图像"这一步
+	int x,y,value,counter;
+	double first,second,haha;
+
 	int wanggex,wanggey,wanggesize;		//只用在"画网格这一步"
 	DWORD* screenbuf=(DWORD*)screendata();
 
@@ -91,32 +115,36 @@ void f3show()
 		//背景
 		background3();
 
+
+
+
 		//准备"画网格"
-		//centerxy=“屏幕”对应“世界”哪个点
-		//scale=“屏幕”上两个点对于“世界”上的距离
-		//通过这两个值，得到最靠近屏幕中心的那个”网格上的横竖交汇点“
+		//wanggesize = 两行网格之间的"屏幕"距离
+		//wanggex,wanggey = 最靠近屏幕中心的那个”网格上的横竖交汇点“
+		haha=scale;
+		counter=0;
+		kexuejishufa(&haha,&counter);
+		wanggesize=(int)(250.00/haha);
+
 		wanggex=512;
 		wanggey=384;
 
-		haha=scale;
-		if(haha<1.00)
-		{
-			while(haha<1.00)haha*=10.00;
-		}
-		else
-		{
-			while(haha>10.00)haha/=10.00;
-		}
-		wanggesize=(int)(250.00/haha);
 
-		//画上网格
-		for(y=0;y<768;y++)
+
+
+		//画上网格,以及网格上对应那一行的x,y坐标值
+		for(x=wanggex-wanggesize;x>0;x-=wanggesize)
 		{
-			for(x=wanggex-wanggesize;x>0;x-=wanggesize)
+			printdouble(x,y,1.2233);
+
+			for(y=0;y<768;y++)
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
-			for(x=wanggex;x<1024;x+=wanggesize)
+		}
+		for(x=wanggex;x<1024;x+=wanggesize)
+		{
+			for(y=0;y<768;y++)
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
@@ -134,13 +162,12 @@ void f3show()
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
-		}
+		}//网格
 
-		//再然后是网格上对应那一行的x,y坐标值
-		//double2decimalstring();
-		//string();
 
-		//带入一百万个坐标算结果
+
+
+		//带入75万个坐标算结果
 		//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
 		for(y=0;y<768;y++)		//只算符号并且保存
 		{
@@ -153,32 +180,35 @@ void f3show()
 				if(haha>0)datahome[1024*y+x]=1;
 				else datahome[1024*y+x]=-1;
 			}
-		}
+		}//calculate results
+
+
+
 
 		//由算出的结果得到图像
 		//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
 		for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
 		{
-			temp=(767-y)<<10;
+			value=(767-y)<<10;
 			for(x=1;x<1023;x++)
 			{
 				counter=0;
-				if( datahome[ temp-1025 + x ] > 0 )counter--;
+				if( datahome[ value-1025 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ temp-1023 + x ] > 0 )counter--;
+				if( datahome[ value-1023 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ temp+1023 + x ] > 0 )counter--;
+				if( datahome[ value+1023 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ temp+1025 + x ] > 0 )counter--;
+				if( datahome[ value+1025 + x ] > 0 )counter--;
 				else counter++;
 
 				//上下左右四点符号完全一样，说明没有点穿过
 				if( (counter!=4) && (counter!=-4) )screenbuf[y*1024+x]=0xffffffff;		//否则白色
 			}
-		}
+		}//result2img
 
 	}//else
 

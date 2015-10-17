@@ -6,7 +6,7 @@
 void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
-void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void holyshit(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
 void diary(char* fmt,...);
 
 
@@ -163,9 +163,14 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 			sector*=blocksize;	//乘以每块多少扇区，现在sector=分区内偏移多少个扇区
 			sector+=block0;		//加上分区相对硬盘开始多少个扇区
 
-			//蛋碎了，拼回来。。。
-			//传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
-			holyshit(sector,count,aaaaa,wantwhere,datahome);
+			//蛋碎了，拼回来。。。传进去的参数为：
+			//前三个；这一块的物理扇区号，扇区数，逻辑位置
+			//后三个：目标位置，目标大小，需求位置
+			holyshit
+			(
+				sector,count,aaaaa,
+				datahome,0x80000,wantwhere
+			);
 		}
 
 		return 1;

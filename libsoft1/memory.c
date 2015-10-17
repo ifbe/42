@@ -70,7 +70,11 @@ void printmemory(QWORD addr,QWORD size)
 //6:             |  [---where,------------|----]      //传进来一块，后面不要
 //来源物理扇区，来源扇区数量，来源代表哪里
 //目的内存地址，目的字节数量，目的需要哪里
-void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere)
+void holyshit
+(
+	QWORD sector,QWORD count,QWORD where,
+	QWORD destaddr,QWORD destsize,QWORD wantwhere
+)
 {
 	//关键:读到哪儿，读哪号扇区，读几个扇区
 	QWORD rdi=0;
@@ -80,33 +84,33 @@ void holyshit(QWORD sector,QWORD count,QWORD where,QWORD wantwhere,QWORD towhere
 	//改rdi,rsi,rcx数值
 	if(where<wantwhere)		//3和4
 	{
-		rdi=towhere;
+		rdi=destaddr;
 		rsi=sector+(wantwhere-where)/0x200;
-		if(where+count*0x200<=wantwhere+0x100000)
+		if(where+count*0x200<=wantwhere+destsize)
 		{
 			rcx=count-(wantwhere-where)/0x200;
 		}
 		else
 		{
-			rcx=0x100000/0x200;
+			rcx=destsize/0x200;
 		}
 	}
 	else
 	{
-		rdi=towhere+(where-wantwhere);
+		rdi=destaddr+(where-wantwhere);
 		rsi=sector;
-		if(where+count*0x200<=wantwhere+0x100000)
+		if(where+count*0x200<=wantwhere+destsize)
 		{
 			rcx=count;
 		}
 		else
 		{
-			rcx=(wantwhere+0x100000-where)/0x200;
+			rcx=(wantwhere+destsize-where)/0x200;
 		}
 	}
 
 	readmemory(rdi,rsi,0,rcx);
 	//diary("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
-	//diary("want:%llx,to:%llx\n",wantwhere,towhere);
+	//diary("want:%llx,to:%llx\n",wantwhere,destaddr);
 	//diary("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
 }

@@ -26,7 +26,7 @@ static int ntfspwd;
 void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
-void holyshit(QWORD sector,QWORD count,QWORD logicpos,QWORD want,QWORD addr);
+void holyshit(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
 void diary(char* fmt,...);
 
 
@@ -107,7 +107,11 @@ void datarun(QWORD targetaddr,QWORD runaddr,QWORD want,QWORD max)
 			//读进内存
 			//传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
 			//readmemory(rdi,ntfssector+offset,diskaddr,count);
-			holyshit(ntfssector+offset,count/0x200,logicpos,want,targetaddr);
+			holyshit
+			(
+				ntfssector+offset,count/0x200,logicpos,
+				targetaddr,0x80000,want
+			);
 		}
 		//准备下一轮
 		runaddr= runaddr + 1 + (QWORD)(data & 0xf) + (QWORD)(data >> 4);
