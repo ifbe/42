@@ -16,6 +16,7 @@ struct mathnode{
 };
 void background3();
 
+void printdouble(int x,int y,double z);
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
@@ -135,8 +136,7 @@ void f3show()
 		//画上网格,以及网格上对应那一行的x,y坐标值
 		for(x=wanggex-wanggesize;x>0;x-=wanggesize)
 		{
-			printdouble(x,y,1.2233);
-
+			printdouble(10,20,1.2233);
 			for(y=0;y<768;y++)
 			{
 				screenbuf[y*1024+x]=0x44444444;
