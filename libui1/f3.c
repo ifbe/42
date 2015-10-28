@@ -85,12 +85,12 @@ void kexuejishufa(double* haha,int* counter)
 	}
 }
 //
-void f3show()
+void printcalc()
 {
 	int x,y,value,counter;
 	double first,second,haha;
 
-	int wanggex,wanggey,wanggesize;		//只用在"画网格这一步"
+	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	DWORD* screenbuf=(DWORD*)screendata();
 
 
@@ -119,50 +119,36 @@ void f3show()
 
 
 
-		//准备"画网格"
-		//wanggesize = 两行网格之间的"屏幕"距离
-		//wanggex,wanggey = 最靠近屏幕中心的那个”网格上的横竖交汇点“
+		//准备"画网格",必须确定3个量：哪个点，间距
+		//wantge:x,y,size = 屏幕上的某个交汇点的x,	交汇点的y,	两行的间距
 		haha=scale;
 		counter=0;
 		kexuejishufa(&haha,&counter);
-		wanggesize=(int)(250.00/haha);
+		wanggedistance=(int)(250.00/haha);
 
-		wanggex=512;
-		wanggey=384;
+		wanggex=512 % wanggedistance;
+		wanggey=384 % wanggedistance;
 
 
 
 
 		//画上网格,以及网格上对应那一行的x,y坐标值
-		for(x=wanggex-wanggesize;x>0;x-=wanggesize)
-		{
-			printdouble(10,20,1.2233);
+		for(x=wanggex;x<1024;x+=wanggedistance)
+		{//竖线
 			for(y=0;y<768;y++)
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
-		}
-		for(x=wanggex;x<1024;x+=wanggesize)
-		{
-			for(y=0;y<768;y++)
-			{
-				screenbuf[y*1024+x]=0x44444444;
-			}
-		}
-		for(y=wanggey-wanggesize;y>0;y-=wanggesize)
-		{
+		}//竖线
+
+		for(y=wanggey;y<768;y+=wanggedistance)
+		{//横线
 			for(x=0;x<1024;x++)
 			{
 				screenbuf[y*1024+x]=0x44444444;
 			}
-		}
-		for(y=wanggey;y<768;y+=wanggesize)
-		{
-			for(x=0;x<1024;x++)
-			{
-				screenbuf[y*1024+x]=0x44444444;
-			}
-		}//网格
+		}//横线
+		printdouble(wanggex/8,wanggey/16,1.2233);
 
 
 
@@ -221,6 +207,26 @@ skipthese:
 	string(0,1,infix);
 	string(0,2,postfix);
 	string(0,3,result);
+}
+
+
+
+
+
+
+
+
+void f3show()
+{
+	/*
+	if math->printcalc
+	if filesystem->printfilesystem
+	if netpackage->printnet
+	if mmio->printmmio
+	if what->printwhat
+	if ...->...
+	*/
+	printcalc();
 }
 void f3message(QWORD type,QWORD key)
 {
