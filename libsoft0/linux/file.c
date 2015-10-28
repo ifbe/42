@@ -89,7 +89,7 @@ void filelist()
 			*(WORD*)(dest+0x18)=0;
 
 			//next
-			printf( "%x,%x:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
+			printf( "%llx,%llx:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
 			dest += 0x100;
 		}
 	}

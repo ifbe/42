@@ -37,6 +37,8 @@ Atom wmDelete;
 
 int width=1024;
 int height=768;
+int oldx=0;
+int oldy=0;
 
 
 
@@ -74,21 +76,51 @@ void waitevent(QWORD* my1,QWORD* my2)
 		}
 		else if(ev.type==ButtonPress)
 		{
-			if(ev.xbutton.button==Button1)
-			{
-				*my1=0x7466656C207A7978;	//'xyz left'
-			}
-			else if(ev.xbutton.button==Button4)	//'xyz fron'
+			//printf("buttonpress\n");
+			if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
 				*my1=0x6E6F7266207A7978;
+				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+				return;
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
 				*my1=0x6B636162207A7978;
+				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+				return;
 			}
-			else *my1=0x66666666;
 
-			*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+			else if(ev.xbutton.button==Button1)
+			{
+				oldx=ev.xbutton.x;
+				oldy=ev.xbutton.y;
+			}
+
+			continue;
+		}
+		else if(ev.type==ButtonRelease)
+		{
+			//printf("buttonrelease\n");
+			if(ev.xbutton.button==Button1)
+			{
+				if( (oldx==ev.xbutton.x) && (oldy==ev.xbutton.y) )
+				{
+					*my1=0x7466656C207A7978;	//'xyz left'
+					*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+					return;
+				}
+			}
+		}
+		else if(ev.type==MotionNotify)
+		{
+			int temp=(ev.xbutton.x-oldx)*(ev.xbutton.y-oldy);
+			if(temp<0)temp=-temp;
+			if(temp<64)continue;
+
+			*my1=0x65766F6D207A7978;         //'xyz move'
+			*my2=( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx;
+			oldx=ev.xbutton.x;
+			oldy=ev.xbutton.y;
 			return;
 		}
 		else if(ev.type==KeyPress)
@@ -144,7 +176,15 @@ void initwindow(QWORD mypixel)
 	// intercept window delete event 
 	wmDelete=XInternAtom(dsp, "WM_DELETE_WINDOW", True);
 	XSetWMProtocols(dsp, win, &wmDelete, 1);
-	XSelectInput(dsp, win, KeyPressMask|ButtonPressMask|ExposureMask|StructureNotifyMask);
+	XSelectInput
+	(
+		dsp, win,
+		KeyPressMask|KeyReleaseMask|
+		ButtonPressMask|ButtonReleaseMask|
+		ButtonMotionMask|
+		ExposureMask|
+		StructureNotifyMask
+	);
 	XMapWindow(dsp, win);
 }
 void killwindow()
