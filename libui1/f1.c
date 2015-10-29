@@ -11,14 +11,15 @@ void anscii(int x,int y,char ch);
 void blackanscii(int x,int y,char ch);
 void point(int x,int y,DWORD color);
 void background1();
+void cleanscreen();
 
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
-QWORD whereisworld();
 QWORD screendata();
 QWORD screenresolution();
+QWORD whereisworld();
 
 
 
@@ -30,7 +31,7 @@ QWORD screenresolution();
 //位置
 static QWORD base;		//显示区基地址
 static QWORD offset;
-static BYTE* datahome;
+static BYTE* datahome=0;
 
 //mainscreen
 static QWORD screenaddr;
@@ -282,23 +283,28 @@ void f1message(QWORD type,QWORD key)
 
 
 
-void f1init(QWORD world)
+void f1init()
 {
 	int i;
+	if(datahome==0)
+	{
+		datahome=(BYTE*)whereisworld()+0x300000;
+		for(i=0;i<0x2000;i++)datahome[i]=0;
 
-	//
-	datahome=(BYTE*)world+0x300000;
-	for(i=0;i<0x2000;i++)datahome[i]=0;
+		//浮动框
+		for(i=0;i<0x100;i++)haha[i]=0;
+		*(QWORD*)haha=0x3a746567726174;
+		*(QWORD*)(haha+0x20)=0x3a65736162;
+		*(QWORD*)(haha+0x40)=0x3a74657366666f;
+		*(QWORD*)(haha+0x60)=0x3a61746164;
 
-	//浮动框
-	for(i=0;i<0x100;i++)haha[i]=0;
-	*(QWORD*)haha=0x3a746567726174;
-	*(QWORD*)(haha+0x20)=0x3a65736162;
-	*(QWORD*)(haha+0x40)=0x3a74657366666f;
-	*(QWORD*)(haha+0x60)=0x3a61746164;
-
-	//文件内部偏移
-	base=0;
-	offset=0;
-	currentcache=0xffffffff;
+		//文件内部偏移
+		base=0;
+		offset=0;
+		currentcache=0xffffffff;
+	}
+	else
+	{
+		cleanscreen();
+	}
 }

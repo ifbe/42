@@ -7,11 +7,11 @@
 
 
 void initmaster(QWORD);
-void menuinit(QWORD);	//0
-void f1init(QWORD);
-void f2init(QWORD);
-void f3init(QWORD);
-void f4init(QWORD);
+void menuinit();	//0
+void f1init();
+void f2init();
+void f3init();
+void f4init();
 
 void menushow();
 void f1show();
@@ -131,11 +131,36 @@ void processmessage(QWORD type,QWORD key)
 	//}
 	else if(type==0x64626b)		//kbd
 	{
-		if(key==0x1b){showmenu^=1;return;}		//按下esc
-		if(key==0x70){what=1;return;}		//f1
-		if(key==0x71){what=2;return;}		//f2
-		if(key==0x72){what=3;return;}		//f3
-		if(key==0x73){what=4;return;}		//f4
+		if(key==0x1b)
+		{
+			showmenu^=1;
+			menuinit();		//0
+			return;
+		}		//按下esc
+		if(key==0x70)
+		{
+			what=1;
+			f1init();			//1
+			return;
+		}		//f1
+		if(key==0x71)
+		{
+			what=2;
+			f2init();			//2
+			return;
+		}		//f2
+		if(key==0x72)
+		{
+			what=3;
+			f3init();			//3
+			return;
+		}		//f3
+		if(key==0x73)
+		{
+			what=4;
+			f4init();			//4
+			return;
+		}		//f4
 	}
 	else if(type==0x7466656c)		//鼠标
 	{
@@ -178,12 +203,11 @@ void main()
 {
 	QWORD world=whereisworld();
 	initmaster(world);
-
-	menuinit(world);		//0
-	f1init(world);			//1
-	f2init(world);			//2
-	f3init(world);			//3
-	f4init(world);			//3
+	menuinit();			//esc
+	f1init();			//1
+	f2init();			//2
+	f3init();			//3
+	f4init();			//4
 
 	while(1)
 	{

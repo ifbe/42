@@ -18,7 +18,6 @@ struct mathnode{
 
 
 
-void background2();
 
 void line(QWORD point1,QWORD point2,DWORD color);
 void string(int x,int y,char* str);
@@ -26,6 +25,9 @@ void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
 void anscii(int x,int y,int z);
+
+void background2();
+void cleanscreen();
 
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,struct mathnode** out);
@@ -47,12 +49,12 @@ static char buffer[128];
 static char postfix[128];
 
 static struct mathnode* node=0;
+static QWORD dirbuffer=0;
 
 
 
 
 //
-static QWORD dirbuffer;
 void printfile0()
 {
 	int x,y;
@@ -204,7 +206,14 @@ void f2message(QWORD type,QWORD key)
 
 
 
-void f2init(QWORD world)
+void f2init()
 {
-	dirbuffer=world+0x200000;
+	if(dirbuffer==0)
+	{
+		dirbuffer=whereisworld()+0x200000;
+	}
+	else
+	{
+		cleanscreen();
+	}
 }

@@ -15,6 +15,22 @@ QWORD screenresolution();
 
 
 
+
+void cleanscreen()
+{
+	DWORD* screenbuf=(DWORD*)screendata();
+
+	//用指定颜色清屏
+	int x,y;
+	for(x=0;x<1024*768;x++)
+	{
+		screenbuf[x]=0;
+	}
+}
+
+
+
+
 void background1()
 {
 	QWORD x,y;
@@ -56,8 +72,6 @@ void background1()
 		}
 	}
 }
-
-
 
 
 
@@ -161,9 +175,6 @@ void background3()
 
 
 
-
-
-
 void background2()
 {
 	DWORD* screenbuf=(DWORD*)screendata();
@@ -175,10 +186,6 @@ void background2()
 		screenbuf[x]=0;
 	}
 }
-
-
-
-
 
 
 

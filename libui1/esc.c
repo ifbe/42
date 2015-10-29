@@ -65,7 +65,7 @@ void menumessage(QWORD type,QWORD key)
 
 
 
-void menuinit(QWORD world)
+void menuinit()
 {
-	diskinfo=world+0x700000;
+	diskinfo=whereisworld()+0x700000;
 }

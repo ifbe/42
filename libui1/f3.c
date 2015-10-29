@@ -14,13 +14,15 @@ struct mathnode{
                 unsigned long long integer;
         };
 };
-void background3();
 
 void printdouble(int x,int y,double z);
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void draw(int x,int y,DWORD color);
+
+void background3();
+void cleanscreen();
 
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
@@ -43,7 +45,7 @@ static int changed=0;
 static struct mathnode* node=0;
 
 //
-static char* datahome;
+static char* datahome=0;
 static double scale;
 static double centerx;
 static double centery;
@@ -341,10 +343,17 @@ void f3message(QWORD type,QWORD key)
 
 
 
-void f3init(QWORD world)
+void f3init()
 {
-	datahome=(char*)world+0x300000;
-	centerx=0.00;
-	centery=0.00;
-	scale=1.00;
+	if(datahome==0)
+	{
+		datahome=(char*)whereisworld()+0x300000;
+		centerx=0.00;
+		centery=0.00;
+		scale=1.00;
+	}
+	else	//不是第一次进来了
+	{
+		cleanscreen();
+	}
 }

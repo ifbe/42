@@ -9,6 +9,7 @@ void die();
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
 void background4(QWORD,QWORD);
+void cleanscreen();
 
 int compare(char* first,char* second);
 void command(char* in);
@@ -19,7 +20,7 @@ QWORD whereisworld();
 
 
 //log位置
-static QWORD logbuf;
+static QWORD logbuf=0;
 static QWORD offset=0;
 
 //键盘输入
@@ -106,7 +107,14 @@ void f4message(QWORD type,QWORD key)
 
 
 
-void f4init(QWORD world)
+void f4init()
 {
-	logbuf=world+0x500000;
+	if(logbuf==0)
+	{
+		logbuf=whereisworld()+0x500000;
+	}
+	else	//不是第一次进来了
+	{
+		cleanscreen();
+	}
 }
