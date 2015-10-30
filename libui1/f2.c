@@ -30,7 +30,7 @@ void background2();
 void cleanscreen();
 
 double calculator(char* postfix);
-void postfix2binarytree(char* postfix,struct mathnode** out);
+void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 
@@ -49,7 +49,6 @@ static char buffer[128];
 static char postfix[128];
 
 static struct mathnode* node=0;
-static QWORD dirbuffer=0;
 
 
 
@@ -58,7 +57,7 @@ static QWORD dirbuffer=0;
 void printfile0()
 {
 	int x,y;
-	char* p=(char*)dirbuffer;
+	char* p=(char*)node;
 
 	for(y=0;y<36;y++)
 	{
@@ -80,6 +79,7 @@ void printnode(int x,int y,int num)
 	int thisx,thisy;
 
 	//拿
+	diary("%d\n",num);
 	if(y>13)return;
 	left=node[num].left;
 	right=node[num].right;
@@ -183,7 +183,7 @@ void f2message(QWORD type,QWORD key)
 			printmemory(buffer,128);
 			infix2postfix(buffer,postfix);
 
-			postfix2binarytree(postfix,&node);
+			postfix2binarytree(postfix,node);
 
 			for(count=0;count<127;count++) buffer[count]=0;
 			count=0;
@@ -208,9 +208,9 @@ void f2message(QWORD type,QWORD key)
 
 void f2init()
 {
-	if(dirbuffer==0)
+	if(node==0)
 	{
-		dirbuffer=whereisworld()+0x200000;
+		node=(struct mathnode*)(whereisworld()+0x200000);
 	}
 	else
 	{

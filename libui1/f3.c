@@ -26,9 +26,10 @@ void cleanscreen();
 
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
-void postfix2binarytree(char* postfix,struct mathnode** out);
+void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
+void kexuejishufa(double* haha,int* counter);
 
 QWORD screendata();
 QWORD screenresolution();
@@ -42,18 +43,6 @@ QWORD whereisworld();
 
 //
 static int changed=0;
-static struct mathnode* node=0;
-
-//
-static char* datahome=0;
-static double scale;
-static double centerx;
-static double centery;
-		//datahome 里面存放计算得到的值的符号
-		//scale=“屏幕”上两个点对于“世界”上的距离
-		//centerxy = “屏幕”对应“世界”哪个点
-
-//
 static int count=0;
 static char buffer[128];
 
@@ -61,35 +50,25 @@ static char buffer[128];
 static char infix[128];
 static char postfix[128];
 static char result[128];
+static char* datahome=0;
+static struct mathnode* node=0;
+
+//
+static double scale;
+static double centerx;
+static double centery;
+		//datahome 里面存放计算得到的值的符号
+		//scale=“屏幕”上两个点对于“世界”上的距离
+		//centerxy = “屏幕”对应“世界”哪个点
 
 
 
 
-//得到haha：1<haha<10
-//得到counter：十的多少次方
-void kexuejishufa(double* haha,int* counter)
-{
-	if( (*haha) < 1.00 )
-	{
-		while( (*haha) < 1.00 )
-		{
-			(*haha) *= 10.00;
-			(*counter) --;
-		}
-	}
-	else
-	{
-		while( (*haha) > 10.00 )
-		{
-			(*haha) /= 10.00;
-			(*counter) ++;
-		}
-	}
-}
 //
 void printcalc()
 {
-	int x,y,value,counter;
+	int x,y;
+	int value1,value2,counter;
 	double first,second,haha;
 
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
@@ -99,14 +78,22 @@ void printcalc()
 
 
 	//跳过
-	if(node==0)goto skipthese;
+	if(node[0].type!=0x3d3d3d3d)goto skipthese;
 	if(changed==0)goto skipthese;
 	changed=0;
 
 
 
 
-	//
+	//背景
+	for(y=0;y<64;y++)
+	{
+		for(x=0;x<256;x++)
+		{
+			screenbuf[y*1024+x]=0;
+		}
+	}
+	//图像
 	if(node[0].integer == 0)	//简单的算式
 	{
 		//计算器
@@ -126,8 +113,14 @@ void printcalc()
 		haha=scale;
 		counter=0;
 		kexuejishufa(&haha,&counter);
-		wanggedistance=(int)(250.00/haha);
+		first=centerx;
+		value1=0;
+		kexuejishufa(&first,&value1);
+		second=centery;
+		value2=0;
+		kexuejishufa(&second,&value2);
 
+		wanggedistance=(int)(250.00/haha);
 		wanggex=512 % wanggedistance;
 		wanggey=384 % wanggedistance;
 
@@ -177,20 +170,20 @@ void printcalc()
 		//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
 		for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
 		{
-			value=(767-y)<<10;
+			value1=(767-y)<<10;
 			for(x=1;x<1023;x++)
 			{
 				counter=0;
-				if( datahome[ value-1025 + x ] > 0 )counter--;
+				if( datahome[ value1-1025 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ value-1023 + x ] > 0 )counter--;
+				if( datahome[ value1-1023 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ value+1023 + x ] > 0 )counter--;
+				if( datahome[ value1+1023 + x ] > 0 )counter--;
 				else counter++;
 
-				if( datahome[ value+1025 + x ] > 0 )counter--;
+				if( datahome[ value1+1025 + x ] > 0 )counter--;
 				else counter++;
 
 				//上下左右四点符号完全一样，说明没有点穿过
@@ -209,6 +202,7 @@ skipthese:
 	string(0,1,infix);
 	string(0,2,postfix);
 	string(0,3,result);
+	return;
 }
 
 
@@ -277,7 +271,7 @@ void f3message(QWORD type,QWORD key)
 
 			//134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
 			infix2postfix(infix,postfix);
-			postfix2binarytree(postfix,&node);
+			postfix2binarytree(postfix,node);
 
 			//告诉打印员
 			changed=1;
@@ -301,7 +295,7 @@ void f3message(QWORD type,QWORD key)
 	{
 		int dx=(int)(short)(key&0xffff);
 		int dy=(int)(short)((key>>16)&0xffff);
-		diary("%d,%d\n",dx,dy);
+		//diary("%d,%d\n",dx,dy);
 
 		centerx -= scale*dx;
 		centery += scale*dy;
@@ -347,7 +341,10 @@ void f3init()
 {
 	if(datahome==0)
 	{
-		datahome=(char*)whereisworld()+0x300000;
+		char* world=(char*)whereisworld();
+		datahome=world+0x300000;
+		node=(struct mathnode*)(world+0x200000);
+
 		centerx=0.00;
 		centery=0.00;
 		scale=1.00;

@@ -154,6 +154,53 @@ float cosine( float degree )
     return result ;
 }
 */
+/*
+double pow (double x, double y)
+{
+	register double __value, __exponent;
+	long p = (long) y;
+
+	if (x == 0.0 && y > 0.0)return 0.0;
+	if (y == (double) p)
+	{
+		double r = 1.0;
+		if (p == 0)return 1.0;
+		if (p < 0)
+		{
+			p = -p;
+			x = 1.0 / x;
+		}
+		while (1)
+		{
+			if (p & 1)
+			r *= x;
+			p >>= 1;
+			if (p == 0)return r;
+			x *= x;
+		}
+		//NOTREACHED
+	}
+	__asm __volatile__
+    (
+		"fmul	%%st(1)		# y * log2(x)\n\t"
+		"fstl	%%st(1)\n\t"
+		"frndint			# int(y * log2(x))\n\t"
+		"fxch\n\t"
+		"fsub	%%st(1)		# fract(y * log2(x))\n\t"
+		"f2xm1			# 2^(fract(y * log2(x))) - 1\n\t"
+		: "=t" (__value), "=u" (__exponent) 
+		:  "0" (__log2 (x)), "1" (y)
+	);
+
+	__value += 1.0;
+	__asm __volatile__
+	(
+		"fscale"
+		: "=t" (__value) 
+		: "0" (__value), "u" (__exponent)
+	);
+	return __value;
+}*/
 
 
 
@@ -373,50 +420,28 @@ double power(double x, double y)
     );
     return result;
 }
-/*
-double pow (double x, double y)
+
+
+
+
+//得到haha：1<haha<10
+//得到counter：十的多少次方
+void kexuejishufa(double* haha,int* counter)
 {
-	register double __value, __exponent;
-	long p = (long) y;
-
-	if (x == 0.0 && y > 0.0)return 0.0;
-	if (y == (double) p)
+	if( (*haha) < 1.00 )
 	{
-		double r = 1.0;
-		if (p == 0)return 1.0;
-		if (p < 0)
+		while( (*haha) < 1.00 )
 		{
-			p = -p;
-			x = 1.0 / x;
+			(*haha) *= 10.00;
+			(*counter) --;
 		}
-		while (1)
-		{
-			if (p & 1)
-			r *= x;
-			p >>= 1;
-			if (p == 0)return r;
-			x *= x;
-		}
-		//NOTREACHED
 	}
-	__asm __volatile__
-    (
-		"fmul	%%st(1)		# y * log2(x)\n\t"
-		"fstl	%%st(1)\n\t"
-		"frndint			# int(y * log2(x))\n\t"
-		"fxch\n\t"
-		"fsub	%%st(1)		# fract(y * log2(x))\n\t"
-		"f2xm1			# 2^(fract(y * log2(x))) - 1\n\t"
-		: "=t" (__value), "=u" (__exponent) 
-		:  "0" (__log2 (x)), "1" (y)
-	);
-
-	__value += 1.0;
-	__asm __volatile__
-	(
-		"fscale"
-		: "=t" (__value) 
-		: "0" (__value), "u" (__exponent)
-	);
-	return __value;
-}*/
+	else
+	{
+		while( (*haha) > 10.00 )
+		{
+			(*haha) /= 10.00;
+			(*counter) ++;
+		}
+	}
+}

@@ -25,7 +25,6 @@ struct mathnode{
 
 
 
-static struct mathnode node[128];
 static DWORD stack[128];
 static int sp=0;
 
@@ -253,7 +252,7 @@ theend:
 
 
 
-void postfix2binarytree(char* postfix,struct mathnode** out)
+void postfix2binarytree(char* postfix,struct mathnode* node)
 {
 	int source;
 	int dest;
@@ -270,8 +269,7 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 	//rsp=128
 	initstack();
-	//====
-	node[0].type=0x3d3d3d3d;
+
 	//值为0代表算式如:"1+2*[9-6]",	非0代表等式如:"1+2*[9-6]=54.321/x^3"
 	node[0].integer=0;
 
@@ -307,6 +305,8 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 			//point zero to root
 			pop(&first);
+
+			node[0].type=0x3d3d3d3d;	//====
 			node[0].left=first;
 			node[0].integer=dest;		//等号的位置
 
@@ -507,5 +507,4 @@ void postfix2binarytree(char* postfix,struct mathnode** out)
 
 	//debug
 	printmemory((char*)node,0x20*16);
-	out[0]=node;
 }
