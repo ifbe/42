@@ -7,6 +7,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
+void printmemory(char* addr,int count);
 void diary(char* fmt,...);
 
 

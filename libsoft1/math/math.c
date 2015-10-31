@@ -2,6 +2,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void printmemory(char*,int);
+void diary(char*,...);
+
+
+
+
 /*
 double _pow(double a, double b) {
     double c = 1;
@@ -428,20 +434,43 @@ double power(double x, double y)
 //得到counter：十的多少次方
 void kexuejishufa(double* haha,int* counter)
 {
-	if( (*haha) < 1.00 )
+	//[ -0.00000000001 , 0.000000000000001 ]:    return 0 , 0
+	if( (haha[0]>-0.0000000001) && (haha[0]<0.0000000001) )
 	{
-		while( (*haha) < 1.00 )
+		haha[0]=1.00;
+		return;
+	}
+
+	//取符号
+	int fuhao=1.00;
+	if(haha[0]<0)
+	{
+		fuhao = -1.00;
+		haha[0] = -haha[0];
+	}
+
+	//[-1,1]:
+	if( haha[0] < 1.00 )
+	{
+		while( haha[0] < 1.00 )
 		{
-			(*haha) *= 10.00;
-			(*counter) --;
+			//diary("%lf,%d\n",haha[0],counter[0]);
+			haha[0] *= 10.00;
+			counter[0] --;
 		}
 	}
+
+	//(-?,-1]&&[1,?):
 	else
 	{
-		while( (*haha) > 10.00 )
+		while( haha[0] > 10.00 )
 		{
-			(*haha) /= 10.00;
-			(*counter) ++;
+			//diary("%lf,%d\n",haha[0],counter[0]);
+			haha[0] /= 10.00;
+			counter[0] ++;
 		}
 	}
+
+	//还原符号
+	haha[0] *= fuhao;
 }

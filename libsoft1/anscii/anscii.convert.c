@@ -189,11 +189,28 @@ void double2decimalstring(double data,BYTE* string)
 	//小数部分
 	temp=(double)(QWORD)data;
 	temp=data-temp;
-	temp=temp*10000000;
-	count=data2decimalstring( (QWORD)temp , string+offset );
+
+	if(temp<0.0000000000000000000000000000000001)
+	{
+		//特别小
+		string[offset]=0x30;
+		offset++;
+	}
+	else
+	{
+		//一般小数
+		while(temp<0.1)
+		{
+			temp*=10;
+			string[offset]=0x30;
+			offset++;
+		}
+		temp=temp*10000000;
+		count=data2decimalstring( (QWORD)temp , string+offset );
+		offset+=count;
+	}
 
 	//0
-	offset+=count;
 	string[offset]=0;
 }
 

@@ -256,7 +256,7 @@ void blackstring(int x,int y,char* p)
 }
 void printdouble(int x,int y,double z)
 {
-	char mystring[40];
+	char mystring[100];
 	double2decimalstring(z,mystring);
 	string(x,y,mystring);
 }

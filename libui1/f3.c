@@ -110,20 +110,20 @@ void printcalc()
 
 		//准备"画网格",必须确定3个量：哪个点，间距
 		//wantge:x,y,size = 屏幕上的某个交汇点的x,	交汇点的y,	两行的间距
-		haha=scale;
+		haha=scale;		//scale
 		counter=0;
 		kexuejishufa(&haha,&counter);
-		first=centerx;
+		wanggedistance=(int)(250.00/haha);
+
+		first=centerx;		//x
 		value1=0;
 		kexuejishufa(&first,&value1);
-		second=centery;
+		wanggex=512 % wanggedistance;
+
+		second=centery;		//y
 		value2=0;
 		kexuejishufa(&second,&value2);
-
-		wanggedistance=(int)(250.00/haha);
-		wanggex=512 % wanggedistance;
 		wanggey=384 % wanggedistance;
-
 
 
 
@@ -143,7 +143,9 @@ void printcalc()
 				screenbuf[y*1024+x]=0x44444444;
 			}
 		}//横线
-		printdouble(wanggex/8,wanggey/16,1.2233);
+
+		//diary("%lf\n",scale);
+		printdouble(wanggex/8,wanggey/16,scale);
 
 
 
