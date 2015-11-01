@@ -437,7 +437,8 @@ void kexuejishufa(double* haha,int* counter)
 	//[ -0.00000000001 , 0.000000000000001 ]:    return 0 , 0
 	if( (haha[0]>-0.0000000001) && (haha[0]<0.0000000001) )
 	{
-		haha[0]=1.00;
+		haha[0] = 1.00;
+		counter[0] = -100000;
 		return;
 	}
 

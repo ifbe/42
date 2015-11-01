@@ -1,13 +1,3 @@
-.PHONY:linux
-linux:
-	gcc -c -fPIC -O2 cli.c
-	rm -f libui0.a
-	ar crs libui0.a cli.o
-.PHONY:win
-win:
-	gcc -c -O2 cli.c
-	rm -f libui0.a
-	ar crs libui0.a cli.o
 .PHONY:linux+fb
 linux+fb:
 	gcc -c -fPIC -O2 fb.c

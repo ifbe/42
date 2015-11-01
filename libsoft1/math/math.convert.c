@@ -87,6 +87,21 @@ static int operatorpriority(QWORD operator)
 
 
 
+//把混乱的输入变成整理好的式子
+void mess2infix(char* in,char* out)
+{
+	//暂时不管，只复制不做事
+	int i;
+	for(i=0;i<127;i++)
+	{
+		out[i]=in[i];
+	}
+}
+
+
+
+
+//中缀表达式转后缀表达式：134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
 void infix2postfix(char* infix,char* postfix)
 {
 	//
@@ -248,10 +263,7 @@ theend:
 
 
 
-
-
-
-
+//后缀表达式转表达式二叉树：
 void postfix2binarytree(char* postfix,struct mathnode* node)
 {
 	int source;

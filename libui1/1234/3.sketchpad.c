@@ -80,50 +80,71 @@ void printcalc()
 	//跳过
 	if(node[0].type!=0x3d3d3d3d)goto skipthese;
 	if(changed==0)goto skipthese;
-	changed=0;
 
 
 
 
 	//背景
-	for(y=0;y<64;y++)
-	{
-		for(x=0;x<256;x++)
-		{
-			screenbuf[y*1024+x]=0;
-		}
-	}
-	//图像
+	//背景
+	changed=0;
+	background3();
+
+
+
+
+	//没等号的式子只要结果
 	if(node[0].integer == 0)	//简单的算式
 	{
 		//计算器
 		haha=calculator(postfix,0,0);
 		double2decimalstring(haha,result);
 	}
-	else	//有等号的式子才要画图
+
+
+
+
+	//否则要画图
+	else
 	{
-		//背景
-		background3();
-
-
-
-
-		//准备"画网格",必须确定3个量：哪个点，间距
-		//wantge:x,y,size = 屏幕上的某个交汇点的x,	交汇点的y,	两行的间距
-		haha=scale;		//scale
+		//算屏上两行的间距：	scale=a*(10^b)	->	distance=250/a(大于25，小于250)
+		haha=scale;
 		counter=0;
 		kexuejishufa(&haha,&counter);
 		wanggedistance=(int)(250.00/haha);
 
-		first=centerx;		//x
+	
+
+
+		//算屏上交点横坐标：
+		//1.得到坐标取值范围[Xmin,Xmax]：		[centerx-scale*512,centerx+scale*512]
+		//2.用科学记数法表示[Xmin,Xmax]：		[a*10^b,c*10^d]
+		//3.在[Xmin,Xmax]里面找一个数字：
+		//		3.1：
+		//		3.2：
+		first = centerx - scale * 512.00;		//Xmin
 		value1=0;
 		kexuejishufa(&first,&value1);
-		wanggex=512 % wanggedistance;
 
-		second=centery;		//y
+		second = centerx + scale * 512.00;		//Xmax
 		value2=0;
 		kexuejishufa(&second,&value2);
+
+		wanggex=512 % wanggedistance;
+
+
+
+
+		//算屏上交点纵坐标，做法同上
+		first = centery - scale * 512.00;		//Ymin
+		value1=0;
+		kexuejishufa(&first,&value1);
+
+		second = centery + scale * 512.00;		//Ymax
+		value2=0;
+		kexuejishufa(&second,&value2);
+
 		wanggey=384 % wanggedistance;
+
 
 
 
