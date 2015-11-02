@@ -23,7 +23,7 @@ linux:
 	gcc -c -O2 text/anscii.c
 	rm -f libui1.a
 	ar crs libui1.a \
-	1.hex.o 2.tree.o 3.sketchpad.o 3.console.o \
+	1.hex.o 2.tree.o 3.sketchpad.o 4.console.o \
 	background.o shape.o \
 	menu.o \
 	anscii.o

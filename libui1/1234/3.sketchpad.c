@@ -65,7 +65,7 @@ static double centery;
 
 
 //
-void printcalc()
+void wangge()
 {
 	int x,y;
 	int value1,value2,counter;
@@ -77,150 +77,192 @@ void printcalc()
 
 
 
-	//跳过
-	if(node[0].type!=0x3d3d3d3d)goto skipthese;
-	if(changed==0)goto skipthese;
+	//算屏上两行的间距：	scale=a*(10^b)	->	distance=250/a(大于25，小于250)
+	haha=scale;
+	counter=0;
+	kexuejishufa(&haha,&counter);
+	wanggedistance=(int)(250.00/haha);
+
+	
 
 
+	//算屏上交点横坐标：
+	//1.得到坐标取值范围[Xmin,Xmax]：		[centerx-scale*512,centerx+scale*512]
+	//2.用科学记数法表示[Xmin,Xmax]：		[a*10^b,c*10^d]
+	//3.在[Xmin,Xmax]里面找一个数字：
+	//	3.1：如果b=d
+	//	3.2：b!=d
+	first = centerx - scale * 512.00;		//Xmin
+	second = centerx + scale * 512.00;		//Xmax
+	diary("%lf,%lf\n",first,second);
 
-
-	//背景
-	//背景
-	changed=0;
-	background3();
-
-
-
-
-	//没等号的式子只要结果
-	if(node[0].integer == 0)	//简单的算式
+	if(first<0 && second>0)
 	{
-		//计算器
-		haha=calculator(postfix,0,0);
-		double2decimalstring(haha,result);
+		//不同符号肯定取0
+		haha=(-first) / (second-first) * 1024.00;
+		wanggex = ( (int)haha ) % wanggedistance;
+	}
+	else
+	{
+		value1=0;
+		kexuejishufa(&first,&value1);
+		value2=0;
+		kexuejishufa(&second,&value2);
+
+		wanggex=512 % wanggedistance;
+	}
+	/*
+	else		//同为负数，或者同为正数
+	{
+		if(value1 == value2)
+		{
+			haha = first和second之间的一个数 * 10 ^ value1
+		}
+		if(value1 < value2)
+		{
+			haha = 1 * 10^( max(b,d)-1 )
+		}
+		if(value1 > value2)
+		{
+			
+		}
+	}
+
+	//0<haha-first<second-first
+	//second-first代表“全部的1024个格子”，haha-fist就是需要的“屏幕坐标值”
+
+	*/
+
+
+
+
+	//算屏上交点纵坐标，做法同上
+	first = centery - scale * 512.00;		//Ymin
+	second = centery + scale * 512.00;		//Ymax
+	diary("%lf,%lf\n",first,second);
+
+	if(first<0 && second>0)
+	{
+		//不同符号肯定取0
+		haha=second / (second-first) * 1024.00;
+		wanggey = ( (int)haha ) % wanggedistance;
+	}
+	else
+	{
+		value1=0;
+		kexuejishufa(&first,&value1);
+		value2=0;
+		kexuejishufa(&second,&value2);
+
+		wanggey=384 % wanggedistance;
 	}
 
 
 
 
-	//否则要画图
+	//画上网格,以及网格上对应那一行的x,y坐标值
+	for(x=wanggex;x<1024;x+=wanggedistance)
+	{//竖线
+		for(y=0;y<768;y++)
+		{
+			screenbuf[y*1024+x]=0x44444444;
+		}
+	}//竖线
+
+	for(y=wanggey;y<768;y+=wanggedistance)
+	{//横线
+		for(x=0;x<1024;x++)
+		{
+			screenbuf[y*1024+x]=0x44444444;
+		}
+	}//横线
+
+	//diary("%lf\n",scale);
+	printdouble(wanggex/8,wanggey/16,scale);
+}
+void tuxiang()
+{
+	int x,y;
+	int value1,value2,counter;
+	double first,second,haha;
+
+	DWORD* screenbuf=(DWORD*)screendata();
+
+
+
+
+	//带入75万个坐标算结果
+	//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
+	for(y=0;y<768;y++)		//只算符号并且保存
+	{
+		second=centery + (y-384)*scale;
+		for(x=0;x<1024;x++)
+		{
+			first=centerx + (x-512)*scale;
+			haha=sketchpad(node,first,second);
+
+			if(haha>0)datahome[1024*y+x]=1;
+			else datahome[1024*y+x]=-1;
+		}
+	}//calculate results
+
+
+
+
+	//由算出的结果得到图像
+	//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
+	for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
+	{
+		value1=(767-y)<<10;
+		for(x=1;x<1023;x++)
+		{
+			counter=0;
+			if( datahome[ value1-1025 + x ] > 0 )counter--;
+			else counter++;
+
+			if( datahome[ value1-1023 + x ] > 0 )counter--;
+			else counter++;
+
+			if( datahome[ value1+1023 + x ] > 0 )counter--;
+			else counter++;
+
+			if( datahome[ value1+1025 + x ] > 0 )counter--;
+			else counter++;
+
+			//上下左右四点符号完全一样，说明没有点穿过//否则白色
+			if( (counter!=4) && (counter!=-4) )screenbuf[y*1024+x]=0xffffffff;
+		}
+	}//result2img
+}
+void f3show()
+{
+	//跳过
+	if(node[0].type!=0x3d3d3d3d)goto skipthese;
+	if(changed==0)goto skipthese;
+	changed=0;
+
+
+
+
+	background3();
+	if(node[0].integer == 0)
+	{
+		//计算器
+		double haha=calculator(postfix,0,0);
+		double2decimalstring(haha,result);
+	}
 	else
 	{
-		//算屏上两行的间距：	scale=a*(10^b)	->	distance=250/a(大于25，小于250)
-		haha=scale;
-		counter=0;
-		kexuejishufa(&haha,&counter);
-		wanggedistance=(int)(250.00/haha);
-
-	
-
-
-		//算屏上交点横坐标：
-		//1.得到坐标取值范围[Xmin,Xmax]：		[centerx-scale*512,centerx+scale*512]
-		//2.用科学记数法表示[Xmin,Xmax]：		[a*10^b,c*10^d]
-		//3.在[Xmin,Xmax]里面找一个数字：
-		//		3.1：
-		//		3.2：
-		first = centerx - scale * 512.00;		//Xmin
-		value1=0;
-		kexuejishufa(&first,&value1);
-
-		second = centerx + scale * 512.00;		//Xmax
-		value2=0;
-		kexuejishufa(&second,&value2);
-
-		wanggex=512 % wanggedistance;
-
-
-
-
-		//算屏上交点纵坐标，做法同上
-		first = centery - scale * 512.00;		//Ymin
-		value1=0;
-		kexuejishufa(&first,&value1);
-
-		second = centery + scale * 512.00;		//Ymax
-		value2=0;
-		kexuejishufa(&second,&value2);
-
-		wanggey=384 % wanggedistance;
-
-
-
-
-		//画上网格,以及网格上对应那一行的x,y坐标值
-		for(x=wanggex;x<1024;x+=wanggedistance)
-		{//竖线
-			for(y=0;y<768;y++)
-			{
-				screenbuf[y*1024+x]=0x44444444;
-			}
-		}//竖线
-
-		for(y=wanggey;y<768;y+=wanggedistance)
-		{//横线
-			for(x=0;x<1024;x++)
-			{
-				screenbuf[y*1024+x]=0x44444444;
-			}
-		}//横线
-
-		//diary("%lf\n",scale);
-		printdouble(wanggex/8,wanggey/16,scale);
-
-
-
-
-		//带入75万个坐标算结果
-		//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
-		for(y=0;y<768;y++)		//只算符号并且保存
-		{
-			second=centery + (y-384)*scale;
-			for(x=0;x<1024;x++)
-			{
-				first=centerx + (x-512)*scale;
-				haha=sketchpad(node,first,second);
-
-				if(haha>0)datahome[1024*y+x]=1;
-				else datahome[1024*y+x]=-1;
-			}
-		}//calculate results
-
-
-
-
-		//由算出的结果得到图像
-		//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
-		for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
-		{
-			value1=(767-y)<<10;
-			for(x=1;x<1023;x++)
-			{
-				counter=0;
-				if( datahome[ value1-1025 + x ] > 0 )counter--;
-				else counter++;
-
-				if( datahome[ value1-1023 + x ] > 0 )counter--;
-				else counter++;
-
-				if( datahome[ value1+1023 + x ] > 0 )counter--;
-				else counter++;
-
-				if( datahome[ value1+1025 + x ] > 0 )counter--;
-				else counter++;
-
-				//上下左右四点符号完全一样，说明没有点穿过
-				if( (counter!=4) && (counter!=-4) )screenbuf[y*1024+x]=0xffffffff;		//否则白色
-			}
-		}//result2img
-
+		//网格，函数图
+		wangge();
+		tuxiang();
 	}//else
 
 
 
 
-	//打印
-skipthese:
+
+skipthese:		//打印
 	string(0,0,buffer);
 	string(0,1,infix);
 	string(0,2,postfix);
@@ -235,18 +277,6 @@ skipthese:
 
 
 
-void f3show()
-{
-	/*
-	if math->printcalc
-	if filesystem->printfilesystem
-	if netpackage->printnet
-	if mmio->printmmio
-	if what->printwhat
-	if ...->...
-	*/
-	printcalc();
-}
 void f3message(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
@@ -365,8 +395,8 @@ void f3init()
 	if(datahome==0)
 	{
 		char* world=(char*)whereisworld();
-		datahome=world+0x300000;
 		node=(struct mathnode*)(world+0x200000);
+		datahome=world+0x300000;
 
 		centerx=0.00;
 		centery=0.00;
