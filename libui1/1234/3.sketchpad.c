@@ -98,12 +98,13 @@ void wangge()
 
 	if(first<0 && second>0)
 	{
-		//不同符号肯定取0
+		//不同符号，肯定取0最漂亮
 		haha=(-first) / (second-first) * 1024.00;
 		wanggex = ( (int)haha ) % wanggedistance;
 	}
 	else
 	{
+		//同为负数或者同为正数，取
 		value1=0;
 		kexuejishufa(&first,&value1);
 		value2=0;
@@ -112,7 +113,7 @@ void wangge()
 		wanggex=512 % wanggedistance;
 	}
 	/*
-	else		//同为负数，或者同为正数
+	else
 	{
 		if(value1 == value2)
 		{
