@@ -1,3 +1,14 @@
+what:
+	@echo "----------------please choose one example below----------------"
+	@echo "make linux:    run in terminal"
+	@echo "make linux+fb:    run in framebuffer(ctrl+alt+f?)"
+	@echo "make linux+xlib    run in xwindow:"
+	@echo "make windows    run in cmd"
+	@echo "make windows+api    run in windows xp+"
+	@echo "make kvm:    test with kvm"
+	@echo "make qemu:    test with qemu"
+	@echo "make clean:    clean"
+	@echo "----------------please choose one example above----------------"
 linux:
 	make -s -C libsof0 linux
 	make -s -C libsoft1 linux

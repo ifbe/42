@@ -1,3 +1,6 @@
+what:
+	@echo "0,1,2,3,world:    beautiful interface for upper layer"
+	@echo "linux/win/mac:    specific implementation"
 .PHONY:linux
 linux:
 	gcc -c -fPIC -O2 world.c
