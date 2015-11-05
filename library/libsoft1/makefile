@@ -12,14 +12,6 @@ binary:
 	gcc -c -fPIC -O2 fat.c
 	gcc -c -fPIC -O2 hfs.c
 	gcc -c -fPIC -O2 ntfs.c
-	rm -f libsoft1.a
-	ar crs libsoft1.a \
-	master.o \
-	memory.o \
-	gpt.o mbr.o \
-	ext.o fat.o hfs.o ntfs.o \
-	anscii.o anscii.convert.o \
-	math.o math.calc.o math.convert.o
 crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 master.c
 	x86_64-elf-gcc -c -fPIC -O2 memory.c
@@ -34,14 +26,6 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 fat.c
 	x86_64-elf-gcc -c -fPIC -O2 hfs.c
 	x86_64-elf-gcc -c -fPIC -O2 ntfs.c
-	rm -f libsoft1.a
-	ar crs libsoft1.a \
-	master.o \
-	memory.o \
-	gpt.o mbr.o \
-	ext.o fat.o hfs.o ntfs.o \
-	anscii.o anscii.convert.o \
-	math.o math.calc.o math.convert.o
 linux:
 	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 memory.c
@@ -56,14 +40,6 @@ linux:
 	gcc -c -fPIC -O2 filesystem/fat.c
 	gcc -c -fPIC -O2 filesystem/hfs.c
 	gcc -c -fPIC -O2 filesystem/ntfs.c
-	rm -f libsoft1.a
-	ar crs libsoft1.a \
-	master.o \
-	memory.o \
-	gpt.o mbr.o \
-	ext.o fat.o hfs.o ntfs.o \
-	anscii.o anscii.convert.o \
-	math.o math.calc.o math.convert.o
 mac:
 	clang -c -fPIC -O2 master.c
 	clang -c -fPIC -O2 memory.c
@@ -78,14 +54,6 @@ mac:
 	clang -c -fPIC -O2 filesystem/fat.c
 	clang -c -fPIC -O2 filesystem/hfs.c
 	clang -c -fPIC -O2 filesystem/ntfs.c
-	rm -f libsoft1.a
-	ar crs libsoft1.a \
-	master.o \
-	memory.o
-	gpt.o mbr.o \
-	ext.o fat.o hfs.o ntfs.o \
-	anscii.o anscii.convert.o \
-	math.o math.calc.o math.convert.o
 win:
 	gcc -c -O2 master.c
 	gcc -c -O2 memory.c
@@ -100,13 +68,5 @@ win:
 	gcc -c -O2 filesystem/fat.c
 	gcc -c -O2 filesystem/hfs.c
 	gcc -c -O2 filesystem/ntfs.c
-	rm -f libsoft1.a
-	ar crs libsoft1.a \
-	master.o \
-	memory.o \
-	gpt.o mbr.o \
-	ext.o fat.o hfs.o ntfs.o \
-	anscii.o anscii.convert.o \
-	math.o math.calc.o math.convert.o
 clean:
 	rm -f *.o *.a

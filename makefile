@@ -10,99 +10,55 @@ what:
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
 linux:
-	make -s -C libsof0 linux
-	make -s -C libsoft1 linux
+	make -s -C library linux
 	make -s -C main cli
 	gcc -o a.out \
-	main/main.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a
+	main/main.a library/library.a
 mac:
-	make -s -C libsoft0 mac
-	make -s -C libsoft1 mac
+	make -s -C library mac
 	make -s -C main cli
 	clang -o a.out \
-	main/main.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a
+	main/main.a library/library.a
 win:
-	make -s -C libsoft0 win
-	make -s -C libsoft1 win
+	make -s -C library win
 	make -s -C main cli
-	gcc -o a.exe libsoft0/uac.res \
-	main/main.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a
+	gcc -o a.exe \
+	libsoft0/uac.res main/main.a library/library.a
 
 
 
 
 linux+fb:
-	make -s -C libsoft0 linux
-	make -s -C libsoft1 linux
-	make -s -C libui0 linux+fb
-	make -s -C libui1 linux
+	make -s -C library linux+fb
 	make -s -C main gui
 	gcc -o a.out \
-	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a
+	main/main.a library/library.a
 linux+xlib:
-	make -s -C libsoft0 linux
-	make -s -C libsoft1 linux
-	make -s -C libui0 linux+xlib
-	make -s -C libui1 linux
+	make -s -C library linux+xlib
 	make -s -C main gui
 	gcc -o a.out \
-	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	main/main.a library/library.a \
 	-lX11
 linux+sdl:
-	make -s -C libsoft0 linux
-	make -s -C libsoft1 linux
-	make -s -C libui0 linux+sdl
-	make -s -C libui1 linux
+	make -s -C library linux+sdl
 	make -s -C main gui
 	gcc -o a.out \
-	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	main/main.a library/library.a \
 	-lSDL2 -lm
 linux+web:
-	make -s -C libsoft0 linux
-	make -s -C libsoft1 linux
-	make -s -C libui0 linux+web
-	make -s -C libui1 linux
+	make -s -C library linux+web
 	make -s -C main gui
 	gcc -o a.out \
-	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a
+	main/main.a library/library.a
 
 
 
 
 mac+sdl:
-	make -s -C libsoft0 mac
-	make -s -C libsoft1 mac
-	make -s -C libui0 mac
-	make -s -C libui1 mac
+	make -s -C library mac
 	make -s -C main cli
 	clang -o a.out \
-	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	main/main.a library/library.a \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm
 
@@ -110,33 +66,20 @@ mac+sdl:
 
 
 win+api:
-	make -s -C libsoft0 win
-	make -s -C libsoft1 win
-	make -s -C libui0 win+api
-	make -s -C libui1 win
+	make -s -C library win+api
 	make -s -C main gui
 	#gcc -o a.exe libsoft0/uac.res \
 	#gcc -o a.exe \
-	gcc -o a.exe -mwindows libsoft0/uac.res \
+	gcc -o a.exe -mwindows \
 	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	library/library.a library/uac.res \
 	-lgdi32
 win+sdl:
-	make -s -C libsoft0 win
-	make -s -C libsoft1 win
-	make -s -C libui0 win+sdl
-	make -s -C libui1 win
+	make -s -C library win+sdl
 	make -s -C main gui
 	gcc -o a.exe \
-	libsoft0/uac.res \
 	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	library/library.a library/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
 	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
 	-lmingw32 -lSDL2main -lSDL2 \
@@ -149,12 +92,9 @@ win+web:
 	make -s -C libui0 win+web
 	make -s -C libui1 win
 	make -s -C main gui
-	gcc -o a.exe -mwindows libsoft0/uac.res \
+	gcc -o a.exe -mwindows \
 	main/main.a \
-	libui1/libui1.a \
-	libui0/libui0.a \
-	libsoft1/libsoft1.a \
-	libsoft0/libsoft0.a \
+	library/library.a library/uac.res
 
 
 
@@ -176,4 +116,9 @@ kvm:
 
 
 clean:
-	rm -f */*.o */*.a */*.res *.bin *.out *.exe
+	rm -f *.bin *.out *.exe
+	rm -f */*.o
+	rm -f */*.a
+	rm -f */*.res
+	make -s -C library clean
+	make -s -C main clean

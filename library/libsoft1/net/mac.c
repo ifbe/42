@@ -1,13 +1,13 @@
 /*
 <------------------------------------------------------------>
-STA（Station，工作站）：
-	其英文定义是“A logical entity that is a singly addressable instance of a MAC and PHY interface to the WM”。通俗点说，STA就是指携带无线网络接口卡（即无线网卡）的设备，例如笔记本、智能手机等。另外，无线网卡和有线网卡的MAC地址均分配自同一个地址池以确保其唯一性。
+da:		destination address
+sa:		source address
+ra:		reciver address
+ta:		transmiter address
 
-AP（Access Point，接入点）：
-	其原文定义是“An entity that contains one STA and provides access to the distribution services，via the WM for associated STAs”。由其定义可知，AP本身也是一个STA，只不过它还能为那些已经关联的（associated）STA提供分布式服务（Distribution Service，DS）
-
-DS（Distribution System，分布式系统）：
-	其英文定义为“A system used to interconnect a set of basic service sets（BSSs）and integrated local area networks（LANs）to create an extended service set（ESS）”。DS的定义涉及BSS、ESS等无线网络架构
+ibss(adhoc):	1=接收者,2=发送者,3=bssid
+sta->ap:	1=bssid,2=发送者,3=最终接收者
+ap->sta:	1=sta地址,2=bssid,3=发送者
 <------------------------------------------------------------>
 
 
@@ -36,11 +36,11 @@ wifi控制帧:
 .rts    =		//我要说话，你听好了
 	[ 2.frame control ][ 2.duration ][     6.ra    ][ 6.ta ][ 4.fcs ]
 
-.cts/ack=		//听他说话，大家安静一下
+.cts=			//听他说话，大家安静一下
 	[ 2.frame control ][ 2.duration ][     6.ra    ][ 4.fcs ]
 
-.ack=
-	[][][][]
+.ack=			//已收到
+	[ 2.frame control ][ 2.duration ][     6.ra    ][ 4.fcs ]
 
 .ps-poll=		//一次给我一堆，我不会一直听着
 	[ 2.frame control ][    2.aid   ][ 6.bssid(ra) ][ 6.ta ][ 4.fcs ]
@@ -49,8 +49,8 @@ wifi控制帧:
 
 
 wifi管理帧:
-	[ 2.frame control ][ 2.duration ][ 6.address1 ][ 6.address2 ][ 6.address3 ]
-	[ 2.sequence control ][ 0~2304.frame body ][ 4.fcs ]
+	[ 2.frame control ][ 2.duration ][ 6.address1 ][ 6.address2 ]
+	[ 6.address3 ][ 2.sequence control ][ 0~2304.frame body ][ 4.fcs ]
 .beacon=
 	timestamp(8字节,微秒),interval,capatibility,ssid
 
@@ -70,14 +70,20 @@ wifi管理帧:
 
 
 wifi数据帧:
-	[ 2.frame control ][ 2.duration ][ 6.address1 ][ 6.address2 ][ 6.address3 ]
-	[ 2.sequence control ][ 6.address4 ][ 2.qos control ][ 4.ht control ]
-	[ 0~7951.framebody ][ 4.fcs ]
+	[ 2.frame control ][ 2.duration ][ 6.address1 ][ 6.address2 ]
+	[ 6.address3 ][ 2.sequence control ][ 6.address4 ]
 
-802.11 rfc 1042=
+?	[ 2.qos control ][ 4.ht control ]
+
+	[ 0~7951.framebody ]
+	[ 4.fcs ]
+
+ethernet帧在wifi里传输(802.11 rfc 1042)=
 	[ 802.11 mac headers ]
-++++	[ snap dsap 0xaa ][ snap ssap 0xaa ][ control 0x03(UI) ][ rfc1042封装 0x00-00-00 ]
-	[ type ][ ip packet ][ fcs ]
+++	[ 1.snap dsap 0xaa ][ 1.snap ssap 0xaa ][ 1.control 0x03(UI) ]
+++	[ 3.rfc1042封装 0x00-00-00 ]
+	[ 2.type ][ ?.ip packet ]
+-+	[ 4.fcs ]
 
 <------------------------------------------------------------>
 
@@ -126,19 +132,23 @@ wifi数据帧:
 
 
 <------------------------mac addr(48bit)------------------->
+举例：
+	00 : 11 : 22 : 33 : 44 : 55
+字节顺序：
+	a[0]=00 , a[1]=11 , a[2]=22 , a[3]=33 , a[4]=44 , a[5]=55
+传送顺序：
+	bit0,bit1,bit2.....bit7,bit0,bit1......bit7,bit0....bit7......
 
-比如：00,11,22,33,44,55
+a[0].bit0:	0=单播，1=组播
+a[0].bit1:	0=全球唯一，1=本地唯一
 
-byte0.bit0:	0=单播，1=组播
-byte0.bit1:	0=全球唯一，1=本地唯一
+a[0]:		厂商代码第1字节(地址第1字节)
+a[1]:		厂商代码第2字节(地址第2字节)
+a[2]:		厂商代码第3字节(地址第3字节)
 
-剩余byte0:	厂商代码	00
-byte1:		厂商代码	11
-byte2:		厂商代码	22
-
-byte3:		网卡编号	33
-byte4:		网卡编号	44
-byte5:		网卡编号	55
+a[3]:		网卡编号第1字节(地址第4字节)
+a[4]:		网卡编号第2字节(地址第5字节)
+a[5]:		网卡编号第3字节(地址第6字节)
 
 <------------------------------------------------------------>
 
@@ -146,6 +156,34 @@ byte5:		网卡编号	55
 
 
 <------------------------------------------------------------>
-1
+capability information:
+bit0:	ess
+bit1:	ibss
+	bit0=0,bit1=0:		mesh bss
+	bit0=0,bit1=1:		ibss
+	bit0=1,bit1=0:		基础结构型网络
+
+bit2:	cf pollable
+bit3:	cf-poll request
+bit4:	privacy
+bit5:	shortpreamble
+bit6:	pbcc
+bit7:	channel aglity
+bit8:	spectrum migmt		1:mib.dot11spectrummanagementrequired=true
+bit9:	qos
+bit10:	short slot time
+bit11:	apsd
+bit12:	radio measurement	1:mib.dot11spectrummanagementactivated=true
+bit13:	dsss-ofdm
+bit14:	delayed block ack
+bit15:	immediate block ack
+<------------------------------------------------------------>
+
+
+
+
+<------------------------------------------------------------>
+ie:
+	[ 1.elementid ][ 1.length ][ information ]
 <------------------------------------------------------------>
 */
