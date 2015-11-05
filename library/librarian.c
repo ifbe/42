@@ -4,16 +4,27 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//ui
+void initwindow(QWORD,QWORD);
+void killwindow();
+QWORD currentresolution();
+//soft
 char* explainarg();
 void initin(unsigned long long);
 void initout(unsigned long long);
 void initlog(unsigned long long);
 void initlist(unsigned long long);
 void target(char*);
+//hard
+//void usb();
 
 
 
 
+//ui
+static unsigned long long resolution=(768<<16)+1024;
+static unsigned long long data;
+//soft
 static char* world;
 	//[0x000000,0x0fffff]:diskhome
 	//[0x100000,0x1fffff]:fshome
@@ -24,6 +35,8 @@ static char* world;
 	//[0x500000,0x5fffff]:stdout
 	//[0x600000,0x6fffff]:log
 	//[0x700000,0x7fffff]:list
+//hard
+//static void* what;
 
 
 
@@ -36,15 +49,10 @@ __attribute__((constructor(101))) void initworld()
 
 	//8MB的世界
 	world = (char*)malloc(0x800000);		//8M
-	if(world == NULL)
-	{
-		printf("can't allloc memory for world\n");
-		exit(-1);
-	}
-	for(i=0;i<0x800000;i++)
-	{
-		world[i]=0;
-	}
+        data = (unsigned long long)malloc(0x400000);              //4M
+	if(world == NULL){printf("can't allloc memory for world\n");exit(-1);}
+	if(data == NULL){printf("can't allloc memory for screen\n");exit(-1);}
+	for(i=0;i<0x800000;i++)world[i]=0;
 
 	//init [+0x400000,+0x4fffff](stdin )		waitevent()
 	initin((QWORD)world+0x400000);
@@ -58,28 +66,41 @@ __attribute__((constructor(101))) void initworld()
 	//init [+0x700000,+0x7fffff](mylist)		enumerate()
 	initlist((QWORD)world+0x700000);
 
+	//screen
+        initwindow(data,resolution);
+
 	//选一个满意的目标就离开
 	target(p);
 }
 __attribute__((destructor)) void killworld()
 {
-	//close disk/file/pipe/socket......
+	//window
+        killwindow();
+        free((void*)data);
+
 	//killlist();
-
 	//killlog();
-
 	//killout();
-
 	//killin();
-
-	//bye
 	free(world);
 }
 
 
 
 
+//ui
+QWORD screendata()
+{
+        return data;
+}
+QWORD screenresolution()
+{
+        return currentresolution();
+}
+//soft
 unsigned long long whereisworld()
 {
 	return (QWORD)world;
 }
+//hard
+//void usb()
