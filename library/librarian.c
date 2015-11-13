@@ -12,8 +12,8 @@ QWORD currentresolution();
 char* explainarg();
 void initin(char*);
 void initout(char*);
-void initlog(unsigned long long);
-void initlist(unsigned long long);
+void initlog(char*);
+void initlist(char*);
 void target(char*);
 //hard
 //void usb();
@@ -89,18 +89,18 @@ __attribute__((destructor)) void killworld()
 
 
 //ui
-char* screendata()
-{
-        return data;
-}
 QWORD screenresolution()
 {
         return currentresolution();
 }
-//soft
-unsigned long long whereisworld()
+char* screendata()
 {
-	return (QWORD)world;
+        return data;
+}
+//soft
+char* whereisworld()
+{
+	return world;
 }
 //hard
 //void usb()
