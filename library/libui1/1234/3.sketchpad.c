@@ -26,16 +26,17 @@ void cleanscreen();
 
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
+double beautifulbetween(double first,double second);
+
 void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
 
-QWORD screendata();
-QWORD screenresolution();
-
 void printmemory(char*,int);
 void diary(char*,...);
+QWORD screendata();
+QWORD screenresolution();
 QWORD whereisworld();
 
 
@@ -67,9 +68,8 @@ static double centery;
 //
 void wangge()
 {
-	int x,y;
-	int value1,value2,counter;
-	double first,second,haha;
+	int x,y,temp;
+	double first,second,res;
 
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	DWORD* screenbuf=(DWORD*)screendata();
@@ -77,86 +77,23 @@ void wangge()
 
 
 
-	//算屏上两行的间距：	scale=a*(10^b)	->	distance=250/a(大于25，小于250)
-	haha=scale;
-	counter=0;
-	kexuejishufa(&haha,&counter);
-	wanggedistance=(int)(250.00/haha);
+	//算屏上两行的间距，交点横坐标，纵坐标
+	temp = 0;
+	res = scale;	//scale=a*(10^b)	->	distance=250/a(大于25，小于250)
+	kexuejishufa( &res , &temp );
+	wanggedistance=(int)( 250.00 / res );
 
-	
+	first = centerx - scale * 512;
+	second = centerx + scale * 512;
+	res=beautifulbetween( first , second );
+	res=(res-first) / (second-first) * 1024;
+	wanggex = ( (int)res ) % wanggedistance;
 
-
-	//算屏上交点横坐标：
-	//1.得到坐标取值范围[Xmin,Xmax]：		[centerx-scale*512,centerx+scale*512]
-	//2.用科学记数法表示[Xmin,Xmax]：		[a*10^b,c*10^d]
-	//3.在[Xmin,Xmax]里面找一个数字：
-	//	3.1：如果b=d
-	//	3.2：b!=d
-	first = centerx - scale * 512.00;		//Xmin
-	second = centerx + scale * 512.00;		//Xmax
-	diary("%lf,%lf\n",first,second);
-
-	if(first<0 && second>0)
-	{
-		//不同符号，肯定取0最漂亮
-		haha=(-first) / (second-first) * 1024.00;
-		wanggex = ( (int)haha ) % wanggedistance;
-	}
-	else
-	{
-		//同为负数或者同为正数，取
-		value1=0;
-		kexuejishufa(&first,&value1);
-		value2=0;
-		kexuejishufa(&second,&value2);
-
-		wanggex=512 % wanggedistance;
-	}
-	/*
-	else
-	{
-		if(value1 == value2)
-		{
-			haha = first和second之间的一个数 * 10 ^ value1
-		}
-		if(value1 < value2)
-		{
-			haha = 1 * 10^( max(b,d)-1 )
-		}
-		if(value1 > value2)
-		{
-			
-		}
-	}
-
-	//0<haha-first<second-first
-	//second-first代表“全部的1024个格子”，haha-fist就是需要的“屏幕坐标值”
-
-	*/
-
-
-
-
-	//算屏上交点纵坐标，做法同上
-	first = centery - scale * 512.00;		//Ymin
-	second = centery + scale * 512.00;		//Ymax
-	diary("%lf,%lf\n",first,second);
-
-	if(first<0 && second>0)
-	{
-		//不同符号肯定取0
-		haha=second / (second-first) * 1024.00;
-		wanggey = ( (int)haha ) % wanggedistance;
-	}
-	else
-	{
-		value1=0;
-		kexuejishufa(&first,&value1);
-		value2=0;
-		kexuejishufa(&second,&value2);
-
-		wanggey=384 % wanggedistance;
-	}
+	first = centery - scale * 512;
+	second = centery + scale * 512;
+	res=beautifulbetween( first , second );
+	res=(res-first) / (second-first) * 1024;
+	wanggey = ( (int)res ) % wanggedistance;
 
 
 

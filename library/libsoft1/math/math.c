@@ -475,3 +475,47 @@ void kexuejishufa(double* haha,int* counter)
 	//还原符号
 	haha[0] *= fuhao;
 }
+
+
+
+
+double beautifulbetween(double first,double second)
+{
+	return first;
+/*        if(first<0 && second>0)
+        {
+                //不同符号，肯定取0最漂亮
+                haha=(0-first) / (second-first) * 1024.00;
+                wanggex = ( (int)haha ) % wanggedistance;
+        }
+        else
+        {
+                //同为负数或者同为正数，先得到数量级
+                value1=0;
+                kexuejishufa(&first,&value1);
+                value2=0;
+                kexuejishufa(&second,&value2);
+
+                //在同一数量级
+                if(value==value2)
+                {
+                        //并且两个都是正数
+                        if(first>0)
+                        {
+                                //
+                                haha=(1-)/(second-first)
+                        }
+                }
+
+                //不同数量级别
+                else
+                {
+
+                }
+
+                //得到最小的那个点
+                wanggex=512 % wanggedistance;
+        }
+
+*/
+}

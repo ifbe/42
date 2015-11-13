@@ -79,11 +79,16 @@ wifi数据帧:
 	[ 4.fcs ]
 
 ethernet帧在wifi里传输(802.11 rfc 1042)=
-	[ 802.11 mac headers ]
+-	[ 12.802.11 mac headers ]
++	[ 24or30.802.11 mac headers ]
+
 ++	[ 1.snap dsap 0xaa ][ 1.snap ssap 0xaa ][ 1.control 0x03(UI) ]
 ++	[ 3.rfc1042封装 0x00-00-00 ]
+
 	[ 2.type ][ ?.ip packet ]
--+	[ 4.fcs ]
+
+-	[ 4.fcs ]
++	[ 4.fcs ]
 
 <------------------------------------------------------------>
 
