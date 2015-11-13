@@ -6,10 +6,10 @@
 #define QWORD unsigned long long
 //soft
 char* explainarg();
-void initin(unsigned long long);
-void initout(unsigned long long);
-void initlog(unsigned long long);
-void initlist(unsigned long long);
+void initin(char*);
+void initout(char*);
+void initlog(char*);
+void initlist(char*);
 void target(char*);
 
 
@@ -42,16 +42,16 @@ __attribute__((constructor(101))) void initworld()
 	for(i=0;i<0x800000;i++)world[i]=0;
 
 	//init [+0x400000,+0x4fffff](stdin )		waitevent()
-	initin((QWORD)world+0x400000);
+	initin(world+0x400000);
 
 	//init [+0x500000,+0x5fffff](stdout)		say()
-	initout((QWORD)world+0x500000);
+	initout(world+0x500000);
 
 	//init [+0x600000,+0x6fffff](stderr)		diary()
-	initlog((QWORD)world+0x600000);
+	initlog(world+0x600000);
 
 	//init [+0x700000,+0x7fffff](mylist)		enumerate()
-	initlist((QWORD)world+0x700000);
+	initlist(world+0x700000);
 
 	//选一个满意的目标就离开
 	target(p);
@@ -69,7 +69,7 @@ __attribute__((destructor)) void killworld()
 
 
 //soft
-unsigned long long whereisworld()
+char* whereisworld()
 {
-	return (QWORD)world;
+	return world;
 }

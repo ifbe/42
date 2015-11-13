@@ -54,7 +54,7 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 
 
-void initout(unsigned long long addr)
+void initout(char* addr)
 {
-	outbuf=(void*)addr;
+	outbuf=addr;
 }

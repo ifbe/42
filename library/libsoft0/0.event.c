@@ -45,7 +45,7 @@ static unsigned char* inbuf;
 
 
 
-void initin(unsigned long long addr)
+void initin(char* addr)
 {
 	inbuf=(void*)addr;
 }

@@ -58,10 +58,10 @@ void diary(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 
 
 
-void initlog(unsigned long long addr)
+void initlog(char* addr)
 {
 	//freopen("haha.log","rw",stdout);
-	logbuf=(void*)addr;
+	logbuf=addr;
 }
 void killlog()
 {
