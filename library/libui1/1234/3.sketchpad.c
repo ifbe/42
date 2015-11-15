@@ -83,22 +83,31 @@ void wangge()
 	kexuejishufa( &res , &temp );
 	wanggedistance=(int)( 250.00 / res );
 
+
 	first = centerx - scale * 512;
 	second = centerx + scale * 512;
 	res=beautifulbetween( first , second );
 	res=(res-first) / (second-first) * 1024;
+
 	wanggex = ( (int)res ) % wanggedistance;
+	if(wanggex>1023 | wanggex<0)return;
 
-	first = centery - scale * 512;
-	second = centery + scale * 512;
+
+	first = centery - scale * 384;
+	second = centery + scale * 384;
 	res=beautifulbetween( first , second );
-	res=(res-first) / (second-first) * 1024;
+	res=(second-res) / (second-first) * 1024;
+
 	wanggey = ( (int)res ) % wanggedistance;
+	if(wanggey>767 | wanggey<0)return;
 
 
 
 
-	//画上网格,以及网格上对应那一行的x,y坐标值
+	//网格上对应那一行的x,y坐标值,以及画上网格
+	printdouble( wanggex/8 , 0+wanggey/16 , centerx - (scale*512) + (wanggex*scale) );
+	printdouble( wanggex/8 , 1+wanggey/16 , centery + (scale*384) -	(wanggey*scale) );
+
 	for(x=wanggex;x<1024;x+=wanggedistance)
 	{//竖线
 		for(y=0;y<768;y++)
@@ -115,8 +124,6 @@ void wangge()
 		}
 	}//横线
 
-	//diary("%lf\n",scale);
-	printdouble(wanggex/8,wanggey/16,scale);
 }
 void tuxiang()
 {
