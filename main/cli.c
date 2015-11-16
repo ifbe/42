@@ -37,7 +37,9 @@ void waitinput(char* p)
 
 void main()
 {
-	initmaster(whereisworld());
+	initworld();
+	explainarg();
+
 	while(1)
 	{
 		//1.等输入，再把这段里面所有的0x20变成0

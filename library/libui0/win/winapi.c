@@ -11,41 +11,54 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1234
 #define menu2 0x5678
-
-
-
-
 void diary(char* fmt,...);
 
 
 
 
-static unsigned int* mypixel;
-static int width;
-static int height;
-
-static char dragpath[MAX_PATH];
-
+//window
 HWND window;
 HDC realdc;
 BITMAPINFO info;
 NOTIFYICONDATA nid;     //托盘属性 
-HMENU hMenu;            //托盘菜单 
+HMENU hMenu;            //托盘菜单
+
+// Step 3: the Window Procedure
+static int width=1024;
+static int height=768;
+static unsigned int* mypixel;
+static char dragpath[MAX_PATH];
+
+//
+static int solved=1;
+static QWORD my1;
+static QWORD my2;
+
+//
+static int leftdown=0,rightdown=0;
+static POINT pt, pe;
+static RECT rt, re;
 
 
 
 
-/*void point(int x,int y,int color)
-{
-	mypixel[y*width+x]=color;
-}
-void draw(int x,int y,int color)
-{
-	point(x+(width/2),(height/2)-y-1,color);
-}*/
-QWORD currentresolution()
+
+
+
+
+QWORD screenresolution()
 {
 	return (height<<16)+width;
+}
+char* screendata()
+{
+	return (char*)mypixel;
+}
+void setwindow(QWORD resolution)
+{
+	width=resolution&0xffff;
+	height=(resolution>>16)&0xffff;
+	//changeresolution
 }
 void writescreen()
 {
@@ -66,14 +79,10 @@ void writescreen()
 
 
 
-// Step 3: the Window Procedure
-static int solved=1;
-static QWORD my1;
-static QWORD my2;
 
-static int leftdown=0,rightdown=0;
-static POINT pt, pe;
-static RECT rt, re;
+
+
+
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
@@ -337,6 +346,10 @@ void waitevent(QWORD* first,QWORD* second)
 
 
 
+
+
+
+
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 int initmywindow()
 {
@@ -423,13 +436,11 @@ void initdib()
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
-void initwindow(QWORD addr,QWORD resolution)
+void initwindow(QWORD addr)
 {
 	//准备rgb点阵
 	//mypixel=(unsigned int*)malloc(width*height*4);
 	mypixel=(unsigned int*)addr;
-	width=resolution&0xffff;
-	height=(resolution>>16)&0xffff;
 
 	//准备beforemain
 	initmywindow();

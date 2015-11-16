@@ -5,6 +5,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
+void target(char*);
 void printmemory(char*,int);
 void diary(char* fmt,...);
 
@@ -16,6 +17,7 @@ char* explainarg()
 {
 	//拿到进程的输入arg,决定默认打开谁
 	int i,j,wantlog;
+	char* result=0;
 	char* inputarg=GetCommandLine();
 	strncpy(mystring,inputarg,100);
 
@@ -58,18 +60,30 @@ char* explainarg()
 	//可能有多个空格
 	for(i=0;i<100;i++)
 	{
-		if(mystring[i]==0)return 0;
+		if(mystring[i]==0)
+		{
+			result=0;
+			break;
+		}
 		if(mystring[i]==0x20)
 		{
 			//只要发现空格后面跟着的不是\0,不是0x20,不是-
-			if( ( mystring[i+1] != 0 ) && ( mystring[i+1] != 0x20 ) && ( mystring[i+1] != '-' ) )
+			if( 
+				( mystring[i+1] != 0 ) &&
+				( mystring[i+1] != 0x20 ) &&
+				( mystring[i+1] != '-' )
+			)
 			{
 				for(j=0;j<20;j++)
 				{
 					if(mystring[i+1+j]==0x20)mystring[i+1+j]=0;
 				}
-				return mystring+i+1;
+				result=mystring+i+1;
+				break;
 			}
 		}
 	}
+
+	//-----
+	target(result);
 }

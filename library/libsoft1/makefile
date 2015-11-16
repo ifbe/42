@@ -1,6 +1,5 @@
 binary:
 	gcc -c -fPIC -O2 master.c
-	gcc -c -fPIC -O2 memory.c
 	gcc -c -fPIC -O2 anscii/anscii.c
 	gcc -c -fPIC -O2 anscii/anscii.convert.c
 	gcc -c -fPIC -O2 math/math.c
@@ -14,7 +13,6 @@ binary:
 	gcc -c -fPIC -O2 ntfs.c
 crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 master.c
-	x86_64-elf-gcc -c -fPIC -O2 memory.c
 	x86_64-elf-gcc -c -fPIC -O2 anscii/anscii.c
 	x86_64-elf-gcc -c -fPIC -O2 anscii/anscii.convert.c
 	x86_64-elf-gcc -c -fPIC -O2 math/math.c
@@ -28,7 +26,6 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 ntfs.c
 linux:
 	gcc -c -fPIC -O2 master.c
-	gcc -c -fPIC -O2 memory.c
 	gcc -c -fPIC -O2 anscii/anscii.c
 	gcc -c -fPIC -O2 anscii/anscii.convert.c
 	gcc -c -fPIC -O2 math/math.c
@@ -42,7 +39,6 @@ linux:
 	gcc -c -fPIC -O2 filesystem/ntfs.c
 mac:
 	clang -c -fPIC -O2 master.c
-	clang -c -fPIC -O2 memory.c
 	clang -c -fPIC -O2 anscii/anscii.c
 	clang -c -fPIC -O2 anscii/anscii.convert.c
 	clang -c -fPIC -O2 math/math.c
@@ -56,7 +52,6 @@ mac:
 	clang -c -fPIC -O2 filesystem/ntfs.c
 win:
 	gcc -c -O2 master.c
-	gcc -c -O2 memory.c
 	gcc -c -O2 anscii/anscii.c
 	gcc -c -O2 anscii/anscii.convert.c
 	gcc -c -O2 math/math.c
