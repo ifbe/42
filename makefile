@@ -10,18 +10,18 @@ what:
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
 linux:
-	make -C library linux
 	make -C main cli
+	make -C library linux
 	gcc main/main.a library/library.a \
 	-o a.out
 mac:
-	make -C library mac
 	make -C main cli
+	make -C library mac
 	clang main/main.a library/library.a \
 	-o a.out
 win:
-	make -C library win
 	make -C main cli
+	make -C library win
 	gcc main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
 
@@ -29,25 +29,25 @@ win:
 
 
 linux+fb:
-	make -C library linux+fb
 	make -C main gui
+	make -C library linux+fb
 	gcc main/main.a library/library.a \
 	-o a.out
 linux+xlib:
-	make -C library linux+xlib
 	make -C main gui
+	make -C library linux+xlib
 	gcc main/main.a library/library.a \
 	-lX11 \
 	-o a.out
 linux+sdl:
-	make -C library linux+sdl
 	make -C main gui
+	make -C library linux+sdl
 	gcc main/main.a library/library.a \
 	-lSDL2 -lm \
 	-o a.out
 linux+web:
-	make -C library linux+web
 	make -C main gui
+	make -C library linux+web
 	gcc \
 	main/main.a library/library.a \
 	-o a.out
@@ -56,8 +56,8 @@ linux+web:
 
 
 mac+sdl:
-	make -C library mac
 	make -C main cli
+	make -C library mac+sdl
 	clang main/main.a library/library.a \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm \
@@ -67,8 +67,8 @@ mac+sdl:
 
 
 win+api:
-	make -C library win+api
 	make -C main gui
+	make -C library win+api
 	#gcc -o a.exe libsoft0/uac.res \
 	#gcc -o a.exe \
 	gcc -mwindows \
@@ -76,8 +76,8 @@ win+api:
 	-lgdi32 \
 	-o a.exe
 win+sdl:
-	make -C library win+sdl
 	make -C main gui
+	make -C library win+sdl
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
@@ -88,8 +88,8 @@ win+sdl:
 	-lshell32 -lversion -luuid \
 	-o a.exe
 win+web:
-	make -C library win+web
 	make -C main gui
+	make -C library win+web
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
