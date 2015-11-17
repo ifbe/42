@@ -50,10 +50,6 @@ QWORD screenresolution()
 {
 	return (height<<16)+width;
 }
-char* screendata()
-{
-	return (char*)mypixel;
-}
 void setwindow(QWORD resolution)
 {
 	width=resolution&0xffff;
@@ -75,6 +71,29 @@ void writescreen()
 			DIB_RGB_COLORS);		//颜色格式
 	//printf("result:%x\n",result);
 }
+void waitevent(QWORD* first,QWORD* second)
+{
+	//收得到就一直收+处理
+	MSG msg;
+	while(GetMessage(&msg,NULL,0,0))
+	{
+		//交给WindowProc，试着处理看看
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+		//WindowProc处理不了，交给用户来处理
+		if(solved==0)
+		{
+			*first=my1;
+			*second=my2;
+			solved=1;
+			return;
+		}
+	}
+
+	//收不到就返回失败消息
+	*first=0;
+}
 
 
 
@@ -87,7 +106,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
     {
-		case WM_TRAY:		//托盘
+		//托盘
+		case WM_TRAY:
 		{
 			switch(lparam) 
 			{
@@ -137,6 +157,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			//diary("tray:\n");
 			return 0;
 		}
+
+		//拖拽文件
 		case WM_DROPFILES:
 		{
 			HDROP hDrop = (HDROP)wparam;
@@ -154,6 +176,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			solved=0;
 			return 0;
 		}
+
+		//按键
 		case WM_KEYDOWN:
 		{
 			switch(wparam)
@@ -176,6 +200,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			//diary("key:%x\n",wparam);
 			return 0;
 		}
+
+		//文字
 		case WM_CHAR:
 		{
 			if(wparam==0x1b)
@@ -197,6 +223,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//{
 		//	
 		//}
+
+		//滚轮
 		case WM_MOUSEWHEEL:
 		{
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
@@ -212,6 +240,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			solved=0;
 			return 0;
 		}
+
+		//鼠标移动
 		case WM_MOUSEMOVE:
 		{
 			//diary("moving\n");
@@ -239,6 +269,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			return 0;
 		}
+
+		//鼠标左键弹起
 		case WM_LBUTTONUP:
 		{
 			if(leftdown==1)
@@ -251,6 +283,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			leftdown=0;
 			return 0;
 		}
+
+		//鼠标右键弹起
 		case WM_RBUTTONUP:
 		{
 			if(rightdown==1)
@@ -263,6 +297,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			rightdown=0;
 			return 0;
 		}
+
+		//鼠标左键按下
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
 			leftdown=1;
@@ -277,6 +313,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			return 0;
 		}
+
+		//鼠标右键按下
 		case WM_RBUTTONDOWN:
 		{
 			rightdown=1;
@@ -291,6 +329,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			return 0;
 		}
+
+		//窗口尺寸改变
 		case WM_SIZE:
 		{
 			//diary("wparam:%llx,lparam:%llx\n",wparam,lparam);
@@ -301,46 +341,29 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			solved=0;
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
-		case WM_PAINT:		//显示
+
+		//显示
+		case WM_PAINT:
 		{
 			writescreen();
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
-		case WM_DESTROY:		//摧毁
+
+		//摧毁
+		case WM_DESTROY:
 		{
 			//Shell_NotifyIcon(NIM_DELETE, &nid);
 			//ReleaseDC(window,fakedc);  
 			PostQuitMessage(0);
 			return 0;
 		}
+
+		//。。。。。。。
 		default:
 		{
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 	}
-}
-void waitevent(QWORD* first,QWORD* second)
-{
-	//收得到就一直收+处理
-	MSG msg;
-	while(GetMessage(&msg,NULL,0,0))
-	{
-		//交给WindowProc，试着处理看看
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-
-		//WindowProc处理不了，交给用户来处理
-		if(solved==0)
-		{
-			*first=my1;
-			*second=my2;
-			solved=1;
-			return;
-		}
-	}
-
-	//收不到就返回失败消息
-	*first=0;
 }
 
 
@@ -436,6 +459,14 @@ void initdib()
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
+
+
+
+
+
+
+
+
 void initwindow(QWORD addr)
 {
 	//准备rgb点阵

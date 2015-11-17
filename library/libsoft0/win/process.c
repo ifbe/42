@@ -2,19 +2,14 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <tlhelp32.h>
-
 #define QWORD unsigned long long
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-
+void diary(char* fmt,...);
 
 HANDLE hDev;
-char* diskinfo;
-
-
-
-void diary(char* fmt,...);
+char* memoryinfo;
 
 
 
@@ -33,7 +28,7 @@ void listprocess()
 	proc.dwSize = sizeof(PROCESSENTRY32);
 
 	//找位置，跟在后面
-	char* p=(char*)diskinfo;
+	char* p=(char*)memoryinfo;
 	int i=0;
 	while(1)
 	{
@@ -46,18 +41,26 @@ void listprocess()
 	while( Process32Next(temp,&proc) )
 	{
 		printf("%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
-		sprintf((char*)diskinfo+i,"%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
+		sprintf((char*)memoryinfo+i,"%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
 		i+=0x100;
 		if(i>0x100*100)break;
 	}
 	CloseHandle(temp);
 	return;
 }
-void chooseprocess(QWORD pid)
+
+
+
+
+void intoprocess(QWORD pid)
 {
 	
 }
-QWORD myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
+
+
+
+
+QWORD readprocess(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
 {
 	QWORD bytesread = 0;
 	ReadProcessMemory(hDev,(char*)(startaddr*512),(char*)buf,count*0x200,&bytesread);
@@ -67,16 +70,22 @@ QWORD myreadprocessmemory(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
 
 
 
-
-
-
-
-void initprocess(QWORD addr)
+void writeprocess()
 {
-	diskinfo=(char*)addr;
-	diary("inited process\n");
+	
+}
+
+
+
+
+
+
+
+
+void initprocess(char* addr)
+{
+	memoryinfo=addr;
 }
 void killprocess()
 {
-	diary("killed process\n");
 }

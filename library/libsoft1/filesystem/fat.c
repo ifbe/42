@@ -330,9 +330,9 @@ int mountfat(QWORD addr,QWORD which)
 	//diary("%llx\n",(QWORD)fat32_explain);
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
-	fshome=addr+0x100000;
+	dirhome=addr+0x100000;
+	fshome=addr+0x200000;
 		fatbuffer=fshome+0x10000;
-	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
 

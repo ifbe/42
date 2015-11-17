@@ -21,14 +21,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-
-
-
-
 void diary(char* fmt,...);
-
-
-
 
 static BYTE* diskinfo;
 static int thisfd=-1;
@@ -37,24 +30,7 @@ static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
 
 
 
-//mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
-{
-	return 0;
-}
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
-{
-	return 0;
-}
-
-
-
-
-
-
-
-
-void filelist()
+void listfile()
 {
 	//clean
 	int tempfd;
@@ -94,7 +70,11 @@ void filelist()
 		}
 	}
 }
-void filetarget(char* wantpath)
+
+
+
+
+void infofile(char* wantpath)
 {
 	//testopen
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
@@ -108,7 +88,11 @@ void filetarget(char* wantpath)
 	if(thisfd!=-1)close(thisfd);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 }
-void fileread(QWORD buf,QWORD sector,QWORD disk,DWORD count)
+
+
+
+
+void readfile(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 {
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	int result;
@@ -125,8 +109,12 @@ void fileread(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 		diary("errno:%d,read:%llx,%llx\n",errno,sector,count);
 	}
 }
+
+
+
+
 //来源内存地址，目的首扇区，无视，总字节数
-void filewrite(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
+void writefile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 {
 	
 }
@@ -134,18 +122,37 @@ void filewrite(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 
 
 
-
-
-
-
-void fileinit(QWORD addr)
+//mem地址，file名字，文件内偏移，总字节数
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 {
-	diary("file initing\n");
+	return 0;
+}
 
+
+
+
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
+{
+	return 0;
+}
+
+
+
+
+
+
+
+
+void initfile(QWORD addr)
+{
 	diskinfo=(void*)addr;
 	filelist();
 }
-void filekill()
+void killfile()
 {
-	if(thisfd != -1)close(thisfd);
+	if(thisfd != -1)
+	{
+		close(thisfd);
+		thisfd=-1;
+	}
 }

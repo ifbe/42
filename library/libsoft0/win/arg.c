@@ -9,10 +9,11 @@ void target(char*);
 void printmemory(char*,int);
 void diary(char* fmt,...);
 
-
-
-
 static char mystring[100];
+
+
+
+
 char* explainarg()
 {
 	//拿到进程的输入arg,决定默认打开谁
@@ -85,5 +86,5 @@ char* explainarg()
 	}
 
 	//-----
-	target(result);
+	return result;
 }

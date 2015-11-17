@@ -37,8 +37,7 @@ void waitinput(char* p)
 
 void main()
 {
-	initworld();
-	explainarg();
+	bribelibrarian(8);
 
 	while(1)
 	{
@@ -48,4 +47,6 @@ void main()
 		if(compare(buffer, "exit" ) == 0)break;
 		else command(buffer);
 	}
+
+	byelibrarian();
 }

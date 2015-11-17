@@ -33,10 +33,9 @@ void file2mem(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
 //每个1M
 static QWORD diskhome;		//+0m
-static QWORD fshome;		//+1m
-static QWORD dirhome;		//+2m
+static QWORD dirhome;		//+1m
+static QWORD fshome;		//+2m
 static QWORD datahome;		//+3m
-static QWORD diskinfo;		//+7m
 
 //3大函数的位置
 int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
@@ -106,36 +105,25 @@ int directread(char* arg1)
 
 
 
-
-
-
-
-void choose(char* arg1)
+void list(char*  arg1)
+{
+	//只是打印一遍扫描到的磁盘信息
+	int i=0;
+	while(1)
+	{
+		//先检查
+		if( *(DWORD*)(diskinfo+i) == 0 )break;
+		if(i>100*0x100)break;
+			//再打印
+		diary("%s\n",diskinfo+i);
+		i+=0x100;
+	}
+}
+void into(char* arg1)
 {
 	cleanmemory(diskhome,0x400000);
-	if( (QWORD)arg1 == 0 )
-	{
-		//只是打印一遍扫描到的磁盘信息
-		char* p=(char*)diskinfo;
-		int i=0;
-
-		while(1)
-		{
-			//先检查
-			if( *(DWORD*)(diskinfo+i) == 0 )break;
-			if(i>100*0x100)break;
-
-			//再打印
-			diary("%s\n",diskinfo+i);
-			i+=0x100;
-		}
-	}
-	else
-	{
-		//检查这是个什么玩意
-		target((QWORD)arg1);
-		hello();
-	}
+	intomemory(arg1);
+	hello();
 }
 int mount(char* arg1)
 {
@@ -277,28 +265,38 @@ void command(char* buffer)
 
 
 //----------------------2.实际的活都找专人来干-----------------------------
+	//help
 	if(compare( arg0 , "help" ) == 0)
 	{
 		diary("list ?          (list all known)\n");
-		diary("choose ?        (choose a disk)\n");
+		diary("into ?        (choose a disk)\n");
 		diary("read ?          (hex print a physical sector)\n");
 		diary("mount ?         (choose a partition)\n");
 		diary("explain ?       (explain inode/cluster/cnid/mft)\n");
 		diary("cd dirname      (change directory)\n");
 		diary("load filename   (load this file)\n");
 	}
-	else if(compare( arg0 , "choose" ) == 0)
+
+	//the disk
+	else if(compare( arg0 , "list" ) == 0)
 	{
-		choose(arg1);
+		list();
+	}
+	else if(compare( arg0 , "into" ) == 0)
+	{
+		into(arg1);
 	}
 	else if(compare( arg0 , "read" ) == 0)
 	{
 		directread(arg1);
 	}
-	else if(compare( arg0 , "mount" ) == 0)
+	else if(compare( arg0 , "write" ) == 0)
 	{
-		mount(arg1);
+		//dangerous
+		//directread(arg1);
 	}
+
+	//the filesystem
 	else if(compare( arg0 , "ls" ) == 0)
 	{
 		ls(arg1);
@@ -315,10 +313,7 @@ void command(char* buffer)
 	{
 		load(arg1);
 	}
-	else
-	{
-		diary("%s\n",arg0);
-	}
+
 }
 
 
@@ -327,10 +322,9 @@ void command(char* buffer)
 void initmaster(QWORD world)
 {
 	diskhome=world+0;
-	fshome=world+0x100000;
-	dirhome=world+0x200000;
+	dirhome=world+0x100000;
+	fshome=world+0x200000;
 	datahome=world+0x300000;
 
-	diskinfo=world+0x700000;
 	hello();
 }

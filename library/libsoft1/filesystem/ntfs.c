@@ -558,10 +558,10 @@ int mountntfs(QWORD addr,QWORD which)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
-	fshome=addr+0x100000;
+	dirhome=addr+0x100000;
+	fshome=addr+0x200000;
 		mft0=fshome+0x10000;
 		mftbuffer=fshome+0x20000;
-	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
 	//上报3个函数的地址
