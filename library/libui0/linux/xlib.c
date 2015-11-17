@@ -29,6 +29,7 @@ static char converttable[0x80]={
 0xff,0xff,0xff,0xff,	0,0,0,0,		0,0,0,0,		0,0,0,0x26,	//0x60,0x6f
 0,0x25,0x27,0,		0x28,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
 };
+
 Display* dsp;
 XImage* ximage;
 Window win;
@@ -43,15 +44,6 @@ int oldy=0;
 
 
 
-/*
-void point(int x, int y, DWORD color)
-{
-	mypixel[y*width+x] = color;
-}
-void draw(int x,int y,int color)
-{
-	point(x+(width/2),(height/2)-y-1,color);
-}*/
 QWORD currentresolution()
 {
 	return (768<<16)+1024;
