@@ -28,6 +28,10 @@ void initmemory(char* memory)
 	initlisten(  memory+0x400000 );
 	initsay( memory+0x500000 );
 }
+void killmemory()
+{
+	killfile();
+}
 
 
 

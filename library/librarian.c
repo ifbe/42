@@ -105,6 +105,18 @@ void bondandfleshandface()	//8+8+16m
 */
 __attribute__((destructor)) void cleanall()
 {
+	if(palette != 0)
+	{
+		killwindow();
+		palette=0;
+	}
+
+	if(memory != 0)
+	{
+		killmemory();
+		memory=0;
+	}
+
 	if(world != 0)
 	{
 		free(world);
