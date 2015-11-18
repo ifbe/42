@@ -3,31 +3,30 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //in libsoft1/
-void mountext(QWORD,QWORD);
-void mountfat(QWORD,QWORD);
-void mounthfs(QWORD,QWORD);
-void mountntfs(QWORD,QWORD);
-void explaingpt(QWORD,QWORD);
-void explainmbr(QWORD,QWORD);
+int mountext(QWORD,QWORD);
+int mountfat(QWORD,QWORD);
+int mounthfs(QWORD,QWORD);
+int mountntfs(QWORD,QWORD);
+int explaingpt(QWORD,QWORD);
+int explainmbr(QWORD,QWORD);
 
 //in libsoft/
-void hexstring2data(char*,QWORD*);
-void buf2arg(char*,BYTE**,BYTE**);
 int compare(char*,char*);
-void printmemory(QWORD addr,int count);
-void cleanmemory(QWORD addr,int count);
+int hexstring2data(char*,QWORD*);
+int buf2arg(char*,BYTE**,BYTE**);
+int printmemory(QWORD addr,int count);
+int cleanmemory(QWORD addr,int count);
 
 //in init/
-void say(char* str,...);
-void diary(char* str,...);
-
+int listmemory();
+int intomemory(char*);
 QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 QWORD writememory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void target(QWORD in);
-
 void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 void file2mem(QWORD memaddr,char* filename,QWORD offset,QWORD count);
 
+int say(char* str,...);
+int diary(char* str,...);
 
 
 

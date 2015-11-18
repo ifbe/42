@@ -2,14 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
-
-//explainmbr和explainebr公用的变量
-
-
-
-
-//用了别人的
 void diary(char* fmt,...);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD start,QWORD count);
@@ -18,7 +10,7 @@ void printmemory(QWORD start,QWORD count);
 
 
 //from：那一条长度为16B的项目的地址，to：希望的位置
-static void mbrrecord(QWORD from,QWORD* to)
+static void mbrrecord(char* from,QWORD* to)
 {
 	QWORD type=*(BYTE*)(from+4);
 	if(type==0)return;
@@ -64,7 +56,7 @@ static void mbrrecord(QWORD from,QWORD* to)
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-QWORD explainmbr(QWORD buffer,QWORD to)
+QWORD explainmbr(char* buffer,QWORD to)
 {
 	diary("mbr disk{\n",0);
 

@@ -1,26 +1,35 @@
 linux:
 	make -s -C libsoft0 linux
 	make -s -C libsoft1 linux
+	make -s -C libui0 linux
+	make -s -C libui1 linux
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
 	libsoft0/*.o libsoft1/*.o \
+	libui0/*.o libui1/*.o \
 	librarian.o
 mac:
 	make -s -C libsoft0 mac
 	make -s -C libsoft1 mac
+	make -s -C libui0 mac
+	make -s -C libui1 mac
 	clang -c librarian.c
 	rm -f library.a
 	ar crs library.a \
 	libsoft0/*.o libsoft1/*.o \
+	libui0/*.o libui1/*.o \
 	librarian.o
 win:
 	make -s -C libsoft0 win
 	make -s -C libsoft1 win
+	make -s -C libui0 win
+	make -s -C libui1 win
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
 	libsoft0/*.o libsoft1/*.o \
+	libui0/*.o libui1/*.o \
 	librarian.o
 
 linux+xlib:

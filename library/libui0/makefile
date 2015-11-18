@@ -1,3 +1,13 @@
+.PHONY:linux
+linux:
+	gcc -c window.c
+.PHONY:mac
+mac:
+	clang -c window.c
+.PHONY:win
+win:
+	gcc -c window.c
+
 .PHONY:linux+fb
 linux+fb:
 	gcc -c -fPIC -O2 fb.c
@@ -7,9 +17,11 @@ linux+xlib:
 .PHONY:linux+sdl
 linux+sdl:
 	gcc -c -fPIC -O2 sdl2/sdl.c
+
 .PHONY:mac+sdl
 mac+sdl:
 	clang -c -O2 sdl/sdl.c -I /usr/local/Cellar/sdl2/2.0.3/include
+
 .PHONY:win+api
 win+api:
 	gcc -c -O2 win/winapi.c
