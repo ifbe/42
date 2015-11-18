@@ -80,7 +80,7 @@ void listfile()
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
 			//[0,7]:id
-			*(QWORD*)(dest+0)=source;
+			*(QWORD*)(dest+0)=('d')+('i'<<8)+('s'<<16)+('k'<<24)+(source<<32);
 
 			//[8,f]:size
 			getsize( temphandle , tempname , (void*)(dest+8) );
@@ -225,7 +225,7 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 void initfile(char* addr)
 {
 	memoryinfo=addr;
-	filelist();
+	listfile();
 }
 void killfile()
 {

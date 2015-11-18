@@ -3,38 +3,39 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //in libsoft1/
-int mountext(QWORD,QWORD);
-int mountfat(QWORD,QWORD);
-int mounthfs(QWORD,QWORD);
-int mountntfs(QWORD,QWORD);
-int explaingpt(QWORD,QWORD);
-int explainmbr(QWORD,QWORD);
+int mountext(char*,QWORD);
+int mountfat(char*,QWORD);
+int mounthfs(char*,QWORD);
+int mountntfs(char*,QWORD);
+int explaingpt(char*,char*);
+int explainmbr(char*,char*);
 
 //in libsoft/
 int compare(char*,char*);
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,BYTE**,BYTE**);
-int printmemory(QWORD addr,int count);
-int cleanmemory(QWORD addr,int count);
+int printmemory(char* addr,int count);
+int cleanmemory(char* addr,int count);
 
 //in init/
 int listmemory();
 int intomemory(char*);
-QWORD readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-QWORD writememory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void mem2file(QWORD memaddr,char* filename,QWORD offset,QWORD count);
-void file2mem(QWORD memaddr,char* filename,QWORD offset,QWORD count);
+QWORD readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+QWORD writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
+void file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 
 int say(char* str,...);
 int diary(char* str,...);
 
 
 
+
 //每个1M
-static QWORD diskhome;		//+0m
-static QWORD dirhome;		//+1m
-static QWORD fshome;		//+2m
-static QWORD datahome;		//+3m
+static char* diskhome;		//+0m
+static char* dirhome;		//+1m
+static char* fshome;		//+2m
+static char* datahome;		//+3m
 
 //3大函数的位置
 int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
@@ -44,17 +45,6 @@ int (*fsload)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(fsload))(arg1,tem
 
 
 
-//from:
-//只知道是一堆数据
-//to:					//[+0,+ffff],每个0x40,总共0x400个
-//[0,7]  		startlba
-//[8,f]  		endlba
-//[10,17]		type
-//[18,1f]		name
-//[20,27]		cdfunc
-//[28,2f]		loadfunc
-//[30,37]		explainfunc
-//[38,3f]		unused
 void hello()		//你究竟是个什么？
 {
 	//读最开始的64个扇区（0x8000字节）来初步确定
@@ -72,12 +62,10 @@ void hello()		//你究竟是个什么？
 		QWORD temp=*(QWORD*)(datahome+0x200);
 		if( temp == 0x5452415020494645 )
 		{
-			//cleanmemory(diskhome,0x400000);
 			explaingpt(datahome,diskhome);
 		}
 		else
 		{
-			//cleanmemory(diskhome,0x400000);
 			explainmbr(datahome,diskhome);
 		}
 	}
@@ -100,27 +88,6 @@ int directread(char* arg1)
 
 
 
-void list()
-{
-	//只是打印一遍扫描到的磁盘信息
-	int i=0;
-	while(1)
-	{
-		//先检查
-		if( *(DWORD*)(diskhome+i) == 0 )break;
-		if(i>100*0x100)break;
-
-		//再打印
-		diary("%s\n",diskhome+i);
-		i+=0x100;
-	}
-}
-void into(char* arg1)
-{
-	cleanmemory(dirhome,0x300000);
-	intomemory(arg1);
-	hello();
-}
 
 
 
@@ -176,7 +143,7 @@ int explain(char* arg1)
 void ls(char* arg1)
 {
 	diary("id              size            type                name\n");
-	QWORD addr=dirhome;
+	char* addr=dirhome;
 	for(;addr<dirhome+0x1000;addr+=0x40)
 	{
 		if(*(QWORD*)(addr+0x20)==0)break;
@@ -188,35 +155,55 @@ void ls(char* arg1)
 	}
 	//printmemory(dirhome,0x1000);
 }
-
-
-
-
-
-
-
-
-int searchthis(char* name,QWORD* addr)
+void list()
 {
-	QWORD temp=dirhome;
+	//只是打印一遍扫描到的磁盘信息
+	int i=0;
+	while(1)
+	{
+		//先检查
+		if( *(DWORD*)(diskhome+i) == 0 )break;
+		if(i>100*0x100)break;
+
+		//再打印
+		diary("%s\n",diskhome+i);
+		i+=0x40;
+	}
+}
+void into(char* arg1)
+{
+	cleanmemory(dirhome,0x300000);
+	intomemory(arg1);
+	hello();
+}
+
+
+
+
+
+
+
+
+char* searchthis(char* name)
+{
+	char* temp=dirhome;
 	for(;temp<dirhome+0x1000;temp+=0x40)
 	{
 		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
 		if( compare( name , (char*)(temp+0x20) ) == 0 )
 		{
-			*addr=temp;
 			printmemory(temp,0x40);
-			return 0;
+			return temp;
 		}
 	}
 
 	diary("file not found\n");
-	return -1;
+	return 0;
 }
 int cd(char* arg1)
 {
-	QWORD addr;
-	if( searchthis(arg1,&addr) < 0 )return -1;		//没找到
+	char* addr=searchthis(arg1);
+	if( addr==0 )return -1;		//没找到
 
 	//change directory
 	fscd( *(QWORD*)(addr+0) );
@@ -224,8 +211,8 @@ int cd(char* arg1)
 int load(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
-	QWORD addr;
-	if( searchthis(arg1,&addr) < 0 )return -1;
+	char* addr=searchthis(arg1);
+	if( addr==0 )return -1;
 
 	QWORD id=*(QWORD*)(addr+0);
 	QWORD size=*(QWORD*)(addr+8);
@@ -319,7 +306,7 @@ void command(char* buffer)
 
 
 
-void initmaster(QWORD world)
+void initmaster(char* world)
 {
 	diskhome=world+0;
 	dirhome=world+0x100000;

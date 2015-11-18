@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void diary(char* fmt,...);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD start,QWORD count);
 
 

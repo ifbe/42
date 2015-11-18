@@ -1,12 +1,12 @@
 .PHONY:linux
 linux:
-	gcc -c window.c
+	gcc -c console.c
 .PHONY:mac
 mac:
-	clang -c window.c
+	clang -c console.c
 .PHONY:win
 win:
-	gcc -c window.c
+	gcc -c console.c
 
 .PHONY:linux+fb
 linux+fb:
