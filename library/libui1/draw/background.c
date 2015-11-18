@@ -2,23 +2,25 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-
-
-
-
 void blackstring(int x,int y,char* str);
 void line(QWORD,QWORD,QWORD);
 void rectangle(QWORD,QWORD,QWORD);
+QWORD windowresolution();
 
-QWORD screendata();
-QWORD screenresolution();
+
+
+
+static DWORD* screenbuf=0;
+void initbackground(char* addr)
+{
+	screenbuf=(DWORD*)addr;
+}
 
 
 
 
 void cleanscreen()
 {
-	DWORD* screenbuf=(DWORD*)screendata();
 
 	//用指定颜色清屏
 	int x,y;
@@ -34,8 +36,7 @@ void cleanscreen()
 void background1()
 {
 	QWORD x,y;
-	DWORD* screenbuf=(DWORD*)screendata();
-	QWORD temp=screenresolution();
+	QWORD temp=windowresolution();
 	int ysize=(temp>>16)&0xffff;
 	int xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;
@@ -79,97 +80,11 @@ void background1()
 void background3()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)screendata();
 
 	for(x=0;x<1024*768;x++)
 	{
 		screenbuf[x]=0;
 	}
-	//bg
-/*
-	for(y=0;y<64;y++)
-	{
-		for(x=0;x<512;x++)
-		{
-			screenbuf[y*1024+x]=0x88888888;
-		}
-	}
-*/
-	//line( (384<<16)+0 , (384<<16)+1023 , 0x01234567);
-	//line( 512 , (767<<16)+512 , 0x01234567);
-/*
-	//[0,128]
-	for(y=0;y<128;y++)
-	{
-		for(x=384;x<640;x++)
-		{
-			screenbuf[y*1024+x]=0xffff;
-		}
-	}
-	blackstring(0x3c,0,"data");
-
-	//[128,256]
-	for(y=128;y<256;y++)
-	{
-		for(x=384;x<640;x++)
-		{
-			screenbuf[y*1024+x]=0x8a67f7;
-		}
-	}
-	blackstring(0x3c,8,"dir");
-
-	//[256,384]
-	for(y=256;y<384;y++)
-	{
-		for(x=384;x<640;x++)
-		{
-			screenbuf[y*1024+x]=0xe578bd;
-		}
-	}
-	blackstring(0x3c,16,"fs");
-
-	//[384,512]
-	for(y=384;y<512;y++)
-	{
-		for(x=384;x<640;x++)
-		{
-			screenbuf[y*1024+x]=0xff00;
-		}
-	}
-	blackstring(0x3c,24,"disk");
-
-	//[512,640]
-	for(y=512;y<640;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			screenbuf[y*1024+x]=0xfedcba98;
-		}
-	}
-	blackstring(0x3c,32,"choose");
-*/
-/*
-	for(y=0;y<16;y++)	//上下
-	{
-		DWORD color=(QWORD)y*thatcolor;
-
-		//上，编译器会不会用rep stosd指令优化呢?
-		for(x=y;x<1024-y;x++)screenbuf[(y<<10) + x]=color;
-
-		//下
-		for(x=y;x<1024-y;x++)screenbuf[( (639-y) << 10 ) + x]=color;
-	}
-	for(x=0;x<16;x++)	//左右
-	{
-		DWORD color=(QWORD)x*thatcolor;
-
-		for(y=x;y<640-x;y++)
-		{
-			screenbuf[(y*1024)+x]=color;
-			screenbuf[(y*1024)+1023-x]=color;
-		}
-	}
-*/
 }
 
 
@@ -177,7 +92,6 @@ void background3()
 
 void background2()
 {
-	DWORD* screenbuf=(DWORD*)screendata();
 
 	//用指定颜色清屏
 	int x,y;
@@ -194,7 +108,6 @@ void background4(QWORD showaddr,QWORD temp)
 {
 	//用指定颜色清屏
 	DWORD x,y,color;
-	DWORD* screenbuf=(DWORD*)screendata();
 
 	for(x=0;x<1024*752;x++)
 	{

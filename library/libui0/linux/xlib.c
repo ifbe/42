@@ -44,7 +44,7 @@ int oldy=0;
 
 
 
-QWORD currentresolution()
+QWORD windowresolution()
 {
 	return (768<<16)+1024;
 }

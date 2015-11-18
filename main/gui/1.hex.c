@@ -17,9 +17,9 @@ int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
-QWORD screendata();
-QWORD screenresolution();
-QWORD whereisworld();
+QWORD windowresolution();
+QWORD whereispalette();
+QWORD whereismemory();
 
 
 
@@ -81,7 +81,7 @@ void foreground()
 	int x,y;
 	int xsize,ysize,xshift;
 	QWORD readwhere=readornotread(base);
-	QWORD temp=screenresolution();
+	QWORD temp=windowresolution();
 
 	ysize=( (temp>>16) & 0xffff ) >> 4;
 	if(ysize>0x40)ysize=0x40;
@@ -122,8 +122,8 @@ void foreground()
 void floatarea()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)screendata();
-	QWORD temp=screenresolution();
+	DWORD* screenbuf=(DWORD*)whereispalette();
+	QWORD temp=windowresolution();
 	int ysize=(temp>>16)&0xffff;
 	int xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;
@@ -288,7 +288,7 @@ void f1init()
 	int i;
 	if(datahome==0)
 	{
-		datahome=(BYTE*)whereisworld()+0x300000;
+		datahome=(BYTE*)whereismemory()+0x300000;
 		for(i=0;i<0x2000;i++)datahome[i]=0;
 
 		//浮动框

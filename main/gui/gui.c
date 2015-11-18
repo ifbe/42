@@ -29,9 +29,9 @@ void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
 void writescreen();
 
-void choose(QWORD in);
+void intomemory(QWORD in);
 void waitevent(QWORD* first,QWORD* second);
-QWORD whereisworld();
+QWORD whereismemory();
 
 
 
@@ -121,7 +121,7 @@ void processmessage(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)		//dropfile
 	{
 		//diary("debuging::::::::%s\n",(char*)key);
-		choose(key);
+		intomemory(key);
 		return;
 	}
 	//else if(type==)		//xychange
@@ -201,9 +201,7 @@ void processmessage(QWORD type,QWORD key)
 
 void main()
 {
-	QWORD world=whereisworld();
-	initmaster(world);
-	menuinit();			//esc
+	memoryandface();
 	f1init();			//1
 	f2init();			//2
 	f3init();			//3

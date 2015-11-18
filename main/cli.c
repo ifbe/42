@@ -37,7 +37,7 @@ void waitinput(char* p)
 
 void main()
 {
-	bribelibrarian(8);
+	onlymemory();
 
 	while(1)
 	{
@@ -48,5 +48,5 @@ void main()
 		else command(buffer);
 	}
 
-	byelibrarian();
+	cleanall();
 }

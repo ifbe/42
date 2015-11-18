@@ -1,24 +1,26 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-
-
-
-
-QWORD screendata();
 QWORD screenresolution();
 //void point(int x,int y,DWORD color);
 
 
 
 
+static DWORD* screenbuf=0;
+void initshape(char* addr)
+{
+	screenbuf=(DWORD*)addr;
+}
+
+
+
+
 void point(int x,int y,int color)
 {
-	DWORD* screenbuf=(DWORD*)screendata();
 	screenbuf[ x + (y<<10) ] = color;
 }
 void draw(int x,int y,int color)
 {
-	DWORD* screenbuf=(DWORD*)screendata();
 	screenbuf[ (x+512) + ((383-y)<<10) ] = color;
 }
 
@@ -29,7 +31,6 @@ void line(QWORD y1x1,QWORD y2x2,DWORD color)
 {
 	int x,y,temp;
 	int x1,y1,x2,y2;
-	DWORD* screenbuf=(DWORD*)screendata();
 
 	x1=y1x1&0xffff;
 	y1=(y1x1>>16)&0xffff;
@@ -84,7 +85,6 @@ void rectangle(QWORD y1x1,QWORD y2x2,DWORD color)
 	int x,y;
 	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
-	DWORD* screenbuf=(DWORD*)screendata();
 
 
 

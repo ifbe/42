@@ -45,10 +45,6 @@ int (*fsload)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(fsload))(arg1,tem
 
 
 
-
-
-
-
 //from:
 //只知道是一堆数据
 //to:					//[+0,+ffff],每个0x40,总共0x400个
@@ -105,26 +101,31 @@ int directread(char* arg1)
 
 
 
-void list(char*  arg1)
+void list()
 {
 	//只是打印一遍扫描到的磁盘信息
 	int i=0;
 	while(1)
 	{
 		//先检查
-		if( *(DWORD*)(diskinfo+i) == 0 )break;
+		if( *(DWORD*)(diskhome+i) == 0 )break;
 		if(i>100*0x100)break;
-			//再打印
-		diary("%s\n",diskinfo+i);
+
+		//再打印
+		diary("%s\n",diskhome+i);
 		i+=0x100;
 	}
 }
 void into(char* arg1)
 {
-	cleanmemory(diskhome,0x400000);
+	cleanmemory(dirhome,0x300000);
 	intomemory(arg1);
 	hello();
 }
+
+
+
+
 int mount(char* arg1)
 {
 	if((QWORD)arg1==0)

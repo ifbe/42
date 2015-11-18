@@ -35,9 +35,9 @@ void kexuejishufa(double* haha,int* counter);
 
 void printmemory(char*,int);
 void diary(char*,...);
-QWORD screendata();
+QWORD whereispalette();
 QWORD screenresolution();
-QWORD whereisworld();
+QWORD whereismemory();
 
 
 
@@ -72,7 +72,7 @@ void wangge()
 	double first,second,res;
 
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
-	DWORD* screenbuf=(DWORD*)screendata();
+	DWORD* screenbuf=(DWORD*)whereispalette();
 
 
 
@@ -131,7 +131,7 @@ void tuxiang()
 	int value1,value2,counter;
 	double first,second,haha;
 
-	DWORD* screenbuf=(DWORD*)screendata();
+	DWORD* screenbuf=(DWORD*)whereispalette();
 
 
 
@@ -339,7 +339,7 @@ void f3init()
 {
 	if(datahome==0)
 	{
-		char* world=(char*)whereisworld();
+		char* world=(char*)whereismemory();
 		node=(struct mathnode*)(world+0x200000);
 		datahome=world+0x300000;
 

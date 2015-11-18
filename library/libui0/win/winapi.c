@@ -46,7 +46,7 @@ static RECT rt, re;
 
 
 
-QWORD screenresolution()
+QWORD windowresolution()
 {
 	return (height<<16)+width;
 }
@@ -376,27 +376,27 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 int initmywindow()
 {
-    //Step 1: Registering the Window Class+Creating the Window
-    char *AppTitle="i am groot!";
-    WNDCLASS wc;
-    wc.style=CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc=WindowProc;
-    wc.cbClsExtra=0;
-    wc.cbWndExtra=0;
-    wc.hInstance=0;				//hInst;
-    wc.hIcon=LoadIcon(NULL,IDI_WINLOGO);
-    wc.hCursor=LoadCursor(NULL,IDC_ARROW);
-    wc.hbrBackground=(HBRUSH)COLOR_WINDOWFRAME;
-    wc.lpszMenuName=NULL;
-    wc.lpszClassName=AppTitle;
-    if (!RegisterClass(&wc)) return 0;
+	//Step 1: Registering the Window Class+Creating the Window
+	char *AppTitle="i am groot!";
+	WNDCLASS wc;
+	wc.style=CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc=WindowProc;
+	wc.cbClsExtra=0;
+	wc.cbWndExtra=0;
+	wc.hInstance=0;				//hInst;
+	wc.hIcon=LoadIcon(NULL,IDI_WINLOGO);
+	wc.hCursor=LoadCursor(NULL,IDC_ARROW);
+	wc.hbrBackground=(HBRUSH)COLOR_WINDOWFRAME;
+	wc.lpszMenuName=NULL;
+	wc.lpszClassName=AppTitle;
+	if (!RegisterClass(&wc)) return 0;
 
 	//创建窗口
-    window = CreateWindow(AppTitle,AppTitle,
-				WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX,		//无边框
+	window = CreateWindow(AppTitle,AppTitle,
+				WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
 				100,100,width+16,height+40,
 				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
-    if (!window) return 0;
+	if (!window) return 0;
 
 	//透明
 	LONG t = GetWindowLong(window, GWL_EXSTYLE);
@@ -404,40 +404,42 @@ int initmywindow()
 	SetLayeredWindowAttributes(window, 0, 0xc0, LWA_ALPHA);  
 
 	//显示窗口
-    ShowWindow(window,SW_SHOW);			//nCmdShow);
-    UpdateWindow(window);
+	ShowWindow(window,SW_SHOW);			//nCmdShow);
+	UpdateWindow(window);
 }
 void InitUIPIFilter()
 {
-    typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,DWORD);
-    HMODULE hUser = LoadLibraryA("user32.dll");
-    if (hUser)
-    {
-        ChangeWindowMessageFilterProc proc = (ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
-        if(proc)
-		{
-			proc(WM_COPYDATA,1);
-			proc(WM_DROPFILES,1);
-			proc(0x0049, 1);
-		}
-		else diary("can't drag");
-    }
+	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,DWORD);
+
+	//1
+	HMODULE hUser = LoadLibraryA("user32.dll");
+	if (!hUser){diary("failed to load\n");exit(-1);}
+
+	//2
+	ChangeWindowMessageFilterProc proc;
+	proc=(ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
+	if(!proc){diary("can't drag\n");exit(-1);}
+
+	//3
+	proc(WM_COPYDATA,1);
+	proc(WM_DROPFILES,1);
+	proc(0x0049, 1);
 }
 void inittray()
 {
-    //Step 2:托盘
-    nid.cbSize = sizeof(NOTIFYICONDATA); 
-    nid.hWnd = window; 
-    nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
-    nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
-    nid.uCallbackMessage = WM_TRAY; 
-    nid.hIcon = LoadIcon(NULL,IDI_WINLOGO); 
-    lstrcpy(nid.szTip, "i am groot!"); 
-    Shell_NotifyIcon(NIM_ADD, &nid); 
+	//Step 2:托盘
+	nid.cbSize = sizeof(NOTIFYICONDATA); 
+	nid.hWnd = window; 
+	nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
+	nid.uCallbackMessage = WM_TRAY; 
+	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO); 
+	lstrcpy(nid.szTip, "i am groot!"); 
+	Shell_NotifyIcon(NIM_ADD, &nid); 
 
-    hMenu = CreatePopupMenu();    //生成托盘菜单 
-    AppendMenu(hMenu, MF_STRING, menu1, TEXT("i am groot")); 
-    AppendMenu(hMenu, MF_STRING, menu2, TEXT("i am groot")); 
+	hMenu = CreatePopupMenu();    //生成托盘菜单 
+	AppendMenu(hMenu, MF_STRING, menu1, TEXT("i am groot")); 
+	AppendMenu(hMenu, MF_STRING, menu2, TEXT("i am groot")); 
 }
 void initdib()
 {

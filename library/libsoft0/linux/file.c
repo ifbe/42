@@ -46,41 +46,37 @@ void listfile()
 	for(source=0;source<10;source++)
 	{
 		diskname[7]=source+'a';
-		//printf("diskname:%s\n",diskname);
 		tempfd = open(diskname,O_RDONLY);
 		if(tempfd == -1)break;
-		else
-		{
-			close(tempfd);
 
-			//[0,7]:id
-			*(QWORD*)(dest+0)=source;
+		//[0,7]:id	[8,f]:size	[0x10,0xff(0x3f)]:name
+		*(QWORD*)(dest+0)=source;
 
-			//[8,f]:size
-			stat(diskname,&st);
-			*(QWORD*)(dest+8)=st.st_size;
+		stat(diskname,&st);
+		*(QWORD*)(dest+8)=st.st_size;
 
-			//[0x10,0xff(0x3f)]:name
-			*(QWORD*)(dest+0x10)=*(QWORD*)diskname;
-			*(WORD*)(dest+0x18)=0;
+		*(QWORD*)(dest+0x10)=*(QWORD*)diskname;
+		*(WORD*)(dest+0x18)=0;
 
-			//next
-			printf( "%llx,%llx:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
-			dest += 0x100;
-		}
+		//next
+		printf( "%llx,%llx:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
+		dest += 0x100;
+		close(tempfd);
 	}
 }
 
 
 
 
-void infofile(char* wantpath)
+void intofile(char* wantpath)
 {
+	//先检查再打开新的，否则新的不行老的已去。。。
 	//testopen
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
 		diary("can't open:%s\n",wantpath);
+		return;
 	}
 	else close(tempfd);
 
@@ -146,7 +142,7 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 void initfile(QWORD addr)
 {
 	diskinfo=(void*)addr;
-	filelist();
+	listfile();
 }
 void killfile()
 {

@@ -4,17 +4,23 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
+char* explainarg();
+void initmemory(char*);
+void initmaster(char*);
+void initwindow(char*);
+void initpalette(char*);
 
 
 
 
 static char*   world=0;
+static char*  memory=0;
 static char* palette=0;
-char* whereisworld()
+char* whereismemory()	//8m
 {
-	return world;
+	return memory;
 }
-char* whereispalette()
+char* whereispalette()	//4m?16m?
 {
 	return palette;
 }
@@ -22,85 +28,82 @@ char* whereispalette()
 
 
 
-//特殊函数1：贿赂图书管理员，来帮忙初始化很多东西，给多少钱，做多少事
-void onlywindow()
+//省的写一大串初始化代码，这里是几种常见初始化过程
+void onlyface()		//4m
 {
-	//从系统手上申请内存
+	//111111
+	char* wantfile=explainarg();
+
+	//222222
 	world=malloc(0x400000);
-	if(world==NULL)
-	{
-		printf("no enough money\n");
-		exit(-1);
-	}
+	if(world==NULL){printf("no enough momery\n");exit(-1);}
 
-	//分赃，全部给窗口工人
+	//33333
 	palette=world;
+	initwindow( palette );
+	initpalette( palette );
 }
-void onlysoftware()
+void onlymemory()		//8m
 {
 	int i=0;
-	char* p=0;
 
-	//从系统手上申请内存
+	//1111111
+	char* wantfile=explainarg();
+
+	//2222222
 	world=malloc(0x800000);
-	if(world==NULL)
-	{
-		printf("no enough money\n");
-		exit(-1);
-	}
-	for(i=0;i<0x800000;i++)rootbuf[i]=0;
+	if(world==NULL){printf("no enough momery\n");exit(-1);}
 
-	//分赃，全部给处理工人
-	initinput(  world+0x400000 );
-	initoutput( world+0x500000 );
-	initdiary(  world+0x600000 );
-	initmemory( world+0x700000 );
-	initmaster( world );
+	//333333333
+	memory=world;
+	for(i=0;i<0x800000;i++)memory[i]=0;
+	initmemory( memory );
+	initmaster( memory );
 }
-void windowandsoftware()
+void memoryandface()		//8+4m
 {
-	//从系统手上申请内存
 	int i=0;
+
+	//111111111
+	char* wantfile=explainarg();
+
+	//22222222
 	world=malloc(0xc00000);
-	if(world==NULL)
-	{
-		printf("no enough money\n");
-		exit(-1);
-	}
-	for(i=0;i<0x800000;i++)rootbuf[i]=0;
+	if(world==NULL){printf("no enough momery\n");exit(-1);}
 
-	//部分给窗口工人
-	palette=	world+0x800000;		//[+0x800000,+0xbfffff]
+	//333333333
+	memory=world;
+	for(i=0;i<0x800000;i++)memory[i]=0;
+	initmemory( memory );
+	initmaster( memory );
 
-	//分赃，全部给处理工人
-	initinput(  world+0x400000 );
-	initoutput( world+0x500000 );
-	initdiary(  world+0x600000 );
-	initmemory( world+0x700000 );
-
-	initmaster(world);
+	//444444444
+	palette=world+0x800000;		//[+0x800000,+0xbfffff]
+	initwindow( palette );
+	initpalette( palette );
 }
-//__attribute__((constructor)) void bribelibrarian(int money)
-void bribelibrarian(int money)
+/*
+void bondandfleshandface()	//8+8+16m
 {
-	//只初始化一个窗口
-	if(money == 4) onlywindow();
+	world=malloc(0x2000000);
+	if(world==NULL){printf("no enough memory\n");exit(-1);}
 
-	//只初始化处理函数
-	else if(money == 8) onlysoftware();
+	hardware=world;
+	for(i=0x0;i<0x800000;i++)hardware[i]=0;
+	initcpu();
+	initdevice();
 
-	//初始化处理函数与窗口
-	else if(money == 12) windowandsofware();
+	memory=world+0x800000;
+	for(i=0x0;i<0x800000;i++)memory[i]=0;
+	initmemory( memory );
+	initmaster( memory );
 
-	//防止误调用
-	else
-	{
-		printf("byebye!");
-		exit(-1);
-	}
+	palette=world+0x1000000;
+	initwindow( palette );
+	initpalette( palette );
 }
-//特殊函数2：图书管理员，负责检查，用户是否防止忘记释放，如果是的话就帮助释放
-__attribute__((destructor)) void byelibrarian()
+*/
+__attribute__((destructor)) void cleanall()
 {
 	if(world != 0)
 	{

@@ -10,13 +10,12 @@ void die();
 void rectangle(QWORD,QWORD,QWORD);
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
-QWORD whereisworld();
+QWORD whereismemory();
 
 
 
 
 //硬盘信息
-static QWORD diskinfo;
 
 
 
@@ -65,7 +64,6 @@ void menumessage(QWORD type,QWORD key)
 
 
 
-void menuinit()
+void menuinit(char* addr)
 {
-	diskinfo=whereisworld()+0x700000;
 }

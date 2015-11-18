@@ -1,11 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-
-
-
-
 void double2decimalstring(double,char*);
-QWORD screendata();
 //void point(int x,int y,DWORD color);
 
 
@@ -145,59 +140,66 @@ static const unsigned char ansciitable[128*16]={
 
 
 
+static DWORD* screen=0;
+void initanscii(char* addr)
+{
+	screen=(DWORD*)addr;
+}
+
+
+
+
 void anscii(int xxxx,int yyyy,char ch)
 {
-    int x,y;
-    unsigned char temp;
-    unsigned long long points=(unsigned long long)&ansciitable;
-	DWORD* screen=(DWORD*)screendata();
+	int x,y;
+	unsigned char temp;
+	unsigned long long points=(unsigned long long)&ansciitable;
 
 	if(ch<0x20)ch=0x20;
-    points+=ch<<4;
-    xxxx<<=3;
-    yyyy<<=4;
+	points+=ch<<4;
+	xxxx<<=3;
+	yyyy<<=4;
 
-    for(y=0;y<16;y++)
-    {
+	for(y=0;y<16;y++)
+	{
 		temp=*(char*)points;
 		points++;
 
-        for(x=0;x<8;x++)
-        {
+		for(x=0;x<8;x++)
+		{
 			if( (temp&0x80) != 0 )
 			{
 				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0xffffffff;
-            }
+			}
 			temp<<=1;
-        }
-    }
+		}
+	}
 }
 void blackanscii(int xxxx,int yyyy,char ch)
 {
-    int x,y;
-    char temp;
-    unsigned long long points=(unsigned long long)&ansciitable;
-	DWORD* screen=(DWORD*)screendata();
+	int x,y;
+	char temp;
+	unsigned long long points=(unsigned long long)&ansciitable;
 
 	if(ch<0x20)ch=0x20;
-    points+=ch<<4;
-    xxxx<<=3;
-    yyyy<<=4;
+	points+=ch<<4;
+	xxxx<<=3;
+	yyyy<<=4;
 
-    for(y=0;y<16;y++)
-    {
+	for(y=0;y<16;y++)
+	{
 		temp=*(char*)points;
 		points++;
 
-        for(x=0;x<8;x++)
-        {
+		for(x=0;x<8;x++)
+		{
 			if( (temp&0x80) != 0 )
 			{
 				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0;
-            }
+			}
 			temp<<=1;
-        }
-    }
+		}
+	}
 }
 /*
 void blackanscii(int x,int y,char ch)

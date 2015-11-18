@@ -4,6 +4,8 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-
-
-
+char* listenbuf=0;
+void initlisten(char* addr)
+{
+	listenbuf=addr;
+}

@@ -10,7 +10,7 @@
 void printmemory(QWORD addr,QWORD size);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void whereislogicworld(QWORD* in);
-void holyshit(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
+void cleverread(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
 void diary(char* fmt,...);
 
 
@@ -463,7 +463,7 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 			//蛋又碎了，传进去的参数为：
 			//前三个：这一块的物理扇区号，扇区数，逻辑位置，
 			//后三个：目标位置，目标大小，需求位置
-			holyshit
+			cleverread
 			(
 				fileblock*blocksize,count*blocksize,logicwhere,
 				datahome,0x80000,wantwhere

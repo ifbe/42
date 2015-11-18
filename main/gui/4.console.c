@@ -14,7 +14,7 @@ void cleanscreen();
 int compare(char* first,char* second);
 void command(char* in);
 
-QWORD whereisworld();
+QWORD whereismemory();
 
 
 
@@ -111,7 +111,7 @@ void f4init()
 {
 	if(logbuf==0)
 	{
-		logbuf=whereisworld()+0x500000;
+		logbuf=whereismemory()+0x500000;
 	}
 	else	//不是第一次进来了
 	{

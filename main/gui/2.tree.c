@@ -37,7 +37,7 @@ void double2decimalstring(double,char*);
 void say(char*,...);
 void diary(char*,...);
 void printmemory(char*,int);
-QWORD whereisworld();
+QWORD whereismemory();
 
 
 
@@ -210,7 +210,7 @@ void f2init()
 {
 	if(node==0)
 	{
-		node=(struct mathnode*)(whereisworld()+0x200000);
+		node=(struct mathnode*)(whereismemory()+0x300000);
 	}
 	else
 	{

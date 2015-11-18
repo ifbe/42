@@ -4,6 +4,11 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
+char* outbuf=0;
+void initsay(char* addr)
+{
+	outbuf=addr;
+}
 
 
 
