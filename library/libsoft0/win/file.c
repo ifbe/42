@@ -60,49 +60,38 @@ void listfile()
 {
 	//printf("enu file\n");
 	//暂时根本不管是什么，默认就是当前第一个硬盘
-	char* p;
-	QWORD source=0,dest=0;
+	int num=0;
+	char* dest=0;
 
 	//clear
-	p=(char*)memoryinfo;
-	for(dest=0;dest<0x10000;dest++)
+	for(num=0;num<0x10000;num++)
 	{
 		//全部清零
-		p[dest]=0;
+		memoryinfo[num]=0;
 	}
 
 	//
-	dest=(QWORD)memoryinfo;
-	for(source=0;source<10;source++)
+	dest=memoryinfo;
+	for(num=0;num<10;num++)
 	{
 		tempname[17]=0x30+source;
 		HANDLE temphandle=CreateFile(tempname,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
-			//[0,7]:id
-			*(QWORD*)(dest+0)=('d')+('i'<<8)+('s'<<16)+('k'<<24)+(source<<32);
+			//[0,7]:type
+			*(QWORD*)(dest+0)=0x6b736964;
 
 			//[8,f]:size
 			getsize( temphandle , tempname , (void*)(dest+8) );
 
-			//[0x10,0xff(0x3f)]:name
-			int j;
-			p=(char*)(dest+0x10);
-			for(j=0;j<20;j++)
-			{
-				p[j]=tempname[j];
-			}
+			//[0x20,0x3f]:name
+			int j=0;
+			for(j=0;j<0x20;j++)dest[j]=tempname[j];
 
-			//close
+			//close,next
 			CloseHandle(temphandle);
-
-			//next
-			printf
-			(
-				"%llx    ,    %llx    :    %s\n" ,
-				*(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10)
-			);
-			dest += 0x100;
+			printf("%llx    ,    %llx    :    %s\n" ,*(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
+			dest += 0x40;
 		}
 	}//10个记录
 }

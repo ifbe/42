@@ -19,29 +19,31 @@ static void mbrrecord(char* from,QWORD* to)
 	QWORD start=*(DWORD*)(from+8);
 	QWORD end=*(DWORD*)(from+0xc);
 	QWORD* addr=(QWORD*)(*to);
-	addr[0]=start;
-	addr[1]=end;
+	addr[0]=0x74726170;		//type
+	addr[1]=0x200*(end-start);	//size
+	addr[2]=start;			//start
+	addr[3]=end;			//end
 
 	//parttype
 	if( type==0x4 | type==0x6 | type==0xb )
 	{
 		//diary("fat\n");
-		addr[2]=0x746166;
+		addr[4]=0x746166;
 	}
 	else if( type==0x7 )
 	{
 		//diary("ntfs\n");
-		addr[2]=0x7366746e;
+		addr[4]=0x7366746e;
 	}
 	else if( type==0x83 )
 	{
 		//diary("ext\n");
-		addr[2]=0x747865;
+		addr[4]=0x747865;
 	}
 	else
 	{
 		//diary("unknown:%x\n",type);
-		addr[2]=type;
+		addr[4]=type;
 	}
 
 	//partname

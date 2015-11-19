@@ -25,7 +25,7 @@ void diary(char* fmt,...);
 
 static BYTE* diskinfo;
 static int thisfd=-1;
-static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
+static char diskname[0x20]={'/','d','e','v','/','s','d','a','\0','\0'};
 
 
 
@@ -33,34 +33,38 @@ static char diskname[10]={'/','d','e','v','/','s','d','a','\0','\0'};
 void listfile()
 {
 	//clean
-	int tempfd;
 	struct stat st;
-	QWORD source=0,dest=0;
-	for(dest=0;dest<0x100*10;dest++)
+	int i;
+
+	int tempfd;
+	int num;
+	char* dest=0;
+	for(i=0;i<0x10000;i++)
 	{
-		diskinfo[dest]=0;
+		diskinfo[i]=0;
 	}
 
 	//enumerate
-	dest=(QWORD)diskinfo;
-	for(source=0;source<10;source++)
+	dest=diskinfo;
+	for(num=0;num<10;num++)
 	{
-		diskname[7]=source+'a';
+		diskname[7]=num+'a';
 		tempfd = open(diskname,O_RDONLY);
 		if(tempfd == -1)break;
 
-		//[0,7]:id	[8,f]:size	[0x10,0xff(0x3f)]:name
-		*(QWORD*)(dest+0)=source;
+		//[0,7]:id
+		*(QWORD*)(dest+0)=0x6b736964;
 
+		//[8,f]:size
 		stat(diskname,&st);
 		*(QWORD*)(dest+8)=st.st_size;
 
-		*(QWORD*)(dest+0x10)=*(QWORD*)diskname;
-		*(WORD*)(dest+0x18)=0;
+		//[0x20,0x3f]:name
+		for(i=0;i<0x20;i++)dest[0x20+i]=diskname[i];
 
 		//next
-		printf( "%llx,%llx:%s\n" , *(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
-		dest += 0x100;
+		//printf("%llx,%llx:%s\n",*(QWORD*)(dest+0),*(QWORD*)(dest+8),(char*)(dest+0x10) );
+		dest += 0x40;
 		close(tempfd);
 	}
 }

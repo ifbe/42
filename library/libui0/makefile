@@ -1,12 +1,15 @@
 .PHONY:linux
 linux:
-	gcc -c console.c
+	rm -f *.o
+	gcc -c console/console.c
 .PHONY:mac
 mac:
-	clang -c console.c
+	rm -f *.o
+	clang -c console/console.c
 .PHONY:win
 win:
-	gcc -c console.c
+	rm -f *.o
+	gcc -c console/console.c
 
 .PHONY:linux+fb
 linux+fb:

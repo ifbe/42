@@ -16,57 +16,71 @@ void diary(char* fmt,...);
 
 
 
-QWORD explaingpt(QWORD from,QWORD to)
+QWORD explaingpt(char* from,char* to)
 {
 	diary("gpt disk\n");
 	from+=0x400;
 
-	int src=0,dst=0;
-	for(src=0;src<0x80;src++)	//0x80 partitions per disk
+	int i=0;
+	QWORD* src=(QWORD*)from;
+	QWORD* dst=(QWORD*)to;
+	for(i=0;i<0x80;i++)	//0x80 partitions per disk
 	{
 		//先取数字出来
-		QWORD firsthalf=*(QWORD*)(from+0x80*src);
-		if(firsthalf==0)continue;
+		src=(QWORD*)( from + 0x80*i );
+		if(src[0]==0)continue;
 
-		QWORD secondhalf=*(QWORD*)(from+0x80*src+8);
-		QWORD startlba=*(QWORD*)(from+0x80*src+0x20);
-		QWORD endlba=*(QWORD*)(from+0x80*src+0x28);
-		diary("%2d    ",dst);
-		diary("[%8x,%8x]    ",startlba,endlba);
+		//类型，大小，开始，结束
+		QWORD firsthalf=src[0];
+		QWORD secondhalf=src[1];
+		QWORD startlba=src[4];
+		QWORD endlba=src[5];
 
-
-
-
-		//开始与结束位置
-		*(QWORD*)(to+0x40*dst)=startlba;
-		*(QWORD*)(to+0x40*dst+8)=endlba;
+		dst[0]=0x74726170;
+		dst[1]=0x200*(endlba-startlba);
+		dst[2]=startlba;
+		dst[3]=endlba;
 
 		//不同分区类型
-		if((firsthalf==0x477284830fc63daf)&&(secondhalf==0xe47d47d8693d798e))
+		if(firsthalf==0x477284830fc63daf)
 		{
-			*(QWORD*)(to+0x40*dst+0x10)=0x747865;		//ext
-			diary("ext\n");
+			if(secondhalf==0xe47d47d8693d798e)
+			{
+				dst[4]=0x747865;		//ext
+				diary("ext\n");
+			}
 		}
-		else if((firsthalf==0x11d2f81fc12a7328)&&(secondhalf==0x3bc93ec9a0004bba))
+		else if(firsthalf==0x11d2f81fc12a7328)
 		{
-			*(QWORD*)(to+0x40*dst+0x10)=0x746166;		//fat
+			if(secondhalf==0x3bc93ec9a0004bba)
+			{
+			dst[4]=0x746166;		//fat
 			diary("fat\n");
+			}
 		}
-		else if((firsthalf==0x11aa000048465300)&&(secondhalf==0xacec4365300011aa))
+		else if(firsthalf==0x11aa000048465300)
 		{
-			*(QWORD*)(to+0x40*dst+0x10)=0x736668;		//hfs
-			diary("hfs\n");
+			if(secondhalf==0xacec4365300011aa)
+			{
+				dst[4]=0x736668;		//hfs
+				diary("hfs\n");
+			}
 		}
-		else if((firsthalf==0x4433b9e5ebd0a0a2)&&(secondhalf==0xc79926b7b668c087))
+		else if(firsthalf==0x4433b9e5ebd0a0a2)
 		{
-			*(QWORD*)(to+0x40*dst+0x10)=0x7366746e;		//ntfs
-			diary("ntfs\n");
+			if(secondhalf==0xc79926b7b668c087)
+			{
+				dst[4]=0x7366746e;		//ntfs
+				diary("ntfs\n");
+			}
 		}
-		else diary("unknown\n");
-
-		//分区名
+		else
+		{
+			dst[4]=0x66666666;
+			diary("unknown\n");
+		}
 
 		//pointer++
-		dst++;
+		dst = dst+8;
 	}
 }

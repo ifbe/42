@@ -96,6 +96,7 @@ int mount(char* arg1)
 {
 	if((QWORD)arg1==0)
 	{
+		printmemory(diskhome,0x200);
 		hello();
 		return 1;
 	}
@@ -155,6 +156,7 @@ void ls(char* arg1)
 	}
 	//printmemory(dirhome,0x1000);
 }
+/*
 void list()
 {
 	//只是打印一遍扫描到的磁盘信息
@@ -169,6 +171,12 @@ void list()
 		diary("%s\n",diskhome+i);
 		i+=0x40;
 	}
+}
+*/
+void list()
+{
+	listmemory();
+	printmemory(diskhome,0x200);
 }
 void into(char* arg1)
 {
@@ -272,6 +280,10 @@ void command(char* buffer)
 	else if(compare( arg0 , "into" ) == 0)
 	{
 		into(arg1);
+	}
+	else if(compare( arg0 , "mount" ) == 0)
+	{
+		mount(arg1);
 	}
 	else if(compare( arg0 , "read" ) == 0)
 	{
