@@ -5,10 +5,18 @@
 #include<stdio.h>
 #include<stdlib.h>
 char* explainarg();
+
 void initmemory(char*);
+void killmemory();
+
 void initmaster(char*);
+void killmaster();
+
 void initwindow(char*);
+void killwindow();
+
 void initpalette(char*);
+void killpalette();
 
 
 

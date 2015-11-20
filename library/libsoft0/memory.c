@@ -3,20 +3,29 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //socket
+void initsocket(char*);
+void killsocket();
 void listsocket();
 void intosocket();
 void readsocket();
 void writesocket();
 //process
+void initprocess(char*);
+void killprocess();
 void listprocess();
 void intoprocess();
 void readprocess();
 void writeprocess();
 //file
+void initfile(char*);
+void killfile();
 void listfile();
 void intofile(char* name);
 void readfile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
+//listen,say,diary,and
+void initlisten(char*);
+void initsay(char*);
 
 
 
