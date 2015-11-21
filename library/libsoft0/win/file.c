@@ -11,7 +11,7 @@ void diary(char* fmt,...);
 
 HANDLE hDev;
 char* memoryinfo;
-static char tempname[20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
+static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 
 
@@ -60,8 +60,9 @@ void listfile()
 {
 	//printf("enu file\n");
 	//暂时根本不管是什么，默认就是当前第一个硬盘
-	int num=0;
 	char* dest=0;
+	int num=0;
+	int j=0;
 
 	//clear
 	for(num=0;num<0x10000;num++)
@@ -74,7 +75,7 @@ void listfile()
 	dest=memoryinfo;
 	for(num=0;num<10;num++)
 	{
-		tempname[17]=0x30+source;
+		tempname[17]=0x30+num;
 		HANDLE temphandle=CreateFile(tempname,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
@@ -85,8 +86,7 @@ void listfile()
 			getsize( temphandle , tempname , (void*)(dest+8) );
 
 			//[0x20,0x3f]:name
-			int j=0;
-			for(j=0;j<0x20;j++)dest[j]=tempname[j];
+			for(j=0;j<0x20;j++)dest[j+0x20]=tempname[j];
 
 			//close,next
 			CloseHandle(temphandle);
