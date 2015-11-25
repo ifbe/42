@@ -10,90 +10,161 @@ void printmemory(QWORD start,QWORD count);
 
 
 //from：那一条长度为16B的项目的地址，to：希望的位置
-static void mbrrecord(char* from,QWORD* to)
+static int mbrrecord(char* from,char* to)
 {
-	QWORD type=*(BYTE*)(from+4);
-	if(type==0)return;
+	DWORD flag;		//(mbr+0x1be)+0
+	DWORD type;		//(mbr+0x1be)+4
+	DWORD start;		//(mbr+0x1be)+8
+	DWORD size;		//(mbr+0x1be)+c
+	QWORD* dst;
+	type=*(BYTE*)(from+4);
+	if(type==0)return 0;
 
-	//startsector,endsector
-	QWORD start=*(DWORD*)(from+8);
-	QWORD end=*(DWORD*)(from+0xc);
-	QWORD* addr=(QWORD*)(*to);
-	addr[0]=0x74726170;		//type
-	addr[1]=0x200*(end-start);	//size
-	addr[2]=start;			//start
-	addr[3]=end;			//end
+	//类型，子类型，开始，结束
+	dst=(QWORD*)to;
+	start=*(DWORD*)(from+8);
+	size=*(DWORD*)(from+0xc);
+        dst[0]=0x2e2e2e6b736964; 	//'disk...'
+	dst[2]=start;			//start
+	dst[3]=start + size - 1;	//end
 
-	//parttype
+	//拓展分区要递归
+	if( (type==0x5) | (type==0xf) )
+	{
+		diary("extend@start\n");
+		dst[1]=0x646e65747865;
+		return 66666;
+	}
+
+	//其他普通分区
 	if( type==0x4 | type==0x6 | type==0xb )
 	{
 		//diary("fat\n");
-		addr[4]=0x746166;
+		dst[1]=0x746166;
 	}
 	else if( type==0x7 )
 	{
 		//diary("ntfs\n");
-		addr[4]=0x7366746e;
+		dst[1]=0x7366746e;
 	}
 	else if( type==0x83 )
 	{
 		//diary("ext\n");
-		addr[4]=0x747865;
+		dst[1]=0x747865;
 	}
 	else
 	{
 		//diary("unknown:%x\n",type);
-		addr[4]=type;
+		dst[1]=type;
 	}
-
-	//partname
-
-	//下一地址
-	*to+=0x40;
+	return 0x10;	//这次翻译了多少
 }
-//mbr:					[+0x1be,+0x1fd],每个0x10,总共4个
+
+
+
+
+//mbr:			[+0x1be,+0x1fd],每个0x10,总共4个
 //[+0]:活动标记
 //[+0x1,+0x3]:开始磁头柱面扇区
 //[+0x4]:分区类型
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-QWORD explainmbr(char* buffer,QWORD to)
+QWORD explainmbr(char* buffer,char* to)
 {
-	diary("mbr disk{\n",0);
+	char* dst;
+	QWORD* dstqword;
+
+	int i,j,ret;
+	QWORD temp;
+	diary("mbr disk\n",0);
+
+        //保留硬盘记录，覆盖新的分区记录
+	dst=to;
+	dstqword=(QWORD*)to;
+	for(i=0;i<0x100;i++)  //0x100*0x40=0x4000=16k
+	{
+		temp=dstqword[i*8];
+		if(temp == 0)break;
+		if( (temp&0xffffffff) == 0x6b736964 )
+		{
+			if( (temp>>32) != 0 )break;
+		}
+	}
+	for(j=0x40*i; j<0x10000; j++)
+	{
+		dst[j] = 0;
+	}
+	dst+=0x40*i;
+	dstqword=(QWORD*)dst;
+
+	//放下第一个
+        dstqword[0]=0x2e2e2e6b736964; 	//'disk...'
+        dstqword[1]=0x72626d;	//'mbr'
+        dstqword[2]=0;
+        dstqword[3]=0;
+        dstqword[4]=0x7766554433221100;
+        dstqword[5]=0xffeeddccbbaa9988;
+        dstqword[6]=0x8899aabbccddeeff;
+        dstqword[7]=0x0011223344556677;
+        dst += 0x40;
+        dstqword += 8;
 
 	//首先是主分区，最多4个
-	QWORD toaddr=to;
-	mbrrecord(buffer+0x1be,&toaddr);
-	mbrrecord(buffer+0x1ce,&toaddr);
-	mbrrecord(buffer+0x1de,&toaddr);
-	mbrrecord(buffer+0x1ee,&toaddr);
+	ret=mbrrecord(buffer+0x1be,dst);
+	if(ret>0)
+	{
+		dst+=0x40;
+		dstqword+=8;
+	}
 
+	ret=mbrrecord(buffer+0x1ce,dst);
+	if(ret>0)
+	{
+		dst+=0x40;
+		dstqword+=8;
+	}
+
+	ret=mbrrecord(buffer+0x1de,dst);
+	if(ret>0)
+	{
+		dst+=0x40;
+		dstqword+=8;
+	}
+
+	ret=mbrrecord(buffer+0x1ee,dst);
+	if(ret>0)
+	{
+		dst+=0x40;
+		dstqword+=8;
+	}
+}
+/*
 	//在这四个里面，寻找逻辑分区并解释
 	QWORD offset=0;
 	while(1)
 	{
-		QWORD start=*(QWORD*)(to+offset);
 		QWORD type=*(QWORD*)(to+offset+0x10);
 		if(type==0)break;		//到这就没东西了
 
+		QWORD start=*(QWORD*)(to+offset);
 		if( type==5 | type==0xf )
 		{
 			//diary("sector:%x\n",*(DWORD*)(to+offset));
 			readmemory(buffer,*(DWORD*)(to+offset),0,1);
 			//printmemory(buffer+0x1be,0x40);
 
-			QWORD remember=toaddr;
-			mbrrecord(buffer+0x1be,&toaddr);
-			if(remember!=toaddr)
+			char* remember=(char*)dstqword;
+			mbrrecord(buffer+0x1be,dstqword);
+			if(remember!=(char*)dstqword)
 			{
 				*(DWORD*)(remember+0)+=start;
 				//diary("1st:%x\n",*(DWORD*)remember);
 			}
 
-			remember=toaddr;
-			mbrrecord(buffer+0x1ce,&toaddr);
-			if(remember!=toaddr)
+			remember=dstqword;
+			mbrrecord(buffer+0x1ce,dstqword);
+			if(remember!=dstqword)
 			{
 				*(DWORD*)(remember+0)+=start;
 				//diary("2st:%x\n",*(DWORD*)remember);
@@ -102,8 +173,9 @@ QWORD explainmbr(char* buffer,QWORD to)
 
 		//轮到下一个了
 		offset+=0x40;
-	}
-
+	}//while
+*/
+/*
 	//最后打印所有的
 	offset=0;
 	while(1)
@@ -116,5 +188,4 @@ QWORD explainmbr(char* buffer,QWORD to)
 
 		offset++;
 	}
-	diary("}\n");
-}
+*/

@@ -2,31 +2,28 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//in libsoft1/
-int mountext(char*,QWORD);
-int mountfat(char*,QWORD);
-int mounthfs(char*,QWORD);
-int mountntfs(char*,QWORD);
-int explaingpt(char*,char*);
-int explainmbr(char*,char*);
-
-//in libsoft/
-int compare(char*,char*);
+//libsoft1/
+int mountext(char* src,char* dst);
+int mountfat(char* src,char* dst);
+int mounthfs(char* src,char* dst);
+int mountntfs(char* src,char* dst);
+int explaingpt(char* src,char* dst);
+int explainmbr(char* src,char* dst);
+int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,BYTE**,BYTE**);
-int printmemory(char* addr,int count);
-int cleanmemory(char* addr,int count);
-
-//in init/
+//libsoft0/
 int listmemory();
 int intomemory(char*);
-QWORD readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-QWORD writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
-void file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
-
-int say(char* str,...);
-int diary(char* str,...);
+int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+int say(char* str,...);		//+1
+int diary(char* str,...);	//+2
+int history(char* str,...);	//+3
+int cleanmemory(char* addr,int count);
+int printmemory(char* addr,int count);
 
 
 
@@ -36,16 +33,17 @@ static char* diskhome;		//+0m
 static char* dirhome;		//+1m
 static char* fshome;		//+2m
 static char* datahome;		//+3m
-
 //3大函数的位置
+static char bowl[0x40];		//用来放三个函数的地址
 int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
 int (*fscd)(QWORD id);		//((int (*)(QWORD))(fscd))(arg1);
-int (*fsload)(QWORD id,QWORD part);		//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
+int (*fsload)(QWORD id,QWORD part);	//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
 
 
 
 
-void hello()		//你究竟是个什么？
+//自己读出来检查这是个什么玩意，不能相信分区表里面的类型
+void hello()
 {
 	//读最开始的64个扇区（0x8000字节）来初步确定
 	int ret=readmemory(datahome,0,0,64);
@@ -92,47 +90,6 @@ int directread(char* arg1)
 
 
 
-int mount(char* arg1)
-{
-	if((QWORD)arg1==0)
-	{
-		printmemory(diskhome,0x200);
-		hello();
-		return 1;
-	}
-
-	//else
-	QWORD which;
-	QWORD* this;
-
-	hexstring2data(arg1,&which);
-	this=(QWORD*)(diskhome+0x40*which);
-	cleanmemory(fshome,0x300000);
-
-	//不同种类的分区，不同的处理
-	if(this[2] == 0x747865)		//ext
-	{
-		mountext(diskhome,which);
-	}
-	else if(this[2] == 0x746166)		//fat
-	{
-		mountfat(diskhome,which);
-	}
-	else if(this[2] == 0x736668)		//hfs
-	{
-		mounthfs(diskhome,which);
-	}
-	else if(this[2] == 0x7366746e)		//ntfs
-	{
-		mountntfs(diskhome,which);
-	}
-
-	//给函数指针赋值
-	if(this[4] < 0xffff)return -1;
-	fsexplain=(void*)( this[4] );
-	fscd=(void*)( this[5] );
-	fsload=(void*)( this[6] );
-}
 int explain(char* arg1)
 {
 	QWORD value;
@@ -141,47 +98,113 @@ int explain(char* arg1)
 	diary("explainer@%llx\n",fsexplain);
 	fsexplain(value);
 }
-void ls(char* arg1)
+void list(char* arg1)
 {
-	diary("id              size            type                name\n");
-	char* addr=dirhome;
-	for(;addr<dirhome+0x1000;addr+=0x40)
-	{
-		if(*(QWORD*)(addr+0x20)==0)break;
-		diary
-		(
-			"%-12llx    %-12llx    %-12x    %-31.31s\n",
-			*(QWORD*)(addr+0),*(QWORD*)(addr+8),*(QWORD*)(addr+0x10),(char*)(addr+0x20)
-		);
-	}
-	//printmemory(dirhome,0x1000);
-}
-/*
-void list()
-{
-	//只是打印一遍扫描到的磁盘信息
-	int i=0;
-	while(1)
-	{
-		//先检查
-		if( *(DWORD*)(diskhome+i) == 0 )break;
-		if(i>100*0x100)break;
+	int i;
+	char* targetaddr=diskhome;
+	QWORD target=0,temp=0;
+	//printmemory(diskhome,0x200);
 
-		//再打印
-		diary("%s\n",diskhome+i);
-		i+=0x40;
+	//想要什么
+	if(arg1==0)target=0;
+	else if( compare(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
+	else if( compare(arg1,"part") == 0 )target=0x2e2e2e6b736964;	//'disk...'
+	else if( compare(arg1,"file") == 0 )
+	{
+		targetaddr=dirhome;
+		target=0;
+		//target=0x656c6966;		//'file'
+		//printmemory(targetaddr,0x200);
 	}
+	else if( compare(arg1,"fs") == 0 )
+	{
+		targetaddr=fshome;
+		target=0;
+		//target=0x656c6966;		//'file'
+		//printmemory(targetaddr,0x200);
+	}
+
+	//搜到就显示
+	for(i=0; i<0x100; i++)
+	{
+		temp=*(QWORD*)( targetaddr + (i*0x40) );
+		if(temp == 0)break;
+		if( (target==0) | (temp == target) )
+		{
+			diary(
+				"%d:	(%s,%s)	[%x,%x]	%s\n",
+				i,
+				targetaddr + (i*0x40),
+				targetaddr + (i*0x40) + 8,
+				*(QWORD*)(targetaddr + (i*0x40) + 0x10),
+				*(QWORD*)(targetaddr + (i*0x40) + 0x18),
+				targetaddr + (i*0x40) + 0x20
+			);
+		}
+	}//for
 }
-*/
-void list()
+void into(char* arg)
 {
-	listmemory();
-	printmemory(diskhome,0x200);
-}
-void into(char* arg1)
-{
+	int i;
+	int number;
+	QWORD temp;
+
+	//如果传进来0，仅扫描所有硬盘
+	if(arg == 0)
+	{
+		listmemory();
+		printmemory(diskhome,0x200);
+		return;
+	}
+
+	//如果传进来数量少，并且是纯数字
+	if( (arg[1]==0) | (arg[2]==0) )
+	{
+		//拿数字
+		number=0;
+		for(i=0;i<10;i++)
+		{
+			if( arg[i]==0 )break;
+			if( (arg[i] >= 0x30) | (arg[i] <= 0x39) )
+			{
+				number=10*number + arg[i] - 0x30;
+			}
+		}
+
+		//挂载那个数字对应的分区
+		if(number != 0)
+		{
+			//printmemory(diskhome + number*0x40,0x40);
+
+			//更新一下种类
+			temp = *(QWORD*)( diskhome+number*0x40 + 8 );	//type
+			if(temp == 0x747865)		//'ext'
+			{
+				mountext( diskhome+number*0x40 , diskhome );
+			}
+			else if(temp == 0x746166)	//'fat'
+			{
+				mountfat( diskhome+number*0x40 , diskhome );
+			}
+			else if(temp == 0x736668)	//'hfs'
+			{
+				mounthfs( diskhome+number*0x40 , diskhome );
+			}
+			else if(temp == 0x7366746e)	//'ntfs'
+			{
+				mountntfs( diskhome+number*0x40 , diskhome );
+			}
+
+			//fsexplain=(void*)( this[4] );
+			//fscd=(void*)( this[5] );
+			//fsload=(void*)( this[6] );
+			return;
+		}
+	}
+
+	//如果
 	cleanmemory(dirhome,0x300000);
-	intomemory(arg1);
+	intomemory(arg);
 	hello();
 }
 
@@ -207,6 +230,26 @@ char* searchthis(char* name)
 
 	diary("file not found\n");
 	return 0;
+}
+void ls(char* arg1)
+{
+	diary("id              size            type                name\n");
+	char* addr=dirhome;
+	for(;addr<dirhome+0x1000;addr+=0x40)
+	{
+		if(*(QWORD*)(addr+0x20)==0)break;
+		diary
+		(
+			"%-12llx    %-12llx    %-12x    %-31.31s\n",
+			*(QWORD*)(addr+0),	//type
+			*(QWORD*)(addr+8),	//id
+			//*(QWORD*)(addr+0x10),	//start
+			*(QWORD*)(addr+0x18),	//end
+
+			(char*)(addr+0x20)	//name
+		);
+	}
+	//printmemory(dirhome,0x1000);
 }
 int cd(char* arg1)
 {
@@ -275,7 +318,7 @@ void command(char* buffer)
 	//the disk
 	else if(compare( arg0 , "list" ) == 0)
 	{
-		list();
+		list(arg1);
 	}
 	else if(compare( arg0 , "into" ) == 0)
 	{

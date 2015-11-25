@@ -52,12 +52,15 @@ void listfile()
 		tempfd = open(diskname,O_RDONLY);
 		if(tempfd == -1)break;
 
-		//[0,7]:id
+		//[0,7]:type
+		//[8,f]:subtype
 		*(QWORD*)(dest+0)=0x6b736964;
+		*(QWORD*)(dest+0x8)=0x3f;
 
-		//[8,f]:size
+		//size
 		stat(diskname,&st);
-		*(QWORD*)(dest+8)=st.st_size;
+		*(QWORD*)(dest+0x10)=0;
+		*(QWORD*)(dest+0x18)=st.st_size;
 
 		//[0x20,0x3f]:name
 		for(i=0;i<0x20;i++)dest[0x20+i]=diskname[i];

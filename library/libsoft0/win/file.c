@@ -80,10 +80,14 @@ void listfile()
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
 			//[0,7]:type
-			*(QWORD*)(dest+0)=0x6b736964;
-
 			//[8,f]:size
-			getsize( temphandle , tempname , (void*)(dest+8) );
+			*(QWORD*)(dest+0)=0x6b736964;
+			*(QWORD*)(dest+8)=0x3f;
+
+			//[0x10,0x17]:start
+			//[0x18,0x1f]:end
+			*(QWORD*)(dest+0x10)=0;
+			getsize( temphandle , tempname , (void*)(dest+18) );
 
 			//[0x20,0x3f]:name
 			for(j=0;j<0x20;j++)dest[j+0x20]=tempname[j];
