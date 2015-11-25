@@ -3,8 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //用了别人的
-void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
+int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
 
 void printmemory(char* addr,int size);
 void diary(char* fmt,...);
@@ -14,10 +14,11 @@ void diary(char* fmt,...);
 
 //memory
 static char* diskhome;			//[0x000000,0x0fffff]
-static char* dirhome;			//[0x100000,0x1fffff]
-static char* fshome;			//[0x200000,0x20ffff]
-	static char* mft0;		//[0x210000,0x21ffff]
-	static char* mftbuffer;		//[0x220000,0x2fffff]
+static char* fshome;			//[0x100000,0x10ffff]
+	static char* pbr;			//[0x110000,0x11ffff]
+	static char* mft0;			//[0x120000,0x12ffff]
+	static char* mftbuffer;		//[0x140000,0x1fffff]
+static char* dirhome;			//[0x200000,0x2fffff]
 static char* datahome;			//[0x300000,0x3fffff]
 //disk
 static QWORD ntfssector;
@@ -231,9 +232,9 @@ char* explainindex(char* rdi,char* rsi,char* end)
 
 				//[0,7]=type
 				*(DWORD*)(buffer+0)=0x656c6966;		//'file'
-				*(DWORD*)(buffer+0x4)=*(DWORD*)(property30body+0x38);
+				//*(DWORD*)(buffer+0x4)=*(DWORD*)(property30body+0x38);
 
-				//[8,f]=size
+				//[8,f]=subtype
 				*(QWORD*)(buffer+0x8)=0;
 
 				//[0x18,0x1f]=size
@@ -504,6 +505,21 @@ void explainmft(QWORD mftnum,QWORD want)
 }
 
 
+static int ntfs_cd(QWORD id)
+{
+	int i=0;
+	for(i=0;i<0x10000;i++)dirhome[i]=0;
+
+	explainmft(id,0);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
+}
+static int ntfs_load(QWORD id,QWORD offset)
+{
+	explainmft(id,offset);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
+}
 static void ntfs_explain(QWORD mftnum)
 {
 	diary("mft %x\n",mftnum);
@@ -512,31 +528,16 @@ static void ntfs_explain(QWORD mftnum)
 }
 
 
-static int ntfs_cd(QWORD id)
-{
-	explainmft(id,0);
-	if(ntfspwd<10) ntfspwd++;
-	pwd[ntfspwd]=id;
-}
-
-
-static int ntfs_load(QWORD id,QWORD offset)
-{
-	explainmft(id,offset);
-	if(ntfspwd<10) ntfspwd++;
-	pwd[ntfspwd]=id;
-}
 
 
 
 
 
 
-
-
-void explainntfshead(char* in,char* fshome)
+int explainntfshead()
 {
 	QWORD* dstqword=(QWORD*)fshome;
+	if( *(DWORD*)(pbr+3) != 0x5346544e ) return -1;
 
 	//func cd
 	dstqword[0]=0x636e7566;		//'func'
@@ -552,12 +553,12 @@ void explainntfshead(char* in,char* fshome)
 
 	//func explain
 	dstqword[0]=0x636e7566;		//'func'
-	dstqword[1]=0x64616f6c;		//'explain'
+	dstqword[1]=0x6e69616c707865;		//'explain'
 	dstqword[2]=(QWORD)ntfs_explain;
 	dstqword += 8;
 
 	//[d,d]
-	clustersize=(QWORD)( *(BYTE*)(in+0xd) );
+	clustersize=(QWORD)( *(BYTE*)(pbr+0xd) );
 	diary("clustersize:%x\n",clustersize);
 
 	dstqword[0]=0x7366;		//'fs'
@@ -568,7 +569,7 @@ void explainntfshead(char* in,char* fshome)
 	dstqword += 8;
 
 	//[0x30,0x37]
-	mftcluster= *(QWORD*)(in+0x30);
+	mftcluster= *(QWORD*)(pbr+0x30);
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x756c6374666d;	//'mftclu'
 	dstqword[2]=0x30;
@@ -578,7 +579,7 @@ void explainntfshead(char* in,char* fshome)
 	diary("mftcluster:%x\n",mftcluster);
 
 	//[0x44,0x44]
-	QWORD indexsize=(QWORD)( *(BYTE*)(in+0x44) );
+	QWORD indexsize=(QWORD)( *(BYTE*)(pbr+0x44) );
 	indexsize=clustersize * indexsize;
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x7a737865646e69;	//'indexsz'
@@ -587,37 +588,37 @@ void explainntfshead(char* in,char* fshome)
 	dstqword[4]=indexsize;
 	dstqword += 8;
 	diary("indexsize:%x\n",indexsize);
+
+	return 1;
 }
 //描述地址，状态机地址
 int mountntfs(char* src,char* addr)
 {
+	int ret=0;
 	QWORD* srcqword=(QWORD*)src;
+	ntfssector=srcqword[2];
+	//diary();
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
-	dirhome=addr+0x100000;
-	fshome=addr+0x200000;
-		mft0=fshome+0x10000;
-		mftbuffer=fshome+0x20000;
+	fshome=addr+0x100000;	//func,struture,...
+		pbr=fshome+0x10000;		//pbr
+		mft0=fshome+0x20000;	//mft0
+		mftbuffer=fshome+0x40000;	//mftn
+	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
-	ntfssector=srcqword[2];
-	diary("ntfs sector:%x\n",ntfssector);
-
 	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
-	readmemory(datahome,ntfssector,0,1);
-	if( *(DWORD*)(datahome+3) != 0x5346544e ) return -1;
-	explainntfshead(datahome,fshome);
+	ret=readmemory(pbr,ntfssector,0,1);
+	ret=explainntfshead();
+	if(ret < 0)return ret;
 
-	//保存开头几个mft
-	readmemory(mft0,ntfssector+mftcluster*clustersize,0,2);
-	//printmemory(mft0,0x400);
-
-	//cd /
+	//保存开头几个mft,然后开始
+	ret=readmemory(mft0,ntfssector+mftcluster*clustersize,0,2);
 	firstmftincache=0xffffffff;		//no mft cache yet
 	pwd[0]=5;
 	ntfspwd=0;
 	ntfs_cd(5);
 
-	return 0;
+	return 1;
 }

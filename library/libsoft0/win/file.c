@@ -16,7 +16,7 @@ static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','
 
 
 
-static QWORD getsize(HANDLE hand,char* path,void* dest)
+static QWORD getsize(HANDLE hand,char* path,char* dest)
 {
 	//diary("%llx\n",*(QWORD*)path);
 	if( *(QWORD*)path == 0x737968505c2e5c5c )
@@ -45,6 +45,7 @@ static QWORD getsize(HANDLE hand,char* path,void* dest)
 
 		//
 		*(QWORD*)dest=out.Length.QuadPart;
+		//diary("%x\n",dest);
 	}
 	else
 	{
@@ -87,7 +88,9 @@ void listfile()
 			//[0x10,0x17]:start
 			//[0x18,0x1f]:end
 			*(QWORD*)(dest+0x10)=0;
-			getsize( temphandle , tempname , (void*)(dest+18) );
+			*(QWORD*)(dest+0x18)=0;
+			//diary("%x\n",dest+0x18);
+			getsize( temphandle , tempname , dest+0x18 );
 
 			//[0x20,0x3f]:name
 			for(j=0;j<0x20;j++)dest[j+0x20]=tempname[j];

@@ -30,8 +30,8 @@ int printmemory(char* addr,int count);
 
 //每个1M
 static char* diskhome;		//+0m
-static char* dirhome;		//+1m
-static char* fshome;		//+2m
+static char* fshome;		//+1m
+static char* dirhome;		//+2m
 static char* datahome;		//+3m
 //3大函数的位置
 static char bowl[0x40];		//用来放三个函数的地址
@@ -73,6 +73,15 @@ void hello()
 		diary("don't know\n");
 	}
 }
+
+
+
+
+
+
+
+
+//basic function
 int directread(char* arg1)
 {
 	QWORD value;
@@ -81,22 +90,6 @@ int directread(char* arg1)
 	readmemory(datahome,value,0,1);
 	printmemory(datahome,0x200);
 	diary("above is:%x,%x\n",value,value+7);
-}
-
-
-
-
-
-
-
-
-int explain(char* arg1)
-{
-	QWORD value;
-	hexstring2data(arg1,&value);
-
-	diary("explainer@%llx\n",fsexplain);
-	fsexplain(value);
 }
 void list(char* arg1)
 {
@@ -109,16 +102,21 @@ void list(char* arg1)
 	if(arg1==0)target=0;
 	else if( compare(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
 	else if( compare(arg1,"part") == 0 )target=0x2e2e2e6b736964;	//'disk...'
-	else if( compare(arg1,"file") == 0 )
+	else if( compare(arg1,"func") == 0 )
 	{
-		targetaddr=dirhome;
-		target=0;
-		//target=0x656c6966;		//'file'
-		//printmemory(targetaddr,0x200);
+		targetaddr=fshome;
+		target=0x636e7566;	//'func'
 	}
 	else if( compare(arg1,"fs") == 0 )
 	{
 		targetaddr=fshome;
+		target=0;
+		//target=0x656c6966;		//'file'
+		//printmemory(targetaddr,0x200);
+	}
+	else if( compare(arg1,"file") == 0 )
+	{
+		targetaddr=dirhome;
 		target=0;
 		//target=0x656c6966;		//'file'
 		//printmemory(targetaddr,0x200);
@@ -132,7 +130,7 @@ void list(char* arg1)
 		if( (target==0) | (temp == target) )
 		{
 			diary(
-				"%d:	(%s,%s)	[%x,%x]	%s\n",
+				"%d:	(%-4s,%4s)	[%-4llx,%4llx]	%s\n",
 				i,
 				targetaddr + (i*0x40),
 				targetaddr + (i*0x40) + 8,
@@ -146,6 +144,7 @@ void list(char* arg1)
 void into(char* arg)
 {
 	int i;
+	int ret;
 	int number;
 	QWORD temp;
 
@@ -176,28 +175,31 @@ void into(char* arg)
 		{
 			//printmemory(diskhome + number*0x40,0x40);
 
-			//更新一下种类
+			//挂载
 			temp = *(QWORD*)( diskhome+number*0x40 + 8 );	//type
 			if(temp == 0x747865)		//'ext'
 			{
-				mountext( diskhome+number*0x40 , diskhome );
+				ret=mountext( diskhome+number*0x40 , diskhome );
 			}
 			else if(temp == 0x746166)	//'fat'
 			{
-				mountfat( diskhome+number*0x40 , diskhome );
+				ret=mountfat( diskhome+number*0x40 , diskhome );
 			}
 			else if(temp == 0x736668)	//'hfs'
 			{
-				mounthfs( diskhome+number*0x40 , diskhome );
+				ret=mounthfs( diskhome+number*0x40 , diskhome );
 			}
 			else if(temp == 0x7366746e)	//'ntfs'
 			{
-				mountntfs( diskhome+number*0x40 , diskhome );
+				ret=mountntfs( diskhome+number*0x40 , diskhome );
 			}
+			if(ret<0)return;
 
-			//fsexplain=(void*)( this[4] );
-			//fscd=(void*)( this[5] );
-			//fsload=(void*)( this[6] );
+			//拿到cd,load,explain等苦工的地址
+			fscd = *(void**)( fshome+0x10 );
+			fsload = *(void**)( fshome+0x50 );
+			fsexplain = *(void**)( fshome+0x90 );
+			diary("%llx,%llx,%llx\n",fscd,fsload,fsexplain);
 			return;
 		}
 	}
@@ -215,62 +217,62 @@ void into(char* arg)
 
 
 
-char* searchthis(char* name)
+//filesystem function
+int searchthis(char* name)
 {
-	char* temp=dirhome;
-	for(;temp<dirhome+0x1000;temp+=0x40)
+	//ls
+	int temp=0;
+	if(name==0)
+	{
+		list("file");
+		return 1;
+	}
+
+	//search
+	for(;temp<0x10000;temp+=0x40)
 	{
 		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
-		if( compare( name , (char*)(temp+0x20) ) == 0 )
+		if( compare( name , dirhome+temp+0x20 ) == 0 )
 		{
-			printmemory(temp,0x40);
-			return temp;
+			printmemory(dirhome+temp,0x40);
+			return temp/0x40;
 		}
 	}
 
+	//failed
 	diary("file not found\n");
-	return 0;
-}
-void ls(char* arg1)
-{
-	diary("id              size            type                name\n");
-	char* addr=dirhome;
-	for(;addr<dirhome+0x1000;addr+=0x40)
-	{
-		if(*(QWORD*)(addr+0x20)==0)break;
-		diary
-		(
-			"%-12llx    %-12llx    %-12x    %-31.31s\n",
-			*(QWORD*)(addr+0),	//type
-			*(QWORD*)(addr+8),	//id
-			//*(QWORD*)(addr+0x10),	//start
-			*(QWORD*)(addr+0x18),	//end
-
-			(char*)(addr+0x20)	//name
-		);
-	}
-	//printmemory(dirhome,0x1000);
+	return -1;
 }
 int cd(char* arg1)
 {
-	char* addr=searchthis(arg1);
-	if( addr==0 )return -1;		//没找到
+	int ret;
+	QWORD id;
+
+	//search
+	ret=searchthis(arg1);
+	if( ret<0 )return ret;		//没找到
 
 	//change directory
-	fscd( *(QWORD*)(addr+0) );
+	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
+	fscd(id);
 }
 int load(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
-	char* addr=searchthis(arg1);
-	if( addr==0 )return -1;
+	int ret;
+	QWORD id;
+	QWORD size;
+	QWORD temp;
 
-	QWORD id=*(QWORD*)(addr+0);
-	QWORD size=*(QWORD*)(addr+8);
+	ret=searchthis(arg1);
+	if( ret==0 )return -1;
+
+	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
+	size=*(QWORD*)(dirhome + 0x40*ret + 0x18);
 	if(size>0x100000)diary("warning:large file\n");
 
-	QWORD temp=0;
 	//1m,1m,1m的整块搞
+	temp=0;
 	for(;temp<( size&0xfffffff00000 );temp+=0x100000)
 	{
 		fsload(id,temp);
@@ -282,6 +284,14 @@ int load(char* arg1)
 		fsload(id,temp);
 		mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 	}
+}
+int explain(char* arg1)
+{
+	QWORD value;
+	hexstring2data(arg1,&value);
+
+	diary("explainer@%llx\n",fsexplain);
+	fsexplain(value);
 }
 
 
@@ -309,25 +319,12 @@ void command(char* buffer)
 		diary("list ?          (list all known)\n");
 		diary("into ?        (choose a disk)\n");
 		diary("read ?          (hex print a physical sector)\n");
-		diary("mount ?         (choose a partition)\n");
 		diary("explain ?       (explain inode/cluster/cnid/mft)\n");
 		diary("cd dirname      (change directory)\n");
 		diary("load filename   (load this file)\n");
 	}
 
 	//the disk
-	else if(compare( arg0 , "list" ) == 0)
-	{
-		list(arg1);
-	}
-	else if(compare( arg0 , "into" ) == 0)
-	{
-		into(arg1);
-	}
-	else if(compare( arg0 , "mount" ) == 0)
-	{
-		mount(arg1);
-	}
 	else if(compare( arg0 , "read" ) == 0)
 	{
 		directread(arg1);
@@ -337,15 +334,19 @@ void command(char* buffer)
 		//dangerous
 		//directread(arg1);
 	}
+	else if(compare( arg0 , "list" ) == 0)
+	{
+		list(arg1);
+	}
+	else if(compare( arg0 , "into" ) == 0)
+	{
+		into(arg1);
+	}
 
 	//the filesystem
-	else if(compare( arg0 , "ls" ) == 0)
+	else if(compare( arg0 , "ls") == 0)
 	{
-		ls(arg1);
-	}
-	else if(compare( arg0 , "explain" ) == 0)
-	{
-		explain(arg1);
+		searchthis(arg1);
 	}
 	else if(compare( arg0 , "cd" ) == 0)
 	{
@@ -354,6 +355,10 @@ void command(char* buffer)
 	else if(compare( arg0 , "load" ) == 0)
 	{
 		load(arg1);
+	}
+	else if(compare( arg0 , "explain" ) == 0)
+	{
+		explain(arg1);
 	}
 
 }
@@ -364,8 +369,8 @@ void command(char* buffer)
 void initmaster(char* world)
 {
 	diskhome=world+0;
-	dirhome=world+0x100000;
-	fshome=world+0x200000;
+	fshome=world+0x100000;
+	dirhome=world+0x200000;
 	datahome=world+0x300000;
 
 	hello();
