@@ -2,8 +2,11 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void command(char* buffer);
+int command(char* buffer);
 int compare(char* first,char* second);
+int waitinput(char*);
+int onlymemory();
+int cleanall();
 
 
 

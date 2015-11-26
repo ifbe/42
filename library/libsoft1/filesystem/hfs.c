@@ -287,11 +287,11 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 	}
 
 	//第一个是当前目录信息（也就是.）
-	*(QWORD*)(rdi+0)=wantcnid;		//[0,7]=cnid
-	//*(QWORD*)(rdi+8)=0;		//[0,7]=size
-	//*(QWORD*)(rdi+0x10)=0;		//[0,7]=type
-	//*(QWORD*)(rdi+0x18)=0;		//[0,7]=?
-	*(QWORD*)(rdi+0x20)='.';		//[0x20,0x3f]=name
+	*(QWORD*)(rdi+0)=0x656c6966;	//type
+	*(QWORD*)(rdi+0x8)='.';		//'.'
+	*(QWORD*)(rdi+0x10)=wantcnid;	//cnid
+	*(QWORD*)(rdi+0x18)=0;		//size
+	*(QWORD*)(rdi+0x20)='.';	//full path
 	rdi+=0x40;
 
 	//这俩控制循环次数
@@ -324,28 +324,36 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		if(key<wantcnid)continue;
 		//diary("key:%x,in:%llx\n",key,nodenum);
 
-	
-
-
-		//[0,7]:cnid号
 		int keylen=BSWAP_16(*(WORD*)(datahome+offset));
-		*(QWORD*)(rdi+0)=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen+0x8));
-
-		//[8,f]:size
 		QWORD filetype=BSWAP_16(*(WORD*)(datahome+offset+2+keylen));
+
+		//[0,0x7]:subtype
 		if(filetype==2)
 		{
-			*(QWORD*)(rdi+8)=BSWAP_64(*(QWORD*)(datahome+offset+2+keylen+0x58));
+			*(QWORD*)(rdi+0)=0x656c6966;	//'file'
 		}
-
-		//[0x10,0x17]:type
-		*(QWORD*)(rdi+0x10)=filetype;
-
+		else if(filetype==1)
+		{
+			*(QWORD*)(rdi+0)=0x726964;	//'dir'
+		}
+		else
+		{
+			*(QWORD*)(rdi+0)='?' + (filetype<<8);
+		}
+		//[0x8,0xf]:subtype
+		*(QWORD*)(rdi+0x8)=0;
+		//[0x10,0x17]:cnid号
+		*(QWORD*)(rdi+0x10)=BSWAP_32(*(DWORD*)(datahome+offset+2+keylen+0x8));
+		//[0x18,0x1f]:size
+		if(filetype==2)
+		{
+			*(QWORD*)(rdi+0x18)=BSWAP_64(*(QWORD*)(datahome+offset+2+keylen+0x58));
+		}
 		//[0x20,0x3f]:名字
 		i=BSWAP_16(*(WORD*)(datahome+offset+6));	//namelength=*(byte*)(rsi+6)
+
 		//diary("%x@%x\n",i,offset);
 		if(i>0x1f)i=0x1f;
-		//for(;i>=0;i--)
 		while(i>0)
 		{
 			i--;
