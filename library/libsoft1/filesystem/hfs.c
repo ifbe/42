@@ -7,29 +7,27 @@
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
 //用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
-void cleverread(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
+void cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
+void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void printmemory(char* addr,QWORD size);
 void diary(char* fmt,...);
 
 
 
 
 //系统或者各种东西提供好的memory，这几个变量仅仅记录了位置
-static QWORD diskhome;
-static QWORD fshome;
-	static QWORD catalogbuffer;
-static QWORD dirhome;
-static QWORD datahome;
-//分区开始扇区，每块多少扇区
-static QWORD block0;
+static char* diskhome;
+static char* fshome;
+	static char* pbr;
+	static char* catabuf;
+static char* dirhome;
+static char* datahome;
+
+static QWORD block0;		//分区开始扇区，每块多少扇区
 static QWORD blocksize;
-//catalog扇区位置，每个节点多少扇区
-static QWORD catalogsector;
+static QWORD catalogsector;	//catalog扇区位置，每个节点多少扇区
 static QWORD nodesize;
-//记下几个节点号
-static QWORD rootnode;
+static QWORD rootnode;		//记下几个节点号
 static QWORD firstleafnode;
 
 
@@ -279,7 +277,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 
 static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 {
-	QWORD rdi=dirhome;
+	char* rdi=dirhome;
 	int i;
 
 	//清理内存
@@ -402,9 +400,9 @@ static int hfs_cd(QWORD id)
 //传进来的是：本文件父目录的cnid，本文件的cnid，节点号，想要的文件内部偏移
 void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 {
-	readmemory(catalogbuffer,catalogsector+nodenum*nodesize,0,nodesize);
-	QWORD rdi=datahome;
 	int i;
+	char* rdi=datahome;
+
 	//清理内存
 	for(i=0;i<0x100000;i++)
 	{
@@ -414,6 +412,7 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 
 
 	//然后是后面的记录
+	readmemory(catabuf,catalogsector+nodenum*nodesize,0,nodesize);
 	int temp=nodesize*0x200;
 	while(1)
 	{
@@ -422,33 +421,33 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 		//diary("oh\n");
 
 		//这个节点结束了（1）
-		WORD offset=BSWAP_16(*(WORD*)(catalogbuffer+temp));
+		WORD offset=BSWAP_16(*(WORD*)(catabuf+temp));
 		//diary("oh 1:offset=%x\n",offset);
 		if(offset>=temp)break;
 
 		//出毛病了，到指针最后一个都没找着（2）
-		int keylen=BSWAP_16(*(WORD*)(catalogbuffer+offset));
+		int keylen=BSWAP_16(*(WORD*)(catabuf+offset));
 		//diary("oh 2:keylen=%x\n",keylen);
 		if(keylen==0)return;
 
 		//比较fathercnid，要是不一样就跳过（3）
-		DWORD key=BSWAP_32(*(DWORD*)(catalogbuffer+offset+2));
+		DWORD key=BSWAP_32(*(DWORD*)(catabuf+offset+2));
 		//diary("oh 3:key=%x\n",key);
 		if(key!=fathercnid)continue;
 
 		//要是这个record不是文件，那就再跳过（4）
-		BYTE filetype=*(BYTE*)(catalogbuffer+offset+2+keylen+1);
+		BYTE filetype=*(BYTE*)(catabuf+offset+2+keylen+1);
 		//diary("oh 4:type=:%x\n",filetype);
 		if(filetype!=2)continue;
 
 		//再看看文件cnid对不对，不对还跳过（5）
-		DWORD thiscnid=BSWAP_32(*(DWORD*)(catalogbuffer+offset+2+keylen+8));
+		DWORD thiscnid=BSWAP_32(*(DWORD*)(catabuf+offset+2+keylen+8));
 		//diary("oh 5:self:%x\n",thiscnid);
 		if(thiscnid!=wantcnid)continue;
 
 		//穿越重重阻碍，现在可以从datafork里面，找扇区号，和扇区数了
 		diary("oh i am here!\n");
-		QWORD forkaddr=catalogbuffer+offset+2+keylen+0x58+0x10;
+		char* forkaddr=catabuf+offset+2+keylen+0x58+0x10;
 		QWORD logicwhere=0;
 		for(i=0;i<8;i++)
 		{
@@ -502,130 +501,151 @@ static void hfs_load(QWORD id,QWORD wantwhere)
 
 
 
-void explainhfshead(QWORD in,QWORD out)
+int explainhfshead()
 {
-	//printmemory(datahome+0x400,0x200);
-	if( *(WORD*)(datahome+0x400) == 0x2b48 )diary("hfs+\n");
-	else if( *(WORD*)(datahome+0x400) == 0x5848 )diary("hfsx\n");
-	blocksize=BSWAP_32( *(DWORD*)(datahome+0x428) )/0x200;
+	QWORD size,clumpsize,totalblock,sector,count;
+	int i;
+	char* addr;
+	QWORD* dstqword=(QWORD*)fshome;
+
+
+
+
+//-------------------------------操作函数-----------------------------------
+	//func cd
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6463;             //'cd'
+	dstqword[2]=(QWORD)hfs_cd;
+	dstqword += 8;
+
+	//func load
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x64616f6c;         //'load'
+	dstqword[2]=(QWORD)hfs_load;
+	dstqword += 8;
+
+	//func explain
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6e69616c707865;           //'explain'
+	dstqword[2]=(QWORD)hfs_explain;
+	dstqword += 8;
+
+
+
+
+//---------------------第一次读，把分区头读进pbrbuffer------------------------
+	readmemory(pbr,block0,0,0x8);	//0x1000
+	//printmemory(pbr+0x400,0x200);
+
+	if( *(WORD*)(pbr+0x400) == 0x2b48 )diary("hfs+\n");
+	else if( *(WORD*)(pbr+0x400) == 0x5848 )diary("hfsx\n");
+	blocksize=BSWAP_32( *(DWORD*)(pbr+0x428) )/0x200;
 	diary("blocksize:%x\n",blocksize);
 
-	//111111111111111111111
-	QWORD size=BSWAP_64(*(QWORD*)(datahome+0x470) );
-	QWORD clumpsize=BSWAP_32(*(DWORD*)(datahome+0x478) );
-	QWORD totalblock=BSWAP_32(*(DWORD*)(datahome+0x47c) );
-	QWORD sector=block0+8*BSWAP_32(*(DWORD*)(datahome+0x480) );
-	QWORD count=blocksize*BSWAP_32(*(DWORD*)(datahome+0x484) );
-	*(QWORD*)(fshome)=0x470;
-	*(QWORD*)(fshome+8)=0x4bf;
-	*(QWORD*)(fshome+0x10)=sector;
-	diary("allocation\n");
-	diary("    size:%llx\n",size);
-	diary("    clumpsize:%llx\n",clumpsize);
-	diary("    totalblocks:%llx\n",totalblock);
-	diary("    sector:%llx\n",sector);
-	diary("    count:%llx\n",count);
+	//0x470,0x4c0,0x510,0x560
+	for(i=0;i<4;i++)
+	{
+		addr=(char*)( pbr + 0x470 + (0x50*i) );
+		size=BSWAP_64(*(QWORD*)addr );
+		clumpsize=BSWAP_32(*(DWORD*)(addr+0x8) );
+		totalblock=BSWAP_32(*(DWORD*)(addr+0xc) );
+		sector=block0+8*BSWAP_32(*(DWORD*)(addr+0x10) );
+		count=blocksize*BSWAP_32(*(DWORD*)(addr+0x14) );
 
-	//22222222222222222222
-	size=BSWAP_64(*(QWORD*)(datahome+0x4c0) );
-	clumpsize=BSWAP_32(*(DWORD*)(datahome+0x4c8) );
-	totalblock=BSWAP_32(*(DWORD*)(datahome+0x4cc) );
-	sector=block0+8*BSWAP_32(*(DWORD*)(datahome+0x4d0) );
-	count=blocksize*BSWAP_32(*(DWORD*)(datahome+0x4d4) );
-	*(QWORD*)(fshome+0x40)=0x4c0;
-	*(QWORD*)(fshome+0x48)=0x50f;
-	*(QWORD*)(fshome+0x50)=sector;
-	diary("extents overflow\n");
-	diary("    size:%llx\n",size);
-	diary("    clumpsize:%llx\n",clumpsize);
-	diary("    totalblocks:%llx\n",totalblock);
-	diary("    sector:%llx\n",sector);
-	diary("    count:%llx\n",count);
+		dstqword[0]=0x24;	//'$'
+		if(i==0)
+		{
+			dstqword[1]=0x636f6c6c61;	//'alloc'
+			diary("	allocation\n");
+		}
+		else if(i==1)
+		{
+			dstqword[1]=0x73746e65747865;	//'extents'
+			diary("extents overflow\n");
+		}
+		else if(i==2)
+		{
+			catalogsector=sector;
+			dstqword[1]=0x676f6c61746163;	//'catalog'
+			diary("catalog\n");
+		}
+		else if(i==3)
+		{
+			dstqword[1]=0x6972747461;	//'attri'
+			diary("attribute\n");
+		}
+		dstqword[2]=sector;
+		dstqword[3]=sector+count;
+		dstqword[4]=size;
+		dstqword[5]=clumpsize;
+		dstqword[6]=totalblock;
+		dstqword += 8;
+		diary("	size:%llx\n",size);
+		diary("	clumpsize:%llx\n",clumpsize);
+		diary("	totalblocks:%llx\n",totalblock);
+		diary("	sector:%llx\n",sector);
+		diary("	count:%llx\n",count);
+	}
 
-	//3333333333333333333333
-	size=BSWAP_64(*(QWORD*)(datahome+0x510) );
-	clumpsize=BSWAP_32(*(DWORD*)(datahome+0x518) );
-	totalblock=BSWAP_32(*(DWORD*)(datahome+0x51c) );
-	sector=block0+8*BSWAP_32(*(DWORD*)(datahome+0x520) );
-	count=blocksize*BSWAP_32(*(DWORD*)(datahome+0x524) );
-	*(QWORD*)(fshome+0x80)=0x510;
-	*(QWORD*)(fshome+0x88)=0x55f;
-	*(QWORD*)(fshome+0x90)=sector;
-	diary("catalog\n");
-	diary("    size:%llx\n",size);
-	diary("    clumpsize:%llx\n",clumpsize);
-	diary("    totalblocks:%llx\n",totalblock);
-	diary("    sector:%llx\n",sector);
-	diary("    count:%llx\n",count);
-	catalogsector=sector;
 
-	//444444444444444444444
-	size=BSWAP_64(*(QWORD*)(datahome+0x560) );
-	clumpsize=BSWAP_32(*(DWORD*)(datahome+0x568) );
-	totalblock=BSWAP_32(*(DWORD*)(datahome+0x56c) );
-	sector=block0+8*BSWAP_32(*(DWORD*)(datahome+0x570) );
-	count=blocksize*BSWAP_32(*(DWORD*)(datahome+0x574) );
-	*(QWORD*)(fshome+0xc0)=0x560;
-	*(QWORD*)(fshome+0xc8)=0x5af;
-	*(QWORD*)(fshome+0xd0)=sector;
-	diary("attribute\n");
-	diary("    size:%llx\n",size);
-	diary("    clumpsize:%llx\n",clumpsize);
-	diary("    totalblocks:%llx\n",totalblock);
-	diary("    sector:%llx\n",sector);
-	diary("    count:%llx\n",count);
 
-	//555555555555
-}
-void explaincatalog(QWORD in,QWORD fshome)
-{
+
+//----------------第二次读，把分区头读进catabuf--------------
+	readmemory(catabuf,catalogsector,0,0x8);	//0x1000
+	//printmemory(catabuf,0x200);
+
 	//nodesize
-	nodesize=BSWAP_16( *(WORD*)(datahome+0x20) );
-	*(QWORD*)(fshome+0x100)=0x20;
-	*(QWORD*)(fshome+0x108)=0x21;
-	*(QWORD*)(fshome+0x110)=nodesize;
+	nodesize=BSWAP_16( *(WORD*)(catabuf+0x20) );
 	nodesize=nodesize/0x200;
+	dstqword[0]=0x7366;		//'fs'
+	dstqword[0]=0x7a7365646f6e;	//'nodesz'
+	dstqword[2]=0x21;
+	dstqword[3]=0x20;
+	dstqword[4]=nodesize;
+	dstqword += 8;
 	diary("nodesize:%x\n",nodesize);
 
 	//rootnode
-	rootnode=BSWAP_32(*(DWORD*)(datahome+0x10) );
-	*(QWORD*)(fshome+0x140)=0x10;
-	*(QWORD*)(fshome+0x148)=0x13;
-	*(QWORD*)(fshome+0x150)=rootnode;
+	rootnode=BSWAP_32(*(DWORD*)(catabuf+0x10) );
+	dstqword[0]=0x7366;		//'fs'
+	dstqword[0]=0x646f6e746f6f72;	//'rootnod'
+	dstqword[2]=0x13;
+	dstqword[3]=0x10;
+	dstqword[4]=rootnode;
+	dstqword += 8;
 	diary("rootnode:%x\n",rootnode);
 
 	//firstleafnode
-	firstleafnode=BSWAP_32(*(DWORD*)(datahome+0x18) );
-	*(QWORD*)(fshome+0x180)=0x18;
-	*(QWORD*)(fshome+0x188)=0x1b;
-	*(QWORD*)(fshome+0x190)=firstleafnode;
+	firstleafnode=BSWAP_32(*(DWORD*)(catabuf+0x18) );
+	dstqword[0]=0x7366;		//'fs'
+	dstqword[0]=0x306661656c;	//'leaf0'
+	dstqword[2]=0x1b;
+	dstqword[3]=0x18;
+	dstqword[4]=firstleafnode;
+	dstqword += 8;
 	diary("firstleafnode:%x\n",firstleafnode);
+
+
+
+	return 1;
 }
-int mounthfs(QWORD addr,QWORD which)
+int mounthfs(char* src,char* addr)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	int ret;
+	block0=*(QWORD*)(src+0x10);
 	diskhome=addr;
-	dirhome=addr+0x100000;
-	fshome=addr+0x200000;
-		catalogbuffer=fshome+0x10000;
+	fshome=addr+0x100000;
+		pbr=fshome+0x10000;
+		catabuf=fshome+0x20000;
+	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
-	//上报3个函数的地址
-	QWORD* this=(QWORD*)(diskhome+which*0x40);
-	block0=this[0];
-	this[4]=(QWORD)hfs_explain;
-	this[5]=(QWORD)hfs_cd;
-	this[6]=(QWORD)hfs_load;
-
-	//读分区前8扇区，总共0x1000字节(其实只要分区内2号和3号扇区)
-	readmemory(datahome,block0,0,0x8);	//0x1000
-	explainhfshead(datahome,fshome);
-
-	//读catalog的第0个node，再分析这东西
-	readmemory(datahome,catalogsector,0,0x8);	//0x1000
-	explaincatalog(datahome,fshome);
+	//很多东西
+	ret=explainhfshead();
+	if(ret<0)return ret;
 
 	//进入根目录
 	hfs_cd(2);
-	return 0;
+	return 1;
 }

@@ -34,7 +34,6 @@ static char* fshome;		//+1m
 static char* dirhome;		//+2m
 static char* datahome;		//+3m
 //3大函数的位置
-static char bowl[0x40];		//用来放三个函数的地址
 int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
 int (*fscd)(QWORD id);		//((int (*)(QWORD))(fscd))(arg1);
 int (*fsload)(QWORD id,QWORD part);	//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
@@ -123,7 +122,7 @@ void list(char* arg1)
 	}
 
 	//搜到就显示
-	for(i=0; i<0x100; i++)
+	for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
 	{
 		temp=*(QWORD*)( targetaddr + (i*0x40) );
 		if(temp == 0)break;

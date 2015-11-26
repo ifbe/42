@@ -559,14 +559,13 @@ int explainntfshead()
 
 	//[d,d]
 	clustersize=(QWORD)( *(BYTE*)(pbr+0xd) );
-	diary("clustersize:%x\n",clustersize);
-
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x7a73756c63;	//'clusz'
 	dstqword[2]=0xd;
 	dstqword[3]=0xd;
 	dstqword[4]=clustersize;
 	dstqword += 8;
+	diary("clustersize:%x\n",clustersize);
 
 	//[0x30,0x37]
 	mftcluster= *(QWORD*)(pbr+0x30);
@@ -595,9 +594,7 @@ int explainntfshead()
 int mountntfs(char* src,char* addr)
 {
 	int ret=0;
-	QWORD* srcqword=(QWORD*)src;
-	ntfssector=srcqword[2];
-	//diary();
+	ntfssector=*(QWORD*)(src+0x10);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;

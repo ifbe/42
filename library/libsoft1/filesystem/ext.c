@@ -3,21 +3,21 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
-void cleverread(QWORD,QWORD,QWORD,QWORD,QWORD,QWORD);
+int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
+void printmemory(char* addr,QWORD size);
 void diary(char* fmt,...);
 
 
 
 
 //memory
-static QWORD diskhome;
-static QWORD fshome;
-	static QWORD inodebuffer;	//故意空格的
-static QWORD dirhome;
-static QWORD datahome;
+static char* diskhome;
+static char* fshome;
+	static char* pbr;		//+0x10000
+	static char* inodebuffer;	//+0x20000
+static char* dirhome;
+static char* datahome;
 
 //disk
 static QWORD block0;
@@ -43,7 +43,7 @@ static QWORD whichblock(QWORD groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readmemory((QWORD)blockrecord,sector,0,1);
+	readmemory(blockrecord,sector,0,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	QWORD addr=(QWORD)blockrecord+8+(groupnum*0x20)%0x200;
@@ -61,7 +61,7 @@ static QWORD whichblock(QWORD groupnum)
 //注意2:每个组的inode数量一般为8192，是0x400的倍数
 //注意3:inode首个的编号是1不是0
 static QWORD firstinodeincache;
-static QWORD checkcacheforinode(QWORD wanted)
+static char* checkcacheforinode(QWORD wanted)
 {
 	//内存里已经是这几个的话就直接返回
 	QWORD inodeoffset=(wanted-1)%0x400;
@@ -72,28 +72,28 @@ static QWORD checkcacheforinode(QWORD wanted)
 
 
 	//不是就麻烦了
-	QWORD rdi=inodebuffer;
+	char* rdi=inodebuffer;
 	QWORD this=wanted-inodeoffset;
 	while(1)
 	{
 		//inode分散在各个group里面，可能需要从不同地方收集
 		QWORD groupnum=(this-1)/inodepergroup;		//算出此inode在第几块组
-		QWORD groupoffset=(this-1)%inodepergroup;			//在这一组内的偏移（几个）
+		QWORD groupoffset=(this-1)%inodepergroup;	//在这一组内的偏移（几个）
 
 		//算：哪个扇区,几个扇区
 		QWORD where;
-		where=block0+blocksize*whichblock(groupnum);	//这一组第一个inode所在扇区，不会出问题
-		where+=groupoffset*inodesize/0x200;		//注意！！！！inodepergroup奇葩时这里出问题
+		where=block0+blocksize*whichblock(groupnum);//这一组第一个inode所在扇区，不会出问题
+		where+=groupoffset*inodesize/0x200;	//注意inodepergroup奇葩时这里出问题
 		QWORD count;
 		count=inodepergroup-groupoffset;	//这一group内剩余多少个
-		if(count>0x400)count=0x400;			//这一组里剩余的太多的话，多余的不要
+		if(count>0x400)count=0x400;	//这一组里剩余的太多的话，多余的不要
 
 		//read inode table
 		//diary("inode:%x@%x\n",this,where);
-	    readmemory(rdi,where,0,count*inodesize/0x200);	//注意！！！！inodepergroup奇葩时这里出问题
+		readmemory(rdi,where,0,count*inodesize/0x200);//注意inodepergroup奇葩时这里出问题
 
 		//读满0x400个inode就走人
-		rdi+=count*inodesize;				//注意！！！！inodepergroup奇葩时这里出问题
+		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
 		this+=count;
 		if(rdi-inodebuffer>=0x40000) break;
 	}
@@ -111,7 +111,7 @@ static QWORD checkcacheforinode(QWORD wanted)
 static int explaininode(QWORD inode,QWORD wantwhere)
 {
 	//函数调用之后,rsi为所请求的inode的内存地址，
-	QWORD rsi=checkcacheforinode(inode);
+	char* rsi=checkcacheforinode(inode);
 
 	//检查是不是软链接
 	WORD temp=(*(WORD*)rsi)&0xf000;
@@ -125,16 +125,16 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	if(*(WORD*)(rsi+0x28) == 0xf30a)	//ext4用新方式
 	{
 		//读extend头，拿点重要的变量
-					//*(WORD*)(rsi+0x28)		//这是个标志，等于0xf30a说明用extend方式
+		//*(WORD*)(rsi+0x28)		//这是个标志，等于0xf30a说明用extend方式
 		QWORD numbers=*(WORD*)(rsi+0x28+2);		//有效项个数
-					//*(WORD*)(rsi+0x28+4);		//项中的存储容量，4
-					//*(WORD*)(rsi+0x28+6);		//树的深度
-					//*(DWORD*)(rsi+0x28+8);	//树的代数
+			//*(WORD*)(rsi+0x28+4);		//项中的存储容量，4
+			//*(WORD*)(rsi+0x28+6);		//树的深度
+			//*(DWORD*)(rsi+0x28+8);	//树的代数
 
 		//为循环准备变量，清空内存，给读取的数据空间
-		rsi=rsi+0x28;		//加完以后指向ext4_extend头
 		int i;
-		QWORD rdi;
+		char* rdi;
+		rsi=rsi+0x28;		//加完以后指向ext4_extend头
 		for(rdi=datahome;rdi<datahome+0x100000;rdi++)
 		{
 			*(BYTE*)rdi=0;
@@ -205,9 +205,9 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 
 static void explaindirectory()
 {
-	QWORD rdi=dirhome;
-	QWORD rsi=datahome;
 	int i;
+	char* rdi=dirhome;
+	char* rsi=datahome;
 
 	for(i=0;i<0x100000;i++)
 	{
@@ -223,16 +223,32 @@ static void explaindirectory()
 		//diary("%x\n",*(WORD*)(rsi+4));
 		//printmemory(rsi,0x10);
 
-		//[0,7]inode号
+		//[0,0x7]:type
+		BYTE type=*(BYTE*)(rsi+7);
+		if(type==1)
+		{
+			*(QWORD*)rdi=0x656c6966;	//'file'
+		}
+		else if(type==2)
+		{
+			*(QWORD*)rdi=0x726964;	//'dir'
+		}
+		else if(type==7)
+		{
+			*(QWORD*)rdi=0x6b6e696c;	//'link'
+		}
+		else
+		{
+			*(QWORD*)rdi=0x66+(type<<8);
+		}
+
+		//[0x10,0x17]inode号
 		QWORD thisinode=*(DWORD*)rsi;
-		*(QWORD*)(rdi+0)=thisinode;
+		*(QWORD*)(rdi+0x10)=thisinode;
 
-		//[8,f]:size，ext的目录表里面没有文件大小，需要到inode表里面寻找
-		QWORD inodeaddr=checkcacheforinode(thisinode);
-		*(QWORD*)(rdi+8)=*(DWORD*)(inodeaddr+4);
-
-		//[0x10,0x17]:type
-		*(QWORD*)(rdi+0x10)=*(BYTE*)(rsi+7);
+		//[0x18,0x1f]:size，ext的目录表里面没有文件大小，需要到inode表里面寻找
+		char* inodeaddr=checkcacheforinode(thisinode);
+		*(QWORD*)(rdi+0x18)=*(DWORD*)(inodeaddr+4);
 
 		//[0x20,0x3f]:名字
 		i=0;
@@ -253,9 +269,7 @@ static int ext_explain(QWORD inode)
 	diary("inode %x\n",inode);
 
 	//函数调用之后,rsi为所请求的inode的内存地址，
-	QWORD rsi=checkcacheforinode(inode);
-
-	//打印整个inode方便调试，这步可注释掉
+	char* rsi=checkcacheforinode(inode);
 	printmemory(rsi,inodesize);
 }
 
@@ -263,8 +277,11 @@ static int ext_explain(QWORD inode)
 static int ext_cd(QWORD id)
 {
 	//开搞
-	int result=explaininode(id,0);
-	if(result>0)explaindirectory();
+	int ret;
+	for(ret=0;ret<0x10000;ret++)dirhome[ret]=0;
+
+	ret=explaininode(id,0);
+	if(ret>0)explaindirectory();
 	return 1;
 }
 
@@ -281,57 +298,88 @@ static void ext_load(QWORD id,QWORD offset)
 
 
 
-void explainexthead(QWORD pbr,QWORD fshome)
+int explainexthead()
 {
+	QWORD* dstqword=(QWORD*)fshome;
+	if( *(WORD*)(pbr+0x438) != 0xef53 ) return -1;
+
+	//func cd
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6463;             //'cd'
+	dstqword[2]=(QWORD)ext_cd;
+	dstqword += 8;
+
+	//func load
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x64616f6c;         //'load'
+	dstqword[2]=(QWORD)ext_load;
+	dstqword += 8;
+
+	//func explain
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6e69616c707865;           //'explain'
+	dstqword[2]=(QWORD)ext_explain;
+	dstqword += 8;
+
 	//变量们
 	blocksize=*(DWORD*)(pbr+0x418);
-	*(QWORD*)(fshome)=0x418;
-	*(QWORD*)(fshome+8)=0x41b;
-	*(QWORD*)(fshome+0x10)=blocksize;
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x7a736b636f6c62;       //'blocksz'
+	dstqword[2]=0x418;
+	dstqword[3]=0x41b;
+	dstqword[4]=blocksize;
+	dstqword += 8;
 	diary("sectorperblock:%x\n",blocksize);
 
 	//每组多少扇区
 	groupsize=*(DWORD*)(pbr+0x420);
-	*(QWORD*)(fshome+0x40)=0x420;
-	*(QWORD*)(fshome+0x48)=0x423;
-	*(QWORD*)(fshome+0x50)=groupsize;
 	groupsize=groupsize*blocksize;
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x7a7370756f7267;       //'groupsz'
+	dstqword[2]=0x420;
+	dstqword[3]=0x423;
+	dstqword[4]=groupsize;
+	dstqword += 8;
 	diary("sectorpergroup:%x\n",groupsize);
 
 	//每组多少个inode
 	inodepergroup=*(DWORD*)(pbr+0x428);
-	*(QWORD*)(fshome+0x80)=0x428;
-	*(QWORD*)(fshome+0x88)=0x42b;
-	*(QWORD*)(fshome+0x90)=inodepergroup;
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x672f69;       //'i/g'
+	dstqword[2]=0x428;
+	dstqword[3]=0x42b;
+	dstqword[4]=inodepergroup;
+	dstqword += 8;
 	diary("inodepergroup:%x\n",inodepergroup);
 
 	//每inode多少字节
 	inodesize=*(WORD*)(pbr+0x458);
-	*(QWORD*)(fshome+0xc0)=0x458;
-	*(QWORD*)(fshome+0xc8)=0x459;
-	*(QWORD*)(fshome+0xd0)=inodesize;
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x7a7365646f6e69;       //'inodesz'
+	dstqword[2]=0x458;
+	dstqword[3]=0x459;
+	dstqword[4]=inodesize;
+	dstqword += 8;
 	diary("byteperinode:%x\n",inodesize);
 }
-int mountext(QWORD addr,QWORD which)
+int mountext(char* src,char* addr)
 {
+	int ret=0;
+	block0=*(QWORD*)(src+0x10);
+
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
-	dirhome=addr+0x100000;
-	fshome=addr+0x200000;
-		inodebuffer=fshome+0x10000;
+	fshome=addr+0x100000;
+		pbr=fshome+0x10000;
+		inodebuffer=fshome+0x20000;
+	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
-	//返回cd和load函数的地址
-	block0=*(QWORD*)(diskhome+0x40*which+0);
-	*(QWORD*)(diskhome+0x40*which+0x20)=(QWORD)ext_explain;
-	*(QWORD*)(diskhome+0x40*which+0x28)=(QWORD)ext_cd;
-	*(QWORD*)(diskhome+0x40*which+0x30)=(QWORD)ext_load;
-
 	//读分区前8扇区，检查magic值
-	readmemory(datahome,block0,0,0x8);	//0x1000
-	if( *(WORD*)(datahome+0x438) != 0xef53 ) return -1;
-	explainexthead(datahome,fshome);
+	ret=readmemory(pbr,block0,0,0x8);	//0x1000
+	ret=explainexthead();
+	if(ret<0)return ret;
 
 	//cd /
 	firstinodeincache=0xffffffff;

@@ -3,20 +3,20 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //用了别人的
-void printmemory(QWORD addr,QWORD size);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void whereislogicworld(QWORD* in);
+int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void printmemory(char* addr,QWORD size);
 void diary(char* fmt,...);
 
 
 
 
 //memory
-static QWORD diskhome;		//
-static QWORD fshome;		//fat表
-	static QWORD fatbuffer;
-static QWORD dirhome;		//目录专用
-static QWORD datahome;		//一般使用
+static char* diskhome;		//
+static char* fshome;		//fat表
+	static char* pbr;
+	static char* fatbuffer;
+static char* dirhome;		//目录专用
+static char* datahome;		//一般使用
 
 //disk
 static QWORD firstsector;
@@ -102,11 +102,11 @@ static int fat16_explain()
 {
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-static int fat16_data(QWORD dest,QWORD cluster)
+static int fat16_data(char* dest,QWORD cluster)
 {
 	diary("cluster:%x\n",cluster);
 
-	QWORD rdi=dest;
+	char* rdi=dest;
 	while(rdi<dest+0x100000)		//大于1M的不管
 	{
 		//判断退出
@@ -210,11 +210,11 @@ static int fat32_explain()
 {
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-static void fat32_data(QWORD dest,QWORD cluster)		//destine,clusternum
+static void fat32_data(char* dest,QWORD cluster)		//destine,clusternum
 {
 	diary("cluster:%x\n",cluster);
 
-	QWORD rdi=dest;
+	char* rdi=dest;
 	while(rdi<dest+0x100000)
 	{
 		readmemory(rdi,cluster0+clustersize*cluster,0,clustersize);
@@ -230,7 +230,6 @@ static void fat32_data(QWORD dest,QWORD cluster)		//destine,clusternum
 		if(cluster==0x0ffffff7){diary("bad cluster,bye!%x\n",cluster);break;}
 	}
 	diary("count:%x\n",rdi-dest);
-	diary("\n");
 }
 //接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
 static void fat32_load(QWORD id,QWORD offset)
@@ -273,119 +272,175 @@ static int fat32_cd(QWORD id)
 
 
 
-void explainfat16head(QWORD in,QWORD out)
+void explainfat16head()
 {
 	//准备本程序需要的变量
-	//QWORD firstsector=(QWORD)( *(DWORD*)(datahome+0x1c) );
-	fatsize=(QWORD)( *(WORD*)(datahome+0x16) );
-	*(QWORD*)(out)=0x16;
-	*(QWORD*)(out+0x8)=0x17;
-	*(QWORD*)(out+0x10)=fatsize;
-	diary("fatsize:%x\n",fatsize);
+	//QWORD firstsector=(QWORD)( *(DWORD*)(pbr+0x1c) );
+	QWORD* dstqword=(QWORD*)fshome;
 
-	fat0=(QWORD)( *(WORD*)(datahome+0xe) );
-	*(QWORD*)(out+0x40)=0xe;
-	*(QWORD*)(out+0x48)=0xf;
-	*(QWORD*)(out+0x50)=fat0;
+	//func cd
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6463;             //'cd'
+	dstqword[2]=(QWORD)fat16_cd;
+	dstqword += 8;
+
+	//func load
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x64616f6c;         //'load'
+	dstqword[2]=(QWORD)fat16_load;
+	dstqword += 8;
+
+	//func explain
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6e69616c707865;           //'explain'
+	dstqword[2]=(QWORD)fat16_explain;
+	dstqword += 8;
+
+	fat0=(QWORD)( *(WORD*)(pbr+0xe) );
 	fat0=firstsector + fat0;
+        dstqword[0]=0x7366;		//'fs'
+        dstqword[1]=0x30746166;		//'fat0'
+        dstqword[2]=0xe;
+        dstqword[3]=0xf;
+        dstqword[4]=fat0;
+        dstqword += 8;
 	diary("fat0:%x\n",fat0);
 
-	clustersize=(QWORD)( *(BYTE*)(datahome+0xd) );
-	*(QWORD*)(out+0x80)=0xd;
-	*(QWORD*)(out+0x88)=0xd;
-	*(QWORD*)(out+0x90)=clustersize;
+	fatsize=(QWORD)( *(WORD*)(pbr+0x16) );
+        dstqword[0]=0x7366;		//'fs'
+        dstqword[1]=0x657a6973746166;	//'fatsize'
+        dstqword[2]=0x16;
+        dstqword[3]=0x17;
+        dstqword[4]=fatsize;
+        dstqword += 8;
+	diary("fatsize:%x\n",fatsize);
+
+	clustersize=(QWORD)( *(BYTE*)(pbr+0xd) );
+        dstqword[0]=0x7366;		//'fs'
+        dstqword[1]=0x657a6973756c63;	//'clusize'
+        dstqword[2]=0xd;
+        dstqword[3]=0xd;
+        dstqword[4]=clustersize;
+        dstqword += 8;
 	diary("clustersize:%x\n",clustersize);
 
 	cluster0=fat0+fatsize*2+32-clustersize*2;
+        dstqword[0]=0x7366;		//'fs'
+        dstqword[1]=0x30756c63;		//'clu0'
+        dstqword[2]=0;
+        dstqword[3]=0;
+        dstqword[4]=cluster0;
+        dstqword += 8;
 	diary("cluster0:%x\n",cluster0);
 }
-void explainfat32head(QWORD in,QWORD out)
+void explainfat32head()
 {
 	//准备本程序需要的变量
-	//QWORD firstsector=(QWORD)( *(DWORD*)(datahome+0x1c) );
-	fatsize=(QWORD)( *(DWORD*)(datahome+0x24) );
-	*(QWORD*)(out)=0x24;
-	*(QWORD*)(out+0x8)=0x27;
-	*(QWORD*)(out+0x10)=fatsize;
-	diary("fatsize:%x\n",fatsize);
+	//QWORD firstsector=(QWORD)( *(DWORD*)(pbr+0x1c) );
+	QWORD* dstqword=(QWORD*)fshome;
 
-	fat0=(QWORD)( *(WORD*)(datahome+0xe) );
-	*(QWORD*)(out+0x40)=0xe;
-	*(QWORD*)(out+0x48)=0xf;
-	*(QWORD*)(out+0x50)=fat0;
+	//func cd
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6463;             //'cd'
+	dstqword[2]=(QWORD)fat32_cd;
+	dstqword += 8;
+
+	//func load
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x64616f6c;         //'load'
+	dstqword[2]=(QWORD)fat32_load;
+	dstqword += 8;
+
+	//func explain
+	dstqword[0]=0x636e7566;         //'func'
+	dstqword[1]=0x6e69616c707865;           //'explain'
+	dstqword[2]=(QWORD)fat32_explain;
+	dstqword += 8;
+
+	fat0=(QWORD)( *(WORD*)(pbr+0xe) );
 	fat0=firstsector + fat0;
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x30746166;         //'fat0'
+	dstqword[2]=0xe;
+	dstqword[3]=0xf;
+	dstqword[4]=fat0;
+	dstqword += 8;
 	diary("fat0:%x\n",fat0);
 
-	clustersize=(QWORD)( *(BYTE*)(datahome+0xd) );
-	*(QWORD*)(out+0x80)=0xd;
-	*(QWORD*)(out+0x88)=0xd;
-	*(QWORD*)(out+0x90)=clustersize;
+	fatsize=(QWORD)( *(DWORD*)(pbr+0x24) );
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x657a6973746166;   //'fatsize'
+	dstqword[2]=0x24;
+	dstqword[3]=0x27;
+	dstqword[4]=fatsize;
+	dstqword += 8;
+	diary("fatsize:%x\n",fatsize);
+
+	clustersize=(QWORD)( *(BYTE*)(pbr+0xd) );
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x657a6973756c63;   //'clusize'
+	dstqword[2]=0xd;
+	dstqword[3]=0xd;
+	dstqword[4]=clustersize;
+	dstqword += 8;
 	diary("clustersize:%x\n",clustersize);
 
 	cluster0=fat0+fatsize*2-clustersize*2;
+	dstqword[0]=0x7366;             //'fs'
+	dstqword[1]=0x30756c63;         //'clu0'
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=cluster0;
+	dstqword += 8;
 	diary("cluster0:%x\n",cluster0);
 }
-int mountfat(QWORD addr,QWORD which)
+//1:那一条0x40字节的地址，2:可以用的8m内存的地址
+int mountfat(char* src,char* addr)
 {
+	int ret;
+	firstsector=*(QWORD*)(src+0x10);
 	//diary("%llx\n",(QWORD)fat32_explain);
+
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	diskhome=addr;
-	dirhome=addr+0x100000;
-	fshome=addr+0x200000;
-		fatbuffer=fshome+0x10000;
+	fshome=addr+0x100000;
+		pbr=fshome+0x10000;
+		fatbuffer=fshome+0x20000;
+	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
-
-
-
 	//读取pbr
-	QWORD* this=(QWORD*)(diskhome+which*0x40);
-	firstsector=this[0];
-	readmemory(datahome,firstsector,0,1); //pbr
-	if( *(WORD*)(datahome+0xb) !=0x200)	//检查分区问题，有就滚
+	readmemory(pbr,firstsector,0,1); //pbr
+	if( *(WORD*)(pbr+0xb) !=0x200)	//检查分区问题，有就滚
 	{
 		diary("not 512B per sector,bye!\n");
 		return -1;
 	}
-	if( *(BYTE*)(datahome+0x10) != 2)
+	if( *(BYTE*)(pbr+0x10) != 2)
 	{
 		diary("not 2 fat,bye!\n");
 		return -2;
 	}
 
-
-
-
 	//检查fat版本
-	int similarity=50;
-	if( *(WORD*)(datahome+0x11) == 0) similarity++;         //fat32为0
-	else similarity--;
-	if( *(WORD*)(datahome+0x16) ==0) similarity++;         //fat32为0
-	else similarity--;
-	if(similarity==48)		//这是fat16
+	int version=24;
+	if( *(WORD*)(pbr+0x11) == 0) version+=4;         //fat32为0
+	else version-=4;
+	if( *(WORD*)(pbr+0x16) ==0) version+=4;         //fat32为0
+	else version-=4;
+	if(version==16)		//这是fat16
 	{
 		//上报3个函数的地址
-		diary("fat16\n");
-		this[4]=(QWORD)fat16_explain;
-		this[5]=(QWORD)fat16_cd;
-		this[6]=(QWORD)fat16_load;
-
-		//
-		explainfat16head(datahome,fshome);
+		explainfat16head();
 
 		//change directory /
 		fat16_root();
 	}
-	else if(similarity==52)		//这是fat32
+	else if(version==32)		//这是fat32
 	{
 		//上报3个函数的地址
 		diary("fat32\n");
-		this[4]=(QWORD)fat32_explain;
-		this[5]=(QWORD)fat32_cd;
-		this[6]=(QWORD)fat32_load;
-
-		//
-		explainfat32head(datahome,fshome);
+		explainfat32head();
 
 		//change directory /
 		fat32_root();
