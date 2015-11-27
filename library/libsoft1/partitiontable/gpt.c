@@ -33,11 +33,8 @@ void explaingpt(char* from,char* to)
 	for(i=0;i<0x100;i++)	//0x100*0x40=0x4000=16k
 	{
 		temp=dstqword[i*8];
-		if(temp == 0)break;
-		if( (temp&0xffffffff) == 0x6b736964 )
-		{
-			if( (temp>>32) != 0 )break;
-		}
+		if( temp == 0)break;
+		if( temp == 0x74726170 )break;
 	}
 	for(j=0x40*i; j<0x10000; j++)
 	{
@@ -47,7 +44,7 @@ void explaingpt(char* from,char* to)
 	dstqword=(QWORD*)dst;
 
 	//放下第一个
-	dstqword[0]=0x2e2e2e6b736964;		//'disk...'
+	dstqword[0]=0x74726170;		//'part'
 	dstqword[1]=0x747067;		//'gpt'
 	dstqword[2]=2;
 	dstqword[3]=0x21;
@@ -75,7 +72,7 @@ void explaingpt(char* from,char* to)
 		QWORD secondhalf = srcqword [1];
 		QWORD startlba = srcqword [4];
 		QWORD endlba = srcqword [5];
-		dstqword[0]=0x2e2e2e6b736964;	//'disk...'
+		dstqword[0]=0x74726170;	//'disk...'
 		dstqword[2]=startlba;
 		dstqword[3]=endlba;
 		for(j=0;j<0x20;j++)

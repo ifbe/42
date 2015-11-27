@@ -24,8 +24,8 @@ static int mbrrecord(char* from,char* to)
 	dst=(QWORD*)to;
 	start=*(DWORD*)(from+8);
 	size=*(DWORD*)(from+0xc);
-        dst[0]=0x2e2e2e6b736964; 	//'disk...'
-	dst[2]=start;			//start
+        dst[0]=0x74726170; 	//'part'
+	dst[2]=start;		//start
 	dst[3]=start + size - 1;	//end
 
 	//拓展分区要递归
@@ -86,10 +86,7 @@ void explainmbr(char* buffer,char* to)
 	{
 		temp=dstqword[i*8];
 		if(temp == 0)break;
-		if( (temp&0xffffffff) == 0x6b736964 )
-		{
-			if( (temp>>32) != 0 )break;
-		}
+		if(temp == 0x74726170)break;
 	}
 	for(j=0x40*i; j<0x10000; j++)
 	{
@@ -99,7 +96,7 @@ void explainmbr(char* buffer,char* to)
 	dstqword=(QWORD*)dst;
 
 	//放下第一个
-        dstqword[0]=0x2e2e2e6b736964; 	//'disk...'
+        dstqword[0]=0x74726170; //'part'
         dstqword[1]=0x72626d;	//'mbr'
         dstqword[2]=0;
         dstqword[3]=0;

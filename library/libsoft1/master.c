@@ -91,6 +91,10 @@ int directread(char* arg1)
 	diary("above is:%x,%x\n",value,value+7);
 	return 1;
 }
+int directwrite()
+{
+	return 0;
+}
 void list(char* arg1)
 {
 	int i;
@@ -101,7 +105,7 @@ void list(char* arg1)
 	//想要什么
 	if(arg1==0)target=0;
 	else if( compare(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
-	else if( compare(arg1,"part") == 0 )target=0x2e2e2e6b736964;	//'disk...'
+	else if( compare(arg1,"part") == 0 )target=0x74726170;	//'part'
 	else if( compare(arg1,"func") == 0 )
 	{
 		targetaddr=fshome;
@@ -235,6 +239,10 @@ int searchthis(char* name)
 		if( compare( name , dirhome+temp+0x20 ) == 0 )
 		{
 			printmemory(dirhome+temp,0x40);
+
+			//id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
+			//explain(id);
+
 			return temp/0x40;
 		}
 	}
@@ -317,15 +325,40 @@ void command(char* buffer)
 	//help
 	if(compare( arg0 , "help" ) == 0)
 	{
-		diary("list ?          (list all known)\n");
-		diary("into ?        (choose a disk)\n");
-		diary("read ?          (hex print a physical sector)\n");
-		diary("explain ?       (explain inode/cluster/cnid/mft)\n");
-		diary("cd dirname      (change directory)\n");
-		diary("load filename   (load this file)\n");
+		//memory
+		diary("[memaddr]	(read memory)\n");
+		diary("[memaddr]=value	(write memory)\n");
+		//physic
+		diary("list ?		(list all known)\n");
+		diary("into ?		(choose a disk)\n");
+		diary("read ?		(hex print a physical sector)\n");
+		diary("write ?		(no)\n");
+		//logic
+		diary("ls ?		(list file)\n");
+		diary("cd ?		(change directory)\n");
+		diary("load ?		(load this file)\n");
+		diary("store ?		(store this file)\n");
 	}
 
+/*
+	//the memory
+	else if(compare( arg0 , "readmem" ) == 0)
+	{
+	}
+	else if(compare( arg0 , "writemem" ) == 0)
+	{
+	}
+*/
+
 	//the disk
+	else if(compare( arg0 , "list" ) == 0)
+	{
+		list(arg1);
+	}
+	else if(compare( arg0 , "into" ) == 0)
+	{
+		into(arg1);
+	}
 	else if(compare( arg0 , "read" ) == 0)
 	{
 		directread(arg1);
@@ -334,14 +367,6 @@ void command(char* buffer)
 	{
 		//dangerous
 		//directread(arg1);
-	}
-	else if(compare( arg0 , "list" ) == 0)
-	{
-		list(arg1);
-	}
-	else if(compare( arg0 , "into" ) == 0)
-	{
-		into(arg1);
 	}
 
 	//the filesystem
@@ -357,9 +382,10 @@ void command(char* buffer)
 	{
 		load(arg1);
 	}
-	else if(compare( arg0 , "explain" ) == 0)
+	else if(compare( arg0 , "store" ) == 0)
 	{
-		explain(arg1);
+		//dangerous
+		//store(arg1);
 	}
 
 }
