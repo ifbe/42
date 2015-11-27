@@ -325,19 +325,28 @@ void command(char* buffer)
 	//help
 	if(compare( arg0 , "help" ) == 0)
 	{
-		//memory
-		diary("[memaddr]	(read memory)\n");
-		diary("[memaddr]=value	(write memory)\n");
-		//physic
-		diary("list ?		(list all known)\n");
-		diary("into ?		(choose a disk)\n");
-		diary("read ?		(hex print a physical sector)\n");
-		diary("write ?		(no)\n");
-		//logic
-		diary("ls ?		(list file)\n");
-		diary("cd ?		(change directory)\n");
-		diary("load ?		(load this file)\n");
-		diary("store ?		(store this file)\n");
+		//normal
+		diary("normal{\n");
+		diary("	list ?		(list all known)\n");
+		diary("	into ?		(choose a disk)\n");
+		diary("	read ?		(hex print a physical sector)\n");
+		diary("	write ?		(no)\n");
+		diary("	ls ?		(list file)\n");
+		diary("	cd ?		(change directory)\n");
+		diary("	load ?		(load this file)\n");
+		diary("	store ?		(store this file)\n");
+		diary("}normal\n");
+		//special
+		diary("special{\n");
+		diary("	ldr ?		(read memory)\n");
+		diary("	str ? ?		(write memory)\n");
+		diary("	in ?		(port in)\n");
+		diary("	out ? ?		(port out)\n");
+		diary("	connect ?	(to whom)\n");
+		diary("	disconnect ?	(from whom)\n");
+		diary("	recv ?		(print message)\n");
+		diary("	send ?		(send message)\n");
+		diary("}special\n");
 	}
 
 /*
