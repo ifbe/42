@@ -37,7 +37,7 @@ static int mbrrecord(char* from,char* to)
 	}
 
 	//其他普通分区
-	if( type==0x4 | type==0x6 | type==0xb )
+	if( (type==0x4) | (type==0x6) | (type==0xb) )
 	{
 		//diary("fat\n");
 		dst[1]=0x746166;
@@ -70,7 +70,7 @@ static int mbrrecord(char* from,char* to)
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-QWORD explainmbr(char* buffer,char* to)
+void explainmbr(char* buffer,char* to)
 {
 	char* dst;
 	QWORD* dstqword;

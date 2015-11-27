@@ -31,7 +31,7 @@ static QWORD inodesize;
 
 //输入值：请求的组号
 //返回值：这个组里面inode表的第一个block号
-static BYTE blockrecord[512];
+static char blockrecord[512];
 static QWORD whichblock(QWORD groupnum)
 {
 	//group descriptor从哪个扇区开始
@@ -126,7 +126,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	{
 		//读extend头，拿点重要的变量
 		//*(WORD*)(rsi+0x28)		//这是个标志，等于0xf30a说明用extend方式
-		QWORD numbers=*(WORD*)(rsi+0x28+2);		//有效项个数
+		int numbers=*(WORD*)(rsi+0x28+2);		//有效项个数
 			//*(WORD*)(rsi+0x28+4);		//项中的存储容量，4
 			//*(WORD*)(rsi+0x28+6);		//树的深度
 			//*(DWORD*)(rsi+0x28+8);	//树的代数
@@ -271,6 +271,8 @@ static int ext_explain(QWORD inode)
 	//函数调用之后,rsi为所请求的inode的内存地址，
 	char* rsi=checkcacheforinode(inode);
 	printmemory(rsi,inodesize);
+
+	return 1;
 }
 
 
@@ -286,9 +288,10 @@ static int ext_cd(QWORD id)
 }
 
 
-static void ext_load(QWORD id,QWORD offset)
+static int ext_load(QWORD id,QWORD offset)
 {
 	explaininode(id,offset);
+	return 1;
 }
 
 
@@ -362,6 +365,8 @@ int explainexthead()
 	dstqword[4]=inodesize;
 	dstqword += 8;
 	diary("byteperinode:%x\n",inodesize);
+
+	return 1;
 }
 int mountext(char* src,char* addr)
 {

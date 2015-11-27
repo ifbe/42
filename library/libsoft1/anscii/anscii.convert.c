@@ -77,10 +77,11 @@ int decstring2data(BYTE* source,QWORD* data)
 			return i;
 		}
 
-		//3.如果是正常值：		先乘10，再加上这个值，然后搞下一个数
+		//3.如果是正常值：	先乘10，再加上这个值，然后搞下一个数
 		*data=(*data)*10;
 		*data+=source[i]-0x30;
 	}
+	return -1;	//不会到这里
 }
 
 
@@ -112,6 +113,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 		}
 		else return -2;
 	}
+	return -999999;	//不会到这里
 }
 
 
@@ -134,6 +136,7 @@ int data2hexstring(QWORD data,BYTE* string)
 		if(temp>=0x3a)temp+=7;
 		string[15-i]=temp;
 	}
+	return i;
 }
 
 

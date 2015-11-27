@@ -12,7 +12,8 @@ int compare(unsigned char* first,unsigned char* second)
 	//diary("%s,%s\n",first,second);
 	for(i=0;i<16;i++)
 	{
-		if( (first[i]==0) && (second[i]==0) )return 0;		//比较完毕，相同
-		if(first[i]!=second[i])return -1;
+		if( (first[i]==0) && (second[i]==0) )break;	//相同
+		if(first[i]!=second[i])break;
 	}
+	return first[i]-second[i];
 }

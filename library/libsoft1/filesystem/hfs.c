@@ -270,6 +270,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 
 	}//大while(1)循环
 
+	return 0;	//不会到这里
 }
 
 
@@ -400,6 +401,7 @@ static int hfs_cd(QWORD id)
 	//3.既然上面找到了，那么就逐个翻译吧
 	//（temp2那个返回值是为了省事给hfs_load函数准备的，但是hfs_cd只用它来判断搜索成功失败）
 	explaindirectory(foundnode,id);
+	return 1;
 }
 
 

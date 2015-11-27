@@ -11,8 +11,8 @@ int cleanall();
 
 
 
-static BYTE buffer[128];//键盘输入专用
-void main()
+static char buffer[128];//键盘输入专用
+int main()
 {
 	onlymemory();
 
@@ -26,4 +26,5 @@ void main()
 	}
 
 	cleanall();
+	return 0;
 }

@@ -108,6 +108,7 @@ static void explaindirectory()
 
 static int fat16_explain()
 {
+	return 1;
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
 static int fat16_data(char* dest,QWORD cluster)
@@ -184,6 +185,7 @@ static int fat16_cd(QWORD id)
 	fat16_data(datahome,id);
 	explaindirectory();
 
+	return 1;
 }
 
 
@@ -217,6 +219,7 @@ static void checkcacheforcluster(QWORD cluster)
 }
 static int fat32_explain()
 {
+	return 1;
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
 static void fat32_data(char* dest,QWORD cluster)		//destine,clusternum
@@ -243,6 +246,7 @@ static void fat32_data(char* dest,QWORD cluster)		//destine,clusternum
 //接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
 static void fat32_load(QWORD id,QWORD offset)
 {
+	if(offset>0x100000)offset=0x100000;
 	fat32_data(datahome,id);
 }
 static void fat32_root()
@@ -273,12 +277,10 @@ static int fat32_cd(QWORD id)
 		fat32_root();
 		return 1;
 	}
-	else
-	{
-		fat32_data(datahome,id);
-		explaindirectory();
-		return 2;
-	}
+
+	fat32_data(datahome,id);
+	explaindirectory();
+	return 2;
 }
 
 

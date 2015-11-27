@@ -56,15 +56,11 @@ void intomemory(char* what)		//cd
 {
 	intofile(what);
 }
-void cleanmemory(char* addr,QWORD size)
+void cleanmemory(char* addr,int size)
 {
 	//清理
 	int i=0;
 	for(i=0;i<size;i++) addr[i]=0;
-}
-void setmemory(char* dest,int destcount,char source)
-{
-
 }
 
 
@@ -87,6 +83,7 @@ void writememory()
 }
 void readmemory(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
 {
+	ignore=ignore;		//kill compiler
 	//if(memory)
 	//
 

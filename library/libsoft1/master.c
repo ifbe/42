@@ -11,7 +11,7 @@ int explaingpt(char* src,char* dst);
 int explainmbr(char* src,char* dst);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
-int buf2arg(char*,BYTE**,BYTE**);
+int buf2arg(char*,char**,char**);
 //libsoft0/
 int listmemory();
 int intomemory(char*);
@@ -89,6 +89,7 @@ int directread(char* arg1)
 	readmemory(datahome,value,0,1);
 	printmemory(datahome,0x200);
 	diary("above is:%x,%x\n",value,value+7);
+	return 1;
 }
 void list(char* arg1)
 {
@@ -142,10 +143,10 @@ void list(char* arg1)
 }
 void into(char* arg)
 {
-	int i;
-	int ret;
-	int number;
-	QWORD temp;
+	int i=0;
+	int ret=0;
+	int number=0;
+	QWORD temp=0;
 
 	//如果传进来0，仅扫描所有硬盘
 	if(arg == 0)
@@ -253,7 +254,7 @@ int cd(char* arg1)
 
 	//change directory
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
-	fscd(id);
+	return fscd(id);
 }
 int load(char* arg1)
 {
@@ -283,6 +284,7 @@ int load(char* arg1)
 		fsload(id,temp);
 		mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
 	}
+	return 0;
 }
 int explain(char* arg1)
 {
@@ -290,7 +292,7 @@ int explain(char* arg1)
 	hexstring2data(arg1,&value);
 
 	diary("explainer@%llx\n",fsexplain);
-	fsexplain(value);
+	return fsexplain(value);
 }
 
 
@@ -303,8 +305,8 @@ int explain(char* arg1)
 void command(char* buffer)
 {
 //-----------------1.把收到的命令检查并翻译一遍-------------------
-	BYTE* arg0;
-	BYTE* arg1;
+	char* arg0;
+	char* arg1;
 	buf2arg(buffer,&arg0,&arg1);
 	if(arg0==0)return;
 

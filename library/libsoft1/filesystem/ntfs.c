@@ -36,7 +36,7 @@ static int ntfspwd;
 void explainrun(char* runaddr,long long* offset,long long* count)
 {
 	//变量
-	BYTE* run=runaddr;
+	char* run=runaddr;
 	BYTE data= run[0];
 	BYTE low4bit=0xf & data;
 	BYTE high4bit=data >>4;
@@ -80,8 +80,9 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 {
 	//变量们
 	long long offset=0;
-	QWORD count=0;
+	long long count=0;
 	QWORD logicpos=0;
+	max=max;		//kill warning currently
 
 	//printmemory(dirhome,0x40);
 	//每个run来一次
@@ -178,7 +179,7 @@ void explain80(char* addr,QWORD want)	//file data
 		DWORD length = *(DWORD*)(addr+0x10);
 		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
 		BYTE* rdi=(BYTE*)datahome;
-		int i;
+		DWORD i;
 		for(i=0;i<length;i++) rdi[i]=rsi[i];
 
 		return;
@@ -197,7 +198,7 @@ void explain80(char* addr,QWORD want)	//file data
 //返回:下一次翻译到哪里(现在解释到了哪)
 char* explainindex(char* rdi,char* rsi,char* end)
 {
-	BYTE* buffer=rdi;
+	char* buffer=rdi;
 	char* temp=rsi;
 	int i;
 
@@ -248,7 +249,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 		//[0x20,0x3f]名字
 		for(i=0;i<*(BYTE*)(temp+0x50);i++)
 		{
-			buffer[0x20+i]= *(BYTE*)(temp+0x52+i*2);
+			buffer[0x20+i]= *(char*)(temp+0x52+i*2);
 
 			if(buffer[0x20+i]==0) break;
 			if(i>=0x20) break;
@@ -397,7 +398,7 @@ void explaina0(char* addr)	//index allocation
 //*+0x38*/	uint64 DataSize;     // 属性值压缩大小
 //*+0x40*/	uint64 InitializedSize;   // 实际数据大小
 //*+0x48*/	uint64 CompressedSize;    // 压缩后大小
-static BYTE explaining[1024];
+static char explaining[1024];
 void explainmft(QWORD mftnum,QWORD want)
 {
 	//具体不用管，知道返回值是所求MFT的地址就行
@@ -513,18 +514,21 @@ static int ntfs_cd(QWORD id)
 	explainmft(id,0);
 	if(ntfspwd<10) ntfspwd++;
 	pwd[ntfspwd]=id;
+	return 1;
 }
 static int ntfs_load(QWORD id,QWORD offset)
 {
 	explainmft(id,offset);
 	if(ntfspwd<10) ntfspwd++;
 	pwd[ntfspwd]=id;
+	return 1;
 }
-static void ntfs_explain(QWORD mftnum)
+static int ntfs_explain(QWORD mftnum)
 {
 	diary("mft %x\n",mftnum);
 	char* mft=checkcacheformft(mftnum);
 	printmemory(mft,0x400);
+	return 1;
 }
 
 

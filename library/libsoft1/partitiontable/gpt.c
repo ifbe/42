@@ -16,7 +16,7 @@ void diary(char* fmt,...);
 
 
 
-QWORD explaingpt(char* from,char* to)
+void explaingpt(char* from,char* to)
 {
 	int i=0,j=0;
 	QWORD temp;
