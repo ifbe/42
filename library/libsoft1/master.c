@@ -323,7 +323,8 @@ void command(char* buffer)
 
 //----------------------2.实际的活都找专人来干-----------------------------
 	//help
-	if(compare( arg0 , "help" ) == 0)
+	int ret=compare( arg0 , "help" );
+	if(ret==0)
 	{
 		//normal
 		diary("normal{\n");
@@ -347,6 +348,7 @@ void command(char* buffer)
 		diary("	recv ?		(print message)\n");
 		diary("	send ?		(send message)\n");
 		diary("}special\n");
+		return;
 	}
 
 /*
@@ -359,44 +361,86 @@ void command(char* buffer)
 	}
 */
 
-	//the disk
-	else if(compare( arg0 , "list" ) == 0)
+	//
+	ret=compare( arg0 , "list" );
+	if(ret==0)
 	{
 		list(arg1);
+		return;
 	}
-	else if(compare( arg0 , "into" ) == 0)
+	ret=compare( arg0 , "into" );
+	if(ret==0)
 	{
 		into(arg1);
+		return;
 	}
-	else if(compare( arg0 , "read" ) == 0)
+	ret=compare( arg0 , "read" );
+	if(ret==0)
 	{
 		directread(arg1);
+		return;
 	}
-	else if(compare( arg0 , "write" ) == 0)
-	{
-		//dangerous
+	//ret=compare( arg0 , "write" );	//dangerous
+	//if(ret==0)
+	//{
 		//directread(arg1);
-	}
-
-	//the filesystem
-	else if(compare( arg0 , "ls") == 0)
+		//return;
+	//}
+	ret=compare( arg0 , "ls");
+	if(ret==0)
 	{
 		searchthis(arg1);
+		return;
 	}
-	else if(compare( arg0 , "cd" ) == 0)
+	ret=compare( arg0 , "cd" );
+	if(ret==0)
 	{
 		cd(arg1);
+		return;
 	}
-	else if(compare( arg0 , "load" ) == 0)
+	ret=compare( arg0 , "load" );
+	if(ret==0)
 	{
 		load(arg1);
+		return;
 	}
-	else if(compare( arg0 , "store" ) == 0)
-	{
-		//dangerous
+	//ret=compare( arg0 , "store" );	//dangerous
+	//if(ret==0)
+	//{
 		//store(arg1);
-	}
+		//return;
+	//}
 
+	ret=compare( arg0 , "ldr" );
+	if(ret==0)
+	{
+		return;
+	}
+	ret=compare( arg0 , "str" );
+	if(ret==0)
+	{
+		return;
+	}
+	ret=compare( arg0 , "in" );
+	if(ret==0)
+	{
+		return;
+	}
+	ret=compare( arg0 , "out" );
+	if(ret==0)
+	{
+		return;
+	}
+	ret=compare( arg0 , "recv" );
+	if(ret==0)
+	{
+		return;
+	}
+	ret=compare( arg0 , "send" );
+	if(ret==0)
+	{
+		return;
+	}
 }
 
 
