@@ -92,7 +92,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 {
 	*data=0;
 	int i;
-	for(i=0;i<8;i++)
+	for(i=0;i<16;i++)
 	{
 		//diary("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了

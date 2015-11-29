@@ -29,9 +29,9 @@ void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
 void writescreen();
 
-void intomemory(QWORD in);
 void waitevent(QWORD* first,QWORD* second);
-QWORD whereismemory();
+void intomemory(QWORD in);
+void memoryandface();
 
 
 

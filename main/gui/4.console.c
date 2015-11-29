@@ -85,7 +85,7 @@ void background4(QWORD showaddr,QWORD temp)
 		}
 	}
 }
-printstdout(QWORD start,QWORD lastline)
+void printstdout(QWORD start,QWORD lastline)
 {
 	//总共38行，必须保证showaddr>=0x80*行数
 	int x,y;
@@ -94,7 +94,7 @@ printstdout(QWORD start,QWORD lastline)
 		string(0 , y , logbuf+start+0x80*(y-lastline));
 	}
 }
-printstdin(QWORD lastline)
+void printstdin(QWORD lastline)
 {
 	string(0,lastline,"user:");
 	string(0x5,lastline,buffer);

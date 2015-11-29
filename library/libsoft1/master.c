@@ -81,18 +81,55 @@ void hello()
 
 
 //basic function
-int directread(char* arg1)
+int readeverything(char* arg1)
 {
 	QWORD value;
+
+	//nothing specified
+	if(arg1==0)
+	{
+		printmemory( diskhome , 0x200 );
+		return -1;
+	}
+
+	//"read memory.400000"
+	value = *(QWORD*)arg1;
+	value &= 0xffffffffffffff;
+	if(value==0x2e79726f6d656d)	//'memory.\0'
+	{
+		hexstring2data(arg1+7 , &value);
+		printmemory( (char*)value , 0x200 );
+		return 1;
+	}
+
+	//default,read chosen memory/port/disk/socket...
 	hexstring2data(arg1,&value);
-	
 	readmemory(datahome,value,0,1);
 	printmemory(datahome,0x200);
-	diary("above is:%x,%x\n",value,value+7);
-	return 1;
+	diary("above is:%x\n",value);
+	return 0;
 }
-int directwrite()
+int writeeverything(char* arg1)
 {
+	QWORD value;
+
+	//nothing specified
+	if(arg1==0)
+	{
+		diary("world@%llx\n",diskhome);
+		return -1;
+	}
+
+	//"read memory.400000"
+	value = *(QWORD*)arg1;
+	value &= 0xffffffffffffff;
+	if(value==0x2e79726f6d656d)	//'memory.\0'
+	{
+		hexstring2data(arg1+7 , &value);
+		diary("%llx\n" , value);
+		return 1;
+	}
+
 	return 0;
 }
 void list(char* arg1)
@@ -327,39 +364,16 @@ void command(char* buffer)
 	if(ret==0)
 	{
 		//normal
-		diary("normal{\n");
-		diary("	list ?		(list all known)\n");
-		diary("	into ?		(choose a disk)\n");
-		diary("	read ?		(hex print a physical sector)\n");
-		diary("	write ?		(no)\n");
-		diary("	ls ?		(list file)\n");
-		diary("	cd ?		(change directory)\n");
-		diary("	load ?		(load this file)\n");
-		diary("	store ?		(store this file)\n");
-		diary("}normal\n");
-		//special
-		diary("special{\n");
-		diary("	ldr ?		(read memory)\n");
-		diary("	str ? ?		(write memory)\n");
-		diary("	in ?		(port in)\n");
-		diary("	out ? ?		(port out)\n");
-		diary("	connect ?	(to whom)\n");
-		diary("	disconnect ?	(from whom)\n");
-		diary("	recv ?		(print message)\n");
-		diary("	send ?		(send message)\n");
-		diary("}special\n");
+		diary("list ?		(list all known)\n");
+		diary("into ?		(choose a disk)\n");
+		diary("read ?		(hex print a physical sector)\n");
+		diary("write ?		(no)\n");
+		diary("ls ?		(list file)\n");
+		diary("cd ?		(change directory)\n");
+		diary("load ?		(load this file)\n");
+		diary("store ?		(store this file)\n");
 		return;
 	}
-
-/*
-	//the memory
-	else if(compare( arg0 , "readmem" ) == 0)
-	{
-	}
-	else if(compare( arg0 , "writemem" ) == 0)
-	{
-	}
-*/
 
 	//
 	ret=compare( arg0 , "list" );
@@ -377,15 +391,15 @@ void command(char* buffer)
 	ret=compare( arg0 , "read" );
 	if(ret==0)
 	{
-		directread(arg1);
+		readeverything(arg1);
 		return;
 	}
-	//ret=compare( arg0 , "write" );	//dangerous
-	//if(ret==0)
-	//{
-		//directread(arg1);
-		//return;
-	//}
+	ret=compare( arg0 , "write" );	//dangerous
+	if(ret==0)
+	{
+		writeeverything(arg1);
+		return;
+	}
 	ret=compare( arg0 , "ls");
 	if(ret==0)
 	{
@@ -410,37 +424,6 @@ void command(char* buffer)
 		//store(arg1);
 		//return;
 	//}
-
-	ret=compare( arg0 , "ldr" );
-	if(ret==0)
-	{
-		return;
-	}
-	ret=compare( arg0 , "str" );
-	if(ret==0)
-	{
-		return;
-	}
-	ret=compare( arg0 , "in" );
-	if(ret==0)
-	{
-		return;
-	}
-	ret=compare( arg0 , "out" );
-	if(ret==0)
-	{
-		return;
-	}
-	ret=compare( arg0 , "recv" );
-	if(ret==0)
-	{
-		return;
-	}
-	ret=compare( arg0 , "send" );
-	if(ret==0)
-	{
-		return;
-	}
 }
 
 

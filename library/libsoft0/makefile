@@ -1,11 +1,13 @@
 .PHONY:linux
 linux:
-	gcc -c -fPIC -O2 memory.c
-	gcc -c -fPIC -O2 stdio/0.listen.c
-	gcc -c -fPIC -O2 stdio/1.say.c
-	gcc -c -fPIC -O2 stdio/2.diary.c
-	gcc -c -fPIC -O2 linux/file.c
-	gcc -c -fPIC -O2 linux/arg.c
+	gcc -c -O2 memory.c
+	gcc -c -O2 stdio/0.listen.c
+	gcc -c -O2 stdio/1.say.c
+	gcc -c -O2 stdio/2.diary.c
+	gcc -c -O2 linux/file.c
+	gcc -c -O2 linux/arg.c
+	gcc -c -O2 x86/fp.c
+	gcc -c -O2 x86/port.c
 
 .PHONY:win
 win:

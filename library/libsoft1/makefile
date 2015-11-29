@@ -2,9 +2,8 @@ binary:
 	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 anscii/anscii.c
 	gcc -c -fPIC -O2 anscii/anscii.convert.c
-	gcc -c -fPIC -O2 math/math.c
-	gcc -c -fPIC -O2 math/math.calc.c
-	gcc -c -fPIC -O2 math/math.convert.c
+	gcc -c -fPIC -O2 calc/calc.c
+	gcc -c -fPIC -O2 calc/stack.c
 	gcc -c -fPIC -O2 partitiontable/gpt.c
 	gcc -c -fPIC -O2 partitiontable/mbr.c
 	gcc -c -fPIC -O2 ext.c
@@ -15,9 +14,8 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 master.c
 	x86_64-elf-gcc -c -fPIC -O2 anscii/anscii.c
 	x86_64-elf-gcc -c -fPIC -O2 anscii/anscii.convert.c
-	x86_64-elf-gcc -c -fPIC -O2 math/math.c
-	x86_64-elf-gcc -c -fPIC -O2 math/math.calc.c
-	x86_64-elf-gcc -c -fPIC -O2 math/math.convert.c
+	x86_64-elf-gcc -c -fPIC -O2 calc/calc.c
+	x86_64-elf-gcc -c -fPIC -O2 calc/stack.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/gpt.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/mbr.c
 	x86_64-elf-gcc -c -fPIC -O2 ext.c
@@ -28,9 +26,8 @@ linux:
 	gcc -c -fPIC -O2 master.c
 	gcc -c -fPIC -O2 anscii/anscii.c
 	gcc -c -fPIC -O2 anscii/anscii.convert.c
-	gcc -c -fPIC -O2 math/math.c
-	gcc -c -fPIC -O2 math/math.calc.c
-	gcc -c -fPIC -O2 math/math.convert.c
+	gcc -c -fPIC -O2 calc/calc.c
+	gcc -c -fPIC -O2 calc/stack.c
 	gcc -c -fPIC -O2 partitiontable/gpt.c
 	gcc -c -fPIC -O2 partitiontable/mbr.c
 	gcc -c -fPIC -O2 filesystem/ext.c
@@ -41,9 +38,8 @@ mac:
 	clang -c -fPIC -O2 master.c
 	clang -c -fPIC -O2 anscii/anscii.c
 	clang -c -fPIC -O2 anscii/anscii.convert.c
-	clang -c -fPIC -O2 math/math.c
-	clang -c -fPIC -O2 math/math.calc.c
-	clang -c -fPIC -O2 math/math.convert.c
+	clang -c -fPIC -O2 calc/calc.c
+	clang -c -fPIC -O2 calc/stack.c
 	clang -c -fPIC -O2 partitiontable/gpt.c
 	clang -c -fPIC -O2 partitiontable/mbr.c
 	clang -c -fPIC -O2 filesystem/ext.c
@@ -54,9 +50,8 @@ win:
 	gcc -c -O2 master.c
 	gcc -c -O2 anscii/anscii.c
 	gcc -c -O2 anscii/anscii.convert.c
-	gcc -c -O2 math/math.c
-	gcc -c -O2 math/math.calc.c
-	gcc -c -O2 math/math.convert.c
+	gcc -c -O2 calc/calc.c
+	gcc -c -O2 calc/stack.c
 	gcc -c -O2 partitiontable/gpt.c
 	gcc -c -O2 partitiontable/mbr.c
 	gcc -c -O2 filesystem/ext.c

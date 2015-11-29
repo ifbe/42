@@ -2,73 +2,36 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int decstring2data(char*,QWORD*);
+void initstack();
+int push(DWORD data);
+int pop(DWORD* dest);
+void initfpstack();
+int pushfp(double data);
+int popfp(double* dest);
+
+double cosine(double);
+double sine(double);
+int decstring2data(BYTE* source,QWORD* data);
 void printmemory(char*,int);
 void diary(char*,...);
 
-
-
-
 struct mathnode{
 
-	DWORD type;
-	DWORD up;
-	DWORD left;
-	DWORD right;
-	union{
-		char datasize[16];
-		double floatpoint;
-		unsigned long long integer;
-	};
+        DWORD type;
+        DWORD up;
+        DWORD left;
+        DWORD right;
+        union{
+                char datasize[16];
+                double floatpoint;
+                unsigned long long integer;
+        };
 };
 
 
 
 
-static DWORD stack[128];
-static int sp=0;
-
-
-
-
-//空栈的时候rsp值最大:		rsp=0xa0000		(sp=128)
-//满栈的时候rsp值最小:		rsp=0x90000		(sp=0)
-static void initstack()
-{
-	sp=128;
-}
-//push rax:
-//rsp-8,[rsp]=rax		(sp--,stack[sp]=data)
-static int push(DWORD data)
-{
-	//diary("push %d\n",data);
-
-	//满栈
-	if(sp==0)return 0;
-
-	//sp-1(rsp-8)，然后放下这个数字
-	sp--;
-	stack[sp]=data;
-	return 1;
-}
-//pop rax:
-//rax=[rsp],rsp+8		(data=stack[sp],sp++)
-static int pop(DWORD* dest)
-{
-	//空栈
-	if(sp>=128)return 0;
-
-	//拿出当前数字，然后sp+1(rsp+8)
-	dest[0]=stack[sp];
-	sp++;
-
-	//diary("pop %d\n",dest[0]);
-	return 1;
-}
-
-
-
-
+//-----------------------------------------------------------
 static int operatorpriority(QWORD operator)
 {
 	if(operator == '(' ) return 0;
@@ -519,4 +482,265 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 	//debug
 	printmemory((char*)node,0x20*16);
+}
+
+
+
+
+//-----------------------------------------------------------
+double calculator(char* postfix,QWORD x,QWORD y)
+{
+	int source=0;
+	int count;
+	QWORD data;
+	double first,second,temp;
+
+	initfpstack();
+	while(1)
+	{
+		//第1种：常量
+		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
+		{
+			//先拿整数部分
+			count = decstring2data( postfix+source , &data );
+			source += count;
+			first = (double)data;
+
+			//检查有没有小数部分有就加上
+			if(postfix[source] == '.')
+			{
+				//say(".@%d\n",source);
+				source++;
+				count=decstring2data( postfix+source , &data );
+
+				if(count>0)
+				{
+					source += count;
+					temp = (double)data;
+
+					while(1)
+					{
+						temp /= 10.00;
+
+						count--;
+						if(count==0)break;
+					}
+
+					//加上小数
+					first+=temp;
+				}
+
+			}
+
+			//保存这个double值
+			pushfp(first);
+		}//是数字
+
+
+
+
+		//第2种：变量
+		else if(postfix[source]=='x')
+		{
+			//pushfp((double)x);
+			source++;
+		}
+		else if(postfix[source]=='y')
+		{
+			//pushfp((double)y);
+			source++;
+		}
+		else if(postfix[source]=='z')
+		{
+			//pushfp((double)z);
+			source++;
+		}
+
+
+
+
+		//第3种：单字节符号
+		else if(postfix[source] == '+')
+		{
+			popfp(&second);
+			popfp(&first);		//注意，栈，先进后出
+			temp = first + second;
+			pushfp(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '-')
+		{
+			popfp(&second);
+			popfp(&first);
+			temp=first-second;
+			pushfp(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '*')
+		{
+			popfp(&second);
+			popfp(&first);
+			temp=first*second;
+			pushfp(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '/')
+		{
+			popfp(&second);
+			popfp(&first);
+			temp=first/second;
+			pushfp(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '^') 	//指数		x^y
+		{
+			popfp(&second);
+			popfp(&first);
+
+			temp=1.00;
+			data=(QWORD)(second+0.000001);
+			if(data!=0) while(1)
+			{
+				temp*=first;
+				data--;
+				if(data==0)break;
+			}
+			pushfp(temp);
+
+			source++;
+		}
+		else if(postfix[source] == '%') 	//取余		x%y
+		{
+			source++;
+		}
+		else if(postfix[source] == '!') 	//阶乘		x!
+		{
+			source++;
+		}
+
+
+
+
+		//第4种：多字节符号
+		else if(postfix[source] == 'l')		//对数		xlogy
+		{
+			source++;
+		}
+		else if(postfix[source] == 's')
+		{
+			//根号		ysqrty
+			//正弦		sinx
+			source++;		//下一个
+		}
+		else if(postfix[source] == 'c') 	//余弦		cosx
+		{
+			source++;		//下一个
+		}
+		else if(postfix[source] == 't') 	//正切		tanx
+		{
+			source++;		//下一个
+		}
+		else
+		{
+			source++;			//其他不认识的不管，不加会死这儿
+		}
+
+
+
+
+		//检查退出while循环
+		if(source>=128)break;
+		if(postfix[source]==0)break;
+
+
+
+
+	}//while结束
+
+	popfp(&temp);
+	return temp;
+}
+
+
+
+
+double sketchpad(struct mathnode* node,double x,double y)
+{
+	int source=1;
+	double first,second,temp;
+	double result1,result2;
+
+	result1=0;
+	initfpstack();
+	while(1)
+	{
+		if( node[source].type == 0x33323130 )	//0123...
+		{
+			pushfp(node[source].floatpoint);
+		}
+		else if( node[source].type == 'x' )
+		{
+			pushfp(x);
+		}
+		else if( node[source].type == 'y' )
+		{
+			pushfp(y);
+		}
+		else if( node[source].type == 0x2f2a2d2b )		//+-*/...
+		{
+			if( node[source].integer == '+' )
+			{
+				popfp(&second);
+				popfp(&first);            //注意，栈，先进后出
+				pushfp(first+second);
+			}
+			if( node[source].integer == '-' )
+			{
+				popfp(&second);
+				popfp(&first);            //注意，栈，先进后出
+				pushfp(first-second);
+			}
+			if( node[source].integer == '*' )
+			{
+				popfp(&second);
+				popfp(&first);            //注意，栈，先进后出
+				pushfp(first*second);
+			}
+			if( node[source].integer == '/' )
+			{
+				popfp(&second);
+				popfp(&first);            //注意，栈，先进后出
+				pushfp(first/second);
+			}
+		}
+		else if( node[source].type == 0x736f63 )	//cos
+		{
+			popfp(&first);
+			pushfp( cosine(first) );
+		}
+		else if( node[source].type == 0x6e6973 )	//sin
+		{
+			popfp(&first);
+			pushfp( sine(first) );
+		}
+		else if( node[source].type == 0x3d)	//=
+		{
+			popfp(&result1);
+		}
+		else if(node[source].type == 0)
+		{
+			popfp(&result2);
+			result2-=result1;
+			break;
+		}
+
+		//
+		source++;
+	}
+
+	return result2;
 }

@@ -1,7 +1,14 @@
+#cd ____androidcode____
+#source ____build/envsetup.sh____
+#lunch ____devicename____
+#ln -s ____fullpathofthis____ ____linkname____
+#mm ____linkname____
+#adb root
+#adb remount
+#adb push androidcode/out/target/product/devicename/system/bin/haha /system/bin/
+
 LOCAL_PATH:= $(call my-dir)
-
 include $(CLEAR_VARS)
-
 LOCAL_SRC_FILES := main/cli.c \
 	library/libsoft0/stdio/0.listen.c \
 	library/libsoft0/stdio/1.say.c \
@@ -24,10 +31,8 @@ LOCAL_SRC_FILES := main/cli.c \
 	library/libui1/menu/menu.c \
 	library/libui1/text/anscii.c \
 	library/librarian.c
-LOCAL_SHARED_LIBRARIES += \
-	liblog libcutils libc
+LOCAL_SHARED_LIBRARIES += libc
+LOCAL_LDFLAGS := -Wl,--hash-style=sysv
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := haha
-
 include $(BUILD_EXECUTABLE)
-
