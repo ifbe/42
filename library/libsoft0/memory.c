@@ -26,6 +26,8 @@ void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 //listen,say,diary,and
 void initlisten(char*);
 void initsay(char*);
+void initdiary(char*);
+void inithidgoty(char*);
 
 
 
@@ -36,6 +38,8 @@ void initmemory(char* memory)
 
 	initlisten(  memory+0x400000 );
 	initsay( memory+0x500000 );
+	initdiary(  memory+0x600000 );
+	inithistory( memory+0x700000 );
 }
 void killmemory()
 {

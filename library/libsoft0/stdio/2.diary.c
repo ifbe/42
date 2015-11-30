@@ -4,6 +4,10 @@
 #define QWORD unsigned long long
 #include<stdarg.h>
 #include<stdio.h>
+static char* diarybuf=0;
+void initdiary()
+{
+}
 
 
 
@@ -19,7 +23,7 @@ void diary(char* fmt , ...)
 
 
 
-void printmemory(QWORD addr,QWORD size)
+void printmemory(QWORD addr,int size)
 {
 //debug用，打印从addr开始的总共size个字节
 	BYTE* printaddr=(BYTE*)addr;

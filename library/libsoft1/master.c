@@ -81,14 +81,14 @@ void hello()
 
 
 //basic function
-int readeverything(char* arg1)
+static int masterread(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		printmemory( diskhome , 0x200 );
+		diary("masterread@%llx,world@%llx\n",masterread,diskhome);
 		return -1;
 	}
 
@@ -106,17 +106,17 @@ int readeverything(char* arg1)
 	hexstring2data(arg1,&value);
 	readmemory(datahome,value,0,1);
 	printmemory(datahome,0x200);
-	diary("above is:%x\n",value);
+	diary("above is:%llx\n",value);
 	return 0;
 }
-int writeeverything(char* arg1)
+static int masterwrite(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		diary("world@%llx\n",diskhome);
+		diary("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
 		return -1;
 	}
 
@@ -132,7 +132,7 @@ int writeeverything(char* arg1)
 
 	return 0;
 }
-void list(char* arg1)
+static void masterlist(char* arg1)
 {
 	int i;
 	char* targetaddr=diskhome;
@@ -182,7 +182,7 @@ void list(char* arg1)
 		}
 	}//for
 }
-void into(char* arg)
+static void masterinto(char* arg)
 {
 	int i=0;
 	int ret=0;
@@ -259,13 +259,13 @@ void into(char* arg)
 
 
 //filesystem function
-int searchthis(char* name)
+static int ls(char* name)
 {
 	//ls
 	int temp=0;
 	if(name==0)
 	{
-		list("file");
+		masterlist("file");
 		return 1;
 	}
 
@@ -288,20 +288,20 @@ int searchthis(char* name)
 	diary("file not found\n");
 	return -1;
 }
-int cd(char* arg1)
+static int cd(char* arg1)
 {
 	int ret;
 	QWORD id;
 
 	//search
-	ret=searchthis(arg1);
+	ret=ls(arg1);
 	if( ret<0 )return ret;		//没找到
 
 	//change directory
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
 	return fscd(id);
 }
-int load(char* arg1)
+static int load(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
 	int ret;
@@ -309,7 +309,7 @@ int load(char* arg1)
 	QWORD size;
 	QWORD temp;
 
-	ret=searchthis(arg1);
+	ret=ls(arg1);
 	if( ret==0 )return -1;
 
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
@@ -331,7 +331,7 @@ int load(char* arg1)
 	}
 	return 0;
 }
-int explain(char* arg1)
+static int explain(char* arg1)
 {
 	QWORD value;
 	hexstring2data(arg1,&value);
@@ -379,31 +379,31 @@ void command(char* buffer)
 	ret=compare( arg0 , "list" );
 	if(ret==0)
 	{
-		list(arg1);
+		masterlist(arg1);
 		return;
 	}
 	ret=compare( arg0 , "into" );
 	if(ret==0)
 	{
-		into(arg1);
+		masterinto(arg1);
 		return;
 	}
 	ret=compare( arg0 , "read" );
 	if(ret==0)
 	{
-		readeverything(arg1);
+		masterread(arg1);
 		return;
 	}
 	ret=compare( arg0 , "write" );	//dangerous
 	if(ret==0)
 	{
-		writeeverything(arg1);
+		masterwrite(arg1);
 		return;
 	}
 	ret=compare( arg0 , "ls");
 	if(ret==0)
 	{
-		searchthis(arg1);
+		ls(arg1);
 		return;
 	}
 	ret=compare( arg0 , "cd" );
