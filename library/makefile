@@ -1,5 +1,5 @@
-linux:
-	make -s -C libsoft0 linux
+x86+linux:
+	make -s -C libsoft0 x86+linux
 	make -s -C libsoft1 linux
 	make -s -C libui0 linux
 	make -s -C libui1 linux
@@ -9,8 +9,8 @@ linux:
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
-mac:
-	make -s -C libsoft0 mac
+x86+mac:
+	make -s -C libsoft0 x86+mac
 	make -s -C libsoft1 mac
 	make -s -C libui0 mac
 	make -s -C libui1 mac
@@ -20,8 +20,8 @@ mac:
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
-win:
-	make -s -C libsoft0 win
+x86+win:
+	make -s -C libsoft0 x86+win
 	make -s -C libsoft1 win
 	make -s -C libui0 win
 	make -s -C libui1 win

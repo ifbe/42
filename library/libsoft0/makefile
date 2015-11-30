@@ -1,7 +1,8 @@
-.PHONY:linux
-linux:
+.PHONY:x86+linux
+x86+linux:
 	gcc -c -O2 x86/fp.c
 	gcc -c -O2 x86/port.c
+	gcc -c -O2 x86/special.c
 	gcc -c -O2 stdio/0.listen.c
 	gcc -c -O2 stdio/1.say.c
 	gcc -c -O2 stdio/2.diary.c

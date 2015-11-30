@@ -27,7 +27,7 @@ void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void initlisten(char*);
 void initsay(char*);
 void initdiary(char*);
-void inithidgoty(char*);
+void inithistory(char*);
 
 
 

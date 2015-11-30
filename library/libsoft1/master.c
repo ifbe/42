@@ -19,6 +19,8 @@ int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+int platformread(char*);
+int platformwrite(char*);
 int say(char* str,...);		//+1
 int diary(char* str,...);	//+2
 int history(char* str,...);	//+3
@@ -92,22 +94,26 @@ static int masterread(char* arg1)
 		return -1;
 	}
 
-	//"read memory.400000"
-	value = *(QWORD*)arg1;
-	value &= 0xffffffffffffff;
-	if(value==0x2e79726f6d656d)	//'memory.\0'
+	//what is it
+	value=0;
+	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
+	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
+	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
 	{
-		hexstring2data(arg1+7 , &value);
-		printmemory( (char*)value , 0x200 );
-		return 1;
+		if( arg1[0] < 'a' )value++;
 	}
 
 	//default,read chosen memory/port/disk/socket...
-	hexstring2data(arg1,&value);
-	readmemory(datahome,value,0,1);
-	printmemory(datahome,0x200);
-	diary("above is:%llx\n",value);
-	return 0;
+	if(value==0)
+	{
+		hexstring2data(arg1,&value);
+		readmemory(datahome,value,0,1);
+		printmemory(datahome,0x200);
+		diary("above is:%llx\n",value);
+		return 0;
+	}
+
+	else return platformread(arg1);
 }
 static int masterwrite(char* arg1)
 {
@@ -120,17 +126,23 @@ static int masterwrite(char* arg1)
 		return -1;
 	}
 
-	//"read memory.400000"
-	value = *(QWORD*)arg1;
-	value &= 0xffffffffffffff;
-	if(value==0x2e79726f6d656d)	//'memory.\0'
+	//what is it
+	value=0;
+	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
+	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
+	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
 	{
-		hexstring2data(arg1+7 , &value);
-		diary("%llx\n" , value);
-		return 1;
+		if( arg1[0] < 'a' )value++;
 	}
 
-	return 0;
+	//"read memory.400000"
+	if(value==0)
+	{
+		diary("no!i won't write!\n");
+		return 0;
+	}
+
+	else return platformwrite(arg1);
 }
 static void masterlist(char* arg1)
 {
