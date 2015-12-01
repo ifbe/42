@@ -14,38 +14,38 @@ x86+linux:
 	make -s -C library x86+linux
 	gcc main/main.a library/library.a \
 	-o a.out
-mac:
+x86+mac:
 	make -s -C main cli
-	make -s -C library mac
+	make -s -C library x86+mac
 	clang main/main.a library/library.a \
 	-o a.out
-win:
+x86+win:
 	make -s -C main cli
-	make -s -C library win
+	make -s -C library x86+win
 	gcc main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
 
 
 
 
-linux+fb:
+x86+linux+fb:
 	make -s -C main gui
 	make -s -C library linux+fb
 	gcc main/main.a library/library.a \
 	-o a.out
-linux+xlib:
+x86+linux+xlib:
 	make -s -C main gui
 	make -s -C library linux+xlib
 	gcc main/main.a library/library.a \
 	-lX11 \
 	-o a.out
-linux+sdl:
+x86+linux+sdl:
 	make -s -C main gui
 	make -s -C library linux+sdl
 	gcc main/main.a library/library.a \
 	-lSDL2 -lm \
 	-o a.out
-linux+web:
+x86+linux+web:
 	make -s -C main gui
 	make -s -C library linux+web
 	gcc \
@@ -55,7 +55,7 @@ linux+web:
 
 
 
-mac+sdl:
+x86+mac+sdl:
 	make -s -C main cli
 	make -s -C library mac+sdl
 	clang main/main.a library/library.a \
@@ -66,7 +66,7 @@ mac+sdl:
 
 
 
-win+api:
+x86+win+api:
 	make -s -C main gui
 	make -s -C library win+api
 	#gcc -o a.exe libsoft0/uac.res \
@@ -75,7 +75,7 @@ win+api:
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-lgdi32 \
 	-o a.exe
-win+sdl:
+x86+win+sdl:
 	make -s -C main gui
 	make -s -C library win+sdl
 	gcc -mwindows \
@@ -87,7 +87,7 @@ win+sdl:
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
 	-lshell32 -lversion -luuid \
 	-o a.exe
-win+web:
+x86+win+web:
 	make -s -C main gui
 	make -s -C library win+web
 	gcc -mwindows \

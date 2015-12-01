@@ -2,19 +2,13 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-BYTE in8(WORD portaddr);
-WORD in16(WORD portaddr);
-DWORD in32(WORD portaddr);
-void out8(WORD port,BYTE val);
-void out16(WORD port,WORD val);
-void out32(WORD port,DWORD val);
 void diary(char* fmt , ...);
 void printmemory(char*,int);
 
 
 
 
-static int myownstr2data(BYTE* source,QWORD* data)
+static int myownstr2data(char* source,QWORD* data)
 {
 	*data=0;
 	int i;
@@ -48,7 +42,7 @@ int platformread(char* arg)
 	//read memory
 	addr = *(QWORD*)arg;
 	addr &= 0xffffffffffff;
-	if(addr==0x2e79726f6d656d)	//'memory'
+	if(addr==0x79726f6d656d)	//'memory'
 	{
 		if( arg[6] == '.' )	//memory.400000
 		{
@@ -64,19 +58,19 @@ int platformread(char* arg)
 		return -100;
 	}
 
-	//read port
+	//read gpio
 	addr = *(DWORD*)arg;
-	if(addr==0x74726f70)
+	if(addr==0x6f697067)
 	{
-		if( arg[4] == '.' )	//port.70
+		if( arg[4] == '.' )	//gpio.70
 		{
 			myownstr2data(arg+7 , &addr);
-			diary( "[%x]=%x" , addr , in8(addr) );
+			diary( "gpio.%x\n" , addr );
 			return 3;
 		}
-		else if( arg[4] == '[' )	//port[cf8,cfb]
+		else if( arg[4] == '[' )	//gpio[cf8,cfb]
 		{
-			diary("read port[?,?]\n");
+			diary("gpio[?,?]\n");
 			return 4;
 		}
 		return -200;
@@ -91,10 +85,12 @@ int platformwrite(char* arg)
 	//write memory[x,y]=what
 	value = *(QWORD*)arg;
 	value &= 0xffffffffffffff;	//clear byte7 for cmp
-	if(value==0x2e79726f6d656d)	//'memory'
+	if(value==0x79726f6d656d)	//'memory'
 	{
 		myownstr2data(arg+7 , &addr);
 		diary("[%llx]\n" , addr);
 		return 1;
 	}
+
+	return -10000;
 }
