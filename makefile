@@ -9,17 +9,17 @@ what:
 	@echo "make qemu:    test with qemu"
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
-x86+linux:
+x86+linux+cli:
 	make -s -C main cli
 	make -s -C library x86+linux
 	gcc main/main.a library/library.a \
 	-o a.out
-x86+mac:
+x86+mac+cli:
 	make -s -C main cli
 	make -s -C library x86+mac
 	clang main/main.a library/library.a \
 	-o a.out
-x86+win:
+x86+win+cli:
 	make -s -C main cli
 	make -s -C library x86+win
 	gcc main/main.a library/library.a library/libsoft0/uac.res \

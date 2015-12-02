@@ -23,8 +23,8 @@
 #define BYTE unsigned char
 void diary(char* fmt,...);
 
-static BYTE* diskinfo;
 static int thisfd=-1;
+static char* diskinfo;
 static char diskname[0x20]={'/','d','e','v','/','s','d','a','\0','\0'};
 
 

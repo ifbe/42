@@ -19,30 +19,30 @@ include $(CLEAR_VARS)
 #1.source file
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES := \
-	library/libsoft0/x86/fp.c \
-	library/libsoft0/x86/port.c \
-	library/libsoft0/x86/platform.c
+	library/libhard0/x86/x86.fp.c \
+	library/libhard0/x86/x86.port.c \
+	library/libhard0/x86/x86.platform.c
 endif
 ifeq ($(TARGET_ARCH),arm64)
-LOCAL_SRC_FILES := library/libsoft0/arm/platform.c
+LOCAL_SRC_FILES := library/libhard0/arm/arm.platform.c
 endif
 
 #1.1 source file
 LOCAL_SRC_FILES += \
-	library/libsoft0/linux/file.c \
-	library/libsoft0/linux/arg.c \
+	library/libsoft0/linux/linux.file.c \
+	library/libsoft0/linux/linux.arg.c \
 	library/libsoft0/stdio/0.listen.c \
 	library/libsoft0/stdio/1.say.c \
 	library/libsoft0/stdio/2.diary.c \
 	library/libsoft0/stdio/3.history.c \
 	library/libsoft0/memory.c \
 	library/libsoft1/anscii/anscii.c \
-	library/libsoft1/filesystem/ext.c \
-	library/libsoft1/filesystem/fat.c \
-	library/libsoft1/filesystem/hfs.c \
-	library/libsoft1/filesystem/ntfs.c \
-	library/libsoft1/partitiontable/gpt.c \
-	library/libsoft1/partitiontable/mbr.c \
+	library/libsoft1/filesystem/fs.ext.c \
+	library/libsoft1/filesystem/fs.fat.c \
+	library/libsoft1/filesystem/fs.hfs.c \
+	library/libsoft1/filesystem/fs.ntfs.c \
+	library/libsoft1/partitiontable/pt.gpt.c \
+	library/libsoft1/partitiontable/pt.mbr.c \
 	library/libsoft1/master.c \
 	library/libui0/console/console.c \
 	library/libui1/draw/background.c \

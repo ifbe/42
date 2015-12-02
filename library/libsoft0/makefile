@@ -1,11 +1,7 @@
-.PHONY:x86+linux
-x86+linux:
-	gcc -c -O2 x86/x86.endian.c
-	gcc -c -O2 x86/x86.fp.c
-	gcc -c -O2 x86/x86.platform.c
-	gcc -c -O2 x86/x86.port.c
-	gcc -c -O2 linux/linux.file.c
+.PHONY:linux
+linux:
 	gcc -c -O2 linux/linux.arg.c
+	gcc -c -O2 linux/linux.file.c
 	gcc -c -O2 stdio/0.listen.c
 	gcc -c -O2 stdio/1.say.c
 	gcc -c -O2 stdio/2.diary.c
@@ -15,9 +11,9 @@ x86+linux:
 .PHONY:win
 win:
 	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	gcc -c -O2 win/win.arg.c
 	gcc -c -O2 win/win.file.c
 	gcc -c -O2 win/win.process.c
-	gcc -c -O2 win/win.arg.c
 	gcc -c -O2 stdio/0.listen.c
 	gcc -c -O2 stdio/1.say.c
 	gcc -c -O2 stdio/2.diary.c
