@@ -11,17 +11,17 @@ what:
 	@echo "----------------please choose one example above----------------"
 x86+linux+cli:
 	make -s -C main cli
-	make -s -C library x86+linux
+	make -s -C library x86+linux+cli
 	gcc main/main.a library/library.a \
 	-o a.out
 x86+mac+cli:
 	make -s -C main cli
-	make -s -C library x86+mac
+	make -s -C library x86+mac+cli
 	clang main/main.a library/library.a \
 	-o a.out
 x86+win+cli:
 	make -s -C main cli
-	make -s -C library x86+win
+	make -s -C library x86+win+cli
 	gcc main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
 
@@ -30,24 +30,24 @@ x86+win+cli:
 
 x86+linux+fb:
 	make -s -C main gui
-	make -s -C library linux+fb
+	make -s -C library x86+linux+fb
 	gcc main/main.a library/library.a \
 	-o a.out
 x86+linux+xlib:
 	make -s -C main gui
-	make -s -C library linux+xlib
+	make -s -C library x86+linux+xlib
 	gcc main/main.a library/library.a \
 	-lX11 \
 	-o a.out
 x86+linux+sdl:
 	make -s -C main gui
-	make -s -C library linux+sdl
+	make -s -C library x86+linux+sdl
 	gcc main/main.a library/library.a \
 	-lSDL2 -lm \
 	-o a.out
 x86+linux+web:
 	make -s -C main gui
-	make -s -C library linux+web
+	make -s -C library x86+linux+web
 	gcc \
 	main/main.a library/library.a \
 	-o a.out
@@ -57,7 +57,7 @@ x86+linux+web:
 
 x86+mac+sdl:
 	make -s -C main cli
-	make -s -C library mac+sdl
+	make -s -C library x86+mac+sdl
 	clang main/main.a library/library.a \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm \
@@ -68,16 +68,14 @@ x86+mac+sdl:
 
 x86+win+api:
 	make -s -C main gui
-	make -s -C library win+api
-	#gcc -o a.exe libsoft0/uac.res \
-	#gcc -o a.exe \
+	make -s -C library x86+win+api
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-lgdi32 \
 	-o a.exe
 x86+win+sdl:
 	make -s -C main gui
-	make -s -C library win+sdl
+	make -s -C library x86+win+sdl
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
@@ -89,7 +87,7 @@ x86+win+sdl:
 	-o a.exe
 x86+win+web:
 	make -s -C main gui
-	make -s -C library win+web
+	make -s -C library x86+win+web
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
