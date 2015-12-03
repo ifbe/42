@@ -3,6 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 #include<stdio.h>
+#include<stdarg.h>
 #include<stdlib.h>
 char* outbuf=0;
 void initsay(char* addr)
@@ -13,9 +14,24 @@ void initsay(char* addr)
 
 
 
-void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
+void say(char* fmt , ...)
 {
-	int start=0;
+	QWORD offsety=*(DWORD*)(outbuf+0xffff0);
+        va_list args;
+
+        va_start(args,fmt);
+	snprintf(outbuf+offsety,0x21,"[doctor@tardis]                 ");
+        vsnprintf(outbuf+offsety+0x20,0x80,fmt,args);
+        va_end(args);
+
+	*(DWORD*)(outbuf+0xffff0)+=0x80;
+}
+
+
+
+
+
+/*	int start=0;
 	int temp=0;
 	QWORD offsety;
 	QWORD offsetx;
@@ -48,4 +64,4 @@ void say(char* rcx,QWORD rdx,QWORD r8,QWORD r9)
 		}
 		temp++;
 	}
-}
+}*/

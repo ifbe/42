@@ -13,8 +13,10 @@ void cleanscreen();
 int compare(char* first,char* second);
 void command(char* in);
 
-unsigned int* whereispalette();
+void say(char*,...);
+void diary(char*,...);
 char* whereismemory();
+unsigned int* whereispalette();
 
 
 
@@ -61,9 +63,9 @@ void background4()
 	}
 
 	//滚动框颜色
-	for(y=0;y<384;y++)
+	for(y=0;y<resolutiony/2;y++)
 	{
-		color = y*0xff/384;//0x44444488;
+		color = y*0xff/resolutiony;//0x44444488;
 
 		for(x=1024-16;x<1024;x++)
 		{
@@ -75,18 +77,18 @@ void background4()
 		}
 	}
 }
-void printposition(int showaddr,int count,int max)
+void printposition(int start,int count,int max)
 {
 	//位置
 	int x,y;
-	diary("printposition:%d,%d\n",showaddr,count);
+	if(max<0x80*45)return;
 
-	count=count*0x80;
-	if(count<0x80*48)return;
+	//显示区大小/总大小
+	QWORD top=resolutiony*start/max;
+	QWORD bottom=resolutiony*(start+0x80*count)/max;//temp变量=max
+	diary("printposition:%x,%x\n",top,bottom);
 
-	QWORD start=640*showaddr/max;
-	QWORD end=640*(showaddr+count)/max;			//temp变量=max
-	for(y=start;y<end;y++)
+	for(y=top;y<bottom;y++)
 	{
 		for(x=1024-16+4;x<1024-4;x++)
 		{
@@ -96,11 +98,11 @@ void printposition(int showaddr,int count,int max)
 }
 void printstdout(int start,int count)
 {
-	//总共38行，必须保证showaddr>=0x80*行数
+	//总共38行，必须保证start>=0x80*行数
 	int x,y;
 	char* p=logbuf+start;
-	diary("printstdout:%d,%d\n",start,count);
-	for(y=0;y<count*0x80;y++)
+	//diary("printstdout:%d,%d\n",start,count);
+	for(y=0;y<count;y++)
 	{
 		string(0 , y , p + y * 0x80);
 	}
@@ -113,10 +115,10 @@ void printstdin(int count)
 void f4show()
 {
 	//显示哪儿开始的一块
-	int count=(resolutiony/16) - 2 - 1;		//-windowtitle -mathproblem
+	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
 	int enqueue=*(DWORD*)(logbuf+0xffff0);
 
-	int start=enqueue-backward;				//代表末尾位置而不是开头
+	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
 	if( start<0 )start=0;
 
 	//背景(start,end)
@@ -132,7 +134,7 @@ void f4message(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'kbd'
 	{
-		if(key==0x8)			//backspace
+		if(key==0x8)		//backspace
 		{
 			if(bufcount!=0)
 			{
@@ -170,7 +172,7 @@ void f4message(QWORD type,QWORD key)
 		DWORD enqueue=*(DWORD*)(logbuf+0xffff0);
 		if(enqueue>=0x80*40)		//大于一页才准上翻
 		{
-			if(backward<enqueue-0x80*40)	//还没翻到头才能继续翻
+			if(backward<enqueue-0x80*40)	//没到头才能继续
 			{
 				backward+=0x80;
 			}

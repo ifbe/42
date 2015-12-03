@@ -2,8 +2,8 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-#include<stdarg.h>
 #include<stdio.h>
+#include<stdarg.h>
 static char* diarybuf=0;
 void initdiary()
 {
