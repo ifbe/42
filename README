@@ -25,5 +25,5 @@
   /  libhard0  \            /   lbsoft0  \            /   libui0   \      
  /              \          /              \          /               \    
 /   /  |    \    \        /   /  |    \    \        /   /  |    \     \   
-arm x86 mips ......   linux mac win android ios  linux mac win android ios
+arm x86 mips ......   linux mac win android ios  cli fb xlib winapi sdl...
 -----------------------------------------------------------------------------
