@@ -29,9 +29,12 @@ void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
 void writescreen();
 
+void listmemory();
+void intomemory(char* in);
+
 void waitevent(QWORD* first,QWORD* second);
-void intomemory(QWORD in);
 void memoryandface();
+void cleanall();
 
 
 
@@ -121,7 +124,7 @@ void processmessage(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)		//dropfile
 	{
 		//diary("debuging::::::::%s\n",(char*)key);
-		intomemory(key);
+		intomemory((char*)key);
 		return;
 	}
 	//else if(type==)		//xychange
@@ -218,10 +221,10 @@ void main()
 		QWORD key=0;
 		waitevent(&type,&key);
 		if(type==0)return;
-		//diary("type=%x,key=%x\n",type,key);
 
 		//3.处理事件，如果要求自杀就让它死
 		processmessage(type,key);
 		if(living==0)return;
 	}
+	cleanall();
 }

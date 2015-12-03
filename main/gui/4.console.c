@@ -21,6 +21,8 @@ char* whereismemory();
 
 //palette
 static unsigned int*  palette=0;
+static int resolutionx;
+static int resolutiony=768;
 
 //log位置
 static char* logbuf=0;
@@ -37,7 +39,7 @@ static int bufcount=0;
 
 
 
-void background4(QWORD showaddr,QWORD temp)
+void background4()
 {
 	//用指定颜色清屏
 	DWORD x,y,color;
@@ -47,6 +49,7 @@ void background4(QWORD showaddr,QWORD temp)
 		palette[x]=0;
 	}
 
+	//输入框颜色
 	for(y=768-16;y<768;y++)
 	{
 		for(x=0;x<512;x++)
@@ -57,6 +60,7 @@ void background4(QWORD showaddr,QWORD temp)
 		}
 	}
 
+	//滚动框颜色
 	for(y=0;y<384;y++)
 	{
 		color = y*0xff/384;//0x44444488;
@@ -70,51 +74,59 @@ void background4(QWORD showaddr,QWORD temp)
 			palette[((767-y)*1024) + x] = color;
 		}
 	}
-
+}
+void printposition(int showaddr,int count,int max)
+{
 	//位置
-	if(temp>=0x80*40)
+	int x,y;
+	diary("printposition:%d,%d\n",showaddr,count);
+
+	count=count*0x80;
+	if(count<0x80*48)return;
+
+	QWORD start=640*showaddr/max;
+	QWORD end=640*(showaddr+count)/max;			//temp变量=max
+	for(y=start;y<end;y++)
 	{
-		QWORD end=64+(640-64*2)*showaddr/temp;			//temp变量=max
-		QWORD start=end-(640-64*2)*0x80*40/temp;
-		for(y=start;y<end;y++)
+		for(x=1024-16+4;x<1024-4;x++)
 		{
-			for(x=1024-16+4;x<1024-4;x++)
-			{
-				palette[(y*1024) + x] = 0x01234567;
-			}
+			palette[(y*1024) + x] = 0x01234567;
 		}
 	}
 }
-void printstdout(QWORD start,QWORD lastline)
+void printstdout(int start,int count)
 {
 	//总共38行，必须保证showaddr>=0x80*行数
 	int x,y;
-	for(y=0;y<lastline;y++)
+	char* p=logbuf+start;
+	diary("printstdout:%d,%d\n",start,count);
+	for(y=0;y<count*0x80;y++)
 	{
-		string(0 , y , logbuf+start+0x80*(y-lastline));
+		string(0 , y , p + y * 0x80);
 	}
 }
-void printstdin(QWORD lastline)
+void printstdin(int count)
 {
-	string(0,lastline,"user:");
-	string(0x5,lastline,buffer);
+	string(0,count,"user:");
+	string(0x5,count,buffer);
 }
-
 void f4show()
 {
 	//显示哪儿开始的一块
-	int resolutiony=768;
-	int lastline=(resolutiony/16) - 2 - 1;		//-windowtitle -mathproblem
-	DWORD enqueue=*(DWORD*)(logbuf+0xffff0);
-	QWORD start=enqueue-backward;				//代表末尾位置而不是开头
-	if(start<0x80*lastline)start=0x80*lastline;
+	int count=(resolutiony/16) - 2 - 1;		//-windowtitle -mathproblem
+	int enqueue=*(DWORD*)(logbuf+0xffff0);
+
+	int start=enqueue-backward;				//代表末尾位置而不是开头
+	if( start<0 )start=0;
 
 	//背景(start,end)
-	background4(start,enqueue);
+	background4();
 
-	printstdout(start,lastline);
+	printposition(start,count,enqueue);
 
-	printstdin(lastline);
+	printstdout(start,count);
+
+	printstdin(count);
 }
 void f4message(QWORD type,QWORD key)
 {
@@ -135,10 +147,14 @@ void f4message(QWORD type,QWORD key)
 				die();
 				return;
 			}
-			else command(buffer);
+			else
+			{
+				say("%s\n",buffer);
+				command(buffer);
 
-			for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
-			bufcount=0;
+				for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
+				bufcount=0;
+			}
 		}
 		else
 		{
