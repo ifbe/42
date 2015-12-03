@@ -9,6 +9,11 @@ what:
 	@echo "make qemu:    test with qemu"
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
+arm+linux+cli:
+	make -s -C main cli
+	make -s -C library arm+linux+cli
+	gcc main/main.a library/library.a \
+	-o a.out
 x86+linux+cli:
 	make -s -C main cli
 	make -s -C library x86+linux+cli
