@@ -31,7 +31,7 @@ x86+mac+cli:
 	make -s -C libhard1 clang
 	make -s -C libsoft0 mac
 	make -s -C libsoft1 clang
-	make -s -C libui0 mac
+	make -s -C libui0 cli
 	make -s -C libui1 clang
 	clang -c librarian.c
 	rm -f library.a
@@ -45,7 +45,7 @@ x86+win+cli:
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 win
 	make -s -C libsoft1 gcc
-	make -s -C libui0 win
+	make -s -C libui0 cli
 	make -s -C libui1 gcc
 	gcc -c -O2 librarian.c
 	rm -f library.a
