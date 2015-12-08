@@ -24,7 +24,7 @@ void keyboardshow()
 		}
 	}
 
-	//∫·œﬂ
+	//
 	for(y=64;y<512;y+=64)
 	{
 		for(x=0;x<1024;x++)
@@ -33,7 +33,7 @@ void keyboardshow()
 		}
 	}
 
-	// ˙œﬂ
+	//
 	for(x=64;x<1024;x++)
 	{
 		for(y=0;y<512;y++)

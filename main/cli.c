@@ -5,7 +5,7 @@
 int command(char* buffer);
 int compare(char* first,char* second);
 int waitinput(char*);
-int onlymemory();
+int worldandmemory();
 int cleanall();
 
 
@@ -14,7 +14,7 @@ int cleanall();
 static char buffer[128];//键盘输入专用
 int main()
 {
-	onlymemory();
+	worldandmemory();
 
 	while(1)
 	{

@@ -15,7 +15,7 @@ void command(char* in);
 
 void say(char*,...);
 void diary(char*,...);
-char* whereismemory();
+char* whereisworld();
 unsigned int* whereispalette();
 
 
@@ -195,7 +195,7 @@ void f4init()
 {
 	if(logbuf==0)
 	{
-		logbuf=whereismemory()+0x500000;
+		logbuf=whereisworld()+0x100000;
 		palette=whereispalette();
 	}
 	else	//不是第一次进来了

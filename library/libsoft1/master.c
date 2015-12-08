@@ -258,7 +258,7 @@ static void masterinto(char* arg)
 	}
 
 	//如果
-	cleanmemory(dirhome,0x300000);
+	cleanmemory(diskhome+0x100000,0x200000);
 	intomemory(arg);
 	hello();
 }

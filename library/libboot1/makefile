@@ -3,5 +3,6 @@ gcc:
 	gcc -c -O2 1.say.c
 	gcc -c -O2 2.diary.c
 	gcc -c -O2 3.history.c
+	gcc -c -O2 std.c
 clean:
 	rm -f *.o *.a *.res
