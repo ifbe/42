@@ -10,13 +10,11 @@ gcc:
 	gcc -c -O2 palette.c
 	gcc -c -O2 draw/background.c
 	gcc -c -O2 draw/shape.c
-	gcc -c -O2 menu/menu.c
 	gcc -c -O2 text/anscii.c
 clang:
 	clang -c -O2 palette.c
 	clang -c -O2 draw/background.c
 	clang -c -O2 draw/shape.c
-	clang -c -O2 menu/menu.c
 	clang -c -O2 text/anscii.c
 clean:
 	rm -f *.o *.a

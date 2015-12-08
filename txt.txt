@@ -1,0 +1,604 @@
+
+none.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000000 T helloworld
+
+0.listen.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U __imp___iob_func
+                 U fgets
+0000000000000000 T initlisten
+0000000000000000 B listenbuf
+0000000000000010 T waitinput
+
+1.say.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U __ms_vsnprintf
+0000000000000030 T initsay
+0000000000000000 B outbuf
+0000000000000040 T say
+0000000000000000 t snprintf.constprop.0
+
+2.diary.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000010 T diary
+0000000000000000 T initdiary
+0000000000000040 T printmemory
+                 U vprintf
+
+3.history.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000000 T inithistory
+
+x86.endian.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000000 T bswap16
+0000000000000010 T bswap32
+0000000000000020 T bswap64
+
+x86.fp.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000000 T absolute
+0000000000000170 T acos
+00000000000000f0 T arcworker
+0000000000000120 T asin
+00000000000001c0 T atan
+0000000000000490 T beautifulbetween
+00000000000000a0 T cosine
+0000000000000300 T f2xm1
+0000000000000020 T floor
+00000000000002c0 T fscale
+0000000000000450 T huanyuan
+0000000000000380 T kexuejishufa
+0000000000000220 T lg
+0000000000000250 T ln
+00000000000001f0 T log2
+0000000000000280 T logarithm
+0000000000000330 T power
+0000000000000080 T sine
+0000000000000060 T squareroot
+00000000000000c0 T tan
+
+x86.platform.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U diary
+                 U in8
+0000000000000000 t myownstr2data
+0000000000000090 T platformread
+0000000000000190 T platformwrite
+                 U printmemory
+
+x86.port.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000010 T in16
+0000000000000020 T in32
+0000000000000000 T in8
+0000000000000040 T out16
+0000000000000050 T out32
+0000000000000030 T out8
+
+usbstack.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+
+memory.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000080 T cleanmemory
+00000000000000c0 T cleverread
+                 U initdiary
+                 U initfile
+                 U inithistory
+                 U initlisten
+0000000000000000 T initmemory
+                 U initsay
+                 U intofile
+0000000000000070 T intomemory
+                 U killfile
+0000000000000050 T killmemory
+                 U listfile
+0000000000000060 T listmemory
+                 U readfile
+00000000000000b0 T readmemory
+00000000000000a0 T writememory
+
+win.arg.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U __imp___iob_func
+                 U __imp_AllocConsole
+                 U __imp_GetCommandLineA
+0000000000000000 T explainarg
+                 U freopen
+0000000000000000 b mystring
+                 U printmemory
+                 U strncpy
+
+win.file.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 i .drectve
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U __imp_CloseHandle
+                 U __imp_CreateFileA
+                 U __imp_DeviceIoControl
+                 U __imp_GetFileSizeEx
+                 U __imp_GetLastError
+                 U __imp_ReadFile
+                 U __imp_SetFilePointer
+                 U __imp_WriteFile
+                 U diary
+0000000000000410 T file2mem
+0000000000000000 t getsize.part.0
+0000000000000008 C hDev
+0000000000000420 T initfile
+00000000000001a0 T intofile
+0000000000000430 T killfile
+0000000000000070 T listfile
+0000000000000350 T mem2file
+0000000000000008 C memoryinfo
+                 U printf
+00000000000002c0 T readfile
+0000000000000000 d tempname
+0000000000000340 T writefile
+
+win.process.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 i .drectve
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U __imp_CloseHandle
+                 U __imp_ReadProcessMemory
+                 U CreateToolhelp32Snapshot
+0000000000000008 C hDev
+0000000000000170 T initprocess
+0000000000000110 T intoprocess
+0000000000000180 T killprocess
+0000000000000000 T listprocess
+0000000000000008 C memoryinfo
+                 U printf
+                 U Process32Next
+0000000000000120 T readprocess
+                 U sprintf
+0000000000000160 T writeprocess
+
+anscii.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000050 T blank2zero
+00000000000005a0 T buf2arg
+0000000000000000 T compare
+0000000000000270 T data2decimalstring
+0000000000000200 T data2hexstring
+0000000000000110 T decstring2data
+0000000000000300 T double2decimalstring
+0000000000000170 T hexstring2data
+00000000000000d0 T small2capital
+0000000000000090 T zero2blank
+
+calc.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+00000000000006f0 T calculator
+                 U cosine
+                 U decstring2data
+0000000000000080 T infix2postfix
+                 U initfpstack
+                 U initstack
+0000000000000060 T mess2infix
+0000000000000000 t operatorpriority
+                 U pop
+                 U popfp
+0000000000000260 T postfix2binarytree
+                 U printmemory
+                 U push
+                 U pushfp
+                 U sine
+00000000000009e0 T sketchpad
+
+fs.ext.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000238 b block0
+0000000000000020 b blockrecord
+0000000000000230 b blocksize
+0000000000000000 t checkcacheforinode
+                 U cleverread
+0000000000000240 b datahome
+                 U diary
+0000000000000248 b dirhome
+0000000000000480 T explainexthead
+00000000000001b0 t explaininode
+0000000000000330 t ext_cd
+0000000000000170 t ext_explain
+0000000000000310 t ext_load
+0000000000000000 b firstinodeincache
+0000000000000260 b fshome
+0000000000000250 b inodebuffer
+0000000000000228 b inodepergroup
+0000000000000220 b inodesize
+0000000000000690 T mountext
+0000000000000258 b pbr
+                 U printmemory
+                 U readmemory
+
+fs.fat.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+00000000000002a0 t checkcacheforcluster
+0000000000000010 b cluster2
+0000000000000008 b clustersize
+0000000000000030 b datahome
+                 U diary
+0000000000000038 b dirhome
+0000000000000000 t explaindirectory
+00000000000004b0 T explainfat16head
+0000000000000680 T explainfat32head
+0000000000000020 b fat0
+0000000000000250 t fat16_cd
+0000000000000140 t fat16_data
+00000000000004a0 t fat16_explain
+0000000000000210 t fat16_load
+0000000000000450 t fat32_cd
+0000000000000300 t fat32_data
+0000000000000130 t fat32_explain
+00000000000003d0 t fat32_load
+00000000000003e0 t fat32_root
+0000000000000040 b fatbuffer
+0000000000000018 b fatsize
+0000000000000000 b firstincache
+0000000000000028 b firstsector
+0000000000000050 b fshome
+0000000000000850 T mountfat
+0000000000000048 b pbr
+                 U readmemory
+
+fs.hfs.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000028 b block0
+0000000000000020 b blocksize
+0000000000000040 b catabuf
+0000000000000018 b catalogsector
+                 U cleverread
+0000000000000030 b datahome
+                 U diary
+0000000000000038 b dirhome
+0000000000000740 T explainfile
+0000000000000940 T explainhfshead
+0000000000000000 T explainindexnode
+0000000000000190 T explainleafnode
+0000000000000100 T explainrecorddata
+0000000000000000 b firstleafnode
+0000000000000050 b fshome
+00000000000004b0 t hfs_cd
+0000000000000280 t hfs_explain
+00000000000008c0 t hfs_load
+0000000000000d50 T mounthfs
+0000000000000010 b nodesize
+0000000000000048 b pbr
+                 U printmemory
+                 U readmemory
+0000000000000008 b rootnode
+0000000000000340 T searchbtreeforcnid
+
+fs.ntfs.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+00000000000001f0 T checkcacheformft
+                 U cleverread
+0000000000000418 b clustersize
+0000000000000428 b datahome
+00000000000000c0 T datarun
+                 U diary
+0000000000000430 b dirhome
+00000000000002f0 T explain80
+00000000000004c0 T explain90
+0000000000000500 T explaina0
+0000000000000380 T explainindex
+0000000000000000 b explaining
+00000000000005e0 T explainmft
+00000000000008f0 T explainntfshead
+0000000000000000 T explainrun
+0000000000000400 b firstmftincache
+0000000000000450 b fshome
+0000000000000440 b mft0
+0000000000000438 b mftbuffer
+0000000000000410 b mftcluster
+0000000000000a80 T mountntfs
+00000000000008a0 t ntfs_cd
+00000000000002b0 t ntfs_explain
+0000000000000870 t ntfs_load
+0000000000000408 b ntfspwd
+0000000000000420 b ntfssector
+0000000000000448 b pbr
+                 U printmemory
+                 U readmemory
+
+master.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 i .drectve
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U buf2arg
+                 U cleanmemory
+0000000000000360 T command
+                 U compare
+0000000000000000 b datahome
+                 U diary
+0000000000000008 b dirhome
+0000000000000018 b diskhome
+                 U explaingpt
+                 U explainmbr
+0000000000000008 C fscd
+0000000000000008 C fsexplain
+0000000000000010 b fshome
+0000000000000008 C fsload
+00000000000002e0 T hello
+                 U hexstring2data
+0000000000000730 T initmaster
+                 U intomemory
+                 U listmemory
+0000000000000130 t ls
+0000000000000000 t masterlist
+00000000000001c0 t masterread
+0000000000000270 t masterwrite
+                 U mem2file
+                 U mountext
+                 U mountfat
+                 U mounthfs
+                 U mountntfs
+                 U platformread
+                 U platformwrite
+                 U printmemory
+                 U readmemory
+
+pt.gpt.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U diary
+0000000000000000 T explaingpt
+
+pt.mbr.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U diary
+00000000000000d0 T explainmbr
+0000000000000000 t mbrrecord
+
+stack.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000420 b fpcount
+0000000000000440 b fpstack
+0000000000000000 T initfpstack
+0000000000000070 T initstack
+00000000000000b0 T pop
+0000000000000040 T popfp
+0000000000000080 T push
+0000000000000010 T pushfp
+0000000000000000 b sp
+0000000000000020 b stack
+
+console.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000000 T initwindow
+0000000000000010 T killwindow
+0000000000000020 T windowresolution
+
+anscii.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000010 T anscii
+0000000000000000 r ansciitable
+00000000000000a0 T blackanscii
+0000000000000180 T blackstring
+0000000000000230 T decimal
+                 U double2decimalstring
+0000000000000330 T hexadecimal
+00000000000003a0 T hexadecimal1234
+0000000000000000 T initanscii
+00000000000001d0 T printdouble
+0000000000000000 b screen
+0000000000000130 T string
+
+background.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000010 T background1
+0000000000000150 T background2
+0000000000000170 T background3
+0000000000000180 T cleanscreen
+0000000000000000 T initbackground
+0000000000000000 b screenbuf
+                 U windowresolution
+
+palette.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+                 U initanscii
+                 U initbackground
+0000000000000000 T initpalette
+                 U initshape
+
+shape.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 p .pdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 r .xdata
+0000000000000030 T draw
+0000000000000000 T initshape
+0000000000000050 T line
+0000000000000010 T point
+0000000000000160 T rectangle
+0000000000000000 b screenbuf
+
+librarian.o:
+0000000000000000 b .bss
+0000000000000000 d .data
+0000000000000000 d .dtors
+0000000000000000 p .pdata
+0000000000000000 p .pdata.exit
+0000000000000000 r .rdata
+0000000000000000 r .rdata$zzz
+0000000000000000 t .text
+0000000000000000 t .text.exit
+0000000000000000 r .xdata
+0000000000000000 r .xdata.exit
+0000000000000000 T cleanall
+                 U exit
+                 U explainarg
+                 U free
+                 U initmaster
+                 U initmemory
+                 U initpalette
+                 U initwindow
+                 U killmemory
+                 U killwindow
+                 U malloc
+0000000000000008 b memory
+0000000000000100 T memoryandface
+0000000000000030 T onlyface
+0000000000000090 T onlymemory
+0000000000000000 b palette
+                 U puts
+0000000000000000 T whereisbody
+0000000000000010 T whereismemory
+0000000000000020 T whereispalette
+0000000000000010 b world

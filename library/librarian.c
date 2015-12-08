@@ -21,14 +21,19 @@ void killpalette();
 
 
 
-static char*   world=0;
-static char*  memory=0;
-static char* palette=0;
-char* whereismemory()	//8m
+static char*   world=0;		//8m
+static char*    body=0;		//8m
+static char*  memory=0;		//8m
+static char* palette=0;		//8m
+char* whereisbody()
+{
+	return body;
+}
+char* whereismemory()
 {
 	return memory;
 }
-char* whereispalette()	//4m?16m?
+char* whereispalette()
 {
 	return palette;
 }

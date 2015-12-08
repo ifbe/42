@@ -9,7 +9,7 @@ xlib:
 	gcc -c -fPIC -O2 xlib/xlib.c
 .PHONY:winapi
 winapi:
-	gcc -c -O2 win/winapi.c
+	gcc -c -O2 winapi/winapi.c
 .PHONY:html
 webui:
 	gcc -c -O2 webui/webui.c

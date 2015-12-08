@@ -1,4 +1,6 @@
 arm+linux+cli:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 arm
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 linux
@@ -8,11 +10,14 @@ arm+linux+cli:
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+linux+cli:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 linux
@@ -22,11 +27,14 @@ x86+linux+cli:
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+mac+cli:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 clang
 	make -s -C libsoft0 mac
@@ -36,11 +44,14 @@ x86+mac+cli:
 	clang -c librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+win+cli:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 win
@@ -50,11 +61,14 @@ x86+win+cli:
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+linux+xlib:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 linux
@@ -64,11 +78,14 @@ x86+linux+xlib:
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+win+api:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 win
@@ -78,11 +95,14 @@ x86+win+api:
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
 x86+mac+sdl:
+	make -s -C libboot0 none
+	make -s -C libboot1 gcc
 	make -s -C libhard0 x86
 	make -s -C libhard1 clang
 	make -s -C libsoft0 mac
@@ -92,6 +112,7 @@ x86+mac+sdl:
 	clang -c librarian.c
 	rm -f library.a
 	ar crs library.a \
+	libboot0/*.o libboot1/*.o \
 	libhard0/*.o libhard1/*.o \
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \

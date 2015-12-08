@@ -1,5 +1,7 @@
 push
 .DS_Store
+.seed
+.tree
 *.o
 *.a
 *.bin
