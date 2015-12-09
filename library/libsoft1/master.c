@@ -182,18 +182,37 @@ static void masterlist(char* arg1)
 		if(temp == 0)break;
 		if( (target==0) | (temp == target) )
 		{
-			diary(
-				"%d:	(%-4s,%4s)	[%-4llx,%4llx]	%s\n",
-				i,
-				targetaddr + (i*0x40),
-				targetaddr + (i*0x40) + 8,
-				*(QWORD*)(targetaddr + (i*0x40) + 0x10),
-				*(QWORD*)(targetaddr + (i*0x40) + 0x18),
-				targetaddr + (i*0x40) + 0x20
-			);
-		}
+//[+0]:type
+//[+10]:id
+//[+18]:id2
+//[+20]:starttime
+//[+28]:endtime
+//[+30]:startaddr
+//[+38]:endtaddr
+//[+40]:detail
+/*
+diary(
+	"%d:	[%-4s][%llx,%llx][%llx,%llx][%llx,%llx]\n",
+	i,
+	targetaddr + (i*0x40),
+	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
+	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
+	0x20151231235958,
+	0x20160101000001,
+	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
+	*(QWORD*)(targetaddr + (i*0x40) + 0x18)
+);//diary
+*/
+
+diary(
+	"%d:	%s\n",
+	i,
+	targetaddr + (i*0x40) + 0x20
+);//diary
+
+		}//if
 	}//for
-}
+}//masterlist
 static void masterinto(char* arg)
 {
 	int i=0;

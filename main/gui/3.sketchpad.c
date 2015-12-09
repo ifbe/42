@@ -66,7 +66,7 @@ static double centery;
 
 
 //
-void wangge()
+static void wangge()
 {
 	int x,y,temp;
 	double first,second,res;
@@ -125,7 +125,7 @@ void wangge()
 	}//横线
 
 }
-void tuxiang()
+static void tuxiang()
 {
 	int x,y;
 	int value1,value2,counter;
@@ -179,7 +179,7 @@ void tuxiang()
 		}
 	}//result2img
 }
-void f3show()
+static void sketchpadshow()
 {
 	//跳过
 	if(node[0].type!=0x3d3d3d3d)goto skipthese;
@@ -222,7 +222,7 @@ skipthese:		//打印
 
 
 
-void f3message(QWORD type,QWORD key)
+static void sketchpadmessage(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -335,8 +335,14 @@ void f3message(QWORD type,QWORD key)
 
 
 
-void f3init()
+void sketchpadinit(char* in)
 {
+	QWORD* this=(QWORD*)in;
+	this[0]=0x776f646e6977;
+	this[2]=0x686374656b73;
+	this[8]=(QWORD)sketchpadshow;
+	this[9]=(QWORD)sketchpadmessage;
+
 	if(datahome==0)
 	{
 		char* world=(char*)whereismemory();

@@ -7,11 +7,7 @@ char* whereispalette();
 
 
 
-void keyboardinit()
-{
-	
-}
-void keyboardshow()
+static void keyboardshow()
 {
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereispalette();
@@ -42,7 +38,14 @@ void keyboardshow()
 		}
 	}
 }
-void keyboardmessage()
+static void keyboardmessage(QWORD type,QWORD value)
 {
-	
+}
+void keyboardinit(char* in)
+{
+	QWORD* this=(QWORD*)in;
+	this[0]=0x776f646e6977;
+	this[2]=0x64626b;
+	this[8]=(QWORD)keyboardshow;
+	this[9]=(QWORD)keyboardmessage;
 }

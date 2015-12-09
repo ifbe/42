@@ -3,9 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 
-void die();
-//void f1init();
-
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
 void cleanscreen();
@@ -15,6 +12,8 @@ void command(char* in);
 
 void say(char*,...);
 void diary(char*,...);
+
+void serventreport(int);
 char* whereisworld();
 unsigned int* whereispalette();
 
@@ -41,7 +40,7 @@ static int bufcount=0;
 
 
 
-void background4()
+static void background4()
 {
 	//用指定颜色清屏
 	DWORD x,y,color;
@@ -77,7 +76,7 @@ void background4()
 		}
 	}
 }
-void printposition(int start,int count,int max)
+static void printposition(int start,int count,int max)
 {
 	//位置
 	int x,y;
@@ -96,7 +95,7 @@ void printposition(int start,int count,int max)
 		}
 	}
 }
-void printstdout(int start,int count)
+static void printstdout(int start,int count)
 {
 	//总共38行，必须保证start>=0x80*行数
 	int x,y;
@@ -107,12 +106,12 @@ void printstdout(int start,int count)
 		string(0 , y , p + y * 0x80);
 	}
 }
-void printstdin(int count)
+static void printstdin(int count)
 {
 	string(0,count,"user:");
 	string(0x5,count,buffer);
 }
-void f4show()
+static void consoleshow()
 {
 	//显示哪儿开始的一块
 	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
@@ -130,7 +129,7 @@ void f4show()
 
 	printstdin(count);
 }
-void f4message(QWORD type,QWORD key)
+static void consolemessage(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'kbd'
 	{
@@ -146,7 +145,7 @@ void f4message(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				die();
+				serventreport(-1);
 				return;
 			}
 			else
@@ -191,8 +190,14 @@ void f4message(QWORD type,QWORD key)
 
 
 
-void f4init()
+void consoleinit(char* in)
 {
+	QWORD* this=(QWORD*)in;
+	this[0]=0x776f646e6977;
+	this[2]=0x656c6f736e6f63;
+	this[8]=(QWORD)consoleshow;
+	this[9]=(QWORD)consolemessage;
+
 	if(logbuf==0)
 	{
 		logbuf=whereisworld()+0x100000;

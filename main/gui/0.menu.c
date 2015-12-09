@@ -4,12 +4,12 @@
 #define QWORD unsigned long long
 void f1init();
 void menubg();
-void hidemenu();
-void die();
 
 void rectangle(QWORD,QWORD,QWORD);
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
+
+void serventreport(int);
 QWORD whereismemory();
 
 
@@ -19,7 +19,7 @@ QWORD whereismemory();
 
 
 
-void menushow()
+static void menushow()
 {
 	rectangle((256<<16)+  0 , (512<<16)+256  , 0x44);
 	rectangle((256<<16)+256 , (512<<16)+512  , 0x4400);
@@ -28,7 +28,7 @@ void menushow()
 
 	string(0x3e,16,"exit");
 }
-void menumessage(QWORD type,QWORD key)
+static void menumessage(QWORD type,QWORD key)
 {
 	if(type!=0x7466656c)return;		//不是鼠标
 
@@ -42,13 +42,13 @@ void menumessage(QWORD type,QWORD key)
 			{
 				if(x<512+64)
 				{
-					die();
+					serventreport(-1);
 					return;
 				}
 			}
 		}
 	}
-	hidemenu();
+	//hidemenu
 	return;
 }
 
@@ -61,4 +61,8 @@ void menumessage(QWORD type,QWORD key)
 
 void menuinit(char* addr)
 {
+	QWORD* that=(QWORD*)addr;
+	that[0]=0x756e656d;	//'menu'
+	that[8]=(QWORD)menushow;
+	that[9]=(QWORD)menumessage;
 }

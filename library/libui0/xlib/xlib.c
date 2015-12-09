@@ -19,8 +19,8 @@ static char xlib2anscii[0x80]={
 0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x60,0x6f
 0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
 };
-static char converttable[0x80]={
-0,0,0,0,		0,0,0,0,		0,0,'1','2',		'3','4','5','6',//0
+static char xlib2kbd[0x80]={
+0,0,0,0,		0,0,0,0,		0,0x1b,'1','2',		'3','4','5','6',//0
 '7','8','9','0',	'-','=',0x8,0x9,	'q','w','e','r',	't','y','u','i',//0x10
 'o','p','[',']',	0xd,0xff,'a','s',	'd','f','g','h',	'j','k','l',';',//0x20
 '\'','`',0xff,'\\',	'z','x','c','v',	'b','n','m',',',	'.','/',0xff,'*',//0x30
@@ -64,7 +64,11 @@ void waitevent(QWORD* my1,QWORD* my2)
 		}
 		else if(ev.type==ClientMessage)
 		{
-			if (ev.xclient.data.l[0] == wmDelete)break;
+			if (ev.xclient.data.l[0] == wmDelete)
+			{
+				*my1=0;
+				return;
+			}
 		}
 		else if(ev.type==ButtonPress)
 		{
@@ -120,7 +124,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 			char temp;
 			//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
 			//if (ev.xkey.keycode == keyQ)break;
-			//printf("%x\n",ev.xkey.keycode);
+			printf("%x\n",ev.xkey.keycode);
 
 
 			//普通anscii码
@@ -134,7 +138,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 
 			//控制按键
 			*my1=0x64626b;
-			*my2=converttable[ev.xkey.keycode];
+			*my2=xlib2kbd[ev.xkey.keycode];
 			return;
 		}
 	}

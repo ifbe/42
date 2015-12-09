@@ -1,0 +1,3 @@
+void viinit(char* in)
+{
+}

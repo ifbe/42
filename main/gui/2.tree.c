@@ -54,7 +54,7 @@ static struct mathnode* node=0;
 
 
 //
-void printfile0()
+static void printfile0()
 {
 	int x,y;
 	char* p=(char*)node;
@@ -72,7 +72,7 @@ void printfile0()
 
 
 
-void printnode(int x,int y,int num)
+static void printnode(int x,int y,int num)
 {
 	int left,right;
 	int offset,temp;
@@ -143,7 +143,7 @@ void printnode(int x,int y,int num)
 
 
 
-void f2show()
+static void treeshow()
 {
 	int left,right;
 	background2();
@@ -168,7 +168,7 @@ void f2show()
 		}
 	}
 }
-void f2message(QWORD type,QWORD key)
+static void treemessage(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'char'
 	{
@@ -196,7 +196,7 @@ void f2message(QWORD type,QWORD key)
 				count++;
 			}
 		}
-	}
+	}//'char'
 }
 
 
@@ -206,8 +206,14 @@ void f2message(QWORD type,QWORD key)
 
 
 
-void f2init()
+void treeinit(char* in)
 {
+	QWORD* this=(QWORD*)in;
+	this[0]=0x776f646e6977;
+	this[2]=0x65657274;
+	this[8]=(QWORD)treeshow;
+	this[9]=(QWORD)treemessage;
+
 	if(node==0)
 	{
 		node=(struct mathnode*)(whereismemory()+0x300000);

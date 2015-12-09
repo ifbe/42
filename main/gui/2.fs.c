@@ -1,0 +1,3 @@
+void fsinit(char* in)
+{
+}

@@ -98,7 +98,7 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 
 		//拿到这一大块的扇区号和扇区数量
 		explainrun(runaddr,&offset,&count);
-		printmemory(runaddr,0x10);
+		//printmemory(runaddr,0x10);
 		diary("sector=%x,count=%x\n",ntfssector+offset,count);
 
 		//要是这个不要，看看下一个怎么样

@@ -2,8 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void die();
-
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
@@ -17,6 +15,7 @@ int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
+void serventreport(int);
 QWORD windowresolution();
 QWORD whereispalette();
 QWORD whereismemory();
@@ -54,7 +53,7 @@ static BYTE haha[0x100];
 //out:请求的地方的内存地址
 //作用:防止每动一下就读一次硬盘
 static QWORD currentcache;
-QWORD readornotread(QWORD wantaddr)
+static QWORD readornotread(QWORD wantaddr)
 {
 	//假如每次能显示0x1000(实际是0xa00)
 	//想要[0,0x1000)：			确保[0,0x2000)			返回datahome+0
@@ -75,7 +74,7 @@ QWORD readornotread(QWORD wantaddr)
 
 	return (QWORD)datahome+(wantaddr-readwhere);
 }
-void foreground()
+static void foreground()
 {
 	//一整页
 	int x,y;
@@ -119,7 +118,7 @@ void foreground()
 		}
 	}
 }
-void floatarea()
+static void floatarea()
 {
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereispalette();
@@ -179,7 +178,7 @@ void floatarea()
 
 
 
-void f1show()
+static void hexshow()
 {
 	//背景
 	background1();
@@ -190,7 +189,7 @@ void f1show()
 	//
 	floatarea();
 }
-void f1message(QWORD type,QWORD key)
+static void hexmessage(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -239,7 +238,7 @@ void f1message(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				die();
+				serventreport(-1);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)
@@ -283,9 +282,15 @@ void f1message(QWORD type,QWORD key)
 
 
 
-void f1init()
+void hexinit(char* in)
 {
 	int i;
+	QWORD* this=(QWORD*)in;
+	this[0]=0x776f646e6977;
+	this[2]=0x786568;
+	this[8]=(QWORD)hexshow;
+	this[9]=(QWORD)hexmessage;
+
 	if(datahome==0)
 	{
 		datahome=(BYTE*)whereismemory()+0x300000;

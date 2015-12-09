@@ -15,49 +15,60 @@ void waitevent(QWORD* first,QWORD* second);
 //
 void listmemory();
 void intomemory(char* in);
-void memoryandface();
+void initall();
 void cleanall();
+//
+char* whereisface();
+void menuinit(char*);		//menu.c
+void hexinit(char*);		//1.hex.c
+void keyboardinit(char*);	//2.keyboard.c
+void treeinit(char*);		//2.tree.c
+void sketchpadinit(char*);	//3.sketchpad.c
+void consoleinit(char*);	//4.console.c
 
 
 
 
-//servents' report
-static int control=0; 
-static int what=1;
 //things
 struct things
 {
-	//type
-	QWORD type;				//[0,7]
-	QWORD subtype;			//[8,f]
-	QWORD start;			//[10,17]
-	QWORD end;				//[18,1f]
-	char functions[0x20];	//[0x20,0x3f]
-}
-static struct things[16];	//总共16个"元素"
+	//概括，人物
+	QWORD type;			//'window'
+	QWORD subtype;
+	QWORD id;			//'小明'
+	QWORD subid;
+
+	//时间，地点
+	QWORD starttime;		//
+	QWORD endtime;			//
+	QWORD startaddr;		//左上角:x+(y<<16)+(z<<32)+(w<<48)
+	QWORD endaddr;			//右下角:x+(y<<16)+(z<<32)+(w<<48)
+
+	//起因，经过，结果
+	int (*show)();				//[20,27]
+	int (*message)(QWORD type,QWORD key);	//[28,2f]
+
+	//对齐0x80字节
+	char padding[ 0x80 - (8*sizeof(QWORD)) - (2*sizeof(char*)) ];
+};
 
 
 
 
-
-
-
-
-int (*show)();		//[20,27]
-int (*message)(QWORD type,QWORD key);	//[28,2f]
-void changegui(int in)
+//0.menu.c
+//1.hex.c
+//1.vi.c
+//2.fs.c
+//2.keyboard.c
+//2.tree.c
+//3.sketchpad.c
+//4.console.c
+//......
+static struct things* things;		//whereisface
+static int control=0; 
+void serventreport(int in)
 {
-	//退出
-	if(in<=0)
-	{
-		control=in;
-	}
-
-	//哪一个:>0
-	else
-	{
-		what=in;
-	}
+	control=in;
 }
 
 
@@ -70,66 +81,57 @@ void changegui(int in)
 //lord's requires
 void printworld()
 {
-	int x,y;
+	int i;
+	printmemory(things,0x400);
 
-	//主界面显示什么
-	switch(what&0xff)
+	for(i=0;i<8;i++)
 	{
-		case 1:f1show();break;
-		case 2:f2show();break;
-		case 3:f3show();break;
-		case 4:f4show();break;
+		if(things[i].type==0)break;
+
+		diary(
+			"%s,%s,%llx,%llx\n" ,
+			&things[i].type,
+			&things[i].id,
+			things[i].show,
+			things[i].message
+		);
 	}
-	if(control==1)menushow();
+
+	if(control > 0)things[0].show();
 }
 void processmessage(QWORD type,QWORD key)
 {
-	if(type==0x656c6966706f7264)		//dropfile
+	diary("%s,%llx\n",&type,key);
+
+	//'dropfile'
+	if(type==0x656c6966706f7264)
 	{
 		//diary("debuging::::::::%s\n",(char*)key);
 		intomemory((char*)key);
 		return;
 	}
-	else if(type==0x64626b)		//kbd
+
+	//'kbd'
+	else if(type==0x64626b)
 	{
+		//按下esc
 		if(key==0x1b)
 		{
 			control^=1;
-			menuinit();		//0
 			return;
-		}		//按下esc
-		if(key==0x70)
-		{
-			what=1;
-			f1init();			//1
-			return;
-		}		//f1
-		if(key==0x71)
-		{
-			what=2;
-			f2init();			//2
-			return;
-		}		//f2
-		if(key==0x72)
-		{
-			what=3;
-			f3init();			//3
-			return;
-		}		//f3
-		if(key==0x73)
-		{
-			what=4;
-			f4init();			//4
-			return;
-		}		//f4
+		}
 	}
-	else if(type==0x7466656c)		//鼠标
+
+	//'mouse'
+	else if(type==0x7466656c)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
+
+		//右上
 		if(x>1024-16)
 		{
-			if(y<16)				//右上
+			if(y<16)
 			{
 				control^=1;
 				return;
@@ -137,12 +139,13 @@ void processmessage(QWORD type,QWORD key)
 		}
 	}
 
+	//'touch'
+	else if(type==0x6863756f74)
+	{
+		diary("touch!\n");
+	}
+
 	//其余所有消息，谁在干活就交给谁
-	if(control==1)menumessage(type,key);		//磁盘
-	else if(what==1)f1message(type,key);		//hex在干活就交给hex
-	else if(what==2)f2message(type,key);		//logic0在干活就交给logic0
-	else if(what==3)f3message(type,key);		//点了叉
-	else if(what==4)f4message(type,key);		//console在干活就交给console
 }
 
 
@@ -152,14 +155,47 @@ void processmessage(QWORD type,QWORD key)
 
 
 
+void initgui()
+{
+	int i;
+	char* face=whereisface();
+	things=(struct things*)face;
+
+	//clean everything
+	for(i=0;i<0x100000;i++)face[i]=0;
+
+	//menu.c
+	menuinit(face);
+	face += 0x80;
+
+	//1.hex.c
+	hexinit(face);
+	face += 0x80;
+
+	//2.keyboard.c
+	keyboardinit(face);
+	face += 0x80;
+
+	//2.tree.c
+	treeinit(face);
+	face += 0x80;
+
+	//3.sketchpad.c
+	sketchpadinit(face);
+	face += 0x80;
+
+	//4.console.c
+	consoleinit(face);
+	face += 0x80;
+
+}
 void main()
 {
 	//before
-	memoryandface();
-	f1init();			//1
-	f2init();			//2
-	f3init();			//3
-	f4init();			//4
+	initall();
+
+	//begin
+	initgui();
 
 	//forever
 	QWORD type=0;
