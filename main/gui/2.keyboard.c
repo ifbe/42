@@ -46,6 +46,8 @@ void keyboardinit(char* in)
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
 	this[2]=0x64626b;
+	this[6]=(0<<16)+0;   //startaddr
+	this[7]=(768<<16)+1024; //endaddr
 	this[8]=(QWORD)keyboardshow;
 	this[9]=(QWORD)keyboardmessage;
 }

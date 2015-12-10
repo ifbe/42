@@ -288,6 +288,8 @@ void hexinit(char* in)
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
 	this[2]=0x786568;
+	this[6]=(0<<16)+0;	//startaddr
+	this[7]=(768<<16)+1024;	//endaddr
 	this[8]=(QWORD)hexshow;
 	this[9]=(QWORD)hexmessage;
 

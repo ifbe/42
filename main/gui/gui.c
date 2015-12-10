@@ -2,11 +2,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void menuinit();	//0
-void f1init();
-void f2init();
-void f3init();
-void f4init();
+void menuinit(char*);		//menu.c
+void hexinit(char*);		//1.hex.c
+void keyboardinit(char*);	//2.keyboard.c
+void treeinit(char*);		//2.tree.c
+void sketchpadinit(char*);	//3.sketchpad.c
+void consoleinit(char*);	//4.console.c
 //
 void point(int x,int y,DWORD color);
 void string(int x,int y,char* str);
@@ -19,18 +20,14 @@ void initall();
 void cleanall();
 //
 char* whereisface();
-void menuinit(char*);		//menu.c
-void hexinit(char*);		//1.hex.c
-void keyboardinit(char*);	//2.keyboard.c
-void treeinit(char*);		//2.tree.c
-void sketchpadinit(char*);	//3.sketchpad.c
-void consoleinit(char*);	//4.console.c
+void diary(char*,...);
+void printmemory(char*,int);
 
 
 
 
-//things
-struct things
+//苦工
+struct worker
 {
 	//概括，人物
 	QWORD type;			//'window'
@@ -51,24 +48,28 @@ struct things
 	//对齐0x80字节
 	char padding[ 0x80 - (8*sizeof(QWORD)) - (2*sizeof(char*)) ];
 };
+static struct worker* worker;		//whereisface
+	//1.hex.c
+	//1.vi.c
+	//2.fs.c
+	//2.keyboard.c
+	//2.tree.c
+	//3.sketchpad.c
+	//4.console.c
+	//......
 
 
 
 
-//0.menu.c
-//1.hex.c
-//1.vi.c
-//2.fs.c
-//2.keyboard.c
-//2.tree.c
-//3.sketchpad.c
-//4.console.c
-//......
-static struct things* things;		//whereisface
-static int control=0; 
+//servents' report
+static int now=1; 
 void serventreport(int in)
 {
-	control=in;
+	//<0:die
+	if(in<0)now=in;
+
+	//=0:hidemenu;
+	if(in==0)worker[0].subtype=0;
 }
 
 
@@ -81,23 +82,28 @@ void serventreport(int in)
 //lord's requires
 void printworld()
 {
+/*
 	int i;
-	printmemory(things,0x400);
-
-	for(i=0;i<8;i++)
+	//printmemory(worker,0x400);
+	for(i=0;i<0x20;i++)
 	{
-		if(things[i].type==0)break;
-
+		if(worker[i].type==0)break;
 		diary(
-			"%s,%s,%llx,%llx\n" ,
-			&things[i].type,
-			&things[i].id,
-			things[i].show,
-			things[i].message
+			"[%-7s,%7s],[%-9llx,%9llx]:%llx,%llx\n",
+			&worker[i].type,
+			&worker[i].id,
+			worker[i].startaddr,
+			worker[i].endaddr,
+			worker[i].show,
+			worker[i].message
 		);
-	}
 
-	if(control > 0)things[0].show();
+	}
+*/
+
+	//开始画画
+	worker[now].show();
+	if(worker[0].subtype > 0)worker[0].show();
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -117,25 +123,8 @@ void processmessage(QWORD type,QWORD key)
 		//按下esc
 		if(key==0x1b)
 		{
-			control^=1;
+			worker[0].subtype ^= 1;
 			return;
-		}
-	}
-
-	//'mouse'
-	else if(type==0x7466656c)
-	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-
-		//右上
-		if(x>1024-16)
-		{
-			if(y<16)
-			{
-				control^=1;
-				return;
-			}
 		}
 	}
 
@@ -146,6 +135,8 @@ void processmessage(QWORD type,QWORD key)
 	}
 
 	//其余所有消息，谁在干活就交给谁
+	if(worker[0].subtype > 0)worker[0].message(type,key);
+	else worker[now].message(type,key);
 }
 
 
@@ -158,36 +149,35 @@ void processmessage(QWORD type,QWORD key)
 void initgui()
 {
 	int i;
-	char* face=whereisface();
-	things=(struct things*)face;
+	char* temp=whereisface();
+	worker=(struct worker*)temp;
 
 	//clean everything
-	for(i=0;i<0x100000;i++)face[i]=0;
+	for(i=0;i<0x100000;i++)temp[i]=0;
 
-	//menu.c
-	menuinit(face);
-	face += 0x80;
+	//0.menu.c
+	menuinit(temp);
+	temp += 0x80;
 
 	//1.hex.c
-	hexinit(face);
-	face += 0x80;
+	hexinit(temp);
+	temp += 0x80;
 
 	//2.keyboard.c
-	keyboardinit(face);
-	face += 0x80;
+	keyboardinit(temp);
+	temp += 0x80;
 
 	//2.tree.c
-	treeinit(face);
-	face += 0x80;
+	treeinit(temp);
+	temp += 0x80;
 
 	//3.sketchpad.c
-	sketchpadinit(face);
-	face += 0x80;
+	sketchpadinit(temp);
+	temp += 0x80;
 
 	//4.console.c
-	consoleinit(face);
-	face += 0x80;
-
+	consoleinit(temp);
+	temp += 0x80;
 }
 void main()
 {
@@ -212,7 +202,7 @@ void main()
 
 		//3.处理事件，如果要求自杀就让它死
 		processmessage(type,key);
-		if( control<0 )break;
+		if( now<0 )break;
 	}
 
 	//after

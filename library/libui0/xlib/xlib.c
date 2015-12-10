@@ -99,9 +99,9 @@ void waitevent(QWORD* my1,QWORD* my2)
 			//printf("buttonrelease\n");
 			if(ev.xbutton.button==Button1)
 			{
-				if( (oldx==ev.xbutton.x) && (oldy==ev.xbutton.y) )
+				if((oldx==ev.xbutton.x)&&(oldy==ev.xbutton.y))
 				{
-					*my1=0x7466656C207A7978;	//'xyz left'
+					*my1=0x7466656C207A7978;//'xyz left'
 					*my2=ev.xbutton.x + (ev.xbutton.y<<16);
 					return;
 				}
@@ -124,7 +124,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 			char temp;
 			//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
 			//if (ev.xkey.keycode == keyQ)break;
-			printf("%x\n",ev.xkey.keycode);
+			//printf("%x\n",ev.xkey.keycode);
 
 
 			//普通anscii码

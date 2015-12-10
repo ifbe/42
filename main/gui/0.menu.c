@@ -30,25 +30,21 @@ static void menushow()
 }
 static void menumessage(QWORD type,QWORD key)
 {
-	if(type!=0x7466656c)return;		//不是鼠标
+	if(type!=0x7466656C207A7978)return;	//'xyz left'
 
 	int x=key&0xffff;
 	int y=(key>>16)&0xffff;
 	if(y>256)
 	{
-		if(y<256+64)
+		if(y<512)
 		{
-			if(x>512-64)
-			{
-				if(x<512+64)
-				{
-					serventreport(-1);
-					return;
-				}
-			}
+			serventreport(-1);
+			return;
 		}
 	}
+
 	//hidemenu
+	serventreport(0);
 	return;
 }
 
@@ -62,7 +58,10 @@ static void menumessage(QWORD type,QWORD key)
 void menuinit(char* addr)
 {
 	QWORD* that=(QWORD*)addr;
-	that[0]=0x756e656d;	//'menu'
+	that[0]=0x776f646e6977;		//'window'
+	that[2]=0x756e656d;		//'menu'
+	that[6]=((QWORD)1<<32)+(256<<16)+256;		//startaddr
+	that[7]=((QWORD)1<<32)+(512<<16)+768;		//endaddr
 	that[8]=(QWORD)menushow;
 	that[9]=(QWORD)menumessage;
 }
