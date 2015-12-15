@@ -231,7 +231,7 @@ static void explaindirectory()
 		}
 		else if(type==2)
 		{
-			*(QWORD*)rdi=0x726964;	//'dir'
+			*(QWORD*)rdi=0x726964;		//'dir'
 		}
 		else if(type==7)
 		{
@@ -251,8 +251,22 @@ static void explaindirectory()
 		*(QWORD*)(rdi+0x18)=*(DWORD*)(inodeaddr+4);
 
 		//[0x20,0x3f]:名字
-		i=0;
-		for(i=0;i<*(BYTE*)(rsi+6);i++)	//namelength=*(byte*)(rsi+6)
+		i = *(BYTE*)(rsi+6);
+		if(i>0x1f)
+		{
+			*(BYTE*)(rdi+0x3f)=0;
+			*(BYTE*)(rdi+0x3e)='.';
+			*(BYTE*)(rdi+0x3d)='.';
+			*(BYTE*)(rdi+0x3c)='.';
+			i=0x1b;
+		}
+		else
+		{
+			*(BYTE*)(rdi+0x20+i)=0;
+			i--;
+		}
+
+		for(;i>=0;i--)
 		{
 			*(BYTE*)(rdi+0x20+i)=*(BYTE*)(rsi+8+i);
 		}

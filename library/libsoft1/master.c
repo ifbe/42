@@ -174,6 +174,26 @@ static void masterlist(char* arg1)
 		//target=0x656c6966;		//'file'
 		//printmemory(targetaddr,0x200);
 	}
+	else if( compare(arg1,"0") == 0 )
+	{
+		targetaddr=diskhome;
+		target=0;
+	}
+	else if( compare(arg1,"1") == 0 )
+	{
+		targetaddr=fshome;
+		target=0;
+	}
+	else if( compare(arg1,"2") == 0 )
+	{
+		targetaddr=dirhome;
+		target=0;
+	}
+	else if( compare(arg1,"3") == 0 )
+	{
+		targetaddr=datahome;
+		target=0;
+	}
 
 	//搜到就显示
 	for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
@@ -182,34 +202,19 @@ static void masterlist(char* arg1)
 		if(temp == 0)break;
 		if( (target==0) | (temp == target) )
 		{
-//[+0]:type
-//[+10]:id
-//[+18]:id2
-//[+20]:starttime
-//[+28]:endtime
-//[+30]:startaddr
-//[+38]:endtaddr
-//[+40]:detail
-/*
-diary(
-	"%d:	[%-4s][%llx,%llx][%llx,%llx][%llx,%llx]\n",
-	i,
-	targetaddr + (i*0x40),
-	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
-	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
-	0x20151231235958,
-	0x20160101000001,
-	*(QWORD*)(targetaddr + (i*0x40) + 0x10),
-	*(QWORD*)(targetaddr + (i*0x40) + 0x18)
-);//diary
-*/
+			//[+0]:type,[+8]:id,[+10]:start,[+18]:end
+			//[+20]:detail
+			diary(
+			"(%-4s,%4llx)	[%-4llx,%4llx]	{%-32s}<%d>\n",
 
-diary(
-	"%d:	%s\n",
-	i,
-	targetaddr + (i*0x40) + 0x20
-);//diary
+			targetaddr + (i*0x40),				//0
+			*(QWORD*)(targetaddr + (i*0x40) + 0x8),		//8
+			*(QWORD*)(targetaddr + (i*0x40) + 0x10),	//10
+			*(QWORD*)(targetaddr + (i*0x40) + 0x18),	//18
+			targetaddr + (i*0x40) + 0x20,			//20
+			i						//which
 
+			);//diary
 		}//if
 	}//for
 }//masterlist
