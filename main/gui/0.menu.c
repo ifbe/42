@@ -59,9 +59,9 @@ void menuinit(char* addr)
 {
 	QWORD* that=(QWORD*)addr;
 	that[0]=0x776f646e6977;		//'window'
-	that[2]=0x756e656d;		//'menu'
-	that[6]=((QWORD)1<<32)+(256<<16)+256;		//startaddr
-	that[7]=((QWORD)1<<32)+(512<<16)+768;		//endaddr
-	that[8]=(QWORD)menushow;
-	that[9]=(QWORD)menumessage;
+	that[1]=0x756e656d;		//'menu'
+	that[2]=((QWORD)1<<32)+(256<<16)+256;		//startaddr
+	that[3]=((QWORD)1<<32)+(512<<16)+768;		//endaddr
+	that[4]=(QWORD)menushow;
+	that[5]=(QWORD)menumessage;
 }

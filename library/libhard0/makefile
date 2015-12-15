@@ -1,8 +1,10 @@
 .PHONY:arm
 arm:
+	rm -f *.o
 	gcc -c -O2 arm/arm.platform.c
 .PHONY:x86
 x86:
+	rm -f *.o
 	gcc -c -O2 x86/x86.endian.c
 	gcc -c -O2 x86/x86.fp.c
 	gcc -c -O2 x86/x86.platform.c

@@ -31,22 +31,18 @@ struct worker
 {
 	//概括，人物
 	QWORD type;			//'window'
-	QWORD subtype;
 	QWORD id;			//'小明'
-	QWORD subid;
-
-	//时间，地点
-	QWORD starttime;		//
-	QWORD endtime;			//
 	QWORD startaddr;		//左上角:x+(y<<16)+(z<<32)+(w<<48)
 	QWORD endaddr;			//右下角:x+(y<<16)+(z<<32)+(w<<48)
 
 	//起因，经过，结果
 	int (*show)();				//[20,27]
 	int (*message)(QWORD type,QWORD key);	//[28,2f]
+	int (*otherfunc)();
+	int (*otherother)();
 
 	//对齐0x80字节
-	char padding[ 0x80 - (8*sizeof(QWORD)) - (2*sizeof(char*)) ];
+	char padding[ 0x40 - (4*sizeof(QWORD)) - (4*sizeof(char*)) ];
 };
 static struct worker* worker;		//whereisface
 	//1.hex.c
@@ -63,13 +59,14 @@ static struct worker* worker;		//whereisface
 
 //servents' report
 static int now=1; 
+static int top=0;
 void serventreport(int in)
 {
 	//<0:die
 	if(in<0)now=in;
 
 	//=0:hidemenu;
-	if(in==0)worker[0].subtype=0;
+	if(in==0)top=0;
 }
 
 
@@ -103,7 +100,7 @@ void printworld()
 
 	//开始画画
 	worker[now].show();
-	if(worker[0].subtype > 0)worker[0].show();
+	if(top > 0)worker[0].show();
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -123,7 +120,7 @@ void processmessage(QWORD type,QWORD key)
 		//按下esc
 		if(key==0x1b)
 		{
-			worker[0].subtype ^= 1;
+			top ^= 1;
 			return;
 		}
 	}
@@ -135,7 +132,7 @@ void processmessage(QWORD type,QWORD key)
 	}
 
 	//其余所有消息，谁在干活就交给谁
-	if(worker[0].subtype > 0)worker[0].message(type,key);
+	if(top > 0)worker[0].message(type,key);
 	else worker[now].message(type,key);
 }
 
@@ -157,27 +154,27 @@ void initgui()
 
 	//0.menu.c
 	menuinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 
 	//1.hex.c
 	hexinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 
 	//2.keyboard.c
 	keyboardinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 
 	//2.tree.c
 	treeinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 
 	//3.sketchpad.c
 	sketchpadinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 
 	//4.console.c
 	consoleinit(temp);
-	temp += 0x80;
+	temp += 0x40;
 }
 void main()
 {

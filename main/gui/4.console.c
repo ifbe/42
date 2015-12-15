@@ -194,11 +194,11 @@ void consoleinit(char* in)
 {
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[2]=0x656c6f736e6f63;
-	this[6]=(0<<16)+0;   //startaddr
-	this[7]=(768<<16)+1024; //endaddr
-	this[8]=(QWORD)consoleshow;
-	this[9]=(QWORD)consolemessage;
+	this[1]=0x656c6f736e6f63;
+	this[2]=(0<<16)+0;   //startaddr
+	this[3]=(768<<16)+1024; //endaddr
+	this[4]=(QWORD)consoleshow;
+	this[5]=(QWORD)consolemessage;
 
 	if(logbuf==0)
 	{

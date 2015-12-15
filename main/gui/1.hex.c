@@ -287,11 +287,11 @@ void hexinit(char* in)
 	int i;
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[2]=0x786568;
-	this[6]=(0<<16)+0;	//startaddr
-	this[7]=(768<<16)+1024;	//endaddr
-	this[8]=(QWORD)hexshow;
-	this[9]=(QWORD)hexmessage;
+	this[1]=0x786568;
+	this[2]=(0<<16)+0;	//startaddr
+	this[3]=(768<<16)+1024;	//endaddr
+	this[4]=(QWORD)hexshow;
+	this[5]=(QWORD)hexmessage;
 
 	if(datahome==0)
 	{

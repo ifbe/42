@@ -339,11 +339,11 @@ void sketchpadinit(char* in)
 {
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[2]=0x686374656b73;
-	this[6]=(0<<16)+0;   //startaddr
-	this[7]=(768<<16)+1024; //endaddr
-	this[8]=(QWORD)sketchpadshow;
-	this[9]=(QWORD)sketchpadmessage;
+	this[1]=0x686374656b73;
+	this[2]=(0<<16)+0;   //startaddr
+	this[3]=(768<<16)+1024; //endaddr
+	this[4]=(QWORD)sketchpadshow;
+	this[5]=(QWORD)sketchpadmessage;
 
 	if(datahome==0)
 	{

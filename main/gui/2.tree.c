@@ -210,11 +210,11 @@ void treeinit(char* in)
 {
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[2]=0x65657274;
-	this[6]=(0<<16)+0;   //startaddr
-	this[7]=(768<<16)+1024; //endaddr
-	this[8]=(QWORD)treeshow;
-	this[9]=(QWORD)treemessage;
+	this[1]=0x65657274;
+	this[2]=(0<<16)+0;   //startaddr
+	this[3]=(768<<16)+1024; //endaddr
+	this[4]=(QWORD)treeshow;
+	this[5]=(QWORD)treemessage;
 
 	if(node==0)
 	{
