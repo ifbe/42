@@ -146,9 +146,12 @@ static int masterwrite(char* arg1)
 }
 static void masterlist(char* arg1)
 {
-	int i;
-	char* targetaddr=diskhome;
-	QWORD target=0,temp=0;
+	QWORD temp=0;
+	int i,j;
+	char buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+	QWORD target=0;
+	char* addr=diskhome;
 	//printmemory(diskhome,0x200);
 
 	//想要什么
@@ -157,64 +160,79 @@ static void masterlist(char* arg1)
 	else if( compare(arg1,"part") == 0 )target=0x74726170;	//'part'
 	else if( compare(arg1,"func") == 0 )
 	{
-		targetaddr=fshome;
+		addr=fshome;
 		target=0x636e7566;	//'func'
 	}
 	else if( compare(arg1,"fs") == 0 )
 	{
-		targetaddr=fshome;
+		addr=fshome;
 		target=0;
 		//target=0x656c6966;		//'file'
-		//printmemory(targetaddr,0x200);
+		//printmemory(addr,0x200);
 	}
 	else if( compare(arg1,"file") == 0 )
 	{
-		targetaddr=dirhome;
+		addr=dirhome;
 		target=0;
 		//target=0x656c6966;		//'file'
-		//printmemory(targetaddr,0x200);
+		//printmemory(addr,0x200);
 	}
 	else if( compare(arg1,"0") == 0 )
 	{
-		targetaddr=diskhome;
+		addr=diskhome;
 		target=0;
 	}
 	else if( compare(arg1,"1") == 0 )
 	{
-		targetaddr=fshome;
+		addr=fshome;
 		target=0;
 	}
 	else if( compare(arg1,"2") == 0 )
 	{
-		targetaddr=dirhome;
+		addr=dirhome;
 		target=0;
 	}
 	else if( compare(arg1,"3") == 0 )
 	{
-		targetaddr=datahome;
+		addr=datahome;
 		target=0;
 	}
 
 	//搜到就显示
 	for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
 	{
-		temp=*(QWORD*)( targetaddr + (i*0x40) );
+		temp=*(QWORD*)( addr + (i*0x40) );
 		if(temp == 0)break;
 		if( (target==0) | (temp == target) )
 		{
-			//[+0]:type,[+8]:id,[+10]:start,[+18]:end
+			//[+0]:type
+			diary("(%-4s," , addr+(i*0x40) );
+
+			//[+8]:id
+			*(QWORD*)buf=*(QWORD*)(addr+(i*0x40)+0x8);
+			temp=0;
+			for(j=0;j<8;j++)
+			{
+				//[1,0x1f]:wrong
+				if(buf[j]>0 && buf[j]<0x20) temp++;
+
+				//[0x80,0xff]:wrong
+				if(buf[j]>=0x80) temp++;
+			}
+			if(temp==0) diary("%4s)	",buf);
+			else diary("%4llx)	",*(QWORD*)buf);
+
+			//[+10]:start
+			diary("[%-4llx,",*(QWORD*)(addr+(i*0x40)+0x10));
+
+			//[+18]:end
+			diary("%4llx]	",*(QWORD*)(addr+(i*0x40)+0x18));
+
 			//[+20]:detail
-			diary(
-			"(%-4s,%4llx)	[%-4llx,%4llx]	{%-32s}<%d>\n",
+			diary("{%-16s}	",addr+(i*0x40)+0x20);
 
-			targetaddr + (i*0x40),				//0
-			*(QWORD*)(targetaddr + (i*0x40) + 0x8),		//8
-			*(QWORD*)(targetaddr + (i*0x40) + 0x10),	//10
-			*(QWORD*)(targetaddr + (i*0x40) + 0x18),	//18
-			targetaddr + (i*0x40) + 0x20,			//20
-			i						//which
-
-			);//diary
+			//which
+			diary("<%d>\n",i);
 		}//if
 	}//for
 }//masterlist

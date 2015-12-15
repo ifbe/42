@@ -540,8 +540,12 @@ static int ntfs_explain(QWORD mftnum)
 
 int explainntfshead()
 {
+	int i;
 	QWORD* dstqword=(QWORD*)fshome;
 	if( *(DWORD*)(pbr+3) != 0x5346544e ) return -1;
+
+	//clean
+	for(i=0;i<0x10000;i++)fshome[i]=0;
 
 	//func cd
 	dstqword[0]=0x636e7566;		//'func'

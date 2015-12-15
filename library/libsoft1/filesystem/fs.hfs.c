@@ -328,7 +328,7 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		int keylen=BSWAP_16(*(WORD*)(datahome+offset));
 		QWORD filetype=BSWAP_16(*(WORD*)(datahome+offset+2+keylen));
 
-		//[0,0x7]:subtype
+		//[0,0x7]:type
 		if(filetype==2)
 		{
 			*(QWORD*)(rdi+0)=0x656c6966;	//'file'
@@ -339,7 +339,7 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		}
 		else
 		{
-			*(QWORD*)(rdi+0)='?' + (filetype<<8);
+			*(QWORD*)(rdi+0)=filetype;
 		}
 		//[0x8,0xf]:subtype
 		*(QWORD*)(rdi+0x8)=0;
@@ -350,14 +350,14 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 		{
 			*(QWORD*)(rdi+0x18)=BSWAP_64(*(QWORD*)(datahome+offset+2+keylen+0x58));
 		}
-		//[0x20,0x3f]:名字
-		i=BSWAP_16(*(WORD*)(datahome+offset+6));	//namelength=*(byte*)(rsi+6)
 
+		//[0x20,0x3f]:名字	//namelength=*(byte*)(rsi+6)
+		i=BSWAP_16(*(WORD*)(datahome+offset+6));
 		//diary("%x@%x\n",i,offset);
-		if(i>0x1f)i=0x1f;
-		while(i>0)
+		i--;
+		if(i>0x1b)i=0x1b;
+		for(;i>=0;i--)
 		{
-			i--;
 			*(BYTE*)(rdi+0x20+i)=*(BYTE*)(datahome+offset+9+i*2);
 		}
 		//diary("%s\n",(char*)(rdi+0x20));
@@ -566,7 +566,7 @@ int explainhfshead()
 		if(i==0)
 		{
 			dstqword[1]=0x636f6c6c61;	//'alloc'
-			diary("	allocation\n");
+			diary("allocation\n");
 		}
 		else if(i==1)
 		{
@@ -584,17 +584,25 @@ int explainhfshead()
 			dstqword[1]=0x6972747461;	//'attri'
 			diary("attribute\n");
 		}
-		dstqword[2]=sector;
-		dstqword[3]=sector+count;
-		dstqword[4]=size;
-		dstqword[5]=clumpsize;
-		dstqword[6]=totalblock;
+		dstqword[2]=0x470+(0x50*i);
+		dstqword[3]=0x470+0x4f+(0x50*i);
+		dstqword[4]=BSWAP_64(*(QWORD*)(addr+0) );
+		dstqword[5]=BSWAP_64(*(QWORD*)(addr+8) );
+		dstqword[6]=BSWAP_64(*(QWORD*)(addr+0x10) );
+		dstqword[7]=BSWAP_64(*(QWORD*)(addr+0x18) );
 		dstqword += 8;
-		diary("	size:%llx\n",size);
-		diary("	clumpsize:%llx\n",clumpsize);
-		diary("	totalblocks:%llx\n",totalblock);
-		diary("	sector:%llx\n",sector);
-		diary("	count:%llx\n",count);
+
+		//dstqword[2]=sector;
+		//dstqword[3]=sector+count;
+		//dstqword[4]=size;
+		//dstqword[5]=clumpsize;
+		//dstqword[6]=totalblock;
+		//dstqword += 8;
+		//diary("	size:%llx\n",size);
+		//diary("	clumpsize:%llx\n",clumpsize);
+		//diary("	totalblocks:%llx\n",totalblock);
+		//diary("	sector:%llx\n",sector);
+		//diary("	count:%llx\n",count);
 	}
 
 
@@ -608,7 +616,7 @@ int explainhfshead()
 	nodesize=BSWAP_16( *(WORD*)(catabuf+0x20) );
 	nodesize=nodesize/0x200;
 	dstqword[0]=0x7366;		//'fs'
-	dstqword[0]=0x7a7365646f6e;	//'nodesz'
+	dstqword[1]=0x7a7365646f6e;	//'nodesz'
 	dstqword[2]=0x21;
 	dstqword[3]=0x20;
 	dstqword[4]=nodesize;
@@ -618,7 +626,7 @@ int explainhfshead()
 	//rootnode
 	rootnode=BSWAP_32(*(DWORD*)(catabuf+0x10) );
 	dstqword[0]=0x7366;		//'fs'
-	dstqword[0]=0x646f6e746f6f72;	//'rootnod'
+	dstqword[1]=0x646f6e746f6f72;	//'rootnod'
 	dstqword[2]=0x13;
 	dstqword[3]=0x10;
 	dstqword[4]=rootnode;
@@ -628,7 +636,7 @@ int explainhfshead()
 	//firstleafnode
 	firstleafnode=BSWAP_32(*(DWORD*)(catabuf+0x18) );
 	dstqword[0]=0x7366;		//'fs'
-	dstqword[0]=0x306661656c;	//'leaf0'
+	dstqword[1]=0x306661656c;	//'leaf0'
 	dstqword[2]=0x1b;
 	dstqword[3]=0x18;
 	dstqword[4]=firstleafnode;

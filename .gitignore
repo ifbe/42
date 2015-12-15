@@ -4,6 +4,7 @@ push
 .tree
 *.o
 *.a
+*.old
 *.bin
 *.img
 *.vhd
