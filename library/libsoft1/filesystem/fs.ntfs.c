@@ -36,25 +36,25 @@ static int ntfspwd;
 void explainrun(char* runaddr,long long* offset,long long* count)
 {
 	//变量
-	char* run=runaddr;
+	long long temp;
+	int i;
+
+	BYTE* run=(BYTE*)runaddr;
 	BYTE data= run[0];
 	BYTE low4bit=0xf & data;
 	BYTE high4bit=data >>4;
-	int i;
-	long long temp;
 
 	//簇数
 	temp=0;
 	for(i=low4bit;i>0;i--)
 	{
-		temp=(temp<<8)+(QWORD)run[i];
+		temp=(temp<<8) + run[i];
 	}
-	//diary("runcount:%x\n",temp);
-	*count=temp*clustersize*0x200;
+	count[0] = temp*clustersize*0x200;
 
 	//簇号
 	i=low4bit+high4bit;
-	if( (run[i] < 0x80) | (*offset==0) )	//正数 或者 传进来的是第一个run
+	if( (run[i] < 0x80) | (offset[0]==0) )	//正数 或者 传进来的是第一个run
 	{
 		temp=(long long)run[i];		//0x68变成0x0000000000000068
 	}
@@ -69,7 +69,7 @@ void explainrun(char* runaddr,long long* offset,long long* count)
 	}
 
 	//从pbr开始偏移的扇区数
-	*offset=*offset + temp*clustersize;
+	offset[0] = offset[0] + temp*clustersize;
 }
 
 
@@ -84,22 +84,16 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 	QWORD logicpos=0;
 	max=max;		//kill warning currently
 
-	//printmemory(dirhome,0x40);
-	//每个run来一次
+	//printmemory(runaddr,0x40);
 	while(1)
 	{
 		BYTE data= *(BYTE*)runaddr;
-		//diary("%x\n",data);
 		if(data == 0) break;
-
-		//这个以及后面再也没有想要的了
-		//diary("%x,%x\n",want+0x100000,logicpos);
 		if(want+0x80000<=logicpos)break;
 
 		//拿到这一大块的扇区号和扇区数量
 		explainrun(runaddr,&offset,&count);
-		//printmemory(runaddr,0x10);
-		diary("sector=%x,count=%x\n",ntfssector+offset,count);
+		diary("sector=%llx,count=%llx\n",ntfssector+offset,count);
 
 		//要是这个不要，看看下一个怎么样
 		if(logicpos+count>want)
@@ -166,29 +160,6 @@ char* checkcacheformft(QWORD mftnum)
 		offset += *(DWORD*)(mft0+offset+4);
 	}
 	return mftbuffer+0x400*(mftnum % 0x100);		//0x40000/0x400=0x100个
-}
-
-
-
-
-void explain80(char* addr,QWORD want)	//file data
-{
-	if( addr[8] == 0 )
-	{
-		diary("resident80@%x\n",addr);
-		DWORD length = *(DWORD*)(addr+0x10);
-		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
-		BYTE* rdi=(BYTE*)datahome;
-		DWORD i;
-		for(i=0;i<length;i++) rdi[i]=rsi[i];
-
-		return;
-	}
-	else
-	{
-		diary("non resident80@%x\n",addr);
-		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want,0x80000);
-	}
 }
 
 
@@ -269,84 +240,21 @@ char* explainindex(char* rdi,char* rsi,char* end)
 }
 
 
-void explain90(char* addr)	//index root
-{
-	diary("90@%x\n",addr);
-
-	addr += *(WORD*)(addr+0x14);	//现在addr=属性体地址=索引根地址
-
-	addr+=0x10;			//现在addr=索引头地址
-	QWORD size=(QWORD)( *(DWORD*)(addr+4) );
-
-	addr+=0x10;			//现在addr=第一个索引项地址
-
-	//剩下的事(这块以后要改，排序什么的)
-	if( *(BYTE*)(addr+0xc) ==0 )	//是小索引
-	{
-		explainindex(dirhome,addr,addr+size);
-	}
-	else				//是大索引
-	{
-		explainindex(dirhome,addr,addr+size);
-	}
-}
 
 
-void explaina0(char* addr)	//index allocation
-{
-	//清理dirhome
-	BYTE* memory;
-	int i;
-	memory=(BYTE*)(datahome);
-	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
-	memory=(BYTE*)(dirhome);
-	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
-
-	//读INDX进来
-	diary("a0@%x{\n",addr);
-	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0 , 0x100000);
-	//printmemory(datahome,0x1000);
-
-	//解释INDX成易懂的格式：名字，编号，类型，大小
-	char* p=datahome;
-	char* rdi=dirhome;
-	while( *(DWORD*)p ==0x58444e49 )	//INDX
-	{
-		diary("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
-		char* start=p + 0x18 + ( *(DWORD*)(p+0x18) );
-		char* end=p + ( *(DWORD*)(p+0x1c) );
-
-		rdi=explainindex(rdi,start,end);
-		//printmemory(dirhome,0x200);
-		p+=0x1000;
-	}
-
-	diary("}\n",0);
-}
-
-
-
-
-//解释mft（mft号，要这个文件里面第几个字节开始的一段）
-//如果是文件夹自动做文件夹的事，如果是文件自动读取指定位置
-//mft记录：
-//*+0x00*/	uint32 Type;            // 固定值'FILE'
-//*+0x04*/	uint16 UsaOffset;       // 更新序列号偏移, 与操作系统有关
-//*+0x06*/	uint16 UsaCount;        // 固定列表大小Size in words of Update Sequence Number & Array (S)
-//*+0x08*/  uint64 Lsn;             // 日志文件序列号(LSN)
-//*+0x10*/  uint16  SequenceNumber;   // 序列号(用于记录文件被反复使用的次数)
-//*+0x12*/  uint16  LinkCount;        // 硬连接数
-//*+0x14*/  uint16  AttributeOffset;  // 第一个属性偏移
-//*+0x16*/  uint16  Flags;            // falgs, 00表示删除文件,01表示正常文件,02表示删除目录,03表示正常目录
-//*+0x18*/  uint32  BytesInUse;       // 文件记录实时大小(字节) 当前MFT表项长度,到FFFFFF的长度+4
-//*+0x1C*/  uint32  BytesAllocated;   // 文件记录分配大小(字节)
-//*+0x20*/  uint64  BaseFileRecord;   // = 0 基础文件记录 File reference to the base FILE record
-//*+0x28*/  uint16  NextAttributeNumber; // 下一个自由ID号
-//*+0x2A*/  uint16  Pading;           // 边界
-//*+0x2C*/  uint32  MFTRecordNumber;  // windows xp中使用,本MFT记录号
-//*+0x30*/  uint32  MFTUseFlags;      // MFT的使用标记
-
-//0x10属性：
+//0x10属性头：
+//[0,3]:	属性类型	0x10
+//[4,7]:	本属性长度
+//[8]:		是否为常驻	0
+//[9]:		属性名长度（0表示没有）		0
+//[a,b]:	属性名开始偏移（没有属性名）	0
+//[c,d]:	压缩加密稀疏标志：1=压缩，4000=加密，8000=稀疏
+//[e,f]:	属性id
+//[10,13]:	属性体长度
+//[14,15]:	属性体开始偏移
+//[16]:		索引标志
+//[17]:		无意义
+//0x10属性体：
 //*+0x00*/	uint64 CreationTime;         // 创建时间
 //*+0x08*/	uint64 ChangeTime;           // 修改时间
 //*+0x10*/	uint64 LastWriteTime;        // 最后写入时间
@@ -359,6 +267,12 @@ void explaina0(char* addr)	//index allocation
 //*+0x30*/	uint64 QuotaCharge;
 //*+0x38*/	USN Usn;
 //#endif
+//void explain10(char* add)
+//{
+//}
+
+
+
 
 //0x20属性：
 //*+0x00*/	ATTRIBUTE_TYPE AttributeType;
@@ -369,6 +283,12 @@ void explaina0(char* addr)	//index allocation
 //*+0x10*/	uint64 FileReferenceNumber;
 //*+0x08*/	uint16 AttributeNumber;
 //*+0x0a*/	uint16 AlignmentOrReserved[3];
+//void explain20(char* addr)
+//{
+//}
+
+
+
 
 //0x30属性：
 //*+0x00*/	uint64 DirectoryFile:48;    // 父目录记录号(前个字节)
@@ -385,8 +305,26 @@ void explaina0(char* addr)	//index allocation
        	// 文件名命名空间, 0 POSIX大小写敏感,1 win32空间,2 DOS空间, 3 win32&DOS空间
 //*+0x41*/	uchar NameType;        
 //*+0x42*/	wchar Name[1];         // 以Unicode方式标识的文件名
+//void explain30(char* addr)
+//{
+//}
 
-//80属性：
+
+
+
+//0x80属性头：
+//[0,3]:	属性类型	0x10
+//[4,7]:	本属性长度
+//[8]:		是否为常驻	0
+//[9]:		属性名长度（0表示没有）		0
+//[a,b]:	属性名开始偏移（没有属性名）	0
+//[c,d]:	压缩加密稀疏标志：1=压缩，4000=加密，8000=稀疏
+//[e,f]:	属性id
+//[10,13]:	属性体长度
+//[14,15]:	属性体开始偏移
+//[16]:		索引标志
+//[17]:		无意义
+//0x80属性体：
 //*+0x00*/	ATTRIBUTE Attribute;  
 //*+0x10*/	uint64 StartVcn;     // LowVcn 起始VCN  起始簇号
 //*+0x18*/	uint64 LastVcn;      // HighVcn  结束VCN  结束簇号
@@ -398,51 +336,169 @@ void explaina0(char* addr)	//index allocation
 //*+0x38*/	uint64 DataSize;     // 属性值压缩大小
 //*+0x40*/	uint64 InitializedSize;   // 实际数据大小
 //*+0x48*/	uint64 CompressedSize;    // 压缩后大小
-static char explaining[1024];
+void explain80(char* addr,QWORD want)	//file data
+{
+	if( addr[8] == 0 )
+	{
+		diary("resident80@%x\n",addr);
+		DWORD length = *(DWORD*)(addr+0x10);
+		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
+		BYTE* rdi=(BYTE*)datahome;
+		DWORD i;
+		for(i=0;i<length;i++) rdi[i]=rsi[i];
+
+		return;
+	}
+	else
+	{
+		diary("non resident80@%x\n",addr);
+		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want,0x80000);
+	}
+}
+
+
+
+
+//0x90属性头：
+//[0,3]:	属性类型	0x10
+//[4,7]:	本属性长度
+//[8]:		是否为常驻	0
+//[9]:		属性名长度（0表示没有）		0
+//[a,b]:	属性名开始偏移（没有属性名）	0
+//[c,d]:	压缩加密稀疏标志：1=压缩，4000=加密，8000=稀疏
+//[e,f]:	属性id
+//[10,13]:	属性体长度
+//[14,15]:	属性体开始偏移
+//[16]:		索引标志
+//[17]:		无意义
+//0x90属性体：
+void explain90(char* addr)	//index root
+{
+	addr += *(WORD*)(addr+0x14);	//现在addr=属性体地址=索引根地址
+	addr+=0x10;			//现在addr=索引头地址
+
+	QWORD size=(QWORD)( *(DWORD*)(addr+4) );
+	addr+=0x10;			//现在addr=第一个索引项地址
+
+	//剩下的事(这块以后要改，排序什么的)
+	if( *(BYTE*)(addr+0xc) ==0 )	//是小索引
+	{
+		explainindex(dirhome,addr,addr+size);
+	}
+	else				//是大索引
+	{
+		explainindex(dirhome,addr,addr+size);
+	}
+}
+
+
+
+
+//0xa0属性头：
+//[0,3]:	属性类型	0x10
+//[4,7]:	本属性长度
+//[8]:		是否为常驻	0
+//[9]:		属性名长度（0表示没有）		0
+//[a,b]:	属性名开始偏移（没有属性名）	0
+//[c,d]:	压缩加密稀疏标志：1=压缩，4000=加密，8000=稀疏
+//[e,f]:	属性id
+//[10,13]:	属性体长度
+//[14,15]:	属性体开始偏移
+//[16]:		索引标志
+//[17]:		无意义
+//0xa0属性体：
+void explaina0(char* addr)	//index allocation
+{
+	//清理dirhome
+	BYTE* memory;
+	int i;
+	memory=(BYTE*)(datahome);
+	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
+	memory=(BYTE*)(dirhome);
+	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
+
+	//读INDX进来
+	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0 , 0x100000);
+	//printmemory(datahome,0x1000);
+
+	//解释INDX成易懂的格式：名字，编号，类型，大小
+	char* p=datahome;
+	char* rdi=dirhome;
+	while( *(DWORD*)p ==0x58444e49 )	//INDX
+	{
+		diary("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
+		char* start=p + 0x18 + ( *(DWORD*)(p+0x18) );
+		char* end=p + ( *(DWORD*)(p+0x1c) );
+
+		rdi=explainindex(rdi,start,end);
+		//printmemory(dirhome,0x200);
+		p+=0x1000;
+	}
+}
+
+
+
+
+//解释mft（mft号，要这个文件里面第几个字节开始的一段）
+//如果是文件夹自动做文件夹的事，如果是文件自动读取指定位置
+//mft记录：
+//*+0x00*/ uint32 Type;        // 固定值'FILE'
+//*+0x04*/ uint16 UsaOffset;   // 更新序列号偏移, 与操作系统有关
+//*+0x06*/ uint16 UsaCount;    // 固定列表大小Size in words of Update Sequence Number&Array(S)
+//*+0x08*/ uint64 Lsn;         // 日志文件序列号(LSN)
+//*+0x10*/ uint16 SequenceNumber;   // 序列号(用于记录文件被反复使用的次数)
+//*+0x12*/ uint16 LinkCount;        // 硬连接数
+//*+0x14*/ uint16 AttributeOffset;  // 第一个属性偏移
+//*+0x16*/ uint16 Flags;            // falgs, 00=删除文件,01=正常文件,02=删除目录,03=正常目录
+//*+0x18*/ uint32 BytesInUse;       // 文件记录实时大小(字节) 当前MFT表项长度,到FFFFFF的长度+4
+//*+0x1C*/ uint32 BytesAllocated;   // 文件记录分配大小(字节)
+//*+0x20*/ uint64 BaseFileRecord;   // = 0 基础文件记录 File reference to the base FILE record
+//*+0x28*/ uint16 NextAttributeNumber; // 下一个自由ID号
+//*+0x2A*/ uint16 Pading;           // 边界
+//*+0x2C*/ uint32 MFTRecordNumber;  // windows xp中使用,本MFT记录号
+//*+0x30*/ uint32 MFTUseFlags;      // MFT的使用标记
+static char here[1024];
 void explainmft(QWORD mftnum,QWORD want)
 {
 	//具体不用管，知道返回值是所求MFT的地址就行
-	char* mft=checkcacheformft(mftnum);
-
-	//mft会被改掉，所以把当前的复制一份到自己家处理
 	int i;
-	for(i=0;i<1024;i++)
-	{
-		explaining[i] = mft[i];
-	}
-	mft=explaining;
-
-    //不对就滚
+	char* mft=checkcacheformft(mftnum);
 	if( *(DWORD*)mft !=0x454c4946 )
 	{
 		diary("[mft]wrong:%x\n",mftnum);
 		return;
 	}
 
+	//mft会被改掉，所以把当前的复制一份到自己家处理
+	for(i=0;i<1024;i++)
+	{
+		here[i] = mft[i];
+	}
+
 	//有一个property解释要给property
-	char* offset=mft + ( *(WORD*)(mft+0x14) );
+	int offset=*(WORD*)(here+0x14);
 	while(1)
 	{
-		if(offset > mft + 0x400) break;
+		if(offset > 0x400) break;
 
-		DWORD property= *(DWORD*)offset;
+		DWORD property= *(DWORD*)(here+offset);
 		if(property == 0xffffffff) break;
 
 		switch(property)
 		{
-			case 0x10:{	//standard information
+			case 0x10:{	//standard information	//权限，时间，硬链接数量
 				diary("10@%x\n",offset);
 				break;
 			}
-			case 0x20:{	//attribute list
+			case 0x20:{	//attribute list//需要多个文件记录时用来描述属性列表
 				diary("20@%x\n",offset);
 				break;
 			}
-			case 0x30:{	//unicode name
+			case 0x30:{	//unicode name//文件名，unicode
 				diary("30@%x\n",offset);
 				break;
 			}
-			case 0x40:{	//object id
+			case 0x40:{	//object id	//早起ntfs1.2中为卷版本
 				diary("40@%x\n",offset);
 				break;
 			}
@@ -450,48 +506,51 @@ void explainmft(QWORD mftnum,QWORD want)
 				diary("50@%x\n",offset);
 				break;
 			}
-			case 0x60:{	//volume name
+			case 0x60:{	//volume name	//只存在于$volume中
 				diary("60@%x\n",offset);
 				break;
 			}
-			case 0x70:{	//volumn information
+			case 0x70:{	//volume information	//只存在于$volume中
 				diary("70@%x\n",offset);
 				break;
 			}
 			case 0x80:{	//data
-				explain80(offset,want);
+				diary("80@%x\n",offset);
+				explain80(here+offset,want);
 				break;
 			}
 			case 0x90:{	//index root
-				explain90(offset);
+				diary("90@%x\n",offset);
+				explain90(here+offset);
 				break;
 			}
 			case 0xa0:	//index allocation
 			{
-				explaina0(offset);
+				diary("a0@%x\n",offset);
+				explaina0(here+offset);
 				break;
 			}
 			case 0xb0:{	//bitmap
 				diary("b0@%x\n",offset);
 				break;
 			}
-			case 0xc0:{	//reparse point
+			case 0xc0:{	//reparse point	//早期ntfs1.2中为符号链接
 				diary("c0@%x\n",offset);
 				break;
 			}
-			case 0xd0:{	//ea information
+			case 0xd0:{	//ea information	//扩充属性信息
 				diary("d0@%x\n",offset);
 				break;
 			}
-			case 0xe0:{	//ea
+			case 0xe0:{	//ea			//扩充属性
 				diary("e0@%x\n",offset);
 				break;
 			}
-			case 0xf0:{	//property set
+			case 0xf0:{	//property set		//早期ntfs1.2中才有
 				diary("f0@%x\n",offset);
 				break;
 			}
-			case 0x100:{	//logged utility stream
+			case 0x100:{	//logged utility stream	//efs加密属性
 				diary("100@%x\n",offset);
 				break;
 			}
@@ -500,10 +559,12 @@ void explainmft(QWORD mftnum,QWORD want)
 				break;
 			}
 		}
-		offset += *(DWORD*)(offset+4);
-	}
-	diary("\n");
-}
+		offset += *(DWORD*)(here+offset+4);
+
+	}//while1
+}//explainmft
+
+
 
 
 static int ntfs_cd(QWORD id)
@@ -530,10 +591,6 @@ static int ntfs_explain(QWORD mftnum)
 	printmemory(mft,0x400);
 	return 1;
 }
-
-
-
-
 
 
 
@@ -596,6 +653,12 @@ int explainntfshead()
 	dstqword += 8;
 	diary("indexsize:%x\n",indexsize);
 
+	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
+	readmemory(mft0,ntfssector+mftcluster*clustersize,0,32);
+	printmemory(mft0,0x400);		//	$Mft
+	printmemory(mft0+0x400*5,0x400);	//	.
+	printmemory(mft0+0x400*7,0x400);	//	$Boot
+
 	return 1;
 }
 //描述地址，状态机地址
@@ -618,9 +681,8 @@ int mountntfs(char* src,char* addr)
 	ret=explainntfshead();
 	if(ret < 0)return ret;
 
-	//保存开头几个mft,然后开始
-	ret=readmemory(mft0,ntfssector+mftcluster*clustersize,0,2);
-	firstmftincache=0xffffffff;		//no mft cache yet
+	//cd /
+	firstmftincache=0xffffffff;
 	pwd[0]=5;
 	ntfspwd=0;
 	ntfs_cd(5);
