@@ -57,7 +57,7 @@ x86+win+cli:
 	make -s -C libsoft0 win
 	make -s -C libsoft1 gcc
 	make -s -C libui0 cli
-	make -s -C libui1 gcc
+	make -s -C libui1 mingw64
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
@@ -91,7 +91,7 @@ x86+win+api:
 	make -s -C libsoft0 win
 	make -s -C libsoft1 gcc
 	make -s -C libui0 winapi
-	make -s -C libui1 gcc
+	make -s -C libui1 mingw64
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \

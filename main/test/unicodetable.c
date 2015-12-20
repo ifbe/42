@@ -1,5 +1,5 @@
 #include<stdio.h>
-extern char* _binary_unicode_unicode_start;
+unsigned char* whereisunicodetable();
 void printmemory(char*,int);
 
 
@@ -28,7 +28,7 @@ void printunicode(char* p)
 void main()
 {
 	int i;
-	unsigned char* p=(char*)&_binary_unicode_unicode_start;
+	unsigned char* p=whereisunicodetable();
 	//printmemory(p,0x1000);
 
 	printunicode(p+(0x6709*0x20));		//有
