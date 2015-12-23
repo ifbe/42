@@ -19,7 +19,7 @@ void intomemory(char* in);
 void initall();
 void cleanall();
 //
-char* whereisface();
+char* whereisworker();
 void diary(char*,...);
 void printmemory(char*,int);
 
@@ -44,7 +44,7 @@ struct worker
 	//对齐0x80字节
 	char padding[ 0x40 - (4*sizeof(QWORD)) - (4*sizeof(char*)) ];
 };
-static struct worker* worker;		//whereisface
+static struct worker* worker;		//whereisworker
 	//1.hex.c
 	//1.vi.c
 	//2.fs.c
@@ -146,7 +146,7 @@ void processmessage(QWORD type,QWORD key)
 void initgui()
 {
 	int i;
-	char* temp=whereisface();
+	char* temp=whereisworker();
 	worker=(struct worker*)temp;
 
 	//clean everything

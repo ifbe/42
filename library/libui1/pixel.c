@@ -7,7 +7,7 @@ void initanscii(char*);
 
 
 //todo
-void initpalette(char* addr)
+void initpixel(char* addr)
 {
 	initbackground(addr);
 	initshape(addr);

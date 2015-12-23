@@ -25,7 +25,7 @@ void printunicode(char* p)
 		printf("\n");
 	}
 }
-void main()
+int main()
 {
 	int i;
 	unsigned char* p=whereisunicodetable();
@@ -33,4 +33,6 @@ void main()
 
 	printunicode(p+(0x6709*0x20));		//有
 	printunicode(p+(0x6ca1*0x20));		//没
+
+	return 0;
 }

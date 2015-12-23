@@ -5,8 +5,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 //libui1
-void initpalette(char*);
-void killpalette();
+void initpixel(char*);
+void killpixel();
 //libui0
 void initwindow(char*);
 void killwindow();
@@ -41,7 +41,7 @@ char* whereispalette()
 static char*   world=0;		//4m
 static char*    body=0;		//4m
 static char*  memory=0;		//4m
-static char*    face=0;		//4m
+static char*  worker=0;		//4m
 char* whereisworld()
 {
 	return world;
@@ -54,9 +54,9 @@ char* whereismemory()
 {
 	return memory;
 }
-char* whereisface()
+char* whereisworker()
 {
-	return face;
+	return worker;
 }
 
 
@@ -94,8 +94,23 @@ void worldandmemory()		//8m
 	initmemory( memory );
 	initmaster( memory );
 }
-void onlyface()
+void initpalette()
 {
+	QWORD i;
+
+	//allocate memory
+	universe=malloc(0x400000 + 0x1000);
+	if(universe==NULL)
+	{
+		printf("no enough momery\n");
+		exit(-1);
+	}
+
+	//强制4k对齐
+	i = (QWORD)universe & 0xfff;
+	palette = universe + (0x1000 - i);
+	initwindow( palette );
+	initpixel( palette );
 }
 void initall()
 {
@@ -132,12 +147,12 @@ void initall()
 	initmaster( memory );
 
 	//[c,f)
-	face=world + (3*0x400000);
+	worker=world + (3*0x400000);
 
 	//444444444
 	palette=world + (4*0x400000);
 	initwindow( palette );
-	initpalette( palette );
+	initpixel( palette );
 }
 __attribute__((destructor)) void cleanall()
 {
@@ -149,9 +164,9 @@ __attribute__((destructor)) void cleanall()
 	}
 
 	//4+4+4+4
-	if(face != 0)
+	if(worker != 0)
 	{
-		face=0;
+		worker=0;
 	}
 	if(memory != 0)
 	{
