@@ -8,6 +8,7 @@ void cleanall();
 void writescreen();
 void waitevent(QWORD* type,QWORD* key);
 void printunicode(int,int,DWORD);
+void printunicodebig(int,int,DWORD);
 
 
 
@@ -38,6 +39,8 @@ void printworld()
                 }
         }
 
+	//
+	printunicodebig(0,0,which);
 }
 void processmessage(QWORD type,QWORD key)
 {
