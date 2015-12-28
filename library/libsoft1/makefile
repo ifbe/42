@@ -10,6 +10,7 @@ binary:
 	gcc -c -fPIC -O2 text/anscii.c
 	gcc -c -fPIC -O2 text/utf8.c
 	gcc -c -fPIC -O2 master.c
+	gcc -c -fPIC -O2 servent.c
 crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 algorithm/stack.c
 	x86_64-elf-gcc -c -fPIC -O2 calc/calc.c
@@ -22,6 +23,7 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 text/anscii.c
 	x86_64-elf-gcc -c -fPIC -O2 text/utf8.c
 	x86_64-elf-gcc -c -fPIC -O2 master.c
+	x86_64-elf-gcc -c -fPIC -O2 servent.c
 gcc:
 	gcc -c -O2 algorithm/stack.c
 	gcc -c -O2 calc/calc.c
@@ -34,6 +36,7 @@ gcc:
 	gcc -c -O2 text/anscii.c
 	gcc -c -O2 text/utf8.c
 	gcc -c -O2 master.c
+	gcc -c -O2 servent.c
 clang:
 	clang -c -O2 algorithm/stack.c
 	clang -c -O2 calc/calc.c
@@ -46,5 +49,6 @@ clang:
 	clang -c -O2 text/anscii.c
 	clang -c -O2 text/utf8.c
 	clang -c -O2 master.c
+	clang -c -O2 servent.c
 clean:
 	rm -f *.o *.a

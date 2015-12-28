@@ -2,6 +2,9 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//servent
+QWORD prelibation(char*);
+int mount(char*);
 //libsoft1/
 int mountext(char* src,char* dst);
 int mountfat(char* src,char* dst);
@@ -19,13 +22,15 @@ int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
-int platformread(char*);
-int platformwrite(char*);
+//libboot1
+int cleanmemory(char* addr,int count);
+int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
 int diary(char* str,...);	//+2
 int history(char* str,...);	//+3
-int cleanmemory(char* addr,int count);
-int printmemory(char* addr,int count);
+//libboot0
+int platformread(char*);
+int platformwrite(char*);
 
 
 
@@ -36,114 +41,14 @@ static char* fshome;		//+1m
 static char* dirhome;		//+2m
 static char* datahome;		//+3m
 //3大函数的位置
-int (*fsexplain)(QWORD id);		//((int (*)(QWORD))(fsexplain))(value);
+int (*fsexplain)(QWORD id);	//((int (*)(QWORD))(fsexplain))(value);
 int (*fscd)(QWORD id);		//((int (*)(QWORD))(fscd))(arg1);
 int (*fsload)(QWORD id,QWORD part);	//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
 
 
 
 
-//自己读出来检查这是个什么玩意，不能相信分区表里面的类型
-void hello()
-{
-	//读最开始的64个扇区（0x8000字节）来初步确定
-	int ret=readmemory(datahome,0,0,64);
-	if(ret<=0)
-	{
-		//读不出来，可能是内存？
-		diary("it's memory?\n");
-	}
-	else if( *(WORD*)(datahome+0x1fe) == 0xaa55 )
-	{
-		//末尾有0x55，0xaa这个标志，这个是磁盘，或者要当成磁盘用
-
-		//看看是什么类型，交给小弟处理
-		QWORD temp=*(QWORD*)(datahome+0x200);
-		if( temp == 0x5452415020494645 )
-		{
-			explaingpt(datahome,diskhome);
-		}
-		else
-		{
-			explainmbr(datahome,diskhome);
-		}
-	}
-	else
-	{
-		//可能是zip,网络包,或者其他乱七八糟的结构
-		diary("don't know\n");
-	}
-}
-
-
-
-
-
-
-
-
-//basic function
-static int masterread(char* arg1)
-{
-	QWORD value;
-
-	//nothing specified
-	if(arg1==0)
-	{
-		diary("masterread@%llx,world@%llx\n",masterread,diskhome);
-		return -1;
-	}
-
-	//what is it
-	value=0;
-	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
-	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
-	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
-	{
-		if( arg1[0] < 'a' )value++;
-	}
-
-	//default,read chosen memory/port/disk/socket...
-	if(value==0)
-	{
-		hexstring2data(arg1,&value);
-		readmemory(datahome,value,0,1);
-		printmemory(datahome,0x200);
-		diary("above is:%llx\n",value);
-		return 0;
-	}
-
-	else return platformread(arg1);
-}
-static int masterwrite(char* arg1)
-{
-	QWORD value;
-
-	//nothing specified
-	if(arg1==0)
-	{
-		diary("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
-		return -1;
-	}
-
-	//what is it
-	value=0;
-	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
-	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
-	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
-	{
-		if( arg1[0] < 'a' )value++;
-	}
-
-	//"read memory.400000"
-	if(value==0)
-	{
-		diary("no!i won't write!\n");
-		return 0;
-	}
-
-	else return platformwrite(arg1);
-}
+//physical function
 static void masterlist(char* arg1)
 {
 	QWORD temp=0;
@@ -238,12 +143,13 @@ static void masterlist(char* arg1)
 }//masterlist
 static void masterinto(char* arg)
 {
-	int i=0;
 	int ret=0;
-	int number=0;
 	QWORD temp=0;
 
-	//如果传进来0，仅扫描所有硬盘
+
+
+
+	//1.如果传进来0，仅扫描所有硬盘
 	if(arg == 0)
 	{
 		listmemory();
@@ -251,58 +157,90 @@ static void masterinto(char* arg)
 		return;
 	}
 
-	//如果传进来数量少，并且是纯数字
-	if( (arg[1]==0) | (arg[2]==0) )
+
+
+
+	//2.如果指向的第一个字节是'/'，说明要一个我们自己的单位
+	if(arg[0]=='/')
 	{
-		//拿数字
-		number=0;
-		for(i=0;i<10;i++)
-		{
-			if( arg[i]==0 )break;
-			if( (arg[i] >= 0x30) | (arg[i] <= 0x39) )
-			{
-				number=10*number + arg[i] - 0x30;
-			}
-		}
-
-		//挂载那个数字对应的分区
-		if(number != 0)
-		{
-			//printmemory(diskhome + number*0x40,0x40);
-
-			//挂载
-			temp = *(QWORD*)( diskhome+number*0x40 + 8 );	//type
-			if(temp == 0x747865)		//'ext'
-			{
-				ret=mountext( diskhome+number*0x40 , diskhome );
-			}
-			else if(temp == 0x746166)	//'fat'
-			{
-				ret=mountfat( diskhome+number*0x40 , diskhome );
-			}
-			else if(temp == 0x736668)	//'hfs'
-			{
-				ret=mounthfs( diskhome+number*0x40 , diskhome );
-			}
-			else if(temp == 0x7366746e)	//'ntfs'
-			{
-				ret=mountntfs( diskhome+number*0x40 , diskhome );
-			}
-			if(ret<0)return;
-
-			//拿到cd,load,explain等苦工的地址
-			fscd = *(void**)( fshome+0x10 );
-			fsload = *(void**)( fshome+0x50 );
-			fsexplain = *(void**)( fshome+0x90 );
-			diary("%llx,%llx,%llx\n",fscd,fsload,fsexplain);
-			return;
-		}
+		return;
 	}
 
-	//如果
-	cleanmemory(diskhome+0x100000,0x200000);
+
+
+
+	//3.其他情况，先清空内存
+	cleanmemory(diskhome+0x100000,0x300000);
+
+	//选中这个“东西”
 	intomemory(arg);
-	hello();
+
+	//读最开始64个扇区(0x200*0x40=0x8000)
+	ret=readmemory(datahome,0,0,64);
+
+	//并检查种类
+	temp=prelibation(datahome);
+}
+static int masterread(char* arg1)
+{
+	QWORD value;
+
+	//nothing specified
+	if(arg1==0)
+	{
+		diary("masterread@%llx,world@%llx\n",masterread,diskhome);
+		return -1;
+	}
+
+	//what is it
+	value=0;
+	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
+	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
+	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
+	{
+		if( arg1[0] < 'a' )value++;
+	}
+
+	//default,read chosen memory/port/disk/socket...
+	if(value==0)
+	{
+		hexstring2data(arg1,&value);
+		readmemory(datahome,value,0,1);
+		printmemory(datahome,0x200);
+		diary("above is:%llx\n",value);
+		return 0;
+	}
+
+	else return platformread(arg1);
+}
+static int masterwrite(char* arg1)
+{
+	QWORD value;
+
+	//nothing specified
+	if(arg1==0)
+	{
+		diary("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
+		return -1;
+	}
+
+	//what is it
+	value=0;
+	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
+	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
+	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
+	{
+		if( arg1[0] < 'a' )value++;
+	}
+
+	//"read memory.400000"
+	if(value==0)
+	{
+		diary("no!i won't write!\n");
+		return 0;
+	}
+
+	else return platformwrite(arg1);
 }
 
 
@@ -312,7 +250,7 @@ static void masterinto(char* arg)
 
 
 
-//filesystem function
+//logical function
 static int ls(char* name)
 {
 	//ls
@@ -428,50 +366,67 @@ void command(char* buffer)
 		diary("store ?		(store this file)\n");
 		return;
 	}
-
-	//
+	//physical 1
 	ret=compare( arg0 , "list" );
 	if(ret==0)
 	{
 		masterlist(arg1);
 		return;
 	}
+	//physical 2
 	ret=compare( arg0 , "into" );
 	if(ret==0)
 	{
 		masterinto(arg1);
 		return;
 	}
+	//physical 3
 	ret=compare( arg0 , "read" );
 	if(ret==0)
 	{
 		masterread(arg1);
 		return;
 	}
+	//physical 4
 	ret=compare( arg0 , "write" );	//dangerous
 	if(ret==0)
 	{
 		masterwrite(arg1);
 		return;
 	}
+
+
+
+
+	//logical 0
+	ret=compare( arg0 , "mount");
+	if(ret==0)
+	{
+		mount(arg1);
+		return;
+	}
+	//logical 1
 	ret=compare( arg0 , "ls");
 	if(ret==0)
 	{
 		ls(arg1);
 		return;
 	}
+	//logical 2
 	ret=compare( arg0 , "cd" );
 	if(ret==0)
 	{
 		cd(arg1);
 		return;
 	}
+	//logical 3
 	ret=compare( arg0 , "load" );
 	if(ret==0)
 	{
 		load(arg1);
 		return;
 	}
+	//logical 4
 	//ret=compare( arg0 , "store" );	//dangerous
 	//if(ret==0)
 	//{
@@ -485,10 +440,12 @@ void command(char* buffer)
 
 void initmaster(char* world)
 {
+	//4块区域，每块1兆
 	diskhome=world+0;
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
 
-	hello();
+	//最开始看着谁
+	masterinto(diskhome+0x20);
 }

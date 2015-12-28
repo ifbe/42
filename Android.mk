@@ -51,7 +51,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/filesystem/fs.ntfs.c \
 	library/libsoft1/partitiontable/pt.gpt.c \
 	library/libsoft1/partitiontable/pt.mbr.c \
-	library/libsoft1/master.c
+	library/libsoft1/master.c \
+	library/libsoft1/servent.c
 #1.ui0
 LOCAL_SRC_FILES += \
 	library/libui0/console/console.c
