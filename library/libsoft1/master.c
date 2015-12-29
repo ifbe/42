@@ -146,9 +146,6 @@ static void masterinto(char* arg)
 	int ret=0;
 	QWORD temp=0;
 
-
-
-
 	//1.如果传进来0，仅扫描所有硬盘
 	if(arg == 0)
 	{
@@ -157,19 +154,14 @@ static void masterinto(char* arg)
 		return;
 	}
 
-
-
-
 	//2.如果指向的第一个字节是'/'，说明要一个我们自己的单位
 	if(arg[0]=='/')
 	{
 		return;
 	}
 
-
-
-
-	//3.其他情况，先清空内存
+	//3.其他情况
+	//先清空内存
 	cleanmemory(diskhome+0x100000,0x300000);
 
 	//选中这个“东西”
@@ -178,8 +170,13 @@ static void masterinto(char* arg)
 	//读最开始64个扇区(0x200*0x40=0x8000)
 	ret=readmemory(datahome,0,0,64);
 
-	//并检查种类
+	//喊仆人来检查“东西”种类
 	temp=prelibation(datahome);
+
+	//读分区表
+	if(temp==0x747067) explaingpt(datahome,diskhome);
+	else if(temp==0x72626d) explainmbr(datahome,diskhome);
+	else diary("i don't know it\n");
 }
 static int masterread(char* arg1)
 {
@@ -355,16 +352,32 @@ void command(char* buffer)
 	int ret=compare( arg0 , "help" );
 	if(ret==0)
 	{
-		//normal
-		diary("list ?		(list all known)\n");
-		diary("into ?		(choose a disk)\n");
-		diary("read ?		(hex print a physical sector)\n");
-		diary("write ?		(no)\n");
-		diary("ls ?		(list file)\n");
-		diary("cd ?		(change directory)\n");
-		diary("load ?		(load this file)\n");
-		diary("store ?		(store this file)\n");
-		return;
+		//checktype
+		if(arg1 == 0)
+		{
+			//physical(master)
+			diary("help ?		(list all known)\n");
+			diary("list ?		(list all known)\n");
+			diary("into ?		(choose a disk)\n");
+			diary("read ?		(hex print a sector)\n");
+			diary("write ?		(no)\n\n");
+
+			//logical(servent)
+			diary("mount ?		(no)\n");
+			diary("ls ?		(list file)\n");
+			diary("cd ?		(change directory)\n");
+			diary("load ?		(load this file)\n");
+			diary("store ?		(store this file)\n");
+			return;
+		}
+
+		//explain memory
+		else
+		{
+			char* value;
+			hexstring2data(arg1,&value);
+			prelibation(value);
+		}
 	}
 	//physical 1
 	ret=compare( arg0 , "list" );
@@ -402,7 +415,9 @@ void command(char* buffer)
 	ret=compare( arg0 , "mount");
 	if(ret==0)
 	{
-		mount(arg1);
+		QWORD value;
+		hexstring2data(arg1,value);
+		mount(value);
 		return;
 	}
 	//logical 1
@@ -427,7 +442,7 @@ void command(char* buffer)
 		return;
 	}
 	//logical 4
-	//ret=compare( arg0 , "store" );	//dangerous
+	//ret=compare( arg0 , "store" );	//very dangerous
 	//if(ret==0)
 	//{
 		//store(arg1);

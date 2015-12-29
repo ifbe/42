@@ -2,6 +2,23 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//返回相似度，越像越接近0x7fffffff，确定不是就返回0
+int isgpt();
+int ismbr();
+int isfat();
+int isntfs();
+int isext();
+int ishfs();
+//int is...();
+
+
+/*
+check
+explain
+cd
+load
+store
+*/
 
 
 
@@ -9,51 +26,40 @@
 //试毒员
 QWORD prelibation(char* memaddr)
 {
-	//读最开始的64个扇区（0x8000字节）来初步确定
-	int ret=readmemory(datahome,0,0,64);
-	if(ret<=0)
-	{
-		//读不出来，可能是内存？
-		diary("it's memory?\n");
-	}
-	else if( *(WORD*)(datahome+0x1fe) == 0xaa55 )
-	{
-		//末尾有0x55，0xaa这个标志，这个是磁盘，或者要当成磁盘用
+	//一个个去问
+	if( isgpt(memaddr) )return 0x747067;		//'gpt'
 
-		//看看是什么类型，交给小弟处理
-		QWORD temp=*(QWORD*)(datahome+0x200);
+	if( isfat(memaddr) )return 0x746166;		//'fat'
+	if( isntfs(memaddr) )return 0x7366746e;	//'ntfs'
+	if( isext(memaddr) )return 0x747865;		//'ext'
+	if( ishfs(memaddr) )return 0x736668;		//'hfs'
+
+	if( ismbr(memaddr) )return 0x72626d;		//'mbr'
+
+	//什么都不像，返回失败
+	return 0;	//'unknown'
+}
+/*
+	//末尾有0x55，0xaa这个标志 -> 分区表头或windows系列文件系统
+	QWORD temp=*(WORD*)(datahome+0x1fe);
+	if(temp == 0xaa55 )
+	{
+		//第二个扇区开头是"EFI PART" -> 是gpt分区表头
+		temp=*(QWORD*)(datahome+0x200);
 		if( temp == 0x5452415020494645 )
 		{
-			explaingpt(datahome,diskhome);
+			return 0x747067;	//'gpt'
 		}
-		else
-		{
-			explainmbr(datahome,diskhome);
-		}
+
 	}
-	else
-	{
-		//可能是zip,网络包,或者其他乱七八糟的结构
-		diary("don't know\n");
-	}
-}
+*/
 
 
 
 
-void mount(char* arg)
+//能挂的肯定是已经认出来的，认出来的就有个id
+int mount(QWORD number)
 {
-	for(i=0;i<10;i++)
-	{
-		if( arg[i]==0 )break;
-		if( (arg[i] >= 0x30) | (arg[i] <= 0x39) )
-		{
-			number=10*number + arg[i] - 0x30;
-		}
-	}
-	if(number == 0)return;
-	//printmemory(diskhome + number*0x40,0x40);
-
 	//挂载
 	temp = *(QWORD*)( diskhome+number*0x40 + 8 );   //type
 	if(temp == 0x747865)            //'ext'
