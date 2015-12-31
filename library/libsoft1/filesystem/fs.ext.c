@@ -318,7 +318,6 @@ static int ext_load(QWORD id,QWORD offset)
 int explainexthead()
 {
 	QWORD* dstqword=(QWORD*)fshome;
-	if( *(WORD*)(pbr+0x438) != 0xef53 ) return -1;
 
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
@@ -382,6 +381,15 @@ int explainexthead()
 
 	return 1;
 }
+int isext(char* addr)
+{
+	//0x53,0xef
+	QWORD temp=*(WORD*)(addr+0x438);
+	if( temp != 0xef53 ) return 0;
+
+	//maybe isext
+	return 4;
+}
 int mountext(char* src,char* addr)
 {
 	int ret=0;
@@ -397,6 +405,10 @@ int mountext(char* src,char* addr)
 
 	//读分区前8扇区，检查magic值
 	ret=readmemory(pbr,block0,0,0x8);	//0x1000
+	ret=isext(pbr);
+	if( ret == 0 ) return -1;
+
+	//读出关键数据
 	ret=explainexthead();
 	if(ret<0)return ret;
 

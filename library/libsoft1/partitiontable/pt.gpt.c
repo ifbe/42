@@ -16,6 +16,19 @@ void diary(char* fmt,...);
 
 
 
+int isgpt(char* addr)
+{
+	//第一个扇区末尾必须有0x55，0xaa这个标志
+	QWORD temp=*(WORD*)(addr+0x1fe);
+	if(temp != 0xaa55 ) return 0;
+
+	//第二个扇区开头必须是"EFI PART"
+	temp=*(QWORD*)(addr+0x200);
+	if( temp != 0x5452415020494645 ) return 0;
+
+	//最终确定
+	return 0x747067;        //'gpt'
+}
 void explaingpt(char* from,char* to)
 {
 	int i=0,j=0;

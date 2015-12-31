@@ -411,6 +411,47 @@ void explainfat32head()
 	dstqword += 8;
 	diary("clustersize:%x\n",clustersize);
 }
+int isfat(char* addr)
+{
+	int version=24;
+	QWORD temp;
+
+	//0x55,0xaa
+	temp=*(WORD*)(addr+0x1fe);
+	if( temp != 0xaa55 ) return 0;
+
+	//0x53,0xef
+	temp=*(WORD*)(addr+0x438);
+	if( temp != 0xef53 ) return 0;
+
+	//512 bytes per sector
+	temp=*(WORD*)(addr+0xb);
+	if( temp !=0x200 )
+	{
+		diary("not 512B per sector,bye!\n");
+		return 0;
+	}
+
+	//totally 2 fat tables
+	temp=*(BYTE*)(addr+0x10);
+	if( temp != 2 )
+	{
+		diary("not 2 fat,bye!\n");
+		return 0;
+	}
+
+	//fat32 or fat16
+	if( *(WORD*)(addr+0x11) == 0) version+=4;         //fat32为0
+	else version-=4;
+	if( *(WORD*)(addr+0x16) ==0) version+=4;         //fat32为0
+	else version-=4;
+
+	//version
+	if(version==32)return 32;
+	else if(version==16)return 16;
+	else return 0;
+}
+
 //1:那一条0x40字节的地址，2:可以用的8m内存的地址
 int mountfat(char* src,char* addr)
 {
@@ -424,50 +465,40 @@ int mountfat(char* src,char* addr)
 		pbr=fshome+0x10000;
 		fatbuffer=fshome+0x20000;
 	dirhome=addr+0x200000;
+		//rootdir
+		//dirdepth1
+		//dirdepth2
+		//dirdepth3
+		//dirdepth4
+		//......
 	datahome=addr+0x300000;
 
-	//读取pbr
-	readmemory(pbr,firstsector,0,1); //pbr
-	if( *(WORD*)(pbr+0xb) !=0x200)	//检查分区问题，有就滚
-	{
-		diary("not 512B per sector,bye!\n");
-		return -1;
-	}
-	if( *(BYTE*)(pbr+0x10) != 2)
-	{
-		diary("not 2 fat,bye!\n");
-		return -2;
-	}
-
-	//检查fat版本
-	int version=24;
-	if( *(WORD*)(pbr+0x11) == 0) version+=4;         //fat32为0
-	else version-=4;
-	if( *(WORD*)(pbr+0x16) ==0) version+=4;         //fat32为0
-	else version-=4;
-	if(version==16)		//这是fat16
+	//读取pbr，检查种类和版本
+	ret=readmemory(pbr,firstsector,0,1); //pbr
+	ret=isfat(pbr);
+	if(ret==16)		//这是fat16
 	{
 		//上报3个函数的地址
 		explainfat16head();
 
 		//change directory /
 		fat16_root();
+
+		return 0;
 	}
 	else if(version==32)		//这是fat32
 	{
 		//上报3个函数的地址
-		diary("fat32\n");
 		explainfat32head();
 
 		//change directory /
 		fat32_root();
+
+		return 0;
 	}
 	else
 	{
-		diary("seem not fatxx,bye!\n");
-		return -3;
+		diary("wrong fat\n");
+		return -1;
 	}
-
-	return 0;
 }
-

@@ -544,11 +544,6 @@ int explainhfshead()
 
 
 //---------------------第一次读，把分区头读进pbrbuffer------------------------
-	readmemory(pbr,block0,0,0x8);	//0x1000
-	//printmemory(pbr+0x400,0x200);
-
-	if( *(WORD*)(pbr+0x400) == 0x2b48 )diary("hfs+\n");
-	else if( *(WORD*)(pbr+0x400) == 0x5848 )diary("hfsx\n");
 	blocksize=BSWAP_32( *(DWORD*)(pbr+0x428) )/0x200;
 	diary("blocksize:%x\n",blocksize);
 
@@ -647,6 +642,28 @@ int explainhfshead()
 
 	return 1;
 }
+int ishfs(char* addr)
+{
+	QWORD temp;
+
+	temp=*(WORD*)(pbr+0x400);
+	if( temp== 0x4442)
+	{
+		diary("hfs\n");
+		return 11;
+	}
+	else if( temp == 0x2b48 )
+	{
+		diary("hfs+\n");
+		return 22;
+	}
+	else if( temp == 0x5848 )
+	{
+		diary("hfsx\n");
+		return 33;
+	}
+	else return 0;
+}
 int mounthfs(char* src,char* addr)
 {
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
@@ -658,6 +675,11 @@ int mounthfs(char* src,char* addr)
 		catabuf=fshome+0x20000;
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
+
+	//检查
+	ret=readmemory(pbr,block0,0,0x8);	//0x1000
+	ret=ishfs();
+	if(ret==0)return -1;
 
 	//很多东西
 	ret=explainhfshead();

@@ -599,7 +599,6 @@ int explainntfshead()
 {
 	int i;
 	QWORD* dstqword=(QWORD*)fshome;
-	if( *(DWORD*)(pbr+3) != 0x5346544e ) return -1;
 
 	//clean
 	for(i=0;i<0x10000;i++)fshome[i]=0;
@@ -661,6 +660,21 @@ int explainntfshead()
 
 	return 1;
 }
+int isntfs(char* addr)
+{
+	QWORD temp;
+
+	//0x55,0xaa
+	temp=*(WORD*)(addr+0x1fe);
+	if( temp != 0xaa55 ) return 0;
+
+	//0x4e,0x54,0x46,0x53
+	temp=*(DWORD*)(addr+3);
+	if( temp != 0x5346544e ) return 0;
+
+	//
+	return 0x666666;
+}
 //描述地址，状态机地址
 int mountntfs(char* src,char* addr)
 {
@@ -676,8 +690,12 @@ int mountntfs(char* src,char* addr)
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 
-	//读PBR，失败就返回,成功就解释分区头(拿出并保存几个重要变量)
+	//读PBR，检查失败就返回
 	ret=readmemory(pbr,ntfssector,0,1);
+	ret=isntfs(pbr);
+	if(ret==0)return -1;
+
+	//解释分区头(拿出并保存几个重要变量)
 	ret=explainntfshead();
 	if(ret < 0)return ret;
 

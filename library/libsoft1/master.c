@@ -3,15 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //servent
-QWORD prelibation(char*);
-int mount(char*);
-//libsoft1/
-int mountext(char* src,char* dst);
-int mountfat(char* src,char* dst);
-int mounthfs(char* src,char* dst);
-int mountntfs(char* src,char* dst);
-int explaingpt(char* src,char* dst);
-int explainmbr(char* src,char* dst);
+int mount(QWORD which,char* dest);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
@@ -40,10 +32,6 @@ static char* diskhome;		//+0m
 static char* fshome;		//+1m
 static char* dirhome;		//+2m
 static char* datahome;		//+3m
-//3大函数的位置
-int (*fsexplain)(QWORD id);	//((int (*)(QWORD))(fsexplain))(value);
-int (*fscd)(QWORD id);		//((int (*)(QWORD))(fscd))(arg1);
-int (*fsload)(QWORD id,QWORD part);	//((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
 
 
 
@@ -62,19 +50,6 @@ static void masterlist(char* arg1)
 	//想要什么
 	if(arg1==0)target=0;
 	else if( compare(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
-	else if( compare(arg1,"part") == 0 )target=0x74726170;	//'part'
-	else if( compare(arg1,"func") == 0 )
-	{
-		addr=fshome;
-		target=0x636e7566;	//'func'
-	}
-	else if( compare(arg1,"fs") == 0 )
-	{
-		addr=fshome;
-		target=0;
-		//target=0x656c6966;		//'file'
-		//printmemory(addr,0x200);
-	}
 	else if( compare(arg1,"file") == 0 )
 	{
 		addr=dirhome;
@@ -146,7 +121,7 @@ static void masterinto(char* arg)
 	int ret=0;
 	QWORD temp=0;
 
-	//1.如果传进来0，仅扫描所有硬盘
+	//1.如果传进来0，仅重新扫描所有硬盘
 	if(arg == 0)
 	{
 		listmemory();
@@ -154,29 +129,14 @@ static void masterinto(char* arg)
 		return;
 	}
 
-	//2.如果指向的第一个字节是'/'，说明要一个我们自己的单位
-	if(arg[0]=='/')
-	{
-		return;
-	}
-
-	//3.其他情况
-	//先清空内存
+	//2.其他情况，比如要\\.\PhysicalDrive0
+	//清空内存,选中这个“东西”
 	cleanmemory(diskhome+0x100000,0x300000);
-
-	//选中这个“东西”
 	intomemory(arg);
 
-	//读最开始64个扇区(0x200*0x40=0x8000)
+	//读最开始64个扇区(0x8000),喊仆人来检查“东西”种类
 	ret=readmemory(datahome,0,0,64);
-
-	//喊仆人来检查“东西”种类
-	temp=prelibation(datahome);
-
-	//读分区表
-	if(temp==0x747067) explaingpt(datahome,diskhome);
-	else if(temp==0x72626d) explainmbr(datahome,diskhome);
-	else diary("i don't know it\n");
+	ret=mount(0,diskhome);
 }
 static int masterread(char* arg1)
 {
@@ -233,100 +193,11 @@ static int masterwrite(char* arg1)
 	//"read memory.400000"
 	if(value==0)
 	{
-		diary("no!i won't write!\n");
+		diary("dangerous,bye\n");
 		return 0;
 	}
 
 	else return platformwrite(arg1);
-}
-
-
-
-
-
-
-
-
-//logical function
-static int ls(char* name)
-{
-	//ls
-	int temp=0;
-	if(name==0)
-	{
-		masterlist("file");
-		return 1;
-	}
-
-	//search
-	for(;temp<0x10000;temp+=0x40)
-	{
-		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
-		if( compare( name , dirhome+temp+0x20 ) == 0 )
-		{
-			printmemory(dirhome+temp,0x40);
-
-			//id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
-			//explain(id);
-
-			return temp/0x40;
-		}
-	}
-
-	//failed
-	diary("file not found\n");
-	return -1;
-}
-static int cd(char* arg1)
-{
-	int ret;
-	QWORD id;
-
-	//search
-	ret=ls(arg1);
-	if( ret<0 )return ret;		//没找到
-
-	//change directory
-	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
-	return fscd(id);
-}
-static int load(char* arg1)
-{
-	//寻找这个文件名，得到id，type，size
-	int ret;
-	QWORD id;
-	QWORD size;
-	QWORD temp;
-
-	ret=ls(arg1);
-	if( ret==0 )return -1;
-
-	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
-	size=*(QWORD*)(dirhome + 0x40*ret + 0x18);
-	if(size>0x100000)diary("warning:large file\n");
-
-	//1m,1m,1m的整块搞
-	temp=0;
-	for(;temp<( size&0xfffffff00000 );temp+=0x100000)
-	{
-		fsload(id,temp);
-		mem2file(datahome,arg1,temp,0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
-	}
-	//最后的零头(要是size=1m的整数倍，就没有零头)
-	if(temp<size)
-	{
-		fsload(id,temp);
-		mem2file(datahome,arg1,temp,size%0x100000);		//mem地址，file名字，文件内偏移，写入多少字节
-	}
-	return 0;
-}
-static int explain(char* arg1)
-{
-	QWORD value;
-	hexstring2data(arg1,&value);
-
-	diary("explainer@%llx\n",fsexplain);
-	return fsexplain(value);
 }
 
 
@@ -352,32 +223,21 @@ void command(char* buffer)
 	int ret=compare( arg0 , "help" );
 	if(ret==0)
 	{
-		//checktype
-		if(arg1 == 0)
-		{
-			//physical(master)
-			diary("help ?		(list all known)\n");
-			diary("list ?		(list all known)\n");
-			diary("into ?		(choose a disk)\n");
-			diary("read ?		(hex print a sector)\n");
-			diary("write ?		(no)\n\n");
+		//physical(master)
+		diary("help ?		(list all known)\n");
+		diary("list ?		(list all known)\n");
+		diary("into ?		(choose a disk)\n");
+		diary("read ?		(hex print a sector)\n");
+		diary("write ?		(no)\n\n");
 
-			//logical(servent)
-			diary("mount ?		(no)\n");
-			diary("ls ?		(list file)\n");
-			diary("cd ?		(change directory)\n");
-			diary("load ?		(load this file)\n");
-			diary("store ?		(store this file)\n");
-			return;
-		}
+		//logical(servent)
+		diary("mount ?		(no)\n");
+		diary("ls ?		(list file)\n");
+		diary("cd ?		(change directory)\n");
+		diary("load ?		(load this file)\n");
+		diary("store ?		(store this file)\n");
 
-		//explain memory
-		else
-		{
-			char* value;
-			hexstring2data(arg1,&value);
-			prelibation(value);
-		}
+		return;
 	}
 	//physical 1
 	ret=compare( arg0 , "list" );
@@ -411,43 +271,43 @@ void command(char* buffer)
 
 
 
-	//logical 0
+	//logical 0 (servent 0) (check)
 	ret=compare( arg0 , "mount");
 	if(ret==0)
 	{
 		QWORD value;
 		hexstring2data(arg1,value);
-		mount(value);
+		mount(value,diskhome);
 		return;
 	}
-	//logical 1
+	//logical 1 (servent 1) (search)
 	ret=compare( arg0 , "ls");
 	if(ret==0)
 	{
 		ls(arg1);
 		return;
 	}
-	//logical 2
+	//logical 2 (servent 2) (enter)
 	ret=compare( arg0 , "cd" );
 	if(ret==0)
 	{
 		cd(arg1);
 		return;
 	}
-	//logical 3
+	//logical 3 (servent 3) (get)
 	ret=compare( arg0 , "load" );
 	if(ret==0)
 	{
 		load(arg1);
 		return;
 	}
-	//logical 4
-	//ret=compare( arg0 , "store" );	//very dangerous
-	//if(ret==0)
-	//{
-		//store(arg1);
-		//return;
-	//}
+	//logical 4 (servent 4) (put)
+	ret=compare( arg0 , "store" );	//very dangerous
+	if(ret==0)
+	{
+		store(arg1);
+		return;
+	}
 }
 
 

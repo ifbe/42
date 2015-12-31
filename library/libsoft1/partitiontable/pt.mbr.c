@@ -9,6 +9,20 @@ void printmemory(QWORD start,QWORD count);
 
 
 
+int ismbr(char* addr)
+{
+        //第一个扇区末尾必须有0x55，0xaa这个标志
+        QWORD temp=*(WORD*)(addr+0x1fe);
+        if(temp != 0xaa55 ) return 0;
+
+	//但是mbr没有特别的标志，只能勉强用55aa确定
+	//所以只能放在check type的最后
+	return 0x72626d;
+}
+
+
+
+
 //from：那一条长度为16B的项目的地址，to：希望的位置
 static int mbrrecord(char* from,char* to)
 {
