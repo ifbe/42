@@ -28,13 +28,13 @@ void diary(char* fmt,...);
 
 //////////////
 static int thisfd=-1;
-static char _dev_sdx[0x20]={
+static char _dev_sd[0x20]={
 	'/','d','e','v','/','s','d','a',0,0
 };
-static char _dev_mmcblkx[0x20]={
+static char _dev_mmcblk[0x20]={
 	'/','d','e','v','/','m','m','c','b','l','k','0',0,0
 };
-static char _dev_block_mmcblkx[0x20]={
+static char _dev_block_mmcblk[0x20]={
 	'/','d','e','v','/','b','l','o','c','k','/','m','m','c','b','l','k','0',0,0
 };
 
@@ -78,22 +78,22 @@ void listfile(char* dest)
 	//		/dev/sd?
 	for(num=0;num<10;num++)
 	{
-		_dev_sdx[0x7]=num + 'a';
-		dest += trythis(_dev_sdx , dest);
+		_dev_sd[0x7]=num + 'a';
+		dest += trythis(_dev_sd , dest);
 	}
 
 	//		/dev/mmcblk?
 	for(num=0;num<10;num++)
 	{
 		_dev_mmcblk[0xb]=num + '0';
-		dest += trythis(_dev_mmcblkx , dest);
+		dest += trythis(_dev_mmcblk , dest);
 	}
 
 	//		/dev/block/mmcblk?
 	for(num=0;num<10;num++)
 	{
-		_dev_mmcblk[0x11]=num + '0';
-		dest += trythis(_dev_mmcblkx , dest);
+		_dev_block_mmcblk[0x11]=num + '0';
+		dest += trythis(_dev_mmcblk , dest);
 	}
 
 	//		special
@@ -106,7 +106,7 @@ void listfile(char* dest)
 void intofile(char* wantpath)
 {
 	//先检查
-	if(whatpath[0]==0)return;
+	if(wantpath[0]==0)return;
 
 	//测试打开新的
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
