@@ -3,33 +3,30 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //socket
-void initsocket(char*);
-void killsocket();
 void listsocket();
 void intosocket();
 void readsocket();
 void writesocket();
 //process
-void initprocess(char*);
-void killprocess();
 void listprocess();
 void intoprocess();
 void readprocess();
 void writeprocess();
 //file
-void initfile(char*);
-void killfile();
-void listfile();
+void listfile(char* towhere);
 void intofile(char* name);
 void readfile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
+void killfile();
 
 
 
 
-void initmemory(char* memory)
+//这个.c负责管理现在开了哪些东西
+static char* diskhome=0;
+void initmemory(char* addr)
 {
-	initfile( memory );
+	diskhome=addr;
 }
 void killmemory()
 {
@@ -39,10 +36,27 @@ void killmemory()
 
 
 
-//ls,cd
-void listmemory()				//ls?
+void cleanmemory(char* addr,int size)
 {
-	listfile();
+	//清理
+	int i=0;
+	for(i=0;i<size;i++) addr[i]=0;
+}
+void copymemory(char* src,char* dest,int size)
+{
+	int i;
+	for(i=0;i<size;i++)
+	{
+		dest[i]=src[i];
+	}
+}
+
+
+
+
+void listmemory(char* addr)				//ls?
+{
+	listfile(addr);
 	//+memoryinfo
 	//+listprocess
 }
@@ -50,31 +64,10 @@ void intomemory(char* what)		//cd
 {
 	intofile(what);
 }
-void cleanmemory(char* addr,int size)
-{
-	//清理
-	int i=0;
-	for(i=0;i<size;i++) addr[i]=0;
-}
 
 
 
 
-//write,read,clever read,clever write
-void writememory()
-{
-	//if memory
-	//
-
-	//if file/disk
-	//
-
-	//if(process)
-	//
-
-	//if socket
-	//
-}
 void readmemory(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
 {
 	ignore=ignore;		//kill compiler
@@ -142,3 +135,29 @@ void cleverread
 //4:         [---|--where,----------------|----]    	//传进来一块，前后不要
 //5:             |  [where,]              |         	//传进来一块，全要
 //6:             |  [---where,------------|----]    	//传进来一块，后面不要
+
+
+
+
+
+
+
+
+void writememory()
+{
+	//if memory
+	//
+
+	//if file/disk
+	//
+
+	//if(process)
+	//
+
+	//if socket
+	//
+}
+void cleverwrite()
+{
+	
+}

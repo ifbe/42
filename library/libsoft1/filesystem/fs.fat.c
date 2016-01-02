@@ -11,7 +11,6 @@ void diary(char* fmt,...);
 
 
 //memory
-static char* diskhome;		//
 static char* fshome;		//fat表
 	static char* pbr;
 	static char* fatbuffer;
@@ -415,20 +414,17 @@ int isfat(char* addr)
 {
 	int version=24;
 	QWORD temp;
+	//printmemory(addr,0x200);
 
 	//0x55,0xaa
 	temp=*(WORD*)(addr+0x1fe);
 	if( temp != 0xaa55 ) return 0;
 
-	//0x53,0xef
-	temp=*(WORD*)(addr+0x438);
-	if( temp != 0xef53 ) return 0;
-
 	//512 bytes per sector
 	temp=*(WORD*)(addr+0xb);
 	if( temp !=0x200 )
 	{
-		diary("not 512B per sector,bye!\n");
+		//diary("not 512B per sector,bye!\n");
 		return 0;
 	}
 
@@ -436,7 +432,7 @@ int isfat(char* addr)
 	temp=*(BYTE*)(addr+0x10);
 	if( temp != 2 )
 	{
-		diary("not 2 fat,bye!\n");
+		//diary("not 2 fat,bye!\n");
 		return 0;
 	}
 
@@ -460,18 +456,17 @@ int mountfat(char* src,char* addr)
 	//diary("%llx\n",(QWORD)fat32_explain);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=addr;
-	fshome=addr+0x100000;
+	fshome=addr+0;
 		pbr=fshome+0x10000;
 		fatbuffer=fshome+0x20000;
-	dirhome=addr+0x200000;
+	dirhome=addr+0x100000;
 		//rootdir
 		//dirdepth1
 		//dirdepth2
 		//dirdepth3
 		//dirdepth4
 		//......
-	datahome=addr+0x300000;
+	datahome=addr+0x200000;
 
 	//读取pbr，检查种类和版本
 	ret=readmemory(pbr,firstsector,0,1); //pbr
@@ -486,7 +481,7 @@ int mountfat(char* src,char* addr)
 
 		return 0;
 	}
-	else if(version==32)		//这是fat32
+	else if(ret==32)		//这是fat32
 	{
 		//上报3个函数的地址
 		explainfat32head();

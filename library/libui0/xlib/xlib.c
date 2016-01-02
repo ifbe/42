@@ -151,7 +151,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 
 
 
-void initwindow(QWORD mypixel)
+void initwindowworker(char* mypixel)
 {
 	//初始化
 	dsp = XOpenDisplay(NULL);
@@ -165,7 +165,7 @@ void initwindow(QWORD mypixel)
 	}
 
 	//pixel,ximage,window,gc
-	ximage=XCreateImage(dsp,visual,24,ZPixmap,0,(char*)mypixel,width,height,32,0);
+	ximage=XCreateImage(dsp,visual,24,ZPixmap,0,mypixel,width,height,32,0);
 	win=XCreateSimpleWindow(dsp,RootWindow(dsp,0),0,0,width,height,1,0,0);
 	gc = XCreateGC(dsp, win, 0, NULL);
 
@@ -183,7 +183,7 @@ void initwindow(QWORD mypixel)
 	);
 	XMapWindow(dsp, win);
 }
-void killwindow()
+void killwindowworker()
 {
 	XDestroyWindow(dsp, win);
 	XCloseDisplay(dsp);

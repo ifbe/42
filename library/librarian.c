@@ -4,44 +4,47 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-//libui1
-void initpixel(char*);
-void killpixel();
-//libui0
+//libui
+void initcharacter(char*);
+void killcharacter();
 void initwindow(char*);
 void killwindow();
-//libsoft1
+//libsoft
 void initmaster(char*);
 void killmaster();
-//libsoft0
-void initmemory(char*);
+void initmemory();
 void killmemory();
-//libboot1
+//libhard
+void initbody(char*);
+void killbody();
+void initdriver(char*);
+void killdriver();
+//libboot
 void initstd(char*);	//listen,say,diary,and
 void killstd();
+void initarch(char*);
+void killarch();
 //argc,argv......
 char* explainarg();
+void say(char*,...);
+void diary(char*,...);
+void history(char*,...);
+
+
+
 
 
 
 
 //raw memory
-static char* universe=0;	//16m+4k
-static char* palette=0;		//4m
-char* whereispalette()
-{
-	//unsigned int*
-	return palette;
-}
-
-
-
-
+static char* colduniverse=0;	//unaligned
+static char* warmuniverse=0;	//aligned
 //processed memory
 static char*   world=0;		//4m
 static char*    body=0;		//4m
 static char*  memory=0;		//4m
-static char*  worker=0;		//4m
+static char*  haha=0;		//4m
+//return address
 char* whereisworld()
 {
 	return world;
@@ -54,138 +57,143 @@ char* whereismemory()
 {
 	return memory;
 }
-char* whereisworker()
+char* whereishaha()
 {
-	return worker;
+	return haha;
 }
-
-
-
-
-//省的写一大串初始化代码，这里是几种常见初始化过程
-void worldandmemory()		//8m
+//get address
+void inituniverse(int size)
 {
-	QWORD i=0;
-	char* wantfile=explainarg();
-
-	//allocate memory
-	//8m+4k		//强制4k对齐
-	universe=malloc(2 * 0x400000 + 0x1000);
-	if(universe==NULL)
-	{
-		printf("no enough momery\n");
-		exit(-1);
-	}
-
-	//universe@[0x   0,0x801000)	->	world@[0x1000,0x801000)
-	//universe@[0x 234,0x801234)	->	world@[0x1000,0x801000)
-	//universe@[0x fff,0x801fff)	->	world@[0x1000,0x801000)
-	//universe@[0x1000,0x802000)	->	world@[0x2000,0x802000)
-
-	//[0,4)
-	i = (QWORD)universe & 0xfff;
-	world = universe + (0x1000 - i);
-
-	for(i=0;i<0x800000;i++)world[i]=0;
-	initstd(world+0);
-
-	//[8,c)
-	memory=world+0x400000;
-	initmemory( memory );
-	initmaster( memory );
-}
-void initpalette()
-{
+	//temp
 	QWORD i;
+	QWORD temp;
 
-	//allocate memory
-	universe=malloc(0x400000 + 0x1000);
-	if(universe==NULL)
+
+	//1.申请内存，为了对齐要多申请0x1000
+	colduniverse=malloc(size+0x1000);
+	if(colduniverse==NULL)
 	{
 		printf("no enough momery\n");
 		exit(-1);
 	}
 
-	//强制4k对齐
-	i = (QWORD)universe & 0xfff;
-	palette = universe + (0x1000 - i);
-	initwindow( palette );
-	initpixel( palette );
+
+	//2.把申请到的进行一次0x1000对齐
+	//[0x   0,0x1401000)	->	[0x1000,0x1401000)
+	//[0x 234,0x1401234)	->	[0x1000,0x1401000)
+	//[0x fff,0x1401fff)	->	[0x1000,0x1401000)
+	//[0x1000,0x1402000)	->	[0x2000,0x1402000)
+	temp = ( (QWORD)colduniverse ) & 0xfff;
+	warmuniverse = colduniverse + 0x1000 - temp;
+
+
+	//3.清零
+	for(i=0;i<size;i++)
+	{
+		warmuniverse[i]=0;
+	}
+}
+
+
+
+
+
+
+
+
+void init123()
+{
+	//0000000000000000000000
+	explainarg();					//argv里面指定要开终端
+	inituniverse( 3 * 0x400000 );	//16m
+
+	//[0,4)：构架相关，以及内核日志
+	world=warmuniverse + 0;
+	initarch( world );
+	diary("finish [0,4).zero\n");
+	initstd( world );
+	diary("finish [0,4).one\n");
+
+	//[4,7)：硬件驱动，以及底层协议栈
+	body=warmuniverse + (1*0x400000);
+	initdriver( body );
+	diary("finish [4,8).zero\n");
+	initbody( body );
+	diary("finish [4,8).one\n");
+
+	//[8,c)：文件读写，以及详细分析
+	memory=warmuniverse + (2*0x400000);
+	initmemory( memory );
+	diary("finish [8,c).zero\n");
+	initmaster( memory );
+	diary("finish [8,c).one\n");
 }
 void initall()
 {
-	QWORD i=0;
-	char* wantfile=explainarg();
+	//0000000000000000000000
+	explainarg();					//argv里面指定要开终端
+	inituniverse( 4 * 0x400000 );	//16m
 
-	//allocate memory
-	//16m+4m+4k	//强制4k对齐
-	universe=malloc(5 * 0x400000 + 0x1000);
-	if(universe==NULL)
-	{
-		printf("no enough momery\n");
-		exit(-1);
-	}
+	//[0,4)：构架相关，以及内核日志
+	world=warmuniverse + 0;
+	initarch( world );
+	diary("finish [0,4).zero\n");
+	initstd( world );
+	diary("finish [0,4).one\n");
 
-	//universe@[0x   0,0x1401000)	->	world@[0x1000,0x1401000)
-	//universe@[0x 234,0x1401234)	->	world@[0x1000,0x1401000)
-	//universe@[0x fff,0x1401fff)	->	world@[0x1000,0x1401000)
-	//universe@[0x1000,0x1402000)	->	world@[0x2000,0x1402000)
+	//[4,7)：硬件驱动，以及底层协议栈
+	body=warmuniverse + (1*0x400000);
+	initdriver( body );
+	diary("finish [4,8).zero\n");
+	initbody( body );
+	diary("finish [4,8).one\n");
 
-	//[0,4)
-	i = (QWORD)universe & 0xfff;
-	world = universe + (0x1000 - i);
-
-	for(i=0;i<0x1000000;i++)world[i]=0;
-	initstd(world+0);
-
-	//[4,7)
-	body=world + (1*0x400000);
-
-	//[8,c)
-	memory=world + (2*0x400000);
+	//[8,c)：文件读写，以及详细分析
+	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
+	diary("finish [8,c).zero\n");
 	initmaster( memory );
+	diary("finish [8,c).one\n");
 
-	//[c,f)
-	worker=world + (3*0x400000);
-
-	//444444444
-	palette=world + (4*0x400000);
-	initwindow( palette );
-	initpixel( palette );
+	//[c,f)：窗口开闭，以及用户界面
+	haha=warmuniverse + (3*0x400000);
+	initwindow( haha );
+	diary("finish [12,16).zero\n");
+	initcharacter( haha );
+	diary("finish [12,16).one\n");
 }
 __attribute__((destructor)) void cleanall()
 {
-	//1024*1024*4
-	if(palette != 0)
-	{
-		killwindow();
-		palette=0;
-	}
-
 	//4+4+4+4
-	if(worker != 0)
+	if(haha != 0)
 	{
-		worker=0;
+		killcharacter();
+		killwindow();
+		haha=0;
 	}
 	if(memory != 0)
 	{
+		killmaster();
 		killmemory();
 		memory=0;
 	}
 	if(body != 0)
 	{
+		killbody();
+		killdriver();
 		body=0;
 	}
 	if(world != 0)
 	{
+		killstd();
+		killarch();
 		world=0;
 	}
 
 	//
-	if(universe !=0)
+	if(colduniverse !=0)
 	{
-		free(universe);
-		universe=0;
+		free(colduniverse);
+		colduniverse=0;
 	}
 }

@@ -5,15 +5,27 @@
 void blackstring(int x,int y,char* str);
 void line(QWORD,QWORD,QWORD);
 void rectangle(QWORD,QWORD,QWORD);
-QWORD windowresolution();
+
+QWORD howiswindow();
+char* whereiswindow();
 
 
 
 
 static DWORD* screenbuf=0;
-void initbackground(char* addr)
+static int xsize=0;
+static int ysize=0;
+void initbackground(char* unusedaddr)
 {
-	screenbuf=(DWORD*)addr;
+	//how
+	QWORD temp=howiswindow();
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	screenbuf=(DWORD*)whereiswindow();
 }
 
 
@@ -36,11 +48,6 @@ void cleanscreen()
 void background1()
 {
 	QWORD x,y;
-	QWORD temp=windowresolution();
-	int ysize=(temp>>16)&0xffff;
-	int xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
 
 	//用指定颜色清屏
 	for(x=0;x<1024*ysize;x++)

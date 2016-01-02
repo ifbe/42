@@ -1,7 +1,8 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
+QWORD howiswindow();
+char* whereiswindow();
 void double2decimalstring(double,char*);
-//void point(int x,int y,DWORD color);
 
 
 
@@ -141,9 +142,19 @@ static const unsigned char ansciitable[128*16]={
 
 
 static DWORD* screen=0;
-void initanscii(char* addr)
+static int xsize=0;
+static int ysize=0;
+void initanscii(char* unusedaddr)
 {
-	screen=(DWORD*)addr;
+	//how
+	QWORD temp=howiswindow();
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	screen=(DWORD*)whereiswindow();
 }
 
 

@@ -137,7 +137,7 @@ void waitevent(QWORD* first,QWORD* second)
 
 
 //__attribute__((constructor)) void initfb()
-void initwindow(QWORD addr)
+void initwindowworker(QWORD addr)
 {
 	//目的地
 	framebufferfp=open("/dev/fb0",O_RDWR);
@@ -188,7 +188,7 @@ void initwindow(QWORD addr)
 	mypixel=(unsigned int*)addr;
 }
 //__attribute__((destructor)) void destoryfb()
-void killwindow()
+void killwindowworker()
 {
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);

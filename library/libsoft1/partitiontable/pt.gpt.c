@@ -40,14 +40,14 @@ void explaingpt(char* from,char* to)
 	QWORD* dstqword;
 	diary("gpt disk\n");
 
-	//保留硬盘记录，覆盖新的分区记录
+	//除了硬盘记录，其余一概干掉
 	dst=to;
 	dstqword=(QWORD*)to;
 	for(i=0;i<0x100;i++)	//0x100*0x40=0x4000=16k
 	{
 		temp=dstqword[i*8];
-		if( temp == 0)break;
-		if( temp == 0x74726170 )break;
+		if( temp == 0x6b736964 )continue;
+		else break;
 	}
 	for(j=0x40*i; j<0x10000; j++)
 	{
@@ -67,6 +67,7 @@ void explaingpt(char* from,char* to)
 	dstqword[7]=0x0011223344556677;
 	dst += 0x40;
 	dstqword += 8;
+	//diary("dst@%llx\n",dst);
 
 
 	//正式开始转换

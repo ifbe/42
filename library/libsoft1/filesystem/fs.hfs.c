@@ -7,8 +7,8 @@
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
 //用了别人的
-void cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
-void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
+int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(char* addr,QWORD size);
 void diary(char* fmt,...);
 
@@ -16,7 +16,6 @@ void diary(char* fmt,...);
 
 
 //系统或者各种东西提供好的memory，这几个变量仅仅记录了位置
-static char* diskhome;
 static char* fshome;
 	static char* pbr;
 	static char* catabuf;
@@ -646,7 +645,7 @@ int ishfs(char* addr)
 {
 	QWORD temp;
 
-	temp=*(WORD*)(pbr+0x400);
+	temp=*(WORD*)(addr+0x400);
 	if( temp== 0x4442)
 	{
 		diary("hfs\n");
@@ -669,16 +668,15 @@ int mounthfs(char* src,char* addr)
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	int ret;
 	block0=*(QWORD*)(src+0x10);
-	diskhome=addr;
-	fshome=addr+0x100000;
+	fshome=addr+0;
 		pbr=fshome+0x10000;
 		catabuf=fshome+0x20000;
-	dirhome=addr+0x200000;
-	datahome=addr+0x300000;
+	dirhome=addr+0x100000;
+	datahome=addr+0x200000;
 
 	//检查
 	ret=readmemory(pbr,block0,0,0x8);	//0x1000
-	ret=ishfs();
+	ret=ishfs(pbr);
 	if(ret==0)return -1;
 
 	//很多东西

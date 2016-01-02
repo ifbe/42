@@ -10,7 +10,6 @@
 void diary(char* fmt,...);
 
 HANDLE hDev;
-char* memoryinfo;
 static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 
@@ -57,11 +56,9 @@ static QWORD getsize(HANDLE hand,char* path,char* dest)
 
 
 
-void listfile()
+void listfile(char* dest)
 {
-	//printf("enu file\n");
-	//暂时根本不管是什么，默认就是当前第一个硬盘
-	char* dest=0;
+	//
 	int num=0;
 	int j=0;
 
@@ -69,11 +66,10 @@ void listfile()
 	for(num=0;num<0x10000;num++)
 	{
 		//全部清零
-		memoryinfo[num]=0;
+		dest[num]=0;
 	}
 
 	//
-	dest=memoryinfo;
 	for(num=0;num<10;num++)
 	{
 		tempname[17]=0x30+num;
@@ -81,7 +77,7 @@ void listfile()
 		if(temphandle != INVALID_HANDLE_VALUE)
 		{
 			//[0,7]:type
-			//[8,f]:size
+			//[8,f]:subtype
 			*(QWORD*)(dest+0)=0x6b736964;
 			*(QWORD*)(dest+8)=0x3f;
 
@@ -106,24 +102,10 @@ void listfile()
 
 
 
-void intofile(QWORD in)
+void intofile(char* path)
 {
-	char* path;
-	if( in >100 )		//是一个内存地址
-	{
-		//第1种可能：文件的路径（比如d:\image\name.img）
-		path=(char*)in;
-	}
-	else		//是一个数字
-	{
-		path=memoryinfo+0x100*in+0x10;
-
-		//第2种可能：是个硬盘(比如："\\.\PHYSICALDRIVE0")
-		//if( *(DWORD*)path == 0x5c2e5c5c )
-		//{
-			//diary("disk:%s\n",path);
-		//}
-	}
+	//检查
+	if(path[0]==0)return;
 
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
@@ -218,11 +200,7 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 
 
-void initfile(char* addr)
-{
-	memoryinfo=addr;
-	listfile();
-}
+
 void killfile()
 {
 	if(hDev!=NULL)

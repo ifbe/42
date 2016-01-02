@@ -3,19 +3,24 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //servent
-int mount(QWORD which,char* dest);
+void initservent(char*);
+int mount(char*);
+int ls(char*);
+int cd(char*);
+int load(char*);
+int store(char*);
+//libsoft1
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
 //libsoft0/
-int listmemory();
+int listmemory(char*);
 int intomemory(char*);
 int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //libboot1
-int cleanmemory(char* addr,int count);
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
 int diary(char* str,...);	//+2
@@ -124,19 +129,14 @@ static void masterinto(char* arg)
 	//1.如果传进来0，仅重新扫描所有硬盘
 	if(arg == 0)
 	{
-		listmemory();
-		printmemory(diskhome,0x200);
+		listmemory(diskhome);
 		return;
 	}
 
 	//2.其他情况，比如要\\.\PhysicalDrive0
-	//清空内存,选中这个“东西”
-	cleanmemory(diskhome+0x100000,0x300000);
+	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
 	intomemory(arg);
-
-	//读最开始64个扇区(0x8000),喊仆人来检查“东西”种类
-	ret=readmemory(datahome,0,0,64);
-	ret=mount(0,diskhome);
+	ret=mount(0);
 }
 static int masterread(char* arg1)
 {
@@ -275,10 +275,17 @@ void command(char* buffer)
 	ret=compare( arg0 , "mount");
 	if(ret==0)
 	{
-		QWORD value;
-		hexstring2data(arg1,value);
-		mount(value,diskhome);
-		return;
+		if(arg1==0)
+		{
+			mount(0);
+		}
+		else
+		{
+			QWORD value;
+			hexstring2data(arg1,&value);
+			mount(diskhome+value*0x40);
+			return;
+		}
 	}
 	//logical 1 (servent 1) (search)
 	ret=compare( arg0 , "ls");
@@ -313,14 +320,25 @@ void command(char* buffer)
 
 
 
+
+
+
+
 void initmaster(char* world)
 {
-	//4块区域，每块1兆
+	//(自己)4块区域，每块1兆
 	diskhome=world+0;
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
 
-	//最开始看着谁
+	//(仆人)最开始看着谁
+	initservent(diskhome);
+
+	//扫描一遍所有认识的东西，选中找到的第一个
+	masterinto(0);
 	masterinto(diskhome+0x20);
+}
+void killmaster()
+{
 }

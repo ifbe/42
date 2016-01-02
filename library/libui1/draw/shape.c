@@ -1,15 +1,25 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-QWORD screenresolution();
-//void point(int x,int y,DWORD color);
+QWORD howiswindow();
+char* whereiswindow();
 
 
 
 
 static DWORD* screenbuf=0;
-void initshape(char* addr)
+static int xsize=0;
+static int ysize=0;
+void initshape(char* unusedaddr)
 {
-	screenbuf=(DWORD*)addr;
+	//how
+	QWORD temp=howiswindow();
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	screenbuf=(DWORD*)whereiswindow();
 }
 
 

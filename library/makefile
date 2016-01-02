@@ -1,3 +1,4 @@
+##########################cli####################
 arm+linux+cli:
 	make -s -C libboot0 none
 	make -s -C libboot1 gcc
@@ -34,7 +35,7 @@ x86+linux+cli:
 	librarian.o
 x86+mac+cli:
 	make -s -C libboot0 none
-	make -s -C libboot1 gcc
+	make -s -C libboot1 clang
 	make -s -C libhard0 x86
 	make -s -C libhard1 clang
 	make -s -C libsoft0 mac
@@ -57,7 +58,7 @@ x86+win+cli:
 	make -s -C libsoft0 win
 	make -s -C libsoft1 gcc
 	make -s -C libui0 cli
-	make -s -C libui1 mingw64
+	make -s -C libui1 gcc
 	gcc -c -O2 librarian.c
 	rm -f library.a
 	ar crs library.a \
@@ -66,6 +67,7 @@ x86+win+cli:
 	libsoft0/*.o libsoft1/*.o \
 	libui0/*.o libui1/*.o \
 	librarian.o
+########################graphical############################
 x86+linux+xlib:
 	make -s -C libboot0 none
 	make -s -C libboot1 gcc

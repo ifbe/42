@@ -1,4 +1,8 @@
-void helloworld()
+void initarch(char* addr)
+{
+	
+}
+void killarch()
 {
 	
 }

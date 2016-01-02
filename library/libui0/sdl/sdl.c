@@ -14,8 +14,11 @@ SDL_Texture* texture;		//texture是在显存里的？
 SDL_TimerID my_timer_id;
 
 
-__attribute__((constructor)) void initsdl()
+void initwindowworker(char* addr)
 {
+	//准备rgb点阵
+	mypixel=(unsigned int*)addr;
+
 	//准备sdl
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window=SDL_CreateWindow("i am groot!",
@@ -32,10 +35,8 @@ __attribute__((constructor)) void initsdl()
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
-	//准备rgb点阵
-	mypixel=(unsigned int*)malloc(width*height*4);
 }
-__attribute__((destructor)) void destorysdl()
+void killwindowworker()
 {
 	//释放点阵
 	free(mypixel);

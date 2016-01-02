@@ -13,7 +13,6 @@ void diary(char* fmt,...);
 
 
 //memory
-static char* diskhome;			//[0x000000,0x0fffff]
 static char* fshome;			//[0x100000,0x10ffff]
 	static char* pbr;			//[0x110000,0x11ffff]
 	static char* mft0;			//[0x120000,0x12ffff]
@@ -654,9 +653,9 @@ int explainntfshead()
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
 	readmemory(mft0,ntfssector+mftcluster*clustersize,0,32);
-	printmemory(mft0,0x400);		//	$Mft
-	printmemory(mft0+0x400*5,0x400);	//	.
-	printmemory(mft0+0x400*7,0x400);	//	$Boot
+	//printmemory(mft0,0x400);		//	$Mft
+	//printmemory(mft0+0x400*5,0x400);	//	.
+	//printmemory(mft0+0x400*7,0x400);	//	$Boot
 
 	return 1;
 }
@@ -682,13 +681,12 @@ int mountntfs(char* src,char* addr)
 	ntfssector=*(QWORD*)(src+0x10);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=addr;
-	fshome=addr+0x100000;	//func,struture,...
+	fshome=addr+0;	//func,struture,...
 		pbr=fshome+0x10000;		//pbr
 		mft0=fshome+0x20000;	//mft0
 		mftbuffer=fshome+0x40000;	//mftn
-	dirhome=addr+0x200000;
-	datahome=addr+0x300000;
+	dirhome=addr+0x100000;
+	datahome=addr+0x200000;
 
 	//读PBR，检查失败就返回
 	ret=readmemory(pbr,ntfssector,0,1);

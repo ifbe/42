@@ -12,7 +12,6 @@ void diary(char* fmt,...);
 
 
 //memory
-static char* diskhome;
 static char* fshome;
 	static char* pbr;		//+0x10000
 	static char* inodebuffer;	//+0x20000
@@ -396,12 +395,11 @@ int mountext(char* src,char* addr)
 	block0=*(QWORD*)(src+0x10);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	diskhome=addr;
-	fshome=addr+0x100000;
+	fshome=addr+0;
 		pbr=fshome+0x10000;
 		inodebuffer=fshome+0x20000;
-	dirhome=addr+0x200000;
-	datahome=addr+0x300000;
+	dirhome=addr+0x100000;
+	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
 	ret=readmemory(pbr,block0,0,0x8);	//0x1000

@@ -469,7 +469,7 @@ void initdib()
 
 
 
-void initwindow(QWORD addr)
+void initwindowworker(char* addr)
 {
 	//准备rgb点阵
 	//mypixel=(unsigned int*)malloc(width*height*4);
@@ -492,7 +492,7 @@ void initwindow(QWORD addr)
 	realdc=GetDC(window);
 }
 //__attribute__((destructor)) void destorysdl()
-void killwindow()
+void killwindowworker()
 {
 	//释放dc
 	ReleaseDC(window,realdc);

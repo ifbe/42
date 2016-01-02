@@ -23,53 +23,81 @@
 #define BYTE unsigned char
 void diary(char* fmt,...);
 
+
+
+
+//////////////
 static int thisfd=-1;
-static char* diskinfo;
-static char diskname[0x20]={'/','d','e','v','/','s','d','a','\0','\0'};
+static char _dev_sdx[0x20]={
+	'/','d','e','v','/','s','d','a',0,0
+};
+static char _dev_mmcblkx[0x20]={
+	'/','d','e','v','/','m','m','c','b','l','k','0',0,0
+};
+static char _dev_block_mmcblkx[0x20]={
+	'/','d','e','v','/','b','l','o','c','k','/','m','m','c','b','l','k','0',0,0
+};
 
 
 
 
-void listfile()
+static int trythis(char* src,char* dest)
+{
+	int i;
+	int ret;
+	struct stat st;
+
+	//使用stat去得到是否存在以及文件大小
+	ret=stat(src , &st);
+	if(ret<0)return 0;
+
+	//[0,7]:type
+	//[8,f]:subtype
+	*(QWORD*)(dest+0)=0x6b736964;
+	*(QWORD*)(dest+0x8)=0x3f;
+
+	//size
+	*(QWORD*)(dest+0x10)=0;
+	*(QWORD*)(dest+0x18)=st.st_size;
+
+	//[0x20,0x3f]:name
+	for(i=0;i<0x20;i++)dest[0x20+i]=src[i];
+
+	//success,next
+	return 0x40;
+}
+void listfile(char* dest)
 {
 	//clean
-	struct stat st;
-	int i;
-
-	int tempfd;
 	int num;
-	char* dest=0;
-	for(i=0;i<0x10000;i++)
+	for(num=0;num<0x10000;num++)
 	{
-		diskinfo[i]=0;
+		dest[num]=0;
 	}
 
-	//enumerate
-	dest=diskinfo;
+	//		/dev/sd?
 	for(num=0;num<10;num++)
 	{
-		diskname[7]=num+'a';
-		tempfd = open(diskname,O_RDONLY);
-		if(tempfd == -1)break;
-
-		//[0,7]:type
-		//[8,f]:subtype
-		*(QWORD*)(dest+0)=0x6b736964;
-		*(QWORD*)(dest+0x8)=0x3f;
-
-		//size
-		stat(diskname,&st);
-		*(QWORD*)(dest+0x10)=0;
-		*(QWORD*)(dest+0x18)=st.st_size;
-
-		//[0x20,0x3f]:name
-		for(i=0;i<0x20;i++)dest[0x20+i]=diskname[i];
-
-		//next
-		//printf("%llx,%llx:%s\n",*(QWORD*)(dest+0),*(QWORD*)(dest+8),(char*)(dest+0x10) );
-		dest += 0x40;
-		close(tempfd);
+		_dev_sdx[0x7]=num + 'a';
+		dest += trythis(_dev_sdx , dest);
 	}
+
+	//		/dev/mmcblk?
+	for(num=0;num<10;num++)
+	{
+		_dev_mmcblk[0xb]=num + '0';
+		dest += trythis(_dev_mmcblkx , dest);
+	}
+
+	//		/dev/block/mmcblk?
+	for(num=0;num<10;num++)
+	{
+		_dev_mmcblk[0x11]=num + '0';
+		dest += trythis(_dev_mmcblkx , dest);
+	}
+
+	//		special
+	dest += trythis("/dev/xvda" , dest);
 }
 
 
@@ -77,8 +105,10 @@ void listfile()
 
 void intofile(char* wantpath)
 {
-	//先检查再打开新的，否则新的不行老的已去。。。
-	//testopen
+	//先检查
+	if(whatpath[0]==0)return;
+
+	//测试打开新的
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
@@ -87,7 +117,7 @@ void intofile(char* wantpath)
 	}
 	else close(tempfd);
 
-	//realopen
+	//真正打开新的
 	if(thisfd!=-1)close(thisfd);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 }
@@ -146,11 +176,6 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 
 
-void initfile(QWORD addr)
-{
-	diskinfo=(void*)addr;
-	listfile();
-}
 void killfile()
 {
 	if(thisfd != -1)
