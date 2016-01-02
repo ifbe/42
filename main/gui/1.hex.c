@@ -2,23 +2,25 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//
+void serventreport(int);
+//
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void anscii(int x,int y,char ch);
 void blackanscii(int x,int y,char ch);
-void point(int x,int y,DWORD color);
 void background1();
 void cleanscreen();
-
+//
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
-void serventreport(int);
-QWORD windowresolution();
-QWORD whereispalette();
-QWORD whereismemory();
+//
+QWORD howiswindow();
+char* whereiswindow();
+char* whereismemory();
 
 
 
@@ -80,7 +82,7 @@ static void foreground()
 	int x,y;
 	int xsize,ysize,xshift;
 	QWORD readwhere=readornotread(base);
-	QWORD temp=windowresolution();
+	QWORD temp=howiswindow();
 
 	ysize=( (temp>>16) & 0xffff ) >> 4;
 	if(ysize>0x40)ysize=0x40;
@@ -121,8 +123,8 @@ static void foreground()
 static void floatarea()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereispalette();
-	QWORD temp=windowresolution();
+	DWORD* screenbuf=(DWORD*)whereiswindow();
+	QWORD temp=howiswindow();
 	int ysize=(temp>>16)&0xffff;
 	int xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;

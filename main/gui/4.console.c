@@ -2,6 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void serventreport(int);
 
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
@@ -13,15 +14,15 @@ void command(char* in);
 void say(char*,...);
 void diary(char*,...);
 
-void serventreport(int);
+QWORD howiswindow();
+char* whereiswindow();
 char* whereisworld();
-unsigned int* whereispalette();
 
 
 
 
 //palette
-static unsigned int*  palette=0;
+static unsigned int* palette=0;
 static int resolutionx;
 static int resolutiony=768;
 
@@ -203,7 +204,7 @@ void consoleinit(char* in)
 	if(logbuf==0)
 	{
 		logbuf=whereisworld()+0x100000;
-		palette=whereispalette();
+		palette=(unsigned int*)whereiswindow();
 	}
 	else	//不是第一次进来了
 	{

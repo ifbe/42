@@ -19,7 +19,7 @@ void intomemory(char* in);
 void initall();
 void cleanall();
 //
-char* whereisworker();
+char* whereischaracter();
 void diary(char*,...);
 void printmemory(char*,int);
 
@@ -146,7 +146,7 @@ void processmessage(QWORD type,QWORD key)
 void initgui()
 {
 	int i;
-	char* temp=whereisworker();
+	char* temp=whereischaracter();
 	worker=(struct worker*)temp;
 
 	//clean everything

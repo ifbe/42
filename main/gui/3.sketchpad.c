@@ -14,30 +14,30 @@ struct mathnode{
                 unsigned long long integer;
         };
 };
-
+//
 void printdouble(int x,int y,double z);
 void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void draw(int x,int y,DWORD color);
-
 void background3();
 void cleanscreen();
-
+//
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
 double beautifulbetween(double first,double second);
-
+//
 void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
-
+//
+QWORD howiswindow();
+char* whereiswindow();
+char* whereismemory();
+//
 void printmemory(char*,int);
 void diary(char*,...);
-QWORD whereispalette();
-QWORD screenresolution();
-QWORD whereismemory();
 
 
 
@@ -72,7 +72,7 @@ static void wangge()
 	double first,second,res;
 
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
-	DWORD* screenbuf=(DWORD*)whereispalette();
+	DWORD* screenbuf=(DWORD*)whereiswindow();
 
 
 
@@ -131,7 +131,7 @@ static void tuxiang()
 	int value1,value2,counter;
 	double first,second,haha;
 
-	DWORD* screenbuf=(DWORD*)whereispalette();
+	DWORD* screenbuf=(DWORD*)whereiswindow();
 
 
 

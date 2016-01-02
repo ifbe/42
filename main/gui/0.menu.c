@@ -2,16 +2,17 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//
+void serventreport(int);
 void f1init();
 void menubg();
-
+//
 void rectangle(QWORD,QWORD,QWORD);
 void point(int x,int y,int color);
 void string(int x,int y,char* str);
-
-void serventreport(int);
-QWORD whereismemory();
-
+//
+QWORD howiswindow();
+char* whereiswindow();
 
 
 

@@ -2,7 +2,8 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-char* whereispalette();
+QWORD howiswindow();
+char* whereiswindow();
 
 
 
@@ -10,7 +11,7 @@ char* whereispalette();
 static void keyboardshow()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereispalette();
+	DWORD* screenbuf=(DWORD*)whereiswindow();
 
 	for(y=0;y<512;y++)
 	{

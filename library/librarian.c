@@ -40,10 +40,10 @@ void history(char*,...);
 static char* colduniverse=0;	//unaligned
 static char* warmuniverse=0;	//aligned
 //processed memory
-static char*   world=0;		//4m
-static char*    body=0;		//4m
-static char*  memory=0;		//4m
-static char*  haha=0;		//4m
+static char*     world=0;		//4m
+static char*      body=0;		//4m
+static char*    memory=0;		//4m
+static char* character=0;		//4m
 //return address
 char* whereisworld()
 {
@@ -57,9 +57,9 @@ char* whereismemory()
 {
 	return memory;
 }
-char* whereishaha()
+char* whereischaracter()
 {
-	return haha;
+	return character;
 }
 //get address
 void inituniverse(int size)
@@ -156,20 +156,20 @@ void initall()
 	diary("finish [8,c).one\n");
 
 	//[c,f)：窗口开闭，以及用户界面
-	haha=warmuniverse + (3*0x400000);
-	initwindow( haha );
+	character=warmuniverse + (3*0x400000);
+	initwindow( character );
 	diary("finish [12,16).zero\n");
-	initcharacter( haha );
+	initcharacter( character );
 	diary("finish [12,16).one\n");
 }
 __attribute__((destructor)) void cleanall()
 {
 	//4+4+4+4
-	if(haha != 0)
+	if(character != 0)
 	{
 		killcharacter();
 		killwindow();
-		haha=0;
+		character=0;
 	}
 	if(memory != 0)
 	{
