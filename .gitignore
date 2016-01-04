@@ -5,7 +5,6 @@ push
 *.o
 *.a
 *.old
-*.bin
 *.img
 *.vhd
 *.vmdk
