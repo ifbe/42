@@ -63,6 +63,8 @@ int utf2unicode(unsigned char* src,unsigned int* dst)
 			+ (src[5]&0x3f);	//src[5:5,5:0]
 		return 4;
 	}
+
+	return 0;
 }
 int unicode2utf(unsigned int src,unsigned char* dst)
 {
@@ -122,4 +124,6 @@ int unicode2utf(unsigned int src,unsigned char* dst)
 		dst[5]=0x80+(src&0x3f);
 		return 6;
 	}
+
+	return 0;
 }
