@@ -52,6 +52,12 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/memory.c
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/compress/7z.c \
+	library/libsoft1/compress/tar.c \
+	library/libsoft1/compress/zip.c \
+	library/libsoft1/executable/elf.c \
+	library/libsoft1/executable/macho.c \
+	library/libsoft1/executable/pe.c \
 	library/libsoft1/filesystem/fs.ext.c \
 	library/libsoft1/filesystem/fs.fat.c \
 	library/libsoft1/filesystem/fs.hfs.c \

@@ -3,7 +3,11 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //检查
-int istar(char*);	//压缩包
+int iself(char*);	//可执行文件
+int ismacho(char*);
+int ispe(char*);
+int is7z(char*);	//压缩包
+int istar(char*);
 int iszip(char*);
 int isfat(char*);	//文件系统
 int isntfs(char*);
@@ -97,16 +101,17 @@ QWORD prelibation(char* memaddr)
 	if( isarp(memaddr) !=0 )return ;	//'arp'
 	if( isudp(memaddr) !=0 )return ;	//'udp'
 	if( istcp(memaddr) !=0 )return ;	//'tcp'
-	
+*/
 	//是可执行文件
-	if( iself(memaddr) !=0 )return ;	//'elf'
-	if( ismacho(memaddr) !=0 )return ;	//'macho'
-	if( ispe(memaddr) !=0 )return ;		//'pe'
+	if( iself(memaddr) !=0 )return 0x666c65;	//'elf'
+	if( ismacho(memaddr) !=0 )return 0x6f6863616d;	//'macho'
+	if( ispe(memaddr) !=0 )return 0x6570;		//'pe'
 
 	//是压缩包
-	if( istar(memaddr) !=0 )return ;	//'tar'
-	if( iszip(memaddr) !=0 )return ;	//'zip'
-*/
+	if( is7z(memaddr) !=0 )return 0x7a37;		//'7z'
+	if( istar(memaddr) !=0 )return 0x726174;	//'tar'
+	if( iszip(memaddr) !=0 )return 0x70697a;	//'zip'
+
 	//是文件系统
 	if( isfat(memaddr) !=0 )return 0x746166;	//'fat'
 	if( isntfs(memaddr) !=0 )return 0x7366746e;	//'ntfs'
