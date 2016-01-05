@@ -449,10 +449,10 @@ int isfat(char* addr)
 }
 
 //1:那一条0x40字节的地址，2:可以用的8m内存的地址
-int mountfat(char* src,char* addr)
+int mountfat(QWORD sector,char* addr)
 {
 	int ret;
-	firstsector=*(QWORD*)(src+0x10);
+	firstsector=sector;
 	//diary("%llx\n",(QWORD)fat32_explain);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置

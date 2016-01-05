@@ -389,12 +389,12 @@ int isext(char* addr)
 	//maybe isext
 	return 4;
 }
-int mountext(char* src,char* addr)
+int mountext(QWORD sector,char* addr)
 {
 	int ret=0;
-	block0=*(QWORD*)(src+0x10);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	block0=sector;
 	fshome=addr+0;
 		pbr=fshome+0x10000;
 		inodebuffer=fshome+0x20000;

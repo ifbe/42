@@ -16,10 +16,10 @@ int ishfs(char*);
 int isgpt(char*);	//分区表
 int ismbr(char*);
 //挂载
-int mountext(char* src,char* dst);	//文件系统
-int mountfat(char* src,char* dst);
-int mounthfs(char* src,char* dst);
-int mountntfs(char* src,char* dst);
+int mountext(QWORD src,char* dst);	//文件系统
+int mountfat(QWORD src,char* dst);
+int mounthfs(QWORD src,char* dst);
+int mountntfs(QWORD src,char* dst);
 int explaingpt(char* src,char* dst);	//分区表
 int explainmbr(char* src,char* dst);
 //读取
@@ -140,25 +140,36 @@ QWORD prelibation(char* memaddr)
 int mount(char* src)
 {
 	int ret;
-	QWORD type=0,temp=0;
+	QWORD sector=0;
+	QWORD type=0;
 
 
-	//读取大概64个扇区(0x8000)进内存
-	if(src==0)readmemory(datahome,0,0,64);
-	else readmemory(datahome , *(QWORD*)(src+0x10) , 0 , 64);
+	//sector=
+	if(src==0)sector=0;
+	else sector=*(QWORD*)(src+0x10);
+
+
+	//读[sector,sector+63](0x8000bytes)进内存，检查种类
+	readmemory(datahome , sector , 0 , 64);
 	type=prelibation(datahome);
 	diary("%s\n",&type);
 
 
-	//如果是文件头，并且是分区表头，那么解释分区表到diskhome
-	if( (src==0) && (type==0x747067) )	//0 && gpt
+	//如果是分区表头，并且是文件头，那么解释分区表到diskhome
+	if(type==0x747067)	//0 && gpt
 	{
-		explaingpt(datahome,diskhome);
+		if(sector==0)
+		{
+			explaingpt(datahome,diskhome);
+		}
 		return 0;
 	}
-	if( (src==0) && (type==0x72626d) )		//0 && mbr
+	if(type==0x72626d)		//0 && mbr
 	{
-		explainmbr(datahome,diskhome);
+		if(sector==0)
+		{
+			explainmbr(datahome,diskhome);
+		}
 		return 0;
 	}
 
@@ -167,19 +178,19 @@ int mount(char* src)
 	cleanmemory(fshome,0x300000);
 	if(type == 0x747865)            //'ext'
 	{
-		ret=mountext(src,fshome);
+		ret=mountext(sector,fshome);
 	}
 	else if(type == 0x746166)       //'fat'
 	{
-		ret=mountfat(src,fshome);
+		ret=mountfat(sector,fshome);
 	}
 	else if(type == 0x736668)       //'hfs'
 	{
-		ret=mounthfs(src,fshome);
+		ret=mounthfs(sector,fshome);
 	}
 	else if(type == 0x7366746e)     //'ntfs'
 	{
-		ret=mountntfs(src,fshome);
+		ret=mountntfs(sector,fshome);
 	}
 
 	//拿到cd,load,explain等苦工的地址

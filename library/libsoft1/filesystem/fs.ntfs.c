@@ -675,12 +675,12 @@ int isntfs(char* addr)
 	return 0x666666;
 }
 //描述地址，状态机地址
-int mountntfs(char* src,char* addr)
+int mountntfs(QWORD sector,char* addr)
 {
 	int ret=0;
-	ntfssector=*(QWORD*)(src+0x10);
 
 	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	ntfssector=sector;
 	fshome=addr+0;	//func,struture,...
 		pbr=fshome+0x10000;		//pbr
 		mft0=fshome+0x20000;	//mft0

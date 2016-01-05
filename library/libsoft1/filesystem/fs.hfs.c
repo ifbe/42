@@ -663,11 +663,12 @@ int ishfs(char* addr)
 	}
 	else return 0;
 }
-int mounthfs(char* src,char* addr)
+int mounthfs(QWORD sector,char* addr)
 {
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	int ret;
-	block0=*(QWORD*)(src+0x10);
+
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	block0=sector;
 	fshome=addr+0;
 		pbr=fshome+0x10000;
 		catabuf=fshome+0x20000;
