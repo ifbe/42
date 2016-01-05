@@ -13,10 +13,12 @@ void diary(char*,...);
 
 
 static char buffer[128];//键盘输入专用
-int main()
+int main(int argc,char* argv[])
 {
+	//必须放第一个
 	init123();
 
+	//无限循环
 	while(1)
 	{
 		//1.等输入，再把这段里面所有的0x20变成0
@@ -26,6 +28,7 @@ int main()
 		else command(buffer);
 	}
 
+	//必须放在最后
 	cleanall();
 	return 0;
 }

@@ -10,6 +10,7 @@ void killcharacter();
 void initwindow(char*);
 void killwindow();
 //libsoft
+void masterinto(QWORD);
 void initmaster(char*);
 void killmaster();
 void initmemory();
@@ -103,64 +104,77 @@ void inituniverse(int size)
 
 void init123()
 {
+	//开终端等等活动，必须放第一个
+	char* p=explainarg();
+
 	//0000000000000000000000
-	explainarg();					//argv里面指定要开终端
 	inituniverse( 3 * 0x400000 );	//16m
 
 	//[0,4)：构架相关，以及内核日志
 	world=warmuniverse + 0;
 	initarch( world );
-	diary("finish [0,4).zero\n");
+	diary("[0,4):boot0 done\n");
 	initstd( world );
-	diary("finish [0,4).one\n");
+	diary("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
 	body=warmuniverse + (1*0x400000);
 	initdriver( body );
-	diary("finish [4,8).zero\n");
+	diary("[4,8):hard0 done\n");
 	initbody( body );
-	diary("finish [4,8).one\n");
+	diary("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
-	diary("finish [8,c).zero\n");
+	diary("[8,c):soft0 done\n");
 	initmaster( memory );
-	diary("finish [8,c).one\n");
+	diary("[8,c):soft1 done\n");
+
+	//默认行为，必须放最后一个
+	if(p==0)masterinto(1);
+	else masterinto((QWORD)p);
 }
 void initall()
 {
+	//开终端等等活动，必须放第一个
+	char* p=explainarg();
+
 	//0000000000000000000000
-	explainarg();					//argv里面指定要开终端
 	inituniverse( 4 * 0x400000 );	//16m
 
 	//[0,4)：构架相关，以及内核日志
 	world=warmuniverse + 0;
 	initarch( world );
-	diary("finish [0,4).zero\n");
+	diary("[0,4):boot0 done\n");
 	initstd( world );
-	diary("finish [0,4).one\n");
+	diary("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
 	body=warmuniverse + (1*0x400000);
 	initdriver( body );
-	diary("finish [4,8).zero\n");
+	diary("[4,8):hard0 done\n");
 	initbody( body );
-	diary("finish [4,8).one\n");
+	diary("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
-	diary("finish [8,c).zero\n");
+	diary("[8,c):soft0 done\n");
 	initmaster( memory );
-	diary("finish [8,c).one\n");
+	diary("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
 	character=warmuniverse + (3*0x400000);
 	initwindow( character );
-	diary("finish [12,16).zero\n");
+	diary("[12,16):ui0 done\n");
 	initcharacter( character );
-	diary("finish [12,16).one\n");
+	diary("[12,16):ui1 done\n");
+
+	//默认行为，必须放最后一个
+	diary("%llx\n",p);
+	if(p==0)masterinto(1);
+	else masterinto((QWORD)p);
 }
 __attribute__((destructor)) void cleanall()
 {

@@ -16,9 +16,12 @@ void diary(char* fmt,...);
 static char buffer[100];
 char* explainarg()
 {
-	//cmdline
+	//clean
+	char* result=0;
 	int temp;
 	for(temp=0;temp<100;temp++)buffer[temp]=0;
+
+	//open,read,close
 	temp=open("/proc/self/cmdline",O_RDONLY);
 	if(temp==-1)diary("error reading cmd line\n");
 	else
@@ -26,17 +29,22 @@ char* explainarg()
 		memset(buffer,0,100);
 		int i=read(temp,buffer,100);
 		close(temp);
-		printmemory(buffer,20);
+		printmemory(buffer,0x20);
 		//diary("cmdline:%s\n",buffer);
 	}
 
 	//
 	for(temp=0;temp<100;temp++)
 	{
-		if(buffer[temp]==0)break;
+		if( buffer[temp] == 0)
+		{
+			if( buffer[temp+1] != 0 )
+			{
+				result=buffer+temp+1;
+			}
+		}
 	}
-	//diary("    arg0:%s,arg1:%s\n",buffer,buffer+temp);
 
-	if( buffer[temp+1] != 0 )return buffer+temp+1;
-	else return "/dev/sda";
+	printf("%llx\n",(QWORD)result);
+	return result;
 }

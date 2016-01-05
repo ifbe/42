@@ -39,7 +39,11 @@ char* explainarg()
 		if(mystring[i]==0x20)
 		{
 			//只要发现空格后面跟着的是-
-			if(mystring[i+1]=='-')wantlog=1;
+			if(mystring[i+1]=='-')
+			{
+				wantlog=1;
+				break;
+			}
 		}
 	}
 	if(wantlog==1)
@@ -52,28 +56,24 @@ char* explainarg()
 		freopen("CONOUT$","w",stdout);
 
 		//必须有console才能显示
-		printmemory(mystring,100);
+		//printmemory(mystring,100);
 	}
 
 
 
 
 	//可能有多个空格
-	for(i=0;i<100;i++)
+	for(i=0;i<100-20;i++)
 	{
-		if(mystring[i]==0)
-		{
-			result=0;
-			break;
-		}
+		//退出
+		if(mystring[i]==0)break;
+
+		//只要发现空格后面跟着的不是\0,不是0x20,不是-
 		if(mystring[i]==0x20)
 		{
-			//只要发现空格后面跟着的不是\0,不是0x20,不是-
-			if( 
-				( mystring[i+1] != 0 ) &&
+			if(	( mystring[i+1] != 0 ) &&
 				( mystring[i+1] != 0x20 ) &&
-				( mystring[i+1] != '-' )
-			)
+				( mystring[i+1] != '-' ) )
 			{
 				for(j=0;j<20;j++)
 				{

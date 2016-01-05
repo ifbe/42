@@ -42,7 +42,7 @@ static char* datahome;		//+3m
 
 
 //physical function
-static void masterlist(char* arg1)
+void masterlist(char* arg1)
 {
 	QWORD temp=0;
 	int i,j;
@@ -121,15 +121,22 @@ static void masterlist(char* arg1)
 		}//if
 	}//for
 }//masterlist
-static void masterinto(char* arg)
+void masterinto(char* arg)
 {
 	int ret=0;
 	QWORD temp=0;
 
-	//1.如果传进来0，仅重新扫描所有硬盘
+	//0.如果传进来0，仅重新扫描所有硬盘
 	if(arg == 0)
 	{
 		listmemory(diskhome);
+		return;
+	}
+
+	//1.如果传进来1，打开默认的硬盘或文件
+	if((QWORD)arg == 1)
+	{
+		masterinto(diskhome+0x20);
 		return;
 	}
 
@@ -138,7 +145,7 @@ static void masterinto(char* arg)
 	intomemory(arg);
 	ret=mount(0);
 }
-static int masterread(char* arg1)
+int masterread(char* arg1)
 {
 	QWORD value;
 
@@ -170,7 +177,7 @@ static int masterread(char* arg1)
 
 	else return platformread(arg1);
 }
-static int masterwrite(char* arg1)
+int masterwrite(char* arg1)
 {
 	QWORD value;
 
@@ -337,7 +344,6 @@ void initmaster(char* world)
 
 	//扫描一遍所有认识的东西，选中找到的第一个
 	masterinto(0);
-	masterinto(diskhome+0x20);
 }
 void killmaster()
 {
