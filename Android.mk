@@ -53,6 +53,8 @@ LOCAL_SRC_FILES += \
 #3.soft1
 LOCAL_SRC_FILES += \
 	library/libsoft1/compress/7z.c \
+	library/libsoft1/compress/cpio.c \
+	library/libsoft1/compress/gz.c \
 	library/libsoft1/compress/tar.c \
 	library/libsoft1/compress/zip.c \
 	library/libsoft1/executable/elf.c \

@@ -1,6 +1,8 @@
 binary:
 	gcc -c -fPIC -O2 calc/calc.c
 	gcc -c -fPIC -O2 compress/7z.c
+	gcc -c -fPIC -O2 compress/cpio.c
+	gcc -c -fPIC -O2 compress/gz.c
 	gcc -c -fPIC -O2 compress/tar.c
 	gcc -c -fPIC -O2 compress/zip.c
 	gcc -c -fPIC -O2 executable/elf.c
@@ -19,6 +21,8 @@ binary:
 crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 calc/calc.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/7z.c
+	x86_64-elf-gcc -c -fPIC -O2 compress/cpio.c
+	x86_64-elf-gcc -c -fPIC -O2 compress/gz.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/tar.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/zip.c
 	x86_64-elf-gcc -c -fPIC -O2 executable/elf.c
@@ -37,6 +41,8 @@ crosscompile:
 gcc:
 	gcc -c -O2 calc/calc.c
 	gcc -c -O2 compress/7z.c
+	gcc -c -O2 compress/cpio.c
+	gcc -c -O2 compress/gz.c
 	gcc -c -O2 compress/tar.c
 	gcc -c -O2 compress/zip.c
 	gcc -c -O2 executable/elf.c
@@ -55,6 +61,8 @@ gcc:
 clang:
 	clang -c -O2 calc/calc.c
 	clang -c -O2 compress/7z.c
+	clang -c -O2 compress/cpio.c
+	clang -c -O2 compress/gz.c
 	clang -c -O2 compress/tar.c
 	clang -c -O2 compress/zip.c
 	clang -c -O2 executable/elf.c

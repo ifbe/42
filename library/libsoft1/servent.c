@@ -7,6 +7,8 @@ int iself(char*);	//可执行文件
 int ismacho(char*);
 int ispe(char*);
 int is7z(char*);	//压缩包
+int iscpio(char*);
+int isgz(char*);
 int istar(char*);
 int iszip(char*);
 int isfat(char*);	//文件系统
@@ -109,6 +111,8 @@ QWORD prelibation(char* memaddr)
 
 	//是压缩包
 	if( is7z(memaddr) !=0 )return 0x7a37;		//'7z'
+	if( iscpio(memaddr) !=0 )return 0x6f697063;	//'cpio'
+	if( isgz(memaddr) !=0 )return 0x7a67;		//'gz'
 	if( istar(memaddr) !=0 )return 0x726174;	//'tar'
 	if( iszip(memaddr) !=0 )return 0x70697a;	//'zip'
 
