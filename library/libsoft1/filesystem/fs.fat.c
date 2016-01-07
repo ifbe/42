@@ -19,7 +19,7 @@ static char* datahome;		//一般使用
 
 //disk
 static QWORD firstsector;
-static QWORD fat0;			//fat表所在扇区
+static QWORD fat0;		//fat表所在扇区
 static QWORD fatsize;		//fat表总共的扇区数量
 static QWORD cluster2;		//2号簇所在扇区
 static QWORD clustersize;	//每个簇的扇区数量
@@ -34,68 +34,72 @@ static QWORD clustersize;	//每个簇的扇区数量
 static void explaindirectory()
 {
 	int i,j;
-	BYTE* rsi=(BYTE*)(datahome);
-	BYTE* rdi=(BYTE*)(dirhome);
+	BYTE* rsi;
+	BYTE* rdi;
 
+	//before
+	rsi=(BYTE*)(datahome-0x20);
+	rdi=(BYTE*)(dirhome);
 	for(i=0;i<0x4000;i++) rdi[i]=0;
 
-	while(rsi<(BYTE*)(datahome+0x2000) )
+	//start
+	while(1)
 	{
-		if( rsi[0xb] !=0xf ){		//fat ignore
-		if( rsi[0] !=0xe5 ){		//not deleted
-		if( *(QWORD*)rsi !=0 ){		//have name
-			QWORD temp;
+		//datahome-0x20+0x20=datahome
+		rsi+=0x20;
+		if(rsi >= (BYTE*)(datahome+0x4000) )break;
 
-			//[0x10,0x17]:type
-			temp=rsi[0xb];
-			if(temp==0x10)
-			{
-				*(QWORD*)(rdi+0)=0x726964;    //'dir'
-			}
-			else
-			{
-				*(QWORD*)(rdi+0)=0x656c6966+(temp<<32);
-			}
+		//check
+		if( rsi[0xb] ==0xf )continue;	//fat ignore
+		if( rsi[0] ==0xe5 )continue;	//not deleted
+		if( *(QWORD*)rsi ==0 )continue;	//have name
 
-			//[0x10,0x17]:cluster
-			temp=((QWORD)(*(WORD*)(rsi+0x14)))<<16; //high
-			temp+=(QWORD)(*(WORD*)(rsi+0x1a));  //low
-			*(QWORD*)(rdi+0x10)=temp;
+		//[0x10,0x17]:type
+		QWORD temp=rsi[0xb];
+		if( (temp&0x10) == 0x10 )
+		{
+			*(QWORD*)(rdi+0)=0x726964;    //'dir'
+		}
+		else
+		{
+			*(QWORD*)(rdi+0)=0x656c6966+(temp<<32);
+		}
 
-			//[0x18,0x1f]:size
-			*(QWORD*)(rdi+0x18)=*(DWORD*)(rsi+0x1c);
+		//[0x10,0x17]:cluster
+		temp=((QWORD)(*(WORD*)(rsi+0x14)))<<16; //high
+		temp+=(QWORD)(*(WORD*)(rsi+0x1a));  //low
+		*(QWORD*)(rdi+0x10)=temp;
 
-			//[0x20,0x3f]:name
-			j=0x20;
-			for(i=0;i<8;i++)
+		//[0x18,0x1f]:size
+		*(QWORD*)(rdi+0x18)=*(DWORD*)(rsi+0x1c);
+
+		//[0x20,0x3f]:name
+		j=0x20;
+		for(i=0;i<8;i++)
+		{
+			if(rsi[i]!=0x20)
 			{
-				if(rsi[i]!=0x20)
-				{
-					rdi[j]=rsi[i];
-					if( (rdi[j]>='A') && (rdi[j]<='Z') )rdi[j]+=0x20;
-					j++;
-				}
-			}
-			if(rsi[8]!=0x20)
-			{
-				rdi[j]='.';
+				rdi[j]=rsi[i];
+				if( (rdi[j]>='A')&&(rdi[j]<='Z') )rdi[j]+=0x20;
 				j++;
 			}
-			for(i=8;i<11;i++)
+		}
+		if(rsi[8]!=0x20)
+		{
+			rdi[j]='.';
+			j++;
+		}
+		for(i=8;i<11;i++)
+		{
+			if(rsi[i]!=0x20)
 			{
-				if(rsi[i]!=0x20)
-				{
-					rdi[j]=rsi[i];
-					if( (rdi[j]>='A') && (rdi[j]<='Z') )rdi[j]+=0x20;
-					j++;
-				}
+				rdi[j]=rsi[i];
+				if( (rdi[j]>='A')&&(rdi[j]<='Z') )rdi[j]+=0x20;
+				j++;
 			}
-			//
-			rdi+=0x40;
 		}
-		}
-		}
-		rsi+=0x20;
+		//
+		rdi+=0x40;
 	}
 }
 
@@ -156,17 +160,16 @@ static void fat16_load(QWORD id,QWORD offset)
 static void fat16_root()
 {
 	//清理内存
-	BYTE* memory=(BYTE*)(datahome);
 	int i;
-	for(i=0;i<0x40000;i++) memory[i]=0;
+	for(i=0;i<0x40000;i++) datahome[i]=0;
 
-	//fat16的
-	//文件分配表区最多0xffff个簇记录*每个记录占2个字节<=0x20000=0x100个扇区
-	//而数据区最大0xffff个簇记录*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
+	//fat16的fat区最多0xffff个簇记录*每个记录2个字节<=0x20000=0x100个扇区
+	//data区最大0xffff个簇*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	diary("reading whole fat table\n");
 	readmemory(fatbuffer,fat0,0,0x100);
 	//printmemory(fatbuffer,0x1000);
 
+	//fat16根目录最多512个记录=0x20*0x200=0x4000字节=32个扇区
 	diary("cd %x\n",fat0+fatsize*2);
 	readmemory(datahome,fat0+fatsize*2,0,32);	//0x40000=0x20*0x200
 	explaindirectory();
@@ -221,12 +224,13 @@ static int fat32_explain()
 	return 1;
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-static void fat32_data(char* dest,QWORD cluster)		//destine,clusternum
+//destination,clusternum,startoffset,maxbytes
+static void fat32_data(char* dest,QWORD cluster,QWORD start,QWORD count)
 {
 	diary("cluster:%x\n",cluster);
 
 	char* rdi=dest;
-	while(rdi<dest+0x80000)
+	while(rdi<dest+count)
 	{
 		readmemory(rdi,cluster2+clustersize*(cluster-2),0,clustersize);
 		rdi+=clustersize*0x200;
@@ -246,22 +250,20 @@ static void fat32_data(char* dest,QWORD cluster)		//destine,clusternum
 static void fat32_load(QWORD id,QWORD offset)
 {
 	if(offset>0x100000)offset=0x100000;
-	fat32_data(datahome,id);
+	fat32_data(datahome,id,offset,0x100000);
 }
 static void fat32_root()
 {
 	int i;
-	BYTE* memory=(BYTE*)(datahome);
-	for(i=0;i<0x40000;i++) memory[i]=0;
+	for(i=0;i<0x40000;i++) datahome[i]=0;
 
-	//fat32
-	//文件分配表区总共可以有0xffffffff个*每个簇记录占4个字节<=0x400000000=16G=0x2000000个扇区
+	//fat32的fat可有0xffffffff个*每簇4字节<=0x400000000=16G=0x2000000个扇区
 	//数据区总共0xffffffff个簇*每簇512k<=0x20000000000=2T=0x100000000个扇区
-	firstincache=0xffffffff;		//绝对会读一块
+	firstincache=0xffffffff;		//保证读第一块
 	checkcacheforcluster(0);
 
 	diary("cd root:%x\n",cluster2);
-	readmemory(datahome,cluster2,0,32);
+	fat32_data(datahome,2,0,0x4000);//readmemory(datahome,cluster2,0,32);
 	explaindirectory();
 }
 static int fat32_cd(QWORD id)
@@ -277,7 +279,7 @@ static int fat32_cd(QWORD id)
 		return 1;
 	}
 
-	fat32_data(datahome,id);
+	fat32_data(datahome,id,0,0x8000);
 	explaindirectory();
 	return 2;
 }
@@ -293,6 +295,7 @@ void explainfat16head()
 	//准备本程序需要的变量
 	//QWORD firstsector=(QWORD)( *(DWORD*)(pbr+0x1c) );
 	QWORD* dstqword=(QWORD*)fshome;
+	diary("fat16\n");
 
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
@@ -354,6 +357,7 @@ void explainfat32head()
 	//准备本程序需要的变量
 	//QWORD firstsector=(QWORD)( *(DWORD*)(pbr+0x1c) );
 	QWORD* dstqword=(QWORD*)fshome;
+	diary("fat32\n");
 
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
