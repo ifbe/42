@@ -137,7 +137,7 @@ QWORD prelibation(char* memaddr)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-int mount(char* src)
+int hello(char* src)
 {
 	int ret;
 	QWORD sector=0;

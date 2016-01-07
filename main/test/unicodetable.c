@@ -28,11 +28,19 @@ void printunicode(char* p)
 int main()
 {
 	int i;
-	unsigned char* p=whereisunicodetable();
-	//printmemory(p,0x1000);
+	unsigned char* p;
+
+	initwindow();
+	p=whereisunicodetable();
+	if(p==0)
+	{
+		printf("unicode table not found\n");
+		return;
+	}
 
 	printunicode(p+(0x6709*0x20));		//有
 	printunicode(p+(0x6ca1*0x20));		//没
 
+	killwindow();
 	return 0;
 }

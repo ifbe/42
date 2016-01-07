@@ -44,16 +44,26 @@ void initwindow(char* addr)
 
 	//从当前目录读取unicode点阵字符文件进入内存
 	int ret=0;
-	FILE* fp=fopen("unicode.bin","r");
+	FILE* fp=fopen("unicode.bin","r");		//打开unicode.bin
 	if(fp==NULL)return;
 
-	ret=fread(addr , 0x1000 , 0x200 , fp);	//0x200,000=2MB
+	unicodetable=(char*)malloc(0x200000);		//申请2MB
+	//printf("%llx\n",unicodetable);
+
+	ret=fread(unicodetable , 0x1000 , 0x200 , fp);	//读取2MB
 	if(ret<0x200)return;
 
-	if(fp!=NULL)fclose(fp);
+	if(fp!=NULL)fclose(fp);				//关闭unicode.bin
 }
 void killwindow()
 {
+	//2m
+	if(unicodetable!=0)
+	{
+		free(unicodetable);
+		unicodetable=0;
+	}
+
 	//1024*1024*4
 	if(window != 0)
 	{

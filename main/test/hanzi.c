@@ -1,9 +1,11 @@
+#include<stdio.h>
 #define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-char* whereispalette();
-void initpalette();
+char* whereiswindow();
+void initwindow();
+void initunicode();
 void cleanall();
 void writescreen();
 void waitevent(QWORD* type,QWORD* key);
@@ -18,7 +20,6 @@ static DWORD which=0x4e00;		//hanzi starts @ 0x4e00
 
 
 
-//lord's requires
 void printworld()
 {
 	int x,y;
@@ -30,17 +31,25 @@ void printworld()
 		}
 	}
 
-        //printunicode(0,13,0x548c);
-        for(y=0;y<768;y+=32)
-        {
-                for(x=0;x<1024;x+=32)
-                {
-                        printunicode(x,y,which + y + (x/32) );
-                }
-        }
+/*
+	printunicode(0,0,0x548c);
+	printunicode(500,0,0x548c);
+	printunicode(1000,0,0x548c);
+	printunicode(0,250,0x548c);
+	printunicode(0,500,0x548c);
+*/
+
+	for(y=0;y<768;y+=32)
+	{
+		for(x=0;x<1024;x+=32)
+		{
+			printunicode(x,y,which + y + (x/32) );
+		}
+	}
 
 	//
 	printunicodebig(0,0,which);
+
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -56,8 +65,9 @@ void processmessage(QWORD type,QWORD key)
 void main()
 {
 	//before
-	initpalette();
-	palette=(DWORD*)whereispalette();
+	initwindow();
+	initunicode();
+	palette=(DWORD*)whereiswindow();
 
 	//forever
 	QWORD type=0;

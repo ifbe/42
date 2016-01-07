@@ -3,13 +3,19 @@
 QWORD howiswindow();
 unsigned char* whereiswindow();
 unsigned char* whereisunicodetable();
+void diary(char*,...);
 
 
 
 
-static DWORD* screen=0;
 static int xsize=0;
 static int ysize=0;
+static DWORD* screen=0;
+static unsigned char* unicodetable=0;
+
+
+
+
 void initunicode(char* unusedaddr)
 {
 	//how
@@ -21,6 +27,9 @@ void initunicode(char* unusedaddr)
 
 	//where
 	screen=(DWORD*)whereiswindow();
+
+	//unicode
+	unicodetable=(unsigned char*)whereisunicodetable();
 }
 
 
@@ -29,7 +38,7 @@ void initunicode(char* unusedaddr)
 void printunicodefromvalue(int xxxx,int yyyy,char* p)
 {
 	int x,y;
-	unsigned int* this=(unsigned int*)( screen + xxxx*4 + (yyyy*4096) );
+	DWORD* this = screen + xxxx + (yyyy*1024);
 
 	unsigned short temp;
 	for(y=0;y<0x10;y++)
@@ -48,8 +57,7 @@ void printunicodefromvalue(int xxxx,int yyyy,char* p)
 }
 void printunicode(int x,int y,DWORD value)
 {
-	unsigned char* p=(unsigned char*)whereisunicodetable();
-	printunicodefromvalue( x , y , p+(value*0x20) );
+	printunicodefromvalue( x , y , unicodetable+(value*0x20) );
 }
 
 
@@ -58,7 +66,7 @@ void printunicode(int x,int y,DWORD value)
 void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
 {
 	int x,y,i,j;
-	unsigned int* this=(unsigned int*)( screen + xxxx*4 + (yyyy*4096) );
+	DWORD* this = screen + xxxx + (yyyy*1024);
 
 	unsigned short temp;
 	for(y=0;y<0x10;y++)
@@ -104,7 +112,6 @@ void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
 }
 void printunicodebig(int x,int y,DWORD value)
 {
-	unsigned char* p=(unsigned char*)whereisunicodetable();
-	printunicodefromvaluebig( x , y , p+(value*0x20) );
+	printunicodefromvaluebig( x , y , unicodetable+(value*0x20) );
 }
 

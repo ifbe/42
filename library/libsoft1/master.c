@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 //servent
 void initservent(char*);
-int mount(char*);
+int hello(char*);
 int ls(char*);
 int cd(char*);
 int load(char*);
@@ -143,7 +143,7 @@ void masterinto(char* arg)
 	//2.其他情况，比如要\\.\PhysicalDrive0
 	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
 	intomemory(arg);
-	ret=mount(0);
+	ret=hello(0);
 }
 int masterread(char* arg1)
 {
@@ -238,7 +238,7 @@ void command(char* buffer)
 		diary("write ?		(no)\n\n");
 
 		//logical(servent)
-		diary("mount ?		(no)\n");
+		diary("hello ?		(no)\n");
 		diary("ls ?		(list file)\n");
 		diary("cd ?		(change directory)\n");
 		diary("load ?		(load this file)\n");
@@ -279,18 +279,18 @@ void command(char* buffer)
 
 
 	//logical 0 (servent 0) (check)
-	ret=compare( arg0 , "mount");
+	ret=compare( arg0 , "hello");
 	if(ret==0)
 	{
 		if(arg1==0)
 		{
-			mount(0);
+			hello(0);
 		}
 		else
 		{
 			QWORD value;
 			hexstring2data(arg1,&value);
-			mount(diskhome+value*0x40);
+			hello(diskhome+value*0x40);
 			return;
 		}
 	}

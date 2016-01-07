@@ -117,7 +117,7 @@ kvm:
 
 
 clean:
-	rm -f *.bin *.out *.exe
+	rm -f *.out *.exe
 	rm -f */*.o
 	rm -f */*.a
 	rm -f */*.res
