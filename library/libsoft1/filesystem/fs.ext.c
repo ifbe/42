@@ -168,7 +168,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 			cleverread
 			(
 				sector,count,aaaaa,
-				datahome,0x80000,wantwhere
+				datahome,0x100000,wantwhere
 			);
 		}
 

@@ -296,7 +296,7 @@ int load(char* arg1)
 
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
 	size=*(QWORD*)(dirhome + 0x40*ret + 0x18);
-	if(size>0x100000)diary("warning:large file\n");
+	if(size>0x100000)diary("id=%x,size=%x\n",id,size);
 
 	//1m,1m,1m的整块搞
 	temp=0;

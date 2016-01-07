@@ -158,6 +158,30 @@ void writefile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 //mem地址，file名字，文件内偏移，总字节数
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 {
+	int thisfile;
+	int ret;
+	thisfile=open(filename,O_RDWR|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
+	if(thisfile==-1)
+	{
+		printf("(mem2file fail)open\n");
+		return -1;
+	}
+
+	ret=lseek( thisfile , offset , SEEK_SET);
+	if(ret==-1)
+	{
+		printf("(mem2file fail)lseek\n");
+		return -2;
+	}
+
+	ret=write( thisfile , memaddr , count);
+	if(ret==-1)
+	{
+		printf("(mem2file fail)write\n");
+	}
+	//printmemory(memaddr,0x200);
+
+	close(thisfile);
 	return 0;
 }
 
