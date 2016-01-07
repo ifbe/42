@@ -32,6 +32,14 @@ static int height=768;
 
 
 
+char* whereiswindow()
+{
+	return (char*)mypixel;
+}
+QWORD howiswindow()
+{
+	return width+(height<<16);
+}
 void writescreen()
 {
 	int y;
@@ -137,8 +145,11 @@ void waitevent(QWORD* first,QWORD* second)
 
 
 //__attribute__((constructor)) void initfb()
-void initwindowworker(QWORD addr)
+void initwindowworker()
 {
+	//申请内存
+	mypixel=(unsigned int*)malloc(0x400000);
+
 	//目的地
 	framebufferfp=open("/dev/fb0",O_RDWR);
 	if(framebufferfp<0)
@@ -183,9 +194,6 @@ void initwindowworker(QWORD addr)
 	new=old;
 	new.c_lflag&=~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
-
-	//内存里的缓冲区
-	mypixel=(unsigned int*)addr;
 }
 //__attribute__((destructor)) void destoryfb()
 void killwindowworker()
@@ -193,5 +201,9 @@ void killwindowworker()
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 
+	//
 	if(framebufferfp!=-1)close(framebufferfp);
+
+	//
+	free(mypixel);
 }

@@ -36,6 +36,7 @@ Window win;
 GC gc;
 Atom wmDelete;
 
+unsigned int* mypixel=0;
 int width=1024;
 int height=768;
 int oldx=0;
@@ -44,9 +45,13 @@ int oldy=0;
 
 
 
-QWORD windowresolution()
+char* whereiswindow()
 {
-	return (768<<16)+1024;
+	return (char*)mypixel;
+}
+QWORD howiswindow()
+{
+	return width+(height<<16);
 }
 void writescreen()
 {
@@ -151,8 +156,11 @@ void waitevent(QWORD* my1,QWORD* my2)
 
 
 
-void initwindowworker(char* mypixel)
+void initwindowworker()
 {
+	//申请内存
+	mypixel=(unsigned int*)malloc(0x400000);
+
 	//初始化
 	dsp = XOpenDisplay(NULL);
 	int screen = DefaultScreen(dsp);
@@ -165,7 +173,10 @@ void initwindowworker(char* mypixel)
 	}
 
 	//pixel,ximage,window,gc
-	ximage=XCreateImage(dsp,visual,24,ZPixmap,0,mypixel,width,height,32,0);
+	ximage=XCreateImage(
+		dsp,visual,24,ZPixmap,0,
+		(char*)mypixel,width,height,32,0
+	);
 	win=XCreateSimpleWindow(dsp,RootWindow(dsp,0),0,0,width,height,1,0,0);
 	gc = XCreateGC(dsp, win, 0, NULL);
 
@@ -185,6 +196,10 @@ void initwindowworker(char* mypixel)
 }
 void killwindowworker()
 {
+	//
 	XDestroyWindow(dsp, win);
 	XCloseDisplay(dsp);
+
+	//
+	free(mypixel);
 }

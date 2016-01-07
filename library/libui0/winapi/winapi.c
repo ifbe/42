@@ -46,15 +46,13 @@ static RECT rt, re;
 
 
 
-QWORD windowresolution()
+char* whereiswindow()
+{
+	return (char*)mypixel;
+}
+QWORD howiswindow()
 {
 	return (height<<16)+width;
-}
-void setwindow(QWORD resolution)
-{
-	width=resolution&0xffff;
-	height=(resolution>>16)&0xffff;
-	//changeresolution
 }
 void writescreen()
 {
@@ -469,11 +467,11 @@ void initdib()
 
 
 
-void initwindowworker(char* addr)
+void initwindowworker()
 {
 	//准备rgb点阵
 	//mypixel=(unsigned int*)malloc(width*height*4);
-	mypixel=(unsigned int*)addr;
+	mypixel=(unsigned int*)malloc(0x400000);
 
 	//准备beforemain
 	initmywindow();
@@ -501,6 +499,5 @@ void killwindowworker()
 	Shell_NotifyIcon(NIM_DELETE, &nid);
 
 	//释放点阵
-	//free(mypixel);
-	//diary("killed window\n");
+	free(mypixel);
 }
