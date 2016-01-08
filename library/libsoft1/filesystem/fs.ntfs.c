@@ -566,6 +566,14 @@ void explainmft(QWORD mftnum,QWORD want)
 
 
 
+
+
+
+
+static int ntfs_ls(char* to)
+{
+	return 0;
+}
 static int ntfs_cd(QWORD id)
 {
 	int i=0;
@@ -583,17 +591,10 @@ static int ntfs_load(QWORD id,QWORD offset)
 	pwd[ntfspwd]=id;
 	return 1;
 }
-static int ntfs_explain(QWORD mftnum)
+static int ntfs_store(QWORD id)
 {
-	diary("mft %x\n",mftnum);
-	char* mft=checkcacheformft(mftnum);
-	printmemory(mft,0x400);
 	return 1;
 }
-
-
-
-
 int explainntfshead()
 {
 	int i;
@@ -602,22 +603,15 @@ int explainntfshead()
 	//clean
 	for(i=0;i<0x10000;i++)fshome[i]=0;
 
-	//func cd
+	//func ls.cd,load,store
 	dstqword[0]=0x636e7566;		//'func'
-	dstqword[1]=0x6463;		//'cd'
-	dstqword[2]=(QWORD)ntfs_cd;
-	dstqword += 8;
-
-	//func load
-	dstqword[0]=0x636e7566;		//'func'
-	dstqword[1]=0x64616f6c;		//'load'
-	dstqword[2]=(QWORD)ntfs_load;
-	dstqword += 8;
-
-	//func explain
-	dstqword[0]=0x636e7566;		//'func'
-	dstqword[1]=0x6e69616c707865;		//'explain'
-	dstqword[2]=(QWORD)ntfs_explain;
+	dstqword[1]=0;
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=(QWORD)ntfs_ls;
+	dstqword[5]=(QWORD)ntfs_cd;
+	dstqword[6]=(QWORD)ntfs_load;
+	dstqword[7]=(QWORD)ntfs_store;
 	dstqword += 8;
 
 	//[d,d]
@@ -659,6 +653,14 @@ int explainntfshead()
 
 	return 1;
 }
+
+
+
+
+
+
+
+
 int isntfs(char* addr)
 {
 	QWORD temp;

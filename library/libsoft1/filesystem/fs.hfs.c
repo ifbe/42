@@ -374,38 +374,6 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 
 
 
-//所谓cd，就是把fathercnid=want的那些记录，翻译成容易看懂的格式：名字，id，种类，大小
-static int hfs_cd(QWORD id)
-{
-	//2.已经知道了目录的cnid号，那么需要从b树里面找到节点号和节点内偏移
-	QWORD foundnode;
-	if(id==2)
-	{
-		//根肯定在最开始的地方，相当于稍微优化一下
-		readmemory(datahome,catalogsector+firstleafnode*nodesize,0,nodesize);
-		foundnode=firstleafnode;
-	}
-	else
-	{
-		foundnode=searchbtreeforcnid(rootnode,id);
-		if( foundnode <= 0 )		//offset值不可能小于e
-		{
-			diary("this cnid isn't in btree\n");
-			return -2;
-		}
-		diary("found:%llx@node:%llx\n",id,foundnode);
-	}
-
-
-	//3.既然上面找到了，那么就逐个翻译吧
-	//（temp2那个返回值是为了省事给hfs_load函数准备的，但是hfs_cd只用它来判断搜索成功失败）
-	explaindirectory(foundnode,id);
-	return 1;
-}
-
-
-
-
 //传进来的是：本文件父目录的cnid，本文件的cnid，节点号，想要的文件内部偏移
 void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 {
@@ -486,6 +454,40 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 	}//大while(1)循环
 
 }
+
+
+
+static int hfs_ls(char* to)
+{
+	return 0;
+}
+static int hfs_cd(QWORD id)
+{
+	//2.已经知道了目录的cnid号，那么需要从b树里面找到节点号和节点内偏移
+	QWORD foundnode;
+	if(id==2)
+	{
+		//根肯定在最开始的地方，相当于稍微优化一下
+		readmemory(datahome,catalogsector+firstleafnode*nodesize,0,nodesize);
+		foundnode=firstleafnode;
+	}
+	else
+	{
+		foundnode=searchbtreeforcnid(rootnode,id);
+		if( foundnode <= 0 )		//offset值不可能小于e
+		{
+			diary("this cnid isn't in btree\n");
+			return -2;
+		}
+		diary("found:%llx@node:%llx\n",id,foundnode);
+	}
+
+
+	//3.既然上面找到了，那么就逐个翻译吧
+	//（temp2那个返回值是为了省事给hfs_load函数准备的，但是hfs_cd只用它来判断搜索成功失败）
+	explaindirectory(foundnode,id);
+	return 1;
+}
 static void hfs_load(QWORD id,QWORD wantwhere)
 {
 	//搜索b树找它爸，没办法直接找到它！
@@ -502,14 +504,10 @@ static void hfs_load(QWORD id,QWORD wantwhere)
 	//3.从他爹开始，record，的data部分，的fork信息里面，找到东西
 	explainfile(fathercnid,id,foundnode,wantwhere);
 }
-
-
-
-
-
-
-
-
+static void hfs_store()
+{
+	return;
+}
 int explainhfshead()
 {
 	QWORD size,clumpsize,totalblock,sector,count;
@@ -518,28 +516,16 @@ int explainhfshead()
 	QWORD* dstqword=(QWORD*)fshome;
 
 
-
-
-//-------------------------------操作函数-----------------------------------
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6463;             //'cd'
-	dstqword[2]=(QWORD)hfs_cd;
+	dstqword[1]=0;
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=(QWORD)hfs_ls;
+	dstqword[5]=(QWORD)hfs_cd;
+	dstqword[6]=(QWORD)hfs_load;
+	dstqword[7]=(QWORD)hfs_store;
 	dstqword += 8;
-
-	//func load
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x64616f6c;         //'load'
-	dstqword[2]=(QWORD)hfs_load;
-	dstqword += 8;
-
-	//func explain
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6e69616c707865;           //'explain'
-	dstqword[2]=(QWORD)hfs_explain;
-	dstqword += 8;
-
-
 
 
 //---------------------第一次读，把分区头读进pbrbuffer------------------------
@@ -641,6 +627,14 @@ int explainhfshead()
 
 	return 1;
 }
+
+
+
+
+
+
+
+
 int ishfs(char* addr)
 {
 	QWORD temp;

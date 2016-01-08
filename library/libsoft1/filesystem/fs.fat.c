@@ -109,10 +109,6 @@ static void explaindirectory()
 
 
 
-static int fat16_explain()
-{
-	return 1;
-}
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
 static int fat16_data(char* dest,QWORD cluster)
 {
@@ -138,25 +134,6 @@ static int fat16_data(char* dest,QWORD cluster)
 	diary("count:%x\n",rdi-dest);
 	return rdi-dest;
 }
-//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat16_load(QWORD id,QWORD offset)
-{
-//从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
-	QWORD cluster=id;
-	QWORD temp=0;
-	while(1)
-	{
-		//就是这里，就从这个簇开始
-		if(temp==offset)break;
-		
-		//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
-		temp+=clustersize*0x200;
-		cluster=(QWORD)(*(WORD*)(fatbuffer+2*cluster));
-	}
-
-//然后读
-	fat16_data(datahome,cluster);
-}
 static void fat16_root()
 {
 	//清理内存
@@ -176,6 +153,18 @@ static void fat16_root()
 
 	diary("\n");
 }
+
+
+
+
+
+
+
+
+static int fat16_ls(char* to)
+{
+	return 0;
+}
 static int fat16_cd(QWORD id)
 {
 	//清理
@@ -189,107 +178,29 @@ static int fat16_cd(QWORD id)
 
 	return 1;
 }
-
-
-
-
-
-
-
-
-
-//fat32的fat表很大，不能像fat16那样直接全部存进一块32K的内存里
-//所以每次查表的时候，要把，被查的表项目，所在的64K块，搬进内存
-//0x40000=0x200个扇区=0x10000个簇记录
-//所以要读的扇区为：[whatwewant,whatwewant+0x1ff](whatwewant=fat0扇区+(cluster/0x10000)*0x200)
-//举例子：
-//请求cluster=   0x777，如果内存里就是这第   0大块就返回，否则要把       0号到  0xffff号扔进内存然后记下当前clustercurrent=0
-//请求cluster= 0x13578，如果内存里就是这第   1大块就返回，否则要把 0x10000号到 0x1ffff号扔进内存然后记下当前clustercurrent=0x10000
-//请求cluster= 0x20000，如果内存里就是这第   2大块就返回，否则要把 0x20000号到 0x2ffff号扔进内存然后记下当前clustercurrent=0x20000
-//请求cluster=0x613153，如果内存里就是这第0x61大块就返回，否则要把0x610000号到0x61ffff号扔进内存然后记下当前clustercurrent=0x610000
-static QWORD firstincache;
-static void checkcacheforcluster(QWORD cluster)
+//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
+static void fat16_load(QWORD id,QWORD offset)
 {
-	//现在的就是我们要的，就直接返回
-	QWORD whatwewant=cluster&0xffffffffffff0000;
-	if(firstincache == whatwewant) return;
+	//从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
+	QWORD cluster=id;
+	QWORD temp=0;
+	while(1)
+	{
+		//就是这里，就从这个簇开始
+		if(temp==offset)break;
+		
+		//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
+		temp+=clustersize*0x200;
+		cluster=(QWORD)(*(WORD*)(fatbuffer+2*cluster));
+	}
 
-	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
-	diary("whatwewant:%x\n",whatwewant);
-	readmemory(fatbuffer,fat0+(whatwewant/0x80),0,0x200);	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
-	firstincache=whatwewant;
+	//然后读
+	fat16_data(datahome,cluster);
 }
-static int fat32_explain()
+static int fat16_store()
 {
 	return 1;
 }
-//从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-//destination,clusternum,startoffset,maxbytes
-static void fat32_data(char* dest,QWORD cluster,QWORD start,QWORD count)
-{
-	diary("cluster:%x\n",cluster);
-
-	char* rdi=dest;
-	while(rdi<dest+count)
-	{
-		readmemory(rdi,cluster2+clustersize*(cluster-2),0,clustersize);
-		rdi+=clustersize*0x200;
-
-		//检查缓冲，从检查完的缓冲区里面读一个cluster号
-		checkcacheforcluster(cluster);
-		cluster=(QWORD)(*(DWORD*)(fatbuffer+4*(cluster%0x10000)));
-
-		//if(cluster<2){diary("impossible cluster,bye!%x\n",cluster);return;}
-		if(cluster<2)break;
-		if(cluster>=0x0ffffff8)break;
-		if(cluster==0x0ffffff7){diary("bad cluster,bye!%x\n",cluster);break;}
-	}
-	diary("count:%x\n",rdi-dest);
-}
-//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat32_load(QWORD id,QWORD offset)
-{
-	if(offset>0x100000)offset=0x100000;
-	fat32_data(datahome,id,offset,0x100000);
-}
-static void fat32_root()
-{
-	int i;
-	for(i=0;i<0x40000;i++) datahome[i]=0;
-
-	//fat32的fat可有0xffffffff个*每簇4字节<=0x400000000=16G=0x2000000个扇区
-	//数据区总共0xffffffff个簇*每簇512k<=0x20000000000=2T=0x100000000个扇区
-	firstincache=0xffffffff;		//保证读第一块
-	checkcacheforcluster(0);
-
-	diary("cd root:%x\n",cluster2);
-	fat32_data(datahome,2,0,0x4000);//readmemory(datahome,cluster2,0,32);
-	explaindirectory();
-}
-static int fat32_cd(QWORD id)
-{
-	//清理
-	int i;
-	for(i=0;i<0x10000;i++) datahome[i]=0;
-
-	//读取，转换
-	if(id<2)
-	{
-		fat32_root();
-		return 1;
-	}
-
-	fat32_data(datahome,id,0,0x8000);
-	explaindirectory();
-	return 2;
-}
-
-
-
-
-
-
-
 void explainfat16head()
 {
 	//准备本程序需要的变量
@@ -299,20 +210,13 @@ void explainfat16head()
 
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6463;             //'cd'
-	dstqword[2]=(QWORD)fat16_cd;
-	dstqword += 8;
-
-	//func load
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x64616f6c;         //'load'
-	dstqword[2]=(QWORD)fat16_load;
-	dstqword += 8;
-
-	//func explain
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6e69616c707865;           //'explain'
-	dstqword[2]=(QWORD)fat16_explain;
+	dstqword[1]=0;
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=(QWORD)fat16_ls;
+	dstqword[5]=(QWORD)fat16_cd;
+	dstqword[6]=(QWORD)fat16_load;
+	dstqword[7]=(QWORD)fat16_store;
 	dstqword += 8;
 
 	fat0=(QWORD)( *(WORD*)(pbr+0xe) );
@@ -352,6 +256,112 @@ void explainfat16head()
 	dstqword += 8;
 	diary("clustersize:%x\n",clustersize);
 }
+
+
+
+
+
+
+
+
+
+//fat32的fat表很大，不能像fat16那样直接全部存进一块32K的内存里
+//所以每次查表的时候，要把，被查的表项目，所在的64K块，搬进内存
+//0x40000=0x200个扇区=0x10000个簇记录
+//所以要读的扇区为：[whatwewant,whatwewant+0x1ff](whatwewant=fat0扇区+(cluster/0x10000)*0x200)
+//举例子：
+//请求cluster=   0x777，如果内存里就是这第   0大块就返回，否则要把       0号到  0xffff号扔进内存然后记下当前clustercurrent=0
+//请求cluster= 0x13578，如果内存里就是这第   1大块就返回，否则要把 0x10000号到 0x1ffff号扔进内存然后记下当前clustercurrent=0x10000
+//请求cluster= 0x20000，如果内存里就是这第   2大块就返回，否则要把 0x20000号到 0x2ffff号扔进内存然后记下当前clustercurrent=0x20000
+//请求cluster=0x613153，如果内存里就是这第0x61大块就返回，否则要把0x610000号到0x61ffff号扔进内存然后记下当前clustercurrent=0x610000
+static QWORD firstincache;
+static void checkcacheforcluster(QWORD cluster)
+{
+	//现在的就是我们要的，就直接返回
+	QWORD whatwewant=cluster&0xffffffffffff0000;
+	if(firstincache == whatwewant) return;
+
+	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
+	diary("whatwewant:%x\n",whatwewant);
+	readmemory(fatbuffer,fat0+(whatwewant/0x80),0,0x200);	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
+	firstincache=whatwewant;
+}
+//从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
+//destination,clusternum,startoffset,maxbytes
+static void fat32_data(char* dest,QWORD cluster,QWORD start,QWORD count)
+{
+	diary("cluster:%x\n",cluster);
+
+	char* rdi=dest;
+	while(rdi<dest+count)
+	{
+		readmemory(rdi,cluster2+clustersize*(cluster-2),0,clustersize);
+		rdi+=clustersize*0x200;
+
+		//检查缓冲，从检查完的缓冲区里面读一个cluster号
+		checkcacheforcluster(cluster);
+		cluster=(QWORD)(*(DWORD*)(fatbuffer+4*(cluster%0x10000)));
+
+		//if(cluster<2){diary("impossible cluster,bye!%x\n",cluster);return;}
+		if(cluster<2)break;
+		if(cluster>=0x0ffffff8)break;
+		if(cluster==0x0ffffff7){diary("bad cluster,bye!%x\n",cluster);break;}
+	}
+	diary("count:%x\n",rdi-dest);
+}
+static void fat32_root()
+{
+	int i;
+	for(i=0;i<0x40000;i++) datahome[i]=0;
+
+	//fat32的fat可有0xffffffff个*每簇4字节<=0x400000000=16G=0x2000000个扇区
+	//数据区总共0xffffffff个簇*每簇512k<=0x20000000000=2T=0x100000000个扇区
+	firstincache=0xffffffff;		//保证读第一块
+	checkcacheforcluster(0);
+
+	diary("cd root:%x\n",cluster2);
+	fat32_data(datahome,2,0,0x4000);//readmemory(datahome,cluster2,0,32);
+	explaindirectory();
+}
+
+
+
+
+
+
+
+
+static int fat32_ls(char* to)
+{
+	return 0;
+}
+static int fat32_cd(QWORD id)
+{
+	//清理
+	int i;
+	for(i=0;i<0x10000;i++) datahome[i]=0;
+
+	//读取，转换
+	if(id<2)
+	{
+		fat32_root();
+		return 1;
+	}
+
+	fat32_data(datahome,id,0,0x8000);
+	explaindirectory();
+	return 2;
+}
+//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
+static void fat32_load(QWORD id,QWORD offset)
+{
+	if(offset>0x100000)offset=0x100000;
+	fat32_data(datahome,id,offset,0x100000);
+}
+static int fat32_store()
+{
+	return 1;
+}
 void explainfat32head()
 {
 	//准备本程序需要的变量
@@ -361,20 +371,13 @@ void explainfat32head()
 
 	//func cd
 	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6463;             //'cd'
-	dstqword[2]=(QWORD)fat32_cd;
-	dstqword += 8;
-
-	//func load
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x64616f6c;         //'load'
-	dstqword[2]=(QWORD)fat32_load;
-	dstqword += 8;
-
-	//func explain
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6e69616c707865;           //'explain'
-	dstqword[2]=(QWORD)fat32_explain;
+	dstqword[1]=0;
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=(QWORD)fat32_ls;
+	dstqword[5]=(QWORD)fat32_cd;
+	dstqword[6]=(QWORD)fat32_load;
+	dstqword[7]=(QWORD)fat32_store;
 	dstqword += 8;
 
 	fat0=(QWORD)( *(WORD*)(pbr+0xe) );
@@ -414,6 +417,14 @@ void explainfat32head()
 	dstqword += 8;
 	diary("clustersize:%x\n",clustersize);
 }
+
+
+
+
+
+
+
+
 int isfat(char* addr)
 {
 	int version=24;

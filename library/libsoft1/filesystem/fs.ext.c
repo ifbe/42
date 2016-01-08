@@ -277,18 +277,16 @@ static void explaindirectory()
 }
 
 
-static int ext_explain(QWORD inode)
+
+
+
+
+
+
+static int ext_ls(char* to)
 {
-	diary("inode %x\n",inode);
-
-	//函数调用之后,rsi为所请求的inode的内存地址，
-	char* rsi=checkcacheforinode(inode);
-	printmemory(rsi,inodesize);
-
 	return 1;
 }
-
-
 static int ext_cd(QWORD id)
 {
 	//开搞
@@ -299,41 +297,28 @@ static int ext_cd(QWORD id)
 	if(ret>0)explaindirectory();
 	return 1;
 }
-
-
-static int ext_load(QWORD id,QWORD offset)
+static int ext_load(QWORD id,QWORD offset,QWORD size)
 {
 	explaininode(id,offset);
 	return 1;
 }
-
-
-
-
-
-
-
-
+static int ext_store(QWORD id,QWORD offset,QWORD size)
+{
+	return 1;
+}
 int explainexthead()
 {
 	QWORD* dstqword=(QWORD*)fshome;
 
-	//func cd
+	//func ls,cd,load,store
 	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6463;             //'cd'
-	dstqword[2]=(QWORD)ext_cd;
-	dstqword += 8;
-
-	//func load
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x64616f6c;         //'load'
-	dstqword[2]=(QWORD)ext_load;
-	dstqword += 8;
-
-	//func explain
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0x6e69616c707865;           //'explain'
-	dstqword[2]=(QWORD)ext_explain;
+	dstqword[1]=0;
+	dstqword[2]=0;
+	dstqword[3]=0;
+	dstqword[4]=(QWORD)ext_ls;
+	dstqword[5]=(QWORD)ext_cd;
+	dstqword[6]=(QWORD)ext_load;
+	dstqword[7]=(QWORD)ext_store;
 	dstqword += 8;
 
 	//变量们

@@ -18,12 +18,14 @@ int ishfs(char*);
 int isgpt(char*);	//分区表
 int ismbr(char*);
 //挂载
-int mountext(QWORD src,char* dst);	//文件系统
-int mountfat(QWORD src,char* dst);
-int mounthfs(QWORD src,char* dst);
-int mountntfs(QWORD src,char* dst);
-int explaingpt(char* src,char* dst);	//分区表
-int explainmbr(char* src,char* dst);
+int explaingpt(char* src,char* dest);	//分区表
+int explainmbr(char* src,char* dest);
+int explainelf(QWORD sector,char* dest);		//可执行文件
+int explainpe(QWORD sector,char* dest);
+int mountext(QWORD sector,char* dest);	//文件系统
+int mountfat(QWORD sector,char* dest);
+int mounthfs(QWORD sector,char* dest);
+int mountntfs(QWORD sector,char* dest);
 //读取
 int mem2file(char* src,char* dest,QWORD ignore,int size);
 int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
@@ -65,9 +67,10 @@ static char* dirhome;
 static char* datahome;
 
 //3大函数的位置
-int (*fsexplain)(QWORD id);     //((int (*)(QWORD))(fsexplain))(value);
-int (*fscd)(QWORD id);          //((int (*)(QWORD))(fscd))(arg1);
-int (*fsload)(QWORD id,QWORD part);     //((int (*)(QWORD,QWORD))(fsload))(arg1,temp*0x100000);
+int (*fsls)(char* to);
+int (*fscd)(QWORD id);
+int (*fsload)(QWORD id,QWORD offset,QWORD size);
+int (*fsstore)(QWORD id,QWORD offset,QWORD size);
 
 
 
@@ -160,7 +163,7 @@ int hello(char* src)
 
 
 	//如果是分区表头，并且是文件头，那么解释分区表到diskhome
-	if(type==0x747067)	//0 && gpt
+	if(type==0x747067)		//'gpt'
 	{
 		if(sector==0)
 		{
@@ -168,7 +171,7 @@ int hello(char* src)
 		}
 		return 0;
 	}
-	if(type==0x72626d)		//0 && mbr
+	if(type==0x72626d)		//'mbr'
 	{
 		if(sector==0)
 		{
@@ -180,28 +183,35 @@ int hello(char* src)
 
 	//否则无论是什么，都解释到fshome
 	cleanmemory(fshome,0x300000);
-	if(type == 0x747865)            //'ext'
+	if(type == 0x666c65)            //'elf'
+	{
+		ret=explainelf(sector,fshome);
+	}
+	else if(type == 0x6570)			//'pe'
+	{
+		ret=explainpe(sector,fshome);
+	}
+	else if(type == 0x747865)		//'ext'
 	{
 		ret=mountext(sector,fshome);
 	}
-	else if(type == 0x746166)       //'fat'
+	else if(type == 0x746166)		//'fat'
 	{
 		ret=mountfat(sector,fshome);
 	}
-	else if(type == 0x736668)       //'hfs'
+	else if(type == 0x736668)		//'hfs'
 	{
 		ret=mounthfs(sector,fshome);
 	}
-	else if(type == 0x7366746e)     //'ntfs'
+	else if(type == 0x7366746e)		//'ntfs'
 	{
 		ret=mountntfs(sector,fshome);
 	}
-
-	//拿到cd,load,explain等苦工的地址
-	fscd = *(void**)( fshome+0x10 );
-	fsload = *(void**)( fshome+0x50 );
-	fsexplain = *(void**)( fshome+0x90 );
-	diary("%llx,%llx,%llx\n",fscd,fsload,fsexplain);
+	fsls = *(void**)( fshome+0x20 );
+	fscd = *(void**)( fshome+0x28 );
+	fsload = *(void**)( fshome+0x30 );
+	fsstore = *(void**)( fshome+0x38 );
+	diary("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
 	return 1;
 }
 
@@ -307,7 +317,7 @@ int load(char* arg1)
 	for(;temp<( size&0xfffffff00000 );temp+=0x100000)
 	{
 		//
-		fsload(id,temp);
+		fsload(id,temp,0x100000);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
 		mem2file(datahome,arg1,temp,0x100000);
@@ -317,7 +327,7 @@ int load(char* arg1)
 	if(temp<size)
 	{
 		//
-		fsload(id,temp);
+		fsload(id,temp,size-temp);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
 		mem2file(datahome,arg1,temp,size%0x100000);
