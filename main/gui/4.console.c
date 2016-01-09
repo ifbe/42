@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void serventreport(int);
+void guireport(int);
 
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
@@ -146,7 +146,7 @@ static void consolemessage(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				serventreport(-1);
+				guireport(0);
 				return;
 			}
 			else

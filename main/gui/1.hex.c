@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void serventreport(int);
+void guireport(int);
 //
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
@@ -240,7 +240,7 @@ static void hexmessage(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				serventreport(-1);
+				guireport(0);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)

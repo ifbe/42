@@ -66,7 +66,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/filesystem/fs.ntfs.c \
 	library/libsoft1/partitiontable/pt.gpt.c \
 	library/libsoft1/partitiontable/pt.mbr.c \
-	library/libsoft1/text/anscii.c \
+	library/libsoft1/text/ascii.c \
 	library/libsoft1/text/unicode.c \
 	library/libsoft1/master.c \
 	library/libsoft1/servent.c
@@ -78,7 +78,7 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libui1/draw/background.c \
 	library/libui1/draw/shape.c \
-	library/libui1/text/anscii.c \
+	library/libui1/text/ascii.c \
 	library/libui1/character.c
 #1.librarian
 LOCAL_SRC_FILES += \

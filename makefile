@@ -10,23 +10,23 @@ what:
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
 arm+linux+cli:
-	make -s -C main cli
-	make -s -C library arm+linux+cli
+	make -C library arm+linux+cli
+	make -C main cli
 	gcc main/main.a library/library.a \
 	-o a.out
 x86+linux+cli:
-	make -s -C main cli
-	make -s -C library x86+linux+cli
+	make -C library x86+linux+cli
+	make -C main cli
 	gcc main/main.a library/library.a \
 	-o a.out
 x86+mac+cli:
-	make -s -C main cli
-	make -s -C library x86+mac+cli
+	make -C library x86+mac+cli
+	make -C main cli
 	clang main/main.a library/library.a \
 	-o a.out
 x86+win+cli:
-	make -s -C main cli
-	make -s -C library x86+win+cli
+	make -C library x86+win+cli
+	make -C main cli
 	gcc main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe
 
@@ -34,25 +34,25 @@ x86+win+cli:
 
 
 x86+linux+fb:
-	make -s -C main gui
-	make -s -C library x86+linux+fb
+	make -C library x86+linux+fb
+	make -C main gui
 	gcc main/main.a library/library.a \
 	-o a.out
 x86+linux+xlib:
-	make -s -C main gui
-	make -s -C library x86+linux+xlib
+	make -C library x86+linux+xlib
+	make -C main gui
 	gcc main/main.a library/library.a \
 	-lX11 \
 	-o a.out
 x86+linux+sdl:
-	make -s -C main gui
-	make -s -C library x86+linux+sdl
+	make -C library x86+linux+sdl
+	make -C main gui
 	gcc main/main.a library/library.a \
 	-lSDL2 -lm \
 	-o a.out
 x86+linux+web:
-	make -s -C main gui
-	make -s -C library x86+linux+web
+	make -C library x86+linux+web
+	make -C main gui
 	gcc \
 	main/main.a library/library.a \
 	-o a.out
@@ -61,8 +61,8 @@ x86+linux+web:
 
 
 x86+mac+sdl:
-	make -s -C main cli
-	make -s -C library x86+mac+sdl
+	make -C library x86+mac+sdl
+	make -C main cli
 	clang main/main.a library/library.a \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm \
@@ -72,15 +72,15 @@ x86+mac+sdl:
 
 
 x86+win+api:
-	make -s -C main gui
-	make -s -C library x86+win+api
+	make -C library x86+win+api
+	make -C main gui
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-lgdi32 \
 	-o a.exe
 x86+win+sdl:
-	make -s -C main gui
-	make -s -C library x86+win+sdl
+	make -C library x86+win+sdl
+	make -C main gui
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-Wl,--no-undefined -static -static-libgcc \
@@ -91,8 +91,8 @@ x86+win+sdl:
 	-lshell32 -lversion -luuid \
 	-o a.exe
 x86+win+web:
-	make -s -C main gui
-	make -s -C library x86+win+web
+	make -C library x86+win+web
+	make -C main gui
 	gcc -mwindows \
 	main/main.a library/library.a library/libsoft0/uac.res \
 	-o a.exe

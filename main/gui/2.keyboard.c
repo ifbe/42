@@ -13,7 +13,7 @@ static void keyboardshow()
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereiswindow();
 
-	for(y=0;y<512;y++)
+	for(y=0;y<768;y++)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -21,8 +21,8 @@ static void keyboardshow()
 		}
 	}
 
-	//
-	for(y=64;y<512;y+=64)
+	//横线
+	for(y=64;y<=768-64;y+=64)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -30,10 +30,10 @@ static void keyboardshow()
 		}
 	}
 
-	//
-	for(x=64;x<1024;x++)
+	//竖线
+	for(x=128;x<1024;x+=128)
 	{
-		for(y=0;y<512;y++)
+		for(y=64;y<=768-64;y++)
 		{
 			screenbuf[y*1024+x]=0xffffffff;
 		}
@@ -41,12 +41,13 @@ static void keyboardshow()
 }
 static void keyboardmessage(QWORD type,QWORD value)
 {
+	
 }
 void keyboardinit(char* in)
 {
 	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[1]=0x64626b;
+	this[1]=0x6472616F6279656B;
 	this[2]=(0<<16)+0;   //startaddr
 	this[3]=(768<<16)+1024; //endaddr
 	this[4]=(QWORD)keyboardshow;
