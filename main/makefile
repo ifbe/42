@@ -1,5 +1,5 @@
 #console interface
-.PHONY:win
+.PHONY:cli
 cli:
 	gcc -c -O2 cli/cli.c
 	rm -f main.a
