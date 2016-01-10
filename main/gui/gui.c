@@ -9,17 +9,21 @@ void treeinit(char*);		//2.tree.c
 void sketchpadinit(char*);	//3.sketchpad.c
 void consoleinit(char*);	//4.console.c
 //
-void point(int x,int y,DWORD color);
+void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void string(int x,int y,char* str);
 void writescreen();
 void waitevent(QWORD* first,QWORD* second);
 //
+void command(char* p);
 void listmemory();
-void intomemory(char* in);
+void masterinto(char* in);
 void initall();
 void cleanall();
 //
+QWORD howiswindow();
+char* whereiswindow();
 char* whereischaracter();
+//
 void diary(char*,...);
 void printmemory(char*,int);
 
@@ -77,10 +81,15 @@ void guicommand(char* p)
 	{
 		if( (buf[i]<'a') && (buf[i]>'z') )break;
 	}
-
-	//清空后面的
 	for(;i<8;i++){buf[i]=0;}
+
+	//拿最终结果，比较是不是退出
 	temp=*(QWORD*)buf;
+	if(temp == 0x74697865)
+	{
+		guireport(0);
+		return;
+	}
 
 	//找
 	for(i=1;i<0x100;i++)
@@ -103,7 +112,7 @@ void guicommand(char* p)
 
 //菜单
 static char buffer[128];
-static int bufcount=0;
+static int bufp=0;
 void menuprint()
 {
 	rectangle((256<<16)+256 , (512<<16)+768  , 0);
@@ -142,34 +151,27 @@ void menumessage(QWORD type,QWORD key)
 	{
 		if(key==0x8)		//backspace
 		{
-			if(bufcount!=0)
+			if(bufp!=0)
 			{
-				bufcount--;
-				buffer[bufcount]=0;
+				bufp--;
+				buffer[bufp]=0;
 			}
 		}
 		else if(key==0xd)		//回车
 		{
-			if(compare( buffer , "exit" ) == 0)
-			{
-				guireport(0);
-				return;
-			}
-			else
-			{
-				//say("%s\n",buffer);
-				guicommand(buffer);
+			//say("%s\n",buffer);
+			guicommand(buffer);
 
-				for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
-				bufcount=0;
-			}
+			//clear
+			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;
+			bufp=0;
 		}
 		else
 		{
-			if(bufcount<0x80)
+			if(bufp<0x80)
 			{
-				buffer[bufcount]=key&0xff;
-				bufcount++;
+				buffer[bufp]=key&0xff;
+				bufp++;
 			}
 		}
 	}//kbd
@@ -194,7 +196,7 @@ void processmessage(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)
 	{
 		//diary("debuging::::::::%s\n",(char*)key);
-		intomemory((char*)key);
+		masterinto((char*)key);
 		return;
 	}
 

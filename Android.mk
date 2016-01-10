@@ -85,7 +85,7 @@ LOCAL_SRC_FILES += \
 	library/librarian.c
 #1.main
 LOCAL_SRC_FILES += \
-	main/cli.c
+	main/cli/cli.c
 
 
 

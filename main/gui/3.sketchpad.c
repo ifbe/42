@@ -34,7 +34,7 @@ void kexuejishufa(double* haha,int* counter);
 //
 QWORD howiswindow();
 char* whereiswindow();
-char* whereismemory();
+char* whereischaracter();
 //
 void printmemory(char*,int);
 void diary(char*,...);
@@ -51,14 +51,14 @@ static char buffer[128];
 static char infix[128];
 static char postfix[128];
 static char result[128];
-static char* datahome=0;
+static char* databuf=0;
 static struct mathnode* node=0;
 
 //
 static double scale;
 static double centerx;
 static double centery;
-		//datahome 里面存放计算得到的值的符号
+		//databuf 里面存放计算得到的值的符号
 		//scale=“屏幕”上两个点对于“世界”上的距离
 		//centerxy = “屏幕”对应“世界”哪个点
 
@@ -146,8 +146,8 @@ static void tuxiang()
 			first=centerx + (x-512)*scale;
 			haha=sketchpad(node,first,second);
 
-			if(haha>0)datahome[1024*y+x]=1;
-			else datahome[1024*y+x]=-1;
+			if(haha>0)databuf[1024*y+x]=1;
+			else databuf[1024*y+x]=-1;
 		}
 	}//calculate results
 
@@ -162,16 +162,16 @@ static void tuxiang()
 		for(x=1;x<1023;x++)
 		{
 			counter=0;
-			if( datahome[ value1-1025 + x ] > 0 )counter--;
+			if( databuf[ value1-1025 + x ] > 0 )counter--;
 			else counter++;
 
-			if( datahome[ value1-1023 + x ] > 0 )counter--;
+			if( databuf[ value1-1023 + x ] > 0 )counter--;
 			else counter++;
 
-			if( datahome[ value1+1023 + x ] > 0 )counter--;
+			if( databuf[ value1+1023 + x ] > 0 )counter--;
 			else counter++;
 
-			if( datahome[ value1+1025 + x ] > 0 )counter--;
+			if( databuf[ value1+1025 + x ] > 0 )counter--;
 			else counter++;
 
 			//上下左右四点符号完全一样，说明没有点穿过//否则白色
@@ -345,11 +345,11 @@ void sketchpadinit(char* in)
 	this[4]=(QWORD)sketchpadshow;
 	this[5]=(QWORD)sketchpadmessage;
 
-	if(datahome==0)
+	if(databuf==0)
 	{
-		char* world=(char*)whereismemory();
-		node=(struct mathnode*)(world+0x200000);
-		datahome=world+0x300000;
+		char* temp=(char*)whereischaracter();
+		node=(struct mathnode*)(temp+0x200000);
+		databuf=temp+0x300000;
 
 		centerx=0.00;
 		centery=0.00;

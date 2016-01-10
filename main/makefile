@@ -1,7 +1,7 @@
 #console interface
 .PHONY:win
 cli:
-	gcc -c -O2 cli.c
+	gcc -c -O2 cli/cli.c
 	rm -f main.a
 	ar crs main.a cli.o
 

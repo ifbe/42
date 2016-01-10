@@ -37,7 +37,7 @@ void double2decimalstring(double,char*);
 void say(char*,...);
 void diary(char*,...);
 void printmemory(char*,int);
-QWORD whereismemory();
+QWORD whereischaracter();
 
 
 
@@ -218,7 +218,7 @@ void treeinit(char* in)
 
 	if(node==0)
 	{
-		node=(struct mathnode*)(whereismemory()+0x300000);
+		node=(struct mathnode*)(whereischaracter()+0x200000);
 	}
 	else
 	{

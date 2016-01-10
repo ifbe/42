@@ -15,12 +15,12 @@ void cleanscreen();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
-void readmemory(QWORD rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
 //
 QWORD howiswindow();
 char* whereiswindow();
-char* whereismemory();
+char* whereischaracter();
 
 
 
@@ -32,7 +32,7 @@ char* whereismemory();
 //位置
 static QWORD base;		//显示区基地址
 static QWORD offset;
-static BYTE* datahome=0;
+static BYTE* databuf=0;
 
 //mainscreen
 static QWORD screenaddr;
@@ -58,23 +58,24 @@ static QWORD currentcache;
 static QWORD readornotread(QWORD wantaddr)
 {
 	//假如每次能显示0x1000(实际是0xa00)
-	//想要[0,0x1000)：			确保[0,0x2000)			返回datahome+0
-	//想要[0xfc0,0x1fc0)：		确保[0,0x2000)			返回datahome+0xfc0
-	//想要[0x1000,0x2000)：		确保[0x1000,0x3000)		返回datahome+0x1000
-	//想要[0x1040,0x2040)：		确保[0x1000,0x3000)		返回datahome+0x40
-	//想要[0x1fc0,0x2fc0)：		确保[0x1000,0x3000)		返回datahome+0xfc0
-	//想要[0x2000,0x3000)：		确保[0x2000,0x4000)		返回datahome+0
-	//想要[0x2040,0x3040)：		确保[0x2000,0x4000)		返回datahome+0x40
-	//想要[0x2fc0,0x3fc0)：		确保[0x2000,0x4000)		返回datahome+0xfc0
-	//想要[0x3000,0x4000)：		确保[0x3000,0x5000)		返回datahome+0
+	//想要[0,0x1000)：	确保[0,0x2000)		返回databuf+0
+	//想要[0xfc0,0x1fc0)：	确保[0,0x2000)		返回databuf+0xfc0
+	//想要[0x1000,0x2000)：	确保[0x1000,0x3000)	返回databuf+0x1000
+	//想要[0x1040,0x2040)：	确保[0x1000,0x3000)	返回databuf+0x40
+	//想要[0x1fc0,0x2fc0)：	确保[0x1000,0x3000)	返回databuf+0xfc0
+	//想要[0x2000,0x3000)：	确保[0x2000,0x4000)	返回databuf+0
+	//想要[0x2040,0x3040)：	确保[0x2000,0x4000)	返回databuf+0x40
+	//想要[0x2fc0,0x3fc0)：	确保[0x2000,0x4000)	返回databuf+0xfc0
+	//想要[0x3000,0x4000)：	确保[0x3000,0x5000)	返回databuf+0
+
 	QWORD readwhere=wantaddr & 0xfffffffffffff000;
 	if(readwhere!=currentcache)
 	{
-		readmemory((QWORD)datahome, readwhere/0x200, 0, 16);
+		readmemory(databuf, readwhere/0x200, 0, 16);
 		currentcache=readwhere;
 	}
 
-	return (QWORD)datahome+(wantaddr-readwhere);
+	return (QWORD)databuf+(wantaddr-readwhere);
 }
 static void foreground()
 {
@@ -295,10 +296,10 @@ void hexinit(char* in)
 	this[4]=(QWORD)hexshow;
 	this[5]=(QWORD)hexmessage;
 
-	if(datahome==0)
+	if(databuf==0)
 	{
-		datahome=(BYTE*)whereismemory()+0x300000;
-		for(i=0;i<0x2000;i++)datahome[i]=0;
+		databuf=(BYTE*)whereischaracter()+0x300000;
+		for(i=0;i<0x2000;i++)databuf[i]=0;
 
 		//浮动框
 		for(i=0;i<0x100;i++)haha[i]=0;
