@@ -6,7 +6,7 @@ linux:
 
 .PHONY:win
 win:
-	windres --input-format=rc -O coff -i win/uac.rc -o uac.res
+	windres --input-format=rc -O coff -i resource/uac.rc -o resource/uac.res
 	gcc -c -O2 win/win.arg.c
 	gcc -c -O2 win/win.file.c
 	gcc -c -O2 win/win.process.c

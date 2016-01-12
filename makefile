@@ -1,12 +1,9 @@
 what:
 	@echo "----------------please choose one example below----------------"
-	@echo "make linux:    run in terminal"
-	@echo "make windows    run in cmd"
-	@echo "make linux+fb:    run in framebuffer(ctrl+alt+f?)"
-	@echo "make linux+xlib    run in xwindow:"
-	@echo "make windows+api    run in windows xp+"
-	@echo "make kvm:    test with kvm"
-	@echo "make qemu:    test with qemu"
+	@echo "make x86+linux+cli:    run in linux terminal"
+	@echo "make x86+win+cli    run in windows cmd"
+	@echo "make x86+linux+xlib    run in X:"
+	@echo "make x86+win+api    run in windows xp+"
 	@echo "make clean:    clean"
 	@echo "----------------please choose one example above----------------"
 arm+linux+cli:
@@ -27,7 +24,9 @@ x86+mac+cli:
 x86+win+cli:
 	make -C library x86+win+cli
 	make -C main cli
-	gcc main/main.a library/library.a library/libsoft0/uac.res \
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	gcc res/uac.res \
+	main/main.a library/library.a \
 	-o a.exe
 
 
@@ -74,15 +73,17 @@ x86+mac+sdl:
 x86+win+api:
 	make -C library x86+win+api
 	make -C main gui
-	gcc -mwindows \
-	main/main.a library/library.a library/libsoft0/uac.res \
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	gcc -mwindows res/uac.res \
+	main/main.a library/library.a \
 	-lgdi32 \
 	-o a.exe
 x86+win+sdl:
 	make -C library x86+win+sdl
 	make -C main gui
-	gcc -mwindows \
-	main/main.a library/library.a library/libsoft0/uac.res \
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	gcc -mwindows res/uac.res \
+	main/main.a library/library.a \
 	-Wl,--no-undefined -static -static-libgcc \
 	-L /opt/SDL2-2.0.3/x86_64-w64-mingw32/lib \
 	-lmingw32 -lSDL2main -lSDL2 \
@@ -93,8 +94,9 @@ x86+win+sdl:
 x86+win+web:
 	make -C library x86+win+web
 	make -C main gui
-	gcc -mwindows \
-	main/main.a library/library.a library/libsoft0/uac.res \
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	gcc -mwindows res/uac.res \
+	main/main.a library/library.a \
 	-o a.exe
 
 
