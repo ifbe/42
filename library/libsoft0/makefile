@@ -1,12 +1,13 @@
 .PHONY:linux
 linux:
+	rm -f win.*.o mac.*.o
 	gcc -c -O2 linux/linux.arg.c
 	gcc -c -O2 linux/linux.file.c
 	gcc -c -O2 memory.c
 
 .PHONY:win
 win:
-	windres --input-format=rc -O coff -i resource/uac.rc -o resource/uac.res
+	rm -f linux.*.o mac.*.o
 	gcc -c -O2 win/win.arg.c
 	gcc -c -O2 win/win.file.c
 	gcc -c -O2 win/win.process.c

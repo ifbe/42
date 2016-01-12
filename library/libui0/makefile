@@ -1,33 +1,41 @@
 .PHONY:cli
 cli:
-	gcc -c -O2 console/console.c
+	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o
+	gcc -c -O2 cli/cli.cli.c
 	gcc -c -O2 window.c
 .PHONY:fb
 fb:
-	gcc -c -fPIC -O2 framebuffer/fb.c
+	rm -f cli.*.o xlib.*.o winapi.*.o sdl.*.o
+	gcc -c -fPIC -O2 fb/fb.fb.c
 	gcc -c -fPIC -O2 window.c
 .PHONY:xlib
 xlib:
-	gcc -c -fPIC -O2 xlib/xlib.c
+	rm -f cli.*.o fb.*.o winapi.*.o sdl.*.o
+	gcc -c -fPIC -O2 xlib/xlib.xlib.c
 	gcc -c -fPIC -O2 window.c
 .PHONY:winapi
 winapi:
-	gcc -c -O2 winapi/winapi.c
+	rm -f cli.*.o fb.*.o xlib.*.o sdl.*.o
+	gcc -c -O2 winapi/winapi.winapi.c
 	gcc -c -O2 window.c
 .PHONY:html
 webui:
+	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o sdl.*.o
 	gcc -c -O2 webui/webui.c
 	gcc -c -O2 window.c
 .PHONY:sdl
 sdl:
-	gcc -c -fPIC -O2 sdl2/sdl.c
+	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
+	gcc -c -fPIC -O2 sdl2/sdl.sdl2.c
 	gcc -c -fPIC -O2 window.c
 .PHONY:mac+sdl
 mac+sdl:
+	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
 	clang -c -O2 sdl/sdl.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	gcc -c -O2 window.c
 .PHONY:win+sdl
 win+sdl:
+	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
 	gcc -c -O2 sdl2/sdl.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
 	gcc -c -O2 window.c
 clean:
