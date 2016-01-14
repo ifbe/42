@@ -11,8 +11,8 @@ void initwindow(char*);
 void killwindow();
 //libsoft
 void masterinto(QWORD);
-void initmaster(char*);
-void killmaster();
+void initsoftware(char*);
+void killsoftware();
 void initmemory();
 void killmemory();
 //libhard
@@ -128,12 +128,8 @@ void init123()
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
 	diary("[8,c):soft0 done\n");
-	initmaster( memory );
+	initsoftware( memory );
 	diary("[8,c):soft1 done\n");
-
-	//默认行为，必须放最后一个
-	if(p==0)masterinto(1);
-	else masterinto((QWORD)p);
 }
 void initall()
 {
@@ -161,7 +157,7 @@ void initall()
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
 	diary("[8,c):soft0 done\n");
-	initmaster( memory );
+	initsoftware( memory );
 	diary("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
@@ -170,11 +166,6 @@ void initall()
 	diary("[12,16):ui0 done\n");
 	initcharacter( character );
 	diary("[12,16):ui1 done\n");
-
-	//默认行为，必须放最后一个
-	diary("%llx\n",p);
-	if(p==0)masterinto(1);
-	else masterinto((QWORD)p);
 }
 __attribute__((destructor)) void cleanall()
 {

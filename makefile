@@ -61,7 +61,7 @@ x86+linux+web:
 
 x86+mac+sdl:
 	make -C library x86+mac+sdl
-	make -C main cli
+	make -C main gui
 	clang main/main.a library/library.a \
 	-L /usr/local/Cellar/sdl2/2.0.3/lib \
 	-lSDL2 -lm \
@@ -93,27 +93,11 @@ x86+win+sdl:
 	-o a.exe
 x86+win+web:
 	make -C library x86+win+web
-	make -C main gui
+	make -C main web
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	gcc -mwindows res/uac.res \
 	main/main.a library/library.a \
 	-o a.exe
-
-
-
-
-qemu:
-	cp ../../../core/core.bin test.img    #first64k
-	dd if=color.bin of=test.img bs=65536 seek=1 conv=notrunc    #real bin
-	echo -n 9 | dd of=test.img bs=1 seek=1048575 conv=notrunc    #fill 0
-	echo "test" | dd of=test.img bs=1 seek=448 conv=notrunc    #test sign
-	../../../tool/qemu $(shell pwd)/test.img
-kvm:
-	cp ../../../core/core.bin test.img    #first64k
-	dd if=color.bin of=test.img bs=65536 seek=1 conv=notrunc    #real bin
-	echo -n 9 | dd of=test.img bs=1 seek=1048575 conv=notrunc    #fill 0
-	echo "test" | dd of=test.img bs=1 seek=448 conv=notrunc    #test sign
-	../../../tool/kvm $(shell pwd)/test.img
 
 
 

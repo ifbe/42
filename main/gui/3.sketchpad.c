@@ -16,7 +16,7 @@ struct mathnode{
 };
 //
 void printdouble(int x,int y,double z);
-void string(int x,int y,char* str);
+void colorstring(int x,int y,char* str,unsigned int color);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void draw(int x,int y,DWORD color);
@@ -179,41 +179,6 @@ static void tuxiang()
 		}
 	}//result2img
 }
-static void sketchpadshow()
-{
-	//跳过
-	if(node[0].type!=0x3d3d3d3d)goto skipthese;
-	if(changed==0)goto skipthese;
-	changed=0;
-
-
-
-
-	background3();
-	if(node[0].integer == 0)
-	{
-		//计算器
-		double haha=calculator(postfix,0,0);
-		double2decimalstring(haha,result);
-	}
-	else
-	{
-		//网格，函数图
-		wangge();
-		tuxiang();
-	}//else
-
-
-
-
-
-skipthese:		//打印
-	string(0,0,buffer);
-	string(0,1,infix);
-	string(0,2,postfix);
-	string(0,3,result);
-	return;
-}
 
 
 
@@ -222,7 +187,7 @@ skipthese:		//打印
 
 
 
-static void sketchpadmessage(QWORD type,QWORD key)
+static void writesketchpad(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -327,24 +292,43 @@ static void sketchpadmessage(QWORD type,QWORD key)
 	//else if(type==0x6B636162207A7978)		//'xyz ++++'
 	//else if(type==0x6B636162207A7978)		//'xyz ----'
 }
-
-
-
-
-
-
-
-
-void sketchpadinit(char* in)
+static void readsketchpad()
 {
-	QWORD* this=(QWORD*)in;
-	this[0]=0x776f646e6977;
-	this[1]=0x686374656b73;
-	this[2]=(0<<16)+0;   //startaddr
-	this[3]=(768<<16)+1024; //endaddr
-	this[4]=(QWORD)sketchpadshow;
-	this[5]=(QWORD)sketchpadmessage;
+	//跳过
+	if(node[0].type!=0x3d3d3d3d)goto skipthese;
+	if(changed==0)goto skipthese;
+	changed=0;
 
+
+
+
+	background3();
+	if(node[0].integer == 0)
+	{
+		//计算器
+		double haha=calculator(postfix,0,0);
+		double2decimalstring(haha,result);
+	}
+	else
+	{
+		//网格，函数图
+		wangge();
+		tuxiang();
+	}//else
+
+
+
+
+
+skipthese:		//打印
+	colorstring(0,0,buffer,0xcccccc);
+	colorstring(0,1,infix,0xcccccc);
+	colorstring(0,2,postfix,0xcccccc);
+	colorstring(0,3,result,0xcccccc);
+	return;
+}
+static void intosketchpad()
+{
 	if(databuf==0)
 	{
 		char* temp=(char*)whereischaracter();
@@ -355,8 +339,29 @@ void sketchpadinit(char* in)
 		centery=0.00;
 		scale=1.00;
 	}
-	else	//不是第一次进来了
-	{
-		cleanscreen();
-	}
+
+	cleanscreen();
+}
+static void listsketchpad(QWORD* this)
+{
+	this[0]=0x776f646e6977;
+	this[1]=0x686374656b73;
+	this[2]=(0<<16)+0;		//left,up
+	this[3]=(768<<16)+1024;		//right,down
+	this[4]=(QWORD)listsketchpad;
+	this[5]=(QWORD)intosketchpad;
+	this[6]=(QWORD)readsketchpad;
+	this[7]=(QWORD)writesketchpad;
+}
+
+
+
+
+
+
+
+
+void registersketchpad(char* in)
+{
+	listsketchpad( (QWORD*)in );
 }

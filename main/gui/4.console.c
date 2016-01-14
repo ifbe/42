@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void guireport(int);
+void guicommand(char*);
 
 void string(int x,int y,char* str);
 void point(int x,int y,DWORD color);
@@ -112,27 +112,17 @@ static void printstdin(int count)
 	string(0,count,"user:");
 	string(0x5,count,buffer);
 }
-static void consoleshow()
+
+
+
+
+
+
+
+
+static void writeconsole(QWORD type,QWORD key)
 {
-	//显示哪儿开始的一块
-	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
-	int enqueue=*(DWORD*)(logbuf+0xffff0);
-
-	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
-	if( start<0 )start=0;
-
-	//背景(start,end)
-	background4();
-
-	printposition(start,count,enqueue);
-
-	printstdout(start,count);
-
-	printstdin(count);
-}
-static void consolemessage(QWORD type,QWORD key)
-{
-	if(type==0x72616863)		//'kbd'
+	if(type==0x72616863)		//'char'
 	{
 		if(key==0x8)		//backspace
 		{
@@ -146,7 +136,7 @@ static void consolemessage(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				guireport(0);
+				guicommand(0);
 				return;
 			}
 			else
@@ -183,24 +173,26 @@ static void consolemessage(QWORD type,QWORD key)
 		if(backward>=0x80)backward-=0x80;
 	}
 }
-
-
-
-
-
-
-
-
-void consoleinit(char* in)
+static void readconsole()
 {
-	QWORD* this=(QWORD*)in;
-	this[0]=0x776f646e6977;
-	this[1]=0x656c6f736e6f63;
-	this[2]=(0<<16)+0;   //startaddr
-	this[3]=(768<<16)+1024; //endaddr
-	this[4]=(QWORD)consoleshow;
-	this[5]=(QWORD)consolemessage;
+	//显示哪儿开始的一块
+	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
+	int enqueue=*(DWORD*)(logbuf+0xffff0);
 
+	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
+	if( start<0 )start=0;
+
+	//背景(start,end)
+	background4();
+
+	printposition(start,count,enqueue);
+
+	printstdout(start,count);
+
+	printstdin(count);
+}
+static void intoconsole()
+{
 	if(logbuf==0)
 	{
 		logbuf=whereisworld()+0x100000;
@@ -210,4 +202,27 @@ void consoleinit(char* in)
 	{
 		cleanscreen();
 	}
+}
+static void listconsole(QWORD* this)
+{
+	this[0]=0x776f646e6977;
+	this[1]=0x656c6f736e6f63;
+	this[2]=(0<<16)+0;   //startaddr
+	this[3]=(768<<16)+1024; //endaddr
+	this[4]=(QWORD)listconsole;
+	this[5]=(QWORD)intoconsole;
+	this[6]=(QWORD)readconsole;
+	this[7]=(QWORD)writeconsole;
+}
+
+
+
+
+
+
+
+
+void registerconsole(char* in)
+{
+	listconsole( (QWORD*)in );
 }

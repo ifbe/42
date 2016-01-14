@@ -45,6 +45,19 @@ void cleanscreen()
 
 
 
+void backgroundcolor(unsigned int color)
+{
+	int x;
+
+	for(x=0;x<1024*768;x++)
+	{
+		screenbuf[x]=color;
+	}
+}
+
+
+
+
 void background1()
 {
 	QWORD x,y;

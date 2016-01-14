@@ -2,15 +2,15 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void menuinit(char*);		//menu.c
-void hexinit(char*);		//1.hex.c
-void keyboardinit(char*);	//2.keyboard.c
-void treeinit(char*);		//2.tree.c
-void sketchpadinit(char*);	//3.sketchpad.c
-void consoleinit(char*);	//4.console.c
+void registerhex(char*);		//1.hex.c
+void register2048(char*);		//2.2048.c
+void registerkeyboard(char*);		//2.keyboard.c
+void registertree(char*);		//2.tree.c
+void registersketchpad(char*);		//3.sketchpad.c
+void registerconsole(char*);		//4.console.c
 //
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
-void string(int x,int y,char* str);
+void colorstring(int x,int y,char* str,unsigned int color);
 void writescreen();
 void waitevent(QWORD* first,QWORD* second);
 //
@@ -33,79 +33,127 @@ void printmemory(char*,int);
 //苦工
 struct worker
 {
-	//概括，人物
+	//[0,7]:种类
 	QWORD type;			//'window'
+
+	//[8,f]:概括
 	QWORD id;			//'小明'
+
+	//[10,17]:开始
 	QWORD startaddr;		//左上角:x+(y<<16)+(z<<32)+(w<<48)
+
+	//[18,1f]:结束
 	QWORD endaddr;			//右下角:x+(y<<16)+(z<<32)+(w<<48)
 
-	//起因，经过，结果
-	int (*show)();				//[20,27]
-	int (*message)(QWORD type,QWORD key);	//[28,2f]
-	int (*otherfunc)();
-	int (*otherother)();
+	//[20,27]:起因
+	int (*list)();
+	char padding1[ 8 - sizeof(char*) ];
 
-	//对齐0x80字节
-	char padding[ 0x40 - (4*sizeof(QWORD)) - (4*sizeof(char*)) ];
+	//[28,2f]:经过
+	int (*into)();
+	char padding2[ 8 - sizeof(char*) ];
+
+	//[30,37]:输出
+	int (*read)();
+	char padding3[ 8 - sizeof(char*) ];
+
+	//[38,3f]:输入
+	int (*write)(QWORD type,QWORD key);
+	char padding4[ 8 - sizeof(char*) ];
 };
-static struct worker* worker;		//whereisworker
-	//1.hex.c
-	//1.vi.c
-	//2.fs.c
-	//2.keyboard.c
-	//2.tree.c
-	//3.sketchpad.c
-	//4.console.c
-	//......
+static struct worker* worker;
+
+
+
+
 
 
 
 
 //界面控制
-static int now=1; 
-static int top=0;
-void guireport(int in)
-{
-	if(in==0)now=0;
-}
+static unsigned int top=0;
+static unsigned int now=1; 
 void guicommand(char* p)
 {
 	//先在在这里找所要求的那个character，比如'hex','console'
+	int i=0;
 	char buf[8];
 	QWORD temp=0;
-	int i=0;
 
-	//到最后一个ascii码
-	*(QWORD*)buf=*(QWORD*)p;
-	for(i=0;i<8;i++)
+	//
+	if(p==0)
 	{
-		if( (buf[i]<'a') && (buf[i]>'z') )break;
-	}
-	for(;i<8;i++){buf[i]=0;}
-
-	//拿最终结果，比较是不是退出
-	temp=*(QWORD*)buf;
-	if(temp == 0x74697865)
-	{
-		guireport(0);
+		now=0;
 		return;
 	}
-
-	//找
-	for(i=1;i<0x100;i++)
+	else if((QWORD)p<0x40)
 	{
-		if(worker[i].id==0)break;
-		if(worker[i].id==temp)
+		top=0;
+		now=(QWORD)p;
+		worker[now].into();
+		return;
+	}
+	else
+	{
+		//到最后一个ascii码
+		*(QWORD*)buf=0;
+		for(i=0;i<8;i++)
 		{
-			now=i;
-			top=0;
+			if(p[i]==0)break;
+			buf[i]=p[i];
+		}
+		for(i=0;i<8;i++)
+		{
+			if( (buf[i]<'a') && (buf[i]>'z') )break;
+		}
+		for(;i<8;i++){buf[i]=0;}
+
+		//拿最终结果，比较是不是退出
+		temp=*(QWORD*)buf;
+		if(temp == 0x74697865)	//exit
+		{
+			now=0;
 			return;
 		}
-	}
 
-	//全部找不到的话调用libsoft1.command()
-	command(p);
+		if(temp == 0x6d6f646e6172)	//random
+		{
+			for(i=1;i<0x1000/0x40;i++)
+			{
+				if(worker[i].id == 0)break;
+			}
+			diary("count=%x\n",i);
+
+			top=0;
+			now=getrandom();
+			now=( now % (i-2) ) + 1;
+			diary("random=%x\n",now);
+
+			worker[now].into();
+			return;
+		}
+
+		//找
+		for(i=1;i<0x100;i++)
+		{
+			if(worker[i].id==0)break;
+			if(worker[i].id==temp)
+			{
+				top=0;
+				now=i;
+				worker[now].into();
+				return;
+			}
+		}
+
+		//全部找不到的话调用libsoft1.command()
+		command(p);
+	}
 }
+
+
+
+
 
 
 
@@ -113,14 +161,20 @@ void guicommand(char* p)
 //菜单
 static char buffer[128];
 static int bufp=0;
-void menuprint()
+void readmenu()
 {
+	//body
 	rectangle((256<<16)+256 , (512<<16)+768  , 0);
-	rectangle((256<<16)+768-32 , ((256+32)<<16)+768  , 0xff0000);
-	string(0x20 , 16 , "what do you want?" );
-	string(0x20 , 17 , buffer );
+	squareframe((256<<16)+256 , (512<<16)+768  , 0xcccccc);
+
+	//close button
+	rectangle((256<<16)+768-16 , ((256+16)<<16)+768  , 0xff0000);
+
+	//string
+	colorstring(0x20 , 16 , "what do you want?" , 0xcccccc);
+	colorstring(0x20 , 17 , buffer , 0xcccccc);
 }
-void menumessage(QWORD type,QWORD key)
+void writemenu(QWORD type,QWORD key)
 {
 	//diary("%s,%llx\n",&type,key);
 
@@ -138,10 +192,10 @@ void menumessage(QWORD type,QWORD key)
 		}
 
 		//点击红色矩形，退出
-		if( (y<256+32) && (x>768-32) )
+		if( (y<256+16) && (x>768-16) )
 		{
 			//退出
-			guireport(0);
+			guicommand(0);
 			return;
 		}
 	}//left
@@ -181,12 +235,16 @@ void menumessage(QWORD type,QWORD key)
 
 
 
+
+
+
+
 //显示，事件处理
 void printworld()
 {
 	//开始画画
-	worker[now].show();
-	if(top > 0)menuprint();
+	worker[now].read();
+	if(top > 0)readmenu();
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -218,8 +276,8 @@ void processmessage(QWORD type,QWORD key)
 	}//touch
 
 	//其余所有消息，谁在干活就交给谁
-	if(top > 0)menumessage(type,key);
-	else worker[now].message(type,key);
+	if(top > 0)writemenu(type,key);
+	else worker[now].write(type,key);
 }
 
 
@@ -230,10 +288,11 @@ void processmessage(QWORD type,QWORD key)
 
 
 //初始化
-void wakeupcharacter()
+void registercharacter()
 {
-	int i;
-	char* temp=whereischaracter();
+	unsigned int i;
+	char* baseaddr=whereischaracter();
+	char* temp=baseaddr;
 	worker=(struct worker*)temp;
 
 	//clean everything
@@ -241,23 +300,27 @@ void wakeupcharacter()
 	temp+=0x40;
 
 	//[+0x40,+0x7f]:	1.hex.c
-	hexinit(temp);
+	registerhex(temp);
 	temp += 0x40;
 
-	//[+0x80,+0xbf]:	2.keyboard.c
-	keyboardinit(temp);
+	//[+0x80,+0xbf]:	2.2048.c
+	register2048(temp);
 	temp += 0x40;
 
-	//[+0xc0,+0xff]:	2.tree.c
-	treeinit(temp);
+	//[+0xc0,+0xff]:	2.keyboard.c
+	registerkeyboard(temp);
 	temp += 0x40;
 
-	//[+0x100,+0x13f]:	3.sketchpad.c
-	sketchpadinit(temp);
+	//[+0x100,+0x13f]:	2.tree.c
+	registertree(temp);
 	temp += 0x40;
 
-	//[+0x140,+0x17f]:	4.console.c
-	consoleinit(temp);
+	//[+0x140,+0x17f]:	3.sketchpad.c
+	registersketchpad(temp);
+	temp += 0x40;
+
+	//[+0x180,+0x1bf]:	4.console.c
+	registerconsole(temp);
 	temp += 0x40;
 }
 void main()
@@ -266,7 +329,8 @@ void main()
 	initall();
 
 	//begin
-	wakeupcharacter();
+	registercharacter();
+	guicommand("random");
 
 	//forever
 	QWORD type=0;

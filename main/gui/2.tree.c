@@ -20,11 +20,11 @@ struct mathnode{
 
 
 void line(QWORD point1,QWORD point2,DWORD color);
-void string(int x,int y,char* str);
+void colorstring(int x,int y,char* str,unsigned int color);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
-void anscii(int x,int y,int z);
+void colorascii(int x,int y,int z,unsigned int color);
 
 void background2();
 void cleanscreen();
@@ -62,16 +62,12 @@ static void printfile0()
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;
-		string(0,y+2,p+0x40*y);
+		colorstring(0,y+2,p+0x40*y,0xcccccc);
 		hexadecimal(0x30,y+2,*(QWORD*)(p+0x40*y+0x10));
 		hexadecimal(0x50,y+2,*(QWORD*)(p+0x40*y+0x20));
 		hexadecimal(0x70,y+2,*(QWORD*)(p+0x40*y+0x30));
 	}
 }
-
-
-
-
 static void printnode(int x,int y,int num)
 {
 	int left,right;
@@ -117,11 +113,11 @@ static void printnode(int x,int y,int num)
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		anscii(thisx,thisy,node[num].integer & 0xff);
+		colorascii(thisx , thisy , node[num].integer & 0xff , 0xffffff);
 	}
 	else
 	{
-		anscii(thisx,thisy,node[num].type & 0xff);
+		colorascii(thisx , thisy , node[num].type & 0xff , 0xffffff);
 	}
 
 	//left
@@ -143,32 +139,11 @@ static void printnode(int x,int y,int num)
 
 
 
-static void treeshow()
-{
-	int left,right;
-	background2();
 
-	string(0,0,buffer);
-	string(0,1,postfix);
 
-	if(node!=0)
-	{
-		//等式左边
-		left=node[0].left;
-		if(left!=0&&left<128)
-		{
-			printnode(256,1,left);
-		}
 
-		//等式右边
-		right=node[0].right;
-		if(right!=0&&right<128)
-		{
-			printnode(768,1,right);
-		}
-	}
-}
-static void treemessage(QWORD type,QWORD key)
+
+static void writetree(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'char'
 	{
@@ -198,24 +173,33 @@ static void treemessage(QWORD type,QWORD key)
 		}
 	}//'char'
 }
-
-
-
-
-
-
-
-
-void treeinit(char* in)
+static void readtree()
 {
-	QWORD* this=(QWORD*)in;
-	this[0]=0x776f646e6977;
-	this[1]=0x65657274;
-	this[2]=(0<<16)+0;   //startaddr
-	this[3]=(768<<16)+1024; //endaddr
-	this[4]=(QWORD)treeshow;
-	this[5]=(QWORD)treemessage;
+	int left,right;
+	background2();
 
+	colorstring(0,0,buffer,0xcccccc);
+	colorstring(0,1,postfix,0xcccccc);
+
+	if(node!=0)
+	{
+		//等式左边
+		left=node[0].left;
+		if(left!=0&&left<128)
+		{
+			printnode(256,1,left);
+		}
+
+		//等式右边
+		right=node[0].right;
+		if(right!=0&&right<128)
+		{
+			printnode(768,1,right);
+		}
+	}
+}
+static intotree()
+{
 	if(node==0)
 	{
 		node=(struct mathnode*)(whereischaracter()+0x200000);
@@ -224,4 +208,27 @@ void treeinit(char* in)
 	{
 		cleanscreen();
 	}
+}
+static listtree(QWORD* this)
+{
+	this[0]=0x776f646e6977;
+	this[1]=0x65657274;
+	this[2]=(0<<16)+0;		//left,up
+	this[3]=(768<<16)+1024;		//write,down
+	this[4]=(QWORD)listtree;
+	this[5]=(QWORD)intotree;
+	this[6]=(QWORD)readtree;
+	this[7]=(QWORD)writetree;
+}
+
+
+
+
+
+
+
+
+void registertree(char* in)
+{
+	listtree( (QWORD*)in );
 }

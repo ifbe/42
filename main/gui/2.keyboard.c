@@ -2,13 +2,22 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-QWORD howiswindow();
+void cleanscreen();
 char* whereiswindow();
+QWORD howiswindow();
 
 
 
 
-static void keyboardshow()
+
+
+
+
+static void writekeyboard(QWORD type,QWORD value)
+{
+	
+}
+static void readkeyboard()
 {
 	int x,y;
 	DWORD* screenbuf=(DWORD*)whereiswindow();
@@ -39,17 +48,30 @@ static void keyboardshow()
 		}
 	}
 }
-static void keyboardmessage(QWORD type,QWORD value)
+static void intokeyboard()
 {
-	
+	cleanscreen();
 }
-void keyboardinit(char* in)
+static void listkeyboard(QWORD* this)
 {
-	QWORD* this=(QWORD*)in;
 	this[0]=0x776f646e6977;
-	this[1]=0x6472616F6279656B;
-	this[2]=(0<<16)+0;   //startaddr
-	this[3]=(768<<16)+1024; //endaddr
-	this[4]=(QWORD)keyboardshow;
-	this[5]=(QWORD)keyboardmessage;
+	this[1]=0x786568;
+	this[2]=(0<<16)+0;      //left,up
+	this[3]=(768<<16)+1024; //right,down
+	this[4]=(QWORD)listkeyboard;
+	this[5]=(QWORD)intokeyboard;
+	this[6]=(QWORD)readkeyboard;
+	this[7]=(QWORD)writekeyboard;
+}
+
+
+
+
+
+
+
+
+void registerkeyboard(char* in)
+{
+	listkeyboard( (QWORD*)in );
 }

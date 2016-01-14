@@ -200,6 +200,9 @@ int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
 
 
 
+void initfile()
+{
+}
 void killfile()
 {
 	if(thisfd != -1)

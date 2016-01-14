@@ -23,13 +23,14 @@ void killfile();
 
 
 //这个.c负责管理现在开了哪些东西
-static char* diskhome=0;
 void initmemory(char* addr)
 {
-	diskhome=addr;
+	initfile();
+	initother();
 }
 void killmemory()
 {
+	killother();
 	killfile();
 }
 

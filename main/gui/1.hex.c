@@ -3,13 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void guireport(int);
+void guicommand(char*);
 //
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
-void anscii(int x,int y,char ch);
-void blackanscii(int x,int y,char ch);
+void ascii(int x,int y,char ch);
+void colorascii(int x,int y,char ch,unsigned int color);
 void background1();
 void cleanscreen();
 //
@@ -106,17 +106,17 @@ static void foreground()
 			}
 		}
 	}
-	else if(printmethod==1)		//anscii
+	else if(printmethod==1)		//ascii
 	{
 		for(y=0;y<ysize;y++)
 		{
 			for(x=0;x<xsize;x+=4)
 			{
 				DWORD value=*(DWORD*)(readwhere+y*xsize+x);
-				blackanscii(2*x+xshift,y,value&0xff);
-				blackanscii(2*x+2+xshift,y,(value>>8)&0xff);
-				blackanscii(2*x+4+xshift,y,(value>>16)&0xff);
-				blackanscii(2*x+6+xshift,y,(value>>24)&0xff);
+				colorascii(2*x+xshift,y,value&0xff,0);
+				colorascii(2*x+2+xshift,y,(value>>8)&0xff,0);
+				colorascii(2*x+4+xshift,y,(value>>16)&0xff,0);
+				colorascii(2*x+6+xshift,y,(value>>24)&0xff,0);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ static void floatarea()
 	{
 		for(x=0;x<32;x++)
 		{
-			blackanscii(chx+x,chy+y,haha[(y*32) + x]);
+			colorascii(chx+x,chy+y,haha[(y*32) + x],0);
 		}
 	}
 }
@@ -181,18 +181,7 @@ static void floatarea()
 
 
 
-static void hexshow()
-{
-	//背景
-	background1();
-
-	//
-	foreground();
-
-	//
-	floatarea();
-}
-static void hexmessage(QWORD type,QWORD key)
+static void writehex(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -241,7 +230,7 @@ static void hexmessage(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				guireport(0);
+				guicommand(0);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)
@@ -277,44 +266,56 @@ static void hexmessage(QWORD type,QWORD key)
 		base+=0x40;
 	}
 }
+static void readhex()
+{
+	//背景
+	background1();
 
+	//
+	foreground();
 
-
-
-
-
-
-
-void hexinit(char* in)
+	//
+	floatarea();
+}
+static void intohex()
 {
 	int i;
-	QWORD* this=(QWORD*)in;
+	databuf=(BYTE*)whereischaracter()+0x300000;
+	for(i=0;i<0x2000;i++)databuf[i]=0;
+
+	//浮动框
+	for(i=0;i<0x100;i++)haha[i]=0;
+	*(QWORD*)haha=0x3a746567726174;
+	*(QWORD*)(haha+0x20)=0x3a65736162;
+	*(QWORD*)(haha+0x40)=0x3a74657366666f;
+	*(QWORD*)(haha+0x60)=0x3a61746164;
+
+	//文件内部偏移
+	base=0;
+	offset=0;
+	currentcache=0xffffffff;
+	cleanscreen();
+}
+static void listhex(QWORD* this)
+{
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
-	this[2]=(0<<16)+0;	//startaddr
-	this[3]=(768<<16)+1024;	//endaddr
-	this[4]=(QWORD)hexshow;
-	this[5]=(QWORD)hexmessage;
+	this[2]=(0<<16)+0;		//left,up
+	this[3]=(768<<16)+1024;		//right,down
+	this[4]=(QWORD)listhex;
+	this[5]=(QWORD)intohex;
+	this[6]=(QWORD)readhex;
+	this[7]=(QWORD)writehex;
+}
 
-	if(databuf==0)
-	{
-		databuf=(BYTE*)whereischaracter()+0x300000;
-		for(i=0;i<0x2000;i++)databuf[i]=0;
 
-		//浮动框
-		for(i=0;i<0x100;i++)haha[i]=0;
-		*(QWORD*)haha=0x3a746567726174;
-		*(QWORD*)(haha+0x20)=0x3a65736162;
-		*(QWORD*)(haha+0x40)=0x3a74657366666f;
-		*(QWORD*)(haha+0x60)=0x3a61746164;
 
-		//文件内部偏移
-		base=0;
-		offset=0;
-		currentcache=0xffffffff;
-	}
-	else
-	{
-		cleanscreen();
-	}
+
+
+
+
+
+void registerhex(char* in)
+{
+	listhex( (QWORD*)in );
 }

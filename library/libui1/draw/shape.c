@@ -6,7 +6,7 @@ char* whereiswindow();
 
 
 
-static DWORD* screenbuf=0;
+static DWORD* winbuf=0;
 static int xsize=0;
 static int ysize=0;
 void initshape(char* unusedaddr)
@@ -19,7 +19,7 @@ void initshape(char* unusedaddr)
 	if(ysize>1024)ysize=1024;
 
 	//where
-	screenbuf=(DWORD*)whereiswindow();
+	winbuf=(DWORD*)whereiswindow();
 }
 
 
@@ -27,25 +27,25 @@ void initshape(char* unusedaddr)
 
 void point(int x,int y,int color)
 {
-	screenbuf[ x + (y<<10) ] = color;
+	winbuf[ x + (y<<10) ] = color;
 }
 void draw(int x,int y,int color)
 {
-	screenbuf[ (x+512) + ((383-y)<<10) ] = color;
+	winbuf[ (x+512) + ((383-y)<<10) ] = color;
 }
 
 
 
 
-void line(QWORD y1x1,QWORD y2x2,DWORD color)
+void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 {
 	int x,y,temp;
 	int x1,y1,x2,y2;
 
-	x1=y1x1&0xffff;
-	y1=(y1x1>>16)&0xffff;
-	x2=y2x2&0xffff;
-	y2=(y2x2>>16)&0xffff;
+	x1=z1y1x1&0xffff;
+	y1=(z1y1x1>>16)&0xffff;
+	x2=z2y2x2&0xffff;
+	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<0)return;
 	if(x1>1024)return;
@@ -66,7 +66,7 @@ void line(QWORD y1x1,QWORD y2x2,DWORD color)
 
 		for(;y<=temp;y++)
 		{
-			screenbuf[ (y<<10) + x1 ] = color;
+			winbuf[ (y<<10) + x1 ] = color;
 		}
 	}
 
@@ -81,8 +81,8 @@ void line(QWORD y1x1,QWORD y2x2,DWORD color)
 		{
 			dx=(double)(x-x1);
 			y=y1+ (DWORD)(k*dx);
-			if(y<640) screenbuf[ (y<<10) + x ] = color;
-			else screenbuf[ x ] = color;
+			if(y<640) winbuf[ (y*1024) + x ] = color;
+			else winbuf[ x ] = color;
 		}
 	}
 }
@@ -90,33 +90,57 @@ void line(QWORD y1x1,QWORD y2x2,DWORD color)
 
 
 
-void rectangle(QWORD y1x1,QWORD y2x2,DWORD color)
+void squareframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+{
+	int t;
+	int x,y;
+	int x1,y1,x2,y2;
+	int startx,endx,starty,endy;
+
+	x1=z1y1x1&0xffff;
+	y1=(z1y1x1>>16)&0xffff;
+	x2=z2y2x2&0xffff;
+	y2=(z2y2x2>>16)&0xffff;
+
+	if(x1<x2){startx=x1;endx=x2;}
+	else{startx=x2;endx=x1;}
+	if(y1<y2){starty=y1;endy=y2;}
+	else{starty=y2;endy=y1;}
+	//diary("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
+
+	for(t=0;t<1;t++)
+	{
+		for(x=startx;x<endx;x++)winbuf[((starty+t)*1024) + x] = color;
+		for(x=startx;x<endx;x++)winbuf[((endy-t)*1024) + x] = color;
+		for(y=starty;y<endy;y++)winbuf[(y*1024) + startx+t] = color;
+		for(y=starty;y<endy;y++)winbuf[(y*1024) + endx-t] = color;
+	}
+}
+
+
+
+
+void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 {
 	int x,y;
 	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
 
-
-
-
-	x1=y1x1&0xffff;
-	y1=(y1x1>>16)&0xffff;
-	x2=y2x2&0xffff;
-	y2=(y2x2>>16)&0xffff;
+	x1=z1y1x1&0xffff;
+	y1=(z1y1x1>>16)&0xffff;
+	x2=z2y2x2&0xffff;
+	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
 	if(y1<=y2){starty=y1;endy=y2;}
 	else{starty=y2;endy=y1;}
 
-
-
-
 	for(y=starty;y<endy;y++)
 	{
 		for(x=startx;x<endx;x++)
 		{
-			screenbuf[ (y<<10) + x ] = color;		//0x53840273;
+			winbuf[ (y<<10) + x ] = color;		//0x53840273;
 		}
 	}
 }

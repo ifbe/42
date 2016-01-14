@@ -1,6 +1,6 @@
 void initbackground(char*);
 void initshape(char*);
-void initanscii(char*);
+void initascii(char*);
 void initunicode(char*);
 
 
@@ -12,7 +12,7 @@ void initcharacter(char* addr)
 	//
 	initbackground(addr);
 	initshape(addr);
-	initanscii(addr);
+	initascii(addr);
 	initunicode(addr);
 }
 void killcharacter()

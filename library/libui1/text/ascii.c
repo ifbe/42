@@ -7,7 +7,7 @@ void double2decimalstring(double,char*);
 
 
 
-static const unsigned char ansciitable[128*16]={
+static const unsigned char asciitable[128*16]={
 0x00,0x00,0x3E,0x63,0x63,0x63,0x6B,0x6B,0x63,0x63,0x63,0x3E,0x00,0x00,0x00,0x00,	//0x00
 0x00,0x00,0x0C,0x1C,0x3C,0x0C,0x0C,0x0C,0x0C,0x0C,0x0C,0x3F,0x00,0x00,0x00,0x00,	//0x01
 0x00,0x00,0x3E,0x63,0x03,0x06,0x0C,0x18,0x30,0x61,0x63,0x7F,0x00,0x00,0x00,0x00,	//0x02
@@ -40,7 +40,7 @@ static const unsigned char ansciitable[128*16]={
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,	//0x1d
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,	//0x1e
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,	//0x1f
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	//0x20 space    //下面正式开始anscii
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	//0x20 space    //下面正式开始ascii
 0x00,0x00,0x18,0x3C,0x3C,0x3C,0x18,0x18,0x18,0x00,0x18,0x18,0x00,0x00,0x00,0x00,	//0x21 !
 0x00,0x63,0x63,0x63,0x22,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,	//0x22 "
 0x00,0x00,0x00,0x36,0x36,0x7F,0x36,0x36,0x36,0x7F,0x36,0x36,0x00,0x00,0x00,0x00,	//0x23 #
@@ -144,7 +144,7 @@ static const unsigned char ansciitable[128*16]={
 static DWORD* screen=0;
 static int xsize=0;
 static int ysize=0;
-void initanscii(char* unusedaddr)
+void initascii(char* unusedaddr)
 {
 	//how
 	QWORD temp=howiswindow();
@@ -160,11 +160,11 @@ void initanscii(char* unusedaddr)
 
 
 
-void anscii(int xxxx,int yyyy,char ch)
+void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
 {
 	int x,y;
 	unsigned char temp;
-	unsigned long long points=(unsigned long long)&ansciitable;
+	unsigned long long points=(unsigned long long)&asciitable;
 
 	if(ch<0x20)ch=0x20;
 	points+=ch<<4;
@@ -173,111 +173,48 @@ void anscii(int xxxx,int yyyy,char ch)
 
 	for(y=0;y<16;y++)
 	{
-		temp=*(char*)points;
+		temp=*(unsigned char*)points;
 		points++;
 
 		for(x=0;x<8;x++)
 		{
 			if( (temp&0x80) != 0 )
 			{
-				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0xffffffff;
+				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = color;
 			}
 			temp<<=1;
 		}
 	}
 }
-void blackanscii(int xxxx,int yyyy,char ch)
+void ascii(int x,int y,unsigned char ch)
 {
-	int x,y;
-	char temp;
-	unsigned long long points=(unsigned long long)&ansciitable;
+	colorascii(x,y,ch,0);
+}
 
-	if(ch<0x20)ch=0x20;
-	points+=ch<<4;
-	xxxx<<=3;
-	yyyy<<=4;
 
-	for(y=0;y<16;y++)
+
+
+void colorstring(int x,int y,char* p,unsigned int color)
+{
+	while(1)
 	{
-		temp=*(char*)points;
-		points++;
+		if( *p == 0x0 )break;
+		if(x>=0x80)break;
 
-		for(x=0;x<8;x++)
-		{
-			if( (temp&0x80) != 0 )
-			{
-				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = 0;
-			}
-			temp<<=1;
-		}
+		colorascii(x,y,*p,color);
+		p++;
+		x++;
 	}
 }
-/*
-void blackanscii(int x,int y,char ch)
-{
-    int i,j;
-    char temp;
-    unsigned long long points=(unsigned long long)&ansciitable;
-
-	if(ch<0x20)ch=0x20;
-    points+=ch<<4;
-    x=8*x;
-    y=16*y;
-
-    for(i=0;i<16;i++)
-    {
-        for(j=0;j<8;j++)
-        {
-            temp=*(char*)points;
-            temp=temp<<j;
-            temp&=0x80;
-            if(temp!=0)
-			{
-                point(x+j,y+i,0);
-            }
-			//else point(x+j,y+i,0);
-        }
-    points++;
-    }
-}*/
-
-
-
 void string(int x,int y,char* p)
 {
-    while(1)
-    {
-		if( *p == 0x0 )break;
-		if(x>=0x80)break;
-
-		anscii(x,y,*p);
-		p++;
-		x++;
-    }
-}
-void blackstring(int x,int y,char* p)
-{
-    while(1)
-    {
-		if( *p == 0x0 )break;
-		if(x>=0x80)break;
-
-		blackanscii(x,y,*p);
-		p++;
-		x++;
-    }
-}
-void printdouble(int x,int y,double z)
-{
-	char mystring[100];
-	double2decimalstring(z,mystring);
-	string(x,y,mystring);
+	colorstring(x,y,p,0);
 }
 
 
 
 
-void decimal(int x,int y,long long z)
+void colordecimal(int x,int y,long long z,unsigned int color)
 {
 	char ch;
 	int i;
@@ -285,7 +222,7 @@ void decimal(int x,int y,long long z)
 
 	if(z<0)
 	{
-		anscii(x,y,'-');
+		colorascii(x,y,'-',color);
 		x++;
 		z=-z;
 	}
@@ -295,8 +232,8 @@ void decimal(int x,int y,long long z)
 	while(1)
 	{
 		if(temp<10)break;
-        temp=temp/10;
-        i++;
+		temp=temp/10;
+		i++;
 	}
 
 	for(;i>=0;i--)
@@ -304,15 +241,19 @@ void decimal(int x,int y,long long z)
 		ch=(char)(z%10);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		anscii(x+i,y,ch);
+		colorascii(x+i,y,ch,color);
 		z=z/10;
 	}
+}
+void decimal(int x,int y,long long z)
+{
+	colordecimal(x,y,z,0);
 }
 
 
 
 
-void hexadecimal(int x,int y,unsigned long long z)
+void colorhexadecimal(int x,int y,unsigned long long z,unsigned int color)
 {
 	char ch;
 	int i=0;
@@ -329,9 +270,13 @@ void hexadecimal(int x,int y,unsigned long long z)
 		ch=(char)(z&0x0000000f);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		anscii(x+i,y,ch);
+		colorascii(x+i,y,ch,color);
 		z=z>>4;
 	}
+}
+void hexadecimal(int x,int y,unsigned long long z)
+{
+	colorhexadecimal(x,y,z,0);
 }
 void hexadecimal1234(int x,int y,unsigned int z)
 {
@@ -347,13 +292,23 @@ void hexadecimal1234(int x,int y,unsigned int z)
 			ch=(fullbyte>>4)&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			blackanscii(x+2*i,y,ch);
+			colorascii(x+2*i,y,ch,0);
 
 			//低半字节
 			ch=fullbyte&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			blackanscii(x+2*i+1,y,ch);
+			colorascii(x+2*i+1,y,ch,0);
 		//}
 	}
+}
+
+
+
+
+void printdouble(int x,int y,double z)
+{
+	char mystring[100];
+	double2decimalstring(z,mystring);
+	string(x,y,mystring);
 }
