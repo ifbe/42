@@ -66,7 +66,10 @@ void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
 }*/
-void writescreen()
+QWORD readwindow(QWORD what)
+{
+}
+void writewindow()
 {
   //画texture？
   SDL_UpdateTexture(texture, NULL, mypixel, width*4);

@@ -3,8 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void cleanscreen();
-char* whereiswindow();
-QWORD howiswindow();
+QWORD readwindow(QWORD);
 
 
 
@@ -20,7 +19,7 @@ static void writekeyboard(QWORD type,QWORD value)
 static void readkeyboard()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereiswindow();
+	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
 
 	for(y=0;y<768;y++)
 	{

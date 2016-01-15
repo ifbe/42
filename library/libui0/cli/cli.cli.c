@@ -6,12 +6,13 @@ void killwindowworker()
 {
 	
 }
-char* whereiswindow()
+unsigned long long readwindow(unsigned long long what)
 {
-	return 0;
+	if(what==0x657a6973)
+	{
+		return 80 + (25<<16);
+	}
 }
-unsigned long long howiswindow()
+void writewindow()
 {
-	//x + (y<<16) + (z<<32) + (w<<48)
-	return 80 + (25<<16);
 }

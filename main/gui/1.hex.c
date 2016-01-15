@@ -18,8 +18,8 @@ void data2hexstring(QWORD,char*);
 void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 
 //
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
+void writewindow();
 char* whereischaracter();
 
 
@@ -83,7 +83,7 @@ static void foreground()
 	int x,y;
 	int xsize,ysize,xshift;
 	QWORD readwhere=readornotread(base);
-	QWORD temp=howiswindow();
+	QWORD temp=readwindow(0x657a6973);
 
 	ysize=( (temp>>16) & 0xffff ) >> 4;
 	if(ysize>0x40)ysize=0x40;
@@ -124,8 +124,8 @@ static void foreground()
 static void floatarea()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)whereiswindow();
-	QWORD temp=howiswindow();
+	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
+	QWORD temp=readwindow(0x657a6973);
 	int ysize=(temp>>16)&0xffff;
 	int xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;

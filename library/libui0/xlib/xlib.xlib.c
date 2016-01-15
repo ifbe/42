@@ -45,15 +45,18 @@ int oldy=0;
 
 
 
-char* whereiswindow()
+QWORD readwindow(QWORD what)
 {
-	return (char*)mypixel;
+	if(what==0x6572656877)
+	{
+		return (QWORD)mypixel;
+	}
+	else if(what==0x657a6973)
+	{
+		return width+(height<<16);
+	}
 }
-QWORD howiswindow()
-{
-	return width+(height<<16);
-}
-void writescreen()
+void writewindow()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
@@ -65,7 +68,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 		XNextEvent(dsp, &ev);
 		if(ev.type==Expose)
 		{
-			if (ev.xexpose.count == 0) writescreen();
+			if (ev.xexpose.count == 0) writewindow();
 		}
 		else if(ev.type==ClientMessage)
 		{

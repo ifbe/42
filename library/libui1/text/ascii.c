@@ -1,7 +1,7 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
+void writewindow();
 void double2decimalstring(double,char*);
 
 
@@ -147,14 +147,14 @@ static int ysize=0;
 void initascii(char* unusedaddr)
 {
 	//how
-	QWORD temp=howiswindow();
+	QWORD temp=readwindow(0x657a6973);
 	ysize=(temp>>16)&0xffff;
 	xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;
 	if(ysize>1024)ysize=1024;
 
 	//where
-	screen=(DWORD*)whereiswindow();
+	screen=(DWORD*)readwindow(0x6572656877);
 }
 
 
@@ -310,5 +310,5 @@ void printdouble(int x,int y,double z)
 {
 	char mystring[100];
 	double2decimalstring(z,mystring);
-	string(x,y,mystring);
+	colorstring(x,y,mystring,0xffffff);
 }

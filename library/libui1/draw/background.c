@@ -6,8 +6,8 @@ void blackstring(int x,int y,char* str);
 void line(QWORD,QWORD,QWORD);
 void rectangle(QWORD,QWORD,QWORD);
 
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
+void writewindow();
 
 
 
@@ -18,14 +18,14 @@ static int ysize=0;
 void initbackground(char* unusedaddr)
 {
 	//how
-	QWORD temp=howiswindow();
+	QWORD temp=readwindow(0x657a6973);
 	ysize=(temp>>16)&0xffff;
 	xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;
 	if(ysize>1024)ysize=1024;
 
 	//where
-	screenbuf=(DWORD*)whereiswindow();
+	screenbuf=(DWORD*)readwindow(0x6572656877);
 }
 
 

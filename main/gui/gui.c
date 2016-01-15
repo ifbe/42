@@ -11,7 +11,6 @@ void registerconsole(char*);		//4.console.c
 //
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
-void writescreen();
 void waitevent(QWORD* first,QWORD* second);
 //
 void command(char* p);
@@ -20,8 +19,8 @@ void masterinto(char* in);
 void initall();
 void cleanall();
 //
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
+void writewindow();
 char* whereischaracter();
 //
 void diary(char*,...);
@@ -122,7 +121,7 @@ void guicommand(char* p)
 			{
 				if(worker[i].id == 0)break;
 			}
-			diary("count=%x\n",i);
+			//diary("count=%x\n",i);
 
 			top=0;
 			now=getrandom();
@@ -339,7 +338,7 @@ void main()
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
 		printworld();
-		writescreen();
+		writewindow();
 
 		//2.等事件，是退出消息就退出
 		waitevent(&type,&key);

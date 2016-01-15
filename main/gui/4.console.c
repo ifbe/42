@@ -14,8 +14,7 @@ void command(char* in);
 void say(char*,...);
 void diary(char*,...);
 
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
 char* whereisworld();
 
 
@@ -196,7 +195,7 @@ static void intoconsole()
 	if(logbuf==0)
 	{
 		logbuf=whereisworld()+0x100000;
-		palette=(unsigned int*)whereiswindow();
+		palette=(unsigned int*)readwindow(0x6572656877);
 	}
 	else	//不是第一次进来了
 	{

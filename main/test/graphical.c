@@ -2,11 +2,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-char* whereispalette();
+QWORD readwindow(QWORD);
+void writewindow();
+void waitevent(QWORD* type,QWORD* key);
+
 void initpalette();
 void cleanall();
-void writescreen();
-void waitevent(QWORD* type,QWORD* key);
 
 
 
@@ -36,7 +37,7 @@ void main()
 {
 	//before
 	initpalette();
-	palette=(DWORD*)whereispalette();
+	palette=(DWORD*)readwindow(0x6572656877);
 
 	//forever
 	QWORD type=0;
@@ -45,7 +46,7 @@ void main()
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
 		printworld();
-		writescreen();
+		writewindow();
 
 		//2.等事件，是退出消息就退出
 		waitevent(&type,&key);

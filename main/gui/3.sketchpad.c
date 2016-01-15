@@ -32,8 +32,7 @@ void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
 //
-QWORD howiswindow();
-char* whereiswindow();
+QWORD readwindow(QWORD);
 char* whereischaracter();
 //
 void printmemory(char*,int);
@@ -72,7 +71,7 @@ static void wangge()
 	double first,second,res;
 
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
-	DWORD* screenbuf=(DWORD*)whereiswindow();
+	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
 
 
 
@@ -131,7 +130,7 @@ static void tuxiang()
 	int value1,value2,counter;
 	double first,second,haha;
 
-	DWORD* screenbuf=(DWORD*)whereiswindow();
+	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
 
 
 

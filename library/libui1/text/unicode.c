@@ -1,8 +1,11 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-QWORD howiswindow();
-unsigned char* whereiswindow();
+//
 unsigned char* whereisunicodetable();
+//
+void writewindow();
+QWORD readwindow(QWORD);
+//
 void diary(char*,...);
 
 
@@ -19,14 +22,14 @@ static unsigned char* unicodetable=0;
 void initunicode(char* unusedaddr)
 {
 	//how
-	QWORD temp=howiswindow();
+	QWORD temp=readwindow(0x657a6973);
 	ysize=(temp>>16)&0xffff;
 	xsize=temp&0xffff;
 	if(xsize>1024)xsize=1024;
 	if(ysize>1024)ysize=1024;
 
 	//where
-	screen=(DWORD*)whereiswindow();
+	screen=(DWORD*)readwindow(0x6572656877);
 
 	//unicode
 	unicodetable=(unsigned char*)whereisunicodetable();

@@ -1,7 +1,6 @@
 #define QWORD unsigned long long
-void writescreen();
 void waitevent(QWORD* first,QWORD* second);
-void decimal(int x,int y,int z);
+void colordecimal(int x,int y,int z,unsigned int color);
 unsigned int getrandom();
 
 
@@ -46,19 +45,93 @@ static void cubie(int x,int y,int z)
 
 
 
+//斗兽场......
 static void left2048()
 {
-	int x,y,temp;
+	int x,y;
+	int src,dst,temp;
+
+	//4对祭品
 	for(y=0;y<4;y++)
 	{
-		for(x=0;x<4;x++)
+		//前三个会去作死
+		for(x=0;x<3;x++)
 		{
-			temp=x;
+		//前三个里面没死的才会去作死
+		if(table[y][x]!=0)
+		{
+			//开始作死
+			src=x+1;
+			for(;src<4;src++)
+			{
+				//空位置就找下一个
+				if(table[y][src]==0)continue;
+
+				//跟自己不一样，没法欺负就跑
+				if( table[y][x] != table[y][src] )break;
+
+				//找到相同的只能活一个，依次排队准备下次
+				
+				table[y][x]=2*table[y][x];	//吃掉别人
+				table[y][src]=0;		//扔尸体
+				x=src;		//别
+				break;
+			}
+		}//if
+		}//forx
+
+		//活着的排好队
+		dst=0;
+		for(x=0;x<3;x++)
+		{
+			if(table[y][x]!=0)
+			{
+				temp=table[y][x];
+				table[y][x]=0;
+				table[y][dst]=temp;
+				dst++;
+			}
 		}
-	}
+	}//fory
 }
 static void right2048()
-{}
+{
+	int x,y;
+	int src,dst,temp;
+
+	for(y=0;y<4;y++)
+	{
+		dst=3;
+		for(x=3;x>0;x--)
+		{
+		if(table[y][x]!=0)
+		{
+			src=x-1;
+			for(;src>=0;src--)
+			{
+				if( table[y][src] == 0 )continue;
+				if( table[y][x] != table[y][src] )break;
+				table[y][x]=2*table[y][x];
+				table[y][src]=0;
+				x=src;
+				break;
+			}
+		}//if
+		}//forx
+
+                dst=3;
+                for(x=3;x>=0;x--)
+                {
+                        if(table[y][x]!=0)
+                        {
+                                temp=table[y][x];
+                                table[y][x]=0;
+                                table[y][dst]=temp;
+                                dst--;
+                        }
+                }
+	}//fory
+}
 static void up2048()
 {}
 static void down2048()
@@ -143,7 +216,6 @@ static void read2048()
 			cubie(x,y,table[y][x]);
 		}
 	}
-	writescreen();
 }
 static void into2048()
 {

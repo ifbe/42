@@ -46,15 +46,18 @@ static RECT rt, re;
 
 
 
-char* whereiswindow()
+QWORD readwindow(QWORD what)
 {
-	return (char*)mypixel;
+	if(what==0x6572656877)
+	{
+		return (QWORD)mypixel;
+	}
+	else if(what==0x657a6973)
+	{
+		return (height<<16)+width;
+	}
 }
-QWORD howiswindow()
-{
-	return (height<<16)+width;
-}
-void writescreen()
+void writewindow(QWORD what)
 {
 	int temp=height;
 	if(temp>1024)temp=1024;
@@ -343,7 +346,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//显示
 		case WM_PAINT:
 		{
-			writescreen();
+			writewindow();
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 

@@ -32,15 +32,18 @@ static int height=768;
 
 
 
-char* whereiswindow()
+QWORD readwindow(QWORD what)
 {
-	return (char*)mypixel;
+	if(what==0x6572656877)
+	{
+		return (QWORD)mypixel;
+	}
+	else if(what==0x657a6973)
+	{
+		return width+(height<<16);
+	}
 }
-QWORD howiswindow()
-{
-	return width+(height<<16);
-}
-void writescreen()
+void writewindow(QWORD what)
 {
 	int y;
 	for(y=0;y<height;y++)
