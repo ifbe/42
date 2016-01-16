@@ -346,7 +346,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//显示
 		case WM_PAINT:
 		{
-			writewindow();
+			writewindow(0);
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 
@@ -402,7 +402,7 @@ int initmywindow()
 	//透明
 	LONG t = GetWindowLong(window, GWL_EXSTYLE);
 	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(window, 0, 0xc0, LWA_ALPHA);  
+	SetLayeredWindowAttributes(window, 0, 0xe0, LWA_ALPHA);  
 
 	//显示窗口
 	ShowWindow(window,SW_SHOW);			//nCmdShow);
