@@ -198,7 +198,7 @@ static void readtree()
 		}
 	}
 }
-static intotree()
+static void intotree()
 {
 	if(node==0)
 	{
@@ -209,7 +209,7 @@ static intotree()
 		cleanscreen();
 	}
 }
-static listtree(QWORD* this)
+static void listtree(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x65657274;

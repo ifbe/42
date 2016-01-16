@@ -9,6 +9,7 @@ void registertree(char*);		//2.tree.c
 void registersketchpad(char*);		//3.sketchpad.c
 void registerconsole(char*);		//4.console.c
 //
+void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
 void waitevent(QWORD* first,QWORD* second);
@@ -19,9 +20,10 @@ void masterinto(char* in);
 void initall();
 void cleanall();
 //
+char* whereischaracter();
+DWORD getrandom();
 QWORD readwindow(QWORD);
 void writewindow();
-char* whereischaracter();
 //
 void diary(char*,...);
 void printmemory(char*,int);

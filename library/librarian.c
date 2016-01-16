@@ -10,7 +10,6 @@ void killcharacter();
 void initwindow(char*);
 void killwindow();
 //libsoft
-void masterinto(QWORD);
 void initsoftware(char*);
 void killsoftware();
 void initmemory();
@@ -178,7 +177,7 @@ __attribute__((destructor)) void cleanall()
 	}
 	if(memory != 0)
 	{
-		killmaster();
+		killsoftware();
 		killmemory();
 		memory=0;
 	}

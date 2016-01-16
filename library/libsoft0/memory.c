@@ -13,11 +13,16 @@ void intoprocess();
 void readprocess();
 void writeprocess();
 //file
+void initfile();
+void killfile();
 void listfile(char* towhere);
 void intofile(char* name);
 void readfile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void killfile();
+//
+void initother();
+void killother();
 
 
 
