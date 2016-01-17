@@ -4,6 +4,7 @@ push
 .tree
 *.o
 *.a
+*.so
 *.old
 *.img
 *.vhd
@@ -12,3 +13,12 @@ push
 *.exe
 *.res
 *.out
+*.apk
+main/apk/bin
+main/apk/gen
+main/apk/libs
+main/apk/obj
+main/apk/build.xml
+main/apk/local.properties
+main/apk/proguard-project.txt
+main/apk/project.properties
