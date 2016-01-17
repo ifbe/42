@@ -18,9 +18,10 @@ package com.example.plasma;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
-import android.view.View;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.view.View;
+import android.view.MotionEvent;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -47,6 +48,7 @@ class PlasmaView extends View {
 
     /* implementend by libplasma.so */
     private static native void renderPlasma(Bitmap  bitmap, long time_ms);
+    private static native void ProcessEvent(long type, long value);
 
     public PlasmaView(Context context, int width, int height) {
         super(context);
@@ -61,4 +63,24 @@ class PlasmaView extends View {
         // force a redraw, with a different time-based pattern.
         invalidate();
     }
+
+	@Override public boolean onTouchEvent(MotionEvent event) {
+		int action = event.getActionMasked();
+		long x = (long)event.getX(0);
+		long y = (long)event.getY(0);
+		long z = (long)event.getPressure(0);
+		if( action == MotionEvent.ACTION_DOWN )
+		{
+			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+		}
+		else if( action == MotionEvent.ACTION_MOVE )
+		{
+			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+		}
+		else if( action == MotionEvent.ACTION_UP )
+		{
+			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+		}
+		return true;
+	}
 }

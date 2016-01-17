@@ -12,6 +12,15 @@
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 
+
+
+//
+static int xxxx=0;
+static int yyyy=0;
+
+
+
+
 static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 {
     int  y,x;
@@ -35,6 +44,24 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 		for(x=0; x < info->width; x++)
 		{
 			this[y*(info->width) + x]=0xffff0000;
+		}
+    }
+    for (; y < info->height; y++)
+	{
+		for(x=0; x < info->width; x++)
+		{
+			this[y*(info->width) + x]=0xffffffff;
+		}
+    }
+
+	//////////////////////////////
+	xxxx = xxxx % info->width;
+	yyyy = yyyy % info->height;
+    for (y=0; y < yyyy; y++)
+	{
+		for(x=0; x < xxxx; x++)
+		{
+			this[y*(info->width) + x]=0xffbb7733;
 		}
     }
 }
@@ -66,4 +93,9 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * 
     fill_plasma(&info, pixels);
 
     AndroidBitmap_unlockPixels(env, bitmap);
+}
+JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(unsigned long long type,unsigned long long value)
+{
+	xxxx=value&0xffff;
+	yyyy=(value>>16)&0xffff;
 }
