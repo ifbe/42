@@ -94,8 +94,9 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * 
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }
-JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(unsigned long long type,unsigned long long value)
+JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * env, jobject  obj , jlong type , jlong value)
 {
 	xxxx=value&0xffff;
 	yyyy=(value>>16)&0xffff;
+	LOGI(">>>>>>>>>>>>>(%llx,%llx),(%x,%x)\n",type,value,xxxx,yyyy);
 }

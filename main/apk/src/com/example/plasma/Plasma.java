@@ -17,6 +17,7 @@ package com.example.plasma;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -69,17 +70,19 @@ class PlasmaView extends View {
 		long x = (long)event.getX(0);
 		long y = (long)event.getY(0);
 		long z = (long)event.getPressure(0);
+		long temp=x+(y<<16)+(z<<32);
+		Log.i("PlasmaView","<<<<<<<<<<<<<<<("+x+","+y+","+z+"),"+temp);
 		if( action == MotionEvent.ACTION_DOWN )
 		{
-			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+			ProcessEvent(0x1234 , temp);
 		}
 		else if( action == MotionEvent.ACTION_MOVE )
 		{
-			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+			ProcessEvent(0x1234 , temp);
 		}
 		else if( action == MotionEvent.ACTION_UP )
 		{
-			ProcessEvent(0x1234 , x+(y<<16)+(z<<32));
+			ProcessEvent(0x1234 , temp);
 		}
 		return true;
 	}

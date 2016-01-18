@@ -102,6 +102,12 @@ x86+win+web:
 
 
 
+push:
+	git add --all .
+	git commit -a
+	git push
+pull:
+	git pull
 clean:
 	rm -f *.out *.exe
 	rm -f */*.o

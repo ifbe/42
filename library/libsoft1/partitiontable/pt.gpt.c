@@ -26,6 +26,9 @@ int isgpt(char* addr)
 	temp=*(QWORD*)(addr+0x200);
 	if( temp != 0x5452415020494645 ) return 0;
 
+	//检查crc32校验正确还是错误
+	//
+
 	//最终确定
 	return 0x747067;        //'gpt'
 }
