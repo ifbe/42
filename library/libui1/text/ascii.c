@@ -164,7 +164,7 @@ void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
 {
 	int x,y;
 	unsigned char temp;
-	unsigned long long points=(unsigned long long)&asciitable;
+	unsigned char* points=(unsigned char*)&asciitable;
 
 	if(ch<0x20)ch=0x20;
 	points+=ch<<4;
@@ -173,7 +173,7 @@ void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
 
 	for(y=0;y<16;y++)
 	{
-		temp=*(unsigned char*)points;
+		temp=points[0];
 		points++;
 
 		for(x=0;x<8;x++)

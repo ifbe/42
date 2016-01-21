@@ -13,6 +13,13 @@ void diary(char*,...);
 
 
 static char buffer[128];//键盘输入专用
+
+
+
+
+void guicommand()
+{
+}
 int main(int argc,char* argv[])
 {
 	//必须放第一个

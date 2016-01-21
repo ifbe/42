@@ -20,6 +20,7 @@ double absolute(double x)
 	);
 	return result;
 }
+/*
 //取整
 double floor(double x)
 {
@@ -35,6 +36,7 @@ double floor(double x)
 	__asm __volatile("fldcw %0"::"m"(cw));
 	return value;
 }
+*/
 
 
 
