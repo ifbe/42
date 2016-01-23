@@ -21,15 +21,15 @@ include $(CLEAR_VARS)
 
 #1.boot1
 LOCAL_SRC_FILES := \
-	library/libboot0/none/none.c
+	library/libboot0/none/serial.rx.c \
+	library/libboot0/none/serial.tx.c \
+	library/libboot0/none/basic.c
 
 #1.boot1
 LOCAL_SRC_FILES += \
-	library/libboot1/0.listen.c \
-	library/libboot1/1.say.c \
-	library/libboot1/2.diary.c \
-	library/libboot1/3.history.c \
-	library/libboot1/std.c
+	library/libboot1/listen.c \
+	library/libboot1/say.c \
+	library/libboot1/debug.c
 
 #2.hard0
 ifeq ($(TARGET_ARCH),x86)
