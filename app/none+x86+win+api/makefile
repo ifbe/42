@@ -1,14 +1,16 @@
+library?=../../library
+res?=../../res
 all:
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1 gcc
 	make -s -C $(library)/libhard0 x86
 	make -s -C $(library)/libhard1 gcc
-	make -s -C $(library)/libsoft0 linux
+	make -s -C $(library)/libsoft0 win
 	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 cli
+	make -s -C $(library)/libui0 winapi
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/user gui
-	gcc -o a.out \
+	gcc -mwindows \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

@@ -39,9 +39,8 @@ x86+linux+cli:
 x86+mac+cli:
 	make -C app/none+x86+mac+cli
 x86+win+cli:
-	make -C app/none+x86+win+cli
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	gcc res/uac.res app/none+x86+win+cli/library.a -o a.exe
+	make -C app/none+x86+win+cli
 
 
 
@@ -65,17 +64,14 @@ x86+mac+sdl:
 
 
 x86+win+api:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+api
-	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	gcc -mwindows res/uac.res app/none+x86+win+api/library.a -o a.exe
 x86+win+sdl:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+sdl
-	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	gcc -mwindows res/uac.res app/none+x86+win+api/library.a -o a.exe
 x86+win+web:
-	make -C app/none+x86+win+web
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	gcc -mwindows res/uac.res app/none+x86+win+api/library.a -o a.exe
+	make -C app/none+x86+win+web
 
 
 

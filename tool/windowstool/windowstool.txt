@@ -1,0 +1,5 @@
+1.git for windows
+	https://git-for-windows.github.io/
+2.ming-w64
+	http://sourceforge.net/projects/mingw-w64/
+3.x86_64-elf-gcc
