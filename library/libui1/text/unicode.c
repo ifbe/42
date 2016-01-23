@@ -6,7 +6,7 @@ unsigned char* whereisunicodetable();
 void writewindow();
 QWORD readwindow(QWORD);
 //
-void diary(char*,...);
+void say(char*,...);
 
 
 

@@ -3,19 +3,17 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void guicommand(char*);
-
+//libui
 void string(int x,int y,char* str);
-void point(int x,int y,DWORD color);
 void cleanscreen();
-
-int compare(char* first,char* second);
-void command(char* in);
-
-void say(char*,...);
-void diary(char*,...);
-
 QWORD readwindow(QWORD);
+//libsoft
+void command(char* in);
+int compare(char* first,char* second);
 char* whereisworld();
+//libboot
+void say(char*,...);
+
 
 
 
@@ -85,7 +83,7 @@ static void printposition(int start,int count,int max)
 	//显示区大小/总大小
 	QWORD top=resolutiony*start/max;
 	QWORD bottom=resolutiony*(start+0x80*count)/max;//temp变量=max
-	diary("printposition:%x,%x\n",top,bottom);
+	say("printposition:%x,%x\n",top,bottom);
 
 	for(y=top;y<bottom;y++)
 	{
@@ -100,7 +98,7 @@ static void printstdout(int start,int count)
 	//总共38行，必须保证start>=0x80*行数
 	int x,y;
 	char* p=logbuf+start;
-	//diary("printstdout:%d,%d\n",start,count);
+	//say("printstdout:%d,%d\n",start,count);
 	for(y=0;y<count;y++)
 	{
 		string(0 , y , p + y * 0x80);

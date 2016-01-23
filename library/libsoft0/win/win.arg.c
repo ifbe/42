@@ -5,9 +5,8 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void target(char*);
 void printmemory(char*,int);
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 static char mystring[100];
 

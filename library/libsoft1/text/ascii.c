@@ -9,7 +9,7 @@
 int compare(unsigned char* first,unsigned char* second)
 {
 	int i;
-	//diary("%s,%s\n",first,second);
+	//say("%s,%s\n",first,second);
 	for(i=0;i<16;i++)
 	{
 		if( (first[i]==0) && (second[i]==0) )break;	//相同
@@ -109,7 +109,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 	int i;
 	for(i=0;i<16;i++)
 	{
-		//diary("%x\n",source[i]);
+		//say("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了
 		if(source[i]<=0x20) break;
 

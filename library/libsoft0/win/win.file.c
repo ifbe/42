@@ -7,7 +7,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 HANDLE hDev;
 static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
@@ -17,7 +17,7 @@ static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','
 
 static QWORD getsize(HANDLE hand,char* path,char* dest)
 {
-	//diary("%llx\n",*(QWORD*)path);
+	//say("%llx\n",*(QWORD*)path);
 	if( *(QWORD*)path == 0x737968505c2e5c5c )
 	{
 		//磁盘大小这么拿
@@ -39,12 +39,12 @@ static QWORD getsize(HANDLE hand,char* path,char* dest)
 		);
 		if(ret==FALSE)
 		{
-			diary("can't get size:%llx\n",GetLastError());
+			say("can't get size:%llx\n",GetLastError());
 		}
 
 		//
 		*(QWORD*)dest=out.Length.QuadPart;
-		//diary("%x\n",dest);
+		//say("%x\n",dest);
 	}
 	else
 	{
@@ -85,7 +85,7 @@ void listfile(char* dest)
 			//[0x18,0x1f]:end
 			*(QWORD*)(dest+0x10)=0;
 			*(QWORD*)(dest+0x18)=0;
-			//diary("%x\n",dest+0x18);
+			//say("%x\n",dest+0x18);
 			getsize( temphandle , tempname , dest+0x18 );
 
 			//[0x20,0x3f]:name
@@ -111,7 +111,7 @@ void intofile(char* path)
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
 	{
-		diary("cannot open:%s\n",path);
+		say("cannot open:%s\n",path);
 		return;
 	}
 	else CloseHandle(temphandle);
@@ -124,7 +124,7 @@ void intofile(char* path)
 	QWORD size=0;
 	getsize(hDev,path,(void*)&size);
 
-	diary("(%s    ,    %llx)\n",path,size);
+	say("(%s    ,    %llx)\n",path,size);
 }
 
 
@@ -167,12 +167,12 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
         FILE_ATTRIBUTE_NORMAL,//设置文件的属性，里面有高速缓存的选项
         NULL);
 
-    //这里失败不会返回NULL，而是INVALID_HANDLE_VALUE
-    if(hFile==INVALID_HANDLE_VALUE)
-    {
-        diary("hFile error\n");
-        return -1;
-    }
+	//这里失败不会返回NULL，而是INVALID_HANDLE_VALUE
+	if(hFile==INVALID_HANDLE_VALUE)
+	{
+		say("hFile error\n");
+		return -1;
+	}
 
 	LARGE_INTEGER li;
 	li.QuadPart = offset;

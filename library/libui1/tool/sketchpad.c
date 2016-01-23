@@ -36,7 +36,7 @@ QWORD readwindow(QWORD);
 char* whereischaracter();
 //
 void printmemory(char*,int);
-void diary(char*,...);
+void say(char*,...);
 
 
 
@@ -257,7 +257,7 @@ static void writesketchpad(QWORD type,QWORD key)
 	{
 		int dx=(int)(short)(key&0xffff);
 		int dy=(int)(short)((key>>16)&0xffff);
-		//diary("%d,%d\n",dx,dy);
+		//say("%d,%d\n",dx,dy);
 
 		centerx -= scale*dx;
 		centery += scale*dy;
@@ -272,7 +272,7 @@ static void writesketchpad(QWORD type,QWORD key)
 		y=384-((key>>16)&0xffff);
 		centerx += ((double)x) * scale * (1-1/1.2);
 		centery += ((double)y) * scale * (1-1/1.2);
-		//diary("%d,%lf\n",x,centerx);
+		//say("%d,%lf\n",x,centerx);
 
 		scale/=1.2;
 		changed=1;

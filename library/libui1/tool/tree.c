@@ -18,26 +18,24 @@ struct mathnode{
 
 
 
-
+//libui
 void line(QWORD point1,QWORD point2,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
 void colorascii(int x,int y,int z,unsigned int color);
-
 void background2();
 void cleanscreen();
-
+QWORD whereischaracter();
+//libsoft
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
-
+//libboot
 void say(char*,...);
-void diary(char*,...);
 void printmemory(char*,int);
-QWORD whereischaracter();
 
 
 
@@ -75,7 +73,7 @@ static void printnode(int x,int y,int num)
 	int thisx,thisy;
 
 	//拿
-	diary("%d\n",num);
+	say("%d\n",num);
 	if(y>13)return;
 	left=node[num].left;
 	right=node[num].right;
@@ -90,7 +88,7 @@ static void printnode(int x,int y,int num)
 		temp--;
 		if(temp==0)break;
 	}
-	//diary("offset=%d\n",offset);
+	//say("offset=%d\n",offset);
 
 	//位置
 	thisx=x/8;
@@ -133,7 +131,7 @@ static void printnode(int x,int y,int num)
 		line( x+((64*y+16)<<16) , (x+offset)+( (64*y+64)<<16) , 0xffffffff);
 		printnode( x+offset , y+1 , right );
 	}
-	//diary("this=%d,left=%d,right=%d\n",num,left,right);
+	//say("this=%d,left=%d,right=%d\n",num,left,right);
 }
 
 

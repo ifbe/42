@@ -4,16 +4,11 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-char* listenbuf=0;
-void initlisten(char* addr)
-{
-	listenbuf=addr;
-}
 
 
 
 
-void waitinput(char* p)
+void rx(char* p)
 {
 	int i;
 	char* ignore;

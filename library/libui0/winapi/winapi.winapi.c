@@ -11,7 +11,7 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1234
 #define menu2 0x5678
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 
@@ -155,7 +155,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			}
-			//diary("tray:\n");
+			//say("tray:\n");
 			return 0;
 		}
 
@@ -171,7 +171,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			diary("drag:%s\n",dragpath);
+			say("drag:%s\n",dragpath);
 			my1=0x656c6966706f7264;		//'dropfile'
 			my2=(QWORD)dragpath;
 			solved=0;
@@ -198,7 +198,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			}
-			//diary("key:%x\n",wparam);
+			//say("key:%x\n",wparam);
 			return 0;
 		}
 
@@ -245,10 +245,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标移动
 		case WM_MOUSEMOVE:
 		{
-			//diary("moving\n");
+			//say("moving\n");
 			if(leftdown>0)
 			{
-				//diary("moving\n");
+				//say("moving\n");
 				GetCursorPos(&pe);		// 获取光标指针的新位置
 
 				if(rightdown==0xff)		//左右一起按下
@@ -264,7 +264,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					my2=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
 					solved=0;
 
-					//diary("%d,%d\n",pe.x,pe.y);
+					//say("%d,%d\n",pe.x,pe.y);
 					GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 				}
 			}
@@ -334,7 +334,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//窗口尺寸改变
 		case WM_SIZE:
 		{
-			//diary("wparam:%llx,lparam:%llx\n",wparam,lparam);
+			//say("wparam:%llx,lparam:%llx\n",wparam,lparam);
 			my1=0x657a6973;		//tfel//left	//2;
 			my2=lparam-( (40<<16) + 16 );
 			width=lparam&0xffff;
@@ -414,12 +414,12 @@ void InitUIPIFilter()
 
 	//1
 	HMODULE hUser = LoadLibraryA("user32.dll");
-	if (!hUser){diary("failed to load\n");exit(-1);}
+	if (!hUser){say("failed to load\n");exit(-1);}
 
 	//2
 	ChangeWindowMessageFilterProc proc;
 	proc=(ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
-	if(!proc){diary("can't drag\n");exit(-1);}
+	if(!proc){say("can't drag\n");exit(-1);}
 
 	//3
 	proc(WM_COPYDATA,1);

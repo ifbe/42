@@ -2,9 +2,9 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void diary(char* fmt,...);
 void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD start,QWORD count);
+void say(char* fmt,...);
 
 
 
@@ -45,7 +45,7 @@ static int mbrrecord(char* from,char* to)
 	//拓展分区要递归
 	if( (type==0x5) | (type==0xf) )
 	{
-		diary("extend@start\n");
+		say("extend@start\n");
 		dst[1]=0x646e65747865;
 		return 66666;
 	}
@@ -53,22 +53,22 @@ static int mbrrecord(char* from,char* to)
 	//其他普通分区
 	if( (type==0x4) | (type==0x6) | (type==0xb) )
 	{
-		//diary("fat\n");
+		//say("fat\n");
 		dst[1]=0x746166;
 	}
 	else if( type==0x7 )
 	{
-		//diary("ntfs\n");
+		//say("ntfs\n");
 		dst[1]=0x7366746e;
 	}
 	else if( type==0x83 )
 	{
-		//diary("ext\n");
+		//say("ext\n");
 		dst[1]=0x747865;
 	}
 	else
 	{
-		//diary("unknown:%x\n",type);
+		//say("unknown:%x\n",type);
 		dst[1]=type;
 	}
 	return 0x10;	//这次翻译了多少
@@ -91,7 +91,7 @@ void explainmbr(char* buffer,char* to)
 
 	int i,j,ret;
 	QWORD temp;
-	diary("mbr disk\n",0);
+	say("mbr disk\n",0);
 
 	//除了硬盘记录以外，全部干掉
 	dst=to;
@@ -161,7 +161,7 @@ void explainmbr(char* buffer,char* to)
 		QWORD start=*(QWORD*)(to+offset);
 		if( type==5 | type==0xf )
 		{
-			//diary("sector:%x\n",*(DWORD*)(to+offset));
+			//say("sector:%x\n",*(DWORD*)(to+offset));
 			readmemory(buffer,*(DWORD*)(to+offset),0,1);
 			//printmemory(buffer+0x1be,0x40);
 
@@ -170,7 +170,7 @@ void explainmbr(char* buffer,char* to)
 			if(remember!=(char*)dstqword)
 			{
 				*(DWORD*)(remember+0)+=start;
-				//diary("1st:%x\n",*(DWORD*)remember);
+				//say("1st:%x\n",*(DWORD*)remember);
 			}
 
 			remember=dstqword;
@@ -178,7 +178,7 @@ void explainmbr(char* buffer,char* to)
 			if(remember!=dstqword)
 			{
 				*(DWORD*)(remember+0)+=start;
-				//diary("2st:%x\n",*(DWORD*)remember);
+				//say("2st:%x\n",*(DWORD*)remember);
 			}
 		}
 
@@ -195,7 +195,7 @@ void explainmbr(char* buffer,char* to)
 		QWORD type=*(QWORD*)addr;
 		if(type==0)break;
 
-		diary("%d:%s\n",offset,(char*)addr);
+		say("%d:%s\n",offset,(char*)addr);
 
 		offset++;
 	}

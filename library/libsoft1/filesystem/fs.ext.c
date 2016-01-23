@@ -6,7 +6,7 @@
 int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
 void printmemory(char* addr,QWORD size);
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 
@@ -88,7 +88,7 @@ static char* checkcacheforinode(QWORD wanted)
 		if(count>0x400)count=0x400;	//这一组里剩余的太多的话，多余的不要
 
 		//read inode table
-		//diary("inode:%x@%x\n",this,where);
+		//say("inode:%x@%x\n",this,where);
 		readmemory(rdi,where,0,count*inodesize/0x200);//注意inodepergroup奇葩时这里出问题
 
 		//读满0x400个inode就走人
@@ -116,8 +116,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	WORD temp=(*(WORD*)rsi)&0xf000;
 	if(temp == 0xa000)
 	{
-		diary((char*)(rsi+0x28));
-		diary("(soft link)\n");
+		say("soft link:%x\n",rsi+0x28);
 		return -1;
 	}
 
@@ -176,8 +175,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 	}
 	else		//ext2，3用老的直接间接块的方式
 	{
-	diary("old@%x\n",rsi);
-	diary("{\n");
+	say("old@%x\n",rsi);
 /*
 	rsi+=0x28;
 	for(i=0;i<8;i++)
@@ -185,10 +183,10 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 		if(*(DWORD*)rsi != 0)
 		{
 			QWORD temp;
-			diary("    pointer@%x\n",rsi);
+			say("    pointer@%x\n",rsi);
 
 			temp=block0+(*(DWORD*)rsi)*blocksize;
-			diary("sector:%x\n",temp);
+			say("sector:%x\n",temp);
 
 		        readmemory(rdi,temp,0,blocksize);
 			rdi+=0x200*blocksize;
@@ -219,7 +217,7 @@ static void explaindirectory()
 		if(rsi>=datahome+0x100000)break;
 		if(*(DWORD*)rsi == 0)break;
 		if(*(WORD*)(rsi+4) == 0)break;
-		//diary("%x\n",*(WORD*)(rsi+4));
+		//say("%x\n",*(WORD*)(rsi+4));
 		//printmemory(rsi,0x10);
 
 		//[0,0x7]:type
@@ -330,7 +328,7 @@ int explainexthead()
 	dstqword[3]=0x41b;
 	dstqword[4]=blocksize;
 	dstqword += 8;
-	diary("sectorperblock:%x\n",blocksize);
+	say("sectorperblock:%x\n",blocksize);
 
 	//每组多少扇区
 	groupsize=*(DWORD*)(pbr+0x420);
@@ -341,7 +339,7 @@ int explainexthead()
 	dstqword[3]=0x423;
 	dstqword[4]=groupsize;
 	dstqword += 8;
-	diary("sectorpergroup:%x\n",groupsize);
+	say("sectorpergroup:%x\n",groupsize);
 
 	//每组多少个inode
 	inodepergroup=*(DWORD*)(pbr+0x428);
@@ -351,7 +349,7 @@ int explainexthead()
 	dstqword[3]=0x42b;
 	dstqword[4]=inodepergroup;
 	dstqword += 8;
-	diary("inodepergroup:%x\n",inodepergroup);
+	say("inodepergroup:%x\n",inodepergroup);
 
 	//每inode多少字节
 	inodesize=*(WORD*)(pbr+0x458);
@@ -361,7 +359,7 @@ int explainexthead()
 	dstqword[3]=0x459;
 	dstqword[4]=inodesize;
 	dstqword += 8;
-	diary("byteperinode:%x\n",inodesize);
+	say("byteperinode:%x\n",inodesize);
 
 	return 1;
 }

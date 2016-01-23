@@ -6,7 +6,7 @@ double cosine(double);
 double sine(double);
 int decstring2data(BYTE* source,QWORD* data);
 void printmemory(char*,int);
-void diary(char*,...);
+void say(char*,...);
 
 
 
@@ -99,7 +99,7 @@ int pop(DWORD* dest)
 	dest[0]=stack[sp];
 	sp++;
 
-	//diary("pop %d\n",dest[0]);
+	//say("pop %d\n",dest[0]);
 	return 1;
 }
 
@@ -370,7 +370,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 		//第1种：常量
 		else if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
 		{
-			//diary("herehere!!!!\n");
+			//say("herehere!!!!\n");
 			//先拿整数部分
 			ret1 = decstring2data( postfix + source , &data );
 			source += ret1;
@@ -505,14 +505,14 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 			//这是符号，所以对应的2个或1个数字可以滚了
 			if(haha>0)
 			{
-				//diary("haha:%d\n",haha);
+				//say("haha:%d\n",haha);
 				if(haha == 2)
 				{
 					//拿出两个并且检查出错没有
-					ret2=pop(&second);		//后进先出
+					ret2=pop(&second);	//后进先出
 					ret1=pop(&first);
-					//diary("ret1=%x,first=%d\n",ret1,first);
-					//diary("ret2=%x,second=%d\n",ret2,second);
+					//say("ret1=%x,first=%d\n",ret1,first);
+					//say("ret2=%x,second=%d\n",ret2,second);
 
 					if(ret1<=0|ret2<=0)break;
 					if(second>=128|first>=128)break;

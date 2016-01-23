@@ -1,0 +1,6 @@
+void initdebug()
+{
+}
+void  killdebug()
+{
+}

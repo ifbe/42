@@ -34,8 +34,6 @@ int compare(char*,char*);
 void cleanmemory(char*,int);
 void printmemory(char*,int);
 void say(char*,...);
-void diary(char*,...);
-void history(char*,...);
 
 
 
@@ -159,7 +157,7 @@ int hello(char* src)
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
 	readmemory(datahome , sector , 0 , 64);
 	type=prelibation(datahome);
-	diary("%s\n",&type);
+	say("%s\n",&type);
 
 
 	//如果是分区表头，并且是文件头，那么解释分区表到diskhome
@@ -211,7 +209,7 @@ int hello(char* src)
 	fscd = *(void**)( fshome+0x28 );
 	fsload = *(void**)( fshome+0x30 );
 	fsstore = *(void**)( fshome+0x38 );
-	diary("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
+	say("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
 	return 1;
 }
 
@@ -232,7 +230,7 @@ int ls(char* name)
 			if(temp == 0)break;
 
 			//[+0]:type
-			diary("(%-4s," , dirhome+(i*0x40) );
+			say("(%-4s," , dirhome+(i*0x40) );
 			//[+8]:id
 			*(QWORD*)buf=*(QWORD*)(dirhome+(i*0x40)+0x8);
 			temp=0;
@@ -243,17 +241,17 @@ int ls(char* name)
 				//[0x80,0xff]:wrong
 				if(buf[j]>=0x80) temp++;
 			}
-			if(temp==0) diary("%4s)	",buf);
-			else diary("%4llx)	",*(QWORD*)buf);
+			if(temp==0) say("%4s)	",buf);
+			else say("%4llx)	",*(QWORD*)buf);
 
 			//[+10]:start
-			diary("[%-4llx,",*(QWORD*)(dirhome+(i*0x40)+0x10));
+			say("[%-4llx,",*(QWORD*)(dirhome+(i*0x40)+0x10));
 			//[+18]:end
-			diary("%4llx]	",*(QWORD*)(dirhome+(i*0x40)+0x18));
+			say("%4llx]	",*(QWORD*)(dirhome+(i*0x40)+0x18));
 			//[+20]:detail
-			diary("{%-16s}	",dirhome+(i*0x40)+0x20);
+			say("{%-16s}	",dirhome+(i*0x40)+0x20);
 			//which
-			diary("<%d>\n",i);
+			say("<%d>\n",i);
 		}//for
 
 		return 1;
@@ -262,7 +260,7 @@ int ls(char* name)
 	//else:         search+explain
 	for(;temp<0x10000;temp+=0x40)
 	{
-		//diary("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
+		//say("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
 		if( compare( name , dirhome+temp+0x20 ) == 0 )
 		{
 			printmemory(dirhome+temp,0x40);
@@ -273,7 +271,7 @@ int ls(char* name)
 	}
 
 	//failed
-	diary("file not found\n");
+	say("file not found\n");
 	return -1;
 }
 
@@ -310,7 +308,7 @@ int load(char* arg1)
 
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
 	size=*(QWORD*)(dirhome + 0x40*ret + 0x18);
-	if(size>0x100000)diary("id=%x,size=%x\n",id,size);
+	if(size>0x100000)say("id=%x,size=%x\n",id,size);
 
 	//1m,1m,1m的整块搞
 	temp=0;

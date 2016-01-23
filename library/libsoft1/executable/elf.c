@@ -6,7 +6,7 @@
 int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
 void printmemory(char* addr,QWORD size);
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 

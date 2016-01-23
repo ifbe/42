@@ -7,7 +7,7 @@ int compare(char* first,char* second);
 int waitinput(char*);
 int init123();
 int cleanall();
-void diary(char*,...);
+void say(char*,...);
 
 
 

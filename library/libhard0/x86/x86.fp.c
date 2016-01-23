@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void printmemory(char*,int);
-void diary(char*,...);
+void say(char*,...);
 
 
 
@@ -250,7 +250,7 @@ void kexuejishufa(double* haha,int* counter)
 	{
 		while( haha[0] < 1.00 )
 		{
-			//diary("%lf,%d\n",haha[0],counter[0]);
+			//say("%lf,%d\n",haha[0],counter[0]);
 			haha[0] *= 10.00;
 			counter[0] --;
 		}
@@ -261,7 +261,7 @@ void kexuejishufa(double* haha,int* counter)
 	{
 		while( haha[0] > 10.00 )
 		{
-			//diary("%lf,%d\n",haha[0],counter[0]);
+			//say("%lf,%d\n",haha[0],counter[0]);
 			haha[0] /= 10.00;
 			counter[0] ++;
 		}

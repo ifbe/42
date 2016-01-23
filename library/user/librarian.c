@@ -20,15 +20,14 @@ void killbody();
 void initdriver(char*);
 void killdriver();
 //libboot
-void initstd(char*);	//listen,say,diary,and
-void killstd();
-void initarch(char*);
-void killarch();
+void initdebug(char*);	//listen,say
+void killdebug();
+void initbasic(char*);	//
+void killbasic();
 //argc,argv......
 char* explainarg();
+void listen(char*);
 void say(char*,...);
-void diary(char*,...);
-void history(char*,...);
 
 
 
@@ -111,24 +110,24 @@ void init123()
 
 	//[0,4)：构架相关，以及内核日志
 	world=warmuniverse + 0;
-	initarch( world );
-	diary("[0,4):boot0 done\n");
-	initstd( world );
-	diary("[0,4):boot1 done\n");
+	initbasic( world );
+	say("[0,4):boot0 done\n");
+	initdebug( world );
+	say("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
 	body=warmuniverse + (1*0x400000);
 	initdriver( body );
-	diary("[4,8):hard0 done\n");
+	say("[4,8):hard0 done\n");
 	initbody( body );
-	diary("[4,8):hard1 done\n");
+	say("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
-	diary("[8,c):soft0 done\n");
+	say("[8,c):soft0 done\n");
 	initsoftware( memory );
-	diary("[8,c):soft1 done\n");
+	say("[8,c):soft1 done\n");
 }
 void initall()
 {
@@ -140,31 +139,31 @@ void initall()
 
 	//[0,4)：构架相关，以及内核日志
 	world=warmuniverse + 0;
-	initarch( world );
-	diary("[0,4):boot0 done\n");
-	initstd( world );
-	diary("[0,4):boot1 done\n");
+	initbasic( world );
+	say("[0,4):boot0 done\n");
+	initdebug( world );
+	say("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
 	body=warmuniverse + (1*0x400000);
 	initdriver( body );
-	diary("[4,8):hard0 done\n");
+	say("[4,8):hard0 done\n");
 	initbody( body );
-	diary("[4,8):hard1 done\n");
+	say("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
 	memory=warmuniverse + (2*0x400000);
 	initmemory( memory );
-	diary("[8,c):soft0 done\n");
+	say("[8,c):soft0 done\n");
 	initsoftware( memory );
-	diary("[8,c):soft1 done\n");
+	say("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
 	character=warmuniverse + (3*0x400000);
 	initwindow( character );
-	diary("[12,16):ui0 done\n");
+	say("[12,16):ui0 done\n");
 	initcharacter( character );
-	diary("[12,16):ui1 done\n");
+	say("[12,16):ui1 done\n");
 }
 __attribute__((destructor)) void cleanall()
 {
@@ -189,8 +188,8 @@ __attribute__((destructor)) void cleanall()
 	}
 	if(world != 0)
 	{
-		killstd();
-		killarch();
+		killdebug();
+		killbasic();
 		world=0;
 	}
 

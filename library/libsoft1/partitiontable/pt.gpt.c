@@ -11,7 +11,7 @@
 //[+0x38,+0x7f]:名字
 
 //用了别人的
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 
@@ -41,7 +41,7 @@ void explaingpt(char* from,char* to)
 	char* dst;
 	QWORD* srcqword;
 	QWORD* dstqword;
-	diary("gpt disk\n");
+	say("gpt disk\n");
 
 	//除了硬盘记录，其余一概干掉
 	dst=to;
@@ -70,7 +70,7 @@ void explaingpt(char* from,char* to)
 	dstqword[7]=0x0011223344556677;
 	dst += 0x40;
 	dstqword += 8;
-	//diary("dst@%llx\n",dst);
+	//say("dst@%llx\n",dst);
 
 
 	//正式开始转换
@@ -103,7 +103,7 @@ void explaingpt(char* from,char* to)
 			if(secondhalf==0xe47d47d8693d798e)
 			{
 				dstqword[1]=0x747865;		//ext
-				//diary("ext\n");
+				//say("ext\n");
 			}
 		}
 		if(firsthalf==0x477284830fc63daf)
@@ -111,7 +111,7 @@ void explaingpt(char* from,char* to)
 			if(secondhalf==0xe47d47d8693d798e)
 			{
 				dstqword[1]=0x747865;		//ext
-				//diary("ext\n");
+				//say("ext\n");
 			}
 		}
 		else if(firsthalf==0x11d2f81fc12a7328)
@@ -119,7 +119,7 @@ void explaingpt(char* from,char* to)
 			if(secondhalf==0x3bc93ec9a0004bba)
 			{
 				dstqword[1]=0x746166;		//fat
-				//diary("fat\n");
+				//say("fat\n");
 			}
 		}
 		else if(firsthalf==0x11aa000048465300)
@@ -127,7 +127,7 @@ void explaingpt(char* from,char* to)
 			if(secondhalf==0xacec4365300011aa)
 			{
 				dstqword[1]=0x736668;		//hfs
-				//diary("hfs\n");
+				//say("hfs\n");
 			}
 		}
 		else if(firsthalf==0x4433b9e5ebd0a0a2)
@@ -135,13 +135,13 @@ void explaingpt(char* from,char* to)
 			if(secondhalf==0xc79926b7b668c087)
 			{
 				dstqword[1]=0x7366746e;		//ntfs
-				//diary("ntfs\n");
+				//say("ntfs\n");
 			}
 		}
 		else
 		{
 			dstqword[1]=0x3f;
-			//diary("unknown\n");
+			//say("unknown\n");
 		}
 
 		//pointer++

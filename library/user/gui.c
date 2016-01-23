@@ -25,7 +25,7 @@ DWORD getrandom();
 QWORD readwindow(QWORD);
 void writewindow();
 //
-void diary(char*,...);
+void say(char*,...);
 void printmemory(char*,int);
 
 
@@ -123,12 +123,12 @@ void guicommand(char* p)
 			{
 				if(worker[i].id == 0)break;
 			}
-			//diary("count=%x\n",i);
+			//say("count=%x\n",i);
 
 			top=0;
 			now=getrandom();
 			now=( now % (i-2) ) + 1;
-			diary("random=%x\n",now);
+			say("random=%x\n",now);
 
 			worker[now].into();
 			return;
@@ -177,7 +177,7 @@ void readmenu()
 }
 void writemenu(QWORD type,QWORD key)
 {
-	//diary("%s,%llx\n",&type,key);
+	//say("%s,%llx\n",&type,key);
 
 	//'xyz left'
 	if(type==0x7466656C207A7978)
@@ -249,12 +249,12 @@ void printworld()
 }
 void processmessage(QWORD type,QWORD key)
 {
-	//diary("%s,%llx\n",&type,key);
+	//say("%s,%llx\n",&type,key);
 
 	//'dropfile'
 	if(type==0x656c6966706f7264)
 	{
-		//diary("debuging::::::::%s\n",(char*)key);
+		//say("debuging::::::::%s\n",(char*)key);
 		masterinto((char*)key);
 		return;
 	}
@@ -273,7 +273,7 @@ void processmessage(QWORD type,QWORD key)
 	//'touch'
 	else if(type==0x6863756f74)
 	{
-		diary("touch!\n");
+		say("touch!\n");
 	}//touch
 
 	//其余所有消息，谁在干活就交给谁

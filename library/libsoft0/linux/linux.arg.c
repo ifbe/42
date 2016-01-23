@@ -8,7 +8,7 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 void printmemory(char* addr,int count);
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 
@@ -23,14 +23,14 @@ char* explainarg()
 
 	//open,read,close
 	temp=open("/proc/self/cmdline",O_RDONLY);
-	if(temp==-1)diary("error reading cmd line\n");
+	if(temp==-1)say("error reading cmd line\n");
 	else
 	{
 		memset(buffer,0,100);
 		int i=read(temp,buffer,100);
 		close(temp);
 		printmemory(buffer,0x20);
-		//diary("cmdline:%s\n",buffer);
+		//say("cmdline:%s\n",buffer);
 	}
 
 	//

@@ -106,7 +106,7 @@ void squareframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	else{startx=x2;endx=x1;}
 	if(y1<y2){starty=y1;endy=y2;}
 	else{starty=y2;endy=y1;}
-	//diary("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
+	//say("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
 
 	for(t=0;t<1;t++)
 	{

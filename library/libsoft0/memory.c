@@ -128,9 +128,9 @@ void cleverread
 	}
 
 	readmemory(rdi,rsi,0,rcx);
-	//diary("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
-	//diary("want:%llx,to:%llx\n",wantwhere,destaddr);
-	//diary("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
+	//say("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
+	//say("want:%llx,to:%llx\n",wantwhere,destaddr);
+	//say("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);
 }
 //来源物理扇区，来源扇区数量，来源代表哪里
 //目的内存地址，目的字节数量，目的需要哪里

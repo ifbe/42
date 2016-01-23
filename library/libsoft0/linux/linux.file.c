@@ -21,7 +21,7 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void diary(char* fmt,...);
+void say(char* fmt,...);
 
 
 
@@ -112,7 +112,7 @@ void intofile(char* wantpath)
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
-		diary("can't open:%s\n",wantpath);
+		say("can't open:%s\n",wantpath);
 		return;
 	}
 	else close(tempfd);
@@ -132,14 +132,14 @@ void readfile(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
-		diary("errno:%d,seek:%llx\n",errno,sector);
+		say("errno:%d,seek:%llx\n",errno,sector);
 		return;
 	}
 
 	result=read(thisfd,(void*)buf,count*0x200);
 	if(result==-1)
 	{
-		diary("errno:%d,read:%llx,%llx\n",errno,sector,count);
+		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
 	}
 }
 

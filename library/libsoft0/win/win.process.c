@@ -6,7 +6,10 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-void diary(char* fmt,...);
+void say(char* fmt,...);
+
+
+
 
 HANDLE hDev;
 char* memoryinfo;

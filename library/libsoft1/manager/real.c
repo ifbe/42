@@ -20,14 +20,12 @@ int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
-//libboot1
-int printmemory(char* addr,int count);
-int say(char* str,...);		//+1
-int diary(char* str,...);	//+2
-int history(char* str,...);	//+3
-//libboot0
+//libhard
 int platformread(char*);
 int platformwrite(char*);
+//libboot
+int printmemory(char* addr,int count);
+int say(char* str,...);		//+1
 
 
 
@@ -91,7 +89,7 @@ void masterlist(char* arg1)
 		if( (target==0) | (temp == target) )
 		{
 			//[+0]:type
-			diary("(%-4s," , addr+(i*0x40) );
+			say("(%-4s," , addr+(i*0x40) );
 
 			//[+8]:id
 			*(QWORD*)buf=*(QWORD*)(addr+(i*0x40)+0x8);
@@ -104,20 +102,20 @@ void masterlist(char* arg1)
 				//[0x80,0xff]:wrong
 				if(buf[j]>=0x80) temp++;
 			}
-			if(temp==0) diary("%4s)	",buf);
-			else diary("%4llx)	",*(QWORD*)buf);
+			if(temp==0) say("%4s)	",buf);
+			else say("%4llx)	",*(QWORD*)buf);
 
 			//[+10]:start
-			diary("[%-4llx,",*(QWORD*)(addr+(i*0x40)+0x10));
+			say("[%-4llx,",*(QWORD*)(addr+(i*0x40)+0x10));
 
 			//[+18]:end
-			diary("%4llx]	",*(QWORD*)(addr+(i*0x40)+0x18));
+			say("%4llx]	",*(QWORD*)(addr+(i*0x40)+0x18));
 
 			//[+20]:detail
-			diary("{%-16s}	",addr+(i*0x40)+0x20);
+			say("{%-16s}	",addr+(i*0x40)+0x20);
 
 			//which
-			diary("<%d>\n",i);
+			say("<%d>\n",i);
 		}//if
 	}//for
 }//masterlist
@@ -152,7 +150,7 @@ int masterread(char* arg1)
 	//nothing specified
 	if(arg1==0)
 	{
-		diary("masterread@%llx,world@%llx\n",masterread,diskhome);
+		say("masterread@%llx,world@%llx\n",masterread,diskhome);
 		return -1;
 	}
 
@@ -171,7 +169,7 @@ int masterread(char* arg1)
 		hexstring2data(arg1,&value);
 		readmemory(datahome,value,0,1);
 		printmemory(datahome,0x200);
-		diary("above is:%llx\n",value);
+		say("above is:%llx\n",value);
 		return 0;
 	}
 
@@ -184,7 +182,7 @@ int masterwrite(char* arg1)
 	//nothing specified
 	if(arg1==0)
 	{
-		diary("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
+		say("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
 		return -1;
 	}
 
@@ -200,7 +198,7 @@ int masterwrite(char* arg1)
 	//"read memory.400000"
 	if(value==0)
 	{
-		diary("dangerous,bye\n");
+		say("dangerous,bye\n");
 		return 0;
 	}
 
@@ -231,18 +229,18 @@ void command(char* buffer)
 	if(ret==0)
 	{
 		//physical(master)
-		diary("help ?		(list all known)\n");
-		diary("list ?		(list all known)\n");
-		diary("into ?		(choose a disk)\n");
-		diary("read ?		(hex print a sector)\n");
-		diary("write ?		(no)\n\n");
+		say("help ?		(list all known)\n");
+		say("list ?		(list all known)\n");
+		say("into ?		(choose a disk)\n");
+		say("read ?		(hex print a sector)\n");
+		say("write ?		(no)\n\n");
 
 		//logical(servent)
-		diary("hello ?		(no)\n");
-		diary("ls ?		(list file)\n");
-		diary("cd ?		(change directory)\n");
-		diary("load ?		(load this file)\n");
-		diary("store ?		(store this file)\n");
+		say("hello ?		(no)\n");
+		say("ls ?		(list file)\n");
+		say("cd ?		(change directory)\n");
+		say("load ?		(load this file)\n");
+		say("store ?		(store this file)\n");
 
 		return;
 	}
