@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void guicommand(char*);
+void uicommand(char*);
 //libui
 void string(int x,int y,char* str);
 void cleanscreen();
@@ -133,7 +133,7 @@ static void writeconsole(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				guicommand(0);
+				uicommand(0);
 				return;
 			}
 			else

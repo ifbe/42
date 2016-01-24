@@ -4,6 +4,11 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
+//
+int bootcommand(char* buffer);
+int hardcommand(char* buffer);
+int softcommand(char* buffer);
+int uicommand(char* buffer);
 //libui
 void initcharacter(char*);
 void killcharacter();
@@ -28,9 +33,6 @@ void killbasic();
 char* explainarg();
 void listen(char*);
 void say(char*,...);
-
-
-
 
 
 
@@ -96,39 +98,42 @@ void inituniverse(int size)
 
 
 
-
-
-
-
-void init123()
+int command(char* p)
 {
-	//开终端等等活动，必须放第一个
-	char* p=explainarg();
+	//在这里找，是不是退出
+	int ret=*(unsigned int*)p;
+	if(ret==0x74697865)return 0;
 
-	//0000000000000000000000
-	inituniverse( 3 * 0x400000 );	//16m
+	//在libui里面找
+	say("searching libui\n");
+	ret=uicommand(p);
+	if(ret>0)return 1;
 
-	//[0,4)：构架相关，以及内核日志
-	world=warmuniverse + 0;
-	initbasic( world );
-	say("[0,4):boot0 done\n");
-	initdebug( world );
-	say("[0,4):boot1 done\n");
+	//在libsoft里面找
+	say("searching libsoft\n");
+	ret=softcommand(p);
+	if(ret>0)return 2;
 
-	//[4,7)：硬件驱动，以及底层协议栈
-	body=warmuniverse + (1*0x400000);
-	initdriver( body );
-	say("[4,8):hard0 done\n");
-	initbody( body );
-	say("[4,8):hard1 done\n");
+	//在libhard里面找
+	say("searching libhard\n");
+	ret=hardcommand(p);
+	if(ret>0)return 3;
 
-	//[8,c)：文件读写，以及详细分析
-	memory=warmuniverse + (2*0x400000);
-	initmemory( memory );
-	say("[8,c):soft0 done\n");
-	initsoftware( memory );
-	say("[8,c):soft1 done\n");
+	//在libboot里面找
+	say("searching libboot\n");
+	ret=bootcommand(p);
+	if(ret>0)return 4;
+
+	//在host系统上找
+
+	//没找到
+	say("unknown command:%s\n",p);
+	return 9999;
 }
+
+
+
+
 void initall()
 {
 	//开终端等等活动，必须放第一个

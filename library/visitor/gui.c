@@ -2,20 +2,9 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void registerhex(char*);		//1.hex.c
-void register2048(char*);		//2.2048.c
-void registerkeyboard(char*);		//2.keyboard.c
-void registertree(char*);		//2.tree.c
-void registersketchpad(char*);		//3.sketchpad.c
-void registerconsole(char*);		//4.console.c
 //
-void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
-void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
-void colorstring(int x,int y,char* str,unsigned int color);
 void waitevent(QWORD* first,QWORD* second);
-//
 void command(char* p);
-void listmemory();
 void masterinto(char* in);
 void initall();
 void cleanall();
@@ -72,7 +61,6 @@ static struct worker* worker;
 
 
 //界面控制
-static unsigned int top=0;
 static unsigned int now=1; 
 void guicommand(char* p)
 {
@@ -89,7 +77,7 @@ void guicommand(char* p)
 	}
 	else if((QWORD)p<0x40)
 	{
-		top=0;
+		worker[0].startaddr=0;
 		now=(QWORD)p;
 		worker[now].into();
 		return;
@@ -125,11 +113,11 @@ void guicommand(char* p)
 			}
 			//say("count=%x\n",i);
 
-			top=0;
 			now=getrandom();
 			now=( now % (i-2) ) + 1;
 			say("random=%x\n",now);
 
+			worker[0].startaddr=0;
 			worker[now].into();
 			return;
 		}
@@ -140,8 +128,8 @@ void guicommand(char* p)
 			if(worker[i].id==0)break;
 			if(worker[i].id==temp)
 			{
-				top=0;
 				now=i;
+				worker[0].startaddr=0;
 				worker[now].into();
 				return;
 			}
@@ -159,93 +147,23 @@ void guicommand(char* p)
 
 
 
-//菜单
-static char buffer[128];
-static int bufp=0;
-void readmenu()
-{
-	//body
-	rectangle((256<<16)+256 , (512<<16)+768  , 0);
-	squareframe((256<<16)+256 , (512<<16)+768  , 0xcccccc);
-
-	//close button
-	rectangle((256<<16)+768-16 , ((256+16)<<16)+768  , 0xff0000);
-
-	//string
-	colorstring(0x20 , 16 , "what do you want?" , 0xcccccc);
-	colorstring(0x20 , 17 , buffer , 0xcccccc);
-}
-void writemenu(QWORD type,QWORD key)
-{
-	//say("%s,%llx\n",&type,key);
-
-	//'xyz left'
-	if(type==0x7466656C207A7978)
-	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-
-		//点击框框外面，关掉菜单
-		if( (x<256)|(x>768)|(y<256)|(y>512) )
-		{
-			top=0;
-			return;
-		}
-
-		//点击红色矩形，退出
-		if( (y<256+16) && (x>768-16) )
-		{
-			//退出
-			guicommand(0);
-			return;
-		}
-	}//left
-
-	//'char'
-	else if(type==0x72616863)
-	{
-		if(key==0x8)		//backspace
-		{
-			if(bufp!=0)
-			{
-				bufp--;
-				buffer[bufp]=0;
-			}
-		}
-		else if(key==0xd)		//回车
-		{
-			//say("%s\n",buffer);
-			guicommand(buffer);
-
-			//clear
-			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;
-			bufp=0;
-		}
-		else
-		{
-			if(bufp<0x80)
-			{
-				buffer[bufp]=key&0xff;
-				bufp++;
-			}
-		}
-	}//kbd
-
-}
-
-
-
-
-
-
-
-
 //显示，事件处理
 void printworld()
 {
-	//开始画画
+	//where
+	say("%llx\n",worker[now].read);
+
+	//主画
 	worker[now].read();
-	if(top > 0)readmenu();
+	say("background\n");
+
+	//菜单
+	if(worker[0].startaddr > 0)worker[0].read();
+	say("menu\n");
+
+	//上屏
+	writewindow();
+	say("window\n");
 }
 void processmessage(QWORD type,QWORD key)
 {
@@ -265,7 +183,7 @@ void processmessage(QWORD type,QWORD key)
 		//按下esc
 		if(key==0x1b)
 		{
-			top ^= 1;
+			worker[0].startaddr ^= 1;
 			return;
 		}
 	}
@@ -277,7 +195,7 @@ void processmessage(QWORD type,QWORD key)
 	}//touch
 
 	//其余所有消息，谁在干活就交给谁
-	if(top > 0)writemenu(type,key);
+	if(worker[0].id > 0)worker[0].write(type,key);
 	else worker[now].write(type,key);
 }
 
@@ -288,50 +206,15 @@ void processmessage(QWORD type,QWORD key)
 
 
 
-//初始化
-void registercharacter()
-{
-	unsigned int i;
-	char* baseaddr=whereischaracter();
-	char* temp=baseaddr;
-	worker=(struct worker*)temp;
-
-	//clean everything
-	for(i=0;i<0x100000;i++)temp[i]=0;
-	temp+=0x40;
-
-	//[+0x40,+0x7f]:	1.hex.c
-	registerhex(temp);
-	temp += 0x40;
-
-	//[+0x80,+0xbf]:	2.2048.c
-	register2048(temp);
-	temp += 0x40;
-
-	//[+0xc0,+0xff]:	2.keyboard.c
-	registerkeyboard(temp);
-	temp += 0x40;
-
-	//[+0x100,+0x13f]:	2.tree.c
-	registertree(temp);
-	temp += 0x40;
-
-	//[+0x140,+0x17f]:	3.sketchpad.c
-	registersketchpad(temp);
-	temp += 0x40;
-
-	//[+0x180,+0x1bf]:	4.console.c
-	registerconsole(temp);
-	temp += 0x40;
-}
 void main()
 {
 	//before
 	initall();
+	worker=(struct worker*)whereischaracter();
 
-	//begin
-	registercharacter();
-	guicommand("random");
+	//
+	now=1;
+	worker[1].into();
 
 	//forever
 	QWORD type=0;
@@ -340,7 +223,6 @@ void main()
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
 		printworld();
-		writewindow();
 
 		//2.等事件，是退出消息就退出
 		waitevent(&type,&key);

@@ -114,8 +114,8 @@ LOCAL_SRC_FILES += \
 
 #1.librarian
 LOCAL_SRC_FILES += \
-	library/user/librarian.c \
-	library/user/cli.c
+	library/visitor/librarian.c \
+	library/visitor/cli.c
 
 
 

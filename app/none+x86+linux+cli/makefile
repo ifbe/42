@@ -8,7 +8,7 @@ all:
 	make -s -C $(library)/libsoft1 gcc
 	make -s -C $(library)/libui0 cli
 	make -s -C $(library)/libui1 gcc
-	make -s -C $(library)/user cli
+	make -s -C $(library)/visitor cli
 	gcc -o a.out \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -18,6 +18,6 @@ all:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/user/*.o
+	$(library)/visitor/*.o
 clean:
 	rm -f *.o

@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void guicommand(char*);
+void uicommand(char*);
 //
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
@@ -16,11 +16,13 @@ void cleanscreen();
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-
 //
 QWORD readwindow(QWORD);
 void writewindow();
 char* whereischaracter();
+//
+void say(char*,...);
+void printmemory(char*,int);
 
 
 
@@ -230,7 +232,7 @@ static void writehex(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				guicommand(0);
+				uicommand(0);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)

@@ -244,17 +244,31 @@ void buf2arg(BYTE* buffer,QWORD* first,QWORD* second)
 	int howmany=0;
 	for(i=0;i<0x80;i++)
 	{
-		if( buffer[i] <= 0x20 )buffer[i]=0;
+		//出错了
+		if( buffer[i] < 0x20 )
+		{
+			return;
+		}
+
+		//把空格全变成0
+		else if(buffer[i] == 0x20)
+		{
+			buffer[i]=0;
+		}
+
+		//拿东西
 		if( buffer[i] > 0x20 )
 		{
-			if(i == 0)		//buffer里第一个，不可能是second
+			//buffer里第一个，不可能是second
+			if(i == 0)
 			{
 				*first=(QWORD)&buffer[i];
 				howmany++;
 			}
 			else
 			{
-				if( buffer[i-1] == 0 )	//前面有0说明这是边界
+				//前面有0说明这是边界
+				if( buffer[i-1] == 0 )
 				{
 					if( howmany == 0 )
 					{
