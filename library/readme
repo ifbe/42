@@ -1,0 +1,14 @@
+libboot:
+	厂商初始化，
+	dts/acpi，
+	cpu切模式，
+	串口
+libhard:
+	cpu功能，比如三角函数
+	硬件驱动，比如pci/usb设备
+libsoft:
+	文件系统,
+	加解压
+	加解密
+libui:
+	用户界面
