@@ -1,5 +1,6 @@
 binary:
 	gcc -c -fPIC -O2 calc/calc.c
+	gcc -c -fPIC -O2 calc/scientificnotation.c
 	gcc -c -fPIC -O2 compress/7z.c
 	gcc -c -fPIC -O2 compress/cpio.c
 	gcc -c -fPIC -O2 compress/gz.c
@@ -21,6 +22,7 @@ binary:
 	gcc -c -fPIC -O2 master.c
 crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 calc/calc.c
+	x86_64-elf-gcc -c -fPIC -O2 calc/scientificnotation.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/7z.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/cpio.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/gz.c
@@ -42,6 +44,7 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 master.c
 gcc:
 	gcc -c -O2 calc/calc.c
+	gcc -c -O2 calc/scientificnotation.c
 	gcc -c -O2 compress/7z.c
 	gcc -c -O2 compress/cpio.c
 	gcc -c -O2 compress/gz.c
@@ -63,6 +66,7 @@ gcc:
 	gcc -c -O2 master.c
 clang:
 	clang -c -O2 calc/calc.c
+	clang -c -O2 calc/scientificnotation.c
 	clang -c -O2 compress/7z.c
 	clang -c -O2 compress/cpio.c
 	clang -c -O2 compress/gz.c

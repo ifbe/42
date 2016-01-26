@@ -21,9 +21,6 @@ void main()
 	//before
 	initall();
 
-	//which
-	command("2048");
-
 	//forever
 	QWORD type=0;
 	QWORD key=0;

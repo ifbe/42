@@ -55,7 +55,7 @@ static struct working* worker;
 
 
 
-static int now=0;
+static unsigned int now=0;		//不能有负数
 int uicommand(char* p)
 {
 	int i;
@@ -71,8 +71,8 @@ int uicommand(char* p)
         }
 	temp=*(unsigned long long*)buf;
 
-	//random
-        if(temp == 0x6d6f646e6172)
+	//faceless
+        if(temp == 0x7373656c65636166)
         {
                 for(i=1;i<0x1000/0x40;i++)
                 {
@@ -201,6 +201,9 @@ void initcharacter(char* addr)
 	//[+0x180,+0x1bf]:      4.console.c
 	registerconsole(addr);
 	addr += 0x40;
+
+	//default face
+	uicommand("2048");
 }
 void killcharacter()
 {

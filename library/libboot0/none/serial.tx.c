@@ -27,10 +27,9 @@ void tx(char* fmt , ...)
 
 
 
-void printmemory(QWORD addr,int size)
+void printmemory(char* addr,int size)
 {
 //debug用，打印从addr开始的总共size个字节
-	BYTE* printaddr=(BYTE*)addr;
 	int i,j;
 
 	//打印的很少就不显示这些了
@@ -52,14 +51,14 @@ void printmemory(QWORD addr,int size)
 
 		for(i=0;i<=0xf;i++)
 		{
-			tx("%.2x ",printaddr[16*j+i]);
+			tx("%.2x ",addr[16*j+i]);
 		}
 		for(i=0;i<=0xf;i++)
 		{
-			unsigned char ch=printaddr[16*j+i];
+			unsigned char ch=addr[16*j+i];
 			if( (ch>=0x80)|(ch<=0x20) )ch=0x20;
 			tx("%c",ch);
 		}
-		tx("\n",printaddr[16*j+15]);
+		tx("\n",addr[16*j+15]);
 	}
 }

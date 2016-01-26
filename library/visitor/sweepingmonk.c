@@ -105,29 +105,29 @@ int command(char* p)
 	if(ret==0x74697865)return 0;
 
 	//在libui里面找
-	say("searching libui\n");
+	//say("searching libui\n");
 	ret=uicommand(p);
 	if(ret>0)return 1;
 
 	//在libsoft里面找
-	say("searching libsoft\n");
+	//say("searching libsoft\n");
 	ret=softcommand(p);
 	if(ret>0)return 2;
 
 	//在libhard里面找
-	say("searching libhard\n");
+	//say("searching libhard\n");
 	ret=hardcommand(p);
 	if(ret>0)return 3;
 
 	//在libboot里面找
-	say("searching libboot\n");
+	//say("searching libboot\n");
 	ret=bootcommand(p);
 	if(ret>0)return 4;
 
 	//在host系统上找
 
 	//没找到
-	say("unknown command:%s\n",p);
+	//say("unknown command:%s\n",p);
 	return 9999;
 }
 
