@@ -23,13 +23,13 @@ help:
 #	NDK_PROJECT_PATH=app/android \
 #	LOCAL_PATH=.
 android:
-	make -s -C app/android
+	make -s -C app/android --no-print-directory
 apk:
-	make -s -C app/apk
+	make -s -C app/apk --no-print-directory
 ipa:
-	make -s -C app/ipa
+	make -s -C app/ipa --no-print-directory
 uwp:
-	make -s -C app/uwp
+	make -s -C app/uwp --no-print-directory
 ###############################################################################
 
 
@@ -37,43 +37,43 @@ uwp:
 
 ########################################help###################################
 x86+linux+cli:
-	make -C app/none+x86+linux+cli
+	make -C app/none+x86+linux+cli --no-print-directory
 x86+mac+cli:
-	make -C app/none+x86+mac+cli
+	make -C app/none+x86+mac+cli --no-print-directory
 x86+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x86+win+cli
+	make -C app/none+x86+win+cli --no-print-directory
 
 
 
 
 x86+linux+fb:
-	make -C app/none+x86+linux+fb
+	make -C app/none+x86+linux+fb --no-print-directory
 x86+linux+xlib:
-	make -C app/none+x86+linux+xlib
+	make -C app/none+x86+linux+xlib --no-print-directory
 x86+linux+sdl:
-	make -C app/none+x86+linux+sdl
+	make -C app/none+x86+linux+sdl --no-print-directory
 x86+linux+web:
-	make -C app/none+x86+linux+web
+	make -C app/none+x86+linux+web --no-print-directory
 
 
 
 
 x86+mac+sdl:
-	make -C app/none+x86+mac+sdl
+	make -C app/none+x86+mac+sdl --no-print-directory
 
 
 
 
 x86+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x86+win+api
+	make -C app/none+x86+win+api --no-print-directory
 x86+win+sdl:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x86+win+sdl
+	make -C app/none+x86+win+sdl --no-print-directory
 x86+win+web:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x86+win+web
+	make -C app/none+x86+win+web --no-print-directory
 
 
 
