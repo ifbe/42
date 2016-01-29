@@ -121,20 +121,22 @@ int command(char* p)
 	//?
 	int ret;
 	if(p==0)return 0;
-	if(p[0]==0)return 0;
 
 	//0x74697865='exit'
 	//0x706c6568='help'
-	if(p[1]!=0)
+	if(p[0]!=0)			//如果""	//绝对不能访问p[1]
 	{
-		if(p[2]!=0)
+		if(p[1]!=0)		//如果"*"	//绝对不能访问p[2]
 		{
-			ret=*(unsigned int*)p;
-			if(ret==0x74697865)return 0;
-			if(ret==0x706c6568)
+			if(p[2]!=0)	//如果"**"	//绝对不能访问p[3]
 			{
-				help();
-				return 1;
+				ret=*(unsigned int*)p;
+				if(ret==0x74697865)return 0;
+				if(ret==0x706c6568)
+				{
+					help();
+					return 1;
+				}
 			}
 		}
 	}

@@ -27,7 +27,7 @@ void tx(char* fmt , ...)
 
 
 
-void printmemory(char* addr,int size)
+void printmemory(BYTE* addr,int size)
 {
 //debug用，打印从addr开始的总共size个字节
 	int i,j;
@@ -55,7 +55,7 @@ void printmemory(char* addr,int size)
 		}
 		for(i=0;i<=0xf;i++)
 		{
-			unsigned char ch=addr[16*j+i];
+			BYTE ch=addr[16*j+i];
 			if( (ch>=0x80)|(ch<=0x20) )ch=0x20;
 			tx("%c",ch);
 		}
