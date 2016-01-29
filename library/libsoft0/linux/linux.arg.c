@@ -45,6 +45,6 @@ char* explainarg()
 		}
 	}
 
-	printf("%llx\n",(QWORD)result);
+	say("%llx\n",result);
 	return result;
 }

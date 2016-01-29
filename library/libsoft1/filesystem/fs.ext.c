@@ -45,7 +45,7 @@ static QWORD whichblock(QWORD groupnum)
 	readmemory(blockrecord,sector,0,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
-	QWORD addr=(QWORD)blockrecord+8+(groupnum*0x20)%0x200;
+	char* addr=blockrecord+8+(groupnum*0x20)%0x200;
 	return *(DWORD*)addr;
 }
 

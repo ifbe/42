@@ -125,7 +125,7 @@ void intofile(char* wantpath)
 
 
 
-void readfile(QWORD buf,QWORD sector,QWORD disk,DWORD count)
+void readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 {
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	int result;
@@ -136,7 +136,7 @@ void readfile(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 		return;
 	}
 
-	result=read(thisfd,(void*)buf,count*0x200);
+	result=read(thisfd,buf,count*0x200);
 	if(result==-1)
 	{
 		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
@@ -147,7 +147,7 @@ void readfile(QWORD buf,QWORD sector,QWORD disk,DWORD count)
 
 
 //来源内存地址，目的首扇区，无视，总字节数
-void writefile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
+void writefile(char* buf,QWORD startsector,QWORD ignore,DWORD count)
 {
 	
 }

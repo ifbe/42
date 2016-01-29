@@ -118,21 +118,14 @@ void masterinto(char* arg)
 	int ret=0;
 	QWORD temp=0;
 
-	//0.如果传进来0，仅重新扫描所有硬盘
+	//如果传进来0，仅重新扫描所有硬盘
 	if(arg == 0)
 	{
 		listmemory(diskhome);
 		return;
 	}
 
-	//1.如果传进来1，打开默认的硬盘或文件
-	if((QWORD)arg == 1)
-	{
-		masterinto(diskhome+0x20);
-		return;
-	}
-
-	//2.其他情况，比如要\\.\PhysicalDrive0
+	//其他情况，比如要\\.\PhysicalDrive0
 	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
 	intomemory(arg);
 	ret=hello(0);

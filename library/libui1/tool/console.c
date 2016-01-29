@@ -192,7 +192,8 @@ static void intoconsole()
 {
 	if(logbuf==0)
 	{
-		logbuf=whereisworld()+0x100000;
+		//never call console before that thing
+		//logbuf=whereisworld()+0x100000;
 		palette=(unsigned int*)readwindow(0x6572656877);
 	}
 	else	//不是第一次进来了

@@ -57,7 +57,7 @@ static BYTE haha[0x100];
 //out:请求的地方的内存地址
 //作用:防止每动一下就读一次硬盘
 static QWORD currentcache;
-static QWORD readornotread(QWORD wantaddr)
+static char* readornotread(QWORD wantaddr)
 {
 	//假如每次能显示0x1000(实际是0xa00)
 	//想要[0,0x1000)：	确保[0,0x2000)		返回databuf+0
@@ -77,14 +77,14 @@ static QWORD readornotread(QWORD wantaddr)
 		currentcache=readwhere;
 	}
 
-	return (QWORD)databuf+(wantaddr-readwhere);
+	return databuf+(wantaddr-readwhere);
 }
 static void foreground()
 {
 	//一整页
 	int x,y;
 	int xsize,ysize,xshift;
-	QWORD readwhere=readornotread(base);
+	char* where=readornotread(base);
 	QWORD temp=readwindow(0x657a6973);
 
 	ysize=( (temp>>16) & 0xffff ) >> 4;
@@ -103,7 +103,7 @@ static void foreground()
 		{
 			for(x=0;x<xsize;x+=4)
 			{
-				DWORD value=*(DWORD*)(readwhere+y*xsize+x);
+				DWORD value=*(DWORD*)(where+y*xsize+x);
 				hexadecimal1234(2*x+xshift,y,value);
 			}
 		}
@@ -114,7 +114,7 @@ static void foreground()
 		{
 			for(x=0;x<xsize;x+=4)
 			{
-				DWORD value=*(DWORD*)(readwhere+y*xsize+x);
+				DWORD value=*(DWORD*)(where+y*xsize+x);
 				colorascii(2*x+xshift,y,value&0xff,0);
 				colorascii(2*x+2+xshift,y,(value>>8)&0xff,0);
 				colorascii(2*x+4+xshift,y,(value>>16)&0xff,0);
