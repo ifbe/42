@@ -3,18 +3,18 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //logical
-void initservent(char*);
-int hello(char*);
+void initlogical(char*);
+int mount(char*);
 int ls(char*);
 int cd(char*);
 int load(char*);
 int store(char*);
 //physical
-void initmaster(char*);
-void masterlist(char*);
-void masterinto(char*);
-void masterread(char*);
-void masterwrite(char*);
+void initreal(char*);
+void softlist(char*);
+void softinto(char*);
+void softread(char*);
+void softwrite(char*);
 //libsoft
 int compare(char*,char*);
 int hexstring2data(char*,QWORD*);
@@ -51,48 +51,35 @@ int softcommand(char* buffer)
 	int ret=compare( arg0 , "help" );
 	if(ret==0)
 	{
-		//physical(master)
-		say("help ?		(list all known)\n");
-		say("list ?		(list all known)\n");
-		say("into ?		(choose a disk)\n");
-		say("read ?		(hex print a sector)\n");
-		say("write ?		(no)\n\n");
-
-		//logical(servent)
-		say("hello ?		(no)\n");
-		say("ls ?		(list file)\n");
-		say("cd ?		(change directory)\n");
-		say("load ?		(load this file)\n");
-		say("store ?		(store this file)\n");
-
+		softhelp();
 		return 1;
 	}
 	//physical 1
 	ret=compare( arg0 , "list" );
 	if(ret==0)
 	{
-		masterlist(arg1);
+		softlist(arg1);
 		return 1;
 	}
 	//physical 2
 	ret=compare( arg0 , "into" );
 	if(ret==0)
 	{
-		masterinto(arg1);
+		softinto(arg1);
 		return 1;
 	}
 	//physical 3
 	ret=compare( arg0 , "read" );
 	if(ret==0)
 	{
-		masterread(arg1);
+		softread(arg1);
 		return 1;
 	}
 	//physical 4
 	ret=compare( arg0 , "write" );	//dangerous
 	if(ret==0)
 	{
-		masterwrite(arg1);
+		softwrite(arg1);
 		return 1;
 	}
 
@@ -100,20 +87,10 @@ int softcommand(char* buffer)
 
 
 	//logical 0 (servent 0) (check)
-	ret=compare( arg0 , "hello");
+	ret=compare( arg0 , "mount");
 	if(ret==0)
 	{
-		if(arg1==0)
-		{
-			hello(0);
-		}
-		else
-		{
-			QWORD value;
-			hexstring2data(arg1,&value);
-			hello(diskhome+value*0x40);
-		}
-
+		mount(arg1);
 		return 1;
 	}
 	//logical 1 (servent 1) (search)
@@ -160,11 +137,11 @@ void initsoftware(char* world)
 	datahome=world+0x300000;
 
 	//两个小弟
-	initmaster(world);
-	initservent(world);
+	initreal(world);
+	initlogical(world);
 
 	//扫描一遍所有认识的东西，选中找到的第一个
-	masterinto(0);
+	softinto(0);
 }
 void killsoftware()
 {

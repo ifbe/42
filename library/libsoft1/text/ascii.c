@@ -82,21 +82,17 @@ int decstring2data(BYTE* source,QWORD* data)
 	int i;
 	for(i=0;i<20;i++)		//64bit的最大数为20个阿拉伯数字
 	{
-		//1.如果大于0x80：		返回错误1
-		if(source[i]>=0x80) return 0;
+		//1.如果<0x20:		//返回取得的总数量
+		if(source[i]<0x20) return i;
 
-		//2.如果不是阿拉伯数字：	返回取得的总数量
-		//（可能是小数点，结束符，算数符号等）
-		if( (source[i]<0x30) | (source[i]>0x39) )
-		{
-			return i;
-		}
+		//2.如果不是阿拉伯数字	//返回错误号
+		if(source[i]<0x30)return -1;
+		if(source[i]>0x39)return -2;
 
-		//3.如果是正常值：	先乘10，再加上这个值，然后搞下一个数
+		//3.如果是正常值:	//先乘10，再加上这个值，然后搞下一个数
 		*data=(*data)*10;
 		*data+=source[i]-0x30;
 	}
-	return -1;	//不会到这里
 }
 
 
@@ -111,7 +107,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 	{
 		//say("%x\n",source[i]);
 		//1.如果小于0x20，那就是结束了
-		if(source[i]<=0x20) break;
+		if(source[i]<=0x20) return i;
 
 		//2.如果大于0x80，那就返回错误
 		if(source[i]>=0x80) return -1;

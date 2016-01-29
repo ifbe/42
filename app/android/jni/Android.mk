@@ -135,8 +135,11 @@ LOCAL_SRC_FILES += \
 
 
 #2
+LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
+
 LOCAL_SHARED_LIBRARIES += libc
 LOCAL_LDFLAGS := -Wl,--hash-style=sysv
+
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := 42
 include $(BUILD_EXECUTABLE)

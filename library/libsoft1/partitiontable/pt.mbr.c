@@ -109,18 +109,6 @@ void explainmbr(char* buffer,char* to)
 	dst+=0x40*i;
 	dstqword=(QWORD*)dst;
 
-	//放下第一个
-	dstqword[0]=0x74726170; //'part'
-	dstqword[1]=0x72626d;	//'mbr'
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=0x7766554433221100;
-	dstqword[5]=0xffeeddccbbaa9988;
-	dstqword[6]=0x8899aabbccddeeff;
-	dstqword[7]=0x0011223344556677;
-	dst += 0x40;
-	dstqword += 8;
-
 	//首先是主分区，最多4个
 	ret=mbrrecord(buffer+0x1be,dst);
 	if(ret>0)

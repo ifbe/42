@@ -59,20 +59,6 @@ void explaingpt(char* from,char* to)
 	dst+=0x40*i;
 	dstqword=(QWORD*)dst;
 
-	//放下第一个
-	dstqword[0]=0x74726170;		//'part'
-	dstqword[1]=0x747067;		//'gpt'
-	dstqword[2]=2;
-	dstqword[3]=0x21;
-	dstqword[4]=0x7766554433221100;
-	dstqword[5]=0xffeeddccbbaa9988;
-	dstqword[6]=0x8899aabbccddeeff;
-	dstqword[7]=0x0011223344556677;
-	dst += 0x40;
-	dstqword += 8;
-	//say("dst@%llx\n",dst);
-
-
 	//正式开始转换
 	from+=0x400;
 	src=from;

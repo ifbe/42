@@ -3,7 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //libsoft1
-int hello(char*);
+QWORD prelibation(char*);
+int mount(char*);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
@@ -34,7 +35,12 @@ static char* datahome;		//+3m
 
 
 //physical function
-void masterlist(char* arg1)
+void softhelp()
+{
+	QWORD type=prelibation(datahome);
+	say("%s\n",&type);
+}
+void softlist(char* arg1)
 {
 	QWORD temp=0;
 	int i,j;
@@ -109,11 +115,11 @@ void masterlist(char* arg1)
 			say("{%-16s}	",addr+(i*0x40)+0x20);
 
 			//which
-			say("<%d>\n",i);
+			say("<%x>\n",i);
 		}//if
 	}//for
-}//masterlist
-void masterinto(char* arg)
+}//softlist
+void softinto(char* arg)
 {
 	int ret=0;
 	QWORD temp=0;
@@ -128,16 +134,16 @@ void masterinto(char* arg)
 	//其他情况，比如要\\.\PhysicalDrive0
 	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
 	intomemory(arg);
-	ret=hello(0);
+	ret=mount(0);
 }
-int masterread(char* arg1)
+int softread(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("masterread@%llx,world@%llx\n",masterread,diskhome);
+		say("softread@%llx,world@%llx\n",softread,diskhome);
 		return -1;
 	}
 
@@ -162,14 +168,14 @@ int masterread(char* arg1)
 
 	else return platformread(arg1);
 }
-int masterwrite(char* arg1)
+int softwrite(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("masterwrite@%llx,world@%llx\n",masterwrite,diskhome);
+		say("softwrite@%llx,world@%llx\n",softwrite,diskhome);
 		return -1;
 	}
 
@@ -199,7 +205,7 @@ int masterwrite(char* arg1)
 
 
 
-void initmaster(char* world)
+void initreal(char* world)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
@@ -207,6 +213,6 @@ void initmaster(char* world)
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
 }
-void killmaster()
+void killreal()
 {
 }

@@ -100,37 +100,70 @@ void inituniverse()
 
 
 
+void help()
+{
+	//physical
+	say("help ?             (help what)\n");
+	say("list ?             (list physical)\n");
+	say("into ?             (choose one)\n");
+	say("read ?             (physical print)\n");
+	say("write ?            (not allowed currently)\n\n");
+
+	//logical
+	say("mount ?            (mount which)\n");
+	say("ls ?               (list logical)\n");
+	say("cd ?               (change directory)\n");
+	say("load ?             (load this file)\n");
+	say("store ?            (store this file)\n");
+}
 int command(char* p)
 {
-	//在这里找，是不是退出
-	int ret=*(unsigned int*)p;
-	if(ret==0x74697865)return 0;
+	//?
+	int ret;
+	if(p==0)return 0;
+	if(p[0]==0)return 0;
 
-	//在libui里面找
-	//say("searching libui\n");
-	ret=uicommand(p);
-	if(ret>0)return 1;
-
-	//在libsoft里面找
-	//say("searching libsoft\n");
-	ret=softcommand(p);
-	if(ret>0)return 2;
-
-	//在libhard里面找
-	//say("searching libhard\n");
-	ret=hardcommand(p);
-	if(ret>0)return 3;
+	//0x74697865='exit'
+	//0x706c6568='help'
+	if(p[1]!=0)
+	{
+		if(p[2]!=0)
+		{
+			ret=*(unsigned int*)p;
+			if(ret==0x74697865)return 0;
+			if(ret==0x706c6568)
+			{
+				help();
+				return 1;
+			}
+		}
+	}
 
 	//在libboot里面找
 	//say("searching libboot\n");
 	ret=bootcommand(p);
-	if(ret>0)return 4;
+	if(ret>0)return 11;
+
+	//在libhard里面找
+	//say("searching libhard\n");
+	ret=hardcommand(p);
+	if(ret>0)return 22;
+
+	//在libsoft里面找
+	//say("searching libsoft\n");
+	ret=softcommand(p);
+	if(ret>0)return 33;
+
+	//在libui里面找
+	//say("searching libui\n");
+	ret=uicommand(p);
+	if(ret>0)return 44;
 
 	//在host系统上找
 
 	//没找到
 	//say("unknown command:%s\n",p);
-	return 9999;
+	return 99;
 }
 
 

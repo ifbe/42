@@ -119,6 +119,7 @@ LOCAL_SRC_FILES += \
 
 
 #2
-LOCAL_MODULE    := plasma
+LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS    := -lm -llog -ljnigraphics
+LOCAL_MODULE    := plasma
 include $(BUILD_SHARED_LIBRARY)

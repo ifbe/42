@@ -3,11 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void initascii(char*);
-void initunicode(char*);
-void initbackground(char*);
-void initshape(char*);
-//
 void registermenu(char*);		//menu.c
 void registerhex(char*);                //1.hex.c
 void register2048(char*);               //2.2048.c
@@ -15,6 +10,13 @@ void registerkeyboard(char*);           //2.keyboard.c
 void registertree(char*);               //2.tree.c
 void registersketchpad(char*);          //3.sketchpad.c
 void registerconsole(char*);            //4.console.c
+//
+void initascii(char*);
+void initunicode(char*);
+void initbackground(char*);
+void initshape(char*);
+//
+void softinto(char*);
 
 
 
@@ -126,7 +128,7 @@ void processmessage(QWORD type,QWORD key)
         if(type==0x656c6966706f7264)
         {
                 //say("debuging::::::::%s\n",(char*)key);
-                masterinto((char*)key);
+                softinto((char*)key);
                 return;
         }
 

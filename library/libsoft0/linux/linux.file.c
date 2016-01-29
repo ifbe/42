@@ -48,6 +48,7 @@ static int trythis(char* src,char* dest)
 	struct stat st;
 
 	//使用stat去得到是否存在以及文件大小
+	//say("%s\n",src);
 	ret=stat(src , &st);
 	if(ret<0)return 0;
 
@@ -93,7 +94,7 @@ void listfile(char* dest)
 	for(num=0;num<10;num++)
 	{
 		_dev_block_mmcblk[0x11]=num + '0';
-		dest += trythis(_dev_mmcblk , dest);
+		dest += trythis(_dev_block_mmcblk , dest);
 	}
 
 	//		special

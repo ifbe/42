@@ -26,33 +26,14 @@ int mountext(QWORD sector,char* dest);	//文件系统
 int mountfat(QWORD sector,char* dest);
 int mounthfs(QWORD sector,char* dest);
 int mountntfs(QWORD sector,char* dest);
-//读取
+//基本函数
+int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
 int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int compare(char*,char*);
-//日志
 void cleanmemory(char*,int);
 void printmemory(char*,int);
 void say(char*,...);
-
-
-
-
-/*
-mountpoint: struct{
-	//.text
-	'cd',		@cd,		//0
-	'explain',	@explain,	//0x10
-	'load',		@load,		//0x20
-	'store',	@store,		//0x30
-
-	//.data
-	'where'		=0x?,		//0x80
-	'where1'	=0x?,		//0x90
-	'blocksz',	=0x200,		//0xa0
-	'indexsz'	=0x200,		//0xb0
-}
-*/
 
 
 
@@ -142,22 +123,29 @@ QWORD prelibation(char* memaddr)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-int hello(char* src)
+int mount(char* src)
 {
 	int ret;
+	QWORD value;
 	QWORD sector=0;
 	QWORD type=0;
 
 
-	//sector=
+	//传进来的字符串不全是数字就返回，否则到这个数字的位置
 	if(src==0)sector=0;
-	else sector=*(QWORD*)(src+0x10);
+	else
+	{
+		ret=hexstring2data(src,&value);
+		if(ret<0)return -1;
+
+		sector=*(QWORD*)(diskhome + value*0x40 + 0x10);
+	}
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
 	readmemory(datahome , sector , 0 , 64);
 	type=prelibation(datahome);
-	say("%s\n",&type);
+	say("%x:%s\n",value,&type);
 
 
 	//如果是分区表头，并且是文件头，那么解释分区表到diskhome
@@ -346,10 +334,13 @@ int store(char* arg1)
 
 
 //
-void initservent(char* addr)
+void initlogical(char* addr)
 {
 	diskhome=addr;
 	fshome=addr+0x100000;
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
+}
+void killlogical()
+{
 }
