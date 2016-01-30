@@ -15,8 +15,11 @@ void initascii(char*);
 void initunicode(char*);
 void initbackground(char*);
 void initshape(char*);
+void writewindow();
 //
+DWORD getrandom();
 void softinto(char*);
+void say(char* , ...);
 
 
 
@@ -87,7 +90,7 @@ int uicommand(char* p)
 
                 worker[0].startaddr=0;
                 worker[now].into();
-                return;
+                return 1;
         }
 
         //找
@@ -99,7 +102,7 @@ int uicommand(char* p)
                         now=i;
                         worker[0].startaddr=0;
                         worker[now].into();
-                        return;
+                        return 2;
                 }
         }
 

@@ -11,6 +11,7 @@ int load(char*);
 int store(char*);
 //physical
 void initreal(char*);
+void softhelp(char*);
 void softlist(char*);
 void softinto(char*);
 void softread(char*);
@@ -51,7 +52,7 @@ int softcommand(char* buffer)
 	int ret=compare( arg0 , "help" );
 	if(ret==0)
 	{
-		softhelp();
+		softhelp(arg1);
 		return 1;
 	}
 	//physical 1

@@ -2,16 +2,9 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//socket
-void listsocket();
-void intosocket();
-void readsocket();
-void writesocket();
-//process
-void listprocess();
-void intoprocess();
-void readprocess();
-void writeprocess();
+//event
+void initevent();
+void killevent();
 //file
 void initfile();
 void killfile();
@@ -19,10 +12,23 @@ void listfile(char* towhere);
 void intofile(char* name);
 void readfile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
 void writefile(QWORD buf,QWORD sector,QWORD ignore,DWORD count);
-void killfile();
-//
-void initother();
-void killother();
+//process
+void initprocess();
+void killprocess();
+void listprocess();
+void intoprocess();
+void readprocess();
+void writeprocess();
+//random
+void initrandom();
+void killrandom();
+//socket
+void initsocket();
+void killsocket();
+void listsocket();
+void intosocket();
+void readsocket();
+void writesocket();
 
 
 
@@ -30,13 +36,19 @@ void killother();
 //这个.c负责管理现在开了哪些东西
 void initmemory(char* addr)
 {
+	//initevent();
 	initfile();
-	initother();
+	//initprocess();
+	initrandom();
+	//initsocket();
 }
 void killmemory()
 {
-	killother();
+	//killsocket();
+	killrandom();
+	//killprocess();
 	killfile();
+	//killevent();
 }
 
 
