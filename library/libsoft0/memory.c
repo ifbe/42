@@ -36,7 +36,7 @@ void writesocket();
 //这个.c负责管理现在开了哪些东西
 void initmemory(char* addr)
 {
-	//initevent();
+	initevent();
 	initfile();
 	//initprocess();
 	initrandom();
@@ -48,7 +48,7 @@ void killmemory()
 	killrandom();
 	//killprocess();
 	killfile();
-	//killevent();
+	killevent();
 }
 
 

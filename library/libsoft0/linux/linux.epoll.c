@@ -55,6 +55,7 @@ void initevent()
 		_dev_input_event[i]=open(devicename , O_RDONLY | O_NONBLOCK);
 		if(_dev_input_event[i] == -1)
 		{
+			//say("failed to open:%s\n",devicename);
 			count=i;
 			break;
 		}
