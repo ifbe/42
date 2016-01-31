@@ -2,8 +2,13 @@
 #define DWORD unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<fcntl.h>
 #include<linux/input.h>		//	/dev/input/event
 #include<sys/epoll.h>		//	epoll
+void say(char*,...);
 
 
 
@@ -24,9 +29,9 @@ char devicename[32]={
 
 
 
-void waitevent(QWORD* first,QWORD* second)
+int softevent(QWORD* first,QWORD* second)
 {
-	
+	return 0;
 }
 
 
@@ -38,7 +43,7 @@ void initevent()
 	epfd=epoll_create1(0);
 	if(epfd==-1)
 	{
-		printf("epoll failed\n");
+		say("epoll failed\n");
 		exit(-1);
 	}
 

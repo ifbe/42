@@ -4,27 +4,30 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-//
-int bootcommand(char* buffer);
-int hardcommand(char* buffer);
-int softcommand(char* buffer);
-int uicommand(char* buffer);
 //libui
+int uicommand(char*);
+int uievent(QWORD* first,QWORD* second);
 void initcharacter(char*);
 void killcharacter();
 void initwindow(char*);
 void killwindow();
 //libsoft
+int softcommand(char*);
+int softevent(QWORD* first,QWORD* second);
 void initsoftware(char*);
 void killsoftware();
-void initmemory();
+void initmemory(char*);
 void killmemory();
 //libhard
+int hardcommand(char*);
+int hardevent(QWORD* first,QWORD* second);
 void initbody(char*);
 void killbody();
 void initdriver(char*);
 void killdriver();
 //libboot
+int bootcommand(char*);
+int bootevent(QWORD* first,QWORD* second);
 void initdebug(char*);	//listen,say
 void killdebug();
 void initbasic(char*);	//
@@ -166,6 +169,30 @@ int command(char* p)
 	//没找到
 	//say("unknown command:%s\n",p);
 	return 99;
+}
+
+
+
+
+int waitevent(QWORD* first,QWORD* second)
+{
+	int ret;
+
+	//调试端口有没有消息
+	ret=bootevent(first,second);
+	if(ret>0)return 11;
+
+	//硬件中断完成状态报告
+	ret=hardevent(first,second);
+	if(ret>0)return 22;
+
+	//输入/网络/系统事件
+	ret=softevent(first,second);
+	if(ret>0)return 33;
+
+	//窗口关闭,窗口大小变化等情况
+	ret=uievent(first,second);
+	if(ret>0)return 44;
 }
 
 

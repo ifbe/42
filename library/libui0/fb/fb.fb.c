@@ -41,7 +41,7 @@ static int height=768;
 
 
 int history[4]={0,0,0,0};
-void waitevent(QWORD* first,QWORD* second)
+int uievent(QWORD* first,QWORD* second)
 {
 	while(1)
 	{
@@ -52,7 +52,7 @@ void waitevent(QWORD* first,QWORD* second)
 		if(history[2]==0x1b&&history[3]==0x1b)
 		{
 			*first=0;
-			return;
+			return 1;
 		}
 		if(history[1]==0x1b&&history[2]==0x5b)
 		{
@@ -60,22 +60,22 @@ void waitevent(QWORD* first,QWORD* second)
 			if(history[3]==0x41)//up
 			{
 				*second=0x26;
-				return;
+				return 1;
 			}
 			if(history[3]==0x42)//down
 			{
 				*second=0x28;
-				return;
+				return 1;
 			}
 			if(history[3]==0x44)//left
 			{
 				*second=0x25;
-				return;
+				return 1;
 			}
 			if(history[3]==0x43)//right
 			{
 				*second=0x27;
-				return;
+				return 1;
 			}
 		}
 	}

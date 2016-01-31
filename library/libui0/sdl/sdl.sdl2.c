@@ -87,7 +87,7 @@ void writewindow()
 //4:鼠标松开
 //5:鼠标移动
 //0xff:时间
-int waitevent(unsigned int* type,unsigned int* value)
+int uievent(QWORD* type,QWORD* value)
 {
 	SDL_Event event;
 	while (1)
@@ -97,13 +97,13 @@ int waitevent(unsigned int* type,unsigned int* value)
 			if(event.type == SDL_QUIT)
 			{
 				*type=0;
-				return;
+				return 1;
 			}
 			else if (event.type == SDL_KEYDOWN)
 			{
 				*type=1;
 				*value=(int)(event.key.keysym.sym);
-				return;
+				return 1;
 			}
 			else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
 			{
@@ -115,7 +115,7 @@ int waitevent(unsigned int* type,unsigned int* value)
 
 					*type=2;
 					*value=x+(y<<16);
-					return;
+					return 1;
 				}
 			}
 		}//如果有事件

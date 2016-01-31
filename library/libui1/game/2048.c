@@ -3,7 +3,6 @@
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colordecimal(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
-void waitevent(QWORD* first,QWORD* second);
 void writewindow();
 unsigned int getrandom();
 

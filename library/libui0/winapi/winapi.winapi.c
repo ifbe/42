@@ -72,7 +72,7 @@ void writewindow(QWORD what)
 			DIB_RGB_COLORS);		//颜色格式
 	//printf("result:%x\n",result);
 }
-void waitevent(QWORD* first,QWORD* second)
+int uievent(QWORD* first,QWORD* second)
 {
 	//收得到就一直收+处理
 	MSG msg;
@@ -88,7 +88,7 @@ void waitevent(QWORD* first,QWORD* second)
 			*first=my1;
 			*second=my2;
 			solved=1;
-			return;
+			return 1;
 		}
 	}
 

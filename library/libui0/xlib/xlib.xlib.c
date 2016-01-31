@@ -60,7 +60,7 @@ void writewindow()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
-void waitevent(QWORD* my1,QWORD* my2)
+int uievent(QWORD* my1,QWORD* my2)
 {
 	XEvent ev;
 	while(1)
@@ -75,7 +75,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 			if (ev.xclient.data.l[0] == wmDelete)
 			{
 				*my1=0;
-				return;
+				return 1;
 			}
 		}
 		else if(ev.type==ButtonPress)
@@ -85,13 +85,13 @@ void waitevent(QWORD* my1,QWORD* my2)
 			{
 				*my1=0x6E6F7266207A7978;
 				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
-				return;
+				return 1;
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
 				*my1=0x6B636162207A7978;
 				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
-				return;
+				return 1;
 			}
 
 			else if(ev.xbutton.button==Button1)
@@ -111,7 +111,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 				{
 					*my1=0x7466656C207A7978;//'xyz left'
 					*my2=ev.xbutton.x + (ev.xbutton.y<<16);
-					return;
+					return 1;
 				}
 			}
 		}
@@ -125,7 +125,7 @@ void waitevent(QWORD* my1,QWORD* my2)
 			*my2=( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx;
 			oldx=ev.xbutton.x;
 			oldy=ev.xbutton.y;
-			return;
+			return 1;
 		}
 		else if(ev.type==KeyPress)
 		{
@@ -141,13 +141,13 @@ void waitevent(QWORD* my1,QWORD* my2)
 			{
 				*my1=0x72616863;
 				*my2=temp;
-				return;
+				return 1;
 			}
 
 			//控制按键
 			*my1=0x64626b;
 			*my2=xlib2kbd[ev.xkey.keycode];
-			return;
+			return 1;
 		}
 	}
 }
