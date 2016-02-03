@@ -31,20 +31,6 @@ void initbackground(char* unusedaddr)
 
 
 
-void cleanscreen()
-{
-
-	//用指定颜色清屏
-	int x,y;
-	for(x=0;x<1024*768;x++)
-	{
-		screenbuf[x]=0;
-	}
-}
-
-
-
-
 void backgroundcolor(unsigned int color)
 {
 	int x;
@@ -93,33 +79,3 @@ void background1()
 		}
 	}
 }
-
-
-
-
-void background3()
-{
-	int x,y;
-
-	for(x=0;x<1024*768;x++)
-	{
-		screenbuf[x]=0;
-	}
-}
-
-
-
-
-void background2()
-{
-
-	//用指定颜色清屏
-	int x,y;
-	for(x=0;x<1024*768;x++)
-	{
-		screenbuf[x]=0;
-	}
-}
-
-
-

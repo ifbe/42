@@ -160,6 +160,37 @@ void initascii(char* unusedaddr)
 
 
 
+void printascii(DWORD x1y1z1,char ch,DWORD fgcolor,DWORD bgcolor)
+{
+	int x,y;
+	int xxxx,yyyy;
+	unsigned char temp;
+	unsigned char* points=(unsigned char*)&asciitable;
+
+	if(ch<0x20)ch=0x20;
+	points+=ch<<4;
+	xxxx=x1y1z1&0xffff;
+	yyyy=(x1y1z1>>16)&0xffff;
+
+	for(y=0;y<16;y++)
+	{
+		temp=points[0];
+		points++;
+
+		for(x=0;x<8;x++)
+		{
+			if( (temp&0x80) != 0 )
+			{
+				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = fgcolor;
+			}
+			else
+			{
+				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = bgcolor;
+			}
+			temp<<=1;
+		}
+	}
+}
 void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
 {
 	int x,y;
@@ -194,6 +225,19 @@ void ascii(int x,int y,unsigned char ch)
 
 
 
+void printstring(DWORD x1y1z1,char* p,DWORD fgcolor,DWORD bgcolor)
+{
+	int x=(x1y1z1 & 0xffff)/8;
+        while(1)
+        {
+                if( *p == 0x0 )break;
+                if(x>=0x80)break;
+
+                printascii( x1y1z1+(x*8) , *p , fgcolor , bgcolor );
+                x++;
+                p++;
+        }
+}
 void colorstring(int x,int y,char* p,unsigned int color)
 {
 	while(1)

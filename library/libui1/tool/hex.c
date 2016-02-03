@@ -10,8 +10,8 @@ void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
 void colorascii(int x,int y,char ch,unsigned int color);
+void backgroundcolor(DWORD);
 void background1();
-void cleanscreen();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
@@ -296,7 +296,7 @@ static void intohex()
 	base=0;
 	offset=0;
 	currentcache=0xffffffff;
-	cleanscreen();
+	backgroundcolor(0);
 }
 static void listhex(QWORD* this)
 {

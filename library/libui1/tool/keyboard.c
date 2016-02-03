@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void cleanscreen();
+void backgroundcolor(DWORD);
 QWORD readwindow(QWORD);
 
 
@@ -49,7 +49,7 @@ static void readkeyboard()
 }
 static void intokeyboard()
 {
-	cleanscreen();
+	backgroundcolor(0);
 }
 static void listkeyboard(QWORD* this)
 {

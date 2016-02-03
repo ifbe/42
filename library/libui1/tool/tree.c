@@ -25,8 +25,7 @@ void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
 void colorascii(int x,int y,int z,unsigned int color);
-void background2();
-void cleanscreen();
+void backgroundcolor(DWORD);
 char* whereischaracter();
 //libsoft
 double calculator(char* postfix);
@@ -174,7 +173,7 @@ static void writetree(QWORD type,QWORD key)
 static void readtree()
 {
 	int left,right;
-	background2();
+	backgroundcolor(0);
 
 	colorstring(0,0,buffer,0xcccccc);
 	colorstring(0,1,postfix,0xcccccc);
@@ -204,7 +203,7 @@ static void intotree()
 	}
 	else
 	{
-		cleanscreen();
+		backgroundcolor(0);
 	}
 }
 static void listtree(QWORD* this)

@@ -16,24 +16,21 @@ struct mathnode{
 };
 //
 void printdouble(int x,int y,double z);
-void colorstring(int x,int y,char* str,unsigned int color);
+void printstring(DWORD x1y1z1,char* str,DWORD fgcolor,DWORD bgcolor);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
-void draw(int x,int y,DWORD color);
-void background3();
-void cleanscreen();
+void backgroundcolor(DWORD);
+void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
+char* whereischaracter();
+QWORD readwindow(QWORD);
 //
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
 double beautifulbetween(double first,double second);
-//
 void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
-//
-QWORD readwindow(QWORD);
-char* whereischaracter();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -216,18 +213,18 @@ static void writesketchpad(QWORD type,QWORD key)
 		if(key==0x8)			//backspace
 		{
 			if(count!=0)count--;
-			buffer[count]=0;
+			buffer[count]=0x20;
 		}
 		else if(key==0xd)		//enter
 		{
 			//检查buffer，然后给infix
-			printmemory(buffer,128);
+			//printmemory(buffer,128);
 
 			//清空输入区
 			for(count=0;count<127;count++)
 			{
 				infix[count]=buffer[count];
-				buffer[count]=0;
+				buffer[count]=0x20;
 			}
 			count=0;
 
@@ -301,7 +298,7 @@ static void readsketchpad()
 
 
 
-	background3();
+	backgroundcolor(0);
 	if(node[0].integer == 0)
 	{
 		//计算器
@@ -320,10 +317,10 @@ static void readsketchpad()
 
 
 skipthese:		//打印
-	colorstring(0,0,buffer,0xcccccc);
-	colorstring(0,1,infix,0xcccccc);
-	colorstring(0,2,postfix,0xcccccc);
-	colorstring(0,3,result,0xcccccc);
+	printstring( 0 + (0<<16) , buffer , 0xcccccc , 0 );
+	printstring( 0 + (16<<16) , infix , 0xcccccc , 0 );
+	printstring( 0 + (32<<16) , postfix , 0xcccccc , 0 );
+	printstring( 0 + (48<<16) , result , 0xcccccc , 0 );
 	return;
 }
 static void intosketchpad()
@@ -339,7 +336,7 @@ static void intosketchpad()
 		scale=1.00;
 	}
 
-	cleanscreen();
+	backgroundcolor(0);
 }
 static void listsketchpad(QWORD* this)
 {
