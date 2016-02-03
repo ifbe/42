@@ -6,56 +6,82 @@
 
 
 //plugged in,plugged out
-/*
 static int testusb_probe(struct usb_interface* interface,const struct usb_device_id* id)
 {
 	//descriptors
-	struct usb_host_interface* ifdesc;
+	struct usb_device* device;
+	unsigned char* p;
+	int i;
+	struct usb_device_descriptor* devicedesc;
+	struct usb_config_descriptor* configdesc;
+	struct usb_interface_descriptor* ifdesc;
 	struct usb_endpoint_descriptor* epdesc;
 	printk("(testusb_probe)vendor=%x,product=%x\n",id->idVendor,id->idProduct);
 
-	//interface descriptor
-	ifdesc = interface->cur_altsetting;
-	printk("interface=%x\n",ifdesc->desc.bInterfaceNumber);
-	printk("bNumEndpoints=%x\n",ifdesc->desc.bNumEndpoints);
-	printk("bInterfaceClass=%x\n",ifdesc->desc.bInterfaceClass);
-
-	//endpoint descriptor
-	for(i=0;i<ifdesc->desc.bNumEndpoints;i++)
-	{
-		epdesc = &ifdesc->endpoint[0].desc;
-		printk("bEndpointAddress=%x\n",epdesc->bEndpointAddress);
-		printk("bmAttributes=%x\n",epdesc->bmAttributes);
-		printk("wMaxPacketSize=%x\n",epdesc->wMaxPacketSize);
-	}
-
-	return 0;
-}
-*/
-static int testusb_probe(struct usb_interface* interface,const struct usb_device_id* id)
-{
-	struct usb_device* device;
-	char** descriptor;
-	unsigned char* str;
-	int i,j;
-	printk("(testusb_probe)vendor=%x,product=%x\n",id->idVendor,id->idProduct);
-
-	//device
+	//device descriptor
 	device=interface_to_usbdev(interface);
-	descriptor=device->rawdescriptors;
-
-	//descriptor
-	for(i=0;i<8;i++)
+	devicedesc = &(device->descriptor);
+	p=(unsigned char*)devicedesc;
+	if(p==NULL)
 	{
-		str=descriptor[i];
-		if(str < (unsigned char*)0x10000)break;
-
-		for(j=0;j<str[0];j++)
-		{
-			printk("%.2x ",str[j]);
-		}
-		printk("\n");
+		printk("(NULL)devicedesc\n");
+		return 0;
 	}
+
+	printk("devicedesc=");
+	for(i=0;i<p[0];i++)
+	{
+		printk("%.2x ",p[i]);
+	}
+	printk("\n");
+
+	//configuration descriptor
+	configdesc = &(device->config->desc);
+	p=(unsigned char*)configdesc;
+	if(p==NULL)
+	{
+		printk("(NULL)configdesc\n");
+		return 0;
+	}
+
+	printk("configdesc=");
+	for(i=0;i<p[0];i++)
+	{
+		printk("%.2x ",p[i]);
+	}
+	printk("\n");
+
+	//interface descriptor
+	ifdesc = &(interface->cur_altsetting->desc);
+	p=(unsigned char*)ifdesc;
+	if(p==NULL)
+	{
+		printk("(NULL)ifdesc\n");
+		return 0;
+	}
+
+	printk("ifdesc=");
+	for(i=0;i<p[0];i++)
+	{
+		printk("%.2x ",p[i]);
+	}
+	printk("\n");
+
+	//endpoint0 descriptor
+	epdesc = &(device->ep0.desc);
+	p=(unsigned char*)epdesc;
+	if(p==NULL)
+	{
+		printk("(NULL)epdesc\n");
+		return 0;
+	}
+
+	printk("ep0desc=");
+	for(i=0;i<p[0];i++)
+	{
+		printk("%.2x ",p[i]);
+	}
+	printk("\n");
 
 	return 0;
 }
