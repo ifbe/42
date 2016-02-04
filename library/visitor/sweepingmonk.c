@@ -235,7 +235,7 @@ int command(char* p)
 
 
 
-void initall()
+void birth()
 {
 	//开终端等等活动，必须放第一个
 	explainarg();
@@ -265,7 +265,7 @@ void initall()
 	initcharacter( character );
 	say("[12,16):ui1 done\n");
 }
-__attribute__((destructor)) void cleanall()
+__attribute__((destructor)) void death()
 {
 	//4+4+4+4
 	if(character != 0)

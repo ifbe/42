@@ -8,8 +8,8 @@ void printworld();
 void waitevent(QWORD* first,QWORD* second);
 void processmessage(QWORD type,QWORD key);
 //
-void initall();
-void cleanall();
+void birth();
+void death();
 void say(char*,...);
 void printmemory(char*,int);
 
@@ -19,7 +19,7 @@ void printmemory(char*,int);
 void main()
 {
 	//before
-	initall();
+	birth();
 
 	//forever
 	QWORD type=0;
@@ -38,5 +38,5 @@ void main()
 	}
 
 	//after
-	cleanall();
+	death();
 }

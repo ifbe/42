@@ -100,11 +100,11 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * 
 	yyyy=(value>>16)&0xffff;
 	LOGI(">>>>>>>>>>>>>(%llx,%llx),(%x,%x)\n",type,value,xxxx,yyyy);
 }
-JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_init42(JNIEnv * env, jobject  obj)
+JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_birth(JNIEnv * env, jobject  obj)
 {
-	initall();
+	birth();
 }
-JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_kill42(JNIEnv * env, jobject  obj)
+JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_death(JNIEnv * env, jobject  obj)
 {
-	cleanall();
+	death();
 }

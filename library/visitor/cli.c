@@ -7,8 +7,8 @@ int command(char* buffer);
 int waitevent(QWORD*,QWORD*);
 //
 int softinto(char*);
-int initall();
-int cleanall();
+int birth();
+int death();
 //
 void say(char*,...);
 
@@ -19,7 +19,7 @@ int main(int argc,char* argv[])
 {
 	//必须放第一个
 	int ret;
-	initall();
+	birth();
 	if(argc==2)softinto(argv[1]);
 
 	//无限循环
@@ -38,6 +38,6 @@ int main(int argc,char* argv[])
 	}
 
 	//必须放在最后
-	cleanall();
+	death();
 	return 0;
 }
