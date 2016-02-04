@@ -317,7 +317,10 @@ static void listhex(QWORD* this)
 
 
 
-void registerhex(char* in)
+void inithex(char* in)
 {
 	listhex( (QWORD*)in );
+}
+void killhex()
+{
 }

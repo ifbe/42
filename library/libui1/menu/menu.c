@@ -107,8 +107,11 @@ static void listmenu(QWORD* this)
 
 
 
-void registermenu(char* in)
+void initmenu(char* in)
 {
 	thataddr=in+0x10;
 	listmenu( (QWORD*)in );
+}
+void killmenu()
+{
 }

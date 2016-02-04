@@ -70,7 +70,10 @@ static void listkeyboard(QWORD* this)
 
 
 
-void registerkeyboard(char* in)
+void initkeyboard(char* in)
 {
 	listkeyboard( (QWORD*)in );
+}
+void killkeyboard()
+{
 }

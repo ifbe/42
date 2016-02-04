@@ -37,6 +37,7 @@ int softevent(QWORD* first,QWORD* second)
 
 
 
+//be careful : epoll_create1 -> [android-21,above) = [5.0,above)
 void initevent()
 {
 	//create one file manager?

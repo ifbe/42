@@ -15,18 +15,6 @@ void writewindow();
 static DWORD* screenbuf=0;
 static int xsize=0;
 static int ysize=0;
-void initbackground(char* unusedaddr)
-{
-	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
-
-	//where
-	screenbuf=(DWORD*)readwindow(0x6572656877);
-}
 
 
 
@@ -40,10 +28,6 @@ void backgroundcolor(unsigned int color)
 		screenbuf[x]=color;
 	}
 }
-
-
-
-
 void background1()
 {
 	QWORD x,y;
@@ -78,4 +62,23 @@ void background1()
 			screenbuf[(y*1024)+xsize-1-x]=color;
 		}
 	}
+}
+
+
+
+
+void initbackground(char* unusedaddr)
+{
+	//how
+	QWORD temp=readwindow(0x657a6973);
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	screenbuf=(DWORD*)readwindow(0x6572656877);
+}
+void killbackground()
+{
 }

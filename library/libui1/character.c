@@ -3,13 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void registermenu(char*);		//menu.c
-void registerhex(char*);                //1.hex.c
-void register2048(char*);               //2.2048.c
-void registerkeyboard(char*);           //2.keyboard.c
-void registertree(char*);               //2.tree.c
-void registersketchpad(char*);          //3.sketchpad.c
-void registerconsole(char*);            //4.console.c
+void initmenu(char*);		//menu.c
+void inithex(char*);                //1.hex.c
+void init2048(char*);               //2.2048.c
+void initkeyboard(char*);           //2.keyboard.c
+void inittree(char*);               //2.tree.c
+void initsketchpad(char*);          //3.sketchpad.c
+void initconsole(char*);            //4.console.c
 //
 void initascii(char*);
 void initunicode(char*);
@@ -180,31 +180,31 @@ void initcharacter(char* addr)
 	initshape(addr);
 
 	//[+0x00,0x3f]:		menu.c
-	registermenu(addr);
+	initmenu(addr);
 	addr+=0x40;
 
 	//[+0x40,+0x7f]:        1.hex.c
-	registerhex(addr);
+	inithex(addr);
 	addr += 0x40;
 
 	//[+0x80,+0xbf]:        2.2048.c
-	register2048(addr);
+	init2048(addr);
 	addr += 0x40;
 
 	//[+0xc0,+0xff]:        2.keyboard.c
-	registerkeyboard(addr);
+	initkeyboard(addr);
 	addr += 0x40;
 
 	//[+0x100,+0x13f]:      2.tree.c
-	registertree(addr);
+	inittree(addr);
 	addr += 0x40;
 
 	//[+0x140,+0x17f]:      3.sketchpad.c
-	registersketchpad(addr);
+	initsketchpad(addr);
 	addr += 0x40;
 
 	//[+0x180,+0x1bf]:      4.console.c
-	registerconsole(addr);
+	initconsole(addr);
 	addr += 0x40;
 
 	//default face

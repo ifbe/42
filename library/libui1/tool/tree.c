@@ -225,7 +225,10 @@ static void listtree(QWORD* this)
 
 
 
-void registertree(char* in)
+void inittree(char* in)
 {
 	listtree( (QWORD*)in );
+}
+void killtree()
+{
 }

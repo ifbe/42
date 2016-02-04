@@ -19,25 +19,6 @@ static unsigned char* unicodetable=0;
 
 
 
-void initunicode(char* unusedaddr)
-{
-	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
-
-	//where
-	screen=(DWORD*)readwindow(0x6572656877);
-
-	//unicode
-	unicodetable=(unsigned char*)whereisunicodetable();
-}
-
-
-
-
 void printunicodefromvalue(int xxxx,int yyyy,char* p)
 {
 	int x,y;
@@ -118,3 +99,24 @@ void printunicodebig(int x,int y,DWORD value)
 	printunicodefromvaluebig( x , y , unicodetable+(value*0x20) );
 }
 
+
+
+
+void initunicode(char* unusedaddr)
+{
+	//how
+	QWORD temp=readwindow(0x657a6973);
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	screen=(DWORD*)readwindow(0x6572656877);
+
+	//unicode
+	unicodetable=(unsigned char*)whereisunicodetable();
+}
+void killunicode()
+{
+}

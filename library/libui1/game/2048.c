@@ -322,7 +322,10 @@ static void list2048(QWORD* this)
 
 
 
-void register2048(char* in)
+void init2048(char* in)
 {
 	list2048( (QWORD*)in );
+}
+void kill2048()
+{
 }

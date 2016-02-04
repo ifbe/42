@@ -357,7 +357,10 @@ static void listsketchpad(QWORD* this)
 
 
 
-void registersketchpad(char* in)
+void initsketchpad(char* in)
 {
 	listsketchpad( (QWORD*)in );
+}
+void killsketchpad()
+{
 }

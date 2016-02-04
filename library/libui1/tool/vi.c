@@ -1,3 +1,6 @@
-void viinit(char* in)
+void initvi(char* in)
+{
+}
+void killvi()
 {
 }

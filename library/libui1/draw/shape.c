@@ -9,18 +9,6 @@ void writewindow();
 static DWORD* winbuf=0;
 static int xsize=0;
 static int ysize=0;
-void initshape(char* unusedaddr)
-{
-	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
-
-	//where
-	winbuf=(DWORD*)readwindow(0x6572656877);
-}
 
 
 
@@ -143,4 +131,23 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 			winbuf[ (y<<10) + x ] = color;		//0x53840273;
 		}
 	}
+}
+
+
+
+
+void initshape(char* unusedaddr)
+{
+	//how
+	QWORD temp=readwindow(0x657a6973);
+	ysize=(temp>>16)&0xffff;
+	xsize=temp&0xffff;
+	if(xsize>1024)xsize=1024;
+	if(ysize>1024)ysize=1024;
+
+	//where
+	winbuf=(DWORD*)readwindow(0x6572656877);
+}
+void killshape()
+{
 }

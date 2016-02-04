@@ -1,3 +1,6 @@
-void fsinit(char* in)
+void initfs(char* in)
+{
+}
+void killfs()
 {
 }

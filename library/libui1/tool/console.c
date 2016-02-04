@@ -5,7 +5,7 @@
 void uicommand(char*);
 //libui
 void string(int x,int y,char* str);
-void cleanscreen();
+void backgroundcolor(DWORD);
 QWORD readwindow(QWORD);
 //libsoft
 void command(char* in);
@@ -198,7 +198,7 @@ static void intoconsole()
 	}
 	else	//不是第一次进来了
 	{
-		cleanscreen();
+		backgroundcolor(0);
 	}
 }
 static void listconsole(QWORD* this)
@@ -220,7 +220,10 @@ static void listconsole(QWORD* this)
 
 
 
-void registerconsole(char* in)
+void initconsole(char* in)
 {
 	listconsole( (QWORD*)in );
+}
+void killconsole()
+{
 }
