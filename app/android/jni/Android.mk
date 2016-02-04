@@ -78,8 +78,9 @@ LOCAL_SRC_FILES += \
 #3.soft0
 LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.arg.c \
+	library/libsoft0/linux/linux.epoll.c \
 	library/libsoft0/linux/linux.file.c \
-	library/libsoft0/linux/linux.other.c \
+	library/libsoft0/linux/linux.random.c \
 	library/libsoft0/memory.c
 
 #3.soft1
