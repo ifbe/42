@@ -38,14 +38,14 @@ uwp:
 ########################################help###################################
 x86+linux+cli:
 	make -C app/none+x86+linux+cli --no-print-directory
-	cp app/none+x86+linux+cli/a.out .
+	cp app/none+x86+linux+cli/a.exe .
 x86+mac+cli:
 	make -C app/none+x86+mac+cli --no-print-directory
-	cp app/none+x86+mac+cli/a.out .
+	cp app/none+x86+mac+cli/a.exe .
 x86+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+cli --no-print-directory
-	cp app/none+x86+win+cli/a.out .
+	cp app/none+x86+win+cli/a.exe .
 
 
 
@@ -76,15 +76,15 @@ x86+mac+sdl:
 x86+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+api --no-print-directory
-	cp app/none+x86+win+api/a.out .
+	cp app/none+x86+win+api/a.exe .
 x86+win+sdl:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+sdl --no-print-directory
-	cp app/none+x86+win+sdl/a.out .
+	cp app/none+x86+win+sdl/a.exe .
 x86+win+web:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+web --no-print-directory
-	cp app/none+x86+win+web/a.out .
+	cp app/none+x86+win+web/a.exe .
 
 
 
