@@ -80,20 +80,24 @@ int uievent(QWORD* first,QWORD* second)
 		}
 	}
 }
-void writewindow(QWORD what)
+void writewindow(QWORD type,QWORD value)
 {
+	if(type==0x656c746974)          //'title'
+	{
+		return;
+	}
+	if(type==0x657a6973)            //'size'
+	{
+		width=value&0xffff;
+		height=(value>>16)&0xffff;
+		return;
+	}
+
 	int y,ret;
-	int xxxx,yyyy;
-
-	if(xmax<width)xxxx=xmax;
-	else xxxx=width;
-	if(ymax<height)yyyy=ymax;
-	else yyyy=height;
-
-	for(y=0;y<yyyy;y++)
+	for(y=0;y<height;y++)
 	{
 		ret=lseek(fbfd , y*fbline , SEEK_SET);
-		ret=write(fbfd , mypixel+y*width , xxxx*4);
+		ret=write(fbfd , mypixel+y*1024 , width*4);
 	}
 }
 QWORD readwindow(QWORD what)
