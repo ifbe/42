@@ -69,8 +69,6 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
-        library/libsoft1/calc/calc.c \
-        library/libsoft1/calc/scientificnotation.c \
         library/libsoft1/compress/7z.c \
         library/libsoft1/compress/cpio.c \
         library/libsoft1/compress/gz.c \
@@ -85,6 +83,8 @@ LOCAL_SRC_FILES += \
         library/libsoft1/filesystem/fs.ntfs.c \
         library/libsoft1/manager/logic.c \
         library/libsoft1/manager/real.c \
+        library/libsoft1/math/calc.c \
+        library/libsoft1/math/scientificnotation.c \
         library/libsoft1/partitiontable/pt.gpt.c \
         library/libsoft1/partitiontable/pt.mbr.c \
         library/libsoft1/text/ascii.c \

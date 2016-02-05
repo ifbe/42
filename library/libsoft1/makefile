@@ -1,6 +1,4 @@
 binary:
-	gcc -c -fPIC -O2 calc/calc.c
-	gcc -c -fPIC -O2 calc/scientificnotation.c
 	gcc -c -fPIC -O2 compress/7z.c
 	gcc -c -fPIC -O2 compress/cpio.c
 	gcc -c -fPIC -O2 compress/gz.c
@@ -15,14 +13,14 @@ binary:
 	gcc -c -fPIC -O2 filesystem/fs.ntfs.c
 	gcc -c -fPIC -O2 manager/real.c
 	gcc -c -fPIC -O2 manager/logic.c
+	gcc -c -fPIC -O2 math/calc.c
+	gcc -c -fPIC -O2 math/scientificnotation.c
 	gcc -c -fPIC -O2 partitiontable/pt.gpt.c
 	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
 	gcc -c -fPIC -O2 text/ascii.c
 	gcc -c -fPIC -O2 text/unicode.c
 	gcc -c -fPIC -O2 master.c
 crosscompile:
-	x86_64-elf-gcc -c -fPIC -O2 calc/calc.c
-	x86_64-elf-gcc -c -fPIC -O2 calc/scientificnotation.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/7z.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/cpio.c
 	x86_64-elf-gcc -c -fPIC -O2 compress/gz.c
@@ -37,14 +35,14 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.ntfs.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/real.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/logic.c
+	x86_64-elf-gcc -c -fPIC -O2 math/calc.c
+	x86_64-elf-gcc -c -fPIC -O2 math/scientificnotation.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/pt.gpt.c
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/pt.mbr.c
 	x86_64-elf-gcc -c -fPIC -O2 text/ascii.c
 	x86_64-elf-gcc -c -fPIC -O2 text/unicode.c
 	x86_64-elf-gcc -c -fPIC -O2 master.c
 gcc:
-	gcc -c -O2 calc/calc.c
-	gcc -c -O2 calc/scientificnotation.c
 	gcc -c -O2 compress/7z.c
 	gcc -c -O2 compress/cpio.c
 	gcc -c -O2 compress/gz.c
@@ -59,14 +57,14 @@ gcc:
 	gcc -c -O2 filesystem/fs.ntfs.c
 	gcc -c -O2 manager/real.c
 	gcc -c -O2 manager/logic.c
+	gcc -c -O2 math/calc.c
+	gcc -c -O2 math/scientificnotation.c
 	gcc -c -O2 partitiontable/pt.gpt.c
 	gcc -c -O2 partitiontable/pt.mbr.c
 	gcc -c -O2 text/ascii.c
 	gcc -c -O2 text/unicode.c
 	gcc -c -O2 master.c
 clang:
-	clang -c -O2 calc/calc.c
-	clang -c -O2 calc/scientificnotation.c
 	clang -c -O2 compress/7z.c
 	clang -c -O2 compress/cpio.c
 	clang -c -O2 compress/gz.c
@@ -81,6 +79,8 @@ clang:
 	clang -c -O2 filesystem/fs.ntfs.c
 	clang -c -O2 manager/real.c
 	clang -c -O2 manager/logic.c
+	clang -c -O2 math/calc.c
+	clang -c -O2 math/scientificnotation.c
 	clang -c -O2 partitiontable/pt.gpt.c
 	clang -c -O2 partitiontable/pt.mbr.c
 	clang -c -O2 text/ascii.c

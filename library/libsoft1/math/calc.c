@@ -295,7 +295,8 @@ void infix2postfix(char* infix,char* postfix)
 	}//while(1)
 
 theend:
-	printmemory(postfix,128);
+	//printmemory(postfix,128);
+	return;
 }
 
 
@@ -556,7 +557,8 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 	//debug
-	printmemory((char*)node,0x20*16);
+	//printmemory((char*)node,0x20*16);
+	return;
 }
 
 

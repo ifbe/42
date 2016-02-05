@@ -31,6 +31,7 @@ static char xlib2kbd[0x80]={
 };
 
 Display* dsp;
+Visual *visual;
 XImage* ximage;
 Window win;
 GC gc;
@@ -47,17 +48,35 @@ int oldy=0;
 
 QWORD readwindow(QWORD what)
 {
+	//'where'
 	if(what==0x6572656877)
 	{
 		return (QWORD)mypixel;
 	}
-	else if(what==0x657a6973)
+
+	//'size'
+	if(what==0x657a6973)
 	{
 		return width+(height<<16);
 	}
+
+	//??????????
+	return 0;
 }
 void writewindow()
 {
+/*
+	//'title'
+	if(what==0x656c746974)
+	{
+		settitle(second);
+	}
+*/
+	//
+	ximage=XCreateImage(
+		dsp,visual,24,ZPixmap,0,
+		(char*)mypixel,width,height,32,0
+	);
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
 int uievent(QWORD* my1,QWORD* my2)
@@ -166,8 +185,9 @@ void initwindowworker()
 
 	//初始化
 	dsp = XOpenDisplay(NULL);
-	int screen = DefaultScreen(dsp);
-	Visual *visual = DefaultVisual(dsp, 0);
+	//int screen = DefaultScreen(dsp);
+
+	visual = DefaultVisual(dsp, 0);
 	if(visual->class!=TrueColor)
 	{
 		fprintf(stderr, "Cannot handle non true color visual ...\n");
@@ -176,10 +196,6 @@ void initwindowworker()
 	}
 
 	//pixel,ximage,window,gc
-	ximage=XCreateImage(
-		dsp,visual,24,ZPixmap,0,
-		(char*)mypixel,width,height,32,0
-	);
 	win=XCreateSimpleWindow(dsp,RootWindow(dsp,0),0,0,width,height,1,0,0);
 	gc = XCreateGC(dsp, win, 0, NULL);
 

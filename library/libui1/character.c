@@ -125,7 +125,8 @@ void printworld()
 }
 void processmessage(QWORD type,QWORD key)
 {
-        say("%s,%llx\n",&type,key);
+	//debug
+        //say("%s,%llx\n",&type,key);
 
         //'dropfile'
         if(type==0x656c6966706f7264)

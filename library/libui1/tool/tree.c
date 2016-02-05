@@ -72,7 +72,7 @@ static void printnode(int x,int y,int num)
 	int thisx,thisy;
 
 	//拿
-	say("%d\n",num);
+	//say("node:%d\n",num);
 	if(y>13)return;
 	left=node[num].left;
 	right=node[num].right;
@@ -152,9 +152,12 @@ static void writetree(QWORD type,QWORD key)
 		else if(key==0xd)		//enter
 		{
 			//134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
-			printmemory(buffer,128);
+			say("buffer:%s\n",buffer);
+
+			say("infix2postfix:%s\n",postfix);
 			infix2postfix(buffer,postfix);
 
+			say("postfix2binarytree......\n");
 			postfix2binarytree(postfix,node);
 
 			for(count=0;count<127;count++) buffer[count]=0;
