@@ -32,9 +32,7 @@ void initdebug(char*);	//listen,say
 void killdebug();
 void initbasic(char*);	//
 void killbasic();
-//argc,argv......
-void explainarg();
-void listen(char*);
+//
 void say(char*,...);
 
 
@@ -237,8 +235,7 @@ int command(char* p)
 
 void birth()
 {
-	//开终端等等活动，必须放第一个
-	explainarg();
+	//必须放第一个
 	inituniverse();	//16m
 
 	//[0,4)：构架相关，以及内核日志

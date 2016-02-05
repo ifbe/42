@@ -1,7 +1,6 @@
 .PHONY:linux
 linux:
 	rm -f win.*.o mac.*.o
-	gcc -c -O2 linux/linux.arg.c
 	gcc -c -O2 linux/linux.file.c
 	gcc -c -O2 linux/linux.epoll.c
 	gcc -c -O2 linux/linux.random.c
@@ -10,7 +9,6 @@ linux:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	gcc -c -O2 win/win.arg.c
 	gcc -c -O2 win/win.file.c
 	gcc -c -O2 win/win.iocp.c
 	gcc -c -O2 win/win.random.c

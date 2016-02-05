@@ -126,36 +126,36 @@ void printworld()
 void processmessage(QWORD type,QWORD key)
 {
 	//debug
-        //say("%s,%llx\n",&type,key);
+	say("%s,%llx\n",&type,key);
 
-        //'dropfile'
-        if(type==0x656c6966706f7264)
-        {
-                //say("debuging::::::::%s\n",(char*)key);
-                softinto((char*)key);
-                return;
-        }
+	//'dropfile'
+	if(type==0x656c6966706f7264)
+	{
+		//say("debuging::::::::%s\n",(char*)key);
+		softinto((char*)key);
+		return;
+	}
 
-        //'kbd'
-        else if(type==0x64626b)
-        {
-                //按下esc
-                if(key==0x1b)
-                {
-                        worker[0].startaddr ^= 1;
-                        return;
-                }
-        }
+	//'kbd'
+	else if(type==0x64626b)
+	{
+		//按下esc
+		if(key==0x1b)
+		{
+			worker[0].startaddr ^= 1;
+			return;
+		}
+	}
 
-        //'touch'
-        else if(type==0x6863756f74)
-        {
-                say("touch!\n");
-        }//touch
+	//'touch'
+	else if(type==0x6863756f74)
+	{
+		say("touch!\n");
+	}//touch
 
-        //其余所有消息，谁在干活就交给谁
-        if(worker[0].startaddr > 0)worker[0].write(type,key);
-        else worker[now].write(type,key);
+	//其余所有消息，谁在干活就交给谁
+	if(worker[0].startaddr > 0)worker[0].write(type,key);
+	else worker[now].write(type,key);
 }
 
 

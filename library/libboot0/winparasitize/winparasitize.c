@@ -1,35 +1,24 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
 #include<stdio.h>
 #include<stdarg.h>
+#include<windows.h>
 
 
 
 
-void initserial()
+void rx(char* p)
 {
 }
-
-
-
-
 void tx(char* fmt , ...)
 {
-	va_list args;
-	va_start(args,fmt);
-	vprintf(fmt,args);
-	va_end(args);
-	//printf(fmt);
+	printf(fmt);
 }
 
 
 
 
+//debug用，打印从addr开始的总共size个字节
 void printmemory(BYTE* addr,int size)
 {
-//debug用，打印从addr开始的总共size个字节
 	int i,j;
 
 	//打印的很少就不显示这些了
@@ -61,4 +50,20 @@ void printmemory(BYTE* addr,int size)
 		}
 		printf("\n",addr[16*j+15]);
 	}
+}
+
+
+
+
+void initbasic(char* arg)
+{
+	//终端回来
+	AllocConsole();
+
+	//
+	freopen("CONIN$","r",stdin);
+	freopen("CONOUT$","w",stdout);
+}
+void killbasic()
+{
 }

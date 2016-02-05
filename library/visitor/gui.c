@@ -26,6 +26,9 @@ void main()
 	QWORD key=0;
 	while(1)
 	{
+		//debug
+		//say("i am here\n");
+
 		//1.先在内存里画画，然后一次性写到窗口内
 		printworld();
 

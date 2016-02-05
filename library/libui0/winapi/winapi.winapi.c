@@ -9,15 +9,18 @@
 #define DWORD unsigned int
 
 #define WM_TRAY (WM_USER + 1)
-#define menu1 0x1234
-#define menu2 0x5678
+#define menu1 0x1111
+#define menu2 0x2222
+#define menu3 0x3333
+#define menu4 0x4444
 void say(char* fmt,...);
 
 
 
 
 //window
-HWND window;
+HWND consolewindow;		//console window
+HWND window;			//my window
 HDC realdc;
 BITMAPINFO info;
 NOTIFYICONDATA nid;     //托盘属性 
@@ -112,20 +115,19 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			switch(lparam) 
 			{
-				case WM_LBUTTONDBLCLK:		//双击
-				{
-					ShowWindow(window,SW_SHOW);
-					break;
-				}
 				case WM_LBUTTONDOWN:
 				{
+					//window开着：显示consolewindow，隐藏window
 					if( IsWindowVisible(window) )
 					{
-						//ShowTrayMsg();
+						ShowWindow(consolewindow,SW_SHOW);
 						ShowWindow(window,SW_HIDE);
 					}
+
+					//window开着：隐藏consolewindow，显示window
 					else
 					{
+						ShowWindow(consolewindow,SW_HIDE);
 						ShowWindow(window,SW_SHOW);
 					}
 					break;
@@ -143,12 +145,36 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					int cmd=TrackPopupMenu(hMenu,TPM_RETURNCMD,pt.x,pt.y,0,window,0); 
 					if(cmd == menu1)
 					{
+						if( IsWindowVisible(consolewindow) )
+						{
+							//ShowTrayMsg();
+							ShowWindow(consolewindow,SW_HIDE);
+						}
+						else
+						{
+							ShowWindow(consolewindow,SW_SHOW);
+						}
+					}
+					if(cmd == menu2)
+					{
+						if( IsWindowVisible(window) )
+						{
+							//ShowTrayMsg();
+							ShowWindow(window,SW_HIDE);
+						}
+						else
+						{
+							ShowWindow(window,SW_SHOW);
+						}
+					}
+					if(cmd == menu3)
+					{
 						//lstrcpy(nid.szInfoTitle, "message");
 						lstrcpy(nid.szInfo, TEXT("i am groot"));
 						nid.uTimeout = 0;
 						Shell_NotifyIcon(NIM_MODIFY, &nid);
 					}
-					if(cmd == menu2)
+					if(cmd == menu4)
 					{
 						PostMessage(window, WM_DESTROY, 0, 0);
 					}
@@ -378,8 +404,9 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 int initmywindow()
 {
 	//Step 1: Registering the Window Class+Creating the Window
-	char *AppTitle="i am groot!";
+	char *AppTitle="run as administrator to see the real world (=.=)";
 	WNDCLASS wc;
+
 	wc.style=CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc=WindowProc;
 	wc.cbClsExtra=0;
@@ -402,11 +429,15 @@ int initmywindow()
 	//透明
 	LONG t = GetWindowLong(window, GWL_EXSTYLE);
 	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(window, 0, 0xe0, LWA_ALPHA);  
+	SetLayeredWindowAttributes(window, 0, 0xf0, LWA_ALPHA);  
 
 	//显示窗口
 	ShowWindow(window,SW_SHOW);			//nCmdShow);
 	UpdateWindow(window);
+
+	//拿console窗口并且隐藏起来
+	consolewindow=GetConsoleWindow();
+	ShowWindow(consolewindow,SW_HIDE);
 }
 void InitUIPIFilter()
 {
@@ -439,8 +470,10 @@ void inittray()
 	Shell_NotifyIcon(NIM_ADD, &nid); 
 
 	hMenu = CreatePopupMenu();    //生成托盘菜单 
-	AppendMenu(hMenu, MF_STRING, menu1, TEXT("i am groot")); 
-	AppendMenu(hMenu, MF_STRING, menu2, TEXT("i am groot")); 
+	AppendMenu(hMenu, MF_STRING, menu1, TEXT("console")); 
+	AppendMenu(hMenu, MF_STRING, menu2, TEXT("window")); 
+	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
+	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
 void initdib()
 {
@@ -476,7 +509,7 @@ void initwindowworker()
 	//mypixel=(unsigned int*)malloc(width*height*4);
 	mypixel=(unsigned int*)malloc(0x400000);
 
-	//准备beforemain
+	//图形窗口
 	initmywindow();
 
 	//允许拖拽
@@ -486,10 +519,8 @@ void initwindowworker()
 	//托盘
 	inittray();
 
-	//dib
+	//dib,dc
 	initdib();
-
-	//拿dc
 	realdc=GetDC(window);
 }
 //__attribute__((destructor)) void destorysdl()

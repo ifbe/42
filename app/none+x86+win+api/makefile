@@ -1,7 +1,7 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/libboot0 none
+	make -s -C $(library)/libboot0 winparasitize
 	make -s -C $(library)/libboot1 gcc
 	make -s -C $(library)/libhard0 x86
 	make -s -C $(library)/libhard1 gcc

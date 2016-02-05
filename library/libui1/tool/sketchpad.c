@@ -218,7 +218,7 @@ static void writesketchpad(QWORD type,QWORD key)
 		else if(key==0xd)		//enter
 		{
 			//检查buffer，然后给infix
-			//printmemory(buffer,128);
+			say("buffer:%s\n",buffer);
 
 			//清空输入区
 			for(count=0;count<127;count++)
@@ -228,8 +228,10 @@ static void writesketchpad(QWORD type,QWORD key)
 			}
 			count=0;
 
-			//134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
+			say("infix2postfix:%s\n",postfix);
 			infix2postfix(infix,postfix);
+
+			say("postfix2binarytree......\n");
 			postfix2binarytree(postfix,node);
 
 			//告诉打印员
