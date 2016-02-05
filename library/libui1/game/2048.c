@@ -3,7 +3,7 @@
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colordecimal(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
-void writewindow();
+void writewindow(QWORD,QWORD);
 unsigned int getrandom();
 
 
@@ -302,6 +302,9 @@ static void into2048()
 
 	//2或4
 	new2048();
+
+	//
+	writewindow( 0x657a6973 , 640+(640<<16) );
 }
 static void list2048(QWORD* this)
 {

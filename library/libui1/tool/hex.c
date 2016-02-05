@@ -18,7 +18,6 @@ void data2hexstring(QWORD,char*);
 void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //
 QWORD readwindow(QWORD);
-void writewindow();
 char* whereischaracter();
 //
 void say(char*,...);

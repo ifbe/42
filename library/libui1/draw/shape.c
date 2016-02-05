@@ -1,7 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 QWORD readwindow(QWORD);
-void writewindow();
 
 
 

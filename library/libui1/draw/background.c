@@ -5,9 +5,7 @@
 void blackstring(int x,int y,char* str);
 void line(QWORD,QWORD,QWORD);
 void rectangle(QWORD,QWORD,QWORD);
-
 QWORD readwindow(QWORD);
-void writewindow();
 
 
 

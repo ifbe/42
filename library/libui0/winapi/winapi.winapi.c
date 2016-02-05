@@ -13,6 +13,8 @@
 #define menu2 0x2222
 #define menu3 0x3333
 #define menu4 0x4444
+
+void writewindow();
 void say(char* fmt,...);
 
 
@@ -25,11 +27,6 @@ HDC realdc;
 BITMAPINFO info;
 NOTIFYICONDATA nid;     //托盘属性 
 HMENU hMenu;            //托盘菜单
-
-// Step 3: the Window Procedure
-static int width=1024;
-static int height=768;
-static unsigned int* mypixel;
 static char dragpath[MAX_PATH];
 
 //
@@ -42,66 +39,9 @@ static int leftdown=0,rightdown=0;
 static POINT pt, pe;
 static RECT rt, re;
 
-
-
-
-
-
-
-
-QWORD readwindow(QWORD what)
-{
-	if(what==0x6572656877)
-	{
-		return (QWORD)mypixel;
-	}
-	else if(what==0x657a6973)
-	{
-		return (height<<16)+width;
-	}
-}
-void writewindow(QWORD what)
-{
-	int temp=height;
-	if(temp>1024)temp=1024;
-
-	SetDIBitsToDevice(realdc,
-			0,0,		//目标位置x,y
-			1024,temp,		//dib宽,高
-			0,0,		//来源起始x,y
-			0,temp,			//起始扫描线,数组中扫描线数量,
-			mypixel,		//rbg颜色数组
-			&info,			//bitmapinfo
-			DIB_RGB_COLORS);		//颜色格式
-	//printf("result:%x\n",result);
-}
-int uievent(QWORD* first,QWORD* second)
-{
-	//收得到就一直收+处理
-	MSG msg;
-	while(GetMessage(&msg,NULL,0,0))
-	{
-		//交给WindowProc，试着处理看看
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-
-		//WindowProc处理不了，交给用户来处理
-		if(solved==0)
-		{
-			*first=my1;
-			*second=my2;
-			solved=1;
-			return 1;
-		}
-	}
-
-	//收不到就返回失败消息
-	*first=0;
-}
-
-
-
-
+static int width=1024;
+static int height=768;
+static unsigned int* mypixel;
 
 
 
@@ -360,27 +300,30 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//窗口尺寸改变
 		case WM_SIZE:
 		{
+			say("WM_SIZE\n");
 			//say("wparam:%llx,lparam:%llx\n",wparam,lparam);
 			my1=0x657a6973;		//tfel//left	//2;
 			my2=lparam-( (40<<16) + 16 );
 			width=lparam&0xffff;
 			height=(lparam>>16)&0xffff;
 			solved=0;
-			return DefWindowProc(window, msg, wparam, lparam);
+
+			return 0;
 		}
 
 		//显示
 		case WM_PAINT:
 		{
+			say("WM_PAINT\n");
 			writewindow(0);
+
+			//这里必须调这个函数，不然cpu占用满
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 
 		//摧毁
 		case WM_DESTROY:
 		{
-			//Shell_NotifyIcon(NIM_DELETE, &nid);
-			//ReleaseDC(window,fakedc);  
 			PostQuitMessage(0);
 			return 0;
 		}
@@ -391,6 +334,80 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 	}
+}
+int uievent(QWORD* first,QWORD* second)
+{
+	//收得到就一直收+处理
+	MSG msg;
+	while(GetMessage(&msg,NULL,0,0))
+	{
+		//交给WindowProc，试着处理看看
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+		//WindowProc处理不了，交给用户来处理
+		if(solved==0)
+		{
+			*first=my1;
+			*second=my2;
+			solved=1;
+			return 1;
+		}
+	}
+
+	//收不到就返回失败消息
+	*first=0;
+}
+
+
+
+
+
+
+
+
+// Step 3: the Window Procedure
+QWORD readwindow(QWORD what)
+{
+	if(what==0x6572656877)		//'where'
+	{
+		return (QWORD)mypixel;
+	}
+	else if(what==0x657a6973)	//'size'
+	{
+		return (height<<16)+width;
+	}
+}
+void writewindow(QWORD type,QWORD value)
+{
+	if(type==0x656c746974)		//'title'
+	{
+		SetWindowText(window,"hahahaha");
+		return;
+	}
+	if(type==0x657a6973)		//'size'
+	{
+		RECT rc;
+		GetWindowRect(window,&rc);
+
+		width=value&0xffff;
+		height=(value>>16)&0xffff;
+		MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
+		return;
+	}
+
+	int tempy=height;
+	if(tempy>1024)tempy=1024;
+
+	SetDIBitsToDevice(realdc,
+			0,0,			//目标位置x,y
+			1024,tempy,		//dib宽,高
+			0,0,			//来源起始x,y
+			0,tempy,		//起始扫描线,数组中扫描线数量,
+			mypixel,		//rbg颜色数组
+			&info,			//bitmapinfo
+			DIB_RGB_COLORS);		//颜色格式
+	//printf("result:%x\n",result);
 }
 
 
@@ -511,6 +528,7 @@ void initwindowworker()
 
 	//图形窗口
 	initmywindow();
+	realdc=GetDC(window);
 
 	//允许拖拽
 	DragAcceptFiles(window, TRUE);
@@ -521,7 +539,6 @@ void initwindowworker()
 
 	//dib,dc
 	initdib();
-	realdc=GetDC(window);
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindowworker()

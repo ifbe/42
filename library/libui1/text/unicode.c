@@ -2,8 +2,6 @@
 #define DWORD unsigned int
 //
 unsigned char* whereisunicodetable();
-//
-void writewindow();
 QWORD readwindow(QWORD);
 //
 void say(char*,...);
