@@ -1,10 +1,9 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
+#define QWORD unsigned long long
+#define DWORD unsigned int
+void writewindow(QWORD,QWORD);
 
 
 
@@ -46,39 +45,6 @@ int oldy=0;
 
 
 
-QWORD readwindow(QWORD what)
-{
-	//'where'
-	if(what==0x6572656877)
-	{
-		return (QWORD)mypixel;
-	}
-
-	//'size'
-	if(what==0x657a6973)
-	{
-		return width+(height<<16);
-	}
-
-	//??????????
-	return 0;
-}
-void writewindow()
-{
-/*
-	//'title'
-	if(what==0x656c746974)
-	{
-		settitle(second);
-	}
-*/
-	//
-	ximage=XCreateImage(
-		dsp,visual,24,ZPixmap,0,
-		(char*)mypixel,width,height,32,0
-	);
-	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
-}
 int uievent(QWORD* my1,QWORD* my2)
 {
 	XEvent ev;
@@ -87,7 +53,7 @@ int uievent(QWORD* my1,QWORD* my2)
 		XNextEvent(dsp, &ev);
 		if(ev.type==Expose)
 		{
-			if (ev.xexpose.count == 0) writewindow();
+			if (ev.xexpose.count == 0) writewindow(0,0);
 		}
 		else if(ev.type==ClientMessage)
 		{
@@ -169,6 +135,48 @@ int uievent(QWORD* my1,QWORD* my2)
 			return 1;
 		}
 	}
+}
+QWORD readwindow(QWORD what)
+{
+	//'where'
+	if(what==0x6572656877)
+	{
+		return (QWORD)mypixel;
+	}
+
+	//'size'
+	if(what==0x657a6973)
+	{
+		return width+(height<<16);
+	}
+
+	//??????????
+	return 0;
+}
+void writewindow(QWORD type,QWORD value)
+{
+
+	//'title'
+	if(type==0x656c746974)
+	{
+		return;
+	}
+
+	//'size'
+	if(type==0x657a6973)            //'size'
+	{
+		width=value&0xffff;
+		height=(value>>16)&0xffff;
+		XResizeWindow(dsp, win, width, height);
+		return;
+	}
+
+	//
+	ximage=XCreateImage(
+		dsp,visual,24,ZPixmap,0,
+		(char*)mypixel,1024,768,32,0
+	);
+	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, 1024, 768); 
 }
 
 
