@@ -6,8 +6,8 @@ void double2decimalstring(double,char*);
 
 
 static DWORD* screen=0;
-static int xsize=0;
-static int ysize=0;
+static int width=0;
+static int height=0;
 
 
 
@@ -197,7 +197,7 @@ void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
 		{
 			if( (temp&0x80) != 0 )
 			{
-				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = color;
+				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = color;
 			}
 			temp<<=1;
 		}
@@ -349,8 +349,8 @@ void printdouble(int x,int y,double z)
 void initascii(QWORD size,void* addr)
 {
 	//how
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 
 	//where
 	screen=addr;

@@ -133,7 +133,7 @@ int uicommand(char* p)
 void writecharacter(QWORD type,QWORD key)
 {
 	//debug
-	say("%s,%llx\n",&type,key);
+	//say("%llx,%llx\n",type,key);
 
 	//'dropfile'
 	if(type==0x656c6966706f7264)
@@ -159,6 +159,10 @@ void writecharacter(QWORD type,QWORD key)
 	{
 		say("touch!\n");
 	}//touch
+
+	//debug
+	//say("now=%x\n",now);
+	//say("write@%llx\n",worker[now].write);
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].startaddr > 0)worker[0].write(type,key);

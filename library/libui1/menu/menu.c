@@ -26,7 +26,7 @@ static char* thataddr=0;
 //write,read,into,list
 void writemenu(QWORD type,QWORD key)
 {
-	//say("%s,%llx\n",&type,key);
+	say("%s,%llx\n",&type,key);
 
 	//'xyz left'
 	if(type==0x7466656C207A7978)

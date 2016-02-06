@@ -6,15 +6,18 @@
 #include <stdlib.h>
 #include <math.h>
 
-void iamhere(unsigned long long type,void* addr);
+#define QWORD unsigned long long
 void readcharacter();
+void writecharacter(QWORD type,QWORD value);
 void say(char* , ...);
 
 
 
 
-//
+//ugly check,where can i put my birth()?
 static int alive=0;
+//
+static int pressed=0;
 static int xxxx=0;
 static int yyyy=0;
 
@@ -23,10 +26,9 @@ static int yyyy=0;
 
 static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 {
-    int x,y;
-	int xxxx,yyyy;
+    int x;
+	uint32_t temp;
     uint32_t* this;
-	uint32_t* src;
 
 	//ensure
 	if(alive == 0)
@@ -37,6 +39,17 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 
 	//拿
 	readcharacter( ((info->height)<<16) + (info->width) , pixels );
+
+	//反色
+	this=pixels;
+	for(x=0;x<info->width*info->height;x++)
+	{
+		temp=this[x];
+		this[x]=0xff000000 +
+			((temp&0xff)<<16) +
+			(temp&0xff00) +
+			((temp&0xff0000)>>16);
+	}
 }
 
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms)
@@ -70,7 +83,59 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * 
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * env, jobject  obj , jlong type , jlong value)
 {
-	xxxx=value&0xffff;
-	yyyy=(value>>16)&0xffff;
-	say(">>>>>>>>>>>>>(%llx,%llx),(%x,%x)\n",type,value,xxxx,yyyy);
+	//ensure
+	if(alive == 0)
+	{
+		alive=1;
+		birth();
+	}
+
+	//
+	say(">>>>>>>>>>>>>(%llx,%llx)\n",type,value);
+	if(type==0x6e776f64)		//'down'
+	{
+		pressed=1;
+		xxxx=value&0xffff;
+		yyyy=(value>>16)&0xffff;
+		return;
+	}
+	if(type==0x7075)			//'up'
+	{
+		int upx=value&0xffff;
+		int upy=(value>>16)&0xffff;
+		pressed=0;
+		say(">>>>>>>>>>>>>>(%d,%d)->(%d,%d)\n",xxxx,yyyy,upx,upy);
+
+		upx-=xxxx;
+		upy-=yyyy;
+		if( (upx>0) && (upy>0) )
+		{
+			//右
+			if(upx>upy)writecharacter(0x64626b,0x27);
+			//下
+			else writecharacter(0x64626b,0x28);
+		}
+		else if( (upx<0) && (upy<0) )
+		{
+			//左
+			if(upx<upy)writecharacter(0x64626b,0x25);
+			//上
+			else writecharacter(0x64626b,0x26);
+		}
+		else if( (upx<0) && (upy>0) )
+		{
+			//左
+			if(upx+upy<0)writecharacter(0x64626b,0x25);
+			//下
+			else writecharacter(0x64626b,0x28);
+		}
+		else if( (upx>0) && (upy<0) )
+		{
+			//右
+			if(upx+upy>0)writecharacter(0x64626b,0x27);
+			//上
+			else writecharacter(0x64626b,0x26);
+		}
+		return;
+	}
 }

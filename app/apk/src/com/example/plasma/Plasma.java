@@ -74,15 +74,15 @@ class PlasmaView extends View {
 
 		if( action == MotionEvent.ACTION_DOWN )
 		{
-			ProcessEvent(0x1234 , temp);
+			ProcessEvent(0x6e776f64 , temp);
 		}
-		else if( action == MotionEvent.ACTION_MOVE )
+		if( action == MotionEvent.ACTION_UP )
 		{
-			ProcessEvent(0x1234 , temp);
+			ProcessEvent(0x7075 , temp);
 		}
-		else if( action == MotionEvent.ACTION_UP )
+		if( action == MotionEvent.ACTION_MOVE )
 		{
-			ProcessEvent(0x1234 , temp);
+			ProcessEvent(0x65766f6d , temp);
 		}
         renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
 		return true;
