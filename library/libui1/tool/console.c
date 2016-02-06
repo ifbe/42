@@ -6,11 +6,9 @@ void uicommand(char*);
 //libui
 void string(int x,int y,char* str);
 void backgroundcolor(DWORD);
-QWORD readwindow(QWORD);
 //libsoft
 void command(char* in);
 int compare(char* first,char* second);
-char* whereisworld();
 //libboot
 void say(char*,...);
 
@@ -190,18 +188,9 @@ static void readconsole()
 }
 static void intoconsole()
 {
-	if(logbuf==0)
-	{
-		//never call console before that thing
-		//logbuf=whereisworld()+0x100000;
-		palette=(unsigned int*)readwindow(0x6572656877);
-	}
-	else	//不是第一次进来了
-	{
-		backgroundcolor(0);
-	}
+	backgroundcolor(0);
 }
-static void listconsole(QWORD* this)
+void listconsole(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x656c6f736e6f63;
@@ -220,9 +209,21 @@ static void listconsole(QWORD* this)
 
 
 
-void initconsole(char* in)
+void initconsole(QWORD size,void* addr)
 {
-	listconsole( (QWORD*)in );
+	//size
+	resolutionx=size&&0xffff;
+	resolutiony=(size>>16)&0xffff;
+
+	//where
+	palette=addr;
+
+	//12123123123
+	if(logbuf==0)
+	{
+		//never call console before that thing
+		//logbuf=whereisworld()+0x100000;
+	}
 }
 void killconsole()
 {

@@ -1,6 +1,5 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-QWORD readwindow(QWORD);
 void double2decimalstring(double,char*);
 
 
@@ -347,17 +346,14 @@ void printdouble(int x,int y,double z)
 
 
 
-void initascii(char* unusedaddr)
+void initascii(QWORD size,void* addr)
 {
 	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
 
 	//where
-	screen=(DWORD*)readwindow(0x6572656877);
+	screen=addr;
 }
 void killascii()
 {

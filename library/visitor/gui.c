@@ -4,9 +4,10 @@
 #define QWORD unsigned long long
 //
 void command(char* p);
-void printworld();
 void waitevent(QWORD* first,QWORD* second);
-void processmessage(QWORD type,QWORD key);
+void readcharacter();
+void writecharacter(QWORD type,QWORD key);
+void writewindow();
 //
 void birth();
 void death();
@@ -16,6 +17,7 @@ void printmemory(char*,int);
 
 
 
+char mybuffer[0x400000];		//4m
 void main()
 {
 	//before
@@ -30,14 +32,15 @@ void main()
 		//say("i am here\n");
 
 		//1.先在内存里画画，然后一次性写到窗口内
-		printworld();
+		readcharacter(1024+(768<<16) , mybuffer);
+		writewindow(1024+(768<<16) , mybuffer);
 
 		//2.等事件，是退出消息就退出
 		waitevent(&type,&key);
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死
-		processmessage(type,key);
+		writecharacter(type,key);
 	}
 
 	//after

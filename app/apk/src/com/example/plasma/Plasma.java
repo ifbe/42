@@ -59,7 +59,6 @@ class PlasmaView extends View {
 
     @Override protected void onDraw(Canvas canvas) {
         //canvas.drawColor(0xFFCCCCCC);
-        renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
         canvas.drawBitmap(mBitmap, 0, 0, null);
         // force a redraw, with a different time-based pattern.
         invalidate();
@@ -71,7 +70,8 @@ class PlasmaView extends View {
 		long y = (long)event.getY(0);
 		long z = (long)event.getPressure(0);
 		long temp=x+(y<<16)+(z<<32);
-		Log.i("PlasmaView","<<<<<<<<<<<<<<<("+x+","+y+","+z+"),"+temp);
+		//Log.i("PlasmaView","<<<<<<<<<<<<<<<("+x+","+y+","+z+"),"+temp);
+
 		if( action == MotionEvent.ACTION_DOWN )
 		{
 			ProcessEvent(0x1234 , temp);
@@ -84,6 +84,7 @@ class PlasmaView extends View {
 		{
 			ProcessEvent(0x1234 , temp);
 		}
+        renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
 		return true;
 	}
 }

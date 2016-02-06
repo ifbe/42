@@ -46,7 +46,7 @@ void printmemory(BYTE* addr,int size)
 	//2222222222222222222222222
 	for(j=0;j<size/16;j++)
 	{
-		if(j%16 == 0)printf("@%-13llx",addr+j*16);
+		if(j%16 == 0)printf( "@%-13llx" , (QWORD)(addr+j*16) );
 		else printf("+%-13x",j*16);
 
 		for(i=0;i<=0xf;i++)
@@ -59,6 +59,6 @@ void printmemory(BYTE* addr,int size)
 			if( (ch>=0x80)|(ch<=0x20) )ch=0x20;
 			printf("%c",ch);
 		}
-		printf("\n",addr[16*j+15]);
+		printf("\n");
 	}
 }

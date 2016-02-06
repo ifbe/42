@@ -10,11 +10,15 @@ void colorstring(int x,int y,char* str,unsigned int color);
 
 
 
-//enable and disable
-static char* thataddr=0;
+//
+static int xsize;
+static int ysize;
+static DWORD* screenbuf;
 //菜单
 static char buffer[128];
 static int bufp=0;
+//enable and disable
+static char* thataddr=0;
 
 
 
@@ -92,8 +96,10 @@ void readmenu()
 static void intomenu()
 {
 }
-static void listmenu(QWORD* this)
+void listmenu(QWORD* this)
 {
+	thataddr=(char*)this+0x10;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x38343032;
 	this[2]=0;		//left,up
@@ -107,10 +113,14 @@ static void listmenu(QWORD* this)
 
 
 
-void initmenu(char* in)
+void initmenu(QWORD size,void* addr)
 {
-	thataddr=in+0x10;
-	listmenu( (QWORD*)in );
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+
+	//
+	screenbuf=addr;
 }
 void killmenu()
 {

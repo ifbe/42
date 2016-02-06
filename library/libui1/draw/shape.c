@@ -1,13 +1,12 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
-QWORD readwindow(QWORD);
 
 
 
 
 static DWORD* winbuf=0;
-static int xsize=0;
-static int ysize=0;
+static int width=0;
+static int height=0;
 
 
 
@@ -127,7 +126,7 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	{
 		for(x=startx;x<endx;x++)
 		{
-			winbuf[ (y<<10) + x ] = color;		//0x53840273;
+			winbuf[ (y*width) + x ] = color;		//0x53840273;
 		}
 	}
 }
@@ -135,17 +134,14 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 
 
-void initshape(char* unusedaddr)
+void initshape(QWORD size,void* addr)
 {
 	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 
 	//where
-	winbuf=(DWORD*)readwindow(0x6572656877);
+	winbuf=addr;
 }
 void killshape()
 {

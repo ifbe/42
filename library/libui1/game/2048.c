@@ -275,11 +275,12 @@ static void write2048(QWORD type,QWORD key)
 	//new number?
 	new2048();
 }
-static void read2048()
+static void read2048(QWORD size,void* addr)
 {
 	int x,y;
-	backgroundcolor(0x444444);
 
+	//say("me\n");
+	backgroundcolor(0x444444);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -306,11 +307,11 @@ static void into2048()
 	//
 	writewindow( 0x657a6973 , 640+(640<<16) );
 }
-static void list2048(QWORD* this)
+void list2048(QWORD* this)
 {
-	this[0]=0x776f646e6977;
-	this[1]=0x38343032;
-	this[2]=(0<<16)+0;		//left,up
+	this[0]=0x776f646e6977;		//'window'
+	this[1]=0x38343032;			//'2048'
+	this[2]=(0<<16)+0;			//left,up
 	this[3]=(640<<16)+640;		//right,down
 	this[4]=(QWORD)list2048;
 	this[5]=(QWORD)into2048;
@@ -325,9 +326,8 @@ static void list2048(QWORD* this)
 
 
 
-void init2048(char* in)
+void init2048(QWORD size,void* addr)
 {
-	list2048( (QWORD*)in );
 }
 void kill2048()
 {

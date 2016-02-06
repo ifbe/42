@@ -11,13 +11,11 @@ void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
 void colorascii(int x,int y,char ch,unsigned int color);
 void backgroundcolor(DWORD);
-void background1();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
 void readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //
-QWORD readwindow(QWORD);
 char* whereischaracter();
 //
 void say(char*,...);
@@ -34,12 +32,12 @@ void printmemory(char*,int);
 static QWORD base;		//显示区基地址
 static QWORD offset;
 static BYTE* databuf=0;
+static int printmethod=0;
 
 //mainscreen
-static QWORD screenaddr;
+static DWORD* screenbuf;
 static int xsize;
 static int ysize;
-static int printmethod=0;
 
 //flostarea
 static int inputcount=0;
@@ -48,6 +46,10 @@ static BYTE haha[0x100];
 	//[0x20,0x3f]:base,value
 	//[0x40,0x5f]:offset,value
 	//[0x60,0x7f]:data,value
+
+
+
+
 
 
 
@@ -82,38 +84,28 @@ static void foreground()
 {
 	//一整页
 	int x,y;
-	int xsize,ysize,xshift;
+	int xshift = xsize & 0x3;
 	char* where=readornotread(base);
-	QWORD temp=readwindow(0x657a6973);
-
-	ysize=( (temp>>16) & 0xffff ) >> 4;
-	if(ysize>0x40)ysize=0x40;
-
-	xsize=( temp & 0xffff ) >> 4;
-	if(xsize>1024)xsize=0x40;
-
-	xshift = xsize&0x3;
-	xsize &= 0xfffc;
 
 	//
 	if(printmethod==0)			//hex
 	{
-		for(y=0;y<ysize;y++)
+		for(y=0;y<ysize/16;y++)
 		{
-			for(x=0;x<xsize;x+=4)
+			for(x=0;x<xsize/16;x+=4)
 			{
-				DWORD value=*(DWORD*)(where+y*xsize+x);
+				DWORD value=*(DWORD*)(where + (y*xsize/16) + x);
 				hexadecimal1234(2*x+xshift,y,value);
 			}
 		}
 	}
 	else if(printmethod==1)		//ascii
 	{
-		for(y=0;y<ysize;y++)
+		for(y=0;y<ysize/16;y++)
 		{
-			for(x=0;x<xsize;x+=4)
+			for(x=0;x<xsize/16;x+=4)
 			{
-				DWORD value=*(DWORD*)(where+y*xsize+x);
+				DWORD value=*(DWORD*)(where + (y*xsize/16) + x);
 				colorascii(2*x+xshift,y,value&0xff,0);
 				colorascii(2*x+2+xshift,y,(value>>8)&0xff,0);
 				colorascii(2*x+4+xshift,y,(value>>16)&0xff,0);
@@ -125,16 +117,10 @@ static void foreground()
 static void floatarea()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
-	QWORD temp=readwindow(0x657a6973);
-	int ysize=(temp>>16)&0xffff;
-	int xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
-
-	//byte框
 	int thisx=(offset&0x3f)*16;
 	int thisy=(offset%0xa00)/0x40*16;
+
+	//byte框
 	for(y=thisy;y<thisy+16;y++)
 	{
 		for(x=thisx;x<thisx+16;x++)
@@ -297,7 +283,7 @@ static void intohex()
 	currentcache=0xffffffff;
 	backgroundcolor(0);
 }
-static void listhex(QWORD* this)
+void listhex(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
@@ -316,9 +302,14 @@ static void listhex(QWORD* this)
 
 
 
-void inithex(char* in)
+void inithex(QWORD size,void* addr)
 {
-	listhex( (QWORD*)in );
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+
+	//
+	screenbuf=addr;
 }
 void killhex()
 {

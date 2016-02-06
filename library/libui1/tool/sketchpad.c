@@ -22,7 +22,6 @@ void decimal(int x,int y,QWORD in);
 void backgroundcolor(DWORD);
 void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
 char* whereischaracter();
-QWORD readwindow(QWORD);
 //
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
@@ -57,6 +56,10 @@ static double centery;
 		//databuf 里面存放计算得到的值的符号
 		//scale=“屏幕”上两个点对于“世界”上的距离
 		//centerxy = “屏幕”对应“世界”哪个点
+//
+static DWORD* screenbuf=0;
+static int xsize;
+static int ysize;
 
 
 
@@ -66,9 +69,7 @@ static void wangge()
 {
 	int x,y,temp;
 	double first,second,res;
-
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
-	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
 
 
 
@@ -126,8 +127,6 @@ static void tuxiang()
 	int x,y;
 	int value1,value2,counter;
 	double first,second,haha;
-
-	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
 
 
 
@@ -340,7 +339,7 @@ static void intosketchpad()
 
 	backgroundcolor(0);
 }
-static void listsketchpad(QWORD* this)
+void listsketchpad(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x686374656b73;
@@ -359,9 +358,14 @@ static void listsketchpad(QWORD* this)
 
 
 
-void initsketchpad(char* in)
+void initsketchpad(QWORD size,void* addr)
 {
-	listsketchpad( (QWORD*)in );
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+
+	//
+	screenbuf=addr;
 }
 void killsketchpad()
 {

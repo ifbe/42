@@ -5,6 +5,11 @@ none:
 	gcc -c -O2 none/serial.rx.c
 	gcc -c -O2 none/serial.tx.c
 
+.PHONY:logcat
+logcat:
+	rm -f *.o
+	gcc -c -O2 logcat/logcat.c
+
 .PHONY:parasitize
 parasitize:
 	rm -f *.o

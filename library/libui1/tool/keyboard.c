@@ -3,11 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void backgroundcolor(DWORD);
-QWORD readwindow(QWORD);
 
 
 
 
+DWORD* screenbuf=0;
+int xsize=0;
+int ysize=0;
 
 
 
@@ -19,8 +21,6 @@ static void writekeyboard(QWORD type,QWORD value)
 static void readkeyboard()
 {
 	int x,y;
-	DWORD* screenbuf=(DWORD*)readwindow(0x6572656877);
-
 	for(y=0;y<768;y++)
 	{
 		for(x=0;x<1024;x++)
@@ -51,7 +51,7 @@ static void intokeyboard()
 {
 	backgroundcolor(0);
 }
-static void listkeyboard(QWORD* this)
+void listkeyboard(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
@@ -70,9 +70,14 @@ static void listkeyboard(QWORD* this)
 
 
 
-void initkeyboard(char* in)
+void initkeyboard(QWORD size,void* addr)
 {
-	listkeyboard( (QWORD*)in );
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+
+	//
+	screenbuf=addr;
 }
 void killkeyboard()
 {

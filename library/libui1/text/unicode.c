@@ -2,8 +2,6 @@
 #define DWORD unsigned int
 //
 unsigned char* whereisunicodetable();
-QWORD readwindow(QWORD);
-//
 void say(char*,...);
 
 
@@ -100,17 +98,14 @@ void printunicodebig(int x,int y,DWORD value)
 
 
 
-void initunicode(char* unusedaddr)
+void initunicode(QWORD size,void* addr)
 {
 	//how
-	QWORD temp=readwindow(0x657a6973);
-	ysize=(temp>>16)&0xffff;
-	xsize=temp&0xffff;
-	if(xsize>1024)xsize=1024;
-	if(ysize>1024)ysize=1024;
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
 
 	//where
-	screen=(DWORD*)readwindow(0x6572656877);
+	screen=addr;
 
 	//unicode
 	unicodetable=(unsigned char*)whereisunicodetable();

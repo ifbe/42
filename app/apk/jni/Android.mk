@@ -5,9 +5,7 @@ include $(CLEAR_VARS)
 
 #1.boot1
 LOCAL_SRC_FILES := \
-        library/libboot0/none/serial.rx.c \
-        library/libboot0/none/serial.tx.c \
-        library/libboot0/none/basic.c
+        library/libboot0/logcat/logcat.c
 
 #1.boot1
 LOCAL_SRC_FILES += \
@@ -61,7 +59,6 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
-        library/libsoft0/linux/linux.arg.c \
 		library/libsoft0/linux/linux.epoll.c \
         library/libsoft0/linux/linux.file.c \
         library/libsoft0/linux/linux.random.c \

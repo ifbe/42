@@ -209,7 +209,7 @@ static void intotree()
 		backgroundcolor(0);
 	}
 }
-static void listtree(QWORD* this)
+void listtree(QWORD* this)
 {
 	this[0]=0x776f646e6977;
 	this[1]=0x65657274;
@@ -230,7 +230,6 @@ static void listtree(QWORD* this)
 
 void inittree(char* in)
 {
-	listtree( (QWORD*)in );
 }
 void killtree()
 {

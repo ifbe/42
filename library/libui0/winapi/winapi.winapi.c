@@ -24,7 +24,6 @@ void say(char* fmt,...);
 HWND consolewindow;		//console window
 HWND window;			//my window
 HDC realdc;
-BITMAPINFO info;
 NOTIFYICONDATA nid;     //托盘属性 
 HMENU hMenu;            //托盘菜单
 static char dragpath[MAX_PATH];
@@ -41,7 +40,6 @@ static RECT rt, re;
 
 static int width=1024;
 static int height=768;
-static unsigned int* mypixel;
 
 
 
@@ -64,7 +62,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 						ShowWindow(window,SW_HIDE);
 					}
 
-					//window开着：隐藏consolewindow，显示window
+					//window隐藏：隐藏consolewindow，显示window
 					else
 					{
 						ShowWindow(consolewindow,SW_HIDE);
@@ -80,7 +78,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
    
 					//解决在菜单外单击左键菜单不消失的问题 
 					SetForegroundWindow(window); 
-   
+
 					//显示并获取选中的菜单 
 					int cmd=TrackPopupMenu(hMenu,TPM_RETURNCMD,pt.x,pt.y,0,window,0); 
 					if(cmd == menu1)
@@ -173,24 +171,29 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(wparam==0x1b)
 			{
-				my1=0x64626b;			//kbd
+				my1=0x64626b;		//'kbd'
 				my2=wparam;
 				solved=0;
 				return 0;
 			}
 			else
 			{
-				my1=0x72616863;			//char
+				my1=0x72616863;		//'char'
 				my2=wparam;
 				solved=0;
 				return 0;
 			}
 		}
-		//case WM_TOUCH:
-		//{
-		//	
-		//}
-
+/*
+		case WM_TOUCH:
+		{
+			say("WM_TOUCH\n");
+			my1=0x6863756f74;		//'touch'
+			my2=wparam;
+			solved=0;
+			return 0;
+		}
+*/
 		//滚轮
 		case WM_MOUSEWHEEL:
 		{
@@ -310,7 +313,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			return 0;
 		}
-
+/*
 		//显示
 		case WM_PAINT:
 		{
@@ -320,7 +323,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			//这里必须调这个函数，不然cpu占用满
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
-
+*/
 		//摧毁
 		case WM_DESTROY:
 		{
@@ -369,17 +372,14 @@ int uievent(QWORD* first,QWORD* second)
 // Step 3: the Window Procedure
 QWORD readwindow(QWORD what)
 {
-	if(what==0x6572656877)		//'where'
-	{
-		return (QWORD)mypixel;
-	}
-	else if(what==0x657a6973)	//'size'
+	if(what==0x657a6973)	//'size'
 	{
 		return (height<<16)+width;
 	}
 }
 void writewindow(QWORD type,QWORD value)
 {
+	say("writewindow:%llx,%llx\n",type,value);
 	if(type==0x656c746974)		//'title'
 	{
 		SetWindowText(window,"hahahaha");
@@ -396,17 +396,38 @@ void writewindow(QWORD type,QWORD value)
 		return;
 	}
 
-	int tempy=height;
-	if(tempy>1024)tempy=1024;
+	//构造info
+	BITMAPINFO info;
+	width=type&0xffff;
+	height=(type>>16)&0xffff;
 
-	SetDIBitsToDevice(realdc,
-			0,0,			//目标位置x,y
-			1024,tempy,		//dib宽,高
-			0,0,			//来源起始x,y
-			0,tempy,		//起始扫描线,数组中扫描线数量,
-			mypixel,		//rbg颜色数组
-			&info,			//bitmapinfo
-			DIB_RGB_COLORS);		//颜色格式
+	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+	info.bmiHeader.biWidth=width;
+	info.bmiHeader.biHeight=-height;
+	info.bmiHeader.biPlanes=1;
+	info.bmiHeader.biBitCount=32;
+	info.bmiHeader.biCompression=0;
+	info.bmiHeader.biSizeImage=width*height*4;
+	info.bmiHeader.biXPelsPerMeter=0;
+	info.bmiHeader.biYPelsPerMeter=0;
+	info.bmiHeader.biClrUsed=0;
+	info.bmiHeader.biClrImportant=0;
+	info.bmiColors[0].rgbBlue=255;
+	info.bmiColors[0].rgbGreen=255;
+	info.bmiColors[0].rgbRed=255;
+	info.bmiColors[0].rgbReserved=255;
+
+	//写屏
+	SetDIBitsToDevice(
+		realdc,
+		0,0,			//目标位置x,y
+		1024,height,	//dib宽,高
+		0,0,			//来源起始x,y
+		0,height,		//起始扫描线,数组中扫描线数量,
+		(void*)value,	//rbg颜色数组
+		&info,			//bitmapinfo
+		DIB_RGB_COLORS	//颜色格式
+	);
 	//printf("result:%x\n",result);
 }
 
@@ -499,26 +520,6 @@ void inittray()
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
 	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
-void initdib()
-{
-	//构造info
-	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biWidth=width;
-	info.bmiHeader.biHeight=-height;
-	info.bmiHeader.biPlanes=1;
-	info.bmiHeader.biBitCount=32;
-	info.bmiHeader.biCompression=0;
-	info.bmiHeader.biSizeImage=width*height*4;
-	info.bmiHeader.biXPelsPerMeter=0;
-	info.bmiHeader.biYPelsPerMeter=0;
-	info.bmiHeader.biClrUsed=0;
-	info.bmiHeader.biClrImportant=0;
-
-	info.bmiColors[0].rgbBlue=255;
-	info.bmiColors[0].rgbGreen=255;
-	info.bmiColors[0].rgbRed=255;
-	info.bmiColors[0].rgbReserved=255;
-}
 
 
 
@@ -529,10 +530,6 @@ void initdib()
 
 void initwindowworker()
 {
-	//准备rgb点阵
-	//mypixel=(unsigned int*)malloc(width*height*4);
-	mypixel=(unsigned int*)malloc(0x400000);
-
 	//终端窗口
 	initconsolewindow();
 
@@ -546,9 +543,6 @@ void initwindowworker()
 
 	//托盘
 	inittray();
-
-	//dib,dc
-	initdib();
 }
 //__attribute__((destructor)) void destorysdl()
 void killwindowworker()
@@ -562,7 +556,4 @@ void killwindowworker()
 
 	//释放托盘
 	Shell_NotifyIcon(NIM_DELETE, &nid);
-
-	//释放点阵
-	free(mypixel);
 }
