@@ -63,6 +63,10 @@ void initbasic(char* arg)
 	//
 	freopen("CONIN$","r",stdin);
 	freopen("CONOUT$","w",stdout);
+
+	//隐藏起来
+	HWND consolewindow=GetConsoleWindow();
+	ShowWindow(consolewindow,SW_HIDE);
 }
 void killbasic()
 {

@@ -417,6 +417,17 @@ void writewindow(QWORD type,QWORD value)
 
 
 
+void initconsolewindow()
+{
+	//int ret;
+	//char buf[128];
+	//ret=GetEnvironmentVariable("cmdcmdline",buf,128);
+	//say("%x:cmdcmdline=%s\n",ret,buf);
+
+	//拿console窗口并且隐藏起来
+	consolewindow=GetConsoleWindow();
+	//ShowWindow(consolewindow,SW_HIDE);
+}
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 int initmywindow()
 {
@@ -451,10 +462,6 @@ int initmywindow()
 	//显示窗口
 	ShowWindow(window,SW_SHOW);			//nCmdShow);
 	UpdateWindow(window);
-
-	//拿console窗口并且隐藏起来
-	consolewindow=GetConsoleWindow();
-	ShowWindow(consolewindow,SW_HIDE);
 }
 void InitUIPIFilter()
 {
@@ -526,6 +533,9 @@ void initwindowworker()
 	//mypixel=(unsigned int*)malloc(width*height*4);
 	mypixel=(unsigned int*)malloc(0x400000);
 
+	//终端窗口
+	initconsolewindow();
+
 	//图形窗口
 	initmywindow();
 	realdc=GetDC(window);
@@ -543,6 +553,10 @@ void initwindowworker()
 //__attribute__((destructor)) void destorysdl()
 void killwindowworker()
 {
+	//必须亮出来再关
+	//ShowWindow(consolewindow,SW_SHOW);
+	//ShowWindow(window,SW_SHOW);
+
 	//释放dc
 	ReleaseDC(window,realdc);
 

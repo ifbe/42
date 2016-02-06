@@ -5,10 +5,10 @@ none:
 	gcc -c -O2 none/serial.rx.c
 	gcc -c -O2 none/serial.tx.c
 
-.PHONY:winparasitize
-winparasitize:
+.PHONY:parasitize
+parasitize:
 	rm -f *.o
-	gcc -c -O2 winparasitize/winparasitize.c
+	gcc -c -O2 parasitize/parasitize.c
 
 .PHONY:efi
 efi:
