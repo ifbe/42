@@ -280,7 +280,6 @@ static void read2048(QWORD size,void* addr)
 	int x,y;
 
 	//say("me\n");
-	backgroundcolor(0x444444);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -293,6 +292,9 @@ static void into2048()
 {
 	//1.init
 	int x,y;
+	backgroundcolor(0x444444);
+
+	//2或4
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -300,8 +302,6 @@ static void into2048()
 			table[y][x]=0;
 		}
 	}
-
-	//2或4
 	new2048();
 
 	//

@@ -3,7 +3,6 @@
 #include <X11/Xlib.h>
 #define QWORD unsigned long long
 #define DWORD unsigned int
-void writewindow(QWORD,QWORD);
 
 
 
@@ -36,7 +35,6 @@ Window win;
 GC gc;
 Atom wmDelete;
 
-unsigned int* mypixel=0;
 int width=1024;
 int height=768;
 int oldx=0;
@@ -51,11 +49,13 @@ int uievent(QWORD* my1,QWORD* my2)
 	while(1)
 	{
 		XNextEvent(dsp, &ev);
+		/*
 		if(ev.type==Expose)
 		{
 			if (ev.xexpose.count == 0) writewindow(0,0);
 		}
-		else if(ev.type==ClientMessage)
+		*/
+		if(ev.type==ClientMessage)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)
 			{
@@ -138,12 +138,6 @@ int uievent(QWORD* my1,QWORD* my2)
 }
 QWORD readwindow(QWORD what)
 {
-	//'where'
-	if(what==0x6572656877)
-	{
-		return (QWORD)mypixel;
-	}
-
 	//'size'
 	if(what==0x657a6973)
 	{
@@ -171,10 +165,13 @@ void writewindow(QWORD type,QWORD value)
 		return;
 	}
 
+	width=type&0xffff;
+	height=(type>>16)&0xffff;
+
 	//
 	ximage=XCreateImage(
 		dsp,visual,24,ZPixmap,0,
-		(char*)mypixel,1024,768,32,0
+		(char*)value,1024,768,32,0
 	);
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, 1024, 768); 
 }
@@ -188,9 +185,6 @@ void writewindow(QWORD type,QWORD value)
 
 void initwindowworker()
 {
-	//申请内存
-	mypixel=(unsigned int*)malloc(0x400000);
-
 	//初始化
 	dsp = XOpenDisplay(NULL);
 	//int screen = DefaultScreen(dsp);
@@ -226,7 +220,4 @@ void killwindowworker()
 	//
 	XDestroyWindow(dsp, win);
 	XCloseDisplay(dsp);
-
-	//
-	free(mypixel);
 }

@@ -11,6 +11,7 @@ void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
 void colorascii(int x,int y,char ch,unsigned int color);
 void backgroundcolor(DWORD);
+void background1();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);

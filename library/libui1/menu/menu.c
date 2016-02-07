@@ -2,10 +2,11 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int command(char* p);
 void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
+int command(char* p);
+int say(char*,...);
 
 
 
