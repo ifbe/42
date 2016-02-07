@@ -113,17 +113,19 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
-        library/libui1/draw/background.c \
-        library/libui1/draw/shape.c \
-        library/libui1/game/2048.c \
+        library/libui1/draw/draw.background.c \
+        library/libui1/draw/draw.shape.c \
+        library/libui1/game/game.2048.c \
+        library/libui1/game/game.snake.c \
+        library/libui1/game/game.tetris.c \
         library/libui1/menu/menu.c \
-        library/libui1/text/ascii.c \
-        library/libui1/text/unicode.c \
-        library/libui1/tool/hex.c \
-        library/libui1/tool/keyboard.c \
-        library/libui1/tool/tree.c \
-        library/libui1/tool/sketchpad.c \
-        library/libui1/tool/console.c \
+        library/libui1/text/text.ascii.c \
+        library/libui1/text/text.unicode.c \
+        library/libui1/tool/tool.console.c \
+        library/libui1/tool/tool.hex.c \
+        library/libui1/tool/tool.keyboard.c \
+        library/libui1/tool/tool.sketchpad.c \
+        library/libui1/tool/tool.tree.c \
         library/libui1/character.c
 
 #1.visitor
