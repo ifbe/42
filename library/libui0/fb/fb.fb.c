@@ -14,9 +14,9 @@
 
 
 //输入
-//int signal=-1;
-//struct termios old;
-//struct termios new;
+int signal=-1;
+struct termios old;
+struct termios new;
 
 //屏幕
 int fbfd=-1;
@@ -162,19 +162,19 @@ void initwindowworker()
 		printf("error4(plese sudo)\n");
 		exit(-1);
 	}
+*/
 
 	//输入方法2
 	signal=tcgetattr(STDIN_FILENO,&old);
 	new=old;
 	new.c_lflag&=~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
-*/
 }
 //__attribute__((destructor)) void destoryfb()
 void killwindowworker()
 {
 	//close(inputfp);
-	//if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
+	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 
 	//
 	if(fbfd!=-1)close(fbfd);
