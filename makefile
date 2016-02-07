@@ -38,14 +38,14 @@ uwp:
 ########################################help###################################
 x86+linux+cli:
 	make -C app/none+x86+linux+cli --no-print-directory
-	cp app/none+x86+linux+cli/a.exe .
+	cp app/none+x86+linux+cli/a.out .
 x86+mac+cli:
 	make -C app/none+x86+mac+cli --no-print-directory
 	cp app/none+x86+mac+cli/a.exe .
 x86+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x86+win+cli --no-print-directory
-	cp app/none+x86+win+cli/a.exe .
+	cp app/none+x86+win+cli/a.out .
 
 
 
