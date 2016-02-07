@@ -196,10 +196,8 @@ void readcharacter(QWORD size,void* addr)
 	//say("menu\n");
 	if(worker[0].startaddr > 0)worker[0].read(size,addr);
 }
-void intocharacter(int i)
+void intocharacter(QWORD size,void* addr)
 {
-	//(iamhere.c)uicommand
-	now=i;
 }
 void listcharacter(char* addr)
 {
