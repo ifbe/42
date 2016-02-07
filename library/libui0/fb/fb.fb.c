@@ -29,7 +29,6 @@ int ymax=0;
 int bpp=0;
 
 //自己的画板
-static unsigned int* mypixel=NULL;
 static int width=1024;
 static int height=768;
 
@@ -93,6 +92,12 @@ void writewindow(QWORD type,QWORD value)
 		return;
 	}
 
+	//
+	unsigned int* mypixel=(unsigned int*)value;
+	width=type&0xffff;
+	height=(type>>16)&0xffff;
+
+	//
 	int y,ret;
 	for(y=0;y<height;y++)
 	{
@@ -102,11 +107,7 @@ void writewindow(QWORD type,QWORD value)
 }
 QWORD readwindow(QWORD what)
 {
-	if(what==0x6572656877)
-	{
-		return (QWORD)mypixel;
-	}
-	else if(what==0x657a6973)
+	if(what==0x657a6973)
 	{
 		return width+(height<<16);
 	}
@@ -121,14 +122,6 @@ QWORD readwindow(QWORD what)
 
 void initwindowworker()
 {
-	//申请内存
-	mypixel=(unsigned int*)malloc(0x400000);
-	if(mypixel==NULL)
-	{
-		printf("malloc window failed\n");
-		exit(-1);
-	}
-
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
 	if(fbfd<0)
@@ -185,5 +178,4 @@ void killwindowworker()
 
 	//
 	if(fbfd!=-1)close(fbfd);
-	free(mypixel);
 }
