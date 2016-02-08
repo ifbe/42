@@ -63,13 +63,12 @@ char* whereischaracter()
 void inituniverse()
 {
 	//temp
-	int size;
 	QWORD i;
 	QWORD temp;
+	int size=2 * 0x400000;
 
 
 	//1.申请内存，为了对齐要多申请0x1000
-	size=2 * 0x400000;
 	rawuniverse=malloc(size+0x1000);
 	if(rawuniverse==NULL)
 	{
