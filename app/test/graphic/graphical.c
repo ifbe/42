@@ -20,7 +20,7 @@ static DWORD color;
 void printworld()
 {
 	int x,y;
-	for(y=0;y<512;y++)
+	for(y=0;y<1024;y++)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -35,7 +35,7 @@ void processmessage(QWORD type,QWORD key)
 void main()
 {
 	//before
-	initwindowworker();
+	initwindow();
 
 	//forever
 	QWORD type=0;
@@ -55,5 +55,5 @@ void main()
 	}
 
 	//after
-	killwindowworker();
+	killwindow();
 }

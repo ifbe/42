@@ -5,7 +5,7 @@
 #define QWORD unsigned long long
 //
 int initunicodetable();
-void initunicode(QWORD,void*);
+int initunicode(QWORD,void*);
 void printunicode(int,int,DWORD);
 void printunicodebig(int,int,DWORD);
 //
@@ -23,7 +23,7 @@ static DWORD which=0x4e00;		//hanzi starts @ 0x4e00
 void printworld()
 {
 	int x,y;
-	for(y=0;y<768;y++)
+	for(y=0;y<1024;y++)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -37,7 +37,7 @@ void printworld()
 	printunicode(0,250,0x548c);
 	printunicode(0,500,0x548c);
 */
-	for(y=0;y<768;y+=32)
+	for(y=0;y<1024;y+=32)
 	{
 		for(x=0;x<1024;x+=32)
 		{
@@ -64,16 +64,10 @@ void main()
 {
 	//before
 	int ret;
-	initwindowworker();
+	ret=initwindow();	//check error!!!!!
 
 	//unicode
-	ret=initunicodetable();
-	if(ret<=0)
-	{
-		printf("(%x)can not find unicode.bin\n",ret);
-		goto death;
-	}
-	initunicode(0x04000400,palette);
+	ret=initunicode(0x04000400,palette);
 
 	//forever
 	QWORD type=0;
@@ -94,6 +88,5 @@ void main()
 
 	//after
 death:
-	killunicodetable();
-	killwindowworker();
+	killwindow();
 }
