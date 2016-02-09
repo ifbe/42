@@ -3,10 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 void writewindow(QWORD size,void* addr);
-void waitevent(QWORD* type,QWORD* key);
-
-void initpalette();
-void cleanall();
+void uievent(QWORD* type,QWORD* key);
 
 
 
@@ -47,7 +44,7 @@ void main()
 		writewindow(0x04000400,palette);
 
 		//2.等事件，是退出消息就退出
-		waitevent(&type,&key);
+		uievent(&type,&key);
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死

@@ -25,6 +25,8 @@ gcc:
 	gcc -c -O2 game/game.2048.c
 	gcc -c -O2 game/game.snake.c
 	gcc -c -O2 game/game.tetris.c
+	gcc -c -O2 image/image.fuzzy.c
+	gcc -c -O2 image/image.gray.c
 	gcc -c -O2 menu/menu.c
 	gcc -c -O2 text/text.ascii.c
 	gcc -c -O2 text/text.unicode.c

@@ -37,3 +37,7 @@ xlibhanzi:
 6:
 	make -C ../none+x86+win+api static --no-print-directory
 	gcc cool/6.c ../none+x86+win+api/library.a  -lgdi32
+###########################image process###########################
+gray:
+	make -C ../none+x86+win+api static --no-print-directory
+	gcc image/gray.c ../none+x86+win+api/library.a  -lgdi32

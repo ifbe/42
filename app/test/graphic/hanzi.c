@@ -4,13 +4,12 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int initunicodetable();
 int initunicode(QWORD,void*);
 void printunicode(int,int,DWORD);
 void printunicodebig(int,int,DWORD);
 //
 void writewindow(QWORD,void*);
-void waitevent(QWORD* type,QWORD* key);
+void uievent(QWORD* type,QWORD* key);
 
 
 
@@ -79,7 +78,7 @@ void main()
 		writewindow(0x04000400,palette);
 
 		//2.等事件，是退出消息就退出
-		waitevent(&type,&key);
+		uievent(&type,&key);
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死
