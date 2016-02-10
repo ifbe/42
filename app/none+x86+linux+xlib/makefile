@@ -29,7 +29,7 @@ static:
 	make -s -C $(library)/libsoft1 gcc
 	make -s -C $(library)/libui0 xlib
 	make -s -C $(library)/libui1 gcc
-	gcc -o a.out \
+	ar crs library.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

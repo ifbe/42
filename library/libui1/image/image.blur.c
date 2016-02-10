@@ -11,8 +11,8 @@ void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 }
 void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 {
-	blur_gauss_x(size,addr);
-	blur_gauss_x(size,addr)
+	blur_gauss_x(size,radius,src,dst);
+	blur_gauss_x(size,radius,src,dst);
 }
 //(e^(-(x*x+y*y)/(2*sigma^2)))/(2*pi*sigma*sigma)
 void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
