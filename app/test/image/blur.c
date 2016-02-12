@@ -24,7 +24,6 @@ void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 //
 static DWORD palette[1024*1024];
 static DWORD final[1024*1024];
-static DWORD color;
 
 
 
@@ -105,15 +104,16 @@ void main()
 	initwindow();
 
 	//picture
-	for(y=0;y<1024;y++)
+	char* src=(char*)final;
+	char* dst=(char*)palette;
+	FILE* fp=fopen("/mnt/fuck/file/kiss.ppm","r");
+	fread(final,0x100000,4,fp);
+	fclose(fp);
+	for(x=0;x<0x100000;x++)
 	{
-		for(x=0;x<1024;x++)
-		{
-			r=RED(x,y)&0xff;
-			g=GREEN(x,y)&0xff;
-			b=BLUE(x,y)&0xff;
-			palette[y*1024+x]=(b)+(g<<8)+(r<<16);
-		}
+		dst[0+x*4]=src[0x39+x*3];
+		dst[1+x*4]=src[0x38+x*3];
+		dst[2+x*4]=src[0x37+x*3];
 	}
 	processmessage(0x72616863,0x30);
 

@@ -79,12 +79,166 @@ void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
 }
 void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 {
+	int x,y;
+	int m,n;
+	int width,height;
+	double sigma;
+	double temp;
+	double r,g,b;
+
+	//由公式:d = 6σ + 1,可以得到σ = r / 3.
+	if(radius>9)radius=9;
+	sigma=(double)radius;
+	sigma/=3;
+	printf("radius=%d,sigma=%lf\n",radius,sigma);
+
+	//first build the "gauss table"
+	for(y=0;y<=radius;y++)
+	{
+		temp  = (double)(-y*y);
+		temp /= 2*sigma*sigma;
+		gausstable[0][y]  = exp(temp);
+		gausstable[0][y] /= 2*pi*sigma*sigma;
+		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+	}
+
+	//开始
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+	for(y=radius;y<height-radius;y++)
+	{
+		for(x=radius;x<width-radius;x++)
+		{
+			//process this pixel
+			r=g=b=0.0;
+
+			//<0
+			for(m=-radius;m<0;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*(y+m) + x )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*(y+m) + x )<<2)+2];
+			}//m
+			//>0
+			for(m=0;m<radius;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*(y+m) + x )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*(y+m) + x )<<2)+2];
+			}//m
+
+			//put the result
+			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			dst[((width*y+x)<<2)+0]=(int)b;
+			dst[((width*y+x)<<2)+1]=(int)g;
+			dst[((width*y+x)<<2)+2]=(int)r;
+		}//x
+	}//y
 	
 }
 void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 {
-	blur_gauss_x(size,radius,src,dst);
-	blur_gauss_x(size,radius,src,dst);
+	int x,y;
+	int m,n;
+	int width,height;
+	double sigma;
+	double temp;
+	double r,g,b;
+
+	//由公式:d = 6σ + 1,可以得到σ = r / 3.
+	if(radius>9)radius=9;
+	sigma=(double)radius;
+	sigma/=3;
+	printf("radius=%d,sigma=%lf\n",radius,sigma);
+
+	//first build the "gauss table"
+	for(y=0;y<=radius;y++)
+	{
+		temp  = (double)(-y*y);
+		temp /= 2*sigma*sigma;
+		gausstable[0][y]  = exp(temp);
+		gausstable[0][y] /= 2*pi*sigma*sigma;
+		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+	}
+
+	//开始(x)
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+	for(y=radius;y<height-radius;y++)
+	{
+		for(x=radius;x<width-radius;x++)
+		{
+			//process this pixel
+			r=g=b=0.0;
+
+			//<0
+			for(m=-radius;m<0;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*y + x+m )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*y + x+m )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*y + x+m )<<2)+2];
+			}//m
+			//>0
+			for(m=0;m<radius;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*y + x+m )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*y + x+m )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*y + x+m )<<2)+2];
+			}//m
+
+			//<0
+			for(m=-radius;m<0;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*(y+m) + x )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*(y+m) + x )<<2)+2];
+			}//m
+			//>0
+			for(m=0;m<radius;m++)
+			{
+				//
+				temp=gausstable[0][m];
+				//b
+				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
+				//g
+				g+=temp*(double)src[ ( (width*(y+m) + x )<<2)+1];
+				//r
+				r+=temp*(double)src[ ( (width*(y+m) + x )<<2)+2];
+			}//m
+
+			//put the result
+			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			dst[((width*y+x)<<2)+0]=(int)b;
+			dst[((width*y+x)<<2)+1]=(int)g;
+			dst[((width*y+x)<<2)+2]=(int)r;
+		}//x
+	}//y
+
 }
 //(e^(-(x*x+y*y)/(2*sigma^2)))/(2*pi*sigma*sigma)
 void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
