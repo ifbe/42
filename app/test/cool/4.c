@@ -15,7 +15,22 @@ void uievent(QWORD* type,QWORD* key);
 
 //
 static DWORD palette[1024*1024];
-static DWORD color;
+void createppm(QWORD size,BYTE* palette,char* filename)
+{
+	int x,y;
+	FILE* fp=fopen(filename,"w");
+	fprintf(fp,"P6\n%d %d\n255\n",1024,1024);
+	for(y=0;y<1024;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			fwrite((char*)palette+y*4096+x*4+2,1,1,fp);
+			fwrite((char*)palette+y*4096+x*4+1,1,1,fp);
+			fwrite((char*)palette+y*4096+x*4,1,1,fp);
+		}
+	}
+	fclose(fp);
+}
 
 
 
@@ -77,6 +92,7 @@ void main()
 			palette[y*1024+x]=(b)+(g<<8)+(r<<16);
 		}
 	}
+	createppm(0x04000400,(BYTE*)palette,"4.ppm");
 
 	//forever
 	QWORD type=0;

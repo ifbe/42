@@ -54,7 +54,6 @@ unsigned char BLUE(int i,int j)
 //
 void processmessage(QWORD type,QWORD key)
 {
-	
 	int i;
 	printf("%x,%x\n",type,key);
 
@@ -75,15 +74,24 @@ void processmessage(QWORD type,QWORD key)
 		else if(key==0x31)
 		{
 			blur_gauss_x(0x04000400,5,(BYTE*)palette,(BYTE*)final);
-			blur_gauss_y(0x04000400,5,(BYTE*)palette,(BYTE*)final);
 		}
 		//2
 		else if(key==0x32)
 		{
-			blur_gauss_2(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_y(0x04000400,5,(BYTE*)palette,(BYTE*)final);
 		}
 		//3
 		else if(key==0x33)
+		{
+			blur_gauss_xy(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+		}
+		//4
+		else if(key==0x34)
+		{
+			blur_gauss_2(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+		}
+		//5
+		else if(key==0x35)
 		{
 			blur_box(0x04000400,5,(BYTE*)palette,(BYTE*)final);
 		}
