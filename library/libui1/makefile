@@ -28,6 +28,7 @@ gcc:
 	gcc -c -O2 image/image.blur.c
 	gcc -c -O2 image/image.channel.c
 	gcc -c -O2 image/image.gray.c
+	gcc -c -O2 image/image.mosaic.c
 	gcc -c -O2 menu/menu.c
 	gcc -c -O2 text/text.ascii.c
 	gcc -c -O2 text/text.unicode.c

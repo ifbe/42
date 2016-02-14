@@ -54,7 +54,7 @@ void channel_rb(QWORD size,char* addr)
 		addr[i*4+1]=0;
 	}
 }
-void channel_bg(QWORD size,char* addr)
+void channel_gb(QWORD size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
