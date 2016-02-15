@@ -9,7 +9,7 @@ static double gausstable[10][10];
 
 
 //(e^(-x*x/(2*sigma^2)))/(sigma*sqrt(2*pi))
-void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
+void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 {
 	int x,y;
 	int m,n;
@@ -22,7 +22,7 @@ void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%d,sigma=%lf\n",radius,sigma);
+	printf("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(x=0;x<=radius;x++)
@@ -30,7 +30,7 @@ void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
 		temp  = (double)(-x*x);
 		temp /= 2*sigma*sigma;
 		gausstable[0][x]  = exp(temp);
-		gausstable[0][x] /= 2*pi*sigma*sigma;
+		gausstable[0][x] /= sigma*sqrt(2*pi);
 		printf("gausstable[%d]=%lf\n",x,gausstable[0][x]);
 	}
 
@@ -48,7 +48,7 @@ void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
 			for(m=-radius;m<0;m++)
 			{
 				//
-				temp=gausstable[0][m];
+				temp=gausstable[0][-m];
 				//b
 				b+=temp*(double)src[ ( (width*y + (x+m) )<<2)+0];
 				//g
@@ -77,7 +77,7 @@ void blur_gauss_x(QWORD size,QWORD radius,char* src,char* dst)
 		}//x
 	}//y
 }
-void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
+void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 {
 	int x,y;
 	int m,n;
@@ -90,7 +90,7 @@ void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%d,sigma=%lf\n",radius,sigma);
+	printf("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -98,7 +98,7 @@ void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 		temp  = (double)(-y*y);
 		temp /= 2*sigma*sigma;
 		gausstable[0][y]  = exp(temp);
-		gausstable[0][y] /= 2*pi*sigma*sigma;
+		gausstable[0][y] /= sigma*sqrt(2*pi);
 		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
@@ -116,7 +116,7 @@ void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 			for(m=-radius;m<0;m++)
 			{
 				//
-				temp=gausstable[0][m];
+				temp=gausstable[0][-m];
 				//b
 				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
 				//g
@@ -146,7 +146,7 @@ void blur_gauss_y(QWORD size,QWORD radius,char* src,char* dst)
 	}//y
 	
 }
-void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
+void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 {
 	int x,y;
 	int m,n;
@@ -159,7 +159,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%d,sigma=%lf\n",radius,sigma);
+	printf("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -167,7 +167,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 		temp  = (double)(-y*y);
 		temp /= 2*sigma*sigma;
 		gausstable[0][y]  = exp(temp);
-		gausstable[0][y] /= 2*pi*sigma*sigma;
+		gausstable[0][y] /= sigma*sqrt(2*pi);
 		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
@@ -185,7 +185,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 			for(m=-radius;m<0;m++)
 			{
 				//
-				temp=gausstable[0][m];
+				temp=gausstable[0][-m];
 				//b
 				b+=temp*(double)src[ ( (width*y + x+m )<<2)+0];
 				//g
@@ -210,7 +210,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 			for(m=-radius;m<0;m++)
 			{
 				//
-				temp=gausstable[0][m];
+				temp=gausstable[0][-m];
 				//b
 				b+=temp*(double)src[ ( (width*(y+m) + x )<<2)+0];
 				//g
@@ -233,15 +233,15 @@ void blur_gauss_xy(QWORD size,QWORD radius,char* src,char* dst)
 
 			//put the result
 			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
-			dst[((width*y+x)<<2)+0]=(int)b;
-			dst[((width*y+x)<<2)+1]=(int)g;
-			dst[((width*y+x)<<2)+2]=(int)r;
+			dst[((width*y+x)<<2)+0]=(int)(b/2);
+			dst[((width*y+x)<<2)+1]=(int)(g/2);
+			dst[((width*y+x)<<2)+2]=(int)(r/2);
 		}//x
 	}//y
 
 }
 //(e^(-(x*x+y*y)/(2*sigma^2)))/(2*pi*sigma*sigma)
-void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
+void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 {
 	int x,y;
 	int m,n;
@@ -254,7 +254,7 @@ void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%d,sigma=%lf\n",radius,sigma);
+	printf("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -286,7 +286,7 @@ void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
 				for(m=-radius;m<0;m++)
 				{
 					//
-					temp=gausstable[n][m];
+					temp=gausstable[-n][-m];
 					//b
 					b+=temp*(double)src[ ( (width*(y+n) + (x+m) )<<2)+0];
 					//g
@@ -299,7 +299,7 @@ void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
 				for(m=0;m<radius;m++)
 				{
 					//
-					temp=gausstable[n][m];
+					temp=gausstable[-n][m];
 					//b
 					b+=temp*(double)src[ ( (width*(y+n) + (x+m) )<<2)+0];
 					//g
@@ -316,7 +316,7 @@ void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
 				for(m=-radius;m<0;m++)
 				{
 					//
-					temp=gausstable[n][m];
+					temp=gausstable[n][-m];
 					//b
 					b+=temp*(double)src[ ( (width*(y+n) + (x+m) )<<2)+0];
 					//g
@@ -359,7 +359,7 @@ void blur_gauss_2(QWORD size,QWORD radius,char* src,char* dst)
 	}//y
 }
 //均值
-void blur_box(QWORD size,QWORD radius,char* src,char* dst)
+void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 {
 	
 }

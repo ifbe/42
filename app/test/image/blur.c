@@ -54,13 +54,10 @@ unsigned char BLUE(int i,int j)
 void processmessage(QWORD type,QWORD key)
 {
 	int i;
-	printf("%x,%x\n",type,key);
+	printf("%llx,%llx\n",type,key);
 
 	if(type==0x72616863)             //'char'
 	{
-		//gray
-		printf("%x,%x\n",type,key);
-
 		//0
 		if(key==0x30)
 		{
@@ -72,27 +69,27 @@ void processmessage(QWORD type,QWORD key)
 		//1
 		else if(key==0x31)
 		{
-			blur_gauss_x(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_x(0x04000400,9,(BYTE*)palette,(BYTE*)final);
 		}
 		//2
 		else if(key==0x32)
 		{
-			blur_gauss_y(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_y(0x04000400,9,(BYTE*)palette,(BYTE*)final);
 		}
 		//3
 		else if(key==0x33)
 		{
-			blur_gauss_xy(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_xy(0x04000400,9,(BYTE*)palette,(BYTE*)final);
 		}
 		//4
 		else if(key==0x34)
 		{
-			blur_gauss_2(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_2(0x04000400,9,(BYTE*)palette,(BYTE*)final);
 		}
 		//5
 		else if(key==0x35)
 		{
-			blur_box(0x04000400,5,(BYTE*)palette,(BYTE*)final);
+			blur_box(0x04000400,9,(BYTE*)palette,(BYTE*)final);
 		}
 	}
 }
@@ -106,14 +103,14 @@ void main()
 	//picture
 	char* src=(char*)final;
 	char* dst=(char*)palette;
-	FILE* fp=fopen("/mnt/fuck/file/kiss.ppm","r");
+	FILE* fp=fopen("4.ppm","r");
 	fread(final,0x100000,4,fp);
 	fclose(fp);
 	for(x=0;x<0x100000;x++)
 	{
-		dst[0+x*4]=src[0x39+x*3];
-		dst[1+x*4]=src[0x38+x*3];
-		dst[2+x*4]=src[0x37+x*3];
+		dst[0+x*4]=src[0x13+x*3];
+		dst[1+x*4]=src[0x12+x*3];
+		dst[2+x*4]=src[0x11+x*3];
 	}
 	processmessage(0x72616863,0x30);
 
