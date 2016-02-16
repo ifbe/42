@@ -6,6 +6,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+double power(double,double);
 //
 void initwindow();
 void killwindow();
@@ -24,27 +25,58 @@ void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 //
 static DWORD palette[1024*1024];
 static DWORD final[1024*1024];
+void createppm(QWORD size,BYTE* palette,char* filename)
+{
+	int x,y;
+	FILE* fp=fopen(filename,"w");
+	fprintf(fp,"P6\n%d %d\n255\n",1024,1024);
+	for(y=0;y<1024;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			fwrite((char*)palette+y*4096+x*4+2,1,1,fp);
+			fwrite((char*)palette+y*4096+x*4+1,1,1,fp);
+			fwrite((char*)palette+y*4096+x*4,1,1,fp);
+		}
+	}
+	fclose(fp);
+}
 
 
 
 
 //
 #define _sq(x) ((x)*(x))
-#define r(n)(rand()%n)
+#define _sq(x) ((x)*(x))
 unsigned char RED(int i,int j)
 {
-	static char c[1024][1024];
-	return!c[i][j]?c[i][j]=!r(999)?r(256):RED((i+r(2))%1024,(j+r(2))%1024):c[i][j];
+	double a=0,b=0,c,d,n=0;
+	while((c=a*a)+(d=b*b)<4&&n++<880)
+	{
+		b=2*a*b+j*8e-9-.645411;
+		a=c-d+i*8e-9+.356888;
+	}
+	return 255*power((n-80)/800,3.);
 }
 unsigned char GREEN(int i,int j)
 {
-	static char c[1024][1024];
-	return!c[i][j]?c[i][j]=!r(999)?r(256):GREEN((i+r(2))%1024,(j+r(2))%1024):c[i][j];
+	double a=0,b=0,c,d,n=0;
+	while((c=a*a)+(d=b*b)<4&&n++<880)
+	{
+		b=2*a*b+j*8e-9-.645411;
+		a=c-d+i*8e-9+.356888;
+	}
+	return 255*power((n-80)/800,.7);
 }
 unsigned char BLUE(int i,int j)
 {
-	static char c[1024][1024];
-	return!c[i][j]?c[i][j]=!r(999)?r(256):BLUE((i+r(2))%1024,(j+r(2))%1024):c[i][j];
+	double a=0,b=0,c,d,n=0;
+	while((c=a*a)+(d=b*b)<4&&n++<880)
+	{
+		b=2*a*b+j*8e-9-.645411;
+		a=c-d+i*8e-9+.356888;
+	}
+	return 255*power((n-80)/800,.5);
 }
 
 
@@ -101,16 +133,15 @@ void main()
 	initwindow();
 
 	//picture
-	char* src=(char*)final;
-	char* dst=(char*)palette;
-	FILE* fp=fopen("4.ppm","r");
-	fread(final,0x100000,4,fp);
-	fclose(fp);
-	for(x=0;x<0x100000;x++)
+	for(y=0;y<1024;y++)
 	{
-		dst[0+x*4]=src[0x13+x*3];
-		dst[1+x*4]=src[0x12+x*3];
-		dst[2+x*4]=src[0x11+x*3];
+		for(x=0;x<1024;x++)
+		{
+			r=RED(x,y)&0xff;
+			g=GREEN(x,y)&0xff;
+			b=BLUE(x,y)&0xff;
+			palette[y*1024+x]=(b)+(g<<8)+(r<<16);
+		}
 	}
 	processmessage(0x72616863,0x30);
 
@@ -125,6 +156,8 @@ void main()
 		//2.等事件，是退出消息就退出
 		uievent(&type,&key);
 		if( type==0 )break;
+		if( (type==0x64626b)&&(key==0x1b))break;
+
 
 		//3.处理事件
 		processmessage(type,key);

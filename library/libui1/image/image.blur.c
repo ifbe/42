@@ -1,8 +1,15 @@
-#include<math.h>
-#include<stdio.h>
 #define QWORD unsigned long long
 #define BYTE unsigned char
 #define pi 3.1415926535897932384626433832795023841971693993751058209749445923078
+#define e 2.7182818284590452353602874713526624977572470936
+double squareroot(double);
+double exponent(double);
+//#define exponent exp
+
+
+
+
+//10*10*8=800BYTE
 static double gausstable[10][10];
 
 
@@ -22,16 +29,16 @@ void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%lld,sigma=%lf\n",radius,sigma);
+	//say("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(x=0;x<=radius;x++)
 	{
 		temp  = (double)(-x*x);
 		temp /= 2*sigma*sigma;
-		gausstable[0][x]  = exp(temp);
-		gausstable[0][x] /= sigma*sqrt(2*pi);
-		printf("gausstable[%d]=%lf\n",x,gausstable[0][x]);
+		gausstable[0][x]  = exponent(temp);
+		gausstable[0][x] /= sigma*squareroot(2*pi);
+		//say("gausstable[%d]=%lf\n",x,gausstable[0][x]);
 	}
 
 	//开始
@@ -70,7 +77,7 @@ void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 			}//m
 
 			//put the result
-			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -90,16 +97,16 @@ void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%lld,sigma=%lf\n",radius,sigma);
+	//say("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
 	{
 		temp  = (double)(-y*y);
 		temp /= 2*sigma*sigma;
-		gausstable[0][y]  = exp(temp);
-		gausstable[0][y] /= sigma*sqrt(2*pi);
-		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+		gausstable[0][y]  = exponent(temp);
+		gausstable[0][y] /= sigma*squareroot(2*pi);
+		//say("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
 	//开始
@@ -138,7 +145,7 @@ void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 			}//m
 
 			//put the result
-			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -159,16 +166,16 @@ void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%lld,sigma=%lf\n",radius,sigma);
+	//say("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
 	{
 		temp  = (double)(-y*y);
 		temp /= 2*sigma*sigma;
-		gausstable[0][y]  = exp(temp);
-		gausstable[0][y] /= sigma*sqrt(2*pi);
-		printf("gausstable[%d]=%lf\n",y,gausstable[0][y]);
+		gausstable[0][y]  = exponent(temp);
+		gausstable[0][y] /= sigma*squareroot(2*pi);
+		//say("gausstable[%d]=%lf\n",y,gausstable[0][y]);
 	}
 
 	//开始(x)
@@ -232,7 +239,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 			}//m
 
 			//put the result
-			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)(b/2);
 			dst[((width*y+x)<<2)+1]=(int)(g/2);
 			dst[((width*y+x)<<2)+2]=(int)(r/2);
@@ -254,7 +261,7 @@ void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	if(radius>9)radius=9;
 	sigma=(double)radius;
 	sigma/=3;
-	printf("radius=%lld,sigma=%lf\n",radius,sigma);
+	//say("radius=%lld,sigma=%lf\n",radius,sigma);
 
 	//first build the "gauss table"
 	for(y=0;y<=radius;y++)
@@ -263,9 +270,9 @@ void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 		{
 			temp  = (double)(-x*x-y*y);
 			temp /= 2*sigma*sigma;
-			gausstable[y][x]  = exp(temp);
+			gausstable[y][x]  = exponent(temp);
 			gausstable[y][x] /= 2*pi*sigma*sigma;
-			printf("gausstable[%d][%d]=%lf\n",y,x,gausstable[y][x]);
+			//say("gausstable[%d][%d]=%lf\n",y,x,gausstable[y][x]);
 		}
 	}
 
@@ -340,7 +347,7 @@ void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 			}//n
 
 			//put the result
-			//printf("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
+			//say("(%d,%d):%lf,%lf,%lf\n",x,y,b,g,r);
 			dst[((width*y+x)<<2)+0]=(int)b;
 			dst[((width*y+x)<<2)+1]=(int)g;
 			dst[((width*y+x)<<2)+2]=(int)r;
@@ -351,7 +358,7 @@ void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 			{
 				for(m=-radius;m<radius;m++)
 				{
-					printf("(%d,%d)(%d,%d)\n",x,y,m,n);
+					say("(%d,%d)(%d,%d)\n",x,y,m,n);
 				}
 			}
 */

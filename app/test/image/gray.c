@@ -26,7 +26,6 @@ void gray_bio(QWORD size,BYTE* addr);
 //
 static DWORD palette[1024*1024];
 static DWORD final[1024*1024];
-static DWORD color;
 
 
 
@@ -58,12 +57,11 @@ void processmessage(QWORD type,QWORD key)
 {
 	
 	int i;
-	printf("%x,%x\n",type,key);
+	printf("%llx,%llx\n",type,key);
 
 	if(type==0x72616863)             //'char'
 	{
 		//gray
-		printf("%x,%x\n",type,key);
 		for(i=0;i<1024*1024;i++)
 		{
 			final[i]=palette[i];
@@ -141,6 +139,7 @@ void main()
 		//2.等事件，是退出消息就退出
 		uievent(&type,&key);
 		if( type==0 )break;
+		if( (type==0x64626b)&&(key==0x1b))break;
 
 		//3.处理事件
 		processmessage(type,key);

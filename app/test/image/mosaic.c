@@ -51,7 +51,7 @@ void processmessage(QWORD type,QWORD key)
 {
 	
 	int i;
-	printf("%x,%x\n",type,key);
+	printf("%llx,%llx\n",type,key);
 
 	if(type==0x72616863)             //'char'
 	{
@@ -101,6 +101,8 @@ void main()
 		//2.等事件，是退出消息就退出
 		uievent(&type,&key);
 		if( type==0 )break;
+		if( (type==0x64626b)&&(key==0x1b))break;
+
 
 		//3.处理事件
 		processmessage(type,key);

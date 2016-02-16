@@ -1,10 +1,10 @@
 //martin buttner
 #include<stdio.h>
-#include<math.h>
 #define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+double sine(double);
 void initwindow();
 void killwindow();
 void writewindow(QWORD size,void* addr);
@@ -41,19 +41,19 @@ void createppm(QWORD size,BYTE* palette,char* filename)
 unsigned char RED(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)((i+DIM)*s+y)%2+(int)((DIM*2-i)*s+y)%2)*127;
 }
 unsigned char GREEN(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)(5*((i+DIM)*s+y))%2+(int)(5*((DIM*2-i)*s+y))%2)*127;
 }
 unsigned char BLUE(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)(29*((i+DIM)*s+y))%2+(int)(29*((DIM*2-i)*s+y))%2)*127;
 }
 
@@ -92,6 +92,7 @@ void main()
 		//2.等事件，是退出消息就退出
 		uievent(&type,&key);
 		if( type==0 )break;
+		if( (type==0x64626b)&&(key==0x1b))break;
 	}
 
 	//after

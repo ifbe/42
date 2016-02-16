@@ -1,10 +1,10 @@
 //martin buttner
 #include<stdio.h>
-#include<math.h>
 #define BYTE unsigned char
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+double power(double,double);
 void initwindow();
 void killwindow();
 void writewindow(QWORD size,void* addr);
@@ -45,18 +45,17 @@ unsigned char RED(int i,int j)
 		b=2*a*b+j*8e-9-.645411;
 		a=c-d+i*8e-9+.356888;
 	}
-	return 255*pow((n-80)/800,3.);
+	return 255*power((n-80)/800,3.);
 }
 unsigned char GREEN(int i,int j)
 {
-	
 	double a=0,b=0,c,d,n=0;
 	while((c=a*a)+(d=b*b)<4&&n++<880)
 	{
 		b=2*a*b+j*8e-9-.645411;
 		a=c-d+i*8e-9+.356888;
 	}
-	return 255*pow((n-80)/800,.7);
+	return 255*power((n-80)/800,.7);
 }
 unsigned char BLUE(int i,int j)
 {
@@ -66,7 +65,7 @@ unsigned char BLUE(int i,int j)
 		b=2*a*b+j*8e-9-.645411;
 		a=c-d+i*8e-9+.356888;
 	}
-	return 255*pow((n-80)/800,.5);
+	return 255*power((n-80)/800,.5);
 }
 
 
@@ -105,6 +104,7 @@ void main()
 		//2.等事件，是退出消息就退出
 		uievent(&type,&key);
 		if( type==0 )break;
+		if( (type==0x64626b)&&(key==0x1b))break;
 	}
 
 	//after
