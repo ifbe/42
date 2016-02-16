@@ -81,6 +81,15 @@ double cosine(double x)
 	);
 	return result;
 }
+//同时得到sin，cos
+void sincos(double x,double *s,double *c)
+{
+	__asm__ (
+		"fsincos;" 
+			: "=t" (*c), "=u" (*s) 
+			: "0" (x) : "st(7)"
+	);
+}
 //正切
 double tangent(double x)
 {
