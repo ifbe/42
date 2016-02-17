@@ -36,6 +36,12 @@ uwp:
 
 
 ########################################help###################################
+arm+linux+cli:
+	make -C app/none+arm+linux+cli --no-print-directory
+	cp app/none+arm+linux+cli/a.out .
+mips+linux+cli:
+	make -C app/none+mips+linux+cli --no-print-directory
+	cp app/none+mips+linux+cli/a.out .
 x86+linux+cli:
 	make -C app/none+x86+linux+cli --no-print-directory
 	cp app/none+x86+linux+cli/a.out .

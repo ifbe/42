@@ -4,6 +4,12 @@ arm:
 	gcc -c -O2 arm/arm.fp.c
 	gcc -c -O2 arm/arm.platform.c
 	gcc -c -O2 driver.c
+.PHONY:mips
+mips:
+	rm -f x86.*.o
+	gcc -c -O2 arm/arm.fp.c
+	gcc -c -O2 arm/arm.platform.c
+	gcc -c -O2 driver.c
 .PHONY:x86
 x86:
 	rm -f arm.*.o
