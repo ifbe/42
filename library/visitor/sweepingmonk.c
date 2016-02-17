@@ -173,19 +173,15 @@ int helpme(char* p)
 	//0x706c6568='help'
 	else if(temp==0x706c6568)
 	{
-		//physical
-		say("help ?             (help what)\n");
-		say("list ?             (list physical)\n");
-		say("into ?             (choose one)\n");
-		say("read ?             (physical print)\n");
-		say("write ?            (not allowed currently)\n\n");
+		//4
+		say("ls ?		=list/summary/view/hello\n");
+		say("cd ?		=choose/into/switch/friend\n");
+		say("read ?		=load/get/eat/copy\n");
+		say("write ?		=store/put/spit/paste\n\n");
 
-		//logical
-		say("mount ?            (mount which)\n");
-		say("ls ?               (list logical)\n");
-		say("cd ?               (change directory)\n");
-		say("load ?             (load this file)\n");
-		say("store ?            (store this file)\n");
+		//2
+		say("enter ?		=init/mount/push/love\n");
+		say("leave ?		=kill/unmount/pop/hate\n");
 
 		return 2;
 	}

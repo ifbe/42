@@ -213,7 +213,7 @@ double power(double x,double y)
 {
 	double result;
 	short t1,t2;
-	__asm__ (
+	__asm __volatile__(
 		"fxch\n\t"
 		"ftst\n\t"
 		"fstsw\n\t"

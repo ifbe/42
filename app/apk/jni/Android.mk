@@ -16,40 +16,40 @@ LOCAL_SRC_FILES += \
 #2.hard0
 ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
-        library/libhard0/x86/x86.fp.c \
-        library/libhard0/x86/x86.port.c \
-        library/libhard0/x86/x86.platform.c \
+        library/libhard0/processor/x86/x86.fp.c \
+        library/libhard0/processor/x86/x86.port.c \
+        library/libhard0/processor/x86/x86.platform.c \
         library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES += \
-        library/libhard0/x86/x86.fp.c \
-        library/libhard0/x86/x86.port.c \
-        library/libhard0/x86/x86.platform.c \
+        library/libhard0/processor/x86/x86.fp.c \
+        library/libhard0/processor/x86/x86.port.c \
+        library/libhard0/processor/x86/x86.platform.c \
         library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm)
 LOCAL_SRC_FILES += \
-        library/libhard0/arm/arm.fp.c \
-        library/libhard0/arm/arm.platform.c \
+        library/libhard0/processor/arm/arm.fp.c \
+        library/libhard0/processor/arm/arm.platform.c \
         library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm64)
 LOCAL_SRC_FILES += \
-        library/libhard0/arm/arm.fp.c \
-        library/libhard0/arm/arm.platform.c \
+        library/libhard0/processor/arm/arm.fp.c \
+        library/libhard0/processor/arm/arm.platform.c \
         library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips)
 LOCAL_SRC_FILES += \
-        library/libhard0/mips/mips.fp.c \
-        library/libhard0/mips/mips.platform.c \
+        library/libhard0/processor/mips/mips.fp.c \
+        library/libhard0/processor/mips/mips.platform.c \
         library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips64)
 LOCAL_SRC_FILES += \
-        library/libhard0/mips/mips.fp.c \
-        library/libhard0/mips/mips.platform.c \
+        library/libhard0/processor/mips/mips.fp.c \
+        library/libhard0/processor/mips/mips.platform.c \
         library/libhard0/driver.c
 endif
 
