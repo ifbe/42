@@ -35,12 +35,7 @@ static char* datahome;		//+3m
 
 
 //physical function
-void softhelp()
-{
-	QWORD type=prelibation(datahome);
-	say("%s\n",&type);
-}
-void softlist(char* arg1)
+void real_list(char* arg1)
 {
 	QWORD temp=0;
 	int i,j;
@@ -118,8 +113,8 @@ void softlist(char* arg1)
 			say("<%x>\n",i);
 		}//if
 	}//for
-}//softlist
-void softinto(char* arg)
+}//real_list
+void real_choose(char* arg)
 {
 	int ret=0;
 	QWORD temp=0;
@@ -136,14 +131,14 @@ void softinto(char* arg)
 	intomemory(arg);
 	ret=mount(0);
 }
-int softread(char* arg1)
+int real_read(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("softread@%llx,world@%llx\n",softread,diskhome);
+		say("read@%llx,world@%llx\n",real_read,diskhome);
 		return -1;
 	}
 
@@ -168,14 +163,14 @@ int softread(char* arg1)
 
 	else return platformread(arg1);
 }
-int softwrite(char* arg1)
+int real_write(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("softwrite@%llx,world@%llx\n",softwrite,diskhome);
+		say("write@%llx,world@%llx\n",real_write,diskhome);
 		return -1;
 	}
 

@@ -30,7 +30,7 @@ void initconsole(QWORD,char*);		//4.console.c
 
 //
 DWORD getrandom();
-void softinto(char*);
+void real_choose(char*);
 void say(char* , ...);
 
 
@@ -139,7 +139,7 @@ void writecharacter(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)
 	{
 		//say("debuging::::::::%s\n",(char*)key);
-		softinto((char*)key);
+		real_choose((char*)key);
 		return;
 	}
 

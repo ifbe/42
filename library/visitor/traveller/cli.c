@@ -6,7 +6,8 @@
 int command(char* buffer);
 int waitevent(QWORD*,QWORD*);
 //
-int softinto(char*);
+int enter(char*);
+int leave();
 int birth();
 int death();
 //
@@ -20,7 +21,12 @@ int main(int argc,char* argv[])
 	//必须放第一个
 	int ret;
 	birth();
-	if(argc==2)softinto(argv[1]);
+
+	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
+	for(ret=1;ret<argc;ret++)
+	{
+		command(argv[ret]);
+	}
 
 	//无限循环
 	QWORD first;

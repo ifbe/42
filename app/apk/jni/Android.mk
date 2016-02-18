@@ -112,8 +112,9 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-        library/visitor/sweepingmonk.c \
-        library/visitor/plasma.c
+        library/visitor/temple/abbot.c \
+        library/visitor/temple/monk.c \
+        library/visitor/traveller/plasma.c
 
 
 

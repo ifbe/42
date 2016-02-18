@@ -205,7 +205,7 @@ int mount(char* src)
 
 
 //logical function
-int ls(char* name)
+int logic_ls(char* name)
 {
 	//null:         just list
 	int i,j,temp;
@@ -266,13 +266,13 @@ int ls(char* name)
 
 
 
-int cd(char* arg1)
+int logic_cd(char* arg1)
 {
 	int ret;
 	QWORD id;
 
 	//search
-	ret=ls(arg1);
+	ret=logic_ls(arg1);
 	if( ret<0 )return ret;          //没找到
 
 	//change directory
@@ -283,7 +283,7 @@ int cd(char* arg1)
 
 
 
-int load(char* arg1)
+int logic_read(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
 	int ret;
@@ -291,7 +291,7 @@ int load(char* arg1)
 	QWORD size;
 	QWORD temp;
 
-	ret=ls(arg1);
+	ret=logic_ls(arg1);
 	if( ret==0 )return -1;
 
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
@@ -325,7 +325,7 @@ int load(char* arg1)
 
 
 
-int store(char* arg1)
+int logic_write(char* arg1)
 {
         return 0;
 }

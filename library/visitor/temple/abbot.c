@@ -5,29 +5,21 @@
 #include<stdio.h>
 #include<stdlib.h>
 //libui
-int uicommand(char*);
-int uievent(QWORD* first,QWORD* second);
 void initcharacter(char*);
 void killcharacter();
 void initwindow(char*);
 void killwindow();
 //libsoft
-int softcommand(char*);
-int softevent(QWORD* first,QWORD* second);
 void initsoftware(char*);
 void killsoftware();
 void initmemory(char*);
 void killmemory();
 //libhard
-int hardcommand(char*);
-int hardevent(QWORD* first,QWORD* second);
 void initbody(char*);
 void killbody();
 void initdriver(char*);
 void killdriver();
 //libboot
-int bootcommand(char*);
-int bootevent(QWORD* first,QWORD* second);
 void initdebug(char*);	//listen,say
 void killdebug();
 void initbasic(char*);	//
@@ -99,126 +91,6 @@ void inituniverse()
 	//character=universe + (3*0x400000);
 	memory=universe + 0;
 	character=universe + 0x400000;
-}
-
-
-
-
-
-
-
-
-int stillalive=1;
-int waitevent(QWORD* first,QWORD* second)
-{
-	int ret;
-	if(stillalive==0)
-	{
-		first[0]=0;
-		return 0;
-	}
-
-	//调试端口有没有消息
-	ret=bootevent(first,second);
-	if(ret>0)return 11;
-
-	//硬件中断完成状态报告
-	ret=hardevent(first,second);
-	if(ret>0)return 22;
-
-	//输入/网络/系统事件
-	ret=softevent(first,second);
-	if(ret>0)return 33;
-
-	//窗口关闭,窗口大小变化等情况
-	ret=uievent(first,second);
-	if(ret>0)return 44;
-}
-
-
-
-
-
-
-
-
-int helpme(char* p)
-{
-	unsigned char cmd[4];
-	unsigned int temp;
-
-	*(unsigned int*)cmd=0;
-	for(temp=0;temp<4;temp++)
-	{
-		if(p[temp]==0)break;
-		else cmd[temp]=p[temp];
-	}
-	temp=*(unsigned int*)cmd;
-	//say("%x\n",temp);
-
-	//'q'
-	if(temp=='q')
-	{
-		stillalive=0;
-		return 1;
-	}
-
-	//0x74697865='exit'
-	if(temp==0x74697865)
-	{
-		stillalive=0;
-		return 1;
-	}
-
-	//0x706c6568='help'
-	else if(temp==0x706c6568)
-	{
-		//4
-		say("ls ?		=list=summary=view=check\n");
-		say("cd ?		=choose=into=switch=clap\n");
-		say("read ?		=load=get=eat=copy\n");
-		say("write ?		=store=put=spit=paste\n\n");
-
-		//2
-		say("enter ?		=init=mount=push=open\n");
-		say("leave ?		=kill=unmount=pop=close\n");
-
-		return 2;
-	}
-
-	return 0;
-}
-int command(char* p)
-{
-	//?
-	int ret=helpme(p);
-	if(ret>0)return 1;
-
-	//在libboot里面找
-	//say("searching libboot\n");
-	ret=bootcommand(p);
-	if(ret>0)return 11;
-
-	//在libhard里面找
-	//say("searching libhard\n");
-	ret=hardcommand(p);
-	if(ret>0)return 21;
-
-	//在libsoft里面找
-	//say("searching libsoft\n");
-	ret=softcommand(p);
-	if(ret>0)return 31;
-
-	//在libui里面找
-	//say("searching libui\n");
-	ret=uicommand(p);
-	if(ret>0)return 41;
-
-	//在host系统上找
-
-	//没找到
-	//say("unknown command:%s\n",p);
-	return 99;
 }
 
 
