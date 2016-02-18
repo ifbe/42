@@ -41,9 +41,9 @@ LOCAL_SRC_FILES += \
 endif
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES += \
-	library/libhard0/processor/x86/x86.fp.c \
-	library/libhard0/processor/x86/x86.port.c \
-	library/libhard0/processor/x86/x86.platform.c \
+	library/libhard0/processor/x64/x64.fp.c \
+	library/libhard0/processor/x64/x64.port.c \
+	library/libhard0/processor/x64/x64.platform.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm)
@@ -54,8 +54,8 @@ LOCAL_SRC_FILES += \
 endif
 ifeq ($(TARGET_ARCH),arm64)
 LOCAL_SRC_FILES += \
-	library/libhard0/processor/arm/arm.fp.c \
-	library/libhard0/processor/arm/arm.platform.c \
+	library/libhard0/processor/arm64/arm64.fp.c \
+	library/libhard0/processor/arm64/arm64.platform.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips)
@@ -66,8 +66,8 @@ LOCAL_SRC_FILES += \
 endif
 ifeq ($(TARGET_ARCH),mips64)
 LOCAL_SRC_FILES += \
-	library/libhard0/processor/mips/mips.fp.c \
-	library/libhard0/processor/mips/mips.platform.c \
+	library/libhard0/processor/mips64/mips64.fp.c \
+	library/libhard0/processor/mips64/mips64.platform.c \
 	library/libhard0/driver.c
 endif
 

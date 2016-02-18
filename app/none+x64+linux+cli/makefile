@@ -2,7 +2,7 @@ library?=../../library
 all:
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x86
+	make -s -C $(library)/libhard0 x64
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc
@@ -22,7 +22,7 @@ all:
 static:
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x86
+	make -s -C $(library)/libhard0 x64
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc

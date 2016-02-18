@@ -1,22 +1,42 @@
 .PHONY:arm
 arm:
-	rm -f x86.*.o
+	rm -f arm64.*.o mips.*.o mips64.*.o x86.*.o x64.*.o
 	gcc -c -O2 processor/arm/arm.fp.c
 	gcc -c -O2 processor/arm/arm.platform.c
+	gcc -c -O2 driver.c
+.PHONY:arm64
+arm64:
+	rm -f arm.*.o mips.*.o mips64.*.o x86.*.o x64.*.o
+	gcc -c -O2 processor/arm64/arm64.fp.c
+	gcc -c -O2 processor/arm64/arm64.platform.c
 	gcc -c -O2 driver.c
 .PHONY:mips
 mips:
-	rm -f x86.*.o
-	gcc -c -O2 processor/arm/arm.fp.c
-	gcc -c -O2 processor/arm/arm.platform.c
+	rm -f arm.*.o arm64.*.o mips64.*.o x86.*.o x64.*.o
+	gcc -c -O2 processor/mips/mips.fp.c
+	gcc -c -O2 processor/mips/mips.platform.c
+	gcc -c -O2 driver.c
+.PHONY:mips64
+mips64:
+	rm -f arm.*.o arm64.*.o mips.*.o x86.*.o x64.*.o
+	gcc -c -O2 processor/mips64/mips64.fp.c
+	gcc -c -O2 processor/mips64/mips64.platform.c
 	gcc -c -O2 driver.c
 .PHONY:x86
 x86:
-	rm -f arm.*.o
+	rm -f arm.*.o arm64.*.o mips.*.o mips64.*.o x64.*.o
 	gcc -c -O2 processor/x86/x86.endian.c
 	gcc -c -O2 processor/x86/x86.fp.c
 	gcc -c -O2 processor/x86/x86.platform.c
 	gcc -c -O2 processor/x86/x86.port.c
+	gcc -c -O2 driver.c
+.PHONY:x64
+x64:
+	rm -f arm.*.o arm64.*.o mips.*.o mips64.*.o x86.*.o
+	gcc -c -O2 processor/x64/x64.endian.c
+	gcc -c -O2 processor/x64/x64.fp.c
+	gcc -c -O2 processor/x64/x64.platform.c
+	gcc -c -O2 processor/x64/x64.port.c
 	gcc -c -O2 driver.c
 clean:
 	rm -f *.o *.a

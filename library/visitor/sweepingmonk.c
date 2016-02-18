@@ -174,14 +174,14 @@ int helpme(char* p)
 	else if(temp==0x706c6568)
 	{
 		//4
-		say("ls ?		=list/summary/view/hello\n");
-		say("cd ?		=choose/into/switch/friend\n");
-		say("read ?		=load/get/eat/copy\n");
-		say("write ?		=store/put/spit/paste\n\n");
+		say("ls ?		=list=summary=view=check\n");
+		say("cd ?		=choose=into=switch=clap\n");
+		say("read ?		=load=get=eat=copy\n");
+		say("write ?		=store=put=spit=paste\n\n");
 
 		//2
-		say("enter ?		=init/mount/push/love\n");
-		say("leave ?		=kill/unmount/pop/hate\n");
+		say("enter ?		=init=mount=push=open\n");
+		say("leave ?		=kill=unmount=pop=close\n");
 
 		return 2;
 	}
