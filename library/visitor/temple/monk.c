@@ -8,6 +8,57 @@ int softevent(QWORD* first,QWORD* second);
 int hardevent(QWORD* first,QWORD* second);
 int bootevent(QWORD* first,QWORD* second);
 //
+void file_list(char*);
+void file_choose(char*);
+void file_read(char*);
+void file_write(char*);
+void file_open(char*);
+void file_close(char*);
+//
+void logic_list(char*);
+void logic_choose(char*);
+void logic_read(char*);
+void logic_write(char*);
+void logic_open(char*);
+void logic_close(char*);
+//
+void real_list(char*);
+void real_choose(char*);
+void real_read(char*);
+void real_write(char*);
+void real_open(char*);
+void real_close(char*);
+//
+void tcp_list(char*);
+void tcp_choose(char*);
+void tcp_read(char*);
+void tcp_write(char*);
+void tcp_open(char*);
+void tcp_close(char*);
+//
+void udp_list(char*);
+void udp_choose(char*);
+void udp_read(char*);
+void udp_write(char*);
+void udp_open(char*);
+void udp_close(char*);
+//
+void i2c_list(char*);
+void i2c_choose(char*);
+void i2c_read(char*);
+void i2c_write(char*);
+void i2c_open(char*);
+void i2c_close(char*);
+//
+void usb_list(char*);
+void usb_choose(char*);
+void usb_read(char*);
+void usb_write(char*);
+void usb_open(char*);
+void usb_close(char*);
+//
+int buf2arg(char*,char**,char**);
+int compare(char*,char*);
 void say(char*,...);
 
 
@@ -58,38 +109,39 @@ static QWORD type=0;
 void final_list(char* p)
 {
 	//if(type==what)what_list();
-	if(type==0)real_list();
-	if(type==0x6c616572)real_list();
-	if(type==0x6369676f6c)logic_ls();
+	if(type==0x656c6966)real_list(p);
+	if(type==0x6c616572)real_list(p);
+	if(type==0x6369676f6c)logic_choose(p);
 }
 void final_choose(char* p)
 {
 	//if(type==what)what_choose();
-	if(type==0)real_choose();
-	if(type==0x6c616572)real_choose();
-	if(type==0x6369676f6c)logic_cd();
+	if(type==0x656c6966)real_choose(p);
+	if(type==0x6c616572)real_choose(p);
+	if(type==0x6369676f6c)logic_choose(p);
 }
 void final_read(char* p)
 {
 	//if(type==what)what_read();
-	if(type==0){say("which?");return;}
-	if(type==0x6c616572)real_read();
-	if(type==0x6369676f6c)logic_read();
+	if(type==0x656c6966)real_read(p);
+	if(type==0x6c616572)real_read(p);
+	if(type==0x6369676f6c)logic_read(p);
 }
 void final_write(char* p)
 {
 	//if(type==what)what_write();
-	if(type==0){say("which?\n");return;}
-	if(type==0x6c616572)real_write();
-	if(type==0x6369676f6c)logic_write();
+	if(type==0x656c6966)real_write(p);
+	if(type==0x6c616572)real_write(p);
+	if(type==0x6369676f6c)logic_write(p);
 }
-void enter(char* p)
+void final_open(char* p)
 {
 	int i=0;
 	int ret=0;
+	type=0;
+	if(p==0)return;
 
 	//如果是    xyz://    这种类型的，type=xyz
-	if(p==0)return;
 	while(1)
 	{
 		//quit?
@@ -98,7 +150,6 @@ void enter(char* p)
 		//
 		if( (p[i]==':')&&(p[i+1]=='/')&&(p[i+2]=='/') )
 		{
-			type=0;
 			for(ret=i-1;ret>=0;ret--)
 			{
 				type = type<<8;
@@ -111,8 +162,8 @@ void enter(char* p)
 		//
 		i++;
 	}
-
 	say("%s\n",(char*)&type);
+
 	//0
 	//	acpi://
 	//	dtb://
@@ -123,11 +174,6 @@ void enter(char* p)
 	//	i2c://
 
 	//2
-	//	file://
-	if(type==0x656c6966)
-	{
-		real_choose(p+ret);
-	}
 	//	java://
 	//	c://
 	//	h://
@@ -137,12 +183,22 @@ void enter(char* p)
 	//	sql://
 
 	//3
-	//	image://
+	//	rgb://
+	//	icon://
 
 	//default
+	if(type==0x656c6966)
+	{
+		file_open(p+ret);
+	}
+	else
+	{
+		type=0x6c616572;
+		real_open(p);
+	}
 	//
 }
-void leave(char* p)
+void final_close(char* p)
 {
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,8 +245,8 @@ int command(char* buffer)
 		say("write ?            =store=put=spit=paste\n\n");
 
 		//2
-		say("enter ?            =init=mount=push=open\n");
-		say("leave ?            =kill=unmount=pop=close\n");
+		say("open ?            =init=mount=push=enter\n");
+		say("close ?            =kill=unmount=pop=leave\n");
 
 		return 2;
 	}
@@ -203,25 +259,25 @@ int command(char* buffer)
         ret=compare( arg0 , "ls" );
         if(ret==0)
         {
-                real_list(arg1);
+                final_list(arg1);
                 return 1;
         }
         ret=compare( arg0 , "cd" );
         if(ret==0)
         {
-                real_choose(arg1);
+                final_choose(arg1);
                 return 1;
         }
         ret=compare( arg0 , "read" );
         if(ret==0)
         {
-                real_read(arg1);
+                final_read(arg1);
                 return 1;
         }
         ret=compare( arg0 , "write" );  //dangerous
         if(ret==0)
         {
-                real_write(arg1);
+                final_write(arg1);
                 return 1;
         }
 
@@ -229,16 +285,16 @@ int command(char* buffer)
 
 
         //2
-        ret=compare( arg0 , "enter");
+        ret=compare( arg0 , "open");
         if(ret==0)
         {
-                enter(arg1);
+                final_open(arg1);
                 return 1;
         }
-        ret=compare( arg0 , "leave");
+        ret=compare( arg0 , "close");
         if(ret==0)
         {
-                leave(arg1);
+                final_close(arg1);
                 return 1;
         }
 

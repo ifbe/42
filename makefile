@@ -30,32 +30,27 @@ ipa:
 	make -s -C app/ipa --no-print-directory
 uwp:
 	make -s -C app/uwp --no-print-directory
-###############################################################################
+############################################################################
 
 
 
 
-########################################help###################################
+#################################small device################################
 arm+linux+cli:
 	make -C app/none+arm+linux+cli --no-print-directory
 	cp app/none+arm+linux+cli/a.out .
 mips+linux+cli:
 	make -C app/none+mips+linux+cli --no-print-directory
 	cp app/none+mips+linux+cli/a.out .
+############################################################################
+
+
+
+
+#####################################pc#######################################
 x64+linux+cli:
 	make -C app/none+x64+linux+cli --no-print-directory
 	cp app/none+x64+linux+cli/a.out .
-x64+mac+cli:
-	make -C app/none+x64+mac+cli --no-print-directory
-	cp app/none+x64+mac+cli/a.exe .
-x64+win+cli:
-	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x64+win+cli --no-print-directory
-	cp app/none+x64+win+cli/a.out .
-
-
-
-
 x64+linux+fb:
 	make -C app/none+x64+linux+fb --no-print-directory
 	cp app/none+x64+linux+fb/a.out .
@@ -72,6 +67,9 @@ x64+linux+web:
 
 
 
+x64+mac+cli:
+	make -C app/none+x64+mac+cli --no-print-directory
+	cp app/none+x64+mac+cli/a.exe .
 x64+mac+sdl:
 	make -C app/none+x64+mac+sdl --no-print-directory
 	cp app/none+x64+mac+sdl/a.out .
@@ -79,6 +77,10 @@ x64+mac+sdl:
 
 
 
+x64+win+cli:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	make -C app/none+x64+win+cli --no-print-directory
+	cp app/none+x64+win+cli/a.exe .
 x64+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+api --no-print-directory

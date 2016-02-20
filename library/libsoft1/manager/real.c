@@ -3,8 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //libsoft1
+int logic_list(char*);
+int logic_choose(char*);
+int logic_read(char*);
+int logic_write(char*);
+int logic_open(char*);
+int logic_close(char*);
 QWORD prelibation(char*);
-int mount(char*);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
@@ -116,20 +121,6 @@ void real_list(char* arg1)
 }//real_list
 void real_choose(char* arg)
 {
-	int ret=0;
-	QWORD temp=0;
-
-	//如果传进来0，仅重新扫描所有硬盘
-	if(arg == 0)
-	{
-		listmemory(diskhome);
-		return;
-	}
-
-	//其他情况，比如要\\.\PhysicalDrive0
-	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
-	intomemory(arg);
-	ret=mount(0);
 }
 int real_read(char* arg1)
 {
@@ -191,6 +182,27 @@ int real_write(char* arg1)
 	}
 
 	else return platformwrite(arg1);
+}
+int real_open(char* p)
+{
+	int ret=0;
+	QWORD temp=0;
+
+	//如果传进来0，仅重新扫描所有硬盘
+	if(p == 0)
+	{
+		listmemory(diskhome);
+		return 0;
+	}
+
+	//其他情况，比如要\\.\PhysicalDrive0
+	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
+	intomemory(p);
+	ret=logic_open(0);
+	return 1;
+}
+int real_close(char* p)
+{
 }
 
 
