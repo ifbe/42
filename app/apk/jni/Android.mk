@@ -66,27 +66,27 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
-        library/libsoft1/compress/7z.c \
-        library/libsoft1/compress/cpio.c \
-        library/libsoft1/compress/gz.c \
-        library/libsoft1/compress/tar.c \
-        library/libsoft1/compress/zip.c \
-        library/libsoft1/executable/elf.c \
-        library/libsoft1/executable/macho.c \
-        library/libsoft1/executable/pe.c \
+        library/libsoft1/compress/compress.7z.c \
+        library/libsoft1/compress/compress.cpio.c \
+        library/libsoft1/compress/compress.gz.c \
+        library/libsoft1/compress/compress.tar.c \
+        library/libsoft1/compress/compress.zip.c \
+        library/libsoft1/executable/exe.elf.c \
+        library/libsoft1/executable/exe.macho.c \
+        library/libsoft1/executable/exe.pe.c \
         library/libsoft1/filesystem/fs.ext.c \
         library/libsoft1/filesystem/fs.fat.c \
         library/libsoft1/filesystem/fs.hfs.c \
         library/libsoft1/filesystem/fs.ntfs.c \
-        library/libsoft1/manager/logic.c \
-        library/libsoft1/manager/real.c \
-        library/libsoft1/math/calc.c \
-        library/libsoft1/math/scientificnotation.c \
+        library/libsoft1/math/math.calc.c \
+        library/libsoft1/math/math.notation.c \
         library/libsoft1/partitiontable/pt.gpt.c \
         library/libsoft1/partitiontable/pt.mbr.c \
-        library/libsoft1/text/ascii.c \
-        library/libsoft1/text/unicode.c \
-        library/libsoft1/master.c \
+        library/libsoft1/text/text.ascii.c \
+        library/libsoft1/text/text.unicode.c \
+        library/libsoft1/manager/manager.master.c \
+        library/libsoft1/manager/manager.logic.c \
+        library/libsoft1/manager/manager.prelibation.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
@@ -100,9 +100,9 @@ LOCAL_SRC_FILES += \
 	library/libui1/game/game.2048.c \
 	library/libui1/game/game.snake.c \
 	library/libui1/game/game.tetris.c \
-	library/libui1/menu/menu.c \
-        library/libui1/text/text.ascii.c \
-	library/libui1/text/text.unicode.c \
+	library/libui1/menu/menu.center.c \
+        library/libui1/print/print.ascii.c \
+	library/libui1/print/print.unicode.c \
 	library/libui1/tool/tool.console.c \
 	library/libui1/tool/tool.hex.c \
 	library/libui1/tool/tool.keyboard.c \
