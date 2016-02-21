@@ -8,54 +8,47 @@ int softevent(QWORD* first,QWORD* second);
 int hardevent(QWORD* first,QWORD* second);
 int bootevent(QWORD* first,QWORD* second);
 //
-void file_list(char*);
-void file_choose(char*);
-void file_read(char*);
-void file_write(char*);
-void file_open(char*);
-void file_close(char*);
+int file_list(char*);
+int file_choose(char*);
+int file_read(char*);
+int file_write(char*);
+int file_open(char*);
+int file_close(char*);
 //
-void logic_list(char*);
-void logic_choose(char*);
-void logic_read(char*);
-void logic_write(char*);
-void logic_open(char*);
-void logic_close(char*);
+int logic_list(char*);
+int logic_choose(char*);
+int logic_read(char*);
+int logic_write(char*);
+int logic_open(char*);
+int logic_close(char*);
 //
-void real_list(char*);
-void real_choose(char*);
-void real_read(char*);
-void real_write(char*);
-void real_open(char*);
-void real_close(char*);
+int tcp_list(char*);
+int tcp_choose(char*);
+int tcp_read(char*);
+int tcp_write(char*);
+int tcp_open(char*);
+int tcp_close(char*);
 //
-void tcp_list(char*);
-void tcp_choose(char*);
-void tcp_read(char*);
-void tcp_write(char*);
-void tcp_open(char*);
-void tcp_close(char*);
+int udp_list(char*);
+int udp_choose(char*);
+int udp_read(char*);
+int udp_write(char*);
+int udp_open(char*);
+int udp_close(char*);
 //
-void udp_list(char*);
-void udp_choose(char*);
-void udp_read(char*);
-void udp_write(char*);
-void udp_open(char*);
-void udp_close(char*);
+int i2c_list(char*);
+int i2c_choose(char*);
+int i2c_read(char*);
+int i2c_write(char*);
+int i2c_open(char*);
+int i2c_close(char*);
 //
-void i2c_list(char*);
-void i2c_choose(char*);
-void i2c_read(char*);
-void i2c_write(char*);
-void i2c_open(char*);
-void i2c_close(char*);
-//
-void usb_list(char*);
-void usb_choose(char*);
-void usb_read(char*);
-void usb_write(char*);
-void usb_open(char*);
-void usb_close(char*);
+int usb_list(char*);
+int usb_choose(char*);
+int usb_read(char*);
+int usb_write(char*);
+int usb_open(char*);
+int usb_close(char*);
 //
 int buf2arg(char*,char**,char**);
 int compare(char*,char*);
@@ -109,39 +102,35 @@ static QWORD type=0;
 void final_list(char* p)
 {
 	//if(type==what)what_list();
-	if(type==0x656c6966)real_list(p);
-	if(type==0x6c616572)real_list(p);
+	if(type==0x656c6966)file_list(p);
 	if(type==0x6369676f6c)logic_choose(p);
 }
 void final_choose(char* p)
 {
 	//if(type==what)what_choose();
-	if(type==0x656c6966)real_choose(p);
-	if(type==0x6c616572)real_choose(p);
+	if(type==0x656c6966)file_choose(p);
 	if(type==0x6369676f6c)logic_choose(p);
 }
 void final_read(char* p)
 {
 	//if(type==what)what_read();
-	if(type==0x656c6966)real_read(p);
-	if(type==0x6c616572)real_read(p);
+	if(type==0x656c6966)file_read(p);
 	if(type==0x6369676f6c)logic_read(p);
 }
 void final_write(char* p)
 {
 	//if(type==what)what_write();
-	if(type==0x656c6966)real_write(p);
-	if(type==0x6c616572)real_write(p);
+	if(type==0x656c6966)file_write(p);
 	if(type==0x6369676f6c)logic_write(p);
 }
-void final_open(char* p)
+int final_open(char* p)
 {
 	int i=0;
 	int ret=0;
-	type=0;
-	if(p==0)return;
+	if(p==0)return -1;
 
 	//如果是    xyz://    这种类型的，type=xyz
+	type=0;
 	while(1)
 	{
 		//quit?
@@ -155,6 +144,7 @@ void final_open(char* p)
 				type = type<<8;
 				type+=p[ret];
 			}
+
 			ret=i+3;
 			break;
 		}
@@ -162,44 +152,86 @@ void final_open(char* p)
 		//
 		i++;
 	}
-	say("%s\n",(char*)&type);
+
+	//default
+	say("type=%s\n",(char*)&type);
+	if(type==0)type=0x656c6966;
+	if(type==0x656c6966)
+	{
+		return file_open(p+ret);
+	}
 
 	//0
 	//	acpi://
+	else if(type==0x69706361)
+	{
+		//return acpi_open(p+ret);
+	}
 	//	dtb://
+	else if(type==0x627464)
+	{
+		//return dtb_open(p+ret);
+	}
 
 	//1
 	//	pci://
+	if(type==0x696370)
+	{
+		//return pci_open(p+ret);
+	}
 	//	usb://
+	else if(type==0x627375)
+	{
+		//return usb_open(p+ret);
+	}
 	//	i2c://
+	else if(type==0x633269)
+	{
+		//return i2c_open(p+ret);
+	}
 
 	//2
 	//	java://
 	//	c://
 	//	h://
 	//	udp://
+	else if(type==0x706475)
+	{
+		//return udp_open(p+ret);
+	}
 	//	tcp://
+	else if(type==0x706374)
+	{
+		//return tcp_open(p+ret);
+	}
 	//	http://
+	else if(type==0x70747468)
+	{
+		//return http_open(p+ret);
+	}
 	//	sql://
+	else if(type==0x6c7173)
+	{
+		//return sql_open(p+ret);
+	}
 
 	//3
 	//	rgb://
+	else if(type==0x626772)
+	{
+		//return rgb_open(p+ret);
+	}
 	//	icon://
+	else if(type==0x6e6f6369)
+	{
+		//return icon_open(p+ret);
+	}
 
-	//default
-	if(type==0x656c6966)
-	{
-		file_open(p+ret);
-	}
-	else
-	{
-		type=0x6c616572;
-		real_open(p);
-	}
-	//
+	return -1;
 }
-void final_close(char* p)
+int final_close(char* p)
 {
+	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

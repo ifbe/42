@@ -29,8 +29,9 @@ void initsketchpad(QWORD,char*);	//3.sketchpad.c
 void initconsole(QWORD,char*);		//4.console.c
 
 //
+int final_open(char*);
+int final_close();
 DWORD getrandom();
-void real_choose(char*);
 void say(char* , ...);
 
 
@@ -139,7 +140,7 @@ void writecharacter(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)
 	{
 		//say("debuging::::::::%s\n",(char*)key);
-		real_choose((char*)key);
+		final_open((char*)key);
 		return;
 	}
 

@@ -11,7 +11,7 @@ binary:
 	gcc -c -fPIC -O2 filesystem/fs.fat.c
 	gcc -c -fPIC -O2 filesystem/fs.hfs.c
 	gcc -c -fPIC -O2 filesystem/fs.ntfs.c
-	gcc -c -fPIC -O2 manager/real.c
+	gcc -c -fPIC -O2 manager/prelibation.c
 	gcc -c -fPIC -O2 manager/logic.c
 	gcc -c -fPIC -O2 math/calc.c
 	gcc -c -fPIC -O2 math/scientificnotation.c
@@ -33,7 +33,7 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.fat.c
 	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.hfs.c
 	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.ntfs.c
-	x86_64-elf-gcc -c -fPIC -O2 manager/real.c
+	x86_64-elf-gcc -c -fPIC -O2 manager/prelibation.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/logic.c
 	x86_64-elf-gcc -c -fPIC -O2 math/calc.c
 	x86_64-elf-gcc -c -fPIC -O2 math/scientificnotation.c
@@ -55,7 +55,7 @@ gcc:
 	gcc -c -O2 filesystem/fs.fat.c
 	gcc -c -O2 filesystem/fs.hfs.c
 	gcc -c -O2 filesystem/fs.ntfs.c
-	gcc -c -O2 manager/real.c
+	gcc -c -O2 manager/prelibation.c
 	gcc -c -O2 manager/logic.c
 	gcc -c -O2 math/calc.c
 	gcc -c -O2 math/scientificnotation.c
@@ -77,7 +77,7 @@ clang:
 	clang -c -O2 filesystem/fs.fat.c
 	clang -c -O2 filesystem/fs.hfs.c
 	clang -c -O2 filesystem/fs.ntfs.c
-	clang -c -O2 manager/real.c
+	clang -c -O2 manager/prelibation.c
 	clang -c -O2 manager/logic.c
 	clang -c -O2 math/calc.c
 	clang -c -O2 math/scientificnotation.c
