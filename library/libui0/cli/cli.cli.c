@@ -12,21 +12,29 @@ char clibuffer[128];
 int uievent(QWORD* first,QWORD* second)
 {
         int i;
-        char* ignore;
+        char* ret;
+	//say("@uievent.start\n");
+
         for(i=0;i<128;i++)clibuffer[i]=0;
         while(1)
         {
-                ignore=fgets(clibuffer,128,stdin);
-                if( clibuffer[0] != 0 )break;
-        }
-        for(i=0;i<128;i++)
-        {
-                if(clibuffer[i]<=0xd)clibuffer[i]=0;
+                ret=fgets(clibuffer,128,stdin);
+		//say("uievent.ret=%x\n",ret);
+
+		if( ret == NULL )
+		{
+			first[0]=0;
+			break;
+		}
+                if( clibuffer[0] != 0 )
+		{
+			first[0]=0x727473;
+			second[0]=(QWORD)clibuffer;
+			break;
+		}
         }
 
-	//
-	first[0]=0x727473;
-	second[0]=(QWORD)clibuffer;
+	//say("@uievent.return\n");
 	return 1;
 }
 
