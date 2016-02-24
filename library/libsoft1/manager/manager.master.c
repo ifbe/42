@@ -190,7 +190,7 @@ int file_open(char* p)
 {
 	int ret=0;
 	QWORD temp=0;
-	say("opening\n");
+	//say("opening\n");
 
 	//如果传进来0，仅重新扫描所有硬盘
 	if(p == 0)
@@ -207,7 +207,7 @@ int file_open(char* p)
 }
 int file_close(char* p)
 {
-	say("closing\n");
+	//say("closing\n");
 }
 
 

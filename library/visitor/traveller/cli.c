@@ -25,6 +25,7 @@ int main(int argc,char* argv[])
 	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
 	for(ret=1;ret<argc;ret++)
 	{
+		//say("argv[%d]=%s\n",ret,argv[ret]);
 		command(argv[ret]);
 	}
 
@@ -33,6 +34,9 @@ int main(int argc,char* argv[])
 	QWORD second;
 	while(1)
 	{
+		//debug
+		//say("here\n");
+
 		//1.等输入，再把这段里面所有的0x20变成0
 		waitevent(&first,&second);
 		if(first==0)break;

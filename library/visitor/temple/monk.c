@@ -66,6 +66,7 @@ int stillalive=1;
 int waitevent(QWORD* first,QWORD* second)
 {
 	int ret;
+	//say("here\n");
 	if(stillalive==0)
 	{
 		first[0]=0;
@@ -99,17 +100,11 @@ int waitevent(QWORD* first,QWORD* second)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 static QWORD type=0;
-void final_list(char* p)
+void final_write(char* p)
 {
-	//if(type==what)what_list();
-	if(type==0x656c6966)file_list(p);
-	if(type==0x6369676f6c)logic_choose(p);
-}
-void final_choose(char* p)
-{
-	//if(type==what)what_choose();
-	if(type==0x656c6966)file_choose(p);
-	if(type==0x6369676f6c)logic_choose(p);
+	//if(type==what)what_write();
+	if(type==0x656c6966)file_write(p);
+	if(type==0x6369676f6c)logic_write(p);
 }
 void final_read(char* p)
 {
@@ -117,12 +112,22 @@ void final_read(char* p)
 	if(type==0x656c6966)file_read(p);
 	if(type==0x6369676f6c)logic_read(p);
 }
-void final_write(char* p)
+void final_choose(char* p)
 {
-	//if(type==what)what_write();
-	if(type==0x656c6966)file_write(p);
-	if(type==0x6369676f6c)logic_write(p);
+	//if(type==what)what_choose();
+	if(type==0x656c6966)file_choose(p);
+	if(type==0x6369676f6c)logic_choose(p);
 }
+void final_list(char* p)
+{
+	//if(type==what)what_list();
+	if(type==0x656c6966)file_list(p);
+	if(type==0x6369676f6c)logic_choose(p);
+}
+
+
+
+
 int final_open(char* p)
 {
 	int i=0;
@@ -233,6 +238,16 @@ int final_close(char* p)
 {
 	return 0;
 }
+int final_init(char* p)
+{
+	//usb.module?
+	//http.module?
+	return 0;
+}
+int final_kill(char* p)
+{
+	return 0;
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -248,7 +263,7 @@ int command(char* buffer)
 	int ret;
 	char* arg0;
 	char* arg1;
-	say("%s\n",buffer);
+	//say("command=%s\n",buffer);
 	buf2arg(buffer,&arg0,&arg1);
 	if(arg0==0)return 0;
 
@@ -259,77 +274,93 @@ int command(char* buffer)
 	if(arg0[0]=='q')
 	{
 		stillalive=0;
-		return 1;
+		return 0;
 	}
 	//'exit
 	if((arg0[0]==0x65)&&(arg0[1]==0x78)&&(arg0[2]==0x69)&&(arg0[3]==0x74))
 	{
 		stillalive=0;
-		return 1;
+		return 0;
 	}
 	//'help'
 	if((arg0[0]==0x68)&&(arg0[1]==0x65)&&(arg0[2]==0x6c)&&(arg0[3]==0x70))
 	{
-		//4
+		//"create","destory","start","stop"
+		say("init ?             =init=make=fabricate\n");
+		say("kill ?             =kill=smash=wreck\n");
+		say("open ?             =mount=enter=start\n");
+		say("close ?            =unmount=leave=stop\n\n");
+
+		//"observe","change","get","put"
 		say("ls ?               =list=summary=view=check\n");
 		say("cd ?               =choose=into=switch=clap\n");
 		say("read ?             =load=get=eat=copy\n");
 		say("write ?            =store=put=spit=paste\n\n");
 
-		//2
-		say("open ?            =init=mount=push=enter\n");
-		say("close ?            =kill=unmount=pop=leave\n");
-
-		return 2;
+		return 1;
 	}
 
 
 
 
-
-        //4
-        ret=compare( arg0 , "ls" );
+	//"create","destory","start","stop"
+        ret=compare( arg0 , "init");
         if(ret==0)
         {
-                final_list(arg1);
-                return 1;
+		final_init(arg1);
+                return 2;
         }
-        ret=compare( arg0 , "cd" );
+        ret=compare( arg0 , "kill");
         if(ret==0)
         {
-                final_choose(arg1);
-                return 1;
+		final_kill(arg1);
+                return 2;
         }
-        ret=compare( arg0 , "read" );
-        if(ret==0)
-        {
-                final_read(arg1);
-                return 1;
-        }
-        ret=compare( arg0 , "write" );  //dangerous
-        if(ret==0)
-        {
-                final_write(arg1);
-                return 1;
-        }
-
-
-
-
-        //2
         ret=compare( arg0 , "open");
         if(ret==0)
         {
                 final_open(arg1);
-                return 1;
+                return 2;
         }
         ret=compare( arg0 , "close");
         if(ret==0)
         {
                 final_close(arg1);
-                return 1;
+                return 2;
         }
 
-	return 2;
+
+
+
+        //"observe","change","get","put"
+        ret=compare( arg0 , "ls" );
+        if(ret==0)
+        {
+                final_list(arg1);
+                return 4;
+        }
+        ret=compare( arg0 , "cd" );
+        if(ret==0)
+        {
+                final_choose(arg1);
+                return 4;
+        }
+        ret=compare( arg0 , "read" );
+        if(ret==0)
+        {
+                final_read(arg1);
+                return 4;
+        }
+        ret=compare( arg0 , "write" );  //dangerous
+        if(ret==0)
+        {
+                final_write(arg1);
+                return 4;
+        }
+
+
+
+
+	return 8;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

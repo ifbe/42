@@ -27,7 +27,7 @@ int initunicodetable()
 	FILE* fp=fopen("unicode.bin","r");		//打开unicode.bin
 	if(fp==NULL)
 	{
-		printf("(failed open)unicode.bin\n");
+		printf("(fail,ignore)open unicode.bin\n");
 		return 0;
 	}
 
@@ -35,7 +35,7 @@ int initunicodetable()
 	unicodetable=(char*)malloc(0x200000);		//申请2MB
 	if(unicodetable==NULL)
 	{
-		printf("(failed malloc)unicode.bin\n");
+		printf("(failed,ignore)malloc unicode.bin\n");
 		return 0;
 	}
 
