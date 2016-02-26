@@ -1,8 +1,3 @@
-.PHONY:cli
-cli:
-	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o
-	gcc -c -O2 cli/cli.cli.c
-	gcc -c -O2 window.c
 .PHONY:fb
 fb:
 	rm -f cli.*.o xlib.*.o winapi.*.o sdl.*.o
@@ -28,13 +23,23 @@ sdl:
 	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
 	gcc -c -fPIC -O2 sdl2/sdl.sdl2.c
 	gcc -c -fPIC -O2 window.c
-.PHONY:mac+sdl
-mac+sdl:
+.PHONY:linuxcli
+linuxcli:
+	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o
+	gcc -c -fPIC -O2 cli/cli.cli.c
+	gcc -c -fPIC -O2 window.c
+.PHONY:wincli
+wincli:
+	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o
+	gcc -c -O2 cli/cli.cli.c
+	gcc -c -O2 window.c
+.PHONY:macsdl
+macsdl:
 	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
 	clang -c -O2 sdl/sdl.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	gcc -c -O2 window.c
-.PHONY:win+sdl
-win+sdl:
+.PHONY:winsdl
+winsdl:
 	rm -f cli.*.o fb.*.o xlib.*.o winapi.*.o
 	gcc -c -O2 sdl2/sdl.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
 	gcc -c -O2 window.c

@@ -43,6 +43,28 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 manager/manager.master.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/manager.prelibation.c
 gcc:
+	gcc -c -fPIC -O2 compress/compress.7z.c
+	gcc -c -fPIC -O2 compress/compress.cpio.c
+	gcc -c -fPIC -O2 compress/compress.gz.c
+	gcc -c -fPIC -O2 compress/compress.tar.c
+	gcc -c -fPIC -O2 compress/compress.zip.c
+	gcc -c -fPIC -O2 executable/exe.elf.c
+	gcc -c -fPIC -O2 executable/exe.macho.c
+	gcc -c -fPIC -O2 executable/exe.pe.c
+	gcc -c -fPIC -O2 filesystem/fs.ext.c
+	gcc -c -fPIC -O2 filesystem/fs.fat.c
+	gcc -c -fPIC -O2 filesystem/fs.hfs.c
+	gcc -c -fPIC -O2 filesystem/fs.ntfs.c
+	gcc -c -fPIC -O2 math/math.calc.c
+	gcc -c -fPIC -O2 math/math.notation.c
+	gcc -c -fPIC -O2 partitiontable/pt.gpt.c
+	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
+	gcc -c -fPIC -O2 text/text.ascii.c
+	gcc -c -fPIC -O2 text/text.unicode.c
+	gcc -c -fPIC -O2 manager/manager.master.c
+	gcc -c -fPIC -O2 manager/manager.logic.c
+	gcc -c -fPIC -O2 manager/manager.prelibation.c
+mingw:
 	gcc -c -O2 compress/compress.7z.c
 	gcc -c -O2 compress/compress.cpio.c
 	gcc -c -O2 compress/compress.gz.c
