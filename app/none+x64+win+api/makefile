@@ -1,14 +1,14 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/libboot0 parasitize
-	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 gcc
+	make -s -C $(library)/libboot0 wincmd
+	make -s -C $(library)/libboot1 mingw
+	make -s -C $(library)/libhard0 winx64
+	make -s -C $(library)/libhard1 mingw
 	make -s -C $(library)/libsoft0 win
-	make -s -C $(library)/libsoft1 gcc
+	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 winapi
-	make -s -C $(library)/libui1 gcc
+	make -s -C $(library)/libui1 mingw
 	make -s -C $(library)/visitor gui
 	gcc -mwindows \
 	$(library)/libboot0/*.o \
@@ -22,14 +22,14 @@ all:
 	$(library)/visitor/*.o \
 	-lgdi32
 static:
-	make -s -C $(library)/libboot0 parasitize
-	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 gcc
+	make -s -C $(library)/libboot0 wincmd
+	make -s -C $(library)/libboot1 mingw
+	make -s -C $(library)/libhard0 winx64
+	make -s -C $(library)/libhard1 mingw
 	make -s -C $(library)/libsoft0 win
-	make -s -C $(library)/libsoft1 gcc
+	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 winapi
-	make -s -C $(library)/libui1 gcc
+	make -s -C $(library)/libui1 mingw
 	ar crs library.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \

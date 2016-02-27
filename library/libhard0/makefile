@@ -38,5 +38,13 @@ x64:
 	gcc -c -fPIC -O2 cpu/x64/x64.platform.c
 	gcc -c -fPIC -O2 cpu/x64/x64.port.c
 	gcc -c -fPIC -O2 driver.c
+.PHONY:winx64
+winx64:
+	rm -f arm.*.o arm64.*.o mips.*.o mips64.*.o x86.*.o
+	gcc -c -O2 cpu/x64/x64.endian.c
+	gcc -c -O2 cpu/x64/x64.fp.c
+	gcc -c -O2 cpu/x64/x64.platform.c
+	gcc -c -O2 cpu/x64/x64.port.c
+	gcc -c -O2 driver.c
 clean:
 	rm -f *.o *.a

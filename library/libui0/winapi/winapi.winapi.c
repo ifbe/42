@@ -1,19 +1,17 @@
+#define WINVER 0x0601
+#include<windows.h>
+#include<winuser.h>
+#include<Commctrl.h>
 #include<stdio.h>
 #include<stdlib.h>
 
-#include<windows.h>
-#include<Commctrl.h>
-#include<Winuser.h>
-
 #define QWORD unsigned long long
 #define DWORD unsigned int
-
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
 #define menu3 0x3333
 #define menu4 0x4444
-
 void writewindow();
 void say(char* fmt,...);
 
@@ -27,6 +25,7 @@ HDC realdc;
 NOTIFYICONDATA nid;     //托盘属性 
 HMENU hMenu;            //托盘菜单
 static char dragpath[MAX_PATH];
+static TOUCHINPUT touchpoint[10];
 
 //
 static int solved=1;
@@ -136,7 +135,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			DragFinish(hDrop);      //释放hDrop
 
 			say("drag:%s\n",dragpath);
-			my1=0x656c6966706f7264;		//'dropfile'
+			my1=(0x706f7264)+((QWORD)0x656c6966<<32);		//'drop''file'
 			my2=(QWORD)dragpath;
 			solved=0;
 			return 0;
@@ -184,24 +183,34 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				return 0;
 			}
 		}
-/*
+
 		case WM_TOUCH:
 		{
-			say("WM_TOUCH\n");
-			my1=0x6863756f74;		//'touch'
-			my2=wparam;
+			int i=0;
+			int count=wparam;
+			GetTouchInputInfo((HTOUCHINPUT)lparam, count, touchpoint, sizeof(TOUCHINPUT));
+
+			say("WM_TOUCH:count=%x{\n",count);
+			for(i=0;i<count;i++)
+			{
+				say("id=%x:x=%x,y=%x\n",touchpoint[i].dwID,touchpoint[i].x,touchpoint[i].y);
+			}
+			say("}\n");
+
+			my1=0x63756f74+((QWORD)count<<32);		//'touc',count
+			my2=(QWORD)touchpoint;
 			solved=0;
 			return 0;
 		}
-*/
+
 		//滚轮
 		case WM_MOUSEWHEEL:
 		{
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				my1=0x6E6F7266207A7978;		//'xyz fron'
+				my1=0x207A7978+((QWORD)0x6E6F7266<<32);		//'xyz fron'
 			}
-			else my1=0x6B636162207A7978;		//'xyz back'
+			else my1=0x207A7978+((QWORD)0x6B636162<<32);		//'xyz back'
 
 			GetCursorPos(&pt);
 			ScreenToClient(window, &pt);
@@ -229,7 +238,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 				else		//只是左键在拖动
 				{
-					my1=0x65766F6D207A7978;		//'xyz move'
+					my1=0x207A7978+((QWORD)0x65766F6D<<32);		//'xyz ','move'
 					my2=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
 					solved=0;
 
@@ -245,7 +254,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(leftdown==1)
 			{
-				my1=0x7466656C207A7978;		//'xyz left'
+				my1=0x207A7978+((QWORD)0x7466656C<<32);		//'xyz ','left'
 				my2=lparam;
 				solved=0;
 			}
@@ -259,7 +268,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				my1=0x72676968207A7978;		//'xyz righ'
+				my1=0x207A7978+((QWORD)0x72676968<<32);		//'xyz ','righ'
 				my2=lparam;
 				solved=0;
 			}
@@ -303,9 +312,9 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//窗口尺寸改变
 		case WM_SIZE:
 		{
-			say("WM_SIZE\n");
-			//say("wparam:%llx,lparam:%llx\n",wparam,lparam);
-			my1=0x657a6973;		//tfel//left	//2;
+			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
+
+			my1=0x657a6973;					//'size'
 			my2=lparam-( (40<<16) + 16 );
 			width=lparam&0xffff;
 			height=(lparam>>16)&0xffff;
@@ -537,11 +546,14 @@ void initwindowworker()
 	initmywindow();
 	realdc=GetDC(window);
 
-	//允许拖拽
+	//打开拖拽
 	DragAcceptFiles(window, TRUE);
 	InitUIPIFilter();
 
-	//托盘
+	//打开触摸
+	RegisterTouchWindow(window, 0);
+
+	//打开托盘
 	inittray();
 }
 //__attribute__((destructor)) void destorysdl()
@@ -551,9 +563,12 @@ void killwindowworker()
 	//ShowWindow(consolewindow,SW_SHOW);
 	//ShowWindow(window,SW_SHOW);
 
+	//关闭托盘
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+
+	//关闭触摸
+	UnregisterTouchWindow(window);
+
 	//释放dc
 	ReleaseDC(window,realdc);
-
-	//释放托盘
-	Shell_NotifyIcon(NIM_DELETE, &nid);
 }

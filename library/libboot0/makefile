@@ -17,10 +17,10 @@ logcat:
 	rm -f *.o
 	gcc -c -fPIC -O2 logcat/logcat.c
 
-.PHONY:parasitize
-parasitize:
+.PHONY:wincmd
+wincmd:
 	rm -f *.o
-	gcc -c -fPIC -O2 parasitize/parasitize.c
+	gcc -c -O2 wincmd/wincmd.c
 
 .PHONY:efi
 efi:
