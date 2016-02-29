@@ -1,115 +1,143 @@
+#############################################################
+library.a--linux.cli:
+	make --no-print-directory -C ../none+x64+linux+cli static
+	cp ../none+x64+linux+cli/library.a .
+library.so--linux.cli:
+	make --no-print-directory -C ../none+x64+linux+cli shared
+	cp ../none+x64+linux+cli/library.so .
+
+library.a--win.cmd:
+	make --no-print-directory -C ../none+x64+win+cli static
+	cp ../none+x64+win+cli/library.a .
+library.dll--win.cmd:
+	make --no-print-directory -C ../none+x64+win+cli shared
+	cp ../none+x64+win+cli/library.dll .
+
+library.a--linux.xlib:
+	make --no-print-directory -C ../none+x64+linux+xlib static
+	cp ../none+x64+linux+xlib/library.a .
+library.so--linux.xlib:
+	make --no-print-directory -C ../none+x64+linux+xlib shared
+	cp ../none+x64+linux+xlib/library.so .
+
+library.a--win.api:
+	make --no-print-directory -C ../none+x64+win+api static
+	cp ../none+x64+win+api/library.a .
+library.dll--win.api:
+	make --no-print-directory -C ../none+x64+win+api shared
+	cp ../none+x64+win+api/library.dll .
 ############################text#############################
-linux_math--static:
+math.static--linux.cli:
 	make --no-print-directory -C ../none+x64+linux+cli static
 	cp ../none+x64+linux+cli/library.a .
 	gcc math/x64.c library.a -lm
-linux_math--shared:
+math.shared--linux.cli:
 	make --no-print-directory -C ../none+x64+linux+cli shared
 	cp ../none+x64+linux+cli/library.so .
 	gcc math/x64.c library.so -lm
-win_math--static:
+math.static--win.cmd:
 	make --no-print-directory -C ../none+x64+win+cli static
 	cp ../none+x64+win+cli/library.a .
 	gcc math/x64.c library.a -lm
-win_math--shared:
+math.shared--win.cmd:
 	make --no-print-directory -C ../none+x64+win+cli shared
-	cp ../none+x64+win+cli/library.so .
-	gcc math/x64.c library.so -lm
+	cp ../none+x64+win+cli/library.dll .
+	gcc math/x64.c library.dll -lm
 
-win_unicode--static:
-	make --no-print-directory -C ../none+x64+win+cli static
-	gcc text/unicodetable.c ../none+x64+win+cli/library.a
-linux_unicode--static:
+unicode.static--linux.cli:
 	make --no-print-directory -C ../none+x64+linux+cli static
 	gcc text/unicodetable.c ../none+x64+linux+cli/library.a
-
-win_utf--static:
+unicode.static--win.cmd:
 	make --no-print-directory -C ../none+x64+win+cli static
-	gcc text/utf.c ../none+x64+win+cli/library.a
-linux_utf--static:
+	gcc text/unicodetable.c ../none+x64+win+cli/library.a
+
+utf.static--linux.cli:
 	make --no-print-directory -C ../none+x64+linux+cli static
 	gcc text/utf.c ../none+x64+linux+cli/library.a
+utf.static--win.cmd:
+	make --no-print-directory -C ../none+x64+win+cli static
+	gcc text/utf.c ../none+x64+win+cli/library.a
 ############################graphical##########################
-winapi--static:
+graphic.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc graphic/graphical.c ./library.a -lgdi32
-xlib--static:
+graphic.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc graphic/graphical.c ./library.a -lX11
 
-winapi_hanzi--static:
+hanzi.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc graphic/hanzi.c ./library.a -lgdi32
-xlib_hanzi--static:
+hanzi.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc graphic/hanzi.c ./library.a -lX11
 ############################so cool############################
-winapi_1--static:
+1.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/1.c ../none+x64+win+api/library.a -lgdi32 -lm
-xlib_1--static:
+1.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/1.c ../none+x64+linux+xlib/library.a -lX11 -lm
 
-winapi_2--static:
+2.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/2.c ../none+x64+win+api/library.a -lgdi32
-xlib_2--static:
+2.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/2.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_3--static:
+3.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/3.c ../none+x64+win+api/library.a -lgdi32
-xlib_3--static:
+3.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/3.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_4--static:
+4.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/4.c ../none+x64+win+api/library.a -lgdi32
-xlib_4--static:
+4.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/4.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_5--static:
+5.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/5.c ../none+x64+win+api/library.a -lgdi32
-xlib_5--static:
+5.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/5.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_6--static:
+6.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc cool/6.c ../none+x64+win+api/library.a -lgdi32
-xlib_6--static:
+6.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc cool/6.c ../none+x64+linux+xlib/library.a -lX11
 ###########################image process###########################
-winapi_blur--static:
+blur.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc image/blur.c ../none+x64+win+api/library.a -lgdi32
-xlib_blur--static:
+blur.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/blur.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_channel--static:
+channel.static--win.api:
 	make --no-print-directory -C ../none+x64+win+api static
 	gcc image/channel.c ../none+x64+win+api/library.a -lgdi32
-xlib_channel--static:
+channel.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/channel.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_gray--static:
+gray.static--win.api:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/gray.c ../none+x64+win+api/library.a -lgdi32
-xlib_gray--static:
+gray.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/gray.c ../none+x64+linux+xlib/library.a -lX11
 
-winapi_mosaic--static:
+mosaic.static--winapi:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/mosaic.c ../none+x64+win+api/library.a -lgdi32
-xlib_mosaic--static:
+mosaic.static--linux.xlib:
 	make --no-print-directory -C ../none+x64+linux+xlib static
 	gcc image/mosaic.c ../none+x64+linux+xlib/library.a -lX11
