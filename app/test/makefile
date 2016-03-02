@@ -6,6 +6,13 @@ library.so@linux.cli:
 	make --no-print-directory -C ../none+x64+linux+cli shared
 	cp ../none+x64+linux+cli/library.so .
 
+library.a@mac.cli:
+	make --no-print-directory -C ../none+x64+mac+cli static
+	cp ../none+x64+mac+cli/library.a .
+library.dylib@mac.cli:
+	make --no-print-directory -C ../none+x64+linux+cli shared
+	cp ../none+x64+linux+cli/library.so .
+
 library.a@win.cmd:
 	make --no-print-directory -C ../none+x64+win+cli static
 	cp ../none+x64+win+cli/library.a .
