@@ -27,6 +27,8 @@ push
 *.ko.cmd
 *.o.cmd
 *.apk
+tool/windowstool/bin
+tool/windowstool/mingw64
 app/android/bin
 app/android/gen
 app/android/libs
