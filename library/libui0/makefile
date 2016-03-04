@@ -57,4 +57,4 @@ xlib:
 	gcc -c -fPIC -O2 window.c
 
 clean:
-	rm -f *.o *.a *.res
+	rm -f *.o *.a

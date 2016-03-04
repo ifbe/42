@@ -57,15 +57,20 @@ void printmemory(BYTE* addr,int size)
 
 void initbasic(char* arg)
 {
-	//终端回来
-	AllocConsole();
-
 	//
+	HWND consolewindow;
+
+	//opened?
+	consolewindow=GetConsoleWindow();
+	if(consolewindow!=NULL)return;
+
+	//new
+	AllocConsole();
 	freopen("CONIN$","r",stdin);
 	freopen("CONOUT$","w",stdout);
 
-	//隐藏起来
-	HWND consolewindow=GetConsoleWindow();
+	//hide
+	consolewindow=GetConsoleWindow();
 	ShowWindow(consolewindow,SW_HIDE);
 }
 void killbasic()

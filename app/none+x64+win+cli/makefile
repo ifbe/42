@@ -1,7 +1,7 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/libboot0 none
+	make -s -C $(library)/libboot0 wincmd
 	make -s -C $(library)/libboot1 mingw
 	make -s -C $(library)/libhard0 winx64
 	make -s -C $(library)/libhard1 mingw
@@ -21,7 +21,7 @@ all:
 	$(library)/libui1/*.o \
 	$(library)/visitor/*.o
 static:
-	make -s -C $(library)/libboot0 none
+	make -s -C $(library)/libboot0 wincmd
 	make -s -C $(library)/libboot1 mingw
 	make -s -C $(library)/libhard0 winx64
 	make -s -C $(library)/libhard1 mingw
