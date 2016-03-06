@@ -34,21 +34,23 @@ void writesocket();
 
 
 //这个.c负责管理现在开了哪些东西
-void initmemory(char* addr)
+void initsystem(char* addr)
 {
-	initevent();
-	initfile();
-	//initprocess();
-	initrandom();
-	//initsocket();
+	initevent();		//1
+	initfile();			//2
+	initmemory();		//3
+	//initprocess();	//4
+	initrandom();		//5
+	//initsocket();		//6
 }
-void killmemory()
+void killsystem()
 {
-	//killsocket();
-	killrandom();
-	//killprocess();
-	killfile();
-	killevent();
+	//killsocket();		//6
+	killrandom();		//5
+	//killprocess();	//4
+	killmemory();		//3
+	killfile();			//2
+	killevent();		//1
 }
 
 
@@ -86,7 +88,7 @@ void intomemory(char* what)		//cd
 
 
 
-void readmemory(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
+void readsystem(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
 {
 	ignore=ignore;		//kill compiler
 	//if(memory)
@@ -139,7 +141,7 @@ void cleverread
 		}
 	}
 
-	readmemory(rdi,rsi,0,rcx);
+	readsystem(rdi,rsi,0,rcx);
 	//say("sector:%llx,count:%llx,where:%llx\n",sector,count,where);
 	//say("want:%llx,to:%llx\n",wantwhere,destaddr);
 	//say("rdi=%llx,rsi=%llx,rcx=%llx\n",rdi,rsi,rcx);

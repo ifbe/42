@@ -1,0 +1,6 @@
+void initmemory()
+{
+}
+void killmemory()
+{
+}

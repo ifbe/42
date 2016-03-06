@@ -15,7 +15,7 @@ int mountntfs(QWORD sector,char* dest);
 //基本函数
 int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
-int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int compare(char*,char*);
 void cleanmemory(char*,int);
 void printmemory(char*,int);
@@ -187,7 +187,7 @@ int logic_open(char* src)
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
-	readmemory(datahome , sector , 0 , 64);
+	readsystem(datahome , sector , 0 , 64);
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 

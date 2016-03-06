@@ -12,8 +12,8 @@ void killwindow();
 //libsoft
 void initsoftware(char*);
 void killsoftware();
-void initmemory(char*);
-void killmemory();
+void initsystem(char*);
+void killsystem();
 //libhard
 void initbody(char*);
 void killbody();
@@ -118,7 +118,7 @@ void birth()
 	say("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
-	initmemory( memory );
+	initsystem( memory );
 	say("[8,c):soft0 done\n");
 	initsoftware( memory );
 	say("[8,c):soft1 done\n");
@@ -141,7 +141,7 @@ __attribute__((destructor)) void death()
 	if(memory != 0)
 	{
 		killsoftware();
-		killmemory();
+		killsystem();
 		memory=0;
 	}
 	if(body != 0)

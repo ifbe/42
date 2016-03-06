@@ -19,8 +19,7 @@ int buf2arg(char*,char**,char**);
 //libsoft0/
 int listmemory(char*);
 int intomemory(char*);
-int readmemory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int writememory(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //libboot
@@ -151,7 +150,7 @@ int file_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		readmemory(datahome,value,0,1);
+		readsystem(datahome,value,0,1);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}
