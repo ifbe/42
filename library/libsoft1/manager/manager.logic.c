@@ -17,7 +17,6 @@ int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
 int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int compare(char*,char*);
-void cleanmemory(char*,int);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -212,7 +211,10 @@ int logic_open(char* src)
 
 
 	//否则无论是什么，都解释到fshome
-	cleanmemory(fshome,0x300000);
+	for(ret=0;ret<0x300000;ret++)
+	{
+		fshome[ret]=0;
+	}
 	if(type == 0x666c65)            //'elf'
 	{
 		ret=explainelf(sector,fshome);

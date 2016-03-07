@@ -17,8 +17,8 @@ int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
 //libsoft0/
-int listmemory(char*);
-int intomemory(char*);
+int listsystem(char*);
+int intosystem(char*);
 int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
@@ -194,13 +194,13 @@ int file_open(char* p)
 	//如果传进来0，仅重新扫描所有硬盘
 	if(p == 0)
 	{
-		listmemory(diskhome);
+		listsystem(diskhome);
 		return 0;
 	}
 
 	//其他情况，比如要\\.\PhysicalDrive0
 	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
-	intomemory(p);
+	intosystem(p);
 	ret=logic_open(0);
 	return 1;
 }

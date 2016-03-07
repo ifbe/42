@@ -33,62 +33,7 @@ void writesocket();
 
 
 
-//这个.c负责管理现在开了哪些东西
-void initsystem(char* addr)
-{
-	initevent();		//1
-	initfile();			//2
-	initmemory();		//3
-	//initprocess();	//4
-	initrandom();		//5
-	//initsocket();		//6
-}
-void killsystem()
-{
-	//killsocket();		//6
-	killrandom();		//5
-	//killprocess();	//4
-	killmemory();		//3
-	killfile();			//2
-	killevent();		//1
-}
-
-
-
-
-void cleanmemory(char* addr,int size)
-{
-	//清理
-	int i=0;
-	for(i=0;i<size;i++) addr[i]=0;
-}
-void copymemory(char* src,char* dest,int size)
-{
-	int i;
-	for(i=0;i<size;i++)
-	{
-		dest[i]=src[i];
-	}
-}
-
-
-
-
-void listmemory(char* addr)				//ls?
-{
-	listfile(addr);
-	//+memoryinfo
-	//+listprocess
-}
-void intomemory(char* what)		//cd
-{
-	intofile(what);
-}
-
-
-
-
-void readsystem(QWORD buf,QWORD sector,QWORD ignore,DWORD count)		//read?
+void readsystem(QWORD buf,QWORD sector,QWORD ignore,DWORD count)
 {
 	ignore=ignore;		//kill compiler
 	//if(memory)
@@ -163,7 +108,7 @@ void cleverread
 
 
 
-void writememory()
+void writesystem()
 {
 	//if memory
 	//
@@ -180,4 +125,48 @@ void writememory()
 void cleverwrite()
 {
 	
+}
+
+
+
+
+void listsystem(char* addr)				//ls?
+{
+	listfile(addr);
+	//+memoryinfo
+	//+listprocess
+}
+void intosystem(char* what)		//cd
+{
+	intofile(what);
+}
+
+
+
+
+void opensystem()
+{
+	//假的"打开多个"
+}
+void closesystem()
+{
+	//关掉一个
+}
+void initsystem(char* addr)
+{
+	initevent();		//1
+	initfile();			//2
+	initmemory();		//3
+	//initprocess();	//4
+	initrandom();		//5
+	//initsocket();		//6
+}
+void killsystem()
+{
+	//killsocket();		//6
+	killrandom();		//5
+	//killprocess();	//4
+	killmemory();		//3
+	killfile();			//2
+	killevent();		//1
 }
