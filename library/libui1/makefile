@@ -1,61 +1,31 @@
+target:
+	$(compiler) $(cflag) draw/draw.background.c
+	$(compiler) $(cflag) draw/draw.shape.c
+	$(compiler) $(cflag) game/game.2048.c
+	$(compiler) $(cflag) game/game.snake.c
+	$(compiler) $(cflag) game/game.tetris.c
+	$(compiler) $(cflag) image/image.blur.c
+	$(compiler) $(cflag) image/image.channel.c
+	$(compiler) $(cflag) image/image.gray.c
+	$(compiler) $(cflag) image/image.mosaic.c
+	$(compiler) $(cflag) menu/menu.center.c
+	$(compiler) $(cflag) print/print.ascii.c
+	$(compiler) $(cflag) print/print.unicode.c
+	$(compiler) $(cflag) tool/tool.console.c
+	$(compiler) $(cflag) tool/tool.hex.c
+	$(compiler) $(cflag) tool/tool.keyboard.c
+	$(compiler) $(cflag) tool/tool.sketchpad.c
+	$(compiler) $(cflag) tool/tool.tree.c
+	$(compiler) $(cflag) character.c
 binary:
-	gcc -c -fPIC -O2 draw/draw.background.c
-	gcc -c -fPIC -O2 draw/draw.shape.c
-	gcc -c -fPIC -O2 menu/menu.center.c
-	gcc -c -fPIC -O2 print/print.ascii.c
-	gcc -c -fPIC -O2 print/print.unicode.c
-	gcc -c -fPIC -O2 character.c
+	make -s target compiler="gcc" cflag="-c -fPIC -O2"
 x86_64-elf-gcc:
-	x86_64-elf-gcc -c -fPIC -O2 draw/draw.background.c
-	x86_64-elf-gcc -c -fPIC -O2 draw/draw.shape.c
-	x86_64-elf-gcc -c -fPIC -O2 menu/menu.center.c
-	x86_64-elf-gcc -c -fPIC -O2 print/print.ascii.c
-	x86_64-elf-gcc -c -fPIC -O2 print/print.unicode.c
-	x86_64-elf-gcc -c -fPIC -O2 character.c
+	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2"
 gcc:
-	gcc -c -fPIC -O2 draw/draw.background.c
-	gcc -c -fPIC -O2 draw/draw.shape.c
-	gcc -c -fPIC -O2 game/game.2048.c
-	gcc -c -fPIC -O2 game/game.snake.c
-	gcc -c -fPIC -O2 game/game.tetris.c
-	gcc -c -fPIC -O2 image/image.blur.c
-	gcc -c -fPIC -O2 image/image.channel.c
-	gcc -c -fPIC -O2 image/image.gray.c
-	gcc -c -fPIC -O2 image/image.mosaic.c
-	gcc -c -fPIC -O2 menu/menu.center.c
-	gcc -c -fPIC -O2 print/print.ascii.c
-	gcc -c -fPIC -O2 print/print.unicode.c
-	gcc -c -fPIC -O2 tool/tool.console.c
-	gcc -c -fPIC -O2 tool/tool.hex.c
-	gcc -c -fPIC -O2 tool/tool.keyboard.c
-	gcc -c -fPIC -O2 tool/tool.sketchpad.c
-	gcc -c -fPIC -O2 tool/tool.tree.c
-	gcc -c -fPIC -O2 character.c
+	make -s target compiler="gcc" cflag="-c -fPIC -O2"
 mingw:
-	gcc -c -O2 draw/draw.background.c
-	gcc -c -O2 draw/draw.shape.c
-	gcc -c -O2 game/game.2048.c
-	gcc -c -O2 game/game.snake.c
-	gcc -c -O2 game/game.tetris.c
-	gcc -c -O2 image/image.blur.c
-	gcc -c -O2 image/image.channel.c
-	gcc -c -O2 image/image.gray.c
-	gcc -c -O2 image/image.mosaic.c
-	gcc -c -O2 menu/menu.center.c
-	gcc -c -O2 print/print.ascii.c
-	gcc -c -O2 print/print.unicode.c
-	gcc -c -O2 tool/tool.console.c
-	gcc -c -O2 tool/tool.hex.c
-	gcc -c -O2 tool/tool.keyboard.c
-	gcc -c -O2 tool/tool.sketchpad.c
-	gcc -c -O2 tool/tool.tree.c
-	gcc -c -O2 character.c
+	make -s target compiler="gcc" cflag="-c -O2"
 clang:
-	clang -c -O2 draw/draw.background.c
-	clang -c -O2 draw/draw.shape.c
-	clang -c -O2 menu/menu.center
-	clang -c -O2 print/print.ascii.c
-	clang -c -O2 print/print.unicode.c
-	clang -c -O2 character.c
+	make -s target compiler="clang" cflag="-c -O2"
 clean:
 	rm -f *.o *.a

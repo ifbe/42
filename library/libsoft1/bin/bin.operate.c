@@ -2,28 +2,17 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//libsoft1
-int logic_list(char*);
-int logic_choose(char*);
-int logic_read(char*);
-int logic_write(char*);
-int logic_open(char*);
-int logic_close(char*);
-void initlogic(char*);
-void killlogic();
 //
 int rawlist(char*);
 int rawchoose(char*);
 int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+//
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
-//
-QWORD prelibation(char* memaddr);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
-int buf2arg(char*,char**,char**);
-//libboot
+//
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
 
@@ -196,16 +185,14 @@ int file_close(char* p)
 
 
 
-void initsoftware(char* world)
+void initreal(char* world)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
-
-	initlogic(world);
 }
-void killsoftware()
+void killreal()
 {
 }

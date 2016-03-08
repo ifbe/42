@@ -94,3 +94,21 @@ void cleverread(QWORD sector,	QWORD count,	QWORD where,
 void cleverwrite()
 {
 }
+
+
+
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void inithub(char* world)
+{
+	initreal(world);
+        initlogic(world);
+}
+void killhub()
+{
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

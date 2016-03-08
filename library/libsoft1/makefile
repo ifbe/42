@@ -1,117 +1,39 @@
-binary:
-	gcc -c -fPIC -O2 compress/compress.7z.c
-	gcc -c -fPIC -O2 compress/compress.cpio.c
-	gcc -c -fPIC -O2 compress/compress.gz.c
-	gcc -c -fPIC -O2 compress/compress.tar.c
-	gcc -c -fPIC -O2 compress/compress.zip.c
-	gcc -c -fPIC -O2 executable/exe.elf.c
-	gcc -c -fPIC -O2 executable/exe.macho.c
-	gcc -c -fPIC -O2 executable/exe.pe.c
-	gcc -c -fPIC -O2 filesystem/fs.ext.c
-	gcc -c -fPIC -O2 filesystem/fs.fat.c
-	gcc -c -fPIC -O2 filesystem/fs.hfs.c
-	gcc -c -fPIC -O2 filesystem/fs.ntfs.c
-	gcc -c -fPIC -O2 math/math.calc.c
-	gcc -c -fPIC -O2 math/math.notation.c
-	gcc -c -fPIC -O2 partitiontable/pt.gpt.c
-	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
-	gcc -c -fPIC -O2 text/text.ascii.c
-	gcc -c -fPIC -O2 text/text.unicode.c
-	gcc -c -fPIC -O2 manager/manager.hub.c
-	gcc -c -fPIC -O2 manager/manager.logic.c
-	gcc -c -fPIC -O2 manager/manager.master.c
-	gcc -c -fPIC -O2 manager/manager.prelibation.c
+target:
+	$(compiler) $(cflag) bin/bin.operate.c
+	$(compiler) $(cflag) compress/compress.c
+	$(compiler) $(cflag) compress/compress.7z.c
+	$(compiler) $(cflag) compress/compress.cpio.c
+	$(compiler) $(cflag) compress/compress.gz.c
+	$(compiler) $(cflag) compress/compress.tar.c
+	$(compiler) $(cflag) compress/compress.zip.c
+	$(compiler) $(cflag) executable/exec.c
+	$(compiler) $(cflag) executable/exec.elf.c
+	$(compiler) $(cflag) executable/exec.macho.c
+	$(compiler) $(cflag) executable/exec.pe.c
+	$(compiler) $(cflag) filesystem/fs.c
+	$(compiler) $(cflag) filesystem/fs.ext.c
+	$(compiler) $(cflag) filesystem/fs.fat.c
+	$(compiler) $(cflag) filesystem/fs.hfs.c
+	$(compiler) $(cflag) filesystem/fs.ntfs.c
+	$(compiler) $(cflag) math/math.calc.c
+	$(compiler) $(cflag) math/math.notation.c
+	$(compiler) $(cflag) partitiontable/pt.c
+	$(compiler) $(cflag) partitiontable/pt.apple.c
+	$(compiler) $(cflag) partitiontable/pt.gpt.c
+	$(compiler) $(cflag) partitiontable/pt.mbr.c
+	$(compiler) $(cflag) text/text.c
+	$(compiler) $(cflag) text/text.ascii.c
+	$(compiler) $(cflag) text/text.gbk.c
+	$(compiler) $(cflag) text/text.unicode.c
+	$(compiler) $(cflag) manager/manager.hub.c
+	$(compiler) $(cflag) manager/manager.prelibation.c
 crosscompile:
-	x86_64-elf-gcc -c -fPIC -O2 compress/compress.7z.c
-	x86_64-elf-gcc -c -fPIC -O2 compress/compress.cpio.c
-	x86_64-elf-gcc -c -fPIC -O2 compress/compress.gz.c
-	x86_64-elf-gcc -c -fPIC -O2 compress/compress.tar.c
-	x86_64-elf-gcc -c -fPIC -O2 compress/compress.zip.c
-	x86_64-elf-gcc -c -fPIC -O2 executable/exe.elf.c
-	x86_64-elf-gcc -c -fPIC -O2 executable/exe.macho.c
-	x86_64-elf-gcc -c -fPIC -O2 executable/exe.pe.c
-	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.ext.c
-	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.fat.c
-	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.hfs.c
-	x86_64-elf-gcc -c -fPIC -O2 filesystem/fs.ntfs.c
-	x86_64-elf-gcc -c -fPIC -O2 math/math.calc.c
-	x86_64-elf-gcc -c -fPIC -O2 math/math.notation.c
-	x86_64-elf-gcc -c -fPIC -O2 partitiontable/pt.gpt.c
-	x86_64-elf-gcc -c -fPIC -O2 partitiontable/pt.mbr.c
-	x86_64-elf-gcc -c -fPIC -O2 text/text.ascii.c
-	x86_64-elf-gcc -c -fPIC -O2 text/text.unicode.c
-	x86_64-elf-gcc -c -fPIC -O2 manager/manager.hub.c
-	x86_64-elf-gcc -c -fPIC -O2 manager/manager.logic.c
-	x86_64-elf-gcc -c -fPIC -O2 manager/manager.master.c
-	x86_64-elf-gcc -c -fPIC -O2 manager/manager.prelibation.c
+	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2"
 gcc:
-	gcc -c -fPIC -O2 compress/compress.7z.c
-	gcc -c -fPIC -O2 compress/compress.cpio.c
-	gcc -c -fPIC -O2 compress/compress.gz.c
-	gcc -c -fPIC -O2 compress/compress.tar.c
-	gcc -c -fPIC -O2 compress/compress.zip.c
-	gcc -c -fPIC -O2 executable/exe.elf.c
-	gcc -c -fPIC -O2 executable/exe.macho.c
-	gcc -c -fPIC -O2 executable/exe.pe.c
-	gcc -c -fPIC -O2 filesystem/fs.ext.c
-	gcc -c -fPIC -O2 filesystem/fs.fat.c
-	gcc -c -fPIC -O2 filesystem/fs.hfs.c
-	gcc -c -fPIC -O2 filesystem/fs.ntfs.c
-	gcc -c -fPIC -O2 math/math.calc.c
-	gcc -c -fPIC -O2 math/math.notation.c
-	gcc -c -fPIC -O2 partitiontable/pt.gpt.c
-	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
-	gcc -c -fPIC -O2 text/text.ascii.c
-	gcc -c -fPIC -O2 text/text.unicode.c
-	gcc -c -fPIC -O2 manager/manager.hub.c
-	gcc -c -fPIC -O2 manager/manager.logic.c
-	gcc -c -fPIC -O2 manager/manager.master.c
-	gcc -c -fPIC -O2 manager/manager.prelibation.c
+	make -s target compiler="gcc" cflag="-c -fPIC -O2"
 mingw:
-	gcc -c -O2 compress/compress.7z.c
-	gcc -c -O2 compress/compress.cpio.c
-	gcc -c -O2 compress/compress.gz.c
-	gcc -c -O2 compress/compress.tar.c
-	gcc -c -O2 compress/compress.zip.c
-	gcc -c -O2 executable/exe.elf.c
-	gcc -c -O2 executable/exe.macho.c
-	gcc -c -O2 executable/exe.pe.c
-	gcc -c -O2 filesystem/fs.ext.c
-	gcc -c -O2 filesystem/fs.fat.c
-	gcc -c -O2 filesystem/fs.hfs.c
-	gcc -c -O2 filesystem/fs.ntfs.c
-	gcc -c -O2 math/math.calc.c
-	gcc -c -O2 math/math.notation.c
-	gcc -c -O2 partitiontable/pt.gpt.c
-	gcc -c -O2 partitiontable/pt.mbr.c
-	gcc -c -O2 text/text.ascii.c
-	gcc -c -O2 text/text.unicode.c
-	gcc -c -O2 manager/manager.hub.c
-	gcc -c -O2 manager/manager.logic.c
-	gcc -c -O2 manager/manager.master.c
-	gcc -c -O2 manager/manager.prelibation.c
+	make -s target compiler="gcc" cflag="-c -O2"
 clang:
-	clang -c -O2 compress/compress.7z.c
-	clang -c -O2 compress/compress.cpio.c
-	clang -c -O2 compress/compress.gz.c
-	clang -c -O2 compress/compress.tar.c
-	clang -c -O2 compress/compress.zip.c
-	clang -c -O2 executable/exe.elf.c
-	clang -c -O2 executable/exe.macho.c
-	clang -c -O2 executable/exe.pe.c
-	clang -c -O2 filesystem/fs.ext.c
-	clang -c -O2 filesystem/fs.fat.c
-	clang -c -O2 filesystem/fs.hfs.c
-	clang -c -O2 filesystem/fs.ntfs.c
-	clang -c -O2 math/math.calc.c
-	clang -c -O2 math/math.notation.c
-	clang -c -O2 partitiontable/pt.gpt.c
-	clang -c -O2 partitiontable/pt.mbr.c
-	clang -c -O2 text/text.ascii.c
-	clang -c -O2 text/text.unicode.c
-	clang -c -O2 manager/manager.hub.c
-	clang -c -O2 manager/manager.logic.c
-	clang -c -O2 manager/manager.master.c
-	clang -c -O2 manager/manager.prelibation.c
+	make -s target compiler="clang" cflag="-c -O2"
 clean:
 	rm -f *.o *.a

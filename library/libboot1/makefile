@@ -1,10 +1,10 @@
+target:
+	$(compiler) $(cflag) debug.c
+	$(compiler) $(cflag) listen.c
+	$(compiler) $(cflag) say.c
 gcc:
-	gcc -c -fPIC -O2 debug.c
-	gcc -c -fPIC -O2 listen.c
-	gcc -c -fPIC -O2 say.c
+	make -s target compiler="gcc" cflag="-c -fPIC -O2"
 mingw:
-	gcc -c -O2 debug.c
-	gcc -c -O2 listen.c
-	gcc -c -O2 say.c
+	make -s target compiler="gcc" cflag="-c -O2"
 clean:
 	rm -f *.o *.a *.so
