@@ -12,16 +12,17 @@ int logic_close(char*);
 void initlogic(char*);
 void killlogic();
 //
+int rawlist(char*);
+int rawchoose(char*);
+int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+//
 QWORD prelibation(char* memaddr);
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,QWORD*);
 int buf2arg(char*,char**,char**);
-//libsoft0/
-int listsystem(char*);
-int intosystem(char*);
-int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //libboot
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
@@ -34,11 +35,6 @@ static char* diskhome=0;
 static char* fshome=0;
 static char* dirhome=0;
 static char* datahome=0;
-//每个1M
-static char* diskhome;		//+0m
-static char* fshome;		//+1m
-static char* dirhome;		//+2m
-static char* datahome;		//+3m
 
 
 
@@ -150,7 +146,7 @@ int file_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		readsystem(datahome,value,0,1);
+		rawread(datahome,value,0,1);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}
@@ -187,22 +183,6 @@ int file_write(char* arg1)
 }
 int file_open(char* p)
 {
-	int ret=0;
-	QWORD temp=0;
-	//say("opening\n");
-
-	//如果传进来0，仅重新扫描所有硬盘
-	if(p == 0)
-	{
-		listsystem(diskhome);
-		return 0;
-	}
-
-	//其他情况，比如要\\.\PhysicalDrive0
-	//选中并且喊仆人自己读开头64个扇区，来检查“东西”种类
-	intosystem(p);
-	ret=logic_open(0);
-	return 1;
 }
 int file_close(char* p)
 {

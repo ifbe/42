@@ -27,7 +27,7 @@ int initunicodetable()
 	FILE* fp=fopen("unicode.bin","r");		//打开unicode.bin
 	if(fp==NULL)
 	{
-		printf("(fail,ignore)open unicode.bin\n");
+		printf("(failed,ignored)open unicode.bin\n");
 		return 0;
 	}
 
@@ -35,7 +35,7 @@ int initunicodetable()
 	unicodetable=(char*)malloc(0x200000);		//申请2MB
 	if(unicodetable==NULL)
 	{
-		printf("(failed,ignore)malloc unicode.bin\n");
+		printf("(failed,ignored)malloc unicode.bin\n");
 		return 0;
 	}
 
@@ -44,7 +44,7 @@ int initunicodetable()
 	//printmemory(unicodetable,0x1000);
 	//if(ret<0x200)				//windows读取成功了还报错？
 	//{
-	//	printf("(%x)(failed read)unicode.bin\n",ret);
+	//	printf("(%x)(failed,ignored)readunicode.bin\n",ret);
 	//	if(fp!=NULL)fclose(fp);
 	//	return 0;
 	//}

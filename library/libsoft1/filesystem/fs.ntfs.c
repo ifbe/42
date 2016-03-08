@@ -3,9 +3,10 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //用了别人的
-int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
-
+//
 void printmemory(char* addr,int size);
 void say(char* fmt,...);
 
@@ -99,7 +100,7 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 		{
 			//读进内存
 			//传进去的参数为：这一块的物理扇区号，扇区数，逻辑位置，需求位置，目标位置
-			//readsystem(rdi,ntfssector+offset,diskaddr,count);
+			//rawread(rdi,ntfssector+offset,diskaddr,count);
 			cleverread
 			(
 				ntfssector+offset,count/0x200,logicpos,
@@ -646,7 +647,7 @@ int explainntfshead()
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	readsystem(mft0,ntfssector+mftcluster*clustersize,0,32);
+	rawread(mft0,ntfssector+mftcluster*clustersize,0,32);
 	//printmemory(mft0,0x400);		//	$Mft
 	//printmemory(mft0+0x400*5,0x400);	//	.
 	//printmemory(mft0+0x400*7,0x400);	//	$Boot
@@ -691,7 +692,7 @@ int mountntfs(QWORD sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读PBR，检查失败就返回
-	ret=readsystem(pbr,ntfssector,0,1);
+	ret=rawread(pbr,ntfssector,0,1);
 	ret=isntfs(pbr);
 	if(ret==0)return -1;
 

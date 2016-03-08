@@ -1,7 +1,7 @@
 #include<unistd.h>
 #include<fcntl.h>
 static int _dev_mem=-1;
-static unsigned long long currentmmap;
+static unsigned long long currentmmap=0xffffffffffffffff;
 
 
 
@@ -24,19 +24,28 @@ void writememory(char* addr,int count)
 
 
 
-void openmemory()
+void openmemory(char* what)
 {
 	//假装"打开多个"
+	//_dev_mem[i]=open(what, O_RDWR|O_SYNC);
 }
 void closememory()
 {
 	//关掉一个
+	//close(_dev_mem[i]);
 }
 void initmemory()
 {
 	_dev_mem=open("/dev/mem", O_RDWR|O_SYNC);
+	if(_dev_mem==-1)
+	{
+		say("(failed,ignored)open /dev/mem\n");
+	}
 }
 void killmemory()
 {
-	close(_dev_mem);
+	if(_dev_mem != -1)
+	{
+		close(_dev_mem);
+	}
 }

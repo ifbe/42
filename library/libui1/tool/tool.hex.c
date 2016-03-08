@@ -15,7 +15,8 @@ void background1();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
-void readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //
 char* whereischaracter();
 //
@@ -75,7 +76,7 @@ static char* readornotread(QWORD wantaddr)
 	QWORD readwhere=wantaddr & 0xfffffffffffff000;
 	if(readwhere!=currentcache)
 	{
-		readsystem(databuf, readwhere/0x200, 0, 16);
+		rawread(databuf, readwhere/0x200, 0, 16);
 		currentcache=readwhere;
 	}
 

@@ -17,6 +17,7 @@ binary:
 	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
 	gcc -c -fPIC -O2 text/text.ascii.c
 	gcc -c -fPIC -O2 text/text.unicode.c
+	gcc -c -fPIC -O2 manager/manager.hub.c
 	gcc -c -fPIC -O2 manager/manager.logic.c
 	gcc -c -fPIC -O2 manager/manager.master.c
 	gcc -c -fPIC -O2 manager/manager.prelibation.c
@@ -39,6 +40,7 @@ crosscompile:
 	x86_64-elf-gcc -c -fPIC -O2 partitiontable/pt.mbr.c
 	x86_64-elf-gcc -c -fPIC -O2 text/text.ascii.c
 	x86_64-elf-gcc -c -fPIC -O2 text/text.unicode.c
+	x86_64-elf-gcc -c -fPIC -O2 manager/manager.hub.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/manager.logic.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/manager.master.c
 	x86_64-elf-gcc -c -fPIC -O2 manager/manager.prelibation.c
@@ -61,8 +63,9 @@ gcc:
 	gcc -c -fPIC -O2 partitiontable/pt.mbr.c
 	gcc -c -fPIC -O2 text/text.ascii.c
 	gcc -c -fPIC -O2 text/text.unicode.c
-	gcc -c -fPIC -O2 manager/manager.master.c
+	gcc -c -fPIC -O2 manager/manager.hub.c
 	gcc -c -fPIC -O2 manager/manager.logic.c
+	gcc -c -fPIC -O2 manager/manager.master.c
 	gcc -c -fPIC -O2 manager/manager.prelibation.c
 mingw:
 	gcc -c -O2 compress/compress.7z.c
@@ -83,8 +86,9 @@ mingw:
 	gcc -c -O2 partitiontable/pt.mbr.c
 	gcc -c -O2 text/text.ascii.c
 	gcc -c -O2 text/text.unicode.c
-	gcc -c -O2 manager/manager.master.c
+	gcc -c -O2 manager/manager.hub.c
 	gcc -c -O2 manager/manager.logic.c
+	gcc -c -O2 manager/manager.master.c
 	gcc -c -O2 manager/manager.prelibation.c
 clang:
 	clang -c -O2 compress/compress.7z.c
@@ -105,8 +109,9 @@ clang:
 	clang -c -O2 partitiontable/pt.mbr.c
 	clang -c -O2 text/text.ascii.c
 	clang -c -O2 text/text.unicode.c
-	clang -c -O2 manager/manager.master.c
+	clang -c -O2 manager/manager.hub.c
 	clang -c -O2 manager/manager.logic.c
+	clang -c -O2 manager/manager.master.c
 	clang -c -O2 manager/manager.prelibation.c
 clean:
 	rm -f *.o *.a

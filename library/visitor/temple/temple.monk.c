@@ -2,94 +2,73 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//
-int uievent(QWORD* first,QWORD* second);
-int softevent(QWORD* first,QWORD* second);
-int hardevent(QWORD* first,QWORD* second);
-int bootevent(QWORD* first,QWORD* second);
-//
+//disk or file
 int file_list(char*);
 int file_choose(char*);
 int file_read(char*);
 int file_write(char*);
 int file_open(char*);
 int file_close(char*);
-//
+int file_init();
+int file_kill();
+//memory or mmio
+int memory_list(char*);
+int memory_choose(char*);
+int memory_read(char*);
+int memory_write(char*);
+int memory_open(char*);
+int memory_close(char*);
+int memory_init();
+int memory_kill();
+//filesystem
 int logic_list(char*);
 int logic_choose(char*);
 int logic_read(char*);
 int logic_write(char*);
 int logic_open(char*);
 int logic_close(char*);
-//
+int logic_init();
+int logic_kill();
+//tcp
 int tcp_list(char*);
 int tcp_choose(char*);
 int tcp_read(char*);
 int tcp_write(char*);
 int tcp_open(char*);
 int tcp_close(char*);
-//
+int tcp_init();
+int tcp_kill();
+//udp
 int udp_list(char*);
 int udp_choose(char*);
 int udp_read(char*);
 int udp_write(char*);
 int udp_open(char*);
 int udp_close(char*);
-//
+int udp_init();
+int udp_kill();
+//i2c
 int i2c_list(char*);
 int i2c_choose(char*);
 int i2c_read(char*);
 int i2c_write(char*);
 int i2c_open(char*);
 int i2c_close(char*);
-//
+int i2c_init();
+int i2c_kill();
+//usb
 int usb_list(char*);
 int usb_choose(char*);
 int usb_read(char*);
 int usb_write(char*);
 int usb_open(char*);
 int usb_close(char*);
+int usb_init();
+int usb_kill();
 //
 int buf2arg(char*,char**,char**);
 int compare(char*,char*);
 void say(char*,...);
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int stillalive=1;
-int waitevent(QWORD* first,QWORD* second)
-{
-	int ret;
-	//say("here\n");
-	if(stillalive==0)
-	{
-		first[0]=0;
-		return 0;
-	}
-
-	//调试端口有没有消息
-	ret=bootevent(first,second);
-	if(ret>0)return 11;
-
-	//硬件中断完成状态报告
-	ret=hardevent(first,second);
-	if(ret>0)return 22;
-
-	//输入/网络/系统事件
-	ret=softevent(first,second);
-	if(ret>0)return 33;
-
-	//窗口关闭,窗口大小变化等情况
-	ret=uievent(first,second);
-	if(ret>0)return 44;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -104,30 +83,40 @@ void final_write(char* p)
 {
 	//if(type==what)what_write();
 	if(type==0x656c6966)file_write(p);
+	//if(type==0x79726f6d656d)memory_write(p);
 	if(type==0x6369676f6c)logic_write(p);
 }
 void final_read(char* p)
 {
 	//if(type==what)what_read();
 	if(type==0x656c6966)file_read(p);
+	//if(type==0x79726f6d656d)memory_read(p);
 	if(type==0x6369676f6c)logic_read(p);
 }
 void final_choose(char* p)
 {
 	//if(type==what)what_choose();
 	if(type==0x656c6966)file_choose(p);
+	//if(type==0x79726f6d656d)memory_choose(p);
 	if(type==0x6369676f6c)logic_choose(p);
 }
 void final_list(char* p)
 {
 	//if(type==what)what_list();
 	if(type==0x656c6966)file_list(p);
-	if(type==0x6369676f6c)logic_choose(p);
+	//if(type==0x79726f6d656d)memory_list(p);
+	if(type==0x6369676f6c)logic_list(p);
 }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int final_open(char* p)
 {
 	int i=0;
@@ -200,6 +189,10 @@ int final_open(char* p)
 	//	c://
 	//	h://
 	//	udp://
+	else if(type==0x79726f6d656d)
+	{
+		//return memory_open(p+ret);
+	}
 	else if(type==0x706475)
 	{
 		//return udp_open(p+ret);
@@ -249,118 +242,3 @@ int final_kill(char* p)
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int command(char* buffer)
-{
-	int ret;
-	char* arg0;
-	char* arg1;
-	//say("command=%s\n",buffer);
-	buf2arg(buffer,&arg0,&arg1);
-	if(arg0==0)return 0;
-
-
-
-
-	//'q'
-	if(arg0[0]=='q')
-	{
-		stillalive=0;
-		return 0;
-	}
-	//'exit
-	if((arg0[0]==0x65)&&(arg0[1]==0x78)&&(arg0[2]==0x69)&&(arg0[3]==0x74))
-	{
-		stillalive=0;
-		return 0;
-	}
-	//'help'
-	if((arg0[0]==0x68)&&(arg0[1]==0x65)&&(arg0[2]==0x6c)&&(arg0[3]==0x70))
-	{
-		//"create","destory","start","stop"
-		say("init ?             =init=make=fabricate\n");
-		say("kill ?             =kill=smash=wreck\n");
-		say("open ?             =mount=enter=start\n");
-		say("close ?            =unmount=leave=stop\n\n");
-
-		//"observe","change","get","put"
-		say("ls ?               =list=summary=view=check\n");
-		say("cd ?               =choose=into=switch=clap\n");
-		say("read ?             =load=get=eat=copy\n");
-		say("write ?            =store=put=spit=paste\n\n");
-
-		return 1;
-	}
-
-
-
-
-	//"create","destory","start","stop"
-        ret=compare( arg0 , "init");
-        if(ret==0)
-        {
-		final_init(arg1);
-                return 2;
-        }
-        ret=compare( arg0 , "kill");
-        if(ret==0)
-        {
-		final_kill(arg1);
-                return 2;
-        }
-        ret=compare( arg0 , "open");
-        if(ret==0)
-        {
-                final_open(arg1);
-                return 2;
-        }
-        ret=compare( arg0 , "close");
-        if(ret==0)
-        {
-                final_close(arg1);
-                return 2;
-        }
-
-
-
-
-        //"observe","change","get","put"
-        ret=compare( arg0 , "ls" );
-        if(ret==0)
-        {
-                final_list(arg1);
-                return 4;
-        }
-        ret=compare( arg0 , "cd" );
-        if(ret==0)
-        {
-                final_choose(arg1);
-                return 4;
-        }
-        ret=compare( arg0 , "read" );
-        if(ret==0)
-        {
-                final_read(arg1);
-                return 4;
-        }
-        ret=compare( arg0 , "write" );  //dangerous
-        if(ret==0)
-        {
-                final_write(arg1);
-                return 4;
-        }
-
-
-
-
-	return 8;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

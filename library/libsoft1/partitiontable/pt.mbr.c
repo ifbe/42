@@ -2,7 +2,8 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 void printmemory(QWORD start,QWORD count);
 void say(char* fmt,...);
 
@@ -150,7 +151,7 @@ void explainmbr(char* buffer,char* to)
 		if( type==5 | type==0xf )
 		{
 			//say("sector:%x\n",*(DWORD*)(to+offset));
-			readsystem(buffer,*(DWORD*)(to+offset),0,1);
+			rawread(buffer,*(DWORD*)(to+offset),0,1);
 			//printmemory(buffer+0x1be,0x40);
 
 			char* remember=(char*)dstqword;

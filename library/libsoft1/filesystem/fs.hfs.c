@@ -6,9 +6,11 @@
 #define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
-//用了别人的
+//
+int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
-int readsystem(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+//用了别人的
 void printmemory(char* addr,QWORD size);
 void say(char* fmt,...);
 
@@ -142,7 +144,7 @@ void explainleafnode()
 static void hfs_explain(QWORD number)
 {
 	say("%llx@%llx\n",number,catalogsector+nodesize*number);
-	readsystem(datahome,catalogsector+nodesize*number,0,nodesize);	//0x1000
+	rawread(datahome,catalogsector+nodesize*number,0,nodesize);  //0x1000
 	printmemory(datahome,0x1000);
 
 	//1.解释节点头
@@ -182,7 +184,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 	say("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
-	readsystem(datahome,catalogsector+nodenum*nodesize,0,nodesize);
+	rawread(datahome,catalogsector+nodenum*nodesize,0,nodesize);
 	BYTE type=*(BYTE*)(datahome+8);
 
 	//节点内每一个record找一遍，找本节点内第一个的偏移
@@ -205,7 +207,7 @@ QWORD searchbtreeforcnid(QWORD nodenum,QWORD wantcnid)
 
 			//临时读下一个到datahome+0x8000那里(节点最大不超过0x8000吧)
 			//读这个临时节点的第一个记录看看，能确定下来目前的最后一个record就是想要的
-			readsystem(datahome+0x8000,catalogsector+temptempnodenum*nodesize,0,nodesize);
+			rawread(datahome+0x8000,catalogsector+temptempnodenum*nodesize,0,nodesize);
 			QWORD temptempkey=BSWAP_32(*(DWORD*)(datahome+0x8000+0x10));
 
 			//
@@ -308,7 +310,7 @@ static void explaindirectory(QWORD nodenum,QWORD wantcnid)
 			if(nodenum==0)break;
 			say("next node:%x\n",nodenum);
 
-			readsystem(datahome,catalogsector+nodenum*nodesize,0,nodesize);
+			rawread(datahome,catalogsector+nodenum*nodesize,0,nodesize);
 			totalrecords=BSWAP_16(*(WORD*)(datahome+0xa));
 			temp=0;
 			continue;
@@ -389,7 +391,7 @@ void explainfile(QWORD fathercnid,QWORD wantcnid,QWORD nodenum,QWORD wantwhere)
 
 
 	//然后是后面的记录
-	readsystem(catabuf,catalogsector+nodenum*nodesize,0,nodesize);
+	rawread(catabuf,catalogsector+nodenum*nodesize,0,nodesize);
 	int temp=nodesize*0x200;
 	while(1)
 	{
@@ -468,7 +470,7 @@ static int hfs_cd(QWORD id)
 	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
-		readsystem(datahome,catalogsector+firstleafnode*nodesize,0,nodesize);
+		rawread(datahome,catalogsector+firstleafnode*nodesize,0,nodesize);
 		foundnode=firstleafnode;
 	}
 	else
@@ -589,7 +591,7 @@ int explainhfshead()
 
 
 //----------------第二次读，把分区头读进catabuf--------------
-	readsystem(catabuf,catalogsector,0,0x8);	//0x1000
+	rawread(catabuf,catalogsector,0,0x8);	//0x1000
 	//printmemory(catabuf,0x200);
 
 	//nodesize
@@ -670,7 +672,7 @@ int mounthfs(QWORD sector,char* addr)
 	datahome=addr+0x200000;
 
 	//检查
-	ret=readsystem(pbr,block0,0,0x8);	//0x1000
+	ret=rawread(pbr,block0,0,0x8);	//0x1000
 	ret=ishfs(pbr);
 	if(ret==0)return -1;
 
