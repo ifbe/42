@@ -26,7 +26,7 @@ target:
 	$(compiler) $(cflag) text/text.ascii.c
 	$(compiler) $(cflag) text/text.gbk.c
 	$(compiler) $(cflag) text/text.unicode.c
-	$(compiler) $(cflag) hub.c
+	$(compiler) $(cflag) artery.c
 crosscompile:
 	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2"
 gcc:

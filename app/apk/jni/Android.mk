@@ -92,7 +92,7 @@ LOCAL_SRC_FILES += \
         library/libsoft1/partitiontable/pt.mbr.c \
         library/libsoft1/text/text.ascii.c \
         library/libsoft1/text/text.unicode.c \
-        library/libsoft1/hub.c
+        library/libsoft1/artery.c
 
 #4.ui0
 LOCAL_SRC_FILES += \

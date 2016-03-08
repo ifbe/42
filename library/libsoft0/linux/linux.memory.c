@@ -1,5 +1,6 @@
 #include<unistd.h>
 #include<fcntl.h>
+void say(char* fmt, ...);
 static int _dev_mem=-1;
 static unsigned long long currentmmap=0xffffffffffffffff;
 

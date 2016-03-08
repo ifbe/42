@@ -10,8 +10,8 @@ void killcharacter();
 void initwindow(char*);
 void killwindow();
 //libsoft
-void inithub(char*);
-void killhub();
+void initartery(char*);
+void killartery();
 void initsystem(char*);
 void killsystem();
 //libhard
@@ -260,7 +260,7 @@ void birth()
 	//[8,c)：文件读写，以及详细分析
 	initsystem( memory );
 	say("[8,c):soft0 done\n");
-	inithub( memory );
+	initartery( memory );
 	say("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
@@ -280,7 +280,7 @@ __attribute__((destructor)) void death()
 	}
 	if(memory != 0)
 	{
-		killhub();
+		killartery();
 		killsystem();
 		memory=0;
 	}

@@ -2,8 +2,12 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//
 void readfile(char* buf,QWORD sector,QWORD disk,DWORD count);
 void readmemory(char* buf,QWORD sector,QWORD disk,DWORD count);
+//
+void initreal(char*);
+void initlogic(char*);
 
 
 
@@ -103,12 +107,12 @@ void cleverwrite()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void inithub(char* world)
+void initartery(char* world)
 {
 	initreal(world);
         initlogic(world);
 }
-void killhub()
+void killartery()
 {
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
