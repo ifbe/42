@@ -1,5 +1,6 @@
 target:
 	$(compiler) $(cflag) bin/bin.operate.c
+	$(compiler) $(cflag) bin/bin.prelibation.c
 	$(compiler) $(cflag) compress/compress.c
 	$(compiler) $(cflag) compress/compress.7z.c
 	$(compiler) $(cflag) compress/compress.cpio.c
@@ -25,8 +26,7 @@ target:
 	$(compiler) $(cflag) text/text.ascii.c
 	$(compiler) $(cflag) text/text.gbk.c
 	$(compiler) $(cflag) text/text.unicode.c
-	$(compiler) $(cflag) manager/manager.hub.c
-	$(compiler) $(cflag) manager/manager.prelibation.c
+	$(compiler) $(cflag) hub.c
 crosscompile:
 	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2"
 gcc:
