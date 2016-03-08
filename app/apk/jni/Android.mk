@@ -61,32 +61,38 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.event.c \
         library/libsoft0/linux/linux.file.c \
+        library/libsoft0/linux/linux.memory.c \
         library/libsoft0/linux/linux.random.c \
-        library/libsoft0/memory.c
+        library/libsoft0/system.c
 
 #3.soft1
 LOCAL_SRC_FILES += \
+        library/libsoft1/bin/bin.operate.c \
+        library/libsoft1/bin/bin.prelibation.c \
+        library/libsoft1/compress/compress.c \
         library/libsoft1/compress/compress.7z.c \
         library/libsoft1/compress/compress.cpio.c \
         library/libsoft1/compress/compress.gz.c \
         library/libsoft1/compress/compress.tar.c \
         library/libsoft1/compress/compress.zip.c \
-        library/libsoft1/executable/exe.elf.c \
-        library/libsoft1/executable/exe.macho.c \
-        library/libsoft1/executable/exe.pe.c \
+        library/libsoft1/executable/exec.c \
+        library/libsoft1/executable/exec.elf.c \
+        library/libsoft1/executable/exec.macho.c \
+        library/libsoft1/executable/exec.pe.c \
+        library/libsoft1/filesystem/fs.c \
         library/libsoft1/filesystem/fs.ext.c \
         library/libsoft1/filesystem/fs.fat.c \
         library/libsoft1/filesystem/fs.hfs.c \
         library/libsoft1/filesystem/fs.ntfs.c \
         library/libsoft1/math/math.calc.c \
         library/libsoft1/math/math.notation.c \
+        library/libsoft1/partitiontable/pt.c \
+        library/libsoft1/partitiontable/pt.apple.c \
         library/libsoft1/partitiontable/pt.gpt.c \
         library/libsoft1/partitiontable/pt.mbr.c \
         library/libsoft1/text/text.ascii.c \
         library/libsoft1/text/text.unicode.c \
-        library/libsoft1/manager/manager.master.c \
-        library/libsoft1/manager/manager.logic.c \
-        library/libsoft1/manager/manager.prelibation.c
+        library/libsoft1/hub.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
@@ -112,8 +118,8 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-        library/visitor/temple/abbot.c \
-        library/visitor/temple/monk.c \
+        library/visitor/temple/temple.abbot.c \
+        library/visitor/temple/temple.monk.c \
         library/visitor/traveller/plasma.c
 
 
