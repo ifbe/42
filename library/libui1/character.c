@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //init......
-void asciiinit_init(QWORD,char*);
+void ascii_init(QWORD,char*);
 void unicode_init(QWORD,char*);
 void background_init(QWORD,char*);
 void shape_init(QWORD,char*);

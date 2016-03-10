@@ -1,7 +1,9 @@
 target:
-	$(compiler) $(cflag) auto/auto.clever.c
-	$(compiler) $(cflag) auto/auto.prelibation.c
-	$(compiler) $(cflag) binary/bin.operate.c
+	$(compiler) $(cflag) core/core.convert.c
+	$(compiler) $(cflag) core/core.lower.c
+	$(compiler) $(cflag) core/core.prelibation.c
+	$(compiler) $(cflag) core/core.upper.c
+	$(compiler) $(cflag) binary/bin.c
 	$(compiler) $(cflag) compress/compress.c
 	$(compiler) $(cflag) compress/compress.7z.c
 	$(compiler) $(cflag) compress/compress.cpio.c
