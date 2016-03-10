@@ -59,16 +59,19 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
-	library/libsoft0/linux/linux.event.c \
-        library/libsoft0/linux/linux.file.c \
-        library/libsoft0/linux/linux.memory.c \
+	library/libsoft0/linux/linux.event.fake.c \
+	library/libsoft0/linux/linux.event.net.c \
+        library/libsoft0/linux/linux.flatmem.file.c \
+        library/libsoft0/linux/linux.flatmem.physical.c \
+        library/libsoft0/linux/linux.flatmem.virtual.c \
         library/libsoft0/linux/linux.random.c \
         library/libsoft0/system.c
 
 #3.soft1
 LOCAL_SRC_FILES += \
-        library/libsoft1/bin/bin.operate.c \
-        library/libsoft1/bin/bin.prelibation.c \
+        library/libsoft1/auto/auto.clever.c \
+        library/libsoft1/auto/auto.prelibation.c \
+        library/libsoft1/binary/bin.operate.c \
         library/libsoft1/compress/compress.c \
         library/libsoft1/compress/compress.7z.c \
         library/libsoft1/compress/compress.cpio.c \

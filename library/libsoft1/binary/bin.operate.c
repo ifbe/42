@@ -170,6 +170,14 @@ int bin_write(char* arg1)
 
 	return 0;
 }
+
+
+
+
+
+
+
+
 int bin_open(char* p)
 {
 }
@@ -177,14 +185,6 @@ int bin_close(char* p)
 {
 	//say("closing\n");
 }
-
-
-
-
-
-
-
-
 void bin_init(char* world)
 {
 	//(自己)4块区域，每块1兆
