@@ -15,6 +15,10 @@ unsigned int getrandom()
 	if(ret<4){printf("error reading:/dev/urandom:%x\n",value);}
 	return value;
 }
+
+
+
+
 void initrandom()
 {
 	_dev_urandom=open("/dev/urandom",O_RDONLY);

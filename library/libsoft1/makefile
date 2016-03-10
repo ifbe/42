@@ -1,6 +1,6 @@
 target:
-	$(compiler) $(cflag) bin/bin.operate.c
-	$(compiler) $(cflag) bin/bin.prelibation.c
+	$(compiler) $(cflag) binary/bin.operate.c
+	$(compiler) $(cflag) binary/bin.prelibation.c
 	$(compiler) $(cflag) compress/compress.c
 	$(compiler) $(cflag) compress/compress.7z.c
 	$(compiler) $(cflag) compress/compress.cpio.c

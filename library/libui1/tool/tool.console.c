@@ -115,7 +115,7 @@ static void printstdin(int count)
 
 
 
-static void writeconsole(QWORD type,QWORD key)
+static void console_write(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'char'
 	{
@@ -168,7 +168,7 @@ static void writeconsole(QWORD type,QWORD key)
 		if(backward>=0x80)backward-=0x80;
 	}
 }
-static void readconsole()
+static void console_read()
 {
 	//显示哪儿开始的一块
 	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
@@ -186,20 +186,12 @@ static void readconsole()
 
 	printstdin(count);
 }
-static void intoconsole()
+static void console_into()
 {
 	backgroundcolor(0);
 }
-void listconsole(QWORD* this)
+static void console_list()
 {
-	this[0]=0x776f646e6977;
-	this[1]=0x656c6f736e6f63;
-	this[2]=(0<<16)+0;   //startaddr
-	this[3]=(768<<16)+1024; //endaddr
-	this[4]=(QWORD)listconsole;
-	this[5]=(QWORD)intoconsole;
-	this[6]=(QWORD)readconsole;
-	this[7]=(QWORD)writeconsole;
 }
 
 
@@ -209,22 +201,43 @@ void listconsole(QWORD* this)
 
 
 
-void initconsole(QWORD size,void* addr)
+static void console_open()
 {
-	//size
-	resolutionx=size&&0xffff;
-	resolutiony=(size>>16)&0xffff;
-
-	//where
-	palette=addr;
-
-	//12123123123
-	if(logbuf==0)
+}
+static void console_close()
+{
+}
+void console_init(QWORD size,void* addr)
+{
+	if(size==0)
 	{
-		//never call console before that thing
-		//logbuf=whereisworld()+0x100000;
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;
+		this[1]=0x656c6f736e6f63;
+		this[2]=(0<<16)+0;   //startaddr
+		this[3]=(768<<16)+1024; //endaddr
+		this[4]=(QWORD)console_list;
+		this[5]=(QWORD)console_into;
+		this[6]=(QWORD)console_read;
+		this[7]=(QWORD)console_write;
+	}
+	else
+	{
+		//size
+		resolutionx=size&&0xffff;
+		resolutiony=(size>>16)&0xffff;
+
+		//where
+		palette=addr;
+
+		//12123123123
+		if(logbuf==0)
+		{
+			//never call console before that thing
+			//logbuf=whereisworld()+0x100000;
+		}
 	}
 }
-void killconsole()
+void console_kill()
 {
 }

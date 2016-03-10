@@ -98,7 +98,7 @@ void printunicodebig(int x,int y,DWORD value)
 
 
 
-void initunicode(QWORD size,void* addr)
+void unicode_init(QWORD size,void* addr)
 {
 	//how
 	xsize=size&0xffff;
@@ -110,6 +110,6 @@ void initunicode(QWORD size,void* addr)
 	//unicode
 	unicodetable=(unsigned char*)whereisunicodetable();
 }
-void killunicode()
+void unicode_kill()
 {
 }

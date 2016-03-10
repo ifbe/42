@@ -1,6 +1,12 @@
-void initvi(char* in)
+void vi_open()
 {
 }
-void killvi()
+void vi_close()
+{
+}
+void vi_init(char* in)
+{
+}
+void vi_kill()
 {
 }

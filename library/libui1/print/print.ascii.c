@@ -346,7 +346,7 @@ void printdouble(int x,int y,double z)
 
 
 
-void initascii(QWORD size,void* addr)
+void ascii_init(QWORD size,void* addr)
 {
 	//how
 	width=size&0xffff;
@@ -355,6 +355,6 @@ void initascii(QWORD size,void* addr)
 	//where
 	screen=addr;
 }
-void killascii()
+void ascii_kill()
 {
 }

@@ -182,7 +182,7 @@ static void tuxiang()
 
 
 
-static void writesketchpad(QWORD type,QWORD key)
+static void sketchpad_write(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -289,7 +289,7 @@ static void writesketchpad(QWORD type,QWORD key)
 	//else if(type==0x6B636162207A7978)		//'xyz ++++'
 	//else if(type==0x6B636162207A7978)		//'xyz ----'
 }
-static void readsketchpad()
+static void sketchpad_read()
 {
 	//跳过
 	if(node[0].type!=0x3d3d3d3d)goto skipthese;
@@ -324,7 +324,7 @@ skipthese:		//打印
 	printstring( 0 + (48<<16) , result , 0xcccccc , 0 );
 	return;
 }
-static void intosketchpad()
+static void sketchpad_into()
 {
 	if(databuf==0)
 	{
@@ -339,16 +339,8 @@ static void intosketchpad()
 
 	backgroundcolor(0);
 }
-void listsketchpad(QWORD* this)
+static void sketchpad_list()
 {
-	this[0]=0x776f646e6977;
-	this[1]=0x686374656b73;
-	this[2]=(0<<16)+0;		//left,up
-	this[3]=(768<<16)+1024;		//right,down
-	this[4]=(QWORD)listsketchpad;
-	this[5]=(QWORD)intosketchpad;
-	this[6]=(QWORD)readsketchpad;
-	this[7]=(QWORD)writesketchpad;
 }
 
 
@@ -358,15 +350,36 @@ void listsketchpad(QWORD* this)
 
 
 
-void initsketchpad(QWORD size,void* addr)
+static void sketchpad_open()
 {
-	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
-
-	//
-	screenbuf=addr;
 }
-void killsketchpad()
+static void sketchpad_close()
+{
+}
+void sketchpad_init(QWORD size,void* addr)
+{
+	if(size==0)
+	{
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;
+		this[1]=0x686374656b73;
+		this[2]=(0<<16)+0;		//left,up
+		this[3]=(768<<16)+1024;		//right,down
+		this[4]=(QWORD)sketchpad_list;
+		this[5]=(QWORD)sketchpad_into;
+		this[6]=(QWORD)sketchpad_read;
+		this[7]=(QWORD)sketchpad_write;
+	}
+	else
+	{
+		//
+		xsize=size&0xffff;
+		ysize=(size>>16)&0xffff;
+
+		//
+		screenbuf=addr;
+	}
+}
+void sketchpad_kill()
 {
 }

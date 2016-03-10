@@ -170,7 +170,7 @@ static void floatarea()
 
 
 
-static void writehex(QWORD type,QWORD key)
+static void hex_write(QWORD type,QWORD key)
 {
 	if(type==0x64626b)			//'kbd'
 	{
@@ -255,7 +255,7 @@ static void writehex(QWORD type,QWORD key)
 		base+=0x40;
 	}
 }
-static void readhex()
+static void hex_read()
 {
 	//背景
 	background1();
@@ -266,7 +266,7 @@ static void readhex()
 	//
 	floatarea();
 }
-static void intohex()
+static void hex_into()
 {
 	int i;
 	databuf=(BYTE*)whereischaracter()+0x300000;
@@ -285,16 +285,8 @@ static void intohex()
 	currentcache=0xffffffff;
 	backgroundcolor(0);
 }
-void listhex(QWORD* this)
+static void hex_list(QWORD* this)
 {
-	this[0]=0x776f646e6977;
-	this[1]=0x786568;
-	this[2]=(0<<16)+0;		//left,up
-	this[3]=(768<<16)+1024;		//right,down
-	this[4]=(QWORD)listhex;
-	this[5]=(QWORD)intohex;
-	this[6]=(QWORD)readhex;
-	this[7]=(QWORD)writehex;
 }
 
 
@@ -304,15 +296,36 @@ void listhex(QWORD* this)
 
 
 
-void inithex(QWORD size,void* addr)
+void hex_open()
 {
-	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
-
-	//
-	screenbuf=addr;
 }
-void killhex()
+void hex_close()
+{
+}
+void hex_init(QWORD size,void* addr)
+{
+	if(size==0)
+	{
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;
+		this[1]=0x786568;
+		this[2]=(0<<16)+0;		//left,up
+		this[3]=(768<<16)+1024;		//right,down
+		this[4]=(QWORD)hex_list;
+		this[5]=(QWORD)hex_into;
+		this[6]=(QWORD)hex_read;
+		this[7]=(QWORD)hex_write;
+	}
+	else
+	{
+		//
+		xsize=size&0xffff;
+		ysize=(size>>16)&0xffff;
+
+		//
+		screenbuf=addr;
+	}
+}
+void hex_kill()
 {
 }

@@ -6,24 +6,12 @@
 void readfile(char* buf,QWORD sector,QWORD disk,DWORD count);
 void readmemory(char* buf,QWORD sector,QWORD disk,DWORD count);
 //
-void initreal(char*);
-void initlogic(char*);
+void initbinary(char*);
+void initfilesystem(char*);
 
 
 
 
-void rawlist()
-{
-	//列出可以自己操作每个字节的东西
-	//count  = filelist(p+count);
-	//count += memorylist(p+count);
-	//count += devicelist(p+count);
-	//count += xxxxlist(p+count);
-}
-void rawchoose()
-{
-	//选一个
-}
 void rawread(char* buf,QWORD sector,QWORD disk,DWORD count)
 {
 	readfile(buf,sector,disk,count);
@@ -35,16 +23,6 @@ void rawwrite(char* buf,QWORD sector,QWORD disk,DWORD count)
 
 
 
-
-
-
-
-void cleverlist()
-{
-}
-void cleverchoose()
-{
-}
 void cleverread(QWORD sector,	QWORD count,	QWORD where,
 		BYTE* destaddr,	QWORD destsize,	QWORD wantwhere)
 {
@@ -107,10 +85,17 @@ void cleverwrite()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void openartery(char* what)
+{
+	//选一个操作者
+}
+void closeartery()
+{
+}
 void initartery(char* world)
 {
-	initreal(world);
-        initlogic(world);
+	bin_init(world);	//1
+        fs_init(world);		//2
 }
 void killartery()
 {

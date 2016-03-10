@@ -32,7 +32,17 @@ void readi2c(unsigned char* dest,unsigned char src)
 		return;
 	}
 }
-void intoi2c(char* what)	//	i2c://0x1.0x62
+void switchi2c(char* what)	//	i2c://0x1.0x62
+{
+}
+void listi2c(char* towhere)	//	enumerate all i2c host and device
+{
+}
+
+
+
+
+void openi2c()
 {
 	//open
 	fp = open("/dev/i2c-1",O_RDWR);
@@ -50,17 +60,13 @@ void intoi2c(char* what)	//	i2c://0x1.0x62
 		return;
 	}
 }
-void listi2c(char* towhere)	//	enumerate all i2c host and device
+void closei2c()
 {
+	if(fp != -1)close(fp);
 }
-
-
-
-
 void initi2c()
 {
 }
 void killi2c()
 {
-	if(fp != -1)close(fp);
 }

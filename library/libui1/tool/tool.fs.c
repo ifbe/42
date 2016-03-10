@@ -1,6 +1,12 @@
-void initfs(char* in)
+void fs_open()
 {
 }
-void killfs()
+void fs_close()
+{
+}
+void fs_init(char* in)
+{
+}
+void fs_kill()
 {
 }

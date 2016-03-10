@@ -18,14 +18,15 @@ static DWORD* screenbuf;
 //菜单
 static char buffer[128];
 static int bufp=0;
-//enable and disable
-static char* thataddr=0;
+//
+static QWORD* this=0;
+static QWORD* that=0;
 
 
 
 
 //write,read,into,list
-void writemenu(QWORD type,QWORD key)
+static void menu_write(QWORD type,QWORD key)
 {
 	say("%s,%llx\n",&type,key);
 
@@ -38,7 +39,7 @@ void writemenu(QWORD type,QWORD key)
 		//点击框框外面，关掉菜单
 		if( (x<256)|(x>768)|(y<256)|(y>512) )
 		{
-			thataddr[0]=0;
+			that[0]=0;
 			return;
 		}
 
@@ -81,7 +82,7 @@ void writemenu(QWORD type,QWORD key)
 		}
 	}//kbd
 }
-void readmenu()
+static void menu_read()
 {
 	//body
 	rectangle((256<<16)+256 , (512<<16)+768  , 0);
@@ -94,35 +95,48 @@ void readmenu()
 	colorstring(0x20 , 16 , "what do you want?" , 0xcccccc);
 	colorstring(0x20 , 17 , buffer , 0xcccccc);
 }
-static void intomenu()
+static void menu_switch()
 {
 }
-void listmenu(QWORD* this)
+static void menu_list()
 {
-	thataddr=(char*)this+0x10;
-
-	this[0]=0x776f646e6977;
-	this[1]=0x38343032;
-	this[2]=0;		//left,up
-	this[3]=0;		//right,down
-	this[4]=(QWORD)listmenu;
-	this[5]=(QWORD)intomenu;
-	this[6]=(QWORD)readmenu;
-	this[7]=(QWORD)writemenu;
 }
 
 
 
 
-void initmenu(QWORD size,void* addr)
+static void menu_open()
 {
-	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
-
-	//
-	screenbuf=addr;
 }
-void killmenu()
+static void menu_close()
+{
+}
+void menu_init(QWORD size,void* addr)
+{
+	if(size==0)
+	{
+		this=(QWORD*)addr;
+		that=(QWORD*)(addr+0x10);
+
+		this[0]=0x776f646e6977;
+		this[1]=0x38343032;
+		this[2]=0;		//left,up
+		this[3]=0;		//right,down
+		this[4]=(QWORD)menu_list;
+		this[5]=(QWORD)menu_switch;
+		this[6]=(QWORD)menu_read;
+		this[7]=(QWORD)menu_write;
+	}
+	else
+	{
+		//
+		xsize=size&0xffff;
+		ysize=(size>>16)&0xffff;
+
+		//
+		screenbuf=addr;
+	}
+}
+void menu_kill()
 {
 }

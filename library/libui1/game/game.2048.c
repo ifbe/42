@@ -260,7 +260,7 @@ static void new2048()
 
 
 
-static void write2048(QWORD type,QWORD key)
+static void the2048_write(QWORD type,QWORD key)
 {
 	//kbd
 	if(type != 0x64626b)return;
@@ -275,7 +275,7 @@ static void write2048(QWORD type,QWORD key)
 	//new number?
 	new2048();
 }
-static void read2048(QWORD size,void* addr)
+static void the2048_read(QWORD size,void* addr)
 {
 	int x,y;
 
@@ -288,7 +288,7 @@ static void read2048(QWORD size,void* addr)
 		}
 	}
 }
-static void into2048()
+static void the2048_into()
 {
 	//1.init
 	int x,y;
@@ -307,28 +307,38 @@ static void into2048()
 	//
 	writewindow( 0x657a6973 , 640+(640<<16) );
 }
-void list2048(QWORD* this)
-{
-	this[0]=0x776f646e6977;		//'window'
-	this[1]=0x38343032;			//'2048'
-	this[2]=(0<<16)+0;			//left,up
-	this[3]=(640<<16)+640;		//right,down
-	this[4]=(QWORD)list2048;
-	this[5]=(QWORD)into2048;
-	this[6]=(QWORD)read2048;
-	this[7]=(QWORD)write2048;
-}
-
-
-
-
-
-
-
-
-void init2048(QWORD size,void* addr)
+static void the2048_list()
 {
 }
-void kill2048()
+
+
+
+
+
+
+
+
+static void the2048_open()
+{
+}
+static void the2048_close()
+{
+}
+void the2048_init(QWORD size,void* addr)
+{
+	if(size==0)
+	{
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;		//'window'
+		this[1]=0x38343032;			//'2048'
+		this[2]=(0<<16)+0;			//left,up
+		this[3]=(640<<16)+640;		//right,down
+		this[4]=(QWORD)the2048_list;
+		this[5]=(QWORD)the2048_into;
+		this[6]=(QWORD)the2048_read;
+		this[7]=(QWORD)the2048_write;
+	}
+}
+void the2048_kill()
 {
 }

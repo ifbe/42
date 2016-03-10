@@ -64,7 +64,7 @@ void background1()
 
 
 
-void initbackground(QWORD size,void* addr)
+void background_init(QWORD size,void* addr)
 {
 	//how
 	width=size&0xffff;
@@ -73,6 +73,6 @@ void initbackground(QWORD size,void* addr)
 	//where
 	screenbuf=addr;
 }
-void killbackground()
+void background_kill()
 {
 }

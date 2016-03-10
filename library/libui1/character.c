@@ -2,31 +2,18 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//list......
-void listmenu(char*);		//menu.c
-void listhex(char*);                //1.hex.c
-void list2048(char*);               //2.2048.c
-void listkeyboard(char*);           //2.keyboard.c
-void listtree(char*);               //2.tree.c
-void listsketchpad(char*);          //3.sketchpad.c
-void listconsole(char*);            //4.console.c
-void listascii(char*);
-void listunicode(char*);
-void listbackground(char*);
-void listshape(char*);
-
 //init......
-void initascii(QWORD,char*);
-void initunicode(QWORD,char*);
-void initbackground(QWORD,char*);
-void initshape(QWORD,char*);
-void initmenu(QWORD,char*);			//menu.c
-void inithex(QWORD,char*);			//1.hex.c
-void init2048(QWORD,char*);			//2.2048.c
-void initkeyboard(QWORD,char*);		//2.keyboard.c
-void inittree(QWORD,char*);			//2.tree.c
-void initsketchpad(QWORD,char*);	//3.sketchpad.c
-void initconsole(QWORD,char*);		//4.console.c
+void asciiinit_init(QWORD,char*);
+void unicode_init(QWORD,char*);
+void background_init(QWORD,char*);
+void shape_init(QWORD,char*);
+void menu_init(QWORD,char*);			//menu.c
+void hex_init(QWORD,char*);			//1.hex.c
+void the2048_init(QWORD,char*);			//2.2048.c
+void keyboard_init(QWORD,char*);		//2.keyboard.c
+void tree_init(QWORD,char*);			//2.tree.c
+void sketchpad_init(QWORD,char*);	//3.sketchpad.c
+void console_init(QWORD,char*);		//4.console.c
 
 //
 int final_open(char*);
@@ -173,21 +160,21 @@ void writecharacter(QWORD type,QWORD key)
 void readcharacter(QWORD size,void* addr)
 {
 	//words
-	initascii(size,addr);
-	initunicode(size,addr);
+	ascii_init(size,addr);
+	unicode_init(size,addr);
 
 	//pictures
-	initbackground(size,addr);
-	initshape(size,addr);
+	background_init(size,addr);
+	shape_init(size,addr);
 
 	//guys
-	initmenu(size,addr);
-	inithex(size,addr);
-	init2048(size,addr);
-	initkeyboard(size,addr);
-	inittree(size,addr);
-	initsketchpad(size,addr);
-	initconsole(size,addr);
+	menu_init(size,addr);
+	hex_init(size,addr);
+	the2048_init(size,addr);
+	keyboard_init(size,addr);
+	tree_init(size,addr);
+	sketchpad_init(size,addr);
+	console_init(size,addr);
 
 	//主画
 	//say("background\n");
@@ -200,40 +187,8 @@ void readcharacter(QWORD size,void* addr)
 void intocharacter(QWORD size,void* addr)
 {
 }
-void listcharacter(char* addr)
+void listcharacter()
 {
-	//clean everything
-	int i;
-	for(i=0;i<0x100000;i++)addr[i]=0;
-	worker=(struct working*)addr;
-
-	//[+0x00,0x3f]:		menu.c
-	listmenu(addr);
-	addr+=0x40;
-
-	//[+0x40,+0x7f]:        1.hex.c
-	listhex(addr);
-	addr += 0x40;
-
-	//[+0x80,+0xbf]:        2.2048.c
-	list2048(addr);
-	addr += 0x40;
-
-	//[+0xc0,+0xff]:        2.keyboard.c
-	listkeyboard(addr);
-	addr += 0x40;
-
-	//[+0x100,+0x13f]:      2.tree.c
-	listtree(addr);
-	addr += 0x40;
-
-	//[+0x140,+0x17f]:      3.sketchpad.c
-	listsketchpad(addr);
-	addr += 0x40;
-
-	//[+0x180,+0x1bf]:      4.console.c
-	listconsole(addr);
-	addr += 0x40;
 }
 
 
@@ -245,8 +200,38 @@ void listcharacter(char* addr)
 
 void initcharacter(char* addr)
 {
-	//这里只负责列出每个单位的4大函数的位置
-	listcharacter(addr);
+	//clean everything
+	int i;
+	for(i=0;i<0x100000;i++)addr[i]=0;
+	worker=(struct working*)addr;
+
+	//[+0x00,0x3f]:		menu.c
+	menu_init(0,addr);
+	addr+=0x40;
+
+	//[+0x40,+0x7f]:        1.hex.c
+	hex_init(0,addr);
+	addr += 0x40;
+
+	//[+0x80,+0xbf]:        2.2048.c
+	the2048_init(0,addr);
+	addr += 0x40;
+
+	//[+0xc0,+0xff]:        2.keyboard.c
+	keyboard_init(0,addr);
+	addr += 0x40;
+
+	//[+0x100,+0x13f]:      2.tree.c
+	tree_init(0,addr);
+	addr += 0x40;
+
+	//[+0x140,+0x17f]:      3.sketchpad.c
+	sketchpad_init(0,addr);
+	addr += 0x40;
+
+	//[+0x180,+0x1bf]:      4.console.c
+	console_init(0,addr);
+	addr += 0x40;
 
 	//选一个作为默认屏幕
 	uicommand("2048");

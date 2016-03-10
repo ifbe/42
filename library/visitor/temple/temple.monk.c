@@ -3,14 +3,14 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //disk or file
-int file_list(char*);
-int file_choose(char*);
-int file_read(char*);
-int file_write(char*);
-int file_open(char*);
-int file_close(char*);
-int file_init();
-int file_kill();
+int bin_list(char*);
+int bin_choose(char*);
+int bin_read(char*);
+int bin_write(char*);
+int bin_open(char*);
+int bin_close(char*);
+int bin_init();
+int bin_kill();
 //memory or mmio
 int memory_list(char*);
 int memory_choose(char*);
@@ -21,14 +21,14 @@ int memory_close(char*);
 int memory_init();
 int memory_kill();
 //filesystem
-int logic_list(char*);
-int logic_choose(char*);
-int logic_read(char*);
-int logic_write(char*);
-int logic_open(char*);
-int logic_close(char*);
-int logic_init();
-int logic_kill();
+int fs_list(char*);
+int fs_choose(char*);
+int fs_read(char*);
+int fs_write(char*);
+int fs_open(char*);
+int fs_close(char*);
+int fs_init();
+int fs_kill();
 //tcp
 int tcp_list(char*);
 int tcp_choose(char*);
@@ -82,30 +82,30 @@ static QWORD type=0;
 void final_write(char* p)
 {
 	//if(type==what)what_write();
-	if(type==0x656c6966)file_write(p);
+	if(type==0x656c6966)bin_write(p);
 	//if(type==0x79726f6d656d)memory_write(p);
-	if(type==0x6369676f6c)logic_write(p);
+	if(type==0x6369676f6c)fs_write(p);
 }
 void final_read(char* p)
 {
 	//if(type==what)what_read();
-	if(type==0x656c6966)file_read(p);
+	if(type==0x656c6966)bin_read(p);
 	//if(type==0x79726f6d656d)memory_read(p);
-	if(type==0x6369676f6c)logic_read(p);
+	if(type==0x6369676f6c)fs_read(p);
 }
 void final_choose(char* p)
 {
 	//if(type==what)what_choose();
-	if(type==0x656c6966)file_choose(p);
+	if(type==0x656c6966)bin_choose(p);
 	//if(type==0x79726f6d656d)memory_choose(p);
-	if(type==0x6369676f6c)logic_choose(p);
+	if(type==0x6369676f6c)fs_choose(p);
 }
 void final_list(char* p)
 {
 	//if(type==what)what_list();
-	if(type==0x656c6966)file_list(p);
+	if(type==0x656c6966)bin_list(p);
 	//if(type==0x79726f6d656d)memory_list(p);
-	if(type==0x6369676f6c)logic_list(p);
+	if(type==0x6369676f6c)fs_list(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -152,7 +152,7 @@ int final_open(char* p)
 	if(type==0)type=0x656c6966;
 	if(type==0x656c6966)
 	{
-		return file_open(p+ret);
+		return bin_open(p+ret);
 	}
 
 	//0

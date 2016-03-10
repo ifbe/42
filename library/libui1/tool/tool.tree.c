@@ -140,7 +140,7 @@ static void printnode(int x,int y,int num)
 
 
 
-static void writetree(QWORD type,QWORD key)
+static void tree_write(QWORD type,QWORD key)
 {
 	if(type==0x72616863)		//'char'
 	{
@@ -173,7 +173,7 @@ static void writetree(QWORD type,QWORD key)
 		}
 	}//'char'
 }
-static void readtree()
+static void tree_read()
 {
 	int left,right;
 	backgroundcolor(0);
@@ -198,7 +198,7 @@ static void readtree()
 		}
 	}
 }
-static void intotree()
+static void tree_into()
 {
 	if(node==0)
 	{
@@ -209,28 +209,38 @@ static void intotree()
 		backgroundcolor(0);
 	}
 }
-void listtree(QWORD* this)
-{
-	this[0]=0x776f646e6977;
-	this[1]=0x65657274;
-	this[2]=(0<<16)+0;		//left,up
-	this[3]=(768<<16)+1024;		//write,down
-	this[4]=(QWORD)listtree;
-	this[5]=(QWORD)intotree;
-	this[6]=(QWORD)readtree;
-	this[7]=(QWORD)writetree;
-}
-
-
-
-
-
-
-
-
-void inittree(char* in)
+static void tree_list()
 {
 }
-void killtree()
+
+
+
+
+
+
+
+
+static void tree_open()
+{
+}
+static void tree_close()
+{
+}
+void tree_init(QWORD size,char* addr)
+{
+	if(size==0)
+	{
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;
+		this[1]=0x65657274;
+		this[2]=(0<<16)+0;		//left,up
+		this[3]=(768<<16)+1024;		//write,down
+		this[4]=(QWORD)tree_list;
+		this[5]=(QWORD)tree_into;
+		this[6]=(QWORD)tree_read;
+		this[7]=(QWORD)tree_write;
+	}
+}
+void tree_kill()
 {
 }

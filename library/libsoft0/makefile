@@ -9,9 +9,9 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f mac.*.o win.*.o
-	gcc -c -fPIC -O2 linux/linux.event.c
-	gcc -c -fPIC -O2 linux/linux.file.c
-	gcc -c -fPIC -O2 linux/linux.memory.c
+	gcc -c -fPIC -O2 linux/linux.event.fake.c
+	gcc -c -fPIC -O2 linux/linux.event.net.c
+	gcc -c -fPIC -O2 linux/linux.flatmem.file.c
 	gcc -c -fPIC -O2 linux/linux.random.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac

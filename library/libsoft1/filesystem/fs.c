@@ -42,7 +42,7 @@ int (*fsstore)(QWORD id,QWORD offset,QWORD size);
 
 
 //logical function
-int logic_list(char* name)
+int fs_list(char* name)
 {
 	//null:         just list
 	int i,j,temp;
@@ -99,20 +99,20 @@ int logic_list(char* name)
 	say("file not found\n");
 	return -1;
 }
-int logic_choose(char* arg1)
+int fs_choose(char* arg1)
 {
 	int ret;
 	QWORD id;
 
 	//search
-	ret=logic_list(arg1);
+	ret=fs_list(arg1);
 	if( ret<0 )return ret;          //没找到
 
 	//change directory
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
 	return fscd(id);
 }
-int logic_read(char* arg1)
+int fs_read(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
 	int ret;
@@ -120,7 +120,7 @@ int logic_read(char* arg1)
 	QWORD size;
 	QWORD temp;
 
-	ret=logic_list(arg1);
+	ret=fs_list(arg1);
 	if( ret==0 )return -1;
 
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
@@ -150,7 +150,7 @@ int logic_read(char* arg1)
 
 	return 0;
 }
-int logic_write(char* arg1)
+int fs_write(char* arg1)
 {
         return 0;
 }
@@ -168,7 +168,7 @@ int logic_write(char* arg1)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-int logic_open(char* src)
+int fs_open(char* src)
 {
 	int ret;
 	QWORD value;
@@ -248,7 +248,7 @@ int logic_open(char* src)
 	say("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
 	return 1;
 }
-int logic_close(char* p)
+int fs_close(char* p)
 {
 }
 
@@ -256,13 +256,13 @@ int logic_close(char* p)
 
 
 //
-void initlogic(char* addr)
+void fs_init(char* addr)
 {
 	diskhome=addr;
 	fshome=addr+0x100000;
 	dirhome=addr+0x200000;
 	datahome=addr+0x300000;
 }
-void killlogic()
+void fs_kill()
 {
 }

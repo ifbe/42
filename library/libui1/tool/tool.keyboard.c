@@ -14,11 +14,11 @@ int ysize=0;
 
 
 
-static void writekeyboard(QWORD type,QWORD value)
+static void keyboard_write(QWORD type,QWORD value)
 {
 	
 }
-static void readkeyboard()
+static void keyboard_read()
 {
 	int x,y;
 	for(y=0;y<768;y++)
@@ -47,20 +47,12 @@ static void readkeyboard()
 		}
 	}
 }
-static void intokeyboard()
+static void keyboard_into()
 {
 	backgroundcolor(0);
 }
-void listkeyboard(QWORD* this)
+static void keyboard_list()
 {
-	this[0]=0x776f646e6977;
-	this[1]=0x786568;
-	this[2]=(0<<16)+0;      //left,up
-	this[3]=(768<<16)+1024; //right,down
-	this[4]=(QWORD)listkeyboard;
-	this[5]=(QWORD)intokeyboard;
-	this[6]=(QWORD)readkeyboard;
-	this[7]=(QWORD)writekeyboard;
 }
 
 
@@ -70,15 +62,36 @@ void listkeyboard(QWORD* this)
 
 
 
-void initkeyboard(QWORD size,void* addr)
+static void keyboard_open()
 {
-	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
-
-	//
-	screenbuf=addr;
 }
-void killkeyboard()
+static void keyboard_close()
+{
+}
+void keyboard_init(QWORD size,void* addr)
+{
+	if(size==0)
+	{
+		QWORD* this=(QWORD*)addr;
+		this[0]=0x776f646e6977;
+		this[1]=0x786568;
+		this[2]=(0<<16)+0;      //left,up
+		this[3]=(768<<16)+1024; //right,down
+		this[4]=(QWORD)keyboard_list;
+		this[5]=(QWORD)keyboard_into;
+		this[6]=(QWORD)keyboard_read;
+		this[7]=(QWORD)keyboard_write;
+	}
+	else
+	{
+		//
+		xsize=size&0xffff;
+		ysize=(size>>16)&0xffff;
+
+		//
+		screenbuf=addr;
+	}
+}
+void keyboard_kill()
 {
 }
