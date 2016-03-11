@@ -2,6 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void say(char*,...);
 
 
 
