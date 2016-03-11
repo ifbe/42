@@ -6,15 +6,25 @@ void pt_read();
 
 
 static int theone;
-void default_open()
+void default_list()
 {
 }
-void default_close()
+void default_choose()
 {
 }
 void default_read()
 {
 }
 void default_write()
+{
+}
+
+
+
+
+void default_open()
+{
+}
+void default_close()
 {
 }

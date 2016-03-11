@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//disk or file
+//binary
 int bin_list(char*);
 int bin_choose(char*);
 int bin_read(char*);
@@ -11,15 +11,15 @@ int bin_open(char*);
 int bin_close(char*);
 int bin_init();
 int bin_kill();
-//memory or mmio
-int memory_list(char*);
-int memory_choose(char*);
-int memory_read(char*);
-int memory_write(char*);
-int memory_open(char*);
-int memory_close(char*);
-int memory_init();
-int memory_kill();
+//default
+int default_list(char*);
+int default_choose(char*);
+int default_read(char*);
+int default_write(char*);
+int default_open(char*);
+int default_close(char*);
+int default_init();
+int default_kill();
 //filesystem
 int fs_list(char*);
 int fs_choose(char*);
@@ -66,8 +66,8 @@ int usb_close(char*);
 int usb_init();
 int usb_kill();
 //
-int buf2arg(char*,char**,char**);
-int compare(char*,char*);
+int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
+int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
 void say(char*,...);
 
 
@@ -82,29 +82,25 @@ static QWORD type=0;
 void final_write(char* p)
 {
 	//if(type==what)what_write();
-	if(type==0x656c6966)bin_write(p);
-	//if(type==0x79726f6d656d)memory_write(p);
+	if(type==0)default_write(p);
 	if(type==0x6369676f6c)fs_write(p);
 }
 void final_read(char* p)
 {
 	//if(type==what)what_read();
-	if(type==0x656c6966)bin_read(p);
-	//if(type==0x79726f6d656d)memory_read(p);
+	if(type==0)default_read(p);
 	if(type==0x6369676f6c)fs_read(p);
 }
 void final_choose(char* p)
 {
 	//if(type==what)what_choose();
-	if(type==0x656c6966)bin_choose(p);
-	//if(type==0x79726f6d656d)memory_choose(p);
+	if(type==0)default_choose(p);
 	if(type==0x6369676f6c)fs_choose(p);
 }
 void final_list(char* p)
 {
 	//if(type==what)what_list();
-	if(type==0x656c6966)bin_list(p);
-	//if(type==0x79726f6d656d)memory_list(p);
+	if(type==0)default_list(p);
 	if(type==0x6369676f6c)fs_list(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,71 +113,44 @@ void final_list(char* p)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int final_open(char* p)
+int final_open(BYTE* p)
 {
-	int i=0;
-	int ret=0;
-	if(p==0)return -1;
-
-	//如果是    xyz://    这种类型的，type=xyz
-	type=0;
-	while(1)
+	//"file://" "tcp://" ".c" ".asm"
+	QWORD type;
+	BYTE* name;
+	buf2type(p,128,&type,&name);
+	if(type==0)
 	{
-		//quit?
-		if(p[i]==0)break;
-
-		//
-		if( (p[i]==':')&&(p[i+1]=='/')&&(p[i+2]=='/') )
-		{
-			for(ret=i-1;ret>=0;ret--)
-			{
-				type = type<<8;
-				type+=p[ret];
-			}
-
-			ret=i+3;
-			break;
-		}
-
-		//
-		i++;
-	}
-
-	//default
-	say("type=%s\n",(char*)&type);
-	if(type==0)type=0x656c6966;
-	if(type==0x656c6966)
-	{
-		return bin_open(p+ret);
+		return default_open(name);
 	}
 
 	//0
 	//	acpi://
 	else if(type==0x69706361)
 	{
-		//return acpi_open(p+ret);
+		//return acpi_open(name);
 	}
 	//	dtb://
 	else if(type==0x627464)
 	{
-		//return dtb_open(p+ret);
+		//return dtb_open(name);
 	}
 
 	//1
 	//	pci://
 	if(type==0x696370)
 	{
-		//return pci_open(p+ret);
+		//return pci_open(name);
 	}
 	//	usb://
 	else if(type==0x627375)
 	{
-		//return usb_open(p+ret);
+		//return usb_open(name);
 	}
 	//	i2c://
 	else if(type==0x633269)
 	{
-		//return i2c_open(p+ret);
+		//return i2c_open(name);
 	}
 
 	//2
@@ -189,46 +158,43 @@ int final_open(char* p)
 	//	c://
 	//	h://
 	//	udp://
-	else if(type==0x79726f6d656d)
-	{
-		//return memory_open(p+ret);
-	}
 	else if(type==0x706475)
 	{
-		//return udp_open(p+ret);
+		//return udp_open(name);
 	}
 	//	tcp://
 	else if(type==0x706374)
 	{
-		//return tcp_open(p+ret);
+		//return tcp_open(name);
 	}
 	//	http://
 	else if(type==0x70747468)
 	{
-		//return http_open(p+ret);
+		//return http_open(name);
 	}
 	//	sql://
 	else if(type==0x6c7173)
 	{
-		//return sql_open(p+ret);
+		//return sql_open(name);
 	}
 
 	//3
 	//	rgb://
 	else if(type==0x626772)
 	{
-		//return rgb_open(p+ret);
+		//return rgb_open(name);
 	}
 	//	icon://
 	else if(type==0x6e6f6369)
 	{
-		//return icon_open(p+ret);
+		//return icon_open(name);
 	}
 
 	return -1;
 }
 int final_close(char* p)
 {
+	if(type==0)default_close(p);
 	return 0;
 }
 int final_init(char* p)
