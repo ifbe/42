@@ -13,6 +13,7 @@ void buf2type(BYTE* p,int max,QWORD* type,BYTE** name)
 	int j=0;
 	int tail=0;
 	*type=0;
+	*name=p;
 
 	for(i=0;i<max;i++)
 	{

@@ -1,3 +1,5 @@
+compiler ?= gcc
+cflag ?= -c -O2
 target:
 	$(compiler) $(cflag) body.c
 	$(compiler) $(cflag) pci.c

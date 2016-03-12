@@ -1,3 +1,5 @@
+compiler ?= gcc
+cflag ?= -c -O2
 target:
 	$(compiler) $(cflag) core/core.compare.c
 	$(compiler) $(cflag) core/core.convert.c

@@ -1,3 +1,5 @@
+compiler ?= gcc
+cflag ?= -c -O2
 target:
 	$(compiler) $(cflag) draw/draw.background.c
 	$(compiler) $(cflag) draw/draw.shape.c
