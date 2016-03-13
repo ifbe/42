@@ -55,7 +55,7 @@ void printmemory(BYTE* addr,int size)
 
 
 
-void initbasic(char* arg)
+void basicinit(char* arg)
 {
 	//
 	HWND consolewindow;
@@ -73,6 +73,6 @@ void initbasic(char* arg)
 	consolewindow=GetConsoleWindow();
 	ShowWindow(consolewindow,SW_HIDE);
 }
-void killbasic()
+void basickill()
 {
 }

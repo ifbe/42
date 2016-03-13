@@ -16,8 +16,8 @@ void sketchpad_init(QWORD,char*);	//3.sketchpad.c
 void console_init(QWORD,char*);		//4.console.c
 
 //
-int final_open(char*);
-int final_close();
+int arteryopen(char*);
+int arteryclose();
 DWORD getrandom();
 void say(char* , ...);
 
@@ -65,8 +65,54 @@ static unsigned int now=0;		//不能有负数
 
 
 
-//
-int uicommand(char* p)
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void characterinit(char* type,char* addr)
+{
+	int i;
+
+	if(type==0)
+	{
+		//clean everything
+		for(i=0;i<0x100000;i++)addr[i]=0;
+		worker=(struct working*)addr;
+
+		//[+0x00,0x3f]:		menu.c
+		menu_init(0,addr);
+		addr+=0x40;
+
+		//[+0x40,+0x7f]:        1.hex.c
+		hex_init(0,addr);
+		addr += 0x40;
+
+		//[+0x80,+0xbf]:        2.2048.c
+		the2048_init(0,addr);
+		addr += 0x40;
+
+		//[+0xc0,+0xff]:        2.keyboard.c
+		keyboard_init(0,addr);
+		addr += 0x40;
+
+		//[+0x100,+0x13f]:      2.tree.c
+		tree_init(0,addr);
+		addr += 0x40;
+
+		//[+0x140,+0x17f]:      3.sketchpad.c
+		sketchpad_init(0,addr);
+		addr += 0x40;
+
+		//[+0x180,+0x1bf]:      4.console.c
+		console_init(0,addr);
+		addr += 0x40;
+	}
+}
+void characterkill()
+{
+}
+int characteropen(char* p)
 {
 	int i;
 	unsigned long long temp;
@@ -113,12 +159,54 @@ int uicommand(char* p)
 
 	return 0;	//ret<=0:failed
 }
+void characterclose()
+{
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-//
-void writecharacter(QWORD type,QWORD key)
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void characterlist()
+{
+}
+void characterswitch(char* p)
+{
+}
+//显示，事件处理
+void characterread(QWORD size,void* addr)
+{
+	//words
+	ascii_init(size,addr);
+	unicode_init(size,addr);
+
+	//pictures
+	background_init(size,addr);
+	shape_init(size,addr);
+
+	//guys
+	menu_init(size,addr);
+	hex_init(size,addr);
+	the2048_init(size,addr);
+	keyboard_init(size,addr);
+	tree_init(size,addr);
+	sketchpad_init(size,addr);
+	console_init(size,addr);
+
+	//主画
+	//say("background\n");
+	worker[now].read(size,addr);
+
+	//菜单
+	//say("menu\n");
+	if(worker[0].startaddr > 0)worker[0].read(size,addr);
+}
+void characterwrite(QWORD type,QWORD key)
 {
 	//debug
 	//say("%llx,%llx\n",type,key);
@@ -127,7 +215,7 @@ void writecharacter(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)
 	{
 		//say("debuging::::::::%s\n",(char*)key);
-		final_open((char*)key);
+		arteryopen((char*)key);
 		return;
 	}
 
@@ -156,86 +244,4 @@ void writecharacter(QWORD type,QWORD key)
 	if(worker[0].startaddr > 0)worker[0].write(type,key);
 	else worker[now].write(type,key);
 }
-//显示，事件处理
-void readcharacter(QWORD size,void* addr)
-{
-	//words
-	ascii_init(size,addr);
-	unicode_init(size,addr);
-
-	//pictures
-	background_init(size,addr);
-	shape_init(size,addr);
-
-	//guys
-	menu_init(size,addr);
-	hex_init(size,addr);
-	the2048_init(size,addr);
-	keyboard_init(size,addr);
-	tree_init(size,addr);
-	sketchpad_init(size,addr);
-	console_init(size,addr);
-
-	//主画
-	//say("background\n");
-	worker[now].read(size,addr);
-
-	//菜单
-	//say("menu\n");
-	if(worker[0].startaddr > 0)worker[0].read(size,addr);
-}
-void intocharacter(QWORD size,void* addr)
-{
-}
-void listcharacter()
-{
-}
-
-
-
-
-
-
-
-
-void initcharacter(char* addr)
-{
-	//clean everything
-	int i;
-	for(i=0;i<0x100000;i++)addr[i]=0;
-	worker=(struct working*)addr;
-
-	//[+0x00,0x3f]:		menu.c
-	menu_init(0,addr);
-	addr+=0x40;
-
-	//[+0x40,+0x7f]:        1.hex.c
-	hex_init(0,addr);
-	addr += 0x40;
-
-	//[+0x80,+0xbf]:        2.2048.c
-	the2048_init(0,addr);
-	addr += 0x40;
-
-	//[+0xc0,+0xff]:        2.keyboard.c
-	keyboard_init(0,addr);
-	addr += 0x40;
-
-	//[+0x100,+0x13f]:      2.tree.c
-	tree_init(0,addr);
-	addr += 0x40;
-
-	//[+0x140,+0x17f]:      3.sketchpad.c
-	sketchpad_init(0,addr);
-	addr += 0x40;
-
-	//[+0x180,+0x1bf]:      4.console.c
-	console_init(0,addr);
-	addr += 0x40;
-
-	//选一个作为默认屏幕
-	uicommand("2048");
-}
-void killcharacter()
-{
-}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

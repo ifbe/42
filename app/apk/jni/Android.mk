@@ -70,9 +70,9 @@ LOCAL_SRC_FILES += \
 #3.soft1
 LOCAL_SRC_FILES += \
         library/libsoft1/binary/bin.c \
-        library/libsoft1/core/core.lower.c \
+        library/libsoft1/core/core.compare.c \
         library/libsoft1/core/core.convert.c \
-        library/libsoft1/core/core.upper.c \
+        library/libsoft1/core/core.parse.c \
         library/libsoft1/core/core.prelibation.c \
         library/libsoft1/compress/compress.c \
         library/libsoft1/compress/compress.7z.c \

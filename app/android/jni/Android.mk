@@ -23,7 +23,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := \
 	library/libboot0/none/serial.rx.c \
 	library/libboot0/none/serial.tx.c \
-	library/libboot0/none/basic.c
+	library/libboot0/basic.c
 
 #1.boot1
 LOCAL_SRC_FILES += \
@@ -88,10 +88,10 @@ LOCAL_SRC_FILES += \
 #3.soft1
 LOCAL_SRC_FILES += \
 	library/libsoft1/binary/bin.c \
+	library/libsoft1/core/core.compare.c \
 	library/libsoft1/core/core.convert.c \
-	library/libsoft1/core/core.lower.c \
+	library/libsoft1/core/core.parse.c \
 	library/libsoft1/core/core.prelibation.c \
-	library/libsoft1/core/core.upper.c \
 	library/libsoft1/compress/compress.7z.c \
 	library/libsoft1/compress/compress.cpio.c \
 	library/libsoft1/compress/compress.gz.c \

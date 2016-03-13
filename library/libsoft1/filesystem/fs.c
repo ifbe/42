@@ -13,8 +13,8 @@ int mountfat(QWORD sector,char* dest);
 int mounthfs(QWORD sector,char* dest);
 int mountntfs(QWORD sector,char* dest);
 //
-int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //基本函数
 int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
@@ -188,7 +188,7 @@ int fs_open(char* src)
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
-	rawread(datahome , sector , 0 , 64);
+	systemread(datahome , sector , 0 , 64);
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 

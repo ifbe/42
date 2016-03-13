@@ -5,8 +5,8 @@
 //
 void command(char* p);
 void waitevent(QWORD* first,QWORD* second);
-void readcharacter();
-void writecharacter(QWORD type,QWORD key);
+void characterread();
+void characterwrite(QWORD type,QWORD key);
 void writewindow();
 //
 void birth();
@@ -32,7 +32,7 @@ void main()
 		//say("i am here\n");
 
 		//1.先在内存里画画，然后一次性写到窗口内
-		readcharacter(1024+(768<<16) , mybuffer);
+		characterread(1024+(768<<16) , mybuffer);
 		writewindow(1024+(768<<16) , mybuffer);
 
 		//2.等事件，是退出消息就退出
@@ -40,7 +40,7 @@ void main()
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死
-		writecharacter(type,key);
+		characterwrite(type,key);
 	}
 
 	//after

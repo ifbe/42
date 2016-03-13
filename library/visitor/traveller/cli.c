@@ -44,7 +44,6 @@ int main(int argc,char* argv[])
 
 		//2.处理输入
 		ret=command((char*)second);
-		if(ret==0)break;
 	}
 
 	//必须放在最后

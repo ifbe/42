@@ -66,15 +66,18 @@ void killunicodetable()
 
 
 
-void initwindow(char* addr)
+void windowinit(char* type,char* addr)
 {
-	//开窗口
-	initwindowworker();
+	if(type==0)
+	{
+		//开窗口
+		initwindowworker();
 
-	//unicode点阵表
-	initunicodetable();
+		//unicode点阵表
+		initunicodetable();
+	}
 }
-void killwindow()
+void windowkill()
 {
 	//unicode点阵表
 	killunicodetable();

@@ -3,10 +3,8 @@ cflag ?= -c -O2
 target:
 	$(compiler) $(cflag) core/core.compare.c
 	$(compiler) $(cflag) core/core.convert.c
-	$(compiler) $(cflag) core/core.lower.c
 	$(compiler) $(cflag) core/core.parse.c
 	$(compiler) $(cflag) core/core.prelibation.c
-	$(compiler) $(cflag) core/core.upper.c
 	$(compiler) $(cflag) binary/bin.c
 	$(compiler) $(cflag) compress/compress.c
 	$(compiler) $(cflag) compress/compress.7z.c

@@ -5,25 +5,25 @@
 #include<stdio.h>
 #include<stdlib.h>
 //libui
-void initcharacter(char*);
-void killcharacter();
-void initwindow(char*);
-void killwindow();
+void characterinit(char*,char*);
+void characterkill();
+void windowinit(char*,char*);
+void windowkill();
 //libsoft
-void initartery(char*);
-void killartery();
-void initsystem(char*);
-void killsystem();
+void arteryinit(char*,char*);
+void arterykill();
+void systeminit(char*,char*);
+void systemkill();
 //libhard
-void initbody(char*);
-void killbody();
-void initdriver(char*);
-void killdriver();
+void bodyinit(char*,char*);
+void bodykill();
+void driverinit(char*,char*);
+void driverkill();
 //libboot
-void initdebug(char*);	//listen,say
-void killdebug();
-void initbasic(char*);	//
-void killbasic();
+void debuginit(char*,char*);
+void debugkill();
+void basicinit(char*,char*);
+void basickill();
 //event
 int uievent(QWORD* first,QWORD* second);
 int softevent(QWORD* first,QWORD* second);
@@ -114,27 +114,27 @@ void birth()
 	inituniverse();	//16m
 
 	//[0,4)：构架相关，以及内核日志
-	initbasic( world );
+	basicinit( 0 , world );
 	say("[0,4):boot0 done\n");
-	initdebug( world );
+	debuginit( 0 , world );
 	say("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
-	initdriver( body );
+	driverinit( 0 , body );
 	say("[4,8):hard0 done\n");
-	initbody( body );
+	bodyinit( 0 , body );
 	say("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
-	initsystem( memory );
+	systeminit( 0 , memory );
 	say("[8,c):soft0 done\n");
-	initartery( memory );
+	arteryinit( 0 , memory );
 	say("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
-	initwindow( character );
+	windowinit( 0 , character );
 	say("[12,16):ui0 done\n");
-	initcharacter( character );
+	characterinit( 0 , character );
 	say("[12,16):ui1 done\n");
 }
 __attribute__((destructor)) void death()
@@ -142,26 +142,26 @@ __attribute__((destructor)) void death()
 	//4+4+4+4
 	if(character != 0)
 	{
-		killcharacter();
-		killwindow();
+		characterkill();
+		windowkill();
 		character=0;
 	}
 	if(memory != 0)
 	{
-		killartery();
-		killsystem();
+		arterykill();
+		systemkill();
 		memory=0;
 	}
 	if(body != 0)
 	{
-		killbody();
-		killdriver();
+		bodykill();
+		driverkill();
 		body=0;
 	}
 	if(world != 0)
 	{
-		killdebug();
-		killbasic();
+		debugkill();
+		basickill();
 		world=0;
 	}
 

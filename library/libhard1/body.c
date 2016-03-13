@@ -1,8 +1,8 @@
-void initbody(char* p)
+void bodyinit(char* type,char* addr)
 {
 	
 }
-void killbody()
+void bodykill()
 {
 	
 }

@@ -1,14 +1,14 @@
 .PHONY:none
 none:
 	rm -f *.o
-	gcc -c -fPIC -O2 none/basic.c
+	gcc -c -fPIC -O2 basic.c
 	gcc -c -fPIC -O2 none/serial.rx.c
 	gcc -c -fPIC -O2 none/serial.tx.c
 
 .PHONY:arm
 arm:
 	rm -f *.o
-	arm-none-eabi-gcc -c -fPIC -O2 none/basic.c
+	arm-none-eabi-gcc -c -fPIC -O2 basic.c
 	arm-none-eabi-gcc -c -fPIC -O2 none/serial.rx.c
 	arm-none-eabi-gcc -c -fPIC -O2 none/serial.tx.c
 

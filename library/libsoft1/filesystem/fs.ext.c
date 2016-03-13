@@ -3,8 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
 //用了别人的
 void printmemory(char* addr,QWORD size);
@@ -44,7 +44,7 @@ static QWORD whichblock(QWORD groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	rawread(blockrecord,sector,0,1);
+	systemread(blockrecord,sector,0,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	char* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -91,7 +91,7 @@ static char* checkcacheforinode(QWORD wanted)
 
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
-		rawread(rdi,where,0,count*inodesize/0x200);//注意inodepergroup奇葩时这里出问题
+		systemread(rdi,where,0,count*inodesize/0x200);//注意inodepergroup奇葩时这里出问题
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -190,7 +190,7 @@ static int explaininode(QWORD inode,QWORD wantwhere)
 			temp=block0+(*(DWORD*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-		        rawread(rdi,temp,0,blocksize);
+		        systemread(rdi,temp,0,blocksize);
 			rdi+=0x200*blocksize;
 		}
 
@@ -387,7 +387,7 @@ int mountext(QWORD sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
-	ret=rawread(pbr,block0,0,0x8);	//0x1000
+	ret=systemread(pbr,block0,0,0x8);	//0x1000
 	ret=isext(pbr);
 	if( ret == 0 ) return -1;
 

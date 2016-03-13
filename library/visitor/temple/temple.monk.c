@@ -7,15 +7,15 @@ int uievent(QWORD* first,QWORD* second);
 int softevent(QWORD* first,QWORD* second);
 int hardevent(QWORD* first,QWORD* second);
 int bootevent(QWORD* first,QWORD* second);
-//final
-void final_init(char*);
-void final_kill(char*);
-void final_open(char*);
-void final_close(char*);
-void final_list(char*);
-void final_choose(char*);
-void final_read(char*);
-void final_write(char*);
+//artery
+void arteryinit(char*);
+void arterykill(char*);
+void arteryopen(char*);
+void arteryclose(char*);
+void arterylist(char*);
+void arterychoose(char*);
+void arteryread(char*);
+void arterywrite(char*);
 //
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
@@ -109,25 +109,25 @@ int command(char* buffer)
 	ret=compare( argv[0] , "init");		//eg:	dynamicmodule
 	if(ret==0)
 	{
-		final_init(argv[1]);
+		arteryinit(argv[1]);
 		return 2;
 	}
 	ret=compare( argv[0] , "kill");
 	if(ret==0)
 	{
-		final_kill(argv[1]);
+		arterykill(argv[1]);
 		return 2;
 	}
 	ret=compare( argv[0] , "open");
 	if(ret==0)
 	{
-		final_open(argv[1]);
+		arteryopen(argv[1]);
 		return 2;
 	}
 	ret=compare( argv[0] , "close");
 	if(ret==0)
 	{
-		final_close(argv[1]);
+		arteryclose(argv[1]);
 		return 2;
 	}
 
@@ -135,25 +135,25 @@ int command(char* buffer)
 	ret=compare( argv[0] , "ls" );
 	if(ret==0)
 	{
-		final_list(argv[1]);
+		arterylist(argv[1]);
 		return 4;
 	}
 	ret=compare( argv[0] , "cd" );
 	if(ret==0)
 	{
-		final_choose(argv[1]);
+		arterychoose(argv[1]);
 		return 4;
 	}
 	ret=compare( argv[0] , "read" );
 	if(ret==0)
 	{
-		final_read(argv[1]);
+		arteryread(argv[1]);
 		return 4;
 	}
 	ret=compare( argv[0] , "write" );  //dangerous
 	if(ret==0)
 	{
-		final_write(argv[1]);
+		arterywrite(argv[1]);
 		return 4;
 	}
 

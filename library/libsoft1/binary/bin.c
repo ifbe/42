@@ -3,10 +3,10 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int rawlist(char*);
-int rawchoose(char*);
-int rawread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int rawwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemlist(char*);
+int systemchoose(char*);
+int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
@@ -135,7 +135,7 @@ int bin_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		rawread(datahome,value,0,1);
+		systemread(datahome,value,0,1);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}

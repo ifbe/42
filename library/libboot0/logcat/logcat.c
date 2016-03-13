@@ -27,9 +27,9 @@ void printmemory()
 
 
 
-void initbasic()
+void basicinit()
 {
 }
-void killbasic()
+void basickill()
 {
 }

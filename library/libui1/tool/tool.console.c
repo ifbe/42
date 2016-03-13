@@ -2,14 +2,13 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void uicommand(char*);
-//libui
+//
+void command(char* in);
+void characteropen(char*);
+//
 void string(int x,int y,char* str);
 void backgroundcolor(DWORD);
-//libsoft
-void command(char* in);
 int compare(char* first,char* second);
-//libboot
 void say(char*,...);
 
 
@@ -131,7 +130,7 @@ static void console_write(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				uicommand(0);
+				characteropen(0);
 				return;
 			}
 			else

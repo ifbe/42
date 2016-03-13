@@ -7,8 +7,8 @@
 #include <math.h>
 
 #define QWORD unsigned long long
-void readcharacter();
-void writecharacter(QWORD type,QWORD value);
+void characterread();
+void characterwrite(QWORD type,QWORD value);
 void say(char* , ...);
 
 
@@ -38,7 +38,7 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 	}
 
 	//拿
-	readcharacter( ((info->height)<<16) + (info->width) , pixels );
+	characterread( ((info->height)<<16) + (info->width) , pixels );
 
 	//反色
 	this=pixels;
@@ -111,30 +111,30 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * 
 		if( (upx>0) && (upy>0) )
 		{
 			//右
-			if(upx>upy)writecharacter(0x64626b,0x27);
+			if(upx>upy)characterwrite(0x64626b,0x27);
 			//下
-			else writecharacter(0x64626b,0x28);
+			else characterwrite(0x64626b,0x28);
 		}
 		else if( (upx<0) && (upy<0) )
 		{
 			//左
-			if(upx<upy)writecharacter(0x64626b,0x25);
+			if(upx<upy)characterwrite(0x64626b,0x25);
 			//上
-			else writecharacter(0x64626b,0x26);
+			else characterwrite(0x64626b,0x26);
 		}
 		else if( (upx<0) && (upy>0) )
 		{
 			//左
-			if(upx+upy<0)writecharacter(0x64626b,0x25);
+			if(upx+upy<0)characterwrite(0x64626b,0x25);
 			//下
-			else writecharacter(0x64626b,0x28);
+			else characterwrite(0x64626b,0x28);
 		}
 		else if( (upx>0) && (upy<0) )
 		{
 			//右
-			if(upx+upy>0)writecharacter(0x64626b,0x27);
+			if(upx+upy>0)characterwrite(0x64626b,0x27);
 			//上
-			else writecharacter(0x64626b,0x26);
+			else characterwrite(0x64626b,0x26);
 		}
 		return;
 	}

@@ -1,6 +1,6 @@
-void initdebug()
+void debuginit(char* type,char* addr)
 {
 }
-void  killdebug()
+void debugkill()
 {
 }

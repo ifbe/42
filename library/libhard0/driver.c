@@ -7,11 +7,11 @@ int hardevent(QWORD* first,QWORD* second)
 
 
 
-void initdriver(char* p)
+void driverinit(char* type,char* addr)
 {
 	
 }
-void killdriver()
+void driverkill()
 {
 	
 }
