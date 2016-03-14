@@ -12,6 +12,7 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.event.fake.c
 	gcc -c -fPIC -O2 linux/linux.event.net.c
 	gcc -c -fPIC -O2 linux/linux.flatmem.file.c
+	gcc -c -fPIC -O2 linux/linux.folder.c
 	gcc -c -fPIC -O2 linux/linux.random.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac

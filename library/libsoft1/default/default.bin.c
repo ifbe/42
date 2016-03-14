@@ -180,6 +180,7 @@ int bin_write(char* arg1)
 
 int bin_open(char* p)
 {
+	return 0;
 }
 int bin_close(char* p)
 {

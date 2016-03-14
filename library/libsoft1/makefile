@@ -5,13 +5,14 @@ target:
 	$(compiler) $(cflag) core/core.convert.c
 	$(compiler) $(cflag) core/core.parse.c
 	$(compiler) $(cflag) core/core.prelibation.c
-	$(compiler) $(cflag) binary/bin.c
 	$(compiler) $(cflag) compress/compress.c
 	$(compiler) $(cflag) compress/compress.7z.c
 	$(compiler) $(cflag) compress/compress.cpio.c
 	$(compiler) $(cflag) compress/compress.gz.c
 	$(compiler) $(cflag) compress/compress.tar.c
 	$(compiler) $(cflag) compress/compress.zip.c
+	$(compiler) $(cflag) default/default.bin.c
+	$(compiler) $(cflag) default/default.folder.c
 	$(compiler) $(cflag) executable/exec.c
 	$(compiler) $(cflag) executable/exec.elf.c
 	$(compiler) $(cflag) executable/exec.macho.c

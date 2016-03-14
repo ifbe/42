@@ -41,6 +41,39 @@ static char _dev_block_mmcblk[0x20]={
 
 
 
+//mem地址，file名字，文件内偏移，总字节数
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+{
+	int thisfile;
+	int ret;
+	thisfile=open(filename,O_RDWR|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
+	if(thisfile==-1)
+	{
+		printf("(mem2file fail)open\n");
+		return -1;
+	}
+
+	ret=lseek( thisfile , offset , SEEK_SET);
+	if(ret==-1)
+	{
+		printf("(mem2file fail)lseek\n");
+		return -2;
+	}
+
+	ret=write( thisfile , memaddr , count);
+	if(ret==-1)
+	{
+		printf("(mem2file fail)write\n");
+	}
+	//printmemory(memaddr,0x200);
+
+	close(thisfile);
+	return 0;
+}
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
+{
+	return 0;
+}
 static int trythis(char* src,char* dest)
 {
 	int i;
@@ -67,6 +100,11 @@ static int trythis(char* src,char* dest)
 	//success,next
 	return 0x40;
 }
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void listfile(char* dest)
 {
 	//clean
@@ -100,10 +138,6 @@ void listfile(char* dest)
 	//		special
 	dest += trythis("/dev/xvda" , dest);
 }
-
-
-
-
 void intofile(char* wantpath)
 {
 	//先检查
@@ -122,10 +156,6 @@ void intofile(char* wantpath)
 	if(thisfd!=-1)close(thisfd);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 }
-
-
-
-
 void readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 {
 	//disk暂时根本不管是什么，默认就是当前第一个硬盘
@@ -143,56 +173,12 @@ void readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
 	}
 }
-
-
-
-
 //来源内存地址，目的首扇区，无视，总字节数
 void writefile(char* buf,QWORD startsector,QWORD ignore,DWORD count)
 {
 	
 }
-
-
-
-
-//mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
-{
-	int thisfile;
-	int ret;
-	thisfile=open(filename,O_RDWR|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
-	if(thisfile==-1)
-	{
-		printf("(mem2file fail)open\n");
-		return -1;
-	}
-
-	ret=lseek( thisfile , offset , SEEK_SET);
-	if(ret==-1)
-	{
-		printf("(mem2file fail)lseek\n");
-		return -2;
-	}
-
-	ret=write( thisfile , memaddr , count);
-	if(ret==-1)
-	{
-		printf("(mem2file fail)write\n");
-	}
-	//printmemory(memaddr,0x200);
-
-	close(thisfile);
-	return 0;
-}
-
-
-
-
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
-{
-	return 0;
-}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -211,4 +197,10 @@ void killfile()
 		close(thisfd);
 		thisfd=-1;
 	}
+}
+void openfile()
+{
+}
+void closefile()
+{
 }

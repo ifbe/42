@@ -8,13 +8,19 @@
 #include<sys/types.h>
 void say(char*,...);
 static char foldername[256];
-static DIR* folderbody;
+static DIR* folderbody=0;
 static struct dirent*  ent;
 
 
 
 
-void openfolder(char* name)
+void initfolder()
+{
+}
+void killfolder()
+{
+}
+int openfolder(char* name)
 {
 	struct stat     statbuf;
 	int             ret;
@@ -23,21 +29,26 @@ void openfolder(char* name)
 	if(ret==-1)
 	{
 		say("not exist\n");
-		return;
+		return 0;
 	}
 
 	if(!(statbuf.st_mode & S_IFDIR))
 	{
 		say("not folder\n");
-		return;
+		return 0;
 	}
 
 	strncpy(foldername,name,256);
 	folderbody=opendir(name);
+	return 1;
 }
 void closefolder()
 {
-	closedir(folderbody);
+	if(folderbody!=0)
+	{
+		closedir(folderbody);
+		folderbody=0;
+	}
 }
 
 
@@ -45,12 +56,15 @@ void closefolder()
 
 void listfolder()
 {
+	if(folderbody==0)return;
+
+	//
 	rewinddir(folderbody);
 	while(1)
 	{
 		ent=readdir(folderbody);
 		if(ent==NULL)return;
-		say("%s/%s\n",foldername,ent->d_name);
+		say("%s\n",ent->d_name);
 	}
 }
 void switchfolder(char* name)
@@ -65,7 +79,7 @@ void readfolder(char* dest)
 	if(ent==NULL)return;
 
 	//get name
-	snprintf(dest,256,"%s/%s",foldername,ent->d_name);
+	snprintf(dest,256,"%s",ent->d_name);
 }
 void writefolder()
 {

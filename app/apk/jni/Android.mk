@@ -64,12 +64,12 @@ LOCAL_SRC_FILES += \
         library/libsoft0/linux/linux.flatmem.file.c \
         library/libsoft0/linux/linux.flatmem.physical.c \
         library/libsoft0/linux/linux.flatmem.virtual.c \
+        library/libsoft0/linux/linux.folder.c \
         library/libsoft0/linux/linux.random.c \
         library/libsoft0/system.c
 
 #3.soft1
 LOCAL_SRC_FILES += \
-        library/libsoft1/binary/bin.c \
         library/libsoft1/core/core.compare.c \
         library/libsoft1/core/core.convert.c \
         library/libsoft1/core/core.parse.c \
@@ -80,6 +80,8 @@ LOCAL_SRC_FILES += \
         library/libsoft1/compress/compress.gz.c \
         library/libsoft1/compress/compress.tar.c \
         library/libsoft1/compress/compress.zip.c \
+        library/libsoft1/default/default.bin.c \
+        library/libsoft1/default/default.folder.c \
         library/libsoft1/executable/exec.c \
         library/libsoft1/executable/exec.elf.c \
         library/libsoft1/executable/exec.macho.c \

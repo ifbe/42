@@ -9,6 +9,12 @@ void killevent();
 void initfile();
 void killfile();
 void readfile(char* buf,QW sector,QW disk,DW count);
+//folder
+void initfolder();
+void killfolder();
+void openfolder(char* foldername);
+void closefolder();
+void readfolder(char* contentname);
 //process
 void initprocess();
 void killprocess();
@@ -24,12 +30,13 @@ void killsocket();
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 static int lowertype=0;
-void systeminit(char* type,char* addr)
+void systeminit(char* module,char* addr)
 {
-	if(type==0)
+	if(module==0)
 	{
 		initevent();		//1
-		initfile();			//2
+		initfile();		//2
+		initfolder();		//3
 		//initprocess();	//4
 		initrandom();		//5
 		//initsocket();		//6
@@ -40,20 +47,27 @@ void systemkill()
 	//killsocket();		//6
 	killrandom();		//5
 	//killprocess();	//4
-	killfile();			//2
+	killfolder();		//3
+	killfile();		//2
 	killevent();		//1
 }
-void systemopen()
+void systemopen(char* p)
 {
+	if(lowertype==0)openfolder(p);
+	else if(lowertype==1)openfile(p);
 }
 void systemclose()
 {
+	if(lowertype==0)closefolder();
+	else if(lowertype==1)closefile();
 }
 void systemlist()
 {
+	if(lowertype==0)listfolder();
 }
-void systemswitch()
+void systemswitch(char* p)
 {
+	if(lowertype==1)switchfolder(p);
 }
 void systemread(char* buf,QW sector,QW disk,DW count)
 {

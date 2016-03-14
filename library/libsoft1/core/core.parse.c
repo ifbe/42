@@ -7,14 +7,15 @@ void say(char*,...);
 
 
 
-void buf2type(BYTE* p,int max,QWORD* type,BYTE** name)
+int buf2type(BYTE* p,int max,QWORD* type,BYTE** name)
 {
 	int i=0;
 	int j=0;
 	int tail=0;
+	if(p==0)return 0;
+
 	*type=0;
 	*name=p;
-
 	for(i=0;i<max;i++)
 	{
 		//all possible '.'
@@ -58,8 +59,8 @@ void buf2type(BYTE* p,int max,QWORD* type,BYTE** name)
 		}
 	}
 
-	say("type=%s,name=%s\n",(char*)type,*name);
-	return;
+	//say("type=%s,name=%s\n",(char*)type,*name);
+	return 1;
 }
 
 
