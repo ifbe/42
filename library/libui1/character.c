@@ -70,6 +70,56 @@ static unsigned int now=0;		//不能有负数
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int characteropen(char* p)
+{
+	int i;
+	unsigned long long temp;
+	char buf[8];
+
+	//get
+	*(unsigned long long*)buf=0;
+	for(i=0;i<8;i++)
+	{
+		if(p[i]<0x20)break;
+		else buf[i]=p[i];
+	}
+	temp=*(unsigned long long*)buf;
+
+	//random
+	if(temp == 0x6d6f646e6172)
+	{
+		for(i=1;i<0x1000/0x40;i++)
+		{
+			if(worker[i].id == 0)break;
+		}
+
+		now=getrandom();
+		now=( now % (i-2) ) + 1;
+		say("random=%x\n",now);
+
+		worker[0].startaddr=0;
+		worker[now].into();
+		return 1;
+	}
+
+	//找
+	for(i=1;i<0x100;i++)
+	{
+		if(worker[i].id==0)break;
+		if(worker[i].id==temp)
+		{
+			now=i;
+			worker[0].startaddr=0;
+			worker[now].into();
+			return 2;
+		}
+	}
+
+	return 0;	//ret<=0:failed
+}
+void characterclose()
+{
+}
 void characterinit(char* type,char* addr)
 {
 	int i;
@@ -107,59 +157,11 @@ void characterinit(char* type,char* addr)
 		//[+0x180,+0x1bf]:      4.console.c
 		console_init(0,addr);
 		addr += 0x40;
+
+		characteropen("random");
 	}
 }
 void characterkill()
-{
-}
-int characteropen(char* p)
-{
-	int i;
-	unsigned long long temp;
-	char buf[8];
-
-	//get
-	*(unsigned long long*)buf=0;
-	for(i=0;i<8;i++)
-	{
-		if(p[i]<0x20)break;
-		else buf[i]=p[i];
-	}
-	temp=*(unsigned long long*)buf;
-
-	//faceless
-	if(temp == 0x7373656c65636166)
-	{
-		for(i=1;i<0x1000/0x40;i++)
-		{
-			if(worker[i].id == 0)break;
-		}
-
-		now=getrandom();
-		now=( now % (i-2) ) + 1;
-		say("random=%x\n",now);
-
-		worker[0].startaddr=0;
-		worker[now].into();
-		return 1;
-	}
-
-	//找
-	for(i=1;i<0x100;i++)
-	{
-		if(worker[i].id==0)break;
-		if(worker[i].id==temp)
-		{
-			now=i;
-			worker[0].startaddr=0;
-			worker[now].into();
-			return 2;
-		}
-	}
-
-	return 0;	//ret<=0:failed
-}
-void characterclose()
 {
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

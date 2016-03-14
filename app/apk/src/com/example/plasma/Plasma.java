@@ -22,49 +22,60 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.View;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Display;
 import android.view.WindowManager;
 
 public class Plasma extends Activity
 {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        Display display = getWindowManager().getDefaultDisplay();
-        setContentView(new PlasmaView(this, display.getWidth(), display.getHeight()));
-    }
+	/* load our native library */
+	static {
+		System.loadLibrary("plasma");
+	}
 
-    /* load our native library */
-    static {
-        System.loadLibrary("plasma");
-    }
+	/* Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		Display display = getWindowManager().getDefaultDisplay();
+		setContentView(new PlasmaView(this,display.getWidth(),display.getHeight()));
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Log.i("PlasmaView","KeyEvent.KEYCODE_BACK");
+			finish();
+			System.exit(0);
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }
 
 class PlasmaView extends View {
-    private Bitmap mBitmap;
-    private long mStartTime;
+	private Bitmap mBitmap;
 
-    /* implementend by libplasma.so */
-    private static native void renderPlasma(Bitmap  bitmap, long time_ms);
-    private static native void ProcessEvent(long type, long value);
+	/* implementend by libplasma.so */
+	private static native void renderPlasma(Bitmap  bitmap, long time_ms);
+	private static native void ProcessEvent(long type, long value);
 
-    public PlasmaView(Context context, int width, int height) {
-        super(context);
-        mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        mStartTime = System.currentTimeMillis();
-    }
+	public PlasmaView(Context context, int width, int height) {
+		super(context);
+		mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	}
 
-    @Override protected void onDraw(Canvas canvas) {
-        //canvas.drawColor(0xFFCCCCCC);
-        canvas.drawBitmap(mBitmap, 0, 0, null);
-        // force a redraw, with a different time-based pattern.
-        invalidate();
-    }
+	@Override
+	protected void onDraw(Canvas canvas) {
+		// canvas.drawColor(0xFFCCCCCC);
+		canvas.drawBitmap(mBitmap, 0, 0, null);
+		// force a redraw, with a different time-based pattern.
+		invalidate();
+	}
 
-	@Override public boolean onTouchEvent(MotionEvent event) {
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getActionMasked();
 		long x = (long)event.getX(0);
 		long y = (long)event.getY(0);
@@ -84,7 +95,8 @@ class PlasmaView extends View {
 		{
 			ProcessEvent(0x65766f6d , temp);
 		}
-        renderPlasma(mBitmap, System.currentTimeMillis() - mStartTime);
+
+		renderPlasma(mBitmap, 0);
 		return true;
 	}
 }

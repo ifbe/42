@@ -1,5 +1,4 @@
 #include <jni.h>
-#include <time.h>
 #include <android/bitmap.h>
 
 #include <stdio.h>
@@ -14,8 +13,6 @@ void say(char* , ...);
 
 
 
-//ugly check,where can i put my birth()?
-static int alive=0;
 //
 static int pressed=0;
 static int xxxx=0;
@@ -26,16 +23,9 @@ static int yyyy=0;
 
 static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 {
-    int x;
+	int x;
 	uint32_t temp;
-    uint32_t* this;
-
-	//ensure
-	if(alive == 0)
-	{
-		alive=1;
-		birth();
-	}
+	uint32_t* this;
 
 	//拿
 	characterread( ((info->height)<<16) + (info->width) , pixels );
@@ -83,13 +73,6 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * 
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * env, jobject  obj , jlong type , jlong value)
 {
-	//ensure
-	if(alive == 0)
-	{
-		alive=1;
-		birth();
-	}
-
 	//
 	say(">>>>>>>>>>>>>(%llx,%llx)\n",type,value);
 	if(type==0x6e776f64)		//'down'
@@ -138,4 +121,20 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_ProcessEvent(JNIEnv * 
 		}
 		return;
 	}
+}
+
+
+
+
+//correct:"On","Load"        wrong:"on","load"
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void* reserved)
+{
+	say("JNI_OnLoad\n");
+	birth();
+	return JNI_VERSION_1_6;
+}
+JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm,void* reserved)
+{
+	say("JNI_OnUnLoad\n");
+	death();
 }
