@@ -8,12 +8,19 @@ void killevent();
 //file
 void initfile();
 void killfile();
+void openfile();
+void closefile();
+void listfile();
+void switchfile();
 void readfile(char* buf,QW sector,QW disk,DW count);
+void writefile(char* buf,QW sector,QW disk,DW count);
 //folder
 void initfolder();
 void killfolder();
 void openfolder(char* foldername);
 void closefolder();
+void listfolder();
+void switchfolder();
 void readfolder(char* contentname);
 //process
 void initprocess();

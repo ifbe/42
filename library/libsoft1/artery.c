@@ -13,7 +13,7 @@ int bin_init(char*);
 int bin_kill();
 //folder
 int folder_list(char*);
-int folder_choose(char*);
+int folder_switch(char*);
 int folder_read(char*);
 int folder_write(char*);
 int folder_open(char*);

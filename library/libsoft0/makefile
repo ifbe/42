@@ -28,6 +28,7 @@ win:
 	rm -f linux.*.o mac.*.o
 	gcc -c -O2 win/win.event.c
 	gcc -c -O2 win/win.file.c
+	gcc -c -O2 win/win.folder.c
 	gcc -c -O2 win/win.memory.c
 	gcc -c -O2 win/win.process.c
 	gcc -c -O2 win/win.random.c
