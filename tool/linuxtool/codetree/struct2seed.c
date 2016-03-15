@@ -50,8 +50,25 @@ void fileordir(char* thisname)
 		return;
 	}
 
+	//如果是文件夹，就进去
+	if(statbuf.st_mode & S_IFDIR)
+	{
+		thisfolder=opendir(thisname);
+		memset(childpath,0,sizeof(childpath));
+		while(1)
+		{
+			ent=readdir(thisfolder);
+			if(ent==NULL)break;
+			if(ent->d_name[0]=='.')continue;
+
+			snprintf(childpath,256,"%s/%s",thisname,ent->d_name);
+			fileordir(childpath);
+		}//while1
+		closedir(thisfolder);
+	}
+
 	//再看看是不是普通文件
-	if(!(statbuf.st_mode & S_IFDIR))
+	else
 	{
 		//没有后缀的不对
 		i=j=0;
@@ -80,20 +97,6 @@ void fileordir(char* thisname)
 		explainfile(thisname,i);
 		return;
 	}
-
-	//如果是文件夹，就进去
-	thisfolder=opendir(thisname);
-	memset(childpath,0,sizeof(childpath));
-	while(1)
-	{
-		ent=readdir(thisfolder);
-		if(ent==NULL)break;
-		if(ent->d_name[0]=='.')continue;
-
-		snprintf(childpath,256,"%s/%s",thisname,ent->d_name);
-		fileordir(childpath);
-	}//while1
-	closedir(thisfolder);
 }//fileordir
 
 
