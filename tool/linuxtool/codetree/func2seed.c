@@ -16,22 +16,20 @@ static int src=-1;
 char datahome[0x2000];	//4k+4k
 
 //the prophets who guide me
-char* prophet=0;	//先知记录下后面可能要用的函数名字
-char* prophetinsist=0;	//先知的坚持(在函数外面碰到了左括号):
-int doubt=0;	//先知的疑虑(想更细致就出错):	else myfunc ()
+char* prophet=0;	//后面可能要用的函数名字
+char* prophetinsist=0;	//在函数外面碰到了左括号:
+int doubt=0;		//"疑虑"(想更细致就出错):	else myfunc ()
 
 //status
-int chance=0;		//卖钱的机会...
-int infunc=0;	//工作时间
-int inmarco=0;	//生病时间
-int innote=0;	//无聊时间
-int instr=0;	//谈话时间
-		//未定时间
+int chance=0;
+int infunc=0;	//在函数内
+int inmarco=0;	//在宏内
+int innote=0;	//在注释内
+int instr=0;	//在字符串内
 
 //
 char* wantedsuffix=".c";	//".c",".cpp",".java"
 int wantedlength=2;
-char* wantedfuncname="main";
 
 
 
