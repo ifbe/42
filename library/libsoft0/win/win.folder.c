@@ -3,6 +3,7 @@
 #include<string.h>
 #include<windows.h>
 void say(char*,...);
+void printmemory(char*,int);
 
 
 
@@ -22,13 +23,16 @@ void killfolder()
 }
 int openfolder(char* name)
 {
-	snprintf(foldername,256,"%s\\*",name);
+	int ret;
+	ret=snprintf(foldername,256,"%s\\*",name);
 	folderbody=FindFirstFile(foldername,&finddata);
+
 	if(folderbody==INVALID_HANDLE_VALUE)
 	{
 		say("findfirstfile error\n");
 		return 0;
 	}
+
 	if( ! (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
 	{
 		say("not directory\n");
@@ -55,9 +59,10 @@ void listfolder()
 	if(folderbody==0)return;
 
 	FindClose(folderbody);
-	FindFirstFile(foldername,&finddata);
+	folderbody=FindFirstFile(foldername,&finddata);
 	while(1)
 	{
+		//printmemory(finddata.cFileName,16);
 		say("%s\n",finddata.cFileName);
 
 		//

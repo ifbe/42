@@ -1,3 +1,0 @@
-void rx(char* p)
-{
-}
