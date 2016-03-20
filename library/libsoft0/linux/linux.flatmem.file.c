@@ -138,23 +138,8 @@ void listfile(char* dest)
 	//		special
 	dest += trythis("/dev/xvda" , dest);
 }
-void intofile(char* wantpath)
+void switchfile()
 {
-	//先检查
-	if(wantpath[0]==0)return;
-
-	//测试打开新的
-	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
-	if(tempfd == -1)
-	{
-		say("can't open:%s\n",wantpath);
-		return;
-	}
-	else close(tempfd);
-
-	//真正打开新的
-	if(thisfd!=-1)close(thisfd);
-	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 }
 void readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 {
@@ -198,8 +183,24 @@ void killfile()
 		thisfd=-1;
 	}
 }
-void openfile()
+int openfile(char* wantpath)
 {
+	//先检查
+	if(wantpath[0]==0)return 0;
+
+	//测试打开新的
+	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	if(tempfd == -1)
+	{
+		say("(openfile error)...\n",wantpath);
+		return 0;
+	}
+	else close(tempfd);
+
+	//真正打开新的
+	if(thisfd!=-1)close(thisfd);
+	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	return 1;
 }
 void closefile()
 {

@@ -104,35 +104,53 @@ void arteryinit(char* module,char* addr)
 	if(module==0)
 	{
 		bin_init(addr);		//1
-        fs_init(addr);		//2
-        pt_init(addr);		//3
+		fs_init(addr);		//2
+		pt_init(addr);		//3
 	}
+/*
+	else
+	{
+		initmodule(module);
+	}
+*/
 }
 void arterykill(char* module)
 {
+	//killmodule(module);
 }
 int arteryopen(BYTE* p)
 {
 	int ret=buf2typename(p,128,&uppertype,&name);
-	if(ret==0)goto failed;		//fail1
+	if(ret==0)
+	{
+		say("null pointer\n");
+		return 0;		//fail1
+	}
 
 	if(uppertype==0)
 	{
+		//is this a folder?
 		ret=folder_open(name);
 		if(ret!=0)
 		{
 			uppertype=0;
+			say("this is a folder\n");
 			return ret;
 		}
 
+		//is this a binary?
 		ret=bin_open(name);
 		if(ret!=0)
 		{
+			//upgrade "type"???
 			uppertype=1;
+			say("this is a binary\n");
 			return ret;
 		}
 
-		goto failed;		//fail2
+		//can't open
+		say("open failed!\n");
+		return 0;
 	}
 
 	//0
@@ -200,10 +218,7 @@ int arteryopen(BYTE* p)
 	{
 		//return icon_open(name);
 	}
-
-failed:
-	say("open failed!\n");
-	return 0;
+	else say("unknown type\n");
 }
 int arteryclose(char* p)
 {

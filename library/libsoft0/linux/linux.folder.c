@@ -28,13 +28,13 @@ int openfolder(char* name)
 	ret=stat(name,&statbuf);
 	if(ret==-1)
 	{
-		say("not exist\n");
+		say("(openfolder error)not exist\n");
 		return 0;
 	}
 
 	if(!(statbuf.st_mode & S_IFDIR))
 	{
-		say("not folder\n");
+		say("(openfolder error)not folder\n");
 		return 0;
 	}
 
