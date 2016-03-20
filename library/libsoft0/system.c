@@ -3,40 +3,46 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 //event
-void initevent();
-void killevent();
+int initevent();
+int killevent();
 //file
-void initfile();
-void killfile();
-void openfile();
-void closefile();
-void listfile();
-void switchfile();
-void readfile(char* buf,QW sector,QW disk,DW count);
-void writefile(char* buf,QW sector,QW disk,DW count);
+int initfile();
+int killfile();
+int openfile();
+int closefile();
+int listfile();
+int switchfile();
+int readfile(char* buf,QW sector,QW disk,DW count);
+int writefile(char* buf,QW sector,QW disk,DW count);
 //folder
-void initfolder();
-void killfolder();
-void openfolder(char* foldername);
-void closefolder();
-void listfolder();
-void switchfolder();
-void readfolder(char* contentname);
+int initfolder();
+int killfolder();
+int openfolder(char* foldername);
+int closefolder();
+int listfolder();
+int switchfolder();
+int readfolder(char* name);
+int writefolder(char* name);
 //process
-void initprocess();
-void killprocess();
+int initprocess();
+int killprocess();
 //random
-void initrandom();
-void killrandom();
+int initrandom();
+int killrandom();
 //socket
-void initsocket();
-void killsocket();
+int initsocket();
+int killsocket();
+
+
+
+
+//
+static int lowertype=0;
 
 
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-static int lowertype=0;
 void systeminit(char* module,char* addr)
 {
 	if(module==0)
@@ -58,30 +64,46 @@ void systemkill()
 	killfile();		//2
 	killevent();		//1
 }
-void systemopen(char* p)
+int systemopen(int type,char* p)
 {
-	if(lowertype==0)openfolder(p);
-	else if(lowertype==1)openfile(p);
+	lowertype=type;
+	if(lowertype==0)return openfolder(p);
+	else if(lowertype==1)return openfile(p);
 }
-void systemclose()
+int systemclose()
 {
-	if(lowertype==0)closefolder();
-	else if(lowertype==1)closefile();
+	if(lowertype==0)return closefolder();
+	else if(lowertype==1)return closefile();
 }
-void systemlist()
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int systemlist(char* p)
 {
-	if(lowertype==0)listfolder();
+	if(lowertype==0)return listfolder(p);
+	else if(lowertype==1)return listfile(p);
 }
-void systemswitch(char* p)
+int systemswitch(char* p)
 {
-	if(lowertype==1)switchfolder(p);
+	if(lowertype==0)return switchfolder(p);
+	else if(lowertype==1)return switchfile(p);
 }
-void systemread(char* buf,QW sector,QW disk,DW count)
+int systemread(char* buf,QW sector,QW disk,DW count)
 {
-	readfile(buf,sector,disk,count);
+	if(lowertype==0)return readfolder(buf);
+	else if(lowertype==1)return readfile(buf,sector,disk,count);
 }
-void systemwrite(char* buf,QW sector,QW disk,DW count)
+int systemwrite(char* buf,QW sector,QW disk,DW count)
 {
+	if(lowertype==0)return writefolder(buf);
+	else if(lowertype==1)return readfile(buf,sector,disk,count);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

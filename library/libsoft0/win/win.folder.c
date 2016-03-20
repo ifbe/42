@@ -29,16 +29,16 @@ int openfolder(char* name)
 
 	if(folderbody==INVALID_HANDLE_VALUE)
 	{
-		say("findfirstfile error\n");
+		say("(openfolder error)findfirstfile\n");
 		return 0;
 	}
-
+/*
 	if( ! (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
 	{
 		say("not directory\n");
 		return 0;
 	}
-
+*/
 	return 1;
 }
 void closefolder()

@@ -85,26 +85,27 @@ int usb_init(char*);
 int usb_kill();
 //
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
-int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
+int buf2typename(BYTE* buf,int max,QWORD* type,BYTE** name);
 void say(char*,...);
 
 
 
 
+//
+static QWORD uppertype=0;
+static BYTE* name=0;
 
 
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-static QWORD uppertype=0;
-static BYTE* name=0;
 void arteryinit(char* module,char* addr)
 {
 	if(module==0)
 	{
 		bin_init(addr);		//1
-        	fs_init(addr);		//2
-        	pt_init(addr);		//2
+        fs_init(addr);		//2
+        pt_init(addr);		//3
 	}
 }
 void arterykill(char* module)
@@ -112,7 +113,7 @@ void arterykill(char* module)
 }
 int arteryopen(BYTE* p)
 {
-	int ret=buf2type(p,128,&uppertype,&name);
+	int ret=buf2typename(p,128,&uppertype,&name);
 	if(ret==0)goto failed;		//fail1
 
 	if(uppertype==0)

@@ -3,6 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
+int systemopen(int,char*);
+int systemclose(char*);
 int systemlist(char*);
 int systemchoose(char*);
 int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
@@ -180,7 +182,8 @@ int bin_write(char* arg1)
 
 int bin_open(char* p)
 {
-	return 0;
+	//say("bin\n");
+	return systemopen(1,p);
 }
 int bin_close(char* p)
 {

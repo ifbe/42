@@ -1,9 +1,9 @@
-int openfolder(char* p);
-int closefolder(char* p);
-int listfolder(char* p);
-int switchfolder(char* p);
-int readfolder(char* p);
-int writefolder(char* p);
+int systemopen(int type,char* p);
+int systemclose(char* p);
+int systemlist(char* p);
+int systemswitch(char* p);
+int systemread(char* p);
+int systemwrite(char* p);
 
 
 
@@ -16,11 +16,11 @@ void folder_kill()
 }
 int folder_open(char* p)
 {
-	return openfolder(p);
+	return systemopen(0,p);
 }
 void folder_close(char* p)
 {
-	closefolder(p);
+	systemclose(p);
 }
 
 
@@ -28,7 +28,7 @@ void folder_close(char* p)
 
 void folder_list(char* p)
 {
-	listfolder(p);
+	systemlist(p);
 }
 void folder_switch()
 {
