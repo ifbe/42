@@ -3,7 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //挂载
-QWORD prelibation(char*);
 int explaingpt(char* src,char* dest);	//分区表
 int explainmbr(char* src,char* dest);
 //

@@ -28,14 +28,14 @@ int openfolder(char* name)
 	ret=stat(name,&statbuf);
 	if(ret==-1)
 	{
-		say("(openfolder error)not exist\n");
-		return 0;
+		//say("(openfolder error)not exist\n");
+		return -1;
 	}
 
 	if(!(statbuf.st_mode & S_IFDIR))
 	{
-		say("(openfolder error)not folder\n");
-		return 0;
+		//say("(openfolder error)not folder\n");
+		return -2;
 	}
 
 	strncpy(foldername,name,256);

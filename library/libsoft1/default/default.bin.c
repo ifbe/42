@@ -3,17 +3,18 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
+QWORD prelibation(char*);
+int compare(char*,char*);	//base tool
+int hexstring2data(char*,QWORD*);
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+//
 int systemopen(int,char*);
 int systemclose(char*);
 int systemlist(char*);
 int systemchoose(char*);
 int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-//
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
-int compare(char*,char*);	//base tool
-int hexstring2data(char*,QWORD*);
 //
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
@@ -182,8 +183,24 @@ int bin_write(char* arg1)
 
 int bin_open(char* p)
 {
-	//say("bin\n");
-	return systemopen(1,p);
+	int ret;
+	QWORD type;
+
+	//open
+	ret=systemopen(1,p);
+	if(ret<=0)return -1;
+
+	//read
+	ret=systemread(datahome,0,0,64);
+	if(ret<=0)return -2;
+
+	//check
+	type=prelibation(datahome);
+	if(type==0)say("type=binary\n");
+	else say("type=%s\n",&type);
+
+	//return
+	return 1;
 }
 int bin_close(char* p)
 {

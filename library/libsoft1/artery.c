@@ -131,20 +131,18 @@ int arteryopen(BYTE* p)
 	{
 		//is this a folder?
 		ret=folder_open(name);
-		if(ret!=0)
+		if(ret>0)
 		{
 			uppertype=0;
-			say("this is a folder\n");
 			return ret;
 		}
 
 		//is this a binary?
 		ret=bin_open(name);
-		if(ret!=0)
+		if(ret>0)
 		{
 			//upgrade "type"???
 			uppertype=1;
-			say("this is a binary\n");
 			return ret;
 		}
 

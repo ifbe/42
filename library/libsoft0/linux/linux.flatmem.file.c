@@ -141,22 +141,26 @@ void listfile(char* dest)
 void switchfile()
 {
 }
-void readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
+int readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 {
-	//disk暂时根本不管是什么，默认就是当前第一个硬盘
 	int result;
+
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
 		say("errno:%d,seek:%llx\n",errno,sector);
-		return;
+		return -1;
 	}
 
 	result=read(thisfd,buf,count*0x200);
 	if(result==-1)
 	{
 		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+		return -2;
 	}
+
+	//
+	return 1;
 }
 //来源内存地址，目的首扇区，无视，总字节数
 void writefile(char* buf,QWORD startsector,QWORD ignore,DWORD count)
@@ -186,22 +190,30 @@ void killfile()
 int openfile(char* wantpath)
 {
 	//先检查
-	if(wantpath[0]==0)return 0;
+	if(wantpath[0]==0)return -1;
 
 	//测试打开新的
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
-		say("(openfile error)...\n",wantpath);
-		return 0;
+		//say("(openfile error)...\n",wantpath);
+		return -2;
 	}
 	else close(tempfd);
 
 	//真正打开新的
 	if(thisfd!=-1)close(thisfd);
 	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+
+	//
+	//say("thisfd=%d\n",thisfd);
 	return 1;
 }
 void closefile()
 {
+	if(thisfd!=-1)
+	{
+		close(thisfd);
+		thisfd=-1;
+	}
 }

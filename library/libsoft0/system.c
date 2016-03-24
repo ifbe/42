@@ -98,7 +98,10 @@ int systemswitch(char* p)
 int systemread(char* buf,QW sector,QW disk,DW count)
 {
 	if(lowertype==0)return readfolder(buf);
-	else if(lowertype==1)return readfile(buf,sector,disk,count);
+	else if(lowertype==1)
+	{
+		return readfile(buf,sector,disk,count);
+	}
 }
 int systemwrite(char* buf,QW sector,QW disk,DW count)
 {

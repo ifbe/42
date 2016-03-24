@@ -97,6 +97,8 @@ void inituniverse()
 	//character=universe + (3*0x400000);
 	memory=universe + 0;
 	character=universe + 0x400000;
+
+	//say("world@%llx,body@%llx,memory@%llx,character@%llx\n",world,body,memory,character);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
