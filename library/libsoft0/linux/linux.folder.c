@@ -38,6 +38,12 @@ int startfolder(char* name)
 		return -2;
 	}
 
+	if((statbuf.st_mode & S_IFCHR) != 0)
+	{
+		//say("(startfolder error)char device\n");
+		return -3;
+	}
+
 	strncpy(foldername,name,256);
 	folderbody=opendir(name);
 	return 1;
