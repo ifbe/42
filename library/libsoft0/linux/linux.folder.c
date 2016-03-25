@@ -20,7 +20,7 @@ void initfolder()
 void killfolder()
 {
 }
-int openfolder(char* name)
+int startfolder(char* name)
 {
 	struct stat     statbuf;
 	int             ret;
@@ -28,13 +28,13 @@ int openfolder(char* name)
 	ret=stat(name,&statbuf);
 	if(ret==-1)
 	{
-		//say("(openfolder error)not exist\n");
+		//say("(startfolder error)not exist\n");
 		return -1;
 	}
 
 	if(!(statbuf.st_mode & S_IFDIR))
 	{
-		//say("(openfolder error)not folder\n");
+		//say("(startfolder error)not folder\n");
 		return -2;
 	}
 
@@ -42,7 +42,7 @@ int openfolder(char* name)
 	folderbody=opendir(name);
 	return 1;
 }
-void closefolder()
+void stopfolder()
 {
 	if(folderbody!=0)
 	{
@@ -69,8 +69,8 @@ void listfolder()
 }
 void switchfolder(char* name)
 {
-	closefolder();
-	openfolder(name);
+	stopfolder();
+	startfolder(name);
 }
 void readfolder(char* dest)
 {

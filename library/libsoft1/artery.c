@@ -7,8 +7,8 @@ int bin_list(char*);
 int bin_choose(char*);
 int bin_read(char*);
 int bin_write(char*);
-int bin_open(char*);
-int bin_close(char*);
+int bin_start(char*);
+int bin_stop(char*);
 int bin_init(char*);
 int bin_kill();
 //folder
@@ -16,8 +16,8 @@ int folder_list(char*);
 int folder_switch(char*);
 int folder_read(char*);
 int folder_write(char*);
-int folder_open(char*);
-int folder_close(char*);
+int folder_start(char*);
+int folder_stop(char*);
 int folder_init(char*);
 int folder_kill();
 //file system
@@ -25,8 +25,8 @@ int fs_list(char*);
 int fs_choose(char*);
 int fs_read(char*);
 int fs_write(char*);
-int fs_open(char*);
-int fs_close(char*);
+int fs_start(char*);
+int fs_stop(char*);
 int fs_init(char*);
 int fs_kill();
 //i2c
@@ -34,8 +34,8 @@ int i2c_list(char*);
 int i2c_choose(char*);
 int i2c_read(char*);
 int i2c_write(char*);
-int i2c_open(char*);
-int i2c_close(char*);
+int i2c_start(char*);
+int i2c_stop(char*);
 int i2c_init(char*);
 int i2c_kill();
 //partition table
@@ -43,8 +43,8 @@ int pt_list(char*);
 int pt_choose(char*);
 int pt_read(char*);
 int pt_write(char*);
-int pt_open(char*);
-int pt_close(char*);
+int pt_start(char*);
+int pt_stop(char*);
 int pt_init(char*);
 int pt_kill();
 //spi
@@ -52,8 +52,8 @@ int spi_list(char*);
 int spi_choose(char*);
 int spi_read(char*);
 int spi_write(char*);
-int spi_open(char*);
-int spi_close(char*);
+int spi_start(char*);
+int spi_stop(char*);
 int spi_init(char*);
 int spi_kill();
 //tcp
@@ -61,8 +61,8 @@ int tcp_list(char*);
 int tcp_choose(char*);
 int tcp_read(char*);
 int tcp_write(char*);
-int tcp_open(char*);
-int tcp_close(char*);
+int tcp_start(char*);
+int tcp_stop(char*);
 int tcp_init(char*);
 int tcp_kill();
 //udp
@@ -70,8 +70,8 @@ int udp_list(char*);
 int udp_choose(char*);
 int udp_read(char*);
 int udp_write(char*);
-int udp_open(char*);
-int udp_close(char*);
+int udp_start(char*);
+int udp_stop(char*);
 int udp_init(char*);
 int udp_kill();
 //usb
@@ -79,8 +79,8 @@ int usb_list(char*);
 int usb_choose(char*);
 int usb_read(char*);
 int usb_write(char*);
-int usb_open(char*);
-int usb_close(char*);
+int usb_start(char*);
+int usb_stop(char*);
 int usb_init(char*);
 int usb_kill();
 //
@@ -118,7 +118,7 @@ void arterykill(char* module)
 {
 	//killmodule(module);
 }
-int arteryopen(BYTE* p)
+int arterystart(BYTE* p)
 {
 	int ret=buf2typename(p,128,&uppertype,&name);
 	if(ret==0)
@@ -130,7 +130,7 @@ int arteryopen(BYTE* p)
 	if(uppertype==0)
 	{
 		//is this a folder?
-		ret=folder_open(name);
+		ret=folder_start(name);
 		if(ret>0)
 		{
 			uppertype=0;
@@ -138,7 +138,7 @@ int arteryopen(BYTE* p)
 		}
 
 		//is this a binary?
-		ret=bin_open(name);
+		ret=bin_start(name);
 		if(ret>0)
 		{
 			//upgrade "type"???
@@ -155,29 +155,29 @@ int arteryopen(BYTE* p)
 	//	acpi://
 	else if(uppertype==0x69706361)
 	{
-		//return acpi_open(name);
+		//return acpi_start(name);
 	}
 	//	dtb://
 	else if(uppertype==0x627464)
 	{
-		//return dtb_open(name);
+		//return dtb_start(name);
 	}
 
 	//1
 	//	pci://
 	if(uppertype==0x696370)
 	{
-		//return pci_open(name);
+		//return pci_start(name);
 	}
 	//	usb://
 	else if(uppertype==0x627375)
 	{
-		//return usb_open(name);
+		//return usb_start(name);
 	}
 	//	i2c://
 	else if(uppertype==0x633269)
 	{
-		//return i2c_open(name);
+		//return i2c_start(name);
 	}
 
 	//2
@@ -187,42 +187,41 @@ int arteryopen(BYTE* p)
 	//	udp://
 	else if(uppertype==0x706475)
 	{
-		//return udp_open(name);
+		//return udp_start(name);
 	}
 	//	tcp://
 	else if(uppertype==0x706374)
 	{
-		//return tcp_open(name);
+		//return tcp_start(name);
 	}
 	//	http://
 	else if(uppertype==0x70747468)
 	{
-		//return http_open(name);
+		//return http_start(name);
 	}
 	//	sql://
 	else if(uppertype==0x6c7173)
 	{
-		//return sql_open(name);
+		//return sql_start(name);
 	}
 
 	//3
 	//	rgb://
 	else if(uppertype==0x626772)
 	{
-		//return rgb_open(name);
+		//return rgb_start(name);
 	}
 	//	icon://
 	else if(uppertype==0x6e6f6369)
 	{
-		//return icon_open(name);
+		//return icon_start(name);
 	}
 	else say("unknown type\n");
 }
-int arteryclose(char* p)
+int arterystop(char* p)
 {
-	//say("@arteryclose\n");
-	if(uppertype==0)folder_close(p);
-	if(uppertype==1)bin_close(p);
+	if(uppertype==0)folder_stop(p);
+	if(uppertype==1)bin_stop(p);
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

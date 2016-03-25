@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int characteropen(char* p);
+int characterstart(char* p);
 void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
@@ -47,7 +47,7 @@ static void menu_write(QWORD type,QWORD key)
 		if( (y<256+16) && (x>768-16) )
 		{
 			//退出
-			characteropen(0);
+			characterstart(0);
 			return;
 		}
 	}//left
@@ -66,7 +66,7 @@ static void menu_write(QWORD type,QWORD key)
 		else if(key==0xd)		//回车
 		{
 			//say("%s\n",buffer);
-			characteropen(buffer);
+			characterstart(buffer);
 
 			//clear
 			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;
@@ -105,10 +105,10 @@ static void menu_list()
 
 
 
-static void menu_open()
+static void menu_start()
 {
 }
-static void menu_close()
+static void menu_stop()
 {
 }
 void menu_init(QWORD size,void* addr)

@@ -168,7 +168,7 @@ int fs_write(char* arg1)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-int fs_open(char* src)
+int fs_start(char* src)
 {
 	int ret;
 	QWORD value;
@@ -248,7 +248,7 @@ int fs_open(char* src)
 	say("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
 	return 1;
 }
-int fs_close(char* p)
+int fs_stop(char* p)
 {
 }
 

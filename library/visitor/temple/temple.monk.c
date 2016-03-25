@@ -10,8 +10,8 @@ int bootevent(QWORD* first,QWORD* second);
 //artery
 void arteryinit(char*);
 void arterykill(char*);
-void arteryopen(char*);
-void arteryclose(char*);
+void arterystart(char*);
+void arterystop(char*);
 void arterylist(char*);
 void arterychoose(char*);
 void arteryread(char*);
@@ -92,8 +92,8 @@ int command(char* buffer)
 		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 		say("init ?             =init=make=fabricate\n");
 		say("kill ?             =kill=smash=wreck\n");
-		say("open ?             =mount=enter=start\n");
-		say("close ?            =unmount=leave=stop\n");
+		say("start ?             =open=mount=enter\n");
+		say("stop ?            =close=unmount=leave\n");
 
 		//"observe","change","get","put"
 		say("ls ?               =list=summary=view=check\n");
@@ -118,16 +118,16 @@ int command(char* buffer)
 		arterykill(argv[1]);
 		return 2;
 	}
-	ret=compare( argv[0] , "open");
+	ret=compare( argv[0] , "start");
 	if(ret==0)
 	{
-		arteryopen(argv[1]);
+		arterystart(argv[1]);
 		return 2;
 	}
-	ret=compare( argv[0] , "close");
+	ret=compare( argv[0] , "stop");
 	if(ret==0)
 	{
-		arteryclose(argv[1]);
+		arterystop(argv[1]);
 		return 2;
 	}
 

@@ -16,8 +16,8 @@ void sketchpad_init(QWORD,char*);	//3.sketchpad.c
 void console_init(QWORD,char*);		//4.console.c
 
 //
-int arteryopen(char*);
-int arteryclose();
+int arterystart(char*);
+int arterystop();
 DWORD getrandom();
 void say(char* , ...);
 
@@ -70,7 +70,7 @@ static unsigned int now=0;		//不能有负数
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characteropen(char* p)
+int characterstart(char* p)
 {
 	int i;
 	unsigned long long temp;
@@ -117,7 +117,7 @@ int characteropen(char* p)
 
 	return 0;	//ret<=0:failed
 }
-void characterclose()
+void characterstop()
 {
 }
 void characterinit(char* type,char* addr)
@@ -158,7 +158,7 @@ void characterinit(char* type,char* addr)
 		console_init(0,addr);
 		addr += 0x40;
 
-		characteropen("random");
+		characterstart("random");
 	}
 }
 void characterkill()
@@ -217,7 +217,7 @@ void characterwrite(QWORD type,QWORD key)
 	if(type==0x656c6966706f7264)
 	{
 		//say("debuging::::::::%s\n",(char*)key);
-		arteryopen((char*)key);
+		arterystart((char*)key);
 		return;
 	}
 

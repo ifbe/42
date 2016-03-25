@@ -42,7 +42,7 @@ void listi2c(char* towhere)	//	enumerate all i2c host and device
 
 
 
-void openi2c()
+void starti2c()
 {
 	//open
 	fp = open("/dev/i2c-1",O_RDWR);
@@ -60,7 +60,7 @@ void openi2c()
 		return;
 	}
 }
-void closei2c()
+void stopi2c()
 {
 	if(fp != -1)close(fp);
 }

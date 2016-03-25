@@ -40,7 +40,7 @@ void writephymem(char* addr,int count)
 
 
 
-void openphymem(char* what)
+void startphymem(char* what)
 {
 	//open
 	_dev_mem=open("/dev/mem", O_RDWR|O_SYNC);
@@ -59,7 +59,7 @@ void openphymem(char* what)
 		0
 	);
 }
-void closephymem()
+void stopphymem()
 {
 	//memory un map
 	munmap(virtual,0x100000);

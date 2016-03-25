@@ -21,7 +21,7 @@ void initfolder()
 void killfolder()
 {
 }
-int openfolder(char* name)
+int startfolder(char* name)
 {
 	int ret;
 	ret=snprintf(foldername,256,"%s\\*",name);
@@ -29,7 +29,7 @@ int openfolder(char* name)
 
 	if(folderbody==INVALID_HANDLE_VALUE)
 	{
-		say("(openfolder error)findfirstfile\n");
+		say("(startfolder error)findfirstfile\n");
 		return 0;
 	}
 /*
@@ -41,7 +41,7 @@ int openfolder(char* name)
 */
 	return 1;
 }
-void closefolder()
+void stopfolder()
 {
 	if(folderbody!=0)
 	{
@@ -72,8 +72,8 @@ void listfolder()
 }
 void switchfolder(char* name)
 {
-	closefolder();
-	openfolder(name);
+	stopfolder();
+	startfolder(name);
 }
 void readfolder(char* dest)
 {

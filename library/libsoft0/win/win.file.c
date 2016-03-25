@@ -132,7 +132,7 @@ void listfile(char* dest)
 			//[0x20,0x3f]:name
 			for(j=0;j<0x20;j++)dest[j+0x20]=tempname[j];
 
-			//close,next
+			//next
 			CloseHandle(temphandle);
 			printf("%llx    ,    %llx    :    %s\n" ,*(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
 			dest += 0x40;
@@ -166,7 +166,7 @@ void writefile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 
 
 //
-void openfile(char* path)
+void startfile(char* path)
 {
 	//检查
 	if(path[0]==0)return;
@@ -175,7 +175,7 @@ void openfile(char* path)
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
 	{
-		say("(openfile error)createfile\n");
+		say("(startfile error)createfile\n");
 		return;
 	}
 	else CloseHandle(temphandle);
@@ -190,7 +190,7 @@ void openfile(char* path)
 
 	say("(%s    ,    %llx)\n",path,size);
 }
-void closefile()
+void stopfile()
 {
 }
 void initfile()

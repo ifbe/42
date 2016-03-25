@@ -8,8 +8,8 @@ int killevent();
 //file
 int initfile();
 int killfile();
-int openfile();
-int closefile();
+int startfile();
+int stopfile();
 int listfile();
 int switchfile();
 int readfile(char* buf,QW sector,QW disk,DW count);
@@ -17,8 +17,8 @@ int writefile(char* buf,QW sector,QW disk,DW count);
 //folder
 int initfolder();
 int killfolder();
-int openfolder(char* foldername);
-int closefolder();
+int startfolder(char* foldername);
+int stopfolder();
 int listfolder();
 int switchfolder();
 int readfolder(char* name);
@@ -64,16 +64,16 @@ void systemkill()
 	killfile();		//2
 	killevent();		//1
 }
-int systemopen(int type,char* p)
+int systemstart(int type,char* p)
 {
 	lowertype=type;
-	if(lowertype==0)return openfolder(p);
-	else if(lowertype==1)return openfile(p);
+	if(lowertype==0)return startfolder(p);
+	else if(lowertype==1)return startfile(p);
 }
-int systemclose()
+int systemstop()
 {
-	if(lowertype==0)return closefolder();
-	else if(lowertype==1)return closefile();
+	if(lowertype==0)return stopfolder();
+	else if(lowertype==1)return stopfile();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

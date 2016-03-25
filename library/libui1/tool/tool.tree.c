@@ -220,10 +220,10 @@ static void tree_list()
 
 
 
-static void tree_open()
+static void tree_start()
 {
 }
-static void tree_close()
+static void tree_stop()
 {
 }
 void tree_init(QWORD size,char* addr)

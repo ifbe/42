@@ -187,7 +187,7 @@ void killfile()
 		thisfd=-1;
 	}
 }
-int openfile(char* wantpath)
+int startfile(char* wantpath)
 {
 	//先检查
 	if(wantpath[0]==0)return -1;
@@ -209,7 +209,7 @@ int openfile(char* wantpath)
 	//say("thisfd=%d\n",thisfd);
 	return 1;
 }
-void closefile()
+void stopfile()
 {
 	if(thisfd!=-1)
 	{

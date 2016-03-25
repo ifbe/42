@@ -1,7 +1,7 @@
-void fs_open()
+void fs_start()
 {
 }
-void fs_close()
+void fs_stop()
 {
 }
 void fs_init(char* in)

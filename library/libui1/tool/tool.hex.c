@@ -3,7 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characteropen(char*);
+char* whereischaracter();
+void characterstart(char*);
 //
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
@@ -15,10 +16,8 @@ void background1();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
-void systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-//
-char* whereischaracter();
+void arteryread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void arterywrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
 //
 void say(char*,...);
 void printmemory(char*,int);
@@ -76,7 +75,7 @@ static char* readornotread(QWORD wantaddr)
 	QWORD readwhere=wantaddr & 0xfffffffffffff000;
 	if(readwhere!=currentcache)
 	{
-		systemread(databuf, readwhere/0x200, 0, 16);
+		arteryread(databuf, readwhere/0x200, 0, 16);
 		currentcache=readwhere;
 	}
 
@@ -219,7 +218,7 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				characteropen(0);
+				characterstart(0);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)
@@ -296,10 +295,10 @@ static void hex_list(QWORD* this)
 
 
 
-void hex_open()
+void hex_start()
 {
 }
-void hex_close()
+void hex_stop()
 {
 }
 void hex_init(QWORD size,void* addr)

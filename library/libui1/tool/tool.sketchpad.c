@@ -350,10 +350,10 @@ static void sketchpad_list()
 
 
 
-static void sketchpad_open()
+static void sketchpad_start()
 {
 }
-static void sketchpad_close()
+static void sketchpad_stop()
 {
 }
 void sketchpad_init(QWORD size,void* addr)

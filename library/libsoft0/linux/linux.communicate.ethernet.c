@@ -14,10 +14,10 @@ void writeethernet()
 
 
 
-void openethernet()
+void startethernet()
 {
 }
-void closeethernet()
+void stopethernet()
 {
 }
 void initethernet()

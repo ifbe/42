@@ -1,5 +1,5 @@
-int systemopen(int type,char* p);
-int systemclose(char* p);
+int systemstart(int type,char* p);
+int systemstop(char* p);
 int systemlist(char* p);
 int systemswitch(char* p);
 int systemread(char* p);
@@ -14,13 +14,13 @@ void folder_init()
 void folder_kill()
 {
 }
-int folder_open(char* p)
+int folder_start(char* p)
 {
-	return systemopen(0,p);
+	return systemstart(0,p);
 }
-void folder_close(char* p)
+void folder_stop(char* p)
 {
-	systemclose(p);
+	systemstop(p);
 }
 
 

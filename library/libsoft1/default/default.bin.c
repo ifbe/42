@@ -9,8 +9,8 @@ int hexstring2data(char*,QWORD*);
 int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //
-int systemopen(int,char*);
-int systemclose(char*);
+int systemstart(int,char*);
+int systemstop(char*);
 int systemlist(char*);
 int systemchoose(char*);
 int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
@@ -181,13 +181,13 @@ int bin_write(char* arg1)
 
 
 
-int bin_open(char* p)
+int bin_start(char* p)
 {
 	int ret;
 	QWORD type;
 
-	//open
-	ret=systemopen(1,p);
+	//start
+	ret=systemstart(1,p);
 	if(ret<=0)return -1;
 
 	//read
@@ -202,7 +202,7 @@ int bin_open(char* p)
 	//return
 	return 1;
 }
-int bin_close(char* p)
+int bin_stop(char* p)
 {
 	//say("closing\n");
 }

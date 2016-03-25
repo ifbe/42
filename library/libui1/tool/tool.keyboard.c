@@ -62,10 +62,10 @@ static void keyboard_list()
 
 
 
-static void keyboard_open()
+static void keyboard_start()
 {
 }
-static void keyboard_close()
+static void keyboard_stop()
 {
 }
 void keyboard_init(QWORD size,void* addr)

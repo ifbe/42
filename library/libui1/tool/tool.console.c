@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 //
 void command(char* in);
-void characteropen(char*);
+void characterstart(char*);
 //
 void string(int x,int y,char* str);
 void backgroundcolor(DWORD);
@@ -130,7 +130,7 @@ static void console_write(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				characteropen(0);
+				characterstart(0);
 				return;
 			}
 			else
@@ -200,10 +200,10 @@ static void console_list()
 
 
 
-static void console_open()
+static void console_start()
 {
 }
-static void console_close()
+static void console_stop()
 {
 }
 void console_init(QWORD size,void* addr)

@@ -318,10 +318,10 @@ static void the2048_list()
 
 
 
-static void the2048_open()
+static void the2048_start()
 {
 }
-static void the2048_close()
+static void the2048_stop()
 {
 }
 void the2048_init(QWORD size,void* addr)
