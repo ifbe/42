@@ -29,13 +29,13 @@ int startfolder(char* name)
 
 	if(folderbody==INVALID_HANDLE_VALUE)
 	{
-		say("(startfolder error)findfirstfile\n");
+		//say("(startfolder error)findfirstfile\n");
 		return 0;
 	}
 /*
 	if( ! (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
 	{
-		say("not directory\n");
+		//say("not directory\n");
 		return 0;
 	}
 */

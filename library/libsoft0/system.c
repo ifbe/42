@@ -37,7 +37,7 @@ int killsocket();
 
 
 //
-static int lowertype=0;
+static int realtype=0;
 
 
 
@@ -66,14 +66,14 @@ void systemkill()
 }
 int systemstart(int type,char* p)
 {
-	lowertype=type;
-	if(lowertype==0)return startfolder(p);
-	else if(lowertype==1)return startfile(p);
+	realtype=type;
+	if(realtype==0)return startfolder(p);
+	else if(realtype==1)return startfile(p);
 }
 int systemstop()
 {
-	if(lowertype==0)return stopfolder();
-	else if(lowertype==1)return stopfile();
+	if(realtype==0)return stopfolder();
+	else if(realtype==1)return stopfile();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -87,26 +87,26 @@ int systemstop()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int systemlist(char* p)
 {
-	if(lowertype==0)return listfolder(p);
-	else if(lowertype==1)return listfile(p);
+	if(realtype==0)return listfolder(p);
+	else if(realtype==1)return listfile(p);
 }
 int systemswitch(char* p)
 {
-	if(lowertype==0)return switchfolder(p);
-	else if(lowertype==1)return switchfile(p);
+	if(realtype==0)return switchfolder(p);
+	else if(realtype==1)return switchfile(p);
 }
 int systemread(char* buf,QW sector,QW disk,DW count)
 {
-	if(lowertype==0)return readfolder(buf);
-	else if(lowertype==1)
+	if(realtype==0)return readfolder(buf);
+	else if(realtype==1)
 	{
 		return readfile(buf,sector,disk,count);
 	}
 }
 int systemwrite(char* buf,QW sector,QW disk,DW count)
 {
-	if(lowertype==0)return writefolder(buf);
-	else if(lowertype==1)return readfile(buf,sector,disk,count);
+	if(realtype==0)return writefolder(buf);
+	else if(realtype==1)return readfile(buf,sector,disk,count);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

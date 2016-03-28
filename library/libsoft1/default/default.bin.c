@@ -32,7 +32,7 @@ static char* datahome=0;
 
 
 //physical function
-void bin_list(char* arg1)
+void binary_list(char* arg1)
 {
 	QWORD temp=0;
 	int i,j;
@@ -110,18 +110,18 @@ void bin_list(char* arg1)
 			say("<%x>\n",i);
 		}//if
 	}//for
-}//bin_list
-void bin_choose(char* arg)
+}//binary_list
+void binary_choose(char* arg)
 {
 }
-int bin_read(char* arg1)
+int binary_read(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("read@%llx,world@%llx\n",bin_read,diskhome);
+		say("read@%llx,world@%llx\n",binary_read,diskhome);
 		return -1;
 	}
 
@@ -145,14 +145,14 @@ int bin_read(char* arg1)
 
 	return 0;
 }
-int bin_write(char* arg1)
+int binary_write(char* arg1)
 {
 	QWORD value;
 
 	//nothing specified
 	if(arg1==0)
 	{
-		say("write@%llx,world@%llx\n",bin_write,diskhome);
+		say("write@%llx,world@%llx\n",binary_write,diskhome);
 		return -1;
 	}
 
@@ -181,7 +181,7 @@ int bin_write(char* arg1)
 
 
 
-int bin_start(char* p)
+int binary_start(char* p)
 {
 	int ret;
 	QWORD type;
@@ -202,11 +202,11 @@ int bin_start(char* p)
 	//return
 	return 1;
 }
-int bin_stop(char* p)
+int binary_stop(char* p)
 {
 	//say("closing\n");
 }
-void bin_init(char* world)
+void binary_init(char* world)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
@@ -214,6 +214,6 @@ void bin_init(char* world)
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
 }
-void bin_kill()
+void binary_kill()
 {
 }

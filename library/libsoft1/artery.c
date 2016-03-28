@@ -3,14 +3,14 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //binary
-int bin_list(char*);
-int bin_choose(char*);
-int bin_read(char*);
-int bin_write(char*);
-int bin_start(char*);
-int bin_stop(char*);
-int bin_init(char*);
-int bin_kill();
+int binary_list(char*);
+int binary_choose(char*);
+int binary_read(char*);
+int binary_write(char*);
+int binary_start(char*);
+int binary_stop(char*);
+int binary_init(char*);
+int binary_kill();
 //folder
 int folder_list(char*);
 int folder_switch(char*);
@@ -91,9 +91,10 @@ void say(char*,...);
 
 
 
-//
-static QWORD uppertype=0;
-static BYTE* name=0;
+//binary-gpt4-ext4
+//ether-ipv4-tcp-http-mp3......
+static QWORD logictype[8]={0};
+static int depth=0;
 
 
 
@@ -103,7 +104,7 @@ void arteryinit(char* module,char* addr)
 {
 	if(module==0)
 	{
-		bin_init(addr);		//1
+		binary_init(addr);		//1
 		fs_init(addr);		//2
 		pt_init(addr);		//3
 	}
@@ -120,29 +121,37 @@ void arterykill(char* module)
 }
 int arterystart(BYTE* p)
 {
-	int ret=buf2typename(p,128,&uppertype,&name);
+	BYTE* name=0;
+	int ret;
+
+	ret=buf2typename(p,128,logictype,&name);
 	if(ret==0)
 	{
-		say("null pointer\n");
+		say(	"@[%s]->[%s]->[%s]->[%s]\n",
+			(char*)&logictype[0],
+			(char*)&logictype[1],
+			(char*)&logictype[2],
+			(char*)&logictype[3]
+		);
 		return 0;		//fail1
 	}
 
-	if(uppertype==0)
+	if(logictype[0]==0)
 	{
 		//is this a folder?
 		ret=folder_start(name);
 		if(ret>0)
 		{
-			uppertype=0;
+			logictype[0]=0x7265646c6f66;
 			return ret;
 		}
 
 		//is this a binary?
-		ret=bin_start(name);
+		ret=binary_start(name);
 		if(ret>0)
 		{
 			//upgrade "type"???
-			uppertype=1;
+			logictype[0]=0x7972616e6962;
 			return ret;
 		}
 
@@ -153,29 +162,29 @@ int arterystart(BYTE* p)
 
 	//0
 	//	acpi://
-	else if(uppertype==0x69706361)
+	else if(logictype[0]==0x69706361)
 	{
 		//return acpi_start(name);
 	}
 	//	dtb://
-	else if(uppertype==0x627464)
+	else if(logictype[0]==0x627464)
 	{
 		//return dtb_start(name);
 	}
 
 	//1
 	//	pci://
-	if(uppertype==0x696370)
+	else if(logictype[0]==0x696370)
 	{
 		//return pci_start(name);
 	}
 	//	usb://
-	else if(uppertype==0x627375)
+	else if(logictype[0]==0x627375)
 	{
 		//return usb_start(name);
 	}
 	//	i2c://
-	else if(uppertype==0x633269)
+	else if(logictype[0]==0x633269)
 	{
 		//return i2c_start(name);
 	}
@@ -185,34 +194,34 @@ int arterystart(BYTE* p)
 	//	c://
 	//	h://
 	//	udp://
-	else if(uppertype==0x706475)
+	else if(logictype[0]==0x706475)
 	{
 		//return udp_start(name);
 	}
 	//	tcp://
-	else if(uppertype==0x706374)
+	else if(logictype[0]==0x706374)
 	{
 		//return tcp_start(name);
 	}
 	//	http://
-	else if(uppertype==0x70747468)
+	else if(logictype[0]==0x70747468)
 	{
 		//return http_start(name);
 	}
 	//	sql://
-	else if(uppertype==0x6c7173)
+	else if(logictype[0]==0x6c7173)
 	{
 		//return sql_start(name);
 	}
 
 	//3
 	//	rgb://
-	else if(uppertype==0x626772)
+	else if(logictype[0]==0x626772)
 	{
 		//return rgb_start(name);
 	}
 	//	icon://
-	else if(uppertype==0x6e6f6369)
+	else if(logictype[0]==0x6e6f6369)
 	{
 		//return icon_start(name);
 	}
@@ -220,8 +229,18 @@ int arterystart(BYTE* p)
 }
 int arterystop(char* p)
 {
-	if(uppertype==0)folder_stop(p);
-	if(uppertype==1)bin_stop(p);
+	if(logictype[0]==0)return 0;
+
+	if(logictype[0]==0x7265646c6f66)
+	{
+		folder_stop(p);
+		logictype[0]=0;
+	}
+	if(logictype[0]==0x7972616e6962)
+	{
+		binary_stop(p);
+		logictype[0]=0;
+	}
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,29 +256,37 @@ int arterystop(char* p)
 void arterylist(char* p)
 {
 	//say("@arterylist\n");
-	if(uppertype==0)folder_list(p);
-	if(uppertype==1)bin_list(p);
-	if(uppertype==0x6369676f6c)fs_list(p);
+	if(logictype[0]==0)return;
+
+	if(logictype[0]==0x7265646c6f66)folder_list(p);
+	if(logictype[0]==0x7972616e6962)binary_list(p);
+	if(logictype[0]==0x6369676f6c)fs_list(p);
 }
 void arterychoose(char* p)
 {
 	//say("@arteryswitch\n");
-	if(uppertype==0)folder_switch(p);
-	if(uppertype==1)bin_choose(p);
-	if(uppertype==0x6369676f6c)fs_choose(p);
+	if(logictype[0]==0)return;
+
+	if(logictype[0]==0x7265646c6f66)folder_switch(p);
+	if(logictype[0]==0x7972616e6962)binary_choose(p);
+	if(logictype[0]==0x6369676f6c)fs_choose(p);
 }
 void arteryread(char* p)
 {
 	//say("@arteryread\n");
-	if(uppertype==0)folder_read(p);
-	if(uppertype==1)bin_read(p);
-	if(uppertype==0x6369676f6c)fs_read(p);
+	if(logictype[0]==0)return;
+
+	if(logictype[0]==0x7265646c6f66)folder_read(p);
+	if(logictype[0]==0x7972616e6962)binary_read(p);
+	if(logictype[0]==0x6369676f6c)fs_read(p);
 }
 void arterywrite(char* p)
 {
 	//say("@arterywrite\n");
-	if(uppertype==0)folder_write(p);
-	if(uppertype==1)bin_write(p);
-	if(uppertype==0x6369676f6c)fs_write(p);
+	if(logictype[0]==0)return;
+
+	if(logictype[0]==0x7265646c6f66)folder_write(p);
+	if(logictype[0]==0x7972616e6962)binary_write(p);
+	if(logictype[0]==0x6369676f6c)fs_write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
