@@ -121,21 +121,15 @@ void arterykill(char* module)
 }
 int arterystart(BYTE* p)
 {
+	//get type and name
 	BYTE* name=0;
-	int ret;
+	int ret=buf2typename(p,128,logictype,&name);
+	if(ret==0)return 0;		//fail1
 
-	ret=buf2typename(p,128,logictype,&name);
-	if(ret==0)
-	{
-		say(	"@[%s]->[%s]->[%s]->[%s]\n",
-			(char*)&logictype[0],
-			(char*)&logictype[1],
-			(char*)&logictype[2],
-			(char*)&logictype[3]
-		);
-		return 0;		//fail1
-	}
 
+
+
+	//auto try
 	if(logictype[0]==0)
 	{
 		//is this a folder?
@@ -160,6 +154,9 @@ int arterystart(BYTE* p)
 		return 0;
 	}
 
+
+
+
 	//0
 	//	acpi://
 	else if(logictype[0]==0x69706361)
@@ -172,27 +169,70 @@ int arterystart(BYTE* p)
 		//return dtb_start(name);
 	}
 
+
+
+
 	//1
+	//	i2c://
+	else if(logictype[0]==0x633269)
+	{
+		//return i2c_start(name);
+	}
 	//	pci://
 	else if(logictype[0]==0x696370)
 	{
 		//return pci_start(name);
+	}
+	//	spi://
+	else if(logictype[0]==0x697073)
+	{
+		//return spi_start(name);
+	}
+	//	uart://
+	else if(logictype[0]==0x74726175)
+	{
+		//return uart_start(name);
 	}
 	//	usb://
 	else if(logictype[0]==0x627375)
 	{
 		//return usb_start(name);
 	}
-	//	i2c://
-	else if(logictype[0]==0x633269)
-	{
-		//return i2c_start(name);
-	}
+
+
+
 
 	//2
+	//	bin://
+	else if(logictype[0]==0x6e6962)
+	{
+		//return struct_start(name);
+	}
+	//	purec://
+	else if(logictype[0]==0x6365727570)
+	{
+		//return purec_start(name);
+	}
+	//	struct://
+	else if(logictype[0]==0x746375727473)
+	{
+		//return struct_start(name);
+	}
+	//	cpp://
+	else if(logictype[0]==0x707063)
+	{
+		//return cpp_start(name);
+	}
+	//	class://
+	else if(logictype[0]==0x7373616c63)
+	{
+		//return class_start(name);
+	}
 	//	java://
-	//	c://
-	//	h://
+	else if(logictype[0]==0x616a616a)
+	{
+		//return java_start(name);
+	}
 	//	udp://
 	else if(logictype[0]==0x706475)
 	{
@@ -214,6 +254,9 @@ int arterystart(BYTE* p)
 		//return sql_start(name);
 	}
 
+
+
+
 	//3
 	//	rgb://
 	else if(logictype[0]==0x626772)
@@ -225,6 +268,11 @@ int arterystart(BYTE* p)
 	{
 		//return icon_start(name);
 	}
+
+
+
+
+	//
 	else say("unknown type\n");
 }
 int arterystop(char* p)
