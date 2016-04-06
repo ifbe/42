@@ -14,14 +14,17 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.flatmem.file.c
 	gcc -c -fPIC -O2 linux/linux.folder.c
 	gcc -c -fPIC -O2 linux/linux.random.c
+	gcc -c -fPIC -O2 linux/linux.socket.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac
 mac:
 	rm -f linux.*.o win.*.o
 	clang -c -O2 mac/mac.event.c
 	clang -c -O2 mac/mac.file.c
+	clang -c -O2 mac/mac.folder.c
 	clang -c -O2 mac/mac.memory.c
 	clang -c -O2 mac/mac.random.c
+	clang -c -O2 mac/mac.socket.c
 	clang -c -O2 system.c
 .PHONY:win
 win:
@@ -32,6 +35,7 @@ win:
 	gcc -c -O2 win/win.memory.c
 	gcc -c -O2 win/win.process.c
 	gcc -c -O2 win/win.random.c
+	gcc -c -O2 win/win.socket.c
 	gcc -c -O2 system.c
 clean:
 	rm -f *.o *.a

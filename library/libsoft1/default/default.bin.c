@@ -10,7 +10,7 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
 int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //
 int systemstart(int,char*);
-int systemstop(char*);
+int systemstop();
 int systemlist(char*);
 int systemchoose(char*);
 int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
@@ -32,7 +32,7 @@ static char* datahome=0;
 
 
 //physical function
-void binary_list(char* arg1)
+static int binary_list(char* arg1)
 {
 	QWORD temp=0;
 	int i,j;
@@ -110,11 +110,13 @@ void binary_list(char* arg1)
 			say("<%x>\n",i);
 		}//if
 	}//for
+
+	return 1;
 }//binary_list
-void binary_choose(char* arg)
+static int binary_switch(char* arg)
 {
 }
-int binary_read(char* arg1)
+static int binary_read(char* arg1)
 {
 	QWORD value;
 
@@ -145,7 +147,7 @@ int binary_read(char* arg1)
 
 	return 0;
 }
-int binary_write(char* arg1)
+static int binary_write(char* arg1)
 {
 	QWORD value;
 
@@ -181,7 +183,7 @@ int binary_write(char* arg1)
 
 
 
-int binary_start(char* p)
+static int binary_start(char* p)
 {
 	int ret;
 	QWORD type;
@@ -190,29 +192,30 @@ int binary_start(char* p)
 	ret=systemstart(1,p);
 	if(ret<=0)return -1;
 
-	//read
-	ret=systemread(datahome,0,0,64);
-	if(ret<=0)return -2;
-
-	//check
-	type=prelibation(datahome);
-	if(type==0)say("type=binary\n");
-	else say("type=%s\n",&type);
-
 	//return
 	return 1;
 }
-int binary_stop(char* p)
+static int binary_stop(char* p)
 {
-	//say("closing\n");
+	systemstop();
 }
-void binary_init(char* world)
+void binary_init(char* world,QWORD* p)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
+
+	//
+	p[0]=0x6e6962;
+	p[1]=0;
+	p[2]=(QWORD)binary_start;
+	p[3]=(QWORD)binary_stop;
+	p[4]=(QWORD)binary_list;
+	p[5]=(QWORD)binary_switch;
+	p[6]=(QWORD)binary_read;
+	p[7]=(QWORD)binary_write;
 }
 void binary_kill()
 {

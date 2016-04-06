@@ -52,12 +52,12 @@ void systeminit(char* module,char* addr)
 		initfolder();		//3
 		//initprocess();	//4
 		initrandom();		//5
-		//initsocket();		//6
+		initsocket();		//6
 	}
 }
 void systemkill()
 {
-	//killsocket();		//6
+	killsocket();		//6
 	killrandom();		//5
 	//killprocess();	//4
 	killfolder();		//3
@@ -66,9 +66,14 @@ void systemkill()
 }
 int systemstart(int type,char* p)
 {
+	int ret;
 	realtype=type;
-	if(realtype==0)return startfolder(p);
-	else if(realtype==1)return startfile(p);
+
+	if(realtype==0)ret=startfolder(p);
+	else if(realtype==1)ret=startfile(p);
+
+	//printf("=%d\n",ret);
+	return ret;
 }
 int systemstop()
 {

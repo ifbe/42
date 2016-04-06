@@ -148,14 +148,14 @@ int readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 	result=lseek64(thisfd,sector*0x200,SEEK_SET);
 	if(result==-1)
 	{
-		say("errno:%d,seek:%llx\n",errno,sector);
+		//say("errno:%d,seek:%llx\n",errno,sector);
 		return -1;
 	}
 
 	result=read(thisfd,buf,count*0x200);
 	if(result==-1)
 	{
-		say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
 		return -2;
 	}
 
@@ -196,7 +196,7 @@ int startfile(char* wantpath)
 	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
-		//say("(openfile error)...\n",wantpath);
+		//say("(openfile error)%s\n",wantpath);
 		return -2;
 	}
 	else close(tempfd);

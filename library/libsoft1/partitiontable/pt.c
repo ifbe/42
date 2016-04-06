@@ -27,12 +27,61 @@ static char* datahome;
 
 
 
-void pt_init(char* addr)
+static int pt_list(char* p)
 {
-	diskhome=addr;
-	fshome=addr+0x100000;
-	dirhome=addr+0x200000;
-	datahome=addr+0x300000;
+}
+static int pt_switch(char* p)
+{
+}
+static int pt_read(char* p)
+{
+}
+static int pt_write(char* p)
+{
+}
+
+
+
+
+static int pt_start(char* p)
+{
+	QWORD type;
+say("@pt_start\n");
+
+	systemread(datahome , 0 , 0 , 64);
+	type=prelibation(datahome);
+
+	if(type==0x747067)              //'gpt'
+	{
+		explaingpt(datahome,diskhome);
+	}
+	if(type==0x72626d)              //'mbr'
+	{
+		explainmbr(datahome,diskhome);
+	}
+
+	return 1;
+}
+static int pt_stop(char* p)
+{
+}
+void pt_init(char* world,QWORD* p)
+{
+	//
+	diskhome=world;
+	fshome=world+0x100000;
+	dirhome=world+0x200000;
+	datahome=world+0x300000;
+
+	//
+	p[0]=0x7470;
+	p[1]=0;
+	p[2]=(QWORD)pt_start;
+	p[3]=(QWORD)pt_stop;
+	p[4]=(QWORD)pt_list;
+	p[5]=(QWORD)pt_switch;
+	p[6]=(QWORD)pt_read;
+	p[7]=(QWORD)pt_write;
 }
 void pt_kill()
 {

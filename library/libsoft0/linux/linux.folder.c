@@ -14,16 +14,25 @@ static struct dirent*  ent;
 
 
 
+void killfolder()
+{
+}
 void initfolder()
 {
 }
-void killfolder()
+void stopfolder()
 {
+	if(folderbody!=0)
+	{
+		closedir(folderbody);
+		folderbody=0;
+	}
 }
 int startfolder(char* name)
 {
 	struct stat     statbuf;
 	int             ret;
+	stopfolder();
 
 	ret=stat(name,&statbuf);
 	if(ret==-1)
@@ -48,14 +57,6 @@ int startfolder(char* name)
 	folderbody=opendir(name);
 	return 1;
 }
-void stopfolder()
-{
-	if(folderbody!=0)
-	{
-		closedir(folderbody);
-		folderbody=0;
-	}
-}
 
 
 
@@ -75,8 +76,28 @@ void listfolder()
 }
 void switchfolder(char* name)
 {
+	int ret;
+	if(name==0)
+	{
+		printf("@%s\n",foldername);
+		return;
+	}
+
+	if(name[0]=='/')
+	{
+		snprintf(foldername,256,"%s",name);
+	}
+	else
+	{
+		ret=strlen(foldername);
+		if(ret==1)ret=0;
+
+		ret=snprintf(foldername+ret,256-ret,"/%s",name);
+		printf("@%s\n",foldername);
+	}
+
 	stopfolder();
-	startfolder(name);
+	startfolder(foldername);
 }
 void readfolder(char* dest)
 {

@@ -29,7 +29,8 @@ void say(char* , ...);
 
 
 //苦工
-struct working
+static unsigned int now=0;		//不能有负数
+static struct working
 {
         //[0,7]:种类            //'window'
         QWORD type;
@@ -58,9 +59,7 @@ struct working
         //[38,3f]:输入
         int (*write)(QWORD type,QWORD key);
         char padding4[ 8 - sizeof(char*) ];
-};
-static struct working* worker;
-static unsigned int now=0;		//不能有负数
+}*worker;
 
 
 

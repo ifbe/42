@@ -24,6 +24,10 @@ target:
 	$(compiler) $(cflag) filesystem/fs.ntfs.c
 	$(compiler) $(cflag) math/math.calc.c
 	$(compiler) $(cflag) math/math.notation.c
+	$(compiler) $(cflag) net/net.c
+	$(compiler) $(cflag) net/application/net.http.c
+	$(compiler) $(cflag) net/transport/net.tcp.c
+	$(compiler) $(cflag) net/transport/net.udp.c
 	$(compiler) $(cflag) partitiontable/pt.c
 	$(compiler) $(cflag) partitiontable/pt.apple.c
 	$(compiler) $(cflag) partitiontable/pt.gpt.c

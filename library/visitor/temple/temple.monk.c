@@ -65,11 +65,13 @@ int command(char* buffer)
 	int argc;
 	BYTE* argv[8];
 	//say("command=%s\n",buffer);
+	//printmemory(buffer,16);
 
 	//convert
 	buf2arg(buffer,128,&argc,argv);
+	//say("argc=%x,argv@%llx\n",argc,argv);
 	if(argc==0)return 0;
-	//say("argc=%x,argv@%llx",argc,argv);
+	if(argv[0]==0)return 0;
 
 	//'q'
 	if(argv[0][0]=='q')
@@ -90,10 +92,10 @@ int command(char* buffer)
 	{
 		//"create","destory","start","stop"
 		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-		say("init ?             =init=make=fabricate\n");
-		say("kill ?             =kill=smash=wreck\n");
-		say("start ?             =open=mount=enter\n");
-		say("stop ?            =close=unmount=leave\n");
+		say("init ?             =create=make=fabricate\n");
+		say("kill ?             =destory=smash=wreck\n");
+		say("start ?            =open=mount=enter\n");
+		say("stop ?             =close=unmount=leave\n");
 
 		//"observe","change","get","put"
 		say("ls ?               =list=summary=view=check\n");

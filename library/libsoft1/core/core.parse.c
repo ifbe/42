@@ -66,6 +66,13 @@ void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv)
 
 
 
+void buf2addrport(BYTE* p,int max,BYTE* addr,int* port)
+{
+}
+
+
+
+
 /*
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"

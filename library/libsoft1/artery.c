@@ -2,88 +2,18 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//binary
-int binary_list(char*);
-int binary_choose(char*);
-int binary_read(char*);
-int binary_write(char*);
-int binary_start(char*);
-int binary_stop(char*);
-int binary_init(char*);
-int binary_kill();
-//folder
-int folder_list(char*);
-int folder_switch(char*);
-int folder_read(char*);
-int folder_write(char*);
-int folder_start(char*);
-int folder_stop(char*);
-int folder_init(char*);
-int folder_kill();
-//file system
-int fs_list(char*);
-int fs_choose(char*);
-int fs_read(char*);
-int fs_write(char*);
-int fs_start(char*);
-int fs_stop(char*);
-int fs_init(char*);
-int fs_kill();
-//i2c
-int i2c_list(char*);
-int i2c_choose(char*);
-int i2c_read(char*);
-int i2c_write(char*);
-int i2c_start(char*);
-int i2c_stop(char*);
-int i2c_init(char*);
-int i2c_kill();
-//partition table
-int pt_list(char*);
-int pt_choose(char*);
-int pt_read(char*);
-int pt_write(char*);
-int pt_start(char*);
-int pt_stop(char*);
-int pt_init(char*);
-int pt_kill();
-//spi
-int spi_list(char*);
-int spi_choose(char*);
-int spi_read(char*);
-int spi_write(char*);
-int spi_start(char*);
-int spi_stop(char*);
-int spi_init(char*);
-int spi_kill();
-//tcp
-int tcp_list(char*);
-int tcp_choose(char*);
-int tcp_read(char*);
-int tcp_write(char*);
-int tcp_start(char*);
-int tcp_stop(char*);
-int tcp_init(char*);
-int tcp_kill();
-//udp
-int udp_list(char*);
-int udp_choose(char*);
-int udp_read(char*);
-int udp_write(char*);
-int udp_start(char*);
-int udp_stop(char*);
-int udp_init(char*);
-int udp_kill();
-//usb
-int usb_list(char*);
-int usb_choose(char*);
-int usb_read(char*);
-int usb_write(char*);
-int usb_start(char*);
-int usb_stop(char*);
-int usb_init(char*);
-int usb_kill();
+int binary_init(void* world,void* func);
+int folder_init(void* world,void* func);
+int     fs_init(void* world,void* func);
+int    i2c_init(void* world,void* func);
+int     pt_init(void* world,void* func);
+int    spi_init(void* world,void* func);
+int    tcp_init(void* world,void* func);
+int    udp_init(void* world,void* func);
+int    usb_init(void* world,void* func);
 //
+QWORD prelibation(void*);
+int systemread(char* memory,QWORD sector,QWORD which,QWORD count);
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2typename(BYTE* buf,int max,QWORD* type,BYTE** name);
 void say(char*,...);
@@ -91,10 +21,43 @@ void say(char*,...);
 
 
 
-//binary-gpt4-ext4
-//ether-ipv4-tcp-http-mp3......
-static QWORD logictype[8]={0};
-static int depth=0;
+//
+static int this=0;
+static struct elements
+{
+	//[0,7]:种类
+	QWORD type;
+
+	//[8,f]:名字
+	QWORD id;
+
+	//[0x10,0x17]
+	int (*start)(char*);
+	char padding2[ 8 - sizeof(char*) ];
+
+	//[0x18,0x1f]
+	int (*stop)(char*);
+	char padding3[ 8 - sizeof(char*) ];
+
+	//[0x20,0x27]
+	int (*list)(char*);
+	char padding4[ 8 - sizeof(char*) ];
+
+	//[0x28,0x2f]
+	int (*choose)(char*);
+	char padding5[ 8 - sizeof(char*) ];
+
+	//[0x30,0x37]
+	int (*read)(char*);
+	char padding6[ 8 - sizeof(char*) ];
+
+	//[0x38,0x3f]
+	int (*write)(char*);
+	char padding7[ 8 - sizeof(char*) ];
+}*table;
+static unsigned char*   fshome;
+static unsigned char*  dirhome;
+static unsigned char* datahome;
 
 
 
@@ -102,11 +65,42 @@ static int depth=0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void arteryinit(char* module,char* addr)
 {
+	int i;
+	char* p;
 	if(module==0)
 	{
-		binary_init(addr);		//1
-		fs_init(addr);		//2
-		pt_init(addr);		//3
+		for(i=0;i<0x10000;i++)addr[i]=0;
+		p=addr+0x40;
+
+		//0
+		table=(struct elements*)addr;
+		fshome  =addr+0x100000;
+		dirhome =addr+0x200000;
+		datahome=addr+0x300000;
+
+		//[0x40,0x7f]
+		binary_init(addr,p);	//1
+		p+=0x40;
+
+		//[0x80,0xbf]
+		folder_init(addr,p);	//2
+		p+=0x40;
+
+		//[]
+		fs_init(addr,p);	//2
+		p+=0x40;
+
+		//[]
+		pt_init(addr,p);	//3
+		p+=0x40;
+
+		//[]
+		tcp_init(addr,p);	//3
+		p+=0x40;
+
+		//[]
+		udp_init(addr,p);	//3
+		p+=0x40;
 	}
 /*
 	else
@@ -122,174 +116,95 @@ void arterykill(char* module)
 int arterystart(BYTE* p)
 {
 	//get type and name
+	QWORD type;
 	BYTE* name=0;
-	int ret=buf2typename(p,128,logictype,&name);
+	int ret=buf2typename(p,128,&type,&name);
 	if(ret==0)return 0;		//fail1
 
 
 
 
-	//auto try
-	if(logictype[0]==0)
+	//auto???????????
+	if(type==0)
 	{
-		//is this a folder?
-		ret=folder_start(name);
+		//只能先试folder
+		ret=table[2].start(name);
 		if(ret>0)
 		{
-			logictype[0]=0x7265646c6f66;
-			return ret;
+			this=2;
+			goto nextstep;
 		}
 
-		//is this a binary?
-		ret=binary_start(name);
+		//然后再试binary
+		ret=table[1].start(name);
 		if(ret>0)
 		{
-			//upgrade "type"???
-			logictype[0]=0x7972616e6962;
-			return ret;
+			this=1;
+			goto nextstep;
 		}
 
-		//can't open
-		say("open failed!\n");
-		return 0;
+		goto unknown;
 	}
 
-
-
-
-	//0
-	//	acpi://
-	else if(logictype[0]==0x69706361)
+	//search............
+	for(ret=0;ret<16;ret++)
 	{
-		//return acpi_start(name);
+		if(type == table[ret].type)break;
 	}
-	//	dtb://
-	else if(logictype[0]==0x627464)
-	{
-		//return dtb_start(name);
-	}
+	if(ret>=16)goto unknown;
+
+	//found!!!!!!!!!!!!!!
+	this=ret;
+	table[this].start(name);
 
 
 
 
-	//1
-	//	i2c://
-	else if(logictype[0]==0x633269)
+nextstep:
+	//二进制文件，仔细检查种类
+	if(this==1)
 	{
-		//return i2c_start(name);
+        	ret=systemread(datahome,0,0,64);
+        	if(ret<=0)return -2;
+
+        	type=prelibation(datahome);
+        	if(type==0)say("type=binary\n");
+        	else say("type=%s\n",&type);
+
+		//bin->fs?
+		//bin->pt?
+		//bin->exe?
+
 	}
-	//	pci://
-	else if(logictype[0]==0x696370)
+/*
+	//网络
+	if(this==x)
 	{
-		//return pci_start(name);
+		tcp->ssh?
+		tcp->http->websocket?
+		......
+
+		return 1;
 	}
-	//	spi://
-	else if(logictype[0]==0x697073)
-	{
-		//return spi_start(name);
-	}
-	//	uart://
-	else if(logictype[0]==0x74726175)
-	{
-		//return uart_start(name);
-	}
-	//	usb://
-	else if(logictype[0]==0x627375)
-	{
-		//return usb_start(name);
-	}
+*/
+	return 1;
 
 
 
 
-	//2
-	//	bin://
-	else if(logictype[0]==0x6e6962)
-	{
-		//return struct_start(name);
-	}
-	//	purec://
-	else if(logictype[0]==0x6365727570)
-	{
-		//return purec_start(name);
-	}
-	//	struct://
-	else if(logictype[0]==0x746375727473)
-	{
-		//return struct_start(name);
-	}
-	//	cpp://
-	else if(logictype[0]==0x707063)
-	{
-		//return cpp_start(name);
-	}
-	//	class://
-	else if(logictype[0]==0x7373616c63)
-	{
-		//return class_start(name);
-	}
-	//	java://
-	else if(logictype[0]==0x616a616a)
-	{
-		//return java_start(name);
-	}
-	//	udp://
-	else if(logictype[0]==0x706475)
-	{
-		//return udp_start(name);
-	}
-	//	tcp://
-	else if(logictype[0]==0x706374)
-	{
-		//return tcp_start(name);
-	}
-	//	http://
-	else if(logictype[0]==0x70747468)
-	{
-		//return http_start(name);
-	}
-	//	sql://
-	else if(logictype[0]==0x6c7173)
-	{
-		//return sql_start(name);
-	}
-
-
-
-
-	//3
-	//	rgb://
-	else if(logictype[0]==0x626772)
-	{
-		//return rgb_start(name);
-	}
-	//	icon://
-	else if(logictype[0]==0x6e6f6369)
-	{
-		//return icon_start(name);
-	}
-
-
-
-
-	//
-	else say("unknown type\n");
+	//找不到
+unknown:
+	say("unknown type\n");
+	return 0;
 }
 int arterystop(char* p)
 {
-	if(logictype[0]==0)return 0;
+	int ret;
+	if(this==0)return 0;
 
-	if(logictype[0]==0x7265646c6f66)
-	{
-		folder_stop(p);
-		logictype[0]=0;
-	}
-	if(logictype[0]==0x7972616e6962)
-	{
-		binary_stop(p);
-		logictype[0]=0;
-	}
-	return 0;
+	ret=table[this].stop(p);
+	this=0;
+	return ret;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -301,40 +216,24 @@ int arterystop(char* p)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void arterylist(char* p)
+int arterylist(char* p)
 {
-	//say("@arterylist\n");
-	if(logictype[0]==0)return;
-
-	if(logictype[0]==0x7265646c6f66)folder_list(p);
-	if(logictype[0]==0x7972616e6962)binary_list(p);
-	if(logictype[0]==0x6369676f6c)fs_list(p);
+	if(this==0)return;
+	return table[this].list(p);
 }
-void arterychoose(char* p)
+int arterychoose(char* p)
 {
-	//say("@arteryswitch\n");
-	if(logictype[0]==0)return;
-
-	if(logictype[0]==0x7265646c6f66)folder_switch(p);
-	if(logictype[0]==0x7972616e6962)binary_choose(p);
-	if(logictype[0]==0x6369676f6c)fs_choose(p);
+	if(this==0)return;
+	return table[this].choose(p);
 }
-void arteryread(char* p)
+int arteryread(char* p)
 {
-	//say("@arteryread\n");
-	if(logictype[0]==0)return;
-
-	if(logictype[0]==0x7265646c6f66)folder_read(p);
-	if(logictype[0]==0x7972616e6962)binary_read(p);
-	if(logictype[0]==0x6369676f6c)fs_read(p);
+	if(this==0)return;
+	return table[this].read(p);
 }
-void arterywrite(char* p)
+int arterywrite(char* p)
 {
-	//say("@arterywrite\n");
-	if(logictype[0]==0)return;
-
-	if(logictype[0]==0x7265646c6f66)folder_write(p);
-	if(logictype[0]==0x7972616e6962)binary_write(p);
-	if(logictype[0]==0x6369676f6c)fs_write(p);
+	if(this==0)return;
+	return table[this].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

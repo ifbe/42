@@ -6,8 +6,6 @@
 QWORD prelibation(char*);
 int explaingpt(char* src,char* dest);	//分区表
 int explainmbr(char* src,char* dest);
-int explainelf(QWORD sector,char* dest);		//可执行文件
-int explainpe(QWORD sector,char* dest);
 int mountext(QWORD sector,char* dest);	//文件系统
 int mountfat(QWORD sector,char* dest);
 int mounthfs(QWORD sector,char* dest);
@@ -42,7 +40,7 @@ int (*fsstore)(QWORD id,QWORD offset,QWORD size);
 
 
 //logical function
-int fs_list(char* name)
+static int fs_list(char* name)
 {
 	//null:         just list
 	int i,j,temp;
@@ -99,7 +97,7 @@ int fs_list(char* name)
 	say("file not found\n");
 	return -1;
 }
-int fs_choose(char* arg1)
+static int fs_switch(char* arg1)
 {
 	int ret;
 	QWORD id;
@@ -112,7 +110,7 @@ int fs_choose(char* arg1)
 	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
 	return fscd(id);
 }
-int fs_read(char* arg1)
+static int fs_read(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
 	int ret;
@@ -150,7 +148,7 @@ int fs_read(char* arg1)
 
 	return 0;
 }
-int fs_write(char* arg1)
+static int fs_write(char* arg1)
 {
         return 0;
 }
@@ -168,13 +166,13 @@ int fs_write(char* arg1)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-int fs_start(char* src)
+static int fs_start(char* src)
 {
 	int ret;
 	QWORD value;
 	QWORD sector=0;
 	QWORD type=0;
-
+say("@fs_start\n");
 
 	//传进来的字符串不全是数字就返回，否则到这个数字的位置
 	if(src==0)sector=0;
@@ -192,40 +190,12 @@ int fs_start(char* src)
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 
-
-	//如果是分区表头，并且是文件头，那么解释分区表到diskhome
-	if(type==0x747067)		//'gpt'
-	{
-		if(sector==0)
-		{
-			explaingpt(datahome,diskhome);
-		}
-		return 0;
-	}
-	if(type==0x72626d)		//'mbr'
-	{
-		if(sector==0)
-		{
-			explainmbr(datahome,diskhome);
-		}
-		return 0;
-	}
-
-
 	//否则无论是什么，都解释到fshome
 	for(ret=0;ret<0x300000;ret++)
 	{
 		fshome[ret]=0;
 	}
-	if(type == 0x666c65)            //'elf'
-	{
-		ret=explainelf(sector,fshome);
-	}
-	else if(type == 0x6570)			//'pe'
-	{
-		ret=explainpe(sector,fshome);
-	}
-	else if(type == 0x747865)		//'ext'
+	if(type == 0x747865)		//'ext'
 	{
 		ret=mountext(sector,fshome);
 	}
@@ -248,7 +218,7 @@ int fs_start(char* src)
 	say("%llx,%llx,%llx,%llx\n",fsls,fscd,fsload,fsstore);
 	return 1;
 }
-int fs_stop(char* p)
+static int fs_stop(char* p)
 {
 }
 
@@ -256,12 +226,23 @@ int fs_stop(char* p)
 
 
 //
-void fs_init(char* addr)
+void fs_init(char* world,QWORD* p)
 {
-	diskhome=addr;
-	fshome=addr+0x100000;
-	dirhome=addr+0x200000;
-	datahome=addr+0x300000;
+	//
+	diskhome=world;
+	fshome=world+0x100000;
+	dirhome=world+0x200000;
+	datahome=world+0x300000;
+
+	//
+	p[0]=0x7366;
+	p[1]=0;
+	p[2]=(QWORD)fs_start;
+	p[3]=(QWORD)fs_stop;
+	p[4]=(QWORD)fs_list;
+	p[5]=(QWORD)fs_switch;
+	p[6]=(QWORD)fs_read;
+	p[7]=(QWORD)fs_write;
 }
 void fs_kill()
 {
