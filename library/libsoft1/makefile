@@ -28,10 +28,10 @@ target:
 	$(compiler) $(cflag) net/application/net.http.c
 	$(compiler) $(cflag) net/transport/net.tcp.c
 	$(compiler) $(cflag) net/transport/net.udp.c
-	$(compiler) $(cflag) partitiontable/pt.c
-	$(compiler) $(cflag) partitiontable/pt.apple.c
-	$(compiler) $(cflag) partitiontable/pt.gpt.c
-	$(compiler) $(cflag) partitiontable/pt.mbr.c
+	$(compiler) $(cflag) parttable/pt.c
+	$(compiler) $(cflag) parttable/pt.apple.c
+	$(compiler) $(cflag) parttable/pt.gpt.c
+	$(compiler) $(cflag) parttable/pt.mbr.c
 	$(compiler) $(cflag) text/text.c
 	$(compiler) $(cflag) text/text.ascii.c
 	$(compiler) $(cflag) text/text.gbk.c

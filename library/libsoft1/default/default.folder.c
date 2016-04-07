@@ -1,10 +1,10 @@
 #define QWORD unsigned long long
 int systemstart(int type,char* p);
-int systemstop(char* p);
-int systemlist(char* p);
-int systemswitch(char* p);
+int systemstop();
 int systemread(char* p,QWORD,QWORD);
 int systemwrite(char* p,QWORD,QWORD);
+int systemlist(char* p);
+int systemswitch(char* p);
 static unsigned char* datahome=0;
 
 
@@ -35,9 +35,9 @@ static int folder_start(QWORD type,char* p)
 {
 	return systemstart(0,p);
 }
-static int folder_stop(char* p)
+static int folder_stop()
 {
-	systemstop(p);
+	systemstop();
 }
 
 
@@ -60,4 +60,5 @@ void folder_init(char* world,unsigned long long* p)
 }
 void folder_kill()
 {
+	folder_stop();
 }

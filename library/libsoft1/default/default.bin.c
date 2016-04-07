@@ -194,7 +194,7 @@ static int binary_start(QWORD type,char* p)
 	//return
 	return 1;
 }
-static int binary_stop(char* p)
+static int binary_stop()
 {
 	systemstop();
 }
@@ -218,4 +218,5 @@ void binary_init(char* world,QWORD* p)
 }
 void binary_kill()
 {
+	binary_stop();
 }

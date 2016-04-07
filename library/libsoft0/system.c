@@ -87,6 +87,7 @@ void systeminit(char* module,char* addr)
 		initrandom();		//5
 		initsocket();		//6
 	}
+	say("[8,c):inited system\n");
 }
 void systemkill()
 {

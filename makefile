@@ -26,7 +26,8 @@ android:
 	make -s -C app/android --no-print-directory
 apk:
 	make -s -C app/apk --no-print-directory
-	adb install -r app/apk/bin/Plasma-debug.apk
+	cp app/apk/bin/Plasma-debug.apk .
+	#adb install -r app/apk/bin/Plasma-debug.apk
 ipa:
 	make -s -C app/ipa --no-print-directory
 uwp:

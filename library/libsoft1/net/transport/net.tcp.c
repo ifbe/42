@@ -82,4 +82,5 @@ int tcp_init(char* world,unsigned long long* p)
 }
 int tcp_kill()
 {
+	tcp_stop();
 }

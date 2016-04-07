@@ -246,6 +246,8 @@ void arteryinit(char* module,char* addr)
 		//[]
 		udp_init(addr,p);	//3
 		p+=0x40;
+
+		say("[8,c):inited artery\n");
 	}
 
 	//

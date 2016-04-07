@@ -23,6 +23,7 @@ void basicinit(char* type,char* addr)
 	//initcpu();
 	//initmemory();
 	initserial();
+	say("[0,4):inited basic\n");
 }
 void basickill()
 {

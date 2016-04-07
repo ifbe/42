@@ -53,6 +53,7 @@ void printmemory(BYTE* addr,int size)
 
 void debuginit(char* type,char* addr)
 {
+	say("[0,4):inited debug\n");
 }
 void debugkill()
 {

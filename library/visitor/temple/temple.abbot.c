@@ -114,27 +114,19 @@ void birth()
 
 	//[0,4)：构架相关，以及内核日志
 	basicinit( 0 , basic );
-	say("[0,4):boot0 done\n");
 	debuginit( 0 , basic );
-	say("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
 	driverinit( 0 , body );
-	say("[4,8):hard0 done\n");
 	bodyinit( 0 , body );
-	say("[4,8):hard1 done\n");
 
 	//[8,c)：文件读写，以及详细分析
 	systeminit( 0 , memory );
-	say("[8,c):soft0 done\n");
 	arteryinit( 0 , memory );
-	say("[8,c):soft1 done\n");
 
 	//[c,f)：窗口开闭，以及用户界面
 	windowinit( 0 , character );
-	say("[12,16):ui0 done\n");
 	characterinit( 0 , character );
-	say("[12,16):ui1 done\n");
 }
 __attribute__((destructor)) void death()
 {

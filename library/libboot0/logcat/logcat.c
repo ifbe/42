@@ -26,6 +26,6 @@ void say(char* fmt , ...)
 void initserial()
 {
 }
-void killserail()
+void killserial()
 {
 }

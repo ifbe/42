@@ -75,6 +75,8 @@ void windowinit(char* type,char* addr)
 
 		//unicode点阵表
 		initunicodetable();
+
+		say("[c,f):inited window\n");
 	}
 }
 void windowkill()

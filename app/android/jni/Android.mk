@@ -21,14 +21,11 @@ include $(CLEAR_VARS)
 
 #1.boot0
 LOCAL_SRC_FILES := \
-	library/libboot0/none/serial.rx.c \
-	library/libboot0/none/serial.tx.c \
+	library/libboot0/none/tx.c \
 	library/libboot0/basic.c
 
 #1.boot1
 LOCAL_SRC_FILES += \
-	library/libboot1/listen.c \
-	library/libboot1/say.c \
 	library/libboot1/debug.c
 
 #2.hard0
@@ -77,13 +74,14 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
+	library/libsoft0/linux/linux.communicate.socket.c \
 	library/libsoft0/linux/linux.event.fake.c \
 	library/libsoft0/linux/linux.event.net.c \
 	library/libsoft0/linux/linux.flatmem.file.c \
 	library/libsoft0/linux/linux.flatmem.physical.c \
 	library/libsoft0/linux/linux.flatmem.virtual.c \
-	library/libsoft0/linux/linux.folder.c \
-	library/libsoft0/linux/linux.random.c \
+	library/libsoft0/linux/linux.special.folder.c \
+	library/libsoft0/linux/linux.special.random.c \
 	library/libsoft0/system.c
 
 #3.soft1
@@ -110,10 +108,13 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/filesystem/fs.ntfs.c \
         library/libsoft1/math/math.calc.c \
         library/libsoft1/math/math.notation.c \
-	library/libsoft1/partitiontable/pt.c \
-	library/libsoft1/partitiontable/pt.apple.c \
-	library/libsoft1/partitiontable/pt.gpt.c \
-	library/libsoft1/partitiontable/pt.mbr.c \
+        library/libsoft1/net/net.c \
+        library/libsoft1/net/transport/net.tcp.c \
+        library/libsoft1/net/transport/net.udp.c \
+	library/libsoft1/parttable/pt.c \
+	library/libsoft1/parttable/pt.apple.c \
+	library/libsoft1/parttable/pt.gpt.c \
+	library/libsoft1/parttable/pt.mbr.c \
 	library/libsoft1/text/text.ascii.c \
 	library/libsoft1/text/text.unicode.c \
 	library/libsoft1/artery.c

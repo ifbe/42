@@ -14,7 +14,7 @@ int hardevent(QWORD* first,QWORD* second)
 
 void driverinit(char* type,char* addr)
 {
-	
+	say("[4,8):inited driver\n");
 }
 void driverkill()
 {

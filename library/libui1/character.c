@@ -260,6 +260,7 @@ void characterinit(char* type,char* addr)
 		addr += 0x40;
 
 		characterstart("random");
+		say("[c,f):inited character\n");
 	}
 }
 void characterkill()
