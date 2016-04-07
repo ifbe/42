@@ -6,8 +6,8 @@
 int explaingpt(char* src,char* dest);	//分区表
 int explainmbr(char* src,char* dest);
 //
-int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread(char* rdi,QWORD rsi,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 //基本函数
 int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
@@ -43,12 +43,14 @@ static int pt_write(char* p)
 
 
 
-static int pt_start(char* p)
+static int pt_start(QWORD type,char* p)
 {
-	QWORD type;
-say("@pt_start\n");
+	int ret;
 
-	systemread(datahome , 0 , 0 , 64);
+	ret=systemstart(1,p);
+        if(ret<=0)return -1;
+
+	systemread(datahome , 0 , 64);
 	type=prelibation(datahome);
 
 	if(type==0x747067)              //'gpt'
@@ -64,6 +66,7 @@ say("@pt_start\n");
 }
 static int pt_stop(char* p)
 {
+	systemstop();
 }
 void pt_init(char* world,QWORD* p)
 {

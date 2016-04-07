@@ -3,8 +3,8 @@ int systemstart(int type,char* p);
 int systemstop(char* p);
 int systemlist(char* p);
 int systemswitch(char* p);
-int systemread(char* p,QWORD,QWORD,QWORD);
-int systemwrite(char* p,QWORD,QWORD,QWORD);
+int systemread(char* p,QWORD,QWORD);
+int systemwrite(char* p,QWORD,QWORD);
 static unsigned char* datahome=0;
 
 
@@ -20,7 +20,7 @@ static int folder_switch(char* p)
 }
 static int folder_read(char* p)
 {
-	int ret=systemread(datahome,0,0,0);
+	int ret=systemread(datahome,0,0);
 	if(ret>0)say("%s\n",datahome);
 }
 static int folder_write()
@@ -31,7 +31,7 @@ static int folder_write()
 
 
 
-static int folder_start(char* p)
+static int folder_start(QWORD type,char* p)
 {
 	return systemstart(0,p);
 }

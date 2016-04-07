@@ -23,9 +23,9 @@ void say(char* fmt , ...)
 
 
 
-void serialinit()
+void initserial()
 {
 }
-void serailkill()
+void killserail()
 {
 }

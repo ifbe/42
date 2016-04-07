@@ -8,13 +8,6 @@
 
 
 
-void initserial()
-{
-}
-
-
-
-
 void say(char* fmt , ...)
 {
 	va_list args;
@@ -22,4 +15,14 @@ void say(char* fmt , ...)
 	vprintf(fmt,args);
 	va_end(args);
 	//printf(fmt);
+}
+
+
+
+
+void killserial()
+{
+}
+void initserial()
+{
 }

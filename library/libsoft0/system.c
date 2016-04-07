@@ -12,8 +12,8 @@ int startfile();
 int stopfile();
 int listfile();
 int switchfile();
-int readfile(char* buf,QW sector,QW disk,DW count);
-int writefile(char* buf,QW sector,QW disk,DW count);
+int readfile( char* buf,QW sector,DW count);
+int writefile(char* buf,QW sector,DW count);
 //folder
 int initfolder();
 int killfolder();
@@ -42,6 +42,39 @@ static int realtype=0;
 
 
 
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int systemlist(char* p)
+{
+	if(realtype==0)return listfolder(p);
+	else if(realtype==1)return listfile(p);
+}
+int systemswitch(char* p)
+{
+	if(realtype==0)return switchfolder(p);
+	else if(realtype==1)return switchfile(p);
+}
+int systemread(char* buf,QW sector,DW count)
+{
+	if(realtype==0)return readfolder(buf);
+	else if(realtype==1)
+	{
+		return readfile(buf,sector,count);
+	}
+}
+int systemwrite(char* buf,QW sector,DW count)
+{
+	if(realtype==0)return writefolder(buf);
+	else if(realtype==1)return readfile(buf,sector,count);
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void systeminit(char* module,char* addr)
 {
@@ -57,6 +90,8 @@ void systeminit(char* module,char* addr)
 }
 void systemkill()
 {
+	say("[8,c):killing system\n");
+
 	killsocket();		//6
 	killrandom();		//5
 	//killprocess();	//4
@@ -79,39 +114,6 @@ int systemstop()
 {
 	if(realtype==0)return stopfolder();
 	else if(realtype==1)return stopfile();
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int systemlist(char* p)
-{
-	if(realtype==0)return listfolder(p);
-	else if(realtype==1)return listfile(p);
-}
-int systemswitch(char* p)
-{
-	if(realtype==0)return switchfolder(p);
-	else if(realtype==1)return switchfile(p);
-}
-int systemread(char* buf,QW sector,QW disk,DW count)
-{
-	if(realtype==0)return readfolder(buf);
-	else if(realtype==1)
-	{
-		return readfile(buf,sector,disk,count);
-	}
-}
-int systemwrite(char* buf,QW sector,QW disk,DW count)
-{
-	if(realtype==0)return writefolder(buf);
-	else if(realtype==1)return readfile(buf,sector,disk,count);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -179,7 +181,7 @@ void cleverread(QW src,QW count,QW where  ,  BYTE* dst,QW size,QW want)
 		rdi,rsi,rcx
 	);
 */
-	systemread(rdi,rsi,0,rcx);
+	systemread(rdi,rsi,rcx);
 }
 
 

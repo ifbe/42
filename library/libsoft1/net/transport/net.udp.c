@@ -20,7 +20,7 @@ static void udp_write()
 
 
 
-static int udp_start(char* p)
+static int udp_start(QWORD type,char* p)
 {
 }
 static int udp_stop()

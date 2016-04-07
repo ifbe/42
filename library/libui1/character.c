@@ -69,116 +69,22 @@ static struct working
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(char* p)
-{
-	int i;
-	unsigned long long temp;
-	char buf[8];
-
-	//get
-	*(unsigned long long*)buf=0;
-	for(i=0;i<8;i++)
-	{
-		if(p[i]<0x20)break;
-		else buf[i]=p[i];
-	}
-	temp=*(unsigned long long*)buf;
-
-	//random
-	if(temp == 0x6d6f646e6172)
-	{
-		for(i=1;i<0x1000/0x40;i++)
-		{
-			if(worker[i].id == 0)break;
-		}
-
-		now=getrandom();
-		now=( now % (i-2) ) + 1;
-		say("random=%x\n",now);
-
-		worker[0].startaddr=0;
-		worker[now].into();
-		return 1;
-	}
-
-	//找
-	for(i=1;i<0x100;i++)
-	{
-		if(worker[i].id==0)break;
-		if(worker[i].id==temp)
-		{
-			now=i;
-			worker[0].startaddr=0;
-			worker[now].into();
-			return 2;
-		}
-	}
-
-	return 0;	//ret<=0:failed
-}
-void characterstop()
-{
-}
-void characterinit(char* type,char* addr)
-{
-	int i;
-
-	if(type==0)
-	{
-		//clean everything
-		for(i=0;i<0x100000;i++)addr[i]=0;
-		worker=(struct working*)addr;
-
-		//[+0x00,0x3f]:		menu.c
-		menu_init(0,addr);
-		addr+=0x40;
-
-		//[+0x40,+0x7f]:        1.hex.c
-		hex_init(0,addr);
-		addr += 0x40;
-
-		//[+0x80,+0xbf]:        2.2048.c
-		the2048_init(0,addr);
-		addr += 0x40;
-
-		//[+0xc0,+0xff]:        2.keyboard.c
-		keyboard_init(0,addr);
-		addr += 0x40;
-
-		//[+0x100,+0x13f]:      2.tree.c
-		tree_init(0,addr);
-		addr += 0x40;
-
-		//[+0x140,+0x17f]:      3.sketchpad.c
-		sketchpad_init(0,addr);
-		addr += 0x40;
-
-		//[+0x180,+0x1bf]:      4.console.c
-		console_init(0,addr);
-		addr += 0x40;
-
-		characterstart("random");
-	}
-}
-void characterkill()
-{
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void characterlist()
 {
 }
 void characterswitch(char* p)
 {
 }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //显示，事件处理
 void characterread(QWORD size,void* addr)
 {
@@ -244,5 +150,128 @@ void characterwrite(QWORD type,QWORD key)
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].startaddr > 0)worker[0].write(type,key);
 	else worker[now].write(type,key);
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int characterstart(char* p)
+{
+	int i;
+	unsigned long long temp;
+	char buf[8];
+
+	//get
+	*(unsigned long long*)buf=0;
+	for(i=0;i<8;i++)
+	{
+		if(p[i]<0x20)break;
+		else buf[i]=p[i];
+	}
+	temp=*(unsigned long long*)buf;
+
+	//random
+	if(temp == 0x6d6f646e6172)
+	{
+		for(i=1;i<0x1000/0x40;i++)
+		{
+			if(worker[i].id == 0)break;
+		}
+
+		now=getrandom();
+		now=( now % (i-2) ) + 1;
+		//say("random=%x\n",now);
+
+		worker[0].startaddr=0;
+		worker[now].into();
+		return 1;
+	}
+
+	//找
+	for(i=1;i<0x100;i++)
+	{
+		if(worker[i].id==0)break;
+		if(worker[i].id==temp)
+		{
+			now=i;
+			worker[0].startaddr=0;
+			worker[now].into();
+			return 2;
+		}
+	}
+
+	return 0;	//ret<=0:failed
+}
+void characterstop()
+{
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void characterinit(char* type,char* addr)
+{
+	int i;
+
+	if(type==0)
+	{
+		//clean everything
+		for(i=0;i<0x100000;i++)addr[i]=0;
+		worker=(struct working*)addr;
+
+		//[+0x00,0x3f]:		menu.c
+		menu_init(0,addr);
+		addr+=0x40;
+
+		//[+0x40,+0x7f]:        1.hex.c
+		hex_init(0,addr);
+		addr += 0x40;
+
+		//[+0x80,+0xbf]:        2.2048.c
+		the2048_init(0,addr);
+		addr += 0x40;
+
+		//[+0xc0,+0xff]:        2.keyboard.c
+		keyboard_init(0,addr);
+		addr += 0x40;
+
+		//[+0x100,+0x13f]:      2.tree.c
+		tree_init(0,addr);
+		addr += 0x40;
+
+		//[+0x140,+0x17f]:      3.sketchpad.c
+		sketchpad_init(0,addr);
+		addr += 0x40;
+
+		//[+0x180,+0x1bf]:      4.console.c
+		console_init(0,addr);
+		addr += 0x40;
+
+		characterstart("random");
+	}
+}
+void characterkill()
+{
+	say("[c,f):killing character\n");
+
+	console_kill();
+	sketchpad_kill();
+	tree_kill();
+	keyboard_kill();
+	the2048_kill();
+	hex_kill();
+	menu_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

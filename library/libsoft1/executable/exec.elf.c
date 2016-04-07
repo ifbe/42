@@ -3,8 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread(char* rdi,QWORD rsi,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
 //用了别人的
 void printmemory(char* addr,QWORD size);
@@ -84,7 +84,7 @@ int explainelf(QWORD sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
-	ret=systemread(first64k,sector,0,0x8);	//0x1000
+	ret=systemread(first64k,sector,0x8);	//0x1000
 	ret=iself(first64k);
 	if( ret == 0 ) return -1;
 

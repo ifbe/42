@@ -9,12 +9,12 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f mac.*.o win.*.o
+	gcc -c -fPIC -O2 linux/linux.communicate.socket.c
 	gcc -c -fPIC -O2 linux/linux.event.fake.c
 	gcc -c -fPIC -O2 linux/linux.event.net.c
 	gcc -c -fPIC -O2 linux/linux.flatmem.file.c
-	gcc -c -fPIC -O2 linux/linux.folder.c
-	gcc -c -fPIC -O2 linux/linux.random.c
-	gcc -c -fPIC -O2 linux/linux.socket.c
+	gcc -c -fPIC -O2 linux/linux.special.folder.c
+	gcc -c -fPIC -O2 linux/linux.special.random.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac
 mac:
@@ -29,13 +29,13 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	gcc -c -O2 win/win.event.c
-	gcc -c -O2 win/win.file.c
-	gcc -c -O2 win/win.folder.c
-	gcc -c -O2 win/win.memory.c
-	gcc -c -O2 win/win.process.c
-	gcc -c -O2 win/win.random.c
-	gcc -c -O2 win/win.socket.c
+	gcc -c -O2 win/win.communicate.socket.c
+	gcc -c -O2 win/win.event.net.c
+	gcc -c -O2 win/win.flatmem.file.c
+	gcc -c -O2 win/win.flatmem.virtual.c
+	gcc -c -O2 win/win.flatmem.process.c
+	gcc -c -O2 win/win.special.folder.c
+	gcc -c -O2 win/win.special.random.c
 	gcc -c -O2 system.c
 clean:
 	rm -f *.o *.a

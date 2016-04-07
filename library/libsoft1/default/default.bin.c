@@ -13,8 +13,8 @@ int systemstart(int,char*);
 int systemstop();
 int systemlist(char*);
 int systemchoose(char*);
-int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread(char* rdi,QWORD rsi,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 //
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
@@ -140,7 +140,7 @@ static int binary_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		systemread(datahome,value,0,1);
+		systemread(datahome,value,1);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}
@@ -183,10 +183,9 @@ static int binary_write(char* arg1)
 
 
 
-static int binary_start(char* p)
+static int binary_start(QWORD type,char* p)
 {
 	int ret;
-	QWORD type;
 
 	//start
 	ret=systemstart(1,p);

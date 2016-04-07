@@ -44,7 +44,7 @@ void say(char*,...);
 static char* rawuniverse=0;	//unaligned
 static char* universe=0;	//aligned
 //processed memory
-static char*     world=0;		//4m
+static char*     basic=0;		//4m
 static char*      body=0;		//4m
 static char*    memory=0;		//4m
 static char* character=0;		//4m
@@ -63,7 +63,7 @@ void inituniverse()
 	//temp
 	QWORD i;
 	QWORD temp;
-	int size=2 * 0x400000;
+	int size=4 * 0x400000;
 
 
 	//1.申请内存，为了对齐要多申请0x1000
@@ -91,14 +91,11 @@ void inituniverse()
 	}
 
 	//4.分配内存
-	//world=universe + 0;
-	//body=universe + (1*0x400000);
-	//memory=universe + (2*0x400000);
-	//character=universe + (3*0x400000);
-	memory=universe + 0;
-	character=universe + 0x400000;
-
-	//say("world@%llx,body@%llx,memory@%llx,character@%llx\n",world,body,memory,character);
+	basic    = universe + 0;
+	body     = universe + (1*0x400000);
+	memory   = universe + (2*0x400000);
+	character= universe + (3*0x400000);
+	//say("basic@%llx,body@%llx,memory@%llx,character@%llx\n",basic,body,memory,character);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -116,9 +113,9 @@ void birth()
 	inituniverse();	//16m
 
 	//[0,4)：构架相关，以及内核日志
-	basicinit( 0 , world );
+	basicinit( 0 , basic );
 	say("[0,4):boot0 done\n");
-	debuginit( 0 , world );
+	debuginit( 0 , basic );
 	say("[0,4):boot1 done\n");
 
 	//[4,7)：硬件驱动，以及底层协议栈
@@ -160,11 +157,11 @@ __attribute__((destructor)) void death()
 		driverkill();
 		body=0;
 	}
-	if(world != 0)
+	if(basic != 0)
 	{
 		debugkill();
 		basickill();
-		world=0;
+		basic=0;
 	}
 
 	//

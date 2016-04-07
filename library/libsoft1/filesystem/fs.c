@@ -11,8 +11,8 @@ int mountfat(QWORD sector,char* dest);
 int mounthfs(QWORD sector,char* dest);
 int mountntfs(QWORD sector,char* dest);
 //
-int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread( char* rdi,QWORD rsi,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 //基本函数
 int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
@@ -166,12 +166,11 @@ static int fs_write(char* arg1)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-static int fs_start(char* src)
+static int fs_start(QWORD type,char* src)
 {
 	int ret;
 	QWORD value;
 	QWORD sector=0;
-	QWORD type=0;
 say("@fs_start\n");
 
 	//传进来的字符串不全是数字就返回，否则到这个数字的位置
@@ -186,7 +185,7 @@ say("@fs_start\n");
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
-	systemread(datahome , sector , 0 , 64);
+	systemread(datahome , sector , 64);
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 

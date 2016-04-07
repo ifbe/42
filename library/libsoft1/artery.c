@@ -13,7 +13,8 @@ int    udp_init(void* world,void* func);
 int    usb_init(void* world,void* func);
 //
 QWORD prelibation(void*);
-int systemread(char* memory,QWORD sector,QWORD which,QWORD count);
+int systemread( char* memory,QWORD sector,QWORD count);
+int systemwrite(char* memory,QWORD sector,QWORD count);
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2typename(BYTE* buf,int max,QWORD* type,BYTE** name);
 void say(char*,...);
@@ -21,8 +22,10 @@ void say(char*,...);
 
 
 
-//
-static int this=0;
+//[0x000000,0x0fffff]:worker
+//[0x100000,0x1fffff]:fs
+//[0x200000,0x2fffff]:dir
+//[0x300000,0x3fffff]:data
 static struct elements
 {
 	//[0,7]:种类
@@ -32,11 +35,11 @@ static struct elements
 	QWORD id;
 
 	//[0x10,0x17]
-	int (*start)(char*);
+	int (*start)(QWORD,char*);
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[0x18,0x1f]
-	int (*stop)(char*);
+	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
 	//[0x20,0x27]
@@ -62,57 +65,48 @@ static unsigned char* datahome;
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void arteryinit(char* module,char* addr)
+//pci->usb->video->h264->stream
+//bin->parttable->filesystem->dir->file....
+//tcp->http->websocket->what
+static int stack[16]={0};
+static int this=0;
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int arterylist(char* p)
 {
-	int i;
-	char* p;
-	if(module==0)
-	{
-		for(i=0;i<0x10000;i++)addr[i]=0;
-		p=addr+0x40;
-
-		//0
-		table=(struct elements*)addr;
-		fshome  =addr+0x100000;
-		dirhome =addr+0x200000;
-		datahome=addr+0x300000;
-
-		//[0x40,0x7f]
-		binary_init(addr,p);	//1
-		p+=0x40;
-
-		//[0x80,0xbf]
-		folder_init(addr,p);	//2
-		p+=0x40;
-
-		//[]
-		fs_init(addr,p);	//2
-		p+=0x40;
-
-		//[]
-		pt_init(addr,p);	//3
-		p+=0x40;
-
-		//[]
-		tcp_init(addr,p);	//3
-		p+=0x40;
-
-		//[]
-		udp_init(addr,p);	//3
-		p+=0x40;
-	}
-/*
-	else
-	{
-		initmodule(module);
-	}
-*/
+	if(this==0)return;
+	return table[this].list(p);
 }
-void arterykill(char* module)
+int arterychoose(char* p)
 {
-	//killmodule(module);
+	if(this==0)return;
+	return table[this].choose(p);
 }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int arteryread(char* p)
+{
+	if(this==0)return;
+	return table[this].read(p);
+}
+int arterywrite(char* p)
+{
+	if(this==0)return;
+	return table[this].write(p);
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterystart(BYTE* p)
 {
 	//get type and name
@@ -128,7 +122,7 @@ int arterystart(BYTE* p)
 	if(type==0)
 	{
 		//只能先试folder
-		ret=table[2].start(name);
+		ret=table[2].start(type,name);
 		if(ret>0)
 		{
 			this=2;
@@ -136,7 +130,7 @@ int arterystart(BYTE* p)
 		}
 
 		//然后再试binary
-		ret=table[1].start(name);
+		ret=table[1].start(type,name);
 		if(ret>0)
 		{
 			this=1;
@@ -155,7 +149,7 @@ int arterystart(BYTE* p)
 
 	//found!!!!!!!!!!!!!!
 	this=ret;
-	table[this].start(name);
+	table[this].start(type,name);
 
 
 
@@ -164,7 +158,7 @@ nextstep:
 	//二进制文件，仔细检查种类
 	if(this==1)
 	{
-        	ret=systemread(datahome,0,0,64);
+        	ret=systemread(datahome,0,64);
         	if(ret<=0)return -2;
 
         	type=prelibation(datahome);
@@ -206,34 +200,69 @@ int arterystop(char* p)
 	this=0;
 	return ret;
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int arterylist(char* p)
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void arteryinit(char* module,char* addr)
 {
-	if(this==0)return;
-	return table[this].list(p);
+	int i;
+	char* p;
+
+	//
+	if(module==0)
+	{
+		for(i=0;i<0x10000;i++)addr[i]=0;
+		p=addr+0x40;
+
+		//0
+		table=(struct elements*)addr;
+		fshome  =addr+0x100000;
+		dirhome =addr+0x200000;
+		datahome=addr+0x300000;
+
+		//[0x40,0x7f]
+		binary_init(addr,p);	//1
+		p+=0x40;
+
+		//[0x80,0xbf]
+		folder_init(addr,p);	//2
+		p+=0x40;
+
+		//[]
+		fs_init(addr,p);	//2
+		p+=0x40;
+
+		//[]
+		pt_init(addr,p);	//3
+		p+=0x40;
+
+		//[]
+		tcp_init(addr,p);	//3
+		p+=0x40;
+
+		//[]
+		udp_init(addr,p);	//3
+		p+=0x40;
+	}
+
+	//
+	else
+	{
+		//initmodule(module);
+		say("(initmodule fail)%s\n",module);
+	}
 }
-int arterychoose(char* p)
+void arterykill(char* module)
 {
-	if(this==0)return;
-	return table[this].choose(p);
-}
-int arteryread(char* p)
-{
-	if(this==0)return;
-	return table[this].read(p);
-}
-int arterywrite(char* p)
-{
-	if(this==0)return;
-	return table[this].write(p);
+	say("[8,c):killing artery\n");
+	udp_kill();
+	tcp_kill();
+	pt_kill();
+	fs_kill();
+	folder_kill();
+	binary_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

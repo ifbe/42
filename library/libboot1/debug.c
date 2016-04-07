@@ -12,18 +12,23 @@ void printmemory(BYTE* addr,int size)
 //debug用，打印从addr开始的总共size个字节
 	int i,j;
 
-	//打印的很少就不显示这些了
-	if(size>0x10)
+	//111111111111111111111111
+	if(size<0x10)
 	{
-		say("[----addr----]");
-		for(i=0;i<=0xf;i++)
-		{
-			say("%2x ",i);
-		}
-		say("[----anscii----]\n");
+		for(i=0;i<size;i++)say("%.2x ",addr[i]);
+		say("\n");
+		return;
 	}
 
 	//2222222222222222222222222
+	say("[----addr----]");
+	for(i=0;i<=0xf;i++)
+	{
+		say("%.2x ",i);
+	}
+	say("[----anscii----]\n");
+
+	//33333333333333333333333333
 	for(j=0;j<size/16;j++)
 	{
 		if(j%16 == 0)say( "@%-13llx" , (QWORD)(addr+j*16) );
@@ -51,4 +56,5 @@ void debuginit(char* type,char* addr)
 }
 void debugkill()
 {
+	say("[0,4):killing debug\n");
 }

@@ -2,6 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+int decstring2data(BYTE* source,QWORD* data);
 void say(char*,...);
 
 
@@ -66,8 +67,30 @@ void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv)
 
 
 
-void buf2addrport(BYTE* p,int max,BYTE* addr,int* port)
+void buf2addrport(BYTE* pp,int max,BYTE* addr,int* port)
 {
+	int ii;
+	QWORD data=0;
+
+	for(ii=0;ii<max;ii++)
+	{
+		if(pp[ii]==0)break;
+		else if(pp[ii]==':')break;
+		else addr[ii]=pp[ii];
+	}
+
+	if(pp[ii]!=':')
+	{
+		addr[0]=0;
+		port[0]=0;
+	}
+	else
+	{
+		addr[ii]=0;
+
+		decstring2data(pp+ii+1,&data);
+		*port=(int)data;
+	}
 }
 
 
@@ -77,8 +100,27 @@ void buf2addrport(BYTE* p,int max,BYTE* addr,int* port)
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"
 */
-int buf2optval(BYTE* p,int max,BYTE** type,BYTE** name)
+int buf2optval(BYTE* pp,int max,BYTE** type,BYTE** name)
 {
+	int ii;
+	for(ii=0;ii<max;ii++)
+	{
+		if(pp[ii]==0)break;
+		if(pp[ii]=='=')break;
+	}
+
+	if( pp[ii] != '=' )
+	{
+		*type=0;
+		*name=0;
+	}
+	else
+	{
+		pp[ii]=0;
+
+		*type=pp;
+		*name=pp+ii+1;
+	}
 }
 
 

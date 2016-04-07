@@ -3,8 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int systemread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+int systemread( char* rdi,QWORD rsi,QWORD rcx);
+int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 //用了别人的
 void printmemory(char* addr,QWORD size);
 void say(char* fmt,...);
@@ -126,7 +126,11 @@ static int fat16_data(char* dest,QWORD cluster)
 		if(cluster>=0xfff8)break;
 
 		//读一个簇
-		systemread(rdi,cluster2+clustersize*(cluster-2),0,clustersize);
+		systemread(
+			rdi,
+			cluster2+clustersize*(cluster-2),
+			clustersize
+		);
 
 		//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
 		rdi+=clustersize*0x200;
@@ -145,12 +149,12 @@ static void fat16_root()
 	//fat16的fat区最多0xffff个簇记录*每个记录2个字节<=0x20000=0x100个扇区
 	//data区最大0xffff个簇*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	say("reading whole fat table\n");
-	systemread(fatbuffer,fat0,0,0x100);
+	systemread(fatbuffer,fat0,0x100);
 	//printmemory(fatbuffer,0x1000);
 
 	//fat16根目录最多512个记录=0x20*0x200=0x4000字节=32个扇区
 	say("cd %x\n",fat0+fatsize*2);
-	systemread(datahome,fat0+fatsize*2,0,32);	//0x40000=0x20*0x200
+	systemread(datahome,fat0+fatsize*2,32);	//0x40000=0x20*0x200
 	explaindirectory();
 
 	say("\n");
@@ -284,8 +288,14 @@ static void checkcacheforcluster(QWORD cluster)
 	if(firstincache == whatwewant) return;
 
 	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
-	say("whatwewant:%x\n",whatwewant);
-	systemread(fatbuffer,fat0+(whatwewant/0x80),0,0x200);	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
+	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
+	systemread(
+		fatbuffer,
+		fat0+(whatwewant/0x80),
+		0x200
+	);
+
+	//say("whatwewant:%x\n",whatwewant);
 	firstincache=whatwewant;
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
@@ -297,7 +307,11 @@ static void fat32_data(char* dest,QWORD cluster,QWORD start,QWORD count)
 	char* rdi=dest;
 	while(rdi<dest+count)
 	{
-		systemread(rdi,cluster2+clustersize*(cluster-2),0,clustersize);
+		systemread(
+			rdi,
+			cluster2+clustersize*(cluster-2),
+			clustersize
+		);
 		rdi+=clustersize*0x200;
 
 		//检查缓冲，从检查完的缓冲区里面读一个cluster号
@@ -321,8 +335,9 @@ static void fat32_root()
 	firstincache=0xffffffff;		//保证读第一块
 	checkcacheforcluster(0);
 
+	//systemread(datahome,cluster2,32);
 	say("cd root:%x\n",cluster2);
-	fat32_data(datahome,2,0,0x4000);//systemread(datahome,cluster2,0,32);
+	fat32_data( datahome , 2 , 0 , 0x4000 );
 	explaindirectory();
 }
 
@@ -486,7 +501,7 @@ int mountfat(QWORD sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读取pbr，检查种类和版本
-	ret=systemread(pbr,firstsector,0,1); //pbr
+	ret=systemread(pbr,firstsector,1); //pbr
 	ret=isfat(pbr);
 	if(ret==16)		//这是fat16
 	{
