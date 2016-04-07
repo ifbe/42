@@ -200,14 +200,6 @@ static void tree_read()
 }
 static void tree_into()
 {
-	if(node==0)
-	{
-		node=(struct mathnode*)(whereischaracter()+0x200000);
-	}
-	else
-	{
-		backgroundcolor(0);
-	}
 }
 static void tree_list()
 {
@@ -220,26 +212,30 @@ static void tree_list()
 
 
 
-static void tree_start()
+static void tree_start(QWORD size,void* addr)
 {
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+	backgroundcolor(0);
 }
 static void tree_stop()
 {
 }
-void tree_init(QWORD size,char* addr)
+void tree_init(char* base,char* addr)
 {
-	if(size==0)
-	{
-		QWORD* this=(QWORD*)addr;
-		this[0]=0x776f646e6977;
-		this[1]=0x65657274;
-		this[2]=(0<<16)+0;		//left,up
-		this[3]=(768<<16)+1024;		//write,down
-		this[4]=(QWORD)tree_list;
-		this[5]=(QWORD)tree_into;
-		this[6]=(QWORD)tree_read;
-		this[7]=(QWORD)tree_write;
-	}
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;
+	this[1]=0x65657274;
+	this[2]=(QWORD)tree_start;
+	this[3]=(QWORD)tree_stop;
+	this[4]=(QWORD)tree_list;
+	this[5]=(QWORD)tree_into;
+	this[6]=(QWORD)tree_read;
+	this[7]=(QWORD)tree_write;
+
+	node=(struct mathnode*)(base+0x200000);
 }
 void tree_kill()
 {

@@ -3,11 +3,16 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void command(char* p);
-void waitevent(QWORD* first,QWORD* second);
+void characterlist();
+void characterchoose(char*);
 void characterread();
 void characterwrite(QWORD type,QWORD key);
+void characterstart(QWORD size,char* addr);
+void characterstop();
+//
+void waitevent(QWORD* first,QWORD* second);
 void writewindow();
+void readwindow();
 //
 void birth();
 void death();
@@ -20,19 +25,21 @@ void printmemory(char*,int);
 char mybuffer[0x400000];		//4m
 void main()
 {
-	//before
-	birth();
-
-	//forever
 	QWORD type=0;
 	QWORD key=0;
+
+	//before
+	birth();
+	characterstart(1024+(768<<16) , mybuffer);
+
+	//forever
 	while(1)
 	{
 		//debug
 		//say("i am here\n");
 
 		//1.先在内存里画画，然后一次性写到窗口内
-		characterread(1024+(768<<16) , mybuffer);
+		characterread();
 		writewindow(1024+(768<<16) , mybuffer);
 
 		//2.等事件，是退出消息就退出
@@ -44,5 +51,6 @@ void main()
 	}
 
 	//after
+	characterstop();
 	death();
 }

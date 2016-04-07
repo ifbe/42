@@ -187,7 +187,6 @@ static void console_read()
 }
 static void console_into()
 {
-	backgroundcolor(0);
 }
 static void console_list()
 {
@@ -200,42 +199,38 @@ static void console_list()
 
 
 
-static void console_start()
+static void console_start(QWORD size,void* addr)
 {
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//size
+	resolutionx=size&&0xffff;
+	resolutiony=(size>>16)&0xffff;
+	palette=addr;
+
+	//
+	backgroundcolor(0);
 }
 static void console_stop()
 {
 }
-void console_init(QWORD size,void* addr)
+void console_init(char* base,void* addr)
 {
-	if(size==0)
-	{
-		QWORD* this=(QWORD*)addr;
-		this[0]=0x776f646e6977;
-		this[1]=0x656c6f736e6f63;
-		this[2]=(0<<16)+0;   //startaddr
-		this[3]=(768<<16)+1024; //endaddr
-		this[4]=(QWORD)console_list;
-		this[5]=(QWORD)console_into;
-		this[6]=(QWORD)console_read;
-		this[7]=(QWORD)console_write;
-	}
-	else
-	{
-		//size
-		resolutionx=size&&0xffff;
-		resolutiony=(size>>16)&0xffff;
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;
+	this[1]=0x656c6f736e6f63;
+	this[2]=(QWORD)console_start;
+	this[3]=(QWORD)console_stop;
+	this[4]=(QWORD)console_list;
+	this[5]=(QWORD)console_into;
+	this[6]=(QWORD)console_read;
+	this[7]=(QWORD)console_write;
 
-		//where
-		palette=addr;
-
-		//12123123123
-		if(logbuf==0)
-		{
-			//never call console before that thing
-			//logbuf=whereisworld()+0x100000;
-		}
-	}
+	//
+	logbuf=base+0x300000;
 }
 void console_kill()
 {

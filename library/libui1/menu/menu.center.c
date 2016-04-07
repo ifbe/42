@@ -105,37 +105,31 @@ static void menu_list()
 
 
 
-static void menu_start()
+static void menu_start(QWORD size,void* addr)
 {
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+
+	//
+	screenbuf=addr;
 }
 static void menu_stop()
 {
 }
-void menu_init(QWORD size,void* addr)
+void menu_init(char* base,char* addr)
 {
-	if(size==0)
-	{
-		this=(QWORD*)addr;
-		that=(QWORD*)(addr+0x10);
+	this=(QWORD*)addr;
+	that=(QWORD*)(addr+0x10);
 
-		this[0]=0x776f646e6977;
-		this[1]=0x38343032;
-		this[2]=0;		//left,up
-		this[3]=0;		//right,down
-		this[4]=(QWORD)menu_list;
-		this[5]=(QWORD)menu_switch;
-		this[6]=(QWORD)menu_read;
-		this[7]=(QWORD)menu_write;
-	}
-	else
-	{
-		//
-		xsize=size&0xffff;
-		ysize=(size>>16)&0xffff;
-
-		//
-		screenbuf=addr;
-	}
+	this[0]=0x776f646e6977;
+	this[1]=0x756e656d;
+	this[2]=(QWORD)menu_start;
+	this[3]=(QWORD)menu_stop;
+	this[4]=(QWORD)menu_list;
+	this[5]=(QWORD)menu_switch;
+	this[6]=(QWORD)menu_read;
+	this[7]=(QWORD)menu_write;
 }
 void menu_kill()
 {

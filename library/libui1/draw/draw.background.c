@@ -9,9 +9,9 @@ void rectangle(QWORD,QWORD,QWORD);
 
 
 
-static DWORD* screenbuf=0;
 static int width=0;
 static int height=0;
+static unsigned int* screenbuf;
 
 
 
@@ -64,14 +64,20 @@ void background1()
 
 
 
-void background_init(QWORD size,void* addr)
+void background_start(QWORD size,char* addr)
 {
-	//how
+	//
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 
-	//where
-	screenbuf=addr;
+	//
+	screenbuf=(unsigned int*)addr;
+}
+void background_stop()
+{
+}
+void background_init()
+{
 }
 void background_kill()
 {

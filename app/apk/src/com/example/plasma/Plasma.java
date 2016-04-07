@@ -58,12 +58,15 @@ class PlasmaView extends View {
 	private Bitmap mBitmap;
 
 	/* implementend by libplasma.so */
-	private static native void renderPlasma(Bitmap  bitmap, long time_ms);
-	private static native void ProcessEvent(long type, long value);
+	private static native void Start(Bitmap bitmap);
+	private static native void Stop();
+	private static native void Read(Bitmap bitmap);
+	private static native void Write(long type, long value);
 
 	public PlasmaView(Context context, int width, int height) {
 		super(context);
 		mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		Start(mBitmap);
 	}
 
 	@Override
@@ -85,18 +88,18 @@ class PlasmaView extends View {
 
 		if( action == MotionEvent.ACTION_DOWN )
 		{
-			ProcessEvent(0x6e776f64 , temp);
+			Write(0x6e776f64 , temp);
 		}
 		if( action == MotionEvent.ACTION_UP )
 		{
-			ProcessEvent(0x7075 , temp);
+			Write(0x7075 , temp);
 		}
 		if( action == MotionEvent.ACTION_MOVE )
 		{
-			ProcessEvent(0x65766f6d , temp);
+			Write(0x65766f6d , temp);
 		}
 
-		renderPlasma(mBitmap, 0);
+		Read(mBitmap);
 		return true;
 	}
 }

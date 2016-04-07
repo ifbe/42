@@ -10,6 +10,8 @@ unsigned int getrandom();
 
 
 static int table[4][4];
+static int width=0;
+static int height=0;
 
 
 
@@ -37,12 +39,11 @@ static void cubie(int x,int y,int z)
 	//for(j=y*160+5;j<y*160+155;j++)
 	//point(i,j,color);
 	rectangle(
-		( x*160+5 ) + ( (y*160+5) << 16 ),
-		( x*160+155 ) + ( (y*160+155) << 16 ),
+		( x*width/4+4 ) + ( (y*height/4+4) << 16 ),
+		( (x+1)*width/4-4 ) + ( ((y+1)*height/4-4) << 16 ),
 		color
 	);
-
-	if(z!=0) colordecimal(4+x*20,4+y*10,z,0);
+	if(z!=0) colordecimal(4+x*(width/32),4+y*(height/64),z,0);
 }
 
 
@@ -275,7 +276,7 @@ static void the2048_write(QWORD type,QWORD key)
 	//new number?
 	new2048();
 }
-static void the2048_read(QWORD size,void* addr)
+static void the2048_read()
 {
 	int x,y;
 
@@ -288,24 +289,8 @@ static void the2048_read(QWORD size,void* addr)
 		}
 	}
 }
-static void the2048_into()
+static void the2048_choose()
 {
-	//1.init
-	int x,y;
-	backgroundcolor(0x444444);
-
-	//2或4
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			table[y][x]=0;
-		}
-	}
-	new2048();
-
-	//
-	writewindow( 0x657a6973 , 640+(640<<16) );
 }
 static void the2048_list()
 {
@@ -318,26 +303,46 @@ static void the2048_list()
 
 
 
-static void the2048_start()
+static void the2048_start(QWORD size,void* addr)
 {
+	//1.init
+	int x,y;
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
+	//2或4
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			table[y][x]=0;
+		}
+	}
+	new2048();
+
+	//
+	//writewindow( 0x657a6973 , 512+(512<<16) );
 }
 static void the2048_stop()
 {
 }
-void the2048_init(QWORD size,void* addr)
+void the2048_init(char* base,void* addr)
 {
-	if(size==0)
-	{
-		QWORD* this=(QWORD*)addr;
-		this[0]=0x776f646e6977;		//'window'
-		this[1]=0x38343032;			//'2048'
-		this[2]=(0<<16)+0;			//left,up
-		this[3]=(640<<16)+640;		//right,down
-		this[4]=(QWORD)the2048_list;
-		this[5]=(QWORD)the2048_into;
-		this[6]=(QWORD)the2048_read;
-		this[7]=(QWORD)the2048_write;
-	}
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;		//'window'
+	this[1]=0x38343032;			//'2048'
+	this[2]=(QWORD)the2048_start;
+	this[3]=(QWORD)the2048_stop;
+	this[4]=(QWORD)the2048_list;
+	this[5]=(QWORD)the2048_choose;
+	this[6]=(QWORD)the2048_read;
+	this[7]=(QWORD)the2048_write;
 }
 void the2048_kill()
 {

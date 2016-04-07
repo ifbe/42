@@ -7,8 +7,8 @@ void say(char*,...);
 
 
 
-static int xsize=0;
-static int ysize=0;
+static int width=0;
+static int height=0;
 static DWORD* screen=0;
 static unsigned char* unicodetable=0;
 
@@ -98,15 +98,20 @@ void printunicodebig(int x,int y,DWORD value)
 
 
 
-void unicode_init(QWORD size,void* addr)
+void unicode_start(QWORD size,char* addr)
 {
 	//how
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 
 	//where
-	screen=addr;
-
+	screen=(DWORD*)addr;
+}
+void unicode_stop()
+{
+}
+void unicode_init()
+{
 	//unicode
 	unicodetable=(unsigned char*)whereisunicodetable();
 }

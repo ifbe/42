@@ -16,8 +16,8 @@ void background1();
 //
 int compare(char*,char*);
 void data2hexstring(QWORD,char*);
-void arteryread(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
-void arterywrite(char* rdi,QWORD rsi,QWORD rdx,QWORD rcx);
+void arteryread(char* rdi,QWORD rsi,QWORD rcx);
+void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
 //
 void say(char*,...);
 void printmemory(char*,int);
@@ -37,8 +37,8 @@ static int printmethod=0;
 
 //mainscreen
 static DWORD* screenbuf;
-static int xsize;
-static int ysize;
+static int width;
+static int height;
 
 //flostarea
 static int inputcount=0;
@@ -75,38 +75,37 @@ static char* readornotread(QWORD wantaddr)
 	QWORD readwhere=wantaddr & 0xfffffffffffff000;
 	if(readwhere!=currentcache)
 	{
-		arteryread(databuf, readwhere/0x200, 0, 16);
+		arteryread(databuf, readwhere/0x200, 16);
 		currentcache=readwhere;
 	}
-
 	return databuf+(wantaddr-readwhere);
 }
 static void foreground()
 {
 	//一整页
 	int x,y;
-	int xshift = xsize & 0x3;
+	int xshift = width & 0x3;
 	char* where=readornotread(base);
 
 	//
 	if(printmethod==0)			//hex
 	{
-		for(y=0;y<ysize/16;y++)
+		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<xsize/16;x+=4)
+			for(x=0;x<width/16;x+=4)
 			{
-				DWORD value=*(DWORD*)(where + (y*xsize/16) + x);
+				DWORD value=*(DWORD*)(where + (y*width/16) + x);
 				hexadecimal1234(2*x+xshift,y,value);
 			}
 		}
 	}
 	else if(printmethod==1)		//ascii
 	{
-		for(y=0;y<ysize/16;y++)
+		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<xsize/16;x+=4)
+			for(x=0;x<width/16;x+=4)
 			{
-				DWORD value=*(DWORD*)(where + (y*xsize/16) + x);
+				DWORD value=*(DWORD*)(where + (y*width/16) + x);
 				colorascii(2*x+xshift,y,value&0xff,0);
 				colorascii(2*x+2+xshift,y,(value>>8)&0xff,0);
 				colorascii(2*x+4+xshift,y,(value>>16)&0xff,0);
@@ -118,29 +117,33 @@ static void foreground()
 static void floatarea()
 {
 	int x,y;
-	int thisx=(offset&0x3f)*16;
-	int thisy=(offset%0xa00)/0x40*16;
+	int thisx,thisy;
+	int byteperline;
+
+	byteperline=width/16;
+	thisx=(offset%byteperline)*16;
+	thisy=(offset/byteperline)*16;
 
 	//byte框
 	for(y=thisy;y<thisy+16;y++)
 	{
 		for(x=thisx;x<thisx+16;x++)
 		{
-			screenbuf[y*1024+x]=~screenbuf[y*1024+x];
+			screenbuf[y*width+x]=~screenbuf[y*width+x];
 		}
 	}
 
 	//256*128的详情框
 	thisx+=16;
-	if(thisx>768)thisx -= (256+16);
+	if(thisx>width-256)thisx -= (256+16);
 	thisy+=16;
-	if(thisy>=640-128+16)thisy -= (128+16);
+	if(thisy>=height-128+16)thisy -= (128+16);
 
 	for(y=thisy;y<thisy+128;y++)
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
-			screenbuf[y*1024+x]=0xffff;
+			screenbuf[y*width+x]=0xffff;
 		}
 	}
 
@@ -171,36 +174,53 @@ static void floatarea()
 
 static void hex_write(QWORD type,QWORD key)
 {
+	int byteperline=width/16;
+
 	if(type==0x64626b)			//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
 		{
-			if( (offset&0x3f) > 0 )offset--;
-			else
+			if( offset % byteperline == 0 )
 			{
 				if(base>=0x800)base-=0x800;
+			}
+			else
+			{
+				offset--;
 			}
 		}
 		else if(key==0x27)		//right	0x4d
 		{
-			if( (offset&0x3f) < 0x3f)offset++;
-			else
+			if( offset % byteperline == byteperline-1 )
 			{
 				base+=0x800;
+			}
+			else
+			{
+				offset++;
 			}
 		}
 		else if(key==0x26)		//up	0x4b
 		{
-			if(offset>=0x40)offset-=0x40;
-			else
+			if(offset<byteperline)
 			{
 				if(base>=0x40)base-=0x40;
+			}
+			else
+			{
+				offset-=0x40;
 			}
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			if(offset<0xa00-0x40)offset+=0x40;
-			else base+=0x40;
+			if(offset<(byteperline*height/16)-0x40)
+			{
+				offset+=0x40;
+			}
+			else
+			{
+				base+=0x40;
+			}
 		}
 	}
 	else if(type==0x72616863)		//'char'
@@ -267,9 +287,30 @@ static void hex_read()
 }
 static void hex_into()
 {
+}
+static void hex_list(QWORD* this)
+{
+}
+
+
+
+
+
+
+
+
+void hex_start(QWORD size,void* addr)
+{
 	int i;
-	databuf=(BYTE*)whereischaracter()+0x300000;
-	for(i=0;i<0x2000;i++)databuf[i]=0;
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//
+	screenbuf=addr;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 
 	//浮动框
 	for(i=0;i<0x100;i++)haha[i]=0;
@@ -284,46 +325,22 @@ static void hex_into()
 	currentcache=0xffffffff;
 	backgroundcolor(0);
 }
-static void hex_list(QWORD* this)
-{
-}
-
-
-
-
-
-
-
-
-void hex_start()
-{
-}
 void hex_stop()
 {
 }
-void hex_init(QWORD size,void* addr)
+void hex_init(char* uibuf,char* addr)
 {
-	if(size==0)
-	{
-		QWORD* this=(QWORD*)addr;
-		this[0]=0x776f646e6977;
-		this[1]=0x786568;
-		this[2]=(0<<16)+0;		//left,up
-		this[3]=(768<<16)+1024;		//right,down
-		this[4]=(QWORD)hex_list;
-		this[5]=(QWORD)hex_into;
-		this[6]=(QWORD)hex_read;
-		this[7]=(QWORD)hex_write;
-	}
-	else
-	{
-		//
-		xsize=size&0xffff;
-		ysize=(size>>16)&0xffff;
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;
+	this[1]=0x786568;
+	this[2]=(QWORD)hex_start;
+	this[3]=(QWORD)hex_stop;
+	this[4]=(QWORD)hex_list;
+	this[5]=(QWORD)hex_into;
+	this[6]=(QWORD)hex_read;
+	this[7]=(QWORD)hex_write;
 
-		//
-		screenbuf=addr;
-	}
+	databuf=uibuf+0x300000;
 }
 void hex_kill()
 {

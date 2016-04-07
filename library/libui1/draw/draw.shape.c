@@ -134,7 +134,7 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 
 
-void shape_init(QWORD size,void* addr)
+void shape_start(QWORD size,void* addr)
 {
 	//how
 	width=size&0xffff;
@@ -142,6 +142,12 @@ void shape_init(QWORD size,void* addr)
 
 	//where
 	winbuf=addr;
+}
+void shape_stop()
+{
+}
+void shape_init()
+{
 }
 void shape_kill()
 {

@@ -326,18 +326,6 @@ skipthese:		//打印
 }
 static void sketchpad_into()
 {
-	if(databuf==0)
-	{
-		char* temp=(char*)whereischaracter();
-		node=(struct mathnode*)(temp+0x200000);
-		databuf=temp+0x300000;
-
-		centerx=0.00;
-		centery=0.00;
-		scale=1.00;
-	}
-
-	backgroundcolor(0);
 }
 static void sketchpad_list()
 {
@@ -350,35 +338,41 @@ static void sketchpad_list()
 
 
 
-static void sketchpad_start()
+static void sketchpad_start(QWORD size,void* addr)
 {
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//
+	xsize=size&0xffff;
+	ysize=(size>>16)&0xffff;
+	screenbuf=addr;
+
+	//
+	backgroundcolor(0);
+	centerx=0.00;
+	centery=0.00;
+	scale=1.00;
 }
 static void sketchpad_stop()
 {
 }
-void sketchpad_init(QWORD size,void* addr)
+void sketchpad_init(void* base,void* addr)
 {
-	if(size==0)
-	{
-		QWORD* this=(QWORD*)addr;
-		this[0]=0x776f646e6977;
-		this[1]=0x686374656b73;
-		this[2]=(0<<16)+0;		//left,up
-		this[3]=(768<<16)+1024;		//right,down
-		this[4]=(QWORD)sketchpad_list;
-		this[5]=(QWORD)sketchpad_into;
-		this[6]=(QWORD)sketchpad_read;
-		this[7]=(QWORD)sketchpad_write;
-	}
-	else
-	{
-		//
-		xsize=size&0xffff;
-		ysize=(size>>16)&0xffff;
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;
+	this[1]=0x686374656b73;
+	this[2]=(QWORD)sketchpad_start;
+	this[3]=(QWORD)sketchpad_stop;
+	this[4]=(QWORD)sketchpad_list;
+	this[5]=(QWORD)sketchpad_into;
+	this[6]=(QWORD)sketchpad_read;
+	this[7]=(QWORD)sketchpad_write;
 
-		//
-		screenbuf=addr;
-	}
+	node=(struct mathnode*)(base+0x200000);
+	databuf=base+0x300000;
 }
 void sketchpad_kill()
 {
