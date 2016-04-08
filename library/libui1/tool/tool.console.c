@@ -3,9 +3,13 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void command(char* in);
 void characterstart(char*);
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
 //
+void command(char* in);
 void string(int x,int y,char* str);
 void backgroundcolor(DWORD);
 int compare(char* first,char* second);

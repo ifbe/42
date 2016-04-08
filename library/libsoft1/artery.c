@@ -12,6 +12,16 @@ int    tcp_init(void* world,void* func);
 int    udp_init(void* world,void* func);
 int    usb_init(void* world,void* func);
 //
+int binary_kill();
+int folder_kill();
+int     fs_kill();
+int    i2c_kill();
+int     pt_kill();
+int    spi_kill();
+int    tcp_kill();
+int    udp_kill();
+int    usb_kill();
+//
 QWORD prelibation(void*);
 int systemread( char* memory,QWORD sector,QWORD count);
 int systemwrite(char* memory,QWORD sector,QWORD count);
@@ -77,12 +87,12 @@ static int this=0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterylist(char* p)
 {
-	if(this==0)return;
+	if(this==0)return 0;
 	return table[this].list(p);
 }
 int arterychoose(char* p)
 {
-	if(this==0)return;
+	if(this==0)return 0;
 	return table[this].choose(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,12 +103,12 @@ int arterychoose(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arteryread(char* p)
 {
-	if(this==0)return;
+	if(this==0)return 0;
 	return table[this].read(p);
 }
 int arterywrite(char* p)
 {
-	if(this==0)return;
+	if(this==0)return 0;
 	return table[this].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

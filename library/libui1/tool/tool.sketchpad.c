@@ -15,13 +15,6 @@ struct mathnode{
         };
 };
 //
-void printdouble(int x,int y,double z);
-void printstring(DWORD x1y1z1,char* str,DWORD fgcolor,DWORD bgcolor);
-void hexadecimal(int x,int y,QWORD in);
-void decimal(int x,int y,QWORD in);
-void backgroundcolor(DWORD);
-void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
-//
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);
 double beautifulbetween(double first,double second);
@@ -29,6 +22,18 @@ void postfix2binarytree(char* postfix,struct mathnode* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
+//
+void printdouble(int x,int y,double z);
+void printstring(DWORD x1y1z1,char* str,DWORD fgcolor,DWORD bgcolor);
+void hexadecimal(int x,int y,QWORD in);
+void decimal(int x,int y,QWORD in);
+void backgroundcolor(DWORD);
+void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
+//
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
 //
 void printmemory(char*,int);
 void say(char*,...);

@@ -32,6 +32,9 @@ int killrandom();
 //socket
 int initsocket();
 int killsocket();
+//
+void printmemory(char*,int);
+void say(char*,...);
 
 
 

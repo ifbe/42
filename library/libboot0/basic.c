@@ -2,10 +2,17 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void say(char* , ...);
+//
 void initcpu();
+void killcpu();
+//
 void initmemory();
+void killmemory();
+//
 void initserial();
+void killserial();
+//
+void say(char* , ...);
 
 
 

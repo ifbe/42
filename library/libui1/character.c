@@ -14,6 +14,14 @@ void keyboard_init(char*,char*);		//2.keyboard.c
 void tree_init(char*,char*);			//2.tree.c
 void sketchpad_init(char*,char*);	//3.sketchpad.c
 void console_init(char*,char*);		//4.console.c
+//kill......
+void menu_kill();
+void hex_kill();
+void the2048_kill();
+void keyboard_kill();
+void tree_kill();
+void sketchpad_kill();
+void console_kill();
 
 //
 int arterystart(char*);

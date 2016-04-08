@@ -5,6 +5,12 @@ int systemread(char* p,QWORD,QWORD);
 int systemwrite(char* p,QWORD,QWORD);
 int systemlist(char* p);
 int systemswitch(char* p);
+void say(char*,...);
+
+
+
+
+//
 static unsigned char* datahome=0;
 
 

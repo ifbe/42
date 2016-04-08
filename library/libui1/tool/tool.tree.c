@@ -18,6 +18,11 @@ struct mathnode{
 
 
 
+//
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
 //libui
 void line(QWORD point1,QWORD point2,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);

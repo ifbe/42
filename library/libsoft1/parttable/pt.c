@@ -6,9 +6,12 @@
 int explaingpt(char* src,char* dest);	//分区表
 int explainmbr(char* src,char* dest);
 //
+int systemstart(QWORD,char*);
+int systemstop();
 int systemread(char* rdi,QWORD rsi,QWORD rcx);
 int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
 //基本函数
+QWORD prelibation(char*);
 int hexstring2data(char* src,QWORD* dest);
 int mem2file(char* src,char* dest,QWORD ignore,int size);
 int compare(char*,char*);

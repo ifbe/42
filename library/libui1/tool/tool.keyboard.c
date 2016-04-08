@@ -2,6 +2,10 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
 void backgroundcolor(DWORD);
 
 

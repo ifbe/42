@@ -4,6 +4,10 @@
 #define QWORD unsigned long long
 //
 void characterstart(char*);
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
 //
 void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);

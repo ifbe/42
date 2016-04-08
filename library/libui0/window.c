@@ -6,6 +6,7 @@
 #include<stdlib.h>
 void initwindowworker();
 void killwindowworker();
+void say(char*,...);
 
 
 
