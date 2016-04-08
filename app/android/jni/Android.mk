@@ -143,9 +143,9 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-	library/visitor/temple/temple.abbot.c \
-	library/visitor/temple/temple.monk.c \
-	library/visitor/traveller/cli.c
+	library/visitor/adult/master.c \
+	library/visitor/adult/slave.c \
+	library/visitor/child/cli.c
 
 
 

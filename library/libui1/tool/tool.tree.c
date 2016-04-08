@@ -26,7 +26,6 @@ void decimal(int x,int y,QWORD in);
 void printdouble(int x,int y,double z);
 void colorascii(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
-char* whereischaracter();
 //libsoft
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,struct mathnode* out);

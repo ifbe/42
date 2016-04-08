@@ -48,15 +48,6 @@ static char*     basic=0;		//4m
 static char*      body=0;		//4m
 static char*    memory=0;		//4m
 static char* character=0;		//4m
-//return address
-char* whereismemory()
-{
-	return memory;
-}
-char* whereischaracter()
-{
-	return character;
-}
 //get address
 void inituniverse()
 {

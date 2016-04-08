@@ -21,7 +21,6 @@ void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
 void backgroundcolor(DWORD);
 void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
-char* whereischaracter();
 //
 double sketchpad(struct mathnode*,double,double);
 double calculator(char* postfix,double,double);

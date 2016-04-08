@@ -3,7 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-char* whereischaracter();
 void characterstart(char*);
 //
 void hexadecimal(int x,int y,QWORD in);
