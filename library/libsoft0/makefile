@@ -9,12 +9,19 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f mac.*.o win.*.o
-	gcc -c -fPIC -O2 linux/linux.communicate.socket.c
 	gcc -c -fPIC -O2 linux/linux.event.fake.c
 	gcc -c -fPIC -O2 linux/linux.event.net.c
-	gcc -c -fPIC -O2 linux/linux.flatmem.file.c
+	gcc -c -fPIC -O2 linux/linux.interface.bluetooth.c
+	gcc -c -fPIC -O2 linux/linux.interface.i2c.c
+	gcc -c -fPIC -O2 linux/linux.interface.pci.c
+	gcc -c -fPIC -O2 linux/linux.interface.spi.c
+	gcc -c -fPIC -O2 linux/linux.interface.usb.c
+	gcc -c -fPIC -O2 linux/linux.interface.wifi.c
+	gcc -c -fPIC -O2 linux/linux.memory.file.c
+	gcc -c -fPIC -O2 linux/linux.memory.mmio.c
 	gcc -c -fPIC -O2 linux/linux.special.folder.c
 	gcc -c -fPIC -O2 linux/linux.special.random.c
+	gcc -c -fPIC -O2 linux/linux.special.socket.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac
 mac:

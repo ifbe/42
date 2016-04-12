@@ -9,7 +9,7 @@ static unsigned char buf[16];
 
 
 
-int writei2c(unsigned char* buf,unsigned char reg)
+int systemi2c_write(unsigned char* buf,unsigned char reg)
 {
 	//write address
 	int ret=write(fp,&reg,1);
@@ -30,7 +30,7 @@ int writei2c(unsigned char* buf,unsigned char reg)
 	}
 	return 1;
 }
-int readi2c(unsigned char* buf,unsigned char reg)
+int systemi2c_read(unsigned char* buf,unsigned char reg)
 {
 	//write address
 	int ret=write(fp,&reg,1);
@@ -51,7 +51,7 @@ int readi2c(unsigned char* buf,unsigned char reg)
 	}
 	return 1;
 }
-void switchi2c(char* bus,int device)	//	"/dev/i2c-1","62"
+void systemi2c_switch(char* bus,int device)	//	"/dev/i2c-1","62"
 {
 	int ret;
 	if(fp!=-1)close(fp);
@@ -59,7 +59,7 @@ void switchi2c(char* bus,int device)	//	"/dev/i2c-1","62"
 	fp=open(bus,O_RDWR);
 	ret=ioctl(fp,I2C_SLAVE,device);
 }
-void listi2c(char* towhere)	//	enumerate all i2c host and device
+void systemi2c_list(char* towhere)	//	enumerate all i2c host and device
 {
 	int x;
 	int y;
@@ -85,6 +85,8 @@ void listi2c(char* towhere)	//	enumerate all i2c host and device
 
 void starti2c()
 {
+	int ret;
+
 	//open
 	fp = open("/dev/i2c-1",O_RDWR);
 	if(fp<0)

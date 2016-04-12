@@ -87,7 +87,23 @@ static int this=0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterylist(char* p)
 {
-	if(this==0)return 0;
+	int i;
+	int j;
+	QWORD k;
+	if( (this==0) | ((p!=0)&&(p[0]=='/')) )
+	{
+		for(j=0;j<0x10;j+=4)
+		{
+			for(i=0;i<4;i++)
+			{
+				k=table[j+i].type;
+				if(k!=0)say("%s	",&k);
+			}
+		}
+		say("\n");
+		return;
+	}
+
 	return table[this].list(p);
 }
 int arterychoose(char* p)

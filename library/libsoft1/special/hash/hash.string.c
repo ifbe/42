@@ -11,7 +11,6 @@ unsigned int bkdrhash(char* str,int i)
 unsigned int aphash(char* str,int i)
 {
 	unsigned int hash = 0;
-	int i;
 	for (i=0; *str; i++)
 	{
 		if ((i & 1) == 0)
