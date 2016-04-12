@@ -36,13 +36,13 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	gcc -c -O2 win/win.communicate.socket.c
 	gcc -c -O2 win/win.event.net.c
-	gcc -c -O2 win/win.flatmem.file.c
-	gcc -c -O2 win/win.flatmem.virtual.c
-	gcc -c -O2 win/win.flatmem.process.c
+	gcc -c -O2 win/win.memory.file.c
+	gcc -c -O2 win/win.memory.virtual.c
+	gcc -c -O2 win/win.memory.process.c
 	gcc -c -O2 win/win.special.folder.c
 	gcc -c -O2 win/win.special.random.c
+	gcc -c -O2 win/win.special.socket.c
 	gcc -c -O2 system.c
 clean:
 	rm -f *.o *.a

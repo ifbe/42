@@ -55,8 +55,8 @@ void folder_init(char* world,unsigned long long* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0x7265646c6f66;
-	p[1]=0;
+	p[0]=0x6c616963657073;
+	p[1]=0x7265646c6f66;
 	p[2]=(QWORD)folder_start;
 	p[3]=(QWORD)folder_stop;
 	p[4]=(QWORD)folder_list;

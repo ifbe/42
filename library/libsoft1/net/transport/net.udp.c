@@ -28,8 +28,8 @@ static int udp_stop()
 }
 int udp_init(char* world,unsigned long long* p)
 {
-	p[0]=0x706475;
-	p[1]=0;
+	p[0]=0x74656e;
+	p[1]=0x706475;
 	p[2]=(QWORD)udp_start;
 	p[3]=(QWORD)udp_stop;
 	p[4]=(QWORD)udp_list;

@@ -207,8 +207,8 @@ void binary_init(char* world,QWORD* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0x6e6962;
-	p[1]=0;
+	p[0]=0x6d656d;
+	p[1]=0x6e6962;
 	p[2]=(QWORD)binary_start;
 	p[3]=(QWORD)binary_stop;
 	p[4]=(QWORD)binary_list;

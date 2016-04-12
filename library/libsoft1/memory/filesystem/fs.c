@@ -234,8 +234,8 @@ void fs_init(char* world,QWORD* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0x7366;
-	p[1]=0;
+	p[0]=0x6d656d;
+	p[1]=0x7366;
 	p[2]=(QWORD)fs_start;
 	p[3]=(QWORD)fs_stop;
 	p[4]=(QWORD)fs_list;

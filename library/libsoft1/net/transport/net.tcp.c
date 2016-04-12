@@ -71,8 +71,8 @@ int tcp_init(char* world,unsigned long long* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0x706374;
-	p[1]=0;
+	p[0]=0x74656e;
+	p[1]=0x706374;
 	p[2]=(QWORD)tcp_start;
 	p[3]=(QWORD)tcp_stop;
 	p[4]=(QWORD)tcp_list;

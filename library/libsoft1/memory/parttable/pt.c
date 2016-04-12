@@ -80,8 +80,8 @@ void pt_init(char* world,QWORD* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0x7470;
-	p[1]=0;
+	p[0]=0x6d656d;
+	p[1]=0x7470;
 	p[2]=(QWORD)pt_start;
 	p[3]=(QWORD)pt_stop;
 	p[4]=(QWORD)pt_list;

@@ -96,12 +96,12 @@ int arterylist(char* p)
 		{
 			for(i=0;i<4;i++)
 			{
-				k=table[j+i].type;
+				k=table[j+i].id;
 				if(k!=0)say("%s	",&k);
 			}
 		}
 		say("\n");
-		return;
+		return 0;
 	}
 
 	return table[this].list(p);
