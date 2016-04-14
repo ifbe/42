@@ -3,37 +3,37 @@
 
 
 
-static void ethernet_list()
+static void eth_list()
 {
 }
-static void ethernet_switch()
+static void eth_switch()
 {
 }
-static void ethernet_read()
+static void eth_read()
 {
 }
-static void ethernet_write()
+static void eth_write()
 {
 }
-static void ethernet_start(QWORD type,char* p)
+static void eth_start(QWORD type,char* p)
 {
 }
-static void ethernet_stop()
+static void eth_stop()
 {
 }
-void ethernet_init(char* world,QWORD* p)
+void eth_init(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
 	p[1]=0x687465;		//id
-	p[2]=(QWORD)ethernet_start;
-	p[3]=(QWORD)ethernet_stop;
-	p[4]=(QWORD)ethernet_list;
-	p[5]=(QWORD)ethernet_switch;
-	p[6]=(QWORD)ethernet_read;
-	p[7]=(QWORD)ethernet_write;
+	p[2]=(QWORD)eth_start;
+	p[3]=(QWORD)eth_stop;
+	p[4]=(QWORD)eth_list;
+	p[5]=(QWORD)eth_switch;
+	p[6]=(QWORD)eth_read;
+	p[7]=(QWORD)eth_write;
 }
-void ethernet_kill()
+void eth_kill()
 {
-	ethernet_stop();
+	eth_stop();
 }

@@ -1,27 +1,29 @@
 #define QWORD unsigned long long
+int folder_init(void*,void*);
+int folder_kill();
 
 
 
 
-static void special_list()
+static int special_list()
 {
 }
-static void special_switch()
+static int special_switch()
 {
 }
-static void special_read()
+static int special_read()
 {
 }
-static void special_write()
+static int special_write()
 {
 }
-static void special_start(QWORD type,char* p)
+static int special_start(QWORD type,char* p)
 {
 }
-static void special_stop()
+static int special_stop()
 {
 }
-void special_init(char* world,QWORD* p)
+int special_init(char* world,QWORD* p)
 {
 	//
 	p[0]=0;			//type
@@ -32,8 +34,16 @@ void special_init(char* world,QWORD* p)
 	p[5]=(QWORD)special_switch;
 	p[6]=(QWORD)special_read;
 	p[7]=(QWORD)special_write;
+
+	//
+	char* q=(char*)p+0x40;
+
+	folder_init(world,q);
+	q+=0x40;
+
+	return q-(char*)p;
 }
-void special_kill()
+int special_kill()
 {
-	special_stop();
+	folder_kill();
 }

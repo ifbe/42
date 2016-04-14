@@ -215,6 +215,9 @@ int memory_init(char* world,QWORD* p)
 	p[5]=(QWORD)memory_switch;
 	p[6]=(QWORD)memory_read;
 	p[7]=(QWORD)memory_write;
+
+	//
+	return 0x40;
 }
 int memory_kill()
 {

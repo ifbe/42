@@ -17,6 +17,7 @@ int systemread( char* memory,QWORD sector,QWORD count);
 int systemwrite(char* memory,QWORD sector,QWORD count);
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2typename(BYTE* buf,int max,QWORD* type,BYTE** name);
+void printmemory(char*,int);
 void say(char*,...);
 
 
@@ -69,7 +70,7 @@ static unsigned char* datahome;
 //bin->parttable->filesystem->dir->file....
 //tcp->http->websocket->what
 static int stack[16]={0};
-static int this=0;
+static int this=0xffff;
 
 
 
@@ -77,20 +78,34 @@ static int this=0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterylist(char* p)
 {
-	int i;
 	int j;
-	QWORD k;
-	if( (this==0) | ((p!=0)&&(p[0]=='/')) )
+	int count;
+	QWORD type;
+	QWORD id;
+	if( (this>=0xffff) | ((p!=0)&&(p[0]=='/')) )
 	{
-		for(j=0;j<0x10;j+=4)
+		for(j=0;j<0x40;j++)
 		{
-			for(i=0;i<4;i++)
+			type=table[j].type;
+			id=table[j].id;
+			if(id==0)
 			{
-				k=table[j+i].id;
-				if(k!=0)say("%s	",&k);
+				if(count%8!=0)say("\n");
+				break;
+			}
+
+			if(type==0)
+			{
+				say("\n%s:\n",&id);
+				count=0;
+			}
+			else
+			{
+				say("	%s/",&id);
+				count++;
+				if(count%8==0)say("\n");
 			}
 		}
-		say("\n");
 		return 0;
 	}
 
@@ -98,7 +113,7 @@ int arterylist(char* p)
 }
 int arterychoose(char* p)
 {
-	if(this==0)return 0;
+	if(this>=0xffff)return 0;
 	return table[this].choose(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,12 +124,12 @@ int arterychoose(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arteryread(char* p)
 {
-	if(this==0)return 0;
+	if(this>=0xffff)return 0;
 	return table[this].read(p);
 }
 int arterywrite(char* p)
 {
-	if(this==0)return 0;
+	if(this>=0xffff)return 0;
 	return table[this].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +156,7 @@ int arterystart(BYTE* p)
 		ret=table[2].start(type,name);
 		if(ret>0)
 		{
-			this=2;
+			this=3;
 			goto nextstep;
 		}
 
@@ -210,10 +225,10 @@ unknown:
 int arterystop(char* p)
 {
 	int ret;
-	if(this==0)return 0;
+	if(this>=0xffff)return 0;
 
 	ret=table[this].stop(p);
-	this=0;
+	this=0xffff;
 	return ret;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -231,7 +246,6 @@ void arteryinit(char* module,char* addr)
 	if(module==0)
 	{
 		for(i=0;i<0x10000;i++)addr[i]=0;
-		p=addr+0x40;
 
 		//0
 		table=(struct elements*)addr;
@@ -240,21 +254,11 @@ void arteryinit(char* module,char* addr)
 		datahome=addr+0x300000;
 
 		//
-		interface_init(addr,p);	//3
-		p+=0x40;
-
-		//
-		memory_init(addr,p);	//1
-		p+=0x40;
-
-		//
-		net_init(addr,p);	//3
-		p+=0x40;
-
-		//
-		special_init(addr,p);	//3
-		p+=0x40;
-
+		p=addr;
+		p+=interface_init(addr,p);
+		p+=memory_init(addr,p);
+		p+=net_init(addr,p);
+		special_init(addr,p);
 
 		say("[8,c):inited artery\n");
 	}

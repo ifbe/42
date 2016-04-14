@@ -1,8 +1,8 @@
 #include<stdio.h>
-#include<stdint.h>
 #include<fcntl.h>
 #include<unistd.h>
 #include<linux/i2c-dev.h>
+#include<sys/ioctl.h>
 static int fp=-1;
 static unsigned char buf[16];
 
@@ -51,7 +51,7 @@ int systemi2c_read(unsigned char* buf,unsigned char reg)
 	}
 	return 1;
 }
-void systemi2c_switch(char* bus,int device)	//	"/dev/i2c-1","62"
+void systemi2c_choose(char* bus,int device)	//	"/dev/i2c-1","62"
 {
 	int ret;
 	if(fp!=-1)close(fp);
@@ -71,7 +71,7 @@ void systemi2c_list(char* towhere)	//	enumerate all i2c host and device
 		for(x=0;x<16;x++)
 		{
 			ret=ioctl(fp,I2C_SLAVE,x+(y<<4));
-			ret=readi2c(&ch,0);
+			ret=systemi2c_read(&ch,0);
 
 			if(ret>0)printf("%.2x ",ch);
 			else printf("-- ");

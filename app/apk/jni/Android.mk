@@ -71,9 +71,16 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libsoft1/artery.c \
 	library/libsoft1/interface/interface.c \
+	library/libsoft1/interface/interface.bluetooth.c \
+	library/libsoft1/interface/interface.ir.c \
 	library/libsoft1/interface/interface.i2c.c \
-	library/libsoft1/interface/interface.usb.c \
+	library/libsoft1/interface/interface.nfc.c \
+	library/libsoft1/interface/interface.pci.c \
 	library/libsoft1/interface/interface.spi.c \
+	library/libsoft1/interface/interface.uart.c \
+	library/libsoft1/interface/interface.usb.c \
+	library/libsoft1/interface/interface.wifi.c \
+	library/libsoft1/interface/interface.zigbee.c \
 	library/libsoft1/memory/memory.c \
 	library/libsoft1/memory/prelibation.c \
 	library/libsoft1/memory/compress/memory.comp.7z.c \
@@ -99,7 +106,19 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/text/memory.text.ascii.c \
 	library/libsoft1/memory/text/memory.text.unicode.c \
 	library/libsoft1/net/net.c \
+	library/libsoft1/net/net.arp.c \
+	library/libsoft1/net/net.ethernet.c \
+	library/libsoft1/net/net.ftp.c \
+	library/libsoft1/net/net.http.c \
+	library/libsoft1/net/net.icmp.c \
+	library/libsoft1/net/net.ipv4.c \
+	library/libsoft1/net/net.ipv6.c \
+	library/libsoft1/net/net.ppp.c \
+	library/libsoft1/net/net.quic.c \
+	library/libsoft1/net/net.slip.c \
+	library/libsoft1/net/net.ssh.c \
 	library/libsoft1/net/net.tcp.c \
+	library/libsoft1/net/net.tftp.c \
 	library/libsoft1/net/net.udp.c \
 	library/libsoft1/special/special.c \
 	library/libsoft1/special/math/special.math.calc.c \

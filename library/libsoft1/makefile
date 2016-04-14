@@ -48,8 +48,19 @@ target:
 	$(compiler) $(cflag) memory/text/memory.text.gbk.c
 	$(compiler) $(cflag) memory/text/memory.text.unicode.c
 	$(compiler) $(cflag) net/net.c
+	$(compiler) $(cflag) net/net.arp.c
+	$(compiler) $(cflag) net/net.ethernet.c
+	$(compiler) $(cflag) net/net.ftp.c
 	$(compiler) $(cflag) net/net.http.c
+	$(compiler) $(cflag) net/net.icmp.c
+	$(compiler) $(cflag) net/net.ipv4.c
+	$(compiler) $(cflag) net/net.ipv6.c
+	$(compiler) $(cflag) net/net.ppp.c
+	$(compiler) $(cflag) net/net.quic.c
+	$(compiler) $(cflag) net/net.slip.c
+	$(compiler) $(cflag) net/net.ssh.c
 	$(compiler) $(cflag) net/net.tcp.c
+	$(compiler) $(cflag) net/net.tftp.c
 	$(compiler) $(cflag) net/net.udp.c
 	$(compiler) $(cflag) special/special.c
 	$(compiler) $(cflag) special/math/special.math.calc.c
