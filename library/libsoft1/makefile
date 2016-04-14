@@ -1,6 +1,8 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
+	$(compiler) $(cflag) artery.c
+	$(compiler) $(cflag) interface/interface.c
 	$(compiler) $(cflag) interface/interface.bluetooth.c
 	$(compiler) $(cflag) interface/interface.i2c.c
 	$(compiler) $(cflag) interface/interface.ir.c
@@ -11,53 +13,49 @@ target:
 	$(compiler) $(cflag) interface/interface.usb.c
 	$(compiler) $(cflag) interface/interface.wifi.c
 	$(compiler) $(cflag) interface/interface.zigbee.c
-	$(compiler) $(cflag) memory/bin.c
-	$(compiler) $(cflag) memory/executable/exec.c
-	$(compiler) $(cflag) memory/executable/exec.elf.c
-	$(compiler) $(cflag) memory/executable/exec.macho.c
-	$(compiler) $(cflag) memory/executable/exec.pe.c
-	$(compiler) $(cflag) memory/filesystem/fs.c
-	$(compiler) $(cflag) memory/filesystem/fs.ext.c
-	$(compiler) $(cflag) memory/filesystem/fs.fat.c
-	$(compiler) $(cflag) memory/filesystem/fs.hfs.c
-	$(compiler) $(cflag) memory/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) memory/parttable/pt.c
-	$(compiler) $(cflag) memory/parttable/pt.apple.c
-	$(compiler) $(cflag) memory/parttable/pt.gpt.c
-	$(compiler) $(cflag) memory/parttable/pt.mbr.c
-	$(compiler) $(cflag) memory/text/text.c
-	$(compiler) $(cflag) memory/text/text.ascii.c
-	$(compiler) $(cflag) memory/text/text.gbk.c
-	$(compiler) $(cflag) memory/text/text.unicode.c
+	$(compiler) $(cflag) memory/memory.c
+	$(compiler) $(cflag) memory/prelibation.c
+	$(compiler) $(cflag) memory/compress/memory.comp.7z.c
+	$(compiler) $(cflag) memory/compress/memory.comp.cpio.c
+	$(compiler) $(cflag) memory/compress/memory.comp.gz.c
+	$(compiler) $(cflag) memory/compress/memory.comp.tar.c
+	$(compiler) $(cflag) memory/compress/memory.comp.zip.c
+	$(compiler) $(cflag) memory/crypt/memory.crypt.aes.c
+	$(compiler) $(cflag) memory/crypt/memory.crypt.des.c
+	$(compiler) $(cflag) memory/crypt/memory.crypt.rsa.c
+	$(compiler) $(cflag) memory/executable/memory.exec.elf.c
+	$(compiler) $(cflag) memory/executable/memory.exec.macho.c
+	$(compiler) $(cflag) memory/executable/memory.exec.pe.c
+	$(compiler) $(cflag) memory/filesystem/memory.fs.c
+	$(compiler) $(cflag) memory/filesystem/memory.fs.ext.c
+	$(compiler) $(cflag) memory/filesystem/memory.fs.fat.c
+	$(compiler) $(cflag) memory/filesystem/memory.fs.hfs.c
+	$(compiler) $(cflag) memory/filesystem/memory.fs.ntfs.c
+	$(compiler) $(cflag) memory/hash/memory.hash.crc8.c
+	$(compiler) $(cflag) memory/hash/memory.hash.crc16.c
+	$(compiler) $(cflag) memory/hash/memory.hash.crc32.c
+	$(compiler) $(cflag) memory/hash/memory.hash.md5.c
+	$(compiler) $(cflag) memory/hash/memory.hash.sha256.c
+	$(compiler) $(cflag) memory/hash/memory.hash.string.c
+	$(compiler) $(cflag) memory/parttable/memory.pt.c
+	$(compiler) $(cflag) memory/parttable/memory.pt.apple.c
+	$(compiler) $(cflag) memory/parttable/memory.pt.gpt.c
+	$(compiler) $(cflag) memory/parttable/memory.pt.mbr.c
+	$(compiler) $(cflag) memory/string/memory.string.compare.c
+	$(compiler) $(cflag) memory/string/memory.string.convert.c
+	$(compiler) $(cflag) memory/string/memory.string.parse.c
+	$(compiler) $(cflag) memory/text/memory.text.ascii.c
+	$(compiler) $(cflag) memory/text/memory.text.gbk.c
+	$(compiler) $(cflag) memory/text/memory.text.unicode.c
 	$(compiler) $(cflag) net/net.c
-	$(compiler) $(cflag) net/application/net.http.c
-	$(compiler) $(cflag) net/transport/net.tcp.c
-	$(compiler) $(cflag) net/transport/net.udp.c
-	$(compiler) $(cflag) special/compress/compress.c
-	$(compiler) $(cflag) special/compress/compress.7z.c
-	$(compiler) $(cflag) special/compress/compress.cpio.c
-	$(compiler) $(cflag) special/compress/compress.gz.c
-	$(compiler) $(cflag) special/compress/compress.tar.c
-	$(compiler) $(cflag) special/compress/compress.zip.c
-	$(compiler) $(cflag) special/crypt/crypt.aes.c
-	$(compiler) $(cflag) special/crypt/crypt.des.c
-	$(compiler) $(cflag) special/crypt/crypt.rsa.c
-	$(compiler) $(cflag) special/hash/hash.c
-	$(compiler) $(cflag) special/hash/hash.crc8.c
-	$(compiler) $(cflag) special/hash/hash.crc16.c
-	$(compiler) $(cflag) special/hash/hash.crc32.c
-	$(compiler) $(cflag) special/hash/hash.md5.c
-	$(compiler) $(cflag) special/hash/hash.sha256.c
-	$(compiler) $(cflag) special/hash/hash.string.c
-	$(compiler) $(cflag) special/math/math.calc.c
-	$(compiler) $(cflag) special/math/math.notation.c
-	$(compiler) $(cflag) special/parasite/parasite.folder.c
-	$(compiler) $(cflag) special/parasite/parasite.setting.c
-	$(compiler) $(cflag) special/string/string.compare.c
-	$(compiler) $(cflag) special/string/string.convert.c
-	$(compiler) $(cflag) special/string/string.parse.c
-	$(compiler) $(cflag) special/string/string.prelibation.c
-	$(compiler) $(cflag) artery.c
+	$(compiler) $(cflag) net/net.http.c
+	$(compiler) $(cflag) net/net.tcp.c
+	$(compiler) $(cflag) net/net.udp.c
+	$(compiler) $(cflag) special/special.c
+	$(compiler) $(cflag) special/math/special.math.calc.c
+	$(compiler) $(cflag) special/math/special.math.notation.c
+	$(compiler) $(cflag) special/parasite/special.parasite.folder.c
+	$(compiler) $(cflag) special/parasite/special.parasite.setting.c
 crosscompile:
 	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2"
 gcc:

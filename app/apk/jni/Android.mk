@@ -58,51 +58,54 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
-	library/libsoft0/linux/linux.communicate.socket.c \
-	library/libsoft0/linux/linux.event.fake.c \
-	library/libsoft0/linux/linux.event.net.c \
-	library/libsoft0/linux/linux.flatmem.file.c \
-	library/libsoft0/linux/linux.flatmem.physical.c \
-	library/libsoft0/linux/linux.flatmem.virtual.c \
+	library/libsoft0/linux/linux.memory.file.c \
+	library/libsoft0/linux/linux.memory.physical.c \
+	library/libsoft0/linux/linux.memory.virtual.c \
+	library/libsoft0/linux/linux.net.epoll.c \
+	library/libsoft0/linux/linux.net.socket.c \
 	library/libsoft0/linux/linux.special.folder.c \
 	library/libsoft0/linux/linux.special.random.c \
 	library/libsoft0/system.c
 
 #3.soft1
 LOCAL_SRC_FILES += \
-	library/libsoft1/core/core.compare.c \
-	library/libsoft1/core/core.convert.c \
-	library/libsoft1/core/core.parse.c \
-	library/libsoft1/core/core.prelibation.c \
-	library/libsoft1/compress/compress.c \
-	library/libsoft1/compress/compress.7z.c \
-	library/libsoft1/compress/compress.cpio.c \
-	library/libsoft1/compress/compress.gz.c \
-	library/libsoft1/compress/compress.tar.c \
-	library/libsoft1/compress/compress.zip.c \
-	library/libsoft1/default/default.bin.c \
-	library/libsoft1/default/default.folder.c \
-	library/libsoft1/executable/exec.c \
-	library/libsoft1/executable/exec.elf.c \
-	library/libsoft1/executable/exec.macho.c \
-	library/libsoft1/executable/exec.pe.c \
-	library/libsoft1/filesystem/fs.c \
-	library/libsoft1/filesystem/fs.ext.c \
-	library/libsoft1/filesystem/fs.fat.c \
-	library/libsoft1/filesystem/fs.hfs.c \
-	library/libsoft1/filesystem/fs.ntfs.c \
-	library/libsoft1/math/math.calc.c \
-	library/libsoft1/math/math.notation.c \
+	library/libsoft1/artery.c \
+	library/libsoft1/interface/interface.c \
+	library/libsoft1/interface/interface.i2c.c \
+	library/libsoft1/interface/interface.usb.c \
+	library/libsoft1/interface/interface.spi.c \
+	library/libsoft1/memory/memory.c \
+	library/libsoft1/memory/prelibation.c \
+	library/libsoft1/memory/compress/memory.comp.7z.c \
+	library/libsoft1/memory/compress/memory.comp.cpio.c \
+	library/libsoft1/memory/compress/memory.comp.gz.c \
+	library/libsoft1/memory/compress/memory.comp.tar.c \
+	library/libsoft1/memory/compress/memory.comp.zip.c \
+	library/libsoft1/memory/executable/memory.exec.elf.c \
+	library/libsoft1/memory/executable/memory.exec.macho.c \
+	library/libsoft1/memory/executable/memory.exec.pe.c \
+	library/libsoft1/memory/filesystem/memory.fs.c \
+	library/libsoft1/memory/filesystem/memory.fs.ext.c \
+	library/libsoft1/memory/filesystem/memory.fs.fat.c \
+	library/libsoft1/memory/filesystem/memory.fs.hfs.c \
+	library/libsoft1/memory/filesystem/memory.fs.ntfs.c \
+	library/libsoft1/memory/parttable/memory.pt.c \
+	library/libsoft1/memory/parttable/memory.pt.apple.c \
+	library/libsoft1/memory/parttable/memory.pt.gpt.c \
+	library/libsoft1/memory/parttable/memory.pt.mbr.c \
+	library/libsoft1/memory/string/memory.string.compare.c \
+	library/libsoft1/memory/string/memory.string.convert.c \
+	library/libsoft1/memory/string/memory.string.parse.c \
+	library/libsoft1/memory/text/memory.text.ascii.c \
+	library/libsoft1/memory/text/memory.text.unicode.c \
 	library/libsoft1/net/net.c \
-	library/libsoft1/net/transport/net.tcp.c \
-	library/libsoft1/net/transport/net.udp.c \
-	library/libsoft1/parttable/pt.c \
-	library/libsoft1/parttable/pt.apple.c \
-	library/libsoft1/parttable/pt.gpt.c \
-	library/libsoft1/parttable/pt.mbr.c \
-	library/libsoft1/text/text.ascii.c \
-	library/libsoft1/text/text.unicode.c \
-	library/libsoft1/artery.c
+	library/libsoft1/net/net.tcp.c \
+	library/libsoft1/net/net.udp.c \
+	library/libsoft1/special/special.c \
+	library/libsoft1/special/math/special.math.calc.c \
+	library/libsoft1/special/math/special.math.notation.c \
+	library/libsoft1/special/parasite/special.parasite.folder.c \
+	library/libsoft1/special/parasite/special.parasite.setting.c
 
 #4.ui0
 LOCAL_SRC_FILES += \

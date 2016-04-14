@@ -2,25 +2,15 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int binary_init(void* world,void* func);
-int folder_init(void* world,void* func);
-int     fs_init(void* world,void* func);
-int    i2c_init(void* world,void* func);
-int     pt_init(void* world,void* func);
-int    spi_init(void* world,void* func);
-int    tcp_init(void* world,void* func);
-int    udp_init(void* world,void* func);
-int    usb_init(void* world,void* func);
+int interface_init(void* world,void* func);
+int    memory_init(void* world,void* func);
+int       net_init(void* world,void* func);
+int   special_init(void* world,void* func);
 //
-int binary_kill();
-int folder_kill();
-int     fs_kill();
-int    i2c_kill();
-int     pt_kill();
-int    spi_kill();
-int    tcp_kill();
-int    udp_kill();
-int    usb_kill();
+int interface_kill();
+int    memory_kill();
+int       net_kill();
+int   special_kill();
 //
 QWORD prelibation(void*);
 int systemread( char* memory,QWORD sector,QWORD count);
@@ -249,29 +239,22 @@ void arteryinit(char* module,char* addr)
 		dirhome =addr+0x200000;
 		datahome=addr+0x300000;
 
-		//[0x40,0x7f]
-		binary_init(addr,p);	//1
+		//
+		interface_init(addr,p);	//3
 		p+=0x40;
 
-		//[0x80,0xbf]
-		folder_init(addr,p);	//2
+		//
+		memory_init(addr,p);	//1
 		p+=0x40;
 
-		//[]
-		fs_init(addr,p);	//2
+		//
+		net_init(addr,p);	//3
 		p+=0x40;
 
-		//[]
-		pt_init(addr,p);	//3
+		//
+		special_init(addr,p);	//3
 		p+=0x40;
 
-		//[]
-		tcp_init(addr,p);	//3
-		p+=0x40;
-
-		//[]
-		udp_init(addr,p);	//3
-		p+=0x40;
 
 		say("[8,c):inited artery\n");
 	}
@@ -286,11 +269,9 @@ void arteryinit(char* module,char* addr)
 void arterykill(char* module)
 {
 	say("[8,c):killing artery\n");
-	udp_kill();
-	tcp_kill();
-	pt_kill();
-	fs_kill();
-	folder_kill();
-	binary_kill();
+	special_kill();
+	net_kill();
+	memory_kill();
+	interface_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
