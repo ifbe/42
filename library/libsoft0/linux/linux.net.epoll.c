@@ -29,14 +29,6 @@ char devicename[32]={
 
 
 
-int softevent(QWORD* first,QWORD* second)
-{
-	return 0;
-}
-
-
-
-
 //be careful : epoll_create1 -> [android-21,above) = [5.0,above)
 void initevent()
 {

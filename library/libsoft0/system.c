@@ -2,9 +2,6 @@
 #define DW unsigned int
 #define WORD unsigned short
 #define BYTE unsigned char
-//event
-int initevent();
-int killevent();
 //file
 int initfile();
 int killfile();
@@ -41,6 +38,10 @@ void say(char*,...);
 
 //
 static int realtype=0;
+int softevent(QW* first,QW* second)
+{
+	return 0;
+}
 
 
 
@@ -83,7 +84,6 @@ void systeminit(char* module,char* addr)
 {
 	if(module==0)
 	{
-		initevent();		//1
 		initfile();		//2
 		initfolder();		//3
 		//initprocess();	//4
@@ -101,7 +101,6 @@ void systemkill()
 	//killprocess();	//4
 	killfolder();		//3
 	killfile();		//2
-	killevent();		//1
 }
 int systemstart(int type,char* p)
 {
