@@ -84,7 +84,7 @@ int arterylist(char* p)
 	QWORD id;
 	if( (this>=0xffff) | ((p!=0)&&(p[0]=='/')) )
 	{
-		for(j=0;j<0x40;j++)
+		for(j=1;j<0x100;j++)
 		{
 			type=table[j].type;
 			id=table[j].id;
@@ -101,7 +101,7 @@ int arterylist(char* p)
 			}
 			else
 			{
-				say("	%s/",&id);
+				say("	[%s]",&id);
 				count++;
 				if(count%8==0)say("\n");
 			}
@@ -140,95 +140,34 @@ int arterywrite(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterystart(BYTE* p)
 {
-	//get type and name
-	QWORD type;
-	BYTE* name=0;
-	int ret=buf2typename(p,128,&type,&name);
-	if(ret==0)return 0;		//fail1
-
-
-
-
-	//auto???????????
-	if(type==0)
+	int ret;
+	if(p==0)
 	{
-		//只能先试folder
-		ret=table[2].start(type,name);
-		if(ret>0)
-		{
-			this=3;
-			goto nextstep;
-		}
-
-		//然后再试binary
-		ret=table[1].start(type,name);
-		if(ret>0)
-		{
-			this=1;
-			goto nextstep;
-		}
-
-		goto unknown;
+		say("what?\n");
+		return 0;
 	}
 
 	//search............
-	for(ret=0;ret<16;ret++)
+	for(ret=0;ret<256;ret++)
 	{
-		if(type == table[ret].type)break;
+		if(compare(p,&table[ret].id)==0)
+		{
+			table[0].type=table[ret].id;
+			return 1;
+		}
 	}
-	if(ret>=16)goto unknown;
 
-	//found!!!!!!!!!!!!!!
-	this=ret;
-	table[this].start(type,name);
-
-
-
-
-nextstep:
-	//二进制文件，仔细检查种类
-	if(this==1)
-	{
-        	ret=systemread(datahome,0,64);
-        	if(ret<=0)return -2;
-
-        	type=prelibation(datahome);
-        	if(type==0)say("type=binary\n");
-        	else say("type=%s\n",&type);
-
-		//bin->fs?
-		//bin->pt?
-		//bin->exe?
-
-	}
-/*
-	//网络
-	if(this==x)
-	{
-		tcp->ssh?
-		tcp->http->websocket?
-		......
-
-		return 1;
-	}
-*/
-	return 1;
-
-
-
-
-	//找不到
-unknown:
-	say("unknown type\n");
+	say("not found\n");
 	return 0;
 }
 int arterystop(char* p)
 {
 	int ret;
-	if(this>=0xffff)return 0;
 
-	ret=table[this].stop(p);
-	this=0xffff;
+	//ret=table[this].stop(p);
+	//this=0xffff;
+
+	table[0].type=0x3234;
 	return ret;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -246,6 +185,8 @@ void arteryinit(char* module,char* addr)
 	if(module==0)
 	{
 		for(i=0;i<0x10000;i++)addr[i]=0;
+		addr[0]=0x34;
+		addr[1]=0x32;
 
 		//0
 		table=(struct elements*)addr;
@@ -254,7 +195,7 @@ void arteryinit(char* module,char* addr)
 		datahome=addr+0x300000;
 
 		//
-		p=addr;
+		p=addr+0x40;
 		p+=interface_init(addr,p);
 		p+=memory_init(addr,p);
 		p+=net_init(addr,p);

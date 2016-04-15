@@ -24,11 +24,9 @@ void debuginit(char*,char*);
 void debugkill();
 void basicinit(char*,char*);
 void basickill();
-//event
-int uievent(QWORD* first,QWORD* second);
-int softevent(QWORD* first,QWORD* second);
-int hardevent(QWORD* first,QWORD* second);
-int bootevent(QWORD* first,QWORD* second);
+//slave
+void slaveinit(char*,char*);
+void slavekill();
 //
 void say(char*,...);
 
@@ -118,9 +116,15 @@ void birth()
 	//[c,f)：窗口开闭，以及用户界面
 	windowinit( 0 , character );
 	characterinit( 0 , character );
+
+	//
+	slaveinit(0,universe);
 }
 __attribute__((destructor)) void death()
 {
+	//
+	slavekill();
+
 	//4+4+4+4
 	if(character != 0)
 	{

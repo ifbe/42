@@ -25,7 +25,7 @@ void nfc_init(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
-	p[1]=0x6e6663;		//id
+	p[1]=0x63666e;		//id
 	p[2]=(QWORD)nfc_start;
 	p[3]=(QWORD)nfc_stop;
 	p[4]=(QWORD)nfc_list;

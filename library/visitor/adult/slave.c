@@ -25,8 +25,16 @@ void say(char*,...);
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int stillalive=1;
+static char* basic;
+static char* body;
+static char* memory;
+static char* character;
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int waitevent(QWORD* first,QWORD* second)
 {
         int ret;
@@ -71,20 +79,22 @@ int command(char* buffer)
 	buf2arg(buffer,128,&argc,argv);
 	//say("argc=%x,argv@%llx\n",argc,argv);
 	if(argc==0)return 0;
-	if(argv[0]==0)return 0;
+
+	//回车
+	if(argv[0]==0)goto finish;
 
 	//'q'
 	if(argv[0][0]=='q')
 	{
 		stillalive=0;
-		return 0;
+		goto finish;
 	}
 	//'exit
 	ret=compare(argv[0],"exit");
 	if(ret==0)
 	{
 		stillalive=0;
-		return 0;
+		goto finish;
 	}
 	//'help'
 	ret=compare(argv[0],"help");
@@ -104,7 +114,7 @@ int command(char* buffer)
 		say("write ?            =store=put=spit=paste\n");
 		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-		return 0;
+		goto finish;
 	}
 
 	//"create","destory","start","stop"
@@ -112,25 +122,25 @@ int command(char* buffer)
 	if(ret==0)
 	{
 		arteryinit(argv[1]);
-		return 2;
+		goto finish;
 	}
 	ret=compare( argv[0] , "kill");
 	if(ret==0)
 	{
 		arterykill(argv[1]);
-		return 2;
+		goto finish;
 	}
 	ret=compare( argv[0] , "start");
 	if(ret==0)
 	{
 		arterystart(argv[1]);
-		return 2;
+		goto finish;
 	}
 	ret=compare( argv[0] , "stop");
 	if(ret==0)
 	{
 		arterystop(argv[1]);
-		return 2;
+		goto finish;
 	}
 
 	//"observe","change","get","put"
@@ -138,28 +148,45 @@ int command(char* buffer)
 	if(ret==0)
 	{
 		arterylist(argv[1]);
-		return 4;
+		goto finish;
 	}
 	ret=compare( argv[0] , "cd" );
 	if(ret==0)
 	{
 		arterychoose(argv[1]);
-		return 4;
+		goto finish;
 	}
 	ret=compare( argv[0] , "read" );
 	if(ret==0)
 	{
 		arteryread(argv[1]);
-		return 4;
+		goto finish;
 	}
 	ret=compare( argv[0] , "write" );  //dangerous
 	if(ret==0)
 	{
 		arterywrite(argv[1]);
-		return 4;
+		goto finish;
 	}
 
-	//
+finish:
+	say("[%s]",memory);
 	return 8;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void slaveinit(char* type,char* addr)
+{
+	basic=addr+0;
+	body=addr+0x400000;
+	memory=addr+0x800000;
+	character=addr+0xc00000;
+}
+void slavekill()
+{
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
