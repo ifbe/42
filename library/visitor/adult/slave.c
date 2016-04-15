@@ -26,10 +26,10 @@ void say(char*,...);
 
 
 int stillalive=1;
-static char* basic;
-static char* body;
-static char* memory;
-static char* character;
+static char* basic=0;
+static char* body=0;
+static char* memory=0;
+static char* character=0;
 
 
 
@@ -170,7 +170,7 @@ int command(char* buffer)
 	}
 
 finish:
-	say("[%s]",memory);
+	if(memory!=0)say("[%s]",memory);
 	return 8;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,6 +185,7 @@ void slaveinit(char* type,char* addr)
 	body=addr+0x400000;
 	memory=addr+0x800000;
 	character=addr+0xc00000;
+	say("[%s]",memory);
 }
 void slavekill()
 {
