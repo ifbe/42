@@ -41,6 +41,18 @@ uwp:
 arm+linux+cli:
 	make -C app/none+arm+linux+cli --no-print-directory
 	cp app/none+arm+linux+cli/a.out .
+arm+linux+fb:
+	make -C app/none+arm+linux+fb --no-print-directory
+	cp app/none+arm+linux+fb/a.out .
+arm+linux+xlib:
+	make -C app/none+arm+linux+xlib --no-print-directory
+	cp app/none+arm+linux+xlib/a.out .
+############################################################################
+
+
+
+
+############################################################################
 mips+linux+cli:
 	make -C app/none+mips+linux+cli --no-print-directory
 	cp app/none+mips+linux+cli/a.out .

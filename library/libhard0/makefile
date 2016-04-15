@@ -1,9 +1,9 @@
 .PHONY:arm
 arm:
 	rm -f arm64.*.o mips.*.o mips64.*.o x86.*.o x64.*.o
-	gcc -c -fPIC -O2 cpu/arm/arm.fp.c
-	gcc -c -fPIC -O2 cpu/arm/arm.platform.c
-	gcc -c -fPIC -O2 driver.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/arm/arm.fp.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/arm/arm.platform.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast driver.c
 .PHONY:arm64
 arm64:
 	rm -f arm.*.o mips.*.o mips64.*.o x86.*.o x64.*.o
@@ -13,9 +13,9 @@ arm64:
 .PHONY:mips
 mips:
 	rm -f arm.*.o arm64.*.o mips64.*.o x86.*.o x64.*.o
-	gcc -c -fPIC -O2 cpu/mips/mips.fp.c
-	gcc -c -fPIC -O2 cpu/mips/mips.platform.c
-	gcc -c -fPIC -O2 driver.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/mips/mips.fp.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/mips/mips.platform.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast driver.c
 .PHONY:mips64
 mips64:
 	rm -f arm.*.o arm64.*.o mips.*.o x86.*.o x64.*.o
@@ -25,11 +25,11 @@ mips64:
 .PHONY:x86
 x86:
 	rm -f arm.*.o arm64.*.o mips.*.o mips64.*.o x64.*.o
-	gcc -c -fPIC -O2 cpu/x86/x86.endian.c
-	gcc -c -fPIC -O2 cpu/x86/x86.fp.c
-	gcc -c -fPIC -O2 cpu/x86/x86.platform.c
-	gcc -c -fPIC -O2 cpu/x86/x86.port.c
-	gcc -c -fPIC -O2 driver.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/x86/x86.endian.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/x86/x86.fp.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/x86/x86.platform.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cpu/x86/x86.port.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast driver.c
 .PHONY:x64
 x64:
 	rm -f arm.*.o arm64.*.o mips.*.o mips64.*.o x86.*.o

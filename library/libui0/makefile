@@ -1,8 +1,8 @@
 .PHONY:linuxcli
 linuxcli:
 	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o
-	gcc -c -fPIC -O2 cli/cli.cli.c
-	gcc -c -fPIC -O2 window.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cli/cli.cli.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast window.c
 .PHONY:maccli
 maccli:
 	rm -f fb.*.o xlib.*.o winapi.*.o sdl.*.o

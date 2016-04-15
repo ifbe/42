@@ -7,8 +7,8 @@ none:
 .PHONY:arm
 arm:
 	rm -f *.o
-	arm-none-eabi-gcc -c -fPIC -O2 none/tx.c
 	arm-none-eabi-gcc -c -fPIC -O2 basic.c
+	arm-none-eabi-gcc -c -fPIC -O2 none/tx.c
 
 .PHONY:logcat
 logcat:
