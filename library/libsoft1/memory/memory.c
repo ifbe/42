@@ -3,11 +3,10 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-QWORD prelibation(char*);
-int compare(char*,char*);	//base tool
-int hexstring2data(char*,QWORD*);
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+int pt_init(char*,char*);
+int fs_init(char*,char*);
+void fs_kill();
+void pt_kill();
 //
 int systemstart(int,char*);
 int systemstop();
@@ -15,6 +14,12 @@ int systemlist(char*);
 int systemchoose(char*);
 int systemread(char* rdi,QWORD rsi,QWORD rcx);
 int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
+//
+QWORD prelibation(char*);
+int compare(char*,char*);	//base tool
+int hexstring2data(char*,QWORD*);
+int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
+int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
 //
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1

@@ -13,6 +13,7 @@ int       net_kill();
 int   special_kill();
 //
 QWORD prelibation(void*);
+int compare(char*,char*);
 int systemread( char* memory,QWORD sector,QWORD count);
 int systemwrite(char* memory,QWORD sector,QWORD count);
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
@@ -70,7 +71,7 @@ static unsigned char* datahome;
 //bin->parttable->filesystem->dir->file....
 //tcp->http->websocket->what
 static int stack[16]={0};
-static int this=0xffff;
+static int this=0;
 
 
 
@@ -82,7 +83,7 @@ int arterylist(char* p)
 	int count;
 	QWORD type;
 	QWORD id;
-	if( (this>=0xffff) | ((p!=0)&&(p[0]=='/')) )
+	if(this==0)
 	{
 		for(j=1;j<0x100;j++)
 		{
@@ -113,7 +114,7 @@ int arterylist(char* p)
 }
 int arterychoose(char* p)
 {
-	if(this>=0xffff)return 0;
+	if(this==0)return 0;
 	return table[this].choose(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,12 +125,12 @@ int arterychoose(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arteryread(char* p)
 {
-	if(this>=0xffff)return 0;
+	if(this==0)return 0;
 	return table[this].read(p);
 }
 int arterywrite(char* p)
 {
-	if(this>=0xffff)return 0;
+	if(this==0)return 0;
 	return table[this].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,10 +151,14 @@ int arterystart(BYTE* p)
 	//search............
 	for(ret=0;ret<256;ret++)
 	{
-		if(compare(p,&table[ret].id)==0)
+		if(compare(p,(char*)&table[ret].id)==0)
 		{
+			//[%s]
 			table[0].type=table[ret].id;
-			return 1;
+
+			//this one
+			this=ret;
+			return table[this].start(0,p);
 		}
 	}
 
@@ -163,10 +168,10 @@ int arterystart(BYTE* p)
 int arterystop(char* p)
 {
 	int ret;
+	if(this==0)return 0;
 
-	//ret=table[this].stop(p);
-	//this=0xffff;
-
+	ret=table[this].stop(p);
+	this=0;
 	table[0].type=0x3234;
 	return ret;
 }
