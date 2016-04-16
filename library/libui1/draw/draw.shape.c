@@ -134,7 +134,7 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 
 
-void shape_start(QWORD size,void* addr)
+void shape_start(DWORD size,void* addr)
 {
 	//how
 	width=size&0xffff;

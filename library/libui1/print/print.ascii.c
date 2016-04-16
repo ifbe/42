@@ -372,7 +372,7 @@ void string(int x,int y,char* p)
 
 
 
-void colordecimal(int x,int y,long long z,unsigned int color)
+void colordecimal(int x,int y,int z,unsigned int color)
 {
 	char ch;
 	int i;
@@ -474,7 +474,7 @@ void printdouble(int x,int y,double z)
 
 
 
-void ascii_start(QWORD size,void* addr)
+void ascii_start(DWORD size,void* addr)
 {
 	//how
 	width=size&0xffff;

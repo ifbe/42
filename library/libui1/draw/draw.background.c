@@ -64,7 +64,7 @@ void background1()
 
 
 
-void background_start(QWORD size,char* addr)
+void background_start(DWORD size,char* addr)
 {
 	//
 	width=size&0xffff;

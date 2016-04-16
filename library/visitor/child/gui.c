@@ -7,7 +7,7 @@ void characterlist();
 void characterchoose(char*);
 void characterread();
 void characterwrite(QWORD type,QWORD key);
-void characterstart(QWORD size,char* addr);
+void characterstart(DWORD size,char* addr);
 void characterstop();
 //
 void waitevent(QWORD* first,QWORD* second);

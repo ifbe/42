@@ -53,7 +53,7 @@ static struct working
         QWORD id;
 
         //[10,17]:开始
-        int (*start)(QWORD size,char* addr);
+        int (*start)(DWORD size,char* addr);
         char padding2[ 8 - sizeof(char*) ];
 
         //[18,1f]:结束
@@ -207,7 +207,7 @@ void characterwrite(QWORD type,QWORD key)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(QWORD size,char* addr)
+int characterstart(DWORD size,char* addr)
 {
 	worker[now].start(size,addr);
 	return 0;	//ret<=0:failed

@@ -1,16 +1,19 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 //
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
+void background_start(DWORD size,void* addr);
+void shape_start(DWORD size,void* addr);
+void ascii_start(DWORD size,void* addr);
+void unicode_start(DWORD size,void* addr);
 //
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colordecimal(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
+//
 void writewindow(QWORD,QWORD);
 unsigned int getrandom();
+void printmemory(char*,int);
+void say(char*,...);
 
 
 
@@ -311,10 +314,11 @@ static void the2048_list()
 
 
 
-static void the2048_start(QWORD size,void* addr)
+static void the2048_start(DWORD size,void* addr)
 {
 	//1.init
 	int x,y;
+
 	ascii_start(size,addr);
 	unicode_start(size,addr);
 	background_start(size,addr);
