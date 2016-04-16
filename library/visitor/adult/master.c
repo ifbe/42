@@ -7,8 +7,8 @@
 //libui
 void characterinit(char*,char*);
 void characterkill();
-void windowinit(char*,char*);
-void windowkill();
+void displayinit(char*,char*);
+void displaykill();
 //libsoft
 void arteryinit(char*,char*);
 void arterykill();
@@ -114,7 +114,7 @@ void birth()
 	arteryinit( 0 , memory );
 
 	//[c,f)：窗口开闭，以及用户界面
-	windowinit( 0 , character );
+	displayinit( 0 , character );
 	characterinit( 0 , character );
 
 	//
@@ -129,7 +129,7 @@ __attribute__((destructor)) void death()
 	if(character != 0)
 	{
 		characterkill();
-		windowkill();
+		displaykill();
 		character=0;
 	}
 	if(memory != 0)

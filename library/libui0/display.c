@@ -4,8 +4,8 @@
 #define QWORD unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-void initwindowworker();
-void killwindowworker();
+void initwindow();
+void killwindow();
 void say(char*,...);
 
 
@@ -67,27 +67,27 @@ void killunicodetable()
 
 
 
-void windowinit(char* type,char* addr)
+void displayinit(char* type,char* addr)
 {
 	if(type==0)
 	{
 		//开窗口
-		initwindowworker();
+		initwindow();
 
 		//unicode点阵表
 		initunicodetable();
 
-		say("[c,f):inited window\n");
+		say("[c,f):inited display\n");
 	}
 }
-void windowkill()
+void displaykill()
 {
 	//
-	say("[c,f):killing window\n");
+	say("[c,f):killing display\n");
 
 	//unicode点阵表
 	killunicodetable();
 
 	//1024*1024*4
-	killwindowworker();
+	killwindow();
 }

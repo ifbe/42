@@ -19,7 +19,7 @@ all:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor/*.o \
-	-lX11
+	-lX11 -lm
 static:
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1 gcc

@@ -286,14 +286,16 @@ static void the2048_read()
 {
 	int x,y;
 
-	//say("me\n");
+	say("2048{\n");
 	for(y=0;y<4;y++)
 	{
+say("	%d	%d	%d	%d\n",table[y][0],table[y][1],table[y][2],table[y][3]);
 		for(x=0;x<4;x++)
 		{
 			cubie(x,y,table[y][x]);
 		}
 	}
+	say("}\n");
 }
 static void the2048_choose()
 {

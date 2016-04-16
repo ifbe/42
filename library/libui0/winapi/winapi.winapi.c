@@ -537,7 +537,7 @@ void inittray()
 
 
 
-void initwindowworker()
+void initwindow()
 {
 	//终端窗口
 	initconsolewindow();
@@ -557,7 +557,7 @@ void initwindowworker()
 	inittray();
 }
 //__attribute__((destructor)) void destorysdl()
-void killwindowworker()
+void killwindow()
 {
 	//必须亮出来再关
 	//ShowWindow(consolewindow,SW_SHOW);

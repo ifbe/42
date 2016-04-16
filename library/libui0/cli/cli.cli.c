@@ -55,11 +55,11 @@ void writewindow()
 
 
 
-void initwindowworker()
+void initwindow()
 {
 	
 }
-void killwindowworker()
+void killwindow()
 {
 	
 }

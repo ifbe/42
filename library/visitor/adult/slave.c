@@ -75,27 +75,31 @@ int command(char* buffer)
 	//say("command=%s\n",buffer);
 	//printmemory(buffer,16);
 
+	//"#"
+	if(buffer[0]=='#')return 0;
+
 	//convert
 	buf2arg(buffer,128,&argc,argv);
 	//say("argc=%x,argv@%llx\n",argc,argv);
 	if(argc==0)return 0;
 
-	//回车
+	//"enter key"
 	if(argv[0]==0)goto finish;
 
-	//'q'
+	//q
 	if(argv[0][0]=='q')
 	{
 		stillalive=0;
-		goto finish;
+		return 0;
 	}
-	//'exit
+	//exit
 	ret=compare(argv[0],"exit");
 	if(ret==0)
 	{
 		stillalive=0;
-		goto finish;
+		return 0;
 	}
+
 	//'help'
 	ret=compare(argv[0],"help");
 	if(ret==0)

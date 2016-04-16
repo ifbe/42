@@ -183,7 +183,7 @@ void writewindow(QWORD type,QWORD value)
 
 
 
-void initwindowworker()
+void initwindow()
 {
 	//初始化
 	dsp = XOpenDisplay(NULL);
@@ -215,7 +215,7 @@ void initwindowworker()
 	);
 	XMapWindow(dsp, win);
 }
-void killwindowworker()
+void killwindow()
 {
 	//
 	XDestroyWindow(dsp, win);

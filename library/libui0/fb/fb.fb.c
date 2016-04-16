@@ -14,21 +14,23 @@
 
 
 //输入
-int signal=-1;
-struct termios old;
-struct termios new;
+static int signal=-1;
+static struct termios old;
+static struct termios new;
 
-//屏幕
-int fbfd=-1;
-int fbtotal=0;
-int fbline=0;
-unsigned long long fbaddr=0;
+//physical info
+static unsigned long long fbaddr=0;
+static int fbtotalbyte=0;
+static int fboneline=0;
 
-int xmax=0;
-int ymax=0;
-int bpp=0;
+//virtual info
+static int xmax=0;
+static int ymax=0;
+static int bpp=0;
 
 //自己的画板
+static int fbfd=-1;
+static char* beforeprint;
 static int width=1024;
 static int height=768;
 
@@ -79,30 +81,32 @@ int uievent(QWORD* first,QWORD* second)
 		}
 	}
 }
-void writewindow(QWORD type,QWORD value)
+void writewindow(DWORD type,char* value)
 {
-	if(type==0x656c746974)          //'title'
-	{
-		return;
-	}
-	if(type==0x657a6973)            //'size'
-	{
-		width=value&0xffff;
-		height=(value>>16)&0xffff;
-		return;
-	}
-
 	//
-	unsigned int* mypixel=(unsigned int*)value;
+	int x,y,ret;
 	width=type&0xffff;
 	height=(type>>16)&0xffff;
+	unsigned char* p=value;
+
+	//5,6,5
+	if(bpp==16)
+	{
+		for(x=0;x<width*height;x++)
+		{
+			*(unsigned short*)(beforeprint+x*2)=
+				    (p[x*4+0]>>3)
+				+ ( (p[x*4+1]>>2) <<  5 )
+				+ ( (p[x*4+2]>>3) << 11 );
+		}
+		p=beforeprint;
+	}
 
 	//
-	int y,ret;
 	for(y=0;y<height;y++)
 	{
-		ret=lseek(fbfd , y*fbline , SEEK_SET);
-		ret=write(fbfd , mypixel+y*1024 , width*4);
+		ret=lseek(fbfd , y*fboneline , SEEK_SET);
+		ret=write(fbfd , p + y*width*bpp/8 , width*bpp/8);
 	}
 }
 QWORD readwindow(QWORD what)
@@ -120,7 +124,7 @@ QWORD readwindow(QWORD what)
 
 
 
-void initwindowworker()
+void initwindow()
 {
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
@@ -138,9 +142,9 @@ void initwindowworker()
 		exit(-1);
 	}
 	fbaddr=finfo.smem_start;
-	fbtotal=finfo.smem_len;
-	fbline=finfo.line_length;
-	printf("@%llx,%x,%x\n",fbaddr,fbtotal,fbline);
+	fbtotalbyte=finfo.smem_len;
+	fboneline=finfo.line_length;
+	printf("fbaddr=%llx,fbtotalbyte=%x,fboneline=%x\n",fbaddr,fbtotalbyte,fboneline);
 	printf("linelen=%x(%d)\n",finfo.line_length,finfo.line_length);
 
 	//可变参数
@@ -153,7 +157,10 @@ void initwindowworker()
 	xmax=vinfo.xres;
 	ymax=vinfo.yres;
 	bpp=vinfo.bits_per_pixel;
-	printf("xmax=%x,ymax=%x,bpp=%x\n",xmax,ymax,bpp);
+	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
+
+	//
+	beforeprint=(unsigned char*)malloc(xmax*ymax*bpp/8);
 /*
 	//input部分
 	inputfp=open("/dev/input/event3",O_RDONLY);
@@ -171,7 +178,7 @@ void initwindowworker()
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 }
 //__attribute__((destructor)) void destoryfb()
-void killwindowworker()
+void killwindow()
 {
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
