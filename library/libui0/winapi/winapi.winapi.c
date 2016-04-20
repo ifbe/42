@@ -408,16 +408,6 @@ void writewindow(QWORD type,QWORD value)
 		SetWindowText(window,"hahahaha");
 		return;
 	}
-	if(type==0x657a6973)		//'size'
-	{
-		RECT rc;
-		GetWindowRect(window,&rc);
-
-		width=value&0xffff;
-		height=(value>>16)&0xffff;
-		MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
-		return;
-	}
 
 	//构造info
 	BITMAPINFO info;
@@ -461,8 +451,14 @@ void writewindow(QWORD type,QWORD value)
 
 
 
-void startwindow()
+void startwindow(DWORD size,char* addr)
 {
+	RECT rc;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
+	GetWindowRect(window,&rc);
+	MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
 }
 void stopwindow()
 {
