@@ -81,6 +81,28 @@ int uievent(QWORD* first,QWORD* second)
 		}
 	}
 }
+
+
+
+
+
+
+
+
+void listwindow()
+{
+}
+void changewindow()
+{
+}
+
+
+
+
+
+
+
+
 void writewindow(DWORD type,char* value)
 {
 	//
@@ -115,6 +137,20 @@ QWORD readwindow(QWORD what)
 	{
 		return width+(height<<16);
 	}
+}
+
+
+
+
+
+
+
+
+void startwindow()
+{
+}
+void stopwindow()
+{
 }
 
 

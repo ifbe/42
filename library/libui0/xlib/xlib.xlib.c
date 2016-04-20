@@ -8,24 +8,40 @@
 
 
 static char xlib2anscii[0x80]={
-0,0,0,0,		0,0,0,0,		0,0,'1','2',		'3','4','5','6',//0
-'7','8','9','0',	'-','=',0x8,0x9,	'q','w','e','r',	't','y','u','i',//0x10
-'o','p','[',']',	0xd,0,'a','s',		'd','f','g','h',	'j','k','l',';',//0x20
-'\'','`',0,'\\',	'z','x','c','v',	'b','n','m',',',	'.','/',0,'*',	//0x30
-0,' ',0,0,		0,0,0,0,		0,0,0,0,		0,0,0,'7',	//0x40
-'8','9','-','4',	'5','6','+','1',	'2','3','0','.',	0,0,0,0,	//0x50
-0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x60,0x6f
-0,0,0,0,		0,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
+0,0,0,0,		0,0,0,0,
+0,0,'1','2',		'3','4','5','6',	//0
+'7','8','9','0',	'-','=',0x8,0x9,
+'q','w','e','r',	't','y','u','i',	//0x10
+'o','p','[',']',	0xd,0,'a','s',
+'d','f','g','h',	'j','k','l',';',	//0x20
+'\'','`',0,'\\',	'z','x','c','v',
+'b','n','m',',',	'.','/',0,'*',		//0x30
+0,' ',0,0,		0,0,0,0,
+0,0,0,0,		0,0,0,'7',		//0x40
+'8','9','-','4',	'5','6','+','1',
+'2','3','0','.',	0,0,0,0,		//0x50
+0,0,0,0,		0,0,0,0,
+0,0,0,0,		0,0,0,0,		//0x60,0x6f
+0,0,0,0,		0,0,0,0,
+0,0,0,0,		0,0,0,0,		//0x70,0x7f
 };
 static char xlib2kbd[0x80]={
-0,0,0,0,		0,0,0,0,		0,0x1b,'1','2',		'3','4','5','6',//0
-'7','8','9','0',	'-','=',0x8,0x9,	'q','w','e','r',	't','y','u','i',//0x10
-'o','p','[',']',	0xd,0xff,'a','s',	'd','f','g','h',	'j','k','l',';',//0x20
-'\'','`',0xff,'\\',	'z','x','c','v',	'b','n','m',',',	'.','/',0xff,'*',//0x30
-0xff,' ',0xff,0x70,	0x71,0x72,0x73,0x74,	0x75,0x76,0x77,0x78,	0x79,0xff,0xff,'7',//0x40
-'8','9','-','4',	'5','6','+','1',	'2','3','0','.',	0xff,0xff,0xff,0xff,//0x50
-0xff,0xff,0xff,0xff,	0,0,0,0,		0,0,0,0,		0,0,0,0x26,	//0x60,0x6f
-0,0x25,0x27,0,		0x28,0,0,0,		0,0,0,0,		0,0,0,0,	//0x70,0x7f
+0,0,0,0,		0,0,0,0,
+0,0x1b,'1','2',		'3','4','5','6',	//0
+'7','8','9','0',	'-','=',0x8,0x9,
+'q','w','e','r',	't','y','u','i',	//0x10
+'o','p','[',']',	0xd,0xff,'a','s',
+'d','f','g','h',	'j','k','l',';',	//0x20
+'\'','`',0xff,'\\',	'z','x','c','v',
+'b','n','m',',',	'.','/',0xff,'*',	//0x30
+0xff,' ',0xff,0x70,	0x71,0x72,0x73,0x74,
+0x75,0x76,0x77,0x78,	0x79,0xff,0xff,'7',	//0x40
+'8','9','-','4',	'5','6','+','1',
+'2','3','0','.',	0xff,0xff,0xff,0xff,	//0x50
+0xff,0xff,0xff,0xff,	0,0,0,0,
+0,0,0,0,		0,0,0,0x26,		//0x60,0x6f
+0,0x25,0x27,0,		0x28,0,0,0,
+0,0,0,0,		0,0,0,0,		//0x70,0x7f
 };
 
 Display* dsp;
@@ -35,10 +51,48 @@ Window win;
 GC gc;
 Atom wmDelete;
 
+static char* userpixel=0;
 int width=1024;
 int height=768;
 int oldx=0;
 int oldy=0;
+
+
+
+
+void listwindow()
+{
+}
+void changewindow()
+{
+}
+
+
+
+
+
+
+
+
+DWORD readwindow(QWORD what)
+{
+	//'size'
+	if(what==0x657a6973)
+	{
+		return width+(height<<16);
+	}
+
+	//??????????
+	return 0;
+}
+void writewindow(DWORD size,char* addr)
+{
+	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
+}
+
+
+
+
 
 
 
@@ -49,12 +103,16 @@ int uievent(QWORD* my1,QWORD* my2)
 	while(1)
 	{
 		XNextEvent(dsp, &ev);
-		/*
 		if(ev.type==Expose)
 		{
-			if (ev.xexpose.count == 0) writewindow(0,0);
+			if (ev.xexpose.count == 0)
+			{
+				if(userpixel!=0)
+				{
+					writewindow(0,0);
+				}
+			}
 		}
-		*/
 		if(ev.type==ClientMessage)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)
@@ -136,44 +194,31 @@ int uievent(QWORD* my1,QWORD* my2)
 		}
 	}
 }
-QWORD readwindow(QWORD what)
+
+
+
+
+
+
+
+
+void startwindow(DWORD size,char* addr)
 {
-	//'size'
-	if(what==0x657a6973)
-	{
-		return width+(height<<16);
-	}
-
-	//??????????
-	return 0;
-}
-void writewindow(QWORD type,QWORD value)
-{
-
-	//'title'
-	if(type==0x656c746974)
-	{
-		return;
-	}
-
-	//'size'
-	if(type==0x657a6973)            //'size'
-	{
-		width=value&0xffff;
-		height=(value>>16)&0xffff;
-		XResizeWindow(dsp, win, width, height);
-		return;
-	}
-
-	width=type&0xffff;
-	height=(type>>16)&0xffff;
+	//
+	width=size & 0xffff;
+	height=(size>>16) & 0xffff;
+	userpixel=addr;
 
 	//
+	XResizeWindow(dsp, win, width, height);
 	ximage=XCreateImage(
 		dsp,visual,24,ZPixmap,0,
-		(char*)value,1024,768,32,0
+		addr,width,height,32,0
 	);
-	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, 1024, 768); 
+}
+void stopwindow()
+{
+	userpixel=0;
 }
 
 

@@ -10,7 +10,6 @@ void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colordecimal(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
 //
-void writewindow(QWORD,QWORD);
 unsigned int getrandom();
 void printmemory(char*,int);
 void say(char*,...);
@@ -337,9 +336,6 @@ static void the2048_start(DWORD size,void* addr)
 		}
 	}
 	new2048();
-
-	//
-	//writewindow( 0x657a6973 , 512+(512<<16) );
 }
 static void the2048_stop()
 {

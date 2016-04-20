@@ -24,6 +24,8 @@ void sketchpad_kill();
 void console_kill();
 
 //
+int startwindow(DWORD,char*);
+int stopwindow();
 int arterystart(char*);
 int arterystop();
 int compare(char*,char*);
@@ -209,11 +211,22 @@ void characterwrite(QWORD type,QWORD key)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int characterstart(DWORD size,char* addr)
 {
+	//configure window
+	startwindow(size,addr);
+
+	//configure character
 	worker[now].start(size,addr);
-	return 0;	//ret<=0:failed
+
+	return 0;
 }
 int characterstop()
 {
+	//deconfigure character
+	worker[now].stop();
+
+	//deconfigure window
+	stopwindow();
+
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

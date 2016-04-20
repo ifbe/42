@@ -378,6 +378,20 @@ int uievent(QWORD* first,QWORD* second)
 
 
 
+void listwindow()
+{
+}
+void choosewindow()
+{
+}
+
+
+
+
+
+
+
+
 // Step 3: the Window Procedure
 QWORD readwindow(QWORD what)
 {
@@ -438,6 +452,20 @@ void writewindow(QWORD type,QWORD value)
 		DIB_RGB_COLORS	//颜色格式
 	);
 	//printf("result:%x\n",result);
+}
+
+
+
+
+
+
+
+
+void startwindow()
+{
+}
+void stopwindow()
+{
 }
 
 
@@ -529,14 +557,6 @@ void inittray()
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
 	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
-
-
-
-
-
-
-
-
 void initwindow()
 {
 	//终端窗口
