@@ -41,6 +41,16 @@ int uievent(QWORD* first,QWORD* second)
 
 
 
+void listwindow()
+{
+}
+void choosewindow()
+{
+}
+
+
+
+
 QWORD readwindow(QWORD what)
 {
 	if(what==0x657a6973)
@@ -49,6 +59,16 @@ QWORD readwindow(QWORD what)
 	}
 }
 void writewindow()
+{
+}
+
+
+
+
+void startwindow()
+{
+}
+void stopwindow()
 {
 }
 

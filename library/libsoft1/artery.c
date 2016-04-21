@@ -70,7 +70,7 @@ static unsigned char* datahome;
 //pci->usb->video->h264->stream
 //bin->parttable->filesystem->dir->file....
 //tcp->http->websocket->what
-static int stack[16]={0};
+//static int stack[16]={0};
 static int this=0;
 
 
@@ -83,39 +83,88 @@ int arterylist(char* p)
 	int count;
 	QWORD type;
 	QWORD id;
-	if(this==0)
-	{
-		for(j=1;j<0x100;j++)
-		{
-			type=table[j].type;
-			id=table[j].id;
-			if(id==0)
-			{
-				if(count%8!=0)say("\n");
-				break;
-			}
 
-			if(type==0)
-			{
-				say("\n%s:\n",&id);
-				count=0;
-			}
-			else
-			{
-				say("	[%s]",&id);
-				count++;
-				if(count%8==0)say("\n");
-			}
-		}
-		return 0;
+	//@somewhere
+	if(this!=0)
+	{
+		return table[this].list(p);
 	}
 
-	return table[this].list(p);
+	//@nowhere
+	for(j=1;j<0x100;j++)
+	{
+		type=table[j].type;
+		id=table[j].id;
+		if(id==0)
+		{
+			if(count%8!=0)say("\n");
+			break;
+		}
+
+		if(type==0)
+		{
+			say("\n%s:\n",&id);
+			count=0;
+		}
+		else
+		{
+			say("	[%s]",&id);
+			count++;
+			if(count%8==0)say("\n");
+		}
+	}
+	return 0;
 }
 int arterychoose(char* p)
 {
-	if(this==0)return 0;
-	return table[this].choose(p);
+	int ret;
+
+	//cd(only print)
+	if(p==0)
+	{
+		return 0;
+	}
+
+	//cd .(current directory)
+	if(p[0]=='.')
+	{
+		//cd ..(parent directory)
+		if(p[1]=='.')
+		{
+			//cd ...(the void)
+			if(p[2]=='.')
+			{
+				table[0].type=0x3234;
+				this=0;
+				return 0;
+			}
+		}
+	}
+
+	//i am not in the void?
+	if(this != 0)
+	{
+		//say("");
+		return table[this].choose(p);
+	}
+
+	//search somewhere to go
+	for(ret=1;ret<256;ret++)
+	{
+		if(compare(p,(char*)&table[ret].id)==0)
+		{
+			break;
+		}
+	}
+	if(ret>=256)
+	{
+		say("not found\n");
+		return 0;
+	}
+
+	//now go into it
+	this=ret;
+	table[0].type=table[ret].id;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -144,36 +193,52 @@ int arterystart(BYTE* p)
 	int ret;
 	if(p==0)
 	{
-		say("what?\n");
+		say("start what?\n");
 		return 0;
 	}
 
-	//search............
-	for(ret=0;ret<256;ret++)
+	//search
+	for(ret=1;ret<256;ret++)
 	{
 		if(compare(p,(char*)&table[ret].id)==0)
 		{
-			//[%s]
-			table[0].type=table[ret].id;
-
-			//this one
-			this=ret;
-			return table[this].start(0,p);
+			break;
 		}
 	}
+	if(ret>=256)
+	{
+		say("not found\n");
+		return 0;
+	}
 
-	say("not found\n");
-	return 0;
+	//found
+	return table[ret].start(0,p);
 }
 int arterystop(char* p)
 {
 	int ret;
-	if(this==0)return 0;
+	if(p==0)
+	{
+		say("stop what?\n");
+		return 0;
+	}
 
-	ret=table[this].stop(p);
-	this=0;
-	table[0].type=0x3234;
-	return ret;
+	//search
+	for(ret=1;ret<256;ret++)
+	{
+		if(compare(p,(char*)&table[ret].id)==0)
+		{
+			break;
+		}
+	}
+	if(ret>=256)
+	{
+		say("not found\n");
+		return 0;
+	}
+
+	//found
+	return table[ret].stop();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
