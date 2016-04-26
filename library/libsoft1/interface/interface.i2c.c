@@ -2,7 +2,7 @@
 #define QWORD unsigned long long
 //
 int systemi2c_list(char*);
-int systemi2c_choose(int);
+int systemi2c_choose(int,char*);
 int systemi2c_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
 int systemi2c_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
 int systemi2c_start(char* p);
@@ -15,6 +15,12 @@ void say(char*,...);
 
 
 
+static int i2c_read()
+{
+}
+static int i2c_write()
+{
+}
 static int i2c_list(char* p)
 {
 	systemi2c_list(0);
@@ -24,18 +30,27 @@ static int i2c_choose(char* p)
 	int ret;
 	QWORD data;
 
-	//0
+	//
 	if(p==0)
 	{
-		systemi2c_choose(0);
+		systemi2c_choose(0,0);
 		return 0;
 	}
 
 	//".."
-	if(p[0]=='.')
+	if( (p[0]=='.') && (p[1]=='.') )
 	{
-		systemi2c_choose(-1);
+		systemi2c_choose(-1,p);
 		return 1;
+	}
+
+	//"/dev/i2c-1"
+	if(p[0]=='/')
+	{
+		ret=decstring2data(p+9,&data);
+		if(ret<=0)return -2;
+
+		return systemi2c_choose((int)data,p);
 	}
 
 	//"0x68"
@@ -44,7 +59,7 @@ static int i2c_choose(char* p)
 		ret=hexstring2data(p+2,&data);
 		if(ret<=0)return -2;
 
-		return systemi2c_choose((int)data);
+		return systemi2c_choose((int)data,0);
 	}
 
 	//33
@@ -53,14 +68,8 @@ static int i2c_choose(char* p)
 		ret=decstring2data(p,&data);
 		if(ret<=0)return -3;
 
-		return systemi2c_choose((int)data);
+		return systemi2c_choose((int)data,0);
 	}
-}
-static int i2c_read()
-{
-}
-static int i2c_write()
-{
 }
 static int i2c_start(QWORD type,char* p)
 {

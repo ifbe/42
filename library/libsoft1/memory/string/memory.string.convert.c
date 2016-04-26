@@ -68,11 +68,8 @@ int decstring2data(BYTE* source,QWORD* data)
 	for(i=0;i<20;i++)		//64bit的最大数为20个阿拉伯数字
 	{
 		//1.如果<0x20:		//返回取得的总数量
-		if(source[i]<0x20) return i;
-
-		//2.如果不是阿拉伯数字	//返回错误号
-		if(source[i]<0x30)return -1;
-		if(source[i]>0x39)return -2;
+		if(source[i]<0x30)return i;
+		if(source[i]>0x39)return i;
 
 		//3.如果是正常值:	//先乘10，再加上这个值，然后搞下一个数
 		*data=(*data)*10;

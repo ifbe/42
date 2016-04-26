@@ -14,6 +14,7 @@
 //
 static int fp=-1;
 static int where[4];
+static char that[16];
 
 
 
@@ -131,11 +132,12 @@ int systemi2c_list(char* towhere)
 	{
 	}
 }
-int systemi2c_choose(int p)
+int systemi2c_choose(int num,char* p)
 {
 	int ret;
 
-	if(p==0)
+	//"cd"
+	if( (num==0) && (p==0) )
 	{
 		say("@i2c");
 		if(where[0]!=0)say("/0x%d",where[0]);
@@ -145,42 +147,46 @@ int systemi2c_choose(int p)
 		return 0;
 	}
 
-	//..
-	if(p<0)
+	//"cd .."
+	if(num<0)
 	{
 		if(where[2]>0)
 		{
 			where[2]=0;
-			return 1;
 		}
-		if(where[1]>0)
+		else if(where[1]>0)
 		{
 			where[1]=0;
-			return 1;
 		}
-		if(where[0]>0)
+		else if(where[0]>0)
 		{
-			
 			if(fp > 0)
 			{
 				close(fp);
 				where[0]=fp=0;
 			}
-			return 1;
 		}
+
+		return 1;
 	}
 
-	//select bus
+	//"cd 1" or "cd /dev/i2c-1"
 	if(where[0]<=0)
 	{
-		fp = open("/dev/i2c-1",O_RDWR);
+		if(p!=0)fp = open(p,O_RDWR);
+		else
+		{
+			snprintf(that,16,"/dev/i2c-%d",num);
+			fp = open(that,O_RDWR);
+		}
+
 		if(fp <= 0)
 		{
 			printf("error open\n");
 			return;
 		}
 
-		where[0]=fp;
+		where[0]=num;
 		where[1]=where[2]=where[3]=0;
 		return 0x11;
 	}
@@ -188,14 +194,14 @@ int systemi2c_choose(int p)
 	//select device
 	if(where[1]<=0)
 	{
-		ret=ioctl(fp,I2C_SLAVE,p);
+		ret=ioctl(fp,I2C_SLAVE,num);
 		if(ret < 0)
 		{
 			printf("error ioctl\n");
 			return;
 		}
 
-		where[1]=p;
+		where[1]=num;
 		return 0x12;
 	}
 }
