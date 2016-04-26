@@ -37,6 +37,14 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
+	gcc -c -O2 win/win.interface.bluetooth.c
+	gcc -c -O2 win/win.interface.i2c.c
+	gcc -c -O2 win/win.interface.gpio.c
+	gcc -c -O2 win/win.interface.pci.c
+	gcc -c -O2 win/win.interface.spi.c
+	gcc -c -O2 win/win.interface.uart.c
+	gcc -c -O2 win/win.interface.usb.c
+	gcc -c -O2 win/win.interface.wifi.c
 	gcc -c -O2 win/win.memory.file.c
 	gcc -c -O2 win/win.memory.virtual.c
 	gcc -c -O2 win/win.memory.process.c
