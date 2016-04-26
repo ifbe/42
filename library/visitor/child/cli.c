@@ -25,7 +25,7 @@ int main(int argc,char* argv[])
 	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
 	for(ret=1;ret<argc;ret++)
 	{
-		//say("argv[%d]=%s\n",ret,argv[ret]);
+		say("%s\n",argv[ret]);
 		command(argv[ret]);
 	}
 

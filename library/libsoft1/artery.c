@@ -119,14 +119,8 @@ int arterychoose(char* p)
 {
 	int ret;
 
-	//cd(only print)
-	if(p==0)
-	{
-		return 0;
-	}
-
 	//cd .(current directory)
-	if(p[0]=='.')
+	if( (p!=0) && (p[0]=='.') )
 	{
 		//cd ..(parent directory)
 		if(p[1]=='.')
