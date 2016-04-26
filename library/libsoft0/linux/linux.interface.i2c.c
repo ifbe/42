@@ -137,7 +137,8 @@ int systemi2c_choose(int p)
 
 	if(p==0)
 	{
-		if(where[0]!=0)say("@%d",where[0]);
+		say("@i2c");
+		if(where[0]!=0)say("/0x%d",where[0]);
 		if(where[1]!=0)say("/0x%x",where[1]);
 		if(where[2]!=0)say("/0x%x",where[2]);
 		say("\n");
@@ -157,11 +158,30 @@ int systemi2c_choose(int p)
 			where[1]=0;
 			return 1;
 		}
+		if(where[0]>0)
+		{
+			
+			if(fp > 0)
+			{
+				close(fp);
+				where[0]=fp=0;
+			}
+			return 1;
+		}
 	}
 
 	//select bus
 	if(where[0]<=0)
 	{
+		fp = open("/dev/i2c-1",O_RDWR);
+		if(fp <= 0)
+		{
+			printf("error open\n");
+			return;
+		}
+
+		where[0]=fp;
+		where[1]=where[2]=where[3]=0;
 		return 0x11;
 	}
 
@@ -185,23 +205,9 @@ int systemi2c_choose(int p)
 
 void systemi2c_start(char* p)
 {
-	fp = open("/dev/i2c-1",O_RDWR);
-	if(fp <= 0)
-	{
-		printf("error open\n");
-		return;
-	}
-
-	where[0]=fp;
-	where[1]=where[2]=where[3]=0;
 }
 void systemi2c_stop()
 {
-	if(fp > 0)
-	{
-		close(fp);
-		where[0]=fp=0;
-	}
 }
 
 

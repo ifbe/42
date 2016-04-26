@@ -74,6 +74,10 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
+	library/libsoft0/linux/linux.interface.gpio.c \
+	library/libsoft0/linux/linux.interface.i2c.c \
+	library/libsoft0/linux/linux.interface.uart.c \
+	library/libsoft0/linux/linux.interface.usb.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.physical.c \
 	library/libsoft0/linux/linux.memory.virtual.c \
