@@ -1,115 +1,183 @@
+#define QWORD unsigned long long
+#define DWORD unsigned int
+#define WORD unsigned short
+#define BYTE unsigned char
 #include<stdio.h>
 #include<fcntl.h>
 #include<unistd.h>
 #include<linux/i2c-dev.h>
 #include<sys/ioctl.h>
+
+
+
+
+//
 static int fp=-1;
-static unsigned char buf[16];
+static int where[4];
 
 
 
 
-int systemi2c_write(unsigned char* buf,unsigned char reg)
+int systemi2c_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
 {
-	//write address
-	int ret=write(fp,&reg,1);
-	usleep(100);
-	if(ret!=1)
+	int ret;
+
+	//select device
+	ret=ioctl(fp,I2C_SLAVE,dev);
+	if(ret < 0)
 	{
-		//printf("(error write)%x:%x\n",reg,ret);
-		return -1;
+		printf("error@systemi2c_read.ioctl\n");
+		return;
 	}
 
-	//write data
-	ret=write(fp,buf,1);
-	usleep(1000);
+	//select register
+	ret=write(fp,&reg,1);
 	if(ret!=1)
 	{
-		//printf("(error read)%x:%x\n",reg,ret);
-		return -2;
-	}
-	return 1;
-}
-int systemi2c_read(unsigned char* buf,unsigned char reg)
-{
-	//write address
-	int ret=write(fp,&reg,1);
-	usleep(100);
-	if(ret!=1)
-	{
-		//printf("(error write)%x:%x\n",reg,ret);
+		printf("error@systemi2c_read.writereg:%x\n",ret);
 		return -1;
 	}
 
 	//read data
-	ret=read(fp,buf,1);
-	usleep(1000);
-	if(ret!=1)
+	ret=read(fp,buf,count);
+	if(ret<=0)
 	{
-		//printf("(error read)%x:%x\n",reg,ret);
+		printf("error@systemi2c_read.readdata:%x\n",ret);
 		return -2;
 	}
 	return 1;
 }
-void systemi2c_choose(char* bus,int device)	//	"/dev/i2c-1","62"
+int systemi2c_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
 {
 	int ret;
-	if(fp!=-1)close(fp);
 
-	fp=open(bus,O_RDWR);
-	ret=ioctl(fp,I2C_SLAVE,device);
+	//select device
+	ret=ioctl(fp,I2C_SLAVE,dev);
+	if(ret < 0)
+	{
+		printf("error@systemi2c_write.ioctl\n");
+		return;
+	}
+
+	//select register
+	ret=write(fp,&reg,1);
+	if(ret!=1)
+	{
+		printf("error@systemi2c_write.writereg:%x\n",ret);
+		return -1;
+	}
+	//usleep(100);
+
+	//write data
+	ret=write(fp,buf,count);
+	if(ret<=0)
+	{
+		printf("error@systemi2c_write.writedata:%x\n",ret);
+		return -2;
+	}
+	return 1;
 }
-void systemi2c_list(char* towhere)	//	enumerate all i2c host and device
+
+
+
+
+int systemi2c_list(char* towhere)
 {
 	int x;
 	int y;
 	int ret;
 	char ch;
 
-	for(y=0;y<16;y++)
+	//listbuses
+	if(where[0]==0)
 	{
+		system("ls /dev/i2c-*");
+		return 1;
+	}
+
+	//listdevices
+	if(where[1]==0)
+	{
+		for(y=0;y<16;y++)
+		{
 		for(x=0;x<16;x++)
 		{
-			ret=ioctl(fp,I2C_SLAVE,x+(y<<4));
-			ret=systemi2c_read(&ch,0);
+			ret=systemi2c_read((y*16)+x,0,&ch,1);
 
 			if(ret>0)printf("%.2x ",ch);
 			else printf("-- ");
 		}
+		}
 		printf("\n");
 	}
+
+	//listregisters
+	if(where[2]==0)
+	{
+		for(y=0;y<16;y++)
+		{
+		for(x=0;x<16;x++)
+		{
+			ret=systemi2c_read(where[1],(y*16)+x,&ch,1);
+			if(ret>0)printf("%.2x ",ch);
+			else printf("-- ");
+		}
+		}
+		printf("\n");
+	}
+
+	//listbits
+	if(where[3]==0)
+	{
+	}
 }
-
-
-
-
-void starti2c()
+int systemi2c_choose(BYTE bus,BYTE dev,BYTE reg)
 {
 	int ret;
 
-	//open
-	fp = open("/dev/i2c-1",O_RDWR);
-	if(fp<0)
-	{
-		printf("error open\n");
-		return;
-	}
+	//select bus
 
-	//ioctl
-	ret=ioctl(fp,I2C_SLAVE,0x62);
+	//select device
+	ret=ioctl(fp,I2C_SLAVE,dev);
 	if(ret < 0)
 	{
 		printf("error ioctl\n");
 		return;
 	}
+
+	//select register
 }
-void stopi2c()
+
+
+
+
+void systemi2c_start(char* p)
 {
-	if(fp != -1)close(fp);
+	fp = open("/dev/i2c-1",O_RDWR);
+	if(fp <= 0)
+	{
+		printf("error open\n");
+		return;
+	}
+
+	where[0]=fp;
+	where[1]=where[2]=where[3]=0;
 }
-void initi2c()
+void systemi2c_stop()
+{
+	if(fp > 0)
+	{
+		close(fp);
+		where[0]=fp=0;
+	}
+}
+
+
+
+
+void systemi2c_init()
 {
 }
-void killi2c()
+void systemi2c_kill()
 {
 }

@@ -4,6 +4,7 @@ target:
 	$(compiler) $(cflag) artery.c
 	$(compiler) $(cflag) interface/interface.c
 	$(compiler) $(cflag) interface/interface.bluetooth.c
+	$(compiler) $(cflag) interface/interface.gpio.c
 	$(compiler) $(cflag) interface/interface.i2c.c
 	$(compiler) $(cflag) interface/interface.ir.c
 	$(compiler) $(cflag) interface/interface.nfc.c

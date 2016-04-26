@@ -11,8 +11,10 @@ linux:
 	rm -f mac.*.o win.*.o
 	gcc -c -fPIC -O2 linux/linux.interface.bluetooth.c
 	gcc -c -fPIC -O2 linux/linux.interface.i2c.c
+	gcc -c -fPIC -O2 linux/linux.interface.gpio.c
 	gcc -c -fPIC -O2 linux/linux.interface.pci.c
 	gcc -c -fPIC -O2 linux/linux.interface.spi.c
+	gcc -c -fPIC -O2 linux/linux.interface.uart.c
 	gcc -c -fPIC -O2 linux/linux.interface.usb.c
 	gcc -c -fPIC -O2 linux/linux.interface.wifi.c
 	gcc -c -fPIC -O2 linux/linux.memory.file.c

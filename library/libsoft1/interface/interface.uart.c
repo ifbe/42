@@ -1,25 +1,36 @@
 #define QWORD unsigned long long
+int systemuart_list();
+int systemuart_choose();
+int systemuart_read();
+int systemuart_write(char*,int);
+int systemuart_start(char*);
+int systemuart_stop();
 
 
 
 
-static void uart_list()
+static int uart_list()
+{
+	systemuart_list();
+}
+static int uart_switch()
 {
 }
-static void uart_switch()
+static int uart_read()
 {
 }
-static void uart_read()
+static int uart_write(char* p)
 {
+	//size?
+	systemuart_write(p,1);
 }
-static void uart_write()
+static int uart_start(QWORD type,char* p)
 {
+	systemuart_start(p);
 }
-static void uart_start(QWORD type,char* p)
+static int uart_stop()
 {
-}
-static void uart_stop()
-{
+	systemuart_stop();
 }
 void uart_init(char* world,QWORD* p)
 {

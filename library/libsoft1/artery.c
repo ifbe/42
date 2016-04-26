@@ -190,55 +190,13 @@ int arterywrite(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterystart(BYTE* p)
 {
-	int ret;
-	if(p==0)
-	{
-		say("start what?\n");
-		return 0;
-	}
-
-	//search
-	for(ret=1;ret<256;ret++)
-	{
-		if(compare(p,(char*)&table[ret].id)==0)
-		{
-			break;
-		}
-	}
-	if(ret>=256)
-	{
-		say("not found\n");
-		return 0;
-	}
-
-	//found
-	return table[ret].start(0,p);
+	if(this==0)return 0;
+	return table[this].start(0,p);
 }
 int arterystop(char* p)
 {
-	int ret;
-	if(p==0)
-	{
-		say("stop what?\n");
-		return 0;
-	}
-
-	//search
-	for(ret=1;ret<256;ret++)
-	{
-		if(compare(p,(char*)&table[ret].id)==0)
-		{
-			break;
-		}
-	}
-	if(ret>=256)
-	{
-		say("not found\n");
-		return 0;
-	}
-
-	//found
-	return table[ret].stop();
+	if(this==0)return 0;
+	return table[this].stop();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

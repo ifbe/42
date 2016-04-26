@@ -1,10 +1,18 @@
+#define BYTE unsigned char
 #define QWORD unsigned long long
+int systemi2c_list(char* towhere);
+int systemi2c_choose(BYTE bus,BYTE dev,BYTE reg);
+int systemi2c_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
+int systemi2c_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
+int systemi2c_start(char* p);
+int systemi2c_stop();
 
 
 
 
 static void i2c_list()
 {
+	systemi2c_list(0);
 }
 static void i2c_switch()
 {
@@ -17,9 +25,11 @@ static void i2c_write()
 }
 static void i2c_start(QWORD type,char* p)
 {
+	systemi2c_start(p);
 }
 static void i2c_stop()
 {
+	systemi2c_stop();
 }
 void i2c_init(char* world,QWORD* p)
 {
