@@ -3,8 +3,10 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 #include<stdio.h>
+#include<stdlib.h>
 #include<fcntl.h>
 #include<unistd.h>
+void say(char*,...);
 
 
 
@@ -17,6 +19,7 @@ static char name[16];
 
 
 
+//
 int systemspi_read()
 {
 }
@@ -72,7 +75,7 @@ int systemspi_choose(int num,char* p)
 		if(fp <= 0)
 		{
 			printf("error open\n");
-			return;
+			return -1;
 		}
 
 		where[0]=fp;

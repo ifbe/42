@@ -7,8 +7,9 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<sys/ioctl.h>
-//#include<linux/i2c.h>		//if you have problem
+#include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
+void say(char*,...);
 
 
 
@@ -188,7 +189,7 @@ int systemi2c_choose(int num,char* p)
 		if(fp <= 0)
 		{
 			printf("error open\n");
-			return;
+			return -1;
 		}
 
 		where[0]=num;
@@ -203,7 +204,7 @@ int systemi2c_choose(int num,char* p)
 		if(ret < 0)
 		{
 			printf("error ioctl\n");
-			return;
+			return -2;
 		}
 
 		where[1]=num;
