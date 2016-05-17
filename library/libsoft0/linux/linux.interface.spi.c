@@ -32,10 +32,12 @@ int systemspi_write()
 
 int systemspi_list(char* towhere)
 {
+	int ret;
+
 	//listbuses
 	if(where[0]==0)
 	{
-		system("ls /dev/spidev*");
+		ret=system("ls /dev/spidev*");
 		return 1;
 	}
 }

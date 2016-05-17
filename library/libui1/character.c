@@ -7,21 +7,24 @@ void ascii_init(char*,char*);
 void unicode_init(char*,char*);
 void background_init(char*,char*);
 void shape_init(char*,char*);
-void menu_init(char*,char*);			//menu.c
-void hex_init(char*,char*);			//1.hex.c
-void the2048_init(char*,char*);			//2.2048.c
-void keyboard_init(char*,char*);		//2.keyboard.c
-void tree_init(char*,char*);			//2.tree.c
-void sketchpad_init(char*,char*);	//3.sketchpad.c
-void console_init(char*,char*);		//4.console.c
+//
+void menu_init(char*,char*);
+void console_init(char*,char*);
+void hex_init(char*,char*);
+void keyboard_init(char*,char*);
+void sketchpad_init(char*,char*);
+void spectrum_init(char*,char*);
+void the2048_init(char*,char*);
+void tree_init(char*,char*);
 //kill......
 void menu_kill();
-void hex_kill();
-void the2048_kill();
-void keyboard_kill();
-void tree_kill();
-void sketchpad_kill();
 void console_kill();
+void hex_kill();
+void keyboard_kill();
+void sketchpad_kill();
+void spectrum_kill();
+void the2048_kill();
+void tree_kill();
 
 //
 int startwindow(DWORD,char*);
@@ -37,7 +40,9 @@ void say(char* , ...);
 
 
 //
-static unsigned int now=0;		//不能有负数
+static DWORD now=0;		//不能有负数
+static DWORD actualsize;
+static void* actualaddr;
 
 
 
@@ -81,159 +86,6 @@ static struct working
 static unsigned char* mega1;
 static unsigned char* mega2;
 static unsigned char* mega3;
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void characterlist()
-{
-	//列出所有“人物”
-	int x;
-	for(x=0;x<16;x++)
-	{
-		if(worker[x].id != 0)
-		{
-			say("%d:%s\n",x,&worker[x].id);
-		}
-	}
-}
-int characterchoose(char* p)
-{
-	int i;
-	int ret;
-
-	//random
-	ret=compare(p,"random");
-	if(ret==0)
-	{
-		for(i=1;i<0x1000/0x40;i++)
-		{
-			if(worker[i].id == 0)break;
-		}
-
-		now=getrandom();
-		now=( now % (i-2) ) + 1;
-		return 1;
-	}
-
-	//找
-	for(i=1;i<0x100;i++)
-	{
-		if(worker[i].id==0)break;
-
-		ret=compare(p,(char*)&worker[i].id);
-		if(ret==0)
-		{
-			now=i;
-			return 2;
-		}
-	}
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//显示，事件处理
-void characterread()
-{
-	//主画
-	worker[now].read();
-/*
-	//菜单
-	if(worker[0].startaddr > 0)
-	{
-		worker[0].read();
-	}
-*/
-}
-void characterwrite(QWORD type,QWORD key)
-{
-	//debug
-	//say("%llx,%llx\n",type,key);
-
-	//'dropfile'
-	if(type==0x656c6966706f7264)
-	{
-		//say("debuging::::::::%s\n",(char*)key);
-		arterystart((char*)key);
-		return;
-	}
-
-	//'kbd'
-	else if(type==0x64626b)
-	{
-/*
-		//按下esc
-		if(key==0x1b)
-		{
-			worker[0].startaddr ^= 1;
-			return;
-		}
-*/
-	}
-
-	//'touch'
-	else if(type==0x6863756f74)
-	{
-		say("touch!\n");
-	}//touch
-
-	//debug
-	//say("now=%x\n",now);
-	//say("write@%llx\n",worker[now].write);
-/*
-	//其余所有消息，谁在干活就交给谁
-	if(worker[0].startaddr > 0)worker[0].write(type,key);
-	else worker[now].write(type,key);
-*/
-	worker[now].write(type,key);
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(DWORD size,char* addr)
-{
-	//configure window
-	startwindow(size,addr);
-
-	//configure character
-	worker[now].start(size,addr);
-
-	return 0;
-}
-int characterstop()
-{
-	//deconfigure character
-	worker[now].stop();
-
-	//deconfigure window
-	stopwindow();
-
-	return 0;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
 
 
 
@@ -284,7 +136,11 @@ void characterinit(char* type,char* addr)
 		console_init(addr,temp);
 		temp += 0x40;
 
-		characterchoose("2048");
+		//
+		spectrum_init(addr,temp);
+		temp += 0x40;
+
+		now=1;
 		say("[c,f):inited character\n");
 	}
 }
@@ -292,12 +148,174 @@ void characterkill()
 {
 	say("[c,f):killing character\n");
 
-	console_kill();
-	sketchpad_kill();
 	tree_kill();
-	keyboard_kill();
 	the2048_kill();
+	spectrum_kill();
+	sketchpad_kill();
+	keyboard_kill();
 	hex_kill();
+	console_kill();
 	menu_kill();
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int characterstart(DWORD size,char* addr)
+{
+	actualsize=size;
+	actualaddr=addr;
+
+	//configure window
+	startwindow(actualsize,actualaddr);
+
+	//
+	worker[now].start(actualsize, actualaddr);
+	worker[0].start(actualsize, actualaddr);
+
+	return 0;
+}
+int characterstop()
+{
+	//deconfigure character
+	worker[now].stop();
+
+	//deconfigure window
+	stopwindow();
+
+	return 0;
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void characterlist()
+{
+	//列出所有“人物”
+	int x;
+	for(x=0;x<16;x++)
+	{
+		if(worker[x].id != 0)
+		{
+			say("%d:%s\n",x,&worker[x].id);
+		}
+	}
+}
+int characterchoose(char* p)
+{
+	int i;
+	int ret;
+	QWORD temp;
+
+	//exit
+	ret=compare(p,"exit");
+	if(ret==0)
+	{
+		//deathflag=1;
+		say("chatacter(%d) wants to die\n",now);
+		return 0;
+	}
+
+	//random
+	ret=compare(p,"random");
+	if(ret==0)
+	{
+		for(i=1;i<0x1000/0x40;i++)
+		{
+			if(worker[i].id == 0)break;
+		}
+
+		now=getrandom();
+		now=( now % (i-2) ) + 1;
+		say("%d\n",now);
+		return 1;
+	}
+
+	//prepare for future hash?
+	temp=0;
+	for(i=0;i<8;i++)
+	{
+		if(p[i]==0)break;
+		( (char*)&temp )[i]=p[i];
+	}
+
+	//start searching
+	for(i=1;i<0x100;i++)
+	{
+		//all searched
+		if(worker[i].id == 0)break;
+
+		//lookat this
+		if(worker[i].id == temp)
+		{
+			now=i;
+			worker[now].start(actualsize, actualaddr);
+			worker[0].start(actualsize, actualaddr);
+			return 2;
+		}
+	}
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//显示，事件处理
+void characterread()
+{
+	//主画
+	worker[now].read();
+
+	//菜单
+	if(worker[0].type > 0)
+	{
+		worker[0].read();
+	}
+
+}
+void characterwrite(QWORD type,QWORD key)
+{
+	//debug
+	//say("%llx,%llx\n",type,key);
+
+	//size
+	if(type==0x657a6973)
+	{
+		actualsize=key;
+/*
+		say("size=(%d,%d)\n",
+			actualsize&0xffff,
+			(actualsize>>16)&0xffff
+		);
+*/
+		characterstart(actualsize, actualaddr);
+		return;
+	}//size
+
+	//'kbd'
+	else if(type==0x64626b)
+	{
+		//按下esc
+		if(key==0x1b)
+		{
+			worker[0].type ^= 1;
+			return;
+		}
+	}//kbd
+
+	//'touch'
+	else if(type==0x6863756f74)
+	{
+		say("touch!\n");
+	}//touch
+
+	//其余所有消息，谁在干活就交给谁
+	if(worker[0].type > 0)worker[0].write(type,key);
+	else worker[now].write(type,key);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

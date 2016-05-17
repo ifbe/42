@@ -65,6 +65,7 @@ void listwindow()
 }
 void changewindow()
 {
+	XResizeWindow(dsp, win, width, height);
 }
 
 
@@ -113,13 +114,29 @@ int uievent(QWORD* my1,QWORD* my2)
 				}
 			}
 		}
-		if(ev.type==ClientMessage)
+		else if(ev.type==ClientMessage)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)
 			{
 				*my1=0;
 				return 1;
 			}
+		}
+		else if(ev.type==ConfigureNotify)
+		{
+			/*
+			printf("%d,%d\n",
+				ev.xconfigure.width,
+				ev.xconfigure.height
+			);
+			*/
+			if(	(width==ev.xconfigure.width) &&
+				(height==ev.xconfigure.height) )
+			{continue;}
+
+			*my1 = 0x657a6973;
+			*my2 = ev.xconfigure.width+(ev.xconfigure.height<<16);
+			return 2;
 		}
 		else if(ev.type==ButtonPress)
 		{
@@ -177,7 +194,6 @@ int uievent(QWORD* my1,QWORD* my2)
 			//if (ev.xkey.keycode == keyQ)break;
 			//printf("%x\n",ev.xkey.keycode);
 
-
 			//普通anscii码
 			temp=xlib2anscii[ev.xkey.keycode];
 			if(temp!=0)
@@ -210,7 +226,6 @@ void startwindow(DWORD size,char* addr)
 	userpixel=addr;
 
 	//
-	XResizeWindow(dsp, win, width, height);
 	ximage=XCreateImage(
 		dsp,visual,24,ZPixmap,0,
 		addr,width,height,32,0

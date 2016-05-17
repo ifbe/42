@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characterstart(char*);
+void characterchoose(char*);
 void background_start(QWORD size,void* addr);
 void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
@@ -178,6 +178,7 @@ static void floatarea()
 static void hex_write(QWORD type,QWORD key)
 {
 	int byteperline=width/16;
+	int totalbyte=( width >> 4 ) * ( height >> 4);
 
 	if(type==0x64626b)			//'kbd'
 	{
@@ -185,7 +186,7 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if( offset % byteperline == 0 )
 			{
-				if(base>=0x800)base-=0x800;
+				if(base >= totalbyte)base -= totalbyte;
 			}
 			else
 			{
@@ -196,7 +197,7 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if( offset % byteperline == byteperline-1 )
 			{
-				base+=0x800;
+				base += totalbyte;
 			}
 			else
 			{
@@ -207,22 +208,22 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if(offset<byteperline)
 			{
-				if(base>=0x40)base-=0x40;
+				if(base >= byteperline)base -= byteperline;
 			}
 			else
 			{
-				offset-=0x40;
+				offset -= byteperline;
 			}
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			if(offset<(byteperline*height/16)-0x40)
+			if( offset*16 < byteperline*(height-16) )
 			{
-				offset+=0x40;
+				offset += byteperline;
 			}
 			else
 			{
-				base+=0x40;
+				base+=byteperline;
 			}
 		}
 	}
@@ -241,7 +242,7 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if(compare( haha+0x80 , "exit" ) == 0)
 			{
-				characterstart(0);
+				characterchoose(0);
 				return;
 			}
 			else if(compare( haha+0x80 , "addr" ) == 0)
@@ -305,6 +306,7 @@ static void hex_list(QWORD* this)
 void hex_start(QWORD size,void* addr)
 {
 	int i;
+
 	ascii_start(size,addr);
 	unicode_start(size,addr);
 	background_start(size,addr);

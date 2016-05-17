@@ -3,7 +3,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characterstart(char*);
+void characterchoose(char*);
 void background_start(QWORD size,void* addr);
 void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
@@ -134,7 +134,7 @@ static void console_write(QWORD type,QWORD key)
 		{
 			if(compare( buffer , "exit" ) == 0)
 			{
-				characterstart(0);
+				characterchoose(0);
 				return;
 			}
 			else

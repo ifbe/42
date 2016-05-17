@@ -2,7 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int characterstart(char* p);
+int characterchoose(char* p);
 void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colorstring(int x,int y,char* str,unsigned int color);
@@ -47,7 +47,7 @@ static void menu_write(QWORD type,QWORD key)
 		if( (y<256+16) && (x>768-16) )
 		{
 			//退出
-			characterstart(0);
+			characterchoose(0);
 			return;
 		}
 	}//left
@@ -66,7 +66,7 @@ static void menu_write(QWORD type,QWORD key)
 		else if(key==0xd)		//回车
 		{
 			//say("%s\n",buffer);
-			characterstart(buffer);
+			characterchoose(buffer);
 
 			//clear
 			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;
@@ -84,16 +84,19 @@ static void menu_write(QWORD type,QWORD key)
 }
 static void menu_read()
 {
+	int leftupper=((ysize/4)<<16) + (xsize/4);
+	int rightbottom=((ysize*3/4)<<16) + (xsize*3/4);
+
 	//body
-	rectangle((256<<16)+256 , (512<<16)+768  , 0);
-	squareframe((256<<16)+256 , (512<<16)+768  , 0xcccccc);
+	rectangle(leftupper, rightbottom, 0);
+	squareframe(leftupper, rightbottom, 0xcccccc);
 
 	//close button
-	rectangle((256<<16)+768-16 , ((256+16)<<16)+768  , 0xff0000);
+	//rectangle((256<<16)+768-16 , rightbottom+768  , 0xff0000);
 
 	//string
-	colorstring(0x20 , 16 , "what do you want?" , 0xcccccc);
-	colorstring(0x20 , 17 , buffer , 0xcccccc);
+	colorstring(xsize/8/4, ysize/16/4, "what do you want?" , 0xcccccc);
+	colorstring(xsize/8/4, ysize/16/4+1, buffer , 0xcccccc);
 }
 static void menu_switch()
 {
@@ -105,7 +108,7 @@ static void menu_list()
 
 
 
-static void menu_start(QWORD size,void* addr)
+static void menu_start(DWORD size,void* addr)
 {
 	//
 	xsize=size&0xffff;
@@ -122,7 +125,7 @@ void menu_init(char* base,char* addr)
 	this=(QWORD*)addr;
 	that=(QWORD*)(addr+0x10);
 
-	this[0]=0x776f646e6977;
+	this[0]=0;
 	this[1]=0x756e656d;
 	this[2]=(QWORD)menu_start;
 	this[3]=(QWORD)menu_stop;

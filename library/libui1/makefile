@@ -17,6 +17,7 @@ target:
 	$(compiler) $(cflag) tool/tool.hex.c
 	$(compiler) $(cflag) tool/tool.keyboard.c
 	$(compiler) $(cflag) tool/tool.sketchpad.c
+	$(compiler) $(cflag) tool/tool.spectrum.c
 	$(compiler) $(cflag) tool/tool.tree.c
 	$(compiler) $(cflag) character.c
 binary:

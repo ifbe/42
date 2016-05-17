@@ -34,13 +34,13 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<0)return;
-	if(x1>1024)return;
+	if(x1>width)return;
 	if(x2<0)return;
-	if(x2>1024)return;
+	if(x2>width)return;
 	if(y1<0)return;
-	if(y1>767)return;
+	if(y1>height-1)return;
 	if(y2<0)return;
-	if(y2>767)return;
+	if(y2>height-1)return;
 
 
 
@@ -67,7 +67,7 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 		{
 			dx=(double)(x-x1);
 			y=y1+ (DWORD)(k*dx);
-			if(y<640) winbuf[ (y*1024) + x ] = color;
+			if(y<height) winbuf[ (y*width) + x ] = color;
 			else winbuf[ x ] = color;
 		}
 	}
@@ -96,10 +96,10 @@ void squareframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 	for(t=0;t<1;t++)
 	{
-		for(x=startx;x<endx;x++)winbuf[((starty+t)*1024) + x] = color;
-		for(x=startx;x<endx;x++)winbuf[((endy-t)*1024) + x] = color;
-		for(y=starty;y<endy;y++)winbuf[(y*1024) + startx+t] = color;
-		for(y=starty;y<endy;y++)winbuf[(y*1024) + endx-t] = color;
+		for(x=startx;x<endx;x++)winbuf[((starty+t)*width) + x] = color;
+		for(x=startx;x<endx;x++)winbuf[((endy-t)*width) + x] = color;
+		for(y=starty;y<endy;y++)winbuf[(y*width) + startx+t] = color;
+		for(y=starty;y<endy;y++)winbuf[(y*width) + endx-t] = color;
 	}
 }
 
@@ -136,6 +136,7 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 void shape_start(DWORD size,void* addr)
 {
+say(">>>>%x\n",size);
 	//how
 	width=size&0xffff;
 	height=(size>>16)&0xffff;

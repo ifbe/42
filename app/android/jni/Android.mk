@@ -76,6 +76,7 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.interface.gpio.c \
 	library/libsoft0/linux/linux.interface.i2c.c \
+	library/libsoft0/linux/linux.interface.spi.c \
 	library/libsoft0/linux/linux.interface.uart.c \
 	library/libsoft0/linux/linux.interface.usb.c \
 	library/libsoft0/linux/linux.memory.file.c \
@@ -165,6 +166,7 @@ LOCAL_SRC_FILES += \
         library/libui1/tool/tool.hex.c \
         library/libui1/tool/tool.keyboard.c \
         library/libui1/tool/tool.sketchpad.c \
+        library/libui1/tool/tool.spectrum.c \
         library/libui1/tool/tool.tree.c \
         library/libui1/character.c
 
