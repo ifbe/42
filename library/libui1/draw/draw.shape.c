@@ -1,5 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
+void say(char*,...);
 
 
 

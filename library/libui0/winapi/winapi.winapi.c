@@ -19,13 +19,14 @@ void say(char* fmt,...);
 
 
 //window
-HWND consolewindow;		//console window
-HWND window;			//my window
-HDC realdc;
-NOTIFYICONDATA nid;     //托盘属性 
-HMENU hMenu;            //托盘菜单
-static char dragpath[MAX_PATH];
+static HWND consolewindow;		//console window
+static HWND window;				//my window
+static HDC realdc;
+static BITMAPINFO info;
+static NOTIFYICONDATA nid;     //托盘属性 
+static HMENU hMenu;            //托盘菜单
 static TOUCHINPUT touchpoint[10];
+static char dragpath[MAX_PATH];
 
 //
 static int solved=1;
@@ -313,9 +314,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_SIZE:
 		{
 			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
-
 			my1=0x657a6973;					//'size'
-			my2=lparam-( (40<<16) + 16 );
+			my2=lparam;
 			width=lparam&0xffff;
 			height=(lparam>>16)&0xffff;
 			solved=0;
@@ -381,8 +381,14 @@ int uievent(QWORD* first,QWORD* second)
 void listwindow()
 {
 }
-void choosewindow()
+void choosewindow(DWORD size,char* addr)
 {
+	RECT rc;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
+	//GetWindowRect(window,&rc);
+	//MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
 }
 
 
@@ -409,32 +415,11 @@ void writewindow(QWORD type,QWORD value)
 		return;
 	}
 
-	//构造info
-	BITMAPINFO info;
-	width=type&0xffff;
-	height=(type>>16)&0xffff;
-
-	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biWidth=width;
-	info.bmiHeader.biHeight=-height;
-	info.bmiHeader.biPlanes=1;
-	info.bmiHeader.biBitCount=32;
-	info.bmiHeader.biCompression=0;
-	info.bmiHeader.biSizeImage=width*height*4;
-	info.bmiHeader.biXPelsPerMeter=0;
-	info.bmiHeader.biYPelsPerMeter=0;
-	info.bmiHeader.biClrUsed=0;
-	info.bmiHeader.biClrImportant=0;
-	info.bmiColors[0].rgbBlue=255;
-	info.bmiColors[0].rgbGreen=255;
-	info.bmiColors[0].rgbRed=255;
-	info.bmiColors[0].rgbReserved=255;
-
 	//写屏
 	SetDIBitsToDevice(
 		realdc,
 		0,0,			//目标位置x,y
-		1024,height,	//dib宽,高
+		width,height,	//dib宽,高
 		0,0,			//来源起始x,y
 		0,height,		//起始扫描线,数组中扫描线数量,
 		(void*)value,	//rbg颜色数组
@@ -453,12 +438,26 @@ void writewindow(QWORD type,QWORD value)
 
 void startwindow(DWORD size,char* addr)
 {
-	RECT rc;
+	//构造info
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 
-	GetWindowRect(window,&rc);
-	MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
+	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+	info.bmiHeader.biWidth=width;
+	info.bmiHeader.biHeight=-height;
+	info.bmiHeader.biPlanes=1;
+	info.bmiHeader.biBitCount=32;
+	info.bmiHeader.biCompression=0;
+	info.bmiHeader.biSizeImage=width*height*4;
+	info.bmiHeader.biXPelsPerMeter=0;
+	info.bmiHeader.biYPelsPerMeter=0;
+	info.bmiHeader.biClrUsed=0;
+	info.bmiHeader.biClrImportant=0;
+	info.bmiColors[0].rgbBlue=255;
+	info.bmiColors[0].rgbGreen=255;
+	info.bmiColors[0].rgbRed=255;
+	info.bmiColors[0].rgbReserved=255;
+
 }
 void stopwindow()
 {

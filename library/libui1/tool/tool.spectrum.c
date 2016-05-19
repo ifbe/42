@@ -14,6 +14,8 @@ void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
 void colorascii(int x,int y,char ch,unsigned int color);
+//
+void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
