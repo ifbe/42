@@ -6,7 +6,7 @@
 static void slip_list()
 {
 }
-static void slip_switch()
+static void slip_choose()
 {
 }
 static void slip_read()
@@ -29,7 +29,7 @@ void slip_init(char* world,QWORD* p)
 	p[2]=(QWORD)slip_start;
 	p[3]=(QWORD)slip_stop;
 	p[4]=(QWORD)slip_list;
-	p[5]=(QWORD)slip_switch;
+	p[5]=(QWORD)slip_choose;
 	p[6]=(QWORD)slip_read;
 	p[7]=(QWORD)slip_write;
 }

@@ -33,7 +33,7 @@ static char* datahome;
 static int pt_list(char* p)
 {
 }
-static int pt_switch(char* p)
+static int pt_choose(char* p)
 {
 }
 static int pt_read(char* p)
@@ -85,7 +85,7 @@ void pt_init(char* world,QWORD* p)
 	p[2]=(QWORD)pt_start;
 	p[3]=(QWORD)pt_stop;
 	p[4]=(QWORD)pt_list;
-	p[5]=(QWORD)pt_switch;
+	p[5]=(QWORD)pt_choose;
 	p[6]=(QWORD)pt_read;
 	p[7]=(QWORD)pt_write;
 }

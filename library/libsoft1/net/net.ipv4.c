@@ -6,7 +6,7 @@
 static void ipv4_list()
 {
 }
-static void ipv4_switch()
+static void ipv4_choose()
 {
 }
 static void ipv4_read()
@@ -29,7 +29,7 @@ void ipv4_init(char* world,QWORD* p)
 	p[2]=(QWORD)ipv4_start;
 	p[3]=(QWORD)ipv4_stop;
 	p[4]=(QWORD)ipv4_list;
-	p[5]=(QWORD)ipv4_switch;
+	p[5]=(QWORD)ipv4_choose;
 	p[6]=(QWORD)ipv4_read;
 	p[7]=(QWORD)ipv4_write;
 }

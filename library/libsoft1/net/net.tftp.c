@@ -6,7 +6,7 @@
 static void tftp_list()
 {
 }
-static void tftp_switch()
+static void tftp_choose()
 {
 }
 static void tftp_read()
@@ -29,7 +29,7 @@ void tftp_init(char* world,QWORD* p)
 	p[2]=(QWORD)tftp_start;
 	p[3]=(QWORD)tftp_stop;
 	p[4]=(QWORD)tftp_list;
-	p[5]=(QWORD)tftp_switch;
+	p[5]=(QWORD)tftp_choose;
 	p[6]=(QWORD)tftp_read;
 	p[7]=(QWORD)tftp_write;
 }

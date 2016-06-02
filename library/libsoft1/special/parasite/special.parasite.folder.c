@@ -4,7 +4,7 @@ int systemstop();
 int systemread(char* p,QWORD,QWORD);
 int systemwrite(char* p,QWORD,QWORD);
 int systemlist(char* p);
-int systemswitch(char* p);
+int systemchoose(char* p);
 void say(char*,...);
 
 
@@ -20,9 +20,9 @@ static int folder_list(char* p)
 {
 	return systemlist(p);
 }
-static int folder_switch(char* p)
+static int folder_choose(char* p)
 {
-	return systemswitch(p);
+	return systemchoose(p);
 }
 static int folder_read(char* p)
 {
@@ -60,7 +60,7 @@ int folder_init(char* world,unsigned long long* p)
 	p[2]=(QWORD)folder_start;
 	p[3]=(QWORD)folder_stop;
 	p[4]=(QWORD)folder_list;
-	p[5]=(QWORD)folder_switch;
+	p[5]=(QWORD)folder_choose;
 	p[6]=(QWORD)folder_read;
 	p[7]=(QWORD)folder_write;
 	return 0;

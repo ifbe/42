@@ -1,12 +1,14 @@
 #define QWORD unsigned long long
+void systemusb_list();
 
 
 
 
 static void usb_list()
 {
+	systemusb_list();
 }
-static void usb_switch()
+static void usb_choose()
 {
 }
 static void usb_read()
@@ -29,7 +31,7 @@ void usb_init(char* world,QWORD* p)
 	p[2]=(QWORD)usb_start;
 	p[3]=(QWORD)usb_stop;
 	p[4]=(QWORD)usb_list;
-	p[5]=(QWORD)usb_switch;
+	p[5]=(QWORD)usb_choose;
 	p[6]=(QWORD)usb_read;
 	p[7]=(QWORD)usb_write;
 }

@@ -97,7 +97,7 @@ static int fs_list(char* name)
 	say("file not found\n");
 	return -1;
 }
-static int fs_switch(char* arg1)
+static int fs_choose(char* arg1)
 {
 	int ret;
 	QWORD id;
@@ -239,7 +239,7 @@ void fs_init(char* world,QWORD* p)
 	p[2]=(QWORD)fs_start;
 	p[3]=(QWORD)fs_stop;
 	p[4]=(QWORD)fs_list;
-	p[5]=(QWORD)fs_switch;
+	p[5]=(QWORD)fs_choose;
 	p[6]=(QWORD)fs_read;
 	p[7]=(QWORD)fs_write;
 }

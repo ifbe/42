@@ -6,7 +6,7 @@
 static void ssh_list()
 {
 }
-static void ssh_switch()
+static void ssh_choose()
 {
 }
 static void ssh_read()
@@ -29,7 +29,7 @@ void ssh_init(char* world,QWORD* p)
 	p[2]=(QWORD)ssh_start;
 	p[3]=(QWORD)ssh_stop;
 	p[4]=(QWORD)ssh_list;
-	p[5]=(QWORD)ssh_switch;
+	p[5]=(QWORD)ssh_choose;
 	p[6]=(QWORD)ssh_read;
 	p[7]=(QWORD)ssh_write;
 }

@@ -6,7 +6,7 @@
 static void nfc_list()
 {
 }
-static void nfc_switch()
+static void nfc_choose()
 {
 }
 static void nfc_read()
@@ -29,7 +29,7 @@ void nfc_init(char* world,QWORD* p)
 	p[2]=(QWORD)nfc_start;
 	p[3]=(QWORD)nfc_stop;
 	p[4]=(QWORD)nfc_list;
-	p[5]=(QWORD)nfc_switch;
+	p[5]=(QWORD)nfc_choose;
 	p[6]=(QWORD)nfc_read;
 	p[7]=(QWORD)nfc_write;
 }

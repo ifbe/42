@@ -22,3 +22,4 @@ int systemuart_init()
 int systemuart_kill()
 {
 }
+

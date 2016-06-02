@@ -6,7 +6,7 @@
 static void arp_list()
 {
 }
-static void arp_switch()
+static void arp_choose()
 {
 }
 static void arp_read()
@@ -29,7 +29,7 @@ void arp_init(char* world,QWORD* p)
 	p[2]=(QWORD)arp_start;
 	p[3]=(QWORD)arp_stop;
 	p[4]=(QWORD)arp_list;
-	p[5]=(QWORD)arp_switch;
+	p[5]=(QWORD)arp_choose;
 	p[6]=(QWORD)arp_read;
 	p[7]=(QWORD)arp_write;
 }

@@ -6,7 +6,7 @@
 static void eth_list()
 {
 }
-static void eth_switch()
+static void eth_choose()
 {
 }
 static void eth_read()
@@ -29,7 +29,7 @@ void eth_init(char* world,QWORD* p)
 	p[2]=(QWORD)eth_start;
 	p[3]=(QWORD)eth_stop;
 	p[4]=(QWORD)eth_list;
-	p[5]=(QWORD)eth_switch;
+	p[5]=(QWORD)eth_choose;
 	p[6]=(QWORD)eth_read;
 	p[7]=(QWORD)eth_write;
 }

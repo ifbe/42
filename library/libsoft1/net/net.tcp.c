@@ -7,7 +7,7 @@ int stopsocket();
 int readsocket(char*,int);
 int writesocket(char*,int);
 int listsocket(char*);
-int switchsocket(char*);
+int choosesocket(char*);
 //
 void buf2addrport(unsigned char* p,int max,unsigned char* addr,int* port);
 void printmemory(char*,int);
@@ -26,9 +26,9 @@ static void tcp_list(char* p)
 {
 	listsocket(p);
 }
-static void tcp_switch(char* p)
+static void tcp_choose(char* p)
 {
-	switchsocket(p);
+	choosesocket(p);
 }
 static void tcp_read()
 {
@@ -76,7 +76,7 @@ int tcp_init(char* world,unsigned long long* p)
 	p[2]=(QWORD)tcp_start;
 	p[3]=(QWORD)tcp_stop;
 	p[4]=(QWORD)tcp_list;
-	p[5]=(QWORD)tcp_switch;
+	p[5]=(QWORD)tcp_choose;
 	p[6]=(QWORD)tcp_read;
 	p[7]=(QWORD)tcp_write;
 }

@@ -22,3 +22,4 @@ int systemgpio_init()
 int systemgpio_kill()
 {
 }
+

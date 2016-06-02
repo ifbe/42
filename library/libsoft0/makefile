@@ -27,6 +27,14 @@ linux:
 .PHONY:mac
 mac:
 	rm -f linux.*.o win.*.o
+	clang -c -O2 mac/mac.interface.bluetooth.c
+	clang -c -O2 mac/mac.interface.i2c.c
+	clang -c -O2 mac/mac.interface.gpio.c
+	clang -c -O2 mac/mac.interface.pci.c
+	clang -c -O2 mac/mac.interface.spi.c
+	clang -c -O2 mac/mac.interface.uart.c
+	clang -c -O2 mac/mac.interface.usb.c
+	clang -c -O2 mac/mac.interface.wifi.c
 	clang -c -O2 mac/mac.memory.file.c
 	clang -c -O2 mac/mac.memory.mmio.c
 	clang -c -O2 mac/mac.net.kqueue.c

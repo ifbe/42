@@ -74,7 +74,7 @@ void listfolder()
 		say("%s\n",ent->d_name);
 	}
 }
-void switchfolder(char* name)
+void choosefolder(char* name)
 {
 	int ret;
 	if(name==0)

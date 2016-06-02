@@ -6,7 +6,7 @@
 static void ppp_list()
 {
 }
-static void ppp_switch()
+static void ppp_choose()
 {
 }
 static void ppp_read()
@@ -29,7 +29,7 @@ void ppp_init(char* world,QWORD* p)
 	p[2]=(QWORD)ppp_start;
 	p[3]=(QWORD)ppp_stop;
 	p[4]=(QWORD)ppp_list;
-	p[5]=(QWORD)ppp_switch;
+	p[5]=(QWORD)ppp_choose;
 	p[6]=(QWORD)ppp_read;
 	p[7]=(QWORD)ppp_write;
 }

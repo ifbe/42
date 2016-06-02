@@ -44,7 +44,7 @@ int listsocket()
 
 	return 1;
 }
-int switchsocket()
+int choosesocket()
 {
 	int ret;
 	socklen_t addrlen;

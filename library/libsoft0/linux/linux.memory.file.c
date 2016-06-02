@@ -138,7 +138,7 @@ void listfile(char* dest)
 	//		special
 	dest += trythis("/dev/xvda" , dest);
 }
-void switchfile()
+void choosefile()
 {
 }
 int readfile(char* buf,QWORD sector,QWORD disk,DWORD count)

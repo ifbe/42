@@ -6,7 +6,7 @@
 static void http_list()
 {
 }
-static void http_switch()
+static void http_choose()
 {
 }
 static void http_read()
@@ -29,7 +29,7 @@ void http_init(char* world,QWORD* p)
 	p[2]=(QWORD)http_start;
 	p[3]=(QWORD)http_stop;
 	p[4]=(QWORD)http_list;
-	p[5]=(QWORD)http_switch;
+	p[5]=(QWORD)http_choose;
 	p[6]=(QWORD)http_read;
 	p[7]=(QWORD)http_write;
 }

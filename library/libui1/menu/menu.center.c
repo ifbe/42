@@ -98,7 +98,7 @@ static void menu_read()
 	colorstring(xsize/8/4, ysize/16/4, "what do you want?" , 0xcccccc);
 	colorstring(xsize/8/4, ysize/16/4+1, buffer , 0xcccccc);
 }
-static void menu_switch()
+static void menu_choose()
 {
 }
 static void menu_list()
@@ -130,7 +130,7 @@ void menu_init(char* base,char* addr)
 	this[2]=(QWORD)menu_start;
 	this[3]=(QWORD)menu_stop;
 	this[4]=(QWORD)menu_list;
-	this[5]=(QWORD)menu_switch;
+	this[5]=(QWORD)menu_choose;
 	this[6]=(QWORD)menu_read;
 	this[7]=(QWORD)menu_write;
 }

@@ -8,7 +8,7 @@ int killfile();
 int startfile();
 int stopfile();
 int listfile();
-int switchfile();
+int choosefile();
 int readfile( char* buf,QW sector,DW count);
 int writefile(char* buf,QW sector,DW count);
 //folder
@@ -17,7 +17,7 @@ int killfolder();
 int startfolder(char* foldername);
 int stopfolder();
 int listfolder();
-int switchfolder();
+int choosefolder();
 int readfolder(char* name);
 int writefolder(char* name);
 //process
@@ -56,10 +56,10 @@ int systemlist(char* p)
 	if(realtype==0)return listfolder(p);
 	else if(realtype==1)return listfile(p);
 }
-int systemswitch(char* p)
+int systemchoose(char* p)
 {
-	if(realtype==0)return switchfolder(p);
-	else if(realtype==1)return switchfile(p);
+	if(realtype==0)return choosefolder(p);
+	else if(realtype==1)return choosefile(p);
 }
 int systemread(char* buf,QW sector,DW count)
 {

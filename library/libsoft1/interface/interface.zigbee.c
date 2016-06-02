@@ -6,7 +6,7 @@
 static void zigbee_list()
 {
 }
-static void zigbee_switch()
+static void zigbee_choose()
 {
 }
 static void zigbee_read()
@@ -29,7 +29,7 @@ void zigbee_init(char* world,QWORD* p)
 	p[2]=(QWORD)zigbee_start;
 	p[3]=(QWORD)zigbee_stop;
 	p[4]=(QWORD)zigbee_list;
-	p[5]=(QWORD)zigbee_switch;
+	p[5]=(QWORD)zigbee_choose;
 	p[6]=(QWORD)zigbee_read;
 	p[7]=(QWORD)zigbee_write;
 }

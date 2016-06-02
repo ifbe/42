@@ -34,7 +34,7 @@ void udp_kill();
 static int net_list()
 {
 }
-static int net_switch()
+static int net_choose()
 {
 }
 static int net_read()
@@ -57,7 +57,7 @@ int net_init(char* world,QWORD* p)
 	p[2]=(QWORD)net_start;
 	p[3]=(QWORD)net_stop;
 	p[4]=(QWORD)net_list;
-	p[5]=(QWORD)net_switch;
+	p[5]=(QWORD)net_choose;
 	p[6]=(QWORD)net_read;
 	p[7]=(QWORD)net_write;
 

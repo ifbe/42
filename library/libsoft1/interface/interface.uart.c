@@ -13,7 +13,7 @@ static int uart_list()
 {
 	systemuart_list();
 }
-static int uart_switch()
+static int uart_choose()
 {
 }
 static int uart_read()
@@ -40,7 +40,7 @@ void uart_init(char* world,QWORD* p)
 	p[2]=(QWORD)uart_start;
 	p[3]=(QWORD)uart_stop;
 	p[4]=(QWORD)uart_list;
-	p[5]=(QWORD)uart_switch;
+	p[5]=(QWORD)uart_choose;
 	p[6]=(QWORD)uart_read;
 	p[7]=(QWORD)uart_write;
 }

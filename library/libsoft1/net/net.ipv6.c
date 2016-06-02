@@ -6,7 +6,7 @@
 static void ipv6_list()
 {
 }
-static void ipv6_switch()
+static void ipv6_choose()
 {
 }
 static void ipv6_read()
@@ -29,7 +29,7 @@ void ipv6_init(char* world,QWORD* p)
 	p[2]=(QWORD)ipv6_start;
 	p[3]=(QWORD)ipv6_stop;
 	p[4]=(QWORD)ipv6_list;
-	p[5]=(QWORD)ipv6_switch;
+	p[5]=(QWORD)ipv6_choose;
 	p[6]=(QWORD)ipv6_read;
 	p[7]=(QWORD)ipv6_write;
 }

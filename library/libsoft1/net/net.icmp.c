@@ -6,7 +6,7 @@
 static void icmp_list()
 {
 }
-static void icmp_switch()
+static void icmp_choose()
 {
 }
 static void icmp_read()
@@ -29,7 +29,7 @@ void icmp_init(char* world,QWORD* p)
 	p[2]=(QWORD)icmp_start;
 	p[3]=(QWORD)icmp_stop;
 	p[4]=(QWORD)icmp_list;
-	p[5]=(QWORD)icmp_switch;
+	p[5]=(QWORD)icmp_choose;
 	p[6]=(QWORD)icmp_read;
 	p[7]=(QWORD)icmp_write;
 }

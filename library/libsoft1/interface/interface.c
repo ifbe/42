@@ -28,7 +28,7 @@ void zigbee_kill();
 static void interface_list()
 {
 }
-static void interface_switch()
+static void interface_choose()
 {
 }
 static void interface_read()
@@ -51,7 +51,7 @@ int interface_init(char* world,QWORD* p)
 	p[2]=(QWORD)interface_start;
 	p[3]=(QWORD)interface_stop;
 	p[4]=(QWORD)interface_list;
-	p[5]=(QWORD)interface_switch;
+	p[5]=(QWORD)interface_choose;
 	p[6]=(QWORD)interface_read;
 	p[7]=(QWORD)interface_write;
 

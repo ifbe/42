@@ -26,7 +26,7 @@ static unsigned char* virtual=0;
 void listphymem()
 {
 }
-void switchphymem()
+void choosephymem()
 {
 	//换位置
 }

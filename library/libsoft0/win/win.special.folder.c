@@ -70,7 +70,7 @@ void listfolder()
 		if(ret==0)break;
 	}
 }
-void switchfolder(char* name)
+void choosefolder(char* name)
 {
 	stopfolder();
 	startfolder(name);

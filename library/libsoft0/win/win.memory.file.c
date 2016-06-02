@@ -139,7 +139,7 @@ void listfile(char* dest)
 		}
 	}//10个记录
 }
-void switchfile(char* buf)
+void choosefile(char* buf)
 {
 }
 //目的内存地址，来源首扇区，无视，总字节数

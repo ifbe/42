@@ -118,7 +118,7 @@ static int memory_list(char* arg1)
 
 	return 1;
 }//memory_list
-static int memory_switch(char* arg)
+static int memory_choose(char* arg)
 {
 }
 static int memory_read(char* arg1)
@@ -217,7 +217,7 @@ int memory_init(char* world,QWORD* p)
 	p[2]=(QWORD)memory_start;
 	p[3]=(QWORD)memory_stop;
 	p[4]=(QWORD)memory_list;
-	p[5]=(QWORD)memory_switch;
+	p[5]=(QWORD)memory_choose;
 	p[6]=(QWORD)memory_read;
 	p[7]=(QWORD)memory_write;
 

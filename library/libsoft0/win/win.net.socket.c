@@ -17,7 +17,7 @@ int stopsocket()
 void listsocket()
 {
 }
-void switchsocket()
+void choosesocket()
 {
 }
 void readsocket()

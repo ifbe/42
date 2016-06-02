@@ -6,7 +6,7 @@
 static void pci_list()
 {
 }
-static void pci_switch()
+static void pci_choose()
 {
 }
 static void pci_read()
@@ -29,7 +29,7 @@ void pci_init(char* world,QWORD* p)
 	p[2]=(QWORD)pci_start;
 	p[3]=(QWORD)pci_stop;
 	p[4]=(QWORD)pci_list;
-	p[5]=(QWORD)pci_switch;
+	p[5]=(QWORD)pci_choose;
 	p[6]=(QWORD)pci_read;
 	p[7]=(QWORD)pci_write;
 }

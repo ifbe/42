@@ -8,7 +8,7 @@ int folder_kill();
 static int special_list()
 {
 }
-static int special_switch()
+static int special_choose()
 {
 }
 static int special_read()
@@ -31,7 +31,7 @@ int special_init(char* world,QWORD* p)
 	p[2]=(QWORD)special_start;
 	p[3]=(QWORD)special_stop;
 	p[4]=(QWORD)special_list;
-	p[5]=(QWORD)special_switch;
+	p[5]=(QWORD)special_choose;
 	p[6]=(QWORD)special_read;
 	p[7]=(QWORD)special_write;
 

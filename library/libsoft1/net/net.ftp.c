@@ -6,7 +6,7 @@
 static void ftp_list()
 {
 }
-static void ftp_switch()
+static void ftp_choose()
 {
 }
 static void ftp_read()
@@ -29,7 +29,7 @@ void ftp_init(char* world,QWORD* p)
 	p[2]=(QWORD)ftp_start;
 	p[3]=(QWORD)ftp_stop;
 	p[4]=(QWORD)ftp_list;
-	p[5]=(QWORD)ftp_switch;
+	p[5]=(QWORD)ftp_choose;
 	p[6]=(QWORD)ftp_read;
 	p[7]=(QWORD)ftp_write;
 }

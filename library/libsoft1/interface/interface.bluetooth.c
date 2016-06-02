@@ -1,12 +1,17 @@
 #define QWORD unsigned long long
+void systembt_list();
+void systembt_choose();
+void systembt_read();
+void systembt_write();
 
 
 
 
 static void bt_list()
 {
+	systembt_list();
 }
-static void bt_switch()
+static void bt_choose()
 {
 }
 static void bt_read()
@@ -29,7 +34,7 @@ void bt_init(char* world,QWORD* p)
 	p[2]=(QWORD)bt_start;
 	p[3]=(QWORD)bt_stop;
 	p[4]=(QWORD)bt_list;
-	p[5]=(QWORD)bt_switch;
+	p[5]=(QWORD)bt_choose;
 	p[6]=(QWORD)bt_read;
 	p[7]=(QWORD)bt_write;
 }

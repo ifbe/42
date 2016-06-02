@@ -6,7 +6,7 @@
 static void ir_list()
 {
 }
-static void ir_switch()
+static void ir_choose()
 {
 }
 static void ir_read()
@@ -29,7 +29,7 @@ void ir_init(char* world,QWORD* p)
 	p[2]=(QWORD)ir_start;
 	p[3]=(QWORD)ir_stop;
 	p[4]=(QWORD)ir_list;
-	p[5]=(QWORD)ir_switch;
+	p[5]=(QWORD)ir_choose;
 	p[6]=(QWORD)ir_read;
 	p[7]=(QWORD)ir_write;
 }

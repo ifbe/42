@@ -1,7 +1,7 @@
-void listethernet
+void listethernet()
 {
 }
-void switchethernet
+void chooseethernet()
 {
 }
 void readethernet()

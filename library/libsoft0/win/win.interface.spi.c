@@ -22,3 +22,4 @@ int systemspi_init()
 int systemspi_kill()
 {
 }
+
