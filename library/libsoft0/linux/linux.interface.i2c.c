@@ -16,7 +16,7 @@ void say(char*,...);
 
 //
 static int fp=-1;
-static int where[4];
+static int where[4]={-1,-1,-1,-1};
 static unsigned char that[16];
 static unsigned char outbuf[16];
 
@@ -95,16 +95,16 @@ int systemi2c_list(char* towhere)
 	int ret;
 
 	//listbuses
-	if(where[0]==0)
+	if(where[0]<0)
 	{
 		ret=system("ls /dev/i2c-*");
-		return 1;
+		return 0;
 	}
 
 	//listdevices
-	if(where[1]==0)
+	if(where[1]<0)
 	{
-		for(y=0;y<16;y++)
+		for(y=0;y<8;y++)
 		{
 			for(x=0;x<16;x++)
 			{
@@ -115,10 +115,11 @@ int systemi2c_list(char* towhere)
 			}
 			printf("\n");
 		}
+		return 1;
 	}
 
 	//listregisters
-	if(where[2]==0)
+	if(where[2]<0)
 	{
 		for(y=0;y<16;y++)
 		{
@@ -131,24 +132,27 @@ int systemi2c_list(char* towhere)
 			}
 			printf("\n");
 		}
+		return 2;
 	}
 
 	//listbits
-	if(where[3]==0)
+	if(where[3]<0)
 	{
+		return 3;
 	}
 }
 int systemi2c_choose(int num,char* p)
 {
 	int ret;
+//printf("num=%d,p=%s\n",num,p);
 
 	//"cd"
-	if( (num==0) && (p==0) )
+	if( (num<0) && (p==0) )
 	{
 		say("@i2c");
-		if(where[0]!=0)say("/0x%d",where[0]);
-		if(where[1]!=0)say("/0x%x",where[1]);
-		if(where[2]!=0)say("/0x%x",where[2]);
+		if(where[0]>=0)say("/0x%d",where[0]);
+		if(where[1]>=0)say("/0x%x",where[1]);
+		if(where[2]>=0)say("/0x%x",where[2]);
 		say("\n");
 		return 0;
 	}
@@ -156,20 +160,20 @@ int systemi2c_choose(int num,char* p)
 	//"cd .."
 	if(num<0)
 	{
-		if(where[2]>0)
+		if(where[2]>=0)
 		{
-			where[2]=0;
+			where[2]=-1;
 		}
-		else if(where[1]>0)
+		else if(where[1]>=0)
 		{
-			where[1]=0;
+			where[1]=-1;
 		}
-		else if(where[0]>0)
+		else if(where[0]>=0)
 		{
 			if(fp > 0)
 			{
 				close(fp);
-				where[0]=fp=0;
+				where[0]=fp=-1;
 			}
 		}
 
@@ -177,7 +181,7 @@ int systemi2c_choose(int num,char* p)
 	}
 
 	//"cd 1" or "cd /dev/i2c-1"
-	if(where[0]<=0)
+	if(where[0]<0)
 	{
 		if(p!=0)fp = open(p,O_RDWR);
 		else
@@ -193,12 +197,12 @@ int systemi2c_choose(int num,char* p)
 		}
 
 		where[0]=num;
-		where[1]=where[2]=where[3]=0;
+		where[1]=where[2]=where[3]=-1;
 		return 0x11;
 	}
 
 	//select device
-	if(where[1]<=0)
+	if(where[1]<0)
 	{
 		ret=ioctl(fp,I2C_SLAVE,num);
 		if(ret < 0)
@@ -227,7 +231,16 @@ void systemi2c_stop()
 
 void systemi2c_init()
 {
+	fp=-1;
+	where[0]=where[1]=where[2]=where[3]=-1;
 }
 void systemi2c_kill()
 {
+	if(fp>0)
+	{
+		close(fp);
+
+		fp=-1;
+		where[0]=where[1]=where[2]=where[3]=-1;
+	}
 }

@@ -33,7 +33,7 @@ static int i2c_choose(char* p)
 	//
 	if(p==0)
 	{
-		systemi2c_choose(0,0);
+		systemi2c_choose(-1,0);
 		return 0;
 	}
 
