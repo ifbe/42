@@ -39,10 +39,16 @@ void say(char* , ...);
 
 
 
-//
+//worker
 static DWORD now=0;		//不能有负数
+//screen
 static DWORD actualsize;
 static void* actualaddr;
+//touch
+static QWORD pointenter[11];
+static QWORD pointleave[11];
+static int pointcount=0;
+static int pointmax=0;
 
 
 
@@ -280,6 +286,8 @@ void characterread()
 }
 void characterwrite(QWORD type,QWORD key)
 {
+	int m,n;
+
 	//debug
 	//say("%llx,%llx\n",type,key);
 
@@ -308,11 +316,81 @@ void characterwrite(QWORD type,QWORD key)
 		}
 	}//kbd
 
-	//'touch'
-	else if(type==0x6863756f74)
+	if( (type&0xff) == 'p' )
 	{
-		say("touch!\n");
-	}//touch
+		say("type=%llx,key=%llx\n",type,key);
+
+		m = (type & 0xff00) >> 8;
+		n = (key >> 48) & 0x07;
+		if( m == '@' )
+		{
+			pointleave[n]=key;
+		}
+		else if( m == '+' )
+		{
+			pointcount++;
+			pointmax++;
+			pointenter[n]=key;
+		}
+		else if( m == '-' )
+		{
+			pointleave[n]=key;
+			pointcount--;
+
+			if(pointcount==0)
+			{
+				if(pointmax==1)
+				{
+					m = (pointleave[0]&0xffff)
+					  - (pointenter[0]&0xffff);
+					n = ((pointleave[0]>>16)&0xffff)
+					  - ((pointenter[0]>>16)&0xffff);
+
+					if( (n>-99) && (n<99) )
+					{
+						if(m<-99)	//left
+						{
+							type=0x64626b;
+							key=0x25;
+						}
+						else if(m>99)	//right
+						{
+							type=0x64626b;
+							key=0x27;
+						}
+						else	//point
+						{
+							type=0x7466656C207A7978;
+							key&=0xffffffff;
+						}
+					}
+					if( (m>-99) && (m<99) )
+					{
+						if(n<-99)	//up
+						{	
+							type=0x64626b;
+							key=0x26;
+						}
+						else if(n>99)	//down
+						{
+							type=0x64626b;
+							key=0x28;
+						}
+						else	//point
+						{
+							type=0x7466656C207A7978;
+							key&=0xffffffff;
+						}
+					}
+				}
+				else if(pointmax>1)
+				{
+					say("haha\n");
+				}
+				pointmax=0;
+			}
+		}
+	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].type > 0)worker[0].write(type,key);

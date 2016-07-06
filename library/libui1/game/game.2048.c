@@ -47,8 +47,8 @@ static void cubie(int x,int y,int z)
 	//for(j=y*160+5;j<y*160+155;j++)
 	//point(i,j,color);
 	rectangle(
-		( x*width/4+4 ) + ( (y*height/4+4) << 16 ),
-		( (x+1)*width/4-4 ) + ( ((y+1)*height/4-4) << 16 ),
+		( x*width/4 ) + ( (y*height/4) << 16 ),
+		( (x+1)*width/4 ) + ( ((y+1)*height/4) << 16 ),
 		color
 	);
 	if(z!=0) colordecimal(4+x*(width/32),4+y*(height/64),z,0);
@@ -257,9 +257,9 @@ static void new2048()
 					table[y][x]=temp;
 					return;
 				}
-			}
-		}
-	}
+			}//if(empty)
+		}//for(x)
+	}//for(y)
 }
 
 
@@ -353,7 +353,7 @@ void the2048_init(char* base,void* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;		//'window'
-	this[1]=0x38343032;			//'2048'
+	this[1]=0x38343032;		//'2048'
 	this[2]=(QWORD)the2048_start;
 	this[3]=(QWORD)the2048_stop;
 	this[4]=(QWORD)the2048_list;

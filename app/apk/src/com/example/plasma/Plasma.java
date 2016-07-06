@@ -80,26 +80,47 @@ class PlasmaView extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getActionMasked();
-		long x = (long)event.getX(0);
-		long y = (long)event.getY(0);
-		long z = (long)event.getPressure(0);
-		long temp=x+(y<<16)+(z<<32);
-		//Log.i("PlasmaView","<<<<<<<<<<<<<<<("+x+","+y+","+z+"),"+temp);
+		int index = event.getActionIndex();
+		int count = event.getPointerCount();
+		//Log.i("<<<<<<<<","("+action+","+index+","+count+")");
 
-		if( action == MotionEvent.ACTION_DOWN )
-		{
-			Write(0x6e776f64 , temp);
-		}
-		if( action == MotionEvent.ACTION_UP )
-		{
-			Write(0x7075 , temp);
-		}
+		//point move:	'p@'=0x4070
 		if( action == MotionEvent.ACTION_MOVE )
 		{
-			Write(0x65766f6d , temp);
+			for(index=0;index<count;index++)
+			{
+				long x = (long)event.getX(index);
+				long y = (long)event.getY(index);
+				long z = (long)event.getPressure(index);
+				long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+				Write(0x4070 , temp);
+			}
 		}
 
-		Read(mBitmap);
+		//point sensed:	'p+'=0x2d70
+		else if((action == MotionEvent.ACTION_DOWN) |
+			(action == MotionEvent.ACTION_POINTER_DOWN) )
+		{
+			long x = (long)event.getX(index);
+			long y = (long)event.getY(index);
+			long z = (long)event.getPressure(index);
+			long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+			Write(0x2b70 , temp);
+		}
+
+		//point gone:	'p-'=0x2d70
+		else if((action == MotionEvent.ACTION_UP) |
+			(action == MotionEvent.ACTION_POINTER_UP) )
+		{
+			long x = (long)event.getX(index);
+			long y = (long)event.getY(index);
+			long z = (long)event.getPressure(index);
+			long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+			Write(0x2d70 , temp);
+
+			Read(mBitmap);
+		}
+
 		return true;
 	}
 }

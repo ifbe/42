@@ -77,54 +77,8 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, job
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Write(JNIEnv * env, jobject  obj , jlong type , jlong value)
 {
-	//
-	say(">>>>>>>>>>>>>(%llx,%llx)\n",type,value);
-	if(type==0x6e776f64)		//'down'
-	{
-		pressed=1;
-		xxxx=value&0xffff;
-		yyyy=(value>>16)&0xffff;
-		return;
-	}
-	if(type==0x7075)			//'up'
-	{
-		int upx=value&0xffff;
-		int upy=(value>>16)&0xffff;
-		pressed=0;
-		say(">>>>>>>>>>>>>>(%d,%d)->(%d,%d)\n",xxxx,yyyy,upx,upy);
-
-		upx-=xxxx;
-		upy-=yyyy;
-		if( (upx>0) && (upy>0) )
-		{
-			//右
-			if(upx>upy)characterwrite(0x64626b,0x27);
-			//下
-			else characterwrite(0x64626b,0x28);
-		}
-		else if( (upx<0) && (upy<0) )
-		{
-			//左
-			if(upx<upy)characterwrite(0x64626b,0x25);
-			//上
-			else characterwrite(0x64626b,0x26);
-		}
-		else if( (upx<0) && (upy>0) )
-		{
-			//左
-			if(upx+upy<0)characterwrite(0x64626b,0x25);
-			//下
-			else characterwrite(0x64626b,0x28);
-		}
-		else if( (upx>0) && (upy<0) )
-		{
-			//右
-			if(upx+upy>0)characterwrite(0x64626b,0x27);
-			//上
-			else characterwrite(0x64626b,0x26);
-		}
-		return;
-	}
+	//say("(%llx,%llx),%d,%d\n",type,value,sizeof(type),sizeof(value));
+	characterwrite(type,value);
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Start(JNIEnv * env, jobject  obj, jobject bitmap)
 {
