@@ -45,7 +45,6 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 			((temp&0xff0000)>>16);
 	}
 }
-
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, jobject  obj, jobject bitmap)
 {
 	AndroidBitmapInfo  info;
@@ -110,10 +109,6 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Start(JNIEnv * env, jo
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Stop(JNIEnv * env, jobject  obj)
 {
 }
-
-
-
-
 //correct:"On","Load"        wrong:"on","load"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm,void* reserved)
 {
@@ -125,4 +120,29 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm,void* reserved)
 {
 	say("JNI_OnUnLoad\n");
 	death();
+}
+
+
+
+
+void uievent()
+{
+}
+void readwindow()
+{
+}
+void writewindow()
+{
+}
+void startwindow()
+{
+}
+void stopwindow()
+{
+}
+void initwindow()
+{
+}
+void killwindow()
+{
 }

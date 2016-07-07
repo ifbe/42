@@ -217,6 +217,27 @@ int characterchoose(char* p)
 	int ret;
 	QWORD temp;
 
+	//
+	temp=(QWORD)p;
+	if(temp==1)
+	{
+		if(worker[now+1].id == 0)return 0;
+
+		now++;
+		worker[now].start(actualsize, actualaddr);
+		worker[0].start(actualsize, actualaddr);
+		return 1;
+	}
+	if( (temp&0xffffffff) == 0xffffffff )
+	{
+		if(now<=1)return 0;
+
+		now--;
+		worker[now].start(actualsize, actualaddr);
+		worker[0].start(actualsize, actualaddr);
+		return 1;
+	}
+
 	//exit
 	ret=compare(p,"exit");
 	if(ret==0)
@@ -238,7 +259,7 @@ int characterchoose(char* p)
 		now=getrandom();
 		now=( now % (i-2) ) + 1;
 		say("%d\n",now);
-		return 1;
+		return 2;
 	}
 
 	//prepare for future hash?
@@ -261,7 +282,7 @@ int characterchoose(char* p)
 			now=i;
 			worker[now].start(actualsize, actualaddr);
 			worker[0].start(actualsize, actualaddr);
-			return 2;
+			return 4;
 		}
 	}
 }
@@ -318,20 +339,20 @@ void characterwrite(QWORD type,QWORD key)
 
 	if( (type&0xff) == 'p' )
 	{
-		say("type=%llx,key=%llx\n",type,key);
+		//say("type=%llx,key=%llx\n",type,key);
 
 		m = (type & 0xff00) >> 8;
 		n = (key >> 48) & 0x07;
 		if( m == '@' )
 		{
 			pointleave[n]=key;
-		}
+		}//point move
 		else if( m == '+' )
 		{
 			pointcount++;
 			pointmax++;
 			pointenter[n]=key;
-		}
+		}//point sensed
 		else if( m == '-' )
 		{
 			pointleave[n]=key;
@@ -383,13 +404,35 @@ void characterwrite(QWORD type,QWORD key)
 						}
 					}
 				}
+
 				else if(pointmax>1)
 				{
-					say("haha\n");
+					m = ((pointleave[0]>>16)&0xffff)
+                                          - ((pointenter[0]>>16)&0xffff);	//dy1
+					n = ((pointleave[1]>>16)&0xffff)
+                                          - ((pointenter[1]>>16)&0xffff);	//dy2
+					if( (m>-250)&&(m<250)&&(n>-250)&&(n<250) )
+					{
+						m = (pointleave[0]&0xffff)
+						  - (pointenter[0]&0xffff);
+						n = (pointleave[1]&0xffff)
+						  - (pointenter[1]&0xffff);
+						if( (m<-250)&&(n<-250) )
+						{
+							characterchoose((char*)1);
+						}
+						else if( (m>250)&&(n>250) )
+						{
+							characterchoose((char*)0xffffffff);
+						}
+					}
 				}
+
 				pointmax=0;
-			}
-		}
+
+			}//last one
+		}//point gone
+
 	}
 
 	//其余所有消息，谁在干活就交给谁

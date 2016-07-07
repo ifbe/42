@@ -29,9 +29,10 @@ static TOUCHINPUT touchpoint[10];
 static char dragpath[MAX_PATH];
 
 //
-static int solved=1;
-static QWORD my1;
-static QWORD my2;
+static int this=-1;
+static int that=-1;
+static QWORD type[10];
+static QWORD key[10];
 
 //
 static int leftdown=0,rightdown=0;
@@ -136,9 +137,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			DragFinish(hDrop);      //释放hDrop
 
 			say("drag:%s\n",dragpath);
-			my1=(0x706f7264)+((QWORD)0x656c6966<<32);		//'drop''file'
-			my2=(QWORD)dragpath;
-			solved=0;
+			type[0]=(0x706f7264)+((QWORD)0x656c6966<<32);	//'drop''file'
+			key[0]=(QWORD)dragpath;
+			this=0;
+			that=-1;
 			return 0;
 		}
 
@@ -156,9 +158,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case 0x72:				//f3
 				case 0x73:				//f4
 				{
-					my1=0x64626b;		//kbd
-					my2=wparam;
-					solved=0;
+					type[0]=0x64626b;		//kbd
+					key[0]=wparam;
+					this=0;
+					that=-1;
 					break;
 				}
 			}
@@ -171,36 +174,83 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(wparam==0x1b)
 			{
-				my1=0x64626b;		//'kbd'
-				my2=wparam;
-				solved=0;
-				return 0;
+				type[0]=0x64626b;		//'kbd'
+				key[0]=wparam;
 			}
 			else
 			{
-				my1=0x72616863;		//'char'
-				my2=wparam;
-				solved=0;
-				return 0;
+				type[0]=0x72616863;		//'char'
+				key[0]=wparam;
 			}
+			this=0;
+			that=-1;
+			return 0;
 		}
-
+/*
+		//触摸
 		case WM_TOUCH:
 		{
 			int i=0;
 			int count=wparam;
-			GetTouchInputInfo((HTOUCHINPUT)lparam, count, touchpoint, sizeof(TOUCHINPUT));
+			GetTouchInputInfo(
+				(HTOUCHINPUT)lparam,
+				count,
+				touchpoint,
+				sizeof(TOUCHINPUT)
+			);
 
-			say("WM_TOUCH:count=%x{\n",count);
 			for(i=0;i<count;i++)
 			{
-				say("id=%x:x=%x,y=%x\n",touchpoint[i].dwID,touchpoint[i].x,touchpoint[i].y);
-			}
-			say("}\n");
+				type[i]=0x4070;
 
-			my1=0x63756f74+((QWORD)count<<32);		//'touc',count
-			my2=(QWORD)touchpoint;
-			solved=0;
+				key[i]=i;
+				key[i]=(value<<16)+0;
+				key[i]=(value<<16)+touchpoint[i].y;
+				key[i]=(value<<16)+touchpoint[i].x;
+
+				say("id=%x:x=%x,y=%x\n",
+					touchpoint[i].dwID,
+					touchpoint[i].x,
+					touchpoint[i].y
+				);
+
+			}
+			this=0;
+			that=count-1;
+			return 0;
+		}
+*/
+		case WM_POINTERDOWN:
+		{
+			type[0]=0x2b70;		//p+
+			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=(key[0]<<16) + 0;
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			this=0;
+			that=-1;
+			return 0;
+		}
+		case WM_POINTERUP:
+		{
+			type[0]=0x2d70;		//p-
+			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=(key[0]<<16) + 0;
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			this=0;
+			that=-1;
+			return 0;
+		}
+		case WM_POINTERUPDATE:
+		{
+			type[0]=0x4070;		//p@
+			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=(key[0]<<16) + 0;
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			this=0;
+			that=-1;
 			return 0;
 		}
 
@@ -209,15 +259,16 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				my1=0x207A7978+((QWORD)0x6E6F7266<<32);		//'xyz fron'
+				type[0]=0x207A7978+((QWORD)0x6E6F7266<<32);	//'xyz fron'
 			}
-			else my1=0x207A7978+((QWORD)0x6B636162<<32);		//'xyz back'
+			else type[0]=0x207A7978+((QWORD)0x6B636162<<32);	//'xyz back'
 
 			GetCursorPos(&pt);
 			ScreenToClient(window, &pt);
-			my2=(pt.y<<16) + pt.x;
+			key[0]=(pt.y<<16) + pt.x;
 
-			solved=0;
+			this=0;
+			that=-1;
 			return 0;
 		}
 
@@ -239,12 +290,14 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 				else		//只是左键在拖动
 				{
-					my1=0x207A7978+((QWORD)0x65766F6D<<32);		//'xyz ','move'
-					my2=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
-					solved=0;
+					//'xyz ','move'
+					type[0]=0x207A7978+((QWORD)0x65766F6D<<32);
+					key[0]=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
 
 					//say("%d,%d\n",pe.x,pe.y);
-					GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+					GetCursorPos(&pt);	// 获取鼠标当前位置
+					this=0;
+					that=-1;
 				}
 			}
 			return 0;
@@ -255,9 +308,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(leftdown==1)
 			{
-				my1=0x207A7978+((QWORD)0x7466656C<<32);		//'xyz ','left'
-				my2=lparam;
-				solved=0;
+				type[0]=0x207A7978+((QWORD)0x7466656C<<32);	//'xyz left'
+				key[0]=lparam;
+				this=0;
+				that=-1;
 			}
 
 			leftdown=0;
@@ -269,9 +323,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				my1=0x207A7978+((QWORD)0x72676968<<32);		//'xyz ','righ'
-				my2=lparam;
-				solved=0;
+				type[0]=0x207A7978+((QWORD)0x72676968<<32);	//'xyz righ'
+				key[0]=lparam;
+				this=0;
+				that=-1;
 			}
 
 			rightdown=0;
@@ -314,11 +369,12 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_SIZE:
 		{
 			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
-			my1=0x657a6973;					//'size'
-			my2=lparam;
+			type[0]=0x657a6973;			//'size'
+			key[0]=lparam;
 			width=lparam&0xffff;
 			height=(lparam>>16)&0xffff;
-			solved=0;
+			this=0;
+			that=-1;
 
 			return 0;
 		}
@@ -349,6 +405,25 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 }
 int uievent(QWORD* first,QWORD* second)
 {
+throw:
+	//没扔完的消息一个个扔，没消息了就下去等
+	if(this!=-1)
+	{
+		*first=type[this];
+		*second=key[this];
+
+		if(this<that)
+		{
+			this++;
+			if(this==that)
+			{
+				that=-1;
+			}
+		}
+
+		return 1;
+	}
+
 	//收得到就一直收+处理
 	MSG msg;
 	while(GetMessage(&msg,NULL,0,0))
@@ -358,17 +433,12 @@ int uievent(QWORD* first,QWORD* second)
 		DispatchMessage(&msg);
 
 		//WindowProc处理不了，交给用户来处理
-		if(solved==0)
-		{
-			*first=my1;
-			*second=my2;
-			solved=1;
-			return 1;
-		}
+		if(this==0)goto throw;
 	}
 
 	//收不到就返回失败消息
 	*first=0;
+	return 0;
 }
 
 

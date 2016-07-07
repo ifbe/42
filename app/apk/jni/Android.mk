@@ -135,7 +135,7 @@ LOCAL_SRC_FILES += \
 
 #4.ui0
 LOCAL_SRC_FILES += \
-	library/libui0/cli/cli.cli.c \
+	library/libui0/android/android.bitmap.c \
 	library/libui0/display.c
 
 #4.ui1
@@ -159,8 +159,7 @@ LOCAL_SRC_FILES += \
 #1.visitor
 LOCAL_SRC_FILES += \
 	library/visitor/adult/master.c \
-	library/visitor/adult/slave.c \
-	library/visitor/child/plasma.c
+	library/visitor/adult/slave.c
 
 
 
