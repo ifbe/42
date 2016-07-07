@@ -339,7 +339,7 @@ void characterwrite(QWORD type,QWORD key)
 
 	if( (type&0xff) == 'p' )
 	{
-		//say("type=%llx,key=%llx\n",type,key);
+		say("type=%llx,key=%llx\n",type,key);
 
 		m = (type & 0xff00) >> 8;
 		n = (key >> 48) & 0x07;
@@ -367,14 +367,14 @@ void characterwrite(QWORD type,QWORD key)
 					n = ((pointleave[0]>>16)&0xffff)
 					  - ((pointenter[0]>>16)&0xffff);
 
-					if( (n>-99) && (n<99) )
+					if( (n>-250) && (n<250) )
 					{
-						if(m<-99)	//left
+						if(m<-250)	//left
 						{
 							type=0x64626b;
 							key=0x25;
 						}
-						else if(m>99)	//right
+						else if(m>250)	//right
 						{
 							type=0x64626b;
 							key=0x27;
@@ -385,14 +385,14 @@ void characterwrite(QWORD type,QWORD key)
 							key&=0xffffffff;
 						}
 					}
-					if( (m>-99) && (m<99) )
+					if( (m>-250) && (m<250) )
 					{
-						if(n<-99)	//up
+						if(n<-250)	//up
 						{	
 							type=0x64626b;
 							key=0x26;
 						}
-						else if(n>99)	//down
+						else if(n>250)	//down
 						{
 							type=0x64626b;
 							key=0x28;

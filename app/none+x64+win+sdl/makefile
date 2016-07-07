@@ -7,7 +7,7 @@ all:
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 mac
 	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 sdl
+	make -s -C $(library)/libui0 winsdl
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor gui
 	gcc -mwindows \

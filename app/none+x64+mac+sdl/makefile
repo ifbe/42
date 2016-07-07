@@ -5,7 +5,7 @@ all:
 	make -s -C libhard1 clang
 	make -s -C libsoft0 mac
 	make -s -C libsoft1 clang
-	make -s -C libui0 cli
+	make -s -C libui0 macsdl
 	make -s -C libui1 clang
 	clang -c librarian.c
 	rm -f library.a

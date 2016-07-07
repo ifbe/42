@@ -6,7 +6,7 @@ all:
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 fb
+	make -s -C $(library)/libui0 linuxfb
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor gui
 	gcc -o a.out \

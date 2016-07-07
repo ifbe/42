@@ -5,7 +5,7 @@ all:
 	make -s -C libhard1 gcc
 	make -s -C libsoft0 linux
 	make -s -C libsoft1 gcc
-	make -s -C libui0 fb
+	make -s -C libui0 linuxsdl
 	make -s -C libui1 gcc
 	gcc -c -O2 librarian.c
 	rm -f library.a

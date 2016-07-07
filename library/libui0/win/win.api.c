@@ -1,17 +1,23 @@
 #define WINVER 0x0601
-#include<windows.h>
-#include<winuser.h>
-#include<Commctrl.h>
 #include<stdio.h>
 #include<stdlib.h>
+#include<windows.h>
+#include<windowsx.h>
+#include<winuser.h>
+#include<commctrl.h>
 
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define WM_POINTERUPDATE 0x0245
+#define WM_POINTERDOWN 0x0246
+#define WM_POINTERUP 0x0247
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
 #define menu3 0x3333
 #define menu4 0x4444
+#define BYTE unsigned char
+#define WORD unsigned short
+#define DWORD unsigned int
+#define QWORD unsigned long long
 void writewindow();
 void say(char* fmt,...);
 
@@ -27,6 +33,10 @@ static NOTIFYICONDATA nid;     //托盘属性
 static HMENU hMenu;            //托盘菜单
 static TOUCHINPUT touchpoint[10];
 static char dragpath[MAX_PATH];
+
+//
+static int pointercount=0;
+static BYTE pointerid[10];
 
 //
 static int this=-1;
@@ -222,33 +232,70 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 */
 		case WM_POINTERDOWN:
 		{
+			pointerid[pointercount]=(BYTE)(wparam);
+			pointercount++;
+
 			type[0]=0x2b70;		//p+
-			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=(BYTE)(wparam);
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
 			this=0;
 			that=-1;
 			return 0;
 		}
 		case WM_POINTERUP:
 		{
+			int x,y;
+			for(x=0;x<pointercount;x++)
+			{
+				say("%2d,",pointerid[x]);
+				if( pointerid[x] == (BYTE)(wparam) )
+				{
+					for(y=x;y<pointercount-1;y++)
+					{
+						pointerid[y]=pointerid[y+1];
+					}
+					break;
+				}
+			}
+
+			say("<-------->%2d\n",(BYTE)wparam);
+			if(x>=pointercount)
+			{
+				say("wrong!!!!!!!!!!\n");
+				this=-1;
+				return 0;
+			}
+
 			type[0]=0x2d70;		//p-
-			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=x;
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
 			this=0;
 			that=-1;
+
+			pointercount--;
 			return 0;
 		}
 		case WM_POINTERUPDATE:
 		{
+			int x;
+			for(x=0;x<pointercount;x++)
+			{
+				if( pointerid[x] == (BYTE)(wparam) )break;
+			}
+			if(x>=pointercount)
+			{
+				this=-1;return 0;
+			}
+
 			type[0]=0x4070;		//p@
-			key[0]=GET_POINTERID_WPARAM(wparam);
+			key[0]=x;
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lParam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lParam);
+			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
+			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
 			this=0;
 			that=-1;
 			return 0;
@@ -412,12 +459,16 @@ throw:
 		*first=type[this];
 		*second=key[this];
 
-		if(this<that)
+		if(that==-1)
+		{
+			this=-1;
+		}
+		else
 		{
 			this++;
 			if(this==that)
 			{
-				that=-1;
+				this=that=-1;
 			}
 		}
 
@@ -478,7 +529,7 @@ QWORD readwindow(QWORD what)
 }
 void writewindow(QWORD type,QWORD value)
 {
-	say("writewindow:%llx,%llx\n",type,value);
+	//say("writewindow:%llx,%llx\n",type,value);
 	if(type==0x656c746974)		//'title'
 	{
 		SetWindowText(window,"hahahaha");

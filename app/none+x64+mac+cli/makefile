@@ -7,7 +7,7 @@ all:
 	make -s -C $(library)/libhard1 clang
 	make -s -C $(library)/libsoft0 mac
 	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 cli
+	make -s -C $(library)/libui0 maccli
 	make -s -C $(library)/libui1 clang
 	make -s -C $(library)/visitor cli
 	clang \
@@ -27,7 +27,7 @@ static:
 	make -s -C $(library)/libhard1 clang
 	make -s -C $(library)/libsoft0 mac
 	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 cli
+	make -s -C $(library)/libui0 maccli
 	make -s -C $(library)/libui1 clang
 	make -s -C $(library)/visitor cli
 	libtool -static -o library.a \
@@ -47,7 +47,7 @@ shared:
 	make -s -C $(library)/libhard1 clang
 	make -s -C $(library)/libsoft0 mac
 	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 cli
+	make -s -C $(library)/libui0 maccli
 	make -s -C $(library)/libui1 clang
 	make -s -C $(library)/visitor winshared
 	libtool -dynamic -o library.dylib \
