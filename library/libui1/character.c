@@ -282,6 +282,7 @@ int characterchoose(char* p)
 			now=i;
 			worker[now].start(actualsize, actualaddr);
 			worker[0].start(actualsize, actualaddr);
+//say("(%llx)\n",actualsize);
 			return 4;
 		}
 	}

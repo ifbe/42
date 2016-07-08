@@ -21,8 +21,8 @@ void say(char*,...);
 
 //palette
 static unsigned int* palette=0;
-static int resolutionx;
-static int resolutiony=768;
+static int width=1024;
+static int height=768;
 
 //log位置
 static char* logbuf=0;
@@ -44,34 +44,34 @@ static void background4()
 	//用指定颜色清屏
 	DWORD x,y,color;
 
-	for(x=0;x<1024*752;x++)
+	for(x=0;x<width*height;x++)
 	{
 		palette[x]=0;
 	}
 
 	//输入框颜色
-	for(y=768-16;y<768;y++)
+	for(y=height-16;y<height;y++)
 	{
-		for(x=0;x<512;x++)
+		for(x=0;x<width/2;x++)
 		{
 			color=(x/2)*0x01010101;
-			palette[(y*1024) + x]=color;
-			palette[(y*1024) + 1023-x]=color;
+			palette[(y*width) + x]=color;
+			palette[(y*width) + width-x -1]=color;
 		}
 	}
 
 	//滚动框颜色
-	for(y=0;y<resolutiony/2;y++)
+	for(y=0;y<height/2;y++)
 	{
-		color = y*0xff/resolutiony;//0x44444488;
+		color = y*0xff/height;//0x44444488;
 
-		for(x=1024-16;x<1024;x++)
+		for(x=width-16;x<width;x++)
 		{
-			palette[(y*1024) + x] = color;
+			palette[(y*width) + x] = color;
 		}
-		for(x=1024-16;x<1024;x++)
+		for(x=width-16;x<width;x++)
 		{
-			palette[((767-y)*1024) + x] = color;
+			palette[((height-1-y)*width) + x] = color;
 		}
 	}
 }
@@ -82,15 +82,15 @@ static void printposition(int start,int count,int max)
 	if(max<0x80*45)return;
 
 	//显示区大小/总大小
-	QWORD top=resolutiony*start/max;
-	QWORD bottom=resolutiony*(start+0x80*count)/max;//temp变量=max
+	QWORD top=height*start/max;
+	QWORD bottom=height*(start+0x80*count)/max;//temp变量=max
 	say("printposition:%x,%x\n",top,bottom);
 
 	for(y=top;y<bottom;y++)
 	{
-		for(x=1024-16+4;x<1024-4;x++)
+		for(x=width-16+4;x<width-4;x++)
 		{
-			palette[(y*1024) + x] = 0x01234567;
+			palette[(y*width) + x] = 0x01234567;
 		}
 	}
 }
@@ -174,11 +174,12 @@ static void console_write(QWORD type,QWORD key)
 static void console_read()
 {
 	//显示哪儿开始的一块
-	int count=(resolutiony/16)-2-1;	//-windowtitle -mathproblem
+	int count=(height/16)-2-1;	//-windowtitle -mathproblem
 	int enqueue=*(DWORD*)(logbuf+0xffff0);
 
 	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
 	if( start<0 )start=0;
+//say("%d,%d\n",width,height);
 
 	//背景(start,end)
 	background4();
@@ -211,8 +212,8 @@ static void console_start(QWORD size,void* addr)
 	shape_start(size,addr);
 
 	//size
-	resolutionx=size&&0xffff;
-	resolutiony=(size>>16)&0xffff;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 	palette=addr;
 
 	//

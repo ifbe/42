@@ -25,29 +25,29 @@ static void keyboard_write(QWORD type,QWORD value)
 static void keyboard_read()
 {
 	int x,y;
-	for(y=0;y<768;y++)
+	for(y=0;y<ysize;y++)
 	{
-		for(x=0;x<1024;x++)
+		for(x=0;x<xsize;x++)
 		{
-			screenbuf[y*1024+x]=0;
+			screenbuf[y*xsize + x]=0;
 		}
 	}
 
 	//横线
-	for(y=64;y<=768-64;y+=64)
+	for(y=ysize/8;y<ysize*15/16;y+=ysize/8)
 	{
-		for(x=0;x<1024;x++)
+		for(x=0;x<xsize;x++)
 		{
-			screenbuf[y*1024+x]=0xffffffff;
+			screenbuf[y*xsize+x]=0xffffffff;
 		}
 	}
 
 	//竖线
-	for(x=128;x<1024;x+=128)
+	for(x=xsize/8;x<xsize*15/16;x+=xsize/8)
 	{
-		for(y=64;y<=768-64;y++)
+		for(y=0;y<=ysize;y++)
 		{
-			screenbuf[y*1024+x]=0xffffffff;
+			screenbuf[y*xsize+x]=0xffffffff;
 		}
 	}
 }
@@ -76,7 +76,7 @@ static void keyboard_start(QWORD size,void* addr)
 	screenbuf=addr;
 	xsize=size&0xffff;
 	ysize=(size>>16)&0xffff;
-
+//say("%d,%d\n",xsize,ysize);
 	//
 	backgroundcolor(0);
 }
