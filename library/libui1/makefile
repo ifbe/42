@@ -13,6 +13,7 @@ target:
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) print/print.ascii.c
 	$(compiler) $(cflag) print/print.unicode.c
+	$(compiler) $(cflag) tool/tool.color.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.hex.c
 	$(compiler) $(cflag) tool/tool.keyboard.c

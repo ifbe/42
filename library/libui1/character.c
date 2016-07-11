@@ -16,6 +16,7 @@ void sketchpad_init(char*,char*);
 void spectrum_init(char*,char*);
 void the2048_init(char*,char*);
 void tree_init(char*,char*);
+void color_init(char*,char*);
 //kill......
 void menu_kill();
 void console_kill();
@@ -25,6 +26,7 @@ void sketchpad_kill();
 void spectrum_kill();
 void the2048_kill();
 void tree_kill();
+void color_kill();
 
 //
 int startwindow(DWORD,char*);
@@ -146,6 +148,10 @@ void characterinit(char* type,char* addr)
 		spectrum_init(addr,temp);
 		temp += 0x40;
 
+		//
+		color_init(addr,temp);
+		temp += 0x40;
+
 		now=1;
 		say("[c,f):inited character\n");
 	}
@@ -154,6 +160,7 @@ void characterkill()
 {
 	say("[c,f):killing character\n");
 
+	color_kill();
 	tree_kill();
 	the2048_kill();
 	spectrum_kill();

@@ -170,6 +170,7 @@ LOCAL_SRC_FILES += \
         library/libui1/tool/tool.sketchpad.c \
         library/libui1/tool/tool.spectrum.c \
         library/libui1/tool/tool.tree.c \
+        library/libui1/tool/tool.color.c \
         library/libui1/character.c
 
 #1.visitor
