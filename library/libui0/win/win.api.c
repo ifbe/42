@@ -232,14 +232,18 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 */
 		case WM_POINTERDOWN:
 		{
-			pointerid[pointercount]=(BYTE)(wparam);
-			pointercount++;
+			pt.y=GET_Y_LPARAM(lparam);
+			pt.x=GET_X_LPARAM(lparam);
+			ScreenToClient(window, &pt);
 
 			type[0]=0x2b70;		//p+
-			key[0]=(BYTE)(wparam);
+			key[0]=pointercount;
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
+			key[0]=(key[0]<<16) + pt.y;
+			key[0]=(key[0]<<16) + pt.x;
+
+			pointerid[pointercount]=(BYTE)(wparam);
+			pointercount++;
 			this=0;
 			that=-1;
 			return 0;
@@ -268,11 +272,15 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				return 0;
 			}
 
+			pt.y=GET_Y_LPARAM(lparam);
+			pt.x=GET_X_LPARAM(lparam);
+			ScreenToClient(window, &pt);
+
 			type[0]=0x2d70;		//p-
 			key[0]=x;
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
+			key[0]=(key[0]<<16) + pt.y;
+			key[0]=(key[0]<<16) + pt.x;
 			this=0;
 			that=-1;
 
@@ -291,11 +299,15 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				this=-1;return 0;
 			}
 
+			pt.y=GET_Y_LPARAM(lparam);
+			pt.x=GET_X_LPARAM(lparam);
+			ScreenToClient(window, &pt);
+
 			type[0]=0x4070;		//p@
 			key[0]=x;
 			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + GET_Y_LPARAM(lparam);
-			key[0]=(key[0]<<16) + GET_X_LPARAM(lparam);
+			key[0]=(key[0]<<16) + pt.y;
+			key[0]=(key[0]<<16) + pt.x;
 			this=0;
 			that=-1;
 			return 0;

@@ -1,5 +1,20 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
+//
+void string(int x,int y,char* str);
+void hexadecimal(int x,int y,QWORD in);
+//
+void background_start(QWORD size,void* addr);
+void shape_start(QWORD size,void* addr);
+void ascii_start(QWORD size,void* addr);
+void unicode_start(QWORD size,void* addr);
+//
+void printmemory(char*,int);
+void say(char*,...);
+
+
+
+
 static DWORD* screenbuf;
 static int width,height;
 static int red=0x8d,green=0x63,blue=0x25;

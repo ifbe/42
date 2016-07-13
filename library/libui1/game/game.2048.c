@@ -330,15 +330,24 @@ static void the2048_start(DWORD size,void* addr)
 {
 	//1.init
 	int x,y;
+	int* p;
 
+	//
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+	p=(int*)addr;
+
+	//
 	ascii_start(size,addr);
 	unicode_start(size,addr);
 	background_start(size,addr);
 	shape_start(size,addr);
 
 	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
+	for(x=0;x<width*height;x++)
+	{
+		p[x]=0;
+	}
 
 	//2或4
 	for(y=0;y<4;y++)

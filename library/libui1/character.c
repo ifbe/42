@@ -363,15 +363,17 @@ void characterwrite(QWORD type,QWORD key)
 		}//point sensed
 		else if( m == '-' )
 		{
-say("(%d,%d)->(%d,%d)\n",
-	(pointenter[n]&0xffff),
-	((pointenter[n]>>16)&0xffff),
-	(pointleave[n]&0xffff),
-	((pointleave[n]>>16)&0xffff)
-);
+			//
 			pointleave[n]=key;
-			pointcount--;
+			say("(%llx,%llx)->(%llx,%llx)\n",
+				(pointenter[n]&0xffff),
+				((pointenter[n]>>16)&0xffff),
+				(pointleave[n]&0xffff),
+				((pointleave[n]>>16)&0xffff)
+			);
 
+			//
+			pointcount--;
 			if(pointcount==0)
 			{
 				if(pointmax==1)
