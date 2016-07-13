@@ -15,31 +15,58 @@ static void color_into()
 }
 static void color_read()
 {
-	//(左边)各种颜色的色板
-	int x=0,y=0,color;
-	for(x=0;x<256;x++)
+	int x,y,min,color;
+	if( (width<=0) && (height<=0) )
 	{
-		for(y=0;y<256;y++)
+		min=512;	
+	}
+	else
+	{
+		if(width<height)min=width;
+		else min=height;
+	}
+
+	//(左边)各种颜色的色板
+	for(x=0;x<min;x++)
+	{
+		for(y=0;y<min;y++)
 		{
-			screenbuf[y*width + x] = (red<<16)+(y<<8)+x;
+			screenbuf[y*width + x]	= (red<<16)
+						+ ( ( (y*256) / min ) << 8 )
+						+ ( (x*256) / min );
 		}
 	}
-	screenbuf[green*width + blue]=0xffffffff;
+say("min=%d\n",min);
+
+	//(白点)被选中的颜色
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			screenbuf[width*(green*min/256+y)+(blue*min/256+x)]=0xffffffff;
+		}
+	}
 
 	//(右边)选中的颜色的方块
 	color=(red<<16)+(green<<8)+blue;
-	for(y=0;y<height;y++)
+	if(width<height)
 	{
-		for(x=256;x<width;x++)
+		for(y=width;y<height;y++)
 		{
-			screenbuf[y*width + x] = color;
+			for(x=0;x<width;x++)
+			{
+				screenbuf[y*width + x] = color;
+			}
 		}
 	}
-	for(y=256;y<height;y++)
+	if(width>height)
 	{
-		for(x=0;x<width;x++)
+		for(y=0;y<height;y++)
 		{
-			screenbuf[y*width + x] = color;
+			for(x=height;x<width;x++)
+			{
+				screenbuf[y*width + x] = color;
+			}
 		}
 	}
 
@@ -83,15 +110,13 @@ static void color_write(QWORD type,QWORD key)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
+		int min;
+		if(width<height)min=width;
+		else min=height;
 
-		if(x<256)
-		{
-			if(y<256)
-			{
-				blue=x;
-				green=y;
-			}
-		}
+		blue=x*256/min;
+		green=y*256/min;
+say("(%d,%d)\n",x,y);
 	}
 }
 

@@ -47,8 +47,8 @@ static DWORD now=0;		//不能有负数
 static DWORD actualsize;
 static void* actualaddr;
 //touch
-static QWORD pointenter[11];
-static QWORD pointleave[11];
+static QWORD pointenter[10];
+static QWORD pointleave[10];
 static int pointcount=0;
 static int pointmax=0;
 
@@ -363,6 +363,12 @@ void characterwrite(QWORD type,QWORD key)
 		}//point sensed
 		else if( m == '-' )
 		{
+say("(%d,%d)->(%d,%d)\n",
+	(pointenter[n]&0xffff),
+	((pointenter[n]>>16)&0xffff),
+	(pointleave[n]&0xffff),
+	((pointleave[n]>>16)&0xffff)
+);
 			pointleave[n]=key;
 			pointcount--;
 

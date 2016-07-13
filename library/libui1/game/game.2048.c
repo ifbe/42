@@ -26,7 +26,11 @@ static int height=0;
 
 static void cubie(int x,int y,int z)
 {
+	int min;
 	int color;
+	if(width<height)min=width;
+	else min=height;
+
 	switch(z)
 	{
 		case 0:color=0x55555555;break;
@@ -47,11 +51,11 @@ static void cubie(int x,int y,int z)
 	//for(j=y*160+5;j<y*160+155;j++)
 	//point(i,j,color);
 	rectangle(
-		( x*width/4 ) + ( (y*height/4) << 16 ),
-		( (x+1)*width/4 ) + ( ((y+1)*height/4) << 16 ),
+		( x*min/4 ) + ( (y*min/4) << 16 ),
+		( (x+1)*min/4 ) + ( ((y+1)*min/4) << 16 ),
 		color
 	);
-	if(z!=0) colordecimal(4+x*(width/32),4+y*(height/64),z,0);
+	if(z!=0) colordecimal(4+x*(min/32),4+y*(min/64),z,0);
 }
 
 

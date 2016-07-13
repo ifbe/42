@@ -89,10 +89,10 @@ class PlasmaView extends View {
 		{
 			for(index=0;index<count;index++)
 			{
-				long x = (long)event.getX(index);
-				long y = (long)event.getY(index);
-				long z = (long)event.getPressure(index);
-				long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+				long temp=(long)event.getPointerId(index);
+				temp=(temp<<16)+(long)event.getPressure(index);
+				temp=(temp<<16)+(long)event.getY(index);
+				temp=(temp<<16)+(long)event.getX(index);
 				Write(0x4070 , temp);
 			}
 		}
@@ -101,10 +101,10 @@ class PlasmaView extends View {
 		else if((action == MotionEvent.ACTION_DOWN) |
 			(action == MotionEvent.ACTION_POINTER_DOWN) )
 		{
-			long x = (long)event.getX(index);
-			long y = (long)event.getY(index);
-			long z = (long)event.getPressure(index);
-			long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+			long temp=(long)event.getPointerId(index);
+			temp=(temp<<16)+(long)event.getPressure(index);
+			temp=(temp<<16)+(long)event.getY(index);
+			temp=(temp<<16)+(long)event.getX(index);
 			Write(0x2b70 , temp);
 		}
 
@@ -112,10 +112,10 @@ class PlasmaView extends View {
 		else if((action == MotionEvent.ACTION_UP) |
 			(action == MotionEvent.ACTION_POINTER_UP) )
 		{
-			long x = (long)event.getX(index);
-			long y = (long)event.getY(index);
-			long z = (long)event.getPressure(index);
-			long temp=x+(y<<16)+(z<<32)+((long)index<<48);
+			long temp=(long)event.getPointerId(index);
+			temp=(temp<<16)+(long)event.getPressure(index);
+			temp=(temp<<16)+(long)event.getY(index);
+			temp=(temp<<16)+(long)event.getX(index);
 			Write(0x2d70 , temp);
 
 			Read(mBitmap);

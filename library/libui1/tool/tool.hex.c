@@ -248,7 +248,6 @@ static void hex_write(QWORD type,QWORD key)
 			else if(compare( haha+0x80 , "addr" ) == 0)
 			{
 			}
-
 		}
 		else
 		{
@@ -263,7 +262,7 @@ static void hex_write(QWORD type,QWORD key)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
-		offset=(y/16*0x40)+(x/16);
+		offset=( (y/16) * byteperline ) + ( x / 16 );
 
 		//浮动框以外的
 		//px=x/(1024/0x40);
