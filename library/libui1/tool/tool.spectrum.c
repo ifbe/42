@@ -31,11 +31,15 @@ void say(char*,...);
 
 
 
-//data
-static int real[64];
-static int imag[64];
+//before
+static double* databuf=0;
 static maxpower;
-static BYTE* databuf=0;
+
+//after
+static double* real;		//8*2048=0x4000
+static double* imag;		//8*2048=0x4000
+static double* power;		//8*1024=0x2000
+static double* phase;		//8*1024=0x2000
 
 //mainscreen
 static DWORD* screenbuf;
@@ -83,9 +87,10 @@ static void spectrum_write(QWORD type,QWORD key)
 	else if(type==0x7466656C207A7978)		//'xyz left'
 	{
 		int i;
-		for(i=0;i<64;i++)
+		for(i=0;i<2048;i++)
 		{
-			real[i]=random()%maxpower;
+			//real[i] = (double)(i*63);
+			real[i] = (double)(random()%maxpower);
 		}
 	}
 	else if(type==0x6E6F7266207A7978)		//'xyz fron'
@@ -106,13 +111,14 @@ static void spectrum_read()
 	else min=height;
 	rectangle(0, (min<<16)+min, 0);
 
-	for(x=0;x<64;x++)
+	for(x=0;x<1024;x++)
 	{
-		y=min - real[x] * min / maxpower;
+		y = min - (int)(real[x] * (double)min / (double)maxpower);
 
-		leftupper = (x*min/64) + (y<<16);
-		rightbottom=(x*min/64 + 4) + (min<<16);
+		leftupper = (x*min/1024) + (y<<16);
+		rightbottom=(x*min/1024) + (min<<16);
 		rectangle(leftupper, rightbottom, 0xffffffff);
+//say("%x,%x\n",leftupper,rightbottom);
 	}
 }
 static void spectrum_into()
@@ -150,9 +156,10 @@ void spectrum_start(QWORD size,void* addr)
 
 	//
 	maxpower=65536;
-	for(i=0;i<64;i++)
+	for(i=0;i<2048;i++)
 	{
-		real[i]=random()%maxpower;
+		real[i] = (double)(i*63);
+		//real[i] = (double)(random()%maxpower);
 	}
 }
 void spectrum_stop()
@@ -170,7 +177,11 @@ void spectrum_init(char* uibuf,char* addr)
 	this[6]=(QWORD)spectrum_read;
 	this[7]=(QWORD)spectrum_write;
 
-	databuf=uibuf+0x300000;
+	databuf=(double*)(uibuf+0x200000);
+	real=(double*)(uibuf+0x300000);
+	imag=(double*)(uibuf+0x340000);
+	power=(double*)(uibuf+0x380000);
+	phase=(double*)(uibuf+0x3c0000);
 }
 void spectrum_kill()
 {

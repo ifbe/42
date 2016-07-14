@@ -33,7 +33,7 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 
 	//反色
 	this=pixels;
-	for(x=0;x<(info->width)*(info->height-32);x++)
+	for(x=0;x<(info->width)*(info->height-64);x++)
 	{
 		temp=this[x];
 		this[x]=0xff000000 +
@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Start(JNIEnv * env, jo
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	characterstart( ((info.height-32)<<16) + info.width , pixels );
+	characterstart( ((info.height-64)<<16) + info.width , pixels );
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Stop(JNIEnv * env, jobject  obj)

@@ -123,9 +123,9 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	if(y1<=y2){starty=y1;endy=y2;}
 	else{starty=y2;endy=y1;}
 
-	for(y=starty;y<endy;y++)
+	for(y=starty;y<=endy;y++)
 	{
-		for(x=startx;x<endx;x++)
+		for(x=startx;x<=endx;x++)
 		{
 			winbuf[ (y*width) + x ] = color;		//0x53840273;
 		}

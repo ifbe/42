@@ -52,7 +52,7 @@ static void cubie(int x,int y,int z)
 	//point(i,j,color);
 	rectangle(
 		( x*min/4 ) + ( (y*min/4) << 16 ),
-		( (x+1)*min/4 ) + ( ((y+1)*min/4) << 16 ),
+		( ((x+1)*min/4) -1 ) + ( ( ((y+1)*min/4) - 1 ) << 16 ),
 		color
 	);
 	if(z!=0) colordecimal(4+x*(min/32),4+y*(min/64),z,0);
