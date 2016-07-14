@@ -24,13 +24,17 @@ void data2hexstring(QWORD,char*);
 void arteryread(char* rdi,QWORD rsi,QWORD rcx);
 void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
 //
-void say(char*,...);
+unsigned int getrandom();
 void printmemory(char*,int);
+void say(char*,...);
 
 
 
 
-//
+//data
+static int real[64];
+static int imag[64];
+static maxpower;
 static BYTE* databuf=0;
 
 //mainscreen
@@ -78,6 +82,11 @@ static void spectrum_write(QWORD type,QWORD key)
 	}
 	else if(type==0x7466656C207A7978)		//'xyz left'
 	{
+		int i;
+		for(i=0;i<64;i++)
+		{
+			real[i]=random()%maxpower;
+		}
 	}
 	else if(type==0x6E6F7266207A7978)		//'xyz fron'
 	{
@@ -88,15 +97,22 @@ static void spectrum_write(QWORD type,QWORD key)
 }
 static void spectrum_read()
 {
-	int x;
 	int leftupper;
 	int rightbottom;
+	int min;
+	int x,y;
 
-	for(x=16;x<width-8;x+=16)
+	if(width<height)min=width;
+	else min=height;
+	rectangle(0, (min<<16)+min, 0);
+
+	for(x=0;x<64;x++)
 	{
-		leftupper=(x-4);
-		rightbottom=(x+4) + ((height-16)<<16);
-		rectangle(leftupper, rightbottom, x);
+		y=min - real[x] * min / maxpower;
+
+		leftupper = (x*min/64) + (y<<16);
+		rightbottom=(x*min/64 + 4) + (min<<16);
+		rectangle(leftupper, rightbottom, 0xffffffff);
 	}
 }
 static void spectrum_into()
@@ -118,6 +134,12 @@ void spectrum_start(QWORD size,void* addr)
 	int i;
 
 	//
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//
 	screenbuf=addr;
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
@@ -127,10 +149,11 @@ void spectrum_start(QWORD size,void* addr)
 	}
 
 	//
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
+	maxpower=65536;
+	for(i=0;i<64;i++)
+	{
+		real[i]=random()%maxpower;
+	}
 }
 void spectrum_stop()
 {
