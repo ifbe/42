@@ -22,7 +22,7 @@ void printmemory(char*,int);
 
 
 
-static char mybuffer[0x400000];		//4m
+static char mybuffer[2048*1024*4];		//4m
 void main()
 {
 	QWORD type=0;

@@ -62,8 +62,8 @@ static double centery;
 		//centerxy = “屏幕”对应“世界”哪个点
 //
 static DWORD* screenbuf=0;
-static int xsize;
-static int ysize;
+static int width;
+static int height;
 
 
 
@@ -85,43 +85,43 @@ static void wangge()
 	wanggedistance=(int)( 250.00 / res );
 
 
-	first = centerx - scale * 512;
-	second = centerx + scale * 512;
+	first = centerx - scale * (width/2);
+	second = centerx + scale * (width/2);
 	res=beautifulbetween( first , second );
-	res=(res-first) / (second-first) * 1024;
+	res=(res-first) / (second-first) * width;
 
 	wanggex = ( (int)res ) % wanggedistance;
-	if(wanggex>1023 | wanggex<0)return;
+	if( (wanggex>width-1) | (wanggex<0) )return;
 
 
-	first = centery - scale * 384;
-	second = centery + scale * 384;
+	first = centery - scale * (height/2);
+	second = centery + scale * (height/2);
 	res=beautifulbetween( first , second );
-	res=(second-res) / (second-first) * 1024;
+	res=(second-res) / (second-first) * width;
 
 	wanggey = ( (int)res ) % wanggedistance;
-	if(wanggey>767 | wanggey<0)return;
+	if( (wanggey>height-1) | (wanggey<0) )return;
 
 
 
 
 	//网格上对应那一行的x,y坐标值,以及画上网格
-	printdouble( wanggex/8 , 0+wanggey/16 , centerx - (scale*512) + (wanggex*scale) );
-	printdouble( wanggex/8 , 1+wanggey/16 , centery + (scale*384) -	(wanggey*scale) );
+	printdouble( wanggex/8, 0+wanggey/16, centerx-(scale*width/2)+(wanggex*scale) );
+	printdouble( wanggex/8, 1+wanggey/16, centery+(scale*height/2)-(wanggey*scale) );
 
-	for(x=wanggex;x<1024;x+=wanggedistance)
+	for(x=wanggex;x<width;x+=wanggedistance)
 	{//竖线
-		for(y=0;y<768;y++)
+		for(y=0;y<height;y++)
 		{
-			screenbuf[y*1024+x]=0x44444444;
+			screenbuf[y*width+x]=0x44444444;
 		}
 	}//竖线
 
-	for(y=wanggey;y<768;y+=wanggedistance)
+	for(y=wanggey;y<height;y+=wanggedistance)
 	{//横线
-		for(x=0;x<1024;x++)
+		for(x=0;x<width;x++)
 		{
-			screenbuf[y*1024+x]=0x44444444;
+			screenbuf[y*width+x]=0x44444444;
 		}
 	}//横线
 
@@ -137,16 +137,16 @@ static void tuxiang()
 
 	//带入75万个坐标算结果
 	//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
-	for(y=0;y<768;y++)		//只算符号并且保存
+	for(y=0;y<height;y++)		//只算符号并且保存
 	{
-		second=centery + (y-384)*scale;
-		for(x=0;x<1024;x++)
+		second=centery + (y - (height/2))*scale;
+		for(x=0;x<width;x++)
 		{
-			first=centerx + (x-512)*scale;
+			first=centerx + (x - (width/2))*scale;
 			haha=sketchpad(node,first,second);
 
-			if(haha>0)databuf[1024*y+x]=1;
-			else databuf[1024*y+x]=-1;
+			if(haha>0)databuf[width*y+x]=1;
+			else databuf[width*y+x]=-1;
 		}
 	}//calculate results
 
@@ -155,26 +155,26 @@ static void tuxiang()
 
 	//由算出的结果得到图像
 	//屏幕(0,767)->data[(767-767)*1024+0],,,,(1023,0)->data[(767-0)*1024+1023]
-	for(y=1;y<767;y++)		//边缘四个点确定中心那一点有没有
+	for(y=1;y<height-1;y++)		//边缘四个点确定中心那一点有没有
 	{
-		value1=(767-y)<<10;
-		for(x=1;x<1023;x++)
+		value1=(height-1-y)*width;
+		for(x=1;x<width-1;x++)
 		{
 			counter=0;
-			if( databuf[ value1-1025 + x ] > 0 )counter--;
+			if( databuf[ value1-width-1 + x ] > 0 )counter--;
 			else counter++;
 
-			if( databuf[ value1-1023 + x ] > 0 )counter--;
+			if( databuf[ value1-width+1 + x ] > 0 )counter--;
 			else counter++;
 
-			if( databuf[ value1+1023 + x ] > 0 )counter--;
+			if( databuf[ value1+width-1 + x ] > 0 )counter--;
 			else counter++;
 
-			if( databuf[ value1+1025 + x ] > 0 )counter--;
+			if( databuf[ value1+width+1 + x ] > 0 )counter--;
 			else counter++;
 
 			//上下左右四点符号完全一样，说明没有点穿过//否则白色
-			if( (counter!=4) && (counter!=-4) )screenbuf[y*1024+x]=0xffffffff;
+			if( (counter!=4) && (counter!=-4) )screenbuf[y*width+x]=0xffffffff;
 		}
 	}//result2img
 }
@@ -270,8 +270,8 @@ static void sketchpad_write(QWORD type,QWORD key)
 		//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
 		//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx -> newcenterx=centerx+scale*pointx*(1-1/1.2)
 		int x,y;
-		x=(key&0xffff)-512;
-		y=384-((key>>16)&0xffff);
+		x=(key&0xffff) - (width/2);
+		y=(height/2) - ( (key>>16) & 0xffff );
 		centerx += ((double)x) * scale * (1-1/1.2);
 		centery += ((double)y) * scale * (1-1/1.2);
 		//say("%d,%lf\n",x,centerx);
@@ -282,8 +282,8 @@ static void sketchpad_write(QWORD type,QWORD key)
 	else if(type==0x6B636162207A7978)		//'xyz back'
 	{
 		int x,y;
-		x=(key&0xffff)-512;
-		y=384-((key>>16)&0xffff);
+		x=(key&0xffff) - (width/2);
+		y=(height/2) - ( (key>>16) & 0xffff );
 		centerx += ((double)x) * scale * (-0.2);
 		centery += ((double)y) * scale * (-0.2);
 
@@ -299,7 +299,6 @@ static void sketchpad_read()
 	if(node[0].type!=0x3d3d3d3d)goto skipthese;
 	if(changed==0)goto skipthese;
 	changed=0;
-
 
 
 
@@ -350,8 +349,8 @@ static void sketchpad_start(QWORD size,void* addr)
 	shape_start(size,addr);
 
 	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 	screenbuf=addr;
 
 	//
@@ -375,8 +374,8 @@ void sketchpad_init(void* base,void* addr)
 	this[6]=(QWORD)sketchpad_read;
 	this[7]=(QWORD)sketchpad_write;
 
-	node=(struct mathnode*)(base+0x200000);
-	databuf=base+0x300000;
+	node=(struct mathnode*)(base+0x100000);
+	databuf=base+0x200000;
 }
 void sketchpad_kill()
 {

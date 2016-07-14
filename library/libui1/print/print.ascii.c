@@ -295,11 +295,11 @@ void printascii(DWORD x1y1z1,char ch,DWORD fgcolor,DWORD bgcolor)
 		{
 			if( (temp&0x80) != 0 )
 			{
-				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = fgcolor;
+				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = fgcolor;
 			}
 			else
 			{
-				screen[ ( (yyyy+y) << 10 ) + (xxxx+x)] = bgcolor;
+				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = bgcolor;
 			}
 			temp<<=1;
 		}
@@ -342,15 +342,15 @@ void ascii(int x,int y,unsigned char ch)
 void printstring(DWORD x1y1z1,char* p,DWORD fgcolor,DWORD bgcolor)
 {
 	int x=(x1y1z1 & 0xffff)/8;
-        while(1)
-        {
-                if( *p == 0x0 )break;
-                if(x>=0x80)break;
+	while(1)
+	{
+		if( *p == 0x0 )break;
+		if(x>=0x80)break;
 
-                printascii( x1y1z1+(x*8) , *p , fgcolor , bgcolor );
-                x++;
-                p++;
-        }
+		printascii( x1y1z1+(x*8) , *p , fgcolor , bgcolor );
+		x++;
+		p++;
+	}
 }
 void colorstring(int x,int y,char* p,unsigned int color)
 {

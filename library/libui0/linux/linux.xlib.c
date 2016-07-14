@@ -179,7 +179,7 @@ int uievent(QWORD* my1,QWORD* my2)
 		{
 			int temp=(ev.xbutton.x-oldx)*(ev.xbutton.y-oldy);
 			if(temp<0)temp=-temp;
-			if(temp<64)continue;
+			if(temp<16)continue;
 
 			*my1=0x65766F6D207A7978;         //'xyz move'
 			*my2=( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx;

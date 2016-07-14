@@ -121,17 +121,28 @@ static void color_write(QWORD type,QWORD key)
 			if(red>0) red--;
 		}
 	}
-	else if(type==0x7466656C207A7978)
+	else if( (type&0xffffffff) == 0x207A7978 )
 	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-		int min;
-		if(width<height)min=width;
-		else min=height;
+		if((type>>32)==0x7466656C)
+		{
+			int x=key&0xffff;
+			int y=(key>>16)&0xffff;
+			int min;
+			if(width<height)min=width;
+			else min=height;
 
-		blue=x*256/min;
-		green=y*256/min;
-say("(%d,%d)\n",x,y);
+			blue=x*256/min;
+			green=y*256/min;
+			say("(%d,%d)\n",x,y);
+		}
+		else if((type>>32)==0x6E6F7266)
+		{
+			if(red<0xff)red++;
+		}
+		else if((type>>32)==0x6B636162)
+		{
+			if(red>0)red--;
+		}
 	}
 }
 
