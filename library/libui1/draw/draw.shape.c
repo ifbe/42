@@ -34,14 +34,15 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	x2=z2y2x2&0xffff;
 	y2=(z2y2x2>>16)&0xffff;
 
-	if(x1<0)return;
-	if(x1>width)return;
-	if(x2<0)return;
-	if(x2>width)return;
-	if(y1<0)return;
-	if(y1>height-1)return;
-	if(y2<0)return;
-	if(y2>height-1)return;
+	if(x1<0)x1=0;
+	if(x1>width)x1=width-1;
+	if(x2<0)x2=0;
+	if(x2>width)x2=width-1;
+	if(y1<0)y1=0;
+	if(y1>=height)y1=height-1;
+	if(y2<0)y2=0;
+	if(y2>=height)y2=height-1;
+//say("(%d,%d)->(%d,%d)\n",x1,y1,x2,y2);
 
 
 
@@ -53,7 +54,7 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 		for(;y<=temp;y++)
 		{
-			winbuf[ (y<<10) + x1 ] = color;
+			winbuf[ (y*width) + x1 ] = color;
 		}
 	}
 
@@ -61,15 +62,19 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	{
 		double dx;
 		double k=(double)(y1-y2) / (double)(x1-x2);
-		if(x1<=x2){x=x1;temp=x2;}
-		if(x1>x2){x=x2;temp=x1;}
+		if(x1<x2){x=x1;temp=x2;}
+		else{x=x2;temp=x1;}
 
 		for(;x<temp;x++)
 		{
 			dx=(double)(x-x1);
-			y=y1+ (DWORD)(k*dx);
-			if(y<height) winbuf[ (y*width) + x ] = color;
-			else winbuf[ x ] = color;
+			y=y1+ (int)(k*dx);
+//say("%d,%d\n",x,y);
+			if(y<height)
+			{
+				winbuf[ (y*width) + x ] = color;
+			}
+			else say("wrong\n");
 		}
 	}
 }

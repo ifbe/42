@@ -6,6 +6,7 @@ void shape_start(DWORD size,void* addr);
 void ascii_start(DWORD size,void* addr);
 void unicode_start(DWORD size,void* addr);
 //
+void line(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
 void colordecimal(int x,int y,int z,unsigned int color);
 void backgroundcolor(DWORD);
@@ -310,6 +311,43 @@ static void the2048_read()
 		{
 			cubie(x,y,table[y][x]);
 		}
+	}
+
+	if(width<height)
+	{
+		//
+		line(
+			(width/4) + ( (width + (height-width)/4) << 16 ),
+			(width*1/8) + ( (width + (height-width)/2) << 16 ),
+			0xffffffff
+		);
+		line(
+			(width/4) + ( (width+(height-width)/4) << 16 ),
+			(width*3/8) + ( (width+(height-width)/2) << 16 ),
+			0xffffffff
+		);
+		line(
+			(width*3/4) + ( (width + (height-width)/4) << 16 ),
+			(width*5/8) + ( (width + (height-width)/2) << 16 ),
+			0xffffffff
+		);
+		line(
+			(width*3/4) + ( (width + (height-width)/4) << 16 ),
+			(width*7/8) + ( (width + (height-width)/2) << 16 ),
+			0xffffffff
+		);
+
+		//
+		line(
+			(width/2) + ( height << 16 ),
+			(width*1/4) + ( (width + (height-width)*3/4) << 16 ),
+			0xffffffff
+		);
+		line(
+			(width/2) + ( height << 16 ),
+			(width*3/4) + ( (width + (height-width)*3/4) << 16 ),
+			0xffffffff
+		);
 	}
 }
 static void the2048_choose()
