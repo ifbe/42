@@ -8,7 +8,7 @@ void unicode_start(DWORD size,void* addr);
 //
 void line(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
-void colordecimal(int x,int y,int z,unsigned int color);
+void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
 void backgroundcolor(DWORD);
 //
 unsigned int getrandom();
@@ -29,24 +29,26 @@ static void cubie(int x,int y,int z)
 {
 	int min;
 	int color;
+	int count;
 	if(width<height)min=width;
 	else min=height;
 
 	switch(z)
 	{
-		case 0:color=0x55555555;break;
-		case 2:color=0xfffffff0;break;
-		case 4:color=0xffffffc0;break;
-		case 8:color=0x995000;break;
-		case 16:color=0xc05000;break;
-		case 32:color=0xb03000;break;
-		case 64:color=0xff0000;break;
-		case 128:color=0xffffa0;break;
-		case 256:color=0xffff80;break;
-		case 512:color=0xffff00;break;
-		case 1024:color=0xffffb0;break;
-		case 2048:color=0xffffffff;break;
-		case 4096:color=0xffffffff;break;
+		case 0:color=0x55555555;count=0;break;
+		case 2:color=0xfffffff0;count=0;break;
+		case 4:color=0xffffffc0;count=0;break;
+		case 8:color=0x995000;count=0;break;
+		case 16:color=0xc05000;count=1;break;
+		case 32:color=0xb03000;count=1;break;
+		case 64:color=0xff0000;count=1;break;
+		case 128:color=0xffffa0;count=2;break;
+		case 256:color=0xffff80;count=2;break;
+		case 512:color=0xffff00;count=2;break;
+		case 1024:color=0xffffb0;count=3;break;
+		case 2048:color=0x11111111;count=3;break;
+		case 4096:color=0x783d72;count=3;break;
+		case 8192:color=0xd73762;count=3;break;
 	}
 	//for(i=x*160+5;i<x*160+155;i++)
 	//for(j=y*160+5;j<y*160+155;j++)
@@ -56,7 +58,14 @@ static void cubie(int x,int y,int z)
 		( ((x+1)*min/4) -1 ) + ( ( ((y+1)*min/4) - 1 ) << 16 ),
 		color
 	);
-	if(z!=0) colordecimal(4+x*(min/32),4+y*(min/64),z,0);
+
+	if(z==0)return;
+	printdecimal(
+		z,
+		x*(min/32)+min/80-count*2 + ((y*(min/64)+min/160)<<8) + (4<<16),
+		0,
+		0
+	);
 }
 
 

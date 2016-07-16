@@ -1,6 +1,7 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 void double2decimalstring(double,char*);
+void say(char*,...);
 
 
 
@@ -274,17 +275,24 @@ static const unsigned char asciitable[128*16]={
 
 
 
-void printascii(DWORD x1y1z1,char ch,DWORD fgcolor,DWORD bgcolor)
+//字符值大小，横纵坐标，前景色，后景色
+void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
-	int x,y;
-	int xxxx,yyyy;
+	int flag;
+	int x,y,j,k;
+	int xxxx,yyyy,size;
 	unsigned char temp;
 	unsigned char* points=(unsigned char*)&asciitable;
 
+	flag=bgcolor>>24;
+	xxxx=(xyz&0xff)<<3;
+	yyyy=((xyz>>8)&0xff)<<4;
+
+	size=(xyz>>16)&0x7;
+	if(size==0)size=1;
+
 	if(ch<0x20)ch=0x20;
 	points+=ch<<4;
-	xxxx=x1y1z1&0xffff;
-	yyyy=(x1y1z1>>16)&0xffff;
 
 	for(y=0;y<16;y++)
 	{
@@ -293,130 +301,95 @@ void printascii(DWORD x1y1z1,char ch,DWORD fgcolor,DWORD bgcolor)
 
 		for(x=0;x<8;x++)
 		{
-			if( (temp&0x80) != 0 )
+			for(j=0;j<size;j++)
 			{
-				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = fgcolor;
-			}
-			else
-			{
-				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = bgcolor;
-			}
+				for(k=0;k<size;k++)
+				{
+					if( (temp&0x80) != 0 )
+					{
+						screen[ ( (yyyy+y*size+k) * width ) + (xxxx+x*size+j)] = fgcolor;
+					}
+					else if(flag != 0)
+					{
+						screen[ ( (yyyy+y*size+k) * width ) + (xxxx+x*size+j)] = bgcolor;
+					}
+				}//k
+			}//j
+
 			temp<<=1;
-		}
-	}
-}
-void colorascii(int xxxx,int yyyy,char ch,unsigned int color)
-{
-	int x,y;
-	unsigned char temp;
-	unsigned char* points=(unsigned char*)&asciitable;
-
-	if(ch<0x20)ch=0x20;
-	points+=ch<<4;
-	xxxx<<=3;
-	yyyy<<=4;
-
-	for(y=0;y<16;y++)
-	{
-		temp=points[0];
-		points++;
-
-		for(x=0;x<8;x++)
-		{
-			if( (temp&0x80) != 0 )
-			{
-				screen[ ( (yyyy+y) * width ) + (xxxx+x)] = color;
-			}
-			temp<<=1;
-		}
-	}
-}
-void ascii(int x,int y,unsigned char ch)
-{
-	colorascii(x,y,ch,0);
+		}//x
+	}//y
 }
 
 
 
 
-void printstring(DWORD x1y1z1,char* p,DWORD fgcolor,DWORD bgcolor)
+void printstring(char* p,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
-	int x=(x1y1z1 & 0xffff)/8;
+	int x=(xyz & 0xff)/8;
 	while(1)
 	{
 		if( *p == 0x0 )break;
-		if(x>=0x80)break;
+		if( x >= 0x80)break;
 
-		printascii( x1y1z1+(x*8) , *p , fgcolor , bgcolor );
+		printascii(*p, xyz+x, fgcolor, bgcolor);
 		x++;
 		p++;
 	}
 }
-void colorstring(int x,int y,char* p,unsigned int color)
-{
-	while(1)
-	{
-		if( *p == 0x0 )break;
-		if(x>=0x80)break;
-
-		colorascii(x,y,*p,color);
-		p++;
-		x++;
-	}
-}
-void string(int x,int y,char* p)
-{
-	colorstring(x,y,p,0);
-}
 
 
 
 
-void colordecimal(int x,int y,int z,unsigned int color)
+void printdecimal(int dec,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
 	char ch;
-	int i;
+	int i,size,count;
 	long long temp;
 
-	if(z<0)
+	size=(xyz>>16)&0xff;
+	if(dec<0)
 	{
-		colorascii(x,y,'-',color);
-		x++;
-		z=-z;
+		printascii('-', xyz, fgcolor, bgcolor);
+		xyz+=size;
+		dec=-dec;
 	}
 
-	i=0;
-	temp=z;
+	count=0;
+	temp=dec;
 	while(1)
 	{
 		if(temp<10)break;
 		temp=temp/10;
-		i++;
+		count++;
 	}
 
-	for(;i>=0;i--)
+	for(i=0;i<=count;i++)
 	{
-		ch=(char)(z%10);
+		ch=(char)(dec%10);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		colorascii(x+i,y,ch,color);
-		z=z/10;
+		printascii(ch, xyz+(count-i)*size, fgcolor, bgcolor);
+		dec=dec/10;
 	}
 }
-void decimal(int x,int y,long long z)
-{
-	colordecimal(x,y,z,0);
-}
 
 
 
 
-void colorhexadecimal(int x,int y,unsigned long long z,unsigned int color)
+void printhexadecimal(unsigned long long hex,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
 	char ch;
-	int i=0;
+	int i,x,y,size;
+	unsigned long long temp;
 
-	unsigned long long temp=z;
+	temp=hex;
+	i=0;
+	x=xyz&0xff;
+	y=(xyz>>8)&0xff;
+	size=(xyz>>16)&0xff;
+	if(size==0)size=1;
+
 	while(1)
 	{
 		if(temp<0x10)break;
@@ -425,38 +398,34 @@ void colorhexadecimal(int x,int y,unsigned long long z,unsigned int color)
 	}
 	for(;i>=0;i--)
 	{
-		ch=(char)(z&0x0000000f);
+		ch=(char)(hex&0x0000000f);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		colorascii(x+i,y,ch,color);
-		z=z>>4;
+		printascii(ch, xyz+i*size,fgcolor, bgcolor);
+		hex=hex>>4;
 	}
 }
-void hexadecimal(int x,int y,unsigned long long z)
-{
-	colorhexadecimal(x,y,z,0);
-}
-void hexadecimal1234(int x,int y,unsigned int z)
+void hexadecimal1234(DWORD x,int y,unsigned int hex)
 {
 	char fullbyte,ch;
 	int i;
 	for(i=0;i<4;i++)
 	{
-		fullbyte=z&0xff;
-		z=z>>8;
+		fullbyte=hex&0xff;
+		hex=hex>>8;
 		//if(fullbyte != 0)
 		//{
 			//高半字节
 			ch=(fullbyte>>4)&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			colorascii(x+2*i,y,ch,0);
+			printascii(ch, (y<<8) + x + 2*i, 0, 0);
 
 			//低半字节
 			ch=fullbyte&0xf;
 			ch+=0x30;
 			if(ch>0x39)ch+=0x7;
-			colorascii(x+2*i+1,y,ch,0);
+			printascii(ch, (y<<8) + x + 2*i + 1, 0, 0);
 		//}
 	}
 }
@@ -464,11 +433,35 @@ void hexadecimal1234(int x,int y,unsigned int z)
 
 
 
-void printdouble(int x,int y,double z)
+void printdouble(double data,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
 	char mystring[100];
-	double2decimalstring(z,mystring);
-	colorstring(x,y,mystring,0xffffff);
+	double2decimalstring(data,mystring);
+	printstring(mystring, xyz, 0xffffffff, 0);
+}
+
+
+
+
+void ascii(int x,int y,unsigned char ch)
+{
+	printascii(ch, x+(y<<8), 0xffffffff, 0);
+}
+void string(int x,int y,char* p)
+{
+	printstring(p, x+(y<<8), 0xffffffff, 0);
+}
+void decimal(int x,int y,long long dec)
+{
+	printdecimal(dec, x+(y<<8), 0xffffffff, 0);
+}
+void hexadecimal(DWORD x,int y,unsigned long long hex)
+{
+	printhexadecimal(hex, x+(y<<8)+(4<<16), 0, 0);
+}
+void defaultdouble(int x,int y,double data)
+{
+	printdouble(data, x+(y<<8), 0xcccccccc, 0x44444444);
 }
 
 

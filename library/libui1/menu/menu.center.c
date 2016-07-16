@@ -5,7 +5,7 @@
 int characterchoose(char* p);
 void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
 void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
-void colorstring(int x,int y,char* str,unsigned int color);
+void printstring(char* str,DWORD xyz,DWORD fg,DWORD bg);
 void say(char*,...);
 
 
@@ -95,8 +95,18 @@ static void menu_read()
 	//rectangle((256<<16)+768-16 , rightbottom+768  , 0xff0000);
 
 	//string
-	colorstring(xsize/8/4, ysize/16/4, "what do you want?" , 0xcccccc);
-	colorstring(xsize/8/4, ysize/16/4+1, buffer , 0xcccccc);
+	printstring(
+		"what do you want?",
+		(xsize/8/4) + ((ysize/16/4)<<8),
+		0xcccccccc,
+		0
+	);
+	printstring(
+		buffer,
+		(xsize/8/4) + ((ysize/16/4+1)<<8),
+		0xcccccccc,
+		0
+	);
 }
 static void menu_choose()
 {

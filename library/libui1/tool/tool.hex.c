@@ -9,11 +9,10 @@ void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
 void unicode_start(QWORD size,void* addr);
 //
-void hexadecimal(int x,int y,QWORD in);
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
-void colorascii(int x,int y,char ch,unsigned int color);
+void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
 void backgroundcolor(DWORD);
 void background1();
 //
@@ -109,10 +108,10 @@ static void foreground()
 			for(x=0;x<width/16;x+=4)
 			{
 				DWORD value=*(DWORD*)(where + (y*width/16) + x);
-				colorascii(2*x+xshift,y,value&0xff,0);
-				colorascii(2*x+2+xshift,y,(value>>8)&0xff,0);
-				colorascii(2*x+4+xshift,y,(value>>16)&0xff,0);
-				colorascii(2*x+6+xshift,y,(value>>24)&0xff,0);
+				printascii(      value&0xff, 2*x+0+xshift+(y<<8), 0, 0);
+				printascii((value>> 8)&0xff, 2*x+2+xshift+(y<<8), 0, 0);
+				printascii((value>>16)&0xff, 2*x+4+xshift+(y<<8), 0, 0);
+				printascii((value>>24)&0xff, 2*x+6+xshift+(y<<8), 0, 0);
 			}
 		}
 	}
@@ -163,7 +162,7 @@ static void floatarea()
 	{
 		for(x=0;x<32;x++)
 		{
-			colorascii(chx+x,chy+y,haha[(y*32) + x],0);
+			printascii(haha[(y*32) + x], chx+x + ((chy+y)<<8), 0, 0);
 		}
 	}
 }

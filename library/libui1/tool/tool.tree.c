@@ -24,12 +24,12 @@ void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
 void unicode_start(QWORD size,void* addr);
 //libui
-void line(QWORD point1,QWORD point2,DWORD color);
-void colorstring(int x,int y,char* str,unsigned int color);
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
-void printdouble(int x,int y,double z);
-void colorascii(int x,int y,int z,unsigned int color);
+void printdouble(double z,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void printstring(char* str,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void line(QWORD point1,QWORD point2,DWORD color);
 void backgroundcolor(DWORD);
 //libsoft
 double calculator(char* postfix);
@@ -63,7 +63,7 @@ static void printfile0()
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;
-		colorstring(0,y+2,p+0x40*y,0xcccccc);
+		printstring(p+0x40*y, 0+(y+2)<<16, 0xcccccc, 0);
 		hexadecimal(0x30,y+2,*(QWORD*)(p+0x40*y+0x10));
 		hexadecimal(0x50,y+2,*(QWORD*)(p+0x40*y+0x20));
 		hexadecimal(0x70,y+2,*(QWORD*)(p+0x40*y+0x30));
@@ -110,15 +110,15 @@ static void printnode(int x,int y,int num)
 	//self
 	if(node[num].type == 0x33323130)	//0,1,2,3...
 	{
-		printdouble(thisx,thisy,node[num].floatpoint);
+		printdouble(node[num].floatpoint, thisx+(thisy<<16), 0xffffffff, 0);
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		colorascii(thisx , thisy , node[num].integer & 0xff , 0xffffff);
+		printascii(node[num].integer & 0xff, thisx+(thisy<<16), 0xffffffff, 0);
 	}
 	else
 	{
-		colorascii(thisx , thisy , node[num].type & 0xff , 0xffffff);
+		printascii(node[num].type & 0xff , thisx+(thisy<<16), 0xffffffff, 0);
 	}
 
 	//left
@@ -182,8 +182,8 @@ static void tree_read()
 	int left,right;
 	backgroundcolor(0);
 
-	colorstring(0,0,buffer,0xcccccc);
-	colorstring(0,1,postfix,0xcccccc);
+	printstring(buffer, 0+(0<<16), 0xcccccccc, 0);
+	printstring(postfix, 0+(1<<16), 0xcccccccc, 0);
 
 	if(node!=0)
 	{

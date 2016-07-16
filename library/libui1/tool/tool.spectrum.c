@@ -9,12 +9,6 @@ void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
 void unicode_start(QWORD size,void* addr);
 //
-void hexadecimal(int x,int y,QWORD in);
-void hexadecimal1234(int x,int y,QWORD in);
-void string(int x,int y,char* str);
-void ascii(int x,int y,char ch);
-void colorascii(int x,int y,char ch,unsigned int color);
-//
 void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
 void backgroundcolor(DWORD);
 void background1();
@@ -33,7 +27,7 @@ void say(char*,...);
 
 //before
 static double* databuf=0;
-static maxpower;
+static int maxpower;
 
 //after
 static double* real;		//8*2048=0x4000
@@ -90,7 +84,7 @@ static void spectrum_write(QWORD type,QWORD key)
 		for(i=0;i<2048;i++)
 		{
 			//real[i] = (double)(i*63);
-			real[i] = (double)(random()%maxpower);
+			real[i] = (double)(getrandom()%maxpower);
 		}
 	}
 	else if(type==0x6E6F7266207A7978)		//'xyz fron'

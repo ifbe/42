@@ -174,7 +174,7 @@ static void console_write(QWORD type,QWORD key)
 static void console_read()
 {
 	//显示哪儿开始的一块
-	int count=(height/16)-2-1;	//-windowtitle -mathproblem
+	int count=(height/16)-1;
 	int enqueue=*(DWORD*)(logbuf+0xffff0);
 
 	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头

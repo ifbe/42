@@ -1,7 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 //
-void string(int x,int y,char* str);
 void hexadecimal(int x,int y,QWORD in);
 //
 void background_start(QWORD size,void* addr);
@@ -86,8 +85,7 @@ say("min=%d\n",min);
 	}
 
 	//
-	string(0x40,0,"color= #");
-	hexadecimal(0x48,0,color);
+	hexadecimal(min/16, 0, color);
 }
 static void color_write(QWORD type,QWORD key)
 {
