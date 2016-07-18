@@ -160,20 +160,24 @@ static void tuxiang()
 		for(x=1;x<width-1;x++)
 		{
 			counter=0;
-			if( databuf[ value1-width-1 + x ] > 0 )counter--;
-			else counter++;
+			if( databuf[ value1-width-1 + x ] == 1 )counter++;
+			else counter--;
 
-			if( databuf[ value1-width+1 + x ] > 0 )counter--;
-			else counter++;
+			if( databuf[ value1-width+1 + x ] == 1 )counter++;
+			else counter--;
 
-			if( databuf[ value1+width-1 + x ] > 0 )counter--;
-			else counter++;
+			if( databuf[ value1+width-1 + x ] == 1 )counter++;
+			else counter--;
 
-			if( databuf[ value1+width+1 + x ] > 0 )counter--;
-			else counter++;
+			if( databuf[ value1+width+1 + x ] == 1 )counter++;
+			else counter--;
 
+			//say("@%d,%d:%d\n",x,y,counter);
 			//上下左右四点符号完全一样，说明没有点穿过//否则白色
-			if( (counter!=4) && (counter!=-4) )screenbuf[y*width+x]=0xffffffff;
+			if( (counter!=4) && (counter!=-4) )
+			{
+				screenbuf[y*width+x]=0xffffffff;
+			}
 		}
 	}//result2img
 }

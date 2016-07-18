@@ -82,7 +82,7 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 
 
-void squareframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+void rectframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 {
 	int t;
 	int x,y;
@@ -108,11 +108,7 @@ void squareframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 		for(y=starty;y<endy;y++)winbuf[(y*width) + endx-t] = color;
 	}
 }
-
-
-
-
-void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+void rectbody(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 {
 	int x,y;
 	int x1,y1,x2,y2;
@@ -135,6 +131,11 @@ void rectangle(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 			winbuf[ (y*width) + x ] = color;		//0x53840273;
 		}
 	}
+}
+void rect(QWORD z1y1x1,QWORD z2y2x2,DWORD bodycolor,DWORD framecolor)
+{
+	rectbody(z1y1x1,z2y2x2,bodycolor);
+	rectframe(z1y1x1,z2y2x2,framecolor);
 }
 
 

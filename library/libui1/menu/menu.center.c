@@ -3,17 +3,18 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 int characterchoose(char* p);
-void squareframe(QWORD leftup,QWORD rightdown,DWORD color);
-void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
+//
 void printstring(char* str,DWORD xyz,DWORD fg,DWORD bg);
+void rect(DWORD leftup,DWORD rightdown,DWORD bodycolor,DWORD framecolor);
+//
 void say(char*,...);
 
 
 
 
 //
-static int xsize;
-static int ysize;
+static int width;
+static int height;
 static DWORD* screenbuf;
 //菜单
 static char buffer[128];
@@ -37,17 +38,20 @@ static void menu_write(QWORD type,QWORD key)
 		int y=(key>>16)&0xffff;
 
 		//点击框框外面，关掉菜单
-		if( (x<256)|(x>768)|(y<256)|(y>512) )
+		if(	(x<width/4) |
+			(x>width*3/4) |
+			(y>(height*3/4)&0xfffffff0) |
+			(y<height/4) )
 		{
 			that[0]=0;
 			return;
 		}
 
 		//点击红色矩形，退出
-		if( (y<256+16) && (x>768-16) )
+		else if( (y<256+16) && (x>768-16) )
 		{
 			//退出
-			characterchoose(0);
+			characterchoose("exit");
 			return;
 		}
 	}//left
@@ -84,27 +88,41 @@ static void menu_write(QWORD type,QWORD key)
 }
 static void menu_read()
 {
-	int leftupper=((ysize/4)<<16) + (xsize/4);
-	int rightbottom=((ysize*3/4)<<16) + (xsize*3/4);
+	//title
+	rect(
+		( ( (height/4)&0xfffffff0)<<16) + (width/4),
+		( ( (height/4+16)&0xfffffff0)<<16) + (width*3/4),
+		0x01234567,
+		0xfedcba98
+	);
 
 	//body
-	rectangle(leftupper, rightbottom, 0);
-	squareframe(leftupper, rightbottom, 0xcccccc);
+	rect(
+		( ( (height/4+16)&0xfffffff0) << 16) + (width/4),
+		((height*3/4)<<16) + (width*3/4),
+		0,
+		0xffffffff
+	);
 
-	//close button
-	//rectangle((256<<16)+768-16 , rightbottom+768  , 0xff0000);
+	//button
+	rect(
+		( ( (height/4)&0xfffffff0) << 16) + (width*47/64),
+		( ( (height/4+16)&0xfffffff0) << 16) + (width*3/4),
+		0xff0000,
+		0
+	);
 
 	//string
 	printstring(
 		"what do you want?",
-		(xsize/8/4) + ((ysize/16/4)<<8),
-		0xcccccccc,
+		(width/16 - 8) + ((height/64)<<8),
+		0xffffffff,
 		0
 	);
 	printstring(
 		buffer,
-		(xsize/8/4) + ((ysize/16/4+1)<<8),
-		0xcccccccc,
+		(width/32) + ((height/64 + 1)<<8),
+		0xffffffff,
 		0
 	);
 }
@@ -121,8 +139,8 @@ static void menu_list()
 static void menu_start(DWORD size,void* addr)
 {
 	//
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 
 	//
 	screenbuf=addr;

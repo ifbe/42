@@ -120,36 +120,36 @@ void characterinit(char* type,char* addr)
 		menu_init(addr,temp);
 		temp+=0x40;
 
-		//[+0x40,+0x7f]:        1.hex.c
-		hex_init(addr,temp);
-		temp += 0x40;
-
-		//[+0x80,+0xbf]:        2.2048.c
+		//game.2048
 		the2048_init(addr,temp);
 		temp += 0x40;
 
-		//[+0xc0,+0xff]:        2.keyboard.c
-		keyboard_init(addr,temp);
+		//tool.color
+		color_init(addr,temp);
 		temp += 0x40;
 
-		//[+0x100,+0x13f]:      2.tree.c
-		tree_init(addr,temp);
-		temp += 0x40;
-
-		//[+0x140,+0x17f]:      3.sketchpad.c
-		sketchpad_init(addr,temp);
-		temp += 0x40;
-
-		//[+0x180,+0x1bf]:      4.console.c
+		//tool.console
 		console_init(addr,temp);
 		temp += 0x40;
 
-		//
+		//tool.hex
+		hex_init(addr,temp);
+		temp += 0x40;
+
+		//tool.keyboard
+		keyboard_init(addr,temp);
+		temp += 0x40;
+
+		//tool.sketchpad
+		sketchpad_init(addr,temp);
+		temp += 0x40;
+
+		//tool.spectrum
 		spectrum_init(addr,temp);
 		temp += 0x40;
 
-		//
-		color_init(addr,temp);
+		//tool.tree
+		tree_init(addr,temp);
 		temp += 0x40;
 
 		now=1;

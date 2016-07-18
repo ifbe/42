@@ -7,7 +7,7 @@ void ascii_start(DWORD size,void* addr);
 void unicode_start(DWORD size,void* addr);
 //
 void line(QWORD leftup,QWORD rightdown,DWORD color);
-void rectangle(QWORD leftup,QWORD rightdown,DWORD color);
+void rectbody(QWORD leftup,QWORD rightdown,DWORD color);
 void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
 void backgroundcolor(DWORD);
 //
@@ -53,7 +53,7 @@ static void cubie(int x,int y,int z)
 	//for(i=x*160+5;i<x*160+155;i++)
 	//for(j=y*160+5;j<y*160+155;j++)
 	//point(i,j,color);
-	rectangle(
+	rectbody(
 		( x*min/4 ) + ( (y*min/4) << 16 ),
 		( ((x+1)*min/4) -1 ) + ( ( ((y+1)*min/4) - 1 ) << 16 ),
 		color

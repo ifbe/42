@@ -9,7 +9,7 @@ void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
 void unicode_start(QWORD size,void* addr);
 //
-void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
+void rectbody(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
@@ -103,7 +103,7 @@ static void spectrum_read()
 
 	if(width<height)min=width;
 	else min=height;
-	rectangle(0, (min<<16)+min, 0);
+	rectbody(0, (min<<16)+min, 0);
 
 	for(x=0;x<1024;x++)
 	{
@@ -111,7 +111,7 @@ static void spectrum_read()
 
 		leftupper = (x*min/1024) + (y<<16);
 		rightbottom=(x*min/1024) + (min<<16);
-		rectangle(leftupper, rightbottom, 0xffffffff);
+		rectbody(leftupper, rightbottom, 0xffffffff);
 //say("%x,%x\n",leftupper,rightbottom);
 	}
 }
