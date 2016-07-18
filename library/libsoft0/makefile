@@ -1,6 +1,24 @@
+.PHONY:android
+android:
+	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
+	gcc -c -fPIC -O2 android/android.interface.bluetooth.c
+	gcc -c -fPIC -O2 android/android.interface.i2c.c
+	gcc -c -fPIC -O2 android/android.interface.gpio.c
+	gcc -c -fPIC -O2 android/android.interface.pci.c
+	gcc -c -fPIC -O2 android/android.interface.spi.c
+	gcc -c -fPIC -O2 android/android.interface.uart.c
+	gcc -c -fPIC -O2 android/android.interface.usb.c
+	gcc -c -fPIC -O2 android/android.interface.wifi.c
+	gcc -c -fPIC -O2 android/android.memory.file.c
+	gcc -c -fPIC -O2 android/android.memory.mmio.c
+	gcc -c -fPIC -O2 android/android.net.epoll.c
+	gcc -c -fPIC -O2 android/android.net.socket.c
+	gcc -c -fPIC -O2 android/android.special.folder.c
+	gcc -c -fPIC -O2 android/android.special.random.c
+	gcc -c -fPIC -O2 system.c
 .PHONY:bsd
 bsd:
-	rm -f mac.*.o win.*.o
+	rm -f android.*o linux.*.o mac.*.o win.*.o
 	gcc -c -fPIC -O2 bsd/bsd.memory.file.c
 	gcc -c -fPIC -O2 bsd/bsd.memory.mmio.c
 	gcc -c -fPIC -O2 bsd/bsd.special.folder.c
@@ -8,7 +26,7 @@ bsd:
 	gcc -c -fPIC -O2 system.c
 .PHONY:linux
 linux:
-	rm -f mac.*.o win.*.o
+	rm -f android.*.o bsd.*.o mac.*.o win.*.o
 	gcc -c -fPIC -O2 linux/linux.interface.bluetooth.c
 	gcc -c -fPIC -O2 linux/linux.interface.i2c.c
 	gcc -c -fPIC -O2 linux/linux.interface.gpio.c
@@ -26,7 +44,7 @@ linux:
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac
 mac:
-	rm -f linux.*.o win.*.o
+	rm -f android.*.o bsd.*.o linux.*.o win.*.o
 	clang -c -O2 mac/mac.interface.bluetooth.c
 	clang -c -O2 mac/mac.interface.i2c.c
 	clang -c -O2 mac/mac.interface.gpio.c
@@ -44,7 +62,7 @@ mac:
 	clang -c -O2 system.c
 .PHONY:win
 win:
-	rm -f linux.*.o mac.*.o
+	rm -f android.*.o bsd.*.o linux.*.o mac.*.o
 	gcc -c -O2 win/win.interface.bluetooth.c
 	gcc -c -O2 win/win.interface.i2c.c
 	gcc -c -O2 win/win.interface.gpio.c
