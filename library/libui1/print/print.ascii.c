@@ -326,13 +326,19 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 
 void printstring(char* p,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
-	int x=(xyz & 0xff)/8;
+	int x;
+	int size;
+
+	x=0;
+	size=(xyz>>16)&0x7;
+	if(size==0)size=1;
+
 	while(1)
 	{
-		if( *p == 0x0 )break;
-		if( x >= 0x80)break;
+		if(*p == 0x00 )break;
+		if( x >= 0x80 )break;
 
-		printascii(*p, xyz+x, fgcolor, bgcolor);
+		printascii(*p, xyz+x*size, fgcolor, bgcolor);
 		x++;
 		p++;
 	}
@@ -348,6 +354,8 @@ void printdecimal(int dec,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 	long long temp;
 
 	size=(xyz>>16)&0xff;
+	if(size==0)size=1;
+
 	if(dec<0)
 	{
 		printascii('-', xyz, fgcolor, bgcolor);

@@ -55,6 +55,7 @@ public class Plasma extends Activity
 }
 
 class PlasmaView extends View {
+	private int doit=1;
 	private Bitmap mBitmap;
 
 	/* implementend by libplasma.so */
@@ -71,6 +72,12 @@ class PlasmaView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		if(doit==1)
+		{
+			Read(mBitmap);
+			doit=0;
+		}
+
 		// canvas.drawColor(0xFFCCCCCC);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 		// force a redraw, with a different time-based pattern.
@@ -118,7 +125,8 @@ class PlasmaView extends View {
 			temp=(temp<<16)+(long)event.getX(index);
 			Write(0x2d70 , temp);
 
-			Read(mBitmap);
+			//Read(mBitmap);
+			doit=1;
 		}
 
 		return true;

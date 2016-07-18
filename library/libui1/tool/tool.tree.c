@@ -44,12 +44,16 @@ void printmemory(char*,int);
 
 
 //
-static int count=0;
+static int width;
+static int height;
 
+//
+static int count=0;
+static struct mathnode* node=0;
+
+//
 static char buffer[128];
 static char postfix[128];
-
-static struct mathnode* node=0;
 
 
 
@@ -63,7 +67,7 @@ static void printfile0()
 	for(y=0;y<36;y++)
 	{
 		if(*(DWORD*)(p+0x40*y) == 0) break;
-		printstring(p+0x40*y, 0+(y+2)<<16, 0xcccccc, 0);
+		printstring(p+0x40*y, 0+(y+2)<<8, 0xcccccc, 0);
 		hexadecimal(0x30,y+2,*(QWORD*)(p+0x40*y+0x10));
 		hexadecimal(0x50,y+2,*(QWORD*)(p+0x40*y+0x20));
 		hexadecimal(0x70,y+2,*(QWORD*)(p+0x40*y+0x30));
@@ -73,7 +77,6 @@ static void printnode(int x,int y,int num)
 {
 	int left,right;
 	int offset,temp;
-	int thisx,thisy;
 
 	//拿
 	//say("node:%d\n",num);
@@ -82,43 +85,43 @@ static void printnode(int x,int y,int num)
 	right=node[num].right;
 
 	//偏移
-	offset=256;
+	offset=width/4;
 	temp=y;
 	while(1)
 	{
-		offset >>= 1;
-
 		temp--;
-		if(temp==0)break;
+		if(temp<=0)break;
+
+		offset >>= 1;
 	}
 	//say("offset=%d\n",offset);
 
 	//位置
-	thisx=x/8;
-	thisy=y*4;
+	temp=y*4;
 	if(node[ node[num].up ].left == num)	//是左边
 	{
 		if(node[num].left==0&&node[num].right==0)	//而且是叶子
 		{
 			if(y>=7)		//而且放不下了
 			{
-				thisy+=1;
+				temp+=1;
 			}
 		}
 	}
 
 	//self
+say("%d,%d\n",x,temp);
 	if(node[num].type == 0x33323130)	//0,1,2,3...
 	{
-		printdouble(node[num].floatpoint, thisx+(thisy<<16), 0xffffffff, 0);
+		printdouble(node[num].floatpoint, (x/8)+(temp<<8), 0xffffffff, 0);
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		printascii(node[num].integer & 0xff, thisx+(thisy<<16), 0xffffffff, 0);
+		printascii(node[num].integer & 0xff, (x/8)+(temp<<8), 0xffffffff, 0);
 	}
 	else
 	{
-		printascii(node[num].type & 0xff , thisx+(thisy<<16), 0xffffffff, 0);
+		printascii(node[num].type & 0xff , (x/8)+(temp<<8), 0xffffffff, 0);
 	}
 
 	//left
@@ -155,9 +158,10 @@ static void tree_write(QWORD type,QWORD key)
 		}
 		else if(key==0xd)		//enter
 		{
-			//134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
-			say("buffer:%s\n",buffer);
-
+			int i;
+			char* p=(char*)node;
+			for(i=0;i<0x1000;i++)p[i]=0;
+			
 			say("infix2postfix:%s\n",postfix);
 			infix2postfix(buffer,postfix);
 
@@ -179,27 +183,21 @@ static void tree_write(QWORD type,QWORD key)
 }
 static void tree_read()
 {
-	int left,right;
 	backgroundcolor(0);
+	printstring(buffer, 0+(0<<8), 0xffffffff, 0);
+	printstring(postfix, 0+(1<<8), 0xffffffff, 0);
+	if(node==0)return;
 
-	printstring(buffer, 0+(0<<16), 0xcccccccc, 0);
-	printstring(postfix, 0+(1<<16), 0xcccccccc, 0);
-
-	if(node!=0)
+	//等式
+	if(node[0].type==0x3d3d3d3d)
 	{
-		//等式左边
-		left=node[0].left;
-		if(left!=0&&left<128)
-		{
-			printnode(256,1,left);
-		}
+		printnode(width/2, 1, 0);
+	}
 
-		//等式右边
-		right=node[0].right;
-		if(right!=0&&right<128)
-		{
-			printnode(768,1,right);
-		}
+	//算式
+	else
+	{
+		printnode(width/2, 1, node[0].right);
 	}
 }
 static void tree_into()
@@ -218,11 +216,18 @@ static void tree_list()
 
 static void tree_start(QWORD size,void* addr)
 {
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
 	ascii_start(size,addr);
 	unicode_start(size,addr);
 	background_start(size,addr);
 	shape_start(size,addr);
-	backgroundcolor(0);
+
+	buffer[0]='1';
+	buffer[1]='+';
+	buffer[2]='1';
+	tree_write(0x72616863, 0xd);
 }
 static void tree_stop()
 {

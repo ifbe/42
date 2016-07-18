@@ -353,10 +353,15 @@ static void sketchpad_start(QWORD size,void* addr)
 	screenbuf=addr;
 
 	//
-	backgroundcolor(0);
 	centerx=0.00;
 	centery=0.00;
 	scale=1.00;
+
+	//
+	buffer[0]='y';
+	buffer[1]='=';
+	buffer[2]='x';
+	sketchpad_write(0x72616863, 0xd);
 }
 static void sketchpad_stop()
 {
