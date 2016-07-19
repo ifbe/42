@@ -58,20 +58,20 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
-	library/libsoft0/android/android.interface.bluetooth.c \
-	library/libsoft0/android/android.interface.gpio.c \
-	library/libsoft0/android/android.interface.i2c.c \
-	library/libsoft0/android/android.interface.spi.c \
-	library/libsoft0/android/android.interface.uart.c \
-	library/libsoft0/android/android.interface.usb.c \
-	library/libsoft0/android/android.interface.wifi.c \
-	library/libsoft0/android/android.memory.file.c \
-	library/libsoft0/android/android.memory.physical.c \
-	library/libsoft0/android/android.memory.virtual.c \
-	library/libsoft0/android/android.net.epoll.c \
-	library/libsoft0/android/android.net.socket.c \
-	library/libsoft0/android/android.special.folder.c \
-	library/libsoft0/android/android.special.random.c \
+	library/libsoft0/linux/linux.interface.bluetooth.c \
+	library/libsoft0/linux/linux.interface.gpio.c \
+	library/libsoft0/linux/linux.interface.i2c.c \
+	library/libsoft0/linux/linux.interface.spi.c \
+	library/libsoft0/linux/linux.interface.uart.c \
+	library/libsoft0/linux/linux.interface.usb.c \
+	library/libsoft0/linux/linux.interface.wifi.c \
+	library/libsoft0/linux/linux.memory.file.c \
+	library/libsoft0/linux/linux.memory.physical.c \
+	library/libsoft0/linux/linux.memory.virtual.c \
+	library/libsoft0/linux/linux.net.epoll.c \
+	library/libsoft0/linux/linux.net.socket.c \
+	library/libsoft0/linux/linux.special.folder.c \
+	library/libsoft0/linux/linux.special.random.c \
 	library/libsoft0/system.c
 
 #3.soft1
