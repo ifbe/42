@@ -151,7 +151,7 @@ LOCAL_SRC_FILES += \
 
 #4.ui0
 LOCAL_SRC_FILES += \
-	library/libui0/cli/cli.cli.c \
+	library/libui0/all/all.cli.c \
 	library/libui0/display.c
 
 #4.ui1

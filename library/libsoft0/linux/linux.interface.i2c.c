@@ -7,7 +7,7 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<sys/ioctl.h>
-//#include<linux/i2c.h>		//if you have problem
+#include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
 void say(char*,...);
 
