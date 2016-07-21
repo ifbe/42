@@ -42,6 +42,7 @@ target:
 	$(compiler) $(cflag) memory/parttable/memory.pt.apple.c
 	$(compiler) $(cflag) memory/parttable/memory.pt.gpt.c
 	$(compiler) $(cflag) memory/parttable/memory.pt.mbr.c
+	$(compiler) $(cflag) memory/qrcode/memory.qrcode.c
 	$(compiler) $(cflag) memory/string/memory.string.compare.c
 	$(compiler) $(cflag) memory/string/memory.string.convert.c
 	$(compiler) $(cflag) memory/string/memory.string.parse.c

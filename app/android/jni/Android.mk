@@ -123,6 +123,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/parttable/memory.pt.apple.c \
 	library/libsoft1/memory/parttable/memory.pt.gpt.c \
 	library/libsoft1/memory/parttable/memory.pt.mbr.c \
+	library/libsoft1/memory/qrcode/memory.qrcode.c \
 	library/libsoft1/memory/string/memory.string.compare.c \
 	library/libsoft1/memory/string/memory.string.convert.c \
 	library/libsoft1/memory/string/memory.string.parse.c \
@@ -158,19 +159,20 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
         library/libui1/draw/draw.background.c \
         library/libui1/draw/draw.shape.c \
+        library/libui1/print/print.ascii.c \
+        library/libui1/print/print.unicode.c \
         library/libui1/game/game.2048.c \
         library/libui1/game/game.snake.c \
         library/libui1/game/game.tetris.c \
-        library/libui1/menu/menu.center.c \
-        library/libui1/print/print.ascii.c \
-        library/libui1/print/print.unicode.c \
+        library/libui1/tool/tool.color.c \
         library/libui1/tool/tool.console.c \
         library/libui1/tool/tool.hex.c \
         library/libui1/tool/tool.keyboard.c \
+        library/libui1/tool/tool.qrcode.c \
         library/libui1/tool/tool.sketchpad.c \
         library/libui1/tool/tool.spectrum.c \
         library/libui1/tool/tool.tree.c \
-        library/libui1/tool/tool.color.c \
+        library/libui1/menu/menu.center.c \
         library/libui1/character.c
 
 #1.visitor

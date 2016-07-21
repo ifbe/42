@@ -17,6 +17,7 @@ void spectrum_init(char*,char*);
 void the2048_init(char*,char*);
 void tree_init(char*,char*);
 void color_init(char*,char*);
+void qrcode_init(char*,char*);
 //kill......
 void menu_kill();
 void console_kill();
@@ -27,6 +28,7 @@ void spectrum_kill();
 void the2048_kill();
 void tree_kill();
 void color_kill();
+void qrcode_kill();
 
 //
 int startwindow(DWORD,char*);
@@ -124,6 +126,10 @@ void characterinit(char* type,char* addr)
 		the2048_init(addr,temp);
 		temp += 0x40;
 
+		//game.tetris
+		//tetris_init(addr,temp);
+		//temp += 0x40;
+
 		//tool.color
 		color_init(addr,temp);
 		temp += 0x40;
@@ -138,6 +144,10 @@ void characterinit(char* type,char* addr)
 
 		//tool.keyboard
 		keyboard_init(addr,temp);
+		temp += 0x40;
+
+		//tool.qrcode
+		qrcode_init(addr,temp);
 		temp += 0x40;
 
 		//tool.sketchpad
@@ -169,6 +179,7 @@ void characterkill()
 	hex_kill();
 	console_kill();
 	menu_kill();
+	qrcode_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
