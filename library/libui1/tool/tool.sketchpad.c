@@ -195,22 +195,22 @@ static void sketchpad_write(QWORD type,QWORD key)
 	{
 		if(key==0x25)			//left	0x4b
 		{
-			centerx -= scale*100;
+			centerx += scale*100;
 			changed=1;
 		}
 		else if(key==0x27)		//right	0x4d
 		{
-			centerx += scale*100;
+			centerx -= scale*100;
 			changed=1;
 		}
 		else if(key==0x26)		//up	0x4b
 		{
-			centery += scale*100;
+			centery -= scale*100;
 			changed=1;
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			centery -= scale*100;
+			centery += scale*100;
 			changed=1;
 		}
 	}
@@ -360,6 +360,8 @@ static void sketchpad_change()
 
 static void sketchpad_start(QWORD size,void* addr)
 {
+	int x;
+
 	ascii_start(size,addr);
 	unicode_start(size,addr);
 	background_start(size,addr);
@@ -369,6 +371,11 @@ static void sketchpad_start(QWORD size,void* addr)
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 	screenbuf=addr;
+
+	for(x=0;x<width*height;x++)
+	{
+		screenbuf[x]=0;
+	}
 }
 static void sketchpad_stop()
 {

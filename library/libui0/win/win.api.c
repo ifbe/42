@@ -427,11 +427,29 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//窗口尺寸改变
 		case WM_SIZE:
 		{
+			width=lparam&0xffff;
+			height=(lparam>>16)&0xffff;
+			printf("%d,%d\n",width,height);
+
+			info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+			info.bmiHeader.biWidth=width;
+			info.bmiHeader.biHeight=-height;
+			info.bmiHeader.biPlanes=1;
+			info.bmiHeader.biBitCount=32;
+			info.bmiHeader.biCompression=0;
+			info.bmiHeader.biSizeImage=width*height*4;
+			info.bmiHeader.biXPelsPerMeter=0;
+			info.bmiHeader.biYPelsPerMeter=0;
+			info.bmiHeader.biClrUsed=0;
+			info.bmiHeader.biClrImportant=0;
+			info.bmiColors[0].rgbBlue=255;
+			info.bmiColors[0].rgbGreen=255;
+			info.bmiColors[0].rgbRed=255;
+			info.bmiColors[0].rgbReserved=255;
+
 			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
 			type[0]=0x657a6973;			//'size'
 			key[0]=lparam;
-			width=lparam&0xffff;
-			height=(lparam>>16)&0xffff;
 			this=0;
 			that=-1;
 
@@ -574,6 +592,8 @@ void startwindow(DWORD size,char* addr)
 	//构造info
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
+	say("%d,%d\n");
+	SetWindowPos(window, 0, 0, 0, width+4, height+27, SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER);
 
 	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biWidth=width;
