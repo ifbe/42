@@ -79,11 +79,11 @@ static struct working
         int (*stop)();
         char padding3[ 8 - sizeof(char*) ];
 
-        //[20,27]:起因
+        //[20,27]:状态
         int (*list)();
         char padding4[ 8 - sizeof(char*) ];
 
-        //[28,2f]:经过
+        //[28,2f]:跳关
         int (*choose)();
         char padding5[ 8 - sizeof(char*) ];
 
@@ -202,6 +202,7 @@ int characterstart(DWORD size,char* addr)
 	worker[now].start(actualsize, actualaddr);
 	worker[0].start(actualsize, actualaddr);
 
+	worker[now].choose();
 	return 0;
 }
 int characterstop()
@@ -243,19 +244,28 @@ int characterchoose(char* p)
 	if(temp==1)
 	{
 		if(worker[now+1].id == 0)return 0;
-
 		now++;
+
+		//
 		worker[now].start(actualsize, actualaddr);
 		worker[0].start(actualsize, actualaddr);
+
+		//
+		worker[now].choose();
 		return 1;
 	}
+
 	if( (temp&0xffffffff) == 0xffffffff )
 	{
 		if(now<=1)return 0;
-
 		now--;
+
+		//
 		worker[now].start(actualsize, actualaddr);
 		worker[0].start(actualsize, actualaddr);
+
+		//
+		worker[now].choose();
 		return 1;
 	}
 
@@ -279,7 +289,13 @@ int characterchoose(char* p)
 
 		now=getrandom();
 		now=( now % (i-2) ) + 1;
-		say("%d\n",now);
+
+		//
+		worker[now].start(actualsize, actualaddr);
+		worker[0].start(actualsize, actualaddr);
+
+		//
+		worker[now].choose();
 		return 2;
 	}
 
@@ -301,9 +317,11 @@ int characterchoose(char* p)
 		if(worker[i].id == temp)
 		{
 			now=i;
+
 			worker[now].start(actualsize, actualaddr);
 			worker[0].start(actualsize, actualaddr);
-//say("(%llx)\n",actualsize);
+
+			worker[now].choose();
 			return 4;
 		}
 	}
@@ -337,14 +355,14 @@ void characterwrite(QWORD type,QWORD key)
 	//size
 	if(type==0x657a6973)
 	{
+		//
 		actualsize=key;
-/*
-		say("size=(%d,%d)\n",
-			actualsize&0xffff,
-			(actualsize>>16)&0xffff
-		);
-*/
-		characterstart(actualsize, actualaddr);
+
+		//
+		worker[now].start(actualsize, actualaddr);
+		worker[0].start(actualsize, actualaddr);
+
+		//
 		return;
 	}//size
 

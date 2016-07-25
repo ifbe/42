@@ -53,16 +53,16 @@ static char* databuf=0;
 static struct mathnode* node=0;
 
 //
-static double scale;
-static double centerx;
-static double centery;
+static double scale=0.0;
+static double centerx=0.0;
+static double centery=0.0;
 		//databuf 里面存放计算得到的值的符号
 		//scale=“屏幕”上两个点对于“世界”上的距离
 		//centerxy = “屏幕”对应“世界”哪个点
 //
 static DWORD* screenbuf=0;
-static int width;
-static int height;
+static int width=0;
+static int height=0;
 
 
 
@@ -330,11 +330,25 @@ skipthese:		//打印
 	printstring(result,  0 + (48<<8), 0xcccccc , 0 );
 	return;
 }
-static void sketchpad_into()
-{
-}
+
+
+
+
 static void sketchpad_list()
 {
+}
+static void sketchpad_change()
+{
+	//
+	centerx=0.00;
+	centery=0.00;
+	scale=1.00;
+
+	//
+	buffer[0]='y';
+	buffer[1]='=';
+	buffer[2]='x';
+	sketchpad_write(0x72616863, 0xd);
 }
 
 
@@ -355,17 +369,6 @@ static void sketchpad_start(QWORD size,void* addr)
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 	screenbuf=addr;
-
-	//
-	centerx=0.00;
-	centery=0.00;
-	scale=1.00;
-
-	//
-	buffer[0]='y';
-	buffer[1]='=';
-	buffer[2]='x';
-	sketchpad_write(0x72616863, 0xd);
 }
 static void sketchpad_stop()
 {
@@ -378,7 +381,7 @@ void sketchpad_init(void* base,void* addr)
 	this[2]=(QWORD)sketchpad_start;
 	this[3]=(QWORD)sketchpad_stop;
 	this[4]=(QWORD)sketchpad_list;
-	this[5]=(QWORD)sketchpad_into;
+	this[5]=(QWORD)sketchpad_change;
 	this[6]=(QWORD)sketchpad_read;
 	this[7]=(QWORD)sketchpad_write;
 

@@ -359,11 +359,29 @@ static void the2048_read()
 		);
 	}
 }
-static void the2048_choose()
-{
-}
+
+
+
+
+
+
+
+
 static void the2048_list()
 {
+}
+static void the2048_choose()
+{
+	int x,y;
+
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			table[y][x]=0;
+		}
+	}
+	new2048();
 }
 
 
@@ -376,7 +394,7 @@ static void the2048_list()
 static void the2048_start(DWORD size,void* addr)
 {
 	//1.init
-	int x,y;
+	int x;
 	int* p;
 
 	//
@@ -396,15 +414,6 @@ static void the2048_start(DWORD size,void* addr)
 		p[x]=0;
 	}
 
-	//2或4
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			table[y][x]=0;
-		}
-	}
-	new2048();
 }
 static void the2048_stop()
 {

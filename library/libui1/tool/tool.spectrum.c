@@ -115,16 +115,24 @@ static void spectrum_read()
 //say("%x,%x\n",leftupper,rightbottom);
 	}
 }
-static void spectrum_into()
-{
-}
+
+
+
+
 static void spectrum_list(QWORD* this)
 {
 }
+static void spectrum_into()
+{
+	int i;
+	maxpower=65536;
 
-
-
-
+	for(i=0;i<2048;i++)
+	{
+		real[i] = (double)(i*63);
+		//real[i] = (double)(random()%maxpower);
+	}
+}
 
 
 
@@ -146,14 +154,6 @@ void spectrum_start(QWORD size,void* addr)
 	for(i=0;i<width*height;i++)
 	{
 		screenbuf[i]=0;
-	}
-
-	//
-	maxpower=65536;
-	for(i=0;i<2048;i++)
-	{
-		real[i] = (double)(i*63);
-		//real[i] = (double)(random()%maxpower);
 	}
 }
 void spectrum_stop()

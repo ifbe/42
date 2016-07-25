@@ -12,8 +12,8 @@ void backgroundcolor(DWORD);
 
 
 DWORD* screenbuf=0;
-int xsize=0;
-int ysize=0;
+static int width=0;
+static int height=0;
 
 
 
@@ -25,29 +25,29 @@ static void keyboard_write(QWORD type,QWORD value)
 static void keyboard_read()
 {
 	int x,y;
-	for(y=0;y<ysize;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<xsize;x++)
+		for(x=0;x<width;x++)
 		{
-			screenbuf[y*xsize + x]=0;
+			screenbuf[y*width + x]=0;
 		}
 	}
 
 	//横线
-	for(y=ysize/8;y<ysize*15/16;y+=ysize/8)
+	for(y=height/8;y<height*15/16;y+=height/8)
 	{
-		for(x=0;x<xsize;x++)
+		for(x=0;x<width;x++)
 		{
-			screenbuf[y*xsize+x]=0xffffffff;
+			screenbuf[y*width+x]=0xffffffff;
 		}
 	}
 
 	//竖线
-	for(x=xsize/8;x<xsize*15/16;x+=xsize/8)
+	for(x=width/8;x<width*15/16;x+=width/8)
 	{
-		for(y=0;y<=ysize;y++)
+		for(y=0;y<=height;y++)
 		{
-			screenbuf[y*xsize+x]=0xffffffff;
+			screenbuf[y*width+x]=0xffffffff;
 		}
 	}
 }
@@ -74,9 +74,9 @@ static void keyboard_start(QWORD size,void* addr)
 
 	//
 	screenbuf=addr;
-	xsize=size&0xffff;
-	ysize=(size>>16)&0xffff;
-//say("%d,%d\n",xsize,ysize);
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
 	//
 	backgroundcolor(0);
 }

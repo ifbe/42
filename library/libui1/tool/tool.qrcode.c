@@ -28,12 +28,6 @@ static char* databuf;
 
 
 
-static void qrcode_list()
-{
-}
-static void qrcode_into()
-{
-}
 static void qrcode_read()
 {
 	DWORD color;
@@ -63,6 +57,22 @@ static void qrcode_read()
 static void qrcode_write()
 {
 }
+
+
+
+
+static void qrcode_list()
+{
+}
+static void qrcode_into()
+{
+	sidelength=49;
+	qrcode_generate("haha",databuf,sidelength);
+}
+
+
+
+
 static void qrcode_start(QWORD size,void* addr)
 {
 	ascii_start(size,addr);
@@ -74,13 +84,14 @@ static void qrcode_start(QWORD size,void* addr)
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 	screenbuf=addr;
-
-	sidelength=49;
-	qrcode_generate("haha",databuf,sidelength);
 }
 static void qrcode_stop()
 {
 }
+
+
+
+
 void qrcode_init(void* base,void* addr)
 {
 	QWORD* this=(QWORD*)addr;

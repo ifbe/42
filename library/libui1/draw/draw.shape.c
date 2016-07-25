@@ -143,7 +143,6 @@ void rect(QWORD z1y1x1,QWORD z2y2x2,DWORD bodycolor,DWORD framecolor)
 
 void shape_start(DWORD size,void* addr)
 {
-say(">>>>%x\n",size);
 	//how
 	width=size&0xffff;
 	height=(size>>16)&0xffff;

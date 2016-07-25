@@ -287,33 +287,20 @@ static void hex_read()
 	//
 	floatarea();
 }
-static void hex_into()
-{
-}
+
+
+
+
+
+
+
+
 static void hex_list(QWORD* this)
 {
 }
-
-
-
-
-
-
-
-
-void hex_start(QWORD size,void* addr)
+static void hex_into()
 {
 	int i;
-
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
 
 	//浮动框
 	for(i=0;i<0x100;i++)haha[i]=0;
@@ -327,6 +314,27 @@ void hex_start(QWORD size,void* addr)
 	offset=0;
 	currentcache=0xffffffff;
 	backgroundcolor(0);
+
+}
+
+
+
+
+
+
+
+
+void hex_start(QWORD size,void* addr)
+{
+	ascii_start(size,addr);
+	unicode_start(size,addr);
+	background_start(size,addr);
+	shape_start(size,addr);
+
+	//
+	screenbuf=addr;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 }
 void hex_stop()
 {

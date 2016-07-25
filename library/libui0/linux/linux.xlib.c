@@ -50,12 +50,13 @@ XImage* ximage;
 Window win;
 GC gc;
 Atom wmDelete;
-
+//
 static char* userpixel=0;
-int width=1024;
-int height=768;
-int oldx=0;
-int oldy=0;
+static int width=512;
+static int height=512;
+//
+static int oldx=0;
+static int oldy=0;
 
 
 
@@ -124,18 +125,21 @@ int uievent(QWORD* my1,QWORD* my2)
 		}
 		else if(ev.type==ConfigureNotify)
 		{
-			/*
-			printf("%d,%d\n",
-				ev.xconfigure.width,
-				ev.xconfigure.height
+			int x = ev.xconfigure.width;
+			int y = ev.xconfigure.height;
+			//printf("%d,%d\n",x,y);
+
+			if( (x==width) && (y==height) )continue;
+			width=x;
+			height=y;
+
+			ximage=XCreateImage(
+				dsp,visual,24,ZPixmap,0,
+				userpixel,x,y,32,0
 			);
-			*/
-			if(	(width==ev.xconfigure.width) &&
-				(height==ev.xconfigure.height) )
-			{continue;}
 
 			*my1 = 0x657a6973;
-			*my2 = ev.xconfigure.width+(ev.xconfigure.height<<16);
+			*my2 = x + (y<<16);
 			return 2;
 		}
 		else if(ev.type==ButtonPress)
@@ -221,9 +225,9 @@ int uievent(QWORD* my1,QWORD* my2)
 void startwindow(DWORD size,char* addr)
 {
 	//
+	userpixel=addr;
 	width=size & 0xffff;
 	height=(size>>16) & 0xffff;
-	userpixel=addr;
 
 	//
 	ximage=XCreateImage(

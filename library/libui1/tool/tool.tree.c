@@ -200,16 +200,20 @@ static void tree_read()
 		printnode(width/2, 1, node[0].right);
 	}
 }
-static void tree_into()
-{
-}
+
+
+
+
 static void tree_list()
 {
 }
-
-
-
-
+static void tree_into()
+{
+	buffer[0]='1';
+	buffer[1]='+';
+	buffer[2]='1';
+	tree_write(0x72616863, 0xd);
+}
 
 
 
@@ -223,11 +227,6 @@ static void tree_start(QWORD size,void* addr)
 	unicode_start(size,addr);
 	background_start(size,addr);
 	shape_start(size,addr);
-
-	buffer[0]='1';
-	buffer[1]='+';
-	buffer[2]='1';
-	tree_write(0x72616863, 0xd);
 }
 static void tree_stop()
 {

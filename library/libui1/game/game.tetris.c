@@ -557,12 +557,17 @@ void tetris_read()
 void tetris_list()
 {
 }
-
-
-
-
 void tetris_choose()
 {
+	int x;
+	for(x= 0*32;x<40*32;x++) table[x]=0;
+	for(x=40*32;x<41*32;x++) table[x]=1;
+
+	that.x=getrandom() %27 +1;
+	that.y=1;
+	that.type=5;
+	that.direction=2;
+	generate();
 }
 
 
@@ -571,8 +576,8 @@ void tetris_choose()
 
 static void tetris_start(DWORD size,void* addr)
 {
-	//1.init
-	int x,y;
+	//
+	int x;
 
 	//
 	width=size&0xffff;
@@ -590,16 +595,6 @@ static void tetris_start(DWORD size,void* addr)
 	{
 		screen[x]=0;
 	}
-
-	for(x= 0*32;x<40*32;x++) table[x]=0;
-	for(x=40*32;x<41*32;x++) table[x]=1;
-
-	that.x=getrandom() %27 +1;
-	that.y=1;
-	that.type=5;
-	that.direction=2;
-	generate();
-
 }
 static void tetris_stop()
 {
