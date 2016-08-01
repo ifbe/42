@@ -1,8 +1,9 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
-	$(compiler) $(cflag) adult/master.c
-	$(compiler) $(cflag) adult/slave.c
+	$(compiler) $(cflag) adult/command.c
+	$(compiler) $(cflag) adult/event.c
+	$(compiler) $(cflag) adult/universe.c
 linuxstatic:
 	rm -f *.o
 	make -s target compiler="gcc" cflag="-c -fPIC -O2"

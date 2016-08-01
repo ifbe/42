@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 //
 int command(char* buffer);
-int waitevent(QWORD*,QWORD*);
+int readevent(QWORD*,QWORD*);
 //
 int enter(char*);
 int leave();
@@ -38,7 +38,7 @@ int main(int argc,char* argv[])
 		//say("here\n");
 
 		//1.等输入，再把这段里面所有的0x20变成0
-		waitevent(&first,&second);
+		readevent(&first,&second);
 		if(first==0)break;
 		if(first != 0x727473)continue;
 

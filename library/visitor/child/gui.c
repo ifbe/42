@@ -10,7 +10,7 @@ void characterwrite(QWORD type,QWORD key);
 void characterstart(DWORD size,char* addr);
 void characterstop();
 //
-void waitevent(QWORD* first,QWORD* second);
+void readevent(QWORD* first,QWORD* second);
 void writewindow(DWORD,char*);
 void readwindow();
 //
@@ -43,7 +43,7 @@ void main()
 		writewindow(512+(512<<16) , mybuffer);
 
 		//2.等事件，是退出消息就退出
-		waitevent(&type,&key);
+		readevent(&type,&key);
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死

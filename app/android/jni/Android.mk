@@ -177,8 +177,9 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-	library/visitor/adult/master.c \
-	library/visitor/adult/slave.c \
+	library/visitor/adult/command.c \
+	library/visitor/adult/event.c \
+	library/visitor/adult/universe.c \
 	library/visitor/child/cli.c
 
 

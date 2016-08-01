@@ -275,6 +275,7 @@ int characterchoose(char* p)
 	{
 		//deathflag=1;
 		say("chatacter(%d) wants to die\n",now);
+		writeevent();
 		return 0;
 	}
 

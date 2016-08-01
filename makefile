@@ -118,10 +118,7 @@ push:
 pull:
 	git pull
 clean:
-	rm -f *.out *.exe
-	rm -f */*.o
-	rm -f */*.a
-	rm -f */*.res
+	rm -f *.apk *.out *.exe *.o *.a *.res
 	make -s -C app clean
 	make -s -C library clean
 	make -s -C res clean

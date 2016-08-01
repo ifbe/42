@@ -2,11 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//event
-int uievent(QWORD* first,QWORD* second);
-int softevent(QWORD* first,QWORD* second);
-int hardevent(QWORD* first,QWORD* second);
-int bootevent(QWORD* first,QWORD* second);
 //artery
 void arteryinit(char*);
 void arterykill(char*);
@@ -16,6 +11,7 @@ void arterylist(char*);
 void arterychoose(char*);
 void arteryread(char*);
 void arterywrite(char*);
+void writeevent();
 //
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
@@ -25,43 +21,10 @@ void say(char*,...);
 
 
 
-int stillalive=1;
 static char* basic=0;
 static char* body=0;
 static char* memory=0;
 static char* character=0;
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int waitevent(QWORD* first,QWORD* second)
-{
-        int ret;
-        //say("here\n");
-        if(stillalive==0)
-        {
-                first[0]=0;
-                return 0;
-        }
-
-        //调试端口有没有消息
-        ret=bootevent(first,second);
-        if(ret>0)return 11;
-
-        //硬件中断完成状态报告
-        ret=hardevent(first,second);
-        if(ret>0)return 22;
-
-        //输入/网络/系统事件
-        ret=softevent(first,second);
-        if(ret>0)return 33;
-
-        //窗口关闭,窗口大小变化等情况
-        ret=uievent(first,second);
-        if(ret>0)return 44;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -89,14 +52,14 @@ int command(char* buffer)
 	//q
 	if(argv[0][0]=='q')
 	{
-		stillalive=0;
+		writeevent();
 		return 0;
 	}
 	//exit
 	ret=compare(argv[0],"exit");
 	if(ret==0)
 	{
-		stillalive=0;
+		writeevent();
 		return 0;
 	}
 
