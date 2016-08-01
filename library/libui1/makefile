@@ -6,10 +6,6 @@ target:
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.snake.c
 	$(compiler) $(cflag) game/game.tetris.c
-	$(compiler) $(cflag) image/image.blur.c
-	$(compiler) $(cflag) image/image.channel.c
-	$(compiler) $(cflag) image/image.gray.c
-	$(compiler) $(cflag) image/image.mosaic.c
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) print/print.ascii.c
 	$(compiler) $(cflag) print/print.unicode.c

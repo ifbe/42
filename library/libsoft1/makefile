@@ -16,33 +16,37 @@ target:
 	$(compiler) $(cflag) interface/interface.zigbee.c
 	$(compiler) $(cflag) memory/memory.c
 	$(compiler) $(cflag) memory/bin/bin.c
-	$(compiler) $(cflag) memory/bin/bin.elf.c
-	$(compiler) $(cflag) memory/bin/bin.macho.c
-	$(compiler) $(cflag) memory/bin/bin.pe.c
-	$(compiler) $(cflag) memory/encdec/comp.7z.c
-	$(compiler) $(cflag) memory/encdec/comp.cpio.c
-	$(compiler) $(cflag) memory/encdec/comp.gz.c
-	$(compiler) $(cflag) memory/encdec/comp.tar.c
-	$(compiler) $(cflag) memory/encdec/comp.zip.c
-	$(compiler) $(cflag) memory/encdec/crypt.aes.c
-	$(compiler) $(cflag) memory/encdec/crypt.des.c
-	$(compiler) $(cflag) memory/encdec/crypt.rsa.c
-	$(compiler) $(cflag) memory/encdec/hash.crc8.c
-	$(compiler) $(cflag) memory/encdec/hash.crc16.c
-	$(compiler) $(cflag) memory/encdec/hash.crc32.c
-	$(compiler) $(cflag) memory/encdec/hash.md5.c
-	$(compiler) $(cflag) memory/encdec/hash.sha256.c
-	$(compiler) $(cflag) memory/encdec/hash.string.c
+	$(compiler) $(cflag) memory/bin/exec/exec.elf.c
+	$(compiler) $(cflag) memory/bin/exec/exec.macho.c
+	$(compiler) $(cflag) memory/bin/exec/exec.pe.c
+	$(compiler) $(cflag) memory/bin/fs/fs.c
+	$(compiler) $(cflag) memory/bin/fs/comp.7z.c
+	$(compiler) $(cflag) memory/bin/fs/comp.cpio.c
+	$(compiler) $(cflag) memory/bin/fs/comp.gz.c
+	$(compiler) $(cflag) memory/bin/fs/comp.tar.c
+	$(compiler) $(cflag) memory/bin/fs/comp.zip.c
+	$(compiler) $(cflag) memory/bin/fs/fs.ext.c
+	$(compiler) $(cflag) memory/bin/fs/fs.fat.c
+	$(compiler) $(cflag) memory/bin/fs/fs.hfs.c
+	$(compiler) $(cflag) memory/bin/fs/fs.ntfs.c
+	$(compiler) $(cflag) memory/bin/fs/pt.c
+	$(compiler) $(cflag) memory/bin/fs/pt.apple.c
+	$(compiler) $(cflag) memory/bin/fs/pt.gpt.c
+	$(compiler) $(cflag) memory/bin/fs/pt.mbr.c
+	$(compiler) $(cflag) memory/bin/image/image.blur.c
+	$(compiler) $(cflag) memory/bin/image/image.channel.c
+	$(compiler) $(cflag) memory/bin/image/image.gray.c
+	$(compiler) $(cflag) memory/bin/image/image.mosaic.c
+	$(compiler) $(cflag) memory/encdec/crypt/crypt.aes.c
+	$(compiler) $(cflag) memory/encdec/crypt/crypt.des.c
+	$(compiler) $(cflag) memory/encdec/crypt/crypt.rsa.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.crc8.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.crc16.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.crc32.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.md5.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.sha256.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.string.c
 	$(compiler) $(cflag) memory/encdec/qrcode.c
-	$(compiler) $(cflag) memory/fs/fs.c
-	$(compiler) $(cflag) memory/fs/fs.ext.c
-	$(compiler) $(cflag) memory/fs/fs.fat.c
-	$(compiler) $(cflag) memory/fs/fs.hfs.c
-	$(compiler) $(cflag) memory/fs/fs.ntfs.c
-	$(compiler) $(cflag) memory/fs/pt.c
-	$(compiler) $(cflag) memory/fs/pt.apple.c
-	$(compiler) $(cflag) memory/fs/pt.gpt.c
-	$(compiler) $(cflag) memory/fs/pt.mbr.c
 	$(compiler) $(cflag) memory/string/string.compare.c
 	$(compiler) $(cflag) memory/string/string.convert.c
 	$(compiler) $(cflag) memory/string/string.parse.c

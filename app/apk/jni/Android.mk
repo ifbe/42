@@ -90,24 +90,26 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/interface/interface.zigbee.c \
 	library/libsoft1/memory/memory.c \
 	library/libsoft1/memory/bin/bin.c \
-	library/libsoft1/memory/bin/bin.elf.c \
-	library/libsoft1/memory/bin/bin.macho.c \
-	library/libsoft1/memory/bin/bin.pe.c \
-	library/libsoft1/memory/encdec/comp.7z.c \
-	library/libsoft1/memory/encdec/comp.cpio.c \
-	library/libsoft1/memory/encdec/comp.gz.c \
-	library/libsoft1/memory/encdec/comp.tar.c \
-	library/libsoft1/memory/encdec/comp.zip.c \
+	library/libsoft1/memory/bin/exec/exec.elf.c \
+	library/libsoft1/memory/bin/exec/exec.macho.c \
+	library/libsoft1/memory/bin/exec/exec.pe.c \
+	library/libsoft1/memory/bin/fs/comp.7z.c \
+	library/libsoft1/memory/bin/fs/comp.cpio.c \
+	library/libsoft1/memory/bin/fs/comp.gz.c \
+	library/libsoft1/memory/bin/fs/comp.tar.c \
+	library/libsoft1/memory/bin/fs/comp.zip.c \
+	library/libsoft1/memory/bin/fs/fs.c \
+	library/libsoft1/memory/bin/fs/fs.ext.c \
+	library/libsoft1/memory/bin/fs/fs.fat.c \
+	library/libsoft1/memory/bin/fs/fs.hfs.c \
+	library/libsoft1/memory/bin/fs/fs.ntfs.c \
+	library/libsoft1/memory/bin/fs/pt.c \
+	library/libsoft1/memory/bin/fs/pt.apple.c \
+	library/libsoft1/memory/bin/fs/pt.gpt.c \
+	library/libsoft1/memory/bin/fs/pt.mbr.c \
+	library/libsoft1/memory/encdec/crypt/crypt.aes.c \
+	library/libsoft1/memory/encdec/hash/hash.md5.c \
 	library/libsoft1/memory/encdec/qrcode.c \
-	library/libsoft1/memory/fs/fs.c \
-	library/libsoft1/memory/fs/fs.ext.c \
-	library/libsoft1/memory/fs/fs.fat.c \
-	library/libsoft1/memory/fs/fs.hfs.c \
-	library/libsoft1/memory/fs/fs.ntfs.c \
-	library/libsoft1/memory/fs/pt.c \
-	library/libsoft1/memory/fs/pt.apple.c \
-	library/libsoft1/memory/fs/pt.gpt.c \
-	library/libsoft1/memory/fs/pt.mbr.c \
 	library/libsoft1/memory/string/string.compare.c \
 	library/libsoft1/memory/string/string.convert.c \
 	library/libsoft1/memory/string/string.parse.c \
