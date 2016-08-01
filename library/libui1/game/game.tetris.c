@@ -491,11 +491,8 @@ static int down()
 void tetris_write(QWORD type,QWORD key)
 {
 	int ret;
-	if(type==0x6b6c63)
-	{
-		down();
-	}
-	else if(type==0x64626b)
+
+	if(type==0x64626b)
 	{
 		if(key=='a'|key==0x25)
 		{
@@ -520,6 +517,11 @@ void tetris_write(QWORD type,QWORD key)
 			if(down()==1)return;
 			if(down()==1)return;
 		}
+	}
+
+	else
+	{
+		down();
 	}
 }
 

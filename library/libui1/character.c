@@ -14,6 +14,7 @@ void hex_init(char*,char*);
 void keyboard_init(char*,char*);
 void sketchpad_init(char*,char*);
 void spectrum_init(char*,char*);
+void snake_init(char*,char*);
 void the2048_init(char*,char*);
 void tetris_init(char*,char*);
 void tree_init(char*,char*);
@@ -29,6 +30,7 @@ void tree_kill();
 void spectrum_kill();
 void the2048_kill();
 void tetris_kill();
+void snake_kill();
 void color_kill();
 void qrcode_kill();
 
@@ -130,6 +132,10 @@ void characterinit(char* type,char* addr)
 
 		//game.tetris
 		tetris_init(addr,temp);
+		temp += 0x40;
+
+		//game.snake
+		snake_init(addr,temp);
 		temp += 0x40;
 
 		//tool.color
