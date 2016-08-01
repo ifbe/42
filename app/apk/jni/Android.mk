@@ -89,30 +89,30 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/interface/interface.wifi.c \
 	library/libsoft1/interface/interface.zigbee.c \
 	library/libsoft1/memory/memory.c \
-	library/libsoft1/memory/prelibation.c \
-	library/libsoft1/memory/compress/memory.comp.7z.c \
-	library/libsoft1/memory/compress/memory.comp.cpio.c \
-	library/libsoft1/memory/compress/memory.comp.gz.c \
-	library/libsoft1/memory/compress/memory.comp.tar.c \
-	library/libsoft1/memory/compress/memory.comp.zip.c \
-	library/libsoft1/memory/executable/memory.exec.elf.c \
-	library/libsoft1/memory/executable/memory.exec.macho.c \
-	library/libsoft1/memory/executable/memory.exec.pe.c \
-	library/libsoft1/memory/filesystem/memory.fs.c \
-	library/libsoft1/memory/filesystem/memory.fs.ext.c \
-	library/libsoft1/memory/filesystem/memory.fs.fat.c \
-	library/libsoft1/memory/filesystem/memory.fs.hfs.c \
-	library/libsoft1/memory/filesystem/memory.fs.ntfs.c \
-	library/libsoft1/memory/parttable/memory.pt.c \
-	library/libsoft1/memory/parttable/memory.pt.apple.c \
-	library/libsoft1/memory/parttable/memory.pt.gpt.c \
-	library/libsoft1/memory/parttable/memory.pt.mbr.c \
-	library/libsoft1/memory/qrcode/memory.qrcode.c \
-	library/libsoft1/memory/string/memory.string.compare.c \
-	library/libsoft1/memory/string/memory.string.convert.c \
-	library/libsoft1/memory/string/memory.string.parse.c \
-	library/libsoft1/memory/text/memory.text.ascii.c \
-	library/libsoft1/memory/text/memory.text.unicode.c \
+	library/libsoft1/memory/bin/bin.c \
+	library/libsoft1/memory/bin/bin.elf.c \
+	library/libsoft1/memory/bin/bin.macho.c \
+	library/libsoft1/memory/bin/bin.pe.c \
+	library/libsoft1/memory/encdec/comp.7z.c \
+	library/libsoft1/memory/encdec/comp.cpio.c \
+	library/libsoft1/memory/encdec/comp.gz.c \
+	library/libsoft1/memory/encdec/comp.tar.c \
+	library/libsoft1/memory/encdec/comp.zip.c \
+	library/libsoft1/memory/encdec/qrcode.c \
+	library/libsoft1/memory/fs/fs.c \
+	library/libsoft1/memory/fs/fs.ext.c \
+	library/libsoft1/memory/fs/fs.fat.c \
+	library/libsoft1/memory/fs/fs.hfs.c \
+	library/libsoft1/memory/fs/fs.ntfs.c \
+	library/libsoft1/memory/fs/pt.c \
+	library/libsoft1/memory/fs/pt.apple.c \
+	library/libsoft1/memory/fs/pt.gpt.c \
+	library/libsoft1/memory/fs/pt.mbr.c \
+	library/libsoft1/memory/string/string.compare.c \
+	library/libsoft1/memory/string/string.convert.c \
+	library/libsoft1/memory/string/string.parse.c \
+	library/libsoft1/memory/text/text.ascii.c \
+	library/libsoft1/memory/text/text.unicode.c \
 	library/libsoft1/net/net.c \
 	library/libsoft1/net/net.arp.c \
 	library/libsoft1/net/net.ethernet.c \
@@ -129,10 +129,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/net/net.tftp.c \
 	library/libsoft1/net/net.udp.c \
 	library/libsoft1/special/special.c \
-	library/libsoft1/special/math/special.math.calc.c \
-	library/libsoft1/special/math/special.math.notation.c \
-	library/libsoft1/special/parasite/special.parasite.folder.c \
-	library/libsoft1/special/parasite/special.parasite.setting.c
+	library/libsoft1/special/host/host.folder.c \
+	library/libsoft1/special/host/host.setting.c \
+	library/libsoft1/special/math/math.calc.c \
+	library/libsoft1/special/math/math.notation.c
 
 #4.ui0
 LOCAL_SRC_FILES += \

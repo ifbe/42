@@ -4,6 +4,7 @@
 #define QWORD unsigned long long
 int decstring2data(BYTE* source,QWORD* data);
 void say(char*,...);
+static char buf[0x1000];
 
 
 
@@ -203,4 +204,45 @@ int buf2typename(BYTE* p,int max,QWORD* type,BYTE** name)
 
 	//say("type=%s,name=%s\n",(char*)type,*name);
 	return 1;
+}
+
+
+
+
+char* buf2folder(char* p)
+{
+	int j = 0;
+	int k = -1;
+	while(1)
+	{
+		if(j>0x1000)break;
+		if(p[j] == 0)break;
+		if(p[j] == '/')k=j;
+
+		buf[j]=p[j];
+		j++;
+	}
+
+	if(k<0)return p;
+	if(k==0)return "/";
+
+	buf[k]=0;
+	return buf;
+}
+
+
+
+
+char* buf2filename(char* p)
+{
+        int j=0;
+        int k=0;
+        while(1)
+        {
+                if(p[j] == 0)break;
+                if(p[j] == '/')k=j+1;
+
+                j++;
+        }
+        return p+k;
 }
