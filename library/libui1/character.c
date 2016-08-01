@@ -40,6 +40,7 @@ int stopwindow();
 int arterystart(char*);
 int arterystop();
 int compare(char*,char*);
+void writeevent();
 DWORD getrandom();
 //
 void say(char* , ...);

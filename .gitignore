@@ -1,11 +1,13 @@
+*~
+*.swo
+*.swp
 .DS_Store
 .Trash
 .hash
 .seed
 .tree
-*~
-*.swo
-*.swp
+.42
+.git
 *.o
 *.a
 *.dll
