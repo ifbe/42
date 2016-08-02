@@ -5,7 +5,7 @@
       android:versionName="1.0">
     <application android:label="@string/app_name" android:debuggable="true">
         <activity android:name=".Plasma"
-                  android:icon="@drawable/groot"
+                  android:icon="@drawable/tardis"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>

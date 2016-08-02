@@ -24,14 +24,19 @@ help:
 #	LOCAL_PATH=.
 android:
 	make -s -C app/android --no-print-directory
+androidpush:
+	adb push app/android/libs/arm64-v8a/42 /data/42
 apk:
 	make -s -C app/apk --no-print-directory
-	cp app/apk/bin/Plasma-debug.apk .
-	#adb install -r app/apk/bin/Plasma-debug.apk
+	cp app/apk/bin/Plasma-debug.apk 42.apk
+apkinstall:
+	adb install -r 42.apk
 ipa:
 	make -s -C app/ipa --no-print-directory
+ipainstall:
 uwp:
 	make -s -C app/uwp --no-print-directory
+uwpinstall:
 ############################################################################
 
 
