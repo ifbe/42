@@ -41,35 +41,38 @@ void snake_read()
 {
 	//init screen
 	int j;
+
 	if(die == 1)return;
 
-	//
-	rectbody(
-		(16*a.x) + ((16*a.y)<<16),
-		(16*a.x + 15) + ((16*a.y + 15)<<16),
-		0xf
-	);
+	//shadow
+	if( (a.x>=0) && (a.y>=0) )
+	{
+		rectbody(
+			(32*a.x) + ((32*a.y)<<16),
+			(32*a.x + 31) + ((32*a.y + 31)<<16),
+			0xf
+		);
+	}
 
-
-	//
+	//snake
 	j=0;
 	while(1)
 	{
 		rect(
-			(16*snake[j].x) + ((16*snake[j].y)<<16),
-			(16*snake[j].x + 15) + ((16*snake[j].y + 15)<<16),
+			(32*snake[j].x) + ((32*snake[j].y)<<16),
+			(32*snake[j].x + 31) + ((32*snake[j].y + 31)<<16),
 			0xffffffff,
 			0
 		);
 
 		j++;
-		if(j>len)break;
+		if(j>=len)break;
 	}
 
-	//
+	//food
 	rect(
-		(16*foodx) + ((16*foody)<<16),
-		(16*foodx + 15) + ((16*foody + 15)<<16),
+		(32*foodx) + ((32*foody)<<16),
+		(32*foodx + 31) + ((32*foody + 31)<<16),
 		0xff00,
 		0
 	);
@@ -115,9 +118,9 @@ void snake_write(QWORD type,QWORD key)
 
 	//撞墙
 	if(	(snake[0].x < 0) |
-		(snake[0].x > (width/16)) |
+		(snake[0].x > (width/32)) |
 		(snake[0].y < 0) |
-		(snake[0].y > (height/16)) )
+		(snake[0].y > (height/32)) )
 	{
 		die=1;
 		return;
@@ -151,8 +154,8 @@ void snake_write(QWORD type,QWORD key)
 		snake[j].y = a.y;
 		len++;
 
-		foodx=getrandom() % (width/16);
-		foody=getrandom() % (height/16);
+		foodx=getrandom() % (width/32);
+		foody=getrandom() % (height/32);
 	}
 }
 
@@ -166,15 +169,14 @@ static void snake_choose()
 {
 	//init food and snake 
 	int i;
-	snake[0].x=1 + getrandom() % ((width/16)-2);
-	snake[0].y=1 + getrandom() % ((height/16)-2);
+	snake[0].x=1 + getrandom() % ((width/32)-2);
+	snake[0].y=1 + getrandom() % ((height/32)-2);
+	foodx=getrandom() % (width/32);
+	foody=getrandom() % (height/32);
+
+	a.x = -1;
+	b.x = -1;
 	len=1;
-
-	a.x=0;
-	b.x=0;
-
-	foodx=getrandom() % (width/16);
-	foody=getrandom() % (height/16);
 	die=0;
 }
 
