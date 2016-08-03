@@ -49,7 +49,6 @@ target:
 	$(compiler) $(cflag) memory/encdec/qrcode.c
 	$(compiler) $(cflag) memory/string/string.compare.c
 	$(compiler) $(cflag) memory/string/string.convert.c
-	$(compiler) $(cflag) memory/string/string.parse.c
 	$(compiler) $(cflag) memory/text/text.ascii.c
 	$(compiler) $(cflag) memory/text/text.gbk.c
 	$(compiler) $(cflag) memory/text/text.unicode.c
@@ -69,10 +68,14 @@ target:
 	$(compiler) $(cflag) net/net.tftp.c
 	$(compiler) $(cflag) net/net.udp.c
 	$(compiler) $(cflag) special/special.c
-	$(compiler) $(cflag) special/host/host.folder.c
-	$(compiler) $(cflag) special/host/host.setting.c
 	$(compiler) $(cflag) special/math/math.calc.c
 	$(compiler) $(cflag) special/math/math.notation.c
+	$(compiler) $(cflag) special/physics/physics.electrical.c
+	$(compiler) $(cflag) special/physics/physics.mechanics.c
+	$(compiler) $(cflag) special/system/system.folder.c
+	$(compiler) $(cflag) special/system/system.process.c
+	$(compiler) $(cflag) special/system/system.thread.c
+	$(compiler) $(cflag) special/system/system.setting.c
 crosscompile:
 	make -s target compiler="x86_64-elf-gcc" cflag="-c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 gcc:

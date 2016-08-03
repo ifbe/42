@@ -128,29 +128,31 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/encdec/qrcode.c \
 	library/libsoft1/memory/string/string.compare.c \
 	library/libsoft1/memory/string/string.convert.c \
-	library/libsoft1/memory/string/string.parse.c \
 	library/libsoft1/memory/text/text.ascii.c \
 	library/libsoft1/memory/text/text.unicode.c \
-        library/libsoft1/net/net.c \
-        library/libsoft1/net/net.arp.c \
-        library/libsoft1/net/net.ethernet.c \
-        library/libsoft1/net/net.ftp.c \
-        library/libsoft1/net/net.http.c \
-        library/libsoft1/net/net.icmp.c \
-        library/libsoft1/net/net.ipv4.c \
-        library/libsoft1/net/net.ipv6.c \
-        library/libsoft1/net/net.ppp.c \
-        library/libsoft1/net/net.quic.c \
-        library/libsoft1/net/net.slip.c \
-        library/libsoft1/net/net.ssh.c \
-        library/libsoft1/net/net.tcp.c \
-        library/libsoft1/net/net.tftp.c \
-        library/libsoft1/net/net.udp.c \
+	library/libsoft1/net/net.c \
+	library/libsoft1/net/net.arp.c \
+	library/libsoft1/net/net.ethernet.c \
+	library/libsoft1/net/net.ftp.c \
+	library/libsoft1/net/net.http.c \
+	library/libsoft1/net/net.icmp.c \
+	library/libsoft1/net/net.ipv4.c \
+	library/libsoft1/net/net.ipv6.c \
+	library/libsoft1/net/net.ppp.c \
+	library/libsoft1/net/net.quic.c \
+	library/libsoft1/net/net.slip.c \
+	library/libsoft1/net/net.ssh.c \
+	library/libsoft1/net/net.tcp.c \
+	library/libsoft1/net/net.tftp.c \
+	library/libsoft1/net/net.udp.c \
 	library/libsoft1/special/special.c \
-	library/libsoft1/special/host/host.folder.c \
-	library/libsoft1/special/host/host.setting.c \
 	library/libsoft1/special/math/math.calc.c \
-	library/libsoft1/special/math/math.notation.c
+	library/libsoft1/special/math/math.notation.c \
+	library/libsoft1/special/physics/physics.electrical.c \
+	library/libsoft1/special/physics/physics.mechanics.c \
+	library/libsoft1/special/system/system.folder.c \
+	library/libsoft1/special/system/system.process.c \
+	library/libsoft1/special/system/system.setting.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
@@ -159,23 +161,23 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
-        library/libui1/draw/draw.background.c \
-        library/libui1/draw/draw.shape.c \
-        library/libui1/print/print.ascii.c \
-        library/libui1/print/print.unicode.c \
-        library/libui1/game/game.2048.c \
-        library/libui1/game/game.snake.c \
-        library/libui1/game/game.tetris.c \
-        library/libui1/tool/tool.color.c \
-        library/libui1/tool/tool.console.c \
-        library/libui1/tool/tool.hex.c \
-        library/libui1/tool/tool.keyboard.c \
-        library/libui1/tool/tool.qrcode.c \
-        library/libui1/tool/tool.sketchpad.c \
-        library/libui1/tool/tool.spectrum.c \
-        library/libui1/tool/tool.tree.c \
-        library/libui1/menu/menu.center.c \
-        library/libui1/character.c
+	library/libui1/draw/draw.background.c \
+	library/libui1/draw/draw.shape.c \
+	library/libui1/print/print.ascii.c \
+	library/libui1/print/print.unicode.c \
+	library/libui1/game/game.2048.c \
+	library/libui1/game/game.snake.c \
+	library/libui1/game/game.tetris.c \
+	library/libui1/tool/tool.color.c \
+	library/libui1/tool/tool.console.c \
+	library/libui1/tool/tool.hex.c \
+	library/libui1/tool/tool.keyboard.c \
+	library/libui1/tool/tool.qrcode.c \
+	library/libui1/tool/tool.sketchpad.c \
+	library/libui1/tool/tool.spectrum.c \
+	library/libui1/tool/tool.tree.c \
+	library/libui1/menu/menu.center.c \
+	library/libui1/character.c
 
 #1.visitor
 LOCAL_SRC_FILES += \

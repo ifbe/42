@@ -2,6 +2,14 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void printmemory(char*,int);
+void say(char*,...);
+
+
+
+
+//
+static char buf[0x1000];
 
 
 
@@ -212,4 +220,246 @@ void double2decimalstring(double data,BYTE* string)
 
 	//0
 	string[offset]=0;
+}
+
+
+
+
+
+/*
+(buf,size) -> (argc,argv)
+*/
+void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv)
+{
+	int i;
+	int count=0;
+	int splited=0;
+	argv[0]=0;
+
+	//
+	for(i=0;i<max;i++)
+	{
+		//finished
+		if( buf[i] == 0 )break;
+
+		//blank
+		if( buf[i] <= 0x20 )
+		{
+			buf[i]=0;
+			splited=1;
+			continue;
+		}
+
+		//new?
+		if(splited != 0)
+		{
+			count++;
+			if(count>=7)break;
+
+			argv[count]=0;
+			splited=0;
+		}
+
+		//new!
+		if( argv[count]==0 )
+		{
+			argv[count]=buf+i;
+		}
+	}//for
+
+	//result
+	count+=1;
+	argv[count]=0;
+	*argc=count;
+
+/*
+	//debug
+	say("count=%x\n",count);
+	for(i=0;i<count;i++)
+	{
+		say("%x=%s\n",i,argv[i]);
+	}
+*/
+}
+
+
+
+
+void buf2addrport(BYTE* pp,int max,BYTE* addr,int* port)
+{
+	int ii;
+	QWORD data=0;
+
+	for(ii=0;ii<max;ii++)
+	{
+		if(pp[ii]==0)break;
+		else if(pp[ii]==':')break;
+		else addr[ii]=pp[ii];
+	}
+
+	if(pp[ii]!=':')
+	{
+		addr[0]=0;
+		port[0]=0;
+	}
+	else
+	{
+		addr[ii]=0;
+
+		decstring2data(pp+ii+1,&data);
+		*port=(int)data;
+	}
+}
+
+
+
+
+/*
+"card=wlan0" -> "card" , "wlan0"
+"user=name" -> "user" , "name"
+*/
+int buf2optval(BYTE* pp,int max,BYTE** type,BYTE** name)
+{
+	int ii;
+	for(ii=0;ii<max;ii++)
+	{
+		if(pp[ii]==0)break;
+		if(pp[ii]=='=')break;
+	}
+
+	if( pp[ii] != '=' )
+	{
+		*type=0;
+		*name=0;
+	}
+	else
+	{
+		pp[ii]=0;
+
+		*type=pp;
+		*name=pp+ii+1;
+	}
+}
+
+
+
+
+/*
+"1.txt" -> "txt"
+"2.html" -> "html"
+*/
+int buf2suffix(BYTE* p,BYTE** suffix)
+{
+	int i=0;
+	int tail=0;
+	if(p==0)return 0;
+
+	for(i=0;i<256;i++)
+	{
+		//all possible '.'
+		if( p[i] == '.' )
+		{
+			tail=i;
+		}
+
+		//finished
+		else if( p[i] == 0 )
+		{
+			//".gitignore" is not an extension
+			if(tail==0)
+			{
+				*suffix=0;
+			}
+			else
+			{
+				*suffix = p + tail;
+			}
+			break;
+		}
+	}
+
+	//say("suffix=%s\n",(char*)suffix);
+	return 1;
+}
+
+
+
+
+/*
+"file://code/readme.txt" -> 'file' , "code/readme.txt"
+"http://192.168.1.1/index.html" -> 'http' , "192.168.1.1/index.html"
+*/
+int buf2typename(BYTE* p,int max,QWORD* type,BYTE** name)
+{
+	int i=0;
+	int j=0;
+	int tail=0;
+	if(p==0)return 0;
+
+	*type=0;
+	*name=p;
+	for(i=0;i<max;i++)
+	{
+		//finished
+		if( p[i] == 0)break;
+
+		//"://"
+		if( p[i] == ':' )
+		{
+			if( (p[i+1]=='/') && (p[i+2]=='/') )
+			{
+				for(j=i-1;j>=0;j--)
+				{
+					*type = (*type) << 8;
+					*type += p[j];
+				}
+				*name=p+i+3;
+				break;
+			}
+		}
+	}
+
+	//say("type=%s,name=%s\n",(char*)type,*name);
+	return 1;
+}
+
+
+
+
+char* buf2folder(char* p)
+{
+	int j = 0;
+	int k = -1;
+	while(1)
+	{
+		if(j>0x1000)break;
+		if(p[j] == 0)break;
+		if(p[j] == '/')k=j;
+
+		buf[j]=p[j];
+		j++;
+	}
+
+	if(k<0)return p;
+	if(k==0)return "/";
+
+	buf[k]=0;
+	return buf;
+}
+
+
+
+
+char* buf2filename(char* p)
+{
+        int j=0;
+        int k=0;
+        while(1)
+        {
+                if(p[j] == 0)break;
+                if(p[j] == '/')k=j+1;
+
+                j++;
+        }
+        return p+k;
 }

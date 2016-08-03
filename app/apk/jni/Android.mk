@@ -112,7 +112,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/encdec/qrcode.c \
 	library/libsoft1/memory/string/string.compare.c \
 	library/libsoft1/memory/string/string.convert.c \
-	library/libsoft1/memory/string/string.parse.c \
 	library/libsoft1/memory/text/text.ascii.c \
 	library/libsoft1/memory/text/text.unicode.c \
 	library/libsoft1/net/net.c \
@@ -131,10 +130,13 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/net/net.tftp.c \
 	library/libsoft1/net/net.udp.c \
 	library/libsoft1/special/special.c \
-	library/libsoft1/special/host/host.folder.c \
-	library/libsoft1/special/host/host.setting.c \
 	library/libsoft1/special/math/math.calc.c \
-	library/libsoft1/special/math/math.notation.c
+	library/libsoft1/special/math/math.notation.c \
+	library/libsoft1/special/physics/physics.electrical.c \
+	library/libsoft1/special/physics/physics.mechanics.c \
+	library/libsoft1/special/system/system.folder.c \
+	library/libsoft1/special/system/system.process.c \
+	library/libsoft1/special/system/system.setting.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
