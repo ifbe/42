@@ -93,6 +93,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/bin/exec/exec.elf.c \
 	library/libsoft1/memory/bin/exec/exec.macho.c \
 	library/libsoft1/memory/bin/exec/exec.pe.c \
+	library/libsoft1/memory/bin/code/code.c \
 	library/libsoft1/memory/bin/fs/comp.7z.c \
 	library/libsoft1/memory/bin/fs/comp.cpio.c \
 	library/libsoft1/memory/bin/fs/comp.gz.c \

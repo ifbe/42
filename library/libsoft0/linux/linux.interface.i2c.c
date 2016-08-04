@@ -89,10 +89,10 @@ int systemi2c_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
 
 int systemi2c_list(char* towhere)
 {
-	char ch;
 	int x;
 	int y;
 	int ret;
+	unsigned char ch;
 
 	//listbuses
 	if(where[0]<0)

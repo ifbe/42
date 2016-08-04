@@ -106,10 +106,17 @@ void traverse_write(char* p)
 	if(p[0]==0)return;
 
 	//clear everything
-	rsp=0;
-	strncpy(path , p , 1024);
+	while(1)
+	{
+		if(rsp==0)break;
+
+		if(stack[rsp].folder != 0)closedir(stack[rsp].folder);
+		if(stack[rsp].tail !=0)stack[rsp].tail = 0;
+		rsp--;
+	}
 
 	//convert "/some/dir/" to "/some/dir"
+	strncpy(path , p , 1024);
 	j=strlen(p);
 	if(p[j-1]=='/')
 	{

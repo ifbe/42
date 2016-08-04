@@ -3,8 +3,10 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int pt_init(char*,char*);
+int code_init(char*,char*);
 int fs_init(char*,char*);
+int pt_init(char*,char*);
+void code_kill();
 void fs_kill();
 void pt_kill();
 //
@@ -224,17 +226,20 @@ int memory_init(char* world,QWORD* p)
 	//
 	char* q=(char*)p+0x40;
 
-	pt_init(world,q);
+	code_init(world,q);
 	q+=0x40;
 
 	fs_init(world,q);
+	q+=0x40;
+
+	pt_init(world,q);
 	q+=0x40;
 
 	return q-(char*)p;
 }
 int memory_kill()
 {
+	code_kill();
 	fs_kill();
 	pt_kill();
-	//memory_stop();
 }

@@ -19,6 +19,7 @@ target:
 	$(compiler) $(cflag) memory/bin/exec/exec.elf.c
 	$(compiler) $(cflag) memory/bin/exec/exec.macho.c
 	$(compiler) $(cflag) memory/bin/exec/exec.pe.c
+	$(compiler) $(cflag) memory/bin/code/code.c
 	$(compiler) $(cflag) memory/bin/fs/fs.c
 	$(compiler) $(cflag) memory/bin/fs/comp.7z.c
 	$(compiler) $(cflag) memory/bin/fs/comp.cpio.c
