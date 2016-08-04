@@ -146,6 +146,7 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
+	library/libui1/menu/menu.center.c \
 	library/libui1/draw/draw.background.c \
 	library/libui1/draw/draw.shape.c \
 	library/libui1/print/print.ascii.c \
@@ -161,7 +162,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \
 	library/libui1/tool/tool.tree.c \
-	library/libui1/menu/menu.center.c \
+	library/libui1/test/test.shape.c \
 	library/libui1/character.c
 
 #1.visitor

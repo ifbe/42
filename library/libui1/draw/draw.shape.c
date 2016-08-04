@@ -1,5 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
+double squareroot(double);
 void say(char*,...);
 
 
@@ -128,7 +129,7 @@ void rectbody(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	{
 		for(x=startx;x<=endx;x++)
 		{
-			winbuf[ (y*width) + x ] = color;		//0x53840273;
+			winbuf[ (y*width) + x ] = color;
 		}
 	}
 }
@@ -136,6 +137,92 @@ void rect(QWORD z1y1x1,QWORD z2y2x2,DWORD bodycolor,DWORD framecolor)
 {
 	rectbody(z1y1x1,z2y2x2,bodycolor);
 	rectframe(z1y1x1,z2y2x2,framecolor);
+}
+
+
+
+
+void circleframe(DWORD xyz,DWORD radius,DWORD color)
+{
+	int ret;
+	int x,y;	//for
+	int cx,cy;	//center
+	int x1,x2;
+	int y1,y2;
+
+	cx=xyz&0xffff;
+	cy=(xyz>>16)&0xffff;
+
+	y1=cy-radius;
+	if(y1<0)y1=0;
+	if(y1>=height)y1=height-1;
+
+	y2=cy+radius;
+	if(y2<0)y2=0;
+	if(y2>=height)y2=height-1;
+
+	for(y=y1;y<=y2;y++)
+	{
+		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
+
+		x1 = cx - ret;
+		if(x1<0)x1=0;
+		if(x1>=width)x1=width-1;
+
+		x2 = cx + ret;
+		if(x2<0)x2=0;
+		if(x2>=width)x2=width-1;
+
+		winbuf[ (y*width) + x1 ] = color;
+		winbuf[ (y*width) + x2 ] = color;
+	}
+}
+void circlebody(DWORD xyz,DWORD radius,DWORD color)
+{
+	int ret;
+	int x,y;	//for
+	int cx,cy;	//center
+	int x1,x2;
+	int y1,y2;
+
+	cx=xyz&0xffff;
+	cy=(xyz>>16)&0xffff;
+
+	y1=cy-radius;
+	if(y1<0)y1=0;
+	if(y1>=height)y1=height-1;
+
+	y2=cy+radius;
+	if(y2<0)y2=0;
+	if(y2>=height)y2=height-1;
+
+	for(y=y1;y<=y2;y++)
+	{
+		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
+
+		x1 = cx - ret;
+		if(x1<0)x1=0;
+		if(x1>=width)x1=width-1;
+
+		x2 = cx + ret;
+		if(x2<0)x2=0;
+		if(x2>=width)x2=width-1;
+
+		for(x=x1;x<=x2;x++)
+		{
+			winbuf[ (y*width) + x ] = color;
+		}
+	}
+}
+
+
+
+
+void sectorframe()
+{
+}
+void sectorbody()
+{
 }
 
 

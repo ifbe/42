@@ -17,6 +17,7 @@ target:
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c
 	$(compiler) $(cflag) tool/tool.tree.c
+	$(compiler) $(cflag) test/test.shape.c
 	$(compiler) $(cflag) character.c
 binary:
 	make -s target compiler="gcc" cflag="-c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"

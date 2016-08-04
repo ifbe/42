@@ -20,6 +20,7 @@ void tetris_init(char*,char*);
 void tree_init(char*,char*);
 void color_init(char*,char*);
 void qrcode_init(char*,char*);
+void testshape_init(char*,char*);
 //kill......
 void menu_kill();
 void console_kill();
@@ -33,6 +34,7 @@ void tetris_kill();
 void snake_kill();
 void color_kill();
 void qrcode_kill();
+void testshape_kill();
 
 //
 int startwindow(DWORD,char*);
@@ -171,6 +173,9 @@ void characterinit(char* type,char* addr)
 		spectrum_init(addr,temp);
 		temp += 0x40;
 
+		testshape_init(addr,temp);
+		temp += 0x40;
+
 		now=1;
 		say("[c,f):inited character\n");
 	}
@@ -190,6 +195,7 @@ void characterkill()
 	console_kill();
 	menu_kill();
 	qrcode_kill();
+	testshape_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

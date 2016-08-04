@@ -519,10 +519,7 @@ void tetris_write(QWORD type,QWORD key)
 		}
 	}
 
-	else
-	{
-		down();
-	}
+	else return;
 }
 
 
