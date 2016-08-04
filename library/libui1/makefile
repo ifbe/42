@@ -1,14 +1,18 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
+	$(compiler) $(cflag) draw/draw.ascii.c
 	$(compiler) $(cflag) draw/draw.background.c
 	$(compiler) $(cflag) draw/draw.shape.c
+	$(compiler) $(cflag) draw/draw.unicode.c
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.snake.c
 	$(compiler) $(cflag) game/game.tetris.c
 	$(compiler) $(cflag) menu/menu.center.c
-	$(compiler) $(cflag) print/print.ascii.c
-	$(compiler) $(cflag) print/print.unicode.c
+	$(compiler) $(cflag) menu/menu.upper.c
+	$(compiler) $(cflag) menu/menu.nether.c
+	$(compiler) $(cflag) menu/menu.left.c
+	$(compiler) $(cflag) menu/menu.right.c
 	$(compiler) $(cflag) tool/tool.color.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.hex.c
@@ -17,6 +21,7 @@ target:
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c
 	$(compiler) $(cflag) tool/tool.tree.c
+	$(compiler) $(cflag) test/test.font.c
 	$(compiler) $(cflag) test/test.shape.c
 	$(compiler) $(cflag) character.c
 binary:

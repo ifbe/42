@@ -142,6 +142,19 @@ void rect(QWORD z1y1x1,QWORD z2y2x2,DWORD bodycolor,DWORD framecolor)
 
 
 
+void trianglebody(DWORD a, DWORD b, DWORD c, DWORD color)
+{
+}
+void triangleframe(DWORD a, DWORD b, DWORD c, DWORD color)
+{
+}
+void triangle(DWORD a, DWORD b, DWORD c, DWORD color)
+{
+}
+
+
+
+
 void circleframe(DWORD xyz,DWORD radius,DWORD color)
 {
 	int ret;
@@ -218,10 +231,13 @@ void circlebody(DWORD xyz,DWORD radius,DWORD color)
 
 
 
-void sectorframe()
+void sectorbody(DWORD center,DWORD radius,DWORD startend,DWORD color)
 {
 }
-void sectorbody()
+void sectorframe(DWORD center,DWORD radius,DWORD startend,DWORD color)
+{
+}
+void sector(DWORD center,DWORD radius,DWORD startend,DWORD bodycolor,DWORD framecolor)
 {
 }
 

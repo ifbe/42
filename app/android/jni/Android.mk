@@ -164,11 +164,16 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libui1/draw/draw.background.c \
 	library/libui1/draw/draw.shape.c \
-	library/libui1/print/print.ascii.c \
-	library/libui1/print/print.unicode.c \
+	library/libui1/draw/draw.ascii.c \
+	library/libui1/draw/draw.unicode.c \
 	library/libui1/game/game.2048.c \
 	library/libui1/game/game.snake.c \
 	library/libui1/game/game.tetris.c \
+	library/libui1/menu/menu.center.c \
+	library/libui1/menu/menu.upper.c \
+	library/libui1/menu/menu.nether.c \
+	library/libui1/menu/menu.left.c \
+	library/libui1/menu/menu.right.c \
 	library/libui1/tool/tool.color.c \
 	library/libui1/tool/tool.console.c \
 	library/libui1/tool/tool.hex.c \
@@ -177,8 +182,8 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \
 	library/libui1/tool/tool.tree.c \
+	library/libui1/test/test.font.c \
 	library/libui1/test/test.shape.c \
-	library/libui1/menu/menu.center.c \
 	library/libui1/character.c
 
 #1.visitor
