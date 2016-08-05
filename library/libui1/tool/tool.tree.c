@@ -29,7 +29,7 @@ void decimal(int x,int y,QWORD in);
 void printdouble(double z,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
 void printstring(char* str,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
 void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
-void line(QWORD point1,QWORD point2,DWORD color);
+void line(int,int,int,int,DWORD);
 void backgroundcolor(DWORD);
 //libsoft
 double calculator(char* postfix);
@@ -127,14 +127,14 @@ say("%d,%d\n",x,temp);
 	//left
 	if(left!=0&&left<128)
 	{
-		line( x+((64*y+16)<<16) , (x-offset)+( (64*y+64)<<16) , 0xffffffff);
+		line(x, 64*y+16, x-offset, 64*y+64, 0xffffffff);
 		printnode( x-offset , y+1 , left );
 	}
 
 	//right
 	if(right!=0&&right<128)
 	{
-		line( x+((64*y+16)<<16) , (x+offset)+( (64*y+64)<<16) , 0xffffffff);
+		line(x, 64*y+16, x+offset, 64*y+64, 0xffffffff);
 		printnode( x+offset , y+1 , right );
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);

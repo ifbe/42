@@ -5,7 +5,7 @@
 int characterchoose(char* p);
 //
 void printstring(char* str,DWORD xyz,DWORD fg,DWORD bg);
-void rect(DWORD leftup,DWORD rightdown,DWORD bodycolor,DWORD framecolor);
+void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 //
 void say(char*,...);
 
@@ -90,24 +90,30 @@ static void menu_read()
 {
 	//title
 	rect(
-		( ( (height/4)&0xfffffff0)<<16) + (width/4),
-		( ( (height/4+16)&0xfffffff0)<<16) + (width*3/4),
+		width/4,
+		(height/4)&0xfffffff0,
+		width*3/4,
+		(height/4+16)&0xfffffff0,
 		0x01234567,
 		0xfedcba98
 	);
 
 	//body
 	rect(
-		( ( (height/4+16)&0xfffffff0) << 16) + (width/4),
-		((height*3/4)<<16) + (width*3/4),
+		width/4,
+		(height/4+16)&0xfffffff0,
+		width*3/4,
+		height*3/4,
 		0,
 		0xffffffff
 	);
 
 	//button
 	rect(
-		( ( (height/4)&0xfffffff0) << 16) + (width*47/64),
-		( ( (height/4+16)&0xfffffff0) << 16) + (width*3/4),
+		(width*3/4) - 16,
+		(height/4)&0xfffffff0,
+		width*3/4,
+		((height/4) + 16)&0xfffffff0,
 		0xff0000,
 		0
 	);

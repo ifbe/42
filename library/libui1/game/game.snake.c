@@ -1,16 +1,17 @@
 #define QWORD unsigned long long 
 #define DWORD unsigned int
 //
-DWORD getrandom();
-void rect(DWORD p1,DWORD p2,DWORD bodycolor,DWORD framecolor);
-void rectbody(DWORD p1,DWORD p2,DWORD bodycolor);
-void rectframe(DWORD p1,DWORD p2,DWORD bodycolor);
+void line(int x1, int y1, int x2, int y2, DWORD color);
+void rectbody( int x1, int y1, int x2, int y2, DWORD color);
+void rectframe(int x1, int y1, int x2, int y2, DWORD color);
+void rect(     int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 //
 void background_start(DWORD size,void* addr);
 void shape_start(DWORD size,void* addr);
 void ascii_start(DWORD size,void* addr);
 void unicode_start(DWORD size,void* addr);
 //
+DWORD getrandom();
 void say(char*,...);
 
 
@@ -42,14 +43,20 @@ void snake_read()
 	//init screen
 	int j;
 
-	if(die == 1)return;
+	if(die == 1)
+	{
+		line(0, 0, width-1, height-1, 0xffffffff);
+		line(width-1, 0, 0, height-1, 0xffffffff);
+	}
 
 	//shadow
 	if( (a.x>=0) && (a.y>=0) )
 	{
 		rectbody(
-			(32*a.x) + ((32*a.y)<<16),
-			(32*a.x + 31) + ((32*a.y + 31)<<16),
+			32*a.x,
+			32*a.y,
+			32*a.x + 31,
+			32*a.y + 31,
 			0xf
 		);
 	}
@@ -59,8 +66,10 @@ void snake_read()
 	while(1)
 	{
 		rect(
-			(32*snake[j].x) + ((32*snake[j].y)<<16),
-			(32*snake[j].x + 31) + ((32*snake[j].y + 31)<<16),
+			32*snake[j].x,
+			32*snake[j].y,
+			32*snake[j].x + 31,
+			32*snake[j].y + 31,
 			0xffffffff,
 			0
 		);
@@ -71,8 +80,10 @@ void snake_read()
 
 	//food
 	rect(
-		(32*foodx) + ((32*foody)<<16),
-		(32*foodx + 31) + ((32*foody + 31)<<16),
+		32*foodx,
+		32*foody,
+		32*foodx + 31,
+		32*foody + 31,
 		0xff00,
 		0
 	);
@@ -90,24 +101,32 @@ void snake_write(QWORD type,QWORD key)
 	{
 		if(key=='a'|key==0x25)
 		{
+			if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
+
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].x--;
 		}
 		else if(key=='d'|key==0x27)
 		{
+			if( (snake[0].x+1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
+
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].x++;
 		}
 		else if(key=='w'|key==0x26)
 		{
+			if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
+
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].y--;
 		}
 		else if(key=='s'|key==0x28)
 		{
+			if( (snake[0].x == snake[1].x) && (snake[0].y+1 == snake[1].y) )return;
+
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].y++;

@@ -86,7 +86,7 @@ say("min=%d\n",min);
 	}
 
 	//
-	hexadecimal(min/16, 0, color);
+	hexadecimal(min/16, 0, color&0xffffff);
 }
 static void color_write(QWORD type,QWORD key)
 {

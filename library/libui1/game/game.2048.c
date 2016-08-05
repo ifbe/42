@@ -6,8 +6,8 @@ void shape_start(DWORD size,void* addr);
 void ascii_start(DWORD size,void* addr);
 void unicode_start(DWORD size,void* addr);
 //
-void line(QWORD leftup,QWORD rightdown,DWORD color);
-void rectbody(QWORD leftup,QWORD rightdown,DWORD color);
+void line(int,int,int,int,DWORD color);
+void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
 void backgroundcolor(DWORD);
 //
@@ -54,8 +54,10 @@ static void cubie(int x,int y,int z)
 	//for(j=y*160+5;j<y*160+155;j++)
 	//point(i,j,color);
 	rectbody(
-		( x*min/4 ) + ( (y*min/4) << 16 ),
-		( ((x+1)*min/4) -1 ) + ( ( ((y+1)*min/4) - 1 ) << 16 ),
+		x*min/4,
+		y*min/4,
+		((x+1)*min/4) - 1,
+		((y+1)*min/4) - 1,
 		color
 	);
 
@@ -320,43 +322,6 @@ static void the2048_read()
 		{
 			cubie(x,y,table[y][x]);
 		}
-	}
-
-	if(width<height)
-	{
-		//
-		line(
-			(width/4) + ( (width + (height-width)/4) << 16 ),
-			(width*1/8) + ( (width + (height-width)/2) << 16 ),
-			0xffffffff
-		);
-		line(
-			(width/4) + ( (width+(height-width)/4) << 16 ),
-			(width*3/8) + ( (width+(height-width)/2) << 16 ),
-			0xffffffff
-		);
-		line(
-			(width*3/4) + ( (width + (height-width)/4) << 16 ),
-			(width*5/8) + ( (width + (height-width)/2) << 16 ),
-			0xffffffff
-		);
-		line(
-			(width*3/4) + ( (width + (height-width)/4) << 16 ),
-			(width*7/8) + ( (width + (height-width)/2) << 16 ),
-			0xffffffff
-		);
-
-		//
-		line(
-			(width/2) + ( height << 16 ),
-			(width*1/4) + ( (width + (height-width)*3/4) << 16 ),
-			0xffffffff
-		);
-		line(
-			(width/2) + ( height << 16 ),
-			(width*3/4) + ( (width + (height-width)*3/4) << 16 ),
-			0xffffffff
-		);
 	}
 }
 

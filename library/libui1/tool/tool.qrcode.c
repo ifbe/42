@@ -3,7 +3,7 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 //
-void rectbody(DWORD xyz1,DWORD xyz2,DWORD color);
+void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 //
 void background_start(QWORD size,void* addr);
@@ -49,7 +49,7 @@ static void qrcode_read()
 			if( databuf[(y*sidelength)+x] == 0 )color=0;
 			else color=0xffffffff;
 //say("%d ",databuf[(y*sidelength)+x]);
-			rectbody(x1+(y1<<16), x2+(y2<<16), color);
+			rectbody(x1, y1, x2, y2, color);
 		}
 //say("\n");
 	}

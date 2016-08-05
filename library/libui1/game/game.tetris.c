@@ -8,8 +8,7 @@ void shape_start(DWORD size,void* addr);
 void ascii_start(DWORD size,void* addr);
 void unicode_start(DWORD size,void* addr);
 //
-void line(QWORD leftup,QWORD rightdown,DWORD color);
-void rect(QWORD leftup,QWORD rightdown,DWORD bodycolor,DWORD framecolor);
+void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
 void backgroundcolor(DWORD);
 //
@@ -71,7 +70,7 @@ static void cubie(int x,int y,int z)
 
 	bodycolor=z>0?0xffffffff:0;
 
-	rect(startx+(starty<<16), endx+(endy<<16), bodycolor, 0x44444444);
+	rect(startx, starty, endx, endy, bodycolor, 0x44444444);
 }
 
 

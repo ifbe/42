@@ -13,16 +13,10 @@ static int height=0;
 
 
 
-void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+void line(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int x,y,temp;
-	int x1,y1,x2,y2;
 	color |= 0xff000000;
-
-	x1=z1y1x1&0xffff;
-	y1=(z1y1x1>>16)&0xffff;
-	x2=z2y2x2&0xffff;
-	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<0)x1=0;
 	if(x1>width)x1=width-1;
@@ -72,18 +66,12 @@ void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 
 
 
-void rectframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+void rectframe(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int t;
 	int x,y;
-	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
 	color |= 0xff000000;
-
-	x1=z1y1x1&0xffff;
-	y1=(z1y1x1>>16)&0xffff;
-	x2=z2y2x2&0xffff;
-	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -99,17 +87,11 @@ void rectframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 		for(y=starty;y<endy;y++)winbuf[(y*width) + endx-t] = color;
 	}
 }
-void rectbody(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
+void rectbody(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int x,y;
-	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
 	color |= 0xff000000;
-
-	x1=z1y1x1&0xffff;
-	y1=(z1y1x1>>16)&0xffff;
-	x2=z2y2x2&0xffff;
-	y2=(z2y2x2>>16)&0xffff;
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -124,39 +106,37 @@ void rectbody(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 		}
 	}
 }
-void rect(QWORD z1y1x1,QWORD z2y2x2,DWORD bodycolor,DWORD framecolor)
+void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
 {
-	rectbody(z1y1x1,z2y2x2,bodycolor);
-	rectframe(z1y1x1,z2y2x2,framecolor);
+	rectbody(x1, y1, x2, y2, bodycolor);
+	rectframe(x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void trianglebody(DWORD a, DWORD b, DWORD c, DWORD color)
+void trianglebody(int x1, int y1, int x2, int y2, int x3, int y3, DWORD color)
 {
 }
-void triangleframe(DWORD a, DWORD b, DWORD c, DWORD color)
+void triangleframe(int x1, int y1, int x2, int y2, int x3, int y3, DWORD color)
 {
 }
-void triangle(DWORD a, DWORD b, DWORD c, DWORD color)
+void triangle(int x1, int y1, int x2, int y2, int x3, int y3, DWORD bodycolor, DWORD framecolor)
 {
+	trianglebody(x1, y1, x2, y2, x3, y3, bodycolor);
+	triangleframe(x1, y1, x2, y2, x3, y3, framecolor);
 }
 
 
 
 
-void circleframe(DWORD xyz,DWORD radius,DWORD color)
+void circleframe(int cx, int cy, int radius, DWORD color)
 {
 	int ret;
-	int x,y;	//for
-	int cx,cy;	//center
+	int x,y;
 	int x1,x2;
 	int y1,y2;
 	color |= 0xff000000;
-
-	cx=xyz&0xffff;
-	cy=(xyz>>16)&0xffff;
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -182,17 +162,13 @@ void circleframe(DWORD xyz,DWORD radius,DWORD color)
 		winbuf[ (y*width) + x2 ] = color;
 	}
 }
-void circlebody(DWORD xyz,DWORD radius,DWORD color)
+void circlebody(int cx, int cy, int radius, DWORD color)
 {
 	int ret;
-	int x,y;	//for
-	int cx,cy;	//center
+	int x,y;
 	int x1,x2;
 	int y1,y2;
 	color |= 0xff000000;
-
-	cx=xyz&0xffff;
-	cy=(xyz>>16)&0xffff;
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -224,26 +200,28 @@ void circlebody(DWORD xyz,DWORD radius,DWORD color)
 
 
 
-void ovalbody(DWORD c1, DWORD c2)
+void ovalbody(int x1, int y1, int x2, int y2, DWORD color)
 {
 }
-void ovalframe()
+void ovalframe(int x1, int y1, int x2, int y2, DWORD color)
 {
 }
-void oval()
+void oval(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
 {
+	ovalbody(x1, y1, x2, y2, bodycolor);
+	ovalbody(x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void sectorbody(DWORD center,DWORD radius,DWORD startend,DWORD color)
+void sectorbody(int cx, int cy, int radius, int start, int end, DWORD color)
 {
 }
-void sectorframe(DWORD center,DWORD radius,DWORD startend,DWORD color)
+void sectorframe(int cx, int cy, int radius, int start, int end, DWORD color)
 {
 }
-void sector(DWORD center,DWORD radius,DWORD startend,DWORD bodycolor,DWORD framecolor)
+void sector(int cx, int cy, int radius, int start, int end, DWORD bodycolor, DWORD framecolor)
 {
 }
 

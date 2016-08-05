@@ -9,7 +9,7 @@ void shape_start(QWORD size,void* addr);
 void ascii_start(QWORD size,void* addr);
 void unicode_start(QWORD size,void* addr);
 //
-void rectbody(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
+void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
@@ -96,22 +96,18 @@ static void spectrum_write(QWORD type,QWORD key)
 }
 static void spectrum_read()
 {
-	int leftupper;
-	int rightbottom;
 	int min;
 	int x,y;
 
 	if(width<height)min=width;
 	else min=height;
-	rectbody(0, (min<<16)+min, 0);
+	rectbody(0, 0, min, min, 0);
 
 	for(x=0;x<1024;x++)
 	{
 		y = min - (int)(real[x] * (double)min / (double)maxpower);
 
-		leftupper = (x*min/1024) + (y<<16);
-		rightbottom=(x*min/1024) + (min<<16);
-		rectbody(leftupper, rightbottom, 0xffffffff);
+		rectbody(x*min/1024, y, x*min/1024, min, 0xffffffff);
 //say("%x,%x\n",leftupper,rightbottom);
 	}
 }
