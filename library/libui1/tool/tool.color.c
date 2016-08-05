@@ -45,7 +45,8 @@ static void color_read()
 	{
 		for(y=0;y<min;y++)
 		{
-			screenbuf[y*width + x]	= (red<<16)
+			screenbuf[y*width + x]	= 0xff000000
+						+ (red<<16)
 						+ ( ( (y*256) / min ) << 8 )
 						+ ( (x*256) / min );
 		}
@@ -62,7 +63,7 @@ say("min=%d\n",min);
 	}
 
 	//(右边)选中的颜色的方块
-	color=(red<<16)+(green<<8)+blue;
+	color=0xff000000+ (red<<16) + (green<<8) + blue;
 	if(width<height)
 	{
 		for(y=width;y<height;y++)

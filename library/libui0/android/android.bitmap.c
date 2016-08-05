@@ -30,7 +30,7 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 
 	//拿
 	characterread();
-
+/*
 	//反色
 	this=pixels;
 	for(x=0;x<(info->width)*(info->height-64);x++)
@@ -41,6 +41,7 @@ static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
 			(temp&0xff00) +
 			((temp&0xff0000)>>16);
 	}
+*/
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, jobject  obj, jobject bitmap)
 {

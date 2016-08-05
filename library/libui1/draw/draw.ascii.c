@@ -282,7 +282,11 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 	int x,y,j,k;
 	int xxxx,yyyy,size;
 	unsigned char temp;
-	unsigned char* points=(unsigned char*)&asciitable;
+	unsigned char* points;
+
+	if(ch<0x20)ch=0x20;
+	points=(unsigned char*)&asciitable;
+	points+=ch<<4;
 
 	flag=bgcolor>>24;
 	xxxx=(xyz&0xff)<<3;
@@ -291,8 +295,8 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 	size=(xyz>>16)&0x7;
 	if(size==0)size=1;
 
-	if(ch<0x20)ch=0x20;
-	points+=ch<<4;
+	fgcolor |= 0xff000000;
+	bgcolor |= 0xff000000;
 
 	for(y=0;y<16;y++)
 	{

@@ -20,6 +20,7 @@ void backgroundcolor(unsigned int color)
 {
 	int x;
 
+	color |= 0xff000000;
 	for(x=0; x<width*height; x++)
 	{
 		screenbuf[x]=color;
@@ -32,13 +33,13 @@ void background1()
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)
 	{
-		screenbuf[x]=0xf0f0f0f0;
+		screenbuf[x]=0xfff0f0f0;
 	}
 
 	//上下
 	for(y=0;y<16;y++)
 	{
-		DWORD color=0x40404040+(0x0b0b0b0b*y);
+		DWORD color=0xff404040+(0x0b0b0b*y);
 
 		//上，编译器会不会用rep stosd指令优化呢?
 		DWORD* p=screenbuf+y*width;
@@ -51,7 +52,7 @@ void background1()
 	//左右
 	for(x=0;x<16;x++)
 	{
-		DWORD color=0x40404040+(0x0b0b0b0b*x);
+		DWORD color=0xff404040+(0x0b0b0b*x);
 
 		for(y=x;y<height-x;y++)
 		{

@@ -13,22 +13,11 @@ static int height=0;
 
 
 
-void point(int x,int y,int color)
-{
-	winbuf[ x + (y<<10) ] = color;
-}
-void draw(int x,int y,int color)
-{
-	winbuf[ (x+512) + ((383-y)<<10) ] = color;
-}
-
-
-
-
 void line(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 {
 	int x,y,temp;
 	int x1,y1,x2,y2;
+	color |= 0xff000000;
 
 	x1=z1y1x1&0xffff;
 	y1=(z1y1x1>>16)&0xffff;
@@ -89,6 +78,7 @@ void rectframe(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	int x,y;
 	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
+	color |= 0xff000000;
 
 	x1=z1y1x1&0xffff;
 	y1=(z1y1x1>>16)&0xffff;
@@ -114,6 +104,7 @@ void rectbody(QWORD z1y1x1,QWORD z2y2x2,DWORD color)
 	int x,y;
 	int x1,y1,x2,y2;
 	int startx,endx,starty,endy;
+	color |= 0xff000000;
 
 	x1=z1y1x1&0xffff;
 	y1=(z1y1x1>>16)&0xffff;
@@ -162,6 +153,7 @@ void circleframe(DWORD xyz,DWORD radius,DWORD color)
 	int cx,cy;	//center
 	int x1,x2;
 	int y1,y2;
+	color |= 0xff000000;
 
 	cx=xyz&0xffff;
 	cy=(xyz>>16)&0xffff;
@@ -197,6 +189,7 @@ void circlebody(DWORD xyz,DWORD radius,DWORD color)
 	int cx,cy;	//center
 	int x1,x2;
 	int y1,y2;
+	color |= 0xff000000;
 
 	cx=xyz&0xffff;
 	cy=(xyz>>16)&0xffff;
@@ -231,6 +224,19 @@ void circlebody(DWORD xyz,DWORD radius,DWORD color)
 
 
 
+void ovalbody(DWORD c1, DWORD c2)
+{
+}
+void ovalframe()
+{
+}
+void oval()
+{
+}
+
+
+
+
 void sectorbody(DWORD center,DWORD radius,DWORD startend,DWORD color)
 {
 }
@@ -238,6 +244,13 @@ void sectorframe(DWORD center,DWORD radius,DWORD startend,DWORD color)
 {
 }
 void sector(DWORD center,DWORD radius,DWORD startend,DWORD bodycolor,DWORD framecolor)
+{
+}
+
+
+
+
+void bezier()
 {
 }
 
