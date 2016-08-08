@@ -6,9 +6,17 @@
 
 
 
-static int width=0;
-static int height=0;
-static unsigned int* screenbuf;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
@@ -16,16 +24,24 @@ static unsigned int* screenbuf;
 void backgroundcolor(unsigned int color)
 {
 	int x;
+	int width,height;
+	DWORD* screenbuf=(DWORD*)(haha->pixelbuffer);
 
 	color |= 0xff000000;
-	for(x=0; x<width*height; x++)
+	for(x=0; x<(haha->width)*(haha->height); x++)
 	{
 		screenbuf[x]=color;
 	}
 }
 void background1()
 {
-	QWORD x,y;
+	int x,y;
+	int width,height;
+	DWORD* screenbuf;
+
+	width = haha->width;
+	height = haha->height;
+	screenbuf = (DWORD*)(haha->pixelbuffer);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)
@@ -64,18 +80,15 @@ void background1()
 
 void background_start(DWORD size,char* addr)
 {
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//
-	screenbuf=(unsigned int*)addr;
 }
 void background_stop()
 {
 }
-void background_init()
+void background_init(void* home,void* me)
 {
+	haha = me;
+	haha->type = 0;
+	haha->id = 0x6762;
 }
 void background_kill()
 {

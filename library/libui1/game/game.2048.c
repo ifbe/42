@@ -1,11 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 //
-void background_start(DWORD size,void* addr);
-void shape_start(DWORD size,void* addr);
-void ascii_start(DWORD size,void* addr);
-void unicode_start(DWORD size,void* addr);
-//
 void line(int,int,int,int,DWORD color);
 void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
@@ -368,12 +363,6 @@ static void the2048_start(DWORD size,void* addr)
 	p=(int*)addr;
 
 	//
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
-	//
 	for(x=0;x<width*height;x++)
 	{
 		p[x]=0;
@@ -388,12 +377,13 @@ void the2048_init(char* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x38343032;		//'2048'
-	this[2]=(QWORD)the2048_start;
-	this[3]=(QWORD)the2048_stop;
-	this[4]=(QWORD)the2048_list;
-	this[5]=(QWORD)the2048_choose;
-	this[6]=(QWORD)the2048_read;
-	this[7]=(QWORD)the2048_write;
+
+	this[10]=(QWORD)the2048_start;
+	this[11]=(QWORD)the2048_stop;
+	this[12]=(QWORD)the2048_list;
+	this[13]=(QWORD)the2048_choose;
+	this[14]=(QWORD)the2048_read;
+	this[15]=(QWORD)the2048_write;
 }
 void the2048_kill()
 {

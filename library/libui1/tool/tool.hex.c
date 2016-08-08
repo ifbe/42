@@ -3,12 +3,6 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characterchoose(char*);
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
@@ -16,10 +10,11 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
 void backgroundcolor(DWORD);
 void background1();
 //
-int compare(char*,char*);
-void data2hexstring(QWORD,char*);
+void characterchoose(char*);
 void arteryread(char* rdi,QWORD rsi,QWORD rcx);
 void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
+void data2hexstring(QWORD,char*);
+int compare(char*,char*);
 //
 void say(char*,...);
 void printmemory(char*,int);
@@ -326,11 +321,6 @@ static void hex_into()
 
 void hex_start(QWORD size,void* addr)
 {
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
 	//
 	screenbuf=addr;
 	width=size&0xffff;
@@ -344,12 +334,13 @@ void hex_init(char* uibuf,char* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
-	this[2]=(QWORD)hex_start;
-	this[3]=(QWORD)hex_stop;
-	this[4]=(QWORD)hex_list;
-	this[5]=(QWORD)hex_into;
-	this[6]=(QWORD)hex_read;
-	this[7]=(QWORD)hex_write;
+
+	this[10]=(QWORD)hex_start;
+	this[11]=(QWORD)hex_stop;
+	this[12]=(QWORD)hex_list;
+	this[13]=(QWORD)hex_into;
+	this[14]=(QWORD)hex_read;
+	this[15]=(QWORD)hex_write;
 
 	databuf=uibuf+0x300000;
 }

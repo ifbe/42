@@ -6,16 +6,31 @@ void say(char*,...);
 
 
 
-static DWORD* winbuf=0;
-static int width=0;
-static int height=0;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
 
 void line(int x1, int y1, int x2, int y2, DWORD color)
 {
-	int x,y,temp;
+	int temp;
+	int x,y;
+	int width,height;
+	DWORD* winbuf;
+
+	winbuf=(DWORD*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
 	color |= 0xff000000;
 
 	if(x1<0)x1=0;
@@ -70,7 +85,13 @@ void rectframe(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int t;
 	int x,y;
+	int width,height;
 	int startx,endx,starty,endy;
+	DWORD* winbuf;
+
+	winbuf=(DWORD*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
 	color |= 0xff000000;
 
 	if(x1<x2){startx=x1;endx=x2;}
@@ -90,7 +111,13 @@ void rectframe(int x1, int y1, int x2, int y2, DWORD color)
 void rectbody(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int x,y;
+	int width,height;
 	int startx,endx,starty,endy;
+	DWORD* winbuf;
+
+	winbuf=(DWORD*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
 	color |= 0xff000000;
 
 	if(x1<=x2){startx=x1;endx=x2;}
@@ -136,6 +163,12 @@ void circleframe(int cx, int cy, int radius, DWORD color)
 	int x,y;
 	int x1,x2;
 	int y1,y2;
+	int width,height;
+	DWORD* winbuf;
+
+	winbuf=(DWORD*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
 	color |= 0xff000000;
 
 	y1=cy-radius;
@@ -168,6 +201,12 @@ void circlebody(int cx, int cy, int radius, DWORD color)
 	int x,y;
 	int x1,x2;
 	int y1,y2;
+	int width,height;
+	DWORD* winbuf;
+
+	winbuf=(DWORD*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
 	color |= 0xff000000;
 
 	y1=cy-radius;
@@ -237,18 +276,15 @@ void bezier()
 
 void shape_start(DWORD size,void* addr)
 {
-	//how
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//where
-	winbuf=addr;
 }
 void shape_stop()
 {
 }
-void shape_init()
+void shape_init(void* home,void* me)
 {
+	haha=me;
+	haha->type=0;
+	haha->id=0x6570616873;
 }
 void shape_kill()
 {

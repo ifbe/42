@@ -6,9 +6,17 @@ void say(char*,...);
 
 
 
-static DWORD* screen=0;
-static int width=0;
-static int height=0;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
@@ -278,11 +286,13 @@ static const unsigned char asciitable[128*16]={
 //字符值大小，横纵坐标，前景色，后景色
 void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 {
-	int flag;
-	int x,y,j,k;
-	int xxxx,yyyy,size;
+	int x,y;
+	int j,k;
+	int width,height;
+	int xxxx,yyyy,size,flag;
 	unsigned char temp;
 	unsigned char* points;
+	DWORD* screen;
 
 	if(ch<0x20)ch=0x20;
 	points=(unsigned char*)&asciitable;
@@ -297,6 +307,10 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 
 	fgcolor |= 0xff000000;
 	bgcolor |= 0xff000000;
+
+	width = haha->width;
+	height = haha->height;
+	screen = (DWORD*)(haha->pixelbuffer);
 
 	for(y=0;y<16;y++)
 	{
@@ -479,20 +493,17 @@ void defaultdouble(int x,int y,double data)
 
 
 
-void ascii_start(DWORD size,void* addr)
+void ascii_start()
 {
-	//how
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//where
-	screen=addr;
 }
 void ascii_stop()
 {
 }
-void ascii_init()
+void ascii_init(void* home,void* me)
 {
+	haha=me;
+	haha->type = 0;
+	haha->id = 0x6969637361;
 }
 void ascii_kill()
 {

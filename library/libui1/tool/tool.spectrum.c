@@ -3,20 +3,15 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characterchoose(char*);
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
-int compare(char*,char*);
-void data2hexstring(QWORD,char*);
+void characterchoose(char*);
 void arteryread(char* rdi,QWORD rsi,QWORD rcx);
 void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
+void data2hexstring(QWORD,char*);
+int compare(char*,char*);
 //
 unsigned int getrandom();
 void printmemory(char*,int);
@@ -138,12 +133,6 @@ void spectrum_start(QWORD size,void* addr)
 	int i;
 
 	//
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
-	//
 	screenbuf=addr;
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
@@ -160,12 +149,13 @@ void spectrum_init(char* uibuf,char* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x6d75727463657073;
-	this[2]=(QWORD)spectrum_start;
-	this[3]=(QWORD)spectrum_stop;
-	this[4]=(QWORD)spectrum_list;
-	this[5]=(QWORD)spectrum_into;
-	this[6]=(QWORD)spectrum_read;
-	this[7]=(QWORD)spectrum_write;
+
+	this[10]=(QWORD)spectrum_start;
+	this[11]=(QWORD)spectrum_stop;
+	this[12]=(QWORD)spectrum_list;
+	this[13]=(QWORD)spectrum_into;
+	this[14]=(QWORD)spectrum_read;
+	this[15]=(QWORD)spectrum_write;
 
 	databuf=(double*)(uibuf+0x200000);
 	real=(double*)(uibuf+0x300000);

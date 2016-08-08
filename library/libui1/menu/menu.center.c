@@ -13,15 +13,20 @@ void say(char*,...);
 
 
 //
-static int width;
-static int height;
-static DWORD* screenbuf;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 //菜单
 static char buffer[128];
 static int bufp=0;
-//
-static QWORD* this=0;
-static QWORD* that=0;
 
 
 
@@ -29,7 +34,8 @@ static QWORD* that=0;
 //write,read,into,list
 static void menu_write(QWORD type,QWORD key)
 {
-	say("%s,%llx\n",&type,key);
+	int width=haha->width;
+	int height=haha->height;
 
 	//'xyz left'
 	if(type==0x7466656C207A7978)
@@ -43,7 +49,7 @@ static void menu_write(QWORD type,QWORD key)
 			(y>(height*3/4)&0xfffffff0) |
 			(y<height/4) )
 		{
-			that[0]=0;
+			haha->start=0;
 			return;
 		}
 
@@ -88,6 +94,9 @@ static void menu_write(QWORD type,QWORD key)
 }
 static void menu_read()
 {
+	int width=haha->width;
+	int height=haha->height;
+
 	//title
 	rect(
 		width/4,
@@ -144,29 +153,24 @@ static void menu_list()
 
 static void menu_start(DWORD size,void* addr)
 {
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//
-	screenbuf=addr;
 }
 static void menu_stop()
 {
 }
-void menu_init(char* base,char* addr)
+void menu_init(void* base,void* addr)
 {
-	this=(QWORD*)addr;
-	that=(QWORD*)(addr+0x10);
+	QWORD* this=addr;
+	haha=addr;
 
 	this[0]=0;
 	this[1]=0x756e656d;
-	this[2]=(QWORD)menu_start;
-	this[3]=(QWORD)menu_stop;
-	this[4]=(QWORD)menu_list;
-	this[5]=(QWORD)menu_choose;
-	this[6]=(QWORD)menu_read;
-	this[7]=(QWORD)menu_write;
+
+	this[10]=(QWORD)menu_start;
+	this[11]=(QWORD)menu_stop;
+	this[12]=(QWORD)menu_list;
+	this[13]=(QWORD)menu_choose;
+	this[14]=(QWORD)menu_read;
+	this[15]=(QWORD)menu_write;
 }
 void menu_kill()
 {

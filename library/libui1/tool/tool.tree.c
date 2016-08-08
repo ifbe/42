@@ -18,11 +18,6 @@ struct mathnode{
 
 
 
-//
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
 //libui
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
@@ -222,11 +217,6 @@ static void tree_start(QWORD size,void* addr)
 {
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
-
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
 }
 static void tree_stop()
 {
@@ -236,12 +226,13 @@ void tree_init(char* base,char* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x65657274;
-	this[2]=(QWORD)tree_start;
-	this[3]=(QWORD)tree_stop;
-	this[4]=(QWORD)tree_list;
-	this[5]=(QWORD)tree_into;
-	this[6]=(QWORD)tree_read;
-	this[7]=(QWORD)tree_write;
+
+	this[10]=(QWORD)tree_start;
+	this[11]=(QWORD)tree_stop;
+	this[12]=(QWORD)tree_list;
+	this[13]=(QWORD)tree_into;
+	this[14]=(QWORD)tree_read;
+	this[15]=(QWORD)tree_write;
 
 	node=(struct mathnode*)(base+0x200000);
 }

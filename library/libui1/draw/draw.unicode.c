@@ -7,9 +7,17 @@ void say(char*,...);
 
 
 
-static int width=0;
-static int height=0;
-static DWORD* screen=0;
+static struct temp{
+	QWORD type;
+	QWORD id;
+	QWORD start;
+	QWORD end;
+
+	QWORD pixelbuffer;
+	QWORD pixelformat;
+	QWORD width;
+	QWORD height;
+}*haha;
 static unsigned char* unicodetable=0;
 
 
@@ -18,9 +26,9 @@ static unsigned char* unicodetable=0;
 void printunicodefromvalue(int xxxx,int yyyy,char* p)
 {
 	int x,y;
-	DWORD* this = screen + xxxx + (yyyy*1024);
-
 	unsigned short temp;
+
+	DWORD* this = (DWORD*)( haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
 	for(y=0;y<0x10;y++)
 	{
 		temp  = p[y*2] << 8;
@@ -46,9 +54,9 @@ void printunicode(int x,int y,DWORD value)
 void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
 {
 	int x,y,i,j;
-	DWORD* this = screen + xxxx + (yyyy*1024);
-
 	unsigned short temp;
+
+	DWORD* this = (DWORD*)(haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
 	for(y=0;y<0x10;y++)
 	{
 		temp  = p[y*2] << 8;
@@ -98,22 +106,13 @@ void printunicodebig(int x,int y,DWORD value)
 
 
 
-void unicode_start(QWORD size,char* addr)
+void unicode_init(void* home,void* me)
 {
-	//how
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//where
-	screen=(DWORD*)addr;
-}
-void unicode_stop()
-{
-}
-void unicode_init()
-{
-	//unicode
 	unicodetable=(unsigned char*)whereisunicodetable();
+
+	haha=me;
+	haha->type=0;
+	haha->id=0x65646f63696e75;
 }
 void unicode_kill()
 {

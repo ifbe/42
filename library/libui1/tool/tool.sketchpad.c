@@ -29,11 +29,6 @@ void decimal(int x,int y,QWORD in);
 void backgroundcolor(DWORD);
 void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
 //
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -362,11 +357,6 @@ static void sketchpad_start(QWORD size,void* addr)
 {
 	int x;
 
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
 	//
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
@@ -385,12 +375,13 @@ void sketchpad_init(void* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x686374656b73;
-	this[2]=(QWORD)sketchpad_start;
-	this[3]=(QWORD)sketchpad_stop;
-	this[4]=(QWORD)sketchpad_list;
-	this[5]=(QWORD)sketchpad_change;
-	this[6]=(QWORD)sketchpad_read;
-	this[7]=(QWORD)sketchpad_write;
+
+	this[10]=(QWORD)sketchpad_start;
+	this[11]=(QWORD)sketchpad_stop;
+	this[12]=(QWORD)sketchpad_list;
+	this[13]=(QWORD)sketchpad_change;
+	this[14]=(QWORD)sketchpad_read;
+	this[15]=(QWORD)sketchpad_write;
 
 	node=(struct mathnode*)(base+0x100000);
 	databuf=base+0x200000;

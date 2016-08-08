@@ -3,15 +3,12 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void characterchoose(char*);
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
-void command(char* in);
 void string(int x,int y,char* str);
 void backgroundcolor(DWORD);
+//
+void characterchoose(char*);
+void command(char* in);
+//
 int compare(char* first,char* second);
 void say(char*,...);
 
@@ -206,11 +203,6 @@ static void console_list()
 
 static void console_start(QWORD size,void* addr)
 {
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
 	//size
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
@@ -227,12 +219,13 @@ void console_init(char* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x656c6f736e6f63;
-	this[2]=(QWORD)console_start;
-	this[3]=(QWORD)console_stop;
-	this[4]=(QWORD)console_list;
-	this[5]=(QWORD)console_into;
-	this[6]=(QWORD)console_read;
-	this[7]=(QWORD)console_write;
+
+	this[10]=(QWORD)console_start;
+	this[11]=(QWORD)console_stop;
+	this[12]=(QWORD)console_list;
+	this[13]=(QWORD)console_into;
+	this[14]=(QWORD)console_read;
+	this[15]=(QWORD)console_write;
 
 	//
 	logbuf=base+0x300000;

@@ -3,11 +3,6 @@
 //
 void hexadecimal(int x,int y,QWORD in);
 //
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -150,32 +145,28 @@ static void color_write(QWORD type,QWORD key)
 
 static void color_start(QWORD size,void* addr)
 {
-        int i;
+	int i;
 
-        ascii_start(size,addr);
-        unicode_start(size,addr);
-        background_start(size,addr);
-        shape_start(size,addr);
-
-        //
-        screenbuf=addr;
-        width=size&0xffff;
-        height=(size>>16)&0xffff;
+	//
+	screenbuf=addr;
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
 }
 static void color_stop()
 {
 }
 void color_init(char* uibuf,char* addr)
 {
-        QWORD* this=(QWORD*)addr;
-        this[0]=0x776f646e6977;
-        this[1]=0x726f6c6f63;
-        this[2]=(QWORD)color_start;
-        this[3]=(QWORD)color_stop;
-        this[4]=(QWORD)color_list;
-        this[5]=(QWORD)color_into;
-        this[6]=(QWORD)color_read;
-        this[7]=(QWORD)color_write;
+	QWORD* this=(QWORD*)addr;
+	this[0]=0x776f646e6977;
+	this[1]=0x726f6c6f63;
+
+	this[10]=(QWORD)color_start;
+	this[11]=(QWORD)color_stop;
+	this[12]=(QWORD)color_list;
+	this[13]=(QWORD)color_into;
+	this[14]=(QWORD)color_read;
+	this[15]=(QWORD)color_write;
 }
 void color_kill()
 {

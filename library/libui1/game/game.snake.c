@@ -6,11 +6,6 @@ void rectbody( int x1, int y1, int x2, int y2, DWORD color);
 void rectframe(int x1, int y1, int x2, int y2, DWORD color);
 void rect(     int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 //
-void background_start(DWORD size,void* addr);
-void shape_start(DWORD size,void* addr);
-void ascii_start(DWORD size,void* addr);
-void unicode_start(DWORD size,void* addr);
-//
 DWORD getrandom();
 void say(char*,...);
 
@@ -23,6 +18,7 @@ struct hehe{
 };
 static struct hehe* snake;
 static int len;
+static int direction;
 //
 static struct hehe a;
 static struct hehe b;
@@ -97,6 +93,15 @@ void snake_write(QWORD type,QWORD key)
 	int j;
 	if(die==1)return;
 
+	if(type==0x7466656C207A7978)
+	{
+		if(direction==1){type=0x64626b;key=0x25;}
+		else if(direction==2){type=0x64626b;key=0x27;}
+		else if(direction==3){type=0x64626b;key=0x26;}
+		else if(direction==4){type=0x64626b;key=0x28;}
+		else return;
+	}
+
 	if(type==0x64626b)
 	{
 		if(key=='a'|key==0x25)
@@ -106,6 +111,7 @@ void snake_write(QWORD type,QWORD key)
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].x--;
+			direction=1;
 		}
 		else if(key=='d'|key==0x27)
 		{
@@ -114,6 +120,7 @@ void snake_write(QWORD type,QWORD key)
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].x++;
+			direction=2;
 		}
 		else if(key=='w'|key==0x26)
 		{
@@ -122,6 +129,7 @@ void snake_write(QWORD type,QWORD key)
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].y--;
+			direction=3;
 		}
 		else if(key=='s'|key==0x28)
 		{
@@ -130,6 +138,7 @@ void snake_write(QWORD type,QWORD key)
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].y++;
+			direction=4;
 		}
 		else return;
 	}
@@ -190,12 +199,16 @@ static void snake_choose()
 	int i;
 	snake[0].x=1 + getrandom() % ((width/32)-2);
 	snake[0].y=1 + getrandom() % ((height/32)-2);
+
 	foodx=getrandom() % (width/32);
 	foody=getrandom() % (height/32);
 
 	a.x = -1;
 	b.x = -1;
+
 	len=1;
+	direction=1;
+
 	die=0;
 }
 
@@ -212,12 +225,6 @@ static void snake_start(DWORD size,void* addr)
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 	p=(int*)addr;
-
-	//
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
 
 	//
 	for(x=0;x<width*height;x++)
@@ -237,12 +244,13 @@ void snake_init(char* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x656b616e73;		//'snake'
-	this[2]=(QWORD)snake_start;
-	this[3]=(QWORD)snake_stop;
-	this[4]=(QWORD)snake_list;
-	this[5]=(QWORD)snake_choose;
-	this[6]=(QWORD)snake_read;
-	this[7]=(QWORD)snake_write;
+
+	this[10]=(QWORD)snake_start;
+	this[11]=(QWORD)snake_stop;
+	this[12]=(QWORD)snake_list;
+	this[13]=(QWORD)snake_choose;
+	this[14]=(QWORD)snake_read;
+	this[15]=(QWORD)snake_write;
 
 	snake=(struct hehe*)(addr+0x300000);
 }

@@ -1,11 +1,6 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
 //
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void rectbody( int x1, int y1, int x2, int y2, DWORD color);
 void rectframe(int x1, int y1, int x2, int y2, DWORD color);
 void circlebody( int cx, int cy, int r, DWORD color);
@@ -54,10 +49,6 @@ void testshape_write()
 }
 void testshape_start(QWORD size,void* addr)
 {
-        ascii_start(size,addr);
-        unicode_start(size,addr);
-        background_start(size,addr);
-        shape_start(size,addr);
 }
 void testshape_stop()
 {
@@ -67,12 +58,13 @@ void testshape_init(char*base,char* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x6570616873;
-	this[2]=(QWORD)testshape_start;
-	this[3]=(QWORD)testshape_stop;
-	this[4]=(QWORD)testshape_list;
-	this[5]=(QWORD)testshape_change;
-	this[6]=(QWORD)testshape_read;
-	this[7]=(QWORD)testshape_write;
+
+	this[10]=(QWORD)testshape_start;
+	this[11]=(QWORD)testshape_stop;
+	this[12]=(QWORD)testshape_list;
+	this[13]=(QWORD)testshape_change;
+	this[14]=(QWORD)testshape_read;
+	this[15]=(QWORD)testshape_write;
 }
 void testshape_kill()
 {

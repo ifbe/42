@@ -6,11 +6,6 @@
 void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 //
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
-//
 void qrcode_generate(char* src,char* dst,int sidelength);
 void say(char*,...);
 
@@ -75,11 +70,6 @@ static void qrcode_into()
 
 static void qrcode_start(QWORD size,void* addr)
 {
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
 	//
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
@@ -97,12 +87,13 @@ void qrcode_init(void* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x65646f637271;
-	this[2]=(QWORD)qrcode_start;
-	this[3]=(QWORD)qrcode_stop;
-	this[4]=(QWORD)qrcode_list;
-	this[5]=(QWORD)qrcode_into;
-	this[6]=(QWORD)qrcode_read;
-	this[7]=(QWORD)qrcode_write;
+
+	this[10]=(QWORD)qrcode_start;
+	this[11]=(QWORD)qrcode_stop;
+	this[12]=(QWORD)qrcode_list;
+	this[13]=(QWORD)qrcode_into;
+	this[14]=(QWORD)qrcode_read;
+	this[15]=(QWORD)qrcode_write;
 
 	databuf=(char*)(addr+0x300000);
 }

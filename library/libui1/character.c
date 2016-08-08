@@ -2,13 +2,17 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//init......
+//special guys
+void menu_init(char*,char*);
+void menu1_init(char*,char*);
+void menu2_init(char*,char*);
+void menu3_init(char*,char*);
+void menu4_init(char*,char*);
 void ascii_init(char*,char*);
 void unicode_init(char*,char*);
 void background_init(char*,char*);
 void shape_init(char*,char*);
-//
-void menu_init(char*,char*);
+//normal guys
 void console_init(char*,char*);
 void hex_init(char*,char*);
 void keyboard_init(char*,char*);
@@ -70,35 +74,49 @@ static int pointmax=0;
 //[0x300000,0x3fffff]:
 static struct working
 {
-        //[0,7]:种类            //'window'
-        QWORD type;
+	//种类，名字，位置，
+	QWORD type;	//[0,7]:种类	    //'window'
+	QWORD id;	//[8,f]:名字	    //'小明'
+	QWORD xyze1;	//x,y,z,en
+	QWORD xyze2;
 
-        //[8,f]:名字            //'小明'
-        QWORD id;
+	//screenbuffer
+	QWORD pixelbuffer;	//address
+	QWORD pixelformat;	//rgba8888    bgra8888    rgb565    yuv420
+	QWORD width;
+	QWORD height;
 
-        //[10,17]:开始
-        int (*start)(DWORD size,char* addr);
-        char padding2[ 8 - sizeof(char*) ];
+	//[40,47]
+	void (*create)();
+	char padding0[ 8 - sizeof(char*) ];
 
-        //[18,1f]:结束
-        int (*stop)();
-        char padding3[ 8 - sizeof(char*) ];
+	//[48,4f]
+	void (*destory)();
+	char padding1[ 8 - sizeof(char*) ];
 
-        //[20,27]:状态
-        int (*list)();
-        char padding4[ 8 - sizeof(char*) ];
+	//[50,57]:开始
+	int (*start)(DWORD size,char* addr);
+	char padding2[ 8 - sizeof(char*) ];
 
-        //[28,2f]:跳关
-        int (*choose)();
-        char padding5[ 8 - sizeof(char*) ];
+	//[58,5f]:结束
+	int (*stop)();
+	char padding3[ 8 - sizeof(char*) ];
 
-        //[30,37]:输出
-        int (*read)();
-        char padding6[ 8 - sizeof(char*) ];
+	//[60,67]:状态
+	int (*list)();
+	char padding4[ 8 - sizeof(char*) ];
 
-        //[38,3f]:输入
-        int (*write)(QWORD type,QWORD key);
-        char padding7[ 8 - sizeof(char*) ];
+	//[68,6f]:跳关
+	int (*choose)();
+	char padding5[ 8 - sizeof(char*) ];
+
+	//[70,77]:输出
+	int (*read)();
+	char padding6[ 8 - sizeof(char*) ];
+
+	//[78,7f]:输入
+	int (*write)(QWORD type,QWORD key);
+	char padding7[ 8 - sizeof(char*) ];
 }*worker;
 static unsigned char* mega1;
 static unsigned char* mega2;
@@ -127,56 +145,78 @@ void characterinit(char* type,char* addr)
 
 		//[+0x00,0x3f]:		menu.c
 		menu_init(addr,temp);
-		temp+=0x40;
+		temp+=0x80;
+
+		//ascii
+		ascii_init(addr,temp);
+		temp+=0x80;
+
+		//unicode
+		unicode_init(addr,temp);
+		temp+=0x80;
+
+		//background
+		background_init(addr,temp);
+		temp+=0x80;
+
+		//shape
+		shape_init(addr,temp);
+		temp+=0x80;
 
 		//game.2048
 		the2048_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//game.tetris
 		tetris_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//game.snake
 		snake_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
+
+		//testfont
+
+		//testshape
+		testshape_init(addr,temp);
+		temp += 0x80;
 
 		//tool.color
 		color_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.console
 		console_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.hex
 		hex_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.keyboard
 		keyboard_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.qrcode
 		qrcode_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.tree
 		tree_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.sketchpad
 		sketchpad_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
 		//tool.spectrum
 		spectrum_init(addr,temp);
-		temp += 0x40;
+		temp += 0x80;
 
-		testshape_init(addr,temp);
-		temp += 0x40;
-
-		now=1;
+		for(now=0;now<100;now++)
+		{
+			if(worker[now].type != 0)break;
+		}
 		say("[c,f):inited character\n");
 	}
 }
@@ -205,6 +245,16 @@ void characterkill()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int characterstart(DWORD size,char* addr)
 {
+	int j;
+	for(j=0;j<100;j++)
+	{
+		if(worker[j].type != 0)break;
+
+		worker[j].width=size&0xffff;
+		worker[j].height=(size>>16)&0xffff;
+		worker[j].pixelbuffer=(QWORD)addr;
+	}
+
 	actualsize=size;
 	actualaddr=addr;
 
@@ -270,7 +320,7 @@ int characterchoose(char* p)
 
 	if( (temp&0xffffffff) == 0xffffffff )
 	{
-		if(now<=1)return 0;
+		if(worker[now-1].type == 0)return 0;
 		now--;
 
 		//
@@ -296,7 +346,11 @@ int characterchoose(char* p)
 	ret=compare(p,"random");
 	if(ret==0)
 	{
-		for(i=1;i<0x1000/0x40;i++)
+		for(i=0;i<10;i++)
+		{
+			if(worker[i].type != 0)break;	//skip menu|draw
+		}
+		for(;i<0x100000/0x80;i++)
 		{
 			if(worker[i].id == 0)break;
 		}
@@ -322,7 +376,11 @@ int characterchoose(char* p)
 	}
 
 	//start searching
-	for(i=1;i<0x100;i++)
+	for(i=0;i<10;i++)
+	{
+		if(worker[i].type != 0)break;	//skip menu|draw
+	}
+	for(;i<0x100;i++)
 	{
 		//all searched
 		if(worker[i].id == 0)break;
@@ -353,7 +411,7 @@ void characterread()
 	worker[now].read();
 
 	//菜单
-	if(worker[0].type > 0)
+	if(worker[0].xyze1 > 0)
 	{
 		worker[0].read();
 	}
@@ -386,7 +444,7 @@ void characterwrite(QWORD type,QWORD key)
 		//按下esc
 		if(key==0x1b)
 		{
-			worker[0].type ^= 1;
+			worker[0].xyze1 ^= 1;
 			return;
 		}
 	}//kbd
@@ -470,9 +528,9 @@ void characterwrite(QWORD type,QWORD key)
 				else if(pointmax>1)
 				{
 					m = ((pointleave[0]>>16)&0xffff)
-                                          - ((pointenter[0]>>16)&0xffff);	//dy1
+					  - ((pointenter[0]>>16)&0xffff);	//dy1
 					n = ((pointleave[1]>>16)&0xffff)
-                                          - ((pointenter[1]>>16)&0xffff);	//dy2
+					  - ((pointenter[1]>>16)&0xffff);	//dy2
 					if( (m>-250)&&(m<250)&&(n>-250)&&(n<250) )
 					{
 						m = (pointleave[0]&0xffff)
@@ -498,7 +556,7 @@ void characterwrite(QWORD type,QWORD key)
 	}
 
 	//其余所有消息，谁在干活就交给谁
-	if(worker[0].type > 0)worker[0].write(type,key);
+	if(worker[0].xyze1 > 0)worker[0].write(type,key);
 	else worker[now].write(type,key);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -22,27 +22,6 @@ static int yyyy=0;
 
 
 
-static void fill_plasma( AndroidBitmapInfo*  info, void*  pixels)
-{
-	int x;
-	uint32_t temp;
-	uint32_t* this;
-
-	//拿
-	characterread();
-/*
-	//反色
-	this=pixels;
-	for(x=0;x<(info->width)*(info->height-64);x++)
-	{
-		temp=this[x];
-		this[x]=0xff000000 +
-			((temp&0xff)<<16) +
-			(temp&0xff00) +
-			((temp&0xff0000)>>16);
-	}
-*/
-}
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, jobject  obj, jobject bitmap)
 {
 	AndroidBitmapInfo  info;
@@ -67,7 +46,8 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, job
 	}
 
 	/* Now fill the values with a nice little plasma */
-	fill_plasma(&info, pixels);
+	//fill_plasma(&info, pixels);
+	characterread();
 
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);

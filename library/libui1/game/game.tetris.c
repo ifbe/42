@@ -3,11 +3,6 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 //
-void background_start(DWORD size,void* addr);
-void shape_start(DWORD size,void* addr);
-void ascii_start(DWORD size,void* addr);
-void unicode_start(DWORD size,void* addr);
-//
 void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
 void backgroundcolor(DWORD);
@@ -490,7 +485,10 @@ static int down()
 void tetris_write(QWORD type,QWORD key)
 {
 	int ret;
-
+	if(type==0x7466656C207A7978)
+	{
+		down();
+	}
 	if(type==0x64626b)
 	{
 		if(key=='a'|key==0x25)
@@ -583,12 +581,6 @@ static void tetris_start(DWORD size,void* addr)
 	screen=(unsigned int*)addr;
 
 	//
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
-	//
 	for(x=0;x<width*height;x++)
 	{
 		screen[x]=0;
@@ -602,12 +594,13 @@ void tetris_init(char* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x736972746574;		//'tetris'
-	this[2]=(QWORD)tetris_start;
-	this[3]=(QWORD)tetris_stop;
-	this[4]=(QWORD)tetris_list;
-	this[5]=(QWORD)tetris_choose;
-	this[6]=(QWORD)tetris_read;
-	this[7]=(QWORD)tetris_write;
+
+	this[10]=(QWORD)tetris_start;
+	this[11]=(QWORD)tetris_stop;
+	this[12]=(QWORD)tetris_list;
+	this[13]=(QWORD)tetris_choose;
+	this[14]=(QWORD)tetris_read;
+	this[15]=(QWORD)tetris_write;
 
 	table=(unsigned char*)(addr+0x300000);
 }

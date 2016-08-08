@@ -2,10 +2,6 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void background_start(QWORD size,void* addr);
-void shape_start(QWORD size,void* addr);
-void ascii_start(QWORD size,void* addr);
-void unicode_start(QWORD size,void* addr);
 void backgroundcolor(DWORD);
 
 
@@ -67,11 +63,6 @@ static void keyboard_list()
 
 static void keyboard_start(QWORD size,void* addr)
 {
-	ascii_start(size,addr);
-	unicode_start(size,addr);
-	background_start(size,addr);
-	shape_start(size,addr);
-
 	//
 	screenbuf=addr;
 	width=size&0xffff;
@@ -88,12 +79,13 @@ void keyboard_init(char* base,void* addr)
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x64626b;
-	this[2]=(QWORD)keyboard_start;
-	this[3]=(QWORD)keyboard_stop;
-	this[4]=(QWORD)keyboard_list;
-	this[5]=(QWORD)keyboard_into;
-	this[6]=(QWORD)keyboard_read;
-	this[7]=(QWORD)keyboard_write;
+
+	this[10]=(QWORD)keyboard_start;
+	this[11]=(QWORD)keyboard_stop;
+	this[12]=(QWORD)keyboard_list;
+	this[13]=(QWORD)keyboard_into;
+	this[14]=(QWORD)keyboard_read;
+	this[15]=(QWORD)keyboard_write;
 }
 void keyboard_kill()
 {
