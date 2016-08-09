@@ -11,8 +11,9 @@ void characterstart(DWORD size,char* addr);
 void characterstop();
 //
 void readevent(QWORD* first,QWORD* second);
-void writewindow(DWORD,char*);
 void readwindow();
+void writewindow();
+//void writewindow(DWORD,char*);
 //
 void birth();
 void death();
@@ -40,7 +41,8 @@ void main()
 
 		//1.先在内存里画画，然后一次性写到窗口内
 		characterread();
-		writewindow(512+(512<<16) , mybuffer);
+		//writewindow(512+(512<<16) , mybuffer);
+		writewindow();
 
 		//2.等事件，是退出消息就退出
 		readevent(&type,&key);

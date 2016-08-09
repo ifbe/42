@@ -99,13 +99,13 @@ static void printstdout(int start,int count)
 	//say("printstdout:%d,%d\n",start,count);
 	for(y=0;y<count;y++)
 	{
-		string(0 , y , p + y * 0x80);
+		string(0 , y*16 , p + y * 0x80);
 	}
 }
 static void printstdin(int count)
 {
-	string(0,count,"user:");
-	string(0x5,count,buffer);
+	string(0, count*16, "[user@42]");
+	string(9*8, count*16, buffer);
 }
 
 

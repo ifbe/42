@@ -3,7 +3,7 @@
 //
 void line(int,int,int,int,DWORD color);
 void rectbody(int x1, int y1, int x2, int y2, DWORD color);
-void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
+void printdecimal(int x, int y, int size, int data, DWORD fg, DWORD bg);
 void backgroundcolor(DWORD);
 //
 unsigned int getrandom();
@@ -58,8 +58,10 @@ static void cubie(int x,int y,int z)
 
 	if(z==0)return;
 	printdecimal(
+		x*(min/4)+min/10-count*16,
+		y*(min/4)+min/20,
+		4,
 		z,
-		x*(min/32)+min/80-count*2 + ((y*(min/64)+min/160)<<8) + (4<<16),
 		0,
 		0
 	);

@@ -4,7 +4,7 @@
 #define QWORD unsigned long long
 int characterchoose(char* p);
 //
-void printstring(char* str,DWORD xyz,DWORD fg,DWORD bg);
+void printstring(int x, int y, int size, char* str, DWORD fg, DWORD bg);
 void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
 //
 void say(char*,...);
@@ -129,14 +129,18 @@ static void menu_read()
 
 	//string
 	printstring(
+		width/4,
+		height/4 + 16,
+		1,
 		"what do you want?",
-		(width/16 - 8) + ((height/64)<<8),
 		0xffffffff,
 		0
 	);
 	printstring(
+		width/4,
+		height/4 + 32,
+		1,
 		buffer,
-		(width/32) + ((height/64 + 1)<<8),
 		0xffffffff,
 		0
 	);

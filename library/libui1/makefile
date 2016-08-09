@@ -13,7 +13,9 @@ target:
 	$(compiler) $(cflag) menu/menu.nether.c
 	$(compiler) $(cflag) menu/menu.left.c
 	$(compiler) $(cflag) menu/menu.right.c
-	$(compiler) $(cflag) tool/tool.color.c
+	$(compiler) $(cflag) test/test.color.c
+	$(compiler) $(cflag) test/test.doodle.c
+	$(compiler) $(cflag) test/test.font.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.hex.c
 	$(compiler) $(cflag) tool/tool.keyboard.c
@@ -21,8 +23,6 @@ target:
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c
 	$(compiler) $(cflag) tool/tool.tree.c
-	$(compiler) $(cflag) test/test.font.c
-	$(compiler) $(cflag) test/test.shape.c
 	$(compiler) $(cflag) character.c
 binary:
 	make -s target compiler="gcc" cflag="-c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"

@@ -49,6 +49,8 @@ static int leftdown=0,rightdown=0;
 static POINT pt, pe;
 static RECT rt, re;
 
+//
+static char* screenbuf;
 static int width=1024;
 static int height=768;
 
@@ -559,7 +561,6 @@ QWORD readwindow(QWORD what)
 }
 void writewindow(QWORD type,QWORD value)
 {
-	//say("writewindow:%llx,%llx\n",type,value);
 	if(type==0x656c746974)		//'title'
 	{
 		SetWindowText(window,"hahahaha");
@@ -573,7 +574,7 @@ void writewindow(QWORD type,QWORD value)
 		width,height,	//dib宽,高
 		0,0,			//来源起始x,y
 		0,height,		//起始扫描线,数组中扫描线数量,
-		(void*)value,	//rbg颜色数组
+		(void*)screenbuf,	//rbg颜色数组
 		&info,			//bitmapinfo
 		DIB_RGB_COLORS	//颜色格式
 	);
@@ -590,9 +591,11 @@ void writewindow(QWORD type,QWORD value)
 void startwindow(DWORD size,char* addr)
 {
 	//构造info
+	screenbuf=addr;
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 	say("%d,%d\n");
+
 	SetWindowPos(window, 0, 0, 0, width+4, height+27, SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER);
 
 	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);

@@ -3,10 +3,10 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void hexadecimal1234(int x,int y,QWORD in);
 void string(int x,int y,char* str);
 void ascii(int x,int y,char ch);
-void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void printascii(int x, int y, int size, char ch, DWORD fg, DWORD bg);
+void printbyte(int x, int y, int size, char ch, DWORD fg, DWORD bg);
 void backgroundcolor(DWORD);
 void background1();
 //
@@ -81,34 +81,49 @@ static void foreground()
 {
 	//一整页
 	int x,y;
-	int xshift = width & 0x3;
-	char* where=readornotread(base);
+	int xshift = (width & 0x3) <<3;
+	unsigned char* where=readornotread(base);
 
 	//
+	printmemory(where,0x200);
 	if(printmethod==0)			//hex
 	{
 		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<width/16;x+=4)
+			for(x=0;x<width/16;x++)
 			{
-				DWORD value=*(DWORD*)(where + (y*width/16) + x);
-				hexadecimal1234(2*x+xshift,y,value);
+				printbyte(
+					16*x+xshift,
+					16*y,
+					1,
+					where[(y*width/16) + x],
+					0,
+					0
+				);
 			}
 		}
 	}
+
 	else if(printmethod==1)		//ascii
 	{
 		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<width/16;x+=4)
+			for(x=0;x<width/16;x++)
 			{
-				DWORD value=*(DWORD*)(where + (y*width/16) + x);
-				printascii(      value&0xff, 2*x+0+xshift+(y<<8), 0, 0);
-				printascii((value>> 8)&0xff, 2*x+2+xshift+(y<<8), 0, 0);
-				printascii((value>>16)&0xff, 2*x+4+xshift+(y<<8), 0, 0);
-				printascii((value>>24)&0xff, 2*x+6+xshift+(y<<8), 0, 0);
+				printascii(
+					16*x + xshift,
+					16*y,
+					1,
+					where[(y*width/16) + x],
+					0,
+					0
+				);
 			}
 		}
+	}
+
+	else if(printmethod == 2)	//utf8
+	{
 	}
 }
 static void floatarea()
@@ -151,13 +166,18 @@ static void floatarea()
 	data2hexstring(0,haha+0x70);
 
 	//target,base,offset,data
-	int chx=thisx/8;
-	int chy=thisy/16;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<32;x++)
 		{
-			printascii(haha[(y*32) + x], chx+x + ((chy+y)<<8), 0, 0);
+			printascii(
+				thisx + x*8,
+				thisy + y*16,
+				1,
+				haha[(y*32) + x],
+				0,
+				0
+			);
 		}
 	}
 }
@@ -342,7 +362,7 @@ void hex_init(char* uibuf,char* addr)
 	this[14]=(QWORD)hex_read;
 	this[15]=(QWORD)hex_write;
 
-	databuf=uibuf+0x300000;
+	databuf = uibuf;
 }
 void hex_kill()
 {

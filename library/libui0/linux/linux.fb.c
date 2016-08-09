@@ -30,7 +30,7 @@ static int bpp=0;
 
 //自己的画板
 static int fbfd=-1;
-static char* beforeprint;
+static char* screenbuf;
 static int width=1024;
 static int height=768;
 
@@ -103,32 +103,28 @@ void changewindow()
 
 
 
-void writewindow(DWORD type,char* value)
+void writewindow()
 {
 	//
 	int x,y,ret;
-	width=type&0xffff;
-	height=(type>>16)&0xffff;
-	unsigned char* p=value;
 
 	//5,6,5
 	if(bpp==16)
 	{
 		for(x=0;x<width*height;x++)
 		{
-			*(unsigned short*)(beforeprint+x*2)=
-				    (p[x*4+0]>>3)
-				+ ( (p[x*4+1]>>2) <<  5 )
-				+ ( (p[x*4+2]>>3) << 11 );
+			*(unsigned short*)(screenbuf+x*2)=
+				    (screenbuf[x*4+0]>>3)
+				+ ( (screenbuf[x*4+1]>>2) <<  5 )
+				+ ( (screenbuf[x*4+2]>>3) << 11 );
 		}
-		p=beforeprint;
 	}
 
 	//
 	for(y=0;y<height;y++)
 	{
 		ret=lseek(fbfd , y*fboneline , SEEK_SET);
-		ret=write(fbfd , p + y*width*bpp/8 , width*bpp/8);
+		ret=write(fbfd , screenbuf + y*width*bpp/8 , width*bpp/8);
 	}
 }
 QWORD readwindow(QWORD what)
@@ -146,8 +142,12 @@ QWORD readwindow(QWORD what)
 
 
 
-void startwindow()
+void startwindow(DWORD size,char* value)
 {
+	width=size&0xffff;
+	height=(size>>16)&0xffff;
+
+	screenbuf = value;
 }
 void stopwindow()
 {
@@ -195,8 +195,6 @@ void initwindow()
 	bpp=vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
 
-	//
-	beforeprint=(unsigned char*)malloc(xmax*ymax*bpp/8);
 /*
 	//input部分
 	inputfp=open("/dev/input/event3",O_RDONLY);

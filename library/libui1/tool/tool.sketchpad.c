@@ -23,7 +23,7 @@ void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
 //
-void printstring(char* str,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
 void defaultdouble(int x,int y,double z);
 void decimal(int x,int y,QWORD in);
 void backgroundcolor(DWORD);
@@ -100,8 +100,8 @@ static void wangge()
 
 
 	//网格上对应那一行的x,y坐标值,以及画上网格
-	defaultdouble( wanggex/8, 0+wanggey/16, centerx-(scale*width/2)+(wanggex*scale) );
-	defaultdouble( wanggex/8, 1+wanggey/16, centery+(scale*height/2)-(wanggey*scale) );
+	defaultdouble( wanggex, 0+wanggey, centerx-(scale*width/2)+(wanggex*scale) );
+	defaultdouble( wanggex, 16+wanggey, centery+(scale*height/2)-(wanggey*scale) );
 
 	for(x=wanggex;x<width;x+=wanggedistance)
 	{//竖线
@@ -319,10 +319,10 @@ static void sketchpad_read()
 
 
 skipthese:		//打印
-	printstring(buffer,  0 + ( 0<<8), 0xcccccc , 0 );
-	printstring(infix,   0 + (16<<8), 0xcccccc , 0 );
-	printstring(postfix, 0 + (32<<8), 0xcccccc , 0 );
-	printstring(result,  0 + (48<<8), 0xcccccc , 0 );
+	printstring(0, 0, 1, buffer, 0xcccccc , 0 );
+	printstring(0, 16, 1, infix, 0xcccccc , 0 );
+	printstring(0, 32, 1, postfix, 0xcccccc , 0 );
+	printstring(0, 48, 1, result, 0xcccccc , 0 );
 	return;
 }
 

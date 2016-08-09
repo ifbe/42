@@ -15,13 +15,13 @@ void say(char*,...);
 
 
 
-void testshape_list()
+void doodle_list()
 {
 }
-void testshape_change()
+void doodle_change()
 {
 }
-void testshape_read()
+void doodle_read()
 {
 	backgroundcolor(0);
 
@@ -44,28 +44,28 @@ void testshape_read()
 	sectorbody(150, 275, 25, 270,  90, 0xffffff);
 
 }
-void testshape_write()
+void doodle_write()
 {
 }
-void testshape_start(QWORD size,void* addr)
+void doodle_start(QWORD size,void* addr)
 {
 }
-void testshape_stop()
+void doodle_stop()
 {
 }
-void testshape_init(char*base,char* addr)
+void doodle_init(char*base,char* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x6570616873;
 
-	this[10]=(QWORD)testshape_start;
-	this[11]=(QWORD)testshape_stop;
-	this[12]=(QWORD)testshape_list;
-	this[13]=(QWORD)testshape_change;
-	this[14]=(QWORD)testshape_read;
-	this[15]=(QWORD)testshape_write;
+	this[10]=(QWORD)doodle_start;
+	this[11]=(QWORD)doodle_stop;
+	this[12]=(QWORD)doodle_list;
+	this[13]=(QWORD)doodle_change;
+	this[14]=(QWORD)doodle_read;
+	this[15]=(QWORD)doodle_write;
 }
-void testshape_kill()
+void doodle_kill()
 {
 }

@@ -12,41 +12,52 @@ void ascii_init(char*,char*);
 void unicode_init(char*,char*);
 void background_init(char*,char*);
 void shape_init(char*,char*);
-//normal guys
+//game
+void snake_init(char*,char*);
+void the2048_init(char*,char*);
+void tetris_init(char*,char*);
+//test
+void color_init(char*,char*);
+void doodle_init(char*,char*);
+void font_init(char*,char*);
+//tool
 void console_init(char*,char*);
 void hex_init(char*,char*);
 void keyboard_init(char*,char*);
 void sketchpad_init(char*,char*);
 void spectrum_init(char*,char*);
-void snake_init(char*,char*);
-void the2048_init(char*,char*);
-void tetris_init(char*,char*);
 void tree_init(char*,char*);
-void color_init(char*,char*);
 void qrcode_init(char*,char*);
-void testshape_init(char*,char*);
-//kill......
+//
 void menu_kill();
+void ascii_kill();
+void unicode_kill();
+void shape_kill();
+void background_kill();
+//
+void the2048_kill();
+void tetris_kill();
+void snake_kill();
+//
+void font_kill();
+void doodle_kill();
+void color_kill();
+//
 void console_kill();
 void hex_kill();
 void keyboard_kill();
 void sketchpad_kill();
 void tree_kill();
 void spectrum_kill();
-void the2048_kill();
-void tetris_kill();
-void snake_kill();
-void color_kill();
 void qrcode_kill();
-void testshape_kill();
-
 //
 int startwindow(DWORD,char*);
 int stopwindow();
 int arterystart(char*);
 int arterystop();
+//
 int compare(char*,char*);
-void writeevent();
+int writeevent();
 DWORD getrandom();
 //
 void say(char* , ...);
@@ -175,14 +186,16 @@ void characterinit(char* type,char* addr)
 		snake_init(addr,temp);
 		temp += 0x80;
 
-		//testfont
-
-		//testshape
-		testshape_init(addr,temp);
+		//test.color
+		color_init(addr,temp);
 		temp += 0x80;
 
-		//tool.color
-		color_init(addr,temp);
+		//test.font
+		font_init(addr,temp);
+		temp += 0x80;
+
+		//test.doodle
+		doodle_init(addr,temp);
 		temp += 0x80;
 
 		//tool.console
@@ -224,18 +237,27 @@ void characterkill()
 {
 	say("[c,f):killing character\n");
 
-	color_kill();
-	tetris_kill();
-	the2048_kill();
 	spectrum_kill();
 	tree_kill();
 	sketchpad_kill();
 	keyboard_kill();
 	hex_kill();
 	console_kill();
-	menu_kill();
 	qrcode_kill();
-	testshape_kill();
+
+	color_kill();
+	doodle_kill();
+	font_kill();
+
+	snake_kill();
+	tetris_kill();
+	the2048_kill();
+
+	ascii_kill();
+	background_kill();
+	shape_kill();
+	unicode_kill();
+	menu_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -288,7 +310,7 @@ void characterlist()
 {
 	//列出所有“人物”
 	int x;
-	for(x=0;x<16;x++)
+	for(x=0;x<256;x++)
 	{
 		if(worker[x].id != 0)
 		{

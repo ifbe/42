@@ -21,6 +21,12 @@ static struct temp{
 
 
 
+void linesegment(int x1, int y1, int x2, int y2, DWORD color)
+{
+}
+void halfline(int x1, int y1, int x2, int y2, DWORD color)
+{
+}
 void line(int x1, int y1, int x2, int y2, DWORD color)
 {
 	int temp;

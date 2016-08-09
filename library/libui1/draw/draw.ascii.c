@@ -283,13 +283,11 @@ static const unsigned char asciitable[128*16]={
 
 
 
-//字符值大小，横纵坐标，前景色，后景色
-void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
+//
+void printascii(int xxxx, int yyyy, int size, char ch, DWORD fgcolor, DWORD bgcolor)
 {
-	int x,y;
-	int j,k;
+	int x,y,j,k,flag;
 	int width,height;
-	int xxxx,yyyy,size,flag;
 	unsigned char temp;
 	unsigned char* points;
 	DWORD* screen;
@@ -298,13 +296,10 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 	points=(unsigned char*)&asciitable;
 	points+=ch<<4;
 
-	flag=bgcolor>>24;
-	xxxx=(xyz&0xff)<<3;
-	yyyy=((xyz>>8)&0xff)<<4;
+	size &= 0x7;
+	if(size == 0)size=1;
 
-	size=(xyz>>16)&0x7;
-	if(size==0)size=1;
-
+	flag = bgcolor>>24;
 	fgcolor |= 0xff000000;
 	bgcolor |= 0xff000000;
 
@@ -338,26 +333,39 @@ void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 		}//x
 	}//y
 }
-
-
-
-
-void printstring(char* p,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
+void printbyte(int x, int y, int size, unsigned char ch, DWORD fg, DWORD bg)
 {
-	int x;
-	int size;
+	int i;
+	unsigned char temp=ch;
 
-	x=0;
-	size=(xyz>>16)&0x7;
+	ch=(temp>>4) & 0xf;
+	ch+=0x30;
+	if(ch>0x39)ch+=0x7;
+	printascii(x, y, size, ch, 0, 0);
+
+	ch=temp & 0xf;
+	ch+=0x30;
+	if(ch>0x39)ch+=0x7;
+	printascii(x + size*8, y, size, ch, 0, 0);
+}
+
+
+
+
+void printstring(int x, int y, int size, char* p, DWORD fgcolor, DWORD bgcolor)
+{
+	int j=0;
+
+	size &= 0x7;
 	if(size==0)size=1;
 
 	while(1)
 	{
 		if(*p == 0x00 )break;
-		if( x >= 0x80 )break;
+		if( j >= 0x80 )break;
 
-		printascii(*p, xyz+x*size, fgcolor, bgcolor);
-		x++;
+		printascii(x+j*size*8, y, size, *p, fgcolor, bgcolor);
+		j++;
 		p++;
 	}
 }
@@ -365,19 +373,19 @@ void printstring(char* p,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 
 
 
-void printdecimal(int dec,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
+void printdecimal(int x, int y, int size, int dec, DWORD fgcolor, DWORD bgcolor)
 {
 	char ch;
-	int i,size,count;
+	int i,count;
 	long long temp;
 
-	size=(xyz>>16)&0xff;
+	size &= 0x7;
 	if(size==0)size=1;
 
 	if(dec<0)
 	{
-		printascii('-', xyz, fgcolor, bgcolor);
-		xyz+=size;
+		printascii(x, y, size, '-', fgcolor, bgcolor);
+		x += size*8;
 		dec=-dec;
 	}
 
@@ -395,7 +403,7 @@ void printdecimal(int dec,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 		ch=(char)(dec%10);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		printascii(ch, xyz+(count-i)*size, fgcolor, bgcolor);
+		printascii(x+(count-i)*size*8, y, size, ch, fgcolor, bgcolor);
 		dec=dec/10;
 	}
 }
@@ -403,18 +411,16 @@ void printdecimal(int dec,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 
 
 
-void printhexadecimal(unsigned long long hex,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
+void printhexadecimal(int x, int y, int size, QWORD hex, DWORD fgcolor, DWORD bgcolor)
 {
+	int i;
 	char ch;
-	int i,x,y,size;
 	unsigned long long temp;
 
-	temp=hex;
 	i=0;
-	x=xyz&0xff;
-	y=(xyz>>8)&0xff;
-	size=(xyz>>16)&0xff;
-	if(size==0)size=1;
+	temp=hex;
+	size &= 0x7;
+	if(size == 0)size=1;
 
 	while(1)
 	{
@@ -427,43 +433,19 @@ void printhexadecimal(unsigned long long hex,DWORD xyz,DWORD fgcolor,DWORD bgcol
 		ch=(char)(hex&0x0000000f);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		printascii(ch, xyz+i*size,fgcolor, bgcolor);
+		printascii(x+i*size*8, y, size, ch, fgcolor, bgcolor);
 		hex=hex>>4;
 	}
 }
-void hexadecimal1234(DWORD x,int y,unsigned int hex)
-{
-	char fullbyte,ch;
-	int i;
-	for(i=0;i<4;i++)
-	{
-		fullbyte=hex&0xff;
-		hex=hex>>8;
-		//if(fullbyte != 0)
-		//{
-			//高半字节
-			ch=(fullbyte>>4)&0xf;
-			ch+=0x30;
-			if(ch>0x39)ch+=0x7;
-			printascii(ch, (y<<8) + x + 2*i, 0, 0);
-
-			//低半字节
-			ch=fullbyte&0xf;
-			ch+=0x30;
-			if(ch>0x39)ch+=0x7;
-			printascii(ch, (y<<8) + x + 2*i + 1, 0, 0);
-		//}
-	}
-}
 
 
 
 
-void printdouble(double data,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
+void printdouble(int x,int y,int size,double data,DWORD fgcolor,DWORD bgcolor)
 {
 	char mystring[100];
 	double2decimalstring(data,mystring);
-	printstring(mystring, xyz, 0xffffffff, 0);
+	printstring(x, y, size, mystring, 0xffffffff, 0);
 }
 
 
@@ -471,23 +453,23 @@ void printdouble(double data,DWORD xyz,DWORD fgcolor,DWORD bgcolor)
 
 void ascii(int x,int y,unsigned char ch)
 {
-	printascii(ch, x+(y<<8), 0xffffffff, 0);
+	printascii(x, y, 1, ch, 0xffffffff, 0);
 }
 void string(int x,int y,char* p)
 {
-	printstring(p, x+(y<<8), 0xffffffff, 0);
+	printstring(x, y, 1, p, 0xffffffff, 0);
 }
 void decimal(int x,int y,long long dec)
 {
-	printdecimal(dec, x+(y<<8), 0xffffffff, 0);
+	printdecimal(x, y, 1, dec, 0xffffffff, 0);
 }
-void hexadecimal(DWORD x,int y,unsigned long long hex)
+void hexadecimal(int x,int y,unsigned long long hex)
 {
-	printhexadecimal(hex, x+(y<<8)+(4<<16), 0, 0);
+	printhexadecimal(x, y, 4, hex, 0, 0);
 }
 void defaultdouble(int x,int y,double data)
 {
-	printdouble(data, x+(y<<8), 0xcccccccc, 0x44444444);
+	printdouble(x, y, 1, data, 0xcccccccc, 0x44444444);
 }
 
 

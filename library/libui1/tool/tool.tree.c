@@ -21,9 +21,9 @@ struct mathnode{
 //libui
 void hexadecimal(int x,int y,QWORD in);
 void decimal(int x,int y,QWORD in);
-void printdouble(double z,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
-void printstring(char* str,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
-void printascii(char ch,DWORD xyz,DWORD fgcolor,DWORD bgcolor);
+void printdouble(int x, int y, int size, double z, DWORD fgcolor, DWORD bgcolor);
+void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
+void printascii(int x, int y, int size, char ch, DWORD fgcolor, DWORD bgcolor);
 void line(int,int,int,int,DWORD);
 void backgroundcolor(DWORD);
 //libsoft
@@ -53,21 +53,6 @@ static char postfix[128];
 
 
 
-//
-static void printfile0()
-{
-	int x,y;
-	char* p=(char*)node;
-
-	for(y=0;y<36;y++)
-	{
-		if(*(DWORD*)(p+0x40*y) == 0) break;
-		printstring(p+0x40*y, 0+(y+2)<<8, 0xcccccc, 0);
-		hexadecimal(0x30,y+2,*(QWORD*)(p+0x40*y+0x10));
-		hexadecimal(0x50,y+2,*(QWORD*)(p+0x40*y+0x20));
-		hexadecimal(0x70,y+2,*(QWORD*)(p+0x40*y+0x30));
-	}
-}
 static void printnode(int x,int y,int num)
 {
 	int left,right;
@@ -92,31 +77,51 @@ static void printnode(int x,int y,int num)
 	//say("offset=%d\n",offset);
 
 	//位置
-	temp=y*4;
+	temp=y*64;
 	if(node[ node[num].up ].left == num)	//是左边
 	{
 		if(node[num].left==0&&node[num].right==0)	//而且是叶子
 		{
 			if(y>=7)		//而且放不下了
 			{
-				temp+=1;
+				temp+=16;
 			}
 		}
 	}
 
 	//self
-say("%d,%d\n",x,temp);
 	if(node[num].type == 0x33323130)	//0,1,2,3...
 	{
-		printdouble(node[num].floatpoint, (x/8)+(temp<<8), 0xffffffff, 0);
+		printdouble(
+			x,
+			temp,
+			0,
+			node[num].floatpoint,
+			0xffffffff,
+			0
+		);
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		printascii(node[num].integer & 0xff, (x/8)+(temp<<8), 0xffffffff, 0);
+		printascii(
+			x,
+			temp,
+			1,
+			node[num].integer & 0xff,
+			0xffffffff,
+			0
+		);
 	}
 	else
 	{
-		printascii(node[num].type & 0xff , (x/8)+(temp<<8), 0xffffffff, 0);
+		printascii(
+			x,
+			temp,
+			1,
+			node[num].type & 0xff,
+			0xffffffff,
+			0
+		);
 	}
 
 	//left
@@ -179,8 +184,8 @@ static void tree_write(QWORD type,QWORD key)
 static void tree_read()
 {
 	backgroundcolor(0);
-	printstring(buffer, 0+(0<<8), 0xffffffff, 0);
-	printstring(postfix, 0+(1<<8), 0xffffffff, 0);
+	printstring(0, 0, 1, buffer, 0xffffffff, 0);
+	printstring(0, 16, 1, postfix, 0xffffffff, 0);
 	if(node==0)return;
 
 	//等式
