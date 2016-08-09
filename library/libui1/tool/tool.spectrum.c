@@ -7,7 +7,6 @@ void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
-void characterchoose(char*);
 void arteryread(char* rdi,QWORD rsi,QWORD rcx);
 void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
 void data2hexstring(QWORD,char*);

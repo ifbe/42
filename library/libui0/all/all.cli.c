@@ -41,45 +41,45 @@ int uievent(QWORD* first,QWORD* second)
 
 
 
-void listwindow()
+void windowlist()
 {
 }
-void choosewindow()
+void windowchange()
 {
 }
 
 
 
 
-QWORD readwindow(QWORD what)
+QWORD windowread(QWORD what)
 {
 	if(what==0x657a6973)
 	{
 		return 80 + (25<<16);
 	}
 }
-void writewindow()
+void windowwrite()
 {
 }
 
 
 
 
-void startwindow()
+void windowstart()
 {
 }
-void stopwindow()
+void windowstop()
 {
 }
 
 
 
 
-void initwindow()
+void windowinit()
 {
 	
 }
-void killwindow()
+void windowkill()
 {
 	
 }

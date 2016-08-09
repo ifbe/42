@@ -51,11 +51,6 @@ void tree_kill();
 void spectrum_kill();
 void qrcode_kill();
 //
-int startwindow(DWORD,char*);
-int stopwindow();
-int arterystart(char*);
-int arterystop();
-//
 int compare(char*,char*);
 int writeevent();
 DWORD getrandom();
@@ -280,9 +275,6 @@ int characterstart(DWORD size,char* addr)
 	actualsize=size;
 	actualaddr=addr;
 
-	//configure window
-	startwindow(actualsize,actualaddr);
-
 	//
 	worker[now].start(actualsize, actualaddr);
 	worker[0].start(actualsize, actualaddr);
@@ -294,10 +286,6 @@ int characterstop()
 {
 	//deconfigure character
 	worker[now].stop();
-
-	//deconfigure window
-	stopwindow();
-
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -320,39 +308,8 @@ void characterlist()
 }
 int characterchoose(char* p)
 {
-	int i;
-	int ret;
+	int j,k,ret;
 	QWORD temp;
-
-	//
-	temp=(QWORD)p;
-	if(temp==1)
-	{
-		if(worker[now+1].id == 0)return 0;
-		now++;
-
-		//
-		worker[now].start(actualsize, actualaddr);
-		worker[0].start(actualsize, actualaddr);
-
-		//
-		worker[now].choose();
-		return 1;
-	}
-
-	if( (temp&0xffffffff) == 0xffffffff )
-	{
-		if(worker[now-1].type == 0)return 0;
-		now--;
-
-		//
-		worker[now].start(actualsize, actualaddr);
-		worker[0].start(actualsize, actualaddr);
-
-		//
-		worker[now].choose();
-		return 1;
-	}
 
 	//exit
 	ret=compare(p,"exit");
@@ -364,61 +321,65 @@ int characterchoose(char* p)
 		return 0;
 	}
 
+	//
+	ret=compare(p,"+");
+	if(ret==0)
+	{
+		if(worker[now+1].id == 0)return 0;
+		now++;
+		goto found;
+	}
+
+	ret=compare(p,"-");
+	if(ret==0)
+	{
+		if(worker[now-1].type == 0)return 0;
+		now--;
+		goto found;
+	}
+
 	//random
 	ret=compare(p,"random");
 	if(ret==0)
 	{
-		for(i=0;i<10;i++)
+		for(j=0;j<10;j++)
 		{
-			if(worker[i].type != 0)break;	//skip menu|draw
+			if(worker[j].type != 0)break;	//skip menu|draw
 		}
-		for(;i<0x100000/0x80;i++)
+		k=j;
+
+		for(;k<0x100000/0x80;k++)
 		{
-			if(worker[i].id == 0)break;
+			if(worker[k].id == 0)break;
 		}
 
-		now=getrandom();
-		now=( now % (i-2) ) + 1;
-
-		//
-		worker[now].start(actualsize, actualaddr);
-		worker[0].start(actualsize, actualaddr);
-
-		//
-		worker[now].choose();
-		return 2;
-	}
-
-	//prepare for future hash?
-	temp=0;
-	for(i=0;i<8;i++)
-	{
-		if(p[i]==0)break;
-		( (char*)&temp )[i]=p[i];
+		now=( getrandom() % (k-j) ) + j;
+		goto found;
 	}
 
 	//start searching
-	for(i=0;i<10;i++)
+	for(j=0;j<10;j++)
 	{
-		if(worker[i].type != 0)break;	//skip menu|draw
+		if(worker[j].type != 0)break;	//skip menu|draw
 	}
-	for(;i<0x100;i++)
+	for(;j<0x100;j++)
 	{
 		//all searched
-		if(worker[i].id == 0)break;
+		if(worker[j].id == 0)return 0;
 
 		//lookat this
-		if(worker[i].id == temp)
+		if(worker[j].id == temp)
 		{
-			now=i;
-
-			worker[now].start(actualsize, actualaddr);
-			worker[0].start(actualsize, actualaddr);
-
-			worker[now].choose();
-			return 4;
+			now=j;
+			goto found;
 		}
 	}
+
+found:
+	worker[now].start(actualsize, actualaddr);
+	worker[0].start(actualsize, actualaddr);
+
+	worker[now].choose();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -561,11 +522,11 @@ void characterwrite(QWORD type,QWORD key)
 						  - (pointenter[1]&0xffff);
 						if( (m<-250)&&(n<-250) )
 						{
-							characterchoose((char*)1);
+							characterchoose("+");
 						}
 						else if( (m>250)&&(n>250) )
 						{
-							characterchoose((char*)0xffffffff);
+							characterchoose("-");
 						}
 					}
 				}

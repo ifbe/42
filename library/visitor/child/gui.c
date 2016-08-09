@@ -2,23 +2,27 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-//
+//libui1
 void characterlist();
 void characterchoose(char*);
 void characterread();
 void characterwrite(QWORD type,QWORD key);
 void characterstart(DWORD size,char* addr);
 void characterstop();
-//
+//libui0
+void windowstart(DWORD,char*);
+void windowstop();
+void windowread();
+void windowwrite();
+//event
+void writeevent();
 void readevent(QWORD* first,QWORD* second);
-void readwindow();
-void writewindow();
-//void writewindow(DWORD,char*);
-//
+//world
 void birth();
 void death();
-void say(char*,...);
+//
 void printmemory(char*,int);
+void say(char*,...);
 
 
 
@@ -31,7 +35,11 @@ void main()
 
 	//before
 	birth();
-	characterstart(512+(512<<16) , mybuffer);
+	windowstart(512+512<<16, mybuffer);
+	characterstart(512+(512<<16), mybuffer);
+	//changewindow("addr",mybuffer);
+	//changewindow("size",512+512<<16);
+	//changewindow("title","hahahahahaha");
 
 	//forever
 	while(1)
@@ -41,8 +49,7 @@ void main()
 
 		//1.先在内存里画画，然后一次性写到窗口内
 		characterread();
-		//writewindow(512+(512<<16) , mybuffer);
-		writewindow();
+		windowwrite();
 
 		//2.等事件，是退出消息就退出
 		readevent(&type,&key);
@@ -54,5 +61,6 @@ void main()
 
 	//after
 	characterstop();
+	windowstop();
 	death();
 }

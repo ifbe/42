@@ -99,21 +99,21 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm,void* reserved)
 void uievent()
 {
 }
-void readwindow()
+void windowread()
 {
 }
-void writewindow()
+void windowwrite()
 {
 }
-void startwindow()
+void windowstart()
 {
 }
-void stopwindow()
+void windowstop()
 {
 }
-void initwindow()
+void windowinit()
 {
 }
-void killwindow()
+void windowkill()
 {
 }

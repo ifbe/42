@@ -61,10 +61,10 @@ static int oldy=0;
 
 
 
-void listwindow()
+void windowlist()
 {
 }
-void changewindow()
+void windowchange()
 {
 	XResizeWindow(dsp, win, width, height);
 }
@@ -76,7 +76,7 @@ void changewindow()
 
 
 
-DWORD readwindow(QWORD what)
+DWORD windowread(QWORD what)
 {
 	//'size'
 	if(what==0x657a6973)
@@ -87,7 +87,7 @@ DWORD readwindow(QWORD what)
 	//??????????
 	return 0;
 }
-void writewindow(DWORD size,char* addr)
+void windowwrite()
 {
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
@@ -111,7 +111,7 @@ int uievent(QWORD* my1,QWORD* my2)
 			{
 				if(userpixel!=0)
 				{
-					writewindow(0,0);
+					windowwrite();
 				}
 			}
 		}
@@ -222,7 +222,7 @@ int uievent(QWORD* my1,QWORD* my2)
 
 
 
-void startwindow(DWORD size,char* addr)
+void windowstart(DWORD size,char* addr)
 {
 	//
 	userpixel=addr;
@@ -235,7 +235,7 @@ void startwindow(DWORD size,char* addr)
 		addr,width,height,32,0
 	);
 }
-void stopwindow()
+void windowstop()
 {
 	userpixel=0;
 }
@@ -247,7 +247,7 @@ void stopwindow()
 
 
 
-void initwindow()
+void windowinit()
 {
 	//初始化
 	dsp = XOpenDisplay(NULL);
@@ -279,7 +279,7 @@ void initwindow()
 	);
 	XMapWindow(dsp, win);
 }
-void killwindow()
+void windowkill()
 {
 	//
 	XDestroyWindow(dsp, win);

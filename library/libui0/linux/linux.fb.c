@@ -89,10 +89,10 @@ int uievent(QWORD* first,QWORD* second)
 
 
 
-void listwindow()
+void windowlist()
 {
 }
-void changewindow()
+void windowchange()
 {
 }
 
@@ -103,7 +103,7 @@ void changewindow()
 
 
 
-void writewindow()
+void windowwrite()
 {
 	//
 	int x,y,ret;
@@ -127,7 +127,7 @@ void writewindow()
 		ret=write(fbfd , screenbuf + y*width*bpp/8 , width*bpp/8);
 	}
 }
-QWORD readwindow(QWORD what)
+QWORD windowread(QWORD what)
 {
 	if(what==0x657a6973)
 	{
@@ -142,14 +142,14 @@ QWORD readwindow(QWORD what)
 
 
 
-void startwindow(DWORD size,char* value)
+void windowstart(DWORD size,char* value)
 {
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
 
 	screenbuf = value;
 }
-void stopwindow()
+void windowstop()
 {
 }
 
@@ -160,7 +160,7 @@ void stopwindow()
 
 
 
-void initwindow()
+void windowinit()
 {
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
@@ -212,7 +212,7 @@ void initwindow()
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 }
 //__attribute__((destructor)) void destoryfb()
-void killwindow()
+void windowkill()
 {
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);

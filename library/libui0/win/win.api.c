@@ -531,10 +531,10 @@ throw:
 
 
 
-void listwindow()
+void windowlist()
 {
 }
-void choosewindow(DWORD size,char* addr)
+void windowchange(DWORD size,char* addr)
 {
 	RECT rc;
 	width=size&0xffff;
@@ -552,14 +552,14 @@ void choosewindow(DWORD size,char* addr)
 
 
 // Step 3: the Window Procedure
-QWORD readwindow(QWORD what)
+QWORD windowread(QWORD what)
 {
 	if(what==0x657a6973)	//'size'
 	{
 		return (height<<16)+width;
 	}
 }
-void writewindow(QWORD type,QWORD value)
+void windowwrite(QWORD type,QWORD value)
 {
 	if(type==0x656c746974)		//'title'
 	{
@@ -588,7 +588,7 @@ void writewindow(QWORD type,QWORD value)
 
 
 
-void startwindow(DWORD size,char* addr)
+void windowstart(DWORD size,char* addr)
 {
 	//构造info
 	screenbuf=addr;
@@ -615,7 +615,7 @@ void startwindow(DWORD size,char* addr)
 	info.bmiColors[0].rgbReserved=255;
 
 }
-void stopwindow()
+void windowstop()
 {
 }
 
@@ -708,7 +708,7 @@ void inittray()
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
 	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
-void initwindow()
+void windowinit()
 {
 	//终端窗口
 	initconsolewindow();
@@ -728,7 +728,7 @@ void initwindow()
 	inittray();
 }
 //__attribute__((destructor)) void destorysdl()
-void killwindow()
+void windowkill()
 {
 	//必须亮出来再关
 	//ShowWindow(consolewindow,SW_SHOW);
