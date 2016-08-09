@@ -594,7 +594,7 @@ void windowstart(DWORD size,char* addr)
 	screenbuf=addr;
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
-	say("%d,%d\n");
+	say("%d,%d\n",width,height);
 
 	SetWindowPos(window, 0, 0, 0, width+4, height+27, SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER);
 

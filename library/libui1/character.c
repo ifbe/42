@@ -376,10 +376,7 @@ int characterchoose(char* p)
 	}
 
 found:
-	worker[now].start(actualsize, actualaddr);
-	worker[0].start(actualsize, actualaddr);
-
-	worker[now].choose();
+	characterstart(actualsize, actualaddr);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -410,14 +407,7 @@ void characterwrite(QWORD type,QWORD key)
 	//size
 	if(type==0x657a6973)
 	{
-		//
-		actualsize=key;
-
-		//
-		worker[now].start(actualsize, actualaddr);
-		worker[0].start(actualsize, actualaddr);
-
-		//
+		characterstart(actualsize, actualaddr);
 		return;
 	}//size
 

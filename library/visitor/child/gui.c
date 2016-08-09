@@ -40,7 +40,6 @@ void main()
 	//changewindow("addr",mybuffer);
 	//changewindow("size",512+512<<16);
 	//changewindow("title","hahahahahaha");
-
 	//forever
 	while(1)
 	{
