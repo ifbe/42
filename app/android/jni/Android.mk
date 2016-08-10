@@ -157,7 +157,7 @@ LOCAL_SRC_FILES += \
 
 #4.ui0
 LOCAL_SRC_FILES += \
-	library/libui0/all/all.cli.c \
+	library/libui0/cli/cli.cli.c \
 	library/libui0/display.c
 
 #4.ui1
@@ -177,6 +177,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/test/test.color.c \
 	library/libui1/test/test.doodle.c \
 	library/libui1/test/test.font.c \
+	library/libui1/test/test.pure.c \
 	library/libui1/tool/tool.console.c \
 	library/libui1/tool/tool.hex.c \
 	library/libui1/tool/tool.keyboard.c \

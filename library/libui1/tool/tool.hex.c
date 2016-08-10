@@ -85,7 +85,7 @@ static void foreground()
 	unsigned char* where=readornotread(base);
 
 	//
-	printmemory(where,0x200);
+	//printmemory(where,0x200);
 	if(printmethod==0)			//hex
 	{
 		for(y=0;y<height/16;y++)

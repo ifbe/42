@@ -18,12 +18,12 @@ int stillalive=1;
 
 
 
-int writeevent()
+int eventwrite()
 {
 	stillalive=0;
 	return 0;
 }
-int readevent(QWORD* first,QWORD* second)
+int eventread(QWORD* first,QWORD* second)
 {
         int ret;
         //say("here\n");

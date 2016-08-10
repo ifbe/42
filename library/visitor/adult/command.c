@@ -11,7 +11,9 @@ void arterylist(char*);
 void arterychoose(char*);
 void arteryread(char*);
 void arterywrite(char*);
-void writeevent();
+//
+void eventread(DWORD,DWORD);
+void eventwrite();
 //
 int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
 int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
@@ -52,14 +54,14 @@ int command(char* buffer)
 	//q
 	if(argv[0][0]=='q')
 	{
-		writeevent();
+		eventwrite();
 		return 0;
 	}
 	//exit
 	ret=compare(argv[0],"exit");
 	if(ret==0)
 	{
-		writeevent();
+		eventwrite();
 		return 0;
 	}
 

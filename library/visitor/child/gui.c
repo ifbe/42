@@ -15,8 +15,8 @@ void windowstop();
 void windowread();
 void windowwrite();
 //event
-void writeevent();
-void readevent(QWORD* first,QWORD* second);
+void eventwrite();
+void eventread(QWORD* first,QWORD* second);
 //world
 void birth();
 void death();
@@ -51,7 +51,7 @@ void main()
 		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		readevent(&type,&key);
+		eventread(&type,&key);
 		if( type==0 )break;
 
 		//3.处理事件，如果要求自杀就让它死

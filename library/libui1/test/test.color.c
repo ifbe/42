@@ -36,9 +36,9 @@ static void color_read()
 	}
 
 	//(左边)各种颜色的色板
-	for(x=0;x<min;x++)
+	for(y=0;y<min;y++)
 	{
-		for(y=0;y<min;y++)
+		for(x=0;x<min;x++)
 		{
 			screenbuf[y*width + x]	= 0xff000000
 						+ (red<<16)
@@ -46,7 +46,6 @@ static void color_read()
 						+ ( (x*256) / min );
 		}
 	}
-say("min=%d\n",min);
 
 	//(白点)被选中的颜色
 	for(y=0;y<4;y++)
@@ -127,7 +126,6 @@ static void color_write(QWORD type,QWORD key)
 
 			blue=x*256/min;
 			green=y*256/min;
-			say("(%d,%d)\n",x,y);
 		}
 		else if((type>>32)==0x6E6F7266)
 		{

@@ -20,6 +20,7 @@ void tetris_init(char*,char*);
 void color_init(char*,char*);
 void doodle_init(char*,char*);
 void font_init(char*,char*);
+void pure_init(char*,char*);
 //tool
 void console_init(char*,char*);
 void hex_init(char*,char*);
@@ -39,6 +40,7 @@ void the2048_kill();
 void tetris_kill();
 void snake_kill();
 //
+void pure_kill();
 void font_kill();
 void doodle_kill();
 void color_kill();
@@ -52,7 +54,7 @@ void spectrum_kill();
 void qrcode_kill();
 //
 int compare(char*,char*);
-int writeevent();
+int eventwrite();
 DWORD getrandom();
 //
 void say(char* , ...);
@@ -193,6 +195,10 @@ void characterinit(char* type,char* addr)
 		doodle_init(addr,temp);
 		temp += 0x80;
 
+		//test.pure
+		pure_init(addr,temp);
+		temp += 0x80;
+
 		//tool.console
 		console_init(addr,temp);
 		temp += 0x80;
@@ -243,6 +249,7 @@ void characterkill()
 	color_kill();
 	doodle_kill();
 	font_kill();
+	pure_kill();
 
 	snake_kill();
 	tetris_kill();
@@ -319,7 +326,7 @@ int characterchoose(char* p)
 	{
 		//deathflag=1;
 		say("chatacter(%d) wants to die\n",now);
-		writeevent();
+		eventwrite();
 		return 0;
 	}
 
