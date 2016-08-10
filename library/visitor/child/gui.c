@@ -35,7 +35,7 @@ void main()
 
 	//before
 	birth();
-	windowstart(512+512<<16, mybuffer);
+	windowstart(512+(512<<16), mybuffer);
 	characterstart(512+(512<<16), mybuffer);
 	//changewindow("addr",mybuffer);
 	//changewindow("size",512+512<<16);

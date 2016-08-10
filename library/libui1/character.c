@@ -263,6 +263,8 @@ void characterkill()
 int characterstart(DWORD size,char* addr)
 {
 	int j;
+	say("@characterstart:%d,%d\n",size&0xffff,(size>>16)&0xffff);
+
 	for(j=0;j<100;j++)
 	{
 		if(worker[j].type != 0)break;
@@ -407,7 +409,8 @@ void characterwrite(QWORD type,QWORD key)
 	//size
 	if(type==0x657a6973)
 	{
-		characterstart(actualsize, actualaddr);
+		actualsize=key;
+		characterstart(actualsize,actualaddr);
 		return;
 	}//size
 

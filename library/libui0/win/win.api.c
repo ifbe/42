@@ -18,7 +18,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-void writewindow();
+void windowwrite();
 void say(char* fmt,...);
 
 
@@ -431,7 +431,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			width=lparam&0xffff;
 			height=(lparam>>16)&0xffff;
-			printf("%d,%d\n",width,height);
+			printf("wm_size:%d,%d\n",width,height);
 
 			info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 			info.bmiHeader.biWidth=width;
@@ -462,7 +462,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_PAINT:
 		{
 			say("WM_PAINT\n");
-			writewindow(0);
+			windowwrite();
 
 			//这里必须调这个函数，不然cpu占用满
 			return DefWindowProc(window, msg, wparam, lparam);
@@ -594,7 +594,7 @@ void windowstart(DWORD size,char* addr)
 	screenbuf=addr;
 	width=size&0xffff;
 	height=(size>>16)&0xffff;
-	say("%d,%d\n",width,height);
+	say("@windowstart:%d,%d\n",width,height);
 
 	SetWindowPos(window, 0, 0, 0, width+4, height+27, SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER);
 
