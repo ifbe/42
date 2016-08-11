@@ -6,8 +6,11 @@ target:
 	$(compiler) $(cflag) draw/draw.shape.c
 	$(compiler) $(cflag) draw/draw.unicode.c
 	$(compiler) $(cflag) game/game.2048.c
+	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c
 	$(compiler) $(cflag) game/game.tetris.c
+	$(compiler) $(cflag) game/game.weiqi.c
+	$(compiler) $(cflag) game/game.xiangqi.c
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) menu/menu.upper.c
 	$(compiler) $(cflag) menu/menu.nether.c

@@ -151,8 +151,11 @@ LOCAL_SRC_FILES += \
 	library/libui1/draw/draw.shape.c \
 	library/libui1/draw/draw.unicode.c \
 	library/libui1/game/game.2048.c \
+	library/libui1/game/game.ooxx.c \
 	library/libui1/game/game.snake.c \
 	library/libui1/game/game.tetris.c \
+	library/libui1/game/game.weiqi.c \
+	library/libui1/game/game.xiangqi.c \
 	library/libui1/menu/menu.center.c \
 	library/libui1/menu/menu.upper.c \
 	library/libui1/menu/menu.nether.c \

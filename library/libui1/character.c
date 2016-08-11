@@ -13,9 +13,12 @@ void unicode_init(char*,char*);
 void background_init(char*,char*);
 void shape_init(char*,char*);
 //game
+void ooxx_init(char*,char*);
 void snake_init(char*,char*);
 void the2048_init(char*,char*);
 void tetris_init(char*,char*);
+void weiqi_init(char*,char*);
+void xiangqi_init(char*,char*);
 //test
 void color_init(char*,char*);
 void doodle_init(char*,char*);
@@ -36,9 +39,12 @@ void unicode_kill();
 void shape_kill();
 void background_kill();
 //
+void xiangqi_kill();
+void weiqi_kill();
 void the2048_kill();
 void tetris_kill();
 void snake_kill();
+void ooxx_kill();
 //
 void pure_kill();
 void font_kill();
@@ -177,12 +183,24 @@ void characterinit(char* type,char* addr)
 		the2048_init(addr,temp);
 		temp += 0x80;
 
-		//game.tetris
-		tetris_init(addr,temp);
+		//game.ooxx
+		ooxx_init(addr,temp);
 		temp += 0x80;
 
 		//game.snake
 		snake_init(addr,temp);
+		temp += 0x80;
+
+		//game.tetris
+		tetris_init(addr,temp);
+		temp += 0x80;
+
+		//game.weiqi
+		weiqi_init(addr,temp);
+		temp += 0x80;
+
+		//game.xiangqi
+		xiangqi_init(addr,temp);
 		temp += 0x80;
 
 		//test.color
@@ -253,9 +271,12 @@ void characterkill()
 	font_kill();
 	pure_kill();
 
+	ooxx_kill();
 	snake_kill();
 	tetris_kill();
 	the2048_kill();
+	weiqi_kill();
+	xiangqi_kill();
 
 	ascii_kill();
 	background_kill();
@@ -320,6 +341,7 @@ void characterlist()
 int characterchoose(char* p)
 {
 	int j,k,ret;
+	char q[8];
 	QWORD temp;
 
 	//exit
@@ -368,6 +390,18 @@ int characterchoose(char* p)
 		goto found;
 	}
 
+	//prepare searching
+	for(j=0;j<8;j++)
+	{
+		if(p[j] == 0)break;
+		q[j] = p[j];
+	}
+	for(;j<8;j++)
+	{
+		q[j] = 0;
+	}
+	temp = *(QWORD*)q;
+
 	//start searching
 	for(j=0;j<10;j++)
 	{
@@ -379,7 +413,7 @@ int characterchoose(char* p)
 		if(worker[j].id == 0)return 0;
 
 		//lookat this
-		if(worker[j].id == temp)
+		if(temp == worker[j].id)
 		{
 			now=j;
 			goto found;
