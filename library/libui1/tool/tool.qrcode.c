@@ -12,10 +12,18 @@ void say(char*,...);
 
 
 
-//
-static int width;
-static int height;
-static DWORD* screenbuf;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
 //
 static int sidelength;
 static char* databuf;
@@ -26,11 +34,13 @@ static char* databuf;
 static void qrcode_read()
 {
 	DWORD color;
-	int min;
 	int x,y,x1,y1,x2,y2;
+	int width,height,min;
 
-	if(width<height)min=width;
-	else min=height;
+	width = haha->width;
+	height = haha->height;
+	if(width < height)min = width;
+	else min = height;
 
 	backgroundcolor(0);
 	for(y=0;y<sidelength;y++)
@@ -61,19 +71,15 @@ static void qrcode_list()
 }
 static void qrcode_into()
 {
-	sidelength=49;
-	qrcode_generate("haha",databuf,sidelength);
 }
 
 
 
 
-static void qrcode_start(QWORD size,void* addr)
+static void qrcode_start()
 {
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	screenbuf=addr;
+	sidelength=49;
+	qrcode_generate("haha",databuf,sidelength);
 }
 static void qrcode_stop()
 {
@@ -84,7 +90,9 @@ static void qrcode_stop()
 
 void qrcode_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x65646f637271;
 

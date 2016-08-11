@@ -1,14 +1,16 @@
+#define QWORD unsigned long long
+#define DWORD unsigned long long
 #include <jni.h>
 #include <android/bitmap.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#define QWORD unsigned long long
-void characterstart(QWORD size,void* addr);
-void characterread();
+//
+void characterstart(char* pixbuf, char* pixfmt, int width, int height);
+void characterstop();
 void characterwrite(QWORD type,QWORD value);
+void characterread();
+//
 void say(char* , ...);
 
 
@@ -74,7 +76,7 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Start(JNIEnv * env, jo
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	characterstart( ((info.height-64)<<16) + info.width , pixels );
+	characterstart(pixels, "rgba8888", info.width, info.height-64);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Stop(JNIEnv * env, jobject  obj)

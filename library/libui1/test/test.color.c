@@ -9,8 +9,20 @@ void say(char*,...);
 
 
 
-static DWORD* screenbuf;
-static int width,height;
+//
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
+//
 static int red=0x8d,green=0x63,blue=0x25;
 
 
@@ -24,26 +36,73 @@ static void color_into()
 }
 static void color_read()
 {
-	int x,y,min,color;
-	if( (width<=0) && (height<=0) )
+	int x,y,min;
+	DWORD color;
+	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+
+	if( ((haha->width) <= 0) && ((haha->height) <= 0) )
 	{
 		min=512;	
 	}
 	else
 	{
-		if(width<height)min=width;
-		else min=height;
+		if((haha->width) < (haha->height))min = haha->width;
+		else min = haha->height;
 	}
 
 	//(左边)各种颜色的色板
-	for(y=0;y<min;y++)
+	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
 	{
-		for(x=0;x<min;x++)
+		for(y=0;y<min;y++)
 		{
-			screenbuf[y*width + x]	= 0xff000000
-						+ (red<<16)
-						+ ( ( (y*256) / min ) << 8 )
-						+ ( (x*256) / min );
+			for(x=0;x<min;x++)
+			{
+				color = 0xff000000
+					+ ( ( (x*256) / min ) << 16)
+					+ ( ( (y*256) / min ) << 8 )
+					+ red;
+				screenbuf[(haha->width)*y + x]	=color;
+			}
+		}
+
+		color=0xff000000+ (blue<<16) + (green<<8) + red;
+	}
+	else
+	{
+		for(y=0;y<min;y++)
+		{
+			for(x=0;x<min;x++)
+			{
+				color = 0xff000000
+					+ (red<<16)
+					+ ( ( (y*256) / min ) << 8 )
+					+ ( (x*256) / min );
+				screenbuf[(haha->width)*y + x]	=color;
+			}
+		}
+
+		color=0xff000000+ (red<<16) + (green<<8) + blue;
+	}
+
+	//(右边)选中的颜色的方块
+	if((haha->width) < (haha->height))
+	{
+		for(y=haha->width;y<haha->height;y++)
+		{
+			for(x=0;x<haha->width;x++)
+			{
+				screenbuf[(haha->width)*y + x] = color;
+			}
+		}
+	}
+	if((haha->width) > (haha->height))
+	{
+		for(y=0;y<(haha->height);y++)
+		{
+			for(x=(haha->height);x<(haha->width);x++)
+			{
+				screenbuf[(haha->width)*y + x] = color;
+			}
 		}
 	}
 
@@ -52,35 +111,13 @@ static void color_read()
 	{
 		for(x=0;x<4;x++)
 		{
-			screenbuf[width*(green*min/256+y)+(blue*min/256+x)]=0xffffffff;
-		}
-	}
-
-	//(右边)选中的颜色的方块
-	color=0xff000000+ (red<<16) + (green<<8) + blue;
-	if(width<height)
-	{
-		for(y=width;y<height;y++)
-		{
-			for(x=0;x<width;x++)
-			{
-				screenbuf[y*width + x] = color;
-			}
-		}
-	}
-	if(width>height)
-	{
-		for(y=0;y<height;y++)
-		{
-			for(x=height;x<width;x++)
-			{
-				screenbuf[y*width + x] = color;
-			}
+			screenbuf[ (haha->width)*(green*min/256+y) + (blue*min/256+x) ]
+				= 0xffffffff;
 		}
 	}
 
 	//
-	hexadecimal(min/16, 0, color&0xffffff);
+	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
 }
 static void color_write(QWORD type,QWORD key)
 {
@@ -121,9 +158,11 @@ static void color_write(QWORD type,QWORD key)
 			int x=key&0xffff;
 			int y=(key>>16)&0xffff;
 			int min;
-			if(width<height)min=width;
-			else min=height;
 
+			if( (haha->width) < (haha->height) )min = haha->width;
+			else min = haha->height;
+
+			if((x>min)|(y>min))return;
 			blue=x*256/min;
 			green=y*256/min;
 		}
@@ -141,21 +180,17 @@ static void color_write(QWORD type,QWORD key)
 
 
 
-static void color_start(QWORD size,void* addr)
+static void color_start()
 {
-	int i;
-
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
 }
 static void color_stop()
 {
 }
-void color_init(char* uibuf,char* addr)
+void color_init(void* base, void* addr)
 {
 	QWORD* this=(QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x726f6c6f63;
 

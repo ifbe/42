@@ -588,15 +588,18 @@ void windowwrite(QWORD type,QWORD value)
 
 
 
-void windowstart(DWORD size,char* addr)
+void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	//构造info
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	say("@windowstart:%d,%d\n",width,height);
+	width = x;
+	height = y;
+	screenbuf = addr;
 
-	SetWindowPos(window, 0, 0, 0, width+4, height+27, SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER);
+	SetWindowPos(
+		window, 0, 0, 0,
+		width+4, height+27,
+		SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER
+	);
 
 	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biWidth=width;

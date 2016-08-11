@@ -222,17 +222,17 @@ int uievent(QWORD* my1,QWORD* my2)
 
 
 
-void windowstart(DWORD size,char* addr)
+void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	//
-	userpixel=addr;
-	width=size & 0xffff;
-	height=(size>>16) & 0xffff;
+	userpixel = addr;
+	width = x;
+	height = y;
 
 	//
 	ximage=XCreateImage(
-		dsp,visual,24,ZPixmap,0,
-		addr,width,height,32,0
+		dsp, visual, 24, ZPixmap, 0,
+		userpixel, width, height, 32, 0
 	);
 }
 void windowstop()

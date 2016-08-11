@@ -40,13 +40,13 @@ void font_read()
 void font_write()
 {
 }
-void font_start(QWORD size,void* addr)
+void font_start()
 {
 }
 void font_stop()
 {
 }
-void font_init(char*base,char* addr)
+void font_init(char* base,char* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;

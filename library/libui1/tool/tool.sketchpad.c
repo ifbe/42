@@ -2,25 +2,15 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-struct mathnode{
-
-        DWORD type;
-        DWORD up;
-        DWORD left;
-        DWORD right;
-        union{
-                char datasize[16];
-                double floatpoint;
-                unsigned long long integer;
-        };
-};
 //
-double sketchpad(struct mathnode*,double,double);
+double sketchpad(void*,double,double);
 double calculator(char* postfix,double,double);
-double beautifulbetween(double first,double second);
-void postfix2binarytree(char* postfix,struct mathnode* out);
+//
+void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
 void double2decimalstring(double,char*);
+//
+double beautifulbetween(double first,double second);
 void kexuejishufa(double* haha,int* counter);
 //
 void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
@@ -35,6 +25,32 @@ void say(char*,...);
 
 
 
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
+struct mathnode{
+
+        DWORD type;
+        DWORD up;
+        DWORD left;
+        DWORD right;
+        union{
+                char datasize[16];
+                double floatpoint;
+                unsigned long long integer;
+        };
+};
+static struct mathnode* node=0;
+
 //
 static int changed=0;
 static int count=0;
@@ -45,7 +61,6 @@ static char infix[128];
 static char postfix[128];
 static char result[128];
 static char* databuf=0;
-static struct mathnode* node=0;
 
 //
 static double scale=0.0;
@@ -54,10 +69,6 @@ static double centery=0.0;
 		//databuf 里面存放计算得到的值的符号
 		//scale=“屏幕”上两个点对于“世界”上的距离
 		//centerxy = “屏幕”对应“世界”哪个点
-//
-static DWORD* screenbuf=0;
-static int width=0;
-static int height=0;
 
 
 
@@ -65,12 +76,14 @@ static int height=0;
 //
 static void wangge()
 {
-	int x,y,temp;
-	double first,second,res;
+	int temp;
+	int x,y;
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
+	double first,second,res;
 
-
-
+	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+	int width = haha->width;
+	int height= haha->height;
 
 	//算屏上两行的间距，交点横坐标，纵坐标
 	temp = 0;
@@ -124,7 +137,11 @@ static void tuxiang()
 {
 	int x,y;
 	int value1,value2,counter;
-	double first,second,haha;
+	double first,second,hello;
+
+	int width = haha->width;
+	int height = haha->height;
+	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
 
 
 
@@ -137,9 +154,9 @@ static void tuxiang()
 		for(x=0;x<width;x++)
 		{
 			first=centerx + (x - (width/2))*scale;
-			haha=sketchpad(node,first,second);
+			hello=sketchpad(node,first,second);
 
-			if(haha>0)databuf[width*y+x]=1;
+			if(hello>0)databuf[width*y+x]=1;
 			else databuf[width*y+x]=-1;
 		}
 	}//calculate results
@@ -186,6 +203,9 @@ static void tuxiang()
 
 static void sketchpad_write(QWORD type,QWORD key)
 {
+	int width = haha->width;
+	int height = haha->height;
+
 	if(type==0x64626b)			//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
@@ -293,6 +313,8 @@ static void sketchpad_write(QWORD type,QWORD key)
 }
 static void sketchpad_read()
 {
+	double hello;
+
 	//跳过
 	if(node[0].type!=0x3d3d3d3d)goto skipthese;
 	if(changed==0)goto skipthese;
@@ -304,8 +326,8 @@ static void sketchpad_read()
 	if(node[0].integer == 0)
 	{
 		//计算器
-		double haha=calculator(postfix,0,0);
-		double2decimalstring(haha,result);
+		hello=calculator(postfix,0,0);
+		double2decimalstring(hello,result);
 	}
 	else
 	{
@@ -334,6 +356,19 @@ static void sketchpad_list()
 }
 static void sketchpad_change()
 {
+}
+
+
+
+
+
+
+
+
+static void sketchpad_start()
+{
+	backgroundcolor(0);
+
 	//
 	centerx=0.00;
 	centery=0.00;
@@ -345,34 +380,14 @@ static void sketchpad_change()
 	buffer[2]='x';
 	sketchpad_write(0x72616863, 0xd);
 }
-
-
-
-
-
-
-
-
-static void sketchpad_start(QWORD size,void* addr)
-{
-	int x;
-
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	screenbuf=addr;
-
-	for(x=0;x<width*height;x++)
-	{
-		screenbuf[x]=0;
-	}
-}
 static void sketchpad_stop()
 {
 }
 void sketchpad_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x686374656b73;
 

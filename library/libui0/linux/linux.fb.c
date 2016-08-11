@@ -142,12 +142,11 @@ QWORD windowread(QWORD what)
 
 
 
-void windowstart(DWORD size,char* value)
+void windowstart(char* addr, char* pixfmt, int x, int y);
 {
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	screenbuf = value;
+	screenbuf = addr;
+	width = x;
+	height = y;
 }
 void windowstop()
 {

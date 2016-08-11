@@ -22,9 +22,18 @@ void printmemory(char*,int);
 
 
 
+//
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
 
-
-
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 //位置
 static QWORD base;		//显示区基地址
@@ -32,14 +41,9 @@ static QWORD offset;
 static BYTE* databuf=0;
 static int printmethod=0;
 
-//mainscreen
-static DWORD* screenbuf;
-static int width;
-static int height;
-
 //flostarea
 static int inputcount=0;
-static BYTE haha[0x100];
+static BYTE hi[0x100];
 	//[0,0x1f]:target,value
 	//[0x20,0x3f]:base,value
 	//[0x40,0x5f]:offset,value
@@ -81,22 +85,22 @@ static void foreground()
 {
 	//一整页
 	int x,y;
-	int xshift = (width & 0x3) <<3;
+	int xshift = ((haha->width) & 0x3) <<3;
 	unsigned char* where=readornotread(base);
 
 	//
 	//printmemory(where,0x200);
 	if(printmethod==0)			//hex
 	{
-		for(y=0;y<height/16;y++)
+		for(y=0;y<(haha->height)/16;y++)
 		{
-			for(x=0;x<width/16;x++)
+			for(x=0;x<(haha->width)/16;x++)
 			{
 				printbyte(
 					16*x+xshift,
 					16*y,
 					1,
-					where[(y*width/16) + x],
+					where[((haha->width)*y/16) + x],
 					0,
 					0
 				);
@@ -106,15 +110,15 @@ static void foreground()
 
 	else if(printmethod==1)		//ascii
 	{
-		for(y=0;y<height/16;y++)
+		for(y=0;y<(haha->height)/16;y++)
 		{
-			for(x=0;x<width/16;x++)
+			for(x=0;x<(haha->width)/16;x++)
 			{
 				printascii(
 					16*x + xshift,
 					16*y,
 					1,
-					where[(y*width/16) + x],
+					where[((haha->width)*y/16) + x],
 					0,
 					0
 				);
@@ -131,8 +135,9 @@ static void floatarea()
 	int x,y;
 	int thisx,thisy;
 	int byteperline;
+	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
 
-	byteperline=width/16;
+	byteperline = (haha->width)/16;
 	thisx=(offset%byteperline)*16;
 	thisy=(offset/byteperline)*16;
 
@@ -141,29 +146,29 @@ static void floatarea()
 	{
 		for(x=thisx;x<thisx+16;x++)
 		{
-			screenbuf[y*width+x]=~screenbuf[y*width+x];
+			screenbuf[(haha->width)*y + x]=~screenbuf[(haha->width)*y + x];
 		}
 	}
 
 	//256*128的详情框
 	thisx+=16;
-	if(thisx>width-256)thisx -= (256+16);
+	if(thisx > (haha->width) - 256)thisx -= (256+16);
 	thisy+=16;
-	if(thisy>=height-128+16)thisy -= (128+16);
+	if(thisy >= (haha->height) - 128+16)thisy -= (128+16);
 
 	for(y=thisy;y<thisy+128;y++)
 	{
 		for(x=thisx;x<thisx+256;x++)
 		{
-			screenbuf[y*width+x]=0xffff;
+			screenbuf[(haha->width)*y + x]=0xffff;
 		}
 	}
 
 	//
-	data2hexstring(0x33333333,haha+0x10);
-	data2hexstring(base,haha+0x30);
-	data2hexstring(offset,haha+0x50);
-	data2hexstring(0,haha+0x70);
+	data2hexstring(0x33333333, hi + 0x10);
+	data2hexstring(base, hi + 0x30);
+	data2hexstring(offset, hi + 0x50);
+	data2hexstring(0, hi + 0x70);
 
 	//target,base,offset,data
 	for(y=0;y<8;y++)
@@ -174,7 +179,7 @@ static void floatarea()
 				thisx + x*8,
 				thisy + y*16,
 				1,
-				haha[(y*32) + x],
+				hi[(y*32) + x],
 				0,
 				0
 			);
@@ -191,8 +196,8 @@ static void floatarea()
 
 static void hex_write(QWORD type,QWORD key)
 {
-	int byteperline=width/16;
-	int totalbyte=( width >> 4 ) * ( height >> 4);
+	int byteperline = (haha->width)/16;
+	int totalbyte=( (haha->width) >> 4 ) * ( (haha->height) >> 4);
 
 	if(type==0x64626b)			//'kbd'
 	{
@@ -231,7 +236,7 @@ static void hex_write(QWORD type,QWORD key)
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			if( offset*16 < byteperline*(height-16) )
+			if( offset*16 < byteperline*((haha->height)-16) )
 			{
 				offset += byteperline;
 			}
@@ -250,16 +255,16 @@ static void hex_write(QWORD type,QWORD key)
 		else if(key==0x8)			//backspace
 		{
 			if(inputcount!=0)inputcount--;
-			haha[0x80+inputcount]=0;
+			hi[0x80+inputcount]=0;
 		}
 		else if(key==0xd)			//enter
 		{
-			if(compare( haha+0x80 , "exit" ) == 0)
+			if(compare( hi+0x80 , "exit" ) == 0)
 			{
 				characterchoose(0);
 				return;
 			}
-			else if(compare( haha+0x80 , "addr" ) == 0)
+			else if(compare( hi+0x80 , "addr" ) == 0)
 			{
 			}
 		}
@@ -267,7 +272,7 @@ static void hex_write(QWORD type,QWORD key)
 		{
 			if(inputcount<128)
 			{
-				haha[0x80+inputcount]=key;
+				hi[0x80+inputcount]=key;
 				inputcount++;
 			}
 		}
@@ -315,43 +320,40 @@ static void hex_list(QWORD* this)
 }
 static void hex_into()
 {
-	int i;
+}
+
+
+
+
+
+
+
+
+void hex_start()
+{
+	int j;
+	backgroundcolor(0);
 
 	//浮动框
-	for(i=0;i<0x100;i++)haha[i]=0;
-	*(QWORD*)haha=0x3a746567726174;
-	*(QWORD*)(haha+0x20)=0x3a65736162;
-	*(QWORD*)(haha+0x40)=0x3a74657366666f;
-	*(QWORD*)(haha+0x60)=0x3a61746164;
+	for(j=0;j<0x100;j++)hi[j]=0;
+	*(QWORD*)hi=0x3a746567726174;
+	*(QWORD*)(hi+0x20)=0x3a65736162;
+	*(QWORD*)(hi+0x40)=0x3a74657366666f;
+	*(QWORD*)(hi+0x60)=0x3a61746164;
 
 	//文件内部偏移
 	base=0;
 	offset=0;
 	currentcache=0xffffffff;
-	backgroundcolor(0);
-
-}
-
-
-
-
-
-
-
-
-void hex_start(QWORD size,void* addr)
-{
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
 }
 void hex_stop()
 {
 }
-void hex_init(char* uibuf,char* addr)
+void hex_init(void* uibuf,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
 

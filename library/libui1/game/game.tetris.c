@@ -14,6 +14,19 @@ void say(char*,...);
 
 
 
+//
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+//
 typedef struct stucture
 {
 	int x;
@@ -30,38 +43,34 @@ typedef struct stucture
 	int y4;
 }structure;
 static structure that;
-
+//
 static int score=0;
 static unsigned char* table;
-
-static int width=0;
-static int height=0;
-static DWORD* screen=0;
 
 
 
 
 static void cubie(int x,int y,int z)
 {
-	int haha;
+	int aa;
 	int startx,starty,endx,endy;
 	DWORD bodycolor;
 
-	haha=(height*32)/40;
+	aa=(haha->height*32)/40;
 
-	if(width<haha)
+	if(haha->width<aa)
 	{
-		startx = x*width/32;
-		endx = (x+1)*width/32 -1;
+		startx = (haha->width)*x/32;
+		endx = (x+1)*(haha->width)/32 -1;
 	}
 	else
 	{
-		startx = (width-haha)/2 + (x*haha/32);
-		endx = (width-haha)/2 + ((x+1)*haha/32) -1;
+		startx = (haha->width-aa)/2 + (x*aa/32);
+		endx = (haha->width-aa)/2 + ((x+1)*aa/32) -1;
 	}
 
-	starty = y*height/40;
-	endy = (y+1)*height/40 - 1;
+	starty = (haha->height)*y/40;
+	endy = (y+1)*(haha->height)/40 - 1;
 
 	bodycolor=z>0?0xffffffff:0;
 
@@ -555,43 +564,35 @@ void tetris_list()
 }
 void tetris_choose()
 {
+}
+
+
+
+
+
+static void tetris_start()
+{
+	//
 	int x;
+	backgroundcolor(0);
+
+	//game data
 	for(x= 0*32;x<40*32;x++) table[x]=0;
 	for(x=40*32;x<41*32;x++) table[x]=1;
-
 	that.x=getrandom() %27 +1;
 	that.y=1;
 	that.type=5;
 	that.direction=2;
 	generate();
 }
-
-
-
-
-
-static void tetris_start(DWORD size,void* addr)
-{
-	//
-	int x;
-
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	screen=(unsigned int*)addr;
-
-	//
-	for(x=0;x<width*height;x++)
-	{
-		screen[x]=0;
-	}
-}
 static void tetris_stop()
 {
 }
 void tetris_init(char* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x736972746574;		//'tetris'
 

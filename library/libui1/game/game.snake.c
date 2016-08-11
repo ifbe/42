@@ -5,29 +5,39 @@ void line(int x1, int y1, int x2, int y2, DWORD color);
 void rectbody( int x1, int y1, int x2, int y2, DWORD color);
 void rectframe(int x1, int y1, int x2, int y2, DWORD color);
 void rect(     int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
-//
+void backgroundcolor(DWORD);
 DWORD getrandom();
+//
 void say(char*,...);
 
 
 
+
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 struct hehe{
 	int x;
 	int y;
 };
 static struct hehe* snake;
-static int len;
-static int direction;
-//
 static struct hehe a;
 static struct hehe b;
 //
+static int len;
+static int direction;
+//
 static int foodx;
 static int foody;
-//
-static int width;
-static int height;
 static int score=0;
 static int die=0;
 
@@ -41,8 +51,8 @@ void snake_read()
 
 	if(die == 1)
 	{
-		line(0, 0, width-1, height-1, 0xffffffff);
-		line(width-1, 0, 0, height-1, 0xffffffff);
+		line(0, 0, (haha->width)-1, (haha->height)-1, 0xffffffff);
+		line((haha->width)-1, 0, 0, (haha->height)-1, 0xffffffff);
 	}
 
 	//shadow
@@ -146,9 +156,9 @@ void snake_write(QWORD type,QWORD key)
 
 	//撞墙
 	if(	(snake[0].x < 0) |
-		(snake[0].x > (width/32)) |
+		(snake[0].x > ((haha->width)/32)) |
 		(snake[0].y < 0) |
-		(snake[0].y > (height/32)) )
+		(snake[0].y > ((haha->height)/32)) )
 	{
 		die=1;
 		return;
@@ -182,8 +192,8 @@ void snake_write(QWORD type,QWORD key)
 		snake[j].y = a.y;
 		len++;
 
-		foodx=getrandom() % (width/32);
-		foody=getrandom() % (height/32);
+		foodx=getrandom() % ((haha->width)/32);
+		foody=getrandom() % ((haha->height)/32);
 	}
 }
 
@@ -195,13 +205,23 @@ static void snake_list()
 }
 static void snake_choose()
 {
-	//init food and snake 
-	int i;
-	snake[0].x=1 + getrandom() % ((width/32)-2);
-	snake[0].y=1 + getrandom() % ((height/32)-2);
+}
 
-	foodx=getrandom() % (width/32);
-	foody=getrandom() % (height/32);
+
+
+
+static void snake_start()
+{
+	//1.init
+	int x;
+	backgroundcolor(0);
+
+	//init food and snake 
+	snake[0].x=1 + getrandom() % (((haha->width)/32)-2);
+	snake[0].y=1 + getrandom() % (((haha->height)/32)-2);
+
+	foodx=getrandom() % ((haha->width)/32);
+	foody=getrandom() % ((haha->height)/32);
 
 	a.x = -1;
 	b.x = -1;
@@ -210,27 +230,6 @@ static void snake_choose()
 	direction=1;
 
 	die=0;
-}
-
-
-
-
-static void snake_start(DWORD size,void* addr)
-{
-	//1.init
-	int x;
-	int* p;
-
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	p=(int*)addr;
-
-	//
-	for(x=0;x<width*height;x++)
-	{
-		p[x]=0;
-	}
 }
 static void snake_stop()
 {
@@ -241,7 +240,9 @@ static void snake_stop()
 
 void snake_init(char* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x656b616e73;		//'snake'
 

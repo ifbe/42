@@ -17,9 +17,17 @@ void say(char*,...);
 
 
 //palette
-static unsigned int* palette=0;
-static int width=1024;
-static int height=768;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 //log位置
 static char* logbuf=0;
@@ -40,35 +48,36 @@ static void background4()
 {
 	//用指定颜色清屏
 	DWORD x,y,color;
+	DWORD* palette = (DWORD*)(haha->pixelbuffer);
 
-	for(x=0;x<width*height;x++)
+	for(x=0;x<(haha->width)*(haha->height);x++)
 	{
 		palette[x]=0;
 	}
 
 	//输入框颜色
-	for(y=height-16;y<height;y++)
+	for(y=(haha->height)-16;y<(haha->height);y++)
 	{
-		for(x=0;x<width/2;x++)
+		for(x=0;x<(haha->width)/2;x++)
 		{
 			color=(x/2)*0x01010101;
-			palette[(y*width) + x]=color;
-			palette[(y*width) + width-x -1]=color;
+			palette[(haha->width)*y + x]=color;
+			palette[(haha->width)*y + (haha->width) -x -1]=color;
 		}
 	}
 
 	//滚动框颜色
-	for(y=0;y<height/2;y++)
+	for(y=0;y<(haha->height)/2;y++)
 	{
-		color = y*0xff/height;//0x44444488;
+		color = y*0xff/(haha->height);//0x44444488;
 
-		for(x=width-16;x<width;x++)
+		for(x=(haha->width)-16;x<(haha->width);x++)
 		{
-			palette[(y*width) + x] = color;
+			palette[(haha->width)*y + x] = color;
 		}
-		for(x=width-16;x<width;x++)
+		for(x=(haha->width)-16;x<(haha->width);x++)
 		{
-			palette[((height-1-y)*width) + x] = color;
+			palette[((haha->height)-1-y)*(haha->width) + x] = color;
 		}
 	}
 }
@@ -76,18 +85,20 @@ static void printposition(int start,int count,int max)
 {
 	//位置
 	int x,y;
+	DWORD* palette = (DWORD*)(haha->pixelbuffer);
+
 	if(max<0x80*45)return;
 
 	//显示区大小/总大小
-	QWORD top=height*start/max;
-	QWORD bottom=height*(start+0x80*count)/max;//temp变量=max
+	QWORD top=(haha->height)*start/max;
+	QWORD bottom=(haha->height)*(start+0x80*count)/max;//temp变量=max
 	say("printposition:%x,%x\n",top,bottom);
 
 	for(y=top;y<bottom;y++)
 	{
-		for(x=width-16+4;x<width-4;x++)
+		for(x=(haha->width)-16+4;x<(haha->width)-4;x++)
 		{
-			palette[(y*width) + x] = 0x01234567;
+			palette[(haha->width)*y + x] = 0x01234567;
 		}
 	}
 }
@@ -171,20 +182,15 @@ static void console_write(QWORD type,QWORD key)
 static void console_read()
 {
 	//显示哪儿开始的一块
-	int count=(height/16)-1;
+	int count=(haha->height)/16 - 1;
 	int enqueue=*(DWORD*)(logbuf+0xffff0);
 
 	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
 	if( start<0 )start=0;
-//say("%d,%d\n",width,height);
 
-	//背景(start,end)
 	background4();
-
 	printposition(start,count,enqueue);
-
 	printstdout(start,count);
-
 	printstdin(count);
 }
 static void console_into()
@@ -201,14 +207,8 @@ static void console_list()
 
 
 
-static void console_start(QWORD size,void* addr)
+static void console_start()
 {
-	//size
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	palette=addr;
-
-	//
 	backgroundcolor(0);
 }
 static void console_stop()
@@ -216,7 +216,9 @@ static void console_stop()
 }
 void console_init(char* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x656c6f736e6f63;
 

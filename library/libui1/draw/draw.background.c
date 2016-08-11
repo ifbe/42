@@ -78,7 +78,7 @@ void background1()
 
 
 
-void background_start(DWORD size,char* addr)
+void background_start()
 {
 }
 void background_stop()

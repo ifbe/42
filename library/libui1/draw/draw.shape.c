@@ -280,7 +280,7 @@ void bezier()
 
 
 
-void shape_start(DWORD size,void* addr)
+void shape_start()
 {
 }
 void shape_stop()

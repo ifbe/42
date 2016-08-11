@@ -65,8 +65,10 @@ void say(char* , ...);
 //worker
 static DWORD now=0;		//不能有负数
 //screen
-static DWORD actualsize;
-static void* actualaddr;
+static void* pixbuf;
+static void* pixfmt;
+static int w;
+static int h;
 //touch
 static QWORD pointenter[10];
 static QWORD pointleave[10];
@@ -103,7 +105,7 @@ static struct working
 	char padding1[ 8 - sizeof(char*) ];
 
 	//[50,57]:开始
-	int (*start)(DWORD size,char* addr);
+	int (*start)();
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[58,5f]:结束
@@ -267,28 +269,28 @@ void characterkill()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(DWORD size,char* addr)
+int characterstart(char* addr, char* fmt, int width, int height)
 {
 	int j;
-	say("@characterstart:%d,%d\n",size&0xffff,(size>>16)&0xffff);
+
+	pixbuf = addr;
+	pixfmt = fmt;
+	w = width;
+	h = height;
+	say("@characterstart:%d,%d\n", w, h);
 
 	for(j=0;j<100;j++)
 	{
-		if(worker[j].type != 0)break;
+		if(worker[j].id == 0)break;
 
-		worker[j].width=size&0xffff;
-		worker[j].height=(size>>16)&0xffff;
-		worker[j].pixelbuffer=(QWORD)addr;
+		worker[j].pixelbuffer = (QWORD)addr;
+		worker[j].pixelformat = *(QWORD*)fmt;
+		worker[j].width = w;
+		worker[j].height = h;
 	}
 
-	actualsize=size;
-	actualaddr=addr;
-
 	//
-	worker[now].start(actualsize, actualaddr);
-	worker[0].start(actualsize, actualaddr);
-
-	worker[now].choose();
+	worker[now].start();
 	return 0;
 }
 int characterstop()
@@ -385,7 +387,7 @@ int characterchoose(char* p)
 	}
 
 found:
-	characterstart(actualsize, actualaddr);
+	characterstart(pixbuf, pixfmt, w, h);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -416,8 +418,9 @@ void characterwrite(QWORD type,QWORD key)
 	//size
 	if(type==0x657a6973)
 	{
-		actualsize=key;
-		characterstart(actualsize,actualaddr);
+		w = key & 0xffff;
+		h = (key >> 16) & 0xffff;
+		characterstart(pixbuf, pixfmt, w, h);
 		return;
 	}//size
 

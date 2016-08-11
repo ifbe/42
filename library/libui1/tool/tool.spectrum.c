@@ -19,6 +19,18 @@ void say(char*,...);
 
 
 
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
 //before
 static double* databuf=0;
 static int maxpower;
@@ -28,11 +40,6 @@ static double* real;		//8*2048=0x4000
 static double* imag;		//8*2048=0x4000
 static double* power;		//8*1024=0x2000
 static double* phase;		//8*1024=0x2000
-
-//mainscreen
-static DWORD* screenbuf;
-static int width;
-static int height;
 
 
 
@@ -90,13 +97,15 @@ static void spectrum_write(QWORD type,QWORD key)
 }
 static void spectrum_read()
 {
-	int min;
 	int x,y;
+	int width,height,min;
 
+	width = haha->width;
+	height = haha->height;
 	if(width<height)min=width;
 	else min=height;
-	rectbody(0, 0, min, min, 0);
 
+	rectbody(0, 0, min, min, 0);
 	for(x=0;x<1024;x++)
 	{
 		y = min - (int)(real[x] * (double)min / (double)maxpower);
@@ -114,38 +123,31 @@ static void spectrum_list(QWORD* this)
 }
 static void spectrum_into()
 {
-	int i;
-	maxpower=65536;
-
-	for(i=0;i<2048;i++)
-	{
-		real[i] = (double)(i*63);
-		//real[i] = (double)(random()%maxpower);
-	}
 }
 
 
 
 
-void spectrum_start(QWORD size,void* addr)
+void spectrum_start()
 {
-	int i;
+	int j;
+	backgroundcolor(0);
 
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	for(i=0;i<width*height;i++)
+	maxpower=32768;
+	for(j=0;j<2048;j++)
 	{
-		screenbuf[i]=0;
+		real[j] = (double)(j*31);
+		//real[j] = (double)(random()%maxpower);
 	}
 }
 void spectrum_stop()
 {
 }
-void spectrum_init(char* uibuf,char* addr)
+void spectrum_init(void* uibuf,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x6d75727463657073;
 

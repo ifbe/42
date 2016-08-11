@@ -47,13 +47,13 @@ void doodle_read()
 void doodle_write()
 {
 }
-void doodle_start(QWORD size,void* addr)
+void doodle_start()
 {
 }
 void doodle_stop()
 {
 }
-void doodle_init(char*base,char* addr)
+void doodle_init(char* base,char* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;

@@ -7,9 +7,17 @@ void backgroundcolor(DWORD);
 
 
 
-DWORD* screenbuf=0;
-static int width=0;
-static int height=0;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
@@ -21,6 +29,13 @@ static void keyboard_write(QWORD type,QWORD value)
 static void keyboard_read()
 {
 	int x,y;
+	int width,height;
+	DWORD* screenbuf;
+
+	screenbuf = (DWORD*)(haha->pixelbuffer);
+	width = haha->width;
+	height = haha->height;
+
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
@@ -61,22 +76,18 @@ static void keyboard_list()
 
 
 
-static void keyboard_start(QWORD size,void* addr)
+static void keyboard_start()
 {
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-
-	//
 	backgroundcolor(0);
 }
 static void keyboard_stop()
 {
 }
-void keyboard_init(char* base,void* addr)
+void keyboard_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x64626b;
 

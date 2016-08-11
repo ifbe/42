@@ -3,14 +3,14 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //libui1
-void characterlist();
-void characterchoose(char*);
-void characterread();
-void characterwrite(QWORD type,QWORD key);
-void characterstart(DWORD size,char* addr);
+void characterstart(char* addr,char* pixfmt, int width,int height);
 void characterstop();
+void characterwrite(QWORD type,QWORD key);
+void characterread();
+void characterchoose(char*);
+void characterlist();
 //libui0
-void windowstart(DWORD,char*);
+void windowstart(char* addr,char* pixfmt, int width,int height);
 void windowstop();
 void windowread();
 void windowwrite();
@@ -27,7 +27,14 @@ void say(char*,...);
 
 
 
-static char mybuffer[2048*1024*4];		//4m
+static char pixbuf[2048*1024*4];
+static char pixfmt[8] = {'b','g','r','a','8','8','8','8'};
+static int width=512;
+static int height=512;
+
+
+
+
 void main()
 {
 	QWORD type=0;
@@ -35,11 +42,12 @@ void main()
 
 	//before
 	birth();
-	windowstart(512+(512<<16), mybuffer);
-	characterstart(512+(512<<16), mybuffer);
+	windowstart(pixbuf, pixfmt, width, height);	//it has the right to decide
+	characterstart(pixbuf, pixfmt, width, height);	//the changed final argument
 	//changewindow("addr",mybuffer);
 	//changewindow("size",512+512<<16);
 	//changewindow("title","hahahahahaha");
+
 	//forever
 	while(1)
 	{

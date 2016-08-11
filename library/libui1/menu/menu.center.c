@@ -155,7 +155,7 @@ static void menu_list()
 
 
 
-static void menu_start(DWORD size,void* addr)
+static void menu_start()
 {
 }
 static void menu_stop()

@@ -11,10 +11,18 @@ void say(char*,...);
 
 
 //
-static DWORD* screenbuf;
-static char* pixelformat;
-static int width;
-static int height;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
 //
 static int flag=0;
 
@@ -30,17 +38,21 @@ static void pure_into()
 static void pure_read()
 {
 	int x,y;
-	DWORD color=0xff000000;
+	DWORD color;
+	DWORD* screenbuf;
 
+	screenbuf = (DWORD*)(haha->pixelbuffer);
+
+	color=0xff000000;
 	if((flag&0x1) == 0x1)color |= 0xff;
 	if((flag&0x2) == 0x2)color |= 0xff00;
 	if((flag&0x4) == 0x4)color |= 0xff0000;
 
-	for(y=0;y<height;y++)
+	for(y=0;y<(haha->height);y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<(haha->width);x++)
 		{
-			screenbuf[y*width + x] = color;
+			screenbuf[(haha->width)*y + x] = color;
 		}
 	}
 
@@ -57,21 +69,17 @@ static void pure_write(QWORD type,QWORD key)
 
 
 
-static void pure_start(QWORD size,void* addr)
+static void pure_start()
 {
-	int i;
-
-	//
-	screenbuf=addr;
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
 }
 static void pure_stop()
 {
 }
-void pure_init(char* uibuf,char* addr)
+void pure_init(void* uibuf,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x65727570;
 

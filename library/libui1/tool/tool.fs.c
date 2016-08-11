@@ -6,9 +6,17 @@
 
 
 
-static int width;
-static int height;
-static DWORD* screenbuf;
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
@@ -25,19 +33,17 @@ static void fs_read()
 static void fs_write()
 {
 }
-static void fs_start(QWORD size,void* addr)
+static void fs_start()
 {
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	screenbuf=addr;
 }
 static void fs_stop()
 {
 }
 void fs_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x7366;
 

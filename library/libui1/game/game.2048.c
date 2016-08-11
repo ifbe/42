@@ -13,9 +13,21 @@ void say(char*,...);
 
 
 
+//
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
+//
 static int table[4][4];
-static int width=0;
-static int height=0;
 
 
 
@@ -25,8 +37,8 @@ static void cubie(int x,int y,int z)
 	int min;
 	int color;
 	int count;
-	if(width<height)min=width;
-	else min=height;
+	if(haha->width < haha->height)min = haha->width;
+	else min = haha->height;
 
 	switch(z)
 	{
@@ -41,13 +53,20 @@ static void cubie(int x,int y,int z)
 		case 256:color=0xffff80;count=2;break;
 		case 512:color=0xffff00;count=2;break;
 		case 1024:color=0xffffb0;count=3;break;
-		case 2048:color=0x11111111;count=3;break;
+		case 2048:color=0x233333;count=3;break;
 		case 4096:color=0x783d72;count=3;break;
 		case 8192:color=0xd73762;count=3;break;
 	}
-	//for(i=x*160+5;i<x*160+155;i++)
-	//for(j=y*160+5;j<y*160+155;j++)
-	//point(i,j,color);
+
+	//if rgba, bgra->rgba
+	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
+	{
+		color	= 0xff000000
+			+ ((color&0xff)<<16)
+			+ (color&0xff00)
+			+ ((color&0xff0000)>>16);
+	}
+
 	rectbody(
 		x*min/4,
 		y*min/4,
@@ -334,8 +353,22 @@ static void the2048_list()
 }
 static void the2048_choose()
 {
-	int x,y;
+}
 
+
+
+
+
+
+
+
+static void the2048_start()
+{
+	//1.init
+	int x,y;
+	backgroundcolor(0);
+
+	//brick
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -345,38 +378,14 @@ static void the2048_choose()
 	}
 	new2048();
 }
-
-
-
-
-
-
-
-
-static void the2048_start(DWORD size,void* addr)
-{
-	//1.init
-	int x;
-	int* p;
-
-	//
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-	p=(int*)addr;
-
-	//
-	for(x=0;x<width*height;x++)
-	{
-		p[x]=0;
-	}
-
-}
 static void the2048_stop()
 {
 }
 void the2048_init(char* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x38343032;		//'2048'
 

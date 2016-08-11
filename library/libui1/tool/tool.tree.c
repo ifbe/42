@@ -2,6 +2,39 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+//libui
+void hexadecimal(int x,int y,QWORD in);
+void decimal(int x,int y,QWORD in);
+void printdouble(int x, int y, int size, double z, DWORD fgcolor, DWORD bgcolor);
+void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
+void printascii(int x, int y, int size, char ch, DWORD fgcolor, DWORD bgcolor);
+void line(int,int,int,int,DWORD);
+void backgroundcolor(DWORD);
+//libsoft
+double calculator(char* postfix);
+void postfix2binarytree(char* postfix,void* out);
+void infix2postfix(char* infix,char* postfix);
+void double2decimalstring(double,char*);
+//libboot
+void say(char*,...);
+void printmemory(char*,int);
+
+
+
+
+//
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
+
 struct mathnode{
 
         DWORD type;
@@ -15,36 +48,9 @@ struct mathnode{
         };
 };
 
-
-
-
-//libui
-void hexadecimal(int x,int y,QWORD in);
-void decimal(int x,int y,QWORD in);
-void printdouble(int x, int y, int size, double z, DWORD fgcolor, DWORD bgcolor);
-void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
-void printascii(int x, int y, int size, char ch, DWORD fgcolor, DWORD bgcolor);
-void line(int,int,int,int,DWORD);
-void backgroundcolor(DWORD);
-//libsoft
-double calculator(char* postfix);
-void postfix2binarytree(char* postfix,struct mathnode* out);
-void infix2postfix(char* infix,char* postfix);
-void double2decimalstring(double,char*);
-//libboot
-void say(char*,...);
-void printmemory(char*,int);
-
-
-
-
 //
-static int width;
-static int height;
-
-//
-static int count=0;
 static struct mathnode* node=0;
+static int count=0;
 
 //
 static char buffer[128];
@@ -65,8 +71,8 @@ static void printnode(int x,int y,int num)
 	right=node[num].right;
 
 	//偏移
-	offset=width/4;
-	temp=y;
+	offset = (haha->width)/4;
+	temp = y;
 	while(1)
 	{
 		temp--;
@@ -191,13 +197,13 @@ static void tree_read()
 	//等式
 	if(node[0].type==0x3d3d3d3d)
 	{
-		printnode(width/2, 1, 0);
+		printnode((haha->width)/2, 1, 0);
 	}
 
 	//算式
 	else
 	{
-		printnode(width/2, 1, node[0].right);
+		printnode((haha->width)/2, 1, node[0].right);
 	}
 }
 
@@ -209,26 +215,26 @@ static void tree_list()
 }
 static void tree_into()
 {
+}
+
+
+
+
+static void tree_start()
+{
 	buffer[0]='1';
 	buffer[1]='+';
 	buffer[2]='1';
 	tree_write(0x72616863, 0xd);
 }
-
-
-
-
-static void tree_start(QWORD size,void* addr)
-{
-	width=size&0xffff;
-	height=(size>>16)&0xffff;
-}
 static void tree_stop()
 {
 }
-void tree_init(char* base,char* addr)
+void tree_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x65657274;
 
