@@ -12,17 +12,13 @@ target:
 	$(compiler) $(cflag) game/game.weiqi.c
 	$(compiler) $(cflag) game/game.xiangqi.c
 	$(compiler) $(cflag) menu/menu.center.c
-	$(compiler) $(cflag) menu/menu.upper.c
-	$(compiler) $(cflag) menu/menu.nether.c
-	$(compiler) $(cflag) menu/menu.left.c
-	$(compiler) $(cflag) menu/menu.right.c
+	$(compiler) $(cflag) menu/menu.keyboard.c
 	$(compiler) $(cflag) test/test.color.c
 	$(compiler) $(cflag) test/test.doodle.c
 	$(compiler) $(cflag) test/test.font.c
 	$(compiler) $(cflag) test/test.pure.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.hex.c
-	$(compiler) $(cflag) tool/tool.keyboard.c
 	$(compiler) $(cflag) tool/tool.qrcode.c
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c

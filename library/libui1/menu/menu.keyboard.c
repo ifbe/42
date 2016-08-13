@@ -2,7 +2,10 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void printascii(int x,int y,int size,char ch,DWORD fg,DWORD bg);
+void rect(int x0,int y0,int x1,int y1,DWORD body,DWORD frame);
 void backgroundcolor(DWORD);
+DWORD getrandom();
 
 
 
@@ -18,6 +21,16 @@ static struct temp{
         QWORD width;
         QWORD height;
 }*haha;
+static char table[8][8] = {
+	'a','b','c','d','e','f','g','h',
+	'i','j','k','l','m','n','o','p',
+	'q','r','s','t','u','v','w','x',
+	'y','z',' ',' ',' ',' ',' ',' ',
+	'0','1','2','3','4','5','6','7',
+	'8','9',' ',' ',' ',' ',' ',' ',
+	'+','-','*','/',' ',' ',' ',' ',
+	' ',' ',' ',' ',' ',' ',' ',' '
+};
 
 
 
@@ -29,36 +42,31 @@ static void keyboard_write(QWORD type,QWORD value)
 static void keyboard_read()
 {
 	int x,y;
-	int width,height;
-	DWORD* screenbuf;
+	int width = haha->width;
+	int height = haha->height;
 
-	screenbuf = (DWORD*)(haha->pixelbuffer);
-	width = haha->width;
-	height = haha->height;
-
-	for(y=0;y<height;y++)
+	//[a,z]
+	for(y=0;y<8;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<8;x++)
 		{
-			screenbuf[y*width + x]=0;
-		}
-	}
+			rect(
+				(width/4) + (x*width/16),
+				(height/2) + (y*height/16),
+				(width/4) + (x+1)*width/16,
+				(height/2) + (y+1)*height/16,
+				0xccffcc,
+				0x352614
+			);
 
-	//横线
-	for(y=height/8;y<height*15/16;y+=height/8)
-	{
-		for(x=0;x<width;x++)
-		{
-			screenbuf[y*width+x]=0xffffffff;
-		}
-	}
-
-	//竖线
-	for(x=width/8;x<width*15/16;x+=width/8)
-	{
-		for(y=0;y<=height;y++)
-		{
-			screenbuf[y*width+x]=0xffffffff;
+			printascii(
+				(width/4) + (x*width/16),
+				(height/2) + (y*height/16),
+				2,
+				table[y][x],
+				0x221133,
+				0
+			);
 		}
 	}
 }
@@ -78,7 +86,6 @@ static void keyboard_list()
 
 static void keyboard_start()
 {
-	backgroundcolor(0);
 }
 static void keyboard_stop()
 {
@@ -88,7 +95,7 @@ void keyboard_init(void* base,void* addr)
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
+	this[0]=0;
 	this[1]=0x64626b;
 
 	this[10]=(QWORD)keyboard_start;

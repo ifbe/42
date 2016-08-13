@@ -159,9 +159,13 @@ void characterinit(char* type,char* addr)
 		mega2=addr+0x200000;
 		mega3=addr+0x300000;
 
-		//[+0x00,0x3f]:		menu.c
+		//menu.center
 		menu_init(addr,temp);
 		temp+=0x80;
+
+		//menu.keyboard
+		keyboard_init(addr,temp);
+		temp += 0x80;
 
 		//ascii
 		ascii_init(addr,temp);
@@ -227,10 +231,6 @@ void characterinit(char* type,char* addr)
 		hex_init(addr,temp);
 		temp += 0x80;
 
-		//tool.keyboard
-		keyboard_init(addr,temp);
-		temp += 0x80;
-
 		//tool.qrcode
 		qrcode_init(addr,temp);
 		temp += 0x80;
@@ -261,7 +261,6 @@ void characterkill()
 	spectrum_kill();
 	tree_kill();
 	sketchpad_kill();
-	keyboard_kill();
 	hex_kill();
 	console_kill();
 	qrcode_kill();
@@ -282,7 +281,9 @@ void characterkill()
 	background_kill();
 	shape_kill();
 	unicode_kill();
+
 	menu_kill();
+	keyboard_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -436,11 +437,8 @@ void characterread()
 	worker[now].read();
 
 	//菜单
-	if(worker[0].xyze1 > 0)
-	{
-		worker[0].read();
-	}
-
+	if(worker[0].xyze1 > 0)worker[0].read();
+	if(worker[1].xyze1 > 0)worker[1].read();
 }
 void characterwrite(QWORD type,QWORD key)
 {
@@ -563,7 +561,7 @@ void characterwrite(QWORD type,QWORD key)
 						else if( (dy0 < -128)&&(dy1 < -128) )
 						{
 							//
-							say("keyboard?\n");
+							worker[1].xyze1 ^= 1;
 						}
 					}
 					else if( (dy0>-128)&&(dy0<128)&&(dy0>-128)&&(dy0<128) )
@@ -586,6 +584,8 @@ void characterwrite(QWORD type,QWORD key)
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)worker[0].write(type,key);
+
+	else if(worker[1].xyze1 > 0)worker[1].write(type,key);
 	else worker[now].write(type,key);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

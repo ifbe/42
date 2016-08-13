@@ -7,7 +7,7 @@ linuxcli:
 .PHONY:linuxsdl
 linuxsdl:
 	rm -f *.o
-	gcc -c -O2 all/all.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	gcc -c -O2 cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	gcc -c -O2 display.c
 .PHONY:linuxfb
 linuxfb:
@@ -33,12 +33,12 @@ linuxxlib:
 .PHONY:maccli
 maccli:
 	rm -f *.o
-	gcc -c -fPIC -O2 all/all.cli.c
+	gcc -c -fPIC -O2 cli/cli.cli.c
 	gcc -c -fPIC -O2 display.c
 .PHONY:macsdl
 macsdl:
 	rm -f *.o
-	clang -c -O2 all/all.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	clang -c -O2 cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	gcc -c -O2 display.c
 .PHONY:maccocoa
 maccocoa:
@@ -54,12 +54,12 @@ maccocoa:
 .PHONY:wincli
 wincli:
 	rm -f *.o
-	gcc -c -O2 all/all.cli.c
+	gcc -c -O2 cli/cli.cli.c
 	gcc -c -O2 display.c
 .PHONY:winsdl
 winsdl:
 	rm -f *.o
-	gcc -c -O2 all/all.sdl2.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
+	gcc -c -O2 cross/cross.sdl2.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
 	gcc -c -O2 display.c
 .PHONY:winapi
 winapi:
