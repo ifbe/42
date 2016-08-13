@@ -445,6 +445,7 @@ void characterread()
 void characterwrite(QWORD type,QWORD key)
 {
 	int m,n;
+	int dx0,dx1,dy0,dy1;
 
 	//debug
 	//say("%llx,%llx\n",type,key);
@@ -471,7 +472,7 @@ void characterwrite(QWORD type,QWORD key)
 
 	if( (type&0xff) == 'p' )
 	{
-		say("type=%llx,key=%llx\n",type,key);
+		//say("type=%llx,key=%llx\n",type,key);
 
 		m = (type & 0xff00) >> 8;
 		n = (key >> 48) & 0x07;
@@ -489,32 +490,32 @@ void characterwrite(QWORD type,QWORD key)
 		{
 			//
 			pointleave[n]=key;
+/*
 			say("(%llx,%llx)->(%llx,%llx)\n",
 				(pointenter[n]&0xffff),
 				((pointenter[n]>>16)&0xffff),
 				(pointleave[n]&0xffff),
 				((pointleave[n]>>16)&0xffff)
 			);
-
+*/
 			//
 			pointcount--;
 			if(pointcount==0)
 			{
 				if(pointmax==1)
 				{
-					m = (pointleave[0]&0xffff)
-					  - (pointenter[0]&0xffff);
-					n = ((pointleave[0]>>16)&0xffff)
-					  - ((pointenter[0]>>16)&0xffff);
+					pointmax=0;
+					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
 
-					if( (n>-250) && (n<250) )
+					if( (dy0>-128) && (dy0<128) )
 					{
-						if(m<-250)	//left
+						if(dx0<-128)	//left
 						{
 							type=0x64626b;
 							key=0x25;
 						}
-						else if(m>250)	//right
+						else if(dx0>128)	//right
 						{
 							type=0x64626b;
 							key=0x27;
@@ -525,14 +526,14 @@ void characterwrite(QWORD type,QWORD key)
 							key&=0xffffffff;
 						}
 					}
-					if( (m>-250) && (m<250) )
+					if( (dx0>-128) && (dx0<128) )
 					{
-						if(n<-250)	//up
+						if(dy0<-128)	//up
 						{	
 							type=0x64626b;
 							key=0x26;
 						}
-						else if(n>250)	//down
+						else if(dy0>128)	//down
 						{
 							type=0x64626b;
 							key=0x28;
@@ -547,28 +548,36 @@ void characterwrite(QWORD type,QWORD key)
 
 				else if(pointmax>1)
 				{
-					m = ((pointleave[0]>>16)&0xffff)
-					  - ((pointenter[0]>>16)&0xffff);	//dy1
-					n = ((pointleave[1]>>16)&0xffff)
-					  - ((pointenter[1]>>16)&0xffff);	//dy2
-					if( (m>-250)&&(m<250)&&(n>-250)&&(n<250) )
+					pointmax=0;
+					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
+					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
+					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
+					if( (dx0>-128)&&(dx0<128)&&(dx1>-128)&&(dx1<128) )
 					{
-						m = (pointleave[0]&0xffff)
-						  - (pointenter[0]&0xffff);
-						n = (pointleave[1]&0xffff)
-						  - (pointenter[1]&0xffff);
-						if( (m<-250)&&(n<-250) )
+						if( (dy0 > 128)&&(dy1 > 128) )
+						{
+							worker[0].xyze1 ^= 1;
+							return;
+						}
+						else if( (dy0 < -128)&&(dy1 < -128) )
+						{
+							//
+							say("keyboard?\n");
+						}
+					}
+					else if( (dy0>-128)&&(dy0<128)&&(dy0>-128)&&(dy0<128) )
+					{
+						if( (dx0 < -128)&&(dx1 < -128) )
 						{
 							characterchoose("+");
 						}
-						else if( (m>250)&&(n>250) )
+						else if( (dx0 > 128)&&(dx1 > 128) )
 						{
 							characterchoose("-");
 						}
 					}
 				}
-
-				pointmax=0;
 
 			}//last one
 		}//point gone

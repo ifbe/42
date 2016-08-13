@@ -3,10 +3,9 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void string(int x,int y,char* str);
-void ascii(int x,int y,char ch);
 void printascii(int x, int y, int size, char ch, DWORD fg, DWORD bg);
 void printbyte(int x, int y, int size, char ch, DWORD fg, DWORD bg);
+void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void backgroundcolor(DWORD);
 void background1();
 //
@@ -35,12 +34,6 @@ static struct temp{
         QWORD height;
 }*haha;
 
-//位置
-static QWORD base;		//显示区基地址
-static QWORD offset;
-static BYTE* databuf=0;
-static int printmethod=0;
-
 //flostarea
 static int inputcount=0;
 static BYTE hi[0x100];
@@ -49,58 +42,68 @@ static BYTE hi[0x100];
 	//[0x40,0x5f]:offset,value
 	//[0x60,0x7f]:data,value
 
+//where
+static BYTE* databuf=0;
+static QWORD windowoffset;
+static QWORD pointeroffset;
 
 
 
 
 
-
-
-//in:想要哪儿
-//out:请求的地方的内存地址
-//作用:防止每动一下就读一次硬盘
-static QWORD currentcache;
-static char* readornotread(QWORD wantaddr)
+static int printmethod=0;
+static int xshift=0;
+static int byteperline=0;
+static int lineperwindow=0;
+static void updateconfig()
 {
-	//假如每次能显示0x1000(实际是0xa00)
-	//想要[0,0x1000)：	确保[0,0x2000)		返回databuf+0
-	//想要[0xfc0,0x1fc0)：	确保[0,0x2000)		返回databuf+0xfc0
-	//想要[0x1000,0x2000)：	确保[0x1000,0x3000)	返回databuf+0x1000
-	//想要[0x1040,0x2040)：	确保[0x1000,0x3000)	返回databuf+0x40
-	//想要[0x1fc0,0x2fc0)：	确保[0x1000,0x3000)	返回databuf+0xfc0
-	//想要[0x2000,0x3000)：	确保[0x2000,0x4000)	返回databuf+0
-	//想要[0x2040,0x3040)：	确保[0x2000,0x4000)	返回databuf+0x40
-	//想要[0x2fc0,0x3fc0)：	确保[0x2000,0x4000)	返回databuf+0xfc0
-	//想要[0x3000,0x4000)：	确保[0x3000,0x5000)	返回databuf+0
+	//
+	int width = haha->width;
+	lineperwindow = (haha->height)/16;
 
-	QWORD readwhere=wantaddr & 0xfffffffffffff000;
-	if(readwhere!=currentcache)
+	if(width >= 2048)
 	{
-		arteryread(databuf, readwhere/0x200, 16);
-		currentcache=readwhere;
+		byteperline = 0x80;
+		xshift = (width - 2048)/2;
 	}
-	return databuf+(wantaddr-readwhere);
+	else if(width >= 1024)
+	{
+		byteperline = 0x40;
+		xshift = (width - 1024)/2;
+	}
+	else if(width >= 512)
+	{
+		byteperline = 0x20;
+		xshift = (width - 512)/2;
+	}
+	else if(width >= 256)
+	{
+		byteperline = 0x10;
+		xshift = (width - 256)/2;
+	}
+	else
+	{
+		byteperline = 0;
+		xshift = 0;
+	}
 }
 static void foreground()
 {
 	//一整页
 	int x,y;
-	int xshift = ((haha->width) & 0x3) <<3;
-	unsigned char* where=readornotread(base);
+	int height=haha->height;
 
-	//
-	//printmemory(where,0x200);
 	if(printmethod==0)			//hex
 	{
-		for(y=0;y<(haha->height)/16;y++)
+		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<(haha->width)/16;x++)
+			for(x=0;x<byteperline;x++)
 			{
 				printbyte(
-					16*x+xshift,
+					16*x + xshift,
 					16*y,
 					1,
-					where[((haha->width)*y/16) + x],
+					databuf[windowoffset + y*byteperline + x],
 					0,
 					0
 				);
@@ -110,15 +113,15 @@ static void foreground()
 
 	else if(printmethod==1)		//ascii
 	{
-		for(y=0;y<(haha->height)/16;y++)
+		for(y=0;y<height/16;y++)
 		{
-			for(x=0;x<(haha->width)/16;x++)
+			for(x=0;x<byteperline;x++)
 			{
 				printascii(
 					16*x + xshift,
 					16*y,
 					1,
-					where[((haha->width)*y/16) + x],
+					databuf[windowoffset + y*byteperline + x],
 					0,
 					0
 				);
@@ -132,42 +135,37 @@ static void foreground()
 }
 static void floatarea()
 {
-	int x,y;
+	DWORD* screenbuf;
+	int width,height;
 	int thisx,thisy;
-	int byteperline;
-	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+	int x,y;
 
-	byteperline = (haha->width)/16;
-	thisx=(offset%byteperline)*16;
-	thisy=(offset/byteperline)*16;
+	screenbuf = (DWORD*)(haha->pixelbuffer);
+	width = haha->width;
+	height = haha->height;
+	thisx = (pointeroffset % byteperline) << 4;
+	thisy = (pointeroffset / byteperline) << 4;
 
 	//byte框
 	for(y=thisy;y<thisy+16;y++)
 	{
 		for(x=thisx;x<thisx+16;x++)
 		{
-			screenbuf[(haha->width)*y + x]=~screenbuf[(haha->width)*y + x];
+			screenbuf[xshift + y*width + x] = ~screenbuf[xshift + y*width + x];
 		}
 	}
 
 	//256*128的详情框
 	thisx+=16;
-	if(thisx > (haha->width) - 256)thisx -= (256+16);
 	thisy+=16;
-	if(thisy >= (haha->height) - 128+16)thisy -= (128+16);
-
-	for(y=thisy;y<thisy+128;y++)
-	{
-		for(x=thisx;x<thisx+256;x++)
-		{
-			screenbuf[(haha->width)*y + x]=0xffff;
-		}
-	}
+	if(thisx > width -xshift -256)thisx -= (256+16);
+	if(thisy >= height - 128)thisy -= (128+16);
+	rectbody(xshift + thisx, thisy, xshift + thisx+256, thisy+128, 0xffff);
 
 	//
-	data2hexstring(0x33333333, hi + 0x10);
-	data2hexstring(base, hi + 0x30);
-	data2hexstring(offset, hi + 0x50);
+	data2hexstring((QWORD)databuf, hi + 0x10);
+	data2hexstring(windowoffset, hi + 0x30);
+	data2hexstring(pointeroffset, hi + 0x50);
 	data2hexstring(0, hi + 0x70);
 
 	//target,base,offset,data
@@ -176,7 +174,7 @@ static void floatarea()
 		for(x=0;x<32;x++)
 		{
 			printascii(
-				thisx + x*8,
+				xshift + thisx + x*8,
 				thisy + y*16,
 				1,
 				hi[(y*32) + x],
@@ -185,6 +183,19 @@ static void floatarea()
 			);
 		}
 	}
+}
+static void hex_read()
+{
+	updateconfig();
+
+	//背景
+	background1();
+
+	//
+	foreground();
+
+	//
+	floatarea();
 }
 
 
@@ -196,54 +207,75 @@ static void floatarea()
 
 static void hex_write(QWORD type,QWORD key)
 {
-	int byteperline = (haha->width)/16;
-	int totalbyte=( (haha->width) >> 4 ) * ( (haha->height) >> 4);
+	updateconfig();
 
 	if(type==0x64626b)			//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
 		{
-			if( offset % byteperline == 0 )
+			if( pointeroffset % byteperline == 0 )
 			{
-				if(base >= totalbyte)base -= totalbyte;
+				windowoffset -= byteperline * lineperwindow;
 			}
 			else
 			{
-				offset--;
+				pointeroffset--;
 			}
 		}
 		else if(key==0x27)		//right	0x4d
 		{
-			if( offset % byteperline == byteperline-1 )
+			if( pointeroffset % byteperline == byteperline-1 )
 			{
-				base += totalbyte;
+				windowoffset += byteperline * lineperwindow;
 			}
 			else
 			{
-				offset++;
+				pointeroffset++;
 			}
 		}
 		else if(key==0x26)		//up	0x4b
 		{
-			if(offset<byteperline)
+			if( pointeroffset < byteperline )
 			{
-				if(base >= byteperline)base -= byteperline;
+				windowoffset -= byteperline;
 			}
 			else
 			{
-				offset -= byteperline;
+				pointeroffset -= byteperline;
 			}
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			if( offset*16 < byteperline*((haha->height)-16) )
+			if( pointeroffset > (lineperwindow-1) * byteperline )
 			{
-				offset += byteperline;
+				windowoffset += byteperline;
 			}
 			else
 			{
-				base+=byteperline;
+				pointeroffset += byteperline;
 			}
+		}
+	}
+	else if(type==0x6E6F7266207A7978)		//'xyz fron'
+	{
+		if( pointeroffset < byteperline )
+		{
+			windowoffset -= byteperline;
+		}
+		else
+		{
+			pointeroffset -= byteperline;
+		}
+	}
+	else if(type==0x6B636162207A7978)		//'xyz back'
+	{
+		if( pointeroffset < (lineperwindow-1) * byteperline )
+		{
+			windowoffset += byteperline;
+		}
+		else
+		{
+			pointeroffset += byteperline;
 		}
 	}
 	else if(type==0x72616863)		//'char'
@@ -281,31 +313,12 @@ static void hex_write(QWORD type,QWORD key)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
-		offset=( (y/16) * byteperline ) + ( x / 16 );
+		pointeroffset = ( (y/16) * byteperline ) + ( (x-xshift) / 16 );
 
 		//浮动框以外的
 		//px=x/(1024/0x40);
 		//py=y/(640/40);
 	}
-	else if(type==0x6E6F7266207A7978)		//'xyz fron'
-	{
-		if(base>=0x40)base-=0x40;
-	}
-	else if(type==0x6B636162207A7978)		//'xyz back'
-	{
-		base+=0x40;
-	}
-}
-static void hex_read()
-{
-	//背景
-	background1();
-
-	//
-	foreground();
-
-	//
-	floatarea();
 }
 
 
@@ -332,7 +345,9 @@ static void hex_into()
 void hex_start()
 {
 	int j;
-	backgroundcolor(0);
+
+	//偏移
+	windowoffset = pointeroffset = 0;
 
 	//浮动框
 	for(j=0;j<0x100;j++)hi[j]=0;
@@ -340,11 +355,6 @@ void hex_start()
 	*(QWORD*)(hi+0x20)=0x3a65736162;
 	*(QWORD*)(hi+0x40)=0x3a74657366666f;
 	*(QWORD*)(hi+0x60)=0x3a61746164;
-
-	//文件内部偏移
-	base=0;
-	offset=0;
-	currentcache=0xffffffff;
 }
 void hex_stop()
 {

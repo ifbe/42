@@ -597,7 +597,7 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 
 	SetWindowPos(
 		window, 0, 0, 0,
-		width+4, height+27,
+		width+16, height+40,
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER
 	);
 

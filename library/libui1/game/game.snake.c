@@ -116,6 +116,8 @@ void snake_write(QWORD type,QWORD key)
 	{
 		if(key=='a'|key==0x25)
 		{
+			if( (snake[0].x-1) < 0){die=1;return;}
+
 			if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
 
 			a.x=snake[0].x;
@@ -125,6 +127,8 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='d'|key==0x27)
 		{
+			if( (snake[0].x+1) > ((haha->width)/32)){die=1;return;}
+
 			if( (snake[0].x+1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
 
 			a.x=snake[0].x;
@@ -134,6 +138,8 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='w'|key==0x26)
 		{
+			if( (snake[0].y-1) < 0){die=1;return;}
+
 			if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
 
 			a.x=snake[0].x;
@@ -143,6 +149,8 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='s'|key==0x28)
 		{
+			if( (snake[0].y+1) > ((haha->height)/32)){die=1;return;}
+
 			if( (snake[0].x == snake[1].x) && (snake[0].y+1 == snake[1].y) )return;
 
 			a.x=snake[0].x;
@@ -153,16 +161,6 @@ void snake_write(QWORD type,QWORD key)
 		else return;
 	}
 	else return;
-
-	//撞墙
-	if(	(snake[0].x < 0) |
-		(snake[0].x > ((haha->width)/32)) |
-		(snake[0].y < 0) |
-		(snake[0].y > ((haha->height)/32)) )
-	{
-		die=1;
-		return;
-	}
 
 	//蛇身往前挪动
 	j=0;
