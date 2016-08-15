@@ -47,37 +47,34 @@ static int bufcount=0;
 static void background4()
 {
 	//用指定颜色清屏
+	int width,height;
 	DWORD x,y,color;
 	DWORD* palette = (DWORD*)(haha->pixelbuffer);
-
-	for(x=0;x<(haha->width)*(haha->height);x++)
-	{
-		palette[x]=0;
-	}
+	backgroundcolor(0);
 
 	//输入框颜色
-	for(y=(haha->height)-16;y<(haha->height);y++)
+	for(y=height-16;y<height;y++)
 	{
-		for(x=0;x<(haha->width)/2;x++)
+		for(x=0;x<width/2;x++)
 		{
 			color=(x/2)*0x01010101;
-			palette[(haha->width)*y + x]=color;
-			palette[(haha->width)*y + (haha->width) -x -1]=color;
+			palette[width*y + x]=color;
+			palette[width*y + width -x -1]=color;
 		}
 	}
 
 	//滚动框颜色
-	for(y=0;y<(haha->height)/2;y++)
+	for(y=0;y<height/2;y++)
 	{
-		color = y*0xff/(haha->height);//0x44444488;
+		color = y*0xff/height;//0x44444488;
 
-		for(x=(haha->width)-16;x<(haha->width);x++)
+		for(x=width-16;x<width;x++)
 		{
-			palette[(haha->width)*y + x] = color;
+			palette[width*y + x] = color;
 		}
-		for(x=(haha->width)-16;x<(haha->width);x++)
+		for(x=width-16;x<width;x++)
 		{
-			palette[((haha->height)-1-y)*(haha->width) + x] = color;
+			palette[(height-1-y)*width + x] = color;
 		}
 	}
 }
@@ -110,7 +107,8 @@ static void printstdout(int start,int count)
 	//say("printstdout:%d,%d\n",start,count);
 	for(y=0;y<count;y++)
 	{
-		string(0 , y*16 , p + y * 0x80);
+		//string(0 , y*16 , p + y * 0x80);
+		string(0, y*16, "haha");
 	}
 }
 static void printstdin(int count)

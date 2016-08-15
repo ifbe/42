@@ -345,11 +345,18 @@ int characterchoose(char* p)
 	char q[8];
 	QWORD temp;
 
-	//exit
+	//exit!
+	if(p == 0)
+	{
+		say("chatacter(%d) wants to die\n",now);
+		eventwrite();
+		return 0;
+	}
+
+	//exit.
 	ret=compare(p,"exit");
 	if(ret==0)
 	{
-		//deathflag=1;
 		say("chatacter(%d) wants to die\n",now);
 		eventwrite();
 		return 0;
@@ -506,7 +513,7 @@ void characterwrite(QWORD type,QWORD key)
 					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
 					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
 
-					if( (dy0>-128) && (dy0<128) )
+					if( (dy0>-256) && (dy0<256) )
 					{
 						if(dx0<-128)	//left
 						{
@@ -524,7 +531,7 @@ void characterwrite(QWORD type,QWORD key)
 							key&=0xffffffff;
 						}
 					}
-					if( (dx0>-128) && (dx0<128) )
+					if( (dx0>-256) && (dx0<256) )
 					{
 						if(dy0<-128)	//up
 						{	
@@ -551,7 +558,7 @@ void characterwrite(QWORD type,QWORD key)
 					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
 					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
 					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-					if( (dx0>-128)&&(dx0<128)&&(dx1>-128)&&(dx1<128) )
+					if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256) )
 					{
 						if( (dy0 > 128)&&(dy1 > 128) )
 						{
@@ -564,7 +571,7 @@ void characterwrite(QWORD type,QWORD key)
 							worker[1].xyze1 ^= 1;
 						}
 					}
-					else if( (dy0>-128)&&(dy0<128)&&(dy0>-128)&&(dy0<128) )
+					else if( (dy0>-256)&&(dy0<256)&&(dy0>-256)&&(dy0<256) )
 					{
 						if( (dx0 < -128)&&(dx1 < -128) )
 						{

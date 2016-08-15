@@ -2,7 +2,7 @@
 .PHONY:linuxcli
 linuxcli:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast all/all.cli.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast terminal/terminal.cli.c
 	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
 .PHONY:linuxsdl
 linuxsdl:
@@ -33,7 +33,7 @@ linuxxlib:
 .PHONY:maccli
 maccli:
 	rm -f *.o
-	gcc -c -fPIC -O2 cli/cli.cli.c
+	gcc -c -fPIC -O2 terminal/terminal.cli.c
 	gcc -c -fPIC -O2 display.c
 .PHONY:macsdl
 macsdl:
@@ -54,7 +54,7 @@ maccocoa:
 .PHONY:wincli
 wincli:
 	rm -f *.o
-	gcc -c -O2 cli/cli.cli.c
+	gcc -c -O2 terminal/terminal.cli.c
 	gcc -c -O2 display.c
 .PHONY:winsdl
 winsdl:

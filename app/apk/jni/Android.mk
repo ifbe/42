@@ -157,17 +157,13 @@ LOCAL_SRC_FILES += \
 	library/libui1/game/game.weiqi.c \
 	library/libui1/game/game.xiangqi.c \
 	library/libui1/menu/menu.center.c \
-	library/libui1/menu/menu.upper.c \
-	library/libui1/menu/menu.nether.c \
-	library/libui1/menu/menu.left.c \
-	library/libui1/menu/menu.right.c \
+	library/libui1/menu/menu.keyboard.c \
 	library/libui1/test/test.color.c \
 	library/libui1/test/test.doodle.c \
 	library/libui1/test/test.font.c \
 	library/libui1/test/test.pure.c \
 	library/libui1/tool/tool.console.c \
 	library/libui1/tool/tool.hex.c \
-	library/libui1/tool/tool.keyboard.c \
 	library/libui1/tool/tool.qrcode.c \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \

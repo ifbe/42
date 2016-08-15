@@ -51,17 +51,17 @@ static void keyboard_read()
 		for(x=0;x<8;x++)
 		{
 			rect(
-				(width/4) + (x*width/16),
-				(height/2) + (y*height/16),
-				(width/4) + (x+1)*width/16,
-				(height/2) + (y+1)*height/16,
+				x*width/8,
+				(height*3/4) + (y*height/32),
+				(x+1)*width/8,
+				(height*3/4) + (y+1)*height/32,
 				0xccffcc,
 				0x352614
 			);
 
 			printascii(
-				(width/4) + (x*width/16),
-				(height/2) + (y*height/16),
+				x*width/8,
+				(height*3/4) + (y*height/32),
 				2,
 				table[y][x],
 				0x221133,
