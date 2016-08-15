@@ -2,6 +2,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
+void printstring(int x,int y,int size,char* str,DWORD fg,DWORD bg);
 void printascii(int x,int y,int size,char ch,DWORD fg,DWORD bg);
 void rect(int x0,int y0,int x1,int y1,DWORD body,DWORD frame);
 void backgroundcolor(DWORD);
