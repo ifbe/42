@@ -4,10 +4,9 @@
 #define QWORD unsigned long long
 //special guys
 void menu_init(char*,char*);
-void menu1_init(char*,char*);
-void menu2_init(char*,char*);
-void menu3_init(char*,char*);
-void menu4_init(char*,char*);
+void keyboard_init(char*,char*);
+void roster_init(char*,char*);
+//libs
 void ascii_init(char*,char*);
 void unicode_init(char*,char*);
 void background_init(char*,char*);
@@ -27,13 +26,15 @@ void pure_init(char*,char*);
 //tool
 void console_init(char*,char*);
 void hex_init(char*,char*);
-void keyboard_init(char*,char*);
 void sketchpad_init(char*,char*);
 void spectrum_init(char*,char*);
 void tree_init(char*,char*);
 void qrcode_init(char*,char*);
 //
 void menu_kill();
+void keyboard_kill();
+void roster_kill();
+//
 void ascii_kill();
 void unicode_kill();
 void shape_kill();
@@ -53,7 +54,6 @@ void color_kill();
 //
 void console_kill();
 void hex_kill();
-void keyboard_kill();
 void sketchpad_kill();
 void tree_kill();
 void spectrum_kill();
@@ -165,6 +165,10 @@ void characterinit(char* type,char* addr)
 
 		//menu.keyboard
 		keyboard_init(addr,temp);
+		temp += 0x80;
+
+		//menu.roster
+		roster_init(addr,temp);
 		temp += 0x80;
 
 		//ascii
@@ -284,6 +288,7 @@ void characterkill()
 
 	menu_kill();
 	keyboard_kill();
+	roster_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -446,6 +451,7 @@ void characterread()
 	//菜单
 	if(worker[0].xyze1 > 0)worker[0].read();
 	if(worker[1].xyze1 > 0)worker[1].read();
+	if(worker[2].xyze1 > 0)worker[2].read();
 }
 void characterwrite(QWORD type,QWORD key)
 {
@@ -560,15 +566,19 @@ void characterwrite(QWORD type,QWORD key)
 					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
 					if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256) )
 					{
-						if( (dy0 > 128)&&(dy1 > 128) )
+						if( (dy0 < -128)&&(dy1 < -128) )
+						{
+							worker[1].xyze1 ^= 1;
+						}
+						else if( (dy0 > 128)&&(dy1 > 128) )
+						{
+							worker[2].xyze1 ^= 1;
+						}
+						else
 						{
 							worker[0].xyze1 ^= 1;
+							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;
 							return;
-						}
-						else if( (dy0 < -128)&&(dy1 < -128) )
-						{
-							//
-							worker[1].xyze1 ^= 1;
 						}
 					}
 					else if( (dy0>-256)&&(dy0<256)&&(dy0>-256)&&(dy0<256) )
@@ -580,6 +590,12 @@ void characterwrite(QWORD type,QWORD key)
 						else if( (dx0 > 128)&&(dx1 > 128) )
 						{
 							characterchoose("-");
+						}
+						else
+						{
+							worker[0].xyze1 ^= 1;
+							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;
+							return;
 						}
 					}
 				}

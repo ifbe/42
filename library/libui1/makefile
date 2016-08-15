@@ -13,6 +13,7 @@ target:
 	$(compiler) $(cflag) game/game.xiangqi.c
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) menu/menu.keyboard.c
+	$(compiler) $(cflag) menu/menu.roster.c
 	$(compiler) $(cflag) test/test.color.c
 	$(compiler) $(cflag) test/test.doodle.c
 	$(compiler) $(cflag) test/test.font.c

@@ -174,6 +174,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/game/game.xiangqi.c \
 	library/libui1/menu/menu.center.c \
 	library/libui1/menu/menu.keyboard.c \
+	library/libui1/menu/menu.roster.c \
 	library/libui1/test/test.color.c \
 	library/libui1/test/test.doodle.c \
 	library/libui1/test/test.font.c \
