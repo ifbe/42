@@ -100,7 +100,7 @@ static void the2048_read()
 		{
 			for(x=0;x<4;x++)
 			{
-				data2decimalstring(table[y][x], p + y*(haha->width) + x*2);
+				data2decimalstring(table[y][x], p + 4*y*(haha->width) + x*8);
 			}
 		}
 		return;

@@ -6,6 +6,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<sys/ioctl.h>
+#include<termios.h>
 void say(char*,...);
 
 
@@ -15,8 +16,11 @@ void say(char*,...);
 static int lastwidth=0,lastheight=0;
 static int width,height;
 static char* textbuf=0;
-//
-char clibuffer[128];
+//输入
+static int signal=-1;
+static struct termios old;
+static struct termios new;
+static int history[4]={0,0,0,0};
 
 
 
@@ -25,7 +29,6 @@ int uievent(QWORD* first,QWORD* second)
 {
         int i;
         char* ret;
-	//say("@uievent.start\n");
 
 	if(lastwidth != width)
 	{
@@ -36,26 +39,43 @@ int uievent(QWORD* first,QWORD* second)
 		return 1;
 	}
 
-        for(i=0;i<128;i++)clibuffer[i]=0;
         while(1)
         {
-                ret=fgets(clibuffer,128,stdin);
-		//say("uievent.ret=%x\n",ret);
-
-		if( ret == NULL )
-		{
-			first[0]=0;
-			break;
-		}
-                if( clibuffer[0] != 0 )
-		{
-			first[0]=0x727473;
-			second[0]=(QWORD)clibuffer;
-			break;
-		}
+                history[0]=history[1];
+                history[1]=history[2];
+                history[2]=history[3];
+                history[3]=getchar();
+                if(history[2]==0x1b&&history[3]==0x1b)
+                {
+                        *first=0;
+                        return 1;
+                }
+                if(history[1]==0x1b&&history[2]==0x5b)
+                {
+                        *first=0x64626b;
+                        if(history[3]==0x41)//up
+                        {
+                                *second=0x26;
+                                return 1;
+                        }
+                        if(history[3]==0x42)//down
+                        {
+                                *second=0x28;
+                                return 1;
+                        }
+                        if(history[3]==0x44)//left
+                        {
+                                *second=0x25;
+                                return 1;
+                        }
+                        if(history[3]==0x43)//right
+                        {
+                                *second=0x27;
+                                return 1;
+                        }
+                }
         }
 
-	//say("@uievent.return\n");
 	return 1;
 }
 
@@ -101,13 +121,19 @@ void windowstop()
 
 void windowinit()
 {
+	//
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 	width=w.ws_col;
 	height=w.ws_row -1;
-	say("width=%d,height=%d\n",width,height);
+
+	//
+	signal=tcgetattr(STDIN_FILENO,&old);
+	new=old;
+	new.c_lflag&=~(ICANON|ECHO);
+	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 }
 void windowkill()
 {
-	
+	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 }

@@ -44,6 +44,15 @@ static int height=768;
 int history[4]={0,0,0,0};
 int uievent(QWORD* first,QWORD* second)
 {
+	if(xmax != width)
+	{
+		width = xmax;
+		height = ymax;
+		first[0] = 0x657a6973;
+		second[0] = width + (height<<16);
+		return 1;
+	}
+
 	while(1)
 	{
 		history[0]=history[1];
@@ -142,7 +151,7 @@ QWORD windowread(QWORD what)
 
 
 
-void windowstart(char* addr, char* pixfmt, int x, int y);
+void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	screenbuf = addr;
 	width = x;
