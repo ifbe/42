@@ -41,9 +41,9 @@ static int height=768;
 
 
 
-int history[4]={0,0,0,0};
 int uievent(QWORD* first,QWORD* second)
 {
+	char a,b,c,d;
 	if(xmax != width)
 	{
 		width = xmax;
@@ -55,38 +55,55 @@ int uievent(QWORD* first,QWORD* second)
 
 	while(1)
 	{
-		history[0]=history[1];
-		history[1]=history[2];
-		history[2]=history[3];
-		history[3]=getchar();
-		if(history[2]==0x1b&&history[3]==0x1b)
+		usleep(1000);
+
+		a=getchar();
+		if(a == -1)continue;
+
+		if(a==0x1b)
 		{
-			*first=0;
+			b=getchar();
+			if(b == -1)
+			{
+				*first=0x64626b;
+				*second=0x1b;
+				return 1;
+			}
+
+			if(b==0x5b)
+			{
+				c=getchar();
+
+				*first=0x64626b;
+				if(c==0x41)//up
+				{
+					*second=0x26;
+					return 1;
+				}
+				if(c==0x42)//down
+				{
+					*second=0x28;
+					return 1;
+				}
+				if(c==0x44)//left
+				{
+					*second=0x25;
+					return 1;
+				}
+				if(c==0x43)//right
+				{
+					*second=0x27;
+					return 1;
+				}
+			}//5b
+		}//1b
+
+		else
+		{
+			printf("%x",a);
+			*first = 0x72616863;
+			*second = a;
 			return 1;
-		}
-		if(history[1]==0x1b&&history[2]==0x5b)
-		{
-			*first=0x64626b;
-			if(history[3]==0x41)//up
-			{
-				*second=0x26;
-				return 1;
-			}
-			if(history[3]==0x42)//down
-			{
-				*second=0x28;
-				return 1;
-			}
-			if(history[3]==0x44)//left
-			{
-				*second=0x25;
-				return 1;
-			}
-			if(history[3]==0x43)//right
-			{
-				*second=0x27;
-				return 1;
-			}
 		}
 	}
 }
@@ -218,6 +235,7 @@ void windowinit()
 	new=old;
 	new.c_lflag&=~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 }
 //__attribute__((destructor)) void destoryfb()
 void windowkill()

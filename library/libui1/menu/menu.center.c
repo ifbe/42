@@ -14,15 +14,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+	QWORD type;
+	QWORD id;
+	QWORD start;
+	QWORD end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+	QWORD pixelbuffer;
+	QWORD pixelformat;
+	QWORD width;
+	QWORD height;
 }*haha;
 //菜单
 static char buffer[128];
@@ -73,7 +73,7 @@ static void menu_write(QWORD type,QWORD key)
 				buffer[bufp]=0;
 			}
 		}
-		else if(key==0xd)		//回车
+		else if( (key==0xa) | (key==0xd) )	//回车
 		{
 			//say("%s\n",buffer);
 			characterchoose(buffer);
@@ -94,8 +94,51 @@ static void menu_write(QWORD type,QWORD key)
 }
 static void menu_read()
 {
+	int x,y;
 	int width=haha->width;
 	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+	char* src;
+	char* dst;
+
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
+	{
+		for(y=height/4;y<height*3/4;y++)
+		{
+			for(x=width/4;x<width*3/4;x++)
+			{
+				p[x + width*y] = 0x20;
+			}
+		}
+		for(y=height/4;y<height*3/4;y++)
+		{
+			p[width/4 + y*width] = '#';
+			p[width*3/4 + y*width] = '#';
+		}
+		for(x=width/4;x<width*3/4;x++)
+		{
+			p[x + (height/4)*width] = '#';
+			p[x + (height*3/4)*width] = '#';
+		}
+
+		dst = p + (height/4+1)*width + width/4 + 1;
+		src = "what do you want?";
+		x=0;
+		while(src[x] != 0)
+		{
+			dst[x]=src[x];
+			x++;
+		}
+
+		dst = p + (height/4+2)*width + width/4 + 1;
+		src = buffer;
+		for(x=0;x<bufp;x++)
+		{
+			dst[x]=src[x];
+		}
+
+		return;
+	}
 
 	//title
 	rect(
