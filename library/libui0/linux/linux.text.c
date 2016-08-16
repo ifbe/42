@@ -142,7 +142,7 @@ void windowinit()
 	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 	width=w.ws_col;
-	height=w.ws_row -1;
+	height=w.ws_row;
 
 	//
 	signal=tcgetattr(STDIN_FILENO,&old);

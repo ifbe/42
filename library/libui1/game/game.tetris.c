@@ -491,7 +491,7 @@ static int down()
 	generate();
 	return 1;
 }
-void tetris_write(QWORD type,QWORD key)
+static void tetris_write(QWORD type,QWORD key)
 {
 	int ret;
 	if(type==0x7466656C207A7978)
@@ -531,38 +531,83 @@ void tetris_write(QWORD type,QWORD key)
 
 
 
-void tetris_read()
+static void tetris_read()
 {
 	int x,y;
-
-	for(y=0;y<40;y++)
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
 	{
-		for(x=0;x<32;x++)
+		for(x=0;x<width*height;x++)p[x]=0x20;
+		if(height>=40)
 		{
-			//say("%d ",table[y*32+x]);
-			cubie(x,y,table[y*32+x]);
+			for(y=0;y<40;y++)
+			{
+				for(x=0;x<32;x++)
+				{
+					if(table[y*32+x])
+					{
+						p[y*width+x]='#';
+					}
+				}
+			}
+			p[that.x1 + that.y1*width]='#';
+			p[that.x2 + that.y2*width]='#';
+			p[that.x3 + that.y3*width]='#';
+			p[that.x4 + that.y4*width]='#';
+		}
+		else
+		{
+			for(y=0;y<height;y++)
+			{
+				for(x=0;x<32;x++)
+				{
+					if(table[32*(y+40-height) + x])
+					{
+						p[y*width+x]='#';
+					}
+				}
+			}
+			p[that.x1 + (that.y1-40+height)*width]='#';
+			p[that.x2 + (that.y2-40+height)*width]='#';
+			p[that.x3 + (that.y3-40+height)*width]='#';
+			p[that.x4 + (that.y4-40+height)*width]='#';
+		}
+		return;
+	}
+
+	else
+	{
+		for(y=0;y<40;y++)
+		{
+			for(x=0;x<32;x++)
+			{
+				//say("%d ",table[y*32+x]);
+				cubie(x,y,table[y*32+x]);
+			}
+			//say("\n");
 		}
 		//say("\n");
+
+		//print cubies
+		cubie(that.x1,that.y1,1);
+		cubie(that.x2,that.y2,1);
+		cubie(that.x3,that.y3,1);
+		cubie(that.x4,that.y4,1);
+
+		//print score
+		//decimal(10,10,score);
 	}
-	//say("\n");
-
-	//print cubies
-	cubie(that.x1,that.y1,1);
-	cubie(that.x2,that.y2,1);
-	cubie(that.x3,that.y3,1);
-	cubie(that.x4,that.y4,1);
-
-	//print score
-	//decimal(10,10,score);
 }
 
 
 
 
-void tetris_list()
+static void tetris_list()
 {
 }
-void tetris_choose()
+static void tetris_choose()
 {
 }
 

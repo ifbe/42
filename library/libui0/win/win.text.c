@@ -119,7 +119,7 @@ void windowinit()
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(h, &bInfo );
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top;
+	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
 }
 void windowkill()

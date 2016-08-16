@@ -14,15 +14,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+	QWORD type;
+	QWORD id;
+	QWORD start;
+	QWORD end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+	QWORD pixelbuffer;
+	QWORD pixelformat;
+	QWORD width;
+	QWORD height;
 }*haha;
 
 struct hehe{
@@ -48,6 +48,24 @@ void snake_read()
 {
 	//init screen
 	int j;
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
+	{
+		for(j=0;j<width*height;j++)p[j]=0x20;
+		j=0;
+		while(1)
+		{
+			p[snake[j].x + snake[j].y * width]='#';
+
+			j++;
+			if(j>=len)break;
+		}
+
+		p[foodx + foody*width] = '@';
+		return;
+	}
 
 	if(die == 1)
 	{
@@ -98,6 +116,19 @@ void snake_read()
 
 
 
+void newfood()
+{
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	{
+		foodx=getrandom() % (haha->width);
+		foody=getrandom() % (haha->height);
+	}
+	else
+	{
+		foodx=getrandom() % ((haha->width)/32);
+		foody=getrandom() % ((haha->height)/32);
+	}
+}
 void snake_write(QWORD type,QWORD key)
 {
 	int j;
@@ -116,9 +147,8 @@ void snake_write(QWORD type,QWORD key)
 	{
 		if(key=='a'|key==0x25)
 		{
-			if( (snake[0].x-1) < 0){die=1;return;}
-
 			if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
+			if( (snake[0].x-1) < 0){die=1;return;}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
@@ -127,9 +157,15 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='d'|key==0x27)
 		{
-			if( (snake[0].x+1) > ((haha->width)/32)){die=1;return;}
-
 			if( (snake[0].x+1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
+			if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+			{
+				if( (snake[0].x+1) > (haha->width)){die=1;return;}
+			}
+			else
+			{
+				if( (snake[0].x+1) > ((haha->width)/32)){die=1;return;}
+			}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
@@ -138,9 +174,8 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='w'|key==0x26)
 		{
-			if( (snake[0].y-1) < 0){die=1;return;}
-
 			if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
+			if( (snake[0].y-1) < 0){die=1;return;}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
@@ -149,9 +184,15 @@ void snake_write(QWORD type,QWORD key)
 		}
 		else if(key=='s'|key==0x28)
 		{
-			if( (snake[0].y+1) > ((haha->height)/32)){die=1;return;}
-
 			if( (snake[0].x == snake[1].x) && (snake[0].y+1 == snake[1].y) )return;
+			if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+			{
+				if( (snake[0].y+1) > (haha->height)){die=1;return;}
+			}
+			else
+			{
+				if( (snake[0].y+1) > ((haha->height)/32)){die=1;return;}
+			}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
@@ -189,9 +230,7 @@ void snake_write(QWORD type,QWORD key)
 		snake[j].x = a.x;
 		snake[j].y = a.y;
 		len++;
-
-		foodx=getrandom() % ((haha->width)/32);
-		foody=getrandom() % ((haha->height)/32);
+		newfood();
 	}
 }
 
@@ -215,11 +254,10 @@ static void snake_start()
 	backgroundcolor(0);
 
 	//init food and snake 
-	snake[0].x=1 + getrandom() % (((haha->width)/32)-2);
-	snake[0].y=1 + getrandom() % (((haha->height)/32)-2);
-
-	foodx=getrandom() % ((haha->width)/32);
-	foody=getrandom() % ((haha->height)/32);
+	newfood();
+	snake[0].x = foodx;
+	snake[0].y = foody;
+	newfood();
 
 	a.x = -1;
 	b.x = -1;
