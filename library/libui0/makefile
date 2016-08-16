@@ -9,6 +9,11 @@ linuxsdl:
 	rm -f *.o
 	gcc -c -O2 cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	gcc -c -O2 display.c
+.PHONY:linuxtext
+linuxtext:
+	rm -f *.o
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.text.c
+	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
 .PHONY:linuxfb
 linuxfb:
 	rm -f *.o

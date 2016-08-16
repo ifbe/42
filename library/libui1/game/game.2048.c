@@ -1,11 +1,14 @@
 #define QWORD unsigned long long
 #define DWORD unsigned int
+#define WORD unsigned short
+#define BYTE unsigned char
 //
 void line(int,int,int,int,DWORD color);
 void rectbody(int x1, int y1, int x2, int y2, DWORD color);
 void printdecimal(int x, int y, int size, int data, DWORD fg, DWORD bg);
 void backgroundcolor(DWORD);
 //
+int data2decimalstring(QWORD data,BYTE* string);
 unsigned int getrandom();
 void printmemory(char*,int);
 void say(char*,...);
@@ -37,6 +40,7 @@ static void cubie(int x,int y,int z)
 	int min;
 	int color;
 	int count;
+
 	if(haha->width < haha->height)min = haha->width;
 	else min = haha->height;
 
@@ -58,8 +62,7 @@ static void cubie(int x,int y,int z)
 		case 8192:color=0xd73762;count=3;break;
 	}
 
-	//if rgba, bgra->rgba
-	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
+	if( ( (haha->pixelformat)&0xffffffff) == 0x61626772)	//if rgba, bgra->rgba
 	{
 		color	= 0xff000000
 			+ ((color&0xff)<<16)
@@ -84,6 +87,39 @@ static void cubie(int x,int y,int z)
 		0,
 		0
 	);
+}
+static void the2048_read()
+{
+	int x,y;
+	char* p = (char*)(haha->pixelbuffer);
+
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)	//if text
+	{
+		for(x=0;x<(haha->width)*(haha->height);x++)p[x]=0x20;
+		for(y=0;y<4;y++)
+		{
+			for(x=0;x<4;x++)
+			{
+				data2decimalstring(table[y][x], p + y*(haha->width) + x*2);
+			}
+		}
+		return;
+	}
+/*
+	if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)	//if html
+	{
+	}
+*/
+	else
+	{
+		for(y=0;y<4;y++)
+		{
+			for(x=0;x<4;x++)
+			{
+				cubie(x,y,table[y][x]);
+			}
+		}
+	}
 }
 
 
@@ -293,14 +329,6 @@ static void new2048()
 		}//for(x)
 	}//for(y)
 }
-
-
-
-
-
-
-
-
 static void the2048_write(QWORD type,QWORD key)
 {
 	//kbd
@@ -315,30 +343,6 @@ static void the2048_write(QWORD type,QWORD key)
 
 	//new number?
 	new2048();
-}
-static void the2048_read()
-{
-	int x,y;
-/*
-	say("2048{\n");
-	for(y=0;y<4;y++)
-	{
-		say("	%d	%d	%d	%d\n",
-			table[y][0],
-			table[y][1],
-			table[y][2],
-			table[y][3]
-		);
-	}
-	say("}\n");
-*/
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			cubie(x,y,table[y][x]);
-		}
-	}
 }
 
 

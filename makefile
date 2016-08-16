@@ -70,6 +70,9 @@ mips+linux+cli:
 x64+linux+cli:
 	make -C app/none+x64+linux+cli --no-print-directory
 	cp app/none+x64+linux+cli/a.out .
+x64+linux+text:
+	make -C app/none+x64+linux+text --no-print-directory
+	cp app/none+x64+linux+text/a.out .
 x64+linux+fb:
 	make -C app/none+x64+linux+fb --no-print-directory
 	cp app/none+x64+linux+fb/a.out .
