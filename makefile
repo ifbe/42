@@ -92,6 +92,9 @@ x64+linux+web:
 x64+mac+cli:
 	make -C app/none+x64+mac+cli --no-print-directory
 	cp app/none+x64+mac+cli/a.exe .
+x64+mac+text:
+	make -C app/none+x64+mac+text --no-print-directory
+	cp app/none+x64+mac+text/a.exe .
 x64+mac+sdl:
 	make -C app/none+x64+mac+sdl --no-print-directory
 	cp app/none+x64+mac+sdl/a.out .
@@ -103,6 +106,10 @@ x64+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+cli --no-print-directory
 	cp app/none+x64+win+cli/a.exe .
+x64+win+text:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	make -C app/none+x64+win+text --no-print-directory
+	cp app/none+x64+win+text/a.exe .
 x64+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+api --no-print-directory

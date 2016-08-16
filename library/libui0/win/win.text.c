@@ -1,3 +1,4 @@
+#include <conio.h>
 #include <stdio.h>
 #include <windows.h>
 #define QWORD unsigned long long
@@ -8,6 +9,7 @@
 
 //
 static HANDLE h;
+static int lastwidth=0,lastheight=0;
 static int width,height;
 //
 static char* content;
@@ -15,33 +17,57 @@ static char* content;
 
 
 
-char clibuffer[128];
 int uievent(QWORD* first,QWORD* second)
 {
-        int i;
-        char* ret;
-	//say("@uievent.start\n");
+	unsigned char ch;
 
-        for(i=0;i<128;i++)clibuffer[i]=0;
-        while(1)
-        {
-                ret=fgets(clibuffer,128,stdin);
-		//say("uievent.ret=%x\n",ret);
+	if(lastwidth != width)
+	{
+		lastwidth = width;
+		lastheight = height;
+		first[0] = 0x657a6973;
+		second[0] = width + (height<<16);
+		return 1;
+	}
 
-		if( ret == NULL )
+	while(1)
+	{
+		ch = getch();
+		printf("%x",ch);
+		if( (ch==3) | (ch==0x1b) )
 		{
-			first[0]=0;
-			break;
+			*first = 0;
+			return 1;
 		}
-                if( clibuffer[0] != 0 )
-		{
-			first[0]=0x727473;
-			second[0]=(QWORD)clibuffer;
-			break;
-		}
-        }
 
-	//say("@uievent.return\n");
+		if(ch == 0xe0)
+		{
+			ch = getch();
+			printf("%x",ch);
+
+			*first = 0x64626b;
+			if(ch == 0x48)	//up
+			{
+				*second = 0x26;
+				return 1;
+			}
+			else if(ch == 0x50)	//down
+			{
+				*second = 0x28;
+				return 1;
+			}
+			else if(ch == 0x4b)	//left
+			{
+				*second = 0x25;
+				return 1;
+			}
+			else if(ch == 0x4d)	//right
+			{
+				*second = 0x27;
+				return 1;
+			}
+		}
+	}
 	return 1;
 }
 
@@ -66,6 +92,7 @@ void windowwrite()
 	COORD pos = {0,0};
 	SetConsoleCursorPosition(h,pos);
 
+	content[width*height]=0;
 	printf("%s",content);
 	fflush(stdout);
 }
@@ -92,7 +119,7 @@ void windowinit()
 	h = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(h, &bInfo );
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top;
 
 }
 void windowkill()
