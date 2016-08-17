@@ -34,13 +34,20 @@ int uievent(QWORD* first,QWORD* second)
 	{
 		ch = getch();
 		printf("%x",ch);
-		if( (ch==3) | (ch==0x1b) )
+		if(ch==3)
 		{
 			*first = 0;
 			return 1;
 		}
 
-		if(ch == 0xe0)
+		else if(ch == 0x1b)
+		{
+			*first=0x64626b;
+			*second=0x1b;
+			return 1;
+		}
+
+		else if(ch == 0xe0)
 		{
 			ch = getch();
 			printf("%x",ch);
@@ -66,6 +73,13 @@ int uievent(QWORD* first,QWORD* second)
 				*second = 0x27;
 				return 1;
 			}
+		}
+
+		else
+		{
+			*first = 0x72616863;
+			*second = ch;
+			return 1;
 		}
 	}
 	return 1;
