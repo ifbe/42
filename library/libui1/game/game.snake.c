@@ -44,28 +44,33 @@ static int die=0;
 
 
 
-void snake_read()
+void snake_read_text()
 {
-	//init screen
+	char bg;
 	int j;
 	int width=haha->width;
 	int height=haha->height;
 	char* p = (char*)(haha->pixelbuffer);
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
+
+	if(die == 1)bg = 0x30;
+	else bg = 0x20;
+	for(j=0;j<width*height;j++)p[j]=bg;
+
+	j=0;
+	while(1)
 	{
-		for(j=0;j<width*height;j++)p[j]=0x20;
-		j=0;
-		while(1)
-		{
-			p[snake[j].x + snake[j].y * width]='#';
+		p[snake[j].x + snake[j].y * width]='#';
 
-			j++;
-			if(j>=len)break;
-		}
-
-		p[foodx + foody*width] = '@';
-		return;
+		j++;
+		if(j>=len)break;
 	}
+
+	p[foodx + foody*width] = '@';
+}
+void snake_read_pixel()
+{
+	//init screen
+	int j;
 
 	if(die == 1)
 	{
@@ -111,6 +116,23 @@ void snake_read()
 		0xff00,
 		0
 	);
+}
+void snake_read()
+{
+	//text
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	{
+		snake_read_text();
+	}
+/*
+	//html
+	else if()
+*/
+	//pixel
+	else
+	{
+		snake_read_pixel();
+	}
 }
 
 

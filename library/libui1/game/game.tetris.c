@@ -76,6 +76,99 @@ static void cubie(int x,int y,int z)
 
 	rect(startx, starty, endx, endy, bodycolor, 0x44444444);
 }
+static void tetris_read_text()
+{
+	int x,y;
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+
+	for(x=0;x<width*height;x++)p[x]=0x20;
+	if(height>=40)
+	{
+		for(y=0;y<40;y++)
+		{
+			for(x=0;x<32;x++)
+			{
+				if(table[y*32+x])
+				{
+					p[y*width+x]='#';
+				}
+			}
+		}
+		p[that.x1 + that.y1*width]='#';
+		p[that.x2 + that.y2*width]='#';
+		p[that.x3 + that.y3*width]='#';
+		p[that.x4 + that.y4*width]='#';
+	}
+	else
+	{
+		for(y=0;y<height;y++)
+		{
+			for(x=0;x<32;x++)
+			{
+				if(table[32*(y+40-height) + x])
+				{
+					p[y*width+x]='#';
+				}
+			}
+		}
+		p[that.x1 + (that.y1-40+height)*width]='#';
+		p[that.x2 + (that.y2-40+height)*width]='#';
+		p[that.x3 + (that.y3-40+height)*width]='#';
+		p[that.x4 + (that.y4-40+height)*width]='#';
+	}
+}
+static void tetris_read_html()
+{
+}
+static void tetris_read_pixel()
+{
+	int x,y;
+	for(y=0;y<40;y++)
+	{
+		for(x=0;x<32;x++)
+		{
+			//say("%d ",table[y*32+x]);
+			cubie(x,y,table[y*32+x]);
+		}
+		//say("\n");
+	}
+	//say("\n");
+
+	//print cubies
+	cubie(that.x1,that.y1,1);
+	cubie(that.x2,that.y2,1);
+	cubie(that.x3,that.y3,1);
+	cubie(that.x4,that.y4,1);
+
+	//print score
+	//decimal(10,10,score);
+}
+static void tetris_read()
+{
+	//text
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	{
+		tetris_read_text();
+	}
+/*
+	//html
+	else if()
+	{
+	}
+*/
+
+	//pixel
+	else
+	{
+		tetris_read_pixel();
+	}
+}
+
+
+
+
 
 
 static void generate()
@@ -526,79 +619,6 @@ static void tetris_write(QWORD type,QWORD key)
 	}
 
 	else return;
-}
-
-
-
-
-static void tetris_read()
-{
-	int x,y;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
-	{
-		for(x=0;x<width*height;x++)p[x]=0x20;
-		if(height>=40)
-		{
-			for(y=0;y<40;y++)
-			{
-				for(x=0;x<32;x++)
-				{
-					if(table[y*32+x])
-					{
-						p[y*width+x]='#';
-					}
-				}
-			}
-			p[that.x1 + that.y1*width]='#';
-			p[that.x2 + that.y2*width]='#';
-			p[that.x3 + that.y3*width]='#';
-			p[that.x4 + that.y4*width]='#';
-		}
-		else
-		{
-			for(y=0;y<height;y++)
-			{
-				for(x=0;x<32;x++)
-				{
-					if(table[32*(y+40-height) + x])
-					{
-						p[y*width+x]='#';
-					}
-				}
-			}
-			p[that.x1 + (that.y1-40+height)*width]='#';
-			p[that.x2 + (that.y2-40+height)*width]='#';
-			p[that.x3 + (that.y3-40+height)*width]='#';
-			p[that.x4 + (that.y4-40+height)*width]='#';
-		}
-		return;
-	}
-
-	else
-	{
-		for(y=0;y<40;y++)
-		{
-			for(x=0;x<32;x++)
-			{
-				//say("%d ",table[y*32+x]);
-				cubie(x,y,table[y*32+x]);
-			}
-			//say("\n");
-		}
-		//say("\n");
-
-		//print cubies
-		cubie(that.x1,that.y1,1);
-		cubie(that.x2,that.y2,1);
-		cubie(that.x3,that.y3,1);
-		cubie(that.x4,that.y4,1);
-
-		//print score
-		//decimal(10,10,score);
-	}
 }
 
 

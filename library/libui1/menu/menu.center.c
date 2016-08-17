@@ -31,6 +31,126 @@ static int bufp=0;
 
 
 
+static void menu_read_text()
+{
+	int x,y;
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+	char* src;
+	char* dst;
+
+	for(y=height/4;y<height*3/4;y++)
+	{
+		for(x=width/4;x<width*3/4;x++)
+		{
+			p[x + width*y] = 0x20;
+		}
+	}
+	for(x=width/4;x<=width*3/4;x++)
+	{
+		p[x + (height/4)*width] = '-';
+		p[x + (height*3/4)*width] = '-';
+	}
+	for(y=height/4;y<=height*3/4;y++)
+	{
+		p[width/4 + y*width] = '|';
+		p[width*3/4 + y*width] = '|';
+	}
+
+	dst = p + (height/4+1)*width + width/4 + 1;
+	src = "what do you want?";
+	x=0;
+	while(src[x] != 0)
+	{
+		dst[x]=src[x];
+		x++;
+	}
+
+	dst = p + (height/4+2)*width + width/4 + 1;
+	src = buffer;
+	for(x=0;x<bufp;x++)
+	{
+		dst[x]=src[x];
+	}
+}
+static void menu_read_pixel()
+{
+	int x,y;
+	int width=haha->width;
+	int height=haha->height;
+
+	//title
+	rect(
+		width/4,
+		(height/4)&0xfffffff0,
+		width*3/4,
+		(height/4+16)&0xfffffff0,
+		0x01234567,
+		0xfedcba98
+	);
+
+	//body
+	rect(
+		width/4,
+		(height/4+16)&0xfffffff0,
+		width*3/4,
+		height*3/4,
+		0,
+		0xffffffff
+	);
+
+	//button
+	rect(
+		(width*3/4) - 16,
+		(height/4)&0xfffffff0,
+		width*3/4,
+		((height/4) + 16)&0xfffffff0,
+		0xff0000,
+		0
+	);
+
+	//string
+	printstring(
+		width/4,
+		height/4 + 16,
+		1,
+		"what do you want?",
+		0xffffffff,
+		0
+	);
+	printstring(
+		width/4,
+		height/4 + 32,
+		1,
+		buffer,
+		0xffffffff,
+		0
+	);
+}
+static void menu_read()
+{
+	//text
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	{
+		menu_read_text();
+	}
+/*
+	//html
+	else if()
+	{
+	}
+*/
+	//pixel
+	else
+	{
+		menu_read_pixel();
+	}
+}
+
+
+
+
 //write,read,into,list
 static void menu_write(QWORD type,QWORD key)
 {
@@ -92,102 +212,10 @@ static void menu_write(QWORD type,QWORD key)
 		}
 	}//kbd
 }
-static void menu_read()
-{
-	int x,y;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
-	char* src;
-	char* dst;
 
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)    //if text
-	{
-		for(y=height/4;y<height*3/4;y++)
-		{
-			for(x=width/4;x<width*3/4;x++)
-			{
-				p[x + width*y] = 0x20;
-			}
-		}
-		for(y=height/4;y<height*3/4;y++)
-		{
-			p[width/4 + y*width] = '#';
-			p[width*3/4 + y*width] = '#';
-		}
-		for(x=width/4;x<width*3/4;x++)
-		{
-			p[x + (height/4)*width] = '#';
-			p[x + (height*3/4)*width] = '#';
-		}
 
-		dst = p + (height/4+1)*width + width/4 + 1;
-		src = "what do you want?";
-		x=0;
-		while(src[x] != 0)
-		{
-			dst[x]=src[x];
-			x++;
-		}
 
-		dst = p + (height/4+2)*width + width/4 + 1;
-		src = buffer;
-		for(x=0;x<bufp;x++)
-		{
-			dst[x]=src[x];
-		}
 
-		return;
-	}
-
-	//title
-	rect(
-		width/4,
-		(height/4)&0xfffffff0,
-		width*3/4,
-		(height/4+16)&0xfffffff0,
-		0x01234567,
-		0xfedcba98
-	);
-
-	//body
-	rect(
-		width/4,
-		(height/4+16)&0xfffffff0,
-		width*3/4,
-		height*3/4,
-		0,
-		0xffffffff
-	);
-
-	//button
-	rect(
-		(width*3/4) - 16,
-		(height/4)&0xfffffff0,
-		width*3/4,
-		((height/4) + 16)&0xfffffff0,
-		0xff0000,
-		0
-	);
-
-	//string
-	printstring(
-		width/4,
-		height/4 + 16,
-		1,
-		"what do you want?",
-		0xffffffff,
-		0
-	);
-	printstring(
-		width/4,
-		height/4 + 32,
-		1,
-		buffer,
-		0xffffffff,
-		0
-	);
-}
 static void menu_choose()
 {
 }

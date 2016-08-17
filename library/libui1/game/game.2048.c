@@ -88,37 +88,51 @@ static void cubie(int x,int y,int z)
 		0
 	);
 }
-static void the2048_read()
+static void the2048_read_text()
 {
 	int x,y;
 	char* p = (char*)(haha->pixelbuffer);
-
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)	//if text
+	for(x=0;x<(haha->width)*(haha->height);x++)p[x]=0x20;
+	for(y=0;y<4;y++)
 	{
-		for(x=0;x<(haha->width)*(haha->height);x++)p[x]=0x20;
-		for(y=0;y<4;y++)
+		for(x=0;x<4;x++)
 		{
-			for(x=0;x<4;x++)
-			{
-				data2decimalstring(table[y][x], p + 4*y*(haha->width) + x*8);
-			}
+			data2decimalstring(table[y][x], p + 4*y*(haha->width) + x*8);
 		}
-		return;
 	}
-/*
-	if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)	//if html
+}
+static void the2048_read_html()
+{
+}
+static void the2048_read_pixel()
+{
+	int x,y;
+	for(y=0;y<4;y++)
 	{
+		for(x=0;x<4;x++)
+		{
+			cubie(x,y,table[y][x]);
+		}
 	}
-*/
+}
+static void the2048_read()
+{
+	//text
+	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	{
+		the2048_read_text();
+	}
+
+	//html
+	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	{
+		the2048_read_html();
+	}
+
+	//pixel
 	else
 	{
-		for(y=0;y<4;y++)
-		{
-			for(x=0;x<4;x++)
-			{
-				cubie(x,y,table[y][x]);
-			}
-		}
+		the2048_read_pixel();
 	}
 }
 
