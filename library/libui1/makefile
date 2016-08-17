@@ -12,7 +12,7 @@ target:
 	$(compiler) $(cflag) game/game.weiqi.c
 	$(compiler) $(cflag) game/game.xiangqi.c
 	$(compiler) $(cflag) menu/menu.center.c
-	$(compiler) $(cflag) menu/menu.keyboard.c
+	$(compiler) $(cflag) menu/menu.virtkbd.c
 	$(compiler) $(cflag) menu/menu.roster.c
 	$(compiler) $(cflag) test/test.color.c
 	$(compiler) $(cflag) test/test.doodle.c
@@ -20,6 +20,8 @@ target:
 	$(compiler) $(cflag) test/test.pure.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.hex.c
+	$(compiler) $(cflag) tool/tool.joystick.c
+	$(compiler) $(cflag) tool/tool.keyboard.c
 	$(compiler) $(cflag) tool/tool.qrcode.c
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c

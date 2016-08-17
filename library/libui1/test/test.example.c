@@ -1,7 +1,7 @@
 /*
 1:	add name in library/libui1/makefile
 2:	add code in character.c character_init() and character_kill()
-3:	replace "example" to "whatname"----->		:0,$s/example/whatname/g
+3:	replace "example" to "whatname"----->		:9,$s/example/whatname/g
 4:	do your logic in this code
 */
 
@@ -15,6 +15,20 @@ void backgroundcolor();
 //
 void say(char*,...);
 
+
+
+
+static struct temp{
+        QWORD type;
+        QWORD id;
+        QWORD start;
+        QWORD end;
+
+        QWORD pixelbuffer;
+        QWORD pixelformat;
+        QWORD width;
+        QWORD height;
+}*haha;
 
 
 
@@ -75,9 +89,11 @@ static void example_start()
 static void example_stop()
 {
 }
-void example_init(char* base,char* addr)
+void example_init(void* base,void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	QWORD* this = (QWORD*)addr;
+	haha = addr;
+
 	this[0]=0x776f646e6977;
 	this[1]=0x746e6f66;
 

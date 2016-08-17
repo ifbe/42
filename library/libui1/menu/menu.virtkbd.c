@@ -35,11 +35,11 @@ static char table[8][8] = {
 
 
 
-static void keyboard_write(QWORD type,QWORD value)
+static void virtkbd_write(QWORD type,QWORD value)
 {
 	
 }
-static void keyboard_read()
+static void virtkbd_read()
 {
 	int x,y;
 	int width = haha->width;
@@ -70,10 +70,10 @@ static void keyboard_read()
 		}
 	}
 }
-static void keyboard_into()
+static void virtkbd_into()
 {
 }
-static void keyboard_list()
+static void virtkbd_list()
 {
 }
 
@@ -84,27 +84,27 @@ static void keyboard_list()
 
 
 
-static void keyboard_start()
+static void virtkbd_start()
 {
 }
-static void keyboard_stop()
+static void virtkbd_stop()
 {
 }
-void keyboard_init(void* base,void* addr)
+void virtkbd_init(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
 
 	this[0]=0;
-	this[1]=0x64626b;
+	this[1]=0x64626b74726976;
 
-	this[10]=(QWORD)keyboard_start;
-	this[11]=(QWORD)keyboard_stop;
-	this[12]=(QWORD)keyboard_list;
-	this[13]=(QWORD)keyboard_into;
-	this[14]=(QWORD)keyboard_read;
-	this[15]=(QWORD)keyboard_write;
+	this[10]=(QWORD)virtkbd_start;
+	this[11]=(QWORD)virtkbd_stop;
+	this[12]=(QWORD)virtkbd_list;
+	this[13]=(QWORD)virtkbd_into;
+	this[14]=(QWORD)virtkbd_read;
+	this[15]=(QWORD)virtkbd_write;
 }
-void keyboard_kill()
+void virtkbd_kill()
 {
 }

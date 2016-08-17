@@ -4,8 +4,8 @@
 #define QWORD unsigned long long
 //special guys
 void menu_init(char*,char*);
-void keyboard_init(char*,char*);
 void roster_init(char*,char*);
+void virtkbd_init(char*,char*);
 //libs
 void ascii_init(char*,char*);
 void unicode_init(char*,char*);
@@ -26,14 +26,16 @@ void pure_init(char*,char*);
 //tool
 void console_init(char*,char*);
 void hex_init(char*,char*);
+void joystick_init(char*,char*);
+void keyboard_init(char*,char*);
 void sketchpad_init(char*,char*);
 void spectrum_init(char*,char*);
 void tree_init(char*,char*);
 void qrcode_init(char*,char*);
 //
 void menu_kill();
-void keyboard_kill();
 void roster_kill();
+void virtkbd_kill();
 //
 void ascii_kill();
 void unicode_kill();
@@ -54,6 +56,8 @@ void color_kill();
 //
 void console_kill();
 void hex_kill();
+void joystick_kill();
+void keyboard_kill();
 void sketchpad_kill();
 void tree_kill();
 void spectrum_kill();
@@ -163,12 +167,12 @@ void characterinit(char* type,char* addr)
 		menu_init(addr,temp);
 		temp+=0x80;
 
-		//menu.keyboard
-		keyboard_init(addr,temp);
-		temp += 0x80;
-
 		//menu.roster
 		roster_init(addr,temp);
+		temp += 0x80;
+
+		//menu.virtkbd
+		virtkbd_init(addr,temp);
 		temp += 0x80;
 
 		//ascii
@@ -235,6 +239,14 @@ void characterinit(char* type,char* addr)
 		hex_init(addr,temp);
 		temp += 0x80;
 
+		//tool.joystick
+		joystick_init(addr,temp);
+		temp += 0x80;
+
+		//tool.keyboard
+		keyboard_init(addr,temp);
+		temp += 0x80;
+
 		//tool.qrcode
 		qrcode_init(addr,temp);
 		temp += 0x80;
@@ -268,6 +280,8 @@ void characterkill()
 	hex_kill();
 	console_kill();
 	qrcode_kill();
+	joystick_kill();
+	keyboard_kill();
 
 	color_kill();
 	doodle_kill();
@@ -287,8 +301,8 @@ void characterkill()
 	unicode_kill();
 
 	menu_kill();
-	keyboard_kill();
 	roster_kill();
+	virtkbd_kill();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
