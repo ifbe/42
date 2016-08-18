@@ -23,9 +23,9 @@ void say(char* fmt , ...)
 
 
 
-void initserial()
+void createserial()
 {
 }
-void killserial()
+void deleteserial()
 {
 }

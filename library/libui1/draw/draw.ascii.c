@@ -481,12 +481,12 @@ void ascii_start()
 void ascii_stop()
 {
 }
-void ascii_init(void* home,void* me)
+void ascii_create(void* home,void* me)
 {
 	haha=me;
 	haha->type = 0;
 	haha->id = 0x6969637361;
 }
-void ascii_kill()
+void ascii_delete()
 {
 }

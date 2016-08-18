@@ -30,7 +30,7 @@ char devicename[32]={
 
 
 //be careful : epoll_create1 -> [android-21,above) = [5.0,above)
-void initevent()
+void createevent()
 {
 	//create one file manager?
 	epfd=epoll_create1(0);
@@ -62,7 +62,7 @@ void initevent()
 		epoll_ctl(epfd , EPOLL_CTL_ADD , _dev_input_event[i] , &ev);
 	}
 }
-void killevent()
+void deleteevent()
 {
 	int i=0;
 	for(i=0;i<10;i++)

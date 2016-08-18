@@ -147,7 +147,7 @@ int startsocket(char* address,int port)
 	}
 	else return 0;
 
-	//init struct
+	//create struct
 	memset(&selfbody, 0, sizeof(struct sockaddr_in));
 	selfbody.sin_family=AF_INET;
 	selfbody.sin_addr.s_addr=inet_addr(address);
@@ -215,16 +215,16 @@ int stopsocket()
 		selffd=0;
 	}
 }
-int initsocket()
+int createsocket()
 {
-	//do not kill process while receiving SIGPIPE
+	//do not delete process while receiving SIGPIPE
 	struct sigaction sa;
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE,&sa,0);
 
 	return 1;
 }
-int killsocket()
+int deletesocket()
 {
 	stopsocket();
 	return 1;

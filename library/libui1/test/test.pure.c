@@ -75,7 +75,7 @@ static void pure_start()
 static void pure_stop()
 {
 }
-void pure_init(void* uibuf,void* addr)
+void pure_create(void* uibuf,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -90,7 +90,7 @@ void pure_init(void* uibuf,void* addr)
 	this[14]=(QWORD)pure_read;
 	this[15]=(QWORD)pure_write;
 }
-void pure_kill()
+void pure_delete()
 {
 }
 

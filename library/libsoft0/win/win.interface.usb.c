@@ -16,9 +16,9 @@ int systemusb_start()
 int systemusb_stop()
 {
 }
-int systemusb_init()
+int systemusb_create()
 {
 }
-int systemusb_kill()
+int systemusb_delete()
 {
 }

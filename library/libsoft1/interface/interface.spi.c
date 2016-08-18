@@ -79,7 +79,7 @@ static int spi_stop()
 {
 	systemspi_stop();
 }
-void spi_init(char* world,QWORD* p)
+void spi_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -91,6 +91,6 @@ void spi_init(char* world,QWORD* p)
 	p[6]=(QWORD)spi_read;
 	p[7]=(QWORD)spi_write;
 }
-void spi_kill()
+void spi_delete()
 {
 }

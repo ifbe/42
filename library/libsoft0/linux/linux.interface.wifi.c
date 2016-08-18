@@ -52,9 +52,9 @@ void systemwifi_stop()
 
 
 
-void systemwifi_init()
+void systemwifi_create()
 {
 }
-void systemwifi_kill()
+void systemwifi_delete()
 {
 }

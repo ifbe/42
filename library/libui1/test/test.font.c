@@ -46,7 +46,7 @@ void font_start()
 void font_stop()
 {
 }
-void font_init(char* base,char* addr)
+void font_create(char* base,char* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
@@ -59,6 +59,6 @@ void font_init(char* base,char* addr)
 	this[14]=(QWORD)font_read;
 	this[15]=(QWORD)font_write;
 }
-void font_kill()
+void font_delete()
 {
 }

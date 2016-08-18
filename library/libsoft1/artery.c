@@ -2,15 +2,15 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-int interface_init(void* world,void* func);
-int    memory_init(void* world,void* func);
-int       net_init(void* world,void* func);
-int   special_init(void* world,void* func);
+int interface_create(void* world,void* func);
+int    memory_create(void* world,void* func);
+int       net_create(void* world,void* func);
+int   special_create(void* world,void* func);
 //
-int interface_kill();
-int    memory_kill();
-int       net_kill();
-int   special_kill();
+int interface_delete();
+int    memory_delete();
+int       net_delete();
+int   special_delete();
 //
 QWORD prelibation(void*);
 int compare(char*,char*);
@@ -198,7 +198,7 @@ int arterystop(char* p)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void arteryinit(char* module,char* addr)
+void arterycreate(char* module,char* addr)
 {
 	int i;
 	char* p;
@@ -218,27 +218,27 @@ void arteryinit(char* module,char* addr)
 
 		//
 		p=addr+0x40;
-		p+=interface_init(addr,p);
-		p+=memory_init(addr,p);
-		p+=net_init(addr,p);
-		special_init(addr,p);
+		p+=interface_create(addr,p);
+		p+=memory_create(addr,p);
+		p+=net_create(addr,p);
+		special_create(addr,p);
 
-		say("[8,c):inited artery\n");
+		say("[8,c):createed artery\n");
 	}
 
 	//
 	else
 	{
-		//initmodule(module);
-		say("(initmodule fail)%s\n",module);
+		//createmodule(module);
+		say("(createmodule fail)%s\n",module);
 	}
 }
-void arterykill(char* module)
+void arterydelete(char* module)
 {
-	say("[8,c):killing artery\n");
-	special_kill();
-	net_kill();
-	memory_kill();
-	interface_kill();
+	say("[8,c):deleteing artery\n");
+	special_delete();
+	net_delete();
+	memory_delete();
+	interface_delete();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

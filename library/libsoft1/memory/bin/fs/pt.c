@@ -71,7 +71,7 @@ static int pt_stop(char* p)
 {
 	systemstop();
 }
-void pt_init(char* world,QWORD* p)
+void pt_create(char* world,QWORD* p)
 {
 	//
 	diskhome=world;
@@ -89,6 +89,6 @@ void pt_init(char* world,QWORD* p)
 	p[6]=(QWORD)pt_read;
 	p[7]=(QWORD)pt_write;
 }
-void pt_kill()
+void pt_delete()
 {
 }

@@ -21,7 +21,7 @@ static void zigbee_start(QWORD type,char* p)
 static void zigbee_stop()
 {
 }
-void zigbee_init(char* world,QWORD* p)
+void zigbee_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -33,7 +33,7 @@ void zigbee_init(char* world,QWORD* p)
 	p[6]=(QWORD)zigbee_read;
 	p[7]=(QWORD)zigbee_write;
 }
-void zigbee_kill()
+void zigbee_delete()
 {
 	zigbee_stop();
 }

@@ -247,7 +247,7 @@ void windowstop()
 
 
 
-void windowinit()
+void windowcreate()
 {
 	//初始化
 	dsp = XOpenDisplay(NULL);
@@ -279,7 +279,7 @@ void windowinit()
 	);
 	XMapWindow(dsp, win);
 }
-void windowkill()
+void windowdelete()
 {
 	//
 	XDestroyWindow(dsp, win);

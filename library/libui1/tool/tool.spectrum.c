@@ -143,7 +143,7 @@ void spectrum_start()
 void spectrum_stop()
 {
 }
-void spectrum_init(void* uibuf,void* addr)
+void spectrum_create(void* uibuf,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -164,6 +164,6 @@ void spectrum_init(void* uibuf,void* addr)
 	power=(double*)(uibuf+0x380000);
 	phase=(double*)(uibuf+0x3c0000);
 }
-void spectrum_kill()
+void spectrum_delete()
 {
 }

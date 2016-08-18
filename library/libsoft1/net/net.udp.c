@@ -26,7 +26,7 @@ static int udp_start(QWORD type,char* p)
 static int udp_stop()
 {
 }
-int udp_init(char* world,unsigned long long* p)
+int udp_create(char* world,unsigned long long* p)
 {
 	p[0]=0x74656e;
 	p[1]=0x706475;
@@ -37,6 +37,6 @@ int udp_init(char* world,unsigned long long* p)
 	p[6]=(QWORD)udp_read;
 	p[7]=(QWORD)udp_write;
 }
-int udp_kill()
+int udp_delete()
 {
 }

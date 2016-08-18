@@ -19,7 +19,7 @@ unsigned int getrandom()
 
 
 
-void initrandom()
+void createrandom()
 {
 	_dev_urandom=open("/dev/urandom",O_RDONLY);
 	if(_dev_urandom==-1)
@@ -27,7 +27,7 @@ void initrandom()
 		printf("error open:/dev/urandom:%x\n",_dev_urandom);
 	}
 }
-void killrandom()
+void deleterandom()
 {
 	if(_dev_urandom != -1)close(_dev_urandom);
 }

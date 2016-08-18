@@ -115,7 +115,7 @@ static void keyboard_start()
 static void keyboard_stop()
 {
 }
-void keyboard_init(void* base,void* addr)
+void keyboard_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -130,6 +130,6 @@ void keyboard_init(void* base,void* addr)
 	this[14]=(QWORD)keyboard_read;
 	this[15]=(QWORD)keyboard_write;
 }
-void keyboard_kill()
+void keyboard_delete()
 {
 }

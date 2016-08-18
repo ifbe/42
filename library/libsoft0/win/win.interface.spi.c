@@ -16,10 +16,10 @@ int systemspi_start()
 int systemspi_stop()
 {
 }
-int systemspi_init()
+int systemspi_create()
 {
 }
-int systemspi_kill()
+int systemspi_delete()
 {
 }
 

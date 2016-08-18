@@ -52,9 +52,9 @@ void systembt_stop()
 
 
 
-void systembt_init()
+void systembt_create()
 {
 }
-void systembt_kill()
+void systembt_delete()
 {
 }

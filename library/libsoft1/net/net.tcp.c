@@ -1,7 +1,7 @@
 #define QWORD unsigned long long 
 //
-int initsocket();
-int killsocket();
+int createsocket();
+int deletesocket();
 int startsocket(char*,int);
 int stopsocket();
 int readsocket(char*,int);
@@ -65,7 +65,7 @@ static int tcp_stop()
 {
 	stopsocket();
 }
-int tcp_init(char* world,unsigned long long* p)
+int tcp_create(char* world,unsigned long long* p)
 {
 	//
 	datahome=world+0x300000;
@@ -80,7 +80,7 @@ int tcp_init(char* world,unsigned long long* p)
 	p[6]=(QWORD)tcp_read;
 	p[7]=(QWORD)tcp_write;
 }
-int tcp_kill()
+int tcp_delete()
 {
 	tcp_stop();
 }

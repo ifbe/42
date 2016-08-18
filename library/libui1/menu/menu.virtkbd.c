@@ -90,7 +90,7 @@ static void virtkbd_start()
 static void virtkbd_stop()
 {
 }
-void virtkbd_init(void* base,void* addr)
+void virtkbd_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -105,6 +105,6 @@ void virtkbd_init(void* base,void* addr)
 	this[14]=(QWORD)virtkbd_read;
 	this[15]=(QWORD)virtkbd_write;
 }
-void virtkbd_kill()
+void virtkbd_delete()
 {
 }

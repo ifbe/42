@@ -73,10 +73,10 @@ byebye:
 	if(ret<0)say("can't open:%s\n",name);
 	return ret;
 }
-void killfolder()
+void deletefolder()
 {
 }
-void initfolder()
+void createfolder()
 {
 	startfolder(".");
 }

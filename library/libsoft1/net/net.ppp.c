@@ -21,7 +21,7 @@ static void ppp_start(QWORD type,char* p)
 static void ppp_stop()
 {
 }
-void ppp_init(char* world,QWORD* p)
+void ppp_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void ppp_init(char* world,QWORD* p)
 	p[6]=(QWORD)ppp_read;
 	p[7]=(QWORD)ppp_write;
 }
-void ppp_kill()
+void ppp_delete()
 {
 	ppp_stop();
 }

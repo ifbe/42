@@ -5,28 +5,28 @@
 #include<stdio.h>
 #include<stdlib.h>
 //libui
-void characterinit(char*,char*);
-void characterkill();
-void displayinit(char*,char*);
-void displaykill();
+void charactercreate(char*,char*);
+void characterdelete();
+void displaycreate(char*,char*);
+void displaydelete();
 //libsoft
-void arteryinit(char*,char*);
-void arterykill();
-void systeminit(char*,char*);
-void systemkill();
+void arterycreate(char*,char*);
+void arterydelete();
+void systemcreate(char*,char*);
+void systemdelete();
 //libhard
-void bodyinit(char*,char*);
-void bodykill();
-void driverinit(char*,char*);
-void driverkill();
+void bodycreate(char*,char*);
+void bodydelete();
+void drivercreate(char*,char*);
+void driverdelete();
 //libboot
-void debuginit(char*,char*);
-void debugkill();
-void basicinit(char*,char*);
-void basickill();
+void debugcreate(char*,char*);
+void debugdelete();
+void basiccreate(char*,char*);
+void basicdelete();
 //slave
-void slaveinit(char*,char*);
-void slavekill();
+void slavecreate(char*,char*);
+void slavedelete();
 //
 void say(char*,...);
 
@@ -47,7 +47,7 @@ static char*      body=0;		//4m
 static char*    memory=0;		//4m
 static char* character=0;		//4m
 //get address
-void inituniverse()
+void createuniverse()
 {
 	//temp
 	QWORD i;
@@ -99,55 +99,55 @@ void inituniverse()
 void birth()
 {
 	//必须放第一个
-	inituniverse();	//16m
+	createuniverse();	//16m
 
 	//[0,4)：构架相关，以及内核日志
-	basicinit( 0 , basic );
-	debuginit( 0 , basic );
+	basiccreate( 0 , basic );
+	debugcreate( 0 , basic );
 
 	//[4,7)：硬件驱动，以及底层协议栈
-	driverinit( 0 , body );
-	bodyinit( 0 , body );
+	drivercreate( 0 , body );
+	bodycreate( 0 , body );
 
 	//[8,c)：文件读写，以及详细分析
-	systeminit( 0 , memory );
-	arteryinit( 0 , memory );
+	systemcreate( 0 , memory );
+	arterycreate( 0 , memory );
 
 	//[c,f)：窗口开闭，以及用户界面
-	displayinit( 0 , character );
-	characterinit( 0 , character );
+	displaycreate( 0 , character );
+	charactercreate( 0 , character );
 
 	//
-	slaveinit(0,universe);
+	slavecreate(0,universe);
 }
 __attribute__((destructor)) void death()
 {
 	//
-	slavekill();
+	slavedelete();
 
 	//4+4+4+4
 	if(character != 0)
 	{
-		characterkill();
-		displaykill();
+		characterdelete();
+		displaydelete();
 		character=0;
 	}
 	if(memory != 0)
 	{
-		arterykill();
-		systemkill();
+		arterydelete();
+		systemdelete();
 		memory=0;
 	}
 	if(body != 0)
 	{
-		bodykill();
-		driverkill();
+		bodydelete();
+		driverdelete();
 		body=0;
 	}
 	if(basic != 0)
 	{
-		debugkill();
-		basickill();
+		debugdelete();
+		basicdelete();
 		basic=0;
 	}
 

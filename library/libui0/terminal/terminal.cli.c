@@ -75,11 +75,11 @@ void windowstop()
 
 
 
-void windowinit()
+void windowcreate()
 {
 	
 }
-void windowkill()
+void windowdelete()
 {
 	
 }

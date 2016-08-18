@@ -136,7 +136,7 @@ void windowstop()
 
 
 
-void windowinit()
+void windowcreate()
 {
 	//
 	struct winsize w;
@@ -153,7 +153,7 @@ void windowinit()
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 }
-void windowkill()
+void windowdelete()
 {
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 }

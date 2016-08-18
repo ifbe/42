@@ -21,7 +21,7 @@ static void ssh_start(QWORD type,char* p)
 static void ssh_stop()
 {
 }
-void ssh_init(char* world,QWORD* p)
+void ssh_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void ssh_init(char* world,QWORD* p)
 	p[6]=(QWORD)ssh_read;
 	p[7]=(QWORD)ssh_write;
 }
-void ssh_kill()
+void ssh_delete()
 {
 	ssh_stop();
 }

@@ -15,10 +15,10 @@ static WIN32_FIND_DATA finddata;
 
 
 
-void initfolder()
+void createfolder()
 {
 }
-void killfolder()
+void deletefolder()
 {
 }
 int startfolder(char* name)

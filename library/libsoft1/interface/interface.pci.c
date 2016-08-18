@@ -21,7 +21,7 @@ static void pci_start(QWORD type,char* p)
 static void pci_stop()
 {
 }
-void pci_init(char* world,QWORD* p)
+void pci_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -33,7 +33,7 @@ void pci_init(char* world,QWORD* p)
 	p[6]=(QWORD)pci_read;
 	p[7]=(QWORD)pci_write;
 }
-void pci_kill()
+void pci_delete()
 {
 	pci_stop();
 }

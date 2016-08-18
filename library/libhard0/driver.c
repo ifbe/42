@@ -12,11 +12,11 @@ int hardevent(QWORD* first,QWORD* second)
 
 
 
-void driverinit(char* type,char* addr)
+void drivercreate(char* type,char* addr)
 {
-	say("[4,8):inited driver\n");
+	say("[4,8):createed driver\n");
 }
-void driverkill()
+void driverdelete()
 {
-	say("[4,8):killing driver\n");
+	say("[4,8):deleteing driver\n");
 }

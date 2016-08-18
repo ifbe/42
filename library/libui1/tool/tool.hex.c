@@ -359,7 +359,7 @@ void hex_start()
 void hex_stop()
 {
 }
-void hex_init(void* uibuf,void* addr)
+void hex_create(void* uibuf,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -376,6 +376,6 @@ void hex_init(void* uibuf,void* addr)
 
 	databuf = uibuf;
 }
-void hex_kill()
+void hex_delete()
 {
 }

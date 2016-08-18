@@ -176,10 +176,10 @@ void writefile(char* buf,QWORD startsector,QWORD ignore,DWORD count)
 
 
 
-void initfile()
+void createfile()
 {
 }
-void killfile()
+void deletefile()
 {
 	if(thisfd != -1)
 	{

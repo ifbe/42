@@ -41,7 +41,7 @@ float eulerian[3];
 
 
 
-int initquaternion()
+int createquaternion()
 {
 	q0=1.0;
 	q1=q2=q3=0;
@@ -50,7 +50,7 @@ int initquaternion()
 
 	return 1;
 }
-void killquaternion()
+void deletequaternion()
 {
 }
 

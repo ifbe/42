@@ -21,7 +21,7 @@ static void slip_start(QWORD type,char* p)
 static void slip_stop()
 {
 }
-void slip_init(char* world,QWORD* p)
+void slip_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void slip_init(char* world,QWORD* p)
 	p[6]=(QWORD)slip_read;
 	p[7]=(QWORD)slip_write;
 }
-void slip_kill()
+void slip_delete()
 {
 	slip_stop();
 }

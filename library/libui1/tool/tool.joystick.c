@@ -131,7 +131,7 @@ static void joystick_start()
 static void joystick_stop()
 {
 }
-void joystick_init(void* base,void* addr)
+void joystick_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -146,6 +146,6 @@ void joystick_init(void* base,void* addr)
 	this[14]=(QWORD)joystick_read;
 	this[15]=(QWORD)joystick_write;
 }
-void joystick_kill()
+void joystick_delete()
 {
 }

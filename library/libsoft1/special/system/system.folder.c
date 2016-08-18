@@ -49,7 +49,7 @@ static int folder_stop()
 
 
 
-int folder_init(char* world,unsigned long long* p)
+int folder_create(char* world,unsigned long long* p)
 {
 	//
 	datahome=world+0x300000;
@@ -65,7 +65,7 @@ int folder_init(char* world,unsigned long long* p)
 	p[7]=(QWORD)folder_write;
 	return 0;
 }
-int folder_kill()
+int folder_delete()
 {
 	folder_stop();
 	return 0;

@@ -21,7 +21,7 @@ static void eth_start(QWORD type,char* p)
 static void eth_stop()
 {
 }
-void eth_init(char* world,QWORD* p)
+void eth_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void eth_init(char* world,QWORD* p)
 	p[6]=(QWORD)eth_read;
 	p[7]=(QWORD)eth_write;
 }
-void eth_kill()
+void eth_delete()
 {
 	eth_stop();
 }

@@ -1,6 +1,6 @@
-void initmemory()
+void creatememory()
 {
 }
-void killmemory()
+void deletememory()
 {
 }

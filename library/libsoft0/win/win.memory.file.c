@@ -193,10 +193,10 @@ void startfile(char* path)
 void stopfile()
 {
 }
-void initfile()
+void createfile()
 {
 }
-void killfile()
+void deletefile()
 {
 	if(hDev!=NULL)
 	{

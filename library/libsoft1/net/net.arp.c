@@ -21,7 +21,7 @@ static void arp_start(QWORD type,char* p)
 static void arp_stop()
 {
 }
-void arp_init(char* world,QWORD* p)
+void arp_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void arp_init(char* world,QWORD* p)
 	p[6]=(QWORD)arp_read;
 	p[7]=(QWORD)arp_write;
 }
-void arp_kill()
+void arp_delete()
 {
 	arp_stop();
 }

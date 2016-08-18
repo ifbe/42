@@ -382,7 +382,7 @@ static void the2048_choose()
 
 static void the2048_start()
 {
-	//1.init
+	//1.create
 	int x,y;
 	backgroundcolor(0);
 
@@ -399,7 +399,7 @@ static void the2048_start()
 static void the2048_stop()
 {
 }
-void the2048_init(char* base,void* addr)
+void the2048_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -414,6 +414,6 @@ void the2048_init(char* base,void* addr)
 	this[14]=(QWORD)the2048_read;
 	this[15]=(QWORD)the2048_write;
 }
-void the2048_kill()
+void the2048_delete()
 {
 }

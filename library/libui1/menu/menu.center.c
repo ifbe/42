@@ -232,7 +232,7 @@ static void menu_start()
 static void menu_stop()
 {
 }
-void menu_init(void* base,void* addr)
+void menu_create(void* base,void* addr)
 {
 	QWORD* this=addr;
 	haha=addr;
@@ -247,6 +247,6 @@ void menu_init(void* base,void* addr)
 	this[14]=(QWORD)menu_read;
 	this[15]=(QWORD)menu_write;
 }
-void menu_kill()
+void menu_delete()
 {
 }

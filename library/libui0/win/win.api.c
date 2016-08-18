@@ -629,7 +629,7 @@ void windowstop()
 
 
 
-void initconsolewindow()
+void createconsolewindow()
 {
 	//int ret;
 	//char buf[128];
@@ -641,7 +641,7 @@ void initconsolewindow()
 	//ShowWindow(consolewindow,SW_HIDE);
 }
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
-int initmywindow()
+int createmywindow()
 {
 	//Step 1: Registering the Window Class+Creating the Window
 	char *AppTitle="run as administrator to see the real world (=.=)";
@@ -693,7 +693,7 @@ void InitUIPIFilter()
 	proc(WM_DROPFILES,1);
 	proc(0x0049, 1);
 }
-void inittray()
+void createtray()
 {
 	//Step 2:托盘
 	nid.cbSize = sizeof(NOTIFYICONDATA); 
@@ -711,13 +711,13 @@ void inittray()
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
 	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
-void windowinit()
+void windowcreate()
 {
 	//终端窗口
-	initconsolewindow();
+	createconsolewindow();
 
 	//图形窗口
-	initmywindow();
+	createmywindow();
 	realdc=GetDC(window);
 
 	//打开拖拽
@@ -728,10 +728,10 @@ void windowinit()
 	RegisterTouchWindow(window, 0);
 
 	//打开托盘
-	inittray();
+	createtray();
 }
 //__attribute__((destructor)) void destorysdl()
-void windowkill()
+void windowdelete()
 {
 	//必须亮出来再关
 	//ShowWindow(consolewindow,SW_SHOW);

@@ -84,7 +84,7 @@ static void roster_start()
 static void roster_stop()
 {
 }
-void roster_init(void* base,void* addr)
+void roster_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -99,6 +99,6 @@ void roster_init(void* base,void* addr)
 	this[14]=(QWORD)roster_read;
 	this[15]=(QWORD)roster_write;
 }
-void roster_kill()
+void roster_delete()
 {
 }

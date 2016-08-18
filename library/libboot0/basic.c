@@ -3,14 +3,14 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void initcpu();
-void killcpu();
+void createcpu();
+void deletecpu();
 //
-void initmemory();
-void killmemory();
+void creatememory();
+void deletememory();
 //
-void initserial();
-void killserial();
+void createserial();
+void deleteserial();
 //
 void say(char* , ...);
 
@@ -25,17 +25,17 @@ int bootevent(QWORD* first,QWORD* second)
 
 
 
-void basicinit(char* type,char* addr)
+void basiccreate(char* type,char* addr)
 {
-	//initcpu();
-	//initmemory();
-	initserial();
-	say("[0,4):inited basic\n");
+	//createcpu();
+	//creatememory();
+	createserial();
+	say("[0,4):createed basic\n");
 }
-void basickill()
+void basicdelete()
 {
-	say("[0,4):killing basic\n");
-	killserial();
-	//killmemory();
-	//killcpu();
+	say("[0,4):deleteing basic\n");
+	deleteserial();
+	//deletememory();
+	//deletecpu();
 }

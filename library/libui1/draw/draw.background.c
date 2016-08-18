@@ -84,12 +84,12 @@ void background_start()
 void background_stop()
 {
 }
-void background_init(void* home,void* me)
+void background_create(void* home,void* me)
 {
 	haha = me;
 	haha->type = 0;
 	haha->id = 0x6762;
 }
-void background_kill()
+void background_delete()
 {
 }

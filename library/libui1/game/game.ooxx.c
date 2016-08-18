@@ -136,7 +136,7 @@ static void ooxx_stop()
 
 
 
-void ooxx_init(char* base,void* addr)
+void ooxx_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -151,6 +151,6 @@ void ooxx_init(char* base,void* addr)
 	this[14]=(QWORD)ooxx_read;
 	this[15]=(QWORD)ooxx_write;
 }
-void ooxx_kill()
+void ooxx_delete()
 {
 }

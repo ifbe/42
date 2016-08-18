@@ -3,8 +3,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //artery
-void arteryinit(char*);
-void arterykill(char*);
+void arterycreate(char*);
+void arterydelete(char*);
 void arterystart(char*);
 void arterystop(char*);
 void arterylist(char*);
@@ -71,8 +71,8 @@ int command(char* buffer)
 	{
 		//"create","destory","start","stop"
 		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-		say("init ?             =create=make=fabricate\n");
-		say("kill ?             =destory=smash=wreck\n");
+		say("create ?             =create=make=fabricate\n");
+		say("delete ?             =destory=smash=wreck\n");
 		say("start ?            =open=mount=enter\n");
 		say("stop ?             =close=unmount=leave\n");
 
@@ -87,16 +87,16 @@ int command(char* buffer)
 	}
 
 	//"create","destory","start","stop"
-	ret=compare( argv[0] , "init");		//eg:	dynamicmodule
+	ret=compare( argv[0] , "create");		//eg:	dynamicmodule
 	if(ret==0)
 	{
-		arteryinit(argv[1]);
+		arterycreate(argv[1]);
 		goto finish;
 	}
-	ret=compare( argv[0] , "kill");
+	ret=compare( argv[0] , "delete");
 	if(ret==0)
 	{
-		arterykill(argv[1]);
+		arterydelete(argv[1]);
 		goto finish;
 	}
 	ret=compare( argv[0] , "start");
@@ -148,7 +148,7 @@ finish:
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void slaveinit(char* type,char* addr)
+void slavecreate(char* type,char* addr)
 {
 	basic=addr+0;
 	body=addr+0x400000;
@@ -156,7 +156,7 @@ void slaveinit(char* type,char* addr)
 	character=addr+0xc00000;
 	say("[%s]",memory);
 }
-void slavekill()
+void slavedelete()
 {
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

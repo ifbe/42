@@ -21,7 +21,7 @@ static void quic_start(QWORD type,char* p)
 static void quic_stop()
 {
 }
-void quic_init(char* world,QWORD* p)
+void quic_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void quic_init(char* world,QWORD* p)
 	p[6]=(QWORD)quic_read;
 	p[7]=(QWORD)quic_write;
 }
-void quic_kill()
+void quic_delete()
 {
 	quic_stop();
 }

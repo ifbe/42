@@ -14,7 +14,7 @@ SDL_Texture* texture;		//texture是在显存里的？
 SDL_TimerID my_timer_id;
 
 
-void initwindow(char* addr)
+void createwindow(char* addr)
 {
 	//准备rgb点阵
 	mypixel=(unsigned int*)addr;
@@ -36,7 +36,7 @@ void initwindow(char* addr)
 	SDL_RenderPresent(renderer);
 
 }
-void killwindow()
+void deletewindow()
 {
 	//释放点阵
 	free(mypixel);

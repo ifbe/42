@@ -1,32 +1,32 @@
 #define QWORD unsigned long long
-void arp_init(void*,void*);
-void eth_init(void*,void*);
-void ftp_init(void*,void*);
-void http_init(void*,void*);
-void icmp_init(void*,void*);
-void ipv4_init(void*,void*);
-void ipv6_init(void*,void*);
-void ppp_init(void*,void*);
-void quic_init(void*,void*);
-void slip_init(void*,void*);
-void ssh_init(void*,void*);
-void tcp_init(void*,void*);
-void tftp_init(void*,void*);
-void udp_init(void*,void*);
-void arp_kill();
-void eth_kill();
-void ftp_kill();
-void http_kill();
-void icmp_kill();
-void ipv4_kill();
-void ipv6_kill();
-void ppp_kill();
-void quic_kill();
-void slip_kill();
-void ssh_kill();
-void tcp_kill();
-void tftp_kill();
-void udp_kill();
+void arp_create(void*,void*);
+void eth_create(void*,void*);
+void ftp_create(void*,void*);
+void http_create(void*,void*);
+void icmp_create(void*,void*);
+void ipv4_create(void*,void*);
+void ipv6_create(void*,void*);
+void ppp_create(void*,void*);
+void quic_create(void*,void*);
+void slip_create(void*,void*);
+void ssh_create(void*,void*);
+void tcp_create(void*,void*);
+void tftp_create(void*,void*);
+void udp_create(void*,void*);
+void arp_delete();
+void eth_delete();
+void ftp_delete();
+void http_delete();
+void icmp_delete();
+void ipv4_delete();
+void ipv6_delete();
+void ppp_delete();
+void quic_delete();
+void slip_delete();
+void ssh_delete();
+void tcp_delete();
+void tftp_delete();
+void udp_delete();
 
 
 
@@ -49,7 +49,7 @@ static int net_start(QWORD type,char* p)
 static int net_stop()
 {
 }
-int net_init(char* world,QWORD* p)
+int net_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0;			//type
@@ -64,64 +64,64 @@ int net_init(char* world,QWORD* p)
 	//
 	char* q=(char*)p+0x40;
 
-	arp_init(world,q);
+	arp_create(world,q);
 	q+=0x40;
 
-	eth_init(world,q);
+	eth_create(world,q);
 	q+=0x40;
 
-	ftp_init(world,q);
+	ftp_create(world,q);
 	q+=0x40;
 
-	http_init(world,q);
+	http_create(world,q);
 	q+=0x40;
 
-	icmp_init(world,q);
+	icmp_create(world,q);
 	q+=0x40;
 
-	ipv4_init(world,q);
+	ipv4_create(world,q);
 	q+=0x40;
 
-	ipv6_init(world,q);
+	ipv6_create(world,q);
 	q+=0x40;
 
-	ppp_init(world,q);
+	ppp_create(world,q);
 	q+=0x40;
 
-	quic_init(world,q);
+	quic_create(world,q);
 	q+=0x40;
 
-	slip_init(world,q);
+	slip_create(world,q);
 	q+=0x40;
 
-	ssh_init(world,q);
+	ssh_create(world,q);
 	q+=0x40;
 
-	tcp_init(world,q);
+	tcp_create(world,q);
 	q+=0x40;
 
-	tftp_init(world,q);
+	tftp_create(world,q);
 	q+=0x40;
 
-	udp_init(world,q);
+	udp_create(world,q);
 	q+=0x40;
 
 	return q-(char*)p;
 }
-int net_kill()
+int net_delete()
 {
-	udp_kill();
-	tftp_kill();
-	tcp_kill();
-	ssh_kill();
-	slip_kill();
-	quic_kill();
-	ppp_kill();
-	ipv6_kill();
-	ipv4_kill();
-	icmp_kill();
-	http_kill();
-	ftp_kill();
-	eth_kill();
-	arp_kill();
+	udp_delete();
+	tftp_delete();
+	tcp_delete();
+	ssh_delete();
+	slip_delete();
+	quic_delete();
+	ppp_delete();
+	ipv6_delete();
+	ipv4_delete();
+	icmp_delete();
+	http_delete();
+	ftp_delete();
+	eth_delete();
+	arp_delete();
 }

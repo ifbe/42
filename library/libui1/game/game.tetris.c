@@ -653,7 +653,7 @@ static void tetris_start()
 static void tetris_stop()
 {
 }
-void tetris_init(char* base,void* addr)
+void tetris_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -670,6 +670,6 @@ void tetris_init(char* base,void* addr)
 
 	table=(unsigned char*)(addr+0x300000);
 }
-void tetris_kill()
+void tetris_delete()
 {
 }

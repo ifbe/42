@@ -23,7 +23,7 @@ static void wifi_start(QWORD type,char* p)
 static void wifi_stop()
 {
 }
-void wifi_init(char* world,QWORD* p)
+void wifi_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -35,7 +35,7 @@ void wifi_init(char* world,QWORD* p)
 	p[6]=(QWORD)wifi_read;
 	p[7]=(QWORD)wifi_write;
 }
-void wifi_kill()
+void wifi_delete()
 {
 	wifi_stop();
 }

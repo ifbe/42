@@ -230,7 +230,7 @@ static void tree_start()
 static void tree_stop()
 {
 }
-void tree_init(void* base,void* addr)
+void tree_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -247,6 +247,6 @@ void tree_init(void* base,void* addr)
 
 	node=(struct mathnode*)(base+0x200000);
 }
-void tree_kill()
+void tree_delete()
 {
 }

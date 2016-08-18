@@ -53,7 +53,7 @@ void doodle_start()
 void doodle_stop()
 {
 }
-void doodle_init(char* base,char* addr)
+void doodle_create(char* base,char* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	this[0]=0x776f646e6977;
@@ -66,6 +66,6 @@ void doodle_init(char* base,char* addr)
 	this[14]=(QWORD)doodle_read;
 	this[15]=(QWORD)doodle_write;
 }
-void doodle_kill()
+void doodle_delete()
 {
 }

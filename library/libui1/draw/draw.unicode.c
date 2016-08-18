@@ -106,7 +106,7 @@ void printunicodebig(int x,int y,DWORD value)
 
 
 
-void unicode_init(void* home,void* me)
+void unicode_create(void* home,void* me)
 {
 	unicodetable=(unsigned char*)whereisunicodetable();
 
@@ -114,6 +114,6 @@ void unicode_init(void* home,void* me)
 	haha->type=0;
 	haha->id=0x65646f63696e75;
 }
-void unicode_kill()
+void unicode_delete()
 {
 }

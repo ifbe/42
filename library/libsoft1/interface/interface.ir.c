@@ -21,7 +21,7 @@ static void ir_start(QWORD type,char* p)
 static void ir_stop()
 {
 }
-void ir_init(char* world,QWORD* p)
+void ir_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -33,7 +33,7 @@ void ir_init(char* world,QWORD* p)
 	p[6]=(QWORD)ir_read;
 	p[7]=(QWORD)ir_write;
 }
-void ir_kill()
+void ir_delete()
 {
 	ir_stop();
 }

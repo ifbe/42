@@ -21,7 +21,7 @@ static void code_start()
 static void code_stop()
 {
 }
-void code_init(char* world,QWORD* p)
+void code_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6d656d;
@@ -33,7 +33,7 @@ void code_init(char* world,QWORD* p)
 	p[6]=(QWORD)code_read;
 	p[7]=(QWORD)code_write;
 }
-void code_kill()
+void code_delete()
 {
 }
 

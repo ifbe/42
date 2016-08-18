@@ -383,7 +383,7 @@ static void sketchpad_start()
 static void sketchpad_stop()
 {
 }
-void sketchpad_init(void* base,void* addr)
+void sketchpad_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -401,6 +401,6 @@ void sketchpad_init(void* base,void* addr)
 	node=(struct mathnode*)(base+0x100000);
 	databuf=base+0x200000;
 }
-void sketchpad_kill()
+void sketchpad_delete()
 {
 }

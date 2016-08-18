@@ -21,7 +21,7 @@ static void icmp_start(QWORD type,char* p)
 static void icmp_stop()
 {
 }
-void icmp_init(char* world,QWORD* p)
+void icmp_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void icmp_init(char* world,QWORD* p)
 	p[6]=(QWORD)icmp_read;
 	p[7]=(QWORD)icmp_write;
 }
-void icmp_kill()
+void icmp_delete()
 {
 	icmp_stop();
 }

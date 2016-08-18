@@ -5,7 +5,7 @@
 int main(int argc, char* argv[])
 {
     int i;
-    md5_init();
+    md5_create();
 
     unsigned char encrypt[1024];     //存放于加密的信息  
     unsigned char decrypt[17];       //存放加密后的结果  

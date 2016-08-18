@@ -23,7 +23,7 @@ static void usb_start(QWORD type,char* p)
 static void usb_stop()
 {
 }
-void usb_init(char* world,QWORD* p)
+void usb_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -35,7 +35,7 @@ void usb_init(char* world,QWORD* p)
 	p[6]=(QWORD)usb_read;
 	p[7]=(QWORD)usb_write;
 }
-void usb_kill()
+void usb_delete()
 {
 	usb_stop();
 }

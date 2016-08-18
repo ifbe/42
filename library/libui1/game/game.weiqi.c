@@ -147,7 +147,7 @@ static void weiqi_stop()
 
 
 
-void weiqi_init(void* base,void* addr)
+void weiqi_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -164,6 +164,6 @@ void weiqi_init(void* base,void* addr)
 
 	data=base+0x300000;
 }
-void weiqi_kill()
+void weiqi_delete()
 {
 }

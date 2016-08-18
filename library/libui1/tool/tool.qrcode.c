@@ -88,7 +88,7 @@ static void qrcode_stop()
 
 
 
-void qrcode_init(void* base,void* addr)
+void qrcode_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -105,6 +105,6 @@ void qrcode_init(void* base,void* addr)
 
 	databuf=(char*)(addr+0x300000);
 }
-void qrcode_kill()
+void qrcode_delete()
 {
 }

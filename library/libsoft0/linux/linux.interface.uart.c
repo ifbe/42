@@ -77,9 +77,9 @@ int systemuart_stop()
 
 
 
-void systemuart_init()
+void systemuart_create()
 {
 }
-void systemuart_kill()
+void systemuart_delete()
 {
 }

@@ -16,9 +16,9 @@ int systembt_start()
 int systembt_stop()
 {
 }
-int systembt_init()
+int systembt_create()
 {
 }
-int systembt_kill()
+int systembt_delete()
 {
 }

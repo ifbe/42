@@ -3,65 +3,65 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //special guys
-void menu_init(char*,char*);
-void roster_init(char*,char*);
-void virtkbd_init(char*,char*);
+void menu_create(char*,char*);
+void roster_create(char*,char*);
+void virtkbd_create(char*,char*);
 //libs
-void ascii_init(char*,char*);
-void unicode_init(char*,char*);
-void background_init(char*,char*);
-void shape_init(char*,char*);
+void ascii_create(char*,char*);
+void unicode_create(char*,char*);
+void background_create(char*,char*);
+void shape_create(char*,char*);
 //game
-void ooxx_init(char*,char*);
-void snake_init(char*,char*);
-void the2048_init(char*,char*);
-void tetris_init(char*,char*);
-void weiqi_init(char*,char*);
-void xiangqi_init(char*,char*);
+void ooxx_create(char*,char*);
+void snake_create(char*,char*);
+void the2048_create(char*,char*);
+void tetris_create(char*,char*);
+void weiqi_create(char*,char*);
+void xiangqi_create(char*,char*);
 //test
-void color_init(char*,char*);
-void doodle_init(char*,char*);
-void font_init(char*,char*);
-void pure_init(char*,char*);
+void color_create(char*,char*);
+void doodle_create(char*,char*);
+void font_create(char*,char*);
+void pure_create(char*,char*);
 //tool
-void console_init(char*,char*);
-void hex_init(char*,char*);
-void joystick_init(char*,char*);
-void keyboard_init(char*,char*);
-void sketchpad_init(char*,char*);
-void spectrum_init(char*,char*);
-void tree_init(char*,char*);
-void qrcode_init(char*,char*);
+void console_create(char*,char*);
+void hex_create(char*,char*);
+void joystick_create(char*,char*);
+void keyboard_create(char*,char*);
+void sketchpad_create(char*,char*);
+void spectrum_create(char*,char*);
+void tree_create(char*,char*);
+void qrcode_create(char*,char*);
 //
-void menu_kill();
-void roster_kill();
-void virtkbd_kill();
+void menu_delete();
+void roster_delete();
+void virtkbd_delete();
 //
-void ascii_kill();
-void unicode_kill();
-void shape_kill();
-void background_kill();
+void ascii_delete();
+void unicode_delete();
+void shape_delete();
+void background_delete();
 //
-void xiangqi_kill();
-void weiqi_kill();
-void the2048_kill();
-void tetris_kill();
-void snake_kill();
-void ooxx_kill();
+void xiangqi_delete();
+void weiqi_delete();
+void the2048_delete();
+void tetris_delete();
+void snake_delete();
+void ooxx_delete();
 //
-void pure_kill();
-void font_kill();
-void doodle_kill();
-void color_kill();
+void pure_delete();
+void font_delete();
+void doodle_delete();
+void color_delete();
 //
-void console_kill();
-void hex_kill();
-void joystick_kill();
-void keyboard_kill();
-void sketchpad_kill();
-void tree_kill();
-void spectrum_kill();
-void qrcode_kill();
+void console_delete();
+void hex_delete();
+void joystick_delete();
+void keyboard_delete();
+void sketchpad_delete();
+void tree_delete();
+void spectrum_delete();
+void qrcode_delete();
 //
 int compare(char*,char*);
 int eventwrite();
@@ -146,7 +146,7 @@ static unsigned char* mega3;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void characterinit(char* type,char* addr)
+void charactercreate(char* type,char* addr)
 {
 	int i;
 	char* temp;
@@ -164,145 +164,145 @@ void characterinit(char* type,char* addr)
 		mega3=addr+0x300000;
 
 		//menu.center
-		menu_init(addr,temp);
+		menu_create(addr,temp);
 		temp+=0x80;
 
 		//menu.roster
-		roster_init(addr,temp);
+		roster_create(addr,temp);
 		temp += 0x80;
 
 		//menu.virtkbd
-		virtkbd_init(addr,temp);
+		virtkbd_create(addr,temp);
 		temp += 0x80;
 
 		//ascii
-		ascii_init(addr,temp);
+		ascii_create(addr,temp);
 		temp+=0x80;
 
 		//unicode
-		unicode_init(addr,temp);
+		unicode_create(addr,temp);
 		temp+=0x80;
 
 		//background
-		background_init(addr,temp);
+		background_create(addr,temp);
 		temp+=0x80;
 
 		//shape
-		shape_init(addr,temp);
+		shape_create(addr,temp);
 		temp+=0x80;
 
 		//game.2048
-		the2048_init(addr,temp);
+		the2048_create(addr,temp);
 		temp += 0x80;
 
 		//game.ooxx
-		ooxx_init(addr,temp);
+		ooxx_create(addr,temp);
 		temp += 0x80;
 
 		//game.snake
-		snake_init(addr,temp);
+		snake_create(addr,temp);
 		temp += 0x80;
 
 		//game.tetris
-		tetris_init(addr,temp);
+		tetris_create(addr,temp);
 		temp += 0x80;
 
 		//game.weiqi
-		weiqi_init(addr,temp);
+		weiqi_create(addr,temp);
 		temp += 0x80;
 
 		//game.xiangqi
-		xiangqi_init(addr,temp);
+		xiangqi_create(addr,temp);
 		temp += 0x80;
 
 		//test.color
-		color_init(addr,temp);
+		color_create(addr,temp);
 		temp += 0x80;
 
 		//test.font
-		font_init(addr,temp);
+		font_create(addr,temp);
 		temp += 0x80;
 
 		//test.doodle
-		doodle_init(addr,temp);
+		doodle_create(addr,temp);
 		temp += 0x80;
 
 		//test.pure
-		pure_init(addr,temp);
+		pure_create(addr,temp);
 		temp += 0x80;
 
 		//tool.console
-		console_init(addr,temp);
+		console_create(addr,temp);
 		temp += 0x80;
 
 		//tool.hex
-		hex_init(addr,temp);
+		hex_create(addr,temp);
 		temp += 0x80;
 
 		//tool.joystick
-		joystick_init(addr,temp);
+		joystick_create(addr,temp);
 		temp += 0x80;
 
 		//tool.keyboard
-		keyboard_init(addr,temp);
+		keyboard_create(addr,temp);
 		temp += 0x80;
 
 		//tool.qrcode
-		qrcode_init(addr,temp);
+		qrcode_create(addr,temp);
 		temp += 0x80;
 
 		//tool.tree
-		tree_init(addr,temp);
+		tree_create(addr,temp);
 		temp += 0x80;
 
 		//tool.sketchpad
-		sketchpad_init(addr,temp);
+		sketchpad_create(addr,temp);
 		temp += 0x80;
 
 		//tool.spectrum
-		spectrum_init(addr,temp);
+		spectrum_create(addr,temp);
 		temp += 0x80;
 
 		for(now=0;now<100;now++)
 		{
 			if(worker[now].type != 0)break;
 		}
-		say("[c,f):inited character\n");
+		say("[c,f):createed character\n");
 	}
 }
-void characterkill()
+void characterdelete()
 {
-	say("[c,f):killing character\n");
+	say("[c,f):deleteing character\n");
 
-	spectrum_kill();
-	tree_kill();
-	sketchpad_kill();
-	hex_kill();
-	console_kill();
-	qrcode_kill();
-	joystick_kill();
-	keyboard_kill();
+	spectrum_delete();
+	tree_delete();
+	sketchpad_delete();
+	hex_delete();
+	console_delete();
+	qrcode_delete();
+	joystick_delete();
+	keyboard_delete();
 
-	color_kill();
-	doodle_kill();
-	font_kill();
-	pure_kill();
+	color_delete();
+	doodle_delete();
+	font_delete();
+	pure_delete();
 
-	ooxx_kill();
-	snake_kill();
-	tetris_kill();
-	the2048_kill();
-	weiqi_kill();
-	xiangqi_kill();
+	ooxx_delete();
+	snake_delete();
+	tetris_delete();
+	the2048_delete();
+	weiqi_delete();
+	xiangqi_delete();
 
-	ascii_kill();
-	background_kill();
-	shape_kill();
-	unicode_kill();
+	ascii_delete();
+	background_delete();
+	shape_delete();
+	unicode_delete();
 
-	menu_kill();
-	roster_kill();
-	virtkbd_kill();
+	menu_delete();
+	roster_delete();
+	virtkbd_delete();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

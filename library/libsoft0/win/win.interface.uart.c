@@ -16,10 +16,10 @@ int systemuart_start()
 int systemuart_stop()
 {
 }
-int systemuart_init()
+int systemuart_create()
 {
 }
-int systemuart_kill()
+int systemuart_delete()
 {
 }
 

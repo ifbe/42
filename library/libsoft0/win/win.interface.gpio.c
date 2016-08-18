@@ -16,10 +16,10 @@ int systemgpio_start()
 int systemgpio_stop()
 {
 }
-int systemgpio_init()
+int systemgpio_create()
 {
 }
-int systemgpio_kill()
+int systemgpio_delete()
 {
 }
 

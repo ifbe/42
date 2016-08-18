@@ -290,7 +290,7 @@ void md5_read(unsigned char digest[16])
 
 
 
-void md5_init()
+void md5_create()
 {  
 	context.count[0] = context.count[1] = 0;  
  
@@ -299,6 +299,6 @@ void md5_init()
 	context.state[2] = 0x98badcfe;  
 	context.state[3] = 0x10325476;  
 }  
-void md5_kill()
+void md5_delete()
 {
 }

@@ -9,10 +9,10 @@ unsigned int getrandom()
 {
 	return rand();
 }
-void initrandom()
+void createrandom()
 {
 	srand((int)time(0));
 }
-void killrandom()
+void deleterandom()
 {
 }

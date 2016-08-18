@@ -77,7 +77,7 @@ char* traverse_read()
 			continue;
 		}
 
-		//kill nondir
+		//delete nondir
 		if(ent->d_type == DT_LNK)
 		{
 			continue;

@@ -69,7 +69,7 @@ void snake_read_text()
 }
 void snake_read_pixel()
 {
-	//init screen
+	//create screen
 	int j;
 
 	if(die == 1)
@@ -271,11 +271,11 @@ static void snake_choose()
 
 static void snake_start()
 {
-	//1.init
+	//1.create
 	int x;
 	backgroundcolor(0);
 
-	//init food and snake 
+	//create food and snake 
 	newfood();
 	snake[0].x = foodx;
 	snake[0].y = foody;
@@ -296,7 +296,7 @@ static void snake_stop()
 
 
 
-void snake_init(char* base,void* addr)
+void snake_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -313,6 +313,6 @@ void snake_init(char* base,void* addr)
 
 	snake=(struct hehe*)(addr+0x300000);
 }
-void snake_kill()
+void snake_delete()
 {
 }

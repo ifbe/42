@@ -190,7 +190,7 @@ static void xiangqi_stop()
 
 
 
-void xiangqi_init(char* base,void* addr)
+void xiangqi_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -205,6 +205,6 @@ void xiangqi_init(char* base,void* addr)
 	this[14]=(QWORD)xiangqi_read;
 	this[15]=(QWORD)xiangqi_write;
 }
-void xiangqi_kill()
+void xiangqi_delete()
 {
 }

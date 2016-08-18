@@ -13,7 +13,7 @@ void say(char* fmt , ...)
 
 
 
-void initserial(char* arg)
+void createserial(char* arg)
 {
 	//
 	HWND consolewindow;
@@ -31,6 +31,6 @@ void initserial(char* arg)
 	consolewindow=GetConsoleWindow();
 	ShowWindow(consolewindow,SW_HIDE);
 }
-void killserial()
+void deleteserial()
 {
 }

@@ -20,9 +20,9 @@ void say(char* fmt , ...)
 
 
 
-void killserial()
+void deleteserial()
 {
 }
-void initserial()
+void createserial()
 {
 }

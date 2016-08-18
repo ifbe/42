@@ -16,10 +16,10 @@ int systemwifi_start()
 int systemwifi_stop()
 {
 }
-int systemwifi_init()
+int systemwifi_create()
 {
 }
-int systemwifi_kill()
+int systemwifi_delete()
 {
 }
 

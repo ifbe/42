@@ -126,7 +126,7 @@ void windowstop()
 
 
 
-void windowinit()
+void windowcreate()
 {
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
@@ -136,6 +136,6 @@ void windowinit()
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
 }
-void windowkill()
+void windowdelete()
 {
 }

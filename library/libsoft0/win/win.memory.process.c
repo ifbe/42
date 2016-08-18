@@ -85,10 +85,10 @@ void writeprocess()
 
 
 
-void initprocess(char* addr)
+void createprocess(char* addr)
 {
 	memoryinfo=addr;
 }
-void killprocess()
+void deleteprocess()
 {
 }

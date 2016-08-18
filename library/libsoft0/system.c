@@ -3,8 +3,8 @@
 #define WORD unsigned short
 #define BYTE unsigned char
 //file
-int initfile();
-int killfile();
+int createfile();
+int deletefile();
 int startfile();
 int stopfile();
 int listfile();
@@ -12,8 +12,8 @@ int choosefile();
 int readfile( char* buf,QW sector,DW count);
 int writefile(char* buf,QW sector,DW count);
 //folder
-int initfolder();
-int killfolder();
+int createfolder();
+int deletefolder();
 int startfolder(char* foldername);
 int stopfolder();
 int listfolder();
@@ -21,14 +21,14 @@ int choosefolder();
 int readfolder(char* name);
 int writefolder(char* name);
 //process
-int initprocess();
-int killprocess();
+int createprocess();
+int deleteprocess();
 //random
-int initrandom();
-int killrandom();
+int createrandom();
+int deleterandom();
 //socket
-int initsocket();
-int killsocket();
+int createsocket();
+int deletesocket();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -80,27 +80,27 @@ int systemwrite(char* buf,QW sector,DW count)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void systeminit(char* module,char* addr)
+void systemcreate(char* module,char* addr)
 {
 	if(module==0)
 	{
-		initfile();		//2
-		initfolder();		//3
-		//initprocess();	//4
-		initrandom();		//5
-		initsocket();		//6
+		createfile();		//2
+		createfolder();		//3
+		//createprocess();	//4
+		createrandom();		//5
+		createsocket();		//6
 	}
-	say("[8,c):inited system\n");
+	say("[8,c):createed system\n");
 }
-void systemkill()
+void systemdelete()
 {
-	say("[8,c):killing system\n");
+	say("[8,c):deleteing system\n");
 
-	killsocket();		//6
-	killrandom();		//5
-	//killprocess();	//4
-	killfolder();		//3
-	killfile();		//2
+	deletesocket();		//6
+	deleterandom();		//5
+	//deleteprocess();	//4
+	deletefolder();		//3
+	deletefile();		//2
 }
 int systemstart(int type,char* p)
 {

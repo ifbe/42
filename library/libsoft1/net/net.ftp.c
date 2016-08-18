@@ -21,7 +21,7 @@ static void ftp_start(QWORD type,char* p)
 static void ftp_stop()
 {
 }
-void ftp_init(char* world,QWORD* p)
+void ftp_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void ftp_init(char* world,QWORD* p)
 	p[6]=(QWORD)ftp_read;
 	p[7]=(QWORD)ftp_write;
 }
-void ftp_kill()
+void ftp_delete()
 {
 	ftp_stop();
 }

@@ -212,7 +212,7 @@ static void console_start()
 static void console_stop()
 {
 }
-void console_init(char* base,void* addr)
+void console_create(char* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -230,6 +230,6 @@ void console_init(char* base,void* addr)
 	//
 	logbuf=base+0x300000;
 }
-void console_kill()
+void console_delete()
 {
 }

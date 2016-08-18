@@ -106,9 +106,9 @@ void systemspi_stop()
 
 
 
-void systemspi_init()
+void systemspi_create()
 {
 }
-void systemspi_kill()
+void systemspi_delete()
 {
 }

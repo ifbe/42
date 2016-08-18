@@ -70,9 +70,9 @@ void stopphymem()
 		close(_dev_mem);
 	}
 }
-void initphymem()
+void createphymem()
 {
 }
-void killphymem()
+void deletephymem()
 {
 }

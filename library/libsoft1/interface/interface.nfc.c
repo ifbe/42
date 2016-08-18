@@ -21,7 +21,7 @@ static void nfc_start(QWORD type,char* p)
 static void nfc_stop()
 {
 }
-void nfc_init(char* world,QWORD* p)
+void nfc_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -33,7 +33,7 @@ void nfc_init(char* world,QWORD* p)
 	p[6]=(QWORD)nfc_read;
 	p[7]=(QWORD)nfc_write;
 }
-void nfc_kill()
+void nfc_delete()
 {
 	nfc_stop();
 }

@@ -39,7 +39,7 @@ static void fs_start()
 static void fs_stop()
 {
 }
-void fs_init(void* base,void* addr)
+void fs_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -54,6 +54,6 @@ void fs_init(void* base,void* addr)
 	this[14]=(QWORD)fs_read;
 	this[15]=(QWORD)fs_write;
 }
-void fs_kill()
+void fs_delete()
 {
 }

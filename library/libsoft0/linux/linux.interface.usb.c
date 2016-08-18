@@ -52,9 +52,9 @@ void systemusb_stop()
 
 
 
-void systemusb_init()
+void systemusb_create()
 {
 }
-void systemusb_kill()
+void systemusb_delete()
 {
 }

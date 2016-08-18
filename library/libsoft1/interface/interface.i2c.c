@@ -79,7 +79,7 @@ static int i2c_stop()
 {
 	systemi2c_stop();
 }
-void i2c_init(char* world,QWORD* p)
+void i2c_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -91,7 +91,7 @@ void i2c_init(char* world,QWORD* p)
 	p[6]=(QWORD)i2c_read;
 	p[7]=(QWORD)i2c_write;
 }
-void i2c_kill()
+void i2c_delete()
 {
 	i2c_stop();
 }

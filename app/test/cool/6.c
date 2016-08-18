@@ -5,8 +5,8 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 double sine(double);
-void initwindow();
-void killwindow();
+void createwindow();
+void deletewindow();
 void writewindow(QWORD size,void* addr);
 void uievent(QWORD* type,QWORD* key);
 
@@ -66,7 +66,7 @@ void main()
 	//before
 	int x,y;
 	int r,g,b;
-	initwindow();
+	createwindow();
 
 	//picture
 	for(y=0;y<1024;y++)
@@ -96,5 +96,5 @@ void main()
 	}
 
 	//after
-	killwindow();
+	deletewindow();
 }

@@ -4,7 +4,7 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int initunicode(QWORD,void*);
+int createunicode(QWORD,void*);
 void printunicode(int,int,DWORD);
 void printunicodebig(int,int,DWORD);
 //
@@ -63,10 +63,10 @@ void main()
 {
 	//before
 	int ret;
-	ret=initwindow();	//check error!!!!!
+	ret=createwindow();	//check error!!!!!
 
 	//unicode
-	ret=initunicode(0x04000400,palette);
+	ret=createunicode(0x04000400,palette);
 
 	//forever
 	QWORD type=0;
@@ -89,5 +89,5 @@ void main()
 
 	//after
 death:
-	killwindow();
+	deletewindow();
 }

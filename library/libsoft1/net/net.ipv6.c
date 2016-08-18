@@ -21,7 +21,7 @@ static void ipv6_start(QWORD type,char* p)
 static void ipv6_stop()
 {
 }
-void ipv6_init(char* world,QWORD* p)
+void ipv6_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void ipv6_init(char* world,QWORD* p)
 	p[6]=(QWORD)ipv6_read;
 	p[7]=(QWORD)ipv6_write;
 }
-void ipv6_kill()
+void ipv6_delete()
 {
 	ipv6_stop();
 }

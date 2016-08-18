@@ -36,7 +36,7 @@ static int sp=0;
 
 
 //------------------------------------------------
-void initfpstack()
+void createfpstack()
 {
 	fpcount=20;
 }
@@ -68,7 +68,7 @@ int popfp(double* dest)
 
 
 
-void initstack()
+void createstack()
 {
 	//空栈的时候rsp值最大:		rsp=0xa0000		(sp=128)
 	//满栈的时候rsp值最小:		rsp=0x90000		(sp=0)
@@ -151,7 +151,7 @@ void infix2postfix(char* infix,char* postfix)
 
 	DWORD stacktop;
 
-	initstack();
+	createstack();
 	for(ret=0;ret<128;ret++)postfix[ret]=0;
 
 	//
@@ -319,7 +319,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 	//rsp=128
-	initstack();
+	createstack();
 
 	//值为0代表算式如:"1+2*[9-6]",	非0代表等式如:"1+2*[9-6]=54.321/x^3"
 	node[0].integer=0;
@@ -572,7 +572,7 @@ double calculator(char* postfix,QWORD x,QWORD y)
 	QWORD data;
 	double first,second,temp;
 
-	initfpstack();
+	createfpstack();
 	while(1)
 	{
 		//第1种：常量
@@ -752,7 +752,7 @@ double sketchpad(struct mathnode* node,double x,double y)
 	double result1,result2;
 
 	result1=0;
-	initfpstack();
+	createfpstack();
 	while(1)
 	{
 		if( node[source].type == 0x33323130 )	//0123...

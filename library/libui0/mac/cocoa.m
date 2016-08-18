@@ -15,10 +15,10 @@ int main(int argc, const char * argv[])
     // Autorelease Pool:
     // Objects declared in this scope will be automatically
     // released at the end of it, when the pool is "drained".
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] create];
 
     // Create a shared app instance.
-    // This will initialize the global variable
+    // This will createialize the global variable
     // 'NSApp' with the application instance.
     [NSApplication sharedApplication];
 
@@ -31,19 +31,19 @@ int main(int argc, const char * argv[])
 
     // Window bounds (x, y, width, height).
     NSRect windowRect = NSMakeRect(100, 100, 400, 400);
-    NSWindow * window = [[NSWindow alloc] initWithContentRect:windowRect
+    NSWindow * window = [[NSWindow alloc] createWithContentRect:windowRect
                                           styleMask:windowStyle
                                           backing:NSBackingStoreBuffered
                                           defer:NO];
     [window autorelease];
 
     // Window controller:
-    NSWindowController * windowController = [[NSWindowController alloc] initWithWindow:window];
+    NSWindowController * windowController = [[NSWindowController alloc] createWithWindow:window];
     [windowController autorelease];
 
     // This will add a simple text view to the window,
     // so we can write a test string on it.
-    NSTextView * textView = [[NSTextView alloc] initWithFrame:windowRect];
+    NSTextView * textView = [[NSTextView alloc] createWithFrame:windowRect];
     [textView autorelease];
 
     [window setContentView:textView];

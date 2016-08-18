@@ -1,6 +1,6 @@
 /*
 1:	add name in library/libui1/makefile
-2:	add code in character.c character_init() and character_kill()
+2:	add code in character.c character_create() and character_delete()
 3:	replace "example" to "whatname"----->		:9,$s/example/whatname/g
 4:	do your logic in this code
 */
@@ -89,7 +89,7 @@ static void example_start()
 static void example_stop()
 {
 }
-void example_init(void* base,void* addr)
+void example_create(void* base,void* addr)
 {
 	QWORD* this = (QWORD*)addr;
 	haha = addr;
@@ -104,6 +104,6 @@ void example_init(void* base,void* addr)
 	this[14]=(QWORD)example_read;
 	this[15]=(QWORD)example_write;
 }
-void example_kill()
+void example_delete()
 {
 }

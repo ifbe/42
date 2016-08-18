@@ -26,7 +26,7 @@ static void bt_start(QWORD type,char* p)
 static void bt_stop()
 {
 }
-void bt_init(char* world,QWORD* p)
+void bt_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -38,7 +38,7 @@ void bt_init(char* world,QWORD* p)
 	p[6]=(QWORD)bt_read;
 	p[7]=(QWORD)bt_write;
 }
-void bt_kill()
+void bt_delete()
 {
 	bt_stop();
 }

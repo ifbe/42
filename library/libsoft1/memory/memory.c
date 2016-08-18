@@ -3,12 +3,12 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-int code_init(char*,char*);
-int fs_init(char*,char*);
-int pt_init(char*,char*);
-void code_kill();
-void fs_kill();
-void pt_kill();
+int code_create(char*,char*);
+int fs_create(char*,char*);
+int pt_create(char*,char*);
+void code_delete();
+void fs_delete();
+void pt_delete();
 //
 int systemstart(int,char*);
 int systemstop();
@@ -205,7 +205,7 @@ static int memory_stop()
 {
 	systemstop();
 }
-int memory_init(char* world,QWORD* p)
+int memory_create(char* world,QWORD* p)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
@@ -226,20 +226,20 @@ int memory_init(char* world,QWORD* p)
 	//
 	char* q=(char*)p+0x40;
 
-	code_init(world,q);
+	code_create(world,q);
 	q+=0x40;
 
-	fs_init(world,q);
+	fs_create(world,q);
 	q+=0x40;
 
-	pt_init(world,q);
+	pt_create(world,q);
 	q+=0x40;
 
 	return q-(char*)p;
 }
-int memory_kill()
+int memory_delete()
 {
-	code_kill();
-	fs_kill();
-	pt_kill();
+	code_delete();
+	fs_delete();
+	pt_delete();
 }

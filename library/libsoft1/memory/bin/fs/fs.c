@@ -225,7 +225,7 @@ static int fs_stop(char* p)
 
 
 //
-void fs_init(char* world,QWORD* p)
+void fs_create(char* world,QWORD* p)
 {
 	//
 	diskhome=world;
@@ -243,6 +243,6 @@ void fs_init(char* world,QWORD* p)
 	p[6]=(QWORD)fs_read;
 	p[7]=(QWORD)fs_write;
 }
-void fs_kill()
+void fs_delete()
 {
 }

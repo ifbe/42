@@ -186,7 +186,7 @@ static void color_start()
 static void color_stop()
 {
 }
-void color_init(void* base, void* addr)
+void color_create(void* base, void* addr)
 {
 	QWORD* this=(QWORD*)addr;
 	haha = addr;
@@ -201,7 +201,7 @@ void color_init(void* base, void* addr)
 	this[14]=(QWORD)color_read;
 	this[15]=(QWORD)color_write;
 }
-void color_kill()
+void color_delete()
 {
 }
 

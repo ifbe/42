@@ -20,9 +20,9 @@ void startethernet()
 void stopethernet()
 {
 }
-void initethernet()
+void createethernet()
 {
 }
-void killethernet()
+void deleteethernet()
 {
 }

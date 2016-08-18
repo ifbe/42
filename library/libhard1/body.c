@@ -3,11 +3,11 @@ void say(char*,...);
 
 
 
-void bodyinit(char* type,char* addr)
+void bodycreate(char* type,char* addr)
 {
-	say("[4,8):inited body\n");
+	say("[4,8):createed body\n");
 }
-void bodykill()
+void bodydelete()
 {
-	say("[4,8):killing body\n");
+	say("[4,8):deleteing body\n");
 }

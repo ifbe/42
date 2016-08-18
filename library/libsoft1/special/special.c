@@ -1,8 +1,8 @@
 #define QWORD unsigned long long
-int folder_init(void*,void*);
-int folder_kill();
-int process_init(void*,void*);
-int process_kill();
+int folder_create(void*,void*);
+int folder_delete();
+int process_create(void*,void*);
+int process_delete();
 
 
 
@@ -25,7 +25,7 @@ static int special_start(QWORD type,char* p)
 static int special_stop()
 {
 }
-int special_init(char* world,QWORD* p)
+int special_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0;			//type
@@ -40,15 +40,15 @@ int special_init(char* world,QWORD* p)
 	//
 	char* q=(char*)p+0x40;
 
-	folder_init(world,q);
+	folder_create(world,q);
 	q+=0x40;
-	process_init(world,q);
+	process_create(world,q);
 	q+=0x40;
 
 	return q-(char*)p;
 }
-int special_kill()
+int special_delete()
 {
-	folder_kill();
-	process_kill();
+	folder_delete();
+	process_delete();
 }

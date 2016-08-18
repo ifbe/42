@@ -21,7 +21,7 @@ static void ipv4_start(QWORD type,char* p)
 static void ipv4_stop()
 {
 }
-void ipv4_init(char* world,QWORD* p)
+void ipv4_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void ipv4_init(char* world,QWORD* p)
 	p[6]=(QWORD)ipv4_read;
 	p[7]=(QWORD)ipv4_write;
 }
-void ipv4_kill()
+void ipv4_delete()
 {
 	ipv4_stop();
 }

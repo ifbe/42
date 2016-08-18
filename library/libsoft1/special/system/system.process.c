@@ -47,7 +47,7 @@ static int process_stop()
 
 
 
-int process_init(char* world,unsigned long long* p)
+int process_create(char* world,unsigned long long* p)
 {
 	//
 	datahome=world+0x300000;
@@ -63,7 +63,7 @@ int process_init(char* world,unsigned long long* p)
 	p[7]=(QWORD)process_write;
 	return 0;
 }
-int process_kill()
+int process_delete()
 {
 	return 0;
 }

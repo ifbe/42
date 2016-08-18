@@ -16,9 +16,9 @@ int systemi2c_start()
 int systemi2c_stop()
 {
 }
-int systemi2c_init()
+int systemi2c_create()
 {
 }
-int systemi2c_kill()
+int systemi2c_delete()
 {
 }

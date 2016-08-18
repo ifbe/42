@@ -229,12 +229,12 @@ void systemi2c_stop()
 
 
 
-void systemi2c_init()
+void systemi2c_create()
 {
 	fp=-1;
 	where[0]=where[1]=where[2]=where[3]=-1;
 }
-void systemi2c_kill()
+void systemi2c_delete()
 {
 	if(fp>0)
 	{

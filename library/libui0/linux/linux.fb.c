@@ -185,7 +185,7 @@ void windowstop()
 
 
 
-void windowinit()
+void windowcreate()
 {
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
@@ -238,7 +238,7 @@ void windowinit()
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 }
 //__attribute__((destructor)) void destoryfb()
-void windowkill()
+void windowdelete()
 {
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);

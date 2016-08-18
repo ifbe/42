@@ -21,7 +21,7 @@ static void http_start(QWORD type,char* p)
 static void http_stop()
 {
 }
-void http_init(char* world,QWORD* p)
+void http_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void http_init(char* world,QWORD* p)
 	p[6]=(QWORD)http_read;
 	p[7]=(QWORD)http_write;
 }
-void http_kill()
+void http_delete()
 {
 	http_stop();
 }

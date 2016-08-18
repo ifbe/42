@@ -21,7 +21,7 @@ static void tftp_start(QWORD type,char* p)
 static void tftp_stop()
 {
 }
-void tftp_init(char* world,QWORD* p)
+void tftp_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x74656e;		//type
@@ -33,7 +33,7 @@ void tftp_init(char* world,QWORD* p)
 	p[6]=(QWORD)tftp_read;
 	p[7]=(QWORD)tftp_write;
 }
-void tftp_kill()
+void tftp_delete()
 {
 	tftp_stop();
 }

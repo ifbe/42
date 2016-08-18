@@ -32,7 +32,7 @@ static int uart_stop()
 {
 	systemuart_stop();
 }
-void uart_init(char* world,QWORD* p)
+void uart_create(char* world,QWORD* p)
 {
 	//
 	p[0]=0x6563616669;	//type
@@ -44,7 +44,7 @@ void uart_init(char* world,QWORD* p)
 	p[6]=(QWORD)uart_read;
 	p[7]=(QWORD)uart_write;
 }
-void uart_kill()
+void uart_delete()
 {
 	uart_stop();
 }

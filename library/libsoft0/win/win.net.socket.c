@@ -1,7 +1,7 @@
-int initsocket()
+int createsocket()
 {
 }
-int killsocket()
+int deletesocket()
 {
 }
 int startsocket()

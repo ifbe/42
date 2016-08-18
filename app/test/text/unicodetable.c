@@ -30,7 +30,7 @@ int main()
 	int i;
 	unsigned char* p;
 
-	initwindow();
+	createwindow();
 	p=whereisunicodetable();
 	if(p==0)
 	{
@@ -41,6 +41,6 @@ int main()
 	printunicode(p+(0x6709*0x20));		//有
 	printunicode(p+(0x6ca1*0x20));		//没
 
-	killwindow();
+	deletewindow();
 	return 0;
 }

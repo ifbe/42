@@ -82,7 +82,7 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 	long long offset=0;
 	long long count=0;
 	QWORD logicpos=0;
-	max=max;		//kill warning currently
+	max=max;		//delete warning currently
 
 	//printmemory(runaddr,0x40);
 	while(1)

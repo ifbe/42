@@ -32,7 +32,7 @@ void processmessage(QWORD type,QWORD key)
 void main()
 {
 	//before
-	initwindow();
+	createwindow();
 
 	//forever
 	QWORD type=0;
@@ -54,5 +54,5 @@ void main()
 	}
 
 	//after
-	killwindow();
+	deletewindow();
 }

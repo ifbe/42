@@ -51,11 +51,11 @@ void printmemory(BYTE* addr,int size)
 
 
 
-void debuginit(char* type,char* addr)
+void debugcreate(char* type,char* addr)
 {
-	say("[0,4):inited debug\n");
+	say("[0,4):createed debug\n");
 }
-void debugkill()
+void debugdelete()
 {
-	say("[0,4):killing debug\n");
+	say("[0,4):deleteing debug\n");
 }

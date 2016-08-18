@@ -286,12 +286,12 @@ void shape_start()
 void shape_stop()
 {
 }
-void shape_init(void* home,void* me)
+void shape_create(void* home,void* me)
 {
 	haha=me;
 	haha->type=0;
 	haha->id=0x6570616873;
 }
-void shape_kill()
+void shape_delete()
 {
 }
