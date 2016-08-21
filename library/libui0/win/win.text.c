@@ -108,7 +108,8 @@ void windowwrite()
 
 	content[width*height]=0;
 	printf("%s",content);
-	fflush(stdout);
+
+	SetConsoleCursorPosition(h,pos);
 }
 
 
