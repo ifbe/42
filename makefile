@@ -109,12 +109,28 @@ none+x64+linux+web:
 
 none+x64+mac+cli:
 	make -C app/none+x64+mac+cli --no-print-directory
+	cp app/none+x64+mac+cli/42.a .
+	cp app/none+x64+mac+cli/42.dylib .
 	cp app/none+x64+mac+cli/a.exe .
+none+x64+mac+cocoa:
+	make -C app/none+x64+mac+cocoa --no-print-directory
+	cp app/none+x64+mac+cocoa/42.a .
+	cp app/none+x64+mac+cocoa/42.dylib .
+	cp app/none+x64+mac+cocoa/a.exe .
+none+x64+mac+quartz:
+	make -C app/none+x64+mac+quartz --no-print-directory
+	cp app/none+x64+mac+quartz/42.a .
+	cp app/none+x64+mac+quartz/42.dylib .
+	cp app/none+x64+mac+quartz/a.exe .
 none+x64+mac+text:
 	make -C app/none+x64+mac+text --no-print-directory
+	cp app/none+x64+mac+text/42.a .
+	cp app/none+x64+mac+text/42.dylib .
 	cp app/none+x64+mac+text/a.exe .
 none+x64+mac+sdl:
 	make -C app/none+x64+mac+sdl --no-print-directory
+	cp app/none+x64+mac+sdl/42.a .
+	cp app/none+x64+mac+sdl/42.dylib .
 	cp app/none+x64+mac+sdl/a.out .
 
 
@@ -123,22 +139,32 @@ none+x64+mac+sdl:
 none+x64+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+cli --no-print-directory
+	cp app/none+x64+win+cli/42.a .
+	cp app/none+x64+win+cli/42.dll .
 	cp app/none+x64+win+cli/a.exe .
 none+x64+win+text:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+text --no-print-directory
+	cp app/none+x64+win+text/42.a .
+	cp app/none+x64+win+text/42.dll .
 	cp app/none+x64+win+text/a.exe .
 none+x64+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+api --no-print-directory
+	cp app/none+x64+win+api/42.a .
+	cp app/none+x64+win+api/42.dll .
 	cp app/none+x64+win+api/a.exe .
 none+x64+win+sdl:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+sdl --no-print-directory
+	cp app/none+x64+win+sdl/42.a .
+	cp app/none+x64+win+sdl/42.dll .
 	cp app/none+x64+win+sdl/a.exe .
 none+x64+win+web:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+web --no-print-directory
+	cp app/none+x64+win+web/42.a .
+	cp app/none+x64+win+web/42.dll .
 	cp app/none+x64+win+web/a.exe .
 
 

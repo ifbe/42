@@ -1,7 +1,11 @@
 compiler ?= gcc
 cflag ?= -c -O2
-all:
+linux:
 	make -s target compiler="gcc" cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+mac:
+	make -s target compiler="clang" cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+win:
+	make -s target compiler="gcc" cflag="-c -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 target:
 	$(compiler) $(cflag) command.c
 	$(compiler) $(cflag) event.c

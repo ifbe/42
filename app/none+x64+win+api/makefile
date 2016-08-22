@@ -9,9 +9,12 @@ all:
 	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 winapi
 	make -s -C $(library)/libui1 mingw
-	make -s -C $(library)/visitor0
+	make -s -C $(library)/visitor0 win
 	make -s -C $(library)/visitor1 gui
-static:
+	make -s a
+	make -s dll
+	make -s program
+a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \

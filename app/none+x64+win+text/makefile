@@ -9,7 +9,7 @@ all:
 	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 wintext
 	make -s -C $(library)/libui1 mingw
-	make -s -C $(library)/visitor0
+	make -s -C $(library)/visitor0 win
 	make -s -C $(library)/visitor1 gui
 	make -s a
 	make -s dll

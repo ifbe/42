@@ -9,8 +9,8 @@ all:
 	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 wincli
 	make -s -C $(library)/libui1 mingw
-	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor cli
+	make -s -C $(library)/visitor0 win
+	make -s -C $(library)/visitor1 cli
 	make -s a
 	make -s dll
 	make -s program
