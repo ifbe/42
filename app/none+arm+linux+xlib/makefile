@@ -29,7 +29,7 @@ static:
 	make -s -C $(library)/libsoft1 gcc
 	make -s -C $(library)/libui0 linuxxlib
 	make -s -C $(library)/libui1 gcc
-	ar crs library.a \
+	ar crs 42.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -47,7 +47,7 @@ shared:
 	make -s -C $(library)/libsoft1 gcc
 	make -s -C $(library)/libui0 linuxxlib
 	make -s -C $(library)/libui1 gcc
-	gcc -shared -o library.so \
+	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

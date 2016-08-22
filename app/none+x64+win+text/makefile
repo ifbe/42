@@ -15,7 +15,7 @@ all:
 	make -s dll
 	make -s program
 a:
-	ar crs library.a \
+	ar crs 42.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

@@ -1,20 +1,56 @@
+library?=../../library
 all:
-	make -s -C libboot0 none
-	make -s -C libboot1 clang
-	make -s -C libhard0 x64
-	make -s -C libhard1 clang
-	make -s -C libsoft0 mac
-	make -s -C libsoft1 clang
-	make -s -C libui0 macsdl
-	make -s -C libui1 clang
-	clang -c librarian.c
-	rm -f library.a
-	ar crs library.a \
-	libboot0/*.o libboot1/*.o \
-	libhard0/*.o libhard1/*.o \
-	libsoft0/*.o libsoft1/*.o \
-	libui0/*.o libui1/*.o \
-	librarian.o gui.o \
+	make -s -C $(library)/libboot0 none
+	make -s -C $(library)/libboot1 clang
+	make -s -C $(library)/libhard0 x64
+	make -s -C $(library)/libhard1 clang
+	make -s -C $(library)/libsoft0 mac
+	make -s -C $(library)/libsoft1 clang
+	make -s -C $(library)/libui0 macsdl
+	make -s -C $(library)/libui1 clang
+	make -s -C $(library)/visitor0
+	make -s -C $(library)/visitor1 cli
+	make -s a
+	make -s dylib
+	make -s program
+a:
+	ar crs 42.a \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor0/*.o \
+	$(library)/visitor1/gui.o \
+	-lSDL2 -lm
+dylib:
+	ar crs 42.dylib \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor0/*.o \
+	$(library)/visitor1/gui.o \
+	-lSDL2 -lm
+program:
+	gcc \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor0/*.o \
+	$(library)/visitor1/gui.o \
 	-lSDL2 -lm
 clean:
 	rm -f *.o

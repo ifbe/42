@@ -9,7 +9,34 @@ all:
 	make -s -C $(library)/libsoft1 clang
 	make -s -C $(library)/libui0 macquartz
 	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor gui
+	make -s -C $(library)/visitor0
+	make -s -C $(library)/visitor1 gui
+	make -s a
+	make -s dylib
+	make -s program
+a:
+	libtool -static -o 42.a \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor/temple.*.o
+dylib:
+	libtool -dynamic -o 42.dylib \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor/temple.*.o
+program:
 	clang -framework Foundation \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -20,45 +47,5 @@ all:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor/*.o
-static:
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 clang
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 clang
-	make -s -C $(library)/libsoft0 mac
-	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 macquartz
-	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor gui
-	libtool -static -o library.a \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor/temple.*.o
-shared:
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 clang
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 clang
-	make -s -C $(library)/libsoft0 mac
-	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 macquartz
-	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor macshared
-	libtool -dynamic -o library.dylib \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor/temple.*.o
 clean:
-	rm -f *.o
+	rm -f *.o *.a *.dylib

@@ -26,30 +26,36 @@ android:
 	make -s -C app/android --no-print-directory
 androidpush:
 	adb push app/android/libs/arm64-v8a/42 /data/42
+
 apk:
 	make -s -C app/apk --no-print-directory
 	cp app/apk/bin/Plasma-debug.apk 42.apk
 apkinstall:
 	adb install -r 42.apk
+
 ipa:
 	make -s -C app/ipa --no-print-directory
 ipainstall:
+
 uwp:
 	make -s -C app/uwp --no-print-directory
 uwpinstall:
+
+efi:
+	make -s -C app/efi --no-print-directory
 ############################################################################
 
 
 
 
 #################################small device################################
-arm+linux+cli:
+none+arm+linux+cli:
 	make -C app/none+arm+linux+cli --no-print-directory
 	cp app/none+arm+linux+cli/a.out .
-arm+linux+fb:
+none+arm+linux+fb:
 	make -C app/none+arm+linux+fb --no-print-directory
 	cp app/none+arm+linux+fb/a.out .
-arm+linux+xlib:
+none+arm+linux+xlib:
 	make -C app/none+arm+linux+xlib --no-print-directory
 	cp app/none+arm+linux+xlib/a.out .
 ############################################################################
@@ -58,7 +64,7 @@ arm+linux+xlib:
 
 
 ############################################################################
-mips+linux+cli:
+none+mips+linux+cli:
 	make -C app/none+mips+linux+cli --no-print-directory
 	cp app/none+mips+linux+cli/a.out .
 ############################################################################
@@ -67,32 +73,32 @@ mips+linux+cli:
 
 
 #####################################pc#######################################
-x64+linux+cli:
+none+x64+linux+cli:
 	make -C app/none+x64+linux+cli --no-print-directory
 	cp app/none+x64+linux+cli/42.a .
 	cp app/none+x64+linux+cli/42.so .
 	cp app/none+x64+linux+cli/a.out .
-x64+linux+text:
+none+x64+linux+text:
 	make -C app/none+x64+linux+text --no-print-directory
 	cp app/none+x64+linux+text/42.a .
 	cp app/none+x64+linux+text/42.so .
 	cp app/none+x64+linux+text/a.out .
-x64+linux+fb:
+none+x64+linux+fb:
 	make -C app/none+x64+linux+fb --no-print-directory
 	cp app/none+x64+linux+fb/42.a .
 	cp app/none+x64+linux+fb/42.so .
 	cp app/none+x64+linux+fb/a.out .
-x64+linux+xlib:
+none+x64+linux+xlib:
 	make -C app/none+x64+linux+xlib --no-print-directory
 	cp app/none+x64+linux+xlib/42.a .
 	cp app/none+x64+linux+xlib/42.so .
 	cp app/none+x64+linux+xlib/a.out .
-x64+linux+sdl:
+none+x64+linux+sdl:
 	make -C app/none+x64+linux+sdl --no-print-directory
 	cp app/none+x64+linux+sdl/42.a .
 	cp app/none+x64+linux+sdl/42.so .
 	cp app/none+x64+linux+sdl/a.out .
-x64+linux+web:
+none+x64+linux+web:
 	make -C app/none+x64+linux+web --no-print-directory
 	cp app/none+x64+linux+web/42.a .
 	cp app/none+x64+linux+web/42.so .
@@ -101,36 +107,36 @@ x64+linux+web:
 
 
 
-x64+mac+cli:
+none+x64+mac+cli:
 	make -C app/none+x64+mac+cli --no-print-directory
 	cp app/none+x64+mac+cli/a.exe .
-x64+mac+text:
+none+x64+mac+text:
 	make -C app/none+x64+mac+text --no-print-directory
 	cp app/none+x64+mac+text/a.exe .
-x64+mac+sdl:
+none+x64+mac+sdl:
 	make -C app/none+x64+mac+sdl --no-print-directory
 	cp app/none+x64+mac+sdl/a.out .
 
 
 
 
-x64+win+cli:
+none+x64+win+cli:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+cli --no-print-directory
 	cp app/none+x64+win+cli/a.exe .
-x64+win+text:
+none+x64+win+text:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+text --no-print-directory
 	cp app/none+x64+win+text/a.exe .
-x64+win+api:
+none+x64+win+api:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+api --no-print-directory
 	cp app/none+x64+win+api/a.exe .
-x64+win+sdl:
+none+x64+win+sdl:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+sdl --no-print-directory
 	cp app/none+x64+win+sdl/a.exe .
-x64+win+web:
+none+x64+win+web:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+web --no-print-directory
 	cp app/none+x64+win+web/a.exe .

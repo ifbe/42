@@ -14,7 +14,7 @@ all:
 	make -s so
 	make -s program
 a:
-	ar crs library.a \
+	ar crs 42.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -25,7 +25,7 @@ a:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
 so:
-	gcc -shared -o library.so \
+	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
