@@ -69,21 +69,33 @@ mips+linux+cli:
 #####################################pc#######################################
 x64+linux+cli:
 	make -C app/none+x64+linux+cli --no-print-directory
+	cp app/none+x64+linux+cli/42.a .
+	cp app/none+x64+linux+cli/42.so .
 	cp app/none+x64+linux+cli/a.out .
 x64+linux+text:
 	make -C app/none+x64+linux+text --no-print-directory
+	cp app/none+x64+linux+text/42.a .
+	cp app/none+x64+linux+text/42.so .
 	cp app/none+x64+linux+text/a.out .
 x64+linux+fb:
 	make -C app/none+x64+linux+fb --no-print-directory
+	cp app/none+x64+linux+fb/42.a .
+	cp app/none+x64+linux+fb/42.so .
 	cp app/none+x64+linux+fb/a.out .
 x64+linux+xlib:
 	make -C app/none+x64+linux+xlib --no-print-directory
+	cp app/none+x64+linux+xlib/42.a .
+	cp app/none+x64+linux+xlib/42.so .
 	cp app/none+x64+linux+xlib/a.out .
 x64+linux+sdl:
 	make -C app/none+x64+linux+sdl --no-print-directory
+	cp app/none+x64+linux+sdl/42.a .
+	cp app/none+x64+linux+sdl/42.so .
 	cp app/none+x64+linux+sdl/a.out .
 x64+linux+web:
 	make -C app/none+x64+linux+web --no-print-directory
+	cp app/none+x64+linux+web/42.a .
+	cp app/none+x64+linux+web/42.so .
 	cp app/none+x64+linux+web/a.out .
 
 
@@ -133,7 +145,7 @@ push:
 pull:
 	git pull
 clean:
-	rm -f *.apk *.out *.exe *.o *.a *.res
+	rm -f *.apk *.out *.exe *.o *.a *.so *.res
 	make -s -C app clean
 	make -s -C library clean
 	make -s -C res clean

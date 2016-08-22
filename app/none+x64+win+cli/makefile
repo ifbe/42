@@ -9,7 +9,34 @@ all:
 	make -s -C $(library)/libsoft1 mingw
 	make -s -C $(library)/libui0 wincli
 	make -s -C $(library)/libui1 mingw
+	make -s -C $(library)/visitor0
 	make -s -C $(library)/visitor cli
+	make -s a
+	make -s dll
+	make -s program
+a:
+	ar crs 42.a \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor0/*.o
+dll:
+	gcc -shared -o 42.dll \
+	$(library)/libboot0/*.o \
+	$(library)/libboot1/*.o \
+	$(library)/libhard0/*.o \
+	$(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o \
+	$(library)/libsoft1/*.o \
+	$(library)/libui0/*.o \
+	$(library)/libui1/*.o \
+	$(library)/visitor0/*.o
+program:
 	gcc \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -19,25 +46,7 @@ all:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor/*.o
-static:
-	make -s -C $(library)/libboot0 wincmd
-	make -s -C $(library)/libboot1 mingw
-	make -s -C $(library)/libhard0 winx64
-	make -s -C $(library)/libhard1 mingw
-	make -s -C $(library)/libsoft0 win
-	make -s -C $(library)/libsoft1 mingw
-	make -s -C $(library)/libui0 wincli
-	make -s -C $(library)/libui1 mingw
-	ar crs library.a \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
-shared:
+	$(library)/visitor0/*.o \
+	$(library)/visitor1/cli.o
 clean:
-	rm -f *.o
+	rm -f *.o *.a *.so
