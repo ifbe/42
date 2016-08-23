@@ -6,18 +6,22 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define QWORD unsigned long long
-double power(double,double);
-//
-void createwindow();
-void deletewindow();
-void writewindow(QWORD size,void* addr);
-void uievent(QWORD* type,QWORD* key);
-//
 void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
 void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
+double power(double,double);
+//
+void windowcreate();
+void windowdelete();
+void windowstart(void* addr,void* pixfmt, int width,int height);
+void windowstop();
+void windowread();
+void windowwrite();
+//
+void eventwrite();
+void eventread(QWORD* first,QWORD* second);
 
 
 
@@ -130,7 +134,10 @@ void main()
 	//before
 	int x,y;
 	int r,g,b;
-	createwindow();
+
+	//
+	windowcreate();
+	windowstart(final, "rgba8888", 1024, 1024);
 
 	//picture
 	for(y=0;y<1024;y++)
@@ -151,18 +158,18 @@ void main()
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
-		writewindow(0x04000400,final);
+		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		uievent(&type,&key);
+		eventread(&type,&key);
 		if( type==0 )break;
 		if( (type==0x64626b)&&(key==0x1b))break;
-
 
 		//3.处理事件
 		processmessage(type,key);
 	}
 
 	//after
-	deletewindow();
+	windowstop();
+	windowdelete();
 }

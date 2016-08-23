@@ -55,6 +55,7 @@ static char* userpixel=0;
 static int width=512;
 static int height=512;
 //
+static int motioncount=0;
 static int oldx=0;
 static int oldy=0;
 
@@ -181,9 +182,8 @@ int uievent(QWORD* my1,QWORD* my2)
 		}
 		else if(ev.type==MotionNotify)
 		{
-			int temp=(ev.xbutton.x-oldx)*(ev.xbutton.y-oldy);
-			if(temp<0)temp=-temp;
-			if(temp<16)continue;
+			motioncount = (motioncount+1)%5;
+			if(motioncount != 0)continue;
 
 			*my1=0x65766F6D207A7978;         //'xyz move'
 			*my2=( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx;
