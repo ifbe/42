@@ -7,12 +7,17 @@
 #define DWORD unsigned int
 #define QWORD unsigned long long
 //
-void createwindow();
-void deletewindow();
-void writewindow(QWORD size,void* addr);
-void uievent(QWORD* type,QWORD* key);
-//
 void mosaic(QWORD size,QWORD partradius,BYTE* src,BYTE* dst);
+//
+void windowcreate();
+void windowdelete();
+void windowstart(void* addr,void* pixfmt, int width,int height);
+void windowstop();
+void windowread();
+void windowwrite();
+//
+void eventwrite();
+void eventread(QWORD* first,QWORD* second);
 
 
 
@@ -75,7 +80,10 @@ void main()
 	//before
 	int x,y;
 	int r,g,b;
-	createwindow();
+
+	//
+	windowcreate();
+	windowstart(final, "rgba8888", 1024, 1024);
 
 	//picture
 	for(y=0;y<1024;y++)
@@ -96,10 +104,10 @@ void main()
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
-		writewindow(0x04000400,final);
+		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		uievent(&type,&key);
+		eventread(&type,&key);
 		if( type==0 )break;
 		if( (type==0x64626b)&&(key==0x1b))break;
 
@@ -109,5 +117,6 @@ void main()
 	}
 
 	//after
-	deletewindow();
+	windowstop();
+	windowdelete();
 }

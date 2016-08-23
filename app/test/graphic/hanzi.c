@@ -8,8 +8,15 @@ int createunicode(QWORD,void*);
 void printunicode(int,int,DWORD);
 void printunicodebig(int,int,DWORD);
 //
-void writewindow(QWORD,void*);
-void uievent(QWORD* type,QWORD* key);
+void windowcreate();
+void windowdelete();
+void windowstart(void* addr,void* pixfmt, int width,int height);
+void windowstop();
+void windowread();
+void windowwrite();
+//
+void eventwrite();
+void eventread(QWORD* first,QWORD* second);
 
 
 
@@ -61,12 +68,11 @@ void processmessage(QWORD type,QWORD key)
 }
 void main()
 {
-	//before
-	int ret;
-	ret=createwindow();	//check error!!!!!
+	//int ret=createunicode(0x04000400,palette);
 
-	//unicode
-	ret=createunicode(0x04000400,palette);
+	//
+	windowcreate();
+	windowstart(palette, "rgba8888", 1024, 1024);
 
 	//forever
 	QWORD type=0;
@@ -75,10 +81,10 @@ void main()
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
 		printworld();
-		writewindow(0x04000400,palette);
+		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		uievent(&type,&key);
+		eventread(&type,&key);
 		if( type==0 )break;
 		if( (type==0x64626b)&&(key==0x1b))break;
 
@@ -89,5 +95,6 @@ void main()
 
 	//after
 death:
-	deletewindow();
+	windowstop();
+	windowdelete();
 }
