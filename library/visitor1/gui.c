@@ -27,7 +27,8 @@ void say(char*,...);
 
 
 
-static char pixbuf[2048*1024*4];
+//
+__attribute__((aligned(0x1000))) static char pixbuf[2048*1024*4 + 0x100000];
 static char pixfmt[8] = {'b','g','r','a','8','8','8','8'};
 static int width=512;
 static int height=512;

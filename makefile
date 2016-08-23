@@ -98,6 +98,11 @@ none+x64+linux+sdl:
 	cp app/none+x64+linux+sdl/42.a .
 	cp app/none+x64+linux+sdl/42.so .
 	cp app/none+x64+linux+sdl/a.out .
+none+x64+linux+wayland:
+	make -C app/none+x64+linux+wayland --no-print-directory
+	cp app/none+x64+linux+wayland/42.a .
+	cp app/none+x64+linux+wayland/42.so .
+	cp app/none+x64+linux+wayland/a.out .
 none+x64+linux+web:
 	make -C app/none+x64+linux+web --no-print-directory
 	cp app/none+x64+linux+web/42.a .

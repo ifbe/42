@@ -39,11 +39,11 @@ static void keyboard_read_pixel()
 	int height = haha->height;
 
 	backgroundcolor(0x444444);
-	for(x=0;x<64;x++)
+	for(x=0;x<32;x++)
 	{
 		rectframe(
 			x, x,
-			width-64+x, height-64+x,
+			width-32+x, height-32+x,
 			0x040404*x
 		);
 	}
@@ -52,13 +52,13 @@ static void keyboard_read_pixel()
 		for(x=0;x<8;x++)
 		{
 			rectframe(
-				64 + (width-64)*x/8, 64 + (height-64)*y/8,
-				63 + (width-64)*(x+1)/8, 63 + (height-64)*(y+1)/8,
+				32 + (width-32)*x/8, 32 + (height-32)*y/8,
+				31 + (width-32)*(x+1)/8, 31 + (height-32)*(y+1)/8,
 				0xffffff
 			);
 
 			printascii(
-				64 + (width-64)*x/8, 64 + (height-64)*y/8,
+				32 + (width-32)*x/8, 32 + (height-32)*y/8,
 				4, 'a',
 				0, 0xffffffff
 			);

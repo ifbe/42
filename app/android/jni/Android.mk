@@ -191,10 +191,10 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-	library/visitor/adult/command.c \
-	library/visitor/adult/event.c \
-	library/visitor/adult/universe.c \
-	library/visitor/child/cli.c
+	library/visitor0/command.c \
+	library/visitor0/event.c \
+	library/visitor0/universe.c \
+	library/visitor1/cli.c
 
 
 

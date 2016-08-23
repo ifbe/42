@@ -37,11 +37,11 @@ static void joystick_read_pixel()
 	int height = haha->height;
 
 	backgroundcolor(0x444444);
-	for(j=0;j<64;j++)
+	for(j=0;j<32;j++)
 	{
 		rectframe(
 			j, j,
-			width-64+j, height-64+j,
+			width-32+j, height-32+j,
 			0x040404*j
 		);
 	}
