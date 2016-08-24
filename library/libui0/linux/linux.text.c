@@ -114,11 +114,10 @@ void windowread(char* addr)
 }
 void windowwrite()
 {
-	printf("\033[H\033[J");
-	//printf("%c[%d;%df",0x1B,height,width);
 	textbuf[width*height] = 0;
+
+	printf("\033[H\033[J");
 	printf("%s",textbuf);
-	//fflush(stdout);
 }
 
 

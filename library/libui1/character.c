@@ -470,7 +470,9 @@ void characterread()
 void characterwrite(QWORD type,QWORD key)
 {
 	int m,n;
-	int dx0,dx1,dy0,dy1;
+	int dx0,dy0;
+	int dx1,dy1;
+	int dx2,dy2;
 
 	//debug
 	//say("%llx,%llx\n",type,key);
@@ -571,41 +573,52 @@ void characterwrite(QWORD type,QWORD key)
 					}
 				}
 
-				else if(pointmax>1)
+				else if(pointmax==2)
 				{
 					pointmax=0;
 					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
 					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
 					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
 					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-					if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256) )
+				}
+
+				else if(pointmax>=3)
+				{
+					pointmax=0;
+					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
+					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
+					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
+					dx2 = (pointleave[2]&0xffff) - (pointenter[2]&0xffff);
+					dy2 = ((pointleave[2]>>16)&0xffff) - ((pointenter[2]>>16)&0xffff);
+					if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256)&&(dx2>-256)&&(dx2<256) )
 					{
-						if( (dy0 < -128)&&(dy1 < -128) )
+						if( (dy0 > 128)&&(dy1 > 128)&&(dy2 > 128) )
 						{
 							worker[1].xyze1 ^= 1;
 						}
-						else if( (dy0 > 128)&&(dy1 > 128) )
+						else if( (dy0 < -128)&&(dy1 < -128)&&(dy2 < -128) )
 						{
 							worker[2].xyze1 ^= 1;
 						}
-						else
+						else if( (dy0>-128)&&(dy0<128)&&(dy1>-128)&&(dy1<128)&&(dy2>-128)&&(dy2<128) )
 						{
 							worker[0].xyze1 ^= 1;
 							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;
 							return;
 						}
 					}
-					else if( (dy0>-256)&&(dy0<256)&&(dy0>-256)&&(dy0<256) )
+					else if( (dy0>-256)&&(dy0<256)&&(dy1>-256)&&(dy1<256)&&(dy2>-256)&&(dy2<256) )
 					{
-						if( (dx0 < -128)&&(dx1 < -128) )
+						if( (dx0 < -128)&&(dx1 < -128)&&(dx2 < -128) )
 						{
 							characterchoose("+");
 						}
-						else if( (dx0 > 128)&&(dx1 > 128) )
+						else if( (dx0 > 128)&&(dx1 > 128)&&(dx2 > 128) )
 						{
 							characterchoose("-");
 						}
-						else
+						else if( (dx0>-128)&&(dx0<128)&&(dx1>-128)&&(dx1<128)&&(dx2>-128)&&(dx2<128) )
 						{
 							worker[0].xyze1 ^= 1;
 							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;

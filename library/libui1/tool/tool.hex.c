@@ -245,7 +245,7 @@ static void hex_read_text()
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				h = l = databuf[windowoffset + y*byteperline + x],
+				h = l = databuf[windowoffset + y*byteperline + x];
 
 				h = ( (h>>4)&0xf ) + 0x30;
 				if(h>0x39)h += 0x7;
@@ -264,8 +264,18 @@ static void hex_read_text()
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				h = databuf[windowoffset + y*byteperline + x],
-				p[y*width + x*2 + 1] = h;
+
+				h = databuf[windowoffset + y*byteperline + x];
+				if( (h>0x20)&&(h<0x80) )
+				{
+					p[xshift + y*width + x*2] = 0x20;
+					p[xshift + y*width + x*2 + 1] = h;
+				}
+				else
+				{
+					p[xshift + y*width + x*2] = 0x20;
+					p[xshift + y*width + x*2 + 1] = 0x20;
+				}
 			}
 		}
 	}
