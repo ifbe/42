@@ -118,7 +118,7 @@ void windowwrite()
 	//printf("%c[%d;%df",0x1B,height,width);
 	textbuf[width*height] = 0;
 	printf("%s",textbuf);
-	fflush(stdout);
+	//fflush(stdout);
 }
 
 

@@ -230,6 +230,7 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 	height = y;
 
 	//
+	XResizeWindow(dsp, win, width, height);
 	ximage=XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
 		userpixel, width, height, 32, 0

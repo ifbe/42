@@ -23,15 +23,15 @@ void printmemory(char*,int);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+	QWORD type;
+	QWORD id;
+	QWORD start;
+	QWORD end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+	QWORD pixelbuffer;
+	QWORD pixelformat;
+	QWORD width;
+	QWORD height;
 }*haha;
 
 //flostarea
@@ -57,34 +57,64 @@ static int byteperline=0;
 static int lineperwindow=0;
 static void updateconfig()
 {
-	//
 	int width = haha->width;
-	lineperwindow = (haha->height)/16;
+	unsigned int pixfmt = (haha->pixelformat)&0xffffffff;
 
-	if(width >= 2048)
+        //text
+        if( pixfmt == 0x74786574)
 	{
-		byteperline = 0x80;
-		xshift = (width - 2048)/2;
-	}
-	else if(width >= 1024)
-	{
-		byteperline = 0x40;
-		xshift = (width - 1024)/2;
-	}
-	else if(width >= 512)
-	{
-		byteperline = 0x20;
-		xshift = (width - 512)/2;
-	}
-	else if(width >= 256)
-	{
-		byteperline = 0x10;
-		xshift = (width - 256)/2;
+		lineperwindow = haha->height;
+
+		if(width >= 0x80)
+		{
+			byteperline = 0x40;
+			xshift = (width - 0x80)/2;
+		}
+		else if(width >= 0x40)
+		{
+			byteperline = 0x20;
+			xshift = (width - 0x40)/2;
+		}
+		else if(width >= 0x20)
+		{
+			byteperline = 0x10;
+			xshift = (width - 0x20)/2;
+		}
+		else
+		{
+			byteperline = 0;
+			xshift = 0;
+		}
 	}
 	else
 	{
-		byteperline = 0;
-		xshift = 0;
+		lineperwindow = (haha->height)/16;
+
+		if(width >= 2048)
+		{
+			byteperline = 0x80;
+			xshift = (width - 2048)/2;
+		}
+		else if(width >= 1024)
+		{
+			byteperline = 0x40;
+			xshift = (width - 1024)/2;
+		}
+		else if(width >= 512)
+		{
+			byteperline = 0x20;
+			xshift = (width - 512)/2;
+		}
+		else if(width >= 256)
+		{
+			byteperline = 0x10;
+			xshift = (width - 256)/2;
+		}
+		else
+		{
+			byteperline = 0;
+			xshift = 0;
+		}
 	}
 }
 static void foreground()
@@ -184,7 +214,7 @@ static void floatarea()
 		}
 	}
 }
-static void hex_read()
+static void hex_read_pixel()
 {
 	updateconfig();
 
@@ -196,6 +226,74 @@ static void hex_read()
 
 	//
 	floatarea();
+}
+static void hex_read_text()
+{
+	int x,y;
+	unsigned char h,l;
+
+	int width = haha->width;
+	int height = haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+
+	updateconfig();
+	//for(x=0;x<width*height;x++)p[x]=0x20;
+
+	if(printmethod==0)		//hex
+	{
+		for(y=0;y<height;y++)
+		{
+			for(x=0;x<byteperline;x++)
+			{
+				h = l = databuf[windowoffset + y*byteperline + x],
+
+				h = ( (h>>4)&0xf ) + 0x30;
+				if(h>0x39)h += 0x7;
+				p[xshift + y*width + x*2] = h;
+
+				l = (l&0xf) + 0x30;
+				if(l>0x39)l += 0x7;
+				p[xshift + y*width + x*2 + 1] = l;
+			}
+		}
+	}
+
+	else if(printmethod==1)		//ascii
+	{
+		for(y=0;y<height;y++)
+		{
+			for(x=0;x<byteperline;x++)
+			{
+				h = databuf[windowoffset + y*byteperline + x],
+				p[y*width + x*2 + 1] = h;
+			}
+		}
+	}
+}
+static void hex_read_html()
+{
+}
+static void hex_read()
+{
+	unsigned int pixfmt = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if( pixfmt == 0x74786574)
+	{
+		hex_read_text();
+	}
+
+	//html
+	else if( pixfmt == 0x6c6d7468)
+	{
+		hex_read_html();
+	}
+
+	//pixel
+	else
+	{
+		hex_read_pixel();
+	}
 }
 
 
