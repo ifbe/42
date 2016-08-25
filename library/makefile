@@ -7,4 +7,5 @@ clean:
 	make -s -C libsoft1 clean
 	make -s -C libui0 clean
 	make -s -C libui1 clean
-	make -s -C visitor clean
+	make -s -C visitor0 clean
+	make -s -C visitor1 clean
