@@ -180,9 +180,8 @@ LOCAL_SRC_FILES += \
 	library/libui1/test/test.font.c \
 	library/libui1/test/test.pure.c \
 	library/libui1/tool/tool.console.c \
+	library/libui1/tool/tool.control.c \
 	library/libui1/tool/tool.hex.c \
-	library/libui1/tool/tool.joystick.c \
-	library/libui1/tool/tool.keyboard.c \
 	library/libui1/tool/tool.qrcode.c \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \

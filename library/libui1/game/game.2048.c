@@ -404,8 +404,8 @@ void the2048_create(char* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;		//'window'
-	this[1]=0x38343032;		//'2048'
+	this[0] = 0x656d6167;
+	this[1] = 0x38343032;
 
 	this[10]=(u64)the2048_start;
 	this[11]=(u64)the2048_stop;

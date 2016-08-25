@@ -194,8 +194,8 @@ void color_create(void* base, void* addr)
 	u64* this=(u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x726f6c6f63;
+	this[0] = 0x74736574;
+	this[1] = 0x726f6c6f63;
 
 	this[10]=(u64)color_start;
 	this[11]=(u64)color_stop;

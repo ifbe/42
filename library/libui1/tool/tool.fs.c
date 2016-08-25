@@ -44,8 +44,8 @@ void fs_create(void* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x7366;
+	this[0] = 0x6c6f6f74;
+	this[1] = 0x7366;
 
 	this[10]=(u64)fs_start;
 	this[11]=(u64)fs_stop;

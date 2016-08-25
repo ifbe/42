@@ -80,8 +80,8 @@ void pure_create(void* uibuf,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x65727570;
+	this[0] = 0x74736574;
+	this[1] = 0x65727570;
 
 	this[10]=(u64)pure_start;
 	this[11]=(u64)pure_stop;

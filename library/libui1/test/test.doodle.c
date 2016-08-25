@@ -56,8 +56,8 @@ void doodle_stop()
 void doodle_create(char* base,char* addr)
 {
 	u64* this=(u64*)addr;
-	this[0]=0x776f646e6977;
-	this[1]=0x6570616873;
+	this[0] = 0x74736574;
+	this[1] = 0x6570616873;
 
 	this[10]=(u64)doodle_start;
 	this[11]=(u64)doodle_stop;

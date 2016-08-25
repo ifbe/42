@@ -94,8 +94,8 @@ void example_create(void* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x746e6f66;
+	this[0] = 0x74736574;
+	this[1] = 0x656c706d617865;
 
 	this[10]=(u64)example_start;
 	this[11]=(u64)example_stop;

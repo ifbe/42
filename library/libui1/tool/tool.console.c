@@ -220,8 +220,8 @@ void console_create(char* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x656c6f736e6f63;
+	this[0] = 0x6c6f6f74;
+	this[1] = 0x656c6f736e6f63;
 
 	this[10]=(u64)console_start;
 	this[11]=(u64)console_stop;

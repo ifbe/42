@@ -3,21 +3,19 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-double sketchpad(void*,double,double);
-double calculator(char* postfix,double,double);
-//
-void postfix2binarytree(char* postfix,void* out);
-void infix2postfix(char* infix,char* postfix);
-void double2decimalstring(double,char*);
-//
-double beautifulbetween(double first,double second);
-void kexuejishufa(double* haha,int* counter);
-//
 void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
 void defaultdouble(int x,int y,double z);
 void decimal(int x,int y,u64 in);
 void backgroundcolor(u32);
 void rectangle(u32 x1y1z1,u32 x2y2z2,u32 color);
+//
+double sketchpad(void*,double,double);
+double calculator(char* postfix,double,double);
+double beautifulbetween(double first,double second);
+void double2decimalstring(double,char*);
+void kexuejishufa(double* haha,int* counter);
+void postfix2binarytree(char* postfix,void* out);
+void infix2postfix(char* infix,char* postfix);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -392,8 +390,8 @@ void sketchpad_create(void* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;
-	this[1]=0x686374656b73;
+	this[0] = 0x6c6f6f74;
+	this[1] = 0x686374656b73;
 
 	this[10]=(u64)sketchpad_start;
 	this[11]=(u64)sketchpad_stop;

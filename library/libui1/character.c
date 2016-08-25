@@ -25,9 +25,8 @@ void font_create(char*,char*);
 void pure_create(char*,char*);
 //tool
 void console_create(char*,char*);
+void control_create(char*,char*);
 void hex_create(char*,char*);
-void joystick_create(char*,char*);
-void keyboard_create(char*,char*);
 void sketchpad_create(char*,char*);
 void spectrum_create(char*,char*);
 void tree_create(char*,char*);
@@ -55,9 +54,8 @@ void doodle_delete();
 void color_delete();
 //
 void console_delete();
+void control_delete();
 void hex_delete();
-void joystick_delete();
-void keyboard_delete();
 void sketchpad_delete();
 void tree_delete();
 void spectrum_delete();
@@ -239,12 +237,8 @@ void charactercreate(char* type,char* addr)
 		hex_create(addr,temp);
 		temp += 0x80;
 
-		//tool.joystick
-		joystick_create(addr,temp);
-		temp += 0x80;
-
-		//tool.keyboard
-		keyboard_create(addr,temp);
+		//tool.control
+		control_create(addr,temp);
 		temp += 0x80;
 
 		//tool.qrcode
@@ -278,10 +272,9 @@ void characterdelete()
 	tree_delete();
 	sketchpad_delete();
 	hex_delete();
-	console_delete();
 	qrcode_delete();
-	joystick_delete();
-	keyboard_delete();
+	control_delete();
+	console_delete();
 
 	color_delete();
 	doodle_delete();
@@ -482,7 +475,14 @@ void characterwrite(u64 type,u64 key)
 	{
 		w = key & 0xffff;
 		h = (key >> 16) & 0xffff;
-		characterstart(pixbuf, pixfmt, w, h);
+
+		for(m=0;m<100;m++)
+		{
+			if(worker[m].id == 0)break;
+
+			worker[m].width = w;
+			worker[m].height = h;
+		}
 		return;
 	}//size
 
@@ -647,6 +647,7 @@ void characterwrite(u64 type,u64 key)
 	{
 		//virtkbd
 		m = worker[2].write(&type,&key);
+		if(m > 0)worker[now].write(&type,&key);
 	}
 	else
 	{

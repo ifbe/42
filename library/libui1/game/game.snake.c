@@ -303,8 +303,8 @@ void snake_create(char* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;		//'window'
-	this[1]=0x656b616e73;		//'snake'
+	this[0] = 0x656d6167;
+	this[1] = 0x656b616e73;
 
 	this[10]=(u64)snake_start;
 	this[11]=(u64)snake_stop;

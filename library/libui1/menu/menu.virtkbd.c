@@ -43,9 +43,14 @@ static int virtkbd_write(u64* type,u64* value)
 	{
 		x = (*value) & 0xffff;
 		y = ( (*value) >> 16 ) & 0xffff;
+		if(y < (haha->height)*3/4)return 0;
+
+		*type = 0x72616863;
+		*value = 'x';
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }
 static void virtkbd_read()
 {

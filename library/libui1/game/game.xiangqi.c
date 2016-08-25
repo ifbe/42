@@ -195,8 +195,8 @@ void xiangqi_create(char* base,void* addr)
 	u64* this = (u64*)addr;
 	haha = addr;
 
-	this[0]=0x776f646e6977;		//'window'
-	this[1]=0x6971676e616978;	//'xiangqi'
+	this[0] = 0x656d6167;
+	this[1] = 0x6971676e616978;
 
 	this[10]=(u64)xiangqi_start;
 	this[11]=(u64)xiangqi_stop;
