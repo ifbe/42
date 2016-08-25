@@ -34,7 +34,7 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 			0,
 			&out,
 			sizeof(GET_LENGTH_INFORMATION),
-			(LPu32)&count,
+			(LPDWORD)&count,
 			NULL
 		);
 		if(ret==FALSE)

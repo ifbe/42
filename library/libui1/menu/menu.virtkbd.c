@@ -25,11 +25,11 @@ static char table[8][8] = {
 	'a','b','c','d','e','f','g','h',
 	'i','j','k','l','m','n','o','p',
 	'q','r','s','t','u','v','w','x',
-	'y','z',' ',' ',' ',' ',' ',' ',
+	'y','z',' ',' ',' ',' ',0x8,0xd,
 	'0','1','2','3','4','5','6','7',
 	'8','9',' ',' ',' ',' ',' ',' ',
 	'+','-','*','/',' ',' ',' ',' ',
-	' ',' ',' ',' ',' ',' ',' ',' '
+	'=',' ',' ',' ',' ',' ',' ',' '
 };
 
 
@@ -38,15 +38,21 @@ static char table[8][8] = {
 static int virtkbd_write(u64* type,u64* value)
 {
 	int x,y;
+	int width = haha->width;
+	int height = haha->height;
 
 	if(*type == 0x7466656C207A7978)
 	{
 		x = (*value) & 0xffff;
 		y = ( (*value) >> 16 ) & 0xffff;
-		if(y < (haha->height)*3/4)return 0;
+		y -= height*3/4;
+		if(y < 0)return 0;
+
+		x = x*8/width;
+		y = y*32/height;
 
 		*type = 0x72616863;
-		*value = 'x';
+		*value = table[y][x];
 		return 1;
 	}
 

@@ -166,7 +166,10 @@ static void control_read()
 
 static void control_write(u64* type,u64* key)
 {
-	what = (what+1)%3;
+	if(*type == 0x7466656C207A7978)
+	{
+		what = (what+1)%3;
+	}
 }
 
 
