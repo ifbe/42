@@ -243,6 +243,12 @@ static void hex_read_text()
 	{
 		for(y=0;y<height;y++)
 		{
+			for(x=0;x<xshift;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+			data2hexstring((QWORD)databuf + windowoffset + y*byteperline, p + y*width);
+
 			for(x=0;x<byteperline;x++)
 			{
 				h = l = databuf[windowoffset + y*byteperline + x];
@@ -255,6 +261,12 @@ static void hex_read_text()
 				if(l>0x39)l += 0x7;
 				p[xshift + y*width + x*2 + 1] = l;
 			}
+
+			x=(width-xshift)&0xfffffffe;
+			for(;x<width;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
 		}
 	}
 
@@ -262,9 +274,14 @@ static void hex_read_text()
 	{
 		for(y=0;y<height;y++)
 		{
+			for(x=0;x<xshift;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+			data2hexstring((QWORD)databuf + windowoffset + y*byteperline, p + y*width);
+
 			for(x=0;x<byteperline;x++)
 			{
-
 				h = databuf[windowoffset + y*byteperline + x];
 				if( (h>0x20)&&(h<0x80) )
 				{
@@ -276,6 +293,12 @@ static void hex_read_text()
 					p[xshift + y*width + x*2] = 0x20;
 					p[xshift + y*width + x*2 + 1] = 0x20;
 				}
+			}
+
+			x=(width-xshift)&0xfffffffe;
+			for(;x<width;x++)
+			{
+				p[y*width + x] = 0x20;
 			}
 		}
 	}

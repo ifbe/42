@@ -7,6 +7,7 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
+#include<signal.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
 void say(char*,...);
@@ -14,34 +15,40 @@ void say(char*,...);
 
 
 
-//
-static int lastwidth=0,lastheight=0;
+//窗口
+static struct winsize w;
 static int width,height;
-static char* textbuf=0;
+static int lastwidth=0,lastheight=0;
 //输入
-static int signal=-1;
+static int flag=-1;
 static struct termios old;
 static struct termios new;
+//
+static char* textbuf=0;
 
 
 
 
+static void newsize(int num)
+{
+	ioctl(0, TIOCGWINSZ, &w);
+	width=w.ws_col;
+	height=w.ws_row;
+}
 int uievent(QWORD* first,QWORD* second)
 {
 	char a,b,c,d;
 
-	if(lastwidth != width)
-	{
-		lastwidth = width;
-		lastheight = height;
-		first[0] = 0x657a6973;
-		second[0] = width + (height<<16);
-		return 1;
-	}
-
 	while(1)
 	{
-		usleep(1000);
+		if(lastwidth != width)
+		{
+			lastwidth = width;
+			lastheight = height;
+			first[0] = 0x657a6973;
+			second[0] = width + (height<<16);
+			return 1;
+		}
 
 		a=getchar();
 		if(a == -1)continue;
@@ -91,6 +98,8 @@ int uievent(QWORD* first,QWORD* second)
 			*second = a;
 			return 1;
 		}
+
+		usleep(1000);
 	}
 
 	return 1;
@@ -118,6 +127,8 @@ void windowwrite()
 
 	printf("\033[H\033[J");
 	printf("%s",textbuf);
+
+	fflush(stdout);
 }
 
 
@@ -137,14 +148,13 @@ void windowstop()
 
 void windowcreate()
 {
-	//
-	struct winsize w;
 	ioctl(0, TIOCGWINSZ, &w);
 	width=w.ws_col;
 	height=w.ws_row;
+	signal(SIGWINCH,newsize);
 
 	//
-	signal=tcgetattr(STDIN_FILENO,&old);
+	flag=tcgetattr(STDIN_FILENO,&old);
 	new=old;
 	new.c_lflag&=~(ICANON|ECHO);
 	new.c_cc[VTIME] = 0;
@@ -154,5 +164,5 @@ void windowcreate()
 }
 void windowdelete()
 {
-	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
+	if(flag!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 }
