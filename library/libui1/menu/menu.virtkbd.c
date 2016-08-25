@@ -1,25 +1,25 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
-void printascii(int x,int y,int size,char ch,DWORD fg,DWORD bg);
-void rect(int x0,int y0,int x1,int y1,DWORD body,DWORD frame);
-void backgroundcolor(DWORD);
-DWORD getrandom();
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
+void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
+void backgroundcolor(u32);
+u32 getrandom();
 
 
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 static char table[8][8] = {
 	'a','b','c','d','e','f','g','h',
@@ -35,9 +35,17 @@ static char table[8][8] = {
 
 
 
-static void virtkbd_write(QWORD type,QWORD value)
+static int virtkbd_write(u64* type,u64* value)
 {
-	
+	int x,y;
+
+	if(*type == 0x7466656C207A7978)
+	{
+		x = (*value) & 0xffff;
+		y = ( (*value) >> 16 ) & 0xffff;
+	}
+
+	return 1;
 }
 static void virtkbd_read()
 {
@@ -92,18 +100,18 @@ static void virtkbd_stop()
 }
 void virtkbd_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0;
 	this[1]=0x64626b74726976;
 
-	this[10]=(QWORD)virtkbd_start;
-	this[11]=(QWORD)virtkbd_stop;
-	this[12]=(QWORD)virtkbd_list;
-	this[13]=(QWORD)virtkbd_into;
-	this[14]=(QWORD)virtkbd_read;
-	this[15]=(QWORD)virtkbd_write;
+	this[10]=(u64)virtkbd_start;
+	this[11]=(u64)virtkbd_stop;
+	this[12]=(u64)virtkbd_list;
+	this[13]=(u64)virtkbd_into;
+	this[14]=(u64)virtkbd_read;
+	this[15]=(u64)virtkbd_write;
 }
 void virtkbd_delete()
 {

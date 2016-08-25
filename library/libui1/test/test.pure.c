@@ -1,8 +1,8 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
-void hexadecimal(int x,int y,QWORD in);
-void printhexadecimal(int x, int y, int size, QWORD in, DWORD fg, DWORD bg);
+void hexadecimal(int x,int y,u64 in);
+void printhexadecimal(int x, int y, int size, u64 in, u32 fg, u32 bg);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -12,15 +12,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -38,10 +38,10 @@ static void pure_into()
 static void pure_read()
 {
 	int x,y;
-	DWORD color;
-	DWORD* screenbuf;
+	u32 color;
+	u32* screenbuf;
 
-	screenbuf = (DWORD*)(haha->pixelbuffer);
+	screenbuf = (u32*)(haha->pixelbuffer);
 
 	color=0xff000000;
 	if((flag&0x1) == 0x1)color |= 0xff;
@@ -58,9 +58,9 @@ static void pure_read()
 
 	printhexadecimal(0, 0, 4, color & 0xffffff, 0x87654321,0xfedcba98);
 }
-static void pure_write(QWORD type,QWORD key)
+static void pure_write(u64* type,u64* key)
 {
-	if( (type&0xffffffff) == 0x207A7978 )
+	if( *(unsigned int*)type == 0x207A7978 )
 	{
 		flag = (flag+1)&0x7;
 	}
@@ -77,18 +77,18 @@ static void pure_stop()
 }
 void pure_create(void* uibuf,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x65727570;
 
-	this[10]=(QWORD)pure_start;
-	this[11]=(QWORD)pure_stop;
-	this[12]=(QWORD)pure_list;
-	this[13]=(QWORD)pure_into;
-	this[14]=(QWORD)pure_read;
-	this[15]=(QWORD)pure_write;
+	this[10]=(u64)pure_start;
+	this[11]=(u64)pure_stop;
+	this[12]=(u64)pure_list;
+	this[13]=(u64)pure_into;
+	this[14]=(u64)pure_read;
+	this[15]=(u64)pure_write;
 }
 void pure_delete()
 {

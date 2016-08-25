@@ -1,21 +1,21 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //挂载
-QWORD prelibation(char*);
+u64 prelibation(char*);
 int explaingpt(char* src,char* dest);	//分区表
 int explainmbr(char* src,char* dest);
-int mountext(QWORD sector,char* dest);	//文件系统
-int mountfat(QWORD sector,char* dest);
-int mounthfs(QWORD sector,char* dest);
-int mountntfs(QWORD sector,char* dest);
+int mountext(u64 sector,char* dest);	//文件系统
+int mountfat(u64 sector,char* dest);
+int mounthfs(u64 sector,char* dest);
+int mountntfs(u64 sector,char* dest);
 //
-int systemread( char* rdi,QWORD rsi,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
+int systemread( char* rdi,u64 rsi,u64 rcx);
+int systemwrite(char* rdi,u64 rsi,u64 rcx);
 //基本函数
-int hexstring2data(char* src,QWORD* dest);
-int mem2file(char* src,char* dest,QWORD ignore,int size);
+int hexstring2data(char* src,u64* dest);
+int mem2file(char* src,char* dest,u64 ignore,int size);
 int compare(char*,char*);
 void printmemory(char*,int);
 void say(char*,...);
@@ -32,9 +32,9 @@ static char* datahome;
 
 //3大函数的位置
 int (*fsls)(char* to);
-int (*fscd)(QWORD id);
-int (*fsload)(QWORD id,QWORD offset,QWORD size);
-int (*fsstore)(QWORD id,QWORD offset,QWORD size);
+int (*fscd)(u64 id);
+int (*fsload)(u64 id,u64 offset,u64 size);
+int (*fsstore)(u64 id,u64 offset,u64 size);
 
 
 
@@ -49,13 +49,13 @@ static int fs_list(char* name)
 	{
 		for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
 		{
-			temp=*(QWORD*)( dirhome+(i*0x40) );
+			temp=*(u64*)( dirhome+(i*0x40) );
 			if(temp == 0)break;
 
 			//[+0]:type
 			say("(%-4s," , dirhome+(i*0x40) );
 			//[+8]:id
-			*(QWORD*)buf=*(QWORD*)(dirhome+(i*0x40)+0x8);
+			*(u64*)buf=*(u64*)(dirhome+(i*0x40)+0x8);
 			temp=0;
 			for(j=0;j<8;j++)
 			{
@@ -65,12 +65,12 @@ static int fs_list(char* name)
 				if(buf[j]>=0x80) temp++;
 			}
 			if(temp==0) say("%4s)	",buf);
-			else say("%4llx)	",*(QWORD*)buf);
+			else say("%4llx)	",*(u64*)buf);
 
 			//[+10]:start
-			say("[%-4llx,",*(QWORD*)(dirhome+(i*0x40)+0x10));
+			say("[%-4llx,",*(u64*)(dirhome+(i*0x40)+0x10));
 			//[+18]:end
-			say("%4llx]	",*(QWORD*)(dirhome+(i*0x40)+0x18));
+			say("%4llx]	",*(u64*)(dirhome+(i*0x40)+0x18));
 			//[+20]:detail
 			say("{%-16s}	",dirhome+(i*0x40)+0x20);
 			//which
@@ -83,11 +83,11 @@ static int fs_list(char* name)
 	//else:         search+explain
 	for(;temp<0x10000;temp+=0x40)
 	{
-		//say("%llx,%llx\n",*(QWORD*)name,*(QWORD*)temp);
+		//say("%llx,%llx\n",*(u64*)name,*(u64*)temp);
 		if( compare( name , dirhome+temp+0x20 ) == 0 )
 		{
 			printmemory(dirhome+temp,0x40);
-			//id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
+			//id=*(u64*)(dirhome + 0x40*ret + 0x10);
 			//explain(id);
 			return temp/0x40;
 		}
@@ -100,29 +100,29 @@ static int fs_list(char* name)
 static int fs_choose(char* arg1)
 {
 	int ret;
-	QWORD id;
+	u64 id;
 
 	//search
 	ret=fs_list(arg1);
 	if( ret<0 )return ret;          //没找到
 
 	//change directory
-	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
+	id=*(u64*)(dirhome + 0x40*ret + 0x10);
 	return fscd(id);
 }
 static int fs_read(char* arg1)
 {
 	//寻找这个文件名，得到id，type，size
 	int ret;
-	QWORD id;
-	QWORD size;
-	QWORD temp;
+	u64 id;
+	u64 size;
+	u64 temp;
 
 	ret=fs_list(arg1);
 	if( ret==0 )return -1;
 
-	id=*(QWORD*)(dirhome + 0x40*ret + 0x10);
-	size=*(QWORD*)(dirhome + 0x40*ret + 0x18);
+	id=*(u64*)(dirhome + 0x40*ret + 0x10);
+	size=*(u64*)(dirhome + 0x40*ret + 0x18);
 	if(size>0x100000)say("id=%x,size=%x\n",id,size);
 
 	//1m,1m,1m的整块搞
@@ -166,11 +166,11 @@ static int fs_write(char* arg1)
 //number>0:
 //		挂载对应分区
 //		写到[diskhome+0,diskhome+0x10000)位置空的地方
-static int fs_start(QWORD type,char* src)
+static int fs_start(u64 type,char* src)
 {
 	int ret;
-	QWORD value;
-	QWORD sector=0;
+	u64 value;
+	u64 sector=0;
 say("@fs_start\n");
 
 	//传进来的字符串不全是数字就返回，否则到这个数字的位置
@@ -180,7 +180,7 @@ say("@fs_start\n");
 		ret=hexstring2data(src,&value);
 		if(ret<0)return -1;
 
-		sector=*(QWORD*)(diskhome + value*0x40 + 0x10);
+		sector=*(u64*)(diskhome + value*0x40 + 0x10);
 	}
 
 
@@ -225,7 +225,7 @@ static int fs_stop(char* p)
 
 
 //
-void fs_create(char* world,QWORD* p)
+void fs_create(char* world,u64* p)
 {
 	//
 	diskhome=world;
@@ -236,12 +236,12 @@ void fs_create(char* world,QWORD* p)
 	//
 	p[0]=0x6d656d;
 	p[1]=0x7366;
-	p[2]=(QWORD)fs_start;
-	p[3]=(QWORD)fs_stop;
-	p[4]=(QWORD)fs_list;
-	p[5]=(QWORD)fs_choose;
-	p[6]=(QWORD)fs_read;
-	p[7]=(QWORD)fs_write;
+	p[2]=(u64)fs_start;
+	p[3]=(u64)fs_stop;
+	p[4]=(u64)fs_list;
+	p[5]=(u64)fs_choose;
+	p[6]=(u64)fs_read;
+	p[7]=(u64)fs_write;
 }
 void fs_delete()
 {

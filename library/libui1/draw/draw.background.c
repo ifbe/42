@@ -1,21 +1,21 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 
 
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
@@ -25,7 +25,7 @@ void backgroundcolor(unsigned int color)
 {
 	int x;
 	int width,height;
-	DWORD* screenbuf=(DWORD*)(haha->pixelbuffer);
+	u32* screenbuf=(u32*)(haha->pixelbuffer);
 
 	color |= 0xff000000;
 	for(x=0; x<(haha->width)*(haha->height); x++)
@@ -37,11 +37,11 @@ void background1()
 {
 	int x,y;
 	int width,height;
-	DWORD* screenbuf;
+	u32* screenbuf;
 
 	width = haha->width;
 	height = haha->height;
-	screenbuf = (DWORD*)(haha->pixelbuffer);
+	screenbuf = (u32*)(haha->pixelbuffer);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)
@@ -52,10 +52,10 @@ void background1()
 	//上下
 	for(y=0;y<16;y++)
 	{
-		DWORD color=0xff404040+(0x0b0b0b*y);
+		u32 color=0xff404040+(0x0b0b0b*y);
 
 		//上，编译器会不会用rep stosd指令优化呢?
-		DWORD* p=screenbuf+y*width;
+		u32* p=screenbuf+y*width;
 		for(x=y;x<width-y;x++)p[x]=color;
 
 		//下
@@ -65,7 +65,7 @@ void background1()
 	//左右
 	for(x=0;x<16;x++)
 	{
-		DWORD color=0xff404040+(0x0b0b0b*x);
+		u32 color=0xff404040+(0x0b0b0b*x);
 
 		for(y=x;y<height-x;y++)
 		{

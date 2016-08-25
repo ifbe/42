@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define DWORD unsigned long long
+#define u64 unsigned long long
+#define u32 unsigned long long
 #include <jni.h>
 #include <android/bitmap.h>
 #include <stdio.h>
@@ -8,7 +8,7 @@
 //
 void characterstart(char* pixbuf, char* pixfmt, int width, int height);
 void characterstop();
-void characterwrite(QWORD type,QWORD value);
+void characterwrite(u64 type,u64 value);
 void characterread();
 //
 void say(char* , ...);

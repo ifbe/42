@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 void arp_create(void*,void*);
 void eth_create(void*,void*);
 void ftp_create(void*,void*);
@@ -43,23 +43,23 @@ static int net_read()
 static int net_write()
 {
 }
-static int net_start(QWORD type,char* p)
+static int net_start(u64 type,char* p)
 {
 }
 static int net_stop()
 {
 }
-int net_create(char* world,QWORD* p)
+int net_create(char* world,u64* p)
 {
 	//
 	p[0]=0;			//type
 	p[1]=0x74656e;		//id
-	p[2]=(QWORD)net_start;
-	p[3]=(QWORD)net_stop;
-	p[4]=(QWORD)net_list;
-	p[5]=(QWORD)net_choose;
-	p[6]=(QWORD)net_read;
-	p[7]=(QWORD)net_write;
+	p[2]=(u64)net_start;
+	p[3]=(u64)net_stop;
+	p[4]=(u64)net_list;
+	p[5]=(u64)net_choose;
+	p[6]=(u64)net_read;
+	p[7]=(u64)net_write;
 
 	//
 	char* q=(char*)p+0x40;

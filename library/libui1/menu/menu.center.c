@@ -1,11 +1,11 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 int characterchoose(char* p);
 //
-void printstring(int x, int y, int size, char* str, DWORD fg, DWORD bg);
-void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
+void printstring(int x, int y, int size, char* str, u32 fg, u32 bg);
+void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 //
 void say(char*,...);
 
@@ -14,15 +14,15 @@ void say(char*,...);
 
 //
 static struct temp{
-	QWORD type;
-	QWORD id;
-	QWORD start;
-	QWORD end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-	QWORD pixelbuffer;
-	QWORD pixelformat;
-	QWORD width;
-	QWORD height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 //菜单
 static char buffer[128];
@@ -152,10 +152,12 @@ static void menu_read()
 
 
 //write,read,into,list
-static void menu_write(QWORD type,QWORD key)
+static void menu_write(u64* a,u64* b)
 {
 	int width=haha->width;
 	int height=haha->height;
+	u64 type = *a;
+	u64 key = *b;
 
 	//'xyz left'
 	if(type==0x7466656C207A7978)
@@ -234,18 +236,18 @@ static void menu_stop()
 }
 void menu_create(void* base,void* addr)
 {
-	QWORD* this=addr;
+	u64* this=addr;
 	haha=addr;
 
 	this[0]=0;
 	this[1]=0x756e656d;
 
-	this[10]=(QWORD)menu_start;
-	this[11]=(QWORD)menu_stop;
-	this[12]=(QWORD)menu_list;
-	this[13]=(QWORD)menu_choose;
-	this[14]=(QWORD)menu_read;
-	this[15]=(QWORD)menu_write;
+	this[10]=(u64)menu_start;
+	this[11]=(u64)menu_stop;
+	this[12]=(u64)menu_list;
+	this[13]=(u64)menu_choose;
+	this[14]=(u64)menu_read;
+	this[15]=(u64)menu_write;
 }
 void menu_delete()
 {

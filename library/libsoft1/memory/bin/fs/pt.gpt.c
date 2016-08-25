@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //gpt:					[+0x400,+0x4400],每个0x80,总共0x80个
 //[+0,+0xf]:类型guid
 //[+0x10,+0x1f]:分区guid
@@ -19,11 +19,11 @@ void say(char* fmt,...);
 int isgpt(char* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
-	QWORD temp=*(WORD*)(addr+0x1fe);
+	u64 temp=*(u16*)(addr+0x1fe);
 	if(temp != 0xaa55 ) return 0;
 
 	//第二个扇区开头必须是"EFI PART"
-	temp=*(QWORD*)(addr+0x200);
+	temp=*(u64*)(addr+0x200);
 	if( temp != 0x5452415020494645 ) return 0;
 
 	//检查crc32校验正确还是错误
@@ -35,17 +35,17 @@ int isgpt(char* addr)
 void explaingpt(char* from,char* to)
 {
 	int i=0,j=0;
-	QWORD temp;
+	u64 temp;
 
 	char* src;
 	char* dst;
-	QWORD* srcqword;
-	QWORD* dstqword;
+	u64* srcqword;
+	u64* dstqword;
 	say("gpt disk\n");
 
 	//除了硬盘记录，其余一概干掉
 	dst=to;
-	dstqword=(QWORD*)to;
+	dstqword=(u64*)to;
 	for(i=0;i<0x100;i++)	//0x100*0x40=0x4000=16k
 	{
 		temp=dstqword[i*8];
@@ -57,24 +57,24 @@ void explaingpt(char* from,char* to)
 		dst[j] = 0;
 	}
 	dst+=0x40*i;
-	dstqword=(QWORD*)dst;
+	dstqword=(u64*)dst;
 
 	//正式开始转换
 	from+=0x400;
 	src=from;
-	srcqword=(QWORD*)from;
+	srcqword=(u64*)from;
 	for(i=0;i<0x80;i++)	//0x80 partitions per disk
 	{
 		//先取数字出来
 		src = from+0x80*i;
-		srcqword = (QWORD*)src;
+		srcqword = (u64*)src;
 		if(srcqword [0]==0)continue;
 
 		//类型，子类型，开始，结束
-		QWORD firsthalf = srcqword [0];
-		QWORD secondhalf = srcqword [1];
-		QWORD startlba = srcqword [4];
-		QWORD endlba = srcqword [5];
+		u64 firsthalf = srcqword [0];
+		u64 secondhalf = srcqword [1];
+		u64 startlba = srcqword [4];
+		u64 endlba = srcqword [5];
 		dstqword[0]=0x74726170;	//'disk...'
 		dstqword[2]=startlba;
 		dstqword[3]=endlba;

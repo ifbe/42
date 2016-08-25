@@ -66,7 +66,7 @@ void draw(int x,int y,int color)
 {
 	point(x+(width/2),(height/2)-y-1,color);
 }*/
-QWORD readwindow(QWORD what)
+u64 readwindow(u64 what)
 {
 }
 void writewindow()
@@ -87,7 +87,7 @@ void writewindow()
 //4:鼠标松开
 //5:鼠标移动
 //0xff:时间
-int uievent(QWORD* type,QWORD* value)
+int uievent(u64* type,u64* value)
 {
 	SDL_Event event;
 	while (1)

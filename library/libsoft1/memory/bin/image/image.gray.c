@@ -1,6 +1,6 @@
-#define QWORD unsigned long long
-#define BYTE unsigned char
-void gray_b(QWORD size,char* addr)
+#define u64 unsigned long long
+#define u8 unsigned char
+void gray_b(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -10,7 +10,7 @@ void gray_b(QWORD size,char* addr)
 		addr[i*4+2]=addr[i*4+1]=addr[i*4];
 	}
 }
-void gray_g(QWORD size,char* addr)
+void gray_g(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -20,7 +20,7 @@ void gray_g(QWORD size,char* addr)
 		addr[i*4]=addr[i*4+2]=addr[i*4+1];
 	}
 }
-void gray_r(QWORD size,char* addr)
+void gray_r(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -31,7 +31,7 @@ void gray_r(QWORD size,char* addr)
 	}
 }
 //max(r,g,b)
-void gray_max(QWORD size,char* addr)
+void gray_max(u64 size,char* addr)
 {
 	int i,temp;
 	int x=size&0xffff;
@@ -45,7 +45,7 @@ void gray_max(QWORD size,char* addr)
 	}
 }
 //(b+g+r)/3
-void gray_average(QWORD size,char* addr)
+void gray_average(u64 size,char* addr)
 {
 	int i,temp;
 	int x=size&0xffff;
@@ -57,7 +57,7 @@ void gray_average(QWORD size,char* addr)
 	}
 }
 //0.072169b+0.715160g+0.212671r
-void gray_opencv(QWORD size,char* addr)
+void gray_opencv(u64 size,char* addr)
 {
 	int i,temp;
 	int x=size&0xffff;
@@ -69,7 +69,7 @@ void gray_opencv(QWORD size,char* addr)
 	}
 }
 //0.11b+0.59g+0.3r
-void gray_bio(QWORD size,char* addr)
+void gray_bio(u64 size,char* addr)
 {
 	int i,temp;
 	int x=size&0xffff;

@@ -1,6 +1,6 @@
-#define QWORD unsigned long long
-#define BYTE unsigned char
-void channel_b(QWORD size,char* addr)
+#define u64 unsigned long long
+#define u8 unsigned char
+void channel_b(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -10,7 +10,7 @@ void channel_b(QWORD size,char* addr)
 		addr[i*4+2]=addr[i*4+1]=0;
 	}
 }
-void channel_g(QWORD size,char* addr)
+void channel_g(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -20,7 +20,7 @@ void channel_g(QWORD size,char* addr)
 		addr[i*4]=addr[i*4+2]=0;
 	}
 }
-void channel_r(QWORD size,char* addr)
+void channel_r(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -34,7 +34,7 @@ void channel_r(QWORD size,char* addr)
 
 
 
-void channel_rg(QWORD size,char* addr)
+void channel_rg(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -44,7 +44,7 @@ void channel_rg(QWORD size,char* addr)
 		addr[i*4]=0;
 	}
 }
-void channel_rb(QWORD size,char* addr)
+void channel_rb(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;
@@ -54,7 +54,7 @@ void channel_rb(QWORD size,char* addr)
 		addr[i*4+1]=0;
 	}
 }
-void channel_gb(QWORD size,char* addr)
+void channel_gb(u64 size,char* addr)
 {
 	int x=size&0xffff;
 	int y=(size>>16)&0xffff;

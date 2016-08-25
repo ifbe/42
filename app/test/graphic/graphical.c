@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 void windowcreate();
 void windowdelete();
@@ -11,13 +11,13 @@ void windowread();
 void windowwrite();
 //
 void eventwrite();
-void eventread(QWORD* first,QWORD* second);
+void eventread(u64* first,u64* second);
 
 
 
 
-static DWORD palette[1024*1024];
-static DWORD color;
+static u32 palette[1024*1024];
+static u32 color;
 
 
 
@@ -33,7 +33,7 @@ void printworld()
 		}
 	}
 }
-void processmessage(QWORD type,QWORD key)
+void processmessage(u64 type,u64 key)
 {
 	color=key;
 }
@@ -44,8 +44,8 @@ void main()
 	windowstart(palette, "rgba8888", 1024, 1024);
 
 	//forever
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内

@@ -1,21 +1,21 @@
 //martin buttner
 #include<stdio.h>
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 double sine(double);
 void createwindow();
 void deletewindow();
-void writewindow(QWORD size,void* addr);
-void uievent(QWORD* type,QWORD* key);
+void writewindow(u64 size,void* addr);
+void uievent(u64* type,u64* key);
 
 
 
 
 //
-static DWORD palette[1024*1024];
-void createppm(QWORD size,BYTE* palette,char* filename)
+static u32 palette[1024*1024];
+void createppm(u64 size,u8* palette,char* filename)
 {
 	int x,y;
 	FILE* fp=fopen(filename,"w");
@@ -79,11 +79,11 @@ void main()
 			palette[y*1024+x]=(b)+(g<<8)+(r<<16);
 		}
 	}
-	createppm(0x04000400,(BYTE*)palette,"6.ppm");
+	createppm(0x04000400,(u8*)palette,"6.ppm");
 
 	//forever
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内

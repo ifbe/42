@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 void createcpu();
 void deletecpu();
@@ -17,7 +17,7 @@ void say(char* , ...);
 
 
 
-int bootevent(QWORD* first,QWORD* second)
+int bootevent(u64* first,u64* second)
 {
 	return 0;
 }

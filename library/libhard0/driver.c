@@ -1,10 +1,10 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 void say(char*,...);
 
 
 
 
-int hardevent(QWORD* first,QWORD* second)
+int hardevent(u64* first,u64* second)
 {
 	return 0;
 }

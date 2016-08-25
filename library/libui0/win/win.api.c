@@ -14,10 +14,10 @@
 #define menu2 0x2222
 #define menu3 0x3333
 #define menu4 0x4444
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 void windowwrite();
 void say(char* fmt,...);
 
@@ -36,13 +36,13 @@ static char dragpath[MAX_PATH];
 
 //
 static int pointercount=0;
-static BYTE pointerid[10];
+static u8 pointerid[10];
 
 //
 static int this=-1;
 static int that=-1;
-static QWORD type[10];
-static QWORD key[10];
+static u64 type[10];
+static u64 key[10];
 
 //
 static int leftdown=0,rightdown=0;
@@ -149,8 +149,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			DragFinish(hDrop);      //释放hDrop
 
 			say("drag:%s\n",dragpath);
-			type[0]=(0x706f7264)+((QWORD)0x656c6966<<32);	//'drop''file'
-			key[0]=(QWORD)dragpath;
+			type[0]=(0x706f7264)+((u64)0x656c6966<<32);	//'drop''file'
+			key[0]=(u64)dragpath;
 			this=0;
 			that=-1;
 			return 0;
@@ -244,7 +244,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			key[0]=(key[0]<<16) + pt.y;
 			key[0]=(key[0]<<16) + pt.x;
 
-			pointerid[pointercount]=(BYTE)(wparam);
+			pointerid[pointercount]=(u8)(wparam);
 			pointercount++;
 			this=0;
 			that=-1;
@@ -256,7 +256,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			for(x=0;x<pointercount;x++)
 			{
 				say("%2d,",pointerid[x]);
-				if( pointerid[x] == (BYTE)(wparam) )
+				if( pointerid[x] == (u8)(wparam) )
 				{
 					for(y=x;y<pointercount-1;y++)
 					{
@@ -266,7 +266,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				}
 			}
 
-			say("<-------->%2d\n",(BYTE)wparam);
+			say("<-------->%2d\n",(u8)wparam);
 			if(x>=pointercount)
 			{
 				say("wrong!!!!!!!!!!\n");
@@ -294,7 +294,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			int x;
 			for(x=0;x<pointercount;x++)
 			{
-				if( pointerid[x] == (BYTE)(wparam) )break;
+				if( pointerid[x] == (u8)(wparam) )break;
 			}
 			if(x>=pointercount)
 			{
@@ -320,9 +320,9 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				type[0]=0x207A7978+((QWORD)0x6E6F7266<<32);	//'xyz fron'
+				type[0]=0x207A7978+((u64)0x6E6F7266<<32);	//'xyz fron'
 			}
-			else type[0]=0x207A7978+((QWORD)0x6B636162<<32);	//'xyz back'
+			else type[0]=0x207A7978+((u64)0x6B636162<<32);	//'xyz back'
 
 			GetCursorPos(&pt);
 			ScreenToClient(window, &pt);
@@ -352,7 +352,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				else		//只是左键在拖动
 				{
 					//'xyz ','move'
-					type[0]=0x207A7978+((QWORD)0x65766F6D<<32);
+					type[0]=0x207A7978+((u64)0x65766F6D<<32);
 					key[0]=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
 
 					//say("%d,%d\n",pe.x,pe.y);
@@ -369,7 +369,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(leftdown==1)
 			{
-				type[0]=0x207A7978+((QWORD)0x7466656C<<32);	//'xyz left'
+				type[0]=0x207A7978+((u64)0x7466656C<<32);	//'xyz left'
 				key[0]=lparam;
 				this=0;
 				that=-1;
@@ -384,7 +384,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				type[0]=0x207A7978+((QWORD)0x72676968<<32);	//'xyz righ'
+				type[0]=0x207A7978+((u64)0x72676968<<32);	//'xyz righ'
 				key[0]=lparam;
 				this=0;
 				that=-1;
@@ -482,7 +482,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 	}
 }
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
 throw:
 	//没扔完的消息一个个扔，没消息了就下去等
@@ -534,7 +534,7 @@ throw:
 void windowlist()
 {
 }
-void windowchange(DWORD size,char* addr)
+void windowchange(u32 size,char* addr)
 {
 	RECT rc;
 	width=size&0xffff;
@@ -552,14 +552,14 @@ void windowchange(DWORD size,char* addr)
 
 
 // Step 3: the Window Procedure
-QWORD windowread(QWORD what)
+u64 windowread(u64 what)
 {
 	if(what==0x657a6973)	//'size'
 	{
 		return (height<<16)+width;
 	}
 }
-void windowwrite(QWORD type,QWORD value)
+void windowwrite(u64 type,u64 value)
 {
 	if(type==0x656c746974)		//'title'
 	{
@@ -677,7 +677,7 @@ int createmywindow()
 }
 void InitUIPIFilter()
 {
-	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,DWORD);
+	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,u32);
 
 	//1
 	HMODULE hUser = LoadLibraryA("user32.dll");

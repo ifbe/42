@@ -1,15 +1,15 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //libui
-void hexadecimal(int x,int y,QWORD in);
-void decimal(int x,int y,QWORD in);
-void printdouble(int x, int y, int size, double z, DWORD fgcolor, DWORD bgcolor);
-void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
-void printascii(int x, int y, int size, char ch, DWORD fgcolor, DWORD bgcolor);
-void line(int,int,int,int,DWORD);
-void backgroundcolor(DWORD);
+void hexadecimal(int x,int y,u64 in);
+void decimal(int x,int y,u64 in);
+void printdouble(int x, int y, int size, double z, u32 fgcolor, u32 bgcolor);
+void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
+void printascii(int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
+void line(int,int,int,int,u32);
+void backgroundcolor(u32);
 //libsoft
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
@@ -24,23 +24,23 @@ void printmemory(char*,int);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 struct mathnode{
 
-        DWORD type;
-        DWORD up;
-        DWORD left;
-        DWORD right;
+        u32 type;
+        u32 up;
+        u32 left;
+        u32 right;
         union{
                 char datasize[16];
                 double floatpoint;
@@ -153,8 +153,11 @@ static void printnode(int x,int y,int num)
 
 
 
-static void tree_write(QWORD type,QWORD key)
+static void tree_write(u64* a,u64* b)
 {
+	u64 type = *a;
+	u64 key = *b;
+
 	if(type==0x72616863)		//'char'
 	{
 		if(key==0x8)			//backspace
@@ -222,28 +225,32 @@ static void tree_into()
 
 static void tree_start()
 {
+	u64 t = 0x72616863;
+	u64 k = 0xd;
+
 	buffer[0]='1';
 	buffer[1]='+';
 	buffer[2]='1';
-	tree_write(0x72616863, 0xd);
+
+	tree_write(&t,&k);
 }
 static void tree_stop()
 {
 }
 void tree_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x65657274;
 
-	this[10]=(QWORD)tree_start;
-	this[11]=(QWORD)tree_stop;
-	this[12]=(QWORD)tree_list;
-	this[13]=(QWORD)tree_into;
-	this[14]=(QWORD)tree_read;
-	this[15]=(QWORD)tree_write;
+	this[10]=(u64)tree_start;
+	this[11]=(u64)tree_stop;
+	this[12]=(u64)tree_list;
+	this[13]=(u64)tree_into;
+	this[14]=(u64)tree_read;
+	this[15]=(u64)tree_write;
 
 	node=(struct mathnode*)(base+0x200000);
 }

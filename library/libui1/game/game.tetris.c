@@ -1,11 +1,11 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 //
-void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
-void printdecimal(int data,int xyz,DWORD fg,DWORD bg);
-void backgroundcolor(DWORD);
+void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
+void printdecimal(int data,int xyz,u32 fg,u32 bg);
+void backgroundcolor(u32);
 //
 unsigned int getrandom();
 void printmemory(char*,int);
@@ -16,15 +16,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 //
 typedef struct stucture
@@ -54,7 +54,7 @@ static void cubie(int x,int y,int z)
 {
 	int aa;
 	int startx,starty,endx,endy;
-	DWORD bodycolor;
+	u32 bodycolor;
 
 	aa=(haha->height*32)/40;
 
@@ -584,9 +584,12 @@ static int down()
 	generate();
 	return 1;
 }
-static void tetris_write(QWORD type,QWORD key)
+static void tetris_write(u64* a,u64* b)
 {
 	int ret;
+	u64 type = *a;
+	u64 key = *b;
+
 	if(type==0x7466656C207A7978)
 	{
 		down();
@@ -655,18 +658,18 @@ static void tetris_stop()
 }
 void tetris_create(char* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x736972746574;		//'tetris'
 
-	this[10]=(QWORD)tetris_start;
-	this[11]=(QWORD)tetris_stop;
-	this[12]=(QWORD)tetris_list;
-	this[13]=(QWORD)tetris_choose;
-	this[14]=(QWORD)tetris_read;
-	this[15]=(QWORD)tetris_write;
+	this[10]=(u64)tetris_start;
+	this[11]=(u64)tetris_stop;
+	this[12]=(u64)tetris_list;
+	this[13]=(u64)tetris_choose;
+	this[14]=(u64)tetris_read;
+	this[15]=(u64)tetris_write;
 
 	table=(unsigned char*)(addr+0x300000);
 }

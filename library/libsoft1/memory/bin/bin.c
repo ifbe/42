@@ -1,7 +1,7 @@
 #define QW unsigned long long
 #define DW unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u16 unsigned short
+#define u8 unsigned char
 //检查
 int iself(char*);	//可执行文件
 int ismacho(char*);
@@ -96,9 +96,9 @@ QW prelibation(char* memaddr)
 (设备这一小块是逻辑上的哪) -> (内存这一小块想要逻辑上的哪)
 (扇区，数量，是哪) -> (内存，数量，要哪)
 */
-void cleverread(QW src,QW count,QW where  ,  BYTE* dst,QW size,QW want)
+void cleverread(QW src,QW count,QW where  ,  u8* dst,QW size,QW want)
 {
-	BYTE* rdi=0;    //关键:读到哪儿
+	u8* rdi=0;    //关键:读到哪儿
 	QW rsi=0;    //读哪号扇区
 	QW rcx=0;    //读几个扇区
 
@@ -159,6 +159,6 @@ void cleverread(QW src,QW count,QW where  ,  BYTE* dst,QW size,QW want)
 (内存这一小块是逻辑上的哪) -> (设备这一小块想要逻辑上的哪)
 (来源，数量，是哪) -> (目的，数量，要哪)
 */
-void cleverwrite(BYTE* src,QW count,QW where  ,  QW dst,QW size,QW want)
+void cleverwrite(u8* src,QW count,QW where  ,  QW dst,QW size,QW want)
 {
 }

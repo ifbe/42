@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -9,7 +9,7 @@
 
 
 char clibuffer[128];
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
         int i;
         char* ret;
@@ -29,7 +29,7 @@ int uievent(QWORD* first,QWORD* second)
                 if( clibuffer[0] != 0 )
 		{
 			first[0]=0x727473;
-			second[0]=(QWORD)clibuffer;
+			second[0]=(u64)clibuffer;
 			break;
 		}
         }
@@ -51,7 +51,7 @@ void windowchange()
 
 
 
-QWORD windowread(QWORD what)
+u64 windowread(u64 what)
 {
 	if(what==0x657a6973)
 	{

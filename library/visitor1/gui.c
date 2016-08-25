@@ -1,11 +1,11 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //libui1
 void characterstart(char* addr,char* pixfmt, int width,int height);
 void characterstop();
-void characterwrite(QWORD type,QWORD key);
+void characterwrite(u64 type,u64 key);
 void characterread();
 void characterchoose(char*);
 void characterlist();
@@ -16,7 +16,7 @@ void windowread();
 void windowwrite();
 //event
 void eventwrite();
-void eventread(QWORD* first,QWORD* second);
+void eventread(u64* first,u64* second);
 //world
 void birth();
 void death();
@@ -38,8 +38,8 @@ static int height=512;
 
 void main()
 {
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 
 	//before
 	birth();

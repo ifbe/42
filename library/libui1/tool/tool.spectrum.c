@@ -1,15 +1,15 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
-void rectbody(int x1, int y1, int x2, int y2, DWORD color);
-void backgroundcolor(DWORD);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void backgroundcolor(u32);
 void background1();
 //
-void arteryread(char* rdi,QWORD rsi,QWORD rcx);
-void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
-void data2hexstring(QWORD,char*);
+void arteryread(char* rdi,u64 rsi,u64 rcx);
+void arterywrite(char* rdi,u64 rsi,u64 rcx);
+void data2hexstring(u64,char*);
 int compare(char*,char*);
 //
 unsigned int getrandom();
@@ -20,15 +20,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //before
@@ -44,8 +44,11 @@ static double* phase;		//8*1024=0x2000
 
 
 
-static void spectrum_write(QWORD type,QWORD key)
+static void spectrum_write(u64* a,u64* b)
 {
+	u64 type = *a;
+	u64 key = *b;
+
 	if(type==0x656c6966706f7264)		//'dropfile'
 	{
 	}
@@ -118,7 +121,7 @@ static void spectrum_read()
 
 
 
-static void spectrum_list(QWORD* this)
+static void spectrum_list(u64* this)
 {
 }
 static void spectrum_into()
@@ -145,18 +148,18 @@ void spectrum_stop()
 }
 void spectrum_create(void* uibuf,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x6d75727463657073;
 
-	this[10]=(QWORD)spectrum_start;
-	this[11]=(QWORD)spectrum_stop;
-	this[12]=(QWORD)spectrum_list;
-	this[13]=(QWORD)spectrum_into;
-	this[14]=(QWORD)spectrum_read;
-	this[15]=(QWORD)spectrum_write;
+	this[10]=(u64)spectrum_start;
+	this[11]=(u64)spectrum_stop;
+	this[12]=(u64)spectrum_list;
+	this[13]=(u64)spectrum_into;
+	this[14]=(u64)spectrum_read;
+	this[15]=(u64)spectrum_write;
 
 	databuf=(double*)(uibuf+0x200000);
 	real=(double*)(uibuf+0x300000);

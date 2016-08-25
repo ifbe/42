@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -15,16 +15,16 @@ static char buf[0x1000];
 
 
 //比如aa zec，得到aa\0ec
-void blank2zero(QWORD* name)
+void blank2zero(u64* name)
 {
 	int i;
-	QWORD temp;
+	u64 temp;
 	for(i=0;i<8;i++)
 	{
 		temp = ( (*name)>>(i*8) )&0xff;
 		if(temp == 0x20)
 		{
-			*name -= ((QWORD)0x20)<<(i*8);
+			*name -= ((u64)0x20)<<(i*8);
 		}
 	}
 }
@@ -33,16 +33,16 @@ void blank2zero(QWORD* name)
 
 
 //比如ac\0be，得到ac be
-void zero2blank(QWORD* name)
+void zero2blank(u64* name)
 {
 	int i;
-	QWORD temp;
+	u64 temp;
 	for(i=0;i<8;i++)
 	{
 		temp = ( (*name)>>(i*8) )&0xff;
 		if(temp == 0)
 		{
-			*name += ((QWORD)0x20)<<(i*8);
+			*name += ((u64)0x20)<<(i*8);
 		}
 	}
 }
@@ -51,16 +51,16 @@ void zero2blank(QWORD* name)
 
 
 //比如abcefg，变成ABCEFG
-void small2capital(QWORD* name)
+void small2capital(u64* name)
 {
 	int i;
-	QWORD temp;
+	u64 temp;
 	for(i=0;i<8;i++)
 	{
 		temp = ( (*name) >> (i*8) )&0xff;
 		if(temp>='a' && temp<='z')
 		{
-			*name -= ( (QWORD)0x20 )<<(i*8);
+			*name -= ( (u64)0x20 )<<(i*8);
 		}
 	}
 }
@@ -69,7 +69,7 @@ void small2capital(QWORD* name)
 
 
 //anscii码转换成一个数字，比如anscii码串为0x36,0x33,转换后得到decimal=36
-int decstring2data(BYTE* source,QWORD* data)
+int decstring2data(u8* source,u64* data)
 {
 	*data=0;
 	int i;
@@ -89,7 +89,7 @@ int decstring2data(BYTE* source,QWORD* data)
 
 
 //anscii码转换成一个16进制数字，比如anscii码串为0x36,0x61,转换后得到hex=0x6a
-int hexstring2data(BYTE* source,QWORD* data)
+int hexstring2data(u8* source,u64* data)
 {
 	*data=0;
 	int i;
@@ -120,7 +120,7 @@ int hexstring2data(BYTE* source,QWORD* data)
 
 
 
-int data2hexstring(QWORD data,BYTE* string)
+int data2hexstring(u64 data,u8* string)
 {
 	int i;
 	unsigned char temp;
@@ -143,7 +143,7 @@ int data2hexstring(QWORD data,BYTE* string)
 
 
 
-int data2decimalstring(QWORD data,BYTE* string)
+int data2decimalstring(u64 data,u8* string)
 {
 	unsigned long long temp;
 	int i,count;
@@ -171,7 +171,7 @@ int data2decimalstring(QWORD data,BYTE* string)
 
 
 
-void double2decimalstring(double data,BYTE* string)
+void double2decimalstring(double data,u8* string)
 {
 	double temp;
 	int offset;
@@ -188,14 +188,14 @@ void double2decimalstring(double data,BYTE* string)
 	}
 
 	//整数部分
-	offset+=data2decimalstring( (QWORD)data , string+offset );
+	offset+=data2decimalstring( (u64)data , string+offset );
 
 	//小数点
 	string[offset]='.';
 	offset++;
 
 	//小数部分
-	temp=(double)(QWORD)data;
+	temp=(double)(u64)data;
 	temp=data-temp;
 
 	if(temp<0.0000000000000000000000000000000001)
@@ -214,7 +214,7 @@ void double2decimalstring(double data,BYTE* string)
 			offset++;
 		}
 		temp=temp*10000000;
-		count=data2decimalstring( (QWORD)temp , string+offset );
+		count=data2decimalstring( (u64)temp , string+offset );
 		offset+=count;
 	}
 
@@ -229,7 +229,7 @@ void double2decimalstring(double data,BYTE* string)
 /*
 (buf,size) -> (argc,argv)
 */
-void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv)
+void buf2arg(u8* buf,int max,int* argc,u8** argv)
 {
 	int i;
 	int count=0;
@@ -285,10 +285,10 @@ void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv)
 
 
 
-void buf2addrport(BYTE* pp,int max,BYTE* addr,int* port)
+void buf2addrport(u8* pp,int max,u8* addr,int* port)
 {
 	int ii;
-	QWORD data=0;
+	u64 data=0;
 
 	for(ii=0;ii<max;ii++)
 	{
@@ -318,7 +318,7 @@ void buf2addrport(BYTE* pp,int max,BYTE* addr,int* port)
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"
 */
-int buf2optval(BYTE* pp,int max,BYTE** type,BYTE** name)
+int buf2optval(u8* pp,int max,u8** type,u8** name)
 {
 	int ii;
 	for(ii=0;ii<max;ii++)
@@ -348,7 +348,7 @@ int buf2optval(BYTE* pp,int max,BYTE** type,BYTE** name)
 "1.txt" -> "txt"
 "2.html" -> "html"
 */
-int buf2suffix(BYTE* p,BYTE** suffix)
+int buf2suffix(u8* p,u8** suffix)
 {
 	int i=0;
 	int tail=0;
@@ -389,7 +389,7 @@ int buf2suffix(BYTE* p,BYTE** suffix)
 "file://code/readme.txt" -> 'file' , "code/readme.txt"
 "http://192.168.1.1/index.html" -> 'http' , "192.168.1.1/index.html"
 */
-int buf2typename(BYTE* p,int max,QWORD* type,BYTE** name)
+int buf2typename(u8* p,int max,u64* type,u8** name)
 {
 	int i=0;
 	int j=0;

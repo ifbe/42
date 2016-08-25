@@ -1,10 +1,10 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
-void rectbody(int x1,int y1,int x2,int y2,DWORD color);
-void rectframe(int x1,int y1,int x2,int y2,DWORD color);
-void rect(int x1,int y1,int x2,int y2,DWORD body,DWORD frame);
-void circlebody(int x,int y,int r,DWORD color);
+void rectbody(int x1,int y1,int x2,int y2,u32 color);
+void rectframe(int x1,int y1,int x2,int y2,u32 color);
+void rect(int x1,int y1,int x2,int y2,u32 body,u32 frame);
+void circlebody(int x,int y,int r,u32 color);
 void backgroundcolor();
 //
 void say(char*,...);
@@ -13,15 +13,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
@@ -108,7 +108,7 @@ static void joystick_read()
 
 
 
-static void joystick_write()
+static void joystick_write(u64* type,u64* key)
 {
 }
 
@@ -133,18 +133,18 @@ static void joystick_stop()
 }
 void joystick_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x6b63697473796f6a;
 
-	this[10]=(QWORD)joystick_start;
-	this[11]=(QWORD)joystick_stop;
-	this[12]=(QWORD)joystick_list;
-	this[13]=(QWORD)joystick_change;
-	this[14]=(QWORD)joystick_read;
-	this[15]=(QWORD)joystick_write;
+	this[10]=(u64)joystick_start;
+	this[11]=(u64)joystick_stop;
+	this[12]=(u64)joystick_list;
+	this[13]=(u64)joystick_change;
+	this[14]=(u64)joystick_read;
+	this[15]=(u64)joystick_write;
 }
 void joystick_delete()
 {

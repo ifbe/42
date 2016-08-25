@@ -1,11 +1,11 @@
-#define QWORD unsigned long long 
-#define DWORD unsigned int
+#define u64 unsigned long long 
+#define u32 unsigned int
 //
-void line(       int x1,int y1,int x2,int y2, DWORD color);
-void circlebody( int x, int y, int r, DWORD color);
-void circleframe(int x, int y, int r, DWORD color);
-void backgroundcolor(DWORD);
-DWORD getrandom();
+void line(       int x1,int y1,int x2,int y2, u32 color);
+void circlebody( int x, int y, int r, u32 color);
+void circleframe(int x, int y, int r, u32 color);
+void backgroundcolor(u32);
+u32 getrandom();
 //
 void say(char*,...);
 
@@ -13,15 +13,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -35,7 +35,7 @@ void weiqi_read()
 {
 	int x,y;
 	int cx,cy,half;
-	DWORD color;
+	u32 color;
 
 	cx = (haha->width)/2;
 	cy = (haha->height)/2;
@@ -87,7 +87,7 @@ void weiqi_read()
 
 
 
-void weiqi_write(QWORD type,QWORD key)
+void weiqi_write(u64* type,u64* key)
 {
 	char val;
 	int x,y;
@@ -98,10 +98,10 @@ void weiqi_write(QWORD type,QWORD key)
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if(type==0x7466656C207A7978)
+	if(*type==0x7466656C207A7978)
 	{
-		x=key&0xffff;
-		y=(key>>16)&0xffff;
+		x=(*key) & 0xffff;
+		y=( (*key) >> 16 ) & 0xffff;
 
 		x = (((x-cx)<<8)/half + 4608 + 128)>>9;
 		y = (((y-cy)<<8)/half + 4608 + 128)>>9;
@@ -149,18 +149,18 @@ static void weiqi_stop()
 
 void weiqi_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;	//'window'
 	this[1]=0x6971696577;	//'weiqi'
 
-	this[10]=(QWORD)weiqi_start;
-	this[11]=(QWORD)weiqi_stop;
-	this[12]=(QWORD)weiqi_list;
-	this[13]=(QWORD)weiqi_choose;
-	this[14]=(QWORD)weiqi_read;
-	this[15]=(QWORD)weiqi_write;
+	this[10]=(u64)weiqi_start;
+	this[11]=(u64)weiqi_stop;
+	this[12]=(u64)weiqi_list;
+	this[13]=(u64)weiqi_choose;
+	this[14]=(u64)weiqi_read;
+	this[15]=(u64)weiqi_write;
 
 	data=base+0x300000;
 }

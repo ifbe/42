@@ -1,34 +1,30 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
 
 //libui1
-void line(		int x1, int y1, int x2, int y2, DWORD color);
-void rectbody(		int x1, int y1, int x2, int y2, DWORD color);
-void rectframe(		int x1, int y1, int x2, int y2, DWORD color);
-void rect(		int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
-void circlebody(	int x, int y, int r, DWORD color);
-void circleframe(	int x, int y, int r, DWORD color);
-void circle(		int x, int y, int r, DWORD bodycolor, DWORD framecolor);
+void line(		int x1, int y1, int x2, int y2, u32 color);
+void rectbody(		int x1, int y1, int x2, int y2, u32 color);
+void rectframe(		int x1, int y1, int x2, int y2, u32 color);
+void rect(		int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
+void circlebody(	int x, int y, int r, u32 color);
+void circleframe(	int x, int y, int r, u32 color);
+void circle(		int x, int y, int r, u32 bodycolor, u32 framecolor);
 
-void printascii(	int x, int y, int size, char ch, int data, DWORD fg, DWORD bg);
-void printbyte( 	int x, int y, int size, char ch, int data, DWORD fg, DWORD bg);
-void printstring( 	int x, int y, int size, char* str, int data, DWORD fg, DWORD bg);
-void printdecimal(	int x, int y, int size, QWORD data, DWORD fg, DWORD bg);
-void printhexadecimal(	int x, int y, int size, QWORD data, DWORD fg, DWORD bg);
-void printdouble(	int x, int y, int size, double data, DWORD fg, DWORD bg);
+void printascii(	int x, int y, int size, char ch, int data, u32 fg, u32 bg);
+void printbyte( 	int x, int y, int size, char ch, int data, u32 fg, u32 bg);
+void printstring( 	int x, int y, int size, char* str, int data, u32 fg, u32 bg);
+void printdecimal(	int x, int y, int size, u64 data, u32 fg, u32 bg);
+void printhexadecimal(	int x, int y, int size, u64 data, u32 fg, u32 bg);
+void printdouble(	int x, int y, int size, double data, u32 fg, u32 bg);
 
 void defaultascii(int x,int y,unsigned char ch);
 void defaultstring(int x,int y,char* p);
 void defaultdecimal(int x,int y,long long dec);
 void defaulthexadecimal(int x,int y,unsigned long long hex);
 void defaultdouble(int x,int y,double data)
-void backgroundcolor(DWORD color);
+void backgroundcolor(u32 color);
 
 //libui0
 #define input_char 0x72616863
@@ -52,19 +48,19 @@ void backgroundcolor(DWORD color);
 //libsoft1
 int compare(char* a,char* b);
 int wildcard(char* wild,char* str);
-int decstring2data(BYTE* source,QWORD* data);
-int hexstring2data(BYTE* source,QWORD* data);
-int data2hexstring(QWORD data,BYTE* string);
-int data2decimalstring(QWORD data,BYTE* string);
-int double2decimalstring(double data,BYTE* string);
+int decstring2data(u8* source,u64* data);
+int hexstring2data(u8* source,u64* data);
+int data2hexstring(u64 data,u8* string);
+int data2decimalstring(u64 data,u8* string);
+int double2decimalstring(double data,u8* string);
 int utf2unicode(unsigned char* src,unsigned int* dst);
 int unicode2utf(unsigned int src,unsigned char* dst);
 
-int buf2typename(BYTE* p,int max,QWORD* type,BYTE** name);
-int buf2optval(BYTE* pp,int max,BYTE** type,BYTE** name);
-int buf2suffix(BYTE* p,BYTE** suffix);
-void buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
-void buf2addrport(BYTE* pp,int max,BYTE* addr,int* port);
+int buf2typename(u8* p,int max,u64* type,u8** name);
+int buf2optval(u8* pp,int max,u8** type,u8** name);
+int buf2suffix(u8* p,u8** suffix);
+void buf2arg(u8* buf,int max,int* argc,u8** argv);
+void buf2addrport(u8* pp,int max,u8* addr,int* port);
 char* buf2folder(char* p);
 char* buf2filename(char* p);
 

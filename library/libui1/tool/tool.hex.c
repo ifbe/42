@@ -1,18 +1,18 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
-void printascii(int x, int y, int size, char ch, DWORD fg, DWORD bg);
-void printbyte(int x, int y, int size, char ch, DWORD fg, DWORD bg);
-void rectbody(int x1, int y1, int x2, int y2, DWORD color);
-void backgroundcolor(DWORD);
+void printascii(int x, int y, int size, char ch, u32 fg, u32 bg);
+void printbyte(int x, int y, int size, char ch, u32 fg, u32 bg);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void backgroundcolor(u32);
 void background1();
 //
 void characterchoose(char*);
-void arteryread(char* rdi,QWORD rsi,QWORD rcx);
-void arterywrite(char* rdi,QWORD rsi,QWORD rcx);
-void data2hexstring(QWORD,char*);
+void arteryread(char* rdi,u64 rsi,u64 rcx);
+void arterywrite(char* rdi,u64 rsi,u64 rcx);
+void data2hexstring(u64,char*);
 int compare(char*,char*);
 //
 void say(char*,...);
@@ -23,29 +23,29 @@ void printmemory(char*,int);
 
 //
 static struct temp{
-	QWORD type;
-	QWORD id;
-	QWORD start;
-	QWORD end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-	QWORD pixelbuffer;
-	QWORD pixelformat;
-	QWORD width;
-	QWORD height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //flostarea
 static int inputcount=0;
-static BYTE hi[0x100];
+static u8 hi[0x100];
 	//[0,0x1f]:target,value
 	//[0x20,0x3f]:base,value
 	//[0x40,0x5f]:offset,value
 	//[0x60,0x7f]:data,value
 
 //where
-static BYTE* databuf=0;
-static QWORD windowoffset;
-static QWORD pointeroffset;
+static u8* databuf=0;
+static u64 windowoffset;
+static u64 pointeroffset;
 
 
 
@@ -165,12 +165,12 @@ static void foreground()
 }
 static void floatarea()
 {
-	DWORD* screenbuf;
+	u32* screenbuf;
 	int width,height;
 	int thisx,thisy;
 	int x,y;
 
-	screenbuf = (DWORD*)(haha->pixelbuffer);
+	screenbuf = (u32*)(haha->pixelbuffer);
 	width = haha->width;
 	height = haha->height;
 	thisx = (pointeroffset % byteperline) << 4;
@@ -193,7 +193,7 @@ static void floatarea()
 	rectbody(xshift + thisx, thisy, xshift + thisx+256, thisy+128, 0xffff);
 
 	//
-	data2hexstring((QWORD)databuf, hi + 0x10);
+	data2hexstring((u64)databuf, hi + 0x10);
 	data2hexstring(windowoffset, hi + 0x30);
 	data2hexstring(pointeroffset, hi + 0x50);
 	data2hexstring(0, hi + 0x70);
@@ -247,7 +247,7 @@ static void hex_read_text()
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstring((QWORD)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstring((u64)databuf + windowoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
@@ -278,7 +278,7 @@ static void hex_read_text()
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstring((QWORD)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstring((u64)databuf + windowoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
@@ -336,8 +336,10 @@ static void hex_read()
 
 
 
-static void hex_write(QWORD type,QWORD key)
+static void hex_write(u64* a,u64* b)
 {
+	u64 type = *a;
+	u64 key = *b;
 	updateconfig();
 
 	if(type==0x64626b)			//'kbd'
@@ -459,7 +461,7 @@ static void hex_write(QWORD type,QWORD key)
 
 
 
-static void hex_list(QWORD* this)
+static void hex_list(u64* this)
 {
 }
 static void hex_into()
@@ -482,28 +484,28 @@ void hex_start()
 
 	//浮动框
 	for(j=0;j<0x100;j++)hi[j]=0;
-	*(QWORD*)hi=0x3a746567726174;
-	*(QWORD*)(hi+0x20)=0x3a65736162;
-	*(QWORD*)(hi+0x40)=0x3a74657366666f;
-	*(QWORD*)(hi+0x60)=0x3a61746164;
+	*(u64*)hi=0x3a746567726174;
+	*(u64*)(hi+0x20)=0x3a65736162;
+	*(u64*)(hi+0x40)=0x3a74657366666f;
+	*(u64*)(hi+0x60)=0x3a61746164;
 }
 void hex_stop()
 {
 }
 void hex_create(void* uibuf,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x786568;
 
-	this[10]=(QWORD)hex_start;
-	this[11]=(QWORD)hex_stop;
-	this[12]=(QWORD)hex_list;
-	this[13]=(QWORD)hex_into;
-	this[14]=(QWORD)hex_read;
-	this[15]=(QWORD)hex_write;
+	this[10]=(u64)hex_start;
+	this[11]=(u64)hex_stop;
+	this[12]=(u64)hex_list;
+	this[13]=(u64)hex_into;
+	this[14]=(u64)hex_read;
+	this[15]=(u64)hex_write;
 
 	databuf = uibuf;
 }

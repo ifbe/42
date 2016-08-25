@@ -17,10 +17,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 void say(char* fmt,...);
 
 
@@ -42,7 +42,7 @@ static char _dev_block_mmcblk[0x20]={
 
 
 //mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+int mem2file(char* memaddr,char* filename,u64 offset,u64 count)
 {
 	int thisfile;
 	int ret;
@@ -70,7 +70,7 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 	close(thisfile);
 	return 0;
 }
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
+int file2mem(char* memaddr,char* filename,u64 offset,u64 count)
 {
 	return 0;
 }
@@ -87,12 +87,12 @@ static int trythis(char* src,char* dest)
 
 	//[0,7]:type
 	//[8,f]:subtype
-	*(QWORD*)(dest+0)=0x6b736964;
-	*(QWORD*)(dest+0x8)=0x3f;
+	*(u64*)(dest+0)=0x6b736964;
+	*(u64*)(dest+0x8)=0x3f;
 
 	//size
-	*(QWORD*)(dest+0x10)=0;
-	*(QWORD*)(dest+0x18)=st.st_size;
+	*(u64*)(dest+0x10)=0;
+	*(u64*)(dest+0x18)=st.st_size;
 
 	//[0x20,0x3f]:name
 	for(i=0;i<0x20;i++)dest[0x20+i]=src[i];
@@ -141,7 +141,7 @@ void listfile(char* dest)
 void choosefile()
 {
 }
-int readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
+int readfile(char* buf,u64 sector,u64 disk,u32 count)
 {
 	int result;
 
@@ -163,7 +163,7 @@ int readfile(char* buf,QWORD sector,QWORD disk,DWORD count)
 	return 1;
 }
 //来源内存地址，目的首扇区，无视，总字节数
-void writefile(char* buf,QWORD startsector,QWORD ignore,DWORD count)
+void writefile(char* buf,u64 startsector,u64 ignore,u32 count)
 {
 	
 }

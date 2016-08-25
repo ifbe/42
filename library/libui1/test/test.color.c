@@ -1,7 +1,7 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
-void hexadecimal(int x,int y,QWORD in);
+void hexadecimal(int x,int y,u64 in);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -11,15 +11,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -37,8 +37,8 @@ static void color_into()
 static void color_read()
 {
 	int x,y,min;
-	DWORD color;
-	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+	u32 color;
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
 
 	if( ((haha->width) <= 0) && ((haha->height) <= 0) )
 	{
@@ -119,8 +119,11 @@ static void color_read()
 	//
 	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
 }
-static void color_write(QWORD type,QWORD key)
+static void color_write(u64* a,u64* b)
 {
+	u64 type = *a;
+	u64 key = *b;
+
 	if(type==0x64626b)
 	{
 		if(key==0x25)		//left
@@ -188,18 +191,18 @@ static void color_stop()
 }
 void color_create(void* base, void* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	u64* this=(u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x726f6c6f63;
 
-	this[10]=(QWORD)color_start;
-	this[11]=(QWORD)color_stop;
-	this[12]=(QWORD)color_list;
-	this[13]=(QWORD)color_into;
-	this[14]=(QWORD)color_read;
-	this[15]=(QWORD)color_write;
+	this[10]=(u64)color_start;
+	this[11]=(u64)color_stop;
+	this[12]=(u64)color_list;
+	this[13]=(u64)color_into;
+	this[14]=(u64)color_read;
+	this[15]=(u64)color_write;
 }
 void color_delete()
 {

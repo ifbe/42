@@ -1,13 +1,13 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
 #include<fcntl.h>
 #include<linux/input.h>		//	/dev/input/event
 #include<sys/epoll.h>		//	epoll
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 void say(char*,...);
 
 

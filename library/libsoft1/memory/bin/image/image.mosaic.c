@@ -1,13 +1,13 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
-void mosaic(QWORD size,QWORD partradius,DWORD* src,DWORD* dst)
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
+void mosaic(u64 size,u64 partradius,u32* src,u32* dst)
 {
 	int x,y,m,n;
 	int width=size&0xffff;
 	int height=(size>>16)&0xffff;
-	DWORD temp;
+	u32 temp;
 
 	int partx=size&0xffff;
 	int party=(size>>16)&0xffff;

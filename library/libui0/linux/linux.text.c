@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
@@ -35,7 +35,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
 	char a,b,c,d;
 

@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
 unsigned char* whereisunicodetable();
 void say(char*,...);
@@ -8,15 +8,15 @@ void say(char*,...);
 
 
 static struct temp{
-	QWORD type;
-	QWORD id;
-	QWORD start;
-	QWORD end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-	QWORD pixelbuffer;
-	QWORD pixelformat;
-	QWORD width;
-	QWORD height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 static unsigned char* unicodetable=0;
 
@@ -28,7 +28,7 @@ void printunicodefromvalue(int xxxx,int yyyy,char* p)
 	int x,y;
 	unsigned short temp;
 
-	DWORD* this = (DWORD*)( haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
+	u32* this = (u32*)( haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
 	for(y=0;y<0x10;y++)
 	{
 		temp  = p[y*2] << 8;
@@ -43,7 +43,7 @@ void printunicodefromvalue(int xxxx,int yyyy,char* p)
 		}
 	}//for
 }
-void printunicode(int x,int y,DWORD value)
+void printunicode(int x,int y,u32 value)
 {
 	printunicodefromvalue( x , y , unicodetable+(value*0x20) );
 }
@@ -56,7 +56,7 @@ void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
 	int x,y,i,j;
 	unsigned short temp;
 
-	DWORD* this = (DWORD*)(haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
+	u32* this = (u32*)(haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
 	for(y=0;y<0x10;y++)
 	{
 		temp  = p[y*2] << 8;
@@ -98,7 +98,7 @@ void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
 		}
 	}//for
 }
-void printunicodebig(int x,int y,DWORD value)
+void printunicodebig(int x,int y,u32 value)
 {
 	printunicodefromvaluebig( x , y , unicodetable+(value*0x20) );
 }

@@ -1,14 +1,14 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 void say(char* fmt , ...);
 void printmemory(char*,int);
 
 
 
 
-static int myownstr2data(char* source,QWORD* data)
+static int myownstr2data(char* source,u64* data)
 {
 	*data=0;
 	int i;
@@ -37,10 +37,10 @@ static int myownstr2data(char* source,QWORD* data)
 }
 int platformread(char* arg)
 {
-	QWORD addr;
+	u64 addr;
 
 	//read memory
-	addr = *(QWORD*)arg;
+	addr = *(u64*)arg;
 	addr &= 0xffffffffffff;
 	if(addr==0x79726f6d656d)	//'memory'
 	{
@@ -59,7 +59,7 @@ int platformread(char* arg)
 	}
 
 	//read gpio
-	addr = *(DWORD*)arg;
+	addr = *(u32*)arg;
 	if(addr==0x6f697067)
 	{
 		if( arg[4] == '.' )	//gpio.70
@@ -80,10 +80,10 @@ int platformread(char* arg)
 }
 int platformwrite(char* arg)
 {
-	QWORD addr,value;
+	u64 addr,value;
 
 	//write memory[x,y]=what
-	value = *(QWORD*)arg;
+	value = *(u64*)arg;
 	value &= 0xffffffffffffff;	//clear byte7 for cmp
 	if(value==0x79726f6d656d)	//'memory'
 	{

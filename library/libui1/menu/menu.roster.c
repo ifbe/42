@@ -1,32 +1,32 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
-void printstring(int x,int y,int size,char* str,DWORD fg,DWORD bg);
-void printascii(int x,int y,int size,char ch,DWORD fg,DWORD bg);
-void rect(int x0,int y0,int x1,int y1,DWORD body,DWORD frame);
-void backgroundcolor(DWORD);
-DWORD getrandom();
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+void printstring(int x,int y,int size,char* str,u32 fg,u32 bg);
+void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
+void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
+void backgroundcolor(u32);
+u32 getrandom();
 
 
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
 
 
-static void roster_write(QWORD type,QWORD value)
+static void roster_write(u64* type,u64* value)
 {
 	
 }
@@ -86,18 +86,18 @@ static void roster_stop()
 }
 void roster_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0;
 	this[1]=0x726574736f72;
 
-	this[10]=(QWORD)roster_start;
-	this[11]=(QWORD)roster_stop;
-	this[12]=(QWORD)roster_list;
-	this[13]=(QWORD)roster_into;
-	this[14]=(QWORD)roster_read;
-	this[15]=(QWORD)roster_write;
+	this[10]=(u64)roster_start;
+	this[11]=(u64)roster_stop;
+	this[12]=(u64)roster_list;
+	this[13]=(u64)roster_into;
+	this[14]=(u64)roster_read;
+	this[15]=(u64)roster_write;
 }
 void roster_delete()
 {

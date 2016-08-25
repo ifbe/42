@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 int folder_create(void*,void*);
 int folder_delete();
 int process_create(void*,void*);
@@ -19,23 +19,23 @@ static int special_read()
 static int special_write()
 {
 }
-static int special_start(QWORD type,char* p)
+static int special_start(u64 type,char* p)
 {
 }
 static int special_stop()
 {
 }
-int special_create(char* world,QWORD* p)
+int special_create(char* world,u64* p)
 {
 	//
 	p[0]=0;			//type
 	p[1]=0x6c616963657073;	//id
-	p[2]=(QWORD)special_start;
-	p[3]=(QWORD)special_stop;
-	p[4]=(QWORD)special_list;
-	p[5]=(QWORD)special_choose;
-	p[6]=(QWORD)special_read;
-	p[7]=(QWORD)special_write;
+	p[2]=(u64)special_start;
+	p[3]=(u64)special_stop;
+	p[4]=(u64)special_list;
+	p[5]=(u64)special_choose;
+	p[6]=(u64)special_read;
+	p[7]=(u64)special_write;
 
 	//
 	char* q=(char*)p+0x40;

@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +42,7 @@ static int height = 512;
 static int enq=0;
 static int deq=0;
 static char kbd[256];
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
 printf("here\n");
 	if(enq == deq)

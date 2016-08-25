@@ -1,12 +1,12 @@
-#define QWORD unsigned long long 
-#define DWORD unsigned int
+#define u64 unsigned long long 
+#define u32 unsigned int
 //
-void line(int x1, int y1, int x2, int y2, DWORD color);
-void rectbody( int x1, int y1, int x2, int y2, DWORD color);
-void rectframe(int x1, int y1, int x2, int y2, DWORD color);
-void rect(     int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor);
-void backgroundcolor(DWORD);
-DWORD getrandom();
+void line(int x1, int y1, int x2, int y2, u32 color);
+void rectbody( int x1, int y1, int x2, int y2, u32 color);
+void rectframe(int x1, int y1, int x2, int y2, u32 color);
+void rect(     int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
+void backgroundcolor(u32);
+u32 getrandom();
 //
 void say(char*,...);
 
@@ -14,15 +14,15 @@ void say(char*,...);
 
 
 static struct temp{
-	QWORD type;
-	QWORD id;
-	QWORD start;
-	QWORD end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-	QWORD pixelbuffer;
-	QWORD pixelformat;
-	QWORD width;
-	QWORD height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 struct hehe{
@@ -151,9 +151,11 @@ void newfood()
 		foody=getrandom() % ((haha->height)/32);
 	}
 }
-void snake_write(QWORD type,QWORD key)
+void snake_write(u64* aaaa,u64* bbbb)
 {
 	int j;
+	u64 type = *aaaa;
+	u64 key = *bbbb;
 	if(die==1)return;
 
 	if(type==0x7466656C207A7978)
@@ -298,18 +300,18 @@ static void snake_stop()
 
 void snake_create(char* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x656b616e73;		//'snake'
 
-	this[10]=(QWORD)snake_start;
-	this[11]=(QWORD)snake_stop;
-	this[12]=(QWORD)snake_list;
-	this[13]=(QWORD)snake_choose;
-	this[14]=(QWORD)snake_read;
-	this[15]=(QWORD)snake_write;
+	this[10]=(u64)snake_start;
+	this[11]=(u64)snake_stop;
+	this[12]=(u64)snake_list;
+	this[13]=(u64)snake_choose;
+	this[14]=(u64)snake_read;
+	this[15]=(u64)snake_write;
 
 	snake=(struct hehe*)(addr+0x300000);
 }

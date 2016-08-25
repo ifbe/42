@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 int interface_create(void* world,void* func);
 int    memory_create(void* world,void* func);
 int       net_create(void* world,void* func);
@@ -12,12 +12,12 @@ int    memory_delete();
 int       net_delete();
 int   special_delete();
 //
-QWORD prelibation(void*);
+u64 prelibation(void*);
 int compare(char*,char*);
-int systemread( char* memory,QWORD sector,QWORD count);
-int systemwrite(char* memory,QWORD sector,QWORD count);
-int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
-int buf2typename(BYTE* buf,int max,QWORD* type,BYTE** name);
+int systemread( char* memory,u64 sector,u64 count);
+int systemwrite(char* memory,u64 sector,u64 count);
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2typename(u8* buf,int max,u64* type,u8** name);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -31,13 +31,13 @@ void say(char*,...);
 static struct elements
 {
 	//[0,7]:种类
-	QWORD type;
+	u64 type;
 
 	//[8,f]:名字
-	QWORD id;
+	u64 id;
 
 	//[0x10,0x17]
-	int (*start)(QWORD,char*);
+	int (*start)(u64,char*);
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[0x18,0x1f]
@@ -81,8 +81,8 @@ int arterylist(char* p)
 {
 	int j;
 	int count;
-	QWORD type;
-	QWORD id;
+	u64 type;
+	u64 id;
 
 	//@somewhere
 	if(this!=0)
@@ -182,7 +182,7 @@ int arterywrite(char* p)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int arterystart(BYTE* p)
+int arterystart(u8* p)
 {
 	if(this==0)return 0;
 	return table[this].start(0,p);

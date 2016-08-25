@@ -2,17 +2,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
-void channel_b(QWORD size,BYTE* addr);
-void channel_g(QWORD size,BYTE* addr);
-void channel_r(QWORD size,BYTE* addr);
-void channel_rg(QWORD size,BYTE* addr);
-void channel_rb(QWORD size,BYTE* addr);
-void channel_gb(QWORD size,BYTE* addr);
+void channel_b(u64 size,u8* addr);
+void channel_g(u64 size,u8* addr);
+void channel_r(u64 size,u8* addr);
+void channel_rg(u64 size,u8* addr);
+void channel_rb(u64 size,u8* addr);
+void channel_gb(u64 size,u8* addr);
 //
 void windowcreate();
 void windowdelete();
@@ -22,14 +22,14 @@ void windowread();
 void windowwrite();
 //
 void eventwrite();
-void eventread(QWORD* first,QWORD* second);
+void eventread(u64* first,u64* second);
 
 
 
 
 //
-static DWORD palette[1024*1024];
-static DWORD final[1024*1024];
+static u32 palette[1024*1024];
+static u32 final[1024*1024];
 
 
 
@@ -57,7 +57,7 @@ unsigned char BLUE(int i,int j)
 
 
 //
-void processmessage(QWORD type,QWORD key)
+void processmessage(u64 type,u64 key)
 {
 	
 	int i;
@@ -78,32 +78,32 @@ void processmessage(QWORD type,QWORD key)
 		//1
 		else if(key==0x31)
 		{
-			channel_b(0x04000400,(BYTE*)final);
+			channel_b(0x04000400,(u8*)final);
 		}
 		//2
 		else if(key==0x32)
 		{
-			channel_g(0x04000400,(BYTE*)final);
+			channel_g(0x04000400,(u8*)final);
 		}
 		//3
 		else if(key==0x33)
 		{
-			channel_r(0x04000400,(BYTE*)final);
+			channel_r(0x04000400,(u8*)final);
 		}
 		//4
 		else if(key==0x34)
 		{
-			channel_rg(0x04000400,(BYTE*)final);
+			channel_rg(0x04000400,(u8*)final);
 		}
 		//5
 		else if(key==0x35)
 		{
-			channel_rb(0x04000400,(BYTE*)final);
+			channel_rb(0x04000400,(u8*)final);
 		}
 		//6
 		else if(key==0x36)
 		{
-			channel_gb(0x04000400,(BYTE*)final);
+			channel_gb(0x04000400,(u8*)final);
 		}
 	}
 }
@@ -131,8 +131,8 @@ void main()
 	processmessage(0x72616863,0x30);
 
 	//forever
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内

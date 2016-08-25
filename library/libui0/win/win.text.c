@@ -1,8 +1,8 @@
 #include <conio.h>
 #include <stdio.h>
 #include <windows.h>
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 
 
 
@@ -17,7 +17,7 @@ static char* content;
 
 
 
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
 	unsigned char ch;
 

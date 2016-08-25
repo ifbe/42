@@ -1,15 +1,15 @@
-#define QWORD unsigned long long
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u8 unsigned char
 //
 int systemspi_list(char*);
 int systemspi_choose(int,char*);
-int systemspi_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
-int systemspi_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count);
+int systemspi_read(u8 dev,u8 reg,u8* buf,u8 count);
+int systemspi_write(u8 dev,u8 reg,u8* buf,u8 count);
 int systemspi_start(char* p);
 int systemspi_stop();
 //
-int decstring2data(char*,QWORD*);
-int hexstring2data(char*,QWORD*);
+int decstring2data(char*,u64*);
+int hexstring2data(char*,u64*);
 void say(char*,...);
 
 
@@ -28,7 +28,7 @@ static int spi_list()
 static int spi_choose(char* p)
 {
 	int ret;
-	QWORD data;
+	u64 data;
 
 	//
 	if(p==0)
@@ -71,7 +71,7 @@ static int spi_choose(char* p)
 		return systemspi_choose((int)data,0);
 	}
 }
-static int spi_start(QWORD type,char* p)
+static int spi_start(u64 type,char* p)
 {
 	systemspi_start(p);
 }
@@ -79,17 +79,17 @@ static int spi_stop()
 {
 	systemspi_stop();
 }
-void spi_create(char* world,QWORD* p)
+void spi_create(char* world,u64* p)
 {
 	//
 	p[0]=0x6563616669;	//type
 	p[1]=0x697073;		//id
-	p[2]=(QWORD)spi_start;
-	p[3]=(QWORD)spi_stop;
-	p[4]=(QWORD)spi_list;
-	p[5]=(QWORD)spi_choose;
-	p[6]=(QWORD)spi_read;
-	p[7]=(QWORD)spi_write;
+	p[2]=(u64)spi_start;
+	p[3]=(u64)spi_stop;
+	p[4]=(u64)spi_list;
+	p[5]=(u64)spi_choose;
+	p[6]=(u64)spi_read;
+	p[7]=(u64)spi_write;
 }
 void spi_delete()
 {

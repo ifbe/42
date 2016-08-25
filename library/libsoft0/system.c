@@ -1,7 +1,7 @@
 #define QW unsigned long long
 #define DW unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u16 unsigned short
+#define u8 unsigned char
 //file
 int createfile();
 int deletefile();

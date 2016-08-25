@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 
 
 #include<fcntl.h>		//	open
@@ -41,7 +41,7 @@ static int height=768;
 
 
 
-int uievent(QWORD* first,QWORD* second)
+int uievent(u64* first,u64* second)
 {
 	char a,b,c,d;
 	if(xmax != width)
@@ -153,7 +153,7 @@ void windowwrite()
 		ret=write(fbfd , screenbuf + y*width*bpp/8 , width*bpp/8);
 	}
 }
-QWORD windowread(QWORD what)
+u64 windowread(u64 what)
 {
 	if(what==0x657a6973)
 	{

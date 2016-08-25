@@ -1,10 +1,10 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
-void systemread(char* rdi,QWORD rsi,QWORD rcx);
-void systemwrite(char* rdi,QWORD rsi,QWORD rcx);
-void printmemory(QWORD start,QWORD count);
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+void systemread(char* rdi,u64 rsi,u64 rcx);
+void systemwrite(char* rdi,u64 rsi,u64 rcx);
+void printmemory(u64 start,u64 count);
 void say(char* fmt,...);
 
 
@@ -13,7 +13,7 @@ void say(char* fmt,...);
 int ismbr(char* addr)
 {
         //第一个扇区末尾必须有0x55，0xaa这个标志
-        QWORD temp=*(WORD*)(addr+0x1fe);
+        u64 temp=*(u16*)(addr+0x1fe);
         if(temp != 0xaa55 ) return 0;
 
 	//但是mbr没有特别的标志，只能勉强用55aa确定
@@ -27,18 +27,18 @@ int ismbr(char* addr)
 //from：那一条长度为16B的项目的地址，to：希望的位置
 static int mbrrecord(char* from,char* to)
 {
-	DWORD flag;		//(mbr+0x1be)+0
-	DWORD type;		//(mbr+0x1be)+4
-	DWORD start;		//(mbr+0x1be)+8
-	DWORD size;		//(mbr+0x1be)+c
-	QWORD* dst;
-	type=*(BYTE*)(from+4);
+	u32 flag;		//(mbr+0x1be)+0
+	u32 type;		//(mbr+0x1be)+4
+	u32 start;		//(mbr+0x1be)+8
+	u32 size;		//(mbr+0x1be)+c
+	u64* dst;
+	type=*(u8*)(from+4);
 	if(type==0)return 0;
 
 	//类型，子类型，开始，结束
-	dst=(QWORD*)to;
-	start=*(DWORD*)(from+8);
-	size=*(DWORD*)(from+0xc);
+	dst=(u64*)to;
+	start=*(u32*)(from+8);
+	size=*(u32*)(from+0xc);
         dst[0]=0x74726170; 	//'part'
 	dst[2]=start;		//start
 	dst[3]=start + size - 1;	//end
@@ -88,15 +88,15 @@ static int mbrrecord(char* from,char* to)
 void explainmbr(char* buffer,char* to)
 {
 	char* dst;
-	QWORD* dstqword;
+	u64* dstqword;
 
 	int i,j,ret;
-	QWORD temp;
+	u64 temp;
 	say("mbr disk\n",0);
 
 	//除了硬盘记录以外，全部干掉
 	dst=to;
-	dstqword=(QWORD*)to;
+	dstqword=(u64*)to;
 	for(i=0;i<0x100;i++)  //0x100*0x40=0x4000=16k
 	{
 		temp=dstqword[i*8];
@@ -108,7 +108,7 @@ void explainmbr(char* buffer,char* to)
 		dst[j] = 0;
 	}
 	dst+=0x40*i;
-	dstqword=(QWORD*)dst;
+	dstqword=(u64*)dst;
 
 	//首先是主分区，最多4个
 	ret=mbrrecord(buffer+0x1be,dst);
@@ -141,19 +141,19 @@ void explainmbr(char* buffer,char* to)
 }
 /*
 	//在这四个里面，寻找逻辑分区并解释
-	QWORD offset=0;
+	u64 offset=0;
 	while(1)
 	{
-		QWORD type=*(QWORD*)(to+offset+0x10);
+		u64 type=*(u64*)(to+offset+0x10);
 		if(type==0)break;		//到这就没东西了
 
-		QWORD start=*(QWORD*)(to+offset);
+		u64 start=*(u64*)(to+offset);
 		if( type==5 | type==0xf )
 		{
-			//say("sector:%x\n",*(DWORD*)(to+offset));
+			//say("sector:%x\n",*(u32*)(to+offset));
 			systemread(
 				buffer,
-				*(DWORD*)(to+offset),
+				*(u32*)(to+offset),
 				1
 			);
 			//printmemory(buffer+0x1be,0x40);
@@ -162,16 +162,16 @@ void explainmbr(char* buffer,char* to)
 			mbrrecord(buffer+0x1be,dstqword);
 			if(remember!=(char*)dstqword)
 			{
-				*(DWORD*)(remember+0)+=start;
-				//say("1st:%x\n",*(DWORD*)remember);
+				*(u32*)(remember+0)+=start;
+				//say("1st:%x\n",*(u32*)remember);
 			}
 
 			remember=dstqword;
 			mbrrecord(buffer+0x1ce,dstqword);
 			if(remember!=dstqword)
 			{
-				*(DWORD*)(remember+0)+=start;
-				//say("2st:%x\n",*(DWORD*)remember);
+				*(u32*)(remember+0)+=start;
+				//say("2st:%x\n",*(u32*)remember);
 			}
 		}
 
@@ -184,8 +184,8 @@ void explainmbr(char* buffer,char* to)
 	offset=0;
 	while(1)
 	{
-		QWORD addr=to+offset*0x40+0x10;
-		QWORD type=*(QWORD*)addr;
+		u64 addr=to+offset*0x40+0x10;
+		u64 type=*(u64*)addr;
 		if(type==0)break;
 
 		say("%d:%s\n",offset,(char*)addr);

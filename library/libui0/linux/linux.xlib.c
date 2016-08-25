@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 
 
 
@@ -77,7 +77,7 @@ void windowchange()
 
 
 
-DWORD windowread(QWORD what)
+u32 windowread(u64 what)
 {
 	//'size'
 	if(what==0x657a6973)
@@ -100,7 +100,7 @@ void windowwrite()
 
 
 
-int uievent(QWORD* my1,QWORD* my2)
+int uievent(u64* my1,u64* my2)
 {
 	XEvent ev;
 	while(1)

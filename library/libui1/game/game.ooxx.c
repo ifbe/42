@@ -1,11 +1,11 @@
-#define QWORD unsigned long long 
-#define DWORD unsigned int
+#define u64 unsigned long long 
+#define u32 unsigned int
 //
-void line(       int x1,int y1,int x2,int y2, DWORD color);
-void circlebody( int x, int y, int r, DWORD color);
-void circleframe(int x, int y, int r, DWORD color);
-void backgroundcolor(DWORD);
-DWORD getrandom();
+void line(       int x1,int y1,int x2,int y2, u32 color);
+void circlebody( int x, int y, int r, u32 color);
+void circleframe(int x, int y, int r, u32 color);
+void backgroundcolor(u32);
+u32 getrandom();
 //
 void say(char*,...);
 
@@ -13,15 +13,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -81,7 +81,7 @@ void ooxx_read()
 
 
 
-void ooxx_write(QWORD type,QWORD key)
+void ooxx_write(u64* type,u64* key)
 {
 	char val;
 	int x,y;
@@ -89,10 +89,10 @@ void ooxx_write(QWORD type,QWORD key)
 	int height = haha->height;
 	int min = (width<height) ? width:height;
 
-	if(type==0x7466656C207A7978)
+	if(*type==0x7466656C207A7978)
 	{
-		x=key&0xffff;
-		y=(key>>16)&0xffff;
+		x=(*key) & 0xffff;
+		y=( (*key) >> 16 ) & 0xffff;
 		if(x>min)return;
 		if(y>min)return;
 
@@ -138,18 +138,18 @@ static void ooxx_stop()
 
 void ooxx_create(char* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x78786f6f;		//'ooxx'
 
-	this[10]=(QWORD)ooxx_start;
-	this[11]=(QWORD)ooxx_stop;
-	this[12]=(QWORD)ooxx_list;
-	this[13]=(QWORD)ooxx_choose;
-	this[14]=(QWORD)ooxx_read;
-	this[15]=(QWORD)ooxx_write;
+	this[10]=(u64)ooxx_start;
+	this[11]=(u64)ooxx_stop;
+	this[12]=(u64)ooxx_list;
+	this[13]=(u64)ooxx_choose;
+	this[14]=(u64)ooxx_read;
+	this[15]=(u64)ooxx_write;
 }
 void ooxx_delete()
 {

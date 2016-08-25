@@ -1,7 +1,7 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>

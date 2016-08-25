@@ -1,11 +1,11 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //用了别人的
-int systemread( char* rdi,QWORD rsi,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
-int cleverread(QWORD,QWORD,QWORD,	char*,QWORD,QWORD);
+int systemread( char* rdi,u64 rsi,u64 rcx);
+int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int cleverread(u64,u64,u64,	char*,u64,u64);
 //
 void printmemory(char* addr,int size);
 void say(char* fmt,...);
@@ -21,11 +21,11 @@ static char* fshome;			//[0x100000,0x10ffff]
 static char* dirhome;			//[0x200000,0x2fffff]
 static char* datahome;			//[0x300000,0x3fffff]
 //disk
-static QWORD ntfssector;
-static QWORD clustersize;
-static QWORD mftcluster;
+static u64 ntfssector;
+static u64 clustersize;
+static u64 mftcluster;
 //ntfs...............
-static QWORD pwd[10];
+static u64 pwd[10];
 static int ntfspwd;
 
 
@@ -39,10 +39,10 @@ void explainrun(char* runaddr,long long* offset,long long* count)
 	long long temp;
 	int i;
 
-	BYTE* run=(BYTE*)runaddr;
-	BYTE data= run[0];
-	BYTE low4bit=0xf & data;
-	BYTE high4bit=data >>4;
+	u8* run=(u8*)runaddr;
+	u8 data= run[0];
+	u8 low4bit=0xf & data;
+	u8 high4bit=data >>4;
 
 	//簇数
 	temp=0;
@@ -76,18 +76,18 @@ void explainrun(char* runaddr,long long* offset,long long* count)
 
 
 //目的地是哪里，datarun那一串数字在哪里，你要的是哪里
-void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
+void datarun(char* targetaddr,char* runaddr,u64 want,u64 max)
 {
 	//变量们
 	long long offset=0;
 	long long count=0;
-	QWORD logicpos=0;
+	u64 logicpos=0;
 	max=max;		//delete warning currently
 
 	//printmemory(runaddr,0x40);
 	while(1)
 	{
-		BYTE data= *(BYTE*)runaddr;
+		u8 data= *(u8*)runaddr;
 		if(data == 0) break;
 		if(want+0x80000<=logicpos)break;
 
@@ -107,7 +107,7 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 			);
 		}
 		//准备下一轮
-		runaddr= runaddr + 1 + (QWORD)(data & 0xf) + (QWORD)(data >> 4);
+		runaddr= runaddr + 1 + (u64)(data & 0xf) + (u64)(data >> 4);
 		logicpos+=count;
 	}
 	//printmemory(dirhome,0x40);
@@ -117,13 +117,13 @@ void datarun(char* targetaddr,char* runaddr,QWORD want,QWORD max)
 
 
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
-static QWORD firstmftincache;
-char* checkcacheformft(QWORD mftnum)
+static u64 firstmftincache;
+char* checkcacheformft(u64 mftnum)
 {
 	//say("checkcacheformft:%x\n",mftnum);
 	//内存里已经是这几个的话就直接返回
 	//0xffffff00:0x100个,0x40000
-	QWORD thistime=mftnum&0xffffffffffffff00;
+	u64 thistime=mftnum&0xffffffffffffff00;
 	if(thistime==firstmftincache)
 	{
 		return mftbuffer+0x400*(mftnum % 0x100);		//0x40000/0x400=0x100个
@@ -131,12 +131,12 @@ char* checkcacheformft(QWORD mftnum)
 
 	//开始找那一块地址并且读取
 	say("reloading mft:[%x,%x]\n",thistime,thistime+0xff);
-	QWORD offset=*(WORD*)(mft0+0x14);
+	u64 offset=*(u16*)(mft0+0x14);
 	while(1)
 	{
 		if(offset > 0x400) break;
 
-		DWORD property= *(DWORD*)(mft0+offset);
+		u32 property= *(u32*)(mft0+offset);
 		if(property == 0xffffffff)
 		{
 			//结束了，mft0里面没有80属性
@@ -149,14 +149,14 @@ char* checkcacheformft(QWORD mftnum)
 			//printmemory(mft0+offset,0x80);
 
 			char* temp=mft0+offset;
-			temp+=(*(QWORD*)(temp+0x20));
+			temp+=(*(u64*)(temp+0x20));
 			datarun(mftbuffer,temp,thistime*0x400,0x80000);
 			firstmftincache=thistime;
 			break;
 		}
 
 		//offset=下一个property地址
-		offset += *(DWORD*)(mft0+offset+4);
+		offset += *(u32*)(mft0+offset+4);
 	}
 	return mftbuffer+0x400*(mftnum % 0x100);		//0x40000/0x400=0x100个
 }
@@ -175,19 +175,19 @@ char* explainindex(char* rdi,char* rsi,char* end)
 	while(1)
 	{
 		if( temp >= end ) break;
-		if( *(DWORD*)(temp+8) <= 0x18 ) break;
+		if( *(u32*)(temp+8) <= 0x18 ) break;
 
-		QWORD mftnum=(*(QWORD*)temp)&0xffffffffffff;
+		u64 mftnum=(*(u64*)temp)&0xffffffffffff;
 		char* thismft=checkcacheformft(mftnum);
-		QWORD offset=*(WORD*)(thismft+0x14);
+		u64 offset=*(u16*)(thismft+0x14);
 
 		//[0x10,0x17]=mft号
-		*(QWORD*)(buffer+0x10)=mftnum;
+		*(u64*)(buffer+0x10)=mftnum;
 		while(1)
 		{
 			if(offset > 0x400) break;
 
-			DWORD property= *(DWORD*)(thismft+offset);
+			u32 property= *(u32*)(thismft+offset);
 			if(property == 0xffffffff)
 			{
 				//结束了，mft0里面没有80属性
@@ -199,25 +199,25 @@ char* explainindex(char* rdi,char* rsi,char* end)
 				//从mft0的datarun中读取我们要的部分mft
 				//printmemory(thismft+offset,0x60);
 				char* property30body=thismft+offset;
-				property30body += *(WORD*)(property30body+0x14);
+				property30body += *(u16*)(property30body+0x14);
 
 				//[0,7]=type
-				*(DWORD*)(buffer+0)=0x656c6966;		//'file'
-				//*(DWORD*)(buffer+0x4)=*(DWORD*)(property30body+0x38);
+				*(u32*)(buffer+0)=0x656c6966;		//'file'
+				//*(u32*)(buffer+0x4)=*(u32*)(property30body+0x38);
 
 				//[8,f]=subtype
-				*(QWORD*)(buffer+0x8)=0;
+				*(u64*)(buffer+0x8)=0;
 
 				//[0x18,0x1f]=size
-				*(QWORD*)(buffer+0x18)=*(QWORD*)(property30body+0x30);
+				*(u64*)(buffer+0x18)=*(u64*)(property30body+0x30);
 				break;
 			}
 			//offset=下一个property地址
-			offset += *(DWORD*)(thismft+offset+4);
+			offset += *(u32*)(thismft+offset+4);
 		}
 
 		//[0x20,0x3f]名字
-		for(i=0;i<*(BYTE*)(temp+0x50);i++)
+		for(i=0;i<*(u8*)(temp+0x50);i++)
 		{
 			buffer[0x20+i]= *(char*)(temp+0x52+i*2);
 
@@ -227,11 +227,11 @@ char* explainindex(char* rdi,char* rsi,char* end)
 		say
 		(
 			"%llx,%llx,%llx,%s\n",
-			*(QWORD*)buffer,*(QWORD*)(buffer+8),*(QWORD*)(buffer+0x10),buffer+0x20
+			*(u64*)buffer,*(u64*)(buffer+8),*(u64*)(buffer+0x10),buffer+0x20
 		);
 
 		//下一个文件
-		temp+= *(WORD*)(temp+0x8);
+		temp+= *(u16*)(temp+0x8);
 		buffer+=0x40;
 	}
 	//printmemory(rdi,0x200);
@@ -335,15 +335,15 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //*+0x38*/	uint64 DataSize;     // 属性值压缩大小
 //*+0x40*/	uint64 InitializedSize;   // 实际数据大小
 //*+0x48*/	uint64 CompressedSize;    // 压缩后大小
-void explain80(char* addr,QWORD want)	//file data
+void explain80(char* addr,u64 want)	//file data
 {
 	if( addr[8] == 0 )
 	{
 		say("resident80@%x\n",addr);
-		DWORD length = *(DWORD*)(addr+0x10);
-		BYTE* rsi=(BYTE*)(addr + (QWORD)(*(DWORD*)(addr+0x14)) );
-		BYTE* rdi=(BYTE*)datahome;
-		DWORD i;
+		u32 length = *(u32*)(addr+0x10);
+		u8* rsi=(u8*)(addr + (u64)(*(u32*)(addr+0x14)) );
+		u8* rdi=(u8*)datahome;
+		u32 i;
 		for(i=0;i<length;i++) rdi[i]=rsi[i];
 
 		return;
@@ -351,7 +351,7 @@ void explain80(char* addr,QWORD want)	//file data
 	else
 	{
 		say("non resident80@%x\n",addr);
-		datarun(datahome,addr + (*(WORD*)(addr+0x20)) ,want,0x80000);
+		datarun(datahome,addr + (*(u16*)(addr+0x20)) ,want,0x80000);
 	}
 }
 
@@ -373,14 +373,14 @@ void explain80(char* addr,QWORD want)	//file data
 //0x90属性体：
 void explain90(char* addr)	//index root
 {
-	addr += *(WORD*)(addr+0x14);	//现在addr=属性体地址=索引根地址
+	addr += *(u16*)(addr+0x14);	//现在addr=属性体地址=索引根地址
 	addr+=0x10;			//现在addr=索引头地址
 
-	QWORD size=(QWORD)( *(DWORD*)(addr+4) );
+	u64 size=(u64)( *(u32*)(addr+4) );
 	addr+=0x10;			//现在addr=第一个索引项地址
 
 	//剩下的事(这块以后要改，排序什么的)
-	if( *(BYTE*)(addr+0xc) ==0 )	//是小索引
+	if( *(u8*)(addr+0xc) ==0 )	//是小索引
 	{
 		explainindex(dirhome,addr,addr+size);
 	}
@@ -409,25 +409,25 @@ void explain90(char* addr)	//index root
 void explaina0(char* addr)	//index allocation
 {
 	//清理dirhome
-	BYTE* memory;
+	u8* memory;
 	int i;
-	memory=(BYTE*)(datahome);
+	memory=(u8*)(datahome);
 	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
-	memory=(BYTE*)(dirhome);
+	memory=(u8*)(dirhome);
 	for(i=0;i<0x100000;i++) memory[i]=0;	//clear [1c0000,1ffff8]
 
 	//读INDX进来
-	datarun(datahome,addr + (*(QWORD*)(addr+0x20)) ,0 , 0x100000);
+	datarun(datahome,addr + (*(u64*)(addr+0x20)) ,0 , 0x100000);
 	//printmemory(datahome,0x1000);
 
 	//解释INDX成易懂的格式：名字，编号，类型，大小
 	char* p=datahome;
 	char* rdi=dirhome;
-	while( *(DWORD*)p ==0x58444e49 )	//INDX
+	while( *(u32*)p ==0x58444e49 )	//INDX
 	{
-		say("INDX@%x,vcn:%x\n",p,*(QWORD*)(p+0x10));
-		char* start=p + 0x18 + ( *(DWORD*)(p+0x18) );
-		char* end=p + ( *(DWORD*)(p+0x1c) );
+		say("INDX@%x,vcn:%x\n",p,*(u64*)(p+0x10));
+		char* start=p + 0x18 + ( *(u32*)(p+0x18) );
+		char* end=p + ( *(u32*)(p+0x1c) );
 
 		rdi=explainindex(rdi,start,end);
 		//printmemory(dirhome,0x200);
@@ -457,12 +457,12 @@ void explaina0(char* addr)	//index allocation
 //*+0x2C*/ uint32 MFTRecordNumber;  // windows xp中使用,本MFT记录号
 //*+0x30*/ uint32 MFTUseFlags;      // MFT的使用标记
 static char here[1024];
-void explainmft(QWORD mftnum,QWORD want)
+void explainmft(u64 mftnum,u64 want)
 {
 	//具体不用管，知道返回值是所求MFT的地址就行
 	int i;
 	char* mft=checkcacheformft(mftnum);
-	if( *(DWORD*)mft !=0x454c4946 )
+	if( *(u32*)mft !=0x454c4946 )
 	{
 		say("[mft]wrong:%x\n",mftnum);
 		return;
@@ -475,12 +475,12 @@ void explainmft(QWORD mftnum,QWORD want)
 	}
 
 	//有一个property解释要给property
-	int offset=*(WORD*)(here+0x14);
+	int offset=*(u16*)(here+0x14);
 	while(1)
 	{
 		if(offset > 0x400) break;
 
-		DWORD property= *(DWORD*)(here+offset);
+		u32 property= *(u32*)(here+offset);
 		if(property == 0xffffffff) break;
 
 		switch(property)
@@ -558,7 +558,7 @@ void explainmft(QWORD mftnum,QWORD want)
 				break;
 			}
 		}
-		offset += *(DWORD*)(here+offset+4);
+		offset += *(u32*)(here+offset+4);
 
 	}//while1
 }//explainmft
@@ -574,7 +574,7 @@ static int ntfs_ls(char* to)
 {
 	return 0;
 }
-static int ntfs_cd(QWORD id)
+static int ntfs_cd(u64 id)
 {
 	int i=0;
 	for(i=0;i<0x10000;i++)dirhome[i]=0;
@@ -584,21 +584,21 @@ static int ntfs_cd(QWORD id)
 	pwd[ntfspwd]=id;
 	return 1;
 }
-static int ntfs_load(QWORD id,QWORD offset)
+static int ntfs_load(u64 id,u64 offset)
 {
 	explainmft(id,offset);
 	if(ntfspwd<10) ntfspwd++;
 	pwd[ntfspwd]=id;
 	return 1;
 }
-static int ntfs_store(QWORD id)
+static int ntfs_store(u64 id)
 {
 	return 1;
 }
 int explainntfshead()
 {
 	int i;
-	QWORD* dstqword=(QWORD*)fshome;
+	u64* dstqword=(u64*)fshome;
 
 	//clean
 	for(i=0;i<0x10000;i++)fshome[i]=0;
@@ -608,14 +608,14 @@ int explainntfshead()
 	dstqword[1]=0;
 	dstqword[2]=0;
 	dstqword[3]=0;
-	dstqword[4]=(QWORD)ntfs_ls;
-	dstqword[5]=(QWORD)ntfs_cd;
-	dstqword[6]=(QWORD)ntfs_load;
-	dstqword[7]=(QWORD)ntfs_store;
+	dstqword[4]=(u64)ntfs_ls;
+	dstqword[5]=(u64)ntfs_cd;
+	dstqword[6]=(u64)ntfs_load;
+	dstqword[7]=(u64)ntfs_store;
 	dstqword += 8;
 
 	//[d,d]
-	clustersize=(QWORD)( *(BYTE*)(pbr+0xd) );
+	clustersize=(u64)( *(u8*)(pbr+0xd) );
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x7a73756c63;	//'clusz'
 	dstqword[2]=0xd;
@@ -625,7 +625,7 @@ int explainntfshead()
 	say("clustersize:%x\n",clustersize);
 
 	//[0x30,0x37]
-	mftcluster= *(QWORD*)(pbr+0x30);
+	mftcluster= *(u64*)(pbr+0x30);
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x756c6374666d;	//'mftclu'
 	dstqword[2]=0x30;
@@ -635,7 +635,7 @@ int explainntfshead()
 	say("mftcluster:%x\n",mftcluster);
 
 	//[0x44,0x44]
-	QWORD indexsize=(QWORD)( *(BYTE*)(pbr+0x44) );
+	u64 indexsize=(u64)( *(u8*)(pbr+0x44) );
 	indexsize=clustersize * indexsize;
 	dstqword[0]=0x7366;		//'fs'
 	dstqword[1]=0x7a737865646e69;	//'indexsz'
@@ -667,21 +667,21 @@ int explainntfshead()
 
 int isntfs(char* addr)
 {
-	QWORD temp;
+	u64 temp;
 
 	//0x55,0xaa
-	temp=*(WORD*)(addr+0x1fe);
+	temp=*(u16*)(addr+0x1fe);
 	if( temp != 0xaa55 ) return 0;
 
 	//0x4e,0x54,0x46,0x53
-	temp=*(DWORD*)(addr+3);
+	temp=*(u32*)(addr+3);
 	if( temp != 0x5346544e ) return 0;
 
 	//
 	return 0x666666;
 }
 //描述地址，状态机地址
-int mountntfs(QWORD sector,char* addr)
+int mountntfs(u64 sector,char* addr)
 {
 	int ret=0;
 

@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 int code_create(char*,char*);
 int fs_create(char*,char*);
@@ -14,14 +14,14 @@ int systemstart(int,char*);
 int systemstop();
 int systemlist(char*);
 int systemchoose(char*);
-int systemread(char* rdi,QWORD rsi,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
+int systemread(char* rdi,u64 rsi,u64 rcx);
+int systemwrite(char* rdi,u64 rsi,u64 rcx);
 //
-QWORD prelibation(char*);
+u64 prelibation(char*);
 int compare(char*,char*);	//base tool
-int hexstring2data(char*,QWORD*);
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count);
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count);
+int hexstring2data(char*,u64*);
+int mem2file(char* memaddr,char* filename,u64 offset,u64 count);
+int file2mem(char* memaddr,char* filename,u64 offset,u64 count);
 //
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
@@ -41,11 +41,11 @@ static char* datahome=0;
 //physical function
 static int memory_list(char* arg1)
 {
-	QWORD temp=0;
+	u64 temp=0;
 	int i,j;
 	char buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-	QWORD target=0;
+	u64 target=0;
 	char* addr=diskhome;
 	//printmemory(diskhome,0x200);
 
@@ -83,7 +83,7 @@ static int memory_list(char* arg1)
 	//搜到就显示
 	for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
 	{
-		temp=*(QWORD*)( addr + (i*0x40) );
+		temp=*(u64*)( addr + (i*0x40) );
 		if(temp == 0)break;
 		if( (target==0) | (temp == target) )
 		{
@@ -91,7 +91,7 @@ static int memory_list(char* arg1)
 			say("(%-4s," , addr+(i*0x40) );
 
 			//[+8]:id
-			*(QWORD*)buf=*(QWORD*)(addr+(i*0x40)+0x8);
+			*(u64*)buf=*(u64*)(addr+(i*0x40)+0x8);
 			temp=0;
 			for(j=0;j<8;j++)
 			{
@@ -102,13 +102,13 @@ static int memory_list(char* arg1)
 				if(buf[j]>=0x80) temp++;
 			}
 			if(temp==0) say("%4s)	",buf);
-			else say("%4llx)	",*(QWORD*)buf);
+			else say("%4llx)	",*(u64*)buf);
 
 			//[+10]:start
-			say("[%-4llx,",*(QWORD*)(addr+(i*0x40)+0x10));
+			say("[%-4llx,",*(u64*)(addr+(i*0x40)+0x10));
 
 			//[+18]:end
-			say("%4llx]	",*(QWORD*)(addr+(i*0x40)+0x18));
+			say("%4llx]	",*(u64*)(addr+(i*0x40)+0x18));
 
 			//[+20]:detail
 			say("{%-16s}	",addr+(i*0x40)+0x20);
@@ -125,7 +125,7 @@ static int memory_choose(char* arg)
 }
 static int memory_read(char* arg1)
 {
-	QWORD value;
+	u64 value;
 
 	//nothing specified
 	if(arg1==0)
@@ -156,7 +156,7 @@ static int memory_read(char* arg1)
 }
 static int memory_write(char* arg1)
 {
-	QWORD value;
+	u64 value;
 
 	//nothing specified
 	if(arg1==0)
@@ -190,7 +190,7 @@ static int memory_write(char* arg1)
 
 
 
-static int memory_start(QWORD type,char* p)
+static int memory_start(u64 type,char* p)
 {
 	int ret;
 
@@ -205,7 +205,7 @@ static int memory_stop()
 {
 	systemstop();
 }
-int memory_create(char* world,QWORD* p)
+int memory_create(char* world,u64* p)
 {
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
@@ -216,12 +216,12 @@ int memory_create(char* world,QWORD* p)
 	//
 	p[0]=0;
 	p[1]=0x79726f6d656d;
-	p[2]=(QWORD)memory_start;
-	p[3]=(QWORD)memory_stop;
-	p[4]=(QWORD)memory_list;
-	p[5]=(QWORD)memory_choose;
-	p[6]=(QWORD)memory_read;
-	p[7]=(QWORD)memory_write;
+	p[2]=(u64)memory_start;
+	p[3]=(u64)memory_stop;
+	p[4]=(u64)memory_list;
+	p[5]=(u64)memory_choose;
+	p[6]=(u64)memory_read;
+	p[7]=(u64)memory_write;
 
 	//
 	char* q=(char*)p+0x40;

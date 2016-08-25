@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //special guys
 void menu_create(char*,char*);
 void roster_create(char*,char*);
@@ -65,7 +65,7 @@ void qrcode_delete();
 //
 int compare(char*,char*);
 int eventwrite();
-DWORD getrandom();
+u32 getrandom();
 //
 void say(char* , ...);
 
@@ -73,15 +73,15 @@ void say(char* , ...);
 
 
 //worker
-static DWORD now=0;		//不能有负数
+static u32 now=0;		//不能有负数
 //screen
 static void* pixbuf;
 static void* pixfmt;
 static int w;
 static int h;
 //touch
-static QWORD pointenter[10];
-static QWORD pointleave[10];
+static u64 pointenter[10];
+static u64 pointleave[10];
 static int pointcount=0;
 static int pointmax=0;
 
@@ -95,16 +95,16 @@ static int pointmax=0;
 static struct working
 {
 	//种类，名字，位置，
-	QWORD type;	//[0,7]:种类	    //'window'
-	QWORD id;	//[8,f]:名字	    //'小明'
-	QWORD xyze1;	//x,y,z,en
-	QWORD xyze2;
+	u64 type;	//[0,7]:种类	    //'window'
+	u64 id;	//[8,f]:名字	    //'小明'
+	u64 xyze1;	//x,y,z,en
+	u64 xyze2;
 
 	//screenbuffer
-	QWORD pixelbuffer;	//address
-	QWORD pixelformat;	//rgba8888    bgra8888    rgb565    yuv420
-	QWORD width;
-	QWORD height;
+	u64 pixelbuffer;	//address
+	u64 pixelformat;	//rgba8888    bgra8888    rgb565    yuv420
+	u64 width;
+	u64 height;
 
 	//[40,47]
 	void (*create)();
@@ -135,7 +135,7 @@ static struct working
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[78,7f]:输入
-	int (*write)(QWORD type,QWORD key);
+	int (*write)(void* type, void* key);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
 static unsigned char* mega1;
@@ -324,8 +324,8 @@ int characterstart(char* addr, char* fmt, int width, int height)
 	{
 		if(worker[j].id == 0)break;
 
-		worker[j].pixelbuffer = (QWORD)addr;
-		worker[j].pixelformat = *(QWORD*)fmt;
+		worker[j].pixelbuffer = (u64)addr;
+		worker[j].pixelformat = *(u64*)fmt;
 		worker[j].width = w;
 		worker[j].height = h;
 	}
@@ -362,7 +362,7 @@ int characterchoose(char* p)
 {
 	int j,k,ret;
 	char q[8];
-	QWORD temp;
+	u64 temp;
 
 	//exit!
 	if(p == 0)
@@ -427,7 +427,7 @@ int characterchoose(char* p)
 	{
 		q[j] = 0;
 	}
-	temp = *(QWORD*)q;
+	temp = *(u64*)q;
 
 	//start searching
 	for(j=0;j<10;j++)
@@ -467,7 +467,7 @@ void characterread()
 	if(worker[1].xyze1 > 0)worker[1].read();
 	if(worker[2].xyze1 > 0)worker[2].read();
 }
-void characterwrite(QWORD type,QWORD key)
+void characterwrite(u64 type,u64 key)
 {
 	int m,n;
 	int dx0,dy0;
@@ -633,9 +633,25 @@ void characterwrite(QWORD type,QWORD key)
 	}
 
 	//其余所有消息，谁在干活就交给谁
-	if(worker[0].xyze1 > 0)worker[0].write(type,key);
-
-	else if(worker[1].xyze1 > 0)worker[1].write(type,key);
-	else worker[now].write(type,key);
+	if(worker[0].xyze1 > 0)
+	{
+		//center
+		m = worker[0].write(&type,&key);
+	}
+	else if(worker[1].xyze1 > 0)
+	{
+		//roster
+		m = worker[1].write(&type,&key);
+	}
+	else if(worker[2].xyze1 > 0)
+	{
+		//virtkbd
+		m = worker[2].write(&type,&key);
+	}
+	else
+	{
+		//player
+		worker[now].write(&type,&key);
+	}
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

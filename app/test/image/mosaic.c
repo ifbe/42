@@ -2,12 +2,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
-void mosaic(QWORD size,QWORD partradius,BYTE* src,BYTE* dst);
+void mosaic(u64 size,u64 partradius,u8* src,u8* dst);
 //
 void windowcreate();
 void windowdelete();
@@ -17,14 +17,14 @@ void windowread();
 void windowwrite();
 //
 void eventwrite();
-void eventread(QWORD* first,QWORD* second);
+void eventread(u64* first,u64* second);
 
 
 
 
 //
-static DWORD palette[1024*1024];
-static DWORD final[1024*1024];
+static u32 palette[1024*1024];
+static u32 final[1024*1024];
 
 
 
@@ -52,7 +52,7 @@ unsigned char BLUE(int i,int j)
 
 
 //
-void processmessage(QWORD type,QWORD key)
+void processmessage(u64 type,u64 key)
 {
 	
 	int i;
@@ -71,7 +71,7 @@ void processmessage(QWORD type,QWORD key)
 		//1
 		else if(key==0x31)
 		{
-			mosaic(0x04000400,0,(BYTE*)palette,(BYTE*)final);
+			mosaic(0x04000400,0,(u8*)palette,(u8*)final);
 		}
 	}
 }
@@ -99,8 +99,8 @@ void main()
 	processmessage(0x72616863,0x30);
 
 	//forever
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内

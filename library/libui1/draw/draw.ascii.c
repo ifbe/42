@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 void double2decimalstring(double,char*);
 void say(char*,...);
 
@@ -7,15 +7,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
@@ -284,13 +284,13 @@ static const unsigned char asciitable[128*16]={
 
 
 //
-void printascii(int xxxx, int yyyy, int size, char ch, DWORD fgcolor, DWORD bgcolor)
+void printascii(int xxxx, int yyyy, int size, char ch, u32 fgcolor, u32 bgcolor)
 {
 	int x,y,j,k,flag;
 	int width,height;
 	unsigned char temp;
 	unsigned char* points;
-	DWORD* screen;
+	u32* screen;
 
 	if(ch<0x20)ch=0x20;
 	points=(unsigned char*)&asciitable;
@@ -305,7 +305,7 @@ void printascii(int xxxx, int yyyy, int size, char ch, DWORD fgcolor, DWORD bgco
 
 	width = haha->width;
 	height = haha->height;
-	screen = (DWORD*)(haha->pixelbuffer);
+	screen = (u32*)(haha->pixelbuffer);
 
 	for(y=0;y<16;y++)
 	{
@@ -333,7 +333,7 @@ void printascii(int xxxx, int yyyy, int size, char ch, DWORD fgcolor, DWORD bgco
 		}//x
 	}//y
 }
-void printbyte(int x, int y, int size, unsigned char ch, DWORD fg, DWORD bg)
+void printbyte(int x, int y, int size, unsigned char ch, u32 fg, u32 bg)
 {
 	int i;
 	unsigned char temp=ch;
@@ -352,7 +352,7 @@ void printbyte(int x, int y, int size, unsigned char ch, DWORD fg, DWORD bg)
 
 
 
-void printstring(int x, int y, int size, char* p, DWORD fgcolor, DWORD bgcolor)
+void printstring(int x, int y, int size, char* p, u32 fgcolor, u32 bgcolor)
 {
 	int j=0;
 
@@ -373,7 +373,7 @@ void printstring(int x, int y, int size, char* p, DWORD fgcolor, DWORD bgcolor)
 
 
 
-void printdecimal(int x, int y, int size, int dec, DWORD fgcolor, DWORD bgcolor)
+void printdecimal(int x, int y, int size, int dec, u32 fgcolor, u32 bgcolor)
 {
 	char ch;
 	int i,count;
@@ -411,7 +411,7 @@ void printdecimal(int x, int y, int size, int dec, DWORD fgcolor, DWORD bgcolor)
 
 
 
-void printhexadecimal(int x, int y, int size, QWORD hex, DWORD fgcolor, DWORD bgcolor)
+void printhexadecimal(int x, int y, int size, u64 hex, u32 fgcolor, u32 bgcolor)
 {
 	int i;
 	char ch;
@@ -441,7 +441,7 @@ void printhexadecimal(int x, int y, int size, QWORD hex, DWORD fgcolor, DWORD bg
 
 
 
-void printdouble(int x,int y,int size,double data,DWORD fgcolor,DWORD bgcolor)
+void printdouble(int x,int y,int size,double data,u32 fgcolor,u32 bgcolor)
 {
 	char mystring[100];
 	double2decimalstring(data,mystring);

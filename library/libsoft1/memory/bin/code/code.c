@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 
 
 
@@ -21,17 +21,17 @@ static void code_start()
 static void code_stop()
 {
 }
-void code_create(char* world,QWORD* p)
+void code_create(char* world,u64* p)
 {
 	//
 	p[0]=0x6d656d;
 	p[1]=0x65646f63;
-	p[2]=(QWORD)code_start;
-	p[3]=(QWORD)code_stop;
-	p[4]=(QWORD)code_list;
-	p[5]=(QWORD)code_change;
-	p[6]=(QWORD)code_read;
-	p[7]=(QWORD)code_write;
+	p[2]=(u64)code_start;
+	p[3]=(u64)code_stop;
+	p[4]=(u64)code_list;
+	p[5]=(u64)code_change;
+	p[6]=(u64)code_read;
+	p[7]=(u64)code_write;
 }
 void code_delete()
 {

@@ -2,15 +2,15 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
-void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
-void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
-void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
-void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
-void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst);
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+void blur_gauss_x(u64 size,u64 radius,u8* src,u8* dst);
+void blur_gauss_y(u64 size,u64 radius,u8* src,u8* dst);
+void blur_gauss_xy(u64 size,u64 radius,u8* src,u8* dst);
+void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst);
+void blur_box(u64 size,u64 radius,u8* src,u8* dst);
 double power(double,double);
 //
 void windowcreate();
@@ -21,15 +21,15 @@ void windowread();
 void windowwrite();
 //
 void eventwrite();
-void eventread(QWORD* first,QWORD* second);
+void eventread(u64* first,u64* second);
 
 
 
 
 //
-static DWORD palette[1024*1024];
-static DWORD final[1024*1024];
-void createppm(QWORD size,BYTE* palette,char* filename)
+static u32 palette[1024*1024];
+static u32 final[1024*1024];
+void createppm(u64 size,u8* palette,char* filename)
 {
 	int x,y;
 	FILE* fp=fopen(filename,"w");
@@ -87,7 +87,7 @@ unsigned char BLUE(int i,int j)
 
 
 //
-void processmessage(QWORD type,QWORD key)
+void processmessage(u64 type,u64 key)
 {
 	int i;
 	printf("%llx,%llx\n",type,key);
@@ -105,27 +105,27 @@ void processmessage(QWORD type,QWORD key)
 		//1
 		else if(key==0x31)
 		{
-			blur_gauss_x(0x04000400,9,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_x(0x04000400,9,(u8*)palette,(u8*)final);
 		}
 		//2
 		else if(key==0x32)
 		{
-			blur_gauss_y(0x04000400,9,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_y(0x04000400,9,(u8*)palette,(u8*)final);
 		}
 		//3
 		else if(key==0x33)
 		{
-			blur_gauss_xy(0x04000400,9,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_xy(0x04000400,9,(u8*)palette,(u8*)final);
 		}
 		//4
 		else if(key==0x34)
 		{
-			blur_gauss_2(0x04000400,9,(BYTE*)palette,(BYTE*)final);
+			blur_gauss_2(0x04000400,9,(u8*)palette,(u8*)final);
 		}
 		//5
 		else if(key==0x35)
 		{
-			blur_box(0x04000400,9,(BYTE*)palette,(BYTE*)final);
+			blur_box(0x04000400,9,(u8*)palette,(u8*)final);
 		}
 	}
 }
@@ -153,8 +153,8 @@ void main()
 	processmessage(0x72616863,0x30);
 
 	//forever
-	QWORD type=0;
-	QWORD key=0;
+	u64 type=0;
+	u64 key=0;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内

@@ -1,21 +1,21 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 
 
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
@@ -30,7 +30,7 @@ static void fs_into()
 static void fs_read()
 {
 }
-static void fs_write()
+static void fs_write(u64* type,u64* key)
 {
 }
 static void fs_start()
@@ -41,18 +41,18 @@ static void fs_stop()
 }
 void fs_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x7366;
 
-	this[10]=(QWORD)fs_start;
-	this[11]=(QWORD)fs_stop;
-	this[12]=(QWORD)fs_list;
-	this[13]=(QWORD)fs_into;
-	this[14]=(QWORD)fs_read;
-	this[15]=(QWORD)fs_write;
+	this[10]=(u64)fs_start;
+	this[11]=(u64)fs_stop;
+	this[12]=(u64)fs_list;
+	this[13]=(u64)fs_into;
+	this[14]=(u64)fs_read;
+	this[15]=(u64)fs_write;
 }
 void fs_delete()
 {

@@ -8,8 +8,8 @@
 
 
 
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
 void backgroundcolor();
 //
@@ -19,15 +19,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
@@ -66,7 +66,7 @@ static void example_read()
 
 
 
-static void example_write()
+static void example_write(u64* type, u64* key)
 {
 }
 
@@ -91,18 +91,18 @@ static void example_stop()
 }
 void example_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x746e6f66;
 
-	this[10]=(QWORD)example_start;
-	this[11]=(QWORD)example_stop;
-	this[12]=(QWORD)example_list;
-	this[13]=(QWORD)example_change;
-	this[14]=(QWORD)example_read;
-	this[15]=(QWORD)example_write;
+	this[10]=(u64)example_start;
+	this[11]=(u64)example_stop;
+	this[12]=(u64)example_list;
+	this[13]=(u64)example_change;
+	this[14]=(u64)example_read;
+	this[15]=(u64)example_write;
 }
 void example_delete()
 {

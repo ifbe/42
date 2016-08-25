@@ -1,7 +1,7 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
@@ -23,7 +23,7 @@ static unsigned char outbuf[16];
 
 
 
-int systemi2c_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
+int systemi2c_read(u8 dev,u8 reg,u8* buf,u8 count)
 {
 	struct i2c_msg messages[2];
 	struct i2c_rdwr_ioctl_data packets;
@@ -52,7 +52,7 @@ int systemi2c_read(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
 
 	return 1;
 }
-int systemi2c_write(BYTE dev,BYTE reg,BYTE* buf,BYTE count)
+int systemi2c_write(u8 dev,u8 reg,u8* buf,u8 count)
 {
 	int ret;
 	struct i2c_msg messages[1];

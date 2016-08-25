@@ -1,12 +1,12 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //event
-int uievent(QWORD* first,QWORD* second);
-int softevent(QWORD* first,QWORD* second);
-int hardevent(QWORD* first,QWORD* second);
-int bootevent(QWORD* first,QWORD* second);
+int uievent(u64* first,u64* second);
+int softevent(u64* first,u64* second);
+int hardevent(u64* first,u64* second);
+int bootevent(u64* first,u64* second);
 //
 void say(char*,...);
 
@@ -23,7 +23,7 @@ int eventwrite()
 	stillalive=0;
 	return 0;
 }
-int eventread(QWORD* first,QWORD* second)
+int eventread(u64* first,u64* second)
 {
         int ret;
         //say("here\n");

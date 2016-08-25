@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 double sketchpad(void*,double,double);
 double calculator(char* postfix,double,double);
@@ -13,11 +13,11 @@ void double2decimalstring(double,char*);
 double beautifulbetween(double first,double second);
 void kexuejishufa(double* haha,int* counter);
 //
-void printstring(int x, int y, int size, char* str, DWORD fgcolor, DWORD bgcolor);
+void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
 void defaultdouble(int x,int y,double z);
-void decimal(int x,int y,QWORD in);
-void backgroundcolor(DWORD);
-void rectangle(DWORD x1y1z1,DWORD x2y2z2,DWORD color);
+void decimal(int x,int y,u64 in);
+void backgroundcolor(u32);
+void rectangle(u32 x1y1z1,u32 x2y2z2,u32 color);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -26,23 +26,23 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 struct mathnode{
 
-        DWORD type;
-        DWORD up;
-        DWORD left;
-        DWORD right;
+        u32 type;
+        u32 up;
+        u32 left;
+        u32 right;
         union{
                 char datasize[16];
                 double floatpoint;
@@ -81,7 +81,7 @@ static void wangge()
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	double first,second,res;
 
-	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
 	int width = haha->width;
 	int height= haha->height;
 
@@ -141,7 +141,7 @@ static void tuxiang()
 
 	int width = haha->width;
 	int height = haha->height;
-	DWORD* screenbuf = (DWORD*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
 
 
 
@@ -201,10 +201,12 @@ static void tuxiang()
 
 
 
-static void sketchpad_write(QWORD type,QWORD key)
+static void sketchpad_write(u64* a,u64* b)
 {
 	int width = haha->width;
 	int height = haha->height;
+	u64 type = *a;
+	u64 key = *b;
 
 	if(type==0x64626b)			//'kbd'
 	{
@@ -367,6 +369,8 @@ static void sketchpad_change()
 
 static void sketchpad_start()
 {
+	u64 haha = 0x72616863;
+	u64 hehe = 0xd;
 	backgroundcolor(0);
 
 	//
@@ -378,25 +382,25 @@ static void sketchpad_start()
 	buffer[0]='y';
 	buffer[1]='=';
 	buffer[2]='x';
-	sketchpad_write(0x72616863, 0xd);
+	sketchpad_write(&haha, &hehe);
 }
 static void sketchpad_stop()
 {
 }
 void sketchpad_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x686374656b73;
 
-	this[10]=(QWORD)sketchpad_start;
-	this[11]=(QWORD)sketchpad_stop;
-	this[12]=(QWORD)sketchpad_list;
-	this[13]=(QWORD)sketchpad_change;
-	this[14]=(QWORD)sketchpad_read;
-	this[15]=(QWORD)sketchpad_write;
+	this[10]=(u64)sketchpad_start;
+	this[11]=(u64)sketchpad_stop;
+	this[12]=(u64)sketchpad_list;
+	this[13]=(u64)sketchpad_change;
+	this[14]=(u64)sketchpad_read;
+	this[15]=(u64)sketchpad_write;
 
 	node=(struct mathnode*)(base+0x100000);
 	databuf=base+0x200000;

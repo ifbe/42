@@ -1,10 +1,10 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 int command(char* buffer);
-int eventread(QWORD*,QWORD*);
+int eventread(u64*,u64*);
 //
 int enter(char*);
 int leave();
@@ -30,8 +30,8 @@ int main(int argc,char* argv[])
 	}
 
 	//无限循环
-	QWORD first;
-	QWORD second;
+	u64 first;
+	u64 second;
 	while(1)
 	{
 		//debug

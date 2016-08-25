@@ -3,10 +3,10 @@
 #include <windows.h>
 #include <tlhelp32.h>
 
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 void say(char* fmt,...);
 
 HANDLE hDev;
@@ -15,14 +15,14 @@ static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','
 
 
 
-static QWORD getsize(HANDLE hand,char* path,char* dest)
+static u64 getsize(HANDLE hand,char* path,char* dest)
 {
-	//say("%llx\n",*(QWORD*)path);
-	if( *(QWORD*)path == 0x737968505c2e5c5c )
+	//say("%llx\n",*(u64*)path);
+	if( *(u64*)path == 0x737968505c2e5c5c )
 	{
 		//磁盘大小这么拿
 		GET_LENGTH_INFORMATION out;
-		DWORD count;
+		u32 count;
 		int ret;
 
 		//
@@ -34,7 +34,7 @@ static QWORD getsize(HANDLE hand,char* path,char* dest)
 			0,
 			&out,
 			sizeof(GET_LENGTH_INFORMATION),
-			(LPDWORD)&count,
+			(LPu32)&count,
 			NULL
 		);
 		if(ret==FALSE)
@@ -43,7 +43,7 @@ static QWORD getsize(HANDLE hand,char* path,char* dest)
 		}
 
 		//
-		*(QWORD*)dest=out.Length.QuadPart;
+		*(u64*)dest=out.Length.QuadPart;
 		//say("%x\n",dest);
 	}
 	else
@@ -57,7 +57,7 @@ static QWORD getsize(HANDLE hand,char* path,char* dest)
 
 
 //mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
+int mem2file(char* memaddr,char* filename,u64 offset,u64 count)
 {
     HANDLE hFile;//文件句柄
     hFile=CreateFile(
@@ -86,7 +86,7 @@ int mem2file(char* memaddr,char* filename,QWORD offset,QWORD count)
 	CloseHandle(hFile);
 }
 //
-int file2mem(char* memaddr,char* filename,QWORD offset,QWORD count)
+int file2mem(char* memaddr,char* filename,u64 offset,u64 count)
 {
 }
 
@@ -119,13 +119,13 @@ void listfile(char* dest)
 		{
 			//[0,7]:type
 			//[8,f]:subtype
-			*(QWORD*)(dest+0)=0x6b736964;
-			*(QWORD*)(dest+8)=0x3f;
+			*(u64*)(dest+0)=0x6b736964;
+			*(u64*)(dest+8)=0x3f;
 
 			//[0x10,0x17]:start
 			//[0x18,0x1f]:end
-			*(QWORD*)(dest+0x10)=0;
-			*(QWORD*)(dest+0x18)=0;
+			*(u64*)(dest+0x10)=0;
+			*(u64*)(dest+0x18)=0;
 			//say("%x\n",dest+0x18);
 			getsize( temphandle , tempname , dest+0x18 );
 
@@ -134,7 +134,7 @@ void listfile(char* dest)
 
 			//next
 			CloseHandle(temphandle);
-			printf("%llx    ,    %llx    :    %s\n" ,*(QWORD*)(dest+0) , *(QWORD*)(dest+8) , (char*)(dest+0x10) );
+			printf("%llx    ,    %llx    :    %s\n" ,*(u64*)(dest+0) , *(u64*)(dest+8) , (char*)(dest+0x10) );
 			dest += 0x40;
 		}
 	}//10个记录
@@ -143,7 +143,7 @@ void choosefile(char* buf)
 {
 }
 //目的内存地址，来源首扇区，无视，总字节数
-void readfile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
+void readfile(u64 buf,u64 startsector,u64 ignore,u32 count)
 {
 	LARGE_INTEGER li;
 	li.QuadPart = startsector*512;
@@ -154,7 +154,7 @@ void readfile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
 	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
 }
 //来源内存地址，目的首扇区，无视，总字节数
-void writefile(QWORD buf,QWORD startsector,QWORD ignore,DWORD count)
+void writefile(u64 buf,u64 startsector,u64 ignore,u32 count)
 {
 }
 
@@ -185,7 +185,7 @@ void startfile(char* path)
 	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 
 	//size
-	QWORD size=0;
+	u64 size=0;
 	getsize(hDev,path,(void*)&size);
 
 	say("(%s    ,    %llx)\n",path,size);

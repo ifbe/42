@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <tlhelp32.h>
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 void say(char* fmt,...);
 
 
@@ -55,7 +55,7 @@ void listprocess()
 
 
 
-void intoprocess(QWORD pid)
+void intoprocess(u64 pid)
 {
 	
 }
@@ -63,9 +63,9 @@ void intoprocess(QWORD pid)
 
 
 
-QWORD readprocess(QWORD buf,QWORD startaddr,QWORD disk,DWORD count)
+u64 readprocess(u64 buf,u64 startaddr,u64 disk,u32 count)
 {
-	QWORD bytesread = 0;
+	u64 bytesread = 0;
 	ReadProcessMemory(hDev,(char*)(startaddr*512),(char*)buf,count*0x200,&bytesread);
 	return bytesread;
 }

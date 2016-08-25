@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 void systemwifi_list();
 
 
@@ -17,23 +17,23 @@ static void wifi_read()
 static void wifi_write()
 {
 }
-static void wifi_start(QWORD type,char* p)
+static void wifi_start(u64 type,char* p)
 {
 }
 static void wifi_stop()
 {
 }
-void wifi_create(char* world,QWORD* p)
+void wifi_create(char* world,u64* p)
 {
 	//
 	p[0]=0x6563616669;	//type
 	p[1]=0x69666977;	//id
-	p[2]=(QWORD)wifi_start;
-	p[3]=(QWORD)wifi_stop;
-	p[4]=(QWORD)wifi_list;
-	p[5]=(QWORD)wifi_choose;
-	p[6]=(QWORD)wifi_read;
-	p[7]=(QWORD)wifi_write;
+	p[2]=(u64)wifi_start;
+	p[3]=(u64)wifi_stop;
+	p[4]=(u64)wifi_list;
+	p[5]=(u64)wifi_choose;
+	p[6]=(u64)wifi_read;
+	p[7]=(u64)wifi_write;
 }
 void wifi_delete()
 {

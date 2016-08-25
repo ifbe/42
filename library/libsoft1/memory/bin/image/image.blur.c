@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u8 unsigned char
 #define pi 3.1415926535897932384626433832795023841971693993751058209749445923078
 #define e 2.7182818284590452353602874713526624977572470936
 double squareroot(double);
@@ -9,14 +9,14 @@ double exponent(double);
 
 
 
-//10*10*8=800BYTE
+//10*10*8=800u8
 static double gausstable[10][10];
 
 
 
 
 //(e^(-x*x/(2*sigma^2)))/(sigma*sqrt(2*pi))
-void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
+void blur_gauss_x(u64 size,u64 radius,u8* src,u8* dst)
 {
 	int x,y;
 	int m,n;
@@ -84,7 +84,7 @@ void blur_gauss_x(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 		}//x
 	}//y
 }
-void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
+void blur_gauss_y(u64 size,u64 radius,u8* src,u8* dst)
 {
 	int x,y;
 	int m,n;
@@ -153,7 +153,7 @@ void blur_gauss_y(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	}//y
 	
 }
-void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
+void blur_gauss_xy(u64 size,u64 radius,u8* src,u8* dst)
 {
 	int x,y;
 	int m,n;
@@ -248,7 +248,7 @@ void blur_gauss_xy(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 
 }
 //(e^(-(x*x+y*y)/(2*sigma^2)))/(2*pi*sigma*sigma)
-void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
+void blur_gauss_2(u64 size,u64 radius,u8* src,u8* dst)
 {
 	int x,y;
 	int m,n;
@@ -366,7 +366,7 @@ void blur_gauss_2(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
 	}//y
 }
 //均值
-void blur_box(QWORD size,QWORD radius,BYTE* src,BYTE* dst)
+void blur_box(u64 size,u64 radius,u8* src,u8* dst)
 {
 	
 }

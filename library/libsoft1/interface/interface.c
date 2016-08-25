@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 //
 void bt_create(void*,void*);
 void i2c_create(void*,void*);
@@ -37,23 +37,23 @@ static void interface_read()
 static void interface_write()
 {
 }
-static void interface_start(QWORD type,char* p)
+static void interface_start(u64 type,char* p)
 {
 }
 static void interface_stop()
 {
 }
-int interface_create(char* world,QWORD* p)
+int interface_create(char* world,u64* p)
 {
 	//
 	p[0]=0;			//type
 	p[1]=0x6563616669;	//id
-	p[2]=(QWORD)interface_start;
-	p[3]=(QWORD)interface_stop;
-	p[4]=(QWORD)interface_list;
-	p[5]=(QWORD)interface_choose;
-	p[6]=(QWORD)interface_read;
-	p[7]=(QWORD)interface_write;
+	p[2]=(u64)interface_start;
+	p[3]=(u64)interface_stop;
+	p[4]=(u64)interface_list;
+	p[5]=(u64)interface_choose;
+	p[6]=(u64)interface_read;
+	p[7]=(u64)interface_write;
 
 	//
 	char* q=(char*)p+0x40;

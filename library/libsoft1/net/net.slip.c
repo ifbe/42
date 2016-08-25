@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 
 
 
@@ -15,23 +15,23 @@ static void slip_read()
 static void slip_write()
 {
 }
-static void slip_start(QWORD type,char* p)
+static void slip_start(u64 type,char* p)
 {
 }
 static void slip_stop()
 {
 }
-void slip_create(char* world,QWORD* p)
+void slip_create(char* world,u64* p)
 {
 	//
 	p[0]=0x74656e;		//type
 	p[1]=0x70696c73;	//id
-	p[2]=(QWORD)slip_start;
-	p[3]=(QWORD)slip_stop;
-	p[4]=(QWORD)slip_list;
-	p[5]=(QWORD)slip_choose;
-	p[6]=(QWORD)slip_read;
-	p[7]=(QWORD)slip_write;
+	p[2]=(u64)slip_start;
+	p[3]=(u64)slip_stop;
+	p[4]=(u64)slip_list;
+	p[5]=(u64)slip_choose;
+	p[6]=(u64)slip_read;
+	p[7]=(u64)slip_write;
 }
 void slip_delete()
 {

@@ -1,5 +1,5 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 double squareroot(double);
 void say(char*,...);
 
@@ -7,34 +7,34 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 
 
 
-void linesegment(int x1, int y1, int x2, int y2, DWORD color)
+void linesegment(int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void halfline(int x1, int y1, int x2, int y2, DWORD color)
+void halfline(int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void line(int x1, int y1, int x2, int y2, DWORD color)
+void line(int x1, int y1, int x2, int y2, u32 color)
 {
 	int temp;
 	int x,y;
 	int width,height;
-	DWORD* winbuf;
+	u32* winbuf;
 
-	winbuf=(DWORD*)(haha->pixelbuffer);
+	winbuf=(u32*)(haha->pixelbuffer);
 	width=haha->width;
 	height=haha->height;
 	color |= 0xff000000;
@@ -87,15 +87,15 @@ void line(int x1, int y1, int x2, int y2, DWORD color)
 
 
 
-void rectframe(int x1, int y1, int x2, int y2, DWORD color)
+void rectframe(int x1, int y1, int x2, int y2, u32 color)
 {
 	int t;
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	DWORD* winbuf;
+	u32* winbuf;
 
-	winbuf=(DWORD*)(haha->pixelbuffer);
+	winbuf=(u32*)(haha->pixelbuffer);
 	width=haha->width;
 	height=haha->height;
 	color |= 0xff000000;
@@ -114,14 +114,14 @@ void rectframe(int x1, int y1, int x2, int y2, DWORD color)
 		for(y=starty;y<endy;y++)winbuf[(y*width) + endx-t] = color;
 	}
 }
-void rectbody(int x1, int y1, int x2, int y2, DWORD color)
+void rectbody(int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	DWORD* winbuf;
+	u32* winbuf;
 
-	winbuf=(DWORD*)(haha->pixelbuffer);
+	winbuf=(u32*)(haha->pixelbuffer);
 	width=haha->width;
 	height=haha->height;
 	color |= 0xff000000;
@@ -139,7 +139,7 @@ void rectbody(int x1, int y1, int x2, int y2, DWORD color)
 		}
 	}
 }
-void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
+void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
 	rectbody(x1, y1, x2, y2, bodycolor);
 	rectframe(x1, y1, x2, y2, framecolor);
@@ -148,13 +148,13 @@ void rect(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
 
 
 
-void trianglebody(int x1, int y1, int x2, int y2, int x3, int y3, DWORD color)
+void trianglebody(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 }
-void triangleframe(int x1, int y1, int x2, int y2, int x3, int y3, DWORD color)
+void triangleframe(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 }
-void triangle(int x1, int y1, int x2, int y2, int x3, int y3, DWORD bodycolor, DWORD framecolor)
+void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
 {
 	trianglebody(x1, y1, x2, y2, x3, y3, bodycolor);
 	triangleframe(x1, y1, x2, y2, x3, y3, framecolor);
@@ -163,16 +163,16 @@ void triangle(int x1, int y1, int x2, int y2, int x3, int y3, DWORD bodycolor, D
 
 
 
-void circleframe(int cx, int cy, int radius, DWORD color)
+void circleframe(int cx, int cy, int radius, u32 color)
 {
 	int ret;
 	int x,y;
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	DWORD* winbuf;
+	u32* winbuf;
 
-	winbuf=(DWORD*)(haha->pixelbuffer);
+	winbuf=(u32*)(haha->pixelbuffer);
 	width=haha->width;
 	height=haha->height;
 	color |= 0xff000000;
@@ -201,16 +201,16 @@ void circleframe(int cx, int cy, int radius, DWORD color)
 		winbuf[ (y*width) + x2 ] = color;
 	}
 }
-void circlebody(int cx, int cy, int radius, DWORD color)
+void circlebody(int cx, int cy, int radius, u32 color)
 {
 	int ret;
 	int x,y;
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	DWORD* winbuf;
+	u32* winbuf;
 
-	winbuf=(DWORD*)(haha->pixelbuffer);
+	winbuf=(u32*)(haha->pixelbuffer);
 	width=haha->width;
 	height=haha->height;
 	color |= 0xff000000;
@@ -245,13 +245,13 @@ void circlebody(int cx, int cy, int radius, DWORD color)
 
 
 
-void ovalbody(int x1, int y1, int x2, int y2, DWORD color)
+void ovalbody(int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void ovalframe(int x1, int y1, int x2, int y2, DWORD color)
+void ovalframe(int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void oval(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
+void oval(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
 	ovalbody(x1, y1, x2, y2, bodycolor);
 	ovalbody(x1, y1, x2, y2, framecolor);
@@ -260,13 +260,13 @@ void oval(int x1, int y1, int x2, int y2, DWORD bodycolor, DWORD framecolor)
 
 
 
-void sectorbody(int cx, int cy, int radius, int start, int end, DWORD color)
+void sectorbody(int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sectorframe(int cx, int cy, int radius, int start, int end, DWORD color)
+void sectorframe(int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sector(int cx, int cy, int radius, int start, int end, DWORD bodycolor, DWORD framecolor)
+void sector(int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
 {
 }
 

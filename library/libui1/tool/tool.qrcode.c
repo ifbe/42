@@ -1,10 +1,10 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 //
-void rectbody(int x1, int y1, int x2, int y2, DWORD color);
-void backgroundcolor(DWORD);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void backgroundcolor(u32);
 //
 void qrcode_generate(char* src,char* dst,int sidelength);
 void say(char*,...);
@@ -13,15 +13,15 @@ void say(char*,...);
 
 
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -33,7 +33,7 @@ static char* databuf;
 
 static void qrcode_read()
 {
-	DWORD color;
+	u32 color;
 	int x,y,x1,y1,x2,y2;
 	int width,height,min;
 
@@ -59,7 +59,7 @@ static void qrcode_read()
 //say("\n");
 	}
 }
-static void qrcode_write()
+static void qrcode_write(u64* type,u64* key)
 {
 }
 
@@ -90,18 +90,18 @@ static void qrcode_stop()
 
 void qrcode_create(void* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x65646f637271;
 
-	this[10]=(QWORD)qrcode_start;
-	this[11]=(QWORD)qrcode_stop;
-	this[12]=(QWORD)qrcode_list;
-	this[13]=(QWORD)qrcode_into;
-	this[14]=(QWORD)qrcode_read;
-	this[15]=(QWORD)qrcode_write;
+	this[10]=(u64)qrcode_start;
+	this[11]=(u64)qrcode_stop;
+	this[12]=(u64)qrcode_list;
+	this[13]=(u64)qrcode_into;
+	this[14]=(u64)qrcode_read;
+	this[15]=(u64)qrcode_write;
 
 	databuf=(char*)(addr+0x300000);
 }

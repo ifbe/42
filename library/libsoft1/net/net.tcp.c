@@ -1,4 +1,4 @@
-#define QWORD unsigned long long 
+#define u64 unsigned long long 
 //
 int createsocket();
 int deletesocket();
@@ -48,7 +48,7 @@ static void tcp_write(char* p)
 
 
 
-static int tcp_start(QWORD type,char* p)
+static int tcp_start(u64 type,char* p)
 {
 	unsigned char addr[16];
 	int port;
@@ -73,12 +73,12 @@ int tcp_create(char* world,unsigned long long* p)
 	//
 	p[0]=0x74656e;
 	p[1]=0x706374;
-	p[2]=(QWORD)tcp_start;
-	p[3]=(QWORD)tcp_stop;
-	p[4]=(QWORD)tcp_list;
-	p[5]=(QWORD)tcp_choose;
-	p[6]=(QWORD)tcp_read;
-	p[7]=(QWORD)tcp_write;
+	p[2]=(u64)tcp_start;
+	p[3]=(u64)tcp_stop;
+	p[4]=(u64)tcp_list;
+	p[5]=(u64)tcp_choose;
+	p[6]=(u64)tcp_read;
+	p[7]=(u64)tcp_write;
 }
 int tcp_delete()
 {

@@ -1,14 +1,14 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
-#define WORD unsigned short
-#define BYTE unsigned char
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 //
-void line(int,int,int,int,DWORD color);
-void rectbody(int x1, int y1, int x2, int y2, DWORD color);
-void printdecimal(int x, int y, int size, int data, DWORD fg, DWORD bg);
-void backgroundcolor(DWORD);
+void line(int,int,int,int,u32 color);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void printdecimal(int x, int y, int size, int data, u32 fg, u32 bg);
+void backgroundcolor(u32);
 //
-int data2decimalstring(QWORD data,BYTE* string);
+int data2decimalstring(u64 data,u8* string);
 unsigned int getrandom();
 void printmemory(char*,int);
 void say(char*,...);
@@ -18,15 +18,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //
@@ -343,16 +343,16 @@ static void new2048()
 		}//for(x)
 	}//for(y)
 }
-static void the2048_write(QWORD type,QWORD key)
+static void the2048_write(u64* type,u64* key)
 {
 	//kbd
-	if(type != 0x64626b)return;
+	if(*type != 0x64626b)return;
 
 	//left,right,up,down
-	if(key == 0x25)left2048();
-	else if(key == 0x27)right2048();
-	else if(key == 0x26)up2048();
-	else if(key == 0x28)down2048();
+	if(*key == 0x25)left2048();
+	else if(*key == 0x27)right2048();
+	else if(*key == 0x26)up2048();
+	else if(*key == 0x28)down2048();
 	else return;
 
 	//new number?
@@ -401,18 +401,18 @@ static void the2048_stop()
 }
 void the2048_create(char* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;		//'window'
 	this[1]=0x38343032;		//'2048'
 
-	this[10]=(QWORD)the2048_start;
-	this[11]=(QWORD)the2048_stop;
-	this[12]=(QWORD)the2048_list;
-	this[13]=(QWORD)the2048_choose;
-	this[14]=(QWORD)the2048_read;
-	this[15]=(QWORD)the2048_write;
+	this[10]=(u64)the2048_start;
+	this[11]=(u64)the2048_stop;
+	this[12]=(u64)the2048_list;
+	this[13]=(u64)the2048_choose;
+	this[14]=(u64)the2048_read;
+	this[15]=(u64)the2048_write;
 }
 void the2048_delete()
 {

@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 //libui
@@ -50,8 +50,8 @@ static char* character=0;		//4m
 void createuniverse()
 {
 	//temp
-	QWORD i;
-	QWORD temp;
+	u64 i;
+	u64 temp;
 	int size=4 * 0x400000;
 
 
@@ -69,7 +69,7 @@ void createuniverse()
 	//[0x 234,0x1401234)	->	[0x1000,0x1401000)
 	//[0x fff,0x1401fff)	->	[0x1000,0x1401000)
 	//[0x1000,0x1402000)	->	[0x2000,0x1402000)
-	temp = ( (QWORD)rawuniverse ) & 0xfff;
+	temp = ( (u64)rawuniverse ) & 0xfff;
 	universe = rawuniverse + 0x1000 - temp;
 
 

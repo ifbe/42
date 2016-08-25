@@ -1,10 +1,10 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 double cosine(double);
 double sine(double);
-int decstring2data(BYTE* source,QWORD* data);
+int decstring2data(u8* source,u64* data);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -13,10 +13,10 @@ void say(char*,...);
 
 struct mathnode{
 
-        DWORD type;
-        DWORD up;
-        DWORD left;
-        DWORD right;
+        u32 type;
+        u32 up;
+        u32 left;
+        u32 right;
         union{
                 char datasize[16];
                 double floatpoint;
@@ -25,7 +25,7 @@ struct mathnode{
 };
 static double fpstack[20];
 static int fpcount=0;
-static QWORD stack[128];
+static u64 stack[128];
 static int sp=0;
 
 
@@ -74,7 +74,7 @@ void createstack()
 	//满栈的时候rsp值最小:		rsp=0x90000		(sp=0)
 	sp=128;
 }
-int push(DWORD data)
+int push(u32 data)
 {
 	//push rax:
 	//rsp-8,[rsp]=rax		(sp--,stack[sp]=data)
@@ -87,7 +87,7 @@ int push(DWORD data)
 	stack[sp]=data;
 	return 1;
 }
-int pop(DWORD* dest)
+int pop(u32* dest)
 {
 	//pop rax:
 	//rax=[rsp],rsp+8		(data=stack[sp],sp++)
@@ -107,7 +107,7 @@ int pop(DWORD* dest)
 
 
 //-----------------------------------------------------------
-static int operatorpriority(QWORD operator)
+static int operatorpriority(u64 operator)
 {
 	if(operator == '(' ) return 0;
 
@@ -149,7 +149,7 @@ void infix2postfix(char* infix,char* postfix)
 	int ret;
 	int compareresult;
 
-	DWORD stacktop;
+	u32 stacktop;
 
 	createstack();
 	for(ret=0;ret<128;ret++)postfix[ret]=0;
@@ -309,10 +309,10 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 	int dest;
 	int haha;
 
-	QWORD data;
+	u64 data;
 	double float1,float2;
 
-	DWORD first,second;
+	u32 first,second;
 	int ret1,ret2;
 
 
@@ -464,7 +464,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 			}
 			else if(postfix[source]=='s')
 			{
-				if( *(DWORD*)(postfix+source) == 0x74727173 )
+				if( *(u32*)(postfix+source) == 0x74727173 )
 				{
 					data=0x74727173;	//sqrt
 					source+=3;		//4-1
@@ -565,11 +565,11 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 //-----------------------------------------------------------
-double calculator(char* postfix,QWORD x,QWORD y)
+double calculator(char* postfix,u64 x,u64 y)
 {
 	int source=0;
 	int count;
-	QWORD data;
+	u64 data;
 	double first,second,temp;
 
 	createfpstack();
@@ -679,7 +679,7 @@ double calculator(char* postfix,QWORD x,QWORD y)
 			popfp(&first);
 
 			temp=1.00;
-			data=(QWORD)(second+0.000001);
+			data=(u64)(second+0.000001);
 			if(data!=0) while(1)
 			{
 				temp*=first;

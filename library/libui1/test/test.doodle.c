@@ -1,12 +1,12 @@
-#define QWORD unsigned long long
-#define DWORD unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 //
-void rectbody( int x1, int y1, int x2, int y2, DWORD color);
-void rectframe(int x1, int y1, int x2, int y2, DWORD color);
-void circlebody( int cx, int cy, int r, DWORD color);
-void circleframe(int cx, int cy, int r, DWORD color);
-void sectorbody( int cx, int cy, int r, int start, int end, DWORD color);
-void sectorframe(int cx, int cy, int r, int start, int end, DWORD color);
+void rectbody( int x1, int y1, int x2, int y2, u32 color);
+void rectframe(int x1, int y1, int x2, int y2, u32 color);
+void circlebody( int cx, int cy, int r, u32 color);
+void circleframe(int cx, int cy, int r, u32 color);
+void sectorbody( int cx, int cy, int r, int start, int end, u32 color);
+void sectorframe(int cx, int cy, int r, int start, int end, u32 color);
 //
 void backgroundcolor();
 void say(char*,...);
@@ -55,16 +55,16 @@ void doodle_stop()
 }
 void doodle_create(char* base,char* addr)
 {
-	QWORD* this=(QWORD*)addr;
+	u64* this=(u64*)addr;
 	this[0]=0x776f646e6977;
 	this[1]=0x6570616873;
 
-	this[10]=(QWORD)doodle_start;
-	this[11]=(QWORD)doodle_stop;
-	this[12]=(QWORD)doodle_list;
-	this[13]=(QWORD)doodle_change;
-	this[14]=(QWORD)doodle_read;
-	this[15]=(QWORD)doodle_write;
+	this[10]=(u64)doodle_start;
+	this[11]=(u64)doodle_stop;
+	this[12]=(u64)doodle_list;
+	this[13]=(u64)doodle_change;
+	this[14]=(u64)doodle_read;
+	this[15]=(u64)doodle_write;
 }
 void doodle_delete()
 {

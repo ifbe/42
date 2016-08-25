@@ -1,13 +1,13 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
-int systemread( char* rdi,QWORD rsi,QWORD rcx);
-int systemwrite(char* rdi,QWORD rsi,QWORD rcx);
-int cleverread(QWORD,QWORD,QWORD,char*,QWORD,QWORD);
+int systemread( char* rdi,u64 rsi,u64 rcx);
+int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int cleverread(u64,u64,u64,char*,u64,u64);
 //用了别人的
-void printmemory(char* addr,QWORD size);
+void printmemory(char* addr,u64 size);
 void say(char* fmt,...);
 
 
@@ -44,17 +44,17 @@ static int pe_store()
 }
 int explainpehead()
 {
-	QWORD* dstqword=(QWORD*)fshome;
+	u64* dstqword=(u64*)fshome;
 
 	//func ls,cd,load,store
 	dstqword[0]=0x636e7566;         //'func'
 	dstqword[1]=0;
 	dstqword[2]=0;
 	dstqword[3]=0;
-	dstqword[4]=(QWORD)pe_ls;
-	dstqword[5]=(QWORD)pe_cd;
-	dstqword[6]=(QWORD)pe_load;
-	dstqword[7]=(QWORD)pe_store;
+	dstqword[4]=(u64)pe_ls;
+	dstqword[5]=(u64)pe_cd;
+	dstqword[6]=(u64)pe_load;
+	dstqword[7]=(u64)pe_store;
 	dstqword += 8;
 
 	return 1;
@@ -84,7 +84,7 @@ int ispe(char* addr)
 
 	return 64;
 }
-int explainpe(QWORD sector,char* addr)
+int explainpe(u64 sector,char* addr)
 {
 	int ret=0;
 

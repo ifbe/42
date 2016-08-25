@@ -1,7 +1,7 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //artery
 void arterycreate(char*);
 void arterydelete(char*);
@@ -12,11 +12,11 @@ void arterychoose(char*);
 void arteryread(char*);
 void arterywrite(char*);
 //
-void eventread(DWORD,DWORD);
+void eventread(u32,u32);
 void eventwrite();
 //
-int buf2arg(BYTE* buf,int max,int* argc,BYTE** argv);
-int buf2type(BYTE* buf,int max,QWORD* type,BYTE** name);
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2type(u8* buf,int max,u64* type,u8** name);
 int compare(char*,char*);
 void say(char*,...);
 
@@ -36,7 +36,7 @@ int command(char* buffer)
 {
 	int ret;
 	int argc;
-	BYTE* argv[8];
+	u8* argv[8];
 	//say("command=%s\n",buffer);
 	//printmemory(buffer,16);
 

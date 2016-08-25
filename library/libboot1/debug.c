@@ -1,13 +1,13 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 void say(char*,...);
 
 
 
 
-void printmemory(BYTE* addr,int size)
+void printmemory(u8* addr,int size)
 {
 //debug用，打印从addr开始的总共size个字节
 	int i,j;
@@ -31,7 +31,7 @@ void printmemory(BYTE* addr,int size)
 	//33333333333333333333333333
 	for(j=0;j<size/16;j++)
 	{
-		if(j%16 == 0)say( "@%-13llx" , (QWORD)(addr+j*16) );
+		if(j%16 == 0)say( "@%-13llx" , (u64)(addr+j*16) );
 		else say("+%-13x",j*16);
 
 		for(i=0;i<=0xf;i++)
@@ -40,7 +40,7 @@ void printmemory(BYTE* addr,int size)
 		}
 		for(i=0;i<=0xf;i++)
 		{
-			BYTE ch=addr[16*j+i];
+			u8 ch=addr[16*j+i];
 			if( (ch>=0x80)|(ch<=0x20) )ch=0x20;
 			say("%c",ch);
 		}

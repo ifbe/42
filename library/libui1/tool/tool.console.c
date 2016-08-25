@@ -1,10 +1,10 @@
-#define BYTE unsigned char
-#define WORD unsigned short
-#define DWORD unsigned int
-#define QWORD unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 //
 void string(int x,int y,char* str);
-void backgroundcolor(DWORD);
+void backgroundcolor(u32);
 //
 void characterchoose(char*);
 void command(char* in);
@@ -18,23 +18,23 @@ void say(char*,...);
 
 //palette
 static struct temp{
-        QWORD type;
-        QWORD id;
-        QWORD start;
-        QWORD end;
+        u64 type;
+        u64 id;
+        u64 start;
+        u64 end;
 
-        QWORD pixelbuffer;
-        QWORD pixelformat;
-        QWORD width;
-        QWORD height;
+        u64 pixelbuffer;
+        u64 pixelformat;
+        u64 width;
+        u64 height;
 }*haha;
 
 //log位置
 static char* logbuf=0;
-static QWORD backward=0;
+static u64 backward=0;
 
 //键盘输入
-static BYTE buffer[128];//键盘输入专用
+static u8 buffer[128];//键盘输入专用
 static int bufcount=0;
 
 
@@ -48,8 +48,8 @@ static void background4()
 {
 	//用指定颜色清屏
 	int width,height;
-	DWORD x,y,color;
-	DWORD* palette = (DWORD*)(haha->pixelbuffer);
+	u32 x,y,color;
+	u32* palette = (u32*)(haha->pixelbuffer);
 	backgroundcolor(0);
 
 	//输入框颜色
@@ -82,13 +82,13 @@ static void printposition(int start,int count,int max)
 {
 	//位置
 	int x,y;
-	DWORD* palette = (DWORD*)(haha->pixelbuffer);
+	u32* palette = (u32*)(haha->pixelbuffer);
 
 	if(max<0x80*45)return;
 
 	//显示区大小/总大小
-	QWORD top=(haha->height)*start/max;
-	QWORD bottom=(haha->height)*(start+0x80*count)/max;//temp变量=max
+	u64 top=(haha->height)*start/max;
+	u64 bottom=(haha->height)*(start+0x80*count)/max;//temp变量=max
 	say("printposition:%x,%x\n",top,bottom);
 
 	for(y=top;y<bottom;y++)
@@ -124,8 +124,11 @@ static void printstdin(int count)
 
 
 
-static void console_write(QWORD type,QWORD key)
+static void console_write(u64* a,u64* b)
 {
+	u64 type = *a;
+	u64 key = *b;
+
 	if(type==0x72616863)		//'char'
 	{
 		if(key==0x8)		//backspace
@@ -163,7 +166,7 @@ static void console_write(QWORD type,QWORD key)
 	}
 	else if(type==0x6E6F7266207A7978)		//'xyz fron'
 	{
-		DWORD enqueue=*(DWORD*)(logbuf+0xffff0);
+		u32 enqueue=*(u32*)(logbuf+0xffff0);
 		if(enqueue>=0x80*40)		//大于一页才准上翻
 		{
 			if(backward<enqueue-0x80*40)	//没到头才能继续
@@ -181,7 +184,7 @@ static void console_read()
 {
 	//显示哪儿开始的一块
 	int count=(haha->height)/16 - 1;
-	int enqueue=*(DWORD*)(logbuf+0xffff0);
+	int enqueue=*(u32*)(logbuf+0xffff0);
 
 	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
 	if( start<0 )start=0;
@@ -214,18 +217,18 @@ static void console_stop()
 }
 void console_create(char* base,void* addr)
 {
-	QWORD* this = (QWORD*)addr;
+	u64* this = (u64*)addr;
 	haha = addr;
 
 	this[0]=0x776f646e6977;
 	this[1]=0x656c6f736e6f63;
 
-	this[10]=(QWORD)console_start;
-	this[11]=(QWORD)console_stop;
-	this[12]=(QWORD)console_list;
-	this[13]=(QWORD)console_into;
-	this[14]=(QWORD)console_read;
-	this[15]=(QWORD)console_write;
+	this[10]=(u64)console_start;
+	this[11]=(u64)console_stop;
+	this[12]=(u64)console_list;
+	this[13]=(u64)console_into;
+	this[14]=(u64)console_read;
+	this[15]=(u64)console_write;
 
 	//
 	logbuf=base+0x300000;

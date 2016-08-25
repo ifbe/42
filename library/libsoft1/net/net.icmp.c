@@ -1,4 +1,4 @@
-#define QWORD unsigned long long
+#define u64 unsigned long long
 
 
 
@@ -15,23 +15,23 @@ static void icmp_read()
 static void icmp_write()
 {
 }
-static void icmp_start(QWORD type,char* p)
+static void icmp_start(u64 type,char* p)
 {
 }
 static void icmp_stop()
 {
 }
-void icmp_create(char* world,QWORD* p)
+void icmp_create(char* world,u64* p)
 {
 	//
 	p[0]=0x74656e;		//type
 	p[1]=0x706d6369;	//id
-	p[2]=(QWORD)icmp_start;
-	p[3]=(QWORD)icmp_stop;
-	p[4]=(QWORD)icmp_list;
-	p[5]=(QWORD)icmp_choose;
-	p[6]=(QWORD)icmp_read;
-	p[7]=(QWORD)icmp_write;
+	p[2]=(u64)icmp_start;
+	p[3]=(u64)icmp_stop;
+	p[4]=(u64)icmp_list;
+	p[5]=(u64)icmp_choose;
+	p[6]=(u64)icmp_read;
+	p[7]=(u64)icmp_write;
 }
 void icmp_delete()
 {
