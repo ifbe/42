@@ -2,10 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
+//
 void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
+void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
 void backgroundcolor(u32);
+//
 u32 getrandom();
+void say(char*,...);
 
 
 
@@ -31,6 +34,10 @@ static char table[8][8] = {
 	'+','-','*','/',' ',' ',' ',' ',
 	'=',' ',' ',' ',' ',' ',' ',' '
 };
+static int arealeft = 64;
+static int areatop = 672;
+static int arearight = 960;
+static int areabottom = 960;	//max=1024=2^10
 
 
 
@@ -44,23 +51,29 @@ static int virtkbd_write(u64* type,u64* value)
 	if(*type == 0x7466656C207A7978)
 	{
 		x = (*value) & 0xffff;
-		y = ( (*value) >> 16 ) & 0xffff;
-		y -= height*3/4;
-		if(y < 0)return 0;
+		x = (x<<10)/width;
+		if(x < arealeft)return 1;
+		if(x > arearight)return 1;
 
-		x = x*8/width;
-		y = y*32/height;
+		y = ( (*value) >> 16 ) & 0xffff;
+		y = (y<<10)/height;
+		if(y < areatop)return 1;
+		if(y > areabottom)return 1;
+
+		x = 8*(x-arealeft)/(arearight-arealeft);
+		y = 8*(y-areatop)/(areabottom-areatop);
+		say("==%d,%d\n",x,y);
 
 		*type = 0x72616863;
 		*value = table[y][x];
-		return 1;
 	}
 
-	return 0;
+	return 1;
 }
 static void virtkbd_read()
 {
 	int x,y;
+	int left,top,right,bottom;
 	int width = haha->width;
 	int height = haha->height;
 
@@ -69,22 +82,19 @@ static void virtkbd_read()
 	{
 		for(x=0;x<8;x++)
 		{
-			rect(
-				x*width/8,
-				(height*3/4) + (y*height/32),
-				(x+1)*width/8,
-				(height*3/4) + (y+1)*height/32,
-				0xccffcc,
-				0x352614
+			left = (arealeft + x*(arearight-arealeft)/8)*width/1024;
+			top = (areatop + y*(areabottom-areatop)/8)*height/1024;
+			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/1024;
+			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/1024;
+			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
+
+			rect(	left, top, right, bottom,
+				0xccffcc, 0x752614
 			);
 
-			printascii(
-				x*width/8,
-				(height*3/4) + (y*height/32),
-				2,
-				table[y][x],
-				0x221133,
-				0
+			printascii(	left, top,
+					2, table[y][x],
+					0x221133, 0
 			);
 		}
 	}

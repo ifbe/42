@@ -39,13 +39,14 @@ target:
 	$(compiler) $(cflag) memory/bin/image/image.gray.c
 	$(compiler) $(cflag) memory/bin/image/image.mosaic.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.aes.c
+	$(compiler) $(cflag) memory/encdec/crypt/crypt.base64.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.des.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.rsa.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.crc8.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.crc16.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.crc32.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.md5.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.sha256.c
+	$(compiler) $(cflag) memory/encdec/hash/hash.sha1.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.string.c
 	$(compiler) $(cflag) memory/encdec/qrcode.c
 	$(compiler) $(cflag) memory/string/string.compare.c

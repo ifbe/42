@@ -83,7 +83,7 @@ output：保存转换出的整数
 input：欲转换的字符缓冲区
 len：输入的字符缓冲区的长度，要求是4的整数倍
 */
-static void Decode(UINT4 *output, unsigned char *input,unsigned int  len)  
+static void Decode(UINT4 *output, const unsigned char *input,unsigned int  len)  
 {  
 	unsigned int i, j;  
 
@@ -101,7 +101,7 @@ state[4]：md5结构中的state[4]，用于保存对512bits信息加密的中间
 block[64]：欲加密的512bits信息 
 */  
 
-static void md5transform (UINT4 state[4], unsigned char block[64])  
+static void md5transform (UINT4 state[4], const unsigned char block[64])  
 {
 	UINT4 j;
 	UINT4 x[16];
@@ -195,7 +195,7 @@ static void md5transform (UINT4 state[4], unsigned char block[64])
 
 
 
-void md5_write(unsigned char* input, unsigned int inputLen)  
+void md5_write(const unsigned char* input, unsigned int inputLen)  
 {
 	unsigned int i;
 	unsigned int j;
@@ -301,4 +301,13 @@ void md5_create()
 }  
 void md5_delete()
 {
+}
+void md5sum(unsigned char* hash_out, const unsigned char* str, int len)
+{
+        unsigned int j;
+
+        md5_create();
+        for (j=0; j<len; j+=1)md5_write(str+j, 1);
+        md5_read(hash_out);
+        hash_out[20] = '\0';
 }
