@@ -35,8 +35,12 @@ void main(int argc,char** argv)
 
 	//websocket
 	snprintf(buf1,256,"%s%s",argv[1],"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+	printf("websocket(%s)=\n	",buf1);
+
 	sha1sum( buf2, buf1, strlen(buf1) );
+	for(j=0;j<20;j++)printf("%.2x",buf2[j]);
+	printf("\n");
+
 	base64_encode( buf1 ,buf2, 20 );
-	printf("websocket(%s)=\n	", argv[1]);
-	printf("%s\n", buf1);
+	printf("	%s\n", buf1);
 }
