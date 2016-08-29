@@ -102,8 +102,8 @@ static void joystick()
 	{
 		j = width/16;
 
-		rectframe(width*3/4,height*13/32,width*11/16,height/2, 0);
-		rectframe(width*3/4,height/2,width*11/16,height*19/32, 0);
+		rectframe(width/4,height*13/32,width*5/16,height/2, 0);
+		rectframe(width/4,height/2,width*5/16,height*19/32, 0);
 
 		circlebody(width/2, height/8, j, 0xff);
 		circlebody(width/4, height/4, j, 0xffff);
@@ -158,17 +158,33 @@ static void control_read()
 		if(what == 0)joystick();
 		else if(what == 1)keyboard();
 		else if(what == 2)touchpad();
+
+		rectbody(0, 0, 64, 64, 0xffffff);
+		rectbody(haha->width-64, 0, haha->width-1, 64, 0xffffff);
+		rectbody(0, haha->height-64, 64, haha->height-1, 0xffffff);
 	}
 }
 
 
 
 
-static void control_write(u64* type,u64* key)
+static void control_write(u64* type,u8* key)
 {
+	int x,y;
 	if(*type == 0x7466656C207A7978)
 	{
-		what = (what+1)%3;
+		x = *(u16*)key;
+		y = *(u16*)(key+2);
+
+		if(y<64)
+		{
+			if(x<64)what = 0;
+			if(x>(haha->width-64))what = 1;
+		}
+		if(y>(haha->height-64))
+		{
+			if(x<64)what = 2;
+		}
 	}
 }
 

@@ -604,7 +604,6 @@ void characterwrite(u64 type,u64 key)
 						else if( (dy0>-128)&&(dy0<128)&&(dy1>-128)&&(dy1<128)&&(dy2>-128)&&(dy2<128) )
 						{
 							worker[0].xyze1 ^= 1;
-							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;
 							return;
 						}
 					}
@@ -621,7 +620,6 @@ void characterwrite(u64 type,u64 key)
 						else if( (dx0>-128)&&(dx0<128)&&(dx1>-128)&&(dx1<128)&&(dx2>-128)&&(dx2<128) )
 						{
 							worker[0].xyze1 ^= 1;
-							worker[1].xyze1 = worker[2].xyze1 = worker[0].xyze1;
 							return;
 						}
 					}
