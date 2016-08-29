@@ -1,0 +1,100 @@
+<html>
+<head>
+<script type="text/javascript">
+
+var ws=new WebSocket("ws://127.0.0.1:2222");
+function say(data)
+{
+	var debug=document.getElementById("debug");
+	debug.textContent=debug.textContent+data+"\n";
+}
+function send(data)
+{
+	ws.send(data);
+}
+ws.onmessage=function(event)
+{
+	say("receive:"+event.data);
+	document.getElementById('haha').innerHTML=event.data;
+};
+ws.onopen=function(event)
+{
+	say("welcome victim");
+};
+ws.onclose=function(event)
+{
+	say("connection closed");
+};
+ws.onerror=function(event)
+{
+	say("something wrong");
+};
+
+var downx;
+var downy;
+function dragstart(theone,event)
+{
+	downx=event.screenX;
+	downy=event.screenY;
+	theone.style.opacity=0.5;
+}
+function dragend(theone,event)
+{
+	var newx=parseInt(theone.style.getPropertyValue("left"),10)+event.screenX-downx;
+	var newy=parseInt(theone.style.top.replace('px',''))+event.screenY-downy;
+	theone.style.left=newx+"px";
+	theone.style.top=newy+"px";
+	theone.style.opacity=0.9;
+}
+
+oldw=0;
+oldh=0;
+window.onresize=function(){  
+	var w = window.innerWidth
+	|| document.documentElement.clientWidth
+	|| document.body.clientWidth;
+
+	var h = window.innerHeight
+	|| document.documentElement.clientHeight
+	|| document.body.clientHeight;
+
+	if((w!=oldw)&&(h!=oldh))
+	{
+		say("size "+w+","+h);
+		ws.send("size "+w+","+h);
+
+		oldw=w;
+		oldh=h;
+	}
+}
+window.onkeydown=function(ev){
+	say("kbd "+ev.keyCode);
+	ws.send("kbd "+ev.keyCode);
+
+	if(ev.keyCode == 9){
+		ev.preventDefault();
+		ev.keyCode=36;
+	}
+}
+
+</script>
+</head>
+
+<body style="background:black;margin:0;padding:0;overflow:hidden;">
+
+<pre><code id="debug" style="position:absolute;width:100%;height:100%;background:#000;color:#fff;overflow-y:scroll;">
+</code></pre>
+
+<div id="haha" style="position:absolute;left:0%;top:0%;width:100%;height:100%;background:#444444;color:#fff;opacity:0.9;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
+</div>
+
+<div id="you" style="position:absolute;left:200px;top:200px;width:20%;height:100px;background:#ffffff;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
+	<textarea id="word" style="float:left;width:80%;height:100%">anyone here?</textarea>
+	<div onclick="send(document.getElementById('word').value)" style="float:left;width:20%;height:25%;background:red">send</div>
+	<div style="float:left;width:20%;height:25%;background:green"></div>
+	<div style="float:left;width:20%;height:25%;background:blue"></div>
+	<div style="float:left;width:20%;height:25%;background:yellow"></div>
+</div>
+
+</body>
+</html>

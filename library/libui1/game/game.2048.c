@@ -10,6 +10,8 @@ void backgroundcolor(u32);
 //
 int data2decimalstring(u64 data,u8* string);
 unsigned int getrandom();
+//
+int snprintf(char*, int, char*, ...);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -18,15 +20,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //
@@ -35,34 +37,44 @@ static int table[4][4];
 
 
 
+u32 the2048_color(int val)
+{
+	switch(val)
+	{
+		case    0:	return 0x555555;
+		case    2:	return 0xfffff0;
+		case    4:	return 0xffffc0;
+		case    8:	return 0x995000;
+		case   16:	return 0xc05000;
+		case   32:	return 0xb03000;
+		case   64:	return 0xff0000;
+		case  128:	return 0xffffa0;
+		case  256:	return 0xffff80;
+		case  512:	return 0xffff00;
+		case 1024:	return 0xffffb0;
+		case 2048:	return 0x233333;
+		case 4096:	return 0x783d72;
+		case 8192:	return 0xd73762;
+	}
+}
 static void cubie(int x,int y,int z)
 {
 	int min;
 	int color;
 	int count;
-
 	if(haha->width < haha->height)min = haha->width;
 	else min = haha->height;
 
-	switch(z)
-	{
-		case 0:color=0x55555555;count=0;break;
-		case 2:color=0xfffffff0;count=0;break;
-		case 4:color=0xffffffc0;count=0;break;
-		case 8:color=0x995000;count=0;break;
-		case 16:color=0xc05000;count=1;break;
-		case 32:color=0xb03000;count=1;break;
-		case 64:color=0xff0000;count=1;break;
-		case 128:color=0xffffa0;count=2;break;
-		case 256:color=0xffff80;count=2;break;
-		case 512:color=0xffff00;count=2;break;
-		case 1024:color=0xffffb0;count=3;break;
-		case 2048:color=0x233333;count=3;break;
-		case 4096:color=0x783d72;count=3;break;
-		case 8192:color=0xd73762;count=3;break;
-	}
+	//
+	if(z<16)count=0;
+	else if(z<128)count=1;
+	else if(z<1024)count=2;
+	else if(z<16384)count=3;
+	else count=4;
 
-	if( ( (haha->pixelformat)&0xffffffff) == 0x61626772)	//if rgba, bgra->rgba
+	//
+	color = the2048_color(z);
+	if( ( (haha->pixelformat)&0xffffffff) == 0x61626772)	//bgra->rgba
 	{
 		color	= 0xff000000
 			+ ((color&0xff)<<16)
@@ -103,6 +115,31 @@ static void the2048_read_text()
 }
 static void the2048_read_html()
 {
+	int x,y,j;
+	u32 color;
+	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+	//say("@2048.html\n");
+
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			color = the2048_color(table[y][x]);
+			j = snprintf(
+				p, 0x1000,
+				"<div style=\""
+				"float:left;"
+				"width:24%;"
+				"height:24%;"
+				"border:1px solid #000;"
+				"background:#%x;"
+				"color:#000;"
+				"\">%d</div>",
+				color, table[y][x]
+			);
+			p += j;
+		}
+	}
 }
 static void the2048_read_pixel()
 {
@@ -117,14 +154,17 @@ static void the2048_read_pixel()
 }
 static void the2048_read()
 {
+	u32 temp = (haha->pixelformat)&0xffffffff;
+	//say("(@2048.read)temp=%x\n",temp);
+
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if( temp == 0x74786574)
 	{
 		the2048_read_text();
 	}
 
 	//html
-	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	else if( temp == 0x6c6d7468)
 	{
 		the2048_read_html();
 	}

@@ -36,16 +36,20 @@ static int clientlast=0;
 static int clienttype[MAXSIZE];
 static int clientfd[MAXSIZE];
 //
-static char* http_response = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
-static int http_response_size;
-static char* http_context[0x1000];
-static int http_context_size;
-//
-static unsigned char* buf;
 static char* GET = 0;
 static char* Connection = 0;
 static char* Upgrade = 0;
 static char* Sec_WebSocket_Key = 0;
+//
+static char* http_response = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
+static int http_response_size;
+static char http_context[0x1000];
+static int http_context_size;
+//
+static unsigned char buf1[256];
+static unsigned char buf2[256];
+static unsigned char recvbuf[0x100000];
+static unsigned char* sendbuf;
 
 
 
@@ -70,22 +74,20 @@ void epoll_delete(int fd)
 
 void serve_websocket(int fd, int nread)
 {
-	int i,j,k;
-	int type,masked;
-	u64 len;
+	int i,j,k,type,masked;
 	unsigned char key[4];
-	unsigned char buf1[256];
-	unsigned char buf2[256];
+	u64 len;
 
-	for(k=0;k<nread;k++)printf("%.2x ",buf[k]);
+	printf("[%d]:\n",fd);
+	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
 	printf("\n");
 
 	//byte0.bit7
-	if((buf[0]&0x80)==0x80)printf("tail,");
+	if((recvbuf[0]&0x80)==0x80)printf("tail,");
 	else printf("part,");
 
 	//byte0.[3,0]
-	k = buf[0]&0xf;
+	k = recvbuf[0]&0xf;
 	if(k==0)
 	{
 		type=0;
@@ -125,7 +127,7 @@ void serve_websocket(int fd, int nread)
 	}
 
 	//byte1.bit7
-	if( (buf[1]>>7) == 1)
+	if( (recvbuf[1]>>7) == 1)
 	{
 		masked=1;
 		printf("masked,");
@@ -137,24 +139,24 @@ void serve_websocket(int fd, int nread)
 	}
 
 	//
-	k = buf[1]&0x7f;
+	k = recvbuf[1]&0x7f;
 	if(k==127)
 	{
-		len     = ((u64)buf[2]<<56)
-			+ ((u64)buf[3]<<48)
-			+ ((u64)buf[4]<<40)
-			+ ((u64)buf[5]<<32)
-			+ ((u64)buf[6]<<24)
-			+ ((u64)buf[7]<<16)
-			+ ((u64)buf[8]<<8)
-			+ buf[9];
+		len     = ((u64)recvbuf[2]<<56)
+			+ ((u64)recvbuf[3]<<48)
+			+ ((u64)recvbuf[4]<<40)
+			+ ((u64)recvbuf[5]<<32)
+			+ ((u64)recvbuf[6]<<24)
+			+ ((u64)recvbuf[7]<<16)
+			+ ((u64)recvbuf[8]<<8)
+			+ recvbuf[9];
 		k = 10;
 		printf("len=%llx,",len);
 	}
 	else if(k==126)
 	{
-		len     = (buf[2]<<8)
-			+ buf[3];
+		len     = (recvbuf[2]<<8)
+			+ (recvbuf[3]);
 		k = 4;
 		printf("len=%llx,",len);
 	}
@@ -167,35 +169,74 @@ void serve_websocket(int fd, int nread)
 
 	if(masked == 1)
 	{
-		*(u32*)key = *(u32*)(buf + k);
+		*(u32*)key = *(u32*)(recvbuf + k);
 		j = k;
 		k += 4;
 		printf("key=%x\n",*(u32*)key);
 
 		if(type==1)
 		{
-			buf[0] &= 0x8f;
-			buf[1] &= 0x7f;
+			recvbuf[0] &= 0x8f;
+			recvbuf[1] &= 0x7f;
 			for(i=0;i<len;i++)
 			{
-				buf[j+i] = buf[i+k] ^ key[i%4];
-				printf("%c",buf[j+i]);
+				recvbuf[j+i] = recvbuf[i+k] ^ key[i%4];
+				printf("%c",recvbuf[j+i]);
 			}
 			printf("\n");
+			//j = write(fd, recvbuf, j+len);
 
-			j = write(fd, buf, j+len);
+			len = strlen(sendbuf+0x1000);
+			if(len<=125)
+			{
+				j = 0x1000 - 2;
+				sendbuf[j] = 0x81;
+				sendbuf[j+1] = len;
+
+				for(k=0;k<2;k++)printf("%.2x ",sendbuf[j+k]);
+				printf("%s\n", sendbuf+0x1000);
+
+				write( fd, sendbuf+j, len+2 );
+			}
+			else if(len<0xffff)
+			{
+				j = 0x1000 - 4;
+				sendbuf[j] = 0x81;
+				sendbuf[j+1] = 126;
+				sendbuf[j+2] = (len>>8)&0xff;
+				sendbuf[j+3] = len&0xff;
+
+				for(k=0;k<4;k++)printf("%.2x ",sendbuf[j+k]);
+				printf("%s\n", sendbuf+0x1000);
+
+				write( fd, sendbuf+j, len+4 );
+			}
+			else
+			{
+				j = 0x1000 - 10;
+				sendbuf[j] = 0x81;
+				sendbuf[j+1] = 127;
+				sendbuf[j+2] = (len>>56)&0xff;
+				sendbuf[j+3] = (len>>48)&0xff;
+				sendbuf[j+4] = (len>>40)&0xff;
+				sendbuf[j+5] = (len>>32)&0xff;
+				sendbuf[j+6] = (len>>24)&0xff;
+				sendbuf[j+7] = (len>>16)&0xff;
+				sendbuf[j+8] = (len>>8)&0xff;
+				sendbuf[j+9] = (len)&0xff;
+
+				for(k=0;k<10;k++)printf("%.2x ",sendbuf[j+k]);
+				printf("%s\n", sendbuf+0x1000);
+
+				write( fd, sendbuf+j, len+10 );
+			}
 		}
 	}
 	else printf("\n");
 }
 void handshake_websocket(int fd)
 {
-	int k,j,i;
-	int type,masked;
-	u64 len;
-	unsigned char key[4];
-	unsigned char buf1[256];
-	unsigned char buf2[256];
+	int j;
 
 	j=0;
 	while(1)
@@ -225,7 +266,7 @@ void handshake_websocket(int fd)
 	base64_encode( buf2 ,buf1, 20 );
 	printf("%s\n",buf2);
 
-	snprintf(buf, 0x10000,
+	snprintf(recvbuf, 0x10000,
 		"HTTP/1.1 101 Switching Protocols\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"
@@ -233,8 +274,8 @@ void handshake_websocket(int fd)
 
 		buf2
 	);
-	printf("%s",buf);
-	j = write(fd, buf, strlen(buf));
+	printf("%s",recvbuf);
+	j = write(fd, recvbuf, strlen(recvbuf));
 }
 void handshake_http(int fd)
 {
@@ -317,10 +358,10 @@ static void do_read(int fd)
 	int nread;
 	struct epoll_event ev;
 
-	nread = read(fd, buf, MAXSIZE);
+	nread = read(fd, recvbuf, MAXSIZE);
 	if(nread>0)
 	{
-		buf[nread] = 0;
+		recvbuf[nread] = 0;
 
 		//这是个websocket包
 		if(clienttype[fd] == 1)
@@ -333,7 +374,7 @@ static void do_read(int fd)
 		if(clienttype[fd]==0xff)
 		{
 			//do nothing
-			printf("[%d]%s", fd, buf);
+			printf("[%d]%s", fd, recvbuf);
 			return;
 		}
 
@@ -341,9 +382,9 @@ static void do_read(int fd)
 		else
 		{
 			//printf("[%d]start {\n", fd);
-			//printf("%s", buf);
+			//printf("%s", recvbuf);
 			//printf("}end [%d]\n\n", fd);
-			explainstr(buf, nread);
+			explainstr(recvbuf, nread);
 
 			//可能是http，websocket
 			if(GET != 0)
@@ -385,7 +426,7 @@ static void do_write(int fd)
 	int nwrite;
 	struct epoll_event ev;
 
-	nwrite = write(fd, buf, strlen(buf));
+	nwrite = write(fd, recvbuf, strlen(recvbuf));
 	if (nwrite == -1)
 	{
 		printf("[%d]write error\n", fd);
@@ -397,7 +438,7 @@ static void do_write(int fd)
 		ev.data.fd = fd;
 		epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
 	}
-	memset(buf, 0, MAXSIZE);
+	memset(recvbuf, 0, MAXSIZE);
 }
 
 
@@ -490,8 +531,8 @@ void windowread()
 void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	//
-	buf = addr;
-	snprintf(pixfmt, 4, "%s", "html");
+	sendbuf = addr;
+	snprintf(pixfmt, 5, "%s", "html");
 }
 void windowstop()
 {
@@ -500,6 +541,7 @@ void windowdelete(int num)
 {
 	close(listenfd);
 	close(epollfd);
+	exit(-1);
 }
 int windowcreate()
 {
@@ -523,9 +565,12 @@ int windowcreate()
 
 	//http
 	ret = open("chat.html",O_RDONLY);
-	http_response_size = strlen(http_response);
+	if(ret <= 0)exit(-1);
+
 	http_context_size = read(ret, http_context, 0x1000);
 	close(ret);
+
+	http_response_size = strlen(http_response);
 
 
 
