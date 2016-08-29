@@ -78,6 +78,16 @@ none+x64+linux+cli:
 	cp app/none+x64+linux+cli/42.a .
 	cp app/none+x64+linux+cli/42.so .
 	cp app/none+x64+linux+cli/a.out .
+none+x64+linux+epoll:
+	make -C app/none+x64+linux+epoll --no-print-directory
+	cp app/none+x64+linux+epoll/42.a .
+	cp app/none+x64+linux+epoll/42.so .
+	cp app/none+x64+linux+epoll/a.out .
+none+x64+linux+sdl:
+	make -C app/none+x64+linux+sdl --no-print-directory
+	cp app/none+x64+linux+sdl/42.a .
+	cp app/none+x64+linux+sdl/42.so .
+	cp app/none+x64+linux+sdl/a.out .
 none+x64+linux+text:
 	make -C app/none+x64+linux+text --no-print-directory
 	cp app/none+x64+linux+text/42.a .
@@ -93,21 +103,11 @@ none+x64+linux+xlib:
 	cp app/none+x64+linux+xlib/42.a .
 	cp app/none+x64+linux+xlib/42.so .
 	cp app/none+x64+linux+xlib/a.out .
-none+x64+linux+sdl:
-	make -C app/none+x64+linux+sdl --no-print-directory
-	cp app/none+x64+linux+sdl/42.a .
-	cp app/none+x64+linux+sdl/42.so .
-	cp app/none+x64+linux+sdl/a.out .
 none+x64+linux+wayland:
 	make -C app/none+x64+linux+wayland --no-print-directory
 	cp app/none+x64+linux+wayland/42.a .
 	cp app/none+x64+linux+wayland/42.so .
 	cp app/none+x64+linux+wayland/a.out .
-none+x64+linux+web:
-	make -C app/none+x64+linux+web --no-print-directory
-	cp app/none+x64+linux+web/42.a .
-	cp app/none+x64+linux+web/42.so .
-	cp app/none+x64+linux+web/a.out .
 
 
 
@@ -117,6 +117,16 @@ none+x64+mac+cli:
 	cp app/none+x64+mac+cli/42.a .
 	cp app/none+x64+mac+cli/42.dylib .
 	cp app/none+x64+mac+cli/a.exe .
+none+x64+mac+kqueue:
+	make -C app/none+x64+mac+kqueue --no-print-directory
+	cp app/none+x64+mac+kqueue/42.a .
+	cp app/none+x64+mac+kqueue/42.dylib .
+	cp app/none+x64+mac+kqueue/a.out .
+none+x64+mac+sdl:
+	make -C app/none+x64+mac+sdl --no-print-directory
+	cp app/none+x64+mac+sdl/42.a .
+	cp app/none+x64+mac+sdl/42.dylib .
+	cp app/none+x64+mac+sdl/a.out .
 none+x64+mac+cocoa:
 	make -C app/none+x64+mac+cocoa --no-print-directory
 	cp app/none+x64+mac+cocoa/42.a .
@@ -132,11 +142,6 @@ none+x64+mac+text:
 	cp app/none+x64+mac+text/42.a .
 	cp app/none+x64+mac+text/42.dylib .
 	cp app/none+x64+mac+text/a.exe .
-none+x64+mac+sdl:
-	make -C app/none+x64+mac+sdl --no-print-directory
-	cp app/none+x64+mac+sdl/42.a .
-	cp app/none+x64+mac+sdl/42.dylib .
-	cp app/none+x64+mac+sdl/a.out .
 
 
 
@@ -147,6 +152,18 @@ none+x64+win+cli:
 	cp app/none+x64+win+cli/42.a .
 	cp app/none+x64+win+cli/42.dll .
 	cp app/none+x64+win+cli/a.exe .
+none+x64+win+iocp:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	make -C app/none+x64+win+iocp --no-print-directory
+	cp app/none+x64+win+iocp/42.a .
+	cp app/none+x64+win+iocp/42.dll .
+	cp app/none+x64+win+iocp/a.exe .
+none+x64+win+sdl:
+	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
+	make -C app/none+x64+win+sdl --no-print-directory
+	cp app/none+x64+win+sdl/42.a .
+	cp app/none+x64+win+sdl/42.dll .
+	cp app/none+x64+win+sdl/a.exe .
 none+x64+win+text:
 	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
 	make -C app/none+x64+win+text --no-print-directory
@@ -159,18 +176,6 @@ none+x64+win+api:
 	cp app/none+x64+win+api/42.a .
 	cp app/none+x64+win+api/42.dll .
 	cp app/none+x64+win+api/a.exe .
-none+x64+win+sdl:
-	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x64+win+sdl --no-print-directory
-	cp app/none+x64+win+sdl/42.a .
-	cp app/none+x64+win+sdl/42.dll .
-	cp app/none+x64+win+sdl/a.exe .
-none+x64+win+web:
-	windres --input-format=rc -O coff -i res/uac.rc -o res/uac.res
-	make -C app/none+x64+win+web --no-print-directory
-	cp app/none+x64+win+web/42.a .
-	cp app/none+x64+win+web/42.dll .
-	cp app/none+x64+win+web/a.exe .
 
 
 

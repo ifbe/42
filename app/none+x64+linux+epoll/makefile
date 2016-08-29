@@ -6,7 +6,7 @@ all:
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 linuxsdl
+	make -s -C $(library)/libui0 linuxepoll
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor0
 	make -s -C $(library)/visitor1 gui
@@ -34,10 +34,9 @@ so:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	-lSDL2 -lm
+	$(library)/visitor0/*.o
 program:
-	gcc \
+	gcc -o a.out \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -47,7 +46,6 @@ program:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
-	-lSDL2 -lm
+	$(library)/visitor1/gui.o
 clean:
 	rm -f *.o *.a *.so

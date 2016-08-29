@@ -1,17 +1,18 @@
 library?=../../library
+res?=../../res
 all:
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 gcc
-	make -s -C $(library)/libsoft0 linux
-	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 linuxsdl
-	make -s -C $(library)/libui1 gcc
-	make -s -C $(library)/visitor0
+	make -s -C $(library)/libboot0 wincmd
+	make -s -C $(library)/libboot1 mingw
+	make -s -C $(library)/libhard0 winx64
+	make -s -C $(library)/libhard1 mingw
+	make -s -C $(library)/libsoft0 win
+	make -s -C $(library)/libsoft1 mingw
+	make -s -C $(library)/libui0 winapi
+	make -s -C $(library)/libui1 mingw
+	make -s -C $(library)/visitor0 win
 	make -s -C $(library)/visitor1 gui
 	make -s a
-	make -s so
+	make -s dll
 	make -s program
 a:
 	ar crs 42.a \
@@ -24,8 +25,8 @@ a:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
-so:
-	gcc -shared -o 42.so \
+dll:
+	gcc -shared -o 42.dll \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -35,9 +36,9 @@ so:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	-lSDL2 -lm
+	-lgdi32
 program:
-	gcc \
+	gcc -mwindows \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -48,6 +49,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lSDL2 -lm
+	-lgdi32
 clean:
 	rm -f *.o *.a *.so

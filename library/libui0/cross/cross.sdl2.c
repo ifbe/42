@@ -2,19 +2,23 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_video.h"
 #undef main
-
-
+//
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
+//
 int width=1024;
 int height=768;
 unsigned int* mypixel;
-
+//sdl
 SDL_Window* window;//窗口
 SDL_Renderer* renderer;	//什么是render
 SDL_Texture* texture;		//texture是在显存里的？
 SDL_TimerID my_timer_id;
 
 
-void createwindow(char* addr)
+void windowcreate(char* addr)
 {
 	//准备rgb点阵
 	mypixel=(unsigned int*)addr;
@@ -36,7 +40,7 @@ void createwindow(char* addr)
 	SDL_RenderPresent(renderer);
 
 }
-void deletewindow()
+void windowdelete()
 {
 	//释放点阵
 	free(mypixel);
@@ -47,29 +51,20 @@ void deletewindow()
 	SDL_DestroyWindow(window); 
 	SDL_Quit(); 
 }
-
-
-
-
-//inner
-//outer
-
-
-
-
-/*
-void point(int x,int y,int color)
-{
-	mypixel[y*width+x]=color;
-}
-void draw(int x,int y,int color)
-{
-	point(x+(width/2),(height/2)-y-1,color);
-}*/
-u64 readwindow(u64 what)
+void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 }
-void writewindow()
+void windowstop()
+{
+}
+
+
+
+
+void windowread(char* p)
+{
+}
+void windowwrite()
 {
   //画texture？
   SDL_UpdateTexture(texture, NULL, mypixel, width*4);
