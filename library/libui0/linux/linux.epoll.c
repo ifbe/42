@@ -16,12 +16,15 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-#define IPADDRESS "127.0.0.1"
+#define IPADDRESS "0.0.0.0"
 #define PORT 2222
 #define MAXSIZE 1024
 //
 void sha1sum(unsigned char* out, const unsigned char* str, int len);
 void base64_encode(unsigned char* out,const unsigned char* in,int len);
+//
+void printmemory(char*,int);
+void say(char*,...);
 
 
 
@@ -45,6 +48,8 @@ static char* http_response = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n
 static int http_response_size;
 static char http_context[0x1000];
 static int http_context_size;
+static char event_queue[0x1000];
+static int event_count=0;
 //
 static unsigned char buf1[256];
 static unsigned char buf2[256];
@@ -54,6 +59,70 @@ static unsigned char* sendbuf;
 
 
 
+
+
+
+
+void windowlist()
+{
+}
+void windowchoose()
+{
+}
+void windowwrite()
+{
+	int j,k;
+	u64 len;
+
+	len = strlen(sendbuf+0x1000);
+	if(len<=125)
+	{
+		j = 2;
+		sendbuf[0x1000-j] = 0x81;
+		sendbuf[0x1000-j+1] = len;
+	}
+	else if(len<0xffff)
+	{
+		j = 4;
+		sendbuf[0x1000-j] = 0x81;
+		sendbuf[0x1000-j+1] = 126;
+		sendbuf[0x1000-j+2] = (len>>8)&0xff;
+		sendbuf[0x1000-j+3] = len&0xff;
+	}
+	else
+	{
+		j = 10;
+		sendbuf[0x1000-j] = 0x81;
+		sendbuf[0x1000-j+1] = 127;
+		sendbuf[0x1000-j+2] = (len>>56)&0xff;
+		sendbuf[0x1000-j+3] = (len>>48)&0xff;
+		sendbuf[0x1000-j+4] = (len>>40)&0xff;
+		sendbuf[0x1000-j+5] = (len>>32)&0xff;
+		sendbuf[0x1000-j+6] = (len>>24)&0xff;
+		sendbuf[0x1000-j+7] = (len>>16)&0xff;
+		sendbuf[0x1000-j+8] = (len>>8)&0xff;
+		sendbuf[0x1000-j+9] = (len)&0xff;
+	}
+
+	//
+	for(k=0;k<j;k++)printf("%.2x ",sendbuf[0x1000-j+k]);
+	printf("%s\n", sendbuf+0x1000);
+
+	//
+	j = write( clientfd[0], sendbuf+0x1000-j, len+j );
+}
+void windowread()
+{
+}
+void windowstart(char* addr, char* pixfmt, int x, int y)
+{
+	//
+	sendbuf = addr;
+	snprintf(pixfmt, 5, "%s", "html");
+}
+void windowstop()
+{
+}
 
 
 
@@ -167,7 +236,8 @@ void serve_websocket(int fd, int nread)
 		printf("len=%llx,",len);
 	}
 
-	if(masked == 1)
+	if(masked != 1)printf("\n");
+	else
 	{
 		*(u32*)key = *(u32*)(recvbuf + k);
 		j = k;
@@ -181,58 +251,26 @@ void serve_websocket(int fd, int nread)
 			for(i=0;i<len;i++)
 			{
 				recvbuf[j+i] = recvbuf[i+k] ^ key[i%4];
+
+				event_queue[i] = recvbuf[j+i];
 				printf("%c",recvbuf[j+i]);
 			}
+			event_queue[i] = 0;
 			printf("\n");
 			//j = write(fd, recvbuf, j+len);
 
-			len = strlen(sendbuf+0x1000);
-			if(len<=125)
-			{
-				j = 0x1000 - 2;
-				sendbuf[j] = 0x81;
-				sendbuf[j+1] = len;
+		}//type=ascii
+	}//masked=1
 
-				for(k=0;k<2;k++)printf("%.2x ",sendbuf[j+k]);
-				printf("%s\n", sendbuf+0x1000);
-
-				write( fd, sendbuf+j, len+2 );
-			}
-			else if(len<0xffff)
-			{
-				j = 0x1000 - 4;
-				sendbuf[j] = 0x81;
-				sendbuf[j+1] = 126;
-				sendbuf[j+2] = (len>>8)&0xff;
-				sendbuf[j+3] = len&0xff;
-
-				for(k=0;k<4;k++)printf("%.2x ",sendbuf[j+k]);
-				printf("%s\n", sendbuf+0x1000);
-
-				write( fd, sendbuf+j, len+4 );
-			}
-			else
-			{
-				j = 0x1000 - 10;
-				sendbuf[j] = 0x81;
-				sendbuf[j+1] = 127;
-				sendbuf[j+2] = (len>>56)&0xff;
-				sendbuf[j+3] = (len>>48)&0xff;
-				sendbuf[j+4] = (len>>40)&0xff;
-				sendbuf[j+5] = (len>>32)&0xff;
-				sendbuf[j+6] = (len>>24)&0xff;
-				sendbuf[j+7] = (len>>16)&0xff;
-				sendbuf[j+8] = (len>>8)&0xff;
-				sendbuf[j+9] = (len)&0xff;
-
-				for(k=0;k<10;k++)printf("%.2x ",sendbuf[j+k]);
-				printf("%s\n", sendbuf+0x1000);
-
-				write( fd, sendbuf+j, len+10 );
-			}
+	if(fd == clientfd[0])
+	{
+		if(*(u32*)event_queue == 0x2064626b)
+		{
+			*(u64*)(event_queue+8) = atoi(event_queue+4);
+			*(u64*)(event_queue+0) = 0x64626b;
 		}
+		event_count = 1;
 	}
-	else printf("\n");
 }
 void handshake_websocket(int fd)
 {
@@ -275,7 +313,13 @@ void handshake_websocket(int fd)
 		buf2
 	);
 	printf("%s",recvbuf);
+
+	//handshake
 	j = write(fd, recvbuf, strlen(recvbuf));
+
+	//context
+	clientfd[0] = fd;
+	windowwrite();
 }
 void handshake_http(int fd)
 {
@@ -505,6 +549,16 @@ void uievent(char* type,char* key)
 {
 	while(1)
 	{
+		if(event_count > 0)
+		{
+			*(u64*)type = *(u64*)event_queue;
+			*(u64*)key = *(u64*)(event_queue + 8);
+			event_count = 0;
+
+			printmemory(event_queue, 16);
+			return;
+		}
+
 		handle_events();
 	}
 }
@@ -512,31 +566,6 @@ void uievent(char* type,char* key)
 
 
 
-void windowlist()
-{
-}
-void windowchoose()
-{
-}
-void windowwrite()
-{
-}
-void windowread()
-{
-}
-
-
-
-
-void windowstart(char* addr, char* pixfmt, int x, int y)
-{
-	//
-	sendbuf = addr;
-	snprintf(pixfmt, 5, "%s", "html");
-}
-void windowstop()
-{
-}
 void windowdelete(int num)
 {
 	close(listenfd);
@@ -564,8 +593,12 @@ int windowcreate()
 
 
 	//http
-	ret = open("chat.html",O_RDONLY);
-	if(ret <= 0)exit(-1);
+	ret = open("42.html",O_RDONLY);
+	if(ret <= 0)
+	{
+		printf("error@html\n");
+		exit(-1);
+	}
 
 	http_context_size = read(ret, http_context, 0x1000);
 	close(ret);
@@ -584,7 +617,7 @@ int windowcreate()
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (listenfd == -1)
 	{
-		printf("socket error\n");
+		printf("error@socket\n");
 		exit(1);
 	}
 
@@ -592,13 +625,13 @@ int windowcreate()
 	ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(ret<0)
 	{
-		printf("setsockopet error\n");
+		printf("error@setsockopet\n");
 		return -1;
 	}
 
 	if (bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
 	{
-		printf("bind error\n");
+		printf("error@bind\n");
 		exit(1);
 	}
 	listen(listenfd, 5);
@@ -618,7 +651,4 @@ int windowcreate()
 	//do not stop when SIGPIPE
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE,&sa,0);
-
-	//ctrl+c
-	signal(SIGINT, windowdelete);
 }

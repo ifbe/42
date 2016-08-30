@@ -3,6 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 int characterchoose(char* p);
+int snprintf(char*, int, char*, ...);
 //
 void printstring(int x, int y, int size, char* str, u32 fg, u32 bg);
 void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
@@ -128,19 +129,46 @@ static void menu_read_pixel()
 		0
 	);
 }
+static void menu_read_html()
+{
+	char* p = (char*)(haha->pixelbuffer)+0x1000;
+	while(*p != 0)p++;
+
+	snprintf(p,0x1000,"%s",
+		"<div style=\""
+		"position:fixed;"
+		"z-index:100;"
+		"left:25%;"
+		"top:25%;"
+		"width:50%;"
+		"height:50%;"
+		"border:4px solid #000;"
+		"background:#444444;"
+		"color:#000;"
+		"text-align:center;"
+		"\">"
+		"what do you want<hr>"
+		"</div>"
+	);
+}
 static void menu_read()
 {
+	u32 temp = (haha->pixelformat)&0xffffffff;
+	say("temp=%x\n",temp);
+
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if(temp == 0x74786574)
 	{
 		menu_read_text();
 	}
-/*
+
 	//html
-	else if()
-	{
-	}
-*/
+        else if(temp == 0x6c6d7468)
+        {
+		say("html\n",temp);
+                menu_read_html();
+        }
+
 	//pixel
 	else
 	{

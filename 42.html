@@ -14,7 +14,7 @@ function send(data)
 }
 ws.onmessage=function(event)
 {
-	say("receive:"+event.data);
+	//say("receive:"+event.data);
 	document.getElementById('haha').innerHTML=event.data;
 };
 ws.onopen=function(event)
@@ -86,14 +86,6 @@ window.onkeydown=function(ev){
 </code></pre>
 
 <div id="haha" style="position:absolute;left:0%;top:0%;width:100%;height:100%;background:#444444;color:#fff;opacity:0.9;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
-</div>
-
-<div id="you" style="position:absolute;left:200px;top:200px;width:20%;height:100px;background:#ffffff;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
-	<textarea id="word" style="float:left;width:80%;height:100%">anyone here?</textarea>
-	<div onclick="send(document.getElementById('word').value)" style="float:left;width:20%;height:25%;background:red">send</div>
-	<div style="float:left;width:20%;height:25%;background:green"></div>
-	<div style="float:left;width:20%;height:25%;background:blue"></div>
-	<div style="float:left;width:20%;height:25%;background:yellow"></div>
 </div>
 
 </body>

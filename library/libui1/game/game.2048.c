@@ -129,8 +129,8 @@ static void the2048_read_html()
 				p, 0x1000,
 				"<div style=\""
 				"float:left;"
-				"width:24%;"
-				"height:24%;"
+				"width:24.5%;"
+				"height:24.5%;"
 				"border:1px solid #000;"
 				"background:#%x;"
 				"color:#000;"

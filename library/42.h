@@ -34,6 +34,10 @@ void backgroundcolor(u32 color);
 	#define kbd_f2 0x71
 	#define kbd_f3 0x72
 	#define kbd_f4 0x73
+	#define kbd_left 0x25
+	#define kbd_up 0x26
+	#define kbd_right 0x27
+	#define kbd_down 0x28
 #define touch_move 0x4070
 #define touch_down 0x2b70
 #define touch_up 0x2d70
