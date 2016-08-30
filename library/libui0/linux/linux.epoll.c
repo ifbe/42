@@ -34,10 +34,11 @@ static int listenfd;
 static int epollfd;
 static struct epoll_event epollevent[MAXSIZE];
 //
+static int clienttype[MAXSIZE];
 static int clientfirst=0;
 static int clientlast=0;
-static int clienttype[MAXSIZE];
-static int clientfd[MAXSIZE];
+static int client1=0;
+static int client2=0;
 //
 static char* GET = 0;
 static char* Connection = 0;
@@ -134,7 +135,13 @@ void epoll_del(int fd)
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 
-	if(fd<MAXSIZE)clienttype[fd] = 0;
+	if(fd < MAXSIZE)clienttype[fd] = 0;
+	if(fd == client2)client2 = 0;
+	if(fd == client1)
+	{
+		client1 = client2;
+		client2 = 0;
+	}
 	close(fd);
 }
 
@@ -145,17 +152,11 @@ void epoll_del(int fd)
 
 
 
-void windowlist()
-{
-}
-void windowchoose()
-{
-}
 void windowwrite()
 {
 	int j,k;
 	u64 len;
-	if(clienttype[0]==0)return;
+	if( (client1 == 0) && (client2 == 0) )return;
 
 	len = strlen(sendbuf+0x1000);
 	if(len<=125)
@@ -192,9 +193,23 @@ void windowwrite()
 	printf("%s\n", sendbuf+0x1000);
 
 	//
-	j = write( clientfd[0], sendbuf+0x1000-j, len+j );
+	if(client1 != 0)
+	{
+		j = write( client1, sendbuf+0x1000-j, len+j );
+	}
+return;
+	if(client2 != 0)
+	{
+		j = write( client2, sendbuf+0x1000-j, len+j );
+	}
 }
 void windowread()
+{
+}
+void windowlist()
+{
+}
+void windowchoose()
 {
 }
 
@@ -214,6 +229,11 @@ void serve_websocket(int fd, int nread)
 	printf("[%d]:\n",fd);
 	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
 	printf("\n");
+
+	if( (fd != client1) && (fd != client2) )
+	{
+		return;
+	}
 
 	//byte0.bit7
 	if((recvbuf[0]&0x80)==0x80)printf("tail,");
@@ -326,15 +346,12 @@ void serve_websocket(int fd, int nread)
 		}//type=ascii
 	}//masked=1
 
-	if(fd == clientfd[0])
+	if(*(u32*)event_queue == 0x2064626b)
 	{
-		if(*(u32*)event_queue == 0x2064626b)
-		{
-			*(u64*)(event_queue+8) = atoi(event_queue+4);
-			*(u64*)(event_queue+0) = 0x64626b;
-		}
-		event_count = 1;
+		*(u64*)(event_queue+8) = atoi(event_queue+4);
+		*(u64*)(event_queue+0) = 0x64626b;
 	}
+	event_count = 1;
 }
 void handshake_websocket(int fd)
 {
@@ -380,10 +397,12 @@ void handshake_websocket(int fd)
 
 	//handshake
 	j = write(fd, recvbuf, strlen(recvbuf));
+	clienttype[fd] = 0x10;
 
 	//context
-	clienttype[0] = 1;
-	clientfd[0] = fd;
+	if(client1 == 0)client1 = fd;
+	else if(client2 ==0)client2 = fd;
+return;
 	windowwrite();
 }
 void handshake_http(int fd)
@@ -409,21 +428,13 @@ static void handle_read(int fd)
 		recvbuf[nread] = 0;
 
 		//这是个websocket包
-		if(clienttype[fd] == 1)
+		if(clienttype[fd] == 0x10)
 		{
 			serve_websocket(fd, nread);
 			return;
 		}
 
 		//这是个普通socket
-		if(clienttype[fd]==0xff)
-		{
-			//do nothing
-			printf("[%d]%s", fd, recvbuf);
-			return;
-		}
-
-		//头一个包,检查是什么玩意
 		else
 		{
 			//printf("[%d]start {\n", fd);
@@ -431,14 +442,16 @@ static void handle_read(int fd)
 			//printf("}end [%d]\n\n", fd);
 			explainstr(recvbuf, nread);
 
+			//普通socket，而且不是GET请求，丢弃
+			if(GET == 0)return;
+
 			//可能是http，websocket
-			if(GET != 0)
+			else
 			{
 				//这是个websocket请求
 				if( (Upgrade != 0) && (Sec_WebSocket_Key != 0) )
 				{
 					handshake_websocket(fd);
-					clienttype[fd] = 1;
 				}
 
 				//http请求根
@@ -456,7 +469,6 @@ static void handle_read(int fd)
 					return;
 				}
 			}
-			else clienttype[fd] = 0xff;
 		}
 	}
 	else
@@ -492,7 +504,7 @@ static void handle_accpet(int listenfd)
 		printf("[%d]MAXSIZE->close\n\n\n\n\n", fd);
 		return;
 	}
-	clientfd[fd] = 1;
+	clienttype[fd] = 1;
 
 	epoll_add(fd);
 	printf("[%d]accept\n\n\n\n\n", fd);
@@ -544,7 +556,7 @@ void uievent(char* type,char* key)
 }
 void windowstop()
 {
-	//only close all clientfd
+	//only close all client
 	//listenfd and epollfd unchanged
 }
 void windowstart(char* addr, char* pixfmt, int x, int y)
@@ -572,7 +584,6 @@ int windowcreate()
 	for(ret=0;ret<MAXSIZE;ret++)
 	{
 		clienttype[ret] = 0;
-		clientfd[ret] = 0;
 	}
 
 
