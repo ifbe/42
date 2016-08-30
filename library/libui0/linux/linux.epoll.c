@@ -59,6 +59,88 @@ static unsigned char* sendbuf;
 
 
 
+static void explainstr(char* buf, int max)
+{
+	int flag;
+	int linehead;
+
+	GET = 0;
+	Connection = 0;
+	Upgrade = 0;
+	Sec_WebSocket_Key = 0;
+
+	linehead = 0;
+	while(1)
+	{
+		if(strncmp(buf+linehead, "GET ", 4) == 0)GET = buf+linehead+4;
+		else if(strncmp(buf+linehead, "Connection: ", 12) == 0)Connection = buf+linehead+12;
+		else if(strncmp(buf+linehead, "Upgrade: ", 9) == 0)Upgrade = buf+linehead+9;
+		else if(strncmp(buf+linehead, "Sec-WebSocket-Key: ", 19) == 0)Sec_WebSocket_Key = buf+linehead+19;
+
+		//eat until next character
+		flag=0;
+		while(1)
+		{
+			if(buf[linehead] == 0)
+			{
+				//printf("[0x0@(%d,%d)]\n",linehead,max);
+			}
+			else if(buf[linehead] == 0xd)
+			{
+				flag=1;
+				//printf("[0xd@(%d,%d)]\n",linehead,max);
+			}
+			else if(buf[linehead] == 0xa)
+			{
+				flag=1;
+				//printf("[0xa@(%d,%d)]",linehead,max);
+				printf("\n");
+			}
+			else
+			{
+				if(flag==0)
+				{
+					printf("%c", buf[linehead]);
+				}
+				else break;
+			}
+
+			linehead++;
+			if(linehead >= max)break;
+		}
+
+		if(linehead >= max)break;
+	}
+	printf("GET@%llx,Connection@%llx,Upgrade@%llx,Sec-WebSocket-Key@%llx\n",
+		(u64)GET,
+		(u64)Connection,
+		(u64)Upgrade,
+		(u64)Sec_WebSocket_Key
+	);
+}
+void epoll_add(int fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN;
+	ev.data.fd = fd;
+	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+}
+void epoll_del(int fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN;
+	ev.data.fd = fd;
+	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+
+	if(fd<MAXSIZE)clienttype[fd] = 0;
+	close(fd);
+}
+
+
+
+
 
 
 
@@ -73,6 +155,7 @@ void windowwrite()
 {
 	int j,k;
 	u64 len;
+	if(clienttype[0]==0)return;
 
 	len = strlen(sendbuf+0x1000);
 	if(len<=125)
@@ -114,32 +197,13 @@ void windowwrite()
 void windowread()
 {
 }
-void windowstart(char* addr, char* pixfmt, int x, int y)
-{
-	//
-	sendbuf = addr;
-	snprintf(pixfmt, 5, "%s", "html");
-}
-void windowstop()
-{
-}
 
 
 
 
-void epoll_delete(int fd)
-{
-	struct epoll_event ev;
 
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 
-	clienttype[fd] = 0;
-	close(fd);
 
-	printf("[%d]leave\n\n\n\n\n", fd);
-}
 
 void serve_websocket(int fd, int nread)
 {
@@ -184,14 +248,14 @@ void serve_websocket(int fd, int nread)
 	}
 	else if(k==8)
 	{
-		printf("close\n");
-		epoll_delete(fd);
+		printf("[%d]type8->close\n",fd);
+		epoll_del(fd);
 		return;
 	}
 	else
 	{
-		printf("known\n");
-		epoll_delete(fd);
+		printf("[%d]known->close\n",fd);
+		epoll_del(fd);
 		return;
 	}
 
@@ -318,6 +382,7 @@ void handshake_websocket(int fd)
 	j = write(fd, recvbuf, strlen(recvbuf));
 
 	//context
+	clienttype[0] = 1;
 	clientfd[0] = fd;
 	windowwrite();
 }
@@ -331,76 +396,12 @@ void handshake_http(int fd)
 	ret = write(fd, http_context, http_context_size);
 	printf("writing http_context\n");
 
-	epoll_delete(fd);
-	printf("\n\n\n\n");
+	epoll_del(fd);
+	printf("[%d]http->close\n\n\n\n\n", fd);
 }
-
-
-
-
-static void explainstr(char* buf, int max)
-{
-	int flag;
-	int linehead;
-
-	GET = 0;
-	Connection = 0;
-	Upgrade = 0;
-	Sec_WebSocket_Key = 0;
-
-	linehead = 0;
-	while(1)
-	{
-		if(strncmp(buf+linehead, "GET ", 4) == 0)GET = buf+linehead+4;
-		else if(strncmp(buf+linehead, "Connection: ", 12) == 0)Connection = buf+linehead+12;
-		else if(strncmp(buf+linehead, "Upgrade: ", 9) == 0)Upgrade = buf+linehead+9;
-		else if(strncmp(buf+linehead, "Sec-WebSocket-Key: ", 19) == 0)Sec_WebSocket_Key = buf+linehead+19;
-
-		//eat until next character
-		flag=0;
-		while(1)
-		{
-			if(buf[linehead] == 0)
-			{
-				//printf("[0x0@(%d,%d)]\n",linehead,max);
-			}
-			else if(buf[linehead] == 0xd)
-			{
-				flag=1;
-				//printf("[0xd@(%d,%d)]\n",linehead,max);
-			}
-			else if(buf[linehead] == 0xa)
-			{
-				flag=1;
-				//printf("[0xa@(%d,%d)]",linehead,max);
-				printf("\n");
-			}
-			else
-			{
-				if(flag==0)
-				{
-					printf("%c", buf[linehead]);
-				}
-				else break;
-			}
-
-			linehead++;
-			if(linehead >= max)break;
-		}
-
-		if(linehead >= max)break;
-	}
-	printf("GET@%llx,Connection@%llx,Upgrade@%llx,Sec-WebSocket-Key@%llx\n",
-		(u64)GET,
-		(u64)Connection,
-		(u64)Upgrade,
-		(u64)Sec_WebSocket_Key
-	);
-}
-static void do_read(int fd)
+static void handle_read(int fd)
 {
 	int nread;
-	struct epoll_event ev;
 
 	nread = read(fd, recvbuf, MAXSIZE);
 	if(nread>0)
@@ -450,7 +451,8 @@ static void do_read(int fd)
 				//http请求其他
 				else
 				{
-					epoll_delete(fd);
+					printf("[%d]bad->close\n\n\n\n\n", fd);
+					epoll_del(fd);
 					return;
 				}
 			}
@@ -461,35 +463,13 @@ static void do_read(int fd)
 	{
 		if (nread == -1)printf("[%d]read error\n", fd);
 		else if (nread == 0)printf("[%d]fd closed\n", fd);
-		epoll_delete(fd);
+
+		epoll_del(fd);
 	}
 }
-
-static void do_write(int fd)
-{
-	int nwrite;
-	struct epoll_event ev;
-
-	nwrite = write(fd, recvbuf, strlen(recvbuf));
-	if (nwrite == -1)
-	{
-		printf("[%d]write error\n", fd);
-		epoll_delete(fd);
-	}
-	else
-	{
-		ev.events = EPOLLIN;
-		ev.data.fd = fd;
-		epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
-	}
-	memset(recvbuf, 0, MAXSIZE);
-}
-
-
 static void handle_accpet(int listenfd)
 {
 	int fd;
-	struct epoll_event ev;
 	struct sockaddr_in cliaddr;
 
 	socklen_t cliaddrlen = sizeof(struct sockaddr_in);
@@ -508,15 +488,14 @@ static void handle_accpet(int listenfd)
 	else if(fd<MAXSIZE)clientlast = fd;
 	else
 	{
-		epoll_delete(fd);
+		epoll_del(fd);
+		printf("[%d]MAXSIZE->close\n\n\n\n\n", fd);
 		return;
 	}
 	clientfd[fd] = 1;
 
-	//
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+	epoll_add(fd);
+	printf("[%d]accept\n\n\n\n\n", fd);
 }
 static void handle_events()
 {
@@ -526,13 +505,6 @@ static void handle_events()
 
 	for (i = 0;i < num;i++)
 	{
-		/*
-		if (epollevent[i].events & EPOLLOUT)
-		{
-			do_write(fd);
-		}
-		*/
-
 		if (epollevent[i].events & EPOLLIN)
 		{
 			fd = epollevent[i].data.fd;
@@ -541,10 +513,18 @@ static void handle_events()
 			{
 				handle_accpet(listenfd);
 			}
-			else do_read(fd);
+			else handle_read(fd);
 		}
 	}
 }
+
+
+
+
+
+
+
+
 void uievent(char* type,char* key)
 {
 	while(1)
@@ -562,10 +542,17 @@ void uievent(char* type,char* key)
 		handle_events();
 	}
 }
-
-
-
-
+void windowstop()
+{
+	//only close all clientfd
+	//listenfd and epollfd unchanged
+}
+void windowstart(char* addr, char* pixfmt, int x, int y)
+{
+	//
+	sendbuf = addr;
+	snprintf(pixfmt, 5, "%s", "html");
+}
 void windowdelete(int num)
 {
 	close(listenfd);
@@ -577,7 +564,6 @@ int windowcreate()
 	int ret;
 	struct sockaddr_in servaddr;
 	struct sigaction sa;
-	struct epoll_event ev;
 
 
 
@@ -641,9 +627,7 @@ int windowcreate()
 
 	//epoll
 	epollfd = epoll_create(MAXSIZE);
-	ev.events = EPOLLIN;
-	ev.data.fd = listenfd;
-	epoll_ctl(epollfd, EPOLL_CTL_ADD, listenfd, &ev);
+	epoll_add(listenfd);
 
 
 
