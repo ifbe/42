@@ -8,13 +8,24 @@
 
 
 
+int diary(char* mem, int max, char* fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args,fmt);
+	ret = vsnprintf(mem, max, fmt, args);
+	va_end(args);
+
+	return ret;
+}
 void say(char* fmt , ...)
 {
 	va_list args;
+
 	va_start(args,fmt);
 	vprintf(fmt,args);
 	va_end(args);
-	//printf(fmt);
 }
 
 

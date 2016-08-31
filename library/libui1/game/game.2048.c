@@ -11,9 +11,9 @@ void backgroundcolor(u32);
 int data2decimalstring(u64 data,u8* string);
 unsigned int getrandom();
 //
-int snprintf(char*, int, char*, ...);
-void printmemory(char*,int);
-void say(char*,...);
+int printmemory(char*,int);
+int diary(char*, int, char*, ...);
+int say(char*,...);
 
 
 
@@ -125,7 +125,7 @@ static void the2048_read_html()
 		for(x=0;x<4;x++)
 		{
 			color = the2048_color(table[y][x]);
-			j = snprintf(
+			j = diary(
 				p, 0x1000,
 				"<div style=\""
 				"position:absolute;"

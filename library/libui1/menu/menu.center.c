@@ -3,12 +3,12 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 int characterchoose(char* p);
-int snprintf(char*, int, char*, ...);
 //
 void printstring(int x, int y, int size, char* str, u32 fg, u32 bg);
 void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 //
-void say(char*,...);
+int diary(char*, int, char*, ...);
+int say(char*,...);
 
 
 
@@ -135,7 +135,7 @@ static void menu_read_html()
 	while(*p != 0)p++;
 
 	buffer[bufp] = 0;
-	snprintf(p,0x1000,
+	diary(p,0x1000,
 		"<div style=\""
 		"position:fixed;"
 		"z-index:100;"

@@ -195,12 +195,14 @@ void windowwrite()
 	//
 	if(client1 != 0)
 	{
-		j = write( client1, sendbuf+0x1000-j, len+j );
+		k = write( client1, sendbuf+0x1000-j, len+j );
+		if(k <= 0)printf("error@client1\n\n\n\n\n");
 	}
-return;
+
 	if(client2 != 0)
 	{
-		j = write( client2, sendbuf+0x1000-j, len+j );
+		k = write( client2, sendbuf+0x1000-j, len+j );
+		if(k <= 0)printf("error@client2\n\n\n\n\n");
 	}
 }
 void windowread()
