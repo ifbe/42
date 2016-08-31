@@ -134,7 +134,8 @@ static void menu_read_html()
 	char* p = (char*)(haha->pixelbuffer)+0x1000;
 	while(*p != 0)p++;
 
-	snprintf(p,0x1000,"%s",
+	buffer[bufp] = 0;
+	snprintf(p,0x1000,
 		"<div style=\""
 		"position:fixed;"
 		"z-index:100;"
@@ -147,8 +148,10 @@ static void menu_read_html()
 		"color:#000;"
 		"text-align:center;"
 		"\">"
-		"what do you want<hr>"
-		"</div>"
+		"what do you want<hr>%s"
+		"</div>",
+
+		buffer
 	);
 }
 static void menu_read()

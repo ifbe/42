@@ -224,7 +224,7 @@ void serve_websocket(int fd, int nread)
 {
 	int i,j,k,type,masked;
 	unsigned char key[4];
-	u64 len;
+	u64 temp;
 
 	printf("[%d]:\n",fd);
 	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
@@ -295,7 +295,7 @@ void serve_websocket(int fd, int nread)
 	k = recvbuf[1]&0x7f;
 	if(k==127)
 	{
-		len     = ((u64)recvbuf[2]<<56)
+		temp	= ((u64)recvbuf[2]<<56)
 			+ ((u64)recvbuf[3]<<48)
 			+ ((u64)recvbuf[4]<<40)
 			+ ((u64)recvbuf[5]<<32)
@@ -304,20 +304,20 @@ void serve_websocket(int fd, int nread)
 			+ ((u64)recvbuf[8]<<8)
 			+ recvbuf[9];
 		k = 10;
-		printf("len=%llx,",len);
+		printf("len=%llx,", temp);
 	}
 	else if(k==126)
 	{
-		len     = (recvbuf[2]<<8)
+		temp	= (recvbuf[2]<<8)
 			+ (recvbuf[3]);
 		k = 4;
-		printf("len=%llx,",len);
+		printf("len=%llx,", temp);
 	}
 	else
 	{
-		len = k;
+		temp = k;
 		k = 2;
-		printf("len=%llx,",len);
+		printf("len=%llx,", temp);
 	}
 
 	if(masked != 1)printf("\n");
@@ -332,7 +332,7 @@ void serve_websocket(int fd, int nread)
 		{
 			recvbuf[0] &= 0x8f;
 			recvbuf[1] &= 0x7f;
-			for(i=0;i<len;i++)
+			for(i=0;i<temp;i++)
 			{
 				recvbuf[j+i] = recvbuf[i+k] ^ key[i%4];
 
@@ -341,15 +341,23 @@ void serve_websocket(int fd, int nread)
 			}
 			event_queue[i] = 0;
 			printf("\n");
-			//j = write(fd, recvbuf, j+len);
+			//j = write(fd, recvbuf, j+temp);
 
 		}//type=ascii
 	}//masked=1
 
-	if(*(u32*)event_queue == 0x2064626b)
+	temp = *(u32*)event_queue;
+	if(temp == 0x2064626b)
 	{
-		*(u64*)(event_queue+8) = atoi(event_queue+4);
+		temp = atoi(event_queue+4);
+		*(u64*)(event_queue+8) = temp;
 		*(u64*)(event_queue+0) = 0x64626b;
+	}
+	else if(temp == 0x72616863)
+	{
+		temp = atoi(event_queue+5);
+		*(u64*)(event_queue+8) = temp;
+		*(u32*)(event_queue+4) = 0;
 	}
 	event_count = 1;
 }

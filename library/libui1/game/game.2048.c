@@ -128,13 +128,16 @@ static void the2048_read_html()
 			j = snprintf(
 				p, 0x1000,
 				"<div style=\""
-				"float:left;"
-				"width:24.5%;"
-				"height:24.5%;"
+				"position:absolute;"
+				"left:%d%;"
+				"top:%d%;"
+				"width:25%;"
+				"height:25%;"
 				"border:1px solid #000;"
 				"background:#%x;"
 				"color:#000;"
 				"\">%d</div>",
+				25*x, 25*y,
 				color, table[y][x]
 			);
 			p += j;

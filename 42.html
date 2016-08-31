@@ -24,10 +24,14 @@ ws.onopen=function(event)
 ws.onclose=function(event)
 {
 	say("connection closed");
+	document.getElementById('haha').innerHTML="connection closed";
+	document.getElementById.style.opacity=0.5;
 };
 ws.onerror=function(event)
 {
 	say("something wrong");
+	document.getElementById('haha').innerHTML="something wrong";
+	document.getElementById.style.opacity=0.5;
 };
 
 var downx;
@@ -37,13 +41,16 @@ function dragstart(theone,event)
 	downx=event.screenX;
 	downy=event.screenY;
 	theone.style.opacity=0.5;
+	say("move "+downx+" "+downy);
 }
 function dragend(theone,event)
 {
-	var newx=parseInt(theone.style.getPropertyValue("left"),10)+event.screenX-downx;
-	var newy=parseInt(theone.style.top.replace('px',''))+event.screenY-downy;
-	theone.style.left=newx+"px";
-	theone.style.top=newy+"px";
+	var x=parseInt(theone.style.getPropertyValue("left"),10);
+	var y=parseInt(theone.style.top.replace('px',''));
+
+	say("x="+x+",y="+y);
+	theone.style.left=x+event.screenX-downx+"px";
+	theone.style.top=y+event.screenY-downy+"px";
 	theone.style.opacity=0.9;
 }
 
@@ -68,12 +75,28 @@ window.onresize=function(){
 	}
 }
 window.onkeydown=function(ev){
-	say("kbd "+ev.keyCode);
-	ws.send("kbd "+ev.keyCode);
-
-	if(ev.keyCode == 9){
+	var k=ev.keyCode;
+	if((k==8)||(k==9))
+	{
 		ev.preventDefault();
-		ev.keyCode=36;
+		say("char "+k);
+		ws.send("char "+k);
+	}
+	else if(k==13||(k>=48&&k<=57))
+	{
+		say("char "+k);
+		ws.send("char "+k);
+	}
+	else if(k>=65&&k<=90)
+	{
+		k=k+32;
+		say("char "+k);
+		ws.send("char "+k);
+	}
+	else
+	{
+		say("kbd "+k);
+		ws.send("kbd "+k);
 	}
 }
 
@@ -82,10 +105,14 @@ window.onkeydown=function(ev){
 
 <body style="background:black;margin:0;padding:0;overflow:hidden;">
 
-<pre><code id="debug" style="position:absolute;width:100%;height:100%;background:#000;color:#fff;overflow-y:scroll;">
-</code></pre>
+<pre>
+<code id="debug" style="position:absolute;width:100%;height:100%;background:#000;color:#fff;overflow-y:scroll;">
+</code>
+</pre>
 
-<div id="haha" style="position:absolute;left:0%;top:0%;width:100%;height:100%;background:#444444;color:#fff;opacity:0.9;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
+<div style="position:absolute;left:2%;top:2%;width:90%;height:90%;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
+<div id="haha" style="position:absolute;left:0%;top:0%;width:100%;height:100%;background:#444444;color:#fff;" draggable="false">
+</div>
 </div>
 
 </body>
