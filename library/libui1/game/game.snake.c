@@ -8,6 +8,7 @@ void rect(     int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 void backgroundcolor(u32);
 u32 getrandom();
 //
+int diary(char*,int,char*,...);
 void say(char*,...);
 
 
@@ -36,10 +37,68 @@ static struct hehe b;
 static int len;
 static int direction;
 //
+static int worldwidth;
+static int worldheight;
 static int foodx;
 static int foody;
 static int score=0;
 static int die=0;
+
+
+
+
+void snake_read_pixel()
+{
+	//create screen
+	int j;
+	int width = haha->width;
+	int height = haha->height;
+
+	if(die == 1)
+	{
+		line(0, 0, width-1, height-1, 0xffffffff);
+		line(width-1, 0, 0, height-1, 0xffffffff);
+	}
+
+	//shadow
+	if( (a.x>=0) && (a.y>=0) )
+	{
+		rectbody(
+			a.x * width/worldwidth,
+			a.y * height/worldheight,
+			(a.x+1) * width/worldwidth,
+			(a.y+1) * height/worldheight,
+			0xf
+		);
+	}
+
+	//snake
+	j=0;
+	while(1)
+	{
+		rect(
+			snake[j].x * width/worldwidth,
+			snake[j].y * height/worldheight,
+			(snake[j].x+1) * width/worldwidth,
+			(snake[j].y+1) * height/worldheight,
+			0xffffffff,
+			0
+		);
+
+		j++;
+		if(j>=len)break;
+	}
+
+	//food
+	rect(
+		foodx * width/worldwidth,
+		foody * height/worldheight,
+		(foodx+1) * width/worldwidth,
+		(foody+1) * height/worldheight,
+		0xff00,
+		0
+	);
+}
 
 
 
@@ -67,67 +126,66 @@ void snake_read_text()
 
 	p[foodx + foody*width] = '@';
 }
-void snake_read_pixel()
-{
-	//create screen
-	int j;
 
+
+
+
+static int htmlcubie(char* p, u32 color, int x, int y)
+{
+	return diary(
+		p, 0x1000,
+		"<div style=\""
+		"position:absolute;"
+		"left:%f%;"
+		"top:%f%;"
+		"width:3.1%;"
+		"height:3.1%;"
+		"border:1px solid #000;"
+		"background:#%.6x;"
+		"\"></div>",
+		x*3.1, y*3.1, color
+	);
+}
+void snake_read_html()
+{
+	int j = 0;
+	char* p = (char*)(haha->pixelbuffer)+0x1000;
 	if(die == 1)
 	{
-		line(0, 0, (haha->width)-1, (haha->height)-1, 0xffffffff);
-		line((haha->width)-1, 0, 0, (haha->height)-1, 0xffffffff);
+		diary(p, 0x1000, "boooooooooooooooom");
+		return;
 	}
 
-	//shadow
-	if( (a.x>=0) && (a.y>=0) )
-	{
-		rectbody(
-			32*a.x,
-			32*a.y,
-			32*a.x + 31,
-			32*a.y + 31,
-			0xf
-		);
-	}
-
-	//snake
-	j=0;
 	while(1)
 	{
-		rect(
-			32*snake[j].x,
-			32*snake[j].y,
-			32*snake[j].x + 31,
-			32*snake[j].y + 31,
-			0xffffffff,
-			0
-		);
-
+		p += htmlcubie(p, 0xffffff, snake[j].x, snake[j].y);
+	 
 		j++;
 		if(j>=len)break;
 	}
-
-	//food
-	rect(
-		32*foodx,
-		32*foody,
-		32*foodx + 31,
-		32*foody + 31,
-		0xff00,
-		0
-	);
+ 
+	htmlcubie(p, 0xff00, foodx, foody);
 }
+
+
+
+
 void snake_read()
 {
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if(temp == 0x74786574)
 	{
 		snake_read_text();
 	}
-/*
+
 	//html
-	else if()
-*/
+	else if(temp == 0x6c6d7468)
+	{
+		snake_read_html();
+	}
+
 	//pixel
 	else
 	{
@@ -140,16 +198,25 @@ void snake_read()
 
 void newfood()
 {
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	u32 temp = (haha->pixelformat)&0xffffffff;
+	if(temp == 0x6c6d7468)
 	{
-		foodx=getrandom() % (haha->width);
-		foody=getrandom() % (haha->height);
+		worldwidth = 32;
+		worldheight = 32;
+	}
+	else if(temp == 0x74786574)
+	{
+		worldwidth = haha->width;
+		worldheight = haha->height;
 	}
 	else
 	{
-		foodx=getrandom() % ((haha->width)/32);
-		foody=getrandom() % ((haha->height)/32);
+		worldwidth = (haha->width)/32;
+		worldheight = (haha->height)/32;
 	}
+
+	foodx=getrandom() % worldwidth;
+	foody=getrandom() % worldheight;
 }
 void snake_write(u64* aaaa,u64* bbbb)
 {
@@ -158,7 +225,16 @@ void snake_write(u64* aaaa,u64* bbbb)
 	u64 key = *bbbb;
 	if(die==1)return;
 
-	if(type==0x7466656C207A7978)
+	if(type==0x72616863)
+	{
+		if(key=='a'){type=0x64626b;key=0x25;}
+		else if(key=='w'){type=0x64626b;key=0x26;}
+		else if(key=='d'){type=0x64626b;key=0x27;}
+		else if(key=='s'){type=0x64626b;key=0x28;}
+		else if(key==' '){type=0x7466656C207A7978;}
+	}
+
+	else if(type==0x7466656C207A7978)
 	{
 		if(direction==1){type=0x64626b;key=0x25;}
 		else if(direction==2){type=0x64626b;key=0x27;}
@@ -169,7 +245,7 @@ void snake_write(u64* aaaa,u64* bbbb)
 
 	if(type==0x64626b)
 	{
-		if(key=='a'|key==0x25)
+		if(key==0x25)
 		{
 			if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
 			if( (snake[0].x-1) < 0){die=1;return;}
@@ -179,24 +255,20 @@ void snake_write(u64* aaaa,u64* bbbb)
 			snake[0].x--;
 			direction=1;
 		}
-		else if(key=='d'|key==0x27)
+		else if(key==0x27)
 		{
-			if( (snake[0].x+1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
-			if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+			if(snake[0].x+1 == snake[1].x)
 			{
-				if( (snake[0].x+1) > (haha->width)){die=1;return;}
+				if(snake[0].y == snake[1].y)return;
 			}
-			else
-			{
-				if( (snake[0].x+1) > ((haha->width)/32)){die=1;return;}
-			}
+			if( (snake[0].x+1) >= worldwidth){die=1;return;}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
 			snake[0].x++;
 			direction=2;
 		}
-		else if(key=='w'|key==0x26)
+		else if(key==0x26)
 		{
 			if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
 			if( (snake[0].y-1) < 0){die=1;return;}
@@ -206,17 +278,13 @@ void snake_write(u64* aaaa,u64* bbbb)
 			snake[0].y--;
 			direction=3;
 		}
-		else if(key=='s'|key==0x28)
+		else if(key==0x28)
 		{
-			if( (snake[0].x == snake[1].x) && (snake[0].y+1 == snake[1].y) )return;
-			if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+			if(snake[0].x == snake[1].x)
 			{
-				if( (snake[0].y+1) > (haha->height)){die=1;return;}
+				if(snake[0].y+1 == snake[1].y)return;
 			}
-			else
-			{
-				if( (snake[0].y+1) > ((haha->height)/32)){die=1;return;}
-			}
+			if( (snake[0].y+1) >= worldheight){die=1;return;}
 
 			a.x=snake[0].x;
 			a.y=snake[0].y;
@@ -241,20 +309,26 @@ void snake_write(u64* aaaa,u64* bbbb)
 		a.x = b.x;
 		a.y = b.y;
 
-		if( (snake[j].x==snake[0].x) && (snake[j].y==snake[0].y) )
+		if(snake[j].x==snake[0].x)
 		{
-			die=1;
-			return;
+			if(snake[j].y==snake[0].y)
+			{
+				die=1;
+				return;
+			}
 		}
 	}
 
 	//吃到食物
-	if(snake[0].x==foodx && snake[0].y==foody)
+	if(snake[0].x==foodx)
 	{
-		snake[j].x = a.x;
-		snake[j].y = a.y;
-		len++;
-		newfood();
+		if(snake[0].y==foody)
+		{
+			snake[j].x = a.x;
+			snake[j].y = a.y;
+			len++;
+			newfood();
+		}
 	}
 }
 

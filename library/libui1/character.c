@@ -360,8 +360,10 @@ int characterchoose(char* p)
 	//exit!
 	if(p == 0)
 	{
+		temp = (worker[0].pixelformat)&0xffffffff;
+		if(temp != 0x6c6d7468)eventwrite;
+
 		say("chatacter(%d) wants to die\n",now);
-		eventwrite();
 		return 0;
 	}
 
@@ -369,8 +371,10 @@ int characterchoose(char* p)
 	ret=compare(p,"exit");
 	if(ret==0)
 	{
+		temp = (worker[0].pixelformat)&0xffffffff;
+		if(temp != 0x6c6d7468)eventwrite();
+
 		say("chatacter(%d) wants to die\n",now);
-		eventwrite();
 		return 0;
 	}
 

@@ -8,6 +8,7 @@ void printdecimal(int data,int xyz,u32 fg,u32 bg);
 void backgroundcolor(u32);
 //
 unsigned int getrandom();
+int diary(char*,int,char*,...);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -16,15 +17,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 //
 typedef struct stucture
@@ -73,7 +74,6 @@ static void cubie(int x,int y,int z)
 	endy = (y+1)*(haha->height)/40 - 1;
 
 	bodycolor=z>0?0xffffffff:0;
-
 	rect(startx, starty, endx, endy, bodycolor, 0x44444444);
 }
 static void tetris_read_text()
@@ -119,8 +119,40 @@ static void tetris_read_text()
 		p[that.x4 + (that.y4-40+height)*width]='#';
 	}
 }
+static int htmlcubie(char* p, int x, int y)
+{
+	return diary(
+		p, 0x1000,
+		"<div style=\""
+		"position:absolute;"
+		"left:%f%;"
+		"top:%f%;"
+		"width:3.1%;"
+		"height:2.5%;"
+		"border:1px solid #000;"
+		"background:#fff;"
+		"\">%d</div>",
+		x*3.1, y*2.5, table[y*32+x]
+	);
+}
 static void tetris_read_html()
 {
+	int x,y;
+	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+
+	for(y=0;y<40;y++)
+	{
+		for(x=0;x<32;x++)
+		{
+			if(table[y*32+x] == 0)continue;
+			p += htmlcubie(p, x, y);
+		}
+	}
+
+	p += htmlcubie(p, that.x1, that.y1);
+	p += htmlcubie(p, that.x2, that.y2);
+	p += htmlcubie(p, that.x3, that.y3);
+	p += htmlcubie(p, that.x4, that.y4);
 }
 static void tetris_read_pixel()
 {
@@ -147,17 +179,19 @@ static void tetris_read_pixel()
 }
 static void tetris_read()
 {
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if(temp == 0x74786574)
 	{
 		tetris_read_text();
 	}
-/*
+
 	//html
-	else if()
+	else if(temp == 0x6c6d7468)
 	{
+		tetris_read_html();
 	}
-*/
 
 	//pixel
 	else
@@ -592,36 +626,26 @@ static void tetris_write(u64* a,u64* b)
 
 	if(type==0x7466656C207A7978)
 	{
-		down();
+		for(ret=0;ret<20;ret++)if(down()==1)return;
 	}
-	if(type==0x64626b)
+	else if(type==0x64626b)
 	{
-		if(key=='a'|key==0x25)
+		if(key==0x25)left();
+		else if(key==0x27)right();
+		else if(key==0x26)up();
+		else if(key==0x28)down();
+	}
+	else if(type==0x72616863)
+	{
+		if(key=='a')left();
+		else if(key=='d')right();
+		else if(key=='w')up();
+		else if(key=='s')down();
+		else if(key==' ')
 		{
-			left();
-		}
-		else if(key=='d'|key==0x27)
-		{
-			right();
-		}
-		else if(key=='w' | key==' '|key==0x26)
-		{
-			up();
-		}
-		else if(key=='s'|key==0x28)
-		{
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
-			if(down()==1)return;
+			for(ret=0;ret<20;ret++)if(down()==1)return;
 		}
 	}
-
-	else return;
 }
 
 

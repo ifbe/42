@@ -3,9 +3,11 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void line(int,int,int,int,u32 color);
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void printdecimal(int x, int y, int size, int data, u32 fg, u32 bg);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void rectframe(int x1, int y1, int x2, int y2, u32 color);
+void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
+void line(int,int,int,int,u32 color);
 void backgroundcolor(u32);
 //
 int data2decimalstring(u64 data,u8* string);
@@ -82,12 +84,13 @@ static void cubie(int x,int y,int z)
 			+ ((color&0xff0000)>>16);
 	}
 
-	rectbody(
+	rect(
 		x*min/4,
 		y*min/4,
 		((x+1)*min/4) - 1,
 		((y+1)*min/4) - 1,
-		color
+		color,
+		0
 	);
 
 	if(z==0)return;
@@ -115,7 +118,7 @@ static void the2048_read_text()
 }
 static void the2048_read_html()
 {
-	int x,y,j;
+	int x,y;
 	u32 color;
 	char* p = (char*)(haha->pixelbuffer) + 0x1000;
 	//say("@2048.html\n");
@@ -124,8 +127,10 @@ static void the2048_read_html()
 	{
 		for(x=0;x<4;x++)
 		{
+			if(table[y][x] == 0)continue;
+
 			color = the2048_color(table[y][x]);
-			j = diary(
+			p += diary(
 				p, 0x1000,
 				"<div style=\""
 				"position:absolute;"
@@ -140,7 +145,6 @@ static void the2048_read_html()
 				25*x, 25*y,
 				color, table[y][x]
 			);
-			p += j;
 		}
 	}
 }
@@ -161,13 +165,13 @@ static void the2048_read()
 	//say("(@2048.read)temp=%x\n",temp);
 
 	//text
-	if( temp == 0x74786574)
+	if(temp == 0x74786574)
 	{
 		the2048_read_text();
 	}
 
 	//html
-	else if( temp == 0x6c6d7468)
+	else if(temp == 0x6c6d7468)
 	{
 		the2048_read_html();
 	}
