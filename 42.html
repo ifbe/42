@@ -1,39 +1,6 @@
 <html>
 <head>
 <script type="text/javascript">
-
-var ws=new WebSocket("ws://127.0.0.1:2222");
-function say(data)
-{
-	var debug=document.getElementById("debug");
-	debug.textContent=debug.textContent+data+"\n";
-}
-function send(data)
-{
-	ws.send(data);
-}
-ws.onmessage=function(event)
-{
-	//say("receive:"+event.data);
-	document.getElementById('haha').innerHTML=event.data;
-};
-ws.onopen=function(event)
-{
-	say("welcome victim");
-};
-ws.onclose=function(event)
-{
-	say("connection closed");
-	document.getElementById('haha').innerHTML="connection closed";
-	document.getElementById.style.opacity=0.5;
-};
-ws.onerror=function(event)
-{
-	say("something wrong");
-	document.getElementById('haha').innerHTML="something wrong";
-	document.getElementById.style.opacity=0.5;
-};
-
 var downx;
 var downy;
 function dragstart(theone,event)
@@ -54,8 +21,65 @@ function dragend(theone,event)
 	theone.style.opacity=0.9;
 }
 
-oldw=0;
-oldh=0;
+function say(data)
+{
+	var debug=document.getElementById("debug");
+	debug.textContent=debug.textContent+data+"\n";
+	debug.scrollTop=debug.scrollHeight;
+}
+function send(data)
+{
+	say(data);
+	if(ws.readyState == WebSocket.OPEN)
+	{
+		ws.send(data);
+	}
+}
+function sendbin(data)
+{
+	//var bin = new Uint8Array(1024*1024*3);
+	//for (var i = 0; i < 1024*1024; i+=3) {
+		//do something
+	//}
+	//ws.send(bin.buffer);
+}
+function sendblob(data)
+{
+	//var file = document.querySelector('input[type="file"]').files[0];
+	//ws.send(file);
+}
+
+var ws=new WebSocket("ws://127.0.0.1:2222");
+ws.binaryType = 'arraybuffer';
+ws.onmessage=function(event)
+{
+	if(typeof event.data === "string")
+	{
+		say("string "+event.data.length);
+		document.getElementById('haha').innerHTML=event.data;
+	}
+	else //if(event.data instanceof ArrayBuffer)
+	{
+		say("binary "+event.data.byteLength);
+	}
+};
+ws.onopen=function(event)
+{
+	say("welcome victim");
+};
+ws.onclose=function(event)
+{
+	say("connection closed");
+	document.getElementById('haha').innerHTML="connection closed";
+};
+ws.onerror=function(event)
+{
+	say("something wrong");
+	document.getElementById('haha').innerHTML="something wrong";
+};
+
+var oldw=0;
+var oldh=0;
 window.onresize=function(){  
 	var w = window.innerWidth
 	|| document.documentElement.clientWidth
@@ -67,8 +91,7 @@ window.onresize=function(){
 
 	if((w!=oldw)&&(h!=oldh))
 	{
-		say("size "+w+","+h);
-		ws.send("size "+w+","+h);
+		send("size "+w+","+h);
 
 		oldw=w;
 		oldh=h;
@@ -79,24 +102,20 @@ window.onkeydown=function(ev){
 	if((k==8)||(k==9))
 	{
 		ev.preventDefault();
-		say("char "+k);
-		ws.send("char "+k);
+		send("char "+k);
 	}
 	else if(k==13||k==32||(k>=48&&k<=57))
 	{
-		say("char "+k);
-		ws.send("char "+k);
+		send("char "+k);
 	}
 	else if(k>=65&&k<=90)
 	{
 		k=k+32;
-		say("char "+k);
-		ws.send("char "+k);
+		send("char "+k);
 	}
 	else
 	{
-		say("kbd "+k);
-		ws.send("kbd "+k);
+		send("kbd "+k);
 	}
 }
 
@@ -105,7 +124,7 @@ window.onkeydown=function(ev){
 
 <body style="background:black;margin:0;padding:0;overflow:hidden;">
 
-<pre>
+<pre style="white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;">
 <code id="debug" style="position:absolute;width:100%;height:100%;background:#000;color:#fff;overflow-y:scroll;">
 </code>
 </pre>
