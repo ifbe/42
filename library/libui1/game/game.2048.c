@@ -123,6 +123,19 @@ static void the2048_read_html()
 	char* p = (char*)(haha->pixelbuffer) + 0x1000;
 	//say("@2048.html\n");
 
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".rect{"
+		"border:1px solid #000;"
+		"position:absolute;"
+		"color:#000;"
+		"width:25%;"
+		"height:25%;"
+		"}"
+		"</style>"
+	);
+
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -132,15 +145,10 @@ static void the2048_read_html()
 			color = the2048_color(table[y][x]);
 			p += diary(
 				p, 0x1000,
-				"<div style=\""
-				"position:absolute;"
+				"<div class=\"rect\" style=\""
 				"left:%d%;"
 				"top:%d%;"
-				"width:25%;"
-				"height:25%;"
-				"border:1px solid #000;"
-				"background:#%x;"
-				"color:#000;"
+				"background:#%06x;"
 				"\">%d</div>",
 				25*x, 25*y,
 				color, table[y][x]

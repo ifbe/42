@@ -129,19 +129,14 @@ void snake_read_text()
 
 
 
-
 static int htmlcubie(char* p, u32 color, int x, int y)
 {
 	return diary(
 		p, 0x1000,
-		"<div style=\""
-		"position:absolute;"
-		"left:%f%;"
-		"top:%f%;"
-		"width:3.1%;"
-		"height:3.1%;"
-		"border:1px solid #000;"
-		"background:#%.6x;"
+		"<div class=\"rect\" style=\""
+		"left:%.2f%;"
+		"top:%.2f%;"
+		"background:#%06x;"
 		"\"></div>",
 		x*3.1, y*3.1, color
 	);
@@ -156,10 +151,21 @@ void snake_read_html()
 		return;
 	}
 
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".rect{"
+		"border:1px solid #000;"
+		"position:absolute;"
+		"width:3.1%;"
+		"height:3.1%;"
+		"}"
+		"</style>"
+	);
 	while(1)
 	{
 		p += htmlcubie(p, 0xffffff, snake[j].x, snake[j].y);
-	 
+
 		j++;
 		if(j>=len)break;
 	}

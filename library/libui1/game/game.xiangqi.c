@@ -7,6 +7,7 @@ void circleframe(int x, int y, int r, u32 color);
 void backgroundcolor(u32);
 u32 getrandom();
 //
+int diary(char*,int,char*,...);
 void say(char*,...);
 
 
@@ -31,7 +32,7 @@ static char data[10][9];
 
 
 
-void xiangqi_read()
+void xiangqi_read_pixel()
 {
 	int x,y;
 	int black,red;
@@ -110,6 +111,96 @@ void xiangqi_read()
 		}//forx
 	}//fory
 }
+static int htmlcircle(char* p, int x, int y)
+{
+	u32 textcolor;
+	char* hanzi;
+	if(data[y][x] >= 'a')textcolor=0;
+	else textcolor=0xff0000;
+
+	switch(data[y][x])
+	{
+		case 'a':hanzi="车";break;
+		case 'b':hanzi="马";break;
+		case 'c':hanzi="象";break;
+		case 'd':hanzi="士";break;
+		case 'e':hanzi="将";break;
+		case 's':hanzi="兵";break;
+		case 'z':hanzi="炮";break;
+
+		case 'A':hanzi="车";break;
+		case 'B':hanzi="马";break;
+		case 'C':hanzi="相";break;
+		case 'D':hanzi="仕";break;
+		case 'E':hanzi="帅";break;
+		case 'S':hanzi="兵";break;
+		case 'Z':hanzi="炮";break;
+
+		default:return 0;
+	}
+	return diary(
+		p, 0x1000,
+		"<div class=\"circle\" style=\""
+		"left:%d%;"
+		"top:%d%;"
+		"background:#ffff00;"
+		"color:#%06x;"
+		"\"><br>%s</div>",
+		x*11, y*10,
+		textcolor, hanzi
+	);
+}
+static void xiangqi_read_html()
+{
+	int x,y;
+	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".circle{"
+		"position:absolute;"
+		"border-radius:50%;"
+		"width:10%;"
+		"height:10%;"
+		"text-align:center;"
+		"}"
+		"</style>"
+	);
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			p += htmlcircle(p, x, y);
+		}//forx
+	}//fory
+}
+static void xiangqi_read_text()
+{
+}
+static void xiangqi_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+	//say("(@2048.read)temp=%x\n",temp);
+
+	//text
+	if(temp == 0x74786574)
+	{
+		xiangqi_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		xiangqi_read_html();
+	}
+
+	//pixel
+	else
+	{
+		xiangqi_read_pixel();
+	}
+}
 
 
 
@@ -156,29 +247,29 @@ static void xiangqi_start()
 
 
 
-	//(red)JU,MA,XIANG,SHI,JIANG
-	for(j=0;j<6;j++)
+	for(j=0;j<=4;j++)
 	{
+		//(red)JU,MA,XIANG,SHI,JIANG
 		data[0][ j ]='A' + j;
 		data[0][8-j]='A' + j;
+		
+		//(black)ju,ma,xiang,shi,jiang
+		data[9][ j ]='a' + j;
+		data[9][8-j]='a' + j;
 	}
-	//(red)SOLDIER
-	for(j=0;j<5;j++)data[3][j*2]='S';
+	for(j=0;j<5;j++)
+	{
+		//(red)SOLDIER
+		data[3][j*2]='S';
+
+		//(black)soldier
+		data[6][j*2]='s';
+	}
+
 	//(red)PAO
 	data[2][1]='Z';
 	data[2][7]='Z';
 
-
-
-
-	//(black)ju,ma,xiang,shi,jiang
-	for(j=0;j<6;j++)
-	{
-		data[9][ j ]='a' + j;
-		data[9][8-j]='a' + j;
-	}
-	//(black)soldier
-	for(j=0;j<5;j++)data[6][j*2]='s';
 	//(black)pao
 	data[7][1]='z';
 	data[7][7]='z';

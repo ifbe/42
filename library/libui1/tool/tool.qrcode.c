@@ -31,7 +31,7 @@ static char* databuf;
 
 
 
-static void qrcode_read()
+static void qrcode_read_pixel()
 {
 	u32 color;
 	int x,y,x1,y1,x2,y2;
@@ -57,6 +57,71 @@ static void qrcode_read()
 			rectbody(x1, y1, x2, y2, color);
 		}
 //say("\n");
+	}
+}
+static qrcode_read_html()
+{
+	int x,y;
+	u32 color;
+	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+
+	p += diary(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".rect{"
+		"border:1px solid #000;"
+		"position:absolute;"
+		"width:%dpx;"
+		"height:%dpx;"
+		"}"
+		"</style>",
+
+		500/sidelength, 500/sidelength
+	);
+	for(y=0;y<sidelength;y++)
+	{
+		for(x=0;x<sidelength;x++)
+		{
+			if( databuf[(y*sidelength)+x] != 0 )continue;
+
+			p += diary(
+				p, 0x1000,
+				"<div class=\"rect\" style=\""
+				"left:%dpx;"
+				"top:%dpx;"
+				"background:#000;"
+				"\"></div>",
+				x*500/sidelength, y*500/sidelength
+			);
+		}
+	}
+	p += diary(p, 99, "</div>");
+}
+static qrcode_read_text()
+{
+}
+static void qrcode_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+	//say("(@2048.read)temp=%x\n",temp);
+
+	//text
+	if(temp == 0x74786574)
+	{
+		qrcode_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		qrcode_read_html();
+	}
+
+	//pixel
+	else
+	{
+		qrcode_read_pixel();
 	}
 }
 static void qrcode_write(u64* who, u64* what, u64* how)

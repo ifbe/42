@@ -123,14 +123,9 @@ static int htmlcubie(char* p, int x, int y)
 {
 	return diary(
 		p, 0x1000,
-		"<div style=\""
-		"position:absolute;"
-		"left:%f%;"
-		"top:%f%;"
-		"width:3.1%;"
-		"height:2.5%;"
-		"border:1px solid #000;"
-		"background:#fff;"
+		"<div class=\"rect\" style=\""
+		"left:%.2f%;"
+		"top:%.2f%;"
 		"\">%d</div>",
 		x*3.1, y*2.5, table[y*32+x]
 	);
@@ -140,6 +135,18 @@ static void tetris_read_html()
 	int x,y;
 	char* p = (char*)(haha->pixelbuffer) + 0x1000;
 
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".rect{"
+		"border:1px solid #000;"
+		"background:#fff;"
+		"position:absolute;"
+		"width:3.1%;"
+		"height:2.5%;"
+		"}"
+		"</style>"
+	);
 	for(y=0;y<40;y++)
 	{
 		for(x=0;x<32;x++)
