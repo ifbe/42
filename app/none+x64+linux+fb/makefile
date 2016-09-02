@@ -48,4 +48,4 @@ program:
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o
 clean:
-	rm -f *.o
+	rm -f *.o *.a *.so

@@ -51,12 +51,28 @@ efi:
 #################################small device################################
 none+arm+linux+cli:
 	make -C app/none+arm+linux+cli --no-print-directory
+	cp app/none+arm+linux+cli/42.a .
+	cp app/none+arm+linux+cli/42.so .
 	cp app/none+arm+linux+cli/a.out .
+none+arm+linux+epoll:
+	make -C app/none+arm+linux+epoll --no-print-directory
+	cp app/none+arm+linux+epoll/42.a .
+	cp app/none+arm+linux+epoll/42.so .
+	cp app/none+arm+linux+epoll/a.out .
+none+arm+linux+text:
+	make -C app/none+arm+linux+text --no-print-directory
+	cp app/none+arm+linux+text/42.a .
+	cp app/none+arm+linux+text/42.so .
+	cp app/none+arm+linux+text/a.out .
 none+arm+linux+fb:
 	make -C app/none+arm+linux+fb --no-print-directory
+	cp app/none+arm+linux+fb/42.a .
+	cp app/none+arm+linux+fb/42.so .
 	cp app/none+arm+linux+fb/a.out .
 none+arm+linux+xlib:
 	make -C app/none+arm+linux+xlib --no-print-directory
+	cp app/none+arm+linux+xlib/42.a .
+	cp app/none+arm+linux+xlib/42.so .
 	cp app/none+arm+linux+xlib/a.out .
 ############################################################################
 

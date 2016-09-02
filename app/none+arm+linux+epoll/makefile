@@ -6,10 +6,10 @@ all:
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 linuxcli
+	make -s -C $(library)/libui0 linuxepoll
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor1 cli
+	make -s -C $(library)/visitor1 gui
 	make -s a
 	make -s so
 	make -s program
@@ -46,7 +46,7 @@ program:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	$(library)/visitor1/cli.o \
+	$(library)/visitor1/gui.o \
 	-lm
 clean:
 	rm -f *.o *.a *.so
