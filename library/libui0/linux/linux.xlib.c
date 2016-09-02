@@ -100,7 +100,7 @@ void windowwrite()
 
 
 
-int uievent(u64* my1,u64* my2)
+int uievent(u64* who, u64* my1, u64* my2)
 {
 	XEvent ev;
 	while(1)

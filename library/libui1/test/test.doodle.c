@@ -44,7 +44,7 @@ void doodle_read()
 	sectorbody(150, 275, 25, 270,  90, 0xffffff);
 
 }
-void doodle_write()
+void doodle_write(u64* who, u64* what, u64* how)
 {
 }
 void doodle_start()

@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 //
 int command(char* buffer);
-int eventread(u64*,u64*);
+int eventread(u64* who, u64* what, u64* how);
 //
 int enter(char*);
 int leave();
@@ -20,9 +20,12 @@ int main(int argc,char* argv[])
 {
 	//必须放第一个
 	int ret;
-	birth();
+	u64 who
+	u64 what;
+	u64 how;
 
 	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
+	birth();
 	for(ret=1;ret<argc;ret++)
 	{
 		say("%s\n",argv[ret]);
@@ -30,15 +33,13 @@ int main(int argc,char* argv[])
 	}
 
 	//无限循环
-	u64 first;
-	u64 second;
 	while(1)
 	{
 		//debug
 		//say("here\n");
 
 		//1.等输入，再把这段里面所有的0x20变成0
-		eventread(&first,&second);
+		eventread(&who, &what, &how);
 		if(first==0)break;
 		if(first != 0x727473)continue;
 

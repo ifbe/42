@@ -38,7 +38,7 @@ void say(char*,...);
 
 //
 static int realtype=0;
-int softevent(QW* first,QW* second)
+int softevent(QW* who, QW* what, QW* how)
 {
 	return 0;
 }

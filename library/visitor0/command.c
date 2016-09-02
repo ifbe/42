@@ -12,7 +12,7 @@ void arterychoose(char*);
 void arteryread(char*);
 void arterywrite(char*);
 //
-void eventread(u32,u32);
+void eventread(u64* who, u64* what, u64* how);
 void eventwrite();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
@@ -148,7 +148,7 @@ finish:
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void slavecreate(char* type,char* addr)
+void commandcreate(char* type,char* addr)
 {
 	basic=addr+0;
 	body=addr+0x400000;
@@ -156,7 +156,7 @@ void slavecreate(char* type,char* addr)
 	character=addr+0xc00000;
 	say("[%s]",memory);
 }
-void slavedelete()
+void commanddelete()
 {
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

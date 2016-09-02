@@ -37,7 +37,7 @@ void font_read()
 		}
 	}
 }
-void font_write(u64* type, u64* key)
+void font_write(u64* who, u64* what, u64* how)
 {
 }
 void font_start()

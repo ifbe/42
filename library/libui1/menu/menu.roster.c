@@ -26,7 +26,7 @@ static struct temp{
 
 
 
-static void roster_write(u64* type,u64* value)
+static void roster_write(u64* who, u64* what, u64* value)
 {
 	
 }

@@ -66,7 +66,7 @@ static void example_read()
 
 
 
-static void example_write(u64* type, u64* key)
+static void example_write(u64* who, u64* what, u64* how)
 {
 }
 

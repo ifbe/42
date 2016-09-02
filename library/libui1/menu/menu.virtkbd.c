@@ -42,13 +42,13 @@ static int areabottom = 960;	//max=1024=2^10
 
 
 
-static int virtkbd_write(u64* type,u64* value)
+static int virtkbd_write(u64* who, u64* what, u64* value)
 {
 	int x,y;
 	int width = haha->width;
 	int height = haha->height;
 
-	if(*type == 0x7466656C207A7978)
+	if(*what == 0x7466656C207A7978)
 	{
 		x = (*value) & 0xffff;
 		x = (x<<10)/width;
@@ -64,7 +64,7 @@ static int virtkbd_write(u64* type,u64* value)
 		y = 8*(y-areatop)/(areabottom-areatop);
 		say("==%d,%d\n",x,y);
 
-		*type = 0x72616863;
+		*what = 0x72616863;
 		*value = table[y][x];
 	}
 

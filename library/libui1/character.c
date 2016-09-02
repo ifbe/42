@@ -133,7 +133,7 @@ static struct working
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[78,7f]:输入
-	int (*write)(void* type, void* key);
+	int (*write)(void* who, void* what, void* how);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
 static unsigned char* mega1;
@@ -361,7 +361,7 @@ int characterchoose(char* p)
 	if(p == 0)
 	{
 		temp = (worker[0].pixelformat)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite;
+		if(temp != 0x6c6d7468)eventwrite();
 
 		say("chatacter(%d) wants to die\n",now);
 		return 0;
@@ -464,18 +464,15 @@ void characterread()
 	if(worker[1].xyze1 > 0)worker[1].read();
 	if(worker[2].xyze1 > 0)worker[2].read();
 }
-void characterwrite(u64 type,u64 key)
+void characterwrite(u64 who, u64 what,u64 key)
 {
 	int m,n;
 	int dx0,dy0;
 	int dx1,dy1;
 	int dx2,dy2;
 
-	//debug
-	//say("%llx,%llx\n",type,key);
-
 	//size
-	if(type==0x657a6973)
+	if(what == 0x657a6973)
 	{
 		w = key & 0xffff;
 		h = (key >> 16) & 0xffff;
@@ -491,7 +488,7 @@ void characterwrite(u64 type,u64 key)
 	}//size
 
 	//'kbd'
-	else if(type==0x64626b)
+	else if(what == 0x64626b)
 	{
 		//按下esc
 		if(key==0x1b)
@@ -501,11 +498,9 @@ void characterwrite(u64 type,u64 key)
 		}
 	}//kbd
 
-	if( (type&0xff) == 'p' )
+	if( (what&0xff) == 'p' )
 	{
-		//say("type=%llx,key=%llx\n",type,key);
-
-		m = (type & 0xff00) >> 8;
+		m = (what & 0xff00) >> 8;
 		n = (key >> 48) & 0x07;
 		if( m == '@' )
 		{
@@ -543,36 +538,36 @@ void characterwrite(u64 type,u64 key)
 					{
 						if(dx0<-128)	//left
 						{
-							type=0x64626b;
-							key=0x25;
+							what = 0x64626b;
+							key = 0x25;
 						}
 						else if(dx0>128)	//right
 						{
-							type=0x64626b;
-							key=0x27;
+							what = 0x64626b;
+							key = 0x27;
 						}
 						else	//point
 						{
-							type=0x7466656C207A7978;
-							key&=0xffffffff;
+							what = 0x7466656C207A7978;
+							key &= 0xffffffff;
 						}
 					}
 					if( (dx0>-256) && (dx0<256) )
 					{
 						if(dy0<-128)	//up
 						{	
-							type=0x64626b;
-							key=0x26;
+							what = 0x64626b;
+							key = 0x26;
 						}
 						else if(dy0>128)	//down
 						{
-							type=0x64626b;
-							key=0x28;
+							what = 0x64626b;
+							key = 0x28;
 						}
 						else	//point
 						{
-							type=0x7466656C207A7978;
-							key&=0xffffffff;
+							what = 0x7466656C207A7978;
+							key &= 0xffffffff;
 						}
 					}
 				}
@@ -638,23 +633,23 @@ void characterwrite(u64 type,u64 key)
 	if(worker[0].xyze1 > 0)
 	{
 		//center
-		m = worker[0].write(&type,&key);
+		m = worker[0].write(&who, &what, &key);
 	}
 	else if(worker[1].xyze1 > 0)
 	{
 		//roster
-		m = worker[1].write(&type,&key);
+		m = worker[1].write(&who, &what, &key);
 	}
 	else if(worker[2].xyze1 > 0)
 	{
 		//virtkbd
-		m = worker[2].write(&type,&key);
-		if(m > 0)worker[now].write(&type,&key);
+		m = worker[2].write(&who, &what, &key);
+		if(m > 0)worker[now].write(&who, &what, &key);
 	}
 	else
 	{
 		//player
-		worker[now].write(&type,&key);
+		worker[now].write(&who, &what, &key);
 	}
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

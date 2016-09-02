@@ -31,7 +31,7 @@ static struct temp{
 
 
 
-static int what = 0;
+static int aaaa = 0;
 static void keyboard()
 {
 	int x,y;
@@ -155,9 +155,9 @@ static void control_read()
 	//pixel
 	else
 	{
-		if(what == 0)joystick();
-		else if(what == 1)keyboard();
-		else if(what == 2)touchpad();
+		if(aaaa == 0)joystick();
+		else if(aaaa == 1)keyboard();
+		else if(aaaa == 2)touchpad();
 
 		rectbody(0, 0, 64, 64, 0xffffff);
 		rectbody(haha->width-64, 0, haha->width-1, 64, 0xffffff);
@@ -168,22 +168,22 @@ static void control_read()
 
 
 
-static void control_write(u64* type,u8* key)
+static void control_write(u64* who, u64* what, u64* how)
 {
 	int x,y;
-	if(*type == 0x7466656C207A7978)
+	if(*what == 0x7466656C207A7978)
 	{
-		x = *(u16*)key;
-		y = *(u16*)(key+2);
+		x = *(u16*)how;
+		y = *(u16*)(how+2);
 
 		if(y<64)
 		{
-			if(x<64)what = 0;
-			if(x>(haha->width-64))what = 1;
+			if(x<64)aaaa = 0;
+			if(x>(haha->width-64))aaaa = 1;
 		}
 		if(y>(haha->height-64))
 		{
-			if(x<64)what = 2;
+			if(x<64)aaaa = 2;
 		}
 	}
 }

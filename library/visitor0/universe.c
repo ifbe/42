@@ -25,8 +25,10 @@ void debugdelete();
 void basiccreate(char*,char*);
 void basicdelete();
 //slave
-void slavecreate(char*,char*);
-void slavedelete();
+void commandcreate(char*,char*);
+void commanddelete();
+void eventcreate(char*,char*);
+void eventdelete();
 //
 void say(char*,...);
 
@@ -118,41 +120,52 @@ void birth()
 	charactercreate( 0 , character );
 
 	//
-	slavecreate(0,universe);
+	commandcreate(0,universe);
+	eventcreate(0,universe);
 }
 __attribute__((destructor)) void death()
 {
 	//
-	slavedelete();
+	if(rawuniverse != 0)
+	{
+		eventdelete();
+		commanddelete();
+	}
 
-	//4+4+4+4
+	//libui
 	if(character != 0)
 	{
 		characterdelete();
 		displaydelete();
-		character=0;
+		character = 0;
 	}
+
+	//libsoft
 	if(memory != 0)
 	{
 		arterydelete();
 		systemdelete();
-		memory=0;
+		memory = 0;
 	}
+
+	//libhard
 	if(body != 0)
 	{
 		bodydelete();
 		driverdelete();
-		body=0;
+		body = 0;
 	}
+
+	//libboot
 	if(basic != 0)
 	{
 		debugdelete();
 		basicdelete();
-		basic=0;
+		basic = 0;
 	}
 
 	//
-	if(rawuniverse !=0)
+	if(rawuniverse != 0)
 	{
 		free(rawuniverse);
 		rawuniverse=0;

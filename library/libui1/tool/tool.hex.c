@@ -336,7 +336,7 @@ static void hex_read()
 
 
 
-static void hex_write(u64* a,u64* b)
+static void hex_write(u64* who, u64* a, u64* b)
 {
 	u64 type = *a;
 	u64 key = *b;

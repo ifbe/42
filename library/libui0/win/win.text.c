@@ -17,7 +17,7 @@ static char* content;
 
 
 
-int uievent(u64* first,u64* second)
+int uievent(u64* who, u64* what, u64* how)
 {
 	unsigned char ch;
 
@@ -25,8 +25,8 @@ int uievent(u64* first,u64* second)
 	{
 		lastwidth = width;
 		lastheight = height;
-		first[0] = 0x657a6973;
-		second[0] = width + (height<<16);
+		what[0] = 0x657a6973;
+		how[0] = width + (height<<16);
 		return 1;
 	}
 
@@ -36,14 +36,14 @@ int uievent(u64* first,u64* second)
 		printf("%x",ch);
 		if(ch==3)
 		{
-			*first = 0;
+			*what = 0;
 			return 1;
 		}
 
 		else if(ch == 0x1b)
 		{
-			*first=0x64626b;
-			*second=0x1b;
+			*what=0x64626b;
+			*how=0x1b;
 			return 1;
 		}
 
@@ -52,33 +52,33 @@ int uievent(u64* first,u64* second)
 			ch = getch();
 			printf("%x",ch);
 
-			*first = 0x64626b;
+			*what = 0x64626b;
 			if(ch == 0x48)	//up
 			{
-				*second = 0x26;
+				*how = 0x26;
 				return 1;
 			}
 			else if(ch == 0x50)	//down
 			{
-				*second = 0x28;
+				*how = 0x28;
 				return 1;
 			}
 			else if(ch == 0x4b)	//left
 			{
-				*second = 0x25;
+				*how = 0x25;
 				return 1;
 			}
 			else if(ch == 0x4d)	//right
 			{
-				*second = 0x27;
+				*how = 0x27;
 				return 1;
 			}
 		}
 
 		else
 		{
-			*first = 0x72616863;
-			*second = ch;
+			*what = 0x72616863;
+			*how = ch;
 			return 1;
 		}
 	}

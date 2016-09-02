@@ -199,7 +199,7 @@ static void tuxiang()
 
 
 
-static void sketchpad_write(u64* a,u64* b)
+static void sketchpad_write(u64* who, u64* a, u64* b)
 {
 	int width = haha->width;
 	int height = haha->height;
@@ -380,7 +380,7 @@ static void sketchpad_start()
 	buffer[0]='y';
 	buffer[1]='=';
 	buffer[2]='x';
-	sketchpad_write(&haha, &hehe);
+	sketchpad_write((void*)0, &haha, &hehe);
 }
 static void sketchpad_stop()
 {

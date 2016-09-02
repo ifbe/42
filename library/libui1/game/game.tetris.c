@@ -618,7 +618,7 @@ static int down()
 	generate();
 	return 1;
 }
-static void tetris_write(u64* a,u64* b)
+static void tetris_write(u64* who, u64* a, u64* b)
 {
 	int ret;
 	u64 type = *a;

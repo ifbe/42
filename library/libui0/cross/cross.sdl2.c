@@ -82,7 +82,7 @@ void windowwrite()
 //4:鼠标松开
 //5:鼠标移动
 //0xff:时间
-int uievent(u64* type,u64* value)
+int uievent(u64* who, u64* type, u64* value)
 {
 	SDL_Event event;
 	while (1)

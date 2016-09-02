@@ -119,7 +119,7 @@ static void color_read()
 	//
 	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
 }
-static void color_write(u64* a,u64* b)
+static void color_write(u64* who, u64* a, u64* b)
 {
 	u64 type = *a;
 	u64 key = *b;

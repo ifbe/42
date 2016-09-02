@@ -4,7 +4,7 @@ void say(char*,...);
 
 
 
-int hardevent(u64* first,u64* second)
+int hardevent(u64* who, u64* what, u64* how)
 {
 	return 0;
 }

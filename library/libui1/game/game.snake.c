@@ -218,7 +218,7 @@ void newfood()
 	foodx=getrandom() % worldwidth;
 	foody=getrandom() % worldheight;
 }
-void snake_write(u64* aaaa,u64* bbbb)
+void snake_write(u64* who, u64* aaaa,u64* bbbb)
 {
 	int j;
 	u64 type = *aaaa;

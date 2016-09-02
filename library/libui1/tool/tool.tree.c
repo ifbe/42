@@ -153,7 +153,7 @@ static void printnode(int x,int y,int num)
 
 
 
-static void tree_write(u64* a,u64* b)
+static void tree_write(u64* who, u64* a, u64* b)
 {
 	u64 type = *a;
 	u64 key = *b;
@@ -232,7 +232,7 @@ static void tree_start()
 	buffer[1]='+';
 	buffer[2]='1';
 
-	tree_write(&t,&k);
+	tree_write((void*)0, &t, &k);
 }
 static void tree_stop()
 {

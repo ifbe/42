@@ -30,7 +30,7 @@ static void fs_into()
 static void fs_read()
 {
 }
-static void fs_write(u64* type,u64* key)
+static void fs_write(u64* who, u64* what, u64* how)
 {
 }
 static void fs_start()

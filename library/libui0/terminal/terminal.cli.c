@@ -9,7 +9,7 @@
 
 
 char clibuffer[128];
-int uievent(u64* first,u64* second)
+int uievent(u64* who, u64* what, u64* how)
 {
         int i;
         char* ret;
@@ -23,13 +23,13 @@ int uievent(u64* first,u64* second)
 
 		if( ret == NULL )
 		{
-			first[0]=0;
+			what[0]=0;
 			break;
 		}
                 if( clibuffer[0] != 0 )
 		{
-			first[0]=0x727473;
-			second[0]=(u64)clibuffer;
+			what[0]=0x727473;
+			how[0]=(u64)clibuffer;
 			break;
 		}
         }

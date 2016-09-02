@@ -58,9 +58,9 @@ static void pure_read()
 
 	printhexadecimal(0, 0, 4, color & 0xffffff, 0x87654321,0xfedcba98);
 }
-static void pure_write(u64* type,u64* key)
+static void pure_write(u64* who, u64* what, u64* how)
 {
-	if( *(unsigned int*)type == 0x207A7978 )
+	if( *(unsigned int*)what == 0x207A7978 )
 	{
 		flag = (flag+1)&0x7;
 	}

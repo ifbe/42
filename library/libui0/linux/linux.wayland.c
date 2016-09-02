@@ -42,7 +42,7 @@ static int height = 512;
 static int enq=0;
 static int deq=0;
 static char kbd[256];
-int uievent(u64* first,u64* second)
+int uievent(u64* who, u64* first, u64* second)
 {
 printf("here\n");
 	if(enq == deq)

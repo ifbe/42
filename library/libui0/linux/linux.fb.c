@@ -41,7 +41,7 @@ static int height=768;
 
 
 
-int uievent(u64* first,u64* second)
+int uievent(u64* who, u64* first, u64* second)
 {
 	char a,b,c,d;
 	if(xmax != width)

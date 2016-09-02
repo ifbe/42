@@ -35,7 +35,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-int uievent(u64* first,u64* second)
+int uievent(u64* who, u64* first, u64* second)
 {
 	char a,b,c,d;
 

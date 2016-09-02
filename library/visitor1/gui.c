@@ -5,7 +5,7 @@
 //libui1
 void characterstart(char* addr,char* pixfmt, int width,int height);
 void characterstop();
-void characterwrite(u64 type,u64 key);
+void characterwrite(u64 who, u64 what, u64 how);
 void characterread();
 void characterchoose(char*);
 void characterlist();
@@ -16,7 +16,7 @@ void windowread();
 void windowwrite();
 //event
 void eventwrite();
-void eventread(u64* first,u64* second);
+void eventread(u64* who, u64* what, u64* how);
 //world
 void birth();
 void death();
@@ -38,8 +38,9 @@ static int height=512;
 
 void main()
 {
-	u64 type=0;
-	u64 key=0;
+	u64 who;
+	u64 what;
+	u64 how;
 
 	//before
 	birth();
@@ -60,11 +61,11 @@ void main()
 		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		eventread(&type,&key);
-		if( type==0 )break;
+		eventread(&who, &what, &how);
+		if( what==0 )break;
 
-		//3.处理事件，如果要求自杀就让它死
-		characterwrite(type,key);
+		//3.其他event都交给用户处理
+		characterwrite(who, what, how);
 	}
 
 	//after

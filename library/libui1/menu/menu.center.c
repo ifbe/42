@@ -183,7 +183,7 @@ static void menu_read()
 
 
 //write,read,into,list
-static void menu_write(u64* a,u64* b)
+static void menu_write(u64* who, u64* a, u64* b)
 {
 	int width=haha->width;
 	int height=haha->height;

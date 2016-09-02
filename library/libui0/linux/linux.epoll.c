@@ -547,7 +547,7 @@ static void handle_events()
 
 
 
-void uievent(char* type,char* key)
+void uievent(char* who, char* type, char* key)
 {
 	while(1)
 	{

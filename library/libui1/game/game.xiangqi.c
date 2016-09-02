@@ -114,7 +114,7 @@ void xiangqi_read()
 
 
 
-void xiangqi_write(u64* type,u64* key)
+void xiangqi_write(u64* who, u64* what, u64* key)
 {
 	char val;
 	int x,y;
@@ -122,7 +122,7 @@ void xiangqi_write(u64* type,u64* key)
 	int height = haha->height;
 	int min = (width<height) ? width:height;
 
-	if(*type==0x7466656C207A7978)
+	if(*what == 0x7466656C207A7978)
 	{
 		x=(*key) & 0xffff;
 		y=( (*key) >> 16 ) & 0xffff;

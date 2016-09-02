@@ -390,10 +390,10 @@ static void new2048()
 		}//for(x)
 	}//for(y)
 }
-static void the2048_write(u64* type,u64* key)
+static void the2048_write(u64* who, u64* what, u64* key)
 {
 	//kbd
-	if(*type != 0x64626b)return;
+	if(*what != 0x64626b)return;
 
 	//left,right,up,down
 	if(*key == 0x25)left2048();

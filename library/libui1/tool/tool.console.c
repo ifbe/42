@@ -124,7 +124,7 @@ static void printstdin(int count)
 
 
 
-static void console_write(u64* a,u64* b)
+static void console_write(u64* who, u64* a, u64* b)
 {
 	u64 type = *a;
 	u64 key = *b;
