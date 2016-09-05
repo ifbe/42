@@ -30,11 +30,12 @@ void say(char*,...);
 
 
 //
+static int listenfd;
 static int epollfd;
 static struct epoll_event epollevent[MAXSIZE];
 //
-static int listenfd;
 static int clienttype[MAXSIZE];
+static int websocket_last;
 static int websocket_count;
 //
 static char* GET = 0;
@@ -118,6 +119,7 @@ static void explainstr(char* buf, int max)
 }
 void epoll_del(u32 fd)
 {
+	int j;
 	struct epoll_event ev;
 
 	ev.events = EPOLLIN;
@@ -126,7 +128,21 @@ void epoll_del(u32 fd)
 
 	if(fd < MAXSIZE)
 	{
-		if(clienttype[fd] == 0x10)websocket_count--;
+		if(clienttype[fd] == 0x10)
+		{
+			websocket_count--;
+			if(fd == websocket_last)
+			{
+				for(j=fd-1;j>2;j--)
+				{
+					if(clienttype[j] == 0x10)
+					{
+						websocket_last = j;
+						break;
+					}
+				}
+			}//less search
+		}
 		clienttype[fd] = 0;
 	}
 	close(fd);
@@ -153,6 +169,8 @@ void windowwrite()
 {
 	int x,y,z;
 	u64 len;
+
+	printf("@windowwrite:count=0\n");
 	if(websocket_count == 0)return;
 
 	len = strlen(sendbuf+0x1000);
@@ -218,7 +236,7 @@ void windowwrite()
 		if(clienttype[z] == 0x10)
 		{
 			y = write( z, sendbuf+0x1000-x, len+x );
-			if(y <= 0)printf("error@client4\n\n\n\n\n");
+			if(y <= 0)printf("error@%d\n\n\n\n\n",z);
 		}
 	}
 }
@@ -249,7 +267,11 @@ void serve_websocket(int fd, int nread)
 	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
 	printf("\n");
 
-	if(websocket_count == 0)return;
+	if(websocket_count == 0)
+	{
+		printf("@serve_websocket:count=0\n");
+		return;
+	}
 
 	//byte0.bit7
 	if((recvbuf[0]&0x80)==0x80)printf("tail,");
@@ -425,6 +447,7 @@ void handshake_websocket(int fd)
 	//
 	clienttype[fd] = 0x10;
 	websocket_count++;
+	if(fd > websocket_last)websocket_last = fd;
 
 	//
 	*(u64*)(event_queue+0) = 0xabcdef;
@@ -441,7 +464,7 @@ void handshake_http(int fd)
 	printf("writing http_context\n");
 
 	epoll_del(fd);
-	printf("[%d]http->close\n\n\n\n\n", fd);
+	printf("[%d]done->close\n\n\n\n\n", fd);
 }
 static void handle_read(int fd)
 {
@@ -489,7 +512,7 @@ static void handle_read(int fd)
 				//http请求其他
 				else
 				{
-					printf("[%d]bad->close\n\n\n\n\n", fd);
+					printf("[%d]ignore->close\n\n\n\n\n", fd);
 					epoll_del(fd);
 					return;
 				}
@@ -609,6 +632,7 @@ int windowcreate()
 		clienttype[ret] = 0;
 	}
 	websocket_count = 0;
+	websocket_last = 0;
 
 
 
