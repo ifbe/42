@@ -30,17 +30,12 @@ void say(char*,...);
 
 
 //
-static int listenfd;
 static int epollfd;
 static struct epoll_event epollevent[MAXSIZE];
 //
+static int listenfd;
 static int clienttype[MAXSIZE];
-static int clientfirst=0;
-static int clientlast=0;
-static int client1=0;
-static int client2=0;
-static int client3=0;
-static int client4=0;
+static int websocket_count;
 //
 static char* GET = 0;
 static char* Connection = 0;
@@ -121,15 +116,7 @@ static void explainstr(char* buf, int max)
 		(u64)Sec_WebSocket_Key
 	);
 }
-void epoll_add(int fd)
-{
-	struct epoll_event ev;
-
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
-}
-void epoll_del(int fd)
+void epoll_del(u32 fd)
 {
 	struct epoll_event ev;
 
@@ -137,12 +124,22 @@ void epoll_del(int fd)
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 
-	if(fd < MAXSIZE)clienttype[fd] = 0;
-	if(fd == client1)client1 = 0;
-	if(fd == client2)client2 = 0;
-	if(fd == client3)client3 = 0;
-	if(fd == client4)client4 = 0;
+	if(fd < MAXSIZE)
+	{
+		if(clienttype[fd] == 0x10)websocket_count--;
+		clienttype[fd] = 0;
+	}
 	close(fd);
+}
+void epoll_add(u32 fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN;
+	ev.data.fd = fd;
+	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+
+	if(fd < MAXSIZE)clienttype[fd] = 1;
 }
 
 
@@ -154,67 +151,75 @@ void epoll_del(int fd)
 
 void windowwrite()
 {
-	int j,k;
+	int x,y,z;
 	u64 len;
-	if( (client1==0) && (client2==0) && (client3==0) && (client4==0) )return;
+	if(websocket_count == 0)return;
 
 	len = strlen(sendbuf+0x1000);
 	if(len<=125)
 	{
-		j = 2;
-		sendbuf[0x1000-j] = 0x81;
-		sendbuf[0x1000-j+1] = len;
+		x = 2;
+		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x+1] = len;
 	}
 	else if(len<0xffff)
 	{
-		j = 4;
-		sendbuf[0x1000-j] = 0x81;
-		sendbuf[0x1000-j+1] = 126;
-		sendbuf[0x1000-j+2] = (len>>8)&0xff;
-		sendbuf[0x1000-j+3] = len&0xff;
+		x = 4;
+		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x+1] = 126;
+		sendbuf[0x1000-x+2] = (len>>8)&0xff;
+		sendbuf[0x1000-x+3] = len&0xff;
 	}
 	else
 	{
-		j = 10;
-		sendbuf[0x1000-j] = 0x81;
-		sendbuf[0x1000-j+1] = 127;
-		sendbuf[0x1000-j+2] = (len>>56)&0xff;
-		sendbuf[0x1000-j+3] = (len>>48)&0xff;
-		sendbuf[0x1000-j+4] = (len>>40)&0xff;
-		sendbuf[0x1000-j+5] = (len>>32)&0xff;
-		sendbuf[0x1000-j+6] = (len>>24)&0xff;
-		sendbuf[0x1000-j+7] = (len>>16)&0xff;
-		sendbuf[0x1000-j+8] = (len>>8)&0xff;
-		sendbuf[0x1000-j+9] = (len)&0xff;
+		x = 10;
+		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x+1] = 127;
+		sendbuf[0x1000-x+2] = (len>>56)&0xff;
+		sendbuf[0x1000-x+3] = (len>>48)&0xff;
+		sendbuf[0x1000-x+4] = (len>>40)&0xff;
+		sendbuf[0x1000-x+5] = (len>>32)&0xff;
+		sendbuf[0x1000-x+6] = (len>>24)&0xff;
+		sendbuf[0x1000-x+7] = (len>>16)&0xff;
+		sendbuf[0x1000-x+8] = (len>>8)&0xff;
+		sendbuf[0x1000-x+9] = (len)&0xff;
 	}
 
 	//
-	for(k=0;k<j;k++)printf("%.2x ",sendbuf[0x1000-j+k]);
+	for(y=0;y<x;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
 	printf("%s\n", sendbuf+0x1000);
-
-	//
+/*
 	if(client1 != 0)
 	{
-		k = write( client1, sendbuf+0x1000-j, len+j );
-		if(k <= 0)printf("error@client1\n\n\n\n\n");
+		y = write( client1, sendbuf+0x1000-x, len+x );
+		if(y <= 0)printf("error@client1\n\n\n\n\n");
 	}
 
 	if(client2 != 0)
 	{
-		k = write( client2, sendbuf+0x1000-j, len+j );
-		if(k <= 0)printf("error@client2\n\n\n\n\n");
+		y = write( client2, sendbuf+0x1000-x, len+x );
+		if(y <= 0)printf("error@client2\n\n\n\n\n");
 	}
 
 	if(client3 != 0)
 	{
-		k = write( client3, sendbuf+0x1000-j, len+j );
-		if(k <= 0)printf("error@client3\n\n\n\n\n");
+		y = write( client3, sendbuf+0x1000-x, len+x );
+		if(y <= 0)printf("error@client3\n\n\n\n\n");
 	}
 
 	if(client4 != 0)
 	{
-		k = write( client4, sendbuf+0x1000-j, len+j );
-		if(k <= 0)printf("error@client4\n\n\n\n\n");
+		y = write( client4, sendbuf+0x1000-x, len+x );
+		if(y <= 0)printf("error@client4\n\n\n\n\n");
+	}
+*/
+	for(z=3;z<MAXSIZE;z++)
+	{
+		if(clienttype[z] == 0x10)
+		{
+			y = write( z, sendbuf+0x1000-x, len+x );
+			if(y <= 0)printf("error@client4\n\n\n\n\n");
+		}
 	}
 }
 void windowread()
@@ -244,10 +249,7 @@ void serve_websocket(int fd, int nread)
 	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
 	printf("\n");
 
-	if( (fd!=client1) && (fd!=client2) && (fd!=client3) && (fd!=client4) )
-	{
-		return;
-	}
+	if(websocket_count == 0)return;
 
 	//byte0.bit7
 	if((recvbuf[0]&0x80)==0x80)printf("tail,");
@@ -419,14 +421,12 @@ void handshake_websocket(int fd)
 
 	//handshake
 	j = write(fd, recvbuf, strlen(recvbuf));
+
+	//
 	clienttype[fd] = 0x10;
+	websocket_count++;
 
-	//context
-	if(client1 == 0)client1 = fd;
-	else if(client2 ==0)client2 = fd;
-	else if(client3 ==0)client3 = fd;
-	else if(client4 ==0)client4 = fd;
-
+	//
 	*(u64*)(event_queue+0) = 0xabcdef;
 	event_count = 1;
 }
@@ -514,25 +514,19 @@ static void handle_accpet(int listenfd)
 	if (fd == -1)printf("accept error\n");
 
 	//
-	printf("[%d]%s:%d\n",
+	printf("[%d]accept@%s:%d\n",
 		fd,
 		inet_ntoa(cliaddr.sin_addr),
 		cliaddr.sin_port
 	);
-
-	//
-	if(fd<clientfirst)clientfirst = fd;
-	else if(fd<MAXSIZE)clientlast = fd;
-	else
+	if(fd > MAXSIZE)
 	{
-		epoll_del(fd);
 		printf("[%d]MAXSIZE->close\n\n\n\n\n", fd);
+		close(fd);
 		return;
 	}
-	clienttype[fd] = 1;
 
 	epoll_add(fd);
-	printf("[%d]accept\n\n\n\n\n", fd);
 }
 static void handle_events()
 {
@@ -588,7 +582,7 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	//
 	sendbuf = addr;
-	snprintf(pixfmt, 5, "%s", "html");
+	snprintf(pixfmt, 5, "html");
 }
 void windowdelete(int num)
 {
@@ -614,6 +608,7 @@ int windowcreate()
 	{
 		clienttype[ret] = 0;
 	}
+	websocket_count = 0;
 
 
 
@@ -668,6 +663,7 @@ int windowcreate()
 	//epoll
 	epollfd = epoll_create(MAXSIZE);
 	epoll_add(listenfd);
+	if(listenfd < MAXSIZE)clienttype[listenfd] = 0;
 
 
 

@@ -1,32 +1,15 @@
 <html>
 <head>
 <script type="text/javascript">
-var downx;
-var downy;
-function dragstart(theone,event)
-{
-	downx=event.screenX;
-	downy=event.screenY;
-	theone.style.opacity=0.5;
-	say("move "+downx+" "+downy);
-}
-function dragend(theone,event)
-{
-	var x=parseInt(theone.style.getPropertyValue("left"),10);
-	var y=parseInt(theone.style.top.replace('px',''));
-
-	say("x="+x+",y="+y);
-	theone.style.left=x+event.screenX-downx+"px";
-	theone.style.top=y+event.screenY-downy+"px";
-	theone.style.opacity=0.9;
-}
-
 function say(data)
 {
 	var debug=document.getElementById("debug");
 	debug.textContent=debug.textContent+data+"\n";
 	debug.scrollTop=debug.scrollHeight;
 }
+
+var ws=new WebSocket("ws://127.0.0.1:2222");
+ws.binaryType = 'arraybuffer';
 function send(data)
 {
 	say(data);
@@ -48,9 +31,6 @@ function sendblob(data)
 	//var file = document.querySelector('input[type="file"]').files[0];
 	//ws.send(file);
 }
-
-var ws=new WebSocket("ws://127.0.0.1:2222");
-ws.binaryType = 'arraybuffer';
 ws.onmessage=function(event)
 {
 	if(typeof event.data === "string")
@@ -119,6 +99,60 @@ window.onkeydown=function(ev){
 	}
 }
 
+var lastmousex=-99;
+var lastmousey=-99;
+function mousestart(theone,event)
+{
+	var x = event.clientX;
+	var y = event.clientY;
+	say("mousestart "+x+" "+y);
+}
+function mousemove(theone,event)
+{
+	var x = event.clientX;
+	var y = event.clientY;
+	if((x==lastmousex)&&(y==lastmousey))return;
+
+	lastmousex=x;
+	lastmousey=y;
+	say("mousemove "+x+" "+y);
+}
+function mouseend(theone,event)
+{
+	var x = event.clientX;
+	var y = event.clientY;
+	say("mouseend "+x+" "+y);
+}
+function mouseenter(theone,event)
+{
+	document.getElementById("haha").style.opacity=0.8;
+}
+function mouseleave(theone,event)
+{
+	document.getElementById("haha").style.opacity=0.2;
+}
+
+function touchstart(theone,event)
+{
+	var touch0 = event.touches[0];
+	var x = touch0.clientX;
+	var y = touch0.clientY;
+	say("touchatart "+x+" "+y);
+}
+function touchmove(theone,event)
+{
+	var touch0 = event.touches[0];
+	var x = touch0.clientX;
+	var y = touch0.clientY;
+	say("touchmove "+x+" "+y);
+}
+function touchend(theone,event)
+{
+	var touch0 = event.touches[0];
+	var x = touch0.clientX;
+	var y = touch0.clientY;
+	say("touchend "+x+" "+y);
+}
 </script>
 </head>
 
@@ -129,9 +163,7 @@ window.onkeydown=function(ev){
 </code>
 </pre>
 
-<div style="position:absolute;left:4%;top:4%;width:90%;height:90%;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" draggable="true" ondragstart="dragstart(this,event)" ondragend="dragend(this,event)" ontouchstart="dragstart(this,event)" ontouchend="dragend(this,event)">
-<div id="haha" style="position:absolute;left:0%;top:0%;width:100%;height:100%;background:#444444;color:#fff;" draggable="false">
-</div>
+<div id="haha" style="position:absolute;left:4%;top:4%;width:90%;height:90%;background:#444444;color:#fff;opacity:0.9;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" onmousedown="mousestart(this,event)" onmousemove="mousemove(this,event)" onmouseup="mouseend(this,event)" onmouseenter="mouseenter(this,event)" onmouseleave="mouseleave(this,event)" ontouchstart="touchstart(this,event)" ontouchmove="touchmove(this,event)" ontouchend="touchend(this,event)">
 </div>
 
 </body>
