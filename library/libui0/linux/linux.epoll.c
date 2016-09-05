@@ -39,6 +39,8 @@ static int clientfirst=0;
 static int clientlast=0;
 static int client1=0;
 static int client2=0;
+static int client3=0;
+static int client4=0;
 //
 static char* GET = 0;
 static char* Connection = 0;
@@ -136,12 +138,10 @@ void epoll_del(int fd)
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 
 	if(fd < MAXSIZE)clienttype[fd] = 0;
+	if(fd == client1)client1 = 0;
 	if(fd == client2)client2 = 0;
-	if(fd == client1)
-	{
-		client1 = client2;
-		client2 = 0;
-	}
+	if(fd == client3)client3 = 0;
+	if(fd == client4)client4 = 0;
 	close(fd);
 }
 
@@ -156,7 +156,7 @@ void windowwrite()
 {
 	int j,k;
 	u64 len;
-	if( (client1 == 0) && (client2 == 0) )return;
+	if( (client1==0) && (client2==0) && (client3==0) && (client4==0) )return;
 
 	len = strlen(sendbuf+0x1000);
 	if(len<=125)
@@ -204,6 +204,18 @@ void windowwrite()
 		k = write( client2, sendbuf+0x1000-j, len+j );
 		if(k <= 0)printf("error@client2\n\n\n\n\n");
 	}
+
+	if(client3 != 0)
+	{
+		k = write( client3, sendbuf+0x1000-j, len+j );
+		if(k <= 0)printf("error@client3\n\n\n\n\n");
+	}
+
+	if(client4 != 0)
+	{
+		k = write( client4, sendbuf+0x1000-j, len+j );
+		if(k <= 0)printf("error@client4\n\n\n\n\n");
+	}
 }
 void windowread()
 {
@@ -232,7 +244,7 @@ void serve_websocket(int fd, int nread)
 	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
 	printf("\n");
 
-	if( (fd != client1) && (fd != client2) )
+	if( (fd!=client1) && (fd!=client2) && (fd!=client3) && (fd!=client4) )
 	{
 		return;
 	}
@@ -412,8 +424,11 @@ void handshake_websocket(int fd)
 	//context
 	if(client1 == 0)client1 = fd;
 	else if(client2 ==0)client2 = fd;
-return;
-	windowwrite();
+	else if(client3 ==0)client3 = fd;
+	else if(client4 ==0)client4 = fd;
+
+	*(u64*)(event_queue+0) = 0xabcdef;
+	event_count = 1;
 }
 void handshake_http(int fd)
 {
@@ -577,9 +592,13 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 }
 void windowdelete(int num)
 {
+	int j;
+	for(j=0;j<MAXSIZE;j++)
+	{
+		if(clienttype[j] != 0)close(j);
+	}
 	close(listenfd);
 	close(epollfd);
-	exit(-1);
 }
 int windowcreate()
 {

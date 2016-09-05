@@ -6,7 +6,8 @@
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
 //
-void qrcode_generate(char* src,char* dst,int sidelength);
+int qrcode_generate(char* src,char* dst,int sidelength);
+int diary(char*,int,char*,...);
 void say(char*,...);
 
 
@@ -59,7 +60,7 @@ static void qrcode_read_pixel()
 //say("\n");
 	}
 }
-static qrcode_read_html()
+static void qrcode_read_html()
 {
 	int x,y;
 	u32 color;
@@ -98,7 +99,7 @@ static qrcode_read_html()
 	}
 	p += diary(p, 99, "</div>");
 }
-static qrcode_read_text()
+static void qrcode_read_text()
 {
 }
 static void qrcode_read()

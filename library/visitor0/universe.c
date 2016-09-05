@@ -25,10 +25,12 @@ void debugdelete();
 void basiccreate(char*,char*);
 void basicdelete();
 //slave
-void commandcreate(char*,char*);
+void commandcreate(void*,void*);
 void commanddelete();
-void eventcreate(char*,char*);
+void eventcreate(void*,void*);
 void eventdelete();
+void signalcreate(void*,void*);
+void signaldelete();
 //
 void say(char*,...);
 
@@ -98,31 +100,6 @@ void createuniverse()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void birth()
-{
-	//必须放第一个
-	createuniverse();	//16m
-
-	//[0,4)：构架相关，以及内核日志
-	basiccreate( 0 , basic );
-	debugcreate( 0 , basic );
-
-	//[4,7)：硬件驱动，以及底层协议栈
-	drivercreate( 0 , body );
-	bodycreate( 0 , body );
-
-	//[8,c)：文件读写，以及详细分析
-	systemcreate( 0 , memory );
-	arterycreate( 0 , memory );
-
-	//[c,f)：窗口开闭，以及用户界面
-	displaycreate( 0 , character );
-	charactercreate( 0 , character );
-
-	//
-	commandcreate(0,universe);
-	eventcreate(0,universe);
-}
 __attribute__((destructor)) void death()
 {
 	//
@@ -169,6 +146,36 @@ __attribute__((destructor)) void death()
 	{
 		free(rawuniverse);
 		rawuniverse=0;
+
+		exit(-1);
 	}
+}
+void birth()
+{
+	//必须放第一个
+	createuniverse();	//16m
+
+	//[0,4)：构架相关，以及内核日志
+	basiccreate( 0 , basic );
+	debugcreate( 0 , basic );
+
+	//[4,7)：硬件驱动，以及底层协议栈
+	drivercreate( 0 , body );
+	bodycreate( 0 , body );
+
+	//[8,c)：文件读写，以及详细分析
+	systemcreate( 0 , memory );
+	arterycreate( 0 , memory );
+
+	//[c,f)：窗口开闭，以及用户界面
+	displaycreate( 0 , character );
+	charactercreate( 0 , character );
+
+	//
+	commandcreate(0,universe);
+	eventcreate(0,universe);
+
+	//ctrl+c
+	signalcreate("c", death);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

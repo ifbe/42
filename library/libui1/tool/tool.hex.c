@@ -15,8 +15,9 @@ void arterywrite(char* rdi,u64 rsi,u64 rcx);
 void data2hexstring(u64,char*);
 int compare(char*,char*);
 //
-void say(char*,...);
 void printmemory(char*,int);
+void say(char*,...);
+int diary(char*,int,char*,...);
 
 
 
@@ -60,8 +61,16 @@ static void updateconfig()
 	int width = haha->width;
 	unsigned int pixfmt = (haha->pixelformat)&0xffffffff;
 
+	//html
+        if(pixfmt == 0x6c6d7468)
+	{
+		lineperwindow = 16;
+		byteperline = 32;
+		xshift = 0;
+	}
+
         //text
-        if( pixfmt == 0x74786574)
+        else if(pixfmt == 0x74786574)
 	{
 		lineperwindow = haha->height;
 
@@ -86,6 +95,8 @@ static void updateconfig()
 			xshift = 0;
 		}
 	}
+
+	//pixel
 	else
 	{
 		lineperwindow = (haha->height)/16;
@@ -305,6 +316,49 @@ static void hex_read_text()
 }
 static void hex_read_html()
 {
+	int x,y;
+	unsigned char ch;
+
+	int width = haha->width;
+	int height = haha->height;
+	unsigned char* p = (char*)(haha->pixelbuffer) + 0x1000;
+
+	updateconfig();
+	p += diary(p, 0x1000, "<table cellspacing=\"0\" cellpadding=\"2\" border=\"1\" bordercolor=\"#000000\">");
+
+	if(printmethod==0)		//hex
+	{
+		for(y=0;y<lineperwindow;y++)
+		{
+			p += diary(p, 0x1000, "<tr><th>%02x</th>", y*16);
+			for(x=0;x<byteperline;x++)
+			{
+				ch = databuf[windowoffset + y*byteperline + x];
+				p += diary(p, 0x1000, "<td>%02x</td>", ch);
+			}
+		}
+	}
+
+	else if(printmethod==1)		//ascii
+	{
+		for(y=0;y<lineperwindow;y++)
+		{
+			p += diary(p, 0x1000, "<tr><th>%02x</th>", y*16);
+			for(x=0;x<byteperline;x++)
+			{
+				ch = databuf[windowoffset + y*byteperline + x];
+				if((ch > 0x1f) && (ch < 0x7f))
+				{
+					p += diary(p, 0x1000, "<td>.%c</td>", ch);
+				}
+				else
+				{
+					p += diary(p, 0x1000, "<td>.?</td>");
+				}
+			}
+		}
+	}
+	diary(p, 0x1000, "</table>");
 }
 static void hex_read()
 {
@@ -348,7 +402,10 @@ static void hex_write(u64* who, u64* a, u64* b)
 		{
 			if( pointeroffset % byteperline == 0 )
 			{
-				windowoffset -= byteperline * lineperwindow;
+				if(windowoffset > byteperline * lineperwindow)
+				{
+					windowoffset -= byteperline * lineperwindow;
+				}
 			}
 			else
 			{
@@ -359,7 +416,10 @@ static void hex_write(u64* who, u64* a, u64* b)
 		{
 			if( pointeroffset % byteperline == byteperline-1 )
 			{
-				windowoffset += byteperline * lineperwindow;
+				if(windowoffset < 0x400000 - byteperline*lineperwindow)
+				{
+					windowoffset += byteperline * lineperwindow;
+				}
 			}
 			else
 			{
@@ -370,7 +430,10 @@ static void hex_write(u64* who, u64* a, u64* b)
 		{
 			if( pointeroffset < byteperline )
 			{
-				windowoffset -= byteperline;
+				if(windowoffset > byteperline)
+				{
+					windowoffset -= byteperline;
+				}
 			}
 			else
 			{
@@ -381,7 +444,10 @@ static void hex_write(u64* who, u64* a, u64* b)
 		{
 			if( pointeroffset > (lineperwindow-1) * byteperline )
 			{
-				windowoffset += byteperline;
+				if(windowoffset < 0x400000 - byteperline)
+				{
+					windowoffset += byteperline;
+				}
 			}
 			else
 			{

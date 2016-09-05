@@ -154,7 +154,6 @@ void commandcreate(char* type,char* addr)
 	body=addr+0x400000;
 	memory=addr+0x800000;
 	character=addr+0xc00000;
-	say("[%s]",memory);
 }
 void commanddelete()
 {
