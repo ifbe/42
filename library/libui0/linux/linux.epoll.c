@@ -38,16 +38,12 @@ static int clienttype[MAXSIZE];
 static int websocket_last;
 static int websocket_count;
 //
-static char* GET = 0;
-static char* Connection = 0;
-static char* Upgrade = 0;
-static char* Sec_WebSocket_Key = 0;
-//
 static char* http_response = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 static int http_response_size;
-static char http_context[0x1000];
+static char http_context[0x100000];
 static int http_context_size;
-static char event_queue[0x1000];
+//
+static char event_queue[0x100000];
 static int event_count=0;
 //
 static unsigned char buf1[256];
@@ -57,7 +53,11 @@ static unsigned char* sendbuf;
 
 
 
-
+//
+static char* GET = 0;
+static char* Connection = 0;
+static char* Upgrade = 0;
+static char* Sec_WebSocket_Key = 0;
 static void explainstr(char* buf, int max)
 {
 	int flag;
@@ -146,6 +146,7 @@ void epoll_del(u32 fd)
 		clienttype[fd] = 0;
 	}
 	close(fd);
+	printf("last=%d\n",websocket_last);
 }
 void epoll_add(u32 fd)
 {
@@ -455,11 +456,16 @@ void handshake_websocket(int fd)
 }
 void handshake_http(int fd)
 {
-	int ret;
+	int ret = open("42.html",O_RDONLY);
+	if(ret <= 0)
+	{
+		printf("error@html\n");
+	}
+	http_context_size = read(ret, http_context, 0x100000);
+	close(ret);
 
-	ret = write(fd, http_response, http_response_size);
+	ret = write(fd, http_response, strlen(http_response) );
 	printf("writing http_response\n");
-
 	ret = write(fd, http_context, http_context_size);
 	printf("writing http_context\n");
 
@@ -633,22 +639,6 @@ int windowcreate()
 	}
 	websocket_count = 0;
 	websocket_last = 0;
-
-
-
-
-	//http
-	ret = open("42.html",O_RDONLY);
-	if(ret <= 0)
-	{
-		printf("error@html\n");
-		exit(-1);
-	}
-
-	http_context_size = read(ret, http_context, 0x1000);
-	close(ret);
-
-	http_response_size = strlen(http_response);
 
 
 

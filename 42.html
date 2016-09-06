@@ -99,71 +99,78 @@ window.onkeydown=function(ev){
 	}
 }
 
+function touch_start(theone,event)
+{
+	var a = document.getElementById("haha");
+	var touch0 = event.touches[0];
+	var x = touch0.clientX - a.offsetLeft;
+	var y = touch0.clientY - a.offsetTop;
+	say("touchatart "+x+" "+y);
+}
+function touch_move(theone,event)
+{
+	var a = document.getElementById("haha");
+	var touch0 = event.touches[0];
+	var x = touch0.clientX - a.offsetLeft;
+	var y = touch0.clientY - a.offsetTop;
+	say("touchmove "+x+" "+y);
+}
+function touch_end(theone,event)
+{
+	var a = document.getElementById("haha");
+	var touch0 = event.touches[0];
+	var x = touch0.clientX - a.offsetLeft;
+	var y = touch0.clientY - a.offsetTop;
+	say("touchend "+x+" "+y);
+}
+
 var lastmousex=-99;
 var lastmousey=-99;
-function mousestart(theone,event)
+function mouse_start(theone,event)
 {
-	var x = event.clientX;
-	var y = event.clientY;
+	var a = document.getElementById("haha");
+	var x = event.clientX - a.offsetLeft;
+	var y = event.clientY - a.offsetTop;
 	say("mousestart "+x+" "+y);
 }
-function mousemove(theone,event)
+function mouse_move(theone,event)
 {
-	var x = event.clientX;
-	var y = event.clientY;
+	var a = document.getElementById("haha");
+	var x = event.clientX - a.offsetLeft;
+	var y = event.clientY - a.offsetTop;
 	if((x==lastmousex)&&(y==lastmousey))return;
 
 	lastmousex=x;
 	lastmousey=y;
 	say("mousemove "+x+" "+y);
 }
-function mouseend(theone,event)
+function mouse_end(theone,event)
 {
-	var x = event.clientX;
-	var y = event.clientY;
+	var a = document.getElementById("haha");
+	var x = event.clientX - a.offsetLeft;
+	var y = event.clientY - a.offsetTop;
 	say("mouseend "+x+" "+y);
 }
-function mouseenter(theone,event)
+function mouse_enter(theone,event)
 {
-	document.getElementById("haha").style.opacity=0.8;
+	document.getElementById("haha").style.opacity=0.66;
 }
-function mouseleave(theone,event)
+function mouse_leave(theone,event)
 {
-	document.getElementById("haha").style.opacity=0.2;
+	document.getElementById("haha").style.opacity=0.33;
 }
 
-function touchstart(theone,event)
-{
-	var touch0 = event.touches[0];
-	var x = touch0.clientX;
-	var y = touch0.clientY;
-	say("touchatart "+x+" "+y);
-}
-function touchmove(theone,event)
-{
-	var touch0 = event.touches[0];
-	var x = touch0.clientX;
-	var y = touch0.clientY;
-	say("touchmove "+x+" "+y);
-}
-function touchend(theone,event)
-{
-	var touch0 = event.touches[0];
-	var x = touch0.clientX;
-	var y = touch0.clientY;
-	say("touchend "+x+" "+y);
-}
 </script>
 </head>
 
 <body style="background:black;margin:0;padding:0;overflow:hidden;">
 
 <pre style="white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;">
-<code id="debug" style="position:absolute;width:100%;height:100%;background:#000;color:#fff;overflow-y:scroll;">
+<code id="debug" style="position:absolute;width:100%;height:100%;background:#444;color:#fff;overflow-y:scroll;">
 </code>
 </pre>
 
-<div id="haha" style="position:absolute;left:4%;top:4%;width:90%;height:90%;background:#444444;color:#fff;opacity:0.9;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" onmousedown="mousestart(this,event)" onmousemove="mousemove(this,event)" onmouseup="mouseend(this,event)" onmouseenter="mouseenter(this,event)" onmouseleave="mouseleave(this,event)" ontouchstart="touchstart(this,event)" ontouchmove="touchmove(this,event)" ontouchend="touchend(this,event)">
+<div id="haha" style="position:absolute;left:4%;top:4%;width:90%;height:90%;background:#444444;color:#fff;opacity:0.9;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" onmousedown="mouse_start(this,event)" onmousemove="mouse_move(this,event)" onmouseup="mouse_end(this,event)" onmouseenter="mouse_enter(this,event)" onmouseleave="mouse_leave(this,event)" ontouchstart="touch_start(this,event)" ontouchend="touch_end(this,event)" ontouchmove="touch_move(this,event)">
 </div>
 
 </body>
