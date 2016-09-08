@@ -35,12 +35,39 @@ html,body{margin:0;padding:0;overflow:hidden;}
 	border-bottom: 1px solid #eee;
 	border-radius: 4px 4px 0 0;
 }
-#boxbody {
+#boxlogin {
 	position:absolute;
 	width:100%;
 	height:98%;
 	background:#444;
 	color:#fff;
+	font-size:128px;
+	text-align:center;
+}
+#boxerror {
+	position:absolute;
+	width:100%;
+	height:98%;
+	background:#444;
+	color:#fff;
+	font-size:128px;
+	text-align:center;
+}
+#boxdraw {
+	position:absolute;
+	width:100%;
+	height:98%;
+	background:#444;
+	color:#fff;
+	text-align:center;
+}
+#boxpixel {
+	position:absolute;
+	width:100%;
+	height:98%;
+	background:#444;
+	color:#fff;
+	text-align:center;
 }
 </style>
 <script type="text/javascript">
@@ -49,6 +76,57 @@ function say(data)
 	var debug=document.getElementById("debug");
 	debug.textContent=debug.textContent+data+"\n";
 	debug.scrollTop=debug.scrollHeight;
+}
+function showlogin()
+{
+	document.getElementById('boxlogin').style.display="";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="none";
+}
+function showerror()
+{
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="none";
+}
+function showdraw(data)
+{
+	say("string "+data.length);
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="";
+	document.getElementById('boxpixel').style.display="none";
+
+	document.getElementById('boxdraw').innerHTML=data;
+}
+function showpixel(data)
+{
+	var ctx = document.getElementById('pixel').getContext('2d');
+	var imageData = ctx.createImageData(512, 512);
+	var p = imageData.data;
+
+	say("binary "+data.byteLength);
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="";
+
+	for (var y=0;y<512;y++) {
+		for (var x=0;x<512;x++) {
+			p[4*(512*y+x)+0] = x;
+			p[4*(512*y+x)+1] = y;
+			p[4*(512*y+x)+2] = 99;
+			p[4*(512*y+x)+3] = 255;
+		}
+	}
+	//var buf = new ArrayBuffer(imageData.data.length);
+	//var buf8 = new Uint8ClampedArray(buf);
+	//var data = new Uint32Array(buf);
+	//data[y*width + x] =(255<<24)|(value<<16)|(value<<8)|value;
+	//imageData.data.set(buf8);
+	ctx.putImageData(imageData, 0, 0);
 }
 
 var ws=new WebSocket("ws://127.0.0.1:2222");
@@ -78,12 +156,11 @@ ws.onmessage=function(event)
 {
 	if(typeof event.data === "string")
 	{
-		say("string "+event.data.length);
-		document.getElementById('boxbody').innerHTML=event.data;
+		showdraw(event.data);
 	}
 	else //if(event.data instanceof ArrayBuffer)
 	{
-		say("binary "+event.data.byteLength);
+		showpixel(event.data);
 	}
 };
 ws.onopen=function(event)
@@ -93,12 +170,12 @@ ws.onopen=function(event)
 ws.onclose=function(event)
 {
 	say("connection closed");
-	document.getElementById('boxbody').innerHTML="connection closed";
+	showerror();
 };
 ws.onerror=function(event)
 {
 	say("something wrong");
-	document.getElementById('boxbody').innerHTML="something wrong";
+	showerror();
 };
 
 var oldw=0;
@@ -149,7 +226,7 @@ window.onload=function() {
 	var draging=false;
 	var disX = disY = 0;
 
-	var boxbody=document.getElementById("boxbody");
+	var boxdraw=document.getElementById("boxdraw");
 	var lastmousex = lastmousey = -99;
 
 	boxhead.onmousedown=function(event)
@@ -167,7 +244,7 @@ window.onload=function() {
 			var maxX = document.body.scrollWidth - boxroot.offsetWidth;
 			var maxY = document.body.offsetHeight - boxroot.offsetHeight;
 			//boxX = (boxX < 0) ? 0 : boxX;
-			//boxY = (boxY < 0) ? 0 : boxY;
+			boxY = (boxY < 0) ? 0 : boxY;
 			//boxX = (boxX > maxX) ? maxX : boxX;
 			//boxY = (boxY > maxY) ? maxY : boxY;
 			boxroot.style.left = boxX + "px";
@@ -181,30 +258,30 @@ window.onload=function() {
 		};
 	}
 
-	boxbody.onmouseenter=function(event)
+	boxdraw.onmouseenter=function(event)
 	{
 		//document.getElementById("boxroot").style.opacity=0.8;
 	}
-	boxbody.onmouseleave=function(event)
+	boxdraw.onmouseleave=function(event)
 	{
 		//document.getElementById("boxroot").style.opacity=0.4;
 	}
-	boxbody.onmousedown=function(event)
+	boxdraw.onmousedown=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
-		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("mousestart "+x+" "+y);
 	}
-	boxbody.onmouseup=function(event)
+	boxdraw.onmouseup=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
-		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("mouseend "+x+" "+y);
 	}
-	boxbody.onmousemove=function(event)
+	boxdraw.onmousemove=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
-		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		if((x==lastmousex)&&(y==lastmousey))return;
 
 		lastmousex=x;
@@ -212,28 +289,33 @@ window.onload=function() {
 		say("mousemove "+x+" "+y);
 	}
 
-	boxbody.ontouchstart=function(event)
+	boxdraw.ontouchstart=function(event)
 	{
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchatart "+x+" "+y);
 	}
-	boxbody.ontouchstart=function(event)
+	boxdraw.ontouchstart=function(event)
 	{
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchmove "+x+" "+y);
 	}
-	boxbody.ontouchstart=function(event)
+	boxdraw.ontouchstart=function(event)
 	{
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchend "+x+" "+y);
 	}
 }
+
+var canvas = document.createElement('canvas');
+canvas.height = 1024;
+canvas.width = 1024;
+var ctx = canvas.getContext('2d');
 
 </script>
 </head>
@@ -246,7 +328,27 @@ window.onload=function() {
 <div id="boxroot">
 	<div id="boxhead">
 	</div>
-	<div id="boxbody">
+
+	<div id="boxlogin">
+		<form action="form_action.asp" method="get">
+		username:<input type="text" name="fname" /><br />
+		password:<input type="text" name="lname" /><br />
+		<input type="submit" value="play" />
+		<input type="submit" value="look" />
+		</form>
+	</div>
+
+	<div id="boxerror">
+		error!
+	</div>
+
+	<div id="boxdraw">
+		haha
+	</div>
+
+	<div id="boxpixel">
+		<canvas id="pixel" width="512" height="512">
+		</canvas>
 	</div>
 </div>
 </body>
