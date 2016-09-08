@@ -120,8 +120,10 @@ static void the2048_read_html()
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(haha->pixelbuffer) + 0x1000;
-	//say("@2048.html\n");
+	char* p = (char*)(haha->pixelbuffer);
+
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
 
 	p += diary(
 		p, 0x1000,

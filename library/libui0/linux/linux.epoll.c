@@ -170,21 +170,35 @@ void windowwrite()
 {
 	int x,y,z;
 	u64 len;
+	u8 type;
 
-	printf("@windowwrite:count=0\n");
-	if(websocket_count == 0)return;
+	if(websocket_count == 0)
+	{
+		printf("@windowwrite:count=0\n");
+		return;
+	}
 
-	len = strlen(sendbuf+0x1000);
+	if(sendbuf[0]==0)
+	{
+		len=8;
+		type=2;
+	}
+	else
+	{
+		len = strlen(sendbuf+0x1000);
+		type=1;
+	}
+
 	if(len<=125)
 	{
 		x = 2;
-		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x] = 0x80|type;
 		sendbuf[0x1000-x+1] = len;
 	}
 	else if(len<0xffff)
 	{
 		x = 4;
-		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x] = 0x80|type;
 		sendbuf[0x1000-x+1] = 126;
 		sendbuf[0x1000-x+2] = (len>>8)&0xff;
 		sendbuf[0x1000-x+3] = len&0xff;
@@ -192,7 +206,7 @@ void windowwrite()
 	else
 	{
 		x = 10;
-		sendbuf[0x1000-x] = 0x81;
+		sendbuf[0x1000-x] = 0x80|type;
 		sendbuf[0x1000-x+1] = 127;
 		sendbuf[0x1000-x+2] = (len>>56)&0xff;
 		sendbuf[0x1000-x+3] = (len>>48)&0xff;
@@ -205,38 +219,15 @@ void windowwrite()
 	}
 
 	//
-	for(y=0;y<x;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
-	printf("%s\n", sendbuf+0x1000);
-/*
-	if(client1 != 0)
-	{
-		y = write( client1, sendbuf+0x1000-x, len+x );
-		if(y <= 0)printf("error@client1\n\n\n\n\n");
-	}
+	for(y=0;y<x+8;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
+	printf("\n");
+	//printf("%s\n", sendbuf+0x1000);
 
-	if(client2 != 0)
-	{
-		y = write( client2, sendbuf+0x1000-x, len+x );
-		if(y <= 0)printf("error@client2\n\n\n\n\n");
-	}
-
-	if(client3 != 0)
-	{
-		y = write( client3, sendbuf+0x1000-x, len+x );
-		if(y <= 0)printf("error@client3\n\n\n\n\n");
-	}
-
-	if(client4 != 0)
-	{
-		y = write( client4, sendbuf+0x1000-x, len+x );
-		if(y <= 0)printf("error@client4\n\n\n\n\n");
-	}
-*/
 	for(z=3;z<MAXSIZE;z++)
 	{
 		if(clienttype[z] == 0x10)
 		{
-			y = write( z, sendbuf+0x1000-x, len+x );
+			y = write(z, sendbuf+0x1000-x, len+x);
 			if(y <= 0)printf("error@%d\n\n\n\n\n",z);
 		}
 	}

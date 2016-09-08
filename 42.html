@@ -291,24 +291,35 @@ window.onload=function() {
 
 	boxdraw.ontouchstart=function(event)
 	{
+		event.preventDefault();
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
 		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchatart "+x+" "+y);
 	}
-	boxdraw.ontouchstart=function(event)
+	boxdraw.ontouchmove=function(event)
 	{
+		event.preventDefault();
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
 		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchmove "+x+" "+y);
 	}
-	boxdraw.ontouchstart=function(event)
+	boxdraw.ontouchend=function(event)
 	{
+		event.preventDefault();
 		var touch0 = event.touches[0];
 		var x = touch0.clientX -boxroot.offsetLeft;
 		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("touchend "+x+" "+y);
+	}
+	boxdraw.ontouchcancel=function(event)
+	{
+		event.preventDefault();
+		var touch0 = event.touches[0];
+		var x = touch0.clientX -boxroot.offsetLeft;
+		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
+		say("touchcancel "+x+" "+y);
 	}
 }
 

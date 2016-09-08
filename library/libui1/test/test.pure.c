@@ -35,7 +35,7 @@ static void pure_list()
 static void pure_into()
 {
 }
-static void pure_read()
+static void pure_read_pixel()
 {
 	int x,y;
 	u32 color;
@@ -57,6 +57,38 @@ static void pure_read()
 	}
 
 	printhexadecimal(0, 0, 4, color & 0xffffff, 0x87654321,0xfedcba98);
+}
+static void pure_read_text()
+{
+}
+static void pure_read_html()
+{
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	screenbuf[0]=0;
+	screenbuf[0x1000]=0;
+}
+static void pure_read()
+{
+        u32 temp = (haha->pixelformat)&0xffffffff;
+        //say("(@2048.read)temp=%x\n",temp);
+
+        //text
+        if(temp == 0x74786574)
+        {
+                pure_read_text();
+        }
+
+        //html
+        else if(temp == 0x6c6d7468)
+        {
+                pure_read_html();
+        }
+
+        //pixel
+        else
+        {
+                pure_read_pixel();
+        }
 }
 static void pure_write(u64* who, u64* what, u64* how)
 {

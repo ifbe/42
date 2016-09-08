@@ -131,8 +131,10 @@ static void menu_read_pixel()
 }
 static void menu_read_html()
 {
-	char* p = (char*)(haha->pixelbuffer)+0x1000;
-	while(*p != 0)p++;
+	char* p = (char*)(haha->pixelbuffer);
+
+        *(u32*)p = 0x6c6d7468;
+	p += 0x1000;
 
 	buffer[bufp] = 0;
 	diary(p,0x1000,
