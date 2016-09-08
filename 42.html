@@ -1,5 +1,48 @@
 <html>
 <head>
+<style>
+html,body{margin:0;padding:0;overflow:hidden;}
+#haha {
+	white-space:pre-wrap;
+	white-space:-moz-pre-wrap;
+	white-space:-pre-wrap;
+	white-space:-o-pre-wrap;
+	word-wrap:break-word;
+}
+#debug {
+	position:absolute;
+	left:0%;
+	top:0%;
+	width:100%;
+	height:100%;
+	background:#000;
+	color:#fff;
+	overflow-y:scroll;
+}
+#boxroot {
+	position:absolute;
+	left:4%;
+	top:4%;
+	width:90%;
+	height:90%;
+	box-shadow:2px 2px 4px #eee;
+	opacity:0.8;
+}
+#boxhead {
+	width:100%;
+	height:2%;
+	background: #ccc;
+	border-bottom: 1px solid #eee;
+	border-radius: 4px 4px 0 0;
+}
+#boxbody {
+	position:absolute;
+	width:100%;
+	height:98%;
+	background:#444;
+	color:#fff;
+}
+</style>
 <script type="text/javascript">
 function say(data)
 {
@@ -36,7 +79,7 @@ ws.onmessage=function(event)
 	if(typeof event.data === "string")
 	{
 		say("string "+event.data.length);
-		document.getElementById('haha').innerHTML=event.data;
+		document.getElementById('boxbody').innerHTML=event.data;
 	}
 	else //if(event.data instanceof ArrayBuffer)
 	{
@@ -50,12 +93,12 @@ ws.onopen=function(event)
 ws.onclose=function(event)
 {
 	say("connection closed");
-	document.getElementById('haha').innerHTML="connection closed";
+	document.getElementById('boxbody').innerHTML="connection closed";
 };
 ws.onerror=function(event)
 {
 	say("something wrong");
-	document.getElementById('haha').innerHTML="something wrong";
+	document.getElementById('boxbody').innerHTML="something wrong";
 };
 
 var oldw=0;
@@ -99,79 +142,112 @@ window.onkeydown=function(ev){
 	}
 }
 
-function touch_start(theone,event)
-{
-	var a = document.getElementById("haha");
-	var touch0 = event.touches[0];
-	var x = touch0.clientX - a.offsetLeft;
-	var y = touch0.clientY - a.offsetTop;
-	say("touchatart "+x+" "+y);
-}
-function touch_move(theone,event)
-{
-	var a = document.getElementById("haha");
-	var touch0 = event.touches[0];
-	var x = touch0.clientX - a.offsetLeft;
-	var y = touch0.clientY - a.offsetTop;
-	say("touchmove "+x+" "+y);
-}
-function touch_end(theone,event)
-{
-	var a = document.getElementById("haha");
-	var touch0 = event.touches[0];
-	var x = touch0.clientX - a.offsetLeft;
-	var y = touch0.clientY - a.offsetTop;
-	say("touchend "+x+" "+y);
-}
+window.onload=function() {
+	var boxroot=document.getElementById("boxroot");
 
-var lastmousex=-99;
-var lastmousey=-99;
-function mouse_start(theone,event)
-{
-	var a = document.getElementById("haha");
-	var x = event.clientX - a.offsetLeft;
-	var y = event.clientY - a.offsetTop;
-	say("mousestart "+x+" "+y);
-}
-function mouse_move(theone,event)
-{
-	var a = document.getElementById("haha");
-	var x = event.clientX - a.offsetLeft;
-	var y = event.clientY - a.offsetTop;
-	if((x==lastmousex)&&(y==lastmousey))return;
+	var boxhead=document.getElementById("boxhead");
+	var draging=false;
+	var disX = disY = 0;
 
-	lastmousex=x;
-	lastmousey=y;
-	say("mousemove "+x+" "+y);
-}
-function mouse_end(theone,event)
-{
-	var a = document.getElementById("haha");
-	var x = event.clientX - a.offsetLeft;
-	var y = event.clientY - a.offsetTop;
-	say("mouseend "+x+" "+y);
-}
-function mouse_enter(theone,event)
-{
-	document.getElementById("haha").style.opacity=0.66;
-}
-function mouse_leave(theone,event)
-{
-	document.getElementById("haha").style.opacity=0.33;
+	var boxbody=document.getElementById("boxbody");
+	var lastmousex = lastmousey = -99;
+
+	boxhead.onmousedown=function(event)
+	{
+		draging=true;
+		disX=event.clientX-boxroot.offsetLeft;
+		disY=event.clientY-boxroot.offsetTop;
+		document.onmousemove = function(event)
+		{
+			if(!draging)return;
+			document.body.style.cursor = "move";
+			var event = event || window.event;
+			var boxX = event.clientX - disX;
+			var boxY = event.clientY - disY;
+			var maxX = document.body.scrollWidth - boxroot.offsetWidth;
+			var maxY = document.body.offsetHeight - boxroot.offsetHeight;
+			//boxX = (boxX < 0) ? 0 : boxX;
+			//boxY = (boxY < 0) ? 0 : boxY;
+			//boxX = (boxX > maxX) ? maxX : boxX;
+			//boxY = (boxY > maxY) ? maxY : boxY;
+			boxroot.style.left = boxX + "px";
+			boxroot.style.top = boxY + "px";
+		};
+         
+		document.onmouseup = function()
+		{
+			draging = false;
+			document.body.style.cursor = "";
+		};
+	}
+
+	boxbody.onmouseenter=function(event)
+	{
+		//document.getElementById("boxroot").style.opacity=0.8;
+	}
+	boxbody.onmouseleave=function(event)
+	{
+		//document.getElementById("boxroot").style.opacity=0.4;
+	}
+	boxbody.onmousedown=function(event)
+	{
+		var x = event.clientX -boxroot.offsetLeft;
+		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		say("mousestart "+x+" "+y);
+	}
+	boxbody.onmouseup=function(event)
+	{
+		var x = event.clientX -boxroot.offsetLeft;
+		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		say("mouseend "+x+" "+y);
+	}
+	boxbody.onmousemove=function(event)
+	{
+		var x = event.clientX -boxroot.offsetLeft;
+		var y = event.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		if((x==lastmousex)&&(y==lastmousey))return;
+
+		lastmousex=x;
+		lastmousey=y;
+		say("mousemove "+x+" "+y);
+	}
+
+	boxbody.ontouchstart=function(event)
+	{
+		var touch0 = event.touches[0];
+		var x = touch0.clientX -boxroot.offsetLeft;
+		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		say("touchatart "+x+" "+y);
+	}
+	boxbody.ontouchstart=function(event)
+	{
+		var touch0 = event.touches[0];
+		var x = touch0.clientX -boxroot.offsetLeft;
+		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		say("touchmove "+x+" "+y);
+	}
+	boxbody.ontouchstart=function(event)
+	{
+		var touch0 = event.touches[0];
+		var x = touch0.clientX -boxroot.offsetLeft;
+		var y = touch0.clientY -boxroot.offsetTop -boxbody.offsetTop;
+		say("touchend "+x+" "+y);
+	}
 }
 
 </script>
 </head>
 
-<body style="background:black;margin:0;padding:0;overflow:hidden;">
-
-<pre style="white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;">
-<code id="debug" style="position:absolute;width:100%;height:100%;background:#444;color:#fff;overflow-y:scroll;">
-</code>
+<body>
+<pre id="haha">
+	<code id="debug">
+	</code>
 </pre>
-
-<div id="haha" style="position:absolute;left:4%;top:4%;width:90%;height:90%;background:#444444;color:#fff;opacity:0.9;border-left:4px solid #473623;border-top:4px solid #456789;border-right:4px solid #012345;border-bottom:4px solid #222222;" onmousedown="mouse_start(this,event)" onmousemove="mouse_move(this,event)" onmouseup="mouse_end(this,event)" onmouseenter="mouse_enter(this,event)" onmouseleave="mouse_leave(this,event)" ontouchstart="touch_start(this,event)" ontouchend="touch_end(this,event)" ontouchmove="touch_move(this,event)">
+<div id="boxroot">
+	<div id="boxhead">
+	</div>
+	<div id="boxbody">
+	</div>
 </div>
-
 </body>
 </html>
