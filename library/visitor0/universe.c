@@ -56,7 +56,8 @@ void createuniverse()
 	//temp
 	u64 i;
 	u64 temp;
-	int size=4 * 0x400000;
+	int size=2 * 0x400000;
+	//int size=4 * 0x400000;
 
 
 	//1.申请内存，为了对齐要多申请0x1000
@@ -83,11 +84,18 @@ void createuniverse()
 		universe[i]=0;
 	}
 
+/*
 	//4.分配内存
 	basic    = universe + 0;
 	body     = universe + (1*0x400000);
 	memory   = universe + (2*0x400000);
 	character= universe + (3*0x400000);
+*/
+	//4.分配内存
+	basic    = 0;
+	body     = 0;
+	memory   = universe + (0*0x400000);
+	character= universe + (1*0x400000);
 	//say("basic@%llx,body@%llx,memory@%llx,character@%llx\n",basic,body,memory,character);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

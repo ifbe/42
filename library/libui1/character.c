@@ -445,6 +445,7 @@ int characterchoose(char* p)
 	}
 
 found:
+	worker[0].xyze1 = 0;
 	characterstart(pixbuf, pixfmt, w, h);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
