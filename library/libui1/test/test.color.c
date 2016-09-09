@@ -11,15 +11,15 @@ void say(char*,...);
 
 //
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //
@@ -34,7 +34,7 @@ static void color_list()
 static void color_into()
 {
 }
-static void color_read()
+static void color_read_pixel()
 {
 	int x,y,min;
 	u32 color;
@@ -118,6 +118,38 @@ static void color_read()
 
 	//
 	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
+}
+static void color_read_html()
+{
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
+
+	color_read_pixel();
+	screenbuf[0]=0;
+}
+static void color_read_text()
+{
+}
+static void color_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if(temp == 0x74786574)
+	{
+		color_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		color_read_html();
+	}
+
+	//pixel
+	else
+	{
+		color_read_pixel();
+	}
 }
 static void color_write(u64* who, u64* a, u64* b)
 {

@@ -180,7 +180,7 @@ void windowwrite()
 
 	if(sendbuf[0]==0)
 	{
-		len=8;
+		len=512*512*4;
 		type=2;
 	}
 	else

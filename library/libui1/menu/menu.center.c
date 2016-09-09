@@ -139,7 +139,7 @@ static void menu_read_html()
 	buffer[bufp] = 0;
 	diary(p,0x1000,
 		"<div style=\""
-		"position:fixed;"
+		"position:absolute;"
 		"z-index:100;"
 		"left:25%;"
 		"top:25%;"

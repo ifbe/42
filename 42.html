@@ -101,31 +101,20 @@ function showdraw(data)
 
 	document.getElementById('boxdraw').innerHTML=data;
 }
+
 function showpixel(data)
 {
-	var ctx = document.getElementById('pixel').getContext('2d');
-	var imageData = ctx.createImageData(512, 512);
-	var p = imageData.data;
-
 	say("binary "+data.byteLength);
 	document.getElementById('boxlogin').style.display="none";
 	document.getElementById('boxerror').style.display="none";
 	document.getElementById('boxdraw').style.display="none";
 	document.getElementById('boxpixel').style.display="";
 
-	for (var y=0;y<512;y++) {
-		for (var x=0;x<512;x++) {
-			p[4*(512*y+x)+0] = x;
-			p[4*(512*y+x)+1] = y;
-			p[4*(512*y+x)+2] = 99;
-			p[4*(512*y+x)+3] = 255;
-		}
-	}
-	//var buf = new ArrayBuffer(imageData.data.length);
-	//var buf8 = new Uint8ClampedArray(buf);
-	//var data = new Uint32Array(buf);
-	//data[y*width + x] =(255<<24)|(value<<16)|(value<<8)|value;
-	//imageData.data.set(buf8);
+	var ctx = document.getElementById('pixel').getContext('2d');
+	var imageData = ctx.getImageData(0, 0, 512, 512);
+	var buf8 = new Uint8ClampedArray(data);
+
+	imageData.data.set(buf8);
 	ctx.putImageData(imageData, 0, 0);
 }
 
@@ -208,10 +197,19 @@ window.onkeydown=function(ev){
 	{
 		send("char "+k);
 	}
+	else if(k>=106&&k<=111)
+	{
+		k-=64;
+		send("char "+k);
+	}
 	else if(k>=65&&k<=90)
 	{
 		k=k+32;
 		send("char "+k);
+	}
+	else if(k==187)
+	{
+		send("char 61");
 	}
 	else
 	{
@@ -307,26 +305,13 @@ window.onload=function() {
 	}
 	boxdraw.ontouchend=function(event)
 	{
-		event.preventDefault();
-		var touch0 = event.touches[0];
-		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
-		say("touchend "+x+" "+y);
+		say("touchend");
 	}
 	boxdraw.ontouchcancel=function(event)
 	{
-		event.preventDefault();
-		var touch0 = event.touches[0];
-		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
-		say("touchcancel "+x+" "+y);
+		say("touchcancel");
 	}
 }
-
-var canvas = document.createElement('canvas');
-canvas.height = 1024;
-canvas.width = 1024;
-var ctx = canvas.getContext('2d');
 
 </script>
 </head>

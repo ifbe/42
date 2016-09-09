@@ -24,28 +24,28 @@ void say(char*,...);
 
 
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 struct mathnode{
 
-        u32 type;
-        u32 up;
-        u32 left;
-        u32 right;
-        union{
-                char datasize[16];
-                double floatpoint;
-                unsigned long long integer;
-        };
+	u32 type;
+	u32 up;
+	u32 left;
+	u32 right;
+	union{
+		char datasize[16];
+		double floatpoint;
+		unsigned long long integer;
+	};
 };
 static struct mathnode* node=0;
 
@@ -311,7 +311,7 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 	//else if(type==0x6B636162207A7978)		//'xyz ++++'
 	//else if(type==0x6B636162207A7978)		//'xyz ----'
 }
-static void sketchpad_read()
+static void sketchpad_read_pixel()
 {
 	double hello;
 
@@ -346,6 +346,38 @@ skipthese:		//打印
 	printstring(0, 32, 1, postfix, 0xcccccc , 0 );
 	printstring(0, 48, 1, result, 0xcccccc , 0 );
 	return;
+}
+static void sketchpad_read_html()
+{
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
+
+	sketchpad_read_pixel();
+	screenbuf[0]=0;
+}
+static void sketchpad_read_text()
+{
+}
+static void sketchpad_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if(temp == 0x74786574)
+	{
+		sketchpad_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		sketchpad_read_html();
+	}
+
+	//pixel
+	else
+	{
+		sketchpad_read_pixel();
+	}
 }
 
 

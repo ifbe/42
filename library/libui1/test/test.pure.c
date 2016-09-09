@@ -64,8 +64,8 @@ static void pure_read_text()
 static void pure_read_html()
 {
 	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	pure_read_pixel();
 	screenbuf[0]=0;
-	screenbuf[0x1000]=0;
 }
 static void pure_read()
 {
@@ -92,7 +92,8 @@ static void pure_read()
 }
 static void pure_write(u64* who, u64* what, u64* how)
 {
-	if( *(unsigned int*)what == 0x207A7978 )
+	u32 temp = *(u32*)what;
+	if( (temp == 0x207A7978) | (temp == 0x64626b) )
 	{
 		flag = (flag+1)&0x7;
 	}
