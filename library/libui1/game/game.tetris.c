@@ -133,7 +133,10 @@ static int htmlcubie(char* p, int x, int y)
 static void tetris_read_html()
 {
 	int x,y;
-	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+	char* p = (char*)(haha->pixelbuffer);
+
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
 
 	p += diary(
 		p, 0x1000,

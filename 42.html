@@ -19,6 +19,7 @@ html,body{margin:0;padding:0;overflow:hidden;}
 	color:#fff;
 	overflow-y:scroll;
 }
+
 #boxroot {
 	position:absolute;
 	left:4%;
@@ -29,51 +30,47 @@ html,body{margin:0;padding:0;overflow:hidden;}
 	opacity:0.8;
 }
 #boxhead {
+	position:absolute;
+	top:0%;
 	width:100%;
 	height:2%;
 	background: #ccc;
 	border-bottom: 1px solid #eee;
 	border-radius: 4px 4px 0 0;
-}
-#boxlogin {
-	position:absolute;
-	width:100%;
-	height:98%;
-	background:#444;
-	color:#fff;
-	font-size:128px;
 	text-align:center;
 }
-#boxerror {
+.boxbody {
 	position:absolute;
+	top:2%;
 	width:100%;
-	height:98%;
-	background:#444;
-	color:#fff;
-	font-size:128px;
-	text-align:center;
-}
-#boxdraw {
-	position:absolute;
-	width:100%;
-	height:98%;
+	height:96%;
 	background:#444;
 	color:#fff;
 	text-align:center;
 }
-#boxpixel {
+#boxtail {
 	position:absolute;
+	top:98%;
 	width:100%;
-	height:98%;
-	background:#444;
-	color:#fff;
+	height:2%;
+	background: #ccc;
+	border-bottom: 1px solid #eee;
+	border-radius: 4px 4px 0 0;
 	text-align:center;
 }
+
 #pixel {
 	position:absolute;
 	left:0%;
 	top:0%;
 	width:100%;
+	height:100%;
+}
+#str {
+	position:absolute;
+	left:25%;
+	top:0%;
+	width:50%;
 	height:100%;
 }
 </style>
@@ -84,49 +81,8 @@ function say(data)
 	debug.textContent=debug.textContent+data+"\n";
 	debug.scrollTop=debug.scrollHeight;
 }
-function showlogin()
-{
-	document.getElementById('boxlogin').style.display="";
-	document.getElementById('boxerror').style.display="none";
-	document.getElementById('boxdraw').style.display="none";
-	document.getElementById('boxpixel').style.display="none";
-}
-function showerror()
-{
-	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="";
-	document.getElementById('boxdraw').style.display="none";
-	document.getElementById('boxpixel').style.display="none";
-}
-function showdraw(data)
-{
-	say("string "+data.length);
-	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="none";
-	document.getElementById('boxdraw').style.display="";
-	document.getElementById('boxpixel').style.display="none";
 
-	document.getElementById('boxdraw').innerHTML=data;
-}
-
-function showpixel(data)
-{
-	say("binary "+data.byteLength);
-	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="none";
-	document.getElementById('boxdraw').style.display="none";
-	document.getElementById('boxpixel').style.display="";
-
-	var ctx = document.getElementById('pixel').getContext('2d');
-	var imageData = ctx.getImageData(0, 0, 512, 512);
-	var buf8 = new Uint8ClampedArray(data);
-
-	imageData.data.set(buf8);
-	ctx.putImageData(imageData, 0, 0);
-}
-
-var ws=new WebSocket("ws://127.0.0.1:2222");
-ws.binaryType = 'arraybuffer';
+var ws;
 function send(data)
 {
 	say(data);
@@ -148,31 +104,75 @@ function sendblob(data)
 	//var file = document.querySelector('input[type="file"]').files[0];
 	//ws.send(file);
 }
-ws.onmessage=function(event)
+
+function draw(data)
 {
-	if(typeof event.data === "string")
+	say("string "+data.length);
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="";
+	document.getElementById('boxpixel').style.display="none";
+
+	document.getElementById('boxdraw').innerHTML=data;
+}
+function pixel(data)
+{
+	say("binary "+data.byteLength);
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="";
+
+	var ctx = document.getElementById('pixel').getContext('2d');
+	var imageData = ctx.getImageData(0, 0, 512, 512);
+	var buf8 = new Uint8ClampedArray(data);
+
+	imageData.data.set(buf8);
+	ctx.putImageData(imageData, 0, 0);
+}
+function error()
+{
+	document.getElementById('boxlogin').style.display="none";
+	document.getElementById('boxerror').style.display="";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="none";
+}
+function login()
+{
+	document.getElementById('boxlogin').style.display="";
+	document.getElementById('boxerror').style.display="none";
+	document.getElementById('boxdraw').style.display="none";
+	document.getElementById('boxpixel').style.display="none";
+
+	ws=new WebSocket("ws://127.0.0.1:2222");
+	ws.binaryType = 'arraybuffer';
+
+	ws.onmessage=function(event)
 	{
-		showdraw(event.data);
-	}
-	else //if(event.data instanceof ArrayBuffer)
+		if(typeof event.data === "string")
+		{
+			draw(event.data);
+		}
+		else //if(event.data instanceof ArrayBuffer)
+		{
+			pixel(event.data);
+		}
+	};
+	ws.onopen=function(event)
 	{
-		showpixel(event.data);
-	}
-};
-ws.onopen=function(event)
-{
-	say("welcome victim");
-};
-ws.onclose=function(event)
-{
-	say("connection closed");
-	showerror();
-};
-ws.onerror=function(event)
-{
-	say("something wrong");
-	showerror();
-};
+		say("welcome victim");
+	};
+	ws.onclose=function(event)
+	{
+		say("connection closed");
+		error();
+	};
+	ws.onerror=function(event)
+	{
+		say("something wrong");
+		error();
+	};
+}
 
 var oldw=0;
 var oldh=0;
@@ -193,7 +193,8 @@ window.onresize=function(){
 		oldh=h;
 	}
 }
-window.onkeydown=function(ev){
+window.onkeydown=function(ev)
+{
 	var k=ev.keyCode;
 	if((k==8)||(k==9))
 	{
@@ -223,7 +224,6 @@ window.onkeydown=function(ev){
 		send("kbd "+k);
 	}
 }
-
 window.onload=function() {
 	var boxroot=document.getElementById("boxroot");
 
@@ -233,6 +233,9 @@ window.onload=function() {
 
 	var boxdraw=document.getElementById("boxdraw");
 	var lastmousex = lastmousey = -99;
+
+	var boxpixel=document.getElementById("boxpixel");
+	var lasttouchx = lasttouchy = -99;
 
 	boxhead.onmousedown=function(event)
 	{
@@ -263,27 +266,27 @@ window.onload=function() {
 		};
 	}
 
-	boxdraw.onmouseenter=function(event)
+	boxpixel.onmouseenter=boxdraw.onmouseenter=function(event)
 	{
 		//document.getElementById("boxroot").style.opacity=0.8;
 	}
-	boxdraw.onmouseleave=function(event)
+	boxpixel.onmouseleave=boxdraw.onmouseleave=function(event)
 	{
 		//document.getElementById("boxroot").style.opacity=0.4;
 	}
-	boxdraw.onmousedown=function(event)
+	boxpixel.onmousedown=boxdraw.onmousedown=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
 		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("mousestart "+x+" "+y);
 	}
-	boxdraw.onmouseup=function(event)
+	boxpixel.onmouseup=boxdraw.onmouseup=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
 		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("mouseend "+x+" "+y);
 	}
-	boxdraw.onmousemove=function(event)
+	boxpixel.onmousemove=boxdraw.onmousemove=function(event)
 	{
 		var x = event.clientX -boxroot.offsetLeft;
 		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
@@ -329,30 +332,34 @@ window.onload=function() {
 	</code>
 </pre>
 <div id="boxroot">
-	<div id="boxhead">
-	</div>
+<div id="boxhead">
+	42
+</div>
 
-	<div id="boxlogin">
-		<form action="form_action.asp" method="get">
-		username:<input type="text" name="fname" /><br />
-		password:<input type="text" name="lname" /><br />
-		<input type="submit" value="play" />
-		<input type="submit" value="look" />
-		</form>
-	</div>
-
-	<div id="boxerror">
-		error!
-	</div>
-
-	<div id="boxdraw">
+	<div id="boxdraw" class="boxbody">
 		haha
 	</div>
 
-	<div id="boxpixel">
+	<div id="boxpixel" class="boxbody">
 		<canvas id="pixel" width="512" height="512">
 		</canvas>
 	</div>
+
+	<div id="boxerror" class="boxbody" style="font-size:64px;">
+		error!
+	</div>
+
+	<div id="boxlogin" class="boxbody" style="font-size:64px;">
+		username:<input type="text" name="username" /><br />
+		password:<input type="password" name="password" /><br />
+		<input type="submit" value="play" onclick="login()" />
+		<input type="submit" value="look" onclick="login()"/>
+	</div>
+
+<div id="boxtail">
+	<input id="str" type="text">
+	</input>
+</div>
 </div>
 </body>
 </html>

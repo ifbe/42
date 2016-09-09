@@ -144,7 +144,11 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 void snake_read_html()
 {
 	int j = 0;
-	char* p = (char*)(haha->pixelbuffer)+0x1000;
+	char* p = (char*)(haha->pixelbuffer);
+
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
+
 	if(die == 1)
 	{
 		diary(p, 0x1000, "boooooooooooooooom");
