@@ -109,7 +109,6 @@ function draw(data)
 {
 	say("string "+data.length);
 	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="none";
 	document.getElementById('boxdraw').style.display="";
 	document.getElementById('boxpixel').style.display="none";
 
@@ -119,7 +118,6 @@ function pixel(data)
 {
 	say("binary "+data.byteLength);
 	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="none";
 	document.getElementById('boxdraw').style.display="none";
 	document.getElementById('boxpixel').style.display="";
 
@@ -130,20 +128,14 @@ function pixel(data)
 	imageData.data.set(buf8);
 	ctx.putImageData(imageData, 0, 0);
 }
-function error()
+function create()
 {
-	document.getElementById('boxlogin').style.display="none";
-	document.getElementById('boxerror').style.display="";
+	document.getElementById('boxlogin').style.display="";
 	document.getElementById('boxdraw').style.display="none";
 	document.getElementById('boxpixel').style.display="none";
 }
-function login()
+function start()
 {
-	document.getElementById('boxlogin').style.display="";
-	document.getElementById('boxerror').style.display="none";
-	document.getElementById('boxdraw').style.display="none";
-	document.getElementById('boxpixel').style.display="none";
-
 	ws=new WebSocket("ws://127.0.0.1:2222");
 	ws.binaryType = 'arraybuffer';
 
@@ -165,12 +157,12 @@ function login()
 	ws.onclose=function(event)
 	{
 		say("connection closed");
-		error();
+		create();
 	};
 	ws.onerror=function(event)
 	{
 		say("something wrong");
-		error();
+		create();
 	};
 }
 
@@ -224,31 +216,28 @@ window.onkeydown=function(ev)
 		send("kbd "+k);
 	}
 }
+var draging=false;
+var newx = newy = -99;
+var movex = movey = -99;
 window.onload=function() {
 	var boxroot=document.getElementById("boxroot");
-
 	var boxhead=document.getElementById("boxhead");
-	var draging=false;
-	var disX = disY = 0;
-
 	var boxdraw=document.getElementById("boxdraw");
-	var lastmousex = lastmousey = -99;
-
 	var boxpixel=document.getElementById("boxpixel");
-	var lasttouchx = lasttouchy = -99;
 
 	boxhead.onmousedown=function(event)
 	{
+		newx=event.clientX-boxroot.offsetLeft;
+		newy=event.clientY-boxroot.offsetTop;
 		draging=true;
-		disX=event.clientX-boxroot.offsetLeft;
-		disY=event.clientY-boxroot.offsetTop;
+
 		document.onmousemove = function(event)
 		{
 			if(!draging)return;
 			document.body.style.cursor = "move";
 			var event = event || window.event;
-			var boxX = event.clientX - disX;
-			var boxY = event.clientY - disY;
+			var boxX = event.clientX - newx;
+			var boxY = event.clientY - newy;
 			var maxX = document.body.scrollWidth - boxroot.offsetWidth;
 			var maxY = document.body.offsetHeight - boxroot.offsetHeight;
 			//boxX = (boxX < 0) ? 0 : boxX;
@@ -260,6 +249,37 @@ window.onload=function() {
 		};
          
 		document.onmouseup = function()
+		{
+			draging = false;
+			document.body.style.cursor = "";
+		};
+	}
+	boxhead.ontouchstart=function(event)
+	{
+		var touch0 = event.touches[0];
+		newx=touch0.clientX-boxroot.offsetLeft;
+		newy=touch0.clientY-boxroot.offsetTop;
+		draging=true;
+
+		document.ontouchmove = function(event)
+		{
+			if(!draging)return;
+
+			document.body.style.cursor = "move";
+			var touch0 = event.touches[0];
+			var boxX = touch0.clientX - newx;
+			var boxY = touch0.clientY - newy;
+			var maxX = document.body.scrollWidth - boxroot.offsetWidth;
+			var maxY = document.body.offsetHeight - boxroot.offsetHeight;
+			//boxX = (boxX < 0) ? 0 : boxX;
+			boxY = (boxY < 0) ? 0 : boxY;
+			//boxX = (boxX > maxX) ? maxX : boxX;
+			//boxY = (boxY > maxY) ? maxY : boxY;
+			boxroot.style.left = boxX + "px";
+			boxroot.style.top = boxY + "px";
+		};
+         
+		document.ontouchend = function()
 		{
 			draging = false;
 			document.body.style.cursor = "";
@@ -278,7 +298,20 @@ window.onload=function() {
 	{
 		var x = event.clientX -boxroot.offsetLeft;
 		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
+
+		newx=movex=x;
+		newy=movex=y;
 		say("mousestart "+x+" "+y);
+	}
+	boxpixel.onmousemove=boxdraw.onmousemove=function(event)
+	{
+		var x = event.clientX -boxroot.offsetLeft;
+		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
+		if((x==movex)&&(y==movey))return;
+
+		movex=x;
+		movey=y;
+		//say("mousemove "+x+" "+y);
 	}
 	boxpixel.onmouseup=boxdraw.onmouseup=function(event)
 	{
@@ -286,40 +319,39 @@ window.onload=function() {
 		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
 		say("mouseend "+x+" "+y);
 	}
-	boxpixel.onmousemove=boxdraw.onmousemove=function(event)
-	{
-		var x = event.clientX -boxroot.offsetLeft;
-		var y = event.clientY -boxroot.offsetTop -boxdraw.offsetTop;
-		if((x==lastmousex)&&(y==lastmousey))return;
-
-		lastmousex=x;
-		lastmousey=y;
-		say("mousemove "+x+" "+y);
-	}
 
 	boxdraw.ontouchstart=function(event)
 	{
-		event.preventDefault();
 		var touch0 = event.touches[0];
-		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
+		var x = Math.round(touch0.clientX -boxroot.offsetLeft);
+		var y = Math.round(touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop);
+
+		newx=movex=x;
+		newy=movex=y;
+		event.preventDefault();
 		say("touchatart "+x+" "+y);
 	}
 	boxdraw.ontouchmove=function(event)
 	{
-		event.preventDefault();
 		var touch0 = event.touches[0];
-		var x = touch0.clientX -boxroot.offsetLeft;
-		var y = touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop;
-		say("touchmove "+x+" "+y);
+		var x = Math.round(touch0.clientX -boxroot.offsetLeft);
+		var y = Math.round(touch0.clientY -boxroot.offsetTop -boxdraw.offsetTop);
+
+		movex=x;
+		movey=y;
+		event.preventDefault();
+		//say("touchmove "+x+" "+y);
 	}
-	boxdraw.ontouchend=function(event)
+	boxdraw.ontouchcancel=boxdraw.ontouchend=function(event)
 	{
-		say("touchend");
-	}
-	boxdraw.ontouchcancel=function(event)
-	{
-		say("touchcancel");
+		var x = movex-newx;
+		var y = movey-newy;
+
+		if(x<-128)send("kbd 37");
+		else if(x>128)send("kbd 39");
+		else if(y<-128)send("kbd 38");
+		else if(y>128)send("kbd 40");
+		say("touchend "+x+" "+y);
 	}
 }
 
@@ -345,15 +377,11 @@ window.onload=function() {
 		</canvas>
 	</div>
 
-	<div id="boxerror" class="boxbody" style="font-size:64px;">
-		error!
-	</div>
-
 	<div id="boxlogin" class="boxbody" style="font-size:64px;">
 		username:<input type="text" name="username" /><br />
 		password:<input type="password" name="password" /><br />
-		<input type="submit" value="play" onclick="login()" />
-		<input type="submit" value="look" onclick="login()"/>
+		<input type="submit" value="play" onclick="start()" />
+		<input type="submit" value="look" onclick="start()"/>
 	</div>
 
 <div id="boxtail">
