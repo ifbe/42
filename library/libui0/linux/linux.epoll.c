@@ -172,23 +172,26 @@ void windowwrite()
 	u64 len;
 	u8 type;
 
+	//no one
 	if(websocket_count == 0)
 	{
 		printf("@windowwrite:count=0\n");
 		return;
 	}
 
-	if(sendbuf[0]==0)
-	{
-		len=512*512*4;
-		type=2;
-	}
-	else
+	//type
+	if(*(u32*)sendbuf == 0x6c6d7468)
 	{
 		len = strlen(sendbuf+0x1000);
 		type=1;
 	}
+	else
+	{
+		len=512*512*4;
+		type=2;
+	}
 
+	//len
 	if(len<=125)
 	{
 		x = 2;
@@ -218,11 +221,11 @@ void windowwrite()
 		sendbuf[0x1000-x+9] = (len)&0xff;
 	}
 
-	//
+	//debug
 	for(y=0;y<x+8;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
 	printf("\n");
-	//printf("%s\n", sendbuf+0x1000);
 
+	//write
 	for(z=3;z<MAXSIZE;z++)
 	{
 		if(clienttype[z] == 0x10)
@@ -586,7 +589,7 @@ void uievent(char* who, char* type, char* key)
 			*(u64*)key = *(u64*)(event_queue + 8);
 			event_count = 0;
 
-			printmemory(event_queue, 16);
+			//printmemory(event_queue, 16);
 			return;
 		}
 

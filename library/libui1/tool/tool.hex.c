@@ -317,24 +317,67 @@ static void hex_read_text()
 static void hex_read_html()
 {
 	int x,y;
+	float dx,dy;
 	unsigned char ch;
 
 	int width = haha->width;
 	int height = haha->height;
-	unsigned char* p = (char*)(haha->pixelbuffer) + 0x1000;
+	unsigned char* p = (char*)(haha->pixelbuffer);
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
 
 	updateconfig();
-	p += diary(p, 0x1000, "<table cellspacing=\"0\" cellpadding=\"2\" border=\"1\" bordercolor=\"#000000\">");
+	dx = 80.00 / (byteperline+1);
+	x = (pointeroffset % byteperline) +1;
+	dy = 80.00 / lineperwindow;
+	y = (pointeroffset / byteperline) +0;
 
+	//css part1
+	p += diary(
+		p, 0x1000,
+		"<style>"
+		".bg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#abcdef;color:#000;}"
+		".tb{position:absolute;left:10%;top:10%;width:80%;height:80%;border-collapse:collapse;table-layout:fixed;}"
+		".tb td{border:solid #000 1px;text-align:center;}",
+
+		dx, dy,
+		dx *x +10.00, dy *y +10.00
+	);
+
+	//css part2
+	if(x>byteperline-4)x-=5;
+	if(y>lineperwindow-5)y-=5;
+	p += diary(
+		p, 0x1000,
+		".fg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#fedcba;color:#000;}"
+		"</style>",
+		dx * 4, dy * 4,
+		dx *(x+1) +10.00, dy *(y+1) +10.00
+	);
+
+	//bg, table
+	p += diary(
+		p, 0x1000,
+		"<div class=\"bg\"></div>"
+		"<table class=\"tb\">"
+	);
 	if(printmethod==0)		//hex
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(p, 0x1000, "<tr><th>%02x</th>", y*16);
+			p += diary(
+				p, 0x1000,
+				"<tr><th>%02x</th>",
+				windowoffset + y*byteperline
+			);
+
 			for(x=0;x<byteperline;x++)
 			{
 				ch = databuf[windowoffset + y*byteperline + x];
-				p += diary(p, 0x1000, "<td>%02x</td>", ch);
+				p += diary(
+					p, 0x1000,
+					"<td>%02x</td>", ch
+				);
 			}
 		}
 	}
@@ -343,22 +386,41 @@ static void hex_read_html()
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(p, 0x1000, "<tr><th>%02x</th>", y*16);
+			p += diary(
+				p, 0x1000,
+				"<tr><th>%02x</th>",
+				windowoffset + y*byteperline
+			);
+
 			for(x=0;x<byteperline;x++)
 			{
 				ch = databuf[windowoffset + y*byteperline + x];
 				if((ch > 0x1f) && (ch < 0x7f))
 				{
-					p += diary(p, 0x1000, "<td>.%c</td>", ch);
+					p += diary(p, 0x1000, "<td>%c</td>", ch);
 				}
 				else
 				{
-					p += diary(p, 0x1000, "<td>.?</td>");
+					p += diary(p, 0x1000, "<td></td>");
 				}
 			}
 		}
 	}
-	diary(p, 0x1000, "</table>");
+	p += diary(p, 0x1000, "</table>");
+
+	//fg
+	p += diary(
+		p, 0x1000,
+		"<div class=\"fg\">"
+		"buf: %llx<br />"
+		"area: %llx<br />"
+		"pointer: %llx<br />"
+		"</div>",
+
+		(u64)databuf,
+		windowoffset,
+		pointeroffset
+	);
 }
 static void hex_read()
 {
@@ -430,7 +492,7 @@ static void hex_write(u64* who, u64* a, u64* b)
 		{
 			if( pointeroffset < byteperline )
 			{
-				if(windowoffset > byteperline)
+				if(windowoffset >= byteperline)
 				{
 					windowoffset -= byteperline;
 				}
@@ -442,7 +504,7 @@ static void hex_write(u64* who, u64* a, u64* b)
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			if( pointeroffset > (lineperwindow-1) * byteperline )
+			if( pointeroffset >= (lineperwindow-1) * byteperline )
 			{
 				if(windowoffset < 0x400000 - byteperline)
 				{

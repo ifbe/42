@@ -64,7 +64,10 @@ static void qrcode_read_html()
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+	char* p = (char*)(haha->pixelbuffer);
+
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
 
 	p += diary(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
 	p += diary(

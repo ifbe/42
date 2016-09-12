@@ -159,7 +159,7 @@ static void menu_read_html()
 static void menu_read()
 {
 	u32 temp = (haha->pixelformat)&0xffffffff;
-	say("temp=%x\n",temp);
+	//say("temp=%x\n",temp);
 
 	//text
 	if(temp == 0x74786574)
