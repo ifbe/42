@@ -454,23 +454,149 @@ found:
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//显示，事件处理
-void characterread()
-{
-	//主画
-	worker[now].read();
-
-	//菜单
-	if(worker[0].xyze1 > 0)worker[0].read();
-	if(worker[1].xyze1 > 0)worker[1].read();
-	if(worker[2].xyze1 > 0)worker[2].read();
-}
-void characterwrite(u64 who, u64 what,u64 key)
+static void parsetouch(u64* who, u64* what, u64* key)
 {
 	int m,n;
 	int dx0,dy0;
 	int dx1,dy1;
 	int dx2,dy2;
+
+	m = *(u16*)what;
+	n = ( (*key) >> 48 ) & 0x07;
+
+	if(m == 0x4070)
+	{
+		//say("[%d]@@@@@@@@@@@\n",n);
+		pointleave[n]=*key;
+	}//point move
+
+	else if(m == 0x2b70)
+	{
+		//say("[%d]++++++++++\n",n);
+		pointcount++;
+		pointmax++;
+		pointenter[n]=*key;
+	}//point sensed
+
+	else if(m == 0x2d70)
+	{
+		//say("[%d]---------\n",n);
+
+		//
+		pointleave[n]=*key;
+/*
+		say("(%llx,%llx)->(%llx,%llx)\n",
+			(pointenter[n]&0xffff),
+			((pointenter[n]>>16)&0xffff),
+			(pointleave[n]&0xffff),
+			((pointleave[n]>>16)&0xffff)
+		);
+*/
+		//
+		pointcount--;
+		if(pointcount==0)
+		{
+			if(pointmax==1)
+			{
+				pointmax=0;
+				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
+
+				if( (dy0>-256) && (dy0<256) )
+				{
+					if(dx0<-128)	//left
+					{
+						*what = 0x64626b;
+						*key = 0x25;
+					}
+					else if(dx0>128)	//right
+					{
+						*what = 0x64626b;
+						*key = 0x27;
+					}
+					else	//point
+					{
+						*what = 0x7466656C207A7978;
+						*key &= 0xffffffff;
+					}
+				}
+				if( (dx0>-256) && (dx0<256) )
+				{
+					if(dy0<-128)	//up
+					{	
+						*what = 0x64626b;
+						*key = 0x26;
+					}
+					else if(dy0>128)	//down
+					{
+						*what = 0x64626b;
+						*key = 0x28;
+					}
+					else	//point
+					{
+						*what = 0x7466656C207A7978;
+						*key &= 0xffffffff;
+					}
+				}
+			}
+
+			else if(pointmax==2)
+			{
+				pointmax=0;
+				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
+				dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
+				dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
+			}
+
+			else if(pointmax>=3)
+			{
+				pointmax=0;
+				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
+				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
+				dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
+				dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
+				dx2 = (pointleave[2]&0xffff) - (pointenter[2]&0xffff);
+				dy2 = ((pointleave[2]>>16)&0xffff) - ((pointenter[2]>>16)&0xffff);
+				if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256)&&(dx2>-256)&&(dx2<256) )
+				{
+					if( (dy0 > 128)&&(dy1 > 128)&&(dy2 > 128) )
+					{
+						worker[1].xyze1 ^= 1;
+					}
+					else if( (dy0 < -128)&&(dy1 < -128)&&(dy2 < -128) )
+					{
+						worker[2].xyze1 ^= 1;
+					}
+					else
+					{
+						worker[0].xyze1 ^= 1;
+					}
+				}
+				else if( (dy0>-256)&&(dy0<256)&&(dy1>-256)&&(dy1<256)&&(dy2>-256)&&(dy2<256) )
+				{
+					if( (dx0 < -128)&&(dx1 < -128)&&(dx2 < -128) )
+					{
+						characterchoose("+");
+					}
+					else if( (dx0 > 128)&&(dx1 > 128)&&(dx2 > 128) )
+					{
+						characterchoose("-");
+					}
+					else
+					{
+						worker[0].xyze1 ^= 1;
+					}
+				}
+			}
+
+		}//last one
+	}//point gone
+
+}
+void characterwrite(u64 who, u64 what,u64 key)
+{
+	int x;
 
 	//size
 	if(what == 0x657a6973)
@@ -478,17 +604,17 @@ void characterwrite(u64 who, u64 what,u64 key)
 		w = key & 0xffff;
 		h = (key >> 16) & 0xffff;
 
-		for(m=0;m<100;m++)
+		for(x=0;x<100;x++)
 		{
-			if(worker[m].id == 0)break;
+			if(worker[x].id == 0)break;
 
-			worker[m].width = w;
-			worker[m].height = h;
+			worker[x].width = w;
+			worker[x].height = h;
 		}
 		return;
 	}//size
 
-	//'kbd'
+	//kbd
 	else if(what == 0x64626b)
 	{
 		//按下esc
@@ -499,158 +625,43 @@ void characterwrite(u64 who, u64 what,u64 key)
 		}
 	}//kbd
 
-	if( (what&0xff) == 'p' )
+	//touch
+	else if( (what&0xff) == 'p' )
 	{
-		m = (what & 0xff00) >> 8;
-		n = (key >> 48) & 0x07;
-		if( m == '@' )
-		{
-			pointleave[n]=key;
-		}//point move
-		else if( m == '+' )
-		{
-			pointcount++;
-			pointmax++;
-			pointenter[n]=key;
-		}//point sensed
-		else if( m == '-' )
-		{
-			//
-			pointleave[n]=key;
-/*
-			say("(%llx,%llx)->(%llx,%llx)\n",
-				(pointenter[n]&0xffff),
-				((pointenter[n]>>16)&0xffff),
-				(pointleave[n]&0xffff),
-				((pointleave[n]>>16)&0xffff)
-			);
-*/
-			//
-			pointcount--;
-			if(pointcount==0)
-			{
-				if(pointmax==1)
-				{
-					pointmax=0;
-					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-
-					if( (dy0>-256) && (dy0<256) )
-					{
-						if(dx0<-128)	//left
-						{
-							what = 0x64626b;
-							key = 0x25;
-						}
-						else if(dx0>128)	//right
-						{
-							what = 0x64626b;
-							key = 0x27;
-						}
-						else	//point
-						{
-							what = 0x7466656C207A7978;
-							key &= 0xffffffff;
-						}
-					}
-					if( (dx0>-256) && (dx0<256) )
-					{
-						if(dy0<-128)	//up
-						{	
-							what = 0x64626b;
-							key = 0x26;
-						}
-						else if(dy0>128)	//down
-						{
-							what = 0x64626b;
-							key = 0x28;
-						}
-						else	//point
-						{
-							what = 0x7466656C207A7978;
-							key &= 0xffffffff;
-						}
-					}
-				}
-
-				else if(pointmax==2)
-				{
-					pointmax=0;
-					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
-					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-				}
-
-				else if(pointmax>=3)
-				{
-					pointmax=0;
-					dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-					dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-					dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
-					dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-					dx2 = (pointleave[2]&0xffff) - (pointenter[2]&0xffff);
-					dy2 = ((pointleave[2]>>16)&0xffff) - ((pointenter[2]>>16)&0xffff);
-					if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256)&&(dx2>-256)&&(dx2<256) )
-					{
-						if( (dy0 > 128)&&(dy1 > 128)&&(dy2 > 128) )
-						{
-							worker[1].xyze1 ^= 1;
-						}
-						else if( (dy0 < -128)&&(dy1 < -128)&&(dy2 < -128) )
-						{
-							worker[2].xyze1 ^= 1;
-						}
-						else if( (dy0>-128)&&(dy0<128)&&(dy1>-128)&&(dy1<128)&&(dy2>-128)&&(dy2<128) )
-						{
-							worker[0].xyze1 ^= 1;
-							return;
-						}
-					}
-					else if( (dy0>-256)&&(dy0<256)&&(dy1>-256)&&(dy1<256)&&(dy2>-256)&&(dy2<256) )
-					{
-						if( (dx0 < -128)&&(dx1 < -128)&&(dx2 < -128) )
-						{
-							characterchoose("+");
-						}
-						else if( (dx0 > 128)&&(dx1 > 128)&&(dx2 > 128) )
-						{
-							characterchoose("-");
-						}
-						else if( (dx0>-128)&&(dx0<128)&&(dx1>-128)&&(dx1<128)&&(dx2>-128)&&(dx2<128) )
-						{
-							worker[0].xyze1 ^= 1;
-							return;
-						}
-					}
-				}
-
-			}//last one
-		}//point gone
-
+		parsetouch(&who, &what, &key);
 	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)
 	{
 		//center
-		m = worker[0].write(&who, &what, &key);
+		x = worker[0].write(&who, &what, &key);
 	}
 	else if(worker[1].xyze1 > 0)
 	{
 		//roster
-		m = worker[1].write(&who, &what, &key);
+		x = worker[1].write(&who, &what, &key);
 	}
 	else if(worker[2].xyze1 > 0)
 	{
 		//virtkbd
-		m = worker[2].write(&who, &what, &key);
-		if(m > 0)worker[now].write(&who, &what, &key);
+		x = worker[2].write(&who, &what, &key);
+		if(x > 0)worker[now].write(&who, &what, &key);
 	}
 	else
 	{
 		//player
 		worker[now].write(&who, &what, &key);
 	}
+}
+void characterread()
+{
+	//主画
+	worker[now].read();
+
+	//菜单
+	if(worker[0].xyze1 > 0)worker[0].read();
+	if(worker[1].xyze1 > 0)worker[1].read();
+	if(worker[2].xyze1 > 0)worker[2].read();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
