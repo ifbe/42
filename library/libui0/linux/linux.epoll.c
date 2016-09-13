@@ -22,6 +22,7 @@
 //
 void sha1sum(unsigned char* out, const unsigned char* str, int len);
 void base64_encode(unsigned char* out,const unsigned char* in,int len);
+u32 getrandom();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -30,8 +31,8 @@ void say(char*,...);
 
 
 //
-static int listenfd;
-static int epollfd;
+static int listenfd=-1;
+static int epollfd=-1;
 static struct epoll_event epollevent[MAXSIZE];
 //
 static int clienttype[MAXSIZE];
@@ -128,14 +129,14 @@ void epoll_del(u32 fd)
 
 	if(fd < MAXSIZE)
 	{
-		if(clienttype[fd] == 0x10)
+		if(clienttype[fd] == 0x1f)
 		{
 			websocket_count--;
 			if(fd == websocket_last)
 			{
 				for(j=fd-1;j>2;j--)
 				{
-					if(clienttype[j] == 0x10)
+					if(clienttype[j] == 0x1f)
 					{
 						websocket_last = j;
 						break;
@@ -146,7 +147,7 @@ void epoll_del(u32 fd)
 		clienttype[fd] = 0;
 	}
 	close(fd);
-	printf("last=%d\n",websocket_last);
+	//printf("[3,%d]\n",websocket_last);
 }
 void epoll_add(u32 fd)
 {
@@ -222,16 +223,17 @@ void windowwrite()
 	}
 
 	//debug
-	for(y=0;y<x+8;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
-	printf("\n");
+	//for(y=0;y<x+8;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
+	//printf("\n");
 
 	//write
 	for(z=3;z<MAXSIZE;z++)
 	{
-		if(clienttype[z] == 0x10)
+		if(clienttype[z] == 0x1f)
 		{
 			y = write(z, sendbuf+0x1000-x, len+x);
-			if(y <= 0)printf("error@%d\n\n\n\n\n",z);
+			if(y > 0) printf("=>%d\n",z);
+			else printf("error@%d\n\n\n\n\n",z);
 		}
 	}
 }
@@ -254,19 +256,13 @@ void windowchoose()
 
 void serve_websocket(int fd, int nread)
 {
-	int i,j,k,type,masked;
+	int i,j,k;
+	int type,masked;
 	unsigned char key[4];
-	u64 temp;
+	u64 len;
 
-	printf("[%d]:\n",fd);
-	for(k=0;k<nread;k++)printf("%.2x ",recvbuf[k]);
-	printf("\n");
-
-	if(websocket_count == 0)
-	{
-		printf("@serve_websocket:count=0\n");
-		return;
-	}
+	//fd
+	printf("[%d]",fd);
 
 	//byte0.bit7
 	if((recvbuf[0]&0x80)==0x80)printf("tail,");
@@ -328,7 +324,7 @@ void serve_websocket(int fd, int nread)
 	k = recvbuf[1]&0x7f;
 	if(k==127)
 	{
-		temp	= ((u64)recvbuf[2]<<56)
+		len	= ((u64)recvbuf[2]<<56)
 			+ ((u64)recvbuf[3]<<48)
 			+ ((u64)recvbuf[4]<<40)
 			+ ((u64)recvbuf[5]<<32)
@@ -337,20 +333,20 @@ void serve_websocket(int fd, int nread)
 			+ ((u64)recvbuf[8]<<8)
 			+ recvbuf[9];
 		k = 10;
-		printf("len=%llx,", temp);
+		printf("len=%llx,", len);
 	}
 	else if(k==126)
 	{
-		temp	= (recvbuf[2]<<8)
+		len	= (recvbuf[2]<<8)
 			+ (recvbuf[3]);
 		k = 4;
-		printf("len=%llx,", temp);
+		printf("len=%llx,", len);
 	}
 	else
 	{
-		temp = k;
+		len = k;
 		k = 2;
-		printf("len=%llx,", temp);
+		printf("len=%llx,", len);
 	}
 
 	if(masked != 1)printf("\n");
@@ -365,40 +361,82 @@ void serve_websocket(int fd, int nread)
 		{
 			recvbuf[0] &= 0x8f;
 			recvbuf[1] &= 0x7f;
-			for(i=0;i<temp;i++)
+			for(i=0;i<len;i++)
 			{
-				recvbuf[j+i] = recvbuf[i+k] ^ key[i%4];
-
-				event_queue[i] = recvbuf[j+i];
-				printf("%c",recvbuf[j+i]);
+				event_queue[i] = recvbuf[i+k] ^ key[i%4];
+				//printf("%c",recvbuf[j+i]);
 			}
-			event_queue[i] = 0;
-			printf("\n");
-			//j = write(fd, recvbuf, j+temp);
-
+			event_queue[len] = 0;
+			//printf("\n");
 		}//type=ascii
 	}//masked=1
 
-	temp = *(u32*)event_queue;
-	if(temp == 0x2064626b)
+reply:
+	if(clienttype[fd]==0x10)
 	{
-		temp = atoi(event_queue+4);
-		*(u64*)(event_queue+8) = temp;
-		*(u64*)(event_queue+0) = 0x64626b;
+		printf("[%d]stage0 trying:%s\n", fd, event_queue);
+
+		//
+		i = snprintf(recvbuf+2, 20, "%x", getrandom());
+		recvbuf[0] = 0x81;
+		recvbuf[1] = i;
+		i = write(fd, recvbuf, 2+i);
+
+		//
+		printf("[%d]stage0 success\n\n", fd);
+		clienttype[fd] = 0x11;
 	}
-	else if(temp == 0x72616863)
+
+	else if(clienttype[fd]==0x11)
 	{
-		temp = atoi(event_queue+5);
-		*(u64*)(event_queue+8) = temp;
-		*(u32*)(event_queue+4) = 0;
+		printf("[%d]stage1 start:%s\n", fd, event_queue);
+		if(*(u32*)event_queue != 0x32343234)
+		{
+			epoll_del(fd);
+			printf("[%d]stage1 failed\n", fd);
+			return;
+		}
+
+		//count
+		websocket_count++;
+		if(fd > websocket_last)websocket_last = fd;
+
+		//event
+		*(u64*)(event_queue+0) = 0xabcdef;
+		event_count = 1;
+
+		//write
+		i = snprintf(recvbuf+2, 20, "success");
+		recvbuf[0] = 0x81;
+		recvbuf[1] = i;
+		i = write(fd, recvbuf, 2+i);
+
+		//
+		printf("[%d]stage1 success\n\n", fd);
+		clienttype[fd] = 0x1f;
 	}
-	event_count = 1;
+
+	else if(clienttype[fd]==0x1f)
+	{
+		len = *(u32*)event_queue;
+		if(len == 0x2064626b)
+		{
+			len = atoi(event_queue+4);
+			*(u64*)(event_queue+8) = len;
+			*(u64*)(event_queue+0) = 0x64626b;
+		}
+		else if(len == 0x72616863)
+		{
+			len = atoi(event_queue+5);
+			*(u64*)(event_queue+8) = len;
+			*(u32*)(event_queue+4) = 0;
+		}
+		event_count = 1;
+	}
 }
 void handshake_websocket(int fd)
 {
-	int j;
-
-	j=0;
+	int j=0;
 	while(1)
 	{
 		if(Sec_WebSocket_Key[j] == 0xa)
@@ -435,18 +473,11 @@ void handshake_websocket(int fd)
 		buf2
 	);
 	printf("%s",recvbuf);
-
-	//handshake
 	j = write(fd, recvbuf, strlen(recvbuf));
 
-	//
+	//handshake
+	printf("[%d]staging\n\n", fd);
 	clienttype[fd] = 0x10;
-	websocket_count++;
-	if(fd > websocket_last)websocket_last = fd;
-
-	//
-	*(u64*)(event_queue+0) = 0xabcdef;
-	event_count = 1;
 }
 void handshake_http(int fd)
 {
@@ -468,64 +499,66 @@ void handshake_http(int fd)
 }
 static void handle_read(int fd)
 {
+	int type;
 	int nread;
 
+	//出错就滚，正常往下
 	nread = read(fd, recvbuf, MAXSIZE);
-	if(nread>0)
-	{
-		recvbuf[nread] = 0;
-
-		//这是个websocket包
-		if(clienttype[fd] == 0x10)
-		{
-			serve_websocket(fd, nread);
-			return;
-		}
-
-		//这是个普通socket
-		else
-		{
-			//printf("[%d]start {\n", fd);
-			//printf("%s", recvbuf);
-			//printf("}end [%d]\n\n", fd);
-			explainstr(recvbuf, nread);
-
-			//普通socket，而且不是GET请求，丢弃
-			if(GET == 0)return;
-
-			//可能是http，websocket
-			else
-			{
-				//这是个websocket请求
-				if( (Upgrade != 0) && (Sec_WebSocket_Key != 0) )
-				{
-					handshake_websocket(fd);
-				}
-
-				//http请求根
-				else if( (GET[0]=='/')&&(GET[1]==' ') )
-				{
-					handshake_http(fd);
-					return;
-				}
-
-				//http请求其他
-				else
-				{
-					printf("[%d]ignore->close\n\n\n\n\n", fd);
-					epoll_del(fd);
-					return;
-				}
-			}
-		}
-	}
-	else
+	if(nread <= 0)
 	{
 		if (nread == -1)printf("[%d]read error\n", fd);
 		else if (nread == 0)printf("[%d]fd closed\n", fd);
 
 		epoll_del(fd);
+		return;
 	}
+	recvbuf[nread] = 0;
+	//printf("[%d]%d bytes\n", fd, nread);
+
+	//这是个普通socket
+	type = clienttype[fd];
+	if(type == 1)
+	{
+		//普通socket，而且不是GET请求，丢弃
+		explainstr(recvbuf, nread);
+		if(GET == 0)return;
+
+		//可能是http，websocket
+		else
+		{
+			//这是个websocket请求
+			if( (Upgrade != 0) && (Sec_WebSocket_Key != 0) )
+			{
+				handshake_websocket(fd);
+			}
+
+			//http请求根
+			else if( (GET[0]=='/')&&(GET[1]==' ') )
+			{
+				handshake_http(fd);
+			}
+
+			//http请求其他
+			else
+			{
+				printf("[%d]ignore->close\n\n\n\n\n", fd);
+				epoll_del(fd);
+			}
+
+			return;
+		}
+	}
+
+	//websocket
+	else if( (type >= 0x10) && (type <= 0x1f) )
+	{
+		serve_websocket(fd, nread);
+		return;
+	}
+
+	//ssh?
+	//vpn?
+	//tunnel?
 }
 static void handle_accpet(int listenfd)
 {
@@ -612,10 +645,10 @@ void windowdelete(int num)
 	int j;
 	for(j=0;j<MAXSIZE;j++)
 	{
-		if(clienttype[j] != 0)close(j);
+		if(clienttype[j] != 0)epoll_del(j);
 	}
-	close(listenfd);
-	close(epollfd);
+	if(listenfd>0)epoll_del(listenfd);
+	if(epollfd>0)close(epollfd);
 }
 int windowcreate()
 {
@@ -632,7 +665,7 @@ int windowcreate()
 		clienttype[ret] = 0;
 	}
 	websocket_count = 0;
-	websocket_last = 0;
+	websocket_last = 3;
 
 
 
@@ -647,7 +680,7 @@ int windowcreate()
 	if (listenfd == -1)
 	{
 		printf("error@socket\n");
-		exit(1);
+		exit(-1);
 	}
 
 	ret = 0;
@@ -655,13 +688,13 @@ int windowcreate()
 	if(ret<0)
 	{
 		printf("error@setsockopet\n");
-		return -1;
+		exit(-1);
 	}
 
 	if (bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
 	{
 		printf("error@bind\n");
-		exit(1);
+		exit(-1);
 	}
 	listen(listenfd, 5);
 

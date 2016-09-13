@@ -326,33 +326,44 @@ static void hex_read_html()
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
+	//prepare
 	updateconfig();
-	dx = 80.00 / (byteperline+1);
-	x = (pointeroffset % byteperline) +1;
+	dx = 80.00 / byteperline;
+	x = (pointeroffset % byteperline);
 	dy = 80.00 / lineperwindow;
-	y = (pointeroffset / byteperline) +0;
+	y = (pointeroffset / byteperline);
 
-	//css part1
+	//background
 	p += diary(
 		p, 0x1000,
 		"<style>"
-		".bg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#abcdef;color:#000;}"
-		".tb{position:absolute;left:10%;top:10%;width:80%;height:80%;border-collapse:collapse;table-layout:fixed;}"
-		".tb td{border:solid #000 1px;text-align:center;}",
+		".bg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#abcdef;color:#000;}",
 
 		dx, dy,
 		dx *x +10.00, dy *y +10.00
 	);
 
-	//css part2
-	if(x>byteperline-4)x-=5;
+	//table
+	p += diary(
+		p, 0x1000,
+		".tb{position:absolute;left:10%;top:10%;width:80%;height:80%;border-collapse:collapse;table-layout:fixed;}"
+		".tb td{border:solid #000 1px;text-align:center;}"
+	);
+
+	//foreground
+	if(x>byteperline-9)x-=9;
 	if(y>lineperwindow-5)y-=5;
 	p += diary(
 		p, 0x1000,
-		".fg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#fedcba;color:#000;}"
+		".fg1{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
+		".fg2{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
 		"</style>",
+
 		dx * 4, dy * 4,
-		dx *(x+1) +10.00, dy *(y+1) +10.00
+		dx *(x+1) +10.00, dy *(y+1) +10.00,
+
+		dx * 4, dy * 4,
+		dx *(x+5) +10.00, dy *(y+1) +10.00
 	);
 
 	//bg, table
@@ -365,11 +376,7 @@ static void hex_read_html()
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(
-				p, 0x1000,
-				"<tr><th>%02x</th>",
-				windowoffset + y*byteperline
-			);
+			p += diary(p, 0x1000, "<tr>");
 
 			for(x=0;x<byteperline;x++)
 			{
@@ -386,11 +393,8 @@ static void hex_read_html()
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(
-				p, 0x1000,
-				"<tr><th>%02x</th>",
-				windowoffset + y*byteperline
-			);
+			p += diary(p, 0x1000, "<tr>");
+//windowoffset + y*byteperline
 
 			for(x=0;x<byteperline;x++)
 			{
@@ -401,7 +405,7 @@ static void hex_read_html()
 				}
 				else
 				{
-					p += diary(p, 0x1000, "<td></td>");
+					p += diary(p, 0x1000, "<td>.</td>");
 				}
 			}
 		}
@@ -411,10 +415,15 @@ static void hex_read_html()
 	//fg
 	p += diary(
 		p, 0x1000,
-		"<div class=\"fg\">"
-		"buf: %llx<br />"
-		"area: %llx<br />"
-		"pointer: %llx<br />"
+		"<div class=\"fg1\">"
+		"buf:<br />"
+		"area:<br />"
+		"pointer:<br />"
+		"</div>"
+		"<div class=\"fg2\">"
+		"%llx<br />"
+		"%llx<br />"
+		"%llx<br />"
 		"</div>",
 
 		(u64)databuf,

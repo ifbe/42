@@ -8,13 +8,37 @@ function say(data)
 	debug.textContent=debug.textContent+data+"\n";
 	debug.scrollTop=debug.scrollHeight;
 }
+function updateserver()
+{
+	var server=document.getElementById("server");
+	server.value=window.location.hostname;
+}
+function updatesize()
+{
+	var src=document.getElementById("boxpixel");
+	var dst=document.getElementById("pixel");
+	var dx=src.offsetWidth;
+	var dy=src.offsetHeight;
+	say(dx+" "+dy);
 
-var opened=0;
+	if(dx<dy)
+	{
+		dst.style.width=dst.style.height=dx+"px";
+		dst.style.top=((dy-dx)/2)+"px";
+	}
+	else
+	{
+		dst.style.width=dst.style.height=dy+"px";
+		dst.style.left=((dx-dy)/2)+"px";
+	}
+}
+
+var stage=0;
 var ws;
 function send(data)
 {
-	say(data);
-	if(opened==1)ws.send(data);
+	//say(data);
+	if(stage>0)ws.send(data);
 }
 function sendbin(data)
 {
@@ -58,16 +82,19 @@ function create()
 	document.getElementById('boxlogin').style.display="";
 	document.getElementById('boxdraw').style.display="none";
 	document.getElementById('boxpixel').style.display="none";
-	if(opened==1)
+	if(stage>0)
 	{
 		ws.close();
-		opened=0;
+		stage=0;
 	}
 }
 function start()
 {
 	var server=document.getElementById("server").value;
 	var port=document.getElementById("port").value;
+	var username=document.getElementById("username").value;
+	var password=document.getElementById("password").value;
+
 	var url="ws://"+server+":"+port;
 	ws=new WebSocket(url);
 	ws.binaryType = 'arraybuffer';
@@ -76,7 +103,30 @@ function start()
 	{
 		if(typeof event.data === "string")
 		{
-			draw(event.data);
+			if(stage==16)
+			{
+				//recv salt
+				//send md5(name+pass+salt)
+				say("stage0 trying:"+event.data);
+
+				stage=17;
+				send(username+password+event.data);
+				//say(username+password+event.data);
+
+				say("stage0 success");
+			}
+			else if(stage==17)
+			{
+				say("stage1 trying:"+event.data);
+				stage=31;
+				say("stage1 success");
+			}
+			else if(stage==31)
+			{
+
+
+				draw(event.data);
+			}
 		}
 		else //if(event.data instanceof ArrayBuffer)
 		{
@@ -85,16 +135,10 @@ function start()
 	};
 	ws.onopen=function(event)
 	{
-		var username=document.getElementById("username").value;
-		var password=document.getElementById("password").value;
-
+		stage=16;
 		send("芝麻开门");
 
-		say("connection opened");
-		say("username:"+username);
-		say("password:"+password);
-
-		opened=1;
+		say("onopen:"+url);
 	};
 	ws.onclose=function(event)
 	{
@@ -108,8 +152,6 @@ function start()
 	};
 }
 
-var oldw=0;
-var oldh=0;
 window.onresize=function(){  
 	var w = window.innerWidth
 	|| document.documentElement.clientWidth
@@ -119,13 +161,7 @@ window.onresize=function(){
 	|| document.documentElement.clientHeight
 	|| document.body.clientHeight;
 
-	if((w!=oldw)&&(h!=oldh))
-	{
-		send("size "+w+","+h);
-
-		oldw=w;
-		oldh=h;
-	}
+	updatesize();
 }
 window.onkeydown=function(ev)
 {
@@ -167,6 +203,7 @@ window.onkeydown=function(ev)
 		send("kbd "+k);
 	}
 }
+
 var draging=false;
 var newx = newy = -99;
 var movex = movey = -99;
@@ -175,8 +212,8 @@ window.onload=function() {
 	var boxhead=document.getElementById("boxhead");
 	var boxdraw=document.getElementById("boxdraw");
 	var boxpixel=document.getElementById("boxpixel");
-	var server=document.getElementById("server");
-	server.value=window.location.hostname;
+	updateserver();
+	updatesize();
 
 	boxhead.onmousedown=function(event)
 	{
@@ -443,8 +480,8 @@ html,body{margin:0;padding:0;overflow:hidden;}
 		<br />
 		server:<input type="text" id="server" value="127.0.0.1" /><br />
 		port:<input type="text" id="port" value="2222" /><br />
-		username:<input type="text" id="username" /><br />
-		password:<input type="password" id="password" /><br />
+		username:<input type="text" id="username" value="42" /><br />
+		password:<input type="password" id="password" value="42" /><br />
 		<input type="submit" value="play" onclick="start()" />
 		<input type="submit" value="look" onclick="start()"/>
 	</div>
