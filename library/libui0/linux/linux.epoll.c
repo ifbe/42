@@ -254,6 +254,8 @@ void windowchoose()
 
 
 
+static u32 fixed_salt;
+static u32 temp_salt;
 void serve_websocket(int fd, int nread)
 {
 	int i,j,k;
@@ -374,29 +376,53 @@ void serve_websocket(int fd, int nread)
 reply:
 	if(clienttype[fd]==0x10)
 	{
-		printf("[%d]stage0 trying:%s\n", fd, event_queue);
+		printf("[%d]stage0 recv:%s\n", fd, event_queue);
 
 		//
-		i = snprintf(recvbuf+2, 20, "%x", getrandom());
+		i = snprintf(recvbuf+2, 20, "4....2..");
 		recvbuf[0] = 0x81;
 		recvbuf[1] = i;
 		i = write(fd, recvbuf, 2+i);
 
 		//
-		printf("[%d]stage0 success\n\n", fd);
+		printf("[%d]stage0 send:%s\n\n", fd, recvbuf+2);
 		clienttype[fd] = 0x11;
 	}
 
 	else if(clienttype[fd]==0x11)
 	{
-		printf("[%d]stage1 start:%s\n", fd, event_queue);
-		if(*(u32*)event_queue != 0x32343234)
+		printf("[%d]stage1 recv:%s\n", fd, event_queue);
+		if( (*(u16*)event_queue != 0x3234) && (event_queue[2]==0) )
 		{
 			epoll_del(fd);
 			printf("[%d]stage1 failed\n", fd);
 			return;
 		}
 
+		//
+		fixed_salt = getrandom();
+		temp_salt = getrandom();
+		i = snprintf(recvbuf+2, 20, "%x,%x", fixed_salt, temp_salt);
+		recvbuf[0] = 0x81;
+		recvbuf[1] = i;
+		i = write(fd, recvbuf, 2+i);
+
+		//
+		printf("[%d]stage1 send:%s\n\n", fd, recvbuf+2);
+		clienttype[fd] = 0x12;
+	}
+
+	else if(clienttype[fd]==0x12)
+	{
+		printf("[%d]stage2 recv:%s\n", fd, event_queue);
+/*
+		if(*(u16*)event_queue != 0x3234)
+		{
+			epoll_del(fd);
+			printf("[%d]stage2 failed\n", fd);
+			return;
+		}
+*/
 		//count
 		websocket_count++;
 		if(fd > websocket_last)websocket_last = fd;
@@ -412,12 +438,14 @@ reply:
 		i = write(fd, recvbuf, 2+i);
 
 		//
-		printf("[%d]stage1 success\n\n", fd);
+		printf("[%d]stage2 send:%s\n\n", fd, recvbuf+2);
 		clienttype[fd] = 0x1f;
 	}
 
 	else if(clienttype[fd]==0x1f)
 	{
+		printf("[%d]:%s\n", fd, event_queue);
+
 		len = *(u32*)event_queue;
 		if(len == 0x2064626b)
 		{

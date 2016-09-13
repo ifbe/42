@@ -103,28 +103,38 @@ function start()
 	{
 		if(typeof event.data === "string")
 		{
-			if(stage==16)
+			if(stage==0x10)
 			{
-				//recv salt
-				//send md5(name+pass+salt)
-				say("stage0 trying:"+event.data);
+				//recv server_identity
+				say("stage0 recv:"+event.data);
 
-				stage=17;
-				send(username+password+event.data);
-				//say(username+password+event.data);
+				//send username
+				send(username);
+				say("stage0 send:"+username);
 
-				say("stage0 success");
+				stage=0x11;
 			}
-			else if(stage==17)
+			else if(stage==0x11)
 			{
-				say("stage1 trying:"+event.data);
+				//recv fixed_salt temp_salt
+				say("stage1 recv:"+event.data);
+
+				//send md5(temp_salt + md5(fixed_salt + password))
+				var arr=event.data.split(",");
+				var temp=arr[0]+password+arr[1];
+				send(temp);
+				say("stage1 send:"+temp);
+
+				stage=0x12;
+			}
+			else if(stage==0x12)
+			{
+				say("stage2 recv:"+event.data);
+				say("stage2 success");
 				stage=31;
-				say("stage1 success");
 			}
 			else if(stage==31)
 			{
-
-
 				draw(event.data);
 			}
 		}
@@ -136,9 +146,8 @@ function start()
 	ws.onopen=function(event)
 	{
 		stage=16;
-		send("芝麻开门");
-
 		say("onopen:"+url);
+		send("final answer?");
 	};
 	ws.onclose=function(event)
 	{
@@ -166,17 +175,6 @@ window.onload=function() {
 
 	updateserver();
 	updatesize();
-	document.onresize=function(){
-		var w = window.innerWidth
-		|| document.documentElement.clientWidth
-		|| document.body.clientWidth;
-
-		var h = window.innerHeight
-		|| document.documentElement.clientHeight
-		|| document.body.clientHeight;
-
-		updatesize();
-	}
 	document.onkeydown=function(ev)
 	{
 		var k=ev.keyCode;
@@ -354,6 +352,17 @@ window.onload=function() {
 		else if(y>128)send("kbd 40");
 		say("touchend "+x+" "+y);
 	}
+}
+window.onresize=function(){
+	var w = window.innerWidth
+	|| document.documentElement.clientWidth
+	|| document.body.clientWidth;
+
+	var h = window.innerHeight
+	|| document.documentElement.clientHeight
+	|| document.body.clientHeight;
+
+	updatesize();
 }
 </script>
 
