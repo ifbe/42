@@ -152,68 +152,74 @@ function start()
 	};
 }
 
-window.onresize=function(){  
-	var w = window.innerWidth
-	|| document.documentElement.clientWidth
-	|| document.body.clientWidth;
-
-	var h = window.innerHeight
-	|| document.documentElement.clientHeight
-	|| document.body.clientHeight;
-
-	updatesize();
-}
-window.onkeydown=function(ev)
-{
-	var k=ev.keyCode;
-	if((k==8)||(k==9))
-	{
-		ev.preventDefault();
-		send("char "+k);
-	}
-	else if(k==13||k==32)
-	{
-		send("char "+k);
-	}
-	else if(k>=48&&k<=57)
-	{
-		send("char "+k);
-	}
-	else if(k>=65&&k<=90)
-	{
-		k=k+32;
-		send("char "+k);
-	}
-	else if(k>=96&&k<=105)
-	{
-		k=k-48;
-		send("char "+k);
-	}
-	else if(k>=106&&k<=111)
-	{
-		k-=64;
-		send("char "+k);
-	}
-	else if(k==187)
-	{
-		send("char 61");
-	}
-	else
-	{
-		send("kbd "+k);
-	}
-}
-
 var draging=false;
 var newx = newy = -99;
 var movex = movey = -99;
 window.onload=function() {
 	var boxroot=document.getElementById("boxroot");
 	var boxhead=document.getElementById("boxhead");
+	var boxtail=document.getElementById("boxtail");
+
 	var boxdraw=document.getElementById("boxdraw");
 	var boxpixel=document.getElementById("boxpixel");
+	var boxlogin=document.getElementById("boxlogin");
+
 	updateserver();
 	updatesize();
+	document.onresize=function(){
+		var w = window.innerWidth
+		|| document.documentElement.clientWidth
+		|| document.body.clientWidth;
+
+		var h = window.innerHeight
+		|| document.documentElement.clientHeight
+		|| document.body.clientHeight;
+
+		updatesize();
+	}
+	document.onkeydown=function(ev)
+	{
+		var k=ev.keyCode;
+		if(k==8||k==9)
+		{
+			send("char "+k);
+			if(boxlogin.style.display=="none")
+			{
+				event.preventDefault();
+			}
+		}
+		else if(k==13||k==32)
+		{
+			send("char "+k);
+		}
+		else if(k>=48&&k<=57)
+		{
+			send("char "+k);
+		}
+		else if(k>=65&&k<=90)
+		{
+			k=k+32;
+			send("char "+k);
+		}
+		else if(k>=96&&k<=105)
+		{
+			k=k-48;
+			send("char "+k);
+		}
+		else if(k>=106&&k<=111)
+		{
+			k-=64;
+			send("char "+k);
+		}
+		else if(k==187)
+		{
+			send("char 61");
+		}
+		else
+		{
+			send("kbd "+k);
+		}
+	}
 
 	boxhead.onmousedown=function(event)
 	{
