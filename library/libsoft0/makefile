@@ -24,6 +24,7 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.special.folder.c
 	gcc -c -fPIC -O2 linux/linux.special.random.c
 	gcc -c -fPIC -O2 linux/linux.special.signal.c
+	gcc -c -fPIC -O2 linux/linux.special.time.c
 	gcc -c -fPIC -O2 system.c
 .PHONY:mac
 mac:
@@ -43,6 +44,7 @@ mac:
 	clang -c -O2 mac/mac.special.folder.c
 	clang -c -O2 mac/mac.special.random.c
 	clang -c -O2 mac/mac.special.signal.c
+	clang -c -O2 mac/mac.special.time.c
 	clang -c -O2 system.c
 .PHONY:win
 win:
@@ -63,6 +65,7 @@ win:
 	gcc -c -O2 win/win.special.folder.c
 	gcc -c -O2 win/win.special.random.c
 	gcc -c -O2 win/win.special.signal.c
+	gcc -c -O2 win/win.special.time.c
 	gcc -c -O2 system.c
 clean:
 	rm -f *.o *.a

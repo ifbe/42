@@ -51,7 +51,9 @@ Window win;
 GC gc;
 Atom wmDelete;
 //
-static char* userpixel=0;
+static char* srcbuf=0;
+static char* pixbuf=0;
+static int pixfmt=0;
 static int width=512;
 static int height=512;
 //
@@ -90,6 +92,15 @@ u32 windowread(u64 what)
 }
 void windowwrite()
 {
+	int x,y,z;
+	if(pixfmt==8)
+	{
+	}
+	else if(pixfmt==16)
+	{
+	}
+
+	//
 	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
 }
 
@@ -110,7 +121,7 @@ int uievent(u64* who, u64* my1, u64* my2)
 		{
 			if (ev.xexpose.count == 0)
 			{
-				if(userpixel!=0)
+				if(pixbuf!=0)
 				{
 					windowwrite();
 				}
@@ -136,7 +147,7 @@ int uievent(u64* who, u64* my1, u64* my2)
 
 			ximage=XCreateImage(
 				dsp,visual,24,ZPixmap,0,
-				userpixel,x,y,32,0
+				pixbuf,x,y,32,0
 			);
 
 			*my1 = 0x657a6973;
@@ -222,23 +233,30 @@ int uievent(u64* who, u64* my1, u64* my2)
 
 
 
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(char* addr, char* fmt, int x, int y)
 {
 	//
-	userpixel = addr;
 	width = x;
 	height = y;
+	XResizeWindow(dsp, win, width, height);
 
 	//
-	XResizeWindow(dsp, win, width, height);
+	pixbuf = addr;
+	pixfmt=32;
+
+	//
 	ximage=XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
-		userpixel, width, height, 32, 0
+		pixbuf, width, height, 32, 0
 	);
 }
 void windowstop()
 {
-	userpixel=0;
+	if(pixfmt == 8)
+	{
+		pixbuf=0;
+	}
+	else pixbuf=0;
 }
 
 

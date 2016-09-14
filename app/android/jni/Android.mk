@@ -89,6 +89,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.special.folder.c \
 	library/libsoft0/linux/linux.special.random.c \
 	library/libsoft0/linux/linux.special.signal.c \
+	library/libsoft0/linux/linux.special.time.c \
 	library/libsoft0/system.c
 
 #3.soft1
