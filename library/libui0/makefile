@@ -90,7 +90,7 @@ wincli:
 .PHONY:winsdl
 winsdl:
 	rm -f *.o
-	gcc -c -O2 cross/cross.sdl2.c -I /opt/SDL2-2.0.3/x86_64-w64-mingw32/include
+	gcc -c -O2 cross/cross.sdl2.c
 	gcc -c -O2 display.c
 
 .PHONY:winapi
