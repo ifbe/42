@@ -15,29 +15,24 @@ target:
 	$(compiler) $(cflag) interface/interface.wifi.c
 	$(compiler) $(cflag) interface/interface.zigbee.c
 	$(compiler) $(cflag) memory/memory.c
-	$(compiler) $(cflag) memory/bin/bin.c
-	$(compiler) $(cflag) memory/bin/exec/exec.elf.c
-	$(compiler) $(cflag) memory/bin/exec/exec.macho.c
-	$(compiler) $(cflag) memory/bin/exec/exec.pe.c
-	$(compiler) $(cflag) memory/bin/code/code.c
-	$(compiler) $(cflag) memory/bin/fs/fs.c
-	$(compiler) $(cflag) memory/bin/fs/comp.7z.c
-	$(compiler) $(cflag) memory/bin/fs/comp.cpio.c
-	$(compiler) $(cflag) memory/bin/fs/comp.gz.c
-	$(compiler) $(cflag) memory/bin/fs/comp.tar.c
-	$(compiler) $(cflag) memory/bin/fs/comp.zip.c
-	$(compiler) $(cflag) memory/bin/fs/fs.ext.c
-	$(compiler) $(cflag) memory/bin/fs/fs.fat.c
-	$(compiler) $(cflag) memory/bin/fs/fs.hfs.c
-	$(compiler) $(cflag) memory/bin/fs/fs.ntfs.c
-	$(compiler) $(cflag) memory/bin/fs/pt.c
-	$(compiler) $(cflag) memory/bin/fs/pt.apple.c
-	$(compiler) $(cflag) memory/bin/fs/pt.gpt.c
-	$(compiler) $(cflag) memory/bin/fs/pt.mbr.c
-	$(compiler) $(cflag) memory/bin/image/image.blur.c
-	$(compiler) $(cflag) memory/bin/image/image.channel.c
-	$(compiler) $(cflag) memory/bin/image/image.gray.c
-	$(compiler) $(cflag) memory/bin/image/image.mosaic.c
+	$(compiler) $(cflag) memory/datasystem/compress/comp.7z.c
+	$(compiler) $(cflag) memory/datasystem/compress/comp.cpio.c
+	$(compiler) $(cflag) memory/datasystem/compress/comp.gz.c
+	$(compiler) $(cflag) memory/datasystem/compress/comp.tar.c
+	$(compiler) $(cflag) memory/datasystem/compress/comp.zip.c
+	$(compiler) $(cflag) memory/datasystem/executable/exec.elf.c
+	$(compiler) $(cflag) memory/datasystem/executable/exec.macho.c
+	$(compiler) $(cflag) memory/datasystem/executable/exec.pe.c
+	$(compiler) $(cflag) memory/datasystem/filesystem/fs.c
+	$(compiler) $(cflag) memory/datasystem/filesystem/fs.ext.c
+	$(compiler) $(cflag) memory/datasystem/filesystem/fs.fat.c
+	$(compiler) $(cflag) memory/datasystem/filesystem/fs.hfs.c
+	$(compiler) $(cflag) memory/datasystem/filesystem/fs.ntfs.c
+	$(compiler) $(cflag) memory/datasystem/parttable/pt.c
+	$(compiler) $(cflag) memory/datasystem/parttable/pt.apple.c
+	$(compiler) $(cflag) memory/datasystem/parttable/pt.gpt.c
+	$(compiler) $(cflag) memory/datasystem/parttable/pt.mbr.c
+	$(compiler) $(cflag) memory/encdec/qrcode.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.aes.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.base64.c
 	$(compiler) $(cflag) memory/encdec/crypt/crypt.des.c
@@ -48,12 +43,15 @@ target:
 	$(compiler) $(cflag) memory/encdec/hash/hash.md5.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.sha1.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.string.c
-	$(compiler) $(cflag) memory/encdec/qrcode.c
-	$(compiler) $(cflag) memory/string/string.compare.c
-	$(compiler) $(cflag) memory/string/string.convert.c
-	$(compiler) $(cflag) memory/text/text.ascii.c
-	$(compiler) $(cflag) memory/text/text.gbk.c
-	$(compiler) $(cflag) memory/text/text.unicode.c
+	$(compiler) $(cflag) memory/text/code/code.c
+	$(compiler) $(cflag) memory/text/compare/compare.simple.c
+	$(compiler) $(cflag) memory/text/compare/compare.wildcard.c
+	$(compiler) $(cflag) memory/text/convert/convert.argument.c
+	$(compiler) $(cflag) memory/text/convert/convert.ascii.c
+	$(compiler) $(cflag) memory/text/convert/convert.encoding.c
+	$(compiler) $(cflag) memory/text/convert/convert.filename.c
+	$(compiler) $(cflag) memory/text/convert/convert.network.c
+	$(compiler) $(cflag) memory/text/convert/convert.number.c
 	$(compiler) $(cflag) net/net.c
 	$(compiler) $(cflag) net/net.arp.c
 	$(compiler) $(cflag) net/net.ethernet.c

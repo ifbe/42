@@ -1,10 +1,15 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
+	$(compiler) $(cflag) character.c
 	$(compiler) $(cflag) draw/draw.ascii.c
 	$(compiler) $(cflag) draw/draw.background.c
 	$(compiler) $(cflag) draw/draw.shape.c
 	$(compiler) $(cflag) draw/draw.unicode.c
+	$(compiler) $(cflag) draw/image.blur.c
+	$(compiler) $(cflag) draw/image.channel.c
+	$(compiler) $(cflag) draw/image.gray.c
+	$(compiler) $(cflag) draw/image.mosaic.c
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c
@@ -25,7 +30,6 @@ target:
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c
 	$(compiler) $(cflag) tool/tool.tree.c
-	$(compiler) $(cflag) character.c
 binary:
 	make -s target compiler="gcc" cflag="-c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 x86_64-elf-gcc:

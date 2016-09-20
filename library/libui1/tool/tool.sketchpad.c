@@ -11,7 +11,7 @@ void rectangle(u32 x1y1z1,u32 x2y2z2,u32 color);
 //
 double sketchpad(void*,double,double);
 double calculator(char* postfix,double,double);
-double beautifulbetween(double first,double second);
+double closestvalue(double first,double second);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
 void postfix2binarytree(char* postfix,void* out);
@@ -92,8 +92,8 @@ static void wangge()
 
 	first = centerx - scale * (width/2);
 	second = centerx + scale * (width/2);
-	res=beautifulbetween( first , second );
-	res=(res-first) / (second-first) * width;
+	res = closestvalue(first, second);
+	res = (res-first) / (second-first) * width;
 
 	wanggex = ( (int)res ) % wanggedistance;
 	if( (wanggex>width-1) | (wanggex<0) )return;
@@ -101,8 +101,8 @@ static void wangge()
 
 	first = centery - scale * (height/2);
 	second = centery + scale * (height/2);
-	res=beautifulbetween( first , second );
-	res=(second-res) / (second-first) * width;
+	res = closestvalue(first, second);
+	res = (second-res) / (second-first) * width;
 
 	wanggey = ( (int)res ) % wanggedistance;
 	if( (wanggey>height-1) | (wanggey<0) )return;

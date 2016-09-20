@@ -107,32 +107,43 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/interface/interface.wifi.c \
 	library/libsoft1/interface/interface.zigbee.c \
 	library/libsoft1/memory/memory.c \
-	library/libsoft1/memory/bin/bin.c \
-	library/libsoft1/memory/bin/exec/exec.elf.c \
-	library/libsoft1/memory/bin/exec/exec.macho.c \
-	library/libsoft1/memory/bin/exec/exec.pe.c \
-	library/libsoft1/memory/bin/code/code.c \
-	library/libsoft1/memory/bin/fs/comp.7z.c \
-	library/libsoft1/memory/bin/fs/comp.cpio.c \
-	library/libsoft1/memory/bin/fs/comp.gz.c \
-	library/libsoft1/memory/bin/fs/comp.tar.c \
-	library/libsoft1/memory/bin/fs/comp.zip.c \
-	library/libsoft1/memory/bin/fs/fs.c \
-	library/libsoft1/memory/bin/fs/fs.ext.c \
-	library/libsoft1/memory/bin/fs/fs.fat.c \
-	library/libsoft1/memory/bin/fs/fs.hfs.c \
-	library/libsoft1/memory/bin/fs/fs.ntfs.c \
-	library/libsoft1/memory/bin/fs/pt.c \
-	library/libsoft1/memory/bin/fs/pt.apple.c \
-	library/libsoft1/memory/bin/fs/pt.gpt.c \
-	library/libsoft1/memory/bin/fs/pt.mbr.c \
-	library/libsoft1/memory/encdec/crypt/crypt.aes.c \
-	library/libsoft1/memory/encdec/hash/hash.md5.c \
+	library/libsoft1/memory/datasystem/compress/comp.7z.c \
+	library/libsoft1/memory/datasystem/compress/comp.cpio.c \
+	library/libsoft1/memory/datasystem/compress/comp.gz.c \
+	library/libsoft1/memory/datasystem/compress/comp.tar.c \
+	library/libsoft1/memory/datasystem/compress/comp.zip.c \
+	library/libsoft1/memory/datasystem/executable/exec.elf.c \
+	library/libsoft1/memory/datasystem/executable/exec.macho.c \
+	library/libsoft1/memory/datasystem/executable/exec.pe.c \
+	library/libsoft1/memory/datasystem/filesystem/fs.c \
+	library/libsoft1/memory/datasystem/filesystem/fs.ext.c \
+	library/libsoft1/memory/datasystem/filesystem/fs.fat.c \
+	library/libsoft1/memory/datasystem/filesystem/fs.hfs.c \
+	library/libsoft1/memory/datasystem/filesystem/fs.ntfs.c \
+	library/libsoft1/memory/datasystem/parttable/pt.c \
+	library/libsoft1/memory/datasystem/parttable/pt.apple.c \
+	library/libsoft1/memory/datasystem/parttable/pt.gpt.c \
+	library/libsoft1/memory/datasystem/parttable/pt.mbr.c \
 	library/libsoft1/memory/encdec/qrcode.c \
-	library/libsoft1/memory/string/string.compare.c \
-	library/libsoft1/memory/string/string.convert.c \
-	library/libsoft1/memory/text/text.ascii.c \
-	library/libsoft1/memory/text/text.unicode.c \
+	library/libsoft1/memory/encdec/crypt/crypt.aes.c \
+	library/libsoft1/memory/encdec/crypt/crypt.base64.c \
+	library/libsoft1/memory/encdec/crypt/crypt.des.c \
+	library/libsoft1/memory/encdec/crypt/crypt.rsa.c \
+	library/libsoft1/memory/encdec/hash/hash.crc8.c \
+	library/libsoft1/memory/encdec/hash/hash.crc16.c \
+	library/libsoft1/memory/encdec/hash/hash.crc32.c \
+	library/libsoft1/memory/encdec/hash/hash.md5.c \
+	library/libsoft1/memory/encdec/hash/hash.sha1.c \
+	library/libsoft1/memory/encdec/hash/hash.string.c \
+	library/libsoft1/memory/text/code/code.c \
+	library/libsoft1/memory/text/compare/compare.simple.c \
+	library/libsoft1/memory/text/compare/compare.wildcard.c \
+	library/libsoft1/memory/text/convert/convert.argument.c \
+	library/libsoft1/memory/text/convert/convert.ascii.c \
+	library/libsoft1/memory/text/convert/convert.encoding.c \
+	library/libsoft1/memory/text/convert/convert.filename.c \
+	library/libsoft1/memory/text/convert/convert.network.c \
+	library/libsoft1/memory/text/convert/convert.number.c \
 	library/libsoft1/net/net.c \
 	library/libsoft1/net/net.arp.c \
 	library/libsoft1/net/net.ethernet.c \
