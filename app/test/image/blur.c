@@ -21,7 +21,7 @@ void windowread();
 void windowwrite();
 //
 void eventwrite();
-void eventread(u64* first,u64* second);
+void eventread(u64*, u64*, u64*);
 
 
 
@@ -134,10 +134,11 @@ void main()
 	//before
 	int x,y;
 	int r,g,b;
+	char pixfmt[] = {"rgba8888"};
 
 	//
 	windowcreate();
-	windowstart(final, "rgba8888", 1024, 1024);
+	windowstart(final, pixfmt, 1024, 1024);
 
 	//picture
 	for(y=0;y<1024;y++)
@@ -147,26 +148,27 @@ void main()
 			r=RED(x,y)&0xff;
 			g=GREEN(x,y)&0xff;
 			b=BLUE(x,y)&0xff;
-			palette[y*1024+x]=(b)+(g<<8)+(r<<16);
+			palette[y*1024+x] = 0xff000000 | (r<<16) | (g<<8) | b;
 		}
 	}
 	processmessage(0x72616863,0x30);
 
 	//forever
-	u64 type=0;
-	u64 key=0;
+	u64 who;
+	u64 type;
+	u64 value;
 	while(1)
 	{
 		//1.先在内存里画画，然后一次性写到窗口内
 		windowwrite();
 
 		//2.等事件，是退出消息就退出
-		eventread(&type,&key);
+		eventread(&who, &type, &value);
 		if( type==0 )break;
-		if( (type==0x64626b)&&(key==0x1b))break;
+		if( (type==0x64626b)&&(value==0x1b))break;
 
 		//3.处理事件
-		processmessage(type,key);
+		processmessage(type, value);
 	}
 
 	//after

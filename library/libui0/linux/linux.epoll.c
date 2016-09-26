@@ -31,6 +31,9 @@ void say(char*,...);
 
 
 //
+static int width;
+static int height;
+//
 static int listenfd=-1;
 static int epollfd=-1;
 static struct epoll_event epollevent[MAXSIZE];
@@ -169,9 +172,14 @@ void epoll_add(u32 fd)
 
 void windowwrite()
 {
-	int x,y,z;
-	u64 len;
+	int fd;
+	int ret;
+
 	u8 type;
+	u8* base;
+
+	u64 headlen;
+	u64 bodylen;
 
 	//no one
 	if(websocket_count == 0)
@@ -183,57 +191,58 @@ void windowwrite()
 	//type
 	if(*(u32*)sendbuf == 0x6c6d7468)
 	{
-		len = strlen(sendbuf+0x1000);
-		type=1;
+		type = 1;
+		base = sendbuf + 0x1000;
+
+		bodylen = strlen(base);
 	}
 	else
 	{
-		len=512*512*4;
-		type=2;
+		type = 2;
+		base = sendbuf + (4*width);
+
+		bodylen = (4*width) * (height-1);
 	}
 
 	//len
-	if(len<=125)
+	if(bodylen<=125)
 	{
-		x = 2;
-		sendbuf[0x1000-x] = 0x80|type;
-		sendbuf[0x1000-x+1] = len;
+		headlen = 2;
+		*(base-2) = 0x80|type;
+		*(base-1) = bodylen;
 	}
-	else if(len<0xffff)
+	else if(bodylen<0xffff)
 	{
-		x = 4;
-		sendbuf[0x1000-x] = 0x80|type;
-		sendbuf[0x1000-x+1] = 126;
-		sendbuf[0x1000-x+2] = (len>>8)&0xff;
-		sendbuf[0x1000-x+3] = len&0xff;
+		headlen = 4;
+		*(base-4) = 0x80|type;
+		*(base-3) = 126;
+		*(base-2) = (bodylen>>8)&0xff;
+		*(base-1) = bodylen&0xff;
 	}
 	else
 	{
-		x = 10;
-		sendbuf[0x1000-x] = 0x80|type;
-		sendbuf[0x1000-x+1] = 127;
-		sendbuf[0x1000-x+2] = (len>>56)&0xff;
-		sendbuf[0x1000-x+3] = (len>>48)&0xff;
-		sendbuf[0x1000-x+4] = (len>>40)&0xff;
-		sendbuf[0x1000-x+5] = (len>>32)&0xff;
-		sendbuf[0x1000-x+6] = (len>>24)&0xff;
-		sendbuf[0x1000-x+7] = (len>>16)&0xff;
-		sendbuf[0x1000-x+8] = (len>>8)&0xff;
-		sendbuf[0x1000-x+9] = (len)&0xff;
+		headlen = 10;
+		*(base-10)= 0x80|type;
+		*(base-9) = 127;
+		*(base-8) = (bodylen>>56)&0xff;
+		*(base-7) = (bodylen>>48)&0xff;
+		*(base-6) = (bodylen>>40)&0xff;
+		*(base-5) = (bodylen>>32)&0xff;
+		*(base-4) = (bodylen>>24)&0xff;
+		*(base-3) = (bodylen>>16)&0xff;
+		*(base-2) = (bodylen>>8)&0xff;
+		*(base-1) = (bodylen)&0xff;
 	}
 
-	//debug
-	//for(y=0;y<x+8;y++)printf("%.2x ",sendbuf[0x1000-x+y]);
-	//printf("\n");
-
 	//write
-	for(z=3;z<MAXSIZE;z++)
+	//printmemory(base-headlen, 0x200);
+	for(fd=3;fd<MAXSIZE;fd++)
 	{
-		if(clienttype[z] == 0x1f)
+		if(clienttype[fd] == 0x1f)
 		{
-			y = write(z, sendbuf+0x1000-x, len+x);
-			if(y > 0) printf("=>%d\n",z);
-			else printf("error@%d\n\n\n\n\n",z);
+			ret = write(fd, base-headlen, headlen+bodylen);
+			if(ret > 0) printf("=>%d\n",fd);
+			else printf("error@%d\n\n\n\n\n",fd);
 		}
 	}
 }
@@ -666,7 +675,16 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 	//
 	sendbuf = addr;
+
+	//
+	*(u64*)pixfmt = 0;
 	snprintf(pixfmt, 5, "html");
+
+	//
+	width = x;
+
+	//
+	height = y;
 }
 void windowdelete(int num)
 {
