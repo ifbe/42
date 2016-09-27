@@ -24,6 +24,7 @@ void doodle_create(char*,char*);
 void font_create(char*,char*);
 void pure_create(char*,char*);
 //tool
+void calculator_create(char*,char*);
 void console_create(char*,char*);
 void control_create(char*,char*);
 void hex_create(char*,char*);
@@ -53,6 +54,7 @@ void font_delete();
 void doodle_delete();
 void color_delete();
 //
+void calculator_delete();
 void console_delete();
 void control_delete();
 void hex_delete();
@@ -229,6 +231,10 @@ void charactercreate(char* type,char* addr)
 		pure_create(addr,temp);
 		temp += 0x80;
 
+		//tool.calculator
+		calculator_create(addr,temp);
+		temp += 0x80;
+
 		//tool.console
 		console_create(addr,temp);
 		temp += 0x80;
@@ -275,6 +281,7 @@ void characterdelete()
 	qrcode_delete();
 	control_delete();
 	console_delete();
+	calculator_delete();
 
 	color_delete();
 	doodle_delete();

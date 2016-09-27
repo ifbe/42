@@ -9,8 +9,8 @@ void decimal(int x,int y,u64 in);
 void backgroundcolor(u32);
 void rectangle(u32 x1y1z1,u32 x2y2z2,u32 color);
 //
-double sketchpad(void*,double,double);
-double calculator(char* postfix,double,double);
+double calculator(char* postfix, u64 x, u64 y);
+double sketchpad(void*, double, double);
 double closestvalue(double first,double second);
 void double2decimalstring(double,char*);
 void kexuejishufa(double* haha,int* counter);
