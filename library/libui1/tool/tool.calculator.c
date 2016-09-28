@@ -2,6 +2,11 @@
 #define u32 unsigned int
 //
 void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
+void printascii(int x, int y, int size, char ch, u32 fg, u32 bg);
+void printbyte(int x, int y, int size, char ch, u32 fg, u32 bg);
+void rect(int x1, int y1, int x2, int y2, u32 body, u32 frame);
+void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void rectframe(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor();
 //
 double calculator(char* postfix, u64 x, u64 y);
@@ -34,6 +39,13 @@ static char result[128];
 //
 static char buffer[128];
 static int count=0;
+//
+static char table[4][8] = {
+'0', '1', '2', '3', '+', '-', '*', '/',
+'4', '5', '6', '7', '^', '%', '!', ' ',
+'8', '9', 'a', 'b', ' ', ' ', ' ', ' ',
+'c', 'd', 'e', 'f', '<', '>', '(', ')',
+};
 
 
 
@@ -43,11 +55,31 @@ static void calculator_read_html()
 }
 static void calculator_read_pixel()
 {
-	backgroundcolor(0);
-	printstring(0, 0, 4, buffer, 0xffffffff, 0);
-	printstring(0, 64, 4, infix, 0xffffffff, 0);
-	printstring(0, 128, 4, postfix, 0xffffffff, 0);
-	printstring(0, 192, 4, result, 0xffffffff, 0);
+	int x,y;
+	int w8 = (haha->width)/8;
+	int h8 = (haha->height)/8;
+	u32 fg;
+
+	rect(0, 0, w8*8-1, h8*4-1, 0, 0xff00);
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			if(x<4)fg = y*0x10 + x*0x100000;
+			else fg = x*0x10 + y*0x100000;
+
+			rect(
+				w8*x, h8*(y+4),
+				w8*(x+1), h8*(y+5),
+				fg, 0xffffffff
+			);
+			printascii(w8*x, h8*(y+4), 4, table[y][x], 0xffffffff, 0);
+		}
+	}
+	printstring(0, 0, 2, buffer, 0xffffffff, 0);
+	printstring(0, 32, 2, infix, 0xffffffff, 0);
+	printstring(0, 64, 2, postfix, 0xffffffff, 0);
+	printstring(0, 96, 2, result, 0xffffffff, 0);
 }
 static void calculator_read_text()
 {
@@ -136,8 +168,11 @@ static void calculator_change()
 static void calculator_start()
 {
 	int j;
-	for(j=0;j<128;j++)buffer[j]=0;
-	count = 0;
+	buffer[0] = '1';
+	buffer[1] = '+';
+	buffer[2] = '2';
+	buffer[3] = 0;
+	count = 3;
 }
 static void calculator_stop()
 {

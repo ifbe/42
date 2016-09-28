@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //用了别人的
-int systemread( char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int sectorread( char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 int cleverread(u64,u64,u64,	char*,u64,u64);
 //
 void printmemory(char* addr,int size);
@@ -646,7 +646,7 @@ int explainntfshead()
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	systemread(
+	sectorread(
 		mft0,
 		ntfssector+mftcluster*clustersize,
 		32
@@ -695,7 +695,7 @@ int mountntfs(u64 sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读PBR，检查失败就返回
-	ret=systemread(pbr,ntfssector,1);
+	ret=sectorread(pbr,ntfssector,1);
 	ret=isntfs(pbr);
 	if(ret==0)return -1;
 

@@ -1,10 +1,10 @@
 #define u64 unsigned long long
-int systemstart(int type,char* p);
-int systemstop();
-int systemread(char* p,u64,u64);
-int systemwrite(char* p,u64,u64);
-int systemlist(char* p);
-int systemchoose(char* p);
+int startfolder(char* p);
+int stopfolder();
+int readfolder(char* p);
+int writefolder(char* p);
+int listfolder(char* p);
+int choosefolder(char* p);
 void say(char*,...);
 
 
@@ -18,18 +18,18 @@ static unsigned char* datahome=0;
 
 static int folder_list(char* p)
 {
-	return systemlist(p);
+	return listfolder(p);
 }
 static int folder_choose(char* p)
 {
-	return systemchoose(p);
+	return choosefolder(p);
 }
 static int folder_read(char* p)
 {
-	int ret=systemread(datahome,0,0);
+	int ret=readfolder(datahome);
 	if(ret>0)say("%s\n",datahome);
 }
-static int folder_write()
+static int folder_write(char* p)
 {
 	return 0;
 }
@@ -39,11 +39,11 @@ static int folder_write()
 
 static int folder_start(u64 type,char* p)
 {
-	return systemstart(0,p);
+	return startfolder(p);
 }
 static int folder_stop()
 {
-	systemstop();
+	stopfolder();
 }
 
 

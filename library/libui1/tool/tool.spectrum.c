@@ -5,14 +5,11 @@
 //
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
-void background1();
 //
-void arteryread(char* rdi,u64 rsi,u64 rcx);
-void arterywrite(char* rdi,u64 rsi,u64 rcx);
 void data2hexstring(u64,char*);
 int compare(char*,char*);
-//
 unsigned int getrandom();
+//
 void printmemory(char*,int);
 void say(char*,...);
 

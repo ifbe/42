@@ -29,13 +29,11 @@ int systemstart(int,char*);
 int systemstop();
 int systemlist(char*);
 int systemchoose(char*);
-int systemread(char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int sectorread(char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 //
 int compare(char*,char*);	//base tool
 int hexstring2data(char*,u64*);
-int mem2file(char* memaddr,char* filename,u64 offset,u64 count);
-int file2mem(char* memaddr,char* filename,u64 offset,u64 count);
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
 
@@ -167,7 +165,7 @@ void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 		rdi,rsi,rcx
 	);
 */
-	systemread(rdi,rsi,rcx);
+	sectorread(rdi,rsi,rcx);
 }
 
 
@@ -302,7 +300,7 @@ static int memory_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		systemread(datahome,value,1);
+		sectorread(datahome,value,1);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}
@@ -345,23 +343,10 @@ static int memory_write(char* arg1)
 
 
 
-static int memory_start(u64 type,char* p)
-{
-	int ret;
-
-	//start
-	ret=systemstart(1,p);
-	if(ret<=0)return -1;
-
-	//return
-	return 1;
-}
-static int memory_stop()
-{
-	systemstop();
-}
 int memory_create(char* world,u64* p)
 {
+	char* q=(char*)p;
+
 	//(自己)4块区域，每块1兆
 	diskhome=world+0;
 	fshome=world+0x100000;
@@ -369,18 +354,6 @@ int memory_create(char* world,u64* p)
 	datahome=world+0x300000;
 
 	//
-	p[0]=0;
-	p[1]=0x79726f6d656d;
-	p[2]=(u64)memory_start;
-	p[3]=(u64)memory_stop;
-	p[4]=(u64)memory_list;
-	p[5]=(u64)memory_choose;
-	p[6]=(u64)memory_read;
-	p[7]=(u64)memory_write;
-
-	//
-	char* q=(char*)p+0x40;
-
 	code_create(world,q);
 	q+=0x40;
 

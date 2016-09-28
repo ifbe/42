@@ -57,22 +57,18 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 
 
 //mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,u64 offset,u64 count)
+int directwrite(char* memaddr,char* filename,u64 offset,u64 count)
 {
-    HANDLE hFile;//文件句柄
-    hFile=CreateFile(
-        filename,//创建或打开的文件或设备的名称(这里是txt文件)。
-        GENERIC_WRITE,// 文件访问权限,写
-        0,//共享模式,这里设置0防止其他进程打开文件或设备
-        NULL,//SECURITY_ATTRIBUTES结构，安全描述，这里NULL代表默认安全级别
-        OPEN_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,//设置文件的属性，里面有高速缓存的选项
-        NULL);
+	HANDLE hFile = CreateFile(
+		filename, GENERIC_WRITE, 0,
+		NULL, OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL, NULL
+	);
 
-	//这里失败不会返回NULL，而是INVALID_HANDLE_VALUE
+	//
 	if(hFile==INVALID_HANDLE_VALUE)
 	{
-		say("hFile error\n");
+		say("error@open\n");
 		return -1;
 	}
 
@@ -81,18 +77,60 @@ int mem2file(char* memaddr,char* filename,u64 offset,u64 count)
 	SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
 
 	unsigned long dwBytesWritten = 0;
-	WriteFile(hFile,memaddr,count,&dwBytesWritten,NULL);
+	WriteFile(hFile, memaddr, count, &dwBytesWritten, NULL);
 
 	CloseHandle(hFile);
 }
 //
-int file2mem(char* memaddr,char* filename,u64 offset,u64 count)
+int directread(char* memaddr,char* filename,u64 offset,u64 count)
 {
+	HANDLE hFile = CreateFile(
+		filename, GENERIC_WRITE, 0,
+		NULL, OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL, NULL
+	);
+
+	//
+	if(hFile==INVALID_HANDLE_VALUE)
+	{
+		say("error@open\n");
+		return -1;
+	}
+
+	LARGE_INTEGER li;
+	li.QuadPart = offset;
+	SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
+
+	unsigned long dwBytesWritten = 0;
+	ReadFile(hFile, memaddr, count, &dwBytesWritten, 0);
+
+	CloseHandle(hFile);
 }
 
 
 
 
+void sectorread(u64 buf,u64 start,u64 count)
+{
+	LARGE_INTEGER li;
+	li.QuadPart = start*512;
+	SetFilePointer (hDev,li.LowPart,&li.HighPart,FILE_BEGIN);
+
+	unsigned long dwret = 0;
+	ReadFile(hDev,(char*)buf,count*512,&dwret,0);
+	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
+}
+//来源内存地址，目的首扇区，无视，总字节数
+void sectorwrite(u64 buf,u64 start,u64 count)
+{
+	LARGE_INTEGER li;
+	li.QuadPart = start*512;
+	SetFilePointer (hDev,li.LowPart,&li.HighPart,FILE_BEGIN);
+
+	unsigned long dwret = 0;
+	WriteFile(hDev, (char*)buf, count*512, &dwret, 0);
+	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
+}
 
 
 
@@ -134,7 +172,7 @@ void listfile(char* dest)
 
 			//next
 			CloseHandle(temphandle);
-			printf("%llx    ,    %llx    :    %s\n" ,*(u64*)(dest+0) , *(u64*)(dest+8) , (char*)(dest+0x10) );
+			printf("%llx	,	%llx	:	%s\n" ,*(u64*)(dest+0) , *(u64*)(dest+8) , (char*)(dest+0x10) );
 			dest += 0x40;
 		}
 	}//10个记录
@@ -142,25 +180,6 @@ void listfile(char* dest)
 void choosefile(char* buf)
 {
 }
-//目的内存地址，来源首扇区，无视，总字节数
-void readfile(u64 buf,u64 startsector,u64 ignore,u32 count)
-{
-	LARGE_INTEGER li;
-	li.QuadPart = startsector*512;
-	SetFilePointer (hDev,li.LowPart,&li.HighPart,FILE_BEGIN);
-
-	unsigned long dwret = 0;
-	ReadFile(hDev,(char*)buf,count*512,&dwret,0);
-	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
-}
-//来源内存地址，目的首扇区，无视，总字节数
-void writefile(u64 buf,u64 startsector,u64 ignore,u32 count)
-{
-}
-
-
-
-
 
 
 
@@ -188,7 +207,7 @@ void startfile(char* path)
 	u64 size=0;
 	getsize(hDev,path,(void*)&size);
 
-	say("(%s    ,    %llx)\n",path,size);
+	say("(%s	,	%llx)\n",path,size);
 }
 void stopfile()
 {

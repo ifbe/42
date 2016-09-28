@@ -42,38 +42,115 @@ static char _dev_block_mmcblk[0x20]={
 
 
 //mem地址，file名字，文件内偏移，总字节数
-int mem2file(char* memaddr,char* filename,u64 offset,u64 count)
+int directwrite(u8* mem, u8* file, u64 offset, u64 count)
 {
-	int thisfile;
+	int fd;
 	int ret;
-	thisfile=open(filename,O_RDWR|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
-	if(thisfile==-1)
+	fd = open(file,O_WRONLY|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
+	if(fd==-1)
 	{
-		printf("(mem2file fail)open\n");
+		printf("fail@open\n");
 		return -1;
 	}
 
-	ret=lseek( thisfile , offset , SEEK_SET);
+	ret=lseek(fd, offset, SEEK_SET);
 	if(ret==-1)
 	{
-		printf("(mem2file fail)lseek\n");
+		printf("fail@lseek\n");
+		goto byebye;
+	}
+
+	ret=write(fd, mem, count);
+	if(ret==-1)
+	{
+		printf("fail@write\n");
+		goto byebye;
+	}
+
+byebye:
+	close(fd);
+	return 0;
+}
+int directread(u8* mem, u8* file, u64 offset, u64 count)
+{
+	int fd;
+	int ret;
+	fd = open(file,O_RDONLY);
+	if(fd==-1)
+	{
+		printf("fail@open\n");
+		return -1;
+	}
+
+	ret = lseek(fd, offset, SEEK_SET);
+	if(ret==-1)
+	{
+		printf("fail@lseek\n");
+		goto byebye;
+	}
+
+	ret = read(fd, mem, count);
+	if(ret==-1)
+	{
+		printf("fail@write\n");
+		goto byebye;
+	}
+
+byebye:
+	close(fd);
+	return 0;
+}
+
+
+
+
+int sectorread(char* buf,u64 sector,u64 count)
+{
+	int result;
+
+	result=lseek64(thisfd,sector*0x200,SEEK_SET);
+	if(result==-1)
+	{
+		//say("errno:%d,seek:%llx\n",errno,sector);
+		return -1;
+	}
+
+	result=read(thisfd,buf,count*0x200);
+	if(result==-1)
+	{
+		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
 		return -2;
 	}
 
-	ret=write( thisfile , memaddr , count);
-	if(ret==-1)
-	{
-		printf("(mem2file fail)write\n");
-	}
-	//printmemory(memaddr,0x200);
-
-	close(thisfile);
-	return 0;
+	//
+	return 1;
 }
-int file2mem(char* memaddr,char* filename,u64 offset,u64 count)
+//来源内存地址，目的首扇区，无视，总字节数
+int sectorwrite(char* buf,u64 sector,u64 count)
 {
-	return 0;
+	int result;
+
+	result=lseek64(thisfd,sector*0x200,SEEK_SET);
+	if(result==-1)
+	{
+		//say("errno:%d,seek:%llx\n",errno,sector);
+		return -1;
+	}
+
+	result=write(thisfd,buf,count*0x200);
+	if(result==-1)
+	{
+		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+		return -2;
+	}
+
+	//
+	return 1;
 }
+
+
+
+
 static int trythis(char* src,char* dest)
 {
 	int i;
@@ -100,11 +177,6 @@ static int trythis(char* src,char* dest)
 	//success,next
 	return 0x40;
 }
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void listfile(char* dest)
 {
 	//clean
@@ -141,52 +213,10 @@ void listfile(char* dest)
 void choosefile()
 {
 }
-int readfile(char* buf,u64 sector,u64 disk,u32 count)
-{
-	int result;
-
-	result=lseek64(thisfd,sector*0x200,SEEK_SET);
-	if(result==-1)
-	{
-		//say("errno:%d,seek:%llx\n",errno,sector);
-		return -1;
-	}
-
-	result=read(thisfd,buf,count*0x200);
-	if(result==-1)
-	{
-		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
-		return -2;
-	}
-
-	//
-	return 1;
-}
-//来源内存地址，目的首扇区，无视，总字节数
-void writefile(char* buf,u64 startsector,u64 ignore,u32 count)
-{
-	
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-
-
-
-
-void createfile()
-{
-}
-void deletefile()
-{
-	if(thisfd != -1)
-	{
-		close(thisfd);
-		thisfd=-1;
-	}
-}
 int startfile(char* wantpath)
 {
 	//先检查
@@ -212,6 +242,17 @@ int startfile(char* wantpath)
 void stopfile()
 {
 	if(thisfd!=-1)
+	{
+		close(thisfd);
+		thisfd=-1;
+	}
+}
+void createfile()
+{
+}
+void deletefile()
+{
+	if(thisfd != -1)
 	{
 		close(thisfd);
 		thisfd=-1;

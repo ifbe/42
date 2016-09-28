@@ -55,9 +55,8 @@ void listprocess()
 
 
 
-void intoprocess(u64 pid)
+void chooseprocess(u64 pid)
 {
-	
 }
 
 
@@ -75,7 +74,6 @@ u64 readprocess(u64 buf,u64 startaddr,u64 disk,u32 count)
 
 void writeprocess()
 {
-	
 }
 
 

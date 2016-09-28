@@ -11,12 +11,13 @@ int mountfat(u64 sector,char* dest);
 int mounthfs(u64 sector,char* dest);
 int mountntfs(u64 sector,char* dest);
 //
-int systemread( char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
-//基本函数
+int sectorread( char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
+int directread(u8* mem, u8* file, u64 where, u64 size);
+int directwrite(u8* mem, u8* file, u64 where, u64 size);
 int hexstring2data(char* src,u64* dest);
-int mem2file(char* src,char* dest,u64 ignore,int size);
 int compare(char*,char*);
+//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -133,7 +134,7 @@ static int fs_read(char* arg1)
 		fsload(id,temp,0x100000);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
-		mem2file(datahome,arg1,temp,0x100000);
+		directwrite(datahome,arg1,temp,0x100000);
 	}
 
 	//最后的零头(要是size=1m的整数倍，就没有零头)
@@ -143,7 +144,7 @@ static int fs_read(char* arg1)
 		fsload(id,temp,size-temp);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
-		mem2file(datahome,arg1,temp,size%0x100000);
+		directwrite(datahome,arg1,temp,size%0x100000);
 	}
 
 	return 0;
@@ -185,7 +186,7 @@ say("@fs_start\n");
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
-	systemread(datahome , sector , 64);
+	sectorread(datahome , sector , 64);
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 

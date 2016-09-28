@@ -7,8 +7,8 @@
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
 //
-int systemread( char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int sectorread( char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 int cleverread(u64,u64,u64,	char*,u64,u64);
 //用了别人的
 void printmemory(char* addr,u64 size);
@@ -144,7 +144,7 @@ void explainleafnode()
 static void hfs_explain(u64 number)
 {
 	say("%llx@%llx\n",number,catalogsector+nodesize*number);
-	systemread(
+	sectorread(
 		datahome,
 		catalogsector+nodesize*number,
 		nodesize
@@ -188,7 +188,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 	say("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
-	systemread(
+	sectorread(
 		datahome,
 		catalogsector+nodenum*nodesize,
 		nodesize
@@ -215,7 +215,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 
 			//临时读下一个到datahome+0x8000那里(节点最大不超过0x8000吧)
 			//读这个临时节点的第一个记录看看，能确定下来目前的最后一个record就是想要的
-			systemread(
+			sectorread(
 				datahome+0x8000,
 				catalogsector+temptempnodenum*nodesize,
 				nodesize
@@ -322,7 +322,7 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 			if(nodenum==0)break;
 			say("next node:%x\n",nodenum);
 
-			systemread(
+			sectorread(
 				datahome,
 				catalogsector+nodenum*nodesize,
 				nodesize
@@ -407,7 +407,7 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 
 	//然后是后面的记录
-	systemread(
+	sectorread(
 		catabuf,
 		catalogsector+nodenum*nodesize,
 		nodesize
@@ -492,7 +492,7 @@ static int hfs_cd(u64 id)
 	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
-		systemread(
+		sectorread(
 			datahome,
 			catalogsector+firstleafnode*nodesize,
 			nodesize
@@ -617,7 +617,7 @@ int explainhfshead()
 
 
 //----------------第二次读，把分区头读进catabuf--------------
-	systemread(catabuf,catalogsector,0x8);	//0x1000
+	sectorread(catabuf,catalogsector,0x8);	//0x1000
 	//printmemory(catabuf,0x200);
 
 	//nodesize
@@ -698,7 +698,7 @@ int mounthfs(u64 sector,char* addr)
 	datahome=addr+0x200000;
 
 	//检查
-	ret=systemread(pbr,block0,0x8);	//0x1000
+	ret=sectorread(pbr,block0,0x8);	//0x1000
 	ret=ishfs(pbr);
 	if(ret==0)return -1;
 

@@ -2,19 +2,19 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//挂载
-int explaingpt(char* src,char* dest);	//分区表
+//
+int startfile();
+int stopfile();
+int sectorread(char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
+//
+u64 prelibation(char*);
+int explaingpt(char* src,char* dest);
 int explainmbr(char* src,char* dest);
 //
-int systemstart(u64,char*);
-int systemstop();
-int systemread(char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
-//基本函数
-u64 prelibation(char*);
 int hexstring2data(char* src,u64* dest);
-int mem2file(char* src,char* dest,u64 ignore,int size);
 int compare(char*,char*);
+//基本函数
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -50,10 +50,10 @@ static int pt_start(u64 type,char* p)
 {
 	int ret;
 
-	ret=systemstart(1,p);
+	ret=startfile(p);
         if(ret<=0)return -1;
 
-	systemread(datahome , 0 , 64);
+	sectorread(datahome , 0 , 64);
 	type=prelibation(datahome);
 
 	if(type==0x747067)              //'gpt'
@@ -69,7 +69,7 @@ static int pt_start(u64 type,char* p)
 }
 static int pt_stop(char* p)
 {
-	systemstop();
+	stopfile();
 }
 void pt_create(char* world,u64* p)
 {

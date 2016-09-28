@@ -22,6 +22,7 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.net.epoll.c
 	gcc -c -fPIC -O2 linux/linux.net.socket.c
 	gcc -c -fPIC -O2 linux/linux.special.folder.c
+	gcc -c -fPIC -O2 linux/linux.special.process.c
 	gcc -c -fPIC -O2 linux/linux.special.random.c
 	gcc -c -fPIC -O2 linux/linux.special.signal.c
 	gcc -c -fPIC -O2 linux/linux.special.time.c
@@ -59,10 +60,10 @@ win:
 	gcc -c -O2 win/win.interface.wifi.c
 	gcc -c -O2 win/win.memory.file.c
 	gcc -c -O2 win/win.memory.virtual.c
-	gcc -c -O2 win/win.memory.process.c
 	gcc -c -O2 win/win.net.iocp.c
 	gcc -c -O2 win/win.net.socket.c
 	gcc -c -O2 win/win.special.folder.c
+	gcc -c -O2 win/win.special.process.c
 	gcc -c -O2 win/win.special.random.c
 	gcc -c -O2 win/win.special.signal.c
 	gcc -c -O2 win/win.special.time.c

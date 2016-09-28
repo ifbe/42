@@ -22,51 +22,6 @@ static char* datahome;
 
 
 
-
-
-
-
-static int pe_ls()
-{
-	return 0;
-}
-static int pe_cd()
-{
-	return 0;
-}
-static int pe_load()
-{
-	return 0;
-}
-static int pe_store()
-{
-	return 0;
-}
-int explainpehead()
-{
-	u64* dstqword=(u64*)fshome;
-
-	//func ls,cd,load,store
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)pe_ls;
-	dstqword[5]=(u64)pe_cd;
-	dstqword[6]=(u64)pe_load;
-	dstqword[7]=(u64)pe_store;
-	dstqword += 8;
-
-	return 1;
-}
-
-
-
-
-
-
-
-
 int ispe(char* addr)
 {
 	unsigned long long temp;
@@ -84,24 +39,13 @@ int ispe(char* addr)
 
 	return 64;
 }
-int explainpe(u64 sector,char* addr)
+int explainpe(char* addr)
 {
 	int ret=0;
 
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	fshome=addr+0;
-		first64k=fshome+0x10000;
-	dirhome=addr+0x100000;
-	datahome=addr+0x200000;
-
-	//读分区前8扇区，检查magic值
-	ret=systemread(first64k,sector,0x8);	//0x1000
+	//
 	ret=ispe(first64k);
 	if( ret == 0 ) return -1;
-
-	//读出关键数据
-	ret=explainpehead();
-	if(ret<0)return ret;
 
 	return 0;
 }

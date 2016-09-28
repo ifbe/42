@@ -1,10 +1,10 @@
 #define u64 unsigned long long
-int systemstart(int type,char* p);
-int systemstop();
-int systemread(char* p,u64,u64);
-int systemwrite(char* p,u64,u64);
-int systemlist(char* p);
-int systemchoose(char* p);
+int startprocess(int type,char* p);
+int stopprocess();
+int readprocess(char* p,u64,u64);
+int writeprocess(char* p,u64,u64);
+int listprocess(char* p);
+int chooseprocess(char* p);
 void say(char*,...);
 
 
@@ -18,15 +18,15 @@ static unsigned char* datahome=0;
 
 static int process_list(char* p)
 {
-	return systemlist(p);
+	return listprocess(p);
 }
 static int process_choose(char* p)
 {
-	return systemchoose(p);
+	return chooseprocess(p);
 }
 static int process_read(char* p)
 {
-	int ret=systemread(datahome,0,0);
+	int ret=readprocess(datahome,0,0);
 	if(ret>0)say("%s\n",datahome);
 }
 static int process_write()

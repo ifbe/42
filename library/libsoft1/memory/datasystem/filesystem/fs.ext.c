@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int systemread( char* rdi,u64 rsi,u64 rcx);
-int systemwrite(char* rdi,u64 rsi,u64 rcx);
+int sectorread( char* rdi,u64 rsi,u64 rcx);
+int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 int cleverread(u64,u64,u64,char*,u64,u64);
 //用了别人的
 void printmemory(char* addr,u64 size);
@@ -44,7 +44,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	systemread(blockrecord,sector,1);
+	sectorread(blockrecord,sector,1);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	char* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -92,14 +92,13 @@ static char* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		systemread(rdi,where,count*inodesize/0x200);
+		sectorread(rdi,where,count*inodesize/0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
 		this+=count;
 		if(rdi-inodebuffer>=0x40000) break;
 	}
-	//mem2file(inodebuffer,"after.bin",0,0x40000);
 	firstinodeincache=wanted-inodeoffset;
 	return inodebuffer+inodeoffset*inodesize;
 }
@@ -191,7 +190,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-		        systemread(rdi,temp,blocksize);
+		        sectorread(rdi,temp,blocksize);
 			rdi+=0x200*blocksize;
 		}
 
@@ -388,7 +387,7 @@ int mountext(u64 sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
-	ret=systemread(pbr,block0,0x8);	//0x1000
+	ret=sectorread(pbr,block0,0x8);	//0x1000
 	ret=isext(pbr);
 	if( ret == 0 ) return -1;
 
