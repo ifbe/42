@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 double cosine(double);
 double sine(double);
-int decstring2data(u8* source,u64* data);
+int decstring2data(u8* src,u64* data);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -52,16 +52,16 @@ int pushfp(double data)
 	fpstack[fpcount]=data;
 	return 1;
 }
-int popfp(double* dest)
+int popfp(double* dst)
 {
 	//空栈
 	if(fpcount>=20)return 0;
 
 	//拿出当前数字，然后fpcount+1(rsp+8)
-	dest[0]=fpstack[fpcount];
+	dst[0]=fpstack[fpcount];
 	fpcount++;
 
-	//say("fppop %llf\n",dest[0]);
+	//say("fppop %llf\n",dst[0]);
 	return 1;
 }
 
@@ -87,7 +87,7 @@ int push(u32 data)
 	stack[sp]=data;
 	return 1;
 }
-int pop(u32* dest)
+int pop(u32* dst)
 {
 	//pop rax:
 	//rax=[rsp],rsp+8		(data=stack[sp],sp++)
@@ -96,10 +96,10 @@ int pop(u32* dest)
 	if(sp>=128)return 0;
 
 	//拿出当前数字，然后sp+1(rsp+8)
-	dest[0]=stack[sp];
+	dst[0]=stack[sp];
 	sp++;
 
-	//say("pop %d\n",dest[0]);
+	//say("pop %d\n",dst[0]);
 	return 1;
 }
 
@@ -107,7 +107,7 @@ int pop(u32* dest)
 
 
 //-----------------------------------------------------------
-static int operatorpriority(u64 operator)
+static int priority(u64 operator)
 {
 	if(operator == '(' ) return 0;
 
@@ -125,177 +125,163 @@ static int operatorpriority(u64 operator)
 
 
 
-//把混乱的输入变成整理好的式子
-void mess2infix(char* in,char* out)
-{
-	//暂时不管，只复制不做事
-	int i;
-	for(i=0;i<127;i++)
-	{
-		out[i]=in[i];
-	}
-}
-
-
-
-
-//中缀表达式转后缀表达式：134+95*x+(70*44+f)*g -> 134 95 x *+ 70 44 * f + g *+
+//中缀表达式转后缀表达式：134+95*x+(70*44+f)*g -> 134 95 x * + 70 44 * f + g * +
 void infix2postfix(char* infix,char* postfix)
 {
 	//
-	int source;
-	int dest;
-
-	int ret;
-	int compareresult;
-
-	u32 stacktop;
+	int src, dst, ret;
+	u32 top, this;
 
 	createstack();
-	for(ret=0;ret<128;ret++)postfix[ret]=0;
+	src=dst=0;
 
-	//
-	source=dest=0;
 	while(1)
 	{
-		switch( infix[source] )
+		this = infix[src];
+		if(this == 0)
 		{
-			case 0:		//结束了，把栈里能搬的全搬过去完事
+			while(1)
 			{
-				while(1)
-				{
-					ret=pop(&stacktop);
-					if(ret<=0)goto theend;
+				ret=pop(&top);
+				if(ret<=0)goto theend;
 
-					postfix[dest]=stacktop&0xff;
-					dest++;
+				postfix[dst]=top&0xff;
+				dst++;
+			}
+		}
+
+		//如果这是个等式
+		else if(this == '=')
+		{
+			while(1)
+			{
+				ret=pop(&top);
+				if(ret<=0)break;
+
+				postfix[dst]=top&0xff;
+				dst++;
+			}
+
+			postfix[dst]='=';
+			dst++;
+		}
+
+		//左括号无条件进栈
+		else if( (this == '(') | (this == '[') )
+		{
+			push( '(' );
+		}
+
+		//右括号
+		else if( (this == ')') | (this == ']') )
+		{
+			postfix[dst]=0x20;
+			dst++;
+
+			while(1)
+			{
+				//叫一个出来
+				ret=pop(&top);
+
+				//出问题了
+				if( ret<=0 )goto theend;
+
+				//是左括号的话直接扔掉，这个右括号就处理完了
+				if( top == '(' )break;
+
+				//否则把刚叫出来的放走，继续叫下一个来处理
+				else
+				{
+					postfix[dst]=top;    //直到‘(’或者‘ ’
+					dst++;
 				}
 			}
-			case '=':		//别急还有等式右边呢
-			{
-				while(1)
-				{
-					ret=pop(&stacktop);
-					if(ret<=0)break;
+		}//右括号
 
-					postfix[dest]=stacktop&0xff;
-					dest++;
+/*
+		else if(this == '!')		//阶乘
+		{
+		}
+
+		else if(this == 'c')	//cos(
+		{
+			if(infix[src+1]=='0' && infix[src+2]=='s')
+			{
+				src+=2;
+			}
+		}
+
+		else if(this == 'l')	//log(
+		{
+		}
+
+		else if(this == 's')	//sqrt(
+		{
+		}
+*/
+
+
+
+		//
+		else if((this == '+') |
+			(this == '-') |
+			(this == '*') |
+			(this == '/') |
+			(this == '^') |
+			(this == '%') )
+		{
+			postfix[dst]=0x20;
+			dst++;
+
+			while(1)
+			{
+				//叫一个出来跟自己比，空栈就自己进去
+				ret=pop(&top);
+				if(ret==0)
+				{
+					push( infix[src] );
+					break;
 				}
-
-				postfix[dest]='=';
-				dest++;
-				break;
-			}
-			case '(':
-			case '[':		//左括号无条件进栈
-			{
-				push( '(' );
-				break;
-			}
-			case ')':
-			case ']':
-			{
-				postfix[dest]=0x20;
-				dest++;
-
-				while(1)
+				else
 				{
-					//叫一个出来
-					ret=pop(&stacktop);
+					//比一下优先级
+					ret = priority(top) - priority(infix[src]);
 
-					//出问题了
-					if( ret<=0 )goto theend;
-
-					//是左括号的话直接扔掉，这个右括号就处理完了
-					if( stacktop == '(' )break;
-
-					//否则把刚叫出来的放走，继续叫下一个来处理
-					else
+					//比自己弱就让它滚回栈里，并且自己也进栈完事
+					if(ret < 0)
 					{
-						postfix[dest]=stacktop;    //直到遇到左括号或者空格
-						dest++;
-					}
-				}
-
-				break;
-			}//右括号
-			case '+':		//把%,^,/,*换出去，否则进栈
-			case '-':
-			case '*':
-			case '/':
-			case '^':		//乘方
-			case '%':		//取余
-			case '!':		//阶乘
-			{
-				postfix[dest]=0x20;
-				dest++;
-
-				while(1)
-				{
-					//叫一个出来跟自己比，空栈就自己进去
-					ret=pop(&stacktop);
-					if(ret==0)
-					{
-						push( infix[source] );
+						push( top );
+						push( infix[src] );
 						break;
 					}
+
+					//否则让它先走然后自己进入下次循环
 					else
 					{
-						compareresult=operatorpriority(stacktop) - operatorpriority(infix[source]);
-						//比自己弱就让它滚回栈里，并且自己也进栈完事
-						if(compareresult<0)
-						{
-							push( stacktop );
-							push( infix[source] );
-							break;
-						}
-
-						//否则让它先走然后自己进入下次循环
-						else
-						{
-							postfix[dest]=stacktop;
-							dest++;
-						}
+						postfix[dst]=top;
+						dst++;
 					}
-
-				}//while
-
-				break;
-			}//+,-,*,/,%,^
-			/*
-			case 'c':	//cos
-			{
-				if(infix[source+1]=='0' && infix[source+2]=='s')
-				{
-					source+=2;
 				}
-				break;
-			}
-			*/
-			//case 'l':	log
-			//case 's'	sqrt
-			case ' ':
-			{
-				break;
-			}
-			default:		//数字直接输出
-			{
-				if(infix[source]>0x20)
-				{
-					postfix[dest]=infix[source];
-					dest++;
-				}
-				break;
-			}
-		}//switch
 
-		source++;
-		if(source>=128)goto theend;
+			}//while
+		}//+,-,*,/,%,^
 
+		//数字直接输出
+		else if(this>0x20)
+		{
+			postfix[dst] = this;
+			dst++;
+		}
+
+
+		//next
+		src++;
+		if(src>=128)goto theend;
 	}//while(1)
 
 theend:
 	//printmemory(postfix,128);
+	postfix[dst] = 0;
 	return;
 }
 
@@ -305,8 +291,8 @@ theend:
 //后缀表达式转表达式二叉树：
 void postfix2binarytree(char* postfix,struct mathnode* node)
 {
-	int source;
-	int dest;
+	int src;
+	int dst;
 	int haha;
 
 	u64 data;
@@ -328,14 +314,14 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 	//正式开始
-	source=0;
-	dest = 1;		//这一号用掉了
+	src=0;
+	dst = 1;		//这一号用掉了
 	while(1)
 	{
 		//结束符
-		if( postfix[source] == 0 )
+		if( postfix[src] == 0 )
 		{
-			node[dest].type=0;
+			node[dst].type=0;
 
 			pop(&first);
 			node[0].right=first;
@@ -346,47 +332,47 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 		//等号
-		if( postfix[source] == '=' )
+		if( postfix[src] == '=' )
 		{
 			//等号节点，for fun
-                        node[dest].type='=';
-                        node[dest].left=0;
-                        node[dest].right=0;
-                        node[dest].integer=0;
+                        node[dst].type='=';
+                        node[dst].left=0;
+                        node[dst].right=0;
+                        node[dst].integer=0;
 
 			//point zero to root
 			pop(&first);
 
 			node[0].type=0x3d3d3d3d;	//====
 			node[0].left=first;
-			node[0].integer=dest;		//等号的位置
+			node[0].integer=dst;		//等号的位置
 
-			source++;
-			dest++;
+			src++;
+			dst++;
 		}
 
 
 
 
 		//第1种：常量
-		else if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
+		else if( ( postfix[src] >= '0' ) && ( postfix[src] <= '9' ) )
 		{
 			//say("herehere!!!!\n");
 			//先拿整数部分
-			ret1 = decstring2data( postfix + source , &data );
-			source += ret1;
+			ret1 = decstring2data( postfix + src , &data );
+			src += ret1;
 			float1=(double)data;
 
 			//如果有小数部分再拿上
-			if(postfix[source] == '.')
+			if(postfix[src] == '.')
 			{
-				//say(".@%d\n",source);
-				source++;
-				ret1=decstring2data( postfix+source , &data );
+				//say(".@%d\n",src);
+				src++;
+				ret1=decstring2data( postfix+src , &data );
 
 				if(ret1>0)
 				{
-					source += ret1;
+					src += ret1;
 					float2 = (double)data;
 
 					while(1)
@@ -404,33 +390,33 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 			}
 
 			//造节点
-			node[dest].type=0x33323130;
-			node[dest].left=0;
-			node[dest].right=0;
-			node[dest].floatpoint=float1;
+			node[dst].type=0x33323130;
+			node[dst].left=0;
+			node[dst].right=0;
+			node[dst].floatpoint=float1;
 
 			//保存节点号
-			push(dest);
-			dest++;		//这一号用掉了
+			push(dst);
+			dst++;		//这一号用掉了
 		}
 
 
 
 
 		//第2种：变量
-		else if( (postfix[source]=='x')|(postfix[source]=='y')|(postfix[source]=='z'))
+		else if( (postfix[src]=='x')|(postfix[src]=='y')|(postfix[src]=='z'))
 		{
 			//造节点
-			node[dest].type=postfix[source];
-			node[dest].left=0;
-			node[dest].right=0;
-			node[dest].integer=0;
+			node[dst].type=postfix[src];
+			node[dst].left=0;
+			node[dst].right=0;
+			node[dst].integer=0;
 
-			push(dest);
-			dest++;
+			push(dst);
+			dst++;
 
 			//下一个
-			source++;
+			src++;
 		}
 
 
@@ -442,58 +428,58 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 			//0：不正常，1：单操作数，2：默认双操作数
 			haha=2;
 
-			if(postfix[source]=='+')data='+';
-			else if(postfix[source]=='-')data='-';
-			else if(postfix[source]=='*')data='*';
-			else if(postfix[source]=='/')data='/';
-			else if(postfix[source]=='^')data='^';
-			else if(postfix[source]=='%')data='%';
-			else if(postfix[source]=='!')
+			if(postfix[src]=='+')data='+';
+			else if(postfix[src]=='-')data='-';
+			else if(postfix[src]=='*')data='*';
+			else if(postfix[src]=='/')data='/';
+			else if(postfix[src]=='^')data='^';
+			else if(postfix[src]=='%')data='%';
+			else if(postfix[src]=='!')
 			{
 				data='!';
 				haha=1;
 			}
-			else if(postfix[source]=='l')
+			else if(postfix[src]=='l')
 			{
-				if( postfix[source+1]=='o' && postfix[source+2]=='g' )
+				if( postfix[src+1]=='o' && postfix[src+2]=='g' )
 				{
 					data=0x676f6c;
-					source+=2;		//3-1
+					src+=2;		//3-1
 				}
 				else haha=0;
 			}
-			else if(postfix[source]=='s')
+			else if(postfix[src]=='s')
 			{
-				if( *(u32*)(postfix+source) == 0x74727173 )
+				if( *(u32*)(postfix+src) == 0x74727173 )
 				{
 					data=0x74727173;	//sqrt
-					source+=3;		//4-1
+					src+=3;		//4-1
 					haha=1;
 				}
-				else if( postfix[source+1]=='i' && postfix[source+2]=='n' )
+				else if( postfix[src+1]=='i' && postfix[src+2]=='n' )
 				{
 					data=0x6e6973;
-					source+=2;		//3-1
+					src+=2;		//3-1
 					haha=1;
 				}
 				else haha=0;
 			}
-			else if(postfix[source]=='c')
+			else if(postfix[src]=='c')
 			{
-				if( postfix[source+1]=='o' && postfix[source+2]=='s' )
+				if( postfix[src+1]=='o' && postfix[src+2]=='s' )
 				{
 					data=0x736f63;
-					source+=2;		//3-1
+					src+=2;		//3-1
 					haha=1;
 				}
 				else haha=0;
 			}
-			else if(postfix[source]=='t')
+			else if(postfix[src]=='t')
 			{
-				if( postfix[source+1]=='a' && postfix[source+2]=='n' )
+				if( postfix[src+1]=='a' && postfix[src+2]=='n' )
 				{
 					data=0x6e6174;
-					source+=2;		//3-1
+					src+=2;		//3-1
 					haha=1;
 				}
 				else haha=0;
@@ -519,10 +505,10 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 					if(second>=128|first>=128)break;
 
 					//处理
-					node[first].up=dest;
-					node[second].up=dest;
-					node[dest].left=first;
-					node[dest].right=second;
+					node[first].up=dst;
+					node[second].up=dst;
+					node[dst].left=first;
+					node[dst].right=second;
 				}
 				else if(haha == 1)
 				{
@@ -531,25 +517,25 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 					if(first>=128)break;
 
 					//处理
-					node[first].up=dest;
-					node[dest].left=first;
-					node[dest].right=0;
+					node[first].up=dst;
+					node[dst].left=first;
+					node[dst].right=0;
 				}
 
-				node[dest].type=0x2f2a2d2b;
-				node[dest].integer=data;
-				push(dest);
-				dest++;
+				node[dst].type=0x2f2a2d2b;
+				node[dst].integer=data;
+				push(dst);
+				dst++;
 			}
 
 			//不管正不正常，都会做这些事
-			source++;
+			src++;
 
 		}//else
 
 		//postfix字符串最大长度
-		if(source>=128)break;
-		//if(postfix[source]==0)break;
+		if(src>=128)break;
+		//if(postfix[src]==0)break;
 
 	}//while(1)
 
@@ -567,7 +553,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 //-----------------------------------------------------------
 double calculator(char* postfix,u64 x,u64 y)
 {
-	int source=0;
+	int src=0;
 	int count;
 	u64 data;
 	double first,second,temp;
@@ -576,23 +562,23 @@ double calculator(char* postfix,u64 x,u64 y)
 	while(1)
 	{
 		//第1种：常量
-		if( ( postfix[source] >= '0' ) && ( postfix[source] <= '9' ) )
+		if( ( postfix[src] >= '0' ) && ( postfix[src] <= '9' ) )
 		{
 			//先拿整数部分
-			count = decstring2data( postfix+source , &data );
-			source += count;
+			count = decstring2data( postfix+src , &data );
+			src += count;
 			first = (double)data;
 
 			//检查有没有小数部分有就加上
-			if(postfix[source] == '.')
+			if(postfix[src] == '.')
 			{
-				//say(".@%d\n",source);
-				source++;
-				count=decstring2data( postfix+source , &data );
+				//say(".@%d\n",src);
+				src++;
+				count=decstring2data( postfix+src , &data );
 
 				if(count>0)
 				{
-					source += count;
+					src += count;
 					temp = (double)data;
 
 					while(1)
@@ -617,63 +603,63 @@ double calculator(char* postfix,u64 x,u64 y)
 
 
 		//第2种：变量
-		else if(postfix[source]=='x')
+		else if(postfix[src]=='x')
 		{
 			//pushfp((double)x);
-			source++;
+			src++;
 		}
-		else if(postfix[source]=='y')
+		else if(postfix[src]=='y')
 		{
 			//pushfp((double)y);
-			source++;
+			src++;
 		}
-		else if(postfix[source]=='z')
+		else if(postfix[src]=='z')
 		{
 			//pushfp((double)z);
-			source++;
+			src++;
 		}
 
 
 
 
 		//第3种：单字节符号
-		else if(postfix[source] == '+')
+		else if(postfix[src] == '+')
 		{
 			popfp(&second);
 			popfp(&first);		//注意，栈，先进后出
 			temp = first + second;
 			pushfp(temp);
 
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '-')
+		else if(postfix[src] == '-')
 		{
 			popfp(&second);
 			popfp(&first);
 			temp=first-second;
 			pushfp(temp);
 
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '*')
+		else if(postfix[src] == '*')
 		{
 			popfp(&second);
 			popfp(&first);
 			temp=first*second;
 			pushfp(temp);
 
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '/')
+		else if(postfix[src] == '/')
 		{
 			popfp(&second);
 			popfp(&first);
 			temp=first/second;
 			pushfp(temp);
 
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '^') 	//指数		x^y
+		else if(postfix[src] == '^') 	//指数		x^y
 		{
 			popfp(&second);
 			popfp(&first);
@@ -688,50 +674,50 @@ double calculator(char* postfix,u64 x,u64 y)
 			}
 			pushfp(temp);
 
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '%') 	//取余		x%y
+		else if(postfix[src] == '%') 	//取余		x%y
 		{
-			source++;
+			src++;
 		}
-		else if(postfix[source] == '!') 	//阶乘		x!
+		else if(postfix[src] == '!') 	//阶乘		x!
 		{
-			source++;
+			src++;
 		}
 
 
 
 
 		//第4种：多字节符号
-		else if(postfix[source] == 'l')		//对数		xlogy
+		else if(postfix[src] == 'l')		//对数		xlogy
 		{
-			source++;
+			src++;
 		}
-		else if(postfix[source] == 's')
+		else if(postfix[src] == 's')
 		{
 			//根号		ysqrty
 			//正弦		sinx
-			source++;		//下一个
+			src++;		//下一个
 		}
-		else if(postfix[source] == 'c') 	//余弦		cosx
+		else if(postfix[src] == 'c') 	//余弦		cosx
 		{
-			source++;		//下一个
+			src++;		//下一个
 		}
-		else if(postfix[source] == 't') 	//正切		tanx
+		else if(postfix[src] == 't') 	//正切		tanx
 		{
-			source++;		//下一个
+			src++;		//下一个
 		}
 		else
 		{
-			source++;			//其他不认识的不管，不加会死这儿
+			src++;			//其他不认识的不管，不加会死这儿
 		}
 
 
 
 
 		//检查退出while循环
-		if(source>=128)break;
-		if(postfix[source]==0)break;
+		if(src>=128)break;
+		if(postfix[src]==0)break;
 
 
 
@@ -747,7 +733,7 @@ double calculator(char* postfix,u64 x,u64 y)
 
 double sketchpad(struct mathnode* node,double x,double y)
 {
-	int source=1;
+	int src=1;
 	double first,second,temp;
 	double result1,result2;
 
@@ -755,60 +741,60 @@ double sketchpad(struct mathnode* node,double x,double y)
 	createfpstack();
 	while(1)
 	{
-		if( node[source].type == 0x33323130 )	//0123...
+		if( node[src].type == 0x33323130 )	//0123...
 		{
-			pushfp(node[source].floatpoint);
+			pushfp(node[src].floatpoint);
 		}
-		else if( node[source].type == 'x' )
+		else if( node[src].type == 'x' )
 		{
 			pushfp(x);
 		}
-		else if( node[source].type == 'y' )
+		else if( node[src].type == 'y' )
 		{
 			pushfp(y);
 		}
-		else if( node[source].type == 0x2f2a2d2b )		//+-*/...
+		else if( node[src].type == 0x2f2a2d2b )		//+-*/...
 		{
-			if( node[source].integer == '+' )
+			if( node[src].integer == '+' )
 			{
 				popfp(&second);
 				popfp(&first);            //注意，栈，先进后出
 				pushfp(first+second);
 			}
-			if( node[source].integer == '-' )
+			if( node[src].integer == '-' )
 			{
 				popfp(&second);
 				popfp(&first);            //注意，栈，先进后出
 				pushfp(first-second);
 			}
-			if( node[source].integer == '*' )
+			if( node[src].integer == '*' )
 			{
 				popfp(&second);
 				popfp(&first);            //注意，栈，先进后出
 				pushfp(first*second);
 			}
-			if( node[source].integer == '/' )
+			if( node[src].integer == '/' )
 			{
 				popfp(&second);
 				popfp(&first);            //注意，栈，先进后出
 				pushfp(first/second);
 			}
 		}
-		else if( node[source].type == 0x736f63 )	//cos
+		else if( node[src].type == 0x736f63 )	//cos
 		{
 			popfp(&first);
 			pushfp( cosine(first) );
 		}
-		else if( node[source].type == 0x6e6973 )	//sin
+		else if( node[src].type == 0x6e6973 )	//sin
 		{
 			popfp(&first);
 			pushfp( sine(first) );
 		}
-		else if( node[source].type == 0x3d)	//=
+		else if( node[src].type == 0x3d)	//=
 		{
 			popfp(&result1);
 		}
-		else if(node[source].type == 0)
+		else if(node[src].type == 0)
 		{
 			popfp(&result2);
 			result2-=result1;
@@ -816,7 +802,7 @@ double sketchpad(struct mathnode* node,double x,double y)
 		}
 
 		//
-		source++;
+		src++;
 	}
 
 	return result2;

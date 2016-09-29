@@ -12,7 +12,6 @@ void backgroundcolor();
 double calculator(char* postfix, u64 x, u64 y);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-//
 void double2decimalstring(double,char*);
 //
 void printmemory(char*,int);
@@ -43,8 +42,8 @@ static int count=0;
 static char table[4][8] = {
 '0', '1', '2', '3', '+', '-', '*', '/',
 '4', '5', '6', '7', '^', '%', '!', ' ',
-'8', '9', 'a', 'b', ' ', ' ', ' ', ' ',
-'c', 'd', 'e', 'f', '<', '>', '(', ')',
+'8', '9', 'a', 'b', '<', '>', '(', ')',
+'c', 'd', 'e', 'f', '.', ' ', '`', '=',
 };
 
 
@@ -76,10 +75,10 @@ static void calculator_read_pixel()
 			printascii(w8*x, h8*(y+4), 4, table[y][x], 0xffffffff, 0);
 		}
 	}
-	printstring(0, 0, 2, buffer, 0xffffffff, 0);
-	printstring(0, 32, 2, infix, 0xffffffff, 0);
-	printstring(0, 64, 2, postfix, 0xffffffff, 0);
-	printstring(0, 96, 2, result, 0xffffffff, 0);
+	printstring(16, 16, 2, buffer, 0xffffffff, 0xff000000);
+	printstring(16, 16+32, 2, infix, 0xffffffff, 0xff000000);
+	printstring(16, 16+64, 2, postfix, 0xffffffff, 0xff000000);
+	printstring(16, 16+96, 2, result, 0xffffffff, 0xff000000);
 }
 static void calculator_read_text()
 {
@@ -110,36 +109,54 @@ static void calculator_read()
 
 static void calculator_write(u64* who, u64* what, u64* value)
 {
+	double final;
+	int x,y,ret;
 	u32 type = *(u32*)what;
 	u32 key = *(u32*)value;
-	double final;
 
-	if(type==0x72616863)	       //'char'
+	if(type == 0x207A7978)
+	{
+		x = key&0xffff;
+		y = (key>>16)&0xffff;
+
+		x = x*8/(haha->width);
+		y = y*8/(haha->height);
+		if(y < 4)return;
+
+		type = 0x72616863;
+		key = table[y-4][x];
+
+		if(key == '`')key = 0x8;
+		if(key == '=')key = 0xd;
+	}
+
+	if(type == 0x72616863)	       //'char'
 	{
 		if(key==0x8)		    //backspace
 		{
-			if(count > 0)count--;
+			if(count <= 0)return;
+
+			count--;
 			buffer[count] = 0x20;
 		}
 		else if(key==0xd)	       //enter
 		{
-			//检查buffer，然后给infix
-			say("buffer:%s\n",buffer);
-
 			//清空输入区
-			for(count=0;count<127;count++)
+			for(ret=0;ret<count;ret++)
 			{
-				infix[count] = buffer[count];
-				buffer[count] = 0x20;
+				infix[ret] = buffer[ret];
+				buffer[ret] = 0x20;
 			}
+			infix[count] = 0;
 			count=0;
+			say("buffer:%s\n", infix);
 
-			say("infix2postfix:%s\n",postfix);
-			infix2postfix(infix,postfix);
+			infix2postfix(infix, postfix);
+			say("postfix:%s\n", postfix);
 
-			say("postfix2binarytree......\n");
 			final = calculator(postfix, 0, 0);
 			double2decimalstring(final, result);
+			say("result:%s\n", result);
 		}
 		else
 		{

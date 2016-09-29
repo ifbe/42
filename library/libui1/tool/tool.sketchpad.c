@@ -199,8 +199,81 @@ static void tuxiang()
 
 
 
+static void sketchpad_read_pixel()
+{
+	double hello;
+
+	//跳过
+	if(node[0].type!=0x3d3d3d3d)goto skipthese;
+	if(changed==0)goto skipthese;
+	changed=0;
+
+
+
+	backgroundcolor(0);
+	if(node[0].integer == 0)
+	{
+		//计算器
+		hello=calculator(postfix,0,0);
+		double2decimalstring(hello,result);
+	}
+	else
+	{
+		//网格，函数图
+		wangge();
+		tuxiang();
+	}//else
+
+
+
+
+
+skipthese:		//打印
+	printstring(0, 0, 1, buffer, 0xcccccc, 0xff000000);
+	printstring(0, 16, 1, infix, 0xcccccc, 0xff000000);
+	printstring(0, 32, 1, postfix, 0xcccccc, 0xff000000);
+	printstring(0, 48, 1, result, 0xcccccc, 0xff000000);
+	return;
+}
+static void sketchpad_read_html()
+{
+	u32* screenbuf = (u32*)(haha->pixelbuffer);
+
+	sketchpad_read_pixel();
+	screenbuf[0]=0;
+}
+static void sketchpad_read_text()
+{
+}
+static void sketchpad_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if(temp == 0x74786574)
+	{
+		sketchpad_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		sketchpad_read_html();
+	}
+
+	//pixel
+	else
+	{
+		sketchpad_read_pixel();
+	}
+}
+
+
+
+
 static void sketchpad_write(u64* who, u64* a, u64* b)
 {
+	int ret;
 	int width = haha->width;
 	int height = haha->height;
 	u64 type = *a;
@@ -233,27 +306,30 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 	{
 		if(key==0x8)			//backspace
 		{
-			if(count!=0)count--;
-			buffer[count]=0x20;
+			if(count == 0)return;
+
+			count--;
+			buffer[count] = 0x20;
 		}
 		else if(key==0xd)		//enter
 		{
-			//检查buffer，然后给infix
-			say("buffer:%s\n",buffer);
-
 			//清空输入区
-			for(count=0;count<127;count++)
+			for(ret=0;ret<count;ret++)
 			{
-				infix[count]=buffer[count];
-				buffer[count]=0x20;
+				infix[ret] = buffer[ret];
+				buffer[ret] = 0x20;
 			}
-			count=0;
+			infix[count] = 0;
+			count = 0;
+			say("infix:%s\n", infix);
 
-			say("infix2postfix:%s\n",postfix);
-			infix2postfix(infix,postfix);
+			//
+			infix2postfix(infix, postfix);
+			say("postfix:%s\n", postfix);
 
-			say("postfix2binarytree......\n");
-			postfix2binarytree(postfix,node);
+			//
+			postfix2binarytree(postfix, node);
+			say("node:%x,%x\n", node[0].left, node[0].right);
 
 			//告诉打印员
 			changed=1;
@@ -262,7 +338,7 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 		{
 			if(count<128)
 			{
-				buffer[count]=key;
+				buffer[count] = key;
 				count++;
 			}
 		}
@@ -311,74 +387,6 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 	//else if(type==0x6B636162207A7978)		//'xyz ++++'
 	//else if(type==0x6B636162207A7978)		//'xyz ----'
 }
-static void sketchpad_read_pixel()
-{
-	double hello;
-
-	//跳过
-	if(node[0].type!=0x3d3d3d3d)goto skipthese;
-	if(changed==0)goto skipthese;
-	changed=0;
-
-
-
-	backgroundcolor(0);
-	if(node[0].integer == 0)
-	{
-		//计算器
-		hello=calculator(postfix,0,0);
-		double2decimalstring(hello,result);
-	}
-	else
-	{
-		//网格，函数图
-		wangge();
-		tuxiang();
-	}//else
-
-
-
-
-
-skipthese:		//打印
-	printstring(0, 0, 1, buffer, 0xcccccc , 0 );
-	printstring(0, 16, 1, infix, 0xcccccc , 0 );
-	printstring(0, 32, 1, postfix, 0xcccccc , 0 );
-	printstring(0, 48, 1, result, 0xcccccc , 0 );
-	return;
-}
-static void sketchpad_read_html()
-{
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
-
-	sketchpad_read_pixel();
-	screenbuf[0]=0;
-}
-static void sketchpad_read_text()
-{
-}
-static void sketchpad_read()
-{
-	u32 temp = (haha->pixelformat)&0xffffffff;
-
-	//text
-	if(temp == 0x74786574)
-	{
-		sketchpad_read_text();
-	}
-
-	//html
-	else if(temp == 0x6c6d7468)
-	{
-		sketchpad_read_html();
-	}
-
-	//pixel
-	else
-	{
-		sketchpad_read_pixel();
-	}
-}
 
 
 
@@ -389,30 +397,21 @@ static void sketchpad_list()
 static void sketchpad_change()
 {
 }
-
-
-
-
-
-
-
-
 static void sketchpad_start()
 {
 	u64 haha = 0x72616863;
 	u64 hehe = 0xd;
-	backgroundcolor(0);
+	buffer[0] = 'y';
+	buffer[1] = '=';
+	buffer[2] = 'x';
+	count = 3;
+	sketchpad_write((void*)0, &haha, &hehe);
 
 	//
 	centerx=0.00;
 	centery=0.00;
 	scale=1.00;
-
-	//
-	buffer[0]='y';
-	buffer[1]='=';
-	buffer[2]='x';
-	sketchpad_write((void*)0, &haha, &hehe);
+	backgroundcolor(0);
 }
 static void sketchpad_stop()
 {
