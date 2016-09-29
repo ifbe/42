@@ -3,9 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //用了别人的
-int sectorread( char* rdi,u64 rsi,u64 rcx);
-int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 int cleverread(u64,u64,u64,	char*,u64,u64);
+int cleverwrite(u64,u64,u64,	char*,u64,u64);
+int readfile(u8* mem, u8* file, u64 offset, u64 count);
+int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //
 void printmemory(char* addr,int size);
 void say(char* fmt,...);
@@ -102,7 +103,10 @@ void datarun(char* targetaddr,char* runaddr,u64 want,u64 max)
 			//内存位置，内存大小，需要的位置
 			cleverread
 			(
-				ntfssector+offset,count/0x200,logicpos,
+				(ntfssector+offset)*0x200,
+				count,
+				logicpos,
+
 				targetaddr,0x80000,want
 			);
 		}
@@ -646,10 +650,11 @@ int explainntfshead()
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	sectorread(
+	readfile(
 		mft0,
-		ntfssector+mftcluster*clustersize,
-		32
+		0,
+		(ntfssector+mftcluster*clustersize)*0x200,
+		32*0x200
 	);
 	//printmemory(mft0,0x400);		//	$Mft
 	//printmemory(mft0+0x400*5,0x400);	//	.
@@ -695,7 +700,7 @@ int mountntfs(u64 sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读PBR，检查失败就返回
-	ret=sectorread(pbr,ntfssector,1);
+	ret=readfile(pbr, 0, ntfssector*0x200, 0x200);
 	ret=isntfs(pbr);
 	if(ret==0)return -1;
 

@@ -3,9 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int sectorread( char* rdi,u64 rsi,u64 rcx);
-int sectorwrite(char* rdi,u64 rsi,u64 rcx);
 int cleverread(u64,u64,u64,char*,u64,u64);
+int cleverwrite(u64,u64,u64,char*,u64,u64);
+int readfile(u8* mem, u8* file, u64 offset, u64 count);
+int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //用了别人的
 void printmemory(char* addr,u64 size);
 void say(char* fmt,...);
@@ -44,7 +45,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	sectorread(blockrecord,sector,1);
+	readfile(blockrecord, 0, sector*0x200, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	char* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -92,7 +93,7 @@ static char* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		sectorread(rdi,where,count*inodesize/0x200);
+		readfile(rdi, 0, where*0x200, count*inodesize*0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -150,12 +151,12 @@ static int explaininode(u64 inode,u64 wantwhere)
 			rsi+=12;
 
 			//逻辑上，这是文件的第几块
-			u64 aaaaa=( *(u32*)rsi )*blocksize*0x200;		//逻辑上，这块的字节位置
+			u64 aaaaa=( *(u32*)rsi )*blocksize*0x200;	//逻辑上位置
 			if(wantwhere+0x100000<=aaaaa)break;		//结束了
 
 			//总共多少个扇区
-			u64 count=( *(u16*)(rsi+4) )*blocksize;			//多少个扇区
-			if(aaaaa+count*0x200<=wantwhere)continue;			//还没到
+			u64 count=( *(u16*)(rsi+4) )*blocksize;		//多少个扇区
+			if(aaaaa+count*0x200<=wantwhere)continue;	//还没到
 
 			//实际上，从第几个扇区开始
 			u64 sector=*(u16*)(rsi+6);	//从extent体里得到高16位实际块号
@@ -163,12 +164,11 @@ static int explaininode(u64 inode,u64 wantwhere)
 			sector*=blocksize;	//乘以每块多少扇区，现在sector=分区内偏移多少个扇区
 			sector+=block0;		//加上分区相对硬盘开始多少个扇区
 
-			//蛋碎了，拼回来。。。传进去的参数为：
 			//前三个；这一块的物理扇区号，扇区数，逻辑位置
 			//后三个：目标位置，目标大小，需求位置
 			cleverread
 			(
-				sector,count,aaaaa,
+				sector*0x200, count*0x200, aaaaa,
 				datahome,0x100000,wantwhere
 			);
 		}
@@ -190,7 +190,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-		        sectorread(rdi,temp,blocksize);
+		        readfile(rdi, 0, temp*0x200, blocksize*0x200);
 			rdi+=0x200*blocksize;
 		}
 
@@ -387,7 +387,7 @@ int mountext(u64 sector,char* addr)
 	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
-	ret=sectorread(pbr,block0,0x8);	//0x1000
+	ret=readfile(pbr, 0, block0*0x200, 0x1000);
 	ret=isext(pbr);
 	if( ret == 0 ) return -1;
 

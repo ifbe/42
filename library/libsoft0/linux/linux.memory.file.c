@@ -41,116 +41,6 @@ static char _dev_block_mmcblk[0x20]={
 
 
 
-//mem地址，file名字，文件内偏移，总字节数
-int directwrite(u8* mem, u8* file, u64 offset, u64 count)
-{
-	int fd;
-	int ret;
-	fd = open(file,O_WRONLY|O_CREAT,S_IRWXU|S_IRWXG|S_IRWXO);
-	if(fd==-1)
-	{
-		printf("fail@open\n");
-		return -1;
-	}
-
-	ret=lseek(fd, offset, SEEK_SET);
-	if(ret==-1)
-	{
-		printf("fail@lseek\n");
-		goto byebye;
-	}
-
-	ret=write(fd, mem, count);
-	if(ret==-1)
-	{
-		printf("fail@write\n");
-		goto byebye;
-	}
-
-byebye:
-	close(fd);
-	return 0;
-}
-int directread(u8* mem, u8* file, u64 offset, u64 count)
-{
-	int fd;
-	int ret;
-	fd = open(file,O_RDONLY);
-	if(fd==-1)
-	{
-		printf("fail@open\n");
-		return -1;
-	}
-
-	ret = lseek(fd, offset, SEEK_SET);
-	if(ret==-1)
-	{
-		printf("fail@lseek\n");
-		goto byebye;
-	}
-
-	ret = read(fd, mem, count);
-	if(ret==-1)
-	{
-		printf("fail@write\n");
-		goto byebye;
-	}
-
-byebye:
-	close(fd);
-	return 0;
-}
-
-
-
-
-int sectorread(char* buf,u64 sector,u64 count)
-{
-	int result;
-
-	result=lseek64(thisfd,sector*0x200,SEEK_SET);
-	if(result==-1)
-	{
-		//say("errno:%d,seek:%llx\n",errno,sector);
-		return -1;
-	}
-
-	result=read(thisfd,buf,count*0x200);
-	if(result==-1)
-	{
-		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
-		return -2;
-	}
-
-	//
-	return 1;
-}
-//来源内存地址，目的首扇区，无视，总字节数
-int sectorwrite(char* buf,u64 sector,u64 count)
-{
-	int result;
-
-	result=lseek64(thisfd,sector*0x200,SEEK_SET);
-	if(result==-1)
-	{
-		//say("errno:%d,seek:%llx\n",errno,sector);
-		return -1;
-	}
-
-	result=write(thisfd,buf,count*0x200);
-	if(result==-1)
-	{
-		//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
-		return -2;
-	}
-
-	//
-	return 1;
-}
-
-
-
-
 static int trythis(char* src,char* dest)
 {
 	int i;
@@ -177,6 +67,119 @@ static int trythis(char* src,char* dest)
 	//success,next
 	return 0x40;
 }
+
+
+
+
+//mem地址，file名字，文件内偏移，总字节数
+int writefile(u8* mem, u8* file, u64 offset, u64 count)
+{
+	int fd;
+	int ret;
+
+	if(file == 0)
+	{
+		ret=lseek64(thisfd, offset, SEEK_SET);
+		if(ret==-1)
+		{
+			//say("errno:%d,seek:%llx\n",errno,sector);
+			return -2;
+		}
+
+		ret=write(thisfd, mem, count);
+		if(ret==-1)
+		{
+			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+			return -1;
+		}
+	}
+	else
+	{
+		fd = open(file, O_WRONLY|O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
+		if(fd==-1)
+		{
+			printf("fail@open\n");
+			return -3;
+		}
+
+		ret=lseek64(fd, offset, SEEK_SET);
+		if(ret==-1)
+		{
+			printf("fail@lseek\n");
+			close(fd);
+			return -2;
+		}
+
+		ret=write(fd, mem, count);
+		if(ret==-1)
+		{
+			printf("fail@write\n");
+			close(fd);
+			return -1;
+		}
+
+		close(fd);
+	}
+
+	//
+	return ret;
+}
+int readfile(u8* mem, u8* file, u64 offset, u64 count)
+{
+	int fd;
+	int ret;
+
+	if(file == 0)
+	{
+		ret=lseek64(thisfd, offset, SEEK_SET);
+		if(ret==-1)
+		{
+			//say("errno:%d,seek:%llx\n",errno,sector);
+			return -2;
+		}
+
+		ret=read(thisfd, mem, count);
+		if(ret==-1)
+		{
+			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
+			return -1;
+		}
+	}
+	else
+	{
+		fd = open(file, O_RDONLY);
+		if(fd==-1)
+		{
+			printf("fail@open\n");
+			return -3;
+		}
+
+		ret = lseek64(fd, offset, SEEK_SET);
+		if(ret==-1)
+		{
+			printf("fail@lseek\n");
+			close(fd);
+			return -2;
+		}
+
+		ret = read(fd, mem, count);
+		if(ret==-1)
+		{
+			printf("fail@write\n");
+			close(fd);
+			return -1;
+		}
+
+		close(fd);
+	}
+
+	//
+	return ret;
+}
+
+
+
+
 void listfile(char* dest)
 {
 	//clean

@@ -3,20 +3,19 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //挂载
-u64 prelibation(char*);
-int explaingpt(char* src,char* dest);	//分区表
-int explainmbr(char* src,char* dest);
 int mountext(u64 sector,char* dest);	//文件系统
 int mountfat(u64 sector,char* dest);
 int mounthfs(u64 sector,char* dest);
 int mountntfs(u64 sector,char* dest);
+int explaingpt(char* src,char* dest);	//分区表
+int explainmbr(char* src,char* dest);
 //
-int sectorread( char* rdi,u64 rsi,u64 rcx);
-int sectorwrite(char* rdi,u64 rsi,u64 rcx);
-int directread(u8* mem, u8* file, u64 where, u64 size);
-int directwrite(u8* mem, u8* file, u64 where, u64 size);
+u64 prelibation(char*);
 int hexstring2data(char* src,u64* dest);
 int compare(char*,char*);
+//
+int readfile(u8* mem, u8* file, u64 where, u64 size);
+int writefile(u8* mem, u8* file, u64 where, u64 size);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -134,7 +133,7 @@ static int fs_read(char* arg1)
 		fsload(id,temp,0x100000);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
-		directwrite(datahome,arg1,temp,0x100000);
+		writefile(datahome, arg1, temp, 0x100000);
 	}
 
 	//最后的零头(要是size=1m的整数倍，就没有零头)
@@ -144,7 +143,7 @@ static int fs_read(char* arg1)
 		fsload(id,temp,size-temp);
 
 		//mem地址，file名字，文件内偏移，写入多少字节
-		directwrite(datahome,arg1,temp,size%0x100000);
+		writefile(datahome, arg1, temp, size%0x100000);
 	}
 
 	return 0;
@@ -186,7 +185,7 @@ say("@fs_start\n");
 
 
 	//读[sector,sector+63](0x8000bytes)进内存，检查种类
-	sectorread(datahome , sector , 64);
+	readfile(datahome, 0, sector*0x200, 0x8000);
 	type=prelibation(datahome);
 	say("%x:%s\n",value,&type);
 

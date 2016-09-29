@@ -5,8 +5,8 @@
 //
 int startfile();
 int stopfile();
-int sectorread(char* rdi,u64 rsi,u64 rcx);
-int sectorwrite(char* rdi,u64 rsi,u64 rcx);
+int readfile(u8* mem, u8* file, u64 offset, u64 count);
+int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //
 u64 prelibation(char*);
 int explaingpt(char* src,char* dest);
@@ -53,7 +53,7 @@ static int pt_start(u64 type,char* p)
 	ret=startfile(p);
         if(ret<=0)return -1;
 
-	sectorread(datahome , 0 , 64);
+	readfile(datahome, 0, 0, 0x8000);
 	type=prelibation(datahome);
 
 	if(type==0x747067)              //'gpt'

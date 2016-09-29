@@ -25,15 +25,11 @@ int fs_delete();
 int pt_create(char*,char*);
 int pt_delete();
 //
-int systemstart(int,char*);
-int systemstop();
-int systemlist(char*);
-int systemchoose(char*);
-int sectorread(char* rdi,u64 rsi,u64 rcx);
-int sectorwrite(char* rdi,u64 rsi,u64 rcx);
-//
-int compare(char*,char*);	//base tool
+int readfile(u8* mem, u8* file, u64 offset, u64 count);
+int writefile(u8* mem, u8* file, u64 offset, u64 count);
 int hexstring2data(char*,u64*);
+int compare(char*,char*);	//base tool
+//
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
 
@@ -123,35 +119,35 @@ u64 prelibation(char* memaddr)
 */
 void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 {
-	u8* rdi=0;    //关键:读到哪儿
-	u64 rsi=0;    //读哪号扇区
-	u64 rcx=0;    //读几个扇区
+	u8* rdi=0;    //内存地址
+	u64 rsi=0;    //扇区号
+	u64 rcx=0;    //扇区数量
 
 	//改rdi,rsi,rcx数值
 	if(where<want)             //3和4
 	{
-		rdi=dst;
-		rsi=src + (want-where)/0x200;
-		if(where+count*0x200<=want+size)
+		rdi = dst;
+		rsi = src+(want-where);
+		if(where+count <= want+size)
 		{
-			rcx=count-(want-where)/0x200;
+			rcx = count-(want-where);
 		}
 		else
 		{
-			rcx=size/0x200;
+			rcx = size;
 		}
 	}
 	else
 	{
-		rdi=dst + (where-want);
-		rsi=src;
-		if(where+count*0x200<=want+size)
+		rdi = dst+(where-want);
+		rsi = src;
+		if(where+count <= want+size)
 		{
-			rcx=count;
+			rcx = count;
 		}
 		else
 		{
-			rcx=(want+size-where)/0x200;
+			rcx = want+size-where;
 		}
 	}
 
@@ -165,7 +161,7 @@ void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 		rdi,rsi,rcx
 	);
 */
-	sectorread(rdi,rsi,rcx);
+	readfile(rdi, 0, rsi, rcx);
 }
 
 
@@ -300,7 +296,7 @@ static int memory_read(char* arg1)
 	if(value==0)
 	{
 		hexstring2data(arg1,&value);
-		sectorread(datahome,value,1);
+		readfile(datahome, 0, value*0x200, 0x200);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);
 	}

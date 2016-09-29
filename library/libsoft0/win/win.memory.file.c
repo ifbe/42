@@ -9,7 +9,7 @@
 #define u8 unsigned char
 void say(char* fmt,...);
 
-HANDLE hDev;
+HANDLE selected;
 static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 
@@ -57,79 +57,76 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 
 
 //mem地址，file名字，文件内偏移，总字节数
-int directwrite(char* memaddr,char* filename,u64 offset,u64 count)
+int writefile(char* memaddr,char* filename,u64 offset,u64 count)
 {
-	HANDLE hFile = CreateFile(
-		filename, GENERIC_WRITE, 0,
-		NULL, OPEN_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL, NULL
-	);
-
-	//
-	if(hFile==INVALID_HANDLE_VALUE)
-	{
-		say("error@open\n");
-		return -1;
-	}
-
+	HANDLE hFile;
 	LARGE_INTEGER li;
-	li.QuadPart = offset;
-	SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
+	unsigned long written = 0;
 
-	unsigned long dwBytesWritten = 0;
-	WriteFile(hFile, memaddr, count, &dwBytesWritten, NULL);
+	if(filename != 0)
+	{
+		li.QuadPart = offset;
+		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
+		WriteFile(selected, memaddr, count, &written, NULL);
+	}
+	else
+	{
+		//
+		hFile = CreateFile(
+			filename, GENERIC_WRITE, 0,
+			NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL, NULL
+		);
+		if(hFile==INVALID_HANDLE_VALUE)
+		{
+			say("error@open\n");
+			return -1;
+		}
 
-	CloseHandle(hFile);
+		//
+		li.QuadPart = offset;
+		SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
+		WriteFile(hFile, memaddr, count, &written, NULL);
+
+		//
+		CloseHandle(hFile);
+	}
 }
 //
-int directread(char* memaddr,char* filename,u64 offset,u64 count)
+int readfile(char* memaddr,char* filename,u64 offset,u64 count)
 {
-	HANDLE hFile = CreateFile(
-		filename, GENERIC_WRITE, 0,
-		NULL, OPEN_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL, NULL
-	);
+	HANDLE hFile;
+	LARGE_INTEGER li;
+	unsigned long written = 0;
 
-	//
-	if(hFile==INVALID_HANDLE_VALUE)
+	if(filename != 0)
 	{
-		say("error@open\n");
-		return -1;
+		li.QuadPart = offset;
+		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
+		ReadFile(selected, memaddr, count, &written, 0);
 	}
+	else 
+	{
+		//
+		hFile = CreateFile(
+			filename, GENERIC_WRITE, 0,
+			NULL, OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL, NULL
+		);
+		if(hFile==INVALID_HANDLE_VALUE)
+		{
+			say("error@open\n");
+			return -1;
+		}
 
-	LARGE_INTEGER li;
-	li.QuadPart = offset;
-	SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
+		//
+		li.QuadPart = offset;
+		SetFilePointer (hFile, li.LowPart, &li.HighPart, FILE_BEGIN);
+		ReadFile(hFile, memaddr, count, &written, 0);
 
-	unsigned long dwBytesWritten = 0;
-	ReadFile(hFile, memaddr, count, &dwBytesWritten, 0);
-
-	CloseHandle(hFile);
-}
-
-
-
-
-void sectorread(u64 buf,u64 start,u64 count)
-{
-	LARGE_INTEGER li;
-	li.QuadPart = start*512;
-	SetFilePointer (hDev,li.LowPart,&li.HighPart,FILE_BEGIN);
-
-	unsigned long dwret = 0;
-	ReadFile(hDev,(char*)buf,count*512,&dwret,0);
-	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
-}
-//来源内存地址，目的首扇区，无视，总字节数
-void sectorwrite(u64 buf,u64 start,u64 count)
-{
-	LARGE_INTEGER li;
-	li.QuadPart = start*512;
-	SetFilePointer (hDev,li.LowPart,&li.HighPart,FILE_BEGIN);
-
-	unsigned long dwret = 0;
-	WriteFile(hDev, (char*)buf, count*512, &dwret, 0);
-	if(dwret!=count*512)printf("read %d bytes,GetLastError()=%d\n",dwret,GetLastError());
+		//
+		CloseHandle(hFile);
+	}
 }
 
 
@@ -200,12 +197,12 @@ void startfile(char* path)
 	else CloseHandle(temphandle);
 
 	//关掉原先已经打开的，然后打开这个
-	if(hDev!=NULL)CloseHandle(hDev);
-	hDev=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
+	if(selected!=NULL)CloseHandle(selected);
+	selected=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 
 	//size
 	u64 size=0;
-	getsize(hDev,path,(void*)&size);
+	getsize(selected,path,(void*)&size);
 
 	say("(%s	,	%llx)\n",path,size);
 }
@@ -217,9 +214,9 @@ void createfile()
 }
 void deletefile()
 {
-	if(hDev!=NULL)
+	if(selected!=NULL)
 	{
-		CloseHandle(hDev);
-		hDev=NULL;
+		CloseHandle(selected);
+		selected=NULL;
 	}
 }
