@@ -258,11 +258,11 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //[16]:		索引标志
 //[17]:		无意义
 //0x10属性体：
-//*+0x00*/	uint64 CreationTime;         // 创建时间
-//*+0x08*/	uint64 ChangeTime;           // 修改时间
-//*+0x10*/	uint64 LastWriteTime;        // 最后写入时间
+//*+0x00*/	uint64 CreationTime;	 // 创建时间
+//*+0x08*/	uint64 ChangeTime;	   // 修改时间
+//*+0x10*/	uint64 LastWriteTime;	// 最后写入时间
 //*+0x18*/	uint64 LastAccessTime;       // 最后访问时间
-//*+0x20*/	uint32 FileAttribute;        // 文件属性
+//*+0x20*/	uint32 FileAttribute;	// 文件属性
 //*+0x24*/	uint32 AlignmentOrReserved[3];  // 
 //#if 0
 //*+0x28*/	uint32 QuotaId;
@@ -296,18 +296,18 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //0x30属性：
 //*+0x00*/	uint64 DirectoryFile:48;    // 父目录记录号(前个字节)
 //*+0x06*/  uint64 ReferenceNumber:16;  // +序列号(与目录相关)
-//*+0x08*/	uint64 CreationTime;        // 文件创建时间
-//*+0x10*/	uint64 ChangeTime;          // 文件修改时间        
+//*+0x08*/	uint64 CreationTime;	// 文件创建时间
+//*+0x10*/	uint64 ChangeTime;	  // 文件修改时间	
 //*+0x18*/	uint64 LastWriteTime;       // MFT更新的时间
 //*+0x20*/	uint64 LastAccessTime;      // 最后一次访问时间
 //*+0x28*/	uint64 AllocatedSize;       // 文件分配大小
-//*+0x30*/	uint64 DataSize;            // 文件实际大小
+//*+0x30*/	uint64 DataSize;	    // 文件实际大小
 //*+0x38*/	uint32 FileAttributes;      // 标志,如目录\压缩\隐藏等
 //*+0x3C*/	uint32 AlignmentOrReserved; // 用于EAS和重解析
 //*+0x40*/	uchar NameLength;      // 以字符计的文件名长度,没字节占用字节数由下一字节命名空间确定
        	// 文件名命名空间, 0 POSIX大小写敏感,1 win32空间,2 DOS空间, 3 win32&DOS空间
-//*+0x41*/	uchar NameType;        
-//*+0x42*/	wchar Name[1];         // 以Unicode方式标识的文件名
+//*+0x41*/	uchar NameType;	
+//*+0x42*/	wchar Name[1];	 // 以Unicode方式标识的文件名
 //void explain30(char* addr)
 //{
 //}
@@ -445,19 +445,19 @@ void explaina0(char* addr)	//index allocation
 //解释mft（mft号，要这个文件里面第几个字节开始的一段）
 //如果是文件夹自动做文件夹的事，如果是文件自动读取指定位置
 //mft记录：
-//*+0x00*/ uint32 Type;        // 固定值'FILE'
+//*+0x00*/ uint32 Type;	// 固定值'FILE'
 //*+0x04*/ uint16 UsaOffset;   // 更新序列号偏移, 与操作系统有关
 //*+0x06*/ uint16 UsaCount;    // 固定列表大小Size in words of Update Sequence Number&Array(S)
-//*+0x08*/ uint64 Lsn;         // 日志文件序列号(LSN)
+//*+0x08*/ uint64 Lsn;	 // 日志文件序列号(LSN)
 //*+0x10*/ uint16 SequenceNumber;   // 序列号(用于记录文件被反复使用的次数)
-//*+0x12*/ uint16 LinkCount;        // 硬连接数
+//*+0x12*/ uint16 LinkCount;	// 硬连接数
 //*+0x14*/ uint16 AttributeOffset;  // 第一个属性偏移
-//*+0x16*/ uint16 Flags;            // falgs, 00=删除文件,01=正常文件,02=删除目录,03=正常目录
+//*+0x16*/ uint16 Flags;	    // falgs, 00=删除文件,01=正常文件,02=删除目录,03=正常目录
 //*+0x18*/ uint32 BytesInUse;       // 文件记录实时大小(字节) 当前MFT表项长度,到FFFFFF的长度+4
 //*+0x1C*/ uint32 BytesAllocated;   // 文件记录分配大小(字节)
 //*+0x20*/ uint64 BaseFileRecord;   // = 0 基础文件记录 File reference to the base FILE record
 //*+0x28*/ uint16 NextAttributeNumber; // 下一个自由ID号
-//*+0x2A*/ uint16 Pading;           // 边界
+//*+0x2A*/ uint16 Pading;	   // 边界
 //*+0x2C*/ uint32 MFTRecordNumber;  // windows xp中使用,本MFT记录号
 //*+0x30*/ uint32 MFTUseFlags;      // MFT的使用标记
 static char here[1024];
@@ -570,35 +570,6 @@ void explainmft(u64 mftnum,u64 want)
 
 
 
-
-
-
-
-static int ntfs_ls(char* to)
-{
-	return 0;
-}
-static int ntfs_cd(u64 id)
-{
-	int i=0;
-	for(i=0;i<0x10000;i++)dirhome[i]=0;
-
-	explainmft(id,0);
-	if(ntfspwd<10) ntfspwd++;
-	pwd[ntfspwd]=id;
-	return 1;
-}
-static int ntfs_load(u64 id,u64 offset)
-{
-	explainmft(id,offset);
-	if(ntfspwd<10) ntfspwd++;
-	pwd[ntfspwd]=id;
-	return 1;
-}
-static int ntfs_store(u64 id)
-{
-	return 1;
-}
 int explainntfshead()
 {
 	int i;
@@ -606,17 +577,6 @@ int explainntfshead()
 
 	//clean
 	for(i=0;i<0x10000;i++)fshome[i]=0;
-
-	//func ls.cd,load,store
-	dstqword[0]=0x636e7566;		//'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)ntfs_ls;
-	dstqword[5]=(u64)ntfs_cd;
-	dstqword[6]=(u64)ntfs_load;
-	dstqword[7]=(u64)ntfs_store;
-	dstqword += 8;
 
 	//[d,d]
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
@@ -662,14 +622,6 @@ int explainntfshead()
 
 	return 1;
 }
-
-
-
-
-
-
-
-
 int isntfs(char* addr)
 {
 	u64 temp;
@@ -685,19 +637,43 @@ int isntfs(char* addr)
 	//
 	return 0x666666;
 }
-//描述地址，状态机地址
-int mountntfs(u64 sector,char* addr)
+
+
+
+
+
+
+
+
+static int ntfs_list(char* to)
+{
+	return 0;
+}
+static int ntfs_choose(u64 id)
+{
+	int i=0;
+	for(i=0;i<0x10000;i++)dirhome[i]=0;
+
+	explainmft(id,0);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
+	return 1;
+}
+static int ntfs_read(u64 id,u64 offset)
+{
+	explainmft(id,offset);
+	if(ntfspwd<10) ntfspwd++;
+	pwd[ntfspwd]=id;
+	return 1;
+}
+static int ntfs_write(u64 id)
+{
+	return 1;
+}
+static int ntfs_start(u64 sector)
 {
 	int ret=0;
-
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	ntfssector=sector;
-	fshome=addr+0;	//func,struture,...
-		pbr=fshome+0x10000;		//pbr
-		mft0=fshome+0x20000;	//mft0
-		mftbuffer=fshome+0x40000;	//mftn
-	dirhome=addr+0x100000;
-	datahome=addr+0x200000;
 
 	//读PBR，检查失败就返回
 	ret=readfile(pbr, 0, ntfssector*0x200, 0x200);
@@ -712,7 +688,33 @@ int mountntfs(u64 sector,char* addr)
 	firstmftincache=0xffffffff;
 	pwd[0]=5;
 	ntfspwd=0;
-	ntfs_cd(5);
+	ntfs_choose(5);
 
 	return 1;
+}
+static void ntfs_stop()
+{
+}
+void ntfs_create(void* world, u64* p)
+{
+	fshome = world+0x100000;
+		pbr=fshome+0x10000;
+		mft0=fshome+0x20000;
+		mftbuffer=fshome+0x40000;
+	dirhome = world+0x200000;
+	datahome = world+0x300000;
+
+	//
+	p[0]=0x79726f6d656d;
+	p[1]=0x7366746e;
+
+	p[10]=(u64)ntfs_start;
+	p[11]=(u64)ntfs_stop;
+	p[12]=(u64)ntfs_list;
+	p[13]=(u64)ntfs_choose;
+	p[14]=(u64)ntfs_read;
+	p[15]=(u64)ntfs_write;
+}
+void ntfs_delete()
+{
 }

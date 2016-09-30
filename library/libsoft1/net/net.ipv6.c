@@ -26,12 +26,13 @@ void ipv6_create(char* world,u64* p)
 	//
 	p[0]=0x74656e;		//type
 	p[1]=0x36767069;	//id
-	p[2]=(u64)ipv6_start;
-	p[3]=(u64)ipv6_stop;
-	p[4]=(u64)ipv6_list;
-	p[5]=(u64)ipv6_choose;
-	p[6]=(u64)ipv6_read;
-	p[7]=(u64)ipv6_write;
+
+	p[10]=(u64)ipv6_start;
+	p[11]=(u64)ipv6_stop;
+	p[12]=(u64)ipv6_list;
+	p[13]=(u64)ipv6_choose;
+	p[14]=(u64)ipv6_read;
+	p[15]=(u64)ipv6_write;
 }
 void ipv6_delete()
 {

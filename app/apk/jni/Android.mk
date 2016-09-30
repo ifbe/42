@@ -100,12 +100,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/datasystem/executable/exec.elf.c \
 	library/libsoft1/memory/datasystem/executable/exec.macho.c \
 	library/libsoft1/memory/datasystem/executable/exec.pe.c \
-	library/libsoft1/memory/datasystem/filesystem/fs.c \
 	library/libsoft1/memory/datasystem/filesystem/fs.ext.c \
 	library/libsoft1/memory/datasystem/filesystem/fs.fat.c \
 	library/libsoft1/memory/datasystem/filesystem/fs.hfs.c \
 	library/libsoft1/memory/datasystem/filesystem/fs.ntfs.c \
-	library/libsoft1/memory/datasystem/parttable/pt.c \
 	library/libsoft1/memory/datasystem/parttable/pt.apple.c \
 	library/libsoft1/memory/datasystem/parttable/pt.gpt.c \
 	library/libsoft1/memory/datasystem/parttable/pt.mbr.c \
@@ -120,7 +118,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/encdec/hash/hash.md5.c \
 	library/libsoft1/memory/encdec/hash/hash.sha1.c \
 	library/libsoft1/memory/encdec/hash/hash.string.c \
-	library/libsoft1/memory/text/code/code.c \
 	library/libsoft1/memory/text/compare/compare.simple.c \
 	library/libsoft1/memory/text/compare/compare.wildcard.c \
 	library/libsoft1/memory/text/convert/convert.argument.c \

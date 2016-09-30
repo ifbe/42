@@ -190,7 +190,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-		        readfile(rdi, 0, temp*0x200, blocksize*0x200);
+			readfile(rdi, 0, temp*0x200, blocksize*0x200);
 			rdi+=0x200*blocksize;
 		}
 
@@ -275,56 +275,14 @@ static void explaindirectory()
 		rdi+=0x40;
 	}
 }
-
-
-
-
-
-
-
-
-static int ext_ls(char* to)
-{
-	return 1;
-}
-static int ext_cd(u64 id)
-{
-	//开搞
-	int ret;
-	for(ret=0;ret<0x10000;ret++)dirhome[ret]=0;
-
-	ret=explaininode(id,0);
-	if(ret>0)explaindirectory();
-	return 1;
-}
-static int ext_load(u64 id,u64 offset,u64 size)
-{
-	explaininode(id,offset);
-	return 1;
-}
-static int ext_store(u64 id,u64 offset,u64 size)
-{
-	return 1;
-}
 int explainexthead()
 {
 	u64* dstqword=(u64*)fshome;
 
-	//func ls,cd,load,store
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)ext_ls;
-	dstqword[5]=(u64)ext_cd;
-	dstqword[6]=(u64)ext_load;
-	dstqword[7]=(u64)ext_store;
-	dstqword += 8;
-
 	//变量们
 	blocksize=*(u32*)(pbr+0x418);
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x7a736b636f6c62;       //'blocksz'
 	dstqword[2]=0x418;
 	dstqword[3]=0x41b;
@@ -335,7 +293,7 @@ int explainexthead()
 	//每组多少扇区
 	groupsize=*(u32*)(pbr+0x420);
 	groupsize=groupsize*blocksize;
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x7a7370756f7267;       //'groupsz'
 	dstqword[2]=0x420;
 	dstqword[3]=0x423;
@@ -345,7 +303,7 @@ int explainexthead()
 
 	//每组多少个inode
 	inodepergroup=*(u32*)(pbr+0x428);
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x672f69;       //'i/g'
 	dstqword[2]=0x428;
 	dstqword[3]=0x42b;
@@ -355,7 +313,7 @@ int explainexthead()
 
 	//每inode多少字节
 	inodesize=*(u16*)(pbr+0x458);
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x7a7365646f6e69;       //'inodesz'
 	dstqword[2]=0x458;
 	dstqword[3]=0x459;
@@ -374,17 +332,37 @@ int isext(char* addr)
 	//maybe isext
 	return 4;
 }
-int mountext(u64 sector,char* addr)
+
+
+
+
+static int ext_list(char* to)
+{
+	return 1;
+}
+static int ext_choose(u64 id)
+{
+	//开搞
+	int ret;
+	for(ret=0;ret<0x10000;ret++)dirhome[ret]=0;
+
+	ret=explaininode(id,0);
+	if(ret>0)explaindirectory();
+	return 1;
+}
+static int ext_read(u64 id,u64 offset,u64 size)
+{
+	explaininode(id,offset);
+	return 1;
+}
+static int ext_write(u64 id,u64 offset,u64 size)
+{
+	return 1;
+}
+static int ext_start(u64 sector)
 {
 	int ret=0;
-
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	block0=sector;
-	fshome=addr+0;
-		pbr=fshome+0x10000;
-		inodebuffer=fshome+0x20000;
-	dirhome=addr+0x100000;
-	datahome=addr+0x200000;
 
 	//读分区前8扇区，检查magic值
 	ret=readfile(pbr, 0, block0*0x200, 0x1000);
@@ -397,7 +375,37 @@ int mountext(u64 sector,char* addr)
 
 	//cd /
 	firstinodeincache=0xffffffff;
-	ext_cd(2);
+	ext_choose(2);
 
 	return 0;
+}
+static void ext_stop()
+{
+}
+
+
+
+
+void ext_create(void* world, u64* p)
+{
+	//得到本分区的开始扇区位置，再得到3个buffer的位置
+	fshome = world+0x100000;
+		pbr = fshome+0x10000;
+		inodebuffer = fshome+0x20000;
+	dirhome = world+0x200000;
+	datahome = world+0x300000;
+
+	//
+	p[0]=0x79726f6d656d;
+	p[1]=0x747865;
+
+	p[10]=(u64)ext_start;
+	p[11]=(u64)ext_stop;
+	p[12]=(u64)ext_list;
+	p[13]=(u64)ext_choose;
+	p[14]=(u64)ext_read;
+	p[15]=(u64)ext_write;
+}
+void ext_delete()
+{
 }

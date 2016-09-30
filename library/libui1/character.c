@@ -107,11 +107,11 @@ static struct working
 	u64 height;
 
 	//[40,47]
-	void (*create)();
+	int (*create)();
 	char padding0[ 8 - sizeof(char*) ];
 
 	//[48,4f]
-	void (*destory)();
+	int (*destory)();
 	char padding1[ 8 - sizeof(char*) ];
 
 	//[50,57]:开始

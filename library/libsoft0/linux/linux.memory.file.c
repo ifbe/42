@@ -220,23 +220,24 @@ void choosefile()
 
 
 
-int startfile(char* wantpath)
+int startfile(char* path)
 {
 	//先检查
-	if(wantpath[0]==0)return -1;
+	if(path == 0)return -3;
+	if(path[0] == 0)return -2;
 
 	//测试打开新的
-	int tempfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	int tempfd=open(path,O_RDONLY | O_LARGEFILE);
 	if(tempfd == -1)
 	{
-		//say("(openfile error)%s\n",wantpath);
-		return -2;
+		//say("(openfile error)%s\n",path);
+		return -1;
 	}
 	else close(tempfd);
 
 	//真正打开新的
 	if(thisfd!=-1)close(thisfd);
-	thisfd=open(wantpath,O_RDONLY | O_LARGEFILE);
+	thisfd=open(path,O_RDONLY | O_LARGEFILE);
 
 	//
 	//say("thisfd=%d\n",thisfd);

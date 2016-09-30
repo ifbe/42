@@ -26,12 +26,13 @@ void eth_create(char* world,u64* p)
 	//
 	p[0]=0x74656e;		//type
 	p[1]=0x687465;		//id
-	p[2]=(u64)eth_start;
-	p[3]=(u64)eth_stop;
-	p[4]=(u64)eth_list;
-	p[5]=(u64)eth_choose;
-	p[6]=(u64)eth_read;
-	p[7]=(u64)eth_write;
+
+	p[10]=(u64)eth_start;
+	p[11]=(u64)eth_stop;
+	p[12]=(u64)eth_list;
+	p[13]=(u64)eth_choose;
+	p[14]=(u64)eth_read;
+	p[15]=(u64)eth_write;
 }
 void eth_delete()
 {

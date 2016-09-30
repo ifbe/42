@@ -12,12 +12,7 @@ int    memory_delete();
 int       net_delete();
 int   special_delete();
 //
-u64 prelibation(void*);
 int compare(char*,char*);
-int systemread( char* memory,u64 sector,u64 count);
-int systemwrite(char* memory,u64 sector,u64 count);
-int buf2arg(u8* buf,int max,int* argc,u8** argv);
-int buf2typename(u8* buf,int max,u64* type,u8** name);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -30,36 +25,50 @@ void say(char*,...);
 //[0x300000,0x3fffff]:data
 static struct elements
 {
-	//[0,7]:种类
+	//种类，名字
 	u64 type;
-
-	//[8,f]:名字
 	u64 id;
+	u64 what1;
+	u64 what2;
 
-	//[0x10,0x17]
-	int (*start)(u64,char*);
+	//
+	u64 aa;
+	u64 bb;
+	u64 cc;
+	u64 dd;
+
+	//[0x40,0x47]
+	int (*create)();
+	char padding0[ 8 - sizeof(char*) ];
+
+	//[0x48,0x4f]
+	int (*delete)();
+	char padding1[ 8 - sizeof(char*) ];
+
+	//[0x50,0x57]
+	int (*start)(char*);
 	char padding2[ 8 - sizeof(char*) ];
 
-	//[0x18,0x1f]
+	//[0x58,0x5f]
 	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
-	//[0x20,0x27]
+	//[0x60,0x67]
 	int (*list)(char*);
 	char padding4[ 8 - sizeof(char*) ];
 
-	//[0x28,0x2f]
+	//[0x68,0x6f]
 	int (*choose)(char*);
 	char padding5[ 8 - sizeof(char*) ];
 
-	//[0x30,0x37]
+	//[0x70,0x77]
 	int (*read)(char*);
 	char padding6[ 8 - sizeof(char*) ];
 
-	//[0x38,0x3f]
+	//[0x78,0x7f]
 	int (*write)(char*);
 	char padding7[ 8 - sizeof(char*) ];
-}*table;
+}*worker;
 static unsigned char*   fshome;
 static unsigned char*  dirhome;
 static unsigned char* datahome;
@@ -68,10 +77,10 @@ static unsigned char* datahome;
 
 
 //pci->usb->video->h264->stream
-//bin->parttable->filesystem->dir->file....
+//bin->partworker->filesystem->dir->file....
 //tcp->http->websocket->what
 //static int stack[16]={0};
-static int this=0;
+static int now=0;
 
 
 
@@ -85,16 +94,16 @@ int arterylist(char* p)
 	u64 id;
 
 	//@somewhere
-	if(this!=0)
+	if(now!=0)
 	{
-		return table[this].list(p);
+		return worker[now].list(p);
 	}
 
 	//@nowhere
 	for(j=1;j<0x100;j++)
 	{
-		type=table[j].type;
-		id=table[j].id;
+		type=worker[j].type;
+		id=worker[j].id;
 		if(id==0)
 		{
 			if(count%8!=0)say("\n");
@@ -118,9 +127,10 @@ int arterylist(char* p)
 int arterychoose(char* p)
 {
 	int ret;
+	if(p == 0)return -1;
 
 	//cd .(current directory)
-	if( (p!=0) && (p[0]=='.') )
+	if(p[0] == '.')
 	{
 		//cd ..(parent directory)
 		if(p[1]=='.')
@@ -128,24 +138,24 @@ int arterychoose(char* p)
 			//cd ...(the void)
 			if(p[2]=='.')
 			{
-				table[0].type=0x3234;
-				this=0;
+				worker[0].type=0x3234;
+				now=0;
 				return 0;
 			}
 		}
 	}
 
 	//i am not in the void?
-	if(this != 0)
+	if(now != 0)
 	{
 		//say("");
-		return table[this].choose(p);
+		return worker[now].choose(p);
 	}
 
 	//search somewhere to go
 	for(ret=1;ret<256;ret++)
 	{
-		if(compare(p,(char*)&table[ret].id)==0)
+		if(compare(p,(char*)&worker[ret].id)==0)
 		{
 			break;
 		}
@@ -157,8 +167,8 @@ int arterychoose(char* p)
 	}
 
 	//now go into it
-	this=ret;
-	table[0].type=table[ret].id;
+	now=ret;
+	worker[0].type=worker[ret].id;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -168,13 +178,13 @@ int arterychoose(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arteryread(char* p)
 {
-	if(this==0)return 0;
-	return table[this].read(p);
+	if(now==0)return 0;
+	return worker[now].read(p);
 }
 int arterywrite(char* p)
 {
-	if(this==0)return 0;
-	return table[this].write(p);
+	if(now==0)return 0;
+	return worker[now].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -184,13 +194,13 @@ int arterywrite(char* p)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterystart(u8* p)
 {
-	if(this==0)return 0;
-	return table[this].start(0,p);
+	if(now==0)return 0;
+	return worker[now].start(p);
 }
 int arterystop(char* p)
 {
-	if(this==0)return 0;
-	return table[this].stop();
+	if(now==0)return 0;
+	return worker[now].stop();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -206,22 +216,22 @@ void arterycreate(char* module,char* addr)
 	//
 	if(module==0)
 	{
-		for(i=0;i<0x10000;i++)addr[i]=0;
-		addr[0]=0x34;
-		addr[1]=0x32;
+		for(i=0;i<0x100000;i++)addr[i] = 0;
+		addr[0] = 0x34;
+		addr[1] = 0x32;
 
 		//0
-		table=(struct elements*)addr;
-		fshome  =addr+0x100000;
-		dirhome =addr+0x200000;
-		datahome=addr+0x300000;
+		worker=(struct elements*)addr;
+		fshome  = addr+0x100000;
+		dirhome = addr+0x200000;
+		datahome= addr+0x300000;
 
 		//
-		p=addr+0x40;
-		p+=interface_create(addr,p);
-		p+=memory_create(addr,p);
-		p+=net_create(addr,p);
-		special_create(addr,p);
+		p = addr+0x80;
+		p += interface_create(addr,p);
+		p += memory_create(addr,p);
+		p += net_create(addr,p);
+		p += special_create(addr,p);
 
 		say("[8,c):createed artery\n");
 	}

@@ -490,11 +490,11 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 
 
-static int hfs_ls(char* to)
+static int hfs_list(char* to)
 {
 	return 0;
 }
-static int hfs_cd(u64 id)
+static int hfs_choose(u64 id)
 {
 	//2.已经知道了目录的cnid号，那么需要从b树里面找到节点号和节点内偏移
 	u64 foundnode;
@@ -526,7 +526,7 @@ static int hfs_cd(u64 id)
 	explaindirectory(foundnode,id);
 	return 1;
 }
-static void hfs_load(u64 id,u64 wantwhere)
+static void hfs_read(u64 id,u64 wantwhere)
 {
 	//搜索b树找它爸，没办法直接找到它！
 	u64 fathercnid=*(u32*)(dirhome+0x10);
@@ -542,7 +542,7 @@ static void hfs_load(u64 id,u64 wantwhere)
 	//3.从他爹开始，record，的data部分，的fork信息里面，找到东西
 	explainfile(fathercnid,id,foundnode,wantwhere);
 }
-static void hfs_store()
+static void hfs_write()
 {
 	return;
 }
@@ -551,20 +551,6 @@ int explainhfshead()
 	u64 size,clumpsize,totalblock,sector,count;
 	int i;
 	char* addr;
-	u64* dstqword=(u64*)fshome;
-
-
-	//func cd
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)hfs_ls;
-	dstqword[5]=(u64)hfs_cd;
-	dstqword[6]=(u64)hfs_load;
-	dstqword[7]=(u64)hfs_store;
-	dstqword += 8;
-
 
 //---------------------第一次读，把分区头读进pbrbuffer------------------------
 	blocksize=BSWAP_32( *(u32*)(pbr+0x428) )/0x200;
@@ -580,47 +566,23 @@ int explainhfshead()
 		sector=block0+8*BSWAP_32(*(u32*)(addr+0x10) );
 		count=blocksize*BSWAP_32(*(u32*)(addr+0x14) );
 
-		dstqword[0]=0x24;	//'$'
 		if(i==0)
 		{
-			dstqword[1]=0x636f6c6c61;	//'alloc'
 			say("allocation\n");
 		}
 		else if(i==1)
 		{
-			dstqword[1]=0x73746e65747865;	//'extents'
 			say("extents overflow\n");
 		}
 		else if(i==2)
 		{
 			catalogsector=sector;
-			dstqword[1]=0x676f6c61746163;	//'catalog'
 			say("catalog\n");
 		}
 		else if(i==3)
 		{
-			dstqword[1]=0x6972747461;	//'attri'
 			say("attribute\n");
 		}
-		dstqword[2]=0x470+(0x50*i);
-		dstqword[3]=0x470+0x4f+(0x50*i);
-		dstqword[4]=BSWAP_64(*(u64*)(addr+0) );
-		dstqword[5]=BSWAP_64(*(u64*)(addr+8) );
-		dstqword[6]=BSWAP_64(*(u64*)(addr+0x10) );
-		dstqword[7]=BSWAP_64(*(u64*)(addr+0x18) );
-		dstqword += 8;
-
-		//dstqword[2]=sector;
-		//dstqword[3]=sector+count;
-		//dstqword[4]=size;
-		//dstqword[5]=clumpsize;
-		//dstqword[6]=totalblock;
-		//dstqword += 8;
-		//say("	size:%llx\n",size);
-		//say("	clumpsize:%llx\n",clumpsize);
-		//say("	totalblocks:%llx\n",totalblock);
-		//say("	sector:%llx\n",sector);
-		//say("	count:%llx\n",count);
 	}
 
 
@@ -633,32 +595,14 @@ int explainhfshead()
 	//nodesize
 	nodesize=BSWAP_16( *(u16*)(catabuf+0x20) );
 	nodesize=nodesize/0x200;
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x7a7365646f6e;	//'nodesz'
-	dstqword[2]=0x21;
-	dstqword[3]=0x20;
-	dstqword[4]=nodesize;
-	dstqword += 8;
 	say("nodesize:%x\n",nodesize);
 
 	//rootnode
 	rootnode=BSWAP_32(*(u32*)(catabuf+0x10) );
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x646f6e746f6f72;	//'rootnod'
-	dstqword[2]=0x13;
-	dstqword[3]=0x10;
-	dstqword[4]=rootnode;
-	dstqword += 8;
 	say("rootnode:%x\n",rootnode);
 
 	//firstleafnode
 	firstleafnode=BSWAP_32(*(u32*)(catabuf+0x18) );
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x306661656c;	//'leaf0'
-	dstqword[2]=0x1b;
-	dstqword[3]=0x18;
-	dstqword[4]=firstleafnode;
-	dstqword += 8;
 	say("firstleafnode:%x\n",firstleafnode);
 
 
@@ -695,17 +639,10 @@ int ishfs(char* addr)
 	}
 	else return 0;
 }
-int mounthfs(u64 sector,char* addr)
+int hfs_start(u64 sector)
 {
 	int ret;
-
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
 	block0=sector;
-	fshome=addr+0;
-		pbr=fshome+0x10000;
-		catabuf=fshome+0x20000;
-	dirhome=addr+0x100000;
-	datahome=addr+0x200000;
 
 	//检查
 	ret=readfile(pbr, 0, block0*0x200, 0x1000);
@@ -717,6 +654,31 @@ int mounthfs(u64 sector,char* addr)
 	if(ret<0)return ret;
 
 	//进入根目录
-	hfs_cd(2);
+	hfs_choose(2);
 	return 1;
+}
+void hfs_stop()
+{
+}
+void hfs_create(void* world, u64* p)
+{
+	fshome = world+0x100000;
+		pbr = fshome+0x10000;
+		catabuf = fshome+0x20000;
+	dirhome = world+0x200000;
+	datahome = world+0x300000;
+
+	//
+	p[0]=0x79726f6d656d;
+	p[1]=0x736668;
+
+	p[10]=(u64)hfs_start;
+	p[11]=(u64)hfs_stop;
+	p[12]=(u64)hfs_list;
+	p[13]=(u64)hfs_choose;
+	p[14]=(u64)hfs_read;
+	p[15]=(u64)hfs_write;
+}
+void hfs_delete()
+{
 }

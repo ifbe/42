@@ -23,12 +23,10 @@ target:
 	$(compiler) $(cflag) memory/datasystem/executable/exec.elf.c
 	$(compiler) $(cflag) memory/datasystem/executable/exec.macho.c
 	$(compiler) $(cflag) memory/datasystem/executable/exec.pe.c
-	$(compiler) $(cflag) memory/datasystem/filesystem/fs.c
 	$(compiler) $(cflag) memory/datasystem/filesystem/fs.ext.c
 	$(compiler) $(cflag) memory/datasystem/filesystem/fs.fat.c
 	$(compiler) $(cflag) memory/datasystem/filesystem/fs.hfs.c
 	$(compiler) $(cflag) memory/datasystem/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) memory/datasystem/parttable/pt.c
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.apple.c
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.gpt.c
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.mbr.c
@@ -43,7 +41,6 @@ target:
 	$(compiler) $(cflag) memory/encdec/hash/hash.md5.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.sha1.c
 	$(compiler) $(cflag) memory/encdec/hash/hash.string.c
-	$(compiler) $(cflag) memory/text/code/code.c
 	$(compiler) $(cflag) memory/text/compare/compare.simple.c
 	$(compiler) $(cflag) memory/text/compare/compare.wildcard.c
 	$(compiler) $(cflag) memory/text/convert/convert.argument.c

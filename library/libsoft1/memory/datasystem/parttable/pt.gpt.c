@@ -2,16 +2,21 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//gpt:					[+0x400,+0x4400],每个0x80,总共0x80个
-//[+0,+0xf]:类型guid
-//[+0x10,+0x1f]:分区guid
-//[+0x20,+0x27]:起始lba
-//[+0x28,+0x2f]:末尾lba
-//[+0x30,+0x37]:属性标签
-//[+0x38,+0x7f]:名字
-
-//用了别人的
+void startfile();
+void stopfile();
+void readfile(u8*,u8*,u64,u64);
+void writefile(u8*,u8*,u64,u64);
+//
+void printmemory(char*,int);
 void say(char* fmt,...);
+
+
+
+
+//
+static u8* fshome;
+static u8* dirhome;
+static u8* datahome;
 
 
 
@@ -30,58 +35,44 @@ int isgpt(char* addr)
 	//
 
 	//最终确定
-	return 0x747067;        //'gpt'
+	return 0x747067;	//'gpt'
 }
-void explaingpt(char* from,char* to)
+
+
+
+
+//gpt:			[+0x400,+0x4400],每个0x80,总共0x80个
+//[+0,+0xf]:类型guid
+//[+0x10,+0x1f]:分区guid
+//[+0x20,+0x27]:起始lba
+//[+0x28,+0x2f]:末尾lba
+//[+0x30,+0x37]:属性标签
+//[+0x38,+0x7f]:名字
+static void gpt_explain(char* src,char* dst)
 {
 	int i=0,j=0;
-	u64 temp;
-
-	char* src;
-	char* dst;
 	u64* srcqword;
 	u64* dstqword;
+
+	//
 	say("gpt disk\n");
+	src += 0x400;
+	srcqword = (u64*)src;
+	dstqword = (u64*)dst;
 
-	//除了硬盘记录，其余一概干掉
-	dst=to;
-	dstqword=(u64*)to;
-	for(i=0;i<0x100;i++)	//0x100*0x40=0x4000=16k
-	{
-		temp=dstqword[i*8];
-		if( temp == 0x6b736964 )continue;
-		else break;
-	}
-	for(j=0x40*i; j<0x10000; j++)
-	{
-		dst[j] = 0;
-	}
-	dst+=0x40*i;
-	dstqword=(u64*)dst;
-
-	//正式开始转换
-	from+=0x400;
-	src=from;
-	srcqword=(u64*)from;
+	//
 	for(i=0;i<0x80;i++)	//0x80 partitions per disk
 	{
 		//先取数字出来
-		src = from+0x80*i;
+		src += 0x80;
 		srcqword = (u64*)src;
-		if(srcqword [0]==0)continue;
+		if(srcqword[0] == 0)continue;
 
 		//类型，子类型，开始，结束
 		u64 firsthalf = srcqword [0];
 		u64 secondhalf = srcqword [1];
 		u64 startlba = srcqword [4];
 		u64 endlba = srcqword [5];
-		dstqword[0]=0x74726170;	//'disk...'
-		dstqword[2]=startlba;
-		dstqword[3]=endlba;
-		for(j=0;j<0x20;j++)
-		{
-			dst [0x20 + j] = src [0x38 + j*2];
-		}
 
 		//不同分区类型
 		if(firsthalf==0x477284830fc63daf)
@@ -130,8 +121,75 @@ void explaingpt(char* from,char* to)
 			//say("unknown\n");
 		}
 
+		dstqword[0]=0x74726170;	//'disk...'
+		dstqword[2]=startlba;
+		dstqword[3]=endlba;
+		for(j=0;j<0x40;j++)
+		{
+			dst[0x40 + j] = src[0x38 + j*2];
+		}
+
 		//pointer++
-		dst = dst + 0x40;
-		dstqword = dstqword + 8;
+		dst = dst + 0x80;
+		dstqword = (u64*)dst;
 	}
+}
+
+
+
+
+static void gpt_list()
+{
+	int j;
+	for(j=0;j<0x80*0x80;j+=0x80)
+	{
+		if(*(u64*)(fshome+j) == 0)break;
+
+		say("(%04s,%04s)	[%08llx,%08llx]	%s\n",
+			fshome+j, fshome+j+8,
+			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
+			fshome+j+0x40
+		);
+	}
+}
+static void gpt_choose()
+{
+}
+static void gpt_read()
+{
+	readfile(datahome, 0, 0, 0x8000);
+	gpt_explain(datahome, fshome);
+
+	gpt_read();
+}
+static void gpt_write()
+{
+}
+static void gpt_start(char* p)
+{
+	startfile(p);
+}
+static void gpt_stop(char* p)
+{
+	stopfile(p);
+}
+void gpt_create(void* world, u64* p)
+{
+	fshome = world+0x100000;
+	dirhome = world+0x200000;
+	datahome = world+0x300000;
+
+	//
+	p[0]=0x79726f6d656d;
+	p[1]=0x747067;
+
+	p[10]=(u64)gpt_start;
+	p[11]=(u64)gpt_stop;
+	p[12]=(u64)gpt_list;
+	p[13]=(u64)gpt_choose;
+	p[14]=(u64)gpt_read;
+	p[15]=(u64)gpt_write;
+}
+void gpt_delete()
+{
 }

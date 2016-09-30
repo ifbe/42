@@ -54,13 +54,14 @@ int process_create(char* world,unsigned long long* p)
 
 	//
 	p[0]=0x6c616963657073;
-	p[1]=0x737365636f7270;
-	p[2]=(u64)process_start;
-	p[3]=(u64)process_stop;
-	p[4]=(u64)process_list;
-	p[5]=(u64)process_choose;
-	p[6]=(u64)process_read;
-	p[7]=(u64)process_write;
+	p[1]=0x636f7270;
+
+	p[10]=(u64)process_start;
+	p[11]=(u64)process_stop;
+	p[12]=(u64)process_list;
+	p[13]=(u64)process_choose;
+	p[14]=(u64)process_read;
+	p[15]=(u64)process_write;
 	return 0;
 }
 int process_delete()

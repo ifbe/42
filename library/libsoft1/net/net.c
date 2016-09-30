@@ -54,57 +54,58 @@ int net_create(char* world,u64* p)
 	//
 	p[0]=0;			//type
 	p[1]=0x74656e;		//id
-	p[2]=(u64)net_start;
-	p[3]=(u64)net_stop;
-	p[4]=(u64)net_list;
-	p[5]=(u64)net_choose;
-	p[6]=(u64)net_read;
-	p[7]=(u64)net_write;
+
+	p[10]=(u64)net_start;
+	p[11]=(u64)net_stop;
+	p[12]=(u64)net_list;
+	p[13]=(u64)net_choose;
+	p[14]=(u64)net_read;
+	p[15]=(u64)net_write;
 
 	//
-	char* q=(char*)p+0x40;
+	char* q=(char*)p+0x80;
 
 	arp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	eth_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	ftp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	http_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	icmp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	ipv4_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	ipv6_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	ppp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	quic_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	slip_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	ssh_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	tcp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	tftp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	udp_create(world,q);
-	q+=0x40;
+	q+=0x80;
 
 	return q-(char*)p;
 }

@@ -11,20 +11,19 @@ void arterylist(char*);
 void arterychoose(char*);
 void arteryread(char*);
 void arterywrite(char*);
-//
 void eventread(u64* who, u64* what, u64* how);
 void eventwrite();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
 int compare(char*,char*);
+//
+void printmemory(char*,int);
 void say(char*,...);
 
 
 
 
-static char* basic=0;
-static char* body=0;
 static char* memory=0;
 static char* character=0;
 
@@ -40,12 +39,14 @@ int command(char* buffer)
 	//say("command=%s\n",buffer);
 	//printmemory(buffer,16);
 
+	//
+	if(buffer == 0)goto finish;
+
 	//"#"
 	if(buffer[0]=='#')return 0;
 
 	//convert
 	buf2arg(buffer,128,&argc,argv);
-	//say("argc=%x,argv@%llx\n",argc,argv);
 	if(argc==0)return 0;
 
 	//"enter key"
@@ -57,6 +58,7 @@ int command(char* buffer)
 		eventwrite();
 		return 0;
 	}
+
 	//exit
 	ret=compare(argv[0],"exit");
 	if(ret==0)
@@ -150,10 +152,8 @@ finish:
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void commandcreate(char* type,char* addr)
 {
-	basic=addr+0;
-	body=addr+0x400000;
-	memory=addr+0x800000;
-	character=addr+0xc00000;
+	memory = addr;
+	character = addr+0x400000;
 }
 void commanddelete()
 {

@@ -18,17 +18,25 @@ int ishfs(char*);
 int isgpt(char*);	//分区表
 int ismbr(char*);
 //
-int code_create(char*,char*);
-int code_delete();
-int fs_create(char*,char*);
-int fs_delete();
-int pt_create(char*,char*);
-int pt_delete();
+int gpt_create(void*,void*);
+int gpt_delete();
+int mbr_create(void*,void*);
+int mbr_delete();
+int ext_create(void*,void*);
+int ext_delete();
+int fat_create(void*,void*);
+int fat_delete();
+int hfs_create(void*,void*);
+int hfs_delete();
+int ntfs_create(void*,void*);
+int ntfs_delete();
 //
+int compare(char*,char*);
+int hexstring2data(char*,u64*);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
-int hexstring2data(char*,u64*);
-int compare(char*,char*);	//base tool
+int startfile();
+int stopfile();
 //
 int printmemory(char* addr,int count);
 int say(char* str,...);		//+1
@@ -37,7 +45,6 @@ int say(char* str,...);		//+1
 
 
 //
-static char* diskhome=0;
 static char* fshome=0;
 static char* dirhome=0;
 static char* datahome=0;
@@ -106,13 +113,13 @@ u64 prelibation(char* memaddr)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                |[want     ,     want+1m]|
-                |                        | [where,]    //不要
- [where, ]      |                        |             //不要
-            [---|--where,--]             |             //要后面
-            [---|--where,----------------|----]        //要中间
-                |  [where,    ]          |             //全要
-                |  [---where,------------|----]        //要前面
+		|[want     ,     want+1m]|
+		|			| [where,]    //不要
+ [where, ]      |			|	     //不要
+	    [---|--where,--]	     |	     //要后面
+	    [---|--where,----------------|----]	//要中间
+		|  [where,    ]	  |	     //全要
+		|  [---where,------------|----]	//要前面
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (设备这一小块是逻辑上的哪) -> (内存这一小块想要逻辑上的哪)
 (扇区，数量，是哪) -> (内存，数量，要哪)
@@ -124,7 +131,7 @@ void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 	u64 rcx=0;    //扇区数量
 
 	//改rdi,rsi,rcx数值
-	if(where<want)             //3和4
+	if(where<want)	     //3和4
 	{
 		rdi = dst;
 		rsi = src+(want-where);
@@ -169,13 +176,13 @@ void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                |[want     ,     want+1m]|
-                |                        | [where,]    //不要
- [where, ]      |                        |             //不要
-            [---|--where,--]             |             //要后面
-            [---|--where,----------------|----]        //要中间
-                |  [where,    ]          |             //全要
-                |  [---where,------------|----]        //要前面
+		|[want     ,     want+1m]|
+		|			| [where,]    //不要
+ [where, ]      |			|	     //不要
+	    [---|--where,--]	     |	     //要后面
+	    [---|--where,----------------|----]	//要中间
+		|  [where,    ]	  |	     //全要
+		|  [---where,------------|----]	//要前面
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (内存这一小块是逻辑上的哪) -> (设备这一小块想要逻辑上的哪)
 (来源，数量，是哪) -> (目的，数量，要哪)
@@ -195,8 +202,8 @@ static int memory_list(char* arg1)
 	char buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	u64 target=0;
-	char* addr=diskhome;
-	//printmemory(diskhome,0x200);
+	char* addr=fshome;
+	//printmemory(fshome,0x200);
 
 	//想要什么
 	if(arg1==0)target=0;
@@ -210,7 +217,7 @@ static int memory_list(char* arg1)
 	}
 	else if( compare(arg1,"0") == 0 )
 	{
-		addr=diskhome;
+		addr=fshome;
 		target=0;
 	}
 	else if( compare(arg1,"1") == 0 )
@@ -275,13 +282,7 @@ static int memory_choose(char* arg)
 static int memory_read(char* arg1)
 {
 	u64 value;
-
-	//nothing specified
-	if(arg1==0)
-	{
-		say("read@%llx,world@%llx\n",memory_read,diskhome);
-		return -1;
-	}
+	if(arg1==0)return -1;
 
 	//what is it
 	value=0;
@@ -306,13 +307,7 @@ static int memory_read(char* arg1)
 static int memory_write(char* arg1)
 {
 	u64 value;
-
-	//nothing specified
-	if(arg1==0)
-	{
-		say("write@%llx,world@%llx\n",memory_write,diskhome);
-		return -1;
-	}
+	if(arg1==0)return -1;
 
 	//what is it
 	value=0;
@@ -335,35 +330,65 @@ static int memory_write(char* arg1)
 
 
 
+int memory_start(char* p)
+{
+	startfile(p);
+}
+int memory_stop()
+{
+	stopfile();
+}
 
 
 
 
 int memory_create(char* world,u64* p)
 {
-	char* q=(char*)p;
-
 	//(自己)4块区域，每块1兆
-	diskhome=world+0;
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
 	datahome=world+0x300000;
 
 	//
-	code_create(world,q);
-	q+=0x40;
+	p[0]=0;
+	p[1]=0x79726f6d656d;
 
-	fs_create(world,q);
-	q+=0x40;
+	p[10]=(u64)memory_start;
+	p[11]=(u64)memory_stop;
+	p[12]=(u64)memory_list;
+	p[13]=(u64)memory_choose;
+	p[14]=(u64)memory_read;
+	p[15]=(u64)memory_write;
 
-	pt_create(world,q);
-	q+=0x40;
+	//
+	char* q=(char*)p+0x80;
+
+	mbr_create(world,q);
+	q+=0x80;
+
+	gpt_create(world,q);
+	q+=0x80;
+
+	ext_create(world,q);
+	q+=0x80;
+
+	fat_create(world,q);
+	q+=0x80;
+
+	hfs_create(world,q);
+	q+=0x80;
+
+	ntfs_create(world,q);
+	q+=0x80;
 
 	return q-(char*)p;
 }
 int memory_delete()
 {
-	code_delete();
-	fs_delete();
-	pt_delete();
+	ext_delete();
+	fat_delete();
+	hfs_delete();
+	ntfs_delete();
+	gpt_delete();
+	mbr_delete();
 }

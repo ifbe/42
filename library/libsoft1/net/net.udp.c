@@ -30,12 +30,13 @@ int udp_create(char* world,unsigned long long* p)
 {
 	p[0]=0x74656e;
 	p[1]=0x706475;
-	p[2]=(u64)udp_start;
-	p[3]=(u64)udp_stop;
-	p[4]=(u64)udp_list;
-	p[5]=(u64)udp_choose;
-	p[6]=(u64)udp_read;
-	p[7]=(u64)udp_write;
+
+	p[10]=(u64)udp_start;
+	p[11]=(u64)udp_stop;
+	p[12]=(u64)udp_list;
+	p[13]=(u64)udp_choose;
+	p[14]=(u64)udp_read;
+	p[15]=(u64)udp_write;
 }
 int udp_delete()
 {

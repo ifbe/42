@@ -33,18 +33,16 @@ int main(int argc,char* argv[])
 	}
 
 	//无限循环
+	how=0;
 	while(1)
 	{
-		//debug
-		//say("here\n");
+		//1.打印
+		ret=command((char*)how);
 
 		//1.等输入，再把这段里面所有的0x20变成0
 		eventread(&who, &what, &how);
 		if(what==0)break;
 		if(what != 0x727473)continue;
-
-		//2.处理输入
-		ret=command((char*)how);
 	}
 
 	//必须放在最后

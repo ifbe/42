@@ -20,6 +20,7 @@ static char* dirhome;		//目录专用
 static char* datahome;		//一般使用
 
 //disk
+static int version;
 static u64 firstsector;
 static u64 fat0;		//fat表所在扇区
 static u64 fatsize;		//fat表总共的扇区数量
@@ -160,71 +161,12 @@ static void fat16_root()
 
 	say("\n");
 }
-
-
-
-
-
-
-
-
-static int fat16_ls(char* to)
-{
-	return 0;
-}
-static int fat16_cd(u64 id)
-{
-	//清理
-	int i;
-	for(i=0;i<0x40000;i++) datahome[i]=0;
-
-	//读取,转换
-	if(id<2)id=2;
-	fat16_data(datahome,id);
-	explaindirectory();
-
-	return 1;
-}
-//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat16_load(u64 id,u64 offset)
-{
-	//从首簇开始，沿着fat的链表，慢慢挪，直到得到调用者要求的位置对应的簇号
-	u64 cluster=id;
-	u64 temp=0;
-	while(1)
-	{
-		//就是这里，就从这个簇开始
-		if(temp==offset)break;
-		
-		//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
-		temp+=clustersize*0x200;
-		cluster=(u64)(*(u16*)(fatbuffer+2*cluster));
-	}
-
-	//然后读
-	fat16_data(datahome,cluster);
-}
-static int fat16_store()
-{
-	return 1;
-}
 void explainfat16head()
 {
 	//准备本程序需要的变量
 	//u64 firstsector=(u64)( *(u32*)(pbr+0x1c) );
 	u64* dstqword=(u64*)fshome;
 	say("fat16\n");
-
-	//func cd
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)fat16_ls;
-	dstqword[5]=(u64)fat16_cd;
-	dstqword[6]=(u64)fat16_load;
-	dstqword[7]=(u64)fat16_store;
-	dstqword += 8;
 
 	fat0=(u64)( *(u16*)(pbr+0xe) );
 	fat0=firstsector + fat0;
@@ -343,45 +285,6 @@ static void fat32_root()
 	fat32_data( datahome , 2 , 0 , 0x4000 );
 	explaindirectory();
 }
-
-
-
-
-
-
-
-
-static int fat32_ls(char* to)
-{
-	return 0;
-}
-static int fat32_cd(u64 id)
-{
-	//清理
-	int i;
-	for(i=0;i<0x10000;i++) datahome[i]=0;
-
-	//读取，转换
-	if(id<2)
-	{
-		fat32_root();
-		return 1;
-	}
-
-	fat32_data(datahome,id,0,0x8000);
-	explaindirectory();
-	return 2;
-}
-//接收参数：文件名字符串，调用者要的文件内部偏移（以1M为单元）
-static void fat32_load(u64 id,u64 offset)
-{
-	if(offset>0x100000)offset=0x100000;
-	fat32_data(datahome,id,offset,0x100000);
-}
-static int fat32_store()
-{
-	return 1;
-}
 void explainfat32head()
 {
 	//准备本程序需要的变量
@@ -389,21 +292,10 @@ void explainfat32head()
 	u64* dstqword=(u64*)fshome;
 	say("fat32\n");
 
-	//func cd
-	dstqword[0]=0x636e7566;         //'func'
-	dstqword[1]=0;
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=(u64)fat32_ls;
-	dstqword[5]=(u64)fat32_cd;
-	dstqword[6]=(u64)fat32_load;
-	dstqword[7]=(u64)fat32_store;
-	dstqword += 8;
-
 	fat0=(u64)( *(u16*)(pbr+0xe) );
 	fat0=firstsector + fat0;
-	dstqword[0]=0x7366;             //'fs'
-	dstqword[1]=0x30746166;         //'fat0'
+	dstqword[0]=0x7366;	     //'fs'
+	dstqword[1]=0x30746166;	 //'fat0'
 	dstqword[2]=0xe;
 	dstqword[3]=0xf;
 	dstqword[4]=fat0;
@@ -411,7 +303,7 @@ void explainfat32head()
 	say("fat0@%x\n",fat0);
 
 	fatsize=(u64)( *(u32*)(pbr+0x24) );
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x657a6973746166;   //'fatsize'
 	dstqword[2]=0x24;
 	dstqword[3]=0x27;
@@ -420,8 +312,8 @@ void explainfat32head()
 	say("fatsize:%x\n",fatsize);
 
 	cluster2=fat0+fatsize*2;
-	dstqword[0]=0x7366;             //'fs'
-	dstqword[1]=0x32756c63;         //'clu0'
+	dstqword[0]=0x7366;	     //'fs'
+	dstqword[1]=0x32756c63;	 //'clu0'
 	dstqword[2]=0;
 	dstqword[3]=0;
 	dstqword[4]=cluster2;
@@ -429,7 +321,7 @@ void explainfat32head()
 	say("cluster2@%x\n",cluster2);
 
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	dstqword[0]=0x7366;             //'fs'
+	dstqword[0]=0x7366;	     //'fs'
 	dstqword[1]=0x657a6973756c63;   //'clusize'
 	dstqword[2]=0xd;
 	dstqword[3]=0xd;
@@ -437,10 +329,6 @@ void explainfat32head()
 	dstqword += 8;
 	say("clustersize:%x\n",clustersize);
 }
-
-
-
-
 
 
 
@@ -472,9 +360,9 @@ int isfat(char* addr)
 	}
 
 	//fat32 or fat16
-	if( *(u16*)(addr+0x11) == 0) version+=4;         //fat32为0
+	if( *(u16*)(addr+0x11) == 0) version+=4;	 //fat32为0
 	else version-=4;
-	if( *(u16*)(addr+0x16) ==0) version+=4;         //fat32为0
+	if( *(u16*)(addr+0x16) ==0) version+=4;	 //fat32为0
 	else version-=4;
 
 	//version
@@ -483,25 +371,80 @@ int isfat(char* addr)
 	else return 0;
 }
 
-//1:那一条0x40字节的地址，2:可以用的8m内存的地址
-int mountfat(u64 sector,char* addr)
+
+
+
+static int fat_list(char* to)
+{
+	return 0;
+}
+static int fat_choose(u64 id)
+{
+	//清理
+	int i;
+	for(i=0;i<0x40000;i++) datahome[i]=0;
+
+	if(version == 16)
+	{
+		//读取,转换
+		if(id<2)id=2;
+		fat16_data(datahome,id);
+		explaindirectory();
+	}
+	else
+	{
+		//读取，转换
+		if(id<2)
+		{
+			fat32_root();
+			return 1;
+		}
+
+		fat32_data(datahome,id,0,0x8000);
+		explaindirectory();
+	}
+	return 1;
+}
+static int fat_read(u64 id,u64 offset)
+{
+	if(version == 16)
+	{
+		//从首簇开始，沿着fat的链表，慢慢挪直到对应簇号
+		u64 cluster=id;
+		u64 temp=0;
+		while(1)
+		{
+			//就是这里，就从这个簇开始
+			if(temp==offset)break;
+		
+			//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
+			temp+=clustersize*0x200;
+			cluster=(u64)(*(u16*)(fatbuffer+2*cluster));
+		}
+
+		//然后读
+		fat16_data(datahome,cluster);
+		return 1;
+	}
+
+	else
+	{
+		if(offset>0x100000)offset=0x100000;
+		fat32_data(datahome,id,offset,0x100000);
+		return 1;
+	}
+}
+static int fat_write()
+{
+	return 1;
+}
+
+
+
+int fat_start(u64 sector)
 {
 	int ret;
 	firstsector=sector;
-	//say("%llx\n",(u64)fat32_explain);
-
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	fshome=addr+0;
-		pbr=fshome+0x10000;
-		fatbuffer=fshome+0x20000;
-	dirhome=addr+0x100000;
-		//rootdir
-		//dirdepth1
-		//dirdepth2
-		//dirdepth3
-		//dirdepth4
-		//......
-	datahome=addr+0x200000;
 
 	//读取pbr，检查种类和版本
 	ret=readfile(pbr, 0, firstsector*0x200, 0x200); //pbr
@@ -514,6 +457,7 @@ int mountfat(u64 sector,char* addr)
 		//change directory /
 		fat16_root();
 
+		version = 16;
 		return 0;
 	}
 	else if(ret==32)		//这是fat32
@@ -524,6 +468,7 @@ int mountfat(u64 sector,char* addr)
 		//change directory /
 		fat32_root();
 
+		version = 32;
 		return 0;
 	}
 	else
@@ -531,4 +476,39 @@ int mountfat(u64 sector,char* addr)
 		say("wrong fat\n");
 		return -1;
 	}
+}
+void fat_stop()
+{
+}
+
+
+
+
+void fat_create(void* world, u64* p)
+{
+	fshome = world+0x100000;
+		pbr = fshome+0x10000;
+		fatbuffer = fshome+0x20000;
+	dirhome = world+0x200000;
+		//rootdir
+		//dirdepth1
+		//dirdepth2
+		//dirdepth3
+		//dirdepth4
+		//......
+	datahome = world+0x300000;
+
+	//
+	p[0]=0x79726f6d656d;
+	p[1]=0x746166;
+
+	p[10]=(u64)fat_start;
+	p[11]=(u64)fat_stop;
+	p[12]=(u64)fat_list;
+	p[13]=(u64)fat_choose;
+	p[14]=(u64)fat_read;
+	p[15]=(u64)fat_write;
+}
+void fat_delete()
+{
 }
