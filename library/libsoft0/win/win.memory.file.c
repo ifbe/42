@@ -9,7 +9,7 @@
 #define u8 unsigned char
 void say(char* fmt,...);
 
-HANDLE selected;
+static HANDLE selected;
 static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 

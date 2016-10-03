@@ -1,15 +1,19 @@
 #define u64 unsigned long long
-void systemwifi_list();
+void systemwifi_list(int);
 
 
 
 
-static void wifi_list()
+static int stage=0;
+static void wifi_list(char* p)
 {
-	systemwifi_list();
+	systemwifi_list(stage);
 }
-static void wifi_choose()
+static void wifi_choose(char* p)
 {
+	if(p == 0)return;
+	else if( (p[0]=='.') && (p[1]=='.') )stage--;
+	else stage = 1;
 }
 static void wifi_read()
 {

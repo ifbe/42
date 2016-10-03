@@ -1,10 +1,14 @@
 #define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 int systemuart_list();
 int systemuart_choose();
-int systemuart_read();
+int systemuart_read(char*);
 int systemuart_write(char*,int);
 int systemuart_start(char*);
 int systemuart_stop();
+void say(char*,...);
 
 
 
@@ -21,10 +25,12 @@ static int uart_read()
 }
 static int uart_write(char* p)
 {
-	//size?
-	systemuart_write(p,1);
+	char fuck[1024];
+	systemuart_write("ls\n",3);
+	systemuart_read(fuck);
+	say("%s\n",fuck);
 }
-static int uart_start(u64 type,char* p)
+static int uart_start(char* p)
 {
 	systemuart_start(p);
 }
