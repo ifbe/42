@@ -31,10 +31,21 @@ static struct temp{
 	u64 pixelformat;
 	u64 width;
 	u64 height;
+
+	u64 f0;
+	u64 f1;
+	u64 f2;
+	u64 f3;
+
+	u64 f4;
+	u64 f5;
+	u64 f6;
+	u64 f7;
 }*haha;
 
 //
-static int table[4][4];
+static int num;
+static void* buffer;
 
 
 
@@ -106,13 +117,17 @@ static void cubie(int x,int y,int z)
 static void the2048_read_text()
 {
 	int x,y;
+	int w = haha->width;
+	int h = haha->height;
 	char* p = (char*)(haha->pixelbuffer);
-	for(x=0;x<(haha->width)*(haha->height);x++)p[x]=0x20;
+	int (*table)[4] = buffer + num*16*4;
+
+	for(x=0;x<w * h;x++)p[x]=0x20;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			data2decimalstring(table[y][x], p + 4*y*(haha->width) + x*8);
+			data2decimalstring(table[y][x], p + 4*w*y + 8*x);
 		}
 	}
 }
@@ -121,6 +136,7 @@ static void the2048_read_html()
 	int x,y;
 	u32 color;
 	char* p = (char*)(haha->pixelbuffer);
+	int (*table)[4] = buffer + num*16*4;
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -161,6 +177,8 @@ static void the2048_read_html()
 static void the2048_read_pixel()
 {
 	int x,y;
+	int (*table)[4] = buffer + num*16*4;
+
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -201,6 +219,7 @@ static void left2048()
 {
 	int x,y;
 	int dst,temp;
+	int (*table)[4] = buffer + num*16*4;
 
 	//4对祭品
 	for(y=0;y<4;y++)
@@ -248,6 +267,7 @@ static void right2048()
 {
 	int x,y;
 	int dst,temp;
+	int (*table)[4] = buffer + num*16*4;
 
 	for(y=0;y<4;y++)
 	{
@@ -285,6 +305,7 @@ static void up2048()
 {
 	int x,y;
 	int dst,temp;
+	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<4;x++)
 	{
@@ -322,6 +343,7 @@ static void down2048()
 {
 	int x,y;
 	int dst,temp;
+	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<4;x++)
 	{
@@ -359,6 +381,7 @@ static void new2048()
 {
 	int x,y;
 	int who,temp;
+	int (*table)[4] = buffer + num*16*4;
 
 	//how many blank cubie
 	who=0;
@@ -403,17 +426,41 @@ static void new2048()
 static void the2048_write(u64* who, u64* what, u64* key)
 {
 	//kbd
-	if(*what != 0x64626b)return;
+	u8 ch;
+	int j;
+	int* p;
+	int* q;
 
-	//left,right,up,down
-	if(*key == 0x25)left2048();
-	else if(*key == 0x27)right2048();
-	else if(*key == 0x26)up2048();
-	else if(*key == 0x28)down2048();
-	else return;
+	//
+	ch = *(u8*)key;
+	if(*what == 0x64626b)
+	{
+		//left,right,up,down
+		if( (ch>=0x25) && (ch<=0x28) )
+		{
+			//
+			p = buffer + 64*num;
+			num = (num+1)%0x1000;
+			q = buffer + 64*num;
+			for(j=0;j<16;j++)q[j] = p[j];
 
-	//new number?
-	new2048();
+			//
+			if(ch == 0x25)left2048();
+			else if(ch == 0x26)up2048();
+			else if(ch == 0x27)right2048();
+			else if(ch == 0x28)down2048();
+
+			//new number?
+			new2048();
+		}
+	}
+	else if(*what == 0x72616863)
+	{
+		if(ch == 0x8)
+		{
+			if(num>0)num--;
+		}
+	}
 }
 
 
@@ -439,37 +486,30 @@ static void the2048_choose()
 
 static void the2048_start()
 {
-	//1.create
-	int x,y;
-	backgroundcolor(0);
+	int j;
+	char* p = buffer;
+	for(j=0;j<0x4000;j++)p[j] = 0;
 
-	//brick
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			table[y][x]=0;
-		}
-	}
+	//
+	num = 0;
 	new2048();
 }
 static void the2048_stop()
 {
 }
-void the2048_create(char* base,void* addr)
+void the2048_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
+	buffer = base + 0x300000;
 	haha = addr;
 
-	this[0] = 0x656d6167;
-	this[1] = 0x38343032;
-
-	this[10]=(u64)the2048_start;
-	this[11]=(u64)the2048_stop;
-	this[12]=(u64)the2048_list;
-	this[13]=(u64)the2048_choose;
-	this[14]=(u64)the2048_read;
-	this[15]=(u64)the2048_write;
+	haha->type = 0x656d6167;
+	haha->id = 0x38343032;
+	haha->f2 = (u64)the2048_start;
+	haha->f3 = (u64)the2048_stop;
+	haha->f4 = (u64)the2048_list;
+	haha->f5 = (u64)the2048_choose;
+	haha->f6 = (u64)the2048_read;
+	haha->f7 = (u64)the2048_write;
 }
 void the2048_delete()
 {
