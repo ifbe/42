@@ -46,6 +46,7 @@ program:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	$(library)/visitor1/cli.o
+	$(library)/visitor1/cli.o \
+	-lpthread
 clean:
 	rm -f *.o *.a *.so

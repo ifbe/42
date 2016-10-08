@@ -49,6 +49,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lgdi32
+	-lgdi32 -lpthread
 clean:
 	rm -f *.o *.a *.so

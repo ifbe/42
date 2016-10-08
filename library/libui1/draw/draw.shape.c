@@ -153,6 +153,9 @@ void trianglebody(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 }
 void triangleframe(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
+	line(x1, y1, x2, y2, color);
+	line(x1, y1, x3, y3, color);
+	line(x2, y2, x3, y3, color);
 }
 void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
 {

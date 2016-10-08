@@ -48,6 +48,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lSDL2 -lm
+	-lm -lpthread -lSDL2
 clean:
 	rm -f *.o *.a *.so

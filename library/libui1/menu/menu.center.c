@@ -2,11 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int characterchoose(char* p);
 //
 void printstring(int x, int y, int size, char* str, u32 fg, u32 bg);
-void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
+void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bg, u32 fg);
+void rect(int x1, int y1, int x2, int y2, u32 bg, u32 fg);
+void line(int x1, int y1, int x2, int y2, u32 color);
 //
+int characterchoose(char* p);
 int diary(char*, int, char*, ...);
 int say(char*,...);
 
@@ -83,50 +85,47 @@ static void menu_read_pixel()
 
 	//title
 	rect(
-		width/4,
-		(height/4)&0xfffffff0,
-		width*3/4,
-		(height/4+16)&0xfffffff0,
-		0x01234567,
-		0xfedcba98
+		width/4, (height/4)&0xfffffff0,
+		width*3/4, (height/4+16)&0xfffffff0,
+		0x01234567, 0xfedcba98
+	);
+	rect(
+		(width*3/4) - 16, (height/4)&0xfffffff0,
+		width*3/4, ((height/4) + 16)&0xfffffff0,
+		0xff0000, 0
+	);
+
+	//left, right
+	triangle(
+		width/16, height/2,
+		width*3/16, height*3/8,
+		width*3/16, height*5/8,
+		0x888888, 0xffffff
+	);
+	triangle(
+		width*15/16, height/2,
+		width*13/16, height*3/8,
+		width*13/16, height*5/8,
+		0x888888, 0xffffff
 	);
 
 	//body
 	rect(
-		width/4,
-		(height/4+16)&0xfffffff0,
-		width*3/4,
-		height*3/4,
-		0,
-		0xffffffff
-	);
-
-	//button
-	rect(
-		(width*3/4) - 16,
-		(height/4)&0xfffffff0,
-		width*3/4,
-		((height/4) + 16)&0xfffffff0,
-		0xff0000,
-		0
+		width/4, (height/4+16)&0xfffffff0,
+		width*3/4, height*3/4,
+		0, 0xffffffff
 	);
 
 	//string
 	printstring(
-		width/4,
-		height/4 + 16,
-		1,
-		"what do you want?",
-		0xffffffff,
-		0
+		width/4, height/4 + 16,
+		1, "what do you want?",
+		0xffffffff, 0
 	);
 	printstring(
-		width/4,
-		height/4 + 32,
-		1,
-		buffer,
-		0xffffffff,
-		0
+		width/4, height/4 + 32,
+		1, buffer,
+		0xffffffff, 0
 	);
 }
 static void menu_read_html()
@@ -199,21 +198,33 @@ static void menu_write(u64* who, u64* a, u64* b)
 		int y=(key>>16)&0xffff;
 
 		//点击框框外面，关掉菜单
-		if(	(x<width/4) |
-			(x>width*3/4) |
-			(y>(height*3/4)&0xfffffff0) |
-			(y<height/4) )
+		if( (y > height*3/4) | (y < height/4) )
 		{
 			haha->start=0;
 			return;
 		}
 
-		//点击红色矩形，退出
-		else if( (y<256+16) && (x>768-16) )
+		//last
+		else if(x < width/4)
 		{
-			//退出
-			characterchoose("exit");
-			return;
+			characterchoose("-");
+		}
+
+		//next
+		else if(x > width*3/4)
+		{
+			characterchoose("+");
+		}
+
+		//点击红色矩形，退出
+		else if(x>(width*3/4)-16)
+		{
+			if(y<(width/4)+16)
+			{
+				//退出
+				characterchoose("exit");
+				return;
+			}
 		}
 	}//left
 

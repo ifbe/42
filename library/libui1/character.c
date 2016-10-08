@@ -452,7 +452,7 @@ int characterchoose(char* p)
 	}
 
 found:
-	worker[0].xyze1 = 0;
+	//worker[0].xyze1 = 0;
 	characterstart(pixbuf, pixfmt, w, h);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -580,6 +580,7 @@ static void parsetouch(u64* who, u64* what, u64* key)
 						worker[0].xyze1 ^= 1;
 					}
 				}
+/*
 				else if( (dy0>-256)&&(dy0<256)&&(dy1>-256)&&(dy1<256)&&(dy2>-256)&&(dy2<256) )
 				{
 					if( (dx0 < -128)&&(dx1 < -128)&&(dx2 < -128) )
@@ -595,6 +596,7 @@ static void parsetouch(u64* who, u64* what, u64* key)
 						worker[0].xyze1 ^= 1;
 					}
 				}
+*/
 			}
 
 		}//last one
@@ -638,6 +640,12 @@ void characterwrite(u64 who, u64 what,u64 key)
 		parsetouch(&who, &what, &key);
 	}
 
+	//virtkbd
+	if(worker[2].xyze1 > 0)
+	{
+		x = worker[2].write(&who, &what, &key);
+	}
+
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)
 	{
@@ -648,12 +656,6 @@ void characterwrite(u64 who, u64 what,u64 key)
 	{
 		//roster
 		x = worker[1].write(&who, &what, &key);
-	}
-	else if(worker[2].xyze1 > 0)
-	{
-		//virtkbd
-		x = worker[2].write(&who, &what, &key);
-		if(x > 0)worker[now].write(&who, &what, &key);
 	}
 	else
 	{

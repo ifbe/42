@@ -4,13 +4,21 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
+#include<pthread.h>
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
+u64 gettime();
 void say(char*,...);
 
 
 
 
 //
-static int fd=-1;
+static int fd = -1;
+static int alive = 1;
+static pthread_t id;
 
 
 
@@ -26,8 +34,14 @@ int systemuart_choose()
 
 
 
-int systemuart_read()
+void* systemuart_read(void* p)
 {
+	while(alive == 1)
+	{
+		printf("%lld\n",gettime());
+		sleep(1);
+	}
+	return 0;
 }
 int systemuart_write(char* p,int count)
 {
@@ -64,13 +78,19 @@ int systemuart_start(char* p)
 	//set
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
+
+	//
+	alive = 1;
+	pthread_create(&id, NULL, systemuart_read, NULL);
 }
 int systemuart_stop()
 {
 	if(fd>0)
 	{
+		alive = 0;
+
 		close(fd);
-		fd=-1;
+		fd = -1;
 	}
 }
 
