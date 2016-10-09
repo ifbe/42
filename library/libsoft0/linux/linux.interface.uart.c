@@ -36,18 +36,23 @@ int systemuart_choose()
 
 void* systemuart_read(void* p)
 {
+	int ret;
+	char buf[256];
 	while(alive == 1)
 	{
-		printf("%lld\n",gettime());
-		sleep(1);
+		ret = read(fd, buf, 256);
+		buf[ret] = 0;
+
+		printf("%s", buf);
+		fflush(stdout);
 	}
 	return 0;
 }
-int systemuart_write(char* p,int count)
+int systemuart_write(char* p)
 {
 	int ret;
-	ret=write(fd,p,strlen(p));
-	say("ret=%d\n",ret);
+	ret = write(fd, p, strlen(p));
+	ret+= write(fd, "\n", 1);
 	return ret;
 }
 

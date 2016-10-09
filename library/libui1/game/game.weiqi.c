@@ -66,6 +66,16 @@ void weiqi_read()
 			cx + half*2*x,	cy + half*2*9,	0);
 	}
 
+	//dian
+	for(y = cy - half*2*6; y <= cy + half*2*6; y += half*2*6)
+	{
+		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
+		{
+			circlebody(x, y, half/4, 0);
+		}
+	}
+
+	//zi
 	for(y=-9;y<=9;y++)
 	{
 		for(x=-9;x<=9;x++)
@@ -102,11 +112,19 @@ void weiqi_write(u64* who, u64* what, u64* key)
 	{
 		x=(*key) & 0xffff;
 		y=( (*key) >> 16 ) & 0xffff;
+		//say("%d,%d\n",x,y);
 
-		x = (((x-cx)<<8)/half + 4608 + 128)>>9;
-		y = (((y-cy)<<8)/half + 4608 + 128)>>9;
-		say("%d,%d\n",x,y);
+		x = (((x-cx)<<8)/half + 4736)>>9;
+		y = (((y-cy)<<8)/half + 4736)>>9;
+		//say("%d,%d\n",x,y);
 
+		if(x<0)return;
+		if(x>18)return;
+		if(y<0)return;
+		if(y>18)return;
+
+		if((turn&0x1) == 0)data[y*19 + x] = 'b';
+		else data[y*19 + x] = 'w';
 		turn++;
 	}
 }
@@ -136,9 +154,6 @@ static void weiqi_start()
 			data[y*19 + x] = 0;
 		}
 	}
-
-	data[9*19 + 3] = 'b';
-	data[7*19 + 9] = 'w';
 }
 static void weiqi_stop()
 {

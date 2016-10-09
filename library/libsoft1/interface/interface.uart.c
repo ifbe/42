@@ -5,7 +5,7 @@
 int systemuart_list();
 int systemuart_choose();
 int systemuart_read(char*);
-int systemuart_write(char*,int);
+int systemuart_write(char*);
 int systemuart_start(char*);
 int systemuart_stop();
 void say(char*,...);
@@ -25,10 +25,7 @@ static int uart_read()
 }
 static int uart_write(char* p)
 {
-	char fuck[1024];
-	systemuart_write("ls\n",3);
-	systemuart_read(fuck);
-	say("%s\n",fuck);
+	systemuart_write(p);
 }
 static int uart_start(char* p)
 {
