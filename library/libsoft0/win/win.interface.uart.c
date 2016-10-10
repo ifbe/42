@@ -36,38 +36,43 @@ int systemuart_list()
 int systemuart_choose()
 {
 }
+
+
+
+
 int systemuart_read(char* p)
 {
+	int ret;
 	u32 count=0;
-	OVERLAPPED writeOS;
+	char buf[256];
 
-	memset(&writeOS, 0, sizeof(OVERLAPPED)); 
-	writeOS.hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
+	while(1)
+	{
+		ret = ReadFile(
+			hcom,
+			buf,
+			256,
+			(void*)&count,
+			0
+		);
+		buf[count] = 0;
 
-	int ret = ReadFile(
-		hcom,
-		p,
-		1000,
-		(void*)&count,
-		&writeOS
-	);
-	printf("read:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
-	return ret;
+		printf("%s", buf);
+		fflush(stdout);
+	}
+	return 0;
 }
 int systemuart_write(char* p)
 {
 	u32 count=0;
-	OVERLAPPED writeOS;
+	int ret;
 
-	memset(&writeOS, 0, sizeof(OVERLAPPED)); 
-	writeOS.hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
-
-	int ret = WriteFile(
+	ret = WriteFile(
 		hcom,
 		p,
 		3,
 		(void*)&count,
-		&writeOS
+		0
 	);
 	printf("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
 	return ret;
@@ -76,6 +81,10 @@ int systemuart_stop()
 {
 	if(hcom != 0)CloseHandle(hcom);
 }
+
+
+
+
 int systemuart_start(char* p)
 {
 	//
@@ -90,7 +99,7 @@ int systemuart_start(char* p)
 		0,
 		NULL,
 		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,
+		0,
 		NULL
 	);
 	if(hcom == INVALID_HANDLE_VALUE)

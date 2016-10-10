@@ -44,6 +44,8 @@ void main()
 
 	//before
 	birth();
+
+	//config
 	windowstart(pixbuf, pixfmt, width, height);	//it has the right to decide
 	characterstart(pixbuf, pixfmt, width, height);	//the changed final argument
 	//changewindow("addr",mybuffer);
@@ -69,7 +71,5 @@ void main()
 	}
 
 	//after
-	characterstop();
-	windowstop();
 	death();
 }

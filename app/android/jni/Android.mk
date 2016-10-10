@@ -200,11 +200,15 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.tree.c \
 	library/libui1/character.c
 
-#1.visitor
+#1.visitor0
 LOCAL_SRC_FILES += \
-	library/visitor0/command.c \
+	library/visitor0/world.c \
 	library/visitor0/event.c \
-	library/visitor0/universe.c \
+	library/visitor0/command.c \
+	library/visitor0/showoff.c
+
+#1.visitor1
+LOCAL_SRC_FILES += \
 	library/visitor1/cli.c
 
 

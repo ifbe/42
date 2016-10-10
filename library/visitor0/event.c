@@ -8,6 +8,11 @@ int softevent(u64* who, u64* what, u64* how);
 int hardevent(u64* who, u64* what, u64* how);
 int bootevent(u64* who, u64* what, u64* how);
 //
+void signalcreate(void*,void*);
+void signaldelete();
+void birth();
+void death();
+//
 void say(char*,...);
 
 
@@ -18,11 +23,6 @@ int stillalive=1;
 
 
 
-int eventwrite()
-{
-	stillalive=0;
-	return 0;
-}
 int eventread(u64* who, u64* what, u64* how)
 {
         int ret;
@@ -53,8 +53,22 @@ int eventread(u64* who, u64* what, u64* how)
 
 
 
+int eventwrite()
+{
+	stillalive=0;
+	return 0;
+}
+static void lastword()
+{
+	death();
+}
+
+
+
+
 void eventcreate()
 {
+	signalcreate("c", lastword);
 }
 void eventdelete()
 {

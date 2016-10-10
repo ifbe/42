@@ -7,8 +7,9 @@ mac:
 win:
 	make -s target compiler="gcc" cflag="-c -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 target:
-	$(compiler) $(cflag) command.c
+	$(compiler) $(cflag) world.c
 	$(compiler) $(cflag) event.c
-	$(compiler) $(cflag) universe.c
+	$(compiler) $(cflag) command.c
+	$(compiler) $(cflag) showoff.c
 clean:
 	rm -f *.o

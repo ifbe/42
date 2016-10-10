@@ -3,11 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+int show();
 int command(char* buffer);
 int eventread(u64* who, u64* what, u64* how);
+int eventwrite(u64* who, u64* what, u64* how);
 //
-int enter(char*);
-int leave();
 int birth();
 int death();
 //
@@ -18,14 +18,13 @@ void say(char*,...);
 
 int main(int argc,char* argv[])
 {
-	//必须放第一个
 	int ret;
-	u64 who;
-	u64 what;
-	u64 how;
+	u64 who, what, how;
+
+	//必须放第一个
+	birth();
 
 	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
-	birth();
 	for(ret=1;ret<argc;ret++)
 	{
 		say("%s\n",argv[ret]);
@@ -36,13 +35,16 @@ int main(int argc,char* argv[])
 	how=0;
 	while(1)
 	{
-		//1.打印
-		ret=command((char*)how);
+		//1.显示位置
+		show();
 
-		//1.等输入，再把这段里面所有的0x20变成0
+		//2.等待输入
 		eventread(&who, &what, &how);
 		if(what==0)break;
 		if(what != 0x727473)continue;
+
+		//3.发送命令
+		ret=command((char*)how);
 	}
 
 	//必须放在最后

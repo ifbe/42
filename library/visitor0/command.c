@@ -141,8 +141,7 @@ int command(char* buffer)
 	}
 
 finish:
-	if(memory!=0)say("[%s]",memory);
-	return 8;
+	return 1;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
