@@ -4,7 +4,7 @@
 #define u8 unsigned char
 int systemuart_list();
 int systemuart_choose();
-int systemuart_read(char*);
+int systemuart_read();
 int systemuart_write(char*);
 int systemuart_start(char*);
 int systemuart_stop();
@@ -22,6 +22,7 @@ static int uart_choose()
 }
 static int uart_read()
 {
+	systemuart_read();
 }
 static int uart_write(char* p)
 {

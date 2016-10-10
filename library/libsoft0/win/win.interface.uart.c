@@ -5,6 +5,7 @@
 #define u64 unsigned long long
 #define u32 unsigned int
 static HANDLE hcom=0;
+static HANDLE thread=0;
 
 
 
@@ -14,7 +15,7 @@ int systemuart_list()
 	int j;
 	HANDLE h;
 	char buf[20];
-	for(j=0;j<20;j++)
+	for(j=0;j<50;j++)
 	{
 		snprintf(buf, 20, "\\\\.\\COM%d", j);
 		h = CreateFile(
@@ -28,7 +29,7 @@ int systemuart_list()
 		);
 		if(h != INVALID_HANDLE_VALUE)
 		{
-			printf("%s\n", buf);
+			printf("%s\n", buf+4);
 			CloseHandle(h);
 		}
 	}
@@ -40,7 +41,7 @@ int systemuart_choose()
 
 
 
-int systemuart_read(char* p)
+DWORD WINAPI systemuart_read(LPVOID pM)
 {
 	int ret;
 	u32 count=0;
@@ -70,11 +71,12 @@ int systemuart_write(char* p)
 	ret = WriteFile(
 		hcom,
 		p,
-		3,
+		strlen(p),
 		(void*)&count,
 		0
 	);
-	printf("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
+	//printf("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
+	ret = WriteFile(hcom,"\n",1,(void*)&count,0);
 	return ret;
 }
 int systemuart_stop()
@@ -89,12 +91,14 @@ int systemuart_start(char* p)
 {
 	//
 	int ret;
+	char buf[20];
 	if(p == 0)return 0;
 	systemuart_stop();
 
 	//
+	snprintf(buf, 20, "\\\\.\\%s", p);
 	hcom = CreateFile(
-		p,
+		buf,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
 		NULL,
@@ -141,6 +145,10 @@ int systemuart_start(char* p)
 		PURGE_RXCLEAR|PURGE_TXCLEAR|PURGE_RXABORT|PURGE_TXABORT
 	);
 	printf("PurgeComm:%d\n", ret);
+
+	//
+	thread = CreateThread(NULL, 0, systemuart_read, NULL, 0, NULL);
+	printf("thread=%x\n", thread);
 }
 int systemuart_create()
 {
