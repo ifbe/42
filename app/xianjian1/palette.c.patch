@@ -1,0 +1,53 @@
+diff --git a/home/ifbe/lc/sdlpal.bak/palette.c b/home/ifbe/lc/xj1/xj1/palette.c
+index 0f9bed7..77b4453 100644
+--- a/home/ifbe/lc/sdlpal.bak/palette.c
++++ b/home/ifbe/lc/xj1/xj1/palette.c
+@@ -19,6 +19,9 @@
+ //
+ 
+ #include "main.h"
++#define u32 unsigned int
++unsigned int colorboard[256];
++
+ 
+ SDL_Color *
+ PAL_GetPalette(
+@@ -70,18 +73,26 @@ PAL_GetPalette(
+       //
+       fNight = FALSE;
+    }
+-
+-   for (i = 0; i < 256; i++)
+-   {
+-      palette[i].r = buf[(fNight ? 256 * 3 : 0) + i * 3] << 2;
+-      palette[i].g = buf[(fNight ? 256 * 3 : 0) + i * 3 + 1] << 2;
+-      palette[i].b = buf[(fNight ? 256 * 3 : 0) + i * 3 + 2] << 2;
+-#if 0
+-      palette[i].r += (255 - palette[i].r) / 5;
+-      palette[i].g += (255 - palette[i].g) / 5;
+-      palette[i].b += (255 - palette[i].b) / 5;
+-#endif
+-   }
++   
++	printf("@PAL_GetPalette,%d\n",iPaletteNum);
++	if(fNight)
++	{
++	  for (i = 0; i < 256; i++)
++	  {
++		 palette[i].r = buf[256 * 3 + i * 3] << 2;
++		 palette[i].g = buf[256 * 3 + i * 3 + 1] << 2;
++		 palette[i].b = buf[256 * 3 + i * 3 + 2] << 2;
++	  }
++	}
++	else
++	{
++	   for (i = 0; i < 256; i++)
++	   {
++	      palette[i].r = buf[i * 3] << 2;
++	      palette[i].g = buf[i * 3 + 1] << 2;
++	      palette[i].b = buf[i * 3 + 2] << 2;
++	   }
++	}
+ 
+    return palette;
+ }

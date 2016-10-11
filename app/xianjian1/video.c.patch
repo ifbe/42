@@ -1,0 +1,150 @@
+diff --git a/home/ifbe/lc/sdlpal.bak/video.c b/home/ifbe/lc/xj1/xj1/video.c
+index 481d79b..a629e5d 100644
+--- a/home/ifbe/lc/sdlpal.bak/video.c
++++ b/home/ifbe/lc/xj1/xj1/video.c
+@@ -17,6 +17,15 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ //
++#define u64 unsigned long long
++void windowcreate();
++void windowstart(void* addr,void* pixfmt, int width,int height);
++void windowwrite();
++void eventread(void*, void*, void*);
++static unsigned int haha[640*480 + 0x400];
++extern unsigned int colorboard[256];
++
++
+ 
+ #include "main.h"
+ 
+@@ -43,6 +52,20 @@ static WORD               g_wInitialHeight   = 400;
+ static WORD               g_wShakeTime       = 0;
+ static WORD               g_wShakeLevel      = 0;
+ 
++
++
++
++
++void myth(void)
++{
++	u64 who,what,value;
++	while(1)
++	{
++		eventread(&who,&what,&value);
++	}
++}
++
++
+ INT
+ #ifdef GEKKO // Rikku2000: Crash on compile, allready define on WIISDK
+ VIDEO_Init_GEKKO(
+@@ -97,9 +120,9 @@ VIDEO_Init(
+ #elif defined (PSP)
+    gpScreenReal = SDL_SetVideoMode(320, 240, 8, SDL_SWSURFACE | SDL_FULLSCREEN);
+ #else
+-   gpScreenReal = SDL_SetVideoMode(wScreenWidth, wScreenHeight, 8,
+-      SDL_HWSURFACE | SDL_RESIZABLE | (fFullScreen ? SDL_FULLSCREEN : 0));
+-#endif
++   //gpScreenReal = SDL_SetVideoMode(wScreenWidth, wScreenHeight, 8,
++      //SDL_HWSURFACE | SDL_RESIZABLE | (fFullScreen ? SDL_FULLSCREEN : 0));
++
+ 
+    if (gpScreenReal == NULL)
+    {
+@@ -108,7 +131,28 @@ VIDEO_Init(
+       //
+       gpScreenReal = SDL_SetVideoMode(640, 480, 8,
+          SDL_SWSURFACE | (fFullScreen ? SDL_FULLSCREEN : 0));
++	  
++	  int ret;
++	  char pixfmt[8];
++	  pthread_t mythread;
++
++printf("111111111111\n");
++
++	  windowcreate();
++
++printf("222222222222\n");
++
++	  windowstart(haha, pixfmt, 640, 480);
++
++printf("333333333333\n");
++
++	  ret=pthread_create(&mythread,NULL,(void*)myth,NULL);
++
++printf("444444444444\n");
++
+    }
++   
++#endif
+ 
+    //
+    // Still fail?
+@@ -213,6 +257,8 @@ VIDEO_UpdateScreen(
+ 
+ --*/
+ {
++int x,y,z;
++unsigned char* p;
+    SDL_Rect        srcrect, dstrect;
+    short           offset = 240 - 200;
+    short           screenRealHeight = gpScreenReal->h;
+@@ -298,7 +344,7 @@ VIDEO_UpdateScreen(
+       }
+ 
+       SDL_UpdateRect(gpScreenReal, 0, 0, gpScreenReal->w, gpScreenReal->h);
+-
++	  
+       g_wShakeTime--;
+    }
+    else
+@@ -316,7 +362,21 @@ VIDEO_UpdateScreen(
+       }
+ 
+       SDL_UpdateRect(gpScreenReal, 0, 0, gpScreenReal->w, gpScreenReal->h);
+-   }
++
++   	}
++
++	//printmemory(gpScreenReal->pixels,0x100);
++	p=gpScreenReal->pixels;
++	for(y=0;y<480;y++)
++	{
++		for(x=0;x<640;x++)
++		{
++			z=y*640+x;
++			haha[z]=colorboard[p[z]];
++		}
++	}
++	windowwrite();
++
+ }
+ 
+ VOID
+@@ -338,7 +398,16 @@ VIDEO_SetPalette(
+ 
+ --*/
+ {
++	int i;
++	printf("@video_setpalette\n");
++	for(i=0;i<256;i++)
++	{
++		colorboard[i]= 0xff000000 | (rgPalette[i].b<<16) | (rgPalette[i].g<<8) | rgPalette[i].r;
++		printf("%06x  ",colorboard[i]);
++		if((i%8)==7)printf("\n");
++	}
+    SDL_SetPalette(gpScreenReal, SDL_LOGPAL | SDL_PHYSPAL, rgPalette, 0, 256);
++   
+ #if (defined (__SYMBIAN32__))
+    {
+       static UINT32 time = 0;
+@@ -408,7 +477,7 @@ VIDEO_Resize(
+       gpScreenReal = SDL_SetVideoMode(640, 480, 8, SDL_SWSURFACE);
+ #endif
+    }
+-
++printf("here\n");
+    SDL_SetPalette(gpScreenReal, SDL_PHYSPAL | SDL_LOGPAL, palette, 0, i);
+    VIDEO_UpdateScreen(NULL);
+ }

@@ -1,0 +1,16 @@
+diff --git a/home/ifbe/lc/sdlpal.bak/Makefile b/home/ifbe/lc/xj1/xj1/Makefile
+index e84b532..bb38c28 100644
+--- a/home/ifbe/lc/sdlpal.bak/Makefile
++++ b/home/ifbe/lc/xj1/xj1/Makefile
+@@ -19,9 +19,10 @@ FILES = rixplay.cpp text.c font.c itemmenu.c scene.c palcommon.c script.c \
+ 
+ FILES += $(ADPLUG_FILES)
+ FILES += $(LIBMAD_FILES)
++FILES += 42.a
+ 
+ CFLAGS = `sdl-config --cflags` -g -Wall -O2 -fno-strict-aliasing
+-LDFLAGS = `sdl-config --libs` -lstdc++ -lm
++LDFLAGS = `sdl-config --libs` -lstdc++ -lm -lX11 -lpthread
+ 
+ $(TARGET): $(FILES)
+ 	$(HOST)gcc $(CFLAGS) -o $(TARGET) $(FILES) $(LDFLAGS)
