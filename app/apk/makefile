@@ -5,6 +5,7 @@ linuxbuild:
 	android update project --path . --target android-21
 	ant debug
 	make cleanicon
+	cp bin/Plasma-debug.apk 42.apk
 windowsbuild:
 	make cleanicon
 	make createicon
@@ -12,6 +13,9 @@ windowsbuild:
 	cmd "/C android update project --path . --target android-21"
 	ant debug
 	make cleanicon
+	cp bin/Plasma-debug.apk 42.apk
+install:
+	adb install -r 42.apk
 createicon:
 	mkdir res/drawable-ldpi
 	mkdir res/drawable-mdpi

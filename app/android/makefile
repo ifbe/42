@@ -1,5 +1,7 @@
 all:
 	ndk-build
+push:
+	adb push libs/arm64-v8a/42 /data/42
 clean:
 	rm -rf bin
 	rm -rf gen
