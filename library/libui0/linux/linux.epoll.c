@@ -20,8 +20,9 @@
 #define PORT 2222
 #define MAXSIZE 1024
 //
-void sha1sum(unsigned char* out, const unsigned char* str, int len);
-void base64_encode(unsigned char* out,const unsigned char* in,int len);
+void datastr2hexstr(u8* out, u8* in, int len);
+void sha1sum(u8* out, u8* in, int len);
+void base64_encode(u8* out,u8* in, int len);
 u32 getrandom();
 //
 void printmemory(char*,int);
@@ -50,10 +51,13 @@ static int http_context_size;
 static char event_queue[0x100000];
 static int event_count=0;
 //
-static unsigned char buf1[256];
-static unsigned char buf2[256];
 static unsigned char recvbuf[0x100000];
 static unsigned char* sendbuf;
+//
+static u8 buf1[256];
+static u8 buf2[256];
+static u8 fixed_salt[256];
+static u8 temp_salt[256];
 
 
 
@@ -263,8 +267,6 @@ void windowchoose()
 
 
 
-static u32 fixed_salt;
-static u32 temp_salt;
 void serve_websocket(int fd, int nread)
 {
 	int i,j,k;
@@ -385,7 +387,7 @@ void serve_websocket(int fd, int nread)
 reply:
 	if(clienttype[fd]==0x10)
 	{
-		printf("[%d]stage0 recv:%s\n", fd, event_queue);
+		printf("[%d][stage0][client]%s\n", fd, event_queue);
 
 		//
 		i = snprintf(recvbuf+2, 20, "4....2..");
@@ -394,61 +396,80 @@ reply:
 		i = write(fd, recvbuf, 2+i);
 
 		//
-		printf("[%d]stage0 send:%s\n\n", fd, recvbuf+2);
+		printf("[%d][stage0][server]%s\n\n", fd, recvbuf+2);
 		clienttype[fd] = 0x11;
 	}
 
 	else if(clienttype[fd]==0x11)
 	{
-		printf("[%d]stage1 recv:%s\n", fd, event_queue);
-		if( (*(u16*)event_queue != 0x3234) && (event_queue[2]==0) )
+		printf("[%d][stage1][client]username=%s\n", fd, event_queue);
+		if(0)
 		{
+			i = snprintf(recvbuf+2, 20, "fail");
+			recvbuf[0] = 0x81;
+			recvbuf[1] = i;
+			i = write(fd, recvbuf, 2+i);
+
 			epoll_del(fd);
 			printf("[%d]stage1 failed\n", fd);
 			return;
 		}
 
-		//
-		fixed_salt = getrandom();
-		temp_salt = getrandom();
-		i = snprintf(recvbuf+2, 20, "%x,%x", fixed_salt, temp_salt);
-		recvbuf[0] = 0x81;
-		recvbuf[1] = i;
-		i = write(fd, recvbuf, 2+i);
+		else
+		{
+			//
+			snprintf(fixed_salt, 256, "%08x", getrandom());
+			snprintf( temp_salt, 256, "%08x", getrandom());
+			i = snprintf(recvbuf+2, 20, "%s,%s", fixed_salt, temp_salt);
+			recvbuf[0] = 0x81;
+			recvbuf[1] = i;
+			i = write(fd, recvbuf, 2+i);
 
-		//
-		printf("[%d]stage1 send:%s\n\n", fd, recvbuf+2);
-		clienttype[fd] = 0x12;
+			//
+			printf("[%d][stage1][server]challenge=%s\n\n", fd, recvbuf+2);
+			clienttype[fd] = 0x12;
+		}
 	}
 
 	else if(clienttype[fd]==0x12)
 	{
-		printf("[%d]stage2 recv:%s\n", fd, event_queue);
+		printf("[%d][stage2][client]response=%s\n", fd, event_queue);
+
+		//
+		snprintf(buf2, 256, "%s%s", fixed_salt, "42");
+		sha1sum(buf1, buf2, strlen(buf2));
+		datastr2hexstr(buf2, buf1, 20);
+		printf("	%s\n",buf2);
+
+		snprintf(buf1, 256, "%s%s", temp_salt, buf2);
+		sha1sum(buf2, buf1, strlen(buf1));
+		datastr2hexstr(buf1, buf2, 20);
+		printf("	%s\n",buf1);
 /*
-		if(*(u16*)event_queue != 0x3234)
+		if(strncmp(event_queue, buf1, 256) != 0)
 		{
 			epoll_del(fd);
-			printf("[%d]stage2 failed\n", fd);
+			printf("[%d][stage2]incorrect\n", fd);
 			return;
 		}
 */
-		//count
-		websocket_count++;
-		if(fd > websocket_last)websocket_last = fd;
-
-		//event
-		*(u64*)(event_queue+0) = 0xabcdef;
-		event_count = 1;
-
 		//write
-		i = snprintf(recvbuf+2, 20, "success");
+		i = snprintf(recvbuf+2, 20, "correct");
 		recvbuf[0] = 0x81;
 		recvbuf[1] = i;
 		i = write(fd, recvbuf, 2+i);
 
-		//
-		printf("[%d]stage2 send:%s\n\n", fd, recvbuf+2);
+		//count
+		websocket_count++;
+		if(fd > websocket_last)websocket_last = fd;
+
+		//type
+		printf("[%d][stage2][server]status=%s\n\n", fd, recvbuf+2);
 		clienttype[fd] = 0x1f;
+
+		//event
+		*(u64*)(event_queue+0) = 0xabcdef;
+		event_count = 1;
 	}
 
 	else if(clienttype[fd]==0x1f)
@@ -518,19 +539,43 @@ void handshake_websocket(int fd)
 }
 void handshake_http(int fd)
 {
-	int ret = open("42.html",O_RDONLY);
+	int ret;
+
+	for(ret=0;ret<0x1000;ret++)
+	{
+		if(GET[ret] <= 0xd)goto byebye;
+		if(GET[ret] == 0x20)
+		{
+			GET[ret] = 0;
+			break;
+		}
+	}
+	printf("%s\n",GET);
+
+	//home page
+	if( (GET[0]=='/')&&(GET[1]==0) )
+	{
+		snprintf(GET+1, 16, "42.html");
+	}
+	printf("%s\n",GET+1);
+
+	//open,read,close
+	ret = open(GET+1, O_RDONLY);
 	if(ret <= 0)
 	{
 		printf("error@html\n");
+		goto byebye;
 	}
 	http_context_size = read(ret, http_context, 0x100000);
 	close(ret);
 
+	//send
 	ret = write(fd, http_response, strlen(http_response) );
 	printf("writing http_response\n");
 	ret = write(fd, http_context, http_context_size);
 	printf("writing http_context\n");
 
+byebye:
 	epoll_del(fd);
 	printf("[%d]done->close\n\n\n\n\n", fd);
 }
@@ -570,7 +615,7 @@ static void handle_read(int fd)
 			}
 
 			//http请求根
-			else if( (GET[0]=='/')&&(GET[1]==' ') )
+			else if(GET != 0)
 			{
 				handshake_http(fd);
 			}
@@ -729,7 +774,7 @@ int windowcreate()
 		exit(-1);
 	}
 
-	ret = 0;
+	ret = 1;
 	ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(ret<0)
 	{

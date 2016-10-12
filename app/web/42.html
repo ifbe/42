@@ -1,6 +1,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<script src="rollups/sha1.js"></script>
 <script type="text/javascript">
 function say(data)
 {
@@ -56,7 +57,7 @@ function sendblob(data)
 
 function draw(data)
 {
-	say("string "+data.length);
+	say("[server] string "+data.length);
 	document.getElementById('boxlogin').style.display="none";
 	document.getElementById('boxdraw').style.display="";
 	document.getElementById('boxpixel').style.display="none";
@@ -65,7 +66,7 @@ function draw(data)
 }
 function pixel(data)
 {
-	say("binary "+data.byteLength);
+	say("[server] binary "+data.byteLength);
 	document.getElementById('boxlogin').style.display="none";
 	document.getElementById('boxdraw').style.display="none";
 	document.getElementById('boxpixel').style.display="";
@@ -106,31 +107,34 @@ function start()
 			if(stage==0x10)
 			{
 				//recv server_identity
-				say("stage0 recv:"+event.data);
+				say("[stage0][server]"+event.data);
 
 				//send username
 				send(username);
-				say("stage0 send:"+username);
+				say("[stage1][client]username="+username);
 
 				stage=0x11;
 			}
 			else if(stage==0x11)
 			{
 				//recv fixed_salt temp_salt
-				say("stage1 recv:"+event.data);
+				say("[stage1][server]challenge="+event.data);
 
 				//send md5(temp_salt + md5(fixed_salt + password))
 				var arr=event.data.split(",");
-				var temp=arr[0]+password+arr[1];
-				send(temp);
-				say("stage1 send:"+temp);
+				var hash1=CryptoJS.SHA1(arr[0] + password);
+				say("	"+hash1);
+				var hash2=CryptoJS.SHA1(arr[1] + hash1);
+				say("	"+hash2);
+
+				send(hash2);
+				say("[stage2][client]response="+hash2);
 
 				stage=0x12;
 			}
 			else if(stage==0x12)
 			{
-				say("stage2 recv:"+event.data);
-				say("stage2 success");
+				say("[stage2][server]status="+event.data);
 				stage=31;
 			}
 			else if(stage==31)
@@ -147,7 +151,10 @@ function start()
 	{
 		stage=16;
 		say("onopen:"+url);
-		send("final answer?");
+
+		var str="final answer?";
+		send(str);
+		say("[stage0][client]" + str);
 	};
 	ws.onclose=function(event)
 	{

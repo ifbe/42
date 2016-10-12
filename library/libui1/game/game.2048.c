@@ -10,7 +10,7 @@ void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
 void line(int,int,int,int,u32 color);
 void backgroundcolor(u32);
 //
-int data2decimalstring(u64 data,u8* string);
+int data2decstr(u64 data,u8* string);
 unsigned int getrandom();
 //
 int printmemory(char*,int);
@@ -127,7 +127,7 @@ static void the2048_read_text()
 	{
 		for(x=0;x<4;x++)
 		{
-			data2decimalstring(table[y][x], p + 4*w*y + 8*x);
+			data2decstr(table[y][x], p + 4*w*y + 8*x);
 		}
 	}
 }

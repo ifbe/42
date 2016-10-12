@@ -12,7 +12,7 @@ void background1();
 void characterchoose(char*);
 void arteryread(char* rdi,u64 rsi,u64 rcx);
 void arterywrite(char* rdi,u64 rsi,u64 rcx);
-void data2hexstring(u64,char*);
+void data2hexstr(u64,char*);
 int compare(char*,char*);
 //
 void printmemory(char*,int);
@@ -204,10 +204,10 @@ static void floatarea()
 	rectbody(xshift + thisx, thisy, xshift + thisx+256, thisy+128, 0xffff);
 
 	//
-	data2hexstring((u64)databuf, hi + 0x10);
-	data2hexstring(windowoffset, hi + 0x30);
-	data2hexstring(pointeroffset, hi + 0x50);
-	data2hexstring(0, hi + 0x70);
+	data2hexstr((u64)databuf, hi + 0x10);
+	data2hexstr(windowoffset, hi + 0x30);
+	data2hexstr(pointeroffset, hi + 0x50);
+	data2hexstr(0, hi + 0x70);
 
 	//target,base,offset,data
 	for(y=0;y<8;y++)
@@ -258,7 +258,7 @@ static void hex_read_text()
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstring((u64)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstr((u64)databuf + windowoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
@@ -289,7 +289,7 @@ static void hex_read_text()
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstring((u64)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstr((u64)databuf + windowoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
