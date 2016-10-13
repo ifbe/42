@@ -171,7 +171,7 @@ static void control_read()
 static void control_write(u64* who, u64* what, u64* how)
 {
 	int x,y;
-	if(*what == 0x7466656C207A7978)
+	if(*what == 0x2d6d)
 	{
 		x = *(u16*)how;
 		y = *(u16*)(how+2);

@@ -108,7 +108,7 @@ void weiqi_write(u64* who, u64* what, u64* key)
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if(*what == 0x7466656C207A7978)
+	if(*what == 0x2d6d)
 	{
 		x=(*key) & 0xffff;
 		y=( (*key) >> 16 ) & 0xffff;

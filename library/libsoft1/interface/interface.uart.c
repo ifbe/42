@@ -3,7 +3,7 @@
 #define u16 unsigned short
 #define u8 unsigned char
 int systemuart_list();
-int systemuart_choose();
+int systemuart_choose(char* p);
 int systemuart_read();
 int systemuart_write(char*);
 int systemuart_start(char*);
@@ -13,14 +13,15 @@ void say(char*,...);
 
 
 
-static int uart_list()
+static int uart_list(char* p)
 {
 	systemuart_list();
 }
-static int uart_choose()
+static int uart_choose(char* p)
 {
+	systemuart_choose(p);
 }
-static int uart_read()
+static int uart_read(char* p)
 {
 	systemuart_read();
 }
@@ -32,7 +33,7 @@ static int uart_start(char* p)
 {
 	systemuart_start(p);
 }
-static int uart_stop()
+static int uart_stop(char* p)
 {
 	systemuart_stop();
 }
@@ -51,5 +52,5 @@ void uart_create(char* world,u64* p)
 }
 void uart_delete()
 {
-	uart_stop();
+	uart_stop(0);
 }

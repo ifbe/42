@@ -186,9 +186,9 @@ static void color_write(u64* who, u64* a, u64* b)
 			if(red>0) red--;
 		}
 	}
-	else if( (type&0xffffffff) == 0x207A7978 )
+	else if(type == 0x2d6d)
 	{
-		if((type>>32)==0x7466656C)
+		if((key>>48) == 1)	//left
 		{
 			int x=key&0xffff;
 			int y=(key>>16)&0xffff;
@@ -201,11 +201,11 @@ static void color_write(u64* who, u64* a, u64* b)
 			blue=x*256/min;
 			green=y*256/min;
 		}
-		else if((type>>32)==0x6E6F7266)
+		else if((key>>48) == 4)
 		{
 			if(red<0xff)red++;
 		}
-		else if((type>>32)==0x6B636162)
+		else if((key>>48) == 5)
 		{
 			if(red>0)red--;
 		}

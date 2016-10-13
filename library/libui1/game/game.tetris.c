@@ -634,18 +634,18 @@ static void tetris_write(u64* who, u64* a, u64* b)
 	u64 type = *a;
 	u64 key = *b;
 
-	if(type==0x7466656C207A7978)
+	if(type == 0x2d6d)
 	{
 		for(ret=0;ret<20;ret++)if(down()==1)return;
 	}
-	else if(type==0x64626b)
+	else if(type == 0x64626b)
 	{
 		if(key==0x25)left();
 		else if(key==0x27)right();
 		else if(key==0x26)up();
 		else if(key==0x28)down();
 	}
-	else if(type==0x72616863)
+	else if(type == 0x72616863)
 	{
 		if(key=='a')left();
 		else if(key=='d')right();

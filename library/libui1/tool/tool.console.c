@@ -9,7 +9,7 @@ void backgroundcolor(u32);
 void characterchoose(char*);
 void command(char* in);
 //
-int compare(char* first,char* second);
+int cmp(char* first,char* second);
 void say(char*,...);
 
 
@@ -141,7 +141,7 @@ static void console_write(u64* who, u64* a, u64* b)
 		}
 		else if(key==0xd)		//回车
 		{
-			if(compare( buffer , "exit" ) == 0)
+			if(cmp( buffer , "exit" ) == 0)
 			{
 				characterchoose(0);
 				return;
@@ -164,20 +164,24 @@ static void console_write(u64* who, u64* a, u64* b)
 			}
 		}
 	}
-	else if(type==0x6E6F7266207A7978)		//'xyz fron'
+	else if(type == 0x2d6d)
 	{
-		u32 enqueue=*(u32*)(logbuf+0xffff0);
-		if(enqueue>=0x80*40)		//大于一页才准上翻
+		//'xyz fron'
+		if((key>>48) == 4)
 		{
-			if(backward<enqueue-0x80*40)	//没到头才能继续
+			u32 enqueue=*(u32*)(logbuf+0xffff0);
+			if(enqueue>=0x80*40)		//大于一页才准上翻
 			{
-				backward+=0x80;
+				if(backward<enqueue-0x80*40)	//没到头才能继续
+				{
+					backward+=0x80;
+				}
 			}
 		}
-	}
-	else if(type==0x6B636162207A7978)		//'xyz back'
-	{
-		if(backward>=0x80)backward-=0x80;
+		if((key>>48) == 5)
+		{
+			if(backward>=0x80)backward-=0x80;
+		}
 	}
 }
 static void console_read()

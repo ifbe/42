@@ -63,7 +63,7 @@ void tree_delete();
 void spectrum_delete();
 void qrcode_delete();
 //
-int compare(char*,char*);
+int cmp(char*,char*);
 int eventwrite();
 u32 getrandom();
 //
@@ -375,7 +375,7 @@ int characterchoose(char* p)
 	}
 
 	//exit.
-	ret=compare(p,"exit");
+	ret=cmp(p,"exit");
 	if(ret==0)
 	{
 		temp = (worker[0].pixelformat)&0xffffffff;
@@ -386,7 +386,7 @@ int characterchoose(char* p)
 	}
 
 	//
-	ret=compare(p,"+");
+	ret=cmp(p,"+");
 	if(ret==0)
 	{
 		if(worker[now+1].id == 0)return 0;
@@ -394,7 +394,7 @@ int characterchoose(char* p)
 		goto found;
 	}
 
-	ret=compare(p,"-");
+	ret=cmp(p,"-");
 	if(ret==0)
 	{
 		if(worker[now-1].type == 0)return 0;
@@ -403,7 +403,7 @@ int characterchoose(char* p)
 	}
 
 	//random
-	ret=compare(p,"random");
+	ret=cmp(p,"random");
 	if(ret==0)
 	{
 		for(j=0;j<10;j++)
@@ -523,8 +523,8 @@ static void parsetouch(u64* who, u64* what, u64* key)
 					}
 					else	//point
 					{
-						*what = 0x7466656C207A7978;
-						*key &= 0xffffffff;
+						*what = 0x2d6d;
+						*key = (*key&0xffffffff) + ((u64)1<<48);
 					}
 				}
 				if( (dx0>-256) && (dx0<256) )
@@ -541,8 +541,8 @@ static void parsetouch(u64* who, u64* what, u64* key)
 					}
 					else	//point
 					{
-						*what = 0x7466656C207A7978;
-						*key &= 0xffffffff;
+						*what = 0x2d6d;
+						*key = (*key&0xffffffff) + ((u64)1<<48);
 					}
 				}
 			}

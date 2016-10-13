@@ -187,9 +187,7 @@ LOCAL_SRC_FILES += \
 #1.visitor
 LOCAL_SRC_FILES += \
 	library/visitor0/world.c \
-	library/visitor0/event.c \
-	library/visitor0/command.c \
-	library/visitor0/showoff.c
+	library/visitor0/event.c
 
 
 

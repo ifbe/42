@@ -31,7 +31,7 @@ int hfs_delete();
 int ntfs_create(void*,void*);
 int ntfs_delete();
 //
-int compare(char*,char*);
+int cmp(char*,char*);
 int hexstring2data(char*,u64*);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
@@ -207,30 +207,30 @@ static int memory_list(char* arg1)
 
 	//想要什么
 	if(arg1==0)target=0;
-	else if( compare(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
-	else if( compare(arg1,"file") == 0 )
+	else if( cmp(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
+	else if( cmp(arg1,"file") == 0 )
 	{
 		addr=dirhome;
 		target=0;
 		//target=0x656c6966;		//'file'
 		//printmemory(addr,0x200);
 	}
-	else if( compare(arg1,"0") == 0 )
+	else if( cmp(arg1,"0") == 0 )
 	{
 		addr=fshome;
 		target=0;
 	}
-	else if( compare(arg1,"1") == 0 )
+	else if( cmp(arg1,"1") == 0 )
 	{
 		addr=fshome;
 		target=0;
 	}
-	else if( compare(arg1,"2") == 0 )
+	else if( cmp(arg1,"2") == 0 )
 	{
 		addr=dirhome;
 		target=0;
 	}
-	else if( compare(arg1,"3") == 0 )
+	else if( cmp(arg1,"3") == 0 )
 	{
 		addr=datahome;
 		target=0;

@@ -48,7 +48,7 @@ static int virtkbd_write(u64* who, u64* what, u64* value)
 	int width = haha->width;
 	int height = haha->height;
 
-	if(*what == 0x7466656C207A7978)
+	if(*what == 0x2d6d)
 	{
 		x = (*value) & 0xffff;
 		x = (x<<10)/width;

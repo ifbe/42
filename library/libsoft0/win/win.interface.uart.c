@@ -10,37 +10,6 @@ static HANDLE thread=0;
 
 
 
-int systemuart_list()
-{
-	int j;
-	HANDLE h;
-	char buf[20];
-	for(j=0;j<50;j++)
-	{
-		snprintf(buf, 20, "\\\\.\\COM%d", j);
-		h = CreateFile(
-			buf,
-			GENERIC_READ | GENERIC_WRITE,
-			0,
-			NULL,
-			OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,
-			NULL
-		);
-		if(h != INVALID_HANDLE_VALUE)
-		{
-			printf("%s\n", buf+4);
-			CloseHandle(h);
-		}
-	}
-}
-int systemuart_choose()
-{
-}
-
-
-
-
 DWORD WINAPI systemuart_read(LPVOID pM)
 {
 	int ret;
@@ -79,16 +48,42 @@ int systemuart_write(char* p)
 	ret = WriteFile(hcom,"\n",1,(void*)&count,0);
 	return ret;
 }
-int systemuart_stop()
+
+
+
+
+int systemuart_list()
 {
-	if(hcom != 0)CloseHandle(hcom);
+	int j;
+	HANDLE h;
+	char buf[20];
+	for(j=0;j<50;j++)
+	{
+		snprintf(buf, 20, "\\\\.\\COM%d", j);
+		h = CreateFile(
+			buf,
+			GENERIC_READ | GENERIC_WRITE,
+			0,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL|FILE_FLAG_OVERLAPPED,
+			NULL
+		);
+		if(h != INVALID_HANDLE_VALUE)
+		{
+			printf("%s\n", buf+4);
+			CloseHandle(h);
+		}
+	}
 }
-
-
-
-
-int systemuart_start(char* p)
+int systemuart_choose(char* p)
 {
+	if(p == 0)
+	{
+		if(hcom != 0)CloseHandle(hcom);
+		return 0;
+	}
+
 	//
 	int ret;
 	char buf[20];
@@ -149,6 +144,19 @@ int systemuart_start(char* p)
 	//
 	thread = CreateThread(NULL, 0, systemuart_read, NULL, 0, NULL);
 	printf("thread=%x\n", thread);
+
+	//success
+	return 1;
+}
+
+
+
+
+int systemuart_stop()
+{
+}
+int systemuart_start(char* p)
+{
 }
 int systemuart_create()
 {

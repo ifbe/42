@@ -9,7 +9,5 @@ win:
 target:
 	$(compiler) $(cflag) world.c
 	$(compiler) $(cflag) event.c
-	$(compiler) $(cflag) command.c
-	$(compiler) $(cflag) showoff.c
 clean:
 	rm -f *.o

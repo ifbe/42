@@ -5,8 +5,6 @@
 //
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
-//
-int compare(char*,char*);
 unsigned int getrandom();
 //
 void printmemory(char*,int);
@@ -78,7 +76,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 		{
 		}
 	}
-	else if(type==0x7466656C207A7978)		//'xyz left'
+	else if(type==0x2d6d)
 	{
 		int i;
 		for(i=0;i<2048;i++)
@@ -86,12 +84,6 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 			//real[i] = (double)(i*63);
 			real[i] = (double)(getrandom()%maxpower);
 		}
-	}
-	else if(type==0x6E6F7266207A7978)		//'xyz fron'
-	{
-	}
-	else if(type==0x6B636162207A7978)		//'xyz back'
-	{
 	}
 }
 static void spectrum_read()

@@ -343,13 +343,13 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 			}
 		}
 	}
-	else if(type==0x7466656C207A7978)		//'xyz left'
+	else if(type==0x2b6d)		//'xyz left'
 	{
 		//浮动框以外的
 		//px=x/(1024/0x40);
 		//py=y/(640/40);
 	}
-	else if(type==0x65766F6D207A7978)		//'xyz move'
+	else if(type==0x406d)		//'xyz move'
 	{
 		int dx=(int)(short)(key&0xffff);
 		int dy=(int)(short)((key>>16)&0xffff);
@@ -359,33 +359,34 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 		centery += scale*dy;
 		changed=1;
 	}
-	else if(type==0x6E6F7266207A7978)		//'xyz fron'
+	else if(type==0x2d6d)
 	{
-		//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
-		//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx -> newcenterx=centerx+scale*pointx*(1-1/1.2)
-		int x,y;
-		x=(key&0xffff) - (width/2);
-		y=(height/2) - ( (key>>16) & 0xffff );
-		centerx += ((double)x) * scale * (1-1/1.2);
-		centery += ((double)y) * scale * (1-1/1.2);
-		//say("%d,%lf\n",x,centerx);
+		if(key == 4)	//front
+		{
+			//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
+			//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx -> newcenterx=centerx+scale*pointx*(1-1/1.2)
+			int x,y;
+			x=(key&0xffff) - (width/2);
+			y=(height/2) - ( (key>>16) & 0xffff );
+			centerx += ((double)x) * scale * (1-1/1.2);
+			centery += ((double)y) * scale * (1-1/1.2);
+			//say("%d,%lf\n",x,centerx);
 
-		scale/=1.2;
-		changed=1;
-	}
-	else if(type==0x6B636162207A7978)		//'xyz back'
-	{
-		int x,y;
-		x=(key&0xffff) - (width/2);
-		y=(height/2) - ( (key>>16) & 0xffff );
-		centerx += ((double)x) * scale * (-0.2);
-		centery += ((double)y) * scale * (-0.2);
+			scale/=1.2;
+			changed=1;
+		}
+		else if(key == 5)	//back
+		{
+			int x,y;
+			x=(key&0xffff) - (width/2);
+			y=(height/2) - ( (key>>16) & 0xffff );
+			centerx += ((double)x) * scale * (-0.2);
+			centery += ((double)y) * scale * (-0.2);
 
-		scale*=1.2;
-		changed=1;
-	}
-	//else if(type==0x6B636162207A7978)		//'xyz ++++'
-	//else if(type==0x6B636162207A7978)		//'xyz ----'
+			scale*=1.2;
+			changed=1;
+		}
+	}//2d6d
 }
 
 

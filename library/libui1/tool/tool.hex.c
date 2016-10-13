@@ -10,14 +10,12 @@ void backgroundcolor(u32);
 void background1();
 //
 void characterchoose(char*);
-void arteryread(char* rdi,u64 rsi,u64 rcx);
-void arterywrite(char* rdi,u64 rsi,u64 rcx);
 void data2hexstr(u64,char*);
-int compare(char*,char*);
+int cmp(char*,char*);
 //
+int diary(char*,int,char*,...);
 void printmemory(char*,int);
 void say(char*,...);
-int diary(char*,int,char*,...);
 
 
 
@@ -526,26 +524,39 @@ static void hex_write(u64* who, u64* a, u64* b)
 			}
 		}
 	}
-	else if(type==0x6E6F7266207A7978)		//'xyz fron'
+	else if(type==0x2d6d)
 	{
-		if( pointeroffset < byteperline )
+		if((key>>48) == 4)	//front
 		{
-			windowoffset -= byteperline;
+			if( pointeroffset < byteperline )
+			{
+				windowoffset -= byteperline;
+			}
+			else
+			{
+				pointeroffset -= byteperline;
+			}
+		}
+		else if((key>>48) == 5)		//back
+		{
+			if( pointeroffset < (lineperwindow-1) * byteperline )
+			{
+				windowoffset += byteperline;
+			}
+			else
+			{
+				pointeroffset += byteperline;
+			}
 		}
 		else
 		{
-			pointeroffset -= byteperline;
-		}
-	}
-	else if(type==0x6B636162207A7978)		//'xyz back'
-	{
-		if( pointeroffset < (lineperwindow-1) * byteperline )
-		{
-			windowoffset += byteperline;
-		}
-		else
-		{
-			pointeroffset += byteperline;
+			int x=key&0xffff;
+			int y=(key>>16)&0xffff;
+			pointeroffset = ( (y/16) * byteperline ) + ( (x-xshift) / 16 );
+
+			//浮动框以外的
+			//px=x/(1024/0x40);
+			//py=y/(640/40);
 		}
 	}
 	else if(type==0x72616863)		//'char'
@@ -561,12 +572,12 @@ static void hex_write(u64* who, u64* a, u64* b)
 		}
 		else if(key==0xd)			//enter
 		{
-			if(compare( hi+0x80 , "exit" ) == 0)
+			if(cmp( hi+0x80 , "exit" ) == 0)
 			{
 				characterchoose(0);
 				return;
 			}
-			else if(compare( hi+0x80 , "addr" ) == 0)
+			else if(cmp( hi+0x80 , "addr" ) == 0)
 			{
 			}
 		}
@@ -578,16 +589,6 @@ static void hex_write(u64* who, u64* a, u64* b)
 				inputcount++;
 			}
 		}
-	}
-	else if(type==0x7466656C207A7978)		//'xyz left'
-	{
-		int x=key&0xffff;
-		int y=(key>>16)&0xffff;
-		pointeroffset = ( (y/16) * byteperline ) + ( (x-xshift) / 16 );
-
-		//浮动框以外的
-		//px=x/(1024/0x40);
-		//py=y/(640/40);
 	}
 }
 

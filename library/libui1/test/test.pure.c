@@ -93,7 +93,7 @@ static void pure_read()
 static void pure_write(u64* who, u64* what, u64* how)
 {
 	u32 temp = *(u32*)what;
-	if( (temp == 0x207A7978) | (temp == 0x64626b) )
+	if( (temp == 0x2d6d) | (temp == 0x64626b) )
 	{
 		flag = (flag+1)&0x7;
 	}

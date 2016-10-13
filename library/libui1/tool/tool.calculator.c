@@ -114,7 +114,7 @@ static void calculator_write(u64* who, u64* what, u64* value)
 	u32 type = *(u32*)what;
 	u32 key = *(u32*)value;
 
-	if(type == 0x207A7978)
+	if(type == 0x2d6d)
 	{
 		x = key&0xffff;
 		y = (key>>16)&0xffff;

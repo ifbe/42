@@ -192,7 +192,7 @@ static void menu_write(u64* who, u64* a, u64* b)
 	u64 key = *b;
 
 	//'xyz left'
-	if(type==0x7466656C207A7978)
+	if(type==0x2d6d)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;

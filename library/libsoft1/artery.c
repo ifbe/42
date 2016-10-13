@@ -12,7 +12,13 @@ int    memory_delete();
 int       net_delete();
 int   special_delete();
 //
-int compare(char*,char*);
+void eventread(u64* who, u64* what, u64* how);
+void eventwrite();
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2type(u8* buf,int max,u64* type,u8** name);
+int cmp(char*,char*);
+int ncmp(char*,char*,int);
+//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -80,12 +86,12 @@ static unsigned char* datahome;
 //bin->partworker->filesystem->dir->file....
 //tcp->http->websocket->what
 //static int stack[16]={0};
-static int now=0;
+static u8* stack;
+static int rsp=0;
 
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterylist(char* p)
 {
 	int j;
@@ -93,121 +99,153 @@ int arterylist(char* p)
 	u64 type;
 	u64 id;
 
-	//@somewhere
-	if(now!=0)
+	//0
+	if(rsp == 0)
 	{
-		return worker[now].list(p);
+		count = 0;
+		for(j=1;j<0x100;j++)
+		{
+			type=worker[j].type;
+			id=worker[j].id;
+			if(id==0)
+			{
+				if(count%8!=0)say("\n");
+				break;
+			}
+
+			if(type==0)
+			{
+				say("\n%s:\n",&id);
+				count=0;
+			}
+			else
+			{
+				say("	[%s]",&id);
+				count++;
+				if(count%8==0)say("\n");
+			}
+		}
+		return 0;
 	}
 
-	//@nowhere
-	for(j=1;j<0x100;j++)
+	//1,2,3,4,5......
+	else
 	{
-		type=worker[j].type;
-		id=worker[j].id;
-		if(id==0)
-		{
-			if(count%8!=0)say("\n");
-			break;
-		}
-
-		if(type==0)
-		{
-			say("\n%s:\n",&id);
-			count=0;
-		}
-		else
-		{
-			say("	[%s]",&id);
-			count++;
-			if(count%8==0)say("\n");
-		}
+		id = stack[rsp];
+		return worker[id].list(p);
 	}
-	return 0;
 }
 int arterychoose(char* p)
 {
 	int ret;
+	u64 who;
 	if(p == 0)return -1;
 
-	//cd .(current directory)
-	if(p[0] == '.')
+	if(rsp == 0)
 	{
-		//cd ..(parent directory)
-		if(p[1]=='.')
+		//search somewhere to go
+		for(ret=1;ret<256;ret++)
 		{
-			//cd ...(the void)
-			if(p[2]=='.')
+			if(cmp(p,(char*)&worker[ret].id)==0)
 			{
-				worker[0].type=0x3234;
-				now=0;
-				return 0;
+				break;
 			}
 		}
-	}
-
-	//i am not in the void?
-	if(now != 0)
-	{
-		//say("");
-		return worker[now].choose(p);
-	}
-
-	//search somewhere to go
-	for(ret=1;ret<256;ret++)
-	{
-		if(compare(p,(char*)&worker[ret].id)==0)
+		if(ret>=256)
 		{
-			break;
+			say("not found\n");
+			return 0;
 		}
-	}
-	if(ret>=256)
-	{
-		say("not found\n");
+
+		//now go into it
+		rsp++;
+		stack[rsp] = ret;
+
 		return 0;
 	}
 
-	//now go into it
-	now=ret;
-	worker[0].type=worker[ret].id;
+	//1,2,3,5,6......
+	else if(rsp == 1)
+	{
+		who = stack[1];
+		if(who != 0)ret = worker[who].choose(p);
+		if(ret != 0)rsp++;
+	}
+
+	else
+	{
+		who = stack[1];
+		if(who != 0)ret = worker[who].choose(p);
+	}
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arteryread(char* p)
 {
-	if(now==0)return 0;
-	return worker[now].read(p);
+	u64 who;
+	if(rsp == 0)
+	{
+		say("@arteryread\n");
+		return 0;
+	}
+	else
+	{
+		who = stack[rsp];
+		return worker[who].read(p);
+	}
 }
 int arterywrite(char* p)
 {
-	if(now==0)return 0;
-	return worker[now].write(p);
+	u64 who;
+	if(rsp==0)
+	{
+		say("@arterywrite\n");
+		return 0;
+	}
+	else
+	{
+		who = stack[rsp];
+		return worker[who].write(p);
+	}
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int arterystart(u8* p)
 {
-	if(now==0)return 0;
-	return worker[now].start(p);
+	u64 who;
+	if(rsp==0)
+	{
+		say("@arterystart\n");
+		return 0;
+	}
+	else
+	{
+		who = stack[rsp];
+		return worker[who].start(p);
+	}
 }
 int arterystop(char* p)
 {
-	if(now==0)return 0;
-	return worker[now].stop();
+	u64 who;
+	if(rsp==0)
+	{
+		say("@arterystop\n");
+		return 0;
+	}
+	else
+	{
+		who = stack[rsp];
+		return worker[who].stop();
+	}
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void arterycreate(char* module,char* addr)
 {
 	int i;
@@ -221,10 +259,14 @@ void arterycreate(char* module,char* addr)
 		addr[1] = 0x32;
 
 		//0
-		worker=(struct elements*)addr;
 		fshome  = addr+0x100000;
 		dirhome = addr+0x200000;
 		datahome= addr+0x300000;
+
+		rsp = 0;
+		stack = addr;
+
+		worker=(struct elements*)addr;
 
 		//
 		p = addr+0x80;
@@ -251,4 +293,167 @@ void arterydelete(char* module)
 	memory_delete();
 	interface_delete();
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+int show()
+{
+	u64 who;
+
+	if(rsp == 0)say("[void]");
+
+	else if(rsp == 1)
+	{
+		who = stack[rsp];
+		say("[%s]",&worker[who].id);
+	}
+
+	return 1;
+}
+int command(char* buffer)
+{
+	int ret;
+	int argc;
+	u64 who;
+	u8* argv[8];
+	//say("command=%s\n",buffer);
+	//printmemory(buffer,16);
+
+
+
+
+//1111111111111111111111111111111111111111111111111111111111111
+	//error
+	if(buffer == 0)goto finish;
+
+	//special
+	if(rsp > 1)
+	{
+		ret = ncmp(buffer, "cd ...", 6);
+		if(ret == 0)
+		{
+			//tell it, i'm leaving
+			who = stack[1];
+			worker[who].choose(0);
+			if(rsp>0)rsp--;
+		}
+		else
+		{
+			//pass through
+			who = stack[1];
+			worker[who].write(buffer);
+		}
+
+		return 0;
+	}
+
+
+
+
+//222222222222222222222222222222222222222222222222222222222222
+	//convert
+	buf2arg(buffer,128,&argc,argv);
+	if(argc==0)return 0;
+
+	//"enter key"
+	if(argv[0]==0)goto finish;
+
+	//"#"
+	if(argv[0][0]=='#')return 0;
+
+	//q
+	if(argv[0][0]=='q')
+	{
+		eventwrite();
+		return 0;
+	}
+
+	//exit
+	ret=cmp(argv[0],"exit");
+	if(ret==0)
+	{
+		eventwrite();
+		return 0;
+	}
+
+	//'help'
+	ret=cmp(argv[0],"help");
+	if(ret==0)
+	{
+		//"create","destory","start","stop"
+		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+		say("create ?	     =create=make=fabricate\n");
+		say("delete ?	     =destory=smash=wreck\n");
+		say("start ?	    =open=mount=enter\n");
+		say("stop ?	     =close=unmount=leave\n");
+
+		//"observe","change","get","put"
+		say("ls ?	       =list=summary=view=check\n");
+		say("cd ?	       =choose=into=switch=clap\n");
+		say("read ?	     =load=get=eat=copy\n");
+		say("write ?	    =store=put=spit=paste\n");
+		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+		goto finish;
+	}
+
+
+
+
+//33333333333333333333333333333333333333333333333333333333333
+	//"create","destory","start","stop"
+	ret=cmp( argv[0] , "create");	       //eg:   dynamicmodule
+	if(ret==0)
+	{
+		//arterycreate(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "delete");
+	if(ret==0)
+	{
+		//arterydelete(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "start");
+	if(ret==0)
+	{
+		arterystart(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "stop");
+	if(ret==0)
+	{
+		arterystop(argv[1]);
+		goto finish;
+	}
+
+	//"observe","change","get","put"
+	ret=cmp( argv[0] , "ls" );
+	if(ret==0)
+	{
+		arterylist(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "cd" );
+	if(ret==0)
+	{
+		arterychoose(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "read" );
+	if(ret==0)
+	{
+		arteryread(argv[1]);
+		goto finish;
+	}
+	ret=cmp( argv[0] , "write" );  //dangerous
+	if(ret==0)
+	{
+		arterywrite(argv[1]);
+		goto finish;
+	}
+
+finish:
+	return 1;
+}

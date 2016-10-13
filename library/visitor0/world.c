@@ -25,10 +25,6 @@ void debugdelete();
 void basiccreate(char*,char*);
 void basicdelete();
 //slave
-void observecreate(void*,void*);
-void observedelete();
-void commandcreate(void*,void*);
-void commanddelete();
 void eventcreate(void*,void*);
 void eventdelete();
 //
@@ -113,12 +109,7 @@ __attribute__((destructor)) void death()
 	//
 	if(rawuniverse != 0)
 	{
-		//
 		eventdelete();
-
-		//
-		commanddelete();
-		observedelete();
 	}
 
 	//libui
@@ -182,10 +173,6 @@ void birth()
 	//[c,f)：窗口开闭，以及用户界面
 	displaycreate( 0 , character );
 	charactercreate( 0 , character );
-
-	//
-	commandcreate(0,universe);
-	observecreate(0,universe);
 
 	//ctrl+c
 	eventcreate(0,universe);

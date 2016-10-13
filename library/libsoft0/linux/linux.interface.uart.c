@@ -23,17 +23,6 @@ static pthread_t id;
 
 
 
-int systemuart_list()
-{
-	return system("ls /dev/tty*");
-}
-int systemuart_choose()
-{
-}
-
-
-
-
 void* systemuart_read(void* p)
 {
 	int ret;
@@ -59,14 +48,30 @@ int systemuart_write(char* p)
 
 
 
-int systemuart_start(char* p)
+int systemuart_list()
+{
+	return system("ls /dev/tty*");
+}
+int systemuart_choose(char* p)
 {
 	struct termios option;
 
-	fd=open(p , O_RDWR | O_NOCTTY | O_NDELAY);
+	if(p == 0)
+	{
+		if(fd>0)
+		{
+			alive = 0;
+
+			close(fd);
+			fd = -1;
+		}
+		return 0;
+	}
+
+	fd=open(p , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd<=0)
 	{
-		say("error@systemuart_start.open\n");
+		say("error@open:%s\n",p);
 		return -1;
 	}
 
@@ -84,24 +89,23 @@ int systemuart_start(char* p)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
-	//
+	//thread
 	alive = 1;
 	pthread_create(&id, NULL, systemuart_read, NULL);
+
+	//success
+	return 1;
 }
+
+
+
+
 int systemuart_stop()
 {
-	if(fd>0)
-	{
-		alive = 0;
-
-		close(fd);
-		fd = -1;
-	}
 }
-
-
-
-
+int systemuart_start(char* p)
+{
+}
 void systemuart_create()
 {
 }

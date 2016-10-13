@@ -122,8 +122,8 @@ int uievent(u64* who, u64* type, u64* value)
 					int x=event.button.x;
 					int y=event.button.y;
 
-					*type=0x7466656C207A7978;
-					*value=x+(y<<16);
+					*type = 0x2d6d;
+					*value = x+(y<<16)+((u64)1<<48);
 					return 1;
 				}
 			}

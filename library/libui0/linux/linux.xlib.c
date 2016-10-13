@@ -159,14 +159,14 @@ int uievent(u64* who, u64* my1, u64* my2)
 			//printf("buttonpress\n");
 			if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
-				*my1=0x6E6F7266207A7978;
-				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+				*my1 = 0x2b6d;
+				*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 				return 1;
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
-				*my1=0x6B636162207A7978;
-				*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+				*my1 = 0x2b6d;
+				*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 				return 1;
 			}
 
@@ -185,8 +185,8 @@ int uievent(u64* who, u64* my1, u64* my2)
 			{
 				if((oldx==ev.xbutton.x)&&(oldy==ev.xbutton.y))
 				{
-					*my1=0x7466656C207A7978;//'xyz left'
-					*my2=ev.xbutton.x + (ev.xbutton.y<<16);
+					*my1 = 0x2d6d;
+					*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 					return 1;
 				}
 			}
@@ -196,8 +196,8 @@ int uievent(u64* who, u64* my1, u64* my2)
 			motioncount = (motioncount+1)%5;
 			if(motioncount != 0)continue;
 
-			*my1=0x65766F6D207A7978;         //'xyz move'
-			*my2=( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx;
+			*my1 = 0x406d;
+			*my2 = ( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48);
 			oldx=ev.xbutton.x;
 			oldy=ev.xbutton.y;
 			return 1;

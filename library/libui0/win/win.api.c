@@ -318,15 +318,18 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//滚轮
 		case WM_MOUSEWHEEL:
 		{
-			if( ((wparam>>16) & 0xffff ) < 0xf000 )
-			{
-				type[0]=0x207A7978+((u64)0x6E6F7266<<32);	//'xyz fron'
-			}
-			else type[0]=0x207A7978+((u64)0x6B636162<<32);	//'xyz back'
-
+			type[0] = 0x2b6d;
 			GetCursorPos(&pt);
 			ScreenToClient(window, &pt);
-			key[0]=(pt.y<<16) + pt.x;
+
+			if( ((wparam>>16) & 0xffff ) < 0xf000 )
+			{
+				key[0] = pt.x + (pt.y<<16) + (4<<48);
+			}
+			else
+			{
+				key[0] = pt.x + (pt.y<<16) + (5<<48);
+			}
 
 			this=0;
 			that=-1;
@@ -352,8 +355,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				else		//只是左键在拖动
 				{
 					//'xyz ','move'
-					type[0]=0x207A7978+((u64)0x65766F6D<<32);
-					key[0]=( ( pe.y - pt.y ) << 16 ) + ( pe.x - pt.x );
+					type[0] = 0x406d;
+					key[0] = (pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48);
 
 					//say("%d,%d\n",pe.x,pe.y);
 					GetCursorPos(&pt);	// 获取鼠标当前位置
@@ -369,8 +372,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(leftdown==1)
 			{
-				type[0]=0x207A7978+((u64)0x7466656C<<32);	//'xyz left'
-				key[0]=lparam;
+				type[0] = 0x2d6d;
+				key[0] = lparam + ((u64)1<<48);
 				this=0;
 				that=-1;
 			}
@@ -384,8 +387,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				type[0]=0x207A7978+((u64)0x72676968<<32);	//'xyz righ'
-				key[0]=lparam;
+				type[0] = 0x2d6d;
+				key[0] = lparam + ((u64)1<<48);
 				this=0;
 				that=-1;
 			}
