@@ -16,8 +16,8 @@ void say(char*,...);
 
 
 //
-static int fd = -1;
 static int alive = 1;
+static int fd = -1;
 static pthread_t id;
 
 

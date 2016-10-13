@@ -328,23 +328,25 @@ int command(char* buffer)
 	if(buffer == 0)goto finish;
 
 	//special
-	if(rsp > 1)
+	ret = ncmp(buffer, "cd ...", 6);
+	if( (rsp > 1) && (ret != 0) )
 	{
-		ret = ncmp(buffer, "cd ...", 6);
-		if(ret == 0)
+		//pass through
+		who = stack[1];
+		if(who>0)worker[who].write(buffer);
+
+		return 0;
+	}
+	else if(ret == 0)
+	{
+		if(rsp > 1)
 		{
 			//tell it, i'm leaving
 			who = stack[1];
-			worker[who].choose(0);
-			if(rsp>0)rsp--;
-		}
-		else
-		{
-			//pass through
-			who = stack[1];
-			worker[who].write(buffer);
+			if(who>0)worker[who].choose(0);
 		}
 
+		if(rsp > 0)rsp--;
 		return 0;
 	}
 

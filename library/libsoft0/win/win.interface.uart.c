@@ -4,6 +4,7 @@
 #include<windows.h>
 #define u64 unsigned long long
 #define u32 unsigned int
+static int alive=0;
 static HANDLE hcom=0;
 static HANDLE thread=0;
 
@@ -16,7 +17,7 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 	u32 count=0;
 	char buf[256];
 
-	while(1)
+	while(alive == 1)
 	{
 		ret = ReadFile(
 			hcom,
@@ -78,17 +79,17 @@ int systemuart_list()
 }
 int systemuart_choose(char* p)
 {
-	if(p == 0)
-	{
-		if(hcom != 0)CloseHandle(hcom);
-		return 0;
-	}
-
 	//
 	int ret;
 	char buf[20];
+	if(hcom != 0)
+	{
+		alive = 0;
+
+		CloseHandle(hcom);
+		hcom = 0;
+	}
 	if(p == 0)return 0;
-	systemuart_stop();
 
 	//
 	snprintf(buf, 20, "\\\\.\\%s", p);
@@ -113,7 +114,7 @@ int systemuart_choose(char* p)
 	printf("GetCommTimeouts:%d\n", ret);
 	timeouts.ReadIntervalTimeout = 0;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
-	timeouts.ReadTotalTimeoutConstant = 1000;
+	timeouts.ReadTotalTimeoutConstant = 100;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
 	timeouts.WriteTotalTimeoutConstant = 0;
 	ret = SetCommTimeouts(hcom, &timeouts);
@@ -142,8 +143,8 @@ int systemuart_choose(char* p)
 	printf("PurgeComm:%d\n", ret);
 
 	//
+	alive = 1;
 	thread = CreateThread(NULL, 0, systemuart_read, NULL, 0, NULL);
-	printf("thread=%x\n", thread);
 
 	//success
 	return 1;
