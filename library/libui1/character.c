@@ -318,7 +318,7 @@ int characterstart(char* addr, char* fmt, int width, int height)
 	pixfmt = fmt;
 	w = width;
 	h = height;
-	say("@characterstart:%d,%d\n", w, h);
+	//say("@characterstart:%d,%d\n", w, h);
 
 	for(j=0;j<100;j++)
 	{

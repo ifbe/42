@@ -168,7 +168,7 @@ LOCAL_SRC_FILES += \
 
 #4.ui0
 LOCAL_SRC_FILES += \
-	library/libui0/terminal/terminal.cli.c \
+	library/libui0/linux/linux.cli.c \
 	library/libui0/display.c
 
 #4.ui1

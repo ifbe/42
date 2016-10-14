@@ -51,7 +51,11 @@ int uievent(u64* who, u64* first, u64* second)
 		}
 
 		a=getchar();
-		if(a == -1)continue;
+		if(a == -1)
+		{
+			usleep(1000);
+			continue;
+		}
 
 		if(a==0x1b)
 		{
@@ -93,13 +97,13 @@ int uievent(u64* who, u64* first, u64* second)
 
 		else
 		{
-			printf("%x",a);
+			if(a == 0x7f)a = 8;
+			if(a == 0xa)a = 0xd;
+
 			*first = 0x72616863;
 			*second = a;
 			return 1;
 		}
-
-		usleep(1000);
 	}
 
 	return 1;

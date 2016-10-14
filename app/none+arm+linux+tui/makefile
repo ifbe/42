@@ -1,21 +1,20 @@
 library?=../../library
-res?=../../res
 all:
 	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 clang
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 clang
-	make -s -C $(library)/libsoft0 mac
-	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 mactext
-	make -s -C $(library)/libui1 clang
+	make -s -C $(library)/libboot1 gcc
+	make -s -C $(library)/libhard0 arm
+	make -s -C $(library)/libhard1 gcc
+	make -s -C $(library)/libsoft0 linux
+	make -s -C $(library)/libsoft1 gcc
+	make -s -C $(library)/libui0 linuxtui
+	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor0
 	make -s -C $(library)/visitor1 gui
 	make -s a
-	make -s dylib
+	make -s so
 	make -s program
 a:
-	libtool -static -o 42.a \
+	ar crs 42.a \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -25,8 +24,8 @@ a:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
-dylib:
-	libtool -dynamic -o 42.dylib \
+so:
+	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -37,7 +36,7 @@ dylib:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
 program:
-	clang \
+	gcc -o a.out \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -47,6 +46,7 @@ program:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o
+	$(library)/visitor1/gui.o \
+	-lm
 clean:
-	rm -f *.o *.a *.dylib
+	rm -f *.o *.a *.so

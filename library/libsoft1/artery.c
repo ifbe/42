@@ -12,12 +12,13 @@ int    memory_delete();
 int       net_delete();
 int   special_delete();
 //
-void eventread(u64* who, u64* what, u64* how);
-void eventwrite();
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(char*,char*);
 int ncmp(char*,char*,int);
+//
+void eventread(u64* who, u64* what, u64* how);
+void eventwrite();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -169,7 +170,10 @@ int arterychoose(char* p)
 	{
 		who = stack[1];
 		if(who != 0)ret = worker[who].choose(p);
-		if(ret != 0)rsp++;
+		if(ret != 0)
+		{
+			rsp++;
+		}
 	}
 
 	else

@@ -41,10 +41,13 @@ int main(int argc,char* argv[])
 		//2.等待输入
 		eventread(&who, &what, &how);
 		if(what==0)break;
-		if(what != 0x727473)continue;
 
 		//3.发送命令
-		ret=command((char*)how);
+		if(what == 0x64626b)
+		{
+			say("%s",(char*)how);
+			ret=command((char*)how);
+		}
 	}
 
 	//必须放在最后
