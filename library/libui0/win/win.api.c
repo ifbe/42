@@ -324,11 +324,11 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				key[0] = pt.x + (pt.y<<16) + (4<<48);
+				key[0] = pt.x + (pt.y<<16) + ((u64)4<<48);
 			}
 			else
 			{
-				key[0] = pt.x + (pt.y<<16) + (5<<48);
+				key[0] = pt.x + (pt.y<<16) + ((u64)5<<48);
 			}
 
 			this=0;
