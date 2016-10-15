@@ -10,6 +10,8 @@
 #include<signal.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+int show();
+int command(void*);
 void say(char*,...);
 
 
@@ -99,11 +101,17 @@ void windowlist()
 
 
 
-void windowread(char* addr)
+void windowread(char* where)
 {
+	show();
 }
-void windowwrite()
+void windowwrite(u64 who, u64 what, u64 how)
 {
+	int ret;
+	if(what == 0x64626b)
+	{
+		ret = command((char*)how);
+	}
 }
 
 

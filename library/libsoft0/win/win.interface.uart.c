@@ -46,7 +46,6 @@ int systemuart_write(char* p)
 		0
 	);
 	//printf("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
-	ret = WriteFile(hcom,"\n",1,(void*)&count,0);
 	return ret;
 }
 

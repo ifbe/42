@@ -107,6 +107,7 @@ void createuniverse()
 __attribute__((destructor)) void death()
 {
 	//
+	printf("\n");
 	if(rawuniverse != 0)
 	{
 		eventdelete();

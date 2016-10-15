@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int show();
-int command(char* buffer);
+int windowread();
+int windowwrite(u64, u64, u64);
 int eventread(u64* who, u64* what, u64* how);
 int eventwrite(u64* who, u64* what, u64* how);
 //
@@ -28,7 +28,7 @@ int main(int argc,char* argv[])
 	for(ret=1;ret<argc;ret++)
 	{
 		say("%s\n",argv[ret]);
-		command(argv[ret]);
+		windowwrite(0, 0x64626b, (u64)argv[ret]);
 	}
 
 	//无限循环
@@ -36,18 +36,14 @@ int main(int argc,char* argv[])
 	while(1)
 	{
 		//1.显示位置
-		show();
+		windowread();
 
 		//2.等待输入
 		eventread(&who, &what, &how);
 		if(what==0)break;
 
 		//3.发送命令
-		if(what == 0x64626b)
-		{
-			say("%s",(char*)how);
-			ret=command((char*)how);
-		}
+		windowwrite(who, what, how);
 	}
 
 	//必须放在最后

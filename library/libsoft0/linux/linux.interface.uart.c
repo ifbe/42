@@ -41,7 +41,6 @@ int systemuart_write(char* p)
 {
 	int ret;
 	ret = write(fd, p, strlen(p));
-	ret+= write(fd, "\n", 1);
 	return ret;
 }
 
