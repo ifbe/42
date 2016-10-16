@@ -89,6 +89,10 @@ static unsigned char* datahome;
 //static int stack[16]={0};
 static u8* stack;
 static int rsp=0;
+//
+static char cmd[256];
+static int dst=0;
+static int combo=0;
 
 
 
@@ -170,10 +174,7 @@ int arterychoose(char* p)
 	{
 		who = stack[1];
 		if(who != 0)ret = worker[who].choose(p);
-		if(ret != 0)
-		{
-			rsp++;
-		}
+		if(ret > 0)rsp++;
 	}
 
 	else
@@ -301,9 +302,10 @@ void arterydelete(char* module)
 
 
 
-int show()
+int arteryprompt()
 {
 	u64 who;
+return 0;
 
 	if(rsp == 0)say("[void]");
 
@@ -315,7 +317,7 @@ int show()
 
 	return 1;
 }
-int command(char* buffer)
+int arterycommand(char* buffer)
 {
 	int ret;
 	int argc;
@@ -332,8 +334,11 @@ int command(char* buffer)
 	if(buffer == 0)goto finish;
 
 	//special
-	ret = ncmp(buffer, "cd ...", 6);
-	if( (rsp > 1) && (ret != 0) )
+	if(buffer[0] == 0x1b)combo++;
+	else combo = 0;
+
+	//passthrough
+	if( (rsp > 1) && (combo < 2) )
 	{
 		//pass through
 		who = stack[1];
@@ -341,7 +346,7 @@ int command(char* buffer)
 
 		return 0;
 	}
-	else if(ret == 0)
+	else if(combo >= 2)
 	{
 		if(rsp > 1)
 		{
@@ -349,19 +354,62 @@ int command(char* buffer)
 			who = stack[1];
 			if(who>0)worker[who].choose(0);
 		}
-
 		if(rsp > 0)rsp--;
+
+		combo = 0;
 		return 0;
 	}
 
 
 
 
-//222222222222222222222222222222222222222222222222222222222222
+	//print
+	if(rsp <= 1)
+	{
+		ret = 0;
+		for(argc=0;argc<666;argc++)
+		{
+			if(buffer[argc] == 0)break;
+//say("%d\n",buffer[argc]);
+
+			if(buffer[argc] == 0x7f)
+			{
+				say("\b \b");
+				if(dst>0)
+				{
+					cmd[dst] = 0;
+					dst--;
+				}
+			}
+			else
+			{
+				say("%c",buffer[argc]);
+				if(buffer[argc] == 0xa)
+				{
+					cmd[dst] = 0;
+					dst = 0;
+					ret = 1;
+				}
+				else if(dst<256)
+				{
+					cmd[dst] = buffer[argc];
+					dst++;
+				}
+				else dst = 0;
+			}
+		}
+		if(ret == 0)return 0;
+	}
+	//say("here:%s\n",cmd);
+
 	//convert
-	buf2arg(buffer,128,&argc,argv);
+	buf2arg(cmd,128,&argc,argv);
 	if(argc==0)return 0;
 
+
+
+
+//222222222222222222222222222222222222222222222222222222222222
 	//"enter key"
 	if(argv[0]==0)goto finish;
 

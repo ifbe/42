@@ -5,7 +5,7 @@
 int systemuart_list();
 int systemuart_choose(char* p);
 int systemuart_read();
-int systemuart_write(char*);
+int systemuart_write(char*, int);
 int systemuart_start(char*);
 int systemuart_stop();
 void say(char*,...);
@@ -25,9 +25,17 @@ static int uart_read(char* p)
 {
 	systemuart_read();
 }
-static int uart_write(char* p)
+static int uart_write(char* buf)
 {
-	systemuart_write(p);
+	int len;
+	for(len=0;len<256;len++)
+	{
+		if(buf[len] == 0)break;
+	}
+	if(len <= 0)return 0;
+	if(len >= 256)return 0;
+
+	systemuart_write(buf, len);
 }
 static int uart_start(char* p)
 {

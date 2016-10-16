@@ -63,7 +63,8 @@ void tree_delete();
 void spectrum_delete();
 void qrcode_delete();
 //
-int cmp(char*,char*);
+int cmp(void*,void*);
+int ncmp(void*,void*,int);
 int eventwrite();
 u32 getrandom();
 //
@@ -346,116 +347,46 @@ int characterstop()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void characterlist()
+int characterlist(char* p)
 {
 	//列出所有“人物”
-	int x;
-	for(x=0;x<256;x++)
-	{
-		if(worker[x].id != 0)
-		{
-			say("%d:%s\n",x,&worker[x].id);
-		}
-	}
-}
-int characterchoose(char* p)
-{
-	int j,k,ret;
-	char q[8];
-	u64 temp;
-
-	//exit!
+	int j;
+	int ret;
 	if(p == 0)
 	{
-		temp = (worker[0].pixelformat)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite();
-
-		say("chatacter(%d) wants to die\n",now);
+		for(j=0;j<256;j++)
+		{
+			if(worker[j].id != 0)
+			{
+				say("%d:%s\n",j,&worker[j].id);
+			}
+		}
 		return 0;
 	}
 
-	//exit.
-	ret=cmp(p,"exit");
-	if(ret==0)
+	else
 	{
-		temp = (worker[0].pixelformat)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite();
-
-		say("chatacter(%d) wants to die\n",now);
-		return 0;
-	}
-
-	//
-	ret=cmp(p,"+");
-	if(ret==0)
-	{
-		if(worker[now+1].id == 0)return 0;
-		now++;
-		goto found;
-	}
-
-	ret=cmp(p,"-");
-	if(ret==0)
-	{
-		if(worker[now-1].type == 0)return 0;
-		now--;
-		goto found;
-	}
-
-	//random
-	ret=cmp(p,"random");
-	if(ret==0)
-	{
+		//start searching
 		for(j=0;j<10;j++)
 		{
 			if(worker[j].type != 0)break;	//skip menu|draw
 		}
-		k=j;
-
-		for(;k<0x100000/0x80;k++)
+		for(;j<0x100;j++)
 		{
-			if(worker[k].id == 0)break;
+			//all searched
+			if(worker[j].id == 0)return 0;
+
+			//lookat this
+			//say("[%s][%s]\n",&worker[j].id, p);
+			ret = ncmp(&worker[j].id, p, 8);
+			if(ret == 0)return j;
 		}
-
-		now=( getrandom() % (k-j) ) + j;
-		goto found;
+		return 0;
 	}
-
-	//prepare searching
-	for(j=0;j<8;j++)
-	{
-		if(p[j] == 0)break;
-		q[j] = p[j];
-	}
-	for(;j<8;j++)
-	{
-		q[j] = 0;
-	}
-	temp = *(u64*)q;
-
-	//start searching
-	for(j=0;j<10;j++)
-	{
-		if(worker[j].type != 0)break;	//skip menu|draw
-	}
-	for(;j<0x100;j++)
-	{
-		//all searched
-		if(worker[j].id == 0)return 0;
-
-		//lookat this
-		if(temp == worker[j].id)
-		{
-			now=j;
-			goto found;
-		}
-	}
-
-found:
-	//worker[0].xyze1 = 0;
-	characterstart(pixbuf, pixfmt, w, h);
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int characterchoose(char* p)
+{
+}
 
 
 
@@ -579,29 +510,10 @@ static void parsetouch(u64* who, u64* what, u64* key)
 					{
 						worker[0].xyze1 ^= 1;
 					}
-				}
-/*
-				else if( (dy0>-256)&&(dy0<256)&&(dy1>-256)&&(dy1<256)&&(dy2>-256)&&(dy2<256) )
-				{
-					if( (dx0 < -128)&&(dx1 < -128)&&(dx2 < -128) )
-					{
-						characterchoose("+");
-					}
-					else if( (dx0 > 128)&&(dx1 > 128)&&(dx2 > 128) )
-					{
-						characterchoose("-");
-					}
-					else
-					{
-						worker[0].xyze1 ^= 1;
-					}
-				}
-*/
-			}
-
+				}//3touch
+			}//max>=3
 		}//last one
 	}//point gone
-
 }
 void characterwrite(u64 who, u64 what,u64 key)
 {
@@ -672,5 +584,87 @@ void characterread()
 	if(worker[0].xyze1 > 0)worker[0].read();
 	if(worker[1].xyze1 > 0)worker[1].read();
 	if(worker[2].xyze1 > 0)worker[2].read();
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+int charactercommand(char* p)
+{
+	int j,k,ret;
+	u64 temp;
+
+	//exit!
+	if(p == 0)
+	{
+		temp = (worker[0].pixelformat)&0xffffffff;
+		if(temp != 0x6c6d7468)eventwrite();
+
+		say("chatacter(%d) wants to die\n",now);
+		return 0;
+	}
+
+	//exit.
+	ret=cmp(p,"exit");
+	if(ret==0)
+	{
+		temp = (worker[0].pixelformat)&0xffffffff;
+		if(temp != 0x6c6d7468)eventwrite();
+
+		say("chatacter(%d) wants to die\n",now);
+		return 0;
+	}
+
+	//next
+	ret=cmp(p,"+");
+	if(ret==0)
+	{
+		if(worker[now+1].id == 0)return 0;
+		now++;
+		goto found;
+	}
+
+	//last
+	ret=cmp(p,"-");
+	if(ret==0)
+	{
+		if(worker[now-1].type == 0)return 0;
+		now--;
+		goto found;
+	}
+
+	//random
+	ret=cmp(p,"random");
+	if(ret==0)
+	{
+		for(j=0;j<10;j++)
+		{
+			if(worker[j].type != 0)break;	//skip menu|draw
+		}
+		k=j;
+
+		for(;k<0x100000/0x80;k++)
+		{
+			if(worker[k].id == 0)break;
+		}
+
+		now=( getrandom() % (k-j) ) + j;
+		goto found;
+	}
+
+	//search
+	ret = characterlist(p);
+	if(ret != 0)
+	{
+		now = ret;
+		goto found;
+	}
+
+	//ret = arterycommand(p);
+
+found:
+	//worker[0].xyze1 = 0;
+	characterstart(pixbuf, pixfmt, w, h);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -4,8 +4,6 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-int show();
-int command(void*);
 void say(char*,...);
 
 
@@ -76,51 +74,25 @@ int uievent(u64* who, u64* what, u64* where)
 
 
 
-void terminal_passthrough()
-{
-}
-void terminal_normalize()
-{
-}
 void windowchange(int what)
 {
 	mode = what;
-	if(mode == 0)terminal_normalize();
-	else if(mode == 1)terminal_passthrough();
 }
 void windowlist()
 {
 }
-
-
-
-
 void windowread(char* where)
 {
-	show();
 }
 void windowwrite(u64 who, u64 what, u64 how)
 {
-	int ret;
-	if(what == 0x64626b)
-	{
-		ret = command((char*)how);
-	}
 }
-
-
-
-
 void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 }
 void windowstop()
 {
 }
-
-
-
-
 void windowcreate()
 {
 }

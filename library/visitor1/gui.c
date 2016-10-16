@@ -2,24 +2,30 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//libui1
-void characterstart(char* addr,char* pixfmt, int width,int height);
-void characterstop();
-void characterwrite(u64 who, u64 what, u64 how);
-void characterread();
-void characterchoose(char*);
-void characterlist();
-//libui0
-void windowstart(char* addr,char* pixfmt, int width,int height);
-void windowstop();
-void windowread();
-void windowwrite();
-//event
+//visitor0
 void eventwrite();
 void eventread(u64* who, u64* what, u64* how);
-//world
 void birth();
 void death();
+//libui1
+int charactercreate();
+int characterdelete();
+int characterstart(char* addr,char* pixfmt, int width,int height);
+int characterstop();
+int characterwrite(u64 who, u64 what, u64 how);
+int characterread();
+int characterchoose(char*);
+int characterlist(char*);
+int charactercommand(char* p);
+//libui0
+int windowcreate();
+int windowdelete();
+int windowstart(char* addr,char* pixfmt, int width,int height);
+int windowstop();
+int windowlist();
+int windowchoose();
+int windowread();
+int windowwrite();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -36,11 +42,10 @@ static int height=512;
 
 
 
-void main()
+int main(int argc, char* argv[])
 {
-	u64 who;
-	u64 what;
-	u64 how;
+	int ret;
+	u64 who, what, how;
 
 	//before
 	birth();
@@ -48,28 +53,26 @@ void main()
 	//config
 	windowstart(pixbuf, pixfmt, width, height);	//it has the right to decide
 	characterstart(pixbuf, pixfmt, width, height);	//the changed final argument
-	//changewindow("addr",mybuffer);
-	//changewindow("size",512+512<<16);
-	//changewindow("title","hahahahahaha");
+	for(ret=1;ret<argc;ret++)
+	{
+		say("%s\n",argv[ret]);
+		charactercommand(argv[ret]);
+	}
 
 	//forever
 	while(1)
 	{
-		//debug
-		//say("i am here\n");
-
-		//1.先在内存里画画，然后一次性写到窗口内
+		//1.先在内存里画画, 然后一次性写到窗口内
 		characterread();
 		windowwrite();
 
-		//2.等事件，是退出消息就退出
+		//2.等事件, 是退出消息就退出, 其他event都交给用户处理
 		eventread(&who, &what, &how);
 		if( what==0 )break;
-
-		//3.其他event都交给用户处理
 		characterwrite(who, what, how);
 	}
 
 	//after
 	death();
+	return 0;
 }

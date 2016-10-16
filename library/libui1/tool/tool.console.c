@@ -6,8 +6,8 @@
 void string(int x,int y,char* str);
 void backgroundcolor(u32);
 //
-void characterchoose(char*);
-void command(char* in);
+void charactercommand(char*);
+void arterycommand(char* in);
 //
 int cmp(char* first,char* second);
 void say(char*,...);
@@ -143,13 +143,13 @@ static void console_write(u64* who, u64* a, u64* b)
 		{
 			if(cmp( buffer , "exit" ) == 0)
 			{
-				characterchoose(0);
+				charactercommand(0);
 				return;
 			}
 			else
 			{
 				say("%s\n",buffer);
-				command(buffer);
+				arterycommand(buffer);
 
 				for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
 				bufcount=0;

@@ -9,8 +9,7 @@ void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
 void background1();
 //
-void characterchoose(char*);
-void data2hexstr(u64,char*);
+int data2hexstr(u64,char*);
 int cmp(char*,char*);
 //
 int diary(char*,int,char*,...);
@@ -572,12 +571,7 @@ static void hex_write(u64* who, u64* a, u64* b)
 		}
 		else if(key==0xd)			//enter
 		{
-			if(cmp( hi+0x80 , "exit" ) == 0)
-			{
-				characterchoose(0);
-				return;
-			}
-			else if(cmp( hi+0x80 , "addr" ) == 0)
+			if(cmp( hi+0x80 , "addr" ) == 0)
 			{
 			}
 		}

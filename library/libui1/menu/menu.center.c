@@ -8,7 +8,7 @@ void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bg, u32 fg);
 void rect(int x1, int y1, int x2, int y2, u32 bg, u32 fg);
 void line(int x1, int y1, int x2, int y2, u32 color);
 //
-int characterchoose(char* p);
+int charactercommand(char* p);
 int diary(char*, int, char*, ...);
 int say(char*,...);
 
@@ -207,13 +207,13 @@ static void menu_write(u64* who, u64* a, u64* b)
 		//last
 		else if(x < width/4)
 		{
-			characterchoose("-");
+			charactercommand("-");
 		}
 
 		//next
 		else if(x > width*3/4)
 		{
-			characterchoose("+");
+			charactercommand("+");
 		}
 
 		//点击红色矩形，退出
@@ -222,7 +222,7 @@ static void menu_write(u64* who, u64* a, u64* b)
 			if(y<(width/4)+16)
 			{
 				//退出
-				characterchoose("exit");
+				charactercommand("exit");
 				return;
 			}
 		}
@@ -242,7 +242,7 @@ static void menu_write(u64* who, u64* a, u64* b)
 		else if( (key==0xa) | (key==0xd) )	//回车
 		{
 			//say("%s\n",buffer);
-			characterchoose(buffer);
+			charactercommand(buffer);
 
 			//clear
 			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;

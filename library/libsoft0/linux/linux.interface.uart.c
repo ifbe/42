@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<errno.h>
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
@@ -37,10 +38,10 @@ void* systemuart_read(void* p)
 	}
 	return 0;
 }
-int systemuart_write(char* p)
+int systemuart_write(char* buf, int len)
 {
 	int ret;
-	ret = write(fd, p, strlen(p));
+	ret = write(fd, buf, len);
 	return ret;
 }
 
@@ -70,7 +71,7 @@ int systemuart_choose(char* p)
 	fd=open(p , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd<=0)
 	{
-		say("error@open:%s\n",p);
+		say("error:%d@open:%s\n",errno,p);
 		return -1;
 	}
 

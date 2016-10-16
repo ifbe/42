@@ -33,15 +33,15 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 	}
 	return 0;
 }
-int systemuart_write(char* p)
+int systemuart_write(char* buf, int len)
 {
 	u32 count=0;
 	int ret;
 
 	ret = WriteFile(
 		hcom,
-		p,
-		strlen(p),
+		buf,
+		len,
 		(void*)&count,
 		0
 	);

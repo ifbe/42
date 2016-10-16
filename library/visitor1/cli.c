@@ -3,10 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int windowread();
-int windowwrite(u64, u64, u64);
+int arteryprompt();
+int arterycommand(void*);
 int eventread(u64* who, u64* what, u64* how);
-int eventwrite(u64* who, u64* what, u64* how);
+int eventwrite(u64 who, u64 what, u64 how);
 //
 int birth();
 int death();
@@ -28,7 +28,7 @@ int main(int argc,char* argv[])
 	for(ret=1;ret<argc;ret++)
 	{
 		say("%s\n",argv[ret]);
-		windowwrite(0, 0x64626b, (u64)argv[ret]);
+		arterycommand( argv[ret] );
 	}
 
 	//无限循环
@@ -36,14 +36,12 @@ int main(int argc,char* argv[])
 	while(1)
 	{
 		//1.显示位置
-		windowread();
+		arteryprompt();
 
 		//2.等待输入
 		eventread(&who, &what, &how);
 		if(what==0)break;
-
-		//3.发送命令
-		windowwrite(who, what, how);
+		arterycommand(&how);
 	}
 
 	//必须放在最后
