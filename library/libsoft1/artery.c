@@ -334,6 +334,7 @@ int arterycommand(char* buffer)
 	if(buffer == 0)goto finish;
 
 	//special
+	//say("	(%x)\n",buffer[0]);
 	if(buffer[0] == 0x1b)combo++;
 	else combo = 0;
 
@@ -383,6 +384,7 @@ int arterycommand(char* buffer)
 			}
 			else
 			{
+				if(buffer[argc] == 0xd)buffer[argc] = 0xa;
 				say("%c",buffer[argc]);
 				if(buffer[argc] == 0xa)
 				{

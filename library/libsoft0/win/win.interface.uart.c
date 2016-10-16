@@ -30,6 +30,8 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 
 		printf("%s", buf);
 		fflush(stdout);
+
+		Sleep(10);
 	}
 	return 0;
 }
@@ -115,7 +117,7 @@ int systemuart_choose(char* p)
 	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 100;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
-	timeouts.WriteTotalTimeoutConstant = 0;
+	timeouts.WriteTotalTimeoutConstant = 100;
 	ret = SetCommTimeouts(hcom, &timeouts);
 	printf("SetCommTimeouts:%d\n", ret);
 
