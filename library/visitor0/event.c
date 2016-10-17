@@ -18,49 +18,53 @@ void say(char*,...);
 
 
 
-int stillalive=1;
+//
+int sig = 0xff;
 
 
 
 
 int eventread(u64* who, u64* what, u64* how)
 {
-        int ret;
-        //say("here\n");
-        if(stillalive==0)
-        {
-                what[0]=0;
-                return 0;
-        }
+	int ret;
+	if(sig == 0)
+	{
+		what[0]=0;
+		return 6;
+	}
+	else if(sig != 0xff)
+	{
+		what[0] = 0x746e69;
+		how[0] = 0x3;		//ctrl+c=3, ctrl+z=0x1a
 
-        //调试端口有没有消息
-        ret=bootevent(who, what, how);
-        if(ret>0)return 11;
+		sig = 0xff;
+		return 5;
+	}
 
-        //硬件中断完成状态报告
-        ret=hardevent(who, what, how);
-        if(ret>0)return 22;
+	//调试端口有没有消息
+	ret=bootevent(who, what, how);
+	if(ret>0)return 4;
 
-        //输入/网络/系统事件
-        ret=softevent(who, what, how);
-        if(ret>0)return 33;
+	//硬件中断完成状态报告
+	ret=hardevent(who, what, how);
+	if(ret>0)return 3;
 
-        //窗口关闭,窗口大小变化等情况
-        ret=uievent(  who, what, how);
-        if(ret>0)return 44;
+	//输入/网络/系统事件
+	ret=softevent(who, what, how);
+	if(ret>0)return 2;
+
+	//窗口关闭,窗口大小变化等情况
+	ret=uievent(  who, what, how);
+	if(ret>0)return 1;
 }
 
 
 
 
-int eventwrite()
+void eventwrite(int who)
 {
-	stillalive=0;
-	return 0;
-}
-static void lastword()
-{
-	death();
+	sig = who;
+	//say("int %d!\n",sig);
 }
 
 
@@ -68,7 +72,8 @@ static void lastword()
 
 void eventcreate()
 {
-	signalcreate("c", lastword);
+	signalcreate("c", eventwrite);
+	//signalcreate("z", eventwrite);
 }
 void eventdelete()
 {

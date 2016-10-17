@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<windows.h>
 #define u64 unsigned long long
-void (*death)();
+static void (*eventwrite)(int);
 
 
 
@@ -14,7 +14,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 		// Handle the CTRL-C signal. 
 		case CTRL_C_EVENT: 
 			printf( "Ctrl-C event\n\n" );
-			death();
+			eventwrite('c');
 			return( TRUE );
  
 		// CTRL-CLOSE: confirm that the user wants to exit. 
@@ -32,7 +32,6 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 			return FALSE; 
  
 		case CTRL_SHUTDOWN_EVENT: 
-			Beep( 750, 500 ); 
 			printf( "Ctrl-Shutdown event\n\n" );
 			return FALSE; 
  
@@ -40,11 +39,11 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 			return FALSE; 
 	}
 } 
-void signalcreate(char* what, void* handler)
+void signalcreate(char* what, void* h)
 {
 	if(what == 0)return;
 	if(what[0] != 'c')return;
 
-	printf("ctrl+c=%llx\n",(u64)handler);
-	SetConsoleCtrlHandler((PHANDLER_ROUTINE)handler, 1);
+	eventwrite = h;
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, 1);
 }

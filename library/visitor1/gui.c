@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //visitor0
-void eventwrite();
+void eventwrite(int);
 void eventread(u64* who, u64* what, u64* how);
 void birth();
 void death();

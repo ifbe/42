@@ -5,9 +5,9 @@
 //
 int arteryprompt();
 int arterycommand(void*);
-int eventread(u64* who, u64* what, u64* how);
-int eventwrite(u64 who, u64 what, u64 how);
 //
+void eventread(u64* who, u64* what, u64* how);
+void eventwrite(int);
 int birth();
 int death();
 //

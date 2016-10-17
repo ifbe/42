@@ -18,7 +18,7 @@ int cmp(char*,char*);
 int ncmp(char*,char*,int);
 //
 void eventread(u64* who, u64* what, u64* how);
-void eventwrite();
+void eventwrite(int);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -92,6 +92,8 @@ static int rsp=0;
 //
 static char cmd[256];
 static int dst=0;
+//
+static int shutup=0;
 static int combo=0;
 
 
@@ -305,16 +307,16 @@ void arterydelete(char* module)
 int arteryprompt()
 {
 	u64 who;
-return 0;
+	if(shutup == 1)return 0;
 
 	if(rsp == 0)say("[void]");
-
 	else if(rsp == 1)
 	{
 		who = stack[rsp];
 		say("[%s]",&worker[who].id);
 	}
 
+	shutup = 1;
 	return 1;
 }
 int arterycommand(char* buffer)
@@ -358,6 +360,8 @@ int arterycommand(char* buffer)
 		if(rsp > 0)rsp--;
 
 		combo = 0;
+		shutup = 0;
+		say("\n");
 		return 0;
 	}
 
@@ -390,7 +394,9 @@ int arterycommand(char* buffer)
 				{
 					cmd[dst] = 0;
 					dst = 0;
+
 					ret = 1;
+					shutup = 0;
 				}
 				else if(dst<256)
 				{
@@ -421,7 +427,7 @@ int arterycommand(char* buffer)
 	//q
 	if(argv[0][0]=='q')
 	{
-		eventwrite();
+		eventwrite(0);
 		return 0;
 	}
 
@@ -429,7 +435,7 @@ int arterycommand(char* buffer)
 	ret=cmp(argv[0],"exit");
 	if(ret==0)
 	{
-		eventwrite();
+		eventwrite(0);
 		return 0;
 	}
 
