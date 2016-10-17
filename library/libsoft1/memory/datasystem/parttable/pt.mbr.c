@@ -107,15 +107,19 @@ static int mbrrecord(char* from,char* dst)
 static void mbr_explain(char* src,char* dst)
 {
 	int j,ret;
-	u64* dstqword;
-
-	//
-	say("mbr disk\n",0);
+	u64* dstqword=(u64*)dst;
 	for(j=0; j<0x10000; j++)
 	{
 		dst[j] = 0;
 	}
-	dstqword=(u64*)dst;
+
+	//check
+	ret = ismbr(src);
+	if(ret == 0)
+	{
+		say("not mbr\n");
+		return;
+	}
 
 	//主分区
 	ret=mbrrecord(src+0x1be,dst);

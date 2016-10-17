@@ -52,13 +52,23 @@ static void gpt_explain(char* src,char* dst)
 {
 	int i=0,j=0;
 	u64* srcqword;
-	u64* dstqword;
+	u64* dstqword = (u64*)dst;
+	for(j=0;j<0x10000;j++)
+	{
+		dst[j] = 0;
+	}
+
+	//check
+	i = isgpt(src);
+	if(i == 0)
+	{
+		say("not gpt\n");
+		return;
+	}
 
 	//
-	say("gpt disk\n");
 	src += 0x400;
 	srcqword = (u64*)src;
-	dstqword = (u64*)dst;
 
 	//
 	for(i=0;i<0x80;i++)	//0x80 partitions per disk
