@@ -2,10 +2,10 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void startfile();
-void stopfile();
-void readfile(u8*,u8*,u64,u64);
-void writefile(u8*,u8*,u64,u64);
+int startfile();
+int stopfile();
+int readfile(u8*,u8*,u64,u64);
+int writefile(u8*,u8*,u64,u64);
 //
 void printmemory(char*,int);
 void say(char* fmt,...);
@@ -152,26 +152,32 @@ static void gpt_list()
 		);
 	}
 }
-static void gpt_choose()
+static int gpt_choose(char* p)
 {
-}
-static void gpt_read()
-{
+	int ret;
+	stopfile(p);
+	if(p == 0)return 0;
+
+	ret = startfile(p);
+	if(ret <= 0)return -1;
+
 	readfile(datahome, 0, 0, 0x8000);
 	gpt_explain(datahome, fshome);
 
-	gpt_read();
+	gpt_list();
+	return 0;
+}
+static void gpt_read()
+{
 }
 static void gpt_write()
 {
 }
 static void gpt_start(char* p)
 {
-	startfile(p);
 }
 static void gpt_stop(char* p)
 {
-	stopfile(p);
 }
 void gpt_create(void* world, u64* p)
 {

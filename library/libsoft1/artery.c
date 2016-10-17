@@ -386,7 +386,7 @@ int arterycommand(char* buffer)
 		{
 			if(buffer[argc] == 0)break;
 
-			if(buffer[argc] == 0x7f)
+			if( (buffer[argc] == 0x8) | (buffer[argc] == 0x7f) )
 			{
 				say("\b \b");
 				if(dst>0)
@@ -397,6 +397,7 @@ int arterycommand(char* buffer)
 			}
 			else
 			{
+				if(buffer[argc] == 0x1b)continue;
 				if(buffer[argc] == 0xd)buffer[argc] = 0xa;
 				say("%c",buffer[argc]);
 

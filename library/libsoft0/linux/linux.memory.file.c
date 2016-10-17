@@ -236,7 +236,7 @@ int startfile(char* path)
 	else close(tempfd);
 
 	//真正打开新的
-	if(thisfd!=-1)close(thisfd);
+	if(thisfd != -1)close(thisfd);
 	thisfd=open(path,O_RDONLY | O_LARGEFILE);
 
 	//

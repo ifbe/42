@@ -2,8 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void startfile(char*);
-void stopfile(char*);
+int startfile(char*);
+int stopfile(char*);
 int readfile(u8*,u8*,u64,u64);
 int writefile(u8*,u8*,u64,u64);
 //
@@ -166,26 +166,32 @@ static void mbr_list()
 		);
 	}
 }
-static void mbr_choose()
+static int mbr_choose(char* p)
 {
-}
-static void mbr_read()
-{
+	int ret;
+	stopfile(p);
+	if(p == 0)return 0;
+
+	ret = startfile(p);
+	if(ret <= 0)return -1;
+
 	readfile(datahome, 0, 0, 0x8000);
 	mbr_explain(datahome, fshome);
 
 	mbr_list();
+	return 0;
+}
+static void mbr_read()
+{
 }
 static void mbr_write()
 {
 }
 static void mbr_start(char* p)
 {
-	startfile(p);
 }
 static void mbr_stop(char* p)
 {
-	stopfile(p);
 }
 void mbr_create(void* world, u64* p)
 {

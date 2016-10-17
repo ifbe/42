@@ -99,7 +99,7 @@ int readfile(char* memaddr,char* filename,u64 offset,u64 count)
 	LARGE_INTEGER li;
 	unsigned long written = 0;
 
-	if(filename != 0)
+	if(filename == 0)
 	{
 		li.QuadPart = offset;
 		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
@@ -182,17 +182,17 @@ void choosefile(char* buf)
 
 
 //
-void startfile(char* path)
+int startfile(char* path)
 {
 	//检查
-	if(path[0]==0)return;
+	if(path[0]==0)return 0;
 
 	//测试能否成功打开
 	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
 	if(temphandle == INVALID_HANDLE_VALUE)
 	{
-		say("(startfile error)createfile\n");
-		return;
+		say("(error%d)createfile:%x\n",errno,temphandle);
+		return 0;
 	}
 	else CloseHandle(temphandle);
 
@@ -205,18 +205,20 @@ void startfile(char* path)
 	getsize(selected,path,(void*)&size);
 
 	say("(%s	,	%llx)\n",path,size);
+	return 1;
 }
 void stopfile()
-{
-}
-void createfile()
-{
-}
-void deletefile()
 {
 	if(selected!=NULL)
 	{
 		CloseHandle(selected);
 		selected=NULL;
 	}
+}
+void createfile()
+{
+}
+void deletefile()
+{
+	stopfile();
 }
