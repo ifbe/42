@@ -351,16 +351,26 @@ int arterycommand(char* buffer)
 	}
 	else if(combo >= 2)
 	{
+		if(rsp <= 0)
+		{
+			eventwrite(0);
+			return 0;
+		}
+
 		if(rsp > 1)
 		{
 			//tell it, i'm leaving
 			who = stack[1];
 			if(who>0)worker[who].choose(0);
 		}
-		if(rsp > 0)rsp--;
+		rsp--;
+
+		//cmd[]=0;
+		dst = 0;
 
 		combo = 0;
 		shutup = 0;
+
 		say("\n");
 		return 0;
 	}
@@ -372,10 +382,9 @@ int arterycommand(char* buffer)
 	if(rsp <= 1)
 	{
 		ret = 0;
-		for(argc=0;argc<666;argc++)
+		for(argc=0;argc<255;argc++)
 		{
 			if(buffer[argc] == 0)break;
-//say("%d\n",buffer[argc]);
 
 			if(buffer[argc] == 0x7f)
 			{
@@ -390,6 +399,7 @@ int arterycommand(char* buffer)
 			{
 				if(buffer[argc] == 0xd)buffer[argc] = 0xa;
 				say("%c",buffer[argc]);
+
 				if(buffer[argc] == 0xa)
 				{
 					cmd[dst] = 0;

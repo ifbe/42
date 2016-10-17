@@ -25,10 +25,11 @@ int main(int argc,char* argv[])
 	birth();
 
 	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
+	how = 0xd;
 	for(ret=1;ret<argc;ret++)
 	{
-		say("%s\n",argv[ret]);
 		arterycommand( argv[ret] );
+		arterycommand( &how );
 	}
 
 	//无限循环

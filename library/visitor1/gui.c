@@ -55,7 +55,6 @@ int main(int argc, char* argv[])
 	characterstart(pixbuf, pixfmt, width, height);	//the changed final argument
 	for(ret=1;ret<argc;ret++)
 	{
-		say("%s\n",argv[ret]);
 		charactercommand(argv[ret]);
 	}
 
