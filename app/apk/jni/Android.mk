@@ -107,17 +107,17 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/datasystem/parttable/pt.apple.c \
 	library/libsoft1/memory/datasystem/parttable/pt.gpt.c \
 	library/libsoft1/memory/datasystem/parttable/pt.mbr.c \
-	library/libsoft1/memory/encdec/qrcode.c \
-	library/libsoft1/memory/encdec/crypt/crypt.aes.c \
-	library/libsoft1/memory/encdec/crypt/crypt.base64.c \
-	library/libsoft1/memory/encdec/crypt/crypt.des.c \
-	library/libsoft1/memory/encdec/crypt/crypt.rsa.c \
-	library/libsoft1/memory/encdec/hash/hash.crc8.c \
-	library/libsoft1/memory/encdec/hash/hash.crc16.c \
-	library/libsoft1/memory/encdec/hash/hash.crc32.c \
-	library/libsoft1/memory/encdec/hash/hash.md5.c \
-	library/libsoft1/memory/encdec/hash/hash.sha1.c \
-	library/libsoft1/memory/encdec/hash/hash.string.c \
+	library/libsoft1/memory/sec/qrcode.c \
+	library/libsoft1/memory/sec/crypt/crypt.aes.c \
+	library/libsoft1/memory/sec/crypt/crypt.base64.c \
+	library/libsoft1/memory/sec/crypt/crypt.des.c \
+	library/libsoft1/memory/sec/crypt/crypt.rsa.c \
+	library/libsoft1/memory/sec/hash/hash.crc8.c \
+	library/libsoft1/memory/sec/hash/hash.crc16.c \
+	library/libsoft1/memory/sec/hash/hash.crc32.c \
+	library/libsoft1/memory/sec/hash/hash.md5.c \
+	library/libsoft1/memory/sec/hash/hash.sha1.c \
+	library/libsoft1/memory/sec/hash/hash.string.c \
 	library/libsoft1/memory/text/compare/compare.simple.c \
 	library/libsoft1/memory/text/compare/compare.wildcard.c \
 	library/libsoft1/memory/text/convert/convert.argument.c \

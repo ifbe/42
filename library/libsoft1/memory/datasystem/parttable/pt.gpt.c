@@ -68,21 +68,22 @@ static void gpt_explain(char* src,char* dst)
 
 	//
 	src += 0x400;
-	srcqword = (u64*)src;
-
-	//
 	for(i=0;i<0x80;i++)	//0x80 partitions per disk
 	{
 		//先取数字出来
-		src += 0x80;
 		srcqword = (u64*)src;
-		if(srcqword[0] == 0)continue;
+		dstqword = (u64*)dst;
+		if(srcqword[0] == 0)
+		{
+			src += 0x80;
+			continue;
+		}
 
 		//类型，子类型，开始，结束
-		u64 firsthalf = srcqword [0];
-		u64 secondhalf = srcqword [1];
-		u64 startlba = srcqword [4];
-		u64 endlba = srcqword [5];
+		u64 firsthalf = srcqword[0];
+		u64 secondhalf = srcqword[1];
+		u64 startlba = srcqword[4];
+		u64 endlba = srcqword[5];
 
 		//不同分区类型
 		if(firsthalf==0x477284830fc63daf)
@@ -140,8 +141,8 @@ static void gpt_explain(char* src,char* dst)
 		}
 
 		//pointer++
-		dst = dst + 0x80;
-		dstqword = (u64*)dst;
+		src += 0x80;
+		dst += 0x80;
 	}
 }
 

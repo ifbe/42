@@ -30,17 +30,17 @@ target:
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.apple.c
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.gpt.c
 	$(compiler) $(cflag) memory/datasystem/parttable/pt.mbr.c
-	$(compiler) $(cflag) memory/encdec/qrcode.c
-	$(compiler) $(cflag) memory/encdec/crypt/crypt.aes.c
-	$(compiler) $(cflag) memory/encdec/crypt/crypt.base64.c
-	$(compiler) $(cflag) memory/encdec/crypt/crypt.des.c
-	$(compiler) $(cflag) memory/encdec/crypt/crypt.rsa.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.crc8.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.crc16.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.crc32.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.md5.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.sha1.c
-	$(compiler) $(cflag) memory/encdec/hash/hash.string.c
+	$(compiler) $(cflag) memory/sec/qrcode.c
+	$(compiler) $(cflag) memory/sec/crypt/crypt.aes.c
+	$(compiler) $(cflag) memory/sec/crypt/crypt.base64.c
+	$(compiler) $(cflag) memory/sec/crypt/crypt.des.c
+	$(compiler) $(cflag) memory/sec/crypt/crypt.rsa.c
+	$(compiler) $(cflag) memory/sec/hash/hash.crc8.c
+	$(compiler) $(cflag) memory/sec/hash/hash.crc16.c
+	$(compiler) $(cflag) memory/sec/hash/hash.crc32.c
+	$(compiler) $(cflag) memory/sec/hash/hash.md5.c
+	$(compiler) $(cflag) memory/sec/hash/hash.sha1.c
+	$(compiler) $(cflag) memory/sec/hash/hash.string.c
 	$(compiler) $(cflag) memory/text/compare/compare.simple.c
 	$(compiler) $(cflag) memory/text/compare/compare.wildcard.c
 	$(compiler) $(cflag) memory/text/convert/convert.argument.c
