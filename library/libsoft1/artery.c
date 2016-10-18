@@ -337,10 +337,10 @@ int arterycommand(char* buffer)
 
 	//special
 	//say("	(%x)\n",buffer[0]);
-	if(buffer[0] == 0x1b)combo++;
+	if( (buffer[0] == 0x1b) && (buffer[1] != '[') )combo++;
 	else combo = 0;
 
-	//passthrough
+	//
 	if( (rsp > 1) && (combo < 2) )
 	{
 		//pass through

@@ -11,7 +11,6 @@ void say(char*,...);
 
 //
 static int mode = 0;
-static char buffer[256];
 
 
 
@@ -19,11 +18,42 @@ static char buffer[256];
 int uievent(u64* who, u64* what, u64* where)
 {
 	int i;
-	char* ret=(char*)where;
+	u8* ret=(u8*)where;
 
 	//
-	*what = 0x64626b;
-	ret[0] = getch();
+	while(1)
+	{
+		ret[0] = getch();
+		if(ret[0] == 0xe0)
+		{
+			ret[1] = getch();
+			if(ret[1] == 0x48)	//up
+			{
+				*where = 0x415b1b;
+				break;
+			}
+			else if(ret[1] == 0x50)	//down
+			{
+				*where = 0x425b1b;
+				break;
+			}
+			else if(ret[1] == 0x4b)	//left
+			{
+				*where = 0x445b1b;
+				break;
+			}
+			else if(ret[1] == 0x4d)	//right
+			{
+				*where = 0x435b1b;
+				break;
+			}
+		}
+		else
+		{
+			ret[1] = 0;
+			break;
+		}
+	}
 
 	//printf("%x\n",ret[0]);
 	return 1;

@@ -1,9 +1,16 @@
+#define u64 unsigned long long
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
-#define u64 unsigned long long
-#define u32 unsigned int
+void say(char*,...);
+
+
+
+//
 static int alive=0;
 static HANDLE hcom=0;
 static HANDLE thread=0;
@@ -28,7 +35,7 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 		);
 		buf[count] = 0;
 
-		printf("%s", buf);
+		say("%s", buf);
 		fflush(stdout);
 
 		Sleep(10);
@@ -47,7 +54,7 @@ int systemuart_write(char* buf, int len)
 		(void*)&count,
 		0
 	);
-	//printf("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
+	//say("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
 	return ret;
 }
 
@@ -73,7 +80,7 @@ int systemuart_list()
 		);
 		if(h != INVALID_HANDLE_VALUE)
 		{
-			printf("%s\n", buf+4);
+			say("%s\n", buf+4);
 			CloseHandle(h);
 		}
 	}
@@ -105,26 +112,26 @@ int systemuart_choose(char* p)
 	);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
-		printf("fail@open\n");
+		say("fail@open\n");
 		return -1;
 	}
 
 	//
 	COMMTIMEOUTS timeouts;
 	ret = GetCommTimeouts(hcom, &timeouts);
-	printf("GetCommTimeouts:%d\n", ret);
+	say("GetCommTimeouts:%d\n", ret);
 	timeouts.ReadIntervalTimeout = 0;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 100;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
 	timeouts.WriteTotalTimeoutConstant = 100;
 	ret = SetCommTimeouts(hcom, &timeouts);
-	printf("SetCommTimeouts:%d\n", ret);
+	say("SetCommTimeouts:%d\n", ret);
 
 	//
 	DCB dcb;
 	ret = GetCommState(hcom,&dcb);
-	printf("GetCommState:%d\n", ret);
+	say("GetCommState:%d\n", ret);
 	dcb.DCBlength = sizeof(DCB);
 	dcb.BaudRate = 115200;	//波特率
 	dcb.ByteSize = 8;		//数据位
@@ -132,16 +139,16 @@ int systemuart_choose(char* p)
 	dcb.Parity = NOPARITY;	//奇偶校验方式
 	dcb.StopBits = ONESTOPBIT;	//停止位
 	ret = SetCommState(hcom,&dcb);
-	printf("SetCommState:%d\n", ret);
+	say("SetCommState:%d\n", ret);
 
 	//
 	ret = SetupComm(hcom, 0x1000, 0x1000);
-	printf("SetupComm:%d\n", ret);
+	say("SetupComm:%d\n", ret);
 	ret = PurgeComm(
 		hcom,
 		PURGE_RXCLEAR|PURGE_TXCLEAR|PURGE_RXABORT|PURGE_TXABORT
 	);
-	printf("PurgeComm:%d\n", ret);
+	say("PurgeComm:%d\n", ret);
 
 	//
 	alive = 1;
