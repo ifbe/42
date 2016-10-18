@@ -156,7 +156,7 @@ static void gpt_list()
 	{
 		if(*(u64*)(fshome+j) == 0)break;
 
-		say("(%04s,%04s)	[%08llx,%08llx]	%s\n",
+		say("(%8s,%8s)	[%08llx,%08llx]	%s\n",
 			fshome+j, fshome+j+8,
 			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
 			fshome+j+0x40

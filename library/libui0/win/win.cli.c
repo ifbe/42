@@ -56,6 +56,7 @@ int uievent(u64* who, u64* what, u64* where)
 	}
 
 	//printf("%x\n",ret[0]);
+	*what = 0x64626b;
 	return 1;
 }
 
