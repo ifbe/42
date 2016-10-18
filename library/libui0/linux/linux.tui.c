@@ -37,7 +37,7 @@ static void newsize(int num)
 }
 int uievent(u64* who, u64* first, u64* second)
 {
-	char a,b,c,d;
+	u8 a,b,c,d;
 
 	while(1)
 	{
@@ -51,7 +51,7 @@ int uievent(u64* who, u64* first, u64* second)
 		}
 
 		a=getchar();
-		if(a == -1)
+		if( (a==0xff) | (a==0) )
 		{
 			usleep(1000);
 			continue;
@@ -60,7 +60,8 @@ int uievent(u64* who, u64* first, u64* second)
 		if(a==0x1b)
 		{
 			b=getchar();
-			if(b == -1)
+
+			if( (b==0xff) | (b==0) )
 			{
 				*first=0x64626b;
 				*second=0x1b;

@@ -23,11 +23,11 @@ static int mode = 0;
 
 int uievent(u64* who, u64* first, u64* second)
 {
-	char* buf = (char*)second;
+	u8* buf = (u8*)second;
 	while(1)
 	{
 		buf[0] = getchar();
-		if(buf[0] <= 0)
+		if( (buf[0] == 0) | (buf[0]==0xff) )
 		{
 			usleep(1000);
 			continue;
