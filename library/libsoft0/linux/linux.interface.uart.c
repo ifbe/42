@@ -18,8 +18,9 @@ void say(char*,...);
 
 //
 static int alive = 1;
-static int fd = -1;
 static pthread_t id;
+//
+static int fd = -1;
 
 
 
@@ -31,8 +32,9 @@ void* systemuart_read(void* p)
 	while(alive == 1)
 	{
 		ret = read(fd, buf, 256);
-		buf[ret] = 0;
+		if(ret < 0)break;
 
+		buf[ret] = 0;
 		printf("%s", buf);
 		fflush(stdout);
 	}

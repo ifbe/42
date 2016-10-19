@@ -36,7 +36,7 @@ int uievent(u64* who, u64* first, u64* second)
 		if(buf[0] == 0x1b)
 		{
 			buf[1] = getchar();
-			if(buf[1] == -1)
+			if(buf[1] == 0xff)
 			{
 				buf[1] = 0;
 				break;

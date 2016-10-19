@@ -1,7 +1,7 @@
 #define u64 unsigned long long
 #define u32 unsigned int
-
-
+#define u16 unsigned short
+#define u8 unsigned char
 #include<fcntl.h>		//	open
 #include<unistd.h>		//	close
 #include<stdio.h>		//	printf
@@ -43,7 +43,7 @@ static int height=768;
 
 int uievent(u64* who, u64* first, u64* second)
 {
-	char a,b,c,d;
+	u8 a,b,c,d;
 	if(xmax != width)
 	{
 		width = xmax;
@@ -56,7 +56,7 @@ int uievent(u64* who, u64* first, u64* second)
 	while(1)
 	{
 		a=getchar();
-		if(a == -1)
+		if( (a==0xff) | (a==0) )
 		{
 			usleep(1000);
 			continue;
@@ -65,7 +65,7 @@ int uievent(u64* who, u64* first, u64* second)
 		if(a==0x1b)
 		{
 			b=getchar();
-			if(b == -1)
+			if( (b==0xff) | (b==0) )
 			{
 				*first=0x64626b;
 				*second=0x1b;

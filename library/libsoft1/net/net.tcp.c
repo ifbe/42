@@ -7,7 +7,7 @@ int stopsocket();
 int readsocket(char*,int);
 int writesocket(char*,int);
 int listsocket(char*);
-int choosesocket(char*);
+int choosesocket(char*,int);
 //
 void buf2addrport(unsigned char* p,int max,unsigned char* addr,int* port);
 void printmemory(char*,int);
@@ -22,27 +22,31 @@ static unsigned char* datahome=0;
 
 
 
-static void tcp_list(char* p)
+static int tcp_list(char* p)
 {
 	listsocket(p);
+	return 1;
 }
-static void tcp_choose(char* p)
+static int tcp_choose(char* p)
 {
-	choosesocket(p);
-}
-static void tcp_read()
-{
+	char addr[64];
+	int port;
 	int ret;
-	ret=readsocket(datahome,0x1000);
-	printmemory(datahome,ret);
+
+	buf2addrport(p, 64, addr, &port);
+	ret = choosesocket(addr, port);
+	return 1;
 }
-static void tcp_write(char* p)
+static int tcp_read()
+{
+}
+static int tcp_write(char* p)
 {
 	int i=0;
-	if(p==0)return;
+	if(p==0)return 0;
 
 	while(p[i]!=0)i++;
-	writesocket(p,i);
+	return writesocket(p,i);
 }
 
 
@@ -50,16 +54,6 @@ static void tcp_write(char* p)
 
 static int tcp_start(u64 type,char* p)
 {
-	unsigned char addr[16];
-	int port;
-
-	//
-	buf2addrport(p,64,addr,&port);
-//say("addr=%s,port=%d\n",addr,port);
-
-	//
-	if(addr[0]!=0)startsocket(addr,port);
-	else startsocket("0.0.0.0",-port);
 }
 static int tcp_stop()
 {
