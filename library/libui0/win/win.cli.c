@@ -50,6 +50,7 @@ int uievent(u64* who, u64* what, u64* where)
 		}
 		else
 		{
+			if(ret[0] == 0x8)ret[0] = 0x7f;
 			ret[1] = 0;
 			break;
 		}

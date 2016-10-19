@@ -1,3 +1,5 @@
+#include<stdio.h>
+#include<stdlib.h>
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
@@ -63,7 +65,8 @@ int eventread(u64* who, u64* what, u64* how)
 
 void eventwrite(int who)
 {
-	sig = who;
+	if(sig==who)exit(-1);
+	else sig = who;
 	//say("int %d!\n",sig);
 }
 

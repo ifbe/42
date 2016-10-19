@@ -33,10 +33,13 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 			(void*)&count,
 			0
 		);
-		buf[count] = 0;
 
-		say("%s", buf);
-		fflush(stdout);
+		if( (ret > 0) && (count > 0) )
+		{
+			buf[count] = 0;
+			say("%s", buf);
+			fflush(stdout);
+		}
 
 		Sleep(10);
 	}

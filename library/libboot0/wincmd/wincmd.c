@@ -54,36 +54,66 @@ void say(char* fmt , ...)
 	va_list args;
 
 	va_start(args,fmt);
-	j = snprintf(buf,10,"%s",last);
-	ret = vsnprintf(buf+j, 0x1000, fmt, args);
+	if(last[0] != 0)
+	{
+		j = snprintf(buf,10,"%s",last);
+		ret = j + vsnprintf(buf+j, 0x1000, fmt, args);
+		last[0] = 0;
+	}
+	else
+	{
+		ret = vsnprintf(buf, 0x1000, fmt, args);
+	}
 	va_end(args);
 
 	for(j=0;j<ret;j++)
 	{
-		//printf("[%x]",buf[j]);continue;
+		//printf("{%x}",buf[j]);
 
 		if(buf[j] == 0x1b)
 		{
-			for(k=0;k<5;k++)
+			if(buf[j+1] == 0)
 			{
-				if(buf[j+k] == 0)break;
+				last[0]=0x1b;
+				last[1]=0;
+				return;
 			}
-			if(k<5)
-			{
-				for(k=0;k<5;k++)last[j+k] = buf[j+k];
-				break;
-			}
+			//printf("{%x,%x,%x,%x,%x}",buf[j+0],buf[j+1],buf[j+2],buf[j+3],buf[j+4]);
 
 			if(buf[j+1] == 0x5b)
 			{
+				if(buf[j+2] == 0)
+				{
+					last[0]=0x1b;
+					last[1]=0x5b;
+					last[2]=0;
+					return;
+				}
 				//????
 				if(buf[j+2] == 0x4b)
+				{
+					printf(" \b");
+					j += 2;
+				}
+
+				//right
+				if(buf[j+2] == 0x43)
 				{
 					j += 2;
 				}
 
+				//
+				for(k=3;k<5;k++)
+				{
+					if(buf[j+k] == 0)
+					{
+						for(k=0;k<5;k++)last[k] = buf[j+k];
+						return;
+					}
+				}
+
 				//reset
-				else if( (buf[j+2] == '0') && (buf[j+3] == 'm') )
+				if( (buf[j+2] == '0') && (buf[j+3] == 'm') )
 				{
 					attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 					j += 3;
@@ -174,7 +204,11 @@ void say(char* fmt , ...)
 				}
 			}//5b
 		}//1b
-		else if( (buf[j] == 0x8) | (buf[j] == 0x7f) )
+		else if(buf[j] == 0x8)
+		{
+			printf("\b");
+		}
+		else if(buf[j] == 0x7f)
 		{
 			printf("\b \b");
 		}
