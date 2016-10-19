@@ -8,8 +8,8 @@ int systemspi_write(u8 dev,u8 reg,u8* buf,u8 count);
 int systemspi_start(char* p);
 int systemspi_stop();
 //
-int decstring2data(char*,u64*);
-int hexstring2data(char*,u64*);
+int decstr2data(char*,u64*);
+int hexstr2data(char*,u64*);
 void say(char*,...);
 
 
@@ -47,7 +47,7 @@ static int spi_choose(char* p)
 	//"/dev/spidev0.0"
 	if(p[0]=='/')
 	{
-		ret=decstring2data(p+11,&data);
+		ret=decstr2data(p+11,&data);
 		if(ret<=0)return -2;
 
 		return systemspi_choose((int)data,p);
@@ -56,7 +56,7 @@ static int spi_choose(char* p)
 	//"0x68"
 	if(p[0]=='0'&&p[1]=='x')
 	{
-		ret=hexstring2data(p+2,&data);
+		ret=hexstr2data(p+2,&data);
 		if(ret<=0)return -2;
 
 		return systemspi_choose((int)data,0);
@@ -65,7 +65,7 @@ static int spi_choose(char* p)
 	//33
 	else
 	{
-		ret=decstring2data(p,&data);
+		ret=decstr2data(p,&data);
 		if(ret<=0)return -3;
 
 		return systemspi_choose((int)data,0);

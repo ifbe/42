@@ -60,10 +60,9 @@ target:
 	$(compiler) $(cflag) net/net.ppp.c
 	$(compiler) $(cflag) net/net.quic.c
 	$(compiler) $(cflag) net/net.slip.c
+	$(compiler) $(cflag) net/net.sock.c
 	$(compiler) $(cflag) net/net.ssh.c
-	$(compiler) $(cflag) net/net.tcp.c
 	$(compiler) $(cflag) net/net.tftp.c
-	$(compiler) $(cflag) net/net.udp.c
 	$(compiler) $(cflag) special/special.c
 	$(compiler) $(cflag) special/math/math.calc.c
 	$(compiler) $(cflag) special/math/math.notation.c

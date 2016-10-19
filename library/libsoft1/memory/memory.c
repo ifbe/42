@@ -32,7 +32,7 @@ int ntfs_create(void*,void*);
 int ntfs_delete();
 //
 int cmp(char*,char*);
-int hexstring2data(char*,u64*);
+int hexstr2data(char*,u64*);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 int startfile();
@@ -296,7 +296,7 @@ static int memory_read(char* arg1)
 	//default,read chosen memory/port/disk/socket...
 	if(value==0)
 	{
-		hexstring2data(arg1,&value);
+		hexstr2data(arg1,&value);
 		readfile(datahome, 0, value*0x200, 0x200);
 		printmemory(datahome,0x200);
 		say("above is:%llx\n",value);

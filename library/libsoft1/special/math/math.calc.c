@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 double cosine(double);
 double sine(double);
-int decstring2data(u8* src,u64* data);
+int decstr2data(u8* src,u64* data);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -359,7 +359,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 		{
 			//say("herehere!!!!\n");
 			//先拿整数部分
-			ret1 = decstring2data( postfix + src , &data );
+			ret1 = decstr2data( postfix + src , &data );
 			src += ret1;
 			float1=(double)data;
 
@@ -368,7 +368,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 			{
 				//say(".@%d\n",src);
 				src++;
-				ret1=decstring2data( postfix+src , &data );
+				ret1=decstr2data( postfix+src , &data );
 
 				if(ret1>0)
 				{
@@ -565,7 +565,7 @@ double calculator(char* postfix,u64 x,u64 y)
 		if( ( postfix[src] >= '0' ) && ( postfix[src] <= '9' ) )
 		{
 			//先拿整数部分
-			count = decstring2data( postfix+src , &data );
+			count = decstr2data( postfix+src , &data );
 			src += count;
 			first = (double)data;
 
@@ -574,7 +574,7 @@ double calculator(char* postfix,u64 x,u64 y)
 			{
 				//say(".@%d\n",src);
 				src++;
-				count=decstring2data( postfix+src , &data );
+				count=decstr2data( postfix+src , &data );
 
 				if(count>0)
 				{

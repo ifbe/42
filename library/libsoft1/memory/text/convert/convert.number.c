@@ -9,7 +9,7 @@ void say(char*,...);
 
 
 //anscii码转换成一个数字，比如anscii码串为0x36,0x33,转换后得到decimal=36
-int decstring2data(u8* source,u64* data)
+int decstr2data(u8* source,u64* data)
 {
 	*data=0;
 	int i;
@@ -107,7 +107,7 @@ void double2decimalstring(double data,u8* string)
 
 
 //anscii码转换成一个16进制数字，比如anscii码串为0x36,0x61,转换后得到hex=0x6a
-int hexstring2data(u8* source,u64* data)
+int hexstr2data(u8* source,u64* data)
 {
 	*data=0;
 	int i;

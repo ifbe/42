@@ -19,8 +19,10 @@ void say(char* , ...);
 static int alive = 0;
 static pthread_t id;
 //
+static int st = 0;
 static int fd = 0;
-static struct sockaddr_in selfbody = {0};
+static socklen_t serlen = 0;
+static struct sockaddr_in server = {0};
 
 
 
@@ -30,65 +32,114 @@ void* readsocket(void* p)
 	int ret;
 	char buf[256];
 
-	while(alive == 1)
+	if(st == SOCK_DGRAM)
 	{
-		ret=read(fd, buf, 256);
-		if(ret<0)break;
+		while(alive == 1)
+		{
+			ret=recvfrom(fd, buf, 256, 0, (void*)&server, (void*)&serlen);
+			if(ret<0)break;
 
-		buf[ret] = 0;
-		printf("%s", buf);
-		fflush(stdout);
+			buf[ret] = 0;
+			printf("%s", buf);
+			fflush(stdout);
+		}
+	}
+	else
+	{
+		while(alive == 1)
+		{
+			ret=read(fd, buf, 256);
+			if(ret<0)break;
+
+			buf[ret] = 0;
+			printf("%s", buf);
+			fflush(stdout);
+		}
 	}
 	return 0;
 }
 int writesocket(char* buf,int len)
 {
 	int ret;
-	ret=write(fd, buf, len);
+	if(st == SOCK_DGRAM)
+	{
+		ret=sendto(fd, buf, len, 0, (void*)&server, serlen);
+		//say("err:%d@sendto:%d\n",errno,ret);
+	}
+	else
+	{
+		ret=write(fd, buf, len);
+		//say("err:%d@write:%d\n",errno,ret);
+	}
 	return ret;
 }
 
 
 
 
-int listsocket()
+int listsocket(char* type)
 {
+	if(strncmp(type, "udp", 3) == 0)
+	{
+		//list udp
+	}
+	else
+	{
+		//list tcp
+	}
 	return 1;
 }
-int choosesocket(char* addr, int port)
+int choosesocket(char* type, char* addr, int port, char* extra)
 {
 	int ret;
-	if(addr == 0)
+	if(fd > 0)
 	{
-		if(fd > 0)
-		{
-			alive = 0;
+		alive = 0;
 
-			close(fd);
-			fd=0;
-		}
+		close(fd);
+		fd = 0;
 	}
+	if(addr == 0)return 0;
+	if(addr[0] == 0)return 0;
 
 	//create struct
-	memset(&selfbody, 0, sizeof(struct sockaddr_in));
-	selfbody.sin_family=AF_INET;
-	selfbody.sin_addr.s_addr=inet_addr(addr);
-	selfbody.sin_port=htons(port);
+	memset(&server, 0, sizeof(struct sockaddr_in));
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = inet_addr(addr);
+	server.sin_port = htons(port);
+	serlen = sizeof(struct sockaddr_in);
 
-	//create socket
-	fd=socket(AF_INET,SOCK_STREAM,0);
-	if(fd==-1)
+	if(strncmp(type, "udp", 3) == 0)
 	{
-		//printf("socketcreate error\n");
-		return 0;
+		//create socket
+		fd = socket(AF_INET, SOCK_DGRAM, 0);
+		if(fd == -1)
+		{
+			printf("error%d@socket:%d\n",errno,fd);
+			return 0;
+		}
+
+		st = SOCK_DGRAM;
 	}
-
-	//connect
-	ret=connect(fd,(struct sockaddr*)&selfbody,sizeof(selfbody));
-	if(ret<0)
+	else
 	{
-		//printf("connect error\n");
-		return 0;
+		//create socket
+		fd = socket(AF_INET, SOCK_STREAM, 0);
+		if(fd == -1)
+		{
+			printf("error%d@socket:%d\n",errno,fd);
+			return 0;
+		}
+
+		//connect
+		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+		if(ret < 0)
+		{
+			//printf("connect error\n");
+			return 0;
+		}
+
+		st = SOCK_STREAM;
 	}
 
 	//thread
