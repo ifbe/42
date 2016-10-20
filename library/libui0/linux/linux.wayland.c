@@ -42,21 +42,21 @@ static int height = 512;
 static int enq=0;
 static int deq=0;
 static char kbd[256];
-int uievent(u64* who, u64* first, u64* second)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 printf("here\n");
 	if(enq == deq)
 	{
 printf("enq=%d,deq=%d\n",enq,deq);
-		*first = 0x656d6974;
+		*who = 0x656d6974;
 		return 1;
 	}
 
 	else
 	{
 printf("else\n");
-		*first = 0x64626b;
-		*second = kbd[deq];
+		*who = 0x64626b;
+		*what = kbd[deq];
 		deq = (deq + 1) % 256;
 		return 1;
 	}

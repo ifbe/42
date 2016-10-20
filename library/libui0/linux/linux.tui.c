@@ -35,7 +35,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-int uievent(u64* who, u64* first, u64* second)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 	u8 a,b,c,d;
 
@@ -45,8 +45,8 @@ int uievent(u64* who, u64* first, u64* second)
 		{
 			lastwidth = width;
 			lastheight = height;
-			first[0] = 0x657a6973;
-			second[0] = width + (height<<16);
+			who[0] = 0x657a6973;
+			what[0] = width + (height<<16);
 			return 1;
 		}
 
@@ -63,8 +63,8 @@ int uievent(u64* who, u64* first, u64* second)
 
 			if( (b==0xff) | (b==0) )
 			{
-				*first=0x64626b;
-				*second=0x1b;
+				*who=0x64626b;
+				*what=0x1b;
 				return 1;
 			}
 
@@ -72,25 +72,25 @@ int uievent(u64* who, u64* first, u64* second)
 			{
 				c=getchar();
 
-				*first=0x64626b;
+				*who=0x64626b;
 				if(c==0x41)//up
 				{
-					*second=0x26;
+					*what=0x26;
 					return 1;
 				}
 				if(c==0x42)//down
 				{
-					*second=0x28;
+					*what=0x28;
 					return 1;
 				}
 				if(c==0x44)//left
 				{
-					*second=0x25;
+					*what=0x25;
 					return 1;
 				}
 				if(c==0x43)//right
 				{
-					*second=0x27;
+					*what=0x27;
 					return 1;
 				}
 			}//5b
@@ -101,8 +101,8 @@ int uievent(u64* who, u64* first, u64* second)
 			if(a == 0x7f)a = 8;
 			if(a == 0xa)a = 0xd;
 
-			*first = 0x72616863;
-			*second = a;
+			*who = 0x72616863;
+			*what = a;
 			return 1;
 		}
 	}

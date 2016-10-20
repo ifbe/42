@@ -32,39 +32,39 @@ LOCAL_SRC_FILES += \
 ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x86/x86.fp.c \
+	library/libhard0/cpu/x86/x86.lock.c \
 	library/libhard0/cpu/x86/x86.port.c \
-	library/libhard0/cpu/x86/x86.platform.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x64/x64.fp.c \
+	library/libhard0/cpu/x64/x64.lock.c \
 	library/libhard0/cpu/x64/x64.port.c \
-	library/libhard0/cpu/x64/x64.platform.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/arm/arm.fp.c \
-	library/libhard0/cpu/arm/arm.platform.c \
+	library/libhard0/cpu/arm/arm.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/arm64/arm64.fp.c \
-	library/libhard0/cpu/arm64/arm64.platform.c \
+	library/libhard0/cpu/arm64/arm64.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/mips/mips.fp.c \
-	library/libhard0/cpu/mips/mips.platform.c \
+	library/libhard0/cpu/mips/mips.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/mips64/mips64.fp.c \
-	library/libhard0/cpu/mips64/mips64.platform.c \
+	library/libhard0/cpu/mips64/mips64.lock.c \
 	library/libhard0/driver.c
 endif
 
@@ -153,10 +153,9 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/net/net.ppp.c \
 	library/libsoft1/net/net.quic.c \
 	library/libsoft1/net/net.slip.c \
+	library/libsoft1/net/net.sock.c \
 	library/libsoft1/net/net.ssh.c \
-	library/libsoft1/net/net.tcp.c \
 	library/libsoft1/net/net.tftp.c \
-	library/libsoft1/net/net.udp.c \
 	library/libsoft1/special/special.c \
 	library/libsoft1/special/math/math.calc.c \
 	library/libsoft1/special/math/math.notation.c \

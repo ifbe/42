@@ -694,14 +694,14 @@ static void handle_events()
 
 
 
-void uievent(char* who, char* type, char* key)
+void uievent(char* what, char* who, char* where, char* when)
 {
 	while(1)
 	{
 		if(event_count > 0)
 		{
-			*(u64*)type = *(u64*)event_queue;
-			*(u64*)key = *(u64*)(event_queue + 8);
+			*(u64*)who = *(u64*)event_queue;
+			*(u64*)what = *(u64*)(event_queue + 8);
 			event_count = 0;
 
 			//printmemory(event_queue, 16);

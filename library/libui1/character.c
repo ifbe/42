@@ -137,7 +137,7 @@ static struct working
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[78,7f]:输入
-	int (*write)(void* who, void* what, void* how);
+	int (*write)(void* where, void* who, void* what);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
 static unsigned char* mega1;
@@ -393,14 +393,14 @@ int characterchoose(char* p)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-static void parsetouch(u64* who, u64* what, u64* key)
+static void parsetouch(u64* type, u64* key)
 {
 	int m,n;
 	int dx0,dy0;
 	int dx1,dy1;
 	int dx2,dy2;
 
-	m = *(u16*)what;
+	m = *(u16*)type;
 	n = ( (*key) >> 48 ) & 0x07;
 
 	if(m == 0x4070)
@@ -445,17 +445,17 @@ static void parsetouch(u64* who, u64* what, u64* key)
 				{
 					if(dx0<-128)	//left
 					{
-						*what = 0x64626b;
+						*type = 0x64626b;
 						*key = 0x25;
 					}
 					else if(dx0>128)	//right
 					{
-						*what = 0x64626b;
+						*type = 0x64626b;
 						*key = 0x27;
 					}
 					else	//point
 					{
-						*what = 0x2d6d;
+						*type = 0x2d6d;
 						*key = (*key&0xffffffff) + ((u64)1<<48);
 					}
 				}
@@ -463,17 +463,17 @@ static void parsetouch(u64* who, u64* what, u64* key)
 				{
 					if(dy0<-128)	//up
 					{	
-						*what = 0x64626b;
+						*type = 0x64626b;
 						*key = 0x26;
 					}
 					else if(dy0>128)	//down
 					{
-						*what = 0x64626b;
+						*type = 0x64626b;
 						*key = 0x28;
 					}
 					else	//point
 					{
-						*what = 0x2d6d;
+						*type = 0x2d6d;
 						*key = (*key&0xffffffff) + ((u64)1<<48);
 					}
 				}
@@ -516,15 +516,15 @@ static void parsetouch(u64* who, u64* what, u64* key)
 		}//last one
 	}//point gone
 }
-void characterwrite(u64 who, u64 what,u64 key)
+void characterwrite(u64 what, u64 who, u64 where, u64 when)
 {
 	int x;
 
 	//size
-	if(what == 0x657a6973)
+	if(who == 0x657a6973)
 	{
-		w = key & 0xffff;
-		h = (key >> 16) & 0xffff;
+		w = what & 0xffff;
+		h = (what >> 16) & 0xffff;
 
 		for(x=0;x<100;x++)
 		{
@@ -537,10 +537,10 @@ void characterwrite(u64 who, u64 what,u64 key)
 	}//size
 
 	//kbd
-	else if(what == 0x64626b)
+	else if(who == 0x64626b)
 	{
 		//按下esc
-		if(key==0x1b)
+		if(what == 0x1b)
 		{
 			worker[0].xyze1 ^= 1;
 			return;
@@ -548,32 +548,32 @@ void characterwrite(u64 who, u64 what,u64 key)
 	}//kbd
 
 	//touch
-	else if( (what&0xff) == 'p' )
+	else if( (who&0xff) == 'p' )
 	{
-		parsetouch(&who, &what, &key);
+		parsetouch(&who, &what);
 	}
 
 	//virtkbd
 	if(worker[2].xyze1 > 0)
 	{
-		x = worker[2].write(&who, &what, &key);
+		x = worker[2].write(&where, &who, &what);
 	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)
 	{
 		//center
-		x = worker[0].write(&who, &what, &key);
+		x = worker[0].write(&where, &who, &what);
 	}
 	else if(worker[1].xyze1 > 0)
 	{
 		//roster
-		x = worker[1].write(&who, &what, &key);
+		x = worker[1].write(&where, &who, &what);
 	}
 	else
 	{
 		//player
-		worker[now].write(&who, &what, &key);
+		worker[now].write(&where, &who, &what);
 	}
 }
 void characterread()

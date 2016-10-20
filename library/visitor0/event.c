@@ -9,18 +9,20 @@ int uievent(  u64* who, u64* what, u64* how);
 int softevent(u64* who, u64* what, u64* how);
 int hardevent(u64* who, u64* what, u64* how);
 int bootevent(u64* who, u64* what, u64* how);
-//
+//libsoft
 void signalcreate(void*,void*);
 void signaldelete();
-void birth();
-void death();
-//
+//libhard
+int snatch(void*);
+int release(void*);
+//libboot
 void say(char*,...);
 
 
 
 
 //
+int lock = 0;
 int sig = 0xff;
 
 
@@ -65,9 +67,13 @@ int eventread(u64* who, u64* what, u64* how)
 
 void eventwrite(int who)
 {
+	snatch(&lock);
+
 	if(sig==who)exit(-1);
 	else sig = who;
 	//say("int %d!\n",sig);
+
+	release(&lock);
 }
 
 

@@ -83,7 +83,7 @@ void windowwrite()
 //4:鼠标松开
 //5:鼠标移动
 //0xff:时间
-int uievent(u64* who, u64* type, u64* value)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 	SDL_Event event;
 	int val;
@@ -93,24 +93,24 @@ int uievent(u64* who, u64* type, u64* value)
 		{
 			if(event.type == SDL_QUIT)
 			{
-				*type=0;
+				*who = 0;
 				return 1;
 			}
 			else if (event.type == SDL_KEYDOWN)
 			{
-				*type=0x64626b;
+				*who = 0x64626b;
 				val = event.key.keysym.sym;
 				//printf("%x\n",val);
 
-				if(val==0x1b){*value=0x1b;return 0;}
-				else if(val==0x40000050){*value=0x25;return 0;}
-				else if(val==0x40000052){*value=0x26;return 0;}
-				else if(val==0x4000004f){*value=0x27;return 0;}
-				else if(val==0x40000051){*value=0x28;return 0;}
+				if(val==0x1b){*what=0x1b;return 0;}
+				else if(val==0x40000050){*what=0x25;return 0;}
+				else if(val==0x40000052){*what=0x26;return 0;}
+				else if(val==0x4000004f){*what=0x27;return 0;}
+				else if(val==0x40000051){*what=0x28;return 0;}
 				else
 				{
-					*type = 0x72616863;
-					*value = val;
+					*who = 0x72616863;
+					*what = val;
 					return 1;
 				}
 			}
@@ -122,8 +122,8 @@ int uievent(u64* who, u64* type, u64* value)
 					int x=event.button.x;
 					int y=event.button.y;
 
-					*type = 0x2d6d;
-					*value = x+(y<<16)+((u64)1<<48);
+					*who = 0x2d6d;
+					*what = x+(y<<16)+((u64)1<<48);
 					return 1;
 				}
 			}

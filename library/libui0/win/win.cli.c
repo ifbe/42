@@ -15,10 +15,10 @@ static int mode = 0;
 
 
 
-int uievent(u64* who, u64* what, u64* where)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 	int i;
-	u8* ret=(u8*)where;
+	u8* ret=(u8*)what;
 
 	//
 	while(1)
@@ -29,22 +29,22 @@ int uievent(u64* who, u64* what, u64* where)
 			ret[1] = getch();
 			if(ret[1] == 0x48)	//up
 			{
-				*where = 0x415b1b;
+				*what = 0x415b1b;
 				break;
 			}
 			else if(ret[1] == 0x50)	//down
 			{
-				*where = 0x425b1b;
+				*what = 0x425b1b;
 				break;
 			}
 			else if(ret[1] == 0x4b)	//left
 			{
-				*where = 0x445b1b;
+				*what = 0x445b1b;
 				break;
 			}
 			else if(ret[1] == 0x4d)	//right
 			{
-				*where = 0x435b1b;
+				*what = 0x435b1b;
 				break;
 			}
 		}
@@ -57,7 +57,7 @@ int uievent(u64* who, u64* what, u64* where)
 	}
 
 	//printf("%x\n",ret[0]);
-	*what = 0x64626b;
+	*who = 0x64626b;
 	return 1;
 }
 
@@ -71,10 +71,10 @@ void windowchange(int what)
 void windowlist()
 {
 }
-void windowread(char* where)
+void windowread()
 {
 }
-void windowwrite(u64 who, u64 what, u64 how)
+void windowwrite()
 {
 }
 void windowstart(char* addr, char* pixfmt, int x, int y)

@@ -25,7 +25,7 @@ void say(char*,...);
 
 
 //
-int softevent(QW* who, QW* what, QW* how)
+int softevent(QW* what, QW* who, QW* where, QW* when)
 {
 	return 0;
 }

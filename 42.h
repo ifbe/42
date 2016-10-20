@@ -3,13 +3,65 @@
 #define u16 unsigned short
 #define u8 unsigned char
 
+
+
+
+//world
+void birth();
+void death();
+
+
+
+
+//event
+void eventwrite(int who);
+void eventread(u64 what, u64 who, u64 where, u64 when);
+
+#define screen_size 0x657a6973	//size
+
+#define recv_name 0x656c6966	//file
+#define recv_data 0x61746164	//data
+
+#define input_char 0x72616863	//char
+#define input_kbd 0x64626b	//kbd
+	#define kbd_esc 0x1b
+	#define kbd_left 0x25
+	#define kbd_up 0x26
+	#define kbd_right 0x27
+	#define kbd_down 0x28
+	#define kbd_f1 0x70
+	#define kbd_f2 0x71
+	#define kbd_f3 0x72
+	#define kbd_f4 0x73
+	#define kbd_f5 0x74
+	#define kbd_f6 0x75
+	#define kbd_f7 0x76
+	#define kbd_f8 0x77
+
+#define touch_down 0x2b70	//p+
+#define touch_up 0x2d70		//p-
+#define touch_move 0x4070	//p@
+#define mouse_down 0x2b6d	//m+
+#define mouse_up 0x2d6d		//m-
+#define mouse_move 0x406d	//m@
+	#define btn_left 1
+	#define btn_right 2
+	#define btn_middle 3
+	#define btn_front 4
+	#define btn_back 5
+	#define btn_side1 6
+	#define btn_side2 7
+
+
+
+
 //libui1
 void backgroundcolor(u32 color);
 void line(int x1, int y1, int x2, int y2, u32 color);
 
-void trianglebody(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame); 
-void triangleframe(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame); 
-void triangle(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame); 
+void trianglebody(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
+void triangleframe(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
+void triangle(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
 
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void rectframe(int x1, int y1, int x2, int y2, u32 color);
@@ -32,37 +84,13 @@ void defaultdecimal(int x, int y, long long dec);
 void defaultdouble(int x, int y, double data)
 void defaulthexadecimal(int x, int y, unsigned long long hex);
 
+
+
+
 //libui0
-#define input_char 0x72616863	//char
-#define input_kbd 0x64626b	//kbd
-	#define kbd_esc 0x1b
-	#define kbd_left 0x25
-	#define kbd_up 0x26
-	#define kbd_right 0x27
-	#define kbd_down 0x28
-	#define kbd_f1 0x70
-	#define kbd_f2 0x71
-	#define kbd_f3 0x72
-	#define kbd_f4 0x73
-	#define kbd_f5 0x74
-	#define kbd_f6 0x75
-	#define kbd_f7 0x76
-	#define kbd_f8 0x77
-#define mouse_down 0x2b6d	//m+
-#define mouse_up 0x2d6d		//m-
-#define mouse_move 0x406d	//m@
-	#define btn_left 1
-	#define btn_right 2
-	#define btn_middle 3
-	#define btn_front 4
-	#define btn_back 5
-	#define btn_side1 6
-	#define btn_side2 7
-#define touch_down 0x2b70	//p+
-#define touch_up 0x2d70		//p-
-#define touch_move 0x4070	//p@
-#define screen_size 0x657a6973	//size
-#define drag_file 0x656c6966	//file
+
+
+
 
 //libsoft1
 int compare(char* a,char* b);
@@ -85,18 +113,33 @@ void buf2addrport(u8* pp,int max,u8* addr,int* port);
 char* buf2folder(char* p);
 char* buf2filename(char* p);
 
+
+
+
 //libsoft0
 unsigned int getrandom();
 unsigned long long shi_ji_nian_yue_ri_shi_fen_miao();
 unsigned long long hao_wei_na_pi();
 
+
+
+
 //libhard1
 
+
+
+
 //libhard0
+
+
+
 
 //libboot1
 void printmemory(char*,int);
 void say(char*,...);
+
+
+
 
 //libboot0
 char getchar();

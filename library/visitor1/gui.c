@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 //visitor0
 void eventwrite(int);
-void eventread(u64* who, u64* what, u64* how);
+void eventread(u64* what, u64* who, u64* where, u64* when);
 void birth();
 void death();
 //libui1
@@ -12,7 +12,7 @@ int charactercreate();
 int characterdelete();
 int characterstart(char* addr,char* pixfmt, int width,int height);
 int characterstop();
-int characterwrite(u64 who, u64 what, u64 how);
+int characterwrite(u64 what, u64 who, u64 where, u64 when);
 int characterread();
 int characterchoose(char*);
 int characterlist(char*);
@@ -45,7 +45,7 @@ static int height=512;
 int main(int argc, char* argv[])
 {
 	int ret;
-	u64 who, what, how;
+	u64 what, who, where, when;
 
 	//before
 	birth();
@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
 		windowwrite();
 
 		//2.等事件, 是退出消息就退出, 其他event都交给用户处理
-		eventread(&who, &what, &how);
-		if( what==0 )break;
-		characterwrite(who, what, how);
+		eventread(&what, &who, &where, &when);
+		if( who==0 )break;
+		characterwrite(what, who, where, when);
 	}
 
 	//after

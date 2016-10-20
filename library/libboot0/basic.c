@@ -17,7 +17,7 @@ void say(char* , ...);
 
 
 
-int bootevent(u64* who, u64* what,u64* how)
+int bootevent(u64* what, u64* who, u64* where, u64* when)
 {
 	return 0;
 }

@@ -21,9 +21,9 @@ static int mode = 0;
 
 
 
-int uievent(u64* who, u64* first, u64* second)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
-	u8* buf = (u8*)second;
+	u8* buf = (u8*)what;
 	while(1)
 	{
 		buf[0] = getchar();
@@ -61,8 +61,7 @@ int uievent(u64* who, u64* first, u64* second)
 		}
 	}
 
-	//*who = 0;
-	*first = 0x64626b;
+	*who = 0x64626b;
 	return 1;
 }
 
@@ -96,7 +95,7 @@ void windowlist()
 void windowread(char* where)
 {
 }
-void windowwrite(u64 who, u64 what, u64 how)
+void windowwrite()
 {
 }
 

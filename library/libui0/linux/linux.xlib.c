@@ -111,7 +111,7 @@ void windowwrite()
 
 
 
-int uievent(u64* who, u64* my1, u64* my2)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 	XEvent ev;
 	while(1)
@@ -131,7 +131,7 @@ int uievent(u64* who, u64* my1, u64* my2)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)
 			{
-				*my1=0;
+				*who=0;
 				return 1;
 			}
 		}
@@ -150,8 +150,8 @@ int uievent(u64* who, u64* my1, u64* my2)
 				pixbuf,x,y,32,0
 			);
 
-			*my1 = 0x657a6973;
-			*my2 = x + (y<<16);
+			*who = 0x657a6973;
+			*what = x + (y<<16);
 			return 2;
 		}
 		else if(ev.type==ButtonPress)
@@ -159,14 +159,14 @@ int uievent(u64* who, u64* my1, u64* my2)
 			//printf("buttonpress\n");
 			if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
-				*my1 = 0x2b6d;
-				*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
+				*who = 0x2b6d;
+				*what = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 				return 1;
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
-				*my1 = 0x2b6d;
-				*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
+				*who = 0x2b6d;
+				*what = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 				return 1;
 			}
 
@@ -185,8 +185,8 @@ int uievent(u64* who, u64* my1, u64* my2)
 			{
 				if((oldx==ev.xbutton.x)&&(oldy==ev.xbutton.y))
 				{
-					*my1 = 0x2d6d;
-					*my2 = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
+					*who = 0x2d6d;
+					*what = ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48);
 					return 1;
 				}
 			}
@@ -196,8 +196,8 @@ int uievent(u64* who, u64* my1, u64* my2)
 			motioncount = (motioncount+1)%5;
 			if(motioncount != 0)continue;
 
-			*my1 = 0x406d;
-			*my2 = ( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48);
+			*who = 0x406d;
+			*what = ( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48);
 			oldx=ev.xbutton.x;
 			oldy=ev.xbutton.y;
 			return 1;
@@ -213,14 +213,14 @@ int uievent(u64* who, u64* my1, u64* my2)
 			temp=xlib2anscii[ev.xkey.keycode];
 			if(temp!=0)
 			{
-				*my1=0x72616863;
-				*my2=temp;
+				*who=0x72616863;
+				*what=temp;
 				return 1;
 			}
 
 			//控制按键
-			*my1=0x64626b;
-			*my2=xlib2kbd[ev.xkey.keycode];
+			*who=0x64626b;
+			*what=xlib2kbd[ev.xkey.keycode];
 			return 1;
 		}
 	}

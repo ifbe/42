@@ -485,14 +485,14 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 	}
 }
-int uievent(u64* who, u64* what, u64* how)
+int uievent(u64* what, u64* who, u64* where, u64* when)
 {
 throw:
 	//没扔完的消息一个个扔，没消息了就下去等
 	if(this!=-1)
 	{
-		*what = type[this];
-		*how = key[this];
+		*who = type[this];
+		*what = key[this];
 
 		if(that==-1)
 		{
@@ -523,7 +523,7 @@ throw:
 	}
 
 	//收不到就返回失败消息
-	*what = 0;
+	*who = 0;
 	return 0;
 }
 
