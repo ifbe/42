@@ -41,7 +41,7 @@ static int i2c_choose(char* p)
 	if( (p[0]=='.') && (p[1]=='.') )
 	{
 		systemi2c_choose(-1,p);
-		return 1;
+		return 0;
 	}
 
 	//"/dev/i2c-1"
@@ -50,7 +50,8 @@ static int i2c_choose(char* p)
 		ret=decstr2data(p+9,&data);
 		if(ret<=0)return -2;
 
-		return systemi2c_choose((int)data,p);
+		systemi2c_choose((int)data,p);
+		return 0;
 	}
 
 	//"0x68"
@@ -59,7 +60,8 @@ static int i2c_choose(char* p)
 		ret=hexstr2data(p+2,&data);
 		if(ret<=0)return -2;
 
-		return systemi2c_choose((int)data,0);
+		systemi2c_choose((int)data,0);
+		return 0;
 	}
 
 	//33
@@ -68,7 +70,8 @@ static int i2c_choose(char* p)
 		ret=decstr2data(p,&data);
 		if(ret<=0)return -3;
 
-		return systemi2c_choose((int)data,0);
+		systemi2c_choose((int)data,0);
+		return 0;
 	}
 }
 static int i2c_start(u64 type,char* p)
