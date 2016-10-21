@@ -24,9 +24,6 @@ void debugcreate(char*,char*);
 void debugdelete();
 void basiccreate(char*,char*);
 void basicdelete();
-//slave
-void eventcreate(void*,void*);
-void eventdelete();
 //
 void say(char*,...);
 
@@ -108,10 +105,6 @@ __attribute__((destructor)) void death()
 {
 	//
 	printf("\n");
-	if(rawuniverse != 0)
-	{
-		eventdelete();
-	}
 
 	//libui
 	if(character != 0)
@@ -174,8 +167,5 @@ void birth()
 	//[c,f)：窗口开闭，以及用户界面
 	displaycreate( 0 , character );
 	charactercreate( 0 , character );
-
-	//ctrl+c
-	eventcreate(0,universe);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

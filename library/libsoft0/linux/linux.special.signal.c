@@ -1,17 +1,32 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #define u64 unsigned long long
+void eventwrite(int);
 
 
 
-void signalcreate(char* what, void* handler)
+
+static void sig_int(int a)
 {
-	if(what == 0)return;
-	if(what[0] != 'c')return;
+	eventwrite(0x3);
+}
+static void sig_tstp(int a)
+{
+	eventwrite(0x1a);
+}
 
-	printf("ctrl+c=%llx\n",(u64)handler);
-	signal(SIGINT, handler);
+
+
+
+void createsignal()
+{
+	signal(SIGINT, sig_int);
+	signal(SIGTSTP, sig_tstp);
+}
+void deletesignal()
+{
 }
