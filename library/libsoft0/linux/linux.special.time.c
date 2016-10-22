@@ -8,3 +8,7 @@ u64 gettime()
 	gettimeofday(&t,0);
 	return (t.tv_sec)*1000*1000 + (t.tv_usec);
 }
+void sleep_us(int t)
+{
+	usleep(t);
+}

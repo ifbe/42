@@ -19,12 +19,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void windowwrite();
+void eventwrite(u64,u64);
 void say(char* fmt,...);
 
 
 
 
 //window
+static HANDLE thread=0;
 static HWND consolewindow;		//console window
 static HWND window;				//my window
 static HDC realdc;
@@ -36,13 +38,7 @@ static char dragpath[MAX_PATH];
 
 //
 static int pointercount=0;
-static u8 pointerid[10];
-
-//
-static int this=-1;
-static int that=-1;
-static u64 type[10];
-static u64 key[10];
+static int pointerid[10];
 
 //
 static int leftdown=0,rightdown=0;
@@ -51,8 +47,8 @@ static RECT rt, re;
 
 //
 static char* screenbuf;
-static int width=1024;
-static int height=768;
+static int width=512;
+static int height=512;
 
 
 
@@ -148,11 +144,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			say("drag:%s\n",dragpath);
-			type[0]=(0x706f7264)+((u64)0x656c6966<<32);	//'drop''file'
-			key[0]=(u64)dragpath;
-			this=0;
-			that=-1;
+			eventwrite( (u64)dragpath, 0x656c6966);
 			return 0;
 		}
 
@@ -170,10 +162,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case 0x72:				//f3
 				case 0x73:				//f4
 				{
-					type[0]=0x64626b;		//kbd
-					key[0]=wparam;
-					this=0;
-					that=-1;
+					eventwrite(wparam, 0x64626b);
 					break;
 				}
 			}
@@ -184,18 +173,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//文字
 		case WM_CHAR:
 		{
-			if(wparam==0x1b)
-			{
-				type[0]=0x64626b;		//'kbd'
-				key[0]=wparam;
-			}
-			else
-			{
-				type[0]=0x72616863;		//'char'
-				key[0]=wparam;
-			}
-			this=0;
-			that=-1;
+			if(wparam==0x1b)eventwrite(0x1b, 0x64626b);
+			else eventwrite(wparam, 0x72616863);
 			return 0;
 		}
 /*
@@ -234,105 +213,76 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 */
 		case WM_POINTERDOWN:
 		{
+			int x;
+			for(x=0;x<10;x++)
+			{
+				if( pointerid[x] == -1 )
+				{
+					pointerid[x]=(u8)(wparam);
+					break;
+				}
+			}
+			if(x>=10)return 0;
+
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			type[0]=0x2b70;		//p+
-			key[0]=pointercount;
-			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + pt.y;
-			key[0]=(key[0]<<16) + pt.x;
-
-			pointerid[pointercount]=(u8)(wparam);
-			pointercount++;
-			this=0;
-			that=-1;
+			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x2b70);
 			return 0;
 		}
 		case WM_POINTERUP:
 		{
-			int x,y;
-			for(x=0;x<pointercount;x++)
+			int x;
+			for(x=0;x<10;x++)
 			{
-				say("%2d,",pointerid[x]);
 				if( pointerid[x] == (u8)(wparam) )
 				{
-					for(y=x;y<pointercount-1;y++)
-					{
-						pointerid[y]=pointerid[y+1];
-					}
+					pointerid[x]=-1;
 					break;
 				}
 			}
-
-			say("<-------->%2d\n",(u8)wparam);
-			if(x>=pointercount)
-			{
-				say("wrong!!!!!!!!!!\n");
-				this=-1;
-				return 0;
-			}
+			if(x>=10)return 0;
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			type[0]=0x2d70;		//p-
-			key[0]=x;
-			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + pt.y;
-			key[0]=(key[0]<<16) + pt.x;
-			this=0;
-			that=-1;
-
-			pointercount--;
+			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x2d70);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
 		{
 			int x;
-			for(x=0;x<pointercount;x++)
+			for(x=0;x<10;x++)
 			{
 				if( pointerid[x] == (u8)(wparam) )break;
 			}
-			if(x>=pointercount)
-			{
-				this=-1;return 0;
-			}
+			if(x>=10)return 0;
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			type[0]=0x4070;		//p@
-			key[0]=x;
-			key[0]=(key[0]<<16) + 0;
-			key[0]=(key[0]<<16) + pt.y;
-			key[0]=(key[0]<<16) + pt.x;
-			this=0;
-			that=-1;
+			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x4070);
 			return 0;
 		}
 
 		//滚轮
 		case WM_MOUSEWHEEL:
 		{
-			type[0] = 0x2b6d;
 			GetCursorPos(&pt);
 			ScreenToClient(window, &pt);
 
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				key[0] = pt.x + (pt.y<<16) + ((u64)4<<48);
+				eventwrite( pt.x + (pt.y<<16) + ((u64)4<<48), 0x2b6d);
 			}
 			else
 			{
-				key[0] = pt.x + (pt.y<<16) + ((u64)5<<48);
+				eventwrite( pt.x + (pt.y<<16) + ((u64)5<<48), 0x2b6d);
 			}
 
-			this=0;
-			that=-1;
 			return 0;
 		}
 
@@ -355,13 +305,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				else		//只是左键在拖动
 				{
 					//'xyz ','move'
-					type[0] = 0x406d;
-					key[0] = (pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48);
+					eventwrite( (pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48), 0x406d);
 
 					//say("%d,%d\n",pe.x,pe.y);
 					GetCursorPos(&pt);	// 获取鼠标当前位置
-					this=0;
-					that=-1;
 				}
 			}
 			return 0;
@@ -370,14 +317,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标左键弹起
 		case WM_LBUTTONUP:
 		{
-			if(leftdown==1)
-			{
-				type[0] = 0x2d6d;
-				key[0] = lparam + ((u64)1<<48);
-				this=0;
-				that=-1;
-			}
-
+			if(leftdown==1)eventwrite(lparam + ((u64)1<<48), 0x2d6d);
 			leftdown=0;
 			return 0;
 		}
@@ -387,10 +327,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				type[0] = 0x2d6d;
-				key[0] = lparam + ((u64)1<<48);
-				this=0;
-				that=-1;
+				eventwrite(lparam + ((u64)1<<48), 0x2d6d);
 			}
 
 			rightdown=0;
@@ -453,14 +390,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			info.bmiColors[0].rgbReserved=255;
 
 			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
-			type[0]=0x657a6973;			//'size'
-			key[0]=lparam;
-			this=0;
-			that=-1;
-
+			eventwrite(lparam, 0x657a6973);			//'size'
 			return 0;
 		}
-/*
+
 		//显示
 		case WM_PAINT:
 		{
@@ -470,7 +403,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			//这里必须调这个函数，不然cpu占用满
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
-*/
+
 		//摧毁
 		case WM_DESTROY:
 		{
@@ -484,47 +417,6 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			return DefWindowProc(window, msg, wparam, lparam);
 		}
 	}
-}
-int uievent(u64* what, u64* who, u64* where, u64* when)
-{
-throw:
-	//没扔完的消息一个个扔，没消息了就下去等
-	if(this!=-1)
-	{
-		*who = type[this];
-		*what = key[this];
-
-		if(that==-1)
-		{
-			this=-1;
-		}
-		else
-		{
-			this++;
-			if(this==that)
-			{
-				this=that=-1;
-			}
-		}
-
-		return 1;
-	}
-
-	//收得到就一直收+处理
-	MSG msg;
-	while(GetMessage(&msg,NULL,0,0))
-	{
-		//交给WindowProc，试着处理看看
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-
-		//WindowProc处理不了，交给用户来处理
-		if(this==0)goto throw;
-	}
-
-	//收不到就返回失败消息
-	*who = 0;
-	return 0;
 }
 
 
@@ -714,8 +606,18 @@ void createtray()
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
 	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
 }
-void windowcreate()
+
+
+
+
+
+
+
+
+DWORD WINAPI uievent(LPVOID pM)
 {
+	MSG msg;
+
 	//终端窗口
 	createconsolewindow();
 
@@ -732,6 +634,25 @@ void windowcreate()
 
 	//打开托盘
 	createtray();
+
+	//一个一个处理
+	while(GetMessage(&msg,NULL,0,0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	//收不到就返回失败消息
+	eventwrite(0,0);
+	return 0;
+}
+void windowcreate()
+{
+	int x;
+	for(x=0;x<10;x++)pointerid[x] = -1;
+
+	//
+	thread = CreateThread(NULL, 0, uievent, NULL, 0, NULL);
 }
 //__attribute__((destructor)) void destorysdl()
 void windowdelete()

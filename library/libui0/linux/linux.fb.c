@@ -6,14 +6,16 @@
 #include<unistd.h>		//	close
 #include<stdio.h>		//	printf
 #include<stdlib.h>		//	malloc
+#include<termios.h>		//	termios,getchar
+#include<pthread.h>
 #include<sys/ioctl.h>		//	ioctl
 #include<linux/fb.h>		//	framebuffer
-#include<termios.h>		//	termios,getchar
 
 
 
 
 //输入
+static pthread_t id;
 static int signal=-1;
 static struct termios old;
 static struct termios new;
@@ -41,75 +43,66 @@ static int height=768;
 
 
 
-int uievent(u64* what, u64* who, u64* where, u64* when)
+void* uievent(void* p)
 {
-	u8 a,b,c,d;
+	u8 ch;
 	if(xmax != width)
 	{
 		width = xmax;
 		height = ymax;
-		who[0] = 0x657a6973;
-		what[0] = width + (height<<16);
-		return 1;
+		eventwrite(width + (height<<16), 0x657a6973);
 	}
 
 	while(1)
 	{
-		a=getchar();
-		if( (a==0xff) | (a==0) )
+		ch = getchar();
+		if( (ch == 0xff) | (ch == 0) )
 		{
 			usleep(1000);
 			continue;
 		}
-
-		if(a==0x1b)
+		else if(ch==0x1b)
 		{
-			b=getchar();
-			if( (b==0xff) | (b==0) )
+			ch = getchar();
+			if( (ch == 0xff) | (ch == 0) )
 			{
-				*who=0x64626b;
-				*what=0x1b;
-				return 1;
+				usleep(1000);
+				ch = getchar();
+				if( (ch == 0xff) | (ch == 0) )
+				{
+					eventwrite(0x1b, 0x64626b);
+				}
 			}
 
-			if(b==0x5b)
+			else if(ch==0x5b)
 			{
-				c=getchar();
-
-				*who=0x64626b;
-				if(c==0x41)//up
+				ch = getchar();
+				if(ch == 0x41)//up
 				{
-					*what=0x26;
-					return 1;
+					eventwrite(0x26, 0x64626b);
 				}
-				if(c==0x42)//down
+				if(ch == 0x42)//down
 				{
-					*what=0x28;
-					return 1;
+					eventwrite(0x28, 0x64626b);
 				}
-				if(c==0x44)//left
+				if(ch == 0x44)//left
 				{
-					*what=0x25;
-					return 1;
+					eventwrite(0x25, 0x64626b);
 				}
-				if(c==0x43)//right
+				if(ch == 0x43)//right
 				{
-					*what=0x27;
-					return 1;
+					eventwrite(0x27, 0x64626b);
 				}
 			}//5b
 		}//1b
-
 		else
 		{
-			if(a == 0x7f)a = 8;
-			if(a == 0xa)a = 0xd;
+			if(ch == 0x7f)ch = 8;
+			if(ch == 0xa)ch = 0xd;
 
-			*who = 0x72616863;
-			*what = a;
-			return 1;
+			eventwrite(ch, 0x72616863);
 		}
-	}
+	}//while
 }
 
 

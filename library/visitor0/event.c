@@ -9,6 +9,8 @@ int   uievent(u64* what, u64* who, u64* where, u64* when);
 int softevent(u64* what, u64* who, u64* where, u64* when);
 int hardevent(u64* what, u64* who, u64* where, u64* when);
 int bootevent(u64* what, u64* who, u64* where, u64* when);
+//libsoft
+void sleep_us(int);
 //libhard
 int snatch(void*);
 int release(void*);
@@ -29,23 +31,17 @@ static char eventqueue[0x100000];
 
 
 
-int eventread(u64* what, u64* who, u64* where, u64* when)
+void* eventread()
 {
 	int ret;
-	if(sig == 0)
+	while(enq == deq)
 	{
-		who[0]=0;
-		return 6;
+		sleep_us(1000);
 	}
-	else if(sig != 0xff)
-	{
-		who[0] = 0x746e69;
-		what[0] = sig;		//ctrl+c=3, ctrl+z=0x1a
-		sig = 0xff;
-
-		return 5;
-	}
-
+	ret = deq;
+	deq = (deq+0x20)%0x100000;
+	return eventqueue + ret;
+/*
 	//调试端口有没有消息
 	ret=bootevent(what, who, where, when);
 	if(ret>0)return 4;
@@ -61,38 +57,51 @@ int eventread(u64* what, u64* who, u64* where, u64* when)
 	//窗口关闭,窗口大小变化等情况
 	ret=  uievent(what, who, where, when);
 	if(ret>0)return 1;
+*/
 }
 
 
 
 
-void eventwrite(int who)
+void eventwrite(u64 what, u64 who)
 {
-	int next;
+	int this,temp;
 	static u64* p;
 
 	//safely update the pointer
 	snatch(&lock);
-	next = (enq+0x20)%0x100000;
-	if(next == deq)
+	this = enq;
+	temp = (this+0x20)%0x100000;
+	if(temp == deq)
 	{
 		//full
 		release(&lock);
 		say("queue full, droping event!\n");
 		return;
 	}
-	enq = next;
+	enq = temp;
 	release(&lock);
 
+	if(who == 0x64626b)
+	{
+		if(what == 3)
+		{
+			temp = (this+0x100000-0x20)%0x100000;
+			p = (u64*)(eventqueue + temp);
+			if(p[1] == 0x64626b)
+			{
+				if(p[0] == 3)exit(-1);
+			}
+		}
+	}
+
 	//put event to place
-	p = (u64*)(eventqueue + enq);
-	p[0] = 0;	//what
-	p[1] = 0;	//who
+	p = (u64*)(eventqueue + this);
+	p[0] = what;
+	p[1] = who;
 	//p[2] = 0;	//where
 	//p[3] = 0;	//when
 
-	//......
-	if(sig==who)exit(-1);
-	else sig = who;
-	//say("int %d!\n",sig);
+	//debug
+	//say("%llx,%llx\n",p[0],p[1]);
 }

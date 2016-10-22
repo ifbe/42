@@ -3,11 +3,15 @@
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_video.h>
 #undef main
-//
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+void eventwrite(u64,u64);
+
+
+
+
 //
 int width=1024;
 int height=768;
@@ -17,6 +21,8 @@ SDL_Window* window;//窗口
 SDL_Renderer* renderer;	//什么是render
 SDL_Texture* texture;		//texture是在显存里的？
 SDL_TimerID my_timer_id;
+
+
 
 
 void windowcreate()

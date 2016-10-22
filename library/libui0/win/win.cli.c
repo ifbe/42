@@ -1,72 +1,63 @@
 #include<stdio.h>
 #include<conio.h>
+#include<windows.h>
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+void eventwrite(u64,u64);
 void say(char*,...);
 
 
 
 
 //
-static int mode = 0;
+static HANDLE thread=0;
 
 
 
 
-int uievent(u64* what, u64* who, u64* where, u64* when)
+DWORD WINAPI uievent(LPVOID pM)
 {
-	int i;
-	u8* ret=(u8*)what;
+	u8 ch;
 
 	//
 	while(1)
 	{
-		ret[0] = getch();
-		if(ret[0] == 0xe0)
+		ch = getch();
+		if(ch == 0xe0)
 		{
-			ret[1] = getch();
-			if(ret[1] == 0x48)	//up
+			ch = getch();
+			if(ch == 0x48)	//up
 			{
-				*what = 0x415b1b;
-				break;
+				eventwrite(0x415b1b, 0x64626b);
 			}
-			else if(ret[1] == 0x50)	//down
+			else if(ch == 0x50)	//down
 			{
-				*what = 0x425b1b;
-				break;
+				eventwrite(0x425b1b, 0x64626b);
 			}
-			else if(ret[1] == 0x4b)	//left
+			else if(ch == 0x4d)	//right
 			{
-				*what = 0x445b1b;
-				break;
+				eventwrite(0x435b1b, 0x64626b);
 			}
-			else if(ret[1] == 0x4d)	//right
+			else if(ch == 0x4b)	//left
 			{
-				*what = 0x435b1b;
-				break;
+				eventwrite(0x445b1b, 0x64626b);
 			}
 		}
 		else
 		{
-			if(ret[0] == 0x8)ret[0] = 0x7f;
-			ret[1] = 0;
-			break;
+			if(ch == 0x8)ch = 0x7f;
+			eventwrite(ch, 0x64626b);
 		}
-	}
-
-	//printf("%x\n",ret[0]);
-	*who = 0x64626b;
-	return 1;
+	}//while
 }
 
 
 
 
-void windowchange(int what)
+void windowchange()
 {
-	mode = what;
 }
 void windowlist()
 {
@@ -85,6 +76,7 @@ void windowstop()
 }
 void windowcreate()
 {
+	thread = CreateThread(NULL, 0, uievent, NULL, 0, NULL);
 }
 void windowdelete()
 {

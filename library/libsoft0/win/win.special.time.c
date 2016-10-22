@@ -5,3 +5,7 @@ u64 gettime()
 {
 	return GetTickCount64();
 }
+void sleep_us(int t)
+{
+	Sleep(t/1000);
+}

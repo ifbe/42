@@ -7,9 +7,10 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
-#include<signal.h>
+#include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+void eventwrite(u64,u64);
 void say(char*,...);
 
 
@@ -17,13 +18,14 @@ void say(char*,...);
 
 //
 static int mode = 0;
+static pthread_t id;
 
 
 
 
-int uievent(u64* what, u64* who, u64* where, u64* when)
+void* uievent(void* p)
 {
-	u8* buf = (u8*)what;
+	u8 buf[8];
 	while(1)
 	{
 		buf[0] = getchar();
@@ -38,8 +40,7 @@ int uievent(u64* what, u64* who, u64* where, u64* when)
 			buf[1] = getchar();
 			if(buf[1] == 0xff)
 			{
-				buf[1] = 0;
-				break;
+				eventwrite(buf[0], 0x64626b);
 			}
 
 			if(buf[1] == 0x5b)
@@ -48,21 +49,16 @@ int uievent(u64* what, u64* who, u64* where, u64* when)
 
 				if( (buf[2]>=0x41) && (buf[2]<=0x44) )
 				{
-					buf[3] = 0;
-					break;
+					eventwrite((buf[2]<<16)+0x5b1b, 0x64626b);
 				}
 			}//5b
 		}//1b
 
 		else
 		{
-			buf[1] = 0;
-			break;
+			eventwrite(buf[0], 0x64626b);
 		}
 	}
-
-	*who = 0x64626b;
-	return 1;
 }
 
 
@@ -111,6 +107,7 @@ void windowstop()
 void windowcreate()
 {
 	windowchange(1);
+	pthread_create(&id, NULL, uievent, NULL);
 }
 void windowdelete()
 {
