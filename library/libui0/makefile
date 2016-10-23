@@ -1,45 +1,53 @@
+flag := -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
+
 ############################linux#########################
 .PHONY:linuxcli
 linuxcli:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.cli.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.cli.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxtui
 linuxtui:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.tui.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.tui.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxfb
 linuxfb:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.fb.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.fb.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxwayland
 linuxwayland:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.wayland.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.wayland.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxxlib
 linuxxlib:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.xlib.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.xlib.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxepoll
 linuxepoll:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast linux/linux.epoll.c
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) linux/linux.epoll.c
+	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxsdl
 linuxsdl:
 	rm -f *.o
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	gcc -c -fPIC -O2 -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast display.c
+	gcc -c -O2 $(flag) cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	gcc -c -O2 $(flag) display.c
+
+.PHONY:linuxopengl
+linuxopengl:
+	rm -f *.o
+	gcc -c -O2 $(flag) cross/cross.opengl.c
+	gcc -c -O2 $(flag) display.c
 #########################################################
 
 

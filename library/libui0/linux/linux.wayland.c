@@ -5,19 +5,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <wayland-client.h>
-#include <wayland-client-protocol.h>
-#include <wayland-server-protocol.h>
-#include <wayland-egl.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <errno.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <wayland-client.h>
+#include <wayland-client-protocol.h>
+#include <wayland-server-protocol.h>
+#include <wayland-egl.h>
+void eventwrite(u64,u64);
 void say(char*,...);
 
 
 
 
+//
+static pthread_t id;
 //display
 static struct wl_display *display = NULL;
 static struct wl_registry *registry = NULL;
@@ -39,46 +43,12 @@ static int height = 512;
 
 
 
-static int enq=0;
-static int deq=0;
-static char kbd[256];
-int uievent(u64* what, u64* who, u64* where, u64* when)
-{
-printf("here\n");
-	if(enq == deq)
-	{
-printf("enq=%d,deq=%d\n",enq,deq);
-		*who = 0x656d6974;
-		return 1;
-	}
-
-	else
-	{
-printf("else\n");
-		*who = 0x64626b;
-		*what = kbd[deq];
-		deq = (deq + 1) % 256;
-		return 1;
-	}
-}
-
-
-
-
-
-
-
-
 void windowlist()
 {
 }
 void windowchange()
 {
 }
-
-
-
-
 
 
 
@@ -93,10 +63,6 @@ void windowwrite()
 	wl_surface_attach(surface, buffer, 0, 0);
 	wl_surface_commit(surface);
 }
-
-
-
-
 
 
 
@@ -222,18 +188,14 @@ static void keyboard_handle_key(void *data, struct wl_keyboard *keyboard, uint32
 {
 	if(state == 0)
 	{
-		if( ((enq+1)%256) == deq)return;
-
-		if(key == 0x01)kbd[enq] = 0x1b;
-		else if(key == 0x67)kbd[enq] = 0x26;
-		else if(key == 0x6c)kbd[enq] = 0x28;
-		else if(key == 0x69)kbd[enq] = 0x25;
-		else if(key == 0x6a)kbd[enq] = 0x27;
-		else kbd[enq] = key;
-
-		enq = (enq + 1) % 256;
+		if(key == 0x01)eventwrite(0x1b, 0x64626b);
+		else if(key == 0x67)eventwrite(0x26, 0x64626b);
+		else if(key == 0x6c)eventwrite(0x28, 0x64626b);
+		else if(key == 0x69)eventwrite(0x25, 0x64626b);
+		else if(key == 0x6a)eventwrite(0x27, 0x64626b);
+		else printf("%x\n",key);
 	}
-	fprintf(stderr, "Key=%x, state=%x,enq=%x,deq=%x\n", key, state, enq, deq);
+	fprintf(stderr, "Key=%x, state=%x\n", key, state);
 }
 static void keyboard_handle_modifiers(void *data, struct wl_keyboard *keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)
 {
@@ -250,7 +212,6 @@ static void seat_handle_capabilities(void *data, struct wl_seat *seat, enum wl_s
 {
 	if(caps & WL_SEAT_CAPABILITY_KEYBOARD)
 	{
-		enq = deq = 0;
 		keyboard = wl_seat_get_keyboard(seat);
 		wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL);
 	}
@@ -328,10 +289,10 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
 	handle_configure,
 	handle_popup_done
 };
-
-
-void windowcreate()
+void* uievent(void* p)
 {
+	int ret;
+
 	//display
 	display = wl_display_connect(NULL);
 	if (display == NULL)
@@ -339,24 +300,21 @@ void windowcreate()
 		fprintf(stderr, "Can't connect to display\n");
 		exit(-1);
 	}
-	else
-	{
-		printf("connected to display\n");
-	}
+	printf("connected to display\n");
 
 	//registry
 	registry = wl_display_get_registry(display);
 	wl_registry_add_listener(registry, &registry_listener, NULL);
+
+	wl_display_dispatch(display);
 	wl_display_roundtrip(display);
+
 	if (compositor == NULL)
 	{
 		fprintf(stderr, "Can't find compositor\n");
 		exit(-1);
 	}
-	else
-	{
-		fprintf(stderr, "Found compositor\n");
-	}
+	fprintf(stderr, "Found compositor\n");
 
 	//surface
 	surface = wl_compositor_create_surface(compositor);
@@ -365,10 +323,7 @@ void windowcreate()
 		fprintf(stderr, "Can't create surface\n");
 		exit(-1);
 	}
-	else
-	{
-		fprintf(stderr, "Created surface\n");
-	}
+	else fprintf(stderr, "Created surface\n");
 
 	//shell_surface
 	shell_surface = wl_shell_get_shell_surface(shell, surface);
@@ -377,17 +332,23 @@ void windowcreate()
 		fprintf(stderr, "Can't create shell surface\n");
 		exit(-1);
 	}
-	else
-	{
-		fprintf(stderr, "Created shell surface\n");
-	}
+	else fprintf(stderr, "Created shell surface\n");
 
 	//?
 	wl_shell_surface_set_toplevel(shell_surface);
 	wl_shell_surface_add_listener(shell_surface, &shell_surface_listener, NULL);
-	//wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL);
+
+	while(1)
+	{
+		ret = wl_display_dispatch(display);
+	}
+
+	wl_display_disconnect(display);
+}
+void windowcreate()
+{
+	pthread_create(&id, NULL, uievent, NULL);
 }
 void windowdelete()
 {
-	wl_display_disconnect(display);
 }

@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<pthread.h>
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_video.h>
 #undef main
@@ -13,14 +14,73 @@ void eventwrite(u64,u64);
 
 
 //
-int width=1024;
-int height=768;
-unsigned int* mypixel;
+static pthread_t id;
+static u32* mypixel;
+static int width=1024;
+static int height=768;
 //sdl
-SDL_Window* window;//窗口
-SDL_Renderer* renderer;	//什么是render
-SDL_Texture* texture;		//texture是在显存里的？
-SDL_TimerID my_timer_id;
+static SDL_Window* window;//窗口
+static SDL_Renderer* renderer;	//什么是render
+static SDL_Texture* texture;		//texture是在显存里的？
+static SDL_TimerID my_timer_id;
+
+
+
+
+//自定义的种类码，不是sdl的不要混淆
+//0:退出
+//1:键盘按下
+//2:键盘松开
+//3:鼠标按下
+//4:鼠标松开
+//5:鼠标移动
+//0xff:时间
+void* uievent(void* p)
+{
+	SDL_Event event;
+	while(1)
+	{
+		if(!SDL_WaitEvent(&event))continue;
+
+		if(event.type == SDL_QUIT)
+		{
+			eventwrite(0,0);
+			break;
+		}
+		else if (event.type == SDL_KEYDOWN)
+		{
+			int val = event.key.keysym.sym;
+
+			if(val==0x1b)eventwrite(0x1b,0x64626b);
+			else if(val==0x40000050)eventwrite(0x25,0x64626b);
+			else if(val==0x40000052)eventwrite(0x26,0x64626b);
+			else if(val==0x4000004f)eventwrite(0x27,0x64626b);
+			else if(val==0x40000051)eventwrite(0x28,0x64626b);
+			else if(val==0x8)eventwrite(0x8,0x72616863);
+			else if(val==0xd)eventwrite(0xd,0x72616863);
+		}
+		else if (event.type == SDL_TEXTINPUT)
+		{
+			int val = event.text.text[0];
+			eventwrite(val, 0x72616863);
+		}
+		else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
+		{
+			if(event.button.button=SDL_BUTTON_LEFT)
+			{
+				int x=event.button.x;
+				int y=event.button.y;
+				eventwrite(x+(y<<16)+((u64)1<<48), 0x2d6d);
+			}
+		}
+	}//while(1)
+
+	//释放sdl
+	SDL_DestroyTexture(texture);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window); 
+	SDL_Quit(); 
+}
 
 
 
@@ -29,14 +89,10 @@ void windowcreate()
 {
 	//准备sdl
 	SDL_Init(SDL_INIT_EVERYTHING);
+	pthread_create(&id, NULL, uievent, NULL);
 }
 void windowdelete()
 {
-	//释放sdl
-	SDL_DestroyTexture(texture);
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window); 
-	SDL_Quit(); 
 }
 void windowstart(char* addr, char* pixfmt, int x, int y)
 {
@@ -78,61 +134,4 @@ void windowwrite()
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, texture, NULL, NULL);
   SDL_RenderPresent(renderer);
-}
-
-
-//自定义的种类码，不是sdl的不要混淆
-//0:退出
-//1:键盘按下
-//2:键盘松开
-//3:鼠标按下
-//4:鼠标松开
-//5:鼠标移动
-//0xff:时间
-int uievent(u64* what, u64* who, u64* where, u64* when)
-{
-	SDL_Event event;
-	int val;
-	while (1)
-	{
-		if (SDL_WaitEvent(&event))
-		{
-			if(event.type == SDL_QUIT)
-			{
-				*who = 0;
-				return 1;
-			}
-			else if (event.type == SDL_KEYDOWN)
-			{
-				*who = 0x64626b;
-				val = event.key.keysym.sym;
-				//printf("%x\n",val);
-
-				if(val==0x1b){*what=0x1b;return 0;}
-				else if(val==0x40000050){*what=0x25;return 0;}
-				else if(val==0x40000052){*what=0x26;return 0;}
-				else if(val==0x4000004f){*what=0x27;return 0;}
-				else if(val==0x40000051){*what=0x28;return 0;}
-				else
-				{
-					*who = 0x72616863;
-					*what = val;
-					return 1;
-				}
-			}
-			else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
-			{
-				if(event.button.button=SDL_BUTTON_LEFT)
-				{
-					//如果是左键按下的事件，就要判断按下鼠标的时候鼠标是否处在button区域中，所以要得到鼠标坐标
-					int x=event.button.x;
-					int y=event.button.y;
-
-					*who = 0x2d6d;
-					*what = x+(y<<16)+((u64)1<<48);
-					return 1;
-				}
-			}
-		}//如果有事件
-	}//while(1)
 }

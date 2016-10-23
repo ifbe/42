@@ -11,6 +11,7 @@
 #include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+void eventwrite(u64,u64);
 void say(char*,...);
 
 

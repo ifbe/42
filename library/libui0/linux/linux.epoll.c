@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
+#include <pthread.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -20,17 +21,22 @@
 #define PORT 2222
 #define MAXSIZE 1024
 //
-void datastr2hexstr(u8* out, u8* in, int len);
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
-u32 getrandom();
+void datastr2hexstr(u8* out, u8* in, int len);
 //
+u32 getrandom();
 void printmemory(char*,int);
 void say(char*,...);
+//
+void eventwrite(u64,u64);
 
 
 
 
+//
+static pthread_t id;
+static char event_queue[0x100000];
 //
 static int width;
 static int height;
@@ -47,9 +53,6 @@ static char* http_response = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n
 static int http_response_size;
 static char http_context[0x100000];
 static int http_context_size;
-//
-static char event_queue[0x100000];
-static int event_count=0;
 //
 static unsigned char recvbuf[0x100000];
 static unsigned char* sendbuf;
@@ -258,6 +261,26 @@ void windowlist()
 }
 void windowchoose()
 {
+}
+void windowstop()
+{
+	//only close all client
+	//listenfd and epollfd unchanged
+}
+void windowstart(char* addr, char* pixfmt, int x, int y)
+{
+	//
+	sendbuf = addr;
+
+	//
+	*(u64*)pixfmt = 0;
+	snprintf(pixfmt, 5, "html");
+
+	//
+	width = x;
+
+	//
+	height = y;
 }
 
 
@@ -469,7 +492,7 @@ reply:
 
 		//event
 		*(u64*)(event_queue+0) = 0xabcdef;
-		event_count = 1;
+		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue);
 	}
 
 	else if(clienttype[fd]==0x1f)
@@ -489,7 +512,7 @@ reply:
 			*(u64*)(event_queue+8) = len;
 			*(u32*)(event_queue+4) = 0;
 		}
-		event_count = 1;
+		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue);
 	}
 }
 void handshake_websocket(int fd)
@@ -666,71 +689,37 @@ static void handle_accpet(int listenfd)
 
 	epoll_add(fd);
 }
-static void handle_events()
+void* handle_events(void* p)
 {
 	int i;
 	int fd;
-	int num = epoll_wait(epollfd, epollevent, MAXSIZE, -1);
-
-	for (i = 0;i < num;i++)
-	{
-		if (epollevent[i].events & EPOLLIN)
-		{
-			fd = epollevent[i].data.fd;
-
-			if(fd == listenfd)
-			{
-				handle_accpet(listenfd);
-			}
-			else handle_read(fd);
-		}
-	}
-}
-
-
-
-
-
-
-
-
-void uievent(char* what, char* who, char* where, char* when)
-{
+	int num;
 	while(1)
 	{
-		if(event_count > 0)
+		num = epoll_wait(epollfd, epollevent, MAXSIZE, -1);
+		for (i = 0;i < num;i++)
 		{
-			*(u64*)who = *(u64*)event_queue;
-			*(u64*)what = *(u64*)(event_queue + 8);
-			event_count = 0;
+			if (epollevent[i].events & EPOLLIN)
+			{
+				fd = epollevent[i].data.fd;
 
-			//printmemory(event_queue, 16);
-			return;
+				if(fd == listenfd)
+				{
+					handle_accpet(listenfd);
+				}
+				else handle_read(fd);
+			}
 		}
-
-		handle_events();
 	}
 }
-void windowstop()
-{
-	//only close all client
-	//listenfd and epollfd unchanged
-}
-void windowstart(char* addr, char* pixfmt, int x, int y)
-{
-	//
-	sendbuf = addr;
 
-	//
-	*(u64*)pixfmt = 0;
-	snprintf(pixfmt, 5, "html");
 
-	//
-	width = x;
 
-	//
-	height = y;
-}
+
+
+
+
+
 void windowdelete(int num)
 {
 	int j;
@@ -747,9 +736,6 @@ int windowcreate()
 	struct sockaddr_in servaddr;
 	struct sigaction sa;
 
-
-
-
 	//clean
 	for(ret=0;ret<MAXSIZE;ret++)
 	{
@@ -757,9 +743,6 @@ int windowcreate()
 	}
 	websocket_count = 0;
 	websocket_last = 3;
-
-
-
 
 	//socket
 	bzero(&servaddr, sizeof(servaddr));
@@ -774,6 +757,7 @@ int windowcreate()
 		exit(-1);
 	}
 
+	//setopt
 	ret = 1;
 	ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(ret<0)
@@ -789,18 +773,15 @@ int windowcreate()
 	}
 	listen(listenfd, 5);
 
-
-
-
 	//epoll
 	epollfd = epoll_create(MAXSIZE);
 	epoll_add(listenfd);
 	if(listenfd < MAXSIZE)clienttype[listenfd] = 0;
 
-
-
-
 	//do not stop when SIGPIPE
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE,&sa,0);
+
+	//
+	pthread_create(&id, NULL, handle_events, NULL);
 }

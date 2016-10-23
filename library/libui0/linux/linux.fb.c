@@ -10,6 +10,7 @@
 #include<pthread.h>
 #include<sys/ioctl.h>		//	ioctl
 #include<linux/fb.h>		//	framebuffer
+void eventwrite(u64,u64);
 
 
 
@@ -46,15 +47,15 @@ static int height=768;
 void* uievent(void* p)
 {
 	u8 ch;
-	if(xmax != width)
-	{
-		width = xmax;
-		height = ymax;
-		eventwrite(width + (height<<16), 0x657a6973);
-	}
-
 	while(1)
 	{
+		if(xmax != width)
+		{
+			width = xmax;
+			height = ymax;
+			eventwrite(width + (height<<16), 0x657a6973);
+		}
+
 		ch = getchar();
 		if( (ch == 0xff) | (ch == 0) )
 		{
@@ -217,22 +218,15 @@ void windowcreate()
 	bpp=vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
 
-/*
-	//input部分
-	inputfp=open("/dev/input/event3",O_RDONLY);
-	if(inputfp<=0)
-	{
-		printf("error4(plese sudo)\n");
-		exit(-1);
-	}
-*/
-
 	//输入方法2
 	signal=tcgetattr(STDIN_FILENO,&old);
 	new=old;
 	new.c_lflag&=~(ICANON|ECHO);
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+
+	//
+	pthread_create(&id, NULL, uievent, NULL);
 }
 //__attribute__((destructor)) void destoryfb()
 void windowdelete()
