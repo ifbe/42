@@ -136,6 +136,9 @@ void windowstart(char* pixbuf, char* pixfmt, int w, int h)
 	int size;
 	int fd;
 
+	//wait for thread
+	usleep(10000);
+
 	width = w;
 	height = h;
 	size = width * height * 4;

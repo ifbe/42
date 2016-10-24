@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<unistd.h>
 #include<pthread.h>
 #include<X11/Xlib.h>
 #define u64 unsigned long long
@@ -53,14 +54,13 @@ static char xlib2kbd[0x80]={
 //
 static pthread_t id;
 //
-static Display* dsp;
-static Visual *visual;
-static XImage* ximage;
+static Display* dsp=0;
+static Visual *visual=0;
+static XImage* ximage=0;
 static Window win;
 static GC gc;
 static Atom wmDelete;
 //
-static char* srcbuf=0;
 static char* pixbuf=0;
 static int pixfmt=0;
 static int width=512;
@@ -98,6 +98,10 @@ u32 windowread(u64 what)
 void windowwrite()
 {
 	int x,y,z;
+	if(pixbuf==0)return;
+	if(ximage==0)return;
+
+	//
 	XLockDisplay(dsp);
 
 	if(pixfmt==8)
@@ -117,6 +121,9 @@ void windowwrite()
 
 void windowstart(char* addr, char* fmt, int x, int y)
 {
+	//wait for pthread inited
+	usleep(10000);
+
 	//
 	width = x;
 	height = y;
@@ -183,10 +190,7 @@ void* uievent(void* p)
 		{
 			if (ev.xexpose.count == 0)
 			{
-				if(pixbuf!=0)
-				{
-					windowwrite();
-				}
+				windowwrite();
 			}
 		}
 		else if(ev.type==ClientMessage)

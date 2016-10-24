@@ -36,7 +36,7 @@ void* eventread()
 	int ret;
 	while(enq == deq)
 	{
-		sleep_us(1000);
+		sleep_us(10000);
 	}
 	ret = deq;
 	deq = (deq+0x20)%0x100000;

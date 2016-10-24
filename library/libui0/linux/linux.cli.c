@@ -31,7 +31,7 @@ void* uievent(void* p)
 		buf[0] = getchar();
 		if( (buf[0] == 0) | (buf[0]==0xff) )
 		{
-			usleep(1000);
+			usleep(10000);
 			continue;
 		}
 

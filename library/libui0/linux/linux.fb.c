@@ -59,7 +59,7 @@ void* uievent(void* p)
 		ch = getchar();
 		if( (ch == 0xff) | (ch == 0) )
 		{
-			usleep(1000);
+			usleep(10000);
 			continue;
 		}
 		else if(ch==0x1b)
@@ -67,7 +67,7 @@ void* uievent(void* p)
 			ch = getchar();
 			if( (ch == 0xff) | (ch == 0) )
 			{
-				usleep(1000);
+				usleep(10000);
 				ch = getchar();
 				if( (ch == 0xff) | (ch == 0) )
 				{
