@@ -27,7 +27,7 @@ static struct sockaddr_in server = {0};
 
 
 
-void* readsocket(void* p)
+void* readclient(void* p)
 {
 	int ret;
 	char buf[256];
@@ -58,7 +58,7 @@ void* readsocket(void* p)
 	}
 	return 0;
 }
-int writesocket(char* buf,int len)
+int writeclient(char* buf,int len)
 {
 	int ret;
 	if(st == SOCK_DGRAM)
@@ -77,7 +77,7 @@ int writesocket(char* buf,int len)
 
 
 
-int listsocket(char* type)
+int listclient(char* type)
 {
 	if(strncmp(type, "udp", 3) == 0)
 	{
@@ -89,7 +89,7 @@ int listsocket(char* type)
 	}
 	return 1;
 }
-int choosesocket(char* type, char* addr, int port, char* extra)
+int chooseclient(char* type, char* addr, int port, char* extra)
 {
 	int ret;
 	if(fd > 0)
@@ -144,7 +144,7 @@ int choosesocket(char* type, char* addr, int port, char* extra)
 
 	//thread
 	alive = 1;
-	pthread_create(&id, NULL, readsocket, NULL);
+	pthread_create(&id, NULL, readclient, NULL);
 
 	//success
 	return 1;
@@ -153,13 +153,15 @@ int choosesocket(char* type, char* addr, int port, char* extra)
 
 
 
-int startsocket()
+int startclient()
 {
+	return 0;
 }
-int stopsocket()
+int stopclient()
 {
+	return 0;
 }
-int createsocket()
+int createclient()
 {
 	//do not delete process while receiving SIGPIPE
 	struct sigaction sa;
@@ -168,8 +170,7 @@ int createsocket()
 
 	return 1;
 }
-int deletesocket()
+int deleteclient()
 {
-	stopsocket();
 	return 1;
 }

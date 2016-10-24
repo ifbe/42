@@ -1,4 +1,6 @@
 #define u64 unsigned long long
+void client_create(void*,void*);
+void server_create(void*,void*);
 void arp_create(void*,void*);
 void eth_create(void*,void*);
 void ftp_create(void*,void*);
@@ -10,8 +12,9 @@ void ppp_create(void*,void*);
 void quic_create(void*,void*);
 void slip_create(void*,void*);
 void ssh_create(void*,void*);
-void sock_create(void*,void*);
 void tftp_create(void*,void*);
+void client_delete();
+void server_delete();
 void arp_delete();
 void eth_delete();
 void ftp_delete();
@@ -23,7 +26,6 @@ void ppp_delete();
 void quic_delete();
 void slip_delete();
 void ssh_delete();
-void sock_delete();
 void tftp_delete();
 
 
@@ -63,6 +65,12 @@ int net_create(char* world,u64* p)
 	//
 	char* q=(char*)p+0x80;
 
+	client_create(world,q);
+	q+=0x80;
+
+	server_create(world,q);
+	q+=0x80;
+
 	arp_create(world,q);
 	q+=0x80;
 
@@ -96,9 +104,6 @@ int net_create(char* world,u64* p)
 	ssh_create(world,q);
 	q+=0x80;
 
-	sock_create(world,q);
-	q+=0x80;
-
 	tftp_create(world,q);
 	q+=0x80;
 
@@ -108,7 +113,6 @@ int net_delete()
 {
 	tftp_delete();
 	ssh_delete();
-	sock_delete();
 	slip_delete();
 	quic_delete();
 	ppp_delete();
@@ -119,4 +123,6 @@ int net_delete()
 	ftp_delete();
 	eth_delete();
 	arp_delete();
+	server_delete();
+	client_delete();
 }

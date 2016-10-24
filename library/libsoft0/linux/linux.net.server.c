@@ -16,30 +16,31 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-//
-#define IPADDRESS "0.0.0.0"
-#define PORT 2222
 #define MAXSIZE 1024
+//
+void eventwrite(u64,u64);
 //
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
-//
 u32 getrandom();
+//
 void printmemory(char*,int);
 void say(char*,...);
+
+
+
+
 //
-void eventwrite(u64,u64);
-
-
-
-
+static int PORT;
+static char IPADDRESS[32]="0.0.0.0";
+static char DIRECTORY[64];
 //
 static pthread_t id;
 static char event_queue[0x100000];
 //
-static int width;
-static int height;
+static int width = 512;
+static int height = 512;
 //
 static int listenfd=-1;
 static int epollfd=-1;
@@ -261,24 +262,6 @@ void listserver()
 }
 void chooseserver()
 {
-}
-void stopserver()
-{
-}
-void startserver(char* addr, char* pixfmt, int x, int y)
-{
-	//
-	sendbuf = addr;
-
-	//
-	*(u64*)pixfmt = 0;
-	snprintf(pixfmt, 5, "html");
-
-	//
-	width = x;
-
-	//
-	height = y;
 }
 
 
@@ -691,48 +674,8 @@ void* handle_events(void* p)
 {
 	int i;
 	int fd;
-	int num;
-	while(1)
-	{
-		num = epoll_wait(epollfd, epollevent, MAXSIZE, -1);
-		for (i = 0;i < num;i++)
-		{
-			if (epollevent[i].events & EPOLLIN)
-			{
-				fd = epollevent[i].data.fd;
-
-				if(fd == listenfd)
-				{
-					handle_accpet(listenfd);
-				}
-				else handle_read(fd);
-			}
-		}
-	}
-}
-
-
-
-
-
-
-
-
-void deleteserver(int num)
-{
-	int j;
-	for(j=0;j<MAXSIZE;j++)
-	{
-		if(clienttype[j] != 0)epoll_del(j);
-	}
-	if(listenfd>0)epoll_del(listenfd);
-	if(epollfd>0)close(epollfd);
-}
-int createserver()
-{
 	int ret;
 	struct sockaddr_in servaddr;
-	struct sigaction sa;
 
 	//clean
 	for(ret=0;ret<MAXSIZE;ret++)
@@ -776,10 +719,60 @@ int createserver()
 	epoll_add(listenfd);
 	if(listenfd < MAXSIZE)clienttype[listenfd] = 0;
 
-	//do not stop when SIGPIPE
-	sa.sa_handler=SIG_IGN;
-	sigaction(SIGPIPE,&sa,0);
+	while(1)
+	{
+		ret = epoll_wait(epollfd, epollevent, MAXSIZE, -1);
+		for (i=0; i<ret; i++)
+		{
+			if (epollevent[i].events & EPOLLIN)
+			{
+				fd = epollevent[i].data.fd;
+
+				if(fd == listenfd)
+				{
+					handle_accpet(listenfd);
+				}
+				else handle_read(fd);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+void stopserver()
+{
+	int j;
+	for(j=0;j<MAXSIZE;j++)
+	{
+		if(clienttype[j] != 0)epoll_del(j);
+	}
+	if(listenfd>0)epoll_del(listenfd);
+	if(epollfd>0)close(epollfd);
+}
+void startserver(char* addr, int port, char* dir, int opt)
+{
+	//snprintf();
+	PORT = port;
+	snprintf(DIRECTORY, 64, "%s", dir);
 
 	//
 	pthread_create(&id, NULL, handle_events, NULL);
+}
+void deleteserver(int num)
+{
+}
+int createserver()
+{
+	int ret;
+	struct sigaction sa;
+
+	//do not stop when SIGPIPE
+	sa.sa_handler=SIG_IGN;
+	sigaction(SIGPIPE,&sa,0);
 }

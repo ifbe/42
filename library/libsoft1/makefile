@@ -50,6 +50,8 @@ target:
 	$(compiler) $(cflag) memory/text/convert/convert.network.c
 	$(compiler) $(cflag) memory/text/convert/convert.number.c
 	$(compiler) $(cflag) net/net.c
+	$(compiler) $(cflag) net/net.client.c
+	$(compiler) $(cflag) net/net.server.c
 	$(compiler) $(cflag) net/net.arp.c
 	$(compiler) $(cflag) net/net.ethernet.c
 	$(compiler) $(cflag) net/net.ftp.c
@@ -60,7 +62,6 @@ target:
 	$(compiler) $(cflag) net/net.ppp.c
 	$(compiler) $(cflag) net/net.quic.c
 	$(compiler) $(cflag) net/net.slip.c
-	$(compiler) $(cflag) net/net.sock.c
 	$(compiler) $(cflag) net/net.ssh.c
 	$(compiler) $(cflag) net/net.tftp.c
 	$(compiler) $(cflag) special/special.c

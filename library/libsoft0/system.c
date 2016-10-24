@@ -14,9 +14,6 @@ int deleteprocess();
 //random
 int createrandom();
 int deleterandom();
-//server
-int createserver();
-int deleteserver();
 //signal
 int createsignal();
 int deletesignal();
@@ -43,7 +40,6 @@ void systemcreate(char* module,char* addr)
 		createfile();
 		createfolder();
 		createrandom();
-		createserver();
 		createsignal();
 	}
 	say("[8,c):createed system\n");
@@ -53,7 +49,6 @@ void systemdelete()
 	say("[8,c):deleteing system\n");
 
 	deletesignal();
-	deleteserver();
 	deleterandom();
 	deletefolder();
 	deletefile();

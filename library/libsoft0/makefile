@@ -19,8 +19,8 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.interface.wifi.c
 	gcc -c -fPIC -O2 linux/linux.memory.file.c
 	gcc -c -fPIC -O2 linux/linux.memory.mmio.c
-	gcc -c -fPIC -O2 linux/linux.net.epoll.c
-	gcc -c -fPIC -O2 linux/linux.net.socket.c
+	gcc -c -fPIC -O2 linux/linux.net.client.c
+	gcc -c -fPIC -O2 linux/linux.net.server.c
 	gcc -c -fPIC -O2 linux/linux.special.folder.c
 	gcc -c -fPIC -O2 linux/linux.special.process.c
 	gcc -c -fPIC -O2 linux/linux.special.random.c
@@ -40,8 +40,8 @@ mac:
 	clang -c -O2 mac/mac.interface.wifi.c
 	clang -c -O2 mac/mac.memory.file.c
 	clang -c -O2 mac/mac.memory.mmio.c
-	clang -c -O2 mac/mac.net.kqueue.c
-	clang -c -O2 mac/mac.net.socket.c
+	clang -c -O2 mac/mac.net.client.c
+	clang -c -O2 mac/mac.net.server.c
 	clang -c -O2 mac/mac.special.folder.c
 	clang -c -O2 mac/mac.special.random.c
 	clang -c -O2 mac/mac.special.signal.c
@@ -60,8 +60,8 @@ win:
 	gcc -c -O2 win/win.interface.wifi.c
 	gcc -c -O2 win/win.memory.file.c
 	gcc -c -O2 win/win.memory.virtual.c
-	gcc -c -O2 win/win.net.iocp.c
-	gcc -c -O2 win/win.net.socket.c
+	gcc -c -O2 win/win.net.client.c
+	gcc -c -O2 win/win.net.server.c
 	gcc -c -O2 win/win.special.folder.c
 	gcc -c -O2 win/win.special.process.c
 	gcc -c -O2 win/win.special.random.c
