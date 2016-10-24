@@ -6,7 +6,7 @@ all:
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 linuxepoll
+	make -s -C $(library)/libui0 linuxgtk
 	make -s -C $(library)/libui1 gcc
 	make -s -C $(library)/visitor0
 	make -s -C $(library)/visitor1 gui
@@ -47,6 +47,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lpthread
+	-lpthread `pkg-config --libs gtk+-3.0`
 clean:
 	rm -f *.o *.a *.so

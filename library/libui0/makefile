@@ -19,6 +19,12 @@ linuxfb:
 	gcc -c -O2 $(flag) linux/linux.fb.c
 	gcc -c -O2 $(flag) display.c
 
+.PHONY:linuxgtk
+linuxgtk:
+	rm -f *.o
+	gcc -c -O2 `pkg-config --cflags gtk+-3.0` $(flag) linux/linux.gtk.c
+	gcc -c -O2 $(flag) display.c
+
 .PHONY:linuxwayland
 linuxwayland:
 	rm -f *.o
@@ -31,22 +37,16 @@ linuxxlib:
 	gcc -c -O2 $(flag) linux/linux.xlib.c
 	gcc -c -O2 $(flag) display.c
 
-.PHONY:linuxepoll
-linuxepoll:
+.PHONY:linuxopengl
+linuxopengl:
 	rm -f *.o
-	gcc -c -O2 $(flag) linux/linux.epoll.c
+	gcc -c -O2 $(flag) cross/cross.opengl.c
 	gcc -c -O2 $(flag) display.c
 
 .PHONY:linuxsdl
 linuxsdl:
 	rm -f *.o
 	gcc -c -O2 $(flag) cross/cross.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	gcc -c -O2 $(flag) display.c
-
-.PHONY:linuxopengl
-linuxopengl:
-	rm -f *.o
-	gcc -c -O2 $(flag) cross/cross.opengl.c
 	gcc -c -O2 $(flag) display.c
 #########################################################
 
@@ -78,10 +78,10 @@ macquartz:
 	clang -c -fPIC -O2 mac/mac.cocoa.c
 	clang -c -fPIC -O2 display.c
 
-.PHONY:mackqueue
-mackqueue:
+.PHONY:macopengl
+macopengl:
 	rm -f *.o
-	clang -c -O2 mac/mac.kqueue.c
+	clang -c -O2 cross/cross.opengl.c
 	gcc -c -O2 display.c
 
 .PHONY:macsdl
@@ -113,10 +113,10 @@ winapi:
 	gcc -c -O2 win/win.api.c
 	gcc -c -O2 display.c
 
-.PHONY:winiocp
-winiocp:
+.PHONY:winopengl
+winopengl:
 	rm -f *.o
-	gcc -c -O2 win/win.iocp.c
+	gcc -c -O2 cross/cross.opengl.c
 	gcc -c -O2 display.c
 
 .PHONY:winsdl

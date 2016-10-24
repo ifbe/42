@@ -10,7 +10,8 @@
 
 
 
-char buffer[256];
+int cur=0;
+char buffer[0x1000];
 int diary(char* mem, int max, char* fmt, ...)
 {
 	int ret;
@@ -24,11 +25,33 @@ int diary(char* mem, int max, char* fmt, ...)
 }
 void say(char* fmt , ...)
 {
+	int i,j;
 	va_list args;
 	va_start(args,fmt);
-	vsnprintf(buffer , 256 , fmt , args);
+	cur += vsnprintf(buffer+cur , 0x1000-cur , fmt , args);
 	va_end(args);
-	LOGI("%s",buffer);
+
+	i = 0;
+	for(j=0;j<cur;j++)
+	{
+		if(buffer[j] == 0)break;
+		if(buffer[j] == '\n')
+		{
+			buffer[j] = 0;
+			LOGI("%s",buffer+i);
+
+			i=j+1;
+		}
+	}
+
+	if(i == j)cur = 0;
+	else
+	{
+		for(cur=0;cur<j-i;cur++)
+		{
+			buffer[cur] = buffer[cur+i];
+		}
+	}
 }
 
 

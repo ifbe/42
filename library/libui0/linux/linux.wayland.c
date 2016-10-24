@@ -35,8 +35,8 @@ static struct wl_callback *frame_callback;
 struct wl_seat *seat;
 struct wl_keyboard *keyboard;
 //
-static void* shm_data;
-static void* buffer;
+static void* shm_data = 0;
+static void* buffer = 0;
 static int width = 512;
 static int height = 512;
 
@@ -341,9 +341,17 @@ void* uievent(void* p)
 	wl_shell_surface_set_toplevel(shell_surface);
 	wl_shell_surface_add_listener(shell_surface, &shell_surface_listener, NULL);
 
+	//wait for start
 	while(1)
 	{
-		ret = wl_display_dispatch(display);
+		if(buffer == 0)usleep(10000);
+		else break;
+	}
+
+	//loop
+	while(1)
+	{
+		ret = wl_display_roundtrip(display);
 	}
 
 	wl_display_disconnect(display);

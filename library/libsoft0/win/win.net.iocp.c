@@ -1,0 +1,6 @@
+void createserver()
+{
+}
+void deleteserver()
+{
+}
