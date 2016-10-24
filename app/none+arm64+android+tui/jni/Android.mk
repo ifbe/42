@@ -84,8 +84,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.physical.c \
 	library/libsoft0/linux/linux.memory.virtual.c \
-	library/libsoft0/linux/linux.net.epoll.c \
-	library/libsoft0/linux/linux.net.socket.c \
+	library/libsoft0/linux/linux.net.client.c \
+	library/libsoft0/linux/linux.net.server.c \
 	library/libsoft0/linux/linux.special.folder.c \
 	library/libsoft0/linux/linux.special.process.c \
 	library/libsoft0/linux/linux.special.random.c \
@@ -143,6 +143,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/memory/text/convert/convert.network.c \
 	library/libsoft1/memory/text/convert/convert.number.c \
 	library/libsoft1/net/net.c \
+	library/libsoft1/net/net.client.c \
+	library/libsoft1/net/net.server.c \
 	library/libsoft1/net/net.arp.c \
 	library/libsoft1/net/net.ethernet.c \
 	library/libsoft1/net/net.ftp.c \
@@ -153,7 +155,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/net/net.ppp.c \
 	library/libsoft1/net/net.quic.c \
 	library/libsoft1/net/net.slip.c \
-	library/libsoft1/net/net.sock.c \
 	library/libsoft1/net/net.ssh.c \
 	library/libsoft1/net/net.tftp.c \
 	library/libsoft1/special/special.c \
