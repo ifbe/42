@@ -2,7 +2,13 @@
 #include<stdlib.h>
 #include<string.h>
 #include<winsock2.h>
+#include<ws2tcpip.h> //IP_HDRINCL is here
 #include<windows.h>
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+void printmemory(char*, ...);
 void say(char* , ...);
 
 
@@ -48,23 +54,39 @@ int startclient()
 DWORD WINAPI readclient(LPVOID pM)
 {
 	int ret;
-	char buf[256];
+	u8 buf[0x1000];
 
-	while(alive == 1)
+	if(st == SOCK_RAW)
 	{
-		if(st == IPPROTO_TCP)
+		while(alive == 1)
 		{
-			ret = recv(sclient, buf, 256, 0);
+			ret=recvfrom(sclient, buf, 0x1000, 0, NULL, NULL);
+			printmemory(buf,ret);
 		}
-		else if(st == IPPROTO_UDP)
+	}
+	else if(st == IPPROTO_UDP)
+	{
+		while(alive == 1)
 		{
 			ret = recvfrom(sclient, buf, 256, 0, (void*)&serAddr, &serlen);
-		}
-		if(ret <= 0)continue;
+			if(ret <= 0)continue;
 
-		buf[ret] = 0;
-		printf("%s", buf);
-		fflush(stdout);
+			buf[ret] = 0;
+			printf("%s", buf);
+			fflush(stdout);
+		}
+	}
+	else if(st == IPPROTO_TCP)
+	{
+		while(alive == 1)
+		{
+			ret = recv(sclient, buf, 256, 0);
+			if(ret <= 0)continue;
+
+			buf[ret] = 0;
+			printf("%s", buf);
+			fflush(stdout);
+		}
 	}
 	return 0;
 }
@@ -120,12 +142,54 @@ int chooseclient(char* type, char* addr, int port, char* extra)
     }
 
 	//
-    serAddr.sin_family = AF_INET;
-    serAddr.sin_port = htons(port);
-    serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
-
-	if(strncmp(type, "udp", 3) == 0)
+	if(strncmp(type, "raw", 3) == 0)
 	{
+		sclient = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
+		if(sclient == SOCKET_ERROR)
+		{
+			printf("error:%d@socket\n", GetLastError());
+			return 0;
+		}
+
+		//
+		printf("type=%s, addr=%s, port=%d\n", type, addr, port);
+		memset(&serAddr, 0, sizeof(serAddr));
+		serAddr.sin_addr.s_addr = inet_addr(addr);
+		serAddr.sin_family = PF_INET;
+		serAddr.sin_port = htons(port);
+
+		//
+		if(bind(sclient, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
+		{
+			printf("error:%d@bind\n", GetLastError());
+			return 0;
+		}
+
+		//
+		int one=1;
+		if(WSAIoctl(sclient, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
+		{
+			printf("error:%d@WSAIoctl\n", GetLastError());
+			return 0;
+		}
+
+		//
+		if(setsockopt(sclient, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
+		{
+			printf("error:%d@setsockopt\n", GetLastError());
+			return 0;
+		}
+
+		st = IPPROTO_RAW;
+	}
+	else if(strncmp(type, "udp", 3) == 0)
+	{
+		//
+		serAddr.sin_family = AF_INET;
+		serAddr.sin_port = htons(port);
+		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
+
+		//
 		sclient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if(sclient == INVALID_SOCKET)
 		{
@@ -137,6 +201,12 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 	}
 	else
 	{
+		//
+		serAddr.sin_family = AF_INET;
+		serAddr.sin_port = htons(port);
+		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
+
+		//
 		sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		if(sclient == INVALID_SOCKET)
 		{

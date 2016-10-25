@@ -37,7 +37,6 @@ static struct sockaddr_in server = {0};
 
 void* readclient(void* p)
 {
-	int j;
 	int ret;
 	u8 buf[0x1000];
 
