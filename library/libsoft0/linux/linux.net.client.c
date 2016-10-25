@@ -153,24 +153,23 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 
 
 
-int startclient()
-{
-	return 0;
-}
 int stopclient()
 {
 	return 0;
 }
+int startclient()
+{
+	return 0;
+}
+int deleteclient()
+{
+	return 1;
+}
 int createclient()
 {
-	//do not delete process while receiving SIGPIPE
 	struct sigaction sa;
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE,&sa,0);
 
-	return 1;
-}
-int deleteclient()
-{
 	return 1;
 }

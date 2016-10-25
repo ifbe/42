@@ -769,10 +769,7 @@ void deleteserver(int num)
 }
 int createserver()
 {
-	int ret;
 	struct sigaction sa;
-
-	//do not stop when SIGPIPE
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE,&sa,0);
 }
