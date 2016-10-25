@@ -56,8 +56,9 @@ DWORD WINAPI readclient(LPVOID pM)
 	int ret;
 	u8 buf[0x1000];
 
-	if(st == SOCK_RAW)
+	if(st == IPPROTO_RAW)
 	{
+		printf("if(nothing incoming){turnoff firewall}\n");
 		while(alive == 1)
 		{
 			ret=recvfrom(sclient, buf, 0x1000, 0, NULL, NULL);
