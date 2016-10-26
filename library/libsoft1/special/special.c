@@ -9,21 +9,27 @@ int process_delete();
 
 static int special_list()
 {
+	return 0;
 }
 static int special_choose()
 {
+	return 0;
 }
 static int special_read()
 {
+	return 0;
 }
 static int special_write()
 {
+	return 0;
 }
 static int special_start(u64 type,char* p)
 {
+	return 0;
 }
 static int special_stop()
 {
+	return 0;
 }
 int special_create(char* world,u64* p)
 {
@@ -52,4 +58,5 @@ int special_delete()
 {
 	folder_delete();
 	process_delete();
+	return 0;
 }

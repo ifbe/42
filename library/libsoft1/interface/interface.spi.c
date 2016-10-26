@@ -17,13 +17,16 @@ void say(char*,...);
 
 static int spi_read()
 {
+	return 0;
 }
 static int spi_write()
 {
+	return 0;
 }
 static int spi_list()
 {
 	systemspi_list(0);
+	return 0;
 }
 static int spi_choose(char* p)
 {
@@ -73,11 +76,11 @@ static int spi_choose(char* p)
 }
 static int spi_start(u64 type,char* p)
 {
-	systemspi_start(p);
+	return systemspi_start(p);
 }
 static int spi_stop()
 {
-	systemspi_stop();
+	return systemspi_stop();
 }
 void spi_create(char* world,u64* p)
 {

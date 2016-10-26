@@ -31,23 +31,23 @@ int hfs_delete();
 int ntfs_create(void*,void*);
 int ntfs_delete();
 //
-int cmp(char*,char*);
-int hexstr2data(char*,u64*);
+int cmp(void*,void*);
+int hexstr2data(u8*,u64*);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 int startfile();
 int stopfile();
 //
-int printmemory(char* addr,int count);
-int say(char* str,...);		//+1
+int printmemory(void* addr, int count);
+int say(void* str, ...);
 
 
 
 
 //
-static char* fshome=0;
-static char* dirhome=0;
-static char* datahome=0;
+static u8* fshome=0;
+static u8* dirhome=0;
+static u8* datahome=0;
 
 
 
@@ -195,14 +195,14 @@ void cleverwrite(u8* src, u64 count, u64 where, u64 dst, u64 size, u64 want)
 
 
 //physical function
-static int memory_list(char* arg1)
+static int memory_list(u8* arg1)
 {
-	u64 temp=0;
 	int i,j;
-	char buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	u64 temp=0;
+	u8 buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	u64 target=0;
-	char* addr=fshome;
+	u8* addr=fshome;
 	//printmemory(fshome,0x200);
 
 	//想要什么
@@ -276,10 +276,11 @@ static int memory_list(char* arg1)
 
 	return 1;
 }//memory_list
-static int memory_choose(char* arg)
+static int memory_choose(u8* arg)
 {
+	return 0;
 }
-static int memory_read(char* arg1)
+static int memory_read(u8* arg1)
 {
 	u64 value;
 	if(arg1==0)return -1;
@@ -304,7 +305,7 @@ static int memory_read(char* arg1)
 
 	return 0;
 }
-static int memory_write(char* arg1)
+static int memory_write(u8* arg1)
 {
 	u64 value;
 	if(arg1==0)return -1;
@@ -330,20 +331,22 @@ static int memory_write(char* arg1)
 
 
 
-int memory_start(char* p)
+int memory_start(u8* p)
 {
-	startfile(p);
+	return startfile(p);
 }
 int memory_stop()
 {
-	stopfile();
+	return stopfile();
 }
 
 
 
 
-int memory_create(char* world,u64* p)
+int memory_create(u8* world,u64* p)
 {
+	u8* q;
+
 	//(自己)4块区域，每块1兆
 	fshome=world+0x100000;
 	dirhome=world+0x200000;
@@ -361,7 +364,7 @@ int memory_create(char* world,u64* p)
 	p[15]=(u64)memory_write;
 
 	//
-	char* q=(char*)p+0x80;
+	q=(u8*)p+0x80;
 
 	mbr_create(world,q);
 	q+=0x80;
@@ -381,7 +384,7 @@ int memory_create(char* world,u64* p)
 	ntfs_create(world,q);
 	q+=0x80;
 
-	return q-(char*)p;
+	return q-(u8*)p;
 }
 int memory_delete()
 {
@@ -391,4 +394,5 @@ int memory_delete()
 	ntfs_delete();
 	gpt_delete();
 	mbr_delete();
+	return 0;
 }

@@ -3,24 +3,24 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //用了别人的
-int cleverread(u64,u64,u64,	char*,u64,u64);
-int cleverwrite(u64,u64,u64,	char*,u64,u64);
+int cleverread(u64,u64,u64,	u8*,u64,u64);
+int cleverwrite(u64,u64,u64,	u8*,u64,u64);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //
-void printmemory(char* addr,int size);
-void say(char* fmt,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //memory
-static char* fshome;			//[0x100000,0x10ffff]
-	static char* pbr;			//[0x110000,0x11ffff]
-	static char* mft0;			//[0x120000,0x12ffff]
-	static char* mftbuffer;		//[0x140000,0x1fffff]
-static char* dirhome;			//[0x200000,0x2fffff]
-static char* datahome;			//[0x300000,0x3fffff]
+static u8* fshome;			//[0x100000,0x10ffff]
+	static u8* pbr;			//[0x110000,0x11ffff]
+	static u8* mft0;		//[0x120000,0x12ffff]
+	static u8* mftbuffer;		//[0x140000,0x1fffff]
+static u8* dirhome;			//[0x200000,0x2fffff]
+static u8* datahome;			//[0x300000,0x3fffff]
 //disk
 static u64 ntfssector;
 static u64 clustersize;
@@ -34,7 +34,7 @@ static int ntfspwd;
 
 //传进来那个run的地址，
 //返回扇区号和扇区数量
-void explainrun(char* runaddr,long long* offset,long long* count)
+void explainrun(u8* runaddr,long long* offset,long long* count)
 {
 	//变量
 	long long temp;
@@ -77,7 +77,7 @@ void explainrun(char* runaddr,long long* offset,long long* count)
 
 
 //目的地是哪里，datarun那一串数字在哪里，你要的是哪里
-void datarun(char* targetaddr,char* runaddr,u64 want,u64 max)
+void datarun(u8* targetaddr,u8* runaddr,u64 want,u64 max)
 {
 	//变量们
 	long long offset=0;
@@ -122,7 +122,7 @@ void datarun(char* targetaddr,char* runaddr,u64 want,u64 max)
 
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
 static u64 firstmftincache;
-char* checkcacheformft(u64 mftnum)
+u8* checkcacheformft(u64 mftnum)
 {
 	//say("checkcacheformft:%x\n",mftnum);
 	//内存里已经是这几个的话就直接返回
@@ -152,7 +152,7 @@ char* checkcacheformft(u64 mftnum)
 			//从mft0的datarun中读取我们要的部分mft
 			//printmemory(mft0+offset,0x80);
 
-			char* temp=mft0+offset;
+			u8* temp=mft0+offset;
 			temp+=(*(u64*)(temp+0x20));
 			datarun(mftbuffer,temp,thistime*0x400,0x80000);
 			firstmftincache=thistime;
@@ -170,10 +170,10 @@ char* checkcacheformft(u64 mftnum)
 
 //输入:(好看的数据)目标位置，(INDX里面诡异的数据)位置，字节数量
 //返回:下一次翻译到哪里(现在解释到了哪)
-char* explainindex(char* rdi,char* rsi,char* end)
+u8* explainindex(u8* rdi, u8* rsi, u8* end)
 {
-	char* buffer=rdi;
-	char* temp=rsi;
+	u8* buffer=rdi;
+	u8* temp=rsi;
 	int i;
 
 	while(1)
@@ -182,7 +182,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 		if( *(u32*)(temp+8) <= 0x18 ) break;
 
 		u64 mftnum=(*(u64*)temp)&0xffffffffffff;
-		char* thismft=checkcacheformft(mftnum);
+		u8* thismft=checkcacheformft(mftnum);
 		u64 offset=*(u16*)(thismft+0x14);
 
 		//[0x10,0x17]=mft号
@@ -202,7 +202,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 			{
 				//从mft0的datarun中读取我们要的部分mft
 				//printmemory(thismft+offset,0x60);
-				char* property30body=thismft+offset;
+				u8* property30body=thismft+offset;
 				property30body += *(u16*)(property30body+0x14);
 
 				//[0,7]=type
@@ -223,7 +223,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 		//[0x20,0x3f]名字
 		for(i=0;i<*(u8*)(temp+0x50);i++)
 		{
-			buffer[0x20+i]= *(char*)(temp+0x52+i*2);
+			buffer[0x20+i]= *(u8*)(temp+0x52+i*2);
 
 			if(buffer[0x20+i]==0) break;
 			if(i>=0x20) break;
@@ -270,7 +270,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //*+0x30*/	uint64 QuotaCharge;
 //*+0x38*/	USN Usn;
 //#endif
-//void explain10(char* add)
+//void explain10(u8* add)
 //{
 //}
 
@@ -286,7 +286,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //*+0x10*/	uint64 FileReferenceNumber;
 //*+0x08*/	uint16 AttributeNumber;
 //*+0x0a*/	uint16 AlignmentOrReserved[3];
-//void explain20(char* addr)
+//void explain20(u8* addr)
 //{
 //}
 
@@ -339,7 +339,7 @@ char* explainindex(char* rdi,char* rsi,char* end)
 //*+0x38*/	uint64 DataSize;     // 属性值压缩大小
 //*+0x40*/	uint64 InitializedSize;   // 实际数据大小
 //*+0x48*/	uint64 CompressedSize;    // 压缩后大小
-void explain80(char* addr,u64 want)	//file data
+void explain80(u8* addr,u64 want)	//file data
 {
 	if( addr[8] == 0 )
 	{
@@ -375,7 +375,7 @@ void explain80(char* addr,u64 want)	//file data
 //[16]:		索引标志
 //[17]:		无意义
 //0x90属性体：
-void explain90(char* addr)	//index root
+void explain90(u8* addr)	//index root
 {
 	addr += *(u16*)(addr+0x14);	//现在addr=属性体地址=索引根地址
 	addr+=0x10;			//现在addr=索引头地址
@@ -410,7 +410,7 @@ void explain90(char* addr)	//index root
 //[16]:		索引标志
 //[17]:		无意义
 //0xa0属性体：
-void explaina0(char* addr)	//index allocation
+void explaina0(u8* addr)	//index allocation
 {
 	//清理dirhome
 	u8* memory;
@@ -425,13 +425,13 @@ void explaina0(char* addr)	//index allocation
 	//printmemory(datahome,0x1000);
 
 	//解释INDX成易懂的格式：名字，编号，类型，大小
-	char* p=datahome;
-	char* rdi=dirhome;
+	u8* p=datahome;
+	u8* rdi=dirhome;
 	while( *(u32*)p ==0x58444e49 )	//INDX
 	{
 		say("INDX@%x,vcn:%x\n",p,*(u64*)(p+0x10));
-		char* start=p + 0x18 + ( *(u32*)(p+0x18) );
-		char* end=p + ( *(u32*)(p+0x1c) );
+		u8* start=p + 0x18 + ( *(u32*)(p+0x18) );
+		u8* end=p + ( *(u32*)(p+0x1c) );
 
 		rdi=explainindex(rdi,start,end);
 		//printmemory(dirhome,0x200);
@@ -460,12 +460,12 @@ void explaina0(char* addr)	//index allocation
 //*+0x2A*/ uint16 Pading;	   // 边界
 //*+0x2C*/ uint32 MFTRecordNumber;  // windows xp中使用,本MFT记录号
 //*+0x30*/ uint32 MFTUseFlags;      // MFT的使用标记
-static char here[1024];
+static u8 here[1024];
 void explainmft(u64 mftnum,u64 want)
 {
 	//具体不用管，知道返回值是所求MFT的地址就行
 	int i;
-	char* mft=checkcacheformft(mftnum);
+	u8* mft=checkcacheformft(mftnum);
 	if( *(u32*)mft !=0x454c4946 )
 	{
 		say("[mft]wrong:%x\n",mftnum);
@@ -622,7 +622,7 @@ int explainntfshead()
 
 	return 1;
 }
-int isntfs(char* addr)
+int isntfs(u8* addr)
 {
 	u64 temp;
 
@@ -645,7 +645,7 @@ int isntfs(char* addr)
 
 
 
-static int ntfs_list(char* to)
+static int ntfs_list(u8* to)
 {
 	return 0;
 }

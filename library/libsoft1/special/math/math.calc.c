@@ -5,8 +5,8 @@
 double cosine(double);
 double sine(double);
 int decstr2data(u8* src,u64* data);
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -18,7 +18,7 @@ struct mathnode{
         u32 left;
         u32 right;
         union{
-                char datasize[16];
+                u8 datasize[16];
                 double floatpoint;
                 unsigned long long integer;
         };
@@ -126,7 +126,7 @@ static int priority(u64 operator)
 
 
 //中缀表达式转后缀表达式：134+95*x+(70*44+f)*g -> 134 95 x * + 70 44 * f + g * +
-void infix2postfix(char* infix,char* postfix)
+void infix2postfix(u8* infix, u8* postfix)
 {
 	//
 	int src, dst, ret;
@@ -289,7 +289,7 @@ theend:
 
 
 //后缀表达式转表达式二叉树：
-void postfix2binarytree(char* postfix,struct mathnode* node)
+void postfix2binarytree(u8* postfix,struct mathnode* node)
 {
 	int src;
 	int dst;
@@ -543,7 +543,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 	//debug
-	//printmemory((char*)node,0x20*16);
+	//printmemory(node,0x20*16);
 	return;
 }
 
@@ -551,7 +551,7 @@ void postfix2binarytree(char* postfix,struct mathnode* node)
 
 
 //-----------------------------------------------------------
-double calculator(char* postfix,u64 x,u64 y)
+double calculator(u8* postfix,u64 x,u64 y)
 {
 	int src=0;
 	int count;

@@ -1,4 +1,5 @@
 #define u32 unsigned int
+#define u8 unsigned char
 #define SHA1HANDSOFF
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
@@ -150,10 +151,10 @@ void SHA1Transform(u32 state[5], const unsigned char buffer[64] )
 
 
 
-void sha1_write(const unsigned char *data, u32 len)
+void sha1_write(u8* data, u32 len)
 {
 	u32 i,j,k;
-	char* p;
+	u8* p;
 
 	j = context.count[0];
 	if ((context.count[0] += len << 3) < j)context.count[1]++;
@@ -180,7 +181,7 @@ void sha1_write(const unsigned char *data, u32 len)
 }
 
 
-void sha1_read(unsigned char digest[20])
+void sha1_read(u8 digest[20])
 {
 	unsigned char finalcount[8];
 	unsigned char c;
@@ -224,7 +225,7 @@ void sha1_create()
 void sha1_delete()
 {
 }
-void sha1sum(unsigned char* hash_out, const unsigned char* str, int len)
+void sha1sum(u8* hash_out, u8* str, int len)
 {
 	unsigned int j;
 

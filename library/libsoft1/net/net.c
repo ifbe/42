@@ -33,21 +33,27 @@ void tftp_delete();
 
 static int net_list()
 {
+	return 0;
 }
 static int net_choose()
 {
+	return 0;
 }
 static int net_read()
 {
+	return 0;
 }
 static int net_write()
 {
+	return 0;
 }
 static int net_start(u64 type,char* p)
 {
+	return 0;
 }
 static int net_stop()
 {
+	return 0;
 }
 int net_create(char* world,u64* p)
 {
@@ -125,4 +131,5 @@ int net_delete()
 	arp_delete();
 	server_delete();
 	client_delete();
+	return 0;
 }

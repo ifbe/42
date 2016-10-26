@@ -9,12 +9,12 @@ void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
 void background1();
 //
-int data2hexstr(u64,char*);
-int cmp(char*,char*);
+int data2hexstr(u64, u8*);
+int cmp(void*, void*);
 //
-int diary(char*,int,char*,...);
-void printmemory(char*,int);
-void say(char*,...);
+int diary(void*, int, void*, ...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -238,11 +238,11 @@ static void hex_read_pixel()
 static void hex_read_text()
 {
 	int x,y;
-	unsigned char h,l;
+	u8 h,l;
 
 	int width = haha->width;
 	int height = haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->pixelbuffer);
 
 	updateconfig();
 	//for(x=0;x<width*height;x++)p[x]=0x20;
@@ -319,7 +319,9 @@ static void hex_read_html()
 
 	int width = haha->width;
 	int height = haha->height;
-	unsigned char* p = (char*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->pixelbuffer);
+
+	//
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 

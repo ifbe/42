@@ -2,13 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int startfile(char*);
-int stopfile(char*);
+int startfile(u8*);
+int stopfile(u8*);
 int readfile(u8*,u8*,u64,u64);
 int writefile(u8*,u8*,u64,u64);
 //
 void printmemory(u64 start,u64 count);
-void say(char* fmt,...);
+void say(void*, ...);
 
 
 
@@ -21,7 +21,7 @@ static u8* datahome;
 
 
 
-int ismbr(char* addr)
+int ismbr(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -36,9 +36,9 @@ int ismbr(char* addr)
 
 
 //
-static int mbrrecord(char* from,char* dst)
+static int mbrrecord(u8* from, u8* dst)
 {
-	char H,L;
+	u8 H,L;
 	u32 flag;		//(mbr+0x1be)+0
 	u32 type;		//(mbr+0x1be)+4
 	u32 start;		//(mbr+0x1be)+8
@@ -104,7 +104,7 @@ static int mbrrecord(char* from,char* dst)
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-static void mbr_explain(char* src,char* dst)
+static void mbr_explain(u8* src, u8* dst)
 {
 	int j,ret;
 	u64* dstqword=(u64*)dst;
@@ -170,7 +170,7 @@ static void mbr_list()
 		);
 	}
 }
-static int mbr_choose(char* p)
+static int mbr_choose(u8* p)
 {
 	int ret;
 	stopfile(p);
@@ -191,10 +191,10 @@ static void mbr_read()
 static void mbr_write()
 {
 }
-static void mbr_start(char* p)
+static void mbr_start()
 {
 }
-static void mbr_stop(char* p)
+static void mbr_stop()
 {
 }
 void mbr_create(void* world, u64* p)

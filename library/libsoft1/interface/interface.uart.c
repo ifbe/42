@@ -3,10 +3,10 @@
 #define u16 unsigned short
 #define u8 unsigned char
 int systemuart_list();
-int systemuart_choose(char* p, int);
+int systemuart_choose(u8* p, int);
 int systemuart_read();
-int systemuart_write(char*, int);
-int systemuart_start(char*);
+int systemuart_write(u8*, int);
+int systemuart_start(u8*);
 int systemuart_stop();
 //
 int decstr2data(u8*, u64*);
@@ -15,15 +15,15 @@ void say(char*, ...);
 
 
 
-static int uart_list(char* p)
+static int uart_list(u8* p)
 {
-	systemuart_list();
+	return systemuart_list();
 }
-static int uart_choose(char* p)
+static int uart_choose(u8* p)
 {
 	int j;
 	u64 speed = 115200;
-	char name[64];
+	u8 name[64];
 
 	if(p==0)
 	{
@@ -42,13 +42,14 @@ static int uart_choose(char* p)
 		else name[j] = p[j];
 	}
 	name[j] = 0;
-	systemuart_choose(name, speed);
+	return systemuart_choose(name, speed);
 }
-static int uart_read(char* p)
+static int uart_read(u8* p)
 {
 	systemuart_read();
+	return 0;
 }
-static int uart_write(char* buf)
+static int uart_write(u8* buf)
 {
 	int len;
 	for(len=0;len<256;len++)
@@ -58,17 +59,17 @@ static int uart_write(char* buf)
 	if(len <= 0)return 0;
 	if(len >= 256)return 0;
 
-	systemuart_write(buf, len);
+	return systemuart_write(buf, len);
 }
-static int uart_start(char* p)
+static int uart_start(u8* p)
 {
-	systemuart_start(p);
+	return systemuart_start(p);
 }
-static int uart_stop(char* p)
+static int uart_stop(u8* p)
 {
-	systemuart_stop();
+	return systemuart_stop();
 }
-void uart_create(char* world,u64* p)
+void uart_create(u8* world,u64* p)
 {
 	//
 	p[0]=0x6563616669;	//type

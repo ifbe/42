@@ -1,8 +1,10 @@
 #define u64 unsigned long long
 #define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 //
-unsigned char* whereisunicodetable();
-void say(char*,...);
+u8* whereisunicodetable();
+void say(void*, ...);
 
 
 
@@ -18,15 +20,15 @@ static struct temp{
 	u64 width;
 	u64 height;
 }*haha;
-static unsigned char* unicodetable=0;
+static u8* unicodetable=0;
 
 
 
 
-void printunicodefromvalue(int xxxx,int yyyy,char* p)
+void printunicodefromvalue(int xxxx, int yyyy, u8* p)
 {
 	int x,y;
-	unsigned short temp;
+	u16 temp;
 
 	u32* this = (u32*)( haha->pixelbuffer + ( xxxx + (yyyy * haha->width) )*4 );
 	for(y=0;y<0x10;y++)
@@ -51,7 +53,7 @@ void printunicode(int x,int y,u32 value)
 
 
 
-void printunicodefromvaluebig(int xxxx,int yyyy,char* p)
+void printunicodefromvaluebig(int xxxx, int yyyy, u8* p)
 {
 	int x,y,i,j;
 	unsigned short temp;
@@ -108,7 +110,7 @@ void printunicodebig(int x,int y,u32 value)
 
 void unicode_create(void* home,void* me)
 {
-	unicodetable=(unsigned char*)whereisunicodetable();
+	unicodetable=(u8*)whereisunicodetable();
 
 	haha=me;
 	haha->type=0;

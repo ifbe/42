@@ -1,33 +1,37 @@
 #define u64 unsigned long long
-int startprocess(int type,char* p);
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
+int startprocess(int type,u8* p);
 int stopprocess();
-int readprocess(char* p,u64,u64);
-int writeprocess(char* p,u64,u64);
-int listprocess(char* p);
-int chooseprocess(char* p);
-void say(char*,...);
+int readprocess(u8*, u64, u64);
+int writeprocess(u8*, u64, u64);
+int listprocess(u8*);
+int chooseprocess(u8*);
+void say(void*, ...);
 
 
 
 
 //
-static unsigned char* datahome=0;
+static u8* datahome=0;
 
 
 
 
-static int process_list(char* p)
+static int process_list(u8* p)
 {
 	return listprocess(p);
 }
-static int process_choose(char* p)
+static int process_choose(u8* p)
 {
 	return chooseprocess(p);
 }
-static int process_read(char* p)
+static int process_read(u8* p)
 {
 	int ret=readprocess(datahome,0,0);
 	if(ret>0)say("%s\n",datahome);
+	return ret;
 }
 static int process_write()
 {
@@ -37,17 +41,19 @@ static int process_write()
 
 
 
-static int process_start(u64 type,char* p)
+static int process_start(u64 type,u8* p)
 {
+	return 0;
 }
 static int process_stop()
 {
+	return 0;
 }
 
 
 
 
-int process_create(char* world,unsigned long long* p)
+int process_create(u8* world,u64* p)
 {
 	//
 	datahome=world+0x300000;

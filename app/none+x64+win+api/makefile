@@ -36,7 +36,7 @@ dll:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	-lgdi32
+	-lgdi32 -lws2_32
 program:
 	gcc -mwindows \
 	$(library)/libboot0/*.o \
@@ -49,6 +49,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lgdi32
+	-lgdi32 -lws2_32
 clean:
 	rm -f *.o *.a *.so

@@ -13,9 +13,9 @@ void backgroundcolor(u32);
 int data2decstr(u64 data,u8* string);
 unsigned int getrandom();
 //
-int printmemory(char*,int);
-int diary(char*, int, char*, ...);
-int say(char*,...);
+int printmemory(void*, int);
+int diary(void*, int, void*, ...);
+int say(void*, ...);
 
 
 
@@ -69,6 +69,7 @@ u32 the2048_color(int val)
 		case 4096:	return 0x783d72;
 		case 8192:	return 0xd73762;
 	}
+	return 0;
 }
 static void cubie(int x,int y,int z)
 {
@@ -119,7 +120,7 @@ static void the2048_read_text()
 	int x,y;
 	int w = haha->width;
 	int h = haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->pixelbuffer);
 	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<w * h;x++)p[x]=0x20;
@@ -135,7 +136,7 @@ static void the2048_read_html()
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->pixelbuffer);
 	int (*table)[4] = buffer + num*16*4;
 
 	*(u32*)p = 0x6c6d7468;
@@ -487,7 +488,7 @@ static void the2048_choose()
 static void the2048_start()
 {
 	int j;
-	char* p = buffer;
+	u8* p = buffer;
 	for(j=0;j<0x4000;j++)p[j] = 0;
 
 	//

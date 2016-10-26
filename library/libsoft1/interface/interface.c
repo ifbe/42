@@ -27,21 +27,27 @@ int zigbee_delete();
 
 static int interface_list()
 {
+	return 0;
 }
 static int interface_choose()
 {
+	return 0;
 }
 static int interface_read()
 {
+	return 0;
 }
 static int interface_write()
 {
+	return 0;
 }
 static int interface_start(u64 type,char* p)
 {
+	return 0;
 }
 static int interface_stop()
 {
+	return 0;
 }
 int interface_create(char* world,u64* p)
 {

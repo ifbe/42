@@ -1,6 +1,0 @@
-void creatememory()
-{
-}
-void deletememory()
-{
-}

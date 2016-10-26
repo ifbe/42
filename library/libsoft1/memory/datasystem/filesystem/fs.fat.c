@@ -6,18 +6,18 @@
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //用了别人的
-void printmemory(char* addr,u64 size);
-void say(char* fmt,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //memory
-static char* fshome;		//fat表
-	static char* pbr;
-	static char* fatbuffer;
-static char* dirhome;		//目录专用
-static char* datahome;		//一般使用
+static u8* fshome;		//fat表
+	static u8* pbr;
+	static u8* fatbuffer;
+static u8* dirhome;		//目录专用
+static u8* datahome;		//一般使用
 
 //disk
 static int version;
@@ -113,11 +113,11 @@ static void explaindirectory()
 
 
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-static int fat16_data(char* dest,u64 cluster)
+static int fat16_data(u8* dest,u64 cluster)
 {
 	say("cluster:%x\n",cluster);
 
-	char* rdi=dest;
+	u8* rdi=dest;
 	while(rdi<dest+0x80000)		//大于1M的不管
 	{
 		//判断退出
@@ -244,11 +244,11 @@ static void checkcacheforcluster(u64 cluster)
 }
 //从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
 //destination,clusternum,startoffset,maxbytes
-static void fat32_data(char* dest,u64 cluster,u64 start,u64 count)
+static void fat32_data(u8* dest,u64 cluster,u64 start,u64 count)
 {
 	say("cluster:%x\n",cluster);
 
-	char* rdi=dest;
+	u8* rdi=dest;
 	while(rdi<dest+count)
 	{
 		readfile(
@@ -333,7 +333,7 @@ void explainfat32head()
 
 
 
-int isfat(char* addr)
+int isfat(u8* addr)
 {
 	int version=24;
 	u64 temp;
@@ -374,7 +374,7 @@ int isfat(char* addr)
 
 
 
-static int fat_list(char* to)
+static int fat_list(u8* to)
 {
 	return 0;
 }

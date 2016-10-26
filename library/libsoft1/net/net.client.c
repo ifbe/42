@@ -5,32 +5,31 @@
 //
 int createclient();
 int deleteclient();
-int startclient(char*,int);
+int startclient(u8*,int);
 int stopclient();
-int readclient(char*,int);
-int writeclient(char*,int);
-int listclient(char*);
-int chooseclient(char*, char*, int, char*);
+int readclient(u8*,int);
+int writeclient(u8*,int);
+int listclient(u8*);
+int chooseclient(u8*, u8*, int, u8*);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //
-static unsigned char* datahome=0;
+static u8* datahome=0;
 
 
 
 
-static int client_list(char* p)
+static int client_list(u8* p)
 {
-	listclient(p);
-	return 1;
+	return listclient(p);
 }
-static int client_choose(char* p)
+static int client_choose(u8* p)
 {
 	int ret;
 
@@ -48,8 +47,9 @@ static int client_choose(char* p)
 }
 static int client_read()
 {
+	return 0;
 }
-static int client_write(char* p)
+static int client_write(u8* p)
 {
 	int i=0;
 	if(p==0)return 0;
@@ -61,17 +61,18 @@ static int client_write(char* p)
 
 
 
-static int client_start(u64 type,char* p)
+static int client_start(u64 type, u8* p)
 {
+	return 0;
 }
 static int client_stop()
 {
-	stopclient();
+	return stopclient();
 }
-int client_create(char* world, u64* p)
+int client_create(u8* world, u64* p)
 {
 	//
-	datahome=world+0x300000;
+	datahome = world+0x300000;
 
 	//
 	p[0]=0x74656e;
@@ -83,8 +84,10 @@ int client_create(char* world, u64* p)
 	p[13]=(u64)client_choose;
 	p[14]=(u64)client_read;
 	p[15]=(u64)client_write;
+	return 0;
 }
 int client_delete()
 {
 	client_stop();
+	return 0;
 }

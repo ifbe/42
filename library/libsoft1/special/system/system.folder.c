@@ -1,35 +1,39 @@
 #define u64 unsigned long long
-int startfolder(char* p);
+#define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
+int startfolder(u8* p);
 int stopfolder();
-int readfolder(char* p);
-int writefolder(char* p);
-int listfolder(char* p);
-int choosefolder(char* p);
-void say(char*,...);
+int readfolder(u8* p);
+int writefolder(u8* p);
+int listfolder(u8* p);
+int choosefolder(u8* p);
+void say(void*, ...);
 
 
 
 
 //
-static unsigned char* datahome=0;
+static u8* datahome=0;
 
 
 
 
-static int folder_list(char* p)
+static int folder_list(u8* p)
 {
 	return listfolder(p);
 }
-static int folder_choose(char* p)
+static int folder_choose(u8* p)
 {
 	return choosefolder(p);
 }
-static int folder_read(char* p)
+static int folder_read(u8* p)
 {
 	int ret=readfolder(datahome);
 	if(ret>0)say("%s\n",datahome);
+	return ret;
 }
-static int folder_write(char* p)
+static int folder_write(u8* p)
 {
 	return 0;
 }
@@ -37,19 +41,19 @@ static int folder_write(char* p)
 
 
 
-static int folder_start(u64 type,char* p)
+static int folder_start(u64 type, u8* p)
 {
 	return startfolder(p);
 }
 static int folder_stop()
 {
-	stopfolder();
+	return stopfolder();
 }
 
 
 
 
-int folder_create(char* world,unsigned long long* p)
+int folder_create(u8* world, u64* p)
 {
 	//
 	datahome=world+0x300000;

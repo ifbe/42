@@ -23,6 +23,7 @@ int decstr2data(u8* source,u64* data)
 		*data=(*data)*10;
 		*data+=source[i]-0x30;
 	}
+	return i;
 }
 int data2decstr(u64 data,u8* string)
 {

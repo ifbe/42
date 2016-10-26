@@ -39,7 +39,7 @@ dll:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid
+	-lshell32 -lversion -luuid -lws2_32
 program:
 	gcc -mwindows \
 	$(library)/libboot0/*.o \
@@ -56,6 +56,6 @@ program:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid
+	-lshell32 -lversion -luuid -lws2_32
 clean:
 	rm -f *.o *.a *.so

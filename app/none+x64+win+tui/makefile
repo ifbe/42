@@ -35,7 +35,8 @@ dll:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/visitor0/*.o \
+	-lws2_32
 program:
 	gcc \
 	$(library)/libboot0/*.o \
@@ -47,6 +48,7 @@ program:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o
+	$(library)/visitor1/gui.o \
+	-lws2_32
 clean:
 	rm -f *.o *.a *.so

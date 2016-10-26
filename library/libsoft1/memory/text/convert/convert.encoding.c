@@ -57,9 +57,9 @@ int utf2unicode(unsigned char* src,unsigned int* dst)
 	{
 		dst[0]	=((src[0]&0x1)<<30)	//src[0:0]
 			+ ((src[1]&0x3f)<<24)	//src[1:5,1:0]
-			+ ((src[2]&0x3f)<<18);	//src[2:5,2:0]
-			+ ((src[3]&0x3f)<<12);	//src[3:5,3:0]
-			+ ((src[4]&0x3f)<<6);	//src[4:5,4:0]
+			+ ((src[2]&0x3f)<<18)	//src[2:5,2:0]
+			+ ((src[3]&0x3f)<<12)	//src[3:5,3:0]
+			+ ((src[4]&0x3f)<<6)	//src[4:5,4:0]
 			+ (src[5]&0x3f);	//src[5:5,5:0]
 		return 4;
 	}

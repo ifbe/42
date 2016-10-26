@@ -7,23 +7,23 @@
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
 //
-int cleverread(u64,u64,u64,	char*,u64,u64);
-int cleverwrite(u64,u64,u64,	char*,u64,u64);
+int cleverread(u64,u64,u64,	u8*,u64,u64);
+int cleverwrite(u64,u64,u64,	u8*,u64,u64);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //用了别人的
-void printmemory(char* addr,u64 size);
-void say(char* fmt,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //系统或者各种东西提供好的memory，这几个变量仅仅记录了位置
-static char* fshome;
-	static char* pbr;
-	static char* catabuf;
-static char* dirhome;
-static char* datahome;
+static u8* fshome;
+	static u8* pbr;
+	static u8* catabuf;
+static u8* dirhome;
+static u8* datahome;
 
 static u64 block0;		//分区开始扇区，每块多少扇区
 static u64 blocksize;
@@ -295,7 +295,7 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 
 static void explaindirectory(u64 nodenum,u64 wantcnid)
 {
-	char* rdi=dirhome;
+	u8* rdi=dirhome;
 	int i;
 
 	//清理内存
@@ -382,7 +382,7 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 		{
 			*(u8*)(rdi+0x20+i)=*(u8*)(datahome+offset+9+i*2);
 		}
-		//say("%s\n",(char*)(rdi+0x20));
+		//say("%s\n",(rdi+0x20));
 		if(*(u32*)(rdi+0x20) == 0) *(u32*)(rdi+0x20)=0x3f3f3f3f;
 
 
@@ -401,7 +401,7 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 {
 	int i;
-	char* rdi=datahome;
+	u8* rdi=datahome;
 
 	//清理内存
 	for(i=0;i<0x100000;i++)
@@ -454,7 +454,7 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 		//穿越重重阻碍，现在可以从datafork里面，找扇区号，和扇区数了
 		say("oh i am here!\n");
-		char* forkaddr=catabuf+offset+2+keylen+0x58+0x10;
+		u8* forkaddr=catabuf+offset+2+keylen+0x58+0x10;
 		u64 logicwhere=0;
 		for(i=0;i<8;i++)
 		{
@@ -490,7 +490,7 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 
 
-static int hfs_list(char* to)
+static int hfs_list(u8* to)
 {
 	return 0;
 }
@@ -550,7 +550,7 @@ int explainhfshead()
 {
 	u64 size,clumpsize,totalblock,sector,count;
 	int i;
-	char* addr;
+	u8* addr;
 
 //---------------------第一次读，把分区头读进pbrbuffer------------------------
 	blocksize=BSWAP_32( *(u32*)(pbr+0x428) )/0x200;
@@ -559,12 +559,12 @@ int explainhfshead()
 	//0x470,0x4c0,0x510,0x560
 	for(i=0;i<4;i++)
 	{
-		addr=(char*)( pbr + 0x470 + (0x50*i) );
-		size=BSWAP_64(*(u64*)addr );
-		clumpsize=BSWAP_32(*(u32*)(addr+0x8) );
-		totalblock=BSWAP_32(*(u32*)(addr+0xc) );
-		sector=block0+8*BSWAP_32(*(u32*)(addr+0x10) );
-		count=blocksize*BSWAP_32(*(u32*)(addr+0x14) );
+		addr = pbr + 0x470 + (0x50*i);
+		size = BSWAP_64(*(u64*)addr );
+		clumpsize = BSWAP_32(*(u32*)(addr+0x8) );
+		totalblock = BSWAP_32(*(u32*)(addr+0xc) );
+		sector = block0+8*BSWAP_32(*(u32*)(addr+0x10) );
+		count = blocksize*BSWAP_32(*(u32*)(addr+0x14) );
 
 		if(i==0)
 		{
@@ -617,7 +617,7 @@ int explainhfshead()
 
 
 
-int ishfs(char* addr)
+int ishfs(u8* addr)
 {
 	u64 temp;
 

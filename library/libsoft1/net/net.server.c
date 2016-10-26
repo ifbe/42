@@ -5,52 +5,56 @@
 //
 int createserver();
 int deleteserver();
-int startserver(char*, int, char*, int);
+int startserver(void*, int, void*, int);
 int stopserver();
-int readserver(char*,int);
-int writeserver(char*,int);
-int listserver(char*);
-int chooseserver(char*, char*, int, char*);
+int readserver(u8*,int);
+int writeserver(u8*,int);
+int listserver(u8*);
+int chooseserver(u8*, u8*, int, u8*);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //
-static unsigned char* datahome=0;
+static u8* datahome=0;
 
 
 
 
-static int server_list(char* p)
+static int server_list(u8* p)
 {
+	return 0;
 }
-static int server_choose(char* p)
+static int server_choose(u8* p)
 {
+	return 0;
 }
 static int server_read()
 {
+	return 0;
 }
-static int server_write(char* p)
+static int server_write(u8* p)
 {
+	return 0;
 }
 
 
 
 
-static int server_start(char* p)
+static int server_start(u8* p)
 {
 	//0.0.0.0:2222/sdcard
-	startserver("0,0,0,0", 2222, "", 0);
+	return startserver("0,0,0,0", 2222, "", 0);
 }
 static int server_stop()
 {
-	stopserver();
+	return stopserver();
 }
-int server_create(char* world, u64* p)
+int server_create(u8* world, u64* p)
 {
 	//
 	datahome=world+0x300000;
@@ -65,7 +69,9 @@ int server_create(char* world, u64* p)
 	p[13]=(u64)server_choose;
 	p[14]=(u64)server_read;
 	p[15]=(u64)server_write;
+	return 0;
 }
 int server_delete()
 {
+	return 0;
 }

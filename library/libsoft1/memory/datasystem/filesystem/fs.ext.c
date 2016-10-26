@@ -3,23 +3,23 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int cleverread(u64,u64,u64,char*,u64,u64);
-int cleverwrite(u64,u64,u64,char*,u64,u64);
+int cleverread(u64,u64,u64,	u8*,u64,u64);
+int cleverwrite(u64,u64,u64,	u8*,u64,u64);
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 //用了别人的
-void printmemory(char* addr,u64 size);
-void say(char* fmt,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
 //memory
-static char* fshome;
-	static char* pbr;		//+0x10000
-	static char* inodebuffer;	//+0x20000
-static char* dirhome;
-static char* datahome;
+static u8* fshome;
+	static u8* pbr;		//+0x10000
+	static u8* inodebuffer;	//+0x20000
+static u8* dirhome;
+static u8* datahome;
 
 //disk
 static u64 block0;
@@ -33,7 +33,7 @@ static u64 inodesize;
 
 //输入值：请求的组号
 //返回值：这个组里面inode表的第一个block号
-static char blockrecord[512];
+static u8 blockrecord[512];
 static u64 whichblock(u64 groupnum)
 {
 	//group descriptor从哪个扇区开始
@@ -48,7 +48,7 @@ static u64 whichblock(u64 groupnum)
 	readfile(blockrecord, 0, sector*0x200, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
-	char* addr=blockrecord+8+(groupnum*0x20)%0x200;
+	u8* addr=blockrecord+8+(groupnum*0x20)%0x200;
 	return *(u32*)addr;
 }
 
@@ -63,7 +63,7 @@ static u64 whichblock(u64 groupnum)
 //注意2:每个组的inode数量一般为8192，是0x400的倍数
 //注意3:inode首个的编号是1不是0
 static u64 firstinodeincache;
-static char* checkcacheforinode(u64 wanted)
+static u8* checkcacheforinode(u64 wanted)
 {
 	//内存里已经是这几个的话就直接返回
 	u64 inodeoffset=(wanted-1)%0x400;
@@ -74,7 +74,7 @@ static char* checkcacheforinode(u64 wanted)
 
 
 	//不是就麻烦了
-	char* rdi=inodebuffer;
+	u8* rdi=inodebuffer;
 	u64 this=wanted-inodeoffset;
 	while(1)
 	{
@@ -113,7 +113,7 @@ static char* checkcacheforinode(u64 wanted)
 static int explaininode(u64 inode,u64 wantwhere)
 {
 	//函数调用之后,rsi为所请求的inode的内存地址，
-	char* rsi=checkcacheforinode(inode);
+	u8* rsi=checkcacheforinode(inode);
 
 	//检查是不是软链接
 	u16 temp=(*(u16*)rsi)&0xf000;
@@ -134,11 +134,11 @@ static int explaininode(u64 inode,u64 wantwhere)
 
 		//为循环准备变量，清空内存，给读取的数据空间
 		int i;
-		char* rdi;
+		u8* rdi;
 		rsi=rsi+0x28;		//加完以后指向ext4_extend头
 		for(rdi=datahome;rdi<datahome+0x100000;rdi++)
 		{
-			*(u8*)rdi=0;
+			rdi[0] = 0;
 		}
 		for(i=0;i<numbers;i++)
 		{
@@ -205,8 +205,8 @@ static int explaininode(u64 inode,u64 wantwhere)
 static void explaindirectory()
 {
 	int i;
-	char* rdi=dirhome;
-	char* rsi=datahome;
+	u8* rdi=dirhome;
+	u8* rsi=datahome;
 
 	for(i=0;i<0x100000;i++)
 	{
@@ -246,7 +246,7 @@ static void explaindirectory()
 		*(u64*)(rdi+0x10)=thisinode;
 
 		//[0x18,0x1f]:size，ext的目录表里面没有文件大小，需要到inode表里面寻找
-		char* inodeaddr=checkcacheforinode(thisinode);
+		u8* inodeaddr=checkcacheforinode(thisinode);
 		*(u64*)(rdi+0x18)=*(u32*)(inodeaddr+4);
 
 		//[0x20,0x3f]:名字
@@ -323,7 +323,7 @@ int explainexthead()
 
 	return 1;
 }
-int isext(char* addr)
+int isext(u8* addr)
 {
 	//0x53,0xef
 	u64 temp=*(u16*)(addr+0x438);
@@ -336,7 +336,7 @@ int isext(char* addr)
 
 
 
-static int ext_list(char* to)
+static int ext_list(u8* to)
 {
 	return 1;
 }

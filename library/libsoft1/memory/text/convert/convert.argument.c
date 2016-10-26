@@ -92,4 +92,5 @@ int buf2optval(u8* pp,int max,u8** type,u8** name)
 		*type=pp;
 		*name=pp+ii+1;
 	}
+	return ii;
 }

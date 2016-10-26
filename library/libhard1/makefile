@@ -5,6 +5,8 @@ target:
 	$(compiler) $(cflag) pci.c
 	$(compiler) $(cflag) usb.c
 	$(compiler) $(cflag) i2c.c
+clang:
+	make -s compiler="clang" cflag="-c -fPIC -O2"
 gcc:
 	make -s compiler="gcc" cflag="-c -fPIC -O2"
 mingw:

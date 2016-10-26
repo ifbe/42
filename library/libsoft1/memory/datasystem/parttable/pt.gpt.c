@@ -7,8 +7,8 @@ int stopfile();
 int readfile(u8*,u8*,u64,u64);
 int writefile(u8*,u8*,u64,u64);
 //
-void printmemory(char*,int);
-void say(char* fmt,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -21,7 +21,7 @@ static u8* datahome;
 
 
 
-int isgpt(char* addr)
+int isgpt(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -48,7 +48,7 @@ int isgpt(char* addr)
 //[+0x28,+0x2f]:末尾lba
 //[+0x30,+0x37]:属性标签
 //[+0x38,+0x7f]:名字
-static void gpt_explain(char* src,char* dst)
+static void gpt_explain(u8* src, u8* dst)
 {
 	int i=0,j=0;
 	u64* srcqword;
@@ -163,7 +163,7 @@ static void gpt_list()
 		);
 	}
 }
-static int gpt_choose(char* p)
+static int gpt_choose(u8* p)
 {
 	int ret;
 	stopfile(p);
@@ -184,10 +184,10 @@ static void gpt_read()
 static void gpt_write()
 {
 }
-static void gpt_start(char* p)
+static void gpt_start()
 {
 }
-static void gpt_stop(char* p)
+static void gpt_stop()
 {
 }
 void gpt_create(void* world, u64* p)

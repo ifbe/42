@@ -3,14 +3,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void string(int x,int y,char* str);
+void string(int x,int y,void* str);
 void backgroundcolor(u32);
 //
-void charactercommand(char*);
-void arterycommand(char* in);
+void charactercommand(u8*);
+void arterycommand(u8*);
 //
-int cmp(char* first,char* second);
-void say(char*,...);
+int cmp(void*, void*);
+void say(void*, ...);
 
 
 

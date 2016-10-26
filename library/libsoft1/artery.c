@@ -14,8 +14,8 @@ int   special_delete();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
-int cmp(char*,char*);
-int ncmp(char*,char*,int);
+int cmp(void*,void*);
+int ncmp(void*,void*,int);
 //
 void eventread(u64* who, u64* what, u64* how);
 void eventwrite(u64,u64);
@@ -53,7 +53,7 @@ static struct elements
 	char padding1[ 8 - sizeof(char*) ];
 
 	//[0x50,0x57]
-	int (*start)(char*);
+	int (*start)(u8*);
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[0x58,0x5f]
@@ -61,19 +61,19 @@ static struct elements
 	char padding3[ 8 - sizeof(char*) ];
 
 	//[0x60,0x67]
-	int (*list)(char*);
+	int (*list)(u8*);
 	char padding4[ 8 - sizeof(char*) ];
 
 	//[0x68,0x6f]
-	int (*choose)(char*);
+	int (*choose)(u8*);
 	char padding5[ 8 - sizeof(char*) ];
 
 	//[0x70,0x77]
-	int (*read)(char*);
+	int (*read)(u8*);
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[0x78,0x7f]
-	int (*write)(char*);
+	int (*write)(u8*);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
 static unsigned char*   fshome;
@@ -90,7 +90,7 @@ static unsigned char* datahome;
 static u8* stack;
 static int rsp=0;
 //
-static char cmd[256];
+static u8 cmd[256];
 static int dst=0;
 //
 static int shutup=0;
@@ -99,7 +99,7 @@ static int combo=0;
 
 
 
-int arterylist(char* p)
+int arterylist(u8* p)
 {
 	int j;
 	int count;
@@ -142,7 +142,7 @@ int arterylist(char* p)
 		return worker[id].list(p);
 	}
 }
-int arterychoose(char* p)
+int arterychoose(u8* p)
 {
 	int ret;
 	u64 who;
@@ -153,7 +153,7 @@ int arterychoose(char* p)
 		//search somewhere to go
 		for(ret=1;ret<256;ret++)
 		{
-			if(cmp(p,(char*)&worker[ret].id)==0)
+			if(cmp(p,(u8*)&worker[ret].id)==0)
 			{
 				break;
 			}
@@ -184,12 +184,14 @@ int arterychoose(char* p)
 		who = stack[1];
 		if(who != 0)ret = worker[who].choose(p);
 	}
+
+	return 1;
 }
 
 
 
 
-int arteryread(char* p)
+int arteryread(u8* p)
 {
 	u64 who;
 	if(rsp == 0)
@@ -203,7 +205,7 @@ int arteryread(char* p)
 		return worker[who].read(p);
 	}
 }
-int arterywrite(char* p)
+int arterywrite(u8* p)
 {
 	u64 who;
 	if(rsp==0)
@@ -235,7 +237,7 @@ int arterystart(u8* p)
 		return worker[who].start(p);
 	}
 }
-int arterystop(char* p)
+int arterystop(u8* p)
 {
 	u64 who;
 	if(rsp==0)
@@ -253,10 +255,10 @@ int arterystop(char* p)
 
 
 
-void arterycreate(char* module,char* addr)
+void arterycreate(u8* module,u8* addr)
 {
 	int i;
-	char* p;
+	u8* p;
 
 	//
 	if(module==0)
@@ -292,7 +294,7 @@ void arterycreate(char* module,char* addr)
 		say("(createmodule fail)%s\n",module);
 	}
 }
-void arterydelete(char* module)
+void arterydelete(u8* module)
 {
 	say("[8,c):deleteing artery\n");
 	special_delete();
@@ -319,7 +321,7 @@ int arteryprompt()
 	shutup = 1;
 	return 1;
 }
-int arterycommand(char* buffer)
+int arterycommand(u8* buffer)
 {
 	int ret;
 	int argc;

@@ -17,13 +17,16 @@ void say(char*,...);
 
 static int i2c_read()
 {
+	return 0;
 }
 static int i2c_write()
 {
+	return 0;
 }
 static int i2c_list(char* p)
 {
 	systemi2c_list(0);
+	return 0;
 }
 static int i2c_choose(char* p)
 {
@@ -76,11 +79,11 @@ static int i2c_choose(char* p)
 }
 static int i2c_start(u64 type,char* p)
 {
-	systemi2c_start(p);
+	return systemi2c_start(p);
 }
 static int i2c_stop()
 {
-	systemi2c_stop();
+	return systemi2c_stop();
 }
 void i2c_create(char* world,u64* p)
 {

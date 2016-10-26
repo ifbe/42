@@ -3,36 +3,36 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //special guys
-void menu_create(char*,char*);
-void roster_create(char*,char*);
-void virtkbd_create(char*,char*);
+void menu_create(u8*,u8*);
+void roster_create(u8*,u8*);
+void virtkbd_create(u8*,u8*);
 //libs
-void ascii_create(char*,char*);
-void unicode_create(char*,char*);
-void background_create(char*,char*);
-void shape_create(char*,char*);
+void ascii_create(u8*,u8*);
+void unicode_create(u8*,u8*);
+void background_create(u8*,u8*);
+void shape_create(u8*,u8*);
 //game
-void the2048_create(char*,char*);
-void ooxx_create(char*,char*);
-void snake_create(char*,char*);
-void sudoku_create(char*,char*);
-void tetris_create(char*,char*);
-void weiqi_create(char*,char*);
-void xiangqi_create(char*,char*);
+void the2048_create(u8*,u8*);
+void ooxx_create(u8*,u8*);
+void snake_create(u8*,u8*);
+void sudoku_create(u8*,u8*);
+void tetris_create(u8*,u8*);
+void weiqi_create(u8*,u8*);
+void xiangqi_create(u8*,u8*);
 //test
-void color_create(char*,char*);
-void doodle_create(char*,char*);
-void font_create(char*,char*);
-void pure_create(char*,char*);
+void color_create(u8*,u8*);
+void doodle_create(u8*,u8*);
+void font_create(u8*,u8*);
+void pure_create(u8*,u8*);
 //tool
-void calculator_create(char*,char*);
-void console_create(char*,char*);
-void control_create(char*,char*);
-void hex_create(char*,char*);
-void sketchpad_create(char*,char*);
-void spectrum_create(char*,char*);
-void tree_create(char*,char*);
-void qrcode_create(char*,char*);
+void calculator_create(u8*,u8*);
+void console_create(u8*,u8*);
+void control_create(u8*,u8*);
+void hex_create(u8*,u8*);
+void sketchpad_create(u8*,u8*);
+void spectrum_create(u8*,u8*);
+void tree_create(u8*,u8*);
+void qrcode_create(u8*,u8*);
 //
 void menu_delete();
 void roster_delete();
@@ -71,7 +71,7 @@ u32 getrandom();
 //
 void eventwrite(u64,u64);
 //
-void say(char* , ...);
+void say(void*, ...);
 
 
 
@@ -142,18 +142,18 @@ static struct working
 	int (*write)(void* where, void* who, void* what);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
-static unsigned char* mega1;
-static unsigned char* mega2;
-static unsigned char* mega3;
+static u8* mega1;
+static u8* mega2;
+static u8* mega3;
 
 
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void charactercreate(char* type,char* addr)
+void charactercreate(u8* type, u8* addr)
 {
 	int i;
-	char* temp;
+	u8* temp;
 
 	if(type==0)
 	{
@@ -319,7 +319,7 @@ void characterdelete()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(char* addr, char* fmt, int width, int height)
+int characterstart(u8* addr, u8* fmt, int width, int height)
 {
 	int j;
 
@@ -355,7 +355,7 @@ int characterstop()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterlist(char* p)
+int characterlist(u8* p)
 {
 	//列出所有“人物”
 	int j;
@@ -392,8 +392,9 @@ int characterlist(char* p)
 		return 0;
 	}
 }
-int characterchoose(char* p)
+int characterchoose(u8* p)
 {
+	return 0;
 }
 
 
@@ -598,7 +599,7 @@ void characterread()
 
 
 
-int charactercommand(char* p)
+int charactercommand(u8* p)
 {
 	int j,k,ret;
 	u64 temp;
@@ -674,5 +675,6 @@ int charactercommand(char* p)
 found:
 	//worker[0].xyze1 = 0;
 	characterstart(pixbuf, pixfmt, w, h);
+	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
