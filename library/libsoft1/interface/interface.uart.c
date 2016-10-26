@@ -3,12 +3,14 @@
 #define u16 unsigned short
 #define u8 unsigned char
 int systemuart_list();
-int systemuart_choose(char* p);
+int systemuart_choose(char* p, int);
 int systemuart_read();
 int systemuart_write(char*, int);
 int systemuart_start(char*);
 int systemuart_stop();
-void say(char*,...);
+//
+int decstr2data(u8*, u64*);
+void say(char*, ...);
 
 
 
@@ -19,7 +21,28 @@ static int uart_list(char* p)
 }
 static int uart_choose(char* p)
 {
-	systemuart_choose(p);
+	int j;
+	u64 speed = 115200;
+	char name[64];
+
+	if(p==0)
+	{
+		systemuart_choose(0,0);
+		return 0;
+	}
+
+	for(j=0;j<64;j++)
+	{
+		if(p[j] == 0)break;
+		if(p[j] == ',')
+		{
+			decstr2data(p+j+1, &speed);
+			break;
+		}
+		else name[j] = p[j];
+	}
+	name[j] = 0;
+	systemuart_choose(name, speed);
 }
 static int uart_read(char* p)
 {

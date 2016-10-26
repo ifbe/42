@@ -54,7 +54,7 @@ int systemuart_list()
 {
 	return system("ls /dev/tty*");
 }
-int systemuart_choose(char* p)
+int systemuart_choose(char* p, int speed)
 {
 	struct termios option;
 
@@ -81,8 +81,11 @@ int systemuart_choose(char* p)
 	tcgetattr(fd,&option);
 	fcntl(fd,F_SETFL,0);
 
+	if(speed == 9600)speed = B9600;
+	else speed = B115200;
+
 	//8n1
-	option.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
+	option.c_cflag = speed | CS8 | CLOCAL | CREAD;
 	option.c_iflag = IGNPAR;
 	option.c_oflag = 0;
 	option.c_lflag=0;

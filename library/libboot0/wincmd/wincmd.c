@@ -7,11 +7,158 @@
 
 //
 static HANDLE output=0;
-static void attr(int val)
+//
+char last[8]={0};
+char buf[0x1000];
+//
+void attr(int val)
 {
 	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(output, val);
 }
+void escapecolor(char* p)
+{
+	//reset
+	if(p[0] == '0')
+	{
+		attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
+		return;
+	}
+
+	//heavy
+	else if(p[0] == '1')
+	{
+		attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_INTENSITY);
+		return;
+	}
+
+	//foreground
+	if(p[0] == '3')
+	{
+		if(p[1] == '0')
+		{
+			attr(0);
+		}
+		else if(p[1] == '1')
+		{
+			attr(FOREGROUND_RED);
+		}
+		else if(p[1] == '2')
+		{
+			attr(FOREGROUND_GREEN);
+		}
+		else if(p[1] == '3')
+		{
+			attr(FOREGROUND_GREEN|FOREGROUND_RED);
+		}
+		else if(p[1] == '4')
+		{
+			attr(FOREGROUND_BLUE);
+		}
+		else if(p[1] == '5')
+		{
+			attr(FOREGROUND_BLUE|FOREGROUND_RED);
+		}
+		else if(p[1] == '6')
+		{
+			attr(FOREGROUND_BLUE|FOREGROUND_GREEN);
+		}
+		else if(p[1] == '7')
+		{
+			attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
+		}
+		return;
+	}
+
+	//background
+	else if(p[0] == '4')
+	{
+		if(p[1] == '0')
+		{
+			attr(0);
+		}
+		else if(p[1] == '1')
+		{
+			attr(BACKGROUND_RED);
+		}
+		else if(p[1] == '2')
+		{
+			attr(BACKGROUND_GREEN);
+		}
+		else if(p[1] == '3')
+		{
+			attr(BACKGROUND_GREEN|BACKGROUND_RED);
+		}
+		else if(p[1] == '4')
+		{
+			attr(BACKGROUND_BLUE);
+		}
+		else if(p[1] == '5')
+		{
+			attr(BACKGROUND_BLUE|BACKGROUND_RED);
+		}
+		else if(p[1] == '6')
+		{
+			attr(BACKGROUND_BLUE|BACKGROUND_GREEN);
+		}
+		else if(p[1] == '7')
+		{
+			attr(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED);
+		}
+		return;
+	}
+}
+int escapesequence(char* p)
+{
+	//????: 1b 5b 4b
+	if(p[2] == 0x4b)
+	{
+		printf(" \b");
+		return 2;
+	}
+
+	//right: 1b 5b 43
+	else if(p[2] == 0x43)
+	{
+		return 2;
+	}
+
+	//1b 5b ? m
+	else if(p[3] == 'm')
+	{
+		escapecolor(p+2);
+		return 3;
+	}
+
+	//1b 5b ? ? m
+	else if(p[4] == 'm')
+	{
+		escapecolor(p+2);
+		return 4;
+	}
+
+	//1b 5b ? ; ? ? m
+	else if( (p[3] == ';') && (p[6] == 'm') )
+	{
+		escapecolor(p+2);
+		escapecolor(p+4);
+		return 6;
+	}
+
+	//1b 5b ? ? ; ? ? m
+	else if( (p[4] == ';') && (p[7] == 'm') )
+	{
+		escapecolor(p+2);
+		escapecolor(p+5);
+		return 7;
+	}
+
+	return 0;
+}
+
+
+
+
 void createserial(char* arg)
 {
 	//opened?
@@ -30,13 +177,6 @@ void createserial(char* arg)
 void deleteserial()
 {
 }
-
-
-
-
-//
-char last[8]={0};
-char buf[0x1000];
 int diary(char* mem, int max, char* fmt, ...)
 {
 	int ret;
@@ -72,136 +212,20 @@ void say(char* fmt , ...)
 
 		if(buf[j] == 0x1b)
 		{
-			if(buf[j+1] == 0)
+			//escape sequence must complete
+			for(k=1;k<8;k++)
 			{
-				last[0]=0x1b;
-				last[1]=0;
-				return;
+				if(buf[j+k] == 0)
+				{
+					for(;k>=0;k--)last[k] = buf[j+k];
+					return;
+				}
 			}
 			//printf("{%x,%x,%x,%x,%x}",buf[j+0],buf[j+1],buf[j+2],buf[j+3],buf[j+4]);
 
 			if(buf[j+1] == 0x5b)
 			{
-				if(buf[j+2] == 0)
-				{
-					last[0]=0x1b;
-					last[1]=0x5b;
-					last[2]=0;
-					return;
-				}
-				//????
-				if(buf[j+2] == 0x4b)
-				{
-					printf(" \b");
-					j += 2;
-				}
-
-				//right
-				if(buf[j+2] == 0x43)
-				{
-					j += 2;
-				}
-
-				//
-				for(k=3;k<5;k++)
-				{
-					if(buf[j+k] == 0)
-					{
-						for(k=0;k<5;k++)last[k] = buf[j+k];
-						return;
-					}
-				}
-
-				//reset
-				if( (buf[j+2] == '0') && (buf[j+3] == 'm') )
-				{
-					attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
-					j += 3;
-				}
-
-				//reset
-				else if( (buf[j+2] == '1') && (buf[j+3] == 'm') )
-				{
-					attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_INTENSITY);
-					j += 3;
-				}
-
-				//foreground
-				else if( (buf[j+2] == '3') && (buf[j+4] == 'm') )
-				{
-					//say("[%02x,%02x,%02x,%02x]",buf[j+0],buf[j+1],buf[j+2],buf[j+3]);
-					if(buf[j+3] == '0')
-					{
-						attr(0);
-					}
-					else if(buf[j+3] == '1')
-					{
-						attr(FOREGROUND_RED);
-					}
-					else if(buf[j+3] == '2')
-					{
-						attr(FOREGROUND_GREEN);
-					}
-					else if(buf[j+3] == '3')
-					{
-						attr(FOREGROUND_GREEN|FOREGROUND_RED);
-					}
-					else if(buf[j+3] == '4')
-					{
-						attr(FOREGROUND_BLUE);
-					}
-					else if(buf[j+3] == '5')
-					{
-						attr(FOREGROUND_BLUE|FOREGROUND_RED);
-					}
-					else if(buf[j+3] == '6')
-					{
-						attr(FOREGROUND_BLUE|FOREGROUND_GREEN);
-					}
-					else if(buf[j+3] == '7')
-					{
-						attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
-					}
-					j += 4;
-				}
-
-				//background
-				else if( (buf[j+2] == '4') && (buf[j+4] == 'm') )
-				{
-					if(buf[j+3] == '0')
-					{
-						attr(0);
-					}
-					else if(buf[j+3] == '1')
-					{
-						attr(BACKGROUND_RED);
-					}
-					else if(buf[j+3] == '2')
-					{
-						attr(BACKGROUND_GREEN);
-					}
-					else if(buf[j+3] == '3')
-					{
-						attr(BACKGROUND_GREEN|BACKGROUND_RED);
-					}
-					else if(buf[j+3] == '4')
-					{
-						attr(BACKGROUND_BLUE);
-					}
-					else if(buf[j+3] == '5')
-					{
-						attr(BACKGROUND_BLUE|BACKGROUND_RED);
-					}
-					else if(buf[j+3] == '6')
-					{
-						attr(BACKGROUND_BLUE|BACKGROUND_GREEN);
-					}
-					else if(buf[j+3] == '7')
-					{
-						attr(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED);
-					}
-					j += 4;
-				}
+				j += escapesequence(buf+j);
 			}//5b
 		}//1b
 		else if(buf[j] == 0x8)

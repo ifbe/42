@@ -88,11 +88,13 @@ int systemuart_list()
 		}
 	}
 }
-int systemuart_choose(char* p)
+int systemuart_choose(char* p, int speed)
 {
 	//
 	int ret;
 	char buf[20];
+
+	//
 	if(hcom != 0)
 	{
 		alive = 0;
@@ -115,7 +117,7 @@ int systemuart_choose(char* p)
 	);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
-		say("fail@open\n");
+		say("err:%d@open\n",GetLastError());
 		return -1;
 	}
 
@@ -136,7 +138,7 @@ int systemuart_choose(char* p)
 	ret = GetCommState(hcom,&dcb);
 	say("GetCommState:%d\n", ret);
 	dcb.DCBlength = sizeof(DCB);
-	dcb.BaudRate = 115200;	//波特率
+	dcb.BaudRate = speed;	//波特率
 	dcb.ByteSize = 8;		//数据位
 	dcb.fBinary = TRUE;		//是否允许传二进制
 	dcb.Parity = NOPARITY;	//奇偶校验方式
