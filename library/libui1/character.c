@@ -12,9 +12,10 @@ void unicode_create(char*,char*);
 void background_create(char*,char*);
 void shape_create(char*,char*);
 //game
+void the2048_create(char*,char*);
 void ooxx_create(char*,char*);
 void snake_create(char*,char*);
-void the2048_create(char*,char*);
+void sudoku_create(char*,char*);
 void tetris_create(char*,char*);
 void weiqi_create(char*,char*);
 void xiangqi_create(char*,char*);
@@ -44,10 +45,11 @@ void background_delete();
 //
 void xiangqi_delete();
 void weiqi_delete();
-void the2048_delete();
 void tetris_delete();
+void sudoku_delete();
 void snake_delete();
 void ooxx_delete();
+void the2048_delete();
 //
 void pure_delete();
 void font_delete();
@@ -205,6 +207,10 @@ void charactercreate(char* type,char* addr)
 		snake_create(addr,temp);
 		temp += 0x80;
 
+		//game.sudoku
+		sudoku_create(addr,temp);
+		temp += 0x80;
+
 		//game.tetris
 		tetris_create(addr,temp);
 		temp += 0x80;
@@ -290,10 +296,11 @@ void characterdelete()
 	font_delete();
 	pure_delete();
 
+	the2048_delete();
 	ooxx_delete();
 	snake_delete();
+	sudoku_delete();
 	tetris_delete();
-	the2048_delete();
 	weiqi_delete();
 	xiangqi_delete();
 

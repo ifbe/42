@@ -7,6 +7,7 @@
 #include<pthread.h>
 #include<signal.h>
 #include<arpa/inet.h>
+#include<linux/if_ether.h>
 #include<net/if.h>
 #include<netinet/in.h>
 #include<netinet/ether.h>

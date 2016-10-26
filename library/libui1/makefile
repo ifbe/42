@@ -13,6 +13,7 @@ target:
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c
+	$(compiler) $(cflag) game/game.sudoku.c
 	$(compiler) $(cflag) game/game.tetris.c
 	$(compiler) $(cflag) game/game.weiqi.c
 	$(compiler) $(cflag) game/game.xiangqi.c
