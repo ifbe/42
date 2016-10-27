@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdarg.h>
 #include<windows.h>
+#define u8 unsigned char
 
 
 
@@ -8,28 +9,28 @@
 //
 static HANDLE output=0;
 //
-char last[8]={0};
-char buf[0x1000];
+u8 last[8]={0};
+u8 buf[0x1000];
 //
 void attr(int val)
 {
 	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(output, val);
 }
-void escapecolor(char* p)
+int escapecolor(u8* p)
 {
 	//reset
 	if(p[0] == '0')
 	{
 		attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
-		return;
+		return 0;
 	}
 
 	//heavy
 	else if(p[0] == '1')
 	{
 		attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_INTENSITY);
-		return;
+		return 1;
 	}
 
 	//foreground
@@ -67,7 +68,7 @@ void escapecolor(char* p)
 		{
 			attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
 		}
-		return;
+		return 3;
 	}
 
 	//background
@@ -105,52 +106,162 @@ void escapecolor(char* p)
 		{
 			attr(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED);
 		}
-		return;
+		return 4;
 	}
 }
-int escapesequence(char* p)
+void gotoxy(int x, int y)
 {
-	//????: 1b 5b 4b
+	COORD pos;
+	pos.X=x;
+	pos.Y=y;
+
+	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(output, pos);
+}
+int escapeposition(u8* p)
+{
+	int t;
+	int x=0,y=0;
+	for(t=0;t<4;t++)
+	{
+		if(p[t] == ';')
+		{
+			t++;
+			break;
+		}
+		y = (y*10) + p[t] - 0x30;
+	}
+	for(;t<8;t++)
+	{
+		if( (p[t] == 'H') | (p[t] == 'f') )
+		{
+			t++;
+			break;
+		}
+		x = (x*10) + p[t] - 0x30;
+	}
+//printf("\n(%d,%d)",x,y);
+	gotoxy(x-1, y-1);
+	return 0;
+}
+int escapesequence(u8* p)
+{
+	int j;
+	int x,y;
+
+	if(p[2] == '?')
+	{
+		for(j=3;j<8;j++)
+		{
+			if( (p[j] == 'h') | (p[j] == 'l') )
+			{
+				gotoxy(0,0);
+				for(y=0;y<128;y++)
+				{
+					for(x=0;x<79;x++)
+					{
+						printf(" ");
+					}
+					printf("\b\n");
+				}
+				gotoxy(0,0);
+
+				return j;
+			}
+		}
+	}
+
+	//1b 5b 4a bf: openwrt special
+	if(p[2] == 0x4a)
+	{
+		if(p[3] == 0xbf) return 3;
+	}
+
+	//1b 5b 4b: erase from here to the end
 	if(p[2] == 0x4b)
 	{
 		printf(" \b");
 		return 2;
 	}
 
-	//right: 1b 5b 43
-	else if(p[2] == 0x43)
+	//1b 5b 41: cursor up
+	if(p[2] == 0x41)
+	{
+		return 2;
+	}
+
+	//1b 5b 42: cursor down
+	if(p[2] == 0x42)
+	{
+		return 2;
+	}
+
+	//1b 5b 43: cursor forward
+	if(p[2] == 0x43)
+	{
+		return 2;
+	}
+
+	//1b 5b 44: cursor backward
+	if(p[2] == 0x44)
 	{
 		return 2;
 	}
 
 	//1b 5b ? m
-	else if(p[3] == 'm')
+	if(p[3] == 'm')
 	{
 		escapecolor(p+2);
 		return 3;
 	}
 
+	//1b 5b ? n
+	if(p[3] == 'n')
+	{
+		return 3;
+	}
+
 	//1b 5b ? ? m
-	else if(p[4] == 'm')
+	if(p[4] == 'm')
 	{
 		escapecolor(p+2);
 		return 4;
 	}
 
-	//1b 5b ? ; ? ? m
-	else if( (p[3] == ';') && (p[6] == 'm') )
+	if(p[3] == ';')
 	{
-		escapecolor(p+2);
-		escapecolor(p+4);
-		return 6;
+		//1b 5b ? ; ? m
+		if(p[5] == 'm')
+		{
+			escapecolor(p+2);
+			escapecolor(p+4);
+			return 5;
+		}
+
+		//1b 5b ? ; ? ? m
+		else if(p[6] == 'm')
+		{
+			escapecolor(p+2);
+			escapecolor(p+4);
+			return 6;
+		}
 	}
 
 	//1b 5b ? ? ; ? ? m
-	else if( (p[4] == ';') && (p[7] == 'm') )
+	if( (p[4] == ';') && (p[7] == 'm') )
 	{
 		escapecolor(p+2);
 		escapecolor(p+5);
 		return 7;
+	}
+
+	for(j=2;j<10;j++)
+	{
+		if( (p[j] == 'H') | (p[j] == 'f') )
+		{
+			escapeposition(p+2);
+			return j;
+		}
 	}
 
 	return 0;
@@ -159,7 +270,7 @@ int escapesequence(char* p)
 
 
 
-void createserial(char* arg)
+void createserial(u8* arg)
 {
 	//opened?
 	HWND consolewindow = GetConsoleWindow();
@@ -177,7 +288,7 @@ void createserial(char* arg)
 void deleteserial()
 {
 }
-int diary(char* mem, int max, char* fmt, ...)
+int diary(u8* mem, int max, u8* fmt, ...)
 {
 	int ret;
 	va_list args;
@@ -188,7 +299,7 @@ int diary(char* mem, int max, char* fmt, ...)
 
 	return ret;
 }
-void say(char* fmt , ...)
+void say(u8* fmt , ...)
 {
 	int j,k,ret;
 	va_list args;
@@ -212,19 +323,19 @@ void say(char* fmt , ...)
 
 		if(buf[j] == 0x1b)
 		{
-			//escape sequence must complete
-			for(k=1;k<8;k++)
-			{
-				if(buf[j+k] == 0)
-				{
-					for(;k>=0;k--)last[k] = buf[j+k];
-					return;
-				}
-			}
-			//printf("{%x,%x,%x,%x,%x}",buf[j+0],buf[j+1],buf[j+2],buf[j+3],buf[j+4]);
+			//printf("...........{%x,%x,%x,%x,%x}",buf[j+0],buf[j+1],buf[j+2],buf[j+3],buf[j+4]);
 
 			if(buf[j+1] == 0x5b)
 			{
+				//escape sequence must complete
+				for(k=2;k<8;k++)
+				{
+					if(buf[j+k] == 0)
+					{
+						for(;k>=0;k--)last[k] = buf[j+k];
+						return;
+					}
+				}
 				j += escapesequence(buf+j);
 			}//5b
 		}//1b
