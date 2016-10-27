@@ -105,26 +105,24 @@ void snake_read_pixel()
 
 void snake_read_text()
 {
-	char bg;
-	int j;
+	int j,t;
 	int width=haha->width;
 	int height=haha->height;
 	char* p = (char*)(haha->pixelbuffer);
-
-	if(die == 1)bg = 0x30;
-	else bg = 0x20;
-	for(j=0;j<width*height;j++)p[j]=bg;
+	for(j=0;j<width*height*4;j++)p[j] = 0;
 
 	j=0;
 	while(1)
 	{
-		p[snake[j].x + snake[j].y * width]='#';
+		t = snake[j].x + snake[j].y * width;
+		p[t<<2]='#';
 
 		j++;
 		if(j>=len)break;
 	}
 
-	p[foodx + foody*width] = '@';
+	t = foodx + foody*width;
+	p[t<<2] = '@';
 }
 
 

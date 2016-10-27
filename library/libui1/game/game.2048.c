@@ -117,18 +117,31 @@ static void cubie(int x,int y,int z)
 }
 static void the2048_read_text()
 {
-	int x,y;
+	int x,y,a,b;
+	u8* dst;
+	u8 src[10];
+
 	int w = haha->width;
 	int h = haha->height;
 	u8* p = (u8*)(haha->pixelbuffer);
 	int (*table)[4] = buffer + num*16*4;
 
-	for(x=0;x<w * h;x++)p[x]=0x20;
+	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			data2decstr(table[y][x], p + 4*w*y + 8*x);
+			data2decstr(table[y][x], src);
+			dst = p + (w*y + 2*x)*4*4;
+
+			a=b=0;
+			for(a=0;a<10;a++)
+			{
+				if(src[a] == 0)break;
+
+				dst[b] = src[a];
+				b += 4;
+			}
 		}
 	}
 }

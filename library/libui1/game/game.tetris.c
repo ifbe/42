@@ -83,7 +83,7 @@ static void tetris_read_text()
 	int height=haha->height;
 	char* p = (char*)(haha->pixelbuffer);
 
-	for(x=0;x<width*height;x++)p[x]=0x20;
+	for(x=0;x<width*height*4;x++)p[x]=0;
 	if(height>=40)
 	{
 		for(y=0;y<40;y++)
@@ -92,14 +92,14 @@ static void tetris_read_text()
 			{
 				if(table[y*32+x])
 				{
-					p[y*width+x]='#';
+					p[(y*width+x)<<2]='#';
 				}
 			}
 		}
-		p[that.x1 + that.y1*width]='#';
-		p[that.x2 + that.y2*width]='#';
-		p[that.x3 + that.y3*width]='#';
-		p[that.x4 + that.y4*width]='#';
+		p[(that.x1 + that.y1*width)<<2]='#';
+		p[(that.x2 + that.y2*width)<<2]='#';
+		p[(that.x3 + that.y3*width)<<2]='#';
+		p[(that.x4 + that.y4*width)<<2]='#';
 	}
 	else
 	{
@@ -109,14 +109,14 @@ static void tetris_read_text()
 			{
 				if(table[32*(y+40-height) + x])
 				{
-					p[y*width+x]='#';
+					p[(y*width+x)<<2]='#';
 				}
 			}
 		}
-		p[that.x1 + (that.y1-40+height)*width]='#';
-		p[that.x2 + (that.y2-40+height)*width]='#';
-		p[that.x3 + (that.y3-40+height)*width]='#';
-		p[that.x4 + (that.y4-40+height)*width]='#';
+		p[(that.x1 + (that.y1-40+height)*width)<<2]='#';
+		p[(that.x2 + (that.y2-40+height)*width)<<2]='#';
+		p[(that.x3 + (that.y3-40+height)*width)<<2]='#';
+		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
 	}
 }
 static int htmlcubie(char* p, int x, int y)

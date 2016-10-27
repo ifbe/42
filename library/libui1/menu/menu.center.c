@@ -47,34 +47,46 @@ static void menu_read_text()
 	{
 		for(x=width/4;x<width*3/4;x++)
 		{
-			p[x + width*y] = 0x20;
+			p[(x + width*y)<<2] = 0x20;
 		}
 	}
 	for(x=width/4;x<=width*3/4;x++)
 	{
-		p[x + (height/4)*width] = '-';
-		p[x + (height*3/4)*width] = '-';
+		p[(x + (height/4)*width)<<2] = '-';
+		p[(x + (height*3/4)*width)<<2] = '-';
 	}
 	for(y=height/4;y<=height*3/4;y++)
 	{
-		p[width/4 + y*width] = '|';
-		p[width*3/4 + y*width] = '|';
+		p[(width/4 + y*width)<<2] = '|';
+		p[(width*3/4 + y*width)<<2] = '|';
 	}
 
-	dst = p + (height/4+1)*width + width/4 + 1;
+	x = (height/4+1)*width + width/4 + 1;
+	dst = p + (x<<2);
 	src = "what do you want?";
-	x=0;
-	while(src[x] != 0)
+
+	x=y=0;
+	while(1)
 	{
-		dst[x]=src[x];
-		x++;
+		if(src[x] == 0)break;
+
+		dst[y]=src[x];
+		x += 1;
+		y += 4;
 	}
 
-	dst = p + (height/4+2)*width + width/4 + 1;
+	x = (height/4+2)*width + width/4 + 1;
+	dst = p + (x<<2);
 	src = buffer;
-	for(x=0;x<bufp;x++)
+
+	x=y=0;
+	while(1)
 	{
-		dst[x]=src[x];
+		if(x > bufp)break;
+
+		dst[y]=src[x];
+		x += 1;
+		y += 4;
 	}
 }
 static void menu_read_pixel()

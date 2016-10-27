@@ -119,12 +119,33 @@ void windowread(char* addr)
 }
 void windowwrite()
 {
-	textbuf[width*height] = 0;
-
 	printf("\033[H\033[J");
+/*
 	printf("%s",textbuf);
-
 	fflush(stdout);
+*/
+	int x,y;
+	u8* p;
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			p = textbuf + ((width*y + x)<<2);
+			if(p[0] > 0x80)
+			{
+				//这是汉字
+				printf("%2s",p);
+				//x++;
+			}
+			else if(p[0] >= 0x20)
+			{
+				//这是ascii
+				printf("%c",p[0]);
+			}
+			else printf(" ");
+		}
+	}
+
 }
 
 

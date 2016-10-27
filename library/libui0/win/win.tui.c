@@ -10,7 +10,7 @@ void eventwrite(u64,u64);
 
 //
 static HANDLE thread=0;
-static HANDLE h;
+static HANDLE output;
 //
 static int lastwidth=0,lastheight=0;
 static int width,height;
@@ -84,13 +84,37 @@ void windowread(char* where)
 }
 void windowwrite()
 {
+	int x,y;
+	char* p;
 	COORD pos = {0,0};
-	SetConsoleCursorPosition(h,pos);
-
+	SetConsoleCursorPosition(output,pos);
+/*
+	//
 	content[width*height]=0;
 	printf("%s",content);
+*/
+	//
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			p = content + ((width*y + x)<<2);
+			if(p[0] > 0x80)
+			{
+				//这是汉字
+				printf("%s",p);
+				//x++;
+			}
+			else if(p[0] >= 0x20)
+			{
+				//这是ascii
+				printf("%c",p[0]);
+			}
+			else printf(" ");
+		}
+	}
 
-	SetConsoleCursorPosition(h,pos);
+	SetConsoleCursorPosition(output,pos);
 }
 
 
@@ -112,8 +136,8 @@ void windowcreate()
 {
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
-	h = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(h, &bInfo );
+	output = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(output, &bInfo );
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 

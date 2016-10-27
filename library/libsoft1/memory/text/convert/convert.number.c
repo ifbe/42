@@ -27,11 +27,11 @@ int decstr2data(u8* source,u64* data)
 }
 int data2decstr(u64 data,u8* string)
 {
-	unsigned long long temp;
+	u64 temp;
 	int i,count;
 
 	count=0;	//至少1
-	temp=(unsigned long long)data;
+	temp=(u64)data;
 	while(1)
 	{
 		count++;
@@ -39,8 +39,9 @@ int data2decstr(u64 data,u8* string)
 		if(temp<10)break;
 		temp/=10;
 	}
+	string[count] = 0;
 
-	temp=(unsigned long long)data;
+	temp=(u64)data;
 	for(i=1;i<=count;i++)
 	{
 		string[count-i]=temp%10+0x30;

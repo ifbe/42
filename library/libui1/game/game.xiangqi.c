@@ -111,28 +111,20 @@ static void xiangqi_read_text()
 	int width=haha->width;
 	int height=haha->height;
 	char* p = (char*)(haha->pixelbuffer);
+	char* q;
 
 	//haha
+	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if(data[y][x] == 0)
-			{
-				ret = diary(p, 9, "      ");
-			}
-			else
-			{
-				ret = diary( p, 9, "%s    ", char2hanzi(data[y][x]));
-			}
+			q = char2hanzi(data[y][x]);
+			if(q == 0)continue;
 
-			p[ret] = 0;
-			p += ret;
+			diary( p + ((y*width + 2*x)<<3), 4, "%s", q);
 		}
-		p[0] = p[1] = 0xa;
-		p += 2;
 	}
-	p[0] = 0;
 }
 void xiangqi_read_pixel()
 {
