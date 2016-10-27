@@ -17,15 +17,15 @@ void say(char*,...);
 
 
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //
@@ -36,6 +36,104 @@ static int px,py;
 
 
 
+char* char2hanzi(int val)
+{
+	switch(val)
+	{
+		case 'a':return "车";
+		case 'b':return "马";
+		case 'c':return "象";
+		case 'd':return "士";
+		case 'e':return "将";
+		case 's':return "卒";
+		case 'z':return "炮";
+
+		case 'A':return "车";
+		case 'B':return "马";
+		case 'C':return "相";
+		case 'D':return "仕";
+		case 'E':return "帅";
+		case 'S':return "兵";
+		case 'Z':return "炮";
+
+		default:return 0;
+	}
+}
+static int htmlcircle(char* p, int x, int y)
+{
+	u32 textcolor;
+	char* hanzi;
+
+	if(data[y][x] >= 'a')textcolor=0;
+	else textcolor=0xff0000;
+
+	hanzi = char2hanzi(data[y][x]);
+	return diary(
+		p, 0x1000,
+		"<div class=\"circle\" style=\""
+		"left:%d%;"
+		"top:%d%;"
+		"background:#ffff00;"
+		"color:#%06x;"
+		"\"><br>%s</div>",
+		x*11, y*10,
+		textcolor, hanzi
+	);
+}
+static void xiangqi_read_html()
+{
+	int x,y;
+	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".circle{"
+		"position:absolute;"
+		"border-radius:50%;"
+		"width:10%;"
+		"height:10%;"
+		"text-align:center;"
+		"}"
+		"</style>"
+	);
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			p += htmlcircle(p, x, y);
+		}//forx
+	}//fory
+}
+static void xiangqi_read_text()
+{
+	int x,y,ret;
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+
+	//haha
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if(data[y][x] == 0)
+			{
+				ret = diary(p, 9, "      ");
+			}
+			else
+			{
+				ret = diary( p, 9, "%s    ", char2hanzi(data[y][x]));
+			}
+
+			p[ret] = 0;
+			p += ret;
+		}
+		p[0] = p[1] = 0xa;
+		p += 2;
+	}
+	p[0] = 0;
+}
 void xiangqi_read_pixel()
 {
 	int x,y;
@@ -52,11 +150,11 @@ void xiangqi_read_pixel()
 	//
 	black=0;
 	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
-        {
+	{
 		backgroundcolor(0x256f8d);
 		red = 0xff;
 		brown = 0x36878d;
-        }
+	}
 	else
 	{
 		backgroundcolor(0x8d6f25);
@@ -130,73 +228,6 @@ void xiangqi_read_pixel()
 		}//forx
 	}//fory
 }
-static int htmlcircle(char* p, int x, int y)
-{
-	u32 textcolor;
-	char* hanzi;
-	if(data[y][x] >= 'a')textcolor=0;
-	else textcolor=0xff0000;
-
-	switch(data[y][x])
-	{
-		case 'a':hanzi="车";break;
-		case 'b':hanzi="马";break;
-		case 'c':hanzi="象";break;
-		case 'd':hanzi="士";break;
-		case 'e':hanzi="将";break;
-		case 's':hanzi="兵";break;
-		case 'z':hanzi="炮";break;
-
-		case 'A':hanzi="车";break;
-		case 'B':hanzi="马";break;
-		case 'C':hanzi="相";break;
-		case 'D':hanzi="仕";break;
-		case 'E':hanzi="帅";break;
-		case 'S':hanzi="兵";break;
-		case 'Z':hanzi="炮";break;
-
-		default:return 0;
-	}
-	return diary(
-		p, 0x1000,
-		"<div class=\"circle\" style=\""
-		"left:%d%;"
-		"top:%d%;"
-		"background:#ffff00;"
-		"color:#%06x;"
-		"\"><br>%s</div>",
-		x*11, y*10,
-		textcolor, hanzi
-	);
-}
-static void xiangqi_read_html()
-{
-	int x,y;
-	char* p = (char*)(haha->pixelbuffer) + 0x1000;
-
-	p += diary(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".circle{"
-		"position:absolute;"
-		"border-radius:50%;"
-		"width:10%;"
-		"height:10%;"
-		"text-align:center;"
-		"}"
-		"</style>"
-	);
-	for(y=0;y<10;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			p += htmlcircle(p, x, y);
-		}//forx
-	}//fory
-}
-static void xiangqi_read_text()
-{
-}
 static void xiangqi_read()
 {
 	u32 temp = (haha->pixelformat)&0xffffffff;
@@ -226,14 +257,14 @@ static void xiangqi_read()
 
 void xiangqi_write(u64* who, u64* what, u64* key)
 {
-        int cx, cy, half;
+	int cx, cy, half;
 	int x, y;
 	int min, max, t, u;
 
-        cx = (haha->width)/2;
-        cy = (haha->height)/2;
-        if(cy*9 > cx*10)half = cx/9;
-        else half = cy/10;
+	cx = (haha->width)/2;
+	cy = (haha->height)/2;
+	if(cy*9 > cx*10)half = cx/9;
+	else half = cy/10;
 
 	if(*what == 0x2d6d)
 	{

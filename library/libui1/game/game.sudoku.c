@@ -204,6 +204,20 @@ void sudoku_solve()
 
 static void sudoku_read_text()
 {
+	int x,y;
+	int width=haha->width;
+	int height=haha->height;
+	char* p = (char*)(haha->pixelbuffer);
+
+	for(x=0;x<width*height;x++)p[x]=0x20;
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if(table[y][x] == 0)continue;
+			p[2*y*width + 4*x] = table[y][x] + 0x30;
+		}
+	}
 }
 static void sudoku_read_html()
 {
