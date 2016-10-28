@@ -12,12 +12,12 @@ static HANDLE output=0;
 u8 last[8]={0};
 u8 buf[0x1000];
 //
-void attr(int val)
+static void attr(int val)
 {
 	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(output, val);
 }
-int escapecolor(u8* p)
+static int escapecolor(u8* p)
 {
 	//reset
 	if(p[0] == '0')
@@ -109,7 +109,7 @@ int escapecolor(u8* p)
 		return 4;
 	}
 }
-void gotoxy(int x, int y)
+static void gotoxy(int x, int y)
 {
 	COORD pos;
 	pos.X=x;
@@ -118,7 +118,7 @@ void gotoxy(int x, int y)
 	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(output, pos);
 }
-int escapeposition(u8* p)
+static int escapeposition(u8* p)
 {
 	int t;
 	int x=0,y=0;
@@ -144,7 +144,7 @@ int escapeposition(u8* p)
 	gotoxy(x-1, y-1);
 	return 0;
 }
-int escapesequence(u8* p)
+static int escapesequence(u8* p)
 {
 	int j;
 	int x,y;

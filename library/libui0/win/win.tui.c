@@ -67,7 +67,7 @@ DWORD WINAPI uievent(LPVOID pM)
 		}
 	}
 }
-void windowsutf8(char* utf8)
+static void windowsutf8(char* utf8)
 {
 	int ret;
 	char unicode[8];
@@ -75,6 +75,16 @@ void windowsutf8(char* utf8)
 	ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, (void*)unicode, 4);
 	ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
 	printf("%s",gbk);
+}
+static void attr(u8 bg,u8 fg)
+{
+	int color;
+	if(bg == 1)color = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+	else if(bg == 4)color = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+	else color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+
+	//
+	SetConsoleTextAttribute(output, color);
 }
 
 
@@ -84,6 +94,7 @@ void windowwrite()
 {
 	int x,y;
 	u8* p;
+	u8 ch,bg=0,fg=0;
 	COORD pos = {0,0};
 	SetConsoleCursorPosition(output,pos);
 /*
@@ -99,16 +110,31 @@ void windowwrite()
 			p = content + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
+				//先颜色
+				if(bg != p[7])
+				{
+					bg = p[7];
+					attr(bg,fg);
+				}
+
 				//这是汉字
 				windowsutf8(p);
 				x++;
 			}
-			else if(p[0] >= 0x20)
+			else
 			{
+				//先颜色
+				if(bg != p[3])
+				{
+					bg = p[3];
+					attr(bg,fg);
+				}
+
 				//这是ascii
-				printf("%c",p[0]);
+				ch = p[0];
+				if(ch < 0x20)ch = 0x20;
+				printf("%c",ch);
 			}
-			else printf(" ");
 		}
 	}
 

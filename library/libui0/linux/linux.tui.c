@@ -100,23 +100,15 @@ void* uievent(void* p)
 		}
 	}//while
 }
-
-
-
-
-void windowlist()
+static void attr(u8 bg, u8 fg)
 {
-}
-void windowchange()
-{
+	if(bg = 1)printf("\033[41m");
+	else if(bg == 4)printf("\033[44m");
 }
 
 
 
 
-void windowread(char* addr)
-{
-}
 void windowwrite()
 {
 	printf("\033[H\033[J");
@@ -126,6 +118,7 @@ void windowwrite()
 */
 	int x,y;
 	u8* p;
+	u8 ch,bg=0,fg=0;
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
@@ -133,19 +126,46 @@ void windowwrite()
 			p = textbuf + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
+				//先颜色
+				if(bg != p[7])
+				{
+					bg = p[7];
+					attr(bg,fg);
+				}
+
 				//这是汉字
 				printf("%2s",p);
 				x++;
 			}
-			else if(p[0] >= 0x20)
+			else
 			{
+				//先颜色
+				if(bg != p[3])
+				{
+					bg = p[3];
+					attr(bg,fg);
+				}
+
 				//这是ascii
-				printf("%c",p[0]);
+				ch = p[0];
+				if(ch < 0x20)ch = 0x20;
+				printf("%c",ch);
 			}
-			else printf(" ");
 		}
 	}
+}
+void windowread(char* addr)
+{
+}
 
+
+
+
+void windowlist()
+{
+}
+void windowchange()
+{
 }
 
 

@@ -107,11 +107,11 @@ static void xiangqi_read_html()
 }
 static void xiangqi_read_text()
 {
-	int x,y,ret;
+	int x,y,j,k,ret,color;
 	int width=haha->width;
 	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
-	char* q;
+	u8* p = (u8*)(haha->pixelbuffer);
+	u8* q;
 
 	//haha
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -122,7 +122,24 @@ static void xiangqi_read_text()
 			q = char2hanzi(data[y][x]);
 			if(q == 0)continue;
 
-			diary( p + ((y*width + 2*x)<<3), 4, "%s", q);
+			//position
+			ret = (3*y+1)*width + x*8 + 2;
+			ret <<= 2;
+
+			//color
+			if(data[y][x] >= 'a')color=1;
+			else color=4;
+			for(j=-1;j<=1;j++)
+			{
+				for(k=-2;k<=3;k++)
+				{
+					p[ret +(j*width*4) +(k*4) +3] = color;
+				}
+			}
+
+			//character
+			diary(p+ret, 4, "%s", q);
+
 		}
 	}
 }
