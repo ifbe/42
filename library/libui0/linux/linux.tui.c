@@ -135,7 +135,7 @@ void windowwrite()
 			{
 				//这是汉字
 				printf("%2s",p);
-				//x++;
+				x++;
 			}
 			else if(p[0] >= 0x20)
 			{

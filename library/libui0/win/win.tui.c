@@ -3,6 +3,8 @@
 #include <windows.h>
 #define u64 unsigned long long
 #define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 void eventwrite(u64,u64);
 
 
@@ -65,27 +67,23 @@ DWORD WINAPI uievent(LPVOID pM)
 		}
 	}
 }
-
-
-
-
-void windowlist()
+void windowsutf8(char* utf8)
 {
+	int ret;
+	char unicode[8];
+	char gbk[8];
+	ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, (void*)unicode, 4);
+	ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
+	printf("%s",gbk);
 }
-void windowchange()
-{
-}
 
 
 
 
-void windowread(char* where)
-{
-}
 void windowwrite()
 {
 	int x,y;
-	char* p;
+	u8* p;
 	COORD pos = {0,0};
 	SetConsoleCursorPosition(output,pos);
 /*
@@ -102,8 +100,8 @@ void windowwrite()
 			if(p[0] > 0x80)
 			{
 				//这是汉字
-				printf("%s",p);
-				//x++;
+				windowsutf8(p);
+				x++;
 			}
 			else if(p[0] >= 0x20)
 			{
@@ -115,6 +113,19 @@ void windowwrite()
 	}
 
 	SetConsoleCursorPosition(output,pos);
+}
+void windowread(char* where)
+{
+}
+
+
+
+
+void windowlist()
+{
+}
+void windowchange()
+{
 }
 
 
