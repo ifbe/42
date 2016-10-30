@@ -1,5 +1,7 @@
 #define u64 unsigned long long 
 #define u32 unsigned int
+#define u16 unsigned short
+#define u8 unsigned char
 //
 void line(       int x1,int y1,int x2,int y2, u32 color);
 void circlebody( int x, int y, int r, u32 color);
@@ -13,25 +15,60 @@ void say(char*,...);
 
 
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
-
 //
 static int turn;
+static int px,py;
+//
 static char* data;
 
 
 
 
-void weiqi_read()
+static void weiqi_read_html()
+{
+}
+static void weiqi_read_text()
+{
+	int x,y,j,k,ret,color;
+	int width=haha->width;
+	int height=haha->height;
+	u8* p = (u8*)(haha->pixelbuffer);
+
+	//haha
+	for(x=0;x<width*height*4;x++)p[x] = 0;
+	for(y=0;y<19;y++)
+	{
+		for(x=0;x<19;x++)
+		{
+			//position
+			ret = y*width + x*2;
+			ret <<= 2;
+
+			//color
+			if( (px == x) && (py == y) )color = 7;
+			else if(data[(y*19) + x] == 'b')color = 4;
+			else if(data[(y*19) + x] == 'w')color = 1;
+			else continue;
+
+			//
+			p[ret] = 0x20;
+			p[ret + 3] = color;
+			p[ret + 4] = 0x20;
+			p[ret + 7] = color;
+		}
+	}
+}
+static void weiqi_read_pixel()
 {
 	int x,y;
 	int cx,cy,half;
@@ -44,9 +81,9 @@ void weiqi_read()
 	else half = cy/20;
 
 	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
-        {
+	{
 		backgroundcolor(0x256f8d);
-        }
+	}
 	else
 	{
 		backgroundcolor(0x8d6f25);
@@ -93,6 +130,28 @@ void weiqi_read()
 		}
 	}
 }
+static void weiqi_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if(temp == 0x74786574)
+	{
+		weiqi_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		weiqi_read_html();
+	}
+
+	//pixel
+	else
+	{
+		weiqi_read_pixel();
+	}
+}
 
 
 
@@ -108,7 +167,41 @@ void weiqi_write(u64* who, u64* what, u64* key)
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if(*what == 0x2d6d)
+	if(*what == 0x64626b)
+	{
+		if(*key == 0x25)	//left
+		{
+			if(px<1)return;
+			px--;
+		}
+		else if(*key == 0x26)   //up
+		{
+			if(py<1)return;
+			py--;
+		}
+		else if(*key == 0x27)   //right
+		{
+			if(px>=18)return;
+			px++;
+		}
+		else if(*key == 0x28)   //down
+		{
+			if(py>=18)return;
+			py++;
+		}
+	}
+
+	else if(*what == 0x72616863)
+	{
+		if(*key == 0x20)
+		{
+			if((turn&1)==0)data[(py*19)+px] = 'b';
+			else data[(py*19)+px] = 'w';
+			turn++;
+		}
+	}
+
+	else if(*what == 0x2d6d)
 	{
 		x=(*key) & 0xffff;
 		y=( (*key) >> 16 ) & 0xffff;
@@ -123,8 +216,8 @@ void weiqi_write(u64* who, u64* what, u64* key)
 		if(y<0)return;
 		if(y>18)return;
 
-		if((turn&0x1) == 0)data[y*19 + x] = 'b';
-		else data[y*19 + x] = 'w';
+		if((turn&0x1) == 0)data[(y*19) + x] = 'b';
+		else data[(y*19) + x] = 'w';
 		turn++;
 	}
 }
@@ -147,6 +240,8 @@ static void weiqi_start()
 	int x,y;
 
 	turn=0;
+	px=py=0;
+
 	for(y=0;y<19;y++)
 	{
 		for(x=0;x<19;x++)

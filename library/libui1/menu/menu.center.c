@@ -47,7 +47,8 @@ static void menu_read_text()
 	{
 		for(x=width/4;x<width*3/4;x++)
 		{
-			p[(x + width*y)<<2] = 0x20;
+			dst = p + ((x + width*y)<<2);
+			dst[0]=dst[1]=dst[2]=dst[3]=0;
 		}
 	}
 	for(x=width/4;x<=width*3/4;x++)

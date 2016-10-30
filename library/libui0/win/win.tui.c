@@ -79,13 +79,17 @@ static void windowsutf8(char* utf8)
 static void attr(u8 bg,u8 fg)
 {
 	int color;
-	if(bg == 1)color = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-	else if(bg == 2)color = BACKGROUND_GREEN | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-	else if(bg == 4)color = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
-	else color = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+	if(bg == 7)color = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
+	else if(bg == 6)color = BACKGROUND_BLUE | BACKGROUND_GREEN;
+	else if(bg == 5)color = BACKGROUND_BLUE | BACKGROUND_RED;
+	else if(bg == 4)color = BACKGROUND_BLUE;
+	else if(bg == 3)color = BACKGROUND_GREEN | BACKGROUND_RED;
+	else if(bg == 2)color = BACKGROUND_GREEN;
+	else if(bg == 1)color = BACKGROUND_RED;
+	else color = 0;
 
 	//
-	SetConsoleTextAttribute(output, color);
+	SetConsoleTextAttribute(output, color | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
 

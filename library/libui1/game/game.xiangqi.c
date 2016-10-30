@@ -31,7 +31,7 @@ static struct temp{
 //
 static char data[10][9];
 static int turn;
-static int px,py;
+static int px,py,qx,qy;
 
 
 
@@ -120,14 +120,20 @@ static void xiangqi_read_text()
 		for(x=0;x<9;x++)
 		{
 			q = char2hanzi(data[y][x]);
-			if(q == 0)continue;
+			if(q == 0)
+			{
+				if(qx != x)continue;
+				if(qy != y)continue;
+			}
 
 			//position
 			ret = (3*y+1)*width + x*8 + 2;
 			ret <<= 2;
 
 			//color
-			if(data[y][x] >= 'a')color=1;
+			if( (px==x)&& (py==y) )color=5;
+			else if( (qx==x)&& (qy==y) )color=7;
+			else if(data[y][x] >= 'a')color=1;
 			else color=4;
 			for(j=-1;j<=1;j++)
 			{
@@ -138,7 +144,7 @@ static void xiangqi_read_text()
 			}
 
 			//character
-			diary(p+ret, 4, "%s", q);
+			if(q != 0)diary(p+ret, 4, "%s", q);
 
 		}
 	}
@@ -240,7 +246,6 @@ void xiangqi_read_pixel()
 static void xiangqi_read()
 {
 	u32 temp = (haha->pixelformat)&0xffffffff;
-	//say("(@2048.read)temp=%x\n",temp);
 
 	//text
 	if(temp == 0x74786574)
@@ -264,56 +269,423 @@ static void xiangqi_read()
 
 
 
-void xiangqi_write(u64* who, u64* what, u64* key)
+void xiangqi_move(int px, int py, int x, int y)
 {
-	int cx, cy, half;
-	int x, y;
 	int min, max, t, u;
+say("(%d,%d) -> (%d,%d)\n", px, py, x, y);
 
-	cx = (haha->width)/2;
-	cy = (haha->height)/2;
-	if(cy*9 > cx*10)half = cx/9;
-	else half = cy/10;
-
-	if(*what == 0x2d6d)
+	//chess going
+	if(data[py][px] == 'S')		//兵
 	{
-		x = (*key) & 0xffff;
-		y = ( (*key) >> 16 ) & 0xffff;
-		//say("%d,%d -> ",x,y);
-
-		x = (x - cx + (9*half) )/half/2;
-		y = (y - cy + (10*half) )/half/2;
-		//say("%d,%d\n",x,y);
-
-		if(x < 0)return;
-		if(x > 8)return;
-		if(y < 0)return;
-		if(y > 9)return;
-		if( (x==px) && (y==py) )return;
-
-		//chess choosing
-		if( (px<0) | (py<0) | (data[py][px] == 0) )
+		if(
+			( (x == px) && (y == py+1) ) |
+			( (y>4) && (x == px-1) && (y == py) ) |
+			( (y>4) && (x == px+1) && (y == py) )
+		)
 		{
-			if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
+			if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
 			{
-				px = x;
-				py = y;
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
 			}
-			if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
+		}
+	}
+	else if(data[py][px] == 's')	//兵
+	{
+		if(
+			( (x == px) && (y == py-1) ) |
+			( (y<5) && (x == px-1) && (y == py) ) |
+			( (y<5) && (x == px+1) && (y == py) )
+		)
+		{
+			if( (data[y][x] < 'a') | (data[y][x] > 'z') )
 			{
-				px = x;
-				py = y;
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
 			}
-			return;
+		}
+	}
+	else if(data[py][px] == 'Z')	//炮
+	{
+		if(data[y][x] == 0)
+		{
+			//横移
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if( data[y][t] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			//竖移
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
 		}
 
-		//chess going
-		if(data[py][px] == 'S')		//兵
+		//打隔子
+		else if(data[y][x] >= 'a')
+		{
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[y][t] != 0)u++;
+				}
+				if(u == 1)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 1)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'z')	//炮
+	{
+		if(data[y][x] == 0)
+		{
+			//横移
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if( data[y][t] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			//竖移
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+
+		//打隔子
+		else if( (data[y][x] >= 'A') && (data[y][x] <= 'Z') )
+		{
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[y][t] != 0)u++;
+				}
+				if(u == 1)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 1)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'A')	//车
+	{
+		if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
+		{
+			//横移
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if( data[y][t] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			//竖移
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'a')	//车
+	{
+		if( (data[y][x] < 'a') | (data[y][x] > 'z') )
+		{
+			//横移
+			if(y == py)
+			{
+				if(x < px){min = x; max=px;}
+				else {min=px; max=x;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if( data[y][t] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+
+			//竖移
+			if(x == px)
+			{
+				if(y < py){min = y; max=py;}
+				else {min=py; max=y;}
+
+				u = 0;
+				for(t=min+1;t<max;t++)
+				{
+					if(data[t][x] != 0)u++;
+				}
+				if(u == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'B')	//马
+	{
+		if(data[y][x] < 'A' | data[y][x] > 'Z')
+		{
+			if( (x == px-2) && (y == py-1) | (y == py+1) )
+			{
+				if(data[py][px-1] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (x == px+2) && (y == py-1) | (y == py+1) )
+			{
+				if(data[py][px+1] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (y == py-2) && ( (x == px-1) | (x == px+1) ) )
+			{
+				if(data[py-1][px] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (y == py+2) && ( (x == px-1) | (x == px+1) ) )
+			{
+				if(data[py+1][px] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'b')	//马
+	{
+		if(data[y][x] < 'a' | data[y][x] > 'z')
+		{
+			if( (x == px-2) && (y == py-1) | (y == py+1) )
+			{
+				if(data[py][px-1] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (x == px+2) && (y == py-1) | (y == py+1) )
+			{
+				if(data[py][px+1] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (y == py-2) && ( (x == px-1) | (x == px+1) ) )
+			{
+				if(data[py-1][px] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+			else if( (y == py+2) && ( (x == px-1) | (x == px+1) ) )
+			{
+				if(data[py+1][px] == 0)
+				{
+					data[y][x] = data[py][px];
+					data[py][px] = 0;
+					turn++;
+				}
+			}
+		}
+	}
+	else if(data[py][px] == 'C')	//象
+	{
+		if( (y<5) && ( (data[y][x] < 'A') | (data[y][x] > 'Z') ) )
 		{
 			if(
-				( (x == px) && (y == py+1) ) |
-				( (y>4) && (x == px-1) && (y == py) ) |
-				( (y>4) && (x == px+1) && (y == py) )
+			( (x == px-2) && (y == py-2) && (data[py-1][px-1]==0) )|
+			( (x == px-2) && (y == py+2) && (data[py+1][px-1]==0) )|
+			( (x == px+2) && (y == py-2) && (data[py-1][px+1]==0) )|
+			( (x == px+2) && (y == py+2) && (data[py+1][px+1]==0) )
+			)
+			{
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
+			}
+		}
+	}
+	else if(data[py][px] == 'c')	//象
+	{
+		if( (y>4) && ( (data[y][x] < 'a') | (data[y][x] > 'z') ) )
+		{
+			if(
+			( (x == px-2) && (y == py-2) && (data[py-1][px-1]==0) )|
+			( (x == px-2) && (y == py+2) && (data[py+1][px-1]==0) )|
+			( (x == px+2) && (y == py-2) && (data[py-1][px+1]==0) )|
+			( (x == px+2) && (y == py+2) && (data[py+1][px+1]==0) )
+			)
+			{
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
+			}
+		}
+	}
+	else if(data[py][px] == 'D')	//士
+	{
+		if( (x>=3)&&(x<=5)&&(y>=0)&&(y<=2) )
+		{
+			if(
+				( (x == px-1) && (y == py-1) ) |
+				( (x == px-1) && (y == py+1) ) |
+				( (x == px+1) && (y == py-1) ) |
+				( (x == px+1) && (y == py+1) )
 			)
 			{
 				if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
@@ -324,12 +696,16 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 				}
 			}
 		}
-		else if(data[py][px] == 's')	//兵
+	}
+	else if(data[py][px] == 'd')	//士
+	{
+		if( (x>=3)&&(x<=5)&&(y>=7)&&(y<=9) )
 		{
 			if(
-				( (x == px) && (y == py-1) ) |
-				( (y<5) && (x == px-1) && (y == py) ) |
-				( (y<5) && (x == px+1) && (y == py) )
+				( (x == px+1) && (y == py-1) ) |
+				( (x == px+1) && (y == py+1) ) |
+				( (x == px-1) && (y == py-1) ) |
+				( (x == px-1) && (y == py+1) )
 			)
 			{
 				if( (data[y][x] < 'a') | (data[y][x] > 'z') )
@@ -340,352 +716,19 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 				}
 			}
 		}
-		else if(data[py][px] == 'Z')	//炮
+	}
+	else if(data[py][px] == 'E')	//将
+	{
+		if( (x>=3)&&(x<=5)&&(y>=0)&&(y<=2) )
 		{
-			if(data[y][x] == 0)
+			if(
+				( (x == px) && (y == py-1) ) |
+				( (x == px) && (y == py+1) ) |
+				( (x == px-1) && (y == py) ) |
+				( (x == px+1) && (y == py) )
+			)
 			{
-				//横移
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if( data[y][t] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				//竖移
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-
-			//打隔子
-			else if(data[y][x] >= 'a')
-			{
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[y][t] != 0)u++;
-					}
-					if(u == 1)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 1)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'z')	//炮
-		{
-			if(data[y][x] == 0)
-			{
-				//横移
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if( data[y][t] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				//竖移
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-
-			//打隔子
-			else if( (data[y][x] >= 'A') && (data[y][x] <= 'Z') )
-			{
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[y][t] != 0)u++;
-					}
-					if(u == 1)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 1)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'A')	//车
-		{
-			if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
-			{
-				//横移
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if( data[y][t] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				//竖移
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'a')	//车
-		{
-			if( (data[y][x] < 'a') | (data[y][x] > 'z') )
-			{
-				//横移
-				if(y == py)
-				{
-					if(x < px){min = x; max=px;}
-					else {min=px; max=x;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if( data[y][t] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-
-				//竖移
-				if(x == px)
-				{
-					if(y < py){min = y; max=py;}
-					else {min=py; max=y;}
-
-					u = 0;
-					for(t=min+1;t<max;t++)
-					{
-						if(data[t][x] != 0)u++;
-					}
-					if(u == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'B')	//马
-		{
-			if(data[y][x] < 'A' | data[y][x] > 'Z')
-			{
-				if( (x == px-2) && (y == py-1) | (y == py+1) )
-				{
-					if(data[py][px-1] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (x == px+2) && (y == py-1) | (y == py+1) )
-				{
-					if(data[py][px+1] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (y == py-2) && ( (x == px-1) | (x == px+1) ) )
-				{
-					if(data[py-1][px] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (y == py+2) && ( (x == px-1) | (x == px+1) ) )
-				{
-					if(data[py+1][px] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'b')	//马
-		{
-			if(data[y][x] < 'a' | data[y][x] > 'z')
-			{
-				if( (x == px-2) && (y == py-1) | (y == py+1) )
-				{
-					if(data[py][px-1] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (x == px+2) && (y == py-1) | (y == py+1) )
-				{
-					if(data[py][px+1] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (y == py-2) && ( (x == px-1) | (x == px+1) ) )
-				{
-					if(data[py-1][px] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-				else if( (y == py+2) && ( (x == px-1) | (x == px+1) ) )
-				{
-					if(data[py+1][px] == 0)
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'C')	//象
-		{
-			if( (y<5) && ( (data[y][x] < 'A') | (data[y][x] > 'Z') ) )
-			{
-				if(
-				( (x == px-2) && (y == py-2) && (data[py-1][px-1]==0) )|
-				( (x == px-2) && (y == py+2) && (data[py+1][px-1]==0) )|
-				( (x == px+2) && (y == py-2) && (data[py-1][px+1]==0) )|
-				( (x == px+2) && (y == py+2) && (data[py+1][px+1]==0) )
-				)
+				if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
 				{
 					data[y][x] = data[py][px];
 					data[py][px] = 0;
@@ -693,16 +736,34 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 				}
 			}
 		}
-		else if(data[py][px] == 'c')	//象
+
+		else if( (x == px) && (data[y][x] == 'e') )
 		{
-			if( (y>4) && ( (data[y][x] < 'a') | (data[y][x] > 'z') ) )
+			u=0;
+			for(t=py+1;t<y;t++)
 			{
-				if(
-				( (x == px-2) && (y == py-2) && (data[py-1][px-1]==0) )|
-				( (x == px-2) && (y == py+2) && (data[py+1][px-1]==0) )|
-				( (x == px+2) && (y == py-2) && (data[py-1][px+1]==0) )|
-				( (x == px+2) && (y == py+2) && (data[py+1][px+1]==0) )
-				)
+				if(data[t][px] != 0)u++;
+			}
+			if(u == 0)
+			{
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
+			}
+		}
+	}
+	else if(data[py][px] == 'e')	//将
+	{
+		if( (x>=3)&&(x<=5)&&(y>=7)&&(y<=9) )
+		{
+			if(
+				( (x == px) && (y == py-1) ) |
+				( (x == px) && (y == py+1) ) |
+				( (x == px-1) && (y == py) ) |
+				( (x == px+1) && (y == py) )
+			)
+			{
+				if( (data[y][x] < 'a') | (data[y][x] > 'z') )
 				{
 					data[y][x] = data[py][px];
 					data[py][px] = 0;
@@ -710,118 +771,118 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 				}
 			}
 		}
-		else if(data[py][px] == 'D')	//士
-		{
-			if( (x>=3)&&(x<=5)&&(y>=0)&&(y<=2) )
-			{
-				if(
-					( (x == px-1) && (y == py-1) ) |
-					( (x == px-1) && (y == py+1) ) |
-					( (x == px+1) && (y == py-1) ) |
-					( (x == px+1) && (y == py+1) )
-				)
-				{
-					if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'd')	//士
-		{
-			if( (x>=3)&&(x<=5)&&(y>=7)&&(y<=9) )
-			{
-				if(
-					( (x == px+1) && (y == py-1) ) |
-					( (x == px+1) && (y == py+1) ) |
-					( (x == px-1) && (y == py-1) ) |
-					( (x == px-1) && (y == py+1) )
-				)
-				{
-					if( (data[y][x] < 'a') | (data[y][x] > 'z') )
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
-		}
-		else if(data[py][px] == 'E')	//将
-		{
-			if( (x>=3)&&(x<=5)&&(y>=0)&&(y<=2) )
-			{
-				if(
-					( (x == px) && (y == py-1) ) |
-					( (x == px) && (y == py+1) ) |
-					( (x == px-1) && (y == py) ) |
-					( (x == px+1) && (y == py) )
-				)
-				{
-					if( (data[y][x] < 'A') | (data[y][x] > 'Z') )
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
-			}
 
-			else if( (x == px) && (data[y][x] == 'e') )
-			{
-				u=0;
-				for(t=py+1;t<y;t++)
-				{
-					if(data[t][px] != 0)u++;
-				}
-				if(u == 0)
-				{
-					data[y][x] = data[py][px];
-					data[py][px] = 0;
-					turn++;
-				}
-			}
-		}
-		else if(data[py][px] == 'e')	//将
+		else if( (x == px) && (data[y][x] == 'E') )
 		{
-			if( (x>=3)&&(x<=5)&&(y>=7)&&(y<=9) )
+			u=0;
+			for(t=y+1;t<py;t++)
 			{
-				if(
-					( (x == px) && (y == py-1) ) |
-					( (x == px) && (y == py+1) ) |
-					( (x == px-1) && (y == py) ) |
-					( (x == px+1) && (y == py) )
-				)
-				{
-					if( (data[y][x] < 'a') | (data[y][x] > 'z') )
-					{
-						data[y][x] = data[py][px];
-						data[py][px] = 0;
-						turn++;
-					}
-				}
+				if(data[t][px] != 0)u++;
 			}
-
-			else if( (x == px) && (data[y][x] == 'E') )
+			if(u == 0)
 			{
-				u=0;
-				for(t=y+1;t<py;t++)
-				{
-					if(data[t][px] != 0)u++;
-				}
-				if(u == 0)
-				{
-say("%d,%d\n",x,y);
-					data[y][x] = data[py][px];
-					data[py][px] = 0;
-					turn++;
-				}
+				data[y][x] = data[py][px];
+				data[py][px] = 0;
+				turn++;
 			}
 		}
+	}
+}
+int xiangqi_pickup(int x, int y)
+{
+	if( (x==px) && (y==py) )
+	{
+		px = py = -1;
+		return 1;
+	}
 
+	//chess choosing
+	if( (px<0) | (py<0) | (data[py][px] == 0) )
+	{
+		if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
+		{
+			px = x;
+			py = y;
+		}
+		if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
+		{
+			px = x;
+			py = y;
+		}
+		return 2;
+	}
+
+	return 0;
+}
+void xiangqi_write(u64* who, u64* what, u64* key)
+{
+	int cx, cy, half;
+	int x, y, ret;
+
+	cx = (haha->width)/2;
+	cy = (haha->height)/2;
+	if(cy*9 > cx*10)half = cx/9;
+	else half = cy/10;
+
+	if(*what == 0x64626b)
+	{
+		if(*key == 0x25)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+		else if(*key == 0x26)	//up
+		{
+			if(qy<1)return;
+			qy--;
+		}
+		else if(*key == 0x27)	//right
+		{
+			if(qx<0)return;
+			if(qx>=8)return;
+			qx++;
+		}
+		else if(*key == 0x28)	//down
+		{
+			if(qy<0)return;
+			if(qy>=9)return;
+			qy++;
+		}
+	}
+
+	else if(*what == 0x72616863)
+	{
+		if(*key == 0x20)
+		{
+			ret = xiangqi_pickup(qx, qy);
+			if(ret > 0)return;
+
+			//是移动操作吗
+			xiangqi_move(px, py, qx, qy);
+		}
+	}
+
+	else if(*what == 0x2d6d)
+	{
+		x = (*key) & 0xffff;
+		y = ( (*key) >> 16 ) & 0xffff;
+		//say("%d,%d => ",x,y);
+
+		x = (x - cx + (9*half) )/half/2;
+		y = (y - cy + (10*half) )/half/2;
+		//say("%d,%d\n",x,y);
+
+		if(x < 0)return;
+		if(x > 8)return;
+		if(y < 0)return;
+		if(y > 9)return;
+
+		//是选中操作吗
+		ret = xiangqi_pickup(x, y);
+		if(ret > 0)return;
+
+		//是移动操作吗
+		xiangqi_move(px, py, x, y);
 		px = py = -1;
 	}
 }
@@ -845,6 +906,7 @@ static void xiangqi_start()
 	char* p=(char*)data;
 
 	px = py = -1;
+	qx = qy = 0;
 	turn = 0;
 	for(j=0;j<90;j++)p[j]=0;
 

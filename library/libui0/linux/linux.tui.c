@@ -102,8 +102,13 @@ void* uievent(void* p)
 }
 static void attr(u8 bg, u8 fg)
 {
-	if(bg = 1)printf("\033[41m");
-	else if(bg == 4)printf("\033[44m");
+	char str[6] = {0x1b, 0x5b, '4', 0, 'm', 0};
+	if( (bg > 0) && (bg <8) )
+	{
+		str[3] = 0x30 + bg;
+		printf("%s", str);
+	}
+	else printf("\033[0m");
 }
 
 

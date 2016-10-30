@@ -43,10 +43,11 @@ static struct temp{
 	u64 f6;
 	u64 f7;
 }*haha;
-
+//
+static int px,py;
+static char table[9][9];
 //
 static char* buffer;
-static char table[9][9];
 
 
 
@@ -221,9 +222,10 @@ static void sudoku_read_text()
 			ret <<= 2;
 
 			//color
-			if( ((x>2)&&(x<6)) && ((y<3)|y>5) )color = 4;
-			else if( ((y>2)&&(y<6)) && ((x<3)|x>5) )color = 4;
-			else color = 0;
+			if( (px == x)&&(py == y) )color = 1;
+			else if( ((x>2)&&(x<6)) && ((y<3)|y>5) )color = 2;
+			else if( ((y>2)&&(y<6)) && ((x<3)|x>5) )color = 2;
+			else color = 4;
 			for(j=-1;j<=1;j++)
 			{
 				for(k=-2;k<=3;k++)
@@ -251,9 +253,9 @@ static void sudoku_read_pixel()
 		for(x=0;x<9;x++)
 		{
 			rect(
-				x*w/9,         y*h/9,
+				x*w/9,	 y*h/9,
 				(x+1)*w/9, (y+1)*h/9,
-				0x888888,          0
+				0x888888,	  0
 			);
 
 			if(table[y][x] != 0)
@@ -261,15 +263,15 @@ static void sudoku_read_pixel()
 				printdecimal(
 					x*w/9,   y*h/9,
 					4, table[y][x],
-					0,           0
+					0,	   0
 				);
 			}
 		}
 	}
-	rectbody(        0, ( h/3 )-2,         w, ( h/3 )+2, 0);
-	rectbody(        0, (h*2/3)-2,         w, (h*2/3)+2, 0);
-	rectbody(( w/3 )-2,         0, ( w/3 )+2,         h, 0);
-	rectbody((w*2/3)-2,         0, (w*2/3)+2,         h, 0);
+	rectbody(	0, ( h/3 )-2,	 w, ( h/3 )+2, 0);
+	rectbody(	0, (h*2/3)-2,	 w, (h*2/3)+2, 0);
+	rectbody(( w/3 )-2,	 0, ( w/3 )+2,	 h, 0);
+	rectbody((w*2/3)-2,	 0, (w*2/3)+2,	 h, 0);
 }
 static void sudoku_read()
 {
@@ -301,9 +303,28 @@ static void sudoku_write(u64* who, u64* what, u64* key)
 {
 	if(*what == 0x64626b)
 	{
-	}
-	else if(*what == 0x72616863)
-	{
+		if(*key == 0x25)	//left
+		{
+			if(px<1)return;
+			px--;
+		}
+		else if(*key == 0x26)   //up
+		{
+			if(py<1)return;
+			py--;
+		}
+		else if(*key == 0x27)   //right
+		{
+			if(px<0)return;
+			if(px>=8)return;
+			px++;
+		}
+		else if(*key == 0x28)   //down
+		{
+			if(py<0)return;
+			if(py>=8)return;
+			py++;
+		}
 	}
 }
 
@@ -331,6 +352,8 @@ static void sudoku_choose()
 static void sudoku_start()
 {
 	int x,y;
+	px = py = 0;
+
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
