@@ -204,7 +204,7 @@ void sudoku_solve()
 
 static void sudoku_read_text()
 {
-	int x,y;
+	int x,y,j,k,ret,color;
 	int width=haha->width;
 	int height=haha->height;
 	char* p = (char*)(haha->pixelbuffer);
@@ -215,7 +215,25 @@ static void sudoku_read_text()
 		for(x=0;x<9;x++)
 		{
 			if(table[y][x] == 0)continue;
-			p[(2*y*width + 4*x)<<2] = table[y][x] + 0x30;
+
+			//position
+			ret = (3*y+1)*width + 6*x + 2;
+			ret <<= 2;
+
+			//color
+			if( ((x>2)&&(x<6)) && ((y<3)|y>5) )color = 4;
+			else if( ((y>2)&&(y<6)) && ((x<3)|x>5) )color = 4;
+			else color = 0;
+			for(j=-1;j<=1;j++)
+			{
+				for(k=-2;k<=3;k++)
+				{
+					p[ret +(j*width*4) +(k*4) +3] = color;
+				}
+			}
+
+			//data
+			p[ret] = table[y][x] + 0x30;
 		}
 	}
 }
