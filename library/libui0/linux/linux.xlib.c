@@ -223,11 +223,11 @@ void* uievent(void* p)
 			//printf("buttonpress\n");
 			if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
-				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48), 0x2b6d);
+				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)4<<48), 0x2b6d);
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
-				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48), 0x2b6d);
+				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)5<<48), 0x2b6d);
 			}
 
 			else if(ev.xbutton.button==Button1)

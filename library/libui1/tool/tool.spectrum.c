@@ -14,15 +14,15 @@ void say(char*,...);
 
 
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //before
@@ -34,10 +34,79 @@ static double* real;		//8*2048=0x4000
 static double* imag;		//8*2048=0x4000
 static double* power;		//8*1024=0x2000
 static double* phase;		//8*1024=0x2000
+void spectrum_random()
+{
+	int j;
+	for(j=0;j<2048;j++)
+	{
+		real[j] = (double)(getrandom()%maxpower);
+	}
+}
 
 
 
 
+static void spectrum_read_pixel()
+{
+	int x,y;
+	int width,height,min;
+
+	width = haha->width;
+	height = haha->height;
+	if(width<height)min=width;
+	else min=height;
+
+	rectbody(0, 0, min, min, 0);
+	for(x=0;x<1024;x++)
+	{
+		y = min - (int)(real[x] * (double)min / (double)maxpower);
+
+		rectbody(x*min/1024, y, x*min/1024, min, 0xffffffff);
+//say("%x,%x\n",leftupper,rightbottom);
+	}
+}
+static void spectrum_read_html()
+{
+}
+static void spectrum_read_text()
+{
+	int x,y;
+	int w = haha->width;
+	int h = haha->height;
+	u8* p = (u8*)(haha->pixelbuffer);
+
+	for(x=0;x<w*h*4;x++)p[x]=0;
+	for(x=0;x<w;x++)
+	{
+		y = h - (int)(real[x] * (double)h / (double)maxpower);
+		for(;y<h;y++)
+		{
+			p[((y*w + x)<<2) + 3] =  0x2;
+		}
+	}
+}
+static void spectrum_read()
+{
+	u32 temp = (haha->pixelformat)&0xffffffff;
+
+	//text
+	if(temp == 0x74786574)
+	{
+		spectrum_read_text();
+	}
+
+	//html
+	else if(temp == 0x6c6d7468)
+	{
+		spectrum_read_html();
+	}
+
+	//pixel
+	else
+	{
+		spectrum_read_pixel();
+	}
+}
 static void spectrum_write(u64* who, u64* a, u64* b)
 {
 	u64 type = *a;
@@ -48,6 +117,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	}
 	if(type==0x64626b)			//'kbd'
 	{
+		spectrum_random();
 		if(key==0x25)			//left	0x4b
 		{
 		}
@@ -78,31 +148,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	}
 	else if(type==0x2d6d)
 	{
-		int i;
-		for(i=0;i<2048;i++)
-		{
-			//real[i] = (double)(i*63);
-			real[i] = (double)(getrandom()%maxpower);
-		}
-	}
-}
-static void spectrum_read()
-{
-	int x,y;
-	int width,height,min;
-
-	width = haha->width;
-	height = haha->height;
-	if(width<height)min=width;
-	else min=height;
-
-	rectbody(0, 0, min, min, 0);
-	for(x=0;x<1024;x++)
-	{
-		y = min - (int)(real[x] * (double)min / (double)maxpower);
-
-		rectbody(x*min/1024, y, x*min/1024, min, 0xffffffff);
-//say("%x,%x\n",leftupper,rightbottom);
+		spectrum_random();
 	}
 }
 
@@ -125,11 +171,7 @@ void spectrum_start()
 	backgroundcolor(0);
 
 	maxpower=32768;
-	for(j=0;j<2048;j++)
-	{
-		real[j] = (double)(j*31);
-		//real[j] = (double)(random()%maxpower);
-	}
+	spectrum_random();
 }
 void spectrum_stop()
 {

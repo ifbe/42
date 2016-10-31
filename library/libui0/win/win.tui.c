@@ -142,6 +142,7 @@ void windowwrite()
 			}
 		}
 	}
+	if(bg != 0)attr(0,0);
 
 	SetConsoleCursorPosition(output,pos);
 }

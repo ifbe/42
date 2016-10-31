@@ -124,6 +124,7 @@ void windowwrite()
 	int x,y;
 	u8* p;
 	u8 ch,bg=0,fg=0;
+
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
@@ -158,6 +159,7 @@ void windowwrite()
 			}
 		}
 	}
+	if(bg != 0)attr(0,0);
 }
 void windowread(char* addr)
 {

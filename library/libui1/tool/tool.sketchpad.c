@@ -133,9 +133,9 @@ static void wangge()
 }
 static void tuxiang()
 {
-	int x,y;
-	int value1,value2,counter;
-	double first,second,hello;
+	int x, y;
+	int value1, value2, counter;
+	double rx, ry, hello;
 
 	int width = haha->width;
 	int height = haha->height;
@@ -148,11 +148,11 @@ static void tuxiang()
 	//逻辑(0,0)->(centerx,centery),,,,(1023,767)->(centerx+scale*1023,centery+scale*767)
 	for(y=0;y<height;y++)		//只算符号并且保存
 	{
-		second=centery + (y - (height/2))*scale;
+		ry = centery + (y - (height/2))*scale;
 		for(x=0;x<width;x++)
 		{
-			first=centerx + (x - (width/2))*scale;
-			hello=sketchpad(node,first,second);
+			rx = centerx + (x - (width/2))*scale;
+			hello=sketchpad(node, rx, ry);
 
 			if(hello>0)databuf[width*y+x]=1;
 			else databuf[width*y+x]=-1;
@@ -244,6 +244,58 @@ static void sketchpad_read_html()
 }
 static void sketchpad_read_text()
 {
+	int x, y;
+	int value1, value2, counter;
+	double rx, ry, hello;
+
+	int width=haha->width;
+	int height=haha->height;
+	u8* p = (u8*)(haha->pixelbuffer);
+	if(node[0].type!=0x3d3d3d3d)return;
+
+	for(x=0;x<width*height*4;x++)p[x] = 0;
+	for(y=0;y<height;y++)
+	{
+		ry = centery + (y - (height/2))*scale;
+		for(x=0;x<width;x++)
+		{
+			rx = centerx + (x-width)/2*scale;
+			hello = sketchpad(node, rx, ry);
+
+			if(hello>0)databuf[width*y+x]=1;
+			else databuf[width*y+x]=-1;
+		}
+	}
+	for(y=1;y<height-1;y++)
+	{
+		value1=(height-1-y)*width;
+		for(x=1;x<width-1;x++)
+		{
+			counter=0;
+			if( databuf[ value1-width-1 + x ] == 1 )counter++;
+			else counter--;
+
+			if( databuf[ value1-width+1 + x ] == 1 )counter++;
+			else counter--;
+
+			if( databuf[ value1+width-1 + x ] == 1 )counter++;
+			else counter--;
+
+			if( databuf[ value1+width+1 + x ] == 1 )counter++;
+			else counter--;
+
+			if( (counter!=4) && (counter!=-4) )
+			{
+				p[(y*width+x)<<2] = 0x35+counter;
+			}
+		}
+	}
+
+	//
+	for(x=0;x<count;x++)
+	{
+		p[x*4] = buffer[x];
+	}
 }
 static void sketchpad_read()
 {
@@ -283,22 +335,22 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 	{
 		if(key==0x25)			//left	0x4b
 		{
-			centerx += scale*100;
+			centerx += scale*10;
 			changed=1;
 		}
 		else if(key==0x27)		//right	0x4d
 		{
-			centerx -= scale*100;
+			centerx -= scale*10;
 			changed=1;
 		}
 		else if(key==0x26)		//up	0x4b
 		{
-			centery -= scale*100;
+			centery -= scale*10;
 			changed=1;
 		}
 		else if(key==0x28)		//down	0x4d
 		{
-			centery += scale*100;
+			centery += scale*10;
 			changed=1;
 		}
 	}
@@ -343,12 +395,6 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 			}
 		}
 	}
-	else if(type==0x2b6d)		//'xyz left'
-	{
-		//浮动框以外的
-		//px=x/(1024/0x40);
-		//py=y/(640/40);
-	}
 	else if(type==0x406d)		//'xyz move'
 	{
 		int dx=(int)(short)(key&0xffff);
@@ -359,8 +405,9 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 		centery += scale*dy;
 		changed=1;
 	}
-	else if(type==0x2d6d)
+	else if(type==0x2b6d)
 	{
+		key >>= 48;
 		if(key == 4)	//front
 		{
 			//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
