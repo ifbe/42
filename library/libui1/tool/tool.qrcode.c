@@ -14,15 +14,15 @@ void say(char*,...);
 
 
 static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+	u64 type;
+	u64 id;
+	u64 start;
+	u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
+	u64 pixelbuffer;
+	u64 pixelformat;
+	u64 width;
+	u64 height;
 }*haha;
 
 //
@@ -104,6 +104,26 @@ static void qrcode_read_html()
 }
 static void qrcode_read_text()
 {
+	int x,y;
+	int width=haha->width;
+	int height=haha->height;
+	u8* p = (u8*)(haha->pixelbuffer);
+	for(x=0;x<width*height*4;x++)p[x] = 0;
+
+	for(y=0;y<100;y++)
+	{
+		if(y >= sidelength)break;
+		if(y >= height)break;
+		for(x=0;x<100;x++)
+		{
+			if(x >= sidelength)break;
+			if(x >= width/2)break;
+			if( databuf[(y*sidelength)+x] != 0 )continue;
+
+			p[( (y*width+x*2)<<2 ) + 3] = 7;
+			p[( (y*width+x*2)<<2 ) + 7] = 7;
+		}
+	}
 }
 static void qrcode_read()
 {
