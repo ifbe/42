@@ -2,21 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int startfile();
-int stopfile();
-int readfile(u8*,u8*,u64,u64);
-int writefile(u8*,u8*,u64,u64);
-//
 void printmemory(void*, int);
 void say(void*, ...);
-
-
-
-
-//
-static u8* fshome;
-static u8* dirhome;
-static u8* datahome;
 
 
 
@@ -48,7 +35,7 @@ int isgpt(u8* addr)
 //[+0x28,+0x2f]:末尾lba
 //[+0x30,+0x37]:属性标签
 //[+0x38,+0x7f]:名字
-static void gpt_explain(u8* src, u8* dst)
+void gpt_explain(u8* src, u8* dst)
 {
 	int i=0,j=0;
 	u64* srcqword;
@@ -144,69 +131,4 @@ static void gpt_explain(u8* src, u8* dst)
 		src += 0x80;
 		dst += 0x80;
 	}
-}
-
-
-
-
-static void gpt_list()
-{
-	int j;
-	for(j=0;j<0x80*0x80;j+=0x80)
-	{
-		if(*(u64*)(fshome+j) == 0)break;
-
-		say("(%8s,%8s)	[%08llx,%08llx]	%s\n",
-			fshome+j, fshome+j+8,
-			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
-			fshome+j+0x40
-		);
-	}
-}
-static int gpt_choose(u8* p)
-{
-	int ret;
-	stopfile(p);
-	if(p == 0)return 0;
-
-	ret = startfile(p);
-	if(ret <= 0)return -1;
-
-	readfile(datahome, 0, 0, 0x8000);
-	gpt_explain(datahome, fshome);
-
-	gpt_list();
-	return 0;
-}
-static void gpt_read()
-{
-}
-static void gpt_write()
-{
-}
-static void gpt_start()
-{
-}
-static void gpt_stop()
-{
-}
-void gpt_create(void* world, u64* p)
-{
-	fshome = world+0x100000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x747067;
-
-	p[10]=(u64)gpt_start;
-	p[11]=(u64)gpt_stop;
-	p[12]=(u64)gpt_list;
-	p[13]=(u64)gpt_choose;
-	p[14]=(u64)gpt_read;
-	p[15]=(u64)gpt_write;
-}
-void gpt_delete()
-{
 }

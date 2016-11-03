@@ -13,10 +13,11 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.fat.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.hfs.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ntfs.c
+	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.apple.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.mbr.c
-	$(compiler) $(cflag) libmemory/libsec/qrcode.c
+	$(compiler) $(cflag) libmemory/libfs/parttable/pt.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.base64.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.des.c
@@ -27,6 +28,7 @@ target:
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.md5.c
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.sha1.c
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.string.c
+	$(compiler) $(cflag) libmemory/libsec/qrcode.c
 	$(compiler) $(cflag) libmemory/libtext/compare/compare.simple.c
 	$(compiler) $(cflag) libmemory/libtext/compare/compare.wildcard.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.argument.c

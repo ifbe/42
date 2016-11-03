@@ -667,17 +667,6 @@ void hfs_create(void* world, u64* p)
 		catabuf = fshome+0x20000;
 	dirhome = world+0x200000;
 	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x736668;
-
-	p[10]=(u64)hfs_start;
-	p[11]=(u64)hfs_stop;
-	p[12]=(u64)hfs_list;
-	p[13]=(u64)hfs_choose;
-	p[14]=(u64)hfs_read;
-	p[15]=(u64)hfs_write;
 }
 void hfs_delete()
 {

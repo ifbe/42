@@ -703,17 +703,6 @@ void ntfs_create(void* world, u64* p)
 		mftbuffer=fshome+0x40000;
 	dirhome = world+0x200000;
 	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x7366746e;
-
-	p[10]=(u64)ntfs_start;
-	p[11]=(u64)ntfs_stop;
-	p[12]=(u64)ntfs_list;
-	p[13]=(u64)ntfs_choose;
-	p[14]=(u64)ntfs_read;
-	p[15]=(u64)ntfs_write;
 }
 void ntfs_delete()
 {

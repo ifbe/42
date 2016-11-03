@@ -497,17 +497,6 @@ void fat_create(void* world, u64* p)
 		//dirdepth4
 		//......
 	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x746166;
-
-	p[10]=(u64)fat_start;
-	p[11]=(u64)fat_stop;
-	p[12]=(u64)fat_list;
-	p[13]=(u64)fat_choose;
-	p[14]=(u64)fat_read;
-	p[15]=(u64)fat_write;
 }
 void fat_delete()
 {

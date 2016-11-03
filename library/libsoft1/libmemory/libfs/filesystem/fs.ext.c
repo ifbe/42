@@ -394,17 +394,6 @@ void ext_create(void* world, u64* p)
 		inodebuffer = fshome+0x20000;
 	dirhome = world+0x200000;
 	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x747865;
-
-	p[10]=(u64)ext_start;
-	p[11]=(u64)ext_stop;
-	p[12]=(u64)ext_list;
-	p[13]=(u64)ext_choose;
-	p[14]=(u64)ext_read;
-	p[15]=(u64)ext_write;
 }
 void ext_delete()
 {

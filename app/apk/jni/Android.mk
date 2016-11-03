@@ -91,14 +91,15 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/filesystem/fs.fat.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.hfs.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.ntfs.c \
+	library/libsoft1/libmemory/libfs/filesystem/fs.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.apple.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.gpt.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.mbr.c \
+	library/libsoft1/libmemory/libfs/parttable/pt.c \
 	library/libsoft1/libmemory/libmath/math.calc.c \
 	library/libsoft1/libmemory/libmath/math.notation.c \
 	library/libsoft1/libmemory/libphys/physics.electrical.c \
 	library/libsoft1/libmemory/libphys/physics.mechanics.c \
-	library/libsoft1/libmemory/libsec/qrcode.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.aes.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.base64.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.des.c \
@@ -109,6 +110,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libsec/hash/hash.md5.c \
 	library/libsoft1/libmemory/libsec/hash/hash.sha1.c \
 	library/libsoft1/libmemory/libsec/hash/hash.string.c \
+	library/libsoft1/libmemory/libsec/qrcode.c \
 	library/libsoft1/libmemory/libtext/compare/compare.simple.c \
 	library/libsoft1/libmemory/libtext/compare/compare.wildcard.c \
 	library/libsoft1/libmemory/libtext/convert/convert.argument.c \

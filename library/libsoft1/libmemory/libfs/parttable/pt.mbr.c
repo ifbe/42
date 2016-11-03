@@ -2,21 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int startfile(u8*);
-int stopfile(u8*);
-int readfile(u8*,u8*,u64,u64);
-int writefile(u8*,u8*,u64,u64);
-//
 void printmemory(u64 start,u64 count);
 void say(void*, ...);
-
-
-
-
-//
-static u8* fshome;
-static u8* dirhome;
-static u8* datahome;
 
 
 
@@ -104,7 +91,7 @@ static int mbrrecord(u8* from, u8* dst)
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-static void mbr_explain(u8* src, u8* dst)
+void mbr_explain(u8* src, u8* dst)
 {
 	int j,ret;
 	u64* dstqword=(u64*)dst;
@@ -152,69 +139,3 @@ static void mbr_explain(u8* src, u8* dst)
 
 	//逻辑分区
 }
-
-
-
-
-static void mbr_list()
-{
-	int j;
-	for(j=0;j<0x80*0x80;j+=0x80)
-	{
-		if(*(u64*)(fshome+j) == 0)break;
-
-		say("(%8s,%8s)	[%08llx,%08llx] %s\n",
-			fshome+j, fshome+j+8,
-			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
-			fshome+j+0x40
-		);
-	}
-}
-static int mbr_choose(u8* p)
-{
-	int ret;
-	stopfile(p);
-	if(p == 0)return 0;
-
-	ret = startfile(p);
-	if(ret <= 0)return -1;
-
-	readfile(datahome, 0, 0, 0x8000);
-	mbr_explain(datahome, fshome);
-
-	mbr_list();
-	return 0;
-}
-static void mbr_read()
-{
-}
-static void mbr_write()
-{
-}
-static void mbr_start()
-{
-}
-static void mbr_stop()
-{
-}
-void mbr_create(void* world, u64* p)
-{
-	fshome = world+0x100000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x72626d;
-
-	p[10]=(u64)mbr_start;
-	p[11]=(u64)mbr_stop;
-	p[12]=(u64)mbr_list;
-	p[13]=(u64)mbr_choose;
-	p[14]=(u64)mbr_read;
-	p[15]=(u64)mbr_write;
-}
-void mbr_delete()
-{
-}
-

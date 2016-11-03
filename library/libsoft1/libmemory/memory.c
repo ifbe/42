@@ -2,37 +2,17 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//检查
-int iself(char*);	//可执行文件
-int ismacho(char*);
-int ispe(char*);
-int is7z(char*);	//压缩包
-int iscpio(char*);
-int isgz(char*);
-int istar(char*);
-int iszip(char*);
-int isfat(char*);	//文件系统
-int isntfs(char*);
-int isext(char*);
-int ishfs(char*);
-int isgpt(char*);	//分区表
-int ismbr(char*);
 //
-int gpt_create(void*,void*);
-int gpt_delete();
-int mbr_create(void*,void*);
-int mbr_delete();
-int ext_create(void*,void*);
-int ext_delete();
-int fat_create(void*,void*);
-int fat_delete();
-int hfs_create(void*,void*);
-int hfs_delete();
-int ntfs_create(void*,void*);
-int ntfs_delete();
+int compress_create(void*,void*);
+int compress_delete();
+int filesystem_create(void*,void*);
+int filesystem_delete();
+int parttable_create(void*,void*);
+int parttable_delete();
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
+//
 int readfile(u8* mem, u8* file, u64 offset, u64 count);
 int writefile(u8* mem, u8* file, u64 offset, u64 count);
 int startfile();
@@ -79,7 +59,7 @@ u64 prelibation(char* memaddr)
 	if( isarp(memaddr) !=0 )return ;	//'arp'
 	if( isudp(memaddr) !=0 )return ;	//'udp'
 	if( istcp(memaddr) !=0 )return ;	//'tcp'
-*/
+
 	//是可执行文件
 	if( iself(memaddr) !=0 )return 0x666c65;	//'elf'
 	if( ismacho(memaddr) !=0 )return 0x6f6863616d;	//'macho'
@@ -103,7 +83,7 @@ u64 prelibation(char* memaddr)
 	//if( isbsd(memaddr) !=0)return ;	//'bsd'	//bsd label
 	if( isgpt(memaddr) !=0 )return 0x747067;	//'gpt'
 	if( ismbr(memaddr) !=0 )return 0x72626d;	//'mbr',特殊,只能放最后
-
+*/
 	//什么都不像，返回失败
 	return 0;	//'unknown'
 }
@@ -366,33 +346,20 @@ int memory_create(u8* world,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	mbr_create(world,q);
+	parttable_create(world,q);
 	q+=0x80;
 
-	gpt_create(world,q);
+	filesystem_create(world,q);
 	q+=0x80;
 
-	ext_create(world,q);
-	q+=0x80;
-
-	fat_create(world,q);
-	q+=0x80;
-
-	hfs_create(world,q);
-	q+=0x80;
-
-	ntfs_create(world,q);
-	q+=0x80;
+	//compress_create();
+	//q+=0x80;
 
 	return q-(u8*)p;
 }
 int memory_delete()
 {
-	ext_delete();
-	fat_delete();
-	hfs_delete();
-	ntfs_delete();
-	gpt_delete();
-	mbr_delete();
+	filesystem_delete();
+	parttable_delete();
 	return 0;
 }
