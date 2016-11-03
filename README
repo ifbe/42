@@ -38,6 +38,6 @@ the answer to life,the universe and everything~
 
 
 how to build & use:
-	cd app/????????
+	cd project/????????
 	make
 then there will be: a.out, 42.a, 42.so, ...

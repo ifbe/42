@@ -22,11 +22,11 @@ createicon:
 	mkdir res/drawable-hdpi
 	mkdir res/drawable-xhdpi
 	mkdir res/drawable-xxhdpi
-	cp ../../res/tardis.ico res/drawable-ldpi
-	cp ../../res/tardis.ico res/drawable-mdpi
-	cp ../../res/tardis.ico res/drawable-hdpi
-	cp ../../res/tardis.ico res/drawable-xhdpi
-	cp ../../res/tardis.ico res/drawable-xxhdpi
+	cp ../../datafile/tardis.ico res/drawable-ldpi
+	cp ../../datafile/tardis.ico res/drawable-mdpi
+	cp ../../datafile/tardis.ico res/drawable-hdpi
+	cp ../../datafile/tardis.ico res/drawable-xhdpi
+	cp ../../datafile/tardis.ico res/drawable-xxhdpi
 cleanicon:
 	rm -rf res/drawable-*
 clean:
