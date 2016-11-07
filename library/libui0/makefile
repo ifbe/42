@@ -1,5 +1,21 @@
 flag := -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 
+
+
+
+############################linux#########################
+.PHONY:barecli
+barecli:
+	rm -f *.o
+
+.PHONY:barefb
+barefb:
+	rm -f *.o
+##########################################################
+
+
+
+
 ############################linux#########################
 .PHONY:linuxcli
 linuxcli:
@@ -125,6 +141,9 @@ winsdl:
 	gcc -c -O2 cross/cross.sdl2.c
 	gcc -c -O2 display.c
 ##########################################################
+
+
+
 
 clean:
 	rm -f *.o *.a
