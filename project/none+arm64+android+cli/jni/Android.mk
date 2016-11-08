@@ -95,14 +95,20 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
-	library/libsoft1/libmemory/libfs/compress/comp.7z.c \
-	library/libsoft1/libmemory/libfs/compress/comp.cpio.c \
-	library/libsoft1/libmemory/libfs/compress/comp.gz.c \
-	library/libsoft1/libmemory/libfs/compress/comp.tar.c \
-	library/libsoft1/libmemory/libfs/compress/comp.zip.c \
+	library/libsoft1/libmemory/libfs/compress/compress.7z.c \
+	library/libsoft1/libmemory/libfs/compress/compress.cpio.c \
+	library/libsoft1/libmemory/libfs/compress/compress.gz.c \
+	library/libsoft1/libmemory/libfs/compress/compress.tar.c \
+	library/libsoft1/libmemory/libfs/compress/compress.zip.c \
+	library/libsoft1/libmemory/libfs/compress/compress.c \
+	library/libsoft1/libmemory/libfs/diskimage/img.raw.c \
+	library/libsoft1/libmemory/libfs/diskimage/img.vhd.c \
+	library/libsoft1/libmemory/libfs/diskimage/img.vmdk.c \
+	library/libsoft1/libmemory/libfs/diskimage/img.c \
 	library/libsoft1/libmemory/libfs/executable/exec.elf.c \
 	library/libsoft1/libmemory/libfs/executable/exec.macho.c \
 	library/libsoft1/libmemory/libfs/executable/exec.pe.c \
+	library/libsoft1/libmemory/libfs/executable/exec.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.ext.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.fat.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.hfs.c \

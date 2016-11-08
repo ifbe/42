@@ -1,14 +1,20 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
-	$(compiler) $(cflag) libmemory/libfs/compress/comp.7z.c
-	$(compiler) $(cflag) libmemory/libfs/compress/comp.cpio.c
-	$(compiler) $(cflag) libmemory/libfs/compress/comp.gz.c
-	$(compiler) $(cflag) libmemory/libfs/compress/comp.tar.c
-	$(compiler) $(cflag) libmemory/libfs/compress/comp.zip.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.7z.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.cpio.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.gz.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.tar.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.zip.c
+	$(compiler) $(cflag) libmemory/libfs/compress/compress.c
+	$(compiler) $(cflag) libmemory/libfs/diskimage/img.raw.c
+	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vhd.c
+	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vmdk.c
+	$(compiler) $(cflag) libmemory/libfs/diskimage/img.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.elf.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.macho.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.pe.c
+	$(compiler) $(cflag) libmemory/libfs/executable/exec.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ext.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.fat.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.hfs.c

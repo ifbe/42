@@ -5,6 +5,10 @@
 //
 int compress_create(void*,void*);
 int compress_delete();
+int diskimage_create(void*,void*);
+int diskimage_delete();
+int executable_create(void*,void*);
+int executable_delete();
 int filesystem_create(void*,void*);
 int filesystem_delete();
 int parttable_create(void*,void*);
@@ -234,20 +238,28 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	q=(u8*)p+0x80;
 
+	compress_create(softaddr, q);
+	q+=0x80;
+
+	diskimage_create(softaddr, q);
+	q+=0x80;
+
+	executable_create(softaddr, q);
+	q+=0x80;
+
 	parttable_create(softaddr, q);
 	q+=0x80;
 
 	filesystem_create(softaddr, q);
 	q+=0x80;
 
-	//compress_create(softaddr, q);
-	//q+=0x80;
-
 	return q-(u8*)p;
 }
 int memory_delete()
 {
-	//compress_delete();
+	compress_delete();
+	diskimage_delete();
+	executable_delete();
 	filesystem_delete();
 	parttable_delete();
 	return 0;
