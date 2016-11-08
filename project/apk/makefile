@@ -1,34 +1,15 @@
 linuxbuild:
-	make cleanicon
-	make createicon
 	ndk-build
 	android update project --path . --target android-21
 	ant debug
-	make cleanicon
 	cp bin/Plasma-debug.apk 42.apk
 windowsbuild:
-	make cleanicon
-	make createicon
 	cmd "/C ndk-build"
 	cmd "/C android update project --path . --target android-21"
 	ant debug
-	make cleanicon
 	cp bin/Plasma-debug.apk 42.apk
 install:
 	adb install -r 42.apk
-createicon:
-	mkdir res/drawable-ldpi
-	mkdir res/drawable-mdpi
-	mkdir res/drawable-hdpi
-	mkdir res/drawable-xhdpi
-	mkdir res/drawable-xxhdpi
-	cp ../../datafile/tardis.ico res/drawable-ldpi
-	cp ../../datafile/tardis.ico res/drawable-mdpi
-	cp ../../datafile/tardis.ico res/drawable-hdpi
-	cp ../../datafile/tardis.ico res/drawable-xhdpi
-	cp ../../datafile/tardis.ico res/drawable-xxhdpi
-cleanicon:
-	rm -rf res/drawable-*
 clean:
 	rm -rf bin
 	rm -rf gen
