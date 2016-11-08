@@ -21,14 +21,55 @@ void say(void*, ...);
 
 
 //
+static u8* guys;
 static u8* fshome;
 static u8* dirhome;
 static u8* datahome;
+//
+static u64 haha = 0;
 
 
 
 
-static void parttable_list()
+//real worker
+int parttable_explain(u8* p)
+{
+	//explain
+	if(isgpt(p) > 0)
+	{
+		say("gpt\n");
+		gpt_explain(p, fshome);
+	}
+	else if(ismbr(p) > 0)
+	{
+		say("mbr\n");
+		mbr_explain(p, fshome);
+	}
+	else
+	{
+		say("parttable notfound\n");
+		return -1;
+	}
+	return 0;
+}
+int parttable_focus(u64 where)
+{
+	haha = where;
+}
+int parttable_read(u8* mem, u8* file, u64 offset, u64 count)
+{
+	return readfile(mem, file, offset + haha, count);
+}
+int parttable_write(u8* mem, u8* file, u64 offset, u64 count)
+{
+	return readfile(mem, file, offset + haha, count);
+}
+
+
+
+
+//just command
+int parttable_ls()
 {
 	int j;
 	for(j=0;j<0x80*0x80;j+=0x80)
@@ -41,60 +82,53 @@ static void parttable_list()
 			fshome+j+0x40
 		);
 	}
+	return j / 0x80;
 }
-static int parttable_choose(u8* p)
+static int parttable_cd(u8* p)
 {
 	int ret;
 
 	//exit?
 	stopfile(p);
-	if(p == 0)return 0;
+	if(p == 0)return -3;
 
 	//open
 	ret = startfile(p);
-	if(ret <= 0)return -1;
+	if(ret <= 0)return -2;
 
 	//read
-	readfile(datahome, 0, 0, 0x8000);
+	ret = readfile(datahome, 0, 0, 0x8000);
 
-	//explain
-	if(isgpt(datahome) > 0)
-	{
-		say("gpt\n");
-		gpt_explain(datahome, fshome);
-	}
-	else if(ismbr(datahome) > 0)
-	{
-		say("mbr\n");
-		mbr_explain(datahome, fshome);
-	}
-	else
-	{
-		say("parttable notfound\n");
-		return 0;
-	}
+	//
+	ret = parttable_explain(datahome);
+	if(ret < 0)return ret;
 
 	//list
-	parttable_list();
+	parttable_ls();
 	return 0;
 }
-static void parttable_read()
+static int parttable_show()
 {
+	return 0;
 }
-static void parttable_write()
+static int parttable_edit()
 {
+	return 0;
 }
-static void parttable_start()
+static int parttable_start()
 {
+	return 0;
 }
-static void parttable_stop()
+static int parttable_stop()
 {
+	return 0;
 }
-void parttable_create(void* world, u64* p)
+void parttable_create(void* softaddr, u64* p)
 {
-	fshome = world+0x100000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
+	guys = softaddr;
+	fshome = softaddr + 0x100000;
+	dirhome = softaddr + 0x200000;
+	datahome = softaddr + 0x300000;
 
 	//
 	p[0]=0x79726f6d656d;
@@ -102,10 +136,10 @@ void parttable_create(void* world, u64* p)
 
 	p[10]=(u64)parttable_start;
 	p[11]=(u64)parttable_stop;
-	p[12]=(u64)parttable_list;
-	p[13]=(u64)parttable_choose;
-	p[14]=(u64)parttable_read;
-	p[15]=(u64)parttable_write;
+	p[12]=(u64)parttable_ls;
+	p[13]=(u64)parttable_cd;
+	p[14]=(u64)parttable_show;
+	p[15]=(u64)parttable_edit;
 }
 void parttable_delete()
 {
