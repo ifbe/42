@@ -27,13 +27,15 @@ static u64 blocksize;
 static u64 groupsize;
 static u64 inodepergroup;
 static u64 inodesize;
+//
+static u64 firstinodeincache;
+static u8 blockrecord[512];
 
 
 
 
 //输入值：请求的组号
 //返回值：这个组里面inode表的第一个block号
-static u8 blockrecord[512];
 static u64 whichblock(u64 groupnum)
 {
 	//group descriptor从哪个扇区开始
@@ -62,7 +64,6 @@ static u64 whichblock(u64 groupnum)
 //注意1:不管inodesize是120(0x400*120)还是128(0x400*128)还是256(0x400*256)，算出的值都能被0x200(一个扇区)整除
 //注意2:每个组的inode数量一般为8192，是0x400的倍数
 //注意3:inode首个的编号是1不是0
-static u64 firstinodeincache;
 static u8* checkcacheforinode(u64 wanted)
 {
 	//内存里已经是这几个的话就直接返回

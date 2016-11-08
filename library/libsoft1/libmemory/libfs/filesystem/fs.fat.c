@@ -21,6 +21,8 @@ static u8* datahome;		//一般使用
 
 //disk
 static int version;
+static u64 firstincache;
+//
 static u64 firstsector;
 static u64 fat0;		//fat表所在扇区
 static u64 fatsize;		//fat表总共的扇区数量
@@ -223,7 +225,6 @@ void explainfat16head()
 //请求cluster= 0x13578，如果内存里就是这第   1大块就返回，否则要把 0x10000号到 0x1ffff号扔进内存然后记下当前clustercurrent=0x10000
 //请求cluster= 0x20000，如果内存里就是这第   2大块就返回，否则要把 0x20000号到 0x2ffff号扔进内存然后记下当前clustercurrent=0x20000
 //请求cluster=0x613153，如果内存里就是这第0x61大块就返回，否则要把0x610000号到0x61ffff号扔进内存然后记下当前clustercurrent=0x610000
-static u64 firstincache;
 static void checkcacheforcluster(u64 cluster)
 {
 	//现在的就是我们要的，就直接返回

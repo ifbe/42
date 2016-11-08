@@ -28,6 +28,10 @@ static u64 mftcluster;
 //ntfs...............
 static u64 pwd[10];
 static int ntfspwd;
+//
+static u64 firstmftincache;
+//
+static u8 here[1024];
 
 
 
@@ -121,7 +125,6 @@ void datarun(u8* targetaddr,u8* runaddr,u64 want,u64 max)
 
 
 //保证包含mftnum的那个1M大小的数据块在我们定义的1M大小的缓冲区里
-static u64 firstmftincache;
 u8* checkcacheformft(u64 mftnum)
 {
 	//say("checkcacheformft:%x\n",mftnum);
@@ -460,7 +463,6 @@ void explaina0(u8* addr)	//index allocation
 //*+0x2A*/ uint16 Pading;	   // 边界
 //*+0x2C*/ uint32 MFTRecordNumber;  // windows xp中使用,本MFT记录号
 //*+0x30*/ uint32 MFTUseFlags;      // MFT的使用标记
-static u8 here[1024];
 void explainmft(u64 mftnum,u64 want)
 {
 	//具体不用管，知道返回值是所求MFT的地址就行

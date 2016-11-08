@@ -24,7 +24,7 @@ static u8* fshome;
 	static u8* catabuf;
 static u8* dirhome;
 static u8* datahome;
-
+//
 static u64 block0;		//分区开始扇区，每块多少扇区
 static u64 blocksize;
 static u64 catalogsector;	//catalog扇区位置，每个节点多少扇区
