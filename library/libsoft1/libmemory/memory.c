@@ -25,14 +25,17 @@ int say(void* str, ...);
 
 
 //
+static u8* guys=0;
 static u8* fshome=0;
 static u8* dirhome=0;
 static u8* datahome=0;
+//
+static int guystack[10];
+static int guyrsp = 0;
 
 
 
 
-//试毒员
 u64 prelibation(char* memaddr)
 {
 /*
@@ -174,163 +177,48 @@ void cleverwrite(u8* src, u64 count, u64 where, u64 dst, u64 size, u64 want)
 
 
 
-//physical function
+//
 static int memory_list(u8* arg1)
 {
-	int i,j;
-	u64 temp=0;
-	u8 buf[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-	u64 target=0;
-	u8* addr=fshome;
-	//printmemory(fshome,0x200);
-
-	//想要什么
-	if(arg1==0)target=0;
-	else if( cmp(arg1,"disk") == 0 )target=0x6b736964;	//'disk'
-	else if( cmp(arg1,"file") == 0 )
+	int j;
+	u8* p;
+	for(j=1;j<0x1000/0x80;j++)
 	{
-		addr=dirhome;
-		target=0;
-		//target=0x656c6966;		//'file'
-		//printmemory(addr,0x200);
+		p = guys + (j*0x80);
+		if(p[0] == 0)say("%s/\n", p+8);
+		else say("	%s\n", p+8);
 	}
-	else if( cmp(arg1,"0") == 0 )
-	{
-		addr=fshome;
-		target=0;
-	}
-	else if( cmp(arg1,"1") == 0 )
-	{
-		addr=fshome;
-		target=0;
-	}
-	else if( cmp(arg1,"2") == 0 )
-	{
-		addr=dirhome;
-		target=0;
-	}
-	else if( cmp(arg1,"3") == 0 )
-	{
-		addr=datahome;
-		target=0;
-	}
-
-	//搜到就显示
-	for(i=0; i<0x400; i++)		//0x40*0x400=0x10000
-	{
-		temp=*(u64*)( addr + (i*0x40) );
-		if(temp == 0)break;
-		if( (target==0) | (temp == target) )
-		{
-			//[+0]:type
-			say("(%-4s," , addr+(i*0x40) );
-
-			//[+8]:id
-			*(u64*)buf=*(u64*)(addr+(i*0x40)+0x8);
-			temp=0;
-			for(j=0;j<8;j++)
-			{
-				//[1,0x1f]:wrong
-				if(buf[j]>0 && buf[j]<0x20) temp++;
-
-				//[0x80,0xff]:wrong
-				if(buf[j]>=0x80) temp++;
-			}
-			if(temp==0) say("%4s)	",buf);
-			else say("%4llx)	",*(u64*)buf);
-
-			//[+10]:start
-			say("[%-4llx,",*(u64*)(addr+(i*0x40)+0x10));
-
-			//[+18]:end
-			say("%4llx]	",*(u64*)(addr+(i*0x40)+0x18));
-
-			//[+20]:detail
-			say("{%-16s}	",addr+(i*0x40)+0x20);
-
-			//which
-			say("<%x>\n",i);
-		}//if
-	}//for
-
-	return 1;
-}//memory_list
+	return 0;
+}
 static int memory_choose(u8* arg)
 {
 	return 0;
 }
-static int memory_read(u8* arg1)
+static int memory_read(u8* mem, u8* file, u64 addr, u64 count)
 {
-	u64 value;
-	if(arg1==0)return -1;
-
-	//what is it
-	value=0;
-	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
-	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
-	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
-	{
-		if( arg1[0] < 'a' )value++;
-	}
-
-	//default,read chosen memory/port/disk/socket...
-	if(value==0)
-	{
-		hexstr2data(arg1,&value);
-		readfile(datahome, 0, value*0x200, 0x200);
-		printmemory(datahome,0x200);
-		say("above is:%llx\n",value);
-	}
-
 	return 0;
 }
-static int memory_write(u8* arg1)
+static int memory_write(u8* mem, u8* file, u64 addr, u64 count)
 {
-	u64 value;
-	if(arg1==0)return -1;
-
-	//what is it
-	value=0;
-	if( arg1[0] < '0' )value++;	//[0,0x2f]:wrong
-	if( arg1[0] > 'f' )value++;	//[0x67,0xff]:wrong
-	if( arg1[0] > '9' )		//[0x3a,0x60]:wrong
-	{
-		if( arg1[0] < 'a' )value++;
-	}
-
-	//"read memory.400000"
-	if(value==0)
-	{
-		say("dangerous,bye\n");
-	}
-
 	return 0;
 }
-
-
-
-
-int memory_start(u8* p)
+static int memory_start(u8* p)
 {
 	return startfile(p);
 }
-int memory_stop()
+static int memory_stop()
 {
 	return stopfile();
 }
-
-
-
-
-int memory_create(u8* world,u64* p)
+int memory_create(u8* softaddr,u64* p)
 {
 	u8* q;
 
 	//(自己)4块区域，每块1兆
-	fshome=world+0x100000;
-	dirhome=world+0x200000;
-	datahome=world+0x300000;
+	guys = softaddr;
+	fshome = softaddr+0x100000;
+	dirhome = softaddr+0x200000;
+	datahome = softaddr+0x300000;
 
 	//
 	p[0]=0;
@@ -346,19 +234,20 @@ int memory_create(u8* world,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	parttable_create(world,q);
+	parttable_create(softaddr, q);
 	q+=0x80;
 
-	filesystem_create(world,q);
+	filesystem_create(softaddr, q);
 	q+=0x80;
 
-	//compress_create();
+	//compress_create(softaddr, q);
 	//q+=0x80;
 
 	return q-(u8*)p;
 }
 int memory_delete()
 {
+	//compress_delete();
 	filesystem_delete();
 	parttable_delete();
 	return 0;
