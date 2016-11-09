@@ -103,15 +103,12 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/compress/compress.gz.c \
 	library/libsoft1/libmemory/libfs/compress/compress.tar.c \
 	library/libsoft1/libmemory/libfs/compress/compress.zip.c \
-	library/libsoft1/libmemory/libfs/compress/compress.c \
 	library/libsoft1/libmemory/libfs/diskimage/img.raw.c \
 	library/libsoft1/libmemory/libfs/diskimage/img.vhd.c \
 	library/libsoft1/libmemory/libfs/diskimage/img.vmdk.c \
-	library/libsoft1/libmemory/libfs/diskimage/img.c \
 	library/libsoft1/libmemory/libfs/executable/exec.elf.c \
 	library/libsoft1/libmemory/libfs/executable/exec.macho.c \
 	library/libsoft1/libmemory/libfs/executable/exec.pe.c \
-	library/libsoft1/libmemory/libfs/executable/exec.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.ext.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.fat.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.hfs.c \
@@ -119,7 +116,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/parttable/pt.apple.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.gpt.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.mbr.c \
-	library/libsoft1/libmemory/libfs/parttable/pt.c \
 	library/libsoft1/libmemory/libfs/fs.c \
 	library/libsoft1/libmemory/libmath/math.calc.c \
 	library/libsoft1/libmemory/libmath/math.notation.c \

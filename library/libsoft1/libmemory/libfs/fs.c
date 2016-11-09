@@ -3,19 +3,37 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int parttable_create(void*,void*);
+int tar_create(void*,void*);
+int tar_delete();
+int zip_create(void*,void*);
+int zip_delete();
 //
 int ext_create(void*,void*);
 int ext_delete();
+int isext(u8*);
 int fat_create(void*,void*);
 int fat_delete();
+int isfat(u8*);
 int hfs_create(void*,void*);
 int hfs_delete();
+int ishfs(u8*);
 int ntfs_create(void*,void*);
 int ntfs_delete();
+int isntfs(u8*);
 //
-int parttable_explain(u8*);
-int parttable_focus(u64);
+int mbr_create(void*,void*);
+int mbr_delete();
+int ismbr(u8*);
+void mbr_explain(u8*, u8*);
+int gpt_create(void*,void*);
+int gpt_delete();
+int isgpt(u8*);
+void gpt_explain(u8*, u8*);
+//
+int vhd_create(void*,void*);
+int vhd_delete();
+int vmdk_create(void*,void*);
+int vmdk_delete();
 //
 int startfile(u8*);
 int stopfile(u8*);
@@ -42,6 +60,39 @@ static int which = 0;
 //
 int filesystem_explain(u8* p)
 {
+	//explain
+	if(isext(p) > 0)
+	{
+		say("ext\n");
+	}
+	else if(isfat(p) > 0)
+	{
+		say("fat\n");
+	}
+	else if(ishfs(p) > 0)
+	{
+		say("hfs\n");
+	}
+	else if(isntfs(p) > 0)
+	{
+		say("ntfs\n");
+	}
+	else if(isgpt(p) > 0)
+	{
+		say("gpt\n");
+		gpt_explain(p, fshome);
+	}
+	else if(ismbr(p) > 0)
+	{
+		say("mbr\n");
+		mbr_explain(p, fshome);
+	}
+	else
+	{
+		say("parttable notfound\n");
+		return -1;
+	}
+	return 0;
 }
 int filesystem_mount(u8* addr)
 {
@@ -80,18 +131,6 @@ int filesystem_mount(u8* addr)
 	return 0;
 */
 }
-int filesystem_read(u8* mem, u8* file, u64 offset, u64 count)
-{
-	if(which <= 0)return -1;
-
-	//return guys[which].read(mem, file, offset, count);
-}
-int filesystem_write(u8* mem, u8* file, u64 offset, u64 count)
-{
-	if(which <= 0)return -1;
-
-	//return guys[which].write(mem, file, offset, count);
-}
 
 
 
@@ -127,8 +166,8 @@ static int filesystem_cd(u8* p)
 	//read
 	ret = readfile(datahome, 0, 0, 0x8000);
 
-	//
-	ret = parttable_explain(datahome);
+	//11111111
+	ret = filesystem_explain(datahome);
 
 	//list
 	filesystem_ls();
@@ -166,9 +205,6 @@ void filesystem_create(void* softaddr, u64* p)
 	p[13]=(u64)filesystem_cd;
 	p[14]=(u64)filesystem_show;
 	p[15]=(u64)filesystem_edit;
-
-	//
-	parttable_create(softaddr,0);
 
 	//
 	ext_create(softaddr,0);

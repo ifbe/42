@@ -9,15 +9,12 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.gz.c
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.tar.c
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.zip.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.c
 	$(compiler) $(cflag) libmemory/libfs/diskimage/img.raw.c
 	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vhd.c
 	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vmdk.c
-	$(compiler) $(cflag) libmemory/libfs/diskimage/img.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.elf.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.macho.c
 	$(compiler) $(cflag) libmemory/libfs/executable/exec.pe.c
-	$(compiler) $(cflag) libmemory/libfs/executable/exec.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ext.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.fat.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.hfs.c
@@ -25,7 +22,6 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.apple.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.mbr.c
-	$(compiler) $(cflag) libmemory/libfs/parttable/pt.c
 	$(compiler) $(cflag) libmemory/libfs/fs.c
 	$(compiler) $(cflag) libmemory/libmath/math.calc.c
 	$(compiler) $(cflag) libmemory/libmath/math.notation.c
