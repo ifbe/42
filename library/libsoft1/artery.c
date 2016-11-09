@@ -2,15 +2,18 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int interface_create(void* world,void* func);
-int    memory_create(void* world,void* func);
-int       net_create(void* world,void* func);
-int   special_create(void* world,void* func);
 //
+int interface_create(void* world,void* func);
 int interface_delete();
-int    memory_delete();
-int       net_delete();
-int   special_delete();
+//
+int memory_create(void* world,void* func);
+int memory_delete();
+//
+int net_create(void* world,void* func);
+int net_delete();
+//
+int special_create(void* world,void* func);
+int special_delete();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -259,44 +262,38 @@ void arterycreate(u8* module,u8* addr)
 {
 	int i;
 	u8* p;
-
-	//
-	if(module==0)
+	if(module!=0)
 	{
-		for(i=0;i<0x100000;i++)addr[i] = 0;
-		addr[0] = 0x34;
-		addr[1] = 0x32;
-
-		//0
-		fshome  = addr+0x100000;
-		dirhome = addr+0x200000;
-		datahome= addr+0x300000;
-
-		rsp = 0;
-		stack = addr;
-
-		worker=(struct elements*)addr;
-
-		//
-		p = addr+0x80;
-		p += interface_create(addr,p);
-		p += memory_create(addr,p);
-		p += net_create(addr,p);
-		p += special_create(addr,p);
-
-		say("[8,c):createed artery\n");
+		//insmod(xxxx)
+		return;
 	}
 
 	//
-	else
-	{
-		//createmodule(module);
-		say("(createmodule fail)%s\n",module);
-	}
+	for(i=0;i<0x100000;i++)addr[i] = 0;
+	addr[0] = 0x34;
+	addr[1] = 0x32;
+
+	//0
+	rsp = 0;
+	stack = addr;
+	worker=(struct elements*)addr;
+	fshome  = addr+0x100000;
+	dirhome = addr+0x200000;
+	datahome= addr+0x300000;
+
+	//
+	p = addr+0x80;
+	p += interface_create(addr,p);
+	p += memory_create(addr,p);
+	p += net_create(addr,p);
+	p += special_create(addr,p);
+
+	say("[8,c):createed artery\n");
 }
 void arterydelete(u8* module)
 {
 	say("[8,c):deleteing artery\n");
+
 	special_delete();
 	net_delete();
 	memory_delete();

@@ -3,6 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+int parttable_create(void*,void*);
+//
 int ext_create(void*,void*);
 int ext_delete();
 int fat_create(void*,void*);
@@ -164,6 +166,9 @@ void filesystem_create(void* softaddr, u64* p)
 	p[13]=(u64)filesystem_cd;
 	p[14]=(u64)filesystem_show;
 	p[15]=(u64)filesystem_edit;
+
+	//
+	parttable_create(softaddr,0);
 
 	//
 	ext_create(softaddr,0);

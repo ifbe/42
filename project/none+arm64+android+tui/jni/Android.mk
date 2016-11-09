@@ -95,6 +95,9 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/libmemory/libbio/bio.c \
+	library/libsoft1/libmemory/libchem/chem.c \
+	library/libsoft1/libmemory/libfile/file.c \
 	library/libsoft1/libmemory/libfs/compress/compress.7z.c \
 	library/libsoft1/libmemory/libfs/compress/compress.cpio.c \
 	library/libsoft1/libmemory/libfs/compress/compress.gz.c \
@@ -113,11 +116,17 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/filesystem/fs.fat.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.hfs.c \
 	library/libsoft1/libmemory/libfs/filesystem/fs.ntfs.c \
-	library/libsoft1/libmemory/libfs/filesystem/fs.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.apple.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.gpt.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.mbr.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.c \
+	library/libsoft1/libmemory/libfs/fs.c \
+	library/libsoft1/libmemory/libmath/math.calc.c \
+	library/libsoft1/libmemory/libmath/math.notation.c \
+	library/libsoft1/libmemory/libmath/math.c \
+	library/libsoft1/libmemory/libphys/physics.electrical.c \
+	library/libsoft1/libmemory/libphys/physics.mechanics.c \
+	library/libsoft1/libmemory/libphys/phys.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.aes.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.base64.c \
 	library/libsoft1/libmemory/libsec/crypt/crypt.des.c \
@@ -129,6 +138,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libsec/hash/hash.sha1.c \
 	library/libsoft1/libmemory/libsec/hash/hash.string.c \
 	library/libsoft1/libmemory/libsec/qrcode.c \
+	library/libsoft1/libmemory/libsec/sec.c \
 	library/libsoft1/libmemory/libtext/compare/compare.simple.c \
 	library/libsoft1/libmemory/libtext/compare/compare.wildcard.c \
 	library/libsoft1/libmemory/libtext/convert/convert.argument.c \
@@ -137,10 +147,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/convert/convert.filename.c \
 	library/libsoft1/libmemory/libtext/convert/convert.network.c \
 	library/libsoft1/libmemory/libtext/convert/convert.number.c \
-	library/libsoft1/libmemory/libmath/math.calc.c \
-	library/libsoft1/libmemory/libmath/math.notation.c \
-	library/libsoft1/libmemory/libphys/physics.electrical.c \
-	library/libsoft1/libmemory/libphys/physics.mechanics.c \
+	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
 	library/libsoft1/libnet/net.client.c \
 	library/libsoft1/libnet/net.server.c \

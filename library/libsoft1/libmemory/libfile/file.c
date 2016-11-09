@@ -22,31 +22,31 @@ static u8* datahome;
 
 
 //
-static int bio_list(u8* arg1)
+static int file_list(u8* arg1)
 {
 	return 0;
 }
-static int bio_choose(u8* arg)
+static int file_choose(u8* arg)
 {
 	return 0;
 }
-static int bio_read(u8* mem, u8* file, u64 addr, u64 count)
+static int file_read(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int bio_write(u8* mem, u8* file, u64 addr, u64 count)
+static int file_write(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int bio_start(u8* p)
+static int file_start(u8* p)
 {
 	return 0;
 }
-static int bio_stop()
+static int file_stop()
 {
 	return 0;
 }
-int bio_create(u8* softaddr,u64* p)
+int file_create(u8* softaddr,u64* p)
 {
 	u8* q;
 
@@ -58,18 +58,18 @@ int bio_create(u8* softaddr,u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x6f6962;
+	p[1]=0x656c6966;
 
-	p[10]=(u64)bio_start;
-	p[11]=(u64)bio_stop;
-	p[12]=(u64)bio_list;
-	p[13]=(u64)bio_choose;
-	p[14]=(u64)bio_read;
-	p[15]=(u64)bio_write;
+	p[10]=(u64)file_start;
+	p[11]=(u64)file_stop;
+	p[12]=(u64)file_list;
+	p[13]=(u64)file_choose;
+	p[14]=(u64)file_read;
+	p[15]=(u64)file_write;
 
 	return 0x80;
 }
-int bio_delete()
+int file_delete()
 {
 	return 0;
 }

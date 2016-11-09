@@ -35,73 +35,12 @@ int executable_write(u8* mem, u8* file, u64 offset, u64 count)
 
 
 
-//just command
-static int executable_ls()
-{
-	int j;
-	for(j=0;j<0x80*0x80;j+=0x80)
-	{
-		if(*(u64*)(fshome+j) == 0)break;
-
-		say("(%8s,%8s)  [%08llx,%08llx] %s\n",
-			fshome+j, fshome+j+8,
-			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
-			fshome+j+0x40
-		);
-	}
-	return j / 0x80;
-}
-static int executable_cd(u8* p)
-{
-	int ret;
-
-	//exit?
-	stopfile(p);
-	if(p == 0)return -3;
-
-	//open
-	ret = startfile(p);
-	if(ret <= 0)return -2;
-
-	//read
-	ret = readfile(datahome, 0, 0, 0x8000);
-
-	//list
-	executable_ls();
-	return 0;
-}
-static int executable_show(u8* addr)
-{
-	return 0;
-}
-static int executable_edit()
-{
-	return 0;
-}
-static int executable_start()
-{
-	return 0;
-}
-static int executable_stop()
-{
-	return 0;
-}
 void executable_create(void* softaddr, u64* p)
 {
 	guys = softaddr;
 	fshome = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
 	datahome = softaddr + 0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
-	p[1]=0x63657865;
-	p[10]=(u64)executable_start;
-	p[11]=(u64)executable_stop;
-	p[12]=(u64)executable_ls;
-	p[13]=(u64)executable_cd;
-	p[14]=(u64)executable_show;
-	p[15]=(u64)executable_edit;
 }
 void executable_delete()
 {

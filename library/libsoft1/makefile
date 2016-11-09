@@ -1,6 +1,9 @@
 compiler ?= gcc
 cflag ?= -c -O2
 target:
+	$(compiler) $(cflag) libmemory/libbio/bio.c
+	$(compiler) $(cflag) libmemory/libchem/chem.c
+	$(compiler) $(cflag) libmemory/libfile/file.c
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.7z.c
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.cpio.c
 	$(compiler) $(cflag) libmemory/libfs/compress/compress.gz.c
@@ -19,11 +22,17 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.fat.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.hfs.c
 	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.apple.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.c
+	$(compiler) $(cflag) libmemory/libfs/fs.c
+	$(compiler) $(cflag) libmemory/libmath/math.calc.c
+	$(compiler) $(cflag) libmemory/libmath/math.notation.c
+	$(compiler) $(cflag) libmemory/libmath/math.c
+	$(compiler) $(cflag) libmemory/libphys/physics.electrical.c
+	$(compiler) $(cflag) libmemory/libphys/physics.mechanics.c
+	$(compiler) $(cflag) libmemory/libphys/phys.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.base64.c
 	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.des.c
@@ -35,6 +44,7 @@ target:
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.sha1.c
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.string.c
 	$(compiler) $(cflag) libmemory/libsec/qrcode.c
+	$(compiler) $(cflag) libmemory/libsec/sec.c
 	$(compiler) $(cflag) libmemory/libtext/compare/compare.simple.c
 	$(compiler) $(cflag) libmemory/libtext/compare/compare.wildcard.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.argument.c
@@ -43,10 +53,7 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.filename.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.network.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.number.c
-	$(compiler) $(cflag) libmemory/libmath/math.calc.c
-	$(compiler) $(cflag) libmemory/libmath/math.notation.c
-	$(compiler) $(cflag) libmemory/libphys/physics.electrical.c
-	$(compiler) $(cflag) libmemory/libphys/physics.mechanics.c
+	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
 	$(compiler) $(cflag) libnet/net.client.c
 	$(compiler) $(cflag) libnet/net.server.c

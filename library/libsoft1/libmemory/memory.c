@@ -3,16 +3,22 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int compress_create(void*,void*);
-int compress_delete();
-int diskimage_create(void*,void*);
-int diskimage_delete();
-int executable_create(void*,void*);
-int executable_delete();
+int bio_create(void*,void*);
+int bio_delete();
+int chem_create(void*,void*);
+int chem_delete();
+int file_create(void*,void*);
+int file_delete();
 int filesystem_create(void*,void*);
 int filesystem_delete();
-int parttable_create(void*,void*);
-int parttable_delete();
+int math_create(void*,void*);
+int math_delete();
+int phys_create(void*,void*);
+int phys_delete();
+int sec_create(void*,void*);
+int sec_delete();
+int text_create(void*,void*);
+int text_delete();
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
@@ -238,29 +244,41 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	compress_create(softaddr, q);
+	bio_create(softaddr, q);
 	q+=0x80;
 
-	diskimage_create(softaddr, q);
+	chem_create(softaddr, q);
 	q+=0x80;
 
-	executable_create(softaddr, q);
-	q+=0x80;
-
-	parttable_create(softaddr, q);
+	file_create(softaddr, q);
 	q+=0x80;
 
 	filesystem_create(softaddr, q);
+	q+=0x80;
+
+	math_create(softaddr, q);
+	q+=0x80;
+
+	phys_create(softaddr, q);
+	q+=0x80;
+
+	sec_create(softaddr, q);
+	q+=0x80;
+
+	text_create(softaddr, q);
 	q+=0x80;
 
 	return q-(u8*)p;
 }
 int memory_delete()
 {
-	compress_delete();
-	diskimage_delete();
-	executable_delete();
+	bio_delete();
+	chem_delete();
+	file_delete();
 	filesystem_delete();
-	parttable_delete();
+	math_delete();
+	phys_delete();
+	sec_delete();
+	text_delete();
 	return 0;
 }
