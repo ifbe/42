@@ -2,11 +2,6 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<sys/ioctl.h>
 void say(char*,...);
 
 

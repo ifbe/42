@@ -22,6 +22,6 @@ all:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-o core.bin
+	-o core.img
 clean:
 	rm -f *.out *.bin *.img
