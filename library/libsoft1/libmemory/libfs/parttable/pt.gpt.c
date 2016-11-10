@@ -8,7 +8,7 @@ void say(void*, ...);
 
 
 
-int isgpt(u8* addr)
+int gpt_yes(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -46,7 +46,7 @@ void gpt_explain(u8* src, u8* dst)
 	}
 
 	//check
-	i = isgpt(src);
+	i = gpt_yes(src);
 	if(i == 0)
 	{
 		say("not gpt\n");

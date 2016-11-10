@@ -5,35 +5,39 @@
 //
 int tar_create(void*,void*);
 int tar_delete();
+int tar_yes(u8*);
 int zip_create(void*,void*);
 int zip_delete();
+int zip_yes();
 //
 int ext_create(void*,void*);
 int ext_delete();
-int isext(u8*);
+int ext_yes(u8*);
 int fat_create(void*,void*);
 int fat_delete();
-int isfat(u8*);
+int fat_yes(u8*);
 int hfs_create(void*,void*);
 int hfs_delete();
-int ishfs(u8*);
+int hfs_yes(u8*);
 int ntfs_create(void*,void*);
 int ntfs_delete();
-int isntfs(u8*);
+int ntfs_yes(u8*);
 //
-int mbr_create(void*,void*);
-int mbr_delete();
-int ismbr(u8*);
-void mbr_explain(u8*, u8*);
 int gpt_create(void*,void*);
 int gpt_delete();
-int isgpt(u8*);
+int gpt_yes(u8*);
 void gpt_explain(u8*, u8*);
+int mbr_create(void*,void*);
+int mbr_delete();
+int mbr_yes(u8*);
+void mbr_explain(u8*, u8*);
 //
 int vhd_create(void*,void*);
 int vhd_delete();
+int vhd_yes(u8*);
 int vmdk_create(void*,void*);
 int vmdk_delete();
+int vmdk_yes(u8*);
 //
 int startfile(u8*);
 int stopfile(u8*);
@@ -61,28 +65,28 @@ static int which = 0;
 int filesystem_explain(u8* p)
 {
 	//explain
-	if(isext(p) > 0)
+	if(ext_yes(p) > 0)
 	{
 		say("ext\n");
 	}
-	else if(isfat(p) > 0)
+	else if(fat_yes(p) > 0)
 	{
 		say("fat\n");
 	}
-	else if(ishfs(p) > 0)
+	else if(hfs_yes(p) > 0)
 	{
 		say("hfs\n");
 	}
-	else if(isntfs(p) > 0)
+	else if(ntfs_yes(p) > 0)
 	{
 		say("ntfs\n");
 	}
-	else if(isgpt(p) > 0)
+	else if(gpt_yes(p) > 0)
 	{
 		say("gpt\n");
 		gpt_explain(p, fshome);
 	}
-	else if(ismbr(p) > 0)
+	else if(mbr_yes(p) > 0)
 	{
 		say("mbr\n");
 		mbr_explain(p, fshome);

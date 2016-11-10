@@ -324,13 +324,13 @@ int explainexthead()
 
 	return 1;
 }
-int isext(u8* addr)
+int ext_yes(u8* addr)
 {
 	//0x53,0xef
 	u64 temp=*(u16*)(addr+0x438);
 	if( temp != 0xef53 ) return 0;
 
-	//maybe isext
+	//maybe ext
 	return 4;
 }
 
@@ -367,7 +367,7 @@ static int ext_start(u64 sector)
 
 	//读分区前8扇区，检查magic值
 	ret=readfile(pbr, 0, block0*0x200, 0x1000);
-	ret=isext(pbr);
+	ret=ext_yes(pbr);
 	if( ret == 0 ) return -1;
 
 	//读出关键数据

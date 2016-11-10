@@ -8,7 +8,7 @@ void say(void*, ...);
 
 
 
-int ismbr(u8* addr)
+int mbr_yes(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -101,7 +101,7 @@ void mbr_explain(u8* src, u8* dst)
 	}
 
 	//check
-	ret = ismbr(src);
+	ret = mbr_yes(src);
 	if(ret == 0)
 	{
 		say("not mbr\n");
