@@ -7,7 +7,8 @@ flag := -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 .PHONY:barecli
 barecli:
 	rm -f *.o
-
+	gcc -c -O2 $(flag) bare/bare.cli.c
+	gcc -c -O2 $(flag) display.c
 .PHONY:barefb
 barefb:
 	rm -f *.o

@@ -1,6 +1,22 @@
+.PHONY:bare
+bare:
+	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
+	gcc -c -fPIC -O2 bare/bare.memory.file.c
+	gcc -c -fPIC -O2 bare/bare.net.client.c
+	gcc -c -fPIC -O2 bare/bare.net.server.c
+	gcc -c -fPIC -O2 bare/bare.system.folder.c
+	gcc -c -fPIC -O2 bare/bare.system.process.c
+	gcc -c -fPIC -O2 bare/bare.system.random.c
+	gcc -c -fPIC -O2 bare/bare.system.signal.c
+	gcc -c -fPIC -O2 bare/bare.system.time.c
+	gcc -c -fPIC -O2 bare/bare.wire.i2c.c
+	gcc -c -fPIC -O2 bare/bare.wire.spi.c
+	gcc -c -fPIC -O2 bare/bare.wire.uart.c
+	gcc -c -fPIC -O2 bare/bare.wire.usb.c
+	gcc -c -fPIC -O2 bare/bare.wire.wifi.c
 .PHONY:bsd
 bsd:
-	rm -f mac.*.o win.*.o
+	rm -f bare.*.o linux.*.o mac.*.o win.*.o
 	gcc -c -fPIC -O2 system.c
 	gcc -c -fPIC -O2 bsd/bsd.memory.file.c
 	gcc -c -fPIC -O2 bsd/bsd.memory.mmio.c
@@ -8,7 +24,7 @@ bsd:
 	gcc -c -fPIC -O2 bsd/bsd.system.random.c
 .PHONY:linux
 linux:
-	rm -f mac.*.o win.*.o
+	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
 	gcc -c -fPIC -O2 system.c
 	gcc -c -fPIC -O2 linux/linux.memory.file.c
 	gcc -c -fPIC -O2 linux/linux.memory.mmio.c
@@ -29,7 +45,7 @@ linux:
 	gcc -c -fPIC -O2 linux/linux.wire.wifi.c
 .PHONY:mac
 mac:
-	rm -f linux.*.o win.*.o
+	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
 	clang -c -O2 system.c
 	clang -c -O2 mac/mac.memory.file.c
 	clang -c -O2 mac/mac.memory.mmio.c

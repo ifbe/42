@@ -3,7 +3,6 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-u8* whereisunicodetable();
 void say(void*, ...);
 
 
@@ -110,8 +109,6 @@ void printunicodebig(int x,int y,u32 value)
 
 void unicode_create(void* home,void* me)
 {
-	unicodetable=(u8*)whereisunicodetable();
-
 	haha=me;
 	haha->type=0;
 	haha->id=0x65646f63696e75;

@@ -24,15 +24,6 @@ void say(char*,...);
 
 
 
-//
-int softevent(QW* what, QW* who, QW* where, QW* when)
-{
-	return 0;
-}
-
-
-
-
 void systemcreate(char* module,char* addr)
 {
 	if(module==0)

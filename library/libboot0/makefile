@@ -1,3 +1,9 @@
+.PHONY:bare
+bare:
+	rm -f *.o
+	gcc -c -fPIC -O2 bare/print.c
+	gcc -c -fPIC -O2 basic.c
+
 .PHONY:none
 none:
 	rm -f *.o
