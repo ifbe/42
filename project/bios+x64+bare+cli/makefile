@@ -2,12 +2,12 @@ library?=../../library
 all:
 	make -s -C $(library)/libboot0 bare
 	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 x64
+	make -s -C $(library)/libhard0 x64 extra="-fno-stack-protector"
 	make -s -C $(library)/libhard1 gcc
 	make -s -C $(library)/libsoft0 bare
-	make -s -C $(library)/libsoft1 gcc
+	make -s -C $(library)/libsoft1 gcc extra="-fno-stack-protector"
 	make -s -C $(library)/libui0 barecli
-	make -s -C $(library)/libui1 gcc
+	make -s -C $(library)/libui1 gcc extra="-fno-stack-protector"
 	make -s -C $(library)/visitor0 bare
 	make -s -C $(library)/visitor1 cli
 	ld -T link.ld \

@@ -1,4 +1,4 @@
-flag := -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
+flag ?= -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 
 
 
