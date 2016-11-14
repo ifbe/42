@@ -129,20 +129,20 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/convert/convert.number.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
-	library/libsoft1/libnet/net.client.c \
-	library/libsoft1/libnet/net.server.c \
-	library/libsoft1/libnet/net.arp.c \
-	library/libsoft1/libnet/net.ethernet.c \
-	library/libsoft1/libnet/net.ftp.c \
-	library/libsoft1/libnet/net.http.c \
-	library/libsoft1/libnet/net.icmp.c \
-	library/libsoft1/libnet/net.ipv4.c \
-	library/libsoft1/libnet/net.ipv6.c \
-	library/libsoft1/libnet/net.ppp.c \
-	library/libsoft1/libnet/net.quic.c \
-	library/libsoft1/libnet/net.slip.c \
-	library/libsoft1/libnet/net.ssh.c \
-	library/libsoft1/libnet/net.tftp.c \
+	library/libsoft1/libnet/worker/net.arp.c \
+	library/libsoft1/libnet/worker/net.ethernet.c \
+	library/libsoft1/libnet/worker/net.ftp.c \
+	library/libsoft1/libnet/worker/net.http.c \
+	library/libsoft1/libnet/worker/net.icmp.c \
+	library/libsoft1/libnet/worker/net.ipv4.c \
+	library/libsoft1/libnet/worker/net.ipv6.c \
+	library/libsoft1/libnet/worker/net.ppp.c \
+	library/libsoft1/libnet/worker/net.quic.c \
+	library/libsoft1/libnet/worker/net.slip.c \
+	library/libsoft1/libnet/worker/net.ssh.c \
+	library/libsoft1/libnet/worker/net.tftp.c \
+	library/libsoft1/libnet/manager/net.client.c \
+	library/libsoft1/libnet/manager/net.server.c \
 	library/libsoft1/libnet/net.c \
 	library/libsoft1/libsystem/system.folder.c \
 	library/libsoft1/libsystem/system.process.c \
@@ -206,6 +206,6 @@ LOCAL_SRC_FILES += \
 
 #2
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
-LOCAL_LDLIBS    := -lm -llog -ljnigraphics
-LOCAL_MODULE    := plasma
+LOCAL_LDLIBS := -lm -llog -ljnigraphics
+LOCAL_MODULE := plasma
 include $(BUILD_SHARED_LIBRARY)

@@ -52,20 +52,21 @@ target:
 	$(compiler) $(cflag) $(extra) libmemory/libtext/convert/convert.number.c
 	$(compiler) $(cflag) $(extra) libmemory/libtext/text.c
 	$(compiler) $(cflag) $(extra) libmemory/memory.c
-	$(compiler) $(cflag) $(extra) libnet/net.client.c
-	$(compiler) $(cflag) $(extra) libnet/net.server.c
-	$(compiler) $(cflag) $(extra) libnet/net.arp.c
-	$(compiler) $(cflag) $(extra) libnet/net.ethernet.c
-	$(compiler) $(cflag) $(extra) libnet/net.ftp.c
-	$(compiler) $(cflag) $(extra) libnet/net.http.c
-	$(compiler) $(cflag) $(extra) libnet/net.icmp.c
-	$(compiler) $(cflag) $(extra) libnet/net.ipv4.c
-	$(compiler) $(cflag) $(extra) libnet/net.ipv6.c
-	$(compiler) $(cflag) $(extra) libnet/net.ppp.c
-	$(compiler) $(cflag) $(extra) libnet/net.quic.c
-	$(compiler) $(cflag) $(extra) libnet/net.slip.c
-	$(compiler) $(cflag) $(extra) libnet/net.ssh.c
-	$(compiler) $(cflag) $(extra) libnet/net.tftp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.arp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ethernet.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ftp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.http.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.icmp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ipv4.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ipv6.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ppp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.quic.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.slip.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.ssh.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.tftp.c
+	$(compiler) $(cflag) $(extra) libnet/worker/net.websocket.c
+	$(compiler) $(cflag) $(extra) libnet/manager/net.client.c
+	$(compiler) $(cflag) $(extra) libnet/manager/net.server.c
 	$(compiler) $(cflag) $(extra) libnet/net.c
 	$(compiler) $(cflag) $(extra) libsystem/system.folder.c
 	$(compiler) $(cflag) $(extra) libsystem/system.process.c
