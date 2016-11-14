@@ -5,8 +5,8 @@
 //
 int cleverread(u64,u64,u64,	u8*,u64,u64);
 int cleverwrite(u64,u64,u64,	u8*,u64,u64);
-int readfile(u8* mem, u8* file, u64 offset, u64 count);
-int writefile(u8* mem, u8* file, u64 offset, u64 count);
+int readfile(u8* file, u8* mem, u64 offset, u64 count);
+int writefile(u8* file, u8* mem, u64 offset, u64 count);
 //用了别人的
 void printmemory(void*, int);
 void say(void*, ...);
@@ -47,7 +47,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readfile(blockrecord, 0, sector*0x200, 0x200);
+	readfile(0, blockrecord, sector*0x200, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	u8* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -94,7 +94,7 @@ static u8* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		readfile(rdi, 0, where*0x200, count*inodesize*0x200);
+		readfile(0, rdi, where*0x200, count*inodesize*0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -191,7 +191,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-			readfile(rdi, 0, temp*0x200, blocksize*0x200);
+			readfile(0, rdi, temp*0x200, blocksize*0x200);
 			rdi+=0x200*blocksize;
 		}
 
@@ -278,48 +278,22 @@ static void explaindirectory()
 }
 int explainexthead()
 {
-	u64* dstqword=(u64*)fshome;
-
 	//变量们
 	blocksize=*(u32*)(pbr+0x418);
 	blocksize=( 1<<(blocksize+10) )/0x200;		//每块多少扇区
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x7a736b636f6c62;       //'blocksz'
-	dstqword[2]=0x418;
-	dstqword[3]=0x41b;
-	dstqword[4]=blocksize;
-	dstqword += 8;
 	say("sectorperblock:%x\n",blocksize);
 
 	//每组多少扇区
 	groupsize=*(u32*)(pbr+0x420);
 	groupsize=groupsize*blocksize;
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x7a7370756f7267;       //'groupsz'
-	dstqword[2]=0x420;
-	dstqword[3]=0x423;
-	dstqword[4]=groupsize;
-	dstqword += 8;
 	say("sectorpergroup:%x\n",groupsize);
 
 	//每组多少个inode
 	inodepergroup=*(u32*)(pbr+0x428);
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x672f69;       //'i/g'
-	dstqword[2]=0x428;
-	dstqword[3]=0x42b;
-	dstqword[4]=inodepergroup;
-	dstqword += 8;
 	say("inodepergroup:%x\n",inodepergroup);
 
 	//每inode多少字节
 	inodesize=*(u16*)(pbr+0x458);
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x7a7365646f6e69;       //'inodesz'
-	dstqword[2]=0x458;
-	dstqword[3]=0x459;
-	dstqword[4]=inodesize;
-	dstqword += 8;
 	say("byteperinode:%x\n",inodesize);
 
 	return 1;
@@ -363,19 +337,19 @@ static int ext_write(u64 id,u64 offset,u64 size)
 static int ext_start(u64 sector)
 {
 	int ret=0;
-	block0=sector;
+	block0 = sector;
 
 	//读分区前8扇区，检查magic值
-	ret=readfile(pbr, 0, block0*0x200, 0x1000);
-	ret=ext_yes(pbr);
+	ret = readfile(0, pbr, block0*0x200, 0x1000);
+	ret = ext_yes(pbr);
 	if( ret == 0 ) return -1;
 
 	//读出关键数据
-	ret=explainexthead();
-	if(ret<0)return ret;
+	ret = explainexthead();
+	if(ret < 0)return ret;
 
 	//cd /
-	firstinodeincache=0xffffffff;
+	firstinodeincache = 0xffffffff;
 	ext_choose(2);
 
 	return 0;

@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int readfile(u8* mem, u8* file, u64 offset, u64 count);
-int writefile(u8* mem, u8* file, u64 offset, u64 count);
+int readfile(u8* file, u8* mem, u64 offset, u64 count);
+int writefile(u8* file, u8* mem, u64 offset, u64 count);
 //用了别人的
 void printmemory(void*, int);
 void say(void*, ...);
@@ -129,9 +129,8 @@ static int fat16_data(u8* dest,u64 cluster)
 		if(cluster>=0xfff8)break;
 
 		//读一个簇
-		readfile(
+		readfile(0,
 			rdi,
-			0,
 			(cluster2+clustersize*(cluster-2))*0x200,
 			clustersize*0x200
 		);
@@ -153,12 +152,12 @@ static void fat16_root()
 	//fat16的fat区最多0xffff个簇记录*每个记录2个字节<=0x20000=0x100个扇区
 	//data区最大0xffff个簇*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	say("reading whole fat table\n");
-	readfile(fatbuffer, 0, fat0*0x200, 0x20000);
+	readfile(0, fatbuffer, fat0*0x200, 0x20000);
 	//printmemory(fatbuffer,0x1000);
 
 	//fat16根目录最多512个记录=0x20*0x200=0x4000字节=32个扇区
 	say("cd %x\n",fat0+fatsize*2);
-	readfile(datahome, 0, (fat0+fatsize*2)*0x200, 0x4000);
+	readfile(0, datahome, (fat0+fatsize*2)*0x200, 0x4000);
 	explaindirectory();
 
 	say("\n");
@@ -167,44 +166,19 @@ void explainfat16head()
 {
 	//准备本程序需要的变量
 	//u64 firstsector=(u64)( *(u32*)(pbr+0x1c) );
-	u64* dstqword=(u64*)fshome;
 	say("fat16\n");
 
 	fat0=(u64)( *(u16*)(pbr+0xe) );
 	fat0=firstsector + fat0;
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x30746166;		//'fat0'
-	dstqword[2]=0xe;
-	dstqword[3]=0xf;
-	dstqword[4]=fat0;
-	dstqword += 8;
 	say("fat0@%x\n",fat0);
 
 	fatsize=(u64)( *(u16*)(pbr+0x16) );
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x657a6973746166;	//'fatsize'
-	dstqword[2]=0x16;
-	dstqword[3]=0x17;
-	dstqword[4]=fatsize;
-	dstqword += 8;
 	say("fatsize:%x\n",fatsize);
 
 	cluster2=fat0+fatsize*2+32;
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x32756c63;		//'clu2'
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=cluster2;
-	dstqword += 8;
 	say("cluster2@%x\n",cluster2);
 
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x657a6973756c63;	//'clusize'
-	dstqword[2]=0xd;
-	dstqword[3]=0xd;
-	dstqword[4]=clustersize;
-	dstqword += 8;
 	say("clustersize:%x\n",clustersize);
 }
 
@@ -233,9 +207,8 @@ static void checkcacheforcluster(u64 cluster)
 
 	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
 	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
-	readfile(
+	readfile(0,
 		fatbuffer,
-		0,
 		(fat0+(whatwewant/0x80))*0x200,
 		0x40000
 	);
@@ -252,9 +225,8 @@ static void fat32_data(u8* dest,u64 cluster,u64 start,u64 count)
 	u8* rdi=dest;
 	while(rdi<dest+count)
 	{
-		readfile(
+		readfile(0,
 			rdi,
-			0,
 			(cluster2+clustersize*(cluster-2))*0x200,
 			clustersize*0x200
 		);
@@ -290,44 +262,19 @@ void explainfat32head()
 {
 	//准备本程序需要的变量
 	//u64 firstsector=(u64)( *(u32*)(pbr+0x1c) );
-	u64* dstqword=(u64*)fshome;
 	say("fat32\n");
 
 	fat0=(u64)( *(u16*)(pbr+0xe) );
 	fat0=firstsector + fat0;
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x30746166;	 //'fat0'
-	dstqword[2]=0xe;
-	dstqword[3]=0xf;
-	dstqword[4]=fat0;
-	dstqword += 8;
 	say("fat0@%x\n",fat0);
 
 	fatsize=(u64)( *(u32*)(pbr+0x24) );
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x657a6973746166;   //'fatsize'
-	dstqword[2]=0x24;
-	dstqword[3]=0x27;
-	dstqword[4]=fatsize;
-	dstqword += 8;
 	say("fatsize:%x\n",fatsize);
 
 	cluster2=fat0+fatsize*2;
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x32756c63;	 //'clu0'
-	dstqword[2]=0;
-	dstqword[3]=0;
-	dstqword[4]=cluster2;
-	dstqword += 8;
 	say("cluster2@%x\n",cluster2);
 
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	dstqword[0]=0x7366;	     //'fs'
-	dstqword[1]=0x657a6973756c63;   //'clusize'
-	dstqword[2]=0xd;
-	dstqword[3]=0xd;
-	dstqword[4]=clustersize;
-	dstqword += 8;
 	say("clustersize:%x\n",clustersize);
 }
 
@@ -448,7 +395,7 @@ int fat_start(u64 sector)
 	firstsector=sector;
 
 	//读取pbr，检查种类和版本
-	ret = readfile(pbr, 0, firstsector*0x200, 0x200); //pbr
+	ret = readfile(0, pbr, firstsector*0x200, 0x200); //pbr
 	ret = fat_yes(pbr);
 	if(ret==16)		//这是fat16
 	{

@@ -5,8 +5,8 @@
 //用了别人的
 int cleverread(u64,u64,u64,	u8*,u64,u64);
 int cleverwrite(u64,u64,u64,	u8*,u64,u64);
-int readfile(u8* mem, u8* file, u64 offset, u64 count);
-int writefile(u8* mem, u8* file, u64 offset, u64 count);
+int readfile(u8* file, u8* mem, u64 offset, u64 count);
+int writefile(u8* file, u8* mem, u64 offset, u64 count);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -575,46 +575,24 @@ void explainmft(u64 mftnum,u64 want)
 int explainntfshead()
 {
 	int i;
-	u64* dstqword=(u64*)fshome;
-
-	//clean
 	for(i=0;i<0x10000;i++)fshome[i]=0;
 
 	//[d,d]
 	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x7a73756c63;	//'clusz'
-	dstqword[2]=0xd;
-	dstqword[3]=0xd;
-	dstqword[4]=clustersize;
-	dstqword += 8;
 	say("clustersize:%x\n",clustersize);
 
 	//[0x30,0x37]
 	mftcluster= *(u64*)(pbr+0x30);
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x756c6374666d;	//'mftclu'
-	dstqword[2]=0x30;
-	dstqword[3]=0x37;
-	dstqword[4]=mftcluster;
-	dstqword += 8;
 	say("mftcluster:%x\n",mftcluster);
 
 	//[0x44,0x44]
 	u64 indexsize=(u64)( *(u8*)(pbr+0x44) );
 	indexsize=clustersize * indexsize;
-	dstqword[0]=0x7366;		//'fs'
-	dstqword[1]=0x7a737865646e69;	//'indexsz'
-	dstqword[2]=0x30;
-	dstqword[3]=0x37;
-	dstqword[4]=indexsize;
-	dstqword += 8;
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	readfile(
+	readfile(0,
 		mft0,
-		0,
 		(ntfssector+mftcluster*clustersize)*0x200,
 		32*0x200
 	);
@@ -678,7 +656,7 @@ static int ntfs_start(u64 sector)
 	ntfssector=sector;
 
 	//读PBR，检查失败就返回
-	ret = readfile(pbr, 0, ntfssector*0x200, 0x200);
+	ret = readfile(0, pbr, ntfssector*0x200, 0x200);
 	ret = ntfs_yes(pbr);
 	if(ret==0)return -1;
 

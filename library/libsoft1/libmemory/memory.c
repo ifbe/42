@@ -23,8 +23,8 @@ int text_delete();
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
 //
-int readfile(u8* mem, u8* file, u64 offset, u64 count);
-int writefile(u8* mem, u8* file, u64 offset, u64 count);
+int readfile(u8* file, u8* mem, u64 offset, u64 count);
+int writefile(u8* file, u8* mem, u64 offset, u64 count);
 int startfile();
 int stopfile();
 //
@@ -161,7 +161,7 @@ void cleverread(u64 src, u64 count, u64 where, u8* dst, u64 size, u64 want)
 		rdi,rsi,rcx
 	);
 */
-	readfile(rdi, 0, rsi, rcx);
+	readfile(0, rdi, rsi, rcx);
 }
 
 

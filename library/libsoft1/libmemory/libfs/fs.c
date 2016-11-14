@@ -168,7 +168,7 @@ static int filesystem_cd(u8* p)
 	if(ret <= 0)return -2;
 
 	//read
-	ret = readfile(datahome, 0, 0, 0x8000);
+	ret = readfile(0, datahome, 0, 0x8000);
 
 	//11111111
 	ret = filesystem_explain(datahome);

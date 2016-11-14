@@ -56,8 +56,8 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 
 
 
-//mem地址，file名字，文件内偏移，总字节数
-int writefile(char* memaddr,char* filename,u64 offset,u64 count)
+//file名字，mem地址，文件内偏移，总字节数
+int writefile(u8* filename,u8* memaddr,u64 offset,u64 count)
 {
 	HANDLE hFile;
 	LARGE_INTEGER li;
@@ -93,7 +93,7 @@ int writefile(char* memaddr,char* filename,u64 offset,u64 count)
 	}
 }
 //
-int readfile(char* memaddr,char* filename,u64 offset,u64 count)
+int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 {
 	HANDLE hFile;
 	LARGE_INTEGER li;
