@@ -1,16 +1,26 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/libboot0 wincmd
-	make -s -C $(library)/libboot1 mingw
-	make -s -C $(library)/libhard0 winx64
-	make -s -C $(library)/libhard1 mingw
-	make -s -C $(library)/libsoft0 win
-	make -s -C $(library)/libsoft1 mingw
-	make -s -C $(library)/libui0 winsdl
-	make -s -C $(library)/libui1 mingw
-	make -s -C $(library)/visitor0 win
-	make -s -C $(library)/visitor1 gui
+	make -s -C $(library)/libboot0 wincmd \
+	cflag="-c -O2"
+	make -s -C $(library)/libboot1 \
+	cflag="-c -O2"
+	make -s -C $(library)/libhard0 winx64 \
+	cflag="-c -O2"
+	make -s -C $(library)/libhard1 \
+	cflag="-c -O2"
+	make -s -C $(library)/libsoft0 win \
+	cflag="-c -O2"
+	make -s -C $(library)/libsoft1 \
+	cflag="-c -O2"
+	make -s -C $(library)/libui0 winsdl \
+	cflag="-c -O2"
+	make -s -C $(library)/libui1 \
+	cflag="-c -O2"
+	make -s -C $(library)/visitor0 \
+	cflag="-c -O2"
+	make -s -C $(library)/visitor1 gui \
+	cflag="-c -O2"
 	make -s a
 	make -s dll
 	make -s program
