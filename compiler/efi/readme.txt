@@ -7,15 +7,15 @@
 	sudo apt-get install libgmp3-dev libmpfr-dev libuuid-dev	#ubuntu
 	sudo apt-get install mingw-w64 acpica-tools
 	git clone https://github.com/tianocore/edk2
-        git clone https://github.com/tianocore/edk2-FatPkg
+	git clone https://github.com/tianocore/edk2-FatPkg
 
 2:build
 	cd edk2/
 	make -C BaseTools
-	./mingw-gcc-build.py --arch=x64 --prefix=~/opt/efi
+	./mingw-gcc-build.py --arch=x64 --prefix=/opt/efi
 
 3:modify
-	Conf/tools/def.txt:
+	Conf/tools_def.txt:
 	UNIXGCC_X64_PETOOLS_PREFIX=x86_64-w64-mingw32-
 
 	Conf/target.txt:
@@ -23,13 +23,13 @@
 	TARGET_ARCH           = X64
 	TOOL_CHAIN_TAG        = UNIXGCC
 
-	Conf/tools_def.txt
-	UNIX_IASL_BIN           = /opt/iasl
+	#Conf/tools_def.txt
+	#DEFINE UNIX_IASL_BIN  = /opt/iasl
 
 4:environment
 	export EDK_TOOLS_PATH=`pwd`/BaseTools
 	source ./edksetup.sh BaseTools
 
-5:coding
-	MdeModulePkg/Application/HelloWorld
+5:sample
+	build -m MdeModulePkg/Application/HelloWorld.inf
 	ls Build/MdeModule/DEBUG_UNIXGCC/X64/
