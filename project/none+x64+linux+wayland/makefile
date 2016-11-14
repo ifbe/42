@@ -1,13 +1,13 @@
 library?=../../library
 all:
 	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 gcc
+	make -s -C $(library)/libboot1
 	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 gcc
+	make -s -C $(library)/libhard1
 	make -s -C $(library)/libsoft0 linux
-	make -s -C $(library)/libsoft1 gcc
+	make -s -C $(library)/libsoft1
 	make -s -C $(library)/libui0 linuxwayland
-	make -s -C $(library)/libui1 gcc
+	make -s -C $(library)/libui1
 	make -s -C $(library)/visitor0
 	make -s -C $(library)/visitor1 gui
 	make -s a

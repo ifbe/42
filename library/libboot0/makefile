@@ -1,35 +1,28 @@
+compiler ?= gcc
+cflag ?= -c -O2 -fPIC
+
 .PHONY:bare
 bare:
 	rm -f *.o
-	gcc -c -fPIC -O2 bare/print.c
-	gcc -c -fPIC -O2 basic.c
+	$(compiler) $(cflag) bare/print.c
+	$(compiler) $(cflag) basic.c
 
 .PHONY:none
 none:
 	rm -f *.o
-	gcc -c -fPIC -O2 none/tx.c
-	gcc -c -fPIC -O2 basic.c
-
-.PHONY:arm
-arm:
-	rm -f *.o
-	arm-none-eabi-gcc -c -fPIC -O2 basic.c
-	arm-none-eabi-gcc -c -fPIC -O2 none/tx.c
-
-.PHONY:logcat
-logcat:
-	rm -f *.o
-	gcc -c -fPIC -O2 logcat/logcat.c
-	gcc -c -fPIC -O2 basic.c
+	$(compiler) $(cflag) none/tx.c
+	$(compiler) $(cflag) basic.c
 
 .PHONY:wincmd
 wincmd:
 	rm -f *.o
-	gcc -c -O2 wincmd/wincmd.c
-	gcc -c -O2 basic.c
+	$(compiler) $(cflag) wincmd/wincmd.c
+	$(compiler) $(cflag) basic.c
 
 .PHONY:efi
 efi:
+	rm -f *.o
+	$(compiler) $(cflag) basic.c
 
 clean:
 	rm -f *.o

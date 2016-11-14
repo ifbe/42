@@ -1,88 +1,96 @@
+compiler ?= gcc
+cflag ?= -c -O2 -fPIC
+
 .PHONY:bare
 bare:
 	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
-	gcc -c -fPIC -O2 bare/bare.memory.file.c
-	gcc -c -fPIC -O2 bare/bare.net.client.c
-	gcc -c -fPIC -O2 bare/bare.net.server.c
-	gcc -c -fPIC -O2 bare/bare.system.folder.c
-	gcc -c -fPIC -O2 bare/bare.system.process.c
-	gcc -c -fPIC -O2 bare/bare.system.random.c
-	gcc -c -fPIC -O2 bare/bare.system.signal.c
-	gcc -c -fPIC -O2 bare/bare.system.time.c
-	gcc -c -fPIC -O2 bare/bare.wire.i2c.c
-	gcc -c -fPIC -O2 bare/bare.wire.spi.c
-	gcc -c -fPIC -O2 bare/bare.wire.uart.c
-	gcc -c -fPIC -O2 bare/bare.wire.usb.c
-	gcc -c -fPIC -O2 bare/bare.wire.wifi.c
+	$(compiler) $(cflag) bare/bare.memory.file.c
+	$(compiler) $(cflag) bare/bare.net.client.c
+	$(compiler) $(cflag) bare/bare.net.server.c
+	$(compiler) $(cflag) bare/bare.system.folder.c
+	$(compiler) $(cflag) bare/bare.system.process.c
+	$(compiler) $(cflag) bare/bare.system.random.c
+	$(compiler) $(cflag) bare/bare.system.signal.c
+	$(compiler) $(cflag) bare/bare.system.time.c
+	$(compiler) $(cflag) bare/bare.wire.i2c.c
+	$(compiler) $(cflag) bare/bare.wire.spi.c
+	$(compiler) $(cflag) bare/bare.wire.uart.c
+	$(compiler) $(cflag) bare/bare.wire.usb.c
+	$(compiler) $(cflag) bare/bare.wire.wifi.c
+	$(compiler) $(cflag) system.c
+
 .PHONY:bsd
 bsd:
 	rm -f bare.*.o linux.*.o mac.*.o win.*.o
-	gcc -c -fPIC -O2 system.c
-	gcc -c -fPIC -O2 bsd/bsd.memory.file.c
-	gcc -c -fPIC -O2 bsd/bsd.memory.mmio.c
-	gcc -c -fPIC -O2 bsd/bsd.system.folder.c
-	gcc -c -fPIC -O2 bsd/bsd.system.random.c
+	$(compiler) $(cflag) bsd/bsd.memory.file.c
+	$(compiler) $(cflag) bsd/bsd.memory.mmio.c
+	$(compiler) $(cflag) bsd/bsd.system.folder.c
+	$(compiler) $(cflag) bsd/bsd.system.random.c
+	$(compiler) $(cflag) system.c
+
 .PHONY:linux
 linux:
 	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
-	gcc -c -fPIC -O2 system.c
-	gcc -c -fPIC -O2 linux/linux.memory.file.c
-	gcc -c -fPIC -O2 linux/linux.memory.mmio.c
-	gcc -c -fPIC -O2 linux/linux.net.client.c
-	gcc -c -fPIC -O2 linux/linux.net.server.c
-	gcc -c -fPIC -O2 linux/linux.system.folder.c
-	gcc -c -fPIC -O2 linux/linux.system.process.c
-	gcc -c -fPIC -O2 linux/linux.system.random.c
-	gcc -c -fPIC -O2 linux/linux.system.signal.c
-	gcc -c -fPIC -O2 linux/linux.system.time.c
-	gcc -c -fPIC -O2 linux/linux.wire.bt.c
-	gcc -c -fPIC -O2 linux/linux.wire.i2c.c
-	gcc -c -fPIC -O2 linux/linux.wire.gpio.c
-	gcc -c -fPIC -O2 linux/linux.wire.pci.c
-	gcc -c -fPIC -O2 linux/linux.wire.spi.c
-	gcc -c -fPIC -O2 linux/linux.wire.uart.c
-	gcc -c -fPIC -O2 linux/linux.wire.usb.c
-	gcc -c -fPIC -O2 linux/linux.wire.wifi.c
+	$(compiler) $(cflag) linux/linux.memory.file.c
+	$(compiler) $(cflag) linux/linux.memory.mmio.c
+	$(compiler) $(cflag) linux/linux.net.client.c
+	$(compiler) $(cflag) linux/linux.net.server.c
+	$(compiler) $(cflag) linux/linux.system.folder.c
+	$(compiler) $(cflag) linux/linux.system.process.c
+	$(compiler) $(cflag) linux/linux.system.random.c
+	$(compiler) $(cflag) linux/linux.system.signal.c
+	$(compiler) $(cflag) linux/linux.system.time.c
+	$(compiler) $(cflag) linux/linux.wire.bt.c
+	$(compiler) $(cflag) linux/linux.wire.i2c.c
+	$(compiler) $(cflag) linux/linux.wire.gpio.c
+	$(compiler) $(cflag) linux/linux.wire.pci.c
+	$(compiler) $(cflag) linux/linux.wire.spi.c
+	$(compiler) $(cflag) linux/linux.wire.uart.c
+	$(compiler) $(cflag) linux/linux.wire.usb.c
+	$(compiler) $(cflag) linux/linux.wire.wifi.c
+	$(compiler) $(cflag) system.c
+
 .PHONY:mac
 mac:
 	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
-	clang -c -O2 system.c
-	clang -c -O2 mac/mac.memory.file.c
-	clang -c -O2 mac/mac.memory.mmio.c
-	clang -c -O2 mac/mac.net.client.c
-	clang -c -O2 mac/mac.net.server.c
-	clang -c -O2 mac/mac.system.folder.c
-	clang -c -O2 mac/mac.system.random.c
-	clang -c -O2 mac/mac.system.signal.c
-	clang -c -O2 mac/mac.system.time.c
-	clang -c -O2 mac/mac.wire.bt.c
-	clang -c -O2 mac/mac.wire.i2c.c
-	clang -c -O2 mac/mac.wire.gpio.c
-	clang -c -O2 mac/mac.wire.pci.c
-	clang -c -O2 mac/mac.wire.spi.c
-	clang -c -O2 mac/mac.wire.uart.c
-	clang -c -O2 mac/mac.wire.usb.c
-	clang -c -O2 mac/mac.wire.wifi.c
+	$(compiler) $(cflag) mac/mac.memory.file.c
+	$(compiler) $(cflag) mac.memory.mmio.c
+	$(compiler) $(cflag) mac.net.client.c
+	$(compiler) $(cflag) mac.net.server.c
+	$(compiler) $(cflag) mac.system.folder.c
+	$(compiler) $(cflag) mac.system.random.c
+	$(compiler) $(cflag) mac.system.signal.c
+	$(compiler) $(cflag) mac.system.time.c
+	$(compiler) $(cflag) mac.wire.bt.c
+	$(compiler) $(cflag) mac.wire.i2c.c
+	$(compiler) $(cflag) mac.wire.gpio.c
+	$(compiler) $(cflag) mac.wire.pci.c
+	$(compiler) $(cflag) mac.wire.spi.c
+	$(compiler) $(cflag) mac.wire.uart.c
+	$(compiler) $(cflag) mac.wire.usb.c
+	$(compiler) $(cflag) mac.wire.wifi.c
+	$(compiler) $(cflag) system.c
+
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	gcc -c -O2 system.c
-	gcc -c -O2 win/win.memory.file.c
-	gcc -c -O2 win/win.memory.virtual.c
-	gcc -c -O2 win/win.net.client.c
-	gcc -c -O2 win/win.net.server.c
-	gcc -c -O2 win/win.system.folder.c
-	gcc -c -O2 win/win.system.process.c
-	gcc -c -O2 win/win.system.random.c
-	gcc -c -O2 win/win.system.signal.c
-	gcc -c -O2 win/win.system.time.c
-	gcc -c -O2 win/win.wire.bt.c
-	gcc -c -O2 win/win.wire.i2c.c
-	gcc -c -O2 win/win.wire.gpio.c
-	gcc -c -O2 win/win.wire.pci.c
-	gcc -c -O2 win/win.wire.spi.c
-	gcc -c -O2 win/win.wire.uart.c
-	gcc -c -O2 win/win.wire.usb.c
-	gcc -c -O2 win/win.wire.wifi.c
+	$(compiler) $(cflag) win/win.memory.file.c
+	$(compiler) $(cflag) win/win.memory.virtual.c
+	$(compiler) $(cflag) win/win.net.client.c
+	$(compiler) $(cflag) win/win.net.server.c
+	$(compiler) $(cflag) win/win.system.folder.c
+	$(compiler) $(cflag) win/win.system.process.c
+	$(compiler) $(cflag) win/win.system.random.c
+	$(compiler) $(cflag) win/win.system.signal.c
+	$(compiler) $(cflag) win/win.system.time.c
+	$(compiler) $(cflag) win/win.wire.bt.c
+	$(compiler) $(cflag) win/win.wire.i2c.c
+	$(compiler) $(cflag) win/win.wire.gpio.c
+	$(compiler) $(cflag) win/win.wire.pci.c
+	$(compiler) $(cflag) win/win.wire.spi.c
+	$(compiler) $(cflag) win/win.wire.uart.c
+	$(compiler) $(cflag) win/win.wire.usb.c
+	$(compiler) $(cflag) win/win.wire.wifi.c
+	$(compiler) $(cflag) system.c
 clean:
 	rm -f *.o *.a

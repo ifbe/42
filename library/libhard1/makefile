@@ -1,15 +1,10 @@
 compiler ?= gcc
-cflag ?= -c -O2
+cflag ?= -c -O2 -fPIC
+
 target:
 	$(compiler) $(cflag) body.c
 	$(compiler) $(cflag) pci.c
 	$(compiler) $(cflag) usb.c
 	$(compiler) $(cflag) i2c.c
-clang:
-	make -s compiler="clang" cflag="-c -fPIC -O2"
-gcc:
-	make -s compiler="gcc" cflag="-c -fPIC -O2"
-mingw:
-	make -s compiler="gcc" cflag="-c -O2"
 clean:
 	rm -f *.o
