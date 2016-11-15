@@ -7,7 +7,7 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void snatch(int*);
 void release(int*);
 
@@ -197,7 +197,7 @@ void* uievent(void* p)
 		{
 			if (ev.xclient.data.l[0] == wmDelete)
 			{
-				eventwrite(0,0);
+				eventwrite(0,0,0,0);
 				break;
 			}
 		}
@@ -216,18 +216,24 @@ void* uievent(void* p)
 				pixbuf,x,y,32,0
 			);
 
-			eventwrite(x+(y<<16), 0x657a6973);
+			eventwrite(x+(y<<16), 0x657a6973, 0, 0);
 		}
 		else if(ev.type==ButtonPress)
 		{
 			//printf("buttonpress\n");
 			if(ev.xbutton.button==Button4)	//'xyz fron'
 			{
-				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)4<<48), 0x2b6d);
+				eventwrite(
+				ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)4<<48),
+				0x2b6d, 0, 0
+				);
 			}
 			else if(ev.xbutton.button==Button5)	//'xyz down'
 			{
-				eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)5<<48), 0x2b6d);
+				eventwrite(
+				ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)5<<48),
+				0x2b6d, 0, 0
+				);
 			}
 
 			else if(ev.xbutton.button==Button1)
@@ -245,7 +251,10 @@ void* uievent(void* p)
 			{
 				if((oldx==ev.xbutton.x)&&(oldy==ev.xbutton.y))
 				{
-					eventwrite(ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48), 0x2d6d);
+					eventwrite(
+					ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48),
+					0x2d6d, 0, 0
+					);
 				}
 			}
 		}
@@ -254,7 +263,10 @@ void* uievent(void* p)
 			motioncount = (motioncount+1)%5;
 			if(motioncount != 0)continue;
 
-			eventwrite( ( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48), 0x406d);
+			eventwrite(
+			( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48),
+			0x406d, 0, 0
+			);
 			oldx=ev.xbutton.x;
 			oldy=ev.xbutton.y;
 		}
@@ -267,10 +279,10 @@ void* uievent(void* p)
 
 			//普通anscii码
 			temp=xlib2anscii[ev.xkey.keycode];
-			if(temp!=0)eventwrite(temp, 0x72616863);
+			if(temp!=0)eventwrite(temp, 0x72616863, 0, 0);
 
 			//控制按键
-			else eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b);
+			else eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b, 0, 0);
 		}
 	}//while
 

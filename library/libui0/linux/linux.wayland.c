@@ -14,7 +14,7 @@
 #include <wayland-client-protocol.h>
 #include <wayland-server-protocol.h>
 #include <wayland-egl.h>
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -191,11 +191,11 @@ static void keyboard_handle_key(void *data, struct wl_keyboard *keyboard, uint32
 {
 	if(state == 0)
 	{
-		if(key == 0x01)eventwrite(0x1b, 0x64626b);
-		else if(key == 0x67)eventwrite(0x26, 0x64626b);
-		else if(key == 0x6c)eventwrite(0x28, 0x64626b);
-		else if(key == 0x69)eventwrite(0x25, 0x64626b);
-		else if(key == 0x6a)eventwrite(0x27, 0x64626b);
+		if(key == 0x01)eventwrite(0x1b, 0x64626b, 0, 0);
+		else if(key == 0x67)eventwrite(0x26, 0x64626b, 0, 0);
+		else if(key == 0x6c)eventwrite(0x28, 0x64626b, 0, 0);
+		else if(key == 0x69)eventwrite(0x25, 0x64626b, 0, 0);
+		else if(key == 0x6a)eventwrite(0x27, 0x64626b, 0, 0);
 		else printf("%x\n",key);
 	}
 	fprintf(stderr, "Key=%x, state=%x\n", key, state);

@@ -4,7 +4,7 @@
 #define u64 unsigned long long
 //visitor0
 u64* eventread();
-void eventwrite(u64 what, u64 who, ...);
+void eventwrite(u64 why, u64 what, u64 where, u64 when);
 void birth();
 void death();
 //libui1

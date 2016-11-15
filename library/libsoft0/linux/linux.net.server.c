@@ -18,7 +18,7 @@
 #define u8 unsigned char
 #define MAXSIZE 1024
 //
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 //
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
@@ -473,7 +473,7 @@ reply:
 
 		//event
 		*(u64*)(event_queue+0) = 0xabcdef;
-		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue);
+		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
 	}
 
 	else if(clienttype[fd]==0x1f)
@@ -493,7 +493,7 @@ reply:
 			*(u64*)(event_queue+8) = len;
 			*(u32*)(event_queue+4) = 0;
 		}
-		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue);
+		eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
 	}
 }
 void handshake_websocket(int fd)

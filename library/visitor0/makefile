@@ -4,8 +4,8 @@ cflag ?= -c -O2 -fPIC
 .PHONY:target
 target:
 	rm -f *.o
-	$(compiler) $(cflag) world.c
-	$(compiler) $(cflag) event.c
+	$(compiler) $(cflag) app/world.c
+	$(compiler) $(cflag) app/event.c
 
 .PHONY:bare
 bare:

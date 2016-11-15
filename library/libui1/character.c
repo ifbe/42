@@ -64,7 +64,7 @@ int cmp(void*,void*);
 int ncmp(void*,void*,int);
 u32 getrandom();
 //
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 //
 void say(void*, ...);
 
@@ -605,7 +605,7 @@ int charactercommand(u8* p)
 	if(p == 0)
 	{
 		temp = (worker[0].pixelformat)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite(0,0);
+		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
 
 		say("chatacter(%d) wants to die\n",now);
 		return 0;
@@ -616,7 +616,7 @@ int charactercommand(u8* p)
 	if(ret==0)
 	{
 		temp = (worker[0].pixelformat)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite(0,0);
+		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
 
 		say("chatacter(%d) wants to die\n",now);
 		return 0;

@@ -19,7 +19,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void windowwrite();
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char* fmt,...);
 
 
@@ -144,7 +144,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			eventwrite( (u64)dragpath, 0x656c6966);
+			eventwrite(
+			(u64)dragpath,
+			0x656c6966, 0, 0
+			);
 			return 0;
 		}
 
@@ -162,7 +165,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				case 0x72:				//f3
 				case 0x73:				//f4
 				{
-					eventwrite(wparam, 0x64626b);
+					eventwrite(wparam, 0x64626b, 0, 0);
 					break;
 				}
 			}
@@ -173,8 +176,8 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//文字
 		case WM_CHAR:
 		{
-			if(wparam==0x1b)eventwrite(0x1b, 0x64626b);
-			else eventwrite(wparam, 0x72616863);
+			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, 0, 0);
+			else eventwrite(wparam, 0x72616863, 0, 0);
 			return 0;
 		}
 /*
@@ -228,7 +231,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x2b70);
+			eventwrite(
+			pt.x + (pt.y<<16) + ((u64)x<<48),
+			0x2b70, 0, 0
+			);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -248,7 +254,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x2d70);
+			eventwrite(
+			pt.x + (pt.y<<16) + ((u64)x<<48),
+			0x2d70, 0, 0
+			);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
@@ -264,7 +273,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(window, &pt);
 
-			eventwrite( pt.x + (pt.y<<16) + ((u64)x<<48), 0x4070);
+			eventwrite(
+			pt.x + (pt.y<<16) + ((u64)x<<48),
+			0x4070, 0, 0
+			);
 			return 0;
 		}
 
@@ -276,11 +288,17 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				eventwrite( pt.x + (pt.y<<16) + ((u64)4<<48), 0x2b6d);
+				eventwrite(
+				pt.x + (pt.y<<16) + ((u64)4<<48),
+				0x2b6d, 0, 0
+				);
 			}
 			else
 			{
-				eventwrite( pt.x + (pt.y<<16) + ((u64)5<<48), 0x2b6d);
+				eventwrite(
+				pt.x + (pt.y<<16) + ((u64)5<<48),
+				0x2b6d, 0, 0
+				);
 			}
 
 			return 0;
@@ -305,7 +323,10 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				else		//只是左键在拖动
 				{
 					//'xyz ','move'
-					eventwrite( (pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48), 0x406d);
+					eventwrite(
+					(pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48),
+					0x406d, 0, 0
+					);
 
 					//say("%d,%d\n",pe.x,pe.y);
 					GetCursorPos(&pt);	// 获取鼠标当前位置
@@ -317,7 +338,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标左键弹起
 		case WM_LBUTTONUP:
 		{
-			if(leftdown==1)eventwrite(lparam + ((u64)1<<48), 0x2d6d);
+			if(leftdown==1)eventwrite(lparam + ((u64)1<<48), 0x2d6d, 0, 0);
 			leftdown=0;
 			return 0;
 		}
@@ -327,7 +348,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			if(rightdown==1)
 			{
-				eventwrite(lparam + ((u64)1<<48), 0x2d6d);
+				eventwrite(lparam + ((u64)1<<48), 0x2d6d, 0, 0);
 			}
 
 			rightdown=0;
@@ -390,7 +411,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			info.bmiColors[0].rgbReserved=255;
 
 			//say("WM_SIZE:wparam=%llx,lparam=%llx\n",wparam,lparam);
-			eventwrite(lparam, 0x657a6973);			//'size'
+			eventwrite(lparam, 0x657a6973, 0, 0);
 			return 0;
 		}
 
@@ -643,7 +664,7 @@ DWORD WINAPI uievent(LPVOID pM)
 	}
 
 	//收不到就返回失败消息
-	eventwrite(0,0);
+	eventwrite(0, 0, 0, 0);
 	return 0;
 }
 void windowcreate()

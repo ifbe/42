@@ -11,7 +11,7 @@
 #include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -48,7 +48,7 @@ void* uievent(void* p)
 		{
 			lastwidth = width;
 			lastheight = height;
-			eventwrite(width + (height<<16), 0x657a6973);
+			eventwrite(width + (height<<16), 0x657a6973, 0, 0);
 		}
 
 		ch = getchar();
@@ -66,7 +66,7 @@ void* uievent(void* p)
 				ch = getchar();
 				if( (ch == 0xff) | (ch == 0) )
 				{
-					eventwrite(0x1b, 0x64626b);
+					eventwrite(0x1b, 0x64626b, 0, 0);
 				}
 			}
 
@@ -75,19 +75,19 @@ void* uievent(void* p)
 				ch = getchar();
 				if(ch == 0x41)//up
 				{
-					eventwrite(0x26, 0x64626b);
+					eventwrite(0x26, 0x64626b, 0, 0);
 				}
 				if(ch == 0x42)//down
 				{
-					eventwrite(0x28, 0x64626b);
+					eventwrite(0x28, 0x64626b, 0, 0);
 				}
 				if(ch == 0x44)//left
 				{
-					eventwrite(0x25, 0x64626b);
+					eventwrite(0x25, 0x64626b, 0, 0);
 				}
 				if(ch == 0x43)//right
 				{
-					eventwrite(0x27, 0x64626b);
+					eventwrite(0x27, 0x64626b, 0, 0);
 				}
 			}//5b
 		}//1b
@@ -96,7 +96,7 @@ void* uievent(void* p)
 			if(ch == 0x7f)ch = 8;
 			if(ch == 0xa)ch = 0xd;
 
-			eventwrite(ch, 0x72616863);
+			eventwrite(ch, 0x72616863, 0, 0);
 		}
 	}//while
 }

@@ -8,7 +8,7 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -44,25 +44,25 @@ void* uievent(void* p)
 
 		if(event.type == SDL_QUIT)
 		{
-			eventwrite(0,0);
+			eventwrite(0,0,0,0);
 			break;
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
 			int val = event.key.keysym.sym;
 
-			if(val==0x1b)eventwrite(0x1b,0x64626b);
-			else if(val==0x40000050)eventwrite(0x25,0x64626b);
-			else if(val==0x40000052)eventwrite(0x26,0x64626b);
-			else if(val==0x4000004f)eventwrite(0x27,0x64626b);
-			else if(val==0x40000051)eventwrite(0x28,0x64626b);
-			else if(val==0x8)eventwrite(0x8,0x72616863);
-			else if(val==0xd)eventwrite(0xd,0x72616863);
+			if(val==0x1b)eventwrite(0x1b,0x64626b,0,0);
+			else if(val==0x40000050)eventwrite(0x25,0x64626b,0,0);
+			else if(val==0x40000052)eventwrite(0x26,0x64626b,0,0);
+			else if(val==0x4000004f)eventwrite(0x27,0x64626b,0,0);
+			else if(val==0x40000051)eventwrite(0x28,0x64626b,0,0);
+			else if(val==0x8)eventwrite(0x8,0x72616863,0,0);
+			else if(val==0xd)eventwrite(0xd,0x72616863,0,0);
 		}
 		else if (event.type == SDL_TEXTINPUT)
 		{
 			int val = event.text.text[0];
-			eventwrite(val, 0x72616863);
+			eventwrite(val, 0x72616863, 0, 0);
 		}
 		else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
 		{
@@ -70,7 +70,10 @@ void* uievent(void* p)
 			{
 				int x=event.button.x;
 				int y=event.button.y;
-				eventwrite(x+(y<<16)+((u64)1<<48), 0x2d6d);
+				eventwrite(
+				x+(y<<16)+((u64)1<<48),
+				0x2d6d, 0, 0
+				);
 			}
 		}
 	}//while(1)

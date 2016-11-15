@@ -21,7 +21,7 @@ int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
 void eventread(u64* who, u64* what, u64* how);
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -352,7 +352,7 @@ int arterycommand(u8* buffer)
 	{
 		if(rsp <= 0)
 		{
-			eventwrite(0,0);
+			eventwrite(0,0,0,0);
 			return 0;
 		}
 
@@ -437,7 +437,7 @@ int arterycommand(u8* buffer)
 	//q
 	if(argv[0][0]=='q')
 	{
-		eventwrite(0,0);
+		eventwrite(0,0,0,0);
 		return 0;
 	}
 
@@ -445,7 +445,7 @@ int arterycommand(u8* buffer)
 	ret=cmp(argv[0],"exit");
 	if(ret==0)
 	{
-		eventwrite(0,0);
+		eventwrite(0,0,0,0);
 		return 0;
 	}
 

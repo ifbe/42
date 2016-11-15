@@ -10,7 +10,7 @@
 #include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -40,7 +40,7 @@ void* uievent(void* p)
 			buf[1] = getchar();
 			if(buf[1] == 0xff)
 			{
-				eventwrite(buf[0], 0x64626b);
+				eventwrite(buf[0], 0x64626b, 0, 0);
 			}
 
 			if(buf[1] == 0x5b)
@@ -49,14 +49,17 @@ void* uievent(void* p)
 
 				if( (buf[2]>=0x41) && (buf[2]<=0x44) )
 				{
-					eventwrite((buf[2]<<16)+0x5b1b, 0x64626b);
+					eventwrite(
+					(buf[2]<<16)+0x5b1b,
+					0x64626b, 0, 0
+					);
 				}
 			}//5b
 		}//1b
 
 		else
 		{
-			eventwrite(buf[0], 0x64626b);
+			eventwrite(buf[0], 0x64626b, 0, 0);
 		}
 	}
 }

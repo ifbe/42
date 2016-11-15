@@ -5,7 +5,7 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -30,25 +30,25 @@ DWORD WINAPI uievent(LPVOID pM)
 			ch = getch();
 			if(ch == 0x48)	//up
 			{
-				eventwrite(0x415b1b, 0x64626b);
+				eventwrite(0x415b1b, 0x64626b, 0, 0);
 			}
 			else if(ch == 0x50)	//down
 			{
-				eventwrite(0x425b1b, 0x64626b);
+				eventwrite(0x425b1b, 0x64626b, 0, 0);
 			}
 			else if(ch == 0x4d)	//right
 			{
-				eventwrite(0x435b1b, 0x64626b);
+				eventwrite(0x435b1b, 0x64626b, 0, 0);
 			}
 			else if(ch == 0x4b)	//left
 			{
-				eventwrite(0x445b1b, 0x64626b);
+				eventwrite(0x445b1b, 0x64626b, 0, 0);
 			}
 		}
 		else
 		{
 			if(ch == 0x8)ch = 0x7f;
-			eventwrite(ch, 0x64626b);
+			eventwrite(ch, 0x64626b, 0, 0);
 		}
 	}//while
 }

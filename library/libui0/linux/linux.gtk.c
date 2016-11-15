@@ -7,7 +7,7 @@
 #include<unistd.h>
 #include<pthread.h>
 #include <gtk/gtk.h>
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -41,7 +41,7 @@ void* uievent(void* p)
 
 	//
 	gtk_main();
-	eventwrite(0,0);
+	eventwrite(0, 0, 0, 0);
 	return 0;
 }
 

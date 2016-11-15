@@ -198,8 +198,8 @@ LOCAL_SRC_FILES += \
 
 #1.visitor
 LOCAL_SRC_FILES += \
-	library/visitor0/world.c \
-	library/visitor0/event.c
+	library/visitor0/app/world.c \
+	library/visitor0/app/event.c
 
 
 

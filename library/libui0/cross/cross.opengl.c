@@ -6,7 +6,7 @@
 #include<stdlib.h>
 #include<pthread.h>
 #include<GL/glut.h> 
-void eventwrite(u64,u64);
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
