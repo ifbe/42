@@ -57,19 +57,6 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	enq = temp;
 	release(&lock);
 
-	if(what == 0x64626b)
-	{
-		if(why == 3)
-		{
-			temp = (this+0x100000-0x20)%0x100000;
-			p = (u64*)(eventqueue + temp);
-			if(p[1] == 0x64626b)
-			{
-				//if(p[0] == 3)exit(-1);
-			}
-		}
-	}
-
 	//put event to place
 	p = (u64*)(eventqueue + this);
 	p[0] = why;

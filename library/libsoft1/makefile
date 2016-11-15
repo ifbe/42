@@ -50,6 +50,8 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.filename.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.network.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.number.c
+	$(compiler) $(cflag) libmemory/libtext/find/find.byte.c
+	$(compiler) $(cflag) libmemory/libtext/find/find.str.c
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
 	$(compiler) $(cflag) libnet/worker/net.arp.c

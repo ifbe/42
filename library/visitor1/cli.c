@@ -51,6 +51,7 @@ int main(int argc,char* argv[])
 		if((addr[1]&0xff) == 'n')	//网络
 		{
 			net_read(addr);
+			continue;
 		}
 
 		//4.世界改变

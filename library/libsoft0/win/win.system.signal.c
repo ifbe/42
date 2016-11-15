@@ -2,7 +2,13 @@
 #include<stdlib.h>
 #include<windows.h>
 #define u64 unsigned long long
+u64 gettime();
 void eventwrite(u64,u64,u64,u64);
+
+
+
+
+static u64 old=0,new=0;
 
 
 
@@ -13,10 +19,17 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 	{ 
 		// Handle the CTRL-C signal. 
 		case CTRL_C_EVENT: 
-			//printf( "Ctrl-C event\n\n" );
-			eventwrite(0x3, 0x64626b,0,0);
+		{
+			old = new;
+			new = gettime();
+
+			if(new-old < 500*1000)  //0.5 s
+			{
+				eventwrite(0, 0, 0, 0);
+			}
+			else eventwrite(0x3, 0x64626b, 0, 0);
 			return( TRUE );
- 
+ 		}
 		// CTRL-CLOSE: confirm that the user wants to exit. 
 		case CTRL_CLOSE_EVENT: 
 			printf( "Ctrl-Close event\n\n" );

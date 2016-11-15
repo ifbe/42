@@ -1,6 +1,8 @@
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
 #define u64 unsigned long long
-void client_create(void*,void*);
-void server_create(void*,void*);
+//
 void arp_create(void*,void*);
 void eth_create(void*,void*);
 void ftp_create(void*,void*);
@@ -27,23 +29,279 @@ void quic_delete();
 void slip_delete();
 void ssh_delete();
 void tftp_delete();
+void client_create(void*,void*);
+void server_create(void*,void*);
+//
+void epoll_del(u64);
+int readserver(u64,u8*,u64,u64);
+int writeserver(u64,u8*,u64,u64);
+//
+int cmp(u8*,u8*);
+int ncmp(u8*,u8*,int);
+//
+void printmemory(char*, int);
+void say(char*, ...);
 
 
 
 
+//
+struct node
+{
+	//8*4=32
+	u64 fd;
+	u64 time;
+	u64 type;
+	u64 usage;
+
+	//32
+	u8 addr[32];
+};
+static struct node known[16];
+static int max = 0;
+//
+static char* GET = 0;
+static char* Connection = 0;
+static char* Upgrade = 0;
+static char* Sec_WebSocket_Key = 0;
+//
+static u8* datahome;
+
+
+
+
+static void explainstr(char* buf, int max)
+{
+        int flag;
+        int linehead;
+
+        GET = 0;
+        Connection = 0;
+        Upgrade = 0;
+        Sec_WebSocket_Key = 0;
+
+        linehead = 0;
+        while(1)
+        {
+                if(ncmp(buf+linehead, "GET ", 4) == 0)GET = buf+linehead+4;
+                else if(ncmp(buf+linehead, "Connection: ", 12) == 0)Connection = buf+linehead+12;
+                else if(ncmp(buf+linehead, "Upgrade: ", 9) == 0)Upgrade = buf+linehead+9;
+                else if(ncmp(buf+linehead, "Sec-WebSocket-Key: ", 19) == 0)Sec_WebSocket_Key = buf+linehead+19;
+
+                //eat until next character
+                flag=0;
+                while(1)
+                {
+                        if(buf[linehead] == 0)
+                        {
+                                //say("[0x0@(%d,%d)]\n",linehead,max);
+                        }
+                        else if(buf[linehead] == 0xd)
+                        {
+                                flag=1;
+                                //say("[0xd@(%d,%d)]\n",linehead,max);
+                        }
+                        else if(buf[linehead] == 0xa)
+                        {
+                                flag=1;
+                                //say("[0xa@(%d,%d)]",linehead,max);
+                                say("\n");
+                        }
+                        else
+                        {
+                                if(flag==0)
+                                {
+                                        say("%c", buf[linehead]);
+                                }
+                                else break;
+                        }
+
+                        linehead++;
+                        if(linehead >= max)break;
+                }
+
+                if(linehead >= max)break;
+        }
+        say("GET@%llx,Connection@%llx,Upgrade@%llx,Sec-WebSocket-Key@%llx\n",
+                (u64)GET,
+                (u64)Connection,
+                (u64)Upgrade,
+                (u64)Sec_WebSocket_Key
+        );
+}
+/*
+static void handle_read(int fd)
+{
+        int type;
+        int nread;
+
+        //出错就滚，正常往下
+        nread = readserver(fd, datahome, 0, 0x10000);
+        if(nread <= 0)
+        {
+                if (nread == -1)say("[%d]read error\n", fd);
+                else if (nread == 0)say("[%d]fd closed\n", fd);
+
+                epoll_del(fd);
+                return;
+        }
+        datahome[nread] = 0;
+        //say("[%d]%d bytes\n", fd, nread);
+
+        //这是个普通socket
+        //type = clienttype[fd];
+        if(type == 1)
+        {
+                //普通socket，而且不是GET请求，丢弃
+                explainstr(datahome, nread);
+                if(GET == 0)return;
+
+                //可能是http，websocket
+                else
+                {
+                        //这是个websocket请求
+                        if( (Upgrade != 0) && (Sec_WebSocket_Key != 0) )
+                        {
+                                handshake_websocket(fd);
+                        }
+
+                        //http请求根
+                        else if(GET != 0)
+                        {
+                                handshake_http(fd);
+                        }
+
+                        //http请求其他
+                        else
+                        {
+                                say("[%d]ignore->close\n\n\n\n\n", fd);
+                                epoll_del(fd);
+                        }
+
+                        return;
+                }
+        }
+
+        //websocket
+        else if( (type >= 0x10) && (type <= 0x1f) )
+        {
+                serve_websocket(fd, nread);
+                return;
+        }
+
+        //ssh?
+        //vpn?
+        //tunnel?
+}
+*/
+
+
+
+
+void printknown()
+{
+	int k;
+	for(k=0;k<max;k++)
+	{
+		say("%d ",known[k].fd);
+	}
+	say("\n");
+}
+void handle_delete(u64* p)
+{
+	int j;
+	u64 fd = p[2];
+	say("[%d]leave\n", fd);
+
+	for(j=0;j<max;j++)
+	{
+		if(known[j].fd == fd)
+		{
+			for(;j<max-1;j++)
+			{
+				known[j].fd = known[j+1].fd;
+				known[j].type = known[j+1].type;
+			}
+			known[j].fd = 0;
+			max--;
+printknown();
+			break;
+		}
+	}
+}
+void handle_create(u64* p)
+{
+	int j,k;
+	u64 str = p[0];
+	u64 fd = p[2];
+	say("[%d]%s\n", fd, (void*)str);
+
+	//user max
+	if(max >= 8)
+	{
+		epoll_del(fd);
+		return;
+	}
+
+	//
+	for(j=0;j<max+1;j++)
+	{
+		if(known[j].fd == fd)
+		{
+			known[j].type = 0;
+			break;
+		}
+
+		if(known[j].fd < fd)
+		{
+			for(k=max;k>j;k--)
+			{
+				known[k].fd = known[k-1].fd;
+				known[k].type = known[k-1].type;
+			}
+
+			known[j].fd = fd;
+			known[j].type = 0;
+			max++;
+printknown();
+			break;
+		}
+	}
+}
+void handle_read(u64* p)
+{
+	int ret;
+	u64 fd = p[2];
+
+	ret = readserver(fd, datahome, 0, 0x100000);
+	if(ret > 0)
+	{
+		datahome[ret] = 0;
+		explainstr(datahome, ret);
+	}
+	epoll_del(fd);
+}
+
+
+
+
+void net_read(u64* p)
+{
+	int ret = p[1] & 0xffff;
+
+	if(ret == 0x406e) handle_read(p);
+	else if(ret == 0x2b6e) handle_create(p);
+	else if(ret == 0x2d6e) handle_delete(p);
+}
+int net_write()
+{
+	return 0;
+}
 int net_list()
 {
 	return 0;
 }
 int net_choose()
-{
-	return 0;
-}
-int net_read()
-{
-	return 0;
-}
-int net_write()
 {
 	return 0;
 }
@@ -55,8 +313,17 @@ int net_stop()
 {
 	return 0;
 }
-int net_create(char* world,u64* p)
+int net_create(void* world,u64* p)
 {
+	//
+	int j;
+	char* q = (void*)known;
+	for(j=0;j<64*16;j++)
+	{
+		q[j] = 0;
+	}
+	datahome = world + 0x300000;
+
 	//
 	p[0]=0;			//type
 	p[1]=0x74656e;		//id
@@ -69,7 +336,7 @@ int net_create(char* world,u64* p)
 	p[15]=(u64)net_write;
 
 	//
-	char* q=(char*)p+0x80;
+	q=(char*)p+0x80;
 
 	client_create(world,q);
 	q+=0x80;
@@ -106,6 +373,7 @@ int net_delete()
 	ftp_delete();
 	eth_delete();
 	arp_delete();
+
 	server_delete();
 	client_delete();
 	return 0;

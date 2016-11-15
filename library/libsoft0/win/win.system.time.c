@@ -3,7 +3,7 @@
 u64 GetTickCount64();
 u64 gettime()
 {
-	return GetTickCount64();
+	return 1000 * GetTickCount64();
 }
 void sleep_us(int t)
 {
