@@ -35,7 +35,7 @@ void websocket_create(char* softhome, u64* p)
 	//
 	datahome = softhome + 0x300000;
 
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x7377;		//id
 
@@ -45,6 +45,7 @@ void websocket_create(char* softhome, u64* p)
 	p[13]=(u64)websocket_choose;
 	p[14]=(u64)websocket_read;
 	p[15]=(u64)websocket_write;
+*/
 }
 void websocket_delete()
 {

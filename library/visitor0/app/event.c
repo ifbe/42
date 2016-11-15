@@ -17,7 +17,6 @@ void say(char*,...);
 
 //
 int lock = 0;
-int sig = 0xff;
 //
 static int enq = 0;
 static int deq = 0;

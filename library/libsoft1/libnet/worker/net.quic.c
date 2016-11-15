@@ -23,7 +23,7 @@ static void quic_stop()
 }
 void quic_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x63697571;	//id
 
@@ -33,6 +33,7 @@ void quic_create(char* world,u64* p)
 	p[13]=(u64)quic_choose;
 	p[14]=(u64)quic_read;
 	p[15]=(u64)quic_write;
+*/
 }
 void quic_delete()
 {

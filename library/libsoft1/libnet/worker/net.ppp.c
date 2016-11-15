@@ -23,7 +23,7 @@ static void ppp_stop()
 }
 void ppp_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x707070;		//id
 
@@ -33,6 +33,7 @@ void ppp_create(char* world,u64* p)
 	p[13]=(u64)ppp_choose;
 	p[14]=(u64)ppp_read;
 	p[15]=(u64)ppp_write;
+*/
 }
 void ppp_delete()
 {

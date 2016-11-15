@@ -23,7 +23,7 @@ static void ftp_stop()
 }
 void ftp_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x707466;		//id
 
@@ -33,6 +33,7 @@ void ftp_create(char* world,u64* p)
 	p[13]=(u64)ftp_choose;
 	p[14]=(u64)ftp_read;
 	p[15]=(u64)ftp_write;
+*/
 }
 void ftp_delete()
 {

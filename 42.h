@@ -17,11 +17,6 @@ void death();
 void eventwrite(int who);
 void eventread(u64 what, u64 who, u64 where, u64 when);
 
-#define screen_size 0x657a6973	//size
-
-#define recv_name 0x656c6966	//file
-#define recv_data 0x61746164	//data
-
 #define input_char 0x72616863	//char
 #define input_kbd 0x64626b	//kbd
 	#define kbd_esc 0x1b
@@ -38,9 +33,6 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 	#define kbd_f7 0x76
 	#define kbd_f8 0x77
 
-#define touch_down 0x2b70	//p+
-#define touch_up 0x2d70		//p-
-#define touch_move 0x4070	//p@
 #define mouse_down 0x2b6d	//m+
 #define mouse_up 0x2d6d		//m-
 #define mouse_move 0x406d	//m@
@@ -51,6 +43,19 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 	#define btn_back 5
 	#define btn_side1 6
 	#define btn_side2 7
+
+#define touch_down 0x2b70	//p+
+#define touch_up 0x2d70		//p-
+#define touch_move 0x4070	//p@
+
+#define net_in 0x2b6e		//n+
+#define net_out 0x2d6e		//n-
+#define net_data 0x406e		//n@
+
+#define drag_file 0x656c6966	//file
+#define drag_data 0x61746164	//data
+
+#define screen_size 0x657a6973	//size
 
 
 

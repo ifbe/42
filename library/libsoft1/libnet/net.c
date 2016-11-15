@@ -31,27 +31,27 @@ void tftp_delete();
 
 
 
-static int net_list()
+int net_list()
 {
 	return 0;
 }
-static int net_choose()
+int net_choose()
 {
 	return 0;
 }
-static int net_read()
+int net_read()
 {
 	return 0;
 }
-static int net_write()
+int net_write()
 {
 	return 0;
 }
-static int net_start(u64 type,char* p)
+int net_start(u64 type,char* p)
 {
 	return 0;
 }
-static int net_stop()
+int net_stop()
 {
 	return 0;
 }
@@ -78,40 +78,17 @@ int net_create(char* world,u64* p)
 	q+=0x80;
 
 	arp_create(world,q);
-	q+=0x80;
-
 	eth_create(world,q);
-	q+=0x80;
-
 	ftp_create(world,q);
-	q+=0x80;
-
 	http_create(world,q);
-	q+=0x80;
-
 	icmp_create(world,q);
-	q+=0x80;
-
 	ipv4_create(world,q);
-	q+=0x80;
-
 	ipv6_create(world,q);
-	q+=0x80;
-
 	ppp_create(world,q);
-	q+=0x80;
-
 	quic_create(world,q);
-	q+=0x80;
-
 	slip_create(world,q);
-	q+=0x80;
-
 	ssh_create(world,q);
-	q+=0x80;
-
 	tftp_create(world,q);
-	q+=0x80;
 
 	return q-(char*)p;
 }

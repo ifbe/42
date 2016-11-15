@@ -23,7 +23,7 @@ static void ssh_stop()
 }
 void ssh_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x687373;		//id
 
@@ -33,6 +33,7 @@ void ssh_create(char* world,u64* p)
 	p[13]=(u64)ssh_choose;
 	p[14]=(u64)ssh_read;
 	p[15]=(u64)ssh_write;
+*/
 }
 void ssh_delete()
 {

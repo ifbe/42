@@ -23,7 +23,7 @@ static void arp_stop()
 }
 void arp_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x707261;		//id
 
@@ -33,6 +33,7 @@ void arp_create(char* world,u64* p)
 	p[13]=(u64)arp_choose;
 	p[14]=(u64)arp_read;
 	p[15]=(u64)arp_write;
+*/
 }
 void arp_delete()
 {

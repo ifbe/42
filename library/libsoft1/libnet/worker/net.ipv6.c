@@ -23,7 +23,7 @@ static void ipv6_stop()
 }
 void ipv6_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x36767069;	//id
 
@@ -33,6 +33,7 @@ void ipv6_create(char* world,u64* p)
 	p[13]=(u64)ipv6_choose;
 	p[14]=(u64)ipv6_read;
 	p[15]=(u64)ipv6_write;
+*/
 }
 void ipv6_delete()
 {

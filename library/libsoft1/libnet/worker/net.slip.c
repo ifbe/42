@@ -23,7 +23,7 @@ static void slip_stop()
 }
 void slip_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x70696c73;	//id
 
@@ -33,6 +33,7 @@ void slip_create(char* world,u64* p)
 	p[13]=(u64)slip_choose;
 	p[14]=(u64)slip_read;
 	p[15]=(u64)slip_write;
+*/
 }
 void slip_delete()
 {

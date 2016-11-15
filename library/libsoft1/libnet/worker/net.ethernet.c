@@ -23,7 +23,7 @@ static void eth_stop()
 }
 void eth_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x687465;		//id
 
@@ -33,6 +33,7 @@ void eth_create(char* world,u64* p)
 	p[13]=(u64)eth_choose;
 	p[14]=(u64)eth_read;
 	p[15]=(u64)eth_write;
+*/
 }
 void eth_delete()
 {

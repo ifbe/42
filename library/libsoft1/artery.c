@@ -130,9 +130,10 @@ int arterylist(u8* p)
 			}
 			else
 			{
+				if((count>0)&&(count%8==0))say("\n");
+
 				say("	[%s]",&id);
 				count++;
-				if(count%8==0)say("\n");
 			}
 		}
 		return 0;

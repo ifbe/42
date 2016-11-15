@@ -23,7 +23,7 @@ static void tftp_stop()
 }
 void tftp_create(char* world,u64* p)
 {
-	//
+/*
 	p[0]=0x74656e;		//type
 	p[1]=0x70746674;	//id
 
@@ -33,6 +33,7 @@ void tftp_create(char* world,u64* p)
 	p[13]=(u64)tftp_choose;
 	p[14]=(u64)tftp_read;
 	p[15]=(u64)tftp_write;
+*/
 }
 void tftp_delete()
 {
