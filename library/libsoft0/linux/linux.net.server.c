@@ -57,7 +57,6 @@ void epoll_del(u32 fd)
 
 	//
 	close(fd);
-	eventwrite(0, 0x2d6e, fd, 0);
 }
 void epoll_add(u32 fd)
 {
@@ -86,8 +85,12 @@ static void handle_accpet(int listenfd)
 		inet_ntoa(cliaddr.sin_addr),
 		cliaddr.sin_port
 	);
-	eventwrite((u64)IPADDRESS, 0x2b6e, fd, 0);
+	eventwrite((u64)IPADDRESS, 0x2b6e, fd, gettime());
 	epoll_add(fd);
+}
+static void handle_close(int fd)
+{
+	eventwrite(0, 0x2d6e, fd, gettime());
 }
 static void* newone(void* p)
 {
@@ -143,13 +146,18 @@ static void* newone(void* p)
 		ret = epoll_wait(epollfd, epollevent, MAXSIZE, -1);
 		for (i=0; i<ret; i++)
 		{
+			//printf("%x\n",epollevent[i].events);
 			if (epollevent[i].events & EPOLLIN)
 			{
 				fd = epollevent[i].data.fd;
 
 				if(fd == listenfd)
 				{
-					handle_accpet(listenfd);
+					handle_accpet(fd);
+				}
+				else if(epollevent[i].events & EPOLLRDHUP)
+				{
+					handle_close(fd);
 				}
 				else
 				{
@@ -186,19 +194,26 @@ int listserver()
 int chooseserver()
 {
 }
-void stopserver()
+void stopserver(u64 x)
 {
-	int j;
-	alive = 0;
+	if(x > 0)
+	{
+		epoll_del(x);
+	}
+	else
+	{
+		alive = 0;
 
-	if(listenfd>0)epoll_del(listenfd);
-	if(epollfd>0)close(epollfd);
+		if(listenfd>0)epoll_del(listenfd);
+		if(epollfd>0)close(epollfd);
+	}
 }
 void startserver(char* addr, int port, char* dir, int opt)
 {
-	//snprintf();
+	snprintf(IPADDRESS, 32, "%s", addr);
 	PORT = port;
 	snprintf(DIRECTORY, 64, "%s", dir);
+	CONFIG = opt;
 
 	//
 	alive = 1;

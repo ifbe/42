@@ -6,7 +6,7 @@
 int createserver();
 int deleteserver();
 int startserver(void*, int, void*, int);
-int stopserver();
+int stopserver(u64 x);
 int readserver(u8*,int);
 int writeserver(u8*,int);
 int listserver(u8*);
@@ -52,7 +52,7 @@ static int server_start(u8* p)
 }
 static int server_stop()
 {
-	return stopserver();
+	return stopserver(0);
 }
 int server_create(u8* world, u64* p)
 {

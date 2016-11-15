@@ -8,9 +8,10 @@ int findtail(char* p);
 //
 int readfile(char* name, char* mem, int offset, int count);
 int writefile(char* name, char* mem, int offset, int count);
-int readserver(u64 fd, u8* buf, int offset, int count);
-int writeserver(u64 fd, u8* buf, int offset, int count);
-int epoll_del(u64);
+//
+int readserver(u64 fd, u8* addr, u64 offset, u64 count);
+int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+int net_stop(u64 x);
 //
 int diary(char*, int, char*, ...);
 void say(char*, ...);
@@ -31,43 +32,43 @@ static int http_context_size;
 
 void handshake_http(int fd, char* GET)
 {
-        int ret,count;
+	int ret,count;
 
-        for(ret=0;ret<0x1000;ret++)
-        {
-                if(GET[ret] <= 0xd)goto byebye;
-                if(GET[ret] == 0x20)
-                {
-                        GET[ret] = 0;
-                        break;
-                }
-        }
-        say("%s\n",GET);
+	for(ret=0;ret<0x1000;ret++)
+	{
+		if(GET[ret] <= 0xd)goto byebye;
+		if(GET[ret] == 0x20)
+		{
+				GET[ret] = 0;
+				break;
+		}
+	}
+	say("%s\n",GET);
 
-        //home page
-        if( (GET[0]=='/')&&(GET[1]==0) )
-        {
-                diary(GET+1, 16, "42.html");
-        }
-        say("%s\n",GET+1);
+	//home page
+	if( (GET[0]=='/')&&(GET[1]==0) )
+	{
+		diary(GET+1, 16, "42.html");
+	}
+	say("%s\n",GET+1);
 
-        //
-        count = readfile(GET+1, datahome, 0, 0x1000);
-        if(ret <= 0)
-        {
-                say("error@readfile\n");
-                goto byebye;
-        }
+	//
+	count = readfile(GET+1, datahome, 0, 0x1000);
+	if(ret <= 0)
+	{
+		say("error@readfile\n");
+		goto byebye;
+	}
 
-        //send
-        ret = writeserver(fd, http_response, 0, findzero(http_response) );
-        say("writing http_response\n");
-        ret = writeserver(fd, datahome, 0, count);
-        say("writing http_context\n");
+	//send
+	ret = writeserver(fd, http_response, 0, findzero(http_response) );
+	say("writing http_response\n");
+	ret = writeserver(fd, datahome, 0, count);
+	say("writing http_context\n");
 
 byebye:
-        epoll_del(fd);
-        say("[%d]done->close\n\n\n\n\n", fd);
+	net_stop(fd);
+	say("[%d]done->close\n\n\n\n\n", fd);
 }
 
 
