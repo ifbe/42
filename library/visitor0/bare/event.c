@@ -62,7 +62,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	p[0] = why;
 	p[1] = what;
 	p[2] = where;
-	p[3] = when
+	p[3] = when;
 
 	//debug
 	//say("%llx,%llx\n",p[0],p[1]);

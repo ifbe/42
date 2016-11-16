@@ -16,7 +16,6 @@ void death();
 //event
 void eventwrite(int who);
 void eventread(u64 what, u64 who, u64 where, u64 when);
-
 #define input_char 0x72616863	//char
 #define input_kbd 0x64626b	//kbd
 	#define kbd_esc 0x1b
@@ -33,20 +32,29 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 	#define kbd_f7 0x76
 	#define kbd_f8 0x77
 
-#define mouse_down 0x2b6d	//m+
-#define mouse_up 0x2d6d		//m-
-#define mouse_move 0x406d	//m@
-	#define btn_left 1
-	#define btn_right 2
-	#define btn_middle 3
-	#define btn_front 4
-	#define btn_back 5
-	#define btn_side1 6
-	#define btn_side2 7
-
-#define touch_down 0x2b70	//p+
-#define touch_up 0x2d70		//p-
-#define touch_move 0x4070	//p@
+#define point_down 0x2b70	//p+
+#define point_up 0x2d70		//p-
+#define point_move 0x4070	//p@
+	#define touch_0 0
+	#define touch_1 1
+	#define touch_2 2
+	#define touch_3 3
+	#define touch_4 4
+	#define touch_5 5
+	#define touch_6 6
+	#define touch_7 7
+	#define touch_8 8
+	#define touch_9 9
+	#define btn_left 'l'
+	#define btn_right 'r'
+	#define btn_middle 'm'
+	#define btn_front 'f'
+	#define btn_back 'b'
+	#define btn_side1 '1'
+	#define btn_side2 '2'
+	#define btn_side2 '3'
+	#define btn_side2 '4'
+	#define btn_side2 '5'
 
 #define net_in 0x2b6e		//n+
 #define net_out 0x2d6e		//n-
@@ -93,6 +101,14 @@ void defaulthexadecimal(int x, int y, unsigned long long hex);
 
 
 //libui0
+void windowlist();
+void windowchange();
+void windowread();
+void windowwrite();
+void windowstart(char* addr, char* fmt, int w, int h);
+void windowstop();
+void windowcreate();
+void windowdelete();
 
 
 
