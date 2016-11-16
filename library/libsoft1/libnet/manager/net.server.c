@@ -52,10 +52,16 @@ static u8* datahome=0;
 void known_print()
 {
 	int k;
+	u64 fd;
+	char* str;
+
 	say("\nknown{\n");
 	for(k=0;k<max;k++)
 	{
-		say("   [%d]%s\n", known[k].fd, known[k].addr);
+		fd = known[k].fd;
+		str = known[k].addr;
+		//say("%llx,%x",fd,str);
+		say("   [%lld]%s\n", fd, str);
 	}
 	say("}%d\n",max);
 }
@@ -90,6 +96,7 @@ void known_create(u64* p)
 	//user max
 	if(max >= 8)
 	{
+		writeserver(fd, "too many", 0, 8);
 		notify_delete(fd);
 		return;
 	}

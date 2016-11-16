@@ -1,15 +1,25 @@
 library?=../../library
 all:
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 gcc
-	make -s -C $(library)/libhard0 arm extra="-Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
-	make -s -C $(library)/libhard1 gcc
-	make -s -C $(library)/libsoft0 linux
-	make -s -C $(library)/libsoft1 gcc
-	make -s -C $(library)/libui0 linuxtui
-	make -s -C $(library)/libui1 gcc
-	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor1 gui
+	make -s -C $(library)/libboot0 none \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libboot1 \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libhard0 arm \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libhard1 \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libsoft0 linux \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libsoft1 \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libui0 linuxtui \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/libui1 \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/visitor0 \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
+	make -s -C $(library)/visitor1 gui \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s a
 	make -s so
 	make -s program

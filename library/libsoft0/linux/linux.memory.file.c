@@ -102,12 +102,15 @@ int writefile(u8* file, u8* mem, u64 offset, u64 count)
 			return -3;
 		}
 
-		ret=lseek64(fd, offset, SEEK_SET);
-		if(ret==-1)
+		if(offset != 0)
 		{
-			printf("fail@lseek\n");
-			close(fd);
-			return -2;
+			ret=lseek64(fd, offset, SEEK_SET);
+			if(ret==-1)
+			{
+				printf("fail@lseek\n");
+				close(fd);
+				return -2;
+			}
 		}
 
 		ret=write(fd, mem, count);
@@ -153,13 +156,16 @@ int readfile(u8* file, u8* mem, u64 offset, u64 count)
 			printf("fail@open\n");
 			return -3;
 		}
-
-		ret = lseek64(fd, offset, SEEK_SET);
-		if(ret==-1)
+printf("offset=%llx\n",offset);
+		if(offset != 0)
 		{
-			printf("fail@lseek\n");
-			close(fd);
-			return -2;
+			ret = lseek64(fd, offset, SEEK_SET);
+			if(ret==-1)
+			{
+				printf("fail@lseek\n");
+				close(fd);
+				return -2;
+			}
 		}
 
 		ret = read(fd, mem, count);

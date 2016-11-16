@@ -13,8 +13,8 @@ int findtail(char* p);
 int cmp(u8*,u8*);
 int ncmp(u8*,u8*,int);
 //
-int readfile(char* name, char* mem, int offset, int count);
-int writefile(char* name, char* mem, int offset, int count);
+int readfile(char* name, char* mem, u64 offset, u64 count);
+int writefile(char* name, char* mem, u64 offset, u64 count);
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 int notify_delete(u64 x);

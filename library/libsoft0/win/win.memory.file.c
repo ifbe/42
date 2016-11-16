@@ -83,9 +83,13 @@ int writefile(u8* filename,u8* memaddr,u64 offset,u64 count)
 			return -1;
 		}
 
+		if(offset != 0)
+		{
+			li.QuadPart = offset;
+			SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
+		}
+
 		//
-		li.QuadPart = offset;
-		SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
 		WriteFile(hFile, memaddr, count, &written, NULL);
 
 		//
@@ -119,9 +123,13 @@ int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 			return -1;
 		}
 
+		if(offset != 0)
+		{
+			li.QuadPart = offset;
+			SetFilePointer (hFile, li.LowPart, &li.HighPart, FILE_BEGIN);
+		}
+
 		//
-		li.QuadPart = offset;
-		SetFilePointer (hFile, li.LowPart, &li.HighPart, FILE_BEGIN);
 		ReadFile(hFile, memaddr, count, &written, 0);
 
 		//
