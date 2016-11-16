@@ -139,10 +139,13 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/compare/compare.wildcard.c \
 	library/libsoft1/libmemory/libtext/convert/convert.argument.c \
 	library/libsoft1/libmemory/libtext/convert/convert.ascii.c \
+	library/libsoft1/libmemory/libtext/convert/convert.copy.c \
 	library/libsoft1/libmemory/libtext/convert/convert.encoding.c \
 	library/libsoft1/libmemory/libtext/convert/convert.filename.c \
 	library/libsoft1/libmemory/libtext/convert/convert.network.c \
 	library/libsoft1/libmemory/libtext/convert/convert.number.c \
+	library/libsoft1/libmemory/libtext/find/find.byte.c \
+	library/libsoft1/libmemory/libtext/find/find.str.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
 	library/libsoft1/libnet/worker/net.arp.c \
@@ -157,6 +160,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libnet/worker/net.slip.c \
 	library/libsoft1/libnet/worker/net.ssh.c \
 	library/libsoft1/libnet/worker/net.tftp.c \
+	library/libsoft1/libnet/worker/net.websocket.c \
 	library/libsoft1/libnet/manager/net.client.c \
 	library/libsoft1/libnet/manager/net.server.c \
 	library/libsoft1/libnet/net.c \

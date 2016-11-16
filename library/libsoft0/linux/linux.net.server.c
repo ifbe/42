@@ -170,6 +170,8 @@ static void* newone(void* p)
 			}//EPOLLIN
 		}//for
 	}//while
+
+	return 0;
 }
 
 
@@ -181,11 +183,19 @@ static void* newone(void* p)
 
 int writeserver(u64 fd, u8* buf, u64 offset, u64 count)
 {
+	if(buf == 0)
+	{
+		if(fd == waiting[deq])
+		{
+			deq = (deq+1)%256;
+		}
+		return 0;
+	}
+
 	return write(fd, buf, count);
 }
 int readserver(u64 fd, u8* buf, u64 offset, u64 count)
 {
-	if(fd == waiting[deq])deq = (deq+1)%256;
 	return read(fd, buf, count);
 }
 int listserver()

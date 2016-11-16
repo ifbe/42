@@ -3,8 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //soft.net
-int net_read(void*);
-int net_write(void*);
+void notify_create(void*);
 //soft.artery
 int arteryprompt();
 int arterycommand(void*);
@@ -50,7 +49,7 @@ int main(int argc,char* argv[])
 		if(addr[1] == 0)break;		//退出
 		if((addr[1]&0xff) == 'n')	//网络
 		{
-			net_read(addr);
+			notify_create(addr);
 			continue;
 		}
 

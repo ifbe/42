@@ -257,55 +257,6 @@ reply:
 	}
 */
 }
-void handshake_websocket(int fd, char* Sec_WebSocket_Key)
-{
-/*
-	int j=0;
-	while(1)
-	{
-		if(Sec_WebSocket_Key[j] == 0xa)
-		{
-			buf1[j] = 0;
-			break;
-		}
-		if(Sec_WebSocket_Key[j] == 0xd)
-		{
-			buf1[j] = 0;
-			break;
-		}
-
-		buf1[j] = Sec_WebSocket_Key[j];
-		j++;
-	}
-
-	j = snprintf(buf2, 256,"%s%s", buf1, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-	say("%s\n",buf2);
-
-	sha1sum(buf1, buf2, j);
-	for(j=0;j<20;j++)say("%.2x",buf1[j]);
-	say("\n");
-
-	base64_encode( buf2 ,buf1, 20 );
-	say("%s\n",buf2);
-
-	j = snprintf(datahome, 0x10000,
-		"HTTP/1.1 101 Switching Protocols\r\n"
-		"Upgrade: websocket\r\n"
-		"Connection: Upgrade\r\n"
-		"Sec-WebSocket-Accept: %s\r\n\r\n",
-
-		buf2
-	);
-	j = serverwrite(fd, datahome, 0, j);
-	say("%s", datahome);
-
-	//handshake
-	say("[%d]staging\n\n", fd);
-	//clienttype[fd] = 0x10;
-*/
-}
-
-
 
 
 
