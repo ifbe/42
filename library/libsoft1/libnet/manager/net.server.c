@@ -133,6 +133,7 @@ void known_read(u64* p)
 	int ret;
 	int count;
 	u64 index;
+	u64 type;
 	u64 fd = p[2];
 
 	//读
@@ -161,26 +162,36 @@ void known_read(u64* p)
 //--------------------------------------------------------
 
 
-	//tcp
-	if(known[index].type == 0)
+	//
+	type = known[index].type;
+	//say("type=%llx\n",type);
+
+	//new
+	if(type == 0)
 	{
 		ret = serve_http(fd, datahome, count);
+		//say("ret=%d\n",ret);
 
 		//http,closed
 		if(ret <= 0)return;
 
 		//websocket,handshaked
-		else if(ret == 0x10)known[index].type == 0x10;
+		else if(ret == 0x10)known[index].type = 0x10;
+	}
+
+	//tcp
+	else if(type <= 0xf)
+	{
 	}
 
 	//websocket
-	else if(known[index].type <= 0x1f)
+	else if(type <= 0x1f)
 	{
 		ret = serve_websocket(fd, datahome, count);
 	}
 
 	//ssh
-	else if(known[index].type <= 0x2f)
+	else if(type <= 0x2f)
 	{
 		//ret = serve_secureshell(fd, datahome, count);
 	}

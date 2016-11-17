@@ -28,8 +28,6 @@ void say(char*, ...);
 //
 static u8* datahome;
 static u8 file[256];
-static u8 buf1[256];
-static u8 buf2[256];
 //
 static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 static int http_response_size=sizeof(http_response) -1;
@@ -42,8 +40,7 @@ static char* Sec_WebSocket_Key = 0;
 
 
 
-//
-static void explainstr(char* buf, int max)
+static void http_read(char* buf, int max)
 {
 	int ret;
 	char* p;
@@ -67,38 +64,74 @@ static void explainstr(char* buf, int max)
 		p += ret;
 		if(p > buf+max)break;
 	}//while
-
+/*
 	say("GET@%llx,Connection@%llx,Upgrade@%llx,Sec-WebSocket-Key@%llx\n",
 		(u64)GET,
 		(u64)Connection,
 		(u64)Upgrade,
 		(u64)Sec_WebSocket_Key
 	);
+*/
 }
+static void http_write()
+{
+}
+static void http_list()
+{
+}
+static void http_choose()
+{
+}
+static void http_start(u64 type,char* p)
+{
+}
+static void http_stop()
+{
+}
+void http_create(char* world,u64* p)
+{
+	datahome = world + 0x300000;
+/*
+	p[0]=0x74656e;		//type
+	p[1]=0x70747468;	//id
 
+	p[10]=(u64)http_start;
+	p[11]=(u64)http_stop;
+	p[12]=(u64)http_list;
+	p[13]=(u64)http_choose;
+	p[14]=(u64)http_read;
+	p[15]=(u64)http_write;
+*/
+}
+void http_delete()
+{
+	http_stop();
+}
 
 
 
 
 int handshake_websocket(int fd)
 {
-	int j=0;
+	int j;
+	u8 buf1[64];
+	u8 buf2[64];
+
+	//在Sec_WebSocket_Key尾巴上添加一个固定的字符串
 	j = findtail(Sec_WebSocket_Key);
-	Sec_WebSocket_Key[j] = 0;
+	j += diary(Sec_WebSocket_Key + j, 256, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+	say("%s\n", Sec_WebSocket_Key);
 
-	j = diary(buf2, 256,"%s%s",
-		Sec_WebSocket_Key,
-		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-	);
-	say("%s\n",buf2);
-
-	sha1sum(buf1, buf2, j);
+	//对这个字符串做一次sha1
+	sha1sum(buf1, Sec_WebSocket_Key, j);
 	for(j=0;j<20;j++)say("%.2x",buf1[j]);
 	say("\n");
 
-	base64_encode( buf2 ,buf1, 20 );
+	//把sha1的结果以base64格式编码
+	base64_encode(buf2 ,buf1, 20 );
 	say("%s\n",buf2);
 
+	//把base64的结果作为accept密钥
 	j = diary(datahome, 0x10000,
 		"HTTP/1.1 101 Switching Protocols\r\n"
 		"Upgrade: websocket\r\n"
@@ -107,13 +140,13 @@ int handshake_websocket(int fd)
 
 		buf2
 	);
+
+	//发出去
 	j = writeserver(fd, datahome, 0, j);
 	say("%s", datahome);
 
-	//handshake
-	say("[%d]staging\n\n", fd);
-	//clienttype[fd] = 0x10;
-
+	//
+	say("[%d]staging\n", fd);
 	return 0x10;
 }
 int handshake_http(int fd)
@@ -156,7 +189,7 @@ byebye:
 }
 int serve_http(u64 fd, char* buf, int len)
 {
-	explainstr(buf,len);
+	http_read(buf,len);
 
 	if( (Upgrade != 0) && (Sec_WebSocket_Key != 0) )
 	{
@@ -167,46 +200,4 @@ int serve_http(u64 fd, char* buf, int len)
 	{
 		return handshake_http(fd);
 	}
-}
-
-
-
-
-
-static void http_list()
-{
-}
-static void http_choose()
-{
-}
-static void http_read()
-{
-}
-static void http_write()
-{
-}
-static void http_start(u64 type,char* p)
-{
-}
-static void http_stop()
-{
-}
-void http_create(char* world,u64* p)
-{
-	datahome = world + 0x300000;
-/*
-	p[0]=0x74656e;		//type
-	p[1]=0x70747468;	//id
-
-	p[10]=(u64)http_start;
-	p[11]=(u64)http_stop;
-	p[12]=(u64)http_list;
-	p[13]=(u64)http_choose;
-	p[14]=(u64)http_read;
-	p[15]=(u64)http_write;
-*/
-}
-void http_delete()
-{
-	http_stop();
 }

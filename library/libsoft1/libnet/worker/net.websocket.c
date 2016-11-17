@@ -17,8 +17,6 @@ void say(char*, ...);
 
 
 //
-static u8* datahome;
-//
 static u8 buf1[256];
 static u8 buf2[256];
 static u8 fixed_salt[256];
@@ -27,23 +25,19 @@ static u8 temp_salt[256];
 
 
 
-void serve_websocket(int fd, char* recvbuf)
+static void websocket_read(u8* buf, int len)
 {
-/*
 	int i,j,k;
 	int type,masked;
 	unsigned char key[4];
-	u64 len;
-
-	//fd
-	say("[%d]",fd);
+	u64 count;
 
 	//byte0.bit7
-	if((recvbuf[0]&0x80)==0x80)say("tail,");
+	if((buf[0]&0x80)==0x80)say("tail,");
 	else say("part,");
 
 	//byte0.[3,0]
-	k = recvbuf[0]&0xf;
+	k = buf[0]&0xf;
 	if(k==0)
 	{
 		type=0;
@@ -71,19 +65,19 @@ void serve_websocket(int fd, char* recvbuf)
 	}
 	else if(k==8)
 	{
-		say("[%d]type8->close\n",fd);
-		epoll_del(fd);
+		//say("[%d]type8->close\n",fd);
+		//epoll_del(fd);
 		return;
 	}
 	else
 	{
-		say("[%d]known->close\n",fd);
-		epoll_del(fd);
+		//say("[%d]known->close\n",fd);
+		//epoll_del(fd);
 		return;
 	}
 
 	//byte1.bit7
-	if( (recvbuf[1]>>7) == 1)
+	if( (buf[1]>>7) == 1)
 	{
 		masked=1;
 		say("masked,");
@@ -95,61 +89,155 @@ void serve_websocket(int fd, char* recvbuf)
 	}
 
 	//
-	k = recvbuf[1]&0x7f;
+	k = buf[1]&0x7f;
 	if(k==127)
 	{
-		len     = ((u64)recvbuf[2]<<56)
-			+ ((u64)recvbuf[3]<<48)
-			+ ((u64)recvbuf[4]<<40)
-			+ ((u64)recvbuf[5]<<32)
-			+ ((u64)recvbuf[6]<<24)
-			+ ((u64)recvbuf[7]<<16)
-			+ ((u64)recvbuf[8]<<8)
-			+ recvbuf[9];
+		count	= ((u64)buf[2]<<56)
+			+ ((u64)buf[3]<<48)
+			+ ((u64)buf[4]<<40)
+			+ ((u64)buf[5]<<32)
+			+ ((u64)buf[6]<<24)
+			+ ((u64)buf[7]<<16)
+			+ ((u64)buf[8]<<8)
+			+ buf[9];
 		k = 10;
-		say("len=%llx,", len);
 	}
 	else if(k==126)
 	{
-		len     = (recvbuf[2]<<8)
-			+ (recvbuf[3]);
+		count	= (buf[2]<<8)
+			+ (buf[3]);
 		k = 4;
-		say("len=%llx,", len);
 	}
 	else
 	{
-		len = k;
+		count = k;
 		k = 2;
-		say("len=%llx,", len);
 	}
+	say("count=%llx,", count);
 
 	if(masked != 1)say("\n");
 	else
 	{
-		*(u32*)key = *(u32*)(recvbuf + k);
+		*(u32*)key = *(u32*)(buf + k);
 		j = k;
 		k += 4;
 		say("key=%x\n",*(u32*)key);
 
 		if(type==1)
 		{
-			recvbuf[0] &= 0x8f;
-			recvbuf[1] &= 0x7f;
-			for(i=0;i<len;i++)
+			buf[0] &= 0x8f;
+			buf[1] &= 0x7f;
+			for(i=0;i<count;i++)
 			{
-				datahome[i] = recvbuf[i+k] ^ key[i%4];
-				//say("%c",recvbuf[j+i]);
+				buf[i] = buf[i+k] ^ key[i%4];
+				//say("%c",buf[j+i]);
 			}
-			datahome[len] = 0;
+			buf[count] = 0;
 			//say("\n");
 		}//type=ascii
 	}//masked=1
+
+	say("%s\n",buf);
+}
+static void websocket_write(char* sendbuf)
+{
+/*
+	int fd;
+	int ret;
+
+	u8 type;
+	u8* base;
+
+	u64 headlen;
+	u64 bodylen;
+
+	//type
+	type = 1;
+	base = sendbuf + 0x1000;
+
+	bodylen = strlen(base);
+
+	//len
+	if(bodylen<=125)
+	{
+		headlen = 2;
+		*(base-2) = 0x80|type;
+		*(base-1) = bodylen;
+	}
+	else if(bodylen<0xffff)
+	{
+		headlen = 4;
+		*(base-4) = 0x80|type;
+		*(base-3) = 126;
+		*(base-2) = (bodylen>>8)&0xff;
+		*(base-1) = bodylen&0xff;
+	}
+	else
+	{
+		headlen = 10;
+		*(base-10)= 0x80|type;
+		*(base-9) = 127;
+		*(base-8) = (bodylen>>56)&0xff;
+		*(base-7) = (bodylen>>48)&0xff;
+		*(base-6) = (bodylen>>40)&0xff;
+		*(base-5) = (bodylen>>32)&0xff;
+		*(base-4) = (bodylen>>24)&0xff;
+		*(base-3) = (bodylen>>16)&0xff;
+		*(base-2) = (bodylen>>8)&0xff;
+		*(base-1) = (bodylen)&0xff;
+	}
+
+	//write
+	//printmemory(base-headlen, 0x200);
+	ret = serverwrite(fd, base-headlen, 0, headlen+bodylen);
+	if(ret > 0) say("=>%d\n",fd);
+	else say("error@%d\n\n\n\n\n",fd);
 */
+}
+static void websocket_list()
+{
+}
+static void websocket_choose()
+{
+}
+static void websocket_start(u64 type,char* p)
+{
+}
+static void websocket_stop()
+{
+}
+void websocket_create(char* softhome, u64* p)
+{
+/*
+	p[0]=0x74656e;		//type
+	p[1]=0x7377;		//id
+
+	p[10]=(u64)websocket_start;
+	p[11]=(u64)websocket_stop;
+	p[12]=(u64)websocket_list;
+	p[13]=(u64)websocket_choose;
+	p[14]=(u64)websocket_read;
+	p[15]=(u64)websocket_write;
+*/
+}
+void websocket_delete()
+{
+	websocket_stop();
+}
 
 
 
+
+int serve_websocket(int fd, char* buf, int len)
+{
+	//explain
+	websocket_read(buf, len);
 
 /*
+	//process
+
+	//send
+	websocket_write();
 reply:
 	if(clienttype[fd]==0x10)
 	{
@@ -256,99 +344,4 @@ reply:
 		//eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
 	}
 */
-}
-
-
-
-
-static void websocket_write(char* sendbuf)
-{
-/*
-	int fd;
-	int ret;
-
-	u8 type;
-	u8* base;
-
-	u64 headlen;
-	u64 bodylen;
-
-	//type
-	type = 1;
-	base = sendbuf + 0x1000;
-
-	bodylen = strlen(base);
-
-	//len
-	if(bodylen<=125)
-	{
-		headlen = 2;
-		*(base-2) = 0x80|type;
-		*(base-1) = bodylen;
-	}
-	else if(bodylen<0xffff)
-	{
-		headlen = 4;
-		*(base-4) = 0x80|type;
-		*(base-3) = 126;
-		*(base-2) = (bodylen>>8)&0xff;
-		*(base-1) = bodylen&0xff;
-	}
-	else
-	{
-		headlen = 10;
-		*(base-10)= 0x80|type;
-		*(base-9) = 127;
-		*(base-8) = (bodylen>>56)&0xff;
-		*(base-7) = (bodylen>>48)&0xff;
-		*(base-6) = (bodylen>>40)&0xff;
-		*(base-5) = (bodylen>>32)&0xff;
-		*(base-4) = (bodylen>>24)&0xff;
-		*(base-3) = (bodylen>>16)&0xff;
-		*(base-2) = (bodylen>>8)&0xff;
-		*(base-1) = (bodylen)&0xff;
-	}
-
-	//write
-	//printmemory(base-headlen, 0x200);
-	ret = serverwrite(fd, base-headlen, 0, headlen+bodylen);
-	if(ret > 0) say("=>%d\n",fd);
-	else say("error@%d\n\n\n\n\n",fd);
-*/
-}
-static void websocket_read()
-{
-}
-static void websocket_list()
-{
-}
-static void websocket_choose()
-{
-}
-static void websocket_start(u64 type,char* p)
-{
-}
-static void websocket_stop()
-{
-}
-void websocket_create(char* softhome, u64* p)
-{
-	//
-	datahome = softhome + 0x300000;
-
-/*
-	p[0]=0x74656e;		//type
-	p[1]=0x7377;		//id
-
-	p[10]=(u64)websocket_start;
-	p[11]=(u64)websocket_stop;
-	p[12]=(u64)websocket_list;
-	p[13]=(u64)websocket_choose;
-	p[14]=(u64)websocket_read;
-	p[15]=(u64)websocket_write;
-*/
-}
-void websocket_delete()
-{
-	websocket_stop();
 }
