@@ -31,6 +31,7 @@ static u8 file[256];
 static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 static int http_response_size=sizeof(http_response) -1;
 //
+static char* SSH = 0;
 static char* GET = 0;
 static char* Connection = 0;
 static char* Upgrade = 0;
@@ -44,6 +45,7 @@ static void http_read(char* buf, int max)
 	int ret;
 	char* p;
 
+	SSH = 0;
 	GET = 0;
 	Connection = 0;
 	Upgrade = 0;
@@ -56,6 +58,7 @@ static void http_read(char* buf, int max)
 		else if(ncmp(p, "Connection: ", 12) == 0)Connection = p+12;
 		else if(ncmp(p, "Upgrade: ", 9) == 0)Upgrade = p+9;
 		else if(ncmp(p, "GET ", 4) == 0)GET = p+4;
+		else if(ncmp(p, "SSH-2.0-", 8) == 0)SSH = p;
 
 		ret = findhead(p);
 		if(ret <= 0)break;
@@ -185,6 +188,11 @@ int handshake_http(int fd)
 byebye:
 	return 0;
 }
+int handshake_ssh(u64 fd)
+{
+	writeserver(fd, "SSH-2.0-42\r\n", 0, 12);
+	return 0x20;
+}
 int serve_http(u64 fd, char* buf, int len)
 {
 	http_read(buf,len);
@@ -197,5 +205,10 @@ int serve_http(u64 fd, char* buf, int len)
 	else if(GET != 0)
 	{
 		return handshake_http(fd);
+	}
+
+	else if(SSH != 0)
+	{
+		return handshake_ssh(fd);
 	}
 }

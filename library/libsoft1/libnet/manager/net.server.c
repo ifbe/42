@@ -16,6 +16,7 @@ void notify_create(u64* p);
 void notify_delete(u64 fd);
 int serve_http(u64 fd, u8* buf, u64 len);
 int serve_websocket(u64 fd, u8* buf, u64 len);
+int serve_secureshell(u64 fd, u8* buf, u64 len);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int movsb(void*,void*,int);
@@ -178,6 +179,9 @@ void known_read(u64* p)
 
 		//websocket,handshaked
 		else if(ret == 0x10)known[index].type = 0x10;
+
+		//secureshell
+		else if(ret == 0x20)known[index].type = 0x20;
 	}
 
 	//tcp
@@ -201,7 +205,7 @@ void known_read(u64* p)
 	//ssh
 	else if(type <= 0x2f)
 	{
-		//ret = serve_secureshell(fd, datahome, count);
+		ret = serve_secureshell(fd, datahome, count);
 	}
 }
 
