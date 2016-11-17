@@ -170,10 +170,11 @@ void known_read(u64* p)
 	if(type == 0)
 	{
 		ret = serve_http(fd, datahome, count);
-		//say("ret=%d\n",ret);
-
-		//http,closed
-		if(ret <= 0)return;
+		if(ret <= 0)
+		{
+			notify_delete(fd);
+			return;
+		}
 
 		//websocket,handshaked
 		else if(ret == 0x10)known[index].type = 0x10;
@@ -188,6 +189,13 @@ void known_read(u64* p)
 	else if(type <= 0x1f)
 	{
 		ret = serve_websocket(fd, datahome, count);
+		if(ret <= 0)
+		{
+			notify_delete(fd);
+			return;
+		}
+
+		else if(ret <= 0x1f)known[index].type = ret;
 	}
 
 	//ssh
@@ -257,7 +265,7 @@ int server_create(void* softhome, u64* p)
 
 	//
 	p[0]=0x74656e;
-	p[1]=0x73;
+	p[1]=0x726576726573;
 	p[10]=(u64)server_start;
 	p[11]=(u64)server_stop;
 	p[12]=(u64)server_list;

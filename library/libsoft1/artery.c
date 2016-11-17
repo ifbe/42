@@ -132,7 +132,7 @@ int arterylist(u8* p)
 			{
 				if((count>0)&&(count%8==0))say("\n");
 
-				say("	[%s]",&id);
+				say("	%s",&id);
 				count++;
 			}
 		}
@@ -526,6 +526,9 @@ int arterycommand(u8* buffer)
 		arterywrite(argv[1]);
 		goto finish;
 	}
+
+	//
+	arterychoose(argv[0]);
 
 finish:
 	return 1;

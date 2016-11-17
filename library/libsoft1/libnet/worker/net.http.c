@@ -17,7 +17,6 @@ int readfile(char* name, char* mem, u64 offset, u64 count);
 int writefile(char* name, char* mem, u64 offset, u64 count);
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
-int notify_delete(u64 x);
 //
 int diary(char*, int, char*, ...);
 void say(char*, ...);
@@ -184,7 +183,6 @@ int handshake_http(int fd)
 	ret = writeserver(fd, datahome, 0, count);
 
 byebye:
-	notify_delete(fd);
 	return 0;
 }
 int serve_http(u64 fd, char* buf, int len)

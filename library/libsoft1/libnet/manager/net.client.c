@@ -76,7 +76,7 @@ int client_create(u8* world, u64* p)
 
 	//
 	p[0]=0x74656e;
-	p[1]=0x63;
+	p[1]=0x746e65696c63;
 
 	p[10]=(u64)client_start;
 	p[11]=(u64)client_stop;

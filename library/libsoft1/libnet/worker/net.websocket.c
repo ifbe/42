@@ -8,8 +8,8 @@ void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
 u32 getrandom();
 //
-int serverwrite(u64 fd, u8* addr, u64 offset, u64 count);
-void epoll_del(u64 fd);
+int readserver(u64 fd, u8* addr, u64 offset, u64 count);
+int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
 void say(char*, ...);
 
@@ -25,7 +25,7 @@ static u8 temp_salt[256];
 
 
 
-static void websocket_read(u8* buf, int len)
+static int websocket_read(u8* buf, int len)
 {
 	int i,j,k;
 	int type,masked;
@@ -56,24 +56,24 @@ static void websocket_read(u8* buf, int len)
 	else if(k==9)
 	{
 		say("ping\n");
-		return;
+		return 0;
 	}
 	else if(k==0xa)
 	{
 		say("pong\n");
-		return;
+		return 0;
 	}
 	else if(k==8)
 	{
 		//say("[%d]type8->close\n",fd);
 		//epoll_del(fd);
-		return;
+		return -1;
 	}
 	else
 	{
 		//say("[%d]known->close\n",fd);
 		//epoll_del(fd);
-		return;
+		return -2;
 	}
 
 	//byte1.bit7
@@ -137,62 +137,45 @@ static void websocket_read(u8* buf, int len)
 		}//type=ascii
 	}//masked=1
 
-	say("%s\n",buf);
+	return count;
 }
-static void websocket_write(char* sendbuf)
+static void websocket_write(u64 fd, u8* buf, u64 len)
 {
-/*
-	int fd;
+	u8 headbuf[8];
+	int headlen;
 	int ret;
 
-	u8 type;
-	u8* base;
-
-	u64 headlen;
-	u64 bodylen;
-
-	//type
-	type = 1;
-	base = sendbuf + 0x1000;
-
-	bodylen = strlen(base);
-
 	//len
-	if(bodylen<=125)
+	headbuf[0] = 0x81;
+	if(len<=125)
 	{
 		headlen = 2;
-		*(base-2) = 0x80|type;
-		*(base-1) = bodylen;
+		headbuf[1] = len;
 	}
-	else if(bodylen<0xffff)
+	else if(len<0xffff)
 	{
 		headlen = 4;
-		*(base-4) = 0x80|type;
-		*(base-3) = 126;
-		*(base-2) = (bodylen>>8)&0xff;
-		*(base-1) = bodylen&0xff;
+		headbuf[1] = 126;
+		headbuf[2] = (len>>8)&0xff;
+		headbuf[3] = len&0xff;
 	}
 	else
 	{
 		headlen = 10;
-		*(base-10)= 0x80|type;
-		*(base-9) = 127;
-		*(base-8) = (bodylen>>56)&0xff;
-		*(base-7) = (bodylen>>48)&0xff;
-		*(base-6) = (bodylen>>40)&0xff;
-		*(base-5) = (bodylen>>32)&0xff;
-		*(base-4) = (bodylen>>24)&0xff;
-		*(base-3) = (bodylen>>16)&0xff;
-		*(base-2) = (bodylen>>8)&0xff;
-		*(base-1) = (bodylen)&0xff;
+		headbuf[1] = 127;
+		headbuf[2] = (len>>56)&0xff;
+		headbuf[3] = (len>>48)&0xff;
+		headbuf[4] = (len>>40)&0xff;
+		headbuf[5] = (len>>32)&0xff;
+		headbuf[6] = (len>>24)&0xff;
+		headbuf[7] = (len>>16)&0xff;
+		headbuf[8] = (len>>8)&0xff;
+		headbuf[9] = (len)&0xff;
 	}
 
 	//write
-	//printmemory(base-headlen, 0x200);
-	ret = serverwrite(fd, base-headlen, 0, headlen+bodylen);
-	if(ret > 0) say("=>%d\n",fd);
-	else say("error@%d\n\n\n\n\n",fd);
-*/
+	ret = writeserver(fd, headbuf, 0, headlen);
+	ret = writeserver(fd, buf, 0, len);
 }
 static void websocket_list()
 {
@@ -222,24 +205,28 @@ void websocket_create(char* softhome, u64* p)
 }
 void websocket_delete()
 {
-	websocket_stop();
 }
 
 
 
 
-int serve_websocket(int fd, char* buf, int len)
+int serve_websocket(u64 fd, u8* buf, u64 len)
 {
-	//explain
-	websocket_read(buf, len);
+	int ret;
 
+	//
+	ret = websocket_read(buf, len);
+	if(ret < 0)return ret;
+
+	//
+	say("%s\n",buf);
+
+	//
+	websocket_write(fd, "hahahaha", 8);
+
+	return 0x10;
 /*
-	//process
-
-	//send
-	websocket_write();
-reply:
-	if(clienttype[fd]==0x10)
+	if(type==0x10)
 	{
 		say("[%d][stage0][client]%s\n", fd, event_queue);
 
@@ -251,10 +238,10 @@ reply:
 
 		//
 		say("[%d][stage0][server]%s\n\n", fd, recvbuf+2);
-		clienttype[fd] = 0x11;
+		type = 0x11;
 	}
 
-	else if(clienttype[fd]==0x11)
+	else if(type==0x11)
 	{
 		say("[%d][stage1][client]username=%s\n", fd, event_queue);
 		if(0)
@@ -281,10 +268,10 @@ reply:
 
 			//
 			say("[%d][stage1][server]challenge=%s\n\n", fd, recvbuf+2);
-			clienttype[fd] = 0x12;
+			type = 0x12;
 		}
 	}
-	else if(clienttype[fd]==0x12)
+	else if(type==0x12)
 	{
 		say("[%d][stage2][client]response=%s\n", fd, event_queue);
 
@@ -318,13 +305,13 @@ reply:
 
 		//type
 		say("[%d][stage2][server]status=%s\n\n", fd, recvbuf+2);
-		clienttype[fd] = 0x1f;
+		type = 0x1f;
 
 		//event
 		*(u64*)(event_queue+0) = 0xabcdef;
 		//eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
 	}
-	else if(clienttype[fd]==0x1f)
+	else if(type==0x1f)
 	{
 		say("[%d]:%s\n", fd, event_queue);
 
