@@ -69,33 +69,39 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 
 
 //libui1
+#define uiguys 0
+#define gamedata 0x100000
+
 void backgroundcolor(u32 color);
-void line(int x1, int y1, int x2, int y2, u32 color);
 
-void trianglebody(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
-void triangleframe(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
-void triangle(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, frame);
+void line(  int x1, int y1, int x2, int y2, u32 color);
+void radial(int x1, int y1, int x2, int y2, u32 color);
 
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void rect(int x1, int y1, int x2, int y2, u32 body, u32 frame);
+void trianglebody( int x1, int y1, int x2, int y2, int x3,int y3, u32 body, u32 frame);
+void triangleframe(int x1, int y1, int x2, int y2, int x3,int y3, u32 body, u32 frame);
+void triangle(     int x1, int y1, int x2, int y2, int x3,int y3, u32 body, u32 frame);
 
-void circlebody(int x, int y, int r, u32 color);
-void circleframe(int x, int y, int r, u32 color);
-void circle(int x, int y, int r, u32 body, u32 frame);
+void rectbody( int x1, int y1, int x2, int y2, u32 body);
+void rectframe(int x1, int y1, int x2, int y2, u32 frame);
+void rect(     int x1, int y1, int x2, int y2, u32 body, u32 frame);
 
-void printascii(int x, int y, int size, char ch, int data, u32 fg, u32 bg);
-void printbyte(int x, int y, int size, char ch, int data, u32 fg, u32 bg);
-void printstring(int x, int y, int size, char* str, int data, u32 fg, u32 bg);
-void printdecimal(int x, int y, int size, u64 data, u32 fg, u32 bg);
-void printhexadecimal(int x, int y, int size, u64 data, u32 fg, u32 bg);
-void printdouble(int x, int y, int size, double data, u32 fg, u32 bg);
+void circlebody( int x, int y, int r, u32 body);
+void circleframe(int x, int y, int r, u32 frame);
+void circle(     int x, int y, int r, u32 body, u32 frame);
 
-void defaultascii(int x, int y, unsigned char ch);
-void defaultstring(int x, int y, char* p);
-void defaultdecimal(int x, int y, long long dec);
-void defaultdouble(int x, int y, double data)
-void defaulthexadecimal(int x, int y, unsigned long long hex);
+void printascii(      int x, int y, int size, char ch, u32 fg, u32 bg);
+void printbyte(       int x, int y, int size, char ch, u32 fg, u32 bg);
+void printstring(     int x, int y, int size, char* s, u32 fg, u32 bg);
+void printdecimal(    int x, int y, int size, u64 dat, u32 fg, u32 bg);
+void printhexadecimal(int x, int y, int size, u64 dat, u32 fg, u32 bg);
+void printfloat(      int x, int y, int size, float dat, u32 fg, u32 bg);
+void printdouble(     int x, int y, int size, double dat, u32 fg, u32 bg);
+
+void defaultascii(      int x, int y, u8 ch);
+void defaultstring(     int x, int y, u8* s);
+void defaultdecimal(    int x, int y, long long dec);
+void defaulthexadecimal(int x, int y, u64 long hex);
+void defaultdouble(     int x, int y, double data)
 
 
 
@@ -114,10 +120,29 @@ void windowdelete();
 
 
 //libsoft1
-int compare(char* a,char* b);
-int wildcard(char* wild,char* str);
-int utf2unicode(unsigned char* src,unsigned int* dst);
-int unicode2utf(unsigned int src,unsigned char* dst);
+#define softguys 0
+#define fshome 0x100000
+	#define memhome fshome+0
+	#define nethome fshome+0xd0000
+	#define syshome fshome+0xe0000
+	#define wirehome fshome+0xf0000
+#define dirhome 0x200000
+#define datahome 0x300000
+int cmp(u8*, u8*);
+int ncmp(u8*, u8*, int);
+int wildcard(u8* wild,u8* str);
+
+int copy(u8* dst, u8* src);		//strcpy
+int ncopy(u8* dst, u8* src, int len);	//strncpy
+int movsb(u8* dst, u8* src, int len);
+
+int findhead(u8* buf);
+int findtail(u8* buf);
+int findzero(u8* buf);
+int finddata(u8* buf, u8 data);
+
+int utf2unicode(u8* src,u32* dst);
+int unicode2utf(u32 src,u8* dst);
 
 int decstr2data(u8* source,u64* data);
 int hexstr2data(u8* source,u64* data);
@@ -129,28 +154,34 @@ int datastr2hexstr(u8* dst,u8* src,int count);
 int buf2typename(u8* p,int max,u64* type,u8** name);
 int buf2optval(u8* pp,int max,u8** type,u8** name);
 int buf2suffix(u8* p,u8** suffix);
-void buf2arg(u8* buf,int max,int* argc,u8** argv);
-void buf2addrport(u8* pp,int max,u8* addr,int* port);
-char* buf2folder(char* p);
-char* buf2filename(char* p);
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2addrport(u8* pp,int max,u8* addr,int* port);
+
+u8* buf2folder(u8* p);
+u8* buf2filename(u8* p);
 
 
 
 
 //libsoft0
-unsigned int getrandom();
-unsigned long long shi_ji_nian_yue_ri_shi_fen_miao();
-unsigned long long hao_wei_na_pi();
+int readfile(u8* file, u8* mem, u64 offset, u64 count);
+int writefile(u8* file, u8* mem, u64 offset, u64 count);
+u32 getrandom();
+u64 gettime();
 
 
 
 
 //libhard1
+int initusb();
+int initnet();
 
 
 
 
 //libhard0
+int initahci(u8* hba);
+int initxhci(u8* hba);
 
 
 

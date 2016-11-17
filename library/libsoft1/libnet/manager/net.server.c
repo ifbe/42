@@ -40,11 +40,12 @@ struct node
 	//32
 	u8 addr[32];
 };
-static struct node known[16];
 static int max = 0;
 
 //
-static u8* datahome=0;
+static struct node* known = 0;
+static u8* dirhome = 0;
+static u8* datahome = 0;
 
 
 
@@ -94,7 +95,7 @@ void known_create(u64* p)
 	u64 fd = p[2];
 
 	//user max
-	if(max >= 8)
+	if(max >= 0x10000/0x40)
 	{
 		writeserver(fd, "too many", 0, 8);
 		notify_delete(fd);
@@ -237,27 +238,29 @@ static int server_stop()
 	}
 	return stopserver(0);
 }
-int server_create(u8* world, u64* p)
+int server_create(void* softhome, u64* p)
 {
 	//
 	int j;
-	char* q = (void*)known;
-	for(j=0;j<64*16;j++)
-	{
-		q[j] = 0;
-	}
-	datahome=world+0x300000;
+	char* q;
 
 	//
 	p[0]=0x74656e;
 	p[1]=0x73;
-
 	p[10]=(u64)server_start;
 	p[11]=(u64)server_stop;
 	p[12]=(u64)server_list;
 	p[13]=(u64)server_choose;
 	p[14]=(u64)server_read;
 	p[15]=(u64)server_write;
+
+	known = softhome + 0x100000 + 0xf0000;
+	dirhome = softhome + 0x200000;
+	datahome = softhome + 0x300000;
+
+	q = (void*)known;
+	for(j=0;j<0x10000;j++)q[j] = 0;
+
 	return 0;
 }
 int server_delete()

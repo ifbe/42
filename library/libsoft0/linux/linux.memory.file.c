@@ -156,7 +156,7 @@ int readfile(u8* file, u8* mem, u64 offset, u64 count)
 			printf("fail@open\n");
 			return -3;
 		}
-printf("offset=%llx\n",offset);
+//printf("offset=%llx\n",offset);
 		if(offset != 0)
 		{
 			ret = lseek64(fd, offset, SEEK_SET);
