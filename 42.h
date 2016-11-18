@@ -141,24 +141,36 @@ int findtail(u8* buf);
 int findzero(u8* buf);
 int finddata(u8* buf, u8 data);
 
-int utf2unicode(u8* src,u32* dst);
-int unicode2utf(u32 src,u8* dst);
-
-int decstr2data(u8* source,u64* data);
-int hexstr2data(u8* source,u64* data);
-int data2decstr(u64 data,u8* string);
-int double2decstr(double data,u8* string);
-int data2hexstr(u64 data,u8* string);
-int datastr2hexstr(u8* dst,u8* src,int count);
-
 int buf2typename(u8* p,int max,u64* type,u8** name);
 int buf2optval(u8* pp,int max,u8** type,u8** name);
 int buf2suffix(u8* p,u8** suffix);
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2addrport(u8* pp,int max,u8* addr,int* port);
-
 u8* buf2folder(u8* p);
 u8* buf2filename(u8* p);
+
+int utf2unicode(u8* src,u32* dst);
+int unicode2utf(u32 src,u8* dst);
+
+int double2decstr(double src,u8* dst);
+int decstr2double(u8* src,double* dst);
+
+int hexstr2data(u8* src,u64* dst);
+int hexstr2bigint(u8* src, u8* dst);
+
+int data2decstr(u64 data,u8* str);
+int data2hexstr(u64 data,u8* str);
+
+int decstr2data(u8* src,u64* dst,int len);
+int decstr2bigint(u8* src, u8* dst,int len);
+
+int bigint2decstr(u8* src,u8* dst,int count);
+int bigint2hexstr(u8* src,u8* dst,int count);
+
+int bigadd(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
+int bigsub(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
+int bigmul(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
+int bigdiv(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
 
 
 

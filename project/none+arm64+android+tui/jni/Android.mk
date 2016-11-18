@@ -119,6 +119,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/fs.c \
 	library/libsoft1/libmemory/libmath/math.calc.c \
 	library/libsoft1/libmemory/libmath/math.notation.c \
+	library/libsoft1/libmemory/libmath/math.prime.c \
 	library/libsoft1/libmemory/libmath/math.c \
 	library/libsoft1/libmemory/libphys/physics.electrical.c \
 	library/libsoft1/libmemory/libphys/physics.mechanics.c \
@@ -149,7 +150,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
 	library/libsoft1/libnet/worker/net.arp.c \
-	library/libsoft1/libnet/worker/net.ethernet.c \
+	library/libsoft1/libnet/worker/net.eth.c \
 	library/libsoft1/libnet/worker/net.ftp.c \
 	library/libsoft1/libnet/worker/net.http.c \
 	library/libsoft1/libnet/worker/net.icmp.c \
@@ -160,7 +161,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libnet/worker/net.slip.c \
 	library/libsoft1/libnet/worker/net.ssh.c \
 	library/libsoft1/libnet/worker/net.tftp.c \
-	library/libsoft1/libnet/worker/net.websocket.c \
+	library/libsoft1/libnet/worker/net.ws.c \
 	library/libsoft1/libnet/manager/net.client.c \
 	library/libsoft1/libnet/manager/net.server.c \
 	library/libsoft1/libnet/net.c \

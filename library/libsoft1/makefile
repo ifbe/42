@@ -26,6 +26,7 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/fs.c
 	$(compiler) $(cflag) libmemory/libmath/math.calc.c
 	$(compiler) $(cflag) libmemory/libmath/math.notation.c
+	$(compiler) $(cflag) libmemory/libmath/math.prime.c
 	$(compiler) $(cflag) libmemory/libmath/math.c
 	$(compiler) $(cflag) libmemory/libphys/physics.electrical.c
 	$(compiler) $(cflag) libmemory/libphys/physics.mechanics.c
@@ -56,7 +57,7 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
 	$(compiler) $(cflag) libnet/worker/net.arp.c
-	$(compiler) $(cflag) libnet/worker/net.ethernet.c
+	$(compiler) $(cflag) libnet/worker/net.eth.c
 	$(compiler) $(cflag) libnet/worker/net.ftp.c
 	$(compiler) $(cflag) libnet/worker/net.http.c
 	$(compiler) $(cflag) libnet/worker/net.icmp.c
@@ -67,7 +68,7 @@ target:
 	$(compiler) $(cflag) libnet/worker/net.slip.c
 	$(compiler) $(cflag) libnet/worker/net.ssh.c
 	$(compiler) $(cflag) libnet/worker/net.tftp.c
-	$(compiler) $(cflag) libnet/worker/net.websocket.c
+	$(compiler) $(cflag) libnet/worker/net.ws.c
 	$(compiler) $(cflag) libnet/manager/net.client.c
 	$(compiler) $(cflag) libnet/manager/net.server.c
 	$(compiler) $(cflag) libnet/net.c

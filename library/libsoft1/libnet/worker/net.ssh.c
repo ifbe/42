@@ -14,16 +14,141 @@ void say(u8*, ...);
 
 
 
+static int ssh_read_algorithm(u8* buf, u64 len)
+{
+	int j;
+	int offset;
+	u32 temp;
+
+	//cookie
+	for(j=0;j<16;j++)
+	{
+		say("%02x ", buf[6+j]);
+	}
+	say("\n");
+
+	//
+	offset = 0x16;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]key_exchange_algorithm\n", offset,temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]server_host_key_algorithm\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]encryption_algorithms_client_to_server\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]encryption_algorithms_server_to_client\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]mac_algorithms_client_to_server\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]mac_algorithms_server_to_client\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]compression_algorithms_client_to_server\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	say("[%x,%x]compression_algorithms_server_to_client\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]languages_client_to_server\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]languages_server_to_client\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]languages_server_to_client\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+	//
+	offset += 4 + temp;
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]first_kex_packet_follows\n", offset, temp);
+	printmemory(buf+offset, temp+4);
+
+byebye:
+	return 0x20;
+}
+static int ssh_read(u8* buf, u64 len)
+{
+	int j;
+	int offset;
+	u32 temp;
+
+	temp = buf[0];
+	temp = (temp<<8) + buf[1];
+	temp = (temp<<8) + buf[2];
+	temp = (temp<<8) + buf[3];
+	say("total=%x\n",temp);
+	say("plen=%x\n", buf[4]);
+	say("type=%x\n", buf[5]);
+	if(buf[5] == 0x14)
+	{
+		ssh_read_algorithm(buf,len);
+	}
+	else
+	{
+		printmemory(buf,temp);
+	}
+
+	return buf[5];
+}
+static int ssh_write()
+{
+}
 static void ssh_list()
 {
 }
 static void ssh_choose()
-{
-}
-static void ssh_read()
-{
-}
-static void ssh_write()
 {
 }
 static void ssh_start(u64 type,char* p)
@@ -56,113 +181,7 @@ void ssh_delete()
 
 int serve_secureshell(u64 fd, u8* buf, u64 len)
 {
-	int j;
-	int offset;
-	u32 temp;
-
-	temp = buf[0];
-	temp = (temp<<8) + buf[1];
-	temp = (temp<<8) + buf[2];
-	temp = (temp<<8) + buf[3];
-	say("total=%x\n",temp);
-	say("plen=%x\n", buf[4]);
-	say("type=%x\n", buf[5]);
-
-	//cookie
-	for(j=0;j<16;j++)
-	{
-		say("%02x ", buf[6+j]);
-	}
-	say("\n");
-
-	//
-	offset = 0x16;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]kex_algorithm\n", offset,temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]server_host_key_algorithm\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_client_to_server\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_server_to_client\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_client_to_server\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_server_to_client\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_client_to_server\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_server_to_client\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_client_to_server\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-	//
-	offset += 4 + temp;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]first_kex_packet_follows\n", offset, temp);
-	printmemory(buf+offset, temp);
-
-byebye:
+	int ret = ssh_read(buf, len);
+	if(ret == 0x14)writeserver(fd, buf, 0, len);
 	return 0x20;
 }
