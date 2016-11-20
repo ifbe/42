@@ -14,9 +14,10 @@ int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
 void notify_create(u64* p);
 void notify_delete(u64 fd);
-int serve_http(u64 fd, u8* buf, u64 len);
-int serve_websocket(u64 fd, u8* buf, u64 len);
-int serve_secureshell(u64 fd, u8* buf, u64 len);
+int serve_http(void* p, u8* buf, u64 len);
+int serve_chat(void* p, u8* buf, u64 len);
+int serve_websocket(void* p, u8* buf, u64 len);
+int serve_secureshell(void* p, u8* buf, u64 len);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int movsb(void*,void*,int);
@@ -32,11 +33,17 @@ void say(void*, ...);
 //
 struct node
 {
-	//8*4=32
-	u64 fd;
-	u64 time;
+	//why
+	u64 detail;
+
+	//what
 	u64 type;       //[0,f]none, [0x10,0x1f]tcp, [0x20,0x2f]ws
-	u64 next;
+
+	//where
+	u64 fd;
+
+	//when
+	u64 time;
 
 	//32
 	u8 addr[32];
@@ -131,17 +138,16 @@ void known_create(u64* p)
 }
 void known_read(u64* p)
 {
-	int ret;
 	int count;
-	u64 index;
-	u64 type;
-	u64 fd = p[2];
+	int index;
+	u64 temp;
 
 	//读
-	count = readserver(fd, datahome, 0, 0x100000);
+	temp = p[2];
+	count = readserver(temp, datahome, 0, 0x100000);
 	if(count <= 0)
 	{
-		notify_delete(fd);
+		notify_delete(temp);
 		return;
 	}
 	datahome[count] = 0;
@@ -149,64 +155,49 @@ void known_read(u64* p)
 	//找
 	for(index=0;index<max;index++)
 	{
-		if(fd == known[index].fd)break;
+		if(temp == known[index].fd)break;
 	}
 	if(index >= max)return;
 
 
 //--------------------------------------------------------
-	//0:	刚来的
-	//10:	websocket
-	//1?:	websocket + authstage
-	//20:	ssh
-	//2?:	ssh + authstage
+	//00:	刚来的
+	//0?:	chat
+	//1?:	websocket
+	//2?:	secureshell
 //--------------------------------------------------------
 
 
-	//
-	type = known[index].type;
-	//say("type=%llx\n",type);
-
-	//new
-	if(type == 0)
+	//1.先检查种类
+	temp = known[index].type;
+	if(temp == 0)
 	{
-		ret = serve_http(fd, datahome, count);
-		if(ret <= 0)
-		{
-			notify_delete(fd);
-			return;
-		}
-
-		//websocket,handshaked
-		else if(ret == 0x10)known[index].type = 0x10;
-
-		//secureshell
-		else if(ret == 0x20)known[index].type = 0x20;
+		temp = serve_http(&known[index], datahome, count);
+		if(temp == 0)goto forceclose;
 	}
 
-	//tcp
-	else if(type <= 0xf)
+	//2.再做合适的事
+	temp = known[index].type;
+	if(temp <= 0x0f)
 	{
+		serve_chat(&known[index], datahome, count);
 	}
-
-	//websocket
-	else if(type <= 0x1f)
+	else if(temp <= 0x1f)
 	{
-		ret = serve_websocket(fd, datahome, count);
-		if(ret <= 0)
-		{
-			notify_delete(fd);
-			return;
-		}
-
-		else if(ret <= 0x1f)known[index].type = ret;
+		serve_websocket(&known[index], datahome, count);
 	}
-
-	//ssh
-	else if(type <= 0x2f)
+	else if(temp <= 0x2f)
 	{
-		ret = serve_secureshell(fd, datahome, count);
+		serve_secureshell(&known[index], datahome, count);
 	}
+	else goto forceclose;
+
+	//3.最后判断关不关fd
+	if(known[index].type != 0)return;
+
+forceclose:
+	notify_delete(known[index].fd);
+	return;
 }
 
 

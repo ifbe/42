@@ -46,7 +46,7 @@ static int printalgorithm(u8* buf,int len)
 		if(j>len)break;
 	}
 }
-static int ssh_read_algorithm(u8* buf, u64 len)
+static int secureshell_read_algorithm(u8* buf, u64 len)
 {
 	int j;
 	int offset;
@@ -150,7 +150,7 @@ static int ssh_read_algorithm(u8* buf, u64 len)
 byebye:
 	return 0x20;
 }
-static int ssh_read(u8* buf, u64 len)
+static int secureshell_read(u8* buf, u64 len)
 {
 	int j;
 	int offset;
@@ -165,7 +165,7 @@ static int ssh_read(u8* buf, u64 len)
 	say("type=%x\n", buf[5]);
 	if(buf[5] == 0x14)
 	{
-		ssh_read_algorithm(buf,len);
+		secureshell_read_algorithm(buf,len);
 	}
 	else
 	{
@@ -174,46 +174,36 @@ static int ssh_read(u8* buf, u64 len)
 
 	return buf[5];
 }
-static int ssh_write()
-{
-}
-static void ssh_list()
-{
-}
-static void ssh_choose()
-{
-}
-static void ssh_start(u64 type,char* p)
-{
-}
-static void ssh_stop()
-{
-}
-void ssh_create(char* world,u64* p)
-{
-/*
-	p[0]=0x74656e;		//type
-	p[1]=0x687373;		//id
 
-	p[10]=(u64)ssh_start;
-	p[11]=(u64)ssh_stop;
-	p[12]=(u64)ssh_list;
-	p[13]=(u64)ssh_choose;
-	p[14]=(u64)ssh_read;
-	p[15]=(u64)ssh_write;
-*/
-}
-void ssh_delete()
+
+
+
+static int secureshell_write(u64 fd, u8* buf, int len)
 {
-	ssh_stop();
+	writeserver(fd, buf, 0, len);
 }
 
 
 
 
-int serve_secureshell(u64 fd, u8* buf, u64 len)
+//why,what,where,when
+int serve_secureshell(u64* p, u8* buf, u64 len)
 {
-	int ret = ssh_read(buf, len);
-	if(ret == 0x14)writeserver(fd, buf, 0, len);
+	int ret;
+	if(p[1] == 0x20)
+	{
+		writeserver(p[2], "SSH-2.0-42\r\n", 0, 12);
+		p[1] = 0x21;
+	}
+	else
+	{
+		ret = secureshell_read(buf, len);
+		if(ret == 0x14)
+		{
+			secureshell_write(p[2], buf, len);
+		}
+	}
+
+	//
 	return 0x20;
 }

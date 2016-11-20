@@ -134,6 +134,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
 	library/libsoft1/libnet/worker/net.arp.c \
+	library/libsoft1/libnet/worker/net.chat.c \
 	library/libsoft1/libnet/worker/net.eth.c \
 	library/libsoft1/libnet/worker/net.ftp.c \
 	library/libsoft1/libnet/worker/net.http.c \

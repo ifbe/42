@@ -2,23 +2,26 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
-u32 getrandom();
+int findzero(char* p);
+int findhead(char* p);
+int findtail(char* p);
+u8* findstr(char* src, int max, char* target, int tarlen);
 //
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+u32 getrandom();
+u64 gettime();
 //
+int diary(char*, int, char*, ...);
 void say(char*, ...);
 
 
 
 
 //
-static u8 buf1[256];
-static u8 buf2[256];
 static u8 fixed_salt[256];
 static u8 temp_salt[256];
 
@@ -177,54 +180,80 @@ static void websocket_write(u64 fd, u8* buf, u64 len)
 	ret = writeserver(fd, headbuf, 0, headlen);
 	ret = writeserver(fd, buf, 0, len);
 }
-static void websocket_list()
-{
-}
-static void websocket_choose()
-{
-}
-static void websocket_start(u64 type,char* p)
-{
-}
-static void websocket_stop()
-{
-}
-void websocket_create(char* softhome, u64* p)
-{
-/*
-	p[0]=0x74656e;		//type
-	p[1]=0x7377;		//id
-
-	p[10]=(u64)websocket_start;
-	p[11]=(u64)websocket_stop;
-	p[12]=(u64)websocket_list;
-	p[13]=(u64)websocket_choose;
-	p[14]=(u64)websocket_read;
-	p[15]=(u64)websocket_write;
-*/
-}
-void websocket_delete()
-{
-}
 
 
 
 
-int serve_websocket(u64 fd, u8* buf, u64 len)
+int handshake_websocket(u64 fd, u8* buf, int len)
+{
+        int j;
+	u8* Sec_WebSocket_Key;
+        u8 buf1[256];
+        u8 buf2[256];
+	say("%s(%d)\n",buf,len);
+
+	//
+	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
+	if(Sec_WebSocket_Key == 0)return 0;
+	Sec_WebSocket_Key += 19;
+
+        //在Sec_WebSocket_Key尾巴上添加一个固定的字符串
+        j = findtail(Sec_WebSocket_Key);
+        j += diary(Sec_WebSocket_Key + j, 256,
+		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+        say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
+
+        //对这个字符串做一次sha1
+        sha1sum(buf1, Sec_WebSocket_Key, j);
+	say("sha1=");
+        for(j=0;j<20;j++)say("%.2x",buf1[j]);
+        say("\n");
+
+        //把sha1的结果以base64格式编码
+        base64_encode(buf2 ,buf1, 20 );
+        say("base64=%s\n",buf2);
+
+        //把base64的结果作为accept密钥
+        j = diary(buf1, 256,
+                "HTTP/1.1 101 Switching Protocols\r\n"
+                "Upgrade: websocket\r\n"
+                "Connection: Upgrade\r\n"
+                "Sec-WebSocket-Accept: %s\r\n\r\n",
+
+                buf2
+        );
+
+        //发出去
+        j = writeserver(fd, buf1, 0, j);
+        say("%s", buf1);
+
+        //
+        say("[%d]staging\n", fd);
+        return 0x11;
+}
+int serve_websocket(u64* p, u8* buf, u64 len)
 {
 	int ret;
 
-	//
-	ret = websocket_read(buf, len);
-	if(ret < 0)return ret;
+	if(p[1] == 0x10)
+	{
+		p[1] = handshake_websocket(p[2], buf, len);
+	}
+	else
+	{
+		//
+		ret = websocket_read(buf, len);
+		if(ret < 0)return ret;
 
-	//
-	say("%s\n",buf);
+		//
+		say("%s\n",buf);
 
-	//
-	websocket_write(fd, "hahahaha", 8);
+		//
+		websocket_write(p[2], "hahahaha", 8);
 
-	return 0x10;
+		//
+		return 0x10;
+	}
 /*
 	if(type==0x10)
 	{

@@ -1,5 +1,10 @@
-void say(char* fmt , ...);
-int cmp(unsigned char* first, unsigned char* second)
+#define u8 unsigned char
+void say(u8* fmt , ...);
+
+
+
+
+int cmp(u8* first, u8* second)
 {
 	int i;
 	int ret=1;	//default different
@@ -18,7 +23,7 @@ int cmp(unsigned char* first, unsigned char* second)
 	}
 	return ret;
 }
-int ncmp(unsigned char* first, unsigned char* second, int count)
+int ncmp(u8* first, u8* second, int count)
 {
 	int i;
 	int ret=1;	//default different

@@ -57,6 +57,7 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
 	$(compiler) $(cflag) libnet/worker/net.arp.c
+	$(compiler) $(cflag) libnet/worker/net.chat.c
 	$(compiler) $(cflag) libnet/worker/net.eth.c
 	$(compiler) $(cflag) libnet/worker/net.ftp.c
 	$(compiler) $(cflag) libnet/worker/net.http.c

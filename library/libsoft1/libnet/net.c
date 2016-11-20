@@ -13,10 +13,10 @@ void ipv6_create(void*,void*);
 void ppp_create(void*,void*);
 void quic_create(void*,void*);
 void slip_create(void*,void*);
-void ssh_create(void*,void*);
+void secureshell_create(void*,void*);
 void tftp_create(void*,void*);
-void client_delete();
-void server_delete();
+void websocket_create(void*,void*);
+
 void arp_delete();
 void eth_delete();
 void ftp_delete();
@@ -27,10 +27,14 @@ void ipv6_delete();
 void ppp_delete();
 void quic_delete();
 void slip_delete();
-void ssh_delete();
+void secureshell_delete();
 void tftp_delete();
+void websocket_delete();
+//
 void client_create(void*,void*);
 void server_create(void*,void*);
+void client_delete();
+void server_delete();
 //
 void printmemory(char*, int);
 void say(char*, ...);
@@ -78,36 +82,10 @@ int net_create(void* world,u64* p)
 	server_create(world,q);
 	q+=0x80;
 
-	arp_create(world,q);
-	eth_create(world,q);
-	ftp_create(world,q);
-	http_create(world,q);
-	icmp_create(world,q);
-	ipv4_create(world,q);
-	ipv6_create(world,q);
-	ppp_create(world,q);
-	quic_create(world,q);
-	slip_create(world,q);
-	ssh_create(world,q);
-	tftp_create(world,q);
-
 	return q-(char*)p;
 }
 int net_delete()
 {
-	tftp_delete();
-	ssh_delete();
-	slip_delete();
-	quic_delete();
-	ppp_delete();
-	ipv6_delete();
-	ipv4_delete();
-	icmp_delete();
-	http_delete();
-	ftp_delete();
-	eth_delete();
-	arp_delete();
-
 	server_delete();
 	client_delete();
 	return 0;
