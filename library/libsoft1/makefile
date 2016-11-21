@@ -48,6 +48,7 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/compare/compare.wildcard.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.argument.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.ascii.c
+	$(compiler) $(cflag) libmemory/libtext/convert/convert.bigint.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.copy.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.encoding.c
 	$(compiler) $(cflag) libmemory/libtext/convert/convert.filename.c

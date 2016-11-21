@@ -141,6 +141,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/compare/compare.wildcard.c \
 	library/libsoft1/libmemory/libtext/convert/convert.argument.c \
 	library/libsoft1/libmemory/libtext/convert/convert.ascii.c \
+	library/libsoft1/libmemory/libtext/convert/convert.bigint.c \
 	library/libsoft1/libmemory/libtext/convert/convert.copy.c \
 	library/libsoft1/libmemory/libtext/convert/convert.encoding.c \
 	library/libsoft1/libmemory/libtext/convert/convert.filename.c \

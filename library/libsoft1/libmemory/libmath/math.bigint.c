@@ -6,7 +6,10 @@
 
 
 
-int bigadd(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max)
+int bigadd(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* answer, int max)
 {
 	int j;
 	int temp = 0;
@@ -58,7 +61,10 @@ int bigadd(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max)
 
 
 
-int bigsub(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max)
+int bigsub(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* answer, int max)
 {
 	int j;
 	int temp = 0;
@@ -191,9 +197,7 @@ int bigdiv_keeptry(
 	u8* abuf, int alen,
 	u8* bbuf, int blen)
 {
-	int j,k;
-
-	k = 0;
+	int j,k=0;
 	while(1)
 	{
 //printf("%016llx\n",*(u64*)abuf);
@@ -205,7 +209,10 @@ int bigdiv_keeptry(
 				if(abuf[j] < bbuf[j])goto nomore;
 				if(abuf[j] > bbuf[j])break;
 			}
-			if(j<0)goto nomore;
+			if(j<0)
+			{
+				if(abuf[0] < bbuf[0])goto nomore;
+			}
 
 			//还可以减一次
 			bigsub(abuf, blen, bbuf, blen, abuf, blen);
@@ -253,7 +260,7 @@ int bigdiv(
 		if(bbuf[j] == 0)blen--;
 		else break;
 	}
-	if( (blen == 1) && (bbuf[0]) )return 0;
+	if( (blen == 1) && (bbuf[0] == 0) )return 0;
 
 	//两种情况都要挪动
 	for(j=0;j<alen;j++)
