@@ -101,6 +101,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/parttable/pt.gpt.c \
 	library/libsoft1/libmemory/libfs/parttable/pt.mbr.c \
 	library/libsoft1/libmemory/libfs/fs.c \
+	library/libsoft1/libmemory/libmath/math.bigint.c \
 	library/libsoft1/libmemory/libmath/math.calc.c \
 	library/libsoft1/libmemory/libmath/math.notation.c \
 	library/libsoft1/libmemory/libmath/math.prime.c \

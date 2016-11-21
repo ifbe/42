@@ -24,6 +24,7 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmemory/libfs/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmemory/libfs/fs.c
+	$(compiler) $(cflag) libmemory/libmath/math.bigint.c
 	$(compiler) $(cflag) libmemory/libmath/math.calc.c
 	$(compiler) $(cflag) libmemory/libmath/math.notation.c
 	$(compiler) $(cflag) libmemory/libmath/math.prime.c
