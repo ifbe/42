@@ -2,6 +2,16 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+int bigmul(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* answer, int max,
+	u8* temp, int rsvd);
+int bigdiv(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* quotient, int max1,
+	u8* remainder, int max2);
 
 
 
@@ -35,4 +45,52 @@ int hexstr2bigint(u8* p, u8* q)
         }
 
         return k;
+}
+int decstr2bigint(u8* p, u8* q)
+{
+}
+
+
+
+
+int bigint2hexstr(u8* p, u8* q, int len)
+{
+}
+int bigint2decstr(u8* p, u8* q, int len)
+{
+	u8 ten[1] = {10};
+	u8 buf1[0x1000];
+	u8 buf2[0x1000];
+	u8* quotient;
+	u8* result;
+	u8* temp;
+	int j,k;
+	if(len>=0x1000)return 0;
+
+	for(j=0;j<len;j++)quotient[j] = p[j];
+	quotient = buf1;
+	result = buf2;
+
+	for(j=0;j<len;j++)
+	{
+		//div10
+		bigdiv(
+			quotient, len,
+			ten, 1,
+			result, 0x1000,
+			q+j, 0x1000	//temp
+		);
+
+		//
+		q[j] = result[0] + 0x30;
+		if(j>len*2)break;
+
+		//next
+		temp = quotient;
+		quotient = result;
+		result = temp;
+	};
+
+	q[j] = 0;
+	return j;
 }
