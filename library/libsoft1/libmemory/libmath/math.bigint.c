@@ -372,14 +372,17 @@ int bigshr(u8* buf, int len, int sh)
 {
 	int j;
 	u16 haha=0;
+//printbigint(buf,len);
+//printf("(before)\n");
 	for(j=len-1;j>=0;j--)
 	{
 		haha |= buf[j];
 		buf[j] = (haha>>sh)&0xff;
 		haha <<= 8;
 	}
-
 	if(buf[len-1] == 0)len--;
+//printbigint(buf,len);
+//printf("(after)\n");
 	return len;
 }
 
@@ -423,17 +426,15 @@ int bigpow(
 		//odd num
 		if((exp[0]&1) == 1)
 		{
-//printbigint(exp,el);
-//printf("\n");
 //printbigint(ans, al);
 //printf(" * ");
 //printbigint(base, bl);
 //printf(" => ");
 			//ans *= base
-			movsb(t1, ans, bl);
+			movsb(t1, ans, al);
 			movsb(t2, base, bl);
 			al = bigmul(
-				t1, bl,
+				t1, al,
 				t2, bl,
 				ans, al,
 				t3, bl
@@ -455,8 +456,6 @@ int bigpow(
 		//
 		el = bigshr(exp, el, 1);
 		if( (el <= 1)&&(exp[0] == 0) )break;
-//printbigint(exp,el);
-//printf("\n");
 
 //printbigint(base, bl);
 //printf(" * ");

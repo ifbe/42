@@ -18,33 +18,43 @@ int bigdiv(
 
 int hexstr2bigint(u8* p, u8* q)
 {
-        int j=0,k=0;
-        while(p[j] != 0)j++;
-        while(1)
-        {
-                //byte.low4
-                j--;
-                if(j < 0)break;
-                if(p[j] == 0)break;
-                if( (p[j] >= 0x30) && (p[j] <= 0x39) )
-                {
-                        q[k] = p[j] - 0x30;
-                        k++;
-                }
-                else return 0;
+	int j=0,k=0;
+	while(p[j] != 0)j++;
+	while(1)
+	{
+		//byte.low4
+		j--;
+		if(j < 0)break;
+		if(p[j] == 0)break;
+		if( (p[j] >= 'a') && (p[j] <= 'f') )
+		{
+			q[k] = p[j] - 0x57;
+			k++;
+		}
+		else if( (p[j] >= '0') && (p[j] <= '9') )
+		{
+			q[k] = p[j] - 0x30;
+			k++;
+		}
+		else return 0;
 
-                //byte.high4
-                j--;
-                if(j < 0)break;
-                if(p[j] == 0)break;
-                if( (p[j] >= 0x30) && (p[j] <= 0x39) )
-                {
-                        q[k-1] += (p[j]-0x30) << 4;
-                }
-                else return 0;
-        }
+		//byte.high4
+		j--;
+		if(j < 0)break;
+		if(p[j] == 0)break;
+		if( (p[j] >= 'a') && (p[j] <= 'f') )
+		{
+			q[k-1] = (p[j]-0x57) << 4;
+			k++;
+		}
+		else if( (p[j] >= 0x30) && (p[j] <= 0x39) )
+		{
+			q[k-1] += (p[j]-0x30) << 4;
+		}
+		else return 0;
+	}
 
-        return k;
+	return k;
 }
 int decstr2bigint(u8* p, u8* q)
 {
