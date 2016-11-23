@@ -168,10 +168,38 @@ int findtail(u8* buf);
 int findzero(u8* buf);
 int finddata(u8* buf, u8 data);
 
-int bigadd(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
-int bigsub(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
-int bigmul(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
-int bigdiv(u8* abuf, int alen, u8* bbuf, int blen, u8* answer, int max);
+int bigadd(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* ans, int max);
+int bigsub(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* ans, int max);
+
+int bigmul(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* ans, int max,
+	u8* tmp, int ign);
+int bigdiv(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* quotient, int max1,
+	u8* remainder, int max2);
+
+int bigmod(
+	u8* base, int bl,
+	u8* mod, int ml,
+	u8* ans, int al);
+int bigpow(
+	u8* base, int bl,
+	u8* exp, int el,
+	u8* mod, int ml,
+	u8* ans, int al,
+	u8* t1, int l1,
+	u8* t2, int l2,
+	u8* t3, int l3);
 
 
 

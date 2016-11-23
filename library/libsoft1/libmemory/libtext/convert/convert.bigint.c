@@ -55,6 +55,29 @@ int decstr2bigint(u8* p, u8* q)
 
 int bigint2hexstr(u8* p, u8* q, int len)
 {
+	u8 ch;
+	int j,k=2;
+	if(len<=0)return 0;
+
+	q[0] = '0';
+	q[1] = 'x';
+	for(j=len-1;j>=0;j--)
+	{
+		ch = (p[j] >> 4) & 0xf;
+		ch += 0x30;
+		if(ch > 0x39)ch += 7;
+		q[k] = ch;
+		k++;
+
+		ch = p[j] &0xf;
+		ch += 0x30;
+		if(ch > 0x39)ch += 7;
+		q[k] = ch;
+		k++;
+	}
+
+	q[k] = 0;
+	return k;
 }
 int bigint2decstr(u8* p, u8* q, int len)
 {
