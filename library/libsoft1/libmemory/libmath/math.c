@@ -3,6 +3,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+double calculator(char* postfix, u64 x, u64 y);
+void infix2postfix(char* infix,char* postfix);
+//
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
 //
@@ -28,13 +31,22 @@ static int math_list(u8* arg1)
 }
 static int math_choose(u8* arg)
 {
+	double ans;
+	u8* postfix = datahome;
+
+	infix2postfix(arg, postfix);
+	say("postfix:%s\n", postfix);
+
+	ans = calculator(postfix, 0, 0);
+	say("answer:%lf\n", ans);
+
 	return 0;
 }
-static int math_read(u8* mem, u8* file, u64 addr, u64 count)
+static int math_read()
 {
 	return 0;
 }
-static int math_write(u8* mem, u8* file, u64 addr, u64 count)
+static int math_write()
 {
 	return 0;
 }

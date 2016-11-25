@@ -25,7 +25,6 @@ int hexstr2bigint(u8* p, u8* q)
 		//byte.low4
 		j--;
 		if(j < 0)break;
-		if(p[j] == 0)break;
 		if( (p[j] >= 'a') && (p[j] <= 'f') )
 		{
 			q[k] = p[j] - 0x57;
@@ -41,11 +40,9 @@ int hexstr2bigint(u8* p, u8* q)
 		//byte.high4
 		j--;
 		if(j < 0)break;
-		if(p[j] == 0)break;
 		if( (p[j] >= 'a') && (p[j] <= 'f') )
 		{
-			q[k-1] = (p[j]-0x57) << 4;
-			k++;
+			q[k-1] += (p[j]-0x57) << 4;
 		}
 		else if( (p[j] >= 0x30) && (p[j] <= 0x39) )
 		{
