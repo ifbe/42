@@ -45,6 +45,8 @@ void pure_delete();
 //tool
 void calculator_create(u8*,u8*);
 void calculator_delete();
+void circuit_create(u8*,u8*);
+void circuit_delete();
 void console_create(u8*,u8*);
 void console_delete();
 void control_create(u8*,u8*);
@@ -241,6 +243,10 @@ void charactercreate(u8* type, u8* addr)
 	calculator_create(addr,temp);
 	temp += 0x80;
 
+	//tool.circuit
+	circuit_create(addr,temp);
+	temp += 0x80;
+
 	//tool.console
 	console_create(addr,temp);
 	temp += 0x80;
@@ -286,6 +292,7 @@ void characterdelete()
 	qrcode_delete();
 	control_delete();
 	console_delete();
+	circuit_delete();
 	calculator_delete();
 
 	color_delete();

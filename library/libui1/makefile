@@ -25,10 +25,10 @@ target:
 	$(compiler) $(cflag) test/test.font.c
 	$(compiler) $(cflag) test/test.pure.c
 	$(compiler) $(cflag) tool/tool.calculator.c
+	$(compiler) $(cflag) tool/tool.circuit.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.control.c
 	$(compiler) $(cflag) tool/tool.hex.c
-	$(compiler) $(cflag) tool/tool.kirchhoff.c
 	$(compiler) $(cflag) tool/tool.qrcode.c
 	$(compiler) $(cflag) tool/tool.sketchpad.c
 	$(compiler) $(cflag) tool/tool.spectrum.c
