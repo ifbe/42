@@ -15,6 +15,7 @@ int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 void notify_create(u64* p);
 void notify_delete(u64 fd);
 int serve_http(void* p, u8* buf, u64 len);
+int serve_https(void* p, u8* buf, u64 len);
 int serve_chat(void* p, u8* buf, u64 len);
 int serve_websocket(void* p, u8* buf, u64 len);
 int serve_secureshell(void* p, u8* buf, u64 len);
@@ -165,6 +166,7 @@ void known_read(u64* p)
 	//0?:	chat
 	//1?:	websocket
 	//2?:	secureshell
+	//3?:	https
 //--------------------------------------------------------
 
 
@@ -189,6 +191,10 @@ void known_read(u64* p)
 	else if(temp <= 0x2f)
 	{
 		serve_secureshell(&known[index], datahome, count);
+	}
+	else if(temp <= 0x3f)
+	{
+		serve_https(&known[index], datahome, count);
 	}
 	else goto forceclose;
 

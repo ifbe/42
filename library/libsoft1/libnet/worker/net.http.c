@@ -106,26 +106,48 @@ byebye:
 
 
 
+int serve_https(u64* p, char* buf, int len)
+{
+	say("@serve_https\n");
+	printmemory(buf,len);
+	return 1;
+}
 int serve_http(u64* p, char* buf, int len)
 {
+	//https
+	if(buf[0] == 0x16)
+	{
+		p[1] = 0x30;
+		goto byebye;
+	}
+
+	//.............................................
 	http_read(buf,len);
 
+	//ssh
 	if(SSH != 0)
 	{
 		p[1] = 0x20;
 	}
+
+	//ws
 	else if( (Connection != 0) && (Upgrade != 0) )
 	{
 		p[1] = 0x10;
 	}
+
+	//http
 	else if(GET != 0)
 	{
 		return http_write(p[2], buf, len);
 	}
+
+	//chat
 	else
 	{
 		p[1] = 1;
 	}
 
+byebye:
 	return 1;
 }
