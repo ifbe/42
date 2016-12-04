@@ -162,11 +162,20 @@ void known_read(u64* p)
 
 
 //--------------------------------------------------------
-	//00:	刚来的
-	//0?:	chat
-	//1?:	websocket
-	//2?:	secureshell
-	//3?:	https
+/*
+server:
+	0000000?	chat(server)
+	0000001?	ws(server)
+	0000002?	https(server)
+	0000003?	wss(server)
+	0000004?	ssh(server)
+client:
+	8000000?	chat(client)
+	8000001?	ws(client)
+	8000002?	https(client)
+	8000003?	wss(client)
+	8000004?	ssh(client)
+*/
 //--------------------------------------------------------
 
 

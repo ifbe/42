@@ -15,6 +15,7 @@ int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
 int diary(char*, int, char*, ...);
+void printmemory(char*,int);
 void say(char*, ...);
 
 

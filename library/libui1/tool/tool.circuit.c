@@ -3,6 +3,8 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
+void rectframe(int x1, int y1, int x2, int y2, u32 color);
+void line(int x1,int y1,int x2,int y2, u32 color);
 void backgroundcolor();
 //
 void say(char*,...);
@@ -31,6 +33,44 @@ struct cell{
 	int side2;	//1,2,3, ...
 };
 
+//(batt, 5000mv), (0, 1)
+static struct cell c1 = {'V', 5000, 0, 1};
+//(resistor, 1000ohm), (1,0)
+static struct cell c2 = {'R', 1000, 1, 0};
+
+
+
+
+static void battery(int x, int y, struct cell* c)
+{
+	line(x-16, y-8, x+16, y-8, 0xffffffff);
+	line(x-8, y+8, x+8, y+8, 0xffffffff);
+}
+static void resistor(int x, int y, struct cell* c)
+{
+	rectframe(x-8, y-16, x+8, y+16, 0xffffffff);
+}
+static void autowire(int x1, int y1, int x2, int y2)
+{
+	int j;
+	if(x1<x2)
+	{
+		j=y1-100;
+		if(j > y2-100)j=y2-100;
+		line(x1, y1, x1, j, 0xffffffff);
+		line(x2, y2, x2, j, 0xffffffff);
+		line(x1, j, x2, j, 0xffffffff);
+	}
+	else
+	{
+		j=y1+100;
+		if(j < y2+100)j=y2+100;
+		line(x1, y1, x1, j, 0xffffffff);
+		line(x2, y2, x2, j, 0xffffffff);
+		line(x1, j, x2, j, 0xffffffff);
+	}
+}
+
 
 
 
@@ -39,7 +79,21 @@ static void circuit_read_html()
 }
 static void circuit_read_pixel()
 {
+	int battx = haha->width/3;
+	int batty = haha->height/2;
+	int resx = haha->width*2/3;
+	int resy = haha->height/2;
 	backgroundcolor(0);
+
+	//5v battery
+	battery(battx, batty, &c1);
+
+	//1000ohm resistor
+	resistor(resx, resy, &c2);
+
+	//wire
+	autowire(battx, batty-8, resx, resy-16);
+	autowire(resx, resy+16, battx, batty+8);
 }
 static void circuit_read_text()
 {
