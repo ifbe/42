@@ -107,13 +107,84 @@ byebye:
 
 
 
-int serve_https(u64* p, char* buf, int len)
+int serve_https_handshake(u8* buf, int len)
 {
-	say("@serve_https\n");
-	printmemory(buf,len);
+	int totallength, cipherlength, extralength;
+	int offset, temp1, temp2;
+
+	//0
+	say("handshake=%x\n", buf[0]);
+
+	//1,2,3
+	totallength = (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say("total length=%x\n",totallength);
+
+	//4,5
+	say("version=%02x%02x\n",buf[4],buf[5]);
+
+	//[6,0x25]
+	printmemory(buf+6, 0x20);
+
+	//0x26
+	say("sessionid length=%x\n",buf[0x26]);
+
+	//0x27,0x28
+	cipherlength = (buf[0x27]<<8) + buf[0x28];
+	say("ciphersites length=%x\n",cipherlength);
+
+	//
+	printmemory(buf+0x29, cipherlength);
+	offset = 0x29+cipherlength;
+
+	//
+	say("compression length=%x\n",buf[offset]);
+	say("compression method=%x\n",buf[offset+1]);
+	offset += 2;
+
+	//
+	extralength = (buf[offset]<<8) + buf[offset+1];
+	say("extension length=%x\n", extralength);
+	offset += 2;
+
+	//
+	printmemory(buf+offset, extralength);
+	while(1)
+	{
+		if(offset >= totallength)break;
+
+		temp1 = (buf[offset+0]<<8) + buf[offset+1];
+		temp2 = (buf[offset+2]<<8) + buf[offset+3];
+		say("type=%04x, len=%x\n", temp1, temp2);
+
+		offset += 4 + temp2;
+	}
+
+	//
 	return 1;
 }
-int serve_http(u64* p, char* buf, int len)
+int serve_https(u64* p, u8* buf, int len)
+{
+	int length;
+	say("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@{\n");
+
+	//0
+	say("type=0x%x\n",buf[0]);
+
+	//1,2
+	say("version=%02x%02x\n",buf[1],buf[2]);
+
+	//3,4
+	length = (buf[3]<<8) + buf[4];
+	say("length=%x\n",length);
+
+	//
+	serve_https_handshake(buf+5, len-5);
+
+	//
+	say("}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+	return 1;
+}
+int serve_http(u64* p, u8* buf, int len)
 {
 	//https
 	if(buf[0] == 0x16)
