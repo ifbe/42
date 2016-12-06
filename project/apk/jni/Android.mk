@@ -135,23 +135,28 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/find/find.str.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
-	library/libsoft1/libnet/worker/net.arp.c \
-	library/libsoft1/libnet/worker/net.chat.c \
-	library/libsoft1/libnet/worker/net.eth.c \
-	library/libsoft1/libnet/worker/net.ftp.c \
-	library/libsoft1/libnet/worker/net.http.c \
-	library/libsoft1/libnet/worker/net.icmp.c \
-	library/libsoft1/libnet/worker/net.ipv4.c \
-	library/libsoft1/libnet/worker/net.ipv6.c \
-	library/libsoft1/libnet/worker/net.ppp.c \
-	library/libsoft1/libnet/worker/net.quic.c \
-	library/libsoft1/libnet/worker/net.slip.c \
-	library/libsoft1/libnet/worker/net.ssh.c \
-	library/libsoft1/libnet/worker/net.tftp.c \
-	library/libsoft1/libnet/worker/net.ws.c \
+	library/libsoft1/libnet/0.phy/net.eth.c \
+	library/libsoft1/libnet/0.phy/net.slip.c \
+	library/libsoft1/libnet/0.phy/net.wlan.c \
+	library/libsoft1/libnet/1.link/net.arp.c \
+	library/libsoft1/libnet/1.link/net.icmp.c \
+	library/libsoft1/libnet/1.link/net.ipv4.c \
+	library/libsoft1/libnet/1.link/net.ipv6.c \
+	library/libsoft1/libnet/1.link/net.ppp.c \
+	library/libsoft1/libnet/2.tran/net.quic.c \
+	library/libsoft1/libnet/2.tran/net.ssl.c \
+	library/libsoft1/libnet/2.tran/net.tcp.c \
+	library/libsoft1/libnet/2.tran/net.tls.c \
+	library/libsoft1/libnet/2.tran/net.udp.c \
+	library/libsoft1/libnet/3.app/net.chat.c \
+	library/libsoft1/libnet/3.app/net.ftp.c \
+	library/libsoft1/libnet/3.app/net.http.c \
+	library/libsoft1/libnet/3.app/net.ssh.c \
+	library/libsoft1/libnet/3.app/net.tftp.c \
+	library/libsoft1/libnet/3.app/net.ws.c \
 	library/libsoft1/libnet/manager/net.client.c \
 	library/libsoft1/libnet/manager/net.server.c \
-	library/libsoft1/libnet/net.c \
+	library/libsoft1/libnet/manager/net.c \
 	library/libsoft1/libsystem/system.folder.c \
 	library/libsoft1/libsystem/system.process.c \
 	library/libsoft1/libsystem/system.setting.c \
