@@ -97,7 +97,7 @@ int tls_read(u64* p, u8* buf, u64 len)
 
 
 
-//1:	client hello
+//1:	client >>>> server
 int tls_write_client_hello(u8* buf, int len)
 {
 	u8* p = buf + 9;
@@ -153,7 +153,7 @@ int tls_write_client_hello(u8* buf, int len)
 
 
 
-//2:	server hello,certificate,keyexch,done
+//2:	client <<<< server
 int tls_write_server_hello(u8* buf, int len)
 {
 	u8* p = buf + 9;
@@ -319,7 +319,7 @@ int tls_write_server_done(u8* buf, int len)
 
 
 
-//3:	client keyexch,cipherspec,hellorequest
+//3:	client >>>> server
 int tls_write_client_keyexch(u8* buf, int len)
 {
 	u8* p = buf + 9;
@@ -352,13 +352,13 @@ int tls_write_client_cipherspec(u8* buf, int len)
 }
 int tls_write_client_hellorequest(u8* buf, int len)
 {
-	
+	return 0;
 }
 
 
 
 
-//4:	server newsession,cipherspec,encrypthanshake
+//4:	client <<<< server
 int tls_write_server_newsession(u8* buf, int len)
 {
 }
@@ -372,6 +372,10 @@ int tls_write_server_encrypthandshake(u8* buf, int len)
 
 
 
+//@:	client <--> server
+int tls_write_both_data(u8* buf, int len)
+{
+}
 int tls_write(u64* p, u8* buf, u64 len)
 {
 	int ret = 1;

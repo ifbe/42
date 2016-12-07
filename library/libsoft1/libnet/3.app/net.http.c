@@ -28,7 +28,6 @@ void say(char*, ...);
 static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 static int http_response_size=sizeof(http_response) -1;
 //
-static char* SSH = 0;
 static char* GET = 0;
 static char* Connection = 0;
 static char* Upgrade = 0;
@@ -36,12 +35,11 @@ static char* Upgrade = 0;
 
 
 
-static void http_read(char* buf, int max)
+int http_read(char* buf, int max)
 {
 	int ret;
 	char* p;
 
-	SSH = 0;
 	GET = 0;
 	Connection = 0;
 	Upgrade = 0;
@@ -49,8 +47,7 @@ static void http_read(char* buf, int max)
 	p = buf;
 	while(1)
 	{
-		if(ncmp(p, "SSH-2.0-", 8) == 0)SSH = p;
-		else if(ncmp(p, "GET ", 4) == 0)GET = p+4;
+		if(ncmp(p, "GET ", 4) == 0)GET = p+4;
 		else if(ncmp(p, "Connection: ", 12) == 0)Connection = p+12;
 		else if(ncmp(p, "Upgrade: ", 9) == 0)Upgrade = p+9;
 
@@ -67,8 +64,13 @@ static void http_read(char* buf, int max)
 		(u64)Upgrade
 	);
 */
+	//
+	if(GET != 0)return 1;
+
+	//
+	return 0;
 }
-static int http_write(u64 fd, u8* buf, int len)
+int http_write(u64 fd, u8* buf, int len)
 {
 	int ret,count;
 	u8 file[256];
@@ -124,24 +126,8 @@ int serve_https(u64* p, u8* buf, int len)
 }
 int serve_http(u64* p, u8* buf, int len)
 {
-	//https
-	if(buf[0] == 0x16)
-	{
-		p[1] = 0x30;
-		goto byebye;
-	}
-
-	//.............................................
-	http_read(buf,len);
-
-	//ssh
-	if(SSH != 0)
-	{
-		p[1] = 0x20;
-	}
-
 	//ws
-	else if( (Connection != 0) && (Upgrade != 0) )
+	if( (Connection != 0) && (Upgrade != 0) )
 	{
 		p[1] = 0x10;
 	}
@@ -152,12 +138,6 @@ int serve_http(u64* p, u8* buf, int len)
 		return http_write(p[2], buf, len);
 	}
 
-	//chat
-	else
-	{
-		p[1] = 1;
-	}
-
-byebye:
+	//
 	return 1;
 }

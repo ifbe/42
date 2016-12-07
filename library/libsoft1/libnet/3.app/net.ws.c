@@ -231,7 +231,7 @@ int handshake_websocket(u64 fd, u8* buf, int len)
         say("[%d]staging\n", fd);
         return 0x11;
 }
-int serve_websocket(u64* p, u8* buf, u64 len)
+int serve_ws(u64* p, u8* buf, u64 len)
 {
 	int ret;
 
@@ -360,4 +360,7 @@ int serve_websocket(u64* p, u8* buf, u64 len)
 		//eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
 	}
 */
+}
+int serve_wss(u64* p, u8* buf, u64 len)
+{
 }

@@ -14,10 +14,12 @@ int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
 void notify_create(u64* p);
 void notify_delete(u64 fd);
-int serve_http(void* p, u8* buf, u64 len);
-int serve_https(void* p, u8* buf, u64 len);
+int serve_first(void* p, u8* buf, u64 len);
 int serve_chat(void* p, u8* buf, u64 len);
-int serve_websocket(void* p, u8* buf, u64 len);
+int serve_http(void* p, u8* buf, u64 len);
+int serve_ws(void* p, u8* buf, u64 len);
+int serve_https(void* p, u8* buf, u64 len);
+int serve_wss(void* p, u8* buf, u64 len);
 int serve_secureshell(void* p, u8* buf, u64 len);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
@@ -164,17 +166,21 @@ void known_read(u64* p)
 //--------------------------------------------------------
 /*
 server:
-	0000000?	chat(server)
-	0000001?	ws(server)
-	0000002?	https(server)
-	0000003?	wss(server)
-	0000004?	ssh(server)
+{
+	0000000?	first, chat(serve)
+	0000001?	http, ws(serve)
+	0000002?	https, wss(serve)
+	0000003?	shell, proxy(serve)
+	0000004?	socks(serve)
+}
 client:
-	8000000?	chat(client)
-	8000001?	ws(client)
-	8000002?	https(client)
-	8000003?	wss(client)
-	8000004?	ssh(client)
+{
+	8000000?	first, chat(client)
+	8000001?	http, ws(client)
+	8000002?	http, wss(client)
+	8000003?	shell, proxy(client)
+	8000004?	socks(client)
+}
 */
 //--------------------------------------------------------
 
@@ -183,7 +189,7 @@ client:
 	temp = known[index].type;
 	if(temp == 0)
 	{
-		temp = serve_http(&known[index], datahome, count);
+		temp = serve_first(&known[index], datahome, count);
 		if(temp == 0)goto forceclose;
 	}
 
@@ -195,15 +201,21 @@ client:
 	}
 	else if(temp <= 0x1f)
 	{
-		serve_websocket(&known[index], datahome, count);
+		serve_http(&known[index], datahome, count);
+		//serve_ws(&known[index], datahome, count);
 	}
 	else if(temp <= 0x2f)
 	{
-		serve_secureshell(&known[index], datahome, count);
+		serve_https(&known[index], datahome, count);
+		//serve_wss(&known[index], datahome, count);
 	}
 	else if(temp <= 0x3f)
 	{
-		serve_https(&known[index], datahome, count);
+		serve_secureshell(&known[index], datahome, count);
+	}
+	else if(temp <= 0x4f)
+	{
+		//serve_socks(&known[index], datahome, count);
 	}
 	else goto forceclose;
 
