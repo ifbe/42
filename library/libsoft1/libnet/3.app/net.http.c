@@ -112,8 +112,15 @@ byebye:
 
 int serve_https(u64* p, u8* buf, int len)
 {
-	tls_read(p, buf, len);
-	return 1;
+	int ret;
+
+	ret = tls_read(p, buf, len);
+
+	ret = tls_write(p, buf, len);
+
+	writeserver(p[2], buf, 0, ret);
+	p[1] = 0;
+	return 0;
 }
 int serve_http(u64* p, u8* buf, int len)
 {
