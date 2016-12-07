@@ -28,14 +28,56 @@ void say(char*, ...);
 static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
 static int http_response_size=sizeof(http_response) -1;
 //
-static char* GET = 0;
 static char* Connection = 0;
 static char* Upgrade = 0;
+static char* GET = 0;
 
 
 
 
-int http_read(char* buf, int max)
+int http_read(u8* buf, int max)
+{
+	int j;
+	if(GET == 0)return 0;
+	if(GET[0] != '/')return 0;
+	GET++;
+
+	//
+	if(GET[0]==' ')
+	{
+		GET = "42.html";
+		return 7;
+	}
+
+	//
+	for(j=0;j<256;j++)
+	{
+		if(GET[j] <= 0x20)break;
+	}
+	GET[j] = 0;
+	return j;
+}
+int http_write(u8* buf, int len)
+{
+	int ret;
+	say("path=%s\n",GET);
+
+	//
+	ret = readfile(GET, buf, 0, 0x100000);
+	if(ret <= 0)
+	{
+		//say("error@readfile\n");
+		return 0;
+	}
+
+	//
+	return ret;
+}
+
+
+
+
+int check_http(char* buf, int max)
 {
 	int ret;
 	char* p;
@@ -65,79 +107,49 @@ int http_read(char* buf, int max)
 	);
 */
 	//
-	if(GET != 0)return 1;
-
-	//
-	return 0;
-}
-int http_write(u64 fd, u8* buf, int len)
-{
-	int ret,count;
-	u8 file[256];
-
-	if( (GET[0]=='/')&&(GET[1]==' ') )
-	{
-		diary(file, 16, "42.html");
-	}
-	else
-	{
-		for(ret=0;ret<256;ret++)
-		{
-			if(GET[ret+1] <= 0x20)
-			{
-				file[ret] = 0;
-				break;
-			}
-			else file[ret] = GET[ret+1];
-		}
-	}
-	say("file=%s\n",file);
-
-	//
-	count = readfile(file, buf, 0, 0x100000);
-	if(count <= 0)
-	{
-		//say("error@readfile\n");
-		goto byebye;
-	}
-
-	//send
-	ret = writeserver(fd, http_response, 0, http_response_size);
-	ret = writeserver(fd, buf, 0, count);
-
-byebye:
-	return 0;
-}
-
-
-
-
-int serve_https(u64* p, u8* buf, int len)
-{
-	int ret;
-
-	ret = tls_read(p, buf, len);
-
-	ret = tls_write(p, buf, len);
-
-	writeserver(p[2], buf, 0, ret);
-	p[1] = 0;
-	return 0;
+	if( (Connection != 0) && (Upgrade != 0) )return 0x11;
+	else if(GET != 0)return 0x10;
+	else return 0;
 }
 int serve_http(u64* p, u8* buf, int len)
 {
-	//ws
-	if( (Connection != 0) && (Upgrade != 0) )
-	{
-		p[1] = 0x10;
-	}
-
-	//http
-	else if(GET != 0)
-	{
-		return http_write(p[2], buf, len);
-	}
+	int ret;
 
 	//
+	len = http_read(buf, len);
+	if(len <= 0)goto byebye;
+
+	//
+	len = http_write(buf, len);
+	if(len <= 0)goto byebye;
+
+	//
+	ret = writeserver(p[2], http_response, 0, http_response_size);
+	ret = writeserver(p[2], buf, 0, len);
+
+byebye:
+	//
+	p[1] = 0;
 	return 1;
+}
+int serve_https(u64* p, u8* buf, int len)
+{
+	//tls >>>> ascii
+	len = tls_read(p, buf, len);
+
+	//ascii >>>> path
+	len = http_read(buf, len);
+
+	//path >>>> bin
+	len = http_write(buf, len);
+
+	//bin >>>> tls
+	len = tls_write(p, buf, len);
+
+	//send
+	writeserver(p[2], buf, 0, len);
+
+	//
+	p[1] = 0;
+	return 0;
 }

@@ -162,7 +162,6 @@ void known_read(u64* p)
 	}
 	if(index >= max)return;
 
-
 //--------------------------------------------------------
 /*
 server:
@@ -170,7 +169,7 @@ server:
 	0000000?	first, chat(serve)
 	0000001?	http, ws(serve)
 	0000002?	https, wss(serve)
-	0000003?	shell, proxy(serve)
+	0000003?	ssh(serve)
 	0000004?	socks(serve)
 }
 client:
@@ -178,48 +177,70 @@ client:
 	8000000?	first, chat(client)
 	8000001?	http, ws(client)
 	8000002?	http, wss(client)
-	8000003?	shell, proxy(client)
+	8000003?	ssh(client)
 	8000004?	socks(client)
 }
 */
 //--------------------------------------------------------
 
-
-	//1.先检查种类
+	//first
 	temp = known[index].type;
 	if(temp == 0)
 	{
-		temp = serve_first(&known[index], datahome, count);
+		//
+		serve_first(&known[index], datahome, count);
+
+		//
+		temp = known[index].type;
 		if(temp == 0)goto forceclose;
 	}
 
-	//2.再做合适的事
-	temp = known[index].type;
+	//chat
 	if(temp <= 0x0f)
 	{
 		serve_chat(&known[index], datahome, count);
 	}
-	else if(temp <= 0x1f)
+
+	//http
+	else if(temp == 0x10)
 	{
 		serve_http(&known[index], datahome, count);
-		//serve_ws(&known[index], datahome, count);
 	}
-	else if(temp <= 0x2f)
+
+	//ws
+	else if(temp <= 0x1f)
+	{
+		serve_ws(&known[index], datahome, count);
+	}
+
+	//https
+	else if(temp == 0x20)
 	{
 		serve_https(&known[index], datahome, count);
-		//serve_wss(&known[index], datahome, count);
 	}
+
+	//wss
+	else if(temp <= 0x2f)
+	{
+		serve_wss(&known[index], datahome, count);
+	}
+
+	//ssh
 	else if(temp <= 0x3f)
 	{
 		serve_secureshell(&known[index], datahome, count);
 	}
+
+	//socks
 	else if(temp <= 0x4f)
 	{
 		//serve_socks(&known[index], datahome, count);
 	}
+
+	//error
 	else goto forceclose;
 
-	//3.最后判断关不关fd
+	//最后判断关不关fd
 	if(known[index].type != 0)return;
 
 forceclose:

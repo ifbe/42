@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int http_read(u8*, int);
+int check_http(u8*, int);
 int ncmp(u8*,u8*,int);
 int cmp(u8*,u8*);
 //
@@ -17,37 +17,40 @@ void say(char*, ...);
 //why,what,where,when
 int serve_first(u64* p, char* buf, int len)
 {
+	int ret;
+
 	//2?:	https or wss
 	if(buf[0] == 0x16)
 	{
 		p[1] = 0x20;
+		return 0x20;
 	}
 
 	//4?:	socks
-	else if(0)
+	if(0)
 	{
 		p[1] = 0x40;
+		return 0x40;
 	}
 
 	//3?:	shell or proxy
-	else if(ncmp(buf, "SSH-2.0-", 8) == 0)
+	ret = ncmp(buf, "SSH-2.0-", 8);
+	if(ret == 0)
 	{
 		p[1] = 0x30;
+		return 0x30;
 	}
 
 	//1?:	http or ws
-	else if(http_read(buf, len) > 0)
+	ret = check_http(buf, len);
+	if(ret > 0)
 	{
-		p[1] = 0x10;
+		p[1] = ret;
+		return ret;
 	}
 
 	//default: debug
-	else
-	{
-		p[1] = 1;
-	}
-
-	//
+	p[1] = 1;
 	return 1;
 }
 

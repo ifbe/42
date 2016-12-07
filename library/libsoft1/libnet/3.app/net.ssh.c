@@ -417,10 +417,10 @@ static u8 version[]="SSH-2.0-finalanswer_42\r\n";
 int serve_secureshell(u64* p, u8* buf, u64 len)
 {
 	int ret;
-	if(p[1] == 0x20)
+	if(p[1] == 0x30)
 	{
 		writeserver(p[2], version, 0, sizeof(version)-1);
-		p[1] = 0x21;
+		p[1] = 0x31;
 	}
 	else
 	{
@@ -441,5 +441,5 @@ int serve_secureshell(u64* p, u8* buf, u64 len)
 	}
 
 	//
-	return 0x20;
+	return 0x30;
 }

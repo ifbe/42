@@ -140,6 +140,7 @@ static int websocket_read(u8* buf, int len)
 		}//type=ascii
 	}//masked=1
 
+	say("%s\n",buf);
 	return count;
 }
 static void websocket_write(u64 fd, u8* buf, u64 len)
@@ -184,7 +185,7 @@ static void websocket_write(u64 fd, u8* buf, u64 len)
 
 
 
-int handshake_websocket(u64 fd, u8* buf, int len)
+int handshake_websocket(u64* p, u8* buf, int len)
 {
         int j;
 	u8* Sec_WebSocket_Key;
@@ -224,20 +225,20 @@ int handshake_websocket(u64 fd, u8* buf, int len)
         );
 
         //发出去
-        j = writeserver(fd, buf1, 0, j);
+        j = writeserver(p[2], buf1, 0, j);
         say("%s", buf1);
 
         //
-        say("[%d]staging\n", fd);
-        return 0x11;
+	p[1] = 0x1f;
+        return 0x1f;
 }
 int serve_ws(u64* p, u8* buf, u64 len)
 {
 	int ret;
 
-	if(p[1] == 0x10)
+	if(p[1] == 0x11)
 	{
-		p[1] = handshake_websocket(p[2], buf, len);
+		handshake_websocket(p, buf, len);
 	}
 	else
 	{
@@ -246,13 +247,8 @@ int serve_ws(u64* p, u8* buf, u64 len)
 		if(ret < 0)return ret;
 
 		//
-		say("%s\n",buf);
-
-		//
 		websocket_write(p[2], "hahahaha", 8);
-
-		//
-		return 0x10;
+		return 0x1f;
 	}
 /*
 	if(type==0x10)
