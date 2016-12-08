@@ -3,13 +3,13 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int check_http(u8*, int);
-int ncmp(u8*,u8*,int);
-int cmp(u8*,u8*);
+int check_http(void*, int);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 //
-int diary(char*, int, char*, ...);
-void printmemory(char*,int);
-void say(char*, ...);
+int diary(void*, int, void*, ...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 

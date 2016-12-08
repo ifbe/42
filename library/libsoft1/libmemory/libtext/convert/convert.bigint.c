@@ -55,6 +55,7 @@ int hexstr2bigint(u8* p, u8* q)
 }
 int decstr2bigint(u8* p, u8* q)
 {
+	return 0;
 }
 
 

@@ -22,9 +22,11 @@ static char name[16];
 //
 int systemspi_read()
 {
+	return 0;
 }
 int systemspi_write()
 {
+	return 0;
 }
 
 
@@ -40,6 +42,7 @@ int systemspi_list(char* towhere)
 		ret=system("ls /dev/spidev*");
 		return 1;
 	}
+	return 0;
 }
 int systemspi_choose(int num,char* p)
 {
@@ -91,6 +94,8 @@ int systemspi_choose(int num,char* p)
 		say("?\n");
 		return 0x11;
 	}
+
+	return 0;
 }
 
 

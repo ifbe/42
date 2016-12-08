@@ -12,6 +12,8 @@ void characterwrite(u64 what, u64 who, u64 where, u64 when);
 void characterread();
 //
 void say(char* , ...);
+void birth();
+void death();
 
 
 

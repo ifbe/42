@@ -37,6 +37,7 @@ int systemwifi_list(char* towhere)
 }
 int systemwifi_choose()
 {
+	return 0;
 }
 
 

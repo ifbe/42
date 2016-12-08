@@ -132,8 +132,8 @@ int filesystem_mount(u8* addr)
 			break;
 		}
 	}
-	return 0;
 */
+	return 0;
 }
 
 

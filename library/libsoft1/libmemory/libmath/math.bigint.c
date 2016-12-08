@@ -187,6 +187,7 @@ printf("@%016llx%016llx\n%016llx%016llx\n\n",
 	{
 		if(answer[j] != 0)return j+1;
 	}
+	return 0;
 }
 
 
@@ -291,6 +292,7 @@ int bigdiv(
 	{
 		if(quotient[j] != 0)return j+1;
 	}
+	return 0;
 }
 int bigmod(
 	u8* abuf, int alen,
@@ -345,6 +347,7 @@ int bigmod(
 	{
 		if(remainder[j] != 0)return j+1;
 	}
+	return 0;
 }
 
 

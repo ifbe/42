@@ -19,8 +19,8 @@
 void eventwrite(u64,u64,u64,u64);
 u64 gettime();
 //
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -200,9 +200,11 @@ int readserver(u64 fd, u8* buf, u64 offset, u64 count)
 }
 int listserver()
 {
+	return 0;
 }
 int chooseserver()
 {
+	return 0;
 }
 void stopserver(u64 x)
 {
@@ -232,7 +234,7 @@ void startserver(char* addr, int port, char* dir, int opt)
 void deleteserver(int num)
 {
 }
-int createserver()
+void createserver()
 {
 	struct sigaction sa;
 	sa.sa_handler=SIG_IGN;

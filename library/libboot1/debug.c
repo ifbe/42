@@ -31,7 +31,7 @@ void printmemory(u8* addr,int size)
 		for(x=0;x<=0xf;x++)
 		{
 			ch = p[x];
-			if( (ch>=0x7f)|(ch<=0x20) )ch=0x20;
+			if( (ch>=0x7f)|(ch<0x20) )ch=0x20;
 			say("%c",ch);
 		}
 		say("\n");
@@ -50,11 +50,11 @@ void printmemory(u8* addr,int size)
 		else
 		{
 			ch = p[x];
-			if( (ch>=0x7f)|(ch<=0x20) )ch=0x20;
+			if( (ch>=0x7f)|(ch<0x20) )ch=0x20;
 			say("%c",ch);
 		}
 	}
-	say("\n\n");
+	say("\n");
 }
 
 

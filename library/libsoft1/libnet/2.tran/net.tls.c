@@ -2,96 +2,188 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printmemory(char*, int);
-void say(char*, ...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
-int tls_read_head(u8* buf, int len)
+int tls_read_client_hello(u8* buf, int len)
 {
-        int length;
+	int temp1, temp2;
+	u8* p = buf;
 
-        //0
-        say("type=0x%x\n",buf[0]);
+	//head
+	say("type=0x%x\n", p[0]);
+	say("version=%02x%02x\n", p[1], p[2]);
+	len = (p[3]<<8) + p[4];
+	say("length=%x\n\n", len);
+	p += 5;
 
-        //1,2
-        say("version=%02x%02x\n",buf[1],buf[2]);
+	//body
+	say("handshake=%x\n", p[0]);
+	temp1 = (p[1]<<16) + (p[2]<<8) + p[3];
+	say("length=%x\n", temp1);
+	say("version=%02x%02x\n\n", p[4], p[5]);
+	p += 6;
 
-        //3,4
-        length = (buf[3]<<8) + buf[4];
-        say("length=%x\n",length);
+	//random
+	say("random(len=0x20)\n");
+	printmemory(p, 0x20);
+	say("\n");
+	p += 0x20;
+
+	//sessionid
+	temp1 = p[0];
+	say("sessionid(len=%x)\n", temp1);
+	printmemory(p+1, temp1);
+	say("\n");
+	p += 1 + temp1;
+
+	//cipher
+	temp1 = (p[0]<<8) + p[1];
+	say("ciphersites(len=%x)\n", temp1);
+	printmemory(p+2, temp1);
+	say("\n");
+	p += 2 + temp1;
+
+	//compression
+	temp1 = p[0];
+	say("compression(len=%x)\n", temp1);
+	printmemory(p+1, temp1);
+	say("\n");
+	p += 1 + temp1;
+
+	//extension
+	temp1 = (p[0]<<8) + p[1];
+	say("extension(len=%x)\n", temp1);
+	printmemory(p+2, temp1);
+	p += 2;
 
 	//
-        return length;
+	while(1)
+	{
+		if(p-buf >= len)return 0;
+		if(p-buf >= len+5)return 0;
+
+		temp1 = (p[0]<<8) + p[1];
+		temp2 = (p[2]<<8) + p[3];
+		say("type=%04x, len=%x\n", temp1, temp2);
+
+		p += 4 + temp2;
+	}
+
+	return len + 5;
 }
-int tls_read_body(u8* buf, int len)
+
+
+
+
+int tls_read_server_hello(u8* buf, int len)
 {
-	int totallength, cipherlength, extralength;
-        int offset, temp1, temp2;
+	return 0;
+}
+int tls_read_server_certificate(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_server_keyexch(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_server_done(u8* buf, int len)
+{
+	return 0;
+}
 
-        //0
-        say("handshake=%x\n", buf[0]);
 
-        //1,2,3
-        totallength = (buf[1]<<16) + (buf[2]<<8) + buf[3];
-        say("total length=%x\n",totallength);
 
-        //4,5
-        say("version=%02x%02x\n",buf[4],buf[5]);
 
-        //[6,0x25]
-        printmemory(buf+6, 0x20);
+int tls_read_client_keyexch(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_client_cipherspec(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_client_hellorequest(u8* buf, int len)
+{
+	return 0;
+}
 
-        //0x26
-        say("sessionid length=%x\n",buf[0x26]);
 
-        //0x27,0x28
-        cipherlength = (buf[0x27]<<8) + buf[0x28];
-        say("ciphersites length=%x\n",cipherlength);
 
-        //
-        printmemory(buf+0x29, cipherlength);
-        offset = 0x29+cipherlength;
 
-        //
-        say("compression length=%x\n",buf[offset]);
-        say("compression method=%x\n",buf[offset+1]);
-        offset += 2;
+int tls_read_server_newsession(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_server_cipherspec(u8* buf, int len)
+{
+	return 0;
+}
+int tls_read_server_encrypthandshake(u8* buf, int len)
+{
+	return 0;
+}
 
-        //
-        extralength = (buf[offset]<<8) + buf[offset+1];
-        say("extension length=%x\n", extralength);
-        offset += 2;
 
-        //
-        printmemory(buf+offset, extralength);
-        while(1)
-        {
-                if(offset >= totallength)break;
 
-                temp1 = (buf[offset+0]<<8) + buf[offset+1];
-                temp2 = (buf[offset+2]<<8) + buf[offset+3];
-                say("type=%04x, len=%x\n", temp1, temp2);
 
-                offset += 4 + temp2;
-        }
+int tls_read_both_data(u8* buf, int len)
+{
+	//head
+	say("type=%02x\n", buf[0]);
+	say("version=%02x%02x\n", buf[1], buf[2]);
+	len = (buf[3]<<8) + buf[4];
+	say("length=%x\n",len);
 
-	return totallength;
+	//data
+	return len;
 }
 int tls_read(u64* p, u8* buf, u64 len)
 {
 	int ret;
-	say("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@{\n");
+	say("tls{\n");
 
-	//
-	ret = tls_read_head(buf, len);
+	if(buf[0] == 0x17)
+	{
+		return tls_read_both_data(buf,len);
+	}
+	else if(buf[0] == 0x16)
+	{
+		if(buf[5] == 1)
+		{
+			ret = tls_read_client_hello(buf, len);
+		}
+		else if(buf[5] == 2)
+		{
+			ret = tls_read_server_hello(buf, len);
+			ret += tls_read_server_certificate(buf+ret, len);
+			ret += tls_read_server_keyexch(buf+ret, len);
+			ret += tls_read_server_done(buf+ret, len);
+		}
+		else if(buf[5] == 12)
+		{
+			ret = tls_read_client_keyexch(buf, len);
+			ret += tls_read_client_cipherspec(buf+ret, len);
+			ret += tls_read_client_hellorequest(buf+ret, len);
+		}
+		else if(0)
+		{
+			ret = tls_read_server_newsession(buf, len);
+			ret += tls_read_server_cipherspec(buf+ret, len);
+			ret += tls_read_server_encrypthandshake(buf+ret, len);
+		}
+	}
+	else
+	{
+		printmemory(buf, len);
+	}
 
-	//
-	ret = tls_read_body(buf+5, len-5);
-
-	say("}@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-	return 1;
+	say("}tls\n");
+	return 0;
 }
 
 
@@ -361,12 +453,15 @@ int tls_write_client_hellorequest(u8* buf, int len)
 //4:	client <<<< server
 int tls_write_server_newsession(u8* buf, int len)
 {
+	return 0;
 }
 int tls_write_server_cipherspec(u8* buf, int len)
 {
+	return 0;
 }
 int tls_write_server_encrypthandshake(u8* buf, int len)
 {
+	return 0;
 }
 
 
@@ -375,6 +470,7 @@ int tls_write_server_encrypthandshake(u8* buf, int len)
 //@:	client <--> server
 int tls_write_both_data(u8* buf, int len)
 {
+	return 0;
 }
 int tls_write(u64* p, u8* buf, u64 len)
 {

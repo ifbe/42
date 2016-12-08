@@ -223,8 +223,8 @@ static void sudoku_read_text()
 
 			//color
 			if( (px == x)&&(py == y) )color = 1;
-			else if( ((x>2)&&(x<6)) && ((y<3)|y>5) )color = 2;
-			else if( ((y>2)&&(y<6)) && ((x<3)|x>5) )color = 2;
+			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
+			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
 			else color = 4;
 			for(j=-1;j<=1;j++)
 			{

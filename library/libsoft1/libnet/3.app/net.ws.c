@@ -5,18 +5,18 @@
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
-int findzero(char* p);
-int findhead(char* p);
-int findtail(char* p);
-u8* findstr(char* src, int max, char* target, int tarlen);
+int findzero(void* p);
+int findhead(void* p);
+int findtail(void* p);
+u8* findstr(void* src, int max, void* target, int tarlen);
 //
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 u32 getrandom();
 u64 gettime();
 //
-int diary(char*, int, char*, ...);
-void say(char*, ...);
+int diary(void*, int, void*, ...);
+void say(void*, ...);
 
 
 
@@ -145,7 +145,7 @@ static int websocket_read(u8* buf, int len)
 }
 static void websocket_write(u64 fd, u8* buf, u64 len)
 {
-	u8 headbuf[8];
+	u8 headbuf[16];
 	int headlen;
 	int ret;
 
@@ -247,9 +247,11 @@ int serve_ws(u64* p, u8* buf, u64 len)
 		if(ret < 0)return ret;
 
 		//
-		websocket_write(p[2], "hahahaha", 8);
+		websocket_write(p[2], (void*)"hahahaha", 8);
 		return 0x1f;
 	}
+
+	return 0;
 /*
 	if(type==0x10)
 	{
@@ -359,4 +361,5 @@ int serve_ws(u64* p, u8* buf, u64 len)
 }
 int serve_wss(u64* p, u8* buf, u64 len)
 {
+	return 0;
 }

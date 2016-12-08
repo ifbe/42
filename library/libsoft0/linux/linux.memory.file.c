@@ -72,7 +72,7 @@ static int trythis(char* src,char* dest)
 
 
 //file名字，mem地址，文件内偏移，总字节数
-int writefile(u8* file, u8* mem, u64 offset, u64 count)
+int writefile(char* file, char* mem, u64 offset, u64 count)
 {
 	int fd;
 	int ret;
@@ -127,7 +127,7 @@ int writefile(u8* file, u8* mem, u64 offset, u64 count)
 	//
 	return ret;
 }
-int readfile(u8* file, u8* mem, u64 offset, u64 count)
+int readfile(char* file, char* mem, u64 offset, u64 count)
 {
 	int fd;
 	int ret;

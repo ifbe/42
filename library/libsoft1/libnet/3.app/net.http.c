@@ -6,16 +6,16 @@
 int findzero(char* p);
 int findhead(char* p);
 int findtail(char* p);
-int cmp(u8*,u8*);
-int ncmp(u8*,u8*,int);
+int cmp(void*,void*);
+int ncmp(void*,void*,int);
 //
 int tls_read(u64* p, u8* buf, u64 len);
 int tls_write(u64* p, u8* buf, u64 len);
 //
-int readfile(char* name, char* mem, u64 offset, u64 count);
-int writefile(char* name, char* mem, u64 offset, u64 count);
-int readserver(u64 fd, u8* addr, u64 offset, u64 count);
-int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+int readfile(void* name, void* mem, u64 offset, u64 count);
+int writefile(void* name, void* mem, u64 offset, u64 count);
+int readserver(u64 fd, void* addr, u64 offset, u64 count);
+int writeserver(u64 fd, void* addr, u64 offset, u64 count);
 //
 int diary(char*, int, char*, ...);
 void printmemory(char*,int);
@@ -136,19 +136,27 @@ int serve_https(u64* p, u8* buf, int len)
 {
 	//tls >>>> ascii
 	len = tls_read(p, buf, len);
+	if(len > 0)
+	{
+		//ascii >>>> path
+		len = http_read(buf, len);
+		if(len <= 0)goto error;
 
-	//ascii >>>> path
-	len = http_read(buf, len);
-
-	//path >>>> bin
-	len = http_write(buf, len);
+		//path >>>> bin
+		len = http_write(buf, len);
+		if(len <= 0)goto error;
+	}
 
 	//bin >>>> tls
 	len = tls_write(p, buf, len);
+	if(len <= 0)goto error;
 
+good:
 	//send
 	writeserver(p[2], buf, 0, len);
+	return 0;
 
+error:
 	//
 	p[1] = 0;
 	return 0;

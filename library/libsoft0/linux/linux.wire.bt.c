@@ -37,16 +37,19 @@ int systembt_list(char* towhere)
 }
 int systembt_choose()
 {
+	return 0;
 }
 
 
 
 
-void systembt_start(char* p)
+int systembt_start(char* p)
 {
+	return 0;
 }
-void systembt_stop()
+int systembt_stop()
 {
+	return 0;
 }
 
 

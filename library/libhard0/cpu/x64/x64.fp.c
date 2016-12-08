@@ -86,8 +86,9 @@ void sincos(double x,double *s,double *c)
 {
 	__asm__ (
 		"fsincos;" 
-			: "=t" (*c), "=u" (*s) 
-			: "0" (x) : "st(7)"
+		: "=t" (*c), "=u" (*s) 
+		: "0" (x)
+		//: "st(7)"
 	);
 }
 //正切
@@ -227,10 +228,10 @@ double power(double x,double y)
 		"jnz 0f\n\t"
 		"fldz\n\t"
 		"jmp 2f\n\t"
-		"0:\n\t"
+	"0:\n\t"
 		"fld1\n\t"
 		"jmp 2f\n\t"
-		"1:\n\t"
+	"1:\n\t"
 		"fstcw %3\n\t"
 		"fstcw %4\n\t"
 		"orw $0xC00,%4\n\t"
@@ -252,10 +253,10 @@ double power(double x,double y)
 		"fstp %%st(1)\n\t"
 		"fmulp\n\t"
 		"fldcw %3\n\t"
-		"2:"
+	"2:"
 			: "=t" (result)
 			: "0" (y), "u" (x), "m" (t1), "m" (t2)
-			: "st(1)", "st(7)", "%3", "%4", "ax"
+			: "%3", "%4", "ax"//"st(1)", "st(7)", 
 	);
 	return(result);
 }
@@ -285,7 +286,7 @@ double exponent(double x)
 		"fldcw %2"
 			: "=t" (result)
 			: "0" (x), "m" (t1), "m" (t2)
-			: "st(6)", "st(7)", "%2", "%3"
+			: "%2", "%3"//"st(6)", "st(7)", 
 	);
 	return(result);
 }

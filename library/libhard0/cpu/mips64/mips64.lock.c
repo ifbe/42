@@ -1,6 +1,6 @@
-int snatch(void* lock)
+void snatch(void* lock)
 {
 }
-int release(void* lock)
+void release(void* lock)
 {
 }

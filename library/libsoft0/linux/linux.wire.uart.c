@@ -107,9 +107,11 @@ int systemuart_choose(char* p, int speed)
 
 int systemuart_stop()
 {
+	return 0;
 }
 int systemuart_start(char* p)
 {
+	return 0;
 }
 void systemuart_create()
 {

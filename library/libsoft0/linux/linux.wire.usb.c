@@ -37,6 +37,7 @@ int systemusb_list(char* towhere)
 }
 int systemusb_choose()
 {
+	return 0;
 }
 
 

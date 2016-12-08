@@ -5,8 +5,8 @@
 //libsoft
 void sleep_us(int);
 //libhard
-int snatch(void*);
-int release(void*);
+void snatch(void*);
+void release(void*);
 //libboot
 void say(char*,...);
 

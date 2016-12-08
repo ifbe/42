@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-double calculator(char* postfix, u64 x, u64 y);
-void infix2postfix(char* infix,char* postfix);
+double calculator(u8* postfix, u64 x, u64 y);
+void infix2postfix(u8* infix, u8* postfix);
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);

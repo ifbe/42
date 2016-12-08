@@ -10,8 +10,8 @@ void line(int x1,int y1,int x2,int y2, u32 color);
 void backgroundcolor(u32);
 u32 getrandom();
 //
-int diary(char*,int,char*,...);
-void say(char*,...);
+int diary(void*, int, void*, ...);
+void say(void*, ...);
 
 
 
@@ -36,7 +36,7 @@ static int px,py,qx,qy;
 
 
 
-char* char2hanzi(int val)
+void* char2hanzi(int val)
 {
 	switch(val)
 	{

@@ -7,14 +7,14 @@ int ncmp(u8*,u8*,int);
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
-int diary(u8*, int, u8*, ...);
-void printmemory(u8*, int);
-void say(u8*, ...);
+int diary(void*, int, void*, ...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
-static int printalgorithm(u8* buf,int len)
+static void printalgorithm(u8* buf,int len)
 {
 	int j,k;
 	u8 temp[64];
@@ -159,6 +159,7 @@ static int secureshell_read_0x1e(u8* buf, u64 len)
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
 	printmemory(buf+offset, temp+4);
+	return temp;
 }
 static int secureshell_read(u8* buf, u64 len)
 {

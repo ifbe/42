@@ -1,8 +1,8 @@
 #include<unistd.h>
 #include<fcntl.h>
 #include<sys/mman.h>
-void say(char* fmt, ...);
-void printmemory(char* addr, int size);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 

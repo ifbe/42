@@ -5,12 +5,12 @@
 //
 int createserver();
 int deleteserver();
-int startserver(u8* addr, int port, u8* dir, int opt);
+int startserver(void* addr, int port, void* dir, int opt);
 int stopserver(u64 x);
 int listserver(u8*);
 int chooseserver(u8*, u8*, int, u8*);
-int readserver(u64 fd, u8* addr, u64 offset, u64 count);
-int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+int readserver(u64 fd, void* addr, u64 offset, u64 count);
+int writeserver(u64 fd, void* addr, u64 offset, u64 count);
 //
 void notify_create(u64* p);
 void notify_delete(u64 fd);
@@ -65,7 +65,7 @@ void known_print()
 {
 	int k;
 	u64 fd;
-	char* str;
+	void* str;
 
 	say("\nknown{\n");
 	for(k=0;k<max;k++)

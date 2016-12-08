@@ -17,7 +17,7 @@ void say(char*,...);
 //
 static int fp=-1;
 static int where[4]={-1,-1,-1,-1};
-static unsigned char that[16];
+static char that[16];
 static unsigned char outbuf[16];
 
 
@@ -140,6 +140,8 @@ int systemi2c_list(char* towhere)
 	{
 		return 3;
 	}
+
+	return -1;
 }
 int systemi2c_choose(int num,char* p)
 {
@@ -214,6 +216,8 @@ int systemi2c_choose(int num,char* p)
 		where[1]=num;
 		return 0x12;
 	}
+
+	return 0;
 }
 
 
