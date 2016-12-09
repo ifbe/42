@@ -151,15 +151,16 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/find/find.str.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
-	library/libsoft1/libnet/0.phy/net.eth.c \
-	library/libsoft1/libnet/0.phy/net.slip.c \
-	library/libsoft1/libnet/0.phy/net.wlan.c \
-	library/libsoft1/libnet/1.link/net.arp.c \
-	library/libsoft1/libnet/1.link/net.icmp.c \
-	library/libsoft1/libnet/1.link/net.ipv4.c \
-	library/libsoft1/libnet/1.link/net.ipv6.c \
-	library/libsoft1/libnet/1.link/net.ppp.c \
+	library/libsoft1/libnet/0.raw/net.eth.c \
+	library/libsoft1/libnet/0.raw/net.ppp.c \
+	library/libsoft1/libnet/0.raw/net.slip.c \
+	library/libsoft1/libnet/0.raw/net.wlan.c \
+	library/libsoft1/libnet/1.net/net.arp.c \
+	library/libsoft1/libnet/1.net/net.icmp.c \
+	library/libsoft1/libnet/1.net/net.ipv4.c \
+	library/libsoft1/libnet/1.net/net.ipv6.c \
 	library/libsoft1/libnet/2.tran/net.quic.c \
+	library/libsoft1/libnet/2.tran/net.ssh.c \
 	library/libsoft1/libnet/2.tran/net.ssl.c \
 	library/libsoft1/libnet/2.tran/net.tcp.c \
 	library/libsoft1/libnet/2.tran/net.tls.c \
@@ -167,7 +168,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libnet/3.app/net.chat.c \
 	library/libsoft1/libnet/3.app/net.ftp.c \
 	library/libsoft1/libnet/3.app/net.http.c \
-	library/libsoft1/libnet/3.app/net.ssh.c \
 	library/libsoft1/libnet/3.app/net.tftp.c \
 	library/libsoft1/libnet/3.app/net.ws.c \
 	library/libsoft1/libnet/manager/net.client.c \

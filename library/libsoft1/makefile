@@ -58,15 +58,16 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/find/find.str.c
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
-	$(compiler) $(cflag) libnet/0.phy/net.eth.c
-	$(compiler) $(cflag) libnet/0.phy/net.slip.c
-	$(compiler) $(cflag) libnet/0.phy/net.wlan.c
-	$(compiler) $(cflag) libnet/1.link/net.arp.c
-	$(compiler) $(cflag) libnet/1.link/net.icmp.c
-	$(compiler) $(cflag) libnet/1.link/net.ipv4.c
-	$(compiler) $(cflag) libnet/1.link/net.ipv6.c
-	$(compiler) $(cflag) libnet/1.link/net.ppp.c
+	$(compiler) $(cflag) libnet/0.raw/net.eth.c
+	$(compiler) $(cflag) libnet/0.raw/net.ppp.c
+	$(compiler) $(cflag) libnet/0.raw/net.slip.c
+	$(compiler) $(cflag) libnet/0.raw/net.wlan.c
+	$(compiler) $(cflag) libnet/1.net/net.arp.c
+	$(compiler) $(cflag) libnet/1.net/net.icmp.c
+	$(compiler) $(cflag) libnet/1.net/net.ipv4.c
+	$(compiler) $(cflag) libnet/1.net/net.ipv6.c
 	$(compiler) $(cflag) libnet/2.tran/net.quic.c
+	$(compiler) $(cflag) libnet/2.tran/net.ssh.c
 	$(compiler) $(cflag) libnet/2.tran/net.ssl.c
 	$(compiler) $(cflag) libnet/2.tran/net.tcp.c
 	$(compiler) $(cflag) libnet/2.tran/net.tls.c
@@ -74,7 +75,6 @@ target:
 	$(compiler) $(cflag) libnet/3.app/net.chat.c
 	$(compiler) $(cflag) libnet/3.app/net.ftp.c
 	$(compiler) $(cflag) libnet/3.app/net.http.c
-	$(compiler) $(cflag) libnet/3.app/net.ssh.c
 	$(compiler) $(cflag) libnet/3.app/net.tftp.c
 	$(compiler) $(cflag) libnet/3.app/net.ws.c
 	$(compiler) $(cflag) libnet/manager/net.client.c
