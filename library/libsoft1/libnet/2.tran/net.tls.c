@@ -246,6 +246,85 @@ int tls_write_client_hello(u8* buf, int len)
 
 
 //2:	client <<<< server
+int writecert(u8* q)
+{
+	int len;
+	u8* p = q+8;
+
+	p[0] = 0xa0;
+	p[1] = 0x03;
+	p[2] = 0x02;
+	p[3] = 0x01;
+	p += 4;
+
+	//version
+	p[0] = 2;
+	p[1] = 2;
+	p += 1;
+
+	//serial
+	p[0] = 0x10;
+	p += 1 + 0x10;
+
+	//signature
+	p[0] = 0x30;
+	p[1] = 0xd;
+	p[2] = 6;
+	p[3] = 9;
+	p += 0xf;
+
+	//issuer
+	p[0] = 0x30;
+	p[1] = 0x6;
+	p[2] = 0x31;
+	p[3] = 0x4;
+	p += 0x8;
+
+	//validity
+	p[0] = 0x30;
+	p[1] = 0x1e;
+	p[2] = 0x17;
+	p[3] = 0xd;
+	p[17] = 0x17;
+	p[18] = 0xd;
+	p += 0x20;
+
+	//subject
+	p[0] = 0x30;
+	p[1] = 0x26;
+	p[2] = 0x31;
+	p[3] = 0x24;
+	p += 0x28;
+
+	//pubkey
+	p[0] = 0x30;
+	p[1] = 0x13;
+	p += 0x15;
+
+	//extension1
+	p[0] = 0x30;
+	p[1] = 0xb;
+	p += 0xd;
+
+	//algorithm
+	p[0] = 0x30;
+	p[1] = 0xa;
+	p += 0xc;
+
+	len = p-q;
+	q[0] = 0x30;
+	q[1] = 0x82;
+	q[2] = ((len-4)>>8)&0xff;
+	q[3] = (len-4)&0xff;
+
+	q[4] = 0x30;
+	q[5] = 0x82;
+	q[6] = ((len-8)>>8)&0xff;
+	q[7] = (len-8)&0xff;
+
+	//
+	return len;
+}
 int tls_write_server_hello(u8* buf, int len)
 {
 	u8* p = buf + 9;
@@ -328,34 +407,41 @@ int tls_write_server_hello(u8* buf, int len)
 }
 int tls_write_server_certificate(u8* buf, int len)
 {
-	u8* p = buf + 9;
+	u8* p = buf + 5 + 4 + 3;
 
-	//certificate
-	p[0] = 0;
-	p[1] = 0x2;
-	p[2] = 0x8;
-	p += 3;
+	//cert 1th
+	len = writecert(p+3);
+	p[0] = 0;	//len(cert1)
+	p[1] = (len>>8)&0xff;
+	p[2] = len&0xff;
+	p += 3 + len;
 
-	//
-	p[0] = 0;
-	p[1] = 0x2;
-	p[2] = 0x5;
-	p += 3;
+	//cert 2th
+	len = writecert(p+3);
+	p[0] = 0;	//len(cert2)
+	p[1] = (len>>8)&0xff;
+	p[2] = len&0xff;
+	p += 3 + len;
 
-	//
-	p += 517;
-
-	//5+4byte
+	//5
 	len = p - buf;
 	buf[0] = 0x16;
 	buf[1] = buf[2] = 0x3;
 	buf[3] = ((len-5)>>8)&0xff;
 	buf[4] = (len-5)&0xff;
 
+	//4
 	buf[5] = 11;
 	buf[6] = ((len-9)>>16)&0xff;
 	buf[7] = ((len-9)>>8)&0xff;
 	buf[8] = (len-9)&0xff;
+
+	//3
+	buf[9] = ((len-12)>>16)&0xff;
+	buf[10] = ((len-12)>>8)&0xff;
+	buf[11] = (len-12)&0xff;
+
+	//
 	return len;
 }
 int tls_write_server_keyexch(u8* buf, int len)
