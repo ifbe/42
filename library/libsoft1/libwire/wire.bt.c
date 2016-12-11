@@ -1,10 +1,12 @@
 #define u64 unsigned long long
+int systembt_list(char*);
 
 
 
 
-static void bt_list()
+static int bt_list(char* p)
 {
+	return systembt_list(p);
 }
 static void bt_choose()
 {

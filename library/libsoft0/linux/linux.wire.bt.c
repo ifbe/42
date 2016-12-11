@@ -30,10 +30,14 @@ int systembt_write()
 
 
 
-int systembt_list(char* towhere)
+int systembt_list(char* p)
 {
-	int ret=system("hcitool scan");
-	return ret;
+	char buf[0x80];
+	if(p == 0)snprintf(buf, 0x80, "hcitool scan");
+	else snprintf(buf, 0x80, "sdptool browse %s", p);
+
+	printf("%s\n",buf);
+	return system(buf);
 }
 int systembt_choose()
 {
