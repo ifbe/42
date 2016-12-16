@@ -176,6 +176,9 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 			return 0;
 		}
 
+		//
+		selfname(fd, temp);
+		printf("%d.%d.%d.%d:%d\n",temp[0],temp[1],temp[2],temp[3],*(u32*)(temp+4));
 		st = SOCK_DGRAM;
 	}
 	else
