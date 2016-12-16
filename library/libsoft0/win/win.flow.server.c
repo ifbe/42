@@ -22,14 +22,32 @@ static int CONFIG;
 
 
 
-DWORD WINAPI newone(LPVOID pM)
+void selfname(u64 fd, u32* buf)
 {
-	return 0;
+	struct sockaddr_in addr;
+	socklen_t len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)&addr, &len);
+
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
+}
+void peername(u64 fd, u32* buf)
+{
+	struct sockaddr_in addr;
+	socklen_t len = sizeof(struct sockaddr_in);
+	getpeername(fd, (void*)&addr, &len);
+
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
 }
 
 
 
 
+DWORD WINAPI newone(LPVOID pM)
+{
+	return 0;
+}
 int readserver(u64 fd, u8* addr, u64 offset, u64 count)
 {
 	return 0;

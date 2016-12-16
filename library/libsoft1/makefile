@@ -2,6 +2,28 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) libflow/libnet/0.raw/net.eth.c
+	$(compiler) $(cflag) libflow/libnet/0.raw/net.ppp.c
+	$(compiler) $(cflag) libflow/libnet/0.raw/net.slip.c
+	$(compiler) $(cflag) libflow/libnet/0.raw/net.wlan.c
+	$(compiler) $(cflag) libflow/libnet/1.net/net.arp.c
+	$(compiler) $(cflag) libflow/libnet/1.net/net.icmp.c
+	$(compiler) $(cflag) libflow/libnet/1.net/net.ipv4.c
+	$(compiler) $(cflag) libflow/libnet/1.net/net.ipv6.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.quic.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.ssh.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.ssl.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.tcp.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.tls.c
+	$(compiler) $(cflag) libflow/libnet/2.tran/net.udp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.chat.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.ftp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.tftp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.ws.c
+	$(compiler) $(cflag) libflow/libnet/manager/net.client.c
+	$(compiler) $(cflag) libflow/libnet/manager/net.server.c
+	$(compiler) $(cflag) libflow/libnet/manager/net.c
 	$(compiler) $(cflag) libmemory/libbio/bio.c
 	$(compiler) $(cflag) libmemory/libchem/chem.c
 	$(compiler) $(cflag) libmemory/libfile/file.c
@@ -58,28 +80,6 @@ target:
 	$(compiler) $(cflag) libmemory/libtext/find/find.str.c
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
-	$(compiler) $(cflag) libnet/0.raw/net.eth.c
-	$(compiler) $(cflag) libnet/0.raw/net.ppp.c
-	$(compiler) $(cflag) libnet/0.raw/net.slip.c
-	$(compiler) $(cflag) libnet/0.raw/net.wlan.c
-	$(compiler) $(cflag) libnet/1.net/net.arp.c
-	$(compiler) $(cflag) libnet/1.net/net.icmp.c
-	$(compiler) $(cflag) libnet/1.net/net.ipv4.c
-	$(compiler) $(cflag) libnet/1.net/net.ipv6.c
-	$(compiler) $(cflag) libnet/2.tran/net.quic.c
-	$(compiler) $(cflag) libnet/2.tran/net.ssh.c
-	$(compiler) $(cflag) libnet/2.tran/net.ssl.c
-	$(compiler) $(cflag) libnet/2.tran/net.tcp.c
-	$(compiler) $(cflag) libnet/2.tran/net.tls.c
-	$(compiler) $(cflag) libnet/2.tran/net.udp.c
-	$(compiler) $(cflag) libnet/3.app/net.chat.c
-	$(compiler) $(cflag) libnet/3.app/net.ftp.c
-	$(compiler) $(cflag) libnet/3.app/net.http.c
-	$(compiler) $(cflag) libnet/3.app/net.tftp.c
-	$(compiler) $(cflag) libnet/3.app/net.ws.c
-	$(compiler) $(cflag) libnet/manager/net.client.c
-	$(compiler) $(cflag) libnet/manager/net.server.c
-	$(compiler) $(cflag) libnet/manager/net.c
 	$(compiler) $(cflag) libsystem/system.folder.c
 	$(compiler) $(cflag) libsystem/system.process.c
 	$(compiler) $(cflag) libsystem/system.thread.c

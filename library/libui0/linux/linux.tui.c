@@ -26,7 +26,7 @@ static int flag=-1;
 static struct termios old;
 static struct termios new;
 //
-static char* textbuf=0;
+static u8* textbuf=0;
 static pthread_t id;
 
 
@@ -178,7 +178,7 @@ void windowchange()
 
 
 
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(u8* addr, u8* pixfmt, int x, int y)
 {
 	textbuf = addr;
 	*(unsigned int*)pixfmt = 0x74786574;

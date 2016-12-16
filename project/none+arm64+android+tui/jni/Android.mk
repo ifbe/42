@@ -74,6 +74,18 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
+	library/libsoft0/linux/linux.flow.client.c \
+	library/libsoft0/linux/linux.flow.image.c \
+	library/libsoft0/linux/linux.flow.server.c \
+	library/libsoft0/linux/linux.flow.voice.c \
+	library/libsoft0/linux/linux.memory.file.c \
+	library/libsoft0/linux/linux.memory.physical.c \
+	library/libsoft0/linux/linux.memory.virtual.c \
+	library/libsoft0/linux/linux.system.folder.c \
+	library/libsoft0/linux/linux.system.process.c \
+	library/libsoft0/linux/linux.system.random.c \
+	library/libsoft0/linux/linux.system.signal.c \
+	library/libsoft0/linux/linux.system.time.c \
 	library/libsoft0/linux/linux.wire.bt.c \
 	library/libsoft0/linux/linux.wire.gpio.c \
 	library/libsoft0/linux/linux.wire.i2c.c \
@@ -81,20 +93,32 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.wire.uart.c \
 	library/libsoft0/linux/linux.wire.usb.c \
 	library/libsoft0/linux/linux.wire.wifi.c \
-	library/libsoft0/linux/linux.memory.file.c \
-	library/libsoft0/linux/linux.memory.physical.c \
-	library/libsoft0/linux/linux.memory.virtual.c \
-	library/libsoft0/linux/linux.net.client.c \
-	library/libsoft0/linux/linux.net.server.c \
-	library/libsoft0/linux/linux.system.folder.c \
-	library/libsoft0/linux/linux.system.process.c \
-	library/libsoft0/linux/linux.system.random.c \
-	library/libsoft0/linux/linux.system.signal.c \
-	library/libsoft0/linux/linux.system.time.c \
 	library/libsoft0/system.c
 
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/libflow/libnet/0.raw/net.eth.c \
+	library/libsoft1/libflow/libnet/0.raw/net.ppp.c \
+	library/libsoft1/libflow/libnet/0.raw/net.slip.c \
+	library/libsoft1/libflow/libnet/0.raw/net.wlan.c \
+	library/libsoft1/libflow/libnet/1.net/net.arp.c \
+	library/libsoft1/libflow/libnet/1.net/net.icmp.c \
+	library/libsoft1/libflow/libnet/1.net/net.ipv4.c \
+	library/libsoft1/libflow/libnet/1.net/net.ipv6.c \
+	library/libsoft1/libflow/libnet/2.tran/net.quic.c \
+	library/libsoft1/libflow/libnet/2.tran/net.ssh.c \
+	library/libsoft1/libflow/libnet/2.tran/net.ssl.c \
+	library/libsoft1/libflow/libnet/2.tran/net.tcp.c \
+	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
+	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
+	library/libsoft1/libflow/libnet/3.app/net.chat.c \
+	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
+	library/libsoft1/libflow/libnet/3.app/net.http.c \
+	library/libsoft1/libflow/libnet/3.app/net.tftp.c \
+	library/libsoft1/libflow/libnet/3.app/net.ws.c \
+	library/libsoft1/libflow/libnet/manager/net.client.c \
+	library/libsoft1/libflow/libnet/manager/net.server.c \
+	library/libsoft1/libflow/libnet/manager/net.c \
 	library/libsoft1/libmemory/libbio/bio.c \
 	library/libsoft1/libmemory/libchem/chem.c \
 	library/libsoft1/libmemory/libfile/file.c \
@@ -151,28 +175,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libtext/find/find.str.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
-	library/libsoft1/libnet/0.raw/net.eth.c \
-	library/libsoft1/libnet/0.raw/net.ppp.c \
-	library/libsoft1/libnet/0.raw/net.slip.c \
-	library/libsoft1/libnet/0.raw/net.wlan.c \
-	library/libsoft1/libnet/1.net/net.arp.c \
-	library/libsoft1/libnet/1.net/net.icmp.c \
-	library/libsoft1/libnet/1.net/net.ipv4.c \
-	library/libsoft1/libnet/1.net/net.ipv6.c \
-	library/libsoft1/libnet/2.tran/net.quic.c \
-	library/libsoft1/libnet/2.tran/net.ssh.c \
-	library/libsoft1/libnet/2.tran/net.ssl.c \
-	library/libsoft1/libnet/2.tran/net.tcp.c \
-	library/libsoft1/libnet/2.tran/net.tls.c \
-	library/libsoft1/libnet/2.tran/net.udp.c \
-	library/libsoft1/libnet/3.app/net.chat.c \
-	library/libsoft1/libnet/3.app/net.ftp.c \
-	library/libsoft1/libnet/3.app/net.http.c \
-	library/libsoft1/libnet/3.app/net.tftp.c \
-	library/libsoft1/libnet/3.app/net.ws.c \
-	library/libsoft1/libnet/manager/net.client.c \
-	library/libsoft1/libnet/manager/net.server.c \
-	library/libsoft1/libnet/manager/net.c \
 	library/libsoft1/libsystem/system.folder.c \
 	library/libsoft1/libsystem/system.process.c \
 	library/libsoft1/libsystem/system.setting.c \

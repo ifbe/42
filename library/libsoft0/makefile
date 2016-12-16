@@ -5,13 +5,18 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
 	$(compiler) $(cflag) bare/bare.memory.file.c
-	$(compiler) $(cflag) bare/bare.net.client.c
-	$(compiler) $(cflag) bare/bare.net.server.c
+	$(compiler) $(cflag) bare/bare.flow.client.c
+	$(compiler) $(cflag) bare/bare.flow.image.c
+	$(compiler) $(cflag) bare/bare.flow.server.c
+	$(compiler) $(cflag) bare/bare.flow.voice.c
+	$(compiler) $(cflag) bare/bare.memory.file.c
+	$(compiler) $(cflag) bare/bare.memory.io.c
 	$(compiler) $(cflag) bare/bare.system.folder.c
 	$(compiler) $(cflag) bare/bare.system.process.c
 	$(compiler) $(cflag) bare/bare.system.random.c
 	$(compiler) $(cflag) bare/bare.system.signal.c
 	$(compiler) $(cflag) bare/bare.system.time.c
+	$(compiler) $(cflag) bare/bare.wire.bt.c
 	$(compiler) $(cflag) bare/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/bare.wire.spi.c
 	$(compiler) $(cflag) bare/bare.wire.uart.c
@@ -31,10 +36,12 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
+	$(compiler) $(cflag) linux/linux.flow.client.c
+	$(compiler) $(cflag) linux/linux.flow.image.c
+	$(compiler) $(cflag) linux/linux.flow.server.c
+	$(compiler) $(cflag) linux/linux.flow.voice.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.mmio.c
-	$(compiler) $(cflag) linux/linux.net.client.c
-	$(compiler) $(cflag) linux/linux.net.server.c
 	$(compiler) $(cflag) linux/linux.system.folder.c
 	$(compiler) $(cflag) linux/linux.system.process.c
 	$(compiler) $(cflag) linux/linux.system.random.c
@@ -53,10 +60,12 @@ linux:
 .PHONY:mac
 mac:
 	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
+	$(compiler) $(cflag) mac.flow.client.c
+	$(compiler) $(cflag) mac.flow.image.c
+	$(compiler) $(cflag) mac.flow.server.c
+	$(compiler) $(cflag) mac.flow.voice.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac.memory.mmio.c
-	$(compiler) $(cflag) mac.net.client.c
-	$(compiler) $(cflag) mac.net.server.c
 	$(compiler) $(cflag) mac.system.folder.c
 	$(compiler) $(cflag) mac.system.random.c
 	$(compiler) $(cflag) mac.system.signal.c
@@ -74,10 +83,12 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
+	$(compiler) $(cflag) win/win.flow.client.c
+	$(compiler) $(cflag) win/win.flow.image.c
+	$(compiler) $(cflag) win/win.flow.server.c
+	$(compiler) $(cflag) win/win.flow.voice.c
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.virtual.c
-	$(compiler) $(cflag) win/win.net.client.c
-	$(compiler) $(cflag) win/win.net.server.c
 	$(compiler) $(cflag) win/win.system.folder.c
 	$(compiler) $(cflag) win/win.system.process.c
 	$(compiler) $(cflag) win/win.system.random.c
