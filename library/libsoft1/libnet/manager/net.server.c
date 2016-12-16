@@ -3,6 +3,8 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
+int selfname(u64, void*);
+int peername(u64, void*);
 int createserver();
 int deleteserver();
 int startserver(void* addr, int port, void* dir, int opt);
@@ -65,15 +67,21 @@ void known_print()
 {
 	int k;
 	u64 fd;
-	void* str;
+	u8* p;
+	u32* q;
 
 	say("\nknown{\n");
 	for(k=0;k<max;k++)
 	{
 		fd = known[k].fd;
-		str = known[k].addr;
-		//say("%llx,%x",fd,str);
-		say("   [%lld]%s\n", fd, str);
+		p = known[k].addr;
+		q = (u32*)(p+4);
+
+		say("   [%lld]%d.%d.%d.%d:%d\n",
+			fd,
+			p[0],p[1],p[2],p[3],
+			q[0]
+		);
 	}
 	say("}%d\n",max);
 }
@@ -102,7 +110,6 @@ void known_delete(u64 fd)
 void known_create(u64* p)
 {
 	int j,k;
-	u8* str = (void*)p[0];
 	u64 fd = p[2];
 
 	//user max
@@ -128,10 +135,11 @@ void known_create(u64* p)
 			movsb(&known[j+1], &known[j], (max-j)*sizeof(struct node));
 			max++;
 
-			//
+			//known[j].time =
 			known[j].fd = fd;
 			known[j].type = 0;
-			ncopy(known[j].addr, str, 32);
+			//known[j].detail =
+			peername(fd, known[j].addr);
 
 			//
 			known_print();

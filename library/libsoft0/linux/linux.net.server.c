@@ -46,6 +46,28 @@ static int CONFIG;
 
 
 
+void selfname(u64 fd, u32* buf)
+{
+	struct sockaddr_in addr;
+	socklen_t len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)&addr, &len);
+
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
+}
+void peername(u64 fd, u32* buf)
+{
+	struct sockaddr_in addr;
+	socklen_t len = sizeof(struct sockaddr_in);
+	getpeername(fd, (void*)&addr, &len);
+
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
+}
+
+
+
+
 void epoll_del(u32 fd)
 {
 	int j;
@@ -66,6 +88,10 @@ void epoll_add(u32 fd)
 	ev.data.fd = fd;
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
 }
+
+
+
+
 static void handle_accpet(int listenfd)
 {
 	int fd;
@@ -79,12 +105,6 @@ static void handle_accpet(int listenfd)
 		return;
 	}
 
-	//
-	snprintf(IPADDRESS, 32,
-		"%s:%d",
-		inet_ntoa(cliaddr.sin_addr),
-		cliaddr.sin_port
-	);
 	eventwrite((u64)IPADDRESS, 0x2b6e, fd, gettime());
 	epoll_add(fd);
 }

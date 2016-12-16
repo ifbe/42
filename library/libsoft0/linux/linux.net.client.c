@@ -18,6 +18,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+int selfname(u64, void*);
+int peername(u64, void*);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -109,6 +111,7 @@ int listclient(char* type)
 int chooseclient(char* type, char* addr, int port, char* extra)
 {
 	int ret;
+	u8 temp[8];
 
 	if(fd > 0)
 	{
@@ -200,6 +203,9 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 			return 0;
 		}
 
+		//
+		selfname(fd, temp);
+		printf("%d.%d.%d.%d:%d\n",temp[0],temp[1],temp[2],temp[3],*(u32*)(temp+4));
 		st = SOCK_STREAM;
 	}
 
