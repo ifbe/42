@@ -4,8 +4,10 @@
 #define u64 unsigned long long
 //
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
+void line(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
-unsigned int getrandom();
+//
+u32 getrandom();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -49,20 +51,18 @@ void spectrum_random()
 static void spectrum_read_pixel()
 {
 	int x,y;
-	int width,height,min;
+	int width = haha->width;
+	int height = haha->height;
 
-	width = haha->width;
-	height = haha->height;
-	if(width<height)min=width;
-	else min=height;
-
-	rectbody(0, 0, min, min, 0);
+	rectbody(0, height/4, width, height*3/4, 0);
 	for(x=0;x<1024;x++)
 	{
-		y = min - (int)(real[x] * (double)min / (double)maxpower);
-
-		rectbody(x*min/1024, y, x*min/1024, min, 0xffffffff);
-//say("%x,%x\n",leftupper,rightbottom);
+		y = (int)(real[x] * height / maxpower / 4);
+		line(
+			x*width/1024, (height/2) - y,
+			x*width/1024, (height/2) + y,
+			0xffffffff
+		);
 	}
 }
 static void spectrum_read_html()

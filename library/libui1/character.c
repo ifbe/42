@@ -62,6 +62,7 @@ void tree_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
+void backgroundcolor();
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 u32 getrandom();
@@ -544,6 +545,9 @@ void characterwrite(u64 what, u64 who, u64 where, u64 when)
 
 			worker[x].width = w;
 			worker[x].height = h;
+
+			//cleanup screen
+			backgroundcolor(0);
 		}
 		return;
 	}//size
