@@ -2,12 +2,62 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int findzero(u8* p);
 int ncmp(u8*, u8*, int);
 
 
 
 
+int findzero(char* p)
+{
+	int j=0;
+	while(1)
+	{
+		if(p[j] == 0)break;
+
+		j++;
+	}
+	return j;
+}
+int findtail(char* p)
+{
+	int j=0;
+	while(1)
+	{
+		if(p[j] == 0)break;
+		if(p[j] == 0xd)break;
+		if(p[j] == 0xa)break;
+
+		j++;
+	}
+	return j;
+}
+int findhead(char* p)
+{
+	int j;
+	int flag=0;
+	while(1)
+	{
+		if(p[j] == 0)break;
+		if(p[j] == 0xa)
+		{
+			j++;
+			break;
+		}
+		if(p[j] == 0xd)
+		{
+			if(p[j+1] == 0xa)
+			{
+				j+=2;
+			}
+			else j++;
+
+			break;
+		}
+
+		j++;
+	}
+	return j;
+}
 u8* findstr(u8* src, int len, u8* target, int tarlen)
 {
 	int j,k;

@@ -20,15 +20,6 @@ void copy(char* dst, char* src)
 		j++;
 	}
 }
-void ncopy(char* dst, char* src, int max)
-{
-	int j;
-	for(j=0;j<max;j++)
-	{
-		dst[j] = src[j];
-		if(src[j] == 0)break;
-	}
-}
 void movsb(u8* rdi, u8* rsi, int rcx)
 {
 	int j;

@@ -143,6 +143,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libfs/fs.c \
 	library/libsoft1/libmemory/libmath/math.bigint.c \
 	library/libsoft1/libmemory/libmath/math.calc.c \
+	library/libsoft1/libmemory/libmath/math.fourier.c \
 	library/libsoft1/libmemory/libmath/math.notation.c \
 	library/libsoft1/libmemory/libmath/math.prime.c \
 	library/libsoft1/libmemory/libmath/math.c \
@@ -161,18 +162,23 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmemory/libsec/hash/hash.string.c \
 	library/libsoft1/libmemory/libsec/qrcode.c \
 	library/libsoft1/libmemory/libsec/sec.c \
-	library/libsoft1/libmemory/libtext/compare/compare.simple.c \
-	library/libsoft1/libmemory/libtext/compare/compare.wildcard.c \
-	library/libsoft1/libmemory/libtext/convert/convert.argument.c \
-	library/libsoft1/libmemory/libtext/convert/convert.ascii.c \
-	library/libsoft1/libmemory/libtext/convert/convert.bigint.c \
-	library/libsoft1/libmemory/libtext/convert/convert.copy.c \
-	library/libsoft1/libmemory/libtext/convert/convert.encoding.c \
-	library/libsoft1/libmemory/libtext/convert/convert.filename.c \
-	library/libsoft1/libmemory/libtext/convert/convert.network.c \
-	library/libsoft1/libmemory/libtext/convert/convert.number.c \
-	library/libsoft1/libmemory/libtext/find/find.byte.c \
-	library/libsoft1/libmemory/libtext/find/find.str.c \
+	library/libsoft1/libmemory/libtext/conv/conv.arg.c \
+	library/libsoft1/libmemory/libtext/conv/conv.ascii.c \
+	library/libsoft1/libmemory/libtext/conv/conv.bigint.c \
+	library/libsoft1/libmemory/libtext/conv/conv.file.c \
+	library/libsoft1/libmemory/libtext/conv/conv.net.c \
+	library/libsoft1/libmemory/libtext/conv/conv.num.c \
+	library/libsoft1/libmemory/libtext/conv/conv.utf8.c \
+	library/libsoft1/libmemory/libtext/diff/diff.cmp.c \
+	library/libsoft1/libmemory/libtext/diff/diff.diff.c \
+	library/libsoft1/libmemory/libtext/diff/diff.wild.c \
+	library/libsoft1/libmemory/libtext/find/find.bm.c \
+	library/libsoft1/libmemory/libtext/find/find.kmp.c \
+	library/libsoft1/libmemory/libtext/find/find.rough.c \
+	library/libsoft1/libmemory/libtext/move/move.copy.c \
+	library/libsoft1/libmemory/libtext/move/move.swap.c \
+	library/libsoft1/libmemory/libtext/sort/sort.gnome.c \
+	library/libsoft1/libmemory/libtext/sort/sort.quick.c \
 	library/libsoft1/libmemory/libtext/text.c \
 	library/libsoft1/libmemory/memory.c \
 	library/libsoft1/libsystem/system.folder.c \

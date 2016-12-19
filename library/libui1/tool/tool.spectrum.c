@@ -7,6 +7,8 @@ void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void line(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
 //
+void fft(float* real, float* imag, float* sample, int k);
+void ifft(float* real, float* imag, float* sample, int k);
 u32 getrandom();
 //
 void printmemory(char*,int);
@@ -28,20 +30,25 @@ static struct temp{
 }*haha;
 
 //before
-static double* databuf=0;
+static float* databuf=0;
 static int maxpower;
 
 //after
-static double* real;		//8*2048=0x4000
-static double* imag;		//8*2048=0x4000
-static double* power;		//8*1024=0x2000
-static double* phase;		//8*1024=0x2000
+static float* real;		//8*2048=0x4000
+static float* imag;		//8*2048=0x4000
+static float* power;		//8*1024=0x2000
+static float* phase;		//8*1024=0x2000
+
+
+
+
+//
 void spectrum_random()
 {
 	int j;
 	for(j=0;j<2048;j++)
 	{
-		real[j] = (double)(getrandom()%maxpower);
+		real[j] = (float)(getrandom()%maxpower);
 	}
 }
 
@@ -54,13 +61,13 @@ static void spectrum_read_pixel()
 	int width = haha->width;
 	int height = haha->height;
 
-	rectbody(0, height/4, width, height*3/4, 0);
+	rectbody(0, 0, width, height/2, 0);
 	for(x=0;x<1024;x++)
 	{
 		y = (int)(real[x] * height / maxpower / 4);
 		line(
-			x*width/1024, (height/2) - y,
-			x*width/1024, (height/2) + y,
+			x*width/1024, (height/4) - y,
+			x*width/1024, (height/4) + y,
 			0xffffffff
 		);
 	}
@@ -78,7 +85,7 @@ static void spectrum_read_text()
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
 	{
-		y = h - (int)(real[x] * (double)h / (double)maxpower);
+		y = h - (int)(real[x] * (float)h / (float)maxpower);
 		for(;y<h;y++)
 		{
 			p[((y*w + x)<<2) + 3] =  0x2;
@@ -191,11 +198,11 @@ void spectrum_create(void* uibuf,void* addr)
 	this[14]=(u64)spectrum_read;
 	this[15]=(u64)spectrum_write;
 
-	databuf=(double*)(uibuf+0x200000);
-	real=(double*)(uibuf+0x300000);
-	imag=(double*)(uibuf+0x340000);
-	power=(double*)(uibuf+0x380000);
-	phase=(double*)(uibuf+0x3c0000);
+	databuf=(float*)(uibuf+0x200000);
+	real=(float*)(uibuf+0x300000);
+	imag=(float*)(uibuf+0x340000);
+	power=(float*)(uibuf+0x380000);
+	phase=(float*)(uibuf+0x3c0000);
 }
 void spectrum_delete()
 {

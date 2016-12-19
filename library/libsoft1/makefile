@@ -48,6 +48,7 @@ target:
 	$(compiler) $(cflag) libmemory/libfs/fs.c
 	$(compiler) $(cflag) libmemory/libmath/math.bigint.c
 	$(compiler) $(cflag) libmemory/libmath/math.calc.c
+	$(compiler) $(cflag) libmemory/libmath/math.fourier.c
 	$(compiler) $(cflag) libmemory/libmath/math.notation.c
 	$(compiler) $(cflag) libmemory/libmath/math.prime.c
 	$(compiler) $(cflag) libmemory/libmath/math.c
@@ -66,18 +67,22 @@ target:
 	$(compiler) $(cflag) libmemory/libsec/hash/hash.string.c
 	$(compiler) $(cflag) libmemory/libsec/qrcode.c
 	$(compiler) $(cflag) libmemory/libsec/sec.c
-	$(compiler) $(cflag) libmemory/libtext/compare/compare.simple.c
-	$(compiler) $(cflag) libmemory/libtext/compare/compare.wildcard.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.argument.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.ascii.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.bigint.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.copy.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.encoding.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.filename.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.network.c
-	$(compiler) $(cflag) libmemory/libtext/convert/convert.number.c
-	$(compiler) $(cflag) libmemory/libtext/find/find.byte.c
-	$(compiler) $(cflag) libmemory/libtext/find/find.str.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.arg.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.ascii.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.bigint.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.file.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.net.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.num.c
+	$(compiler) $(cflag) libmemory/libtext/conv/conv.utf8.c
+	$(compiler) $(cflag) libmemory/libtext/diff/diff.cmp.c
+	$(compiler) $(cflag) libmemory/libtext/diff/diff.wild.c
+	$(compiler) $(cflag) libmemory/libtext/find/find.bm.c
+	$(compiler) $(cflag) libmemory/libtext/find/find.kmp.c
+	$(compiler) $(cflag) libmemory/libtext/find/find.rough.c
+	$(compiler) $(cflag) libmemory/libtext/move/move.copy.c
+	$(compiler) $(cflag) libmemory/libtext/move/move.swap.c
+	$(compiler) $(cflag) libmemory/libtext/sort/sort.gnome.c
+	$(compiler) $(cflag) libmemory/libtext/sort/sort.quick.c
 	$(compiler) $(cflag) libmemory/libtext/text.c
 	$(compiler) $(cflag) libmemory/memory.c
 	$(compiler) $(cflag) libsystem/system.folder.c
