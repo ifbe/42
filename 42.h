@@ -52,9 +52,9 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 	#define btn_back 'b'
 	#define btn_side1 '1'
 	#define btn_side2 '2'
-	#define btn_side2 '3'
-	#define btn_side2 '4'
-	#define btn_side2 '5'
+	#define btn_side3 '3'
+	#define btn_side4 '4'
+	#define btn_side5 '5'
 
 #define net_in 0x2b6e		//n+
 #define net_out 0x2d6e		//n-
@@ -99,9 +99,9 @@ void printdouble(     int x, int y, int size, double dat, u32 fg, u32 bg);
 
 void defaultascii(      int x, int y, u8 ch);
 void defaultstring(     int x, int y, u8* s);
+void defaulthexadecimal(int x, int y, u64 hex);
 void defaultdecimal(    int x, int y, long long dec);
-void defaulthexadecimal(int x, int y, u64 long hex);
-void defaultdouble(     int x, int y, double data)
+void defaultdouble(     int x, int y, double data);
 
 
 
@@ -171,35 +171,37 @@ int finddata(u8* buf, u8 data);
 int bigadd(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
-	u8* ans, int max);
+	u8* ans, int max
+);
 int bigsub(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
-	u8* ans, int max);
-
+	u8* ans, int max
+);
 int bigmul(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
-	u8* ans, int max,
-	u8* tmp, int ign);
+	u8* ans, int max
+);
+int bigmod(
+	u8* base, int bl,
+	u8* mod, int ml,
+	u8* ans, int al
+);
 int bigdiv(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
 	u8* quotient, int max1,
-	u8* remainder, int max2);
-
-int bigmod(
-	u8* base, int bl,
-	u8* mod, int ml,
-	u8* ans, int al);
+	u8* remainder, int max2
+);
 int bigpow(
 	u8* base, int bl,
 	u8* exp, int el,
 	u8* mod, int ml,
 	u8* ans, int al,
 	u8* t1, int l1,
-	u8* t2, int l2,
-	u8* t3, int l3);
+	u8* t2, int l2
+);
 
 
 
@@ -235,7 +237,5 @@ void say(char*,...);
 
 
 //libboot0
-char getchar();
-void putchar(char ch);
 void power_off();
 void power_on();
