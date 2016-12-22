@@ -2,18 +2,19 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//soft.net
-void notify_create(void*);
 //soft.artery
 int arteryprompt();
 int arterycommand(void*);
+void motion_explain(void*);
+void network_explain(void*);
+void sound_explain(void*);
+void vision_explain(void*);
 //boot
 void printmemory(char*, int);
 void say(char*, ...);
 //event
 u64* eventread();
 void eventwrite(u64 why, u64 what, u64 where, u64 when);
-//world
 int birth();
 int death();
 
@@ -43,17 +44,20 @@ int main(int argc,char* argv[])
 
 		//2.等待输入
 		addr = eventread();
-
-		//3.特殊的自己处理
-		if(addr == 0)break;		//错误
-		if(addr[1] == 0)break;		//退出
-		if((addr[1]&0xff) == 'n')	//网络
+		if(addr == 0)break;		//error
+		if(addr[1] == 0)break;		//exit
+		if((addr[1]&0xff) == 'n')	//net
 		{
-			notify_create(addr);
+			network_explain(addr);
+			continue;
+		}
+		if((addr[1]&0xff) == 'p')	//touch
+		{
+			motion_explain(addr);
 			continue;
 		}
 
-		//4.世界改变
+		//3.世界改变
 		arterycommand(addr);
 	}
 

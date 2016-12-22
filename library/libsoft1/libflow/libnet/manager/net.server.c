@@ -14,8 +14,6 @@ int chooseserver(u8*, u8*, int, u8*);
 int readserver(u64 fd, void* addr, u64 offset, u64 count);
 int writeserver(u64 fd, void* addr, u64 offset, u64 count);
 //
-void notify_create(u64* p);
-void notify_delete(u64 fd);
 int serve_first(void* p, u8* buf, u64 len);
 int serve_chat(void* p, u8* buf, u64 len);
 int serve_http(void* p, u8* buf, u64 len);
@@ -107,6 +105,15 @@ void known_delete(u64 fd)
 		}
 	}
 }
+void notify_delete(u64 fd)
+{
+	known_delete(fd);
+	stopserver(fd);
+}
+
+
+
+
 void known_create(u64* p)
 {
 	int j,k;
@@ -259,7 +266,7 @@ forceclose:
 
 
 
-void notify_create(u64* p)
+void network_explain(u64* p)
 {
 	int ret = p[1] & 0xffff;
 
@@ -269,15 +276,6 @@ void notify_create(u64* p)
 
 	writeserver(p[2], 0, 0, 0);
 }
-void notify_delete(u64 fd)
-{
-	known_delete(fd);
-	stopserver(fd);
-}
-
-
-
-
 static int server_read(u64* p)
 {
 	return 0;

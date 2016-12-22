@@ -81,11 +81,6 @@ static void* pixbuf;
 static void* pixfmt;
 static int w;
 static int h;
-//touch
-static u64 pointenter[10];
-static u64 pointleave[10];
-static int pointcount=0;
-static int pointmax=0;
 
 
 
@@ -405,139 +400,15 @@ int characterchoose(u8* p)
 
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-static void parsetouch(u64* type, u64* key)
-{
-	int m,n;
-	int dx0,dy0;
-	int dx1,dy1;
-	int dx2,dy2;
-
-	m = *(u16*)type;
-	n = ( (*key) >> 48 ) & 0x07;
-
-	if(m == 0x4070)
-	{
-		//say("[%d]@@@@@@@@@@@\n",n);
-		pointleave[n]=*key;
-	}//point move
-
-	else if(m == 0x2b70)
-	{
-		//say("[%d]++++++++++\n",n);
-		pointcount++;
-		pointmax++;
-		pointenter[n]=*key;
-	}//point sensed
-
-	else if(m == 0x2d70)
-	{
-		//say("[%d]---------\n",n);
-
-		//
-		pointleave[n]=*key;
-/*
-		say("(%llx,%llx)->(%llx,%llx)\n",
-			(pointenter[n]&0xffff),
-			((pointenter[n]>>16)&0xffff),
-			(pointleave[n]&0xffff),
-			((pointleave[n]>>16)&0xffff)
-		);
-*/
-		//
-		pointcount--;
-		if(pointcount==0)
-		{
-			if(pointmax==1)
-			{
-				pointmax=0;
-				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-
-				if( (dy0>-256) && (dy0<256) )
-				{
-					if(dx0<-128)	//left
-					{
-						*type = 0x64626b;
-						*key = 0x25;
-					}
-					else if(dx0>128)	//right
-					{
-						*type = 0x64626b;
-						*key = 0x27;
-					}
-					else	//point
-					{
-						*type = 0x2d6d;
-						*key = (*key&0xffffffff) + ((u64)1<<48);
-					}
-				}
-				if( (dx0>-256) && (dx0<256) )
-				{
-					if(dy0<-128)	//up
-					{	
-						*type = 0x64626b;
-						*key = 0x26;
-					}
-					else if(dy0>128)	//down
-					{
-						*type = 0x64626b;
-						*key = 0x28;
-					}
-					else	//point
-					{
-						*type = 0x2d6d;
-						*key = (*key&0xffffffff) + ((u64)1<<48);
-					}
-				}
-			}
-
-			else if(pointmax==2)
-			{
-				pointmax=0;
-				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-				dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
-				dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-			}
-
-			else if(pointmax>=3)
-			{
-				pointmax=0;
-				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
-				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
-				dx1 = (pointleave[1]&0xffff) - (pointenter[1]&0xffff);
-				dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
-				dx2 = (pointleave[2]&0xffff) - (pointenter[2]&0xffff);
-				dy2 = ((pointleave[2]>>16)&0xffff) - ((pointenter[2]>>16)&0xffff);
-				if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256)&&(dx2>-256)&&(dx2<256) )
-				{
-					if( (dy0 > 128)&&(dy1 > 128)&&(dy2 > 128) )
-					{
-						worker[1].xyze1 ^= 1;
-					}
-					else if( (dy0 < -128)&&(dy1 < -128)&&(dy2 < -128) )
-					{
-						worker[2].xyze1 ^= 1;
-					}
-					else
-					{
-						worker[0].xyze1 ^= 1;
-					}
-				}//3touch
-			}//max>=3
-		}//last one
-	}//point gone
-}
-void characterwrite(u64 what, u64 who, u64 where, u64 when)
+void characterwrite(u64* p)
 {
 	int x;
 
 	//size
-	if(who == 0x657a6973)
+	if(p[1] == 0x657a6973)
 	{
-		w = what & 0xffff;
-		h = (what >> 16) & 0xffff;
+		w = p[0] & 0xffff;
+		h = (p[0] >> 16) & 0xffff;
 
 		for(x=0;x<100;x++)
 		{
@@ -553,43 +424,37 @@ void characterwrite(u64 what, u64 who, u64 where, u64 when)
 	}//size
 
 	//kbd
-	else if(who == 0x64626b)
+	else if(p[1] == 0x64626b)
 	{
 		//按下esc
-		if(what == 0x1b)
+		if(p[0] == 0x1b)
 		{
 			worker[0].xyze1 ^= 1;
 			return;
 		}
 	}//kbd
 
-	//touch
-	else if( (who&0xff) == 'p' )
-	{
-		parsetouch(&who, &what);
-	}
-
 	//virtkbd
 	if(worker[2].xyze1 > 0)
 	{
-		x = worker[2].write(&where, &who, &what);
+		x = worker[2].write(p+2, p+1, p);
 	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)
 	{
 		//center
-		x = worker[0].write(&where, &who, &what);
+		x = worker[0].write(p+2, p+1, p);
 	}
 	else if(worker[1].xyze1 > 0)
 	{
 		//roster
-		x = worker[1].write(&where, &who, &what);
+		x = worker[1].write(p+2, p+1, p);
 	}
 	else
 	{
 		//player
-		worker[now].write(&where, &who, &what);
+		worker[now].write(p+2, p+1, p);
 	}
 }
 void characterread()

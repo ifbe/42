@@ -8,8 +8,13 @@
 //
 void characterstart(char* pixbuf, char* pixfmt, int width, int height);
 void characterstop();
-void characterwrite(u64 what, u64 who, u64 where, u64 when);
+void characterwrite(u64* p);
 void characterread();
+//
+void motion_explain(u64* p);
+void network_explain(u64* p);
+void sound_explain(u64* p);
+void vision_explain(u64* p);
 //
 void say(char* , ...);
 void birth();
@@ -58,8 +63,11 @@ JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Read(JNIEnv * env, job
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Write(JNIEnv * env, jobject  obj , jlong type , jlong value)
 {
+	u64 p[4] = {value, type, 0, 0};
+	motion_explain(p);
+
 	//say("(%llx,%llx),%d,%d\n",type,value,sizeof(type),sizeof(value));
-	characterwrite(value, type, 0, 0);
+	characterwrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_Start(JNIEnv * env, jobject  obj, jobject bitmap)
 {

@@ -81,6 +81,7 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/libflow/libmotion/motion.c \
 	library/libsoft1/libflow/libnet/0.raw/net.eth.c \
 	library/libsoft1/libflow/libnet/0.raw/net.ppp.c \
 	library/libsoft1/libflow/libnet/0.raw/net.slip.c \
@@ -103,6 +104,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/manager/net.client.c \
 	library/libsoft1/libflow/libnet/manager/net.server.c \
 	library/libsoft1/libflow/libnet/manager/net.c \
+	library/libsoft1/libflow/libsound/sound.c \
+	library/libsoft1/libflow/libvision/vision.c \
 	library/libsoft1/libmemory/libbio/bio.c \
 	library/libsoft1/libmemory/libchem/chem.c \
 	library/libsoft1/libmemory/libfile/file.c \

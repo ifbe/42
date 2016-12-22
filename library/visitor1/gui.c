@@ -12,7 +12,7 @@ int charactercreate();
 int characterdelete();
 int characterstart(char* addr,char* pixfmt, int width,int height);
 int characterstop();
-int characterwrite(u64 what, u64 who, u64 where, u64 when);
+int characterwrite(u64* p);
 int characterread();
 int characterchoose(char*);
 int characterlist(char*);
@@ -26,6 +26,11 @@ int windowlist();
 int windowchoose();
 int windowread();
 int windowwrite();
+//libsoft1
+void motion_explain(void*);
+void network_explain(void*);
+void sound_explain(void*);
+void vision_explain(void*);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -61,15 +66,25 @@ int main(int argc, char* argv[])
 	//forever
 	while(1)
 	{
-		//1.先在内存里画画, 然后一次性写到窗口内
+		//1.世界显示
 		characterread();
 		windowwrite();
 
-		//2.等事件, 是退出消息就退出, 其他event都交给用户处理
+		//2.等事件
 		addr = eventread();
-		if(addr == 0)break;
-		if(addr[1] == 0)break;
-		characterwrite(addr[0], addr[1], addr[2], addr[3]);
+		if(addr == 0)break;		//error
+		if(addr[1] == 0)break;		//exit
+		if((addr[1]&0xff) == 'n')	//net
+		{
+			network_explain(addr);
+		}
+		if((addr[1]&0xff) == 'p')	//touch
+		{
+			motion_explain(addr);
+		}
+
+		//3.世界改变
+		characterwrite(addr);
 	}
 
 	//after

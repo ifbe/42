@@ -2,6 +2,7 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) libflow/libmotion/motion.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.eth.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.ppp.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.slip.c
@@ -24,6 +25,8 @@ target:
 	$(compiler) $(cflag) libflow/libnet/manager/net.client.c
 	$(compiler) $(cflag) libflow/libnet/manager/net.server.c
 	$(compiler) $(cflag) libflow/libnet/manager/net.c
+	$(compiler) $(cflag) libflow/libsound/sound.c
+	$(compiler) $(cflag) libflow/libvision/vision.c
 	$(compiler) $(cflag) libmemory/libbio/bio.c
 	$(compiler) $(cflag) libmemory/libchem/chem.c
 	$(compiler) $(cflag) libmemory/libfile/file.c
