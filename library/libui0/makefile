@@ -12,9 +12,9 @@ barecli:
 	$(compiler) $(cflag) display.c
 .PHONY:barefb
 barefb:
+	rm -f *.o
 	$(compiler) $(cflag) bare/bare.fb.c
 	$(compiler) $(cflag) display.c
-	rm -f *.o
 ##########################################################
 
 

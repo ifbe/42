@@ -2,6 +2,8 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) libbio/bio.c
+	$(compiler) $(cflag) libchem/chem.c
 	$(compiler) $(cflag) libflow/libmotion/motion.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.eth.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.ppp.c
@@ -27,72 +29,70 @@ target:
 	$(compiler) $(cflag) libflow/libnet/manager/net.c
 	$(compiler) $(cflag) libflow/libsound/sound.c
 	$(compiler) $(cflag) libflow/libvision/vision.c
-	$(compiler) $(cflag) libmemory/libbio/bio.c
-	$(compiler) $(cflag) libmemory/libchem/chem.c
-	$(compiler) $(cflag) libmemory/libfile/file.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.7z.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.cpio.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.gz.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.tar.c
-	$(compiler) $(cflag) libmemory/libfs/compress/compress.zip.c
-	$(compiler) $(cflag) libmemory/libfs/diskimage/img.raw.c
-	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vhd.c
-	$(compiler) $(cflag) libmemory/libfs/diskimage/img.vmdk.c
-	$(compiler) $(cflag) libmemory/libfs/executable/exec.elf.c
-	$(compiler) $(cflag) libmemory/libfs/executable/exec.macho.c
-	$(compiler) $(cflag) libmemory/libfs/executable/exec.pe.c
-	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ext.c
-	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.fat.c
-	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.hfs.c
-	$(compiler) $(cflag) libmemory/libfs/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) libmemory/libfs/parttable/pt.apple.c
-	$(compiler) $(cflag) libmemory/libfs/parttable/pt.gpt.c
-	$(compiler) $(cflag) libmemory/libfs/parttable/pt.mbr.c
-	$(compiler) $(cflag) libmemory/libfs/fs.c
-	$(compiler) $(cflag) libmemory/libmath/math.bigint.c
-	$(compiler) $(cflag) libmemory/libmath/math.calc.c
-	$(compiler) $(cflag) libmemory/libmath/math.fourier.c
-	$(compiler) $(cflag) libmemory/libmath/math.notation.c
-	$(compiler) $(cflag) libmemory/libmath/math.prime.c
-	$(compiler) $(cflag) libmemory/libmath/math.c
-	$(compiler) $(cflag) libmemory/libphys/physics.electrical.c
-	$(compiler) $(cflag) libmemory/libphys/physics.mechanics.c
-	$(compiler) $(cflag) libmemory/libphys/phys.c
-	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.aes.c
-	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.base64.c
-	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.des.c
-	$(compiler) $(cflag) libmemory/libsec/crypt/crypt.rsa.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.crc8.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.crc16.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.crc32.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.md5.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.sha1.c
-	$(compiler) $(cflag) libmemory/libsec/hash/hash.string.c
-	$(compiler) $(cflag) libmemory/libsec/qrcode.c
-	$(compiler) $(cflag) libmemory/libsec/sec.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.arg.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.ascii.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.bigint.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.file.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.net.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.num.c
-	$(compiler) $(cflag) libmemory/libtext/conv/conv.utf8.c
-	$(compiler) $(cflag) libmemory/libtext/diff/diff.cmp.c
-	$(compiler) $(cflag) libmemory/libtext/diff/diff.wild.c
-	$(compiler) $(cflag) libmemory/libtext/find/find.bm.c
-	$(compiler) $(cflag) libmemory/libtext/find/find.kmp.c
-	$(compiler) $(cflag) libmemory/libtext/find/find.rough.c
-	$(compiler) $(cflag) libmemory/libtext/move/move.copy.c
-	$(compiler) $(cflag) libmemory/libtext/move/move.swap.c
-	$(compiler) $(cflag) libmemory/libtext/sort/sort.gnome.c
-	$(compiler) $(cflag) libmemory/libtext/sort/sort.quick.c
-	$(compiler) $(cflag) libmemory/libtext/text.c
-	$(compiler) $(cflag) libmemory/memory.c
-	$(compiler) $(cflag) libsystem/system.folder.c
-	$(compiler) $(cflag) libsystem/system.process.c
-	$(compiler) $(cflag) libsystem/system.thread.c
-	$(compiler) $(cflag) libsystem/system.setting.c
-	$(compiler) $(cflag) libsystem/system.c
+	$(compiler) $(cflag) libmath/math.bigint.c
+	$(compiler) $(cflag) libmath/math.calc.c
+	$(compiler) $(cflag) libmath/math.fourier.c
+	$(compiler) $(cflag) libmath/math.notation.c
+	$(compiler) $(cflag) libmath/math.prime.c
+	$(compiler) $(cflag) libmath/math.c
+	$(compiler) $(cflag) libmem/libfile/file.c
+	$(compiler) $(cflag) libmem/libfs/compress/compress.7z.c
+	$(compiler) $(cflag) libmem/libfs/compress/compress.cpio.c
+	$(compiler) $(cflag) libmem/libfs/compress/compress.gz.c
+	$(compiler) $(cflag) libmem/libfs/compress/compress.tar.c
+	$(compiler) $(cflag) libmem/libfs/compress/compress.zip.c
+	$(compiler) $(cflag) libmem/libfs/diskimage/img.raw.c
+	$(compiler) $(cflag) libmem/libfs/diskimage/img.vhd.c
+	$(compiler) $(cflag) libmem/libfs/diskimage/img.vmdk.c
+	$(compiler) $(cflag) libmem/libfs/executable/exec.elf.c
+	$(compiler) $(cflag) libmem/libfs/executable/exec.macho.c
+	$(compiler) $(cflag) libmem/libfs/executable/exec.pe.c
+	$(compiler) $(cflag) libmem/libfs/filesystem/fs.ext.c
+	$(compiler) $(cflag) libmem/libfs/filesystem/fs.fat.c
+	$(compiler) $(cflag) libmem/libfs/filesystem/fs.hfs.c
+	$(compiler) $(cflag) libmem/libfs/filesystem/fs.ntfs.c
+	$(compiler) $(cflag) libmem/libfs/parttable/pt.apple.c
+	$(compiler) $(cflag) libmem/libfs/parttable/pt.gpt.c
+	$(compiler) $(cflag) libmem/libfs/parttable/pt.mbr.c
+	$(compiler) $(cflag) libmem/libfs/fs.c
+	$(compiler) $(cflag) libmem/libsec/crypt/crypt.aes.c
+	$(compiler) $(cflag) libmem/libsec/crypt/crypt.base64.c
+	$(compiler) $(cflag) libmem/libsec/crypt/crypt.des.c
+	$(compiler) $(cflag) libmem/libsec/crypt/crypt.rsa.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.crc8.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.crc16.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.crc32.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.md5.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.sha1.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.string.c
+	$(compiler) $(cflag) libmem/libsec/qrcode.c
+	$(compiler) $(cflag) libmem/libsec/sec.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.arg.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.ascii.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.bigint.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.file.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.net.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.num.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.utf8.c
+	$(compiler) $(cflag) libmem/libtext/diff/diff.cmp.c
+	$(compiler) $(cflag) libmem/libtext/diff/diff.wild.c
+	$(compiler) $(cflag) libmem/libtext/find/find.bm.c
+	$(compiler) $(cflag) libmem/libtext/find/find.kmp.c
+	$(compiler) $(cflag) libmem/libtext/find/find.rough.c
+	$(compiler) $(cflag) libmem/libtext/move/move.copy.c
+	$(compiler) $(cflag) libmem/libtext/move/move.swap.c
+	$(compiler) $(cflag) libmem/libtext/sort/sort.gnome.c
+	$(compiler) $(cflag) libmem/libtext/sort/sort.quick.c
+	$(compiler) $(cflag) libmem/libtext/text.c
+	$(compiler) $(cflag) libmem/memory.c
+	$(compiler) $(cflag) libphys/physics.electrical.c
+	$(compiler) $(cflag) libphys/physics.mechanics.c
+	$(compiler) $(cflag) libphys/phys.c
+	$(compiler) $(cflag) libsys/system.folder.c
+	$(compiler) $(cflag) libsys/system.process.c
+	$(compiler) $(cflag) libsys/system.thread.c
+	$(compiler) $(cflag) libsys/system.setting.c
+	$(compiler) $(cflag) libsys/system.c
 	$(compiler) $(cflag) libwire/wire.bt.c
 	$(compiler) $(cflag) libwire/wire.gpio.c
 	$(compiler) $(cflag) libwire/wire.i2c.c

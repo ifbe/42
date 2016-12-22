@@ -1,12 +1,28 @@
+#cd ____coderoot____
+#ln -s ____fullpathofme____ ____linkname____
+
+#source ____build/envsetup.sh____
+#lunch ____devicename____
+#mmm ____linkname____
+
+#adb root
+#adb remount
+#adb push coderoot/out/target/product/devicename/system/bin/42 /system/bin/
+
+
+
+
+#0.head
 LOCAL_PATH:=$(call my-dir)/../../..
 include $(CLEAR_VARS)
 
 
 
-#1.boot1
+
+#1.boot0
 LOCAL_SRC_FILES := \
-	library/libboot0/basic.c \
-	library/libboot0/logcat/logcat.c
+	library/libboot0/none/tx.c \
+	library/libboot0/basic.c
 
 #1.boot1
 LOCAL_SRC_FILES += \
@@ -81,6 +97,8 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/libbio/bio.c \
+	library/libsoft1/libchem/chem.c \
 	library/libsoft1/libflow/libmotion/motion.c \
 	library/libsoft1/libflow/libnet/0.raw/net.eth.c \
 	library/libsoft1/libflow/libnet/0.raw/net.ppp.c \
@@ -106,75 +124,73 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/manager/net.c \
 	library/libsoft1/libflow/libsound/sound.c \
 	library/libsoft1/libflow/libvision/vision.c \
-	library/libsoft1/libmemory/libbio/bio.c \
-	library/libsoft1/libmemory/libchem/chem.c \
-	library/libsoft1/libmemory/libfile/file.c \
-	library/libsoft1/libmemory/libfs/compress/compress.7z.c \
-	library/libsoft1/libmemory/libfs/compress/compress.cpio.c \
-	library/libsoft1/libmemory/libfs/compress/compress.gz.c \
-	library/libsoft1/libmemory/libfs/compress/compress.tar.c \
-	library/libsoft1/libmemory/libfs/compress/compress.zip.c \
-	library/libsoft1/libmemory/libfs/diskimage/img.raw.c \
-	library/libsoft1/libmemory/libfs/diskimage/img.vhd.c \
-	library/libsoft1/libmemory/libfs/diskimage/img.vmdk.c \
-	library/libsoft1/libmemory/libfs/executable/exec.elf.c \
-	library/libsoft1/libmemory/libfs/executable/exec.macho.c \
-	library/libsoft1/libmemory/libfs/executable/exec.pe.c \
-	library/libsoft1/libmemory/libfs/filesystem/fs.ext.c \
-	library/libsoft1/libmemory/libfs/filesystem/fs.fat.c \
-	library/libsoft1/libmemory/libfs/filesystem/fs.hfs.c \
-	library/libsoft1/libmemory/libfs/filesystem/fs.ntfs.c \
-	library/libsoft1/libmemory/libfs/parttable/pt.apple.c \
-	library/libsoft1/libmemory/libfs/parttable/pt.gpt.c \
-	library/libsoft1/libmemory/libfs/parttable/pt.mbr.c \
-	library/libsoft1/libmemory/libfs/fs.c \
-	library/libsoft1/libmemory/libmath/math.bigint.c \
-	library/libsoft1/libmemory/libmath/math.calc.c \
-	library/libsoft1/libmemory/libmath/math.fourier.c \
-	library/libsoft1/libmemory/libmath/math.notation.c \
-	library/libsoft1/libmemory/libmath/math.prime.c \
-	library/libsoft1/libmemory/libmath/math.c \
-	library/libsoft1/libmemory/libphys/physics.electrical.c \
-	library/libsoft1/libmemory/libphys/physics.mechanics.c \
-	library/libsoft1/libmemory/libphys/phys.c \
-	library/libsoft1/libmemory/libsec/crypt/crypt.aes.c \
-	library/libsoft1/libmemory/libsec/crypt/crypt.base64.c \
-	library/libsoft1/libmemory/libsec/crypt/crypt.des.c \
-	library/libsoft1/libmemory/libsec/crypt/crypt.rsa.c \
-	library/libsoft1/libmemory/libsec/hash/hash.crc8.c \
-	library/libsoft1/libmemory/libsec/hash/hash.crc16.c \
-	library/libsoft1/libmemory/libsec/hash/hash.crc32.c \
-	library/libsoft1/libmemory/libsec/hash/hash.md5.c \
-	library/libsoft1/libmemory/libsec/hash/hash.sha1.c \
-	library/libsoft1/libmemory/libsec/hash/hash.string.c \
-	library/libsoft1/libmemory/libsec/qrcode.c \
-	library/libsoft1/libmemory/libsec/sec.c \
-	library/libsoft1/libmemory/libtext/conv/conv.arg.c \
-	library/libsoft1/libmemory/libtext/conv/conv.ascii.c \
-	library/libsoft1/libmemory/libtext/conv/conv.bigint.c \
-	library/libsoft1/libmemory/libtext/conv/conv.file.c \
-	library/libsoft1/libmemory/libtext/conv/conv.net.c \
-	library/libsoft1/libmemory/libtext/conv/conv.num.c \
-	library/libsoft1/libmemory/libtext/conv/conv.utf8.c \
-	library/libsoft1/libmemory/libtext/diff/diff.cmp.c \
-	library/libsoft1/libmemory/libtext/diff/diff.diff.c \
-	library/libsoft1/libmemory/libtext/diff/diff.wild.c \
-	library/libsoft1/libmemory/libtext/find/find.bm.c \
-	library/libsoft1/libmemory/libtext/find/find.kmp.c \
-	library/libsoft1/libmemory/libtext/find/find.rough.c \
-	library/libsoft1/libmemory/libtext/move/move.copy.c \
-	library/libsoft1/libmemory/libtext/move/move.swap.c \
-	library/libsoft1/libmemory/libtext/sort/sort.gnome.c \
-	library/libsoft1/libmemory/libtext/sort/sort.quick.c \
-	library/libsoft1/libmemory/libtext/text.c \
-	library/libsoft1/libmemory/memory.c \
-	library/libsoft1/libsystem/system.folder.c \
-	library/libsoft1/libsystem/system.process.c \
-	library/libsoft1/libsystem/system.setting.c \
-	library/libsoft1/libsystem/system.c \
+	library/libsoft1/libmath/math.bigint.c \
+	library/libsoft1/libmath/math.calc.c \
+	library/libsoft1/libmath/math.fourier.c \
+	library/libsoft1/libmath/math.notation.c \
+	library/libsoft1/libmath/math.prime.c \
+	library/libsoft1/libmath/math.c \
+	library/libsoft1/libmem/libfile/file.c \
+	library/libsoft1/libmem/libfs/compress/compress.7z.c \
+	library/libsoft1/libmem/libfs/compress/compress.cpio.c \
+	library/libsoft1/libmem/libfs/compress/compress.gz.c \
+	library/libsoft1/libmem/libfs/compress/compress.tar.c \
+	library/libsoft1/libmem/libfs/compress/compress.zip.c \
+	library/libsoft1/libmem/libfs/diskimage/img.raw.c \
+	library/libsoft1/libmem/libfs/diskimage/img.vhd.c \
+	library/libsoft1/libmem/libfs/diskimage/img.vmdk.c \
+	library/libsoft1/libmem/libfs/executable/exec.elf.c \
+	library/libsoft1/libmem/libfs/executable/exec.macho.c \
+	library/libsoft1/libmem/libfs/executable/exec.pe.c \
+	library/libsoft1/libmem/libfs/filesystem/fs.ext.c \
+	library/libsoft1/libmem/libfs/filesystem/fs.fat.c \
+	library/libsoft1/libmem/libfs/filesystem/fs.hfs.c \
+	library/libsoft1/libmem/libfs/filesystem/fs.ntfs.c \
+	library/libsoft1/libmem/libfs/parttable/pt.apple.c \
+	library/libsoft1/libmem/libfs/parttable/pt.gpt.c \
+	library/libsoft1/libmem/libfs/parttable/pt.mbr.c \
+	library/libsoft1/libmem/libfs/fs.c \
+	library/libsoft1/libmem/libsec/crypt/crypt.aes.c \
+	library/libsoft1/libmem/libsec/crypt/crypt.base64.c \
+	library/libsoft1/libmem/libsec/crypt/crypt.des.c \
+	library/libsoft1/libmem/libsec/crypt/crypt.rsa.c \
+	library/libsoft1/libmem/libsec/hash/hash.crc8.c \
+	library/libsoft1/libmem/libsec/hash/hash.crc16.c \
+	library/libsoft1/libmem/libsec/hash/hash.crc32.c \
+	library/libsoft1/libmem/libsec/hash/hash.md5.c \
+	library/libsoft1/libmem/libsec/hash/hash.sha1.c \
+	library/libsoft1/libmem/libsec/hash/hash.string.c \
+	library/libsoft1/libmem/libsec/qrcode.c \
+	library/libsoft1/libmem/libsec/sec.c \
+	library/libsoft1/libmem/libtext/conv/conv.arg.c \
+	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
+	library/libsoft1/libmem/libtext/conv/conv.bigint.c \
+	library/libsoft1/libmem/libtext/conv/conv.file.c \
+	library/libsoft1/libmem/libtext/conv/conv.net.c \
+	library/libsoft1/libmem/libtext/conv/conv.num.c \
+	library/libsoft1/libmem/libtext/conv/conv.utf8.c \
+	library/libsoft1/libmem/libtext/diff/diff.cmp.c \
+	library/libsoft1/libmem/libtext/diff/diff.diff.c \
+	library/libsoft1/libmem/libtext/diff/diff.wild.c \
+	library/libsoft1/libmem/libtext/find/find.bm.c \
+	library/libsoft1/libmem/libtext/find/find.kmp.c \
+	library/libsoft1/libmem/libtext/find/find.rough.c \
+	library/libsoft1/libmem/libtext/move/move.copy.c \
+	library/libsoft1/libmem/libtext/move/move.swap.c \
+	library/libsoft1/libmem/libtext/sort/sort.gnome.c \
+	library/libsoft1/libmem/libtext/sort/sort.quick.c \
+	library/libsoft1/libmem/libtext/text.c \
+	library/libsoft1/libmem/memory.c \
+	library/libsoft1/libphys/physics.electrical.c \
+	library/libsoft1/libphys/physics.mechanics.c \
+	library/libsoft1/libphys/phys.c \
+	library/libsoft1/libsys/system.folder.c \
+	library/libsoft1/libsys/system.process.c \
+	library/libsoft1/libsys/system.setting.c \
+	library/libsoft1/libsys/system.c \
 	library/libsoft1/libwire/wire.bt.c \
-	library/libsoft1/libwire/wire.ir.c \
 	library/libsoft1/libwire/wire.i2c.c \
+	library/libsoft1/libwire/wire.ir.c \
 	library/libsoft1/libwire/wire.nfc.c \
 	library/libsoft1/libwire/wire.pci.c \
 	library/libsoft1/libwire/wire.spi.c \
@@ -183,18 +199,18 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libwire/wire.wifi.c \
 	library/libsoft1/libwire/wire.zigbee.c \
 	library/libsoft1/libwire/wire.c \
-	library/libsoft1/artery.c \
+	library/libsoft1/artery.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
-	library/libui0/android/android.bitmap.c \
+	library/libui0/linux/linux.tui.c \
 	library/libui0/display.c
 
 #4.ui1
 LOCAL_SRC_FILES += \
-	library/libui1/draw/draw.ascii.c \
 	library/libui1/draw/draw.background.c \
 	library/libui1/draw/draw.shape.c \
+	library/libui1/draw/draw.ascii.c \
 	library/libui1/draw/draw.unicode.c \
 	library/libui1/game/game.2048.c \
 	library/libui1/game/game.ooxx.c \
@@ -221,16 +237,24 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.tree.c \
 	library/libui1/character.c
 
-#1.visitor
+#1.visitor0
 LOCAL_SRC_FILES += \
 	library/visitor0/app/world.c \
 	library/visitor0/app/event.c
+
+#1.visitor1
+LOCAL_SRC_FILES += \
+	library/visitor1/gui.c
 
 
 
 
 #2
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
-LOCAL_LDLIBS := -lm -llog -ljnigraphics
-LOCAL_MODULE := plasma
-include $(BUILD_SHARED_LIBRARY)
+
+LOCAL_SHARED_LIBRARIES += libc
+LOCAL_LDFLAGS := -Wl,--hash-style=sysv
+
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE := 42
+include $(BUILD_EXECUTABLE)
