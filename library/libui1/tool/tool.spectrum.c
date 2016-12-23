@@ -2,13 +2,20 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define PI 3.14159265358979323846264338327950288419716939937510582097494459230
+#define tau PI*2
 //
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void line(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
 //
-void fft(float* real, float* imag, float* sample, int k);
-void ifft(float* real, float* imag, float* sample, int k);
+void fft(double* real, double* imag, int k);
+void ifft(double* real, double* imag, int k);
+double cosine(double);
+double sine(double);
+double log2(double);
+double lg(double);
+double ln(double);
 u32 getrandom();
 //
 void printmemory(char*,int);
@@ -30,14 +37,14 @@ static struct temp{
 }*haha;
 
 //before
-static float* databuf=0;
 static int maxpower;
+static int* data;
 
 //after
-static float* real;		//8*2048=0x4000
-static float* imag;		//8*2048=0x4000
-static float* power;		//8*1024=0x2000
-static float* phase;		//8*1024=0x2000
+static double* real;		//8*2048=0x4000
+static double* imag;		//8*2048=0x4000
+static double* power;		//8*1024=0x2000
+static double* phase;		//8*1024=0x2000
 
 
 
@@ -46,9 +53,19 @@ static float* phase;		//8*1024=0x2000
 void spectrum_random()
 {
 	int j;
-	for(j=0;j<2048;j++)
+	for(j=0;j<1024;j++)
 	{
-		real[j] = (float)(getrandom()%maxpower);
+		//real[j] = (double)(getrandom()%maxpower);
+		real[j] = cosine(j*tau/64)/3 + sine(j*tau/128)/2;
+		imag[j] = 0.0;
+		data[j] = (int)(maxpower*real[j]);
+	}
+
+	fft(real, imag, 10);
+	for(j=0;j<1024;j++)
+	{
+		//say("%lf	%lf\n", real[j], imag[j]);
+		power[j]=10*lg(real[j]*real[j] + imag[j]*imag[j] + 1.0);
 	}
 }
 
@@ -60,16 +77,24 @@ static void spectrum_read_pixel()
 	int x,y;
 	int width = haha->width;
 	int height = haha->height;
+	backgroundcolor(0);
 
-	rectbody(0, 0, width, height/2, 0);
 	for(x=0;x<1024;x++)
 	{
-		y = (int)(real[x] * height / maxpower / 4);
+		y = data[x] *height /maxpower /4;
 		line(
 			x*width/1024, (height/4) - y,
-			x*width/1024, (height/4) + y,
+			x*width/1024, height/4,
 			0xffffffff
 		);
+
+		y = (int)(power[x]);
+		line(
+			x*width/1024, (height*3/4) - y,
+			x*width/1024, height*3/4,
+			0xffffffff
+		);
+
 	}
 }
 static void spectrum_read_html()
@@ -85,7 +110,7 @@ static void spectrum_read_text()
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
 	{
-		y = h - (int)(real[x] * (float)h / (float)maxpower);
+		y = h - (int)(real[x] * (double)h / (double)maxpower);
 		for(;y<h;y++)
 		{
 			p[((y*w + x)<<2) + 3] =  0x2;
@@ -198,11 +223,11 @@ void spectrum_create(void* uibuf,void* addr)
 	this[14]=(u64)spectrum_read;
 	this[15]=(u64)spectrum_write;
 
-	databuf=(float*)(uibuf+0x200000);
-	real=(float*)(uibuf+0x300000);
-	imag=(float*)(uibuf+0x340000);
-	power=(float*)(uibuf+0x380000);
-	phase=(float*)(uibuf+0x3c0000);
+	data=(int*)(uibuf+0x200000);
+	real=(double*)(uibuf+0x300000);
+	imag=(double*)(uibuf+0x340000);
+	power=(double*)(uibuf+0x380000);
+	phase=(double*)(uibuf+0x3c0000);
 }
 void spectrum_delete()
 {
