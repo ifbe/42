@@ -46,7 +46,7 @@ dll:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	-lws2_32
+	-lwinmm -lws2_32
 program:
 	gcc \
 	$(library)/libboot0/*.o \

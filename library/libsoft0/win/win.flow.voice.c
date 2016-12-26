@@ -31,13 +31,13 @@ static void CALLBACK CB(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, 
 
 
 
-void soundlist()
+void listsound()
 {
 }
-void soundchoose()
+void choosesound()
 {
 }
-void soundread(u8* buf, int len)
+void readsound(u8* buf, int len)
 {
 	headin.lpData = buf;
 	headin.dwBufferLength = len;
@@ -52,7 +52,7 @@ void soundread(u8* buf, int len)
 	Sleep(1000);
 	waveInReset(wavein);
 }
-void soundwrite(u8* buf, int len)
+void writesound(u8* buf, int len)
 {
 	headout.dwLoops = 0L;
 	headout.lpData = buf;
@@ -61,7 +61,7 @@ void soundwrite(u8* buf, int len)
 	waveOutPrepareHeader(waveout, &headout, sizeof(WAVEHDR));
 	waveOutWrite(waveout, &headout, sizeof(WAVEHDR));
 }
-void soundstart()
+void startsound()
 {
 	//in
 	HANDLE wait;
@@ -70,12 +70,12 @@ void soundstart()
 	//out
 	waveOutOpen(&waveout, WAVE_MAPPER, &fmt, (u64)CB, 0L, CALLBACK_FUNCTION);
 }
-void soundstop()
+void stopsound()
 {
 	waveInClose(wavein);
 	waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
 }
-void soundcreate()
+void createsound()
 {
 	fmt.wFormatTag = WAVE_FORMAT_PCM;	//声音格式为PCM
 	fmt.nSamplesPerSec = 44100;		//采样率，16000次/秒
@@ -85,6 +85,6 @@ void soundcreate()
 	fmt.nBlockAlign = 4;			//一个块的大小
 	fmt.cbSize = 0;
 }
-void sounddelete()
+void deletesound()
 {
 }
