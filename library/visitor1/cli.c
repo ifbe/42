@@ -39,25 +39,41 @@ int main(int argc,char* argv[])
 	//无限循环
 	while(1)
 	{
-		//1.世界显示
+		//1.界面显示
 		arteryprompt();
 
-		//2.等待输入
+again:
+		//2.事件等待
 		addr = eventread();
 		if(addr == 0)break;		//error
 		if(addr[1] == 0)break;		//exit
-		if((addr[1]&0xff) == 'n')	//net
-		{
-			network_explain(addr);
-			continue;
-		}
+
+
+		//3.事件解释
 		if((addr[1]&0xff) == 'p')	//touch
 		{
 			motion_explain(addr);
 			continue;
 		}
+		else if((addr[1]&0xff) == 'n')	//net
+		{
+			network_explain(addr);
+			continue;
+		}
+		else if((addr[1]&0xff) == 's')	//sound
+		{
+			network_explain(addr);
+			continue;
+		}
+		else if((addr[1]&0xff) == 'v')	//vision
+		{
+			network_explain(addr);
+			continue;
+		}
+		if(addr[1] == 0)goto again;
 
-		//3.世界改变
+
+		//4.界面改变
 		arterycommand(addr);
 	}
 

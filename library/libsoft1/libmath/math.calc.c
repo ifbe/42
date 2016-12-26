@@ -2,9 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//
+int hexstr2data(u8*,u64*);
+int decstr2data(u8*,u64*);
+//
 double cosine(double);
 double sine(double);
-int decstr2data(u8* src,u64* data);
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -13,20 +17,26 @@ void say(void*, ...);
 
 struct mathnode{
 
-        u32 type;
-        u32 up;
-        u32 left;
-        u32 right;
-        union{
-                u8 datasize[16];
-                double floatpoint;
-                unsigned long long integer;
-        };
+	u32 type;
+	u32 up;
+	u32 left;
+	u32 right;
+	union{
+		u8 datasize[16];
+		double floatpoint;
+		unsigned long long integer;
+	};
 };
+//
 static double fpstack[20];
 static int fpcount=0;
 static u64 stack[128];
 static int sp=0;
+//
+static u8* guys;
+static u8* fshome;
+static u8* dirhome;
+static u8* datahome;
 
 
 
@@ -335,10 +345,10 @@ void postfix2binarytree(u8* postfix,struct mathnode* node)
 		if( postfix[src] == '=' )
 		{
 			//等号节点，for fun
-                        node[dst].type='=';
-                        node[dst].left=0;
-                        node[dst].right=0;
-                        node[dst].integer=0;
+			node[dst].type='=';
+			node[dst].left=0;
+			node[dst].right=0;
+			node[dst].integer=0;
 
 			//point zero to root
 			pop(&first);
@@ -758,25 +768,25 @@ double sketchpad(struct mathnode* node,double x,double y)
 			if( node[src].integer == '+' )
 			{
 				popfp(&second);
-				popfp(&first);            //注意，栈，先进后出
+				popfp(&first);	    //注意，栈，先进后出
 				pushfp(first+second);
 			}
 			if( node[src].integer == '-' )
 			{
 				popfp(&second);
-				popfp(&first);            //注意，栈，先进后出
+				popfp(&first);	    //注意，栈，先进后出
 				pushfp(first-second);
 			}
 			if( node[src].integer == '*' )
 			{
 				popfp(&second);
-				popfp(&first);            //注意，栈，先进后出
+				popfp(&first);	    //注意，栈，先进后出
 				pushfp(first*second);
 			}
 			if( node[src].integer == '/' )
 			{
 				popfp(&second);
-				popfp(&first);            //注意，栈，先进后出
+				popfp(&first);	    //注意，栈，先进后出
 				pushfp(first/second);
 			}
 		}
@@ -806,4 +816,58 @@ double sketchpad(struct mathnode* node,double x,double y)
 	}
 
 	return result2;
+}
+
+
+
+
+static void calc_list(u8* p)
+{
+}
+static void calc_choose(u8* p)
+{
+        double ans; 
+        u8* postfix = datahome;
+
+        infix2postfix(p, postfix);
+        say("postfix:%s\n", postfix);
+
+        ans = calculator(postfix, 0, 0);
+        say("answer:%lf\n", ans);
+}
+static void calc_read(u8* p)
+{
+}
+static void calc_write(u8* p)
+{
+}
+static void calc_start(u8* p)
+{
+}
+static void calc_stop(u8* p)
+{
+}
+void calc_create(u8* softaddr, u64* p)
+{
+	u8* q;
+
+	//
+	guys = softaddr;
+	fshome = softaddr+0x100000;
+	dirhome = softaddr+0x200000;
+	datahome = softaddr+0x300000;
+
+	//
+	p[0]=0x6874616d;
+	p[1]=0x636c6163;
+
+	p[10]=(u64)calc_start;
+	p[11]=(u64)calc_stop;
+	p[12]=(u64)calc_list;
+	p[13]=(u64)calc_choose;
+	p[14]=(u64)calc_read;
+	p[15]=(u64)calc_write;
+}
+void calc_delete()
+{
 }

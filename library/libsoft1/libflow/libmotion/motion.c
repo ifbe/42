@@ -137,3 +137,39 @@ void motion_explain(u64* p)
 	}//point gone
 }
 
+
+
+
+static void motion_list()
+{
+}
+static void motion_choose()
+{
+}
+static void motion_read()
+{
+}
+static void motion_write()
+{
+}
+static void motion_start()
+{
+}
+static void motion_stop()
+{
+}
+void motion_create(void* w, u64* p)
+{
+	p[0]=0x776f6c66;	//type
+	p[1]=0x6e6f69746f6d;	//id
+
+	p[10]=(u64)motion_start;
+	p[11]=(u64)motion_stop;
+	p[12]=(u64)motion_list;
+	p[13]=(u64)motion_choose;
+	p[14]=(u64)motion_read;
+	p[15]=(u64)motion_write;
+}
+void motion_delete()
+{
+}

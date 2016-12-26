@@ -62,19 +62,7 @@ void net_stop(u64 fd)
 }
 int net_create(void* world,u64* p)
 {
-	//
-	p[0]=0;			//type
-	p[1]=0x74656e;		//id
-
-	p[10]=(u64)net_start;
-	p[11]=(u64)net_stop;
-	p[12]=(u64)net_list;
-	p[13]=(u64)net_choose;
-	p[14]=(u64)net_read;
-	p[15]=(u64)net_write;
-
-	//
-	char* q=(char*)p+0x80;
+	char* q=(char*)p;
 
 	client_create(world,q);
 	q+=0x80;

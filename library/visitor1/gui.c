@@ -2,11 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//visitor0
-u64* eventread();
-void eventwrite(u64 why, u64 what, u64 where, u64 when);
-void birth();
-void death();
 //libui1
 int charactercreate();
 int characterdelete();
@@ -31,9 +26,15 @@ void motion_explain(void*);
 void network_explain(void*);
 void sound_explain(void*);
 void vision_explain(void*);
-//
+//libhard
+//libboot
 void printmemory(char*,int);
 void say(char*,...);
+//visitor0
+u64* eventread();
+void eventwrite(u64 why, u64 what, u64 where, u64 when);
+void birth();
+void death();
 
 
 
@@ -66,24 +67,39 @@ int main(int argc, char* argv[])
 	//forever
 	while(1)
 	{
-		//1.世界显示
+		//1.界面显示
 		characterread();
 		windowwrite();
 
-		//2.等事件
+again:
+		//2.事件等待
 		addr = eventread();
-		if(addr == 0)break;		//error
-		if(addr[1] == 0)break;		//exit
-		if((addr[1]&0xff) == 'n')	//net
-		{
-			network_explain(addr);
-		}
-		if((addr[1]&0xff) == 'p')	//touch
+		if(addr == 0)break;	//error
+		if(addr[1] == 0)break;	//exit
+
+
+		//3.事件解释
+		if((addr[1]&0xff) == 'p')	//motion
 		{
 			motion_explain(addr);
 		}
+		else if((addr[1]&0xff) == 'n')	//net
+		{
+			network_explain(addr);
+		}
+		else if((addr[1]&0xff) == 's')	//sound
+		{
+			sound_explain(addr);
+		}
+		else if((addr[1]&0xff) == 'v')	//vision
+		{
+			vision_explain(addr);
+		}
+		if(addr[1] == 0)goto again;
 
-		//3.世界改变
+
+		//4.界面改变
+		//windowread();		//录屏
 		characterwrite(addr);
 	}
 

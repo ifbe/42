@@ -7,42 +7,42 @@ int process_delete();
 
 
 
-static int special_list()
+static int system_list()
 {
 	return 0;
 }
-static int special_choose()
+static int system_choose()
 {
 	return 0;
 }
-static int special_read()
+static int system_read()
 {
 	return 0;
 }
-static int special_write()
+static int system_write()
 {
 	return 0;
 }
-static int special_start(u64 type,char* p)
+static int system_start(u64 type,char* p)
 {
 	return 0;
 }
-static int special_stop()
+static int system_stop()
 {
 	return 0;
 }
-int special_create(char* world,u64* p)
+int system_create(char* world,u64* p)
 {
 	//
 	p[0]=0;			//type
-	p[1]=0x6c616963657073;	//id
+	p[1]=0x6d6574737973;	//id
 
-	p[10]=(u64)special_start;
-	p[11]=(u64)special_stop;
-	p[12]=(u64)special_list;
-	p[13]=(u64)special_choose;
-	p[14]=(u64)special_read;
-	p[15]=(u64)special_write;
+	p[10]=(u64)system_start;
+	p[11]=(u64)system_stop;
+	p[12]=(u64)system_list;
+	p[13]=(u64)system_choose;
+	p[14]=(u64)system_read;
+	p[15]=(u64)system_write;
 
 	//
 	char* q=(char*)p+0x80;
@@ -54,7 +54,7 @@ int special_create(char* world,u64* p)
 
 	return q-(char*)p;
 }
-int special_delete()
+int system_delete()
 {
 	folder_delete();
 	process_delete();

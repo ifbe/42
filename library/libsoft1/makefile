@@ -29,6 +29,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/manager/net.c
 	$(compiler) $(cflag) libflow/libsound/sound.c
 	$(compiler) $(cflag) libflow/libvision/vision.c
+	$(compiler) $(cflag) libflow/flow.c
 	$(compiler) $(cflag) libmath/math.bigint.c
 	$(compiler) $(cflag) libmath/math.calc.c
 	$(compiler) $(cflag) libmath/math.fourier.c

@@ -59,6 +59,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lws2_32
+	-lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

@@ -3,28 +3,30 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int interface_create(void* world,void* func);
-int interface_delete();
-//
+int flow_create(void* world,void* func);
+int flow_delete();
 int memory_create(void* world,void* func);
 int memory_delete();
+int system_create(void* world,void* func);
+int system_delete();
+int wire_create(void* world,void* func);
+int wire_delete();
 //
-int net_create(void* world,void* func);
-int net_delete();
-//
-int special_create(void* world,void* func);
-int special_delete();
+int math_create(void* world,void* func);
+int math_delete();
+int phys_create(void* world,void* func);
+int phys_delete();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
-void eventread(u64* who, u64* what, u64* how);
-void eventwrite(u64,u64,u64,u64);
-//
 void printmemory(char*,int);
 void say(char*,...);
+//
+void eventread(u64* who, u64* what, u64* how);
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -281,13 +283,17 @@ void arterycreate(u8* module,u8* addr)
 	fshome  = addr+0x100000;
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;
+	p = addr+0x80;
 
 	//
-	p = addr+0x80;
-	p += interface_create(addr,p);
+	p += flow_create(addr,p);
 	p += memory_create(addr,p);
-	p += net_create(addr,p);
-	p += special_create(addr,p);
+	p += system_create(addr,p);
+	p += wire_create(addr,p);
+
+	//
+	p += math_create(addr,p);
+	p += phys_create(addr,p);
 
 	say("[8,c):createed artery\n");
 }
@@ -295,10 +301,15 @@ void arterydelete(u8* module)
 {
 	say("[8,c):deleteing artery\n");
 
-	special_delete();
-	net_delete();
+	//
+	flow_delete();
 	memory_delete();
-	interface_delete();
+	system_delete();
+	wire_delete();
+
+	//
+	phys_delete();
+	math_delete();
 }
 
 

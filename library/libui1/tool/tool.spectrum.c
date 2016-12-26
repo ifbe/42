@@ -56,7 +56,7 @@ void spectrum_random()
 	for(j=0;j<1024;j++)
 	{
 		//real[j] = (double)(getrandom()%maxpower);
-		real[j] = cosine(j*tau/64)/3 + sine(j*tau/128)/2;
+		real[j] = cosine(j*tau/256)/2 + sine(j*tau/64)/2;
 		imag[j] = 0.0;
 		data[j] = (int)(maxpower*real[j]);
 	}
@@ -74,25 +74,27 @@ void spectrum_random()
 
 static void spectrum_read_pixel()
 {
-	int x,y;
+	int x,j,k;
 	int width = haha->width;
 	int height = haha->height;
 	backgroundcolor(0);
 
 	for(x=0;x<1024;x++)
 	{
-		y = data[x] *height /maxpower /4;
+		j = data[x] *height /maxpower /4;
+		k = data[x]*256/maxpower;
+		if(k<0)k=-k;
 		line(
-			x*width/1024, (height/4) - y,
+			x*width/1024, (height/4) - j,
 			x*width/1024, height/4,
-			0xffffffff
+			0x010001 * k
 		);
 
-		y = (int)(power[x]);
+		j = (int)(power[x]);
 		line(
-			x*width/1024, (height*3/4) - y,
+			x*width/1024, (height*3/4) - j,
 			x*width/1024, height*3/4,
-			0xffffffff
+			0xffffff
 		);
 
 	}

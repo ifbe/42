@@ -25,42 +25,42 @@ int zigbee_delete();
 
 
 
-static int interface_list()
+static int wire_list()
 {
 	return 0;
 }
-static int interface_choose()
+static int wire_choose()
 {
 	return 0;
 }
-static int interface_read()
+static int wire_read()
 {
 	return 0;
 }
-static int interface_write()
+static int wire_write()
 {
 	return 0;
 }
-static int interface_start(u64 type,char* p)
+static int wire_start(u64 type,char* p)
 {
 	return 0;
 }
-static int interface_stop()
+static int wire_stop()
 {
 	return 0;
 }
-int interface_create(char* world,u64* p)
+int wire_create(char* world,u64* p)
 {
 	//
 	p[0]=0;			//type
-	p[1]=0x6563616669;	//id
+	p[1]=0x65726977;	//id
 
-	p[10]=(u64)interface_start;
-	p[11]=(u64)interface_stop;
-	p[12]=(u64)interface_list;
-	p[13]=(u64)interface_choose;
-	p[14]=(u64)interface_read;
-	p[15]=(u64)interface_write;
+	p[10]=(u64)wire_start;
+	p[11]=(u64)wire_stop;
+	p[12]=(u64)wire_list;
+	p[13]=(u64)wire_choose;
+	p[14]=(u64)wire_read;
+	p[15]=(u64)wire_write;
 
 	//
 	char* q=(char*)p+0x80;
@@ -97,7 +97,7 @@ int interface_create(char* world,u64* p)
 
 	return q-(char*)p;
 }
-void interface_delete()
+void wire_delete()
 {
 	zigbee_delete();
 	wifi_delete();

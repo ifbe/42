@@ -57,7 +57,7 @@ int phys_create(u8* softaddr,u64* p)
 	datahome = softaddr+0x300000;
 
 	//
-	p[0]=0x79726f6d656d;
+	p[0]=0;
 	p[1]=0x73796870;
 
 	p[10]=(u64)phys_start;

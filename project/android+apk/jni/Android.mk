@@ -58,10 +58,10 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
+	library/libsoft0/android/android.flow.sound.c \
+	library/libsoft0/android/android.flow.vision.c \
 	library/libsoft0/linux/linux.flow.client.c \
-	library/libsoft0/linux/linux.flow.image.c \
 	library/libsoft0/linux/linux.flow.server.c \
-	library/libsoft0/linux/linux.flow.voice.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.physical.c \
 	library/libsoft0/linux/linux.memory.virtual.c \
@@ -108,6 +108,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/manager/net.c \
 	library/libsoft1/libflow/libsound/sound.c \
 	library/libsoft1/libflow/libvision/vision.c \
+	library/libsoft1/libflow/flow.c \
 	library/libsoft1/libmath/math.bigint.c \
 	library/libsoft1/libmath/math.calc.c \
 	library/libsoft1/libmath/math.fourier.c \

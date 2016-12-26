@@ -3,18 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int bio_create(void*,void*);
-int bio_delete();
-int chem_create(void*,void*);
-int chem_delete();
 int file_create(void*,void*);
 int file_delete();
 int filesystem_create(void*,void*);
 int filesystem_delete();
-int math_create(void*,void*);
-int math_delete();
-int phys_create(void*,void*);
-int phys_delete();
 int sec_create(void*,void*);
 int sec_delete();
 int text_create(void*,void*);
@@ -244,22 +236,10 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	bio_create(softaddr, q);
-	q+=0x80;
-
-	chem_create(softaddr, q);
-	q+=0x80;
-
 	file_create(softaddr, q);
 	q+=0x80;
 
 	filesystem_create(softaddr, q);
-	q+=0x80;
-
-	math_create(softaddr, q);
-	q+=0x80;
-
-	phys_create(softaddr, q);
 	q+=0x80;
 
 	sec_create(softaddr, q);
@@ -272,12 +252,8 @@ int memory_create(u8* softaddr,u64* p)
 }
 int memory_delete()
 {
-	bio_delete();
-	chem_delete();
 	file_delete();
 	filesystem_delete();
-	math_delete();
-	phys_delete();
 	sec_delete();
 	text_delete();
 	return 0;

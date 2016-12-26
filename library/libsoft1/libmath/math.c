@@ -3,11 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-double calculator(u8* postfix, u64 x, u64 y);
-void infix2postfix(u8* infix, u8* postfix);
-//
-int cmp(void*,void*);
-int hexstr2data(u8*,u64*);
+void calc_create(void*,void*);
+void calc_delete();
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -16,60 +13,30 @@ int say(void* str, ...);
 
 
 //
-static u8* guys;
-static u8* fshome;
-static u8* dirhome;
-static u8* datahome;
-
-
-
-
-//
-static int math_list(u8* arg1)
+static void math_list(u8* arg1)
 {
-	return 0;
 }
-static int math_choose(u8* arg)
+static void math_choose(u8* arg)
 {
-	double ans;
-	u8* postfix = datahome;
-
-	infix2postfix(arg, postfix);
-	say("postfix:%s\n", postfix);
-
-	ans = calculator(postfix, 0, 0);
-	say("answer:%lf\n", ans);
-
-	return 0;
 }
-static int math_read()
+static void math_read()
 {
-	return 0;
 }
-static int math_write()
+static void math_write()
 {
-	return 0;
 }
-static int math_start(u8* p)
+static void math_start(u8* p)
 {
-	return 0;
 }
-static int math_stop()
+static void math_stop()
 {
-	return 0;
 }
 int math_create(u8* softaddr,u64* p)
 {
-	u8* q;
+	u8* q = (u8*)p + 0x80;
 
 	//
-	guys = softaddr;
-	fshome = softaddr+0x100000;
-	dirhome = softaddr+0x200000;
-	datahome = softaddr+0x300000;
-
-	//
-	p[0]=0x79726f6d656d;
+	p[0]=0;
 	p[1]=0x6874616d;
 
 	p[10]=(u64)math_start;
@@ -79,9 +46,14 @@ int math_create(u8* softaddr,u64* p)
 	p[14]=(u64)math_read;
 	p[15]=(u64)math_write;
 
-	return 0x80;
+	//
+	calc_create(softaddr, q);
+	q += 0x80;
+
+	return (void*)q - (void*)p;
 }
 int math_delete()
 {
+	calc_delete();
 	return 0;
 }
