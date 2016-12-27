@@ -45,6 +45,7 @@ static double* real;		//8*2048=0x4000
 static double* imag;		//8*2048=0x4000
 static double* power;		//8*1024=0x2000
 static double* phase;		//8*1024=0x2000
+static double tttt = 1.0;
 
 
 
@@ -53,10 +54,12 @@ static double* phase;		//8*1024=0x2000
 void spectrum_random()
 {
 	int j;
+	double p = (tttt<1.0)?tttt:(2.0-tttt);
+	double q = 1.0 - p;
 	for(j=0;j<1024;j++)
 	{
-		//real[j] = (double)(getrandom()%maxpower);
-		real[j] = cosine(j*tau/256)/2 + sine(j*tau/64)/2;
+		real[j] = p * cosine(j*tau/256)/2
+			+ q * sine(j*tau/64)/2;
 		imag[j] = 0.0;
 		data[j] = (int)(maxpower*real[j]);
 	}
@@ -182,6 +185,12 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	}
 	else if(type==0x2d6d)
 	{
+		spectrum_random();
+	}
+	else if(type==0x656d6974)
+	{
+		tttt += 0.01;
+		if(tttt > 2.0)tttt = 0.0;
 		spectrum_random();
 	}
 }

@@ -5,6 +5,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //libsoft
+u64 gettime();
 void sleep_us(int);
 //libhard
 void snatch(void*);
@@ -16,11 +17,12 @@ void say(char*,...);
 
 
 //
-int lock = 0;
-//
 static int enq = 0;
 static int deq = 0;
 static char eventqueue[0x100000];
+//
+static int lock = 0;
+static u64 haha[4];
 
 
 
@@ -28,13 +30,20 @@ static char eventqueue[0x100000];
 void* eventread()
 {
 	int ret;
-	while(enq == deq)
+	if(enq != deq)
 	{
-		sleep_us(10000);
+		ret = deq;
+		deq = (deq+0x20)%0x100000;
+		return eventqueue + ret;
 	}
-	ret = deq;
-	deq = (deq+0x20)%0x100000;
-	return eventqueue + ret;
+
+	//haha[0] = 0;
+	haha[1] = 0x656d6974;
+	//haha[2] = 0;
+	haha[3] = gettime() + 10000;
+
+	sleep_us(10000);
+	return haha;
 }
 
 

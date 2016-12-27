@@ -40,6 +40,9 @@ void death();
 
 
 //
+static u64 time;
+static int fps;
+//
 __attribute__((aligned(0x1000))) static char pixbuf[2048*1024*4 + 0x100000];
 static char pixfmt[8] = {'b','g','r','a','8','8','8','8'};
 static int width=512;
@@ -70,6 +73,7 @@ int main(int argc, char* argv[])
 		//1.界面显示
 		characterread();
 		windowwrite();
+		fps++;
 
 again:
 		//2.事件等待
@@ -79,7 +83,16 @@ again:
 
 
 		//3.事件解释
-		if((addr[1]&0xff) == 'p')	//motion
+		if(addr[1] == 0x656d6974)	//time
+		{
+			if(addr[3] - time > 1000000)
+			{
+				say("fps=%d\n",fps);
+				time = addr[3];
+				fps = 0;
+			}
+		}
+		else if((addr[1]&0xff) == 'p')	//motion
 		{
 			motion_explain(addr);
 		}
