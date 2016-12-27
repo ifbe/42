@@ -6,6 +6,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void eventwrite(u64,u64,u64,u64);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -54,6 +55,8 @@ void* soundlistener(void* p)
 		{
 			printf ("%s\n", snd_strerror(j));
 		}
+
+		eventwrite(0, 's', 0, 0);
 	}
 }
 

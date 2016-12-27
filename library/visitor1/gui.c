@@ -80,9 +80,6 @@ again:
 		addr = eventread();
 		if(addr == 0)break;	//error
 		if(addr[1] == 0)break;	//exit
-
-
-		//3.事件解释
 		if(addr[1] == 0x656d6974)	//time
 		{
 			if(addr[3] - time > 1000000)
@@ -91,7 +88,11 @@ again:
 				time = addr[3];
 				fps = 0;
 			}
+			goto again;
 		}
+
+
+		//3.事件解释
 		else if((addr[1]&0xff) == 'p')	//motion
 		{
 			motion_explain(addr);

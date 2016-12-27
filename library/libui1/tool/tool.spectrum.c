@@ -11,13 +11,14 @@ void backgroundcolor(u32);
 //
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
+double squareroot(double);
 double cosine(double);
 double sine(double);
 double log2(double);
 double lg(double);
 double ln(double);
-u32 getrandom();
 //
+u32 getrandom();
 int startsound(int rate, int chan, void* buf, int max);
 int stopsound();
 //
@@ -66,7 +67,7 @@ void spectrum_random()
 	for(j=0;j<1024;j++)
 	{
 		//say("%lf	%lf\n", real[j], imag[j]);
-		power[j]=10*lg(real[j]*real[j] + imag[j]*imag[j] + 1.0);
+		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / real[0];
 	}
 }
 
@@ -93,10 +94,10 @@ static void spectrum_read_pixel()
 	}
 	for(x=0;x<512;x++)
 	{
-		j = (int)(power[x]);
+		j = (int)(power[x]*height);
 		line(
-			x*width/512, (height*3/4) - j,
-			x*width/512, height*3/4,
+			x*width/512, height - j,
+			x*width/512, height,
 			0xffffff
 		);
 	}
@@ -156,7 +157,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	{
 		spectrum_random();
 	}
-	else if(type==0x656d6974)
+	else if(type=='s')
 	{
 		spectrum_random();
 	}
