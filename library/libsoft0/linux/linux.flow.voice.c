@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <alsa/asoundlib.h>
 #define u8 unsigned char
 #define u16 unsigned short
@@ -12,9 +13,12 @@ void say(void*, ...);
 
 
 //
+static pthread_t id;
+static int alive = 1;
 static int freq;
 static int channel;
 //
+static u8* buffer = 0;
 static snd_pcm_t* capture_handle;
 static snd_pcm_hw_params_t* capture_params;
 //
@@ -26,33 +30,31 @@ static int dir=0;
 
 
 
+void listsound()
+{
+}
+void choosesound()
+{
+}
 int readsound(char* buf, int frame)
 {
-	int j;
-
-	j = snd_pcm_readi(capture_handle, buf, frame);
-	if (j != frame)
-	{
-		printf ("%s\n", snd_strerror(j));
-		return j;
-	}
-
-	//single channel -> dual channel
-	if(channel == 1)
-	{
-		for(j=frame-1;j>0;j--)
-		{
-			buf[4*j + 3] = buf[2*j+1];
-			buf[4*j + 2] = buf[2*j+0];
-		}
-	}
-
-	printmemory(buf, 0x100);
-	return frame;
 }
 int writesound(char* buf, int frame)
 {
 	return snd_pcm_writei(playback_handle, buf, frames);
+}
+void* soundlistener(void* p)
+{
+	int j;
+
+	while(alive)
+	{
+		j = snd_pcm_readi(capture_handle, buffer, 4410);
+		if (j != 4410)
+		{
+			printf ("%s\n", snd_strerror(j));
+		}
+	}
 }
 
 
@@ -203,17 +205,24 @@ int startsound_playback(unsigned int frequency, int channels)
 
 	return 1;
 }
-int startsound(unsigned int rate, int ch)
+int startsound(unsigned int rate, int ch, u8* buf, int max)
 {
 	if(startsound_capture(rate, ch) < 0)return -1;
 	if(startsound_playback(rate, ch) < 0)return -2;
 
 	freq = rate;
 	channel = ch;
+	buffer = buf;
+
+	//thread
+	alive = 1;
+	pthread_create(&id, NULL, soundlistener, NULL);
 	return 1;
 }
 void stopsound()
 {
+	alive = 0;
+
 	//printf("@snd_pcm_close\n");
 	snd_pcm_close(capture_handle);
 	snd_pcm_close(playback_handle);

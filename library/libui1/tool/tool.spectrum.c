@@ -18,6 +18,9 @@ double lg(double);
 double ln(double);
 u32 getrandom();
 //
+int startsound(int rate, int chan, void* buf, int max);
+int stopsound();
+//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -38,14 +41,13 @@ static struct temp{
 
 //before
 static int maxpower;
-static int* data;
+static u16* data;
 
 //after
 static double* real;		//8*2048=0x4000
 static double* imag;		//8*2048=0x4000
 static double* power;		//8*1024=0x2000
 static double* phase;		//8*1024=0x2000
-static double tttt = 1.0;
 
 
 
@@ -54,14 +56,10 @@ static double tttt = 1.0;
 void spectrum_random()
 {
 	int j;
-	double p = (tttt<1.0)?tttt:(2.0-tttt);
-	double q = 1.0 - p;
 	for(j=0;j<1024;j++)
 	{
-		real[j] = p * cosine(j*tau/256)/2
-			+ q * sine(j*tau/64)/2;
+		real[j] = (double)data[j];
 		imag[j] = 0.0;
-		data[j] = (int)(maxpower*real[j]);
 	}
 
 	fft(real, imag, 10);
@@ -89,17 +87,18 @@ static void spectrum_read_pixel()
 		if(k<0)k=-k;
 		line(
 			x*width/1024, (height/4) - j,
-			x*width/1024, height/4,
-			0x010001 * k
+			x*width/1024, (height/4) + j,
+			0x010101 * k
 		);
-
+	}
+	for(x=0;x<512;x++)
+	{
 		j = (int)(power[x]);
 		line(
-			x*width/1024, (height*3/4) - j,
-			x*width/1024, height*3/4,
+			x*width/512, (height*3/4) - j,
+			x*width/512, height*3/4,
 			0xffffff
 		);
-
 	}
 }
 static void spectrum_read_html()
@@ -149,39 +148,9 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	u64 type = *a;
 	u64 key = *b;
 
-	if(type==0x656c6966706f7264)		//'dropfile'
-	{
-	}
 	if(type==0x64626b)			//'kbd'
 	{
 		spectrum_random();
-		if(key==0x25)			//left	0x4b
-		{
-		}
-		else if(key==0x27)		//right	0x4d
-		{
-		}
-		else if(key==0x26)		//up	0x4b
-		{
-		}
-		else if(key==0x28)		//down	0x4d
-		{
-		}
-	}
-	else if(type==0x72616863)		//'char'
-	{
-		if(key==9)					//tab
-		{
-		}
-		else if(key==0x8)			//backspace
-		{
-		}
-		else if(key==0xd)			//enter
-		{
-		}
-		else
-		{
-		}
 	}
 	else if(type==0x2d6d)
 	{
@@ -189,8 +158,6 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	}
 	else if(type==0x656d6974)
 	{
-		tttt += 0.01;
-		if(tttt > 2.0)tttt = 0.0;
 		spectrum_random();
 	}
 }
@@ -211,9 +178,13 @@ static void spectrum_into()
 void spectrum_start()
 {
 	int j;
+	maxpower = 65536;
 	backgroundcolor(0);
 
-	maxpower=32768;
+	//
+	startsound(44100, 2, data, 0x100000);
+
+	//
 	spectrum_random();
 }
 void spectrum_stop()
@@ -234,7 +205,7 @@ void spectrum_create(void* uibuf,void* addr)
 	this[14]=(u64)spectrum_read;
 	this[15]=(u64)spectrum_write;
 
-	data=(int*)(uibuf+0x200000);
+	data=(void*)(uibuf+0x200000);
 	real=(double*)(uibuf+0x300000);
 	imag=(double*)(uibuf+0x340000);
 	power=(double*)(uibuf+0x380000);

@@ -21,11 +21,6 @@ static void sound_list()
 }
 static void sound_choose()
 {
-	while(1)
-	{
-		readsound(datahome, 1024);
-		writesound(datahome, 1024);
-	}
 }
 static void sound_read()
 {

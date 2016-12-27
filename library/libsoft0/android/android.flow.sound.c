@@ -1,3 +1,15 @@
+void listsound()
+{
+}
+void choosesound()
+{
+}
+void readsound()
+{
+}
+void writesound()
+{
+}
 void startsound()
 {
 }
