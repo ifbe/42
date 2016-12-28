@@ -4,7 +4,7 @@
 
 
 
-void sha256sum(u8* dst, u8* src, int len)
+void sha512sum(u8* dst, u8* src, int len)
 {
 }
 
