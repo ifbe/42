@@ -6,10 +6,6 @@ target:
 	$(compiler) $(cflag) draw/draw.background.c
 	$(compiler) $(cflag) draw/draw.shape.c
 	$(compiler) $(cflag) draw/draw.unicode.c
-	$(compiler) $(cflag) draw/image.blur.c
-	$(compiler) $(cflag) draw/image.channel.c
-	$(compiler) $(cflag) draw/image.gray.c
-	$(compiler) $(cflag) draw/image.mosaic.c
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c

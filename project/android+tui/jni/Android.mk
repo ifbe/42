@@ -127,7 +127,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/flow.c \
 	library/libsoft1/libmath/math.bigint.c \
 	library/libsoft1/libmath/math.calc.c \
-	library/libsoft1/libmath/math.fourier.c \
+	library/libsoft1/libmath/math.dct.c \
+	library/libsoft1/libmath/math.fft.c \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \

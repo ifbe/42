@@ -59,7 +59,7 @@ void spectrum_random()
 	int j;
 	for(j=0;j<1024;j++)
 	{
-		real[j] = (double)data[j];
+		real[j] = (double)data[j] / 65536.0;
 		imag[j] = 0.0;
 	}
 
@@ -67,8 +67,9 @@ void spectrum_random()
 	for(j=0;j<1024;j++)
 	{
 		//say("%lf	%lf\n", real[j], imag[j]);
-		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / real[0];
+		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
 	}
+	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
 }
 
 
