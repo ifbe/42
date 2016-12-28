@@ -1,0 +1,4 @@
+fedora:
+	sudo dnf install make gcc
+ubuntu:
+	sudo apt-get install make gcc libasound2-dev libx11-dev libsdl2-dev
