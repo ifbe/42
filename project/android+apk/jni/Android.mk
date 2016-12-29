@@ -111,6 +111,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/flow.c \
 	library/libsoft1/libmath/math.bigint.c \
 	library/libsoft1/libmath/math.calc.c \
+	library/libsoft1/libmath/math.dh.c \
 	library/libsoft1/libmath/math.dct.c \
 	library/libsoft1/libmath/math.fft.c \
 	library/libsoft1/libmath/math.notation.c \
@@ -145,6 +146,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libsec/hash/hash.crc32.c \
 	library/libsoft1/libmem/libsec/hash/hash.md5.c \
 	library/libsoft1/libmem/libsec/hash/hash.sha1.c \
+	library/libsoft1/libmem/libsec/hash/hash.sha256.c \
 	library/libsoft1/libmem/libsec/hash/hash.string.c \
 	library/libsoft1/libmem/libsec/qrcode.c \
 	library/libsoft1/libmem/libsec/sec.c \

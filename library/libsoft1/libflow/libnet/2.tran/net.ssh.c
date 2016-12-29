@@ -2,10 +2,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int cmp(u8*,u8*);
-int ncmp(u8*,u8*,int);
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+//
+void generatePG(u8*, int, u8*, int);
+int cmp(u8*,u8*);
+int ncmp(u8*,u8*,int);
 //
 int diary(void*, int, void*, ...);
 void printmemory(void*, int);
@@ -53,6 +55,7 @@ static int secureshell_read_0x14(u8* buf, u64 len)
 	u32 temp;
 
 	//cookie
+	say("[6,15]cookie\n	");
 	for(temp=0;temp<16;temp++)
 	{
 		say("%02x ", buf[6+temp]);
@@ -63,72 +66,64 @@ static int secureshell_read_0x14(u8* buf, u64 len)
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]key_exchange_algorithm\n", offset,temp);
+	say("[%x,%x]key_exchange_algorithm\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]server_host_key_algorithm\n", offset, temp);
+	say("[%x,%x]server_host_key_algorithm\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_client_to_server\n", offset, temp);
+	say("[%x,%x]encryption_algorithms_client_to_server\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_server_to_client\n", offset, temp);
+	say("[%x,%x]encryption_algorithms_server_to_client\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_client_to_server\n", offset, temp);
+	say("[%x,%x]mac_algorithms_client_to_server\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_server_to_client\n", offset, temp);
+	say("[%x,%x]mac_algorithms_server_to_client\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_client_to_server\n", offset, temp);
+	say("[%x,%x]compression_algorithms_client_to_server\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
 	//
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_server_to_client\n", offset, temp);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
-
-	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_client_to_server\n", offset, temp);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
-
-	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n", offset, temp);
+	say("[%x,%x]compression_algorithms_server_to_client\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
@@ -136,7 +131,8 @@ static int secureshell_read_0x14(u8* buf, u64 len)
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
 	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n", offset, temp);
+	say("[%x,%x]languages_client_to_server\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 	offset += 4 + temp;
 
@@ -144,7 +140,26 @@ static int secureshell_read_0x14(u8* buf, u64 len)
 	temp = buf[offset+2];
 	temp = (temp<<8) + buf[offset+3];
 	if(temp <= 0)goto byebye;
-	say("[%x,%x]first_kex_packet_follows\n", offset, temp);
+	say("[%x,%x]languages_server_to_client\n",
+		offset, offset+temp-1);
+	printalgorithm(buf+offset, temp+4);
+	offset += 4 + temp;
+
+	//
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]languages_server_to_client\n",
+		offset, offset+temp-1);
+	printalgorithm(buf+offset, temp+4);
+	offset += 4 + temp;
+
+	//
+	temp = buf[offset+2];
+	temp = (temp<<8) + buf[offset+3];
+	if(temp <= 0)goto byebye;
+	say("[%x,%x]first_kex_packet_follows\n",
+		offset, offset+temp-1);
 	printalgorithm(buf+offset, temp+4);
 
 byebye:
@@ -152,14 +167,55 @@ byebye:
 }
 static int secureshell_read_0x1e(u8* buf, u64 len)
 {
-	int offset;
 	u32 temp;
+	int j = 6;
 
-	offset = 0x6;
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	printmemory(buf+offset, temp+4);
+	temp = buf[j+2];
+	temp = (temp<<8) + buf[j+3];
+	printmemory(buf+j+4, temp);
 	return temp;
+}
+static int secureshell_read_0x1f(u8* buf, u64 len)
+{
+	u32 Plen, Glen, Slen;
+	int j=6;
+
+	//P
+	Plen = (buf[j+2]<<8) + buf[j+3];
+	say("[%x,%x]P\n", j+4, j+Plen+3);
+	printmemory(buf+j+4, Plen);
+	j += 4 + Plen;
+
+	//G
+	Glen = (buf[j+2]<<8) + buf[j+3];
+	say("[%x,%x]G\n", j+4, j+Glen+3);
+	printmemory(buf+j+4, Glen);
+	j += 4 + Glen;
+
+	//sig
+	Slen = (buf[j+2]<<8) + buf[j+3];
+	say("[%x,%x]S\n", j+4, j+Slen+3);
+	printmemory(buf+j+4, Slen);
+	j += 4 + Slen;
+
+	return j;
+}
+static int secureshell_read_0x22(u8* buf, u64 len)
+{
+	int min;
+	int prefer;
+	int max;
+
+	min = (buf[8]<<8) + buf[9];
+	prefer = (buf[0xc]<<8) + buf[0xd];
+	max = (buf[0x10]<<8) + buf[0x11];
+
+	say("[6,11]DH GEX\n");
+	say("	min=%d\n", min);
+	say("	prefer=%d\n", prefer);
+	say("	max=%d\n", max);
+
+	return prefer;
 }
 static int secureshell_read(u8* buf, u64 len)
 {
@@ -170,22 +226,56 @@ static int secureshell_read(u8* buf, u64 len)
 	temp = (temp<<8) + buf[1];
 	temp = (temp<<8) + buf[2];
 	temp = (temp<<8) + buf[3];
-	say("total=%x\n",temp);
-	say("plen=%x\n", buf[4]);
-	say("type=%x\n", buf[5]);
 	if(buf[5] == 0x14)
 	{
+		say(
+			"[0,5]SSH_MSG_KEXINIT\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
 		secureshell_read_0x14(buf,len);
 	}
 	else if(buf[5] == 0x1e)
 	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST_OLD\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
 		secureshell_read_0x1e(buf,len);
+	}
+	else if(buf[5] == 0x1f)
+	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_GROUP\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x1f(buf,len);
+	}
+	else if(buf[5] == 0x22)
+	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x22(buf,len);
 	}
 	else
 	{
 		printmemory(buf,temp);
 	}
 
+	say("\n\n\n\n");
 	return buf[5];
 }
 
@@ -194,11 +284,15 @@ static int secureshell_read(u8* buf, u64 len)
 
 static int secureshell_write_head(u8* buf, int len)
 {
-say("len(old)=%d\n",len);
+	int j,temp;
+
 	//padding
-	int temp;
 	if((len&7) < 4)temp = 8-(len&7);
 	else temp = 16-(len&7);
+	for(j=0;j<temp;j++)
+	{
+		buf[len+j] = 0;
+	}
 	len += temp;
 
 	//head
@@ -208,7 +302,6 @@ say("len(old)=%d\n",len);
 	buf[3] = (len-4)&0xff;
 	buf[4] = temp;
 
-say("len(new)=%d\n",len);
 	return len;
 }
 static int secureshell_write_0x14(u8* buf, u64 len)
@@ -222,10 +315,8 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 
 	//key_exchange_algorithm
 	temp = diary(buf+offset+4, 999,
-		"curve25519-sha256@libssh.org,"
-		"diffie-hellman-group14-sha1,"
-		"diffie-hellman-group-exchange-sha1,"
-		"diffie-hellman-group-exchange-sha256"
+		"diffie-hellman-group-exchange-sha256,"
+		"diffie-hellman-group-exchange-sha1"
 	);
 	buf[offset+0] = buf[offset+1] = 0;
 	buf[offset+2] = (temp>>8)&0xff;
@@ -316,61 +407,50 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 static int secureshell_write_0x1f(u8* buf, u64 len)
 {
 	int offset;
-	int temp;
+	int Plen;
+	int Glen;
+	int Slen;
+	u8* Pbuf;
+	u8* Gbuf;
+	u8* Sbuf;
 
 	//
 	buf[5] = 0x1f;
 	offset = 6;
 
-	//KEX DH HOST KEY
-	for(temp=offset+4;temp<offset+4+0x68;temp++)
-	{
-		buf[temp] = temp;
-	}
+	//P.len, P.val
+	Plen = 0x68;
+	Pbuf = buf + offset + 4;
 	buf[offset+0] = 0;
 	buf[offset+1] = 0;
-	buf[offset+2] = 0;
-	buf[offset+3] = 0x68;
-	offset += 4 + 0x68;
+	buf[offset+2] = (Plen>>8)&0xff;
+	buf[offset+3] = Plen&0xff;
+	offset += 4 + Plen;
 
-	//MULTI PRECISION INTEGER
-	for(temp=offset+4;temp<offset+4+0x20;temp++)
-	{
-		buf[temp] = temp;
-	}
+	//G.len, G.val
+	Glen = 0x20;
+	Gbuf = buf + offset + 4;
 	buf[offset+0] = 0;
 	buf[offset+1] = 0;
-	buf[offset+2] = 0;
-	buf[offset+3] = 0x20;
-	offset += 4 + 0x20;
+	buf[offset+2] = (Glen>>8)&0xff;
+	buf[offset+3] = Glen&0xff;
+	offset += 4 + Glen;
 
-	//KEX DH SIGNATURE
-	for(temp=offset+4;temp<offset+4+0x64;temp++)
-	{
-		buf[temp] = temp;
-	}
+	//sig.len, sig.val
+	Slen = 0x64;
+	Sbuf = buf + offset + 4;
 	buf[offset+0] = 0;
 	buf[offset+1] = 0;
-	buf[offset+2] = 0;
-	buf[offset+3] = 0x64;
-	offset += 4 + 0x64;
+	buf[offset+2] = (Slen>>8)&0xff;
+	buf[offset+3] = Slen&0xff;
+	offset += 4 + Slen;
 
 	//
-	for(temp=offset+4;temp<offset+4+0x64;temp++)
-	{
-		buf[temp] = temp;
-	}
-	buf[offset+0] = 0;
-	buf[offset+1] = 0;
-	buf[offset+2] = 0;
-	buf[offset+3] = 0x64;
-	offset += 4 + 0x64;
-
-	//
+	generatePG(Pbuf, Plen, Gbuf, Glen);
 	offset = secureshell_write_head(buf, offset);
 
 	//
-	//secureshell_read_0x1f(buf, offset);
+	secureshell_read(buf, offset);
 	return offset;
 }
 static int secureshell_write_0x15(u8* buf, u64 len)
@@ -433,6 +513,13 @@ int serve_secureshell(u64* p, u8* buf, u64 len)
 			writeserver(p[2], buf, 0, ret);
 		}
 		else if(ret == 0x1e)
+		{
+			//try
+			ret = secureshell_write_0x1f(buf, len);
+			ret += secureshell_write_0x15(buf+ret, len);
+			writeserver(p[2], buf, 0, ret);
+		}
+		else if(ret == 0x22)
 		{
 			//try
 			ret = secureshell_write_0x1f(buf, len);
