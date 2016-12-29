@@ -66,6 +66,7 @@ target:
 	$(compiler) $(cflag) libmem/libsec/hash/hash.crc32.c
 	$(compiler) $(cflag) libmem/libsec/hash/hash.md5.c
 	$(compiler) $(cflag) libmem/libsec/hash/hash.sha1.c
+	$(compiler) $(cflag) libmem/libsec/hash/hash.sha256.c
 	$(compiler) $(cflag) libmem/libsec/hash/hash.string.c
 	$(compiler) $(cflag) libmem/libsec/qrcode.c
 	$(compiler) $(cflag) libmem/libsec/sec.c

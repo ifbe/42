@@ -14,13 +14,12 @@
 #define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);
 
 
-struct sha1_ctx
+typedef struct sha1_ctx
 {
 	u32 state[5];
 	u32 count[2];
 	unsigned char buffer[64];
-};
-static struct sha1_ctx context;
+}SHA1_CTX;
 
 
 
@@ -151,37 +150,37 @@ void SHA1Transform(u32 state[5], const unsigned char buffer[64] )
 
 
 
-void sha1_write(u8* data, u32 len)
+void sha1_write(SHA1_CTX* context, u8* data, u32 len)
 {
 	u32 i,j,k;
 	u8* p;
 
-	j = context.count[0];
-	if ((context.count[0] += len << 3) < j)context.count[1]++;
-	context.count[1] += (len >> 29);
+	j = context->count[0];
+	if ((context->count[0] += len << 3) < j)context->count[1]++;
+	context->count[1] += (len >> 29);
 
 	j = (j >> 3) & 63;
 	if ((j + len) > 63)
 	{
 		i = 64-j;
-		p = &context.buffer[j];
+		p = &context->buffer[j];
 		for(k=0;k<i;k++)p[k] = data[k];
 
-		SHA1Transform(context.state, context.buffer);
+		SHA1Transform(context->state, context->buffer);
 		for (; i + 63 < len; i += 64)
 		{
-			SHA1Transform(context.state, &data[i]);
+			SHA1Transform(context->state, &data[i]);
 		}
 		j = 0;
 	}
 	else i = 0;
 
-	p = &context.buffer[j];
+	p = &context->buffer[j];
 	for(k=0;k<len-i;k++)p[k]= data[i+k];
 }
 
 
-void sha1_read(u8 digest[20])
+void sha1_read(SHA1_CTX* context, u8 digest[20])
 {
 	unsigned char finalcount[8];
 	unsigned char c;
@@ -190,48 +189,57 @@ void sha1_read(u8 digest[20])
 
 	for (i = 0; i < 8; i++)
 	{
-		finalcount[i] = (unsigned char) ((context.count[(i >= 4 ? 0 : 1)] >> ((3 - (i & 3)) * 8)) & 255);	  /* Endian independent */
+		finalcount[i] = (u8)((context->count[(i >= 4 ? 0 : 1)] >> ((3 - (i & 3)) * 8)) & 255);	  /* Endian independent */
 	}
 
 	c = 0200;
-	sha1_write(&c, 1);
-	while ((context.count[0] & 504) != 448)
+	sha1_write(context, &c, 1);
+	while ((context->count[0] & 504) != 448)
 	{
 		c = 0000;
-		sha1_write(&c, 1);
+		sha1_write(context, &c, 1);
 	}
-	sha1_write(finalcount, 8); /* Should cause a SHA1Transform() */
+	sha1_write(context, finalcount, 8); /* Should cause a SHA1Transform() */
 	for (i = 0; i < 20; i++)
 	{
-		digest[i] = (unsigned char)( (context.state[i>>2] >> ((3-(i&3))*8) ) & 255);
+		digest[i] = (u8)( (context->state[i>>2] >> ((3-(i&3))*8) ) & 255);
 	}
 
 	/* Wipe variables */
 	p = (void*)&context;
-	for(j=0;j<sizeof(context);j++)p[j]=0;
+	for(j=0;j<sizeof(SHA1_CTX);j++)p[j]=0;
 	p = (void*)&finalcount;
 	for(j=0;j<sizeof(finalcount);j++)p[j]=0;
 }
 
-void sha1_create()
+void sha1_create(SHA1_CTX* context)
 {
-	context.state[0] = 0x67452301;
-	context.state[1] = 0xEFCDAB89;
-	context.state[2] = 0x98BADCFE;
-	context.state[3] = 0x10325476;
-	context.state[4] = 0xC3D2E1F0;
-	context.count[0] = context.count[1] = 0;
+	context->state[0] = 0x67452301;
+	context->state[1] = 0xEFCDAB89;
+	context->state[2] = 0x98BADCFE;
+	context->state[3] = 0x10325476;
+	context->state[4] = 0xC3D2E1F0;
+	context->count[0] = context->count[1] = 0;
 }
-void sha1_delete()
+void sha1_delete(SHA1_CTX* context)
 {
 }
-void sha1sum(u8* hash_out, u8* str, int len)
+void sha1sum(u8* dst, u8* src, int len)
 {
-	unsigned int j;
+	int j;
+	SHA1_CTX context;
+	sha1_create(&context);
 
-	sha1_create();
-	for (j=0; j<len; j+=1)sha1_write(str+j, 1);
-	sha1_read(hash_out);
-	hash_out[20] = '\0';
+	//
+	sha1_create(&context);
+	for (j=0;j<=len-64;j+=64)
+	{
+		sha1_write(&context, src+j, 64);
+	}
+	if((len%64) > 0)sha1_write(&context, src+j, len%64);
+	sha1_read(&context, dst);
+
+	//
+	sha1_delete(&context);
 }
 

@@ -3,6 +3,7 @@
 void md5sum(unsigned char* out, const unsigned char* str, int len);
 void sha1sum(unsigned char* out, const unsigned char* str, int len);
 void base64_encode(unsigned char* out,const unsigned char* in,int len);
+void base64_decode(unsigned char* out,const unsigned char* in);
 
 
 
