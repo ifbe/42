@@ -50,8 +50,8 @@ void* soundlistener(void* p)
 
 	while(alive)
 	{
-		j = snd_pcm_readi(capture_handle, buffer, 4410);
-		if (j != 4410)
+		j = snd_pcm_readi(capture_handle, buffer, 1024);
+		if (j != 1024)
 		{
 			printf ("%s\n", snd_strerror(j));
 		}
@@ -68,7 +68,7 @@ int startsound_capture(unsigned int rate, int ch)
 	int err;
 
 	//printf("@snd_pcm_open\n");
-	err = snd_pcm_open (&capture_handle, "hw:1,0", SND_PCM_STREAM_CAPTURE, 0);
+	err = snd_pcm_open (&capture_handle, "hw:0,0", SND_PCM_STREAM_CAPTURE, 0);
 	if (err < 0) {
 		printf("%s\n", snd_strerror (err));
 		return -1;
@@ -140,7 +140,7 @@ int startsound_playback(unsigned int frequency, int channels)
 {
         int rc;
 
-        rc=snd_pcm_open(&playback_handle, "hw:1,0", SND_PCM_STREAM_PLAYBACK, 0);
+        rc=snd_pcm_open(&playback_handle, "hw:0,0", SND_PCM_STREAM_PLAYBACK, 0);
         if(rc<0)
         {
                 perror("\nopen PCM device failed:");

@@ -36,7 +36,7 @@ DWORD WINAPI soundlistener(LPVOID pM)
 	while(alive == 1)
 	{
 		headin.lpData = buffer;
-		headin.dwBufferLength = 4410*4;
+		headin.dwBufferLength = 1024*4;
 		headin.dwBytesRecorded = 0;
 		headin.dwUser = 0;
 		headin.dwFlags = 0;
@@ -45,7 +45,7 @@ DWORD WINAPI soundlistener(LPVOID pM)
 		waveInPrepareHeader(wavein, &headin, sizeof(WAVEHDR));
 		waveInAddBuffer(wavein, &headin, sizeof (WAVEHDR));
 		waveInStart(wavein);
-		Sleep(100);
+		Sleep(23);
 		waveInReset(wavein);
 
 		eventwrite(0, 's', 0, 0);
