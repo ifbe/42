@@ -168,40 +168,40 @@ int findtail(u8* buf);
 int findzero(u8* buf);
 int finddata(u8* buf, u8 data);
 
+
+int bigdup(u8* src, int sl, u8* dst, int dl);
+int bigcmp(u8* src, int sl, u8* dst, int dl);
+int bigshl(u8* buf, int len, int sh);
+int bigshr(u8* buf, int len, int sh);
 int bigadd(
 	u8* abuf, int alen,
-	u8* bbuf, int blen,
-	u8* ans, int max
-);
-int bigsub(
+	u8* bbuf, int blen);
+int bigadd_muled(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
-	u8* ans, int max
-);
+	int val);
+int bigsub(
+	u8* abuf, int alen,
+	u8* bbuf, int blen);
+int bigsub_muled(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	int val);
 int bigmul(
 	u8* abuf, int alen,
 	u8* bbuf, int blen,
-	u8* ans, int max
-);
-int bigmod(
-	u8* base, int bl,
-	u8* mod, int ml,
-	u8* ans, int al
-);
-int bigdiv(
-	u8* abuf, int alen,
-	u8* bbuf, int blen,
-	u8* quotient, int max1,
-	u8* remainder, int max2
-);
+	u8* answer, int max);
 int bigpow(
 	u8* base, int bl,
 	u8* exp, int el,
 	u8* mod, int ml,
 	u8* ans, int al,
-	u8* t1, int l1,
-	u8* t2, int l2
-);
+	u8* t1, int l1);
+int bigdiv(
+	u8* abuf, int alen,
+	u8* bbuf, int blen,
+	u8* quotient, int max1,
+	u8* remainder, int max2);
 
 
 
