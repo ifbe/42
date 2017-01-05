@@ -38,6 +38,8 @@ target:
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c
+	$(compiler) $(cflag) libmem/libfile/picture/picture.jpg.c
+	$(compiler) $(cflag) libmem/libfile/picture/picture.png.c
 	$(compiler) $(cflag) libmem/libfile/file.c
 	$(compiler) $(cflag) libmem/libfs/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfs/compress/compress.cpio.c

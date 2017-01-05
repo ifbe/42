@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+int circuit_create(void*, void*);
+int circuit_delete();
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
@@ -67,9 +69,12 @@ int phys_create(u8* softaddr,u64* p)
 	p[14]=(u64)phys_read;
 	p[15]=(u64)phys_write;
 
-	return 0x80;
+	q = (u8*)p;
+	circuit_create(softaddr, q+0x80);
+	return 0x100;
 }
 int phys_delete()
 {
+	circuit_delete();
 	return 0;
 }

@@ -117,6 +117,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \
+	library/libsoft1/libmem/libfile/picture/picture.jpg.c \
+	library/libsoft1/libmem/libfile/picture/picture.png.c \
 	library/libsoft1/libmem/libfile/file.c \
 	library/libsoft1/libmem/libfs/compress/compress.7z.c \
 	library/libsoft1/libmem/libfs/compress/compress.cpio.c \
