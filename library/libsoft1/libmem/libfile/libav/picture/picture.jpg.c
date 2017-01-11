@@ -8,7 +8,7 @@ void say(void*, ...);
 
 
 
-int jpg_check(u8* buf)
+int jpg_yes(u8* buf)
 {
 	if(buf[0] != 0xff)return 0;
 	if(buf[1] != 0xd8)return 0;

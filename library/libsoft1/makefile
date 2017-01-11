@@ -41,6 +41,7 @@ target:
 	$(compiler) $(cflag) libmem/libdata/codec/codec.avc.c
 	$(compiler) $(cflag) libmem/libdata/codec/codec.hevc.c
 	$(compiler) $(cflag) libmem/libdata/data.c
+	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.jpg.c
 	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.png.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.cpio.c

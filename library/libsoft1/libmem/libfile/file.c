@@ -2,14 +2,17 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
+//multimedia
+int jpg_yes(void*);
+int jpg_explain(void*, int);
+//compress
 int tar_create(void*,void*);
 int tar_delete();
 int tar_yes(u8*);
 int zip_create(void*,void*);
 int zip_delete();
 int zip_yes();
-//
+//filesystem
 int ext_create(void*,void*);
 int ext_delete();
 int ext_yes(u8*);
@@ -22,7 +25,7 @@ int hfs_yes(u8*);
 int ntfs_create(void*,void*);
 int ntfs_delete();
 int ntfs_yes(u8*);
-//
+//parttable
 int gpt_create(void*,void*);
 int gpt_delete();
 int gpt_yes(u8*);
@@ -31,7 +34,7 @@ int mbr_create(void*,void*);
 int mbr_delete();
 int mbr_yes(u8*);
 void mbr_explain(u8*, u8*);
-//
+//diskimage
 int vhd_create(void*,void*);
 int vhd_delete();
 int vhd_yes(u8*);
@@ -64,8 +67,13 @@ static int which = 0;
 //
 int filesystem_explain(u8* p)
 {
-	//explain
-	if(ext_yes(p) > 0)
+	if(jpg_yes(p) > 0)
+	{
+		jpg_explain(p, 0x100000);
+	}
+
+	//filesystem
+	else if(ext_yes(p) > 0)
 	{
 		say("ext\n");
 	}
@@ -81,6 +89,8 @@ int filesystem_explain(u8* p)
 	{
 		say("ntfs\n");
 	}
+
+	//parttable
 	else if(gpt_yes(p) > 0)
 	{
 		say("gpt\n");
@@ -91,9 +101,11 @@ int filesystem_explain(u8* p)
 		say("mbr\n");
 		mbr_explain(p, fshome);
 	}
+
+	//unknown
 	else
 	{
-		say("parttable notfound\n");
+		say("unknown\n");
 		return -1;
 	}
 	return 0;

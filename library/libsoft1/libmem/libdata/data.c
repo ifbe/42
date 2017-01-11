@@ -3,8 +3,6 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int jpg_check(void*);
-int jpg_explain(void*, int);
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
 //
@@ -35,12 +33,6 @@ static int file_list(u8* arg1)
 }
 static int file_choose(u8* arg)
 {
-	int ret;
-
-	ret = readfile(arg, datahome, 0, 0x10000);
-	if(ret <= 0)return 0;
-
-	if(jpg_check(datahome))jpg_explain(datahome, ret);
 	return 0;
 }
 static int file_read(u8* mem, u8* file, u64 addr, u64 count)
