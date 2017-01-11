@@ -133,28 +133,30 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \
-	library/libsoft1/libmem/libfile/picture/picture.jpg.c \
-	library/libsoft1/libmem/libfile/picture/picture.png.c \
+	library/libsoft1/libmem/libdata/codec/codec.avc.c \
+	library/libsoft1/libmem/libdata/codec/codec.hevc.c \
+	library/libsoft1/libmem/libdata/data.c \
+	library/libsoft1/libmem/libfile/libav/picture/picture.jpg.c \
+	library/libsoft1/libmem/libfile/libav/picture/picture.png.c \
+	library/libsoft1/libmem/libfile/libfs/compress/compress.7z.c \
+	library/libsoft1/libmem/libfile/libfs/compress/compress.cpio.c \
+	library/libsoft1/libmem/libfile/libfs/compress/compress.gz.c \
+	library/libsoft1/libmem/libfile/libfs/compress/compress.tar.c \
+	library/libsoft1/libmem/libfile/libfs/compress/compress.zip.c \
+	library/libsoft1/libmem/libfile/libfs/diskimage/img.raw.c \
+	library/libsoft1/libmem/libfile/libfs/diskimage/img.vhd.c \
+	library/libsoft1/libmem/libfile/libfs/diskimage/img.vmdk.c \
+	library/libsoft1/libmem/libfile/libfs/executable/exec.elf.c \
+	library/libsoft1/libmem/libfile/libfs/executable/exec.macho.c \
+	library/libsoft1/libmem/libfile/libfs/executable/exec.pe.c \
+	library/libsoft1/libmem/libfile/libfs/filesystem/fs.ext.c \
+	library/libsoft1/libmem/libfile/libfs/filesystem/fs.fat.c \
+	library/libsoft1/libmem/libfile/libfs/filesystem/fs.hfs.c \
+	library/libsoft1/libmem/libfile/libfs/filesystem/fs.ntfs.c \
+	library/libsoft1/libmem/libfile/libfs/parttable/pt.apple.c \
+	library/libsoft1/libmem/libfile/libfs/parttable/pt.gpt.c \
+	library/libsoft1/libmem/libfile/libfs/parttable/pt.mbr.c \
 	library/libsoft1/libmem/libfile/file.c \
-	library/libsoft1/libmem/libfs/compress/compress.7z.c \
-	library/libsoft1/libmem/libfs/compress/compress.cpio.c \
-	library/libsoft1/libmem/libfs/compress/compress.gz.c \
-	library/libsoft1/libmem/libfs/compress/compress.tar.c \
-	library/libsoft1/libmem/libfs/compress/compress.zip.c \
-	library/libsoft1/libmem/libfs/diskimage/img.raw.c \
-	library/libsoft1/libmem/libfs/diskimage/img.vhd.c \
-	library/libsoft1/libmem/libfs/diskimage/img.vmdk.c \
-	library/libsoft1/libmem/libfs/executable/exec.elf.c \
-	library/libsoft1/libmem/libfs/executable/exec.macho.c \
-	library/libsoft1/libmem/libfs/executable/exec.pe.c \
-	library/libsoft1/libmem/libfs/filesystem/fs.ext.c \
-	library/libsoft1/libmem/libfs/filesystem/fs.fat.c \
-	library/libsoft1/libmem/libfs/filesystem/fs.hfs.c \
-	library/libsoft1/libmem/libfs/filesystem/fs.ntfs.c \
-	library/libsoft1/libmem/libfs/parttable/pt.apple.c \
-	library/libsoft1/libmem/libfs/parttable/pt.gpt.c \
-	library/libsoft1/libmem/libfs/parttable/pt.mbr.c \
-	library/libsoft1/libmem/libfs/fs.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.aes.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.base64.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.des.c \

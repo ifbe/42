@@ -38,28 +38,29 @@ target:
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c
-	$(compiler) $(cflag) libmem/libfile/picture/picture.jpg.c
-	$(compiler) $(cflag) libmem/libfile/picture/picture.png.c
+	$(compiler) $(cflag) libmem/libdata/codec/codec.avc.c
+	$(compiler) $(cflag) libmem/libdata/codec/codec.hevc.c
+	$(compiler) $(cflag) libmem/libdata/data.c
+	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.png.c
+	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.7z.c
+	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.cpio.c
+	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.gz.c
+	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.tar.c
+	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.zip.c
+	$(compiler) $(cflag) libmem/libfile/libfs/diskimage/img.raw.c
+	$(compiler) $(cflag) libmem/libfile/libfs/diskimage/img.vhd.c
+	$(compiler) $(cflag) libmem/libfile/libfs/diskimage/img.vmdk.c
+	$(compiler) $(cflag) libmem/libfile/libfs/executable/exec.elf.c
+	$(compiler) $(cflag) libmem/libfile/libfs/executable/exec.macho.c
+	$(compiler) $(cflag) libmem/libfile/libfs/executable/exec.pe.c
+	$(compiler) $(cflag) libmem/libfile/libfs/filesystem/fs.ext.c
+	$(compiler) $(cflag) libmem/libfile/libfs/filesystem/fs.fat.c
+	$(compiler) $(cflag) libmem/libfile/libfs/filesystem/fs.hfs.c
+	$(compiler) $(cflag) libmem/libfile/libfs/filesystem/fs.ntfs.c
+	$(compiler) $(cflag) libmem/libfile/libfs/parttable/pt.apple.c
+	$(compiler) $(cflag) libmem/libfile/libfs/parttable/pt.gpt.c
+	$(compiler) $(cflag) libmem/libfile/libfs/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmem/libfile/file.c
-	$(compiler) $(cflag) libmem/libfs/compress/compress.7z.c
-	$(compiler) $(cflag) libmem/libfs/compress/compress.cpio.c
-	$(compiler) $(cflag) libmem/libfs/compress/compress.gz.c
-	$(compiler) $(cflag) libmem/libfs/compress/compress.tar.c
-	$(compiler) $(cflag) libmem/libfs/compress/compress.zip.c
-	$(compiler) $(cflag) libmem/libfs/diskimage/img.raw.c
-	$(compiler) $(cflag) libmem/libfs/diskimage/img.vhd.c
-	$(compiler) $(cflag) libmem/libfs/diskimage/img.vmdk.c
-	$(compiler) $(cflag) libmem/libfs/executable/exec.elf.c
-	$(compiler) $(cflag) libmem/libfs/executable/exec.macho.c
-	$(compiler) $(cflag) libmem/libfs/executable/exec.pe.c
-	$(compiler) $(cflag) libmem/libfs/filesystem/fs.ext.c
-	$(compiler) $(cflag) libmem/libfs/filesystem/fs.fat.c
-	$(compiler) $(cflag) libmem/libfs/filesystem/fs.hfs.c
-	$(compiler) $(cflag) libmem/libfs/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) libmem/libfs/parttable/pt.apple.c
-	$(compiler) $(cflag) libmem/libfs/parttable/pt.gpt.c
-	$(compiler) $(cflag) libmem/libfs/parttable/pt.mbr.c
-	$(compiler) $(cflag) libmem/libfs/fs.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.base64.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.des.c
