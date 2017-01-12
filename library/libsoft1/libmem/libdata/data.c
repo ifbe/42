@@ -63,7 +63,7 @@ int file_create(u8* softaddr,u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x656c6966;
+	p[1]=0x61746164;
 
 	p[10]=(u64)file_start;
 	p[11]=(u64)file_stop;

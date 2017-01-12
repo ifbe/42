@@ -28,6 +28,18 @@ static int text_list(u8* arg1)
 }
 static int text_choose(u8* arg)
 {
+	int j;
+	if(arg == 0)return 0;
+	if(arg[0] == 0)return 0;
+	for(j=0;j<8;j++)
+	{
+		if(arg[j+1] == 0)break;
+	}
+
+	say("0x");
+	for(;j>=0;j--)say("%02x",arg[j]);
+	say("\n");
+
 	return 0;
 }
 static int text_read(u8* mem, u8* file, u64 addr, u64 count)

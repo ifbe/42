@@ -65,7 +65,7 @@ static int which = 0;
 
 
 //
-int filesystem_explain(u8* p)
+int file_explain(u8* p)
 {
 	if(jpg_yes(p) > 0)
 	{
@@ -110,7 +110,7 @@ int filesystem_explain(u8* p)
 	}
 	return 0;
 }
-int filesystem_mount(u8* addr)
+int file_mount(u8* addr)
 {
 /*
 	int j;
@@ -183,10 +183,7 @@ static int filesystem_cd(u8* p)
 	ret = readfile(0, datahome, 0, 0x8000);
 
 	//11111111
-	ret = filesystem_explain(datahome);
-
-	//list
-	filesystem_ls();
+	ret = file_explain(datahome);
 	return 0;
 }
 static int filesystem_show(u8* addr)
@@ -214,7 +211,7 @@ void filesystem_create(void* softaddr, u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x7366;
+	p[1]=0x656c6966;
 	p[10]=(u64)filesystem_start;
 	p[11]=(u64)filesystem_stop;
 	p[12]=(u64)filesystem_ls;
