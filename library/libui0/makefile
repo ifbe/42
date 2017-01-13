@@ -57,8 +57,8 @@ linuxxlib:
 	$(compiler) $(cflag) linux/linux.xlib.c
 	$(compiler) $(cflag) display.c
 
-.PHONY:linuxopengl
-linuxopengl:
+.PHONY:linuxgl
+linuxgl:
 	rm -f *.o
 	$(compiler) $(cflag) cross/cross.opengl.c
 	$(compiler) $(cflag) display.c
@@ -98,8 +98,8 @@ macquartz:
 	$(compiler) $(cflag) mac/mac.cocoa.c
 	$(compiler) $(cflag) display.c
 
-.PHONY:macopengl
-macopengl:
+.PHONY:macgl
+macgl:
 	rm -f *.o
 	$(compiler) $(cflag) cross/cross.opengl.c
 	$(compiler) $(cflag) display.c
@@ -133,8 +133,8 @@ winapi:
 	$(compiler) $(cflag) win/win.api.c
 	$(compiler) $(cflag) display.c
 
-.PHONY:winopengl
-winopengl:
+.PHONY:wingl
+wingl:
 	rm -f *.o
 	$(compiler) $(cflag) cross/cross.opengl.c
 	$(compiler) $(cflag) display.c

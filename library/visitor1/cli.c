@@ -62,12 +62,12 @@ again:
 		}
 		else if((addr[1]&0xff) == 's')	//sound
 		{
-			network_explain(addr);
+			sound_explain(addr);
 			continue;
 		}
 		else if((addr[1]&0xff) == 'v')	//vision
 		{
-			network_explain(addr);
+			vision_explain(addr);
 			continue;
 		}
 		if(addr[1] == 0)goto again;
