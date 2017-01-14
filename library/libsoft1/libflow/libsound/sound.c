@@ -5,6 +5,8 @@
 //
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
+int decstr2data(u8* src,u64* dst);
+int hexstr2data(u8* src,u64* dst);
 //
 int startsound(int rate, int chan, void* buf, int len);
 int stopsound();
@@ -12,6 +14,7 @@ int readsound(void* buf, int len);
 int writesound(void* buf, int len);
 //
 void sleep_us(int);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -44,23 +47,33 @@ static void sound_choose()
 static void sound_read()
 {
 }
-static void sound_write()
+static void sound_write(char* buf)
 {
-	int j;
+	int j,k;
+	u64 dat;
+	if(buf == 0)dat=64;
+	else
+	{
+		decstr2data(buf, &dat);
+		dat=dat*1024/44100;
+	}
+
 	for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
-	real[64]=real[1023-64]=65535;
-	real[128]=real[1023-128]=65535;
-	real[256]=real[1023-256]=65535;
+	real[dat]=real[1023-dat]=65535;
 
 	ifft(real,imag,10);
 	for(j=0;j<1024;j++)pcmout[j]=(u16)real[j];
+	//printmemory(pcmout,2048);
 
-	for(j=0;j<10*44100/1024;j++)
+	for(j=1;j<44100/1024;j++)
 	{
-		writesound(pcmout, 1024*2);
-		sleep_us(20000);
+		for(k=0;k<1024;k++)
+		{
+			pcmout[j*1024+k]=pcmout[k];
+		}
 	}
-	say("3\n");
+
+	writesound(pcmout, 1024*2);
 }
 static void sound_start()
 {

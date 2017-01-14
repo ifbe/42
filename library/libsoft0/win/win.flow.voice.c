@@ -84,7 +84,7 @@ void writesound(u8* buf, int len)
 {
 	headout.dwLoops = 0L;
 	headout.lpData = buf;
-	headout.dwBufferLength = 1024*chan;
+	headout.dwBufferLength = 44100*chan;
 	headout.dwFlags = 0L;
 	waveOutPrepareHeader(waveout, &headout, sizeof(WAVEHDR));
 	waveOutWrite(waveout, &headout, sizeof(WAVEHDR));
