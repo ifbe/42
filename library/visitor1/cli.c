@@ -70,7 +70,7 @@ again:
 			vision_explain(addr);
 			continue;
 		}
-		if(addr[1] == 0)goto again;
+		if(addr[1] != 0x64626b)goto again;
 
 
 		//4.界面改变

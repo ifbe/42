@@ -63,7 +63,7 @@ static void CALLBACK CB(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, 
 		case WOM_DONE://上次缓存播放完成,触发该事件
 		{
 			headout.dwBufferLength = 0;
-			printf("done\n");
+			//printf("done\n");
 		}
 	}
 }

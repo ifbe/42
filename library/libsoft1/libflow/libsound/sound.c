@@ -62,7 +62,12 @@ static void sound_write(char* buf)
 	real[dat]=real[1023-dat]=65535;
 
 	ifft(real,imag,10);
-	for(j=0;j<1024;j++)pcmout[j]=(u16)real[j];
+	for(j=0;j<1024;j++)
+	{
+		real[j]*=32;
+		if(real[j]>65535.0)pcmout[j]=65535;
+		else pcmout[j]=(u16)real[j];
+	}
 	//printmemory(pcmout,2048);
 
 	for(j=1;j<44100/1024;j++)
@@ -73,7 +78,7 @@ static void sound_write(char* buf)
 		}
 	}
 
-	writesound(pcmout, 1024*2);
+	writesound(pcmout, 44100*2);
 }
 static void sound_start()
 {
