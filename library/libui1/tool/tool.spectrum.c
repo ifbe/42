@@ -18,9 +18,11 @@ double log2(double);
 double lg(double);
 double ln(double);
 //
-u32 getrandom();
+int sound_output(double*, double*, u16*);
+//
 int startsound(int rate, int chan, void* buf, int max);
 int stopsound();
+u32 getrandom();
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -42,13 +44,17 @@ static struct temp{
 
 //before
 static int maxpower;
-static u16* data;
+static u16* pcmin;
+static u16* pcmout;
 
 //after
-static double* real;		//8*2048=0x4000
-static double* imag;		//8*2048=0x4000
-static double* power;		//8*1024=0x2000
-static double* phase;		//8*1024=0x2000
+static double* real;
+static double* imag;
+static double* power;
+static double* phase;
+
+//
+static u16 tone[8]={200,256,288,320,341,384,427,480};
 
 
 
@@ -59,7 +65,7 @@ void spectrum_random()
 	int j;
 	for(j=0;j<1024;j++)
 	{
-		real[j] = (double)data[j] / 65536.0;
+		real[j] = (double)pcmin[j] / 65536.0;
 		imag[j] = 0.0;
 	}
 
@@ -70,6 +76,32 @@ void spectrum_random()
 		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
 	}
 	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
+}
+static void spectrum_write(u64* who, u64* a, u64* b)
+{
+	int j;
+	u64 type = *a;
+	u64 key = *b;
+
+	if(type==0x72616863)	//'char'
+	{
+		if(key<=0x30)return;
+		if(key>=0x38)return;
+		key -= 0x30;
+
+		for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
+		j=tone[key]*1024/44100;
+		real[j]=real[1023-j]=65535;
+		sound_output(real, imag, pcmout);
+	}
+	else if(type==0x2d6d)
+	{
+		spectrum_random();
+	}
+	else if(type=='s')
+	{
+		spectrum_random();
+	}
 }
 
 
@@ -84,8 +116,8 @@ static void spectrum_read_pixel()
 
 	for(x=0;x<1024;x++)
 	{
-		j = data[x] *height /maxpower /4;
-		k = data[x]*256/maxpower;
+		j = pcmin[x] *height /maxpower /4;
+		k = pcmin[x]*256/maxpower;
 		if(k<0)k=-k;
 		line(
 			x*width/1024, (height/4) - j,
@@ -145,24 +177,6 @@ static void spectrum_read()
 		spectrum_read_pixel();
 	}
 }
-static void spectrum_write(u64* who, u64* a, u64* b)
-{
-	u64 type = *a;
-	u64 key = *b;
-
-	if(type==0x64626b)			//'kbd'
-	{
-		spectrum_random();
-	}
-	else if(type==0x2d6d)
-	{
-		spectrum_random();
-	}
-	else if(type=='s')
-	{
-		spectrum_random();
-	}
-}
 
 
 
@@ -184,7 +198,7 @@ void spectrum_start()
 	backgroundcolor(0);
 
 	//
-	startsound(44100, 2, data, 0x100000);
+	startsound(44100, 2, pcmin, 0x100000);
 
 	//
 	spectrum_random();
@@ -207,7 +221,9 @@ void spectrum_create(void* uibuf,void* addr)
 	this[14]=(u64)spectrum_read;
 	this[15]=(u64)spectrum_write;
 
-	data=(void*)(uibuf+0x200000);
+	pcmin=(void*)(uibuf+0x200000);
+	pcmout=(void*)(uibuf+0x280000);
+
 	real=(double*)(uibuf+0x300000);
 	imag=(double*)(uibuf+0x340000);
 	power=(double*)(uibuf+0x380000);
