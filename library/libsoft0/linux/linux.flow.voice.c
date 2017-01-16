@@ -19,14 +19,16 @@ static int alive = 1;
 static int freq;
 static int channel;
 //
-static u8* buffer = 0;
 static snd_pcm_t* capture_handle;
 static snd_pcm_hw_params_t* capture_params;
+static u8* bufin = 0;
 //
 static snd_pcm_t* playback_handle;
 static snd_pcm_hw_params_t* playback_params;
 static snd_pcm_uframes_t frames;
 static int dir=0;
+static int count=0;
+static u8* bufout = 0;
 
 
 
@@ -42,21 +44,47 @@ int readsound(char* buf, int frame)
 }
 int writesound(char* buf, int frame)
 {
-	return snd_pcm_writei(playback_handle, buf, frames);
+	bufout = buf;
+	count = 0;
 }
 void* soundlistener(void* p)
 {
-	int j;
+	int j,k;
+	int count;
 
+	k=0;
 	while(alive)
 	{
-		j = snd_pcm_readi(capture_handle, buffer, 1024);
-		if (j != 1024)
+		j = snd_pcm_readi(capture_handle, bufin, frames);
+		if(j != frames)
 		{
-			printf ("%s\n", snd_strerror(j));
+			printf("snd_pcm_readi:%s\n", snd_strerror(j));
 		}
 
-		eventwrite(0, 's', 0, 0);
+		if(bufout == 0)j = snd_pcm_writei(playback_handle, bufin, frames);
+		else j = snd_pcm_writei(playback_handle, bufout, frames);
+		if(j != frames)
+		{
+			printf("snd_pcm_writei:%s\n", snd_strerror(j));
+			if(j == -EPIPE)
+			{
+				snd_pcm_prepare(playback_handle);
+			}
+		}
+
+		usleep(frames*10000/441/2);	//dont know need /2
+		k += frames;
+		count++;
+		if(k >= 1024)
+		{
+			eventwrite(0, 's', 0, 0);
+			k = 0;
+		}
+		if(count > 0x8000/frames)
+		{
+			bufout = 0;
+			count = 0;
+		}
 	}
 }
 
@@ -68,7 +96,10 @@ int startsound_capture(unsigned int rate, int ch)
 	int err;
 
 	//printf("@snd_pcm_open\n");
-	err = snd_pcm_open (&capture_handle, "hw:0,0", SND_PCM_STREAM_CAPTURE, 0);
+	err = snd_pcm_open(
+		&capture_handle, "hw:0,0",
+		SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK
+	);
 	if (err < 0) {
 		printf("%s\n", snd_strerror (err));
 		return -1;
@@ -215,7 +246,7 @@ int startsound(unsigned int rate, int ch, u8* buf, int max)
 
 	freq = rate;
 	channel = ch;
-	buffer = buf;
+	bufin = buf;
 
 	//thread
 	alive = 1;

@@ -54,7 +54,7 @@ static double* power;
 static double* phase;
 
 //
-static u16 tone[8]={200,256,288,320,341,384,427,480};
+static u16 tone[8]={200,523,587,659,698,784,880,988};
 
 
 
@@ -90,7 +90,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 		key -= 0x30;
 
 		for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
-		j=tone[key]*1024/44100;
+		j=(tone[key]*1024)/44100;
 		real[j]=real[1023-j]=65535;
 		sound_output(real, imag, pcmout);
 	}
