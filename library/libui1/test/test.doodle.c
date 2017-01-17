@@ -1,13 +1,14 @@
 #define u64 unsigned long long
 #define u32 unsigned int
 //
+void line(int ax, int ay, int bx, int by, u32 color);
+void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color);
 void rectbody( int x1, int y1, int x2, int y2, u32 color);
 void rectframe(int x1, int y1, int x2, int y2, u32 color);
 void circlebody( int cx, int cy, int r, u32 color);
 void circleframe(int cx, int cy, int r, u32 color);
 void sectorbody( int cx, int cy, int r, int start, int end, u32 color);
 void sectorframe(int cx, int cy, int r, int start, int end, u32 color);
-void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color);
 //
 void backgroundcolor();
 void say(char*,...);
@@ -50,7 +51,9 @@ void doodle_read()
 	sectorbody(150, 275, 25, 270,  90, 0xffffff);
 
 	//bezier
-	bezier(0,256, 512,256, px,py, 0xffff);
+	line(  0, 256,  px,  py, 0xffff);
+	line(512, 256,  px,  py, 0xffff);
+	bezier(0, 256, 512, 256, px, py, 0xffff);
 }
 void doodle_write(u64* who, u64* what, u64* how)
 {
