@@ -276,8 +276,29 @@ void sector(int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 f
 
 
 
-void bezier()
+void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color)
 {
+	u32* winbuf;
+	int width;
+	int height;
+	int x,y,t;
+
+	winbuf=(u32*)(haha->pixelbuffer);
+	width=haha->width;
+	height=haha->height;
+
+	for(t=0;t<1000;t++)
+	{
+		x = (1000-t)*(1000-t)*ax + 2*t*(1000-t)*cx + t*t*bx;
+		x /= 1000*1000;
+		if(x<0|x>=width)continue;
+
+		y = (1000-t)*(1000-t)*ay + 2*t*(1000-t)*cy + t*t*by;
+		y /= 1000*1000;
+		if(y<0|y>=height)continue;
+
+		winbuf[y*width + x] = 0xff00;
+	}
 }
 
 

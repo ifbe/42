@@ -7,10 +7,16 @@ void circlebody( int cx, int cy, int r, u32 color);
 void circleframe(int cx, int cy, int r, u32 color);
 void sectorbody( int cx, int cy, int r, int start, int end, u32 color);
 void sectorframe(int cx, int cy, int r, int start, int end, u32 color);
+void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color);
 //
 void backgroundcolor();
 void say(char*,...);
 
+
+
+
+//
+static int px=0,py=0;
 
 
 
@@ -43,9 +49,16 @@ void doodle_read()
 	sectorbody(150, 225, 25,  90, 270, 0);
 	sectorbody(150, 275, 25, 270,  90, 0xffffff);
 
+	//bezier
+	bezier(0,256, 512,256, px,py, 0xffff);
 }
 void doodle_write(u64* who, u64* what, u64* how)
 {
+	if(*what == 0x2d6d)
+	{
+		px = (*how)&0xffff;
+		py = ((*how)>>16)&0xffff;
+	}
 }
 void doodle_start()
 {
@@ -57,7 +70,7 @@ void doodle_create(char* base,char* addr)
 {
 	u64* this=(u64*)addr;
 	this[0] = 0x74736574;
-	this[1] = 0x6570616873;
+	this[1] = 0x656c646f6f64;
 
 	this[10]=(u64)doodle_start;
 	this[11]=(u64)doodle_stop;

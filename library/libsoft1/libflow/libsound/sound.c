@@ -5,8 +5,8 @@
 //
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
-int decstr2data(u8* src,u64* dst);
-int hexstr2data(u8* src,u64* dst);
+int decstr2data(void* src,u64* dst);
+int hexstr2data(void* src,u64* dst);
 //
 int startsound(int rate, int chan, void* buf, int len);
 int stopsound();
