@@ -43,6 +43,10 @@ target:
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.jpg.c
 	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.png.c
+	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.drum.c
+	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.flute.c
+	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.piano.c
+	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.violin.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.cpio.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.gz.c

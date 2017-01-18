@@ -138,6 +138,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfile/libav/picture/picture.jpg.c \
 	library/libsoft1/libmem/libfile/libav/picture/picture.png.c \
+	library/libsoft1/libmem/libfile/libav/tone/tone.drum.c \
+	library/libsoft1/libmem/libfile/libav/tone/tone.flute.c \
+	library/libsoft1/libmem/libfile/libav/tone/tone.piano.c \
+	library/libsoft1/libmem/libfile/libav/tone/tone.violin.c \
 	library/libsoft1/libmem/libfile/libfs/compress/compress.7z.c \
 	library/libsoft1/libmem/libfile/libfs/compress/compress.cpio.c \
 	library/libsoft1/libmem/libfile/libfs/compress/compress.gz.c \

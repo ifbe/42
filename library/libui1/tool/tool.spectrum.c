@@ -4,11 +4,11 @@
 #define u64 unsigned long long
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
-//
+//libui1
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void line(int x1, int y1, int x2, int y2, u32 color);
 void backgroundcolor(u32);
-//
+//libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
 double squareroot(double);
@@ -17,15 +17,15 @@ double sine(double);
 double log2(double);
 double lg(double);
 double ln(double);
-//
 int sound_output(double*, double*, u16*);
-//
+int piano_freq(int);
+//libsoft0
 int startsound(int rate, int chan, void* buf, int max);
 int stopsound();
 u32 getrandom();
 //
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*,int);
+void say(void*,...);
 
 
 
@@ -54,7 +54,7 @@ static double* power;
 static double* phase;
 
 //
-static u16 tone[8]={200,523,587,659,698,784,880,988};
+static int area=0;
 
 
 
@@ -85,14 +85,19 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 
 	if(type==0x72616863)	//'char'
 	{
-		if(key<=0x30)return;
-		if(key>=0x38)return;
-		key -= 0x30;
+		if( (key>='a') && (key<='z') )
+		{
+			area = key - 'a';
+		}
+		else if( (key>=0x31) && (key<=0x37) )
+		{
+			key -= 0x30;
 
-		for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
-		j=(tone[key]*1024)/44100;
-		real[j]=real[1023-j]=65535;
-		sound_output(real, imag, pcmout);
+			for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
+			j=(piano_freq(area*12+key)*1024)/44100;
+			real[j]=real[1023-j]=65535;
+			sound_output(real, imag, pcmout);
+		}
 	}
 	else if(type==0x2d6d)
 	{
@@ -109,27 +114,26 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 
 static void spectrum_read_pixel()
 {
-	int x,j,k;
+	int x,y;
 	int width = haha->width;
 	int height = haha->height;
 	backgroundcolor(0);
 
 	for(x=0;x<1024;x++)
 	{
-		j = pcmin[x] *height /maxpower /4;
-		k = pcmin[x]*256/maxpower;
-		if(k<0)k=-k;
+		if(pcmin[x]>32768)continue;
+		y = pcmin[x] *height /maxpower /4;
 		line(
-			x*width/1024, (height/4) - j,
-			x*width/1024, (height/4) + j,
-			0x010101 * k
+			x*width/1024, (height/4) - y,
+			x*width/1024, (height/4) + y,
+			0xffffff
 		);
 	}
 	for(x=0;x<512;x++)
 	{
-		j = (int)(power[x]*height);
+		y = (int)(power[x]*height);
 		line(
-			x*width/512, height - j,
+			x*width/512, height - y,
 			x*width/512, height,
 			0xffffff
 		);
