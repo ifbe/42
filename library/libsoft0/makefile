@@ -5,10 +5,10 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
 	$(compiler) $(cflag) bare/bare.memory.file.c
-	$(compiler) $(cflag) bare/bare.flow.client.c
-	$(compiler) $(cflag) bare/bare.flow.image.c
-	$(compiler) $(cflag) bare/bare.flow.server.c
-	$(compiler) $(cflag) bare/bare.flow.voice.c
+	$(compiler) $(cflag) bare/bare.flow.net.client.c
+	$(compiler) $(cflag) bare/bare.flow.net.server.c
+	$(compiler) $(cflag) bare/bare.flow.vision.c
+	$(compiler) $(cflag) bare/bare.flow.sound.c
 	$(compiler) $(cflag) bare/bare.memory.file.c
 	$(compiler) $(cflag) bare/bare.memory.io.c
 	$(compiler) $(cflag) bare/bare.system.folder.c
@@ -36,10 +36,12 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
-	$(compiler) $(cflag) linux/linux.flow.client.c
-	$(compiler) $(cflag) linux/linux.flow.image.c
-	$(compiler) $(cflag) linux/linux.flow.server.c
-	$(compiler) $(cflag) linux/linux.flow.voice.c
+	$(compiler) $(cflag) linux/linux.flow.net.client.c
+	$(compiler) $(cflag) linux/linux.flow.net.server.c
+	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
+	$(compiler) $(cflag) linux/linux.flow.vision.other.c
+	$(compiler) $(cflag) linux/linux.flow.sound.alsa.c
+	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.mmio.c
 	$(compiler) $(cflag) linux/linux.system.folder.c
@@ -83,10 +85,10 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	$(compiler) $(cflag) win/win.flow.client.c
-	$(compiler) $(cflag) win/win.flow.image.c
-	$(compiler) $(cflag) win/win.flow.server.c
-	$(compiler) $(cflag) win/win.flow.voice.c
+	$(compiler) $(cflag) win/win.flow.net.client.c
+	$(compiler) $(cflag) win/win.flow.net.server.c
+	$(compiler) $(cflag) win/win.flow.vision.directshow.c
+	$(compiler) $(cflag) win/win.flow.sound.waveio.c
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.virtual.c
 	$(compiler) $(cflag) win/win.system.folder.c

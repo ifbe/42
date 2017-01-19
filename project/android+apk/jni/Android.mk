@@ -60,8 +60,8 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.sound.c \
 	library/libsoft0/android/android.flow.vision.c \
-	library/libsoft0/linux/linux.flow.client.c \
-	library/libsoft0/linux/linux.flow.server.c \
+	library/libsoft0/linux/linux.flow.net.client.c \
+	library/libsoft0/linux/linux.flow.net.server.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.physical.c \
 	library/libsoft0/linux/linux.memory.virtual.c \
