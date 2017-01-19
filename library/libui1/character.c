@@ -43,6 +43,8 @@ void font_delete();
 void pure_create(u8*,u8*);
 void pure_delete();
 //tool
+void camera_create(u8*,u8*);
+void camera_delete();
 void calculator_create(u8*,u8*);
 void calculator_delete();
 void circuit_create(u8*,u8*);
@@ -235,8 +237,12 @@ void charactercreate(u8* type, u8* addr)
 	pure_create(addr,temp);
 	temp += 0x80;
 
-	//tool.calculator
-	calculator_create(addr,temp);
+	//tool.camera
+	camera_create(addr,temp);
+	temp += 0x80;
+
+	//tool.camera
+	camera_create(addr,temp);
 	temp += 0x80;
 
 	//tool.circuit
@@ -290,6 +296,7 @@ void characterdelete()
 	console_delete();
 	circuit_delete();
 	calculator_delete();
+	camera_delete();
 
 	color_delete();
 	doodle_delete();

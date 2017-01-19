@@ -21,6 +21,7 @@ target:
 	$(compiler) $(cflag) test/test.font.c
 	$(compiler) $(cflag) test/test.pure.c
 	$(compiler) $(cflag) tool/tool.calculator.c
+	$(compiler) $(cflag) tool/tool.camera.c
 	$(compiler) $(cflag) tool/tool.circuit.c
 	$(compiler) $(cflag) tool/tool.console.c
 	$(compiler) $(cflag) tool/tool.control.c
