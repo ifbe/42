@@ -47,6 +47,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lasound -lpthread -lm
+	-lpulse -lpulse-simple -lpthread -lm
 clean:
 	rm -f *.o *.a *.so

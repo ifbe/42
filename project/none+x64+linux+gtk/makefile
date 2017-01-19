@@ -47,6 +47,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lasound -lpthread `pkg-config --libs gtk+-3.0`
+	-lpulse -lpulse-simple -lpthread `pkg-config --libs gtk+-3.0`
 clean:
 	rm -f *.o *.a *.so

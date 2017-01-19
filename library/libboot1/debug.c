@@ -36,6 +36,7 @@ void printmemory(u8* addr,int size)
 		}
 		say("\n");
 	}
+	if(y*16 >= size)return;
 
 	p = addr+y*16;
 	say("+%-13x",y*16);

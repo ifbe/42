@@ -40,7 +40,6 @@ linux:
 	$(compiler) $(cflag) linux/linux.flow.net.server.c
 	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
 	$(compiler) $(cflag) linux/linux.flow.vision.other.c
-	$(compiler) $(cflag) linux/linux.flow.sound.alsa.c
 	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.mmio.c

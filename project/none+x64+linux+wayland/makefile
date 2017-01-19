@@ -48,6 +48,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lasound -lpthread -lwayland-client
+	-lpulse -lpulse-simple -lpthread -lwayland-client
 clean:
 	rm -f *.o *.a *.so

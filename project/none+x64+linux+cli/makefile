@@ -48,5 +48,6 @@ program:
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/cli.o \
 	-lasound -lpthread
+	#-lpulse -lpulse-simple -lpthread
 clean:
 	rm -f *.o *.a *.so

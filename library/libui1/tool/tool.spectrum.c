@@ -85,19 +85,31 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 
 	if(type==0x72616863)	//'char'
 	{
-		if( (key>='a') && (key<='z') )
+		if( (key>=0x31) && (key<=0x39) )
 		{
-			area = key - 'a';
+			key -= 0x31;
 		}
-		else if( (key>=0x31) && (key<=0x37) )
+		else if(key == '0')key = 9;
+		else if(key == '-')key = 10;
+		else if(key == '=')key = 11;
+		else
 		{
-			key -= 0x30;
+			if( (key>='a') && (key<='z') )
+			{
+				area = key - 'a';
+			}
+			return;
+		}
 
-			for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
-			j=(piano_freq(area*12+key)*1024)/44100;
-			real[j]=real[1023-j]=65535;
-			sound_output(real, imag, pcmout);
-		}
+		for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
+
+		j = piano_freq(area*12+key);
+		say("%d->",j);
+		j = (j*1024)/44100;
+		say("%d\n",j);
+
+		real[j]=real[1023-j]=65535;
+		sound_output(real, imag, pcmout);
 	}
 	else if(type==0x2d6d)
 	{
@@ -105,6 +117,7 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 	}
 	else if(type=='s')
 	{
+		//printmemory(pcmin, 16);
 		spectrum_random();
 	}
 }
