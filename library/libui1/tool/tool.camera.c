@@ -90,7 +90,7 @@ static void camera_write(u64* who, u64* a, u64* b)
 	else if(type=='v')
 	{
 		vision = (void*)key;
-		printmemory(vision, 16);
+		printmemory(vision+0xfff, 16);
 	}
 }
 

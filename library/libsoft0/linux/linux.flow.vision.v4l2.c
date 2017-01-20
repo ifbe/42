@@ -63,7 +63,7 @@ void* visionlistener(void* p)
 	if(-1==ioctl(fd,VIDIOC_QUERYCAP,&cap))
 	{
 		printf("VIDIOC_QUERYCAP error\n");
-		exit(1);
+		return 0;
 	}
 	printf("v4l2_capability:\n");
 	printf("	driver: %s\n", cap.driver);
@@ -97,7 +97,7 @@ void* visionlistener(void* p)
 	if(ioctl(fd,VIDIOC_S_FMT,&fmt) == -1)
 	{
 		printf("VIDIOC_S_FMT error\n");
-		exit(1);
+		return 0;
 	}
 	//v4l2_requestbuffers
 	struct v4l2_requestbuffers req;
@@ -107,7 +107,7 @@ void* visionlistener(void* p)
 	if(ioctl(fd,VIDIOC_REQBUFS,&req) == -1)
 	{
 		printf("VIDIOC_REQBUFS error\n");
-		exit(1);
+		return 0;
 	}
 
 	//prepare
@@ -120,7 +120,7 @@ void* visionlistener(void* p)
 		if(ioctl(fd,VIDIOC_QUERYBUF,&buf) == -1)
 		{
 			printf("VIDIOC_QUERYBUF\n");
-			exit(1);
+			return 0;
 		}
 
 		my[j].length = buf.length;
@@ -136,12 +136,12 @@ void* visionlistener(void* p)
 		if(my[j].start == MAP_FAILED)
 		{
 			printf("fail@mmap\n");
-			exit(1);
+			return 0;
 		}
 		if(ioctl(fd,VIDIOC_QBUF,&buf) == -1)
 		{
 			printf("VIDEOC_QBUF\n");
-			exit(1);
+			return 0;
 		}
 	}
 
@@ -150,7 +150,7 @@ void* visionlistener(void* p)
 	if(ioctl(fd, VIDIOC_STREAMON, &j) == -1)
 	{
 		printf("error@ON\n");
-		exit(1);
+		return 0;
 	}
 
 	//record
@@ -160,6 +160,7 @@ void* visionlistener(void* p)
 	ev.data.fd=fd;
 	ev.events = EPOLLIN | EPOLLET;
 	epoll_ctl(epfd,EPOLL_CTL_ADD,fd,&ev);
+	j=0;
 	while(alive)
 	{
 		//!!!!!!!!!!!!!!must take out ontime!!!!!!!!!!!!!!
@@ -167,18 +168,29 @@ void* visionlistener(void* p)
 		if(k == -1)
 		{
 			printf("epoll error\n");
-			exit(1);
+			return 0;
 		}
 
-		//
+		//deq
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory = V4L2_MEMORY_MMAP;
-		ioctl(fd, VIDIOC_DQBUF, my[j].start);
+		ioctl(fd, VIDIOC_DQBUF, &buf);
+
+		//do
+		//printmemory(my[j].start+0xfff, 16);
 		eventwrite((u64)my[j].start, 'v', 0, 0);
-		ioctl(fd, VIDIOC_QBUF, my[j].start);
+
+		//enq
+		ioctl(fd, VIDIOC_QBUF, &buf);
+		j = (j+1)%24;
 	}
 
 	//stop
+	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if(ioctl(fd, VIDIOC_STREAMOFF, &j) == -1)
+        {
+                printf("error@OFF\n");
+        }
 	for(j=0;j<24;j++)
 	{
 		munmap(my[j].start, my[j].length);
