@@ -40,6 +40,13 @@ target:
 	$(compiler) $(cflag) libmath/math.c
 	$(compiler) $(cflag) libmem/libdata/codec/codec.avc.c
 	$(compiler) $(cflag) libmem/libdata/codec/codec.hevc.c
+	$(compiler) $(cflag) libmem/libdata/image/image.blur.c
+	$(compiler) $(cflag) libmem/libdata/image/image.channel.c
+	$(compiler) $(cflag) libmem/libdata/image/image.convert.c
+	$(compiler) $(cflag) libmem/libdata/image/image.gray.c
+	$(compiler) $(cflag) libmem/libdata/image/image.mosaic.c
+	$(compiler) $(cflag) libmem/libdata/image/image.rotate.c
+	$(compiler) $(cflag) libmem/libdata/image/image.scale.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.jpg.c
 	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.png.c

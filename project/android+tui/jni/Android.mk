@@ -135,6 +135,13 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.c \
 	library/libsoft1/libmem/libdata/codec/codec.avc.c \
 	library/libsoft1/libmem/libdata/codec/codec.hevc.c \
+	library/libsoft1/libmem/libdata/image/image.blur.c \
+	library/libsoft1/libmem/libdata/image/image.channel.c \
+	library/libsoft1/libmem/libdata/image/image.convert.c \
+	library/libsoft1/libmem/libdata/image/image.gray.c \
+	library/libsoft1/libmem/libdata/image/image.mosaic.c \
+	library/libsoft1/libmem/libdata/image/image.rotate.c \
+	library/libsoft1/libmem/libdata/image/image.scale.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfile/libav/picture/picture.jpg.c \
 	library/libsoft1/libmem/libfile/libav/picture/picture.png.c \

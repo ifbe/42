@@ -22,10 +22,10 @@ void say(void*, ...);
 
 //
 static struct buffer{
-        void *start;
+	void *start;
 	char padding[8- sizeof(void*)];
 
-        int length;
+	int length;
 	int status;
 }my[24];
 //
@@ -90,15 +90,26 @@ void* visionlistener(void* p)
 	//v4l2_format
 	struct v4l2_format fmt;
 	fmt.type		= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 	fmt.fmt.pix.width       = 640;
 	fmt.fmt.pix.height      = 480;
-	fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
-	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+	fmt.fmt.pix.pixelformat =
+		V4L2_PIX_FMT_YUYV;
+		//V4L2_PIX_FMT_MJPEG;
+		//V4L2_PIX_FMT_SBGGR8;
+		//V4L2_PIX_FMT_SN9C10X;
+		//V4L2_PIX_FMT_MJPEG;
+		//V4L2_PIX_FMT_JPEG;
+		//V4L2_PIX_FMT_RGB24;
+		//V4L2_PIX_FMT_UYVY;
+		//V4L2_PIX_FMT_YUV422P;
+		//V4L2_PIX_FMT_YUV420;
 	if(ioctl(fd,VIDIOC_S_FMT,&fmt) == -1)
 	{
 		printf("VIDIOC_S_FMT error\n");
 		return 0;
 	}
+
 	//v4l2_requestbuffers
 	struct v4l2_requestbuffers req;
 	req.count       = 24;
@@ -187,10 +198,10 @@ void* visionlistener(void* p)
 
 	//stop
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        if(ioctl(fd, VIDIOC_STREAMOFF, &j) == -1)
-        {
-                printf("error@OFF\n");
-        }
+	if(ioctl(fd, VIDIOC_STREAMOFF, &j) == -1)
+	{
+		printf("error@OFF\n");
+	}
 	for(j=0;j<24;j++)
 	{
 		munmap(my[j].start, my[j].length);
@@ -206,7 +217,7 @@ void* visionlistener(void* p)
 int startvision()
 {
 	alive = 1;
-        pthread_create(&id, NULL, visionlistener, NULL);
+	pthread_create(&id, NULL, visionlistener, NULL);
 	return 1;
 }
 void stopvision()

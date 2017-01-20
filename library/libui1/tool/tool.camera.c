@@ -2,6 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void yuyv2rgba(
+	u8* src, int w1, int h1, 
+	u8* dst, int w2, int h2
+);
+//
 void startvision();
 void stopvision();
 //libboot
@@ -51,10 +56,10 @@ void camera_read_pixel()
 	u8* screen = (u8*)haha->pixelbuffer;
 	if(vision == 0)return;
 
-	for(j=0;j<0xffff;j++)
-	{
-		screen[j] = vision[j];
-	}
+	yuyv2rgba(
+		vision, 640, 480,
+		screen, haha->width, haha->height
+	);
 	vision = 0;
 }
 static void camera_read()
