@@ -48,12 +48,12 @@ target:
 	$(compiler) $(cflag) libmem/libdata/image/image.rotate.c
 	$(compiler) $(cflag) libmem/libdata/image/image.scale.c
 	$(compiler) $(cflag) libmem/libdata/data.c
-	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.jpg.c
-	$(compiler) $(cflag) libmem/libfile/libav/picture/picture.png.c
-	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.drum.c
-	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.flute.c
-	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.piano.c
-	$(compiler) $(cflag) libmem/libfile/libav/tone/tone.violin.c
+	$(compiler) $(cflag) libmem/libfile/libav/1.tone/tone.drum.c
+	$(compiler) $(cflag) libmem/libfile/libav/1.tone/tone.flute.c
+	$(compiler) $(cflag) libmem/libfile/libav/1.tone/tone.piano.c
+	$(compiler) $(cflag) libmem/libfile/libav/1.tone/tone.violin.c
+	$(compiler) $(cflag) libmem/libfile/libav/2.picture/pic.jpg.c
+	$(compiler) $(cflag) libmem/libfile/libav/2.picture/pic.png.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.cpio.c
 	$(compiler) $(cflag) libmem/libfile/libfs/compress/compress.gz.c
