@@ -57,6 +57,7 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
-	-lasound -lpthread -lX11 -lm
+	-lpulse -lpulse-simple -lpthread -lX11 -lm
+	#-lasound -lpthread -lX11 -lm
 clean:
 	rm -f *.o *.a *.so
