@@ -3,6 +3,16 @@
 
 
 
+//yuv444
+void yuv2rgba(
+	u8* src, int w1, int h1,
+	u8* dst, int w2, int h2, int sx, int sy)
+{
+}
+
+
+
+
 //yuv422
 void yuyv2rgba(
 	u8* src, int w1, int h1,
@@ -44,9 +54,21 @@ void yuyv2rgba(
 
 
 
-//yuv420
-void yuv2rgba(
+//yuv411
+void yyuyyv2rgba(
 	u8* src, int w1, int h1,
-	u8* dst, int w2, int h2, int sx, int sy)
+	u8* dst, int w2, int h2)
 {
+	
+}
+
+
+
+
+//yuv420
+void yx2rgba(
+	u8* src, int w1, int h1,
+	u8* dst, int w2, int h2)
+{
+	
 }
