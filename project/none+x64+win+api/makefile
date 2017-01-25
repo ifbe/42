@@ -1,5 +1,5 @@
 library?=../../library
-res?=../../res
+datafile?=../../datafile
 all:
 	make -s -C $(library)/libboot0 wincmd \
 	cflag="-c -O2"
@@ -48,6 +48,7 @@ dll:
 	$(library)/visitor0/*.o \
 	-lgdi32 -lwinmm -lws2_32
 program:
+	windres --input-format=rc -O coff -i $(datafile)/uac.rc -o $(datafile)/uac.res
 	gcc -mwindows \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -59,6 +60,7 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
+	$(datafile)/uac.res \
 	-lgdi32 -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

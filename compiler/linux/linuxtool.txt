@@ -1,4 +1,14 @@
 fedora:
-	sudo dnf install make gcc
+	sudo dnf install \
+	make gcc \
+	libX11-devel \
+	freeglut-devel \
+	SDL-devel SDL2-devel \
+	pulseaudio-libs-devel #alsa-lib-devel
 ubuntu:
-	sudo apt-get install make gcc freeglut3-dev libasound2-dev libsdl2-dev libx11-dev
+	sudo apt-get install \
+	make gcc \
+	libx11-dev \
+	freeglut3-dev \
+	libsdl1.2-dev libsdl2-dev \
+	libpulse-dev #libasound2-dev
