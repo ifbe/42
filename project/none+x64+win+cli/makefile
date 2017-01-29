@@ -36,7 +36,7 @@ a:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
 dll:
-	gcc -shared -o 42.dll \
+	g++ -shared -o 42.dll \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -46,9 +46,9 @@ dll:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	-lwinmm -lws2_32
+	-lole32 -lstrmiids -lwinmm -lws2_32
 program:
-	gcc \
+	g++ \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -59,6 +59,6 @@ program:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/cli.o \
-	-lwinmm -lws2_32
+	-lole32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

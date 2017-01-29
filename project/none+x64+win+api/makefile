@@ -46,7 +46,7 @@ dll:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o \
-	-lgdi32 -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/uac.rc -o $(datafile)/uac.res
 	gcc -mwindows \
@@ -61,6 +61,6 @@ program:
 	$(library)/visitor0/*.o \
 	$(library)/visitor1/gui.o \
 	$(datafile)/uac.res \
-	-lgdi32 -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

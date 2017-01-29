@@ -86,7 +86,7 @@ win:
 	rm -f linux.*.o mac.*.o
 	$(compiler) $(cflag) win/win.flow.net.client.c
 	$(compiler) $(cflag) win/win.flow.net.server.c
-	$(compiler) $(cflag) win/win.flow.vision.directshow.c
+	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.c
 	$(compiler) $(cflag) win/win.flow.sound.waveinout.c
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.virtual.c
