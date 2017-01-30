@@ -97,6 +97,7 @@ int enumdev(void* device, int which)
 	IPropertyBag *pPropBag;
 	VARIANT var;
 	HRESULT hr;
+	int flag = -1;
 
 	//Create the System Device Enumerator.
 	hr = CoCreateInstance(
@@ -140,7 +141,11 @@ int enumdev(void* device, int which)
 			{
 				hr = pMoniker->BindToObject(0, 0, IID_IBaseFilter, (void**)device);
 				if(FAILED(hr))printf("error@bindtoobject\n");
-				else printf("%S	**selected**\n", var.bstrVal);
+				else
+				{
+					printf("%S	**selected**\n", var.bstrVal);
+					flag = 1;
+				}
 			}
 			else printf("%S\n", var.bstrVal);
 
@@ -154,7 +159,7 @@ int enumdev(void* device, int which)
 	//
 	pEnum->Release();
 	pDevEnum->Release();
-	return 1;
+	return flag;
 }
 HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin)
 {
@@ -195,41 +200,46 @@ IPin* GetInPin( IBaseFilter * pFilter, int nPin )
     enumpin(pFilter, PINDIR_INPUT, nPin, &pComPin);
     return pComPin;
 }
-int enumfmt(IPin* pin)
+int enumfmt(IPin* pin, IAMStreamConfig* pConfig)
 {
 	IEnumMediaTypes *mtEnum=NULL;  
     AM_MEDIA_TYPE   *mt=NULL;  
     if( FAILED( pin->EnumMediaTypes( &mtEnum )) )return -1;
     mtEnum->Reset();
 
-    ULONG mtFetched = 0;  
+	VIDEOINFOHEADER* head;
+	BITMAPINFOHEADER* bmp;
+    ULONG mtFetched = 0;
     while (SUCCEEDED(mtEnum->Next(1, &mt, &mtFetched)) && mtFetched)
 	{
-        printf("[MediaType]\n");
-/*
-        //Video  
-        char *MEDIATYPE_Video_str=GuidToString(MEDIATYPE_Video);  
-        //Audio  
-        char *MEDIATYPE_Audio_str=GuidToString(MEDIATYPE_Audio);  
-        //Stream  
-        char *MEDIATYPE_Stream_str=GuidToString(MEDIATYPE_Stream);  
-        //Majortype  
-        char *majortype_str=GuidToString(mt->majortype);  
-        //Subtype  
-        char *subtype_str=GuidToString(mt->subtype);  
+		if(mt->majortype == MEDIATYPE_Video)
+		{
+			printf("video,");
+			if(mt->subtype == MEDIASUBTYPE_YUY2)
+			{
+				printf("yuyv,");
+				if(mt->formattype == FORMAT_VideoInfo)
+				{
+					head = (VIDEOINFOHEADER*)(mt->pbFormat);
+					bmp = &(head->bmiHeader);
+					printf("%dx%d", bmp->biWidth, bmp->biHeight);
 
-        printf("\t\t  Majortype:");  
-        if(strcmp(majortype_str,MEDIATYPE_Video_str)==0){  
-        printf("Video\n");  
-        }else if(strcmp(majortype_str,MEDIATYPE_Audio_str)==0){  
-        printf("Audio\n");  
-        }else if(strcmp(majortype_str,MEDIATYPE_Stream_str)==0){  
-        printf("Stream\n");  
-        }else{  
-        printf("Other\n");  
-        }  
-        printf("\t\t  Subtype GUID:%s",subtype_str);
-*/
+					if( (bmp->biWidth==640) && (bmp->biHeight==480) )
+					{
+						if(pConfig != 0)
+						{
+							pConfig->SetFormat(mt);
+							printf("	***selected***");
+						}
+					}
+				}
+				else printf("???");
+			}
+			else printf("???");
+		}
+		else printf("???");
+
+		printf("\n");
 	}
 
 	return 1;
@@ -261,8 +271,6 @@ void startvision()
 	IMediaControl * g_pMC = NULL;
 	IMediaEventEx * g_pME = NULL;
 	IVideoWindow  * g_pVW = NULL;
-	AM_MEDIA_TYPE mt;
-	VIDEOINFOHEADER fmt;
 
 	//src
 	IBaseFilter* device = NULL;
@@ -274,7 +282,11 @@ void startvision()
 	ISampleGrabber* pGrabber = NULL;
 	CallbackObject cb;
 
-    IPin* pComPin=0;
+	IAMStreamConfig *pConfig = NULL;
+	AM_MEDIA_TYPE mt;
+	VIDEOINFOHEADER* head;
+	BITMAPINFOHEADER* bmp;
+
 
 
 
@@ -313,13 +325,23 @@ void startvision()
 
 
 	//device filter
-	hr = enumdev(&device, 1);
+	hr = enumdev(&device, 0);
 	if(hr < 0)goto fail;
+/*
+	hr = m_pBuild->FindInterface(
+		&PIN_CATEGORY_CAPTURE, 0,
+		device, IID_IAMStreamConfig,
+		(void**)&pConfig
+	);
+	if(FAILED(hr))goto fail;
+*/
+	hr = m_pGraph->AddFilter(device, L"Capture Filter");
+	if(FAILED(hr)){printf("error %x@add device\n",hr);goto fail;}
 
 	hr = enumpin(device, PINDIR_OUTPUT, 0, &deviceout);
 	if(hr < 0)goto fail;
 
-	hr = enumfmt(deviceout);
+	hr = enumfmt(deviceout, 0);
 	if(hr < 0)goto fail;
 
 
@@ -342,31 +364,27 @@ void startvision()
 	hr = pGrabber->SetCallback(&cb, 0);
 	if(FAILED(hr)){printf("error %x@sample callback\n",hr);goto fail;}
 
+	hr = m_pGraph->AddFilter(sample, L"Sample Grabber");
+	if(FAILED(hr)){printf("error %x@add sample\n",hr);goto fail;}
+
 	//enumpin(sample, PINDIR_INPUT, 0, &samplein);
 	samplein = GetInPin(sample, 0);
-	printf("%llx\n", samplein);
 
-	hr = enumfmt(samplein);
+	hr = enumfmt(samplein, 0);
 
 
 
 
 	//connect, start
-	hr = m_pGraph->AddFilter(device, L"Capture Filter");
-	if(FAILED(hr)){printf("error %x@add device\n",hr);goto fail;}
-
-	hr = m_pGraph->AddFilter(sample, L"Sample Grabber");
-	if(FAILED(hr)){printf("error %x@add sample\n",hr);goto fail;}
-
     hr = m_pGraph->Connect(deviceout, samplein);
 	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
 
-	//hr = m_pBuild->RenderStream(&PIN_CATEGORY_CAPTURE,&MEDIATYPE_Video,device,NULL,NULL);
-	//if(FAILED(hr)){printf("error %x@graph render\n",hr);goto fail;}
-
 	hr = pGrabber->GetConnectedMediaType(&mt);
-	//fmt = mt.pbFormat->bmiHeader;
-	//printf("%llx\n", *(u64*)fmt);
+	if(FAILED(hr)){printf("error %x@media type\n",hr);goto fail;}
+
+	head = (VIDEOINFOHEADER*)(mt.pbFormat);
+	bmp = &(head->bmiHeader);
+	printf("[mediatype]%dx%d\n", bmp->biWidth, bmp->biHeight);
 
 	hr = g_pMC->Run();
 	return;
