@@ -87,56 +87,8 @@ STDMETHODIMP CallbackObject::SampleCB(double SampleTime, IMediaSample *pSample)
 
 
 
-HRESULT GetPin( IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin)
-{
-    IEnumPins* pEnum;
-    *ppPin = NULL;
 
-    HRESULT hr = pFilter->EnumPins(&pEnum);
-    if(FAILED(hr)) return hr;
-
-    ULONG ulFound;
-    IPin *pPin;
-    hr = E_FAIL;
-
-    while(S_OK == pEnum->Next(1, &pPin, &ulFound))
-    {
-        PIN_DIRECTION pindir = (PIN_DIRECTION)3;
-
-        pPin->QueryDirection(&pindir);
-        if(pindir == dirrequired)
-        {
-            if(iNum == 0)
-            {
-                *ppPin = pPin;  // Return the pin's interface
-                hr = S_OK;      // Found requested pin, so clear error
-                break;
-            }
-            iNum--;
-        } 
-
-        pPin->Release();
-    } 
-
-    return hr;
-}
-IPin* GetInPin( IBaseFilter * pFilter, int nPin )
-{
-    IPin* pComPin=0;
-    GetPin(pFilter, PINDIR_INPUT, nPin, &pComPin);
-    return pComPin;
-}
-IPin* GetOutPin( IBaseFilter * pFilter, int nPin )
-{
-    IPin* pComPin=0;
-    GetPin(pFilter, PINDIR_OUTPUT, nPin, &pComPin);
-    return pComPin;
-}
-
-
-
-
-int choose(void* device, int which)
+int enumdev(void* device, int which)
 {
 	//enumerator
 	ICreateDevEnum *pDevEnum = NULL;
@@ -204,6 +156,84 @@ int choose(void* device, int which)
 	pDevEnum->Release();
 	return 1;
 }
+HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin)
+{
+    IEnumPins* pEnum;
+    *ppPin = NULL;
+
+    HRESULT hr = pFilter->EnumPins(&pEnum);
+    if(FAILED(hr)) return hr;
+
+    ULONG ulFound;
+    IPin *pPin;
+    hr = E_FAIL;
+
+    while(S_OK == pEnum->Next(1, &pPin, &ulFound))
+    {
+        PIN_DIRECTION pindir = (PIN_DIRECTION)3;
+
+        pPin->QueryDirection(&pindir);
+        if(pindir == dirrequired)
+        {
+            if(iNum == 0)
+            {
+                *ppPin = pPin;  // Return the pin's interface
+                hr = S_OK;      // Found requested pin, so clear error
+                break;
+            }
+            iNum--;
+        } 
+
+        pPin->Release();
+    } 
+
+    return hr;
+}
+IPin* GetInPin( IBaseFilter * pFilter, int nPin )
+{
+    IPin* pComPin=0;
+    enumpin(pFilter, PINDIR_INPUT, nPin, &pComPin);
+    return pComPin;
+}
+int enumfmt(IPin* pin)
+{
+	IEnumMediaTypes *mtEnum=NULL;  
+    AM_MEDIA_TYPE   *mt=NULL;  
+    if( FAILED( pin->EnumMediaTypes( &mtEnum )) )return -1;
+    mtEnum->Reset();
+
+    ULONG mtFetched = 0;  
+    while (SUCCEEDED(mtEnum->Next(1, &mt, &mtFetched)) && mtFetched)
+	{
+        printf("[MediaType]\n");
+/*
+        //Video  
+        char *MEDIATYPE_Video_str=GuidToString(MEDIATYPE_Video);  
+        //Audio  
+        char *MEDIATYPE_Audio_str=GuidToString(MEDIATYPE_Audio);  
+        //Stream  
+        char *MEDIATYPE_Stream_str=GuidToString(MEDIATYPE_Stream);  
+        //Majortype  
+        char *majortype_str=GuidToString(mt->majortype);  
+        //Subtype  
+        char *subtype_str=GuidToString(mt->subtype);  
+
+        printf("\t\t  Majortype:");  
+        if(strcmp(majortype_str,MEDIATYPE_Video_str)==0){  
+        printf("Video\n");  
+        }else if(strcmp(majortype_str,MEDIATYPE_Audio_str)==0){  
+        printf("Audio\n");  
+        }else if(strcmp(majortype_str,MEDIATYPE_Stream_str)==0){  
+        printf("Stream\n");  
+        }else{  
+        printf("Other\n");  
+        }  
+        printf("\t\t  Subtype GUID:%s",subtype_str);
+*/
+	}
+
+	return 1;
+}
 
 
 
@@ -225,30 +255,32 @@ void writevision()
 void startvision()
 {
 	//builder
+	HRESULT hr;
 	IGraphBuilder* m_pGraph;
 	ICaptureGraphBuilder2* m_pBuild;
 	IMediaControl * g_pMC = NULL;
 	IMediaEventEx * g_pME = NULL;
 	IVideoWindow  * g_pVW = NULL;
-	AM_MEDIA_TYPE am_media_type;
+	AM_MEDIA_TYPE mt;
+	VIDEOINFOHEADER fmt;
 
 	//src
 	IBaseFilter* device = NULL;
-	IPin *deviceout = NULL;
+	IPin* deviceout = 0;
 
 	//dst
 	IBaseFilter* sample = NULL;
-	IPin *samplein = NULL;
+	IPin* samplein = 0;
 	ISampleGrabber* pGrabber = NULL;
 	CallbackObject cb;
 
+    IPin* pComPin=0;
+
+
+
 	//com init
-	AM_MEDIA_TYPE mt;
-	HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	if(FAILED(hr))goto end;
-
-
-
 
 	//builder
 	hr = CoCreateInstance(
@@ -281,9 +313,14 @@ void startvision()
 
 
 	//device filter
-	hr = choose(&device, 1);
+	hr = enumdev(&device, 1);
 	if(hr < 0)goto fail;
-	//printf("%llx\n",device);
+
+	hr = enumpin(device, PINDIR_OUTPUT, 0, &deviceout);
+	if(hr < 0)goto fail;
+
+	hr = enumfmt(deviceout);
+	if(hr < 0)goto fail;
 
 
 
@@ -305,6 +342,12 @@ void startvision()
 	hr = pGrabber->SetCallback(&cb, 0);
 	if(FAILED(hr)){printf("error %x@sample callback\n",hr);goto fail;}
 
+	//enumpin(sample, PINDIR_INPUT, 0, &samplein);
+	samplein = GetInPin(sample, 0);
+	printf("%llx\n", samplein);
+
+	hr = enumfmt(samplein);
+
 
 
 
@@ -315,15 +358,16 @@ void startvision()
 	hr = m_pGraph->AddFilter(sample, L"Sample Grabber");
 	if(FAILED(hr)){printf("error %x@add sample\n",hr);goto fail;}
 
-	deviceout = GetOutPin(device, 0);
-    samplein = GetInPin(sample, 0);
     hr = m_pGraph->Connect(deviceout, samplein);
 	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
 
 	//hr = m_pBuild->RenderStream(&PIN_CATEGORY_CAPTURE,&MEDIATYPE_Video,device,NULL,NULL);
 	//if(FAILED(hr)){printf("error %x@graph render\n",hr);goto fail;}
 
-	hr = pGrabber->GetConnectedMediaType(&am_media_type);
+	hr = pGrabber->GetConnectedMediaType(&mt);
+	//fmt = mt.pbFormat->bmiHeader;
+	//printf("%llx\n", *(u64*)fmt);
+
 	hr = g_pMC->Run();
 	return;
 
