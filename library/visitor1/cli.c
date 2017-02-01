@@ -53,22 +53,18 @@ again:
 		if((addr[1]&0xff) == 'p')	//touch
 		{
 			motion_explain(addr);
-			continue;
 		}
 		else if((addr[1]&0xff) == 'n')	//net
 		{
 			network_explain(addr);
-			continue;
 		}
 		else if((addr[1]&0xff) == 's')	//sound
 		{
 			sound_explain(addr);
-			continue;
 		}
 		else if((addr[1]&0xff) == 'v')	//vision
 		{
 			vision_explain(addr);
-			continue;
 		}
 		if(addr[1] != 0x64626b)goto again;
 

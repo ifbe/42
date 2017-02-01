@@ -283,7 +283,7 @@ void createserial(u8* arg)
 
 	//hide
 	consolewindow = GetConsoleWindow();
-	ShowWindow(consolewindow,SW_HIDE);
+	//ShowWindow(consolewindow,SW_HIDE);
 }
 void deleteserial()
 {
@@ -299,7 +299,14 @@ int diary(u8* mem, int max, u8* fmt, ...)
 
 	return ret;
 }
-void say(u8* fmt , ...)
+void say()
+{
+}
+void say1(u8* fmt , ...)
+{
+	asm("jmp printf");
+}
+void say2(u8* fmt , ...)
 {
 	int j,k,ret;
 	va_list args;

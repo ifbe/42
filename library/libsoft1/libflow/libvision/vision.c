@@ -11,7 +11,7 @@ void say(void*, ...);
 
 void vision_explain(u64* p)
 {
-	say("%llx\n",p[0]);
+	//say("%llx\n",p[0]);
 }
 
 
@@ -20,8 +20,9 @@ void vision_explain(u64* p)
 static void vision_list()
 {
 }
-static void vision_choose()
+static int vision_choose()
 {
+	return 0;
 }
 static void vision_read()
 {

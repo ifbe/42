@@ -36,7 +36,7 @@ a:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
 dll:
-	gcc -shared -o 42.dll \
+	g++ -shared -o 42.dll \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -49,7 +49,7 @@ dll:
 	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/uac.rc -o $(datafile)/uac.res
-	gcc -mwindows \
+	g++ -mwindows \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
