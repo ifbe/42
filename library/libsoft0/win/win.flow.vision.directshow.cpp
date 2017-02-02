@@ -79,7 +79,7 @@ STDMETHODIMP CallbackObject::SampleCB(double SampleTime, IMediaSample *pSample)
 	pSample->GetPointer(&p);
 	pSample->Release();
 
-	printf("%llx,%x\n", p, s);
+	//printf("%llx,%x\n", p, s);
 	eventwrite((u64)p, 'v', 0, 0);
 	return S_OK;
 }
@@ -250,20 +250,34 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 		for (int iFormat = 0; iFormat < iCount; iFormat++)
 		{
 			hr = devcfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE*)&scc);
-			if (SUCCEEDED(hr))
-			{
-				head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
-				bmp = &(head->bmiHeader);
-				printf("%dx%d\n", bmp->biWidth, bmp->biHeight);
+			if (FAILED(hr))continue;
 
-				if( (bmp->biWidth== 640) && (bmp->biHeight==480) )
+			if(pmtConfig->majortype == MEDIATYPE_Video)
+			{
+				printf("video,");
+				if(pmtConfig->subtype == MEDIASUBTYPE_YUY2)
 				{
-					hr = devcfg->SetFormat(pmtConfig);
-					if(hr == S_OK)printf("success\n");
-					else printf("error %x\n", hr);
+					printf("yuyv,");
+					if(pmtConfig->formattype == FORMAT_VideoInfo)
+					{
+						head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
+						bmp = &(head->bmiHeader);
+						printf("%dx%d", bmp->biWidth, bmp->biHeight);
+
+						if( (bmp->biWidth== 640) && (bmp->biHeight==480) )
+						{
+							hr = devcfg->SetFormat(pmtConfig);
+							if(SUCCEEDED(hr))printf("	***selected***");
+							else printf("	***%x***", hr);
+						}
+					}
+					else printf("???");
 				}
-				//DeleteMediaType(pmtConfig);
+				else printf("???");
 			}
+			else printf("???");
+
+			printf("\n");
 		}
 	}
 /*
