@@ -8,9 +8,12 @@
 #define u64 unsigned long long
 #pragma comment(lib, "ole32")
 #pragma comment(lib, "strmiids")
+EXTERN_C void eventwrite(u64,u64,u64,u64);
 EXTERN_C const CLSID CLSID_NullRenderer;
 EXTERN_C const CLSID CLSID_SampleGrabber;
-EXTERN_C void eventwrite(u64,u64,u64,u64);
+static IMediaControl* g_pMC = NULL;
+static IMediaEventEx* g_pME = NULL;
+static IVideoWindow*  g_pVW = NULL;
 
 #ifndef SAMPLE_GRABBER_H
 #define SAMPLE_GRABBER_H
@@ -77,7 +80,7 @@ STDMETHODIMP CallbackObject::SampleCB(double SampleTime, IMediaSample *pSample)
 	pSample->Release();
 
 	printf("%llx,%x\n", p, s);
-	//eventwrite((u64)p, 'v', 0, 0);
+	eventwrite((u64)p, 'v', 0, 0);
 	return S_OK;
 }
 
@@ -276,15 +279,21 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 */
 	return S_OK;
 }
+void shutupdie()
+{
+	if(g_pMC != 0)
+	{
+		g_pMC->Stop();
+		g_pMC = 0;
+	}
+	CoUninitialize();
+}
 void letsgo()
 {
 	//builder
 	HRESULT hr;
 	IGraphBuilder* m_pGraph;
 	ICaptureGraphBuilder2* m_pBuild;
-	IMediaControl * g_pMC = NULL;
-	IMediaEventEx * g_pME = NULL;
-	IVideoWindow  * g_pVW = NULL;
 
 	//src
 	IBaseFilter* dev = NULL;
@@ -306,7 +315,7 @@ void letsgo()
 
 	//com init
 	hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	if(FAILED(hr))goto end;
+	if(FAILED(hr))goto fail;
 
 	//builder
 	hr = CoCreateInstance(
@@ -339,7 +348,7 @@ void letsgo()
 
 
 	//dev filter
-	hr = enumdev(&dev, 1);
+	hr = enumdev(&dev, 0);
 	if(hr < 0)goto fail;
 
 	hr = m_pGraph->AddFilter(dev, L"Capture Filter");
@@ -410,9 +419,6 @@ void letsgo()
 
 
 fail:
-	//com uninit
-	CoUninitialize();
-end:
 	return;
 }
 
@@ -441,7 +447,7 @@ void startvision()
 }
 void stopvision()
 {
-	CoUninitialize();
+	//shutupdie();
 }
 void createvision()
 {
