@@ -57,8 +57,7 @@ public:
 			*ppv = static_cast<IUnknown*>(this);
 			return S_OK;
 		}
-		//if (riid == __uuidof(ISampleGrabberCB))   {
-		else
+		if (riid == IID_ISampleGrabberCB)
 		{
 			*ppv = static_cast<ISampleGrabberCB*>(this);
 			return S_OK;
