@@ -11,9 +11,6 @@
 EXTERN_C void eventwrite(u64,u64,u64,u64);
 EXTERN_C const CLSID CLSID_NullRenderer;
 EXTERN_C const CLSID CLSID_SampleGrabber;
-static IMediaControl* g_pMC = NULL;
-static IMediaEventEx* g_pME = NULL;
-static IVideoWindow*  g_pVW = NULL;
 
 #ifndef SAMPLE_GRABBER_H
 #define SAMPLE_GRABBER_H
@@ -68,20 +65,23 @@ public:
 	STDMETHODIMP_(ULONG) Release(){return S_OK;}
 
 	//ISampleGrabberCB
-	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample);
 	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
-};
-STDMETHODIMP CallbackObject::SampleCB(double SampleTime, IMediaSample *pSample)
-{
-	BYTE *p = NULL;
-	int s = pSample->GetActualDataLength();
-	pSample->GetPointer(&p);
-	pSample->Release();
+	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
+	{
+		BYTE *p = NULL;
+		int s = pSample->GetActualDataLength();
+		pSample->GetPointer(&p);
+		pSample->Release();
 
-	//printf("%llx,%x\n", p, s);
-	eventwrite((u64)p, 'v', 0, 0);
-	return S_OK;
-}
+		//printf("%llx,%x\n", p, s);
+		eventwrite((u64)p, 'v', 0, 0);
+		return S_OK;
+	}
+};
+static CallbackObject cb;
+static IMediaControl* g_pMC = NULL;
+static IMediaEventEx* g_pME = NULL;
+static IVideoWindow*  g_pVW = NULL;
 
 
 
@@ -261,7 +261,7 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 					{
 						head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
 						bmp = &(head->bmiHeader);
-						printf("%dx%d", bmp->biWidth, bmp->biHeight);
+						printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, head->AvgTimePerFrame);
 
 						if( (bmp->biWidth== 640) && (bmp->biHeight==480) )
 						{
@@ -317,7 +317,6 @@ void letsgo()
 	IBaseFilter* sample = NULL;
 	IPin* samplein = 0;
 	ISampleGrabber* pGrabber = NULL;
-	CallbackObject cb;
 
 	AM_MEDIA_TYPE mt;
 	VIDEOINFOHEADER* head;

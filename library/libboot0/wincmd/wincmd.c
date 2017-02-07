@@ -299,14 +299,14 @@ int diary(u8* mem, int max, u8* fmt, ...)
 
 	return ret;
 }
-void say()
+void say1()
 {
 }
-void say1(u8* fmt , ...)
+void say2(u8* fmt , ...)
 {
 	asm("jmp printf");
 }
-void say2(u8* fmt , ...)
+void say(u8* fmt , ...)
 {
 	int j,k,ret;
 	va_list args;
