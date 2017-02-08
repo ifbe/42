@@ -66,8 +66,8 @@ int http_write(u8* buf, int len)
 	ret = readfile(GET, buf, 0, 0x100000);
 	if(ret <= 0)
 	{
-		//say("error@readfile\n");
-		return 0;
+		*(u32*)buf = 0x343034;
+		return 3;
 	}
 
 	//

@@ -70,13 +70,29 @@ int main(int argc, char* argv[])
 	//forever
 	while(1)
 	{
-		//1.界面显示
+/*
+		//1.display
+		//[+00,+07]addr		pointer to actual memory
+		//[+08,+0f]fmt		rgba, text, html, ...
+		//[+10,+17]width
+		//[+18,+1f]height
+		for(ret=0;ret<max;ret++)
+		{
+			characterread(list + ret*0x20);
+			windowwrite(  list + ret*0x20);
+		}
+		fps++;
+*/
 		characterread();
 		windowwrite();
 		fps++;
 
 again:
-		//2.事件等待
+		//2.event
+		//[+00,+07]why
+		//[+08,+0f]what
+		//[+10,+17]where
+		//[+18,+1f]when
 		addr = eventread();
 		if(addr == 0)break;	//error
 		if(addr[1] == 0)break;	//exit
@@ -92,7 +108,7 @@ again:
 		}
 
 
-		//3.事件解释
+		//3.pre change
 		else if((addr[1]&0xff) == 'p')	//motion
 		{
 			motion_explain(addr);
@@ -112,8 +128,7 @@ again:
 		if(addr[1] == 0)goto again;
 
 
-		//4.界面改变
-		//windowread();		//录屏
+		//4.real change
 		characterwrite(addr);
 	}
 

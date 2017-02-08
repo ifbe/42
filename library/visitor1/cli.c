@@ -26,30 +26,46 @@ int main(int argc,char* argv[])
 	int ret;
 	u64* addr;
 
-	//必须放第一个
+	//before
 	birth();
 
-	//一个个解释传进来的东西:in=xxxx out=xxx type=xxxx what=what
+	//config
 	for(ret=1;ret<argc;ret++)
 	{
 		arterycommand( argv[ret] );
 		arterycommand( "\n" );
 	}
 
-	//无限循环
+	//forever
 	while(1)
 	{
-		//1.界面显示
+/*
+                //1.display
+                //[+00,+07]addr         pointer to actual memory
+                //[+08,+0f]fmt          rgba, text, html, ...
+                //[+10,+17]width
+                //[+18,+1f]height
+                for(ret=0;ret<max;ret++)
+                {
+                        characterread(list + ret*0x20);
+                        windowwrite(  list + ret*0x20);
+                }
+                fps++;
+*/
 		arteryprompt();
 
 again:
-		//2.事件等待
+                //2.event
+                //[+00,+07]why
+                //[+08,+0f]what
+                //[+10,+17]where
+                //[+18,+1f]when
 		addr = eventread();
 		if(addr == 0)break;		//error
 		if(addr[1] == 0)break;		//exit
 
 
-		//3.事件解释
+		//3.pre change
 		if((addr[1]&0xff) == 'p')	//touch
 		{
 			motion_explain(addr);
@@ -69,11 +85,11 @@ again:
 		if(addr[1] != 0x64626b)goto again;
 
 
-		//4.界面改变
+		//4.real change
 		arterycommand(addr);
 	}
 
-	//必须放在最后
+	//after
 	death();
 	return 0;
 }
