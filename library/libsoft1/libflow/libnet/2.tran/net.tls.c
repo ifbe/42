@@ -90,7 +90,7 @@ int tls_read_client_hello(u8* buf, int len)
 
 	//random
 	say("random(len=0x20)\n");
-	for(j=0;j=0x20;j++)clientrandom[j] = p[j];
+	for(j=0;j<0x20;j++)clientrandom[j] = p[j];
 	printmemory(p, 0x20);
 	say("\n");
 	p += 0x20;
