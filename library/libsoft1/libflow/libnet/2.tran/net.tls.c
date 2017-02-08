@@ -11,7 +11,8 @@ void say(void*, ...);
 
 
 
-static u8 random_example[] = {
+static u8 clientrandom[0x20];
+static u8 serverrandom[0x20] = {
 	//0000
 	0x4f,0xcc,0x1e,0x94,0xb7,0xe0,0x12,0xae,
 	0x88,0x49,0x61,0x3b,0x0a,0xc7,0x5f,0xed,
@@ -70,7 +71,7 @@ static u8 signature[] = {
 
 int tls_read_client_hello(u8* buf, int len)
 {
-	int temp1, temp2;
+	int j, k;
 	u8* p = buf;
 
 	//head
@@ -82,42 +83,43 @@ int tls_read_client_hello(u8* buf, int len)
 
 	//body
 	say("handshake=%x\n", p[0]);
-	temp1 = (p[1]<<16) + (p[2]<<8) + p[3];
-	say("length=%x\n", temp1);
+	j = (p[1]<<16) + (p[2]<<8) + p[3];
+	say("length=%x\n", j);
 	say("version=%02x%02x\n\n", p[4], p[5]);
 	p += 6;
 
 	//random
 	say("random(len=0x20)\n");
+	for(j=0;j=0x20;j++)clientrandom[j] = p[j];
 	printmemory(p, 0x20);
 	say("\n");
 	p += 0x20;
 
 	//sessionid
-	temp1 = p[0];
-	say("sessionid(len=%x)\n", temp1);
-	printmemory(p+1, temp1);
+	j = p[0];
+	say("sessionid(len=%x)\n", j);
+	printmemory(p+1, j);
 	say("\n");
-	p += 1 + temp1;
+	p += 1 + j;
 
 	//cipher
-	temp1 = (p[0]<<8) + p[1];
-	say("ciphersites(len=%x)\n", temp1);
-	printmemory(p+2, temp1);
+	j = (p[0]<<8) + p[1];
+	say("ciphersites(len=%x)\n", j);
+	printmemory(p+2, j);
 	say("\n");
-	p += 2 + temp1;
+	p += 2 + j;
 
 	//compression
-	temp1 = p[0];
-	say("compression(len=%x)\n", temp1);
-	printmemory(p+1, temp1);
+	j = p[0];
+	say("compression(len=%x)\n", j);
+	printmemory(p+1, j);
 	say("\n");
-	p += 1 + temp1;
+	p += 1 + j;
 
 	//extension
-	temp1 = (p[0]<<8) + p[1];
-	say("extension(len=%x)\n", temp1);
-	printmemory(p+2, temp1);
+	j = (p[0]<<8) + p[1];
+	say("extension(len=%x)\n", j);
+	printmemory(p+2, j);
 	p += 2;
 
 	//
@@ -126,11 +128,11 @@ int tls_read_client_hello(u8* buf, int len)
 		if(p-buf >= len)return 0;
 		if(p-buf >= len+5)return 0;
 
-		temp1 = (p[0]<<8) + p[1];
-		temp2 = (p[2]<<8) + p[3];
-		say("type=%04x, len=%x\n", temp1, temp2);
+		j = (p[0]<<8) + p[1];
+		k = (p[2]<<8) + p[3];
+		say("type=%04x, len=%x\n", j, k);
 
-		p += 4 + temp2;
+		p += 4 + k;
 	}
 
 	return len + 5;
@@ -316,7 +318,7 @@ int tls_write_server_hello(u8* buf, int len)
 	p += 2;
 
 	//random
-	for(j=0;j<0x20;j++)p[j] = random_example[j];
+	for(j=0;j<0x20;j++)p[j] = serverrandom[j];
 	p += 0x20;
 
 	//sessionid length
@@ -441,7 +443,7 @@ int tls_write_server_keyexch(u8* buf, int len)
 	p[2] = 0x17;
 	p += 3;
 
-	//pubkey
+	//pubkey(p + g + Y)
 	for(j=0;j<0x41;j++)
 	{
 		p[1+j] = pubkey[j];
@@ -454,7 +456,7 @@ int tls_write_server_keyexch(u8* buf, int len)
 	p[1] = 1;
 	p += 2;
 
-	//signature length
+	//signature(clientrandom + serverrandom + pubkey)
 	for(j=0;j<0x100;j++)
 	{
 		p[2+j] = signature[j];
