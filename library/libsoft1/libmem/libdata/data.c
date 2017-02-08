@@ -27,31 +27,31 @@ static u8* datahome;
 
 
 //
-static int file_list(u8* arg1)
+static int data_list(u8* arg1)
 {
 	return 0;
 }
-static int file_choose(u8* arg)
+static int data_choose(u8* arg)
 {
 	return 0;
 }
-static int file_read(u8* mem, u8* file, u64 addr, u64 count)
+static int data_read(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int file_write(u8* mem, u8* file, u64 addr, u64 count)
+static int data_write(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int file_start(u8* p)
+static int data_start(u8* p)
 {
 	return 0;
 }
-static int file_stop()
+static int data_stop()
 {
 	return 0;
 }
-int file_create(u8* softaddr,u64* p)
+int data_create(u8* softaddr,u64* p)
 {
 	u8* q;
 
@@ -65,16 +65,16 @@ int file_create(u8* softaddr,u64* p)
 	p[0]=0x79726f6d656d;
 	p[1]=0x61746164;
 
-	p[10]=(u64)file_start;
-	p[11]=(u64)file_stop;
-	p[12]=(u64)file_list;
-	p[13]=(u64)file_choose;
-	p[14]=(u64)file_read;
-	p[15]=(u64)file_write;
+	p[10]=(u64)data_start;
+	p[11]=(u64)data_stop;
+	p[12]=(u64)data_list;
+	p[13]=(u64)data_choose;
+	p[14]=(u64)data_read;
+	p[15]=(u64)data_write;
 
 	return 0x80;
 }
-int file_delete()
+int data_delete()
 {
 	return 0;
 }

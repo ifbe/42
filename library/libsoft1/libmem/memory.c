@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int file_create(void*,void*);
-int file_delete();
+int data_create(void*,void*);
+int data_delete();
 int filesystem_create(void*,void*);
 int filesystem_delete();
 int sec_create(void*,void*);
@@ -236,7 +236,7 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	file_create(softaddr, q);
+	data_create(softaddr, q);
 	q+=0x80;
 
 	filesystem_create(softaddr, q);
@@ -252,7 +252,7 @@ int memory_create(u8* softaddr,u64* p)
 }
 int memory_delete()
 {
-	file_delete();
+	data_delete();
 	filesystem_delete();
 	sec_delete();
 	text_delete();

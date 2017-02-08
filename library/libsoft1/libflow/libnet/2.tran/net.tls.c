@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int readfile(char*, char*, int, int);
+int readfile(void*, void*, int, int);
 //
 void printmemory(void*, int);
 void say(void*, ...);
