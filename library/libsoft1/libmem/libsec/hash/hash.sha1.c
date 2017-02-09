@@ -14,7 +14,7 @@
 #define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1D6+rol(v,5);w=rol(w,30);
 
 
-typedef struct sha1_ctx
+typedef struct
 {
 	u32 state[5];
 	u32 count[2];
@@ -212,7 +212,7 @@ void sha1_read(SHA1_CTX* context, u8 digest[20])
 	for(j=0;j<sizeof(finalcount);j++)p[j]=0;
 }
 
-void sha1_create(SHA1_CTX* context)
+void sha1_start(SHA1_CTX* context)
 {
 	context->state[0] = 0x67452301;
 	context->state[1] = 0xEFCDAB89;
@@ -221,17 +221,16 @@ void sha1_create(SHA1_CTX* context)
 	context->state[4] = 0xC3D2E1F0;
 	context->count[0] = context->count[1] = 0;
 }
-void sha1_delete(SHA1_CTX* context)
+void sha1_stop(SHA1_CTX* context)
 {
 }
 void sha1sum(u8* dst, u8* src, int len)
 {
 	int j;
 	SHA1_CTX context;
-	sha1_create(&context);
+	sha1_start(&context);
 
 	//
-	sha1_create(&context);
 	for (j=0;j<=len-64;j+=64)
 	{
 		sha1_write(&context, src+j, 64);
@@ -240,6 +239,6 @@ void sha1sum(u8* dst, u8* src, int len)
 	sha1_read(&context, dst);
 
 	//
-	sha1_delete(&context);
+	//sha1_stop(&context);
 }
 

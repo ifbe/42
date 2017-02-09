@@ -195,7 +195,7 @@ static void md5transform (u32 state[4], const unsigned char block[64])
 
 
 
-void md5_write(MD5_CTX* context, u8* input, u32 len)
+void md5_write(MD5_CTX* ctx, u8* input, u32 len)
 {
 	unsigned int i;
 	unsigned int j;
@@ -207,14 +207,14 @@ void md5_write(MD5_CTX* context, u8* input, u32 len)
 	/*计算已有信息的bits长度的字节数的模64, 64bytes=512bits。
 	用于判断已有信息加上当前传过来的信息的总长度能不能达到512bits，
 	如果能够达到则对凑够的512bits进行一次处理*/
-	index = (u32)((context->count[0] >> 3) & 0x3F);
+	index = (u32)((ctx->count[0] >> 3) & 0x3F);
  
 	/* Update number of bits *//*更新已有信息的bits长度*/  
-	if((context->count[0] += (len << 3)) < (len << 3))
+	if((ctx->count[0] += (len << 3)) < (len << 3))
 	{
-		context->count[1]++;
+		ctx->count[1]++;
 	}
-	context->count[1] += (len >> 29);
+	ctx->count[1] += (len >> 29);
   
 	/*计算已有的字节数长度还差多少字节可以 凑成64的整倍数*/  
 	partLen = 64 - index;  
@@ -222,18 +222,18 @@ void md5_write(MD5_CTX* context, u8* input, u32 len)
 	/*如果当前输入的字节数 大于 已有字节数长度补足64字节整倍数所差的字节数*/  
 	if(len >= partLen)
 	{ 
-		/*用当前输入的内容把context->buffer的内容补足512bits*/
-		dst=(u8*)&context->buffer[index];
+		/*用当前输入的内容把ctx->buffer的内容补足512bits*/
+		dst=(u8*)&ctx->buffer[index];
 		src=(u8*)input;
 		for(j=0;j<partLen;j++)dst[j]=src[j];
 
-		/*用基本函数对填充满的512bits（已经保存到context->buffer中） 做一次转换，转换结果保存到context->state中*/
-		md5transform(context->state, context->buffer);  
+		/*用基本函数对填充满的512bits（已经保存到ctx->buffer中） 做一次转换，转换结果保存到ctx->state中*/
+		md5transform(ctx->state, ctx->buffer);
   
-		/* 对当前输入的剩余字节做转换（如果剩余的字节<在输入的input缓冲区中>大于512bits，转换结果保存到context->state中,把i+63<inputlen改为i+64<=inputlen更容易理解*/
+		/* 对当前输入的剩余字节做转换（如果剩余的字节<在输入的input缓冲区中>大于512bits，转换结果保存到ctx->state中,把i+63<inputlen改为i+64<=inputlen更容易理解*/
 		for(i = partLen; i + 63 < len; i += 64 )
 		{
-			md5transform(context->state, &input[i]);
+			md5transform(ctx->state, &input[i]);
 		}
 		index = 0;  
 	}
@@ -242,8 +242,8 @@ void md5_write(MD5_CTX* context, u8* input, u32 len)
 		i = 0;  
 	}
   
-	//将输入缓冲区中的不足填充满512bits的剩余内容填充到context->buffer中
-	dst=(u8*)&context->buffer[index];
+	//将输入缓冲区中的不足填充满512bits的剩余内容填充到ctx->buffer中
+	dst=(u8*)&ctx->buffer[index];
 	src=(u8*)&input[i];
 	for(j=0;j<len-i;j++)dst[j]=src[j];
 } 
@@ -253,34 +253,34 @@ void md5_write(MD5_CTX* context, u8* input, u32 len)
 
 /*获取加密 的最终结果 
 digest：保存最终的加密串 
-context：你前面初始化并填入了信息的md5结构 
+ctx：你前面初始化并填入了信息的md5结构 
 */  
-void md5_read(MD5_CTX* context, u8 digest[16])
+void md5_read(MD5_CTX* ctx, u8 digest[16])
 {
 	char* p;
 	unsigned char bits[8];  
 	unsigned int index, padLen;  
   
 	/*将要被转换的信息(所有的)的bits长度拷贝到bits中*/  
-	Encode(bits, context->count, 8);
+	Encode(bits, ctx->count, 8);
 
 	/* 计算所有的bits长度的字节数的模64, 64bytes=512bits*/  
-	index = (u32)((context->count[0] >> 3) & 0x3f);
+	index = (u32)((ctx->count[0] >> 3) & 0x3f);
 
 	/*计算需要填充的字节数，padLen的取值范围在1-64之间*/  
 	padLen = (index < 56) ? (56 - index) : (120 - index);
 
 	/*这一次函数调用绝对不会再导致MD5Transform的被调用，因为这一次不会填满512bits*/  
-	md5_write(context, PADDING, padLen);  
+	md5_write(ctx, PADDING, padLen);  
 
 	/*补上原始信息的bits长度（bits长度固定的用64bits表示），这一次能够恰巧凑够512bits，不会多也不会少*/  
-	md5_write(context, bits, 8);
+	md5_write(ctx, bits, 8);
 
 	/*将最终的结果保存到digest中。ok，终于大功告成了*/  
-	Encode(digest, context->state, 16);
+	Encode(digest, ctx->state, 16);
 
 	/* Zeroize sensitive information. */  
-	p=(char*)&context;
+	p=(char*)&ctx;
 	for(index=0;index<sizeof(MD5_CTX);index++)
 	{
 		p[index]=0;
@@ -290,32 +290,32 @@ void md5_read(MD5_CTX* context, u8 digest[16])
 
 
 
-void md5_create(MD5_CTX* context)
+void md5_start(MD5_CTX* ctx)
 {  
-	context->count[0] = context->count[1] = 0;
+	ctx->count[0] = ctx->count[1] = 0;
  
-	context->state[0] = 0x67452301;
-	context->state[1] = 0xefcdab89;
-	context->state[2] = 0x98badcfe;
-	context->state[3] = 0x10325476;
+	ctx->state[0] = 0x67452301;
+	ctx->state[1] = 0xefcdab89;
+	ctx->state[2] = 0x98badcfe;
+	ctx->state[3] = 0x10325476;
 }  
-void md5_delete(MD5_CTX* context)
+void md5_stop(MD5_CTX* ctx)
 {
 }
 void md5sum(u8* dst, u8* src, int len)
 {
 	int j;
-	MD5_CTX context;
-	md5_create(&context);
+	MD5_CTX ctx;
+	md5_start(&ctx);
 
 	//
 	for(j=0;j<=len-64;j+=64)
 	{
-		md5_write(&context, src+j, 64);
+		md5_write(&ctx, src+j, 64);
 	}
-	if((len%64) > 0)md5_write(&context, src+j, len%64);
-	md5_read(&context, dst);
+	if((len%64) > 0)md5_write(&ctx, src+j, len%64);
+	md5_read(&ctx, dst);
 
 	//
-	md5_delete(&context);
+	//md5_stop(&ctx);
 }
