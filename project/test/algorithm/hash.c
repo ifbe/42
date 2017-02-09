@@ -3,13 +3,14 @@
 void md5sum(char* dst, char* src, int len);
 void sha1sum(char* dst, char* src, int len);
 void sha256sum(char* dst, char* src, int len);
+void sha512sum(char* dst, char* src, int len);
 
 
 
 
 //
-unsigned char src[1024];	//存放于加密的信息
-unsigned char dst[21];		//存放加密后的结果
+unsigned char src[1024];	//原始数据
+unsigned char dst[0x100];	//hash结果
 
 
 
@@ -25,6 +26,7 @@ void main(int argc, char* argv[])
 	else if(strcmp(argv[1], "md5") == 0)type = 1;
 	else if(strcmp(argv[1], "sha1") == 0)type = 2;
 	else if(strcmp(argv[1], "sha256") == 0)type = 3;
+	else if(strcmp(argv[1], "sha512") == 0)type = 4;
 	else
 	{
 		printf("what?\n");
@@ -47,6 +49,11 @@ void main(int argc, char* argv[])
 	{
 		sha256sum(dst, src, strlen(src));
 		len = 32;
+	}
+	if(type == 4)
+	{
+		sha512sum(dst, src, strlen(src));
+		len = 64;
 	}
 
 	//

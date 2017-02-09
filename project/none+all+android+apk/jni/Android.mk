@@ -162,6 +162,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libsec/hash/hash.md5.c \
 	library/libsoft1/libmem/libsec/hash/hash.sha1.c \
 	library/libsoft1/libmem/libsec/hash/hash.sha256.c \
+	library/libsoft1/libmem/libsec/hash/hash.sha512.c \
 	library/libsoft1/libmem/libsec/hash/hash.string.c \
 	library/libsoft1/libmem/libsec/qrcode.c \
 	library/libsoft1/libmem/libsec/sec.c \

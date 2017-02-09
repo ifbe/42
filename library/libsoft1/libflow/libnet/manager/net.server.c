@@ -181,19 +181,23 @@ void known_read(u64* p)
 /*
 server:
 {
-	0000000?	first, chat(serve)
-	0000001?	http, ws(serve)
-	0000002?	https, wss(serve)
-	0000003?	ssh(serve)
-	0000004?	socks(serve)
+	0000000?	default, chat
+	0000001?	http, ws
+	0000002?	https, wss
+	0000003?	ssh
+	0000004?	socks?
+	0000005?	rdp
+	0000006?	vnc
 }
 client:
 {
-	8000000?	first, chat(client)
-	8000001?	http, ws(client)
-	8000002?	http, wss(client)
-	8000003?	ssh(client)
-	8000004?	socks(client)
+	8000000?	default, chat
+	8000001?	http, ws
+	8000002?	https, wss
+	8000003?	ssh
+	8000004?	socks
+	8000005?	rdp
+	8000006?	vnc
 }
 */
 //--------------------------------------------------------

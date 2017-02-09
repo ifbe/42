@@ -2,8 +2,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
-int readfile(void*, void*, int, int);
+//soft1
+void sha512sum(void* dst, void* src, int len);
+void rsa2048(  void* dst, void* src, void* key, int len);
+//soft0
+int readfile(void* mem, void* file, int off, int len);
+int writefile(void* mem, void* file, int off, int len);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -437,6 +441,9 @@ int tls_write_server_keyexch(u8* buf, int len)
 	int j;
 	u8* p = buf + 9;
 
+
+
+
 	//curve type,name
 	p[0] = 3;
 	p[1] = 0;
@@ -451,12 +458,37 @@ int tls_write_server_keyexch(u8* buf, int len)
 	p[0] = 0x41;
 	p += 1 + 0x41;
 
+
+
+
 	//hash algorithm
 	p[0] = 6;
 	p[1] = 1;
 	p += 2;
+/*
+	rsa2048(
+		//[19byte]fixed header
+		3051300d 06096086 48016503 04020305 000440
 
-	//signature(clientrandom + serverrandom + pubkey)
+		//[64byte]result value
+		sha512(
+			clientrandom,
+			serverrandom,
+			curvetype,namedcurve,pubkeylength,pubkeydata
+		)
+	)//with cert's private key
+
+	//put all @ [0,0x100]
+	memcpy(p+0x00, clientrandom, 0x20);
+	memcpy(p+0x20, serverrandom, 0x20);
+	memcpy(p+0x40, buf+9, 3+1+0x41);
+
+	//dst@[0x100,0x17f], src@[0,0x84]
+	sha512sum(p+0x100, p, 0x20+0x20+3+1+0x41);
+
+	//dst@[0,0x7f], src@[0x100,0x17f]
+	rsa2048(p, p+0x100);
+*/
 	for(j=0;j<0x100;j++)
 	{
 		p[2+j] = signature[j];
@@ -464,6 +496,9 @@ int tls_write_server_keyexch(u8* buf, int len)
 	p[0] = 0x01;
 	p[1] = 0x00;
 	p += 2 + 0x100;
+
+
+
 
 	//5+4byte
 	len = p - buf;
