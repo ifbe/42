@@ -129,21 +129,13 @@ void windowdelete();
 #define dirhome 0x200000
 #define datahome 0x300000
 
-int utf2unicode(u8* src,u32* dst);
-int unicode2utf(u32 src,u8* dst);
-
+u8* buf2folder(u8* p);
+u8* buf2filename(u8* p);
 int buf2typename(u8* p,int max,u64* type,u8** name);
 int buf2optval(u8* pp,int max,u8** type,u8** name);
 int buf2suffix(u8* p,u8** suffix);
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2addrport(u8* pp,int max,u8* addr,int* port);
-u8* buf2folder(u8* p);
-u8* buf2filename(u8* p);
-
-int decstr2double(u8* src,double* dst);
-int hexstr2double(u8* src,double* dst);
-int double2decstr(double src,u8* dst);
-int double2hexstr(double src,u8* dst);
 
 int data2decstr(u64 data,u8* str);
 int data2hexstr(u64 data,u8* str);
@@ -154,6 +146,14 @@ int bigint2decstr(u8* src,u8* dst,int count);
 int bigint2hexstr(u8* src,u8* dst,int count);
 int hexstr2bigint(u8* src, u8* dst);
 int decstr2bigint(u8* src, u8* dst);
+
+int decstr2double(u8* src,double* dst);
+int hexstr2double(u8* src,double* dst);
+int double2decstr(double src,u8* dst);
+int double2hexstr(double src,u8* dst);
+
+int utf2unicode(u8* src,u32* dst);
+int unicode2utf(u32 src,u8* dst);
 
 int cmp(u8*, u8*);
 int ncmp(u8*, u8*, int);
@@ -168,6 +168,10 @@ int findtail(u8* buf);
 int findzero(u8* buf);
 int finddata(u8* buf, u8 data);
 
+int md5sum(u8* dst, u8* src, int len);
+int sha1sum(u8* dst, u8* src, int len);
+int sha256sum(u8* dst, u8* src, int len);
+int sha512sum(u8* dst, u8* src, int len);
 
 int bigdup(u8* src, int sl, u8* dst, int dl);
 int bigcmp(u8* src, int sl, u8* dst, int dl);
@@ -202,6 +206,11 @@ int bigdiv(
 	u8* bbuf, int blen,
 	u8* quotient, int max1,
 	u8* remainder, int max2);
+int rsa2048(
+	u8* dstbuf, int dstlen,
+	u8* srcbuf, int srclen,
+	u8* keybuf, int keylen,
+	u8* modbuf, int modlen);
 
 
 

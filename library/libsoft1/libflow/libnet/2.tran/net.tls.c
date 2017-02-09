@@ -3,8 +3,12 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //soft1
+void rsa2048(
+        u8* dstbuf, int dstlen,
+        u8* srcbuf, int srclen,
+        u8* keybuf, int keylen,
+        u8* modbuf, int modlen);
 void sha512sum(void* dst, void* src, int len);
-void rsa2048(  void* dst, void* src, void* key, int len);
 //soft0
 int readfile(void* mem, void* file, int off, int len);
 int writefile(void* mem, void* file, int off, int len);
@@ -483,11 +487,16 @@ int tls_write_server_keyexch(u8* buf, int len)
 	memcpy(p+0x20, serverrandom, 0x20);
 	memcpy(p+0x40, buf+9, 3+1+0x41);
 
-	//dst@[0x100,0x17f], src@[0,0x84]
+	//dst@[0x100,0x1ff], src@[0,0x84]
 	sha512sum(p+0x100, p, 0x20+0x20+3+1+0x41);
 
-	//dst@[0,0x7f], src@[0x100,0x17f]
-	rsa2048(p, p+0x100);
+	//dst@[0,0xff], src@[0x100,0x1ff]
+	rsa2048(
+		p,       0x100,
+		p+0x100, 0x100,
+		key,     0x100,
+		mod,     0x100
+	);
 */
 	for(j=0;j<0x100;j++)
 	{

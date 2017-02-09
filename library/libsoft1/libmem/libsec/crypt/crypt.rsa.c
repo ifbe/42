@@ -6,6 +6,11 @@
 
 
 
-void rsa2048(u8* dst, u8* src, u8* key, int len)
+void rsa2048(
+	u8* dstbuf, int dstlen,
+	u8* srcbuf, int srclen,
+	u8* keybuf, int keylen,
+	u8* modbuf, int modlen)
 {
+	//dst = (src^key)%mod
 }
