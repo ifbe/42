@@ -4,14 +4,33 @@
 #define u64 unsigned long long
 void windowcreate();
 void windowdelete();
-void say(char*,...);
+void say(void*,...);
 
 
 
 
-void displaycreate(char* type,char* addr)
+//
+static u8* mega0;
+static u8* mega1;
+static u8* mega2;
+static u8* mega3;
+
+
+
+
+void displaycreate(u8* type, u8* addr)
 {
+	int j;
 	if(type!=0)return;
+
+	//where
+	mega0=addr;
+	mega1=addr+0x100000;
+	mega2=addr+0x200000;
+	mega3=addr+0x300000;
+
+	//clean [0x80000,0xfffff]
+	for(j=0x80000;j<0x100000;j++)addr[j]=0;
 
 	//
 	windowcreate();

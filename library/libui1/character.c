@@ -149,21 +149,19 @@ void charactercreate(u8* type, u8* addr)
 {
 	int i;
 	u8* temp;
-	if(type!=0)
-	{
-		//insmod(xxxx)
-		return;
-	}
+	if(type!=0)return;
 
-	//clean everything
-	for(i=0;i<0x100000;i++)addr[i]=0;
-	temp=addr;
-
-	//
+	//where
 	worker=(struct working*)addr;
 	mega1=addr+0x100000;
 	mega2=addr+0x200000;
 	mega3=addr+0x300000;
+
+	//clean [0,0x7ffff]
+	for(i=0;i<0x80000;i++)addr[i]=0;
+
+	//......
+	temp=addr;
 
 	//menu.center
 	menu_create(addr,temp);

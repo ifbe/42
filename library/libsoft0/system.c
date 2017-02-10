@@ -18,27 +18,50 @@ int deleterandom();
 int createsignal();
 int deletesignal();
 //
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
-void systemcreate(char* module,char* addr)
+//
+static u8* mega0;
+static u8* mega1;
+static u8* mega2;
+static u8* mega3;
+
+
+
+
+void systemcreate(u8* type, u8* addr)
 {
-	if(module==0)
-	{
-		createfile();
-		createfolder();
-		createrandom();
-		createsignal();
-	}
+	int j;
+	if(type!=0)return;
+
+	//where
+	mega0=addr;
+	mega1=addr+0x100000;
+	mega2=addr+0x200000;
+	mega3=addr+0x300000;
+
+	//clean [0x80000,0xfffff]
+	for(j=0x80000;j<0x100000;j++)addr[j]=0;
+
+	//
+	createfile();
+	createfolder();
+	createrandom();
+	createsignal();
+
+	//
 	say("[8,c):createed system\n");
 }
 void systemdelete()
 {
+	//
 	say("[8,c):deleteing system\n");
 
+	//
 	deletesignal();
 	deleterandom();
 	deletefolder();

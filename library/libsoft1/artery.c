@@ -261,31 +261,27 @@ int arterystop(u8* p)
 
 
 
-void arterycreate(u8* module,u8* addr)
+void arterycreate(u8* type, u8* addr)
 {
 	int i;
 	u8* p;
-	if(module!=0)
-	{
-		//insmod(xxxx)
-		return;
-	}
+	if(type!=0)return;
 
-	//
-	for(i=0;i<0x100000;i++)addr[i] = 0;
-	addr[0] = 0x34;
-	addr[1] = 0x32;
-
-	//0
-	rsp = 0;
-	stack = addr;
+	//where
 	worker=(struct elements*)addr;
 	fshome  = addr+0x100000;
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;
-	p = addr+0x80;
+
+	//clean [0,0x7ffff]
+	for(i=0;i<0x80000;i++)addr[i] = 0;
+	stack = addr;
+	stack[0] = 0x34;
+	stack[1] = 0x32;
+	rsp = 0;
 
 	//
+	p = addr+0x80;
 	p += flow_create(addr,p);
 	p += memory_create(addr,p);
 	p += system_create(addr,p);
@@ -295,10 +291,12 @@ void arterycreate(u8* module,u8* addr)
 	p += math_create(addr,p);
 	p += phys_create(addr,p);
 
+	//
 	say("[8,c):createed artery\n");
 }
-void arterydelete(u8* module)
+void arterydelete()
 {
+	//
 	say("[8,c):deleteing artery\n");
 
 	//
@@ -487,25 +485,25 @@ int arterycommand(u8* buffer)
 
 //33333333333333333333333333333333333333333333333333333333333
 	//"create","destory","start","stop"
-	ret=cmp( argv[0] , "create");	       //eg:   dynamicmodule
+	ret=cmp(argv[0] , "create");
 	if(ret==0)
 	{
 		//arterycreate(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "delete");
+	ret=cmp(argv[0] , "delete");
 	if(ret==0)
 	{
 		//arterydelete(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "start");
+	ret=cmp(argv[0] , "start");
 	if(ret==0)
 	{
 		arterystart(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "stop");
+	ret=cmp(argv[0] , "stop");
 	if(ret==0)
 	{
 		arterystop(argv[1]);
@@ -513,25 +511,25 @@ int arterycommand(u8* buffer)
 	}
 
 	//"observe","change","get","put"
-	ret=cmp( argv[0] , "ls" );
+	ret=cmp(argv[0] , "ls" );
 	if(ret==0)
 	{
 		arterylist(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "cd" );
+	ret=cmp(argv[0] , "cd" );
 	if(ret==0)
 	{
 		arterychoose(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "read" );
+	ret=cmp(argv[0] , "read" );
 	if(ret==0)
 	{
 		arteryread(argv[1]);
 		goto finish;
 	}
-	ret=cmp( argv[0] , "write" );  //dangerous
+	ret=cmp(argv[0] , "write" );  //dangerous
 	if(ret==0)
 	{
 		arterywrite(argv[1]);

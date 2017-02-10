@@ -56,20 +56,24 @@
 
 #define screen_size 0x657a6973	//size
 
+u64* eventread();
+void eventwrite(u64 what, u64 who, u64 where, u64 when);
 void birth();
 void death();
-void eventwrite(int who);
-void eventread(u64 what, u64 who, u64 where, u64 when);
 //----------------------------------------------------------------------
 
 
 
 
 //--------------------------libui---------------------------------------
-#define uiobj 0x0		//xlib, winapi, gtk, gl...
+#define uibase 0x000000		//xlib, winapi, gtk, gl...
+	#define uibase0 uibase+0x80000
+	#define uibase1 uibase+0x00000
 #define uiuser 0x100000		//2048, spectrum, camera...
-#define uinode 0x200000		//node in a game
-#define uidata 0x300000		//data in a node
+	#define gamehome uiuser+0x00000
+	#define toolhome uiuser+0x40000
+#define uinode 0x200000		//item
+#define uidata 0x300000		//data
 
 //libui1
 void backgroundcolor(u32 color);
@@ -118,16 +122,16 @@ void windowdelete();
 
 
 //-------------------------------libsoft--------------------------------
-#define fsobj 0			//function pointer
-	#define memhome fsobj+0
-	#define nethome fsobj+0xd0000
-	#define syshome fsobj+0xe0000
-	#define wirehome fsobj+0xf0000
-#define fsuser 0x100000		//protocol data
-	#define fshome fsuser+0
-	#define nethome fsuser+0x40000
-#define fsdir 0x200000		//vfs dir
-#define fsdata 0x300000		//vfs data
+#define fsbase 0x000000		//fd
+	#define fsbase0 fsbase+0x80000
+	#define fsbase1 fsbase+0x00000
+#define fsuser 0x100000		//worker
+	#define memhome fsuser+0
+	#define nethome fsuser+0xd0000
+	#define syshome fsuser+0xe0000
+	#define wirehome fsuser+0xf0000
+#define fsnode 0x200000		//dir
+#define fsdata 0x300000		//raw
 
 //libsoft1
 u8* buf2folder(u8* p);
@@ -225,10 +229,16 @@ u64 gettime();
 
 
 //-------------------------------libhard--------------------------------
-#define hwlist 0
-#define hwdev 0x100000
-#define hwtab 0x200000
-#define hwdata 0x300000
+#define hwbase 0x000000		//cpu, ether, sound, video...
+	#define hwbase0 hwbase+0x80000
+	#define hwbase1 hwbase+0x00000
+#define hwuser 0x100000		//driver
+	#define diskhome hwuser+0x00000
+	#define usbhome hwuser+0x40000
+	#define tcpiphome hwuser+0x80000
+	#define yyhome hwuser+0xc0000
+#define hwnode 0x200000		//struct
+#define hwdata 0x300000		//content
 
 //libhard1
 int initusb();
@@ -243,10 +253,12 @@ int initxhci(u8* hba);
 
 
 //-------------------------------libboot--------------------------------
-#define bootlist 0
-#define bootproto 0x100000
-#define bootdir 0x200000
-#define bootdata 0x300000
+#define xxbase 0x000000		//acpi, dts, jtag, int
+	#define xxbase0 xxbase+0x80000
+	#define xxbase1 xxbase+0x00000
+#define xxuser 0x100000		//configer
+#define xxnode 0x200000		//type
+#define xxdata 0x300000		//value
 
 //libboot1
 void printmemory(char*,int);
