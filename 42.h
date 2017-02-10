@@ -6,16 +6,7 @@
 
 
 
-//world
-void birth();
-void death();
-
-
-
-
-//event
-void eventwrite(int who);
-void eventread(u64 what, u64 who, u64 where, u64 when);
+//--------------------------------world---------------------------------
 #define input_char 0x72616863	//char
 #define input_kbd 0x64626b	//kbd
 	#define kbd_esc 0x1b
@@ -65,13 +56,22 @@ void eventread(u64 what, u64 who, u64 where, u64 when);
 
 #define screen_size 0x657a6973	//size
 
+void birth();
+void death();
+void eventwrite(int who);
+void eventread(u64 what, u64 who, u64 where, u64 when);
+//----------------------------------------------------------------------
 
 
+
+
+//--------------------------libui---------------------------------------
+#define uiobj 0x0		//xlib, winapi, gtk, gl...
+#define uiuser 0x100000		//2048, spectrum, camera...
+#define uinode 0x200000		//node in a game
+#define uidata 0x300000		//data in a node
 
 //libui1
-#define uiguys 0
-#define gamedata 0x100000
-
 void backgroundcolor(u32 color);
 
 void line(  int x1, int y1, int x2, int y2, u32 color);
@@ -103,9 +103,6 @@ void defaulthexadecimal(int x, int y, u64 hex);
 void defaultdecimal(    int x, int y, long long dec);
 void defaultdouble(     int x, int y, double data);
 
-
-
-
 //libui0
 void windowlist();
 void windowchange();
@@ -115,22 +112,27 @@ void windowstart(char* addr, char* fmt, int w, int h);
 void windowstop();
 void windowcreate();
 void windowdelete();
+//----------------------------------------------------------------------
 
 
 
+
+//-------------------------------libsoft--------------------------------
+#define fsobj 0			//function pointer
+	#define memhome fsobj+0
+	#define nethome fsobj+0xd0000
+	#define syshome fsobj+0xe0000
+	#define wirehome fsobj+0xf0000
+#define fsuser 0x100000		//protocol data
+	#define fshome fsuser+0
+	#define nethome fsuser+0x40000
+#define fsdir 0x200000		//vfs dir
+#define fsdata 0x300000		//vfs data
 
 //libsoft1
-#define softguys 0
-#define fshome 0x100000
-	#define memhome fshome+0
-	#define nethome fshome+0xd0000
-	#define syshome fshome+0xe0000
-	#define wirehome fshome+0xf0000
-#define dirhome 0x200000
-#define datahome 0x300000
-
 u8* buf2folder(u8* p);
 u8* buf2filename(u8* p);
+
 int buf2typename(u8* p,int max,u64* type,u8** name);
 int buf2optval(u8* pp,int max,u8** type,u8** name);
 int buf2suffix(u8* p,u8** suffix);
@@ -212,39 +214,45 @@ int rsa2048(
 	u8* keybuf, int keylen,
 	u8* modbuf, int modlen);
 
-
-
-
 //libsoft0
 int readfile(u8* file, u8* mem, u64 offset, u64 count);
 int writefile(u8* file, u8* mem, u64 offset, u64 count);
 u32 getrandom();
 u64 gettime();
+//----------------------------------------------------------------------
 
 
 
+
+//-------------------------------libhard--------------------------------
+#define hwlist 0
+#define hwdev 0x100000
+#define hwtab 0x200000
+#define hwdata 0x300000
 
 //libhard1
 int initusb();
 int initnet();
 
-
-
-
 //libhard0
 int initahci(u8* hba);
 int initxhci(u8* hba);
+//----------------------------------------------------------------------
 
 
 
+
+//-------------------------------libboot--------------------------------
+#define bootlist 0
+#define bootproto 0x100000
+#define bootdir 0x200000
+#define bootdata 0x300000
 
 //libboot1
 void printmemory(char*,int);
 void say(char*,...);
 
-
-
-
 //libboot0
 void power_off();
 void power_on();
+//----------------------------------------------------------------------
