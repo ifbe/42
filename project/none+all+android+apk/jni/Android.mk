@@ -153,7 +153,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfile/libfs/parttable/pt.mbr.c \
 	library/libsoft1/libmem/libfile/file.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.aes.c \
-	library/libsoft1/libmem/libsec/crypt/crypt.base64.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.des.c \
 	library/libsoft1/libmem/libsec/crypt/crypt.rsa.c \
 	library/libsoft1/libmem/libsec/hash/hash.crc8.c \
@@ -168,9 +167,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libsec/sec.c \
 	library/libsoft1/libmem/libtext/conv/conv.arg.c \
 	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
+	library/libsoft1/libmem/libtext/conv/conv.base64.c \
 	library/libsoft1/libmem/libtext/conv/conv.bigint.c \
 	library/libsoft1/libmem/libtext/conv/conv.file.c \
 	library/libsoft1/libmem/libtext/conv/conv.net.c \
+	library/libsoft1/libmem/libtext/conv/conv.pem.c \
 	library/libsoft1/libmem/libtext/conv/conv.num.c \
 	library/libsoft1/libmem/libtext/conv/conv.utf8.c \
 	library/libsoft1/libmem/libtext/diff/diff.cmp.c \

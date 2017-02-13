@@ -60,16 +60,16 @@ int base64_decode(unsigned char* out, const unsigned char* in)
 
 		c = map[in[x]];
 		x++;
-		if (c == 255) return -1;
-		if (c == 253) continue;
-		if (c == 254) { c = 0; g--; }
+		if (c == 255)break;	//return -1
+		if (c == 253)continue;
+		if (c == 254){c=0;g--;}
 		t = (t<<6)|c;
 
 		if (++y == 4)
 		{
 			out[z++] = (unsigned char)((t>>16)&255);
-			if (g > 1) out[z++] = (unsigned char)((t>>8)&255);
-			if (g > 2) out[z++] = (unsigned char)(t&255);
+			if(g>1) out[z++] = (unsigned char)((t>>8)&255);
+			if(g>2) out[z++] = (unsigned char)(t&255);
 			y = t = 0;
 		}
 	}

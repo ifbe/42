@@ -531,3 +531,13 @@ int serve_secureshell(u64* p, u8* buf, u64 len)
 	//
 	return 0x30;
 }
+
+
+
+
+void ssh_start()
+{
+}
+void ssh_stop()
+{
+}

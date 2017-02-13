@@ -3,17 +3,6 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-int selfname(u64, void*);
-int peername(u64, void*);
-int createserver();
-int deleteserver();
-int startserver(void* addr, int port, void* dir, int opt);
-int stopserver(u64 x);
-int listserver(u8*);
-int chooseserver(u8*, u8*, int, u8*);
-int readserver(u64 fd, void* addr, u64 offset, u64 count);
-int writeserver(u64 fd, void* addr, u64 offset, u64 count);
-//
 int serve_first(void* p, u8* buf, u64 len);
 int serve_chat(void* p, u8* buf, u64 len);
 int serve_http(void* p, u8* buf, u64 len);
@@ -22,10 +11,22 @@ int serve_https(void* p, u8* buf, u64 len);
 int serve_wss(void* p, u8* buf, u64 len);
 int serve_secureshell(void* p, u8* buf, u64 len);
 //
-int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
+int tls_start();
+int tls_stop();
+int ssh_start();
+int ssh_stop();
 int movsb(void*,void*,int);
-int copy(u8*,u8*);
-int ncopy(u8*,u8*,int);
+//
+int selfname(u64, void*);
+int peername(u64, void*);
+int createserver();
+int deleteserver();
+int listserver(u8*);
+int chooseserver(u8*, u8*, int, u8*);
+int startserver(void* addr, int port, void* dir, int opt);
+int stopserver(u64 x);
+int readserver(u64 fd, void* addr, u64 offset, u64 count);
+int writeserver(u64 fd, void* addr, u64 offset, u64 count);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -298,7 +299,8 @@ static int server_choose(u8* p)
 }
 static int server_start(u8* p)
 {
-	//0.0.0.0:2222/sdcard
+	tls_start();
+	ssh_start();
 	return startserver("0,0,0,0", 2222, "", 0);
 }
 static int server_stop()

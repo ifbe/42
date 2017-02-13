@@ -74,7 +74,6 @@ target:
 	$(compiler) $(cflag) libmem/libfile/libfs/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmem/libfile/file.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.aes.c
-	$(compiler) $(cflag) libmem/libsec/crypt/crypt.base64.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.des.c
 	$(compiler) $(cflag) libmem/libsec/crypt/crypt.rsa.c
 	$(compiler) $(cflag) libmem/libsec/hash/hash.crc8.c
@@ -89,10 +88,12 @@ target:
 	$(compiler) $(cflag) libmem/libsec/sec.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.arg.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.ascii.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.base64.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.bigint.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.file.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.net.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.num.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.pem.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.utf8.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.cmp.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.wild.c
