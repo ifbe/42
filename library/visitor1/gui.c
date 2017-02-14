@@ -107,9 +107,8 @@ again:
 			goto again;
 		}
 
-
 		//3.pre change
-		else if((addr[1]&0xff) == 'p')	//motion
+		if((addr[1]&0xff) == 'p')	//motion
 		{
 			motion_explain(addr);
 		}

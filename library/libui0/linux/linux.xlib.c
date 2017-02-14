@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<unistd.h>
 #include<pthread.h>
 #include<X11/Xlib.h>
@@ -73,84 +74,6 @@ static int oldy=0;
 
 
 
-void windowlist()
-{
-}
-void windowchange()
-{
-	XResizeWindow(dsp, win, width, height);
-}
-
-
-
-
-u32 windowread(u64 what)
-{
-	//'size'
-	if(what==0x657a6973)
-	{
-		return width+(height<<16);
-	}
-
-	//??????????
-	return 0;
-}
-void windowwrite()
-{
-	int x,y,z;
-	if(pixbuf==0)return;
-	if(ximage==0)return;
-
-	//
-	XLockDisplay(dsp);
-
-	if(pixfmt==8)
-	{
-	}
-	else if(pixfmt==16)
-	{
-	}
-	XPutImage(dsp, win, gc, ximage, 0, 0, 0, 0, width, height); 
-
-	//
-	XUnlockDisplay(dsp);
-}
-
-
-
-
-void windowstart(char* addr, char* fmt, int x, int y)
-{
-	//wait for pthread inited
-	usleep(10000);
-
-	//
-	width = x;
-	height = y;
-	XResizeWindow(dsp, win, width, height);
-
-	//
-	pixbuf = addr;
-	pixfmt=32;
-
-	//
-	ximage=XCreateImage(
-		dsp, visual, 24, ZPixmap, 0,
-		pixbuf, width, height, 32, 0
-	);
-}
-void windowstop()
-{
-	if(pixfmt == 8)
-	{
-		pixbuf=0;
-	}
-	else pixbuf=0;
-}
-
-
-
-
 void* uievent(void* p)
 {
 	XEvent ev;
@@ -188,10 +111,13 @@ void* uievent(void* p)
 		XNextEvent(dsp, &ev);
 		if(ev.type==Expose)
 		{
-			if (ev.xexpose.count == 0)
-			{
-				windowwrite();
-			}
+			if(pixbuf==0)continue;
+			if(ximage==0)continue;
+			XPutImage(
+				dsp, win, gc, ximage,
+				0, 0, 0, 0,
+				width, height
+			); 
 		}
 		else if(ev.type==ClientMessage)
 		{
@@ -290,10 +216,61 @@ void* uievent(void* p)
 	XDestroyWindow(dsp, win);
 	XCloseDisplay(dsp);
 }
+
+
+
+
+void windowlist()
+{
+}
+void windowchange()
+{
+}
+void windowread()
+{
+}
+void windowwrite()
+{
+	XEvent ev;
+	memset(&ev,0,sizeof(XEvent));
+	ev.type = Expose;
+	ev.xexpose.display = dsp;
+	ev.xexpose.window = win;
+	XSendEvent(dsp, win, False, ExposureMask, &ev);
+	XFlush(dsp);	//must
+}
+void windowstart(char* addr, char* fmt, int x, int y)
+{
+	//wait for pthread inited
+	usleep(10000);
+
+	//
+	width = x;
+	height = y;
+	XResizeWindow(dsp, win, width, height);
+
+	//
+	pixbuf = addr;
+	pixfmt=32;
+
+	//
+	ximage=XCreateImage(
+		dsp, visual, 24, ZPixmap, 0,
+		pixbuf, width, height, 32, 0
+	);
+}
+void windowstop()
+{
+	if(pixfmt == 8)
+	{
+		pixbuf=0;
+	}
+	else pixbuf=0;
+}
 void windowcreate()
 {
 	//
-	XInitThreads();
+	//XInitThreads();
 	pthread_create(&id, NULL, uievent, NULL);
 }
 void windowdelete()

@@ -56,6 +56,7 @@ void camera_read_pixel()
 	u8* screen = (u8*)haha->pixelbuffer;
 	if(vision == 0)return;
 
+	for(j=0;j<640*480;j++)vision[j*2]=256-vision[j*2];
 	yuyv2rgba(
 		vision, 640, 480,
 		screen, haha->width, haha->height
