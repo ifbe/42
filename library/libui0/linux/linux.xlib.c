@@ -9,8 +9,6 @@
 #define u16 unsigned short
 #define u8 unsigned char
 void eventwrite(u64,u64,u64,u64);
-void snatch(int*);
-void release(int*);
 
 
 
@@ -52,24 +50,31 @@ static char xlib2kbd[0x80]={
 0,0,0,0,		0,0,0,0,		//0x70,0x7f
 };
 
-//
-static pthread_t id;
-//
+//global
 static Display* dsp=0;
 static Visual *visual=0;
-static XImage* ximage=0;
-static Window win;
-static GC gc;
-static Atom wmDelete;
 //
-static char* pixbuf=0;
-static int pixfmt=0;
-static int width=512;
-static int height=512;
-//
-static int motioncount=0;
-static int oldx=0;
-static int oldy=0;
+struct abcd
+{
+	//lib
+	pthread_t id;
+	Window win;
+	GC gc;
+	Atom wmDelete;
+	XImage* ximage;
+
+	//cfg
+	char* pixbuf;
+	int pixfmt;
+	int width;
+	int height;
+
+	//tmp
+	int motioncount;
+	int oldx;
+	int oldy;
+};
+static struct abcd haha[1];
 
 
 
@@ -77,74 +82,32 @@ static int oldy=0;
 void* uievent(void* p)
 {
 	XEvent ev;
-	dsp = XOpenDisplay(NULL);
-	//int screen = DefaultScreen(dsp);
-
-	visual = DefaultVisual(dsp, 0);
-	if(visual->class!=TrueColor)
-	{
-		fprintf(stderr, "Cannot handle non true color visual ...\n");
-		XCloseDisplay(dsp);
-		exit(1);
-	}
 
 	//pixel,ximage,window,gc
-	win=XCreateSimpleWindow(dsp,RootWindow(dsp,0),0,0,width,height,1,0,0);
-	gc = XCreateGC(dsp, win, 0, NULL);
+	haha[0].win = XCreateSimpleWindow(
+		dsp, RootWindow(dsp,0), 0, 0,
+		haha[0].width, haha[0].height,
+		1, 0, 0);
+	haha[0].gc = XCreateGC(dsp, haha[0].win, 0, NULL);
 
 	// intercept window delete event 
-	wmDelete=XInternAtom(dsp, "WM_DELETE_WINDOW", True);
-	XSetWMProtocols(dsp, win, &wmDelete, 1);
+	haha[0].wmDelete=XInternAtom(dsp, "WM_DELETE_WINDOW", True);
+	XSetWMProtocols(dsp, haha[0].win, &haha[0].wmDelete, 1);
 	XSelectInput
 	(
-		dsp, win,
+		dsp, haha[0].win,
 		KeyPressMask|KeyReleaseMask|
 		ButtonPressMask|ButtonReleaseMask|
 		ButtonMotionMask|
 		ExposureMask|
 		StructureNotifyMask
 	);
-	XMapWindow(dsp, win);
+	XMapWindow(dsp, haha[0].win);
 
 	while(1)
 	{
 		XNextEvent(dsp, &ev);
-		if(ev.type==Expose)
-		{
-			if(pixbuf==0)continue;
-			if(ximage==0)continue;
-			XPutImage(
-				dsp, win, gc, ximage,
-				0, 0, 0, 0,
-				width, height
-			); 
-		}
-		else if(ev.type==ClientMessage)
-		{
-			if (ev.xclient.data.l[0] == wmDelete)
-			{
-				eventwrite(0,0,0,0);
-				break;
-			}
-		}
-		else if(ev.type==ConfigureNotify)
-		{
-			int x = ev.xconfigure.width;
-			int y = ev.xconfigure.height;
-			//printf("%d,%d\n",x,y);
-
-			if( (x==width) && (y==height) )continue;
-			width=x;
-			height=y;
-
-			ximage=XCreateImage(
-				dsp,visual,24,ZPixmap,0,
-				pixbuf,x,y,32,0
-			);
-
-			eventwrite(x+(y<<16), 0x657a6973, 0, 0);
-		}
-		else if(ev.type==ButtonPress)
+		if(ev.type==ButtonPress)
 		{
 			//printf("buttonpress\n");
 			if(ev.xbutton.button==Button4)	//'xyz fron'
@@ -164,8 +127,8 @@ void* uievent(void* p)
 
 			else if(ev.xbutton.button==Button1)
 			{
-				oldx=ev.xbutton.x;
-				oldy=ev.xbutton.y;
+				haha[0].oldx=ev.xbutton.x;
+				haha[0].oldy=ev.xbutton.y;
 			}
 
 			continue;
@@ -175,7 +138,8 @@ void* uievent(void* p)
 			//printf("buttonrelease\n");
 			if(ev.xbutton.button==Button1)
 			{
-				if((oldx==ev.xbutton.x)&&(oldy==ev.xbutton.y))
+				if((haha[0].oldx==ev.xbutton.x)&&
+				   (haha[0].oldy==ev.xbutton.y) )
 				{
 					eventwrite(
 					ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48),
@@ -184,17 +148,41 @@ void* uievent(void* p)
 				}
 			}
 		}
-		else if(ev.type==MotionNotify)
+		else if(ev.type==ClientMessage)
 		{
-			motioncount = (motioncount+1)%5;
-			if(motioncount != 0)continue;
+			if (ev.xclient.data.l[0] == haha[0].wmDelete)
+			{
+				eventwrite(0,0,0,0);
+				break;
+			}
+		}
+		else if(ev.type==ConfigureNotify)
+		{
+			int x = ev.xconfigure.width;
+			int y = ev.xconfigure.height;
+			//printf("%d,%d\n",x,y);
 
-			eventwrite(
-			( (ev.xbutton.y-oldy) << 16 ) + ev.xbutton.x-oldx + ((u64)1<<48),
-			0x406d, 0, 0
+			if( (x==haha[0].width) && (y==haha[0].height) )continue;
+			haha[0].width=x;
+			haha[0].height=y;
+
+			haha[0].ximage=XCreateImage(
+				dsp, visual, 24, ZPixmap,
+				0, haha[0].pixbuf,
+				x,y,32,0
 			);
-			oldx=ev.xbutton.x;
-			oldy=ev.xbutton.y;
+
+			eventwrite(x+(y<<16), 0x657a6973, 0, 0);
+		}
+		else if(ev.type==Expose)
+		{
+			if(haha[0].pixbuf==0)continue;
+			if(haha[0].ximage==0)continue;
+			XPutImage(
+				dsp, haha[0].win, haha[0].gc, haha[0].ximage,
+				0, 0, 0, 0,
+				haha[0].width, haha[0].height
+			); 
 		}
 		else if(ev.type==KeyPress)
 		{
@@ -210,10 +198,25 @@ void* uievent(void* p)
 			//控制按键
 			else eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b, 0, 0);
 		}
+		else if(ev.type==MotionNotify)
+		{
+			haha[0].motioncount = (haha[0].motioncount+1)%5;
+			if(haha[0].motioncount != 0)continue;
+
+			eventwrite(
+			( (ev.xbutton.y - haha[0].oldy) << 16 )
+			+ (ev.xbutton.x - haha[0].oldx)
+			+ ((u64)1<<48),
+
+			0x406d, 0, 0
+			);
+			haha[0].oldx = ev.xbutton.x;
+			haha[0].oldy = ev.xbutton.y;
+		}
 	}//while
 
 	//
-	XDestroyWindow(dsp, win);
+	XDestroyWindow(dsp, haha[0].win);
 	XCloseDisplay(dsp);
 }
 
@@ -235,43 +238,50 @@ void windowwrite()
 	memset(&ev,0,sizeof(XEvent));
 	ev.type = Expose;
 	ev.xexpose.display = dsp;
-	ev.xexpose.window = win;
-	XSendEvent(dsp, win, False, ExposureMask, &ev);
+	ev.xexpose.window = haha[0].win;
+	XSendEvent(dsp, haha[0].win, False, ExposureMask, &ev);
 	XFlush(dsp);	//must
 }
 void windowstart(char* addr, char* fmt, int x, int y)
 {
 	//wait for pthread inited
-	usleep(10000);
-
-	//
-	width = x;
-	height = y;
-	XResizeWindow(dsp, win, width, height);
-
-	//
-	pixbuf = addr;
-	pixfmt=32;
-
-	//
-	ximage=XCreateImage(
+	haha[0].width = x;
+	haha[0].height = y;
+	haha[0].pixbuf = addr;
+	haha[0].pixfmt = 32;
+	haha[0].ximage=XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
-		pixbuf, width, height, 32, 0
+		haha[0].pixbuf, haha[0].width, haha[0].height,
+		32, 0
 	);
+
+	pthread_create(&haha[0].id, NULL, uievent, NULL);
 }
 void windowstop()
 {
-	if(pixfmt == 8)
+	if(haha[0].pixfmt == 8)
 	{
-		pixbuf=0;
+		haha[0].pixbuf = 0;
 	}
-	else pixbuf=0;
+	else haha[0].pixbuf = 0;
 }
 void windowcreate()
 {
-	//
-	//XInitThreads();
-	pthread_create(&id, NULL, uievent, NULL);
+	//must
+	XInitThreads();
+
+	//display
+	dsp = XOpenDisplay(NULL);
+	//int screen = DefaultScreen(dsp);
+
+	//visual
+	visual = DefaultVisual(dsp, 0);
+	if(visual->class!=TrueColor)
+	{
+		fprintf(stderr, "Cannot handle non true color visual ...\n");
+		XCloseDisplay(dsp);
+		exit(1);
+	}
 }
 void windowdelete()
 {
