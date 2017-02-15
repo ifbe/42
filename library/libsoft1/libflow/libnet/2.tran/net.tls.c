@@ -597,13 +597,15 @@ int tls_read(u64* p, u8* buf, u64 len)
 	if(buf[0] == 0x17)
 	{
 		ret = tls_read_both_data(buf,len);
-		p[1] |= 0xf;
+		p[1] &= 0xffffff00;
+		p[1] |= 0x17;
 	}
 	else if(buf[0] == 0x16)
 	{
 		if(buf[5] == 1)
 		{
 			ret = tls_read_client_hello(buf, len);
+			p[1] &= 0xffffff00;
 			p[1] |= 1;
 		}
 		else if(buf[5] == 2)
@@ -612,19 +614,24 @@ int tls_read(u64* p, u8* buf, u64 len)
 			ret += tls_read_server_certificate(buf+ret, len);
 			ret += tls_read_server_keyexch(buf+ret, len);
 			ret += tls_read_server_done(buf+ret, len);
+			p[1] &= 0xffffff00;
+			p[1] |= 2;
 		}
 		else if(buf[5] == 16)
 		{
 			ret = tls_read_client_keyexch(buf, len);
 			ret += tls_read_client_cipherspec(buf+ret, len);
 			ret += tls_read_client_hellorequest(buf+ret, len);
-			p[1] |= 2;
+			p[1] &= 0xffffff00;
+			p[1] |= 16;
 		}
-		else if(0)
+		else if(buf[5] == 4)
 		{
 			ret = tls_read_server_newsession(buf, len);
 			ret += tls_read_server_cipherspec(buf+ret, len);
 			ret += tls_read_server_encrypthandshake(buf+ret, len);
+			p[1] &= 0xffffff00;
+			p[1] |= 4;
 		}
 	}
 	else
@@ -638,8 +645,7 @@ int tls_read(u64* p, u8* buf, u64 len)
 }
 int tls_write(u64* p, u8* buf, u64 len)
 {
-	int ret = p[1]&0xf;
-	say("stage=%llx\n",p[1]);
+	int ret = p[1]&0xff;
 
 	if(ret == 0)
 	{
@@ -658,14 +664,14 @@ int tls_write(u64* p, u8* buf, u64 len)
 		ret += tls_write_client_cipherspec(buf+ret, len);
 		ret += tls_write_client_hellorequest(buf+ret, len);
 	}
-	else if(ret == 3)
+	else if(ret == 16)
 	{
 		ret = tls_write_server_newsession(buf, len);
 		ret += tls_write_server_cipherspec(buf+ret, len);
 		ret += tls_write_server_encrypthandshake(buf+ret, len);
 		printmemory(buf,ret);
 	}
-	else if(ret == 0xf)
+	else if(ret == 0x17)
 	{
 		ret = tls_write_both_data(buf, len);
 	}

@@ -2,6 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define ssh_new 0x500
+#define ssh_ing 0x501
+#define ssh_done 0x5ff
 int readserver(u64 fd, u8* addr, u64 offset, u64 count);
 int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
 //
@@ -216,67 +219,6 @@ static int secureshell_read_0x22(u8* buf, u64 len)
 	say("	max=%d\n", max);
 
 	return prefer;
-}
-static int secureshell_read(u8* buf, u64 len)
-{
-	int offset;
-	u32 temp;
-
-	temp = buf[0];
-	temp = (temp<<8) + buf[1];
-	temp = (temp<<8) + buf[2];
-	temp = (temp<<8) + buf[3];
-	if(buf[5] == 0x14)
-	{
-		say(
-			"[0,5]SSH_MSG_KEXINIT\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			temp, buf[4], buf[5]
-		);
-		secureshell_read_0x14(buf,len);
-	}
-	else if(buf[5] == 0x1e)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST_OLD\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			temp, buf[4], buf[5]
-		);
-		secureshell_read_0x1e(buf,len);
-	}
-	else if(buf[5] == 0x1f)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_GROUP\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			temp, buf[4], buf[5]
-		);
-		secureshell_read_0x1f(buf,len);
-	}
-	else if(buf[5] == 0x22)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			temp, buf[4], buf[5]
-		);
-		secureshell_read_0x22(buf,len);
-	}
-	else
-	{
-		printmemory(buf,temp);
-	}
-
-	say("\n\n\n\n");
-	return buf[5];
 }
 
 
@@ -495,46 +437,100 @@ static int secureshell_write_0x15(u8* buf, u64 len)
 
 //why,what,where,when
 static u8 version[]="SSH-2.0-finalanswer_42\r\n";
-int serve_secureshell(u64* p, u8* buf, u64 len)
+static int secureshell_read(u8* buf, u64 len)
 {
-	int ret;
-	if(p[1] == 0x30)
+	int offset;
+	u32 temp;
+
+	temp = buf[0];
+	temp = (temp<<8) + buf[1];
+	temp = (temp<<8) + buf[2];
+	temp = (temp<<8) + buf[3];
+	if(buf[5] == 0x14)
 	{
-		writeserver(p[2], version, 0, sizeof(version)-1);
-		p[1] = 0x31;
+		say(
+			"[0,5]SSH_MSG_KEXINIT\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x14(buf,len);
+	}
+	else if(buf[5] == 0x1e)
+	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST_OLD\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x1e(buf,len);
+	}
+	else if(buf[5] == 0x1f)
+	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_GROUP\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x1f(buf,len);
+	}
+	else if(buf[5] == 0x22)
+	{
+		say(
+			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST\n"
+			"	total=%x\n"
+			"	plen=%x\n"
+			"	type=%x\n",
+			temp, buf[4], buf[5]
+		);
+		secureshell_read_0x22(buf,len);
 	}
 	else
 	{
-		ret = secureshell_read(buf, len);
-		if(ret == 0x14)
-		{
-			//secureshell_write(buf, len);
-			ret = secureshell_write_0x14(buf, len);
-			writeserver(p[2], buf, 0, ret);
-		}
-		else if(ret == 0x1e)
-		{
-			//try
-			ret = secureshell_write_0x1f(buf, len);
-			ret += secureshell_write_0x15(buf+ret, len);
-			writeserver(p[2], buf, 0, ret);
-		}
-		else if(ret == 0x22)
-		{
-			//try
-			ret = secureshell_write_0x1f(buf, len);
-			ret += secureshell_write_0x15(buf+ret, len);
-			writeserver(p[2], buf, 0, ret);
-		}
+		printmemory(buf,temp);
 	}
 
-	//
-	return 0x30;
+	say("\n\n\n\n");
+	return buf[5];
 }
+int serve_secureshell(u64* p, u8* buf, u64 len)
+{
+	int ret;
+	if(p[1] == ssh_new)
+	{
+		writeserver(p[2], version, 0, sizeof(version)-1);
+		p[1] = ssh_ing;
+		return ssh_ing;
+	}
 
-
-
-
+	ret = secureshell_read(buf, len);
+	if(ret == 0x14)
+	{
+		//secureshell_write(buf, len);
+		ret = secureshell_write_0x14(buf, len);
+		writeserver(p[2], buf, 0, ret);
+	}
+	else if(ret == 0x1e)
+	{
+		//try
+		ret = secureshell_write_0x1f(buf, len);
+		ret += secureshell_write_0x15(buf+ret, len);
+		writeserver(p[2], buf, 0, ret);
+	}
+	else if(ret == 0x22)
+	{
+		//try
+		ret = secureshell_write_0x1f(buf, len);
+		ret += secureshell_write_0x15(buf+ret, len);
+		writeserver(p[2], buf, 0, ret);
+	}
+	return ssh_done;
+}
 void ssh_start()
 {
 }

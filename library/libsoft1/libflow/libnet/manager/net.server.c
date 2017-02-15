@@ -180,25 +180,17 @@ void known_read(u64* p)
 
 //--------------------------------------------------------
 /*
-server:
+server:bit31=0, client:bit31=1
 {
-	0000000?	default, chat
-	0000001?	http, ws
-	0000002?	https, wss
-	0000003?	ssh
-	0000004?	socks?
-	0000005?	rdp
-	0000006?	vnc
-}
-client:
-{
-	8000000?	default, chat
-	8000001?	http, ws
-	8000002?	https, wss
-	8000003?	ssh
-	8000004?	socks
-	8000005?	rdp
-	8000006?	vnc
+	00000000	default, chat
+	00000100	http
+	000002??	ws
+	000003??	https
+	000004??	wss
+	000005??	ssh
+	000006??	socks?
+	000007??	rdp
+	000008??	vnc
 }
 */
 //--------------------------------------------------------
@@ -216,45 +208,57 @@ client:
 	}
 
 	//chat
-	if(temp <= 0x0f)
+	if(temp <= 0xff)
 	{
 		serve_chat(&known[index], datahome, count);
 	}
 
 	//http
-	else if(temp == 0x10)
+	else if(temp <= 0x1ff)
 	{
 		serve_http(&known[index], datahome, count);
 	}
 
 	//ws
-	else if(temp <= 0x1f)
+	else if(temp <= 0x2ff)
 	{
 		serve_ws(&known[index], datahome, count);
 	}
 
 	//https
-	else if(temp <= 0x28)
+	else if(temp <= 0x3ff)
 	{
 		serve_https(&known[index], datahome, count);
 	}
 
 	//wss
-	else if(temp <= 0x2f)
+	else if(temp <= 0x4ff)
 	{
 		serve_wss(&known[index], datahome, count);
 	}
 
 	//ssh
-	else if(temp <= 0x3f)
+	else if(temp <= 0x5ff)
 	{
 		serve_secureshell(&known[index], datahome, count);
 	}
 
 	//socks
-	else if(temp <= 0x4f)
+	else if(temp <= 0x6ff)
 	{
 		//serve_socks(&known[index], datahome, count);
+	}
+
+	//rdp
+	else if(temp <= 0x7ff)
+	{
+		//serve_rdp(&known[index], datahome, count);
+	}
+
+	//vnc
+	else if(temp <= 0x7ff)
+	{
+		//serve_vnc(&known[index], datahome, count);
 	}
 
 	//error

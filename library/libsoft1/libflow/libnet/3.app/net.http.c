@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define http_new 0x100
+#define websocket_new 0x200
 //
 int findzero(char* p);
 int findhead(char* p);
@@ -107,8 +109,8 @@ int check_http(char* buf, int max)
 	);
 */
 	//
-	if( (Connection != 0) && (Upgrade != 0) )return 0x11;
-	else if(GET != 0)return 0x10;
+	if( (Connection != 0) && (Upgrade != 0) )return websocket_new;
+	else if(GET != 0)return http_new;
 	else return 0;
 }
 int serve_http(u64* p, u8* buf, int len)

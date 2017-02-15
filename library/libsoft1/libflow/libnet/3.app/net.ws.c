@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define websocket_new 0x200
+#define websocket_done 0x2ff
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
@@ -229,29 +231,24 @@ int handshake_websocket(u64* p, u8* buf, int len)
         say("%s", buf1);
 
         //
-	p[1] = 0x1f;
-        return 0x1f;
+	p[1] = websocket_done;
+        return websocket_done;
 }
 int serve_ws(u64* p, u8* buf, u64 len)
 {
 	int ret;
-
-	if(p[1] == 0x11)
+	if(p[1] == websocket_new)
 	{
-		handshake_websocket(p, buf, len);
-	}
-	else
-	{
-		//
-		ret = websocket_read(buf, len);
-		if(ret < 0)return ret;
-
-		//
-		websocket_write(p[2], (void*)"hahahaha", 8);
-		return 0x1f;
+		return handshake_websocket(p, buf, len);
 	}
 
-	return 0;
+	//
+	ret = websocket_read(buf, len);
+	if(ret < 0)return ret;
+
+	//
+	websocket_write(p[2], (void*)"hahahaha", 8);
+	return websocket_done;
 /*
 	if(type==0x10)
 	{
