@@ -234,7 +234,7 @@ client:
 	}
 
 	//https
-	else if(temp == 0x20)
+	else if(temp <= 0x28)
 	{
 		serve_https(&known[index], datahome, count);
 	}

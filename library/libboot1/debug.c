@@ -7,6 +7,14 @@ void say(char*,...);
 
 
 
+void printbigint(u8* p, int i)
+{
+        int j;
+        if(i<=0)return;
+
+        say("0x");
+        for(j=i-1;j>=0;j--)say("%02x",p[j]);
+}
 void printmemory(u8* addr,int size)
 {
 	int x,y;

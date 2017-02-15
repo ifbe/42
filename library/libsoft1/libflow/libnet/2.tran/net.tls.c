@@ -152,15 +152,20 @@ int tls_read_server_done(u8* buf, int len)
 
 int tls_read_client_keyexch(u8* buf, int len)
 {
-	return 0;
+	int j = (buf[3]<<8) + buf[4];
+	say("client keyexch\n");
+	return j+5;
 }
 int tls_read_client_cipherspec(u8* buf, int len)
 {
-	return 0;
+	say("client cipherspec\n");
+	return 6;
 }
 int tls_read_client_hellorequest(u8* buf, int len)
 {
-	return 0;
+	int j = (buf[3]<<8) + buf[4];
+	say("client hellorequest\n");
+	return j+5;
 }
 
 
@@ -192,50 +197,6 @@ int tls_read_both_data(u8* buf, int len)
 
 	//data
 	return len;
-}
-int tls_read(u64* p, u8* buf, u64 len)
-{
-	int ret;
-	say("tls{\n");
-
-	if(buf[0] == 0x17)
-	{
-		ret = tls_read_both_data(buf,len);
-	}
-	else if(buf[0] == 0x16)
-	{
-		if(buf[5] == 1)
-		{
-			ret = tls_read_client_hello(buf, len);
-		}
-		else if(buf[5] == 2)
-		{
-			ret = tls_read_server_hello(buf, len);
-			ret += tls_read_server_certificate(buf+ret, len);
-			ret += tls_read_server_keyexch(buf+ret, len);
-			ret += tls_read_server_done(buf+ret, len);
-		}
-		else if(buf[5] == 12)
-		{
-			ret = tls_read_client_keyexch(buf, len);
-			ret += tls_read_client_cipherspec(buf+ret, len);
-			ret += tls_read_client_hellorequest(buf+ret, len);
-		}
-		else if(0)
-		{
-			ret = tls_read_server_newsession(buf, len);
-			ret += tls_read_server_cipherspec(buf+ret, len);
-			ret += tls_read_server_encrypthandshake(buf+ret, len);
-		}
-	}
-	else
-	{
-		printmemory(buf, len);
-		ret = -1;
-	}
-
-	say("}tls\n");
-	return ret;
 }
 
 
@@ -564,15 +525,55 @@ int tls_write_client_hellorequest(u8* buf, int len)
 //4:	client <<<< server
 int tls_write_server_newsession(u8* buf, int len)
 {
-	return 0;
+	u8* p = buf + 9;
+
+	//pubkey
+	p[0] = 0;
+	p[1] = 0;
+	p[2] = 2;
+	p[3] = 0x58;
+	p[4] = 0;
+	p[5] = 0xb0;
+	p += 0xb0 + 6;
+
+	//5+4byte
+	len = p - buf;
+	buf[0] = 0x16;
+	buf[1] = buf[2] = 3;
+	buf[3] = ((len-5)>>8)&0xff;
+	buf[4] = (len-5)&0xff;
+
+	buf[5] = 4;
+	buf[6] = ((len-9)>>16)&0xff;
+	buf[7] = ((len-9)>>8)&0xff;
+	buf[8] = (len-9)&0xff;
+	return len;
 }
 int tls_write_server_cipherspec(u8* buf, int len)
 {
-	return 0;
+	buf[0] = 0x14;
+	buf[1] = 3;
+	buf[2] = 3;
+	buf[3] = 0;
+	buf[4] = 1;
+	buf[5] = 1;
+	return 6;
 }
 int tls_write_server_encrypthandshake(u8* buf, int len)
 {
-	return 0;
+	int j;
+	u8* p = buf + 5;
+
+	for(j=0;j<0x28;j++)p[j] = j;
+	p += 0x28;
+
+	len = p - buf;
+	buf[0] = 0x16;
+	buf[1] = buf[2] = 3;
+	buf[3] = ((len-5)>>8)&0xff;
+	buf[4] = (len-5)&0xff;
+
+	return len;
 }
 
 
@@ -583,9 +584,62 @@ int tls_write_both_data(u8* buf, int len)
 {
 	return 0;
 }
+
+
+
+
+int tls_read(u64* p, u8* buf, u64 len)
+{
+	int ret=0;
+	say("stage=%llx\n",p[1]);
+	say("tls{\n");
+
+	if(buf[0] == 0x17)
+	{
+		ret = tls_read_both_data(buf,len);
+		p[1] |= 0xf;
+	}
+	else if(buf[0] == 0x16)
+	{
+		if(buf[5] == 1)
+		{
+			ret = tls_read_client_hello(buf, len);
+			p[1] |= 1;
+		}
+		else if(buf[5] == 2)
+		{
+			ret = tls_read_server_hello(buf, len);
+			ret += tls_read_server_certificate(buf+ret, len);
+			ret += tls_read_server_keyexch(buf+ret, len);
+			ret += tls_read_server_done(buf+ret, len);
+		}
+		else if(buf[5] == 16)
+		{
+			ret = tls_read_client_keyexch(buf, len);
+			ret += tls_read_client_cipherspec(buf+ret, len);
+			ret += tls_read_client_hellorequest(buf+ret, len);
+			p[1] |= 2;
+		}
+		else if(0)
+		{
+			ret = tls_read_server_newsession(buf, len);
+			ret += tls_read_server_cipherspec(buf+ret, len);
+			ret += tls_read_server_encrypthandshake(buf+ret, len);
+		}
+	}
+	else
+	{
+		printmemory(buf, len);
+		ret = -1;
+	}
+
+	say("}tls\n");
+	return ret;
+}
 int tls_write(u64* p, u8* buf, u64 len)
 {
-	int ret = 1;
+	int ret = p[1]&0xf;
+	say("stage=%llx\n",p[1]);
 
 	if(ret == 0)
 	{
@@ -609,21 +663,19 @@ int tls_write(u64* p, u8* buf, u64 len)
 		ret = tls_write_server_newsession(buf, len);
 		ret += tls_write_server_cipherspec(buf+ret, len);
 		ret += tls_write_server_encrypthandshake(buf+ret, len);
+		printmemory(buf,ret);
+	}
+	else if(ret == 0xf)
+	{
+		ret = tls_write_both_data(buf, len);
 	}
 
 	return ret;
 }
-
-
-
-
 void tls_start()
 {
 	int j,fl;
 	u8 buf[0x2000];
-
-
-
 
 	//cert1,2,3......
 	fl = readfile("fullchain.pem", buf, 0, 0x2000);
@@ -644,9 +696,6 @@ void tls_start()
 	cert_second[2] = j&0xff;
 	say("cert2:\n");
 	printmemory(cert_second, j+3);
-
-
-
 
 	//private and modulus
 	j = readfile("privkey.pem", buf, 0, 0x2000);
