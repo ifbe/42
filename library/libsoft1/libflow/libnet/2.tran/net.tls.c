@@ -200,7 +200,7 @@ int tls_read(u64* p, u8* buf, u64 len)
 
 	if(buf[0] == 0x17)
 	{
-		return tls_read_both_data(buf,len);
+		ret = tls_read_both_data(buf,len);
 	}
 	else if(buf[0] == 0x16)
 	{
@@ -231,10 +231,11 @@ int tls_read(u64* p, u8* buf, u64 len)
 	else
 	{
 		printmemory(buf, len);
+		ret = -1;
 	}
 
 	say("}tls\n");
-	return 0;
+	return ret;
 }
 
 
@@ -325,7 +326,7 @@ int tls_write_server_hello(u8* buf, int len)
 
 	//extensions
 	p[0] = 0;
-	p[1] = 0x1a;
+	p[1] = 0x11;
 	p += 2;
 
 	//.ff01
@@ -353,18 +354,6 @@ int tls_write_server_hello(u8* buf, int len)
 	p[2] = 0;
 	p[3] = 0;
 	p += 4;
-
-	//.0010
-	p[0] = 0;
-	p[1] = 0x10;
-	p[2] = 0;
-	p[3] = 5;
-	p[4] = 0;
-	p[5] = 3;
-	p[6] = 2;
-	p[7] = 0x68;
-	p[8] = 0x32;
-	p += 9;
 
 	//5+4byte
 	len = p - buf;
@@ -456,6 +445,9 @@ int tls_write_server_keyexch(u8* buf, int len)
 	p += 2;
 /*
 	rsa2048(
+		//[173byte]padding
+		//0001fffffffffffffffff...ffffffff00
+
 		//[19byte]fixed header
 		3051300d 06096086 48016503 04020305 000440
 
@@ -471,24 +463,27 @@ int tls_write_server_keyexch(u8* buf, int len)
 	for(j=0;j<0x20;j++)p[0x00+j] = clientrandom[j];
 	for(j=0;j<0x20;j++)p[0x20+j] = serverrandom[j];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
-	say("combine:\n");
+	say("c+s+p:\n");
 	printmemory(p, 0x85);
 
-	//dst@[0x800,0x83f], src@[0,0x84]
-	sha512sum(p+0x800, p, 0x20+0x20+3+1+0x41);
-	say("sha512:\n");
-	printmemory(p+0x800, 64);
+	//dst@[0x10c0,0x10ff], src@[0,0x84]
+	p[0x1000] = 0;
+	p[0x1001] = 1;
+	for(j=0x1002;j<0x10ac;j++)p[j] = 0xff;
+	p[0x10ac] = 0;
+	for(j=0;j<19;j++)p[0x10ad+j] = fixed[j];
+	sha512sum(p+0x10c0, p, 0x20+0x20+3+1+0x41);
+
+	say("flag+sha512:\n");
+	printmemory(p+0x1000, 256);
 
 	//dst@[0x100,0x1ff], src@[0x1000,0x10ff]
-	for(j=0;j<64;j++)p[0x1000+j]=p[0x83f-j];
-	for(j=0;j<19;j++)p[0x1040+j]=fixed[18-j];
 	rsa2048(
-		p+0x100,      0x100,
-		p+0x1000,     64+19,
-		cert_private, 0x100,
-		cert_modulus, 0x100
+		p,            256,
+		p+0x1000,     256,
+		cert_private, 256,
+		cert_modulus, 256
 	);
-	for(j=0;j<0x100;j++)p[j]=p[0x1ff-j];
 	say("rsa2048:\n");
 	printmemory(p, 256);
 

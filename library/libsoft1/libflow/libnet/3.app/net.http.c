@@ -136,6 +136,8 @@ int serve_https(u64* p, u8* buf, int len)
 {
 	//tls >>>> ascii
 	len = tls_read(p, buf, len);
+	if(len < 0)goto error;
+/*
 	if(len > 0)
 	{
 		//ascii >>>> path
@@ -146,7 +148,7 @@ int serve_https(u64* p, u8* buf, int len)
 		len = http_write(buf, len);
 		if(len <= 0)goto error;
 	}
-
+*/
 	//bin >>>> tls
 	len = tls_write(p, buf, len);
 	if(len <= 0)goto error;
