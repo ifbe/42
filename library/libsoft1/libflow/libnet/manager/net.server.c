@@ -256,7 +256,7 @@ server:bit31=0, client:bit31=1
 	}
 
 	//vnc
-	else if(temp <= 0x7ff)
+	else if(temp <= 0x8ff)
 	{
 		//serve_vnc(&known[index], datahome, count);
 	}

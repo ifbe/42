@@ -343,7 +343,6 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset = secureshell_write_head(buf, offset);
 
 	//
-	secureshell_read(buf, offset);
 	return offset;
 }
 static int secureshell_write_0x1f(u8* buf, u64 len)
@@ -392,7 +391,6 @@ static int secureshell_write_0x1f(u8* buf, u64 len)
 	offset = secureshell_write_head(buf, offset);
 
 	//
-	secureshell_read(buf, offset);
 	return offset;
 }
 static int secureshell_write_0x15(u8* buf, u64 len)
@@ -426,7 +424,6 @@ static int secureshell_write_0x15(u8* buf, u64 len)
 	offset = secureshell_write_head(buf, offset);
 
 	//
-	//secureshell_read_0x1f(buf, offset);
 	return offset;
 }
 
