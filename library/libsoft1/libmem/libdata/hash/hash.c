@@ -22,31 +22,31 @@ static u8* datahome;
 
 
 //
-static int sec_list(u8* arg1)
+static int hash_list(u8* arg1)
 {
 	return 0;
 }
-static int sec_choose(u8* arg)
+static int hash_choose(u8* arg)
 {
 	return 0;
 }
-static int sec_read(u8* mem, u8* file, u64 addr, u64 count)
+static int hash_read(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int sec_write(u8* mem, u8* file, u64 addr, u64 count)
+static int hash_write(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int sec_start(u8* p)
+static int hash_start(u8* p)
 {
 	return 0;
 }
-static int sec_stop()
+static int hash_stop()
 {
 	return 0;
 }
-int sec_create(u8* softaddr,u64* p)
+int hash_create(u8* softaddr,u64* p)
 {
 	u8* q;
 
@@ -58,18 +58,18 @@ int sec_create(u8* softaddr,u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x636573;
+	p[1]=0x68736168;
 
-	p[10]=(u64)sec_start;
-	p[11]=(u64)sec_stop;
-	p[12]=(u64)sec_list;
-	p[13]=(u64)sec_choose;
-	p[14]=(u64)sec_read;
-	p[15]=(u64)sec_write;
+	p[10]=(u64)hash_start;
+	p[11]=(u64)hash_stop;
+	p[12]=(u64)hash_list;
+	p[13]=(u64)hash_choose;
+	p[14]=(u64)hash_read;
+	p[15]=(u64)hash_write;
 
 	return 0x80;
 }
-int sec_delete()
+int hash_delete()
 {
 	return 0;
 }

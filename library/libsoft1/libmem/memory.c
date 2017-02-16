@@ -3,14 +3,19 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int data_create(void*,void*);
-int data_delete();
+int crypt_create(void*,void*);
+int crypt_delete();
+int hash_create(void*,void*);
+int hash_delete();
+//
 int filesystem_create(void*,void*);
 int filesystem_delete();
-int sec_create(void*,void*);
-int sec_delete();
+//
 int text_create(void*,void*);
 int text_delete();
+//
+int tran_create(void*,void*);
+int tran_delete();
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
@@ -236,25 +241,31 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	q=(u8*)p+0x80;
 
-	data_create(softaddr, q);
+	crypt_create(softaddr, q);
+	q+=0x80;
+	hash_create(softaddr, q);
 	q+=0x80;
 
 	filesystem_create(softaddr, q);
 	q+=0x80;
 
-	sec_create(softaddr, q);
+	text_create(softaddr, q);
 	q+=0x80;
 
-	text_create(softaddr, q);
+	tran_create(softaddr, q);
 	q+=0x80;
 
 	return q-(u8*)p;
 }
 int memory_delete()
 {
-	data_delete();
+	crypt_delete();
+	hash_delete();
+
 	filesystem_delete();
-	sec_delete();
+
 	text_delete();
+
+	tran_delete();
 	return 0;
 }

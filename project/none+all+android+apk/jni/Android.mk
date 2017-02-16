@@ -119,52 +119,54 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.c \
 	library/libsoft1/libmem/libdata/codec/codec.avc.c \
 	library/libsoft1/libmem/libdata/codec/codec.hevc.c \
-	library/libsoft1/libmem/libdata/image/image.blur.c \
-	library/libsoft1/libmem/libdata/image/image.channel.c \
-	library/libsoft1/libmem/libdata/image/image.convert.c \
-	library/libsoft1/libmem/libdata/image/image.gray.c \
-	library/libsoft1/libmem/libdata/image/image.mosaic.c \
-	library/libsoft1/libmem/libdata/image/image.rotate.c \
-	library/libsoft1/libmem/libdata/image/image.scale.c \
-	library/libsoft1/libmem/libdata/data.c \
-	library/libsoft1/libmem/libfile/libav/1.tone/tone.drum.c \
-	library/libsoft1/libmem/libfile/libav/1.tone/tone.flute.c \
-	library/libsoft1/libmem/libfile/libav/1.tone/tone.piano.c \
-	library/libsoft1/libmem/libfile/libav/1.tone/tone.violin.c \
-	library/libsoft1/libmem/libfile/libav/2.picture/pic.jpg.c \
-	library/libsoft1/libmem/libfile/libav/2.picture/pic.png.c \
-	library/libsoft1/libmem/libfile/libfs/compress/compress.7z.c \
-	library/libsoft1/libmem/libfile/libfs/compress/compress.cpio.c \
-	library/libsoft1/libmem/libfile/libfs/compress/compress.gz.c \
-	library/libsoft1/libmem/libfile/libfs/compress/compress.tar.c \
-	library/libsoft1/libmem/libfile/libfs/compress/compress.zip.c \
-	library/libsoft1/libmem/libfile/libfs/diskimage/img.raw.c \
-	library/libsoft1/libmem/libfile/libfs/diskimage/img.vhd.c \
-	library/libsoft1/libmem/libfile/libfs/diskimage/img.vmdk.c \
-	library/libsoft1/libmem/libfile/libfs/executable/exec.elf.c \
-	library/libsoft1/libmem/libfile/libfs/executable/exec.macho.c \
-	library/libsoft1/libmem/libfile/libfs/executable/exec.pe.c \
-	library/libsoft1/libmem/libfile/libfs/filesystem/fs.ext.c \
-	library/libsoft1/libmem/libfile/libfs/filesystem/fs.fat.c \
-	library/libsoft1/libmem/libfile/libfs/filesystem/fs.hfs.c \
-	library/libsoft1/libmem/libfile/libfs/filesystem/fs.ntfs.c \
-	library/libsoft1/libmem/libfile/libfs/parttable/pt.apple.c \
-	library/libsoft1/libmem/libfile/libfs/parttable/pt.gpt.c \
-	library/libsoft1/libmem/libfile/libfs/parttable/pt.mbr.c \
-	library/libsoft1/libmem/libfile/file.c \
-	library/libsoft1/libmem/libsec/crypt/crypt.aes.c \
-	library/libsoft1/libmem/libsec/crypt/crypt.des.c \
-	library/libsoft1/libmem/libsec/crypt/crypt.rsa.c \
-	library/libsoft1/libmem/libsec/hash/hash.crc8.c \
-	library/libsoft1/libmem/libsec/hash/hash.crc16.c \
-	library/libsoft1/libmem/libsec/hash/hash.crc32.c \
-	library/libsoft1/libmem/libsec/hash/hash.md5.c \
-	library/libsoft1/libmem/libsec/hash/hash.sha1.c \
-	library/libsoft1/libmem/libsec/hash/hash.sha256.c \
-	library/libsoft1/libmem/libsec/hash/hash.sha512.c \
-	library/libsoft1/libmem/libsec/hash/hash.string.c \
-	library/libsoft1/libmem/libsec/qrcode.c \
-	library/libsoft1/libmem/libsec/sec.c \
+	library/libsoft1/libmem/libdata/codec/codec.c \
+	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
+	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
+	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
+	library/libsoft1/libmem/libdata/crypt/crypt.c \
+	library/libsoft1/libmem/libdata/photo/photo.blur.c \
+	library/libsoft1/libmem/libdata/photo/photo.channel.c \
+	library/libsoft1/libmem/libdata/photo/photo.convert.c \
+	library/libsoft1/libmem/libdata/photo/photo.gray.c \
+	library/libsoft1/libmem/libdata/photo/photo.mosaic.c \
+	library/libsoft1/libmem/libdata/photo/photo.rotate.c \
+	library/libsoft1/libmem/libdata/photo/photo.scale.c \
+	library/libsoft1/libmem/libdata/photo/photo.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
+	library/libsoft1/libmem/libdata/hash/hash.md5.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha1.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
+	library/libsoft1/libmem/libdata/hash/hash.string.c \
+	library/libsoft1/libmem/libdata/hash/hash.c \
+	library/libsoft1/libmem/libdata/qrcode.c \
+	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
+	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
+	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
+	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.violin.c \
+	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.jpg.c \
+	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.png.c \
+	library/libsoft1/libmem/libfmt/computer/compress/compress.7z.c \
+	library/libsoft1/libmem/libfmt/computer/compress/compress.cpio.c \
+	library/libsoft1/libmem/libfmt/computer/compress/compress.gz.c \
+	library/libsoft1/libmem/libfmt/computer/compress/compress.tar.c \
+	library/libsoft1/libmem/libfmt/computer/compress/compress.zip.c \
+	library/libsoft1/libmem/libfmt/computer/diskimage/img.raw.c \
+	library/libsoft1/libmem/libfmt/computer/diskimage/img.vhd.c \
+	library/libsoft1/libmem/libfmt/computer/diskimage/img.vmdk.c \
+	library/libsoft1/libmem/libfmt/computer/executable/exec.elf.c \
+	library/libsoft1/libmem/libfmt/computer/executable/exec.macho.c \
+	library/libsoft1/libmem/libfmt/computer/executable/exec.pe.c \
+	library/libsoft1/libmem/libfmt/computer/filesystem/fs.ext.c \
+	library/libsoft1/libmem/libfmt/computer/filesystem/fs.fat.c \
+	library/libsoft1/libmem/libfmt/computer/filesystem/fs.hfs.c \
+	library/libsoft1/libmem/libfmt/computer/filesystem/fs.ntfs.c \
+	library/libsoft1/libmem/libfmt/computer/parttable/pt.apple.c \
+	library/libsoft1/libmem/libfmt/computer/parttable/pt.gpt.c \
+	library/libsoft1/libmem/libfmt/computer/parttable/pt.mbr.c \
+	library/libsoft1/libmem/libfmt/file.c \
 	library/libsoft1/libmem/libtext/conv/conv.arg.c \
 	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
 	library/libsoft1/libmem/libtext/conv/conv.base64.c \
@@ -185,6 +187,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libtext/sort/sort.gnome.c \
 	library/libsoft1/libmem/libtext/sort/sort.quick.c \
 	library/libsoft1/libmem/libtext/text.c \
+	library/libsoft1/libmem/libtran/assembly/asm.x64.c \
+	library/libsoft1/libmem/libtran/assembly/asm.arm64.c \
+	library/libsoft1/libmem/libtran/program/prog.purec.c \
+	library/libsoft1/libmem/libtran/program/prog.cpp.c \
+	library/libsoft1/libmem/libtran/tran.c \
 	library/libsoft1/libmem/memory.c \
 	library/libsoft1/libphys/physics.electrical.c \
 	library/libsoft1/libphys/physics.mechanics.c \

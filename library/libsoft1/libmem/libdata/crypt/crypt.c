@@ -6,11 +6,6 @@
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
 //
-int startfile(u8*);
-int stopfile(u8*);
-int readfile(u8*,u8*,u64,u64);
-int writefile(u8*,u8*,u64,u64);
-//
 int printmemory(void* addr, int count);
 int say(void* str, ...);
 
@@ -27,31 +22,31 @@ static u8* datahome;
 
 
 //
-static int data_list(u8* arg1)
+static int crypt_list(u8* arg1)
 {
 	return 0;
 }
-static int data_choose(u8* arg)
+static int crypt_choose(u8* arg)
 {
 	return 0;
 }
-static int data_read(u8* mem, u8* file, u64 addr, u64 count)
+static int crypt_read(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int data_write(u8* mem, u8* file, u64 addr, u64 count)
+static int crypt_write(u8* mem, u8* file, u64 addr, u64 count)
 {
 	return 0;
 }
-static int data_start(u8* p)
+static int crypt_start(u8* p)
 {
 	return 0;
 }
-static int data_stop()
+static int crypt_stop()
 {
 	return 0;
 }
-int data_create(u8* softaddr,u64* p)
+int crypt_create(u8* softaddr,u64* p)
 {
 	u8* q;
 
@@ -63,18 +58,18 @@ int data_create(u8* softaddr,u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x61746164;
+	p[1]=0x7470797263;
 
-	p[10]=(u64)data_start;
-	p[11]=(u64)data_stop;
-	p[12]=(u64)data_list;
-	p[13]=(u64)data_choose;
-	p[14]=(u64)data_read;
-	p[15]=(u64)data_write;
+	p[10]=(u64)crypt_start;
+	p[11]=(u64)crypt_stop;
+	p[12]=(u64)crypt_list;
+	p[13]=(u64)crypt_choose;
+	p[14]=(u64)crypt_read;
+	p[15]=(u64)crypt_write;
 
 	return 0x80;
 }
-int data_delete()
+int crypt_delete()
 {
 	return 0;
 }
