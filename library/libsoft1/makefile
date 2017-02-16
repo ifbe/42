@@ -106,6 +106,7 @@ target:
 	$(compiler) $(cflag) libmem/libtext/move/move.swap.c
 	$(compiler) $(cflag) libmem/libtext/sort/sort.gnome.c
 	$(compiler) $(cflag) libmem/libtext/sort/sort.quick.c
+	$(compiler) $(cflag) libmem/libtext/text.c
 	$(compiler) $(cflag) libmem/libtran/assembly/asm.x64.c
 	$(compiler) $(cflag) libmem/libtran/assembly/asm.arm.c
 	$(compiler) $(cflag) libmem/libtran/program/prog.purec.c
