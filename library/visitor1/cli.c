@@ -47,6 +47,10 @@ int main(int argc,char* argv[])
                 //[+18,+1f]height
                 for(ret=0;ret<max;ret++)
                 {
+			//skip whom doesn't want
+			if(list.flag != waiting)continue;
+
+			//show whom want it
                         characterread(list + ret*0x20);
                         windowwrite(  list + ret*0x20);
                 }
@@ -66,20 +70,24 @@ again:
 
 
 		//3.pre change
-		if((addr[1]&0xff) == 'p')	//touch
+		if((addr[1]&0xff) == 'p')
 		{
+			//sensor rawdata -> my event
 			motion_explain(addr);
 		}
-		else if((addr[1]&0xff) == 'n')	//net
+		else if((addr[1]&0xff) == 'n')
 		{
+			//network rawdata -> my event
 			network_explain(addr);
 		}
-		else if((addr[1]&0xff) == 's')	//sound
+		else if((addr[1]&0xff) == 's')
 		{
+			//sound rawdata -> my event
 			sound_explain(addr);
 		}
-		else if((addr[1]&0xff) == 'v')	//vision
+		else if((addr[1]&0xff) == 'v')
 		{
+			//vision rawdata -> my event
 			vision_explain(addr);
 		}
 		if(addr[1] != 0x64626b)goto again;
