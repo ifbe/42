@@ -36,7 +36,7 @@ a:
 	$(library)/libui1/*.o \
 	$(library)/visitor0/*.o
 dll:
-	gcc -shared -o 42.dll \
+	g++ -shared -o 42.dll \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -49,9 +49,9 @@ dll:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid -lws2_32
+	-lshell32 -lversion -luuid -lws2_32 -lstrmiids
 program:
-	gcc -mwindows \
+	g++ \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -66,6 +66,6 @@ program:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid -lws2_32
+	-lshell32 -lversion -luuid -lws2_32 -lstrmiids
 clean:
 	rm -f *.o *.a *.so
