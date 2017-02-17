@@ -4,7 +4,6 @@
 #include<errno.h>
 #include<fcntl.h>
 #include<unistd.h>
-#include<pthread.h>
 #include<signal.h>
 #include<arpa/inet.h>
 #include<linux/if_ether.h>
@@ -20,6 +19,10 @@
 #define u64 unsigned long long
 int selfname(u64, void*);
 int peername(u64, void*);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -28,7 +31,7 @@ void say(void*, ...);
 
 //
 static int alive = 0;
-static pthread_t id;
+static u64 thread;
 //
 static int st = 0;
 static int fd = 0;
@@ -214,7 +217,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 
 	//thread
 	alive = 1;
-	pthread_create(&id, NULL, readclient, NULL);
+	thread = startthread(readclient, 0);
 
 	//success
 	return 1;

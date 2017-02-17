@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <alsa/asoundlib.h>
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -14,7 +18,7 @@ void say(void*, ...);
 
 
 //
-static pthread_t id;
+static u64 thread;
 static int alive = 1;
 static int freq;
 static int channel;
@@ -250,7 +254,7 @@ int startsound(unsigned int rate, int ch, u8* buf, int max)
 
 	//thread
 	alive = 1;
-	pthread_create(&id, NULL, soundlistener, NULL);
+	thread = startthread(soundlistener, 0);
 	return 1;
 }
 void stopsound()

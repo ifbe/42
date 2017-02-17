@@ -2,13 +2,16 @@
 #include<stdlib.h>
 #include<string.h>
 #include<unistd.h>
-#include<pthread.h>
 #include<X11/Xlib.h>
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
 
 
 
@@ -57,7 +60,7 @@ static Visual *visual=0;
 struct abcd
 {
 	//lib
-	pthread_t id;
+	u64 thread;
 	Window win;
 	GC gc;
 	Atom wmDelete;
@@ -244,7 +247,6 @@ void windowwrite()
 }
 void windowstart(char* addr, char* fmt, int x, int y)
 {
-	//wait for pthread inited
 	haha[0].width = x;
 	haha[0].height = y;
 	haha[0].pixbuf = addr;
@@ -255,7 +257,7 @@ void windowstart(char* addr, char* fmt, int x, int y)
 		32, 0
 	);
 
-	pthread_create(&haha[0].id, NULL, uievent, NULL);
+	haha[0].thread = startthread(uievent, 0);
 }
 void windowstop()
 {

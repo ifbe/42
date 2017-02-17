@@ -5,16 +5,20 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
-#include<pthread.h>
-#include <gtk/gtk.h>
+#include<gtk/gtk.h>
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void say(char*,...);
 
 
 
 
 //
-static pthread_t id;
+static u64 thread;
 
 
 
@@ -68,7 +72,7 @@ void windowstop()
 }
 void windowcreate()
 {
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

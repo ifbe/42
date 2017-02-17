@@ -9,19 +9,23 @@
 #include <sys/mman.h>
 #include <errno.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <wayland-client.h>
 #include <wayland-client-protocol.h>
 #include <wayland-server-protocol.h>
 #include <wayland-egl.h>
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void say(char*,...);
 
 
 
 
 //
-static pthread_t id;
+static u64 thread;
 //display
 static struct wl_display *display = NULL;
 static struct wl_registry *registry = NULL;
@@ -358,7 +362,7 @@ void* uievent(void* p)
 }
 void windowcreate()
 {
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

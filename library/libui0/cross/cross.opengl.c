@@ -4,8 +4,11 @@
 #define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
-#include<pthread.h>
 #include<GL/glut.h> 
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
@@ -13,7 +16,7 @@ void say(char*,...);
 
 
 //
-static pthread_t id;
+static u64 thread;
 static int rotate_x=0,rotate_y=0;
 
 
@@ -142,7 +145,7 @@ void* uievent(void* p)
 }
 void windowcreate()
 {
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

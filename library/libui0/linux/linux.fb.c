@@ -7,16 +7,19 @@
 #include<stdio.h>		//	printf
 #include<stdlib.h>		//	malloc
 #include<termios.h>		//	termios,getchar
-#include<pthread.h>
 #include<sys/ioctl.h>		//	ioctl
 #include<linux/fb.h>		//	framebuffer
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
 
 
 
 
 //输入
-static pthread_t id;
+static u64 thread;
 static int signal=-1;
 static struct termios old;
 static struct termios new;
@@ -226,7 +229,7 @@ void windowcreate()
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
 	//
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 //__attribute__((destructor)) void destoryfb()
 void windowdelete()

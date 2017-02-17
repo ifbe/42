@@ -6,14 +6,16 @@
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
+u64 startthread(void*, void*);
+void stopthread();
 void say(char*,...);
 
 
 
 //
 static int alive=0;
+static u64 thread=0;
 static HANDLE hcom=0;
-static HANDLE thread=0;
 
 
 
@@ -157,7 +159,7 @@ int systemuart_choose(char* p, int speed)
 
 	//
 	alive = 1;
-	thread = CreateThread(NULL, 0, systemuart_read, NULL, 0, NULL);
+	thread = startthread(systemuart_read, 0);
 
 	//success
 	return 1;

@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<pthread.h>
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_video.h>
 #undef main
@@ -9,12 +8,15 @@
 #define u16 unsigned short
 #define u8 unsigned char
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
 
 
 
 
 //
-static pthread_t id;
+static u64 thread;
 static u32* mypixel;
 static int width=1024;
 static int height=768;
@@ -92,7 +94,7 @@ void windowcreate()
 {
 	//准备sdl
 	SDL_Init(SDL_INIT_EVERYTHING);
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {
@@ -132,9 +134,9 @@ void windowread(char* p)
 }
 void windowwrite()
 {
-  //画texture？
-  SDL_UpdateTexture(texture, NULL, mypixel, width*4);
-  SDL_RenderClear(renderer);
-  SDL_RenderCopy(renderer, texture, NULL, NULL);
-  SDL_RenderPresent(renderer);
+	//画texture？
+	SDL_UpdateTexture(texture, NULL, mypixel, width*4);
+	SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	SDL_RenderPresent(renderer);
 }

@@ -6,13 +6,15 @@
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
+u64 startthread(void*, void*);
+void stopthread();
 
 
 
 
 //
 static int alive=0;
-static HANDLE thread=0;
+static u64 thread=0;
 //
 static char IPADDRESS[32];
 static int PORT;
@@ -79,7 +81,7 @@ int startserver(char* addr, int port, char* dir, int opt)
 {
 	//
 	alive = 1;
-	thread = CreateThread(NULL, 0, newone, NULL, 0, NULL);
+	thread = startthread(newone, 0);
 
 	//
 	return 0;

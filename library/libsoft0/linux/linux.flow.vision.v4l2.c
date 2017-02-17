@@ -4,7 +4,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <sys/epoll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -13,7 +12,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -29,7 +33,7 @@ static struct buffer{
 	int status;
 }my[24];
 //
-static pthread_t id;
+static u64 thread;
 static int alive = 1;
 
 
@@ -217,7 +221,7 @@ void* visionlistener(void* p)
 int startvision()
 {
 	alive = 1;
-	pthread_create(&id, NULL, visionlistener, NULL);
+	thread = startthread(visionlistener, 0);
 	return 1;
 }
 void stopvision()

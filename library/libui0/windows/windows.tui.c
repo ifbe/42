@@ -5,13 +5,17 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void eventwrite(u64,u64,u64,u64);
 
 
 
 
 //
-static HANDLE thread=0;
+static u64 thread=0;
 static HANDLE output;
 //
 static int lastwidth=0,lastheight=0;
@@ -184,7 +188,7 @@ void windowcreate()
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-	thread = CreateThread(NULL, 0, uievent, NULL, 0, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

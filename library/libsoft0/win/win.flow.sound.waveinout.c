@@ -5,6 +5,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
 void printmemory(void*, int);
 
 
@@ -12,7 +15,7 @@ void printmemory(void*, int);
 
 //
 static int alive=0;
-static HANDLE thread=0;
+static u64 thread=0;
 static char* buffer;
 //
 static int freq;
@@ -114,7 +117,7 @@ void startsound(unsigned int ra, int ch, void* buf, int max)
 
 	//
 	alive = 1;
-	thread = CreateThread(NULL, 0, soundlistener, NULL, 0, NULL);
+	thread = startthread(soundlistener, 0);
 }
 void stopsound()
 {

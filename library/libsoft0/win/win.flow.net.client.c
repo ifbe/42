@@ -10,6 +10,10 @@
 #define u64 unsigned long long
 int selfname(u64, void*);
 int peername(u64, void*);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void printmemory(char*, ...);
 void say(char* , ...);
 
@@ -18,7 +22,7 @@ void say(char* , ...);
 
 //
 static int alive = 0;
-static HANDLE thread=0;
+static u64 thread=0;
 static SOCKET sclient = 0;
 //
 static int st = 0;
@@ -237,7 +241,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 
 	//thread
 	alive = 1;
-	thread = CreateThread(NULL, 0, readclient, NULL, 0, NULL);
+	thread = startthread(readclient, 0);
 
 	//success
 	return 1;

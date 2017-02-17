@@ -18,6 +18,10 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void windowwrite();
 void eventwrite(u64,u64,u64,u64);
 void say(char* fmt,...);
@@ -26,7 +30,7 @@ void say(char* fmt,...);
 
 
 //window
-static HANDLE thread=0;
+static u64 thread=0;
 static HWND consolewindow;		//console window
 static HWND window;				//my window
 static HDC realdc;
@@ -673,7 +677,7 @@ void windowcreate()
 	for(x=0;x<10;x++)pointerid[x] = -1;
 
 	//
-	thread = CreateThread(NULL, 0, uievent, NULL, 0, NULL);
+	thread = startthread(uievent, 0);
 }
 //__attribute__((destructor)) void destorysdl()
 void windowdelete()

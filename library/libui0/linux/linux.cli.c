@@ -7,10 +7,14 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
-#include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void say(char*,...);
 
 
@@ -18,7 +22,7 @@ void say(char*,...);
 
 //
 static int mode = 0;
-static pthread_t id;
+static u64 thread;
 
 
 
@@ -110,7 +114,7 @@ void windowstop()
 void windowcreate()
 {
 	windowchange(1);
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

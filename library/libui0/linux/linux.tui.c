@@ -8,10 +8,14 @@
 #include<unistd.h>
 #include<termios.h>
 #include<signal.h>
-#include<pthread.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void say(char*,...);
 
 
@@ -27,7 +31,7 @@ static struct termios old;
 static struct termios new;
 //
 static u8* textbuf=0;
-static pthread_t id;
+static u64 thread;
 
 
 
@@ -207,7 +211,7 @@ void windowcreate()
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
 	//
-	pthread_create(&id, NULL, uievent, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

@@ -5,6 +5,10 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+//
+u64 startthread(void*, void*);
+void stopthread();
+//
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
@@ -12,7 +16,7 @@ void say(char*,...);
 
 
 //
-static HANDLE thread=0;
+static u64 thread=0;
 
 
 
@@ -76,7 +80,7 @@ void windowstop()
 }
 void windowcreate()
 {
-	thread = CreateThread(NULL, 0, uievent, NULL, 0, NULL);
+	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

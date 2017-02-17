@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -17,7 +16,10 @@
 #define u8 unsigned char
 //
 void eventwrite(u64,u64,u64,u64);
+//
 u64 gettime();
+u64 startthread(void*, void*);
+void stopthread();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -32,7 +34,7 @@ static int waiting[256];
 static int enq = 0;
 static int deq = 0;
 //
-static pthread_t id;
+static u64 thread;
 static int alive = 0;
 //
 static int listenfd=-1;
@@ -249,7 +251,7 @@ void startserver(char* addr, int port, char* dir, int opt)
 
 	//
 	alive = 1;
-	pthread_create(&id, NULL, newone, NULL);
+	thread = startthread(newone, 0);
 }
 void deleteserver(int num)
 {

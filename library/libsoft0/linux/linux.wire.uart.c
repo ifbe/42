@@ -5,11 +5,13 @@
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
-#include<pthread.h>
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+u64 startthread(void*, void*);
+void stopthread();
+//
 u64 gettime();
 void say(char*,...);
 
@@ -18,7 +20,7 @@ void say(char*,...);
 
 //
 static int alive = 1;
-static pthread_t id;
+static u64 thread;
 //
 static int fd = -1;
 
@@ -96,7 +98,7 @@ int systemuart_choose(char* p, int speed)
 
 	//thread
 	alive = 1;
-	pthread_create(&id, NULL, systemuart_read, NULL);
+	thread = startthread(systemuart_read, 0);
 
 	//success
 	return 1;
