@@ -137,6 +137,7 @@ static struct working
 	int (*write)(void* where, void* who, void* what);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
+static u8* mega0;
 static u8* mega1;
 static u8* mega2;
 static u8* mega3;
@@ -152,16 +153,15 @@ void charactercreate(u8* type, u8* addr)
 	if(type!=0)return;
 
 	//where
-	worker=(struct working*)addr;
+	mega0=addr+0x000000;
 	mega1=addr+0x100000;
 	mega2=addr+0x200000;
 	mega3=addr+0x300000;
-
-	//clean [0,0x7ffff]
-	for(i=0;i<0x80000;i++)addr[i]=0;
+	for(i=0;i<0x100000;i++)mega1[i]=0;
 
 	//......
-	temp=addr;
+	worker=(struct working*)mega1;
+	temp=mega1;
 
 	//menu.center
 	menu_create(addr,temp);

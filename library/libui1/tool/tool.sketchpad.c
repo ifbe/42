@@ -479,8 +479,8 @@ void sketchpad_create(void* base,void* addr)
 	this[14]=(u64)sketchpad_read;
 	this[15]=(u64)sketchpad_write;
 
-	node=(struct mathnode*)(base+0x100000);
-	databuf=base+0x200000;
+	node=(struct mathnode*)(base+0x200000);
+	databuf=base+0x300000;
 }
 void sketchpad_delete()
 {

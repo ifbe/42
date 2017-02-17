@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void windowcreate();
+void windowcreate(void* list);
 void windowdelete();
 void say(void*,...);
 
@@ -33,7 +33,7 @@ void displaycreate(u8* type, u8* addr)
 	for(j=0;j<0x100000;j++)mega0[j]=0;
 
 	//
-	windowcreate();
+	windowcreate(mega0);
 
 	//
 	say("[c,f):createed display\n");

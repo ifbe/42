@@ -641,7 +641,7 @@ void hex_create(void* uibuf,void* addr)
 	this[14]=(u64)hex_read;
 	this[15]=(u64)hex_write;
 
-	databuf = uibuf;
+	databuf = uibuf + 0x300000;
 }
 void hex_delete()
 {
