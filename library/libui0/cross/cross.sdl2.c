@@ -7,10 +7,14 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+u64* eventread();
 void eventwrite(u64,u64,u64,u64);
 //
 u64 startthread(void*, void*);
 void stopthread();
+//
+void sleep_us(int);
+void say(void*, ...);
 
 
 
@@ -40,6 +44,23 @@ static SDL_TimerID my_timer_id;
 void* uievent(void* p)
 {
 	SDL_Event event;
+
+	//
+	window =SDL_CreateWindow("i am groot!",
+				SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED,
+				width,height,
+				SDL_WINDOW_OPENGL);
+
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	texture = SDL_CreateTexture(renderer,
+				SDL_PIXELFORMAT_ARGB8888,
+				SDL_TEXTUREACCESS_STREAMING,
+				width,height);
+	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	//SDL_RenderClear(renderer);
+	//SDL_RenderPresent(renderer);
+
 	while(1)
 	{
 		if(!SDL_WaitEvent(&event))continue;
@@ -94,7 +115,6 @@ void windowcreate()
 {
 	//准备sdl
 	SDL_Init(SDL_INIT_EVERYTHING);
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {
@@ -106,21 +126,8 @@ void windowstart(char* addr, char* pixfmt, int x, int y)
 	width = x;
 	height = y;
 
-	//
-	window=SDL_CreateWindow("i am groot!",
-				SDL_WINDOWPOS_UNDEFINED,
-				SDL_WINDOWPOS_UNDEFINED,
-				width,height,
-				SDL_WINDOW_OPENGL);
-
-	renderer= SDL_CreateRenderer(window, -1, 0);
-	texture= SDL_CreateTexture(renderer,
-				SDL_PIXELFORMAT_ARGB8888,
-				SDL_TEXTUREACCESS_STREAMING,
-				width,height);
-	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	//SDL_RenderClear(renderer);
-	//SDL_RenderPresent(renderer);
+	thread = startthread(uievent, 0);
+	sleep_us(50*1000);
 }
 void windowstop()
 {
