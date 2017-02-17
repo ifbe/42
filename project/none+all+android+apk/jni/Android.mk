@@ -58,8 +58,9 @@ LOCAL_SRC_FILES += \
 
 #3.soft0
 LOCAL_SRC_FILES += \
-	library/libsoft0/android/android.flow.sound.c \
-	library/libsoft0/android/android.flow.vision.c \
+	library/libsoft0/android/android.flow.motion.sensor.c \
+	library/libsoft0/android/android.flow.sound.audiotrack.c \
+	library/libsoft0/android/android.flow.vision.qcamera2.c \
 	library/libsoft0/linux/linux.flow.net.client.c \
 	library/libsoft0/linux/linux.flow.net.server.c \
 	library/libsoft0/linux/linux.memory.file.c \
