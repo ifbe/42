@@ -25,10 +25,9 @@ static u32* mypixel;
 static int width=1024;
 static int height=768;
 //sdl
-static SDL_Window* window;//窗口
-static SDL_Renderer* renderer;	//什么是render
-static SDL_Texture* texture;		//texture是在显存里的？
-static SDL_TimerID my_timer_id;
+static SDL_Window* window;
+static SDL_Renderer* renderer;
+static SDL_Texture* texture;
 
 
 
@@ -70,6 +69,13 @@ void* uievent(void* p)
 			eventwrite(0,0,0,0);
 			break;
 		}
+		else if(event.type == SDL_USEREVENT)
+		{
+			SDL_UpdateTexture(texture, NULL, mypixel, width*4);
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, texture, NULL, NULL);
+			SDL_RenderPresent(renderer);
+		}
 		else if (event.type == SDL_KEYDOWN)
 		{
 			int val = event.key.keysym.sym;
@@ -81,6 +87,7 @@ void* uievent(void* p)
 			else if(val==0x40000051)eventwrite(0x28,0x64626b,0,0);
 			else if(val==0x8)eventwrite(0x8,0x72616863,0,0);
 			else if(val==0xd)eventwrite(0xd,0x72616863,0,0);
+			else eventwrite(val, 0x72616863, 0, 0);
 		}
 		else if (event.type == SDL_TEXTINPUT)
 		{
@@ -141,9 +148,7 @@ void windowread(char* p)
 }
 void windowwrite()
 {
-	//画texture？
-	SDL_UpdateTexture(texture, NULL, mypixel, width*4);
-	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
-	SDL_RenderPresent(renderer);
+	SDL_Event event;  
+	event.type = SDL_USEREVENT;  
+	SDL_PushEvent(&event);
 }
