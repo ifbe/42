@@ -45,11 +45,9 @@ void systemcreate(u8* type, u8* addr)
 	mega3=addr+0x300000;
 
 	//clean [0x80000,0xfffff]
-	for(j=0x80000;j<0x100000;j++)addr[j]=0;
+	for(j=0;j<0x100000;j++)mega0[j]=0;
 
 	//
-	createfile();
-	createfolder();
 	createrandom();
 	createsignal();
 
@@ -64,6 +62,4 @@ void systemdelete()
 	//
 	deletesignal();
 	deleterandom();
-	deletefolder();
-	deletefile();
 }

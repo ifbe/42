@@ -77,25 +77,25 @@ linuxsdl:
 .PHONY:maccli
 maccli:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.cli.c
+	$(compiler) $(cflag) macos/macos.cli.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:mactui
 mactui:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.tui.c
+	$(compiler) $(cflag) macos/macos.tui.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:maccocoa
 maccocoa:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.cocoa.c
+	$(compiler) $(cflag) macos/macos.cocoa.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:macquartz
 macquartz:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.cocoa.c
+	$(compiler) $(cflag) macos/macos.quartz.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:macgl
@@ -118,19 +118,19 @@ macsdl:
 .PHONY:wincli
 wincli:
 	rm -f *.o
-	$(compiler) $(cflag) win/win.cli.c
+	$(compiler) $(cflag) windows/win.cli.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:wintui
 wintui:
 	rm -f *.o
-	$(compiler) $(cflag) win/win.tui.c
+	$(compiler) $(cflag) windows/win.tui.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:winapi
 winapi:
 	rm -f *.o
-	$(compiler) $(cflag) win/win.api.c
+	$(compiler) $(cflag) windows/win.api.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:wingl

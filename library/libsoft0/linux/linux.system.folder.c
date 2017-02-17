@@ -78,7 +78,6 @@ void deletefolder()
 }
 void createfolder()
 {
-	startfolder(".");
 }
 
 
