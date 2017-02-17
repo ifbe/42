@@ -118,19 +118,19 @@ macsdl:
 .PHONY:wincli
 wincli:
 	rm -f *.o
-	$(compiler) $(cflag) windows/win.cli.c
+	$(compiler) $(cflag) windows/windows.cli.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:wintui
 wintui:
 	rm -f *.o
-	$(compiler) $(cflag) windows/win.tui.c
+	$(compiler) $(cflag) windows/windows.tui.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:winapi
 winapi:
 	rm -f *.o
-	$(compiler) $(cflag) windows/win.api.c
+	$(compiler) $(cflag) windows/windows.api.c
 	$(compiler) $(cflag) display.c
 
 .PHONY:wingl
