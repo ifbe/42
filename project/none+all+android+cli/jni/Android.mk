@@ -79,13 +79,14 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.flow.net.client.c \
 	library/libsoft0/linux/linux.flow.net.server.c \
 	library/libsoft0/linux/linux.memory.file.c \
+	library/libsoft0/linux/linux.memory.folder.c \
 	library/libsoft0/linux/linux.memory.physical.c \
 	library/libsoft0/linux/linux.memory.virtual.c \
-	library/libsoft0/linux/linux.system.folder.c \
 	library/libsoft0/linux/linux.system.process.c \
 	library/libsoft0/linux/linux.system.random.c \
 	library/libsoft0/linux/linux.system.signal.c \
 	library/libsoft0/linux/linux.system.time.c \
+	library/libsoft0/linux/linux.system.thread.c \
 	library/libsoft0/linux/linux.wire.bt.c \
 	library/libsoft0/linux/linux.wire.gpio.c \
 	library/libsoft0/linux/linux.wire.i2c.c \
