@@ -51,7 +51,7 @@ dll:
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
 	-lshell32 -lversion -luuid -lws2_32 -lstrmiids
 program:
-	g++ \
+	g++ -mwindows \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

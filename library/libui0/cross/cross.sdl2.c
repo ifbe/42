@@ -79,6 +79,7 @@ void* uievent(void* p)
 		else if (event.type == SDL_KEYDOWN)
 		{
 			int val = event.key.keysym.sym;
+			//say("val=%x\n",val);
 
 			if(val==0x1b)eventwrite(0x1b,0x64626b,0,0);
 			else if(val==0x40000050)eventwrite(0x25,0x64626b,0,0);
@@ -87,13 +88,15 @@ void* uievent(void* p)
 			else if(val==0x40000051)eventwrite(0x28,0x64626b,0,0);
 			else if(val==0x8)eventwrite(0x8,0x72616863,0,0);
 			else if(val==0xd)eventwrite(0xd,0x72616863,0,0);
-			else eventwrite(val, 0x72616863, 0, 0);
+			else if((val>=0x20)&&(val<=0x7e))eventwrite(val, 0x72616863, 0, 0);
 		}
+/*
 		else if (event.type == SDL_TEXTINPUT)
 		{
 			int val = event.text.text[0];
-			eventwrite(val, 0x72616863, 0, 0);
+			if((val>=0x20)&&(val<=0x7e))eventwrite(val, 0x72616863, 0, 0);
 		}
+*/
 		else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
 		{
 			if(event.button.button=SDL_BUTTON_LEFT)
@@ -118,27 +121,6 @@ void* uievent(void* p)
 
 
 
-void windowcreate()
-{
-	//准备sdl
-	SDL_Init(SDL_INIT_EVERYTHING);
-}
-void windowdelete()
-{
-}
-void windowstart(char* addr, char* pixfmt, int x, int y)
-{
-	//准备rgb点阵
-	mypixel = (unsigned int*)addr;
-	width = x;
-	height = y;
-
-	thread = startthread(uievent, 0);
-	sleep_us(50*1000);
-}
-void windowstop()
-{
-}
 
 
 
@@ -151,4 +133,31 @@ void windowwrite()
 	SDL_Event event;  
 	event.type = SDL_USEREVENT;  
 	SDL_PushEvent(&event);
+}
+void windowlist()
+{
+}
+void windowchoose()
+{
+}
+void windowstop()
+{
+}
+void windowstart(char* addr, char* pixfmt, int x, int y)
+{
+	//准备rgb点阵
+	mypixel = (unsigned int*)addr;
+	width = x;
+	height = y;
+
+	thread = startthread(uievent, 0);
+	sleep_us(50*1000);
+}
+void windowdelete()
+{
+}
+void windowcreate()
+{
+	//准备sdl
+	SDL_Init(SDL_INIT_EVERYTHING);
 }
