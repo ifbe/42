@@ -18,11 +18,13 @@ void say(char*,...);
 //
 static int refresh=0;
 static u64 thread;
+static GLuint texture[1];
+static int last_x=0,last_y=0;
+static int rotate_x=-5,rotate_y=5;
+//
+static void* pData;
 static int width;
 static int height;
-static void* pData;
-static GLuint texture[1];
-static int rotate_x=-5,rotate_y=5;
 
 
 
@@ -128,15 +130,25 @@ void callback_special(int key, int x, int y)
 	else if (key == GLUT_KEY_UP){eventwrite(0x26,0x64626b,0,0);}
 	else if (key == GLUT_KEY_RIGHT){eventwrite(0x27,0x64626b,0,0);}
 	else if (key == GLUT_KEY_DOWN){eventwrite(0x28,0x64626b,0,0);}
-	//glutPostRedisplay();
 }
 void callback_mouse(int button, int state, int x, int y)
 {
-	if(state==GLUT_DOWN)rotate_x += 5;
+	if(state==GLUT_DOWN)
+	{
+		last_x = x;
+		last_y = y;
+	}
 }
 void callback_move(int x,int y)
 {
-	rotate_y += 1;
+	if(x>last_x)rotate_y -= 1;
+	if(x<last_x)rotate_y += 1;
+	if(y>last_y)rotate_x -= 1;
+	if(y<last_y)rotate_x += 1;
+
+	last_x = x;
+	last_y = y;
+	glutPostRedisplay();
 }
 void* uievent(void* p)
 {
