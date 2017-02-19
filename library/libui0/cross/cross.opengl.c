@@ -5,9 +5,13 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<GL/glut.h> 
+#define PI 3.141592653
 //
 u64 startthread(void*, void*);
 void stopthread();
+//
+double cosine(double);
+double sine(double);
 //
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
@@ -19,19 +23,50 @@ void say(char*,...);
 static int refresh=0;
 static u64 thread;
 static GLuint texture[1];
-static int last_x=0,last_y=0;
-static int rotate_x=-5,rotate_y=5;
 //
 static void* pData;
 static int width;
 static int height;
+//
+static int last_x=0;
+static int last_y=0;
+//
+static float camera_pitch = PI/4;
+static float camera_yaw = 0.0;
+static float camera_roll = 0.0;
+static float camera_zoom = 2.0;
+//
+static float object_pitch = 0.0;
+static float object_yaw = 0.0;
+static float object_roll = 0.0;
+static float object_zoom = 1.0;
 
 
 
 void callback_display()
 {
+	float ex,ey,ez, ux,uy,uz;
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//glClearColor//清除颜色  
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//camera rotate
+	ex = 0;
+	ey = -camera_zoom*cosine(camera_pitch);
+	ez = camera_zoom*sine(camera_pitch);
+	ux = 0;
+	uy = sine(camera_pitch);
+	uz = cosine(camera_pitch);
+	gluPerspective(45.0, 1.0, 0.1, 100.0);
+	gluLookAt(
+		ex, ey, ez,
+		 0,  0,  0,
+		ux, uy, uz
+	);
+
+	//thing rotate
+	//glRotatef( rotate_x, 1.0, 0.0, 0.0 );
+	//glRotatef( rotate_y, 0.0, 1.0, 0.0 );
 
 	glDisable(GL_TEXTURE_2D);
 	//1
@@ -73,10 +108,10 @@ void callback_display()
 	//5
 	glBegin(GL_QUADS);
 	glColor3f(   0.5,  0.0, 0.5 );
-	glVertex3f(  0.5, -0.5, 0.5 );
-	glVertex3f(  0.5,  0.5, 0.5 );
-	glVertex3f( -0.5,  0.5, 0.5 );
-	glVertex3f( -0.5, -0.5, 0.5 );
+	glVertex3f(  0.5, -0.5, -0.5 );
+	glVertex3f(  0.5,  0.5, -0.5 );
+	glVertex3f( -0.5,  0.5, -0.5 );
+	glVertex3f( -0.5, -0.5, -0.5 );
 	glEnd();
 
 	//0
@@ -95,16 +130,11 @@ void callback_display()
 	);
     glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0.5, -0.5);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, -0.5, -0.5);
-	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, -0.5);
-	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, -0.5);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0.5, 0.5);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, -0.5, 0.5);
+	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, 0.5);
+	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, 0.5);
     glEnd();
-
-	// Reset transformations
-	glLoadIdentity();
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_y, 0.0, 1.0, 0.0 );
 
 	//
 	glFlush();
@@ -133,18 +163,32 @@ void callback_special(int key, int x, int y)
 }
 void callback_mouse(int button, int state, int x, int y)
 {
-	if(state==GLUT_DOWN)
+	if(state == GLUT_DOWN)
 	{
 		last_x = x;
 		last_y = y;
 	}
+	if(state == GLUT_UP)
+	{
+		if(button == 3)	//wheel_up
+		{
+			camera_zoom *= 1.05263158;
+			glutPostRedisplay();
+		}
+		if(button == 4)	//wheel_down
+		{
+			camera_zoom *= 0.95;
+			glutPostRedisplay();
+		}
+		printf("camera_zoom=%f\n",camera_zoom);
+	}
 }
 void callback_move(int x,int y)
 {
-	if(x>last_x)rotate_y -= 1;
-	if(x<last_x)rotate_y += 1;
-	if(y>last_y)rotate_x -= 1;
-	if(y<last_y)rotate_x += 1;
+	if(x>last_x)camera_yaw -= PI/180;
+	if(x<last_x)camera_yaw += PI/180;
+	if(y>last_y)camera_pitch += PI/180;
+	if(y<last_y)camera_pitch -= PI/180;
 
 	last_x = x;
 	last_y = y;
