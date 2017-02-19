@@ -45,7 +45,7 @@ static float object_zoom = 1.0;
 
 void callback_display()
 {
-	float ex,ey,ez, ux,uy,uz;
+	float ex,ey,ez;
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -54,14 +54,11 @@ void callback_display()
 	ex = 0;
 	ey = -camera_zoom*cosine(camera_pitch);
 	ez = camera_zoom*sine(camera_pitch);
-	ux = 0;
-	uy = sine(camera_pitch);
-	uz = cosine(camera_pitch);
 	gluPerspective(45.0, 1.0, 0.1, 100.0);
 	gluLookAt(
-		ex, ey, ez,
-		 0,  0,  0,
-		ux, uy, uz
+		 ex, ey, ez,
+		  0,  0,  0,
+		0.0,0.0,1.0
 	);
 
 	//thing rotate
