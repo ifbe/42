@@ -32,7 +32,7 @@ static int last_x=0;
 static int last_y=0;
 //
 static float camera_pitch = PI/4;
-static float camera_yaw = 0.0;
+static float camera_yaw = -PI/2;
 static float camera_roll = 0.0;
 static float camera_zoom = 2.0;
 //
@@ -51,8 +51,8 @@ void callback_display()
 	glLoadIdentity();
 
 	//camera rotate
-	ex = 0;
-	ey = -camera_zoom*cosine(camera_pitch);
+	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
+	ey = camera_zoom*cosine(camera_pitch)*sine(camera_yaw);
 	ez = camera_zoom*sine(camera_pitch);
 	gluPerspective(45.0, 1.0, 0.1, 100.0);
 	gluLookAt(
@@ -169,12 +169,12 @@ void callback_mouse(int button, int state, int x, int y)
 	{
 		if(button == 3)	//wheel_up
 		{
-			camera_zoom *= 1.05263158;
+			camera_zoom *= 0.95;
 			glutPostRedisplay();
 		}
 		if(button == 4)	//wheel_down
 		{
-			camera_zoom *= 0.95;
+			camera_zoom *= 1.05263158;
 			glutPostRedisplay();
 		}
 		printf("camera_zoom=%f\n",camera_zoom);
@@ -182,8 +182,8 @@ void callback_mouse(int button, int state, int x, int y)
 }
 void callback_move(int x,int y)
 {
-	if(x>last_x)camera_yaw -= PI/180;
-	if(x<last_x)camera_yaw += PI/180;
+	if(x>last_x)camera_yaw += PI/180;
+	if(x<last_x)camera_yaw -= PI/180;
 	if(y>last_y)camera_pitch += PI/180;
 	if(y<last_y)camera_pitch -= PI/180;
 
