@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.plasma;
+package com.example.finalanswer;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -27,44 +27,54 @@ import android.view.MotionEvent;
 import android.view.Display;
 import android.view.WindowManager;
 
-public class Plasma extends Activity
+public class FinalAnswer extends Activity
 {
-	/* load our native library */
 	static {
-		System.loadLibrary("plasma");
-	}
-
-	/* Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		Display display = getWindowManager().getDefaultDisplay();
-		setContentView(new PlasmaView(this,display.getWidth(),display.getHeight()));
+		System.loadLibrary("finalanswer");
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Log.i("PlasmaView","KeyEvent.KEYCODE_BACK");
+			Log.i("finalanswer","KeyEvent.KEYCODE_BACK");
 			finish();
 			System.exit(0);
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+
+        //ifuse(bitmap)
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                Display display = getWindowManager().getDefaultDisplay();
+                setContentView(
+                        new FinalAnswerView(
+                        this,display.getWidth(),display.getHeight())
+                );
+        }
+/*
+        //ifuse(surface)
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.activity_main);
+                SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+                surfaceHolder = surfaceView.getHolder();
+                surfaceHolder.addCallback(this);
+        }
+*/
 }
 
-class PlasmaView extends View {
-	private int doit=1;
-	private Bitmap mBitmap;
-
-	/* implementend by libplasma.so */
+class FinalAnswerView extends View {
 	private static native void Start(Bitmap bitmap);
 	private static native void Stop();
 	private static native void Read(Bitmap bitmap);
 	private static native void Write(long type, long value);
 
-	public PlasmaView(Context context, int width, int height) {
+	private int doit=1;
+	private Bitmap mBitmap;
+	public FinalAnswerView(Context context, int width, int height) {
 		super(context);
 		mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Start(mBitmap);
