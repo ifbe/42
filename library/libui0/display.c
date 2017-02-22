@@ -1,17 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
 int windowcreate();
 int windowdelete();
-int windowstart(void* buf, void* fmt, int width,int height);
+int windowstart(void*);
 int windowstop();
 int windowlist();
 int windowchoose();
 int windowread();
-int windowwrite();
+int windowwrite(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -22,10 +20,11 @@ void say(void*, ...);
 //
 struct screen
 {
-        void* buf;
+        u64 buf;
         u64 fmt;
         u64 w;
         u64 h;
+	char padding[256 - sizeof(u64)*4];
 };
 static struct screen* sc;
 static int id = 0;
@@ -39,7 +38,7 @@ void displayread()
 void displaywrite()
 {
 	//if(local) {
-		windowwrite();
+		windowwrite( &(sc[id]) );
 	//}
 
 	//if(net) {
@@ -56,11 +55,10 @@ void displaystart(int j)
 {
 	id = j;
 
-	sc[id].buf = malloc(2048*1024*4);
 	sc[id].fmt = 0x6267726138383838;	//"bgra8888"
 	sc[id].w = 512;
 	sc[id].h = 512;
-	windowstart(sc[id].buf, &sc[id].fmt, sc[id].w, sc[id].h);
+	windowstart( &(sc[id]) );
 }
 void displaystop()
 {

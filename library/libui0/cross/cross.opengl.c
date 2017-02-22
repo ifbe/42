@@ -19,14 +19,18 @@ void say(char*,...);
 
 
 
+struct gldata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+	u64 thread;
+};
+static void* pData;
 //
 static int refresh=0;
-static u64 thread;
 static GLuint texture[1];
-//
-static void* pData;
-static int width;
-static int height;
 //
 static int last_x=0;
 static int last_y=0;
@@ -113,25 +117,25 @@ void callback_display()
 
 	//0
 	glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glTexImage2D(
-		GL_TEXTURE_2D,// 目标  
-		0,// 级别  
-		GL_RGBA,// 纹理内部格式  
-		width,// 纹理的宽（最好2的次方）  
-		height,// 纹理的高（最好2的次方）  
-		0,// 纹理的深度（最好2的次方）  
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		512,
+		512,
+		0,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,// 像素的数据类型  
 		pData		// 数据指针
 	);
-    glBegin(GL_QUADS);
+	glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
 	glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0.5, 0.5);
 	glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, -0.5, 0.5);
 	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, 0.5);
 	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, 0.5);
-    glEnd();
+	glEnd();
 
 	//
 	glFlush();
@@ -191,7 +195,11 @@ void callback_move(int x,int y)
 	last_y = y;
 	glutPostRedisplay();
 }
-void* uievent(void* p)
+
+
+
+
+void* uievent(struct gldata* p)
 {
 	int argc=1;
 	char* argv[2];
@@ -201,7 +209,7 @@ void* uievent(void* p)
 	argv[1] = 0;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
-	glutInitWindowSize(width, height);
+	glutInitWindowSize(p->w, p->h);
 	glutInitWindowPosition(200, 200);
 
 	//创建窗口
@@ -219,16 +227,12 @@ void* uievent(void* p)
 	glutDisplayFunc(callback_display);
 	glutKeyboardFunc(callback_keyboard);
 	glutSpecialFunc(callback_special);
-    glutMouseFunc(callback_mouse);
+	glutMouseFunc(callback_mouse);
 	glutMotionFunc(callback_move); 
 
 	//
 	glutMainLoop();
 }
-
-
-
-
 void windowread(char* where)
 {
 }
@@ -245,13 +249,16 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(struct gldata* p)
 {
-	pData = addr;
-	pixfmt[0]='r';pixfmt[1]='g';pixfmt[2]='b';pixfmt[3]='a';
-	width = x;
-	height = y;
-	thread = startthread(uievent, 0);
+	pData = malloc(2048*1024*4);
+
+	//
+	p->buf = (u64)pData;
+	p->fmt = 0x3838383861626772;
+	p->w = 512;
+	p->h = 512;
+	p->thread = startthread(uievent, p);
 }
 void windowdelete()
 {

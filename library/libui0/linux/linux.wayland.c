@@ -25,7 +25,15 @@ void say(char*,...);
 
 
 //
-static u64 thread;
+struct waylanddata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u64 thread;
+};
 //display
 static struct wl_display *display = NULL;
 static struct wl_registry *registry = NULL;
@@ -41,32 +49,10 @@ struct wl_keyboard *keyboard;
 //
 static void* shm_data = 0;
 static void* buffer = 0;
-static int width = 512;
-static int height = 512;
 
 
 
 
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-
-
-
-
-void windowread(char* addr)
-{
-}
-void windowwrite()
-{
-	wl_display_dispatch(display);
-	wl_surface_damage(surface, 0, 0, width, height);
-	wl_surface_attach(surface, buffer, 0, 0);
-	wl_surface_commit(surface);
-}
 
 
 
@@ -134,51 +120,6 @@ int os_create_anonymous_file(off_t size)
 
 	return fd;
 }
-void windowstart(char* pixbuf, char* pixfmt, int w, int h)
-{
-	struct wl_shm_pool *pool;
-	int size;
-	int fd;
-
-	//wait for thread
-	usleep(10000);
-
-	width = w;
-	height = h;
-	size = width * height * 4;
-
-	fd = os_create_anonymous_file(size);
-	if (fd < 0) {
-		fprintf(stderr, "creating a buffer file for %d B failed: %m\n", size);
-		exit(1);
-	}
-
-	shm_data = mmap(pixbuf, size, PROT_READ | PROT_WRITE, MAP_FIXED|MAP_SHARED, fd, 0);
-	if (shm_data == MAP_FAILED) {
-		fprintf(stderr, "mmap failed: %m\n");
-		close(fd);
-		exit(1);
-	}
-
-	pool = wl_shm_create_pool(shm, fd, size);
-	buffer = wl_shm_pool_create_buffer(
-		pool, 0,
-		width, height,
-		width*4,	
-		WL_SHM_FORMAT_XRGB8888
-	);
-	wl_shm_pool_destroy(pool);
-}
-void windowstop()
-{
-}
-
-
-
-
-
-
-
 
 static void keyboard_handle_keymap(void *data, struct wl_keyboard *keyboard, uint32_t format, int fd, uint32_t size)
 {
@@ -296,9 +237,19 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
 	handle_configure,
 	handle_popup_done
 };
-void* uievent(void* p)
+
+
+
+
+
+
+
+
+void* uievent(struct waylanddata* p)
 {
+	struct wl_shm_pool* pool;
 	int ret;
+	int fd;
 
 	//display
 	display = wl_display_connect(NULL);
@@ -345,12 +296,31 @@ void* uievent(void* p)
 	wl_shell_surface_set_toplevel(shell_surface);
 	wl_shell_surface_add_listener(shell_surface, &shell_surface_listener, NULL);
 
-	//wait for start
-	while(1)
-	{
-		if(buffer == 0)usleep(10000);
-		else break;
+	//
+	fd = os_create_anonymous_file(2048*1024*4);
+	if (fd < 0) {
+		fprintf(stderr, "creating a buffer file failed: %m\n");
+		exit(1);
 	}
+
+	//
+	shm_data = mmap((void*)p->buf, 2048*1024*4,
+		PROT_READ | PROT_WRITE, MAP_FIXED|MAP_SHARED, fd, 0);
+	if (shm_data == MAP_FAILED) {
+		fprintf(stderr, "mmap failed: %m\n");
+		close(fd);
+		exit(1);
+	}
+
+	//
+	pool = wl_shm_create_pool(shm, fd, 2048*1024*4);
+	buffer = wl_shm_pool_create_buffer(
+		pool, 0,
+		p->w, p->h,
+		(p->w)*4,
+		WL_SHM_FORMAT_XRGB8888
+	);
+	wl_shm_pool_destroy(pool);
 
 	//loop
 	while(1)
@@ -360,9 +330,38 @@ void* uievent(void* p)
 
 	wl_display_disconnect(display);
 }
+void windowread()
+{
+}
+void windowwrite(struct waylanddata* p)
+{
+	wl_display_dispatch(display);
+	wl_surface_damage(surface, 0, 0, p->w, p->h);
+	wl_surface_attach(surface, (void*)p->buf, 0, 0);
+	wl_surface_commit(surface);
+}
+void windowlist()
+{
+}
+void windowchange()
+{
+}
+void windowstart(struct waylanddata* p)
+{
+	//
+	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
+
+	//wait for thread
+	p->buf = m - (m&0xfffff) + 0x100000;
+	p->w = 512;
+	p->h = 512;
+	p->thread = startthread(uievent, p);
+}
+void windowstop()
+{
+}
 void windowcreate()
 {
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

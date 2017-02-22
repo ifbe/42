@@ -104,7 +104,7 @@ again:
 		{
 			if(ev->when > time+1000000)
 			{
-				say("fps=%d\n",fps);
+				//say("fps=%d\n",fps);
 				time = ev->when;
 				fps = 0;
 			}

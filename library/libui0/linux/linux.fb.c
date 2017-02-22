@@ -25,7 +25,8 @@ static struct termios old;
 static struct termios new;
 
 //physical info
-static unsigned long long fbaddr=0;
+static int fbfd=-1;
+static u64 fbaddr=0;
 static int fbtotalbyte=0;
 static int fboneline=0;
 
@@ -35,10 +36,13 @@ static int ymax=0;
 static int bpp=0;
 
 //自己的画板
-static int fbfd=-1;
-static char* screenbuf;
-static int width=1024;
-static int height=768;
+struct fbdata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+};
 
 
 
@@ -52,13 +56,6 @@ void* uievent(void* p)
 	u8 ch;
 	while(1)
 	{
-		if(xmax != width)
-		{
-			width = xmax;
-			height = ymax;
-			eventwrite(width + (height<<16), 0x657a6973, 0, 0);
-		}
-
 		ch = getchar();
 		if( (ch == 0xff) | (ch == 0) )
 		{
@@ -116,76 +113,50 @@ void* uievent(void* p)
 
 
 
+void windowwrite(struct fbdata* p)
+{
+	//
+	int x,y,ret;
+	u8* buf = (void*)(p->buf);
+
+	//5,6,5
+	if(bpp==16)
+	{
+		for(x=0;x<xmax*ymax;x++)
+		{
+			*(u16*)(buf+x*2) =
+				    (buf[x*4+0]>>3)
+				+ ( (buf[x*4+1]>>2) <<  5 )
+				+ ( (buf[x*4+2]>>3) << 11 );
+		}
+	}
+
+	//
+	x = xmax*bpp/8;
+	for(y=0;y<ymax;y++)
+	{
+		ret=lseek(fbfd, y*fboneline, SEEK_SET);
+		ret=write(fbfd, buf + y*x, x);
+	}
+}
+void windowread()
+{
+}
 void windowlist()
 {
 }
 void windowchange()
 {
 }
-
-
-
-
-
-
-
-
-void windowwrite()
+void windowstart(struct fbdata* p)
 {
-	//
-	int x,y,ret;
-
-	//5,6,5
-	if(bpp==16)
-	{
-		for(x=0;x<width*height;x++)
-		{
-			*(unsigned short*)(screenbuf+x*2)=
-				    (screenbuf[x*4+0]>>3)
-				+ ( (screenbuf[x*4+1]>>2) <<  5 )
-				+ ( (screenbuf[x*4+2]>>3) << 11 );
-		}
-	}
-
-	//
-	for(y=0;y<height;y++)
-	{
-		ret=lseek(fbfd , y*fboneline , SEEK_SET);
-		ret=write(fbfd , screenbuf + y*width*bpp/8 , width*bpp/8);
-	}
-}
-u64 windowread(u64 what)
-{
-	if(what==0x657a6973)
-	{
-		return width+(height<<16);
-	}
-}
-
-
-
-
-
-
-
-
-void windowstart(char* addr, char* pixfmt, int x, int y)
-{
-	screenbuf = addr;
-	width = x;
-	height = y;
+	p->buf = (u64)malloc(xmax*ymax*4);
+	p->w = xmax;
+	p->h = ymax;
 }
 void windowstop()
 {
 }
-
-
-
-
-
-
-
-
 void windowcreate()
 {
 	//目的地

@@ -20,14 +20,18 @@ void say(void*, ...);
 
 
 //
-static u64 thread;
-static u32* mypixel;
-static int width=1024;
-static int height=768;
-//sdl
-static SDL_Window* window;
-static SDL_Renderer* renderer;
-static SDL_Texture* texture;
+struct sdldata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u64 thread;
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+	SDL_Texture* texture;
+};
 
 
 
@@ -40,25 +44,25 @@ static SDL_Texture* texture;
 //4:鼠标松开
 //5:鼠标移动
 //0xff:时间
-void* uievent(void* p)
+void* uievent(struct sdldata* p)
 {
 	SDL_Event event;
 
 	//
-	window =SDL_CreateWindow("i am groot!",
+	p->window =SDL_CreateWindow("i am groot!",
 				SDL_WINDOWPOS_UNDEFINED,
 				SDL_WINDOWPOS_UNDEFINED,
-				width,height,
+				p->w, p->h,
 				SDL_WINDOW_OPENGL);
 
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	texture = SDL_CreateTexture(renderer,
+	p->renderer = SDL_CreateRenderer(p->window, -1, 0);
+	p->texture = SDL_CreateTexture(p->renderer,
 				SDL_PIXELFORMAT_ARGB8888,
 				SDL_TEXTUREACCESS_STREAMING,
-				width,height);
-	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	//SDL_RenderClear(renderer);
-	//SDL_RenderPresent(renderer);
+				p->w, p->h);
+	//SDL_SetRenderDrawColor(p->renderer, 0, 0, 0, 255);
+	//SDL_RenderClear(p->renderer);
+	//SDL_RenderPresent(p->renderer);
 
 	while(1)
 	{
@@ -71,10 +75,13 @@ void* uievent(void* p)
 		}
 		else if(event.type == SDL_USEREVENT)
 		{
-			SDL_UpdateTexture(texture, NULL, mypixel, width*4);
-			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, texture, NULL, NULL);
-			SDL_RenderPresent(renderer);
+			SDL_UpdateTexture(
+				p->texture, NULL,
+				(void*)(p->buf), (p->w)*4
+			);
+			SDL_RenderClear(p->renderer);
+			SDL_RenderCopy(p->renderer, p->texture, NULL, NULL);
+			SDL_RenderPresent(p->renderer);
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
@@ -112,9 +119,9 @@ void* uievent(void* p)
 	}//while(1)
 
 	//释放sdl
-	SDL_DestroyTexture(texture);
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window); 
+	SDL_DestroyTexture(p->texture);
+	SDL_DestroyRenderer(p->renderer);
+	SDL_DestroyWindow(p->window); 
 	SDL_Quit(); 
 }
 
@@ -143,15 +150,13 @@ void windowchoose()
 void windowstop()
 {
 }
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(struct sdldata* p)
 {
 	//准备rgb点阵
-	mypixel = (unsigned int*)addr;
-	width = x;
-	height = y;
+	p->buf = (u64)malloc(2048*1024*4);
 
-	thread = startthread(uievent, 0);
-	sleep_us(50*1000);
+	//
+	p->thread = startthread(uievent, p);
 }
 void windowdelete()
 {

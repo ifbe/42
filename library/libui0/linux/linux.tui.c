@@ -30,8 +30,15 @@ static int flag=-1;
 static struct termios old;
 static struct termios new;
 //
-static u8* textbuf=0;
-static u64 thread;
+struct textdata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u64 thread;
+};
 
 
 
@@ -42,7 +49,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-void* uievent(void* p)
+void* uievent(struct textdata* p)
 {
 	u8 ch;
 
@@ -118,22 +125,23 @@ static void attr(u8 bg, u8 fg)
 
 
 
-void windowwrite()
+void windowwrite(struct textdata* t)
 {
 	printf("\033[H\033[J");
 /*
-	printf("%s",textbuf);
+	printf("%s",t->buf);
 	fflush(stdout);
 */
 	int x,y;
-	u8* p;
 	u8 ch,bg=0,fg=0;
+	u8* p;
+	u8* buf = (u8*)t->buf;
 
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
 		{
-			p = textbuf + ((width*y + x)<<2);
+			p = buf + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
 				//先颜色
@@ -182,10 +190,13 @@ void windowchange()
 
 
 
-void windowstart(u8* addr, u8* pixfmt, int x, int y)
+void windowstart(struct textdata* p)
 {
-	textbuf = addr;
-	*(unsigned int*)pixfmt = 0x74786574;
+	p->buf = (u64)malloc(0x100000);
+	p->fmt = 0x74786574;
+	p->w = width;
+	p->h = height;
+	p->thread = startthread(uievent, p);
 }
 void windowstop()
 {
@@ -209,9 +220,6 @@ void windowcreate()
 	new.c_cc[VMIN] = 1;
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-
-	//
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {
