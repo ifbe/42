@@ -147,7 +147,7 @@ __attribute__((destructor)) void death()
 		exit(-1);
 	}
 }
-void birth()
+void* birth()
 {
 	//必须放第一个
 	createuniverse();	//16m
@@ -167,5 +167,7 @@ void birth()
 	//[c,f)：窗口开闭，以及用户界面
 	displaycreate( 0 , character );
 	charactercreate( 0 , character );
+
+	return memory;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

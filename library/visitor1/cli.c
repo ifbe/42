@@ -2,7 +2,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//soft.artery
+//event
+void* eventread();
+void eventwrite(u64 why, u64 what, u64 where, u64 when);
+void* birth();
+void death();
+//soft
 int arteryprompt();
 int arterycommand(void*);
 void motion_explain(void*);
@@ -12,21 +17,35 @@ void vision_explain(void*);
 //boot
 void printmemory(char*, int);
 void say(char*, ...);
-//event
-u64* eventread();
-void eventwrite(u64 why, u64 what, u64 where, u64 when);
-int birth();
-int death();
+
+
+
+
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
+
+//libui
+struct screen
+{
+        void* buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
 
 
 
 
 int main(int argc,char* argv[])
 {
-	int ret;
-	u64* addr;
-
 	//before
+	int ret;
+	struct event* ev;
 	birth();
 
 	//config
@@ -41,10 +60,6 @@ int main(int argc,char* argv[])
 	{
 /*
                 //1.display
-                //[+00,+07]addr         pointer to actual memory
-                //[+08,+0f]fmt          rgba, text, html, ...
-                //[+10,+17]width
-                //[+18,+1f]height
                 for(ret=0;ret<max;ret++)
                 {
 			//skip whom doesn't want
@@ -60,41 +75,58 @@ int main(int argc,char* argv[])
 
 again:
                 //2.event
-                //[+00,+07]why
-                //[+08,+0f]what
-                //[+10,+17]where
-                //[+18,+1f]when
-		addr = eventread();
-		if(addr == 0)break;		//error
-		if(addr[1] == 0)break;		//exit
+		ev = eventread();
+		if(ev == 0)break;		//error
+		if(ev->what == 0)break;		//exit
 
 
 		//3.pre change
-		if((addr[1]&0xff) == 'p')
+		if(((ev->what)&0xff) == 'p')
 		{
 			//sensor rawdata -> my event
-			motion_explain(addr);
+			motion_explain(ev);
 		}
-		else if((addr[1]&0xff) == 'n')
+		else if(((ev->what)&0xff) == 'n')
 		{
 			//network rawdata -> my event
-			network_explain(addr);
+			network_explain(ev);
+/*
+                        if((ev->what) == 'w')      //vnc, rdp, ...
+                        {
+                                //user come, re-draw
+                                if(+)
+                                {
+                                        windowstart(addr, "net", 512, 512);
+                                        continue;
+                                }
+
+                                //user gone, re-draw
+                                else if(-)
+                                {
+                                        windowstop();
+                                        continue;
+                                }
+
+                                //user resize, set-flag
+                                else .flag = 1;
+                        }
+*/
 		}
-		else if((addr[1]&0xff) == 's')
+		else if(((ev->what)&0xff) == 's')
 		{
 			//sound rawdata -> my event
-			sound_explain(addr);
+			sound_explain(ev);
 		}
-		else if((addr[1]&0xff) == 'v')
+		else if(((ev->what)&0xff) == 'v')
 		{
 			//vision rawdata -> my event
-			vision_explain(addr);
+			vision_explain(ev);
 		}
-		if(addr[1] != 0x64626b)goto again;
+		if((ev->what) != 0x64626b)goto again;
 
 
 		//4.real change
-		arterycommand(addr);
+		arterycommand(ev);
 	}
 
 	//after

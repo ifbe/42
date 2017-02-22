@@ -7,8 +7,10 @@ void start()
 
 
 
-void birth()
+void* birth()
 {
+	//@16MB
+	return (void*)0x1000000;
 }
 void death()
 {
