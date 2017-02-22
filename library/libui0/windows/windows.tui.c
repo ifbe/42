@@ -14,14 +14,19 @@ void eventwrite(u64,u64,u64,u64);
 
 
 
+struct textdata
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u64 thread;
+};
 //
-static u64 thread=0;
 static HANDLE output;
-//
 static int lastwidth=0,lastheight=0;
 static int width,height;
-//
-static char* content;
 
 
 
@@ -99,12 +104,13 @@ static void attr(u8 bg,u8 fg)
 
 
 
-void windowwrite()
+void windowwrite(struct textdata* t)
 {
 	int x,y;
-	u8* p;
 	u8 ch,bg=0,fg=0;
 	COORD pos = {0,0};
+	u8* p;
+	u8* content = (u8*)(t->buf);
 	SetConsoleCursorPosition(output,pos);
 /*
 	//
@@ -150,35 +156,26 @@ void windowwrite()
 
 	SetConsoleCursorPosition(output,pos);
 }
-void windowread(char* where)
+void windowread()
 {
 }
-
-
-
-
 void windowlist()
 {
 }
 void windowchange()
 {
 }
-
-
-
-
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(struct textdata* p)
 {
-	content = addr;
-	*(unsigned int*)pixfmt = 0x74786574;
+	p->buf = (u64)malloc(0x100000);
+	p->fmt = 0x74786574;
+	p->w = width;
+	p->h = height;
+	p->thread = startthread(uievent, p);
 }
 void windowstop()
 {
 }
-
-
-
-
 void windowcreate()
 {
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
@@ -187,8 +184,6 @@ void windowcreate()
 	GetConsoleScreenBufferInfo(output, &bInfo );
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
-
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {
