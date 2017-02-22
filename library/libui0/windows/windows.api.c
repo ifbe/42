@@ -65,95 +65,6 @@ static int height=512;
 
 
 
-
-
-
-
-void createconsolewindow()
-{
-	//int ret;
-	//char buf[128];
-	//ret=GetEnvironmentVariable("cmdcmdline",buf,128);
-	//say("%x:cmdcmdline=%s\n",ret,buf);
-
-	//拿console窗口并且隐藏起来
-	consolewindow=GetConsoleWindow();
-	//ShowWindow(consolewindow,SW_HIDE);
-}
-//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
-int createmywindow(void* proc)
-{
-	//Step 1: Registering the Window Class+Creating the Window
-	char *AppTitle="run as administrator to see the real world (=.=)";
-	WNDCLASS wc;
-
-	wc.style=CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc=proc;
-	wc.cbClsExtra=0;
-	wc.cbWndExtra=0;
-	wc.hInstance=0;				//hInst;
-	wc.hIcon=LoadIcon(NULL,IDI_WINLOGO);
-	wc.hCursor=LoadCursor(NULL,IDC_ARROW);
-	wc.hbrBackground=(HBRUSH)COLOR_WINDOWFRAME;
-	wc.lpszMenuName=NULL;
-	wc.lpszClassName=AppTitle;
-	if (!RegisterClass(&wc)) return 0;
-
-	//创建窗口
-	window = CreateWindow(AppTitle,AppTitle,
-				WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-				100,100,width+16,height+40,
-				NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
-	if (!window) return 0;
-
-	//透明
-	LONG t = GetWindowLong(window, GWL_EXSTYLE);
-	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(window, 0, 0xf8, LWA_ALPHA);
-
-	//显示窗口
-	ShowWindow(window,SW_SHOW);			//nCmdShow);
-	UpdateWindow(window);
-
-	//
-	//SetWindowText(window,"hahahaha");
-}
-void InitUIPIFilter()
-{
-	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,u32);
-
-	//1
-	HMODULE hUser = LoadLibraryA("user32.dll");
-	if (!hUser){say("failed to load\n");exit(-1);}
-
-	//2
-	ChangeWindowMessageFilterProc proc;
-	proc=(ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
-	if(!proc){say("can't drag\n");exit(-1);}
-
-	//3
-	proc(WM_COPYDATA,1);
-	proc(WM_DROPFILES,1);
-	proc(0x0049, 1);
-}
-void createtray()
-{
-	//Step 2:托盘
-	nid.cbSize = sizeof(NOTIFYICONDATA); 
-	nid.hWnd = window; 
-	nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
-	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
-	nid.uCallbackMessage = WM_TRAY; 
-	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO); 
-	lstrcpy(nid.szTip, "i am groot!"); 
-	Shell_NotifyIcon(NIM_ADD, &nid); 
-
-	hMenu = CreatePopupMenu();    //生成托盘菜单 
-	AppendMenu(hMenu, MF_STRING, menu1, TEXT("console")); 
-	AppendMenu(hMenu, MF_STRING, menu2, TEXT("window")); 
-	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
-	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
-}
 void bitmapinfo(int w, int h)
 {
 	info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
@@ -172,14 +83,6 @@ void bitmapinfo(int w, int h)
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
-
-
-
-
-
-
-
-
 LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
@@ -530,7 +433,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_PAINT:
 		{
 			say("WM_PAINT\n");
-			windowwrite();
+			//windowwrite(p);
 
 			//这里必须调这个函数，不然cpu占用满
 			return DefWindowProc(window, msg, wparam, lparam);
@@ -550,6 +453,104 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 	}
 }
+void createconsolewindow()
+{
+	//int ret;
+	//char buf[128];
+	//ret=GetEnvironmentVariable("cmdcmdline",buf,128);
+	//say("%x:cmdcmdline=%s\n",ret,buf);
+
+	//拿console窗口并且隐藏起来
+	consolewindow=GetConsoleWindow();
+	//ShowWindow(consolewindow,SW_HIDE);
+}
+//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
+int createmywindow()
+{
+	//Step 1: Registering the Window Class+Creating the Window
+	char *AppTitle="run as administrator to see the real world (=.=)";
+	WNDCLASS wc;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = WindowProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = 0;				//hInst;
+	wc.hIcon = LoadIcon(NULL,IDI_WINLOGO);
+	wc.hCursor = LoadCursor(NULL,IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOWFRAME;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = AppTitle;
+	if(!RegisterClass(&wc))return 0;
+
+	//创建窗口
+	window = CreateWindow(AppTitle,AppTitle,
+		WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
+		100,100,width+16,height+39,
+		NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
+	if(!window)return 0;
+
+	//拿dc
+	realdc=GetDC(window);
+	if(!realdc)return 0;
+
+	//透明
+	LONG t = GetWindowLong(window, GWL_EXSTYLE);
+	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(window, 0, 0xf8, LWA_ALPHA);
+
+	//显示窗口
+	ShowWindow(window,SW_SHOW);
+	UpdateWindow(window);
+
+	//窗口标题
+	//SetWindowText(window,"hahahaha");
+}
+void enabledrag()
+{
+	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,u32);
+
+	DragAcceptFiles(window, TRUE);
+
+	//1
+	HMODULE hUser = LoadLibraryA("user32.dll");
+	if (!hUser){say("failed to load\n");exit(-1);}
+
+	//2
+	ChangeWindowMessageFilterProc proc;
+	proc=(ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
+	if(!proc){say("can't drag\n");exit(-1);}
+
+	//3
+	proc(WM_COPYDATA,1);
+	proc(WM_DROPFILES,1);
+	proc(0x0049, 1);
+}
+void createtray()
+{
+	//Step 2:托盘
+	nid.cbSize = sizeof(NOTIFYICONDATA); 
+	nid.hWnd = window; 
+	nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
+	nid.uCallbackMessage = WM_TRAY; 
+	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO); 
+	lstrcpy(nid.szTip, "i am groot!"); 
+	Shell_NotifyIcon(NIM_ADD, &nid); 
+
+	hMenu = CreatePopupMenu();    //生成托盘菜单 
+	AppendMenu(hMenu, MF_STRING, menu1, TEXT("console")); 
+	AppendMenu(hMenu, MF_STRING, menu2, TEXT("window")); 
+	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
+	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
+}
+
+
+
+
+
+
+
+
 DWORD WINAPI uievent(struct windata* p)
 {
 	MSG msg;
@@ -558,12 +559,10 @@ DWORD WINAPI uievent(struct windata* p)
 	createconsolewindow();
 
 	//图形窗口
-	createmywindow(WindowProc);
-	realdc=GetDC(window);
+	createmywindow();
 
 	//打开拖拽
-	DragAcceptFiles(window, TRUE);
-	InitUIPIFilter();
+	enabledrag();
 
 	//打开触摸
 	RegisterTouchWindow(window, 0);
@@ -571,7 +570,7 @@ DWORD WINAPI uievent(struct windata* p)
 	//打开托盘
 	createtray();
 
-	//
+	//bmp
 	bitmapinfo(p->w, p->h);
 
 	//一个一个处理
@@ -594,7 +593,7 @@ void windowwrite(struct windata* p)
 	SetDIBitsToDevice(
 		realdc,
 		0, 0,			//目标位置x,y
-		p->w, p->h,	//dib宽,高
+		p->w, p->h,		//dib宽,高
 		0, 0,			//来源起始x,y
 		0, p->h,		//起始扫描线,数组中扫描线数量,
 		(void*)p->buf,	//rbg颜色数组
@@ -616,6 +615,8 @@ void windowstart(struct windata* p)
 {
 	//构造info
 	p->buf = (u64)malloc(2048*1024*4);
+	p->w = 512;
+	p->h = 512;
 /*
 	SetWindowPos(
 		window, 0, 0, 0,
