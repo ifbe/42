@@ -22,9 +22,10 @@
 *.ko.cmd
 *.o.cmd
 
+*.a
+*.class
 *.o
 *.o.d
-*.a
 *.dll
 *.efi
 *.so
