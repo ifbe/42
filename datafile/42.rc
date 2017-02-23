@@ -1,4 +1,4 @@
 #include <winuser.h>
-1 RT_MANIFEST uac.manifest
 #define RT_MANIFEST 24
+//1 RT_MANIFEST 42.manifest
 id ICON "42.ico"

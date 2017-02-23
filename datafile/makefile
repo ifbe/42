@@ -3,5 +3,5 @@ elf64-x86-64:
 pei-x86-64:
 	objcopy -I binary -O pei-x86-64 -B i386 unicode.bin unicode.o
 clean:
-	rm -f uac.res
+	rm -f *.res
 	rm -f *.o

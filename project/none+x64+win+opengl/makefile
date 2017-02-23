@@ -1,4 +1,5 @@
 library?=../../library
+datafile?=../../datafile
 all:
 	make -s -C $(library)/libboot0 wincmd \
 	cflag="-c -O2"
@@ -47,7 +48,9 @@ dll:
 	$(library)/visitor0/*.o \
 	-lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 program:
+	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
+	$(datafile)/42.res \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
