@@ -1,10 +1,20 @@
 #include "com_example_test.h"
-int i = 0;
-JNIEXPORT jint JNICALL Java_com_example_test_get(JNIEnv *env, jclass jc)
+void birth();
+void death();
+void say(void*, ...);
+
+
+
+
+JNIEXPORT void JNICALL Java_com_example_test_birth(JNIEnv *env, jclass jc)
 {
-    return i;
+	birth();
 }
-JNIEXPORT void JNICALL Java_com_example_test_set(JNIEnv *env, jclass jc, jint j)
+JNIEXPORT void JNICALL Java_com_example_test_death(JNIEnv *env, jclass jc)
 {
-    i = j;
+	death();
+}
+JNIEXPORT void JNICALL Java_com_example_test_print(JNIEnv *env, jclass jc)
+{
+	say("here %d\n", 666666);
 }

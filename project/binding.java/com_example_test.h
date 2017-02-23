@@ -9,19 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     com_example_test
- * Method:    get
- * Signature: ()I
+ * Method:    birth
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_com_example_test_get
+JNIEXPORT void JNICALL Java_com_example_test_birth
   (JNIEnv *, jclass);
 
 /*
  * Class:     com_example_test
- * Method:    set
- * Signature: (I)V
+ * Method:    death
+ * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_example_test_set
-  (JNIEnv *, jclass, jint);
+JNIEXPORT void JNICALL Java_com_example_test_death
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_example_test
+ * Method:    print
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_example_test_print
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
