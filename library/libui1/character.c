@@ -14,8 +14,6 @@ void ascii_create(u8*,u8*);
 void ascii_delete();
 void unicode_create(u8*,u8*);
 void unicode_delete();
-void background_create(u8*,u8*);
-void background_delete();
 void shape_create(u8*,u8*);
 void shape_delete();
 //game
@@ -64,7 +62,7 @@ void tree_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-void backgroundcolor();
+void backgroundcolor(void*, u64, u64, u64);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 u32 getrandom();
@@ -100,8 +98,8 @@ static struct working
 	u64 xyze2;
 
 	//screenbuffer
-	u64 pixelbuffer;	//address
-	u64 pixelformat;	//rgba8888    bgra8888    rgb565    yuv420
+	u64 buffer;	//address
+	u64 format;	//rgba8888    bgra8888    rgb565    yuv420
 	u64 width;
 	u64 height;
 
@@ -183,10 +181,6 @@ void charactercreate(u8* type, u8* addr)
 	unicode_create(addr,temp);
 	temp+=0x80;
 
-	//background
-	background_create(addr,temp);
-	temp+=0x80;
-
 	//shape
 	shape_create(addr,temp);
 	temp+=0x80;
@@ -235,8 +229,8 @@ void charactercreate(u8* type, u8* addr)
 	pure_create(addr,temp);
 	temp += 0x80;
 
-	//tool.camera
-	camera_create(addr,temp);
+	//tool.calculator
+	calculator_create(addr,temp);
 	temp += 0x80;
 
 	//tool.camera
@@ -310,7 +304,6 @@ void characterdelete()
 	xiangqi_delete();
 
 	ascii_delete();
-	background_delete();
 	shape_delete();
 	unicode_delete();
 
@@ -338,8 +331,8 @@ int characterstart(u8* addr, u8* fmt, int width, int height)
 	{
 		if(worker[j].id == 0)break;
 
-		worker[j].pixelbuffer = (u64)addr;
-		worker[j].pixelformat = *(u64*)fmt;
+		worker[j].buffer = (u64)addr;
+		worker[j].format = *(u64*)fmt;
 		worker[j].width = w;
 		worker[j].height = h;
 	}
@@ -423,7 +416,7 @@ void characterwrite(u64* p)
 			worker[x].height = h;
 
 			//cleanup screen
-			backgroundcolor(0);
+			backgroundcolor(pixbuf, 0, w, h);
 		}
 		return;
 	}//size
@@ -485,7 +478,7 @@ int charactercommand(u8* p)
 	//exit!
 	if(p == 0)
 	{
-		temp = (worker[0].pixelformat)&0xffffffff;
+		temp = (worker[0].format)&0xffffffff;
 		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
 
 		say("chatacter(%d) wants to die\n",now);
@@ -496,7 +489,7 @@ int charactercommand(u8* p)
 	ret=cmp(p,"exit");
 	if(ret==0)
 	{
-		temp = (worker[0].pixelformat)&0xffffffff;
+		temp = (worker[0].format)&0xffffffff;
 		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
 
 		say("chatacter(%d) wants to die\n",now);

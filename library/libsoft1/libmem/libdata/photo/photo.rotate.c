@@ -1,10 +1,15 @@
 #define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 
 
 
 
 void rotate_image(
-	u8* src, int sw, int sh, int scx, int scy, int scw, int sch,
-	u8* dst, int dw, int dh, int dcx, int dcy, int angle)
+//[dst]buf, fmt, width, height, startx, starty, lenx, leny
+u8* db, u64 df, int dw, int dh, int dsx, int dsy, int dlx, int dly,
+//[src]buf, fmt, width, height, startx, starty, lenx, leny
+u8* sb, u64 sf, int sw, int sh, int ssx, int ssy, int slx, int sly)
 {
 }

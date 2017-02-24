@@ -7,7 +7,6 @@ void printbyte(int x, int y, int size, char ch, u32 fg, u32 bg);
 void rect(int x1, int y1, int x2, int y2, u32 body, u32 frame);
 void rectbody(int x1, int y1, int x2, int y2, u32 color);
 void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor();
 //
 double calculator(char* postfix, u64 x, u64 y);
 void postfix2binarytree(char* postfix,void* out);
@@ -26,8 +25,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -86,13 +85,13 @@ static void calculator_read_text()
 static void calculator_read()
 {
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if( ( (haha->format)&0xffffffff) == 0x74786574)
 	{
 		calculator_read_text();
 	}
 
 	//html
-	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
 	{
 		calculator_read_html();
 	}

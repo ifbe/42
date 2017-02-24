@@ -94,6 +94,7 @@ u64 displaystart(void* buf, void* fmt, int w, int h)
 }
 u64 displaystop()
 {
+	return 0;
 }
 void displaycreate(u8* type, u8* addr)
 {

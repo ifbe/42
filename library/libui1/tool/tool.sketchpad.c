@@ -3,11 +3,15 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
-void defaultdouble(int x,int y,double z);
-void decimal(int x,int y,u64 in);
-void backgroundcolor(u32);
-void rectangle(u32 x1y1z1,u32 x2y2z2,u32 color);
+void printstring(
+	int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
+void defaultdouble(
+	int x,int y,double z);
+void decimal(
+	int x,int y,u64 in);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -29,8 +33,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -79,7 +83,7 @@ static void wangge()
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	double first,second,res;
 
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 	int width = haha->width;
 	int height= haha->height;
 
@@ -139,7 +143,7 @@ static void tuxiang()
 
 	int width = haha->width;
 	int height = haha->height;
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 
 
 
@@ -210,7 +214,10 @@ static void sketchpad_read_pixel()
 
 
 
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 	if(node[0].integer == 0)
 	{
 		//计算器
@@ -237,7 +244,7 @@ skipthese:		//打印
 }
 static void sketchpad_read_html()
 {
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 
 	sketchpad_read_pixel();
 	screenbuf[0]=0;
@@ -250,7 +257,7 @@ static void sketchpad_read_text()
 
 	int width=haha->width;
 	int height=haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 	if(node[0].type!=0x3d3d3d3d)return;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -299,7 +306,7 @@ static void sketchpad_read_text()
 }
 static void sketchpad_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)
@@ -459,7 +466,6 @@ static void sketchpad_start()
 	centerx=0.00;
 	centery=0.00;
 	scale=1.00;
-	backgroundcolor(0);
 }
 static void sketchpad_stop()
 {

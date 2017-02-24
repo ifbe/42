@@ -17,8 +17,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -41,7 +41,7 @@ static void pure_read_pixel()
 	u32 color;
 	u32* screenbuf;
 
-	screenbuf = (u32*)(haha->pixelbuffer);
+	screenbuf = (u32*)(haha->buffer);
 
 	color=0xff000000;
 	if((flag&0x1) == 0x1)color |= 0xff;
@@ -63,13 +63,13 @@ static void pure_read_text()
 }
 static void pure_read_html()
 {
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 	pure_read_pixel();
 	screenbuf[0]=0;
 }
 static void pure_read()
 {
-        u32 temp = (haha->pixelformat)&0xffffffff;
+        u32 temp = (haha->format)&0xffffffff;
         //say("(@2048.read)temp=%x\n",temp);
 
         //text

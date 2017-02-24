@@ -2,10 +2,6 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) draw/draw.ascii.c
-	$(compiler) $(cflag) draw/draw.background.c
-	$(compiler) $(cflag) draw/draw.shape.c
-	$(compiler) $(cflag) draw/draw.unicode.c
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c

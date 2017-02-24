@@ -3,10 +3,15 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void line(       int x1,int y1,int x2,int y2, u32 color);
-void circlebody( int x, int y, int r, u32 color);
-void circleframe(int x, int y, int r, u32 color);
-void backgroundcolor(u32);
+void line(
+	int x1,int y1,int x2,int y2, u32 color);
+void circlebody(
+	int x, int y, int r, u32 color);
+void circleframe(
+	int x, int y, int r, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 u32 getrandom();
 //
 void say(char*,...);
@@ -20,8 +25,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -42,7 +47,7 @@ static void weiqi_read_text()
 	int x,y,j,k,ret,color;
 	int width=haha->width;
 	int height=haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 
 	//haha
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -80,14 +85,18 @@ static void weiqi_read_pixel()
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
+	if( ((haha->format)&0xffffffff) == 0x61626772)
 	{
-		backgroundcolor(0x256f8d);
+		color = 0x256f8d;
 	}
 	else
 	{
-		backgroundcolor(0x8d6f25);
+		color = 0x8d6f25;
 	}
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		color
+	);
 
 	//heng
 	for(y=-9;y<10;y++)
@@ -132,7 +141,7 @@ static void weiqi_read_pixel()
 }
 static void weiqi_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)

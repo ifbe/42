@@ -1,16 +1,26 @@
 #define u64 unsigned long long
 #define u32 unsigned int
 //
-void line(int ax, int ay, int bx, int by, u32 color);
-void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color);
-void rectbody( int x1, int y1, int x2, int y2, u32 color);
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void circlebody( int cx, int cy, int r, u32 color);
-void circleframe(int cx, int cy, int r, u32 color);
-void sectorbody( int cx, int cy, int r, int start, int end, u32 color);
-void sectorframe(int cx, int cy, int r, int start, int end, u32 color);
+void line(
+	int ax, int ay, int bx, int by, u32 color);
+void bezier(
+	int ax, int ay, int bx, int by, int cx, int cy, u32 color);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void rectframe(
+	int x1, int y1, int x2, int y2, u32 color);
+void circlebody(
+	int cx, int cy, int r, u32 color);
+void circleframe(
+	int cx, int cy, int r, u32 color);
+void sectorbody(
+	int cx, int cy, int r, int start, int end, u32 color);
+void sectorframe(
+	int cx, int cy, int r, int start, int end, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
-void backgroundcolor();
 void say(char*,...);
 
 
@@ -18,6 +28,7 @@ void say(char*,...);
 
 //
 static int px=0,py=0;
+static u64* this;
 
 
 
@@ -30,7 +41,10 @@ void doodle_change()
 }
 void doodle_read()
 {
-	backgroundcolor(0);
+	backgroundcolor(
+		this[4], this[5], this[6], this[7],
+		0
+	);
 
 	//rect
 	rectbody(  10, 10, 90, 90, 0xff00);
@@ -71,7 +85,7 @@ void doodle_stop()
 }
 void doodle_create(char* base,char* addr)
 {
-	u64* this=(u64*)addr;
+	this=(u64*)addr;
 	this[0] = 0x74736574;
 	this[1] = 0x656c646f6f64;
 

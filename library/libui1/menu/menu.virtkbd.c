@@ -5,7 +5,6 @@
 //
 void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
 void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
-void backgroundcolor(u32);
 //
 u32 getrandom();
 void say(char*,...);
@@ -19,8 +18,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;

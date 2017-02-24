@@ -143,6 +143,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.c \
+	library/libsoft1/libmem/libdata/draw/draw.background.c \
+	library/libsoft1/libmem/libdata/draw/draw.shape.c \
+	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
+	library/libsoft1/libmem/libdata/draw/draw.unicode.c \
 	library/libsoft1/libmem/libdata/photo/photo.blur.c \
 	library/libsoft1/libmem/libdata/photo/photo.channel.c \
 	library/libsoft1/libmem/libdata/photo/photo.convert.c \
@@ -239,10 +243,6 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
-	library/libui1/draw/draw.background.c \
-	library/libui1/draw/draw.shape.c \
-	library/libui1/draw/draw.ascii.c \
-	library/libui1/draw/draw.unicode.c \
 	library/libui1/game/game.2048.c \
 	library/libui1/game/game.ooxx.c \
 	library/libui1/game/game.snake.c \

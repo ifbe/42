@@ -3,8 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void string(int x,int y,void* str);
-void backgroundcolor(u32);
+void string(
+	int x,int y,void* str);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
 void charactercommand(u8*);
 void arterycommand(u8*);
@@ -23,8 +26,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -49,8 +52,11 @@ static void background4()
 	//用指定颜色清屏
 	int width,height;
 	u32 x,y,color;
-	u32* palette = (u32*)(haha->pixelbuffer);
-	backgroundcolor(0);
+	u32* palette = (u32*)(haha->buffer);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 
 	//输入框颜色
 	for(y=height-16;y<height;y++)
@@ -82,7 +88,7 @@ static void printposition(int start,int count,int max)
 {
 	//位置
 	int x,y;
-	u32* palette = (u32*)(haha->pixelbuffer);
+	u32* palette = (u32*)(haha->buffer);
 
 	if(max<0x80*45)return;
 
@@ -214,7 +220,6 @@ static void console_list()
 
 static void console_start()
 {
-	backgroundcolor(0);
 }
 static void console_stop()
 {

@@ -3,8 +3,11 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(u32);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
 int qrcode_generate(char* src,char* dst,int sidelength);
 int diary(char*,int,char*,...);
@@ -19,8 +22,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -43,7 +46,11 @@ static void qrcode_read_pixel()
 	if(width < height)min = width;
 	else min = height;
 
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, width, height,
+		0
+	);
+
 	for(y=0;y<sidelength;y++)
 	{
 		for(x=0;x<sidelength;x++)
@@ -54,7 +61,7 @@ static void qrcode_read_pixel()
 			y2=(y+1)*min/sidelength-1;
 			if( databuf[(y*sidelength)+x] == 0 )color=0;
 			else color=0xffffffff;
-//say("%d ",databuf[(y*sidelength)+x]);
+//say("%d",databuf[(y*sidelength)+x]);
 			rectbody(x1, y1, x2, y2, color);
 		}
 //say("\n");
@@ -64,7 +71,7 @@ static void qrcode_read_html()
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -107,7 +114,7 @@ static void qrcode_read_text()
 	int x,y;
 	int width=haha->width;
 	int height=haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 
 	for(y=0;y<100;y++)
@@ -127,7 +134,7 @@ static void qrcode_read_text()
 }
 static void qrcode_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 	//say("(@2048.read)temp=%x\n",temp);
 
 	//text
@@ -192,7 +199,7 @@ void qrcode_create(void* base,void* addr)
 	this[14]=(u64)qrcode_read;
 	this[15]=(u64)qrcode_write;
 
-	databuf=(char*)(addr+0x300000);
+	databuf=(char*)(base+0x300000);
 }
 void qrcode_delete()
 {

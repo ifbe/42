@@ -3,11 +3,17 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(int x, int y, int size, char ch, u32 fg, u32 bg);
-void printbyte(int x, int y, int size, char ch, u32 fg, u32 bg);
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(u32);
-void background1();
+void printascii(
+	//void*, u64, int, int,
+	int x, int y, int size, char ch, u32 fg, u32 bg);
+void printbyte(
+	//void*, u64, int, int,
+	int x, int y, int size, char ch, u32 fg, u32 bg);
+void rectbody(
+	//void*, u64, int, int,
+	int x1, int y1, int x2, int y2, u32 color);
+void background1(
+	u64, u64, int, int);
 //
 int data2hexstr(u64, u8*);
 int cmp(void*, void*);
@@ -26,8 +32,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -56,7 +62,7 @@ static int lineperwindow=0;
 static void updateconfig()
 {
 	int width = haha->width;
-	unsigned int pixfmt = (haha->pixelformat)&0xffffffff;
+	unsigned int pixfmt = (haha->format)&0xffffffff;
 
 	//html
         if(pixfmt == 0x6c6d7468)
@@ -93,7 +99,7 @@ static void updateconfig()
 		}
 	}
 
-	//pixel
+	//
 	else
 	{
 		lineperwindow = (haha->height)/16;
@@ -178,7 +184,7 @@ static void floatarea()
 	int thisx,thisy;
 	int x,y;
 
-	screenbuf = (u32*)(haha->pixelbuffer);
+	screenbuf = (u32*)(haha->buffer);
 	width = haha->width;
 	height = haha->height;
 	thisx = (pointeroffset % byteperline) << 4;
@@ -227,7 +233,7 @@ static void hex_read_pixel()
 	updateconfig();
 
 	//背景
-	background1();
+	background1(haha->buffer, haha->format, haha->width, haha->height);
 
 	//
 	foreground();
@@ -242,7 +248,7 @@ static void hex_read_text()
 
 	int width = haha->width;
 	int height = haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 
 	updateconfig();
 	//for(x=0;x<width*height;x++)p[x]=0x20;
@@ -319,7 +325,7 @@ static void hex_read_html()
 
 	int width = haha->width;
 	int height = haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 
 	//
 	*(u32*)p = 0x6c6d7468;
@@ -432,7 +438,7 @@ static void hex_read_html()
 }
 static void hex_read()
 {
-	unsigned int pixfmt = (haha->pixelformat)&0xffffffff;
+	unsigned int pixfmt = (haha->format)&0xffffffff;
 
 	//text
 	if( pixfmt == 0x74786574)

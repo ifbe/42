@@ -1,13 +1,19 @@
 #define u64 unsigned long long 
 #define u32 unsigned int
 //
-void line(int x1, int y1, int x2, int y2, u32 color);
-void rectbody( int x1, int y1, int x2, int y2, u32 color);
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void rect(     int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
-void backgroundcolor(u32);
-u32 getrandom();
+void line(
+	int x1, int y1, int x2, int y2, u32 color);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void rectframe(
+	int x1, int y1, int x2, int y2, u32 color);
+void rect(
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
+u32 getrandom();
 int diary(char*,int,char*,...);
 void say(char*,...);
 
@@ -20,8 +26,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -108,7 +114,7 @@ void snake_read_text()
 	int j,t;
 	int width=haha->width;
 	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 	for(j=0;j<width*height*4;j++)p[j] = 0;
 
 	j=0;
@@ -142,7 +148,7 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 void snake_read_html()
 {
 	int j = 0;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -180,7 +186,7 @@ void snake_read_html()
 
 void snake_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)
@@ -206,7 +212,7 @@ void snake_read()
 
 void newfood()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 	if(temp == 0x6c6d7468)
 	{
 		worldwidth = 32;
@@ -357,7 +363,10 @@ static void snake_start()
 {
 	//1.create
 	int x;
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 
 	//create food and snake 
 	newfood();

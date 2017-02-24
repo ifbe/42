@@ -3,13 +3,22 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //libui
-void hexadecimal(int x,int y,u64 in);
-void decimal(int x,int y,u64 in);
-void printdouble(int x, int y, int size, double z, u32 fgcolor, u32 bgcolor);
-void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
-void printascii(int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
-void line(int,int,int,int,u32);
-void backgroundcolor(u32);
+void hexadecimal(
+	int x,int y,u64 in);
+void decimal(
+	int x,int y,u64 in);
+void printdouble(
+	int x, int y, int size, double z, u32 fgcolor, u32 bgcolor);
+void printstring(
+	int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
+void printascii(
+	int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
+void line(
+	int,int,int,int,u32);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32
+);
 //libsoft
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
@@ -29,8 +38,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -192,7 +201,10 @@ static void tree_write(u64* who, u64* a, u64* b)
 }
 static void tree_read()
 {
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 	printstring(0, 0, 1, buffer, 0xffffffff, 0);
 	printstring(0, 16, 1, postfix, 0xffffffff, 0);
 	if(node==0)return;

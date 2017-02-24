@@ -12,9 +12,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
-void backgroundcolor();
-//
 void say(char*,...);
 
 
@@ -26,8 +23,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -47,13 +44,13 @@ static void example_read_text()
 static void example_read()
 {
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if( ( (haha->format)&0xffffffff) == 0x74786574)
 	{
 		example_read_text();
 	}
 
 	//html
-	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
 	{
 		example_read_html();
 	}

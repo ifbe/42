@@ -6,42 +6,19 @@
 
 
 
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
-}*haha;
-
-
-
-
-void backgroundcolor(unsigned int color)
+void backgroundcolor(u32* screenbuf, u64 fmt, int width, int height,
+	unsigned int color)
 {
 	int x;
-	int width,height;
-	u32* screenbuf=(u32*)(haha->pixelbuffer);
-
 	color |= 0xff000000;
-	for(x=0; x<(haha->width)*(haha->height); x++)
+	for(x=0; x<width*height; x++)
 	{
 		screenbuf[x]=color;
 	}
 }
-void background1()
+void background1(u32* screenbuf, u64 fmt, int width, int height)
 {
 	int x,y;
-	int width,height;
-	u32* screenbuf;
-
-	width = haha->width;
-	height = haha->height;
-	screenbuf = (u32*)(haha->pixelbuffer);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)
@@ -73,23 +50,4 @@ void background1()
 			screenbuf[(y*width)+width-1-x]=color;
 		}
 	}
-}
-
-
-
-
-void background_start()
-{
-}
-void background_stop()
-{
-}
-void background_create(void* home,void* me)
-{
-	haha = me;
-	haha->type = 0;
-	haha->id = 0x6762;
-}
-void background_delete()
-{
 }

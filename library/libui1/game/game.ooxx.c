@@ -1,12 +1,17 @@
 #define u64 unsigned long long 
 #define u32 unsigned int
 //
-void line(       int x1,int y1,int x2,int y2, u32 color);
-void circlebody( int x, int y, int r, u32 color);
-void circleframe(int x, int y, int r, u32 color);
-void backgroundcolor(u32);
-u32 getrandom();
+void line(
+	int x1,int y1,int x2,int y2, u32 color);
+void circlebody(
+	int x, int y, int r, u32 color);
+void circleframe(
+	int x, int y, int r, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
+u32 getrandom();
 void say(char*,...);
 
 
@@ -18,8 +23,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -38,7 +43,10 @@ void ooxx_read()
 	int height = haha->height;
 	int min = (width<height) ? width:height;
 
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, width, height,
+		0
+	);
         line(min/16,    min  /  3,      min *15 /16,    min   /   3,    0xffffffff);
         line(min/16,    min *2 /3,      min *15 /16,    min  *2  /3,    0xffffffff);
         line(min/3,     min  / 16,      min   /   3,    min *15 /16,    0xffffffff);

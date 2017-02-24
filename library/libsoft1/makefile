@@ -45,6 +45,10 @@ target:
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.des.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.rsa.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.c
+	$(compiler) $(cflag) libmem/libdata/draw/draw.ascii.c
+	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
+	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
+	$(compiler) $(cflag) libmem/libdata/draw/draw.unicode.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.channel.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.convert.c

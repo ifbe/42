@@ -3,16 +3,21 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(int x, int y, int size, u8 data, u32 fg, u32 bg);
-void printdecimal(int x, int y, int size, int data, u32 fg, u32 bg);
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
-void line(int,int,int,int,u32 color);
-void backgroundcolor(u32);
+void printascii(
+	int x, int y, int size, u8 data, u32 fg, u32 bg);
+void printdecimal(
+	int x, int y, int size, int data, u32 fg, u32 bg);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void rectframe(
+	int x1, int y1, int x2, int y2, u32 color);
+void rect(
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
+void line(
+	int, int, int, int, u32);
 //
 int data2decstr(u64 data,u8* string);
-unsigned int getrandom();
+u32 getrandom();
 //
 int printmemory(char*,int);
 int diary(char*, int, char*, ...);
@@ -28,8 +33,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 
@@ -208,7 +213,7 @@ static void sudoku_read_text()
 	int x,y,j,k,ret,color;
 	int width=haha->width;
 	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<9;y++)
@@ -275,7 +280,7 @@ static void sudoku_read_pixel()
 }
 static void sudoku_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)

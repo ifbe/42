@@ -3,11 +3,17 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(int x, int y, int size, u8 data, u32 fg, u32 bg);
-void circlebody(int x, int y, int r, u32 color);
-void circleframe(int x, int y, int r, u32 color);
-void line(int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor(u32);
+void printascii(
+	int x, int y, int size, u8 data, u32 fg, u32 bg);
+void circlebody(
+	int x, int y, int r, u32 color);
+void circleframe(
+	int x, int y, int r, u32 color);
+void line(
+	int x1,int y1,int x2,int y2, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 u32 getrandom();
 //
 int diary(void*, int, void*, ...);
@@ -22,8 +28,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -83,7 +89,7 @@ static int htmlcircle(char* p, int x, int y)
 static void xiangqi_read_html()
 {
 	int x,y;
-	char* p = (char*)(haha->pixelbuffer) + 0x1000;
+	char* p = (char*)(haha->buffer) + 0x1000;
 
 	p += diary(
 		p, 0x1000,
@@ -110,7 +116,7 @@ static void xiangqi_read_text()
 	int x,y,j,k,ret,color;
 	int width=haha->width;
 	int height=haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 	u8* q;
 
 	//haha
@@ -154,7 +160,7 @@ void xiangqi_read_pixel()
 	int x,y;
 	int cx,cy,half;
 	u32 black, brown, red;
-	u32 chesscolor, fontcolor;
+	u32 chesscolor, fontcolor, temp;
 
 	//
 	cx = (haha->width)/2;
@@ -164,18 +170,22 @@ void xiangqi_read_pixel()
 
 	//
 	black=0;
-	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
+	if( ((haha->format)&0xffffffff) == 0x61626772)
 	{
-		backgroundcolor(0x256f8d);
+		temp = 0x256f8d;
 		red = 0xff;
 		brown = 0x36878d;
 	}
 	else
 	{
-		backgroundcolor(0x8d6f25);
+		temp = 0x8d6f25;
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		temp
+	);
 
 	//heng
 	for(y=-5;y<5;y++)
@@ -245,7 +255,7 @@ void xiangqi_read_pixel()
 }
 static void xiangqi_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)

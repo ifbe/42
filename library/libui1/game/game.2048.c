@@ -3,15 +3,19 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printdecimal(int x, int y, int size, int data, u32 fg, u32 bg);
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
-void line(int,int,int,int,u32 color);
-void backgroundcolor(u32);
+void printdecimal(
+	int x, int y, int size, int data, u32 fg, u32 bg);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void rectframe(
+	int x1, int y1, int x2, int y2, u32 color);
+void rect(
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
+void line(
+	int,int,int,int,u32 color);
 //
 int data2decstr(u64 data,u8* string);
-unsigned int getrandom();
+u32 getrandom();
 //
 int printmemory(void*, int);
 int diary(void*, int, void*, ...);
@@ -27,8 +31,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 
@@ -88,7 +92,7 @@ static void cubie(int x,int y,int z)
 
 	//
 	color = the2048_color(z);
-	if( ( (haha->pixelformat)&0xffffffff) == 0x61626772)	//bgra->rgba
+	if( ( (haha->format)&0xffffffff) == 0x61626772)	//bgra->rgba
 	{
 		color	= 0xff000000
 			+ ((color&0xff)<<16)
@@ -122,7 +126,7 @@ static void the2048_read_text()
 
 	int w = haha->width;
 	int h = haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
@@ -160,7 +164,7 @@ static void the2048_read_html()
 {
 	int x,y;
 	u32 color;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 	int (*table)[4] = buffer + num*16*4;
 
 	*(u32*)p = 0x6c6d7468;
@@ -214,7 +218,7 @@ static void the2048_read_pixel()
 }
 static void the2048_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 	//say("(@2048.read)temp=%x\n",temp);
 
 	//text

@@ -3,13 +3,21 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(int x1,int y1,int size,char ch,u32 fg,u32 bg);
-void rectbody(int x1,int y1,int x2,int y2,u32 color);
-void rectframe(int x1,int y1,int x2,int y2,u32 color);
-void rect(int x1,int y1,int x2,int y2,u32 body,u32 frame);
-void circlebody(int x,int y,int r,u32 color);
-void circleframe(int x,int y,int r,u32 color);
-void backgroundcolor();
+void printascii(
+	int x1,int y1,int size,char ch,u32 fg,u32 bg);
+void rectbody(
+	int x1,int y1,int x2,int y2,u32 color);
+void rectframe(
+	int x1,int y1,int x2,int y2,u32 color);
+void rect(
+	int x1,int y1,int x2,int y2,u32 body,u32 frame);
+void circlebody(
+	int x,int y,int r,u32 color);
+void circleframe(
+	int x,int y,int r,u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
 void say(char*,...);
 
@@ -22,8 +30,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -38,7 +46,6 @@ static void keyboard()
 	int width = haha->width;
 	int height = haha->height;
 
-	backgroundcolor(0x444444);
 	for(x=0;x<32;x++)
 	{
 		rectframe(
@@ -71,7 +78,6 @@ static void joystick()
 	int width = haha->width;
 	int height = haha->height;
 
-	backgroundcolor(0x444444);
 	for(j=0;j<32;j++)
 	{
 		rectframe(
@@ -122,7 +128,6 @@ static void touchpad()
 	int width = haha->width;
 	int height = haha->height;
 
-	backgroundcolor(0x444444);
 	for(j=0;j<32;j++)
 	{
 		rectframe( 
@@ -141,13 +146,13 @@ static void control_read_html()
 static void control_read()
 {
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if( ( (haha->format)&0xffffffff) == 0x74786574)
 	{
 		control_read_text();
 	}
 
 	//html
-	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
 	{
 		control_read_html();
 	}
@@ -155,6 +160,11 @@ static void control_read()
 	//pixel
 	else
 	{
+		backgroundcolor(
+			haha->buffer, 0, haha->width, haha->height,
+			0x444444
+		);
+
 		if(aaaa == 0)joystick();
 		else if(aaaa == 1)keyboard();
 		else if(aaaa == 2)touchpad();

@@ -5,9 +5,12 @@
 //
 void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 void printdecimal(int data,int xyz,u32 fg,u32 bg);
-void backgroundcolor(u32);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32
+);
 //
-unsigned int getrandom();
+u32 getrandom();
 int diary(char*,int,char*,...);
 void printmemory(char*,int);
 void say(char*,...);
@@ -22,8 +25,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -81,7 +84,7 @@ static void tetris_read_text()
 	int x,y;
 	int width=haha->width;
 	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
 	for(x=0;x<width*height*4;x++)p[x]=0;
 	if(height>=40)
@@ -133,7 +136,7 @@ static int htmlcubie(char* p, int x, int y)
 static void tetris_read_html()
 {
 	int x,y;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -189,7 +192,7 @@ static void tetris_read_pixel()
 }
 static void tetris_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)
@@ -676,7 +679,10 @@ static void tetris_start()
 {
 	//
 	int x;
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 
 	//game data
 	for(x= 0*32;x<40*32;x++) table[x]=0;

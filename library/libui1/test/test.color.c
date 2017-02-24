@@ -16,8 +16,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -38,7 +38,7 @@ static void color_read_pixel()
 {
 	int x,y,min;
 	u32 color;
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 
 	if( ((haha->width) <= 0) && ((haha->height) <= 0) )
 	{
@@ -51,7 +51,7 @@ static void color_read_pixel()
 	}
 
 	//(左边)各种颜色的色板
-	if( ((haha->pixelformat)&0xffffffff) == 0x61626772)
+	if( ((haha->format)&0xffffffff) == 0x61626772)
 	{
 		for(y=0;y<min;y++)
 		{
@@ -121,7 +121,7 @@ static void color_read_pixel()
 }
 static void color_read_html()
 {
-	u32* screenbuf = (u32*)(haha->pixelbuffer);
+	u32* screenbuf = (u32*)(haha->buffer);
 
 	color_read_pixel();
 	screenbuf[0]=0;
@@ -131,7 +131,7 @@ static void color_read_text()
 }
 static void color_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)

@@ -23,8 +23,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -53,7 +53,7 @@ void camera_read_html()
 void camera_read_pixel()
 {
 	int j;
-	u8* screen = (u8*)haha->pixelbuffer;
+	u8* screen = (u8*)haha->buffer;
 	if(vision == 0)return;
 
 	for(j=0;j<640*480;j++)vision[j*2]=256-vision[j*2];
@@ -65,7 +65,7 @@ void camera_read_pixel()
 }
 static void camera_read()
 {
-        u32 temp = (haha->pixelformat)&0xffffffff;
+        u32 temp = (haha->format)&0xffffffff;
 
         //text
         if(temp == 0x74786574)

@@ -5,9 +5,13 @@
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
 //libui1
-void rectbody(int x1, int y1, int x2, int y2, u32 color);
-void line(int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(u32);
+void rectbody(
+	int x1, int y1, int x2, int y2, u32 color);
+void line(
+	int x1, int y1, int x2, int y2, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -36,8 +40,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -130,7 +134,10 @@ static void spectrum_read_pixel()
 	int x,y;
 	int width = haha->width;
 	int height = haha->height;
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, width, height,
+		0
+	);
 
 	for(x=0;x<1024;x++)
 	{
@@ -160,7 +167,7 @@ static void spectrum_read_text()
 	int x,y;
 	int w = haha->width;
 	int h = haha->height;
-	u8* p = (u8*)(haha->pixelbuffer);
+	u8* p = (u8*)(haha->buffer);
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
@@ -174,7 +181,7 @@ static void spectrum_read_text()
 }
 static void spectrum_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 
 	//text
 	if(temp == 0x74786574)
@@ -212,12 +219,9 @@ void spectrum_start()
 {
 	int j;
 	maxpower = 65536;
-	backgroundcolor(0);
 
 	//
 	startsound(44100, 2, pcmin, 0x100000);
-
-	//
 	spectrum_random();
 }
 void spectrum_stop()

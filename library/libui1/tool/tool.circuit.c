@@ -3,9 +3,13 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void rectframe(int x1, int y1, int x2, int y2, u32 color);
-void line(int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor();
+void rectframe(
+	int x1, int y1, int x2, int y2, u32 color);
+void line(
+	int x1,int y1,int x2,int y2, u32 color);
+void backgroundcolor(
+	u64, u64, u64, u64,
+	u32);
 //
 void say(char*,...);
 
@@ -19,8 +23,8 @@ static struct temp{
         u64 start;
         u64 end;
 
-        u64 pixelbuffer;
-        u64 pixelformat;
+        u64 buffer;
+        u64 format;
         u64 width;
         u64 height;
 }*haha;
@@ -83,7 +87,10 @@ static void circuit_read_pixel()
 	int batty = haha->height/2;
 	int resx = haha->width*2/3;
 	int resy = haha->height/2;
-	backgroundcolor(0);
+	backgroundcolor(
+		haha->buffer, 0, haha->width, haha->height,
+		0
+	);
 
 	//5v battery
 	battery(battx, batty, &c1);
@@ -101,13 +108,13 @@ static void circuit_read_text()
 static void circuit_read()
 {
 	//text
-	if( ( (haha->pixelformat)&0xffffffff) == 0x74786574)
+	if( ( (haha->format)&0xffffffff) == 0x74786574)
 	{
 		circuit_read_text();
 	}
 
 	//html
-	else if( ( (haha->pixelformat)&0xffffffff) == 0x6c6d7468)
+	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
 	{
 		circuit_read_html();
 	}

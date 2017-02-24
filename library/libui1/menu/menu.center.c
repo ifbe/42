@@ -22,8 +22,8 @@ static struct temp{
 	u64 start;
 	u64 end;
 
-	u64 pixelbuffer;
-	u64 pixelformat;
+	u64 buffer;
+	u64 format;
 	u64 width;
 	u64 height;
 }*haha;
@@ -39,7 +39,7 @@ static void menu_read_text()
 	int x,y;
 	int width=haha->width;
 	int height=haha->height;
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 	char* src;
 	char* dst;
 
@@ -143,7 +143,7 @@ static void menu_read_pixel()
 }
 static void menu_read_html()
 {
-	char* p = (char*)(haha->pixelbuffer);
+	char* p = (char*)(haha->buffer);
 
         *(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -170,7 +170,7 @@ static void menu_read_html()
 }
 static void menu_read()
 {
-	u32 temp = (haha->pixelformat)&0xffffffff;
+	u32 temp = (haha->format)&0xffffffff;
 	//say("temp=%x\n",temp);
 
 	//text
