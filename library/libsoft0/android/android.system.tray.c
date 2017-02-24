@@ -1,0 +1,6 @@
+void createtray()
+{
+}
+void deletetray()
+{
+}

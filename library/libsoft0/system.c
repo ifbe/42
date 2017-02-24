@@ -2,21 +2,15 @@
 #define DW unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-//file
-int createfile();
-int deletefile();
-//folder
-int createfolder();
-int deletefolder();
-//process
-int createprocess();
-int deleteprocess();
 //random
 int createrandom();
 int deleterandom();
 //signal
 int createsignal();
 int deletesignal();
+//tray
+int createtray();
+int deletetray();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -50,6 +44,7 @@ void systemcreate(u8* type, u8* addr)
 	//
 	createrandom();
 	createsignal();
+	createtray();
 
 	//
 	say("[8,c):createed system\n");
@@ -60,6 +55,7 @@ void systemdelete()
 	say("[8,c):deleteing system\n");
 
 	//
+	deletetray();
 	deletesignal();
 	deleterandom();
 }

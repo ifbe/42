@@ -16,7 +16,9 @@ bare:
 	$(compiler) $(cflag) bare/bare.system.process.c
 	$(compiler) $(cflag) bare/bare.system.random.c
 	$(compiler) $(cflag) bare/bare.system.signal.c
+	$(compiler) $(cflag) bare/bare.system.thread.c
 	$(compiler) $(cflag) bare/bare.system.time.c
+	$(compiler) $(cflag) bare/bare.system.tray.c
 	$(compiler) $(cflag) bare/bare.wire.bt.c
 	$(compiler) $(cflag) bare/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/bare.wire.spi.c
@@ -35,8 +37,9 @@ bsd:
 	$(compiler) $(cflag) bsd/bsd.system.process.c
 	$(compiler) $(cflag) bsd/bsd.system.random.c
 	$(compiler) $(cflag) bsd/bsd.system.signal.c
-	$(compiler) $(cflag) bsd/bsd.system.time.c
 	$(compiler) $(cflag) bsd/bsd.system.thread.c
+	$(compiler) $(cflag) bsd/bsd.system.time.c
+	$(compiler) $(cflag) bsd/bsd.system.tray.c
 	$(compiler) $(cflag) system.c
 
 .PHONY:linux
@@ -56,6 +59,7 @@ linux:
 	$(compiler) $(cflag) linux/linux.system.signal.c
 	$(compiler) $(cflag) linux/linux.system.thread.c
 	$(compiler) $(cflag) linux/linux.system.time.c
+	$(compiler) $(cflag) linux/linux.system.tray.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
@@ -80,8 +84,9 @@ mac:
 	$(compiler) $(cflag) mac/mac.system.process.c
 	$(compiler) $(cflag) mac/mac.system.random.c
 	$(compiler) $(cflag) mac/mac.system.signal.c
-	$(compiler) $(cflag) mac/mac.system.time.c
 	$(compiler) $(cflag) mac/mac.system.thread.c
+	$(compiler) $(cflag) mac/mac.system.time.c
+	$(compiler) $(cflag) mac/mac.system.tray.c
 	$(compiler) $(cflag) mac/mac.wire.bt.c
 	$(compiler) $(cflag) mac/mac.wire.i2c.c
 	$(compiler) $(cflag) mac/mac.wire.gpio.c
@@ -106,8 +111,9 @@ win:
 	$(compiler) $(cflag) win/win.system.process.c
 	$(compiler) $(cflag) win/win.system.random.c
 	$(compiler) $(cflag) win/win.system.signal.c
-	$(compiler) $(cflag) win/win.system.time.c
 	$(compiler) $(cflag) win/win.system.thread.c
+	$(compiler) $(cflag) win/win.system.time.c
+	$(compiler) $(cflag) win/win.system.tray.c
 	$(compiler) $(cflag) win/win.wire.bt.c
 	$(compiler) $(cflag) win/win.wire.i2c.c
 	$(compiler) $(cflag) win/win.wire.gpio.c

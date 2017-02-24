@@ -8,11 +8,6 @@
 #define WM_POINTERUPDATE 0x0245
 #define WM_POINTERDOWN 0x0246
 #define WM_POINTERUP 0x0247
-#define WM_TRAY (WM_USER + 1)
-#define menu1 0x1111
-#define menu2 0x2222
-#define menu3 0x3333
-#define menu4 0x4444
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
@@ -21,7 +16,6 @@
 u64 startthread(void*, void*);
 void stopthread();
 //
-void windowwrite();
 void eventwrite(u64,u64,u64,u64);
 void say(char* fmt,...);
 
@@ -37,13 +31,7 @@ struct windata
 	u64 h;
 	u64 thread;
 };
-//console
-static HWND console;		//console window
-//tray
-static HWND dummy;
-static NOTIFYICONDATA nid;	//托盘属性 
-static HMENU hMenu;		//托盘菜单
-//window
+//
 static HWND window;				//my window
 static HDC realdc;
 static BITMAPINFO info;
@@ -473,119 +461,6 @@ DWORD WINAPI uievent(struct windata* p)
 
 
 
-LRESULT CALLBACK trayproc(HWND hd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-	switch(msg)
-	{
-	case WM_TRAY:
-	{
-	switch(lparam) 
-	{
-		case WM_LBUTTONDOWN:
-		{
-			if( IsWindowVisible(console) )ShowWindow(console, SW_HIDE);
-			else ShowWindow(console, SW_SHOW);
-			break;
-		}
-		case WM_RBUTTONDOWN: 
-		{ 
-			//获取鼠标坐标 
-			POINT pt;
-			GetCursorPos(&pt); 
- 
-			//解决在菜单外单击左键菜单不消失的问题 
-			SetForegroundWindow(hd); 
-
-			//显示并获取选中的菜单 
-			int cmd=TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, 0, hd,0); 
-			if(cmd == menu1)
-			{
-				if( IsWindowVisible(console) )ShowWindow(console, SW_HIDE);
-				else ShowWindow(console, SW_SHOW);
-			}
-			else if(cmd == menu2)
-			{
-				if( IsWindowVisible(window) )ShowWindow(window, SW_HIDE);
-				else ShowWindow(window, SW_SHOW);
-			}
-			else if(cmd == menu3)
-			{
-				//lstrcpy(nid.szInfoTitle, "message");
-				lstrcpy(nid.szInfo, TEXT("i am groot"));
-				nid.uTimeout = 0;
-				Shell_NotifyIcon(NIM_MODIFY, &nid);
-			}
-			else if(cmd == menu4)
-			{
-				PostMessage(window, WM_DESTROY, 0, 0);
-			}
-			break;
-		}//case WM_RBUTTONDOWN
-	}//switch(lparam) 
-	}//case WM_TRAY
-	}//switch(msg)
-
-	return DefWindowProc(hd, msg, wparam, lparam);
-}
-DWORD WINAPI createtray()
-{
-	MSG msg;
-	WNDCLASS wc;
-	char* str = "MessageOnly";
-
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = trayproc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = 0;				//hInst;
-	wc.hIcon = LoadIcon(NULL,IDI_WINLOGO);
-	wc.hCursor = LoadCursor(NULL,IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOWFRAME;
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = str;
-	if(!RegisterClass(&wc))return 0;
-
-	//the dummy
-	dummy = CreateWindow(
-		str, str, 0,
-		0, 0, 0, 0,
-		HWND_MESSAGE, 0, 0, 0
-	);
-
-	//the tray
-	nid.cbSize = sizeof(NOTIFYICONDATA);
-	nid.hWnd = dummy;
-	nid.uID = 0xabef;		//ID_TRAY_APP_ICON;
-	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
-	nid.uCallbackMessage = WM_TRAY;
-	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO);
-	lstrcpy(nid.szTip, "i am groot!");
-	Shell_NotifyIcon(NIM_ADD, &nid);
-	hMenu = CreatePopupMenu();    //生成托盘菜单 
-	AppendMenu(hMenu, MF_STRING, menu1, TEXT("console")); 
-	AppendMenu(hMenu, MF_STRING, menu2, TEXT("window")); 
-	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
-	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit"));
-
-	//forever
-	while(GetMessage(&msg,NULL,0,0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-}
-void deletetray()
-{
-	Shell_NotifyIcon(NIM_DELETE, &nid);
-}
-
-
-
-
-
-
-
-
 void windowread()
 {
 }
@@ -643,16 +518,7 @@ void windowcreate()
 {
 	int x;
 	for(x=0;x<10;x++)pointerid[x] = -1;
-
-	//console
-	console = GetConsoleWindow();
-	//ShowWindow(console, SW_SHOW);
-
-	//tray
-	startthread(createtray, 0);
 }
 void windowdelete()
 {
-	//关闭托盘
-	deletetray();
 }
