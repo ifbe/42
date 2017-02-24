@@ -11,6 +11,8 @@ int windowchoose();
 int windowread();
 int windowwrite(void*);
 //
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -32,11 +34,11 @@ static int id = 0;
 
 
 
-int displayread()
+u64 displayread()
 {
 	return 0;
 }
-int displaywrite()
+u64 displaywrite()
 {
 	//if(local) {
 		windowwrite( &(sc[id]) );
@@ -47,15 +49,40 @@ int displaywrite()
 	//}
 	return 0;
 }
-int displaylist()
+u64 displaylist(u64 dispid, u64 property)
 {
+	int j;
+	if(ncmp("buffer", &property, 8) == 0)return sc[dispid].buf;
+	else if(ncmp("format", &property, 8) == 0)return sc[dispid].fmt;
+	else if(ncmp("width" , &property, 8) == 0)return sc[dispid].w;
+	else if(ncmp("height", &property, 8) == 0)return sc[dispid].h;
+
+	//if(property==unknown)
+	for(j=0;j<10;j++)
+	{
+		if(sc[j].fmt == 0)break;
+
+		say(
+		"%llx,%llx,%llx,%llx\n",
+		sc[j].buf,
+		sc[j].fmt,
+		sc[j].w,
+		sc[j].h
+		);
+	}
 	return 0;
 }
-int displaychoose()
+u64 displaychoose(u64 dispid, u64 property, u64 what)
 {
-	return 0;
+	if(ncmp("buffer", &property, 8) == 0)sc[dispid].buf = what;
+	else if(ncmp("format", &property, 8) == 0)sc[dispid].fmt = what;
+	else if(ncmp("width" , &property, 8) == 0)sc[dispid].w = what;
+	else if(ncmp("height", &property, 8) == 0)sc[dispid].h = what;
+	else what = 0;	//fail
+
+	return what;
 }
-int displaystart(void* buf, void* fmt, int w, int h)
+u64 displaystart(void* buf, void* fmt, int w, int h)
 {
 	id = 0;
 	sc[id].fmt = 0x6267726138383838;	//"bgra8888"
@@ -65,7 +92,7 @@ int displaystart(void* buf, void* fmt, int w, int h)
 
 	return id;
 }
-int displaystop()
+u64 displaystop()
 {
 }
 void displaycreate(u8* type, u8* addr)
