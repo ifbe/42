@@ -16,33 +16,39 @@
 u64 startthread(void*, void*);
 void stopthread();
 //
-void eventwrite(u64,u64,u64,u64);
-void say(char* fmt,...);
+void eventwrite(u64, u64, u64, u64);
+void say(char* fmt, ...);
 
 
 
 
-//
+//global
+static WNDCLASS wc;
+static char* AppTitle="haha";
+static char dragpath[MAX_PATH];
+
+//each
 struct windata
 {
 	u64 buf;
 	u64 fmt;
 	u64 w;
 	u64 h;
+
 	u64 thread;
+	HWND wnd;
+	HDC dc;
 };
-//
-static HWND window;				//my window
-static HDC realdc;
+
+//temp
 static BITMAPINFO info;
 static TOUCHINPUT touchpoint[10];
 static int pointercount=0;
 static int pointerid[10];
-//
-static char dragpath[MAX_PATH];
-static int width=512;
-static int height=512;
-static int leftdown=0,rightdown=0;
+
+//temp
+static int leftdown=0;
+static int rightdown=0;
 static POINT pt, pe;
 static RECT rt, re;
 
@@ -71,8 +77,9 @@ void bitmapinfo(int w, int h)
 	info.bmiColors[0].rgbRed=255;
 	info.bmiColors[0].rgbReserved=255;
 }
-LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	struct windata* data = (void*)GetWindowLongPtr(wnd, GWLP_USERDATA);
 	switch (msg)
 	{
 		//拖拽文件
@@ -87,10 +94,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			eventwrite(
-			(u64)dragpath,
-			0x656c6966, 0, 0
-			);
+			eventwrite((u64)dragpath, 0x656c6966, 0, 0);
 			return 0;
 		}
 
@@ -112,7 +116,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 				}
 			}
-			//say("key:%x\n",wparam);
+			//say("key:%x\n", wparam);
 			return 0;
 		}
 
@@ -172,7 +176,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
-			ScreenToClient(window, &pt);
+			ScreenToClient(wnd, &pt);
 
 			eventwrite(
 			pt.x + (pt.y<<16) + ((u64)x<<48),
@@ -195,7 +199,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
-			ScreenToClient(window, &pt);
+			ScreenToClient(wnd, &pt);
 
 			eventwrite(
 			pt.x + (pt.y<<16) + ((u64)x<<48),
@@ -214,7 +218,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
-			ScreenToClient(window, &pt);
+			ScreenToClient(wnd, &pt);
 
 			eventwrite(
 			pt.x + (pt.y<<16) + ((u64)x<<48),
@@ -227,7 +231,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_MOUSEWHEEL:
 		{
 			GetCursorPos(&pt);
-			ScreenToClient(window, &pt);
+			ScreenToClient(wnd, &pt);
 
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
@@ -260,7 +264,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 				{
 					re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
 					re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
-					MoveWindow(window,re.left,re.top,re.right,re.bottom,1);// 移动窗口
+					MoveWindow(wnd, re.left, re.top, re.right, re.bottom, 1);// 移动窗口
 				}
 
 				else		//只是左键在拖动
@@ -271,7 +275,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 					0x406d, 0, 0
 					);
 
-					//say("%d,%d\n",pe.x,pe.y);
+					//say("%d,%d\n", pe.x, pe.y);
 					GetCursorPos(&pt);	// 获取鼠标当前位置
 				}
 			}
@@ -307,7 +311,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(rightdown>0)
 			{
 				leftdown=rightdown=0xff;
-				GetWindowRect(window,&rt);   // 获取窗口位置与大小
+				GetWindowRect(wnd, &rt);   // 获取窗口位置与大小
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
 			}
@@ -323,7 +327,7 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(leftdown>0)
 			{
 				leftdown=rightdown=0xff;
-				GetWindowRect(window,&rt);   // 获取窗口位置与大小
+				GetWindowRect(wnd, &rt);   // 获取窗口位置与大小
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
 			}
@@ -333,23 +337,19 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		//窗口尺寸改变
 		case WM_SIZE:
 		{
-			width=lparam&0xffff;
-			height=(lparam>>16)&0xffff;
-			printf("wm_size:%d,%d\n",width,height);
+			int w = lparam&0xffff;
+			int h = (lparam>>16)&0xffff;
+			printf("wm_size:%d,%d\n", w, h);
 
-			bitmapinfo(width, height);
+			if(data != 0)
+			{
+				data->w = w;
+				data->h = h;
+			}
+
+			bitmapinfo(w, h);
 			eventwrite(lparam, 0x657a6973, 0, 0);
 			return 0;
-		}
-
-		//显示
-		case WM_PAINT:
-		{
-			say("WM_PAINT\n");
-			//windowwrite(p);
-
-			//这里必须调这个函数，不然cpu占用满
-			return DefWindowProc(window, msg, wparam, lparam);
 		}
 
 		//摧毁
@@ -359,40 +359,41 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//。。。。。。。
-		default:
+		//显示
+		case WM_PAINT:
 		{
-			return DefWindowProc(window, msg, wparam, lparam);
+			say("WM_PAINT\n");
+			goto theend;
 		}
 	}
+
+theend:
+	return DefWindowProc(wnd, msg, wparam, lparam);
 }
-int createmywindow()
+int registermyclass()
 {
-	//Registering Class
-	char *AppTitle="haha";
-	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = 0;				//hInst;
-	wc.hIcon = LoadIcon(NULL,IDI_WINLOGO);
-	wc.hCursor = LoadCursor(NULL,IDC_ARROW);
+	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOWFRAME;
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = AppTitle;
 	if(!RegisterClass(&wc))return 0;
 
+	return 1;
+}
+HWND createmywindow(int w, int h)
+{
 	//创建窗口
-	window = CreateWindow(
+	HWND window = CreateWindow(
 		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-		100, 100, width+16, height+39,
+		100, 100, w+16, h+38,
 		NULL, NULL, 0, NULL);
 	if(!window)return 0;
-
-	//拿dc
-	realdc=GetDC(window);
-	if(!realdc)return 0;
 
 	//透明
 	LONG t = GetWindowLong(window, GWL_EXSTYLE);
@@ -400,17 +401,16 @@ int createmywindow()
 	SetLayeredWindowAttributes(window, 0, 0xf8, LWA_ALPHA);
 
 	//显示窗口
-	ShowWindow(window,SW_SHOW);
+	ShowWindow(window, SW_SHOW);
 	UpdateWindow(window);
 
-	//窗口标题
-	//SetWindowText(window,"hahahaha");
+	return window;
 }
-void enabledrag()
+void enabledrag(HWND wnd)
 {
-	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT,u32);
+	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT, u32);
 
-	DragAcceptFiles(window, TRUE);
+	DragAcceptFiles(wnd, TRUE);
 
 	//1
 	HMODULE hUser = LoadLibraryA("user32.dll");
@@ -422,8 +422,8 @@ void enabledrag()
 	if(!proc){say("can't drag\n");exit(-1);}
 
 	//3
-	proc(WM_COPYDATA,1);
-	proc(WM_DROPFILES,1);
+	proc(WM_COPYDATA, 1);
+	proc(WM_DROPFILES, 1);
 	proc(0x0049, 1);
 }
 DWORD WINAPI uievent(struct windata* p)
@@ -431,25 +431,33 @@ DWORD WINAPI uievent(struct windata* p)
 	MSG msg;
 
 	//图形窗口
-	createmywindow();
+	p->wnd = createmywindow(p->w, p->h);
+	SetWindowLongPtr(p->wnd, GWLP_USERDATA, (u64)p);
 
 	//打开拖拽
-	enabledrag();
+	enabledrag(p->wnd);
 
 	//打开触摸
-	RegisterTouchWindow(window, 0);
+	RegisterTouchWindow(p->wnd, 0);
 
 	//bmp
+	p->dc = GetDC(p->wnd);
 	bitmapinfo(p->w, p->h);
 
 	//一个一个处理
-	while(GetMessage(&msg,NULL,0,0))
+	while(GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
-	//收不到就返回失败消息
+	//关闭触摸
+	UnregisterTouchWindow(p->wnd);
+
+	//释放dc
+	ReleaseDC(p->wnd, p->dc);
+
+	//退出main
 	eventwrite(0, 0, 0, 0);
 	return 0;
 }
@@ -468,7 +476,7 @@ void windowwrite(struct windata* p)
 {
 	//写屏
 	SetDIBitsToDevice(
-		realdc,
+		p->dc,
 		0, 0,			//目标位置x,y
 		p->w, p->h,		//dib宽,高
 		0, 0,			//来源起始x,y
@@ -485,39 +493,36 @@ void windowlist()
 void windowchange()
 {
 	//RECT rc;
-	//GetWindowRect(window,&rc);
-	//MoveWindow(window , rc.left , rc.top , width+16 , height+40 , 0);
+	//GetWindowRect(window, &rc);
+	//MoveWindow(window, rc.left, rc.top, width+16, height+39, 0);
+
+	//窗口标题
+	//SetWindowText(window, "hahahaha");
 }
 void windowstart(struct windata* p)
 {
-	//构造info
+	int j = sizeof(struct windata);
+	if(j > 256)
+	{
+		printf("error@%d>256\n", j);
+		return;
+	}
+
 	p->buf = (u64)malloc(2048*1024*4);
 	p->w = 512;
 	p->h = 512;
-/*
-	SetWindowPos(
-		window, 0, 0, 0,
-		width+16, height+39,
-		SWP_NOMOVE|SWP_NOZORDER|SWP_NOOWNERZORDER
-	);
-*/
-	//
 	p->thread = startthread(uievent, p);
 }
 void windowstop()
 {
-	//ShowWindow(window,SW_SHOW);
-
-	//关闭触摸
-	UnregisterTouchWindow(window);
-
-	//释放dc
-	ReleaseDC(window,realdc);
 }
 void windowcreate()
 {
 	int x;
 	for(x=0;x<10;x++)pointerid[x] = -1;
+
+	//
+	registermyclass();
 }
 void windowdelete()
 {
