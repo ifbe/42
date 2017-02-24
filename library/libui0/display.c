@@ -32,10 +32,11 @@ static int id = 0;
 
 
 
-void displayread()
+int displayread()
 {
+	return 0;
 }
-void displaywrite()
+int displaywrite()
 {
 	//if(local) {
 		windowwrite( &(sc[id]) );
@@ -44,23 +45,27 @@ void displaywrite()
 	//if(net) {
 		//netdsp_write();
 	//}
+	return 0;
 }
-void displaylist()
+int displaylist()
 {
+	return 0;
 }
-void displaychoose()
+int displaychoose()
 {
+	return 0;
 }
-void displaystart(int j)
+int displaystart(void* buf, void* fmt, int w, int h)
 {
-	id = j;
-
+	id = 0;
 	sc[id].fmt = 0x6267726138383838;	//"bgra8888"
 	sc[id].w = 512;
 	sc[id].h = 512;
 	windowstart( &(sc[id]) );
+
+	return id;
 }
-void displaystop()
+int displaystop()
 {
 }
 void displaycreate(u8* type, u8* addr)

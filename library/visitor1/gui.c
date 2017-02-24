@@ -15,7 +15,7 @@ int characterread();
 int characterlist(char*);
 int charactercommand(char* p);
 //libui0
-void* displaystart(int);
+int displaystart(void*, void*, int, int);
 int displaystop();
 int displaylist();
 int displaychoose();
@@ -68,8 +68,12 @@ int main(int argc, char* argv[])
 	say("ui@%llx\n", (u64)ui);
 
 	//config
-	displaystart(0);
-	characterstart(ui[0].buf, &ui[0].fmt, ui[0].w, ui[0].h);
+	ui[0].buf = 0;
+	ui[0].fmt = 0x6267726138383838;
+	ui[0].w = 512;
+	ui[0].h = 512;
+	ret = displaystart(ui[0].buf, &ui[0].fmt, ui[0].w, ui[0].h);
+	ret = characterstart(ui[0].buf, &ui[0].fmt, ui[0].w, ui[0].h);
 	for(ret=1;ret<argc;ret++)
 	{
 		charactercommand(argv[ret]);

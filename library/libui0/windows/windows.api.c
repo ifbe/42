@@ -453,17 +453,6 @@ LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 	}
 }
-void createconsolewindow()
-{
-	//int ret;
-	//char buf[128];
-	//ret=GetEnvironmentVariable("cmdcmdline",buf,128);
-	//say("%x:cmdcmdline=%s\n",ret,buf);
-
-	//拿console窗口并且隐藏起来
-	consolewindow=GetConsoleWindow();
-	//ShowWindow(consolewindow,SW_HIDE);
-}
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 int createmywindow()
 {
@@ -529,7 +518,7 @@ void createtray()
 {
 	//Step 2:托盘
 	nid.cbSize = sizeof(NOTIFYICONDATA); 
-	nid.hWnd = window; 
+	nid.hWnd = GetDesktopWindow();
 	nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
 	nid.uCallbackMessage = WM_TRAY; 
@@ -555,9 +544,6 @@ DWORD WINAPI uievent(struct windata* p)
 {
 	MSG msg;
 
-	//终端窗口
-	createconsolewindow();
-
 	//图形窗口
 	createmywindow();
 
@@ -566,9 +552,6 @@ DWORD WINAPI uievent(struct windata* p)
 
 	//打开触摸
 	RegisterTouchWindow(window, 0);
-
-	//打开托盘
-	createtray();
 
 	//bmp
 	bitmapinfo(p->w, p->h);
@@ -629,11 +612,26 @@ void windowstart(struct windata* p)
 }
 void windowstop()
 {
+	//关闭触摸
+	UnregisterTouchWindow(window);
+
+	//释放dc
+	ReleaseDC(window,realdc);
 }
 void windowcreate()
 {
 	int x;
+
+	//
 	for(x=0;x<10;x++)pointerid[x] = -1;
+
+	//tray
+	createtray();
+
+	//console
+	consolewindow=GetConsoleWindow();
+	//ShowWindow(consolewindow,SW_HIDE);
+
 }
 //__attribute__((destructor)) void destorysdl()
 void windowdelete()
@@ -644,10 +642,4 @@ void windowdelete()
 
 	//关闭托盘
 	Shell_NotifyIcon(NIM_DELETE, &nid);
-
-	//关闭触摸
-	UnregisterTouchWindow(window);
-
-	//释放dc
-	ReleaseDC(window,realdc);
 }
