@@ -5,7 +5,6 @@
 #include<windowsx.h>
 #include<winuser.h>
 #include<commctrl.h>
-
 #define WM_POINTERUPDATE 0x0245
 #define WM_POINTERDOWN 0x0246
 #define WM_POINTERUP 0x0247
@@ -38,13 +37,13 @@ struct windata
 	u64 h;
 	u64 thread;
 };
-//
-static char dragpath[MAX_PATH];
+//console
 static HWND console;		//console window
-static void* conproc;
+//tray
+static HWND dummy;
 static NOTIFYICONDATA nid;	//托盘属性 
 static HMENU hMenu;		//托盘菜单
-//
+//window
 static HWND window;				//my window
 static HDC realdc;
 static BITMAPINFO info;
@@ -52,12 +51,12 @@ static TOUCHINPUT touchpoint[10];
 static int pointercount=0;
 static int pointerid[10];
 //
+static char dragpath[MAX_PATH];
+static int width=512;
+static int height=512;
 static int leftdown=0,rightdown=0;
 static POINT pt, pe;
 static RECT rt, re;
-//
-static int width=512;
-static int height=512;
 
 
 
@@ -397,10 +396,10 @@ int createmywindow()
 	if(!RegisterClass(&wc))return 0;
 
 	//创建窗口
-	window = CreateWindow(AppTitle,AppTitle,
-		WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-		100,100,width+16,height+39,
-		NULL,NULL,0,NULL);		//NULL,NULL,hInst,NULL);
+	window = CreateWindow(
+		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
+		100, 100, width+16, height+39,
+		NULL, NULL, 0, NULL);
 	if(!window)return 0;
 
 	//拿dc
@@ -474,7 +473,7 @@ DWORD WINAPI uievent(struct windata* p)
 
 
 
-LRESULT CALLBACK trayproc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK trayproc(HWND hd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	switch(msg)
 	{
@@ -484,19 +483,8 @@ LRESULT CALLBACK trayproc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		case WM_LBUTTONDOWN:
 		{
-			//window开着：显示console，隐藏window
-			if( IsWindowVisible(window) )
-			{
-				ShowWindow(console, SW_SHOW);
-				ShowWindow(window, SW_HIDE);
-			}
-
-			//window隐藏：隐藏console，显示window
-			else
-			{
-				ShowWindow(console, SW_HIDE);
-				ShowWindow(window, SW_SHOW);
-			}
+			if( IsWindowVisible(console) )ShowWindow(console, SW_HIDE);
+			else ShowWindow(console, SW_SHOW);
 			break;
 		}
 		case WM_RBUTTONDOWN: 
@@ -506,33 +494,19 @@ LRESULT CALLBACK trayproc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 			GetCursorPos(&pt); 
  
 			//解决在菜单外单击左键菜单不消失的问题 
-			SetForegroundWindow(window); 
+			SetForegroundWindow(hd); 
 
 			//显示并获取选中的菜单 
-			int cmd=TrackPopupMenu(hMenu,TPM_RETURNCMD,pt.x,pt.y,0,window,0); 
+			int cmd=TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, 0, hd,0); 
 			if(cmd == menu1)
 			{
-				if( IsWindowVisible(console) )
-				{
-					//ShowTrayMsg();
-					ShowWindow(console, SW_HIDE);
-				}
-				else
-				{
-					ShowWindow(console, SW_SHOW);
-				}
+				if( IsWindowVisible(console) )ShowWindow(console, SW_HIDE);
+				else ShowWindow(console, SW_SHOW);
 			}
 			else if(cmd == menu2)
 			{
-				if( IsWindowVisible(window) )
-				{
-					//ShowTrayMsg();
-					ShowWindow(window,SW_HIDE);
-				}
-				else
-				{
-					ShowWindow(window,SW_SHOW);
-				}
+				if( IsWindowVisible(window) )ShowWindow(window, SW_HIDE);
+				else ShowWindow(window, SW_SHOW);
 			}
 			else if(cmd == menu3)
 			{
@@ -551,30 +525,54 @@ LRESULT CALLBACK trayproc(HWND window, UINT msg, WPARAM wparam, LPARAM lparam)
 	}//case WM_TRAY
 	}//switch(msg)
 
-	return CallWindowProc(conproc, window, msg, wparam, lparam);
+	return DefWindowProc(hd, msg, wparam, lparam);
 }
-void createtray()
+DWORD WINAPI createtray()
 {
-	//console
-	console = GetConsoleWindow();
-	conproc = (WNDPROC)SetWindowLong(console, GWL_WNDPROC, trayproc);
-	ShowWindow(consolewindow, SW_HIDE);
+	MSG msg;
+	WNDCLASS wc;
+	char* str = "MessageOnly";
 
-	//Step 2:托盘
-	nid.cbSize = sizeof(NOTIFYICONDATA); 
-	nid.hWnd = console;
-	nid.uID = 0xabef;		//ID_TRAY_APP_ICON; 
-	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO; 
-	nid.uCallbackMessage = WM_TRAY; 
-	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO); 
-	lstrcpy(nid.szTip, "i am groot!"); 
-	Shell_NotifyIcon(NIM_ADD, &nid); 
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = trayproc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = 0;				//hInst;
+	wc.hIcon = LoadIcon(NULL,IDI_WINLOGO);
+	wc.hCursor = LoadCursor(NULL,IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOWFRAME;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = str;
+	if(!RegisterClass(&wc))return 0;
 
+	//the dummy
+	dummy = CreateWindow(
+		str, str, 0,
+		0, 0, 0, 0,
+		HWND_MESSAGE, 0, 0, 0
+	);
+
+	//the tray
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = dummy;
+	nid.uID = 0xabef;		//ID_TRAY_APP_ICON;
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
+	nid.uCallbackMessage = WM_TRAY;
+	nid.hIcon = LoadIcon(NULL,IDI_WINLOGO);
+	lstrcpy(nid.szTip, "i am groot!");
+	Shell_NotifyIcon(NIM_ADD, &nid);
 	hMenu = CreatePopupMenu();    //生成托盘菜单 
 	AppendMenu(hMenu, MF_STRING, menu1, TEXT("console")); 
 	AppendMenu(hMenu, MF_STRING, menu2, TEXT("window")); 
 	AppendMenu(hMenu, MF_STRING, menu3, TEXT("about")); 
-	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit")); 
+	AppendMenu(hMenu, MF_STRING, menu4, TEXT("exit"));
+
+	//forever
+	while(GetMessage(&msg,NULL,0,0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 }
 void deletetray()
 {
@@ -644,12 +642,14 @@ void windowstop()
 void windowcreate()
 {
 	int x;
-
-	//
 	for(x=0;x<10;x++)pointerid[x] = -1;
 
+	//console
+	console = GetConsoleWindow();
+	//ShowWindow(console, SW_SHOW);
+
 	//tray
-	createtray();
+	startthread(createtray, 0);
 }
 void windowdelete()
 {
