@@ -7,28 +7,42 @@ void rectframe(
 	int x1, int y1, int x2, int y2, u32 color);
 void line(
 	int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 void say(char*,...);
 
 
 
 
-//显示
-static struct temp{
+struct player
+{
         u64 type;
-        u64 id;
+        u64 name;
+        u8 temp[0x30];
+
+        u64 create;
+        u64 delete;
         u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
-
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //元件
 struct cell{
 	int type;	//battery, resistor, ...
@@ -78,19 +92,16 @@ static void autowire(int x1, int y1, int x2, int y2)
 
 
 
-static void circuit_read_html()
+static void circuit_read_html(struct window* win)
 {
 }
-static void circuit_read_pixel()
+static void circuit_read_pixel(struct window* win)
 {
-	int battx = haha->width/3;
-	int batty = haha->height/2;
-	int resx = haha->width*2/3;
-	int resy = haha->height/2;
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
+	int battx = (win->w)/3;
+	int batty = (win->h)/2;
+	int resx = (win->w)*2/3;
+	int resy = (win->h)/2;
+	backgroundcolor(win, 0);
 
 	//5v battery
 	battery(battx, batty, &c1);
@@ -102,34 +113,32 @@ static void circuit_read_pixel()
 	autowire(battx, batty-8, resx, resy-16);
 	autowire(resx, resy+16, battx, batty+8);
 }
-static void circuit_read_text()
+static void circuit_read_text(struct window* win)
 {
 }
-static void circuit_read()
+static void circuit_read(struct window* win)
 {
+	u64 fmt = win->fmt;
+
 	//text
-	if( ( (haha->format)&0xffffffff) == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		circuit_read_text();
+		circuit_read_text(win);
 	}
 
 	//html
-	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		circuit_read_html();
+		circuit_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		circuit_read_pixel();
+		circuit_read_pixel(win);
 	}
 }
-
-
-
-
-static void circuit_write(u64* who, u64* what, u64* how)
+static void circuit_write(struct event* ev)
 {
 }
 
@@ -142,10 +151,6 @@ static void circuit_list()
 static void circuit_change()
 {
 }
-
-
-
-
 static void circuit_start()
 {
 }
@@ -154,18 +159,17 @@ static void circuit_stop()
 }
 void circuit_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x74736574;
-	this[1] = 0x74697563726963;
+	p->type = 0x74736574;
+	p->name = 0x74697563726963;
 
-	this[10]=(u64)circuit_start;
-	this[11]=(u64)circuit_stop;
-	this[12]=(u64)circuit_list;
-	this[13]=(u64)circuit_change;
-	this[14]=(u64)circuit_read;
-	this[15]=(u64)circuit_write;
+	p->start = (u64)circuit_start;
+	p->stop = (u64)circuit_stop;
+	p->list = (u64)circuit_list;
+	p->choose = (u64)circuit_change;
+	p->read = (u64)circuit_read;
+	p->write = (u64)circuit_write;
 }
 void circuit_delete()
 {

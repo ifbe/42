@@ -11,29 +11,44 @@ void circleframe(
 	int x, int y, int r, u32 color);
 void line(
 	int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
-u32 getrandom();
+void backgroundcolor(void*, u32);
 //
+u32 getrandom();
 int diary(void*, int, void*, ...);
 void say(void*, ...);
 
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static char data[10][9];
 static int turn;
@@ -86,10 +101,10 @@ static int htmlcircle(char* p, int x, int y)
 		textcolor, hanzi
 	);
 }
-static void xiangqi_read_html()
+static void xiangqi_read_html(struct window* win)
 {
 	int x,y;
-	char* p = (char*)(haha->buffer) + 0x1000;
+	char* p = (char*)(win->buf) + 0x1000;
 
 	p += diary(
 		p, 0x1000,
@@ -111,15 +126,19 @@ static void xiangqi_read_html()
 		}//forx
 	}//fory
 }
-static void xiangqi_read_text()
+
+
+
+
+static void xiangqi_read_text(struct window* win)
 {
 	int x,y,j,k,ret,color;
-	int width=haha->width;
-	int height=haha->height;
-	u8* p = (u8*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 	u8* q;
 
-	//haha
+	//
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<10;y++)
 	{
@@ -155,22 +174,25 @@ static void xiangqi_read_text()
 		}
 	}
 }
-void xiangqi_read_pixel()
+
+
+
+
+void xiangqi_read_pixel(struct window* win)
 {
-	int x,y;
-	int cx,cy,half;
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
+	int x,y,half;
+	int cx = (win->w)/2;
+	int cy = (win->h)/2;
 
 	//
-	cx = (haha->width)/2;
-	cy = (haha->height)/2;
 	if(cy*9 > cx*10)half = cx/9;
 	else half = cy/10;
 
 	//
 	black=0;
-	if( ((haha->format)&0xffffffff) == 0x61626772)
+	if( ((win->fmt)&0xffffffff) == 0x61626772)
 	{
 		temp = 0x256f8d;
 		red = 0xff;
@@ -182,10 +204,7 @@ void xiangqi_read_pixel()
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		temp
-	);
+	backgroundcolor(win, temp);
 
 	//heng
 	for(y=-5;y<5;y++)
@@ -253,32 +272,32 @@ void xiangqi_read_pixel()
 		}//forx
 	}//fory
 }
-static void xiangqi_read()
+
+
+
+
+static void xiangqi_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u32 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		xiangqi_read_text();
+		xiangqi_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		xiangqi_read_html();
+		xiangqi_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		xiangqi_read_pixel();
+		xiangqi_read_pixel(win);
 	}
 }
-
-
-
-
 void xiangqi_move(int px, int py, int x, int y)
 {
 	int min, max, t, u;
@@ -824,35 +843,36 @@ int xiangqi_pickup(int x, int y)
 
 	return 0;
 }
-void xiangqi_write(u64* who, u64* what, u64* key)
+void xiangqi_write(struct event* ev)
 {
-	int cx, cy, half;
-	int x, y, ret;
+	int x, y, half, ret;
+	int cx = 256;
+	int cy = 256;
+	u64 what = ev->what;
+	u64 key = ev->why;
 
-	cx = (haha->width)/2;
-	cy = (haha->height)/2;
 	if(cy*9 > cx*10)half = cx/9;
 	else half = cy/10;
 
-	if(*what == 0x64626b)
+	if(what == 0x64626b)
 	{
-		if(*key == 0x25)	//left
+		if(key == 0x25)	//left
 		{
 			if(qx<1)return;
 			qx--;
 		}
-		else if(*key == 0x26)	//up
+		else if(key == 0x26)	//up
 		{
 			if(qy<1)return;
 			qy--;
 		}
-		else if(*key == 0x27)	//right
+		else if(key == 0x27)	//right
 		{
 			if(qx<0)return;
 			if(qx>=8)return;
 			qx++;
 		}
-		else if(*key == 0x28)	//down
+		else if(key == 0x28)	//down
 		{
 			if(qy<0)return;
 			if(qy>=9)return;
@@ -860,9 +880,9 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 		}
 	}
 
-	else if(*what == 0x72616863)
+	else if(what == 0x72616863)
 	{
-		if(*key == 0x20)
+		if(key == 0x20)
 		{
 			ret = xiangqi_pickup(qx, qy);
 			if(ret > 0)return;
@@ -872,10 +892,10 @@ void xiangqi_write(u64* who, u64* what, u64* key)
 		}
 	}
 
-	else if(*what == 0x2d6d)
+	else if(what == 0x2d6d)
 	{
-		x = (*key) & 0xffff;
-		y = ( (*key) >> 16 ) & 0xffff;
+		x = key & 0xffff;
+		y = (key >> 16) & 0xffff;
 		//say("%d,%d => ",x,y);
 
 		x = (x - cx + (9*half) )/half/2;
@@ -906,10 +926,6 @@ static void xiangqi_list()
 static void xiangqi_choose()
 {
 }
-
-
-
-
 static void xiangqi_start()
 {
 	int j;
@@ -953,24 +969,19 @@ static void xiangqi_start()
 static void xiangqi_stop()
 {
 }
-
-
-
-
-void xiangqi_create(char* base,void* addr)
+void xiangqi_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x656d6167;
-	this[1] = 0x6971676e616978;
+	p->type = 0x656d6167;
+	p->name = 0x6971676e616978;
 
-	this[10]=(u64)xiangqi_start;
-	this[11]=(u64)xiangqi_stop;
-	this[12]=(u64)xiangqi_list;
-	this[13]=(u64)xiangqi_choose;
-	this[14]=(u64)xiangqi_read;
-	this[15]=(u64)xiangqi_write;
+	p->start = (u64)xiangqi_start;
+	p->stop = (u64)xiangqi_stop;
+	p->list = (u64)xiangqi_list;
+	p->choose = (u64)xiangqi_choose;
+	p->read = (u64)xiangqi_read;
+	p->write = (u64)xiangqi_write;
 }
 void xiangqi_delete()
 {

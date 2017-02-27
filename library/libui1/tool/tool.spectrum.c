@@ -9,9 +9,7 @@ void rectbody(
 	int x1, int y1, int x2, int y2, u32 color);
 void line(
 	int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -34,18 +32,35 @@ void say(void*,...);
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //before
 static int maxpower;
 static u16* pcmin;
@@ -81,11 +96,80 @@ void spectrum_random()
 	}
 	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
 }
-static void spectrum_write(u64* who, u64* a, u64* b)
+static void spectrum_read_pixel(struct window* win)
+{
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+
+	backgroundcolor(win, 0);
+	for(x=0;x<1024;x++)
+	{
+		if(pcmin[x]>32768)continue;
+		y = pcmin[x] *height /maxpower /4;
+		line(
+			x*width/1024, (height/4) - y,
+			x*width/1024, (height/4) + y,
+			0xffffff
+		);
+	}
+	for(x=0;x<512;x++)
+	{
+		y = (int)(power[x]*height);
+		line(
+			x*width/512, height - y,
+			x*width/512, height,
+			0xffffff
+		);
+	}
+}
+static void spectrum_read_html(struct window* win)
+{
+}
+static void spectrum_read_text(struct window* win)
+{
+	int x,y;
+	int w = win->w;
+	int h = win->h;
+	u8* p = (u8*)(win->buf);
+
+	for(x=0;x<w*h*4;x++)p[x]=0;
+	for(x=0;x<w;x++)
+	{
+		y = h - (int)(real[x] * (double)h / (double)maxpower);
+		for(;y<h;y++)
+		{
+			p[((y*w + x)<<2) + 3] =  0x2;
+		}
+	}
+}
+static void spectrum_read(struct window* win)
+{
+	u64 fmt = win->fmt;
+
+	//text
+	if(fmt == 0x74786574)
+	{
+		spectrum_read_text(win);
+	}
+
+	//html
+	else if(fmt == 0x6c6d7468)
+	{
+		spectrum_read_html(win);
+	}
+
+	//pixel
+	else
+	{
+		spectrum_read_pixel(win);
+	}
+}
+static void spectrum_write(struct event* ev)
 {
 	int j;
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x72616863)	//'char'
 	{
@@ -129,92 +213,12 @@ static void spectrum_write(u64* who, u64* a, u64* b)
 
 
 
-static void spectrum_read_pixel()
-{
-	int x,y;
-	int width = haha->width;
-	int height = haha->height;
-	backgroundcolor(
-		haha->buffer, 0, width, height,
-		0
-	);
-
-	for(x=0;x<1024;x++)
-	{
-		if(pcmin[x]>32768)continue;
-		y = pcmin[x] *height /maxpower /4;
-		line(
-			x*width/1024, (height/4) - y,
-			x*width/1024, (height/4) + y,
-			0xffffff
-		);
-	}
-	for(x=0;x<512;x++)
-	{
-		y = (int)(power[x]*height);
-		line(
-			x*width/512, height - y,
-			x*width/512, height,
-			0xffffff
-		);
-	}
-}
-static void spectrum_read_html()
-{
-}
-static void spectrum_read_text()
-{
-	int x,y;
-	int w = haha->width;
-	int h = haha->height;
-	u8* p = (u8*)(haha->buffer);
-
-	for(x=0;x<w*h*4;x++)p[x]=0;
-	for(x=0;x<w;x++)
-	{
-		y = h - (int)(real[x] * (double)h / (double)maxpower);
-		for(;y<h;y++)
-		{
-			p[((y*w + x)<<2) + 3] =  0x2;
-		}
-	}
-}
-static void spectrum_read()
-{
-	u32 temp = (haha->format)&0xffffffff;
-
-	//text
-	if(temp == 0x74786574)
-	{
-		spectrum_read_text();
-	}
-
-	//html
-	else if(temp == 0x6c6d7468)
-	{
-		spectrum_read_html();
-	}
-
-	//pixel
-	else
-	{
-		spectrum_read_pixel();
-	}
-}
-
-
-
-
-static void spectrum_list(u64* this)
+static void spectrum_list()
 {
 }
 static void spectrum_into()
 {
 }
-
-
-
-
 void spectrum_start()
 {
 	int j;
@@ -229,26 +233,23 @@ void spectrum_stop()
 }
 void spectrum_create(void* uibuf,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
-
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x6d75727463657073;
-
-	this[10]=(u64)spectrum_start;
-	this[11]=(u64)spectrum_stop;
-	this[12]=(u64)spectrum_list;
-	this[13]=(u64)spectrum_into;
-	this[14]=(u64)spectrum_read;
-	this[15]=(u64)spectrum_write;
-
+	struct player* p = addr;
 	pcmin=(void*)(uibuf+0x200000);
 	pcmout=(void*)(uibuf+0x280000);
-
 	real=(double*)(uibuf+0x300000);
 	imag=(double*)(uibuf+0x340000);
 	power=(double*)(uibuf+0x380000);
 	phase=(double*)(uibuf+0x3c0000);
+
+	p->type = 0x6c6f6f74;
+	p->name = 0x6d75727463657073;
+
+	p->start = (u64)spectrum_start;
+	p->stop = (u64)spectrum_stop;
+	p->list = (u64)spectrum_list;
+	p->choose = (u64)spectrum_into;
+	p->read = (u64)spectrum_read;
+	p->write = (u64)spectrum_write;
 }
 void spectrum_delete()
 {

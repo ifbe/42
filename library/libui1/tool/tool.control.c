@@ -15,36 +15,52 @@ void circlebody(
 	int x,int y,int r,u32 color);
 void circleframe(
 	int x,int y,int r,u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 void say(char*,...);
 
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
-
-
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 static int aaaa = 0;
-static void keyboard()
+
+
+
+
+static void keyboard(struct window* win)
 {
 	int x,y;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 
 	for(x=0;x<32;x++)
 	{
@@ -72,11 +88,11 @@ static void keyboard()
 		}
 	}
 }
-static void joystick()
+static void joystick(struct window* win)
 {
 	int j;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 
 	for(j=0;j<32;j++)
 	{
@@ -122,11 +138,11 @@ static void joystick()
 		circlebody(width/2, height*7/8, j, 0xffff00);
 	}
 }
-static void touchpad()
+static void touchpad(struct window* win)
 {
 	int j;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 
 	for(j=0;j<32;j++)
 	{
@@ -137,41 +153,40 @@ static void touchpad()
 		);
 	}
 }
-static void control_read_text()
+static void control_read_text(struct window* win)
 {
 }
-static void control_read_html()
+static void control_read_html(struct window* win)
 {
 }
-static void control_read()
+static void control_read(struct window* win)
 {
+	u64 fmt = win->fmt;
+
 	//text
-	if( ( (haha->format)&0xffffffff) == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		control_read_text();
+		control_read_text(win);
 	}
 
 	//html
-	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		control_read_html();
+		control_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		backgroundcolor(
-			haha->buffer, 0, haha->width, haha->height,
-			0x444444
-		);
+		backgroundcolor(win, 0x444444);
 
-		if(aaaa == 0)joystick();
-		else if(aaaa == 1)keyboard();
-		else if(aaaa == 2)touchpad();
+		if(aaaa == 0)joystick(win);
+		else if(aaaa == 1)keyboard(win);
+		else if(aaaa == 2)touchpad(win);
 
 		rectbody(0, 0, 64, 64, 0xffffff);
-		rectbody(haha->width-64, 0, haha->width-1, 64, 0xffffff);
-		rectbody(0, haha->height-64, 64, haha->height-1, 0xffffff);
+		rectbody((win->w)-64, 0, (win->w)-1, 64, 0xffffff);
+		rectbody(0, (win->h)-64, 64, (win->h)-1, 0xffffff);
 	}
 }
 
@@ -189,9 +204,9 @@ static void control_write(u64* who, u64* what, u64* how)
 		if(y<64)
 		{
 			if(x<64)aaaa = 0;
-			if(x>(haha->width-64))aaaa = 1;
+			if(x>(512-64))aaaa = 1;
 		}
-		if(y>(haha->height-64))
+		if(y>512-64)
 		{
 			if(x<64)aaaa = 2;
 		}
@@ -219,18 +234,16 @@ static void control_stop()
 }
 void control_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	p->type = 0x6c6f6f74;
+	p->name = 0x6c6f72746e6f63;
 
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x6c6f72746e6f63;
-
-	this[10]=(u64)control_start;
-	this[11]=(u64)control_stop;
-	this[12]=(u64)control_list;
-	this[13]=(u64)control_change;
-	this[14]=(u64)control_read;
-	this[15]=(u64)control_write;
+	p->start = (u64)control_start;
+	p->stop = (u64)control_stop;
+	p->list = (u64)control_list;
+	p->choose = (u64)control_change;
+	p->read = (u64)control_read;
+	p->write = (u64)control_write;
 }
 void control_delete()
 {

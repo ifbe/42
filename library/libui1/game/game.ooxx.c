@@ -1,5 +1,7 @@
-#define u64 unsigned long long 
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long 
 //
 void line(
 	int x1,int y1,int x2,int y2, u32 color);
@@ -7,9 +9,7 @@ void circlebody(
 	int x, int y, int r, u32 color);
 void circleframe(
 	int x, int y, int r, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 u32 getrandom();
 void say(char*,...);
@@ -17,18 +17,35 @@ void say(char*,...);
 
 
 
-static struct temp{
+struct player
+{
         u64 type;
-        u64 id;
+        u64 name;
+        u8 temp[0x30];
+
+        u64 create;
+        u64 delete;
         u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
-
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static int turn;
 static char data[9];
@@ -36,17 +53,14 @@ static char data[9];
 
 
 
-void ooxx_read()
+void ooxx_read(struct window* win)
 {
 	int x,y;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 	int min = (width<height) ? width:height;
 
-	backgroundcolor(
-		haha->buffer, 0, width, height,
-		0
-	);
+	backgroundcolor(win, 0);
         line(min/16,    min  /  3,      min *15 /16,    min   /   3,    0xffffffff);
         line(min/16,    min *2 /3,      min *15 /16,    min  *2  /3,    0xffffffff);
         line(min/3,     min  / 16,      min   /   3,    min *15 /16,    0xffffffff);
@@ -89,19 +103,22 @@ void ooxx_read()
 
 
 
-void ooxx_write(u64* who, u64* what, u64* key)
+void ooxx_write(struct event* ev)
 {
 	char val;
 	int x,y;
+/*
 	int width = haha->width;
 	int height = haha->height;
 	int min = (width<height) ? width:height;
-
-	if(*what == 0x2d6d)
+*/
+	int min = 512;
+	if(ev->what == 0x2d6d)
 	{
-		x=(*key) & 0xffff;
-		y=( (*key) >> 16 ) & 0xffff;
+		x=(ev->why) & 0xffff;
 		if(x>min)return;
+
+		y=( (ev->why) >> 16 ) & 0xffff;
 		if(y>min)return;
 
 		x = x*3/min;
@@ -126,10 +143,6 @@ static void ooxx_list()
 static void ooxx_choose()
 {
 }
-
-
-
-
 static void ooxx_start()
 {
 	int j;
@@ -140,24 +153,19 @@ static void ooxx_start()
 static void ooxx_stop()
 {
 }
-
-
-
-
 void ooxx_create(char* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x656d6167;
-	this[1] = 0x78786f6f;
+	p->type = 0x656d6167;
+	p->name = 0x78786f6f;
 
-	this[10]=(u64)ooxx_start;
-	this[11]=(u64)ooxx_stop;
-	this[12]=(u64)ooxx_list;
-	this[13]=(u64)ooxx_choose;
-	this[14]=(u64)ooxx_read;
-	this[15]=(u64)ooxx_write;
+	p->start = (u64)ooxx_start;
+	p->stop = (u64)ooxx_stop;
+	p->list = (u64)ooxx_list;
+	p->choose = (u64)ooxx_choose;
+	p->read = (u64)ooxx_read;
+	p->write = (u64)ooxx_write;
 }
 void ooxx_delete()
 {

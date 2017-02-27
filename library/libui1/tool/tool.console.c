@@ -5,37 +5,50 @@
 //
 void string(
 	int x,int y,void* str);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 void charactercommand(u8*);
 void arterycommand(u8*);
 //
+int ncmp(void*, void*, int);
 int cmp(void*, void*);
 void say(void*, ...);
 
 
 
 
-
-//palette
-static struct temp{
+struct player
+{
         u64 type;
-        u64 id;
+        u64 name;
+        u8 temp[0x30];
+
+        u64 create;
+        u64 delete;
         u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
-
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //log位置
 static char* logbuf=0;
 static u64 backward=0;
-
 //键盘输入
 static u8 buffer[128];//键盘输入专用
 static int bufcount=0;
@@ -47,16 +60,13 @@ static int bufcount=0;
 
 
 
-static void background4()
+static void background4(struct window* win)
 {
 	//用指定颜色清屏
 	int width,height;
 	u32 x,y,color;
-	u32* palette = (u32*)(haha->buffer);
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
+	u32* palette = (u32*)(win->buf);
+	backgroundcolor(win, 0);
 
 	//输入框颜色
 	for(y=height-16;y<height;y++)
@@ -84,24 +94,26 @@ static void background4()
 		}
 	}
 }
-static void printposition(int start,int count,int max)
+static void printposition(struct window* win, int start,int count,int max)
 {
 	//位置
 	int x,y;
-	u32* palette = (u32*)(haha->buffer);
+	int w = win->w;
+	int h = win->h;
+	u32* palette = (u32*)(win->buf);
 
 	if(max<0x80*45)return;
 
 	//显示区大小/总大小
-	u64 top=(haha->height)*start/max;
-	u64 bottom=(haha->height)*(start+0x80*count)/max;//temp变量=max
+	u64 top = (win->h)*start/max;
+	u64 bottom = (win->h)*(start+0x80*count)/max;//temp变量=max
 	say("printposition:%x,%x\n",top,bottom);
 
 	for(y=top;y<bottom;y++)
 	{
-		for(x=(haha->width)-16+4;x<(haha->width)-4;x++)
+		for(x=w-16+4;x<w-4;x++)
 		{
-			palette[(haha->width)*y + x] = 0x01234567;
+			palette[w*y + x] = 0x01234567;
 		}
 	}
 }
@@ -122,18 +134,24 @@ static void printstdin(int count)
 	string(0, count*16, "[user@42]");
 	string(9*8, count*16, buffer);
 }
-
-
-
-
-
-
-
-
-static void console_write(u64* who, u64* a, u64* b)
+static void console_read(struct window* win)
 {
-	u64 type = *a;
-	u64 key = *b;
+	//显示哪儿开始的一块
+	int count=(win->h)/16 - 1;
+	int enqueue=*(u32*)(logbuf+0xffff0);
+
+	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
+	if( start<0 )start=0;
+
+	background4(win);
+	printposition(win, start,count,enqueue);
+	printstdout(start,count);
+	printstdin(count);
+}
+static void console_write(struct event* ev)
+{
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x72616863)		//'char'
 	{
@@ -190,57 +208,40 @@ static void console_write(u64* who, u64* a, u64* b)
 		}
 	}
 }
-static void console_read()
+
+
+
+
+
+
+
+
+static void console_list()
 {
-	//显示哪儿开始的一块
-	int count=(haha->height)/16 - 1;
-	int enqueue=*(u32*)(logbuf+0xffff0);
-
-	int start=enqueue-(count*0x80)-backward;//代表末尾位置而不是开头
-	if( start<0 )start=0;
-
-	background4();
-	printposition(start,count,enqueue);
-	printstdout(start,count);
-	printstdin(count);
 }
 static void console_into()
 {
 }
-static void console_list()
-{
-}
-
-
-
-
-
-
-
-
 static void console_start()
 {
 }
 static void console_stop()
 {
 }
-void console_create(char* base,void* addr)
+void console_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
-
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x656c6f736e6f63;
-
-	this[10]=(u64)console_start;
-	this[11]=(u64)console_stop;
-	this[12]=(u64)console_list;
-	this[13]=(u64)console_into;
-	this[14]=(u64)console_read;
-	this[15]=(u64)console_write;
-
-	//
+	struct player* p = addr;
 	logbuf=base+0x300000;
+
+	p->type = 0x6c6f6f74;
+	p->name = 0x656c6f736e6f63;
+
+	p->start = (u64)console_start;
+	p->stop = (u64)console_stop;
+	p->list = (u64)console_list;
+	p->choose = (u64)console_into;
+	p->read = (u64)console_read;
+	p->write = (u64)console_write;
 }
 void console_delete()
 {

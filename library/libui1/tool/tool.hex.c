@@ -12,8 +12,7 @@ void printbyte(
 void rectbody(
 	//void*, u64, int, int,
 	int x1, int y1, int x2, int y2, u32 color);
-void background1(
-	u64, u64, int, int);
+void background1(void*);
 //
 int data2hexstr(u64, u8*);
 int cmp(void*, void*);
@@ -25,19 +24,35 @@ void say(void*, ...);
 
 
 
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //flostarea
 static int inputcount=0;
 static u8 hi[0x100];
@@ -59,13 +74,13 @@ static int printmethod=0;
 static int xshift=0;
 static int byteperline=0;
 static int lineperwindow=0;
-static void updateconfig()
+static void updateconfig(struct window* win)
 {
-	int width = haha->width;
-	unsigned int pixfmt = (haha->format)&0xffffffff;
+	int width = win->w;
+	u64 fmt = win->fmt;
 
 	//html
-        if(pixfmt == 0x6c6d7468)
+        if(fmt == 0x6c6d7468)
 	{
 		lineperwindow = 16;
 		byteperline = 32;
@@ -73,9 +88,9 @@ static void updateconfig()
 	}
 
         //text
-        else if(pixfmt == 0x74786574)
+        else if(fmt == 0x74786574)
 	{
-		lineperwindow = haha->height;
+		lineperwindow = win->h;
 
 		if(width >= 0x80)
 		{
@@ -102,7 +117,7 @@ static void updateconfig()
 	//
 	else
 	{
-		lineperwindow = (haha->height)/16;
+		lineperwindow = (win->h)/16;
 
 		if(width >= 2048)
 		{
@@ -131,11 +146,11 @@ static void updateconfig()
 		}
 	}
 }
-static void foreground()
+static void foreground(struct window* win)
 {
 	//一整页
 	int x,y;
-	int height=haha->height;
+	int height = win->h;
 
 	if(printmethod==0)			//hex
 	{
@@ -177,16 +192,16 @@ static void foreground()
 	{
 	}
 }
-static void floatarea()
+static void floatarea(struct window* win)
 {
 	u32* screenbuf;
 	int width,height;
 	int thisx,thisy;
 	int x,y;
 
-	screenbuf = (u32*)(haha->buffer);
-	width = haha->width;
-	height = haha->height;
+	screenbuf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	thisx = (pointeroffset % byteperline) << 4;
 	thisy = (pointeroffset / byteperline) << 4;
 
@@ -228,30 +243,24 @@ static void floatarea()
 		}
 	}
 }
-static void hex_read_pixel()
+static void hex_read_pixel(struct window* win)
 {
-	updateconfig();
-
 	//背景
-	background1(haha->buffer, haha->format, haha->width, haha->height);
+	background1(win);
 
 	//
-	foreground();
+	foreground(win);
 
 	//
-	floatarea();
+	floatarea(win);
 }
-static void hex_read_text()
+static void hex_read_text(struct window* win)
 {
-	int x,y;
 	u8 h,l;
-
-	int width = haha->width;
-	int height = haha->height;
-	u8* p = (u8*)(haha->buffer);
-
-	updateconfig();
-	//for(x=0;x<width*height;x++)p[x]=0x20;
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 
 	if(printmethod==0)		//hex
 	{
@@ -317,22 +326,20 @@ static void hex_read_text()
 		}
 	}
 }
-static void hex_read_html()
+static void hex_read_html(struct window* win)
 {
-	int x,y;
 	float dx,dy;
-	unsigned char ch;
-
-	int width = haha->width;
-	int height = haha->height;
-	u8* p = (u8*)(haha->buffer);
+	u8 ch;
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 
 	//
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
 	//prepare
-	updateconfig();
 	dx = 80.00 / byteperline;
 	x = (pointeroffset % byteperline);
 	dy = 80.00 / lineperwindow;
@@ -436,41 +443,33 @@ static void hex_read_html()
 		pointeroffset
 	);
 }
-static void hex_read()
+static void hex_read(struct window* win)
 {
-	unsigned int pixfmt = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
+	updateconfig(win);
 
 	//text
-	if( pixfmt == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		hex_read_text();
+		hex_read_text(win);
 	}
 
 	//html
-	else if( pixfmt == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		hex_read_html();
+		hex_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		hex_read_pixel();
+		hex_read_pixel(win);
 	}
 }
-
-
-
-
-
-
-
-
-static void hex_write(u64* who, u64* a, u64* b)
+static void hex_write(struct event* ev)
 {
-	u64 type = *a;
-	u64 key = *b;
-	updateconfig();
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x64626b)			//'kbd'
 	{
@@ -601,21 +600,13 @@ static void hex_write(u64* who, u64* a, u64* b)
 
 
 
-static void hex_list(u64* this)
+static void hex_list()
 {
 }
 static void hex_into()
 {
 }
-
-
-
-
-
-
-
-
-void hex_start()
+static void hex_start()
 {
 	int j;
 
@@ -629,25 +620,23 @@ void hex_start()
 	*(u64*)(hi+0x40)=0x3a74657366666f;
 	*(u64*)(hi+0x60)=0x3a61746164;
 }
-void hex_stop()
+static void hex_stop()
 {
 }
 void hex_create(void* uibuf,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
-
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x786568;
-
-	this[10]=(u64)hex_start;
-	this[11]=(u64)hex_stop;
-	this[12]=(u64)hex_list;
-	this[13]=(u64)hex_into;
-	this[14]=(u64)hex_read;
-	this[15]=(u64)hex_write;
-
+	struct player* p = addr;
 	databuf = uibuf + 0x300000;
+
+	p->type = 0x6c6f6f74;
+	p->name = 0x786568;
+
+	p->start = (u64)hex_start;
+	p->stop = (u64)hex_stop;
+	p->list = (u64)hex_list;
+	p->choose = (u64)hex_into;
+	p->read = (u64)hex_read;
+	p->write = (u64)hex_write;
 }
 void hex_delete()
 {

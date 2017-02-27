@@ -26,28 +26,35 @@ int say(char*,...);
 
 
 
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-
-	u64 f0;
-	u64 f1;
-	u64 f2;
-	u64 f3;
-
-	u64 f4;
-	u64 f5;
-	u64 f6;
-	u64 f7;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static int px,py;
 static char table[9][9];
@@ -208,12 +215,12 @@ void sudoku_solve()
 
 
 
-static void sudoku_read_text()
+static void sudoku_read_text(struct window* win)
 {
 	int x,y,j,k,ret,color;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<9;y++)
@@ -244,14 +251,14 @@ static void sudoku_read_text()
 		}
 	}
 }
-static void sudoku_read_html()
+static void sudoku_read_html(struct window* win)
 {
 }
-static void sudoku_read_pixel()
+static void sudoku_read_pixel(struct window* win)
 {
 	int x,y;
-	int w = haha->width;
-	int h = haha->height;
+	int w = win->w;
+	int h = win->h;
 
 	for(y=0;y<9;y++)
 	{
@@ -273,58 +280,56 @@ static void sudoku_read_pixel()
 			}
 		}
 	}
-	rectbody(	0, ( h/3 )-2,	 w, ( h/3 )+2, 0);
-	rectbody(	0, (h*2/3)-2,	 w, (h*2/3)+2, 0);
-	rectbody(( w/3 )-2,	 0, ( w/3 )+2,	 h, 0);
-	rectbody((w*2/3)-2,	 0, (w*2/3)+2,	 h, 0);
+	rectbody(        0, ( h/3 )-2,         w, ( h/3 )+2, 0);
+	rectbody(        0, (h*2/3)-2,         w, (h*2/3)+2, 0);
+	rectbody(( w/3 )-2,         0, ( w/3 )+2,         h, 0);
+	rectbody((w*2/3)-2,         0, (w*2/3)+2,         h, 0);
 }
-static void sudoku_read()
+static void sudoku_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		sudoku_read_text();
+		sudoku_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		sudoku_read_html();
+		sudoku_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		sudoku_read_pixel();
+		sudoku_read_pixel(win);
 	}
 }
-
-
-
-
-static void sudoku_write(u64* who, u64* what, u64* key)
+static void sudoku_write(struct event* ev)
 {
-	if(*what == 0x64626b)
+	u64 what = ev->what;
+	u64 key = ev->why;
+	if(what == 0x64626b)
 	{
-		if(*key == 0x25)	//left
+		if(key == 0x25)	//left
 		{
 			if(px<1)return;
 			px--;
 		}
-		else if(*key == 0x26)   //up
+		else if(key == 0x26)   //up
 		{
 			if(py<1)return;
 			py--;
 		}
-		else if(*key == 0x27)   //right
+		else if(key == 0x27)   //right
 		{
 			if(px<0)return;
 			if(px>=8)return;
 			px++;
 		}
-		else if(*key == 0x28)   //down
+		else if(key == 0x28)   //down
 		{
 			if(py<0)return;
 			if(py>=8)return;
@@ -346,14 +351,6 @@ static void sudoku_list()
 static void sudoku_choose()
 {
 }
-
-
-
-
-
-
-
-
 static void sudoku_start()
 {
 	int x,y;
@@ -373,17 +370,18 @@ static void sudoku_stop()
 }
 void sudoku_create(void* base,void* addr)
 {
+	struct player* p = addr;
 	buffer = base+0x300000;
-	haha = addr;
 
-	haha->type = 0x656d6167;
-	haha->id = 0x756b6f647573;
-	haha->f2 = (u64)sudoku_start;
-	haha->f3 = (u64)sudoku_stop;
-	haha->f4 = (u64)sudoku_list;
-	haha->f5 = (u64)sudoku_choose;
-	haha->f6 = (u64)sudoku_read;
-	haha->f7 = (u64)sudoku_write;
+	p->type = 0x656d6167;
+	p->name = 0x756b6f647573;
+
+	p->start = (u64)sudoku_start;
+	p->stop = (u64)sudoku_stop;
+	p->list = (u64)sudoku_list;
+	p->choose = (u64)sudoku_choose;
+	p->read = (u64)sudoku_read;
+	p->write = (u64)sudoku_write;
 }
 void sudoku_delete()
 {

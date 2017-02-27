@@ -6,24 +6,39 @@
 
 
 
-void backgroundcolor(u32* screenbuf, u64 fmt, int width, int height,
-	unsigned int color)
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+
+
+
+
+void backgroundcolor(struct window* win, u32 color)
 {
 	int x;
+	u32* buf = (u32*)(win->buf);
 	color |= 0xff000000;
-	for(x=0; x<width*height; x++)
+
+	for(x=0; x<(win->w)*(win->h); x++)
 	{
-		screenbuf[x]=color;
+		buf[x] = color;
 	}
 }
-void background1(u32* screenbuf, u64 fmt, int width, int height)
+void background1(struct window* win)
 {
 	int x,y;
+	int width = win->w;
+	int height = win->h;
+	u32* buf = (u32*)(win->buf);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)
 	{
-		screenbuf[x]=0xfff0f0f0;
+		buf[x]=0xfff0f0f0;
 	}
 
 	//上下
@@ -32,11 +47,11 @@ void background1(u32* screenbuf, u64 fmt, int width, int height)
 		u32 color=0xff404040+(0x0b0b0b*y);
 
 		//上，编译器会不会用rep stosd指令优化呢?
-		u32* p=screenbuf+y*width;
+		u32* p = buf+y*width;
 		for(x=y;x<width-y;x++)p[x]=color;
 
 		//下
-		p=screenbuf+(height-1-y)*width;
+		p = buf+(height-1-y)*width;
 		for(x=y;x<width-y;x++)p[x]=color;
 	}
 	//左右
@@ -46,8 +61,8 @@ void background1(u32* screenbuf, u64 fmt, int width, int height)
 
 		for(y=x;y<height-x;y++)
 		{
-			screenbuf[(y*width)+x]=color;
-			screenbuf[(y*width)+width-1-x]=color;
+			buf[(y*width)+x]=color;
+			buf[(y*width)+width-1-x]=color;
 		}
 	}
 }

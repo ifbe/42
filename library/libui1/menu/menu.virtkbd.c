@@ -12,6 +12,13 @@ void say(char*,...);
 
 
 
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 static struct temp{
         u64 type;
         u64 id;
@@ -41,20 +48,22 @@ static int areabottom = 960;	//max=1024=2^10
 
 
 
-static int virtkbd_write(u64* who, u64* what, u64* value)
+static int virtkbd_write(struct event* ev)
 {
-	int x,y;
+	int x,y,t;
 	int width = haha->width;
 	int height = haha->height;
 
-	if(*what == 0x2d6d)
+	if(ev->what == 0x2d6d)
 	{
-		x = (*value) & 0xffff;
+		t = (ev->why)&0xffffffff;
+
+		x = t & 0xffff;
 		x = (x<<10)/width;
 		if(x < arealeft)return 1;
 		if(x > arearight)return 1;
 
-		y = ( (*value) >> 16 ) & 0xffff;
+		y = (t >> 16) & 0xffff;
 		y = (y<<10)/height;
 		if(y < areatop)return 1;
 		if(y > areabottom)return 1;
@@ -63,8 +72,8 @@ static int virtkbd_write(u64* who, u64* what, u64* value)
 		y = 8*(y-areatop)/(areabottom-areatop);
 		say("==%d,%d\n",x,y);
 
-		*what = 0x72616863;
-		*value = table[y][x];
+		ev->what = 0x72616863;
+		ev->why = table[y][x];
 	}
 
 	return 1;

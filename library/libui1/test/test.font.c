@@ -1,38 +1,56 @@
-#define u64 unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long
 //
 void printascii(
 	int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
 void printdecimal(
 	int x, int y, int size, int data, u32 fg, u32 bg);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 void say(char*,...);
 
 
 
 
-static u64* this;
-
-
-
-
-
-void font_list()
+struct player
 {
-}
-void font_change()
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
+
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
 {
-}
-void font_read()
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
+
+
+
+
+void font_read(struct window* win)
 {
 	int x,y;
-	backgroundcolor(
-		this[4], this[5], this[6], this[7],
-		0
-	);
+	backgroundcolor(win, 0);
 
 	for(y=2;y<8;y++)
 	{
@@ -49,7 +67,13 @@ void font_read()
 		}
 	}
 }
-void font_write(u64* who, u64* what, u64* how)
+void font_write(struct event* ev)
+{
+}
+void font_list()
+{
+}
+void font_change()
 {
 }
 void font_start()
@@ -58,18 +82,18 @@ void font_start()
 void font_stop()
 {
 }
-void font_create(char* base,char* addr)
+void font_create(void* base, void* addr)
 {
-	this=(u64*)addr;
-	this[0] = 0x74736574;
-	this[1] = 0x746e6f66;
+	struct player* p = addr;
+	p->type = 0x74736574;
+	p->name = 0x746e6f66;
 
-	this[10]=(u64)font_start;
-	this[11]=(u64)font_stop;
-	this[12]=(u64)font_list;
-	this[13]=(u64)font_change;
-	this[14]=(u64)font_read;
-	this[15]=(u64)font_write;
+	p->start = (u64)font_start;
+	p->stop = (u64)font_stop;
+	p->list = (u64)font_list;
+	p->choose = (u64)font_change;
+	p->read = (u64)font_read;
+	p->write = (u64)font_write;
 }
 void font_delete()
 {

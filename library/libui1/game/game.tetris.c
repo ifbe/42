@@ -5,10 +5,6 @@
 //
 void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 void printdecimal(int data,int xyz,u32 fg,u32 bg);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32
-);
 //
 u32 getrandom();
 int diary(char*,int,char*,...);
@@ -18,18 +14,35 @@ void say(char*,...);
 
 
 
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 typedef struct stucture
 {
@@ -54,37 +67,111 @@ static unsigned char* table;
 
 
 
-static void cubie(int x,int y,int z)
+static void cubie(struct window* win, int x,int y,int z)
 {
-	int aa;
-	int startx,starty,endx,endy;
 	u32 bodycolor;
+	int startx,starty,endx,endy;
+	int aa = (win->h)*32/40;
 
-	aa=(haha->height*32)/40;
-
-	if(haha->width<aa)
+	if(win->w < aa)
 	{
-		startx = (haha->width)*x/32;
-		endx = (x+1)*(haha->width)/32 -1;
+		startx = (win->w)*x/32;
+		endx = (x+1)*(win->w)/32 -1;
 	}
 	else
 	{
-		startx = (haha->width-aa)/2 + (x*aa/32);
-		endx = (haha->width-aa)/2 + ((x+1)*aa/32) -1;
+		startx = (win->w-aa)/2 + (x*aa/32);
+		endx = (win->w-aa)/2 + ((x+1)*aa/32) -1;
 	}
 
-	starty = (haha->height)*y/40;
-	endy = (y+1)*(haha->height)/40 - 1;
+	starty = (win->h)*y/40;
+	endy = (y+1)*(win->h)/40 - 1;
 
 	bodycolor=z>0?0xffffffff:0;
 	rect(startx, starty, endx, endy, bodycolor, 0x44444444);
 }
-static void tetris_read_text()
+static void tetris_read_pixel(struct window* win)
 {
 	int x,y;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->buffer);
+	for(y=0;y<40;y++)
+	{
+		for(x=0;x<32;x++)
+		{
+			//say("%d ",table[y*32+x]);
+			cubie(win, x,y,table[y*32+x]);
+		}
+		//say("\n");
+	}
+	//say("\n");
+
+	//print cubies
+	cubie(win, that.x1, that.y1, 1);
+	cubie(win, that.x2, that.y2, 1);
+	cubie(win, that.x3, that.y3, 1);
+	cubie(win, that.x4, that.y4, 1);
+
+	//print score
+	//decimal(10,10,score);
+}
+
+
+
+
+static int htmlcubie(char* p, int x, int y)
+{
+	return diary(
+		p, 0x1000,
+		"<div class=\"rect\" style=\""
+		"left:%.2f%;"
+		"top:%.2f%;"
+		"\">%d</div>",
+		x*3.1, y*2.5, table[y*32+x]
+	);
+}
+static void tetris_read_html(struct window* win)
+{
+	int x,y;
+	char* p = (char*)(win->buf);
+
+	*(u32*)p = 0x6c6d7468;
+	p += 0x1000;
+
+	p += diary(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".rect{"
+		"border:1px solid #000;"
+		"background:#fff;"
+		"position:absolute;"
+		"width:3.1%;"
+		"height:2.5%;"
+		"}"
+		"</style>"
+	);
+	for(y=0;y<40;y++)
+	{
+		for(x=0;x<32;x++)
+		{
+			if(table[y*32+x] == 0)continue;
+			p += htmlcubie(p, x, y);
+		}
+	}
+
+	p += htmlcubie(p, that.x1, that.y1);
+	p += htmlcubie(p, that.x2, that.y2);
+	p += htmlcubie(p, that.x3, that.y3);
+	p += htmlcubie(p, that.x4, that.y4);
+}
+
+
+
+
+static void tetris_read_text(struct window* win)
+{
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
 
 	for(x=0;x<width*height*4;x++)p[x]=0;
 	if(height>=40)
@@ -122,94 +209,26 @@ static void tetris_read_text()
 		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
 	}
 }
-static int htmlcubie(char* p, int x, int y)
+static void tetris_read(struct window* win)
 {
-	return diary(
-		p, 0x1000,
-		"<div class=\"rect\" style=\""
-		"left:%.2f%;"
-		"top:%.2f%;"
-		"\">%d</div>",
-		x*3.1, y*2.5, table[y*32+x]
-	);
-}
-static void tetris_read_html()
-{
-	int x,y;
-	char* p = (char*)(haha->buffer);
-
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
-	p += diary(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".rect{"
-		"border:1px solid #000;"
-		"background:#fff;"
-		"position:absolute;"
-		"width:3.1%;"
-		"height:2.5%;"
-		"}"
-		"</style>"
-	);
-	for(y=0;y<40;y++)
-	{
-		for(x=0;x<32;x++)
-		{
-			if(table[y*32+x] == 0)continue;
-			p += htmlcubie(p, x, y);
-		}
-	}
-
-	p += htmlcubie(p, that.x1, that.y1);
-	p += htmlcubie(p, that.x2, that.y2);
-	p += htmlcubie(p, that.x3, that.y3);
-	p += htmlcubie(p, that.x4, that.y4);
-}
-static void tetris_read_pixel()
-{
-	int x,y;
-	for(y=0;y<40;y++)
-	{
-		for(x=0;x<32;x++)
-		{
-			//say("%d ",table[y*32+x]);
-			cubie(x,y,table[y*32+x]);
-		}
-		//say("\n");
-	}
-	//say("\n");
-
-	//print cubies
-	cubie(that.x1,that.y1,1);
-	cubie(that.x2,that.y2,1);
-	cubie(that.x3,that.y3,1);
-	cubie(that.x4,that.y4,1);
-
-	//print score
-	//decimal(10,10,score);
-}
-static void tetris_read()
-{
-	u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		tetris_read_text();
+		tetris_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		tetris_read_html();
+		tetris_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		tetris_read_pixel();
+		tetris_read_pixel(win);
 	}
 }
 
@@ -489,16 +508,18 @@ static void generate()
 	//	00
 	if(that.type==6)
 	{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x +1;
-			that.y2=that.y;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x +1;
-			that.y4=that.y +1;
+		that.x1=that.x;
+		that.y1=that.y;
+		that.x2=that.x +1;
+		that.y2=that.y;
+		that.x3=that.x;
+		that.y3=that.y +1;
+		that.x4=that.x +1;
+		that.y4=that.y +1;
 	}
 }
+
+
 
 
 static int check()
@@ -631,11 +652,11 @@ static int down()
 	generate();
 	return 1;
 }
-static void tetris_write(u64* who, u64* a, u64* b)
+static void tetris_write(struct event* ev)
 {
 	int ret;
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type == 0x2d6d)
 	{
@@ -670,23 +691,12 @@ static void tetris_list()
 static void tetris_choose()
 {
 }
-
-
-
-
-
 static void tetris_start()
 {
-	//
 	int x;
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
-
-	//game data
 	for(x= 0*32;x<40*32;x++) table[x]=0;
 	for(x=40*32;x<41*32;x++) table[x]=1;
+
 	that.x=getrandom() %27 +1;
 	that.y=1;
 	that.type=5;
@@ -696,22 +706,20 @@ static void tetris_start()
 static void tetris_stop()
 {
 }
-void tetris_create(char* base,void* addr)
+void tetris_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	table=(u8*)(addr+0x300000);
 
-	this[0] = 0x656d6167;
-	this[1] = 0x736972746574;
+	p->type = 0x656d6167;
+	p->name = 0x736972746574;
 
-	this[10]=(u64)tetris_start;
-	this[11]=(u64)tetris_stop;
-	this[12]=(u64)tetris_list;
-	this[13]=(u64)tetris_choose;
-	this[14]=(u64)tetris_read;
-	this[15]=(u64)tetris_write;
-
-	table=(unsigned char*)(addr+0x300000);
+	p->start = (u64)tetris_start;
+	p->stop = (u64)tetris_stop;
+	p->list = (u64)tetris_list;
+	p->choose = (u64)tetris_choose;
+	p->read = (u64)tetris_read;
+	p->write = (u64)tetris_write;
 }
 void tetris_delete()
 {

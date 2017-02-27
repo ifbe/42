@@ -9,9 +9,7 @@ void defaultdouble(
 	int x,int y,double z);
 void decimal(
 	int x,int y,u64 in);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
+void backgroundcolor(void*, u32);
 //
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -27,18 +25,38 @@ void say(char*,...);
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+//
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 
+//
 struct mathnode{
 
 	u32 type;
@@ -76,16 +94,16 @@ static double centery=0.0;
 
 
 //
-static void wangge()
+static void wangge(struct window* win)
 {
 	int temp;
 	int x,y;
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	double first,second,res;
 
-	u32* screenbuf = (u32*)(haha->buffer);
-	int width = haha->width;
-	int height= haha->height;
+	u32* buf = (u32*)(win->buf);
+	int width = win->w;
+	int height= win->h;
 
 	//算屏上两行的间距，交点横坐标，纵坐标
 	temp = 0;
@@ -122,7 +140,7 @@ static void wangge()
 	{//竖线
 		for(y=0;y<height;y++)
 		{
-			screenbuf[y*width+x]=0x44444444;
+			buf[y*width+x]=0x44444444;
 		}
 	}//竖线
 
@@ -130,20 +148,20 @@ static void wangge()
 	{//横线
 		for(x=0;x<width;x++)
 		{
-			screenbuf[y*width+x]=0x44444444;
+			buf[y*width+x]=0x44444444;
 		}
 	}//横线
 
 }
-static void tuxiang()
+static void tuxiang(struct window* win)
 {
 	int x, y;
 	int value1, value2, counter;
 	double rx, ry, hello;
 
-	int width = haha->width;
-	int height = haha->height;
-	u32* screenbuf = (u32*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	u32* buf = (u32*)(win->buf);
 
 
 
@@ -190,20 +208,12 @@ static void tuxiang()
 			//上下左右四点符号完全一样，说明没有点穿过//否则白色
 			if( (counter!=4) && (counter!=-4) )
 			{
-				screenbuf[y*width+x]=0xffffffff;
+				buf[y*width+x]=0xffffffff;
 			}
 		}
 	}//result2img
 }
-
-
-
-
-
-
-
-
-static void sketchpad_read_pixel()
+static void sketchpad_read_pixel(struct window* win)
 {
 	double hello;
 
@@ -214,21 +224,18 @@ static void sketchpad_read_pixel()
 
 
 
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
+	backgroundcolor(win, 0);
 	if(node[0].integer == 0)
 	{
 		//计算器
-		hello=calculator(postfix,0,0);
-		double2decimalstring(hello,result);
+		hello=calculator(postfix, 0, 0);
+		double2decimalstring(hello, result);
 	}
 	else
 	{
 		//网格，函数图
-		wangge();
-		tuxiang();
+		wangge(win);
+		tuxiang(win);
 	}//else
 
 
@@ -242,22 +249,30 @@ skipthese:		//打印
 	printstring(0, 48, 1, result, 0xcccccc, 0xff000000);
 	return;
 }
-static void sketchpad_read_html()
-{
-	u32* screenbuf = (u32*)(haha->buffer);
 
-	sketchpad_read_pixel();
-	screenbuf[0]=0;
+
+
+
+static void sketchpad_read_html(struct window* win)
+{
+	u32* buf = (u32*)(win->buf);
+
+	sketchpad_read_pixel(win);
+	buf[0]=0;
 }
-static void sketchpad_read_text()
+
+
+
+
+static void sketchpad_read_text(struct window* win)
 {
 	int x, y;
 	int value1, value2, counter;
 	double rx, ry, hello;
 
-	int width=haha->width;
-	int height=haha->height;
-	u8* p = (u8*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 	if(node[0].type!=0x3d3d3d3d)return;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -304,39 +319,41 @@ static void sketchpad_read_text()
 		p[x*4] = buffer[x];
 	}
 }
-static void sketchpad_read()
+
+
+
+
+static void sketchpad_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		sketchpad_read_text();
+		sketchpad_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		sketchpad_read_html();
+		sketchpad_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		sketchpad_read_pixel();
+		sketchpad_read_pixel(win);
 	}
 }
 
 
 
 
-static void sketchpad_write(u64* who, u64* a, u64* b)
+static void sketchpad_write(struct event* ev)
 {
 	int ret;
-	int width = haha->width;
-	int height = haha->height;
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x64626b)			//'kbd'
 	{
@@ -420,8 +437,8 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 			//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
 			//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx -> newcenterx=centerx+scale*pointx*(1-1/1.2)
 			int x,y;
-			x=(key&0xffff) - (width/2);
-			y=(height/2) - ( (key>>16) & 0xffff );
+			x = (key&0xffff) - 256;
+			y = 256 - ( (key>>16) & 0xffff );
 			centerx += ((double)x) * scale * (1-1/1.2);
 			centery += ((double)y) * scale * (1-1/1.2);
 			//say("%d,%lf\n",x,centerx);
@@ -432,8 +449,8 @@ static void sketchpad_write(u64* who, u64* a, u64* b)
 		else if(key == 5)	//back
 		{
 			int x,y;
-			x=(key&0xffff) - (width/2);
-			y=(height/2) - ( (key>>16) & 0xffff );
+			x = (key&0xffff) - 256;
+			y = 256 - ( (key>>16) & 0xffff );
 			centerx += ((double)x) * scale * (-0.2);
 			centery += ((double)y) * scale * (-0.2);
 
@@ -454,15 +471,6 @@ static void sketchpad_change()
 }
 static void sketchpad_start()
 {
-	u64 haha = 0x72616863;
-	u64 hehe = 0xd;
-	buffer[0] = 'y';
-	buffer[1] = '=';
-	buffer[2] = 'x';
-	count = 3;
-	sketchpad_write((void*)0, &haha, &hehe);
-
-	//
 	centerx=0.00;
 	centery=0.00;
 	scale=1.00;
@@ -472,21 +480,19 @@ static void sketchpad_stop()
 }
 void sketchpad_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
-
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x686374656b73;
-
-	this[10]=(u64)sketchpad_start;
-	this[11]=(u64)sketchpad_stop;
-	this[12]=(u64)sketchpad_list;
-	this[13]=(u64)sketchpad_change;
-	this[14]=(u64)sketchpad_read;
-	this[15]=(u64)sketchpad_write;
-
+	struct player* p = addr;
 	node=(struct mathnode*)(base+0x200000);
 	databuf=base+0x300000;
+
+	p->type = 0x6c6f6f74;
+	p->name = 0x686374656b73;
+
+	p->start = (u64)sketchpad_start;
+	p->stop = (u64)sketchpad_stop;
+	p->list = (u64)sketchpad_list;
+	p->choose = (u64)sketchpad_change;
+	p->read = (u64)sketchpad_read;
+	p->write = (u64)sketchpad_write;
 }
 void sketchpad_delete()
 {

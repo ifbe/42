@@ -24,29 +24,35 @@ int say(void*, ...);
 
 
 
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-
-	u64 f0;
-	u64 f1;
-	u64 f2;
-	u64 f3;
-
-	u64 f4;
-	u64 f5;
-	u64 f6;
-	u64 f7;
-}*haha;
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static int num;
 static void* buffer;
@@ -75,13 +81,13 @@ u32 the2048_color(int val)
 	}
 	return 0;
 }
-static void cubie(int x,int y,int z)
+static void cubie(struct window* win, int x,int y,int z)
 {
 	int min;
 	int color;
 	int count;
-	if(haha->width < haha->height)min = haha->width;
-	else min = haha->height;
+	if(win->w < win->h)min = win->w;
+	else min = win->h;
 
 	//
 	if(z<16)count=0;
@@ -92,7 +98,7 @@ static void cubie(int x,int y,int z)
 
 	//
 	color = the2048_color(z);
-	if( ( (haha->format)&0xffffffff) == 0x61626772)	//bgra->rgba
+	if( ( (win->fmt)&0xffffffff) == 0x61626772)	//bgra->rgba
 	{
 		color	= 0xff000000
 			+ ((color&0xff)<<16)
@@ -119,14 +125,27 @@ static void cubie(int x,int y,int z)
 		0
 	);
 }
-static void the2048_read_text()
+static void the2048_read_pixel(struct window* win)
+{
+	int x,y;
+	int (*table)[4] = buffer + num*16*4;
+
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			cubie(win, x, y, table[y][x]);
+		}
+	}
+}
+static void the2048_read_text(struct window* win)
 {
 	int x,y,j,k,ret;
 	u8 src[10];
 
-	int w = haha->width;
-	int h = haha->height;
-	u8* p = (u8*)(haha->buffer);
+	int w = win->w;
+	int h = win->h;
+	u8* p = (u8*)(win->buf);
 	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
@@ -160,11 +179,11 @@ static void the2048_read_text()
 		}
 	}
 }
-static void the2048_read_html()
+static void the2048_read_html(struct window* win)
 {
 	int x,y;
 	u32 color;
-	u8* p = (u8*)(haha->buffer);
+	u8* p = (u8*)(win->buf);
 	int (*table)[4] = buffer + num*16*4;
 
 	*(u32*)p = 0x6c6d7468;
@@ -203,40 +222,27 @@ static void the2048_read_html()
 		}
 	}
 }
-static void the2048_read_pixel()
+static void the2048_read(struct window* win)
 {
-	int x,y;
-	int (*table)[4] = buffer + num*16*4;
-
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			cubie(x,y,table[y][x]);
-		}
-	}
-}
-static void the2048_read()
-{
-	u32 temp = (haha->format)&0xffffffff;
-	//say("(@2048.read)temp=%x\n",temp);
+	u64 fmt = win->fmt;
+	//say("(@2048.read)fmt=%x\n",temp);
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		the2048_read_text();
+		the2048_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		the2048_read_html();
+		the2048_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		the2048_read_pixel();
+		the2048_read_pixel(win);
 	}
 }
 
@@ -452,7 +458,7 @@ static void new2048()
 		}//for(x)
 	}//for(y)
 }
-static void the2048_write(u64* who, u64* what, u64* key)
+static void the2048_write(struct event* ev)
 {
 	//kbd
 	u8 ch;
@@ -461,10 +467,9 @@ static void the2048_write(u64* who, u64* what, u64* key)
 	int* q;
 
 	//
-	ch = *(u8*)key;
-	if(*what == 0x64626b)
+	if(ev->what == 0x64626b)
 	{
-		//left,right,up,down
+		ch = (ev->why)&0xff;
 		if( (ch>=0x25) && (ch<=0x28) )
 		{
 			//
@@ -483,7 +488,7 @@ static void the2048_write(u64* who, u64* what, u64* key)
 			new2048();
 		}
 	}
-	else if(*what == 0x72616863)
+	else if(ev->what == 0x72616863)
 	{
 		if(ch == 0x8)
 		{
@@ -505,14 +510,6 @@ static void the2048_list()
 static void the2048_choose()
 {
 }
-
-
-
-
-
-
-
-
 static void the2048_start()
 {
 	int j;
@@ -526,19 +523,19 @@ static void the2048_start()
 static void the2048_stop()
 {
 }
-void the2048_create(void* base,void* addr)
+void the2048_create(void* base, void* addr)
 {
+	struct player* p = addr;
 	buffer = base + 0x300000;
-	haha = addr;
 
-	haha->type = 0x656d6167;
-	haha->id = 0x38343032;
-	haha->f2 = (u64)the2048_start;
-	haha->f3 = (u64)the2048_stop;
-	haha->f4 = (u64)the2048_list;
-	haha->f5 = (u64)the2048_choose;
-	haha->f6 = (u64)the2048_read;
-	haha->f7 = (u64)the2048_write;
+	p->type = 0x656d6167;
+	p->name = 0x38343032;
+	p->start = (u64)the2048_start;
+	p->stop = (u64)the2048_stop;
+	p->list = (u64)the2048_list;
+	p->choose = (u64)the2048_choose;
+	p->read = (u64)the2048_read;
+	p->write = (u64)the2048_write;
 }
 void the2048_delete()
 {

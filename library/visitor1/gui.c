@@ -8,19 +8,19 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when);
 void* birth();
 void death();
 //libui1
-int characterstart(void* buf, void* fmt, int w, int h);
+int characterstart(u64 buf, u64 fmt, u64 w, u64 h);
 int characterstop();
-int characterwrite(void* p);
-int characterread();
+int characterwrite(void* event);
+int characterread(void* screen);
 int characterlist(char*);
 int charactercommand(char* p);
 //libui0
-int displaystart(void*, void*, int, int);
+int displaystart(u64 buf, u64 fmt, u64 w, u64 h);
 int displaystop();
 int displaylist();
 int displaychoose();
-int displayread();
-int displaywrite();
+int displayread(void*);
+int displaywrite(void*);
 //libsoft1
 void motion_explain(void*);
 void network_explain(void*);
@@ -50,7 +50,7 @@ struct event
 //libui
 struct screen
 {
-	void* buf;
+	u64 buf;
 	u64 fmt;
 	u64 w;
 	u64 h;
@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
 	ui[0].fmt = 0x6267726138383838;
 	ui[0].w = 512;
 	ui[0].h = 512;
-	ret = displaystart(ui[0].buf, &ui[0].fmt, ui[0].w, ui[0].h);
-	ret = characterstart(ui[0].buf, &ui[0].fmt, ui[0].w, ui[0].h);
+	ret = displaystart(ui[0].buf, ui[0].fmt, ui[0].w, ui[0].h);
+	ret = characterstart(ui[0].buf, ui[0].fmt, ui[0].w, ui[0].h);
 	for(ret=1;ret<argc;ret++)
 	{
 		charactercommand(argv[ret]);
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
 		}
 		fps++;
 */
-		characterread();
-		displaywrite();
+		characterread(ui);
+		displaywrite(ui);
 		fps++;
 
 again:

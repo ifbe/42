@@ -5,10 +5,7 @@
 //
 void rectbody(
 	int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
-//
+void backgroundcolor(void*, u32);
 int qrcode_generate(char* src,char* dst,int sidelength);
 int diary(char*,int,char*,...);
 void say(char*,...);
@@ -16,18 +13,35 @@ void say(char*,...);
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static int sidelength;
 static char* databuf;
@@ -35,22 +49,18 @@ static char* databuf;
 
 
 
-static void qrcode_read_pixel()
+static void qrcode_read_pixel(struct window* win)
 {
 	u32 color;
 	int x,y,x1,y1,x2,y2;
 	int width,height,min;
 
-	width = haha->width;
-	height = haha->height;
+	width = win->w;
+	height = win->h;
 	if(width < height)min = width;
 	else min = height;
 
-	backgroundcolor(
-		haha->buffer, 0, width, height,
-		0
-	);
-
+	backgroundcolor(win, 0);
 	for(y=0;y<sidelength;y++)
 	{
 		for(x=0;x<sidelength;x++)
@@ -67,11 +77,11 @@ static void qrcode_read_pixel()
 //say("\n");
 	}
 }
-static void qrcode_read_html()
+static void qrcode_read_html(struct window* win)
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(haha->buffer);
+	char* p = (char*)(win->buf);
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -109,12 +119,12 @@ static void qrcode_read_html()
 	}
 	p += diary(p, 99, "</div>");
 }
-static void qrcode_read_text()
+static void qrcode_read_text(struct window* win)
 {
 	int x,y;
-	int width=haha->width;
-	int height=haha->height;
-	u8* p = (u8*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 
 	for(y=0;y<100;y++)
@@ -132,30 +142,29 @@ static void qrcode_read_text()
 		}
 	}
 }
-static void qrcode_read()
+static void qrcode_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
-	//say("(@2048.read)temp=%x\n",temp);
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		qrcode_read_text();
+		qrcode_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		qrcode_read_html();
+		qrcode_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		qrcode_read_pixel();
+		qrcode_read_pixel(win);
 	}
 }
-static void qrcode_write(u64* who, u64* what, u64* how)
+static void qrcode_write(struct event* ev)
 {
 }
 
@@ -168,10 +177,6 @@ static void qrcode_list()
 static void qrcode_into()
 {
 }
-
-
-
-
 static void qrcode_start()
 {
 	sidelength=49;
@@ -180,26 +185,20 @@ static void qrcode_start()
 static void qrcode_stop()
 {
 }
-
-
-
-
 void qrcode_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	databuf = base+0x300000;
 
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x65646f637271;
+	p->type = 0x6c6f6f74;
+	p->name = 0x65646f637271;
 
-	this[10]=(u64)qrcode_start;
-	this[11]=(u64)qrcode_stop;
-	this[12]=(u64)qrcode_list;
-	this[13]=(u64)qrcode_into;
-	this[14]=(u64)qrcode_read;
-	this[15]=(u64)qrcode_write;
-
-	databuf=(char*)(base+0x300000);
+	p->start = (u64)qrcode_start;
+	p->stop = (u64)qrcode_stop;
+	p->list = (u64)qrcode_list;
+	p->choose = (u64)qrcode_into;
+	p->read = (u64)qrcode_read;
+	p->write = (u64)qrcode_write;
 }
 void qrcode_delete()
 {

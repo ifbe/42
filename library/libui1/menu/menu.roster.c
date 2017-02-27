@@ -10,6 +10,13 @@ u32 getrandom();
 
 
 
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 static struct temp{
         u64 type;
         u64 id;
@@ -25,10 +32,6 @@ static struct temp{
 
 
 
-static void roster_write(u64* who, u64* what, u64* value)
-{
-	
-}
 static void roster_read()
 {
 	int x,y;
@@ -63,20 +66,15 @@ static void roster_read()
 	);
 	printstring(width*3/4,	0,4,"haha",0,0xffffff);
 }
+static void roster_write(struct event* ev)
+{
+}
 static void roster_into()
 {
 }
 static void roster_list()
 {
 }
-
-
-
-
-
-
-
-
 static void roster_start()
 {
 }

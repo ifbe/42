@@ -16,6 +16,14 @@ int say(char*,...);
 
 
 //
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
+//
 static struct temp{
 	u64 type;
 	u64 id;
@@ -197,12 +205,12 @@ static void menu_read()
 
 
 //write,read,into,list
-static void menu_write(u64* who, u64* a, u64* b)
+static void menu_write(struct event* ev)
 {
 	int width=haha->width;
 	int height=haha->height;
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	//'xyz left'
 	if(type==0x2d6d)

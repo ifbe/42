@@ -6,6 +6,13 @@
 
 
 
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 static struct temp{
         u64 type;
         u64 id;
@@ -21,16 +28,20 @@ static struct temp{
 
 
 
+static void fs_read()
+{
+}
+static void fs_write(struct event* ev)
+{
+}
+
+
+
+
 static void fs_list()
 {
 }
 static void fs_into()
-{
-}
-static void fs_read()
-{
-}
-static void fs_write(u64* who, u64* what, u64* how)
 {
 }
 static void fs_start()

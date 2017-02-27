@@ -1,5 +1,7 @@
-#define u64 unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long
 //
 void printstring(int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
 void printascii(int x, int y, int size, char ch, u32 fg, u32 bg);
@@ -19,17 +21,35 @@ void say(char*,...);
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static char infix[128];
 static char postfix[128];
@@ -48,15 +68,15 @@ static char table[4][8] = {
 
 
 
-static void calculator_read_html()
+static void calculator_read_html(struct window* win)
 {
 }
-static void calculator_read_pixel()
+static void calculator_read_pixel(struct window* win)
 {
-	int x,y;
-	int w8 = (haha->width)/8;
-	int h8 = (haha->height)/8;
 	u32 fg;
+	int x,y;
+	int w8 = (win->w)/8;
+	int h8 = (win->h)/8;
 
 	rect(0, 0, w8*8-1, h8*4-1, 0, 0xff00);
 	for(y=0;y<4;y++)
@@ -79,47 +99,49 @@ static void calculator_read_pixel()
 	printstring(16, 16+64, 2, postfix, 0xffffffff, 0xff000000);
 	printstring(16, 16+96, 2, result, 0xffffffff, 0xff000000);
 }
-static void calculator_read_text()
+static void calculator_read_text(struct window* win)
 {
 }
-static void calculator_read()
+static void calculator_read(struct window* win)
 {
+	u64 fmt = win->fmt;
+
 	//text
-	if( ( (haha->format)&0xffffffff) == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		calculator_read_text();
+		calculator_read_text(win);
 	}
 
 	//html
-	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		calculator_read_html();
+		calculator_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		calculator_read_pixel();
+		calculator_read_pixel(win);
 	}
 }
 
 
 
 
-static void calculator_write(u64* who, u64* what, u64* value)
+static void calculator_write(struct event* ev)
 {
 	double final;
 	int x,y,ret;
-	u32 type = *(u32*)what;
-	u32 key = *(u32*)value;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type == 0x2d6d)
 	{
 		x = key&0xffff;
 		y = (key>>16)&0xffff;
 
-		x = x*8/(haha->width);
-		y = y*8/(haha->height);
+		x = x*8 / 512;
+		y = y*8 / 512;
 		if(y < 4)return;
 
 		type = 0x72616863;
@@ -177,10 +199,6 @@ static void calculator_list()
 static void calculator_change()
 {
 }
-
-
-
-
 static void calculator_start()
 {
 	int j;
@@ -195,18 +213,16 @@ static void calculator_stop()
 }
 void calculator_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	p->type = 0x6c6f6f74;
+	p->name = 0x636c6163;
 
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x636c6163;
-
-	this[10]=(u64)calculator_start;
-	this[11]=(u64)calculator_stop;
-	this[12]=(u64)calculator_list;
-	this[13]=(u64)calculator_change;
-	this[14]=(u64)calculator_read;
-	this[15]=(u64)calculator_write;
+	p->start = (u64)calculator_start;
+	p->stop = (u64)calculator_stop;
+	p->list = (u64)calculator_list;
+	p->choose = (u64)calculator_change;
+	p->read = (u64)calculator_read;
+	p->write = (u64)calculator_write;
 }
 void calculator_delete()
 {

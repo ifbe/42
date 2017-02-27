@@ -16,79 +16,91 @@ void say(void*, ...);
 
 
 
-//
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
+struct player
+{
+	u64 type;
+	u64 name;
+	u8 temp[0x30];
 
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
-//
+	u64 create;
+	u64 delete;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+};
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
+};
 static u8* vision = 0;
 
 
 
 
-static void camera_list()
-{
-}
-static void camera_into()
-{
-}
 
 
 
 
-void camera_read_text()
+void camera_read_text(struct window* win)
 {
 }
-void camera_read_html()
+void camera_read_html(struct window* win)
 {
 }
-void camera_read_pixel()
+void camera_read_pixel(struct window* win)
 {
 	int j;
-	u8* screen = (u8*)haha->buffer;
+	int w = win->w;
+	int h = win->h;
+	u8* screen = (u8*)(win->buf);
 	if(vision == 0)return;
 
 	for(j=0;j<640*480;j++)vision[j*2]=256-vision[j*2];
 	yuyv2rgba(
 		vision, 640, 480,
-		screen, haha->width, haha->height
+		screen, w, h
 	);
 	vision = 0;
 }
-static void camera_read()
+static void camera_read(struct window* win)
 {
-        u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
-        //text
-        if(temp == 0x74786574)
-        {
-                camera_read_text();
-        }
+	//text
+	if(fmt == 0x74786574)
+	{
+		camera_read_text(win);
+	}
 
-        //html
-        else if(temp == 0x6c6d7468)
-        {
-                camera_read_html();
-        }
+	//html
+	else if(fmt == 0x6c6d7468)
+	{
+		camera_read_html(win);
+	}
 
-        //pixel
-        else
-        {
-                camera_read_pixel();
-        }
+	//pixel
+	else
+	{
+		camera_read_pixel(win);
+	}
 }
-static void camera_write(u64* who, u64* a, u64* b)
+static void camera_write(struct event* ev)
 {
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x72616863)	//'char'
 	{
@@ -103,6 +115,12 @@ static void camera_write(u64* who, u64* a, u64* b)
 
 
 
+static void camera_list()
+{
+}
+static void camera_into()
+{
+}
 static void camera_start()
 {
 	startvision();
@@ -113,18 +131,17 @@ static void camera_stop()
 }
 void camera_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x6172656d6163;
+	p->type = 0x6c6f6f74;
+	p->name = 0x6172656d6163;
 
-	this[10]=(u64)camera_start;
-	this[11]=(u64)camera_stop;
-	this[12]=(u64)camera_list;
-	this[13]=(u64)camera_into;
-	this[14]=(u64)camera_read;
-	this[15]=(u64)camera_write;
+	p->start = (u64)camera_start;
+	p->stop = (u64)camera_stop;
+	p->list = (u64)camera_list;
+	p->choose = (u64)camera_into;
+	p->read = (u64)camera_read;
+	p->write = (u64)camera_write;
 }
 void camera_delete()
 {

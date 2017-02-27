@@ -12,8 +12,6 @@ void virtkbd_delete();
 //libs
 void ascii_create(u8*,u8*);
 void ascii_delete();
-void unicode_create(u8*,u8*);
-void unicode_delete();
 void shape_create(u8*,u8*);
 void shape_delete();
 //game
@@ -62,39 +60,23 @@ void tree_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-void backgroundcolor(void*, u64, u64, u64);
+void backgroundcolor(void*, int);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 u32 getrandom();
 //
 void eventwrite(u64,u64,u64,u64);
-//
 void say(void*, ...);
 
 
 
 
-//worker
-static u32 now=0;		//不能有负数
-//screen
-static void* pixbuf;
-static void* pixfmt;
-static int w;
-static int h;
-
-
-
-
-//[0x000000,0x0fffff]:
-//[0x100000,0x1fffff]:
-//[0x200000,0x2fffff]:
-//[0x300000,0x3fffff]:
-static struct working
+struct working
 {
 	//种类，名字，位置，
-	u64 type;	//[0,7]:种类	    //'window'
-	u64 id;	//[8,f]:名字	    //'小明'
-	u64 xyze1;	//x,y,z,en
+	u64 type;
+	u64 name;
+	u64 xyze1;
 	u64 xyze2;
 
 	//screenbuffer
@@ -128,18 +110,29 @@ static struct working
 	char padding5[ 8 - sizeof(char*) ];
 
 	//[70,77]:输出
-	int (*read)();
+	int (*read)(void* config);
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[78,7f]:输入
-	int (*write)(void* where, void* who, void* what);
+	int (*write)(void* event);
 	char padding7[ 8 - sizeof(char*) ];
-}*worker;
-static u8* mega0;
-static u8* mega1;
-static u8* mega2;
-static u8* mega3;
+};
+static struct working* worker;
+static u32 now=0;		//不能有负数
 
+
+
+
+//
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+static struct window* win;
+static u32 cur=0;
 
 
 
@@ -151,15 +144,12 @@ void charactercreate(u8* type, u8* addr)
 	if(type!=0)return;
 
 	//where
-	mega0=addr+0x000000;
-	mega1=addr+0x100000;
-	mega2=addr+0x200000;
-	mega3=addr+0x300000;
-	for(i=0;i<0x100000;i++)mega1[i]=0;
+	win = (struct window*)(addr+0);
+	worker = (struct working*)(addr+0x100000);
 
 	//......
-	worker=(struct working*)mega1;
-	temp=mega1;
+	temp = addr + 0x100000;
+	for(i=0;i<0x100000;i++)temp[i]=0;
 
 	//menu.center
 	menu_create(addr,temp);
@@ -175,10 +165,6 @@ void charactercreate(u8* type, u8* addr)
 
 	//ascii
 	ascii_create(addr,temp);
-	temp+=0x80;
-
-	//unicode
-	unicode_create(addr,temp);
 	temp+=0x80;
 
 	//shape
@@ -305,7 +291,6 @@ void characterdelete()
 
 	ascii_delete();
 	shape_delete();
-	unicode_delete();
 
 	menu_delete();
 	roster_delete();
@@ -317,22 +302,21 @@ void characterdelete()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(u8* addr, u8* fmt, int width, int height)
+int characterstart(u64 buf, u64 fmt, u64 w, u64 h)
 {
 	int j;
-
-	pixbuf = addr;
-	pixfmt = fmt;
-	w = width;
-	h = height;
+	win->buf = buf;
+	win->fmt = fmt;
+	win->w = w;
+	win->h = h;
 	//say("@characterstart:%d,%d\n", w, h);
 
 	for(j=0;j<100;j++)
 	{
-		if(worker[j].id == 0)break;
+		if(worker[j].name == 0)break;
 
-		worker[j].buffer = (u64)addr;
-		worker[j].format = *(u64*)fmt;
+		worker[j].buffer = buf;
+		worker[j].format = fmt;
 		worker[j].width = w;
 		worker[j].height = h;
 	}
@@ -362,9 +346,9 @@ int characterlist(u8* p)
 	{
 		for(j=0;j<256;j++)
 		{
-			if(worker[j].id != 0)
+			if(worker[j].name != 0)
 			{
-				say("%d:%s\n",j,&worker[j].id);
+				say("%d:%s\n",j,&worker[j].name);
 			}
 		}
 		return 0;
@@ -380,11 +364,11 @@ int characterlist(u8* p)
 		for(;j<0x100;j++)
 		{
 			//all searched
-			if(worker[j].id == 0)return 0;
+			if(worker[j].name == 0)return 0;
 
 			//lookat this
-			//say("[%s][%s]\n",&worker[j].id, p);
-			ret = ncmp(&worker[j].id, p, 8);
+			//say("[%s][%s]\n",&worker[j].name, p);
+			ret = ncmp(&worker[j].name, p, 8);
 			if(ret == 0)return j;
 		}
 		return 0;
@@ -405,18 +389,18 @@ void characterwrite(u64* p)
 	//size
 	if(p[1] == 0x657a6973)
 	{
-		w = p[0] & 0xffff;
-		h = (p[0] >> 16) & 0xffff;
+		win->w = p[0] & 0xffff;
+		win->h = (p[0] >> 16) & 0xffff;
 
 		for(x=0;x<100;x++)
 		{
-			if(worker[x].id == 0)break;
+			if(worker[x].name == 0)break;
 
-			worker[x].width = w;
-			worker[x].height = h;
+			worker[x].width = win->w;
+			worker[x].height = win->h;
 
 			//cleanup screen
-			backgroundcolor(pixbuf, 0, w, h);
+			backgroundcolor(win, 0);
 		}
 		return;
 	}//size
@@ -435,35 +419,35 @@ void characterwrite(u64* p)
 	//virtkbd
 	if(worker[2].xyze1 > 0)
 	{
-		x = worker[2].write(p+2, p+1, p);
+		x = worker[2].write(p);
 	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(worker[0].xyze1 > 0)
 	{
 		//center
-		x = worker[0].write(p+2, p+1, p);
+		x = worker[0].write(p);
 	}
 	else if(worker[1].xyze1 > 0)
 	{
 		//roster
-		x = worker[1].write(p+2, p+1, p);
+		x = worker[1].write(p);
 	}
 	else
 	{
 		//player
-		worker[now].write(p+2, p+1, p);
+		worker[now].write(p);
 	}
 }
-void characterread()
+void characterread(void* cfg)
 {
 	//主画
-	worker[now].read();
+	worker[now].read(cfg);
 
 	//菜单
-	if(worker[0].xyze1 > 0)worker[0].read();
-	if(worker[1].xyze1 > 0)worker[1].read();
-	if(worker[2].xyze1 > 0)worker[2].read();
+	if(worker[0].xyze1 > 0)worker[0].read(cfg);
+	if(worker[1].xyze1 > 0)worker[1].read(cfg);
+	if(worker[2].xyze1 > 0)worker[2].read(cfg);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -500,7 +484,7 @@ int charactercommand(u8* p)
 	ret=cmp(p,"+");
 	if(ret==0)
 	{
-		if(worker[now+1].id == 0)return 0;
+		if(worker[now+1].name == 0)return 0;
 		now++;
 		goto found;
 	}
@@ -526,7 +510,7 @@ int charactercommand(u8* p)
 
 		for(;k<0x100000/0x80;k++)
 		{
-			if(worker[k].id == 0)break;
+			if(worker[k].name == 0)break;
 		}
 
 		now=( getrandom() % (k-j) ) + j;
@@ -545,7 +529,7 @@ int charactercommand(u8* p)
 
 found:
 	//worker[0].xyze1 = 0;
-	characterstart(pixbuf, pixfmt, w, h);
+	characterstart(win->buf, win->fmt, win->w, win->h);
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

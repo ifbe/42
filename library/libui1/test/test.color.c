@@ -1,5 +1,7 @@
-#define u64 unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long
 //
 void hexadecimal(int x,int y,u64 in);
 //
@@ -9,49 +11,55 @@ void say(char*,...);
 
 
 
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-
-//
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 static int red=0x8d,green=0x63,blue=0x25;
 
 
 
 
-static void color_list()
+static void color_read_pixel(struct window* win)
 {
-}
-static void color_into()
-{
-}
-static void color_read_pixel()
-{
-	int x,y,min;
+	int x,y,w,h,min;
 	u32 color;
-	u32* screenbuf = (u32*)(haha->buffer);
+	u32* screenbuf;
 
-	if( ((haha->width) <= 0) && ((haha->height) <= 0) )
-	{
-		min=512;	
-	}
-	else
-	{
-		if((haha->width) < (haha->height))min = haha->width;
-		else min = haha->height;
-	}
+	screenbuf = (u32*)(win->buf);
+	w = win->w;
+	h = win->h;
+
+	if(w < h)min = w;
+	else min = h;
 
 	//(左边)各种颜色的色板
-	if( ((haha->format)&0xffffffff) == 0x61626772)
+	if( ((win->fmt)&0xffffffff) == 0x61626772)
 	{
 		for(y=0;y<min;y++)
 		{
@@ -61,7 +69,7 @@ static void color_read_pixel()
 					+ ( ( (x*256) / min ) << 16)
 					+ ( ( (y*256) / min ) << 8 )
 					+ red;
-				screenbuf[(haha->width)*y + x]	=color;
+				screenbuf[w*y + x] = color;
 			}
 		}
 
@@ -77,7 +85,7 @@ static void color_read_pixel()
 					+ (red<<16)
 					+ ( ( (y*256) / min ) << 8 )
 					+ ( (x*256) / min );
-				screenbuf[(haha->width)*y + x]	=color;
+				screenbuf[w*y + x] = color;
 			}
 		}
 
@@ -85,23 +93,23 @@ static void color_read_pixel()
 	}
 
 	//(右边)选中的颜色的方块
-	if((haha->width) < (haha->height))
+	if(w < h)
 	{
-		for(y=haha->width;y<haha->height;y++)
+		for(y=w;y<h;y++)
 		{
-			for(x=0;x<haha->width;x++)
+			for(x=0;x<w;x++)
 			{
-				screenbuf[(haha->width)*y + x] = color;
+				screenbuf[w*y + x] = color;
 			}
 		}
 	}
-	if((haha->width) > (haha->height))
+	else
 	{
-		for(y=0;y<(haha->height);y++)
+		for(y=0;y<h;y++)
 		{
-			for(x=(haha->height);x<(haha->width);x++)
+			for(x=h;x<w;x++)
 			{
-				screenbuf[(haha->width)*y + x] = color;
+				screenbuf[w*y + x] = color;
 			}
 		}
 	}
@@ -111,7 +119,7 @@ static void color_read_pixel()
 	{
 		for(x=0;x<4;x++)
 		{
-			screenbuf[ (haha->width)*(green*min/256+y) + (blue*min/256+x) ]
+			screenbuf[w*(green*min/256+y) + (blue*min/256+x) ]
 				= 0xffffffff;
 		}
 	}
@@ -119,42 +127,41 @@ static void color_read_pixel()
 	//
 	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
 }
-static void color_read_html()
+static void color_read_html(struct window* win)
 {
-	u32* screenbuf = (u32*)(haha->buffer);
-
-	color_read_pixel();
-	screenbuf[0]=0;
+	u32* buf = (u32*)(win->buf);
+	color_read_pixel(win);
+	buf[0]=0;
 }
-static void color_read_text()
+static void color_read_text(struct window* win)
 {
 }
-static void color_read()
+static void color_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u32 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		color_read_text();
+		color_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		color_read_html();
+		color_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		color_read_pixel();
+		color_read_pixel(win);
 	}
 }
-static void color_write(u64* who, u64* a, u64* b)
+static void color_write(struct event* ev)
 {
-	u64 type = *a;
-	u64 key = *b;
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x64626b)
 	{
@@ -190,12 +197,9 @@ static void color_write(u64* who, u64* a, u64* b)
 	{
 		if((key>>48) == 1)	//left
 		{
-			int x=key&0xffff;
-			int y=(key>>16)&0xffff;
-			int min;
-
-			if( (haha->width) < (haha->height) )min = haha->width;
-			else min = haha->height;
+			int x = key&0xffff;
+			int y = (key>>16)&0xffff;
+			int min = 512;
 
 			if((x>min)|(y>min))return;
 			blue=x*256/min;
@@ -215,6 +219,12 @@ static void color_write(u64* who, u64* a, u64* b)
 
 
 
+static void color_list()
+{
+}
+static void color_into()
+{
+}
 static void color_start()
 {
 }
@@ -223,18 +233,17 @@ static void color_stop()
 }
 void color_create(void* base, void* addr)
 {
-	u64* this=(u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x74736574;
-	this[1] = 0x726f6c6f63;
+	p->type = 0x74736574;
+	p->name = 0x726f6c6f63;
 
-	this[10]=(u64)color_start;
-	this[11]=(u64)color_stop;
-	this[12]=(u64)color_list;
-	this[13]=(u64)color_into;
-	this[14]=(u64)color_read;
-	this[15]=(u64)color_write;
+	p->start = (u64)color_start;
+	p->stop = (u64)color_stop;
+	p->list = (u64)color_list;
+	p->choose = (u64)color_into;
+	p->read = (u64)color_read;
+	p->write = (u64)color_write;
 }
 void color_delete()
 {

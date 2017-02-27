@@ -1,5 +1,7 @@
-#define u64 unsigned long long 
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long 
 //
 void line(
 	int x1, int y1, int x2, int y2, u32 color);
@@ -9,10 +11,6 @@ void rectframe(
 	int x1, int y1, int x2, int y2, u32 color);
 void rect(
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
-//
 u32 getrandom();
 int diary(char*,int,char*,...);
 void say(char*,...);
@@ -20,17 +18,35 @@ void say(char*,...);
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 
 struct hehe{
 	int x;
@@ -53,12 +69,12 @@ static int die=0;
 
 
 
-void snake_read_pixel()
+void snake_read_pixel(struct window* win)
 {
 	//create screen
 	int j;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 
 	if(die == 1)
 	{
@@ -109,12 +125,12 @@ void snake_read_pixel()
 
 
 
-void snake_read_text()
+void snake_read_text(struct window* win)
 {
 	int j,t;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
 	for(j=0;j<width*height*4;j++)p[j] = 0;
 
 	j=0;
@@ -145,10 +161,10 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html()
+void snake_read_html(struct window* win)
 {
 	int j = 0;
-	char* p = (char*)(haha->buffer);
+	char* p = (char*)(win->buf);
 
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
@@ -184,26 +200,26 @@ void snake_read_html()
 
 
 
-void snake_read()
+void snake_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		snake_read_text();
+		snake_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		snake_read_html();
+		snake_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		snake_read_pixel();
+		snake_read_pixel(win);
 	}
 }
 
@@ -212,31 +228,14 @@ void snake_read()
 
 void newfood()
 {
-	u32 temp = (haha->format)&0xffffffff;
-	if(temp == 0x6c6d7468)
-	{
-		worldwidth = 32;
-		worldheight = 32;
-	}
-	else if(temp == 0x74786574)
-	{
-		worldwidth = haha->width;
-		worldheight = haha->height;
-	}
-	else
-	{
-		worldwidth = (haha->width)/32;
-		worldheight = (haha->height)/32;
-	}
-
 	foodx=getrandom() % worldwidth;
 	foody=getrandom() % worldheight;
 }
-void snake_write(u64* who, u64* aaaa,u64* bbbb)
+void snake_write(struct event* ev)
 {
 	int j;
-	u64 type = *aaaa;
-	u64 key = *bbbb;
+	u64 type = ev->what;
+	u64 key = ev->why;
 	if(die==1)return;
 
 	if(type==0x72616863)
@@ -355,20 +354,11 @@ static void snake_list()
 static void snake_choose()
 {
 }
-
-
-
-
 static void snake_start()
 {
-	//1.create
-	int x;
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
+	worldwidth = 32;
+	worldheight = 32;
 
-	//create food and snake 
 	newfood();
 	snake[0].x = foodx;
 	snake[0].y = foody;
@@ -385,26 +375,20 @@ static void snake_start()
 static void snake_stop()
 {
 }
-
-
-
-
-void snake_create(char* base,void* addr)
+void snake_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	snake=(struct hehe*)(base+0x300000);
 
-	this[0] = 0x656d6167;
-	this[1] = 0x656b616e73;
+	p->type = 0x656d6167;
+	p->name = 0x656b616e73;
 
-	this[10]=(u64)snake_start;
-	this[11]=(u64)snake_stop;
-	this[12]=(u64)snake_list;
-	this[13]=(u64)snake_choose;
-	this[14]=(u64)snake_read;
-	this[15]=(u64)snake_write;
-
-	snake=(struct hehe*)(addr+0x300000);
+	p->start = (u64)snake_start;
+	p->stop = (u64)snake_stop;
+	p->list = (u64)snake_list;
+	p->choose = (u64)snake_choose;
+	p->read = (u64)snake_read;
+	p->write = (u64)snake_write;
 }
 void snake_delete()
 {

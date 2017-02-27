@@ -28,6 +28,13 @@ static struct temp{
         u64 width;
         u64 height;
 }*haha;
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 
 
 
@@ -61,11 +68,7 @@ static void example_read()
 		example_read_pixel();
 	}
 }
-
-
-
-
-static void example_write(u64* who, u64* what, u64* how)
+static void example_write(struct event* ev)
 {
 }
 
@@ -78,10 +81,6 @@ static void example_list()
 static void example_change()
 {
 }
-
-
-
-
 static void example_start()
 {
 }

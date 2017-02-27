@@ -9,27 +9,43 @@ void circlebody(
 	int x, int y, int r, u32 color);
 void circleframe(
 	int x, int y, int r, u32 color);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32);
-u32 getrandom();
+void backgroundcolor(void*, u32);
 //
+u32 getrandom();
 void say(char*,...);
 
 
 
 
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
+struct player
+{
+        u64 type;
+        u64 name;
+        u8 temp[0x30];
 
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
+        u64 create;
+        u64 delete;
+        u64 start;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 //
 static int turn;
 static int px,py;
@@ -39,17 +55,17 @@ static char* data;
 
 
 
-static void weiqi_read_html()
+static void weiqi_read_html(struct window* win)
 {
 }
-static void weiqi_read_text()
+static void weiqi_read_text(struct window* win)
 {
 	int x,y,j,k,ret,color;
-	int width=haha->width;
-	int height=haha->height;
-	u8* p = (u8*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
 
-	//haha
+	//
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<19;y++)
 	{
@@ -73,19 +89,17 @@ static void weiqi_read_text()
 		}
 	}
 }
-static void weiqi_read_pixel()
+static void weiqi_read_pixel(struct window* win)
 {
-	int x,y;
-	int cx,cy,half;
 	u32 color;
-
-	cx = (haha->width)/2;
-	cy = (haha->height)/2;
+	int x,y,half;
+	int cx = (win->w)/2;
+	int cy = (win->h)/2;
 
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if( ((haha->format)&0xffffffff) == 0x61626772)
+	if( ((win->fmt)&0xffffffff) == 0x61626772)
 	{
 		color = 0x256f8d;
 	}
@@ -93,10 +107,7 @@ static void weiqi_read_pixel()
 	{
 		color = 0x8d6f25;
 	}
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		color
-	);
+	backgroundcolor(win, color);
 
 	//heng
 	for(y=-9;y<10;y++)
@@ -139,81 +150,80 @@ static void weiqi_read_pixel()
 		}
 	}
 }
-static void weiqi_read()
+static void weiqi_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		weiqi_read_text();
+		weiqi_read_text(win);
 	}
 
 	//html
-	else if(temp == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		weiqi_read_html();
+		weiqi_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		weiqi_read_pixel();
+		weiqi_read_pixel(win);
 	}
 }
 
 
 
 
-void weiqi_write(u64* who, u64* what, u64* key)
+void weiqi_write(struct event* ev)
 {
 	char val;
-	int x,y;
-	int cx,cy,half;
+	int x,y,half;
+	int cx = 256;
+	int cy = 256;
+	u64 what = ev->what;
+	u64 key = ev->why;
 
-	cx = (haha->width)/2;
-	cy = (haha->height)/2;
 	if(cy > cx)half = cx/20;
 	else half = cy/20;
 
-	if(*what == 0x64626b)
+	if(what == 0x64626b)
 	{
-		if(*key == 0x25)	//left
+		if(key == 0x25)	//left
 		{
 			if(px<1)return;
 			px--;
 		}
-		else if(*key == 0x26)   //up
+		else if(key == 0x26)   //up
 		{
 			if(py<1)return;
 			py--;
 		}
-		else if(*key == 0x27)   //right
+		else if(key == 0x27)   //right
 		{
 			if(px>=18)return;
 			px++;
 		}
-		else if(*key == 0x28)   //down
+		else if(key == 0x28)   //down
 		{
 			if(py>=18)return;
 			py++;
 		}
 	}
-
-	else if(*what == 0x72616863)
+	else if(what == 0x72616863)
 	{
-		if(*key == 0x20)
+		if(key == 0x20)
 		{
 			if((turn&1)==0)data[(py*19)+px] = 'b';
 			else data[(py*19)+px] = 'w';
 			turn++;
 		}
 	}
-
-	else if(*what == 0x2d6d)
+	else if(what == 0x2d6d)
 	{
-		x=(*key) & 0xffff;
-		y=( (*key) >> 16 ) & 0xffff;
+		x=key & 0xffff;
+		y=(key >> 16) & 0xffff;
 		//say("%d,%d\n",x,y);
 
 		x = (((x-cx)<<8)/half + 4736)>>9;
@@ -240,10 +250,6 @@ static void weiqi_list()
 static void weiqi_choose()
 {
 }
-
-
-
-
 static void weiqi_start()
 {
 	int x,y;
@@ -262,26 +268,20 @@ static void weiqi_start()
 static void weiqi_stop()
 {
 }
-
-
-
-
-void weiqi_create(void* base,void* addr)
+void weiqi_create(void* base, void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
+	data = base+0x300000;
 
-	this[0] = 0x656d6167;
-	this[1] = 0x6971696577;
+	p->type = 0x656d6167;
+	p->name = 0x6971696577;
 
-	this[10]=(u64)weiqi_start;
-	this[11]=(u64)weiqi_stop;
-	this[12]=(u64)weiqi_list;
-	this[13]=(u64)weiqi_choose;
-	this[14]=(u64)weiqi_read;
-	this[15]=(u64)weiqi_write;
-
-	data=base+0x300000;
+	p->start = (u64)weiqi_start;
+	p->stop = (u64)weiqi_stop;
+	p->list = (u64)weiqi_list;
+	p->choose = (u64)weiqi_choose;
+	p->read = (u64)weiqi_read;
+	p->write = (u64)weiqi_write;
 }
 void weiqi_delete()
 {

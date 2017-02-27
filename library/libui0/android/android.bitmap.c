@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <math.h>
 //
-void characterstart(char* pixbuf, char* pixfmt, int width, int height);
+void characterstart(u64 buf, u64 fmt, u64 w, u64 h);
 void characterstop();
-void characterwrite(u64* p);
-void characterread();
+void characterwrite(void* p);
+void characterread(void* p);
 //
 void motion_explain(u64* p);
 void network_explain(u64* p);
@@ -23,6 +23,14 @@ void death();
 
 
 
+struct screen
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+};
+static struct screen sc[1];
 //
 static int pressed=0;
 static int xxxx=0;
@@ -49,7 +57,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	}
 
 	//draw pixel
-	characterread();
+	characterread(sc);
 
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);
@@ -64,9 +72,9 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)
 {
+	int ret;
+	u64 pixels;
 	AndroidBitmapInfo  info;
-	int                ret;
-	void*              pixels;
 	say("start\n");
 
 	if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0)
@@ -79,12 +87,16 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("Bitmap format is not RGBA_8888 !");
 		return;
 	}
-	if ((ret = AndroidBitmap_lockPixels(env, bitmap, &pixels)) < 0)
+	if ((ret = AndroidBitmap_lockPixels(env, bitmap, (void*)&pixels)) < 0)
 	{
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	characterstart(pixels, "rgba8888", info.width, info.height-64);
+	sc->buf = pixels;
+	sc->fmt = 0x3838383861626772;
+	sc->w = info.width;
+	sc->h = info.height;
+	characterstart(sc->buf, sc->fmt, sc->w, sc->h-64);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)

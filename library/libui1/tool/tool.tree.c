@@ -15,10 +15,7 @@ void printascii(
 	int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
 void line(
 	int,int,int,int,u32);
-void backgroundcolor(
-	u64, u64, u64, u64,
-	u32
-);
+void backgroundcolor(void*, u32);
 //libsoft
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
@@ -31,19 +28,35 @@ void printmemory(char*,int);
 
 
 
-//
-static struct temp{
+struct player
+{
         u64 type;
-        u64 id;
+        u64 name;
+        u8 temp[0x30];
+
+        u64 create;
+        u64 delete;
         u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
-
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
 struct mathnode{
 
         u32 type;
@@ -56,19 +69,15 @@ struct mathnode{
                 unsigned long long integer;
         };
 };
-
-//
 static struct mathnode* node=0;
 static int count=0;
-
-//
 static char buffer[128];
 static char postfix[128];
 
 
 
 
-static void printnode(int x,int y,int num)
+static void printnode(struct window* win, int x,int y,int num)
 {
 	int left,right;
 	int offset,temp;
@@ -80,7 +89,7 @@ static void printnode(int x,int y,int num)
 	right=node[num].right;
 
 	//偏移
-	offset = (haha->width)/4;
+	offset = (win->w)/4;
 	temp = y;
 	while(1)
 	{
@@ -143,29 +152,40 @@ static void printnode(int x,int y,int num)
 	if(left!=0&&left<128)
 	{
 		line(x, 64*y+16, x-offset, 64*y+64, 0xffffffff);
-		printnode( x-offset , y+1 , left );
+		printnode(win, x-offset , y+1 , left );
 	}
 
 	//right
 	if(right!=0&&right<128)
 	{
 		line(x, 64*y+16, x+offset, 64*y+64, 0xffffffff);
-		printnode( x+offset , y+1 , right );
+		printnode(win, x+offset , y+1 , right );
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);
 }
-
-
-
-
-
-
-
-
-static void tree_write(u64* who, u64* a, u64* b)
+static void tree_read(struct window* win)
 {
-	u64 type = *a;
-	u64 key = *b;
+	backgroundcolor(win, 0);
+	printstring(0, 0, 1, buffer, 0xffffffff, 0);
+	printstring(0, 16, 1, postfix, 0xffffffff, 0);
+	if(node==0)return;
+
+	//等式
+	if(node[0].type==0x3d3d3d3d)
+	{
+		printnode(win, (win->w)/2, 1, 0);
+	}
+
+	//算式
+	else
+	{
+		printnode(win, (win->w)/2, 1, node[0].right);
+	}
+}
+static void tree_write(struct event* ev)
+{
+	u64 type = ev->what;
+	u64 key = ev->why;
 
 	if(type==0x72616863)		//'char'
 	{
@@ -199,28 +219,6 @@ static void tree_write(u64* who, u64* a, u64* b)
 		}
 	}//'char'
 }
-static void tree_read()
-{
-	backgroundcolor(
-		haha->buffer, 0, haha->width, haha->height,
-		0
-	);
-	printstring(0, 0, 1, buffer, 0xffffffff, 0);
-	printstring(0, 16, 1, postfix, 0xffffffff, 0);
-	if(node==0)return;
-
-	//等式
-	if(node[0].type==0x3d3d3d3d)
-	{
-		printnode((haha->width)/2, 1, 0);
-	}
-
-	//算式
-	else
-	{
-		printnode((haha->width)/2, 1, node[0].right);
-	}
-}
 
 
 
@@ -231,40 +229,26 @@ static void tree_list()
 static void tree_into()
 {
 }
-
-
-
-
 static void tree_start()
 {
-	u64 t = 0x72616863;
-	u64 k = 0xd;
-
-	buffer[0]='1';
-	buffer[1]='+';
-	buffer[2]='1';
-
-	tree_write((void*)0, &t, &k);
 }
 static void tree_stop()
 {
 }
 void tree_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
-
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x65657274;
-
-	this[10]=(u64)tree_start;
-	this[11]=(u64)tree_stop;
-	this[12]=(u64)tree_list;
-	this[13]=(u64)tree_into;
-	this[14]=(u64)tree_read;
-	this[15]=(u64)tree_write;
-
+	struct player* p = addr;
 	node=(struct mathnode*)(base+0x200000);
+
+	p->type = 0x6c6f6f74;
+	p->name = 0x65657274;
+
+	p->start = (u64)tree_start;
+	p->stop = (u64)tree_stop;
+	p->list = (u64)tree_list;
+	p->choose = (u64)tree_into;
+	p->read = (u64)tree_read;
+	p->write = (u64)tree_write;
 }
 void tree_delete()
 {
