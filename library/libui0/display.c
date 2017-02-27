@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//local
 int windowcreate();
 int windowdelete();
 int windowstart(void*);
@@ -20,7 +21,7 @@ void say(void*, ...);
 
 
 //
-struct screen
+struct window
 {
         u64 buf;
         u64 fmt;
@@ -28,25 +29,25 @@ struct screen
         u64 h;
 	char padding[256 - sizeof(u64)*4];
 };
-static struct screen* sc;
+static struct window* sc;
 static int id = 0;
 
 
 
 
-u64 displayread()
+u64 displayread(struct window* win)
 {
 	return 0;
 }
-u64 displaywrite()
+u64 displaywrite(struct window* win)
 {
-	//if(local) {
-		windowwrite( &(sc[id]) );
-	//}
-
-	//if(net) {
-		//netdsp_write();
-	//}
+	if(win->fmt == 0x6c6d7468)
+	{
+	}
+	else
+	{
+		windowwrite(win);
+	}
 	return 0;
 }
 u64 displaylist(u64 dispid, u64 property)
@@ -82,14 +83,18 @@ u64 displaychoose(u64 dispid, u64 property, u64 what)
 
 	return what;
 }
-u64 displaystart(void* buf, void* fmt, int w, int h)
+u64 displaystart(u64 buf, u64 fmt, u64 w, u64 h)
 {
-	id = 0;
-	sc[id].fmt = 0x6267726138383838;	//"bgra8888"
-	sc[id].w = 512;
-	sc[id].h = 512;
-	windowstart( &(sc[id]) );
-
+	if(fmt == 0x6c6d7468)
+	{
+	}
+	else
+	{
+		sc[0].fmt = fmt;
+		sc[0].w = w;
+		sc[0].h = h;
+		windowstart( &(sc[0]) );
+	}
 	return id;
 }
 u64 displaystop()

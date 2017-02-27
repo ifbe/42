@@ -3,10 +3,18 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(int x, int y, int size, char* str, u32 fg, u32 bg);
-void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bg, u32 fg);
-void rect(int x1, int y1, int x2, int y2, u32 bg, u32 fg);
-void line(int x1, int y1, int x2, int y2, u32 color);
+void printstring(void*,
+	int x, int y, int size,
+	char* str, u32 fg, u32 bg);
+void triangle(void*,
+	int x1, int y1,
+	int x2, int y2,
+	int x3, int y3,
+	u32 bc, u32 fc);
+void rect(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 bc, u32 fc);
 //
 int charactercommand(char* p);
 int diary(char*, int, char*, ...);
@@ -15,39 +23,47 @@ int say(char*,...);
 
 
 
-//
+struct player
+{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+	
+	u8 data[0xc0];
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
+};
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
-//
-static struct temp{
-	u64 type;
-	u64 id;
-	u64 start;
-	u64 end;
-
-	u64 buffer;
-	u64 format;
-	u64 width;
-	u64 height;
-}*haha;
-//菜单
 static char buffer[128];
 static int bufp=0;
 
 
 
 
-static void menu_read_text()
+static void menu_read_text(struct window* win)
 {
 	int x,y;
-	int width=haha->width;
-	int height=haha->height;
-	char* p = (char*)(haha->buffer);
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
 	char* src;
 	char* dst;
 
@@ -98,32 +114,32 @@ static void menu_read_text()
 		y += 4;
 	}
 }
-static void menu_read_pixel()
+static void menu_read_pixel(struct window* win)
 {
 	int x,y;
-	int width=haha->width;
-	int height=haha->height;
+	int width = win->w;
+	int height = win->h;
 
 	//title
-	rect(
+	rect(win,
 		width/4, (height/4)&0xfffffff0,
 		width*3/4, (height/4+16)&0xfffffff0,
 		0x01234567, 0xfedcba98
 	);
-	rect(
+	rect(win,
 		(width*3/4) - 16, (height/4)&0xfffffff0,
 		width*3/4, ((height/4) + 16)&0xfffffff0,
 		0xff0000, 0
 	);
 
 	//left, right
-	triangle(
+	triangle(win,
 		width/16, height/2,
 		width*3/16, height*3/8,
 		width*3/16, height*5/8,
 		0x888888, 0xffffff
 	);
-	triangle(
+	triangle(win,
 		width*15/16, height/2,
 		width*13/16, height*3/8,
 		width*13/16, height*5/8,
@@ -131,29 +147,29 @@ static void menu_read_pixel()
 	);
 
 	//body
-	rect(
+	rect(win,
 		width/4, (height/4+16)&0xfffffff0,
 		width*3/4, height*3/4,
 		0, 0xffffffff
 	);
 
 	//string
-	printstring(
+	printstring(win,
 		width/4, height/4 + 16,
 		1, "what do you want?",
 		0xffffffff, 0
 	);
-	printstring(
+	printstring(win,
 		width/4, height/4 + 32,
 		1, buffer,
 		0xffffffff, 0
 	);
 }
-static void menu_read_html()
+static void menu_read_html(struct window* win)
 {
-	char* p = (char*)(haha->buffer);
+	char* p = (char*)(win->buf);
 
-        *(u32*)p = 0x6c6d7468;
+	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
 	buffer[bufp] = 0;
@@ -176,28 +192,26 @@ static void menu_read_html()
 		buffer
 	);
 }
-static void menu_read()
+static void menu_read(struct window* win)
 {
-	u32 temp = (haha->format)&0xffffffff;
-	//say("temp=%x\n",temp);
+	u64 fmt = win->fmt;
 
 	//text
-	if(temp == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		menu_read_text();
+		menu_read_text(win);
 	}
 
 	//html
-        else if(temp == 0x6c6d7468)
-        {
-		say("html\n",temp);
-                menu_read_html();
-        }
+	else if(fmt == 0x6c6d7468)
+	{
+		menu_read_html(win);
+	}
 
 	//pixel
 	else
 	{
-		menu_read_pixel();
+		menu_read_pixel(win);
 	}
 }
 
@@ -207,8 +221,8 @@ static void menu_read()
 //write,read,into,list
 static void menu_write(struct event* ev)
 {
-	int width=haha->width;
-	int height=haha->height;
+	int width = 512;
+	int height = 512;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
@@ -221,7 +235,6 @@ static void menu_write(struct event* ev)
 		//点击框框外面，关掉菜单
 		if( (y > height*3/4) | (y < height/4) )
 		{
-			haha->start=0;
 			return;
 		}
 
@@ -289,30 +302,24 @@ static void menu_choose()
 static void menu_list()
 {
 }
-
-
-
-
 static void menu_start()
 {
 }
 static void menu_stop()
 {
 }
-void menu_create(void* base,void* addr)
+void menu_create(void* base, void* addr)
 {
-	u64* this=addr;
-	haha=addr;
+	struct player* p = addr;
 
-	this[0]=0;
-	this[1]=0x756e656d;
-
-	this[10]=(u64)menu_start;
-	this[11]=(u64)menu_stop;
-	this[12]=(u64)menu_list;
-	this[13]=(u64)menu_choose;
-	this[14]=(u64)menu_read;
-	this[15]=(u64)menu_write;
+	p->type = 0;
+	p->name = 0x756e656d;
+	p->start = (u64)menu_start;
+	p->stop = (u64)menu_stop;
+	p->list = (u64)menu_list;
+	p->choose = (u64)menu_choose;
+	p->read = (u64)menu_read;
+	p->write = (u64)menu_write;
 }
 void menu_delete()
 {

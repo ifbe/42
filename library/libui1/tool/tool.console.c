@@ -3,9 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void string(
+void string(void*,
 	int x,int y,void* str);
-void backgroundcolor(void*, u32);
+void backgroundcolor(void*,
+	u32);
 //
 void charactercommand(u8*);
 void arterycommand(u8*);
@@ -19,32 +20,32 @@ void say(void*, ...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //log位置
 static char* logbuf=0;
@@ -117,7 +118,7 @@ static void printposition(struct window* win, int start,int count,int max)
 		}
 	}
 }
-static void printstdout(int start,int count)
+static void printstdout(struct window* win, int start,int count)
 {
 	//总共38行，必须保证start>=0x80*行数
 	int x,y;
@@ -125,14 +126,13 @@ static void printstdout(int start,int count)
 	//say("printstdout:%d,%d\n",start,count);
 	for(y=0;y<count;y++)
 	{
-		//string(0 , y*16 , p + y * 0x80);
-		string(0, y*16, "haha");
+		string(win, 0, y*16, "haha");
 	}
 }
-static void printstdin(int count)
+static void printstdin(struct window* win, int count)
 {
-	string(0, count*16, "[user@42]");
-	string(9*8, count*16, buffer);
+	string(win, 0, count*16, "[user@42]");
+	string(win, 9*8, count*16, buffer);
 }
 static void console_read(struct window* win)
 {
@@ -145,8 +145,8 @@ static void console_read(struct window* win)
 
 	background4(win);
 	printposition(win, start,count,enqueue);
-	printstdout(start,count);
-	printstdin(count);
+	printstdout(win, start,count);
+	printstdin(win, count);
 }
 static void console_write(struct event* ev)
 {

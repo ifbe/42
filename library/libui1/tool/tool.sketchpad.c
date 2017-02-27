@@ -3,13 +3,13 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(
-	int x, int y, int size, char* str, u32 fgcolor, u32 bgcolor);
-void defaultdouble(
+void printstring(void*,
+	int x, int y, int size,
+	char* str, u32 fgcolor, u32 bgcolor);
+void defaultdouble(void*,
 	int x,int y,double z);
-void decimal(
-	int x,int y,u64 in);
-void backgroundcolor(void*, u32);
+void backgroundcolor(void*,
+	u32);
 //
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -28,32 +28,32 @@ void say(char*,...);
 //
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 
 //
@@ -133,8 +133,14 @@ static void wangge(struct window* win)
 
 
 	//网格上对应那一行的x,y坐标值,以及画上网格
-	defaultdouble( wanggex, 0+wanggey, centerx-(scale*width/2)+(wanggex*scale) );
-	defaultdouble( wanggex, 16+wanggey, centery+(scale*height/2)-(wanggey*scale) );
+	defaultdouble(win,
+		wanggex, 0+wanggey,
+		centerx-(scale*width/2)+(wanggex*scale)
+	);
+	defaultdouble(win,
+		wanggex, 16+wanggey,
+		centery+(scale*height/2)-(wanggey*scale)
+	);
 
 	for(x=wanggex;x<width;x+=wanggedistance)
 	{//竖线
@@ -243,10 +249,10 @@ static void sketchpad_read_pixel(struct window* win)
 
 
 skipthese:		//打印
-	printstring(0, 0, 1, buffer, 0xcccccc, 0xff000000);
-	printstring(0, 16, 1, infix, 0xcccccc, 0xff000000);
-	printstring(0, 32, 1, postfix, 0xcccccc, 0xff000000);
-	printstring(0, 48, 1, result, 0xcccccc, 0xff000000);
+	printstring(win, 0, 0, 1, buffer, 0xcccccc, 0xff000000);
+	printstring(win, 0, 16, 1, infix, 0xcccccc, 0xff000000);
+	printstring(win, 0, 32, 1, postfix, 0xcccccc, 0xff000000);
+	printstring(win, 0, 48, 1, result, 0xcccccc, 0xff000000);
 	return;
 }
 

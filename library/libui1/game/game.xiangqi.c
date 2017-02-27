@@ -3,15 +3,14 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(
+void printascii(void*,
 	int x, int y, int size, u8 data, u32 fg, u32 bg);
-void circlebody(
+void circlebody(void*,
 	int x, int y, int r, u32 color);
-void circleframe(
-	int x, int y, int r, u32 color);
-void line(
+void line(void*,
 	int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor(void*, u32);
+void backgroundcolor(void*,
+	u32);
 //
 u32 getrandom();
 int diary(void*, int, void*, ...);
@@ -22,32 +21,32 @@ void say(void*, ...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static char data[10][9];
@@ -209,27 +208,34 @@ void xiangqi_read_pixel(struct window* win)
 	//heng
 	for(y=-5;y<5;y++)
 	{
-		line(	cx - half*8,	cy + half*(2*y+1),
+		line(win,
+			cx - half*8,	cy + half*(2*y+1),
 			cx + half*8,	cy + half*(2*y+1),	0);
 	}
 
 	//shu
 	for(x=-4;x<5;x++)
 	{
-		line(	cx + x*half*2,	cy - half*9,
+		line(win,
+			cx + x*half*2,	cy - half*9,
 			cx + x*half*2,	cy - half*1,	0);
-		line(	cx + x*half*2,	cy + half*9,
+		line(win,
+			cx + x*half*2,	cy + half*9,
 			cx + x*half*2,	cy + half*1,	0);
 	}
 
 	//pie,na
-	line(	cx - half*2,	cy - half*9,
+	line(win,
+		cx - half*2,	cy - half*9,
 		cx + half*2,	cy - half*5,	0);
-	line(	cx + half*2,	cy - half*9,
+	line(win,
+		cx + half*2,	cy - half*9,
 		cx - half*2,	cy - half*5,	0);
-	line(	cx - half*2,	cy + half*9,
+	line(win,
+		cx - half*2,	cy + half*9,
 		cx + half*2,	cy + half*5,	0);
-	line(	cx + half*2,	cy + half*9,
+	line(win,
+		cx + half*2,	cy + half*9,
 		cx - half*2,	cy + half*5,	0);
 	//chess
 	for(y=0;y<10;y++)
@@ -254,14 +260,14 @@ void xiangqi_read_pixel(struct window* win)
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
-			circlebody(
+			circlebody(win,
 				cx + (2*x-8)*half,
 				cy + (2*y-9)*half,
 				half,
 				chesscolor
 			);
 
-			printascii(
+			printascii(win,
 				cx + (2*x-8)*half - (half/8*8/2),
 				cy + (2*y-9)*half - (half/8*16/2),
 				half/8,

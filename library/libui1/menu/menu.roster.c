@@ -2,69 +2,96 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printstring(int x,int y,int size,char* str,u32 fg,u32 bg);
-void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
-void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
+void printstring(void*,
+	int x, int y, int size,
+	char* str, u32 fg, u32 bg);
+void rect(void*,
+	int x0, int y0,
+	int x1, int y1,
+	u32 bc, u32 fc);
 u32 getrandom();
 
 
 
 
+struct player
+{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+
+	u8 data[0xc0];
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+	
+	u8 data[0xe0];
+};
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
 
 
 
 
-static void roster_read()
+static void roster_read(struct window* win)
 {
 	int x,y;
-	int width = haha->width;
-	int height = haha->height;
+	int width = win->w;
+	int height = win->h;
 
-	rect(
-		0,	0,
-		width/4,	height/4,
-		0x554455,	0xff00ff
+	rect(win,
+		0, 0,
+		width/4, height/4,
+		0x554455, 0xff00ff
 	);
-	printstring(      0,	0,4,"game",0,0xffffff);
+	printstring(win,
+		0, 0, 4,
+		"game", 0, 0xffffff
+	);
 
-	rect(
-		width/4,	0,
-		width/2,	height/4,
-		0x998899,	0xff00ff
+	rect(win,
+		width/4, 0,
+		width/2, height/4,
+		0x998899, 0xff00ff
 	);
-	printstring(width/4,	0,4,"test",0,0xffffff);
+	printstring(win,
+		width/4, 0, 4,
+		"test", 0, 0xffffff
+	);
 
-	rect(
-		width/2,	0,
-		width*3/4,	height/4,
-		0x887788,	0xff00ff
+	rect(win,
+		width/2, 0,
+		width*3/4, height/4,
+		0x887788, 0xff00ff
 	);
-	printstring(width/2,	0,4,"tool",0,0xffffff);
+	printstring(win,
+		width/2, 0, 4,
+		"tool", 0, 0xffffff
+	);
 
-	rect(
-		width*3/4,	0,
-		width,	height/4,
-		0xccbbcc,	0xff00ff
+	rect(win,
+		width*3/4, 0,
+		width, height/4,
+		0xccbbcc, 0xff00ff
 	);
-	printstring(width*3/4,	0,4,"haha",0,0xffffff);
+	printstring(win,
+		width*3/4, 0, 4,
+		"haha", 0, 0xffffff
+	);
 }
 static void roster_write(struct event* ev)
 {
@@ -81,20 +108,19 @@ static void roster_start()
 static void roster_stop()
 {
 }
-void roster_create(void* base,void* addr)
+void roster_create(void* base, void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0]=0;
-	this[1]=0x726574736f72;
+	p->type = 0;
+	p->name = 0x726574736f72;
 
-	this[10]=(u64)roster_start;
-	this[11]=(u64)roster_stop;
-	this[12]=(u64)roster_list;
-	this[13]=(u64)roster_into;
-	this[14]=(u64)roster_read;
-	this[15]=(u64)roster_write;
+	p->start = (u64)roster_start;
+	p->stop = (u64)roster_stop;
+	p->list = (u64)roster_list;
+	p->choose = (u64)roster_into;
+	p->read = (u64)roster_read;
+	p->write = (u64)roster_write;
 }
 void roster_delete()
 {

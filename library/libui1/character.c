@@ -12,8 +12,6 @@ void virtkbd_delete();
 //libs
 void ascii_create(u8*,u8*);
 void ascii_delete();
-void shape_create(u8*,u8*);
-void shape_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -60,7 +58,7 @@ void tree_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-void backgroundcolor(void*, int);
+int arterycommand(void*);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 u32 getrandom();
@@ -73,52 +71,43 @@ void say(void*, ...);
 
 struct working
 {
-	//种类，名字，位置，
+	//[0,7]:种类
 	u64 type;
+
+	//[8,f]:名字
 	u64 name;
-	u64 xyze1;
-	u64 xyze2;
 
-	//screenbuffer
-	u64 buffer;	//address
-	u64 format;	//rgba8888    bgra8888    rgb565    yuv420
-	u64 width;
-	u64 height;
-
-	//[40,47]
-	int (*create)();
-	char padding0[ 8 - sizeof(char*) ];
-
-	//[48,4f]
-	int (*destory)();
-	char padding1[ 8 - sizeof(char*) ];
-
-	//[50,57]:开始
+	//[10,17]:开始
 	int (*start)();
 	char padding2[ 8 - sizeof(char*) ];
 
-	//[58,5f]:结束
+	//[18,1f]:结束
 	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
-	//[60,67]:状态
+	//[20,27]:观察
 	int (*list)();
 	char padding4[ 8 - sizeof(char*) ];
 
-	//[68,6f]:跳关
+	//[28,2f]:调整
 	int (*choose)();
 	char padding5[ 8 - sizeof(char*) ];
 
-	//[70,77]:输出
+	//[30,37]:输出
 	int (*read)(void* config);
 	char padding6[ 8 - sizeof(char*) ];
 
-	//[78,7f]:输入
+	//[38,3f]:输入
 	int (*write)(void* event);
 	char padding7[ 8 - sizeof(char*) ];
+
+	char data[0xc0];
 };
 static struct working* worker;
 static u32 now=0;		//不能有负数
+static u32 menu=0;
+static u32 rost=0;
+static u32 vkbd=0;
 
 
 
@@ -153,107 +142,99 @@ void charactercreate(u8* type, u8* addr)
 
 	//menu.center
 	menu_create(addr,temp);
-	temp+=0x80;
+	temp+=0x100;
 
 	//menu.roster
 	roster_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//menu.virtkbd
 	virtkbd_create(addr,temp);
-	temp += 0x80;
-
-	//ascii
-	ascii_create(addr,temp);
-	temp+=0x80;
-
-	//shape
-	shape_create(addr,temp);
-	temp+=0x80;
+	temp+=0x100;
 
 	//game.2048
 	the2048_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.ooxx
 	ooxx_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.snake
 	snake_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.sudoku
 	sudoku_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.tetris
 	tetris_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.weiqi
 	weiqi_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//game.xiangqi
 	xiangqi_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//test.color
 	color_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//test.font
 	font_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//test.doodle
 	doodle_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//test.pure
 	pure_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.calculator
 	calculator_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.camera
 	camera_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.circuit
 	circuit_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.console
 	console_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.hex
 	hex_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.control
 	control_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.qrcode
 	qrcode_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.tree
 	tree_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.sketchpad
 	sketchpad_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	//tool.spectrum
 	spectrum_create(addr,temp);
-	temp += 0x80;
+	temp+=0x100;
 
 	for(now=0;now<100;now++)
 	{
@@ -289,9 +270,6 @@ void characterdelete()
 	weiqi_delete();
 	xiangqi_delete();
 
-	ascii_delete();
-	shape_delete();
-
 	menu_delete();
 	roster_delete();
 	virtkbd_delete();
@@ -309,19 +287,6 @@ int characterstart(u64 buf, u64 fmt, u64 w, u64 h)
 	win->fmt = fmt;
 	win->w = w;
 	win->h = h;
-	//say("@characterstart:%d,%d\n", w, h);
-
-	for(j=0;j<100;j++)
-	{
-		if(worker[j].name == 0)break;
-
-		worker[j].buffer = buf;
-		worker[j].format = fmt;
-		worker[j].width = w;
-		worker[j].height = h;
-	}
-
-	//
 	worker[now].start();
 	return 0;
 }
@@ -391,17 +356,6 @@ void characterwrite(u64* p)
 	{
 		win->w = p[0] & 0xffff;
 		win->h = (p[0] >> 16) & 0xffff;
-
-		for(x=0;x<100;x++)
-		{
-			if(worker[x].name == 0)break;
-
-			worker[x].width = win->w;
-			worker[x].height = win->h;
-
-			//cleanup screen
-			backgroundcolor(win, 0);
-		}
 		return;
 	}//size
 
@@ -411,24 +365,21 @@ void characterwrite(u64* p)
 		//按下esc
 		if(p[0] == 0x1b)
 		{
-			worker[0].xyze1 ^= 1;
+			menu ^= 1;
 			return;
 		}
 	}//kbd
 
 	//virtkbd
-	if(worker[2].xyze1 > 0)
-	{
-		x = worker[2].write(p);
-	}
+	if(vkbd > 0)x = worker[2].write(p);
 
 	//其余所有消息，谁在干活就交给谁
-	if(worker[0].xyze1 > 0)
+	if(menu > 0)
 	{
 		//center
 		x = worker[0].write(p);
 	}
-	else if(worker[1].xyze1 > 0)
+	else if(rost > 0)
 	{
 		//roster
 		x = worker[1].write(p);
@@ -445,9 +396,9 @@ void characterread(void* cfg)
 	worker[now].read(cfg);
 
 	//菜单
-	if(worker[0].xyze1 > 0)worker[0].read(cfg);
-	if(worker[1].xyze1 > 0)worker[1].read(cfg);
-	if(worker[2].xyze1 > 0)worker[2].read(cfg);
+	if(menu > 0)worker[0].read(cfg);
+	if(rost > 0)worker[1].read(cfg);
+	if(vkbd > 0)worker[2].read(cfg);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -460,23 +411,10 @@ int charactercommand(u8* p)
 	u64 temp;
 
 	//exit!
-	if(p == 0)
+	if( (p==0) | (cmp(p,"exit")==0) )
 	{
-		temp = (worker[0].format)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
-
 		say("chatacter(%d) wants to die\n",now);
-		return 0;
-	}
-
-	//exit.
-	ret=cmp(p,"exit");
-	if(ret==0)
-	{
-		temp = (worker[0].format)&0xffffffff;
-		if(temp != 0x6c6d7468)eventwrite(0,0,0,0);
-
-		say("chatacter(%d) wants to die\n",now);
+		eventwrite(0,0,0,0);
 		return 0;
 	}
 
@@ -525,10 +463,10 @@ int charactercommand(u8* p)
 		goto found;
 	}
 
-	//ret = arterycommand(p);
+	ret = arterycommand(p);
 
 found:
-	//worker[0].xyze1 = 0;
+	//
 	characterstart(win->buf, win->fmt, win->w, win->h);
 	return 0;
 }

@@ -6,29 +6,40 @@
 
 
 
+struct player
+{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+
+	u8 data[0xc0];
+};      
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
+};
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
 
 
 
 
-static void fs_read()
+static void fs_read(struct window* win)
 {
 }
 static void fs_write(struct event* ev)
@@ -52,18 +63,16 @@ static void fs_stop()
 }
 void fs_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x6c6f6f74;
-	this[1] = 0x7366;
-
-	this[10]=(u64)fs_start;
-	this[11]=(u64)fs_stop;
-	this[12]=(u64)fs_list;
-	this[13]=(u64)fs_into;
-	this[14]=(u64)fs_read;
-	this[15]=(u64)fs_write;
+	p->type = 0x6c6f6f74;
+	p->name = 0x7366;
+	p->start = (u64)fs_start;
+	p->stop = (u64)fs_stop;
+	p->list = (u64)fs_list;
+	p->choose = (u64)fs_into;
+	p->write = (u64)fs_read;
+	p->write = (u64)fs_write;
 }
 void fs_delete()
 {

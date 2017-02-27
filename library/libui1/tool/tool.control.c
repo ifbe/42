@@ -3,19 +3,22 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(
-	int x1,int y1,int size,char ch,u32 fg,u32 bg);
-void rectbody(
-	int x1,int y1,int x2,int y2,u32 color);
-void rectframe(
-	int x1,int y1,int x2,int y2,u32 color);
-void rect(
-	int x1,int y1,int x2,int y2,u32 body,u32 frame);
-void circlebody(
-	int x,int y,int r,u32 color);
-void circleframe(
-	int x,int y,int r,u32 color);
-void backgroundcolor(void*, u32);
+void printascii(void*,
+	int x1, int y1, int size,
+	char ch, u32 fg, u32 bg);
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void rectframe(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void circlebody(void*,
+	int x, int y,
+	int r, u32 color);
+void backgroundcolor(void*,
+	u32);
 //
 void say(char*,...);
 
@@ -24,32 +27,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 static int aaaa = 0;
 
@@ -64,7 +67,7 @@ static void keyboard(struct window* win)
 
 	for(x=0;x<32;x++)
 	{
-		rectframe(
+		rectframe(win,
 			x, x,
 			width-32+x, height-32+x,
 			0x040404*x
@@ -74,13 +77,13 @@ static void keyboard(struct window* win)
 	{
 		for(x=0;x<8;x++)
 		{
-			rectframe(
+			rectframe(win,
 				32 + (width-32)*x/8, 32 + (height-32)*y/8,
 				31 + (width-32)*(x+1)/8, 31 + (height-32)*(y+1)/8,
 				0xffffff
 			);
 
-			printascii(
+			printascii(win,
 				32 + (width-32)*x/8, 32 + (height-32)*y/8,
 				4, 'a',
 				0, 0xffffffff
@@ -96,7 +99,7 @@ static void joystick(struct window* win)
 
 	for(j=0;j<32;j++)
 	{
-		rectframe(
+		rectframe(win,
 			j, j,
 			width-32+j, height-32+j,
 			0x040404*j
@@ -107,35 +110,43 @@ static void joystick(struct window* win)
 	{
 		j = height/16;
 
-		rectframe(width*13/32,height*3/4,width/2,height*11/16, 0);
-		rectframe(width/2,height*3/4,width*19/32,height*11/16, 0);
+		rectframe(win,
+			width*13/32, height*3/4,
+			width/2,height*11/16,
+			0
+		);
+		rectframe(win,
+			width/2, height*3/4,
+			width*19/32, height*11/16,
+			0
+		);
 
-		circlebody(width/8, height/2, j, 0xff);
-		circlebody(width/4, height/4, j, 0xff00);
-		circlebody(width/4, height*3/4, j, 0xffff);
-		circlebody(width*3/8, height/2, j, 0xff0000);
+		circlebody(win, width/8, height/2, j, 0xff);
+		circlebody(win, width/4, height/4, j, 0xff00);
+		circlebody(win, width/4, height*3/4, j, 0xffff);
+		circlebody(win, width*3/8, height/2, j, 0xff0000);
 
-		circlebody(width*5/8, height/2, j, 0xff00ff);
-		circlebody(width*3/4, height/4, j, 0xfedcba);
-		circlebody(width*3/4, height*3/4, j, 0xabcdef);
-		circlebody(width*7/8, height/2, j, 0xffff00);
+		circlebody(win, width*5/8, height/2, j, 0xff00ff);
+		circlebody(win, width*3/4, height/4, j, 0xfedcba);
+		circlebody(win, width*3/4, height*3/4, j, 0xabcdef);
+		circlebody(win, width*7/8, height/2, j, 0xffff00);
 	}
 	else
 	{
 		j = width/16;
 
-		rectframe(width/4,height*13/32,width*5/16,height/2, 0);
-		rectframe(width/4,height/2,width*5/16,height*19/32, 0);
+		rectframe(win, width/4,height*13/32,width*5/16,height/2, 0);
+		rectframe(win, width/4,height/2,width*5/16,height*19/32, 0);
 
-		circlebody(width/2, height/8, j, 0xff);
-		circlebody(width/4, height/4, j, 0xffff);
-		circlebody(width*3/4, height/4, j, 0xff00);
-		circlebody(width/2, height*3/8, j, 0xff0000);
+		circlebody(win, width/2, height/8, j, 0xff);
+		circlebody(win, width/4, height/4, j, 0xffff);
+		circlebody(win, width*3/4, height/4, j, 0xff00);
+		circlebody(win, width/2, height*3/8, j, 0xff0000);
 
-		circlebody(width/2, height*5/8, j, 0xff00ff);
-		circlebody(width/4, height*3/4, j, 0xabcdef);
-		circlebody(width*3/4, height*3/4, j, 0xfedcba);
-		circlebody(width/2, height*7/8, j, 0xffff00);
+		circlebody(win, width/2, height*5/8, j, 0xff00ff);
+		circlebody(win, width/4, height*3/4, j, 0xabcdef);
+		circlebody(win, width*3/4, height*3/4, j, 0xfedcba);
+		circlebody(win, width/2, height*7/8, j, 0xffff00);
 	}
 }
 static void touchpad(struct window* win)
@@ -146,7 +157,7 @@ static void touchpad(struct window* win)
 
 	for(j=0;j<32;j++)
 	{
-		rectframe( 
+		rectframe(win,
 			j, j,
 			width-32+j, height-32+j,
 			0x040404*j
@@ -184,9 +195,21 @@ static void control_read(struct window* win)
 		else if(aaaa == 1)keyboard(win);
 		else if(aaaa == 2)touchpad(win);
 
-		rectbody(0, 0, 64, 64, 0xffffff);
-		rectbody((win->w)-64, 0, (win->w)-1, 64, 0xffffff);
-		rectbody(0, (win->h)-64, 64, (win->h)-1, 0xffffff);
+		rectbody(win,
+			0, 0,
+			64, 64,
+			0xffffff
+		);
+		rectbody(win,
+			(win->w)-64, 0,
+			(win->w)-1, 64,
+			0xffffff
+		);
+		rectbody(win,
+			0, (win->h)-64,
+			64, (win->h)-1,
+			0xffffff
+		);
 	}
 }
 

@@ -3,13 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long 
 //
-void line(
+void line(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void rectbody(
+void rectbody(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void rectframe(
-	int x1, int y1, int x2, int y2, u32 color);
-void rect(
+void rect(void*,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 u32 getrandom();
 int diary(char*,int,char*,...);
@@ -20,32 +18,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 
 struct hehe{
@@ -78,14 +76,22 @@ void snake_read_pixel(struct window* win)
 
 	if(die == 1)
 	{
-		line(0, 0, width-1, height-1, 0xffffffff);
-		line(width-1, 0, 0, height-1, 0xffffffff);
+		line(win,
+			0, 0,
+			width-1, height-1,
+			0xffffffff
+		);
+		line(win,
+			width-1, 0,
+			0, height-1,
+			0xffffffff
+		);
 	}
 
 	//shadow
 	if( (a.x>=0) && (a.y>=0) )
 	{
-		rectbody(
+		rectbody(win,
 			a.x * width/worldwidth,
 			a.y * height/worldheight,
 			(a.x+1) * width/worldwidth,
@@ -98,7 +104,7 @@ void snake_read_pixel(struct window* win)
 	j=0;
 	while(1)
 	{
-		rect(
+		rect(win,
 			snake[j].x * width/worldwidth,
 			snake[j].y * height/worldheight,
 			(snake[j].x+1) * width/worldwidth,
@@ -112,7 +118,7 @@ void snake_read_pixel(struct window* win)
 	}
 
 	//food
-	rect(
+	rect(win,
 		foodx * width/worldwidth,
 		foody * height/worldheight,
 		(foodx+1) * width/worldwidth,

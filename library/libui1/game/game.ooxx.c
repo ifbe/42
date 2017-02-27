@@ -3,13 +3,15 @@
 #define u32 unsigned int
 #define u64 unsigned long long 
 //
-void line(
-	int x1,int y1,int x2,int y2, u32 color);
-void circlebody(
-	int x, int y, int r, u32 color);
-void circleframe(
-	int x, int y, int r, u32 color);
-void backgroundcolor(void*, u32);
+void line(void*,
+	int x1,int y1,
+	int x2,int y2,
+	u32 color);
+void circleframe(void*,
+	int x, int y,
+	int r, u32 color);
+void backgroundcolor(void*,
+	u32);
 //
 u32 getrandom();
 void say(char*,...);
@@ -21,16 +23,14 @@ struct player
 {
         u64 type;
         u64 name;
-        u8 temp[0x30];
-
-        u64 create;
-        u64 delete;
         u64 start;
         u64 stop;
         u64 list;
         u64 choose;
         u64 read;
         u64 write;
+
+        u8 data[0xc0];
 };
 struct window
 {
@@ -38,6 +38,8 @@ struct window
         u64 fmt;
         u64 w;
         u64 h;
+
+        u8 data[0xe0];
 };
 struct event
 {
@@ -61,10 +63,22 @@ void ooxx_read(struct window* win)
 	int min = (width<height) ? width:height;
 
 	backgroundcolor(win, 0);
-        line(min/16,    min  /  3,      min *15 /16,    min   /   3,    0xffffffff);
-        line(min/16,    min *2 /3,      min *15 /16,    min  *2  /3,    0xffffffff);
-        line(min/3,     min  / 16,      min   /   3,    min *15 /16,    0xffffffff);
-        line(min*2/3,   min  / 16,      min  *2  /3,    min *16 /16,    0xffffffff);
+        line(win,
+		min/16, min/3,
+		min*15/16, min/3,
+		0xffffffff);
+        line(win,
+		min/16, min*2/3,
+		min*15/16, min*2/3,
+		0xffffffff);
+        line(win,
+		min/3, min/16,
+		min/3, min*15/16,
+		0xffffffff);
+        line(win,
+		min*2/3, min/16,
+		min*2/3, min*16/16,
+		0xffffffff);
 
 	for(y=0;y<3;y++)
 	{
@@ -72,7 +86,7 @@ void ooxx_read(struct window* win)
 		{
 			if(data[3*y + x] == 'o')
 			{
-				circleframe(
+				circleframe(win,
 					(2*x+1)*min/6,
 					(2*y+1)*min/6,
 					min/12,
@@ -81,18 +95,14 @@ void ooxx_read(struct window* win)
 			}
 			else if(data[3*y + x] == 'x')
 			{
-				line(
-					(4*x+1)*min/12,
-					(4*y+1)*min/12,
-					(4*x+3)*min/12,
-					(4*y+3)*min/12,
+				line(win,
+					(4*x+1)*min/12, (4*y+1)*min/12,
+					(4*x+3)*min/12, (4*y+3)*min/12,
 					0xff0000
 				);
-				line(
-					(4*x+3)*min/12,
-					(4*y+1)*min/12,
-					(4*x+1)*min/12,
-					(4*y+3)*min/12,
+				line(win,
+					(4*x+3)*min/12, (4*y+1)*min/12,
+					(4*x+1)*min/12, (4*y+3)*min/12,
 					0xff0000
 				);
 			}

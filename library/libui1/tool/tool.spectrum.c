@@ -5,11 +5,12 @@
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
 //libui1
-void rectbody(
-	int x1, int y1, int x2, int y2, u32 color);
-void line(
-	int x1, int y1, int x2, int y2, u32 color);
-void backgroundcolor(void*, u32);
+void line(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void backgroundcolor(void*,
+	u32);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -34,32 +35,32 @@ void say(void*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //before
 static int maxpower;
@@ -107,7 +108,7 @@ static void spectrum_read_pixel(struct window* win)
 	{
 		if(pcmin[x]>32768)continue;
 		y = pcmin[x] *height /maxpower /4;
-		line(
+		line(win,
 			x*width/1024, (height/4) - y,
 			x*width/1024, (height/4) + y,
 			0xffffff
@@ -116,7 +117,7 @@ static void spectrum_read_pixel(struct window* win)
 	for(x=0;x<512;x++)
 	{
 		y = (int)(power[x]*height);
-		line(
+		line(win,
 			x*width/512, height - y,
 			x*width/512, height,
 			0xffffff

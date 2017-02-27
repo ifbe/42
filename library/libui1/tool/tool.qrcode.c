@@ -3,8 +3,10 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void rectbody(
-	int x1, int y1, int x2, int y2, u32 color);
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void backgroundcolor(void*, u32);
 int qrcode_generate(char* src,char* dst,int sidelength);
 int diary(char*,int,char*,...);
@@ -15,32 +17,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static int sidelength;
@@ -72,7 +74,11 @@ static void qrcode_read_pixel(struct window* win)
 			if( databuf[(y*sidelength)+x] == 0 )color=0;
 			else color=0xffffffff;
 //say("%d",databuf[(y*sidelength)+x]);
-			rectbody(x1, y1, x2, y2, color);
+			rectbody(win,
+				x1, y1,
+				x2, y2,
+				color
+			);
 		}
 //say("\n");
 	}

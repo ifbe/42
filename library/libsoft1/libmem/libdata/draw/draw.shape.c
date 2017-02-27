@@ -6,37 +6,36 @@ void say(char*,...);
 
 
 
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
-}*haha;
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+};
 
 
 
 
-void linesegment(int x1, int y1, int x2, int y2, u32 color)
+void linesegment(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void halfline(int x1, int y1, int x2, int y2, u32 color)
+void halfline(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void line(int x1, int y1, int x2, int y2, u32 color)
+void line(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 	int temp;
 	int x,y;
 	int width,height;
-	u32* winbuf;
+	u32* buf;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	color |= 0xff000000;
 
 	if(x1<0)x1=0;
@@ -59,7 +58,7 @@ void line(int x1, int y1, int x2, int y2, u32 color)
 
 		for(;y<=temp;y++)
 		{
-			winbuf[ (y*width) + x1 ] = color;
+			buf[ (y*width) + x1 ] = color;
 		}
 	}
 
@@ -77,7 +76,7 @@ void line(int x1, int y1, int x2, int y2, u32 color)
 //say("%d,%d\n",x,y);
 			if(y<height)
 			{
-				winbuf[ (y*width) + x ] = color;
+				buf[ (y*width) + x ] = color;
 			}
 			else say("wrong\n");
 		}
@@ -87,17 +86,18 @@ void line(int x1, int y1, int x2, int y2, u32 color)
 
 
 
-void rectframe(int x1, int y1, int x2, int y2, u32 color)
+void rectframe(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 	int t;
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* winbuf;
+	u32* buf;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	color |= 0xff000000;
 
 	if(x1<x2){startx=x1;endx=x2;}
@@ -108,22 +108,23 @@ void rectframe(int x1, int y1, int x2, int y2, u32 color)
 
 	for(t=0;t<1;t++)
 	{
-		for(x=startx;x<endx;x++)winbuf[((starty+t)*width) + x] = color;
-		for(x=startx;x<endx;x++)winbuf[((endy-t)*width) + x] = color;
-		for(y=starty;y<endy;y++)winbuf[(y*width) + startx+t] = color;
-		for(y=starty;y<endy;y++)winbuf[(y*width) + endx-t] = color;
+		for(x=startx;x<endx;x++)buf[((starty+t)*width) + x] = color;
+		for(x=startx;x<endx;x++)buf[((endy-t)*width) + x] = color;
+		for(y=starty;y<endy;y++)buf[(y*width) + startx+t] = color;
+		for(y=starty;y<endy;y++)buf[(y*width) + endx-t] = color;
 	}
 }
-void rectbody(int x1, int y1, int x2, int y2, u32 color)
+void rectbody(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* winbuf;
+	u32* buf;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	color |= 0xff000000;
 
 	if(x1<=x2){startx=x1;endx=x2;}
@@ -135,49 +136,62 @@ void rectbody(int x1, int y1, int x2, int y2, u32 color)
 	{
 		for(x=startx;x<=endx;x++)
 		{
-			winbuf[ (y*width) + x ] = color;
+			buf[ (y*width) + x ] = color;
 		}
 	}
 }
-void rect(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
+void rect(struct window* win,
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
-	rectbody(x1, y1, x2, y2, bodycolor);
-	rectframe(x1, y1, x2, y2, framecolor);
+	rectbody(win, x1, y1, x2, y2, bodycolor);
+	rectframe(win, x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void trianglebody(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
+void trianglebody(struct window* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 }
-void triangleframe(int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
+void triangleframe(struct window* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
-	line(x1, y1, x2, y2, color);
-	line(x1, y1, x3, y3, color);
-	line(x2, y2, x3, y3, color);
+	line(win,
+	x1, y1, x2, y2, color);
+
+	line(win,
+	x1, y1, x3, y3, color);
+
+	line(win,
+	x2, y2, x3, y3, color);
 }
-void triangle(int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
+void triangle(struct window* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
 {
-	trianglebody(x1, y1, x2, y2, x3, y3, bodycolor);
-	triangleframe(x1, y1, x2, y2, x3, y3, framecolor);
+	trianglebody(win,
+	x1, y1, x2, y2, x3, y3, bodycolor);
+
+	triangleframe(win,
+	x1, y1, x2, y2, x3, y3, framecolor);
 }
 
 
 
 
-void circleframe(int cx, int cy, int radius, u32 color)
+void circleframe(struct window* win,
+	int cx, int cy, int radius, u32 color)
 {
 	int ret;
 	int x,y;
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* winbuf;
+	u32* buf;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	color |= 0xff000000;
 
 	y1=cy-radius;
@@ -200,22 +214,23 @@ void circleframe(int cx, int cy, int radius, u32 color)
 		if(x2<0)x2=0;
 		if(x2>=width)x2=width-1;
 
-		winbuf[ (y*width) + x1 ] = color;
-		winbuf[ (y*width) + x2 ] = color;
+		buf[ (y*width) + x1 ] = color;
+		buf[ (y*width) + x2 ] = color;
 	}
 }
-void circlebody(int cx, int cy, int radius, u32 color)
+void circlebody(struct window* win,
+	int cx, int cy, int radius, u32 color)
 {
 	int ret;
 	int x,y;
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* winbuf;
+	u32* buf;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 	color |= 0xff000000;
 
 	y1=cy-radius;
@@ -240,7 +255,7 @@ void circlebody(int cx, int cy, int radius, u32 color)
 
 		for(x=x1;x<=x2;x++)
 		{
-			winbuf[ (y*width) + x ] = color;
+			buf[ (y*width) + x ] = color;
 		}
 	}
 }
@@ -248,44 +263,54 @@ void circlebody(int cx, int cy, int radius, u32 color)
 
 
 
-void ovalbody(int x1, int y1, int x2, int y2, u32 color)
+void ovalbody(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void ovalframe(int x1, int y1, int x2, int y2, u32 color)
+void ovalframe(struct window* win,
+	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void oval(int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
+void oval(struct window* win,
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
-	ovalbody(x1, y1, x2, y2, bodycolor);
-	ovalbody(x1, y1, x2, y2, framecolor);
-}
+	ovalbody(win,
+	x1, y1, x2, y2, bodycolor);
 
-
-
-
-void sectorbody(int cx, int cy, int radius, int start, int end, u32 color)
-{
-}
-void sectorframe(int cx, int cy, int radius, int start, int end, u32 color)
-{
-}
-void sector(int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
-{
+	ovalbody(win,
+	x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color)
+void sectorbody(struct window* win,
+	int cx, int cy, int radius, int start, int end, u32 color)
 {
-	u32* winbuf;
+}
+void sectorframe(struct window* win,
+	int cx, int cy, int radius, int start, int end, u32 color)
+{
+}
+void sector(struct window* win,
+	int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
+{
+}
+
+
+
+
+void bezier(struct window* win,
+	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
+{
+	u32* buf;
 	int width;
 	int height;
 	int x,y,t;
 
-	winbuf=(u32*)(haha->pixelbuffer);
-	width=haha->width;
-	height=haha->height;
+	buf = (u32*)(win->buf);
+	width = win->w;
+	height = win->h;
 
 	for(t=0;t<1000;t++)
 	{
@@ -297,25 +322,6 @@ void bezier(int ax, int ay, int bx, int by, int cx, int cy, u32 color)
 		y /= 1000*1000;
 		if(y<0|y>=height)continue;
 
-		winbuf[y*width + x] = 0xff00;
+		buf[y*width + x] = 0xff00;
 	}
-}
-
-
-
-
-void shape_start()
-{
-}
-void shape_stop()
-{
-}
-void shape_create(void* home,void* me)
-{
-	haha=me;
-	haha->type=0;
-	haha->id=0x6570616873;
-}
-void shape_delete()
-{
 }

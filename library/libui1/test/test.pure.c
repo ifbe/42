@@ -3,8 +3,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void hexadecimal(int x,int y,u64 in);
-void printhexadecimal(int x, int y, int size, u64 in, u32 fg, u32 bg);
+void printhexadecimal(void*,
+	int x, int y, int size,
+	u64 in, u32 fg, u32 bg);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -16,16 +17,14 @@ struct player
 {
 	u64 type;
 	u64 name;
-	u8 temp[0x30];
-
-	u64 create;
-	u64 delete;
 	u64 start;
 	u64 stop;
 	u64 list;
 	u64 choose;
 	u64 read;
 	u64 write;
+
+	u8 data[0xc0];
 };
 struct window
 {
@@ -33,6 +32,8 @@ struct window
 	u64 fmt;
 	u64 w;
 	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
@@ -69,7 +70,9 @@ static void pure_read_pixel(struct window* win)
 		}
 	}
 
-	printhexadecimal(0, 0, 4, color & 0xffffff, 0x87654321,0xfedcba98);
+	printhexadecimal(win,
+		0, 0, 4,
+		color & 0xffffff, 0x87654321, 0xfedcba98);
 }
 static void pure_read_html(struct window* win)
 {

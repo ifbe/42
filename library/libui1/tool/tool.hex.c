@@ -3,15 +3,16 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(
-	//void*, u64, int, int,
-	int x, int y, int size, char ch, u32 fg, u32 bg);
-void printbyte(
-	//void*, u64, int, int,
-	int x, int y, int size, char ch, u32 fg, u32 bg);
-void rectbody(
-	//void*, u64, int, int,
-	int x1, int y1, int x2, int y2, u32 color);
+void printascii(void*,
+	int x, int y, int size,
+	char ch, u32 fg, u32 bg);
+void printbyte(void*,
+	int x, int y, int size,
+	char ch, u32 fg, u32 bg);
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void background1(void*);
 //
 int data2hexstr(u64, u8*);
@@ -26,32 +27,32 @@ void say(void*, ...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //flostarea
 static int inputcount=0;
@@ -80,15 +81,15 @@ static void updateconfig(struct window* win)
 	u64 fmt = win->fmt;
 
 	//html
-        if(fmt == 0x6c6d7468)
+	if(fmt == 0x6c6d7468)
 	{
 		lineperwindow = 16;
 		byteperline = 32;
 		xshift = 0;
 	}
 
-        //text
-        else if(fmt == 0x74786574)
+	//text
+	else if(fmt == 0x74786574)
 	{
 		lineperwindow = win->h;
 
@@ -158,13 +159,10 @@ static void foreground(struct window* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				printbyte(
-					16*x + xshift,
-					16*y,
-					1,
-					databuf[windowoffset + y*byteperline + x],
-					0,
-					0
+				printbyte(win,
+					16*x + xshift, 16*y,
+					1, databuf[windowoffset + y*byteperline + x],
+					0, 0
 				);
 			}
 		}
@@ -176,7 +174,7 @@ static void foreground(struct window* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				printascii(
+				printascii(win,
 					16*x + xshift,
 					16*y,
 					1,
@@ -219,7 +217,11 @@ static void floatarea(struct window* win)
 	thisy+=16;
 	if(thisx > width -xshift -256)thisx -= (256+16);
 	if(thisy >= height - 128)thisy -= (128+16);
-	rectbody(xshift + thisx, thisy, xshift + thisx+256, thisy+128, 0xffff);
+	rectbody(win,
+		xshift + thisx, thisy,
+		xshift + thisx+256, thisy+128,
+		0xffff
+	);
 
 	//
 	data2hexstr((u64)databuf, hi + 0x10);
@@ -232,7 +234,7 @@ static void floatarea(struct window* win)
 	{
 		for(x=0;x<32;x++)
 		{
-			printascii(
+			printascii(win,
 				xshift + thisx + x*8,
 				thisy + y*16,
 				1,

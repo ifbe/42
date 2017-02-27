@@ -3,11 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(
+void printascii(void*,
 	int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
-void printdecimal(
-	int x, int y, int size, int data, u32 fg, u32 bg);
-void backgroundcolor(void*, u32);
+void backgroundcolor(void*,
+	u32);
 //
 void say(char*,...);
 
@@ -16,32 +15,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 
 
@@ -56,7 +55,7 @@ void font_read(struct window* win)
 	{
 		for(x=0;x<16;x++)
 		{
-			printascii(
+			printascii(win,
 				x*16,
 				y*16,
 				1,

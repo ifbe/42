@@ -3,13 +3,12 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void line(
+void line(void*,
 	int x1,int y1,int x2,int y2, u32 color);
-void circlebody(
+void circlebody(void*,
 	int x, int y, int r, u32 color);
-void circleframe(
-	int x, int y, int r, u32 color);
-void backgroundcolor(void*, u32);
+void backgroundcolor(void*,
+	u32);
 //
 u32 getrandom();
 void say(char*,...);
@@ -19,32 +18,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static int turn;
@@ -112,14 +111,16 @@ static void weiqi_read_pixel(struct window* win)
 	//heng
 	for(y=-9;y<10;y++)
 	{
-		line(	cx - half*2*9,	cy + half*2*y,
+		line(win,
+			cx - half*2*9,	cy + half*2*y,
 			cx + half*2*9,	cy + half*2*y,	0);
 	}
 
 	//shu
 	for(x=-9;x<10;x++)
 	{
-		line(	cx + half*2*x,	cy - half*2*9,
+		line(win,
+			cx + half*2*x,	cy - half*2*9,
 			cx + half*2*x,	cy + half*2*9,	0);
 	}
 
@@ -128,7 +129,10 @@ static void weiqi_read_pixel(struct window* win)
 	{
 		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
 		{
-			circlebody(x, y, half/4, 0);
+			circlebody(win,
+				x, y,
+				half/4, 0
+			);
 		}
 	}
 
@@ -141,11 +145,9 @@ static void weiqi_read_pixel(struct window* win)
 			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffffff;
 			else continue;
 
-			circlebody(
-				cx + half*2*x,
-				cy + half*2*y,
-				half,
-				color
+			circlebody(win,
+				cx + half*2*x, cy + half*2*y,
+				half, color
 			);
 		}
 	}

@@ -4,10 +4,6 @@
 3:	replace "example" to "whatname"----->		:9,$s/example/whatname/g
 4:	do your logic in this code
 */
-
-
-
-
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
@@ -17,17 +13,28 @@ void say(char*,...);
 
 
 
-static struct temp{
+struct player
+{
         u64 type;
-        u64 id;
+        u64 name;
         u64 start;
-        u64 end;
+        u64 stop;
+        u64 list;
+        u64 choose;
+        u64 read;
+        u64 write;
 
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
+        u8 data[0xc0];
+};
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+
+        u8 data[0xe0];
+};
 struct event
 {
         u64 why;
@@ -39,33 +46,35 @@ struct event
 
 
 
-static void example_read_html()
+static void example_read_html(struct window* win)
 {
 }
-static void example_read_pixel()
+static void example_read_pixel(struct window* win)
 {
 }
-static void example_read_text()
+static void example_read_text(struct window* win)
 {
 }
-static void example_read()
+static void example_read(struct window* win)
 {
+	u64 fmt = win->fmt;
+
 	//text
-	if( ( (haha->format)&0xffffffff) == 0x74786574)
+	if(fmt == 0x74786574)
 	{
-		example_read_text();
+		example_read_text(win);
 	}
 
 	//html
-	else if( ( (haha->format)&0xffffffff) == 0x6c6d7468)
+	else if(fmt == 0x6c6d7468)
 	{
-		example_read_html();
+		example_read_html(win);
 	}
 
 	//pixel
 	else
 	{
-		example_read_pixel();
+		example_read_pixel(win);
 	}
 }
 static void example_write(struct event* ev)
@@ -89,18 +98,16 @@ static void example_stop()
 }
 void example_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0] = 0x74736574;
-	this[1] = 0x656c706d617865;
-
-	this[10]=(u64)example_start;
-	this[11]=(u64)example_stop;
-	this[12]=(u64)example_list;
-	this[13]=(u64)example_change;
-	this[14]=(u64)example_read;
-	this[15]=(u64)example_write;
+	p->type = 0x74736574;
+	p->name = 0x656c706d617865;
+	p->start = (u64)example_start;
+	p->stop = (u64)example_stop;
+	p->list = (u64)example_list;
+	p->choose = (u64)example_change;
+	p->read = (u64)example_read;
+	p->write = (u64)example_write;
 }
 void example_delete()
 {

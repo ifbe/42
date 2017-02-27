@@ -3,8 +3,13 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void rect(int x0,int y0,int x1,int y1,u32 body,u32 frame);
-void printascii(int x,int y,int size,char ch,u32 fg,u32 bg);
+void rect(void*,
+	int x0, int y0,
+	int x1, int y1,
+	u32 bc, u32 fc);
+void printascii(void*,
+	int x, int y, int size,
+	char ch, u32 fg, u32 bg);
 //
 u32 getrandom();
 void say(char*,...);
@@ -12,24 +17,35 @@ void say(char*,...);
 
 
 
+struct player
+{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+
+	u8 data[0xc0];
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+	
+	u8 data[0xe0];
+};
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 buffer;
-        u64 format;
-        u64 width;
-        u64 height;
-}*haha;
 static char table[8][8] = {
 	'a','b','c','d','e','f','g','h',
 	'i','j','k','l','m','n','o','p',
@@ -48,11 +64,42 @@ static int areabottom = 960;	//max=1024=2^10
 
 
 
+static void virtkbd_read(struct window* win)
+{
+	int x,y;
+	int left,top,right,bottom;
+	int width = win->w;
+	int height = win->h;
+
+	//[a,z]
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			left = (arealeft + x*(arearight-arealeft)/8)*width/1024;
+			top = (areatop + y*(areabottom-areatop)/8)*height/1024;
+			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/1024;
+			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/1024;
+			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
+
+			rect(win,
+				left, top,
+				right, bottom,
+				0xccffcc, 0x752614
+			);
+
+			printascii(win,
+				left, top, 2,
+				table[y][x], 0x221133, 0
+			);
+		}
+	}
+}
 static int virtkbd_write(struct event* ev)
 {
 	int x,y,t;
-	int width = haha->width;
-	int height = haha->height;
+	int width = 512;
+	int height = 512;
 
 	if(ev->what == 0x2d6d)
 	{
@@ -78,49 +125,16 @@ static int virtkbd_write(struct event* ev)
 
 	return 1;
 }
-static void virtkbd_read()
-{
-	int x,y;
-	int left,top,right,bottom;
-	int width = haha->width;
-	int height = haha->height;
 
-	//[a,z]
-	for(y=0;y<8;y++)
-	{
-		for(x=0;x<8;x++)
-		{
-			left = (arealeft + x*(arearight-arealeft)/8)*width/1024;
-			top = (areatop + y*(areabottom-areatop)/8)*height/1024;
-			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/1024;
-			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/1024;
-			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
 
-			rect(	left, top, right, bottom,
-				0xccffcc, 0x752614
-			);
 
-			printascii(	left, top,
-					2, table[y][x],
-					0x221133, 0
-			);
-		}
-	}
-}
+
 static void virtkbd_into()
 {
 }
 static void virtkbd_list()
 {
 }
-
-
-
-
-
-
-
-
 static void virtkbd_start()
 {
 }
@@ -129,18 +143,16 @@ static void virtkbd_stop()
 }
 void virtkbd_create(void* base,void* addr)
 {
-	u64* this = (u64*)addr;
-	haha = addr;
+	struct player* p = addr;
 
-	this[0]=0;
-	this[1]=0x64626b74726976;
-
-	this[10]=(u64)virtkbd_start;
-	this[11]=(u64)virtkbd_stop;
-	this[12]=(u64)virtkbd_list;
-	this[13]=(u64)virtkbd_into;
-	this[14]=(u64)virtkbd_read;
-	this[15]=(u64)virtkbd_write;
+	p->type = 0;
+	p->name = 0x64626b74726976;
+	p->start = (u64)virtkbd_start;
+	p->stop = (u64)virtkbd_stop;
+	p->list = (u64)virtkbd_list;
+	p->choose = (u64)virtkbd_into;
+	p->read = (u64)virtkbd_read;
+	p->write = (u64)virtkbd_write;
 }
 void virtkbd_delete()
 {

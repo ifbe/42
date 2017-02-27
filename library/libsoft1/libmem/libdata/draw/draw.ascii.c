@@ -1,22 +1,9 @@
-#define u64 unsigned long long
+#define u8 unsigned char
+#define u16 unsigned short
 #define u32 unsigned int
+#define u64 unsigned long long
 void double2decimalstring(double,char*);
 void say(char*,...);
-
-
-
-
-static struct temp{
-        u64 type;
-        u64 id;
-        u64 start;
-        u64 end;
-
-        u64 pixelbuffer;
-        u64 pixelformat;
-        u64 width;
-        u64 height;
-}*haha;
 
 
 
@@ -279,18 +266,31 @@ static const unsigned char asciitable[128*16]={
 0x00,0x70,0xD8,0xD8,0x70,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00		//0x7f DEL
 };
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+};
 
 
 
 
 //
-void printascii(int xxxx, int yyyy, int size, char ch, u32 fgcolor, u32 bgcolor)
+void printascii(struct window* win,
+	int xxxx, int yyyy, int size,
+	char ch, u32 fgcolor, u32 bgcolor)
 {
 	int x,y,j,k,flag;
 	int width,height;
 	unsigned char temp;
 	unsigned char* points;
 	u32* screen;
+
+	width = win->w;
+	height = win->h;
+	screen = (u32*)(win->buf);
 
 	if(ch<0x20)ch=0x20;
 	points=(unsigned char*)&asciitable;
@@ -302,10 +302,6 @@ void printascii(int xxxx, int yyyy, int size, char ch, u32 fgcolor, u32 bgcolor)
 	flag = bgcolor>>24;
 	fgcolor |= 0xff000000;
 	bgcolor |= 0xff000000;
-
-	width = haha->width;
-	height = haha->height;
-	screen = (u32*)(haha->pixelbuffer);
 
 	for(y=0;y<16;y++)
 	{
@@ -333,26 +329,36 @@ void printascii(int xxxx, int yyyy, int size, char ch, u32 fgcolor, u32 bgcolor)
 		}//x
 	}//y
 }
-void printbyte(int x, int y, int size, unsigned char ch, u32 fg, u32 bg)
+void printbyte(struct window* win,
+	int x, int y, int size,
+	u8 ch, u32 fg, u32 bg)
 {
 	int i;
-	unsigned char temp=ch;
+	u8 temp = ch;
 
 	ch=(temp>>4) & 0xf;
 	ch+=0x30;
 	if(ch>0x39)ch+=0x7;
-	printascii(x, y, size, ch, 0, 0);
+	printascii(win,
+		x, y, size,
+		ch, 0, 0
+	);
 
 	ch=temp & 0xf;
 	ch+=0x30;
 	if(ch>0x39)ch+=0x7;
-	printascii(x + size*8, y, size, ch, 0, 0);
+	printascii(win,
+		x + size*8, y,
+		size, ch, 0, 0
+	);
 }
 
 
 
 
-void printstring(int x, int y, int size, char* p, u32 fgcolor, u32 bgcolor)
+void printstring(struct window* win,
+	int x, int y, int size,
+	char* p, u32 fgcolor, u32 bgcolor)
 {
 	int j=0;
 
@@ -364,7 +370,10 @@ void printstring(int x, int y, int size, char* p, u32 fgcolor, u32 bgcolor)
 		if(*p == 0x00 )break;
 		if( j >= 0x80 )break;
 
-		printascii(x+j*size*8, y, size, *p, fgcolor, bgcolor);
+		printascii(win,
+			x+j*size*8, y, size,
+			*p, fgcolor, bgcolor
+		);
 		j++;
 		p++;
 	}
@@ -373,7 +382,9 @@ void printstring(int x, int y, int size, char* p, u32 fgcolor, u32 bgcolor)
 
 
 
-void printdecimal(int x, int y, int size, int dec, u32 fgcolor, u32 bgcolor)
+void printdecimal(struct window* win,
+	int x, int y, int size,
+	int dec, u32 fgcolor, u32 bgcolor)
 {
 	char ch;
 	int i,count;
@@ -384,7 +395,10 @@ void printdecimal(int x, int y, int size, int dec, u32 fgcolor, u32 bgcolor)
 
 	if(dec<0)
 	{
-		printascii(x, y, size, '-', fgcolor, bgcolor);
+		printascii(win,
+			x, y, size,
+			'-', fgcolor, bgcolor
+		);
 		x += size*8;
 		dec=-dec;
 	}
@@ -403,7 +417,10 @@ void printdecimal(int x, int y, int size, int dec, u32 fgcolor, u32 bgcolor)
 		ch=(char)(dec%10);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		printascii(x+(count-i)*size*8, y, size, ch, fgcolor, bgcolor);
+		printascii(win,
+			x+(count-i)*size*8, y, size,
+			ch, fgcolor, bgcolor
+		);
 		dec=dec/10;
 	}
 }
@@ -411,7 +428,9 @@ void printdecimal(int x, int y, int size, int dec, u32 fgcolor, u32 bgcolor)
 
 
 
-void printhexadecimal(int x, int y, int size, u64 hex, u32 fgcolor, u32 bgcolor)
+void printhexadecimal(struct window* win,
+	int x, int y, int size,
+	u64 hex, u32 fgcolor, u32 bgcolor)
 {
 	int i;
 	char ch;
@@ -433,7 +452,10 @@ void printhexadecimal(int x, int y, int size, u64 hex, u32 fgcolor, u32 bgcolor)
 		ch=(char)(hex&0x0000000f);
 		if(ch<=9)ch+=0x30;
 		else if(ch<=0xf)ch+=0x37;
-		printascii(x+i*size*8, y, size, ch, fgcolor, bgcolor);
+		printascii(win,
+			x+i*size*8, y, size,
+			ch, fgcolor, bgcolor
+		);
 		hex=hex>>4;
 	}
 }
@@ -441,52 +463,58 @@ void printhexadecimal(int x, int y, int size, u64 hex, u32 fgcolor, u32 bgcolor)
 
 
 
-void printdouble(int x,int y,int size,double data,u32 fgcolor,u32 bgcolor)
+void printdouble(struct window* win,
+	int x,int y,int size,
+	double data,u32 fgcolor,u32 bgcolor)
 {
 	char mystring[100];
 	double2decimalstring(data,mystring);
-	printstring(x, y, size, mystring, 0xffffffff, 0);
+	printstring(win,
+		x, y, size,
+		mystring, 0xffffffff, 0
+	);
 }
 
 
 
 
-void ascii(int x,int y,unsigned char ch)
+void ascii(struct window* win,
+	int x,int y,unsigned char ch)
 {
-	printascii(x, y, 1, ch, 0xffffffff, 0);
+	printascii(win,
+		x, y, 1,
+		ch, 0xffffffff, 0
+	);
 }
-void string(int x,int y,char* p)
+void string(struct window* win,
+	int x,int y,char* p)
 {
-	printstring(x, y, 1, p, 0xffffffff, 0);
+	printstring(win,
+		x, y, 1,
+		p, 0xffffffff, 0
+	);
 }
-void decimal(int x,int y,long long dec)
+void decimal(struct window* win,
+	int x,int y,long long dec)
 {
-	printdecimal(x, y, 1, dec, 0xffffffff, 0);
+	printdecimal(win,
+		x, y, 1,
+		dec, 0xffffffff, 0
+	);
 }
-void hexadecimal(int x,int y,unsigned long long hex)
+void hexadecimal(struct window* win,
+	int x,int y,unsigned long long hex)
 {
-	printhexadecimal(x, y, 4, hex, 0, 0);
+	printhexadecimal(win,
+		x, y, 4,
+		hex, 0, 0
+	);
 }
-void defaultdouble(int x,int y,double data)
+void defaultdouble(struct window* win,
+	int x,int y,double data)
 {
-	printdouble(x, y, 1, data, 0xcccccccc, 0x44444444);
-}
-
-
-
-
-void ascii_start()
-{
-}
-void ascii_stop()
-{
-}
-void ascii_create(void* home,void* me)
-{
-	haha=me;
-	haha->type = 0;
-	haha->id = 0x6969637361;
-}
-void ascii_delete()
-{
+	printdouble(win,
+		x, y, 1,
+		data, 0xcccccccc, 0x44444444
+	);
 }

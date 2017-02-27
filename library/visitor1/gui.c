@@ -54,6 +54,7 @@ struct screen
 	u64 fmt;
 	u64 w;
 	u64 h;
+	char data[256-4*sizeof(u64)];
 };
 
 

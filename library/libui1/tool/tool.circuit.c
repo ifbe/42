@@ -3,10 +3,14 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void rectframe(
-	int x1, int y1, int x2, int y2, u32 color);
-void line(
-	int x1,int y1,int x2,int y2, u32 color);
+void rectframe(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void line(void*,
+	int x1,int y1,
+	int x2,int y2,
+	u32 color);
 void backgroundcolor(void*, u32);
 //
 void say(char*,...);
@@ -16,32 +20,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 temp[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 temp[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //元件
 struct cell{
@@ -59,33 +63,33 @@ static struct cell c2 = {'R', 1000, 1, 0};
 
 
 
-static void battery(int x, int y, struct cell* c)
+static void battery(struct window* win, int x, int y, struct cell* c)
 {
-	line(x-16, y-8, x+16, y-8, 0xffffffff);
-	line(x-8, y+8, x+8, y+8, 0xffffffff);
+	line(win, x-16, y-8, x+16, y-8, 0xffffffff);
+	line(win, x-8, y+8, x+8, y+8, 0xffffffff);
 }
-static void resistor(int x, int y, struct cell* c)
+static void resistor(struct window* win, int x, int y, struct cell* c)
 {
-	rectframe(x-8, y-16, x+8, y+16, 0xffffffff);
+	rectframe(win, x-8, y-16, x+8, y+16, 0xffffffff);
 }
-static void autowire(int x1, int y1, int x2, int y2)
+static void autowire(struct window* win, int x1, int y1, int x2, int y2)
 {
 	int j;
 	if(x1<x2)
 	{
 		j=y1-100;
 		if(j > y2-100)j=y2-100;
-		line(x1, y1, x1, j, 0xffffffff);
-		line(x2, y2, x2, j, 0xffffffff);
-		line(x1, j, x2, j, 0xffffffff);
+		line(win, x1, y1, x1, j, 0xffffffff);
+		line(win, x2, y2, x2, j, 0xffffffff);
+		line(win, x1, j, x2, j, 0xffffffff);
 	}
 	else
 	{
 		j=y1+100;
 		if(j < y2+100)j=y2+100;
-		line(x1, y1, x1, j, 0xffffffff);
-		line(x2, y2, x2, j, 0xffffffff);
-		line(x1, j, x2, j, 0xffffffff);
+		line(win, x1, y1, x1, j, 0xffffffff);
+		line(win, x2, y2, x2, j, 0xffffffff);
+		line(win, x1, j, x2, j, 0xffffffff);
 	}
 }
 
@@ -104,14 +108,14 @@ static void circuit_read_pixel(struct window* win)
 	backgroundcolor(win, 0);
 
 	//5v battery
-	battery(battx, batty, &c1);
+	battery(win, battx, batty, &c1);
 
 	//1000ohm resistor
-	resistor(resx, resy, &c2);
+	resistor(win, resx, resy, &c2);
 
 	//wire
-	autowire(battx, batty-8, resx, resy-16);
-	autowire(resx, resy+16, battx, batty+8);
+	autowire(win, battx, batty-8, resx, resy-16);
+	autowire(win, resx, resy+16, battx, batty+8);
 }
 static void circuit_read_text(struct window* win)
 {

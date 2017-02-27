@@ -3,18 +3,17 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(
-	int x, int y, int size, u8 data, u32 fg, u32 bg);
-void printdecimal(
-	int x, int y, int size, int data, u32 fg, u32 bg);
-void rectbody(
-	int x1, int y1, int x2, int y2, u32 color);
-void rectframe(
-	int x1, int y1, int x2, int y2, u32 color);
-void rect(
-	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
-void line(
-	int, int, int, int, u32);
+void printdecimal(void*,
+	int x, int y, int size,
+	int data, u32 fg, u32 bg);
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void rect(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 bodycolor, u32 framecolr);
 //
 int data2decstr(u64 data,u8* string);
 u32 getrandom();
@@ -28,32 +27,32 @@ int say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static int px,py;
@@ -264,7 +263,7 @@ static void sudoku_read_pixel(struct window* win)
 	{
 		for(x=0;x<9;x++)
 		{
-			rect(
+			rect(win,
 				x*w/9,	 y*h/9,
 				(x+1)*w/9, (y+1)*h/9,
 				0x888888,	  0
@@ -272,18 +271,34 @@ static void sudoku_read_pixel(struct window* win)
 
 			if(table[y][x] != 0)
 			{
-				printdecimal(
-					x*w/9,   y*h/9,
+				printdecimal(win,
+					x*w/9, y*h/9,
 					4, table[y][x],
-					0,	   0
+					0, 0
 				);
 			}
 		}
 	}
-	rectbody(        0, ( h/3 )-2,         w, ( h/3 )+2, 0);
-	rectbody(        0, (h*2/3)-2,         w, (h*2/3)+2, 0);
-	rectbody(( w/3 )-2,         0, ( w/3 )+2,         h, 0);
-	rectbody((w*2/3)-2,         0, (w*2/3)+2,         h, 0);
+	rectbody(win,
+		0, (h/3)-2,
+		w, (h/3)+2,
+		0
+	);
+	rectbody(win,
+		0, (h*2/3)-2,
+		w, (h*2/3)+2,
+		0
+	);
+	rectbody(win,
+		(w/3)-2, 0,
+		(w/3)+2, h,
+		0
+	);
+	rectbody(win,
+		(w*2/3)-2, 0,
+		(w*2/3)+2, h,
+		0
+	);
 }
 static void sudoku_read(struct window* win)
 {

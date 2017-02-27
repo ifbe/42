@@ -3,7 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void hexadecimal(int x,int y,u64 in);
+void hexadecimal(void*,
+	int x, int y, u64 in);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -13,32 +14,32 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u8 temp[0x30];
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u64 create;
-        u64 delete;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 static int red=0x8d,green=0x63,blue=0x25;
 
@@ -49,9 +50,9 @@ static void color_read_pixel(struct window* win)
 {
 	int x,y,w,h,min;
 	u32 color;
-	u32* screenbuf;
+	u32* buf;
 
-	screenbuf = (u32*)(win->buf);
+	buf = (u32*)(win->buf);
 	w = win->w;
 	h = win->h;
 
@@ -69,7 +70,7 @@ static void color_read_pixel(struct window* win)
 					+ ( ( (x*256) / min ) << 16)
 					+ ( ( (y*256) / min ) << 8 )
 					+ red;
-				screenbuf[w*y + x] = color;
+				buf[w*y + x] = color;
 			}
 		}
 
@@ -85,7 +86,7 @@ static void color_read_pixel(struct window* win)
 					+ (red<<16)
 					+ ( ( (y*256) / min ) << 8 )
 					+ ( (x*256) / min );
-				screenbuf[w*y + x] = color;
+				buf[w*y + x] = color;
 			}
 		}
 
@@ -99,7 +100,7 @@ static void color_read_pixel(struct window* win)
 		{
 			for(x=0;x<w;x++)
 			{
-				screenbuf[w*y + x] = color;
+				buf[w*y + x] = color;
 			}
 		}
 	}
@@ -109,7 +110,7 @@ static void color_read_pixel(struct window* win)
 		{
 			for(x=h;x<w;x++)
 			{
-				screenbuf[w*y + x] = color;
+				buf[w*y + x] = color;
 			}
 		}
 	}
@@ -119,13 +120,14 @@ static void color_read_pixel(struct window* win)
 	{
 		for(x=0;x<4;x++)
 		{
-			screenbuf[w*(green*min/256+y) + (blue*min/256+x) ]
+			buf[w*(green*min/256+y) + (blue*min/256+x) ]
 				= 0xffffffff;
 		}
 	}
 
 	//
-	hexadecimal(0, 0, (red<<16) + (green<<8) + blue);
+	hexadecimal(win, 0, 0,
+		(red<<16) + (green<<8) + blue);
 }
 static void color_read_html(struct window* win)
 {
