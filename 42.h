@@ -63,10 +63,17 @@ struct event
 	u64 where;
 	u64 when;
 };
+struct world
+{
+	u8 boot[0x400000];
+	u8 hard[0x400000];
+	u8 soft[0x400000];
+	u8 ui[0x400000];
+};
 
-u64* eventread();
+void* eventread();
 void eventwrite(u64 what, u64 who, u64 where, u64 when);
-void birth();
+void* birth();
 void death();
 //----------------------------------------------------------------------
 
@@ -136,7 +143,7 @@ void windowwrite();
 
 
 //-------------------------------libsoft--------------------------------
-#define fsbase 0x000000		//fd
+#define fsbase 0x000000		//mem, file, net...
 	#define fsbase0 fsbase+0x80000
 	#define fsbase1 fsbase+0x00000
 #define fsuser 0x100000		//worker
@@ -434,7 +441,7 @@ struct explainer
 
 	u8 data[0xc0];
 };
-struct devicetree
+struct environment
 {
 	u64 buf;
 	u64 fmt;
