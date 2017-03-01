@@ -129,30 +129,54 @@ void callback_display_texture()
 }
 void callback_display_stl()
 {
+/*
+	GLfloat position[4] = {100.0, 100.0, 200.0, 1.0};
+	GLfloat ambient[4]={1.0, 1.0, 1.0, 0.0};
+	GLfloat diffuse[4]={1.0, 0.0, 0.0, 0.0};
+*/
+	GLfloat color[8][3]=
+	{
+		0.0, 0.0, 0.0,
+		0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0,
+		0.0, 1.0, 1.0,
+		1.0, 0.0, 0.0,
+		1.0, 0.0, 1.0,
+		1.0, 1.0, 0.0,
+		1.0, 1.0, 1.0
+	};
 	float* p;
 	void* pointer;
 	u32 j, count;
 
 	pointer = (void*)(gdata->buf);
 	count = *(u32*)(pointer+80);
+	if(count > 0xa3d5)count = 0xa3d5;	//2MB
 
 	pointer += 84;
 	//printf("count=%d\n", count);
 	//printmemory(pointer, 50);
 
-	glColor3f(0.0,  1.0,  1.0);
 	for(j=0;j<count;j++)
 	{
 		p = pointer;
 		pointer += 50;
 
+		glColor3fv(color[j%8]);
 		glBegin(GL_TRIANGLES);
 		glVertex3f(p[3], p[4], p[5]);
 		glVertex3f(p[6], p[7], p[8]);
 		glVertex3f(p[9], p[10], p[11]);
 		glEnd();
 	}
-
+/*
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+	glEnable(GL_COLOR_MATERIAL);
+*/
 	glFlush();
 	glutSwapBuffers();
 }
@@ -161,6 +185,7 @@ void callback_display()
 	float ex,ey,ez;
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
+	//glShadeModel(GL_SMOOTH);
 	glLoadIdentity();
 
 	//camera rotate
