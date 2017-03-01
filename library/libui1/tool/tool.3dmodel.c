@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void readfile(void*, void*, int, int);
+void writefile(void*, void*, int, int);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -37,7 +39,7 @@ struct event
 	u64 where;
 	u64 when;
 };
-static u64 buf=0;
+static void* buf=0;
 
 
 
@@ -50,7 +52,7 @@ static void stl_read_text(struct window* win)
 }
 static void stl_read_data(struct window* win)
 {
-	win->buf = buf;
+	win->buf = (u64)buf;
 	win->fmt = 0x6c7473;	//'stl'
 }
 static void stl_read(struct window* win)
@@ -105,6 +107,7 @@ static void stl_change()
 }
 static void stl_start()
 {
+	readfile("42.stl", buf, 0, 0x200000);
 }
 static void stl_stop()
 {
@@ -112,7 +115,7 @@ static void stl_stop()
 void stl_create(void* base,void* addr)
 {
 	struct player* p = addr;
-	buf = (u64)(base+0x200000);
+	buf = base+0x200000;
 
 	p->type = 0x6c6f6f74;
 	p->name = 0x6c7473;

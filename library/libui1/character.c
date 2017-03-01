@@ -36,6 +36,15 @@ void font_create(u8*,u8*);
 void font_delete();
 void pure_create(u8*,u8*);
 void pure_delete();
+//hack
+void console_create(u8*,u8*);
+void console_delete();
+void control_create(u8*,u8*);
+void control_delete();
+void hex_create(u8*,u8*);
+void hex_delete();
+void tree_create(u8*,u8*);
+void tree_delete();
 //tool
 void camera_create(u8*,u8*);
 void camera_delete();
@@ -43,18 +52,12 @@ void calculator_create(u8*,u8*);
 void calculator_delete();
 void circuit_create(u8*,u8*);
 void circuit_delete();
-void console_create(u8*,u8*);
-void console_delete();
-void control_create(u8*,u8*);
-void control_delete();
-void hex_create(u8*,u8*);
-void hex_delete();
 void sketchpad_create(u8*,u8*);
 void sketchpad_delete();
 void spectrum_create(u8*,u8*);
 void spectrum_delete();
-void tree_create(u8*,u8*);
-void tree_delete();
+void stl_create(u8*,u8*);
+void stl_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
@@ -180,6 +183,22 @@ void charactercreate(u8* type, u8* addr)
 	xiangqi_create(addr,temp);
 	temp+=0x100;
 
+	//hack.console
+	console_create(addr,temp);
+	temp+=0x100;
+
+	//hack.hex
+	hex_create(addr,temp);
+	temp+=0x100;
+
+	//hack.input
+	control_create(addr,temp);
+	temp+=0x100;
+
+	//hack.tree
+	tree_create(addr,temp);
+	temp+=0x100;
+
 	//test.color
 	color_create(addr,temp);
 	temp+=0x100;
@@ -208,28 +227,16 @@ void charactercreate(u8* type, u8* addr)
 	circuit_create(addr,temp);
 	temp+=0x100;
 
-	//tool.console
-	console_create(addr,temp);
-	temp+=0x100;
-
-	//tool.hex
-	hex_create(addr,temp);
-	temp+=0x100;
-
-	//tool.control
-	control_create(addr,temp);
-	temp+=0x100;
-
 	//tool.qrcode
 	qrcode_create(addr,temp);
 	temp+=0x100;
 
-	//tool.tree
-	tree_create(addr,temp);
-	temp+=0x100;
-
 	//tool.sketchpad
 	sketchpad_create(addr,temp);
+	temp+=0x100;
+
+	//tool.stl
+	stl_create(addr,temp);
 	temp+=0x100;
 
 	//tool.spectrum
@@ -247,15 +254,17 @@ void characterdelete()
 	say("[c,f):deleteing character\n");
 
 	spectrum_delete();
-	tree_delete();
+	stl_delete();
 	sketchpad_delete();
-	hex_delete();
 	qrcode_delete();
-	control_delete();
-	console_delete();
 	circuit_delete();
 	calculator_delete();
 	camera_delete();
+
+	tree_delete();
+	hex_delete();
+	control_delete();
+	console_delete();
 
 	color_delete();
 	doodle_delete();

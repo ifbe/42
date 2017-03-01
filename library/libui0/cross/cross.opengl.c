@@ -6,6 +6,7 @@
 #include<stdlib.h>
 #include<GL/glut.h> 
 #define PI 3.141592653
+void eventwrite(u64,u64,u64,u64);
 //
 u64 startthread(void*, void*);
 void stopthread();
@@ -13,8 +14,8 @@ void stopthread();
 double cosine(double);
 double sine(double);
 //
-void eventwrite(u64,u64,u64,u64);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -27,6 +28,7 @@ struct gldata
 	u64 h;
 	u64 thread;
 };
+static struct gldata* gdata;
 static void* pData;
 //
 static int refresh=0;
@@ -47,24 +49,8 @@ static float object_zoom = 1.0;
 
 
 
-void callback_display()
+void callback_display_texture()
 {
-	float ex,ey,ez;
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	//camera rotate
-	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
-	ey = camera_zoom*cosine(camera_pitch)*sine(camera_yaw);
-	ez = camera_zoom*sine(camera_pitch);
-	gluPerspective(45.0, 1.0, 0.1, 100.0);
-	gluLookAt(
-		 ex, ey, ez,
-		  0,  0,  0,
-		0.0,0.0,1.0
-	);
-
 	//thing rotate
 	//glRotatef( rotate_x, 1.0, 0.0, 0.0 );
 	//glRotatef( rotate_y, 0.0, 1.0, 0.0 );
@@ -140,6 +126,62 @@ void callback_display()
 	//
 	glFlush();
 	glutSwapBuffers();
+}
+void callback_display_stl()
+{
+	float* p;
+	void* pointer;
+	u32 j, count;
+
+	pointer = (void*)(gdata->buf);
+	count = *(u32*)(pointer+80);
+
+	pointer += 84;
+	//printf("count=%d\n", count);
+	//printmemory(pointer, 50);
+
+	glColor3f(0.0,  1.0,  1.0);
+	for(j=0;j<count;j++)
+	{
+		p = pointer;
+		pointer += 50;
+
+		glBegin(GL_TRIANGLES);
+		glVertex3f(p[3], p[4], p[5]);
+		glVertex3f(p[6], p[7], p[8]);
+		glVertex3f(p[9], p[10], p[11]);
+		glEnd();
+	}
+
+	glFlush();
+	glutSwapBuffers();
+}
+void callback_display()
+{
+	float ex,ey,ez;
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//camera rotate
+	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
+	ey = camera_zoom*cosine(camera_pitch)*sine(camera_yaw);
+	ez = camera_zoom*sine(camera_pitch);
+	gluPerspective(45.0, 1.0, 0.1, 1000.0);
+	gluLookAt(
+		 ex, ey, ez,
+		  0,  0,  0,
+		0.0,0.0,1.0
+	);
+
+	if(gdata->fmt == 0x6c7473)
+	{
+		callback_display_stl();
+	}
+	else
+	{
+		callback_display_texture();
+	}
 }
 void callback_idle()
 {
@@ -252,6 +294,7 @@ void windowstop()
 void windowstart(struct gldata* p)
 {
 	pData = malloc(2048*1024*4);
+	gdata = p;
 
 	//
 	p->buf = (u64)pData;
