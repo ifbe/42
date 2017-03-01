@@ -463,7 +463,10 @@ int charactercommand(u8* p)
 		goto found;
 	}
 
+notfound:
 	ret = arterycommand(p);
+	ret = arterycommand("\n");
+	return 0;
 
 found:
 	//

@@ -250,6 +250,11 @@ LOCAL_SRC_FILES += \
 	library/libui1/game/game.tetris.c \
 	library/libui1/game/game.weiqi.c \
 	library/libui1/game/game.xiangqi.c \
+	library/libui1/hack/hack.console.c \
+	library/libui1/hack/hack.editor.c \
+	library/libui1/hack/hack.hex.c \
+	library/libui1/hack/hack.input.c \
+	library/libui1/hack/hack.tree.c \
 	library/libui1/menu/menu.center.c \
 	library/libui1/menu/menu.roster.c \
 	library/libui1/menu/menu.virtkbd.c \
@@ -257,16 +262,13 @@ LOCAL_SRC_FILES += \
 	library/libui1/test/test.doodle.c \
 	library/libui1/test/test.font.c \
 	library/libui1/test/test.pure.c \
-	library/libui1/tool/tool.camera.c \
+	library/libui1/tool/tool.3dmodel.c \
 	library/libui1/tool/tool.calculator.c \
+	library/libui1/tool/tool.camera.c \
 	library/libui1/tool/tool.circuit.c \
-	library/libui1/tool/tool.console.c \
-	library/libui1/tool/tool.control.c \
-	library/libui1/tool/tool.hex.c \
 	library/libui1/tool/tool.qrcode.c \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \
-	library/libui1/tool/tool.tree.c \
 	library/libui1/character.c
 
 #1.visitor0

@@ -57,15 +57,14 @@ void editor_create(void* base,void* addr)
 {
 	struct player* p = addr;
 
-	p.type = 0x6c6f6f74;
-	p.name = 0x726f74696465;
-
-	p.start = (u64)editor_start;
-	p.stop = (u64)editor_stop;
-	p.list = (u64)editor_list;
-	p.choose = (u64)editor_into;
-	p.read = (u64)editor_read;
-	p.write = (u64)editor_write;
+	p->type = 0x6c6f6f74;
+	p->name = 0x726f74696465;
+	p->start = (u64)editor_start;
+	p->stop = (u64)editor_stop;
+	p->list = (u64)editor_list;
+	p->choose = (u64)editor_choose;
+	p->read = (u64)editor_read;
+	p->write = (u64)editor_write;
 }
 void editor_delete()
 {
