@@ -2,8 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void readfile(void*, void*, int, int);
-void writefile(void*, void*, int, int);
+int readfile(void*, void*, int, int);
+int writefile(void*, void*, int, int);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -107,7 +107,8 @@ static void stl_change()
 }
 static void stl_start()
 {
-	readfile("42.stl", buf, 0, 0x200000);
+	int ret = readfile("42.stl", buf, 0, 0x200000);
+	if(ret <= 0)say("ret=%d\n", ret);
 }
 static void stl_stop()
 {

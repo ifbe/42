@@ -101,19 +101,20 @@ int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 {
 	HANDLE hFile;
 	LARGE_INTEGER li;
-	unsigned long written = 0;
+	unsigned long val = 0;
+	int ret;
 
 	if(filename == 0)
 	{
 		li.QuadPart = offset;
 		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
-		ReadFile(selected, memaddr, count, &written, 0);
+		ret = ReadFile(selected, memaddr, count, &val, 0);
 	}
-	else 
+	else
 	{
 		//
 		hFile = CreateFile(
-			filename, GENERIC_WRITE, 0,
+			filename, GENERIC_READ, 0,
 			NULL, OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL, NULL
 		);
@@ -130,11 +131,12 @@ int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 		}
 
 		//
-		ReadFile(hFile, memaddr, count, &written, 0);
-
-		//
+		ret = ReadFile(hFile, memaddr, count, &val, 0);
 		CloseHandle(hFile);
 	}
+
+	if(ret == 0)say("val=%d\n", ret, val);
+	return val;
 }
 
 
