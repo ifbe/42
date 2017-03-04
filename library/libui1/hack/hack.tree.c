@@ -22,7 +22,6 @@ void backgroundcolor(void*,
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-void double2decimalstring(double,char*);
 //libboot
 void say(char*,...);
 void printmemory(char*,int);

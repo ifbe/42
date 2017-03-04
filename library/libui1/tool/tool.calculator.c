@@ -17,7 +17,7 @@ void rect(void*,
 double calculator(char* postfix, u64 x, u64 y);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-void double2decimalstring(double,char*);
+void double2decstr(double,char*);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -199,7 +199,7 @@ static void calculator_write(struct event* ev)
 			say("postfix:%s\n", postfix);
 
 			final = calculator(postfix, 0, 0);
-			double2decimalstring(final, result);
+			double2decstr(final, result);
 			say("result:%s\n", result);
 		}
 		else

@@ -2,9 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int decstr2data(u8* source,u64* data);
-void printmemory(char*,int);
-void say(char*,...);
+int decstr2data(void*, void*);
+void printmemory(char*, int);
+void say(char*, ...);
 
 
 
@@ -14,54 +14,53 @@ int buf2net(
 	u8* type, u8* addr, int* port, u8* detail
 )
 {
-	int ii,jj;
-	u64 data=0;
+	int j,k;
 	if(pp==0)return 0;
 
-	//search for ://
-	for(ii=0;ii<max;ii++)
+	//type
+	for(j=0;j<max;j++)
 	{
-		if(pp[ii]==0)break;
-		if(pp[ii]==':')break;
-	}
-
-	jj = 0;
-	type[0] = 0;
-	if(pp[ii] == ':')
-	{
-		if( (pp[ii+1] == '/') && (pp[ii+2] == '/') )
+		if(pp[j]==0)return 0;
+		if(pp[j]==':')
 		{
-			for(jj=0;jj<ii;jj++)
+			if( (pp[j+1] == '/') && (pp[j+2] == '/') )
 			{
-				type[jj] = pp[jj];
+				for(k=0;k<j;k++)type[k] = pp[k];
+				type[k] = 0;
+
+				pp += j+3;
+				break;
 			}
-			type[jj] = 0;
-			jj = ii+3;
 		}
 	}
 
-	//now addr
-	pp += jj;
-	for(ii=0;ii<max;ii++)
+	//addr
+	for(j=0;j<max;j++)
 	{
-		if(pp[ii]==0)break;
-		else if(pp[ii]==':')break;
-		else addr[ii]=pp[ii];
+		if(pp[j]==0)return 1;
+		else if(pp[j]==':')
+		{
+			addr[j] = 0;
+			pp += j+1;
+			break;
+		}
+		else addr[j] = pp[j];
 	}
 
-	if(pp[ii] != ':')
-	{
-		addr[0]=0;
-		port[0]=0;
-	}
-	else
-	{
-		addr[ii]=0;
+	//port
+	j = decstr2data(pp, port);
+	if( (j<=0) | (j>5) | (*port>65535) )return 0;
+	pp += j;
 
-		decstr2data(pp+ii+1,&data);
-		*port=(int)data;
+	//extra
+	for(j=0;j<max;j++)
+	{
+		if(pp[j] == 0)
+		{
+			detail[j] = 0;
+			break;
+		}
+		else detail[j] = pp[j];
 	}
-
-	//say("%s,%s,%d\n", type, addr, port[0]);
 	return 1;
 }

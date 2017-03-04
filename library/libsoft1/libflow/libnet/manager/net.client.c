@@ -5,14 +5,17 @@
 //
 int createclient();
 int deleteclient();
-int startclient(u8*,int);
+u64 startclient(int, u8*, int, u8*);
 int stopclient();
+int listclient(u8*);
+int chooseclient(u8*,int);
 int readclient(u8*,int);
 int writeclient(u8*,int);
-int listclient(u8*);
-int chooseclient(u8*, u8*, int, u8*);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -43,19 +46,36 @@ static int client_list(u8* p)
 }
 static int client_choose(u8* p)
 {
+	//
+	u64 fd;
 	int ret;
 
-	u8 type[64];
-	u8 addr[64];
+	//
+	u8 buf[128];
 	int port;
-	u8 extra[64];
+	u8* ip = buf+0x10;
+	u8* cfg = buf+0x80;
 
-	ret = buf2net(
-		p,64,
-		type, addr, &port, extra
-	);
-	if(ret <= 0)return chooseclient(0, 0, 0, 0);
-	else return chooseclient(type, addr, port, extra);
+	//parse
+	ret = buf2net(p, 128, buf, ip, &port, cfg);
+	if(ret <= 0)return 0;
+	//say("type=%s, addr=%s, port=%d, extra=%s\n", buf, ip, port, cfg);
+
+	//compare
+	if(ncmp(buf, "raw", 3) == 0)ret = 'r';
+	else if(ncmp(buf, "udp", 3) == 0)ret = 'u';
+	else if(ncmp(buf, "tcp", 3) == 0)ret = 't';
+	else if(ncmp(buf, "https", 4) == 0)ret = 't';
+	else if(ncmp(buf, "http", 4) == 0)ret = 't';
+	else if(ncmp(buf, "wss", 4) == 0)ret = 't';
+	else if(ncmp(buf, "ws", 4) == 0)ret = 't';
+
+	//start
+	fd = startclient(ret, ip, port, cfg);
+	say("fd=%llx\n", fd);
+
+	//
+	return 0;
 }
 
 

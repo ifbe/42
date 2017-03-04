@@ -37,11 +37,7 @@ static int st = 0;
 static int fd = 0;
 static socklen_t serlen = 0;
 static struct sockaddr_in server = {0};
-
-
-
-
-void* readclient(void* p)
+void* clientthread(void* p)
 {
 	int ret;
 	u8 buf[0x1000];
@@ -80,6 +76,14 @@ void* readclient(void* p)
 	}
 	return 0;
 }
+
+
+
+
+int readclient()
+{
+	return 0;
+}
 int writeclient(u8* buf,int len)
 {
 	int ret;
@@ -95,10 +99,6 @@ int writeclient(u8* buf,int len)
 	}
 	return ret;
 }
-
-
-
-
 int listclient(char* type)
 {
 	if(strncmp(type, "udp", 3) == 0)
@@ -111,7 +111,15 @@ int listclient(char* type)
 	}
 	return 1;
 }
-int chooseclient(char* type, char* addr, int port, char* extra)
+int chooseclient()
+{
+	return 0;
+}
+int stopclient()
+{
+	return 0;
+}
+u64 startclient(int type, char* addr, int port, char* extra)
 {
 	int ret;
 	u8 temp[8];
@@ -126,7 +134,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 	if(addr == 0)return 0;
 	if(addr[0] == 0)return 0;
 
-	if(strncmp(type, "raw", 3) == 0)
+	if(type == 'r')		//raw
 	{
 		int sockopt;
 		struct ifreq ifopts;
@@ -161,8 +169,9 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 		}
 
 		st = SOCK_RAW;
+		return fd;
 	}
-	else if(strncmp(type, "udp", 3) == 0)
+	else if(type == 'u')		//udp
 	{
 		//create struct
 		memset(&server, 0, sizeof(struct sockaddr_in));
@@ -183,8 +192,9 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 		selfname(fd, temp);
 		printf("%d.%d.%d.%d:%d\n",temp[0],temp[1],temp[2],temp[3],*(u32*)(temp+4));
 		st = SOCK_DGRAM;
+		return fd;
 	}
-	else
+	else		//tcp
 	{
 		//create struct
 		memset(&server, 0, sizeof(struct sockaddr_in));
@@ -205,7 +215,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
 		if(ret < 0)
 		{
-			//printf("connect error\n");
+			printf("connect error\n");
 			return 0;
 		}
 
@@ -213,25 +223,12 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 		selfname(fd, temp);
 		printf("%d.%d.%d.%d:%d\n",temp[0],temp[1],temp[2],temp[3],*(u32*)(temp+4));
 		st = SOCK_STREAM;
+		return fd;
 	}
 
 	//thread
-	alive = 1;
-	thread = startthread(readclient, 0);
-
-	//success
-	return 1;
-}
-
-
-
-
-int stopclient()
-{
-	return 0;
-}
-int startclient()
-{
+	//alive = 1;
+	//thread = startthread(readclient, 0);
 	return 0;
 }
 int deleteclient()

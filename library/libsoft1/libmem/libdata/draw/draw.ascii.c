@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void double2decimalstring(double,char*);
+void double2decstr(double,char*);
 void say(char*,...);
 
 
@@ -467,11 +467,11 @@ void printdouble(struct window* win,
 	int x,int y,int size,
 	double data,u32 fgcolor,u32 bgcolor)
 {
-	char mystring[100];
-	double2decimalstring(data,mystring);
+	char mystr[100];
+	double2decstr(data, mystr);
 	printstring(win,
 		x, y, size,
-		mystring, 0xffffffff, 0
+		mystr, 0xffffffff, 0
 	);
 }
 
