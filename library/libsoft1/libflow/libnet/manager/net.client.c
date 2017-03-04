@@ -25,6 +25,18 @@ static u8* datahome=0;
 
 
 
+static int client_read()
+{
+	return 0;
+}
+static int client_write(u8* p)
+{
+	int i=0;
+	if(p==0)return 0;
+
+	while(p[i]!=0)i++;
+	return writeclient(p,i);
+}
 static int client_list(u8* p)
 {
 	return listclient(p);
@@ -44,18 +56,6 @@ static int client_choose(u8* p)
 	);
 	if(ret <= 0)return chooseclient(0, 0, 0, 0);
 	else return chooseclient(type, addr, port, extra);
-}
-static int client_read()
-{
-	return 0;
-}
-static int client_write(u8* p)
-{
-	int i=0;
-	if(p==0)return 0;
-
-	while(p[i]!=0)i++;
-	return writeclient(p,i);
 }
 
 
