@@ -5,7 +5,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<GL/glut.h> 
-#define PI 3.141592653
+#define PI 3.1415926535897932384626433832795028841971693993151
 void eventwrite(u64,u64,u64,u64);
 //
 u64 startthread(void*, void*);
@@ -253,10 +253,16 @@ void callback_mouse(int button, int state, int x, int y)
 }
 void callback_move(int x,int y)
 {
-	if(x>last_x)camera_yaw += PI/180;
-	if(x<last_x)camera_yaw -= PI/180;
-	if(y>last_y)camera_pitch += PI/180;
-	if(y<last_y)camera_pitch -= PI/180;
+	if(x>last_x)camera_yaw += PI/90;
+	if(x<last_x)camera_yaw -= PI/90;
+	if(y>last_y)
+	{
+		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
+	}
+	if(y<last_y)
+	{
+		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
+	}
 
 	last_x = x;
 	last_y = y;
