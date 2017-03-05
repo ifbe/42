@@ -11,12 +11,18 @@ int serve_https(void* p, u8* buf, u64 len);
 int serve_wss(void* p, u8* buf, u64 len);
 int serve_secureshell(void* p, u8* buf, u64 len);
 //
-int selfname(u64, void*);
-int peername(u64, void*);
 void client_create(void*,void*);
 void server_create(void*,void*);
 void client_delete();
 void server_delete();
+int movsb(void*, void*, int);
+//
+int startserver(void* addr, int port, void* dir, int opt);
+int stopserver(u64);
+int readserver(u64, void*, int, int);
+int writeserver(u64, void*, int, int);
+int selfname(u64, void*);
+int peername(u64, void*);
 //
 void printmemory(char*, int);
 void say(char*, ...);
@@ -131,8 +137,8 @@ void net_start(u64 fd)
 	if(max >= 0x10000/0x40)
 	{
 		writeserver(fd, "too many", 0, 8);
-		net_delete(fd);
 		stopserver(fd);
+		net_stop(fd);
 		return;
 	}
 
@@ -172,7 +178,7 @@ void net_read(u64 temp)
 	count = readserver(temp, datahome, 0, 0x100000);
 	if(count <= 0)
 	{
-		net_delete(temp);
+		net_stop(temp);
 		stopserver(temp);
 		return;
 	}
@@ -275,7 +281,7 @@ server:bit31=0, client:bit31=1
 	if(known[index].type != 0)return;
 
 forceclose:
-	net_delete(known[index].fd);
+	net_stop(known[index].fd);
 	stopserver(known[index].fd);
 	return;
 }

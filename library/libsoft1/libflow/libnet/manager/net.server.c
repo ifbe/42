@@ -60,6 +60,7 @@ static int server_stop()
 	}
 	return stopserver(0);
 */
+	return 0;
 }
 int server_create(void* softhome, u64* p)
 {
