@@ -3,13 +3,16 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //random
-int createrandom();
+int createrandom(void*);
 int deleterandom();
 //signal
-int createsignal();
+int createsignal(void*);
 int deletesignal();
+//signal
+int createsocket(void*);
+int deletesocket();
 //tray
-int createtray();
+int createtray(void*);
 int deletetray();
 //
 void printmemory(void*, int);
@@ -37,14 +40,13 @@ void systemcreate(u8* type, u8* addr)
 	mega1=addr+0x100000;
 	mega2=addr+0x200000;
 	mega3=addr+0x300000;
-
-	//clean [0x80000,0xfffff]
 	for(j=0;j<0x100000;j++)mega0[j]=0;
 
 	//
-	createrandom();
-	createsignal();
-	createtray();
+	createrandom(mega0);
+	createsignal(mega0);
+	createsocket(mega0);
+	createtray(mega0);
 
 	//
 	say("[8,c):createed system\n");
@@ -56,6 +58,7 @@ void systemdelete()
 
 	//
 	deletetray();
+	deletesocket();
 	deletesignal();
 	deleterandom();
 }

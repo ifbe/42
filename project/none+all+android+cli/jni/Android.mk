@@ -78,8 +78,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
 	library/libsoft0/android/android.flow.vision.qcamera2.c \
 	library/libsoft0/android/android.system.tray.c \
-	library/libsoft0/linux/linux.flow.net.client.c \
-	library/libsoft0/linux/linux.flow.net.server.c \
+	library/libsoft0/linux/linux.flow.net.socket.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.folder.c \
 	library/libsoft0/linux/linux.memory.physical.c \

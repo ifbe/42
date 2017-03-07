@@ -12,12 +12,12 @@ int findhead(void* p);
 int findtail(void* p);
 u8* findstr(void* src, int max, void* target, int tarlen);
 //
-int readserver(u64 fd, u8* addr, u64 offset, u64 count);
-int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
+int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
 u32 getrandom();
 u64 gettime();
 //
-int diary(void*, int, void*, ...);
+int fmt(void*, int, void*, ...);
 void say(void*, ...);
 
 
@@ -180,20 +180,20 @@ static void websocket_write(u64 fd, u8* buf, u64 len)
 	}
 
 	//write
-	ret = writeserver(fd, headbuf, 0, headlen);
-	ret = writeserver(fd, buf, 0, len);
+	ret = writesocket(fd, headbuf, 0, headlen);
+	ret = writesocket(fd, buf, 0, len);
 }
 
 
 
 
-int handshake_websocket(u64* p, u8* buf, int len)
+int handshake_websocket(u64 fd, u8* buf, int len)
 {
         int j;
 	u8* Sec_WebSocket_Key;
         u8 buf1[256];
         u8 buf2[256];
-	say("%s(%d)\n",buf,len);
+	//say("%s(%d)\n",buf,len);
 
 	//
 	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
@@ -202,7 +202,7 @@ int handshake_websocket(u64* p, u8* buf, int len)
 
         //在Sec_WebSocket_Key尾巴上添加一个固定的字符串
         j = findtail(Sec_WebSocket_Key);
-        j += diary(Sec_WebSocket_Key + j, 256,
+        j += fmt(Sec_WebSocket_Key + j, 256,
 		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
         say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
 
@@ -217,7 +217,7 @@ int handshake_websocket(u64* p, u8* buf, int len)
         say("base64=%s\n",buf2);
 
         //把base64的结果作为accept密钥
-        j = diary(buf1, 256,
+        j = fmt(buf1, 256,
                 "HTTP/1.1 101 Switching Protocols\r\n"
                 "Upgrade: websocket\r\n"
                 "Connection: Upgrade\r\n"
@@ -227,19 +227,18 @@ int handshake_websocket(u64* p, u8* buf, int len)
         );
 
         //发出去
-        j = writeserver(p[2], buf1, 0, j);
+        j = writesocket(fd, buf1, 0, j);
         say("%s", buf1);
 
         //
-	p[1] = websocket_done;
         return websocket_done;
 }
-int serve_ws(u64* p, u8* buf, u64 len)
+int serve_ws(u64 fd, u64 type, u8* buf, u64 len)
 {
 	int ret;
-	if(p[1] == websocket_new)
+	if(type == websocket_new)
 	{
-		return handshake_websocket(p, buf, len);
+		return handshake_websocket(fd, buf, len);
 	}
 
 	//
@@ -247,7 +246,7 @@ int serve_ws(u64* p, u8* buf, u64 len)
 	if(ret < 0)return ret;
 
 	//
-	websocket_write(p[2], (void*)"hahahaha", 8);
+	websocket_write(fd, (void*)"hahahaha", 8);
 	return websocket_done;
 /*
 	if(type==0x10)
@@ -356,7 +355,7 @@ int serve_ws(u64* p, u8* buf, u64 len)
 	}
 */
 }
-int serve_wss(u64* p, u8* buf, u64 len)
+int serve_wss(u64 fd, u64 type, u8* buf, u64 len)
 {
 	return 0;
 }

@@ -8,8 +8,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int selfname(u64, void*);
-int peername(u64, void*);
 //
 u64 startthread(void*, void*);
 void stopthread();
@@ -28,37 +26,42 @@ static SOCKET sclient = 0;
 static int st = 0;
 static int serlen = sizeof(struct sockaddr_in);
 static struct sockaddr_in serAddr;
+//
+static char IPADDRESS[32];
+static int PORT;
 
 
 
 
-int deleteclient()
+void selfname(u64 fd, u32* buf)
 {
-	return 1;
+	struct sockaddr_in addr;
+	u32 len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)&addr, &len);
+
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
 }
-int createclient()
+void peername(u64 fd, u32* buf)
 {
-	return 1;
-}
-int stopclient()
-{
-    closesocket(sclient);
-    WSACleanup();
+	struct sockaddr_in addr;
+	u32 len = sizeof(struct sockaddr_in);
+	getpeername(fd, (void*)&addr, &len);
 
-	sclient=0;
+	buf[0] = *(u32*)&addr.sin_addr;
+	buf[1] = addr.sin_port;
+}
+DWORD WINAPI newone(LPVOID pM)
+{
 	return 0;
 }
-int startclient()
+
+
+
+
+int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 {
-	return 0;
-}
-
-
-
-
-
-DWORD WINAPI readclient(LPVOID pM)
-{
+/*
 	int ret;
 	u8 buf[0x1000];
 
@@ -96,8 +99,9 @@ DWORD WINAPI readclient(LPVOID pM)
 		}
 	}
 	return 0;
+*/
 }
-int writeclient(char* buf,int len)
+int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 {
 	int ret;
 
@@ -112,23 +116,17 @@ int writeclient(char* buf,int len)
 	//printf("[%d]%c,%d -> %d,%d\n", sclient, buf[0], len, ret, GetLastError());
 	return ret;
 }
-
-
-
-
-int listclient(char* type)
+int listsocket()
 {
-	if(strncmp(type, "udp", 3) == 0)
-	{
-		//list udp
-	}
-	else
-	{
-		//list tcp
-	}
-	return 1;
 }
-int chooseclient(char* type, char* addr, int port, char* extra)
+int choosesocket()
+{
+}
+int stopsocket(u64 fd)
+{
+	return 0;
+}
+int startsocket(char* addr, int port, int type)
 {
 	int ret;
 	u8 temp[8];
@@ -142,16 +140,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 	if(addr == 0)return 0;
 	if(addr[0] == 0)return 0;
 
-    WORD sockVersion = MAKEWORD(2,2);
-    WSADATA data; 
-    if(WSAStartup(sockVersion, &data) != 0)
-    {
-		printf("error@WSAStartup\n");
-        return 0;
-    }
-
-	//
-	if(strncmp(type, "raw", 3) == 0)
+	if(type == 'r')
 	{
 		sclient = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
 		if(sclient == SOCKET_ERROR)
@@ -161,7 +150,6 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 		}
 
 		//
-		printf("type=%s, addr=%s, port=%d\n", type, addr, port);
 		memset(&serAddr, 0, sizeof(serAddr));
 		serAddr.sin_addr.s_addr = inet_addr(addr);
 		serAddr.sin_family = PF_INET;
@@ -191,7 +179,7 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 
 		st = IPPROTO_RAW;
 	}
-	else if(strncmp(type, "udp", 3) == 0)
+	else if(type == 'u')
 	{
 		//
 		serAddr.sin_family = AF_INET;
@@ -244,5 +232,21 @@ int chooseclient(char* type, char* addr, int port, char* extra)
 	thread = startthread(readclient, 0);
 
 	//success
+	return 1;
+}
+int deletesocket()
+{
+	WSACleanup();
+	return 1;
+}
+int createsocket()
+{
+	WSADATA data; 
+	WORD sockVersion = MAKEWORD(2,2);
+	if(WSAStartup(sockVersion, &data) != 0)
+	{
+		printf("error@WSAStartup\n");
+		return 0;
+	}
 	return 1;
 }

@@ -17,7 +17,7 @@ void rect(void*,
 	u32 bc, u32 fc);
 //
 int charactercommand(char* p);
-int diary(char*, int, char*, ...);
+int fmt(char*, int, char*, ...);
 int say(char*,...);
 
 
@@ -173,7 +173,7 @@ static void menu_read_html(struct window* win)
 	p += 0x1000;
 
 	buffer[bufp] = 0;
-	diary(p,0x1000,
+	fmt(p,0x1000,
 		"<div style=\""
 		"position:absolute;"
 		"z-index:100;"

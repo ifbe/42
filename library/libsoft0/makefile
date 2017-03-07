@@ -4,11 +4,9 @@ cflag ?= -c -O2 -fPIC
 .PHONY:bare
 bare:
 	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
-	$(compiler) $(cflag) bare/bare.memory.file.c
-	$(compiler) $(cflag) bare/bare.flow.net.client.c
-	$(compiler) $(cflag) bare/bare.flow.net.server.c
-	$(compiler) $(cflag) bare/bare.flow.vision.c
+	$(compiler) $(cflag) bare/bare.flow.net.socket.c
 	$(compiler) $(cflag) bare/bare.flow.sound.c
+	$(compiler) $(cflag) bare/bare.flow.vision.c
 	$(compiler) $(cflag) bare/bare.memory.file.c
 	$(compiler) $(cflag) bare/bare.memory.folder.c
 	$(compiler) $(cflag) bare/bare.memory.io.c
@@ -45,8 +43,7 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
-	$(compiler) $(cflag) linux/linux.flow.net.client.c
-	$(compiler) $(cflag) linux/linux.flow.net.server.c
+	$(compiler) $(cflag) linux/linux.flow.net.socket.c
 	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
 	$(compiler) $(cflag) linux/linux.flow.vision.other.c
 	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
@@ -73,9 +70,8 @@ linux:
 .PHONY:mac
 mac:
 	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
-	$(compiler) $(cflag) mac/mac.flow.client.c
+	$(compiler) $(cflag) mac/mac.flow.net.socket.c
 	$(compiler) $(cflag) mac/mac.flow.image.c
-	$(compiler) $(cflag) mac/mac.flow.server.c
 	$(compiler) $(cflag) mac/mac.flow.voice.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac/mac.memory.folder.c
@@ -100,10 +96,9 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	$(compiler) $(cflag) win/win.flow.net.client.c
-	$(compiler) $(cflag) win/win.flow.net.server.c
-	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
+	$(compiler) $(cflag) win/win.flow.net.socket.c
 	$(compiler) $(cflag) win/win.flow.sound.waveinout.c
+	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.folder.c
 	$(compiler) $(cflag) win/win.memory.virtual.c

@@ -11,27 +11,27 @@ void peername(u64 fd, u32* buf)
 
 
 
-void writeserver()
+void writesocket()
 {
 }
-void readserver()
+void readsocket()
 {
 }
-void listserver()
+void listsocket()
 {
 }
-void chooseserver()
+void choosesocket()
 {
 }
-void stopserver()
+void stopsocket()
 {
 }
-void startserver(char* addr, int port, char* dir, int opt)
+void startsocket(char* addr, int port, int type)
 {
 }
-void deleteserver(int num)
+void deletesocket(int num)
 {
 }
-void createserver()
+void createsocket()
 {
 }

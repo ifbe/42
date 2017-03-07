@@ -12,7 +12,7 @@ int data2decstr(u64 data,u8* string);
 u32 getrandom();
 //
 int printmemory(void*, int);
-int diary(void*, int, void*, ...);
+int fmt(void*, int, void*, ...);
 int say(void*, ...);
 
 
@@ -184,7 +184,7 @@ static void the2048_read_html(struct window* win)
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
@@ -204,7 +204,7 @@ static void the2048_read_html(struct window* win)
 			if(table[y][x] == 0)continue;
 
 			color = the2048_color(table[y][x]);
-			p += diary(
+			p += fmt(
 				p, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%d%;"

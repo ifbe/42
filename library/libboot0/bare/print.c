@@ -6,7 +6,7 @@
 
 
 
-int diary(char* mem, int max, char* fmt, ...)
+int fmt(char* mem, int max, char* fmt, ...)
 {
 	return 0;
 }

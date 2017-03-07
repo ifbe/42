@@ -9,7 +9,7 @@ void rectbody(void*,
 	u32 color);
 void backgroundcolor(void*, u32);
 int qrcode_generate(char* src,char* dst,int sidelength);
-int diary(char*,int,char*,...);
+int fmt(char*,int,char*,...);
 void say(char*,...);
 
 
@@ -92,8 +92,8 @@ static void qrcode_read_html(struct window* win)
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
-	p += diary(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
-	p += diary(
+	p += fmt(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
+	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
@@ -112,7 +112,7 @@ static void qrcode_read_html(struct window* win)
 		{
 			if( databuf[(y*sidelength)+x] != 0 )continue;
 
-			p += diary(
+			p += fmt(
 				p, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%dpx;"
@@ -123,7 +123,7 @@ static void qrcode_read_html(struct window* win)
 			);
 		}
 	}
-	p += diary(p, 99, "</div>");
+	p += fmt(p, 99, "</div>");
 }
 static void qrcode_read_text(struct window* win)
 {

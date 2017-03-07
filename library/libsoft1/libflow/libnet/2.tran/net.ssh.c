@@ -5,21 +5,21 @@
 #define ssh_new 0x500
 #define ssh_ing 0x501
 #define ssh_done 0x5ff
-int readserver(u64 fd, u8* addr, u64 offset, u64 count);
-int writeserver(u64 fd, u8* addr, u64 offset, u64 count);
+int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
+int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
 //
 void generatePG(u8*, int, u8*, int);
 int cmp(u8*,u8*);
 int ncmp(u8*,u8*,int);
 //
-int diary(void*, int, void*, ...);
+int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
 
 
 
-static void printalgorithm(u8* buf,int len)
+static void printalgorithm(u8* buf, int len)
 {
 	int j,k;
 	u8 temp[64];
@@ -256,7 +256,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset = 0x16;
 
 	//key_exchange_algorithm
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"diffie-hellman-group-exchange-sha256,"
 		"diffie-hellman-group-exchange-sha1"
 	);
@@ -266,7 +266,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//server_host_key_algorithm
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"ssh-rsa,"
 		"rsa-sha2-256,"
 		"rsa-sha2-512"
@@ -277,7 +277,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//encryption_algorithms_client_to_server
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
@@ -288,7 +288,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//encryption_algorithms_server_to_client
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
@@ -299,7 +299,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//mac_algorithms_client_to_server
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
@@ -310,7 +310,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//mac_algorithms_server_to_client
-	temp = diary(buf+offset+4, 999,
+	temp = fmt(buf+offset+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
@@ -321,14 +321,14 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	offset += 4 + temp;
 
 	//compression_algorithms_client_to_server
-	temp = diary(buf+offset+4, 999, "none");
+	temp = fmt(buf+offset+4, 999, "none");
 	buf[offset+0] = buf[offset+1] = 0;
 	buf[offset+2] = (temp>>8)&0xff;
 	buf[offset+3] = temp&0xff;
 	offset += 4 + temp;
 
 	//compression_algorithms_server_to_client
-	temp = diary(buf+offset+4, 999, "none");
+	temp = fmt(buf+offset+4, 999, "none");
 	buf[offset+0] = buf[offset+1] = 0;
 	buf[offset+2] = (temp>>8)&0xff;
 	buf[offset+3] = temp&0xff;
@@ -495,13 +495,12 @@ static int secureshell_read(u8* buf, u64 len)
 	say("\n\n\n\n");
 	return buf[5];
 }
-int serve_secureshell(u64* p, u8* buf, u64 len)
+int serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
 {
 	int ret;
-	if(p[1] == ssh_new)
+	if(type == ssh_new)
 	{
-		writeserver(p[2], version, 0, sizeof(version)-1);
-		p[1] = ssh_ing;
+		writesocket(fd, version, 0, sizeof(version)-1);
 		return ssh_ing;
 	}
 
@@ -510,21 +509,21 @@ int serve_secureshell(u64* p, u8* buf, u64 len)
 	{
 		//secureshell_write(buf, len);
 		ret = secureshell_write_0x14(buf, len);
-		writeserver(p[2], buf, 0, ret);
+		writesocket(fd, buf, 0, ret);
 	}
 	else if(ret == 0x1e)
 	{
 		//try
 		ret = secureshell_write_0x1f(buf, len);
 		ret += secureshell_write_0x15(buf+ret, len);
-		writeserver(p[2], buf, 0, ret);
+		writesocket(fd, buf, 0, ret);
 	}
 	else if(ret == 0x22)
 	{
 		//try
 		ret = secureshell_write_0x1f(buf, len);
 		ret += secureshell_write_0x15(buf+ret, len);
-		writeserver(p[2], buf, 0, ret);
+		writesocket(fd, buf, 0, ret);
 	}
 	return ssh_done;
 }

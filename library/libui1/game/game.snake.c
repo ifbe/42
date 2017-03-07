@@ -10,7 +10,7 @@ void rectbody(void*,
 void rect(void*,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
 u32 getrandom();
-int diary(char*,int,char*,...);
+int fmt(char*,int,char*,...);
 void say(char*,...);
 
 
@@ -157,7 +157,7 @@ void snake_read_text(struct window* win)
 
 static int htmlcubie(char* p, u32 color, int x, int y)
 {
-	return diary(
+	return fmt(
 		p, 0x1000,
 		"<div class=\"rect\" style=\""
 		"left:%.2f%;"
@@ -177,11 +177,11 @@ void snake_read_html(struct window* win)
 
 	if(die == 1)
 	{
-		diary(p, 0x1000, "boooooooooooooooom");
+		fmt(p, 0x1000, "boooooooooooooooom");
 		return;
 	}
 
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"

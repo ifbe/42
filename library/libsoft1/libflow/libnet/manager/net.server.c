@@ -3,24 +3,15 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-int serve_first(void* p, u8* buf, u64 len);
-int serve_chat(void* p, u8* buf, u64 len);
-int serve_http(void* p, u8* buf, u64 len);
-int serve_ws(void* p, u8* buf, u64 len);
-int serve_https(void* p, u8* buf, u64 len);
-int serve_wss(void* p, u8* buf, u64 len);
-int serve_secureshell(void* p, u8* buf, u64 len);
-//
 int tls_start();
 int tls_stop();
 int ssh_start();
 int ssh_stop();
-int movsb(void*,void*,int);
 //
-int startserver(void* addr, int port, void* dir, int opt);
-int stopserver(u64 x);
-int readserver(u64 fd, void* addr, u64 offset, u64 count);
-int writeserver(u64 fd, void* addr, u64 offset, u64 count);
+int startsocket(void* addr, int port, int type);
+int stopsocket(u64 x);
+int readsocket(u64 fd, void* addr, u64 offset, u64 count);
+int writesocket(u64 fd, void* addr, u64 offset, u64 count);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -48,7 +39,9 @@ static int server_start(u8* p)
 {
 	tls_start();
 	ssh_start();
-	return startserver("0,0,0,0", 2222, "", 0);
+	startsocket("0,0,0,0", 2222, 'T');	//tcp server
+	//startsocket("0,0,0,0", 2222, 'U');	//udp server
+	return 0;
 }
 static int server_stop()
 {
@@ -58,7 +51,7 @@ static int server_stop()
 	{
 		notify_delete(known[j].fd);
 	}
-	return stopserver(0);
+	return stopsocket(0);
 */
 	return 0;
 }

@@ -4,6 +4,8 @@
 #define u64 unsigned long long
 #define http_new 0x100
 #define websocket_new 0x200
+#define https_new 0x300
+#define wss_new 0x400
 //
 int findzero(char* p);
 int findhead(char* p);
@@ -11,24 +13,23 @@ int findtail(char* p);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
-int tls_read(u64* p, u8* buf, u64 len);
-int tls_write(u64* p, u8* buf, u64 len);
+int tls_read(u64 fd, u8* buf, u64 len);
+int tls_write(u64 fd, u8* buf, u64 len);
 //
 int readfile(void* name, void* mem, u64 offset, u64 count);
 int writefile(void* name, void* mem, u64 offset, u64 count);
-int readserver(u64 fd, void* addr, u64 offset, u64 count);
-int writeserver(u64 fd, void* addr, u64 offset, u64 count);
+int readsocket(u64 fd, void* addr, u64 offset, u64 count);
+int writesocket(u64 fd, void* addr, u64 offset, u64 count);
 //
-int diary(char*, int, char*, ...);
-void printmemory(char*,int);
-void say(char*, ...);
+int fmt(void*, int, void*, ...);
+void printmemory(void*,int);
+void say(void*, ...);
 
 
 
 
 //
 static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
-static int http_response_size=sizeof(http_response) -1;
 //
 static char* Connection = 0;
 static char* Upgrade = 0;
@@ -37,6 +38,30 @@ static char* GET = 0;
 
 
 
+int http_write_string(u8* buf, int len, char* p, int t)
+{
+	return fmt(buf, 100,
+		"GET /%s HTTP/1.1\r\n"
+		"Range: bytes=%d-%d\r\n"
+		"\r\n",
+		p, 0, 0xfff
+	);
+}
+int http_write_file(u8* buf, int len, char* p, int t)
+{
+	int ret = readfile(p, buf, 0, 0x100000);
+	if(ret <= 0)
+	{
+		*(u32*)buf = 0x343034;
+		return 3;
+	}
+	return ret;
+}
+int http_write(u8* buf, int len, char* p, int t)
+{
+	if(t == 0)return http_write_file(buf, len, p, t);
+	else return http_write_string(buf, len, p, t);
+}
 int http_read(u8* buf, int max)
 {
 	int j;
@@ -58,22 +83,6 @@ int http_read(u8* buf, int max)
 	}
 	GET[j] = 0;
 	return j;
-}
-int http_write(u8* buf, int len)
-{
-	int ret;
-	say("path=%s\n",GET);
-
-	//
-	ret = readfile(GET, buf, 0, 0x100000);
-	if(ret <= 0)
-	{
-		*(u32*)buf = 0x343034;
-		return 3;
-	}
-
-	//
-	return ret;
 }
 
 
@@ -113,7 +122,7 @@ int check_http(char* buf, int max)
 	else if(GET != 0)return http_new;
 	else return 0;
 }
-int serve_http(u64* p, u8* buf, int len)
+int serve_http(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret;
 
@@ -122,22 +131,20 @@ int serve_http(u64* p, u8* buf, int len)
 	if(len <= 0)goto byebye;
 
 	//
-	len = http_write(buf, len);
+	len = http_write(buf, len, GET, 0);
 	if(len <= 0)goto byebye;
 
 	//
-	ret = writeserver(p[2], http_response, 0, http_response_size);
-	ret = writeserver(p[2], buf, 0, len);
+	ret = writesocket(fd, http_response, 0, sizeof(http_response)-1);
+	ret = writesocket(fd, buf, 0, len);
 
 byebye:
-	//
-	p[1] = 0;
-	return 1;
+	return 0;
 }
-int serve_https(u64* p, u8* buf, int len)
+int serve_https(u64 fd, u64 type, u8* buf, int len)
 {
 	//tls >>>> ascii
-	len = tls_read(p, buf, len);
+	len = tls_read(fd, buf, len);
 	if(len < 0)goto error;
 /*
 	if(len > 0)
@@ -147,21 +154,17 @@ int serve_https(u64* p, u8* buf, int len)
 		if(len <= 0)goto error;
 
 		//path >>>> bin
-		len = http_write(buf, len);
+		len = http_write(buf, len, GET, 0);
 		if(len <= 0)goto error;
 	}
 */
 	//bin >>>> tls
-	len = tls_write(p, buf, len);
+	len = tls_write(fd, buf, len);
 	if(len <= 0)goto error;
 
 good:
-	//send
-	writeserver(p[2], buf, 0, len);
-	return 0;
-
+	writesocket(fd, buf, 0, len);
+	return https_new;
 error:
-	//
-	p[1] = 0;
 	return 0;
 }

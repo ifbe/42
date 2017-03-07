@@ -3,26 +3,24 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int serve_first(void* p, u8* buf, u64 len);
-int serve_chat(void* p, u8* buf, u64 len);
-int serve_http(void* p, u8* buf, u64 len);
-int serve_ws(void* p, u8* buf, u64 len);
-int serve_https(void* p, u8* buf, u64 len);
-int serve_wss(void* p, u8* buf, u64 len);
-int serve_secureshell(void* p, u8* buf, u64 len);
+int serve_first(u64 fd, u64 type, u8* buf, u64 len);
+int serve_chat( u64 fd, u64 type, u8* buf, u64 len);
+int serve_http( u64 fd, u64 type, u8* buf, u64 len);
+int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
+int serve_https(u64 fd, u64 type, u8* buf, u64 len);
+int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
+int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
 //
-void client_create(void*,void*);
-void server_create(void*,void*);
+void client_create(void*, void*);
+void server_create(void*, void*);
 void client_delete();
 void server_delete();
 int movsb(void*, void*, int);
 //
-int startserver(void* addr, int port, void* dir, int opt);
-int stopserver(u64);
-int readserver(u64, void*, int, int);
-int writeserver(u64, void*, int, int);
-int selfname(u64, void*);
-int peername(u64, void*);
+int startsocket(void* addr, int port, int type);
+int stopsocket(u64);
+int readsocket(u64, void*, int, int);
+int writesocket(u64, void*, int, int);
 //
 void printmemory(char*, int);
 void say(char*, ...);
@@ -30,55 +28,29 @@ void say(char*, ...);
 
 
 
-struct node
+struct object
 {
-	//why
-	u64 detail;
+        //0x20 = 4 * 8
+        u64 type0;      //raw, bt, udp, tcp?
+        u64 type1;      //ssh, tls?
+        u64 type2;      //https, wss?
+        u64 type3;
 
-	//what
-	u64 type;       //[0,f]none, [0x10,0x1f]tcp, [0x20,0x2f]ws
+        //0x20 = 4 * 8
+        u64 zero;
+        u64 port_src;
+        u64 port_xxx;
+        u64 port_dst;
 
-	//where
-	u64 fd;
-
-	//when
-	u64 time;
-
-	//32
-	u8 addr[32];
+        //0xc0 = 3 * 0x40
+        u8 addr_src[0x40];
+        u8 addr_xxx[0x40];
+        u8 addr_dst[0x40];
 };
-static int max = 0;
-
-//
-static struct node* known = 0;
+struct object* obj;
+static u8* fshome = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
-
-
-
-
-void net_print()
-{
-	int k;
-	u64 fd;
-	u8* p;
-	u32* q;
-
-	say("\nknown{\n");
-	for(k=0;k<max;k++)
-	{
-		fd = known[k].fd;
-		p = known[k].addr;
-		q = (u32*)(p+4);
-
-		say("   [%lld]%d.%d.%d.%d:%d\n",
-			fd,
-			p[0],p[1],p[2],p[3],
-			q[0]
-		);
-	}
-	say("}%d\n",max);
-}
 
 
 
@@ -89,107 +61,64 @@ int net_delete()
 	client_delete();
 	return 0;
 }
-int net_create(void* world,u64* p)
+int net_create(void* w, void* p)
 {
-	int j;
-	char* tmp;
-	known = world + 0x100000 + 0xf0000;
-	dirhome = world + 0x200000;
-	datahome = world + 0x300000;
+	void* tmp = p;
 
-	tmp = (void*)known;
-	for(j=0;j<0x10000;j++)tmp[j] = 0;
+	obj = w + 0x000000;
+	fshome = w + 0x100000;
+	dirhome = w + 0x200000;
+	datahome = w + 0x300000;
 
-	tmp=(char*)p;
-	client_create(world, tmp);
-	tmp+=0x80;
+	client_create(w, tmp);
+	tmp += 0x80;
 
-	server_create(world, tmp);
-	tmp+=0x80;
+	server_create(w, tmp);
+	tmp += 0x80;
 
-	return tmp-(char*)p;
+	return tmp-p;
 }
 void net_stop(u64 fd)
 {
-	int j;
-	//say("[%d]leave\n", fd);
-
-	for(j=0;j<max;j++)
-	{
-		if(known[j].fd == fd)
-		{
-			//左移
-			movsb(&known[j], &known[j+1], (max-1-j)*sizeof(struct node));
-			max--;
-
-			//
-			known[max].fd = 0;
-
-			//
-			net_print();
-			break;
-		}
-	}
+	say("[%d]out\n",fd);
 }
 void net_start(u64 fd)
 {
-	int j,k;
-	if(max >= 0x10000/0x40)
-	{
-		writeserver(fd, "too many", 0, 8);
-		stopserver(fd);
-		net_stop(fd);
-		return;
-	}
-
-	//say("[%d]%s\n", fd, (void*)str);
-	for(j=0;j<=max;j++)
-	{
-		if(known[j].fd == fd)
-		{
-			known[j].type = 0;
-			break;
-		}
-
-		if(known[j].fd < fd)
-		{
-			//右移
-			movsb(&known[j+1], &known[j], (max-j)*sizeof(struct node));
-			max++;
-
-			//known[j].time =
-			known[j].fd = fd;
-			known[j].type = 0;
-			//known[j].detail =
-			peername(fd, known[j].addr);
-
-			//
-			net_print();
-			break;
-		}
-	}
+	say("[%d]in\n",fd);
 }
-void net_read(u64 temp)
+void net_list()
+{
+}
+void net_choose()
+{
+}
+void net_write()
+{
+}
+void net_read(u64 fd)
 {
 	int count;
-	int index;
+	u64 type;
+	//say("[%d]before\n", fd);
 
-	//读
-	count = readserver(temp, datahome, 0, 0x100000);
+	//read
+	count = readsocket(fd, datahome, 0, 0x100000);
 	if(count <= 0)
 	{
-		net_stop(temp);
-		stopserver(temp);
+		//say("[%d]stop\n",fd);
+		stopsocket(fd);
 		return;
 	}
 	datahome[count] = 0;
+	//say("[%d]after net_read:%d\n", fd, count);
 
-	//找
-	for(index=0;index<max;index++)
+	//what
+	type = obj[fd].type1;
+	if(type == 0)
 	{
-		if(temp == known[index].fd)break;
+		//
+		type = serve_first(fd, type, datahome, count);
 	}
-	if(index >= max)return;
 
 //--------------------------------------------------------
 /*
@@ -208,91 +137,73 @@ server:bit31=0, client:bit31=1
 */
 //--------------------------------------------------------
 
-	//first
-	temp = known[index].type;
-	if(temp == 0)
-	{
-		//
-		serve_first(&known[index], datahome, count);
-
-		//
-		temp = known[index].type;
-		if(temp == 0)goto forceclose;
-	}
-
 	//chat
-	if(temp <= 0xff)
+	if(type <= 0xff)
 	{
-		serve_chat(&known[index], datahome, count);
+		type = serve_chat(fd, type, datahome, count);
 	}
 
 	//http
-	else if(temp <= 0x1ff)
+	else if(type <= 0x1ff)
 	{
-		serve_http(&known[index], datahome, count);
+		type = serve_http(fd, type, datahome, count);
 	}
 
 	//ws
-	else if(temp <= 0x2ff)
+	else if(type <= 0x2ff)
 	{
-		serve_ws(&known[index], datahome, count);
+		type = serve_ws(fd, type, datahome, count);
 	}
 
 	//https
-	else if(temp <= 0x3ff)
+	else if(type <= 0x3ff)
 	{
-		serve_https(&known[index], datahome, count);
+		type = serve_https(fd, type, datahome, count);
 	}
 
 	//wss
-	else if(temp <= 0x4ff)
+	else if(type <= 0x4ff)
 	{
-		serve_wss(&known[index], datahome, count);
+		type = serve_wss(fd, type, datahome, count);
 	}
 
 	//ssh
-	else if(temp <= 0x5ff)
+	else if(type <= 0x5ff)
 	{
-		serve_secureshell(&known[index], datahome, count);
+		type = serve_ssh(fd, type, datahome, count);
 	}
 
 	//socks
-	else if(temp <= 0x6ff)
+	else if(type <= 0x6ff)
 	{
-		//serve_socks(&known[index], datahome, count);
+		//type = serve_socks(fd, type, datahome, count);
 	}
 
 	//rdp
-	else if(temp <= 0x7ff)
+	else if(type <= 0x7ff)
 	{
-		//serve_rdp(&known[index], datahome, count);
+		//type = serve_rdp(fd, type, datahome, count);
 	}
 
 	//vnc
-	else if(temp <= 0x8ff)
+	else if(type <= 0x8ff)
 	{
-		//serve_vnc(&known[index], datahome, count);
+		//type = serve_vnc(fd, type, datahome, count);
 	}
 
 	//error
 	else goto forceclose;
 
-	//最后判断关不关fd
-	if(known[index].type != 0)return;
+checkclose:
+	if( (type>0) && (type<0x1000) )
+	{
+		obj[fd].type1 = type;
+		return;
+	}
 
 forceclose:
-	net_stop(known[index].fd);
-	stopserver(known[index].fd);
+	stopsocket(fd);
 	return;
-}
-void net_write()
-{
-}
-void net_list()
-{
-}
-void net_choose()
-{
 }
 
 
@@ -304,12 +215,11 @@ void net_choose()
 
 void network_explain(u64* p)
 {
-	int type = p[1] & 0xffff;
-	u64 fd = p[2];
+	u64 evfd = p[0];
+	u64 type = p[1] & 0xffff;
+	//say("%llx,%llx\n", evfd, type);
 
-	if(type == 0x406e) net_read(fd);
-	else if(type == 0x2b6e) net_start(fd);
-	else if(type == 0x2d6e) net_stop(fd);
-
-	writeserver(p[2], 0, 0, 0);
+	if(type == 0x406e) net_read(evfd);
+	else if(type == 0x2b6e) net_start(evfd);
+	else if(type == 0x2d6e) net_stop(evfd);
 }

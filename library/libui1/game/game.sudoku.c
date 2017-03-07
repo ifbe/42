@@ -19,7 +19,6 @@ int data2decstr(u64 data,u8* string);
 u32 getrandom();
 //
 int printmemory(char*,int);
-int diary(char*, int, char*, ...);
 int say(char*,...);
 
 

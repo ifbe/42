@@ -9,7 +9,7 @@ void rect(void*,
 	u32 bc, u32 fc);
 //
 u32 getrandom();
-int diary(char*,int,char*,...);
+int fmt(char*,int,char*,...);
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -125,7 +125,7 @@ static void tetris_read_pixel(struct window* win)
 
 static int htmlcubie(char* p, int x, int y)
 {
-	return diary(
+	return fmt(
 		p, 0x1000,
 		"<div class=\"rect\" style=\""
 		"left:%.2f%;"
@@ -142,7 +142,7 @@ static void tetris_read_html(struct window* win)
 	*(u32*)p = 0x6c6d7468;
 	p += 0x1000;
 
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"

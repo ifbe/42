@@ -18,7 +18,7 @@ void background1(void*);
 int data2hexstr(u64, u8*);
 int cmp(void*, void*);
 //
-int diary(void*, int, void*, ...);
+int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -348,7 +348,7 @@ static void hex_read_html(struct window* win)
 	y = (pointeroffset / byteperline);
 
 	//background
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<style>"
 		".bg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#abcdef;color:#000;}",
@@ -358,7 +358,7 @@ static void hex_read_html(struct window* win)
 	);
 
 	//table
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		".tb{position:absolute;left:10%;top:10%;width:80%;height:80%;border-collapse:collapse;table-layout:fixed;}"
 		".tb td{border:solid #000 1px;text-align:center;}"
@@ -367,7 +367,7 @@ static void hex_read_html(struct window* win)
 	//foreground
 	if(x>byteperline-9)x-=9;
 	if(y>lineperwindow-5)y-=5;
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		".fg1{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
 		".fg2{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
@@ -381,7 +381,7 @@ static void hex_read_html(struct window* win)
 	);
 
 	//bg, table
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<div class=\"bg\"></div>"
 		"<table class=\"tb\">"
@@ -390,12 +390,12 @@ static void hex_read_html(struct window* win)
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(p, 0x1000, "<tr>");
+			p += fmt(p, 0x1000, "<tr>");
 
 			for(x=0;x<byteperline;x++)
 			{
 				ch = databuf[windowoffset + y*byteperline + x];
-				p += diary(
+				p += fmt(
 					p, 0x1000,
 					"<td>%02x</td>", ch
 				);
@@ -407,7 +407,7 @@ static void hex_read_html(struct window* win)
 	{
 		for(y=0;y<lineperwindow;y++)
 		{
-			p += diary(p, 0x1000, "<tr>");
+			p += fmt(p, 0x1000, "<tr>");
 //windowoffset + y*byteperline
 
 			for(x=0;x<byteperline;x++)
@@ -415,19 +415,19 @@ static void hex_read_html(struct window* win)
 				ch = databuf[windowoffset + y*byteperline + x];
 				if((ch > 0x1f) && (ch < 0x7f))
 				{
-					p += diary(p, 0x1000, "<td>%c</td>", ch);
+					p += fmt(p, 0x1000, "<td>%c</td>", ch);
 				}
 				else
 				{
-					p += diary(p, 0x1000, "<td>.</td>");
+					p += fmt(p, 0x1000, "<td>.</td>");
 				}
 			}
 		}
 	}
-	p += diary(p, 0x1000, "</table>");
+	p += fmt(p, 0x1000, "</table>");
 
 	//fg
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<div class=\"fg1\">"
 		"buf:<br />"

@@ -62,7 +62,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	{
 		//full
 		release(&lock);
-		say("queue full, droping event!\n");
+		say("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
 		return;
 	}
 	enq = temp;

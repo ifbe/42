@@ -13,7 +13,7 @@ void backgroundcolor(void*,
 	u32);
 //
 u32 getrandom();
-int diary(void*, int, void*, ...);
+int fmt(void*, int, void*, ...);
 void say(void*, ...);
 
 
@@ -88,7 +88,7 @@ static int htmlcircle(char* p, int x, int y)
 	else textcolor=0xff0000;
 
 	hanzi = char2hanzi(data[y][x]);
-	return diary(
+	return fmt(
 		p, 0x1000,
 		"<div class=\"circle\" style=\""
 		"left:%d%;"
@@ -105,7 +105,7 @@ static void xiangqi_read_html(struct window* win)
 	int x,y;
 	char* p = (char*)(win->buf) + 0x1000;
 
-	p += diary(
+	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".circle{"
@@ -168,7 +168,7 @@ static void xiangqi_read_text(struct window* win)
 			}
 
 			//character
-			if(q != 0)diary(p+ret, 4, "%s", q);
+			if(q != 0)fmt(p+ret, 4, "%s", q);
 
 		}
 	}

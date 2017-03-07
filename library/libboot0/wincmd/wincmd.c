@@ -288,7 +288,7 @@ void createserial(u8* arg)
 void deleteserial()
 {
 }
-int diary(u8* mem, int max, u8* fmt, ...)
+int fmt(u8* mem, int max, u8* fmt, ...)
 {
 	int ret;
 	va_list args;

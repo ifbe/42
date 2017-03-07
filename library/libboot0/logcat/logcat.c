@@ -12,7 +12,7 @@
 
 int cur=0;
 char buffer[0x1000];
-int diary(char* mem, int max, char* fmt, ...)
+int fmt(char* mem, int max, char* fmt, ...)
 {
 	int ret;
 	va_list args;
