@@ -51,7 +51,7 @@ void peername(u64 fd, u32* buf)
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
 }
-DWORD WINAPI newone(LPVOID pM)
+DWORD WINAPI iocpthread(LPVOID pM)
 {
 	return 0;
 }
@@ -135,7 +135,7 @@ int startsocket(char* addr, int port, int type)
 	{
 		alive = 0;
 
-		stopclient();
+		stopsocket(sclient);
 	}
 	if(addr == 0)return 0;
 	if(addr[0] == 0)return 0;
@@ -181,6 +181,7 @@ int startsocket(char* addr, int port, int type)
 	}
 	else if(type == 'u')
 	{
+		u32 temp[2];
 		//
 		serAddr.sin_family = AF_INET;
 		serAddr.sin_port = htons(port);
@@ -201,6 +202,7 @@ int startsocket(char* addr, int port, int type)
 	}
 	else
 	{
+		u32 temp[2];
 		//
 		serAddr.sin_family = AF_INET;
 		serAddr.sin_port = htons(port);
@@ -217,7 +219,7 @@ int startsocket(char* addr, int port, int type)
 		if (connect(sclient, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@connect\n",GetLastError());
-			stopclient();
+			stopsocket(sclient);
 			return 0;
 		}
 
@@ -229,7 +231,7 @@ int startsocket(char* addr, int port, int type)
 
 	//thread
 	alive = 1;
-	thread = startthread(readclient, 0);
+	thread = startthread(iocpthread, 0);
 
 	//success
 	return 1;
