@@ -10,12 +10,12 @@ int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 int serve_https(u64 fd, u64 type, u8* buf, u64 len);
 int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
-//
-void client_create(void*, void*);
-void server_create(void*, void*);
-void client_delete();
-void server_delete();
+int http_read(void*, int);
+int http_write(void*, int, void*, int);
+int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int movsb(void*, void*, int);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(u64);
@@ -51,51 +51,12 @@ struct object* obj;
 static u8* fshome = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
+char indexhtml[]="index.html";
 
 
 
 
-int net_delete()
-{
-	server_delete();
-	client_delete();
-	return 0;
-}
-int net_create(void* w, void* p)
-{
-	void* tmp = p;
-
-	obj = w + 0x000000;
-	fshome = w + 0x100000;
-	dirhome = w + 0x200000;
-	datahome = w + 0x300000;
-
-	client_create(w, tmp);
-	tmp += 0x80;
-
-	server_create(w, tmp);
-	tmp += 0x80;
-
-	return tmp-p;
-}
-void net_stop(u64 fd)
-{
-	say("[%d]out\n",fd);
-}
-void net_start(u64 fd)
-{
-	say("[%d]in\n",fd);
-}
-void net_list()
-{
-}
-void net_choose()
-{
-}
-void net_write()
-{
-}
-void net_read(u64 fd)
+int net_read(u64 fd)
 {
 	int count;
 	u64 type;
@@ -198,17 +159,97 @@ checkclose:
 	if( (type>0) && (type<0x1000) )
 	{
 		obj[fd].type1 = type;
-		return;
+		return 0;
 	}
 
 forceclose:
 	stopsocket(fd);
-	return;
+	return 0;
 }
+int net_write()
+{
+	return 0;
+}
+int net_list()
+{
+	return 0;
+}
+int net_choose(u8* p)
+{
+	//
+	u64 fd;
+	int ret;
 
+	//
+	u8 buf[128];
+	int port;
+	u8* ip = buf+0x10;
+	u8* str = buf+0x80;
 
+	//parse
+	ret = buf2net(p, 128, buf, ip, &port, str);
+	if(ret <= 0)return 0;
+	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, ip, port, str);
 
+	//compare
+	if(ncmp(buf, "TCP", 3) == 0)
+	{
+		startsocket("0,0,0,0", 2222, 'T');	//tcp server
+	}
+	else if(ncmp(buf, "raw", 3) == 0)
+	{
+		fd = startsocket(ip, port, 'r');
+	}
+	else if(ncmp(buf, "udp", 3) == 0)
+	{
+		fd = startsocket(ip, port, 'u');
+	}
+	else
+	{
+		fd = startsocket(ip, port, 't');
+		if(fd == 0)return -1;
 
+		if(ncmp(buf, "http", 4) == 0)
+		{
+			str = (u8*)indexhtml;
+			ret = http_write(datahome, 0x100000, str, 10);
+			ret = writesocket(fd, datahome, 0, ret);
+		}
+	}
+	return 0;
+}
+int net_stop(u64 fd)
+{
+	say("[%d]out\n",fd);
+	return 0;
+}
+int net_start(u64 fd)
+{
+	say("[%d]in\n",fd);
+	return 0;
+}
+int net_delete()
+{
+	return 0;
+}
+int net_create(void* w, u64* p)
+{
+	obj = w + 0x000000;
+	fshome = w + 0x100000;
+	dirhome = w + 0x200000;
+	datahome = w + 0x300000;
+
+	p[0]=0x776f6c66;
+	p[1]=0x74656e;
+	p[10]=(u64)net_start;
+	p[11]=(u64)net_stop;
+	p[12]=(u64)net_list;
+	p[13]=(u64)net_choose;
+	p[14]=(u64)net_read;
+	p[15]=(u64)net_write;
+
+	return 0x80;
+}
 
 
 

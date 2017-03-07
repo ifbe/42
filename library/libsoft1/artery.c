@@ -22,8 +22,8 @@ int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 //
 void eventread(u64* who, u64* what, u64* how);
 void eventwrite(u64,u64,u64,u64);
@@ -81,9 +81,8 @@ static struct elements
 	int (*write)(u8*);
 	char padding7[ 8 - sizeof(char*) ];
 }*worker;
-static unsigned char*   fshome;
-static unsigned char*  dirhome;
-static unsigned char* datahome;
+static u8*  dirhome;
+static u8* datahome;
 
 
 
@@ -268,28 +267,26 @@ void arterycreate(u8* type, u8* addr)
 	if(type!=0)return;
 
 	//where
-	worker=(struct elements*)addr;
-	fshome  = addr+0x100000;
+	worker=(struct elements*)(addr+0x100000);
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;
 
-	//clean [0,0x7ffff]
-	for(i=0;i<0x80000;i++)addr[i] = 0;
-	stack = addr;
+	//clean [0,0xfffff]
+	p = addr+0x100000;
+	for(i=0;i<0x100000;i++)p[i] = 0;
+	stack = p;
 	stack[0] = 0x34;
 	stack[1] = 0x32;
 	rsp = 0;
 
 	//
-	p = addr+0x80;
-	p += flow_create(addr,p);
-	p += memory_create(addr,p);
-	p += system_create(addr,p);
-	p += wire_create(addr,p);
-
-	//
-	p += math_create(addr,p);
-	p += phys_create(addr,p);
+	p = addr+0x100080;
+	p += flow_create(addr, p);
+	p += memory_create(addr, p);
+	p += system_create(addr, p);
+	p += wire_create(addr, p);
+	p += math_create(addr, p);
+	p += phys_create(addr, p);
 
 	//
 	say("[8,c):createed artery\n");

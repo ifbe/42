@@ -37,10 +37,10 @@ static int flow_stop()
 }
 int flow_create(char* world,u64* p)
 {
-	//
+	char* q=(char*)p+0x80;
+
 	p[0]=0;			//type
 	p[1]=0x776f6c66;	//id
-
 	p[10]=(u64)flow_start;
 	p[11]=(u64)flow_stop;
 	p[12]=(u64)flow_list;
@@ -48,15 +48,16 @@ int flow_create(char* world,u64* p)
 	p[14]=(u64)flow_read;
 	p[15]=(u64)flow_write;
 
-	//
-	char* q=(char*)p+0x80;
+	motion_create(world, q);
+	q+=0x80;
 
-	motion_create(world,q);
+	net_create(world, q);
 	q+=0x80;
-	q += net_create(world,q);
-	sound_create(world,q);
+
+	sound_create(world, q);
 	q+=0x80;
-	vision_create(world,q);
+
+	vision_create(world, q);
 	q+=0x80;
 
 	return q-(char*)p;

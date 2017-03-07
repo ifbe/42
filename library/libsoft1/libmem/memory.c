@@ -33,7 +33,6 @@ int say(void* str, ...);
 
 //
 static u8* guys=0;
-static u8* fshome=0;
 static u8* dirhome=0;
 static u8* datahome=0;
 //
@@ -222,8 +221,7 @@ int memory_create(u8* softaddr,u64* p)
 	u8* q;
 
 	//(自己)4块区域，每块1兆
-	guys = softaddr;
-	fshome = softaddr+0x100000;
+	guys = softaddr+0x100000;
 	dirhome = softaddr+0x200000;
 	datahome = softaddr+0x300000;
 

@@ -253,10 +253,10 @@ int choosesocket()
 }
 void stopsocket(int x)
 {
-	int ret = close(x);
-	if(ret != 0)printf("errno %d@close %d\n",errno, x);
+	//int ret = close(x);
+	//if(ret != 0)printf("errno %d@close %d\n",errno, x);
 
-	//epoll_del(x);
+	epoll_del(x);
 	//if(listenfd>0)epoll_del(listenfd);
 }
 int startsocket(char* addr, int port, int type)

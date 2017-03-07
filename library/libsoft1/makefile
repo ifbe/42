@@ -24,9 +24,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.tftp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.ws.c
-	$(compiler) $(cflag) libflow/libnet/manager/net.client.c
-	$(compiler) $(cflag) libflow/libnet/manager/net.server.c
-	$(compiler) $(cflag) libflow/libnet/manager/net.c
+	$(compiler) $(cflag) libflow/libnet/net.c
 	$(compiler) $(cflag) libflow/libsound/sound.c
 	$(compiler) $(cflag) libflow/libvision/vision.c
 	$(compiler) $(cflag) libflow/flow.c
