@@ -12,6 +12,9 @@ int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
 int http_read(void*, int);
 int http_write(void*, int, void*, int);
+int websocket_read_handshake(void*, int);
+int websocket_write_handshake(void*, int);
+//
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int hexstr2data(void*, void*);
 int movsb(void*, void*, int);
@@ -52,7 +55,6 @@ struct object* obj;
 static u8* fshome = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
-char indexhtml[]="index.html";
 
 
 
@@ -61,7 +63,6 @@ u64 net_read(u64 fd, u64 type, u8* buf, int len)
 {
 	if(type == 0)
 	{
-		//
 		type = serve_first(fd, type, buf, len);
 	}
 
@@ -167,13 +168,13 @@ int net_choose(u8* p)
 	int ret;
 
 	//
-	u8 buf[128];
+	u8 buf[256];
 	int port;
 	u8* ip = buf+0x10;
 	u8* str = buf+0x80;
 
 	//parse
-	ret = buf2net(p, 128, buf, ip, &port, str);
+	ret = buf2net(p, 256, buf, ip, &port, str);
 	if(ret <= 0)return 0;
 	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, ip, port, str);
 
@@ -197,8 +198,12 @@ int net_choose(u8* p)
 
 		if(ncmp(buf, "http", 4) == 0)
 		{
-			str = (u8*)indexhtml;
 			ret = http_write(datahome, 0x100000, str, 10);
+			ret = writesocket(fd, datahome, 0, ret);
+		}
+		else if(ncmp(buf, "ws", 2) == 0)
+		{
+			ret = websocket_write_handshake(datahome, 0x100000);
 			ret = writesocket(fd, datahome, 0, ret);
 		}
 	}

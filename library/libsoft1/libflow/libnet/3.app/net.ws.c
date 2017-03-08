@@ -30,7 +30,54 @@ static u8 temp_salt[256];
 
 
 
-static int websocket_read(u8* buf, int len)
+int websocket_read_handshake(u64 fd, u8* buf, int len)
+{
+	int j;
+	u8* Sec_WebSocket_Key;
+	u8 buf1[256];
+	u8 buf2[256];
+	//say("%s(%d)\n",buf,len);
+
+	//
+	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
+	if(Sec_WebSocket_Key == 0)return 0;
+	Sec_WebSocket_Key += 19;
+
+	//在Sec_WebSocket_Key尾巴上添加一个固定的字符串
+	j = findtail(Sec_WebSocket_Key);
+	j += fmt(Sec_WebSocket_Key + j, 256,
+		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
+
+	//对这个字符串做一次sha1
+	sha1sum(buf1, Sec_WebSocket_Key, j);
+	say("sha1=");
+	for(j=0;j<20;j++)say("%.2x",buf1[j]);
+	say("\n");
+
+	//把sha1的结果以base64格式编码
+	base64_encode(buf2 ,buf1, 20 );
+	say("base64=%s\n",buf2);
+
+	//把base64的结果作为accept密钥
+	j = fmt(buf1, 256,
+		"HTTP/1.1 101 Switching Protocols\r\n"
+		"Upgrade: websocket\r\n"
+		"Connection: Upgrade\r\n"
+		"Sec-WebSocket-Accept: %s\r\n"
+		"\r\n",
+
+		buf2
+	);
+
+	//发出去
+	j = writesocket(fd, buf1, 0, j);
+	say("%s", buf1);
+
+	//
+	return websocket_done;
+}
+int websocket_read(u8* buf, int len)
 {
 	int i,j,k;
 	int type,masked;
@@ -145,7 +192,21 @@ static int websocket_read(u8* buf, int len)
 	say("%s\n",buf);
 	return count;
 }
-static void websocket_write(u64 fd, u8* buf, u64 len)
+
+
+
+
+int websocket_write_handshake(u8* buf, int len)
+{
+	return fmt(buf, len,
+		"GET / HTTP/1.1\r\n"
+		"Upgrade: websocket\r\n"
+		"Connection: Upgrade\r\n"
+		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
+		"\r\n"
+	);
+}
+int websocket_write(u64 fd, u8* buf, u64 len)
 {
 	u8 headbuf[16];
 	int headlen;
@@ -182,63 +243,18 @@ static void websocket_write(u64 fd, u8* buf, u64 len)
 	//write
 	ret = writesocket(fd, headbuf, 0, headlen);
 	ret = writesocket(fd, buf, 0, len);
+	return ret;
 }
 
 
 
 
-int handshake_websocket(u64 fd, u8* buf, int len)
-{
-        int j;
-	u8* Sec_WebSocket_Key;
-        u8 buf1[256];
-        u8 buf2[256];
-	//say("%s(%d)\n",buf,len);
-
-	//
-	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
-	if(Sec_WebSocket_Key == 0)return 0;
-	Sec_WebSocket_Key += 19;
-
-        //在Sec_WebSocket_Key尾巴上添加一个固定的字符串
-        j = findtail(Sec_WebSocket_Key);
-        j += fmt(Sec_WebSocket_Key + j, 256,
-		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-        say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
-
-        //对这个字符串做一次sha1
-        sha1sum(buf1, Sec_WebSocket_Key, j);
-	say("sha1=");
-        for(j=0;j<20;j++)say("%.2x",buf1[j]);
-        say("\n");
-
-        //把sha1的结果以base64格式编码
-        base64_encode(buf2 ,buf1, 20 );
-        say("base64=%s\n",buf2);
-
-        //把base64的结果作为accept密钥
-        j = fmt(buf1, 256,
-                "HTTP/1.1 101 Switching Protocols\r\n"
-                "Upgrade: websocket\r\n"
-                "Connection: Upgrade\r\n"
-                "Sec-WebSocket-Accept: %s\r\n\r\n",
-
-                buf2
-        );
-
-        //发出去
-        j = writesocket(fd, buf1, 0, j);
-        say("%s", buf1);
-
-        //
-        return websocket_done;
-}
 int serve_ws(u64 fd, u64 type, u8* buf, u64 len)
 {
 	int ret;
 	if(type == websocket_new)
 	{
-		return handshake_websocket(fd, buf, len);
+		return websocket_read_handshake(fd, buf, len);
 	}
 
 	//

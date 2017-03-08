@@ -40,6 +40,8 @@ static char* GET = 0;
 
 int http_write_string(u8* buf, int len, char* p, int t)
 {
+	if((p==0)|(p[0]==0))p="index.html";
+
 	return fmt(buf, 100,
 		"GET /%s HTTP/1.1\r\n"
 		"Range: bytes=%d-%d\r\n"
@@ -118,8 +120,9 @@ int check_http(char* buf, int max)
 	);
 */
 	//
-	if( (Connection != 0) && (Upgrade != 0) )return websocket_new;
-	else if(GET != 0)return http_new;
+	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return websocket_new;
+	if(GET != 0)return http_new;
+	if( (Connection != 0) && (Upgrade != 0) )return 1;
 	else return 0;
 }
 int serve_http(u64 fd, u64 type, u8* buf, int len)
