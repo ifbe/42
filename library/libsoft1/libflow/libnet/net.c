@@ -13,6 +13,7 @@ int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
 int http_read(void*, int);
 int http_write(void*, int, void*, int);
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
+int hexstr2data(void*, void*);
 int movsb(void*, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -56,29 +57,12 @@ char indexhtml[]="index.html";
 
 
 
-int net_read(u64 fd)
+u64 net_read(u64 fd, u64 type, u8* buf, int len)
 {
-	int count;
-	u64 type;
-	//say("[%d]before\n", fd);
-
-	//read
-	count = readsocket(fd, datahome, 0, 0x100000);
-	if(count <= 0)
-	{
-		//say("[%d]stop\n",fd);
-		stopsocket(fd);
-		return;
-	}
-	datahome[count] = 0;
-	//say("[%d]after net_read:%d\n", fd, count);
-
-	//what
-	type = obj[fd].type1;
 	if(type == 0)
 	{
 		//
-		type = serve_first(fd, type, datahome, count);
+		type = serve_first(fd, type, buf, len);
 	}
 
 //--------------------------------------------------------
@@ -101,77 +85,79 @@ server:bit31=0, client:bit31=1
 	//chat
 	if(type <= 0xff)
 	{
-		type = serve_chat(fd, type, datahome, count);
+		type = serve_chat(fd, type, buf, len);
 	}
 
 	//http
 	else if(type <= 0x1ff)
 	{
-		type = serve_http(fd, type, datahome, count);
+		type = serve_http(fd, type, buf, len);
 	}
 
 	//ws
 	else if(type <= 0x2ff)
 	{
-		type = serve_ws(fd, type, datahome, count);
+		type = serve_ws(fd, type, buf, len);
 	}
 
 	//https
 	else if(type <= 0x3ff)
 	{
-		type = serve_https(fd, type, datahome, count);
+		type = serve_https(fd, type, buf, len);
 	}
 
 	//wss
 	else if(type <= 0x4ff)
 	{
-		type = serve_wss(fd, type, datahome, count);
+		type = serve_wss(fd, type, buf, len);
 	}
 
 	//ssh
 	else if(type <= 0x5ff)
 	{
-		type = serve_ssh(fd, type, datahome, count);
+		type = serve_ssh(fd, type, buf, len);
 	}
 
 	//socks
 	else if(type <= 0x6ff)
 	{
-		//type = serve_socks(fd, type, datahome, count);
+		//type = serve_socks(fd, type, buf, len);
 	}
 
 	//rdp
 	else if(type <= 0x7ff)
 	{
-		//type = serve_rdp(fd, type, datahome, count);
+		//type = serve_rdp(fd, type, buf, len);
 	}
 
 	//vnc
 	else if(type <= 0x8ff)
 	{
-		//type = serve_vnc(fd, type, datahome, count);
+		//type = serve_vnc(fd, type, buf, len);
 	}
 
-	//error
-	else goto forceclose;
-
-checkclose:
-	if( (type>0) && (type<0x1000) )
-	{
-		obj[fd].type1 = type;
-		return 0;
-	}
-
-forceclose:
-	stopsocket(fd);
-	return 0;
+	return type;
 }
 int net_write()
 {
 	return 0;
 }
-int net_list()
+int net_list(u8* p)
 {
+	int j;
+	u64 fd=0;
+	if(p==0)
+	{
+		for(j=0;j<1024;j++)
+		{
+			say("%d:	%llx,%llx\n",
+				j, obj[j].type0, obj[j].type1);
+		}
+		return 0;
+	}
+
+	hexstr2data(p, &fd);
+	say("%llx,%llx\n", obj[fd].type0, obj[fd].type1);
 	return 0;
 }
 int net_choose(u8* p)
@@ -218,14 +204,28 @@ int net_choose(u8* p)
 	}
 	return 0;
 }
-int net_stop(u64 fd)
+int net_stop(u8* p)
 {
-	say("[%d]out\n",fd);
+	int j;
+	u64 fd=0;
+	if(p==0)
+	{
+		for(j=6;j<1024;j++)
+		{
+			stopsocket(j);
+			return 0;
+		}
+	}
+
+	hexstr2data(p, &fd);
+	stopsocket(fd);
+
+	//say("[%d]out\n",fd);
 	return 0;
 }
 int net_start(u64 fd)
 {
-	say("[%d]in\n",fd);
+	//say("[%d]in\n",fd);
 	return 0;
 }
 int net_delete()
@@ -258,9 +258,30 @@ void network_explain(u64* p)
 {
 	u64 evfd = p[0];
 	u64 type = p[1] & 0xffff;
-	//say("%llx,%llx\n", evfd, type);
 
-	if(type == 0x406e) net_read(evfd);
-	else if(type == 0x2b6e) net_start(evfd);
-	else if(type == 0x2d6e) net_stop(evfd);
+	if(type == 0x2b6e)
+	{
+	}
+	else if(type == 0x2d6e)
+	{
+	}
+	else if(type == 0x406e)
+	{
+		//get data
+		int len = readsocket(evfd, datahome, 0, 0x100000);
+		say("@@@@ %llx %d\n", evfd, len);
+		if(len > 0)
+		{
+			datahome[len] = 0;
+			type = net_read(evfd, obj[evfd].type1, datahome, len);
+			if( (type>0) && (type<0x1000) )
+			{
+				obj[evfd].type1 = type;
+				return;
+			}
+		}
+
+		//wrong(len) or wrong(type)
+		stopsocket(evfd);
+	}
 }

@@ -55,8 +55,8 @@ struct object
 };
 struct object* obj;
 static struct epoll_event epollevent[16];
-static int enqueue=0;
-static int dequeue=0;
+//static int enqueue=0;
+//static int dequeue=0;
 //
 static u64 thread;
 static int alive = 0;
@@ -93,15 +93,20 @@ void epoll_del(u64 fd)
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 	close(fd);
 }
+void epoll_mod(u64 fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN | EPOLLET;
+	ev.data.fd = fd;
+	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
+}
 void epoll_add(u64 fd)
 {
 	int flag;
 	struct epoll_event ev;
-	if(fd != listenfd)
-	{
-		flag = fcntl(fd, F_GETFL, 0);
-		fcntl(fd, F_SETFL, flag | O_NONBLOCK);
-	}
+	flag = fcntl(fd, F_GETFL, 0);
+	fcntl(fd, F_SETFL, flag | O_NONBLOCK);
 
 	ev.events = EPOLLIN | EPOLLET;
 	ev.data.fd = fd;
@@ -112,60 +117,61 @@ static void* epollthread(void* p)
 int i, fd, ret;
 epollfd = epoll_create(MAXSIZE);
 
-while(alive) {
-if(dequeue != enqueue)usleep(1000);	//wait until all done
-enqueue=dequeue=0;
+while(alive)
+{
+	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
+	if(ret <= 0)continue;
 
-ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
-if(ret <= 0)continue;
-
-//say("epoll:%d\n",ret);
-for(i=0; i<ret; i++) {			//many fds
-if(epollevent[i].events & EPOLLIN) {
-	//ev.fd
-	fd = epollevent[i].data.fd;
-
-	//accept
-	if(fd == listenfd)
+	//printf("epoll:%d\n",ret);
+	for(i=0; i<ret; i++)
 	{
-		int fd;
-		struct sockaddr_in cliaddr;
-
-		socklen_t cliaddrlen = sizeof(struct sockaddr_in);
-		fd = accept(listenfd, (struct sockaddr*)&cliaddr, &cliaddrlen);
-		if(fd == -1)
-		{
-			say("accept error\n");
-			continue;
-		}
-		if(fd >= MAXSIZE)
-		{
-			say("fd>MAXSIZE\n");
-			close(fd);
-			continue;
-		}
-
-		obj[fd].type0 = 't';
-		obj[fd].type1 = 0;
-		epoll_add(fd);
-		eventwrite(fd, 0x2b6e, 0, gettime());
-	}
-
-	//close(fd);
-	else if(epollevent[i].events & EPOLLRDHUP)	//close
+	if(epollevent[i].events & EPOLLRDHUP)
 	{
+		printf("rdhup!!!!!!!\n");
 		eventwrite(fd, 0x2d6e, 0, gettime());
 	}
-
-	//read
-	else
+	else if(epollevent[i].events & EPOLLIN)
 	{
-		enqueue++;
-		//printf("%x\n",fd);
-		eventwrite(fd, 0x406e, 0, gettime());
-	}
-}//EPOLLIN
-}//for
+		//ev.fd
+		fd = epollevent[i].data.fd;
+
+		//accept
+		if(fd == listenfd)
+		{
+		int fd;
+		struct sockaddr_in cliaddr;
+		socklen_t cliaddrlen = sizeof(struct sockaddr_in);
+		while(1)
+		{
+			fd = accept(listenfd, (struct sockaddr*)&cliaddr, &cliaddrlen);
+			if(fd == -1)break;
+			if(fd >= MAXSIZE)
+			{
+				printf("fd>MAXSIZE\n");
+				close(fd);
+				continue;
+			}
+
+			printf("++++ %d\n",fd);
+			obj[fd].type0 = 't';
+			obj[fd].type1 = 0;
+			epoll_add(fd);
+			eventwrite(fd, 0x2b6e, 0, gettime());
+		}//while
+		}//accept
+
+		//read
+		else
+		{
+			//enqueue++;
+			printf("#### %x\n", fd);
+			eventwrite(fd, 0x406e, 0, gettime());
+		}
+	}//EPOLLIN
+	}//for
+
+	//wait for completion
+	//usleep(100000);
 }//while
 
 printf("epoll die!!!\n");
@@ -187,12 +193,12 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 	if(st == SOCK_DGRAM)
 	{
 		ret=sendto(fd, buf, len, 0, (void*)&server, serlen);
-		//say("err:%d@sendto:%d\n",errno,ret);
+		//printf("err:%d@sendto:%d\n",errno,ret);
 	}
 	else
 	{
 		ret=write(fd, buf, len);
-		//say("err:%d@write:%d\n",errno,ret);
+		//printf("err:%d@write:%d\n",errno,ret);
 	}
 */
 	int ret;
@@ -239,9 +245,31 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 		}
 	}
 */
-	int ret = read(fd, buf, len);
-	dequeue++;
-	return ret;
+/*
+	if(buf == 0)
+	{
+		epoll_mod(fd);
+		return 0;
+	}
+*/
+	int ret, cnt;
+	cnt = read(fd, buf, len);
+	if(cnt <= 0)return 0;
+
+	while(1)
+	{
+		ret = read(fd, buf+cnt, len-cnt);
+		if(ret == -1)
+		{
+			if(errno != EAGAIN)return 0;
+			else break;
+		}
+		else if(ret == 0)return 0;
+		else cnt += ret;
+	}
+
+	if(cnt < len)epoll_mod(fd);
+	return cnt;
 }
 int listsocket()
 {
@@ -253,10 +281,10 @@ int choosesocket()
 }
 void stopsocket(int x)
 {
-	//int ret = close(x);
-	//if(ret != 0)printf("errno %d@close %d\n",errno, x);
+	int ret = close(x);
+	printf("---- %d %d, %d\n", x, ret, errno);
 
-	epoll_del(x);
+	//epoll_del(x);
 	//if(listenfd>0)epoll_del(listenfd);
 }
 int startsocket(char* addr, int port, int type)
@@ -391,12 +419,12 @@ int startsocket(char* addr, int port, int type)
 		listenfd = socket(AF_INET, SOCK_STREAM, 0);
 		if (listenfd == -1)
 		{
-			say("error@socket\n");
+			printf("error@socket\n");
 			return 0;
 		}
 		if(listenfd > MAXSIZE)
 		{
-			say("listenfd>4096\n");
+			printf("listenfd>4096\n");
 			return 0;
 		}
 
@@ -405,13 +433,13 @@ int startsocket(char* addr, int port, int type)
 		ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 		if(ret<0)
 		{
-			say("error@setsockopet\n");
+			printf("error@setsockopet\n");
 			return 0;
 		}
 
 		if(bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
 		{
-			say("error@bind\n");
+			printf("error@bind\n");
 			return 0;
 		}
 		listen(listenfd, 5);
