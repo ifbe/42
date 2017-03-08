@@ -112,7 +112,6 @@ static void* epollthread(void* p)
 int i, fd, ret;
 struct epoll_event epollevent[16];
 
-epollfd = epoll_create(MAXSIZE);
 while(alive)
 {
 	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
@@ -464,7 +463,9 @@ void createsocket(void* addr)
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE, &sa, 0);
 
+	epollfd = epoll_create(MAXSIZE);
+	if(epollfd <= 0)printf("%d,%d@epoll_create\n", epollfd, errno);
+
 	alive = 1;
 	thread = startthread(epollthread, 0);
-	usleep(100*1000);	//wait epoll
 }
