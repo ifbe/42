@@ -466,4 +466,5 @@ void createsocket(void* addr)
 
 	alive = 1;
 	thread = startthread(epollthread, 0);
+	usleep(100*1000);	//wait epoll
 }
