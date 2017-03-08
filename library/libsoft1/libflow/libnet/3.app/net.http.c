@@ -2,10 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define http_new 0x100
-#define websocket_new 0x200
-#define https_new 0x300
-#define wss_new 0x400
 //
 int findzero(char* p);
 int findhead(char* p);
@@ -120,9 +116,12 @@ int check_http(char* buf, int max)
 	);
 */
 	//
-	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return websocket_new;
-	if(GET != 0)return http_new;
-	if( (Connection != 0) && (Upgrade != 0) )return 1;
+#define HTTP 0x50545448
+#define WS 0x5357
+#define ws 0x7377
+	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return WS;
+	if(GET != 0)return HTTP;
+	if( (Connection != 0) && (Upgrade != 0) )return ws;
 	else return 0;
 }
 int serve_http(u64 fd, u64 type, u8* buf, int len)
@@ -146,28 +145,5 @@ byebye:
 }
 int serve_https(u64 fd, u64 type, u8* buf, int len)
 {
-	//tls >>>> ascii
-	len = tls_read(fd, buf, len);
-	if(len < 0)goto error;
-/*
-	if(len > 0)
-	{
-		//ascii >>>> path
-		len = http_read(buf, len);
-		if(len <= 0)goto error;
-
-		//path >>>> bin
-		len = http_write(buf, len, GET, 0);
-		if(len <= 0)goto error;
-	}
-*/
-	//bin >>>> tls
-	len = tls_write(fd, buf, len);
-	if(len <= 0)goto error;
-
-good:
-	writesocket(fd, buf, 0, len);
-	return https_new;
-error:
 	return 0;
 }

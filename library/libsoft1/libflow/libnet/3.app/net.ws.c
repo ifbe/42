@@ -2,8 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define websocket_new 0x200
-#define websocket_done 0x2ff
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
@@ -34,9 +32,8 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 {
 	int j;
 	u8* Sec_WebSocket_Key;
-	u8 buf1[256];
-	u8 buf2[256];
-	//say("%s(%d)\n",buf,len);
+	u8* sha1buf = buf+0x1000;
+	u8* base64buf = buf+0x2000;
 
 	//
 	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
@@ -50,32 +47,24 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
 
 	//对这个字符串做一次sha1
-	sha1sum(buf1, Sec_WebSocket_Key, j);
+	sha1sum(sha1buf, Sec_WebSocket_Key, j);
 	say("sha1=");
-	for(j=0;j<20;j++)say("%.2x",buf1[j]);
+	for(j=0;j<20;j++)say("%.2x", sha1buf[j]);
 	say("\n");
 
 	//把sha1的结果以base64格式编码
-	base64_encode(buf2 ,buf1, 20 );
-	say("base64=%s\n",buf2);
+	base64_encode(base64buf, sha1buf, 20);
+	say("base64=%s\n", base64buf);
 
 	//把base64的结果作为accept密钥
-	j = fmt(buf1, 256,
+	return fmt(buf, 256,
 		"HTTP/1.1 101 Switching Protocols\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"
 		"Sec-WebSocket-Accept: %s\r\n"
 		"\r\n",
-
-		buf2
+		base64buf
 	);
-
-	//发出去
-	j = writesocket(fd, buf1, 0, j);
-	say("%s", buf1);
-
-	//
-	return websocket_done;
 }
 int websocket_read(u8* buf, int len)
 {
@@ -249,21 +238,30 @@ int websocket_write(u64 fd, u8* buf, u64 len)
 
 
 
-int serve_ws(u64 fd, u64 type, u8* buf, u64 len)
+#define ws 0x7377
+#define WS 0x5357
+u64 serve_ws(u64 fd, u64 type, u8* buf, u64 len)
 {
 	int ret;
-	if(type == websocket_new)
+	if(buf[0] == 'G')
 	{
-		return websocket_read_handshake(fd, buf, len);
+		//
+		ret = websocket_read_handshake(fd, buf, len);
+		if(ret <= 0)goto theend;
+
+		ret = writesocket(fd, buf, 0, ret);
+		goto theend;
 	}
 
 	//
 	ret = websocket_read(buf, len);
-	if(ret < 0)return ret;
+	if(ret < 0)goto theend;
 
 	//
 	websocket_write(fd, (void*)"hahahaha", 8);
-	return websocket_done;
+
+theend:
+	return WS;
 /*
 	if(type==0x10)
 	{

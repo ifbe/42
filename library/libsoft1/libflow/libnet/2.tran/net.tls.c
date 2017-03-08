@@ -5,11 +5,14 @@
 //
 void sha512sum(void* dst, void* src, int len);
 void rsa2048(
-        u8* dstbuf, int dstlen,
-        u8* srcbuf, int srclen,
-        u8* keybuf, int keylen,
-        u8* modbuf, int modlen);
+	u8* dstbuf, int dstlen,
+	u8* srcbuf, int srclen,
+	u8* keybuf, int keylen,
+	u8* modbuf, int modlen);
 int pem2bin(  void* dest, void* mem, int off, int len);
+//
+int readsocket(   u64 fd, void* mem, int off, int len);
+int writesocket(  u64 fd, void* mem, int off, int len);
 int readfile( void* file, void* mem, int off, int len);
 int writefile(void* file, void* mem, int off, int len);
 //
@@ -440,7 +443,7 @@ int tls_write_server_keyexch(u8* buf, int len)
 
 	//dst@[0x100,0x1ff], src@[0x1000,0x10ff]
 	rsa2048(
-		p,            256,
+		p,	    256,
 		p+0x1000,     256,
 		cert_private, 256,
 		cert_modulus, 256
@@ -588,25 +591,25 @@ int tls_write_both_data(u8* buf, int len)
 
 
 
-int tls_read(u64* p, u8* buf, u64 len)
+int tls_read(u64 fd, u8* buf, u64 len)
 {
 	int ret=0;
-	say("stage=%llx\n",p[1]);
+	//say("stage=%llx\n",p[1]);
 	say("tls{\n");
 
 	if(buf[0] == 0x17)
 	{
 		ret = tls_read_both_data(buf,len);
-		p[1] &= 0xffffff00;
-		p[1] |= 0x17;
+		//p[1] &= 0xffffff00;
+		//p[1] |= 0x17;
 	}
 	else if(buf[0] == 0x16)
 	{
 		if(buf[5] == 1)
 		{
 			ret = tls_read_client_hello(buf, len);
-			p[1] &= 0xffffff00;
-			p[1] |= 1;
+			//p[1] &= 0xffffff00;
+			//p[1] |= 1;
 		}
 		else if(buf[5] == 2)
 		{
@@ -614,24 +617,24 @@ int tls_read(u64* p, u8* buf, u64 len)
 			ret += tls_read_server_certificate(buf+ret, len);
 			ret += tls_read_server_keyexch(buf+ret, len);
 			ret += tls_read_server_done(buf+ret, len);
-			p[1] &= 0xffffff00;
-			p[1] |= 2;
+			//p[1] &= 0xffffff00;
+			//p[1] |= 2;
 		}
 		else if(buf[5] == 16)
 		{
 			ret = tls_read_client_keyexch(buf, len);
 			ret += tls_read_client_cipherspec(buf+ret, len);
 			ret += tls_read_client_hellorequest(buf+ret, len);
-			p[1] &= 0xffffff00;
-			p[1] |= 16;
+			//p[1] &= 0xffffff00;
+			//p[1] |= 16;
 		}
 		else if(buf[5] == 4)
 		{
 			ret = tls_read_server_newsession(buf, len);
 			ret += tls_read_server_cipherspec(buf+ret, len);
 			ret += tls_read_server_encrypthandshake(buf+ret, len);
-			p[1] &= 0xffffff00;
-			p[1] |= 4;
+			//p[1] &= 0xffffff00;
+			//p[1] |= 4;
 		}
 	}
 	else
@@ -643,10 +646,9 @@ int tls_read(u64* p, u8* buf, u64 len)
 	say("}tls\n");
 	return ret;
 }
-int tls_write(u64* p, u8* buf, u64 len)
+int tls_write(u64 fd, u8* buf, u64 len)
 {
-	int ret = p[1]&0xff;
-
+	int ret;
 	if(ret == 0)
 	{
 		ret = tls_write_client_hello(buf, len);
@@ -720,4 +722,25 @@ void tls_start()
 }
 void tls_stop()
 {
+}
+
+
+
+
+#define TLS 0x534c54
+int serve_tls(u64 fd, u64 type, u8* buf, int len)
+{
+	//tls >>>> ascii
+	len = tls_read(fd, buf, len);
+	if(len < 0)goto error;
+
+	//bin >>>> tls
+	len = tls_write(fd, buf, len);
+	if(len <= 0)goto error;
+
+good:
+	writesocket(fd, buf, 0, len);
+	return TLS;
+error:
+	return 0;
 }

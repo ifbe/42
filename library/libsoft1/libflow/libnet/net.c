@@ -5,11 +5,12 @@
 //
 int serve_first(u64 fd, u64 type, u8* buf, u64 len);
 int serve_chat( u64 fd, u64 type, u8* buf, u64 len);
+int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
+int serve_tls(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_http( u64 fd, u64 type, u8* buf, u64 len);
 int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 int serve_https(u64 fd, u64 type, u8* buf, u64 len);
 int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
 int http_read(void*, int);
 int http_write(void*, int, void*, int);
 int websocket_read_handshake(void*, int);
@@ -34,22 +35,20 @@ void say(char*, ...);
 
 struct object
 {
-        //0x20 = 4 * 8
+        //[0x00,0x0f]
         u64 type0;      //raw, bt, udp, tcp?
         u64 type1;      //ssh, tls?
-        u64 type2;      //https, wss?
-        u64 type3;
 
-        //0x20 = 4 * 8
-        u64 zero;
+        //[0x10,0x1f]
         u64 port_src;
-        u64 port_xxx;
         u64 port_dst;
 
-        //0xc0 = 3 * 0x40
-        u8 addr_src[0x40];
-        u8 addr_xxx[0x40];
-        u8 addr_dst[0x40];
+        //[0x20,0x3f]
+        u8 addr_src[0x10];
+        u8 addr_dst[0x10];
+
+	//[0x40,0xff]
+	u8 data[0xc0];
 };
 struct object* obj;
 static u8* fshome = 0;
@@ -59,85 +58,126 @@ static u8* datahome = 0;
 
 
 
-u64 net_read(u64 fd, u64 type, u8* buf, int len)
+u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 {
+	//0
 	if(type == 0)
 	{
 		type = serve_first(fd, type, buf, len);
 	}
 
-//--------------------------------------------------------
-/*
-server:bit31=0, client:bit31=1
-{
-	00000000	default, chat
-	00000100	http
-	000002??	ws
-	000003??	https
-	000004??	wss
-	000005??	ssh
-	000006??	socks?
-	000007??	rdp
-	000008??	vnc
-}
-*/
-//--------------------------------------------------------
-
-	//chat
-	if(type <= 0xff)
+#define chat 0x74616863
+	if(type==chat)
 	{
 		type = serve_chat(fd, type, buf, len);
 	}
 
-	//http
-	else if(type <= 0x1ff)
+#define HTTP 0x50545448		//connection
+#define http 0x70747468		//client
+	else if( (type==HTTP) | (type==http) )
 	{
 		type = serve_http(fd, type, buf, len);
 	}
 
-	//ws
-	else if(type <= 0x2ff)
+#define WS 0x5357
+#define ws 0x7377
+	else if( (type==WS) | (type==ws) )
 	{
 		type = serve_ws(fd, type, buf, len);
 	}
 
-	//https
-	else if(type <= 0x3ff)
+#define TLS 0x534c54
+#define tls 0x736c74
+	else if( (type==TLS) | (type==tls) )
+	{
+	}
+
+#define HTTPS 0x5350545448
+#define https 0x7370747468
+	else if( (type==HTTPS) | (type==https) )
 	{
 		type = serve_https(fd, type, buf, len);
 	}
 
-	//wss
-	else if(type <= 0x4ff)
+#define WSS 0x535357
+#define wss 0x737377
+	else if( (type==WSS) | (type==wss) )
 	{
 		type = serve_wss(fd, type, buf, len);
 	}
 
-	//ssh
-	else if(type <= 0x5ff)
+#define SSH 0x485353
+#define ssh 0x687373
+	else if( (type==SSH) | (type==ssh) )
 	{
 		type = serve_ssh(fd, type, buf, len);
 	}
 
-	//socks
-	else if(type <= 0x6ff)
+#define SOCKS 0x534b434f53
+#define socks 0x736b636f73
+	else if( (type==SOCKS) | (type==socks) )
 	{
 		//type = serve_socks(fd, type, buf, len);
 	}
 
-	//rdp
-	else if(type <= 0x7ff)
+#define RDP 0x504452
+#define rdp 0x706472
+	else if( (type==RDP) | (type==rdp) )
 	{
 		//type = serve_rdp(fd, type, buf, len);
 	}
 
-	//vnc
-	else if(type <= 0x8ff)
+#define VNC 0x434e56
+#define vnc 0x636e76
+	else if( (type==VNC) | (type==vnc) )
 	{
 		//type = serve_vnc(fd, type, buf, len);
 	}
 
 	return type;
+}
+void network_explain(u64* p)
+{
+	u64 evfd = p[0];
+	u64 type = p[1] & 0xffff;
+
+	if(type == 0x2b6e)
+	{
+	}
+	else if(type == 0x2d6e)
+	{
+	}
+	else if(type == 0x406e)
+	{
+		//get data
+		int len = readsocket(evfd, datahome, 0, 0x100000);
+		say("@@@@ %llx %d\n", evfd, len);
+		if(len > 0)
+		{
+			datahome[len] = 0;
+			type = serve_what(evfd, obj[evfd].type1, datahome, len);
+			if(type != 0)
+			{
+				obj[evfd].type1 = type;
+				return;
+			}
+		}
+
+		//wrong(len) or wrong(type)
+		stopsocket(evfd);
+	}
+}
+
+
+
+
+
+
+
+
+int net_read()
+{
+	return 0;
 }
 int net_write()
 {
@@ -254,39 +294,4 @@ int net_create(void* w, u64* p)
 	p[15]=(u64)net_write;
 
 	return 0x80;
-}
-
-
-
-
-void network_explain(u64* p)
-{
-	u64 evfd = p[0];
-	u64 type = p[1] & 0xffff;
-
-	if(type == 0x2b6e)
-	{
-	}
-	else if(type == 0x2d6e)
-	{
-	}
-	else if(type == 0x406e)
-	{
-		//get data
-		int len = readsocket(evfd, datahome, 0, 0x100000);
-		say("@@@@ %llx %d\n", evfd, len);
-		if(len > 0)
-		{
-			datahome[len] = 0;
-			type = net_read(evfd, obj[evfd].type1, datahome, len);
-			if( (type>0) && (type<0x1000) )
-			{
-				obj[evfd].type1 = type;
-				return;
-			}
-		}
-
-		//wrong(len) or wrong(type)
-		stopsocket(evfd);
-	}
 }

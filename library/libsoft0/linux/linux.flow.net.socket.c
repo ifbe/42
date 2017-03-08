@@ -36,27 +36,22 @@ void say(void*, ...);
 
 struct object
 {
-	//0x20 = 4 * 8
+	//[0x00,0x0f]
 	u64 type0;	//raw, bt, udp, tcp?
 	u64 type1;	//ssh, tls?
-	u64 type2;	//https, wss?
-	u64 type3;
 
-	//0x20 = 4 * 8
-	u64 zero;
+	//[0x10,0x1f]
 	u64 port_src;
-	u64 port_xxx;
 	u64 port_dst;
 
-	//0xc0 = 3 * 0x40
-	u8 addr_src[0x40];
-	u8 addr_xxx[0x40];
-	u8 addr_dst[0x40];
+	//[0x20,0x3f]
+	u8 addr_src[0x10];
+	u8 addr_dst[0x10];
+
+	//[0x40,0xff]
+	u8 data[0xc0];
 };
 struct object* obj;
-static struct epoll_event epollevent[16];
-//static int enqueue=0;
-//static int dequeue=0;
 //
 static u64 thread;
 static int alive = 0;
@@ -115,8 +110,9 @@ void epoll_add(u64 fd)
 static void* epollthread(void* p)
 {
 int i, fd, ret;
-epollfd = epoll_create(MAXSIZE);
+struct epoll_event epollevent[16];
 
+epollfd = epoll_create(MAXSIZE);
 while(alive)
 {
 	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
@@ -163,7 +159,6 @@ while(alive)
 		//read
 		else
 		{
-			//enqueue++;
 			printf("#### %x\n", fd);
 			eventwrite(fd, 0x406e, 0, gettime());
 		}
