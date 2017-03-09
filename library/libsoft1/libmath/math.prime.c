@@ -11,7 +11,3 @@ int prime_yes(u8* buf, int len)
 {
 	return 0;
 }
-int prime_create(u8* buf, int len)
-{
-	return 0;
-}

@@ -28,13 +28,12 @@ void bt_create(char* world,u64* p)
 	//
 	p[0]=0x6563616669;	//type
 	p[1]=0x7462;		//id
-
-	p[10]=(u64)bt_start;
-	p[11]=(u64)bt_stop;
-	p[12]=(u64)bt_list;
-	p[13]=(u64)bt_choose;
-	p[14]=(u64)bt_read;
-	p[15]=(u64)bt_write;
+	p[2]=(u64)bt_start;
+	p[3]=(u64)bt_stop;
+	p[4]=(u64)bt_list;
+	p[5]=(u64)bt_choose;
+	p[6]=(u64)bt_read;
+	p[7]=(u64)bt_write;
 }
 void bt_delete()
 {

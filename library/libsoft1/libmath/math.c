@@ -33,22 +33,23 @@ static void math_stop()
 }
 int math_create(u8* softaddr,u64* p)
 {
-	u8* q = (u8*)p + 0x80;
+	u8* q = (u8*)p;
 
 	//
 	p[0]=0;
 	p[1]=0x6874616d;
-
-	p[10]=(u64)math_start;
-	p[11]=(u64)math_stop;
-	p[12]=(u64)math_list;
-	p[13]=(u64)math_choose;
-	p[14]=(u64)math_read;
-	p[15]=(u64)math_write;
+	p[2]=(u64)math_start;
+	p[3]=(u64)math_stop;
+	p[4]=(u64)math_list;
+	p[5]=(u64)math_choose;
+	p[6]=(u64)math_read;
+	p[7]=(u64)math_write;
 
 	//
+	q += 0x100;
+
 	calc_create(softaddr, q);
-	q += 0x80;
+	q += 0x100;
 
 	return (void*)q - (void*)p;
 }

@@ -1,3 +1,6 @@
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
 #define u64 unsigned long long
 int motion_create(void*,void*);
 int motion_delete();
@@ -37,30 +40,32 @@ static int flow_stop()
 }
 int flow_create(char* world,u64* p)
 {
-	char* q=(char*)p+0x80;
+	u8* q;
 
 	p[0]=0;			//type
 	p[1]=0x776f6c66;	//id
-	p[10]=(u64)flow_start;
-	p[11]=(u64)flow_stop;
-	p[12]=(u64)flow_list;
-	p[13]=(u64)flow_choose;
-	p[14]=(u64)flow_read;
-	p[15]=(u64)flow_write;
+	p[2]=(u64)flow_start;
+	p[3]=(u64)flow_stop;
+	p[4]=(u64)flow_list;
+	p[5]=(u64)flow_choose;
+	p[6]=(u64)flow_read;
+	p[7]=(u64)flow_write;
+	q = (u8*)p;
+	q += 0x100;
 
 	motion_create(world, q);
-	q+=0x80;
+	q+=0x100;
 
 	net_create(world, q);
-	q+=0x80;
+	q+=0x100;
 
 	sound_create(world, q);
-	q+=0x80;
+	q+=0x100;
 
 	vision_create(world, q);
-	q+=0x80;
+	q+=0x100;
 
-	return q-(char*)p;
+	return q-(u8*)p;
 }
 int flow_delete()
 {

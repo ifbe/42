@@ -37,49 +37,38 @@ void eventwrite(u64,u64,u64,u64);
 //[0x300000,0x3fffff]:data
 static struct elements
 {
-	//种类，名字
+	//[00,07]
 	u64 type;
+
+	//[08,0f]
 	u64 id;
-	u64 what1;
-	u64 what2;
 
-	//
-	u64 aa;
-	u64 bb;
-	u64 cc;
-	u64 dd;
-
-	//[0x40,0x47]
-	int (*create)();
-	char padding0[ 8 - sizeof(char*) ];
-
-	//[0x48,0x4f]
-	int (*delete)();
-	char padding1[ 8 - sizeof(char*) ];
-
-	//[0x50,0x57]
+	//[10,17]
 	int (*start)(u8*);
 	char padding2[ 8 - sizeof(char*) ];
 
-	//[0x58,0x5f]
+	//[18,1f]
 	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
-	//[0x60,0x67]
+	//[20,27]
 	int (*list)(u8*);
 	char padding4[ 8 - sizeof(char*) ];
 
-	//[0x68,0x6f]
+	//[28,2f]
 	int (*choose)(u8*);
 	char padding5[ 8 - sizeof(char*) ];
 
-	//[0x70,0x77]
+	//[30,37]
 	int (*read)(u8*);
 	char padding6[ 8 - sizeof(char*) ];
 
-	//[0x78,0x7f]
+	//[38,3f]
 	int (*write)(u8*);
 	char padding7[ 8 - sizeof(char*) ];
+
+	//[40,ff]
+	u8 data[0xc0];
 }*worker;
 static u8*  dirhome;
 static u8* datahome;
@@ -280,7 +269,7 @@ void arterycreate(u8* type, u8* addr)
 	rsp = 0;
 
 	//
-	p = addr+0x100080;
+	p = addr+0x100100;
 	p += flow_create(addr, p);
 	p += memory_create(addr, p);
 	p += system_create(addr, p);

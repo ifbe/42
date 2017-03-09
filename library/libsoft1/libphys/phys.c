@@ -61,16 +61,18 @@ int phys_create(u8* softaddr,u64* p)
 	//
 	p[0]=0;
 	p[1]=0x73796870;
-
-	p[10]=(u64)phys_start;
-	p[11]=(u64)phys_stop;
-	p[12]=(u64)phys_list;
-	p[13]=(u64)phys_choose;
-	p[14]=(u64)phys_read;
-	p[15]=(u64)phys_write;
-
+	p[2]=(u64)phys_start;
+	p[3]=(u64)phys_stop;
+	p[4]=(u64)phys_list;
+	p[5]=(u64)phys_choose;
+	p[6]=(u64)phys_read;
+	p[7]=(u64)phys_write;
 	q = (u8*)p;
-	circuit_create(softaddr, q+0x80);
+	q += 0x100;
+
+	circuit_create(softaddr, q+0x100);
+	q += 0x100;
+
 	return 0x100;
 }
 int phys_delete()

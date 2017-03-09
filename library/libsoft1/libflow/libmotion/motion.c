@@ -162,13 +162,12 @@ void motion_create(void* w, u64* p)
 {
 	p[0]=0x776f6c66;	//type
 	p[1]=0x6e6f69746f6d;	//id
-
-	p[10]=(u64)motion_start;
-	p[11]=(u64)motion_stop;
-	p[12]=(u64)motion_list;
-	p[13]=(u64)motion_choose;
-	p[14]=(u64)motion_read;
-	p[15]=(u64)motion_write;
+	p[2]=(u64)motion_start;
+	p[3]=(u64)motion_stop;
+	p[4]=(u64)motion_list;
+	p[5]=(u64)motion_choose;
+	p[6]=(u64)motion_read;
+	p[7]=(u64)motion_write;
 }
 void motion_delete()
 {

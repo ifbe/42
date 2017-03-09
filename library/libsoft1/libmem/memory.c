@@ -228,30 +228,29 @@ int memory_create(u8* softaddr,u64* p)
 	//
 	p[0]=0;
 	p[1]=0x79726f6d656d;
-
-	p[10]=(u64)memory_start;
-	p[11]=(u64)memory_stop;
-	p[12]=(u64)memory_list;
-	p[13]=(u64)memory_choose;
-	p[14]=(u64)memory_read;
-	p[15]=(u64)memory_write;
-
-	//
-	q=(u8*)p+0x80;
+	p[2]=(u64)memory_start;
+	p[3]=(u64)memory_stop;
+	p[4]=(u64)memory_list;
+	p[5]=(u64)memory_choose;
+	p[6]=(u64)memory_read;
+	p[7]=(u64)memory_write;
+	q = (u8*)p;
+	q += 0x100;
 
 	crypt_create(softaddr, q);
-	q+=0x80;
+	q += 0x100;
+
 	hash_create(softaddr, q);
-	q+=0x80;
+	q += 0x100;
 
 	filesystem_create(softaddr, q);
-	q+=0x80;
+	q += 0x100;
 
 	text_create(softaddr, q);
-	q+=0x80;
+	q += 0x100;
 
 	tran_create(softaddr, q);
-	q+=0x80;
+	q += 0x100;
 
 	return q-(u8*)p;
 }

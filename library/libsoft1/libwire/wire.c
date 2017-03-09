@@ -1,3 +1,6 @@
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
 #define u64 unsigned long long
 //
 int bt_create(void*,void*);
@@ -51,51 +54,53 @@ static int wire_stop()
 }
 int wire_create(char* world,u64* p)
 {
+	u8* q;
+
 	//
 	p[0]=0;			//type
 	p[1]=0x65726977;	//id
-
-	p[10]=(u64)wire_start;
-	p[11]=(u64)wire_stop;
-	p[12]=(u64)wire_list;
-	p[13]=(u64)wire_choose;
-	p[14]=(u64)wire_read;
-	p[15]=(u64)wire_write;
+	p[2]=(u64)wire_start;
+	p[3]=(u64)wire_stop;
+	p[4]=(u64)wire_list;
+	p[5]=(u64)wire_choose;
+	p[6]=(u64)wire_read;
+	p[7]=(u64)wire_write;
 
 	//
-	char* q=(char*)p+0x80;
+	q = (u8*)p;
+	q += 0x100;
 
 	bt_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	i2c_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	ir_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	nfc_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	pci_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	spi_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	uart_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	usb_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	wifi_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
 	zigbee_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
-	return q-(char*)p;
+	return q-(u8*)p;
 }
 void wire_delete()
 {

@@ -202,8 +202,9 @@ static int filesystem_stop()
 {
 	return 0;
 }
-void filesystem_create(void* softaddr, u64* p)
+int filesystem_create(void* softaddr, u64* p)
 {
+	u8* q;
 	guys = softaddr;
 	fshome = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
@@ -212,23 +213,34 @@ void filesystem_create(void* softaddr, u64* p)
 	//
 	p[0]=0x79726f6d656d;
 	p[1]=0x656c6966;
-	p[10]=(u64)filesystem_start;
-	p[11]=(u64)filesystem_stop;
-	p[12]=(u64)filesystem_ls;
-	p[13]=(u64)filesystem_cd;
-	p[14]=(u64)filesystem_show;
-	p[15]=(u64)filesystem_edit;
+	p[2]=(u64)filesystem_start;
+	p[3]=(u64)filesystem_stop;
+	p[4]=(u64)filesystem_ls;
+	p[5]=(u64)filesystem_cd;
+	p[6]=(u64)filesystem_show;
+	p[7]=(u64)filesystem_edit;
+	q = (u8*)p;
+	q += 0x100;
 
-	//
-	ext_create(softaddr,0);
-	fat_create(softaddr,0);
-	hfs_create(softaddr,0);
-	ntfs_create(softaddr,0);
+	ext_create(softaddr, q);
+	q += 0x100;
+
+	fat_create(softaddr, q);
+	q += 0x100;
+
+	hfs_create(softaddr, q);
+	q += 0x100;
+
+	ntfs_create(softaddr, q);
+	q += 0x100;
+
+	return q-(u8*)p;
 }
-void filesystem_delete()
+int filesystem_delete()
 {
 	ext_delete();
 	fat_delete();
 	hfs_delete();
 	ntfs_delete();
+	return 0;
 }

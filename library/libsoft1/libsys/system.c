@@ -1,3 +1,6 @@
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
 #define u64 unsigned long long
 int folder_create(void*,void*);
 int folder_delete();
@@ -33,26 +36,29 @@ static int system_stop()
 }
 int system_create(char* world,u64* p)
 {
+	u8* q;
+
 	//
 	p[0]=0;			//type
 	p[1]=0x6d6574737973;	//id
-
-	p[10]=(u64)system_start;
-	p[11]=(u64)system_stop;
-	p[12]=(u64)system_list;
-	p[13]=(u64)system_choose;
-	p[14]=(u64)system_read;
-	p[15]=(u64)system_write;
+	p[2]=(u64)system_start;
+	p[3]=(u64)system_stop;
+	p[4]=(u64)system_list;
+	p[5]=(u64)system_choose;
+	p[6]=(u64)system_read;
+	p[7]=(u64)system_write;
 
 	//
-	char* q=(char*)p+0x80;
+	q=(u8*)p;
+	q += 0x100;
 
 	folder_create(world,q);
-	q+=0x80;
-	process_create(world,q);
-	q+=0x80;
+	q += 0x100;
 
-	return q-(char*)p;
+	process_create(world,q);
+	q += 0x100;
+
+	return q-(u8*)p;
 }
 int system_delete()
 {

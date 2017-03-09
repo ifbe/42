@@ -87,13 +87,12 @@ void spi_create(char* world,u64* p)
 	//
 	p[0]=0x6563616669;	//type
 	p[1]=0x697073;		//id
-
-	p[10]=(u64)spi_start;
-	p[11]=(u64)spi_stop;
-	p[12]=(u64)spi_list;
-	p[13]=(u64)spi_choose;
-	p[14]=(u64)spi_read;
-	p[15]=(u64)spi_write;
+	p[2]=(u64)spi_start;
+	p[3]=(u64)spi_stop;
+	p[4]=(u64)spi_list;
+	p[5]=(u64)spi_choose;
+	p[6]=(u64)spi_read;
+	p[7]=(u64)spi_write;
 }
 void spi_delete()
 {

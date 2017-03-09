@@ -48,8 +48,6 @@ static int hash_stop()
 }
 int hash_create(u8* softaddr,u64* p)
 {
-	u8* q;
-
 	//
 	guys = softaddr;
 	fshome = softaddr+0x100000;
@@ -59,15 +57,14 @@ int hash_create(u8* softaddr,u64* p)
 	//
 	p[0]=0x79726f6d656d;
 	p[1]=0x68736168;
+	p[2]=(u64)hash_start;
+	p[3]=(u64)hash_stop;
+	p[4]=(u64)hash_list;
+	p[5]=(u64)hash_choose;
+	p[6]=(u64)hash_read;
+	p[7]=(u64)hash_write;
 
-	p[10]=(u64)hash_start;
-	p[11]=(u64)hash_stop;
-	p[12]=(u64)hash_list;
-	p[13]=(u64)hash_choose;
-	p[14]=(u64)hash_read;
-	p[15]=(u64)hash_write;
-
-	return 0x80;
+	return 0x100;
 }
 int hash_delete()
 {
