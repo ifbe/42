@@ -14,7 +14,7 @@ int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 int serve_https(u64 fd, u64 type, u8* buf, u64 len);
 int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
 int http_read(void*, int);
-int http_write(void*, int, void*, int);
+int http_write_request(void*, int, void*, void*);
 int websocket_read_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 //
@@ -216,13 +216,13 @@ int net_choose(u8* p)
 	//
 	u8 buf[256];
 	int port;
-	u8* ip = buf+0x10;
-	u8* str = buf+0x80;
+	u8* addr = buf+0x10;
+	u8* url = buf+0x80;
 
 	//parse
-	ret = buf2net(p, 256, buf, ip, &port, str);
+	ret = buf2net(p, 256, buf, addr, &port, url);
 	if(ret <= 0)return 0;
-	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, ip, port, str);
+	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
 
 	//compare
 	if(ncmp(buf, "TCP", 3) == 0)
@@ -231,24 +231,26 @@ int net_choose(u8* p)
 	}
 	else if(ncmp(buf, "raw", 3) == 0)
 	{
-		fd = startsocket(ip, port, 'r');
+		fd = startsocket(addr, port, 'r');
 	}
 	else if(ncmp(buf, "udp", 3) == 0)
 	{
-		fd = startsocket(ip, port, 'u');
+		fd = startsocket(addr, port, 'u');
 	}
 	else
 	{
-		fd = startsocket(ip, port, 't');
+		fd = startsocket(addr, port, 't');
 		if(fd == 0)return -1;
 
 		if(ncmp(buf, "http", 4) == 0)
 		{
-			ret = http_write(datahome, 0x100000, str, 10);
+			obj[fd].type1 = http;
+			ret = http_write_request(datahome, 0x100000, url, addr);
 			ret = writesocket(fd, datahome, 0, ret);
 		}
 		else if(ncmp(buf, "ws", 2) == 0)
 		{
+			obj[fd].type1 = ws;
 			ret = websocket_write_handshake(datahome, 0x100000);
 			ret = writesocket(fd, datahome, 0, ret);
 		}

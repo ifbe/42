@@ -34,35 +34,31 @@ static char* GET = 0;
 
 
 
-int http_write_string(u8* buf, int len, char* p, int t)
+int http_write_request(u8* buf, int len, char* url, char* host)
 {
-	if(	(p==0)|
-		(p[0]==0) |
-		(p[0]=='/'&&p[1]==0)
+	if(	(url==0)|
+		(url[0]==0) |
+		(url[0]=='/'&&url[1]==0)
 	)
-	{p="index.html";}
+	{url="index.html";}
 
 	return fmt(buf, 100,
 		"GET /%s HTTP/1.1\r\n"
+		"Host: %s\r\n"
 		"Range: bytes=%d-%d\r\n"
 		"\r\n",
-		p, 0, 0xfff
+		url, host, 0, 0xfff
 	);
 }
-int http_write_file(u8* buf, int len, char* p, int t)
+int http_write_file(u8* buf, int len, char* name)
 {
-	int ret = readfile(p, buf, 0, 0x100000);
+	int ret = readfile(name, buf, 0, 0x100000);
 	if(ret <= 0)
 	{
 		*(u32*)buf = 0x343034;
 		return 3;
 	}
 	return ret;
-}
-int http_write(u8* buf, int len, char* p, int t)
-{
-	if(t == 0)return http_write_file(buf, len, p, t);
-	else return http_write_string(buf, len, p, t);
 }
 int http_read(u8* buf, int max)
 {
@@ -121,6 +117,7 @@ int check_http(char* buf, int max)
 */
 	//
 #define HTTP 0x50545448
+#define http 0x70747468
 #define WS 0x5357
 #define ws 0x7377
 	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return WS;
@@ -131,13 +128,18 @@ int check_http(char* buf, int max)
 int serve_http(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret;
+	if(type == http)
+	{
+		printmemory(buf, len);
+		goto byebye;
+	}
 
 	//
 	len = http_read(buf, len);
 	if(len <= 0)goto byebye;
 
 	//
-	len = http_write(buf, len, GET, 0);
+	len = http_write_file(buf, len, GET);
 	if(len <= 0)goto byebye;
 
 	//

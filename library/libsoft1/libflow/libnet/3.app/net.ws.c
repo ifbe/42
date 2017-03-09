@@ -16,6 +16,7 @@ u32 getrandom();
 u64 gettime();
 //
 int fmt(void*, int, void*, ...);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -243,6 +244,18 @@ int websocket_write(u64 fd, u8* buf, u64 len)
 u64 serve_ws(u64 fd, u64 type, u8* buf, u64 len)
 {
 	int ret;
+	if(type == ws)
+	{
+		if(buf[0] == 'H')	//response
+		{
+			printmemory(buf, len);
+		}
+		else		//real data
+		{
+		}
+		goto theend;
+	}
+
 	if(buf[0] == 'G')
 	{
 		//
@@ -261,7 +274,7 @@ u64 serve_ws(u64 fd, u64 type, u8* buf, u64 len)
 	websocket_write(fd, (void*)"hahahaha", 8);
 
 theend:
-	return WS;
+	return type;
 /*
 	if(type==0x10)
 	{
