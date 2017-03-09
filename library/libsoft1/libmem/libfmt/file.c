@@ -54,7 +54,7 @@ void say(void*, ...);
 
 
 //
-static u8* guys;
+static u8* fdhome;
 static u8* fshome;
 static u8* dirhome;
 static u8* datahome;
@@ -138,7 +138,7 @@ int file_mount(u8* addr)
 
 	for(j=0;j<0x10000/0x80;j++)
 	{
-		if(id == guys[j].id)
+		if(id == fdhome[j].id)
 		{
 			which = id;
 			break;
@@ -152,7 +152,7 @@ int file_mount(u8* addr)
 
 
 //just command
-static int filesystem_ls()
+static int file_ls()
 {
 	int j;
 	for(j=0;j<0x80*0x80;j+=0x80)
@@ -167,7 +167,7 @@ static int filesystem_ls()
 	}
 	return j / 0x80;
 }
-static int filesystem_cd(u8* p)
+static int file_cd(u8* p)
 {
 	int ret;
 
@@ -186,26 +186,26 @@ static int filesystem_cd(u8* p)
 	ret = file_explain(datahome);
 	return 0;
 }
-static int filesystem_show(u8* addr)
+static int file_show(u8* addr)
 {
 	return 0;
 }
-static int filesystem_edit()
+static int file_edit()
 {
 	return 0;
 }
-static int filesystem_start()
+static int file_start()
 {
 	return 0;
 }
-static int filesystem_stop()
+static int file_stop()
 {
 	return 0;
 }
-int filesystem_create(void* softaddr, u64* p)
+int file_create(void* softaddr, u64* p)
 {
 	u8* q;
-	guys = softaddr;
+	fdhome = softaddr;
 	fshome = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
 	datahome = softaddr + 0x300000;
@@ -213,12 +213,12 @@ int filesystem_create(void* softaddr, u64* p)
 	//
 	p[0]=0x79726f6d656d;
 	p[1]=0x656c6966;
-	p[2]=(u64)filesystem_start;
-	p[3]=(u64)filesystem_stop;
-	p[4]=(u64)filesystem_ls;
-	p[5]=(u64)filesystem_cd;
-	p[6]=(u64)filesystem_show;
-	p[7]=(u64)filesystem_edit;
+	p[2]=(u64)file_start;
+	p[3]=(u64)file_stop;
+	p[4]=(u64)file_ls;
+	p[5]=(u64)file_cd;
+	p[6]=(u64)file_show;
+	p[7]=(u64)file_edit;
 	q = (u8*)p;
 	q += 0x100;
 
@@ -236,7 +236,7 @@ int filesystem_create(void* softaddr, u64* p)
 
 	return q-(u8*)p;
 }
-int filesystem_delete()
+int file_delete()
 {
 	ext_delete();
 	fat_delete();

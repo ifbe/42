@@ -44,7 +44,6 @@ target:
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.des.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.rsa.c
-	$(compiler) $(cflag) libmem/libdata/crypt/crypt.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.ascii.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
@@ -65,8 +64,8 @@ target:
 	$(compiler) $(cflag) libmem/libdata/hash/hash.sha256.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.sha512.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.c
-	$(compiler) $(cflag) libmem/libdata/qrcode.c
+	$(compiler) $(cflag) libmem/libdata/qrcode/qrcode.c
+	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.piano.c
@@ -117,8 +116,8 @@ target:
 	$(compiler) $(cflag) libmem/libtran/program/prog.cpp.c
 	$(compiler) $(cflag) libmem/libtran/tran.c
 	$(compiler) $(cflag) libmem/memory.c
-	$(compiler) $(cflag) libphys/physics.electrical.c
-	$(compiler) $(cflag) libphys/physics.mechanics.c
+	$(compiler) $(cflag) libphys/phys.elec.c
+	$(compiler) $(cflag) libphys/phys.mech.c
 	$(compiler) $(cflag) libphys/phys.c
 	$(compiler) $(cflag) libsys/system.folder.c
 	$(compiler) $(cflag) libsys/system.process.c

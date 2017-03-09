@@ -141,7 +141,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
-	library/libsoft1/libmem/libdata/crypt/crypt.c \
 	library/libsoft1/libmem/libdata/draw/draw.background.c \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
 	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
@@ -162,8 +161,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
 	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
 	library/libsoft1/libmem/libdata/hash/hash.string.c \
-	library/libsoft1/libmem/libdata/hash/hash.c \
-	library/libsoft1/libmem/libdata/qrcode.c \
+	library/libsoft1/libmem/libdata/qrcode/qrcode.c \
+	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
@@ -215,8 +214,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libtran/program/prog.cpp.c \
 	library/libsoft1/libmem/libtran/tran.c \
 	library/libsoft1/libmem/memory.c \
-	library/libsoft1/libphys/physics.electrical.c \
-	library/libsoft1/libphys/physics.mechanics.c \
+	library/libsoft1/libphys/phys.elec.c \
+	library/libsoft1/libphys/phys.mech.c \
 	library/libsoft1/libphys/phys.c \
 	library/libsoft1/libsys/system.folder.c \
 	library/libsoft1/libsys/system.process.c \

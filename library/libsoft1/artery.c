@@ -5,17 +5,16 @@
 //
 int flow_create(void* world,void* func);
 int flow_delete();
+int math_create(void* world,void* func);
+int math_delete();
 int memory_create(void* world,void* func);
 int memory_delete();
+int phys_create(void* world,void* func);
+int phys_delete();
 int system_create(void* world,void* func);
 int system_delete();
 int wire_create(void* world,void* func);
 int wire_delete();
-//
-int math_create(void* world,void* func);
-int math_delete();
-int phys_create(void* world,void* func);
-int phys_delete();
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -271,11 +270,11 @@ void arterycreate(u8* type, u8* addr)
 	//
 	p = addr+0x100100;
 	p += flow_create(addr, p);
+	p += math_create(addr, p);
 	p += memory_create(addr, p);
+	p += phys_create(addr, p);
 	p += system_create(addr, p);
 	p += wire_create(addr, p);
-	p += math_create(addr, p);
-	p += phys_create(addr, p);
 
 	//
 	say("[8,c):createed artery\n");
@@ -286,14 +285,12 @@ void arterydelete()
 	say("[8,c):deleteing artery\n");
 
 	//
-	flow_delete();
-	memory_delete();
-	system_delete();
 	wire_delete();
-
-	//
+	system_delete();
 	phys_delete();
+	memory_delete();
 	math_delete();
+	flow_delete();
 }
 
 
