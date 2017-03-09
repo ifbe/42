@@ -23,19 +23,19 @@ void say(char*, ...);
 
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 
 //libui
 struct screen
 {
-        void* buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	void* buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
 };
 
 
@@ -58,29 +58,17 @@ int main(int argc,char* argv[])
 	//forever
 	while(1)
 	{
-/*
-                //1.display
-                for(ret=0;ret<max;ret++)
-                {
-			//skip whom doesn't want
-			if(list.flag != waiting)continue;
-
-			//show whom want it
-                        characterread(list + ret*0x20);
-                        windowwrite(  list + ret*0x20);
-                }
-                fps++;
-*/
+		//1.show
 		arteryprompt();
 
 again:
-                //2.event
+		//2.wait
 		ev = eventread();
 		if(ev == 0)break;		//error
 		if(ev->what == 0)break;		//exit
 
 
-		//3.pre change
+		//3.pre process
 		if(((ev->what)&0xff) == 'p')
 		{
 			//sensor rawdata -> my event
@@ -90,27 +78,6 @@ again:
 		{
 			//network rawdata -> my event
 			network_explain(ev);
-/*
-                        if((ev->what) == 'w')      //vnc, rdp, ...
-                        {
-                                //user come, re-draw
-                                if(+)
-                                {
-                                        windowstart(addr, "net", 512, 512);
-                                        continue;
-                                }
-
-                                //user gone, re-draw
-                                else if(-)
-                                {
-                                        windowstop();
-                                        continue;
-                                }
-
-                                //user resize, set-flag
-                                else .flag = 1;
-                        }
-*/
 		}
 		else if(((ev->what)&0xff) == 's')
 		{
@@ -125,7 +92,7 @@ again:
 		if((ev->what) != 0x64626b)goto again;
 
 
-		//4.real change
+		//4.real process
 		arterycommand(ev);
 	}
 

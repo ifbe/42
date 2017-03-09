@@ -83,25 +83,13 @@ int main(int argc, char* argv[])
 	//forever
 	while(1)
 	{
-/*
-		//1.screen
-		for(ret=0;ret<max;ret++)
-		{
-			//skip whom doesn't want
-			if(list.flag != waiting)continue;
-
-			//show whom want it
-			characterread(list + ret*0x20);
-			displaywrite( list + ret*0x20);
-		}
-		fps++;
-*/
+		//1.show
 		characterread(ui);
 		displaywrite(ui);
 		fps++;
 
 again:
-		//2.event
+		//2.wait
 		ev = eventread();
 		if(ev == 0)break;		//error
 		if(ev->what == 0)break;		//exit
@@ -116,7 +104,8 @@ again:
 			goto again;
 		}
 
-		//3.pre change
+
+		//3.pre process
 		if(((ev->what)&0xff) == 'p')
 		{
 			//sensor rawdata -> my event
@@ -126,27 +115,6 @@ again:
 		{
 			//network rawdata -> my event
 			network_explain(ev);
-/*
-			if(ev->what == 'w')	//vnc, rdp, ...
-			{
-				//user come, re-draw
-				if(+)
-				{
-					windowstart(addr, "net", 512, 512);
-					continue;
-				}
-
-				//user gone, re-draw
-				else if(-)
-				{
-					displaystop();
-					continue;
-				}
-
-				//user resize, set-flag
-				else .flag = 1;
-			}
-*/
 		}
 		else if(((ev->what)&0xff) == 's')
 		{
@@ -161,7 +129,7 @@ again:
 		if(ev->what == 0)goto again;
 
 
-		//4.real change
+		//4.real process
 		characterwrite(ev);
 	}
 

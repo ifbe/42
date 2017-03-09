@@ -36,7 +36,11 @@ static char* GET = 0;
 
 int http_write_string(u8* buf, int len, char* p, int t)
 {
-	if((p==0)|(p[0]==0))p="index.html";
+	if(	(p==0)|
+		(p[0]==0) |
+		(p[0]=='/'&&p[1]==0)
+	)
+	{p="index.html";}
 
 	return fmt(buf, 100,
 		"GET /%s HTTP/1.1\r\n"

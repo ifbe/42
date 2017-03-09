@@ -114,6 +114,7 @@ struct epoll_event epollevent[16];
 
 while(alive)
 {
+	epoll_mod(listenfd);
 	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
 	if(ret <= 0)continue;
 
@@ -123,7 +124,7 @@ while(alive)
 	if(epollevent[i].events & EPOLLRDHUP)
 	{
 		printf("rdhup!!!!!!!\n");
-		eventwrite(fd, 0x2d6e, 0, gettime());
+		eventwrite(0, 0x2d6e, fd, gettime());
 	}
 	else if(epollevent[i].events & EPOLLIN)
 	{
@@ -151,7 +152,7 @@ while(alive)
 			obj[fd].type0 = 't';
 			obj[fd].type1 = 0;
 			epoll_add(fd);
-			eventwrite(fd, 0x2b6e, 0, gettime());
+			eventwrite(0, 0x2b6e, fd, gettime());
 		}//while
 		}//accept
 
@@ -159,7 +160,7 @@ while(alive)
 		else
 		{
 			printf("#### %x\n", fd);
-			eventwrite(fd, 0x406e, 0, gettime());
+			eventwrite(0, 0x406e, fd, gettime());
 		}
 	}//EPOLLIN
 	}//for
@@ -321,7 +322,7 @@ int startsocket(char* addr, int port, int type)
 		epoll_add(fd);
 
 		obj[listenfd].type0 = type;
-		eventwrite(fd, 0x2b6e, 0, gettime());
+		eventwrite(0, 0x2b6e, fd, gettime());
 		return fd;
 	}
 	else if(type == 'u')	//udp client
@@ -349,7 +350,7 @@ int startsocket(char* addr, int port, int type)
 		obj[listenfd].type0 = type;
 		obj[listenfd].type1 = 0;
 		obj[listenfd].port_src = port;
-		eventwrite(fd, 0x2b6e, 0, gettime());
+		eventwrite(0, 0x2b6e, fd, gettime());
 		return fd;
 	}
 	else if(type == 't')	//tcp client
@@ -386,7 +387,7 @@ int startsocket(char* addr, int port, int type)
 		obj[listenfd].type0 = type;
 		obj[listenfd].type1 = 0;
 		obj[listenfd].port_src = port;
-		eventwrite(fd, 0x2b6e, 0, gettime());
+		eventwrite(0, 0x2b6e, fd, gettime());
 		return fd;
 	}
 	else if(type == 'b')	//bluetooth client

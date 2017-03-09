@@ -7,6 +7,8 @@ int serve_first(u64 fd, u64 type, u8* buf, u64 len);
 int serve_chat( u64 fd, u64 type, u8* buf, u64 len);
 int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_tls(  u64 fd, u64 type, u8* buf, u64 len);
+int serve_rdp(  u64 fd, u64 type, u8* buf, u64 len);
+int serve_vnc(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_http( u64 fd, u64 type, u8* buf, u64 len);
 int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 int serve_https(u64 fd, u64 type, u8* buf, u64 len);
@@ -17,8 +19,9 @@ int websocket_read_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
-int hexstr2data(void*, void*);
 int movsb(void*, void*, int);
+int decstr2data(void*, void*);
+int hexstr2data(void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
@@ -90,6 +93,7 @@ u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 #define tls 0x736c74
 	else if( (type==TLS) | (type==tls) )
 	{
+		type = serve_tls(fd, type, buf, len);
 	}
 
 #define HTTPS 0x5350545448
@@ -124,47 +128,49 @@ u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 #define rdp 0x706472
 	else if( (type==RDP) | (type==rdp) )
 	{
-		//type = serve_rdp(fd, type, buf, len);
+		type = serve_rdp(fd, type, buf, len);
 	}
 
 #define VNC 0x434e56
 #define vnc 0x636e76
 	else if( (type==VNC) | (type==vnc) )
 	{
-		//type = serve_vnc(fd, type, buf, len);
+		type = serve_vnc(fd, type, buf, len);
 	}
 
 	return type;
 }
 void network_explain(u64* p)
 {
-	u64 evfd = p[0];
-	u64 type = p[1] & 0xffff;
+	//u64 why = p[0];
+	u64 what = p[1] & 0xffff;
+	u64 where = p[2];
+	//u64 when = p[3];
 
-	if(type == 0x2b6e)
+	if(what == 0x2b6e)
 	{
 	}
-	else if(type == 0x2d6e)
+	else if(what == 0x2d6e)
 	{
 	}
-	else if(type == 0x406e)
+	else if(what == 0x406e)
 	{
 		//get data
-		int len = readsocket(evfd, datahome, 0, 0x100000);
-		say("@@@@ %llx %d\n", evfd, len);
+		int len = readsocket(where, datahome, 0, 0x100000);
+		say("@@@@ %llx %d\n", where, len);
 		if(len > 0)
 		{
 			datahome[len] = 0;
-			type = serve_what(evfd, obj[evfd].type1, datahome, len);
-			if(type != 0)
+			what = serve_what(where, obj[where].type1, datahome, len);
+			if(what != 0)
 			{
-				obj[evfd].type1 = type;
+				obj[where].type1 = what;
 				return;
 			}
 		}
 
 		//wrong(len) or wrong(type)
-		stopsocket(evfd);
+		stopsocket(where);
 	}
 }
 
@@ -197,7 +203,7 @@ int net_list(u8* p)
 		return 0;
 	}
 
-	hexstr2data(p, &fd);
+	decstr2data(p, &fd);
 	say("%llx,%llx\n", obj[fd].type0, obj[fd].type1);
 	return 0;
 }
@@ -262,7 +268,7 @@ int net_stop(u8* p)
 		}
 	}
 
-	hexstr2data(p, &fd);
+	decstr2data(p, &fd);
 	stopsocket(fd);
 
 	//say("[%d]out\n",fd);
