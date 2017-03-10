@@ -13,6 +13,8 @@ int serve_http( u64 fd, u64 type, u8* buf, u64 len);
 int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 int serve_https(u64 fd, u64 type, u8* buf, u64 len);
 int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
+int tftp_read(void*, int);
+int tftp_write(void*, int);
 int http_read(void*, int);
 int http_write_request(void*, int, void*, void*);
 int websocket_read_handshake(void*, int);
@@ -157,7 +159,6 @@ void network_explain(u64* p)
 	{
 		//get data
 		int len = readsocket(where, datahome, 0, 0x100000);
-		say("@@@@ %llx %d\n", where, len);
 		if(len > 0)
 		{
 			datahome[len] = 0;
@@ -197,6 +198,8 @@ int net_list(u8* p)
 	{
 		for(j=0;j<1024;j++)
 		{
+			if(obj[j].type0 == 0)continue;
+
 			say("%d:	%llx,%llx\n",
 				j, obj[j].type0, obj[j].type1);
 		}
@@ -227,37 +230,63 @@ int net_choose(u8* p)
 	//compare
 	if(ncmp(buf, "raw", 3) == 0)
 	{
-		startsocket("0,0,0,0", 2222, 'r');	//tcp server
+		fd = startsocket("0,0,0,0", 2222, 'r');	//tcp server
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = chat;
 	}
 	else if(ncmp(buf, "UDP", 3) == 0)
 	{
-		startsocket("0,0,0,0", 2222, 'U');	//tcp server
+		fd = startsocket("0,0,0,0", 2222, 'U');	//tcp server
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = chat;
 	}
 	else if(ncmp(buf, "TCP", 3) == 0)
 	{
-		startsocket("0,0,0,0", 2222, 'T');	//tcp server
+		fd = startsocket("0,0,0,0", 2222, 'T');	//tcp server
+		if(fd == 0)return 0;
 	}
 	else if(ncmp(buf, "udp", 3) == 0)
 	{
 		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = chat;
 	}
-	else
+	else if(ncmp(buf, "tcp", 3) == 0)
 	{
 		fd = startsocket(addr, port, 't');
-		if(fd == 0)return -1;
+		if(fd == 0)return 0;
 
-		if(ncmp(buf, "http", 4) == 0)
-		{
-			obj[fd].type1 = http;
-			ret = http_write_request(datahome, 0x100000, url, addr);
-			ret = writesocket(fd, datahome, 0, ret);
-		}
-		else if(ncmp(buf, "ws", 2) == 0)
-		{
-			obj[fd].type1 = ws;
-			ret = websocket_write_handshake(datahome, 0x100000);
-			ret = writesocket(fd, datahome, 0, ret);
-		}
+		obj[fd].type1 = chat;
+	}
+	else if(ncmp(buf, "tftp", 4) == 0)
+	{
+		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = http;
+		ret = tftp_write(datahome, 0x100000);
+		ret = writesocket(fd, datahome, 0, ret);
+	}
+	else if(ncmp(buf, "http", 4) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = http;
+		ret = http_write_request(datahome, 0x100000, url, addr);
+		ret = writesocket(fd, datahome, 0, ret);
+	}
+	else if(ncmp(buf, "ws", 2) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		obj[fd].type1 = ws;
+		ret = websocket_write_handshake(datahome, 0x100000);
+		ret = writesocket(fd, datahome, 0, ret);
 	}
 	return 0;
 }

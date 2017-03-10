@@ -185,16 +185,9 @@ return 0;
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 {
 	int ret;
-	struct sockaddr_in* server;
-	if(fd == udplisten)
-	{
-		server = (void*)(obj[fd].addr_src);
-		ret=sendto(fd, buf, len, 0, (void*)server, sizeof(struct sockaddr_in));
-		return ret;
-	}
-
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
+
 	ret = write(fd, buf, len);
 	return ret;
 }
@@ -209,7 +202,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 		printf("%s:%d\n", inet_ntoa(server.sin_addr), server.sin_port);
 		return ret;
 	}
-
+/*
 	cnt = read(fd, buf, len);
 	if(cnt <= 0)return 0;
 
@@ -224,9 +217,19 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 		else if(ret == 0)return 0;
 		else cnt += ret;
 	}
-
-	if(cnt < len)epoll_mod(fd);
-	return cnt;
+*/
+	while(1)
+	{
+		ret = read(fd, buf, len);
+		if(ret >= 0)break;
+		if(ret == -1)
+		{
+			if(errno == 11)usleep(1000);
+			else break;
+		}
+	}
+	if(ret > 0)epoll_mod(fd);
+	return ret;
 }
 int listsocket()
 {
@@ -239,6 +242,7 @@ int choosesocket()
 void stopsocket(int x)
 {
 	int ret = close(x);
+	obj[x].type0 = obj[x].type1 = 0;
 	printf("---- %d %d, %d\n", x, ret, errno);
 
 	//epoll_del(x);
@@ -379,7 +383,8 @@ int startsocket(char* addr, int port, int type)
 	}
 	else if(type == 'u')	//udp client
 	{
-		struct sockaddr_in* server;
+		struct sockaddr_in server;
+
 		fd = socket(AF_INET, SOCK_DGRAM, 0);
 		if(fd == -1)
 		{
@@ -387,21 +392,30 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		server = (void*)(obj[fd].addr_src);
-		server->sin_family = AF_INET;
-		server->sin_addr.s_addr = inet_addr(addr);
-		server->sin_port = htons(port);
+		memset(&server, 0, sizeof(struct sockaddr_in));
+		server.sin_family = AF_INET;
+		server.sin_addr.s_addr = inet_addr(addr);
+		server.sin_port = htons(port);
+
+		//
+		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+		if(ret < 0)
+		{
+			printf("connect error\n");
+			return 0;
+		}
+
+		//
 		obj[fd].type0 = type;
 		obj[fd].type1 = 0;
+		obj[fd].port_src = port;
 		epoll_add(fd);
 		return fd;
 	}
 	else if(type == 't')	//tcp client
 	{
 		//create struct
-		struct sockaddr_in server = {0};
-		socklen_t serlen = 0;
-		u32 temp[4];
+		struct sockaddr_in server;
 
 		//create socket
 		fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -416,7 +430,6 @@ int startsocket(char* addr, int port, int type)
 		server.sin_family = AF_INET;
 		server.sin_addr.s_addr = inet_addr(addr);
 		server.sin_port = htons(port);
-		serlen = sizeof(struct sockaddr_in);
 
 		//connect
 		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
