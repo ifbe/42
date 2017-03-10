@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ws2tcpip.h>	//IP_HDRINCL
+#include<ws2bth.h>		//BTHPROTO_RFCOMM
 #include<winsock2.h>
-#include<ws2tcpip.h> //IP_HDRINCL is here
 #include<windows.h>
 #define u8 unsigned char
 #define u16 unsigned short
@@ -36,10 +37,9 @@ struct object
 };
 struct object* obj;
 //
-static int alive = 0;
-static u64 thread=0;
 static HANDLE iocpfd;
-static SOCKET listenfd;
+static SOCKET tcplisten;
+static SOCKET udplisten;
 
 
 
@@ -64,6 +64,20 @@ void peername(u64 fd, u32* buf)
 }
 DWORD WINAPI iocpthread(LPVOID pM)
 {
+	int ret;
+	DWORD trans;
+	HANDLE iocp = (HANDLE)pM;
+return 0;
+	while(1)
+	{
+		ret = GetQueuedCompletionStatus(
+			iocp,
+			&trans,
+			0,//(PULONG_PTR)&PerHandleData,
+			0,//(LPOVERLAPPED*)&IpOverlapped,
+			INFINITE
+		);
+	}
 	return 0;
 }
 
@@ -81,7 +95,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 		printf("if(nothing incoming){turnoff firewall}\n");
 		while(alive == 1)
 		{
-			ret=recvfrom(sclient, buf, 0x1000, 0, NULL, NULL);
+			ret=recvfrom(fd, buf, 0x1000, 0, NULL, NULL);
 			printmemory(buf,ret);
 		}
 	}
@@ -90,7 +104,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 		while(alive == 1)
 		{
 			ret = sizeof(struct sockaddr_in);
-			ret = recvfrom(sclient, buf, 256, 0, (void*)&serAddr, &ret);
+			ret = recvfrom(fd, buf, 256, 0, (void*)&serAddr, &ret);
 			if(ret <= 0)continue;
 
 			buf[ret] = 0;
@@ -102,7 +116,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	{
 		while(alive == 1)
 		{
-			ret = recv(sclient, buf, 256, 0);
+			ret = recv(fd, buf, 256, 0);
 			if(ret <= 0)continue;
 
 			buf[ret] = 0;
@@ -123,7 +137,7 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 	else if(st == IPPROTO_UDP)
 	{
 		ret = sizeof(struct sockaddr_in);
-		ret = sendto(sclient, buf, len, 0, (void*)&serAddr, ret);
+		ret = sendto(fd, buf, len, 0, (void*)&serAddr, ret);
 	}
 */
 	ret = send(fd, buf, len, 0);
@@ -139,15 +153,15 @@ int stopsocket(u64 fd)
 {
 	return 0;
 }
-int startsocket(char* addr, int port, int type)
+u64 startsocket(char* addr, int port, int type)
 {
 	int ret;
 	u32 temp[2];
 
 	if(type == 'r')		//raw
 	{
-		SOCKET sclient = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
-		if(sclient == SOCKET_ERROR)
+		SOCKET rawlisten = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
+		if(rawlisten == SOCKET_ERROR)
 		{
 			printf("error:%d@socket\n", GetLastError());
 			return 0;
@@ -161,7 +175,7 @@ int startsocket(char* addr, int port, int type)
 		serAddr.sin_port = htons(port);
 
 		//
-		if(bind(sclient, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
+		if(bind(rawlisten, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@bind\n", GetLastError());
 			return 0;
@@ -169,80 +183,123 @@ int startsocket(char* addr, int port, int type)
 
 		//
 		int one=1;
-		if(WSAIoctl(sclient, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
+		if(WSAIoctl(rawlisten, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
 		{
 			printf("error:%d@WSAIoctl\n", GetLastError());
 			return 0;
 		}
 
 		//
-		if(setsockopt(sclient, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
+		if(setsockopt(rawlisten, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
 		{
 			printf("error:%d@setsockopt\n", GetLastError());
 			return 0;
 		}
+
+		//
+		return rawlisten;
+	}
+	else if(type == 'U')	//udp server
+	{
+		int ret;
+		int addrlen = sizeof(SOCKADDR_IN);
+		SOCKADDR_IN servaddr;
+
+		//
+		udplisten = socket(AF_INET,SOCK_DGRAM,0);
+
+		//
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(port);
+		servaddr.sin_addr.s_addr = INADDR_ANY;
+
+		//
+		ret = bind(udplisten, (SOCKADDR*)&servaddr, addrlen);
+		if(ret == SOCKET_ERROR)
+		{
+			printf("error@bind\n");
+			closesocket(udplisten);
+			return 0;
+		}
+
+		return udplisten;
+	}
+	else if(type == 'T')	//tcp server
+	{
+		int ret;
+		int addrlen = sizeof(SOCKADDR_IN);
+		SOCKADDR_IN servaddr;
+
+		//
+		tcplisten = socket(AF_INET, SOCK_STREAM, 0);
+
+		//
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(port);
+		servaddr.sin_addr.s_addr = INADDR_ANY;
+
+		//
+		ret = bind(tcplisten, (SOCKADDR*)&servaddr, addrlen);
+		if(ret == SOCKET_ERROR)
+		{
+			printf("error@bind\n");
+			closesocket(tcplisten);
+			return 0;
+		}
+
+		//
+		listen(tcplisten, SOMAXCONN);
+
+		return tcplisten;
+	}
+	else if(type == 'B')	//bluetooth server
+	{
 	}
 	else if(type == 'u')	//udp client
 	{
 		//
-		struct sockaddr_in serAddr;
-		serAddr.sin_family = AF_INET;
-		serAddr.sin_port = htons(port);
-		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
-
-		//
-		SOCKET sclient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-		if(sclient == INVALID_SOCKET)
+		SOCKET fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if(fd == INVALID_SOCKET)
 		{
 			printf("error@socket\n");
 			return 0;
 		}
+
+		return fd;
 	}
 	else if(type == 't')	//tcp client
 	{
 		//
-		struct sockaddr_in serAddr;
-		serAddr.sin_family = AF_INET;
-		serAddr.sin_port = htons(port);
-		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
-
-		//
-		SOCKET sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		if(sclient == INVALID_SOCKET)
+		SOCKET fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		if(fd == INVALID_SOCKET)
 		{
 			printf("error@socket\n");
 			return 0;
 		}
 
-		if (connect(sclient, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
+		//
+		struct sockaddr_in serAddr;
+		serAddr.sin_family = AF_INET;
+		serAddr.sin_port = htons(port);
+		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
+		if (connect(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@connect\n",GetLastError());
-			stopsocket(sclient);
+			stopsocket(fd);
 			return 0;
 		}
+
+		return fd;
 	}
 	else if(type == 'b')	//bluetooth client
 	{
-	}
-	else if(type == 'U')	//udp server
-	{
-	}
-	else if(type == 'T')	//tcp server
-	{
-		SOCKADDR_IN servaddr;
-		int addrlen = sizeof(SOCKADDR_IN);
-
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		servaddr.sin_addr.s_addr = inet_addr(addr);
-
-		listenfd = socket(AF_INET, SOCK_STREAM, 0);
-		printf("listenfd=%d\n",listenfd);
-		bind(listenfd, (SOCKADDR*)&servaddr, addrlen);
-		listen(listenfd, SOMAXCONN);
-	}
-	else if(type == 'B')	//bluetooth server
-	{
+		SOCKET fd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
+		if(fd == INVALID_SOCKET)
+		{
+			printf("error@socket\n");
+			return 0;
+		}
+		return fd;
 	}
 	else printf("error@type\n");
 	return 0;
@@ -253,11 +310,11 @@ void deletesocket()
 }
 void createsocket(void* addr)
 {
-	WSADATA data; 
-	WORD sockVersion = MAKEWORD(2,2);
 	obj = addr;
 
 	//socket
+	WSADATA data; 
+	WORD sockVersion = MAKEWORD(2,2);
 	if(WSAStartup(sockVersion, &data) != 0)
 	{
 		printf("error@WSAStartup\n");
@@ -272,7 +329,11 @@ void createsocket(void* addr)
 		4
 	);
 
-	//thread
-	alive = 1;
-	thread = startthread(iocpthread, 0);
+	int j;
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	for(j=0;j<info.dwNumberOfProcessors*2;j++)
+	{
+		u64 thread = startthread(iocpthread, iocpfd);
+	}
 }

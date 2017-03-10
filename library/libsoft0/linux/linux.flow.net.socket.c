@@ -56,7 +56,9 @@ struct object* obj;
 static u64 thread;
 static int alive = 0;
 static int epollfd = 0;
-static int listenfd = 0;
+static int rawlisten = 0;
+static int tcplisten = 0;
+static int udplisten = 0;
 
 
 
@@ -114,7 +116,7 @@ struct epoll_event epollevent[16];
 
 while(alive)
 {
-	epoll_mod(listenfd);
+	epoll_mod(tcplisten);
 	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
 	if(ret <= 0)continue;
 
@@ -132,14 +134,14 @@ while(alive)
 		fd = epollevent[i].data.fd;
 
 		//accept
-		if(fd == listenfd)
+		if(fd == tcplisten)
 		{
 		int fd;
 		struct sockaddr_in cliaddr;
 		socklen_t cliaddrlen = sizeof(struct sockaddr_in);
 		while(1)
 		{
-			fd = accept(listenfd, (struct sockaddr*)&cliaddr, &cliaddrlen);
+			fd = accept(tcplisten, (struct sockaddr*)&cliaddr, &cliaddrlen);
 			if(fd == -1)break;
 			if(fd >= MAXSIZE)
 			{
@@ -280,7 +282,7 @@ void stopsocket(int x)
 	printf("---- %d %d, %d\n", x, ret, errno);
 
 	//epoll_del(x);
-	//if(listenfd>0)epoll_del(listenfd);
+	//if(tcplisten>0)epoll_del(tcplisten);
 }
 int startsocket(char* addr, int port, int type)
 {
@@ -292,38 +294,122 @@ int startsocket(char* addr, int port, int type)
 		struct ifreq ifopts;
 		char* ifName = "eth0";
 
-		fd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-		if(fd == -1)
+		rawlisten = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+		if(rawlisten == -1)
 		{
-			printf("error%d@socket:%d\n",errno,fd);
+			printf("error%d@socket:%d\n",errno,rawlisten);
 			return 0;
 		}
 
 		strncpy(ifopts.ifr_name, ifName, 5);
-		ioctl(fd, SIOCGIFFLAGS, &ifopts);
+		ioctl(rawlisten, SIOCGIFFLAGS, &ifopts);
 		ifopts.ifr_flags |= IFF_PROMISC;
-		ioctl(fd, SIOCSIFFLAGS, &ifopts);
+		ioctl(rawlisten, SIOCSIFFLAGS, &ifopts);
 
-		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof sockopt);
+		ret = setsockopt(rawlisten, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof sockopt);
 		if(ret == -1)
 		{
 			perror("setsockopt");
-			close(fd);
+			close(rawlisten);
 			exit(EXIT_FAILURE);
 		}
 
-		ret = setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, ifName, 5);
+		ret = setsockopt(rawlisten, SOL_SOCKET, SO_BINDTODEVICE, ifName, 5);
 		if(ret == -1)
 		{
 			perror("SO_BINDTODEVICE");
-			close(fd);
+			close(rawlisten);
 			exit(EXIT_FAILURE);
 		}
-		epoll_add(fd);
+		epoll_add(rawlisten);
 
-		obj[listenfd].type0 = type;
-		eventwrite(0, 0x2b6e, fd, gettime());
-		return fd;
+		obj[tcplisten].type0 = type;
+		return rawlisten;
+	}
+	else if(type == 'U')	//udp server
+	{
+		//socket
+		udplisten = socket(AF_INET, SOCK_DGRAM, 0);
+		if (udplisten == -1)
+		{
+			printf("error@socket\n");
+			return 0;
+		}
+		if(udplisten > MAXSIZE)
+		{
+			printf("udplisten>4096\n");
+			return 0;
+		}
+
+		//
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(port);
+		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
+
+		//
+		ret = bind(udplisten, (SOCKADDR*)&servaddr, addrlen);
+		if(ret == SOCKET_ERROR)
+		{
+			printf("error@bind\n");
+			closesocket(udplisten);
+			return 0;
+		}
+
+		return udplisten;
+	}
+	else if(type == 'T')	//tcp server
+	{
+		int ret;
+		struct sockaddr_in servaddr;
+		char IPADDRESS[32];
+		snprintf(IPADDRESS, 32, "0.0.0.0");
+
+		//socket
+		tcplisten = socket(AF_INET, SOCK_STREAM, 0);
+		if (tcplisten == -1)
+		{
+			printf("error@socket\n");
+			return 0;
+		}
+		if(tcplisten > MAXSIZE)
+		{
+			printf("tcplisten>4096\n");
+			return 0;
+		}
+
+		//setopt
+		ret = 1;
+		ret = setsockopt(tcplisten, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		if(ret<0)
+		{
+			printf("error@setsockopet\n");
+			return 0;
+		}
+
+		//
+		bzero(&servaddr, sizeof(servaddr));
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(port);
+		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
+
+		//
+		if(bind(tcplisten, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
+		{
+			printf("error@bind\n");
+			return 0;
+		}
+
+		//
+		listen(tcplisten, 5);
+
+		//
+		obj[tcplisten].type0 = type;
+		obj[tcplisten].port_src = port;
+		epoll_add(tcplisten);
+		return tcplisten;
+	}
+	else if(type == 'B')	//bluetooth server
+	{
 	}
 	else if(type == 'u')	//udp client
 	{
@@ -332,12 +418,6 @@ int startsocket(char* addr, int port, int type)
 		socklen_t serlen = 0;
 		u32 temp[4];
 
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
-		serlen = sizeof(struct sockaddr_in);
-
 		//create socket
 		fd = socket(AF_INET, SOCK_DGRAM, 0);
 		if(fd == -1)
@@ -345,12 +425,11 @@ int startsocket(char* addr, int port, int type)
 			printf("error%d@socket:%d\n",errno,fd);
 			return 0;
 		}
-		epoll_add(fd);
 
-		obj[listenfd].type0 = type;
-		obj[listenfd].type1 = 0;
-		obj[listenfd].port_src = port;
-		eventwrite(0, 0x2b6e, fd, gettime());
+		obj[fd].type0 = type;
+		obj[fd].type1 = 0;
+		obj[fd].port_src = port;
+		epoll_add(fd);
 		return fd;
 	}
 	else if(type == 't')	//tcp client
@@ -360,12 +439,6 @@ int startsocket(char* addr, int port, int type)
 		socklen_t serlen = 0;
 		u32 temp[4];
 
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
-		serlen = sizeof(struct sockaddr_in);
-
 		//create socket
 		fd = socket(AF_INET, SOCK_STREAM, 0);
 		if(fd == -1)
@@ -374,6 +447,13 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
+		//
+		memset(&server, 0, sizeof(struct sockaddr_in));
+		server.sin_family = AF_INET;
+		server.sin_addr.s_addr = inet_addr(addr);
+		server.sin_port = htons(port);
+		serlen = sizeof(struct sockaddr_in);
+
 		//connect
 		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
 		if(ret < 0)
@@ -381,71 +461,15 @@ int startsocket(char* addr, int port, int type)
 			printf("connect error\n");
 			return 0;
 		}
-		epoll_add(fd);
 
 		//
-		obj[listenfd].type0 = type;
-		obj[listenfd].type1 = 0;
-		obj[listenfd].port_src = port;
-		eventwrite(0, 0x2b6e, fd, gettime());
+		obj[fd].type0 = type;
+		obj[fd].type1 = 0;
+		obj[fd].port_src = port;
+		epoll_add(fd);
 		return fd;
 	}
 	else if(type == 'b')	//bluetooth client
-	{
-	}
-	else if(type == 'U')	//udp server
-	{
-	}
-	else if(type == 'T')	//tcp server
-	{
-		int i;
-		int fd;
-		int ret;
-		struct sockaddr_in servaddr;
-		char IPADDRESS[32];
-		snprintf(IPADDRESS, 32, "0.0.0.0");
-
-		//socket
-		bzero(&servaddr, sizeof(servaddr));
-		servaddr.sin_family = AF_INET;
-		inet_pton(AF_INET, IPADDRESS, &servaddr.sin_addr);
-		servaddr.sin_port = htons(port);
-
-		listenfd = socket(AF_INET, SOCK_STREAM, 0);
-		if (listenfd == -1)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-		if(listenfd > MAXSIZE)
-		{
-			printf("listenfd>4096\n");
-			return 0;
-		}
-
-		//setopt
-		ret = 1;
-		ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret<0)
-		{
-			printf("error@setsockopet\n");
-			return 0;
-		}
-
-		if(bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
-		{
-			printf("error@bind\n");
-			return 0;
-		}
-		listen(listenfd, 5);
-		epoll_add(listenfd);	
-
-		//
-		obj[listenfd].type0 = type;
-		obj[listenfd].port_src = port;
-		return listenfd;
-	}
-	else if(type == 'B')	//bluetooth server
 	{
 	}
 	else printf("error@type\n");
