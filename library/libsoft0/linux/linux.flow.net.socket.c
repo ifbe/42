@@ -161,7 +161,7 @@ while(alive)
 		//read
 		else
 		{
-			printf("#### %x\n", fd);
+			//printf("#### %x\n", fd);
 			eventwrite(0, 0x406e, fd, gettime());
 		}
 	}//EPOLLIN
@@ -275,7 +275,7 @@ int startsocket(char* addr, int port, int type)
 		{
 			perror("setsockopt");
 			close(rawlisten);
-			exit(EXIT_FAILURE);
+			return 0;
 		}
 
 		ret = setsockopt(rawlisten, SOL_SOCKET, SO_BINDTODEVICE, ifName, 5);
@@ -283,7 +283,7 @@ int startsocket(char* addr, int port, int type)
 		{
 			perror("SO_BINDTODEVICE");
 			close(rawlisten);
-			exit(EXIT_FAILURE);
+			return 0;
 		}
 		epoll_add(rawlisten);
 

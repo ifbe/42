@@ -19,6 +19,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/2.tran/net.tcp.c
 	$(compiler) $(cflag) libflow/libnet/2.tran/net.tls.c
 	$(compiler) $(cflag) libflow/libnet/2.tran/net.udp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.raw.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.chat.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rdp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.vnc.c

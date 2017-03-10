@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	int ret;
 	struct event* ev;
 	struct screen* ui = birth() + 0x400000;
-	say("ui@%llx\n", (u64)ui);
+	say("@birth\n");
 
 	//config
 	ui[0].buf = 0;
@@ -134,6 +134,7 @@ again:
 	}
 
 	//after
+	say("@death\n");
 	death();
 	return 0;
 }

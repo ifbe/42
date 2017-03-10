@@ -3,6 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+int serve_raw(  u64 fd, u64 type, u8* buf, u64 len);
 int serve_first(u64 fd, u64 type, u8* buf, u64 len);
 int serve_chat( u64 fd, u64 type, u8* buf, u64 len);
 int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
@@ -66,10 +67,18 @@ static u8* datahome = 0;
 u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 {
 	//0
+#define raw 0x776172
 	if(type == 0)
 	{
 		type = serve_first(fd, type, buf, len);
 	}
+	else if(type == raw)
+	{
+		type = serve_raw(fd, type, buf, len);
+	}
+
+
+
 
 #define chat 0x74616863
 	if(type==chat)
@@ -233,7 +242,7 @@ int net_choose(u8* p)
 		fd = startsocket("0,0,0,0", 2222, 'r');	//tcp server
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = chat;
+		obj[fd].type1 = raw;
 	}
 	else if(ncmp(buf, "UDP", 3) == 0)
 	{

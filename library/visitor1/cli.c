@@ -47,6 +47,7 @@ int main(int argc,char* argv[])
 	int ret;
 	struct event* ev;
 	birth();
+	say("@birth\n");
 
 	//config
 	for(ret=1;ret<argc;ret++)
@@ -97,6 +98,7 @@ again:
 	}
 
 	//after
+	say("@death\n");
 	death();
 	return 0;
 }

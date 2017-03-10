@@ -100,6 +100,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/2.tran/net.tcp.c \
 	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
 	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
+	library/libsoft1/libflow/libnet/3.app/net.raw.c \
 	library/libsoft1/libflow/libnet/3.app/net.chat.c \
 	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
 	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
