@@ -171,7 +171,14 @@ void network_explain(u64* p)
 		if(len > 0)
 		{
 			datahome[len] = 0;
-			what = serve_what(where, obj[where].type1, datahome, len);
+			what = obj[where].type1;
+			if(what == http)
+			{
+				p[1] = http;
+				p[0] = len;
+			}
+
+			what = serve_what(where, what, datahome, len);
 			if(what != 0)
 			{
 				obj[where].type1 = what;
@@ -232,6 +239,7 @@ int net_choose(u8* p)
 	u8* url = buf+0x80;
 
 	//parse
+	url[0] = 0;
 	ret = buf2net(p, 256, buf, addr, &port, url);
 	if(ret <= 0)return 0;
 	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
@@ -275,7 +283,7 @@ int net_choose(u8* p)
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = http;
+		obj[fd].type1 = chat;
 		ret = tftp_write(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 	}

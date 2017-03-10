@@ -9,6 +9,7 @@ target:
 	$(compiler) $(cflag) game/game.tetris.c
 	$(compiler) $(cflag) game/game.weiqi.c
 	$(compiler) $(cflag) game/game.xiangqi.c
+	$(compiler) $(cflag) hack/hack.browse.c
 	$(compiler) $(cflag) hack/hack.console.c
 	$(compiler) $(cflag) hack/hack.editor.c
 	$(compiler) $(cflag) hack/hack.hex.c

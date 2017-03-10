@@ -70,7 +70,7 @@ int data_create(void* softaddr, u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x74786574;
+	p[1]=0x61746164;
 	p[2]=(u64)data_start;
 	p[3]=(u64)data_stop;
 	p[4]=(u64)data_ls;
