@@ -328,6 +328,9 @@ int startsocket(char* addr, int port, int type)
 	}
 	else if(type == 'U')	//udp server
 	{
+		int ret;
+		struct sockaddr_in servaddr;
+
 		//socket
 		udplisten = socket(AF_INET, SOCK_DGRAM, 0);
 		if (udplisten == -1)
@@ -347,22 +350,23 @@ int startsocket(char* addr, int port, int type)
 		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
 
 		//
-		ret = bind(udplisten, (SOCKADDR*)&servaddr, addrlen);
-		if(ret == SOCKET_ERROR)
+		ret = bind(udplisten, (void*)&servaddr, sizeof(servaddr));
+		if(ret == -1)
 		{
 			printf("error@bind\n");
-			closesocket(udplisten);
+			close(udplisten);
 			return 0;
 		}
 
+		obj[tcplisten].type0 = type;
+		obj[tcplisten].port_src = port;
+		epoll_add(udplisten);
 		return udplisten;
 	}
 	else if(type == 'T')	//tcp server
 	{
 		int ret;
 		struct sockaddr_in servaddr;
-		char IPADDRESS[32];
-		snprintf(IPADDRESS, 32, "0.0.0.0");
 
 		//socket
 		tcplisten = socket(AF_INET, SOCK_STREAM, 0);
@@ -393,9 +397,11 @@ int startsocket(char* addr, int port, int type)
 		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
 
 		//
-		if(bind(tcplisten, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
+		ret = bind(tcplisten, (void*)&servaddr, sizeof(servaddr));
+		if(ret == -1)
 		{
 			printf("error@bind\n");
+			close(tcplisten);
 			return 0;
 		}
 

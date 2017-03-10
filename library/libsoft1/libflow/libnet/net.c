@@ -225,13 +225,17 @@ int net_choose(u8* p)
 	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
 
 	//compare
-	if(ncmp(buf, "TCP", 3) == 0)
+	if(ncmp(buf, "raw", 3) == 0)
+	{
+		startsocket("0,0,0,0", 2222, 'r');	//tcp server
+	}
+	else if(ncmp(buf, "UDP", 3) == 0)
+	{
+		startsocket("0,0,0,0", 2222, 'U');	//tcp server
+	}
+	else if(ncmp(buf, "TCP", 3) == 0)
 	{
 		startsocket("0,0,0,0", 2222, 'T');	//tcp server
-	}
-	else if(ncmp(buf, "raw", 3) == 0)
-	{
-		fd = startsocket(addr, port, 'r');
 	}
 	else if(ncmp(buf, "udp", 3) == 0)
 	{
