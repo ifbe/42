@@ -184,21 +184,15 @@ return 0;
 
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 {
-/*
-	socklen_t serlen = 0;
-	struct sockaddr_in server = {0};
-	if(st == SOCK_DGRAM)
-	{
-		ret=sendto(fd, buf, len, 0, (void*)&server, serlen);
-		//printf("err:%d@sendto:%d\n",errno,ret);
-	}
-	else
-	{
-		ret=write(fd, buf, len);
-		//printf("err:%d@write:%d\n",errno,ret);
-	}
-*/
 	int ret;
+	struct sockaddr_in* server;
+	if(fd == udplisten)
+	{
+		server = (void*)(obj[fd].addr_src);
+		ret=sendto(fd, buf, len, 0, (void*)server, sizeof(struct sockaddr_in));
+		return ret;
+	}
+
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
 	ret = write(fd, buf, len);
@@ -206,50 +200,16 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 }
 int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 {
-/*
-	socklen_t serlen = 0;
-	struct sockaddr_in server = {0};
-	if(st == SOCK_RAW)
-	{
-		while(alive == 1)
-		{
-			ret=recvfrom(fd, buf, 0x1000, 0, NULL, NULL);
-			printmemory(buf,ret);
-		}
-	}
-	else if(st == SOCK_DGRAM)
-	{
-		while(alive == 1)
-		{
-			ret=recvfrom(fd, buf, 0x1000, 0, (void*)&server, (void*)&serlen);
-			if(ret<0)break;
-
-			buf[ret] = 0;
-			printf("%s", buf);
-			fflush(stdout);
-		}
-	}
-	else
-	{
-		while(alive == 1)
-		{
-			ret=read(fd, buf, 0x1000);
-			if(ret<0)break;
-
-			buf[ret] = 0;
-			printf("%s", buf);
-			fflush(stdout);
-		}
-	}
-*/
-/*
-	if(buf == 0)
-	{
-		epoll_mod(fd);
-		return 0;
-	}
-*/
 	int ret, cnt;
+	struct sockaddr_in server;
+	if(fd == udplisten)
+	{
+		ret = sizeof(server);
+		ret = recvfrom(fd, buf, len, 0, (void*)&server, (void*)&ret);
+		printf("%s:%d\n", inet_ntoa(server.sin_addr), server.sin_port);
+		return ret;
+	}
+
 	cnt = read(fd, buf, len);
 	if(cnt <= 0)return 0;
 
@@ -419,12 +379,7 @@ int startsocket(char* addr, int port, int type)
 	}
 	else if(type == 'u')	//udp client
 	{
-		//create struct
-		struct sockaddr_in server = {0};
-		socklen_t serlen = 0;
-		u32 temp[4];
-
-		//create socket
+		struct sockaddr_in* server;
 		fd = socket(AF_INET, SOCK_DGRAM, 0);
 		if(fd == -1)
 		{
@@ -432,9 +387,12 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
+		server = (void*)(obj[fd].addr_src);
+		server->sin_family = AF_INET;
+		server->sin_addr.s_addr = inet_addr(addr);
+		server->sin_port = htons(port);
 		obj[fd].type0 = type;
 		obj[fd].type1 = 0;
-		obj[fd].port_src = port;
 		epoll_add(fd);
 		return fd;
 	}
