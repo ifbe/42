@@ -2,9 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define ssh_new 0x500
-#define ssh_ing 0x501
-#define ssh_done 0x5ff
 int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
 int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
 //
@@ -495,16 +492,23 @@ static int secureshell_read(u8* buf, u64 len)
 	say("\n\n\n\n");
 	return buf[5];
 }
-int serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
+int secureshell_write()
 {
-	int ret;
-	if(type == ssh_new)
-	{
-		writesocket(fd, version, 0, sizeof(version)-1);
-		return ssh_ing;
-	}
+	return 0;
+}
 
-	ret = secureshell_read(buf, len);
+
+
+
+
+
+
+
+#define SSH 0x485353
+#define ssh 0x687373
+u64 serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
+{
+	int ret = secureshell_read(buf, len);
 	if(ret == 0x14)
 	{
 		//secureshell_write(buf, len);
@@ -525,11 +529,15 @@ int serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
 		ret += secureshell_write_0x15(buf+ret, len);
 		writesocket(fd, buf, 0, ret);
 	}
-	return ssh_done;
+	return SSH;
 }
-void ssh_start()
+u64 check_ssh(u64 fd, u64 type, u8* buf, u64 len)
 {
-}
-void ssh_stop()
-{
+	if(ncmp(buf, "SSH-2.0-", 8) == 0)
+	{
+		writesocket(fd, version, 0, sizeof(version)-1);
+		return SSH;
+	}
+
+	return 0;
 }

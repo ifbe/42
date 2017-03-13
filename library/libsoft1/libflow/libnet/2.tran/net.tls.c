@@ -728,7 +728,7 @@ void tls_stop()
 
 
 #define TLS 0x534c54
-int serve_tls(u64 fd, u64 type, u8* buf, int len)
+u64 serve_tls(u64 fd, u64 type, u8* buf, int len)
 {
 	//tls >>>> ascii
 	len = tls_read(fd, buf, len);
@@ -742,5 +742,10 @@ good:
 	writesocket(fd, buf, 0, len);
 	return TLS;
 error:
+	return 0;
+}
+u64 check_tls(u64 fd, u64 type, u8* buf, int len)
+{
+	if(buf[0] == 0x16)return TLS;
 	return 0;
 }

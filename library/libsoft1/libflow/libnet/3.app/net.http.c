@@ -84,7 +84,11 @@ int http_read(u8* buf, int max)
 
 
 
-int check_http(char* buf, int max)
+#define HTTP 0x50545448
+#define http 0x70747468
+#define WS 0x5357
+#define ws 0x7377
+int check_http(u64 fd, u64 type, char* buf, int max)
 {
 	int ret;
 	char* p;
@@ -114,10 +118,6 @@ int check_http(char* buf, int max)
 	);
 */
 	//
-#define HTTP 0x50545448
-#define http 0x70747468
-#define WS 0x5357
-#define ws 0x7377
 	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return WS;
 	if(GET != 0)return HTTP;
 	if( (Connection != 0) && (Upgrade != 0) )return ws;

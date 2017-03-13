@@ -3,17 +3,23 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int serve_raw(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_first(u64 fd, u64 type, u8* buf, u64 len);
-int serve_chat( u64 fd, u64 type, u8* buf, u64 len);
-int serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_tls(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_rdp(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_vnc(  u64 fd, u64 type, u8* buf, u64 len);
-int serve_http( u64 fd, u64 type, u8* buf, u64 len);
-int serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
-int serve_https(u64 fd, u64 type, u8* buf, u64 len);
-int serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
+u64 check_ssh(  u64 fd, u64 type, u8* buf, u64 len);
+u64 check_tls(  u64 fd, u64 type, u8* buf, u64 len);
+u64 check_http( u64 fd, u64 type, u8* buf, u64 len);
+u64 check_rtmp( u64 fd, u64 type, u8* buf, u64 len);
+//
+u64 serve_raw(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_chat( u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_tls(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_rdp(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_vnc(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_http( u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_https(u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_rtmp( u64 fd, u64 type, u8* buf, u64 len);
+//
 int tftp_read(void*, int);
 int tftp_write(void*, int);
 int http_read(void*, int);
@@ -41,17 +47,17 @@ void say(char*, ...);
 
 struct object
 {
-        //[0x00,0x0f]
-        u64 type0;      //raw, bt, udp, tcp?
-        u64 type1;      //ssh, tls?
+	//[0x00,0x0f]
+	u64 type0;      //raw, bt, udp, tcp?
+	u64 type1;      //ssh, tls?
 
-        //[0x10,0x1f]
-        u64 port_src;
-        u64 port_dst;
+	//[0x10,0x1f]
+	u64 port_src;
+	u64 port_dst;
 
-        //[0x20,0x3f]
-        u8 addr_src[0x10];
-        u8 addr_dst[0x10];
+	//[0x20,0x3f]
+	u8 addr_src[0x10];
+	u8 addr_dst[0x10];
 
 	//[0x40,0xff]
 	u8 data[0xc0];
@@ -64,90 +70,104 @@ static u8* datahome = 0;
 
 
 
+//capital(uppercase):		server
+//small(lowercase):		client
+#define RAW 0x574152		//parse, print
+#define raw 0x776172		//send raw packet
+#define CHAT 0x54414843		//check, broadcast
+#define chat 0x74616863		//send user msg
+#define HTTP 0x50545448		//parse, reply
+#define http 0x70747468		//req url, get reply
+#define HTTPS 0x5350545448	//parse, reply
+#define https 0x7370747468	//req url, get reply
+#define WS 0x5357		//c 
+#define ws 0x7377		//s
+#define WSS 0x535357		//s
+#define wss 0x737377		//c
+#define TLS 0x534c54		//s
+#define tls 0x736c74		//c
+#define SSH 0x485353		//s
+#define ssh 0x687373		//c
+#define SOCKS 0x534b434f53	//s
+#define socks 0x736b636f73	//c
+#define RDP 0x504452		//s
+#define rdp 0x706472		//c
+#define VNC 0x434e56		//s
+#define vnc 0x636e76		//c
+#define RTMP 0x504d5452		//s
+#define rtmp 0x706d7472		//c
 u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 {
-	//0
-#define raw 0x776172
-	if(type == 0)
-	{
-		type = serve_first(fd, type, buf, len);
-	}
-	else if(type == raw)
+	int ret;
+	if(type != 0)goto protocol;
+
+handshake:
+	type = check_tls(fd, type, buf, len);
+	if(type != 0)goto protocol;
+
+	type = check_ssh(fd, type, buf, len);
+	if(type != 0)goto protocol;
+
+	type = check_http(fd, type, buf, len);
+	if(type != 0)goto protocol;
+
+	type = check_rtmp(fd, type, buf, len);
+	if(type != 0)goto protocol;
+
+	type = CHAT;
+
+
+
+protocol:
+	if(type == RAW)
 	{
 		type = serve_raw(fd, type, buf, len);
 	}
-
-
-
-
-#define chat 0x74616863
-	if(type==chat)
+	else if(type==CHAT)
 	{
 		type = serve_chat(fd, type, buf, len);
 	}
-
-#define HTTP 0x50545448		//connection
-#define http 0x70747468		//client
 	else if( (type==HTTP) | (type==http) )
 	{
 		type = serve_http(fd, type, buf, len);
 	}
-
-#define WS 0x5357
-#define ws 0x7377
 	else if( (type==WS) | (type==ws) )
 	{
 		type = serve_ws(fd, type, buf, len);
 	}
-
-#define TLS 0x534c54
-#define tls 0x736c74
 	else if( (type==TLS) | (type==tls) )
 	{
 		type = serve_tls(fd, type, buf, len);
 	}
-
-#define HTTPS 0x5350545448
-#define https 0x7370747468
 	else if( (type==HTTPS) | (type==https) )
 	{
 		type = serve_https(fd, type, buf, len);
 	}
-
-#define WSS 0x535357
-#define wss 0x737377
 	else if( (type==WSS) | (type==wss) )
 	{
 		type = serve_wss(fd, type, buf, len);
 	}
-
-#define SSH 0x485353
-#define ssh 0x687373
 	else if( (type==SSH) | (type==ssh) )
 	{
 		type = serve_ssh(fd, type, buf, len);
 	}
-
-#define SOCKS 0x534b434f53
-#define socks 0x736b636f73
 	else if( (type==SOCKS) | (type==socks) )
 	{
 		//type = serve_socks(fd, type, buf, len);
 	}
-
-#define RDP 0x504452
-#define rdp 0x706472
 	else if( (type==RDP) | (type==rdp) )
 	{
 		type = serve_rdp(fd, type, buf, len);
 	}
-
-#define VNC 0x434e56
-#define vnc 0x636e76
 	else if( (type==VNC) | (type==vnc) )
 	{
 		type = serve_vnc(fd, type, buf, len);
 	}
+	else if( (type==RTMP) | (type==rtmp) )
+	{
+		type = serve_rtmp(fd, type, buf, len);
+	}
+	else printmemory(buf, len);
 
 	return type;
 }
@@ -245,19 +265,19 @@ int net_choose(u8* p)
 	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
 
 	//compare
-	if(ncmp(buf, "raw", 3) == 0)
+	if(ncmp(buf, "RAW", 3) == 0)
 	{
 		fd = startsocket("0,0,0,0", 2222, 'r');	//tcp server
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = raw;
+		obj[fd].type1 = RAW;
 	}
 	else if(ncmp(buf, "UDP", 3) == 0)
 	{
 		fd = startsocket("0,0,0,0", 2222, 'U');	//tcp server
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = chat;
+		obj[fd].type1 = CHAT;
 	}
 	else if(ncmp(buf, "TCP", 3) == 0)
 	{
@@ -269,21 +289,21 @@ int net_choose(u8* p)
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = chat;
+		obj[fd].type1 = CHAT;
 	}
 	else if(ncmp(buf, "tcp", 3) == 0)
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = chat;
+		obj[fd].type1 = CHAT;
 	}
 	else if(ncmp(buf, "tftp", 4) == 0)
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 
-		obj[fd].type1 = chat;
+		obj[fd].type1 = CHAT;
 		ret = tftp_write(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 	}
