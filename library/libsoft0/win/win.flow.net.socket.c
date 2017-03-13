@@ -4,6 +4,7 @@
 #include<ws2tcpip.h>	//IP_HDRINCL
 #include<ws2bth.h>		//BTHPROTO_RFCOMM
 #include<winsock2.h>
+#include<mswsock.h>
 #include<windows.h>
 #define u8 unsigned char
 #define u16 unsigned short
@@ -65,18 +66,21 @@ void peername(u64 fd, u32* buf)
 DWORD WINAPI iocpthread(LPVOID pM)
 {
 	int ret;
-	DWORD trans;
-	HANDLE iocp = (HANDLE)pM;
-return 0;
+	DWORD trans = 0;
+	void* context = 0;
+	OVERLAPPED* overlap = NULL;
+
 	while(1)
 	{
 		ret = GetQueuedCompletionStatus(
-			iocp,
+			iocpfd,
 			&trans,
-			0,//(PULONG_PTR)&PerHandleData,
-			0,//(LPOVERLAPPED*)&IpOverlapped,
+			(void*)&context,
+			&overlap,
 			INFINITE
 		);
+
+		printf("ret=%d,trans=%d\n",ret,trans);
 	}
 	return 0;
 }
@@ -231,7 +235,15 @@ u64 startsocket(char* addr, int port, int type)
 		SOCKADDR_IN servaddr;
 
 		//
-		tcplisten = socket(AF_INET, SOCK_STREAM, 0);
+		tcplisten = WSASocket(
+			AF_INET, SOCK_STREAM, IPPROTO_TCP,
+			0, 0, WSA_FLAG_OVERLAPPED
+		);
+		if(tcplisten == INVALID_SOCKET)
+		{
+			printf("error@wsasocket\n");
+			return 0;
+		}
 
 		//
 		servaddr.sin_family = AF_INET;
@@ -248,8 +260,63 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		listen(tcplisten, SOMAXCONN);
+		ret = listen(tcplisten, SOMAXCONN);
+		if(ret == -1)
+		{
+			printf("error@listen\n");
+			closesocket(tcplisten);
+			return 0;
+		}
 
+		//
+		CreateIoCompletionPort(
+			(void*)tcplisten,
+			iocpfd,
+			0,
+			4
+		);
+
+		LPFN_ACCEPTEX acceptex = NULL;
+		GUID guidacceptex = WSAID_ACCEPTEX;
+		DWORD haha = 0;
+		ret = WSAIoctl(
+			tcplisten,
+			SIO_GET_EXTENSION_FUNCTION_POINTER,
+			&guidacceptex,
+			sizeof(guidacceptex),
+			&acceptex,
+			sizeof(acceptex),
+			&haha,
+			NULL,
+			NULL
+		);
+		if(ret != 0)
+		{
+			printf("error@WSAIoctl\n");
+			return 0;
+		}
+
+		int j;
+		SOCKET tmp;
+		for(j=0;j<1000;j++)
+		{
+			tmp = WSASocket(
+				AF_INET, SOCK_STREAM, IPPROTO_TCP,
+				0, 0, WSA_FLAG_OVERLAPPED
+			);
+			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
+
+			ret = acceptex(
+				tcplisten,
+				tmp,
+				(void*)obj[tmp/4].data,
+				0,
+				0x20,
+				0x20,
+				0,
+				(void*)(obj[tmp/4].data+0x40)
+			);
+		}
 		return tcplisten;
 	}
 	else if(type == 'B')	//bluetooth server
@@ -262,6 +329,20 @@ u64 startsocket(char* addr, int port, int type)
 		if(fd == INVALID_SOCKET)
 		{
 			printf("error@socket\n");
+			return 0;
+		}
+
+		struct sockaddr_in server;
+		memset(&server, 0, sizeof(struct sockaddr_in));
+		server.sin_family = AF_INET;
+		server.sin_addr.s_addr = inet_addr(addr);
+		server.sin_port = htons(port);
+
+		//
+		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+		if(ret < 0)
+		{
+			printf("connect error\n");
 			return 0;
 		}
 
