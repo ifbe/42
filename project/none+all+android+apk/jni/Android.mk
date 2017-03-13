@@ -100,13 +100,14 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/2.tran/net.tcp.c \
 	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
 	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
-	library/libsoft1/libflow/libnet/3.app/net.raw.c \
 	library/libsoft1/libflow/libnet/3.app/net.chat.c \
 	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
-	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
-	library/libsoft1/libflow/libnet/3.app/net.vnc.c \
 	library/libsoft1/libflow/libnet/3.app/net.http.c \
+	library/libsoft1/libflow/libnet/3.app/net.raw.c \
+	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
+	library/libsoft1/libflow/libnet/3.app/net.rtmp.c \
 	library/libsoft1/libflow/libnet/3.app/net.tftp.c \
+	library/libsoft1/libflow/libnet/3.app/net.vnc.c \
 	library/libsoft1/libflow/libnet/3.app/net.ws.c \
 	library/libsoft1/libflow/libnet/net.c \
 	library/libsoft1/libflow/libsound/sound.c \

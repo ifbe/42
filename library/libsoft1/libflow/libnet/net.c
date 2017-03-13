@@ -39,8 +39,8 @@ int stopsocket(u64);
 int readsocket(u64, void*, int, int);
 int writesocket(u64, void*, int, int);
 //
-void printmemory(char*, int);
-void say(char*, ...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -101,20 +101,24 @@ u64 serve_what(u64 fd, u64 type, u8* buf, int len)
 	int ret;
 	if(type != 0)goto protocol;
 
+
+
+
 handshake:
-	type = check_tls(fd, type, buf, len);
-	if(type != 0)goto protocol;
-
 	type = check_ssh(fd, type, buf, len);
-	if(type != 0)goto protocol;
+	if(type != 0)return type;
 
-	type = check_http(fd, type, buf, len);
+	type = check_tls(fd, type, buf, len);
 	if(type != 0)goto protocol;
 
 	type = check_rtmp(fd, type, buf, len);
 	if(type != 0)goto protocol;
 
+	type = check_http(fd, type, buf, len);
+	if(type != 0)goto protocol;
+
 	type = CHAT;
+
 
 
 

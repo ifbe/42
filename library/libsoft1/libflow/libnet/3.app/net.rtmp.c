@@ -16,7 +16,7 @@ void say(void*, ...);
 #define rtmp 0x706d7472
 u64 check_rtmp(u64 fd, u64 type, u8* buf, int len)
 {
-	if(buf[0] = 0x3)return RTMP;
+	if(buf[0] == 0x3)return RTMP;
 	return 0;
 }
 u64 serve_rtmp(u64 fd, u64 type, u8* buf, int len)

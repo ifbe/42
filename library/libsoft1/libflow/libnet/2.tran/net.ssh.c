@@ -5,9 +5,9 @@
 int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
 int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
 //
-void generatePG(u8*, int, u8*, int);
-int cmp(u8*,u8*);
-int ncmp(u8*,u8*,int);
+void generatePG(void*, int, void*, int);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 //
 int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
