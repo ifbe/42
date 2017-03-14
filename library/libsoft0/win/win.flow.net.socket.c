@@ -40,11 +40,13 @@ struct object
 	u8 addr_dst[0x10];
 
 	//[0x40,0xff]
-	u8 data[0xc0];
+	u8 data[0x40];
+	u8 haha[0x80];
 };
 static struct object* obj;
 //
 static HANDLE iocpfd;
+static SOCKET rawlisten;
 static SOCKET tcplisten;
 static SOCKET udplisten;
 
@@ -86,8 +88,20 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			INFINITE
 		);
 
-		printf("ret=%d,trans=%d,fd=%d\n",ret, trans, *pfd);
-		printmemory(pov, 0x40);
+		printf("ret=%d,trans=%d,listen=%d,this=%d\n",
+			ret, trans, *pfd, ((void*)pov - (void*)obj - 0x80) / 0x40
+		);
+/*
+			//
+			p = (void*)(obj[tmp/4].data);
+			*p = tmp;
+			CreateIoCompletionPort(
+				(void*)tmp,
+				iocpfd,
+				(ULONG_PTR)p,
+				(ULONG_PTR)(p+0x40)
+			);
+*/
 	}
 	return 0;
 }
@@ -169,7 +183,7 @@ u64 startsocket(char* addr, int port, int type)
 	int ret;
 	if(type == 'r')		//raw
 	{
-		SOCKET rawlisten = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
+		rawlisten = socket(PF_INET, SOCK_RAW, IPPROTO_IP);
 		if(rawlisten == SOCKET_ERROR)
 		{
 			printf("error:%d@socket\n", GetLastError());
@@ -239,7 +253,7 @@ u64 startsocket(char* addr, int port, int type)
 		int addrlen = sizeof(SOCKADDR_IN);
 		SOCKADDR_IN servaddr;
 
-		//s.1
+		//server.1
 		tcplisten = WSASocket(
 			AF_INET, SOCK_STREAM, IPPROTO_TCP,
 			0, 0, WSA_FLAG_OVERLAPPED
@@ -250,12 +264,12 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//s.2
+		//server.2
 		servaddr.sin_family = AF_INET;
 		servaddr.sin_port = htons(port);
 		servaddr.sin_addr.s_addr = INADDR_ANY;
 
-		//s.3
+		//server.3
 		ret = bind(tcplisten, (SOCKADDR*)&servaddr, addrlen);
 		if(ret == SOCKET_ERROR)
 		{
@@ -264,7 +278,7 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//s.4
+		//server.4
 		ret = listen(tcplisten, SOMAXCONN);
 		if(ret == -1)
 		{
@@ -274,7 +288,7 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 
-		//c.1
+		//server.5
 		u32* p = (void*)(obj[tcplisten/4].data);
 		*p = tcplisten;
 		CreateIoCompletionPort(
@@ -284,10 +298,10 @@ u64 startsocket(char* addr, int port, int type)
 			0
 		);
 
-		//c.2
+		//client.1
 		LPFN_ACCEPTEX acceptex = NULL;
 		GUID guidacceptex = WSAID_ACCEPTEX;
-		DWORD haha = 0;
+		DWORD dwret = 0;
 		ret = WSAIoctl(
 			tcplisten,
 			SIO_GET_EXTENSION_FUNCTION_POINTER,
@@ -295,7 +309,7 @@ u64 startsocket(char* addr, int port, int type)
 			sizeof(guidacceptex),
 			&acceptex,
 			sizeof(acceptex),
-			&haha,
+			&dwret,
 			NULL,
 			NULL
 		);
@@ -305,10 +319,9 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//c.3
+		//clients.2
 		int j;
 		SOCKET tmp;
-		u8* q;
 		for(j=0;j<1000;j++)
 		{
 			//
@@ -319,29 +332,15 @@ u64 startsocket(char* addr, int port, int type)
 			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
 
 			//
-			q = obj[tmp/4].data+0x80;
-			*(u32*)(q+sizeof(OVERLAPPED)) = tmp;
-
-			//
 			ret = acceptex(
 				tcplisten,
 				tmp,
-				(void*)(q+0x40),
+				(void*)(obj[tmp/4].data),
 				0,
 				0x20,
 				0x20,
 				0,
-				(void*)(q+0x80)
-			);
-
-			//
-			p = (void*)(obj[tmp/4].data);
-			*p = tmp;
-			CreateIoCompletionPort(
-				(void*)tmp,
-				iocpfd,
-				(ULONG_PTR)p,
-				(ULONG_PTR)(p+0x40)
+				(void*)(obj[tmp/4].haha)
 			);
 		}
 		return tcplisten;
