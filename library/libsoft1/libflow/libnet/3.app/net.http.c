@@ -36,9 +36,7 @@ static char* GET = 0;
 
 int http_write_request(u8* buf, int len, char* url, char* host)
 {
-	if(	(url==0)|
-		(url[0]==0) )
-	{url="/index.html";}
+	if((url==0)|(url[0]==0)){url="/";}
 
 	return fmt(buf, 100,
 		"GET %s HTTP/1.1\r\n"

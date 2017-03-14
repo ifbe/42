@@ -43,9 +43,10 @@ struct player
         u8 data[0xc0];
 };
 static struct player* pl;
+static int count = 0;
 //
 static u64 fd = 0;
-static int len;
+static int len = 0;
 static u8* srcbuf = 0;
 static u8* dstbuf = 0;
 
@@ -54,6 +55,27 @@ static u8* dstbuf = 0;
 
 static void browse_read_text(struct window* win)
 {
+	u8* p = (u8*)(win->buf);
+	int w = win->w;
+	int h = win->h;
+	int x,y;
+
+	//
+	for(x=0;x<w*h*4;x++)p[x] = 0;
+	for(x=0;x<w;x++)p[x<<2] = pl->data[x];
+
+	//
+	y = w;
+	for(x=0;x<len;x++)
+	{
+		if(dstbuf[x] == 0xa)y += w-(y%w);
+		else
+		{
+			p[y<<2] = dstbuf[x];
+			y++;
+			if(y>w*h)break;
+		}
+	}
 }
 static void browse_read_html(struct window* win)
 {
@@ -61,6 +83,7 @@ static void browse_read_html(struct window* win)
 static void browse_read_pixel(struct window* win)
 {
 	backgroundcolor(win, 0);
+	printstring(win, 0, 0, 1, pl->data, 0xffffffff, 0);
 	printstring(win, 0, 16, 1, dstbuf, 0xffffffff, 0);
 }
 static void browse_read(struct window* win)
@@ -89,21 +112,40 @@ static void browse_write(struct event* ev)
 {
 #define kbd 0x72616863
 #define http 0x70747468
-	int j;
 	u64 type = ev->what;
 	u64 key = ev->why;
 	if(type == kbd)
 	{
 		if(key == 0xd)
 		{
-			net_choose("http://127.0.0.1:2222/42.html");
+			net_choose(pl->data);
+			for(;count>=0;count--)pl->data[count] = 0;
+			count = 0;
+		}
+		else if(key == 0x8)
+		{
+			if(count>0)count--;
+			pl->data[count] = 0;
+		}
+		else
+		{
+			pl->data[count] = key&0xff;
+			if(count<0xbf)count++;
 		}
 	}
 	else if(type == http)
 	{
+		int src=0,dst=0;
 		fd = ev->where;
-		len = key;
-		for(j=0;j<len;j++)dstbuf[j]=srcbuf[j];
+
+		for(src=0;src<key;src++)
+		{
+			if(srcbuf[src] == 0xd)continue;
+
+			dstbuf[dst] = srcbuf[src];
+			dst++;
+		}
+		len = dst;
 	}
 }
 
