@@ -9,13 +9,10 @@ int findtail(char* p);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
-int tls_read(u64 fd, u8* buf, u64 len);
-int tls_write(u64 fd, u8* buf, u64 len);
-//
-int readfile(void* name, void* mem, u64 offset, u64 count);
-int writefile(void* name, void* mem, u64 offset, u64 count);
-int readsocket(u64 fd, void* addr, u64 offset, u64 count);
-int writesocket(u64 fd, void* addr, u64 offset, u64 count);
+int readfile(void* name, void* mem, u64 off, u64 len);
+int writefile(void* name, void* mem, u64 off, u64 len);
+int readsocket(int fd, void* mem, int off, int len);
+int writesocket(int fd, void* mem, int off, int len);
 //
 int fmt(void*, int, void*, ...);
 void printmemory(void*,int);
@@ -24,9 +21,6 @@ void say(void*, ...);
 
 
 
-//
-static char http_response[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
-//
 static char* Connection = 0;
 static char* Upgrade = 0;
 static char* GET = 0;
@@ -64,7 +58,7 @@ int http_read(u8* buf, int max)
 	GET++;
 
 	//
-	if(GET[0]==' ')
+	if(GET[0]<=' ')
 	{
 		GET = "42.html";
 		return 7;
@@ -86,7 +80,7 @@ int http_read(u8* buf, int max)
 #define http 0x70747468
 #define WS 0x5357
 #define ws 0x7377
-int check_http(u64 fd, u64 type, char* buf, int max)
+u64 check_http(u64 fd, u64 type, char* buf, int max)
 {
 	int ret;
 	char* p;
@@ -121,7 +115,7 @@ int check_http(u64 fd, u64 type, char* buf, int max)
 	if( (Connection != 0) && (Upgrade != 0) )return ws;
 	else return 0;
 }
-int serve_http(u64 fd, u64 type, u8* buf, int len)
+u64 serve_http(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret;
 	if(type == http)
@@ -130,22 +124,34 @@ int serve_http(u64 fd, u64 type, u8* buf, int len)
 		goto byebye;
 	}
 
-	//
+	//get filename
 	len = http_read(buf, len);
 	if(len <= 0)goto byebye;
 
-	//
+	//read body
 	len = http_write_file(buf, len, GET);
 	if(len <= 0)goto byebye;
 
-	//
-	ret = writesocket(fd, http_response, 0, sizeof(http_response)-1);
+	//read head
+	ret = fmt(buf+len, 0x100000-len,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/html\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+
+		len
+	);
+
+	//send head
+	ret = writesocket(fd, buf+len, 0, ret);
+
+	//send body
 	ret = writesocket(fd, buf, 0, len);
 
 byebye:
 	return 0;
 }
-int serve_https(u64 fd, u64 type, u8* buf, int len)
+u64 serve_https(u64 fd, u64 type, u8* buf, int len)
 {
 	return 0;
 }

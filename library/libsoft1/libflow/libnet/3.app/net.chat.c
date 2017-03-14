@@ -11,7 +11,7 @@ void say(void*, ...);
 
 #define CHAT 0x54414843
 #define chat 0x74616863
-int serve_chat(u64 fd, u64 type, char* buf, int len)
+u64 serve_chat(u64 fd, u64 type, char* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<len;j++)

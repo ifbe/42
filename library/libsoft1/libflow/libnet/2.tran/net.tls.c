@@ -11,8 +11,8 @@ void rsa2048(
 	u8* modbuf, int modlen);
 int pem2bin(  void* dest, void* mem, int off, int len);
 //
-int readsocket(   u64 fd, void* mem, int off, int len);
-int writesocket(  u64 fd, void* mem, int off, int len);
+int readsocket(   int fd, void* mem, int off, int len);
+int writesocket(  int fd, void* mem, int off, int len);
 int readfile( void* file, void* mem, int off, int len);
 int writefile(void* file, void* mem, int off, int len);
 //
@@ -591,7 +591,7 @@ int tls_write_both_data(u8* buf, int len)
 
 
 
-int tls_read(u64 fd, u8* buf, u64 len)
+int tls_read(u64 fd, u8* buf, int len)
 {
 	int ret=0;
 	//say("stage=%llx\n",p[1]);
@@ -646,7 +646,7 @@ int tls_read(u64 fd, u8* buf, u64 len)
 	say("}tls\n");
 	return ret;
 }
-int tls_write(u64 fd, u8* buf, u64 len)
+int tls_write(u64 fd, u8* buf, int len)
 {
 	int ret;
 	if(ret == 0)

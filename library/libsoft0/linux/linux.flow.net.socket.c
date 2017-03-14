@@ -182,16 +182,15 @@ return 0;
 
 
 
-int writesocket(u64 fd, u8* buf, u64 off, u64 len)
+int writesocket(int fd, u8* buf, int off, int len)
 {
 	int ret;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
-
 	ret = write(fd, buf, len);
 	return ret;
 }
-int readsocket(u64 fd, u8* buf, u64 off, u64 len)
+int readsocket(int fd, u8* buf, int off, int len)
 {
 	int ret, cnt;
 	struct sockaddr_in server;

@@ -10,8 +10,8 @@ int findhead(void* p);
 int findtail(void* p);
 u8* findstr(void* src, int max, void* target, int tarlen);
 //
-int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
-int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
+int readsocket(int fd, u8* addr, int offset, int count);
+int writesocket(int fd, u8* addr, int offset, int count);
 u32 getrandom();
 u64 gettime();
 //
@@ -382,7 +382,7 @@ theend:
 	}
 */
 }
-int serve_wss(u64 fd, u64 type, u8* buf, u64 len)
+u64 serve_wss(u64 fd, u64 type, u8* buf, u64 len)
 {
 	return 0;
 }

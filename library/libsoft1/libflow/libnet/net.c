@@ -20,11 +20,8 @@ u64 serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
 u64 serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
 u64 serve_rtmp( u64 fd, u64 type, u8* buf, u64 len);
 //
-int tftp_read(void*, int);
 int tftp_write(void*, int);
-int http_read(void*, int);
 int http_write_request(void*, int, void*, void*);
-int websocket_read_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
@@ -36,8 +33,8 @@ int cmp(void*, void*);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(u64);
-int readsocket(u64, void*, int, int);
-int writesocket(u64, void*, int, int);
+int readsocket(int, void*, int, int);
+int writesocket(int, void*, int, int);
 //
 void printmemory(void*, int);
 void say(void*, ...);
