@@ -6,11 +6,11 @@
 
 
 
-int ssl_read(u64* p, u8* buf, u64 len)
+int ssl_read(u64* p, u8* buf, int len)
 {
 	return 1;
 }
-int ssl_write(u64* p, u8* buf, u64 len)
+int ssl_write(u64* p, u8* buf, int len)
 {
 	return 1;
 }

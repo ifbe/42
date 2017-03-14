@@ -196,7 +196,7 @@ int websocket_write_handshake(u8* buf, int len)
 		"\r\n"
 	);
 }
-int websocket_write(u64 fd, u8* buf, u64 len)
+int websocket_write(u64 fd, u8* buf, int len)
 {
 	u8 headbuf[16];
 	int headlen;
@@ -220,10 +220,10 @@ int websocket_write(u64 fd, u8* buf, u64 len)
 	{
 		headlen = 10;
 		headbuf[1] = 127;
-		headbuf[2] = (len>>56)&0xff;
-		headbuf[3] = (len>>48)&0xff;
-		headbuf[4] = (len>>40)&0xff;
-		headbuf[5] = (len>>32)&0xff;
+		headbuf[2] = 0;
+		headbuf[3] = 0;
+		headbuf[4] = 0;
+		headbuf[5] = 0;
 		headbuf[6] = (len>>24)&0xff;
 		headbuf[7] = (len>>16)&0xff;
 		headbuf[8] = (len>>8)&0xff;
@@ -241,7 +241,7 @@ int websocket_write(u64 fd, u8* buf, u64 len)
 
 #define ws 0x7377
 #define WS 0x5357
-u64 serve_ws(u64 fd, u64 type, u8* buf, u64 len)
+u64 serve_ws(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret;
 	if(type == ws)
@@ -382,7 +382,7 @@ theend:
 	}
 */
 }
-u64 serve_wss(u64 fd, u64 type, u8* buf, u64 len)
+u64 serve_wss(u64 fd, u64 type, u8* buf, int len)
 {
 	return 0;
 }

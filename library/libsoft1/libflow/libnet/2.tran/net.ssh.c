@@ -49,7 +49,7 @@ static void printalgorithm(u8* buf, int len)
 		if(j>len)break;
 	}
 }
-static int secureshell_read_0x14(u8* buf, u64 len)
+static int secureshell_read_0x14(u8* buf, int len)
 {
 	int offset;
 	u32 temp;
@@ -165,7 +165,7 @@ static int secureshell_read_0x14(u8* buf, u64 len)
 byebye:
 	return 0x20;
 }
-static int secureshell_read_0x1e(u8* buf, u64 len)
+static int secureshell_read_0x1e(u8* buf, int len)
 {
 	u32 temp;
 	int j = 6;
@@ -175,7 +175,7 @@ static int secureshell_read_0x1e(u8* buf, u64 len)
 	printmemory(buf+j+4, temp);
 	return temp;
 }
-static int secureshell_read_0x1f(u8* buf, u64 len)
+static int secureshell_read_0x1f(u8* buf, int len)
 {
 	u32 Plen, Glen, Slen;
 	int j=6;
@@ -200,7 +200,7 @@ static int secureshell_read_0x1f(u8* buf, u64 len)
 
 	return j;
 }
-static int secureshell_read_0x22(u8* buf, u64 len)
+static int secureshell_read_0x22(u8* buf, int len)
 {
 	int min;
 	int prefer;
@@ -243,7 +243,7 @@ static int secureshell_write_head(u8* buf, int len)
 
 	return len;
 }
-static int secureshell_write_0x14(u8* buf, u64 len)
+static int secureshell_write_0x14(u8* buf, int len)
 {
 	int offset;
 	int temp;
@@ -342,7 +342,7 @@ static int secureshell_write_0x14(u8* buf, u64 len)
 	//
 	return offset;
 }
-static int secureshell_write_0x1f(u8* buf, u64 len)
+static int secureshell_write_0x1f(u8* buf, int len)
 {
 	int offset;
 	int Plen;
@@ -390,7 +390,7 @@ static int secureshell_write_0x1f(u8* buf, u64 len)
 	//
 	return offset;
 }
-static int secureshell_write_0x15(u8* buf, u64 len)
+static int secureshell_write_0x15(u8* buf, int len)
 {
 	int offset;
 	int temp;
@@ -431,7 +431,7 @@ static int secureshell_write_0x15(u8* buf, u64 len)
 
 //why,what,where,when
 static u8 version[]="SSH-2.0-finalanswer_42\r\n";
-static int secureshell_read(u8* buf, u64 len)
+static int secureshell_read(u8* buf, int len)
 {
 	int offset;
 	u32 temp;
@@ -506,7 +506,7 @@ int secureshell_write()
 
 #define SSH 0x485353
 #define ssh 0x687373
-u64 serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
+u64 serve_ssh(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret = secureshell_read(buf, len);
 	if(ret == 0x14)
@@ -531,7 +531,7 @@ u64 serve_ssh(u64 fd, u64 type, u8* buf, u64 len)
 	}
 	return SSH;
 }
-u64 check_ssh(u64 fd, u64 type, u8* buf, u64 len)
+u64 check_ssh(u64 fd, u64 type, u8* buf, int len)
 {
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{

@@ -15,7 +15,7 @@ int readsocket(int fd, void* mem, int off, int len);
 int writesocket(int fd, void* mem, int off, int len);
 //
 int fmt(void*, int, void*, ...);
-void printmemory(void*,int);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -50,46 +50,15 @@ int http_write_file(u8* buf, int len, char* name)
 	}
 	return ret;
 }
-int http_read(u8* buf, int max)
-{
-	int j;
-	if(GET == 0)return 0;
-	if(GET[0] != '/')return 0;
-	GET++;
-
-	//
-	if(GET[0]<=' ')
-	{
-		GET = "42.html";
-		return 7;
-	}
-
-	//
-	for(j=0;j<256;j++)
-	{
-		if(GET[j] <= 0x20)break;
-	}
-	GET[j] = 0;
-	return j;
-}
-
-
-
-
-#define HTTP 0x50545448
-#define http 0x70747468
-#define WS 0x5357
-#define ws 0x7377
-u64 check_http(u64 fd, u64 type, char* buf, int max)
+int http_read(u8* buf, int len)
 {
 	int ret;
-	char* p;
+	u8* p = buf;
 
 	GET = 0;
 	Connection = 0;
 	Upgrade = 0;
 
-	p = buf;
 	while(1)
 	{
 		if(ncmp(p, "GET ", 4) == 0)GET = p+4;
@@ -100,20 +69,70 @@ u64 check_http(u64 fd, u64 type, char* buf, int max)
 		if(ret <= 0)break;
 
 		p += ret;
-		if(p > buf+max)break;
+		if(p > buf+len)break;
 	}//while
-/*
+
+	//debug
 	say("GET@%llx,Connection@%llx,Upgrade@%llx\n",
 		(u64)GET,
 		(u64)Connection,
 		(u64)Upgrade
 	);
-*/
-	//
+
+}
+
+
+
+
+#define CHAT 0x54414843
+#define chat 0x74616863
+#define HTTP 0x50545448
+#define http 0x70747468
+#define WS 0x5357
+#define ws 0x7377
+u64 check_http(u64 fd, u64 type, char* buf, int len)
+{
+	int ret;
+
+	//check
+	http_read(buf, len);
 	if( (GET != 0) && (Connection != 0) && (Upgrade != 0) )return WS;
-	if(GET != 0)return HTTP;
 	if( (Connection != 0) && (Upgrade != 0) )return ws;
-	else return 0;
+	if(GET == 0)return CHAT;
+
+	//parse
+	if(GET[0] != '/')return 0;
+	if(GET[1]<=' ')GET = "/42.html";
+	else
+	{
+		for(ret=0;ret<256;ret++)
+		{
+			if(GET[ret] <= 0x20)break;
+		}
+		GET[ret] = 0;
+	}
+
+	//read body
+	len = http_write_file(buf, len, GET+1);
+	if(len <= 0)goto byebye;
+//say("len=%d\n",len);
+	//read head	"Content-Length: %d\r\n"
+	ret = fmt(buf+len, 0x100000-len,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/html\r\n"
+		"\r\n"
+	);
+//say("ret=%d\n",ret);
+
+
+	//send head
+	ret = writesocket(fd, buf+len, 0, ret);
+
+	//send body
+	ret = writesocket(fd, buf, 0, len);
+
+byebye:
+	return 0;
 }
 u64 serve_http(u64 fd, u64 type, u8* buf, int len)
 {
@@ -124,29 +143,8 @@ u64 serve_http(u64 fd, u64 type, u8* buf, int len)
 		goto byebye;
 	}
 
-	//get filename
-	len = http_read(buf, len);
-	if(len <= 0)goto byebye;
-
-	//read body
-	len = http_write_file(buf, len, GET);
-	if(len <= 0)goto byebye;
-
-	//read head
-	ret = fmt(buf+len, 0x100000-len,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: text/html\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-
-		len
-	);
-
-	//send head
-	ret = writesocket(fd, buf+len, 0, ret);
-
-	//send body
-	ret = writesocket(fd, buf, 0, len);
+	//http 1.1 persistent connection
+	return 0;
 
 byebye:
 	return 0;

@@ -3,22 +3,22 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-u64 check_ssh(  u64 fd, u64 type, u8* buf, u64 len);
-u64 check_tls(  u64 fd, u64 type, u8* buf, u64 len);
-u64 check_http( u64 fd, u64 type, u8* buf, u64 len);
-u64 check_rtmp( u64 fd, u64 type, u8* buf, u64 len);
+u64 check_ssh(  u64 fd, u64 type, u8* buf, int len);
+u64 check_tls(  u64 fd, u64 type, u8* buf, int len);
+u64 check_http( u64 fd, u64 type, u8* buf, int len);
+u64 check_rtmp( u64 fd, u64 type, u8* buf, int len);
 //
-u64 serve_raw(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_chat( u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_ssh(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_tls(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_rdp(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_vnc(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_http( u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_https(u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_ws(   u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_wss(  u64 fd, u64 type, u8* buf, u64 len);
-u64 serve_rtmp( u64 fd, u64 type, u8* buf, u64 len);
+u64 serve_raw(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_chat( u64 fd, u64 type, u8* buf, int len);
+u64 serve_ssh(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_tls(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_rdp(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_vnc(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_http( u64 fd, u64 type, u8* buf, int len);
+u64 serve_https(u64 fd, u64 type, u8* buf, int len);
+u64 serve_ws(   u64 fd, u64 type, u8* buf, int len);
+u64 serve_wss(  u64 fd, u64 type, u8* buf, int len);
+u64 serve_rtmp( u64 fd, u64 type, u8* buf, int len);
 //
 int tftp_write(void*, int);
 int http_write_request(void*, int, void*, void*);
@@ -114,7 +114,7 @@ handshake:
 	type = check_http(fd, type, buf, len);
 	if(type != 0)goto protocol;
 
-	type = CHAT;
+	if(type == 0)return 0;
 
 
 
@@ -174,6 +174,7 @@ protocol:
 }
 void network_explain(u64* p)
 {
+	int ret;
 	//u64 why = p[0];
 	u64 what = p[1] & 0xffff;
 	u64 where = p[2];
@@ -188,18 +189,18 @@ void network_explain(u64* p)
 	else if(what == 0x406e)
 	{
 		//get data
-		int len = readsocket(where, datahome, 0, 0x100000);
-		if(len > 0)
+		ret = readsocket(where, datahome, 0, 0x100000);
+		if(ret > 0)
 		{
-			datahome[len] = 0;
+			datahome[ret] = 0;
 			what = obj[where].type1;
 			if(what == http)
 			{
 				p[1] = http;
-				p[0] = len;
+				p[0] = ret;
 			}
 
-			what = serve_what(where, what, datahome, len);
+			what = serve_what(where, what, datahome, ret);
 			if(what != 0)
 			{
 				obj[where].type1 = what;
@@ -207,7 +208,7 @@ void network_explain(u64* p)
 			}
 		}
 
-		//wrong(len) or wrong(type)
+		//wrong(ret) or wrong(type)
 		stopsocket(where);
 	}
 }
