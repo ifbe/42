@@ -11,8 +11,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+void eventwrite(u64,u64,u64,u64);
 u64 startthread(void*, void*);
-void stopthread();
 //
 void printmemory(void*, ...);
 void say(void* , ...);
@@ -40,8 +40,8 @@ struct object
 	u8 addr_dst[0x10];
 
 	//[0x40,0xff]
-	u8 data[0x40];
-	u8 haha[0x80];
+	u8 data[0x40];		//(completion key) | (self and peer addr)
+	u8 haha[0x80];		//(only per io data)
 };
 static struct object* obj;
 //
@@ -49,6 +49,7 @@ static HANDLE iocpfd;
 static SOCKET rawlisten;
 static SOCKET tcplisten;
 static SOCKET udplisten;
+static WSABUF wsabuf;
 
 
 
@@ -73,35 +74,54 @@ void peername(u64 fd, u32* buf)
 }
 DWORD WINAPI iocpthread(LPVOID pM)
 {
-	int ret;
-	DWORD trans = 0;
-	u32* pfd = 0;
 	struct per_io_data* pov = NULL;
+	u32* key = 0;
+	char temp[4096];
+	int ret;
+
+	SOCKET fd;
+	DWORD trans = 0;
+	DWORD flag = 0;
 
 	while(1)
 	{
 		ret = GetQueuedCompletionStatus(
 			iocpfd,
 			&trans,
-			(void*)&pfd,
+			(void*)&key,
 			(void*)&pov,
 			INFINITE
 		);
 
+		fd = pov->fd;
 		printf("ret=%d,trans=%d,listen=%d,this=%d\n",
-			ret, trans, *pfd, ((void*)pov - (void*)obj - 0x80) / 0x40
+			ret, trans, *key, fd
 		);
-/*
-			//
-			p = (void*)(obj[tmp/4].data);
-			*p = tmp;
+
+		//accept
+		if(pov->stage == 0)
+		{
+			pov->stage = 1;
+			eventwrite(0, 0x2b6e, fd/4, 0);
+
 			CreateIoCompletionPort(
-				(void*)tmp,
+				(void*)fd,
 				iocpfd,
-				(ULONG_PTR)p,
-				(ULONG_PTR)(p+0x40)
+				(ULONG_PTR)(obj[fd/4].data),
+				0
 			);
-*/
+		}
+		else
+		{
+			pov->stage = 1;
+			eventwrite(0, 0x406e, fd/4, 0);
+		}
+
+		//all
+		wsabuf.buf = temp;
+		wsabuf.len = 4096;
+		ret = WSARecv(fd, &wsabuf, 1, &trans, &flag, (void*)pov, NULL);
+		printf("ret=%d,err=%d\n", ret, WSAGetLastError());
 	}
 	return 0;
 }
@@ -111,61 +131,25 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 {
-/*
-	int ret;
-	u8 buf[0x1000];
-
-	if(st == IPPROTO_RAW)
+	int j;
+	int c = wsabuf.len;
+	for(j=0;j<c;j++)
 	{
-		printf("if(nothing incoming){turnoff firewall}\n");
-		while(alive == 1)
-		{
-			ret=recvfrom(fd, buf, 0x1000, 0, NULL, NULL);
-			printmemory(buf,ret);
-		}
+		buf[j] = wsabuf.buf[j];
 	}
-	else if(st == IPPROTO_UDP)
-	{
-		while(alive == 1)
-		{
-			ret = sizeof(struct sockaddr_in);
-			ret = recvfrom(fd, buf, 256, 0, (void*)&serAddr, &ret);
-			if(ret <= 0)continue;
-
-			buf[ret] = 0;
-			printf("%s", buf);
-			fflush(stdout);
-		}
-	}
-	else if(st == IPPROTO_TCP)
-	{
-		while(alive == 1)
-		{
-			ret = recv(fd, buf, 256, 0);
-			if(ret <= 0)continue;
-
-			buf[ret] = 0;
-			printf("%s", buf);
-			fflush(stdout);
-		}
-	}
-	return 0;
-*/
+	return c;
 }
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 {
 	int ret;
 /*
-	if(st == IPPROTO_TCP)
-	{
-	}
-	else if(st == IPPROTO_UDP)
+	if(st == IPPROTO_UDP)
 	{
 		ret = sizeof(struct sockaddr_in);
 		ret = sendto(fd, buf, len, 0, (void*)&serAddr, ret);
 	}
 */
-	ret = send(fd, buf, len, 0);
+	ret = send(fd*4, buf, len, 0);
 	return ret;
 }
 int listsocket()
@@ -176,6 +160,8 @@ int choosesocket()
 }
 int stopsocket(u64 fd)
 {
+	Sleep(1000);
+	closesocket(fd*4);
 	return 0;
 }
 u64 startsocket(char* addr, int port, int type)
@@ -322,6 +308,8 @@ u64 startsocket(char* addr, int port, int type)
 		//clients.2
 		int j;
 		SOCKET tmp;
+		void* pdata = (void*)(obj[tmp/4].data);
+		struct per_io_data* pov;
 		for(j=0;j<1000;j++)
 		{
 			//
@@ -332,15 +320,13 @@ u64 startsocket(char* addr, int port, int type)
 			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
 
 			//
+			pov = (void*)(obj[tmp/4].haha);
+			pov->fd = tmp;
+			pov->stage = 0;
 			ret = acceptex(
-				tcplisten,
-				tmp,
-				(void*)(obj[tmp/4].data),
-				0,
-				0x20,
-				0x20,
-				0,
-				(void*)(obj[tmp/4].haha)
+				tcplisten, tmp,
+				pdata, 0, 0x20, 0x20, 0,
+				(void*)pov
 			);
 		}
 		return tcplisten;
