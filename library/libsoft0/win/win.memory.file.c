@@ -115,7 +115,7 @@ int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 		//
 		hFile = CreateFile(
 			filename, GENERIC_READ, 0,
-			NULL, OPEN_ALWAYS,
+			NULL, OPEN_EXISTING,
 			FILE_ATTRIBUTE_NORMAL, NULL
 		);
 		if(hFile==INVALID_HANDLE_VALUE)

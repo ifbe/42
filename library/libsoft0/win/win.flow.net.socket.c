@@ -24,6 +24,8 @@ struct per_io_data
 	OVERLAPPED overlap;
 	SOCKET fd;
 	int stage;
+	WSABUF bufing;
+	WSABUF bufdone;
 };
 struct object
 {
@@ -40,8 +42,8 @@ struct object
 	u8 addr_dst[0x10];
 
 	//[0x40,0xff]
-	u8 data[0x40];		//(completion key) | (self and peer addr)
-	u8 haha[0x80];		//(only per io data)
+	u8 tempdat[0x40];		//(completion key) | (self and peer addr)
+	u8 overlap[0x80];		//(only per io data)
 };
 static struct object* obj;
 //
@@ -49,7 +51,6 @@ static HANDLE iocpfd;
 static SOCKET rawlisten;
 static SOCKET tcplisten;
 static SOCKET udplisten;
-static WSABUF wsabuf;
 
 
 
@@ -92,6 +93,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			(void*)&pov,
 			INFINITE
 		);
+		if(ret == 0)continue;
 
 		fd = pov->fd;
 		printf("ret=%d,trans=%d,listen=%d,this=%d\n",
@@ -107,21 +109,23 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			CreateIoCompletionPort(
 				(void*)fd,
 				iocpfd,
-				(ULONG_PTR)(obj[fd/4].data),
+				(ULONG_PTR)(obj[fd/4].tempdat),
 				0
 			);
 		}
 		else
 		{
 			pov->stage = 1;
+			pov->bufdone.buf = pov->bufing.buf;
+			pov->bufdone.len = pov->bufing.len;
 			eventwrite(0, 0x406e, fd/4, 0);
 		}
 
 		//all
-		wsabuf.buf = temp;
-		wsabuf.len = 4096;
-		ret = WSARecv(fd, &wsabuf, 1, &trans, &flag, (void*)pov, NULL);
-		printf("ret=%d,err=%d\n", ret, WSAGetLastError());
+		pov->bufing.buf = malloc(4096);
+		pov->bufing.len = 4096;
+		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
+		//printf("ret=%d,err=%d\n", ret, WSAGetLastError());
 	}
 	return 0;
 }
@@ -131,17 +135,22 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 {
-	int j;
-	int c = wsabuf.len;
-	for(j=0;j<c;j++)
-	{
-		buf[j] = wsabuf.buf[j];
-	}
+	int c,j;
+	char* p;
+	struct per_io_data* pov;
+
+	pov = (void*)(obj[fd].overlap);
+	p = pov->bufdone.buf;
+	c = pov->bufdone.len;
+	for(j=0;j<c;j++)buf[j] = p[j];
+	free(pov->bufdone.buf);
 	return c;
 }
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 {
 	int ret;
+	DWORD dwret;
+	WSABUF wbuf;
 /*
 	if(st == IPPROTO_UDP)
 	{
@@ -149,7 +158,10 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 		ret = sendto(fd, buf, len, 0, (void*)&serAddr, ret);
 	}
 */
-	ret = send(fd*4, buf, len, 0);
+	wbuf.buf = buf;
+	wbuf.len = len;
+	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
+	printf("@send:ret=%d,err=%d\n",ret,GetLastError());
 	return ret;
 }
 int listsocket()
@@ -160,7 +172,6 @@ int choosesocket()
 }
 int stopsocket(u64 fd)
 {
-	Sleep(1000);
 	closesocket(fd*4);
 	return 0;
 }
@@ -275,7 +286,7 @@ u64 startsocket(char* addr, int port, int type)
 
 
 		//server.5
-		u32* p = (void*)(obj[tcplisten/4].data);
+		u32* p = (void*)(obj[tcplisten/4].tempdat);
 		*p = tcplisten;
 		CreateIoCompletionPort(
 			(void*)tcplisten,
@@ -308,7 +319,7 @@ u64 startsocket(char* addr, int port, int type)
 		//clients.2
 		int j;
 		SOCKET tmp;
-		void* pdata = (void*)(obj[tmp/4].data);
+		void* pdata = (void*)(obj[tmp/4].tempdat);
 		struct per_io_data* pov;
 		for(j=0;j<1000;j++)
 		{
@@ -320,7 +331,7 @@ u64 startsocket(char* addr, int port, int type)
 			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
 
 			//
-			pov = (void*)(obj[tmp/4].haha);
+			pov = (void*)(obj[tmp/4].overlap);
 			pov->fd = tmp;
 			pov->stage = 0;
 			ret = acceptex(
