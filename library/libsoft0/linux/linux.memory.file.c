@@ -27,7 +27,6 @@ void say(char* fmt,...);
 
 
 //////////////
-static int thisfd=-1;
 static char _dev_sd[0x20]={
 	'/','d','e','v','/','s','d','a',0,0
 };
@@ -72,21 +71,21 @@ static int trythis(char* src,char* dest)
 
 
 //file名字，mem地址，文件内偏移，总字节数
-int writefile(char* file, char* mem, u64 offset, u64 count)
+int writefile(u64 file, char* mem, u64 offset, u64 count)
 {
 	int fd;
 	int ret;
 
-	if(file == 0)
+	if(file < 0x1000)
 	{
-		ret=lseek64(thisfd, offset, SEEK_SET);
+		ret=lseek64(file, offset, SEEK_SET);
 		if(ret==-1)
 		{
 			//say("errno:%d,seek:%llx\n",errno,sector);
 			return -2;
 		}
 
-		ret=write(thisfd, mem, count);
+		ret=write(file, mem, count);
 		if(ret==-1)
 		{
 			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
@@ -95,7 +94,7 @@ int writefile(char* file, char* mem, u64 offset, u64 count)
 	}
 	else
 	{
-		fd = open(file, O_WRONLY|O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
+		fd = open((void*)file, O_WRONLY|O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
 		if(fd==-1)
 		{
 			printf("fail@open\n");
@@ -127,21 +126,21 @@ int writefile(char* file, char* mem, u64 offset, u64 count)
 	//
 	return ret;
 }
-int readfile(char* file, char* mem, u64 offset, u64 count)
+int readfile(u64 file, char* mem, u64 offset, u64 count)
 {
 	int fd;
 	int ret;
 
-	if(file == 0)
+	if(file < 0x1000)
 	{
-		ret=lseek64(thisfd, offset, SEEK_SET);
+		ret=lseek64(file, offset, SEEK_SET);
 		if(ret==-1)
 		{
 			//say("errno:%d,seek:%llx\n",errno,sector);
 			return -2;
 		}
 
-		ret=read(thisfd, mem, count);
+		ret=read(file, mem, count);
 		if(ret==-1)
 		{
 			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
@@ -150,7 +149,7 @@ int readfile(char* file, char* mem, u64 offset, u64 count)
 	}
 	else
 	{
-		fd = open(file, O_RDONLY);
+		fd = open((void*)file, O_RDONLY);
 		if(fd==-1)
 		{
 			printf("fail@open\n");
@@ -228,43 +227,20 @@ void choosefile()
 
 int startfile(char* path)
 {
-	//先检查
+	//检查
 	if(path == 0)return -3;
 	if(path[0] == 0)return -2;
 
-	//测试打开新的
-	int tempfd=open(path,O_RDONLY | O_LARGEFILE);
-	if(tempfd == -1)
-	{
-		//say("(openfile error)%s\n",path);
-		return -1;
-	}
-	else close(tempfd);
-
-	//真正打开新的
-	if(thisfd != -1)close(thisfd);
-	thisfd=open(path,O_RDONLY | O_LARGEFILE);
-
-	//
-	//say("thisfd=%d\n",thisfd);
-	return 1;
+	//打开
+	return open(path,O_RDONLY | O_LARGEFILE);
 }
-void stopfile()
+void stopfile(int fd)
 {
-	if(thisfd!=-1)
-	{
-		close(thisfd);
-		thisfd=-1;
-	}
+	close(fd);
 }
 void createfile()
 {
 }
 void deletefile()
 {
-	if(thisfd != -1)
-	{
-		close(thisfd);
-		thisfd=-1;
-	}
 }

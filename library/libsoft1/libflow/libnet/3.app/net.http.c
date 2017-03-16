@@ -3,11 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int findzero(char* p);
-int findhead(char* p);
-int findtail(char* p);
-int cmp(void*,void*);
-int ncmp(void*,void*,int);
+int findzero(void*);
+int findhead(void*);
+int findtail(void*);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 //
 int readfile(void* name, void* mem, u64 off, u64 len);
 int writefile(void* name, void* mem, u64 off, u64 len);
@@ -21,9 +21,10 @@ void say(void*, ...);
 
 
 
-static char* Connection = 0;
-static char* Upgrade = 0;
-static char* GET = 0;
+static u8* Connection = 0;
+static u8* Upgrade = 0;
+static u8* GET = 0;
+static u8 indexhtml[] = "42.html";
 
 
 
@@ -40,7 +41,7 @@ int http_write_request(u8* buf, int len, char* url, char* host)
 		url, host, 0, 0xfff
 	);
 }
-int http_write_file(u8* buf, int len, char* name)
+int http_write_file(u8* buf, int len, u8* name)
 {
 	int ret = readfile(name, buf, 0, 0x100000);
 	if(ret <= 0)
@@ -78,7 +79,7 @@ int http_read(u8* buf, int len)
 		(u64)Connection,
 		(u64)Upgrade
 	);
-
+	return 0;
 }
 
 
@@ -90,7 +91,7 @@ int http_read(u8* buf, int len)
 #define http 0x70747468
 #define WS 0x5357
 #define ws 0x7377
-u64 check_http(u64 fd, u64 type, char* buf, int len)
+u64 check_http(u64 fd, u64 type, u8* buf, int len)
 {
 	int ret;
 
@@ -102,7 +103,7 @@ u64 check_http(u64 fd, u64 type, char* buf, int len)
 
 	//parse
 	if(GET[0] != '/')return 0;
-	if(GET[1]<=' ')GET = "/42.html";
+	if(GET[1]<=' ')GET = indexhtml;
 	else
 	{
 		for(ret=0;ret<256;ret++)

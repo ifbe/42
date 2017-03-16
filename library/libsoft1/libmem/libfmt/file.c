@@ -43,11 +43,11 @@ int vmdk_delete();
 int vmdk_yes(u8*);
 //
 int startfile(u8*);
-int stopfile(u8*);
-int readfile(u8*,u8*,u64,u64);
-int writefile(u8*,u8*,u64,u64);
+int stopfile(int);
+int readfile(u64,u8*,u64,u64);
+int writefile(u64,u8*,u64,u64);
 //
-void printmemory(u64 start,u64 count);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -94,12 +94,12 @@ int file_explain(u8* p)
 	else if(gpt_yes(p) > 0)
 	{
 		say("gpt\n");
-		gpt_explain(p, fshome);
+		gpt_explain(p, dirhome);
 	}
 	else if(mbr_yes(p) > 0)
 	{
 		say("mbr\n");
-		mbr_explain(p, fshome);
+		mbr_explain(p, dirhome);
 	}
 
 	//unknown
@@ -155,42 +155,44 @@ int file_mount(u8* addr)
 static int file_ls()
 {
 	int j;
-	for(j=0;j<0x80*0x80;j+=0x80)
+	u8* p8;
+	u64* p64;
+	for(j=0;j<0x10;j++)
 	{
-		if(*(u64*)(fshome+j) == 0)break;
+		p8 = dirhome + j*0x80;
+		p64 = (void*)p8;
+		if(p64[0] == 0)break;
 
-		say("(%8s,%8s)  [%08llx,%08llx] %s\n",
-			fshome+j, fshome+j+8,
-			*(u64*)(fshome+j+0x10), *(u64*)(fshome+j+0x18),
-			fshome+j+0x40
-		);
+		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
 	}
-	return j / 0x80;
+	return 0;
 }
 static int file_cd(u8* p)
 {
+	int fd;
 	int ret;
 
-	//exit?
-	stopfile(p);
-	if(p == 0)return -3;
-
 	//open
-	ret = startfile(p);
-	if(ret <= 0)return -2;
+	fd = startfile(p);
+	if(fd <= 0)return -1;
 
 	//read
-	ret = readfile(0, datahome, 0, 0x8000);
+	ret = readfile(fd, datahome, 0, 0x8000);
+	if(ret <= 0)return 0;
+
+	//close
+	stopfile(fd);
 
 	//11111111
 	ret = file_explain(datahome);
 	return 0;
 }
-static int file_show(u8* addr)
+static int file_read(u8* addr)
 {
+	printmemory(datahome, 0x200);
 	return 0;
 }
-static int file_edit()
+static int file_write()
 {
 	return 0;
 }
@@ -217,8 +219,8 @@ int file_create(void* softaddr, u64* p)
 	p[3]=(u64)file_stop;
 	p[4]=(u64)file_ls;
 	p[5]=(u64)file_cd;
-	p[6]=(u64)file_show;
-	p[7]=(u64)file_edit;
+	p[6]=(u64)file_read;
+	p[7]=(u64)file_write;
 	q = (u8*)p;
 	q += 0x100;
 

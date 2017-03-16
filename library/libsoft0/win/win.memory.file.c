@@ -9,8 +9,9 @@
 #define u8 unsigned char
 void say(char* fmt,...);
 
-static HANDLE selected;
-static char tempname[0x20]={'\\','\\','.','\\','P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
+static char name[0x20]={
+	'\\','\\','.','\\',
+	'P','h','y','s','i','c','a','l','D','r','i','v','e','0','\0','\0'};
 
 
 
@@ -22,7 +23,7 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 	{
 		//磁盘大小这么拿
 		GET_LENGTH_INFORMATION out;
-		u32 count;
+		u32 len;
 		int ret;
 
 		//
@@ -34,7 +35,7 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 			0,
 			&out,
 			sizeof(GET_LENGTH_INFORMATION),
-			(LPDWORD)&count,
+			(LPDWORD)&len,
 			NULL
 		);
 		if(ret==FALSE)
@@ -57,23 +58,23 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 
 
 //file名字，mem地址，文件内偏移，总字节数
-int writefile(u8* filename,u8* memaddr,u64 offset,u64 count)
+int writefile(u64 file, u8* mem, u64 off, u64 len)
 {
 	HANDLE hFile;
 	LARGE_INTEGER li;
 	unsigned long written = 0;
 
-	if(filename != 0)
+	if(file < 0x1000)
 	{
-		li.QuadPart = offset;
-		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
-		WriteFile(selected, memaddr, count, &written, NULL);
+		li.QuadPart = off;
+		SetFilePointer(selected, li.LowPart, &li.HighPart, FILE_BEGIN);
+		WriteFile(selected, mem, len, &written, NULL);
 	}
 	else
 	{
 		//
 		hFile = CreateFile(
-			filename, GENERIC_WRITE, 0,
+			(void*)file, GENERIC_WRITE, 0,
 			NULL, OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL, NULL
 		);
@@ -83,38 +84,38 @@ int writefile(u8* filename,u8* memaddr,u64 offset,u64 count)
 			return -1;
 		}
 
-		if(offset != 0)
+		if(off != 0)
 		{
-			li.QuadPart = offset;
+			li.QuadPart = off;
 			SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
 		}
 
 		//
-		WriteFile(hFile, memaddr, count, &written, NULL);
+		WriteFile(hFile, mem, len, &written, NULL);
 
 		//
 		CloseHandle(hFile);
 	}
 }
 //
-int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
+int readfile(u64 file,u8* mem,u64 off,u64 len)
 {
 	HANDLE hFile;
 	LARGE_INTEGER li;
 	unsigned long val = 0;
 	int ret;
 
-	if(filename == 0)
+	if(file < 0x1000)
 	{
-		li.QuadPart = offset;
+		li.QuadPart = off;
 		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
-		ret = ReadFile(selected, memaddr, count, &val, 0);
+		ret = ReadFile(selected, mem, len, &val, 0);
 	}
 	else
 	{
 		//
 		hFile = CreateFile(
-			filename, GENERIC_READ, 0,
+			(void*)file, GENERIC_READ, 0,
 			NULL, OPEN_EXISTING,
 			FILE_ATTRIBUTE_NORMAL, NULL
 		);
@@ -124,14 +125,14 @@ int readfile(u8* filename,u8* memaddr,u64 offset,u64 count)
 			return -1;
 		}
 
-		if(offset != 0)
+		if(off != 0)
 		{
-			li.QuadPart = offset;
+			li.QuadPart = off;
 			SetFilePointer (hFile, li.LowPart, &li.HighPart, FILE_BEGIN);
 		}
 
 		//
-		ret = ReadFile(hFile, memaddr, count, &val, 0);
+		ret = ReadFile(hFile, mem, len, &val, 0);
 		CloseHandle(hFile);
 	}
 
@@ -158,9 +159,12 @@ void listfile(char* dest)
 	//
 	for(num=0;num<10;num++)
 	{
-		tempname[17]=0x30+num;
-		HANDLE temphandle=CreateFile(tempname,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-		if(temphandle != INVALID_HANDLE_VALUE)
+		name[17] = 0x30+num;
+		HANDLE hand = CreateFile(name,
+			GENERIC_READ,FILE_SHARE_READ,0,
+			OPEN_EXISTING,0,0
+		);
+		if(hand != INVALID_HANDLE_VALUE)
 		{
 			//[0,7]:type
 			//[8,f]:subtype
@@ -172,14 +176,18 @@ void listfile(char* dest)
 			*(u64*)(dest+0x10)=0;
 			*(u64*)(dest+0x18)=0;
 			//say("%x\n",dest+0x18);
-			getsize( temphandle , tempname , dest+0x18 );
+			getsize(hand, name, dest+0x18 );
 
 			//[0x20,0x3f]:name
-			for(j=0;j<0x20;j++)dest[j+0x20]=tempname[j];
+			for(j=0;j<0x20;j++)dest[j+0x20]=name[j];
 
 			//next
-			CloseHandle(temphandle);
-			printf("%llx	,	%llx	:	%s\n" ,*(u64*)(dest+0) , *(u64*)(dest+8) , (char*)(dest+0x10) );
+			CloseHandle(hand);
+			printf("%llx,	%llx:	%s\n" ,
+				*(u64*)(dest+0),
+				*(u64*)(dest+8),
+				(char*)(dest+0x10)
+			);
 			dest += 0x40;
 		}
 	}//10个记录
@@ -192,43 +200,32 @@ void choosefile(char* buf)
 
 
 //
-int startfile(char* path)
+HANDLE startfile(char* path)
 {
 	//检查
-	if(path[0]==0)return 0;
+	if(path == 0)return 0;
+	if(path[0] == 0)return 0;
 
-	//测试能否成功打开
-	HANDLE temphandle=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-	if(temphandle == INVALID_HANDLE_VALUE)
+	//打开
+	HANDLE hand = CreateFile(path,
+		GENERIC_READ, FILE_SHARE_READ, 0,
+		OPEN_EXISTING, 0, 0
+	);
+	if(hand == INVALID_HANDLE_VALUE)
 	{
-		say("(error%d)createfile:%x\n",errno,temphandle);
+		say("(error%d)createfile:%x\n", errno, hand);
 		return 0;
 	}
-	else CloseHandle(temphandle);
 
-	//关掉原先已经打开的，然后打开这个
-	if(selected!=NULL)CloseHandle(selected);
-	selected=CreateFile(path,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,0,0);
-
-	//size
-	u64 size=0;
-	getsize(selected,path,(void*)&size);
-
-	say("(%s	,	%llx)\n",path,size);
-	return 1;
+	return hand;
 }
-void stopfile()
+void stopfile(HANDLE fd)
 {
-	if(selected!=NULL)
-	{
-		CloseHandle(selected);
-		selected=NULL;
-	}
+	CloseHandle(fd);
 }
 void createfile()
 {
 }
 void deletefile()
 {
-	stopfile();
 }
