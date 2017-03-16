@@ -11,9 +11,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+int stopsocket(u64);
+//
 void eventwrite(u64,u64,u64,u64);
 u64 startthread(void*, void*);
-//
 void printmemory(void*, ...);
 void say(void* , ...);
 
@@ -78,12 +79,15 @@ DWORD WINAPI iocpthread(LPVOID pM)
 	struct per_io_data* pov = NULL;
 	u32* key = 0;
 	char temp[4096];
+	int th;
 	int ret;
 
+	HANDLE hh;
 	SOCKET fd;
 	DWORD trans = 0;
 	DWORD flag = 0;
 
+	th = GetCurrentThreadId();
 	while(1)
 	{
 		ret = GetQueuedCompletionStatus(
@@ -96,8 +100,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		if(ret == 0)continue;
 
 		fd = pov->fd;
-		printf("ret=%d,trans=%d,listen=%d,this=%d\n",
-			ret, trans, *key, fd
+		printf("th=%d,ret=%d,trans=%d,listen=%d,this=%d\n",
+			th, ret, trans, *key, fd
 		);
 
 		//accept
@@ -106,26 +110,35 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			pov->stage = 1;
 			eventwrite(0, 0x2b6e, fd/4, 0);
 
-			CreateIoCompletionPort(
+			hh = CreateIoCompletionPort(
 				(void*)fd,
 				iocpfd,
 				(ULONG_PTR)(obj[fd/4].tempdat),
 				0
 			);
+			printf("[%x]++++,hh=%llx\n",fd/4,hh);
+		}
+		else if(trans == 0)
+		{
+			printf("[%x]----\n",fd/4);
+			stopsocket(fd);
+			continue;
 		}
 		else
 		{
 			pov->stage = 1;
 			pov->bufdone.buf = pov->bufing.buf;
-			pov->bufdone.len = pov->bufing.len;
+			pov->bufdone.len = trans;
 			eventwrite(0, 0x406e, fd/4, 0);
+			
+			printf("[%x]####\n",fd/4);
 		}
 
 		//all
 		pov->bufing.buf = malloc(4096);
 		pov->bufing.len = 4096;
 		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-		//printf("ret=%d,err=%d\n", ret, WSAGetLastError());
+		printf("(recv)ret=%d,err=%d\n", ret, WSAGetLastError());
 	}
 	return 0;
 }
@@ -143,6 +156,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	p = pov->bufdone.buf;
 	c = pov->bufdone.len;
 	for(j=0;j<c;j++)buf[j] = p[j];
+printf("(read)len=%d\n",c);
 	free(pov->bufdone.buf);
 	return c;
 }
@@ -161,7 +175,7 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 	wbuf.buf = buf;
 	wbuf.len = len;
 	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
-	printf("@send:ret=%d,err=%d\n",ret,GetLastError());
+	printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return ret;
 }
 int listsocket()
@@ -172,7 +186,28 @@ int choosesocket()
 }
 int stopsocket(u64 fd)
 {
-	closesocket(fd*4);
+	LPFN_DISCONNECTEX disconnectex = NULL;
+	GUID guiddisconnectex = WSAID_DISCONNECTEX;
+	DWORD dwret = 0;
+	int ret = WSAIoctl(
+		tcplisten,
+		SIO_GET_EXTENSION_FUNCTION_POINTER,
+		&guiddisconnectex,
+		sizeof(guiddisconnectex),
+		&disconnectex,
+		sizeof(disconnectex),
+		&dwret,
+		NULL,
+		NULL
+	);
+	if(ret != 0)
+	{
+		printf("error@WSAIoctl\n");
+		return 0;
+	}
+
+	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
+	printf("[%x]close\n",fd);
 	return 0;
 }
 u64 startsocket(char* addr, int port, int type)
