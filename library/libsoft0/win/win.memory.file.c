@@ -67,8 +67,8 @@ int writefile(u64 file, u8* mem, u64 off, u64 len)
 	if(file < 0x1000)
 	{
 		li.QuadPart = off;
-		SetFilePointer(selected, li.LowPart, &li.HighPart, FILE_BEGIN);
-		WriteFile(selected, mem, len, &written, NULL);
+		SetFilePointer((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
+		WriteFile((HANDLE)file, mem, len, &written, NULL);
 	}
 	else
 	{
@@ -108,8 +108,8 @@ int readfile(u64 file,u8* mem,u64 off,u64 len)
 	if(file < 0x1000)
 	{
 		li.QuadPart = off;
-		SetFilePointer (selected, li.LowPart, &li.HighPart, FILE_BEGIN);
-		ret = ReadFile(selected, mem, len, &val, 0);
+		SetFilePointer ((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
+		ret = ReadFile((HANDLE)file, mem, len, &val, 0);
 	}
 	else
 	{
