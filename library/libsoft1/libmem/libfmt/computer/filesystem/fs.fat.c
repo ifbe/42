@@ -281,7 +281,7 @@ void explainfat32head()
 
 
 
-int fat_yes(u8* addr)
+int check_fat(u8* addr)
 {
 	int version=24;
 	u64 temp;
@@ -396,7 +396,7 @@ int fat_start(u64 sector)
 
 	//读取pbr，检查种类和版本
 	ret = readfile(0, pbr, firstsector*0x200, 0x200); //pbr
-	ret = fat_yes(pbr);
+	ret = check_fat(pbr);
 	if(ret==16)		//这是fat16
 	{
 		//上报3个函数的地址

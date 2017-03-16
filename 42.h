@@ -169,15 +169,19 @@ struct worker
 };
 struct object
 {
-	u64 buf;
-	u64 fmt;
-	u64 w;
-	u64 h;
-	u64 a;
-	u64 b;
-	u64 c;
-	u64 d;
+	//[0x00,0x0f]
+	u64 type0;
+	u64 type1;
 
+	//[0x10,0x1f]
+	u64 port_src;
+	u64 port_dst;
+
+	//[0x20,0x3f]
+	u8 addr_src[0x10];
+	u8 addr_dst[0x10];
+
+	//[0x40,0xff]
 	u8 data[0xc0];
 };
 

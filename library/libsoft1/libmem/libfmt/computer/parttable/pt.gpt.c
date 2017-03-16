@@ -8,7 +8,7 @@ void say(void*, ...);
 
 
 
-int gpt_yes(u8* addr)
+int check_gpt(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -35,26 +35,18 @@ int gpt_yes(u8* addr)
 //[+0x28,+0x2f]:末尾lba
 //[+0x30,+0x37]:属性标签
 //[+0x38,+0x7f]:名字
-void gpt_explain(u8* src, u8* dst)
+void parse_gpt(u8* src, u8* dst)
 {
 	int i=0,j=0;
 	u64* srcqword;
-	u64* dstqword = (u64*)dst;
-	for(j=0;j<0x10000;j++)
-	{
-		dst[j] = 0;
-	}
+	u64* dstqword;
 
-	//check
-	i = gpt_yes(src);
-	if(i == 0)
-	{
-		say("not gpt\n");
-		return;
-	}
+	i = check_gpt(src);
+	if(i > 0)say("gpt\n");
+	else{say("not gpt\n");return;}
 
-	//
 	src += 0x400;
+	for(j=0;j<0x10000;j++)dst[j] = 0;
 	for(i=0;i<0x80;i++)	//0x80 partitions per disk
 	{
 		//先取数字出来

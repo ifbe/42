@@ -611,7 +611,7 @@ int explainhfshead()
 
 
 
-int hfs_yes(u8* addr)
+int check_hfs(u8* addr)
 {
 	u64 temp;
 
@@ -640,7 +640,7 @@ int hfs_start(u64 sector)
 
 	//检查
 	ret = readfile(0, pbr, block0*0x200, 0x1000);
-	ret = hfs_yes(pbr);
+	ret = check_hfs(pbr);
 	if(ret==0)return -1;
 
 	//很多东西

@@ -602,7 +602,7 @@ int explainntfshead()
 
 	return 1;
 }
-int ntfs_yes(u8* addr)
+int check_ntfs(u8* addr)
 {
 	u64 temp;
 
@@ -657,7 +657,7 @@ static int ntfs_start(u64 sector)
 
 	//读PBR，检查失败就返回
 	ret = readfile(0, pbr, ntfssector*0x200, 0x200);
-	ret = ntfs_yes(pbr);
+	ret = check_ntfs(pbr);
 	if(ret==0)return -1;
 
 	//解释分区头(拿出并保存几个重要变量)

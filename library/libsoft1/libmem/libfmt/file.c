@@ -32,34 +32,27 @@ int parse_macho(void*);
 int check_pe(void*);
 int parse_pe(void*);
 //filesystem
-int ext_create(void*,void*);
-int ext_delete();
-int ext_yes(u8*);
-int fat_create(void*,void*);
-int fat_delete();
-int fat_yes(u8*);
-int hfs_create(void*,void*);
-int hfs_delete();
-int hfs_yes(u8*);
-int ntfs_create(void*,void*);
-int ntfs_delete();
-int ntfs_yes(u8*);
+int check_ext(u8*);
+int parse_ext(u8*, u8*);
+int check_fat(u8*);
+int parse_fat(u8*, u8*);
+int check_hfs(u8*);
+int parse_hfs(u8*, u8*);
+int check_ntfs(u8*);
+int parse_ntfs(u8*, u8*);
 //parttable
-int gpt_create(void*,void*);
-int gpt_delete();
-int gpt_yes(u8*);
-void gpt_explain(u8*, u8*);
-int mbr_create(void*,void*);
-int mbr_delete();
-int mbr_yes(u8*);
-void mbr_explain(u8*, u8*);
+int check_applept(u8*);
+int parse_applept(u8*, u8*);
+int check_gpt(u8*);
+int parse_gpt(u8*, u8*);
+int check_mbr(u8*);
+int parse_mbr(u8*, u8*);
 //diskimage
-int vhd_create(void*,void*);
-int vhd_delete();
-int vhd_yes(u8*);
-int vmdk_create(void*,void*);
-int vmdk_delete();
-int vmdk_yes(u8*);
+int check_dmg(u8*);
+int check_qcow2(u8*);
+int check_vdi(u8*);
+int check_vhd(u8*);
+int check_vmdk(u8*);
 //
 int startfile(u8*);
 int stopfile(int);
@@ -86,6 +79,7 @@ static int which = 0;
 //
 int file_explain(u8* buf, int len)
 {
+	//picture
 	if(check_bmp(buf) > 0)parse_bmp(buf, len);
 	else if(check_flif(buf) > 0)parse_flif(buf, len);
 	else if(check_jpg(buf) > 0)parse_jpg(buf, len);
@@ -105,41 +99,17 @@ int file_explain(u8* buf, int len)
 	else if(check_pe(buf) > 0)parse_pe(buf);
 
 	//filesystem
-	else if(ext_yes(buf) > 0)
-	{
-		say("ext\n");
-	}
-	else if(fat_yes(buf) > 0)
-	{
-		say("fat\n");
-	}
-	else if(hfs_yes(buf) > 0)
-	{
-		say("hfs\n");
-	}
-	else if(ntfs_yes(buf) > 0)
-	{
-		say("ntfs\n");
-	}
+	else if(check_ext(buf) > 0)say("ext\n");
+	else if(check_fat(buf) > 0)say("fat\n");
+	else if(check_hfs(buf) > 0)say("hfs\n");
+	else if(check_ntfs(buf) > 0)say("ntfs\n");
 
 	//parttable
-	else if(gpt_yes(buf) > 0)
-	{
-		say("gpt\n");
-		gpt_explain(buf, dirhome);
-	}
-	else if(mbr_yes(buf) > 0)
-	{
-		say("mbr\n");
-		mbr_explain(buf, dirhome);
-	}
+	else if(check_gpt(buf) > 0)parse_gpt(buf, dirhome);
+	else if(check_mbr(buf) > 0)parse_mbr(buf, dirhome);
 
 	//unknown
-	else
-	{
-		say("unknown\n");
-		return -1;
-	}
+	else say("unknown\n");
 	return 0;
 }
 int file_mount(u8* addr)
@@ -238,7 +208,6 @@ static int file_stop()
 }
 int file_create(void* softaddr, u64* p)
 {
-	u8* q;
 	fdhome = softaddr;
 	fshome = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
@@ -253,28 +222,10 @@ int file_create(void* softaddr, u64* p)
 	p[5]=(u64)file_cd;
 	p[6]=(u64)file_read;
 	p[7]=(u64)file_write;
-	q = (u8*)p;
-	q += 0x100;
 
-	ext_create(softaddr, q);
-	q += 0x100;
-
-	fat_create(softaddr, q);
-	q += 0x100;
-
-	hfs_create(softaddr, q);
-	q += 0x100;
-
-	ntfs_create(softaddr, q);
-	q += 0x100;
-
-	return q-(u8*)p;
+	return 0x100;
 }
 int file_delete()
 {
-	ext_delete();
-	fat_delete();
-	hfs_delete();
-	ntfs_delete();
 	return 0;
 }

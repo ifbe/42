@@ -2,13 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printmemory(u64 start,u64 count);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
 
 
-int mbr_yes(u8* addr)
+int check_mbr(u8* addr)
 {
 	//第一个扇区末尾必须有0x55，0xaa这个标志
 	u64 temp=*(u16*)(addr+0x1fe);
@@ -91,21 +91,18 @@ static int mbrrecord(u8* from, u8* dst)
 //[+0x5,+0x7]:结束磁头柱面扇区
 //[+0x8,+0xb]:起始lba
 //[+0xc,+0xf]:大小
-void mbr_explain(u8* src, u8* dst)
+void parse_mbr(u8* src, u8* dst)
 {
 	int j,ret;
+	ret = check_mbr(src);
+	if(ret > 0)say("mbr\n");
+	else{say("not mbr\n");return;}
+
+	//clear
 	u64* dstqword=(u64*)dst;
 	for(j=0; j<0x10000; j++)
 	{
 		dst[j] = 0;
-	}
-
-	//check
-	ret = mbr_yes(src);
-	if(ret == 0)
-	{
-		say("not mbr\n");
-		return;
 	}
 
 	//主分区
