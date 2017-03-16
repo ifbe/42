@@ -24,7 +24,7 @@ void say(void*, ...);
 static u8* Connection = 0;
 static u8* Upgrade = 0;
 static u8* GET = 0;
-static u8 indexhtml[] = "42.html";
+static u8 indexhtml[] = "/42.html";
 
 
 
