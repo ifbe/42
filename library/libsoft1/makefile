@@ -72,8 +72,11 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.piano.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.violin.c
+	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.bmp.c
+	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.flif.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.jpg.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.png.c
+	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.webp.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.cpio.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.gz.c

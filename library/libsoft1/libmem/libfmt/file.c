@@ -3,15 +3,34 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //multimedia
-int jpg_yes(void*);
-int jpg_explain(void*, int);
+int check_bmp(void*);
+int parse_bmp(void*, int);
+int check_flif(void*);
+int parse_flif(void*, int);
+int check_jpg(void*);
+int parse_jpg(void*, int);
+int check_png(void*);
+int parse_png(void*, int);
+int check_webp(void*);
+int parse_webp(void*, int);
 //compress
-int tar_create(void*,void*);
-int tar_delete();
-int tar_yes(u8*);
-int zip_create(void*,void*);
-int zip_delete();
-int zip_yes();
+int check_7z(void*);
+int parse_7z(void*);
+int check_cpio(void*);
+int parse_cpio(void*);
+int check_gz(void*);
+int parse_gz(void*);
+int check_tar(void*);
+int parse_tar(void*);
+int check_zip(void*);
+int parse_zip(void*);
+//executable
+int check_elf(void*);
+int parse_elf(void*);
+int check_macho(void*);
+int parse_macho(void*);
+int check_pe(void*);
+int parse_pe(void*);
 //filesystem
 int ext_create(void*,void*);
 int ext_delete();
@@ -65,41 +84,54 @@ static int which = 0;
 
 
 //
-int file_explain(u8* p)
+int file_explain(u8* buf, int len)
 {
-	if(jpg_yes(p) > 0)
-	{
-		jpg_explain(p, 0x100000);
-	}
+	if(check_bmp(buf) > 0)parse_bmp(buf, len);
+	else if(check_flif(buf) > 0)parse_flif(buf, len);
+	else if(check_jpg(buf) > 0)parse_jpg(buf, len);
+	else if(check_png(buf) > 0)parse_png(buf, len);
+	else if(check_webp(buf) > 0)parse_webp(buf, len);
+
+	//compress
+	else if(check_7z(buf) > 0)parse_7z(buf);
+	else if(check_cpio(buf) > 0)parse_cpio(buf);
+	else if(check_gz(buf) > 0)parse_gz(buf);
+	else if(check_tar(buf) > 0)parse_tar(buf);
+	else if(check_zip(buf) > 0)parse_zip(buf);
+
+	//executable
+	else if(check_elf(buf) > 0)parse_elf(buf);
+	else if(check_macho(buf) > 0)parse_macho(buf);
+	else if(check_pe(buf) > 0)parse_pe(buf);
 
 	//filesystem
-	else if(ext_yes(p) > 0)
+	else if(ext_yes(buf) > 0)
 	{
 		say("ext\n");
 	}
-	else if(fat_yes(p) > 0)
+	else if(fat_yes(buf) > 0)
 	{
 		say("fat\n");
 	}
-	else if(hfs_yes(p) > 0)
+	else if(hfs_yes(buf) > 0)
 	{
 		say("hfs\n");
 	}
-	else if(ntfs_yes(p) > 0)
+	else if(ntfs_yes(buf) > 0)
 	{
 		say("ntfs\n");
 	}
 
 	//parttable
-	else if(gpt_yes(p) > 0)
+	else if(gpt_yes(buf) > 0)
 	{
 		say("gpt\n");
-		gpt_explain(p, dirhome);
+		gpt_explain(buf, dirhome);
 	}
-	else if(mbr_yes(p) > 0)
+	else if(mbr_yes(buf) > 0)
 	{
 		say("mbr\n");
-		mbr_explain(p, dirhome);
+		mbr_explain(buf, dirhome);
 	}
 
 	//unknown
@@ -184,7 +216,7 @@ static int file_cd(u8* p)
 	stopfile(fd);
 
 	//11111111
-	ret = file_explain(datahome);
+	ret = file_explain(datahome, 0x8000);
 	return 0;
 }
 static int file_read(u8* addr)

@@ -1,4 +1,9 @@
-int is7z(char* addr)
+void say(void*, ...);
+
+
+
+
+int check_7z(char* addr)
 {
 	unsigned int temp;
 
@@ -11,4 +16,9 @@ int is7z(char* addr)
 	if(temp!=0x1c27)return 0;
 
 	return 7;
+}
+int parse_7z(char* addr)
+{
+	say("7z\n");
+	return 0;
 }

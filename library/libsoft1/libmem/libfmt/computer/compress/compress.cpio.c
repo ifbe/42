@@ -1,4 +1,9 @@
-int iscpio(char* addr)
+void say(void*, ...);
+
+
+
+
+int check_cpio(char* addr)
 {
 	unsigned long long temp;
 
@@ -16,5 +21,10 @@ int iscpio(char* addr)
 	if(addr[5] == 0x31)return 1;
 	if(addr[5] == 0x32)return 2;
 
+	return 0;
+}
+int parse_cpio(char* addr)
+{
+	say("cpio\n");
 	return 0;
 }

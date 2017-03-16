@@ -9,16 +9,7 @@ void say(char* fmt,...);
 
 
 
-//memory
-static char* fshome;
-	static char* first64k;		//+0x10000
-static char* dirhome;
-static char* datahome;
-
-
-
-
-int ispe(char* addr)
+int check_pe(char* addr)
 {
 	unsigned long long temp;
 
@@ -35,13 +26,8 @@ int ispe(char* addr)
 
 	return 64;
 }
-int explainpe(char* addr)
+int parse_pe(char* addr)
 {
-	int ret=0;
-
-	//
-	ret=ispe(first64k);
-	if( ret == 0 ) return -1;
-
+	say("pe\n");
 	return 0;
 }

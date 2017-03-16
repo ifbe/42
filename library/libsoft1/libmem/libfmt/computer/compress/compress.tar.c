@@ -1,4 +1,9 @@
-int istar(char* addr)
+void say(void*, ...);
+
+
+
+
+int check_tar(char* addr)
 {
 	unsigned int temp;
 
@@ -10,4 +15,9 @@ int istar(char* addr)
 	if(temp!=0x72617473)return 0;
 
 	return 1111;
+}
+int parse_tar(char* addr)
+{
+	say("tar\n");
+	return 0;
 }

@@ -169,8 +169,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.violin.c \
+	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.bmp.c \
+	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.flif.c \
 	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.jpg.c \
 	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.png.c \
+	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.webp.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.7z.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.cpio.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.gz.c \

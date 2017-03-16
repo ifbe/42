@@ -1,4 +1,9 @@
-int iszip(char* addr)
+void say(void*, ...);
+
+
+
+
+int check_zip(char* addr)
 {
 	unsigned int temp;
 
@@ -6,5 +11,10 @@ int iszip(char* addr)
 	temp=*(unsigned int*)addr;
 	if(temp==0x04034b50)return 11111;
 
+	return 0;
+}
+int parse_zip(char* addr)
+{
+	say("zip\n");
 	return 0;
 }

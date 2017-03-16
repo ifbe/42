@@ -8,7 +8,7 @@ void say(void*, ...);
 
 
 
-int jpg_yes(u8* buf)
+int check_jpg(u8* buf)
 {
 	if(buf[0] != 0xff)return 0;
 	if(buf[1] != 0xd8)return 0;
@@ -16,7 +16,7 @@ int jpg_yes(u8* buf)
 	if(buf[3] < 0xc0)return 0;
 	return 1;
 }
-int jpg_explain(u8* buf, int len)
+int parse_jpg(u8* buf, int len)
 {
 	int j,k,m,n;
 	int type,length;
