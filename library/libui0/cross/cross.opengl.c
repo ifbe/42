@@ -6,16 +6,17 @@
 #include<stdlib.h>
 #include<GL/glut.h> 
 #define PI 3.1415926535897932384626433832795028841971693993151
-void eventwrite(u64,u64,u64,u64);
-//
 u64 startthread(void*, void*);
-void stopthread();
+int readfile(u64, void*, u64, u64);
+int writefile(u64, void*, u64, u64);
+void sleep_us(int);
 //
 double cosine(double);
 double sine(double);
 //
 void printmemory(void*, int);
 void say(void*, ...);
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -26,10 +27,12 @@ struct gldata
 	u64 fmt;
 	u64 w;
 	u64 h;
+
 	u64 thread;
+	u64 datafmt;
+	void* databuf;
 };
 static struct gldata* gdata;
-static void* pData;
 //
 static int refresh=0;
 static GLuint texture[1];
@@ -113,7 +116,7 @@ void callback_display_texture()
 		0,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,// 像素的数据类型  
-		pData		// 数据指针
+		(void*)gdata->buf	// 数据指针
 	);
 	glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
@@ -149,9 +152,9 @@ void callback_display_stl()
 	void* pointer;
 	u32 j, count;
 
-	pointer = (void*)(gdata->buf);
+	pointer = gdata->databuf;
 	count = *(u32*)(pointer+80);
-	if(count > 0xa3d5)count = 0xa3d5;	//2MB
+	if(count > 0x147adf)count = 0x147adf;	//64MB
 
 	pointer += 84;
 	//printf("count=%d\n", count);
@@ -199,7 +202,7 @@ void callback_display()
 		0.0,0.0,1.0
 	);
 
-	if(gdata->fmt == 0x6c7473)
+	if(gdata->datafmt == 0x6c7473)
 	{
 		callback_display_stl();
 	}
@@ -211,9 +214,10 @@ void callback_display()
 void callback_idle()
 {
 	if(refresh <= 0)return;
+	refresh--;
 
 	glutPostRedisplay();
-	refresh--;
+	sleep_us(1000*20);
 }
 void callback_keyboard(unsigned char key, int x, int y)
 {
@@ -306,8 +310,19 @@ void* uievent(struct gldata* p)
 	//
 	glutMainLoop();
 }
-void windowread(char* where)
+void windowread(char* p)
 {
+	if(p == 0)
+	{
+		gdata->datafmt = 0;
+		free(gdata->databuf);
+	}
+	else
+	{
+		gdata->datafmt = 0x6c7473;
+		if(gdata->databuf == 0)gdata->databuf = malloc(0x100000*64);
+		readfile((u64)p, gdata->databuf, 0, 0x100000*64);
+	}
 }
 void windowwrite()
 {
@@ -324,14 +339,13 @@ void windowstop()
 }
 void windowstart(struct gldata* p)
 {
-	pData = malloc(2048*1024*4);
 	gdata = p;
-
-	//
-	p->buf = (u64)pData;
+	p->buf = (u64)malloc(2048*1024*4);
 	p->fmt = 0x3838383861626772;
 	p->w = 512;
 	p->h = 512;
+	p->datafmt = 0;
+	p->databuf = 0;
 	p->thread = startthread(uievent, p);
 }
 void windowdelete()

@@ -21,6 +21,15 @@ void say(char*,...);
 
 
 //
+struct clidata
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+
+        u64 thread;
+};
 static int mode = 0;
 static u64 thread;
 
@@ -105,8 +114,11 @@ void windowwrite()
 
 
 
-void windowstart(char* addr, char* pixfmt, int x, int y)
+void windowstart(struct clidata* win)
 {
+	win->fmt = 0;
+	win->w = 80;
+	win->h = 25;
 }
 void windowstop()
 {

@@ -8,13 +8,13 @@ all:
 	make -s -C $(library)/libsoft1
 	make -s -C $(library)/libui0 linuxxlib
 	make -s -C $(library)/libui1
-	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor1 gui
+	make -s -C $(library)/visitor
 	make -s a
 	make -s so
 	make -s program
 a:
 	ar crs 42.a \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -22,10 +22,10 @@ a:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/libui1/*.o
 so:
 	gcc -shared -o 42.so \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -33,10 +33,10 @@ so:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/libui1/*.o
 program:
 	gcc -o a.out \
+	$(library)/visitor/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -45,8 +45,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
 	-lpulse -lpulse-simple -lpthread -lX11
 	#-lasound -lpthread -lX11
 clean:

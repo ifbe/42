@@ -17,15 +17,14 @@ all:
 	cflag="-c -O2"
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2"
-	make -s -C $(library)/visitor0 \
-	cflag="-c -O2"
-	make -s -C $(library)/visitor1 gui \
+	make -s -C $(library)/visitor \
 	cflag="-c -O2"
 	make -s a
 	make -s dll
 	make -s program
 a:
 	ar crs 42.a \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -33,10 +32,10 @@ a:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/libui1/*.o
 dll:
 	g++ -shared -o 42.dll \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -45,7 +44,6 @@ dll:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
@@ -54,6 +52,7 @@ program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
 	$(datafile)/42.res \
+	$(library)/visitor/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -62,8 +61,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
 	-Wl,--no-undefined -static -static-libgcc \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \

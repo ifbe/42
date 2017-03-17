@@ -23,7 +23,7 @@ static u8* fshome;
 static u8* dirhome;
 static u8* datahome;
 static int algorithm = 0;
-void explain_data(char* buf, int len)
+void explain_data(u8* buf, int len)
 {
 	char res[0x40];
 	md5sum(res, buf, len);

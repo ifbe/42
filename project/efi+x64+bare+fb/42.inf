@@ -120,10 +120,8 @@
 	../../library/libui1/tool/tool.spectrum.c
 	../../library/libui1/tool/tool.tree.c
 	../../library/libui1/character.c
-	../../library/visitor/adult/command.c
-	../../library/visitor/adult/event.c
-	../../library/visitor/adult/universe.c
-	../../library/visitor/child/gui.c
+	../../library/visitor/startefi.c
+	../../library/visitor/main.c
  
 
 

@@ -325,7 +325,7 @@ int arterycommand(u8* buffer)
 
 //1111111111111111111111111111111111111111111111111111111111111
 	//error
-	if(buffer == 0)goto finish;
+	if(buffer == 0)return 0;
 
 	//special
 	//say("	(%x)\n",buffer[0]);

@@ -8,13 +8,13 @@ all:
 	make -s -C $(library)/libsoft1 clang
 	make -s -C $(library)/libui0 macsdl
 	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor1 cli
+	make -s -C $(library)/visitor
 	make -s a
 	make -s dylib
 	make -s program
 a:
 	ar crs 42.a \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -23,11 +23,10 @@ a:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
 	-lSDL2 -lm
 dylib:
 	ar crs 42.dylib \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -36,11 +35,10 @@ dylib:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
 	-lSDL2 -lm
 program:
 	gcc \
+	$(library)/visitor/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -49,8 +47,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/gui.o \
 	-lSDL2 -lm
 clean:
 	rm -f *.o

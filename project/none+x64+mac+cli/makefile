@@ -9,13 +9,13 @@ all:
 	make -s -C $(library)/libsoft1 clang
 	make -s -C $(library)/libui0 maccli
 	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor0
-	make -s -C $(library)/visitor1 cli
+	make -s -C $(library)/visitor
 	make -s a
 	make -s dylib
 	make -s program
 a:
 	libtool -static -o 42.a \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -23,10 +23,10 @@ a:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/libui1/*.o
 dylib:
 	libtool -dynamic -o 42.dylib \
+	$(library)/visitor/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -34,10 +34,10 @@ dylib:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o
+	$(library)/libui1/*.o
 program:
 	clang \
+	$(library)/visitor/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -45,8 +45,6 @@ program:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	$(library)/visitor0/*.o \
-	$(library)/visitor1/cli.o
+	$(library)/libui1/*.o
 clean:
 	rm -f *.o *.a *.dylib

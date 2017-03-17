@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 //
-void characterstart(u64 buf, u64 fmt, u64 w, u64 h);
-void characterstop();
+void characterstart(int);
+void characterstop(int);
 void characterwrite(void* p);
 void characterread(void* p);
 //
@@ -17,7 +17,7 @@ void sound_explain(u64* p);
 void vision_explain(u64* p);
 //
 void say(char* , ...);
-void birth();
+void* birth();
 void death();
 
 
@@ -30,7 +30,8 @@ struct screen
 	u64 w;
 	u64 h;
 };
-static struct screen sc[1];
+static void* world;
+static struct screen* ui;
 //
 static int pressed=0;
 static int xxxx=0;
@@ -57,7 +58,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	}
 
 	//draw pixel
-	characterread(sc);
+	characterread(ui);
 
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);
@@ -92,11 +93,11 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	sc->buf = pixels;
-	sc->fmt = 0x3838383861626772;
-	sc->w = info.width;
-	sc->h = info.height;
-	characterstart(sc->buf, sc->fmt, sc->w, sc->h-64);
+	ui->buf = pixels;
+	ui->fmt = 0x3838383861626772;
+	ui->w = info.width;
+	ui->h = info.height;
+	characterstart(0);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
@@ -106,7 +107,8 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv*
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
 	say("JNI_OnLoad\n");
-	birth();
+	world = birth();
+	ui = world+0x400000;
 	return JNI_VERSION_1_6;
 }
 JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)

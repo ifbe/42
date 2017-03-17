@@ -64,8 +64,9 @@ void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
 int arterycommand(void*);
-int cmp(void*,void*);
+int arteryprompt();
 int ncmp(void*,void*,int);
+int cmp(void*,void*);
 u32 getrandom();
 //
 void eventwrite(u64,u64,u64,u64);
@@ -108,25 +109,21 @@ struct working
 
 	char data[0xc0];
 };
-static struct working* worker;
-static u32 now=0;		//不能有负数
-static u32 menu=0;
-static u32 rost=0;
-static u32 vkbd=0;
-
-
-
-
-//
 struct window
 {
         u64 buf;
         u64 fmt;
         u64 w;
         u64 h;
+
+	char data[0xe0];
 };
+static struct working* worker;
 static struct window* win;
-static u32 cur=0;
+static u32 now=0;		//不能有负数
+static u32 menu=0;
+static u32 rost=0;
+static u32 vkbd=0;
 
 
 
@@ -296,19 +293,13 @@ void characterdelete()
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int characterstart(u64 buf, u64 fmt, u64 w, u64 h)
+int characterstart(int j)
 {
-	int j;
-	win->buf = buf;
-	win->fmt = fmt;
-	win->w = w;
-	win->h = h;
 	worker[now].start();
 	return 0;
 }
 int characterstop()
 {
-	//deconfigure character
 	worker[now].stop();
 	return 0;
 }
@@ -366,6 +357,11 @@ int characterchoose(u8* p)
 void characterwrite(u64* p)
 {
 	int x;
+	if(win->fmt == 0)
+	{
+		if(p[1] == 0x64626b)arterycommand(p);
+		return;
+	}
 
 	//size
 	if(p[1] == 0x657a6973)
@@ -406,15 +402,19 @@ void characterwrite(u64* p)
 		worker[now].write(p);
 	}
 }
-void characterread(void* cfg)
+void characterread(struct window* win)
 {
-	//主画
-	worker[now].read(cfg);
+	if(win->fmt == 0)
+	{
+		arteryprompt();
+		return;
+	}
 
-	//菜单
-	if(menu > 0)worker[0].read(cfg);
-	if(rost > 0)worker[1].read(cfg);
-	if(vkbd > 0)worker[2].read(cfg);
+	//
+	worker[now].read(win);
+	if(menu > 0)worker[0].read(win);
+	if(rost > 0)worker[1].read(win);
+	if(vkbd > 0)worker[2].read(win);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -486,7 +486,7 @@ notfound:
 
 found:
 	//
-	characterstart(win->buf, win->fmt, win->w, win->h);
+	characterstart(0);
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

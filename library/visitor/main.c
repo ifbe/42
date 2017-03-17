@@ -2,21 +2,16 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//visitor0
-void* eventread();
-void eventwrite(u64 why, u64 what, u64 where, u64 when);
-void* birth();
-void death();
 //libui1
-int characterstart(u64 buf, u64 fmt, u64 w, u64 h);
+int characterstart(int);
 int characterstop();
 int characterwrite(void* event);
 int characterread(void* screen);
 int characterlist(char*);
 int charactercommand(char* p);
 //libui0
-int displaystart(u64 buf, u64 fmt, u64 w, u64 h);
-int displaystop();
+int displaystart(int);
+int displaystop(int);
 int displaylist();
 int displaychoose();
 int displayread(void*);
@@ -26,17 +21,23 @@ void motion_explain(void*);
 void network_explain(void*);
 void sound_explain(void*);
 void vision_explain(void*);
+//libsoft0
+u64 gettime();
+void sleep_us(int);
 //libhard
+void snatch(void*);
+void release(void*);
 //libboot
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
+//
+void* birth();
+void death();
+void* eventread();
+void eventwrite(u64,u64,u64,u64);
 
 
 
-
-//other
-static u64 time;
-static int fps;
 
 //visitor
 struct event
@@ -46,7 +47,6 @@ struct event
 	u64 where;
 	u64 when;
 };
-
 //libui
 struct screen
 {
@@ -56,6 +56,9 @@ struct screen
 	u64 h;
 	char data[256-4*sizeof(u64)];
 };
+//
+static u64 time;
+static int fps;
 
 
 
@@ -69,12 +72,8 @@ int main(int argc, char* argv[])
 	say("@birth\n");
 
 	//config
-	ui[0].buf = 0;
-	ui[0].fmt = 0x6267726138383838;
-	ui[0].w = 512;
-	ui[0].h = 512;
-	ret = displaystart(ui[0].buf, ui[0].fmt, ui[0].w, ui[0].h);
-	ret = characterstart(ui[0].buf, ui[0].fmt, ui[0].w, ui[0].h);
+	ret = displaystart(0);
+	ret = characterstart(0);
 	for(ret=1;ret<argc;ret++)
 	{
 		charactercommand(argv[ret]);
