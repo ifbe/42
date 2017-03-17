@@ -18,10 +18,10 @@ int tran_delete();
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
 //
-int readfile(u8* file, u8* mem, u64 offset, u64 count);
-int writefile(u8* file, u8* mem, u64 offset, u64 count);
-int startfile();
-int stopfile();
+int readfile(u64 file, u8* mem, u64 offset, u64 count);
+int writefile(u64 file, u8* mem, u64 offset, u64 count);
+int startfile(void*);
+int stopfile(u64);
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -208,11 +208,11 @@ static int memory_write(u8* mem, u8* file, u64 addr, u64 count)
 }
 static int memory_start(u8* p)
 {
-	return startfile(p);
+	return 0;
 }
 static int memory_stop()
 {
-	return stopfile();
+	return 0;
 }
 int memory_create(u8* softaddr,u64* p)
 {

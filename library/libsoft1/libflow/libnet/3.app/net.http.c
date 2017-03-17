@@ -9,8 +9,8 @@ int findtail(void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int readfile(void* name, void* mem, u64 off, u64 len);
-int writefile(void* name, void* mem, u64 off, u64 len);
+int readfile(u64 name, void* mem, u64 off, u64 len);
+int writefile(u64 name, void* mem, u64 off, u64 len);
 int readsocket(int fd, void* mem, int off, int len);
 int writesocket(int fd, void* mem, int off, int len);
 //
@@ -43,7 +43,10 @@ int http_write_request(u8* buf, int len, char* url, char* host)
 }
 int http_write_file(u8* buf, int len, u8* name)
 {
-	int ret = readfile(name, buf, 0, 0x100000);
+	int ret;
+	say("file=%s\n",name);
+
+	ret = readfile((u64)name, buf, 0, 0x100000);
 	if(ret <= 0)
 	{
 		*(u32*)buf = 0x343034;
@@ -72,13 +75,14 @@ int http_read(u8* buf, int len)
 		p += ret;
 		if(p > buf+len)break;
 	}//while
-
+/*
 	//debug
 	say("GET@%llx,Connection@%llx,Upgrade@%llx\n",
 		(u64)GET,
 		(u64)Connection,
 		(u64)Upgrade
 	);
+*/
 	return 0;
 }
 
