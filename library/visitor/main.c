@@ -6,7 +6,7 @@
 int characterstart(int);
 int characterstop();
 int characterwrite(void* event);
-int characterread(void* screen);
+int characterread();
 int characterlist(char*);
 int charactercommand(char* p);
 //libui0
@@ -14,8 +14,8 @@ int displaystart(int);
 int displaystop(int);
 int displaylist();
 int displaychoose();
-int displayread(void*);
-int displaywrite(void*);
+int displayread();
+int displaywrite();
 //libsoft1
 void motion_explain(void*);
 void network_explain(void*);
@@ -39,7 +39,6 @@ void eventwrite(u64,u64,u64,u64);
 
 
 
-//visitor
 struct event
 {
 	u64 why;
@@ -47,16 +46,6 @@ struct event
 	u64 where;
 	u64 when;
 };
-//libui
-struct screen
-{
-	u64 buf;
-	u64 fmt;
-	u64 w;
-	u64 h;
-	char data[256-4*sizeof(u64)];
-};
-//
 static u64 time;
 static int fps;
 
@@ -68,7 +57,8 @@ int main(int argc, char* argv[])
 	//before
 	int ret;
 	struct event* ev;
-	struct screen* ui = birth() + 0x400000;
+
+	birth();
 	say("@birth\n");
 
 	//config
@@ -83,8 +73,8 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		//1.show
-		characterread(ui);
-		displaywrite(ui);
+		characterread();
+		displaywrite();
 		fps++;
 
 again:

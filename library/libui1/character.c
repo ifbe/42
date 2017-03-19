@@ -9,9 +9,6 @@ void roster_create(u8*,u8*);
 void roster_delete();
 void virtkbd_create(u8*,u8*);
 void virtkbd_delete();
-//libs
-void ascii_create(u8*,u8*);
-void ascii_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -75,6 +72,15 @@ void say(void*, ...);
 
 
 
+struct window
+{
+        u64 buf;
+        u64 fmt;
+        u64 w;
+        u64 h;
+
+	char data[0xe0];
+};
 struct working
 {
 	//[0,7]:种类
@@ -100,7 +106,7 @@ struct working
 	char padding5[ 8 - sizeof(char*) ];
 
 	//[30,37]:输出
-	int (*read)(void* config);
+	int (*read)(void* win);
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[38,3f]:输入
@@ -109,17 +115,11 @@ struct working
 
 	char data[0xc0];
 };
-struct window
-{
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
-
-	char data[0xe0];
-};
-static struct working* worker;
 static struct window* win;
+static struct working* worker;
+static void* uinode;
+static void* uidata;
+//
 static u32 now=0;		//不能有负数
 static u32 menu=0;
 static u32 rost=0;
@@ -402,7 +402,7 @@ void characterwrite(u64* p)
 		worker[now].write(p);
 	}
 }
-void characterread(struct window* win)
+void characterread()
 {
 	if(win->fmt == 0)
 	{

@@ -35,18 +35,18 @@ static int id = 0;
 
 
 
-u64 displayread(struct window* win)
+u64 displayread()
 {
 	return 0;
 }
-u64 displaywrite(struct window* win)
+u64 displaywrite()
 {
-	if(win->fmt == 0x6c6d7468)
+	if(ui->fmt == 0x6c6d7468)
 	{
 	}
 	else
 	{
-		windowwrite(win);
+		windowwrite(ui);
 	}
 	return 0;
 }
