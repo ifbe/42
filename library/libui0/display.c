@@ -3,25 +3,25 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //voice
-int voicecreate();
+int voicecreate(void*, void*);
 int voicedelete();
-int voicestart(void*);
+int voicestart(int);
 int voicestop();
 int voicelist();
 int voicechoose();
 int voiceread();
 int voicewrite(void*);
 //network
-int netwincreate();
+int netwincreate(void*, void*);
 int netwindelete();
-int netwinstart(void*);
+int netwinstart(int);
 int netwinstop();
 int netwinlist();
 int netwinchoose();
 int netwinread();
 int netwinwrite(void*);
 //local
-int windowcreate();
+int windowcreate(void*, void*);
 int windowdelete();
 int windowstart(void*);
 int windowstop();
@@ -134,15 +134,13 @@ void displaycreate(u8* type, u8* addr)
 	for(j=0;j<0x100000;j++)addr[j] = 0;
 
 	//ws,rdp,vnc...
-	netwincreate();
-	netwinstart(&ui[0]);
+	netwincreate(addr, addr);
 
 	//voice
-	voicecreate();
-	voicestart(&ui[1]);
+	voicecreate(addr, addr+0x100);
 
 	//local prepare
-	windowcreate();
+	windowcreate(addr, addr+0x200);
 	id = 2;
 
 	//

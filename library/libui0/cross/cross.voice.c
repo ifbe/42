@@ -9,6 +9,7 @@ struct window
 	u64 w;
 	u64 h;
 };
+static struct window* win;
 
 
 
@@ -33,17 +34,18 @@ int voicestop()
 {
 	return 0;
 }
-int voicestart(struct window* win)
+int voicestart()
 {
-	win->buf = 0;
-	win->fmt = 0x6563696f76;
 	return 0;
 }
 int voicedelete()
 {
 	return 0;
 }
-int voicecreate()
+int voicecreate(void* uibase, void* uithis)
 {
+	win = uithis;
+	win->buf = 0;
+	win->fmt = 0x6563696f76;
 	return 0;
 }

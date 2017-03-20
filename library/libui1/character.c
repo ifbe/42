@@ -357,9 +357,11 @@ int characterchoose(u8* p)
 void characterwrite(u64* p)
 {
 	int x;
-	if(win[2].fmt == 0x696c63)
+
+	//cmd
+	if( (p[1] == 0x64626b)&&(p[2] == 0)&&(win[2].fmt == 0x696c63) )
 	{
-		if(p[1] == 0x64626b)arterycommand(p);
+		arterycommand(p);
 		return;
 	}
 

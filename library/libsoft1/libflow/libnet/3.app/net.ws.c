@@ -6,6 +6,7 @@ void eventwrite(u64,u64,u64,u64);
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
+void decstr2data(u8* str, int* data);
 int findzero(void* p);
 int findhead(void* p);
 int findtail(void* p);
@@ -13,6 +14,8 @@ u8* findstr(void* src, int max, void* target, int tarlen);
 //
 int readsocket(int fd, u8* addr, int offset, int count);
 int writesocket(int fd, u8* addr, int offset, int count);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 u32 getrandom();
 u64 gettime();
 //
@@ -272,6 +275,12 @@ u64 serve_ws(u64 fd, u64 type, u8* buf, int len)
 	//
 	ret = websocket_read(buf, len);
 	if(ret < 0)goto theend;
+
+	if(ncmp(buf, "kbd ", 4) == 0)
+	{
+		decstr2data(buf+4, &ret);
+		eventwrite(ret, 0x64626b, fd, 0);
+	}
 
 	//
 	websocket_write(fd, (void*)"hahahaha", 8);
