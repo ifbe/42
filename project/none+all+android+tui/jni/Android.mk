@@ -242,6 +242,8 @@ LOCAL_SRC_FILES += \
 #4.ui0
 LOCAL_SRC_FILES += \
 	library/libui0/linux/linux.tui.c \
+	library/libui0/cross/cross.net.c \
+	library/libui0/cross/cross.voice.c \
 	library/libui0/display.c
 
 #4.ui1

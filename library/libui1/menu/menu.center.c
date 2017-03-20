@@ -168,11 +168,8 @@ static void menu_read_pixel(struct window* win)
 static void menu_read_html(struct window* win)
 {
 	char* p = (char*)(win->buf);
-
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
 	buffer[bufp] = 0;
+
 	fmt(p,0x1000,
 		"<div style=\""
 		"position:absolute;"

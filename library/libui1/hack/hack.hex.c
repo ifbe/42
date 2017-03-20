@@ -337,10 +337,6 @@ static void hex_read_html(struct window* win)
 	int height = win->h;
 	u8* p = (u8*)(win->buf);
 
-	//
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
 	//prepare
 	dx = 80.00 / byteperline;
 	x = (pointeroffset % byteperline);

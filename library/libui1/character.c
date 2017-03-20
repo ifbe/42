@@ -357,7 +357,7 @@ int characterchoose(u8* p)
 void characterwrite(u64* p)
 {
 	int x;
-	if(win->fmt == 0)
+	if(win[2].fmt == 0x696c63)
 	{
 		if(p[1] == 0x64626b)arterycommand(p);
 		return;
@@ -404,17 +404,21 @@ void characterwrite(u64* p)
 }
 void characterread()
 {
-	if(win->fmt == 0)
+	int j;
+	for(j=0;j<16;j++)
 	{
-		arteryprompt();
-		return;
-	}
+		if(win[j].fmt == 0)break;
+		if(win[j].fmt == 0x6563696f76)continue;
 
-	//
-	worker[now].read(win);
-	if(menu > 0)worker[0].read(win);
-	if(rost > 0)worker[1].read(win);
-	if(vkbd > 0)worker[2].read(win);
+		if(win[j].fmt == 0x696c63)arteryprompt();
+		else
+		{
+			worker[now].read(&win[j]);
+			if(menu > 0)worker[0].read(&win[j]);
+			if(rost > 0)worker[1].read(&win[j]);
+			if(vkbd > 0)worker[2].read(&win[j]);
+		}
+	}
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

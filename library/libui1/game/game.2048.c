@@ -181,9 +181,6 @@ static void the2048_read_html(struct window* win)
 	u8* p = (u8*)(win->buf);
 	int (*table)[4] = buffer + num*16*4;
 
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
 	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"

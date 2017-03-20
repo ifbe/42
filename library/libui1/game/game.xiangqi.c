@@ -103,7 +103,7 @@ static int htmlcircle(char* p, int x, int y)
 static void xiangqi_read_html(struct window* win)
 {
 	int x,y;
-	char* p = (char*)(win->buf) + 0x1000;
+	char* p = (char*)(win->buf);
 
 	p += fmt(
 		p, 0x1000,

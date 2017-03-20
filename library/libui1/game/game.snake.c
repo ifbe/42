@@ -172,9 +172,6 @@ void snake_read_html(struct window* win)
 	int j = 0;
 	char* p = (char*)(win->buf);
 
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
 	if(die == 1)
 	{
 		fmt(p, 0x1000, "boooooooooooooooom");

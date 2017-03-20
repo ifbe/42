@@ -116,7 +116,8 @@ void windowwrite()
 
 void windowstart(struct clidata* win)
 {
-	win->fmt = 0;
+	win->buf = 0;
+	win->fmt = 0x696c63;
 	win->w = 80;
 	win->h = 25;
 }

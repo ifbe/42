@@ -2,6 +2,24 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//voice
+int voicecreate();
+int voicedelete();
+int voicestart(void*);
+int voicestop();
+int voicelist();
+int voicechoose();
+int voiceread();
+int voicewrite(void*);
+//network
+int netwincreate();
+int netwindelete();
+int netwinstart(void*);
+int netwinstop();
+int netwinlist();
+int netwinchoose();
+int netwinread();
+int netwinwrite(void*);
 //local
 int windowcreate();
 int windowdelete();
@@ -41,12 +59,15 @@ u64 displayread()
 }
 u64 displaywrite()
 {
-	if(ui->fmt == 0x6c6d7468)
+	int j;
+	for(j=0;j<16;j++)
 	{
-	}
-	else
-	{
-		windowwrite(ui);
+		if(ui[j].fmt == 0)break;
+		if(ui[j].fmt == 0x696c63)continue;
+		if(ui[j].fmt == 0x6563696f76)continue;
+
+		if(ui[j].fmt == 0x6c6d7468)netwinwrite(&ui[j]);
+		else windowwrite(&ui[j]);
 	}
 	return 0;
 }
@@ -85,7 +106,6 @@ u64 displaychoose(u64 dispid, u64 property, u64 what)
 }
 int displaystart(int j)
 {
-	id = 0;
 	ui[id].buf = 0;
 	ui[id].fmt = 0x6267726138383838;
 	ui[id].w = 512;
@@ -107,8 +127,19 @@ void displaycreate(u8* type, u8* addr)
 	ui = (void*)addr;
 	for(j=0;j<0x100000;j++)addr[j] = 0;
 
+	//ws,rdp,vnc...
+	netwincreate();
+	netwinstart(&ui[0]);
+
+	//voice
+	voicecreate();
+	voicestart(&ui[1]);
+
 	//local prepare
 	windowcreate();
+	id = 2;
+
+	//
 	say("[c,f):createed display\n");
 }
 void displaydelete()
@@ -118,4 +149,7 @@ void displaydelete()
 
 	//1024*1024*4
 	windowdelete();
+
+	//
+	netwindelete();
 }

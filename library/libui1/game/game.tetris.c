@@ -139,9 +139,6 @@ static void tetris_read_html(struct window* win)
 	int x,y;
 	char* p = (char*)(win->buf);
 
-	*(u32*)p = 0x6c6d7468;
-	p += 0x1000;
-
 	p += fmt(
 		p, 0x1000,
 		"<style type=\"text/css\">"
