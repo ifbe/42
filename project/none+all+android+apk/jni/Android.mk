@@ -186,6 +186,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libtext/conv/conv.pem.c \
 	library/libsoft1/libmem/libtext/conv/conv.num.c \
 	library/libsoft1/libmem/libtext/conv/conv.utf8.c \
+	library/libsoft1/libmem/libtext/count/count.item.c \
+	library/libsoft1/libmem/libtext/count/count.line.c \
 	library/libsoft1/libmem/libtext/diff/diff.cmp.c \
 	library/libsoft1/libmem/libtext/diff/diff.diff.c \
 	library/libsoft1/libmem/libtext/diff/diff.wild.c \

@@ -59,8 +59,12 @@ struct object
 	//[0x40,0xff]
 	u8 data[0xc0];
 };
-struct object* obj;
-static u8* fshome = 0;
+struct filesys
+{
+	u8 data[256];
+};
+static struct object* obj;
+static struct filesys* fs = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
 
@@ -360,7 +364,7 @@ int net_delete()
 int net_create(void* w, u64* p)
 {
 	obj = w + 0x000000;
-	fshome = w + 0x100000;
+	fs = w + 0x100000;
 	dirhome = w + 0x200000;
 	datahome = w + 0x300000;
 

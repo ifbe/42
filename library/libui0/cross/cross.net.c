@@ -6,6 +6,7 @@
 int websocket_write(u64, u8*, int);
 int rdp_write(u64, u8*, int);
 int vnc_write(u64, u8*, int);
+int count_strlen(void*);
 //
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
@@ -37,10 +38,10 @@ int netwinwrite(struct window* win)
 {
 	void* p;
 	int j;
-	if(theone == 0)return;
+	if(theone == 0)return 0;
 
 	p = (void*)win->buf;
-	j = strlen(p);
+	j = count_strlen(p);
 	websocket_write(theone, p, j);
 	return 0;
 }

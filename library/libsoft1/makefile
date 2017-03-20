@@ -105,6 +105,8 @@ target:
 	$(compiler) $(cflag) libmem/libtext/conv/conv.num.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.pem.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.utf8.c
+	$(compiler) $(cflag) libmem/libtext/count/count.item.c
+	$(compiler) $(cflag) libmem/libtext/count/count.line.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.cmp.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.wild.c
 	$(compiler) $(cflag) libmem/libtext/find/find.bm.c
