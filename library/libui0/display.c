@@ -104,15 +104,21 @@ u64 displaychoose(u64 dispid, u64 property, u64 what)
 
 	return what;
 }
-int displaystart(int j)
+int displaystart(int type, int j)
 {
-	ui[id].buf = 0;
-	ui[id].fmt = 0x6267726138383838;
-	ui[id].w = 512;
-	ui[id].h = 512;
-
-	windowstart( &(ui[id]) );
-	return id;
+	if(type == 0)
+	{
+		ui[id].buf = 0;
+		ui[id].fmt = 0x6267726138383838;
+		ui[id].w = 512;
+		ui[id].h = 512;
+		windowstart( &(ui[id]) );
+		return id;
+	}
+	else if(type == 0x5357)
+	{
+		netwinstart(j);
+	}
 }
 int displaystop()
 {

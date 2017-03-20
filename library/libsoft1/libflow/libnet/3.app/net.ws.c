@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void eventwrite(u64,u64,u64,u64);
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(u8* out, u8* in, int len);
@@ -263,6 +264,8 @@ u64 serve_ws(u64 fd, u64 type, u8* buf, int len)
 		if(ret <= 0)goto theend;
 
 		ret = writesocket(fd, buf, 0, ret);
+
+		eventwrite(0, WS, fd, 0);
 		goto theend;
 	}
 

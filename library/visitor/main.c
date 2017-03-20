@@ -10,7 +10,7 @@ int characterread();
 int characterlist(char*);
 int charactercommand(char* p);
 //libui0
-int displaystart(int);
+int displaystart(int, int);
 int displaystop(int);
 int displaylist();
 int displaychoose();
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 	say("@birth\n");
 
 	//config
-	ret = displaystart(0);
+	ret = displaystart(0,0);
 	ret = characterstart(0);
 	for(ret=1;ret<argc;ret++)
 	{
@@ -95,7 +95,12 @@ again:
 
 
 		//3.pre process
-		if(((ev->what)&0xff) == 'p')
+		if(ev->what == 0x5357)
+		{
+			displaystart(0x5357, ev->where);
+			continue;
+		}
+		else if(((ev->what)&0xff) == 'p')
 		{
 			//sensor rawdata -> my event
 			motion_explain(ev);
