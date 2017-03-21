@@ -206,6 +206,13 @@ void network_explain(u64* p)
 			if(what != 0)
 			{
 				obj[where].type_road = what;
+				if( (what == WS)&&(obj[where].stage1 > 3) )
+				{
+					p[0] = obj[where].stage3;
+					p[1] = obj[where].type_data;
+					//p[2]	//not change
+					//p[3]	//not change
+				}
 				return;
 			}
 		}

@@ -71,7 +71,7 @@ int netwindelete()
 int netwincreate(void* uibase, void* uithis)
 {
 	win = uithis;
-	win->buf = malloc(0x100000);
+	win->buf = (u64)malloc(0x100000);
 	win->fmt = 0x6c6d7468;
 	win->w = 512;
 	win->h = 512;

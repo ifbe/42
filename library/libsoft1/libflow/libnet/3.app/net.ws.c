@@ -5,8 +5,8 @@
 void eventwrite(u64,u64,u64,u64);
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
-void datastr2hexstr(u8* out, u8* in, int len);
-void decstr2data(u8* str, int* data);
+void datastr2hexstr(void* o, void* i, int len);
+void decstr2data(void* i, void* o);
 int findzero(void* p);
 int findhead(void* p);
 int findtail(void* p);
@@ -318,8 +318,8 @@ int serve_ws(struct object* obj, int fd, u8* buf, int len)
 		{
 			if(ncmp(buf, "kbd ", 4) == 0)
 			{
-				decstr2data(buf+4, &ret);
-				eventwrite(ret, 0x64626b, fd, 0);
+				obj[fd].type_data = 0x64626b;
+				decstr2data(buf+4, &(obj[fd].stage3));
 			}
 		}
 	}
