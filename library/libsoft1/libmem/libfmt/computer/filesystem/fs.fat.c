@@ -432,19 +432,28 @@ void fat_stop()
 
 
 
-void fat_create(void* world, u64* p)
+void fat_create(void* base, u64* this)
 {
-	fshome = world+0x100000;
+	//
+	fshome = base+0x100000;
 		pbr = fshome+0x10000;
 		fatbuffer = fshome+0x20000;
-	dirhome = world+0x200000;
+	dirhome = base+0x200000;
 		//rootdir
 		//dirdepth1
 		//dirdepth2
 		//dirdepth3
 		//dirdepth4
 		//......
-	datahome = world+0x300000;
+	datahome = base+0x300000;
+
+	//
+	this[2] = (u64)fat_start;
+	this[3] = (u64)fat_stop;
+	this[4] = (u64)fat_list;
+	this[5] = (u64)fat_choose;
+	this[6] = (u64)fat_read;
+	this[7] = (u64)fat_write;
 }
 void fat_delete()
 {

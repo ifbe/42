@@ -654,13 +654,22 @@ int hfs_start(u64 sector)
 void hfs_stop()
 {
 }
-void hfs_create(void* world, u64* p)
+void hfs_create(void* base, u64* this)
 {
-	fshome = world+0x100000;
+	//
+	fshome = base+0x100000;
 		pbr = fshome+0x10000;
 		catabuf = fshome+0x20000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
+	dirhome = base+0x200000;
+	datahome = base+0x300000;
+
+	//
+	this[2] = (u64)hfs_start;
+	this[3] = (u64)hfs_stop;
+	this[4] = (u64)hfs_list;
+	this[5] = (u64)hfs_choose;
+	this[6] = (u64)hfs_read;
+	this[7] = (u64)hfs_write;
 }
 void hfs_delete()
 {

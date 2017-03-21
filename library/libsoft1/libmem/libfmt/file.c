@@ -65,9 +65,34 @@ void say(void*, ...);
 
 
 
-//
-static u8* fdhome;
-static u8* fshome;
+struct object
+{
+	u64 type0;
+	u64 stage0;
+	u64 type1;
+	u64 stage1;
+	u64 type2;
+	u64 stage2;
+	u64 type3;
+	u64 stage3;
+
+	u8 data[0xc0];
+};
+struct filesystem
+{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
+
+	u8 data[0xc0];
+};
+static struct object* obj;
+static struct filesystem* fs;
 static u8* dirhome;
 static u8* datahome;
 //
@@ -77,7 +102,7 @@ static int which = 0;
 
 
 //
-int file_explain(u8* buf, int len)
+int mount_file(u8* buf, int len)
 {
 	//picture
 	if(check_bmp(buf) > 0)parse_bmp(buf, len);
@@ -112,48 +137,11 @@ int file_explain(u8* buf, int len)
 	else say("unknown\n");
 	return 0;
 }
-int file_mount(u8* addr)
-{
-/*
-	int j;
-	u64 id = 0;
-	if(isext(addr) > 0)
-	{
-		id = ext
-	}
-	else if(isfat(addr) > 0)
-	{
-		id = fat
-	}
-	else if(ishfs(addr) > 0)
-	{
-		id = hfs
-	}
-	else if(isntfs(addr) > 0)
-	{
-		id = ntfs
-	}
-	else
-	{
-		return -1;
-	}
-
-	for(j=0;j<0x10000/0x80;j++)
-	{
-		if(id == fdhome[j].id)
-		{
-			which = id;
-			break;
-		}
-	}
-*/
-	return 0;
-}
 
 
 
 
-//just command
+//
 static int file_ls()
 {
 	int j;
@@ -186,7 +174,7 @@ static int file_cd(u8* p)
 	stopfile(fd);
 
 	//11111111
-	ret = file_explain(datahome, 0x8000);
+	ret = mount_file(datahome, 0x8000);
 	return 0;
 }
 static int file_read(u8* addr)
@@ -208,8 +196,8 @@ static int file_stop()
 }
 int file_create(void* softaddr, u64* p)
 {
-	fdhome = softaddr;
-	fshome = softaddr + 0x100000;
+	obj = softaddr;
+	fs = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
 	datahome = softaddr + 0x300000;
 

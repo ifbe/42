@@ -675,14 +675,23 @@ static int ntfs_start(u64 sector)
 static void ntfs_stop()
 {
 }
-void ntfs_create(void* world, u64* p)
+void ntfs_create(void* base, u64* this)
 {
-	fshome = world+0x100000;
+	//
+	fshome = base+0x100000;
 		pbr=fshome+0x10000;
 		mft0=fshome+0x20000;
 		mftbuffer=fshome+0x40000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
+	dirhome = base+0x200000;
+	datahome = base+0x300000;
+
+	//
+	this[2] = (u64)ntfs_start;
+	this[3] = (u64)ntfs_stop;
+	this[4] = (u64)ntfs_list;
+	this[5] = (u64)ntfs_choose;
+	this[6] = (u64)ntfs_read;
+	this[7] = (u64)ntfs_write;
 }
 void ntfs_delete()
 {

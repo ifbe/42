@@ -42,7 +42,9 @@ int netwinwrite(struct window* win)
 
 	p = (void*)win->buf;
 	j = count_strlen(p);
-	websocket_write(theone, p, j);
+	j = websocket_write(theone, p, j);
+	if(j <= 0)theone = 0;
+
 	return 0;
 }
 int netwinlist()

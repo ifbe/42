@@ -342,7 +342,7 @@ static int ext_start(u64 sector)
 	//读分区前8扇区，检查magic值
 	ret = readfile(0, pbr, block0*0x200, 0x1000);
 	ret = check_ext(pbr);
-	if( ret == 0 ) return -1;
+	if(ret == 0)return -1;
 
 	//读出关键数据
 	ret = explainexthead();
@@ -357,18 +357,22 @@ static int ext_start(u64 sector)
 static void ext_stop()
 {
 }
-
-
-
-
-void ext_create(void* world, u64* p)
+void ext_create(void* base, u64* this)
 {
-	//得到本分区的开始扇区位置，再得到3个buffer的位置
-	fshome = world+0x100000;
+	//
+	fshome = base+0x100000;
 		pbr = fshome+0x10000;
 		inodebuffer = fshome+0x20000;
-	dirhome = world+0x200000;
-	datahome = world+0x300000;
+	dirhome = base+0x200000;
+	datahome = base+0x300000;
+
+	//
+	this[2] = (u64)ext_start;
+	this[3] = (u64)ext_stop;
+	this[4] = (u64)ext_list;
+	this[5] = (u64)ext_choose;
+	this[6] = (u64)ext_read;
+	this[7] = (u64)ext_write;
 }
 void ext_delete()
 {
