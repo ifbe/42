@@ -176,7 +176,7 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 	wbuf.len = len;
 	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
 	printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
-	return ret;
+	return len;
 }
 int listsocket()
 {

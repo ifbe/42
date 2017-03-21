@@ -188,8 +188,8 @@ static void the2048_read_html(struct window* win)
 		"border:1px solid #000;"
 		"position:absolute;"
 		"color:#000;"
-		"width:25%;"
-		"height:25%;"
+		"width:25%%;"
+		"height:25%%;"
 		"}"
 		"</style>"
 	);
@@ -204,8 +204,8 @@ static void the2048_read_html(struct window* win)
 			p += fmt(
 				p, 0x1000,
 				"<div class=\"rect\" style=\""
-				"left:%d%;"
-				"top:%d%;"
+				"left:%d%%;"
+				"top:%d%%;"
 				"background:#%06x;"
 				"\">%d</div>",
 				25*x, 25*y,
