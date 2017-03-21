@@ -2,12 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int readsocket(u64 fd, u8* addr, u64 offset, u64 count);
-int writesocket(u64 fd, u8* addr, u64 offset, u64 count);
 //
 void generatePG(void*, int, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
+//
+int readsocket(int fd, u8* addr, int offset, int count);
+int writesocket(int fd, u8* addr, int offset, int count);
 //
 int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
@@ -506,7 +507,7 @@ int secureshell_write()
 
 #define SSH 0x485353
 #define ssh 0x687373
-u64 serve_ssh(u64 fd, u64 type, u8* buf, int len)
+int serve_ssh(void* p, int fd, u8* buf, int len)
 {
 	int ret = secureshell_read(buf, len);
 	if(ret == 0x14)
@@ -531,7 +532,7 @@ u64 serve_ssh(u64 fd, u64 type, u8* buf, int len)
 	}
 	return SSH;
 }
-u64 check_ssh(u64 fd, u64 type, u8* buf, int len)
+u64 check_ssh(void* p, int fd, u8* buf, int len)
 {
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{

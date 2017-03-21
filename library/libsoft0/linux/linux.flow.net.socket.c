@@ -36,20 +36,22 @@ void say(void*, ...);
 
 struct object
 {
-	//[0x00,0x0f]
-	u64 type0;	//raw, bt, udp, tcp?
-	u64 type1;	//ssh, tls?
+	//[0x00,0x3f]
+	u64 type_sock;	//raw, bt, udp, tcp?
+	u64 stage0;
+	u64 type_road;	//ssh, tls?
+	u64 stage1;
+	u64 type_app;	//http2, ws, rdp, vnc?
+	u64 stage2;
+	u64 type_data;	//html, rgb?
+	u64 stage3;
 
-	//[0x10,0x1f]
-	u64 port_src;
-	u64 port_dst;
+	//[0x40,0x7f]
+	u8 addr_src[0x20];
+	u8 addr_dst[0x20];
 
-	//[0x20,0x3f]
-	u8 addr_src[0x10];
-	u8 addr_dst[0x10];
-
-	//[0x40,0xff]
-	u8 data[0xc0];
+	//[0x80,0xff]
+	u8 data[0x80];
 };
 struct object* obj;
 //
@@ -151,8 +153,8 @@ while(alive)
 			}
 
 			printf("++++ %d\n",fd);
-			obj[fd].type0 = 't';
-			obj[fd].type1 = 0;
+			obj[fd].type_sock = 't';
+			obj[fd].type_road = 0;
 			epoll_add(fd);
 			eventwrite(0, 0x2b6e, fd, gettime());
 		}//while
@@ -241,7 +243,8 @@ int choosesocket()
 void stopsocket(int x)
 {
 	int ret = close(x);
-	obj[x].type0 = obj[x].type1 = 0;
+	obj[x].type_sock = 0;
+	obj[x].type_road = 0;
 	printf("---- %d %d, %d\n", x, ret, errno);
 
 	//epoll_del(x);
@@ -286,7 +289,8 @@ int startsocket(char* addr, int port, int type)
 		}
 		epoll_add(rawlisten);
 
-		obj[tcplisten].type0 = type;
+		obj[tcplisten].type_sock = type;
+		obj[tcplisten].type_road = 0;
 		return rawlisten;
 	}
 	else if(type == 'U')	//udp server
@@ -321,8 +325,8 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		obj[tcplisten].type0 = type;
-		obj[tcplisten].port_src = port;
+		obj[tcplisten].type_sock = type;
+		obj[tcplisten].type_road = 0;
 		epoll_add(udplisten);
 		return udplisten;
 	}
@@ -372,8 +376,8 @@ int startsocket(char* addr, int port, int type)
 		listen(tcplisten, 5);
 
 		//
-		obj[tcplisten].type0 = type;
-		obj[tcplisten].port_src = port;
+		obj[tcplisten].type_sock = type;
+		obj[tcplisten].type_road = 0;
 		epoll_add(tcplisten);
 		return tcplisten;
 	}
@@ -405,9 +409,8 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd].type0 = type;
-		obj[fd].type1 = 0;
-		obj[fd].port_src = port;
+		obj[fd].type_sock = type;
+		obj[fd].type_road = 0;
 		epoll_add(fd);
 		return fd;
 	}
@@ -439,9 +442,8 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd].type0 = type;
-		obj[fd].type1 = 0;
-		obj[fd].port_src = port;
+		obj[fd].type_sock = type;
+		obj[fd].type_road = 0;
 		epoll_add(fd);
 		return fd;
 	}

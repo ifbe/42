@@ -26,9 +26,25 @@ void say(void*, ...);
 
 
 
-//
-static u8 fixed_salt[256];
-static u8 temp_salt[256];
+struct object
+{
+        //[0x00,0x0f]
+        u64 type_sock;  //raw, bt, udp, tcp?
+        u64 stage0;
+        u64 type_road;  //ssh, tls?
+        u64 stage1;
+        u64 type_app;   //http2, ws, rdp, vnc?
+        u64 stage2;
+        u64 type_data;  //html, rgb?
+        u64 stage3;
+
+        //[0x40,0x7f]
+        u8 addr_src[0x20];
+        u8 addr_dst[0x20];
+
+        //[0x80,0xff]
+        u8 data[0x80];
+};
 
 
 
@@ -200,7 +216,7 @@ int websocket_write_handshake(u8* buf, int len)
 		"\r\n"
 	);
 }
-int websocket_write(u64 fd, u8* buf, int len)
+int websocket_write(u64 fd, void* buf, int len)
 {
 	u8 headbuf[16];
 	int headlen;
@@ -245,10 +261,13 @@ int websocket_write(u64 fd, u8* buf, int len)
 
 #define ws 0x7377
 #define WS 0x5357
-u64 serve_ws(u64 fd, u64 type, u8* buf, int len)
+int serve_ws(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
-	if(type == ws)
+	u64 temp;
+
+	temp = obj[fd].type_road;
+	if(temp == ws)
 	{
 		if(buf[0] == 'H')	//response
 		{
@@ -260,141 +279,55 @@ u64 serve_ws(u64 fd, u64 type, u8* buf, int len)
 		goto theend;
 	}
 
-	if(buf[0] == 'G')
+	temp = obj[fd].stage1;
+	if(temp == 0)
 	{
 		//
 		ret = websocket_read_handshake(fd, buf, len);
 		if(ret <= 0)goto theend;
 
 		ret = writesocket(fd, buf, 0, ret);
+		if(ret <= 0)goto theend;
 
-		eventwrite(0, WS, fd, 0);
+		obj[fd].stage1 = 1;
 		goto theend;
 	}
-
-	//
-	ret = websocket_read(buf, len);
-	if(ret < 0)goto theend;
-
-	if(ncmp(buf, "kbd ", 4) == 0)
+	else
 	{
-		decstr2data(buf+4, &ret);
-		eventwrite(ret, 0x64626b, fd, 0);
-	}
+		ret = websocket_read(buf, len);
+		if(ret < 0)goto theend;
 
-	//
-	websocket_write(fd, (void*)"hahahaha", 8);
-
-theend:
-	return type;
-/*
-	if(type==0x10)
-	{
-		say("[%d][stage0][client]%s\n", fd, event_queue);
-
-		//
-		i = snprintf(recvbuf+2, 20, "4....2..");
-		recvbuf[0] = 0x81;
-		recvbuf[1] = i;
-		i = write(fd, recvbuf, 2+i);
-
-		//
-		say("[%d][stage0][server]%s\n\n", fd, recvbuf+2);
-		type = 0x11;
-	}
-
-	else if(type==0x11)
-	{
-		say("[%d][stage1][client]username=%s\n", fd, event_queue);
-		if(0)
+		if(temp == 1)
 		{
-			i = snprintf(recvbuf+2, 20, "fail");
-			recvbuf[0] = 0x81;
-			recvbuf[1] = i;
-			i = write(fd, recvbuf, 2+i);
-
-			epoll_del(fd);
-			say("[%d]stage1 failed\n", fd);
-			return;
+			websocket_write(fd, "haha@1", 6);
+			obj[fd].stage1 = 2;
 		}
+		else if(temp == 2)
+		{
+			websocket_write(fd, "haha@2", 6);
+			obj[fd].stage1 = 3;
+		}
+		else if(temp == 3)
+		{
+			websocket_write(fd, "haha@3", 6);
+			obj[fd].stage1 = 4;
 
+			eventwrite(0, WS, fd, 0);
+		}
 		else
 		{
-			//
-			snprintf(fixed_salt, 256, "%08x", getrandom());
-			snprintf( temp_salt, 256, "%08x", getrandom());
-			i = snprintf(recvbuf+2, 20, "%s,%s", fixed_salt, temp_salt);
-			recvbuf[0] = 0x81;
-			recvbuf[1] = i;
-			i = write(fd, recvbuf, 2+i);
-
-			//
-			say("[%d][stage1][server]challenge=%s\n\n", fd, recvbuf+2);
-			type = 0x12;
+			if(ncmp(buf, "kbd ", 4) == 0)
+			{
+				decstr2data(buf+4, &ret);
+				eventwrite(ret, 0x64626b, fd, 0);
+			}
 		}
 	}
-	else if(type==0x12)
-	{
-		say("[%d][stage2][client]response=%s\n", fd, event_queue);
 
-		//
-		snprintf(buf2, 256, "%s%s", fixed_salt, "42");
-		sha1sum(buf1, buf2, strlen(buf2));
-		datastr2hexstr(buf2, buf1, 20);
-		say("   %s\n",buf2);
-
-		snprintf(buf1, 256, "%s%s", temp_salt, buf2);
-		sha1sum(buf2, buf1, strlen(buf1));
-		datastr2hexstr(buf1, buf2, 20);
-		say("   %s\n",buf1);
-
-		//if(strncmp(event_queue, buf1, 256) != 0)
-		//{
-			//epoll_del(fd);
-			//say("[%d][stage2]incorrect\n", fd);
-			//return;
-		//}
-
-		//write
-		i = snprintf(recvbuf+2, 20, "correct");
-		recvbuf[0] = 0x81;
-		recvbuf[1] = i;
-		i = write(fd, recvbuf, 2+i);
-
-		//count
-		websocket_count++;
-		if(fd > websocket_last)websocket_last = fd;
-
-		//type
-		say("[%d][stage2][server]status=%s\n\n", fd, recvbuf+2);
-		type = 0x1f;
-
-		//event
-		*(u64*)(event_queue+0) = 0xabcdef;
-		//eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
-	}
-	else if(type==0x1f)
-	{
-		say("[%d]:%s\n", fd, event_queue);
-
-		len = *(u32*)event_queue;
-		if(len == 0x2064626b)
-		{
-			len = atoi(event_queue+4);
-			*(u64*)(event_queue+8) = len;
-			*(u64*)(event_queue+0) = 0x64626b;
-		}
-		else if(len == 0x72616863)
-		{
-			len = atoi(event_queue+5);
-			*(u64*)(event_queue+8) = len;
-			*(u32*)(event_queue+4) = 0;
-		}
-		//eventwrite(*(u64*)(event_queue+8), *(u64*)event_queue, fd, 0);
-	}
-*/
+theend:
+	return WS;
 }
-u64 serve_wss(u64 fd, u64 type, u8* buf, int len)
+int serve_wss(void* p, int fd, u8* buf, int len)
 {
 	return 0;
 }

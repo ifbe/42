@@ -11,7 +11,7 @@ void say(void*, ...);
 
 #define RAW 0x574152
 #define raw 0x776172
-u64 serve_raw(u64 fd, u64 type, u8* buf, int len)
+int serve_raw(void* p, int fd, u8* buf, int len)
 {
 	int proto;
 
@@ -40,5 +40,5 @@ u64 serve_raw(u64 fd, u64 type, u8* buf, int len)
 
 	//
 	say("\n");
-	return type;
+	return RAW;
 }

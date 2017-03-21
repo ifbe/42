@@ -728,7 +728,7 @@ void tls_stop()
 
 
 #define TLS 0x534c54
-u64 serve_tls(u64 fd, u64 type, u8* buf, int len)
+int serve_tls(void* p, int fd, u8* buf, int len)
 {
 	//tls >>>> ascii
 	len = tls_read(fd, buf, len);
@@ -744,7 +744,7 @@ good:
 error:
 	return 0;
 }
-u64 check_tls(u64 fd, u64 type, u8* buf, int len)
+int check_tls(void* p, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x16)return TLS;
 	return 0;

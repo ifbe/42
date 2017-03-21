@@ -31,20 +31,20 @@ struct per_io_data
 struct object
 {
 	//[0x00,0x0f]
-	u64 type0;	//raw, bt, udp, tcp?
-	u64 type1;	//ssh, tls?
+	u64 type_sock;  //raw, bt, udp, tcp?
+	u64 stage0;
+	u64 type_road;  //ssh, tls?
+	u64 stage1;
+	u64 type_app;   //http2, ws, rdp, vnc?
+	u64 stage2;
+	u64 type_data;  //html, rgb?
+	u64 stage3;
 
-	//[0x10,0x1f]
-	u64 port_src;
-	u64 port_dst;
+	//[0x40,0x7f]
+	u8 tempdat[0x40];	//(completion key) | (self and peer addr)
 
-	//[0x20,0x3f]
-	u8 addr_src[0x10];
-	u8 addr_dst[0x10];
-
-	//[0x40,0xff]
-	u8 tempdat[0x40];		//(completion key) | (self and peer addr)
-	u8 overlap[0x80];		//(only per io data)
+	//[0x80,0xff]
+	u8 overlap[0x80];	//(only per io data)
 };
 static struct object* obj;
 //

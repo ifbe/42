@@ -21,6 +21,25 @@ void say(void*, ...);
 
 
 
+struct object
+{
+        //[0x00,0x0f]
+        u64 type_sock;  //raw, bt, udp, tcp?
+        u64 stage0;
+        u64 type_road;  //ssh, tls?
+        u64 stage1;
+        u64 type_app;   //http2, ws, rdp, vnc?
+        u64 stage2;
+        u64 type_data;  //html, rgb?
+        u64 stage3;
+
+        //[0x40,0x7f]
+        u8 addr_src[0x20];
+        u8 addr_dst[0x20];
+
+        //[0x80,0xff]
+        u8 data[0x80];
+};
 static u8* Connection = 0;
 static u8* Upgrade = 0;
 static u8* GET = 0;
@@ -95,7 +114,7 @@ int http_read(u8* buf, int len)
 #define http 0x70747468
 #define WS 0x5357
 #define ws 0x7377
-u64 check_http(u64 fd, u64 type, u8* buf, int len)
+int check_http(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
 
@@ -139,9 +158,9 @@ u64 check_http(u64 fd, u64 type, u8* buf, int len)
 byebye:
 	return 0;
 }
-u64 serve_http(u64 fd, u64 type, u8* buf, int len)
+int serve_http(struct object* obj, int fd, u8* buf, int len)
 {
-	int ret;
+	u64 type = obj[fd].type_road;
 	if(type == http)
 	{
 		printmemory(buf, len);
@@ -154,7 +173,7 @@ u64 serve_http(u64 fd, u64 type, u8* buf, int len)
 byebye:
 	return 0;
 }
-u64 serve_https(u64 fd, u64 type, u8* buf, int len)
+int serve_https(struct object* obj, int fd, u8* buf, int len)
 {
 	return 0;
 }
