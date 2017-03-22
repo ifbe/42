@@ -115,10 +115,10 @@ struct working
 
 	char data[0xc0];
 };
-static struct window* win;
-static struct working* worker;
-static void* uinode;
-static void* uidata;
+static struct window* win = 0;
+static struct working* worker = 0;
+static void* uinode = 0;
+static void* uidata = 0;
 //
 static u32 now=0;		//不能有负数
 static u32 menu=0;
@@ -133,6 +133,7 @@ void charactercreate(u8* type, u8* addr)
 	int i;
 	u8* temp;
 	if(type!=0)return;
+	if( (type == 0)&&(worker != 0) )return;
 
 	//where
 	win = (struct window*)(addr+0);
@@ -286,6 +287,11 @@ void characterdelete()
 	menu_delete();
 	roster_delete();
 	virtkbd_delete();
+
+	win = 0;
+	worker = 0;
+	uinode = 0;
+	uidata = 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

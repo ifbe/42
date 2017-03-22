@@ -163,14 +163,11 @@ int serve_http(struct object* obj, int fd, u8* buf, int len)
 	u64 type = obj[fd].type_road;
 	if(type == http)
 	{
-		printmemory(buf, len);
-		goto byebye;
+		//printmemory(buf, len);
+		return http;
 	}
 
 	//http 1.1 persistent connection
-	return 0;
-
-byebye:
 	return 0;
 }
 int serve_https(struct object* obj, int fd, u8* buf, int len)

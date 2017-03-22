@@ -15,6 +15,12 @@ void say(char*, ...);
 
 
 
+//
+static u64* worker = 0;
+
+
+
+
 static int uart_list(u8* p)
 {
 	return systemuart_list();
@@ -42,7 +48,10 @@ static int uart_choose(u8* p)
 		else name[j] = p[j];
 	}
 	name[j] = 0;
-	return systemuart_choose(name, speed);
+
+	j = systemuart_choose(name, speed);
+	worker[0] = 1;
+	return 0;
 }
 static int uart_read(u8* p)
 {
@@ -69,8 +78,10 @@ static int uart_stop(u8* p)
 {
 	return systemuart_stop();
 }
-void uart_create(u8* world,u64* p)
+void uart_create(void* world,u64* p)
 {
+	worker = world+0x100000;
+
 	p[0]=0x6563616669;	//type
 	p[1]=0x74726175;	//id
 	p[2]=(u64)uart_start;

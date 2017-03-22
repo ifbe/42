@@ -46,9 +46,9 @@ static struct player* pl;
 static int count = 0;
 //
 static u64 fd = 0;
-static int len = 0;
 static u8* srcbuf = 0;
 static u8* dstbuf = 0;
+static int len = 0;
 
 
 
@@ -79,6 +79,9 @@ static void browse_read_text(struct window* win)
 }
 static void browse_read_html(struct window* win)
 {
+	int j;
+	u8* p = (u8*)(win->buf);
+	for(j=0;j<len;j++)p[j] = dstbuf[j];
 }
 static void browse_read_pixel(struct window* win)
 {

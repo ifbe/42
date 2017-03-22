@@ -183,7 +183,7 @@ protocol:
 }
 void network_explain(u64* p)
 {
-	int ret;
+	int len;
 	//u64 why = p[0];
 	u64 what = p[1] & 0xffff;
 	u64 where = p[2];
@@ -197,28 +197,37 @@ void network_explain(u64* p)
 	}
 	else if(what == 0x406e)
 	{
-		//get data
-		ret = readsocket(where, datahome, 0, 0x100000);
-		if(ret > 0)
+		//read socket
+		len = readsocket(where, datahome, 0, 0x100000);
+		if(len <= 0)
 		{
-			datahome[ret] = 0;
-			what = serve_what(where, datahome, ret);
-			if(what != 0)
-			{
-				obj[where].type_road = what;
-				if( (what == WS)&&(obj[where].stage1 >= 3) )
-				{
-					p[0] = obj[where].stage3;
-					p[1] = obj[where].type_data;
-					//p[2]	//not change
-					//p[3]	//not change
-				}
-				return;
-			}
+			stopsocket(where);
+			return;
 		}
 
-		//wrong(ret) or wrong(type)
-		stopsocket(where);
+		//serve socket
+		datahome[len] = 0;
+		what = serve_what(where, datahome, len);
+		if(what == 0)
+		{
+			stopsocket(where);
+			return;
+		}
+
+		//change event
+		obj[where].type_road = what;
+		if( (what == WS)&&(obj[where].stage1 >= 3) )
+		{
+			p[0] = obj[where].stage3;
+			p[1] = obj[where].type_data;
+			//p[2]	//not change
+			//p[3]	//not change
+		}
+		else if(what == http)
+		{
+			p[0] = len;
+			p[1] = http;
+		}
 	}
 }
 
@@ -336,7 +345,7 @@ int net_choose(u8* p)
 		ret = websocket_write_handshake(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 	}
-	return 0;
+	return fd;
 }
 int net_stop(u8* p)
 {

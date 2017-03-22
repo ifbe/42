@@ -24,8 +24,8 @@ int ncmp(void*,void*,int);
 void printmemory(void*, int);
 void say(void*, ...);
 //
-void eventread(u64* who, u64* what, u64* how);
 void eventwrite(u64,u64,u64,u64);
+void* eventread();
 
 
 
@@ -34,7 +34,7 @@ void eventwrite(u64,u64,u64,u64);
 //[0x100000,0x1fffff]:fs
 //[0x200000,0x2fffff]:dir
 //[0x300000,0x3fffff]:data
-static struct elements
+struct element
 {
 	//[00,07]
 	u64 type;
@@ -68,25 +68,21 @@ static struct elements
 
 	//[40,ff]
 	u8 data[0xc0];
-}*worker;
-static u8*  dirhome;
-static u8* datahome;
+};
+static struct element* worker = 0;
+static u8* dirhome = 0;
+static u8* datahome = 0;
 
 
 
 
-//pci->usb->video->h264->stream
-//bin->partworker->filesystem->dir->file....
-//tcp->http->websocket->what
-//static int stack[16]={0};
-static u8* stack;
-static int rsp=0;
 //
 static u8 cmd[256];
-static int dst=0;
+static int len=0;
 //
-static int shutup=0;
-static int combo=0;
+static int theone = 0;
+static int shutup = 0;
+static int combo = 0;
 
 
 
@@ -97,88 +93,57 @@ int arterylist(u8* p)
 	int count;
 	u64 type;
 	u64 id;
+	if(theone > 0)return worker[theone].list(p);
 
-	//0
-	if(rsp == 0)
+	//
+	count = 0;
+	for(j=1;j<0x100;j++)
 	{
-		count = 0;
-		for(j=1;j<0x100;j++)
+		type=worker[j].type;
+		id=worker[j].id;
+		if(id==0)
 		{
-			type=worker[j].type;
-			id=worker[j].id;
-			if(id==0)
-			{
-				if(count%8!=0)say("\n");
-				break;
-			}
-
-			if(type==0)
-			{
-				say("\n%s:\n",&id);
-				count=0;
-			}
-			else
-			{
-				if((count>0)&&(count%8==0))say("\n");
-
-				say("	%s",&id);
-				count++;
-			}
+			if(count%8!=0)say("\n");
+			break;
 		}
-		return 0;
-	}
 
-	//1,2,3,4,5......
-	else
-	{
-		id = stack[rsp];
-		return worker[id].list(p);
+		if(type==0)
+		{
+			say("\n%s:\n",&id);
+			count=0;
+		}
+		else
+		{
+			if((count>0)&&(count%8==0))say("\n");
+
+			say("	%s",&id);
+			count++;
+		}
 	}
+	return 0;
 }
 int arterychoose(u8* p)
 {
 	int ret;
-	u64 who;
-	if(p == 0)return -1;
+	if(p == 0)return 0;
+	if(theone > 0)return worker[theone].choose(p);
 
-	if(rsp == 0)
+	//search somewhere to go
+	for(ret=1;ret<256;ret++)
 	{
-		//search somewhere to go
-		for(ret=1;ret<256;ret++)
-		{
-			if(cmp(p,(u8*)&worker[ret].id)==0)
-			{
-				break;
-			}
-		}
-		if(ret>=256)
-		{
-			say("not found\n");
-			return 0;
-		}
-
-		//now go into it
-		rsp++;
-		stack[rsp] = ret;
-
+		if(cmp(p, &worker[ret].id) == 0)break;
+	}
+	if(ret>=256)
+	{
+		say("not found\n");
 		return 0;
 	}
 
-	//1,2,3,5,6......
-	else if(rsp == 1)
-	{
-		who = stack[1];
-		if(who != 0)ret = worker[who].choose(p);
-		if(ret > 0)rsp++;
-	}
-
-	else
-	{
-		who = stack[1];
-		if(who != 0)ret = worker[who].choose(p);
-	}
-
-	return 1;
+	//now go into it
+	theone = ret;
+	worker[0].type = 0;
+	worker[0].id = worker[theone].id;
+	return 0;
 }
 
 
@@ -186,31 +151,13 @@ int arterychoose(u8* p)
 
 int arteryread(u8* p)
 {
-	u64 who;
-	if(rsp == 0)
-	{
-		say("@arteryread\n");
-		return 0;
-	}
-	else
-	{
-		who = stack[rsp];
-		return worker[who].read(p);
-	}
+	if(theone > 0)worker[theone].read(p);
+	else say("@arteryread\n");
 }
 int arterywrite(u8* p)
 {
-	u64 who;
-	if(rsp==0)
-	{
-		say("@arterywrite\n");
-		return 0;
-	}
-	else
-	{
-		who = stack[rsp];
-		return worker[who].write(p);
-	}
+	if(theone > 0)worker[theone].write(p);
+	else say("@arterywrite\n");
 }
 
 
@@ -218,31 +165,13 @@ int arterywrite(u8* p)
 
 int arterystart(u8* p)
 {
-	u64 who;
-	if(rsp==0)
-	{
-		say("@arterystart\n");
-		return 0;
-	}
-	else
-	{
-		who = stack[rsp];
-		return worker[who].start(p);
-	}
+	if(theone > 0)worker[theone].start(p);
+	else say("@arterystart\n");
 }
 int arterystop(u8* p)
 {
-	u64 who;
-	if(rsp==0)
-	{
-		say("@arterystop\n");
-		return 0;
-	}
-	else
-	{
-		who = stack[rsp];
-		return worker[who].stop();
-	}
+	if(theone > 0)worker[theone].stop();
+	else say("@arterystop\n");
 }
 
 
@@ -250,24 +179,18 @@ int arterystop(u8* p)
 
 void arterycreate(u8* type, u8* addr)
 {
-	int i;
 	u8* p;
-	if(type!=0)return;
+	int j;
+	if(type != 0)return;
+	if( (type == 0)&&(worker != 0) )return;
 
 	//where
-	worker=(struct elements*)(addr+0x100000);
+	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
+	worker=(struct element*)(addr+0x100000);
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;
 
-	//clean [0,0xfffff]
-	p = addr+0x100000;
-	for(i=0;i<0x100000;i++)p[i] = 0;
-	stack = p;
-	stack[0] = 0x34;
-	stack[1] = 0x32;
-	rsp = 0;
-
-	//
+	//create
 	p = addr+0x100100;
 	p += flow_create(addr, p);
 	p += math_create(addr, p);
@@ -275,6 +198,7 @@ void arterycreate(u8* type, u8* addr)
 	p += phys_create(addr, p);
 	p += system_create(addr, p);
 	p += wire_create(addr, p);
+	theone = 0;
 
 	//
 	say("[8,c):createed artery\n");
@@ -291,6 +215,11 @@ void arterydelete()
 	memory_delete();
 	math_delete();
 	flow_delete();
+
+	//
+	worker = 0;
+	dirhome = 0;
+	datahome = 0;
 }
 
 
@@ -298,15 +227,10 @@ void arterydelete()
 
 int arteryprompt()
 {
-	u64 who;
 	if(shutup == 1)return 0;
 
-	if(rsp == 0)say("[void]");
-	else if(rsp == 1)
-	{
-		who = stack[rsp];
-		say("[%s]",&worker[who].id);
-	}
+	if(theone > 0)say("[%s]",&worker[theone].id);
+	else say("[void]");
 
 	shutup = 1;
 	return 1;
@@ -315,7 +239,6 @@ int arterycommand(u8* buffer)
 {
 	int ret;
 	int argc;
-	u64 who;
 	u8* argv[8];
 	//say("command=%s\n",buffer);
 	//printmemory(buffer,16);
@@ -323,104 +246,86 @@ int arterycommand(u8* buffer)
 
 
 
-//1111111111111111111111111111111111111111111111111111111111111
+//------------------------------------------------------------
 	//error
 	if(buffer == 0)return 0;
 
-	//special
-	//say("	(%x)\n",buffer[0]);
+	//passthrough?
 	if( (buffer[0] == 0x1b) && (buffer[1] != '[') )combo++;
 	else combo = 0;
 
-	//
-	if( (rsp > 1) && (combo < 2) )
+	if(combo >= 2)
 	{
-		//pass through
-		who = stack[1];
-		if(who>0)worker[who].write(buffer);
-
-		return 0;
-	}
-	else if(combo >= 2)
-	{
-		if(rsp <= 0)
-		{
-			eventwrite(0,0,0,0);
-			return 0;
-		}
-
-		if(rsp > 1)
-		{
-			//tell it, i'm leaving
-			who = stack[1];
-			if(who>0)worker[who].choose(0);
-		}
-		rsp--;
-
-		//cmd[]=0;
-		dst = 0;
-
-		combo = 0;
+		theone = 0;
 		shutup = 0;
+		combo = 0;
+		len = 0;
+		worker[0].type = 0;
 
+		//
 		say("\n");
 		return 0;
 	}
 
-
-
-
-	//print
-	if(rsp <= 1)
+	//passthrough!
+	if( (theone != 0) && (worker[0].type > 0) )
 	{
-		ret = 0;
-		for(argc=0;argc<255;argc++)
+		worker[theone].write(buffer);
+		return 0;
+	}
+
+
+
+
+//------------------------------------------------------------
+	//print
+	ret = 0;
+	for(argc=0;argc<255;argc++)
+	{
+		if(buffer[argc] == 0)break;
+
+		if( (buffer[argc] == 0x8) | (buffer[argc] == 0x7f) )
 		{
-			if(buffer[argc] == 0)break;
-
-			if( (buffer[argc] == 0x8) | (buffer[argc] == 0x7f) )
+			say("\b \b");
+			if(len>0)
 			{
-				say("\b \b");
-				if(dst>0)
-				{
-					cmd[dst] = 0;
-					dst--;
-				}
-			}
-			else
-			{
-				if(buffer[argc] == 0x1b)continue;
-				if(buffer[argc] == 0xd)buffer[argc] = 0xa;
-				say("%c",buffer[argc]);
-
-				if(buffer[argc] == 0xa)
-				{
-					cmd[dst] = 0;
-					dst = 0;
-
-					ret = 1;
-					shutup = 0;
-				}
-				else if(dst<256)
-				{
-					cmd[dst] = buffer[argc];
-					dst++;
-				}
-				else dst = 0;
+				cmd[len] = 0;
+				len--;
 			}
 		}
-		if(ret == 0)return 0;
+		else
+		{
+			if(buffer[argc] == 0x1b)continue;
+			if(buffer[argc] == 0xd)buffer[argc] = 0xa;
+			say("%c",buffer[argc]);
+
+			if(buffer[argc] == 0xa)
+			{
+				cmd[len] = 0;
+				len = 0;
+
+				ret = 1;
+				shutup = 0;
+			}
+			else if(len<256)
+			{
+				cmd[len] = buffer[argc];
+				len++;
+			}
+			else len = 0;
+		}
 	}
+	if(ret == 0)return 0;
 	//say("here:%s\n",cmd);
 
+
+
+
+//------------------------------------------------------------
 	//convert
-	buf2arg(cmd,128,&argc,argv);
+	buf2arg(cmd, 256, &argc, argv);
 	if(argc==0)return 0;
 
-
-
-
-//222222222222222222222222222222222222222222222222222222222222
 	//"enter key"
 	if(argv[0]==0)goto finish;
 
@@ -466,7 +371,7 @@ int arterycommand(u8* buffer)
 
 
 
-//33333333333333333333333333333333333333333333333333333333333
+//------------------------------------------------------------
 	//"create","destory","start","stop"
 	ret=cmp(argv[0] , "create");
 	if(ret==0)
