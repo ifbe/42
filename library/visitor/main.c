@@ -95,12 +95,7 @@ again:
 
 
 		//3.pre process
-		if(ev->what == 0x5357)
-		{
-			displaystart(0x5357, ev->where);
-			continue;
-		}
-		else if(((ev->what)&0xff) == 'p')
+		if(((ev->what)&0xff) == 'p')
 		{
 			//sensor rawdata -> my event
 			motion_explain(ev);
@@ -109,6 +104,11 @@ again:
 		{
 			//network rawdata -> my event
 			network_explain(ev);
+			if(ev->what == 0x5357)
+			{
+				displaystart(0x5357, ev->where);
+				continue;
+			}
 		}
 		else if(((ev->what)&0xff) == 's')
 		{

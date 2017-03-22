@@ -312,7 +312,8 @@ int serve_ws(struct object* obj, int fd, u8* buf, int len)
 			websocket_write(fd, "haha@3", 6);
 			obj[fd].stage1 = 4;
 
-			eventwrite(0, WS, fd, 0);
+			obj[fd].type_data = WS;
+			obj[fd].stage3 = 0;
 		}
 		else
 		{
@@ -320,6 +321,11 @@ int serve_ws(struct object* obj, int fd, u8* buf, int len)
 			{
 				obj[fd].type_data = 0x64626b;
 				decstr2data(buf+4, &(obj[fd].stage3));
+			}
+			else if(ncmp(buf, "char ", 5) == 0)
+			{
+				obj[fd].type_data = 0x72616863;
+				decstr2data(buf+5, &(obj[fd].stage3));
 			}
 		}
 	}
