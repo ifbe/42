@@ -119,6 +119,7 @@ int displaystart(int type, int j)
 	{
 		netwinstart(j);
 	}
+	return 0;
 }
 int displaystop()
 {

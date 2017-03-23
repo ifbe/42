@@ -153,11 +153,13 @@ int arteryread(u8* p)
 {
 	if(theone > 0)worker[theone].read(p);
 	else say("@arteryread\n");
+	return 0;
 }
 int arterywrite(u8* p)
 {
 	if(theone > 0)worker[theone].write(p);
 	else say("@arterywrite\n");
+	return 0;
 }
 
 
@@ -167,11 +169,13 @@ int arterystart(u8* p)
 {
 	if(theone > 0)worker[theone].start(p);
 	else say("@arterystart\n");
+	return 0;
 }
 int arterystop(u8* p)
 {
 	if(theone > 0)worker[theone].stop();
 	else say("@arterystop\n");
+	return 0;
 }
 
 

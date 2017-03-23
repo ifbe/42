@@ -25,6 +25,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rdp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rtmp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.sql.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.tftp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.vnc.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.ws.c

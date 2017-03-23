@@ -18,6 +18,7 @@ int serve_http( void* p, int fd, void* buf, int len);
 int serve_https(void* p, int fd, void* buf, int len);
 int serve_ws(   void* p, int fd, void* buf, int len);
 int serve_wss(  void* p, int fd, void* buf, int len);
+int serve_sql(  void* p, int fd, void* buf, int len);
 int serve_rtmp( void* p, int fd, void* buf, int len);
 //
 int tftp_write(void*, int);
@@ -93,6 +94,8 @@ static u8* datahome = 0;
 #define ssh 0x687373		//c
 #define SOCKS 0x534b434f53	//s
 #define socks 0x736b636f73	//c
+#define SQL 0x4c5153		//s
+#define sql 0x6c7173		//c
 #define RDP 0x504452		//s
 #define rdp 0x706472		//c
 #define VNC 0x434e56		//s
@@ -176,6 +179,10 @@ protocol:
 	else if( (type==RTMP) | (type==rtmp) )
 	{
 		type = serve_rtmp(obj, fd, buf, len);
+	}
+	else if( (type==SQL) | (type==sql) )
+	{
+		type = serve_sql(obj, fd, buf, len);
 	}
 	else printmemory(buf, len);
 
@@ -317,6 +324,13 @@ int net_choose(u8* p)
 		if(fd == 0)return 0;
 
 		obj[fd].type_road = CHAT;
+	}
+	else if(ncmp(buf, "sql", 3) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		obj[fd].type_road = sql;
 	}
 	else if(ncmp(buf, "tftp", 4) == 0)
 	{
