@@ -20,6 +20,7 @@ void printmemory(u8* addr,int size)
 	int x,y;
 	u8 ch;
 	u8* p;
+	say("\n");
 
 	for(y=0;y<size/16;y++)
 	{

@@ -22,13 +22,32 @@ void say(void*, ...);
 
 
 
+struct object
+{
+        //[0x00,0x0f]
+        u64 type_sock;  //raw, bt, udp, tcp?
+        u64 stage0;
+        u64 type_road;  //ssh, tls?
+        u64 stage1;
+        u64 type_app;   //http2, ws, rdp, vnc?
+        u64 stage2;
+        u64 type_data;  //html, rgb?
+        u64 stage3;
+
+        //[0x40,0x7f]
+        u8 addr_src[0x20];
+        u8 addr_dst[0x20];
+
+        //[0x80,0xff]
+        u8 data[0x80];
+};
+
+
 //letsencrypt
 static u8 cert_first[0x1000];
 static u8 cert_second[0x1000];
 static u8 cert_private[256];
 static u8 cert_modulus[256];
-
-
 
 
 //testonly
@@ -728,8 +747,15 @@ void tls_stop()
 
 
 #define TLS 0x534c54
-int serve_tls(void* p, int fd, u8* buf, int len)
+#define tls 0x736c74
+int serve_tls(struct object* obj, int fd, u8* buf, int len)
 {
+	if(obj[fd].type_road == tls)
+	{
+		printmemory(buf, len);
+		return tls;
+	}
+
 	//tls >>>> ascii
 	len = tls_read(fd, buf, len);
 	if(len < 0)goto error;

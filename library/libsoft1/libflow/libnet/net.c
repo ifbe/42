@@ -22,8 +22,10 @@ int serve_sql(  void* p, int fd, void* buf, int len);
 int serve_rtmp( void* p, int fd, void* buf, int len);
 //
 int tftp_write(void*, int);
-int http_write_request(void*, int, void*, void*);
+int tls_write_client_hello(void*, int);
+int secureshell_write_handshake(void*, int);
 int websocket_write_handshake(void*, int);
+int http_write_request(void*, int, void*, void*);
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int movsb(void*, void*, int);
@@ -206,20 +208,12 @@ void network_explain(u64* p)
 	{
 		//read socket
 		len = readsocket(where, datahome, 0, 0x100000);
-		if(len <= 0)
-		{
-			stopsocket(where);
-			return;
-		}
+		if(len <= 0)goto failreturn;
 
 		//serve socket
 		datahome[len] = 0;
 		what = serve_what(where, datahome, len);
-		if(what == 0)
-		{
-			stopsocket(where);
-			return;
-		}
+		if(what == 0)goto failreturn;
 
 		//change event
 		obj[where].type_road = what;
@@ -236,6 +230,13 @@ void network_explain(u64* p)
 			p[1] = http;
 		}
 	}
+
+normalreturn:
+	return;
+
+failreturn:
+	stopsocket(where);
+	return;
 }
 
 
@@ -276,8 +277,9 @@ int net_list(u8* p)
 int net_choose(u8* p)
 {
 	//
-	u64 fd;
 	int ret;
+	u64 fd=0;
+	u64 type=CHAT;
 
 	//
 	u8 buf[256];
@@ -285,11 +287,13 @@ int net_choose(u8* p)
 	u8* addr = buf+0x10;
 	u8* url = buf+0x80;
 
+
 	//parse
 	url[0] = 0;
 	ret = buf2net(p, 256, buf, addr, &port, url);
 	if(ret <= 0)return 0;
 	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
+
 
 	//compare
 	if(ncmp(buf, "RAW", 3) == 0)
@@ -297,68 +301,93 @@ int net_choose(u8* p)
 		fd = startsocket("0,0,0,0", 2222, 'r');	//tcp server
 		if(fd == 0)return 0;
 
-		obj[fd].type_road = RAW;
+		type = RAW;
 	}
+
+
 	else if(ncmp(buf, "UDP", 3) == 0)
 	{
 		fd = startsocket("0,0,0,0", 2222, 'U');	//tcp server
-		if(fd == 0)return 0;
-
-		obj[fd].type_road = CHAT;
-	}
-	else if(ncmp(buf, "TCP", 3) == 0)
-	{
-		fd = startsocket("0,0,0,0", 2222, 'T');	//tcp server
 		if(fd == 0)return 0;
 	}
 	else if(ncmp(buf, "udp", 3) == 0)
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
-
-		obj[fd].type_road = CHAT;
-	}
-	else if(ncmp(buf, "tcp", 3) == 0)
-	{
-		fd = startsocket(addr, port, 't');
-		if(fd == 0)return 0;
-
-		obj[fd].type_road = CHAT;
-	}
-	else if(ncmp(buf, "sql", 3) == 0)
-	{
-		fd = startsocket(addr, port, 't');
-		if(fd == 0)return 0;
-
-		obj[fd].type_road = sql;
 	}
 	else if(ncmp(buf, "tftp", 4) == 0)
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 
-		obj[fd].type_road = CHAT;
 		ret = tftp_write(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
+
+		type = CHAT;
+	}
+
+
+	else if(ncmp(buf, "TCP", 3) == 0)
+	{
+		fd = startsocket("0,0,0,0", 2222, 'T');	//tcp server
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(buf, "tcp", 3) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(buf, "sql", 3) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		type = sql;
+	}
+	else if(ncmp(buf, "ssh", 3) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		ret = secureshell_write_handshake(datahome, 0x100000);
+		ret = writesocket(fd, datahome, 0, ret);
+
+		type = ssh;
+	}
+	else if(ncmp(buf, "tls", 3) == 0)
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		ret = tls_write_client_hello(datahome, 0x100000);
+		ret = writesocket(fd, datahome, 0, ret);
+
+		type = tls;
 	}
 	else if(ncmp(buf, "http", 4) == 0)
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
 
-		obj[fd].type_road = http;
 		ret = http_write_request(datahome, 0x100000, url, addr);
 		ret = writesocket(fd, datahome, 0, ret);
+
+		type = http;
 	}
 	else if(ncmp(buf, "ws", 2) == 0)
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
 
-		obj[fd].type_road = ws;
 		ret = websocket_write_handshake(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
+
+		type = ws;
 	}
+
+
+	obj[fd].type_road = type;
+	obj[fd].stage1 = 0;
 	return fd;
 }
 int net_stop(u8* p)
