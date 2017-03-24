@@ -261,7 +261,7 @@ int net_list(u8* p)
 	u64 fd=0;
 	if(p==0)
 	{
-		for(j=0;j<1024;j++)
+		for(j=0;j<4096;j++)
 		{
 			if(obj[j].type_sock == 0)continue;
 
@@ -287,6 +287,7 @@ int net_choose(u8* p)
 	int port;
 	u8* addr = buf+0x10;
 	u8* url = buf+0x80;
+	if(p == 0)return 0;
 
 
 	//parse

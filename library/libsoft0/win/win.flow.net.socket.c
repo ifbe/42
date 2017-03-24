@@ -107,15 +107,16 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		//accept
 		if(pov->stage == 0)
 		{
-			pov->stage = 1;
-			eventwrite(0, 0x2b6e, fd/4, 0);
-
 			hh = CreateIoCompletionPort(
 				(void*)fd,
 				iocpfd,
 				(ULONG_PTR)(obj[fd/4].tempdat),
 				0
 			);
+
+			pov->stage = 1;
+			obj[fd/4].type_sock = 't';
+			eventwrite(0, 0x2b6e, fd/4, 0);
 			printf("[%x]++++,hh=%llx\n",fd/4,hh);
 		}
 		else if(trans == 0)
@@ -177,7 +178,8 @@ int writesocket(u64 fd, u8* buf, u64 off, u64 len)
 	wbuf.buf = buf;
 	wbuf.len = len;
 	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
-	printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
+
+	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
 int listsocket()
