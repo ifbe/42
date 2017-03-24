@@ -158,6 +158,8 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	for(j=0;j<c;j++)buf[j] = p[j];
 printf("(read)len=%d\n",c);
 	free(pov->bufdone.buf);
+
+	if(c == 0)return -1;	//disconnect
 	return c;
 }
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)

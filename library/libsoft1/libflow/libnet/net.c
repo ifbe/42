@@ -208,12 +208,13 @@ void network_explain(u64* p)
 	{
 		//read socket
 		len = readsocket(where, datahome, 0, 0x100000);
-		if(len <= 0)goto failreturn;
+		if(len == 0)goto pass;		//sticky
+		if(len < 0)goto fail;		//wrong
 
 		//serve socket
 		datahome[len] = 0;
 		what = serve_what(where, datahome, len);
-		if(what == 0)goto failreturn;
+		if(what == 0)goto fail;
 
 		//change event
 		obj[where].type_road = what;
@@ -231,10 +232,10 @@ void network_explain(u64* p)
 		}
 	}
 
-normalreturn:
+pass:
 	return;
 
-failreturn:
+fail:
 	stopsocket(where);
 	return;
 }

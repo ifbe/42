@@ -222,18 +222,15 @@ int readsocket(int fd, u8* buf, int off, int len)
 	while(1)
 	{
 		ret = read(fd, buf, len);
-		if(ret >= 0)break;
-		if(ret == -1)
-		{
-			if(errno != 11)break;
+		if(ret > 0)break;
+		if(ret == 0)return -1;		//disconnect
+		if(errno != 11)return -2;	//errno
+		if(cnt >= 100)return 0;
 
-			if(cnt >= 100)break;
-
-			usleep(1000);
-			cnt++;
-		}
+		usleep(1000);
+		cnt++;
 	}
-	if(ret > 0)epoll_mod(fd);
+	epoll_mod(fd);
 	return ret;
 }
 int listsocket()
