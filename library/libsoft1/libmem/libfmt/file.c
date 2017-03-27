@@ -105,33 +105,33 @@ static int which = 0;
 int mount_file(u8* buf, int len)
 {
 	//picture
-	if(check_bmp(buf) > 0)parse_bmp(buf, len);
-	else if(check_flif(buf) > 0)parse_flif(buf, len);
-	else if(check_jpg(buf) > 0)parse_jpg(buf, len);
-	else if(check_png(buf) > 0)parse_png(buf, len);
-	else if(check_webp(buf) > 0)parse_webp(buf, len);
+	if(check_bmp(buf) != 0)parse_bmp(buf, len);
+	else if(check_flif(buf) != 0)parse_flif(buf, len);
+	else if(check_jpg(buf) != 0)parse_jpg(buf, len);
+	else if(check_png(buf) != 0)parse_png(buf, len);
+	else if(check_webp(buf) != 0)parse_webp(buf, len);
 
 	//compress
-	else if(check_7z(buf) > 0)parse_7z(buf);
-	else if(check_cpio(buf) > 0)parse_cpio(buf);
-	else if(check_gz(buf) > 0)parse_gz(buf);
-	else if(check_tar(buf) > 0)parse_tar(buf);
-	else if(check_zip(buf) > 0)parse_zip(buf);
+	else if(check_7z(buf) != 0)parse_7z(buf);
+	else if(check_cpio(buf) != 0)parse_cpio(buf);
+	else if(check_gz(buf) != 0)parse_gz(buf);
+	else if(check_tar(buf) != 0)parse_tar(buf);
+	else if(check_zip(buf) != 0)parse_zip(buf);
 
 	//executable
-	else if(check_elf(buf) > 0)parse_elf(buf);
-	else if(check_macho(buf) > 0)parse_macho(buf);
-	else if(check_pe(buf) > 0)parse_pe(buf);
+	else if(check_elf(buf) != 0)parse_elf(buf);
+	else if(check_macho(buf) != 0)parse_macho(buf);
+	else if(check_pe(buf) != 0)parse_pe(buf);
 
 	//filesystem
-	else if(check_ext(buf) > 0)say("ext\n");
-	else if(check_fat(buf) > 0)say("fat\n");
-	else if(check_hfs(buf) > 0)say("hfs\n");
-	else if(check_ntfs(buf) > 0)say("ntfs\n");
+	else if(check_ext(buf) != 0)say("ext\n");
+	else if(check_fat(buf) != 0)say("fat\n");
+	else if(check_hfs(buf) != 0)say("hfs\n");
+	else if(check_ntfs(buf) != 0)say("ntfs\n");
 
 	//parttable
-	else if(check_gpt(buf) > 0)parse_gpt(buf, dirhome);
-	else if(check_mbr(buf) > 0)parse_mbr(buf, dirhome);
+	else if(check_gpt(buf) != 0)parse_gpt(buf, dirhome);
+	else if(check_mbr(buf) != 0)parse_mbr(buf, dirhome);
 
 	//unknown
 	else say("unknown\n");

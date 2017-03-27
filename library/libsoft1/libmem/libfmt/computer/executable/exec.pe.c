@@ -166,14 +166,15 @@ int parse_pe(u8* addr)
 	//mz head
 	mz = (void*)addr;
 	j = mz->addr;
-	say("[0,%x]%x\n", j-1);
+	say("[0,%x]\n", j-1);
 
 	//pe head
 	pe = (void*)(addr+j);
 	say(
 		"machine=%x\n"
 		"symtab=%x\n"
-		"symnum=%x\n",
+		"symnum=%x\n"
+		"\n",
 		pe->machine,
 		pe->symtab,
 		pe->symnum
@@ -186,7 +187,8 @@ int parse_pe(u8* addr)
 		"datasize=%x\n"
 		"bsssize=%x\n"
 		"entry=%x\n"
-		"codebase=%x\n",
+		"codebase=%x\n"
+		"\n",
 		opthdr->codesize,
 		opthdr->datasize,
 		opthdr->bsssize,
@@ -205,7 +207,8 @@ int parse_pe(u8* addr)
 			"stackreserve=%x\n"
 			"stackcommit=%x\n"
 			"stackreserve=%x\n"
-			"stackcommit=%x\n",
+			"stackcommit=%x\n"
+			"\n",
 			opt32->imagebase,
 			opt32->imagesize,
 			opt32->headersize,
@@ -227,7 +230,8 @@ int parse_pe(u8* addr)
 			"stackreserve=%llx\n"
 			"stackcommit=%llx\n"
 			"stackreserve=%llx\n"
-			"stackcommit=%llx\n",
+			"stackcommit=%llx\n"
+			"\n",
 			opt64->imagebase,
 			opt64->imagesize,
 			opt64->headersize,
@@ -241,20 +245,21 @@ int parse_pe(u8* addr)
 	}
 
 	say(
-		"export@%llx#%llx\n"
-		"import@%llx#%llx\n"
-		"resource@%llx#%llx\n"
-		"exception@%llx#%llx\n"
-		"certificate@%llx#%llx\n"
-		"relocation@%llx#%llx\n"
-		"debug@%llx#%llx\n"
-		"architecture@%llx#%llx\n"
-		"globalptr@%llx#%llx\n"
-		"tlstable@%llx#%llx\n"
-		"loadconfig@%llx#%llx\n"
-		"boundimport@%llx#%llx\n"
-		"iat@%llx#%llx\n"
-		"delayimport@%llx#%llx\n",
+		"export@%llx$%llx\n"
+		"import@%llx$%llx\n"
+		"resource@%llx$%llx\n"
+		"exception@%llx$%llx\n"
+		"certificate@%llx$%llx\n"
+		"relocation@%llx$%llx\n"
+		"debug@%llx$%llx\n"
+		"architecture@%llx$%llx\n"
+		"globalptr@%llx$%llx\n"
+		"tlstable@%llx$%llx\n"
+		"loadconfig@%llx$%llx\n"
+		"boundimport@%llx$%llx\n"
+		"iat@%llx$%llx\n"
+		"delayimport@%llx$%llx\n"
+		"\n",
 		dir->exportaddr, dir->exportsize,
 		dir->importaddr, dir->importsize,
 		dir->resourceaddr, dir->resourcesize,
