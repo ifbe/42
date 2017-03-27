@@ -50,7 +50,7 @@ target:
 	$(compiler) $(cflag) libmem/libdata/draw/draw.ascii.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
-	$(compiler) $(cflag) libmem/libdata/draw/draw.unicode.c
+	$(compiler) $(cflag) libmem/libdata/draw/draw.ttf.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.channel.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.convert.c

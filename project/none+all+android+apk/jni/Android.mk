@@ -65,8 +65,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.flow.net.socket.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.folder.c \
-	library/libsoft0/linux/linux.memory.physical.c \
-	library/libsoft0/linux/linux.memory.virtual.c \
+	library/libsoft0/linux/linux.memory.managed.c \
 	library/libsoft0/linux/linux.system.process.c \
 	library/libsoft0/linux/linux.system.random.c \
 	library/libsoft0/linux/linux.system.signal.c \
@@ -131,7 +130,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
 	library/libsoft1/libmem/libdata/draw/draw.background.c \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
-	library/libsoft1/libmem/libdata/draw/draw.unicode.c \
+	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
 	library/libsoft1/libmem/libdata/photo/photo.blur.c \
 	library/libsoft1/libmem/libdata/photo/photo.channel.c \
 	library/libsoft1/libmem/libdata/photo/photo.convert.c \

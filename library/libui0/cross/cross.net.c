@@ -10,6 +10,8 @@ int count_strlen(void*);
 //
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
+void* startmemory(int);
+int stopmemory(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -71,7 +73,7 @@ int netwindelete()
 int netwincreate(void* uibase, void* uithis)
 {
 	win = uithis;
-	win->buf = (u64)malloc(0x100000);
+	win->buf = (u64)startmemory(0x100000);
 	win->fmt = 0x6c6d7468;
 	win->w = 512;
 	win->h = 512;

@@ -9,7 +9,8 @@ bare:
 	$(compiler) $(cflag) bare/bare.flow.vision.c
 	$(compiler) $(cflag) bare/bare.memory.file.c
 	$(compiler) $(cflag) bare/bare.memory.folder.c
-	$(compiler) $(cflag) bare/bare.memory.io.c
+	$(compiler) $(cflag) bare/bare.memory.managed.c
+	$(compiler) $(cflag) bare/bare.memory.portio.c
 	$(compiler) $(cflag) bare/bare.system.power.c
 	$(compiler) $(cflag) bare/bare.system.process.c
 	$(compiler) $(cflag) bare/bare.system.random.c
@@ -30,6 +31,7 @@ bsd:
 	rm -f bare.*.o linux.*.o mac.*.o win.*.o
 	$(compiler) $(cflag) bsd/bsd.memory.file.c
 	$(compiler) $(cflag) bsd/bsd.memory.folder.c
+	$(compiler) $(cflag) bsd/bsd.memory.managed.c
 	$(compiler) $(cflag) bsd/bsd.memory.mmio.c
 	$(compiler) $(cflag) bsd/bsd.system.power.c
 	$(compiler) $(cflag) bsd/bsd.system.process.c
@@ -49,6 +51,7 @@ linux:
 	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.folder.c
+	$(compiler) $(cflag) linux/linux.memory.managed.c
 	$(compiler) $(cflag) linux/linux.memory.mmio.c
 	$(compiler) $(cflag) linux/linux.system.power.c
 	$(compiler) $(cflag) linux/linux.system.process.c
@@ -75,6 +78,7 @@ mac:
 	$(compiler) $(cflag) mac/mac.flow.voice.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac/mac.memory.folder.c
+	$(compiler) $(cflag) mac/mac.memory.managed.c
 	$(compiler) $(cflag) mac/mac.memory.mmio.c
 	$(compiler) $(cflag) mac/mac.system.power.c
 	$(compiler) $(cflag) mac/mac.system.process.c
@@ -101,7 +105,7 @@ win:
 	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.folder.c
-	$(compiler) $(cflag) win/win.memory.virtual.c
+	$(compiler) $(cflag) win/win.memory.managed.c
 	$(compiler) $(cflag) win/win.system.power.c
 	$(compiler) $(cflag) win/win.system.process.c
 	$(compiler) $(cflag) win/win.system.random.c
