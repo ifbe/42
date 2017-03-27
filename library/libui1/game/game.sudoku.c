@@ -24,6 +24,22 @@ int say(char*,...);
 
 
 
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
+};
 struct player
 {
 	u64 type;
@@ -36,22 +52,6 @@ struct player
 	u64 write;
 
 	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf;
-	u64 fmt;
-	u64 w;
-	u64 h;
-
-	u8 data[0xe0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
 };
 //
 static int px,py;

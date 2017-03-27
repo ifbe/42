@@ -3,6 +3,7 @@ cflag ?= -c -O2 -fPIC
 
 target:
 	$(compiler) $(cflag) game/game.2048.c
+	$(compiler) $(cflag) game/game.chess.c
 	$(compiler) $(cflag) game/game.ooxx.c
 	$(compiler) $(cflag) game/game.snake.c
 	$(compiler) $(cflag) game/game.sudoku.c

@@ -236,6 +236,7 @@ LOCAL_SRC_FILES += \
 #4.ui1
 LOCAL_SRC_FILES += \
 	library/libui1/game/game.2048.c \
+	library/libui1/game/game.chess.c \
 	library/libui1/game/game.ooxx.c \
 	library/libui1/game/game.snake.c \
 	library/libui1/game/game.sudoku.c \

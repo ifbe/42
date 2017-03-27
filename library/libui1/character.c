@@ -12,6 +12,8 @@ void virtkbd_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
+void chess_create(u8*,u8*);
+void chess_delete();
 void ooxx_create(u8*,u8*);
 void ooxx_delete();
 void snake_create(u8*,u8*);
@@ -159,6 +161,10 @@ void charactercreate(u8* type, u8* addr)
 	the2048_create(addr,temp);
 	temp+=0x100;
 
+	//game.chess
+	chess_create(addr,temp);
+	temp+=0x100;
+
 	//game.ooxx
 	ooxx_create(addr,temp);
 	temp+=0x100;
@@ -277,6 +283,7 @@ void characterdelete()
 	pure_delete();
 
 	the2048_delete();
+	chess_delete();
 	ooxx_delete();
 	snake_delete();
 	sudoku_delete();

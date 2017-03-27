@@ -18,6 +18,22 @@ int say(void*, ...);
 
 
 
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
+};
+struct window
+{
+	u64 buf;
+	u64 fmt;
+	u64 w;
+	u64 h;
+
+	u8 data[0xe0];
+};
 struct player
 {
 	u64 type;
@@ -29,24 +45,10 @@ struct player
 	u64 read;
 	u64 write;
 
-	u8 data[0xc0];
+	//z,y,x
+	u8 data[12][4][4];
 };
-struct window
-{
-	u64 buf;
-	u64 fmt;
-	u64 w;
-	u64 h;
-
-	u8 data[0xe0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
+static struct player* pl;
 //
 static int num;
 static void* buffer;
@@ -517,17 +519,17 @@ static void the2048_stop()
 }
 void the2048_create(void* base, void* addr)
 {
-	struct player* p = addr;
+	pl = addr;
 	buffer = base + 0x300000;
 
-	p->type = 0x656d6167;
-	p->name = 0x38343032;
-	p->start = (u64)the2048_start;
-	p->stop = (u64)the2048_stop;
-	p->list = (u64)the2048_list;
-	p->choose = (u64)the2048_choose;
-	p->read = (u64)the2048_read;
-	p->write = (u64)the2048_write;
+	pl->type = 0x656d6167;
+	pl->name = 0x38343032;
+	pl->start = (u64)the2048_start;
+	pl->stop = (u64)the2048_stop;
+	pl->list = (u64)the2048_list;
+	pl->choose = (u64)the2048_choose;
+	pl->read = (u64)the2048_read;
+	pl->write = (u64)the2048_write;
 }
 void the2048_delete()
 {
