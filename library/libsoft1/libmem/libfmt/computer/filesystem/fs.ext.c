@@ -354,8 +354,9 @@ static int ext_start(u64 sector)
 
 	return 0;
 }
-static void ext_stop()
+static int ext_stop()
 {
+	return 0;
 }
 void ext_create(void* base, u64* this)
 {

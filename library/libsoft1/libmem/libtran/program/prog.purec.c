@@ -9,35 +9,35 @@ void say(void*, ...);
 
 
 //count
-static int countbyte=0;		//Í³¼Æ×Ö½ÚÊı
-static int countline=0;		//Í³¼ÆĞĞÊı
+static int countbyte=0;		//ç»Ÿè®¡å­—èŠ‚æ•°
+static int countline=0;		//ç»Ÿè®¡è¡Œæ•°
 
-//º¯ÊıÃû×Ö
-static unsigned char* prophet=0;	//ºóÃæ¿ÉÄÜÒªÓÃµÄº¯ÊıÃû×Ö
-static unsigned char* insist=0;		//ÔÚº¯ÊıÍâÃæÅöµ½ÁË×óÀ¨ºÅ:
-static unsigned char* doubt=0;		//ÓĞĞ©ÈËĞ´´úÂëelse myfunc ()
+//å‡½æ•°åå­—
+static u8* prophet=0;	//åé¢å¯èƒ½è¦ç”¨çš„å‡½æ•°åå­—
+static u8* insist=0;		//åœ¨å‡½æ•°å¤–é¢ç¢°åˆ°äº†å·¦æ‹¬å·:
+static u8* doubt=0;		//æœ‰äº›äººå†™ä»£ç else myfunc ()
 
-//Õâµ½µ×ÊÇ²»ÊÇ¸öº¯Êı
+//è¿™åˆ°åº•æ˜¯ä¸æ˜¯ä¸ªå‡½æ•°
 static int chance=0;
 static int roundbracket=0;
 
 //status
 static int infunc=0;
-	//0:	²»ÔÚº¯ÊıÀï
-	//1:	ÔÚº¯ÊıÄÚ
-	//?:	±»°üÔÚµÚ¼¸¸öÀ¨ºÅÀï
+	//0:	ä¸åœ¨å‡½æ•°é‡Œ
+	//1:	åœ¨å‡½æ•°å†…
+	//?:	è¢«åŒ…åœ¨ç¬¬å‡ ä¸ªæ‹¬å·é‡Œ
 static int inmarco=0;
-	//0:	²»ÔÚºêÀï
-	//1:	ÔÚÆÕÍ¨ºêÄÚ
+	//0:	ä¸åœ¨å®é‡Œ
+	//1:	åœ¨æ™®é€šå®å†…
 	//'d':	#define
 	//'e':	#else
 static int innote=0;
-	//0:	²»ÔÚ×¢ÊÍÀï
+	//0:	ä¸åœ¨æ³¨é‡Šé‡Œ
 	//1:	//
 	//9:	/**/
 static int instr=0;
-	//0:	²»ÔÚ×Ö·û´®Àï
-	//1:	ÔÚ×Ö·û´®ÄÚ
+	//0:	ä¸åœ¨å­—ç¬¦ä¸²é‡Œ
+	//1:	åœ¨å­—ç¬¦ä¸²å†…
 
 
 
@@ -171,12 +171,12 @@ forcecopy:
 	return i;
 
 }
-static void printprophet(unsigned char* p)
+static void printprophet(u8* p)
 {
 	int count=0;
-	unsigned char strbuf[256];
+	u8 strbuf[256];
 
-	//º¯Êı½áÊø
+	//å‡½æ•°ç»“æŸ
 	if(p==0)
 	{
 		strbuf[0]='}';
@@ -186,7 +186,7 @@ static void printprophet(unsigned char* p)
 		goto finalprint;
 	}
 
-	//ÔÚº¯ÊıÍâ
+	//åœ¨å‡½æ•°å¤–
 	if(infunc==0)
 	{
 		count = copyname(p , strbuf);
@@ -215,9 +215,9 @@ finalprint:
 	say("%s",strbuf);
 	return;
 }
-int purec_read(char* src, int count)
+int purec_read(u8* src, int count)
 {
-	unsigned char ch=0;
+	u8 ch=0;
 	countbyte = 0;
 
 /*
@@ -234,10 +234,10 @@ int purec_read(char* src, int count)
 	//
 	for(;countbyte<0x100000;countbyte++)
 	{
-		//ÄÃÒ»¸ö
+		//æ‹¿ä¸€ä¸ª
 		ch=src[countbyte];
 
-		//ÈíÍË
+		//è½¯é€€
 		if( (countbyte>count) && (prophet==0) && (insist==0))
 		{
 			if(ch==' ')break;
@@ -246,69 +246,69 @@ int purec_read(char* src, int count)
 			else if(ch==0xd)break;
 		}
 
-		//Ç¿ÍË(´úÂëÀï¾ø²»»áÓĞÕæÕıµÄ0£¬¶¼ÊÇasciiµÄ0x30)
+		//å¼ºé€€(ä»£ç é‡Œç»ä¸ä¼šæœ‰çœŸæ­£çš„0ï¼Œéƒ½æ˜¯asciiçš„0x30)
 		if(ch==0)
 		{
 			break;
 		}
 
-		//0xa:		linuxµÄ»»ĞĞ·û
+		//0xa:		linuxçš„æ¢è¡Œç¬¦
 		else if(ch==0xa)
 		{
-			//linuxµÄ»»ĞĞ·û
+			//linuxçš„æ¢è¡Œç¬¦
 			countline++;
 
-			//defineºê£¬»»ĞĞÇåÁã
+			//defineå®ï¼Œæ¢è¡Œæ¸…é›¶
 			if(inmarco=='d')inmarco=0;
 
-			//µ¥ĞĞ×¢ÊÍ£¬»»ĞĞÇåÁã
+			//å•è¡Œæ³¨é‡Šï¼Œæ¢è¡Œæ¸…é›¶
 			if(innote==1)innote=0;
 
-			//×Ö·û´®£¬»»ĞĞÇåÁã
+			//å­—ç¬¦ä¸²ï¼Œæ¢è¡Œæ¸…é›¶
 			if(instr==1)instr=0;
 
-			//»»ĞĞÁË£¬¿ÉÄÜº¯ÊıÃû²»¶ÔÁË
+			//æ¢è¡Œäº†ï¼Œå¯èƒ½å‡½æ•°åä¸å¯¹äº†
 			if(prophet != 0)doubt=src+countbyte;
 		}
 
-		//0xd:		mac»òÊÇwindowsµÄ»»ĞĞ·û
+		//0xd:		macæˆ–æ˜¯windowsçš„æ¢è¡Œç¬¦
 		else if(ch==0xd)
 		{
-			//Èç¹ûÊÇwindowsµÄ»»ĞĞ·û£¬³ÔµôºóÃæµÄ0xa
+			//å¦‚æœæ˜¯windowsçš„æ¢è¡Œç¬¦ï¼Œåƒæ‰åé¢çš„0xa
 			countline++;
 			if(src[countbyte+1]==0xa)countbyte++;
 
-			//defineºê£¬»»ĞĞÇåÁã
+			//defineå®ï¼Œæ¢è¡Œæ¸…é›¶
 			if(inmarco=='d')inmarco=0;
 
-			//µ¥ĞĞ×¢ÊÍ£¬»»ĞĞÇåÁã
+			//å•è¡Œæ³¨é‡Šï¼Œæ¢è¡Œæ¸…é›¶
 			if(innote==1)innote=0;
 
-			//×Ö·û´®£¬»»ĞĞÇåÁã
+			//å­—ç¬¦ä¸²ï¼Œæ¢è¡Œæ¸…é›¶
 			if(instr==1)instr=0;
 
-			//»»ĞĞÁË£¬¿ÉÄÜº¯ÊıÃû²»¶ÔÁË
+			//æ¢è¡Œäº†ï¼Œå¯èƒ½å‡½æ•°åä¸å¯¹äº†
 			if(prophet != 0)doubt = src + countbyte;
 		}
 
 		//.....................
 		else if(ch=='\\')
 		{
-			//linuxµÄ»»ĞĞ
+			//linuxçš„æ¢è¡Œ
 			if(src[countbyte+1] == 0xa)
 			{
 				countline++;
 			}
 
-			//mac»òÕßwindowsµÄ»»ĞĞ
+			//macæˆ–è€…windowsçš„æ¢è¡Œ
 			else if(src[countbyte+1] == 0xd)
 			{
-				//windowsµÄ»»ĞĞ¶à³ÔµôÒ»¸ö
+				//windowsçš„æ¢è¡Œå¤šåƒæ‰ä¸€ä¸ª
 				if(src[countbyte+2] == 0xa)countbyte++;
 				countline++;
 			}
 
-			//³ÔÒ»¸ö£¬È»ºó»»ĞĞ
+			//åƒä¸€ä¸ªï¼Œç„¶åæ¢è¡Œ
 			countbyte++;
 			continue;
 		}
@@ -358,7 +358,7 @@ int purec_read(char* src, int count)
 				}
 			}
 
-			//ÔÚº¯ÊıÍâÃæÅöµ½ÁË×óÀ¨ºÅ
+			//åœ¨å‡½æ•°å¤–é¢ç¢°åˆ°äº†å·¦æ‹¬å·
 			else
 			{
 				if(prophet!=0)
@@ -387,13 +387,13 @@ int purec_read(char* src, int count)
 		{
 			if(inmarco>=2|innote>0|instr>0)continue;
 
-			//ÒÑ¾­ÔÚº¯ÊıÀï
+			//å·²ç»åœ¨å‡½æ•°é‡Œ
 			if(infunc!=0)infunc++;
 
-			//È·ÈÏÕâ¼´½«ÊÇ¸öº¯Êı
+			//ç¡®è®¤è¿™å³å°†æ˜¯ä¸ªå‡½æ•°
 			else
 			{
-				//ÏûÃğaaa=(struct){int a,int b}ÕâÖÖ
+				//æ¶ˆç­aaa=(struct){int a,int b}è¿™ç§
 				if( (chance>0) && (insist!=0) )
 				{
 					printprophet(insist);
@@ -430,7 +430,7 @@ int purec_read(char* src, int count)
 			}
 		}
 
-		//ÕâÀïÓĞbug£¬±ØĞë¸Éµôµ¥ÒıºÅÀ¨Ò»¸ö×Ö·ûµÄÇé¿ö
+		//è¿™é‡Œæœ‰bugï¼Œå¿…é¡»å¹²æ‰å•å¼•å·æ‹¬ä¸€ä¸ªå­—ç¬¦çš„æƒ…å†µ
 		else if(ch=='\'')
 		{
 			if(innote>0|instr>0)continue;
@@ -443,17 +443,17 @@ int purec_read(char* src, int count)
 
 		else if(ch=='/')
 		{
-			//ÔÚÕâÈıÖÖÇé¿öÏÂÊ²Ã´¶¼²»ÄÜ¸É
+			//åœ¨è¿™ä¸‰ç§æƒ…å†µä¸‹ä»€ä¹ˆéƒ½ä¸èƒ½å¹²
 			if(innote>0|instr>0)continue;
 
-			//µ¥ĞĞ×¢ÊÍºÜºÃ½â¾ö
+			//å•è¡Œæ³¨é‡Šå¾ˆå¥½è§£å†³
 			if(src[countbyte+1] == '/')
 			{
 				innote=1;
 				countbyte++;
 			}
 
-			//¶àĞĞ×¢ÊÍ
+			//å¤šè¡Œæ³¨é‡Š
 			else if(src[countbyte+1]=='*')
 			{
 				innote=9;
@@ -513,10 +513,10 @@ int purec_read(char* src, int count)
 
 		else if(ch=='#')
 		{
-			//²»ÔÚ×¢ÊÍÀïÃæ,Ò²²»ÔÚ×Ö·û´®ÀïµÄÊ±ºò
+			//ä¸åœ¨æ³¨é‡Šé‡Œé¢,ä¹Ÿä¸åœ¨å­—ç¬¦ä¸²é‡Œçš„æ—¶å€™
 			if(innote>0|instr>0)continue;
 
-			//³ÔµôËùÓĞ¿Õ¸ñºÍtab
+			//åƒæ‰æ‰€æœ‰ç©ºæ ¼å’Œtab
 			while(1)
 			{
 				if(src[countbyte+1]==' ')countbyte++;
@@ -524,7 +524,7 @@ int purec_read(char* src, int count)
 				else break;
 			}
 
-			//ºêÍâÃæÅöµ½#ºÅ
+			//å®å¤–é¢ç¢°åˆ°#å·
 			if(inmarco==0)
 			{
 				//#define
@@ -537,7 +537,7 @@ int purec_read(char* src, int count)
 					}
 				}
 
-				//#else ÕâÀïÊÇÎªÁËÔİÊ±²»¹ÜºêÇ¶Ì×µÄÎÊÌâ...
+				//#else è¿™é‡Œæ˜¯ä¸ºäº†æš‚æ—¶ä¸ç®¡å®åµŒå¥—çš„é—®é¢˜...
 				else if( (*(u32*)(src+countbyte+1) )==0x65736c65 )
 				{
 
@@ -553,28 +553,28 @@ int purec_read(char* src, int count)
 				}
 			}
 
-			//ÆÕÍ¨ºêÀïÓÖÅöµ½ÁË#ºÅ
+			//æ™®é€šå®é‡Œåˆç¢°åˆ°äº†#å·
 			else if(inmarco==1)
 			{
 /*
-				//Ç¶Ì×ÔÚ#ifÀïÃæµÄ#define,ÕâÖÖ½â·¨²»¶Ô
-				if( (*(unsigned short*)(src+i+1) )==0x6564 )
+				//åµŒå¥—åœ¨#ifé‡Œé¢çš„#define,è¿™ç§è§£æ³•ä¸å¯¹
+				if( (*(u16*)(src+i+1) )==0x6564 )
 				{
-					if( (*(unsigned int*)(src+i+3) )==0x656e6966 )
+					if( (*(u32*)(src+i+3) )==0x656e6966 )
 					{
 						i+=6;
 						inmarco='d';
 					}
 				}
 */
-				//#else -> Éı¼¶
+				//#else -> å‡çº§
 				if( (*(u32*)(src+countbyte+1) )==0x65736c65 )
 				{
 					inmarco = 'e';
 					countbyte += 4;
 				}
 
-				//#endif -> ½µ¼¶
+				//#endif -> é™çº§
 				else if((src[countbyte+1]=='e') &&
 					(src[countbyte+2]=='n') &&
 					(src[countbyte+3]=='d') &&
@@ -586,7 +586,7 @@ int purec_read(char* src, int count)
 				}
 			}
 
-			//elseÀïÃæÅöµ½endif
+			//elseé‡Œé¢ç¢°åˆ°endif
 			else if(inmarco=='e')
 			{
 				if( (src[countbyte+1]=='e') &&
@@ -607,12 +607,15 @@ int purec_read(char* src, int count)
 }
 int purec_write()
 {
+	return 0;
 }
 int purec_list()
 {
+	return 0;
 }
 int purec_choose()
 {
+	return 0;
 }
 int purec_stop()
 {
@@ -627,6 +630,7 @@ int purec_stop()
 	);
 */
 	//write(outfile,"\n\n\n\n",4);
+	return 0;
 }
 int purec_start()
 {
@@ -634,11 +638,12 @@ int purec_start()
 	countbyte=countline=0;
 	infunc = inmarco = innote = instr = 0;
 	prophet=insist=doubt=0;
+	return 0;
 }
-int purec_delete()
+void purec_delete()
 {
 }
-int purec_create(u64* that, u64* this)
+void purec_create(u64* that, u64* this)
 {
 	this[0] = 0x6573726170;
 	this[1] = 0x63;

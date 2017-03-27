@@ -734,6 +734,7 @@ int tls_read_server_done(u8* buf, int len)
 
 	//
 	say("}serverdone\n\n");
+	return 0;
 }
 int tls_write_server_done(u8* buf, int len)
 {

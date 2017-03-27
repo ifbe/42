@@ -32,27 +32,27 @@ int parse_macho(void*);
 int check_pe(void*);
 int parse_pe(void*);
 //filesystem
-int check_ext(u8*);
-int parse_ext(u8*, u8*);
-int check_fat(u8*);
-int parse_fat(u8*, u8*);
-int check_hfs(u8*);
-int parse_hfs(u8*, u8*);
-int check_ntfs(u8*);
-int parse_ntfs(u8*, u8*);
+int check_ext(void*);
+int parse_ext(void*, void*);
+int check_fat(void*);
+int parse_fat(void*, void*);
+int check_hfs(void*);
+int parse_hfs(void*, void*);
+int check_ntfs(void*);
+int parse_ntfs(void*, void*);
 //parttable
-int check_applept(u8*);
-int parse_applept(u8*, u8*);
-int check_gpt(u8*);
-int parse_gpt(u8*, u8*);
-int check_mbr(u8*);
-int parse_mbr(u8*, u8*);
+int check_applept(void*);
+int parse_applept(void*, void*);
+int check_gpt(void*);
+int parse_gpt(void*, void*);
+int check_mbr(void*);
+int parse_mbr(void*, void*);
 //diskimage
-int check_dmg(u8*);
-int check_qcow2(u8*);
-int check_vdi(u8*);
-int check_vhd(u8*);
-int check_vmdk(u8*);
+int check_dmg(void*);
+int check_qcow2(void*);
+int check_vdi(void*);
+int check_vhd(void*);
+int check_vmdk(void*);
 //
 int startfile(u8*);
 int stopfile(int);
@@ -80,8 +80,9 @@ struct object
 };
 struct filesystem
 {
-	u64 type;
-	u64 name;
+	//
+	u64 magic;	//mnt
+	u64 parent;	//fs[fs[this].parent].read?
 	u64 start;
 	u64 stop;
 	u64 list;
@@ -89,20 +90,50 @@ struct filesystem
 	u64 read;
 	u64 write;
 
+	//
 	u8 data[0xc0];
 };
 static struct object* obj;
 static struct filesystem* fs;
 static u8* dirhome;
 static u8* datahome;
-//
-static int which = 0;
+//jpg in ext4 in gpt in vhd in zip ......
+static int root;
+static int curr;
 
 
 
 
-//
-int mount_file(u8* buf, int len)
+#define ext 0x747865
+#define fat 0x746166
+#define hfs 0x736668
+#define ntfs 0x7366746e
+int mount_tree(int parent, u64 type)
+{
+	int j;
+	void* p;
+/*
+	//search
+	for(j=0;j<0x1000;j++)
+	{
+		if(fs[j].magic == 0)break;
+	}
+	if(j >= 0x1000)return 0;
+
+	//create
+	fs[j].magic = 0x746e6d;
+	fs[j].parent = parent;
+	if(type == ext)ext_create(obj, &(fs[j]));
+	else if(type == fat)fat_create(obj, &(fs[j]));
+	else if(type == hfs)hfs_create(obj, &(fs[j]));
+	else if(type == ntfs)ntfs_create(obj, &(fs[j]));
+
+	//start
+	fs[j].start();
+*/
+	return j;
+}
+int mount_what(u8* buf, int len)
 {
 	//picture
 	if(check_bmp(buf) != 0)parse_bmp(buf, len);
@@ -174,7 +205,7 @@ static int file_cd(u8* p)
 	stopfile(fd);
 
 	//11111111
-	ret = mount_file(datahome, 0x8000);
+	ret = mount_what(datahome, 0x8000);
 	return 0;
 }
 static int file_read(u8* addr)
