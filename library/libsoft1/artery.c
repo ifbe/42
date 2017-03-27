@@ -205,12 +205,12 @@ void arterycreate(u8* type, u8* addr)
 	theone = 0;
 
 	//
-	say("[8,c):createed artery\n");
+	//say("[8,c):createed artery\n");
 }
 void arterydelete()
 {
 	//
-	say("[8,c):deleteing artery\n");
+	//say("[8,c):deleteing artery\n");
 
 	//
 	wire_delete();

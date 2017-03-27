@@ -49,12 +49,12 @@ void systemcreate(u8* type, u8* addr)
 	createtray(mega0);
 
 	//
-	say("[8,c):createed system\n");
+	//say("[8,c):createed system\n");
 }
 void systemdelete()
 {
 	//
-	say("[8,c):deleteing system\n");
+	//say("[8,c):deleteing system\n");
 
 	//
 	deletetray();

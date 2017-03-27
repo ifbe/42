@@ -17,24 +17,16 @@ void say(char* , ...);
 
 
 
-int bootevent(u64* what, u64* who, u64* where, u64* when)
-{
-	return 0;
-}
-
-
-
-
 void basiccreate(char* type,char* addr)
 {
 	//createcpu();
 	//creatememory();
 	createserial();
-	say("[0,4):createed basic\n");
+	//say("[0,4):createed basic\n");
 }
 void basicdelete()
 {
-	say("[0,4):deleteing basic\n");
+	//say("[0,4):deleteing basic\n");
 	deleteserial();
 	//deletememory();
 	//deletecpu();

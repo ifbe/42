@@ -145,12 +145,12 @@ void displaycreate(u8* type, u8* addr)
 	id = 2;
 
 	//
-	say("[c,f):createed display\n");
+	//say("[c,f):createed display\n");
 }
 void displaydelete()
 {
 	//
-	say("[c,f):deleteing display\n");
+	//say("[c,f):deleteing display\n");
 
 	//1024*1024*4
 	windowdelete();

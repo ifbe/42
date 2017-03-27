@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	struct event* ev;
 
 	birth();
-	say("@birth\n");
+	//say("@birth\n");
 
 	//config
 	ret = displaystart(0,0);
@@ -128,7 +128,7 @@ again:
 	}
 
 	//after
-	say("@death\n");
+	//say("@death\n");
 	death();
 	return 0;
 }

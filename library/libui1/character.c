@@ -251,11 +251,11 @@ void charactercreate(u8* type, u8* addr)
 	{
 		if(worker[now].type != 0)break;
 	}
-	say("[c,f):createed character\n");
+	//say("[c,f):createed character\n");
 }
 void characterdelete()
 {
-	say("[c,f):deleteing character\n");
+	//say("[c,f):deleteing character\n");
 
 	spectrum_delete();
 	stl_delete();

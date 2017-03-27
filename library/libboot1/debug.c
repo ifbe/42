@@ -72,9 +72,9 @@ void printmemory(u8* addr,int size)
 
 void debugcreate(char* type,char* addr)
 {
-	say("[0,4):createed debug\n");
+	//say("[0,4):createed debug\n");
 }
 void debugdelete()
 {
-	say("[0,4):deleteing debug\n");
+	//say("[0,4):deleteing debug\n");
 }
