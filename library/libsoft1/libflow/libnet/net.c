@@ -300,10 +300,24 @@ int net_choose(u8* p)
 	//compare
 	if(ncmp(buf, "RAW", 3) == 0)
 	{
-		fd = startsocket("0,0,0,0", 2222, 'r');	//tcp server
+		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
 		if(fd == 0)return 0;
 
 		type = RAW;
+	}
+	else if(ncmp(buf, "raw", 3) == 0)
+	{
+		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
+		if(fd == 0)return 0;
+
+		type = raw;
+	}
+	else if(ncmp(buf, "icmp", 4) == 0)
+	{
+		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
+		if(fd == 0)return 0;
+
+		type = raw;
 	}
 
 

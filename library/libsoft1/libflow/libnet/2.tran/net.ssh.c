@@ -536,13 +536,32 @@ static int secureshell_read(u8* buf, int len)
 #define ssh 0x687373
 int serve_ssh(struct object* obj, int fd, u8* buf, int len)
 {
-	if(obj[fd].type_road == ssh)
+	int ret=0;
+	u64 type;
+
+	type = obj[fd].type_road;
+	if(type == ssh)
 	{
-		printmemory(buf, len);
-		return ssh;
+		if(ncmp(buf, "SSH-2.0-", 8) == 0)
+		{
+			for(ret=0;ret<len;ret++)
+			{
+				if( (buf[ret] == 0xd) && (buf[ret+1] == 0xa) )
+				{
+					buf[ret] = buf[ret+1] = 0;
+					say("%s\n",buf);
+
+					break;
+				}
+			}
+			if(ret+2 >= len)return type;
+
+			buf += ret+2;
+			len -= ret+2;
+		}
 	}
 
-	int ret = secureshell_read(buf, len);
+	ret = secureshell_read(buf, len);
 	if(ret == 0x14)
 	{
 		//secureshell_write(buf, len);
@@ -563,7 +582,7 @@ int serve_ssh(struct object* obj, int fd, u8* buf, int len)
 		ret += secureshell_write_0x15(buf+ret, len);
 		writesocket(fd, buf, 0, ret);
 	}
-	return SSH;
+	return type;
 }
 int check_ssh(void* p, int fd, u8* buf, int len)
 {
