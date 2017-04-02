@@ -27,7 +27,7 @@ struct window
 	u64 h;
 };
 static struct window* win=0;
-static int theone=0;
+static int user[10];
 
 
 
@@ -38,14 +38,18 @@ int netwinread()
 }
 int netwinwrite(struct window* win)
 {
-	void* p;
-	int j;
-	if(theone == 0)return 0;
+	void* buf;
+	int j,k,len;
 
-	p = (void*)win->buf;
-	j = count_strlen(p);
-	j = websocket_write(theone, p, j);
-	if(j <= 0)theone = 0;
+	buf = (void*)win->buf;
+	len = count_strlen(buf);
+	for(j=0;j<10;j++)
+	{
+		if(user[j] == 0)continue;
+
+		k = websocket_write(user[j], buf, len);
+		if(k <= 0)user[j] = 0;
+	}
 
 	return 0;
 }
@@ -57,13 +61,30 @@ int netwinchoose(int j)
 {
 	return 0;
 }
-int netwinstop()
+int netwinstop(int fd)
 {
+	int j;
+	for(j=0;j<10;j++)
+	{
+		if(user[j] == fd)
+		{
+			user[j] = 0;
+			break;
+		}
+	}
 	return 0;
 }
-int netwinstart(int j)
+int netwinstart(int fd)
 {
-	theone = j;
+	int j;
+	for(j=0;j<10;j++)
+	{
+		if(user[j] == 0)
+		{
+			user[j] = fd;
+			break;
+		}
+	}
 	return 0;
 }
 int netwindelete()
@@ -72,10 +93,14 @@ int netwindelete()
 }
 int netwincreate(void* uibase, void* uithis)
 {
+	int j;
+	for(j=0;j<10;j++)user[j] = 0;
+
 	win = uithis;
 	win->buf = (u64)startmemory(0x100000);
 	win->fmt = 0x6c6d7468;
 	win->w = 512;
 	win->h = 512;
+
 	return 0;
 }
