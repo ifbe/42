@@ -79,31 +79,28 @@ static int area=0;
 
 
 
-//
-void spectrum_random()
-{
-	int j;
-	for(j=0;j<1024;j++)
-	{
-		real[j] = (double)pcmin[j] / 65536.0;
-		imag[j] = 0.0;
-	}
-
-	fft(real, imag, 10);
-	for(j=0;j<1024;j++)
-	{
-		//say("%lf	%lf\n", real[j], imag[j]);
-		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
-	}
-	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
-}
 static void spectrum_read_pixel(struct window* win)
 {
+	double t,cc,ss;
 	int x,y;
 	int width = win->w;
 	int height = win->h;
 
 	backgroundcolor(win, 0);
+	for(x=0;x<512;x++)
+	{
+		t = x * tau /512.0;
+		cc = cosine(t) * 256;
+		ss = -sine(t) * 256;
+		line(win,
+			256 + (int)(cc * (1.0 - 2*power[x])),
+			256 + (int)(ss * (1.0 - 2*power[x])),
+			256 + (int)cc,
+			256 + (int)ss,
+			0xffffff
+		);
+	}
+/*
 	for(x=0;x<1024;x++)
 	{
 		if(pcmin[x]>32768)continue;
@@ -123,6 +120,7 @@ static void spectrum_read_pixel(struct window* win)
 			0xffffff
 		);
 	}
+*/
 }
 static void spectrum_read_html(struct window* win)
 {
@@ -165,6 +163,27 @@ static void spectrum_read(struct window* win)
 	{
 		spectrum_read_pixel(win);
 	}
+}
+
+
+
+
+void spectrum_random()
+{
+	int j;
+	for(j=0;j<1024;j++)
+	{
+		real[j] = (double)pcmin[j] / 65536.0;
+		imag[j] = 0.0;
+	}
+
+	fft(real, imag, 10);
+	for(j=0;j<1024;j++)
+	{
+		//say("%lf	%lf\n", real[j], imag[j]);
+		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
+	}
+	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
 }
 static void spectrum_write(struct event* ev)
 {
