@@ -327,6 +327,10 @@ int serve_ws(struct object* obj, int fd, u8* buf, int len)
 				obj[fd].type_data = 0x72616863;
 				decstr2data(buf+5, &(obj[fd].stage3));
 			}
+			else
+			{
+				obj[fd].type_data = 0;
+			}
 		}
 	}
 

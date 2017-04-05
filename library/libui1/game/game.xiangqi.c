@@ -83,9 +83,18 @@ static int htmlcircle(char* p, int x, int y)
 {
 	u32 textcolor;
 	char* hanzi;
+	char ch;
 
-	if(data[y][x] >= 'a')textcolor=0;
-	else textcolor=0xff0000;
+	ch = data[y][x];
+	if( (ch>='a') && (ch<='z') )
+	{
+		textcolor=0;
+	}
+	else if( (ch >='A') && (ch <= 'Z') )
+	{
+		textcolor=0xff0000;
+	}
+	else return 0;
 
 	hanzi = char2hanzi(data[y][x]);
 	return fmt(

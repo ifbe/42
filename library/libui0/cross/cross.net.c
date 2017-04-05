@@ -79,11 +79,14 @@ int netwinstart(int fd)
 	int j;
 	for(j=0;j<10;j++)
 	{
-		if(user[j] == 0)
+		if(user[j] != 0)
 		{
-			user[j] = fd;
-			break;
+			if(user[j] == fd)break;	//already in
+			else continue;		//another one
 		}
+
+		user[j] = fd;
+		break;
 	}
 	return 0;
 }

@@ -218,12 +218,15 @@ void network_explain(u64* p)
 
 		//change event
 		obj[where].type_road = what;
-		if( (what == WS)&&(obj[where].stage1 >= 3) )
+		if(what == WS)
+		{
+		if( (obj[where].stage1 >= 4) && (obj[where].type_data != 0) )
 		{
 			p[0] = obj[where].stage3;
 			p[1] = obj[where].type_data;
 			//p[2]	//not change
 			//p[3]	//not change
+		}
 		}
 		else if(what == http)
 		{
