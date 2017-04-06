@@ -112,6 +112,8 @@ int http_read(u8* buf, int len)
 #define chat 0x74616863
 #define HTTP 0x50545448
 #define http 0x70747468
+#define PROXY 0x59584f5250
+#define proxy 0x79786f7270
 #define WS 0x5357
 #define ws 0x7377
 int check_http(struct object* obj, int fd, u8* buf, int len)
@@ -140,6 +142,7 @@ int check_http(struct object* obj, int fd, u8* buf, int len)
 	len = http_write_file(buf, len, GET+1);
 	if(len <= 0)goto byebye;
 //say("len=%d\n",len);
+
 	//read head	"Content-Length: %d\r\n"
 	ret = fmt(buf+len, 0x100000-len,
 		"HTTP/1.1 200 OK\r\n"
@@ -147,7 +150,6 @@ int check_http(struct object* obj, int fd, u8* buf, int len)
 		"\r\n"
 	);
 //say("ret=%d\n",ret);
-
 
 	//send head
 	ret = writesocket(fd, buf+len, 0, ret);

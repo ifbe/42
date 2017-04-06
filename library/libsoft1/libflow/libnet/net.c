@@ -8,18 +8,19 @@ int check_tls(  void* p, int fd, void* buf, int len);
 int check_http( void* p, int fd, void* buf, int len);
 int check_rtmp( void* p, int fd, void* buf, int len);
 //
-int serve_raw(  void* p, int fd, void* buf, int len);
 int serve_chat( void* p, int fd, void* buf, int len);
-int serve_ssh(  void* p, int fd, void* buf, int len);
-int serve_tls(  void* p, int fd, void* buf, int len);
-int serve_rdp(  void* p, int fd, void* buf, int len);
-int serve_vnc(  void* p, int fd, void* buf, int len);
 int serve_http( void* p, int fd, void* buf, int len);
 int serve_https(void* p, int fd, void* buf, int len);
+int serve_proxy(void* p, int fd, void* buf, int len);
+int serve_raw(  void* p, int fd, void* buf, int len);
+int serve_rdp(  void* p, int fd, void* buf, int len);
+int serve_rtmp( void* p, int fd, void* buf, int len);
+int serve_sql(  void* p, int fd, void* buf, int len);
+int serve_ssh(  void* p, int fd, void* buf, int len);
+int serve_tls(  void* p, int fd, void* buf, int len);
+int serve_vnc(  void* p, int fd, void* buf, int len);
 int serve_ws(   void* p, int fd, void* buf, int len);
 int serve_wss(  void* p, int fd, void* buf, int len);
-int serve_sql(  void* p, int fd, void* buf, int len);
-int serve_rtmp( void* p, int fd, void* buf, int len);
 //
 int tftp_write(void*, int);
 int tls_write_client_hello(void*, int);
@@ -94,8 +95,8 @@ static u8* datahome = 0;
 #define tls 0x736c74		//c
 #define SSH 0x485353		//s
 #define ssh 0x687373		//c
-#define SOCKS 0x534b434f53	//s
-#define socks 0x736b636f73	//c
+#define PROXY 0x59584f5250	//s
+#define proxy 0x79786f7270	//c
 #define SQL 0x4c5153		//s
 #define sql 0x6c7173		//c
 #define RDP 0x504452		//s
@@ -166,9 +167,9 @@ protocol:
 	{
 		type = serve_ssh(obj, fd, buf, len);
 	}
-	else if( (type==SOCKS) | (type==socks) )
+	else if( (type==PROXY) | (type==proxy) )
 	{
-		//type = serve_socks(obj, fd, buf, len);
+		type = serve_proxy(obj, fd, buf, len);
 	}
 	else if( (type==RDP) | (type==rdp) )
 	{

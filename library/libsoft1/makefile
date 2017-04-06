@@ -24,6 +24,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/3.app/net.raw.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.ftp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.proxy.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rdp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rtmp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.sql.c

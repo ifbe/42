@@ -103,6 +103,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/3.app/net.dload.c \
 	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
 	library/libsoft1/libflow/libnet/3.app/net.http.c \
+	library/libsoft1/libflow/libnet/3.app/net.proxy.c \
 	library/libsoft1/libflow/libnet/3.app/net.raw.c \
 	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
 	library/libsoft1/libflow/libnet/3.app/net.rtmp.c \
