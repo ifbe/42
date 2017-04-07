@@ -25,22 +25,24 @@ void say(void*, ...);
 
 struct object
 {
-        //[0x00,0x0f]
-        u64 type_sock;  //raw, bt, udp, tcp?
-        u64 stage0;
-        u64 type_road;  //ssh, tls?
-        u64 stage1;
-        u64 type_app;   //http2, ws, rdp, vnc?
-        u64 stage2;
-        u64 type_data;  //html, rgb?
-        u64 stage3;
+	//[0x00,0x0f]
+	u64 type_sock;  //raw, bt, udp, tcp?
+	u64 stage0;
+	u64 type_road;  //ssh, tls?
+	u64 stage1;
+	u64 type_app;   //http2, ws, rdp, vnc?
+	u64 stage2;
+	u64 type_data;  //html, rgb?
+	u64 stage3;
 
-        //[0x40,0x7f]
-        u8 addr_src[0x20];
-        u8 addr_dst[0x20];
+	//[0x40,0x7f]
+	u8 addr_src[0x20];
+	u8 addr_dst[0x20];
 
-        //[0x80,0xff]
-        u8 data[0x80];
+	//[0x80,0xff]
+	u8 clientrandom[0x20];
+	u8 serverrandom[0x20];
+	u8 data[0x40];
 };
 
 
@@ -56,15 +58,6 @@ static u8 fixed[19]= {
 	0x30,0x51,0x30,0x0d,0x06,0x09,0x60,0x86,
 	0x48,0x01,0x65,0x03,0x04,0x02,0x03,0x05,
 	0x00,0x04,0x40
-};
-static u8 clientrandom[0x20];
-static u8 serverrandom[0x20] = {
-	//0000
-	0x4f,0xcc,0x1e,0x94,0xb7,0xe0,0x12,0xae,
-	0x88,0x49,0x61,0x3b,0x0a,0xc7,0x5f,0xed,
-	//0010
-	0x90,0x01,0xcd,0x7d,0xc2,0xa4,0x9d,0xfa,
-	0x0c,0x2e,0xe0,0x93,0x56,0xa2,0x02,0x7f
 };
 static u8 dh[] = {
 	0x04,0x36,0xfb,0xdf,0xda,0x82,0xf5,0xc3,
@@ -132,7 +125,7 @@ int tls_read_server_hello(u8* buf, int len)
 	say("}serverhello\n\n");
 	return len+5;
 }
-int tls_read_client_hello(u8* buf, int len)
+int tls_read_client_hello(struct object* obj, int fd, u8* buf, int len)
 {
 	int j, k;
 	struct bothhello* p = (void*)buf;
@@ -150,14 +143,13 @@ int tls_read_client_hello(u8* buf, int len)
 	//
 	j = ((p->thislen[0])<<16) + ((p->thislen[1])<<8) + (p->thislen[2]);
 	say("%x, %x, %02x%02x\n",
-		p->thistype,
-		j,
+		p->thistype, j,
 		p->thisver[0], p->thisver[1]
 	);
 
 	//random
 	q = buf+11;
-	for(j=0;j<0x20;j++)clientrandom[j] = q[j];
+	for(j=0;j<0x20;j++)obj[fd].clientrandom[j] = q[j];
 	//printmemory(buf+11, 0x20);
 
 	//sessionid
@@ -360,7 +352,7 @@ int tls_write_client_hello(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_write_server_hello(u8* buf, int len)
+int tls_write_server_hello(struct object* obj, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -370,7 +362,15 @@ int tls_write_server_hello(u8* buf, int len)
 	p += 2;
 
 	//random
-	for(j=0;j<0x20;j++)p[j] = serverrandom[j];
+	*(u32*)(p+0) = getrandom();
+	*(u32*)(p+4) = getrandom();
+	*(u32*)(p+8) = getrandom();
+	*(u32*)(p+12) = getrandom();
+	*(u32*)(p+16) = getrandom();
+	*(u32*)(p+20) = getrandom();
+	*(u32*)(p+24) = getrandom();
+	*(u32*)(p+28) = getrandom();
+	for(j=0;j<0x20;j++)p[j] = obj[fd].serverrandom[j] = p[j];
 	p += 0x20;
 
 	//sessionid length
@@ -605,7 +605,7 @@ int tls_write_client_keyexch(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_write_server_keyexch(u8* buf, int len)
+int tls_write_server_keyexch(struct object* obj, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -655,8 +655,8 @@ int tls_write_server_keyexch(u8* buf, int len)
 	)//with cert's private key
 */
 	//put all @ [0,0x84]
-	for(j=0;j<0x20;j++)p[0x00+j] = clientrandom[j];
-	for(j=0;j<0x20;j++)p[0x20+j] = serverrandom[j];
+	for(j=0;j<0x20;j++)p[0x00+j] = obj[fd].clientrandom[j];
+	for(j=0;j<0x20;j++)p[0x20+j] = obj[fd].serverrandom[j];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
 	say("c+s+p:\n");
 	printmemory(p, 0x85);
@@ -918,7 +918,7 @@ int tls_read(struct object* obj, int fd, u8* buf, int len)
 	{
 		if(buf[5] == 1)
 		{
-			ret = tls_read_client_hello(buf, len);
+			ret = tls_read_client_hello(obj, fd, buf, len);
 			obj[fd].stage1 = 1;
 		}
 		else if(buf[5] == 2)
@@ -963,9 +963,9 @@ int tls_write(struct object* obj, int fd, u8* buf, int len)
 	}
 	else if(stage == 1)
 	{
-		ret = tls_write_server_hello(buf, len);
+		ret = tls_write_server_hello(obj, fd, buf, len);
 		ret += tls_write_server_certificate(buf+ret, len);
-		ret += tls_write_server_keyexch(buf+ret, len);
+		ret += tls_write_server_keyexch(obj, fd, buf+ret, len);
 		ret += tls_write_server_done(buf+ret, len);
 	}
 	else if(stage == 2)
