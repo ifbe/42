@@ -137,6 +137,7 @@ int tls_read_client_hello(u8* buf, int len)
 	int j, k;
 	struct bothhello* p = (void*)buf;
 	u8* q;
+	say("clienthello{\n");
 
 	//
 	len = ((p->length[0])<<8) + p->length[1];
@@ -157,40 +158,37 @@ int tls_read_client_hello(u8* buf, int len)
 	//random
 	q = buf+11;
 	for(j=0;j<0x20;j++)clientrandom[j] = q[j];
-	printmemory(buf+11, 0x20);
+	//printmemory(buf+11, 0x20);
 
 	//sessionid
 	j = q[0];
 	say("sessionid(len=%x)\n", j);
-	printmemory(q+1, j);
-	say("\n");
+	//printmemory(q+1, j);
 	q += 1 + j;
 
 	//cipher
 	j = (q[0]<<8) + q[1];
 	say("ciphersites(len=%x)\n", j);
-	printmemory(q+2, j);
-	say("\n");
+	//printmemory(q+2, j);
 	q += 2 + j;
 
 	//compression
 	j = q[0];
 	say("compression(len=%x)\n", j);
-	printmemory(q+1, j);
-	say("\n");
+	//printmemory(q+1, j);
 	q += 1 + j;
 
 	//extension
 	j = (q[0]<<8) + q[1];
 	say("extension(len=%x)\n", j);
-	printmemory(q+2, j);
+	//printmemory(q+2, j);
 	q += 2;
 
 	//
 	while(1)
 	{
-		if(q-buf >= len)return 0;
-		if(q-buf >= len+5)return 0;
+		if(q-buf >= len)break;
+		if(q-buf >= len+5)break;
 
 		j = (q[0]<<8) + q[1];
 		k = (q[2]<<8) + q[3];
@@ -199,6 +197,7 @@ int tls_read_client_hello(u8* buf, int len)
 		q += 4 + k;
 	}
 
+	say("}clienthello\n\n");
 	return len + 5;
 }
 int tls_write_client_hello(u8* buf, int len)
@@ -905,24 +904,22 @@ int tls_write_both_data(u8* buf, int len)
 
 
 
-int tls_read(u64 fd, u8* buf, int len)
+int tls_read(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret=0;
-	//say("stage=%llx\n",p[1]);
+	int stage;
 
 	if(buf[0] == 0x17)
 	{
 		ret = tls_read_both_data(buf,len);
-		//p[1] &= 0xffffff00;
-		//p[1] |= 0x17;
+		obj[fd].stage1 = 0xff;
 	}
 	else if(buf[0] == 0x16)
 	{
 		if(buf[5] == 1)
 		{
 			ret = tls_read_client_hello(buf, len);
-			//p[1] &= 0xffffff00;
-			//p[1] |= 1;
+			obj[fd].stage1 = 1;
 		}
 		else if(buf[5] == 2)
 		{
@@ -930,24 +927,21 @@ int tls_read(u64 fd, u8* buf, int len)
 			ret += tls_read_server_certificate(buf+ret, len);
 			ret += tls_read_server_keyexch(buf+ret, len);
 			ret += tls_read_server_done(buf+ret, len);
-			//p[1] &= 0xffffff00;
-			//p[1] |= 2;
+			obj[fd].stage1 = 2;
 		}
 		else if(buf[5] == 16)
 		{
 			ret = tls_read_client_keyexch(buf, len);
 			ret += tls_read_client_cipherspec(buf+ret, len);
 			ret += tls_read_client_hellorequest(buf+ret, len);
-			//p[1] &= 0xffffff00;
-			//p[1] |= 16;
+			obj[fd].stage1 = 16;
 		}
 		else if(buf[5] == 4)
 		{
 			ret = tls_read_server_newsession(buf, len);
 			ret += tls_read_server_cipherspec(buf+ret, len);
 			ret += tls_read_server_encrypthandshake(buf+ret, len);
-			//p[1] &= 0xffffff00;
-			//p[1] |= 4;
+			obj[fd].stage1 = 4;
 		}
 	}
 	else
@@ -958,40 +952,46 @@ int tls_read(u64 fd, u8* buf, int len)
 
 	return ret;
 }
-int tls_write(u64 fd, u8* buf, int len)
+int tls_write(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
-	if(ret == 0)
+	int stage = obj[fd].stage1;
+
+	if(stage == 0)
 	{
 		ret = tls_write_client_hello(buf, len);
 	}
-	else if(ret == 1)
+	else if(stage == 1)
 	{
 		ret = tls_write_server_hello(buf, len);
 		ret += tls_write_server_certificate(buf+ret, len);
 		ret += tls_write_server_keyexch(buf+ret, len);
 		ret += tls_write_server_done(buf+ret, len);
 	}
-	else if(ret == 2)
+	else if(stage == 2)
 	{
 		ret = tls_write_client_keyexch(buf, len);
 		ret += tls_write_client_cipherspec(buf+ret, len);
 		ret += tls_write_client_hellorequest(buf+ret, len);
 	}
-	else if(ret == 16)
+	else if(stage == 16)
 	{
 		ret = tls_write_server_newsession(buf, len);
 		ret += tls_write_server_cipherspec(buf+ret, len);
 		ret += tls_write_server_encrypthandshake(buf+ret, len);
 		printmemory(buf,ret);
 	}
-	else if(ret == 0x17)
+	else if(stage == 0xff)
 	{
 		ret = tls_write_both_data(buf, len);
 	}
 
 	return ret;
 }
+
+
+
+
 void tls_start()
 {
 	int j,fl;
@@ -1041,21 +1041,20 @@ void tls_stop()
 
 #define TLS 0x534c54
 #define tls 0x736c74
-int serve_tls(struct object* obj, int fd, u8* buf, int len)
+int serve_tls_c(struct object* obj, int fd, u8* buf, int len)
 {
-	if(obj[fd].type_road == tls)
-	{
-		//printmemory(buf, len);
-		tls_read(fd, buf, len);
-		return tls;
-	}
-
+	//printmemory(buf, len);
+	tls_read(obj, fd, buf, len);
+	return tls;
+}
+int serve_tls_s(struct object* obj, int fd, u8* buf, int len)
+{
 	//tls >>>> ascii
-	len = tls_read(fd, buf, len);
+	len = tls_read(obj, fd, buf, len);
 	if(len < 0)goto error;
 
 	//bin >>>> tls
-	len = tls_write(fd, buf, len);
+	len = tls_write(obj, fd, buf, len);
 	if(len <= 0)goto error;
 
 good:
@@ -1064,7 +1063,16 @@ good:
 error:
 	return 0;
 }
-int check_tls(void* p, int fd, u8* buf, int len)
+int serve_tls(struct object* obj, int fd, u8* buf, int len)
+{
+	if(obj[fd].type_road == tls)
+	{
+		return serve_tls_c(obj, fd, buf, len);
+	}
+
+	return serve_tls_s(obj, fd, buf, len);
+}
+int check_tls(struct object* obj, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x16)return TLS;
 	return 0;

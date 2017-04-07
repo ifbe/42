@@ -27,6 +27,10 @@ int tls_write_client_hello(void*, int);
 int secureshell_write_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 int http_write_request(void*, int, void*, void*);
+void tls_start();
+void tls_stop();
+void ssh_start();
+void ssh_stop();
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
 int movsb(void*, void*, int);
@@ -302,40 +306,45 @@ int net_choose(u8* p)
 
 
 	//compare
-	if(ncmp(buf, "RAW", 3) == 0)
+	if(ncmp(buf, "RAW", 3) == 0)		//raw server
 	{
-		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
+		fd = startsocket("0,0,0,0", 0, 'r');
 		if(fd == 0)return 0;
 
 		type = RAW;
 	}
-	else if(ncmp(buf, "raw", 3) == 0)
+	else if(ncmp(buf, "raw", 3) == 0)	//raw client
 	{
-		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
+		fd = startsocket("0,0,0,0", 0, 'r');
 		if(fd == 0)return 0;
 
 		type = raw;
 	}
-	else if(ncmp(buf, "icmp", 4) == 0)
+	else if(ncmp(buf, "icmp", 4) == 0)	//icmp client
 	{
-		fd = startsocket("0,0,0,0", 0, 'r');	//tcp server
+		fd = startsocket("0,0,0,0", 0, 'r');
 		if(fd == 0)return 0;
 
 		type = raw;
 	}
 
 
-	else if(ncmp(buf, "UDP", 3) == 0)
+	else if(ncmp(buf, "UDP", 3) == 0)	//udp server
 	{
-		fd = startsocket("0,0,0,0", 2222, 'U');	//tcp server
+		fd = startsocket("0,0,0,0", 2222, 'U');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "udp", 3) == 0)
+	else if(ncmp(buf, "TFTP", 3) == 0)	//tftp server
+	{
+		fd = startsocket("0,0,0,0", 2222, 'U');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(buf, "udp", 3) == 0)	//udp client
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "tftp", 4) == 0)
+	else if(ncmp(buf, "tftp", 4) == 0)	//tftp client
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
@@ -347,24 +356,36 @@ int net_choose(u8* p)
 	}
 
 
-	else if(ncmp(buf, "TCP", 3) == 0)
+	else if(ncmp(buf, "TCP", 3) == 0)	//tcp server
 	{
-		fd = startsocket("0,0,0,0", 2222, 'T');	//tcp server
+		fd = startsocket("0,0,0,0", 2222, 'T');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "tcp", 3) == 0)
+	else if(ncmp(buf, "SSH", 3) == 0)	//ssh server
+	{
+		ssh_start();
+		fd = startsocket("0,0,0,0", 2222, 'T');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(buf, "TLS", 3) == 0)	//tls server
+	{
+		tls_start();
+		fd = startsocket("0,0,0,0", 2222, 'T');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(buf, "tcp", 3) == 0)	//tcp client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "sql", 3) == 0)
+	else if(ncmp(buf, "sql", 3) == 0)	//sql client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
 
 		type = sql;
 	}
-	else if(ncmp(buf, "ssh", 3) == 0)
+	else if(ncmp(buf, "ssh", 3) == 0)	//ssh client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -374,7 +395,7 @@ int net_choose(u8* p)
 
 		type = ssh;
 	}
-	else if(ncmp(buf, "tls", 3) == 0)
+	else if(ncmp(buf, "tls", 3) == 0)	//tls client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -384,7 +405,7 @@ int net_choose(u8* p)
 
 		type = tls;
 	}
-	else if(ncmp(buf, "http", 4) == 0)
+	else if(ncmp(buf, "http", 4) == 0)	//http client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -394,7 +415,7 @@ int net_choose(u8* p)
 
 		type = http;
 	}
-	else if(ncmp(buf, "ws", 2) == 0)
+	else if(ncmp(buf, "ws", 2) == 0)	//ws client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;

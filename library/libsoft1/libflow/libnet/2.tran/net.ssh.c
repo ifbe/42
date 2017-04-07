@@ -7,8 +7,8 @@ void generatePG(void*, int, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int readsocket(int fd, u8* addr, int offset, int count);
-int writesocket(int fd, u8* addr, int offset, int count);
+int readsocket(int fd, u8* addr, int off, int len);
+int writesocket(int fd, u8* addr, int off, int len);
 //
 int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
@@ -76,129 +76,106 @@ static void printalgorithm(u8* buf, int len)
 }
 static int secureshell_read_0x14(u8* buf, int len)
 {
-	int offset;
-	u32 temp;
+	u32 j;
+	int off;
 
 	//cookie
 	say("[6,15]cookie\n	");
-	for(temp=0;temp<16;temp++)
-	{
-		say("%02x ", buf[6+temp]);
-	}
+	for(j=0;j<16;j++)say("%02x ", buf[6+j]);
 	say("\n");
-	offset = 0x16;
+	off = 0x16;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]key_exchange_algorithm\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]key_exchange_algorithm\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]server_host_key_algorithm\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]server_host_key_algorithm\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_client_to_server\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]enc_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]encryption_algorithms_server_to_client\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]enc_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_client_to_server\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]mac_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]mac_algorithms_server_to_client\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]mac_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_client_to_server\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]comp_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	say("[%x,%x]compression_algorithms_server_to_client\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]comp_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_client_to_server\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]lang_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]lang_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
 
 	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]languages_server_to_client\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
-	offset += 4 + temp;
-
-	//
-	temp = buf[offset+2];
-	temp = (temp<<8) + buf[offset+3];
-	if(temp <= 0)goto byebye;
-	say("[%x,%x]first_kex_packet_follows\n",
-		offset, offset+temp-1);
-	printalgorithm(buf+offset, temp+4);
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]first_kex\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
 
 byebye:
-	return 0x20;
+	return 0x14;
 }
 static int secureshell_read_0x1e(u8* buf, int len)
 {
-	u32 temp;
-	int j = 6;
+	u32 j;
+	int off = 6;
 
-	temp = buf[j+2];
-	temp = (temp<<8) + buf[j+3];
-	printmemory(buf+j+4, temp);
-	return temp;
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	printmemory(buf+off+4, j);
+	return j;
 }
 static int secureshell_read_0x1f(u8* buf, int len)
 {
@@ -278,183 +255,188 @@ int secureshell_write_head(u8* buf, int len)
 }
 static int secureshell_write_0x14(u8* buf, int len)
 {
-	int offset;
-	int temp;
+	int j;
+	int off;
 
 	//cookie unchanged
-	for(temp=0;temp<16;temp++)buf[6+temp] = temp;
-	offset = 0x16;
+	for(j=0;j<16;j++)buf[off+j] = j;
+	off = 0x16;
 
 	//key_exchange_algorithm
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"diffie-hellman-group-exchange-sha256,"
 		"diffie-hellman-group-exchange-sha1"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//server_host_key_algorithm
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"ssh-rsa,"
 		"rsa-sha2-256,"
 		"rsa-sha2-512"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//encryption_algorithms_client_to_server
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//encryption_algorithms_server_to_client
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//mac_algorithms_client_to_server
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//mac_algorithms_server_to_client
-	temp = fmt(buf+offset+4, 999,
+	j = fmt(buf+off+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
 	);
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//compression_algorithms_client_to_server
-	temp = fmt(buf+offset+4, 999, "none");
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	j = fmt(buf+off+4, 999, "none");
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//compression_algorithms_server_to_client
-	temp = fmt(buf+offset+4, 999, "none");
-	buf[offset+0] = buf[offset+1] = 0;
-	buf[offset+2] = (temp>>8)&0xff;
-	buf[offset+3] = temp&0xff;
-	offset += 4 + temp;
+	j = fmt(buf+off+4, 999, "none");
+	buf[off+0] = buf[off+1] = 0;
+	buf[off+2] = (j>>8)&0xff;
+	buf[off+3] = j&0xff;
+	off += 4 + j;
 
 	//other
-	for(temp=offset;temp<offset+32;temp++)buf[temp] = 0;
-	offset += 4+4+5;
+	for(j=off;j<off+32;j++)buf[j] = 0;
+	off += 4+4+5;
 
 	//
 	buf[5] = 0x14;
-	offset = secureshell_write_head(buf, offset);
+	return secureshell_write_head(buf, off);
+}
+static int secureshell_write_0x1e(u8* buf, int len)
+{
+	int ret;
+	int off=6;
 
-	//
-	return offset;
+	buf[off+0] = 0;
+	buf[off+1] = 0;
+	buf[off+2] = 0;
+	buf[off+3] = 0x20;
+	for(ret=0;ret<0x20;ret++)
+	{
+		buf[off+4+ret] = ret;
+	}
+	off += 4+0x20;
+
+	buf[5] = 0x1e;
+	return secureshell_write_head(buf, off);
 }
 static int secureshell_write_0x1f(u8* buf, int len)
 {
-	int offset;
-	int Plen;
-	int Glen;
-	int Slen;
 	u8* Pbuf;
 	u8* Gbuf;
 	u8* Sbuf;
-
-	//
-	buf[5] = 0x1f;
-	offset = 6;
+	int Plen;
+	int Glen;
+	int Slen;
+	int off=6;
 
 	//P.len, P.val
 	Plen = 0x68;
-	Pbuf = buf + offset + 4;
-	buf[offset+0] = 0;
-	buf[offset+1] = 0;
-	buf[offset+2] = (Plen>>8)&0xff;
-	buf[offset+3] = Plen&0xff;
-	offset += 4 + Plen;
+	Pbuf = buf + off + 4;
+	buf[off+0] = 0;
+	buf[off+1] = 0;
+	buf[off+2] = (Plen>>8)&0xff;
+	buf[off+3] = Plen&0xff;
+	off += 4 + Plen;
 
 	//G.len, G.val
 	Glen = 0x20;
-	Gbuf = buf + offset + 4;
-	buf[offset+0] = 0;
-	buf[offset+1] = 0;
-	buf[offset+2] = (Glen>>8)&0xff;
-	buf[offset+3] = Glen&0xff;
-	offset += 4 + Glen;
+	Gbuf = buf + off + 4;
+	buf[off+0] = 0;
+	buf[off+1] = 0;
+	buf[off+2] = (Glen>>8)&0xff;
+	buf[off+3] = Glen&0xff;
+	off += 4 + Glen;
 
 	//sig.len, sig.val
 	Slen = 0x64;
-	Sbuf = buf + offset + 4;
-	buf[offset+0] = 0;
-	buf[offset+1] = 0;
-	buf[offset+2] = (Slen>>8)&0xff;
-	buf[offset+3] = Slen&0xff;
-	offset += 4 + Slen;
+	Sbuf = buf + off + 4;
+	buf[off+0] = 0;
+	buf[off+1] = 0;
+	buf[off+2] = (Slen>>8)&0xff;
+	buf[off+3] = Slen&0xff;
+	off += 4 + Slen;
 
 	//
 	generatePG(Pbuf, Plen, Gbuf, Glen);
-	offset = secureshell_write_head(buf, offset);
 
 	//
-	return offset;
+	buf[5] = 0x1f;
+	return secureshell_write_head(buf, off);
 }
 static int secureshell_write_0x15(u8* buf, int len)
 {
-	int offset;
-	int temp;
+	int j;
+	int off=6;
+
+	//
+	for(j=off+4;j<off+4+10;j++)
+	{
+		buf[j] = j;
+	}
+	buf[off+0] = 0;
+	buf[off+1] = 0;
+	buf[off+2] = 0;
+	buf[off+3] = 10;
+	off += 4 + 10;
+
+	//
+	for(j=off;j<off+0x54;j++)
+	{
+		buf[j] = j;
+	}
+	off += 0x54;
 
 	//
 	buf[5] = 0x15;
-	offset = 6;
-
-	//
-	for(temp=offset+4;temp<offset+4+10;temp++)
-	{
-		buf[temp] = temp;
-	}
-	buf[offset+0] = 0;
-	buf[offset+1] = 0;
-	buf[offset+2] = 0;
-	buf[offset+3] = 10;
-	offset += 4 + 10;
-
-	//
-	for(temp=offset;temp<offset+0x54;temp++)
-	{
-		buf[temp] = temp;
-	}
-	offset += 0x54;
-
-	//
-	offset = secureshell_write_head(buf, offset);
-
-	//
-	return offset;
+	return secureshell_write_head(buf, off);
 }
 
 
@@ -465,13 +447,13 @@ static int secureshell_write_0x15(u8* buf, int len)
 //why,what,where,when
 static int secureshell_read(u8* buf, int len)
 {
-	int offset;
-	u32 temp;
+	u32 j;
+	int off;
 
-	temp = buf[0];
-	temp = (temp<<8) + buf[1];
-	temp = (temp<<8) + buf[2];
-	temp = (temp<<8) + buf[3];
+	j = buf[0];
+	j = (j<<8) + buf[1];
+	j = (j<<8) + buf[2];
+	j = (j<<8) + buf[3];
 	if(buf[5] == 0x14)
 	{
 		say(
@@ -479,7 +461,7 @@ static int secureshell_read(u8* buf, int len)
 			"	total=%x\n"
 			"	plen=%x\n"
 			"	type=%x\n",
-			temp, buf[4], buf[5]
+			j, buf[4], buf[5]
 		);
 		secureshell_read_0x14(buf,len);
 	}
@@ -490,7 +472,7 @@ static int secureshell_read(u8* buf, int len)
 			"	total=%x\n"
 			"	plen=%x\n"
 			"	type=%x\n",
-			temp, buf[4], buf[5]
+			j, buf[4], buf[5]
 		);
 		secureshell_read_0x1e(buf,len);
 	}
@@ -501,7 +483,7 @@ static int secureshell_read(u8* buf, int len)
 			"	total=%x\n"
 			"	plen=%x\n"
 			"	type=%x\n",
-			temp, buf[4], buf[5]
+			j, buf[4], buf[5]
 		);
 		secureshell_read_0x1f(buf,len);
 	}
@@ -512,17 +494,23 @@ static int secureshell_read(u8* buf, int len)
 			"	total=%x\n"
 			"	plen=%x\n"
 			"	type=%x\n",
-			temp, buf[4], buf[5]
+			j, buf[4], buf[5]
 		);
 		secureshell_read_0x22(buf,len);
 	}
 	else
 	{
-		printmemory(buf,temp);
+		printmemory(buf,j);
 	}
 
 	say("\n\n\n\n");
 	return buf[5];
+}
+void ssh_start()
+{
+}
+void ssh_stop()
+{
 }
 
 
@@ -534,34 +522,45 @@ static int secureshell_read(u8* buf, int len)
 
 #define SSH 0x485353
 #define ssh 0x687373
-int serve_ssh(struct object* obj, int fd, u8* buf, int len)
+int serve_ssh_c(struct object* obj, int fd, u8* buf, int len)
 {
-	int ret=0;
-	u64 type;
-
-	type = obj[fd].type_road;
-	if(type == ssh)
+	int ret;
+	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{
-		if(ncmp(buf, "SSH-2.0-", 8) == 0)
+		for(ret=0;ret<len;ret++)
 		{
-			for(ret=0;ret<len;ret++)
+			if( (buf[ret] == 0xd) && (buf[ret+1] == 0xa) )
 			{
-				if( (buf[ret] == 0xd) && (buf[ret+1] == 0xa) )
-				{
-					buf[ret] = buf[ret+1] = 0;
-					say("%s\n",buf);
+				buf[ret] = buf[ret+1] = 0;
+				say("%s\n",buf);
 
-					break;
-				}
+				break;
 			}
-			if(ret+2 >= len)return type;
-
-			buf += ret+2;
-			len -= ret+2;
 		}
+		if(ret+2 >= len)return ssh;
+
+		buf += ret+2;
+		len -= ret+2;
 	}
 
 	ret = secureshell_read(buf, len);
+	if(ret == 0x14)
+	{
+		//protocol
+		ret = secureshell_write_0x14(buf, len);
+		writesocket(fd, buf, 0, ret);
+
+		//keyexch
+		ret = secureshell_write_0x1e(buf, len);
+		writesocket(fd, buf, 0, ret);
+	}
+	else printmemory(buf,len);
+
+	return 0;
+}
+int serve_ssh_s(struct object* obj, int fd, u8* buf, int len)
+{
+	int ret = secureshell_read(buf, len);
 	if(ret == 0x14)
 	{
 		//secureshell_write(buf, len);
@@ -582,7 +581,28 @@ int serve_ssh(struct object* obj, int fd, u8* buf, int len)
 		ret += secureshell_write_0x15(buf+ret, len);
 		writesocket(fd, buf, 0, ret);
 	}
-	return type;
+	else printmemory(buf,len);
+
+	return 0;
+}
+int serve_ssh(struct object* obj, int fd, u8* buf, int len)
+{
+	int ret=0;
+	u64 type;
+
+	type = obj[fd].type_road;
+	if(type == ssh)
+	{
+		serve_ssh_c(obj, fd, buf, len);
+		return ssh;
+	}
+	else if(type == SSH)
+	{
+		serve_ssh_s(obj, fd, buf, len);
+		return SSH;
+	}
+
+	return 0;
 }
 int check_ssh(void* p, int fd, u8* buf, int len)
 {
