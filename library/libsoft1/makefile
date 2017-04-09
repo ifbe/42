@@ -37,9 +37,6 @@ target:
 	$(compiler) $(cflag) libflow/flow.c
 	$(compiler) $(cflag) libmath/math.bigint.c
 	$(compiler) $(cflag) libmath/math.calc.c
-	$(compiler) $(cflag) libmath/math.dh.c
-	$(compiler) $(cflag) libmath/math.dct.c
-	$(compiler) $(cflag) libmath/math.fft.c
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c
@@ -53,6 +50,10 @@ target:
 	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.ttf.c
+	$(compiler) $(cflag) libmem/libdata/dsp/dsp.dct.c
+	$(compiler) $(cflag) libmem/libdata/dsp/dsp.fft.c
+	$(compiler) $(cflag) libmem/libdata/key/key.dh.c
+	$(compiler) $(cflag) libmem/libdata/key/key.ecdhe.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.channel.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.convert.c

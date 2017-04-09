@@ -117,9 +117,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/flow.c \
 	library/libsoft1/libmath/math.bigint.c \
 	library/libsoft1/libmath/math.calc.c \
-	library/libsoft1/libmath/math.dh.c \
-	library/libsoft1/libmath/math.dct.c \
-	library/libsoft1/libmath/math.fft.c \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \
@@ -133,6 +130,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.background.c \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
+	library/libsoft1/libmem/libdata/key/key.dh.c \
+	library/libsoft1/libmem/libdata/key/key.ecdhe.c \
+	library/libsoft1/libmem/libdata/dsp/dsp.dct.c \
+	library/libsoft1/libmem/libdata/dsp/dsp.fft.c \
 	library/libsoft1/libmem/libdata/photo/photo.blur.c \
 	library/libsoft1/libmem/libdata/photo/photo.channel.c \
 	library/libsoft1/libmem/libdata/photo/photo.convert.c \
