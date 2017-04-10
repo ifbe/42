@@ -146,11 +146,12 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
 	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
-	library/libsoft1/libmem/libdata/dsp/dsp.dct.c \
-	library/libsoft1/libmem/libdata/dsp/dsp.fft.c \
-	library/libsoft1/libmem/libdata/find/find.bm.c \
-	library/libsoft1/libmem/libdata/find/find.kmp.c \
-	library/libsoft1/libmem/libdata/find/find.rough.c \
+	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
+	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
+	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
+	library/libsoft1/libmem/libdata/search/search.bm.c \
+	library/libsoft1/libmem/libdata/search/search.kmp.c \
+	library/libsoft1/libmem/libdata/search/search.rough.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
@@ -159,8 +160,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
 	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
 	library/libsoft1/libmem/libdata/hash/hash.string.c \
-	library/libsoft1/libmem/libdata/key/key.dh.c \
-	library/libsoft1/libmem/libdata/key/key.ecdhe.c \
+	library/libsoft1/libmem/libdata/keyex/keyex.dh.c \
+	library/libsoft1/libmem/libdata/keyex/keyex.ecdhe.c \
 	library/libsoft1/libmem/libdata/photo/photo.blur.c \
 	library/libsoft1/libmem/libdata/photo/photo.channel.c \
 	library/libsoft1/libmem/libdata/photo/photo.convert.c \
@@ -201,6 +202,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfmt/computer/parttable/pt.gpt.c \
 	library/libsoft1/libmem/libfmt/computer/parttable/pt.mbr.c \
 	library/libsoft1/libmem/libfmt/file.c \
+	library/libsoft1/libmem/liblang/assembly/asm.x64.c \
+	library/libsoft1/libmem/liblang/assembly/asm.arm64.c \
+	library/libsoft1/libmem/liblang/program/prog.purec.c \
+	library/libsoft1/libmem/liblang/program/prog.cpp.c \
+	library/libsoft1/libmem/liblang/lang.c \
 	library/libsoft1/libmem/libtext/conv/conv.arg.c \
 	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
 	library/libsoft1/libmem/libtext/conv/conv.base64.c \
@@ -218,11 +224,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libtext/move/move.copy.c \
 	library/libsoft1/libmem/libtext/move/move.swap.c \
 	library/libsoft1/libmem/libtext/text.c \
-	library/libsoft1/libmem/libtran/assembly/asm.x64.c \
-	library/libsoft1/libmem/libtran/assembly/asm.arm64.c \
-	library/libsoft1/libmem/libtran/program/prog.purec.c \
-	library/libsoft1/libmem/libtran/program/prog.cpp.c \
-	library/libsoft1/libmem/libtran/tran.c \
 	library/libsoft1/libmem/memory.c \
 	library/libsoft1/libphys/phys.elec.c \
 	library/libsoft1/libphys/phys.mech.c \

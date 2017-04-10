@@ -29,11 +29,11 @@ static u8* datahome;
 
 
 //
-static int tran_list(u8* p)
+static int lang_list(u8* p)
 {
 	return 0;
 }
-static int tran_choose(u8* p)
+static int lang_choose(u8* p)
 {
 	int ret;
 
@@ -44,23 +44,23 @@ static int tran_choose(u8* p)
 	ret = purec_read(datahome, ret, 0, 0);
 	return ret;
 }
-static int tran_read()
+static int lang_read()
 {
 	return 0;
 }
-static int tran_write()
+static int lang_write()
 {
 	return 0;
 }
-static int tran_start()
+static int lang_start()
 {
 	return 0;
 }
-static int tran_stop()
+static int lang_stop()
 {
 	return 0;
 }
-int tran_create(u8* softaddr,u64* p)
+int lang_create(u8* softaddr,u64* p)
 {
 	//
 	guys = softaddr;
@@ -70,17 +70,17 @@ int tran_create(u8* softaddr,u64* p)
 
 	//
 	p[0]=0x79726f6d656d;
-	p[1]=0x6e617274;
-	p[2]=(u64)tran_start;
-	p[3]=(u64)tran_stop;
-	p[4]=(u64)tran_list;
-	p[5]=(u64)tran_choose;
-	p[6]=(u64)tran_read;
-	p[7]=(u64)tran_write;
+	p[1]=0x676e616c;
+	p[2]=(u64)lang_start;
+	p[3]=(u64)lang_stop;
+	p[4]=(u64)lang_list;
+	p[5]=(u64)lang_choose;
+	p[6]=(u64)lang_read;
+	p[7]=(u64)lang_write;
 
 	return 0x100;
 }
-int tran_delete()
+int lang_delete()
 {
 	return 0;
 }

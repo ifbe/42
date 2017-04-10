@@ -50,11 +50,6 @@ target:
 	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
 	$(compiler) $(cflag) libmem/libdata/draw/draw.ttf.c
-	$(compiler) $(cflag) libmem/libdata/dsp/dsp.dct.c
-	$(compiler) $(cflag) libmem/libdata/dsp/dsp.fft.c
-	$(compiler) $(cflag) libmem/libdata/find/find.bm.c
-	$(compiler) $(cflag) libmem/libdata/find/find.kmp.c
-	$(compiler) $(cflag) libmem/libdata/find/find.rough.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc8.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc16.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc32.c
@@ -63,8 +58,8 @@ target:
 	$(compiler) $(cflag) libmem/libdata/hash/hash.sha256.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.sha512.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
-	$(compiler) $(cflag) libmem/libdata/key/key.dh.c
-	$(compiler) $(cflag) libmem/libdata/key/key.ecdhe.c
+	$(compiler) $(cflag) libmem/libdata/keyex/keyex.dh.c
+	$(compiler) $(cflag) libmem/libdata/keyex/keyex.ecdhe.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.channel.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.convert.c
@@ -73,8 +68,14 @@ target:
 	$(compiler) $(cflag) libmem/libdata/photo/photo.rotate.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.scale.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.c
+	$(compiler) $(cflag) libmem/libdata/search/search.bm.c
+	$(compiler) $(cflag) libmem/libdata/search/search.kmp.c
+	$(compiler) $(cflag) libmem/libdata/search/search.rough.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.gnome.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.quick.c
+	$(compiler) $(cflag) libmem/libdata/tran/tran.cosine.c
+	$(compiler) $(cflag) libmem/libdata/tran/tran.fourier.c
+	$(compiler) $(cflag) libmem/libdata/tran/tran.laplace.c
 	$(compiler) $(cflag) libmem/libdata/qrcode/qrcode.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
@@ -105,6 +106,11 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmem/libfmt/file.c
+	$(compiler) $(cflag) libmem/liblang/assembly/asm.x64.c
+	$(compiler) $(cflag) libmem/liblang/assembly/asm.arm.c
+	$(compiler) $(cflag) libmem/liblang/program/prog.purec.c
+	$(compiler) $(cflag) libmem/liblang/program/prog.cpp.c
+	$(compiler) $(cflag) libmem/liblang/lang.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.arg.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.ascii.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.base64.c
@@ -121,11 +127,6 @@ target:
 	$(compiler) $(cflag) libmem/libtext/move/move.copy.c
 	$(compiler) $(cflag) libmem/libtext/move/move.swap.c
 	$(compiler) $(cflag) libmem/libtext/text.c
-	$(compiler) $(cflag) libmem/libtran/assembly/asm.x64.c
-	$(compiler) $(cflag) libmem/libtran/assembly/asm.arm.c
-	$(compiler) $(cflag) libmem/libtran/program/prog.purec.c
-	$(compiler) $(cflag) libmem/libtran/program/prog.cpp.c
-	$(compiler) $(cflag) libmem/libtran/tran.c
 	$(compiler) $(cflag) libmem/memory.c
 	$(compiler) $(cflag) libphys/phys.elec.c
 	$(compiler) $(cflag) libphys/phys.mech.c

@@ -9,11 +9,11 @@ int data_delete();
 int file_create(void*,void*);
 int file_delete();
 //
+int lang_create(void*,void*);
+int lang_delete();
+//
 int text_create(void*,void*);
 int text_delete();
-//
-int tran_create(void*,void*);
-int tran_delete();
 //
 int cmp(void*,void*);
 int hexstr2data(u8*,u64*);
@@ -162,10 +162,10 @@ int memory_create(u8* base, u64* p)
 	file_create(base, q);
 	q += 0x100;
 
-	text_create(base, q);
+	lang_create(base, q);
 	q += 0x100;
 
-	tran_create(base, q);
+	text_create(base, q);
 	q += 0x100;
 
 	return q-(u8*)p;
@@ -178,6 +178,6 @@ int memory_delete()
 
 	text_delete();
 
-	tran_delete();
+	lang_delete();
 	return 0;
 }
