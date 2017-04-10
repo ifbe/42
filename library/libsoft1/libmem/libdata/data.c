@@ -65,6 +65,46 @@ static int data_cd(u8* p)
 		algorithm = 0;
 	}
 
+	//crypt
+	else if(cmp(p, "dsa") == 0)
+	{
+		algorithm = 6;
+	}
+	else if(cmp(p, "rsa") == 0)
+	{
+		algorithm = 7;
+	}
+	else if(cmp(p, "des") == 0)
+	{
+		algorithm = 8;
+	}
+	else if(cmp(p, "aes") == 0)
+	{
+		algorithm = 9;
+	}
+
+	//encode
+	else if(cmp(p, "base64") == 0)
+	{
+		algorithm = 1;
+	}
+	else if(cmp(p, "pem") == 0)
+	{
+		algorithm = 1;
+	}
+	else if(cmp(p, "x509") == 0)
+	{
+		algorithm = 1;
+	}
+	else if(cmp(p, "barcode") == 0)
+	{
+		algorithm = 1;
+	}
+	else if(cmp(p, "qrcode") == 0)
+	{
+		algorithm = 1;
+	}
+
 	//hash
 	else if(cmp(p, "md5") == 0)
 	{
@@ -87,22 +127,14 @@ static int data_cd(u8* p)
 		algorithm = 5;
 	}
 
-	//crypt
-	else if(cmp(p, "dsa") == 0)
+	//search
+	else if(cmp(p, "bm") == 0)
 	{
-		algorithm = 6;
+		algorithm = 14;
 	}
-	else if(cmp(p, "rsa") == 0)
+	else if(cmp(p, "kmp") == 0)
 	{
-		algorithm = 7;
-	}
-	else if(cmp(p, "des") == 0)
-	{
-		algorithm = 8;
-	}
-	else if(cmp(p, "aes") == 0)
-	{
-		algorithm = 9;
+		algorithm = 15;
 	}
 
 	//sort
@@ -129,16 +161,6 @@ static int data_cd(u8* p)
 	else if(cmp(p, "select") == 0)
 	{
 		algorithm = 13;
-	}
-
-	//search
-	else if(cmp(p, "bm") == 0)
-	{
-		algorithm = 14;
-	}
-	else if(cmp(p, "kmp") == 0)
-	{
-		algorithm = 15;
 	}
 
 	//

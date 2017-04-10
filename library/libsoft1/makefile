@@ -76,7 +76,11 @@ target:
 	$(compiler) $(cflag) libmem/libdata/tran/tran.cosine.c
 	$(compiler) $(cflag) libmem/libdata/tran/tran.fourier.c
 	$(compiler) $(cflag) libmem/libdata/tran/tran.laplace.c
-	$(compiler) $(cflag) libmem/libdata/qrcode/qrcode.c
+	$(compiler) $(cflag) libmem/libdata/encode/encode.base64.c
+	$(compiler) $(cflag) libmem/libdata/encode/encode.pem.c
+	$(compiler) $(cflag) libmem/libdata/encode/encode.x509.c
+	$(compiler) $(cflag) libmem/libdata/encode/encode.barcode.c
+	$(compiler) $(cflag) libmem/libdata/encode/encode.qrcode.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
@@ -113,12 +117,10 @@ target:
 	$(compiler) $(cflag) libmem/liblang/lang.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.arg.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.ascii.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.base64.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.bigint.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.file.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.net.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.num.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.pem.c
+	$(compiler) $(cflag) libmem/libtext/conv/conv.url.c
 	$(compiler) $(cflag) libmem/libtext/conv/conv.utf8.c
 	$(compiler) $(cflag) libmem/libtext/count/count.item.c
 	$(compiler) $(cflag) libmem/libtext/count/count.line.c

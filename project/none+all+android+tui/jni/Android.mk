@@ -146,6 +146,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
 	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
+	library/libsoft1/libmem/libdata/encode/encode.base64.c \
+	library/libsoft1/libmem/libdata/encode/encode.pem.c \
+	library/libsoft1/libmem/libdata/encode/encode.x509.c \
+	library/libsoft1/libmem/libdata/encode/encode.barcode.c \
+	library/libsoft1/libmem/libdata/encode/encode.qrcode.c \
 	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
 	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
 	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
@@ -172,7 +177,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/photo/photo.c \
 	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
 	library/libsoft1/libmem/libdata/sort/sort.quick.c \
-	library/libsoft1/libmem/libdata/qrcode/qrcode.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
@@ -209,12 +213,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/liblang/lang.c \
 	library/libsoft1/libmem/libtext/conv/conv.arg.c \
 	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
-	library/libsoft1/libmem/libtext/conv/conv.base64.c \
 	library/libsoft1/libmem/libtext/conv/conv.bigint.c \
 	library/libsoft1/libmem/libtext/conv/conv.file.c \
-	library/libsoft1/libmem/libtext/conv/conv.net.c \
 	library/libsoft1/libmem/libtext/conv/conv.num.c \
-	library/libsoft1/libmem/libtext/conv/conv.pem.c \
+	library/libsoft1/libmem/libtext/conv/conv.url.c \
 	library/libsoft1/libmem/libtext/conv/conv.utf8.c \
 	library/libsoft1/libmem/libtext/count/count.item.c \
 	library/libsoft1/libmem/libtext/count/count.line.c \
