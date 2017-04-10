@@ -52,6 +52,17 @@ target:
 	$(compiler) $(cflag) libmem/libdata/draw/draw.ttf.c
 	$(compiler) $(cflag) libmem/libdata/dsp/dsp.dct.c
 	$(compiler) $(cflag) libmem/libdata/dsp/dsp.fft.c
+	$(compiler) $(cflag) libmem/libdata/find/find.bm.c
+	$(compiler) $(cflag) libmem/libdata/find/find.kmp.c
+	$(compiler) $(cflag) libmem/libdata/find/find.rough.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.crc8.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.crc16.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.crc32.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.md5.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.sha1.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.sha256.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.sha512.c
+	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
 	$(compiler) $(cflag) libmem/libdata/key/key.dh.c
 	$(compiler) $(cflag) libmem/libdata/key/key.ecdhe.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
@@ -62,14 +73,8 @@ target:
 	$(compiler) $(cflag) libmem/libdata/photo/photo.rotate.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.scale.c
 	$(compiler) $(cflag) libmem/libdata/photo/photo.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc8.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc16.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc32.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.md5.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha1.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha256.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha512.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.gnome.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.quick.c
 	$(compiler) $(cflag) libmem/libdata/qrcode/qrcode.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
@@ -113,13 +118,8 @@ target:
 	$(compiler) $(cflag) libmem/libtext/count/count.line.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.cmp.c
 	$(compiler) $(cflag) libmem/libtext/diff/diff.wild.c
-	$(compiler) $(cflag) libmem/libtext/find/find.bm.c
-	$(compiler) $(cflag) libmem/libtext/find/find.kmp.c
-	$(compiler) $(cflag) libmem/libtext/find/find.rough.c
 	$(compiler) $(cflag) libmem/libtext/move/move.copy.c
 	$(compiler) $(cflag) libmem/libtext/move/move.swap.c
-	$(compiler) $(cflag) libmem/libtext/sort/sort.gnome.c
-	$(compiler) $(cflag) libmem/libtext/sort/sort.quick.c
 	$(compiler) $(cflag) libmem/libtext/text.c
 	$(compiler) $(cflag) libmem/libtran/assembly/asm.x64.c
 	$(compiler) $(cflag) libmem/libtran/assembly/asm.arm.c

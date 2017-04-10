@@ -5,6 +5,8 @@
 //
 void md5sum(void*, void*, int);
 void sha1sum(void*, void*, int);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 //
 int startfile(u8*);
 int stopfile(u64);
@@ -41,7 +43,7 @@ static int data_cd(u8* p)
 {
 	int fd;
 	int ret;
-
+/*
 	//open
 	fd = startfile(p);
 	if(fd <= 0)return -1;
@@ -50,13 +52,97 @@ static int data_cd(u8* p)
 	ret = readfile(fd, datahome, 0, 0x100000);
 	if(ret < 0)return 0;
 
-	//close
-	stopfile(fd);
-
 	//.......
 	explain_data(datahome, ret);
 
+	//close
+	stopfile(fd);
+*/
+
+	//..
+	if(cmp(p, "..") == 0)
+	{
+		algorithm = 0;
+	}
+
+	//hash
+	else if(cmp(p, "md5") == 0)
+	{
+		algorithm = 1;
+	}
+	else if(cmp(p, "sha1") == 0)
+	{
+		algorithm = 2;
+	}
+	else if(cmp(p, "sha256") == 0)
+	{
+		algorithm = 3;
+	}
+	else if(cmp(p, "sha384") == 0)
+	{
+		algorithm = 4;
+	}
+	else if(cmp(p, "sha512") == 0)
+	{
+		algorithm = 5;
+	}
+
+	//crypt
+	else if(cmp(p, "dsa") == 0)
+	{
+		algorithm = 6;
+	}
+	else if(cmp(p, "rsa") == 0)
+	{
+		algorithm = 7;
+	}
+	else if(cmp(p, "des") == 0)
+	{
+		algorithm = 8;
+	}
+	else if(cmp(p, "aes") == 0)
+	{
+		algorithm = 9;
+	}
+
+	//sort
+	else if(cmp(p, "bubble") == 0)
+	{
+		algorithm = 10;
+	}
+	else if(cmp(p, "gnome") == 0)
+	{
+		algorithm = 11;
+	}
+	else if(cmp(p, "heap") == 0)
+	{
+		algorithm = 12;
+	}
+	else if(cmp(p, "merge") == 0)
+	{
+		algorithm = 13;
+	}
+	else if(cmp(p, "quick") == 0)
+	{
+		algorithm = 13;
+	}
+	else if(cmp(p, "select") == 0)
+	{
+		algorithm = 13;
+	}
+
+	//search
+	else if(cmp(p, "bm") == 0)
+	{
+		algorithm = 14;
+	}
+	else if(cmp(p, "kmp") == 0)
+	{
+		algorithm = 15;
+	}
+
 	//
+	say("%d\n", algorithm);
 	return 0;
 }
 static int data_read(u8* addr)

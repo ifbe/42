@@ -87,6 +87,78 @@ static int combo = 0;
 
 
 
+//--------------------------------------------------------
+void arterycreate(u8* type, u8* addr)
+{
+	//register new workers and configure inner data
+	u8* p;
+	int j;
+	if(type != 0)return;
+	if( (type == 0)&&(worker != 0) )return;
+
+	//where
+	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
+	worker=(struct element*)(addr+0x100000);
+	dirhome = addr+0x200000;
+	datahome= addr+0x300000;
+
+	//create
+	p = addr+0x100100;
+	p += flow_create(addr, p);
+	p += math_create(addr, p);
+	p += memory_create(addr, p);
+	p += phys_create(addr, p);
+	p += system_create(addr, p);
+	p += wire_create(addr, p);
+	theone = 0;
+
+	//
+	//say("[8,c):createed artery\n");
+}
+void arterydelete()
+{
+	//
+	//say("[8,c):deleteing artery\n");
+
+	//
+	wire_delete();
+	system_delete();
+	phys_delete();
+	memory_delete();
+	math_delete();
+	flow_delete();
+
+	//
+	worker = 0;
+	dirhome = 0;
+	datahome = 0;
+}
+int arterystart(int src, int dst)
+{
+	if(dst == 0)	//toggle passthrough
+	{
+	}
+	else		//dumplicate, configure
+	{
+	}
+	return 0;
+}
+int arterystop(int haha)
+{
+	if(haha == 0)	//nolonger passthrough
+	{
+	}
+	else		//deconfigure, cleanup
+	{
+	}
+	return 0;
+}
+//--------------------------------------------------------
+
+
+
+
+//--------------------------------------------------------
 int arterylist(u8* p)
 {
 	int j;
@@ -145,91 +217,7 @@ int arterychoose(u8* p)
 	worker[0].id = worker[theone].id;
 	return 0;
 }
-
-
-
-
 int arteryread(u8* p)
-{
-	if(theone > 0)worker[theone].read(p);
-	else say("@arteryread\n");
-	return 0;
-}
-int arterywrite(u8* p)
-{
-	if(theone > 0)worker[theone].write(p);
-	else say("@arterywrite\n");
-	return 0;
-}
-
-
-
-
-int arterystart(u8* p)
-{
-	if(theone > 0)worker[theone].start(p);
-	else say("@arterystart\n");
-	return 0;
-}
-int arterystop(u8* p)
-{
-	if(theone > 0)worker[theone].stop();
-	else say("@arterystop\n");
-	return 0;
-}
-
-
-
-
-void arterycreate(u8* type, u8* addr)
-{
-	u8* p;
-	int j;
-	if(type != 0)return;
-	if( (type == 0)&&(worker != 0) )return;
-
-	//where
-	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
-	worker=(struct element*)(addr+0x100000);
-	dirhome = addr+0x200000;
-	datahome= addr+0x300000;
-
-	//create
-	p = addr+0x100100;
-	p += flow_create(addr, p);
-	p += math_create(addr, p);
-	p += memory_create(addr, p);
-	p += phys_create(addr, p);
-	p += system_create(addr, p);
-	p += wire_create(addr, p);
-	theone = 0;
-
-	//
-	//say("[8,c):createed artery\n");
-}
-void arterydelete()
-{
-	//
-	//say("[8,c):deleteing artery\n");
-
-	//
-	wire_delete();
-	system_delete();
-	phys_delete();
-	memory_delete();
-	math_delete();
-	flow_delete();
-
-	//
-	worker = 0;
-	dirhome = 0;
-	datahome = 0;
-}
-
-
-
-
-int arteryprompt()
 {
 	if(shutup == 1)return 0;
 
@@ -239,19 +227,12 @@ int arteryprompt()
 	shutup = 1;
 	return 1;
 }
-int arterycommand(u8* buffer)
+int arterywrite(u8* buffer)
 {
+	//------------------------------------------------------
+	u8* argv[8];
 	int ret;
 	int argc;
-	u8* argv[8];
-	//say("command=%s\n",buffer);
-	//printmemory(buffer,16);
-
-
-
-
-//------------------------------------------------------------
-	//error
 	if(buffer == 0)return 0;
 
 	//passthrough?
@@ -281,13 +262,13 @@ int arterycommand(u8* buffer)
 
 
 
-//------------------------------------------------------------
-	//print
+	//------------------------------------------------------
 	ret = 0;
 	for(argc=0;argc<255;argc++)
 	{
 		if(buffer[argc] == 0)break;
 
+		//print
 		if( (buffer[argc] == 0x8) | (buffer[argc] == 0x7f) )
 		{
 			say("\b \b");
@@ -325,112 +306,58 @@ int arterycommand(u8* buffer)
 
 
 
-//------------------------------------------------------------
+	//---------------------------------------------------
 	//convert
 	buf2arg(cmd, 256, &argc, argv);
 	if(argc==0)return 0;
 
 	//"enter key"
-	if(argv[0]==0)goto finish;
+	if(argv[0]==0)return 0;
 
 	//"#"
 	if(argv[0][0]=='#')return 0;
 
 	//q
-	if(argv[0][0]=='q')
+	if( (argv[0][0]=='q') | (cmp(argv[0],"exit") == 0) )
 	{
 		eventwrite(0,0,0,0);
 		return 0;
 	}
 
-	//exit
-	ret=cmp(argv[0],"exit");
-	if(ret==0)
+	//feed child
+	if(theone != 0)
 	{
-		eventwrite(0,0,0,0);
-		return 0;
-	}
+		arterychoose(argv[0]);
 
-	//'help'
-	ret=cmp(argv[0],"help");
-	if(ret==0)
-	{
-		//"create","destory","start","stop"
-		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-		say("create ?	     =create=make=fabricate\n");
-		say("delete ?	     =destory=smash=wreck\n");
-		say("start ?	    =open=mount=enter\n");
-		say("stop ?	     =close=unmount=leave\n");
-
-		//"observe","change","get","put"
-		say("ls ?	       =list=summary=view=check\n");
-		say("cd ?	       =choose=into=switch=clap\n");
-		say("read ?	     =load=get=eat=copy\n");
-		say("write ?	    =store=put=spit=paste\n");
-		say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
-
-		goto finish;
+		if(ncmp(argv[0], "...", 3) == 0)theone = 0;
+		return 1;
 	}
 
 
 
 
-//------------------------------------------------------------
-	//"create","destory","start","stop"
-	ret=cmp(argv[0] , "create");
-	if(ret==0)
-	{
-		//arterycreate(argv[1]);
-		goto finish;
-	}
-	ret=cmp(argv[0] , "delete");
-	if(ret==0)
-	{
-		//arterydelete(argv[1]);
-		goto finish;
-	}
-	ret=cmp(argv[0] , "start");
-	if(ret==0)
-	{
-		arterystart(argv[1]);
-		goto finish;
-	}
-	ret=cmp(argv[0] , "stop");
-	if(ret==0)
-	{
-		arterystop(argv[1]);
-		goto finish;
-	}
+	//---------------------------------------------------
+	//feed self
+	if(cmp(argv[0], "create") == 0)arterylist(0);
+	else if(cmp(argv[0], "delete") == 0)arterylist(0);
+	else if(cmp(argv[0], "start") == 0)arterylist(0);
+	else if(cmp(argv[0], "stop") == 0)arterylist(0);
+	else if(cmp(argv[0], "ls") == 0)arterylist(0);
+	else if(cmp(argv[0], "cd") == 0)arterylist(0);
+	else if(cmp(argv[0], "read") == 0)arterylist(0);
+	else if(cmp(argv[0], "write") == 0)arterylist(0);
 
-	//"observe","change","get","put"
-	ret=cmp(argv[0] , "ls" );
-	if(ret==0)
+	//search somewhere to go
+	for(ret=1;ret<256;ret++)
 	{
-		arterylist(argv[1]);
-		goto finish;
+		if(cmp(argv[0], &worker[ret].id) == 0)
+		{
+			theone = ret;
+			worker[0].type = 0;
+			worker[0].id = worker[theone].id;
+			break;
+		}
 	}
-	ret=cmp(argv[0] , "cd" );
-	if(ret==0)
-	{
-		arterychoose(argv[1]);
-		goto finish;
-	}
-	ret=cmp(argv[0] , "read" );
-	if(ret==0)
-	{
-		arteryread(argv[1]);
-		goto finish;
-	}
-	ret=cmp(argv[0] , "write" );  //dangerous
-	if(ret==0)
-	{
-		arterywrite(argv[1]);
-		goto finish;
-	}
-
-	//
-	arterychoose(argv[0]);
-
-finish:
 	return 1;
 }
+//--------------------------------------------------------

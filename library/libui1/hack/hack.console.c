@@ -9,7 +9,7 @@ void backgroundcolor(void*,
 	u32);
 //
 void charactercommand(u8*);
-void arterycommand(u8*);
+void arterywrite(u8*);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -173,7 +173,7 @@ static void console_write(struct event* ev)
 			else
 			{
 				say("%s\n",buffer);
-				arterycommand(buffer);
+				arterywrite(buffer);
 
 				for(bufcount=0;bufcount<127;bufcount++) buffer[bufcount]=0;
 				bufcount=0;

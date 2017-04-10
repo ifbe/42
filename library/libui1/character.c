@@ -62,8 +62,8 @@ void stl_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-int arterycommand(void*);
-int arteryprompt();
+int arteryread();
+int arterywrite(void*);
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
 u32 getrandom();
@@ -132,6 +132,7 @@ static u32 vkbd=0;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void charactercreate(u8* type, u8* addr)
 {
+	//register new workers and configure inner data
 	int i;
 	u8* temp;
 	if(type!=0)return;
@@ -300,14 +301,9 @@ void characterdelete()
 	uinode = 0;
 	uidata = 0;
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int characterstart(int j)
 {
+	//dumplicate existing workers and configure inner data
 	worker[now].start();
 	return 0;
 }
@@ -363,10 +359,24 @@ int characterchoose(u8* p)
 {
 	return 0;
 }
+void characterread()
+{
+	int j;
+	for(j=0;j<16;j++)
+	{
+		if(win[j].fmt == 0)break;
+		if(win[j].fmt == 0x6563696f76)continue;
 
-
-
-
+		if(win[j].fmt == 0x696c63)arteryread();
+		else
+		{
+			worker[now].read(&win[j]);
+			if(menu > 0)worker[0].read(&win[j]);
+			if(rost > 0)worker[1].read(&win[j]);
+			if(vkbd > 0)worker[2].read(&win[j]);
+		}
+	}
+}
 void characterwrite(u64* p)
 {
 	int x;
@@ -374,7 +384,7 @@ void characterwrite(u64* p)
 	//cmd
 	if( (p[1] == 0x64626b)&&(p[2] == 0)&&(win[2].fmt == 0x696c63) )
 	{
-		arterycommand(p);
+		arterywrite(p);
 		return;
 	}
 
@@ -417,29 +427,12 @@ void characterwrite(u64* p)
 		worker[now].write(p);
 	}
 }
-void characterread()
-{
-	int j;
-	for(j=0;j<16;j++)
-	{
-		if(win[j].fmt == 0)break;
-		if(win[j].fmt == 0x6563696f76)continue;
-
-		if(win[j].fmt == 0x696c63)arteryprompt();
-		else
-		{
-			worker[now].read(&win[j]);
-			if(menu > 0)worker[0].read(&win[j]);
-			if(rost > 0)worker[1].read(&win[j]);
-			if(vkbd > 0)worker[2].read(&win[j]);
-		}
-	}
-}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int charactercommand(u8* p)
 {
 	int j,k,ret;
@@ -499,8 +492,8 @@ int charactercommand(u8* p)
 	}
 
 notfound:
-	ret = arterycommand(p);
-	ret = arterycommand("\n");
+	ret = arterywrite(p);
+	ret = arterywrite("\n");
 	return 0;
 
 found:

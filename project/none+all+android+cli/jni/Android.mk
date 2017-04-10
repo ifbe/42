@@ -148,6 +148,17 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
 	library/libsoft1/libmem/libdata/dsp/dsp.dct.c \
 	library/libsoft1/libmem/libdata/dsp/dsp.fft.c \
+	library/libsoft1/libmem/libdata/find/find.bm.c \
+	library/libsoft1/libmem/libdata/find/find.kmp.c \
+	library/libsoft1/libmem/libdata/find/find.rough.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
+	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
+	library/libsoft1/libmem/libdata/hash/hash.md5.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha1.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
+	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
+	library/libsoft1/libmem/libdata/hash/hash.string.c \
 	library/libsoft1/libmem/libdata/key/key.dh.c \
 	library/libsoft1/libmem/libdata/key/key.ecdhe.c \
 	library/libsoft1/libmem/libdata/photo/photo.blur.c \
@@ -158,14 +169,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/photo/photo.rotate.c \
 	library/libsoft1/libmem/libdata/photo/photo.scale.c \
 	library/libsoft1/libmem/libdata/photo/photo.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
-	library/libsoft1/libmem/libdata/hash/hash.md5.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha1.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
-	library/libsoft1/libmem/libdata/hash/hash.string.c \
+	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
+	library/libsoft1/libmem/libdata/sort/sort.quick.c \
 	library/libsoft1/libmem/libdata/qrcode/qrcode.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
@@ -210,13 +215,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libtext/diff/diff.cmp.c \
 	library/libsoft1/libmem/libtext/diff/diff.diff.c \
 	library/libsoft1/libmem/libtext/diff/diff.wild.c \
-	library/libsoft1/libmem/libtext/find/find.bm.c \
-	library/libsoft1/libmem/libtext/find/find.kmp.c \
-	library/libsoft1/libmem/libtext/find/find.rough.c \
 	library/libsoft1/libmem/libtext/move/move.copy.c \
 	library/libsoft1/libmem/libtext/move/move.swap.c \
-	library/libsoft1/libmem/libtext/sort/sort.gnome.c \
-	library/libsoft1/libmem/libtext/sort/sort.quick.c \
 	library/libsoft1/libmem/libtext/text.c \
 	library/libsoft1/libmem/libtran/assembly/asm.x64.c \
 	library/libsoft1/libmem/libtran/assembly/asm.arm64.c \
