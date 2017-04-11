@@ -821,31 +821,38 @@ double sketchpad(struct mathnode* node,double x,double y)
 
 
 
-static void calc_list(u8* p)
+static int calc_read(u8* p)
 {
+	return 0;
 }
-static void calc_choose(u8* p)
+static int calc_write(u8* p)
 {
-        double ans; 
-        u8* postfix = datahome;
+	double ans; 
+	u8* postfix = datahome;
 
-        infix2postfix(p, postfix);
-        say("postfix:%s\n", postfix);
+	infix2postfix(p, postfix);
+	say("postfix:%s\n", postfix);
 
-        ans = calculator(postfix, 0, 0);
-        say("answer:%lf\n", ans);
+	ans = calculator(postfix, 0, 0);
+	say("answer:%lf\n", ans);
+
+	return 0;
 }
-static void calc_read(u8* p)
+static int calc_list(u8* p)
 {
+	return 0;
 }
-static void calc_write(u8* p)
+static int calc_choose(u8* p)
 {
+	return 0;
 }
-static void calc_start(u8* p)
+static int calc_start(u8* p)
 {
+	return 0;
 }
-static void calc_stop(u8* p)
+static int calc_stop(u8* p)
 {
+	return 0;
 }
 void calc_create(u8* softaddr, u64* p)
 {

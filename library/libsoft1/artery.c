@@ -335,7 +335,7 @@ int arterywrite(u8* buffer)
 	//feed child
 	if(theone != 0)
 	{
-		arterychoose(argv[0]);
+		worker[theone].write(argv[0]);
 
 		if(ncmp(argv[0], "...", 3) == 0)theone = 0;
 		return 1;

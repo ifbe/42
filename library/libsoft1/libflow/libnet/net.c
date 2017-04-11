@@ -255,35 +255,11 @@ fail:
 
 
 
-int net_read()
+int netmgr_read()
 {
 	return 0;
 }
-int net_write()
-{
-	return 0;
-}
-int net_list(u8* p)
-{
-	int j;
-	u64 fd=0;
-	if(p==0)
-	{
-		for(j=0;j<4096;j++)
-		{
-			if(obj[j].type_sock == 0)continue;
-
-			say("%d:	%llx,%llx\n",
-				j, obj[j].type_sock, obj[j].type_road);
-		}
-		return 0;
-	}
-
-	decstr2data(p, &fd);
-	say("%llx,%llx\n", obj[fd].type_sock, obj[fd].type_road);
-	return 0;
-}
-int net_choose(u8* p)
+int netmgr_write(u8* p)
 {
 	//
 	int ret;
@@ -431,7 +407,31 @@ int net_choose(u8* p)
 	obj[fd].stage1 = 0;
 	return fd;
 }
-int net_stop(u8* p)
+int netmgr_list(u8* p)
+{
+	int j;
+	u64 fd=0;
+	if(p==0)
+	{
+		for(j=0;j<4096;j++)
+		{
+			if(obj[j].type_sock == 0)continue;
+
+			say("%d:	%llx,%llx\n",
+				j, obj[j].type_sock, obj[j].type_road);
+		}
+		return 0;
+	}
+
+	decstr2data(p, &fd);
+	say("%llx,%llx\n", obj[fd].type_sock, obj[fd].type_road);
+	return 0;
+}
+int netmgr_choose(u8* p)
+{
+	return 0;
+}
+int netmgr_stop(u8* p)
 {
 	int j;
 	u64 fd=0;
@@ -450,16 +450,16 @@ int net_stop(u8* p)
 	//say("[%d]out\n",fd);
 	return 0;
 }
-int net_start(u64 fd)
+int netmgr_start(u64 fd)
 {
 	//say("[%d]in\n",fd);
 	return 0;
 }
-int net_delete()
+int netmgr_delete()
 {
 	return 0;
 }
-int net_create(void* w, u64* p)
+int netmgr_create(void* w, u64* p)
 {
 	obj = w + 0x000000;
 	fs = w + 0x100000;
@@ -468,12 +468,12 @@ int net_create(void* w, u64* p)
 
 	p[0]=0x776f6c66;
 	p[1]=0x74656e;
-	p[2]=(u64)net_start;
-	p[3]=(u64)net_stop;
-	p[4]=(u64)net_list;
-	p[5]=(u64)net_choose;
-	p[6]=(u64)net_read;
-	p[7]=(u64)net_write;
+	p[2]=(u64)netmgr_start;
+	p[3]=(u64)netmgr_stop;
+	p[4]=(u64)netmgr_list;
+	p[5]=(u64)netmgr_choose;
+	p[6]=(u64)netmgr_read;
+	p[7]=(u64)netmgr_write;
 
 	return 0x100;
 }

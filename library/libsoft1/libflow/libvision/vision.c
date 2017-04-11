@@ -1,7 +1,7 @@
 #define u64 unsigned long long
 //
-void startvision();
-void stopvision();
+int startvision();
+int stopvision();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -17,26 +17,29 @@ void vision_explain(u64* p)
 
 
 
-static void vision_list()
+static int vision_list()
 {
+	return 0;
 }
 static int vision_choose()
 {
 	return 0;
 }
-static void vision_read()
+static int vision_read()
 {
+	return 0;
 }
-static void vision_write()
+static int vision_write()
 {
+	return 0;
 }
-static void vision_start()
+static int vision_start()
 {
-	startvision();
+	return startvision();
 }
-static void vision_stop()
+static int vision_stop()
 {
-	stopvision();
+	return stopvision();
 }
 void vision_create(void* w, u64* p)
 {

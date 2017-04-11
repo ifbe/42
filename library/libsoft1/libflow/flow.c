@@ -4,8 +4,8 @@
 #define u64 unsigned long long
 int motion_create(void*,void*);
 int motion_delete();
-int net_create(void*,void*);
-int net_delete();
+int netmgr_create(void*,void*);
+int netmgr_delete();
 int sound_create(void*,void*);
 int sound_delete();
 int vision_create(void*,void*);
@@ -56,7 +56,7 @@ int flow_create(char* world,u64* p)
 	motion_create(world, q);
 	q+=0x100;
 
-	net_create(world, q);
+	netmgr_create(world, q);
 	q+=0x100;
 
 	sound_create(world, q);
@@ -71,5 +71,7 @@ int flow_delete()
 {
 	vision_delete();
 	sound_delete();
+	netmgr_delete();
+	motion_delete();
 	return 0;
 }

@@ -21,12 +21,11 @@ static u8* datahome;
 
 
 
-//
-static int text_list(u8* arg1)
+static int text_read()
 {
 	return 0;
 }
-static int text_choose(u8* arg)
+static int text_write(u8* arg)
 {
 	int j;
 	if(arg == 0)return 0;
@@ -42,15 +41,15 @@ static int text_choose(u8* arg)
 
 	return 0;
 }
-static int text_read(u8* mem, u8* file, u64 addr, u64 count)
+static int text_list()
 {
 	return 0;
 }
-static int text_write(u8* mem, u8* file, u64 addr, u64 count)
+static int text_choose()
 {
 	return 0;
 }
-static int text_start(u8* p)
+static int text_start()
 {
 	return 0;
 }

@@ -35,11 +35,11 @@ void explain_data(u8* buf, int len)
 
 
 
-static int data_ls()
+static int data_read()
 {
 	return 0;
 }
-static int data_cd(u8* p)
+static int data_write(u8* p)
 {
 	int fd;
 	int ret;
@@ -167,11 +167,11 @@ static int data_cd(u8* p)
 	say("%d\n", algorithm);
 	return 0;
 }
-static int data_read(u8* addr)
+static int data_ls()
 {
 	return 0;
 }
-static int data_write()
+static int data_cd()
 {
 	return 0;
 }

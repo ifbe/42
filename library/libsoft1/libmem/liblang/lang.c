@@ -28,12 +28,11 @@ static u8* datahome;
 
 
 
-//
-static int lang_list(u8* p)
+static int lang_read()
 {
 	return 0;
 }
-static int lang_choose(u8* p)
+static int lang_write(u8* p)
 {
 	int ret;
 
@@ -42,13 +41,14 @@ static int lang_choose(u8* p)
 
 	purec_start();
 	ret = purec_read(datahome, ret, 0, 0);
+
 	return ret;
 }
-static int lang_read()
+static int lang_list()
 {
 	return 0;
 }
-static int lang_write()
+static int lang_choose()
 {
 	return 0;
 }

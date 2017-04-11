@@ -7,8 +7,11 @@ void printstring(void*,
         void*, u32 fgcolor, u32 bgcolor);
 void backgroundcolor(void*, u32);
 //
-int net_choose(void*);
-void say(char*,...);
+int netmgr_read();
+int netmgr_write(void*);
+//
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -121,7 +124,7 @@ static void browse_write(struct event* ev)
 	{
 		if(key == 0xd)
 		{
-			net_choose(pl->data);
+			netmgr_write(pl->data);
 			for(;count>=0;count--)pl->data[count] = 0;
 			count = 0;
 		}

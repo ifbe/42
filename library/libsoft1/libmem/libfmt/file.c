@@ -172,23 +172,12 @@ int mount_what(u8* buf, int len)
 
 
 
-//
-static int file_ls()
+static int file_read(u8* addr)
 {
-	int j;
-	u8* p8;
-	u64* p64;
-	for(j=0;j<0x10;j++)
-	{
-		p8 = dirhome + j*0x80;
-		p64 = (void*)p8;
-		if(p64[0] == 0)break;
-
-		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
-	}
+	printmemory(datahome, 0x200);
 	return 0;
 }
-static int file_cd(u8* p)
+static int file_write(u8* p)
 {
 	int fd;
 	int ret;
@@ -208,12 +197,22 @@ static int file_cd(u8* p)
 	ret = mount_what(datahome, 0x8000);
 	return 0;
 }
-static int file_read(u8* addr)
+static int file_ls()
 {
-	printmemory(datahome, 0x200);
+	int j;
+	u8* p8;
+	u64* p64;
+	for(j=0;j<0x10;j++)
+	{
+		p8 = dirhome + j*0x80;
+		p64 = (void*)p8;
+		if(p64[0] == 0)break;
+
+		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
+	}
 	return 0;
 }
-static int file_write()
+static int file_cd()
 {
 	return 0;
 }

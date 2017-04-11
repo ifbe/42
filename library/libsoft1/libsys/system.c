@@ -26,7 +26,7 @@ static int system_write()
 {
 	return 0;
 }
-static int system_start(u64 type,char* p)
+static int system_start()
 {
 	return 0;
 }
