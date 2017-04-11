@@ -2,7 +2,9 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) libbio/bio.chance.c
 	$(compiler) $(cflag) libbio/bio.c
+	$(compiler) $(cflag) libchem/chem.equation.c
 	$(compiler) $(cflag) libchem/chem.c
 	$(compiler) $(cflag) libflow/libmotion/motion.c
 	$(compiler) $(cflag) libflow/libnet/0.raw/net.eth.c

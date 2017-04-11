@@ -3,6 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+int bio_create(void* world,void* func);
+int bio_delete();
+int chem_create(void* world,void* func);
+int chem_delete();
 int flow_create(void* world,void* func);
 int flow_delete();
 int math_create(void* world,void* func);
@@ -104,6 +108,8 @@ void arterycreate(u8* type, u8* addr)
 
 	//create
 	p = addr+0x100100;
+	p += bio_create(addr, p);
+	p += chem_create(addr, p);
 	p += flow_create(addr, p);
 	p += math_create(addr, p);
 	p += memory_create(addr, p);
@@ -127,6 +133,8 @@ void arterydelete()
 	memory_delete();
 	math_delete();
 	flow_delete();
+	chem_delete();
+	bio_delete();
 
 	//
 	worker = 0;

@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int cmp(void*,void*);
-int hexstr2data(u8*,u64*);
+void chance_create(void*, void*);
+void chance_delete();
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -46,18 +46,18 @@ static int bio_stop()
 {
 	return 0;
 }
-int bio_create(u8* softaddr,u64* p)
+int bio_create(u8* base, u64* p)
 {
 	u8* q;
 
 	//
-	guys = softaddr;
-	fshome = softaddr+0x100000;
-	dirhome = softaddr+0x200000;
-	datahome = softaddr+0x300000;
+	guys = base;
+	fshome = base+0x100000;
+	dirhome = base+0x200000;
+	datahome = base+0x300000;
 
 	//
-	p[0]=0x79726f6d656d;
+	p[0]=0;
 	p[1]=0x6f6962;
 	p[2]=(u64)bio_start;
 	p[3]=(u64)bio_stop;
@@ -66,7 +66,13 @@ int bio_create(u8* softaddr,u64* p)
 	p[6]=(u64)bio_read;
 	p[7]=(u64)bio_write;
 
-	return 0x100;
+	q = (u8*)p;
+	q += 0x100;
+
+	chance_create(base, q);
+	q += 0x100;
+
+	return q-(u8*)p;
 }
 int bio_delete()
 {

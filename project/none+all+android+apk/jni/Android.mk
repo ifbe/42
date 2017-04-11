@@ -82,7 +82,9 @@ LOCAL_SRC_FILES += \
 
 #3.soft1
 LOCAL_SRC_FILES += \
+	library/libsoft1/libbio/bio.chance.c \
 	library/libsoft1/libbio/bio.c \
+	library/libsoft1/libchem/chem.equation.c \
 	library/libsoft1/libchem/chem.c \
 	library/libsoft1/libflow/libmotion/motion.c \
 	library/libsoft1/libflow/libnet/0.raw/net.eth.c \

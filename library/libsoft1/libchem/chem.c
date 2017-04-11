@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int cmp(void*,void*);
-int hexstr2data(u8*,u64*);
+void chemequa_create(void*, void*);
+void chemequa_delete();
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -46,16 +46,18 @@ static int chem_stop()
 {
 	return 0;
 }
-int chem_create(u8* softaddr,u64* p)
+int chem_create(u8* base, u64* p)
 {
-	//
-	guys = softaddr;
-	fshome = softaddr+0x100000;
-	dirhome = softaddr+0x200000;
-	datahome = softaddr+0x300000;
+	u8* q;
 
 	//
-	p[0]=0x79726f6d656d;
+	guys = base;
+	fshome = base+0x100000;
+	dirhome = base+0x200000;
+	datahome = base+0x300000;
+
+	//
+	p[0]=0;
 	p[1]=0x6d656863;
 	p[2]=(u64)chem_start;
 	p[3]=(u64)chem_stop;
@@ -64,7 +66,13 @@ int chem_create(u8* softaddr,u64* p)
 	p[6]=(u64)chem_read;
 	p[7]=(u64)chem_write;
 
-	return 0x100;
+	q = (u8*)p;
+	q += 0x100;
+
+	chemequa_create(base, q);
+	q += 0x100;
+
+	return q-(u8*)p;
 }
 int chem_delete()
 {
