@@ -87,28 +87,42 @@ static u8* datahome = 0;
 #define raw 0x776172		//send raw packet
 #define CHAT 0x54414843		//check, broadcast
 #define chat 0x74616863		//send user msg
-#define HTTP 0x50545448		//parse, reply
-#define http 0x70747468		//req url, get reply
-#define HTTPS 0x5350545448	//parse, reply
-#define https 0x7370747468	//req url, get reply
-#define WS 0x5357		//c 
-#define ws 0x7377		//s
-#define WSS 0x535357		//s
-#define wss 0x737377		//c
+
 #define TLS 0x534c54		//s
 #define tls 0x736c74		//c
 #define SSH 0x485353		//s
 #define ssh 0x687373		//c
 #define PROXY 0x59584f5250	//s
 #define proxy 0x79786f7270	//c
-#define SQL 0x4c5153		//s
-#define sql 0x6c7173		//c
+
+#define HTTP 0x50545448		//parse, reply
+#define http 0x70747468		//req url, get reply
+#define HTTPS 0x5350545448	//parse, reply
+#define https 0x7370747468	//req url, get reply
+#define WS 0x5357		//s 
+#define ws 0x7377		//c
+#define WSS 0x535357		//s
+#define wss 0x737377		//c
+
+#define ED2K 0x4b324445		//s
+#define ed2k 0x6b326465		//c
+#define MAGNET 0x54454e47414d	//s
+#define magnet 0x74656e67616d	//c
+#define TORRENT 0x544e4552524f54	//s
+#define torrent 0x746e6572726f74	//c
+
 #define RDP 0x504452		//s
 #define rdp 0x706472		//c
 #define VNC 0x434e56		//s
 #define vnc 0x636e76		//c
+#define SPICE 0x4543495053	//s
+#define spice 0x6563697073	//c
+
 #define RTMP 0x504d5452		//s
 #define rtmp 0x706d7472		//c
+#define SQL 0x4c5153		//s
+#define sql 0x6c7173		//c
+
 u64 serve_what(int fd, u8* buf, int len)
 {
 	int ret;
