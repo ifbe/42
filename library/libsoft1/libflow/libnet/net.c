@@ -166,15 +166,36 @@ void serve_eth(int fd, u8* buf, int len)
 }
 void serve_udp(int fd, u8* buf, int len)
 {
+	int ret;
 	u64* aa;
 	u64* bb;
 	u8* q = obj[fd].addr_src;
+	u64 type = obj[fd].type_road;
+
+	if(type == hole)
+	{
+		if((buf[0] == 2) && (buf[1] == 0) )
+		{
+			aa = (void*)(obj[fd].addr_src);
+			bb = (void*)buf;
+
+			say("target=%llx\n",bb[0]);
+			aa[0] = bb[0];
+
+			writesocket(fd, "hole\n", 0, 5);
+		}
+
+		printmemory(buf, len);
+		return;
+	}
+
 	say(
 		"[%d.%d.%d.%d:%d]%x,%x\n",
 		q[4],q[5],q[6],q[7],
 		(((int)q[2])<<8) + q[3],
-		buf[0], buf[1]
+		buf[0], buf[1], buf[2], buf[3]
 	);
+
 	if(buf[0] == '1')
 	{
 		aa = (void*)(obj[fd].data);
@@ -191,7 +212,7 @@ void serve_udp(int fd, u8* buf, int len)
 			aa[0] = aa[1] = 0;
 		}
 	}
-	if(buf[0] == '0')
+	else if(buf[0] == '0')
 	{
 		aa = (void*)(obj[fd].data);
 		bb = (void*)(obj[fd].addr_src);
@@ -294,6 +315,8 @@ protocol:
 void network_explain(u64* p)
 {
 	int len;
+	u64 type_sock;
+
 	//u64 why = p[0];
 	u64 what = p[1] & 0xffff;
 	u64 where = p[2];
@@ -307,33 +330,45 @@ void network_explain(u64* p)
 	}
 	else if(what == 0x406e)
 	{
-		//read socket
-		len = readsocket(where, datahome, 0, 0x100000);
-		if(len == 0)goto pass;		//sticky
-		if(len < 0)goto fail;		//wrong
-		datahome[len] = 0;
-		//say("%x\n",obj[where].type_sock);
+		type_sock = obj[where].type_sock;
+		//say("%x\n",type_sock);
 /*
 		//bluetooth
-		if(obj[where].type_sock == 'B')
+		if(type_sock == 'B')
 		{
 			serve_bt(where, datahome, len);
 			goto pass;
 		}
 */
 		//raw
-		if(obj[where].type_sock == 'R')
+		if(type_sock == 'R')
 		{
+			len = readsocket(where, datahome, 0, 0x100000);
+			if(len == 0)goto pass;		//sticky
+			if(len < 0)goto fail;		//wrong
+			datahome[len] = 0;
+
 			serve_eth(where, datahome, len);
 			goto pass;
 		}
 
 		//udp
-		if(obj[where].type_sock == 'U')
+		if( (type_sock == 'U')|(type_sock == 'u') )
 		{
+		while(1)
+		{
+			len = readsocket(where, datahome, 0, 0x100000);
+			if(len <= 0)goto pass;		//sticky
+
 			serve_udp(where, datahome, len);
-			goto pass;
 		}
+		}
+
+		//read socket
+		len = readsocket(where, datahome, 0, 0x100000);
+		if(len == 0)goto pass;		//sticky
+		if(len < 0)goto fail;		//wrong
+		datahome[len] = 0;
 
 		//serve socket
 		what = serve_tcp(where, datahome, len);
@@ -434,8 +469,19 @@ int netmgr_write(u8* p)
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
+	}
+	else if(ncmp(type, "HOLE", 4) == 0)	//p2p client
+	{
+		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(type, "hole", 4) == 0)	//p2p client
+	{
+		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
 
-		writesocket(fd, url+1, 0, 1);
+		writesocket(fd, url+1, 0, 16);
+		tmp = hole;
 	}
 	else if(ncmp(type, "TFTP", 3) == 0)	//tftp server
 	{

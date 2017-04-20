@@ -369,7 +369,7 @@ int startsocket(char* addr, int port, int type)
 		haha->sin_family = AF_INET;
 		haha->sin_addr.s_addr = inet_addr(addr);
 		haha->sin_port = htons(port);
-
+/*
 		//
 		ret = connect(fd, (void*)haha, sizeof(struct sockaddr_in) );
 		if(ret < 0)
@@ -377,7 +377,7 @@ int startsocket(char* addr, int port, int type)
 			printf("connect error\n");
 			return 0;
 		}
-
+*/
 		//
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
