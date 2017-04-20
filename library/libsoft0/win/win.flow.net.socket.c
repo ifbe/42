@@ -47,8 +47,9 @@ struct object
 	u8 overlap[0x80];	//(only per io data)
 };
 static struct object* obj;
-//
 static HANDLE iocpfd;
+//
+static SOCKET btlisten;
 static SOCKET rawlisten;
 static SOCKET tcplisten;
 static SOCKET udplisten;
@@ -217,7 +218,7 @@ int stopsocket(u64 fd)
 u64 startsocket(char* addr, int port, int type)
 {
 	int ret;
-	if(type == 'r')		//raw
+	if(type == 'R')		//RAW
 	{
 		rawlisten = WSASocket(
 			PF_INET, SOCK_RAW, IPPROTO_IP,
@@ -281,7 +282,12 @@ u64 startsocket(char* addr, int port, int type)
 		obj[rawlisten].type_road = 0;
 		return rawlisten/4;
 	}
-	else if(type == 'U')	//udp server
+	else if(type == 'r')	//raw
+	{
+		SOCKET fd;
+		return fd/4;
+	}
+	else if(type == 'U')	//UDP
 	{
 		int ret;
 		int addrlen = sizeof(SOCKADDR_IN);
@@ -328,6 +334,55 @@ u64 startsocket(char* addr, int port, int type)
 		obj[udplisten].type_sock = type;
 		obj[udplisten].type_road = 0;
 		return udplisten/4;
+	}
+	else if(type == 'u')	//udp client
+	{
+		//
+		SOCKET fd = WSASocket(
+			AF_INET, SOCK_DGRAM, IPPROTO_UDP,
+			0, 0, WSA_FLAG_OVERLAPPED
+		);
+		if(fd == INVALID_SOCKET)
+		{
+			printf("error@socket\n");
+			return 0;
+		}
+
+		struct sockaddr_in server;
+		memset(&server, 0, sizeof(struct sockaddr_in));
+		server.sin_family = AF_INET;
+		server.sin_addr.s_addr = inet_addr(addr);
+		server.sin_port = htons(port);
+
+		//
+		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+		if(ret < 0)
+		{
+			printf("connect error\n");
+			return 0;
+		}
+
+		u32* p = (void*)(obj[fd/4].tempdat);
+		*p = fd;
+		CreateIoCompletionPort(
+			(void*)fd,
+			iocpfd,
+			(ULONG_PTR)p,
+			0
+		);
+
+		DWORD trans = 0;
+		DWORD flag = 0;
+		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
+		pov->fd = fd;
+		pov->stage = 1;
+		pov->bufing.buf = malloc(4096);
+		pov->bufing.len = 4096;
+		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
+
+		obj[fd].type_sock = type;
+		obj[fd].type_road = 0;
+		return fd/4;
 	}
 	else if(type == 'T')	//tcp server
 	{
@@ -430,58 +485,6 @@ u64 startsocket(char* addr, int port, int type)
 		obj[tcplisten].type_road = 0;
 		return tcplisten/4;
 	}
-	else if(type == 'B')	//bluetooth server
-	{
-	}
-	else if(type == 'u')	//udp client
-	{
-		//
-		SOCKET fd = WSASocket(
-			AF_INET, SOCK_DGRAM, IPPROTO_UDP,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == INVALID_SOCKET)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-
-		struct sockaddr_in server;
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
-
-		//
-		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
-		}
-
-		u32* p = (void*)(obj[fd/4].tempdat);
-		*p = fd;
-		CreateIoCompletionPort(
-			(void*)fd,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
-
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
-		pov->fd = fd;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
-		obj[fd].type_sock = type;
-		obj[fd].type_road = 0;
-		return fd/4;
-	}
 	else if(type == 't')	//tcp client
 	{
 		//
@@ -528,6 +531,10 @@ u64 startsocket(char* addr, int port, int type)
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
 		return fd/4;
+	}
+	else if(type == 'B')	//bluetooth server
+	{
+		return btlisten/4;
 	}
 	else if(type == 'b')	//bluetooth client
 	{

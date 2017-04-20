@@ -58,6 +58,8 @@ struct object* obj;
 static u64 thread;
 static int alive = 0;
 static int epollfd = 0;
+//
+static int btlisten = 0;
 static int rawlisten = 0;
 static int tcplisten = 0;
 static int udplisten = 0;
@@ -138,7 +140,6 @@ while(alive)
 		//accept
 		if(fd == tcplisten)
 		{
-		int fd;
 		struct sockaddr_in cliaddr;
 		socklen_t cliaddrlen = sizeof(struct sockaddr_in);
 		while(1)
@@ -186,21 +187,39 @@ return 0;
 
 int writesocket(int fd, u8* buf, int off, int len)
 {
+	u64 type;
 	int ret;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
+
+	type = obj[fd].type_sock;
+	if( (type == 'U') | (type == 'u') )
+	{
+		ret = sendto(
+			fd, buf, len, 0,
+			(void*)obj[fd].addr_src, sizeof(struct sockaddr_in)
+		);
+		return ret;
+	}
+
 	ret = write(fd, buf, len);
 	return ret;
 }
 int readsocket(int fd, u8* buf, int off, int len)
 {
+	u64 type;
 	int ret, cnt=0;
-	struct sockaddr_in server;
-	if(fd == udplisten)
+	if(fd == 0)return 0;
+	if(buf == 0)return 0;
+
+	type = obj[fd].type_sock;
+	if( (type == 'U') | (type == 'u') )
 	{
-		ret = sizeof(server);
-		ret = recvfrom(fd, buf, len, 0, (void*)&server, (void*)&ret);
-		printf("%s:%d\n", inet_ntoa(server.sin_addr), server.sin_port);
+		ret = sizeof(struct sockaddr_in);
+		ret = recvfrom(
+			fd, buf, len, 0,
+			(void*)obj[fd].addr_src, (void*)&ret
+		);
 		return ret;
 	}
 /*
@@ -255,7 +274,7 @@ int startsocket(char* addr, int port, int type)
 {
 	int fd;
 	int ret;
-	if(type == 'r')		//raw
+	if(type == 'R')		//RAW
 	{
 		int sockopt;
 		struct ifreq ifopts;
@@ -290,11 +309,15 @@ int startsocket(char* addr, int port, int type)
 		}
 		epoll_add(rawlisten);
 
-		obj[tcplisten].type_sock = type;
-		obj[tcplisten].type_road = 0;
+		obj[rawlisten].type_sock = type;
+		obj[rawlisten].type_road = 0;
 		return rawlisten;
 	}
-	else if(type == 'U')	//udp server
+	if(type == 'r')		//raw
+	{
+		return fd;
+	}
+	else if(type == 'U')	//UDP
 	{
 		int ret;
 		struct sockaddr_in servaddr;
@@ -326,12 +349,42 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		obj[tcplisten].type_sock = type;
-		obj[tcplisten].type_road = 0;
+		obj[udplisten].type_sock = type;
+		obj[udplisten].type_road = 0;
 		epoll_add(udplisten);
 		return udplisten;
 	}
-	else if(type == 'T')	//tcp server
+	else if(type == 'u')	//udp
+	{
+		struct sockaddr_in* haha;
+		fd = socket(AF_INET, SOCK_DGRAM, 0);
+		if(fd == -1)
+		{
+			printf("error%d@socket:%d\n",errno,fd);
+			return 0;
+		}
+
+		haha = (void*)obj[fd].addr_src;
+		memset(haha, 0, sizeof(struct sockaddr_in));
+		haha->sin_family = AF_INET;
+		haha->sin_addr.s_addr = inet_addr(addr);
+		haha->sin_port = htons(port);
+
+		//
+		ret = connect(fd, (void*)haha, sizeof(struct sockaddr_in) );
+		if(ret < 0)
+		{
+			printf("connect error\n");
+			return 0;
+		}
+
+		//
+		obj[fd].type_sock = type;
+		obj[fd].type_road = 0;
+		epoll_add(fd);
+		return fd;
+	}
+	else if(type == 'T')	//TCP
 	{
 		int ret;
 		struct sockaddr_in servaddr;
@@ -382,43 +435,10 @@ int startsocket(char* addr, int port, int type)
 		epoll_add(tcplisten);
 		return tcplisten;
 	}
-	else if(type == 'B')	//bluetooth server
-	{
-	}
-	else if(type == 'u')	//udp client
-	{
-		struct sockaddr_in server;
-
-		fd = socket(AF_INET, SOCK_DGRAM, 0);
-		if(fd == -1)
-		{
-			printf("error%d@socket:%d\n",errno,fd);
-			return 0;
-		}
-
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
-
-		//
-		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
-		}
-
-		//
-		obj[fd].type_sock = type;
-		obj[fd].type_road = 0;
-		epoll_add(fd);
-		return fd;
-	}
-	else if(type == 't')	//tcp client
+	else if(type == 't')	//tcp
 	{
 		//create struct
-		struct sockaddr_in server;
+		struct sockaddr_in* haha;
 
 		//create socket
 		fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -429,13 +449,14 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
+		haha = (void*)obj[fd].addr_src;
+		memset(haha, 0, sizeof(struct sockaddr_in));
+		haha->sin_family = AF_INET;
+		haha->sin_addr.s_addr = inet_addr(addr);
+		haha->sin_port = htons(port);
 
 		//connect
-		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+		ret = connect(fd, (void*)haha, sizeof(struct sockaddr_in));
 		if(ret < 0)
 		{
 			printf("connect error\n");
@@ -448,8 +469,13 @@ int startsocket(char* addr, int port, int type)
 		epoll_add(fd);
 		return fd;
 	}
-	else if(type == 'b')	//bluetooth client
+	else if(type == 'B')	//BT
 	{
+		return btlisten;
+	}
+	else if(type == 'b')	//bt
+	{
+		return fd;
 	}
 	else printf("error@type\n");
 	return 0;

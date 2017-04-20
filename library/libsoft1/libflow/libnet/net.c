@@ -32,7 +32,7 @@ void tls_stop();
 void ssh_start();
 void ssh_stop();
 //
-int buf2net(u8* p, int max, u8* type, u8* addr, int* port, u8* extra);
+int buf2net(u8* p, int max, u8* type, u8* addr, int* port);
 int movsb(void*, void*, int);
 int decstr2data(void*, void*);
 int hexstr2data(void*, void*);
@@ -44,6 +44,7 @@ int stopsocket(u64);
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
 //
+int fmt(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -81,20 +82,44 @@ static u8* datahome = 0;
 
 
 
-//capital(uppercase):		server
-//small(lowercase):		client
+//----------------uppercase = server, lowercase = client----------------
+//raw
 #define RAW 0x574152		//parse, print
 #define raw 0x776172		//send raw packet
-#define CHAT 0x54414843		//check, broadcast
-#define chat 0x74616863		//send user msg
-
-#define TLS 0x534c54		//s
-#define tls 0x736c74		//c
-#define SSH 0x485353		//s
-#define ssh 0x687373		//c
+#define WOL 0x4c4f57		//s
+#define wol 0x6c6f77		//c
+//ip
+#define ARP 0x505241		//s
+#define arp 0x707261		//c
+#define IPX 0x585049		//s
+#define ipx 0x787069		//c
+#define ICMP 0x504d4349		//s
+#define icmp 0x706d6369		//c
+//udp
+#define BOOTP 0x50544f4f42	//s
+#define bootp 0x70746f6f62	//c
+#define DNS 0x534e44		//s
+#define dns 0x736e64		//c
+#define HOLE 0x454c4f48		//s
+#define hole 0x656c6f68		//c
+#define QUIC 0x43495551		//s
+#define quic 0x63697571		//c
+#define STUN 0x4e555453		//s
+#define stun 0x6e757473		//c
+#define TFTP 0x50544654		//s
+#define tftp 0x70746674		//c
+#define WEBRTC 0x435452424557	//s
+#define webrtc 0x637472626577	//c
+//transport
 #define PROXY 0x59584f5250	//s
 #define proxy 0x79786f7270	//c
-
+#define SOCKS5 0x35534b434f53	//s
+#define socks5 0x35736b636f73	//c
+#define SSH 0x485353		//s
+#define ssh 0x687373		//c
+#define TLS 0x534c54		//s
+#define tls 0x736c74		//c
+//http family
 #define HTTP 0x50545448		//parse, reply
 #define http 0x70747468		//req url, get reply
 #define HTTPS 0x5350545448	//parse, reply
@@ -103,27 +128,88 @@ static u8* datahome = 0;
 #define ws 0x7377		//c
 #define WSS 0x535357		//s
 #define wss 0x737377		//c
-
-#define ED2K 0x4b324445		//s
-#define ed2k 0x6b326465		//c
-#define MAGNET 0x54454e47414d	//s
-#define magnet 0x74656e67616d	//c
-#define TORRENT 0x544e4552524f54	//s
-#define torrent 0x746e6572726f74	//c
-
+//live stream
+#define FLV 0x564c46		//s
+#define flv 0x766c66		//c
+#define RTMP 0x504d5452		//s
+#define rtmp 0x706d7472		//c
+//remote desktop
 #define RDP 0x504452		//s
 #define rdp 0x706472		//c
 #define VNC 0x434e56		//s
 #define vnc 0x636e76		//c
 #define SPICE 0x4543495053	//s
 #define spice 0x6563697073	//c
-
-#define RTMP 0x504d5452		//s
-#define rtmp 0x706d7472		//c
+//download
+#define ED2K 0x4b324445		//s
+#define ed2k 0x6b326465		//c
+#define MAGNET 0x54454e47414d	//s
+#define magnet 0x74656e67616d	//c
+#define TORRENT 0x544e4552524f54	//s
+#define torrent 0x746e6572726f74	//c
+//application
+#define CHAT 0x54414843		//check, broadcast
+#define chat 0x74616863		//send user msg
 #define SQL 0x4c5153		//s
 #define sql 0x6c7173		//c
+//----------------uppercase = server, lowercase = client----------------
 
-u64 serve_what(int fd, u8* buf, int len)
+
+
+
+void serve_bt(int fd, u8* buf, int len)
+{
+}
+void serve_eth(int fd, u8* buf, int len)
+{
+	serve_raw(obj, fd, buf, len);
+}
+void serve_udp(int fd, u8* buf, int len)
+{
+	u64* aa;
+	u64* bb;
+	u8* q = obj[fd].addr_src;
+	say(
+		"[%d.%d.%d.%d:%d]%x,%x\n",
+		q[4],q[5],q[6],q[7],
+		(((int)q[2])<<8) + q[3],
+		buf[0], buf[1]
+	);
+	if(buf[0] == '1')
+	{
+		aa = (void*)(obj[fd].data);
+		bb = (void*)(obj[fd].addr_src);
+		aa[1] = bb[0];
+
+		if(aa[0] != 0)
+		{
+			writesocket(fd, aa, 0, 8);
+
+			bb[0] = aa[0];
+			writesocket(fd, aa+1, 0, 8);
+
+			aa[0] = aa[1] = 0;
+		}
+	}
+	if(buf[0] == '0')
+	{
+		aa = (void*)(obj[fd].data);
+		bb = (void*)(obj[fd].addr_src);
+		aa[0] = bb[0];
+
+		if(aa[1] != 0)
+		{
+			writesocket(fd, aa+1, 0, 8);
+
+			bb[0] = aa[1];
+			writesocket(fd, aa, 0, 8);
+
+			aa[0] = aa[1] = 0;
+		}
+	}
+	else writesocket(fd, "haha\n", 0, 5);
+}
+u64 serve_tcp(int fd, u8* buf, int len)
 {
 	int ret;
 	u64 type = obj[fd].type_road;
@@ -153,11 +239,7 @@ handshake:
 
 
 protocol:
-	if(type == RAW)
-	{
-		type = serve_raw(obj, fd, buf, len);
-	}
-	else if(type==CHAT)
+	if( (type==CHAT) | (type==chat) )
 	{
 		type = serve_chat(obj, fd, buf, len);
 	}
@@ -229,10 +311,32 @@ void network_explain(u64* p)
 		len = readsocket(where, datahome, 0, 0x100000);
 		if(len == 0)goto pass;		//sticky
 		if(len < 0)goto fail;		//wrong
+		datahome[len] = 0;
+		//say("%x\n",obj[where].type_sock);
+/*
+		//bluetooth
+		if(obj[where].type_sock == 'B')
+		{
+			serve_bt(where, datahome, len);
+			goto pass;
+		}
+*/
+		//raw
+		if(obj[where].type_sock == 'R')
+		{
+			serve_eth(where, datahome, len);
+			goto pass;
+		}
+
+		//udp
+		if(obj[where].type_sock == 'U')
+		{
+			serve_udp(where, datahome, len);
+			goto pass;
+		}
 
 		//serve socket
-		datahome[len] = 0;
-		what = serve_what(where, datahome, len);
+		what = serve_tcp(where, datahome, len);
 		if(what == 0)goto fail;
 
 		//change event
@@ -278,63 +382,67 @@ int netmgr_write(u8* p)
 	//
 	int ret;
 	u64 fd=0;
-	u64 type=CHAT;
+	u64 tmp=CHAT;
 
-	//
-	u8 buf[256];
+	u8 type[16];
+	u8 addr[16];
+	u8* url;
 	int port;
-	u8* addr = buf+0x10;
-	u8* url = buf+0x80;
+
 	if(p == 0)return 0;
+	type[0] = addr[0] = 0;
+	port = 0;
 
 
 	//parse
-	url[0] = 0;
-	ret = buf2net(p, 256, buf, addr, &port, url);
-	if(ret <= 0)return 0;
-	say("type=%s, addr=%s, port=%d, extra=%s\n", buf, addr, port, url);
-
-
-	//compare
-	if(ncmp(buf, "RAW", 3) == 0)		//raw server
+	ret = buf2net(p, 256, type, addr, &port);
+	if(ret <= 0)
 	{
-		fd = startsocket("0,0,0,0", 0, 'r');
+		say("%s\n", p);
+		return 0;
+	}
+	url = p+ret;
+
+
+	//
+	if(addr[0] == 0)fmt(addr, 10, "0.0.0.0");
+	if(port == 0)port = 2222;
+	//say("%s:%d\n",addr, port);
+
+	if(ncmp(type, "RAW", 3) == 0)		//raw server
+	{
+		fd = startsocket(addr, port, 'R');
 		if(fd == 0)return 0;
 
-		type = RAW;
+		tmp = RAW;
 	}
-	else if(ncmp(buf, "raw", 3) == 0)	//raw client
+	else if(ncmp(type, "raw", 3) == 0)	//raw client
 	{
-		fd = startsocket("0,0,0,0", 0, 'r');
+		fd = startsocket(addr, port, 'r');
 		if(fd == 0)return 0;
 
-		type = raw;
-	}
-	else if(ncmp(buf, "icmp", 4) == 0)	//icmp client
-	{
-		fd = startsocket("0,0,0,0", 0, 'r');
-		if(fd == 0)return 0;
-
-		type = raw;
+		tmp = raw;
 	}
 
 
-	else if(ncmp(buf, "UDP", 3) == 0)	//udp server
+	else if(ncmp(type, "UDP", 3) == 0)	//udp server
 	{
-		fd = startsocket("0,0,0,0", 2222, 'U');
+		fd = startsocket(addr, port, 'U');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "TFTP", 3) == 0)	//tftp server
-	{
-		fd = startsocket("0,0,0,0", 2222, 'U');
-		if(fd == 0)return 0;
-	}
-	else if(ncmp(buf, "udp", 3) == 0)	//udp client
+	else if(ncmp(type, "udp", 3) == 0)	//udp client
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
+
+		writesocket(fd, url+1, 0, 1);
 	}
-	else if(ncmp(buf, "tftp", 4) == 0)	//tftp client
+	else if(ncmp(type, "TFTP", 3) == 0)	//tftp server
+	{
+		fd = startsocket(addr, port, 'U');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(type, "tftp", 4) == 0)	//tftp client
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
@@ -342,40 +450,27 @@ int netmgr_write(u8* p)
 		ret = tftp_write(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 
-		type = CHAT;
+		tmp = CHAT;
 	}
 
 
-	else if(ncmp(buf, "TCP", 3) == 0)	//tcp server
+	else if(ncmp(type, "TCP", 3) == 0)	//tcp server
 	{
-		fd = startsocket("0,0,0,0", 2222, 'T');
+		fd = startsocket(addr, port, 'T');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "SSH", 3) == 0)	//ssh server
+	else if(ncmp(type, "tcp", 3) == 0)	//tcp client
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(type, "SSH", 3) == 0)	//ssh server
 	{
 		ssh_start();
-		fd = startsocket("0,0,0,0", 2222, 'T');
+		fd = startsocket(addr, port, 'T');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(buf, "TLS", 3) == 0)	//tls server
-	{
-		tls_start();
-		fd = startsocket("0,0,0,0", 2222, 'T');
-		if(fd == 0)return 0;
-	}
-	else if(ncmp(buf, "tcp", 3) == 0)	//tcp client
-	{
-		fd = startsocket(addr, port, 't');
-		if(fd == 0)return 0;
-	}
-	else if(ncmp(buf, "sql", 3) == 0)	//sql client
-	{
-		fd = startsocket(addr, port, 't');
-		if(fd == 0)return 0;
-
-		type = sql;
-	}
-	else if(ncmp(buf, "ssh", 3) == 0)	//ssh client
+	else if(ncmp(type, "ssh", 3) == 0)	//ssh client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -383,9 +478,15 @@ int netmgr_write(u8* p)
 		ret = secureshell_write_handshake(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 
-		type = ssh;
+		tmp = ssh;
 	}
-	else if(ncmp(buf, "tls", 3) == 0)	//tls client
+	else if(ncmp(type, "TLS", 3) == 0)	//tls server
+	{
+		tls_start();
+		fd = startsocket(addr, port, 'T');
+		if(fd == 0)return 0;
+	}
+	else if(ncmp(type, "tls", 3) == 0)	//tls client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -393,9 +494,16 @@ int netmgr_write(u8* p)
 		ret = tls_write_client_hello(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 
-		type = tls;
+		tmp = tls;
 	}
-	else if(ncmp(buf, "http", 4) == 0)	//http client
+	else if(ncmp(type, "sql", 3) == 0)	//sql client
+	{
+		fd = startsocket(addr, port, 't');
+		if(fd == 0)return 0;
+
+		tmp = sql;
+	}
+	else if(ncmp(type, "http", 4) == 0)	//http client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -403,9 +511,9 @@ int netmgr_write(u8* p)
 		ret = http_write_request(datahome, 0x100000, url, addr);
 		ret = writesocket(fd, datahome, 0, ret);
 
-		type = http;
+		tmp = http;
 	}
-	else if(ncmp(buf, "ws", 2) == 0)	//ws client
+	else if(ncmp(type, "ws", 2) == 0)	//ws client
 	{
 		fd = startsocket(addr, port, 't');
 		if(fd == 0)return 0;
@@ -413,11 +521,11 @@ int netmgr_write(u8* p)
 		ret = websocket_write_handshake(datahome, 0x100000);
 		ret = writesocket(fd, datahome, 0, ret);
 
-		type = ws;
+		tmp = ws;
 	}
 
 
-	obj[fd].type_road = type;
+	obj[fd].type_road = tmp;
 	obj[fd].stage1 = 0;
 	return fd;
 }

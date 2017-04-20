@@ -10,12 +10,13 @@ void say(char*, ...);
 
 
 int buf2net(
-	u8* pp, int max,
-	u8* type, u8* addr, int* port, u8* detail
-)
+	u8* orig, int max,
+	u8* type, u8* addr, int* port)
 {
 	int j,k;
-	if(pp==0)return 0;
+	u8* pp;
+	if(orig==0)return 0;
+	pp = orig;
 
 	//type
 	for(j=0;j<max;j++)
@@ -52,15 +53,5 @@ int buf2net(
 	if( (j<=0) | (j>5) | (*port>65535) )return 0;
 	pp += j;
 
-	//extra
-	for(j=0;j<max;j++)
-	{
-		if(pp[j] == 0)
-		{
-			detail[j] = 0;
-			break;
-		}
-		else detail[j] = pp[j];
-	}
-	return 1;
+	return pp-orig;
 }
