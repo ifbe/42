@@ -437,7 +437,7 @@ int netmgr_write(u8* p)
 	}
 	else if(ncmp(type, "DNS", 3) == 0)	//DNS server
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(addr, port, 'U');
 		if(fd == 0)return 0;
 
 		tmp = DNS;
@@ -453,7 +453,7 @@ int netmgr_write(u8* p)
 	}
 	else if(ncmp(type, "HOLE", 4) == 0)	//p2p server
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(addr, port, 'U');
 		if(fd == 0)return 0;
 
 		tmp = HOLE;

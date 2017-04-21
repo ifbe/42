@@ -103,6 +103,6 @@ int serve_hole(struct object* obj, int fd, u8* buf, int len)
 {
 	u64 type = obj[fd].type_road;
 	if(type == HOLE)serve_hole_s(obj, fd, buf, len);
-	if(type == hole)serve_hole_c(obj, fd, buf, len);
+	else if(type == hole)serve_hole_c(obj, fd, buf, len);
 	return 0;
 }
