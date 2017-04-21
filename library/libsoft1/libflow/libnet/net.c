@@ -32,6 +32,7 @@ int tls_write_client_hello(void*, int);
 int secureshell_write_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 int http_write_request(void*, int, void*, void*);
+int dns_write_query(void*, int, void*, int);
 void tls_start();
 void tls_stop();
 void ssh_start();
@@ -434,10 +435,28 @@ int netmgr_write(u8* p)
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
 	}
-	else if(ncmp(type, "HOLE", 4) == 0)	//p2p client
+	else if(ncmp(type, "DNS", 3) == 0)	//DNS server
 	{
 		fd = startsocket(addr, port, 'u');
 		if(fd == 0)return 0;
+
+		tmp = DNS;
+	}
+	else if(ncmp(type, "dns", 3) == 0)	//DNS client
+	{
+		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
+
+		ret = dns_write_query(datahome, 666, url+1, 666);
+		writesocket(fd, datahome, 0, ret);
+		tmp = dns;
+	}
+	else if(ncmp(type, "HOLE", 4) == 0)	//p2p server
+	{
+		fd = startsocket(addr, port, 'u');
+		if(fd == 0)return 0;
+
+		tmp = HOLE;
 	}
 	else if(ncmp(type, "hole", 4) == 0)	//p2p client
 	{
