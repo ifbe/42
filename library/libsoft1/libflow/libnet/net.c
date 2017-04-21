@@ -7,12 +7,17 @@ int check_ssh(  void* p, int fd, void* buf, int len);
 int check_tls(  void* p, int fd, void* buf, int len);
 int check_http( void* p, int fd, void* buf, int len);
 int check_rtmp( void* p, int fd, void* buf, int len);
-//
+//raw
+int serve_raw(  void* p, int fd, void* buf, int len);
+//udp
+int serve_dns(  void* p, int fd, void* buf, int len);
+int serve_hole( void* p, int fd, void* buf, int len);
+int serve_tftp( void* p, int fd, void* buf, int len);
+//tcp
 int serve_chat( void* p, int fd, void* buf, int len);
 int serve_http( void* p, int fd, void* buf, int len);
 int serve_https(void* p, int fd, void* buf, int len);
 int serve_proxy(void* p, int fd, void* buf, int len);
-int serve_raw(  void* p, int fd, void* buf, int len);
 int serve_rdp(  void* p, int fd, void* buf, int len);
 int serve_rtmp( void* p, int fd, void* buf, int len);
 int serve_sql(  void* p, int fd, void* buf, int len);
@@ -100,16 +105,21 @@ static u8* datahome = 0;
 #define bootp 0x70746f6f62	//c
 #define DNS 0x534e44		//s
 #define dns 0x736e64		//c
-#define HOLE 0x454c4f48		//s
-#define hole 0x656c6f68		//c
 #define QUIC 0x43495551		//s
 #define quic 0x63697571		//c
-#define STUN 0x4e555453		//s
-#define stun 0x6e757473		//c
 #define TFTP 0x50544654		//s
 #define tftp 0x70746674		//c
 #define WEBRTC 0x435452424557	//s
 #define webrtc 0x637472626577	//c
+//hole
+#define HOLE 0x454c4f48		//s
+#define hole 0x656c6f68		//c
+#define STUN 0x4e555453		//s
+#define stun 0x6e757473		//c
+#define TURN 0x4e525554		//s
+#define turn 0x6e727574		//c
+#define ICE 0x454349		//s
+#define ice 0x656369		//c
 //transport
 #define PROXY 0x59584f5250	//s
 #define proxy 0x79786f7270	//c
@@ -166,69 +176,23 @@ void serve_eth(int fd, u8* buf, int len)
 }
 void serve_udp(int fd, u8* buf, int len)
 {
-	int ret;
-	u64* aa;
-	u64* bb;
-	u8* q = obj[fd].addr_src;
 	u64 type = obj[fd].type_road;
-
-	if(type == hole)
+	if( (type == DNS) | (type == dns) )
 	{
-		if((buf[0] == 2) && (buf[1] == 0) )
-		{
-			aa = (void*)(obj[fd].addr_src);
-			bb = (void*)buf;
-
-			say("target=%llx\n",bb[0]);
-			aa[0] = bb[0];
-
-			writesocket(fd, "hole\n", 0, 5);
-		}
-
-		printmemory(buf, len);
+		serve_dns(obj, fd, buf, len);
 		return;
 	}
-
-	say(
-		"[%d.%d.%d.%d:%d]%x,%x\n",
-		q[4],q[5],q[6],q[7],
-		(((int)q[2])<<8) + q[3],
-		buf[0], buf[1], buf[2], buf[3]
-	);
-
-	if(buf[0] == '1')
+	else if( (type == HOLE) | (type == hole) )
 	{
-		aa = (void*)(obj[fd].data);
-		bb = (void*)(obj[fd].addr_src);
-		aa[1] = bb[0];
-
-		if(aa[0] != 0)
-		{
-			writesocket(fd, aa, 0, 8);
-
-			bb[0] = aa[0];
-			writesocket(fd, aa+1, 0, 8);
-
-			aa[0] = aa[1] = 0;
-		}
+		serve_hole(obj, fd, buf, len);
+		return;
 	}
-	else if(buf[0] == '0')
+	else if( (type == TFTP) | (type == tftp) )
 	{
-		aa = (void*)(obj[fd].data);
-		bb = (void*)(obj[fd].addr_src);
-		aa[0] = bb[0];
-
-		if(aa[1] != 0)
-		{
-			writesocket(fd, aa+1, 0, 8);
-
-			bb[0] = aa[1];
-			writesocket(fd, aa, 0, 8);
-
-			aa[0] = aa[1] = 0;
-		}
+		serve_tftp(obj, fd, buf, len);
+		return;
 	}
-	else writesocket(fd, "haha\n", 0, 5);
+	else say("type=%llx\n",type);
 }
 u64 serve_tcp(int fd, u8* buf, int len)
 {

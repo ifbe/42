@@ -118,9 +118,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
 	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
 	library/libsoft1/libflow/libnet/3.app/net.chat.c \
-	library/libsoft1/libflow/libnet/3.app/net.dload.c \
+	library/libsoft1/libflow/libnet/3.app/net.dl.c \
+	library/libsoft1/libflow/libnet/3.app/net.dns.c \
 	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
 	library/libsoft1/libflow/libnet/3.app/net.http.c \
+	library/libsoft1/libflow/libnet/3.app/net.hole.c \
 	library/libsoft1/libflow/libnet/3.app/net.proxy.c \
 	library/libsoft1/libflow/libnet/3.app/net.raw.c \
 	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
@@ -144,21 +146,15 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
+	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
 	library/libsoft1/libmem/libdata/draw/draw.background.c \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
-	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
 	library/libsoft1/libmem/libdata/encode/encode.base64.c \
 	library/libsoft1/libmem/libdata/encode/encode.pem.c \
 	library/libsoft1/libmem/libdata/encode/encode.x509.c \
 	library/libsoft1/libmem/libdata/encode/encode.barcode.c \
 	library/libsoft1/libmem/libdata/encode/encode.qrcode.c \
-	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
-	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
-	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
-	library/libsoft1/libmem/libdata/search/search.bm.c \
-	library/libsoft1/libmem/libdata/search/search.kmp.c \
-	library/libsoft1/libmem/libdata/search/search.rough.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
@@ -177,8 +173,14 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/photo/photo.rotate.c \
 	library/libsoft1/libmem/libdata/photo/photo.scale.c \
 	library/libsoft1/libmem/libdata/photo/photo.c \
+	library/libsoft1/libmem/libdata/search/search.bm.c \
+	library/libsoft1/libmem/libdata/search/search.kmp.c \
+	library/libsoft1/libmem/libdata/search/search.rough.c \
 	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
 	library/libsoft1/libmem/libdata/sort/sort.quick.c \
+	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
+	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
+	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \

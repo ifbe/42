@@ -22,9 +22,11 @@ target:
 	$(compiler) $(cflag) libflow/libnet/2.tran/net.tls.c
 	$(compiler) $(cflag) libflow/libnet/2.tran/net.udp.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.chat.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.dload.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.dl.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.dns.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.raw.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.ftp.c
+	$(compiler) $(cflag) libflow/libnet/3.app/net.hole.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.proxy.c
 	$(compiler) $(cflag) libflow/libnet/3.app/net.rdp.c

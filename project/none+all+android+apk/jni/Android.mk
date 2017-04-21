@@ -3,7 +3,7 @@ include $(CLEAR_VARS)
 
 
 
-#1.boot1
+#1.boot0
 LOCAL_SRC_FILES := \
 	library/libboot0/basic.c \
 	library/libboot0/logcat/logcat.c
@@ -102,9 +102,11 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
 	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
 	library/libsoft1/libflow/libnet/3.app/net.chat.c \
-	library/libsoft1/libflow/libnet/3.app/net.dload.c \
+	library/libsoft1/libflow/libnet/3.app/net.dl.c \
+	library/libsoft1/libflow/libnet/3.app/net.dns.c \
 	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
 	library/libsoft1/libflow/libnet/3.app/net.http.c \
+	library/libsoft1/libflow/libnet/3.app/net.hole.c \
 	library/libsoft1/libflow/libnet/3.app/net.proxy.c \
 	library/libsoft1/libflow/libnet/3.app/net.raw.c \
 	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
@@ -137,9 +139,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/encode/encode.x509.c \
 	library/libsoft1/libmem/libdata/encode/encode.barcode.c \
 	library/libsoft1/libmem/libdata/encode/encode.qrcode.c \
-	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
-	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
-	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
@@ -163,6 +162,9 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/search/search.rough.c \
 	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
 	library/libsoft1/libmem/libdata/sort/sort.quick.c \
+	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
+	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
+	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
@@ -221,8 +223,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libsys/system.setting.c \
 	library/libsoft1/libsys/system.c \
 	library/libsoft1/libwire/wire.bt.c \
-	library/libsoft1/libwire/wire.ir.c \
 	library/libsoft1/libwire/wire.i2c.c \
+	library/libsoft1/libwire/wire.ir.c \
 	library/libsoft1/libwire/wire.nfc.c \
 	library/libsoft1/libwire/wire.pci.c \
 	library/libsoft1/libwire/wire.spi.c \
@@ -231,7 +233,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libwire/wire.wifi.c \
 	library/libsoft1/libwire/wire.zigbee.c \
 	library/libsoft1/libwire/wire.c \
-	library/libsoft1/artery.c \
+	library/libsoft1/artery.c
 
 #4.ui0
 LOCAL_SRC_FILES += \
