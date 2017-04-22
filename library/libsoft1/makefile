@@ -1,40 +1,41 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC
-
 target:
 	$(compiler) $(cflag) libbio/bio.chance.c
 	$(compiler) $(cflag) libbio/bio.c
 	$(compiler) $(cflag) libchem/chem.equation.c
 	$(compiler) $(cflag) libchem/chem.c
 	$(compiler) $(cflag) libflow/libmotion/motion.c
-	$(compiler) $(cflag) libflow/libnet/0.raw/net.eth.c
-	$(compiler) $(cflag) libflow/libnet/0.raw/net.ppp.c
-	$(compiler) $(cflag) libflow/libnet/0.raw/net.slip.c
-	$(compiler) $(cflag) libflow/libnet/0.raw/net.wlan.c
-	$(compiler) $(cflag) libflow/libnet/1.net/net.arp.c
-	$(compiler) $(cflag) libflow/libnet/1.net/net.icmp.c
-	$(compiler) $(cflag) libflow/libnet/1.net/net.ipv4.c
-	$(compiler) $(cflag) libflow/libnet/1.net/net.ipv6.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.quic.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.ssh.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.ssl.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.tcp.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.tls.c
-	$(compiler) $(cflag) libflow/libnet/2.tran/net.udp.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.chat.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.dl.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.dns.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.raw.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.ftp.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.hole.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.http.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.proxy.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.rdp.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.rtmp.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.sql.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.tftp.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.vnc.c
-	$(compiler) $(cflag) libflow/libnet/3.app/net.ws.c
+	$(compiler) $(cflag) libflow/libnet/0.phy/phy.bt.c
+	$(compiler) $(cflag) libflow/libnet/0.phy/phy.eth.c
+	$(compiler) $(cflag) libflow/libnet/0.phy/phy.wlan.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.arp.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv4.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv6.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.ipx.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.ppp.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.slip.c
+	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.icmp.c
+	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.tcp.c
+	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.udp.c
+	$(compiler) $(cflag) libflow/libnet/2.ip/ipx.spx.c
+	$(compiler) $(cflag) libflow/libnet/3.tran/tcp.ssh.c
+	$(compiler) $(cflag) libflow/libnet/3.tran/tcp.tls.c
+	$(compiler) $(cflag) libflow/libnet/3.tran/udp.quic.c
+	$(compiler) $(cflag) libflow/libnet/app/app.chat.c
+	$(compiler) $(cflag) libflow/libnet/app/app.raw.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.dl.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.ftp.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.http.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.proxy.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.rdp.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.rtmp.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.sql.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.vnc.c
+	$(compiler) $(cflag) libflow/libnet/app/tcp.ws.c
+	$(compiler) $(cflag) libflow/libnet/app/udp.dns.c
+	$(compiler) $(cflag) libflow/libnet/app/udp.hole.c
+	$(compiler) $(cflag) libflow/libnet/app/udp.tftp.c
 	$(compiler) $(cflag) libflow/libnet/net.c
 	$(compiler) $(cflag) libflow/libsound/sound.c
 	$(compiler) $(cflag) libflow/libvision/vision.c
@@ -44,9 +45,14 @@ target:
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c
-	$(compiler) $(cflag) libmem/libdata/codec/codec.avc.c
-	$(compiler) $(cflag) libmem/libdata/codec/codec.hevc.c
-	$(compiler) $(cflag) libmem/libdata/codec/codec.c
+	$(compiler) $(cflag) libmem/libdata/acodec/acodec.aac.c
+	$(compiler) $(cflag) libmem/libdata/acodec/acodec.mp3.c
+	$(compiler) $(cflag) libmem/libdata/vcodec/vcodec.avc.c
+	$(compiler) $(cflag) libmem/libdata/vcodec/vcodec.hevc.c
+	$(compiler) $(cflag) libmem/libdata/gcode/gcode.barcode.c
+	$(compiler) $(cflag) libmem/libdata/gcode/gcode.qrcode.c
+	$(compiler) $(cflag) libmem/libdata/tcode/tcode.base64.c
+	$(compiler) $(cflag) libmem/libdata/tcode/tcode.huffman.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.des.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.rsa.c
@@ -77,14 +83,9 @@ target:
 	$(compiler) $(cflag) libmem/libdata/search/search.rough.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.gnome.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.quick.c
-	$(compiler) $(cflag) libmem/libdata/tran/tran.cosine.c
-	$(compiler) $(cflag) libmem/libdata/tran/tran.fourier.c
-	$(compiler) $(cflag) libmem/libdata/tran/tran.laplace.c
-	$(compiler) $(cflag) libmem/libdata/encode/encode.base64.c
-	$(compiler) $(cflag) libmem/libdata/encode/encode.pem.c
-	$(compiler) $(cflag) libmem/libdata/encode/encode.x509.c
-	$(compiler) $(cflag) libmem/libdata/encode/encode.barcode.c
-	$(compiler) $(cflag) libmem/libdata/encode/encode.qrcode.c
+	$(compiler) $(cflag) libmem/libdata/trfm/trfm.cosine.c
+	$(compiler) $(cflag) libmem/libdata/trfm/trfm.fourier.c
+	$(compiler) $(cflag) libmem/libdata/trfm/trfm.laplace.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
@@ -95,6 +96,8 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.jpg.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.png.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.webp.c
+	$(compiler) $(cflag) libmem/libfmt/computer/certificate/cert.pem.c
+	$(compiler) $(cflag) libmem/libfmt/computer/certificate/cert.x509.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.7z.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.cpio.c
 	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.gz.c

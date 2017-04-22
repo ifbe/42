@@ -7,25 +7,40 @@ int check_ssh(  void* p, int fd, void* buf, int len);
 int check_tls(  void* p, int fd, void* buf, int len);
 int check_http( void* p, int fd, void* buf, int len);
 int check_rtmp( void* p, int fd, void* buf, int len);
-//raw
-int serve_raw(  void* p, int fd, void* buf, int len);
+//phy
+int serve_bt(   void* p, int fd, void* buf, int len);
+int serve_eth(  void* p, int fd, void* buf, int len);
+int serve_wifi( void* p, int fd, void* buf, int len);
+//link
+int serve_arp(  void* p, int fd, void* buf, int len);
+int serve_ppp(  void* p, int fd, void* buf, int len);
+//ip
+int serve_icmp( void* p, int fd, void* buf, int len);
+int serve_ipv4( void* p, int fd, void* buf, int len);
+int serve_ipv6( void* p, int fd, void* buf, int len);
+//tran
+int serve_udp(  void* p, int fd, void* buf, int len);
+int serve_tcp(  void* p, int fd, void* buf, int len);
+int serve_quic( void* p, int fd, void* buf, int len);
+int serve_ssh(  void* p, int fd, void* buf, int len);
+int serve_tls(  void* p, int fd, void* buf, int len);
 //udp
 int serve_dns(  void* p, int fd, void* buf, int len);
 int serve_hole( void* p, int fd, void* buf, int len);
 int serve_tftp( void* p, int fd, void* buf, int len);
 //tcp
-int serve_chat( void* p, int fd, void* buf, int len);
 int serve_http( void* p, int fd, void* buf, int len);
 int serve_https(void* p, int fd, void* buf, int len);
 int serve_proxy(void* p, int fd, void* buf, int len);
 int serve_rdp(  void* p, int fd, void* buf, int len);
 int serve_rtmp( void* p, int fd, void* buf, int len);
 int serve_sql(  void* p, int fd, void* buf, int len);
-int serve_ssh(  void* p, int fd, void* buf, int len);
-int serve_tls(  void* p, int fd, void* buf, int len);
 int serve_vnc(  void* p, int fd, void* buf, int len);
 int serve_ws(   void* p, int fd, void* buf, int len);
 int serve_wss(  void* p, int fd, void* buf, int len);
+//debug
+int serve_chat( void* p, int fd, void* buf, int len);
+int serve_raw(  void* p, int fd, void* buf, int len);
 //
 int tftp_write(void*, int);
 int tls_write_client_hello(void*, int);
@@ -33,10 +48,12 @@ int secureshell_write_handshake(void*, int);
 int websocket_write_handshake(void*, int);
 int http_write_request(void*, int, void*, void*);
 int dns_write_query(void*, int, void*, int);
-void tls_start();
-void tls_stop();
+void quic_start();
+void quic_stop();
 void ssh_start();
 void ssh_stop();
+void tls_start();
+void tls_stop();
 //
 int buf2net(u8* p, int max, u8* type, u8* addr, int* port);
 int movsb(void*, void*, int);
@@ -89,25 +106,36 @@ static u8* datahome = 0;
 
 
 //----------------uppercase = server, lowercase = client----------------
-//raw
-#define RAW 0x574152		//parse, print
-#define raw 0x776172		//send raw packet
+//link
+#define ARP 0x505241		//s
+#define arp 0x707261		//c
+#define EAP 0x504146		//s
+#define eap 0x706166		//c
+#define IPX 0x585049		//s
+#define ipx 0x787069		//c
+#define PPPOE 0x454f505050	//s
+#define pppoe 0x656f707070	//c
 #define WOL 0x4c4f57		//s
 #define wol 0x6c6f77		//c
 //ip
-#define ARP 0x505241		//s
-#define arp 0x707261		//c
-#define IPX 0x585049		//s
-#define ipx 0x787069		//c
 #define ICMP 0x504d4349		//s
 #define icmp 0x706d6369		//c
+#define IGMP 0x504d4749		//s
+#define igmp 0x706d6769		//c
+//tran
+#define QUIC 0x43495551		//s
+#define quic 0x63697571		//c
+#define SOCKS5 0x35534b434f53	//s
+#define socks5 0x35736b636f73	//c
+#define SSH 0x485353		//s
+#define ssh 0x687373		//c
+#define TLS 0x534c54		//s
+#define tls 0x736c74		//c
 //udp
 #define BOOTP 0x50544f4f42	//s
 #define bootp 0x70746f6f62	//c
 #define DNS 0x534e44		//s
 #define dns 0x736e64		//c
-#define QUIC 0x43495551		//s
-#define quic 0x63697571		//c
 #define TFTP 0x50544654		//s
 #define tftp 0x70746674		//c
 #define WEBRTC 0x435452424557	//s
@@ -121,15 +149,6 @@ static u8* datahome = 0;
 #define turn 0x6e727574		//c
 #define ICE 0x454349		//s
 #define ice 0x656369		//c
-//transport
-#define PROXY 0x59584f5250	//s
-#define proxy 0x79786f7270	//c
-#define SOCKS5 0x35534b434f53	//s
-#define socks5 0x35736b636f73	//c
-#define SSH 0x485353		//s
-#define ssh 0x687373		//c
-#define TLS 0x534c54		//s
-#define tls 0x736c74		//c
 //http family
 #define HTTP 0x50545448		//parse, reply
 #define http 0x70747468		//req url, get reply
@@ -158,24 +177,32 @@ static u8* datahome = 0;
 #define magnet 0x74656e67616d	//c
 #define TORRENT 0x544e4552524f54	//s
 #define torrent 0x746e6572726f74	//c
+//
+#define PROXY 0x59584f5250	//s
+#define proxy 0x79786f7270	//c
+#define SQL 0x4c5153		//s
+#define sql 0x6c7173		//c
 //application
 #define CHAT 0x54414843		//check, broadcast
 #define chat 0x74616863		//send user msg
-#define SQL 0x4c5153		//s
-#define sql 0x6c7173		//c
+#define RAW 0x574152		//parse, print
+#define raw 0x776172		//send raw packet
 //----------------uppercase = server, lowercase = client----------------
 
 
 
 
-void serve_bt(int fd, u8* buf, int len)
+void netmgr_bt(int fd, u8* buf, int len)
 {
 }
-void serve_eth(int fd, u8* buf, int len)
+void netmgr_eth(int fd, u8* buf, int len)
 {
 	serve_raw(obj, fd, buf, len);
 }
-void serve_udp(int fd, u8* buf, int len)
+void netmgr_wifi(int fd, u8* buf, int len)
+{
+}
+void netmgr_udp(int fd, u8* buf, int len)
 {
 	u64 type = obj[fd].type_road;
 	if( (type == DNS) | (type == dns) )
@@ -195,7 +222,7 @@ void serve_udp(int fd, u8* buf, int len)
 	}
 	else say("type=%llx\n",type);
 }
-u64 serve_tcp(int fd, u8* buf, int len)
+u64 netmgr_tcp(int fd, u8* buf, int len)
 {
 	int ret;
 	u64 type = obj[fd].type_road;
@@ -301,7 +328,13 @@ void network_explain(u64* p)
 		//bluetooth
 		if(type_sock == 'B')
 		{
-			serve_bt(where, datahome, len);
+			netmgr_bt(where, datahome, len);
+			goto pass;
+		}
+		//wifi
+		if(type_sock == 'W')
+		{
+			netmgr_wifi(where, datahome, len);
 			goto pass;
 		}
 */
@@ -313,7 +346,7 @@ void network_explain(u64* p)
 			if(len < 0)goto fail;		//wrong
 			datahome[len] = 0;
 
-			serve_eth(where, datahome, len);
+			netmgr_eth(where, datahome, len);
 			goto pass;
 		}
 
@@ -325,7 +358,7 @@ void network_explain(u64* p)
 			len = readsocket(where, datahome, 0, 0x100000);
 			if(len <= 0)goto pass;		//sticky
 
-			serve_udp(where, datahome, len);
+			netmgr_udp(where, datahome, len);
 		}
 		}
 
@@ -336,7 +369,7 @@ void network_explain(u64* p)
 		datahome[len] = 0;
 
 		//serve socket
-		what = serve_tcp(where, datahome, len);
+		what = netmgr_tcp(where, datahome, len);
 		if(what == 0)goto fail;
 
 		//change event
