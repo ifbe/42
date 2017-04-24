@@ -23,8 +23,8 @@ struct object
 	u64 stage3;
 
 	//[0x40,0x7f]
-	u8 addr_src[0x20];
-	u8 addr_dst[0x20];
+	u8 self[0x20];
+	u8 peer[0x20];
 
 	//[0x80,0xff]
 	u8 data[0x80];
@@ -39,7 +39,7 @@ int serve_hole_s(struct object* obj, int fd, u8* buf, int len)
 {
 	u64* aa;
 	u64* bb;
-	u8* q = obj[fd].addr_src;
+	u8* q = obj[fd].peer;
 	say(
 		"[%d.%d.%d.%d:%d]%x,%x\n",
 		q[4],q[5],q[6],q[7],
@@ -49,7 +49,7 @@ int serve_hole_s(struct object* obj, int fd, u8* buf, int len)
 	if(buf[0] == '1')
 	{
 		aa = (void*)(obj[fd].data);
-		bb = (void*)(obj[fd].addr_src);
+		bb = (void*)(obj[fd].peer);
 		aa[1] = bb[0];
 
 		if(aa[0] != 0)
@@ -65,7 +65,7 @@ int serve_hole_s(struct object* obj, int fd, u8* buf, int len)
 	else if(buf[0] == '0')
 	{
 		aa = (void*)(obj[fd].data);
-		bb = (void*)(obj[fd].addr_src);
+		bb = (void*)(obj[fd].peer);
 		aa[0] = bb[0];
 
 		if(aa[1] != 0)
@@ -86,7 +86,7 @@ int serve_hole_c(struct object* obj, int fd, u8* buf, int len)
 	u64* bb;
 	if((buf[0] == 2) && (buf[1] == 0) )
 	{
-		aa = (void*)(obj[fd].addr_src);
+		aa = (void*)(obj[fd].peer);
 		bb = (void*)buf;
 
 		say("target=%llx\n",bb[0]);

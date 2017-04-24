@@ -47,8 +47,8 @@ struct object
 	u64 stage3;
 
 	//[0x40,0x7f]
-	u8 addr_src[0x20];
-	u8 addr_dst[0x20];
+	u8 self[0x20];
+	u8 peer[0x20];
 
 	//[0x80,0xff]
 	u8 data[0x80];
@@ -59,10 +59,10 @@ static u64 thread;
 static int alive = 0;
 static int epollfd = 0;
 //
-static int btlisten = 0;
-static int rawlisten = 0;
-static int tcplisten = 0;
-static int udplisten = 0;
+static int btfd = 0;
+static int rawfd = 0;
+static int tcpfd = 0;
+static int udpfd = 0;
 
 
 
@@ -120,7 +120,7 @@ struct epoll_event epollevent[16];
 
 while(alive)
 {
-	epoll_mod(tcplisten);
+	epoll_mod(tcpfd);
 	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
 	if(ret <= 0)continue;
 
@@ -138,13 +138,14 @@ while(alive)
 		fd = epollevent[i].data.fd;
 
 		//accept
-		if(fd == tcplisten)
+		if(fd == tcpfd)
 		{
-		struct sockaddr_in cliaddr;
-		socklen_t cliaddrlen = sizeof(struct sockaddr_in);
 		while(1)
 		{
-			fd = accept(tcplisten, (struct sockaddr*)&cliaddr, &cliaddrlen);
+			struct sockaddr_in haha;
+			socklen_t len = sizeof(struct sockaddr_in);
+
+			fd = accept(tcpfd, (struct sockaddr*)&haha, &len);
 			if(fd == -1)break;
 			if(fd >= MAXSIZE)
 			{
@@ -153,10 +154,12 @@ while(alive)
 				continue;
 			}
 
-			printf("++++ %d\n",fd);
+			memcpy(obj[fd].peer, &haha, 8);
 			obj[fd].type_sock = 't';
 			obj[fd].type_road = 0;
 			epoll_add(fd);
+
+			printf("++++ %d\n",fd);
 			eventwrite(0, 0x2b6e, fd, gettime());
 		}//while
 		}//accept
@@ -197,7 +200,7 @@ int writesocket(int fd, u8* buf, int off, int len)
 	{
 		ret = sendto(
 			fd, buf, len, 0,
-			(void*)obj[fd].addr_src, sizeof(struct sockaddr_in)
+			(void*)(obj[fd].peer), sizeof(struct sockaddr_in)
 		);
 		return ret;
 	}
@@ -218,7 +221,7 @@ int readsocket(int fd, u8* buf, int off, int len)
 		ret = sizeof(struct sockaddr_in);
 		ret = recvfrom(
 			fd, buf, len, 0,
-			(void*)obj[fd].addr_src, (void*)&ret
+			(void*)(obj[fd].peer), (void*)&ret
 		);
 		return ret;
 	}
@@ -268,7 +271,7 @@ void stopsocket(int x)
 	printf("---- %d %d, %d\n", x, ret, errno);
 
 	//epoll_del(x);
-	//if(tcplisten>0)epoll_del(tcplisten);
+	//if(tcpfd>0)epoll_del(tcpfd);
 }
 int startsocket(char* addr, int port, int type)
 {
@@ -276,169 +279,211 @@ int startsocket(char* addr, int port, int type)
 	int ret;
 	if(type == 'R')		//RAW
 	{
-		int sockopt;
+		int ret;
+		int len;
 		struct ifreq ifopts;
-		char* ifName = "eth0";
 
-		rawlisten = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-		if(rawlisten == -1)
+		//create
+		rawfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+		if(rawfd == -1)
 		{
-			printf("error%d@socket:%d\n",errno,rawlisten);
+			printf("error%d@socket:%d\n",errno,rawfd);
 			return 0;
 		}
 
-		strncpy(ifopts.ifr_name, ifName, 5);
-		ioctl(rawlisten, SIOCGIFFLAGS, &ifopts);
-		ifopts.ifr_flags |= IFF_PROMISC;
-		ioctl(rawlisten, SIOCSIFFLAGS, &ifopts);
-
-		ret = setsockopt(rawlisten, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof sockopt);
+		//reuse
+		ret = 1;
+		ret = setsockopt(rawfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 		if(ret == -1)
 		{
 			perror("setsockopt");
-			close(rawlisten);
+			close(rawfd);
 			return 0;
 		}
 
-		ret = setsockopt(rawlisten, SOL_SOCKET, SO_BINDTODEVICE, ifName, 5);
+		//setup
+		len = strlen(addr);
+		strncpy(ifopts.ifr_name, addr, len);
+		ioctl(rawfd, SIOCGIFFLAGS, &ifopts);
+		ifopts.ifr_flags |= IFF_PROMISC;
+		ioctl(rawfd, SIOCSIFFLAGS, &ifopts);
+
+		//bind
+		ret = setsockopt(rawfd, SOL_SOCKET, SO_BINDTODEVICE, addr, len);
 		if(ret == -1)
 		{
 			perror("SO_BINDTODEVICE");
-			close(rawlisten);
+			close(rawfd);
 			return 0;
 		}
-		epoll_add(rawlisten);
 
-		obj[rawlisten].type_sock = type;
-		obj[rawlisten].type_road = 0;
-		return rawlisten;
+		//done
+		obj[rawfd].type_sock = type;
+		obj[rawfd].type_road = 0;
+		epoll_add(rawfd);
+		return rawfd;
 	}
 	if(type == 'r')		//raw
 	{
-		return fd;
+		return rawfd;
 	}
 	else if(type == 'U')	//UDP
 	{
 		int ret;
-		struct sockaddr_in servaddr;
+		struct sockaddr_in* self;
 
-		//socket
-		udplisten = socket(AF_INET, SOCK_DGRAM, 0);
-		if (udplisten == -1)
+		//create
+		udpfd = socket(AF_INET, SOCK_DGRAM, 0);
+		if (udpfd == -1)
 		{
 			printf("error@socket\n");
 			return 0;
 		}
-		if(udplisten > MAXSIZE)
+		if(udpfd > MAXSIZE)
 		{
-			printf("udplisten>4096\n");
+			printf("udpfd>4096\n");
 			return 0;
 		}
 
-		//
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
-
-		//
-		ret = bind(udplisten, (void*)&servaddr, sizeof(servaddr));
-		if(ret == -1)
-		{
-			printf("error@bind\n");
-			close(udplisten);
-			return 0;
-		}
-
-		obj[udplisten].type_sock = type;
-		obj[udplisten].type_road = 0;
-		epoll_add(udplisten);
-		return udplisten;
-	}
-	else if(type == 'u')	//udp
-	{
-		struct sockaddr_in* haha;
-		fd = socket(AF_INET, SOCK_DGRAM, 0);
-		if(fd == -1)
-		{
-			printf("error%d@socket:%d\n",errno,fd);
-			return 0;
-		}
-
-		haha = (void*)obj[fd].addr_src;
-		memset(haha, 0, sizeof(struct sockaddr_in));
-		haha->sin_family = AF_INET;
-		haha->sin_addr.s_addr = inet_addr(addr);
-		haha->sin_port = htons(port);
-/*
-		//
-		ret = connect(fd, (void*)haha, sizeof(struct sockaddr_in) );
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
-		}
-*/
-		//
-		obj[fd].type_sock = type;
-		obj[fd].type_road = 0;
-		epoll_add(fd);
-		return fd;
-	}
-	else if(type == 'T')	//TCP
-	{
-		int ret;
-		struct sockaddr_in servaddr;
-
-		//socket
-		tcplisten = socket(AF_INET, SOCK_STREAM, 0);
-		if (tcplisten == -1)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-		if(tcplisten > MAXSIZE)
-		{
-			printf("tcplisten>4096\n");
-			return 0;
-		}
-
-		//setopt
+		//reuse
 		ret = 1;
-		ret = setsockopt(tcplisten, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		ret = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 		if(ret<0)
 		{
 			printf("error@setsockopet\n");
 			return 0;
 		}
 
-		//
-		bzero(&servaddr, sizeof(servaddr));
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		servaddr.sin_addr.s_addr = htons(INADDR_ANY);
-
-		//
-		ret = bind(tcplisten, (void*)&servaddr, sizeof(servaddr));
+		//self
+		self = (void*)obj[udpfd].self;
+		memset(self, 0, sizeof(struct sockaddr_in));
+		self->sin_family = AF_INET;
+		self->sin_port = htons(port);
+		self->sin_addr.s_addr = htons(INADDR_ANY);
+		ret = bind(udpfd, (void*)self, sizeof(struct sockaddr_in));
 		if(ret == -1)
 		{
 			printf("error@bind\n");
-			close(tcplisten);
+			close(udpfd);
 			return 0;
 		}
 
-		//
-		listen(tcplisten, 5);
+		//done
+		obj[udpfd].type_sock = type;
+		obj[udpfd].type_road = 0;
+		epoll_add(udpfd);
+		return udpfd;
+	}
+	else if(type == 'u')	//udp
+	{
+		struct sockaddr_in* self;
+		struct sockaddr_in* peer;
+		if(udpfd > 0)goto udpnext;
 
-		//
-		obj[tcplisten].type_sock = type;
-		obj[tcplisten].type_road = 0;
-		epoll_add(tcplisten);
-		return tcplisten;
+		//create
+		udpfd = socket(AF_INET, SOCK_DGRAM, 0);
+		if(udpfd == -1)
+		{
+			printf("error%d@socket:%d\n",errno,udpfd);
+			return 0;
+		}
+		if(udpfd > MAXSIZE)
+		{
+			printf("udpfd>4096\n");
+			return 0;
+		}
+
+		//reuse
+		ret = 1;
+		ret = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		if(ret<0)
+		{
+			printf("error@setsockopet\n");
+			return 0;
+		}
+
+		//self
+		self = (void*)obj[udpfd].self;
+		memset(self, 0, sizeof(struct sockaddr_in));
+		self->sin_family = AF_INET;
+		self->sin_port = htons(2222);
+		self->sin_addr.s_addr = htons(INADDR_ANY);
+		ret = bind(udpfd, (void*)self, sizeof(struct sockaddr_in));
+		if(ret == -1)
+		{
+			printf("error@bind\n");
+			close(udpfd);
+			return 0;
+		}
+
+udpnext:
+		//peer
+		peer = (void*)obj[udpfd].peer;
+		memset(peer, 0, sizeof(struct sockaddr_in));
+		peer->sin_family = AF_INET;
+		peer->sin_port = htons(port);
+		peer->sin_addr.s_addr = inet_addr(addr);
+
+		//done
+		obj[udpfd].type_sock = type;
+		obj[udpfd].type_road = 0;
+		epoll_add(udpfd);
+		return udpfd;
+	}
+	else if(type == 'T')	//TCP
+	{
+		int ret;
+		struct sockaddr_in* self;
+
+		//create
+		tcpfd = socket(AF_INET, SOCK_STREAM, 0);
+		if (tcpfd == -1)
+		{
+			printf("error@socket\n");
+			return 0;
+		}
+		if(tcpfd > MAXSIZE)
+		{
+			printf("tcpfd>4096\n");
+			return 0;
+		}
+
+		//reuse
+		ret = 1;
+		ret = setsockopt(tcpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		if(ret<0)
+		{
+			printf("error@setsockopet\n");
+			return 0;
+		}
+
+		//self
+		self = (void*)obj[tcpfd].self;
+		memset(self, 0, sizeof(struct sockaddr_in));
+		self->sin_family = AF_INET;
+		self->sin_port = htons(port);
+		self->sin_addr.s_addr = htons(INADDR_ANY);
+		ret = bind(tcpfd, (void*)self, sizeof(struct sockaddr_in));
+		if(ret == -1)
+		{
+			printf("error@bind\n");
+			close(tcpfd);
+			return 0;
+		}
+
+		//work
+		listen(tcpfd, 5);
+
+		//done
+		obj[tcpfd].type_sock = type;
+		obj[tcpfd].type_road = 0;
+		epoll_add(tcpfd);
+		return tcpfd;
 	}
 	else if(type == 't')	//tcp
 	{
-		//create struct
-		struct sockaddr_in* haha;
+		int ret;
+		struct sockaddr_in* peer;
 
 		//create socket
 		fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -448,22 +493,31 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//
-		haha = (void*)obj[fd].addr_src;
-		memset(haha, 0, sizeof(struct sockaddr_in));
-		haha->sin_family = AF_INET;
-		haha->sin_addr.s_addr = inet_addr(addr);
-		haha->sin_port = htons(port);
+		//reuse
+		ret = 1;
+		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		if(ret<0)
+		{
+			printf("error@setsockopet\n");
+			return 0;
+		}
 
-		//connect
-		ret = connect(fd, (void*)haha, sizeof(struct sockaddr_in));
+		//peer
+		peer = (void*)obj[fd].peer;
+		memset(peer, 0, sizeof(struct sockaddr_in));
+		peer->sin_family = AF_INET;
+		peer->sin_addr.s_addr = inet_addr(addr);
+		peer->sin_port = htons(port);
+
+		//work
+		ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
 		if(ret < 0)
 		{
 			printf("connect error\n");
 			return 0;
 		}
 
-		//
+		//done
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
 		epoll_add(fd);
@@ -471,11 +525,11 @@ int startsocket(char* addr, int port, int type)
 	}
 	else if(type == 'B')	//BT
 	{
-		return btlisten;
+		return btfd;
 	}
 	else if(type == 'b')	//bt
 	{
-		return fd;
+		return btfd;
 	}
 	else printf("error@type\n");
 	return 0;

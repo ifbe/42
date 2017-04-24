@@ -38,7 +38,11 @@ int buf2net(
 	//addr
 	for(j=0;j<max;j++)
 	{
-		if(pp[j]==0)return 1;
+		if(pp[j]<=0x20)
+		{
+			addr[j] = 0;
+			return 1;
+		}
 		else if(pp[j]==':')
 		{
 			addr[j] = 0;

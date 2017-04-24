@@ -103,34 +103,32 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libchem/chem.equation.c \
 	library/libsoft1/libchem/chem.c \
 	library/libsoft1/libflow/libmotion/motion.c \
-	library/libsoft1/libflow/libnet/0.raw/net.eth.c \
-	library/libsoft1/libflow/libnet/0.raw/net.ppp.c \
-	library/libsoft1/libflow/libnet/0.raw/net.slip.c \
-	library/libsoft1/libflow/libnet/0.raw/net.wlan.c \
-	library/libsoft1/libflow/libnet/1.net/net.arp.c \
-	library/libsoft1/libflow/libnet/1.net/net.icmp.c \
-	library/libsoft1/libflow/libnet/1.net/net.ipv4.c \
-	library/libsoft1/libflow/libnet/1.net/net.ipv6.c \
-	library/libsoft1/libflow/libnet/2.tran/net.quic.c \
-	library/libsoft1/libflow/libnet/2.tran/net.ssh.c \
-	library/libsoft1/libflow/libnet/2.tran/net.ssl.c \
-	library/libsoft1/libflow/libnet/2.tran/net.tcp.c \
-	library/libsoft1/libflow/libnet/2.tran/net.tls.c \
-	library/libsoft1/libflow/libnet/2.tran/net.udp.c \
-	library/libsoft1/libflow/libnet/3.app/net.chat.c \
-	library/libsoft1/libflow/libnet/3.app/net.dl.c \
-	library/libsoft1/libflow/libnet/3.app/net.dns.c \
-	library/libsoft1/libflow/libnet/3.app/net.ftp.c \
-	library/libsoft1/libflow/libnet/3.app/net.http.c \
-	library/libsoft1/libflow/libnet/3.app/net.hole.c \
-	library/libsoft1/libflow/libnet/3.app/net.proxy.c \
-	library/libsoft1/libflow/libnet/3.app/net.raw.c \
-	library/libsoft1/libflow/libnet/3.app/net.rdp.c \
-	library/libsoft1/libflow/libnet/3.app/net.rtmp.c \
-	library/libsoft1/libflow/libnet/3.app/net.sql.c \
-	library/libsoft1/libflow/libnet/3.app/net.tftp.c \
-	library/libsoft1/libflow/libnet/3.app/net.vnc.c \
-	library/libsoft1/libflow/libnet/3.app/net.ws.c \
+	library/libsoft1/libflow/libnet/0.phy/phy.bt.c \
+	library/libsoft1/libflow/libnet/0.phy/phy.eth.c \
+	library/libsoft1/libflow/libnet/0.phy/phy.wlan.c \
+	library/libsoft1/libflow/libnet/1.link/link.arp.c \
+	library/libsoft1/libflow/libnet/1.link/link.ipv4.c \
+	library/libsoft1/libflow/libnet/1.link/link.ipv6.c \
+	library/libsoft1/libflow/libnet/2.ip/ip46.icmp.c \
+	library/libsoft1/libflow/libnet/2.ip/ip46.tcp.c \
+	library/libsoft1/libflow/libnet/2.ip/ip46.udp.c \
+	library/libsoft1/libflow/libnet/3.tran/tcp.ssh.c \
+	library/libsoft1/libflow/libnet/3.tran/tcp.tls.c \
+	library/libsoft1/libflow/libnet/3.tran/udp.quic.c \
+	library/libsoft1/libflow/libnet/app/app.chat.c \
+	library/libsoft1/libflow/libnet/app/app.raw.c \
+	library/libsoft1/libflow/libnet/app/tcp.dl.c \
+	library/libsoft1/libflow/libnet/app/tcp.ftp.c \
+	library/libsoft1/libflow/libnet/app/tcp.http.c \
+	library/libsoft1/libflow/libnet/app/tcp.proxy.c \
+	library/libsoft1/libflow/libnet/app/tcp.rdp.c \
+	library/libsoft1/libflow/libnet/app/tcp.rtmp.c \
+	library/libsoft1/libflow/libnet/app/tcp.sql.c \
+	library/libsoft1/libflow/libnet/app/tcp.vnc.c \
+	library/libsoft1/libflow/libnet/app/tcp.ws.c \
+	library/libsoft1/libflow/libnet/app/udp.dns.c \
+	library/libsoft1/libflow/libnet/app/udp.hole.c \
+	library/libsoft1/libflow/libnet/app/udp.tftp.c \
 	library/libsoft1/libflow/libnet/net.c \
 	library/libsoft1/libflow/libsound/sound.c \
 	library/libsoft1/libflow/libvision/vision.c \
@@ -140,9 +138,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \
-	library/libsoft1/libmem/libdata/codec/codec.avc.c \
-	library/libsoft1/libmem/libdata/codec/codec.hevc.c \
-	library/libsoft1/libmem/libdata/codec/codec.c \
+	library/libsoft1/libmem/libdata/acodec/acodec.aac.c \
+	library/libsoft1/libmem/libdata/acodec/acodec.mp3.c \
+	library/libsoft1/libmem/libdata/vcodec/vcodec.avc.c \
+	library/libsoft1/libmem/libdata/vcodec/vcodec.hevc.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
@@ -150,11 +149,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/draw/draw.background.c \
 	library/libsoft1/libmem/libdata/draw/draw.shape.c \
 	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
-	library/libsoft1/libmem/libdata/encode/encode.base64.c \
-	library/libsoft1/libmem/libdata/encode/encode.pem.c \
-	library/libsoft1/libmem/libdata/encode/encode.x509.c \
-	library/libsoft1/libmem/libdata/encode/encode.barcode.c \
-	library/libsoft1/libmem/libdata/encode/encode.qrcode.c \
+	library/libsoft1/libmem/libdata/gcode/gcode.barcode.c \
+	library/libsoft1/libmem/libdata/gcode/gcode.qrcode.c \
+	library/libsoft1/libmem/libdata/tcode/tcode.base64.c \
+	library/libsoft1/libmem/libdata/tcode/tcode.huffman.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
 	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
@@ -178,10 +176,12 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/search/search.rough.c \
 	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
 	library/libsoft1/libmem/libdata/sort/sort.quick.c \
-	library/libsoft1/libmem/libdata/tran/tran.cosine.c \
-	library/libsoft1/libmem/libdata/tran/tran.fourier.c \
-	library/libsoft1/libmem/libdata/tran/tran.laplace.c \
+	library/libsoft1/libmem/libdata/trfm/trfm.cosine.c \
+	library/libsoft1/libmem/libdata/trfm/trfm.fourier.c \
+	library/libsoft1/libmem/libdata/trfm/trfm.laplace.c \
 	library/libsoft1/libmem/libdata/data.c \
+	library/libsoft1/libmem/libfmt/computer/certificate/cert.pem.c \
+	library/libsoft1/libmem/libfmt/computer/certificate/cert.x509.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
