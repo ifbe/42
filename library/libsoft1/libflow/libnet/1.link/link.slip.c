@@ -3,9 +3,9 @@
 
 
 
-static void slip_read()
+void slip_read()
 {
 }
-static void slip_write()
+void slip_write()
 {
 }

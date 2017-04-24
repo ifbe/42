@@ -13,7 +13,7 @@ target:
 	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv4.c
 	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv6.c
 	$(compiler) $(cflag) libflow/libnet/1.link/link.ipx.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.ppp.c
+	$(compiler) $(cflag) libflow/libnet/1.link/link.pppoe.c
 	$(compiler) $(cflag) libflow/libnet/1.link/link.slip.c
 	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.icmp.c
 	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.tcp.c

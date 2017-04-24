@@ -5,28 +5,25 @@
 
 
 
-
-struct ipv4
+struct pppoe
 {
 	u8 dstmac[6];
 	u8 srcmac[6];
-	u8 type_0800;
+	u16 type_886x;		//x=3:discovery, x=4:session
 
-	u32 first4;
-	u16 length;
-	u8 proto;
-	u8 hop;
-
-	u8 srcip6[16];
-	u8 dstip6[16];
+	u8 version;
+	u8 type;
+	u16 code;
+	u32 session;
+	u32 length;
 };
 
 
 
 
-void ipv6_read()
+void pppoe_read()
 {
 }
-void ipv6_write()
+void pppoe_write()
 {
 }
