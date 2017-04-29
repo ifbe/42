@@ -17,14 +17,14 @@ all:
 	cflag="-c -O2"
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2"
-	make -s -C $(library)/visitor \
+	make -s -C $(library)/init \
 	cflag="-c -O2"
 	make -s a
 	make -s dll
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -35,7 +35,7 @@ a:
 	$(library)/libui1/*.o
 dll:
 	g++ -shared -o 42.dll \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -49,7 +49,7 @@ program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
 	$(datafile)/42.res \
-	$(library)/visitor/*.o \
+	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

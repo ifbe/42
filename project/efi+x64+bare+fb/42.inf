@@ -120,8 +120,8 @@
 	../../library/libui1/tool/tool.spectrum.c
 	../../library/libui1/tool/tool.tree.c
 	../../library/libui1/character.c
-	../../library/visitor/startefi.c
-	../../library/visitor/main.c
+	../../library/init/startefi.c
+	../../library/init/main.c
  
 
 

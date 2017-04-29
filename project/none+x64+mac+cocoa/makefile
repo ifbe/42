@@ -9,13 +9,13 @@ all:
 	make -s -C $(library)/libsoft1 clang
 	make -s -C $(library)/libui0 maccocoa
 	make -s -C $(library)/libui1 clang
-	make -s -C $(library)/visitor
+	make -s -C $(library)/init
 	make -s a
 	make -s dylib
 	make -s program
 a:
 	libtool -static -o 42.a \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -26,7 +26,7 @@ a:
 	$(library)/libui1/*.o
 dylib:
 	libtool -dynamic -o 42.dylib \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -37,7 +37,7 @@ dylib:
 	$(library)/libui1/*.o
 program:
 	clang -framework Foundation \
-	$(library)/visitor/*.o \
+	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

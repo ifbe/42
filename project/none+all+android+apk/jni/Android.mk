@@ -274,10 +274,10 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.spectrum.c \
 	library/libui1/character.c
 
-#1.visitor
+#1.init
 LOCAL_SRC_FILES += \
-	library/visitor/startapp.c \
-	library/visitor/main.c
+	library/init/startapp.c \
+	library/init/main.c
 
 
 

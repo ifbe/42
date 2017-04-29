@@ -8,13 +8,13 @@ all:
 	make -s -C $(library)/libsoft1
 	make -s -C $(library)/libui0 linuxgl
 	make -s -C $(library)/libui1
-	make -s -C $(library)/visitor
+	make -s -C $(library)/init
 	make -s a
 	make -s so
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -25,7 +25,7 @@ a:
 	$(library)/libui1/*.o
 so:
 	gcc -shared -o 42.so \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -36,7 +36,7 @@ so:
 	$(library)/libui1/*.o
 program:
 	gcc -o a.out \
-	$(library)/visitor/*.o \
+	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

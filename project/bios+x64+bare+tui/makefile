@@ -16,11 +16,11 @@ linux:
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/visitor bare \
+	make -s -C $(library)/init bare \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	ld -T link.ld \
-	$(library)/visitor/startbare.o \
-	$(library)/visitor/main.o \
+	$(library)/init/startbare.o \
+	$(library)/init/main.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -47,11 +47,11 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libui1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/visitor bare \
+	make -s -C $(library)/init bare \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	x86_64-elf-ld -T link.ld \
-	$(library)/visitor/startbare.o \
-	$(library)/visitor/main.o \
+	$(library)/init/startbare.o \
+	$(library)/init/main.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

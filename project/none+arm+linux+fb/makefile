@@ -16,14 +16,14 @@ all:
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
-	make -s -C $(library)/visitor \
+	make -s -C $(library)/init \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s a
 	make -s so
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -34,7 +34,7 @@ a:
 	$(library)/libui1/*.o
 so:
 	gcc -shared -o 42.so \
-	$(library)/visitor/startapp.o \
+	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -45,7 +45,7 @@ so:
 	$(library)/libui1/*.o
 program:
 	gcc -o a.out \
-	$(library)/visitor/*.o \
+	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
