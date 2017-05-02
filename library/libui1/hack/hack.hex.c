@@ -55,7 +55,8 @@ struct event
 	u64 when;
 };
 //flostarea
-static int inputcount=0;
+static int dimension = 2;
+static int inputcount = 0;
 static u8 hi[0x100];
 	//[0,0x1f]:target,value
 	//[0x20,0x3f]:base,value
@@ -469,9 +470,12 @@ static void hex_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x64626b)			//'kbd'
+	if(type==0x64626b)		//'kbd'
 	{
-		if(key==0x25)			//left	0x4b
+		if(key == 0xf1)dimension = 1;
+		else if(key == 0xf2)dimension = 2;
+		else if(key == 0xf3)dimension = 3;
+		else if(key==0x25)	//left	0x4b
 		{
 			if( pointeroffset % byteperline == 0 )
 			{
@@ -485,7 +489,7 @@ static void hex_write(struct event* ev)
 				pointeroffset--;
 			}
 		}
-		else if(key==0x27)		//right	0x4d
+		else if(key==0x27)	//right	0x4d
 		{
 			if( pointeroffset % byteperline == byteperline-1 )
 			{
@@ -499,7 +503,7 @@ static void hex_write(struct event* ev)
 				pointeroffset++;
 			}
 		}
-		else if(key==0x26)		//up	0x4b
+		else if(key==0x26)	//up	0x4b
 		{
 			if( pointeroffset < byteperline )
 			{
@@ -513,7 +517,7 @@ static void hex_write(struct event* ev)
 				pointeroffset -= byteperline;
 			}
 		}
-		else if(key==0x28)		//down	0x4d
+		else if(key==0x28)	//down	0x4d
 		{
 			if( pointeroffset >= (lineperwindow-1) * byteperline )
 			{
