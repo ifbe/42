@@ -1,15 +1,15 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1 clang
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1 clang
-	make -s -C $(library)/libsoft0 mac
-	make -s -C $(library)/libsoft1 clang
-	make -s -C $(library)/libui0 maccli
-	make -s -C $(library)/libui1 clang
 	make -s -C $(library)/init
+	make -s -C $(library)/libboot0 none
+	make -s -C $(library)/libboot1
+	make -s -C $(library)/libhard0 x64
+	make -s -C $(library)/libhard1
+	make -s -C $(library)/libsoft0 mac
+	make -s -C $(library)/libsoft1
+	make -s -C $(library)/libui0 maccli
+	make -s -C $(library)/libui1
 	make -s a
 	make -s dylib
 	make -s program

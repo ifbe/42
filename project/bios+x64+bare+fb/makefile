@@ -1,5 +1,7 @@
 library?=../../library
 linux:
+	make -s -C $(library)/init bare \
+	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot0 bare \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
@@ -15,8 +17,6 @@ linux:
 	make -s -C $(library)/libui0 barefb \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libui1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/init bare \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	ld -T link.ld \
 	$(library)/init/startbare.o \
@@ -29,8 +29,10 @@ linux:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-o core.img
+	-o 42.bin
 cross:
+	make -s -C $(library)/init bare \
+	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot0 bare \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
@@ -47,8 +49,6 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libui1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/init bare \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	x86_64-elf-ld -T link.ld \
 	$(library)/init/startbare.o \
 	$(library)/init/main.o \
@@ -60,6 +60,6 @@ cross:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-o core.img
+	-o 42.bin
 clean:
 	rm -f *.out *.bin *.img

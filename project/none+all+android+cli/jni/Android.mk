@@ -19,8 +19,13 @@ include $(CLEAR_VARS)
 
 
 
-#1.boot0
+#0.init
 LOCAL_SRC_FILES := \
+	library/init/startapp.c \
+	library/init/main.c
+
+#1.boot0
+LOCAL_SRC_FILES += \
 	library/libboot0/none/tx.c \
 	library/libboot0/basic.c
 
@@ -289,11 +294,6 @@ LOCAL_SRC_FILES += \
 	library/libui1/tool/tool.sketchpad.c \
 	library/libui1/tool/tool.spectrum.c \
 	library/libui1/character.c
-
-#1.init
-LOCAL_SRC_FILES += \
-	library/init/startapp.c \
-	library/init/main.c
 
 
 

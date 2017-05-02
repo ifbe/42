@@ -1,5 +1,7 @@
 library?=../../library
 all:
+	make -s -C $(library)/init \
+	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libboot0 none \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libboot1 \
@@ -15,8 +17,6 @@ all:
 	make -s -C $(library)/libui0 linuxcli \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libui1 \
-	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
-	make -s -C $(library)/init \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s a
 	make -s so

@@ -1,6 +1,8 @@
 library?=../../library
 datafile?=../../datafile
 all:
+	make -s -C $(library)/init \
+	cflag="-c -O2"
 	make -s -C $(library)/libboot0 wincmd \
 	cflag="-c -O2"
 	make -s -C $(library)/libboot1 \
@@ -16,8 +18,6 @@ all:
 	make -s -C $(library)/libui0 winapi \
 	cflag="-c -O2"
 	make -s -C $(library)/libui1 \
-	cflag="-c -O2"
-	make -s -C $(library)/init \
 	cflag="-c -O2"
 	make -s a
 	make -s dll

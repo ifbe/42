@@ -1,5 +1,6 @@
 library?=../../library
 all:
+	make -s -C $(library)/init
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1
 	make -s -C $(library)/libhard0 mips
@@ -8,7 +9,6 @@ all:
 	make -s -C $(library)/libsoft1
 	make -s -C $(library)/libui0 linuxtui
 	make -s -C $(library)/libui1
-	make -s -C $(library)/init
 	make -s a
 	make -s so
 	make -s program
