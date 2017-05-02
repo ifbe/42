@@ -80,7 +80,13 @@ int main(int argc, char* argv[])
 again:
 		//2.wait
 		ev = eventread();
-		if(ev == 0)break;		//error
+		if(ev == 0)
+		{
+			sleep_us(1000);
+			goto again;
+		}
+
+		//exit or timer
 		if(ev->what == 0)break;		//exit
 		if(ev->what == 0x656d6974)	//time
 		{
