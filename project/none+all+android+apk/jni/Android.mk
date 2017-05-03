@@ -22,39 +22,33 @@ LOCAL_SRC_FILES += \
 ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x86/x86.fp.c \
-	library/libhard0/cpu/x86/x86.lock.c \
 	library/libhard0/cpu/x86/x86.port.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x64/x64.fp.c \
-	library/libhard0/cpu/x64/x64.lock.c \
 	library/libhard0/cpu/x64/x64.port.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/arm/arm.fp.c \
-	library/libhard0/cpu/arm/arm.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),arm64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/arm64/arm64.fp.c \
-	library/libhard0/cpu/arm64/arm64.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/mips/mips.fp.c \
-	library/libhard0/cpu/mips/mips.lock.c \
 	library/libhard0/driver.c
 endif
 ifeq ($(TARGET_ARCH),mips64)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/mips64/mips64.fp.c \
-	library/libhard0/cpu/mips64/mips64.lock.c \
 	library/libhard0/driver.c
 endif
 
@@ -225,8 +219,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libphys/phys.mech.c \
 	library/libsoft1/libphys/phys.c \
 	library/libsoft1/libsys/system.folder.c \
-	library/libsoft1/libsys/system.process.c \
-	library/libsoft1/libsys/system.setting.c \
+	library/libsoft1/libsys/system.monitor.c \
+	library/libsoft1/libsys/system.shell.c \
 	library/libsoft1/libsys/system.c \
 	library/libsoft1/libwire/wire.bt.c \
 	library/libsoft1/libwire/wire.i2c.c \

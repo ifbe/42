@@ -4,8 +4,10 @@
 #define u64 unsigned long long
 int folder_create(void*,void*);
 int folder_delete();
-int process_create(void*,void*);
-int process_delete();
+int monitor_create(void*,void*);
+int monitor_delete();
+int shell_create(void*,void*);
+int shell_delete();
 
 
 
@@ -55,7 +57,10 @@ int system_create(char* world,u64* p)
 	folder_create(world,q);
 	q += 0x100;
 
-	process_create(world,q);
+	monitor_create(world,q);
+	q += 0x100;
+
+	shell_create(world,q);
 	q += 0x100;
 
 	return q-(u8*)p;
@@ -63,6 +68,7 @@ int system_create(char* world,u64* p)
 int system_delete()
 {
 	folder_delete();
-	process_delete();
+	monitor_delete();
+	shell_delete();
 	return 0;
 }

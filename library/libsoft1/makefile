@@ -141,9 +141,8 @@ target:
 	$(compiler) $(cflag) libphys/phys.mech.c
 	$(compiler) $(cflag) libphys/phys.c
 	$(compiler) $(cflag) libsys/system.folder.c
-	$(compiler) $(cflag) libsys/system.process.c
-	$(compiler) $(cflag) libsys/system.thread.c
-	$(compiler) $(cflag) libsys/system.setting.c
+	$(compiler) $(cflag) libsys/system.monitor.c
+	$(compiler) $(cflag) libsys/system.shell.c
 	$(compiler) $(cflag) libsys/system.c
 	$(compiler) $(cflag) libwire/wire.bt.c
 	$(compiler) $(cflag) libwire/wire.gpio.c
