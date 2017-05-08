@@ -63,6 +63,7 @@ struct event
 	u64 when;
 };
 //before
+static int dimension = 2;
 static int maxpower;
 static u16* pcmin;
 static u16* pcmout;
@@ -87,40 +88,38 @@ static void spectrum_read_pixel(struct window* win)
 	int height = win->h;
 
 	backgroundcolor(win, 0);
-	for(x=0;x<512;x++)
+	if(dimension == 1)
 	{
-		t = x * tau /512.0;
-		cc = cosine(t) * 256;
-		ss = -sine(t) * 256;
-		line(win,
-			256 + (int)(cc * (1.0 - 2*power[x])),
-			256 + (int)(ss * (1.0 - 2*power[x])),
-			256 + (int)cc,
-			256 + (int)ss,
-			0xffffff
-		);
+		for(x=0;x<1024;x++)
+		{
+			if(pcmin[x]>32768)continue;
+			y = pcmin[x] *height /maxpower /4;
+			line(win,
+				x*width/1024, (height/4) - y,
+				x*width/1024, (height/4) + y,
+				0xffffff
+			);
+		}
 	}
-/*
-	for(x=0;x<1024;x++)
+	else if(dimension == 2)
 	{
-		if(pcmin[x]>32768)continue;
-		y = pcmin[x] *height /maxpower /4;
-		line(win,
-			x*width/1024, (height/4) - y,
-			x*width/1024, (height/4) + y,
-			0xffffff
-		);
+		for(x=0;x<512;x++)
+		{
+			t = x * tau /512.0;
+			cc = cosine(t) * 256;
+			ss = -sine(t) * 256;
+			line(win,
+				256 + (int)(cc * (1.0 - 2*power[x])),
+				256 + (int)(ss * (1.0 - 2*power[x])),
+				256 + (int)cc,
+				256 + (int)ss,
+				0xffffff
+			);
+		}
 	}
-	for(x=0;x<512;x++)
+	else if(dimension == 3)
 	{
-		y = (int)(power[x]*height);
-		line(win,
-			x*width/512, height - y,
-			x*width/512, height,
-			0xffffff
-		);
 	}
-*/
 }
 static void spectrum_read_html(struct window* win)
 {
@@ -191,7 +190,14 @@ static void spectrum_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x72616863)	//'char'
+	if(type == 0x64626b)
+	{
+		if(key == 0xf1)dimension = 1;
+		else if(key == 0xf2)dimension = 2;
+		else if(key == 0xf3)dimension = 3;
+		return;
+	}
+	else if(type==0x72616863)	//'char'
 	{
 		if( (key>=0x31) && (key<=0x39) )
 		{
@@ -218,10 +224,6 @@ static void spectrum_write(struct event* ev)
 
 		real[j]=real[1023-j]=65535;
 		sound_output(real, imag, pcmout);
-	}
-	else if(type==0x2d6d)
-	{
-		spectrum_random();
 	}
 	else if(type=='s')
 	{

@@ -24,9 +24,6 @@ void vision_explain(void*);
 //libsoft0
 u64 gettime();
 void sleep_us(int);
-//libhard
-void snatch(void*);
-void release(void*);
 //libboot
 void printmemory(void*, int);
 void say(void*, ...);

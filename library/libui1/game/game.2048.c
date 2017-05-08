@@ -49,6 +49,7 @@ struct player
 	u8 data[12][4][4];
 };
 static struct player* pl;
+static int dimension = 2;
 //
 static int num;
 static void* buffer;
@@ -455,7 +456,7 @@ static void new2048()
 static void the2048_write(struct event* ev)
 {
 	//kbd
-	u8 ch;
+	u8 key;
 	int j;
 	int* p;
 	int* q;
@@ -463,8 +464,12 @@ static void the2048_write(struct event* ev)
 	//
 	if(ev->what == 0x64626b)
 	{
-		ch = (ev->why)&0xff;
-		if( (ch>=0x25) && (ch<=0x28) )
+		key = (ev->why)&0xff;
+		if(key == 0xf1)dimension = 1;
+		else if(key == 0xf2)dimension = 2;
+		else if(key == 0xf3)dimension = 3;
+		else if(key == 0xf3)return;
+		else if( (key>=0x25) && (key<=0x28) )
 		{
 			//
 			p = buffer + 64*num;
@@ -473,10 +478,10 @@ static void the2048_write(struct event* ev)
 			for(j=0;j<16;j++)q[j] = p[j];
 
 			//
-			if(ch == 0x25)left2048();
-			else if(ch == 0x26)up2048();
-			else if(ch == 0x27)right2048();
-			else if(ch == 0x28)down2048();
+			if(key == 0x25)left2048();
+			else if(key == 0x26)up2048();
+			else if(key == 0x27)right2048();
+			else if(key == 0x28)down2048();
 
 			//new number?
 			new2048();
@@ -484,7 +489,7 @@ static void the2048_write(struct event* ev)
 	}
 	else if(ev->what == 0x72616863)
 	{
-		if(ch == 0x8)
+		if(key == 0x8)
 		{
 			if(num>0)num--;
 		}

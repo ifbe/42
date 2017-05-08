@@ -103,14 +103,30 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			switch(wparam)
 			{
+				case 0x70:	//f1
+				{
+					eventwrite(0xf1, 0x64626b, 0, 0);
+					break;
+				}
+				case 0x71:	//f2
+				{
+					eventwrite(0xf2, 0x64626b, 0, 0);
+					break;
+				}
+				case 0x72:	//f3
+				{
+					eventwrite(0xf3, 0x64626b, 0, 0);
+					break;
+				}
+				case 0x73:	//f4
+				{
+					eventwrite(0xf4, 0x64626b, 0, 0);
+					break;
+				}
 				case VK_UP:				//up
 				case VK_LEFT:			//left
 				case VK_RIGHT:			//right
 				case VK_DOWN:			//down
-				case 0x70:				//f1
-				case 0x71:				//f2
-				case 0x72:				//f3
-				case 0x73:				//f4
 				{
 					eventwrite(wparam, 0x64626b, 0, 0);
 					break;

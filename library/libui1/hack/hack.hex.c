@@ -76,78 +76,6 @@ static int printmethod=0;
 static int xshift=0;
 static int byteperline=0;
 static int lineperwindow=0;
-static void updateconfig(struct window* win)
-{
-	int width = win->w;
-	u64 fmt = win->fmt;
-
-	//html
-	if(fmt == 0x6c6d7468)
-	{
-		lineperwindow = 16;
-		byteperline = 32;
-		xshift = 0;
-	}
-
-	//text
-	else if(fmt == 0x74786574)
-	{
-		lineperwindow = win->h;
-
-		if(width >= 0x80)
-		{
-			byteperline = 0x40;
-			xshift = (width - 0x80)/2;
-		}
-		else if(width >= 0x40)
-		{
-			byteperline = 0x20;
-			xshift = (width - 0x40)/2;
-		}
-		else if(width >= 0x20)
-		{
-			byteperline = 0x10;
-			xshift = (width - 0x20)/2;
-		}
-		else
-		{
-			byteperline = 0;
-			xshift = 0;
-		}
-	}
-
-	//
-	else
-	{
-		lineperwindow = (win->h)/16;
-
-		if(width >= 2048)
-		{
-			byteperline = 0x80;
-			xshift = (width - 2048)/2;
-		}
-		else if(width >= 1024)
-		{
-			byteperline = 0x40;
-			xshift = (width - 1024)/2;
-		}
-		else if(width >= 512)
-		{
-			byteperline = 0x20;
-			xshift = (width - 512)/2;
-		}
-		else if(width >= 256)
-		{
-			byteperline = 0x10;
-			xshift = (width - 256)/2;
-		}
-		else
-		{
-			byteperline = 0;
-			xshift = 0;
-		}
-	}
-}
 static void foreground(struct window* win)
 {
 	//一整页
@@ -248,14 +176,23 @@ static void floatarea(struct window* win)
 }
 static void hex_read_pixel(struct window* win)
 {
-	//背景
 	background1(win);
+	say("%d\n",dimension);
 
-	//
-	foreground(win);
-
-	//
-	floatarea(win);
+	if(dimension == 1)
+	{
+	}
+	else if(dimension == 2)
+	{
+		foreground(win);
+		floatarea(win);
+	}
+	else if(dimension == 3)
+	{
+	}
+	else if(dimension == 4)
+	{
+	}
 }
 static void hex_read_text(struct window* win)
 {
@@ -445,23 +382,78 @@ static void hex_read_html(struct window* win)
 static void hex_read(struct window* win)
 {
 	u64 fmt = win->fmt;
-	updateconfig(win);
+	u64 width = win->w;
 
 	//text
 	if(fmt == 0x74786574)
 	{
+		lineperwindow = win->h;
+
+		if(width >= 0x80)
+		{
+			byteperline = 0x40;
+			xshift = (width - 0x80)/2;
+		}
+		else if(width >= 0x40)
+		{
+			byteperline = 0x20;
+			xshift = (width - 0x40)/2;
+		}
+		else if(width >= 0x20)
+		{
+			byteperline = 0x10;
+			xshift = (width - 0x20)/2;
+		}
+		else
+		{
+			byteperline = 0;
+			xshift = 0;
+		}
+
 		hex_read_text(win);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
+		lineperwindow = 16;
+		byteperline = 32;
+		xshift = 0;
+
 		hex_read_html(win);
 	}
 
 	//pixel
 	else
 	{
+		lineperwindow = (win->h)/16;
+
+		if(width >= 2048)
+		{
+			byteperline = 0x80;
+			xshift = (width - 2048)/2;
+		}
+		else if(width >= 1024)
+		{
+			byteperline = 0x40;
+			xshift = (width - 1024)/2;
+		}
+		else if(width >= 512)
+		{
+			byteperline = 0x20;
+			xshift = (width - 512)/2;
+		}
+		else if(width >= 256)
+		{
+			byteperline = 0x10;
+			xshift = (width - 256)/2;
+		}
+		else
+		{
+			byteperline = 0;
+			xshift = 0;
+		}
+
 		hex_read_pixel(win);
 	}
 }
@@ -469,12 +461,14 @@ static void hex_write(struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;
+	say("%x,%x\n",type,key);
 
 	if(type==0x64626b)		//'kbd'
 	{
 		if(key == 0xf1)dimension = 1;
 		else if(key == 0xf2)dimension = 2;
 		else if(key == 0xf3)dimension = 3;
+		else if(key == 0xf3)return;
 		else if(key==0x25)	//left	0x4b
 		{
 			if( pointeroffset % byteperline == 0 )
