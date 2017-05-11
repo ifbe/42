@@ -97,7 +97,7 @@ linuxsdl:
 .PHONY:maccli
 maccli:
 	rm -f *.o
-	$(compiler) $(cflag) macos/macos.cli.c
+	$(compiler) $(cflag) mac/mac.cli.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
@@ -105,7 +105,7 @@ maccli:
 .PHONY:mactui
 mactui:
 	rm -f *.o
-	$(compiler) $(cflag) macos/macos.tui.c
+	$(compiler) $(cflag) mac/mac.tui.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
@@ -113,7 +113,7 @@ mactui:
 .PHONY:maccocoa
 maccocoa:
 	rm -f *.o
-	$(compiler) $(cflag) macos/macos.cocoa.c
+	$(compiler) $(cflag) mac/mac.cocoa.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
@@ -121,7 +121,7 @@ maccocoa:
 .PHONY:macquartz
 macquartz:
 	rm -f *.o
-	$(compiler) $(cflag) macos/macos.quartz.c
+	$(compiler) $(cflag) mac/mac.quartz.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
