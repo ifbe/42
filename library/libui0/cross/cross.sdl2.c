@@ -106,7 +106,7 @@ void* uievent(struct sdldata* p)
 */
 		else if(event.type == SDL_MOUSEBUTTONDOWN)	//MOUSEMOTION
 		{
-			if(event.button.button=SDL_BUTTON_LEFT)
+			if(event.button.button == SDL_BUTTON_LEFT)
 			{
 				int x=event.button.x;
 				int y=event.button.y;
@@ -123,6 +123,7 @@ void* uievent(struct sdldata* p)
 	SDL_DestroyRenderer(p->renderer);
 	SDL_DestroyWindow(p->window); 
 	SDL_Quit(); 
+	return 0;
 }
 
 
