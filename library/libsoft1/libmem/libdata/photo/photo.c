@@ -1,0 +1,3 @@
+void photo_read()
+{
+}

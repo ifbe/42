@@ -1,0 +1,3 @@
+void kmp_read()
+{
+}

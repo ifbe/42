@@ -3,9 +3,9 @@
 
 
 
-static void ftp_read()
+void ftp_read()
 {
 }
-static void ftp_write()
+void ftp_write()
 {
 }

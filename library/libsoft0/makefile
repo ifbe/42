@@ -74,8 +74,8 @@ linux:
 mac:
 	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
 	$(compiler) $(cflag) mac/mac.flow.net.socket.c
-	$(compiler) $(cflag) mac/mac.flow.image.c
-	$(compiler) $(cflag) mac/mac.flow.voice.c
+	$(compiler) $(cflag) mac/mac.flow.sound.xxx.c
+	$(compiler) $(cflag) mac/mac.flow.vision.xxx.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac/mac.memory.folder.c
 	$(compiler) $(cflag) mac/mac.memory.managed.c

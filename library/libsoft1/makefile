@@ -140,10 +140,10 @@ target:
 	$(compiler) $(cflag) libphys/phys.elec.c
 	$(compiler) $(cflag) libphys/phys.mech.c
 	$(compiler) $(cflag) libphys/phys.c
-	$(compiler) $(cflag) libsys/system.folder.c
-	$(compiler) $(cflag) libsys/system.monitor.c
-	$(compiler) $(cflag) libsys/system.shell.c
-	$(compiler) $(cflag) libsys/system.c
+	$(compiler) $(cflag) libsys/sys.folder.c
+	$(compiler) $(cflag) libsys/sys.monitor.c
+	$(compiler) $(cflag) libsys/sys.shell.c
+	$(compiler) $(cflag) libsys/sys.c
 	$(compiler) $(cflag) libwire/wire.bt.c
 	$(compiler) $(cflag) libwire/wire.gpio.c
 	$(compiler) $(cflag) libwire/wire.i2c.c

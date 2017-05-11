@@ -1,15 +1,24 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/init
-	make -s -C $(library)/libboot0 none
-	make -s -C $(library)/libboot1
-	make -s -C $(library)/libhard0 x64
-	make -s -C $(library)/libhard1
-	make -s -C $(library)/libsoft0 mac
-	make -s -C $(library)/libsoft1
-	make -s -C $(library)/libui0 maccli
-	make -s -C $(library)/libui1
+	make -s -C $(library)/init \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libboot0 none \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libboot1 \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libhard0 x64 \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libhard1 \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libsoft0 mac \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libsoft1 \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libui0 maccli \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libui1 \
+	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s a
 	make -s dylib
 	make -s program
@@ -25,7 +34,8 @@ a:
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o
 dylib:
-	libtool -dynamic -o 42.dylib \
+	libtool -dynamic -macosx_version_min 10.12 \
+	-o 42.dylib \
 	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -34,7 +44,8 @@ dylib:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libui1/*.o \
+	-lm -lc
 program:
 	clang \
 	$(library)/init/*.o \

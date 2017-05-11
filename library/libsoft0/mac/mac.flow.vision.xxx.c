@@ -1,0 +1,6 @@
+void startvision()
+{
+}
+void stopvision()
+{
+}

@@ -1,0 +1,6 @@
+void createsignal()
+{
+}
+void deletesignal()
+{
+}

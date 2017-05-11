@@ -1,0 +1,6 @@
+void readpci()
+{
+}
+void writepci()
+{
+}

@@ -3,9 +3,9 @@
 
 
 
-static void eth_read()
+void eth_read()
 {
 }
-static void eth_write()
+void eth_write()
 {
 }

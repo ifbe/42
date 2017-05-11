@@ -1,0 +1,3 @@
+void barcode_read()
+{
+}

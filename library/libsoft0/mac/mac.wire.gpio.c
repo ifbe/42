@@ -1,0 +1,6 @@
+void readgpio()
+{
+}
+void writegpio()
+{
+}

@@ -1,0 +1,3 @@
+void bm_read()
+{
+}

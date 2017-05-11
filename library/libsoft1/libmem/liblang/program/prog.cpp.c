@@ -1,0 +1,3 @@
+void cpp_read()
+{
+}

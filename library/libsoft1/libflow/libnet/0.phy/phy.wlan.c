@@ -1,0 +1,3 @@
+void phywlan_read()
+{
+}

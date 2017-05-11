@@ -3,9 +3,9 @@
 
 
 
-static void quic_read()
+void quic_read()
 {
 }
-static void quic_write()
+void quic_write()
 {
 }

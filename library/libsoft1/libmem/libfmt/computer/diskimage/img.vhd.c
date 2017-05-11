@@ -1,0 +1,3 @@
+void vhd_read()
+{
+}

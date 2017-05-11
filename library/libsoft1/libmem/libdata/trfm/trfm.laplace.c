@@ -1,0 +1,3 @@
+void laplace_read()
+{
+}

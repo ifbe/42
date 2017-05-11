@@ -233,10 +233,10 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libphys/phys.elec.c \
 	library/libsoft1/libphys/phys.mech.c \
 	library/libsoft1/libphys/phys.c \
-	library/libsoft1/libsys/system.folder.c \
-	library/libsoft1/libsys/system.monitor.c \
-	library/libsoft1/libsys/system.shell.c \
-	library/libsoft1/libsys/system.c \
+	library/libsoft1/libsys/sys.folder.c \
+	library/libsoft1/libsys/sys.monitor.c \
+	library/libsoft1/libsys/sys.shell.c \
+	library/libsoft1/libsys/sys.c \
 	library/libsoft1/libwire/wire.bt.c \
 	library/libsoft1/libwire/wire.i2c.c \
 	library/libsoft1/libwire/wire.ir.c \

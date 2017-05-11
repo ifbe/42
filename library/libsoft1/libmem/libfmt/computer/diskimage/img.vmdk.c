@@ -1,0 +1,3 @@
+void vmdk_read()
+{
+}
