@@ -113,7 +113,7 @@ mactui:
 .PHONY:maccocoa
 maccocoa:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.cocoa.c
+	$(compiler) $(cflag) mac/mac.cocoa.m
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c

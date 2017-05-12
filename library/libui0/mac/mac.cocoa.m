@@ -7,15 +7,36 @@
  * Compile with:
  *  cc OSXWindow.m -o OSXWindow -framework Cocoa
  */
-
 #import "Cocoa/Cocoa.h"
+//int main(int argc, const char * argv[])
 
-int main(int argc, const char * argv[])
+
+
+
+void windowread()
+{
+}
+void windowwrite()
+{
+}
+void windowlist()
+{
+}
+void windowchoose()
+{
+}
+void windowstart()
+{
+}
+void windowstop()
+{
+}
+int windowcreate()
 {
     // Autorelease Pool:
     // Objects declared in this scope will be automatically
     // released at the end of it, when the pool is "drained".
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] create];
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
     // Create a shared app instance.
     // This will createialize the global variable
@@ -27,27 +48,27 @@ int main(int argc, const char * argv[])
     //
 
     // Style flags:
-    NSUInteger windowStyle = NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask;
+    NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
 
     // Window bounds (x, y, width, height).
     NSRect windowRect = NSMakeRect(100, 100, 400, 400);
-    NSWindow * window = [[NSWindow alloc] createWithContentRect:windowRect
+    NSWindow * window = [[NSWindow alloc] initWithContentRect:windowRect
                                           styleMask:windowStyle
                                           backing:NSBackingStoreBuffered
                                           defer:NO];
     [window autorelease];
 
     // Window controller:
-    NSWindowController * windowController = [[NSWindowController alloc] createWithWindow:window];
+    NSWindowController * windowController = [[NSWindowController alloc] initWithWindow:window];
     [windowController autorelease];
 
     // This will add a simple text view to the window,
     // so we can write a test string on it.
-    NSTextView * textView = [[NSTextView alloc] createWithFrame:windowRect];
+    NSTextView * textView = [[NSTextView alloc] initWithFrame:windowRect];
     [textView autorelease];
 
     [window setContentView:textView];
-    [textView insertText:@"Hello OSX/Cocoa world!"];
+    //[textView insertText:@"Hello OSX/Cocoa world!"];
 
     // TODO: Create app delegate to handle system events.
     // TODO: Create menus (especially Quit!)
@@ -59,4 +80,7 @@ int main(int argc, const char * argv[])
     [pool drain];
 
     return 0;
+}
+void windowdelete()
+{
 }
