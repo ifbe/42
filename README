@@ -11,8 +11,8 @@ explain:
 	libboot1(debug):		printf
 	libhard0(localhw):		register config(ahci, xhci, ethernet...)
 	libhard1(localhw):		protocol stack(sata, usb, tcpip...)
-	libsoft0(system):		function interface(unified, simple, goodlook)
-	libsoft1(system):		program central(algorithm, logic, net...)
+	libsoft0(system):		function interface(unified, simple, goodlook...)
+	libsoft1(system):		logic central(algorithm, science, network...)
 	libui0(graphic):		screen window(framebuffer, winapi, opengl, sdl...)
 	libui1(graphic):		inner content(button, picture, sound, video...)
 
