@@ -1,5 +1,20 @@
-42
-the answer to life,the universe and everything~
+42:
+	the answer to life,the universe and everything~
+
+build:
+	cd project/base+arch+sys+ui
+	make
+
+explain:
+	init:					start() && main()
+	libboot0(debug):		basic setup(cpu, memory, uart...)
+	libboot1(debug):		printf
+	libhard0(localhw):		register config(ahci, xhci, ethernet...)
+	libhard1(localhw):		protocol stack(sata, usb, tcpip...)
+	libsoft0(system):		program interface(unified, simple, goodlook)
+	libsoft1(system):		software center(algorithm, logic, net...)
+	libui0(graphic):		window container(winapi, opengl, sdl...)
+	libui1(graphic):		inner content(button, picture, sound, video...)
 
 
 
@@ -13,11 +28,6 @@ the answer to life,the universe and everything~
 |                      /  /  \     |   /   \  | \   | /                     |
 |                       \  \  \   / \  / \      / \  /                      |
 |                           \    |  |     |   \   /                         |
-|===========================================================================|
-|                                  |     |                                  |
-|                                  visitor                                  |
-|        __________________________|     |_________________________         |
-|        |                  |                  |                  |         |
 |==================|==================|==================|==================|
 |    |        |    |    |        |    |    |        |    |    |        |    |
 |    |        |    |    |        |    |    |        |    |    |        |    |
@@ -33,11 +43,6 @@ the answer to life,the universe and everything~
 | /              \ | /    |    \    \ | /  /  |    \   \ | /   /  |   \   \ |
 |/bios efi uboot  \|/arm x86 mips    \|/  linux mac win \|/ cli fb xlib api\|
 |==================|==================|==================|==================|
-
-
-
-
-how to build & use:
-	cd project/????????
-	make
-then there will be: a.out, 42.a, 42.so, ...
+|                                  m a i n                                  |
+|                                 s t a r t                                 |
+|===========================================================================|
