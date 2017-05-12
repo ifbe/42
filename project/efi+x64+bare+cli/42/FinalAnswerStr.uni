@@ -1,0 +1,8 @@
+/=#
+
+#langdef en-US "English"
+
+#string STR_HELLO_WORLD_HELP_INFORMATION        #language en-US ""
+".TH FinalAnswer 0 "Displays a \"UEFI Final Answer!\" string."\r\n"
+".SH NAME\r\n"
+"FinalAnswer application.\r\n"

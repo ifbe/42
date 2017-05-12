@@ -12,24 +12,27 @@
 2:build
 	cd edk2/
 	make -C BaseTools
-	./mingw-gcc-build.py --arch=x64 --prefix=/opt/efi
 
-3:modify
-	Conf/tools_def.txt:
+	#cd BaseTools/gcc
+	#./mingw-gcc-build.py --arch=x64 --prefix=/opt/efi
+	#cd ../../
+
+	source ./edksetup.sh BaseTools
+
+3:modify Conf/tools_def.txt:
 	UNIXGCC_X64_PETOOLS_PREFIX=x86_64-w64-mingw32-
 
-	Conf/target.txt:
+4:modify Conf/target.txt:
 	ACTIVE_PLATFORM       = MdeModulePkg/MdeModulePkg.dsc
 	TARGET_ARCH           = X64
 	TOOL_CHAIN_TAG        = UNIXGCC
 
-	#Conf/tools_def.txt
 	#DEFINE UNIX_IASL_BIN  = /opt/iasl
 
-4:environment
+5:environment
 	export EDK_TOOLS_PATH=`pwd`/BaseTools
 	source ./edksetup.sh BaseTools
 
-5:sample
-	build -m MdeModulePkg/Application/HelloWorld.inf
+6:sample
+	build -m MdeModulePkg/Application/HelloWorld/HelloWorld.inf
 	ls Build/MdeModule/DEBUG_UNIXGCC/X64/
