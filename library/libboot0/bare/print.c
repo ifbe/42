@@ -6,11 +6,10 @@
 
 
 
-int fmt(char* mem, int max, char* fmt, ...)
+int lowlevel_input(char* buf)
 {
-	return 0;
 }
-void say(char* fmt , ...)
+void lowlevel_output(char* buf, int len)
 {
 }
 

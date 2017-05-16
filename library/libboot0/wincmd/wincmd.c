@@ -270,25 +270,8 @@ static int escapesequence(u8* p)
 
 
 
-void createserial(u8* arg)
-{
-	//opened?
-	HWND consolewindow = GetConsoleWindow();
-	if(consolewindow != NULL)return;
-
-	//new
-	AllocConsole();
-	freopen("CONIN$","r",stdin);
-	freopen("CONOUT$","w",stdout);
-
-	//hide
-	consolewindow = GetConsoleWindow();
-	//ShowWindow(consolewindow,SW_HIDE);
-}
-void deleteserial()
-{
-}
-int fmt(u8* mem, int max, u8* fmt, ...)
+/*
+int fmt1(u8* mem, int max, u8* fmt, ...)
 {
 	int ret;
 	va_list args;
@@ -306,7 +289,7 @@ void say2(u8* fmt , ...)
 {
 	asm("jmp printf");
 }
-void say(u8* fmt , ...)
+void say3(u8* fmt , ...)
 {
 	int j,k,ret;
 	va_list args;
@@ -359,4 +342,35 @@ void say(u8* fmt , ...)
 			printf("%c",buf[j]);
 		}
 	}
+}
+*/
+
+
+
+
+int lowlevel_input(char* buf)
+{
+}
+void lowlevel_output(char* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)printf("%c",buf[j]);
+}
+void createserial(u8* arg)
+{
+	//opened?
+	HWND consolewindow = GetConsoleWindow();
+	if(consolewindow != NULL)return;
+
+	//new
+	AllocConsole();
+	freopen("CONIN$","r",stdin);
+	freopen("CONOUT$","w",stdout);
+
+	//hide
+	consolewindow = GetConsoleWindow();
+	ShowWindow(consolewindow,SW_HIDE);
+}
+void deleteserial()
+{
 }

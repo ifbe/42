@@ -31,6 +31,8 @@ LOCAL_SRC_FILES += \
 
 #1.boot1
 LOCAL_SRC_FILES += \
+	library/libboot1/say.c \
+	library/libboot1/event.c \
 	library/libboot1/debug.c
 
 #2.hard0

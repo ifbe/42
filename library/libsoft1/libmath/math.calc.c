@@ -834,7 +834,7 @@ static int calc_write(u8* p)
 	say("postfix:%s\n", postfix);
 
 	ans = calculator(postfix, 0, 0);
-	say("answer:%lf\n", ans);
+	say("answer:%f\n", ans);
 
 	return 0;
 }

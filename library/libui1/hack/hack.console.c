@@ -153,7 +153,7 @@ static void console_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x72616863)		//'char'
+	if(type==0x72616863)	//'char'
 	{
 		if(key==0x8)		//backspace
 		{
@@ -231,7 +231,7 @@ static void console_stop()
 void console_create(void* base,void* addr)
 {
 	struct player* p = addr;
-	logbuf=base+0x300000;
+	logbuf = base+0x300000;
 
 	p->type = 0x6c6f6f74;
 	p->name = 0x656c6f736e6f63;

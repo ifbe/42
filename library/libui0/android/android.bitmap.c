@@ -106,8 +106,9 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv*
 //correct:"On","Load"        wrong:"on","load"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
-	say("JNI_OnLoad\n");
 	world = birth();
+	say("JNI_OnLoad\n");
+
 	ui = world+0x400000;
 	return JNI_VERSION_1_6;
 }

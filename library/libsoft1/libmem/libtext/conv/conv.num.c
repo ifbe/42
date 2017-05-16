@@ -132,7 +132,7 @@ int data2hexstr(u64 data,u8* str)
 
 
 //double类型转换成10进制字符串
-void double2decstr(double data, u8* str)
+int double2decstr(double data, u8* str)
 {
 	double temp;
 	int offset;
@@ -181,4 +181,5 @@ void double2decstr(double data, u8* str)
 
 	//0
 	str[offset]=0;
+	return offset;
 }

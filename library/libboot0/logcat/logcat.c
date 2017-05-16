@@ -12,6 +12,7 @@
 
 int cur=0;
 char buffer[0x1000];
+/*
 int fmt(char* mem, int max, char* fmt, ...)
 {
 	int ret;
@@ -53,10 +54,32 @@ void say(char* fmt , ...)
 		}
 	}
 }
+*/
 
 
 
 
+int lowlevel_input(char* buf)
+{
+	return 0;
+}
+void lowlevel_output(char* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)
+	{
+		buffer[cur] = buf[j];
+		cur++;
+
+		if((buf[j] == '\n') | (cur >= 0xfff))
+		{
+			buffer[cur] = 0;
+			LOGI("%s",buffer);
+
+			cur = 0;
+		}
+	}
+}
 void createserial()
 {
 }

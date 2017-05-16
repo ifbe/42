@@ -8,6 +8,7 @@
 
 
 
+/*
 int fmt(char* mem, int max, char* fmt, ...)
 {
 	int ret;
@@ -27,10 +28,19 @@ void say(char* fmt , ...)
 	vprintf(fmt,args);
 	va_end(args);
 }
+*/
 
 
 
 
+int lowlevel_input(char* buf)
+{
+}
+void lowlevel_output(char* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)printf("%c",buf[j]);
+}
 void deleteserial()
 {
 }

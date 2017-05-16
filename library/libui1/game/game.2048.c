@@ -220,7 +220,7 @@ static void the2048_read_html(struct window* win)
 static void the2048_read(struct window* win)
 {
 	u64 fmt = win->fmt;
-	//say("(@2048.read)fmt=%x\n",temp);
+	say("@2048.read\n");
 
 	//text
 	if(fmt == 0x74786574)

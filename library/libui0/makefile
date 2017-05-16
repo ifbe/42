@@ -150,7 +150,7 @@ macsdl:
 .PHONY:wincli
 wincli:
 	rm -f *.o
-	$(compiler) $(cflag) windows/windows.cli.c
+	$(compiler) $(cflag) win/win.cli.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
@@ -158,7 +158,7 @@ wincli:
 .PHONY:wintui
 wintui:
 	rm -f *.o
-	$(compiler) $(cflag) windows/windows.tui.c
+	$(compiler) $(cflag) win/win.tui.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
@@ -166,7 +166,7 @@ wintui:
 .PHONY:winapi
 winapi:
 	rm -f *.o
-	$(compiler) $(cflag) windows/windows.api.c
+	$(compiler) $(cflag) win/win.api.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
