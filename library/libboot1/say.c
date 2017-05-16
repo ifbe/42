@@ -3,11 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 #include<stdarg.h>
-int data2decstr(u64 data,u8* str);
-int data2hexstr(u64 data,u8* str);
-int double2decstr(double data, u8* str);
-void lowlevel_input(char*);
-void lowlevel_output(char*, int);
+int data2decstr(u64 data, void* str);
+int data2hexstr(u64 data, void* str);
+int double2decstr(double data, void* str);
+void lowlevel_input(void*);
+void lowlevel_output(void*, int);
 
 
 
@@ -42,9 +42,9 @@ void initsay(char* buf)
 int convert(char* buf, int len, char* str, va_list arg)
 {
 	int j,k;
-	double _f;
 	u64 _x;
-	u8* _s;
+    char* _s;
+    double _f;
 
 	j = k = 0;
 	while(1)
@@ -115,8 +115,9 @@ int fmt(char* buf, int len, char* str, ...)
 	va_start(arg, str);
 	ret = convert(buf, len, str, arg);
 	va_end(arg);
+    return ret;
 }
-void say(u8* str, ...)
+void say(char* str, ...)
 {
 	int ret;
 	va_list arg;

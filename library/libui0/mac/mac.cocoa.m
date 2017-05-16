@@ -8,6 +8,14 @@
  *  cc OSXWindow.m -o OSXWindow -framework Cocoa
  */
 #import "Cocoa/Cocoa.h"
+struct windata
+{
+    unsigned long long buf;
+    unsigned long long fmt;
+    unsigned long long w;
+    unsigned long long h;
+};
+CGContextRef  cgcxtref;
 //int main(int argc, const char * argv[])
 
 
@@ -25,8 +33,20 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart()
+void windowstart(struct windata* p)
 {
+    void* data = malloc(2048*1024*4);
+    CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    cgcxtref = CGBitmapContextCreate(
+        data, 512, 512,
+        8, 2048,
+        colorspace, kCGImageAlphaPremultipliedLast
+    );
+    CGColorSpaceRelease(colorspace);
+
+    p->buf = (unsigned long long)data;
+    p->w = 512;
+    p->h = 512;
 }
 void windowstop()
 {
@@ -51,7 +71,7 @@ int windowcreate()
     NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
 
     // Window bounds (x, y, width, height).
-    NSRect windowRect = NSMakeRect(100, 100, 400, 400);
+    NSRect windowRect = NSMakeRect(0, 0, 512, 512);
     NSWindow * window = [[NSWindow alloc] initWithContentRect:windowRect
                                           styleMask:windowStyle
                                           backing:NSBackingStoreBuffered

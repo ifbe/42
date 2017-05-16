@@ -35,6 +35,7 @@ void say(char* fmt , ...)
 
 int lowlevel_input(char* buf)
 {
+    return 0;
 }
 void lowlevel_output(char* buf, int len)
 {
