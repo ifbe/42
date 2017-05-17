@@ -14,6 +14,7 @@ void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bodycolor, u32 framecolr);
+void xt100_read(void*);
 //
 int data2decstr(u64 data,u8* string);
 u32 getrandom();
@@ -58,6 +59,7 @@ static int px,py;
 static char table[9][9];
 //
 static char* buffer;
+static int dimension = 2;
 
 
 
@@ -257,6 +259,21 @@ static void sudoku_read_pixel(struct window* win)
 	int x,y;
 	int w = win->w;
 	int h = win->h;
+	if(dimension == 1)
+	{
+		for(y=0;y<9;y++)
+		{
+			for(x=0;x<9;x++)
+			{
+				if(table[y][x] == 0)continue;
+				say("%d	",table[y][x]);
+			}
+			say("\n");
+		}
+		say("\n");
+		xt100_read(win);
+		return;
+	}
 
 	for(y=0;y<9;y++)
 	{
@@ -327,23 +344,26 @@ static void sudoku_write(struct event* ev)
 	u64 key = ev->why;
 	if(what == 0x64626b)
 	{
-		if(key == 0x25)	//left
+		if(key == 0xf1)dimension = 1;
+		else if(key == 0xf2)dimension = 2;
+		else if(key == 0xf3)dimension = 3;
+		else if(key == 0x25)	//left
 		{
 			if(px<1)return;
 			px--;
 		}
-		else if(key == 0x26)   //up
+		else if(key == 0x26)	//up
 		{
 			if(py<1)return;
 			py--;
 		}
-		else if(key == 0x27)   //right
+		else if(key == 0x27)	//right
 		{
 			if(px<0)return;
 			if(px>=8)return;
 			px++;
 		}
-		else if(key == 0x28)   //down
+		else if(key == 0x28)	//down
 		{
 			if(py<0)return;
 			if(py>=8)return;

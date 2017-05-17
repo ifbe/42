@@ -135,6 +135,7 @@ static void the2048_read_pixel(struct window* win)
 		say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
 		say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
 		say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
+		say("\n");
 		xt100_read(win);
 		return;
 	}
@@ -479,7 +480,7 @@ static void the2048_write(struct event* ev)
 		if(key == 0xf1)dimension = 1;
 		else if(key == 0xf2)dimension = 2;
 		else if(key == 0xf3)dimension = 3;
-		else if(key == 0xf3)return;
+		else if(key == 0xf4)return;
 		else if( (key>=0x25) && (key<=0x28) )
 		{
 			//

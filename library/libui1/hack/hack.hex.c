@@ -14,6 +14,7 @@ void rectbody(void*,
 	int x2, int y2,
 	u32 color);
 void background1(void*);
+void xt100_read(void*);
 //
 int data2hexstr(u64, u8*);
 int cmp(void*, void*);
@@ -176,14 +177,16 @@ static void floatarea(struct window* win)
 }
 static void hex_read_pixel(struct window* win)
 {
-	background1(win);
 	say("%d\n",dimension);
 
 	if(dimension == 1)
 	{
+		printmemory(databuf, 0x200);
+		xt100_read(win);
 	}
 	else if(dimension == 2)
 	{
+		background1(win);
 		foreground(win);
 		floatarea(win);
 	}
