@@ -2,6 +2,12 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) draw/draw.ascii.c
+	$(compiler) $(cflag) draw/draw.background.c
+	$(compiler) $(cflag) draw/draw.icon.c
+	$(compiler) $(cflag) draw/draw.shape.c
+	$(compiler) $(cflag) draw/draw.ttf.c
+	$(compiler) $(cflag) draw/draw.xt100.c
 	$(compiler) $(cflag) game/game.2048.c
 	$(compiler) $(cflag) game/game.chess.c
 	$(compiler) $(cflag) game/game.ooxx.c
@@ -11,7 +17,6 @@ target:
 	$(compiler) $(cflag) game/game.weiqi.c
 	$(compiler) $(cflag) game/game.xiangqi.c
 	$(compiler) $(cflag) hack/hack.browse.c
-	$(compiler) $(cflag) hack/hack.console.c
 	$(compiler) $(cflag) hack/hack.editor.c
 	$(compiler) $(cflag) hack/hack.hex.c
 	$(compiler) $(cflag) hack/hack.input.c

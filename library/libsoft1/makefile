@@ -56,10 +56,6 @@ target:
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.des.c
 	$(compiler) $(cflag) libmem/libdata/crypt/crypt.rsa.c
-	$(compiler) $(cflag) libmem/libdata/draw/draw.ascii.c
-	$(compiler) $(cflag) libmem/libdata/draw/draw.background.c
-	$(compiler) $(cflag) libmem/libdata/draw/draw.shape.c
-	$(compiler) $(cflag) libmem/libdata/draw/draw.ttf.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc8.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc16.c
 	$(compiler) $(cflag) libmem/libdata/hash/hash.crc32.c

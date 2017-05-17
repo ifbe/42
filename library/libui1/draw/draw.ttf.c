@@ -27,3 +27,6 @@ void ttf_str(struct window* win,
 	int xxxx, int yyyy, int size, u8* code)
 {
 }
+void ttf_create(void* addr)
+{
+}

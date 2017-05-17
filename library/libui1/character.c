@@ -2,7 +2,10 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//special guys
+//library
+void xt100_create(void*);
+void ttf_create(void*);
+//special
 void menu_create(u8*,u8*);
 void menu_delete();
 void roster_create(u8*,u8*);
@@ -38,8 +41,6 @@ void pure_delete();
 //hack
 void browse_create(u8*,u8*);
 void browse_delete();
-void console_create(u8*,u8*);
-void console_delete();
 void control_create(u8*,u8*);
 void control_delete();
 void hex_create(u8*,u8*);
@@ -146,6 +147,10 @@ void charactercreate(u8* type, u8* addr)
 	temp = addr + 0x100000;
 	for(i=0;i<0x100000;i++)temp[i]=0;
 
+	//
+	xt100_create(addr);
+	ttf_create(addr);
+
 	//menu.center
 	menu_create(addr,temp);
 	temp+=0x100;
@@ -192,10 +197,6 @@ void charactercreate(u8* type, u8* addr)
 
 	//hack.browse
 	browse_create(addr,temp);
-	temp+=0x100;
-
-	//hack.console
-	console_create(addr,temp);
 	temp+=0x100;
 
 	//hack.hex
@@ -275,7 +276,6 @@ void characterdelete()
 	tree_delete();
 	hex_delete();
 	control_delete();
-	console_delete();
 	browse_delete();
 
 	color_delete();

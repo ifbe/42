@@ -146,10 +146,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
 	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
-	library/libsoft1/libmem/libdata/draw/draw.ascii.c \
-	library/libsoft1/libmem/libdata/draw/draw.background.c \
-	library/libsoft1/libmem/libdata/draw/draw.shape.c \
-	library/libsoft1/libmem/libdata/draw/draw.ttf.c \
 	library/libsoft1/libmem/libdata/gcode/gcode.barcode.c \
 	library/libsoft1/libmem/libdata/gcode/gcode.qrcode.c \
 	library/libsoft1/libmem/libdata/tcode/tcode.base64.c \
@@ -261,6 +257,12 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
+	library/libui1/draw/draw.ascii.c \
+	library/libui1/draw/draw.background.c \
+	library/libui1/draw/draw.icon.c \
+	library/libui1/draw/draw.shape.c \
+	library/libui1/draw/draw.ttf.c \
+	library/libui1/draw/draw.xt100.c \
 	library/libui1/game/game.2048.c \
 	library/libui1/game/game.chess.c \
 	library/libui1/game/game.ooxx.c \
@@ -270,7 +272,6 @@ LOCAL_SRC_FILES += \
 	library/libui1/game/game.weiqi.c \
 	library/libui1/game/game.xiangqi.c \
 	library/libui1/hack/hack.browse.c \
-	library/libui1/hack/hack.console.c \
 	library/libui1/hack/hack.editor.c \
 	library/libui1/hack/hack.hex.c \
 	library/libui1/hack/hack.input.c \

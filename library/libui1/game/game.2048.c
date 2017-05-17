@@ -3,6 +3,7 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
+void xt100_read(void*);
 void printdecimal(void*, 
 	int x, int y, int size, int data, u32 fg, u32 bg);
 void rect(void*,
@@ -127,6 +128,16 @@ static void the2048_read_pixel(struct window* win)
 {
 	int x,y;
 	int (*table)[4] = buffer + num*16*4;
+
+	if(dimension == 1)
+	{
+		say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
+		say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
+		say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
+		say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
+		xt100_read(win);
+		return;
+	}
 
 	for(y=0;y<4;y++)
 	{

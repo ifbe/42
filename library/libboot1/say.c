@@ -24,22 +24,22 @@ static void* journalqueue;      //stderr
 void initsay(char* buf)
 {
 	inputqueue = buf;
-		incur = inputqueue+0x100000-16;
-		inwin = inputqueue+0x100000-8;
+	incur = inputqueue+0x100000-16;
+	inwin = inputqueue+0x100000-8;
 
 	outputqueue = buf+0x100000;
-		outcur = outputqueue+0x100000-16;
-		outwin = outputqueue+0x100000-8;
+	outcur = outputqueue+0x100000-16;
+	outwin = outputqueue+0x100000-8;
 
 	journalqueue = buf+0x200000;
-		logcur = journalqueue+0x100000-16;
-		logwin = journalqueue+0x100000-8;
+	logcur = journalqueue+0x100000-16;
+	logwin = journalqueue+0x100000-8;
 }
 
 
 
 
-int convert(char* buf, int len, char* str, va_list arg)
+int convert(char* buf, int len, char* str, int align, va_list arg)
 {
 	int j,k;
 	u64 _x;
@@ -102,28 +102,102 @@ int convert(char* buf, int len, char* str, va_list arg)
 			}
 		}
 
-		buf[k] = str[j];
+		if(str[j] == '\n')
+		{
+			buf[k] = '\n';
+			k = (k+0x80) - ((align+k)%0x80);
+		}
+		else if(str[j] == '	')
+		{
+			do
+			{
+				buf[k] = 0x20;
+				k++;
+			}while( ( (align+k) % 8 ) != 0);
+		}
+		else
+		{
+			buf[k] = str[j];
+			k++;
+		}
+
 		j++;
-		k++;
 	}
 	return k;
 }
+void printout(int cur, int len)
+{
+	int j,k;
+	u8* p;
+
+	p = outputqueue;
+	j = cur;
+	while(1)
+	{	
+		if(j >= cur+len)
+		{
+			if(j%0x80 == 0)break;
+
+			k = j - (j%0x80);
+			if(k<cur)k=cur;
+
+			lowlevel_output(p+k, j-k);
+			break;
+		}
+		else if(p[j] == '\n')
+		{
+			k = j - (j%0x80);
+			if(k<cur)k=cur;
+
+			lowlevel_output(p+k, j-k+1);
+			j = (j+0x80) - (j%0x80);
+		}
+		else
+		{
+			if(j%0x80 == 0x7f)
+			{
+				k = j - (j%0x80);
+				if(k<cur)k=cur;
+
+				lowlevel_output(p+k, j-k+1);
+			}
+			j++;
+		}
+	}
+}
+
+
+
+
 int fmt(char* buf, int len, char* str, ...)
 {
 	int ret;
 	va_list arg;
 	va_start(arg, str);
-	ret = convert(buf, len, str, arg);
+	ret = convert(buf, len, str, 0, arg);
 	va_end(arg);
     return ret;
 }
 void say(char* str, ...)
 {
-	int ret;
+	int cur,ret;
 	va_list arg;
 	va_start(arg, str);
-	ret = convert(outputqueue, 0x1000, str, arg);
-	lowlevel_output(outputqueue, ret);
+
+	//read position
+	cur = *outcur;
+
+	//snprintf
+	ret = convert(outputqueue+cur, 0x1000, str, cur%0x80, arg);
+
+	//debugport
+	printout(cur, ret);
+
+	//write position
+	cur = cur+ret;
+	if(cur > 0xf0000)cur = 0;
+	*outcur = cur;
+
 	va_end(arg);
 }
 
