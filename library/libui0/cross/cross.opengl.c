@@ -21,18 +21,21 @@ void eventwrite(u64,u64,u64,u64);
 
 
 
-struct gldata
+struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
 	u64 thread;
-	u64 datafmt;
-	void* databuf;
 };
-static struct gldata* gdata;
+static struct window* win;
 //
 static int refresh=0;
 static GLuint texture[1];
@@ -116,7 +119,7 @@ void callback_display_texture()
 		0,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,// 像素的数据类型  
-		(void*)gdata->buf	// 数据指针
+		(void*)win->buf1	// 数据指针
 	);
 	glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
@@ -152,7 +155,7 @@ void callback_display_stl()
 	void* pointer;
 	u32 j, count;
 
-	pointer = gdata->databuf;
+	pointer = win->buf2;
 	count = *(u32*)(pointer+80);
 	if(count > 0x147adf)count = 0x147adf;	//64MB
 
@@ -202,7 +205,7 @@ void callback_display()
 		0.0,0.0,1.0
 	);
 
-	if(gdata->datafmt == 0x6c7473)
+	if(win->dim == 3)
 	{
 		callback_display_stl();
 	}
@@ -276,7 +279,7 @@ void callback_move(int x,int y)
 
 
 
-void* uievent(struct gldata* p)
+void* uievent(struct window* p)
 {
 	int argc=1;
 	char* argv[2];
@@ -310,19 +313,8 @@ void* uievent(struct gldata* p)
 	//
 	glutMainLoop();
 }
-void windowread(char* p)
+void windowread()
 {
-	if(p == 0)
-	{
-		gdata->datafmt = 0;
-		free(gdata->databuf);
-	}
-	else
-	{
-		gdata->datafmt = 0x6c7473;
-		if(gdata->databuf == 0)gdata->databuf = malloc(0x100000*64);
-		readfile((u64)p, gdata->databuf, 0, 0x100000*64);
-	}
 }
 void windowwrite()
 {
@@ -337,15 +329,13 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct gldata* p)
+void windowstart(struct window* p)
 {
-	gdata = p;
-	p->buf = (u64)malloc(2048*1024*4);
+	win = p;
+	p->buf1 = (u64)malloc(2048*1024*4);
 	p->fmt = 0x3838383861626772;
 	p->w = 512;
 	p->h = 512;
-	p->datafmt = 0;
-	p->databuf = 0;
 	p->thread = startthread(uievent, p);
 }
 void windowdelete()

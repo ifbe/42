@@ -77,12 +77,17 @@ void say(void*, ...);
 
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
 
-	char data[0xe0];
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	char data[0xc0];
 };
 struct working
 {
@@ -120,8 +125,6 @@ struct working
 };
 static struct window* win = 0;
 static struct working* worker = 0;
-static void* uinode = 0;
-static void* uidata = 0;
 //
 static u32 now=0;		//不能有负数
 static u32 menu=0;
@@ -298,8 +301,6 @@ void characterdelete()
 
 	win = 0;
 	worker = 0;
-	uinode = 0;
-	uidata = 0;
 }
 int characterstart(int j)
 {
@@ -391,8 +392,8 @@ void characterwrite(u64* p)
 	//size
 	if(p[1] == 0x657a6973)
 	{
-		win->w = p[0] & 0xffff;
-		win->h = (p[0] >> 16) & 0xffff;
+		win[2].w = p[0] & 0xffff;
+		win[2].h = (p[0] >> 16) & 0xffff;
 		return;
 	}//size
 
@@ -400,11 +401,10 @@ void characterwrite(u64* p)
 	else if(p[1] == 0x64626b)
 	{
 		//按下esc
-		if(p[0] == 0x1b)
-		{
-			menu ^= 1;
-			return;
-		}
+		if(p[0] == 0x1b){menu ^= 1;return;}
+		else if(p[0] == 0xf1){win[2].dim = 1;return;}
+		else if(p[0] == 0xf2){win[2].dim = 2;return;}
+		else if(p[0] == 0xf3){win[2].dim = 3;return;}
 	}//kbd
 
 	//virtkbd

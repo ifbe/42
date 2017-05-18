@@ -268,10 +268,15 @@ static const unsigned char asciitable[128*16]={
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 };
 
 
@@ -290,7 +295,7 @@ void printascii(struct window* win,
 
 	width = win->w;
 	height = win->h;
-	screen = (u32*)(win->buf);
+	screen = (u32*)(win->buf1);
 
 	if(ch<0x20)ch=0x20;
 	points=(unsigned char*)&asciitable;

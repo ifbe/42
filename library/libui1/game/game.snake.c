@@ -31,12 +31,17 @@ struct player
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct event
 {
@@ -136,7 +141,7 @@ void snake_read_text(struct window* win)
 	int j,t;
 	int width = win->w;
 	int height = win->h;
-	char* p = (char*)(win->buf);
+	char* p = (char*)(win->buf1);
 	for(j=0;j<width*height*4;j++)p[j] = 0;
 
 	j=0;
@@ -170,7 +175,7 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 void snake_read_html(struct window* win)
 {
 	int j = 0;
-	char* p = (char*)(win->buf);
+	char* p = (char*)(win->buf1);
 
 	if(die == 1)
 	{

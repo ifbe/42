@@ -8,10 +8,15 @@ void say(char*,...);
 
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
+
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
 };
 
 
@@ -31,9 +36,8 @@ void line(struct window* win,
 	int temp;
 	int x,y;
 	int width,height;
-	u32* buf;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	color |= 0xff000000;
@@ -93,9 +97,8 @@ void rectframe(struct window* win,
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* buf;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	color |= 0xff000000;
@@ -120,9 +123,8 @@ void rectbody(struct window* win,
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* buf;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	color |= 0xff000000;
@@ -187,9 +189,8 @@ void circleframe(struct window* win,
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* buf;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	color |= 0xff000000;
@@ -226,9 +227,8 @@ void circlebody(struct window* win,
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* buf;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	color |= 0xff000000;
@@ -303,12 +303,11 @@ void sector(struct window* win,
 void bezier(struct window* win,
 	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
 {
-	u32* buf;
+	int x,y,t;
 	int width;
 	int height;
-	int x,y,t;
+	u32* buf = (u32*)(win->buf1);
 
-	buf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 

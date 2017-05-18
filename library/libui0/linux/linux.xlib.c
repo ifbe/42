@@ -78,10 +78,15 @@ static Visual* visual=0;
 struct xlibdata
 {
 	//cfg
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
 	u64 thread;
 	int motioncount;
@@ -105,7 +110,7 @@ void* uievent(struct xlibdata* p)
 	//ximage
 	p->ximage = XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
-		(void*)p->buf, p->w, p->h,
+		(void*)p->buf1, p->w, p->h,
 		32, 0
 	);
 
@@ -194,7 +199,7 @@ void* uievent(struct xlibdata* p)
 
 			p->ximage = XCreateImage(
 				dsp, visual, 24, ZPixmap,
-				0, (void*)p->buf,
+				0, (void*)p->buf1,
 				x,y,32,0
 			);
 
@@ -202,7 +207,7 @@ void* uievent(struct xlibdata* p)
 		}
 		else if(ev.type==Expose)
 		{
-			if(p->buf==0)continue;
+			if(p->buf1==0)continue;
 			if(p->ximage==0)continue;
 			XPutImage(
 				dsp, p->win, p->gc, p->ximage,
@@ -293,8 +298,8 @@ void windowstart(struct xlibdata* p)
 	}
 
 	//malloc
-	p->buf = (u64)malloc(2048*1024*4);
-	if(p->buf == 0)printf("error@malloc\n");
+	p->buf1 = (u64)malloc(2048*1024*4);
+	if(p->buf1 == 0)printf("error@malloc\n");
 
 	//
 	p->thread = startthread(uievent, p);

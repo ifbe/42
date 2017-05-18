@@ -10,8 +10,6 @@ int count_strlen(void*);
 //
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
-void* startmemory(int);
-int stopmemory(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -21,10 +19,15 @@ void say(void*, ...);
 
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 };
 static struct window* win=0;
 static int user[10];
@@ -41,7 +44,7 @@ int netwinwrite(struct window* win)
 	void* buf;
 	int j,k,len;
 
-	buf = (void*)win->buf;
+	buf = (void*)win->buf1;
 	len = count_strlen(buf);
 	for(j=0;j<10;j++)
 	{
@@ -100,7 +103,6 @@ int netwincreate(void* uibase, void* uithis)
 	for(j=0;j<10;j++)user[j] = 0;
 
 	win = uithis;
-	win->buf = (u64)startmemory(0x100000);
 	win->fmt = 0x6c6d7468;
 	win->w = 512;
 	win->h = 512;

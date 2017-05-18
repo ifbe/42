@@ -48,12 +48,17 @@ struct player
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct event
 {
@@ -63,7 +68,6 @@ struct event
 	u64 when;
 };
 //before
-static int dimension = 2;
 static int maxpower;
 static u16* pcmin;
 static u16* pcmout;
@@ -88,7 +92,7 @@ static void spectrum_read_pixel(struct window* win)
 	int height = win->h;
 
 	backgroundcolor(win, 0);
-	if(dimension == 1)
+	if(win->dim == 1)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -100,25 +104,21 @@ static void spectrum_read_pixel(struct window* win)
 				0xffffff
 			);
 		}
+		return;
 	}
-	else if(dimension == 2)
+
+	for(x=0;x<512;x++)
 	{
-		for(x=0;x<512;x++)
-		{
-			t = x * tau /512.0;
-			cc = cosine(t) * 256;
-			ss = -sine(t) * 256;
-			line(win,
-				256 + (int)(cc * (1.0 - 2*power[x])),
-				256 + (int)(ss * (1.0 - 2*power[x])),
-				256 + (int)cc,
-				256 + (int)ss,
-				0xffffff
-			);
-		}
-	}
-	else if(dimension == 3)
-	{
+		t = x * tau /512.0;
+		cc = cosine(t) * 256;
+		ss = -sine(t) * 256;
+		line(win,
+			256 + (int)(cc * (1.0 - 2*power[x])),
+			256 + (int)(ss * (1.0 - 2*power[x])),
+			256 + (int)cc,
+			256 + (int)ss,
+			0xffffff
+		);
 	}
 }
 static void spectrum_read_html(struct window* win)
@@ -129,7 +129,7 @@ static void spectrum_read_text(struct window* win)
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
@@ -190,14 +190,7 @@ static void spectrum_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x64626b)
-	{
-		if(key == 0xf1)dimension = 1;
-		else if(key == 0xf2)dimension = 2;
-		else if(key == 0xf3)dimension = 3;
-		return;
-	}
-	else if(type==0x72616863)	//'char'
+	if(type==0x72616863)	//'char'
 	{
 		if( (key>=0x31) && (key<=0x39) )
 		{

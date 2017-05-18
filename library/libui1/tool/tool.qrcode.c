@@ -30,12 +30,17 @@ struct player
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct event
 {
@@ -87,7 +92,7 @@ static void qrcode_read_html(struct window* win)
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(win->buf);
+	char* p = (char*)(win->buf1);
 
 	p += fmt(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
 	p += fmt(
@@ -127,7 +132,7 @@ static void qrcode_read_text(struct window* win)
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 
 	for(y=0;y<100;y++)

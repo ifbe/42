@@ -28,12 +28,17 @@ struct event
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct player
 {
@@ -50,7 +55,6 @@ struct player
 	u8 data[12][4][4];
 };
 static struct player* pl;
-static int dimension = 2;
 //
 static int num;
 static void* buffer;
@@ -129,7 +133,7 @@ static void the2048_read_pixel(struct window* win)
 	int x,y;
 	int (*table)[4] = buffer + num*16*4;
 
-	if(dimension == 1)
+	if(win->dim == 1)
 	{
 		say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
 		say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
@@ -155,7 +159,7 @@ static void the2048_read_text(struct window* win)
 
 	int w = win->w;
 	int h = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
@@ -193,7 +197,7 @@ static void the2048_read_html(struct window* win)
 {
 	int x,y;
 	u32 color;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 	int (*table)[4] = buffer + num*16*4;
 
 	p += fmt(
@@ -477,11 +481,7 @@ static void the2048_write(struct event* ev)
 	if(ev->what == 0x64626b)
 	{
 		key = (ev->why)&0xff;
-		if(key == 0xf1)dimension = 1;
-		else if(key == 0xf2)dimension = 2;
-		else if(key == 0xf3)dimension = 3;
-		else if(key == 0xf4)return;
-		else if( (key>=0x25) && (key<=0x28) )
+		if( (key>=0x25) && (key<=0x28) )
 		{
 			//
 			p = buffer + 64*num;

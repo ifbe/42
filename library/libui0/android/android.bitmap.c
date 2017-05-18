@@ -25,10 +25,15 @@ void death();
 
 struct screen
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 };
 static void* world;
 static struct screen* ui;
@@ -93,7 +98,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	ui->buf = pixels;
+	ui->buf1 = pixels;
 	ui->fmt = 0x3838383861626772;
 	ui->w = info.width;
 	ui->h = info.height;

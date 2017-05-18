@@ -25,12 +25,17 @@ struct event
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct player
 {
@@ -62,7 +67,7 @@ static void weiqi_read_text(struct window* win)
 	int x,y,j,k,ret,color;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 
 	//
 	for(x=0;x<width*height*4;x++)p[x] = 0;

@@ -22,13 +22,22 @@ void death();
 
 
 
+struct window
+{
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
 
-//
-ANativeWindow* window;
-static u8* pxibuf=0;
-static u8* pixfmt="rgba8888";
-static int width=0;
-static int height=0;
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	u64 thread;
+};
+static struct window* win;
+static ANativeWindow* window;
 
 
 
@@ -59,9 +68,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	ANativeWindow_setBuffersGeometry(window, 0, 0, WINDOW_FORMAT_RGBA_8888);
 
 	//my toy
-	pixbuf = surface.;
-	width = surface.width;
-	height = surface.height;
+	win->buf1 = surface.buffer;
+	win->fmt = 0x3838383861626772;
+	win->w = surface.width;
+	win->h = surface.height;
 	characterstart(pixbuf, pixfmt, width, height-64);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)

@@ -41,12 +41,17 @@ struct player
 };
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 struct event
 {
@@ -56,7 +61,6 @@ struct event
 	u64 when;
 };
 //flostarea
-static int dimension = 2;
 static int inputcount = 0;
 static u8 hi[0x100];
 	//[0,0x1f]:target,value
@@ -127,7 +131,7 @@ static void floatarea(struct window* win)
 	int thisx,thisy;
 	int x,y;
 
-	screenbuf = (u32*)(win->buf);
+	screenbuf = (u32*)(win->buf1);
 	width = win->w;
 	height = win->h;
 	thisx = (pointeroffset % byteperline) << 4;
@@ -177,25 +181,16 @@ static void floatarea(struct window* win)
 }
 static void hex_read_pixel(struct window* win)
 {
-	say("%d\n",dimension);
-
-	if(dimension == 1)
+	if(win->dim == 1)
 	{
 		printmemory(databuf, 0x200);
 		xt100_read(win);
+		return;
 	}
-	else if(dimension == 2)
-	{
-		background1(win);
-		foreground(win);
-		floatarea(win);
-	}
-	else if(dimension == 3)
-	{
-	}
-	else if(dimension == 4)
-	{
-	}
+
+	background1(win);
+	foreground(win);
+	floatarea(win);
 }
 static void hex_read_text(struct window* win)
 {
@@ -203,7 +198,7 @@ static void hex_read_text(struct window* win)
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 
 	if(printmethod==0)		//hex
 	{
@@ -276,7 +271,7 @@ static void hex_read_html(struct window* win)
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 
 	//prepare
 	dx = 80.00 / byteperline;
@@ -468,11 +463,7 @@ static void hex_write(struct event* ev)
 
 	if(type==0x64626b)		//'kbd'
 	{
-		if(key == 0xf1)dimension = 1;
-		else if(key == 0xf2)dimension = 2;
-		else if(key == 0xf3)dimension = 3;
-		else if(key == 0xf3)return;
-		else if(key==0x25)	//left	0x4b
+		if(key==0x25)	//left	0x4b
 		{
 			if( pointeroffset % byteperline == 0 )
 			{

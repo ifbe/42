@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void printstring(void*,
-        int x, int y, int size,
-        void*, u32 fgcolor, u32 bgcolor);
+	int x, int y, int size,
+	void*, u32 fgcolor, u32 bgcolor);
 void backgroundcolor(void*, u32);
 //
 int netmgr_read();
@@ -18,32 +18,37 @@ void say(void*, ...);
 
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
 
-        u8 data[0xe0];
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	u8 data[0xc0];
 };
 struct player
 {
-        u64 type;
-        u64 name;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u8 data[0xc0];
+	u8 data[0xc0];
 };
 static struct player* pl;
 static int count = 0;
@@ -58,7 +63,7 @@ static int len = 0;
 
 static void browse_read_text(struct window* win)
 {
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 	int w = win->w;
 	int h = win->h;
 	int x,y;
@@ -83,7 +88,7 @@ static void browse_read_text(struct window* win)
 static void browse_read_html(struct window* win)
 {
 	int j;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf1);
 	for(j=0;j<len;j++)p[j] = dstbuf[j];
 }
 static void browse_read_pixel(struct window* win)

@@ -4,10 +4,15 @@
 #define u64 unsigned long long
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 };
 static struct window* win;
 
@@ -45,7 +50,7 @@ int voicedelete()
 int voicecreate(void* uibase, void* uithis)
 {
 	win = uithis;
-	win->buf = 0;
+	win->buf1 = 0;
 	win->fmt = 0x6563696f76;
 	return 0;
 }

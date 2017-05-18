@@ -30,10 +30,15 @@ static char dragpath[MAX_PATH];
 //each
 struct windata
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
 	u64 thread;
 	HWND wnd;
@@ -497,7 +502,7 @@ void windowwrite(struct windata* p)
 		p->w, p->h,		//dib宽,高
 		0, 0,			//来源起始x,y
 		0, p->h,		//起始扫描线,数组中扫描线数量,
-		(void*)p->buf,	//rbg颜色数组
+		(void*)p->buf1,	//rbg颜色数组
 		&info,			//bitmapinfo
 		DIB_RGB_COLORS	//颜色格式
 	);
@@ -524,7 +529,7 @@ void windowstart(struct windata* p)
 		return;
 	}
 
-	p->buf = (u64)malloc(2048*1024*4);
+	p->buf1 = (u64)malloc(2048*1024*4);
 	p->w = 512;
 	p->h = 512;
 	p->thread = startthread(uievent, p);

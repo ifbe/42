@@ -23,12 +23,17 @@ void say(void*, ...);
 
 struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
-	u8 data[0xe0];
+	u8 data[0xc0];
 };
 static char* input = 0;
 static char* output = 0;
@@ -45,7 +50,7 @@ static void background4(struct window* win)
 	//用指定颜色清屏
 	int width,height;
 	u32 x,y,color;
-	u32* palette = (u32*)(win->buf);
+	u32* palette = (u32*)(win->buf1);
 	backgroundcolor(win, 0);
 
 	//输入框颜色
@@ -80,7 +85,7 @@ static void printposition(struct window* win, int start,int count,int max)
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	u32* palette = (u32*)(win->buf);
+	u32* palette = (u32*)(win->buf1);
 
 	if(max<0x80*45)return;
 

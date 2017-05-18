@@ -8,10 +8,15 @@
 
 struct window
 {
-        u64 buf;
+        u64 buf1;
+        u64 buf2;
         u64 fmt;
+	u64 dim;
+
         u64 w;
         u64 h;
+        u64 d;
+        u64 t;
 };
 
 
@@ -20,7 +25,7 @@ struct window
 void backgroundcolor(struct window* win, u32 color)
 {
 	int x;
-	u32* buf = (u32*)(win->buf);
+	u32* buf = (u32*)(win->buf1);
 	color |= 0xff000000;
 
 	for(x=0; x<(win->w)*(win->h); x++)
@@ -33,7 +38,7 @@ void background1(struct window* win)
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u32* buf = (u32*)(win->buf);
+	u32* buf = (u32*)(win->buf1);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)

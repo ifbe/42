@@ -21,14 +21,19 @@ void say(char*,...);
 
 
 //
-struct clidata
+struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
 
-        u64 thread;
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	u64 thread;
 };
 static int mode = 0;
 static u64 thread;
@@ -114,9 +119,9 @@ void windowwrite()
 
 
 
-void windowstart(struct clidata* win)
+void windowstart(struct window* win)
 {
-	win->buf = 0;
+	win->buf1 = 0;
 	win->fmt = 0x696c63;
 	win->w = 80;
 	win->h = 25;

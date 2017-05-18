@@ -30,12 +30,17 @@ static int flag=-1;
 static struct termios old;
 static struct termios new;
 //
-struct textdata
+struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
 	u64 thread;
 };
@@ -49,7 +54,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-void* uievent(struct textdata* p)
+void* uievent(struct window* p)
 {
 	u8 ch;
 
@@ -125,7 +130,7 @@ static void attr(u8 bg, u8 fg)
 
 
 
-void windowwrite(struct textdata* t)
+void windowwrite(struct window* t)
 {
 	printf("\033[H\033[J");
 /*
@@ -135,7 +140,7 @@ void windowwrite(struct textdata* t)
 	int x,y;
 	u8 ch,bg=0,fg=0;
 	u8* p;
-	u8* buf = (u8*)t->buf;
+	u8* buf = (u8*)t->buf1;
 
 	for(y=0;y<height;y++)
 	{
@@ -190,9 +195,9 @@ void windowchange()
 
 
 
-void windowstart(struct textdata* p)
+void windowstart(struct window* p)
 {
-	p->buf = (u64)malloc(0x100000);
+	p->buf1 = (u64)malloc(0x100000);
 	p->fmt = 0x74786574;
 	p->w = width;
 	p->h = height;

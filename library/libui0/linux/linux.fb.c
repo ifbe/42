@@ -36,12 +36,17 @@ static int ymax=0;
 static int bpp=0;
 
 //自己的画板
-struct fbdata
+struct window
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 };
 
 
@@ -113,11 +118,11 @@ void* uievent(void* p)
 
 
 
-void windowwrite(struct fbdata* p)
+void windowwrite(struct window* p)
 {
 	//
 	int x,y,ret;
-	u8* buf = (void*)(p->buf);
+	u8* buf = (void*)(p->buf1);
 
 	//5,6,5
 	if(bpp==16)
@@ -148,9 +153,9 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct fbdata* p)
+void windowstart(struct window* p)
 {
-	p->buf = (u64)malloc(xmax*ymax*4);
+	p->buf1 = (u64)malloc(xmax*ymax*4);
 	p->w = xmax;
 	p->h = ymax;
 }

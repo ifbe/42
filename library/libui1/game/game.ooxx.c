@@ -21,32 +21,37 @@ void say(char*,...);
 
 struct player
 {
-        u64 type;
-        u64 name;
-        u64 start;
-        u64 stop;
-        u64 list;
-        u64 choose;
-        u64 read;
-        u64 write;
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 stop;
+	u64 list;
+	u64 choose;
+	u64 read;
+	u64 write;
 
-        u8 data[0xc0];
+	u8 data[0xc0];
 };
 struct window
 {
-        u64 buf;
-        u64 fmt;
-        u64 w;
-        u64 h;
+	u64 buf1;
+	u64 buf2;
+	u64 fmt;
+	u64 dim;
 
-        u8 data[0xe0];
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	u8 data[0xc0];
 };
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static int turn;
@@ -63,19 +68,19 @@ void ooxx_read(struct window* win)
 	int min = (width<height) ? width:height;
 
 	backgroundcolor(win, 0);
-        line(win,
+	line(win,
 		min/16, min/3,
 		min*15/16, min/3,
 		0xffffffff);
-        line(win,
+	line(win,
 		min/16, min*2/3,
 		min*15/16, min*2/3,
 		0xffffffff);
-        line(win,
+	line(win,
 		min/3, min/16,
 		min/3, min*15/16,
 		0xffffffff);
-        line(win,
+	line(win,
 		min*2/3, min/16,
 		min*2/3, min*16/16,
 		0xffffffff);

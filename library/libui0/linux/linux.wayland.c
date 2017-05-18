@@ -27,10 +27,15 @@ void say(char*,...);
 //
 struct waylanddata
 {
-	u64 buf;
+	u64 buf1;
+	u64 buf2;
 	u64 fmt;
+	u64 dim;
+
 	u64 w;
 	u64 h;
+	u64 d;
+	u64 t;
 
 	u64 thread;
 };
@@ -304,7 +309,7 @@ void* uievent(struct waylanddata* p)
 	}
 
 	//
-	shm_data = mmap((void*)p->buf, 2048*1024*4,
+	shm_data = mmap((void*)p->buf1, 2048*1024*4,
 		PROT_READ | PROT_WRITE, MAP_FIXED|MAP_SHARED, fd, 0);
 	if (shm_data == MAP_FAILED) {
 		fprintf(stderr, "mmap failed: %m\n");
@@ -337,7 +342,7 @@ void windowwrite(struct waylanddata* p)
 {
 	wl_display_dispatch(display);
 	wl_surface_damage(surface, 0, 0, p->w, p->h);
-	wl_surface_attach(surface, (void*)p->buf, 0, 0);
+	wl_surface_attach(surface, (void*)p->buf1, 0, 0);
 	wl_surface_commit(surface);
 }
 void windowlist()
@@ -352,7 +357,7 @@ void windowstart(struct waylanddata* p)
 	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
 
 	//wait for thread
-	p->buf = m - (m&0xfffff) + 0x100000;
+	p->buf1 = m - (m&0xfffff) + 0x100000;
 	p->w = 512;
 	p->h = 512;
 	p->thread = startthread(uievent, p);
