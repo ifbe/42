@@ -1,3 +1,0 @@
-void photo_read()
-{
-}

@@ -145,14 +145,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/hash/hash.string.c \
 	library/libsoft1/libmem/libdata/keyex/keyex.dh.c \
 	library/libsoft1/libmem/libdata/keyex/keyex.ecdhe.c \
-	library/libsoft1/libmem/libdata/photo/photo.blur.c \
-	library/libsoft1/libmem/libdata/photo/photo.channel.c \
-	library/libsoft1/libmem/libdata/photo/photo.convert.c \
-	library/libsoft1/libmem/libdata/photo/photo.gray.c \
-	library/libsoft1/libmem/libdata/photo/photo.mosaic.c \
-	library/libsoft1/libmem/libdata/photo/photo.rotate.c \
-	library/libsoft1/libmem/libdata/photo/photo.scale.c \
-	library/libsoft1/libmem/libdata/photo/photo.c \
 	library/libsoft1/libmem/libdata/search/search.bm.c \
 	library/libsoft1/libmem/libdata/search/search.kmp.c \
 	library/libsoft1/libmem/libdata/search/search.rough.c \
@@ -264,6 +256,13 @@ LOCAL_SRC_FILES += \
 	library/libui1/menu/menu.center.c \
 	library/libui1/menu/menu.roster.c \
 	library/libui1/menu/menu.virtkbd.c \
+	library/libui1/photo/photo.blur.c \
+	library/libui1/photo/photo.channel.c \
+	library/libui1/photo/photo.convert.c \
+	library/libui1/photo/photo.gray.c \
+	library/libui1/photo/photo.mosaic.c \
+	library/libui1/photo/photo.rotate.c \
+	library/libui1/photo/photo.scale.c \
 	library/libui1/test/test.color.c \
 	library/libui1/test/test.doodle.c \
 	library/libui1/test/test.font.c \

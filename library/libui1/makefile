@@ -26,6 +26,13 @@ target:
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) menu/menu.virtkbd.c
 	$(compiler) $(cflag) menu/menu.roster.c
+	$(compiler) $(cflag) photo/photo.blur.c
+	$(compiler) $(cflag) photo/photo.channel.c
+	$(compiler) $(cflag) photo/photo.convert.c
+	$(compiler) $(cflag) photo/photo.gray.c
+	$(compiler) $(cflag) photo/photo.mosaic.c
+	$(compiler) $(cflag) photo/photo.rotate.c
+	$(compiler) $(cflag) photo/photo.scale.c
 	$(compiler) $(cflag) test/test.color.c
 	$(compiler) $(cflag) test/test.doodle.c
 	$(compiler) $(cflag) test/test.font.c

@@ -66,14 +66,6 @@ target:
 	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
 	$(compiler) $(cflag) libmem/libdata/keyex/keyex.dh.c
 	$(compiler) $(cflag) libmem/libdata/keyex/keyex.ecdhe.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.blur.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.channel.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.convert.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.gray.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.mosaic.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.rotate.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.scale.c
-	$(compiler) $(cflag) libmem/libdata/photo/photo.c
 	$(compiler) $(cflag) libmem/libdata/search/search.bm.c
 	$(compiler) $(cflag) libmem/libdata/search/search.kmp.c
 	$(compiler) $(cflag) libmem/libdata/search/search.rough.c
