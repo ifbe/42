@@ -2,7 +2,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void windowread(char*);
+//
+void background1(void*);
+//
+void readfile(void*, void*, int , int);
+void writefile(void*, void*, int , int);
+//
 void printmemory(char*,int);
 void say(char*,...);
 
@@ -43,6 +48,7 @@ struct event
 	u64 where;
 	u64 when;
 };
+static int lastdim = 2;
 
 
 
@@ -55,6 +61,18 @@ static void stl_read_text(struct window* win)
 }
 static void stl_read_data(struct window* win)
 {
+	int j;
+	char* p = (void*)(win->buf2);
+	if(win->dim == 2)
+	{
+		background1(win);
+	}
+	else if( (win->dim == 3)&&(lastdim != 3) )
+	{
+		readfile("42.stl", p, 0, 0x800000);
+	}
+
+	lastdim = win->dim;
 }
 static void stl_read(struct window* win)
 {
@@ -108,11 +126,9 @@ static void stl_change()
 }
 static void stl_start()
 {
-	windowread("42.stl");
 }
 static void stl_stop()
 {
-	windowread(0);
 }
 void stl_create(void* base,void* addr)
 {

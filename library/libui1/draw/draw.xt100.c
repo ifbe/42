@@ -115,7 +115,7 @@ static void printstdout(struct window* win)
 	pos = pos - (pos%0x80);
 
 	if(pos < h*0x80)pos = 0;
-	else pos -= h*0x80;
+	else pos -= (h-1)*0x80;
 
 	for(y=0;y<h;y++)
 	{
@@ -125,7 +125,7 @@ static void printstdout(struct window* win)
 			if( (ch==0) | (ch=='\n') )break;
 
 			printascii(win,
-				x*8, y*16, 1,
+				x*8, (y*16)+(h%16), 1,
 				ch, 0xffffff, 0
 			);
 		}

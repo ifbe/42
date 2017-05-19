@@ -61,7 +61,9 @@ void callback_display_texture()
 	//glRotatef( rotate_x, 1.0, 0.0, 0.0 );
 	//glRotatef( rotate_y, 0.0, 1.0, 0.0 );
 
+	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
+
 	//1
 	glBegin(GL_QUADS);
 	glColor3f(   0.0,  0.0,  0.5 );
@@ -135,11 +137,10 @@ void callback_display_texture()
 }
 void callback_display_stl()
 {
-/*
-	GLfloat position[4] = {100.0, 100.0, 200.0, 1.0};
-	GLfloat ambient[4]={1.0, 1.0, 1.0, 0.0};
-	GLfloat diffuse[4]={1.0, 0.0, 0.0, 0.0};
-*/
+	GLfloat position[4] = {3.0, 2.0, 1.0, 0.0};
+	GLfloat ambient[4]={0.5, 0.5, 0.5, 1.0};
+	GLfloat diffuse[4]={1.0, 1.0, 1.0, 1.0};
+	GLfloat specular[4]={1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat color[8][3]=
 	{
 		0.0, 0.0, 0.0,
@@ -151,38 +152,41 @@ void callback_display_stl()
 		1.0, 1.0, 0.0,
 		1.0, 1.0, 1.0
 	};
+	u32 j, count;
 	float* p;
 	void* pointer;
-	u32 j, count;
 
-	pointer = win->buf2;
+	pointer = (void*)(win->buf2);
 	count = *(u32*)(pointer+80);
 	if(count > 0x147adf)count = 0x147adf;	//64MB
-
 	pointer += 84;
 	//printf("count=%d\n", count);
 	//printmemory(pointer, 50);
 
+	//must!!!
+	glDisable(GL_TEXTURE_2D);
 	for(j=0;j<count;j++)
 	{
 		p = pointer;
 		pointer += 50;
 
-		glColor3fv(color[j%8]);
+		glColor3fv(color[7]);
 		glBegin(GL_TRIANGLES);
 		glVertex3f(p[3], p[4], p[5]);
 		glVertex3f(p[6], p[7], p[8]);
 		glVertex3f(p[9], p[10], p[11]);
 		glEnd();
 	}
-/*
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+
+	glEnable(GL_COLOR_MATERIAL);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glEnable(GL_COLOR_MATERIAL);
-*/
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+
+	//
 	glFlush();
 	glutSwapBuffers();
 }
@@ -231,10 +235,18 @@ void callback_keyboard(unsigned char key, int x, int y)
 void callback_special(int key, int x, int y)
 {
 	printf("%x\n",key);
-	if (key == GLUT_KEY_LEFT){eventwrite(0x25,0x64626b,0,0);}
-	else if (key == GLUT_KEY_UP){eventwrite(0x26,0x64626b,0,0);}
-	else if (key == GLUT_KEY_RIGHT){eventwrite(0x27,0x64626b,0,0);}
-	else if (key == GLUT_KEY_DOWN){eventwrite(0x28,0x64626b,0,0);}
+
+	if(key == GLUT_KEY_F1)key = 0xf1;
+	else if(key == GLUT_KEY_F2)key = 0xf2;
+	else if(key == GLUT_KEY_F3)key = 0xf3;
+	else if(key == GLUT_KEY_F4)key = 0xf4;
+	else if(key == GLUT_KEY_LEFT)key = 0x25;
+	else if(key == GLUT_KEY_UP)key = 0x26;
+	else if(key == GLUT_KEY_RIGHT)key = 0x27;
+	else if(key == GLUT_KEY_DOWN)key = 0x28;
+	else return;
+
+	eventwrite(key, 0x64626b, 0, 0);
 }
 void callback_mouse(int button, int state, int x, int y)
 {
@@ -333,6 +345,7 @@ void windowstart(struct window* p)
 {
 	win = p;
 	p->buf1 = (u64)malloc(2048*1024*4);
+	p->buf2 = (u64)malloc(2048*1024*4);
 	p->fmt = 0x3838383861626772;
 	p->w = 512;
 	p->h = 512;
