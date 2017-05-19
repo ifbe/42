@@ -346,7 +346,7 @@ void printbyte(struct window* win,
 	if(ch>0x39)ch+=0x7;
 	printascii(win,
 		x, y, size,
-		ch, 0, 0
+		ch, fg, bg
 	);
 
 	ch=temp & 0xf;
@@ -354,7 +354,7 @@ void printbyte(struct window* win,
 	if(ch>0x39)ch+=0x7;
 	printascii(win,
 		x + size*8, y,
-		size, ch, 0, 0
+		size, ch, fg, bg
 	);
 }
 

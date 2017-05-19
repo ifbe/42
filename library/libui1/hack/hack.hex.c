@@ -616,7 +616,7 @@ static void hex_stop()
 void hex_create(void* uibuf,void* addr)
 {
 	struct player* p = addr;
-	databuf = uibuf + 0x300000;
+	databuf = uibuf;
 
 	p->type = 0x6c6f6f74;
 	p->name = 0x786568;

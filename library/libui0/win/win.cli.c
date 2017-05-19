@@ -48,25 +48,25 @@ DWORD WINAPI uievent(LPVOID pM)
 			ch = getch();
 			if(ch == 0x48)	//up
 			{
-				eventwrite(0x415b1b, 0x64626b, 0, 0);
+				eventwrite(0x415b1b, 0x72616863, 0, 0);
 			}
 			else if(ch == 0x50)	//down
 			{
-				eventwrite(0x425b1b, 0x64626b, 0, 0);
+				eventwrite(0x425b1b, 0x72616863, 0, 0);
 			}
 			else if(ch == 0x4d)	//right
 			{
-				eventwrite(0x435b1b, 0x64626b, 0, 0);
+				eventwrite(0x435b1b, 0x72616863, 0, 0);
 			}
 			else if(ch == 0x4b)	//left
 			{
-				eventwrite(0x445b1b, 0x64626b, 0, 0);
+				eventwrite(0x445b1b, 0x72616863, 0, 0);
 			}
 		}
 		else
 		{
 			if(ch == 0x8)ch = 0x7f;
-			eventwrite(ch, 0x64626b, 0, 0);
+			eventwrite(ch, 0x72616863, 0, 0);
 		}
 	}//while
 }

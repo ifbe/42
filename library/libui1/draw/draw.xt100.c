@@ -11,8 +11,8 @@ void string(void*,
 void backgroundcolor(void*,
 	u32);
 //
-void charactercommand(u8*);
-void arterywrite(u8*);
+void arterywrite(void*);
+void arteryread();
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -138,8 +138,21 @@ static void printstdin(struct window* win, int count)
 }
 void xt100_read(struct window* win)
 {
-	background4(win);
-	printstdout(win);
+	arteryread();
+
+	if(win->fmt != 0x696c63)
+	{
+		background4(win);
+		printstdout(win);
+	}
+}
+void xt100_write(u64* p)
+{
+	if( (p[1] == 0x72616863)&&(p[2] == 0) )
+	{
+		arterywrite(p);
+		return;
+	}
 }
 
 

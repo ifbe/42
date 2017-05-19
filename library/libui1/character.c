@@ -3,8 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //library
-void xt100_create(void*);
 void ttf_create(void*);
+void ttf_delete();
+void xt100_create(void*);
+void xt100_delete();
+void xt100_write(void*);
 //special
 void menu_create(u8*,u8*);
 void menu_delete();
@@ -63,8 +66,6 @@ void stl_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-int arteryread();
-int arterywrite(void*);
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
 u32 getrandom();
@@ -368,7 +369,10 @@ void characterread()
 		if(win[j].fmt == 0)break;
 		if(win[j].fmt == 0x6563696f76)continue;
 
-		if(win[j].fmt == 0x696c63)arteryread();
+		if( (win[j].fmt == 0x696c63) | ((j==2)&&(win[2].dim == 1)) )
+		{
+			xt100_read(&win[j]);
+		}
 		else
 		{
 			worker[now].read(&win[j]);
@@ -381,13 +385,6 @@ void characterread()
 void characterwrite(u64* p)
 {
 	int x;
-
-	//cmd
-	if( (p[1] == 0x64626b)&&(p[2] == 0)&&(win[2].fmt == 0x696c63) )
-	{
-		arterywrite(p);
-		return;
-	}
 
 	//size
 	if(p[1] == 0x657a6973)
@@ -407,8 +404,18 @@ void characterwrite(u64* p)
 		else if(p[0] == 0xf3){win[2].dim = 3;return;}
 	}//kbd
 
+	//
+	if((win[2].fmt == 0x696c63)|(win[2].dim == 1))
+	{
+		xt100_write(p);
+		return;
+	}
+
 	//virtkbd
-	if(vkbd > 0)x = worker[2].write(p);
+	if(vkbd > 0)
+	{
+		x = worker[2].write(p);
+	}
 
 	//其余所有消息，谁在干活就交给谁
 	if(menu > 0)
@@ -492,8 +499,6 @@ int charactercommand(u8* p)
 	}
 
 notfound:
-	ret = arterywrite(p);
-	ret = arterywrite("\n");
 	return 0;
 
 found:
