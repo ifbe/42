@@ -4,7 +4,7 @@ cflag ?= -c -O2 -fPIC
 
 
 
-############################linux#########################
+############################bare#########################
 .PHONY:barecli
 barecli:
 	rm -f *.o
@@ -16,6 +16,43 @@ barecli:
 barefb:
 	rm -f *.o
 	$(compiler) $(cflag) bare/bare.fb.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) display.c
+##########################################################
+
+
+
+
+############################cross#########################
+.PHONY:gles
+gles:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.opengl.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) display.c
+
+.PHONY:glut
+glut:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.opengl.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) display.c
+
+.PHONY:sdl1
+sdl1:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.sdl1.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) display.c
+
+.PHONY:sdl2
+sdl2:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.sdl2.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) display.c
