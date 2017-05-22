@@ -3,10 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(
+void drawascii(
 	void*, char ch, int size,
 	int x, int y, u32 fg, u32 bg);
-void printstring(
+void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
 void backgroundcolor(

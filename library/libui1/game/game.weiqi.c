@@ -186,14 +186,9 @@ static void weiqi_read(struct window* win)
 void weiqi_write(struct event* ev)
 {
 	char val;
-	int x,y,half;
-	int cx = 256;
-	int cy = 256;
+	int x,y;
 	u64 what = ev->what;
 	u64 key = ev->why;
-
-	if(cy > cx)half = cx/20;
-	else half = cy/20;
 
 	if(what == 0x64626b)
 	{
@@ -233,8 +228,8 @@ void weiqi_write(struct event* ev)
 		y=(key >> 16) & 0xffff;
 		//say("%d,%d\n",x,y);
 
-		x = (((x-cx)<<8)/half + 4736)>>9;
-		y = (((y-cy)<<8)/half + 4736)>>9;
+		x = (x*19)>>16;
+		y = (y*19)>>16;
 		//say("%d,%d\n",x,y);
 
 		if(x<0)return;

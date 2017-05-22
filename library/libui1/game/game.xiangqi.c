@@ -119,6 +119,7 @@ static void xiangqi_read_html(struct window* win)
 {
 	int x,y;
 	char* p = (char*)(win->buf1);
+	return;
 
 	p += fmt(
 		p, 0x1000,
@@ -321,7 +322,7 @@ static void xiangqi_read(struct window* win)
 void xiangqi_move(int px, int py, int x, int y)
 {
 	int min, max, t, u;
-say("(%d,%d) -> (%d,%d)\n", px, py, x, y);
+	say("(%d,%d) -> (%d,%d)\n", px, py, x, y);
 
 	//chess going
 	if(data[py][px] == 'S')		//兵
@@ -865,14 +866,9 @@ int xiangqi_pickup(int x, int y)
 }
 void xiangqi_write(struct event* ev)
 {
-	int x, y, half, ret;
-	int cx = 256;
-	int cy = 256;
+	int x, y, ret;
 	u64 what = ev->what;
 	u64 key = ev->why;
-
-	if(cy*9 > cx*10)half = cx/9;
-	else half = cy/10;
 
 	if(what == 0x64626b)
 	{
@@ -918,8 +914,8 @@ void xiangqi_write(struct event* ev)
 		y = (key >> 16) & 0xffff;
 		//say("%d,%d => ",x,y);
 
-		x = (x - cx + (9*half) )/half/2;
-		y = (y - cy + (10*half) )/half/2;
+		x = (x*9)>>16;
+		y = (y*10)>>16;
 		//say("%d,%d\n",x,y);
 
 		if(x < 0)return;

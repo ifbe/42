@@ -263,7 +263,7 @@ static void hex_read_html(struct window* win)
 	int width = win->w;
 	int height = win->h;
 	u8* p = (u8*)(win->buf1);
-
+return;
 	//prepare
 	dx = 80.00 / byteperline;
 	x = (pointeroffset % byteperline);
@@ -513,7 +513,7 @@ static void hex_write(struct event* ev)
 	}
 	else if(type==0x2d6d)
 	{
-		if((key>>48) == 4)	//front
+		if((key>>48) == 'f')	//front
 		{
 			if( pointeroffset < byteperline )
 			{
@@ -524,7 +524,7 @@ static void hex_write(struct event* ev)
 				pointeroffset -= byteperline;
 			}
 		}
-		else if((key>>48) == 5)		//back
+		else if((key>>48) == 'b')		//back
 		{
 			if( pointeroffset < (lineperwindow-1) * byteperline )
 			{

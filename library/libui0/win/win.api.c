@@ -199,8 +199,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (data.h);
-			x = (pt.x<<16) / (data.w);
+			y = (pt.y<<16) / (data->h);
+			x = (pt.x<<16) / (data->w);
 			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			return 0;
 		}
@@ -221,8 +221,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (data.h);
-			x = (pt.x<<16) / (data.w);
+			y = (pt.y<<16) / (data->h);
+			x = (pt.x<<16) / (data->w);
 			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			return 0;
 		}
@@ -239,8 +239,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (data.h);
-			x = (pt.x<<16) / (data.w);
+			y = (pt.y<<16) / (data->h);
+			x = (pt.x<<16) / (data->w);
 			eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 			return 0;
 		}
@@ -252,8 +252,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			GetCursorPos(&pt);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (data.h);
-			x = (pt.x<<16) / (data.w);
+			y = (pt.y<<16) / (data->h);
+			x = (pt.x<<16) / (data->w);
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
 				k = 'f';
@@ -287,8 +287,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				else		//只是左键在拖动
 				{
 					k = 'l';
-					y = (pe.y<<16) / (data.h);
-					x = (pe.x<<16) / (data.w);
+					y = (pe.y<<16) / (data->h);
+					x = (pe.x<<16) / (data->w);
 					eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 
 					//say("%d,%d\n", pe.x, pe.y);
@@ -305,8 +305,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(leftdown==1)
 			{
 				k = 'l';
-				y = ((lparam&0xffff0000) / (data.h);
-				x = ((lparam&0xffff)<<16) / (data.w);
+				y = (lparam&0xffff0000) / (data->h);
+				x = ((lparam&0xffff)<<16) / (data->w);
 				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			}
 			leftdown=0;
@@ -320,8 +320,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if(rightdown==1)
 			{
 				k = 'r';
-				y = ((lparam&0xffff0000) / (data.h);
-				x = ((lparam&0xffff)<<16) / (data.w);
+				y = (lparam&0xffff0000) / (data->h);
+				x = ((lparam&0xffff)<<16) / (data->w);
 				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			}
 

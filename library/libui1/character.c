@@ -7,6 +7,7 @@ void ttf_create(void*);
 void ttf_delete();
 void xt100_create(void*);
 void xt100_delete();
+void xt100_read(void*);
 void xt100_write(void*);
 //special
 void menu_create(u8*,u8*);
