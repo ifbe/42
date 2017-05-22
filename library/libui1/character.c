@@ -369,18 +369,27 @@ void characterread()
 	{
 		if(win[j].fmt == 0)break;
 		if(win[j].fmt == 0x6563696f76)continue;
-
-		if( (win[j].fmt == 0x696c63) | ((j==2)&&(win[2].dim == 1)) )
+		if(win[j].fmt == 0x696c63)
+		{
+			xt100_read(&win[j]);
+			continue;
+		}
+		if(win[j].fmt == 0x6c6d7468)
+		{
+			worker[now].read(&win[j]);
+			continue;
+		}
+		if( (j >= 2) && (win[j].dim == 1) )
 		{
 			xt100_read(&win[j]);
 		}
 		else
 		{
 			worker[now].read(&win[j]);
-			if(menu > 0)worker[0].read(&win[j]);
-			if(rost > 0)worker[1].read(&win[j]);
-			if(vkbd > 0)worker[2].read(&win[j]);
 		}
+		if(menu > 0)worker[0].read(&win[j]);
+		if(rost > 0)worker[1].read(&win[j]);
+		if(vkbd > 0)worker[2].read(&win[j]);
 	}
 }
 void characterwrite(u64* p)

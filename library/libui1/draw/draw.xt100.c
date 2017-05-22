@@ -111,14 +111,14 @@ static void printstdout(struct window* win)
 	int w = (win->w)/8;
 	int h = (win->h)/16;
 
-	if(w>0x80)x=0x80;
+	if(w>0x80)x = 0x80;
 	pos = *(u32*)(output+0x100000-16);
 	pos = pos - (pos%0x80);
 
 	if(pos < h*0x80)pos = 0;
-	else pos -= (h-1)*0x80;
+	else pos -= (h-2)*0x80;
 
-	for(y=0;y<h;y++)
+	for(y=0;y<h-1;y++)
 	{
 		for(x=0;x<w;x++)
 		{
@@ -132,31 +132,51 @@ static void printstdout(struct window* win)
 		}
 	}
 }
-static void printstdin(struct window* win, int count)
+static void printstdin(struct window* win)
 {
+	int w = win->w;
+	int h = win->h;
 	drawstring(
 		win, "[user@42]", 1,
-		0, count*16, 0xffffffff, 0);
+		0, h-16, 0xffffffff, 0);
 	drawstring(
 		win, input, 1,
-		9*8, count*16, 0xffffffff, 0);
+		9<<3, h-16, 0xffffffff, 0);
 }
 void xt100_read(struct window* win)
 {
 	arteryread();
+	if(win->fmt == 0x696c63)return;
 
-	if(win->fmt != 0x696c63)
-	{
-		background4(win);
-		printstdout(win);
-	}
+	background4(win);
+	printstdout(win);
+	printstdin(win);
 }
 void xt100_write(u64* p)
 {
-	if( (p[1] == 0x72616863)&&(p[2] == 0) )
+	int j;
+	int* in = (void*)(input+0xffff0);
+	if(p[2] != 0)return;
+	if(p[1] != 0x72616863)return;
+
+	arterywrite(p);
+
+	j = *(u8*)p;
+	if(j == 0x8)		//backspace
 	{
-		arterywrite(p);
-		return;
+		if(*in <= 0)return;
+		(*in)--;
+		input[*in] = 0;
+	}
+	else if(j == 0xa)	//enter
+	{
+		for(j=0;j<0x80;j++)input[j] = 0;
+		*in = 0;
+	}
+	else
+	{
+		input[*in] = j;
+		(*in)++;
 	}
 }
 
