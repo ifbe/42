@@ -3,13 +3,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(void*,
-	int x, int y, int size,
-	char* str, u32 fgcolor, u32 bgcolor);
-void defaultdouble(void*,
-	int x,int y,double z);
-void backgroundcolor(void*,
-	u32);
+void backgroundcolor(
+	void*, u32);
+void drawstring(
+	void*, void* str, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawdouble(
+	void*, double z, int size,
+	int x,int y, u32 fg, u32 bg);
 //
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -138,13 +139,13 @@ static void wangge(struct window* win)
 
 
 	//网格上对应那一行的x,y坐标值,以及画上网格
-	defaultdouble(win,
-		wanggex, 0+wanggey,
-		centerx-(scale*width/2)+(wanggex*scale)
+	drawdouble(
+		win, centerx-(scale*width/2)+(wanggex*scale), 1,
+		wanggex, 0+wanggey, 0xffffffff, 0
 	);
-	defaultdouble(win,
-		wanggex, 16+wanggey,
-		centery+(scale*height/2)-(wanggey*scale)
+	drawdouble(
+		win, centery+(scale*height/2)-(wanggey*scale), 1,
+		wanggex, 16+wanggey, 0xffffffff, 0
 	);
 
 	for(x=wanggex;x<width;x+=wanggedistance)
@@ -254,10 +255,14 @@ static void sketchpad_read_pixel(struct window* win)
 
 
 skipthese:		//打印
-	printstring(win, 0, 0, 1, buffer, 0xcccccc, 0xff000000);
-	printstring(win, 0, 16, 1, infix, 0xcccccc, 0xff000000);
-	printstring(win, 0, 32, 1, postfix, 0xcccccc, 0xff000000);
-	printstring(win, 0, 48, 1, result, 0xcccccc, 0xff000000);
+	drawstring(win, buffer, 1,
+		0, 0, 0xcccccc, 0xff000000);
+	drawstring(win, infix, 1,
+		0, 16, 0xcccccc, 0xff000000);
+	drawstring(win, postfix, 1,
+		0, 32, 0xcccccc, 0xff000000);
+	drawstring(win, result, 1,
+		0, 48, 0xcccccc, 0xff000000);
 	return;
 }
 

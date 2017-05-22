@@ -3,13 +3,13 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+void drawascii(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
 void rect(void*,
 	int x0, int y0,
 	int x1, int y1,
 	u32 bc, u32 fc);
-void printascii(void*,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
 //
 u32 getrandom();
 void say(char*,...);
@@ -93,9 +93,9 @@ static void virtkbd_read(struct window* win)
 				0xccffcc, 0x752614
 			);
 
-			printascii(win,
-				left, top, 2,
-				table[y][x], 0x221133, 0
+			drawascii(
+				win, table[y][x], 2,
+				left, top, 0x221133, 0
 			);
 		}
 	}

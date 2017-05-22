@@ -3,9 +3,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(void*,
-	int x, int y, int size,
-	char* str, u32 fg, u32 bg);
+void drawstring(
+	void*, void* str, int size, 
+	int x, int y, u32 fg, u32 bg);
 void triangle(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -159,15 +159,13 @@ static void menu_read_pixel(struct window* win)
 	);
 
 	//string
-	printstring(win,
-		width/4, height/4 + 16,
-		1, "what do you want?",
-		0xffffffff, 0
+	drawstring(
+		win, "what do you want?", 1,
+		width/4, height/4 + 16, 0xffffffff, 0
 	);
-	printstring(win,
-		width/4, height/4 + 32,
-		1, buffer,
-		0xffffffff, 0
+	drawstring(
+		win, buffer, 1,
+		width/4, height/4 + 32,	0xffffffff, 0
 	);
 }
 static void menu_read_html(struct window* win)
@@ -223,8 +221,6 @@ static void menu_read(struct window* win)
 //write,read,into,list
 static void menu_write(struct event* ev)
 {
-	int width = 512;
-	int height = 512;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
@@ -233,29 +229,24 @@ static void menu_write(struct event* ev)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
-
-		//点击框框外面，关掉菜单
-		if( (y > height*3/4) | (y < height/4) )
-		{
-			return;
-		}
+		if( (y > 0xc000) | (y < 0x4000) )return;
 
 		//last
-		else if(x < width/4)
+		else if(x < 0x4000)
 		{
 			charactercommand("-");
 		}
 
 		//next
-		else if(x > width*3/4)
+		else if(x > 0xc000)
 		{
 			charactercommand("+");
 		}
 
 		//点击红色矩形，退出
-		else if(x>(width*3/4)-16)
+		else if(x>0xc000-16)
 		{
-			if(y<(width/4)+16)
+			if(y<0x4000+16)
 			{
 				//退出
 				charactercommand("exit");

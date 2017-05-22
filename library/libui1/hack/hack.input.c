@@ -3,9 +3,11 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(void*,
-	int x1, int y1, int size,
-	char ch, u32 fg, u32 bg);
+void backgroundcolor(
+	void*, u32);
+void drawascii(
+	void*, char ch, int size,
+	int x1, int y1, u32 fg, u32 bg);
 void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -17,8 +19,6 @@ void rectframe(void*,
 void circlebody(void*,
 	int x, int y,
 	int r, u32 color);
-void backgroundcolor(void*,
-	u32);
 //
 void say(char*,...);
 
@@ -88,10 +88,12 @@ static void keyboard(struct window* win)
 				0xffffff
 			);
 
-			printascii(win,
-				32 + (width-32)*x/8, 32 + (height-32)*y/8,
-				4, 'a',
-				0, 0xffffffff
+			drawascii(
+				win, 'a', 4,
+				32 + (width-32)*x/8,
+				32 + (height-32)*y/8,
+				0,
+				0xffffffff
 			);
 		}
 	}

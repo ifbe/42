@@ -184,89 +184,85 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 */
 		case WM_POINTERDOWN:
 		{
-			int x;
-			for(x=0;x<10;x++)
+			u64 x,y,k;
+			for(k=0;k<10;k++)
 			{
-				if( pointerid[x] == -1 )
+				if( pointerid[k] == -1 )
 				{
-					pointerid[x]=(u8)(wparam);
+					pointerid[k]=(u8)(wparam);
 					break;
 				}
 			}
-			if(x>=10)return 0;
+			if(k >= 10)return 0;
 
-			pt.y=GET_Y_LPARAM(lparam);
-			pt.x=GET_X_LPARAM(lparam);
+			pt.y = GET_Y_LPARAM(lparam);
+			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			eventwrite(
-			pt.x + (pt.y<<16) + ((u64)x<<48),
-			0x2b70, 0, 0
-			);
+			y = (pt.y<<16) / (data.h);
+			x = (pt.x<<16) / (data.w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			return 0;
 		}
 		case WM_POINTERUP:
 		{
-			int x;
-			for(x=0;x<10;x++)
+			u64 x,y,k;
+			for(k=0;k<10;k++)
 			{
-				if( pointerid[x] == (u8)(wparam) )
+				if( pointerid[k] == (u8)(wparam) )
 				{
-					pointerid[x]=-1;
+					pointerid[k]=-1;
 					break;
 				}
 			}
-			if(x>=10)return 0;
+			if(k >= 10)return 0;
 
-			pt.y=GET_Y_LPARAM(lparam);
-			pt.x=GET_X_LPARAM(lparam);
+			pt.y = GET_Y_LPARAM(lparam);
+			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			eventwrite(
-			pt.x + (pt.y<<16) + ((u64)x<<48),
-			0x2d70, 0, 0
-			);
+			y = (pt.y<<16) / (data.h);
+			x = (pt.x<<16) / (data.w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
 		{
-			int x;
-			for(x=0;x<10;x++)
+			u64 x,y,k;
+			for(k=0;k<10;k++)
 			{
-				if( pointerid[x] == (u8)(wparam) )break;
+				if( pointerid[k] == (u8)(wparam) )break;
 			}
-			if(x>=10)return 0;
+			if(k >= 10)return 0;
 
 			pt.y=GET_Y_LPARAM(lparam);
 			pt.x=GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			eventwrite(
-			pt.x + (pt.y<<16) + ((u64)x<<48),
-			0x4070, 0, 0
-			);
+			y = (pt.y<<16) / (data.h);
+			x = (pt.x<<16) / (data.w);
+			eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 			return 0;
 		}
 
 		//滚轮
 		case WM_MOUSEWHEEL:
 		{
+			u64 x,y,k;
 			GetCursorPos(&pt);
 			ScreenToClient(wnd, &pt);
 
+			y = (pt.y<<16) / (data.h);
+			x = (pt.x<<16) / (data.w);
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
-				eventwrite(
-				pt.x + (pt.y<<16) + ((u64)4<<48),
-				0x2b6d, 0, 0
-				);
+				k = 'f';
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			}
 			else
 			{
-				eventwrite(
-				pt.x + (pt.y<<16) + ((u64)5<<48),
-				0x2b6d, 0, 0
-				);
+				k = 'b';
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			}
 
 			return 0;
@@ -275,7 +271,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标移动
 		case WM_MOUSEMOVE:
 		{
-			//say("moving\n");
+			u64 x,y,k;
 			if(leftdown>0)
 			{
 				//say("moving\n");
@@ -290,11 +286,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 				else		//只是左键在拖动
 				{
-					//'xyz ','move'
-					eventwrite(
-					(pe.x-pt.x) + ((pe.y-pt.y)<<16) + ((u64)1<<48),
-					0x406d, 0, 0
-					);
+					k = 'l';
+					y = (pe.y<<16) / (data.h);
+					x = (pe.x<<16) / (data.w);
+					eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 
 					//say("%d,%d\n", pe.x, pe.y);
 					GetCursorPos(&pt);	// 获取鼠标当前位置
@@ -306,7 +301,14 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标左键弹起
 		case WM_LBUTTONUP:
 		{
-			if(leftdown==1)eventwrite(lparam + ((u64)1<<48), 0x2d6d, 0, 0);
+			u64 x,y,k;
+			if(leftdown==1)
+			{
+				k = 'l';
+				y = ((lparam&0xffff0000) / (data.h);
+				x = ((lparam&0xffff)<<16) / (data.w);
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+			}
 			leftdown=0;
 			return 0;
 		}
@@ -314,9 +316,13 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标右键弹起
 		case WM_RBUTTONUP:
 		{
+			u64 x,y,k;
 			if(rightdown==1)
 			{
-				eventwrite(lparam + ((u64)1<<48), 0x2d6d, 0, 0);
+				k = 'r';
+				y = ((lparam&0xffff0000) / (data.h);
+				x = ((lparam&0xffff)<<16) / (data.w);
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			}
 
 			rightdown=0;

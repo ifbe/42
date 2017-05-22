@@ -3,6 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long 
 //
+void backgroundcolor(
+	void*, u32);
 void line(void*,
 	int x1, int y1, int x2, int y2, u32 color);
 void rectbody(void*,
@@ -78,6 +80,7 @@ void snake_read_pixel(struct window* win)
 	int j;
 	int width = win->w;
 	int height = win->h;
+	backgroundcolor(win, 0);
 
 	if(die == 1)
 	{

@@ -43,26 +43,26 @@ public class FinalAnswer extends Activity
 		return super.onKeyDown(keyCode, event);
 	}
 
-        //ifuse(bitmap)
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                Display display = getWindowManager().getDefaultDisplay();
-                setContentView(
-                        new FinalAnswerView(
-                        this,display.getWidth(),display.getHeight())
-                );
-        }
+	//ifuse(bitmap)
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			Display display = getWindowManager().getDefaultDisplay();
+			setContentView(
+					new FinalAnswerView(
+					this, display.getWidth(), display.getHeight())
+			);
+	}
 /*
-        //ifuse(surface)
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-                super.onCreate(savedInstanceState);
-                setContentView(R.layout.activity_main);
-                SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
-                surfaceHolder = surfaceView.getHolder();
-                surfaceHolder.addCallback(this);
-        }
+	//ifuse(surface)
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+			SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+			surfaceHolder = surfaceView.getHolder();
+			surfaceHolder.addCallback(this);
+	}
 */
 }
 
@@ -74,6 +74,9 @@ class FinalAnswerView extends View {
 
 	private int doit=1;
 	private Bitmap mBitmap;
+	private int w = getResources().getDisplayMetrics().widthPixels;
+	private int h = getResources().getDisplayMetrics().heightPixels;
+
 	public FinalAnswerView(Context context, int width, int height) {
 		super(context);
 		mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -108,8 +111,8 @@ class FinalAnswerView extends View {
 			{
 				long temp=(long)event.getPointerId(index);
 				temp=(temp<<16)+(long)event.getPressure(index);
-				temp=(temp<<16)+(long)event.getY(index);
-				temp=(temp<<16)+(long)event.getX(index);
+				temp=(temp<<16)+(long)(event.getY(index) * 65536 / h);
+				temp=(temp<<16)+(long)(event.getX(index) * 65536 / w);
 				Write(0x4070 , temp);
 			}
 		}
@@ -120,8 +123,8 @@ class FinalAnswerView extends View {
 		{
 			long temp=(long)event.getPointerId(index);
 			temp=(temp<<16)+(long)event.getPressure(index);
-			temp=(temp<<16)+(long)event.getY(index);
-			temp=(temp<<16)+(long)event.getX(index);
+			temp=(temp<<16)+(long)(event.getY(index) * 65536 / h);
+			temp=(temp<<16)+(long)(event.getX(index) * 65536 / w);
 			Write(0x2b70 , temp);
 		}
 
@@ -131,8 +134,8 @@ class FinalAnswerView extends View {
 		{
 			long temp=(long)event.getPointerId(index);
 			temp=(temp<<16)+(long)event.getPressure(index);
-			temp=(temp<<16)+(long)event.getY(index);
-			temp=(temp<<16)+(long)event.getX(index);
+			temp=(temp<<16)+(long)(event.getY(index) * 65536 / h);
+			temp=(temp<<16)+(long)(event.getX(index) * 65536 / w);
 			Write(0x2d70 , temp);
 
 			//Read(mBitmap);

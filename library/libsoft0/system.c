@@ -30,6 +30,24 @@ static u8* mega3;
 
 
 
+void systemread()
+{
+}
+void systemwrite()
+{
+}
+void systemlist()
+{
+}
+void systemchoose()
+{
+}
+void systemstart()
+{
+}
+void systemstop()
+{
+}
 void systemcreate(u8* type, u8* addr)
 {
 	int j;

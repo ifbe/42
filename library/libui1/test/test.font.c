@@ -3,10 +3,11 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(void*,
-	int x, int y, int size, char ch, u32 fgcolor, u32 bgcolor);
-void backgroundcolor(void*,
-	u32);
+void backgroundcolor(
+	void*, u32);
+void drawascii(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
 //
 void say(char*,...);
 
@@ -60,14 +61,9 @@ void font_read(struct window* win)
 	{
 		for(x=0;x<16;x++)
 		{
-			printascii(win,
-				x*16,
-				y*16,
-				1,
-				x+y*16,
-				0xffffffff,
-				0
-			);
+			drawascii(
+				win, x+y*16, 1,
+				x*16, y*16, 0xffffffff, 0);
 		}
 	}
 }

@@ -3,20 +3,20 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //libui
-void printdouble(void*,
-	int x, int y, int size,
-	double z, u32 fgcolor, u32 bgcolor);
-void printstring(void*,
-	int x, int y, int size,
-	char* str, u32 fgcolor, u32 bgcolor);
-void printascii(void*,
-	int x, int y, int size,
-	char ch, u32 fgcolor, u32 bgcolor);
+void backgroundcolor(
+	void*, u32);
+void drawdouble(
+	void*, double z, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawstring(
+	void*, void* str, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawascii(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
 void line(void*,
 	int x1, int y1,
 	int x2, int y2,
-	u32);
-void backgroundcolor(void*,
 	u32);
 //libsoft
 double calculator(char* postfix);
@@ -122,23 +122,23 @@ static void printnode(struct window* win, int x,int y,int num)
 	//self
 	if(node[num].type == 0x33323130)	//0,1,2,3...
 	{
-		printdouble(win,
-			x, temp, 0,
-			node[num].floatpoint, 0xffffffff, 0
+		drawdouble(
+			win, node[num].floatpoint, 1,
+			x, temp, 0xffffffff, 0
 		);
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		printascii(win,
-			x, temp, 1,
-			node[num].integer & 0xff, 0xffffffff, 0
+		drawascii(
+			win, node[num].integer & 0xff, 1,
+			x, temp, 0xffffffff, 0
 		);
 	}
 	else
 	{
-		printascii(win,
-			x, temp, 1,
-			node[num].type & 0xff, 0xffffffff, 0
+		drawascii(
+			win, node[num].type & 0xff, 1,
+			x, temp, 0xffffffff, 0
 		);
 	}
 
@@ -167,9 +167,14 @@ static void printnode(struct window* win, int x,int y,int num)
 }
 static void tree_read(struct window* win)
 {
-	backgroundcolor(win, 0);
-	printstring(win, 0, 0, 1, buffer, 0xffffffff, 0);
-	printstring(win, 0, 16, 1, postfix, 0xffffffff, 0);
+	backgroundcolor(
+		win, 0);
+	drawstring(
+		win, buffer, 1,
+		0, 0, 0xffffffff, 0);
+	drawstring(
+		win, postfix, 1,
+		0, 16, 0xffffffff, 0);
 	if(node==0)return;
 
 	//等式

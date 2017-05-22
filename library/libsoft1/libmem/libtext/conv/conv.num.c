@@ -31,28 +31,26 @@ int decstr2data(u8* src, void* dst)
 }
 int data2decstr(u64 data,u8* string)
 {
+	int j,max;
 	u64 temp;
-	int j,count;
 
-	count=0;	//至少1
-	temp=(u64)data;
-	while(1)
+	max = 0;
+	temp = data;
+	for(j=0;j<0x10;j++)
 	{
-		count++;
-
-		if(temp<10)break;
-		temp/=10;
+		max++;
+		temp /= 10;
+		if(temp == 0)break;
 	}
-	string[count] = 0;
 
-	temp=(u64)data;
-	for(j=1;j<=count;j++)
+	temp = data;
+	for(j=1;j<=max;j++)
 	{
-		string[count-j]=temp%10+0x30;
+		string[max-j] = (temp%10)+0x30;
 		temp/=10;
 	}
 
-	return count;
+	return max;
 }
 
 
@@ -110,22 +108,28 @@ int hexstr2data(u8* src,u64* data)
 }
 int data2hexstr(u64 data,u8* str)
 {
-	int j;
-	unsigned char temp;
-	for(j=0;j<0xf;j++)str[j]=0x20;
-	str[15]=0x30;
+	int j,max;
+	u64 temp;
 
+	max = 0;
+	temp = data;
 	for(j=0;j<0x10;j++)
 	{
-		if(data==0)break;
-		temp=data&0xf;
-		data>>=4;
+		max++;
+		temp >>= 4;
+		if(temp == 0)break;
+	}
+
+	for(j=1;j<=max;j++)
+	{
+		temp = data&0xf;
+		data >>= 4;
 
 		temp+=0x30;
 		if(temp>=0x3a)temp+=7;
-		str[15-j]=temp;
+		str[max-j] = temp;
 	}
-	return j;
+	return max;
 }
 
 

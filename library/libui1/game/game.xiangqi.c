@@ -3,8 +3,9 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printascii(void*,
-	int x, int y, int size, u8 data, u32 fg, u32 bg);
+void drawascii(
+	void*, u8 data, int size,
+	int x, int y, u32 fg, u32 bg);
 void circlebody(void*,
 	int x, int y, int r, u32 color);
 void line(void*,
@@ -281,11 +282,10 @@ void xiangqi_read_pixel(struct window* win)
 				chesscolor
 			);
 
-			printascii(win,
+			drawascii(
+				win, data[y][x], half/8,
 				cx + (2*x-8)*half - (half/8*8/2),
 				cy + (2*y-9)*half - (half/8*16/2),
-				half/8,
-				data[y][x],
 				fontcolor,
 				0
 			);

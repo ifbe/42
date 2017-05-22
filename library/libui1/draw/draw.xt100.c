@@ -3,13 +3,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(void*,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
-void string(void*,
-	int x,int y,void* str);
-void backgroundcolor(void*,
-	u32);
+void printascii(
+	void*, char ch, int size,
+	int x, int y, u32 fg, u32 bg);
+void printstring(
+	void*, void* str, int size,
+	int x, int y, u32 fg, u32 bg);
+void backgroundcolor(
+	void*, u32);
 //
 void arterywrite(void*);
 void arteryread();
@@ -124,17 +125,21 @@ static void printstdout(struct window* win)
 			ch = output[pos + (y*0x80) + x];
 			if( (ch==0) | (ch=='\n') )break;
 
-			printascii(win,
-				x*8, (y*16)+(h%16), 1,
-				ch, 0xffffff, 0
+			drawascii(
+				win, ch, 1,
+				x*8, (y*16)+(h%16), 0xffffff, 0
 			);
 		}
 	}
 }
 static void printstdin(struct window* win, int count)
 {
-	string(win, 0, count*16, "[user@42]");
-	string(win, 9*8, count*16, input);
+	drawstring(
+		win, "[user@42]", 1,
+		0, count*16, 0xffffffff, 0);
+	drawstring(
+		win, input, 1,
+		9*8, count*16, 0xffffffff, 0);
 }
 void xt100_read(struct window* win)
 {

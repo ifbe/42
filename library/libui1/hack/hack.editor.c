@@ -40,8 +40,36 @@ struct event
 
 
 
+static void editor_read_text(struct window* win)
+{
+}
+static void editor_read_html(struct window* win)
+{
+}
+static void editor_read_pixel(struct window* win)
+{
+}
 static void editor_read(struct window* win)
 {
+	u64 fmt = win->fmt;
+
+	//text
+	if(fmt == 0x74786574)
+	{
+		editor_read_text(win);
+	}
+
+	//html
+	else if(fmt == 0x6c6d7468)
+	{
+		editor_read_html(win);
+	}
+
+	//pixel
+	else
+	{
+		editor_read_pixel(win);
+	}
 }
 static void editor_write(struct event* ev)
 {

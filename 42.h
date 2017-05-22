@@ -119,9 +119,9 @@ struct window
 };
 
 //libui1
-void charactercreate();
+void charactercreate(void*, void*);
 void characterdelete();
-void characterstart(char* addr, char* fmt, int w, int h);
+void characterstart();
 void characterstop();
 void characterlist();
 void characterchange();
@@ -129,10 +129,84 @@ void characterread();
 void characterwrite();
 void charactercommand(void*);
 
+void background1(struct window* win);
+void backgroundcolor(struct window* win,
+	u32 color);
+
+void line(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void radial(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+
+void circlebody(struct window* win,
+	int x, int y,
+	int r, u32 body);
+void circleframe(struct window* win,
+	int x, int y,
+	int r, u32 frame);
+void circle(struct window* win,
+	int x, int y,
+	int r, u32 body, u32 frame);
+
+void rectbody(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	u32 body);
+void rectframe(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	u32 frame);
+void rect(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	u32 body, u32 frame);
+
+void trianglebody(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	int x3, int y3,
+	u32 body, u32 frame);
+void triangleframe(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	int x3, int y3,
+	u32 body, u32 frame);
+void triangle(struct window* win,
+	int x1, int y1,
+	int x2, int y2,
+	int x3, int y3,
+	u32 body, u32 frame);
+
+void printascii(
+	struct window* win, char ch, int size,
+	int x, int y, u32 fg, u32 bg);
+void printbyte(
+	struct window* win, char ch,  int size,
+	int x, int y, u32 fg, u32 bg);
+void printstring(
+	struct window* win, char* s, int size,
+	int x, int y, u32 fg, u32 bg);
+void printdecimal(
+	struct window* win, u64 dat, int size,
+	int x, int y, u32 fg, u32 bg);
+void printhexadecimal(
+	struct window* win, u64 dat, int size,
+	int x, int y, u32 fg, u32 bg);
+void printfloat(
+	struct window* win, float dat, int size,
+	int x, int y, u32 fg, u32 bg);
+void printdouble(
+	struct window* win, double dat, int size,
+	int x, int y, u32 fg, u32 bg);
+
 //libui0
-void windowcreate();
+void windowcreate(void*, void*);
 void windowdelete();
-void windowstart(char* addr, char* fmt, int w, int h);
+void windowstart(int type, int j);
 void windowstop();
 void windowlist();
 void windowchange();
@@ -187,90 +261,59 @@ struct object
 };
 
 //libsoft1
-void background1(struct window* win);
-void backgroundcolor(struct window* win,
-	u32 color);
+void arterycreate(void*, void*);
+void arterydelete();
+void arterystart();
+void arterystop();
+void arterylist();
+void arterychoose();
+void arteryread();
+void arterywrite();
 
-void line(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void radial(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
+int data2decstr(u64 data,u8* str);
+int data2hexstr(u64 data,u8* str);
+int hexstr2data(u8* src,u64* dst);
+int decstr2data(u8* src,u64* dst);
 
-void circlebody(struct window* win,
-	int x, int y,
-	int r, u32 body);
-void circleframe(struct window* win,
-	int x, int y,
-	int r, u32 frame);
-void circle(struct window* win,
-	int x, int y,
-	int r, u32 body, u32 frame);
+int bigint2decstr(u8* src,u8* dst,int count);
+int bigint2hexstr(u8* src,u8* dst,int count);
+int hexstr2bigint(u8* src, u8* dst);
+int decstr2bigint(u8* src, u8* dst);
 
-void rectbody(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body);
-void rectframe(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 frame);
-void rect(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
+int decstr2double(u8* src,double* dst);
+int hexstr2double(u8* src,double* dst);
+int double2decstr(double src,u8* dst);
+int double2hexstr(double src,u8* dst);
 
-void trianglebody(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
-void triangleframe(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
-void triangle(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
+int utf2unicode(u8* src,u32* dst);
+int unicode2utf(u32 src,u8* dst);
 
-void printascii(struct window* win,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
-void printbyte(struct window* win,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
-void printstring(struct window* win,
-	int x, int y, int size,
-	char* s, u32 fg, u32 bg);
-void printdecimal(struct window* win,
-	int x, int y, int size,
-	u64 dat, u32 fg, u32 bg);
-void printhexadecimal(struct window* win,
-	int x, int y, int size,
-	u64 dat, u32 fg, u32 bg);
-void printfloat(struct window* win,
-	int x, int y, int size,
-	float dat, u32 fg, u32 bg);
-void printdouble(struct window* win,
-	int x, int y, int size,
-	double dat, u32 fg, u32 bg);
+int cmp(u8*, u8*);
+int ncmp(u8*, u8*, int);
+int wildcard(u8* wild,u8* str);
 
-void defaultascii(struct window* win,
-	int x, int y, u8 ch);
-void defaultstring(struct window* win,
-	int x, int y, u8* s);
-void defaulthexadecimal(struct window* win,
-	int x, int y, u64 hex);
-void defaultdecimal(struct window* win,
-	int x, int y, long long dec);
-void defaultdouble(struct window* win,
-	int x, int y, double data);
+int copy(u8* dst, u8* src);		//strcpy
+int ncopy(u8* dst, u8* src, int len);	//strncpy
+int movsb(u8* dst, u8* src, int len);
+
+int findhead(u8* buf);
+int findtail(u8* buf);
+int findzero(u8* buf);
+int finddata(u8* buf, u8 data);
+
+int md5sum(u8* dst, u8* src, int len);
+int sha1sum(u8* dst, u8* src, int len);
+int sha256sum(u8* dst, u8* src, int len);
+int sha512sum(u8* dst, u8* src, int len);
+
+int buf2typename(u8* p,int max,u64* type,u8** name);
+int buf2optval(u8* pp,int max,u8** type,u8** name);
+int buf2suffix(u8* p,u8** suffix);
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2addrport(u8* pp,int max,u8* addr,int* port);
+
+u8* buf2folder(u8* p);
+u8* buf2filename(u8* p);
 
 int bigdup(
 	u8* src, int sl,
@@ -319,52 +362,16 @@ int rsa2048(
 	u8* keybuf, int keylen,
 	u8* modbuf, int modlen);
 
-int data2decstr(u64 data,u8* str);
-int data2hexstr(u64 data,u8* str);
-int hexstr2data(u8* src,u64* dst);
-int decstr2data(u8* src,u64* dst);
-
-int bigint2decstr(u8* src,u8* dst,int count);
-int bigint2hexstr(u8* src,u8* dst,int count);
-int hexstr2bigint(u8* src, u8* dst);
-int decstr2bigint(u8* src, u8* dst);
-
-int decstr2double(u8* src,double* dst);
-int hexstr2double(u8* src,double* dst);
-int double2decstr(double src,u8* dst);
-int double2hexstr(double src,u8* dst);
-
-int utf2unicode(u8* src,u32* dst);
-int unicode2utf(u32 src,u8* dst);
-
-int cmp(u8*, u8*);
-int ncmp(u8*, u8*, int);
-int wildcard(u8* wild,u8* str);
-
-int copy(u8* dst, u8* src);		//strcpy
-int ncopy(u8* dst, u8* src, int len);	//strncpy
-int movsb(u8* dst, u8* src, int len);
-
-int findhead(u8* buf);
-int findtail(u8* buf);
-int findzero(u8* buf);
-int finddata(u8* buf, u8 data);
-
-int md5sum(u8* dst, u8* src, int len);
-int sha1sum(u8* dst, u8* src, int len);
-int sha256sum(u8* dst, u8* src, int len);
-int sha512sum(u8* dst, u8* src, int len);
-
-int buf2typename(u8* p,int max,u64* type,u8** name);
-int buf2optval(u8* pp,int max,u8** type,u8** name);
-int buf2suffix(u8* p,u8** suffix);
-int buf2arg(u8* buf,int max,int* argc,u8** argv);
-int buf2addrport(u8* pp,int max,u8* addr,int* port);
-
-u8* buf2folder(u8* p);
-u8* buf2filename(u8* p);
-
 //libsoft0
+void systemcreate(void*, void*);
+void systemdelete();
+void systemstart();
+void systemstop();
+void systemlist();
+void systemchoose();
+void systemread();
+void systemwrite();
+
 int readfile(u8* file, u8* mem, u64 offset, u64 count);
 int writefile(u8* file, u8* mem, u64 offset, u64 count);
 u32 getrandom();
@@ -414,10 +421,16 @@ struct hardware
 };
 
 //libhard1
+void bodycreate(void*, void*);
+void bodydelete();
+
 int initusb();
 int initnet();
 
 //libhard0
+void drivercreate(void*, void*);
+void driverdelete();
+
 int initahci(u8* hba);
 int initxhci(u8* hba);
 //----------------------------------------------------------------------
@@ -461,10 +474,18 @@ struct environment
 };
 
 //libboot1
+void debugcreate(void*, void*);
+void debugdelete();
+
 void printmemory(char*,int);
 void say(char*,...);
 
 //libboot0
+void basiccreate(void*, void*);
+void basicdelete();
+
 void power_off();
 void power_on();
+int tx(void*, int);
+int rx(void*);
 //----------------------------------------------------------------------

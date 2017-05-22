@@ -3,9 +3,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printhexadecimal(void*,
-	int x, int y, int size,
-	u64 in, u32 fg, u32 bg);
+void drawhexadecimal(
+	void*, u64 in, int size,
+	int x, int y, u32 fg, u32 bg);
 //
 void printmemory(char*,int);
 void say(char*,...);
@@ -73,9 +73,9 @@ static void pure_read_pixel(struct window* win)
 		}
 	}
 
-	printhexadecimal(win,
-		0, 0, 4,
-		color & 0xffffff, 0x87654321, 0xfedcba98);
+	drawhexadecimal(
+		win, color & 0xffffff, 4,
+		0, 0, 0x87654321, 0xfedcba98);
 }
 static void pure_read_html(struct window* win)
 {

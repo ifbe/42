@@ -2,9 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printstring(void*,
-	int x, int y, int size,
-	char* str, u32 fg, u32 bg);
+void drawstring(
+	void*, void* str, int size, 
+	int x, int y, u32 fg, u32 bg);
 void rect(void*,
 	int x0, int y0,
 	int x1, int y1,
@@ -63,9 +63,9 @@ static void roster_read(struct window* win)
 		width/4, height/4,
 		0x554455, 0xff00ff
 	);
-	printstring(win,
-		0, 0, 4,
-		"game", 0, 0xffffff
+	drawstring(
+		win, "game", 4,
+		0, 0, 0, 0xffffff
 	);
 
 	rect(win,
@@ -73,9 +73,9 @@ static void roster_read(struct window* win)
 		width/2, height/4,
 		0x998899, 0xff00ff
 	);
-	printstring(win,
-		width/4, 0, 4,
-		"test", 0, 0xffffff
+	drawstring(
+		win, "test", 4,
+		width/4, 0, 0, 0xffffff
 	);
 
 	rect(win,
@@ -83,9 +83,9 @@ static void roster_read(struct window* win)
 		width*3/4, height/4,
 		0x887788, 0xff00ff
 	);
-	printstring(win,
-		width/2, 0, 4,
-		"tool", 0, 0xffffff
+	drawstring(
+		win, "tool", 4,
+		width/2, 0,	0, 0xffffff
 	);
 
 	rect(win,
@@ -93,9 +93,9 @@ static void roster_read(struct window* win)
 		width, height/4,
 		0xccbbcc, 0xff00ff
 	);
-	printstring(win,
-		width*3/4, 0, 4,
-		"haha", 0, 0xffffff
+	drawstring(
+		win, "haha", 4,
+		width*3/4, 0, 0, 0xffffff
 	);
 }
 static void roster_write(struct event* ev)

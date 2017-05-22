@@ -3,12 +3,12 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printstring(void*,
-	int x, int y, int size,
-	char* str, u32 fgcolor, u32 bgcolor);
-void printascii(void*,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
+void drawstring(
+	void*, void* str, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawascii(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
 void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -104,27 +104,27 @@ static void calculator_read_pixel(struct window* win)
 				w8*(x+1), h8*(y+5),
 				fg, 0xffffffff
 			);
-			printascii(win,
-				w8*x, h8*(y+4), 4,
-				table[y][x], 0xffffffff, 0
+			drawascii(
+				win, table[y][x], 4,
+				w8*x, h8*(y+4), 0xffffffff, 0
 			);
 		}
 	}
-	printstring(win,
-		16, 16, 2,
-		buffer, 0xffffffff, 0xff000000
+	drawstring(
+		win, buffer, 2,
+		16, 16, 0xffffffff, 0xff000000
 	);
-	printstring(win,
-		16, 16+32, 2,
-		infix, 0xffffffff, 0xff000000
+	drawstring(
+		win, infix, 2,
+		16, 16+32, 0xffffffff, 0xff000000
 	);
-	printstring(win,
-		16, 16+64, 2,
-		postfix, 0xffffffff, 0xff000000
+	drawstring(
+		win, postfix, 2,
+		16, 16+64, 0xffffffff, 0xff000000
 	);
-	printstring(win,
-		16, 16+96, 2,
-		result, 0xffffffff, 0xff000000
+	drawstring(
+		win, result, 2,
+		16, 16+96, 0xffffffff, 0xff000000
 	);
 }
 static void calculator_read_text(struct window* win)

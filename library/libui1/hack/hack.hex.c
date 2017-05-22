@@ -3,18 +3,18 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void printascii(void*,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
-void printbyte(void*,
-	int x, int y, int size,
-	char ch, u32 fg, u32 bg);
+void xt100_read(void*);
+void background1(void*);
+void drawascii(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawbyte(
+	void*, u8 ch, int size,
+	int x, int y, u32 fg, u32 bg);
 void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void background1(void*);
-void xt100_read(void*);
 //
 int data2hexstr(u64, u8*);
 int cmp(void*, void*);
@@ -93,10 +93,9 @@ static void foreground(struct window* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				printbyte(win,
-					16*x + xshift, 16*y,
-					1, databuf[windowoffset + y*byteperline + x],
-					0, 0
+				drawbyte(
+					win, databuf[windowoffset + y*byteperline + x], 1,
+					16*x + xshift, 16*y, 0, 0
 				);
 			}
 		}
@@ -108,13 +107,9 @@ static void foreground(struct window* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				printascii(win,
-					16*x + xshift,
-					16*y,
-					1,
-					databuf[windowoffset + y*byteperline + x],
-					0,
-					0
+				drawascii(
+					win, databuf[windowoffset + y*byteperline + x], 1,
+					16*x + xshift, 16*y, 0, 0
 				);
 			}
 		}
@@ -168,13 +163,9 @@ static void floatarea(struct window* win)
 	{
 		for(x=0;x<32;x++)
 		{
-			printascii(win,
-				xshift + thisx + x*8,
-				thisy + y*16,
-				1,
-				hi[(y*32) + x],
-				0,
-				0
+			drawascii(
+				win, hi[(y*32) + x], 1,
+				xshift + thisx + x*8, thisy + y*16, 0, 0
 			);
 		}
 	}

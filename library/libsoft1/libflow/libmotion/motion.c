@@ -60,14 +60,14 @@ void motion_explain(u64* p)
 				dx0 = (pointleave[0]&0xffff) - (pointenter[0]&0xffff);
 				dy0 = ((pointleave[0]>>16)&0xffff) - ((pointenter[0]>>16)&0xffff);
 
-				if( (dy0>-256) && (dy0<256) )
+				if( (dy0 > -0x2000) && (dy0 < 0x2000) )
 				{
-					if(dx0<-128)    //left
+					if(dx0 < -0x2000)    //left
 					{
 						p[1] = 0x64626b;
 						p[0] = 0x25;
 					}
-					else if(dx0>128)	//right
+					else if(dx0 > 0x2000)	//right
 					{
 						p[1] = 0x64626b;
 						p[0] = 0x27;
@@ -78,14 +78,14 @@ void motion_explain(u64* p)
 						p[0] = (p[0]&0xffffffff) + ((u64)1<<48);
 					}
 				}
-				if( (dx0>-256) && (dx0<256) )
+				if( (dx0 > -0x2000) && (dx0 < 0x2000) )
 				{
-					if(dy0<-128)    //up
+					if(dy0 < -0x2000)    //up
 					{
 						p[1] = 0x64626b;
 						p[0] = 0x26;
 					}
-					else if(dy0>128)	//down
+					else if(dy0 > 0x2000)	//down
 					{
 						p[1] = 0x64626b;
 						p[0] = 0x28;
@@ -116,13 +116,15 @@ void motion_explain(u64* p)
 				dy1 = ((pointleave[1]>>16)&0xffff) - ((pointenter[1]>>16)&0xffff);
 				dx2 = (pointleave[2]&0xffff) - (pointenter[2]&0xffff);
 				dy2 = ((pointleave[2]>>16)&0xffff) - ((pointenter[2]>>16)&0xffff);
-				if( (dx0>-256)&&(dx0<256)&&(dx1>-256)&&(dx1<256)&&(dx2>-256)&&(dx2<256) )
+				if( (dx0 > -0x2000)&&(dx0 < 0x2000)&&
+					(dx1 > -0x2000)&&(dx1 < 0x2000)&&
+					(dx2 > -0x2000)&&(dx2 < 0x2000) )
 				{
-					if( (dy0 > 128)&&(dy1 > 128)&&(dy2 > 128) )
+					if( (dy0 > 0x2000)&&(dy1 > 0x2000)&&(dy2 > 0x2000) )
 					{
 						//worker[1].xyze1 ^= 1;
 					}
-					else if( (dy0 < -128)&&(dy1 < -128)&&(dy2 < -128) )
+					else if( (dy0 < -0x2000)&&(dy1 < -0x2000)&&(dy2 < -0x2000) )
 					{
 						//worker[2].xyze1 ^= 1;
 					}

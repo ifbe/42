@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 {
 	u64 p[4] = {value, type, 0, 0};
 	motion_explain(p);
-	//say("(%llx,%llx),%d,%d\n",type,value,sizeof(type),sizeof(value));
+	say("event:%x,%x\n", p[0], p[1]);
 
 	characterwrite(p);
 }

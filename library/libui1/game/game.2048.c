@@ -4,10 +4,13 @@
 #define u8 unsigned char
 //
 void xt100_read(void*);
-void printdecimal(void*, 
-	int x, int y, int size, int data, u32 fg, u32 bg);
+void drawdecimal(
+	void*, int data, int size,
+	int x, int y, u32 fg, u32 bg);
 void rect(void*,
-	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolr);
+	int x1, int y1,
+	int x2, int y2,
+	u32 body, u32 frame);
 //
 int data2decstr(u64 data,u8* string);
 u32 getrandom();
@@ -119,11 +122,10 @@ static void cubie(struct window* win, int x,int y,int z)
 	);
 
 	if(z==0)return;
-	printdecimal(win,
+	drawdecimal(
+		win, z, 4,
 		x*(min/4)+min/10-count*16,
 		y*(min/4)+min/20,
-		4,
-		z,
 		0,
 		0
 	);

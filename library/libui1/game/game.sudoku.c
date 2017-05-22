@@ -3,9 +3,9 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void printdecimal(void*,
-	int x, int y, int size,
-	int data, u32 fg, u32 bg);
+void drawdecimal(
+	void*, int data, int size,
+	int x, int y, u32 fg, u32 bg);
 void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -13,7 +13,7 @@ void rectbody(void*,
 void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
-	u32 bodycolor, u32 framecolr);
+	u32 body, u32 frame);
 void xt100_read(void*);
 //
 int data2decstr(u64 data,u8* string);
@@ -291,10 +291,9 @@ static void sudoku_read_pixel(struct window* win)
 
 			if(table[y][x] != 0)
 			{
-				printdecimal(win,
-					x*w/9, y*h/9,
-					4, table[y][x],
-					0, 0
+				drawdecimal(
+					win, table[y][x], 4,
+					x*w/9, y*h/9, 0, 0
 				);
 			}
 		}

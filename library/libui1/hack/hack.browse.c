@@ -2,10 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printstring(void*,
-	int x, int y, int size,
-	void*, u32 fgcolor, u32 bgcolor);
-void backgroundcolor(void*, u32);
+void drawstring(
+	void*, void*, int size,
+	int x, int y, u32 fg, u32 bg);
+void backgroundcolor(
+	void*, u32);
 //
 int netmgr_read();
 int netmgr_write(void*);
@@ -94,8 +95,12 @@ static void browse_read_html(struct window* win)
 static void browse_read_pixel(struct window* win)
 {
 	backgroundcolor(win, 0);
-	printstring(win, 0, 0, 1, pl->data, 0xffffffff, 0);
-	printstring(win, 0, 16, 1, dstbuf, 0xffffffff, 0);
+	drawstring(
+		win, pl->data, 1,
+		0, 0, 0xffffffff, 0);
+	drawstring(
+		win, dstbuf, 1,
+		0, 16, 0xffffffff, 0);
 }
 static void browse_read(struct window* win)
 {
