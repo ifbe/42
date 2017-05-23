@@ -450,7 +450,7 @@ static void hex_write(struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;
-	say("%x,%x\n",type,key);
+	//say("%x,%x\n",type,key);
 
 	if(type==0x64626b)		//'kbd'
 	{
@@ -607,7 +607,7 @@ static void hex_stop()
 void hex_create(void* uibuf,void* addr)
 {
 	struct player* p = addr;
-	databuf = uibuf;
+	databuf = uibuf+0x500000;
 
 	p->type = 0x6c6f6f74;
 	p->name = 0x786568;

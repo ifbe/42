@@ -39,9 +39,45 @@ void initsay(char* buf)
 
 
 
+u64 fixdata(u64 data, int val)
+{
+	u64 mask;
+	if(val == 0)return data;
+
+	mask = 0;
+	while(val > 0)
+	{
+		mask = (mask<<8) | 0xff;
+		val--;
+	}
+	return data&mask;
+}
+int convert_c(char* buf, int align, int k, int ch)
+{
+	if(ch == '\n')
+	{
+		buf[k] = '\n';
+		k += 0x80-((k+align)%0x80);
+	}
+	else if(ch == '	')
+	{
+		do
+		{
+			buf[k] = 0x20;
+			k++;
+		}while( ( (align+k) % 8 ) != 0);
+	}
+	else
+	{
+		buf[k] = ch;
+		k++;
+	}
+	return k;
+}
 int convert(char* buf, int len, char* str, int align, va_list arg)
 {
 	int j,k;
+	int num,val;
 	u64 _x;
     char* _s;
     double _f;
@@ -54,73 +90,65 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 
 		if(str[j] == '%')
 		{
-			if(str[j+1] == 'c')
+			val = 0;
+			num = j+1;
+			while( (str[num] >= 0x30) && (str[num] <= 0x39) )
 			{
-				buf[k] = va_arg(arg,int);
-				k++;
-				j += 2;
+				val = (val*10) + (str[num]-0x30);
+				num++;
+			}
+
+			if(str[num] == 'c')
+			{
+				_x = va_arg(arg, int);
+				k = convert_c(buf, align, k, _x);
+
+				j = num+1;
 				continue;
 			}
-			else if(str[j+1] == 'd')
+			else if(str[num] == 'd')
 			{
 				_x = va_arg(arg, u64);
 				k += data2decstr(_x, buf+k);
 
-				j += 2;
+				j = num+1;
 				continue;
 			}
-			else if(str[j+1] == 'f')
+			else if(str[num] == 'f')
 			{
 				_f = va_arg(arg, double);
 				k += double2decstr(_f, buf+k);
 
-				j += 2;
+				j = num+1;
 				continue;
 			}
-			else if(str[j+1] == 'x')
+			else if(str[num] == 'x')
 			{
 				_x = va_arg(arg, u64);
+				_x = fixdata(_x, val);
 				k += data2hexstr(_x, buf+k);
 
-				j += 2;
+				j = num+1;
 				continue;
 			}
-			else if(str[j+1] == 's')
+			else if(str[num] == 's')
 			{
 				_s = va_arg(arg, char*);
 				while(1)
 				{
 					if(k >= len)return len;
-					if(*_s == 0)break;
-					buf[k] = *_s;
-					_s++;
-					k++;
-				}
 
-				j += 2;
+					k = convert_c(buf, align, k, *_s);
+
+					_s++;
+					if(*_s == 0)break;
+				}
+				j = num+1;
 				continue;
 			}
 		}
 
-		if(str[j] == '\n')
-		{
-			buf[k] = '\n';
-			k = (k+0x80) - ((align+k)%0x80);
-		}
-		else if(str[j] == '	')
-		{
-			do
-			{
-				buf[k] = 0x20;
-				k++;
-			}while( ( (align+k) % 8 ) != 0);
-		}
-		else
-		{
-			buf[k] = str[j];
-			k++;
-		}
-
+		k = convert_c(buf, align, k, str[j]);
 		j++;
 	}
 	return k;
@@ -190,6 +218,9 @@ void say(char* str, ...)
 	//snprintf
 	ret = convert(outputqueue+cur, 0x1000, str, cur%0x80, arg);
 
+	//
+	va_end(arg);
+
 	//debugport
 	printout(cur, ret);
 
@@ -198,7 +229,6 @@ void say(char* str, ...)
 	if(cur > 0xf0000)cur = 0;
 	*outcur = cur;
 
-	va_end(arg);
 }
 
 
