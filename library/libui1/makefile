@@ -2,6 +2,10 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
+	$(compiler) $(cflag) carve/carve.ground.c
+	$(compiler) $(cflag) carve/carve.shape.c
+	$(compiler) $(cflag) carve/carve.thing.c
+	$(compiler) $(cflag) carve/carve.water.c
 	$(compiler) $(cflag) draw/draw.ascii.c
 	$(compiler) $(cflag) draw/draw.background.c
 	$(compiler) $(cflag) draw/draw.icon.c
@@ -26,6 +30,8 @@ target:
 	$(compiler) $(cflag) menu/menu.center.c
 	$(compiler) $(cflag) menu/menu.virtkbd.c
 	$(compiler) $(cflag) menu/menu.roster.c
+	$(compiler) $(cflag) model/model.magnify.c
+	$(compiler) $(cflag) model/model.minify.c
 	$(compiler) $(cflag) photo/photo.blur.c
 	$(compiler) $(cflag) photo/photo.channel.c
 	$(compiler) $(cflag) photo/photo.convert.c

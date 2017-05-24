@@ -137,27 +137,21 @@ void callback_display_texture()
 }
 void callback_display_stl()
 {
-	GLfloat position[4] = {3.0, 2.0, 1.0, 0.0};
-	GLfloat ambient[4]={0.5, 0.5, 0.5, 1.0};
-	GLfloat diffuse[4]={1.0, 1.0, 1.0, 1.0};
-	GLfloat specular[4]={1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat color[8][3]=
-	{
-		0.0, 0.0, 0.0,
-		0.0, 0.0, 1.0,
-		0.0, 1.0, 0.0,
-		0.0, 1.0, 1.0,
-		1.0, 0.0, 0.0,
-		1.0, 0.0, 1.0,
-		1.0, 1.0, 0.0,
-		1.0, 1.0, 1.0
-	};
-	u32 j, count;
-	float* p;
-	void* pointer;
+	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
+	GLfloat redDiffuseMaterial[] = {1.0, 0.0, 0.0, 1.0};
+	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat greenEmissiveMaterial[] = {0.0, 1.0, 0.0, 1.0};
 
-	pointer = (void*)(win->buf2);
-	count = *(u32*)(pointer+80);
+	GLfloat shininess[] = {128.0};
+	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0, 1.0};
+	GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0, 1.0};
+
+	float* p;
+	void* pointer = (void*)(win->buf2);
+	u32 count = *(u32*)(pointer+80);
+	u32 j;
+
 	if(count > 0x147adf)count = 0x147adf;	//64MB
 	pointer += 84;
 	//printf("count=%d\n", count);
@@ -165,12 +159,23 @@ void callback_display_stl()
 
 	//must!!!
 	glDisable(GL_TEXTURE_2D);
+	glColor3f(1.0, 1.0, 1.0);
+	glShadeModel(GL_SMOOTH);
+
+	//
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+	//glMaterialfv(GL_FRONT, GL_EMISSION, greenEmissiveMaterial);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, redDiffuseMaterial);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecularMaterial);
+	glEnable(GL_COLOR_MATERIAL);
+
+	//
 	for(j=0;j<count;j++)
 	{
 		p = pointer;
 		pointer += 50;
 
-		glColor3fv(color[7]);
 		glBegin(GL_TRIANGLES);
 		glVertex3f(p[3], p[4], p[5]);
 		glVertex3f(p[6], p[7], p[8]);
@@ -178,11 +183,11 @@ void callback_display_stl()
 		glEnd();
 	}
 
-	glEnable(GL_COLOR_MATERIAL);
+	//
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, blackAmbientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 

@@ -234,6 +234,10 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
+	library/libui1/carve/carve.ground.c \
+	library/libui1/carve/carve.shape.c \
+	library/libui1/carve/carve.thing.c \
+	library/libui1/carve/carve.water.c \
 	library/libui1/draw/draw.ascii.c \
 	library/libui1/draw/draw.background.c \
 	library/libui1/draw/draw.icon.c \
@@ -256,6 +260,8 @@ LOCAL_SRC_FILES += \
 	library/libui1/menu/menu.center.c \
 	library/libui1/menu/menu.roster.c \
 	library/libui1/menu/menu.virtkbd.c \
+	library/libui1/model/model.magnify.c \
+	library/libui1/model/model.minify.c \
 	library/libui1/photo/photo.blur.c \
 	library/libui1/photo/photo.channel.c \
 	library/libui1/photo/photo.convert.c \
