@@ -14,4 +14,4 @@ bare:
 	$(compiler) $(cflag) startbare.c
 
 clean:
-	rm -f *.o
+	rm -f *.o *.o.cmd
