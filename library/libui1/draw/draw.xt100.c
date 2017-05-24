@@ -3,14 +3,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+void backgroundcolor(
+	void*, u32);
 void drawascii(
 	void*, char ch, int size,
 	int x, int y, u32 fg, u32 bg);
 void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
-void backgroundcolor(
-	void*, u32);
 //
 void arterywrite(void*);
 void arteryread();
@@ -42,83 +42,21 @@ static char* output = 0;
 
 
 
-
-
-
-
-static void background4(struct window* win)
-{
-	//用指定颜色清屏
-	int width,height;
-	u32 x,y,color;
-	u32* palette = (u32*)(win->buf1);
-	backgroundcolor(win, 0);
-
-	//输入框颜色
-	for(y=height-16;y<height;y++)
-	{
-		for(x=0;x<width/2;x++)
-		{
-			color=(x/2)*0x01010101;
-			palette[width*y + x]=color;
-			palette[width*y + width -x -1]=color;
-		}
-	}
-
-	//滚动框颜色
-	for(y=0;y<height/2;y++)
-	{
-		color = y*0xff/height;//0x44444488;
-
-		for(x=width-16;x<width;x++)
-		{
-			palette[width*y + x] = color;
-		}
-		for(x=width-16;x<width;x++)
-		{
-			palette[(height-1-y)*width + x] = color;
-		}
-	}
-}
-static void printposition(struct window* win, int start,int count,int max)
-{
-	//位置
-	int x,y;
-	int w = win->w;
-	int h = win->h;
-	u32* palette = (u32*)(win->buf1);
-
-	if(max<0x80*45)return;
-
-	//显示区大小/总大小
-	u64 top = (win->h)*start/max;
-	u64 bottom = (win->h)*(start+0x80*count)/max;//temp变量=max
-	say("printposition:%x,%x\n",top,bottom);
-
-	for(y=top;y<bottom;y++)
-	{
-		for(x=w-16+4;x<w-4;x++)
-		{
-			palette[w*y + x] = 0x01234567;
-		}
-	}
-}
 static void printstdout(struct window* win)
 {
 	u8 ch;
 	u32 pos;
 	int x,y;
-	int w = (win->w)/8;
 	int h = (win->h)/16;
+	int w = (win->w)/8;
+	if(w>0x80)w = 0x80;
 
-	if(w>0x80)x = 0x80;
 	pos = *(u32*)(output+0x100000-16);
 	pos = pos - (pos%0x80);
-
 	if(pos < h*0x80)pos = 0;
-	else pos -= (h-2)*0x80;
+	else pos -= (h-1)*0x80;
 
-	for(y=0;y<h-1;y++)
+	for(y=0;y<h;y++)
 	{
 		for(x=0;x<w;x++)
 		{
@@ -138,20 +76,59 @@ static void printstdin(struct window* win)
 	int h = win->h;
 	drawstring(
 		win, "[user@42]", 1,
-		0, h-16, 0xffffffff, 0);
+		0, 0, 0, 0xffffffff);
 	drawstring(
 		win, input, 1,
-		9<<3, h-16, 0xffffffff, 0);
+		9<<3, 0, 0, 0xffffffff);
+}
+static void printposition(struct window* win)
+{
+	//位置
+	int x,y,pos;
+	int w = win->w;
+	int h = win->h;
+	u32* palette = (u32*)(win->buf1);
+
+	//
+	pos = *(u32*)(output+0x100000-16);
+	pos = pos - (pos%0x80);
+	if(pos < (h/16)*0x80)pos = 0;
+	else pos -= ((h/16)-1)*0x80;
+
+	//显示区大小/总大小
+	u64 top = h * pos / (pos+(h/16)*0x80);
+	u64 bottom = h;
+
+	//
+	for(y=0;y<h;y++)
+	{
+		for(x=w-16;x<w;x++)
+		{
+			palette[w*y + x] = 0xff888888;
+		}
+	}
+	for(y=top;y<bottom;y++)
+	{
+		for(x=w-16+1;x<w-1;x++)
+		{
+			palette[w*y + x] = 0xffffffff;
+		}
+	}
 }
 void xt100_read(struct window* win)
 {
 	arteryread();
 	if(win->fmt == 0x696c63)return;
 
-	background4(win);
+	backgroundcolor(win, 0);
 	printstdout(win);
 	printstdin(win);
+	printposition(win);
 }
+
+
+
+
 void xt100_write(u64* p)
 {
 	int j;
@@ -179,10 +156,6 @@ void xt100_write(u64* p)
 		(*in)++;
 	}
 }
-
-
-
-
 
 
 

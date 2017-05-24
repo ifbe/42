@@ -1,4 +1,5 @@
 obj-m := testusb.o
+testusb-y := ../../library/init/startko.c
 
 KERNEL_DIR = /lib/modules/$(shell uname -r)/build
 PWD = $(shell pwd)
