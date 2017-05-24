@@ -511,7 +511,7 @@ static void hex_write(struct event* ev)
 			}
 		}
 	}
-	else if(type==0x2d6d)
+	else if(type==0x2d70)
 	{
 		if((key>>48) == 'f')	//front
 		{
@@ -539,7 +539,9 @@ static void hex_write(struct event* ev)
 		{
 			int x=key&0xffff;
 			int y=(key>>16)&0xffff;
-			pointeroffset = ( (y/16) * byteperline ) + ( (x-xshift) / 16 );
+			pointeroffset =
+				( (byteperline*x) >> 16 )+
+				( (lineperwindow*y) >> 16 )*byteperline;
 
 			//浮动框以外的
 			//px=x/(1024/0x40);

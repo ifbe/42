@@ -226,7 +226,7 @@ static void control_read(struct window* win)
 static void control_write(u64* who, u64* what, u64* how)
 {
 	int x,y;
-	if(*what == 0x2d6d)
+	if(*what == 0x2d70)
 	{
 		x = *(u16*)how;
 		y = *(u16*)(how+2);

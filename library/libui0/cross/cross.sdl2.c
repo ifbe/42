@@ -52,19 +52,23 @@ struct sdldata
 void* uievent(struct sdldata* p)
 {
 	SDL_Event event;
-
-	//
-	p->window =SDL_CreateWindow("i am groot!",
-				SDL_WINDOWPOS_UNDEFINED,
-				SDL_WINDOWPOS_UNDEFINED,
-				p->w, p->h,
-				SDL_WINDOW_OPENGL);
+	p->window =SDL_CreateWindow(
+		"i am groot!",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		p->w, p->h,
+		SDL_WINDOW_OPENGL
+	);
 
 	p->renderer = SDL_CreateRenderer(p->window, -1, 0);
-	p->texture = SDL_CreateTexture(p->renderer,
-				SDL_PIXELFORMAT_ARGB8888,
-				SDL_TEXTUREACCESS_STREAMING,
-				p->w, p->h);
+
+	p->texture = SDL_CreateTexture(
+		p->renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		p->w, p->h
+	);
+
 	//SDL_SetRenderDrawColor(p->renderer, 0, 0, 0, 255);
 	//SDL_RenderClear(p->renderer);
 	//SDL_RenderPresent(p->renderer);
@@ -116,8 +120,8 @@ void* uievent(struct sdldata* p)
 				int x=event.button.x;
 				int y=event.button.y;
 				eventwrite(
-				x+(y<<16)+((u64)1<<48),
-				0x2d6d, 0, 0
+				x+(y<<16)+((u64)'l'<<48),
+				0x2d70, 0, 0
 				);
 			}
 		}

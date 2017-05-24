@@ -475,7 +475,7 @@ void drawdouble(
 	char mystr[100];
 	double2decstr(data, mystr);
 	drawstring(
-		win, mystr, size,
+		win, (void*)mystr, size,
 		x, y, fg, bg
 	);
 }

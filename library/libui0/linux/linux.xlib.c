@@ -135,131 +135,129 @@ void* uievent(struct xlibdata* p)
 	);
 	XMapWindow(dsp, p->win);
 
+	u64 x,y,k;
 	while(1)
 	{
-		XNextEvent(dsp, &ev);
-		if(ev.type==ButtonPress)
+	XNextEvent(dsp, &ev);
+	if(ev.type==ButtonPress)
+	{
+		//printf("buttonpress\n");
+		if(ev.xbutton.button==Button4)	//front
 		{
-			//printf("buttonpress\n");
-			if(ev.xbutton.button==Button4)	//'xyz fron'
-			{
-				eventwrite(
-				ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)4<<48),
-				0x2b6d, 0, 0
-				);
-			}
-			else if(ev.xbutton.button==Button5)	//'xyz down'
-			{
-				eventwrite(
-				ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)5<<48),
-				0x2b6d, 0, 0
-				);
-			}
-
-			else if(ev.xbutton.button==Button1)
-			{
-				p->oldx=ev.xbutton.x;
-				p->oldy=ev.xbutton.y;
-			}
-
-			continue;
+			x = (ev.xbutton.x<<16) / (p->w);
+			y = (ev.xbutton.y<<16) / (p->h);
+			k = 'f';
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 		}
-		else if(ev.type==ButtonRelease)
+		else if(ev.xbutton.button==Button5)	//back
 		{
-			//printf("buttonrelease\n");
-			if(ev.xbutton.button==Button1)
-			{
-				if((p->oldx==ev.xbutton.x)&&
-				   (p->oldy==ev.xbutton.y) )
-				{
-					eventwrite(
-					ev.xbutton.x + (ev.xbutton.y<<16) + ((u64)1<<48),
-					0x2d6d, 0, 0
-					);
-				}
-			}
+			x = (ev.xbutton.x<<16) / (p->w);
+			y = (ev.xbutton.y<<16) / (p->h);
+			k = 'b';
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 		}
-		else if(ev.type==ClientMessage)
+		else if(ev.xbutton.button==Button1)
 		{
-			if (ev.xclient.data.l[0] == p->wmDelete)
-			{
-				eventwrite(0,0,0,0);
-				break;
-			}
+			p->oldx=ev.xbutton.x;
+			p->oldy=ev.xbutton.y;
 		}
-		else if(ev.type==ConfigureNotify)
+
+		continue;
+	}
+	else if(ev.type==ButtonRelease)
+	{
+		//printf("buttonrelease\n");
+		if(ev.xbutton.button==Button1)
 		{
-			int x = ev.xconfigure.width;
-			int y = ev.xconfigure.height;
-			//printf("%d,%d\n",x,y);
-
-			if( (x==p->w) && (y==p->h) )continue;
-			p->w=x;
-			p->h=y;
-
-			p->ximage = XCreateImage(
-				dsp, visual, 24, ZPixmap,
-				0, (void*)p->buf1,
-				x,y,32,0
-			);
-
-			eventwrite(x+(y<<16), 0x657a6973, 0, 0);
+		if((p->oldx==ev.xbutton.x)&&
+		   (p->oldy==ev.xbutton.y) )
+		{
+			x = (ev.xbutton.x<<16) / (p->w);
+			y = (ev.xbutton.y<<16) / (p->h);
+			k = 'l';
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 		}
-		else if(ev.type==Expose)
-		{
-			if(p->buf1==0)continue;
-			if(p->ximage==0)continue;
-			XPutImage(
-				dsp, p->win, p->gc, p->ximage,
-				0, 0, 0, 0,
-				p->w, p->h
-			); 
 		}
-		else if(ev.type==KeyPress)
-		{
-			char temp;
-			//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
-			//if (ev.xkey.keycode == keyQ)break;
-			//printf("%x\n",ev.xkey.keycode);
+	}
+	else if(ev.type==MotionNotify)
+	{
+		p->motioncount = (p->motioncount+1)%5;
+		if(p->motioncount != 0)continue;
 
-			//普通anscii码
-			if((ev.xkey.state&1) == 1)
-			{
+		x = (ev.xbutton.x<<16) / (p->w);
+		y = (ev.xbutton.y<<16) / (p->h);
+		k = 'l';
+		eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
+
+		p->oldx = ev.xbutton.x;
+		p->oldy = ev.xbutton.y;
+	}
+	else if(ev.type==ClientMessage)
+	{
+		if (ev.xclient.data.l[0] == p->wmDelete)
+		{
+			eventwrite(0,0,0,0);
+			break;
+		}
+	}
+	else if(ev.type==ConfigureNotify)
+	{
+		int x = ev.xconfigure.width;
+		int y = ev.xconfigure.height;
+		//printf("%d,%d\n",x,y);
+
+		if( (x==p->w) && (y==p->h) )continue;
+		p->w=x;
+		p->h=y;
+
+		p->ximage = XCreateImage(
+			dsp, visual, 24, ZPixmap,
+			0, (void*)p->buf1,
+			x,y,32,0
+		);
+
+		eventwrite(x+(y<<16), 0x657a6973, 0, 0);
+	}
+	else if(ev.type==Expose)
+	{
+		if(p->buf1==0)continue;
+		if(p->ximage==0)continue;
+		XPutImage(
+			dsp, p->win, p->gc, p->ximage,
+			0, 0, 0, 0,
+			p->w, p->h
+		); 
+	}
+	else if(ev.type==KeyPress)
+	{
+		char temp;
+		//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
+		//if (ev.xkey.keycode == keyQ)break;
+		//printf("%x\n",ev.xkey.keycode);
+
+		//普通anscii码
+		if((ev.xkey.state&1) == 1)
+		{
 			temp=xlib2upper[ev.xkey.keycode];
 			if(temp!=0)
 			{
 				eventwrite(temp, 0x72616863, 0, 0);
 				continue;
 			}
-			}
-			else
-			{
+		}
+		else
+		{
 			temp=xlib2anscii[ev.xkey.keycode];
 			if(temp!=0)
 			{
 				eventwrite(temp, 0x72616863, 0, 0);
 				continue;
 			}
-			}
-
-			//控制按键
-			eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b, 0, 0);
 		}
-		else if(ev.type==MotionNotify)
-		{
-			p->motioncount = (p->motioncount+1)%5;
-			if(p->motioncount != 0)continue;
 
-			eventwrite(
-			( (ev.xbutton.y - p->oldy) << 16 )
-			+ (ev.xbutton.x - p->oldx)
-			+ ((u64)1<<48),
-
-			0x406d, 0, 0
-			);
-			p->oldx = ev.xbutton.x;
-			p->oldy = ev.xbutton.y;
-		}
+		//控制按键
+		eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b, 0, 0);
+	}
 	}//while
 
 	//

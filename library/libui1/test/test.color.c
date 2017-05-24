@@ -201,7 +201,7 @@ static void color_write(struct event* ev)
 			if(red>0) red--;
 		}
 	}
-	else if(type == 0x2d6d)
+	else if(type == 0x2d70)
 	{
 		if((key>>48) == 1)	//left
 		{

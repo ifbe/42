@@ -255,10 +255,10 @@ void snake_write(struct event* ev)
 		else if(key=='w'){type=0x64626b;key=0x26;}
 		else if(key=='d'){type=0x64626b;key=0x27;}
 		else if(key=='s'){type=0x64626b;key=0x28;}
-		else if(key==' '){type=0x2d6d;}
+		else if(key==' '){type=0x2d70;}
 	}
 
-	else if(type==0x2d6d)
+	else if(type==0x2d70)
 	{
 		if(direction==1){type=0x64626b;key=0x25;}
 		else if(direction==2){type=0x64626b;key=0x27;}

@@ -112,7 +112,7 @@ static void pure_read(struct window* win)
 static void pure_write(struct event* ev)
 {
 	u64 what = ev->what;
-	if(what==0x2d6d | what==0x64626b)
+	if(what==0x2d70 | what==0x64626b)
 	{
 		flag = (flag+1)&0x7;
 	}

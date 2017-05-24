@@ -666,7 +666,7 @@ static void tetris_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x2d6d)
+	if(type == 0x2d70)
 	{
 		for(ret=0;ret<20;ret++)if(down()==1)return;
 	}

@@ -128,7 +128,7 @@ void ooxx_write(struct event* ev)
 	int min = (width<height) ? width:height;
 */
 	int min = 512;
-	if(ev->what == 0x2d6d)
+	if(ev->what == 0x2d70)
 	{
 		x=(ev->why) & 0xffff;
 		if(x>min)return;

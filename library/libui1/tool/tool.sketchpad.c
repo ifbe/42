@@ -445,7 +445,7 @@ static void sketchpad_write(struct event* ev)
 		centery += scale*dy;
 		changed=1;
 	}
-	else if(type==0x2b6d)
+	else if(type==0x2b70)
 	{
 		key >>= 48;
 		if(key == 4)	//front

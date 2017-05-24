@@ -222,7 +222,7 @@ void weiqi_write(struct event* ev)
 			turn++;
 		}
 	}
-	else if(what == 0x2d6d)
+	else if(what == 0x2d70)
 	{
 		x=key & 0xffff;
 		y=(key >> 16) & 0xffff;

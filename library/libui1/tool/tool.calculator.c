@@ -163,7 +163,7 @@ static void calculator_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x2d6d)
+	if(type == 0x2d70)
 	{
 		x = key&0xffff;
 		y = (key>>16)&0xffff;

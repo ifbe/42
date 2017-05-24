@@ -106,7 +106,7 @@ static int virtkbd_write(struct event* ev)
 	int width = 512;
 	int height = 512;
 
-	if(ev->what == 0x2d6d)
+	if(ev->what == 0x2d70)
 	{
 		t = (ev->why)&0xffffffff;
 

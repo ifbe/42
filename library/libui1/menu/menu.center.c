@@ -225,7 +225,7 @@ static void menu_write(struct event* ev)
 	u64 key = ev->why;
 
 	//'xyz left'
-	if(type==0x2d6d)
+	if(type==0x2d70)
 	{
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;

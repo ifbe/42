@@ -111,7 +111,7 @@ void doodle_write(struct event* ev)
 {
 	u64 what = ev->what;
 	u64 why = ev->why;
-	if(what == 0x2d6d)
+	if(what == 0x2d70)
 	{
 		px = why & 0xffff;
 		py = (why >> 16) & 0xffff;
