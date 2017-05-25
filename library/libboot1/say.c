@@ -76,8 +76,8 @@ int convert_c(char* buf, int align, int k, int ch)
 }
 int convert(char* buf, int len, char* str, int align, va_list arg)
 {
-	int j,k;
-	int num,val;
+	int j,k,t;
+	int num,val,flag;
 	u64 _x;
     char* _s;
     double _f;
@@ -92,6 +92,8 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 		{
 			val = 0;
 			num = j+1;
+			flag = str[num];
+			if(flag == '-')num++;
 			while( (str[num] >= 0x30) && (str[num] <= 0x39) )
 			{
 				val = (val*10) + (str[num]-0x30);
@@ -126,7 +128,25 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 			{
 				_x = va_arg(arg, u64);
 				_x = fixdata(_x, val);
+
+				if( (flag == '0')&&(val == 2) )
+				{
+					if(_x < 0x10)
+					{
+						buf[k] = '0';
+						k += 1;
+					}
+				}
+
+				t = k;
 				k += data2hexstr(_x, buf+k);
+				if( (flag == '-')&&(val > 0) )
+				{
+					for(;k<t+val;k++)
+					{
+						buf[k] = ' ';
+					}
+				}
 
 				j = num+1;
 				continue;
