@@ -172,13 +172,6 @@ static void floatarea(struct window* win)
 }
 static void hex_read_pixel(struct window* win)
 {
-	if(win->dim == 1)
-	{
-		printmemory(databuf, 0x200);
-		xt100_read(win);
-		return;
-	}
-
 	background1(win);
 	foreground(win);
 	floatarea(win);
@@ -511,17 +504,17 @@ static void hex_write(struct event* ev)
 			}
 		}
 	}
-	else if(type==0x2d70)
+	else if(type==0x2b70)
 	{
 		if((key>>48) == 'f')	//front
 		{
 			if( pointeroffset < byteperline )
 			{
-				windowoffset -= byteperline;
+				if(windowoffset >= byteperline)windowoffset -= byteperline;
 			}
 			else
 			{
-				pointeroffset -= byteperline;
+				if(pointeroffset >= byteperline)pointeroffset -= byteperline;
 			}
 		}
 		else if((key>>48) == 'b')		//back
@@ -537,8 +530,8 @@ static void hex_write(struct event* ev)
 		}
 		else
 		{
-			int x=key&0xffff;
-			int y=(key>>16)&0xffff;
+			int x = key&0xffff;
+			int y = (key>>16)&0xffff;
 			pointeroffset =
 				( (byteperline*x) >> 16 )+
 				( (lineperwindow*y) >> 16 )*byteperline;

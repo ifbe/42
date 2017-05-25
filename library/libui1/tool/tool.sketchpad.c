@@ -78,7 +78,6 @@ struct mathnode{
 static struct mathnode* node=0;
 
 //
-static int changed=0;
 static int count=0;
 static char buffer[128];
 
@@ -227,43 +226,30 @@ static void tuxiang(struct window* win)
 }
 static void sketchpad_read_pixel(struct window* win)
 {
-	double hello;
-
-	//跳过
-	if(node[0].type!=0x3d3d3d3d)goto skipthese;
-	if(changed==0)goto skipthese;
-	changed=0;
-
-
-
+	//draw
 	backgroundcolor(win, 0);
-	if(node[0].integer == 0)
-	{
-		//计算器
-		hello=calculator(postfix, 0, 0);
-		double2decstr(hello, result);
-	}
-	else
-	{
-		//网格，函数图
-		wangge(win);
-		tuxiang(win);
-	}//else
+	wangge(win);
+	tuxiang(win);
 
 
-
-
-
-skipthese:		//打印
-	drawstring(win, buffer, 1,
-		0, 0, 0xcccccc, 0xff000000);
-	drawstring(win, infix, 1,
-		0, 16, 0xcccccc, 0xff000000);
-	drawstring(win, postfix, 1,
-		0, 32, 0xcccccc, 0xff000000);
-	drawstring(win, result, 1,
-		0, 48, 0xcccccc, 0xff000000);
-	return;
+	//text
+skipthese:
+	drawstring(
+		win, buffer, 1,
+		0, 0, 0xcccccc, 0xff000000
+	);
+	drawstring(
+		win, infix, 1,
+		0, 16, 0xcccccc, 0xff000000
+	);
+	drawstring(
+		win, postfix, 1,
+		0, 32, 0xcccccc, 0xff000000
+	);
+	drawstring(
+		win, result, 1,
+		0, 48, 0xcccccc, 0xff000000
+	);
 }
 
 
@@ -376,22 +362,18 @@ static void sketchpad_write(struct event* ev)
 		if(key==0x25)			//left	0x4b
 		{
 			centerx += scale*10;
-			changed=1;
 		}
 		else if(key==0x27)		//right	0x4d
 		{
 			centerx -= scale*10;
-			changed=1;
 		}
 		else if(key==0x26)		//up	0x4b
 		{
 			centery -= scale*10;
-			changed=1;
 		}
 		else if(key==0x28)		//down	0x4d
 		{
 			centery += scale*10;
-			changed=1;
 		}
 	}
 	else if(type==0x72616863)		//'char'
@@ -422,9 +404,6 @@ static void sketchpad_write(struct event* ev)
 			//
 			postfix2binarytree(postfix, node);
 			say("node:%x,%x\n", node[0].left, node[0].right);
-
-			//告诉打印员
-			changed=1;
 		}
 		else
 		{
@@ -435,45 +414,40 @@ static void sketchpad_write(struct event* ev)
 			}
 		}
 	}
-	else if(type==0x406d)		//'xyz move'
+	else if(type==0x2b70)		//p+
 	{
-		int dx=(int)(short)(key&0xffff);
-		int dy=(int)(short)((key>>16)&0xffff);
-		//say("%d,%d\n",dx,dy);
+		int k = (key>>48)&0xffff;
+		int x = key&0xffff;
+		int y = (key>>16)&0xffff;
+		x = x - 0x8000;
+		y = 0x8000 - y;
+		if(k == 'f')	//front
+		{
+			//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx
+			//newcenterx=centerx+scale*pointx*(1-1/1.2)
+			centerx += scale * (x*512.0/65536) * (1-1/1.2);
+			centery += scale * (y*512.0/65536) * (1-1/1.2);
 
-		centerx -= scale*dx;
-		centery += scale*dy;
-		changed=1;
+			scale /= 1.2;
+		}
+		else if(k == 'b')	//back
+		{
+			centerx += scale * (x*512.0/65536) * (-0.2);
+			centery += scale * (y*512.0/65536) * (-0.2);
+
+			scale *= 1.2;
+		}
 	}
-	else if(type==0x2b70)
+	else if(type==0x4070)		//p@
 	{
-		key >>= 48;
-		if(key == 4)	//front
-		{
-			//保证鼠标之前指着哪儿(x,y)，之后就指着哪儿(x,y)
-			//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx -> newcenterx=centerx+scale*pointx*(1-1/1.2)
-			int x,y;
-			x = (key&0xffff) - 256;
-			y = 256 - ( (key>>16) & 0xffff );
-			centerx += ((double)x) * scale * (1-1/1.2);
-			centery += ((double)y) * scale * (1-1/1.2);
-			//say("%d,%lf\n",x,centerx);
-
-			scale/=1.2;
-			changed=1;
-		}
-		else if(key == 5)	//back
-		{
-			int x,y;
-			x = (key&0xffff) - 256;
-			y = 256 - ( (key>>16) & 0xffff );
-			centerx += ((double)x) * scale * (-0.2);
-			centery += ((double)y) * scale * (-0.2);
-
-			scale*=1.2;
-			changed=1;
-		}
-	}//2d6d
+		int x = key&0xffff;
+		int y = (key>>16)&0xffff;
+	}
+	else if(type==0x2d70)		//p-
+	{
+		int x = key&0xffff;
+		int y = (key>>16)&0xffff;
+	}
 }
 
 
