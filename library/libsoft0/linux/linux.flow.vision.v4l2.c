@@ -39,18 +39,6 @@ static int alive = 1;
 
 
 
-void listvision()
-{
-}
-void choosevision()
-{
-}
-int readvision(char* buf, int frame)
-{
-}
-int writevision(char* buf, int frame)
-{
-}
 void* visionlistener(void* p)
 {
 	//v4l2_open
@@ -218,6 +206,22 @@ void* visionlistener(void* p)
 
 
 
+int listvision()
+{
+	return 0;
+}
+int choosevision()
+{
+	return 0;
+}
+int readvision(char* buf, int frame)
+{
+	return 0;
+}
+int writevision(char* buf, int frame)
+{
+	return 0;
+}
 int startvision()
 {
 	alive = 1;
