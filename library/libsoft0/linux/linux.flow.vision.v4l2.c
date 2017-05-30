@@ -201,6 +201,7 @@ void* visionlistener(void* p)
 
 	//v4l2_release
 	close(fd);
+	return 0;
 }
 
 
