@@ -2,7 +2,8 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) lib1d/draw.xt100.c
+	$(compiler) $(cflag) lib1d/xt100/xt100.c
+	$(compiler) $(cflag) lib1d/1d.c
 	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
 	$(compiler) $(cflag) lib2d/draw/draw.background.c
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
@@ -15,12 +16,18 @@ target:
 	$(compiler) $(cflag) lib2d/photo/photo.mosaic.c
 	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
 	$(compiler) $(cflag) lib2d/photo/photo.scale.c
+	$(compiler) $(cflag) lib2d/2d.c
 	$(compiler) $(cflag) lib3d/carve/carve.ground.c
 	$(compiler) $(cflag) lib3d/carve/carve.shape.c
 	$(compiler) $(cflag) lib3d/carve/carve.thing.c
 	$(compiler) $(cflag) lib3d/carve/carve.water.c
 	$(compiler) $(cflag) lib3d/model/model.magnify.c
 	$(compiler) $(cflag) lib3d/model/model.minify.c
+	$(compiler) $(cflag) lib3d/3d.c
+	$(compiler) $(cflag) float/menu/menu.center.c
+	$(compiler) $(cflag) float/popup/menu.roster.c
+	$(compiler) $(cflag) float/vkbd/menu.virtkbd.c
+	$(compiler) $(cflag) float/float.c
 	$(compiler) $(cflag) floor/game/game.2048.c
 	$(compiler) $(cflag) floor/game/game.chess.c
 	$(compiler) $(cflag) floor/game/game.ooxx.c
@@ -47,9 +54,7 @@ target:
 	$(compiler) $(cflag) floor/tool/tool.qrcode.c
 	$(compiler) $(cflag) floor/tool/tool.sketchpad.c
 	$(compiler) $(cflag) floor/tool/tool.spectrum.c
-	$(compiler) $(cflag) float/menu/menu.center.c
-	$(compiler) $(cflag) float/popup/menu.roster.c
-	$(compiler) $(cflag) float/vkbd/menu.virtkbd.c
-	$(compiler) $(cflag) character.c
+	$(compiler) $(cflag) floor/floor.c
+	$(compiler) $(cflag) ui.c
 clean:
 	rm -f *.o *.a

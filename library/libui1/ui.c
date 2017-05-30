@@ -2,20 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//library
-void ttf_create(void*);
-void ttf_delete();
-void xt100_create(void*);
-void xt100_delete();
-void xt100_read(void*);
-void xt100_write(void*);
-//special
-void menu_create(u8*,u8*);
-void menu_delete();
-void roster_create(u8*,u8*);
-void roster_delete();
-void virtkbd_create(u8*,u8*);
-void virtkbd_delete();
+//floor
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -66,6 +53,24 @@ void stl_create(u8*,u8*);
 void stl_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
+//float
+void menu_create(u8*,u8*);
+void menu_delete();
+void roster_create(u8*,u8*);
+void roster_delete();
+void virtkbd_create(u8*,u8*);
+void virtkbd_delete();
+//lib1d
+void xt100_create(void*);
+void xt100_delete();
+void xt100_read(void*);
+void xt100_write(void*);
+//lib2d
+void ttf_create(void*);
+void ttf_delete();
+//lib3d
+void model_create(void*);
+void model_delete();
 //
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
@@ -148,11 +153,11 @@ void charactercreate(u8* type, u8* addr)
 	win = (struct window*)(addr+0);
 	worker = (struct working*)(addr+0x100000);
 
-	//......
-	temp = addr + 0x100000;
+	//clean
+	temp = (void*)worker;
 	for(i=0;i<0x100000;i++)temp[i]=0;
 
-	//
+	//lib
 	xt100_create(addr);
 	ttf_create(addr);
 

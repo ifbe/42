@@ -92,7 +92,7 @@ void motion_explain(u64* p)
 					}
 					else    //point
 					{
-						p[1] = 0x2d6d;
+						p[1] = 0x2d70;
 						p[0] = (p[0]&0xffffffff) + ((u64)1<<48);
 					}
 				}
