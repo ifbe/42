@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void ttf_create(void*);
+void ttf_delete();
 
 
 
@@ -27,6 +29,7 @@ void dimension2_start()
 void dimension2_delete()
 {
 }
-void dimension2_create()
+void dimension2_create(void* addr)
 {
+	ttf_create(addr);
 }
