@@ -68,7 +68,6 @@ static struct working* worker = 0;
 //
 static u32 now=0;		//不能有负数
 static u32 menu=0;
-static u32 vkbd=0;
 
 
 
@@ -96,10 +95,10 @@ void charactercreate(u8* type, u8* addr)
 	dimension3_create(addr, temp);
 
 	//special
-	special_create(addr, temp);
+	external_create(addr, temp);
 
 	//ordinary
-	ordinary_create(addr, temp);
+	content_create(addr, temp);
 
 	//
 	for(now=0;now<100;now++)
@@ -112,8 +111,8 @@ void characterdelete()
 {
 	//say("[c,f):deleteing character\n");
 
-	ordinary_delete();
-	special_delete();
+	content_delete();
+	external_delete();
 
 	dimension1_delete();
 	dimension2_delete();
@@ -193,6 +192,7 @@ void characterread()
 			worker[now].read(&win[j]);
 			continue;
 		}
+
 		if( (j >= 2) && (win[j].dim == 1) )
 		{
 			xt100_read(&win[j]);
@@ -200,9 +200,12 @@ void characterread()
 		else
 		{
 			worker[now].read(&win[j]);
+			if(menu > 0)
+			{
+				worker[1].read(&win[j]);
+				worker[0].read(&win[j]);
+			}
 		}
-		if(menu > 0)worker[0].read(&win[j]);
-		if(vkbd > 0)worker[2].read(&win[j]);
 	}
 }
 void characterwrite(u64* p)
@@ -234,23 +237,13 @@ void characterwrite(u64* p)
 		return;
 	}
 
-	//virtkbd
-	if(vkbd > 0)
-	{
-		x = worker[2].write(p);
-	}
-
 	//其余所有消息，谁在干活就交给谁
 	if(menu > 0)
 	{
-		//center
-		x = worker[0].write(p);
+		worker[1].write(p);
+		worker[0].write(p);
 	}
-	else
-	{
-		//player
-		worker[now].write(p);
-	}
+	worker[now].write(p);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

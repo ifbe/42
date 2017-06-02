@@ -2,6 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//float
+void menu_create(u8*,u8*);
+void menu_delete();
+void virtkbd_create(u8*,u8*);
+void virtkbd_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -56,8 +61,16 @@ void qrcode_delete();
 
 
 
-int ordinary_create(void* addr, void* temp)
+int content_create(void* addr, void* temp)
 {
+	//float.menu
+	menu_create(addr, temp);
+	temp += 0x100;
+
+	//float.virtkbd
+	virtkbd_create(addr, temp);
+	temp += 0x100;
+
 	//game.2048
 	the2048_create(addr, temp);
 	temp += 0x100;
@@ -152,7 +165,7 @@ int ordinary_create(void* addr, void* temp)
 
 	return temp-addr;
 }
-void ordinary_delete()
+void content_delete()
 {
 	spectrum_delete();
 	stl_delete();
@@ -180,4 +193,7 @@ void ordinary_delete()
 	tetris_delete();
 	weiqi_delete();
 	xiangqi_delete();
+
+	menu_delete();
+	virtkbd_delete();
 }

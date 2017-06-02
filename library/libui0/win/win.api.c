@@ -307,7 +307,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				k = 'l';
 				y = (lparam&0xffff0000) / (data->h);
 				x = ((lparam&0xffff)<<16) / (data->w);
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+				eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			}
 			leftdown=0;
 			return 0;
@@ -322,7 +322,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				k = 'r';
 				y = (lparam&0xffff0000) / (data->h);
 				x = ((lparam&0xffff)<<16) / (data->w);
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+				eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			}
 
 			rightdown=0;

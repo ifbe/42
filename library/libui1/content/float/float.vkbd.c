@@ -51,6 +51,12 @@ struct event
 	u64 where;
 	u64 when;
 };
+
+//max=32768
+static int arealeft = 16384;
+static int areatop = 32768;
+static int arearight = 49152;
+static int areabottom = 49152;
 static char table[8][8] = {
 	'a','b','c','d','e','f','g','h',
 	'i','j','k','l','m','n','o','p',
@@ -61,10 +67,6 @@ static char table[8][8] = {
 	'+','-','*','/',' ',' ',' ',' ',
 	'=',' ',' ',' ',' ',' ',' ',' '
 };
-static int arealeft = 64;
-static int areatop = 672;
-static int arearight = 960;
-static int areabottom = 960;	//max=1024=2^10
 
 
 
@@ -81,48 +83,42 @@ static void virtkbd_read(struct window* win)
 	{
 		for(x=0;x<8;x++)
 		{
-			left = (arealeft + x*(arearight-arealeft)/8)*width/1024;
-			top = (areatop + y*(areabottom-areatop)/8)*height/1024;
-			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/1024;
-			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/1024;
+			left = (arealeft + x*(arearight-arealeft)/8)*width/65536;
+			top = (areatop + y*(areabottom-areatop)/8)*height/65536;
+			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/65536;
+			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/65536;
 			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
 
 			rect(win,
 				left, top,
 				right, bottom,
-				0xccffcc, 0x752614
+				0xff00ff, 0
 			);
 
 			drawascii(
-				win, table[y][x], 2,
-				left, top, 0x221133, 0
+				win, table[y][x], 1,
+				left, top, 0xffffffff, 0
 			);
 		}
 	}
 }
 static int virtkbd_write(struct event* ev)
 {
-	int x,y,t;
-	int width = 512;
-	int height = 512;
+	int x,y;
+	say("%x,%x\n",x,y);
 
 	if(ev->what == 0x2d70)
 	{
-		t = (ev->why)&0xffffffff;
-
-		x = t & 0xffff;
-		x = (x<<10)/width;
+		x = (ev->why)&0xffff;
 		if(x < arealeft)return 1;
 		if(x > arearight)return 1;
 
-		y = (t >> 16) & 0xffff;
-		y = (y<<10)/height;
+		y = ((ev->why)>>16)&0xffff;
 		if(y < areatop)return 1;
 		if(y > areabottom)return 1;
 
-		x = 8*(x-arealeft)/(arearight-arealeft);
-		y = 8*(y-areatop)/(areabottom-areatop);
-		say("==%d,%d\n",x,y);
+		x = (x-arealeft)*8/32768;
+		y = (y-areatop)*8/16384;
 
 		ev->what = 0x72616863;
 		ev->why = table[y][x];

@@ -139,22 +139,22 @@ static void menu_read_pixel(struct window* win)
 
 	//left, right
 	triangle(win,
-		width/16, height/2,
-		width*3/16, height*3/8,
-		width*3/16, height*5/8,
+		width/16, height*3/8,
+		width*3/16, height/4,
+		width*3/16, height/2,
 		0x888888, 0xffffff
 	);
 	triangle(win,
-		width*15/16, height/2,
-		width*13/16, height*3/8,
-		width*13/16, height*5/8,
+		width*15/16, height*3/8,
+		width*13/16, height/4,
+		width*13/16, height/2,
 		0x888888, 0xffffff
 	);
 
 	//body
 	rect(win,
 		width/4, (height/4+16)&0xfffffff0,
-		width*3/4, height*3/4,
+		width*3/4, height/2,
 		0, 0xffffffff
 	);
 
@@ -223,6 +223,7 @@ static void menu_write(struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;
+	say("%x,%x\n",type,key);
 
 	//'xyz left'
 	if(type==0x2d70)

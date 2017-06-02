@@ -271,35 +271,36 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib3d/model/model.magnify.c \
 	library/libui1/lib3d/model/model.minify.c \
 	library/libui1/lib3d/3d.c \
-	library/libui1/float/menu/menu.center.c \
-	library/libui1/float/popup/menu.roster.c \
-	library/libui1/float/vkbd/menu.virtkbd.c \
-	library/libui1/float/float.c \
-	library/libui1/floor/game/game.2048.c \
-	library/libui1/floor/game/game.chess.c \
-	library/libui1/floor/game/game.ooxx.c \
-	library/libui1/floor/game/game.snake.c \
-	library/libui1/floor/game/game.sudoku.c \
-	library/libui1/floor/game/game.tetris.c \
-	library/libui1/floor/game/game.weiqi.c \
-	library/libui1/floor/game/game.xiangqi.c \
-	library/libui1/floor/hack/hack.browse.c \
-	library/libui1/floor/hack/hack.editor.c \
-	library/libui1/floor/hack/hack.hex.c \
-	library/libui1/floor/hack/hack.input.c \
-	library/libui1/floor/hack/hack.tree.c \
-	library/libui1/floor/test/test.color.c \
-	library/libui1/floor/test/test.doodle.c \
-	library/libui1/floor/test/test.font.c \
-	library/libui1/floor/test/test.pure.c \
-	library/libui1/floor/tool/tool.3dmodel.c \
-	library/libui1/floor/tool/tool.calculator.c \
-	library/libui1/floor/tool/tool.camera.c \
-	library/libui1/floor/tool/tool.circuit.c \
-	library/libui1/floor/tool/tool.qrcode.c \
-	library/libui1/floor/tool/tool.sketchpad.c \
-	library/libui1/floor/tool/tool.spectrum.c \
-	library/libui1/floor/floor.c \
+	library/libui1/external/external.title.c \
+	library/libui1/external/external.toast.c \
+	library/libui1/external/external.c \
+	library/libui1/content/float/float.menu.c \
+	library/libui1/content/float/float.vkbd.c \
+	library/libui1/content/game/game.2048.c \
+	library/libui1/content/game/game.chess.c \
+	library/libui1/content/game/game.ooxx.c \
+	library/libui1/content/game/game.snake.c \
+	library/libui1/content/game/game.sudoku.c \
+	library/libui1/content/game/game.tetris.c \
+	library/libui1/content/game/game.weiqi.c \
+	library/libui1/content/game/game.xiangqi.c \
+	library/libui1/content/hack/hack.browse.c \
+	library/libui1/content/hack/hack.editor.c \
+	library/libui1/content/hack/hack.hex.c \
+	library/libui1/content/hack/hack.input.c \
+	library/libui1/content/hack/hack.tree.c \
+	library/libui1/content/test/test.color.c \
+	library/libui1/content/test/test.doodle.c \
+	library/libui1/content/test/test.font.c \
+	library/libui1/content/test/test.pure.c \
+	library/libui1/content/tool/tool.3dmodel.c \
+	library/libui1/content/tool/tool.calculator.c \
+	library/libui1/content/tool/tool.camera.c \
+	library/libui1/content/tool/tool.circuit.c \
+	library/libui1/content/tool/tool.qrcode.c \
+	library/libui1/content/tool/tool.sketchpad.c \
+	library/libui1/content/tool/tool.spectrum.c \
+	library/libui1/content/content.c \
 	library/libui1/ui.c
 
 
