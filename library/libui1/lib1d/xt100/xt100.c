@@ -133,7 +133,6 @@ void xt100_write(u64* p)
 {
 	int j;
 	int* in = (void*)(input+0xffff0);
-	if(p[2] != 0)return;
 	if(p[1] != 0x72616863)return;
 
 	arterywrite(p);

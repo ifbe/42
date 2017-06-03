@@ -8,28 +8,28 @@ void xt100_delete();
 
 
 
-void dimension1_read()
+void lib1d_read()
 {
 }
-void dimension1_write()
+void lib1d_write()
 {
 }
-void dimension1_list()
+void lib1d_list()
 {
 }
-void dimension1_choose()
+void lib1d_choose()
 {
 }
-void dimension1_stop()
+void lib1d_stop()
 {
 }
-void dimension1_start()
+void lib1d_start()
 {
 }
-void dimension1_delete()
+void lib1d_delete()
 {
 }
-void dimension1_create(void* addr)
+void lib1d_create(void* addr)
 {
 	xt100_create(addr);
 }

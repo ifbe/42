@@ -16,3 +16,21 @@ void external_create(void* addr, void* temp)
 void external_delete()
 {
 }
+void external_start()
+{
+}
+void external_stop()
+{
+}
+void external_list()
+{
+}
+void external_choose()
+{
+}
+void external_read()
+{
+}
+void external_write(void* win, void* event)
+{
+}

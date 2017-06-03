@@ -8,27 +8,27 @@ void model_delete();
 
 
 
-void dimension3_read()
+void lib3d_read()
 {
 }
-void dimension3_write()
+void lib3d_write()
 {
 }
-void dimension3_list()
+void lib3d_list()
 {
 }
-void dimension3_choose()
+void lib3d_choose()
 {
 }
-void dimension3_stop()
+void lib3d_stop()
 {
 }
-void dimension3_start()
+void lib3d_start()
 {
 }
-void dimension3_delete()
+void lib3d_delete()
 {
 }
-void dimension3_create()
+void lib3d_create()
 {
 }

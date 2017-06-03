@@ -250,7 +250,7 @@ LOCAL_SRC_FILES += \
 #4.ui1
 LOCAL_SRC_FILES += \
 	library/libui1/lib1d/xt100/xt100.c \
-	library/libui1/lib1d/1d.c \
+	library/libui1/lib1d/lib1d.c \
 	library/libui1/lib2d/draw/draw.ascii.c \
 	library/libui1/lib2d/draw/draw.background.c \
 	library/libui1/lib2d/draw/draw.icon.c \
@@ -263,14 +263,14 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib2d/photo/photo.mosaic.c \
 	library/libui1/lib2d/photo/photo.rotate.c \
 	library/libui1/lib2d/photo/photo.scale.c \
-	library/libui1/lib2d/2d.c \
+	library/libui1/lib2d/lib2d.c \
 	library/libui1/lib3d/carve/carve.ground.c \
 	library/libui1/lib3d/carve/carve.shape.c \
 	library/libui1/lib3d/carve/carve.thing.c \
 	library/libui1/lib3d/carve/carve.water.c \
 	library/libui1/lib3d/model/model.magnify.c \
 	library/libui1/lib3d/model/model.minify.c \
-	library/libui1/lib3d/3d.c \
+	library/libui1/lib3d/lib3d.c \
 	library/libui1/external/external.title.c \
 	library/libui1/external/external.toast.c \
 	library/libui1/external/external.c \

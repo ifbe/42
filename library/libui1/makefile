@@ -3,7 +3,7 @@ cflag ?= -c -O2 -fPIC
 
 target:
 	$(compiler) $(cflag) lib1d/xt100/xt100.c
-	$(compiler) $(cflag) lib1d/1d.c
+	$(compiler) $(cflag) lib1d/lib1d.c
 	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
 	$(compiler) $(cflag) lib2d/draw/draw.background.c
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
@@ -16,14 +16,14 @@ target:
 	$(compiler) $(cflag) lib2d/photo/photo.mosaic.c
 	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
 	$(compiler) $(cflag) lib2d/photo/photo.scale.c
-	$(compiler) $(cflag) lib2d/2d.c
+	$(compiler) $(cflag) lib2d/lib2d.c
 	$(compiler) $(cflag) lib3d/carve/carve.ground.c
 	$(compiler) $(cflag) lib3d/carve/carve.shape.c
 	$(compiler) $(cflag) lib3d/carve/carve.thing.c
 	$(compiler) $(cflag) lib3d/carve/carve.water.c
 	$(compiler) $(cflag) lib3d/model/model.magnify.c
 	$(compiler) $(cflag) lib3d/model/model.minify.c
-	$(compiler) $(cflag) lib3d/3d.c
+	$(compiler) $(cflag) lib3d/lib3d.c
 	$(compiler) $(cflag) external/external.notify.c
 	$(compiler) $(cflag) external/external.title.c
 	$(compiler) $(cflag) external/external.toast.c

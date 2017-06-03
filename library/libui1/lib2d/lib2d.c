@@ -8,28 +8,28 @@ void ttf_delete();
 
 
 
-void dimension2_read()
+void lib2d_read()
 {
 }
-void dimension2_write()
+void lib2d_write()
 {
 }
-void dimension2_list()
+void lib2d_list()
 {
 }
-void dimension2_choose()
+void lib2d_choose()
 {
 }
-void dimension2_stop()
+void lib2d_stop()
 {
 }
-void dimension2_start()
+void lib2d_start()
 {
 }
-void dimension2_delete()
+void lib2d_delete()
 {
 }
-void dimension2_create(void* addr)
+void lib2d_create(void* addr)
 {
 	ttf_create(addr);
 }

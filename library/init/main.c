@@ -5,10 +5,8 @@
 //libui1
 int characterstart(int);
 int characterstop();
-int characterwrite(void* event);
 int characterread();
-int characterlist(char*);
-int charactercommand(char* p);
+int characterwrite(void* event);
 //libui0
 int displaystart(int, int);
 int displaystop(int);
@@ -53,6 +51,7 @@ int main(int argc, char* argv[])
 {
 	//before
 	int ret;
+	struct event temp;
 	struct event* ev;
 
 	birth();
@@ -63,7 +62,9 @@ int main(int argc, char* argv[])
 	ret = characterstart(0);
 	for(ret=1;ret<argc;ret++)
 	{
-		charactercommand(argv[ret]);
+		temp.why = (u64)(argv[ret]);
+		temp.what = 0x727473;
+		characterwrite(&temp);
 	}
 
 	//forever
