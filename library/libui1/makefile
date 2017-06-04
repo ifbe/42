@@ -2,13 +2,14 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) lib1d/xt100/xt100.c
+	$(compiler) $(cflag) lib1d/term/term.cli.c
 	$(compiler) $(cflag) lib1d/lib1d.c
 	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
 	$(compiler) $(cflag) lib2d/draw/draw.background.c
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
 	$(compiler) $(cflag) lib2d/draw/draw.shape.c
 	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
+	$(compiler) $(cflag) lib2d/draw/draw.xt100.c
 	$(compiler) $(cflag) lib2d/photo/photo.blur.c
 	$(compiler) $(cflag) lib2d/photo/photo.channel.c
 	$(compiler) $(cflag) lib2d/photo/photo.convert.c

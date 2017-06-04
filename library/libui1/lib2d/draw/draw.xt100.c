@@ -12,11 +12,9 @@ void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
 //
-void arterywrite(void*);
-void arteryread();
+void cli_read();
+void cli_write();
 //
-int ncmp(void*, void*, int);
-int cmp(void*, void*);
 void say(void*, ...);
 
 
@@ -117,43 +115,16 @@ static void printposition(struct window* win)
 }
 void xt100_read(struct window* win)
 {
-	arteryread();
-	if(win->fmt == 0x696c63)return;
+	cli_read();
 
 	backgroundcolor(win, 0);
 	printstdout(win);
 	printstdin(win);
 	printposition(win);
 }
-
-
-
-
-void xt100_write(u64* p)
+void xt100_write()
 {
-	int j;
-	int* in = (void*)(input+0xffff0);
-	if(p[1] != 0x72616863)return;
-
-	arterywrite(p);
-
-	j = *(u8*)p;
-	if(j == 0x8)		//backspace
-	{
-		if(*in <= 0)return;
-		(*in)--;
-		input[*in] = 0;
-	}
-	else if(j == 0xa)	//enter
-	{
-		for(j=0;j<0x80;j++)input[j] = 0;
-		*in = 0;
-	}
-	else
-	{
-		input[*in] = j;
-		(*in)++;
-	}
+	//cli_write();
 }
 
 
@@ -164,6 +135,6 @@ void xt100_create(void* addr)
 	input = addr + 0x400000;
 	output = addr + 0x500000;
 }
-void console_delete()
+void xt100_delete()
 {
 }

@@ -3,8 +3,12 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
+void cli_read(void*);
+void cli_write(void*);
 void xt100_read(void*);
 void xt100_write(void*);
+void term3d_read(void*);
+void term3d_write(void*);
 //float
 void menu_create(u8*,u8*);
 void menu_delete();
@@ -390,34 +394,37 @@ found:
 }
 int content_read(struct window* win)
 {
-	//cli
+	//1d:	cli
 	if(win->fmt == 0x696c63)
 	{
-		xt100_read(win);
+		cli_read(win);
 		return 0;
 	}
-/*
-	//gles
-	if(win->fmt == 0x696c63)
-	{
-		xt100_read(win);
-		return;
-	}
-*/
-	//net, rgba, gl
-	if(win->dim == 1)
-	{
-		xt100_read(win);
-	}
+
+	//2d:	rgba
 	else
 	{
-		worker[now].read(win);
+		if(win->dim == 1)xt100_read(win);
+		else worker[now].read(win);
+
 		if(menu > 0)
 		{
 			worker[1].read(win);
 			worker[0].read(win);
 		}
+		return 0;
 	}
+/*
+	//3d:	directx, opengl, vulkan
+	if(win->fmt == 0x696c63)
+	{
+		if(win->dim == 1)term3d_read(win);
+		else if(win->dim == 2)texture_read(win);
+		else worker[now].read(win);
+
+		return 0;
+	}
+*/
 	return 0;
 }
 int content_write(u64* ev)
@@ -438,17 +445,22 @@ int content_write(u64* ev)
 	}//kbd
 
 	//
-	if((win->fmt == 0x696c63)|(win->dim == 1))
+	if(win->dim == 1)
 	{
-		xt100_write(ev);
+		cli_write(ev);
 		return 0;
 	}
-
-	//其余所有消息，谁在干活就交给谁
-	if(menu > 0)
+	else if(win->dim == 2)
 	{
-		worker[1].write(ev);
-		worker[0].write(ev);
+		if(menu > 0)
+		{
+			worker[1].write(ev);
+			worker[0].write(ev);
+		}
+		return worker[now].write(ev);
 	}
-	return worker[now].write(ev);
+	else
+	{
+		say("dim=%d\n",win->dim);
+	}
 }

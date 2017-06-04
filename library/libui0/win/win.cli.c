@@ -89,9 +89,14 @@ void windowwrite()
 void windowstart(struct window* win)
 {
 	win->buf1 = 0;
+	win->buf2 = 0;
 	win->fmt = 0x696c63;
+	win->dim = 1;
+
 	win->w = 80;
 	win->h = 25;
+	win->d = 0;
+	win->t = 0;
 }
 void windowstop()
 {

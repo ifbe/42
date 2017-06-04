@@ -2,8 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void xt100_create(void*);
-void xt100_delete();
+void b8000_create(void*);
+void cli_create(void*);
+void tui_create(void*);
 
 
 
@@ -31,5 +32,7 @@ void lib1d_delete()
 }
 void lib1d_create(void* addr)
 {
-	xt100_create(addr);
+	//b8000_create(addr);
+	cli_create(addr);
+	//tui_create(addr);
 }
