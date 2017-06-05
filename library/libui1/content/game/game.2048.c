@@ -142,7 +142,6 @@ static void the2048_read_pixel(struct window* win)
 		say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
 		say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
 		say("\n");
-		xt100_read(win);
 		return;
 	}
 

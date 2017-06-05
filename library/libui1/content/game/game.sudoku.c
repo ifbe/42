@@ -275,7 +275,6 @@ static void sudoku_read_pixel(struct window* win)
 			say("\n");
 		}
 		say("\n");
-		xt100_read(win);
 		return;
 	}
 

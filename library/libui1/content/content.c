@@ -5,10 +5,8 @@
 //
 void cli_read(void*);
 void cli_write(void*);
-void xt100_read(void*);
-void xt100_write(void*);
-void term3d_read(void*);
-void term3d_write(void*);
+void draw_xt100(void*, int, int, int, int);
+void carve_term3d(void*);
 //float
 void menu_create(u8*,u8*);
 void menu_delete();
@@ -404,7 +402,10 @@ int content_read(struct window* win)
 	//2d:	rgba
 	else
 	{
-		if(win->dim == 1)xt100_read(win);
+		if(win->dim == 1)
+		{
+			draw_xt100(win, 0, 0, 0xffff, 0xffff);
+		}
 		else worker[now].read(win);
 
 		if(menu > 0)
@@ -418,10 +419,21 @@ int content_read(struct window* win)
 	//3d:	directx, opengl, vulkan
 	if(win->fmt == 0x696c63)
 	{
-		if(win->dim == 1)term3d_read(win);
-		else if(win->dim == 2)texture_read(win);
+		if(win->dim == 1)
+		{
+			carve_term3d(win);
+		}
+		else if(win->dim == 2)
+		{
+			carve_texture(win);
+		}
 		else worker[now].read(win);
 
+		if(menu > 0)
+		{
+			worker[1].read(win);
+			worker[0].read(win);
+		}
 		return 0;
 	}
 */

@@ -40,7 +40,8 @@ static char* output = 0;
 
 
 
-static void printstdout(struct window* win)
+static void printstdout(struct window* win,
+	int x0, int y0, int x1, int y1)
 {
 	u8 ch;
 	u32 pos;
@@ -68,7 +69,8 @@ static void printstdout(struct window* win)
 		}
 	}
 }
-static void printstdin(struct window* win)
+static void printstdin(struct window* win,
+	int x0, int y0, int x1, int y1)
 {
 	int w = win->w;
 	int h = win->h;
@@ -79,7 +81,8 @@ static void printstdin(struct window* win)
 		win, input, 1,
 		9<<3, 0, 0, 0xffffffff);
 }
-static void printposition(struct window* win)
+static void printposition(struct window* win,
+	int x0, int y0, int x1, int y1)
 {
 	//位置
 	int x,y,pos;
@@ -113,18 +116,15 @@ static void printposition(struct window* win)
 		}
 	}
 }
-void xt100_read(struct window* win)
+void draw_xt100(struct window* win,
+	int x0, int y0, int x1, int y1)
 {
 	cli_read();
 
-	backgroundcolor(win, 0);
-	printstdout(win);
-	printstdin(win);
-	printposition(win);
-}
-void xt100_write()
-{
-	//cli_write();
+	//backgroundcolor(win, 0);
+	printstdout(win, x0, y0, x1, y1);
+	printstdin(win, x0, y0, x1, y1);
+	printposition(win, x0, y0, x1, y1);
 }
 
 
