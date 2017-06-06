@@ -40,6 +40,7 @@ target:
 	$(compiler) $(cflag) content/game/game.tetris.c
 	$(compiler) $(cflag) content/game/game.weiqi.c
 	$(compiler) $(cflag) content/game/game.xiangqi.c
+	$(compiler) $(cflag) content/hack/hack.algo.c
 	$(compiler) $(cflag) content/hack/hack.browse.c
 	$(compiler) $(cflag) content/hack/hack.editor.c
 	$(compiler) $(cflag) content/hack/hack.hex.c

@@ -39,6 +39,8 @@ void font_delete();
 void pure_create(u8*,u8*);
 void pure_delete();
 //hack
+void algorithm_create(u8*,u8*);
+void algorithm_delete();
 void browse_create(u8*,u8*);
 void browse_delete();
 void control_create(u8*,u8*);
@@ -182,6 +184,10 @@ int content_create(u8* addr)
 	xiangqi_create(addr, temp);
 	temp += 0x100;
 
+	//hack.algorithm
+	algorithm_create(addr, temp);
+	temp += 0x100;
+
 	//hack.browse
 	browse_create(addr, temp);
 	temp += 0x100;
@@ -264,6 +270,7 @@ void content_delete()
 	hex_delete();
 	control_delete();
 	browse_delete();
+	algorithm_delete();
 
 	color_delete();
 	doodle_delete();

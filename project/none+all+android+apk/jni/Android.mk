@@ -234,13 +234,14 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
-	library/libui1/lib1d/xt100/xt100.c \
+	library/libui1/lib1d/term/term.cli.c \
 	library/libui1/lib1d/lib1d.c \
 	library/libui1/lib2d/draw/draw.ascii.c \
 	library/libui1/lib2d/draw/draw.background.c \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
+	library/libui1/lib2d/draw/draw.xt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \
@@ -269,6 +270,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/game/game.tetris.c \
 	library/libui1/content/game/game.weiqi.c \
 	library/libui1/content/game/game.xiangqi.c \
+	library/libui1/content/hack/hack.algo.c \
 	library/libui1/content/hack/hack.browse.c \
 	library/libui1/content/hack/hack.editor.c \
 	library/libui1/content/hack/hack.hex.c \
