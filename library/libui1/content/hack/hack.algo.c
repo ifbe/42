@@ -65,10 +65,20 @@ struct player
 	u8 data[0xc0];
 };
 static struct player* pl;
-static u64 algtype = 0x35646d;
+//
+static u64 algtype[] = {
+	0x35646d,		//md5
+	0x31616873,		//sha1
+	0
+};
+static int this = 0;
 //
 static u8* buffer;
 static int buflen;
+//
+static u8* key;
+static int keylen;
+//
 static int reslen;
 
 
@@ -101,16 +111,21 @@ static void algorithm_read_pixel(struct window* win)
 		(win->w)*15/16, (win->h)*9/16,
 		0
 	);
-
-	//middle.center
 	rectframe(win,
-		(win->w/2)-32, (win->h/2)-16,
-		(win->w/2)+32, (win->h/2)+16,
+		(win->w/4)+32, (win->h/2)-16,
+		(win->w*3/4)-32, (win->h/2)+16,
+		0xffffffff
+	);
+
+	//middle.left
+	rectframe(win,
+		(win->w/4)-32, (win->h/2)-16,
+		(win->w/4)+32, (win->h/2)+16,
 		0xffffffff
 	);
 	drawstring(
-		win, &algtype, 1,
-		(win->w/2)-16, (win->h/2)-4, 0xffffffff, 0
+		win, &algtype[this], 1,
+		(win->w/4)-16, (win->h/2)-4, 0xffffffff, 0
 	);
 
 	//middle.right
@@ -172,24 +187,23 @@ static void algorithm_write(struct event* ev)
 		int y=(key>>16)&0xffff;
 		if(y<0x7000)return;
 		if(y>0x9000)return;
-		if(x<0x7000)return;
-		if(x<0x9000)
+		if(x<0x3000)return;
+		if(x<0x5000)
 		{
-			if(algtype == 0x35646d)algtype = 0x31616873;
-			else algtype = 0x35646d;
-
+			this = (this+1)%2;
 			return;
 		}
+		if(x<0xb000)return;
 
 		int ret = readfile("makefile", buffer, 0, 0x100000);
-		if(algtype == 0x35646d)
+		if(algtype[this] == 0x35646d)
 		{
 			md5sum(temp, buffer, ret);
 			datastr2hexstr(pl->data, temp, 16);
 			pl->data[32] = 0;
 			reslen = 32;
 		}
-		else if(algtype == 0x31616873)
+		else if(algtype[this] == 0x31616873)
 		{
 			sha1sum(temp, buffer, ret);
 			datastr2hexstr(pl->data, temp, 20);

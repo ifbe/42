@@ -141,25 +141,11 @@ void arterydelete()
 	dirhome = 0;
 	datahome = 0;
 }
-int arterystart(int src, int dst)
+int arterystart()
 {
-	if(dst == 0)	//toggle passthrough
-	{
-	}
-	else		//dumplicate, configure
-	{
-	}
-	return 0;
 }
-int arterystop(int haha)
+int arterystop()
 {
-	if(haha == 0)	//nolonger passthrough
-	{
-	}
-	else		//deconfigure, cleanup
-	{
-	}
-	return 0;
 }
 //--------------------------------------------------------
 

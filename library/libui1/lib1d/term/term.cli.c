@@ -5,6 +5,8 @@
 void arteryread();
 void arterywrite(void*);
 //
+int buf2arg(u8* buf,int max,int* argc,u8** argv);
+int buf2type(u8* buf,int max,u64* type,u8** name);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
@@ -13,26 +15,32 @@ void say(void*, ...);
 
 
 
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
 static char* input = 0;
 static char* output = 0;
 
 
 
 
+void cli_create(void* addr)
+{
+	input = addr + 0x400000;
+	output = addr + 0x500000;
+}
+void cli_delete()
+{
+}
+void cli_start()
+{
+}
+void cli_stop()
+{
+}
+void cli_list()
+{
+}
+void cli_choose()
+{
+}
 void cli_read()
 {
 	arteryread();
@@ -62,16 +70,4 @@ void cli_write(u64* p)
 		input[*in] = j;
 		(*in)++;
 	}
-}
-
-
-
-
-void cli_create(void* addr)
-{
-	input = addr + 0x400000;
-	output = addr + 0x500000;
-}
-void cli_delete()
-{
 }
