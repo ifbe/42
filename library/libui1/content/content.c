@@ -125,6 +125,7 @@ struct working
 };
 static struct working* worker;
 //
+static u32 shutup=0;
 static u32 now=0;		//不能有负数
 static u32 menu=0;
 
@@ -400,20 +401,24 @@ found:
 int content_read(struct window* win)
 {
 	//1d:	cli
-	if(win->fmt == 0x696c63)
+	if(win->dim == 1)
 	{
-		cli_read(win);
+		if(shutup == 0)
+		{
+			worker[now].read(win);
+			cli_read(win);
+			shutup = 1;
+		}
+		if(win->fmt == 0x696c63)return 0;
+
+		draw_xt100(win, 0, 0, 0xffff, 0xffff);
 		return 0;
 	}
 
 	//2d:	rgba
-	else
+	else if(win->dim == 2)
 	{
-		if(win->dim == 1)
-		{
-			draw_xt100(win, 0, 0, 0xffff, 0xffff);
-		}
-		else worker[now].read(win);
+		worker[now].read(win);
 
 		if(menu > 0)
 		{
@@ -424,7 +429,7 @@ int content_read(struct window* win)
 	}
 /*
 	//3d:	directx, opengl, vulkan
-	if(win->fmt == 0x696c63)
+	else if(win->dim == 3)
 	{
 		if(win->dim == 1)
 		{
@@ -462,6 +467,16 @@ int content_write(u64* ev)
 		else if(why == 0xf2){win->dim = 2;return 0;}
 		else if(why == 0xf3){win->dim = 3;return 0;}
 	}//kbd
+
+	//char
+	if(what == 0x72616863)
+	{
+		//enter
+		if( (why==0xa)|(why==0xd) )shutup = 0;
+
+		//tab
+		//esc
+	}
 
 	//
 	if(win->dim == 1)

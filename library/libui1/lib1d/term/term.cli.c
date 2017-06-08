@@ -43,7 +43,7 @@ void cli_choose()
 }
 void cli_read()
 {
-	arteryread();
+	say("[void]");
 }
 void cli_write(u64* p)
 {

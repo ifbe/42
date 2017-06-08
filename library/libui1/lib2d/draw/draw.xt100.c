@@ -3,8 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void backgroundcolor(
-	void*, u32);
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 body);
 void drawascii(
 	void*, char ch, int size,
 	int x, int y, u32 fg, u32 bg);
@@ -46,8 +48,16 @@ static void printstdout(struct window* win,
 	u8 ch;
 	u32 pos;
 	int x,y;
-	int h = (win->h)/16;
-	int w = (win->w)/8;
+	int h = win->h;
+	int w = win->w;
+	rectbody(win,
+		w*x0/0x10000, h*y0/0x10000,
+		w*x1/0x10000, h*y1/0x10000,
+		0
+	);
+
+	h >>= 4;
+	w >>= 3;
 	if(w>0x80)w = 0x80;
 
 	pos = *(u32*)(output+0x100000-16);
@@ -119,8 +129,6 @@ static void printposition(struct window* win,
 void draw_xt100(struct window* win,
 	int x0, int y0, int x1, int y1)
 {
-	cli_read();
-
 	//backgroundcolor(win, 0);
 	printstdout(win, x0, y0, x1, y1);
 	printstdin(win, x0, y0, x1, y1);

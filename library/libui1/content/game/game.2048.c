@@ -65,6 +65,56 @@ static void* buffer;
 
 
 
+static void the2048_read_cli(struct window* win)
+{
+	int (*table)[4] = buffer + num*16*4;
+	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
+	say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
+	say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
+	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
+	say("\n");
+}
+static void the2048_read_tui(struct window* win)
+{
+	int x,y,j,k,ret;
+	u8 src[10];
+
+	int w = win->w;
+	int h = win->h;
+	u8* p = (u8*)(win->buf1);
+	int (*table)[4] = buffer + num*16*4;
+
+	for(x=0;x<w*h*4;x++)p[x]=0;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			data2decstr(table[y][x], src);
+			ret = w*(4*y+1) + 8*x + 2;
+			ret <<= 2;
+
+			//color
+			for(j=-1;j<=1;j++)
+			{
+				for(k=-2;k<=3;k++)
+				{
+					p[ret + (j*w*4) +(k*4) +3] = 4;
+				}
+			}
+
+
+			//number
+			j=k=0;
+			for(j=0;j<10;j++)
+			{
+				if(src[j] == 0)break;
+
+				p[ret + k] = src[j];
+				k += 4;
+			}
+		}
+	}
+}
 u32 the2048_color(int val)
 {
 	switch(val)
@@ -135,62 +185,11 @@ static void the2048_read_pixel(struct window* win)
 	int x,y;
 	int (*table)[4] = buffer + num*16*4;
 
-	if(win->dim == 1)
-	{
-		say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
-		say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
-		say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
-		say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
-		say("\n");
-		return;
-	}
-
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
 			cubie(win, x, y, table[y][x]);
-		}
-	}
-}
-static void the2048_read_text(struct window* win)
-{
-	int x,y,j,k,ret;
-	u8 src[10];
-
-	int w = win->w;
-	int h = win->h;
-	u8* p = (u8*)(win->buf1);
-	int (*table)[4] = buffer + num*16*4;
-
-	for(x=0;x<w*h*4;x++)p[x]=0;
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			data2decstr(table[y][x], src);
-			ret = w*(4*y+1) + 8*x + 2;
-			ret <<= 2;
-
-			//color
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					p[ret + (j*w*4) +(k*4) +3] = 4;
-				}
-			}
-
-
-			//number
-			j=k=0;
-			for(j=0;j<10;j++)
-			{
-				if(src[j] == 0)break;
-
-				p[ret + k] = src[j];
-				k += 4;
-			}
 		}
 	}
 }
@@ -239,23 +238,17 @@ static void the2048_read(struct window* win)
 	u64 fmt = win->fmt;
 	//say("@2048.read\n");
 
+	//cli
+	if(win->dim == 1)the2048_read_cli(win);
+
 	//text
-	if(fmt == 0x74786574)
-	{
-		the2048_read_text(win);
-	}
+	else if(fmt == 0x74786574)the2048_read_tui(win);
 
 	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		the2048_read_html(win);
-	}
+	else if(fmt == 0x6c6d7468)the2048_read_html(win);
 
 	//pixel
-	else
-	{
-		the2048_read_pixel(win);
-	}
+	else the2048_read_pixel(win);
 }
 
 

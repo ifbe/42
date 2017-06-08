@@ -52,12 +52,12 @@ u64 fixdata(u64 data, int val)
 	}
 	return data&mask;
 }
-int convert_c(char* buf, int align, int k, int ch)
+int convert_c(char* buf, int prev, int k, int ch)
 {
 	if(ch == '\n')
 	{
 		buf[k] = '\n';
-		k += 0x80-((k+align)%0x80);
+		k += 0x80-((k+prev)%0x80);
 	}
 	else if(ch == '	')
 	{
@@ -65,7 +65,7 @@ int convert_c(char* buf, int align, int k, int ch)
 		{
 			buf[k] = 0x20;
 			k++;
-		}while( ( (align+k) % 8 ) != 0);
+		}while( ( (prev+k) % 8 ) != 0);
 	}
 	else
 	{
@@ -74,7 +74,7 @@ int convert_c(char* buf, int align, int k, int ch)
 	}
 	return k;
 }
-int convert(char* buf, int len, char* str, int align, va_list arg)
+int convert(char* buf, int prev, int len, char* str, va_list arg)
 {
 	int j,k,t;
 	int num,val,flag;
@@ -103,7 +103,7 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 			if(str[num] == 'c')
 			{
 				_x = va_arg(arg, int);
-				k = convert_c(buf, align, k, _x);
+				k = convert_c(buf, prev, k, _x);
 
 				j = num+1;
 				continue;
@@ -158,7 +158,7 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 				{
 					if(k >= len)return len;
 
-					k = convert_c(buf, align, k, *_s);
+					k = convert_c(buf, prev, k, *_s);
 
 					_s++;
 					if(*_s == 0)break;
@@ -168,11 +168,24 @@ int convert(char* buf, int len, char* str, int align, va_list arg)
 			}
 		}
 
-		k = convert_c(buf, align, k, str[j]);
+		k = convert_c(buf, prev, k, str[j]);
 		j++;
 	}
 	return k;
 }
+int fmt(char* buf, int len, char* str, ...)
+{
+	int ret;
+	va_list arg;
+	va_start(arg, str);
+	ret = convert(buf, 0, len, str, arg);
+	va_end(arg);
+    return ret;
+}
+
+
+
+
 void printout(int cur, int len)
 {
 	int j,k;
@@ -213,19 +226,6 @@ void printout(int cur, int len)
 		}
 	}
 }
-
-
-
-
-int fmt(char* buf, int len, char* str, ...)
-{
-	int ret;
-	va_list arg;
-	va_start(arg, str);
-	ret = convert(buf, len, str, 0, arg);
-	va_end(arg);
-    return ret;
-}
 void say(char* str, ...)
 {
 	int cur,ret;
@@ -236,7 +236,7 @@ void say(char* str, ...)
 	cur = *outcur;
 
 	//snprintf
-	ret = convert(outputqueue+cur, 0x1000, str, cur%0x80, arg);
+	ret = convert(outputqueue+cur, cur%0x80, 0x1000, str, arg);
 
 	//
 	va_end(arg);

@@ -85,7 +85,6 @@ static u8 cmd[256];
 static int len=0;
 //
 static int theone = 0;
-static int shutup = 0;
 static int combo = 0;
 
 
@@ -213,13 +212,7 @@ int arterychoose(u8* p)
 }
 int arteryread(u8* p)
 {
-	if(shutup == 1)return 0;
-
-	if(theone > 0)say("[%s]",&worker[theone].id);
-	else say("[void]");
-
-	shutup = 1;
-	return 1;
+	return 0;
 }
 int arterywrite(u8* buffer)
 {
@@ -236,7 +229,6 @@ int arterywrite(u8* buffer)
 	if(combo >= 2)
 	{
 		theone = 0;
-		shutup = 0;
 		combo = 0;
 		len = 0;
 		worker[0].type = 0;
@@ -284,7 +276,6 @@ int arterywrite(u8* buffer)
 				len = 0;
 
 				ret = 1;
-				shutup = 0;
 			}
 			else if(len<256)
 			{
