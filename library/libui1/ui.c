@@ -8,6 +8,11 @@ int cli_write(void*);
 void draw_vt100(void*, int, int, int, int);
 void carve_term3d(void*);
 //
+void content_create(void*, void*);
+void content_delete();
+void external_create(void*, void*);
+void external_delete();
+//
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
@@ -15,11 +20,11 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //
-void external_create(void*, void*);
-void external_delete();
-void content_create(void*, void*);
-void content_delete();
+int ncmp(void*,void*,int);
+int cmp(void*,void*);
+u32 getrandom();
 //
+void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
 
@@ -78,7 +83,7 @@ static struct working* worker = 0;
 //
 static u32 now=0;		//不能有负数
 static u32 menu=0;
-static u32 newline=0;
+static u32 newline=1;
 
 
 
@@ -347,7 +352,7 @@ int characterwrite(u64* ev)
 	{
 		ret = characterchoose( (void*)(ev[0]) );
 		if(ret == 0)say("%s\n", ev[0]);
-		return;
+		return 0;
 	}
 	ev[2] = (u64)(&win[2]);
 

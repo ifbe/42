@@ -2,10 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void characterlist(void*);
-void characterchoose(void*);
-void arteryread();
-void arterywrite(void*);
+int characterlist(void*);
+int characterchoose(void*);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -56,14 +54,20 @@ int cli_write(u64* p)
 	j = *p;
 	if(j == 0x8)		//backspace
 	{
-		if(*enq <= 0)return;
+		if(*enq <= 0)return 0;
 		(*enq)--;
 		input[*enq] = 0;
 		return 0;
 	}
 	else if((j == 0xa)|(j == 0xd))	//enter
 	{
+		say("%s\n",input);
+		j = characterchoose(input);
+		if(j != 0)return 1;
+
 		if(ncmp(input, "ls", 2) == 0)characterlist(0);
+		else if(ncmp(input, "ls", 2) == 0)characterlist(0);
+
 		for(j=0;j<0x80;j++)input[j] = 0;
 		*enq = 0;
 		return 1;
