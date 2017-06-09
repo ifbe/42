@@ -3,7 +3,6 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void xt100_read(void*);
 void background1(void*);
 void drawascii(
 	void*, u8 ch, int size,

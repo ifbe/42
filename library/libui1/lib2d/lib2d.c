@@ -4,8 +4,8 @@
 #define u64 unsigned long long
 void ttf_create(void*);
 void ttf_delete();
-void xt100_create(void*);
-void xt100_delete();
+void vt100_create(void*);
+void vt100_delete();
 
 
 
@@ -34,5 +34,5 @@ void lib2d_delete()
 void lib2d_create(void* addr)
 {
 	ttf_create(addr);
-	xt100_create(addr);
+	vt100_create(addr);
 }

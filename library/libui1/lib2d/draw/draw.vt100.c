@@ -126,7 +126,7 @@ static void printposition(struct window* win,
 		}
 	}
 }
-void draw_xt100(struct window* win,
+void draw_vt100(struct window* win,
 	int x0, int y0, int x1, int y1)
 {
 	//backgroundcolor(win, 0);
@@ -138,11 +138,11 @@ void draw_xt100(struct window* win,
 
 
 
-void xt100_create(void* addr)
+void vt100_create(void* addr)
 {
 	input = addr + 0x400000;
 	output = addr + 0x500000;
 }
-void xt100_delete()
+void vt100_delete()
 {
 }

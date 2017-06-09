@@ -9,7 +9,7 @@ target:
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
 	$(compiler) $(cflag) lib2d/draw/draw.shape.c
 	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
-	$(compiler) $(cflag) lib2d/draw/draw.xt100.c
+	$(compiler) $(cflag) lib2d/draw/draw.vt100.c
 	$(compiler) $(cflag) lib2d/photo/photo.blur.c
 	$(compiler) $(cflag) lib2d/photo/photo.channel.c
 	$(compiler) $(cflag) lib2d/photo/photo.convert.c

@@ -14,7 +14,6 @@ void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 body, u32 frame);
-void xt100_read(void*);
 //
 int data2decstr(u64 data,u8* string);
 u32 getrandom();

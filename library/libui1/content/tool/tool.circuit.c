@@ -170,7 +170,7 @@ void circuit_create(void* base,void* addr)
 {
 	struct player* p = addr;
 
-	p->type = 0x74736574;
+	p->type = 0x6c6f6f74;
 	p->name = 0x74697563726963;
 
 	p->start = (u64)circuit_start;

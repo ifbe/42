@@ -230,7 +230,7 @@ void algorithm_create(void* base, void* addr)
 	pl = addr;
 	buffer = base+0x300000;
 
-	pl->type = 0x656d6167;
+	pl->type = 0x6c6f6f74;
 	pl->name = 0x6f676c61;
 	pl->start = (u64)algorithm_start;
 	pl->stop = (u64)algorithm_stop;

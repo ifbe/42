@@ -186,7 +186,7 @@ void browse_create(void* base,void* addr)
 	dstbuf = base+0x300000;
 	pl = addr;
 
-	pl->type = 0x74736574;
+	pl->type = 0x6c6f6f74;
 	pl->name = 0x6573776f7262;
 	pl->start = (u64)browse_start;
 	pl->stop = (u64)browse_stop;

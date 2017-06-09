@@ -241,7 +241,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
-	library/libui1/lib2d/draw/draw.xt100.c \
+	library/libui1/lib2d/draw/draw.vt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \

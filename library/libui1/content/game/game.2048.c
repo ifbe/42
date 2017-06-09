@@ -3,7 +3,6 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void xt100_read(void*);
 void drawdecimal(
 	void*, int data, int size,
 	int x, int y, u32 fg, u32 bg);
