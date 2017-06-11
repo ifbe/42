@@ -53,11 +53,11 @@ struct working
 	u64 name;
 
 	//[10,17]:开始
-	int (*start)();
+	int (*start)(void* p);
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[18,1f]:结束
-	int (*stop)();
+	int (*stop)(void* p);
 	char padding3[ 8 - sizeof(char*) ];
 
 	//[20,27]:观察
@@ -69,7 +69,7 @@ struct working
 	char padding5[ 8 - sizeof(char*) ];
 
 	//[30,37]:输出
-	int (*read)(void* win);
+	int (*read)(void* w, void* p);
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[38,3f]:输入
@@ -140,11 +140,11 @@ void characterdelete()
 }
 int characterstart(int j)
 {
-	return worker[now].start();
+	return worker[now].start( &worker[now] );
 }
 int characterstop()
 {
-	return worker[now].stop();
+	return worker[now].stop( &worker[now] );
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -274,10 +274,12 @@ int characterread()
 {
 	int j;
 	struct window* w;
+	struct working* p;
 	for(j=0;j<16;j++)
 	{
 		//
 		w = &win[j];
+		p = &worker[now];
 
 		//error
 		if(w->fmt == 0)break;
@@ -296,7 +298,7 @@ int characterread()
 		{
 			if(newline == 1)
 			{
-				worker[now].read(w);
+				worker[now].read(w, p);
 				cli_read(w);
 				newline = 0;
 			}
@@ -309,12 +311,12 @@ int characterread()
 		//2d:	rgba
 		else if(w->dim == 2)
 		{
-			worker[now].read(w);
+			worker[now].read(w, p);
 
 			if(menu > 0)
 			{
-				worker[1].read(w);
-				worker[0].read(w);
+				worker[1].read(w, p);
+				worker[0].read(w, p);
 			}
 			return 0;
 		}
@@ -331,12 +333,12 @@ int characterread()
 			{
 				carve_texture(w);
 			}
-			else worker[now].read(w);
+			else worker[now].read(w, p);
 
 			if(menu > 0)
 			{
-				worker[1].read(w);
-				worker[0].read(w);
+				worker[1].read(w, p);
+				worker[0].read(w, p);
 			}
 */
 			return 0;
@@ -354,7 +356,7 @@ int characterwrite(u64* ev)
 		if(ret == 0)say("%s\n", ev[0]);
 		return 0;
 	}
-	ev[2] = (u64)(&win[2]);
+	if(ev[2] < 0x1000)ev[2] = (u64)(&win[2]);
 
 
 
@@ -402,8 +404,9 @@ int characterwrite(u64* ev)
 	}
 	else if(w->dim == 3)
 	{
-		say("dim=%d\n",w->dim);
 	}
+
+	say("dim=%d\n",w->dim);
 	return 0;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

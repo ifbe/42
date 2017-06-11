@@ -9,7 +9,7 @@
 void characterstart(int);
 void characterstop(int);
 void characterwrite(void* p);
-void characterread(void* p);
+void characterread();
 //
 void motion_explain(u64* p);
 void network_explain(u64* p);
@@ -23,7 +23,7 @@ void death();
 
 
 
-struct screen
+struct window
 {
 	u64 buf1;
 	u64 buf2;
@@ -36,7 +36,7 @@ struct screen
 	u64 t;
 };
 static void* world;
-static struct screen* ui;
+static struct window* win;
 //
 static int pressed=0;
 static int xxxx=0;
@@ -63,16 +63,16 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	}
 
 	//draw pixel
-	characterread(ui);
+	characterread();
 
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong value)
 {
-	u64 p[4] = {value, type, 0, 0};
+	u64 p[4] = {value, type, &win[0], 0};
 	motion_explain(p);
-	say("event:%x,%x\n", p[0], p[1]);
+	say("event:%x,%x,%x,0\n", p[0], p[1], p[2]);
 
 	characterwrite(p);
 }
@@ -80,7 +80,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 {
 	int ret;
 	u64 pixels;
-	AndroidBitmapInfo  info;
+	AndroidBitmapInfo info;
 	say("start\n");
 
 	if ((ret = AndroidBitmap_getInfo(env, bitmap, &info)) < 0)
@@ -98,10 +98,14 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	ui->buf1 = pixels;
-	ui->fmt = 0x3838383861626772;
-	ui->w = info.width;
-	ui->h = info.height;
+	win[0].buf1 = pixels;
+	win[0].buf2 = 0;
+	win[0].fmt = 0x3838383861626772;
+	win[0].dim = 2;
+
+	win[0].w = info.width;
+	win[0].h = info.height;
+
 	characterstart(0);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
@@ -114,7 +118,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	world = birth();
 	say("JNI_OnLoad\n");
 
-	ui = world+0x400000;
+	win = world+0x400000;
 	return JNI_VERSION_1_6;
 }
 JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
@@ -126,17 +130,16 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 
 
 
-void uievent()
-{
-}
 void windowread()
 {
 }
 void windowwrite()
 {
 }
-void windowstart()
+void windowstart(struct window* win)
 {
+	win->fmt = 0x3838383861626772;
+	win->dim = 2;
 }
 void windowstop()
 {

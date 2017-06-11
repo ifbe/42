@@ -3,13 +3,17 @@
 #define u16 unsigned short
 #define u8 unsigned char
 //
-void drawdecimal(
-	void*, int data, int size,
-	int x, int y, u32 fg, u32 bg);
+void rectframe(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 body, u32 frame);
+void drawdecimal(
+	void*, int data, int size,
+	int x, int y, u32 fg, u32 bg);
 //
 int data2decstr(u64 data,u8* string);
 u32 getrandom();
@@ -53,10 +57,18 @@ struct player
 	u64 read;
 	u64 write;
 
+	u64 x;
+	u64 y;
+	u64 z;
+	u64 t;
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 k;
+
 	//z,y,x
-	u8 data[12][4][4];
+	u8 data[8][4][4];
 };
-static struct player* pl;
 //
 static int num;
 static void* buffer;
@@ -64,56 +76,6 @@ static void* buffer;
 
 
 
-static void the2048_read_cli(struct window* win)
-{
-	int (*table)[4] = buffer + num*16*4;
-	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
-	say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
-	say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
-	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
-	say("\n");
-}
-static void the2048_read_tui(struct window* win)
-{
-	int x,y,j,k,ret;
-	u8 src[10];
-
-	int w = win->w;
-	int h = win->h;
-	u8* p = (u8*)(win->buf1);
-	int (*table)[4] = buffer + num*16*4;
-
-	for(x=0;x<w*h*4;x++)p[x]=0;
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			data2decstr(table[y][x], src);
-			ret = w*(4*y+1) + 8*x + 2;
-			ret <<= 2;
-
-			//color
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					p[ret + (j*w*4) +(k*4) +3] = 4;
-				}
-			}
-
-
-			//number
-			j=k=0;
-			for(j=0;j<10;j++)
-			{
-				if(src[j] == 0)break;
-
-				p[ret + k] = src[j];
-				k += 4;
-			}
-		}
-	}
-}
 u32 the2048_color(int val)
 {
 	switch(val)
@@ -135,23 +97,11 @@ u32 the2048_color(int val)
 	}
 	return 0;
 }
-static void cubie(struct window* win, int x,int y,int z)
+static void cubie(
+	struct window* win, int data,
+	int x, int y, int w, int h)
 {
-	int min;
-	int color;
-	int count;
-	if(win->w < win->h)min = win->w;
-	else min = win->h;
-
-	//
-	if(z<16)count=0;
-	else if(z<128)count=1;
-	else if(z<1024)count=2;
-	else if(z<16384)count=3;
-	else count=4;
-
-	//
-	color = the2048_color(z);
+	u32 color = the2048_color(data);
 	if( ( (win->fmt)&0xffffffff) == 0x61626772)	//bgra->rgba
 	{
 		color	= 0xff000000
@@ -160,47 +110,74 @@ static void cubie(struct window* win, int x,int y,int z)
 			+ ((color&0xff0000)>>16);
 	}
 
-	rect(
-		win,
-		x*min/4,
-		y*min/4,
-		((x+1)*min/4) - 1,
-		((y+1)*min/4) - 1,
-		color,
-		0
+	rect(win,
+		x, y,
+		x+w, y+h,
+		color, 0
 	);
 
-	if(z==0)return;
+	if(data==0)return;
 	drawdecimal(
-		win, z, 4,
-		x*(min/4)+min/10-count*16,
-		y*(min/4)+min/20,
-		0,
-		0
+		win, data, 4,
+		x+(w/4), y+(h/4),
+		0, 0
 	);
 }
-static void the2048_read_pixel(struct window* win)
+static void the2048_read_pixel(struct window* win, struct player* pl)
 {
-	int x,y;
+	int j,k;
+	int x,y,w,h;
 	int (*table)[4] = buffer + num*16*4;
 
-	for(y=0;y<4;y++)
+	//position
+	x = (win->w)*(pl->x)/0x10000;
+	y = (win->h)*(pl->y)/0x10000;
+	w = (win->w)*(pl->w)/0x10000;
+	h = (win->h)*(pl->h)/0x10000;
+	rectframe(
+		win,
+		x, y,
+		x+w, y+h,
+		0xffffffff
+	);
+
+	//center
+	if(w>=h)
 	{
-		for(x=0;x<4;x++)
+		x += (w-h)/2;
+		w = h;
+	}
+	else
+	{
+		y += (h-w)/2;
+		h = w;
+	}
+
+	//cubies
+	for(k=0;k<4;k++)
+	{
+		for(j=0;j<4;j++)
 		{
-			cubie(win, x, y, table[y][x]);
+			cubie(
+				win,
+				table[k][j],
+				x+(j*w/4),
+				y+(k*h/4),
+				w/4,
+				h/4
+			);
 		}
 	}
 }
-static void the2048_read_html(struct window* win)
+static void the2048_read_html(struct window* win, struct player* pl)
 {
 	int x,y;
 	u32 color;
-	u8* p = (u8*)(win->buf1);
+	u8* buf = (u8*)(win->buf1);
 	int (*table)[4] = buffer + num*16*4;
 
-	p += fmt(
-		p, 0x1000,
+	buf += fmt(
+		buf, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
 		"border:1px solid #000;"
@@ -219,8 +196,8 @@ static void the2048_read_html(struct window* win)
 			if(table[y][x] == 0)continue;
 
 			color = the2048_color(table[y][x]);
-			p += fmt(
-				p, 0x1000,
+			buf += fmt(
+				buf, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%d%%;"
 				"top:%d%%;"
@@ -232,22 +209,72 @@ static void the2048_read_html(struct window* win)
 		}
 	}
 }
-static void the2048_read(struct window* win)
+static void the2048_read_tui(struct window* win, struct player* pl)
+{
+	int x,y,j,k,ret;
+	u8 src[10];
+
+	int w = win->w;
+	int h = win->h;
+	u8* buf = (u8*)(win->buf1);
+	int (*table)[4] = buffer + num*16*4;
+
+	for(x=0;x<w*h*4;x++)buf[x]=0;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			data2decstr(table[y][x], src);
+			ret = w*(4*y+1) + 8*x + 2;
+			ret <<= 2;
+
+			//color
+			for(j=-1;j<=1;j++)
+			{
+				for(k=-2;k<=3;k++)
+				{
+					buf[ret + (j*w*4) +(k*4) +3] = 4;
+				}
+			}
+
+
+			//number
+			j=k=0;
+			for(j=0;j<10;j++)
+			{
+				if(src[j] == 0)break;
+
+				buf[ret + k] = src[j];
+				k += 4;
+			}
+		}
+	}
+}
+static void the2048_read_cli(struct window* win, struct player* pl)
+{
+	int (*table)[4] = buffer + num*16*4;
+	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
+	say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
+	say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
+	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
+	say("\n");
+}
+static void the2048_read(struct window* win, struct player* pl)
 {
 	u64 fmt = win->fmt;
 	//say("@2048.read\n");
 
 	//cli
-	if(win->dim == 1)the2048_read_cli(win);
+	if(win->dim == 1)the2048_read_cli(win, pl);
 
 	//text
-	else if(fmt == 0x74786574)the2048_read_tui(win);
+	else if(fmt == 0x74786574)the2048_read_tui(win, pl);
 
 	//html
-	else if(fmt == 0x6c6d7468)the2048_read_html(win);
+	else if(fmt == 0x6c6d7468)the2048_read_html(win, pl);
 
 	//pixel
-	else the2048_read_pixel(win);
+	else the2048_read_pixel(win, pl);
 }
 
 
@@ -514,22 +541,33 @@ static void the2048_list()
 static void the2048_choose()
 {
 }
-static void the2048_start()
+static void the2048_start(struct player* pl)
 {
 	int j;
-	u8* p = buffer;
-	for(j=0;j<0x4000;j++)p[j] = 0;
+	u8* buf;
+
+	pl->x = 0x1000;
+	pl->y = 0x1000;
+	pl->z = 0;
+
+	pl->w = 0xe000;
+	pl->h = 0xe000;
+	pl->d = 0;
+
+	//
+	buf = buffer;
+	for(j=0;j<0x4000;j++)buf[j] = 0;
 
 	//
 	num = 0;
 	new2048();
 }
-static void the2048_stop()
+static void the2048_stop(struct player* pl)
 {
 }
 void the2048_create(void* base, void* addr)
 {
-	pl = addr;
+	struct player* pl = addr;
 	buffer = base + 0x300000;
 
 	pl->type = 0x656d6167;
