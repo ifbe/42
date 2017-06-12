@@ -57,14 +57,14 @@ struct player
 	u64 read;
 	u64 write;
 
-	u64 x;
-	u64 y;
-	u64 z;
-	u64 t;
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 k;
+	u64 x0;
+	u64 y0;
+	u64 z0;
+	u64 t0;
+	u64 x1;
+	u64 y1;
+	u64 z1;
+	u64 t1;
 
 	//z,y,x
 	u8 data[8][4][4];
@@ -76,6 +76,15 @@ static void* buffer;
 
 
 
+u32 the2048_length(int val)
+{
+	if(val == 0)return 0;
+	if(val <= 8)return 1;
+	if(val <= 64)return 2;
+	if(val <= 512)return 3;
+	if(val <= 8192)return 4;
+	if(val <= 65536)return 5;
+}
 u32 the2048_color(int val)
 {
 	switch(val)
@@ -99,9 +108,13 @@ u32 the2048_color(int val)
 }
 static void cubie(
 	struct window* win, int data,
-	int x, int y, int w, int h)
+	int x0, int y0, int x1, int y1)
 {
-	u32 color = the2048_color(data);
+	u32 color;
+	u32 length;
+
+	//color
+	color = the2048_color(data);
 	if( ( (win->fmt)&0xffffffff) == 0x61626772)	//bgra->rgba
 	{
 		color	= 0xff000000
@@ -109,62 +122,65 @@ static void cubie(
 			+ (color&0xff00)
 			+ ((color&0xff0000)>>16);
 	}
-
 	rect(win,
-		x, y,
-		x+w, y+h,
+		x0, y0,
+		x1, y1,
 		color, 0
 	);
 
-	if(data==0)return;
+	//decimal
+	length = the2048_length(data);
+	if(length == 0)return;
 	drawdecimal(
 		win, data, 4,
-		x+(w/4), y+(h/4),
+		-(length*16)+(x0+x1)/2, -32+(y0+y1)/2,
 		0, 0
 	);
 }
 static void the2048_read_pixel(struct window* win, struct player* pl)
 {
-	int j,k;
-	int x,y,w,h;
+	int x,y;
+	int x0,y0,x1,y1;
 	int (*table)[4] = buffer + num*16*4;
 
 	//position
-	x = (win->w)*(pl->x)/0x10000;
-	y = (win->h)*(pl->y)/0x10000;
-	w = (win->w)*(pl->w)/0x10000;
-	h = (win->h)*(pl->h)/0x10000;
+	x0 = (win->w)*(pl->x0)/0x10000;
+	y0 = (win->h)*(pl->y0)/0x10000;
+	x1 = (win->w)*(pl->x1)/0x10000;
+	y1 = (win->h)*(pl->y1)/0x10000;
 	rectframe(
 		win,
-		x, y,
-		x+w, y+h,
+		x0, y0,
+		x1, y1,
 		0xffffffff
 	);
 
 	//center
-	if(w>=h)
+	x = x1-x0;
+	y = y1-y0;
+	if(x >= y)
 	{
-		x += (w-h)/2;
-		w = h;
+		x0 += (x-y)/2;
+		x1 -= (x-y)/2;
 	}
 	else
 	{
-		y += (h-w)/2;
-		h = w;
+		y0 += (y-x)/2;
+		y1 -= (y-x)/2;
 	}
 
 	//cubies
-	for(k=0;k<4;k++)
+	for(y=0;y<4;y++)
 	{
-		for(j=0;j<4;j++)
+		for(x=0;x<4;x++)
 		{
 			cubie(
 				win,
-				table[k][j],
-				x+(j*w/4),
-				y+(k*h/4),
-				w/4,
-				h/4
+				table[y][x],
+				x0 + x*(x1-x0)/4,
+				y0 + y*(y1-y0)/4,
+				x0 + (x+1)*(x1-x0)/4,
+				y0 + (y+1)*(y1-y0)/4
 			);
 		}
 	}
@@ -546,13 +562,13 @@ static void the2048_start(struct player* pl)
 	int j;
 	u8* buf;
 
-	pl->x = 0x1000;
-	pl->y = 0x1000;
-	pl->z = 0;
+	pl->x0 = 0x100;
+	pl->y0 = 0x100;
+	pl->z0 = 0;
 
-	pl->w = 0xe000;
-	pl->h = 0xe000;
-	pl->d = 0;
+	pl->x1 = 0xff00;
+	pl->y1 = 0xff00;
+	pl->z1 = 0;
 
 	//
 	buf = buffer;

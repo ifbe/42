@@ -304,7 +304,7 @@ int characterread()
 			}
 			if(w->fmt == 0x696c63)return 0;
 
-			draw_vt100(w, 0, 0, 0xffff, 0xffff);
+			draw_vt100(w, 0x800, 0x800, 0xf800, 0xf800);
 			return 0;
 		}
 

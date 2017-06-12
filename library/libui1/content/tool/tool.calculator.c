@@ -77,10 +77,7 @@ static char table[4][8] = {
 
 
 
-static void calculator_read_html(struct window* win)
-{
-}
-static void calculator_read_pixel(struct window* win)
+static void calculator_read_pixel(struct window* win, struct player* pl)
 {
 	u32 fg;
 	int x,y;
@@ -127,30 +124,33 @@ static void calculator_read_pixel(struct window* win)
 		16, 16+96, 0xffffffff, 0xff000000
 	);
 }
-static void calculator_read_text(struct window* win)
+static void calculator_read_html(struct window* win, struct player* pl)
 {
 }
-static void calculator_read(struct window* win)
+static void calculator_read_text(struct window* win, struct player* pl)
+{
+}
+static void calculator_read_cli(struct window* win, struct player* pl)
+{
+	say("buffer:%s\n", infix);
+	say("postfix:%s\n", postfix);
+	say("result:%s\n", result);
+}
+static void calculator_read(struct window* win, struct player* pl)
 {
 	u64 fmt = win->fmt;
 
+	//cli
+	if(win->dim == 1)calculator_read_cli(win, pl);
+
 	//text
-	if(fmt == 0x74786574)
-	{
-		calculator_read_text(win);
-	}
+	if(fmt == 0x74786574)calculator_read_text(win, pl);
 
 	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		calculator_read_html(win);
-	}
+	else if(fmt == 0x6c6d7468)calculator_read_html(win, pl);
 
 	//pixel
-	else
-	{
-		calculator_read_pixel(win);
-	}
+	else calculator_read_pixel(win, pl);
 }
 
 

@@ -3,9 +3,6 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void calc_create(void*,void*);
-void calc_delete();
-//
 int printmemory(void* addr, int count);
 int say(void* str, ...);
 
@@ -33,9 +30,6 @@ static void math_stop()
 }
 int math_create(u8* softaddr,u64* p)
 {
-	u8* q = (u8*)p;
-
-	//
 	p[0]=0;
 	p[1]=0x6874616d;
 	p[2]=(u64)math_start;
@@ -46,15 +40,9 @@ int math_create(u8* softaddr,u64* p)
 	p[7]=(u64)math_write;
 
 	//
-	q += 0x100;
-
-	calc_create(softaddr, q);
-	q += 0x100;
-
-	return (void*)q - (void*)p;
+	return 0x100;
 }
 int math_delete()
 {
-	calc_delete();
 	return 0;
 }

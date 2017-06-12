@@ -32,11 +32,6 @@ static double fpstack[20];
 static int fpcount=0;
 static u64 stack[128];
 static int sp=0;
-//
-static u8* guys;
-static u8* fshome;
-static u8* dirhome;
-static u8* datahome;
 
 
 
@@ -816,62 +811,4 @@ double sketchpad(struct mathnode* node,double x,double y)
 	}
 
 	return result2;
-}
-
-
-
-
-static int calc_read(u8* p)
-{
-	return 0;
-}
-static int calc_write(u8* p)
-{
-	double ans; 
-	u8* postfix = datahome;
-
-	infix2postfix(p, postfix);
-	say("postfix:%s\n", postfix);
-
-	ans = calculator(postfix, 0, 0);
-	say("answer:%f\n", ans);
-
-	return 0;
-}
-static int calc_list(u8* p)
-{
-	return 0;
-}
-static int calc_choose(u8* p)
-{
-	return 0;
-}
-static int calc_start(u8* p)
-{
-	return 0;
-}
-static int calc_stop(u8* p)
-{
-	return 0;
-}
-void calc_create(u8* softaddr, u64* p)
-{
-	//
-	guys = softaddr;
-	fshome = softaddr+0x100000;
-	dirhome = softaddr+0x200000;
-	datahome = softaddr+0x300000;
-
-	//
-	p[0]=0x6874616d;
-	p[1]=0x636c6163;
-	p[2]=(u64)calc_start;
-	p[3]=(u64)calc_stop;
-	p[4]=(u64)calc_list;
-	p[5]=(u64)calc_choose;
-	p[6]=(u64)calc_read;
-	p[7]=(u64)calc_write;
-}
-void calc_delete()
-{
 }
