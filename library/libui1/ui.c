@@ -78,8 +78,31 @@ struct working
 
 	char data[0xc0];
 };
-static struct window* win = 0;
-static struct working* worker = 0;
+struct relation
+{
+	u64 arena;
+	u64 actor;
+	u64 a;
+	u64 b;
+
+	u64 w;		//width
+	u64 h;		//height
+	u64 d;		//depth
+	u64 t;
+
+	u64 cx;		//centerx
+	u64 cy;		//centery
+	u64 cz;		//centerz
+	u64 ct;
+
+	u64 rx;		//eulerx
+	u64 ry;		//eulery
+	u64 rz;		//eulerz
+	u64 rt;
+};
+static struct window* arena = 0;
+static struct working* actor = 0;
+static struct relation* treaty = 0;
 //
 static u32 now=0;		//不能有负数
 static u32 menu=0;
@@ -93,14 +116,15 @@ void charactercreate(u8* type, u8* addr)
 {
 	int j;
 	if(type != 0)return;
-	if( (type == 0)&&(win != 0) )return;
+	if( (type == 0)&&(arena != 0) )return;
 
 	//clean
 	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
 
 	//where
-	win = (void*)(addr+0);
-	worker = (void*)(addr+0x100000);
+	arena = (void*)(addr+0);
+	actor = (void*)(addr+0x100000);
+	treaty = (void*)(addr+0x200000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -120,7 +144,7 @@ void charactercreate(u8* type, u8* addr)
 	//
 	for(now=0;now<1000;now++)
 	{
-		if(worker[now].type != 0)break;
+		if(actor[now].type != 0)break;
 	}
 	//say("[c,f):createed character\n");
 }
@@ -135,16 +159,17 @@ void characterdelete()
 	lib2d_delete();
 	lib3d_delete();
 
-	worker = 0;
-	win = 0;
+	treaty = 0;
+	actor = 0;
+	arena = 0;
 }
 int characterstart(int j)
 {
-	return worker[now].start( &worker[now] );
+	return actor[now].start( &actor[now] );
 }
 int characterstop()
 {
-	return worker[now].stop( &worker[now] );
+	return actor[now].stop( &actor[now] );
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -166,20 +191,20 @@ int characterlist(u8* p)
 		name = 0;
 		for(j=0;j<0x100;j++)
 		{
-			if(worker[j].name == 0)
+			if(actor[j].name == 0)
 			{
 				if((ret%8)!=0)say("\n");
 				break;
 			}
 
-			if(worker[j].type != type)
+			if(actor[j].type != type)
 			{
-				say("\n%s:\n",&worker[j].type);
+				say("\n%s:\n",&actor[j].type);
 				ret=0;
 			}
 			
-			type = worker[j].type;
-			name = worker[j].name;
+			type = actor[j].type;
+			name = actor[j].name;
 			if((ret>0)&&(ret%8==0))say("\n");
 
 			say("	%s", &name);
@@ -194,11 +219,11 @@ int characterlist(u8* p)
 		for(j=0;j<0x100;j++)
 		{
 			//all searched
-			if(worker[j].name == 0)return 0;
+			if(actor[j].name == 0)return 0;
 
 			//lookat this
-			//say("[%s][%s]\n",&worker[j].name, p);
-			ret = ncmp(&worker[j].name, p, 8);
+			//say("[%s][%s]\n",&actor[j].name, p);
+			ret = ncmp(&actor[j].name, p, 8);
 			if(ret == 0)return j;
 		}
 		return 0;
@@ -221,7 +246,7 @@ int characterchoose(u8* p)
 	ret=cmp(p,"+");
 	if(ret==0)
 	{
-		if(worker[now+1].name == 0)return 0;
+		if(actor[now+1].name == 0)return 0;
 		now++;
 		goto found;
 	}
@@ -230,7 +255,7 @@ int characterchoose(u8* p)
 	ret=cmp(p,"-");
 	if(ret==0)
 	{
-		if(worker[now-1].type == 0)return 0;
+		if(actor[now-1].type == 0)return 0;
 		now--;
 		goto found;
 	}
@@ -241,13 +266,13 @@ int characterchoose(u8* p)
 	{
 		for(j=0;j<10;j++)
 		{
-			if(worker[j].type != 0)break;	//skip menu|draw
+			if(actor[j].type != 0)break;	//skip menu|draw
 		}
 		k=j;
 
 		for(;k<0x100000/0x80;k++)
 		{
-			if(worker[k].name == 0)break;
+			if(actor[k].name == 0)break;
 		}
 
 		now=( getrandom() % (k-j) ) + j;
@@ -275,11 +300,12 @@ int characterread()
 	int j;
 	struct window* w;
 	struct working* p;
+	struct relation* t;
 	for(j=0;j<16;j++)
 	{
 		//
-		w = &win[j];
-		p = &worker[now];
+		w = &arena[j];
+		p = &actor[now];
 
 		//error
 		if(w->fmt == 0)break;
@@ -298,7 +324,7 @@ int characterread()
 		{
 			if(newline == 1)
 			{
-				worker[now].read(w, p);
+				actor[now].read(w, p);
 				cli_read(w);
 				newline = 0;
 			}
@@ -311,12 +337,12 @@ int characterread()
 		//2d:	rgba
 		else if(w->dim == 2)
 		{
-			worker[now].read(w, p);
+			actor[now].read(w, p);
 
 			if(menu > 0)
 			{
-				worker[1].read(w, p);
-				worker[0].read(w, p);
+				actor[1].read(w, p);
+				actor[0].read(w, p);
 			}
 			return 0;
 		}
@@ -333,12 +359,12 @@ int characterread()
 			{
 				carve_texture(w);
 			}
-			else worker[now].read(w, p);
+			else actor[now].read(w, p);
 
 			if(menu > 0)
 			{
-				worker[1].read(w, p);
-				worker[0].read(w, p);
+				actor[1].read(w, p);
+				actor[0].read(w, p);
 			}
 */
 			return 0;
@@ -356,7 +382,7 @@ int characterwrite(u64* ev)
 		if(ret == 0)say("%s\n", ev[0]);
 		return 0;
 	}
-	if(ev[2] < 0x1000)ev[2] = (u64)(&win[2]);
+	if(ev[2] < 0x1000)ev[2] = (u64)(&arena[2]);
 
 
 
@@ -397,10 +423,10 @@ int characterwrite(u64* ev)
 
 		if(menu > 0)
 		{
-			worker[1].write(ev);
-			worker[0].write(ev);
+			actor[1].write(ev);
+			actor[0].write(ev);
 		}
-		return worker[now].write(ev);
+		return actor[now].write(ev);
 	}
 	else if(w->dim == 3)
 	{
