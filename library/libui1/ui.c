@@ -53,11 +53,11 @@ struct working
 	u64 name;
 
 	//[10,17]:开始
-	int (*start)(void* p);
+	int (*start)();
 	char padding2[ 8 - sizeof(char*) ];
 
 	//[18,1f]:结束
-	int (*stop)(void* p);
+	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
 	//[20,27]:观察
@@ -69,7 +69,7 @@ struct working
 	char padding5[ 8 - sizeof(char*) ];
 
 	//[30,37]:输出
-	int (*read)(void* w, void* p);
+	int (*read)(void* arena, void* actor, void* treaty);
 	char padding6[ 8 - sizeof(char*) ];
 
 	//[38,3f]:输入
@@ -80,31 +80,58 @@ struct working
 };
 struct relation
 {
-	u64 arena;
-	u64 actor;
-	u64 a;
-	u64 b;
+	//[00,1f]:doubly link all arenas of this actor
+	u64 parent_type;
+	u64 parent_id;
+	u64 parent_last;
+	u64 parent_next;
 
-	u64 w;		//width
-	u64 h;		//height
-	u64 d;		//depth
-	u64 t;
+	//[20,3f]:doubly link all actors of this arena
+	u64 child_type;
+	u64 child_id;
+	u64 child_below;
+	u64 child_above;
 
+	//[40,5f]:cartesian coordinate
 	u64 cx;		//centerx
 	u64 cy;		//centery
 	u64 cz;		//centerz
 	u64 ct;
 
-	u64 rx;		//eulerx
-	u64 ry;		//eulery
-	u64 rz;		//eulerz
+	//[60,7f]:eulerian angle
+	u64 rx;		//pitch
+	u64 ry;		//yaw
+	u64 rz;		//roll
 	u64 rt;
+
+	//[80,9f]:total size(base 0x10000)
+	u64 width;
+	u64 height;
+	u64 depth;
+	u64 time;
+
+	//[a0,bf]:show area(base 0x100000)
+	u64 left;
+	u64 top;
+	u64 right;
+	u64 bottom;
+
+	//[c0,df]:
+	u64 a0;
+	u64 a1;
+	u64 a2;
+	u64 a3;
+
+	//[e0,ff]:
+	u64 a4;
+	u64 a5;
+	u64 a6;
+	u64 a7;
 };
 static struct window* arena = 0;
 static struct working* actor = 0;
 static struct relation* treaty = 0;
 //
-static u32 now=0;		//不能有负数
 static u32 menu=0;
 static u32 newline=1;
 
@@ -118,8 +145,8 @@ void charactercreate(u8* type, u8* addr)
 	if(type != 0)return;
 	if( (type == 0)&&(arena != 0) )return;
 
-	//clean
-	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
+	//clean [1m,4m)
+	for(j=0x100000;j<0x400000;j++)addr[j] = 0;
 
 	//where
 	arena = (void*)(addr+0);
@@ -142,10 +169,12 @@ void charactercreate(u8* type, u8* addr)
 	content_create(addr, 0);
 
 	//
-	for(now=0;now<1000;now++)
-	{
-		if(actor[now].type != 0)break;
-	}
+	treaty[0].parent_id = 2;
+	treaty[0].child_id = 2;
+	treaty[0].cx = 0x8000;
+	treaty[0].cy = 0x8000;
+	treaty[0].width = 0xe000;
+	treaty[0].height = 0xe000;
 	//say("[c,f):createed character\n");
 }
 void characterdelete()
@@ -163,13 +192,15 @@ void characterdelete()
 	actor = 0;
 	arena = 0;
 }
-int characterstart(int j)
+int characterstart()
 {
-	return actor[now].start( &actor[now] );
+	int this = treaty[0].child_id;
+	return actor[this].start();
 }
 int characterstop()
 {
-	return actor[now].stop( &actor[now] );
+	int this = treaty[0].child_id;
+	return actor[this].stop();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -232,7 +263,7 @@ int characterlist(u8* p)
 int characterchoose(u8* p)
 {
 	int j,k,ret;
-	u64 temp;
+	u64 now = treaty[0].child_id;
 
 	//exit!
 	if( (p==0) | (cmp(p,"exit")==0) )
@@ -292,12 +323,14 @@ notfound:
 
 found:
 	//
-	characterstart(0);
+	treaty[0].child_id = now;
+	characterstart();
 	return now;
 }
 int characterread()
 {
 	int j;
+	int now;
 	struct window* w;
 	struct working* p;
 	struct relation* t;
@@ -306,6 +339,8 @@ int characterread()
 		//
 		w = &arena[j];
 		p = &actor[now];
+		t = &treaty[0];
+		now = t->child_id;
 
 		//error
 		if(w->fmt == 0)break;
@@ -324,7 +359,7 @@ int characterread()
 		{
 			if(newline == 1)
 			{
-				actor[now].read(w, p);
+				actor[now].read(w, p, t);
 				cli_read(w);
 				newline = 0;
 			}
@@ -337,12 +372,12 @@ int characterread()
 		//2d:	rgba
 		else if(w->dim == 2)
 		{
-			actor[now].read(w, p);
+			actor[now].read(w, p, t);
 
 			if(menu > 0)
 			{
-				actor[1].read(w, p);
-				actor[0].read(w, p);
+				actor[1].read(w, p, t);
+				actor[0].read(w, p, t);
 			}
 			return 0;
 		}
@@ -359,12 +394,12 @@ int characterread()
 			{
 				carve_texture(w);
 			}
-			else actor[now].read(w, p);
+			else actor[now].read(w, p, t);
 
 			if(menu > 0)
 			{
-				actor[1].read(w, p);
-				actor[0].read(w, p);
+				actor[1].read(w, p, t);
+				actor[0].read(w, p, t);
 			}
 */
 			return 0;
@@ -376,6 +411,11 @@ int characterwrite(u64* ev)
 {
 	//prepare
 	int ret;
+/*
+	if(w+)	//new win
+	if(w-)	//del win
+	if(w@)	//changed memaddr
+*/
 	if(ev[1] == 0x727473)
 	{
 		ret = characterchoose( (void*)(ev[0]) );
@@ -426,7 +466,7 @@ int characterwrite(u64* ev)
 			actor[1].write(ev);
 			actor[0].write(ev);
 		}
-		return actor[now].write(ev);
+		return actor[treaty[0].child_id].write(ev);
 	}
 	else if(w->dim == 3)
 	{

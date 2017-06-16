@@ -25,14 +25,7 @@ int say(void*, ...);
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
+struct arena
 {
 	u64 buf1;
 	u64 buf2;
@@ -46,7 +39,7 @@ struct window
 
 	u8 data[0xc0];
 };
-struct player
+struct actor
 {
 	u64 type;
 	u64 name;
@@ -68,6 +61,63 @@ struct player
 
 	//z,y,x
 	u8 data[8][4][4];
+};
+struct relation
+{
+	//[00,1f]:doubly link all arenas of this actor
+	u64 parent_type;
+	u64 parent_id;
+	u64 parent_last;
+	u64 parent_next;
+
+	//[20,3f]:doubly link all actors of this arena
+	u64 child_type;
+	u64 child_id;
+	u64 child_below;
+	u64 child_above;
+
+	//[40,5f]:cartesian coordinate
+	u64 cx;		//centerx
+	u64 cy;		//centery
+	u64 cz;		//centerz
+	u64 ct;
+
+	//[60,7f]:eulerian angle
+	u64 rx;		//pitch
+	u64 ry;		//yaw
+	u64 rz;		//roll
+	u64 rt;
+
+	//[80,9f]:total size(base 0x10000)
+	u64 width;
+	u64 height;
+	u64 depth;
+	u64 time;
+
+	//[a0,bf]:show area(base 0x100000)
+	u64 left;
+	u64 top;
+	u64 right;
+	u64 bottom;
+
+	//[c0,df]:
+	u64 a0;
+	u64 a1;
+	u64 a2;
+	u64 a3;
+
+	//[e0,ff]:
+	u64 a4;
+	u64 a5;
+	u64 a6;
+	u64 a7;
+};
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 //
 static int num;
@@ -107,7 +157,7 @@ u32 the2048_color(int val)
 	return 0;
 }
 static void cubie(
-	struct window* win, int data,
+	struct arena* win, int data,
 	int x0, int y0, int x1, int y1)
 {
 	u32 color;
@@ -137,37 +187,19 @@ static void cubie(
 		0, 0
 	);
 }
-static void the2048_read_pixel(struct window* win, struct player* pl)
+static void the2048_read_pixel(struct arena* win, struct actor* act, struct relation* rl)
 {
 	int x,y;
-	int x0,y0,x1,y1;
+	int cx,cy,w,h;
 	int (*table)[4] = buffer + num*16*4;
 
 	//position
-	x0 = (win->w)*(pl->x0)/0x10000;
-	y0 = (win->h)*(pl->y0)/0x10000;
-	x1 = (win->w)*(pl->x1)/0x10000;
-	y1 = (win->h)*(pl->y1)/0x10000;
-	rectframe(
-		win,
-		x0, y0,
-		x1, y1,
-		0xffffffff
-	);
-
-	//center
-	x = x1-x0;
-	y = y1-y0;
-	if(x >= y)
-	{
-		x0 += (x-y)/2;
-		x1 -= (x-y)/2;
-	}
-	else
-	{
-		y0 += (y-x)/2;
-		y1 -= (y-x)/2;
-	}
+	cx = (win->w) * (rl->cx) / 0x10000;
+	cy = (win->h) * (rl->cy) / 0x10000;
+	w = (win->w) * (rl->width) / 0x10000;
+	h = (win->h) * (rl->height) / 0x10000;
+	if(w >= h)w=h;
+	else h=w;
 
 	//cubies
 	for(y=0;y<4;y++)
@@ -177,15 +209,15 @@ static void the2048_read_pixel(struct window* win, struct player* pl)
 			cubie(
 				win,
 				table[y][x],
-				x0 + x*(x1-x0)/4,
-				y0 + y*(y1-y0)/4,
-				x0 + (x+1)*(x1-x0)/4,
-				y0 + (y+1)*(y1-y0)/4
+				cx + (x-2)*w/4,
+				cy + (y-2)*h/4,
+				cx + (x-1)*w/4,
+				cy + (y-1)*h/4
 			);
 		}
 	}
 }
-static void the2048_read_html(struct window* win, struct player* pl)
+static void the2048_read_html(struct arena* win, struct actor* act, struct relation* rl)
 {
 	int x,y;
 	u32 color;
@@ -225,7 +257,7 @@ static void the2048_read_html(struct window* win, struct player* pl)
 		}
 	}
 }
-static void the2048_read_tui(struct window* win, struct player* pl)
+static void the2048_read_tui(struct arena* win, struct actor* act, struct relation* rl)
 {
 	int x,y,j,k,ret;
 	u8 src[10];
@@ -266,7 +298,7 @@ static void the2048_read_tui(struct window* win, struct player* pl)
 		}
 	}
 }
-static void the2048_read_cli(struct window* win, struct player* pl)
+static void the2048_read_cli()
 {
 	int (*table)[4] = buffer + num*16*4;
 	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
@@ -275,22 +307,23 @@ static void the2048_read_cli(struct window* win, struct player* pl)
 	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
 	say("\n");
 }
-static void the2048_read(struct window* win, struct player* pl)
+static void the2048_read(struct arena* win, struct actor* act, struct relation* rl)
 {
 	u64 fmt = win->fmt;
+	u64 dim = win->dim;
 	//say("@2048.read\n");
 
 	//cli
-	if(win->dim == 1)the2048_read_cli(win, pl);
+	if(dim == 1)the2048_read_cli();
 
 	//text
-	else if(fmt == 0x74786574)the2048_read_tui(win, pl);
+	else if(fmt == 0x74786574)the2048_read_tui(win, act, rl);
 
 	//html
-	else if(fmt == 0x6c6d7468)the2048_read_html(win, pl);
+	else if(fmt == 0x6c6d7468)the2048_read_html(win, act, rl);
 
 	//pixel
-	else the2048_read_pixel(win, pl);
+	else the2048_read_pixel(win, act, rl);
 }
 
 
@@ -557,33 +590,22 @@ static void the2048_list()
 static void the2048_choose()
 {
 }
-static void the2048_start(struct player* pl)
+static void the2048_start()
 {
 	int j;
-	u8* buf;
-
-	pl->x0 = 0x100;
-	pl->y0 = 0x100;
-	pl->z0 = 0;
-
-	pl->x1 = 0xff00;
-	pl->y1 = 0xff00;
-	pl->z1 = 0;
-
-	//
-	buf = buffer;
+	u8* buf = buffer;
 	for(j=0;j<0x4000;j++)buf[j] = 0;
 
 	//
 	num = 0;
 	new2048();
 }
-static void the2048_stop(struct player* pl)
+static void the2048_stop()
 {
 }
 void the2048_create(void* base, void* addr)
 {
-	struct player* pl = addr;
+	struct actor* pl = addr;
 	buffer = base + 0x300000;
 
 	pl->type = 0x656d6167;
