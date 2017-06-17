@@ -36,8 +36,8 @@ struct window
 
 	u8 data[0xc0];
 };
-static char* input = 0;
-static char* output = 0;
+static u8* input = 0;
+static u8* output = 0;
 
 
 

@@ -3,17 +3,17 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //libui1
-int characterstart(int);
-int characterstop();
-int characterread();
-int characterwrite(void* event);
+int actorstart(int);
+int actorstop();
+int actorread();
+int actorwrite(void* event);
 //libui0
-int displaystart(int, int);
-int displaystop(int);
-int displaylist();
-int displaychoose();
-int displayread();
-int displaywrite();
+int arenastart(int, int);
+int arenastop(int);
+int arenalist();
+int arenachoose();
+int arenaread();
+int arenawrite();
 //libsoft1
 void motion_explain(void*);
 void network_explain(void*);
@@ -58,21 +58,21 @@ int main(int argc, char* argv[])
 	//say("@birth\n");
 
 	//config
-	ret = displaystart(0,0);
-	ret = characterstart(0);
+	ret = arenastart(0,0);
+	ret = actorstart(0);
 	for(ret=1;ret<argc;ret++)
 	{
 		temp.why = (u64)(argv[ret]);
 		temp.what = 0x727473;
-		characterwrite(&temp);
+		actorwrite(&temp);
 	}
 
 	//forever
 	while(1)
 	{
 		//1.show
-		characterread();
-		displaywrite();
+		actorread();
+		arenawrite();
 		fps++;
 
 again:
@@ -110,7 +110,7 @@ again:
 			network_explain(ev);
 			if(ev->what == 0x5357)
 			{
-				displaystart(0x5357, ev->where);
+				arenastart(0x5357, ev->where);
 				continue;
 			}
 		}
@@ -128,7 +128,7 @@ again:
 
 
 		//4.real process
-		characterwrite(ev);
+		actorwrite(ev);
 	}
 
 	//after

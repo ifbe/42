@@ -2,8 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int characterlist(void*);
-int characterchoose(void*);
+int actorlist(void*);
+int actorchoose(void*);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -62,11 +62,11 @@ int cli_write(u64* p)
 	else if((j == 0xa)|(j == 0xd))	//enter
 	{
 		say("%s\n",input);
-		j = characterchoose(input);
+		j = actorchoose(input);
 		if(j != 0)return 1;
 
-		if(ncmp(input, "ls", 2) == 0)characterlist(0);
-		else if(ncmp(input, "ls", 2) == 0)characterlist(0);
+		if(ncmp(input, "ls", 2) == 0)actorlist(0);
+		else if(ncmp(input, "ls", 2) == 0)actorlist(0);
 
 		for(j=0;j<0x80;j++)input[j] = 0;
 		*enq = 0;

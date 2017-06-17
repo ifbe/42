@@ -16,7 +16,8 @@ void rect(void*,
 	int x2, int y2,
 	u32 bc, u32 fc);
 //
-int characterchoose(char* p);
+int actorchoose(char* p);
+//
 int fmt(char*, int, char*, ...);
 int say(char*,...);
 
@@ -235,13 +236,13 @@ static void menu_write(struct event* ev)
 		//last
 		else if(x < 0x4000)
 		{
-			characterchoose("-");
+			actorchoose("-");
 		}
 
 		//next
 		else if(x > 0xc000)
 		{
-			characterchoose("+");
+			actorchoose("+");
 		}
 
 		//点击红色矩形，退出
@@ -250,7 +251,7 @@ static void menu_write(struct event* ev)
 			if(y<0x4000+16)
 			{
 				//退出
-				characterchoose("q");
+				actorchoose("q");
 				return;
 			}
 		}
@@ -270,7 +271,7 @@ static void menu_write(struct event* ev)
 		else if( (key==0xa) | (key==0xd) )	//回车
 		{
 			//say("%s\n",buffer);
-			characterchoose(buffer);
+			actorchoose(buffer);
 
 			//clear
 			for(bufp=0;bufp<127;bufp++) buffer[bufp]=0;

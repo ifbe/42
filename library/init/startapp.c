@@ -5,10 +5,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 //libui
-void charactercreate(char*,char*);
-void characterdelete();
-void displaycreate(char*,char*);
-void displaydelete();
+void actorcreate(char*,char*);
+void actordelete();
+void arenacreate(char*,char*);
+void arenadelete();
 //libsoft
 void sleep_us(int);
 u64 gettime();
@@ -42,7 +42,7 @@ static char* universe=0;	//aligned
 static char*     basic=0;		//4m
 static char*      body=0;		//4m
 static char*    memory=0;		//4m
-static char* character=0;		//4m
+static char* actor=0;		//4m
 
 
 
@@ -86,14 +86,14 @@ void createuniverse()
 	basic    = universe + 0;
 	body     = universe + (1*0x400000);
 	memory   = universe + (2*0x400000);
-	character= universe + (3*0x400000);
+	actor= universe + (3*0x400000);
 */
 	//4.分配内存
 	basic    = universe + (2*0x400000);
 	body     = 0;
 	memory   = universe + (0*0x400000);
-	character= universe + (1*0x400000);
-	//say("basic@%llx,body@%llx,memory@%llx,character@%llx\n",basic,body,memory,character);
+	actor= universe + (1*0x400000);
+	//say("basic@%llx,body@%llx,memory@%llx,actor@%llx\n",basic,body,memory,actor);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -111,11 +111,11 @@ __attribute__((destructor)) void death()
 	printf("\n");
 
 	//libui
-	if(character != 0)
+	if(actor != 0)
 	{
-		characterdelete();
-		displaydelete();
-		character = 0;
+		actordelete();
+		arenadelete();
+		actor = 0;
 	}
 
 	//libsoft
@@ -169,8 +169,8 @@ void* birth()
 	arterycreate( 0 , memory );
 
 	//[c,f)：窗口开闭，以及用户界面
-	displaycreate( 0 , character );
-	charactercreate( 0 , character );
+	arenacreate( 0 , actor );
+	actorcreate( 0 , actor );
 
 	return memory;
 }

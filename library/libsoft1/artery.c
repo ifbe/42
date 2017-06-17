@@ -142,9 +142,11 @@ void arterydelete()
 }
 int arterystart()
 {
+	return 0;
 }
 int arterystop()
 {
+	return 0;
 }
 //--------------------------------------------------------
 

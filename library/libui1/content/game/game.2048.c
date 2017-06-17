@@ -134,6 +134,7 @@ u32 the2048_length(int val)
 	if(val <= 512)return 3;
 	if(val <= 8192)return 4;
 	if(val <= 65536)return 5;
+	return 6;
 }
 u32 the2048_color(int val)
 {

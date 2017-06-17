@@ -2,6 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#include "arena.h"
+
+
+
+
 //voice
 int voicecreate(void*, void*);
 int voicedelete();
@@ -43,31 +48,17 @@ void say(void*, ...);
 
 
 //
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	char padding[0xc0];
-};
 static struct window* ui;
 static int id = 0;
 
 
 
 
-u64 displayread()
+u64 arenaread()
 {
 	return 0;
 }
-u64 displaywrite()
+u64 arenawrite()
 {
 	int j;
 	for(j=0;j<16;j++)
@@ -81,7 +72,7 @@ u64 displaywrite()
 	}
 	return 0;
 }
-u64 displaylist(u64 dispid, u64 property)
+u64 arenalist(u64 dispid, u64 property)
 {
 	int j;
 	if(ncmp("buffer", &property, 8) == 0)return ui[dispid].buf1;
@@ -109,7 +100,7 @@ u64 displaylist(u64 dispid, u64 property)
 	}
 	return 0;
 }
-u64 displaychoose(u64 dispid, u64 property, u64 what)
+u64 arenachoose(u64 dispid, u64 property, u64 what)
 {
 	if(ncmp("buffer", &property, 8) == 0)ui[dispid].buf1 = what;
 	else if(ncmp("format", &property, 8) == 0)ui[dispid].fmt = what;
@@ -119,7 +110,7 @@ u64 displaychoose(u64 dispid, u64 property, u64 what)
 
 	return what;
 }
-int displaystart(int type, int j)
+int arenastart(int type, int j)
 {
 	if(type == 0)
 	{
@@ -138,11 +129,11 @@ int displaystart(int type, int j)
 	}
 	return 0;
 }
-int displaystop()
+int arenastop()
 {
 	return 0;
 }
-void displaycreate(u8* type, u8* addr)
+void arenacreate(u8* type, u8* addr)
 {
 	int j;
 	if(type!=0)return;
@@ -164,12 +155,12 @@ void displaycreate(u8* type, u8* addr)
 	id = 2;
 
 	//
-	//say("[c,f):createed display\n");
+	//say("[c,f):createed arena\n");
 }
-void displaydelete()
+void arenadelete()
 {
 	//
-	//say("[c,f):deleteing display\n");
+	//say("[c,f):deleteing arena\n");
 
 	//
 	netwindelete();

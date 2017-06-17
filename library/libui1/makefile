@@ -60,6 +60,6 @@ target:
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
 	$(compiler) $(cflag) content/content.c
-	$(compiler) $(cflag) ui.c
+	$(compiler) $(cflag) actor.c
 clean:
 	rm -f *.o *.a

@@ -119,15 +119,14 @@ struct window
 };
 
 //libui1
-void charactercreate(void*, void*);
-void characterdelete();
-void characterstart();
-void characterstop();
-void characterlist();
-void characterchange();
-void characterread();
-void characterwrite();
-void charactercommand(void*);
+void actorcreate(void*, void*);
+void actordelete();
+void actorstart();
+void actorstop();
+void actorlist();
+void actorchange();
+void actorread();
+void actorwrite();
 
 void background1(struct window* win);
 void backgroundcolor(struct window* win,
@@ -204,14 +203,14 @@ void printdouble(
 	int x, int y, u32 fg, u32 bg);
 
 //libui0
-void windowcreate(void*, void*);
-void windowdelete();
-void windowstart(int type, int j);
-void windowstop();
-void windowlist();
-void windowchange();
-void windowread();
-void windowwrite();
+void arenacreate(void*, void*);
+void arenadelete();
+void arenastart(int type, int j);
+void arenastop();
+void arenalist();
+void arenachange();
+void arenaread();
+void arenawrite();
 //----------------------------------------------------------------------
 
 
