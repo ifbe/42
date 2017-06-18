@@ -24,15 +24,15 @@ void death();
 
 struct window
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
+	u64 type;		//local,cli,voice,vnc,rdp,...
+	u64 fmt;		//rgba8888,vt100...
+	u64 buf;
+	u64 len;
 
 	u64 w;
 	u64 h;
 	u64 d;
-	u64 t;
+	u64 dim;
 
 	u64 thread;
 };
@@ -68,10 +68,14 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	ANativeWindow_setBuffersGeometry(window, 0, 0, WINDOW_FORMAT_RGBA_8888);
 
 	//my toy
-	win->buf1 = surface.buffer;
+	win->type = 0;
 	win->fmt = 0x3838383861626772;
+	win->buf = surface.buffer;
+	win->len = 0;
+
 	win->w = surface.width;
 	win->h = surface.height;
+	win->dim = 2;
 	characterstart(pixbuf, pixfmt, width, height-64);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)

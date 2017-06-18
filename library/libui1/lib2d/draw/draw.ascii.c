@@ -1,9 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void double2decstr(double,char*);
-void say(char*,...);
+#include<actor.h>
 
 
 
@@ -266,25 +261,13 @@ static const unsigned char asciitable[128*16]={
 0x00,0x70,0xD8,0xD8,0x70,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00		//0x7f DEL
 };
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-};
 
 
 
 
 //
 void drawascii(
-	struct window* win, u8 ch, int size,
+	struct arena* win, u8 ch, int size,
 	int xxxx, int yyyy, u32 fg, u32 bg)
 {
 	int x,y,j,k,flag;
@@ -295,7 +278,7 @@ void drawascii(
 
 	width = win->w;
 	height = win->h;
-	screen = (u32*)(win->buf1);
+	screen = (u32*)(win->buf);
 
 	if(ch<0x20)ch=0x20;
 	points=(unsigned char*)&asciitable;
@@ -335,7 +318,7 @@ void drawascii(
 	}//y
 }
 void drawbyte(
-	struct window* win, u8 ch, int size,
+	struct arena* win, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg)
 {
 	int i;
@@ -362,7 +345,7 @@ void drawbyte(
 
 
 void drawstring(
-	struct window* win,  u8* p, int size,
+	struct arena* win,  u8* p, int size,
 	int x, int y, u32 fg, u32 bg)
 {
 	int j=0;
@@ -388,7 +371,7 @@ void drawstring(
 
 
 void drawdecimal(
-	struct window* win, int dec, int size,
+	struct arena* win, int dec, int size,
 	int x, int y, u32 fg, u32 bg)
 {
 	char ch;
@@ -434,7 +417,7 @@ void drawdecimal(
 
 
 void drawhexadecimal(
-	struct window* win, u64 hex, int size,
+	struct arena* win, u64 hex, int size,
 	int x, int y, u32 fg, u32 bg)
 {
 	int i;
@@ -469,7 +452,7 @@ void drawhexadecimal(
 
 
 void drawdouble(
-	struct window* win, double data, int size,
+	struct arena* win, double data, int size,
 	int x,int y, u32 fg, u32 bg)
 {
 	char mystr[100];

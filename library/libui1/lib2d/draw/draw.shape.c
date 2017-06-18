@@ -1,42 +1,23 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-double squareroot(double);
-void say(char*,...);
+#include "actor.h"
 
 
 
 
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-};
-
-
-
-
-void linesegment(struct window* win,
+void linesegment(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void halfline(struct window* win,
+void halfline(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void line(struct window* win,
+void line(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int temp;
 	int x,y;
 	int width,height;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;
@@ -90,14 +71,14 @@ void line(struct window* win,
 
 
 
-void rectframe(struct window* win,
+void rectframe(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int t;
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;
@@ -117,13 +98,13 @@ void rectframe(struct window* win,
 		for(y=starty;y<endy;y++)buf[(y*width) + endx-t] = color;
 	}
 }
-void rectbody(struct window* win,
+void rectbody(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y;
 	int width,height;
 	int startx,endx,starty,endy;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;
@@ -142,7 +123,7 @@ void rectbody(struct window* win,
 		}
 	}
 }
-void rect(struct window* win,
+void rect(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
 	rectbody(win, x1, y1, x2, y2, bodycolor);
@@ -152,11 +133,11 @@ void rect(struct window* win,
 
 
 
-void trianglebody(struct window* win,
+void trianglebody(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 }
-void triangleframe(struct window* win,
+void triangleframe(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 	line(win,
@@ -168,7 +149,7 @@ void triangleframe(struct window* win,
 	line(win,
 	x2, y2, x3, y3, color);
 }
-void triangle(struct window* win,
+void triangle(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
 {
 	trianglebody(win,
@@ -181,7 +162,7 @@ void triangle(struct window* win,
 
 
 
-void circleframe(struct window* win,
+void circleframe(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -189,7 +170,7 @@ void circleframe(struct window* win,
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;
@@ -219,7 +200,7 @@ void circleframe(struct window* win,
 		buf[ (y*width) + x2 ] = color;
 	}
 }
-void circlebody(struct window* win,
+void circlebody(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -227,7 +208,7 @@ void circlebody(struct window* win,
 	int x1,x2;
 	int y1,y2;
 	int width,height;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;
@@ -263,15 +244,15 @@ void circlebody(struct window* win,
 
 
 
-void ovalbody(struct window* win,
+void ovalbody(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void ovalframe(struct window* win,
+void ovalframe(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void oval(struct window* win,
+void oval(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
 	ovalbody(win,
@@ -284,15 +265,15 @@ void oval(struct window* win,
 
 
 
-void sectorbody(struct window* win,
+void sectorbody(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sectorframe(struct window* win,
+void sectorframe(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sector(struct window* win,
+void sector(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
 {
 }
@@ -300,13 +281,13 @@ void sector(struct window* win,
 
 
 
-void bezier(struct window* win,
+void bezier(struct arena* win,
 	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
 {
 	int x,y,t;
 	int width;
 	int height;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	width = win->w;
 	height = win->h;

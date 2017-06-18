@@ -16,9 +16,9 @@ all:
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2"
 	make -s -C $(library)/libui0 wintui \
-	cflag="-c -O2"
+	cflag="-c -O2 -I."
 	make -s -C $(library)/libui1 \
-	cflag="-c -O2"
+	cflag="-c -O2 -I."
 	make -s a
 	make -s dll
 	make -s program

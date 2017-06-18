@@ -25,15 +25,15 @@ void death();
 
 struct window
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
+	u64 type;		//local,cli,voice,vnc,rdp,...
+	u64 fmt;		//rgba8888,vt100...
+	u64 buf;
+	u64 len;
 
 	u64 w;
 	u64 h;
 	u64 d;
-	u64 t;
+	u64 dim;
 };
 static void* world;
 static struct window* win;
@@ -98,14 +98,14 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	win[0].buf1 = pixels;
-	win[0].buf2 = 0;
+	win[0].type = 0;
 	win[0].fmt = 0x3838383861626772;
-	win[0].dim = 2;
+	win[0].buf = pixels;
+	win[0].len = 0;
 
 	win[0].w = info.width;
 	win[0].h = info.height;
-
+	win[0].dim = 2;
 	characterstart(0);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }

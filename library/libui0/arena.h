@@ -4,15 +4,25 @@
 #define u64 unsigned long long
 struct window
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
+	u64 type;		//local,cli,voice,vnc,rdp,...
+	u64 fmt;		//rgba8888,vt100...
+	u64 rlast;
+	u64 rnext;
+
+	u64 buf;
+	u64 len;
 	u64 dim;
+	u64 hah;
 
 	u64 w;
 	u64 h;
 	u64 d;
 	u64 t;
 
-	char padding[0xc0];
+	u64 oldw;
+	u64 oldh;
+	u64 oldd;
+	u64 oldt;
+
+	char priv[0x80];
 };

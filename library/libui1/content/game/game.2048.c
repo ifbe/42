@@ -1,124 +1,20 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-//
-void rectframe(void*,
+#include "actor.h"
+
+
+
+
+void rect(
+	void* win,
 	int x1, int y1,
 	int x2, int y2,
-	u32 color);
-void rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
+	u32 bc, u32 fc);
 void drawdecimal(
 	void*, int data, int size,
 	int x, int y, u32 fg, u32 bg);
-//
-int data2decstr(u64 data,u8* string);
-u32 getrandom();
-//
-int printmemory(void*, int);
-int fmt(void*, int, void*, ...);
-int say(void*, ...);
 
 
 
 
-struct arena
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct actor
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u64 x0;
-	u64 y0;
-	u64 z0;
-	u64 t0;
-	u64 x1;
-	u64 y1;
-	u64 z1;
-	u64 t1;
-
-	//z,y,x
-	u8 data[8][4][4];
-};
-struct relation
-{
-	//[00,1f]:doubly link all arenas of this actor
-	u64 parent_type;
-	u64 parent_id;
-	u64 parent_last;
-	u64 parent_next;
-
-	//[20,3f]:doubly link all actors of this arena
-	u64 child_type;
-	u64 child_id;
-	u64 child_below;
-	u64 child_above;
-
-	//[40,5f]:cartesian coordinate
-	u64 cx;		//centerx
-	u64 cy;		//centery
-	u64 cz;		//centerz
-	u64 ct;
-
-	//[60,7f]:eulerian angle
-	u64 rx;		//pitch
-	u64 ry;		//yaw
-	u64 rz;		//roll
-	u64 rt;
-
-	//[80,9f]:total size(base 0x10000)
-	u64 width;
-	u64 height;
-	u64 depth;
-	u64 time;
-
-	//[a0,bf]:show area(base 0x100000)
-	u64 left;
-	u64 top;
-	u64 right;
-	u64 bottom;
-
-	//[c0,df]:
-	u64 a0;
-	u64 a1;
-	u64 a2;
-	u64 a3;
-
-	//[e0,ff]:
-	u64 a4;
-	u64 a5;
-	u64 a6;
-	u64 a7;
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 //
 static int num;
 static void* buffer;
@@ -222,7 +118,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct relat
 {
 	int x,y;
 	u32 color;
-	u8* buf = (u8*)(win->buf1);
+	u8* buf = (u8*)(win->buf);
 	int (*table)[4] = buffer + num*16*4;
 
 	buf += fmt(
@@ -265,7 +161,7 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct relati
 
 	int w = win->w;
 	int h = win->h;
-	u8* buf = (u8*)(win->buf1);
+	u8* buf = (u8*)(win->buf);
 	int (*table)[4] = buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)buf[x]=0;
@@ -591,6 +487,9 @@ static void the2048_list()
 static void the2048_choose()
 {
 }
+static void the2048_stop()
+{
+}
 static void the2048_start()
 {
 	int j;
@@ -601,7 +500,7 @@ static void the2048_start()
 	num = 0;
 	new2048();
 }
-static void the2048_stop()
+void the2048_delete()
 {
 }
 void the2048_create(void* base, void* addr)
@@ -611,13 +510,13 @@ void the2048_create(void* base, void* addr)
 
 	pl->type = 0x656d6167;
 	pl->name = 0x38343032;
-	pl->start = (u64)the2048_start;
-	pl->stop = (u64)the2048_stop;
-	pl->list = (u64)the2048_list;
-	pl->choose = (u64)the2048_choose;
-	pl->read = (u64)the2048_read;
-	pl->write = (u64)the2048_write;
-}
-void the2048_delete()
-{
+	pl->rlast = 0;
+	pl->rnext = 0;
+
+	pl->start = (void*)the2048_start;
+	pl->stop = (void*)the2048_stop;
+	pl->list = (void*)the2048_list;
+	pl->choose = (void*)the2048_choose;
+	pl->read = (void*)the2048_read;
+	pl->write = (void*)the2048_write;
 }

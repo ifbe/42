@@ -1,42 +1,16 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include "actor.h"
 
 
 
 
-//
 int cli_read(void*);
 int cli_write(void*);
 void draw_vt100(void*, int, int, int, int);
-void carve_term3d(void*);
-//
-void content_create(void*, void*);
-void content_delete();
-void external_create(void*, void*);
-void external_delete();
-//
-void lib1d_create(void*, void*);
-void lib1d_delete();
-void lib2d_create(void*, void*);
-void lib2d_delete();
-void lib3d_create(void*, void*);
-void lib3d_delete();
-//
-int ncmp(void*,void*,int);
-int cmp(void*,void*);
-u32 getrandom();
-//
-void eventwrite(u64,u64,u64,u64);
-void say(void*, ...);
 
 
 
-
-static struct window* arena = 0;
-static struct working* actor = 0;
+static struct arena* arena = 0;
+static struct actor* actor = 0;
 static struct relation* treaty = 0;
 //
 static u32 menu=0;
@@ -45,6 +19,147 @@ static u32 newline=1;
 
 
 
+int actorread()
+{
+	int j;
+	int now;
+	struct arena* w;
+	struct actor* p;
+	struct relation* t;
+	for(j=0;j<16;j++)
+	{
+		//
+		w = &arena[j];
+		p = &actor[now];
+		t = &treaty[0];
+		now = t->child_id;
+
+		//error
+		if(w->fmt == 0)break;
+
+		//title
+		//if(w->fmt == 0x)title_read(w);
+
+		//tray
+		//if(w->fmt == 0x)tray_read(w);
+
+		//voice
+		if(w->fmt == 0x6563696f76)continue;
+
+		//1d:	cli
+		if(w->dim == 1)
+		{
+			if(newline == 1)
+			{
+				actor[now].read(w, p, t);
+				cli_read(w);
+				newline = 0;
+			}
+			if(w->fmt == 0x696c63)return 0;
+
+			draw_vt100(w, 0x800, 0x800, 0xf800, 0xf800);
+			return 0;
+		}
+
+		//2d:	rgba
+		else if(w->dim == 2)
+		{
+			actor[now].read(w, p, t);
+
+			if(menu > 0)
+			{
+				actor[1].read(w, p, t);
+				actor[0].read(w, p, t);
+			}
+			return 0;
+		}
+
+		//3d:	directx, opengl, vulkan
+		else if(w->dim == 3)
+		{
+/*
+			if(w->dim == 1)
+			{
+				carve_term3d(w);
+			}
+			else if(w->dim == 2)
+			{
+				carve_texture(w);
+			}
+			else actor[now].read(w, p, t);
+
+			if(menu > 0)
+			{
+				actor[1].read(w, p, t);
+				actor[0].read(w, p, t);
+			}
+*/
+			return 0;
+		}//dim=3
+	}//for
+	return 0;
+}
+int actorwrite(u64* ev)
+{
+	//prepare
+	int ret;
+/*
+	if(w+)	//new win
+	if(w-)	//del win
+	if(w@)	//changed memaddr
+*/
+	if(ev[1] == 0x727473)
+	{
+		cli_write((void*)ev[0]);
+		return 0;
+	}
+	if(ev[2] < 0x1000)ev[2] = (u64)(&arena[0]);
+
+
+
+
+	//process
+	u64 why = ev[0];
+	u64 what = ev[1];
+	struct arena* w = (void*)ev[2];
+	//u64 when = ev[3];
+
+	//kbd
+	if(what == 0x64626b)
+	{
+		if(why == 0xf1){w->dim = 1;return 0;}
+		else if(why == 0xf2){w->dim = 2;return 0;}
+		else if(why == 0xf3){w->dim = 3;return 0;}
+	}//kbd
+
+	//
+	if(w->dim == 1)
+	{
+		newline = cli_write(&ev[0]);
+		return 0;
+	}
+	else if(w->dim == 2)
+	{
+		if( (what == 0x64626b)&&(why == 0x1b) )
+		{
+			menu ^= 1;
+			return 0;
+		}
+
+		if(menu > 0)
+		{
+			actor[1].write(ev);
+			actor[0].write(ev);
+		}
+		return actor[treaty[0].child_id].write(ev);
+	}
+	else //if(w->dim == 3)
+	{
+		say("dim=%d\n",w->dim);
+	}
+
+	return 0;
+}
 int actorlist(u8* p)
 {
 	//列出所有“人物”
@@ -163,163 +278,30 @@ found:
 	actor[now].start();
 	return now;
 }
-int actorstart()
+int actorstart(int win, int wk)
 {
-	int this = treaty[0].child_id;
-	return actor[this].start();
-}
-int actorread()
-{
-	int j;
-	int now;
-	struct window* w;
-	struct working* p;
-	struct relation* t;
-	for(j=0;j<16;j++)
-	{
-		//
-		w = &arena[j];
-		p = &actor[now];
-		t = &treaty[0];
-		now = t->child_id;
-
-		//error
-		if(w->fmt == 0)break;
-
-		//title
-		//if(w->fmt == 0x)title_read(w);
-
-		//tray
-		//if(w->fmt == 0x)tray_read(w);
-
-		//voice
-		if(w->fmt == 0x6563696f76)continue;
-
-		//1d:	cli
-		if(w->dim == 1)
-		{
-			if(newline == 1)
-			{
-				actor[now].read(w, p, t);
-				cli_read(w);
-				newline = 0;
-			}
-			if(w->fmt == 0x696c63)return 0;
-
-			draw_vt100(w, 0x800, 0x800, 0xf800, 0xf800);
-			return 0;
-		}
-
-		//2d:	rgba
-		else if(w->dim == 2)
-		{
-			actor[now].read(w, p, t);
-
-			if(menu > 0)
-			{
-				actor[1].read(w, p, t);
-				actor[0].read(w, p, t);
-			}
-			return 0;
-		}
-
-		//3d:	directx, opengl, vulkan
-		else if(w->dim == 3)
-		{
-/*
-			if(w->dim == 1)
-			{
-				carve_term3d(w);
-			}
-			else if(w->dim == 2)
-			{
-				carve_texture(w);
-			}
-			else actor[now].read(w, p, t);
-
-			if(menu > 0)
-			{
-				actor[1].read(w, p, t);
-				actor[0].read(w, p, t);
-			}
-*/
-			return 0;
-		}//dim=3
-	}//for
-	return 0;
-}
-int actorwrite(u64* ev)
-{
-	//prepare
-	int ret;
-/*
-	if(w+)	//new win
-	if(w-)	//del win
-	if(w@)	//changed memaddr
-*/
-	if(ev[1] == 0x727473)
-	{
-		ret = actorchoose( (void*)(ev[0]) );
-		if(ret == 0)say("%s\n", ev[0]);
-		return 0;
-	}
-	if(ev[2] < 0x1000)ev[2] = (u64)(&arena[2]);
-
-
-
-
-	//process
-	u64 why = ev[0];
-	u64 what = ev[1];
-	struct window* w = (void*)ev[2];
-	//u64 when = ev[3];
-
-	//kbd
-	if(what == 0x64626b)
-	{
-		if(why == 0xf1){w->dim = 1;return 0;}
-		else if(why == 0xf2){w->dim = 2;return 0;}
-		else if(why == 0xf3){w->dim = 3;return 0;}
-	}//kbd
-
 	//
-	if(w->dim == 1)
-	{
-		if(what == 0x64626b)
-		{
-			ev[1] = 0x72616863;
-			if(why == 0x1b)ev[0] = 0x1b;
-		}
+	treaty[0].parent_type = 0;
+	treaty[0].parent_id = 0;
+	treaty[0].parent_last = 0;
+	treaty[0].parent_next = 0;
 
-		newline = cli_write(ev);
-		return 0;
-	}
-	else if(w->dim == 2)
-	{
-		if( (what == 0x64626b)&&(why == 0x1b) )
-		{
-			menu ^= 1;
-			return 0;
-		}
+	treaty[0].child_type = 1;
+	treaty[0].child_id = 2;
+	treaty[0].child_below = 0;
+	treaty[0].child_above = 0;
 
-		if(menu > 0)
-		{
-			actor[1].write(ev);
-			actor[0].write(ev);
-		}
-		return actor[treaty[0].child_id].write(ev);
-	}
-	else if(w->dim == 3)
-	{
-	}
+	treaty[0].cx = 0x8000;
+	treaty[0].cy = 0x8000;
+	treaty[0].width = 0xe000;
+	treaty[0].height = 0xe000;
 
-	say("dim=%d\n",w->dim);
+	actor[2].start();
 	return 0;
 }
 int actorstop()
 {
-	int this = treaty[0].child_id;
-	return actor[this].stop();
+	return 0;
 }
 void actorcreate(u8* type, u8* addr)
 {
@@ -350,18 +332,13 @@ void actorcreate(u8* type, u8* addr)
 	//ordinary
 	content_create(addr, 0);
 
-	//
-	treaty[0].parent_id = 2;
-	treaty[0].child_id = 2;
-	treaty[0].cx = 0x8000;
-	treaty[0].cy = 0x8000;
-	treaty[0].width = 0xe000;
-	treaty[0].height = 0xe000;
+	actorstart(0,2);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()
 {
 	//say("[c,f):deleteing actor\n");
+	actorstop();
 
 	content_delete();
 	external_delete();

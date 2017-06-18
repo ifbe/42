@@ -1,41 +1,19 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//
-void rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
+#include "actor.h"
+
+
+
+void rect(struct arena* win,
+	int x1, int y1, int x2, int y2, u32 bc, u32 fc);
 void drawascii(
-	void*, char ch, int size,
+	void* win, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
 void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
-//
-void cli_read();
-void cli_write();
-//
-void say(void*, ...);
 
 
 
 
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
 static u8* input = 0;
 static u8* output = 0;
 
@@ -78,7 +56,7 @@ static void printstdout(struct window* win,
 	}
 }
 */
-static void printstdout(struct window* win,
+static void printstdout(struct arena* win,
 	int xx0, int yy0, int xx1, int yy1)
 {
 	int x;
@@ -136,7 +114,7 @@ static void printstdout(struct window* win,
 	}
 
 	//outer
-	palette = (u32*)(win->buf1);
+	palette = (u32*)(win->buf);
 	for(y=y0;y<y1;y++)
 	{
 		for(x=x1-16;x<x1;x++)
@@ -154,7 +132,7 @@ static void printstdout(struct window* win,
 		}
 	}
 }
-static void printstdin(struct window* win,
+static void printstdin(struct arena* win,
 	int xx0, int yy0, int xx1, int yy1)
 {
 	int x0 = (win->w)*xx0/0x10000;
@@ -166,7 +144,7 @@ static void printstdin(struct window* win,
 		win, input, 1,
 		x0+72, y0, 0, 0xffffffff);
 }
-void draw_vt100(struct window* win,
+void draw_vt100(struct arena* win,
 	int x0, int y0, int x1, int y1)
 {
 	//backgroundcolor(win, 0);

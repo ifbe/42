@@ -1,31 +1,12 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include<actor.h>
 
 
 
 
-struct window
-{
-        u64 buf1;
-        u64 buf2;
-        u64 fmt;
-	u64 dim;
-
-        u64 w;
-        u64 h;
-        u64 d;
-        u64 t;
-};
-
-
-
-
-void backgroundcolor(struct window* win, u32 color)
+void backgroundcolor(struct arena* win, u32 color)
 {
 	int x;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	color |= 0xff000000;
 
 	for(x=0; x<(win->w)*(win->h); x++)
@@ -33,12 +14,12 @@ void backgroundcolor(struct window* win, u32 color)
 		buf[x] = color;
 	}
 }
-void background1(struct window* win)
+void background1(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	//用指定颜色清屏
 	for(x=0;x<width*height;x++)

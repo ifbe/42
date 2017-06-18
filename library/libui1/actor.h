@@ -6,53 +6,84 @@
 
 
 
-struct window
+struct event
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
+};
+struct arena
+{
+	u64 type;		//local,cli,voice,vnc,rdp,...
+	u64 fmt;		//rgba8888,vt100...
+	u64 rlast;
+	u64 rnext;
+
+	u64 buf;
+	u64 len;
 	u64 dim;
+	u64 hah;
 
 	u64 w;
 	u64 h;
 	u64 d;
 	u64 t;
 
-	char data[0xc0];
+	u64 oldw;
+	u64 oldh;
+	u64 oldd;
+	u64 oldt;
+
+	char priv[0x80];
 };
-struct working
+struct actor
 {
-	//[0,7]:种类
+	//[0,1f]
 	u64 type;
-
-	//[8,f]:名字
 	u64 name;
+	u64 rlast;
+	u64 rnext;
 
-	//[10,17]:开始
+	//[20,3f]
+	u64 aa;
+	u64 bb;
+	u64 cc;
+	u64 dd;
+
+	//[40,47]
+	int (*create)();
+	char padding0[ 8 - sizeof(char*) ];
+
+	//[48,4f]
+	int (*delete)();
+	char padding1[ 8 - sizeof(char*) ];
+
+	//[50,57]:开始
 	int (*start)();
 	char padding2[ 8 - sizeof(char*) ];
 
-	//[18,1f]:结束
+	//[58,5f]:结束
 	int (*stop)();
 	char padding3[ 8 - sizeof(char*) ];
 
-	//[20,27]:观察
+	//[60,67]:观察
 	int (*list)();
 	char padding4[ 8 - sizeof(char*) ];
 
-	//[28,2f]:调整
+	//[68,6f]:调整
 	int (*choose)();
 	char padding5[ 8 - sizeof(char*) ];
 
-	//[30,37]:输出
+	//[70,77]:输出
 	int (*read)(void* arena, void* actor, void* treaty);
 	char padding6[ 8 - sizeof(char*) ];
 
-	//[38,3f]:输入
+	//[78,7f]:输入
 	int (*write)(void* event);
 	char padding7[ 8 - sizeof(char*) ];
 
-	char data[0xc0];
+	char priv[0x80];
 };
 struct relation
 {
@@ -104,3 +135,33 @@ struct relation
 	u64 a6;
 	u64 a7;
 };
+
+
+
+
+//
+void content_create(void*, void*);
+void content_delete();
+void external_create(void*, void*);
+void external_delete();
+//
+void lib1d_create(void*, void*);
+void lib1d_delete();
+void lib2d_create(void*, void*);
+void lib2d_delete();
+void lib3d_create(void*, void*);
+void lib3d_delete();
+//
+int double2decstr(double,char*);
+int data2decstr(u64 data,u8* string);
+int ncmp(void*,void*,int);
+int cmp(void*,void*);
+//
+u32 getrandom();
+u64 gettime();
+double squareroot(double);
+//
+void eventwrite(u64,u64,u64,u64);
+int printmemory(void*, int);
+int fmt(void*, int, void*, ...);
+int say(void*, ...);

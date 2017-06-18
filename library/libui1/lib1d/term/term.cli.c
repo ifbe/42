@@ -46,41 +46,47 @@ int cli_read()
 	say("[void]");
 	return 0;
 }
-int cli_write(u64* p)
+int cli_write(u8* p)
 {
 	int j;
 	int* enq = (void*)(input+0xffff0);
 
-	j = *p;
-	if(j == 0x8)		//backspace
+	if(p == 0)return 0;
+	while(*p != 0)
 	{
-		if(*enq <= 0)return 0;
-		(*enq)--;
-		input[*enq] = 0;
-		return 0;
-	}
-	else if((j == 0xa)|(j == 0xd))	//enter
-	{
-		say("%s\n",input);
-		j = actorchoose(input);
-		if(j != 0)return 1;
+		j = *p;
+		p++;
 
-		if(ncmp(input, "ls", 2) == 0)actorlist(0);
-		else if(ncmp(input, "ls", 2) == 0)actorlist(0);
+		if(j == 0x8)		//backspace
+		{
+			if(*enq <= 0)return 0;
+			(*enq)--;
+			input[*enq] = 0;
+			return 0;
+		}
+		else if((j == 0xa)|(j == 0xd))	//enter
+		{
+			say("%s\n",input);
+			j = actorchoose(input);
+			if(j != 0)return 1;
 
-		for(j=0;j<0x80;j++)input[j] = 0;
-		*enq = 0;
-		return 1;
-	}
-	else if(j == 0x1b)
-	{
-		say("esc\n");
-		return 0;
-	}
-	else
-	{
-		input[*enq] = j;
-		(*enq)++;
-		return 0;
+			if(ncmp(input, "ls", 2) == 0)actorlist(0);
+			else if(ncmp(input, "ls", 2) == 0)actorlist(0);
+
+			for(j=0;j<0x80;j++)input[j] = 0;
+			*enq = 0;
+			return 1;
+		}
+		else if(j == 0x1b)
+		{
+			say("esc\n");
+			return 0;
+		}
+		else
+		{
+			input[*enq] = j;
+			(*enq)++;
+			return 0;
+		}
 	}
 }

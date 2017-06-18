@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<conio.h>
 #include<windows.h>
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "arena.h"
+
+
+
+
 //
 u64 startthread(void*, void*);
 void stopthread();
@@ -16,20 +17,6 @@ void say(char*,...);
 
 
 //
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-};
 static u64 thread=0;
 
 
@@ -88,15 +75,15 @@ void windowwrite()
 }
 void windowstart(struct window* win)
 {
-	win->buf1 = 0;
-	win->buf2 = 0;
+	win->type = 0;
 	win->fmt = 0x696c63;
-	win->dim = 1;
+	win->buf = 0;
+	win->len = 0;
 
 	win->w = 80;
 	win->h = 25;
 	win->d = 0;
-	win->t = 0;
+	win->dim = 1;
 }
 void windowstop()
 {

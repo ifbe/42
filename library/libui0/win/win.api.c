@@ -1,17 +1,14 @@
 #define WINVER 0x0601
+#define WM_POINTERUPDATE 0x0245
+#define WM_POINTERDOWN 0x0246
+#define WM_POINTERUP 0x0247
 #include<stdio.h>
 #include<stdlib.h>
 #include<windows.h>
 #include<windowsx.h>
 #include<winuser.h>
 #include<commctrl.h>
-#define WM_POINTERUPDATE 0x0245
-#define WM_POINTERDOWN 0x0246
-#define WM_POINTERUP 0x0247
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "arena.h"
 //
 u64 startthread(void*, void*);
 void stopthread();
@@ -28,18 +25,8 @@ static char* AppTitle="haha";
 static char dragpath[MAX_PATH];
 
 //each
-struct windata
+struct privdata
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
 	u64 thread;
 	HWND wnd;
 	HDC dc;
@@ -84,7 +71,7 @@ void bitmapinfo(int w, int h)
 }
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	struct windata* data = (void*)GetWindowLongPtr(wnd, GWLP_USERDATA);
+	struct window* data = (void*)GetWindowLongPtr(wnd, GWLP_USERDATA);
 	switch (msg)
 	{
 		//拖拽文件
@@ -416,22 +403,22 @@ int registermyclass()
 HWND createmywindow(int w, int h)
 {
 	//创建窗口
-	HWND window = CreateWindow(
+	HWND win = CreateWindow(
 		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
 		100, 100, w+16, h+38,
 		NULL, NULL, 0, NULL);
-	if(!window)return 0;
+	if(!win)return 0;
 
 	//透明
-	LONG t = GetWindowLong(window, GWL_EXSTYLE);
-	SetWindowLong(window, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(window, 0, 0xf8, LWA_ALPHA);
+	LONG t = GetWindowLong(win, GWL_EXSTYLE);
+	SetWindowLong(win, GWL_EXSTYLE, t | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(win, 0, 0xf8, LWA_ALPHA);
 
 	//显示窗口
-	ShowWindow(window, SW_SHOW);
-	UpdateWindow(window);
+	ShowWindow(win, SW_SHOW);
+	UpdateWindow(win);
 
-	return window;
+	return win;
 }
 void enabledrag(HWND wnd)
 {
@@ -453,23 +440,24 @@ void enabledrag(HWND wnd)
 	proc(WM_DROPFILES, 1);
 	proc(0x0049, 1);
 }
-DWORD WINAPI uievent(struct windata* p)
+DWORD WINAPI uievent(struct window* win)
 {
+	struct privdata* priv = (void*)(win->priv);
 	MSG msg;
 
 	//图形窗口
-	p->wnd = createmywindow(p->w, p->h);
-	SetWindowLongPtr(p->wnd, GWLP_USERDATA, (u64)p);
+	priv->wnd = createmywindow(win->w, win->h);
+	SetWindowLongPtr(priv->wnd, GWLP_USERDATA, (u64)win);
 
 	//打开拖拽
-	enabledrag(p->wnd);
+	enabledrag(priv->wnd);
 
 	//打开触摸
-	RegisterTouchWindow(p->wnd, 0);
+	RegisterTouchWindow(priv->wnd, 0);
 
 	//bmp
-	p->dc = GetDC(p->wnd);
-	bitmapinfo(p->w, p->h);
+	priv->dc = GetDC(priv->wnd);
+	bitmapinfo(win->w, win->h);
 
 	//一个一个处理
 	while(GetMessage(&msg, NULL, 0, 0))
@@ -479,10 +467,10 @@ DWORD WINAPI uievent(struct windata* p)
 	}
 
 	//关闭触摸
-	UnregisterTouchWindow(p->wnd);
+	UnregisterTouchWindow(priv->wnd);
 
 	//释放dc
-	ReleaseDC(p->wnd, p->dc);
+	ReleaseDC(priv->wnd, priv->dc);
 
 	//退出main
 	eventwrite(0, 0, 0, 0);
@@ -499,16 +487,16 @@ DWORD WINAPI uievent(struct windata* p)
 void windowread()
 {
 }
-void windowwrite(struct windata* p)
+void windowwrite(struct window* win)
 {
-	//写屏
+	struct privdata* priv = (void*)(win->priv);
 	SetDIBitsToDevice(
-		p->dc,
+		priv->dc,
 		0, 0,			//目标位置x,y
-		p->w, p->h,		//dib宽,高
+		win->w, win->h,		//dib宽,高
 		0, 0,			//来源起始x,y
-		0, p->h,		//起始扫描线,数组中扫描线数量,
-		(void*)p->buf1,	//rbg颜色数组
+		0, win->h,		//起始扫描线,数组中扫描线数量,
+		(void*)win->buf,	//rbg颜色数组
 		&info,			//bitmapinfo
 		DIB_RGB_COLORS	//颜色格式
 	);
@@ -520,25 +508,25 @@ void windowlist()
 void windowchange()
 {
 	//RECT rc;
-	//GetWindowRect(window, &rc);
-	//MoveWindow(window, rc.left, rc.top, width+16, height+39, 0);
+	//GetWindowRect(win, &rc);
+	//MoveWindow(win, rc.left, rc.top, width+16, height+39, 0);
 
 	//窗口标题
-	//SetWindowText(window, "hahahaha");
+	//SetWindowText(win, "hahahaha");
 }
-void windowstart(struct windata* p)
+void windowstart(struct window* win)
 {
-	int j = sizeof(struct windata);
-	if(j > 256)
-	{
-		printf("error@%d>256\n", j);
-		return;
-	}
+	struct privdata* priv = (void*)(win->priv);
 
-	p->buf1 = (u64)malloc(2048*1024*4);
-	p->w = 512;
-	p->h = 512;
-	p->thread = startthread(uievent, p);
+	win->type = 0;
+	win->fmt = 0x6267726138383838;
+	win->len = 2048*1024*4;
+	win->buf = (u64)malloc(win->len);
+
+	win->w = 512;
+	win->h = 512;
+
+	priv->thread = startthread(uievent, win);
 }
 void windowstop()
 {

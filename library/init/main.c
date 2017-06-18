@@ -3,15 +3,9 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //libui1
-int actorstart(int);
-int actorstop();
 int actorread();
 int actorwrite(void* event);
 //libui0
-int arenastart(int, int);
-int arenastop(int);
-int arenalist();
-int arenachoose();
 int arenaread();
 int arenawrite();
 //libsoft1
@@ -58,8 +52,6 @@ int main(int argc, char* argv[])
 	//say("@birth\n");
 
 	//config
-	ret = arenastart(0,0);
-	ret = actorstart(0);
 	for(ret=1;ret<argc;ret++)
 	{
 		temp.why = (u64)(argv[ret]);
@@ -108,11 +100,6 @@ again:
 		{
 			//network rawdata -> my event
 			network_explain(ev);
-			if(ev->what == 0x5357)
-			{
-				arenastart(0x5357, ev->where);
-				continue;
-			}
 		}
 		else if(((ev->what)&0xff) == 's')
 		{
