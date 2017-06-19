@@ -6,8 +6,8 @@ struct window
 {
 	u64 type;		//local,cli,voice,vnc,rdp,...
 	u64 fmt;		//rgba8888,vt100...
-	u64 rlast;
-	u64 rnext;
+	u64 bot;
+	u64 top;
 
 	u64 buf;
 	u64 len;

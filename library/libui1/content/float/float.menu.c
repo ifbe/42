@@ -1,7 +1,5 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
+int actorchoose(char* p);
 //
 void drawstring(
 	void*, void* str, int size, 
@@ -15,61 +13,22 @@ void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
-//
-int actorchoose(char* p);
-//
-int fmt(char*, int, char*, ...);
-int say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-	
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static char buffer[128];
 static int bufp=0;
 
 
 
 
-static void menu_read_text(struct window* win)
+static void menu_read_text(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 	char* src;
 	char* dst;
 
@@ -120,7 +79,7 @@ static void menu_read_text(struct window* win)
 		y += 4;
 	}
 }
-static void menu_read_pixel(struct window* win)
+static void menu_read_pixel(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
@@ -169,12 +128,12 @@ static void menu_read_pixel(struct window* win)
 		width/4, height/4 + 32,	0xffffffff, 0
 	);
 }
-static void menu_read_html(struct window* win)
+static void menu_read_html(struct arena* win)
 {
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 	buffer[bufp] = 0;
 
-	fmt(p,0x1000,
+	win->len = fmt(p,0x1000,
 		"<div style=\""
 		"position:absolute;"
 		"z-index:100;"
@@ -193,7 +152,7 @@ static void menu_read_html(struct window* win)
 		buffer
 	);
 }
-static void menu_read(struct window* win)
+static void menu_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -305,16 +264,16 @@ static void menu_stop()
 }
 void menu_create(void* base, void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 
 	p->type = 0;
-	p->name = 0x756e656d;
-	p->start = (u64)menu_start;
-	p->stop = (u64)menu_stop;
-	p->list = (u64)menu_list;
-	p->choose = (u64)menu_choose;
-	p->read = (u64)menu_read;
-	p->write = (u64)menu_write;
+	p->name = hexof('m','e','n','u');
+	p->start = (void*)menu_start;
+	p->stop = (void*)menu_stop;
+	p->list = (void*)menu_list;
+	p->choose = (void*)menu_choose;
+	p->read = (void*)menu_read;
+	p->write = (void*)menu_write;
 }
 void menu_delete()
 {

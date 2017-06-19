@@ -442,6 +442,7 @@ static void the2048_write(struct event* ev)
 	int j;
 	int* p;
 	int* q;
+	say("%x,%x\n",ev->why, ev->what);
 
 	//
 	if(ev->what == 0x64626b)
@@ -505,18 +506,18 @@ void the2048_delete()
 }
 void the2048_create(void* base, void* addr)
 {
-	struct actor* pl = addr;
+	struct actor* act = addr;
 	buffer = base + 0x300000;
 
-	pl->type = 0x656d6167;
-	pl->name = 0x38343032;
-	pl->rlast = 0;
-	pl->rnext = 0;
+	act->type = hexof('g','a','m','e');
+	act->name = hexof('2','0','4','8');
+	act->first = 0;
+	act->last = 0;
 
-	pl->start = (void*)the2048_start;
-	pl->stop = (void*)the2048_stop;
-	pl->list = (void*)the2048_list;
-	pl->choose = (void*)the2048_choose;
-	pl->read = (void*)the2048_read;
-	pl->write = (void*)the2048_write;
+	act->start = (void*)the2048_start;
+	act->stop = (void*)the2048_stop;
+	act->list = (void*)the2048_list;
+	act->choose = (void*)the2048_choose;
+	act->read = (void*)the2048_read;
+	act->write = (void*)the2048_write;
 }

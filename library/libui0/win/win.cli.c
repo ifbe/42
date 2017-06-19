@@ -17,7 +17,10 @@ void say(char*,...);
 
 
 //
-static u64 thread=0;
+struct privdata
+{
+	u64 thread;
+};
 
 
 
@@ -75,6 +78,8 @@ void windowwrite()
 }
 void windowstart(struct window* win)
 {
+	struct privdata* priv;
+
 	win->type = 0;
 	win->fmt = 0x696c63;
 	win->buf = 0;
@@ -84,13 +89,15 @@ void windowstart(struct window* win)
 	win->h = 25;
 	win->d = 0;
 	win->dim = 1;
+
+	priv = (void*)(win->priv);
+	priv->thread = startthread(uievent, win);
 }
 void windowstop()
 {
 }
 void windowcreate()
 {
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

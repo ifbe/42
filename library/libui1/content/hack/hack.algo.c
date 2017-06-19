@@ -1,7 +1,4 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h"
 //
 void backgroundcolor(void*,
 	u32 color);
@@ -16,55 +13,12 @@ void rectframe(void*,
 void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
+
+
+
+
 //
-void datastr2hexstr(void* dst, void* src, int len);
-void md5sum(void*, void*, int);
-void sha1sum(void*, void*, int);
-//
-int readfile(void*, void*, u64, u64);
-int writefile(void*, void*, u64, u64);
-//
-int say(void*, ...);
-
-
-
-
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	//z,y,x
-	u8 data[0xc0];
-};
-static struct player* pl;
+static struct actor* pl;
 //
 static u64 algtype[] = {
 	0x35646d,		//md5
@@ -84,13 +38,13 @@ static int reslen;
 
 
 
-static void algorithm_read_text(struct window* win)
+static void algorithm_read_text(struct arena* win)
 {
 }
-static void algorithm_read_html(struct window* win)
+static void algorithm_read_html(struct arena* win)
 {
 }
-static void algorithm_read_pixel(struct window* win)
+static void algorithm_read_pixel(struct arena* win)
 {
 	backgroundcolor(win, 0);
 
@@ -146,11 +100,11 @@ static void algorithm_read_pixel(struct window* win)
 		0x400000
 	);
 	drawstring(
-		win, pl->data, 1,
+		win, pl->priv, 1,
 		(win->w/2)-(reslen*4), (win->h)*3/4, 0xffffffff, 0
 	);
 }
-static void algorithm_read(struct window* win)
+static void algorithm_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -199,15 +153,15 @@ static void algorithm_write(struct event* ev)
 		if(algtype[this] == 0x35646d)
 		{
 			md5sum(temp, buffer, ret);
-			datastr2hexstr(pl->data, temp, 16);
-			pl->data[32] = 0;
+			datastr2hexstr(pl->priv, temp, 16);
+			pl->priv[32] = 0;
 			reslen = 32;
 		}
 		else if(algtype[this] == 0x31616873)
 		{
 			sha1sum(temp, buffer, ret);
-			datastr2hexstr(pl->data, temp, 20);
-			pl->data[40] = 0;
+			datastr2hexstr(pl->priv, temp, 20);
+			pl->priv[40] = 0;
 			reslen = 40;
 		}
 	}
@@ -220,7 +174,7 @@ static void algorithm_choose()
 }
 static void algorithm_start()
 {
-	pl->data[0] = 0;
+	pl->priv[0] = 0;
 }
 static void algorithm_stop()
 {
@@ -230,14 +184,17 @@ void algorithm_create(void* base, void* addr)
 	pl = addr;
 	buffer = base+0x300000;
 
-	pl->type = 0x6c6f6f74;
-	pl->name = 0x6f676c61;
-	pl->start = (u64)algorithm_start;
-	pl->stop = (u64)algorithm_stop;
-	pl->list = (u64)algorithm_list;
-	pl->choose = (u64)algorithm_choose;
-	pl->read = (u64)algorithm_read;
-	pl->write = (u64)algorithm_write;
+	pl->type = hexof('t','o','o','l');
+	pl->name = hexof('a','l','g','o');
+	pl->first = 0;
+	pl->last = 0;
+
+	pl->start = (void*)algorithm_start;
+	pl->stop = (void*)algorithm_stop;
+	pl->list = (void*)algorithm_list;
+	pl->choose = (void*)algorithm_choose;
+	pl->read = (void*)algorithm_read;
+	pl->write = (void*)algorithm_write;
 }
 void algorithm_delete()
 {

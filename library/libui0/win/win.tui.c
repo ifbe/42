@@ -13,6 +13,10 @@ void say(void*, ...);
 
 
 //
+struct privdata
+{
+	u64 thread;
+};
 static HANDLE output;
 static int lastwidth=0,lastheight=0;
 static int width,height;
@@ -99,19 +103,19 @@ void windowwrite(struct window* t)
 	u8 ch,bg=0,fg=0;
 	COORD pos = {0,0};
 	u8* p;
-	u8* content = (u8*)(t->buf1);
+	u8* buf = (u8*)(t->buf);
 	SetConsoleCursorPosition(output,pos);
 /*
 	//
-	content[width*height]=0;
-	printf("%s",content);
+	buf[width*height]=0;
+	printf("%s",buf);
 */
 	//
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
 		{
-			p = content + ((width*y + x)<<2);
+			p = buf + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
 				//先颜色
@@ -156,6 +160,8 @@ void windowchange()
 }
 void windowstart(struct window* win)
 {
+	struct privdata* priv;
+
 	win->type = 0;
 	win->fmt = 0x74786574;
 	win->buf = (u64)malloc(0x100000);
@@ -163,7 +169,9 @@ void windowstart(struct window* win)
 
 	win->w = width;
 	win->h = height;
-	win->priv = startthread(uievent, p);
+
+	priv = (void*)(win->priv);
+	priv->thread = startthread(uievent, win);
 }
 void windowstop()
 {

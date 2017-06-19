@@ -283,7 +283,7 @@ int actorstart(int win, int wk)
 	//
 	treaty[0].parent_type = 0;
 	treaty[0].parent_id = 0;
-	treaty[0].parent_last = 0;
+	treaty[0].parent_prev = 0;
 	treaty[0].parent_next = 0;
 
 	treaty[0].child_type = 1;

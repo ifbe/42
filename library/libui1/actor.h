@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define hexof(a,b,c,d) (a|(b<<8)|(c<<16)|(d<<24))
 
 
 
@@ -17,8 +18,8 @@ struct arena
 {
 	u64 type;		//local,cli,voice,vnc,rdp,...
 	u64 fmt;		//rgba8888,vt100...
-	u64 rlast;
-	u64 rnext;
+	u64 bot;
+	u64 top;
 
 	u64 buf;
 	u64 len;
@@ -42,8 +43,8 @@ struct actor
 	//[0,1f]
 	u64 type;
 	u64 name;
-	u64 rlast;
-	u64 rnext;
+	u64 first;
+	u64 last;
 
 	//[20,3f]
 	u64 aa;
@@ -90,7 +91,7 @@ struct relation
 	//[00,1f]:doubly link all arenas of this actor
 	u64 parent_type;
 	u64 parent_id;
-	u64 parent_last;
+	u64 parent_prev;
 	u64 parent_next;
 
 	//[20,3f]:doubly link all actors of this arena
@@ -144,23 +145,28 @@ void content_create(void*, void*);
 void content_delete();
 void external_create(void*, void*);
 void external_delete();
-//
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
 void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
-//
+//libsoft1
+void md5sum(void*, void*, int);
+void sha1sum(void*, void*, int);
 int double2decstr(double,char*);
 int data2decstr(u64 data,u8* string);
+int datastr2hexstr(void* dst, void* src, int len);
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
-//
+//libsoft0
 u32 getrandom();
 u64 gettime();
+int readfile(void*, void*, u64, u64);
+int writefile(void*, void*, u64, u64);
+//libhard1
 double squareroot(double);
-//
+//libboot1
 void eventwrite(u64,u64,u64,u64);
 int printmemory(void*, int);
 int fmt(void*, int, void*, ...);

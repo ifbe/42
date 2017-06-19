@@ -319,6 +319,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//鼠标左键按下
 		case WM_LBUTTONDOWN:		//鼠标左键点下
 		{
+			u64 x,y,k;
 			leftdown=1;
 			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 
@@ -329,12 +330,18 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
 			}
+			
+			k = 'l';
+			y = (lparam&0xffff0000) / (data->h);
+			x = ((lparam&0xffff)<<16) / (data->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			return 0;
 		}
 
 		//鼠标右键按下
 		case WM_RBUTTONDOWN:
 		{
+			u64 x,y,k;
 			rightdown=1;
 			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
 
@@ -345,6 +352,11 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				re.right=rt.right-rt.left;               // 保存窗口宽度
 				re.bottom=rt.bottom-rt.top; // 保存窗口高度
 			}
+
+			k = 'r';
+			y = (lparam&0xffff0000) / (data->h);
+			x = ((lparam&0xffff)<<16) / (data->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
 			return 0;
 		}
 

@@ -117,8 +117,8 @@ int arenastart(int type)
 	{
 		arena[now].type = 0;
 		arena[now].fmt = 0;
-		arena[now].rlast = 0;
-		arena[now].rnext = 0;
+		arena[now].bot = 0;
+		arena[now].top = 0;
 
 		arena[now].buf = 0;
 		arena[now].len = 0;

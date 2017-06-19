@@ -19,9 +19,10 @@ void motion_explain(u64* p)
 	int dx1,dy1;
 	int dx2,dy2;
 
-	m = p[1]&0xffff;
-	n = (p[0] >> 48) & 0x07;
+	n = (p[0] >> 48) & 0xffff;
+	if(n>0x10)return;
 
+	m = p[1]&0xffff;
 	if(m == 0x4070)
 	{
 		//say("[%d]@@@@@@@@@@@\n",n);
