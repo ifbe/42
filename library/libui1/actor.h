@@ -90,15 +90,21 @@ struct relation
 {
 	//[00,1f]:doubly link all arenas of this actor
 	u64 parent_type;
-	u64 parent_id;
-	u64 parent_prev;
-	u64 parent_next;
+	void* parent_this;
+	char padding1[ 8 - sizeof(char*) ];
+	void* parent_prev;
+	char padding2[ 8 - sizeof(char*) ];
+	void* parent_next;
+	char padding3[ 8 - sizeof(char*) ];
 
 	//[20,3f]:doubly link all actors of this arena
 	u64 child_type;
-	u64 child_id;
-	u64 child_below;
-	u64 child_above;
+	void* child_this;
+	char padding5[ 8 - sizeof(char*) ];
+	void* child_below;
+	char padding6[ 8 - sizeof(char*) ];
+	void* child_above;
+	char padding7[ 8 - sizeof(char*) ];
 
 	//[40,5f]:cartesian coordinate
 	u64 cx;		//centerx

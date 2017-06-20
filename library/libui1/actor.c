@@ -23,7 +23,6 @@ static u32 newline=1;
 int actorread()
 {
 	int j;
-	int now;
 	struct arena* w;
 	struct actor* p;
 	struct relation* t;
@@ -31,9 +30,8 @@ int actorread()
 	{
 		//
 		w = &arena[j];
-		p = &actor[now];
 		t = &treaty[0];
-		now = t->child_id;
+		p = t->child_this;
 
 		//error
 		if(w->fmt == 0)break;
@@ -65,7 +63,7 @@ int actorread()
 		//2d:	rgba
 		else if(w->dim == 2)
 		{
-			actor[now].read(w, p, t);
+			p->read(w, p, t);
 
 			if(menu > 0)
 			{
@@ -123,6 +121,8 @@ int actorwrite(u64* ev)
 	u64 why = ev[0];
 	u64 what = ev[1];
 	struct arena* w = (void*)ev[2];
+	struct relation* t = treaty;
+	struct actor* p = treaty->child_this;
 	//u64 when = ev[3];
 
 	//kbd
@@ -146,21 +146,21 @@ int actorwrite(u64* ev)
 				{
 					x = (why&0xffff) - (tmp&0xffff);
 					y = ((why>>16)&0xffff) - ((tmp>>16)&0xffff);
-					treaty[0].cx += x;
-					treaty[0].cy += y;
+					t->cx += x;
+					t->cy += y;
 					tmp = why;
 				}
 			}
 		}
 		else if((why>>48)=='b')
 		{
-			treaty[0].width = treaty[0].width*90/100;
-			treaty[0].height = treaty[0].height*90/100;
+			t->width = treaty[0].width*90/100;
+			t->height = treaty[0].height*90/100;
 		}
 		else if((why>>48)=='f')
 		{
-			treaty[0].width = treaty[0].width*110/100;
-			treaty[0].height = treaty[0].height*110/100;
+			t->width = treaty[0].width*110/100;
+			t->height = treaty[0].height*110/100;
 		}
 	}//mouse
 
@@ -183,7 +183,7 @@ int actorwrite(u64* ev)
 			actor[1].write(ev);
 			actor[0].write(ev);
 		}
-		return actor[treaty[0].child_id].write(ev);
+		return p->write(ev);
 	}
 	else //if(w->dim == 3)
 	{
@@ -247,32 +247,14 @@ int actorlist(u8* p)
 int actorchoose(u8* p)
 {
 	int j,k,ret;
-	u64 now = treaty[0].child_id;
+	struct actor* now;
 
 	//exit!
 	if( (p==0) | (cmp(p,"exit")==0) )
 	{
-		say("%d wants to die\n",now);
+		say("%x wants to die\n",now);
 		eventwrite(0,0,0,0);
 		return 0;
-	}
-
-	//next
-	ret=cmp(p,"+");
-	if(ret==0)
-	{
-		if(actor[now+1].name == 0)return 0;
-		now++;
-		goto found;
-	}
-
-	//last
-	ret=cmp(p,"-");
-	if(ret==0)
-	{
-		if(actor[now-1].type == 0)return 0;
-		now--;
-		goto found;
 	}
 
 	//random
@@ -290,7 +272,8 @@ int actorchoose(u8* p)
 			if(actor[k].name == 0)break;
 		}
 
-		now=( getrandom() % (k-j) ) + j;
+		ret = ( getrandom() % (k-j) ) + j;
+		now = &actor[ret];
 		goto found;
 	}
 
@@ -298,7 +281,7 @@ int actorchoose(u8* p)
 	ret = actorlist(p);
 	if(ret != 0)
 	{
-		now = ret;
+		now = &actor[ret];
 		goto found;
 	}
 
@@ -306,20 +289,20 @@ notfound:
 	return 0;
 
 found:
-	treaty[0].child_id = now;
-	actor[now].start();
-	return now;
+	treaty[0].child_this = now;
+	now->start();
+	return 1;
 }
 int actorstart(int win, int wk)
 {
 	//
 	treaty[0].parent_type = 0;
-	treaty[0].parent_id = 0;
+	treaty[0].parent_this = &arena[0];
 	treaty[0].parent_prev = 0;
 	treaty[0].parent_next = 0;
 
 	treaty[0].child_type = 1;
-	treaty[0].child_id = 2;
+	treaty[0].child_this = &actor[2];
 	treaty[0].child_below = 0;
 	treaty[0].child_above = 0;
 
