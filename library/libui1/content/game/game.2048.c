@@ -442,7 +442,7 @@ static void the2048_write(struct event* ev)
 	int j;
 	int* p;
 	int* q;
-	say("%x,%x\n",ev->why, ev->what);
+	//say("%x,%x\n",ev->why, ev->what);
 
 	//
 	if(ev->what == 0x64626b)

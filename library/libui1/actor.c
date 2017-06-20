@@ -13,6 +13,7 @@ static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct relation* treaty = 0;
 //
+static u64 tmp=0;
 static u32 menu=0;
 static u32 newline=1;
 
@@ -51,7 +52,7 @@ int actorread()
 		{
 			if(newline == 1)
 			{
-				actor[now].read(w, p, t);
+				//actor[now].read(w, p, t);
 				cli_read(w);
 				newline = 0;
 			}
@@ -102,7 +103,7 @@ int actorread()
 int actorwrite(u64* ev)
 {
 	//prepare
-	int ret;
+	int x,y;
 /*
 	if(w+)	//new win
 	if(w-)	//del win
@@ -131,6 +132,37 @@ int actorwrite(u64* ev)
 		else if(why == 0xf2){w->dim = 2;return 0;}
 		else if(why == 0xf3){w->dim = 3;return 0;}
 	}//kbd
+
+	//mouse
+	if((what&0xff)=='p')
+	{
+		if((why>>48)=='r')
+		{
+			if(what == 0x2b70)tmp = why;
+			else if(what == 0x2d70)tmp = 0;
+			else if(what == 0x4070)
+			{
+				if(tmp != 0)
+				{
+					x = (why&0xffff) - (tmp&0xffff);
+					y = ((why>>16)&0xffff) - ((tmp>>16)&0xffff);
+					treaty[0].cx += x;
+					treaty[0].cy += y;
+					tmp = why;
+				}
+			}
+		}
+		else if((why>>48)=='b')
+		{
+			treaty[0].width = treaty[0].width*90/100;
+			treaty[0].height = treaty[0].height*90/100;
+		}
+		else if((why>>48)=='f')
+		{
+			treaty[0].width = treaty[0].width*110/100;
+			treaty[0].height = treaty[0].height*110/100;
+		}
+	}//mouse
 
 	//
 	if(w->dim == 1)

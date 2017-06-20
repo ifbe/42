@@ -369,7 +369,7 @@ void createserial(u8* arg)
 
 	//hide
 	consolewindow = GetConsoleWindow();
-	ShowWindow(consolewindow,SW_HIDE);
+	ShowWindow(consolewindow,SW_SHOW);
 }
 void deleteserial()
 {

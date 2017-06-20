@@ -259,29 +259,22 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_MOUSEMOVE:
 		{
 			u64 x,y,k;
-			if(leftdown>0)
+			if((leftdown>0)&&(rightdown>0))
 			{
-				//say("moving\n");
 				GetCursorPos(&pe);		// 获取光标指针的新位置
-
-				if(rightdown==0xff)		//左右一起按下
-				{
-					re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
-					re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
-					MoveWindow(wnd, re.left, re.top, re.right, re.bottom, 1);// 移动窗口
-				}
-
-				else		//只是左键在拖动
-				{
-					k = 'l';
-					y = (pe.y<<16) / (data->h);
-					x = (pe.x<<16) / (data->w);
-					eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
-
-					//say("%d,%d\n", pe.x, pe.y);
-					GetCursorPos(&pt);	// 获取鼠标当前位置
-				}
+				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
+				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
+				MoveWindow(wnd, re.left, re.top, re.right, re.bottom, 1);// 移动窗口
+				GetCursorPos(&pt);			// 获取鼠标当前位置
+				GetWindowRect(wnd, &rt);	// 获取窗口位置与大小
+				return 0;
 			}
+			else if(rightdown>0)k = 'r';
+			else k = 'l';
+
+			y = (lparam&0xffff0000) / (data->h);
+			x = ((lparam&0xffff)<<16) / (data->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 			return 0;
 		}
 
@@ -289,14 +282,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_LBUTTONUP:
 		{
 			u64 x,y,k;
-			if(leftdown==1)
-			{
-				k = 'l';
-				y = (lparam&0xffff0000) / (data->h);
-				x = ((lparam&0xffff)<<16) / (data->w);
-				eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
-			}
 			leftdown=0;
+
+			k = 'l';
+			y = (lparam&0xffff0000) / (data->h);
+			x = ((lparam&0xffff)<<16) / (data->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			return 0;
 		}
 
@@ -304,20 +295,17 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case WM_RBUTTONUP:
 		{
 			u64 x,y,k;
-			if(rightdown==1)
-			{
-				k = 'r';
-				y = (lparam&0xffff0000) / (data->h);
-				x = ((lparam&0xffff)<<16) / (data->w);
-				eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
-			}
-
 			rightdown=0;
+
+			k = 'r';
+			y = (lparam&0xffff0000) / (data->h);
+			x = ((lparam&0xffff)<<16) / (data->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
 			return 0;
 		}
 
 		//鼠标左键按下
-		case WM_LBUTTONDOWN:		//鼠标左键点下
+		case WM_LBUTTONDOWN:
 		{
 			u64 x,y,k;
 			leftdown=1;
@@ -325,10 +313,9 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if(rightdown>0)
 			{
-				leftdown=rightdown=0xff;
-				GetWindowRect(wnd, &rt);   // 获取窗口位置与大小
-				re.right=rt.right-rt.left;               // 保存窗口宽度
-				re.bottom=rt.bottom-rt.top; // 保存窗口高度
+				GetWindowRect(wnd, &rt);	// 获取窗口位置与大小
+				re.right=rt.right-rt.left;	// 保存窗口宽度
+				re.bottom=rt.bottom-rt.top;	// 保存窗口高度
 			}
 			
 			k = 'l';
@@ -347,10 +334,9 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if(leftdown>0)
 			{
-				leftdown=rightdown=0xff;
-				GetWindowRect(wnd, &rt);   // 获取窗口位置与大小
-				re.right=rt.right-rt.left;               // 保存窗口宽度
-				re.bottom=rt.bottom-rt.top; // 保存窗口高度
+				GetWindowRect(wnd, &rt);	// 获取窗口位置与大小
+				re.right=rt.right-rt.left;	// 保存窗口宽度
+				re.bottom=rt.bottom-rt.top;	// 保存窗口高度
 			}
 
 			k = 'r';
