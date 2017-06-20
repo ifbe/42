@@ -11,9 +11,6 @@ int deletesignal();
 //signal
 int createsocket(void*);
 int deletesocket();
-//tray
-int createtray(void*);
-int deletetray();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -64,7 +61,6 @@ void systemcreate(u8* type, u8* addr)
 	createrandom(mega0);
 	createsignal(mega0);
 	createsocket(mega0);
-	createtray(mega0);
 
 	//
 	//say("[8,c):createed system\n");
@@ -75,7 +71,6 @@ void systemdelete()
 	//say("[8,c):deleteing system\n");
 
 	//
-	deletetray();
 	deletesocket();
 	deletesignal();
 	deleterandom();
