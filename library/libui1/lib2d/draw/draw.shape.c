@@ -74,8 +74,7 @@ void line(struct arena* win,
 void rectframe(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
-	int t;
-	int x,y;
+	int x,y,n;
 	int width,height;
 	int startx,endx,starty,endy;
 	u32* buf = (u32*)(win->buf);
@@ -90,12 +89,40 @@ void rectframe(struct arena* win,
 	else{starty=y2;endy=y1;}
 	//say("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
 
-	for(t=0;t<1;t++)
+	for(n=0;n<2;n++)
 	{
-		for(x=startx;x<endx;x++)buf[((starty+t)*width) + x] = color;
-		for(x=startx;x<endx;x++)buf[((endy-t)*width) + x] = color;
-		for(y=starty;y<endy;y++)buf[(y*width) + startx+t] = color;
-		for(y=starty;y<endy;y++)buf[(y*width) + endx-t] = color;
+		for(x=startx;x<endx;x++)
+		{
+			if(starty < 0)break;
+			if(starty >= width)break;
+			if(x > width-1)break;
+			if(x < 0)x=0;
+			buf[((starty+n)*width) + x] = color;
+		}
+		for(x=startx;x<endx;x++)
+		{
+			if(endy < n)break;
+			if(endy > height-1)break;
+			if(x > width-1)break;
+			if(x < 0)x=0;
+			buf[((endy-n)*width) + x] = color;
+		}
+		for(y=starty;y<endy;y++)
+		{
+			if(startx < 0)break;
+			if(startx >= width)break;
+			if(y > height-1)break;
+			if(y < 0)y = 0;
+			buf[(y*width) + startx+n] = color;
+		}
+		for(y=starty;y<endy;y++)
+		{
+			if(endx < n)break;
+			if(endx > width-1)break;
+			if(y > height-1)break;
+			if(y < 0)y = 0;
+			buf[(y*width) + endx-n] = color;
+		}
 	}
 }
 void rectbody(struct arena* win,
@@ -112,8 +139,13 @@ void rectbody(struct arena* win,
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
+	if(startx < 0)startx = 0;
+	if(endx >= width)endx = width-1;
+
 	if(y1<=y2){starty=y1;endy=y2;}
 	else{starty=y2;endy=y1;}
+	if(starty < 0)starty = 0;
+	if(endy >= height)endy = height-1;
 
 	for(y=starty;y<=endy;y++)
 	{

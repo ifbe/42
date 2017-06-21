@@ -270,8 +270,8 @@ void drawascii(
 	struct arena* win, u8 ch, int size,
 	int xxxx, int yyyy, u32 fg, u32 bg)
 {
-	int x,y,j,k,flag;
-	int width,height;
+	int x,y,j,k;
+	int width,height,offset,flag;
 	u8 temp;
 	u8* points;
 	u32* screen;
@@ -280,9 +280,9 @@ void drawascii(
 	height = win->h;
 	screen = (u32*)(win->buf);
 
-	if(ch<0x20)ch=0x20;
-	points=(unsigned char*)&asciitable;
-	points+=ch<<4;
+	if(ch<0x20)ch = 0x20;
+	points = (unsigned char*)&asciitable;
+	points += ch<<4;
 
 	size &= 0x7;
 	if(size == 0)size=1;
@@ -302,14 +302,11 @@ void drawascii(
 			{
 				for(k=0;k<size;k++)
 				{
-					if( (temp&0x80) != 0 )
-					{
-						screen[ ( (yyyy+y*size+k) * width ) + (xxxx+x*size+j)] = fg;
-					}
-					else if(flag != 0)
-					{
-						screen[ ( (yyyy+y*size+k) * width ) + (xxxx+x*size+j)] = bg;
-					}
+					offset = ( ( yyyy + y*size + k ) * width ) + xxxx + x*size + j;
+					if(offset < 0)continue;
+
+					if( (temp&0x80) != 0 )screen[offset] = fg;
+					else if(flag != 0)screen[offset] = bg;
 				}//k
 			}//j
 
