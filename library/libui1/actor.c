@@ -30,8 +30,6 @@ int actorread()
 	{
 		//
 		w = &arena[j];
-		t = &treaty[0];
-		p = t->child_this;
 
 		//error
 		if(w->fmt == 0)break;
@@ -44,6 +42,13 @@ int actorread()
 
 		//voice
 		if(w->fmt == 0x6563696f76)continue;
+
+
+
+
+		//
+		t = &treaty[w->bot];
+		p = t->child_this;
 
 		//1d:	cli
 		if(w->dim == 1)
@@ -121,8 +126,8 @@ int actorwrite(u64* ev)
 	u64 why = ev[0];
 	u64 what = ev[1];
 	struct arena* w = (void*)ev[2];
-	struct relation* t = treaty;
-	struct actor* p = treaty->child_this;
+	struct relation* t = &treaty[1];
+	struct actor* p = t->child_this;
 	//u64 when = ev[3];
 
 	//kbd
@@ -154,13 +159,13 @@ int actorwrite(u64* ev)
 		}
 		else if((why>>48)=='b')
 		{
-			t->width = treaty[0].width*90/100;
-			t->height = treaty[0].height*90/100;
+			t->width = t->width*90/100;
+			t->height = t->height*90/100;
 		}
 		else if((why>>48)=='f')
 		{
-			t->width = treaty[0].width*110/100;
-			t->height = treaty[0].height*110/100;
+			t->width = t->width*110/100;
+			t->height = t->height*110/100;
 		}
 	}//mouse
 
@@ -293,25 +298,81 @@ found:
 	now->start();
 	return 1;
 }
-int actorstart(int win, int wk)
+int actorstart(int w, int a)
 {
+	int t;
+	for(t=1;t<50;t++)
+	{
+		if(treaty[t].parent_this == 0)break;
+	}
+	treaty[t].cx = 0x8000 + a*0x80;
+	treaty[t].cy = 0x8000 + a*0x80;
+	treaty[t].width = 0xe000;
+	treaty[t].height = 0xe000;
+
 	//
-	treaty[0].parent_type = 0;
-	treaty[0].parent_this = &arena[0];
-	treaty[0].parent_prev = 0;
-	treaty[0].parent_next = 0;
+	treaty[t].parent_type = 0;
+	treaty[t].parent_this = &arena[w];
+	if(arena[w].bot == 0)	//0
+	{
+		treaty[t].parent_prev = 0;
+		treaty[t].parent_next = 0;
 
-	treaty[0].child_type = 1;
-	treaty[0].child_this = &actor[2];
-	treaty[0].child_below = 0;
-	treaty[0].child_above = 0;
+		arena[w].bot = t;
+		//arena[w].top = 0;
+	}
+	else if(arena[w].top == 0)	//1
+	{
+		treaty[arena[w].bot].parent_next = &treaty[t];
 
-	treaty[0].cx = 0x8000;
-	treaty[0].cy = 0x8000;
-	treaty[0].width = 0xe000;
-	treaty[0].height = 0xe000;
+		treaty[t].parent_prev = &treaty[arena[w].bot];
+		treaty[t].parent_next = 0;
 
-	actor[2].start();
+		//arena[w].bot = itself
+		arena[w].top = t;
+	}
+	else	//more
+	{
+		treaty[arena[w].top].parent_next = &treaty[t];
+
+		treaty[t].parent_prev = &treaty[arena[w].top];
+		treaty[t].parent_next = 0;
+
+		//arena[w].bot = itself
+		arena[w].top = t;
+	}
+
+	//
+	treaty[t].child_type = 1;
+	treaty[t].child_this = &actor[a];
+	if(actor[a].first == 0)		//0
+	{
+		treaty[t].child_below = 0;
+		treaty[t].child_above = 0;
+
+		actor[a].first = t;
+	}
+	else if(actor[a].last == 0)		//1
+	{
+		treaty[actor[a].first].child_above = 0;
+
+		treaty[t].child_below = &treaty[actor[a].first];
+		treaty[t].child_above = 0;
+
+		actor[a].last = t;
+	}
+	else	//more
+	{
+		treaty[actor[a].last].child_above = 0;
+
+		treaty[t].child_below = &treaty[actor[a].last];
+		treaty[t].child_above = 0;
+
+		actor[a].last = t;
+	}
+
+	//
+	actor[a].start();
 	return 0;
 }
 int actorstop()
@@ -347,7 +408,9 @@ void actorcreate(u8* type, u8* addr)
 	//ordinary
 	content_create(addr, 0);
 
+	//
 	actorstart(0,2);
+	actorstart(0,3);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()

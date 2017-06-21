@@ -1,58 +1,18 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h"
+
+
+
+
 void rectbody(void*,
-        int x1, int y1, int x2, int y2, u32 color);
-//
-int printmemory(void*, int);
-int fmt(void*, int, void*, ...);
-int say(void*, ...);
+	int x1, int y1,
+	int x2, int y2,
+	u32 color
+);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	//z,y,x
-	u8 data[3][8][8];
-};
-static struct player* pl;
-
-
-
-
-static void chess_read_pixel(struct window* win)
+static void chess_read_pixel(struct arena* win)
 {
 	u32 color;
 	int x,y;
@@ -73,13 +33,13 @@ static void chess_read_pixel(struct window* win)
 		}
 	}
 }
-static void chess_read_html(struct window* win)
+static void chess_read_html(struct arena* win)
 {
 }
-static void chess_read_text(struct window* win)
+static void chess_read_text(struct arena* win)
 {
 }
-static void chess_read(struct window* win)
+static void chess_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -122,16 +82,19 @@ static void chess_stop()
 }
 void chess_create(void* base, void* addr)
 {
-	pl = addr;
+	struct actor* act = addr;
 
-	pl->type = 0x656d6167;
-	pl->name = 0x7373656863;
-	pl->start = (u64)chess_start;
-	pl->stop = (u64)chess_stop;
-	pl->list = (u64)chess_list;
-	pl->choose = (u64)chess_choose;
-	pl->read = (u64)chess_read;
-	pl->write = (u64)chess_write;
+	act->type = 0x656d6167;
+	act->name = 0x7373656863;
+	act->first = 0;
+	act->last = 0;
+
+	act->start = (void*)chess_start;
+	act->stop = (void*)chess_stop;
+	act->list = (void*)chess_list;
+	act->choose = (void*)chess_choose;
+	act->read = (void*)chess_read;
+	act->write = (void*)chess_write;
 }
 void chess_delete()
 {
