@@ -1,8 +1,5 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-//
+#include "actor.h"
+void backgroundcolor(void*, u32);
 void rectframe(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -11,47 +8,10 @@ void line(void*,
 	int x1,int y1,
 	int x2,int y2,
 	u32 color);
-void backgroundcolor(void*, u32);
-//
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 temp[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 temp[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 //元件
 struct cell{
 	int type;	//battery, resistor, ...
@@ -68,16 +28,16 @@ static struct cell c2 = {'R', 1000, 1, 0};
 
 
 
-static void battery(struct window* win, int x, int y, struct cell* c)
+static void battery(struct arena* win, int x, int y, struct cell* c)
 {
 	line(win, x-16, y-8, x+16, y-8, 0xffffffff);
 	line(win, x-8, y+8, x+8, y+8, 0xffffffff);
 }
-static void resistor(struct window* win, int x, int y, struct cell* c)
+static void resistor(struct arena* win, int x, int y, struct cell* c)
 {
 	rectframe(win, x-8, y-16, x+8, y+16, 0xffffffff);
 }
-static void autowire(struct window* win, int x1, int y1, int x2, int y2)
+static void autowire(struct arena* win, int x1, int y1, int x2, int y2)
 {
 	int j;
 	if(x1<x2)
@@ -101,10 +61,10 @@ static void autowire(struct window* win, int x1, int y1, int x2, int y2)
 
 
 
-static void circuit_read_html(struct window* win)
+static void circuit_read_html(struct arena* win)
 {
 }
-static void circuit_read_pixel(struct window* win)
+static void circuit_read_pixel(struct arena* win)
 {
 	int battx = (win->w)/3;
 	int batty = (win->h)/2;
@@ -122,10 +82,10 @@ static void circuit_read_pixel(struct window* win)
 	autowire(win, battx, batty-8, resx, resy-16);
 	autowire(win, resx, resy+16, battx, batty+8);
 }
-static void circuit_read_text(struct window* win)
+static void circuit_read_text(struct arena* win)
 {
 }
-static void circuit_read(struct window* win)
+static void circuit_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -168,17 +128,16 @@ static void circuit_stop()
 }
 void circuit_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('c','i','r','c','u','i','t',0);
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x74697563726963;
-
-	p->start = (u64)circuit_start;
-	p->stop = (u64)circuit_stop;
-	p->list = (u64)circuit_list;
-	p->choose = (u64)circuit_change;
-	p->read = (u64)circuit_read;
-	p->write = (u64)circuit_write;
+	p->start = (void*)circuit_start;
+	p->stop = (void*)circuit_stop;
+	p->list = (void*)circuit_list;
+	p->choose = (void*)circuit_change;
+	p->read = (void*)circuit_read;
+	p->write = (void*)circuit_write;
 }
 void circuit_delete()
 {

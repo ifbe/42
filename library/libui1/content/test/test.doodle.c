@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //
 void line(void*,
 	int ax, int ay, int bx, int by, u32 color);
@@ -21,53 +18,16 @@ void sectorframe(void*,
 	int cx, int cy, int r, int start, int end, u32 color);
 void backgroundcolor(void*,
 	u32);
-//
-void say(char*,...);
-
 
 
 
 //
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static int px=0,py=0;
 
 
 
 
-void doodle_read(struct window* win)
+void doodle_read(struct arena* win)
 {
 	backgroundcolor(win, 0);
 
@@ -131,16 +91,16 @@ void doodle_stop()
 }
 void doodle_create(void* base, void* addr)
 {
-	struct player* p = addr;
-	p->type = 0x74736574;
-	p->name = 0x656c646f6f64;
+	struct actor* p = addr;
+	p->type = hexof('t','e','s','t',0,0,0,0);
+	p->name = hexof('d','o','o','d','l','e',0,0);
 
-	p->start = (u64)doodle_start;
-	p->stop = (u64)doodle_stop;
-	p->list = (u64)doodle_list;
-	p->choose = (u64)doodle_change;
-	p->read = (u64)doodle_read;
-	p->write = (u64)doodle_write;
+	p->start = (void*)doodle_start;
+	p->stop = (void*)doodle_stop;
+	p->list = (void*)doodle_list;
+	p->choose = (void*)doodle_change;
+	p->read = (void*)doodle_read;
+	p->write = (void*)doodle_write;
 }
 void doodle_delete()
 {

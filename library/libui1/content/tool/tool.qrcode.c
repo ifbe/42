@@ -1,62 +1,23 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h"
 //
+void backgroundcolor(void*, u32);
 void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void backgroundcolor(void*, u32);
-int qrcode_generate(char* src,char* dst,int sidelength);
-int fmt(char*,int,char*,...);
-void say(char*,...);
-
-
-
-
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 //
+int qrcode_generate(char* src,char* dst,int sidelength);
+
+
+
+
 static int sidelength;
 static char* databuf;
 
 
 
 
-static void qrcode_read_pixel(struct window* win)
+static void qrcode_read_pixel(struct arena* win)
 {
 	u32 color;
 	int x,y,x1,y1,x2,y2;
@@ -88,11 +49,11 @@ static void qrcode_read_pixel(struct window* win)
 //say("\n");
 	}
 }
-static void qrcode_read_html(struct window* win)
+static void qrcode_read_html(struct arena* win)
 {
 	int x,y;
 	u32 color;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 
 	p += fmt(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
 	p += fmt(
@@ -127,12 +88,12 @@ static void qrcode_read_html(struct window* win)
 	}
 	p += fmt(p, 99, "</div>");
 }
-static void qrcode_read_text(struct window* win)
+static void qrcode_read_text(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 
 	for(y=0;y<100;y++)
@@ -150,7 +111,7 @@ static void qrcode_read_text(struct window* win)
 		}
 	}
 }
-static void qrcode_read(struct window* win)
+static void qrcode_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -195,18 +156,18 @@ static void qrcode_stop()
 }
 void qrcode_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	databuf = base+0x300000;
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x65646f637271;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('q','r','c','o','d','e',0,0);
 
-	p->start = (u64)qrcode_start;
-	p->stop = (u64)qrcode_stop;
-	p->list = (u64)qrcode_list;
-	p->choose = (u64)qrcode_into;
-	p->read = (u64)qrcode_read;
-	p->write = (u64)qrcode_write;
+	p->start = (void*)qrcode_start;
+	p->stop = (void*)qrcode_stop;
+	p->list = (void*)qrcode_list;
+	p->choose = (void*)qrcode_into;
+	p->read = (void*)qrcode_read;
+	p->write = (void*)qrcode_write;
 }
 void qrcode_delete()
 {

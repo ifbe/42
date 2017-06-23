@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define hexof(a,b,c,d) (a|(b<<8)|(c<<16)|(d<<24))
+#define hexof(a,b,c,d,e,f,g,h) (a | (b<<8) | (c<<16) | (d<<24) | (((u64)e)<<32) | (((u64)f)<<40) | (((u64)g)<<48) | (((u64)h)<<56) )
 
 
 
@@ -158,13 +158,23 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //libsoft1
-void md5sum(void*, void*, int);
-void sha1sum(void*, void*, int);
-int double2decstr(double,char*);
-int data2decstr(u64 data,u8* string);
+int double2decstr(double, void*);
+int double2hexstr(double, void*);
+int decstr2data(void* str, u64 data);
+int decstr2datastr(void* dst, void* src, int len);
+int hexstr2data(void* str, u64 data);
+int hexstr2datastr(void* dst, void* src, int len);
+int data2decstr(u64 data,u8* str);
+int data2hexstr(u64 data,u8* str);
+int datastr2decstr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
-int ncmp(void*,void*,int);
 int cmp(void*,void*);
+int ncmp(void*,void*,int);
+int md5sum(void*, void*, int);
+int sha1sum(void*, void*, int);
+int sha256sum(void*, void*, int);
+int sha384sum(void*, void*, int);
+int sha512sum(void*, void*, int);
 //libsoft0
 u32 getrandom();
 u64 gettime();

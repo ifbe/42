@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //
 void backgroundcolor(
 	void*, u32);
@@ -15,52 +12,11 @@ void drawdouble(
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
 double closestvalue(double first,double second);
-void double2decstr(double,char*);
 void kexuejishufa(double* haha,int* counter);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-//
-void printmemory(char*,int);
-void say(char*,...);
 
 
-
-
-//
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 
 //
 struct mathnode{
@@ -99,14 +55,14 @@ static double centery=0.0;
 
 
 //
-static void wangge(struct window* win)
+static void wangge(struct arena* win)
 {
 	int temp;
 	int x,y;
 	int wanggex,wanggey,wanggedistance;		//只用在"画网格这一步"
 	double first,second,res;
 
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	int width = win->w;
 	int height= win->h;
 
@@ -164,7 +120,7 @@ static void wangge(struct window* win)
 	}//横线
 
 }
-static void tuxiang(struct window* win)
+static void tuxiang(struct arena* win)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -172,7 +128,7 @@ static void tuxiang(struct window* win)
 
 	int width = win->w;
 	int height = win->h;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 
 
@@ -224,7 +180,7 @@ static void tuxiang(struct window* win)
 		}
 	}//result2img
 }
-static void sketchpad_read_pixel(struct window* win)
+static void sketchpad_read_pixel(struct arena* win)
 {
 	//draw
 	backgroundcolor(win, 0);
@@ -255,9 +211,9 @@ skipthese:
 
 
 
-static void sketchpad_read_html(struct window* win)
+static void sketchpad_read_html(struct arena* win)
 {
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 
 	sketchpad_read_pixel(win);
 	buf[0]=0;
@@ -266,7 +222,7 @@ static void sketchpad_read_html(struct window* win)
 
 
 
-static void sketchpad_read_text(struct window* win)
+static void sketchpad_read_text(struct arena* win)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -274,7 +230,7 @@ static void sketchpad_read_text(struct window* win)
 
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 	if(node[0].type!=0x3d3d3d3d)return;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -325,7 +281,7 @@ static void sketchpad_read_text(struct window* win)
 
 
 
-static void sketchpad_read(struct window* win)
+static void sketchpad_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -470,19 +426,19 @@ static void sketchpad_stop()
 }
 void sketchpad_create(void* base,void* addr)
 {
-	struct player* p = addr;
-	node=(struct mathnode*)(base+0x200000);
-	databuf=base+0x300000;
+	struct actor* p = addr;
+	node = (struct mathnode*)(base+0x200000);
+	databuf = base+0x300000;
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x686374656b73;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('s','k','e','t','c','h',0,0);
 
-	p->start = (u64)sketchpad_start;
-	p->stop = (u64)sketchpad_stop;
-	p->list = (u64)sketchpad_list;
-	p->choose = (u64)sketchpad_change;
-	p->read = (u64)sketchpad_read;
-	p->write = (u64)sketchpad_write;
+	p->start = (void*)sketchpad_start;
+	p->stop = (void*)sketchpad_stop;
+	p->list = (void*)sketchpad_list;
+	p->choose = (void*)sketchpad_change;
+	p->read = (void*)sketchpad_read;
+	p->write = (void*)sketchpad_write;
 }
 void sketchpad_delete()
 {

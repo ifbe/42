@@ -84,8 +84,8 @@ void chess_create(void* base, void* addr)
 {
 	struct actor* act = addr;
 
-	act->type = 0x656d6167;
-	act->name = 0x7373656863;
+	act->type = hexof('g','a','m','e',0,0,0,0);
+	act->name = hexof('c','h','e','s','s',0,0,0);
 	act->first = 0;
 	act->last = 0;
 

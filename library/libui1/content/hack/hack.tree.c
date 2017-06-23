@@ -1,8 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//libui
+#include "actor.h"
 void backgroundcolor(
 	void*, u32);
 void drawdouble(
@@ -22,47 +18,10 @@ void line(void*,
 double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-//libboot
-void say(char*,...);
-void printmemory(char*,int);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 struct mathnode{
 
 	u32 type;
@@ -83,7 +42,7 @@ static char postfix[128];
 
 
 
-static void printnode(struct window* win, int x,int y,int num)
+static void printnode(struct arena* win, int x,int y,int num)
 {
 	int left,right;
 	int offset,temp;
@@ -165,7 +124,7 @@ static void printnode(struct window* win, int x,int y,int num)
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);
 }
-static void tree_read(struct window* win)
+static void tree_read(struct arena* win)
 {
 	backgroundcolor(
 		win, 0);
@@ -244,18 +203,18 @@ static void tree_stop()
 }
 void tree_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	node=(struct mathnode*)(base+0x200000);
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x65657274;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('t','r','e','e',0,0,0,0);
 
-	p->start = (u64)tree_start;
-	p->stop = (u64)tree_stop;
-	p->list = (u64)tree_list;
-	p->choose = (u64)tree_into;
-	p->read = (u64)tree_read;
-	p->write = (u64)tree_write;
+	p->start = (void*)tree_start;
+	p->stop = (void*)tree_stop;
+	p->list = (void*)tree_list;
+	p->choose = (void*)tree_into;
+	p->read = (void*)tree_read;
+	p->write = (void*)tree_write;
 }
 void tree_delete()
 {

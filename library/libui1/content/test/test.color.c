@@ -1,62 +1,21 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//
+#include "actor.h"
 void drawhexadecimal(
 	void*, u64 in, int size,
 	int x, int y, u32 fg, u32 bg);
-//
-void printmemory(char*,int);
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static int red=0x8d,green=0x63,blue=0x25;
 
 
 
 
-static void color_read_pixel(struct window* win)
+static void color_read_pixel(struct arena* win)
 {
 	int x,y,w,h,min;
 	u32 color;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	w = win->w;
 	h = win->h;
 
@@ -135,16 +94,16 @@ static void color_read_pixel(struct window* win)
 		0, 0, 0xffffffff, 0
 	);
 }
-static void color_read_html(struct window* win)
+static void color_read_html(struct arena* win)
 {
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	color_read_pixel(win);
 	buf[0]=0;
 }
-static void color_read_text(struct window* win)
+static void color_read_text(struct arena* win)
 {
 }
-static void color_read(struct window* win)
+static void color_read(struct arena* win)
 {
 	u32 fmt = win->fmt;
 
@@ -241,17 +200,16 @@ static void color_stop()
 }
 void color_create(void* base, void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
+	p->type = hexof('t','e','s','t',0,0,0,0);
+	p->name = hexof('c','o','l','o','r',0,0,0);
 
-	p->type = 0x74736574;
-	p->name = 0x726f6c6f63;
-
-	p->start = (u64)color_start;
-	p->stop = (u64)color_stop;
-	p->list = (u64)color_list;
-	p->choose = (u64)color_into;
-	p->read = (u64)color_read;
-	p->write = (u64)color_write;
+	p->start = (void*)color_start;
+	p->stop = (void*)color_stop;
+	p->list = (void*)color_list;
+	p->choose = (void*)color_into;
+	p->read = (void*)color_read;
+	p->write = (void*)color_write;
 }
 void color_delete()
 {

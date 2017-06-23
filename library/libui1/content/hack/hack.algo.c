@@ -184,8 +184,8 @@ void algorithm_create(void* base, void* addr)
 	pl = addr;
 	buffer = base+0x300000;
 
-	pl->type = hexof('t','o','o','l');
-	pl->name = hexof('a','l','g','o');
+	pl->type = hexof('t','o','o','l',0,0,0,0);
+	pl->name = hexof('a','l','g','o',0,0,0,0);
 	pl->first = 0;
 	pl->last = 0;
 

@@ -509,8 +509,8 @@ void the2048_create(void* base, void* addr)
 	struct actor* act = addr;
 	buffer = base + 0x300000;
 
-	act->type = hexof('g','a','m','e');
-	act->name = hexof('2','0','4','8');
+	act->type = hexof('g','a','m','e',0,0,0,0);
+	act->name = hexof('2','0','4','8',0,0,0,0);
 	act->first = 0;
 	act->last = 0;
 

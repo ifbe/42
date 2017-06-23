@@ -1,3 +1,8 @@
+#include "actor.h"
+
+
+
+
 void friend_read()
 {
 }

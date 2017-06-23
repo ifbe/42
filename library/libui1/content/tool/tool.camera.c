@@ -1,76 +1,31 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 void yuyv2rgba(
 	u8* src, int w1, int h1, 
 	u8* dst, int w2, int h2
 );
-//
 void startvision();
 void stopvision();
-//libboot
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static u8* vision = 0;
 
 
 
 
-
-
-
-
-void camera_read_text(struct window* win)
+void camera_read_text(struct arena* win)
 {
 }
-void camera_read_html(struct window* win)
+void camera_read_html(struct arena* win)
 {
 }
-void camera_read_pixel(struct window* win)
+void camera_read_pixel(struct arena* win)
 {
 	int j;
 	int w = win->w;
 	int h = win->h;
-	u8* screen = (u8*)(win->buf1);
+	u8* screen = (u8*)(win->buf);
 	if(vision == 0)return;
 
 	for(j=0;j<640*480;j++)vision[j*2]=256-vision[j*2];
@@ -80,7 +35,7 @@ void camera_read_pixel(struct window* win)
 	);
 	vision = 0;
 }
-static void camera_read(struct window* win)
+static void camera_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -136,17 +91,16 @@ static void camera_stop()
 }
 void camera_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('c','a','m','e','r','a',0,0);
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x6172656d6163;
-
-	p->start = (u64)camera_start;
-	p->stop = (u64)camera_stop;
-	p->list = (u64)camera_list;
-	p->choose = (u64)camera_into;
-	p->read = (u64)camera_read;
-	p->write = (u64)camera_write;
+	p->start = (void*)camera_start;
+	p->stop = (void*)camera_stop;
+	p->list = (void*)camera_list;
+	p->choose = (void*)camera_into;
+	p->read = (void*)camera_read;
+	p->write = (void*)camera_write;
 }
 void camera_delete()
 {

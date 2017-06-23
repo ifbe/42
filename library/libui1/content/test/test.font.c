@@ -1,58 +1,15 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //
 void backgroundcolor(
 	void*, u32);
 void drawascii(
 	void*, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
-//
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-
-
-
-
-void font_read(struct window* win)
+void font_read(struct arena* win)
 {
 	int x,y;
 	backgroundcolor(win, 0);
@@ -84,16 +41,16 @@ void font_stop()
 }
 void font_create(void* base, void* addr)
 {
-	struct player* p = addr;
-	p->type = 0x74736574;
-	p->name = 0x746e6f66;
+	struct actor* p = addr;
+	p->type = hexof('t','e','s','t',0,0,0,0);
+	p->name = hexof('f','o','n','t',0,0,0,0);
 
-	p->start = (u64)font_start;
-	p->stop = (u64)font_stop;
-	p->list = (u64)font_list;
-	p->choose = (u64)font_change;
-	p->read = (u64)font_read;
-	p->write = (u64)font_write;
+	p->start = (void*)font_start;
+	p->stop = (void*)font_stop;
+	p->list = (void*)font_list;
+	p->choose = (void*)font_change;
+	p->read = (void*)font_read;
+	p->write = (void*)font_write;
 }
 void font_delete()
 {

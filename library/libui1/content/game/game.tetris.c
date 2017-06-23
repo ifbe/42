@@ -1,56 +1,13 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h" 
 //
 void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
-//
-u32 getrandom();
-int fmt(char*,int,char*,...);
-void printmemory(char*,int);
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-//
 typedef struct stucture
 {
 	int x;
@@ -74,7 +31,7 @@ static unsigned char* table;
 
 
 
-static void cubie(struct window* win, int x,int y,int z)
+static void cubie(struct arena* win, int x,int y,int z)
 {
 	u32 bodycolor;
 	int startx,starty,endx,endy;
@@ -101,7 +58,7 @@ static void cubie(struct window* win, int x,int y,int z)
 		bodycolor, 0x44444444
 	);
 }
-static void tetris_read_pixel(struct window* win)
+static void tetris_read_pixel(struct arena* win)
 {
 	int x,y;
 	for(y=0;y<40;y++)
@@ -139,10 +96,10 @@ static int htmlcubie(char* p, int x, int y)
 		x*3.1, y*2.5, table[y*32+x]
 	);
 }
-static void tetris_read_html(struct window* win)
+static void tetris_read_html(struct arena* win)
 {
 	int x,y;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 
 	p += fmt(
 		p, 0x1000,
@@ -174,12 +131,12 @@ static void tetris_read_html(struct window* win)
 
 
 
-static void tetris_read_text(struct window* win)
+static void tetris_read_text(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 
 	for(x=0;x<width*height*4;x++)p[x]=0;
 	if(height>=40)
@@ -217,7 +174,7 @@ static void tetris_read_text(struct window* win)
 		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
 	}
 }
-static void tetris_read(struct window* win)
+static void tetris_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -716,18 +673,18 @@ static void tetris_stop()
 }
 void tetris_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	table=(u8*)(addr+0x300000);
 
-	p->type = 0x656d6167;
-	p->name = 0x736972746574;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('t','e','t','r','i','s',0,0);
 
-	p->start = (u64)tetris_start;
-	p->stop = (u64)tetris_stop;
-	p->list = (u64)tetris_list;
-	p->choose = (u64)tetris_choose;
-	p->read = (u64)tetris_read;
-	p->write = (u64)tetris_write;
+	p->start = (void*)tetris_start;
+	p->stop = (void*)tetris_stop;
+	p->list = (void*)tetris_list;
+	p->choose = (void*)tetris_choose;
+	p->read = (void*)tetris_read;
+	p->write = (void*)tetris_write;
 }
 void tetris_delete()
 {

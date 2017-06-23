@@ -1,57 +1,21 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long 
-//
-void backgroundcolor(
-	void*, u32);
+#include "actor.h" 
+void backgroundcolor(void*,
+	u32 color);
 void line(void*,
-	int x1, int y1, int x2, int y2, u32 color);
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void rectbody(void*,
-	int x1, int y1, int x2, int y2, u32 color);
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void rect(void*,
-	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor);
-u32 getrandom();
-int fmt(char*,int,char*,...);
-void say(char*,...);
+	int x1, int y1,
+	int x2, int y2,
+	u32 body, u32 frame);
 
 
 
-
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 
 struct hehe{
 	int x;
@@ -74,7 +38,7 @@ static int die=0;
 
 
 
-void snake_read_pixel(struct window* win)
+void snake_read_pixel(struct arena* win)
 {
 	//create screen
 	int j;
@@ -139,12 +103,12 @@ void snake_read_pixel(struct window* win)
 
 
 
-void snake_read_text(struct window* win)
+void snake_read_text(struct arena* win)
 {
 	int j,t;
 	int width = win->w;
 	int height = win->h;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 	for(j=0;j<width*height*4;j++)p[j] = 0;
 
 	j=0;
@@ -175,10 +139,10 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html(struct window* win)
+void snake_read_html(struct arena* win)
 {
 	int j = 0;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 
 	if(die == 1)
 	{
@@ -211,7 +175,7 @@ void snake_read_html(struct window* win)
 
 
 
-void snake_read(struct window* win)
+void snake_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -388,18 +352,18 @@ static void snake_stop()
 }
 void snake_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	snake=(struct hehe*)(base+0x300000);
 
-	p->type = 0x656d6167;
-	p->name = 0x656b616e73;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('s','n','a','k','e',0,0,0);
 
-	p->start = (u64)snake_start;
-	p->stop = (u64)snake_stop;
-	p->list = (u64)snake_list;
-	p->choose = (u64)snake_choose;
-	p->read = (u64)snake_read;
-	p->write = (u64)snake_write;
+	p->start = (void*)snake_start;
+	p->stop = (void*)snake_stop;
+	p->list = (void*)snake_list;
+	p->choose = (void*)snake_choose;
+	p->read = (void*)snake_read;
+	p->write = (void*)snake_write;
 }
 void snake_delete()
 {

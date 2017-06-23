@@ -1,57 +1,16 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 void drawstring(
 	void*, void*, int size,
 	int x, int y, u32 fg, u32 bg);
 void backgroundcolor(
 	void*, u32);
-//
 int netmgr_read();
 int netmgr_write(void*);
-//
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-static struct player* pl;
+static struct actor* pl;
 static int count = 0;
 //
 static u64 fd = 0;
@@ -62,16 +21,16 @@ static int len = 0;
 
 
 
-static void browse_read_text(struct window* win)
+static void browse_read_text(struct arena* win)
 {
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 	int w = win->w;
 	int h = win->h;
 	int x,y;
 
 	//
 	for(x=0;x<w*h*4;x++)p[x] = 0;
-	for(x=0;x<w;x++)p[x<<2] = pl->data[x];
+	for(x=0;x<w;x++)p[x<<2] = pl->priv[x];
 
 	//
 	y = w;
@@ -86,23 +45,23 @@ static void browse_read_text(struct window* win)
 		}
 	}
 }
-static void browse_read_html(struct window* win)
+static void browse_read_html(struct arena* win)
 {
 	int j;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 	for(j=0;j<len;j++)p[j] = dstbuf[j];
 }
-static void browse_read_pixel(struct window* win)
+static void browse_read_pixel(struct arena* win)
 {
 	backgroundcolor(win, 0);
 	drawstring(
-		win, pl->data, 1,
+		win, pl->priv, 1,
 		0, 0, 0xffffffff, 0);
 	drawstring(
 		win, dstbuf, 1,
 		0, 16, 0xffffffff, 0);
 }
-static void browse_read(struct window* win)
+static void browse_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -134,18 +93,18 @@ static void browse_write(struct event* ev)
 	{
 		if(key == 0xd)
 		{
-			netmgr_write(pl->data);
-			for(;count>=0;count--)pl->data[count] = 0;
+			netmgr_write(pl->priv);
+			for(;count>=0;count--)pl->priv[count] = 0;
 			count = 0;
 		}
 		else if(key == 0x8)
 		{
 			if(count>0)count--;
-			pl->data[count] = 0;
+			pl->priv[count] = 0;
 		}
 		else
 		{
-			pl->data[count] = key&0xff;
+			pl->priv[count] = key&0xff;
 			if(count<0xbf)count++;
 		}
 	}
@@ -186,14 +145,15 @@ void browse_create(void* base,void* addr)
 	dstbuf = base+0x300000;
 	pl = addr;
 
-	pl->type = 0x6c6f6f74;
-	pl->name = 0x6573776f7262;
-	pl->start = (u64)browse_start;
-	pl->stop = (u64)browse_stop;
-	pl->list = (u64)browse_list;
-	pl->choose = (u64)browse_change;
-	pl->read = (u64)browse_read;
-	pl->write = (u64)browse_write;
+	pl->type = hexof('t','o','o','l',0,0,0,0);
+	pl->name = hexof('b','r','o','w','s','e',0,0);
+
+	pl->start = (void*)browse_start;
+	pl->stop = (void*)browse_stop;
+	pl->list = (void*)browse_list;
+	pl->choose = (void*)browse_change;
+	pl->read = (void*)browse_read;
+	pl->write = (void*)browse_write;
 }
 void browse_delete()
 {

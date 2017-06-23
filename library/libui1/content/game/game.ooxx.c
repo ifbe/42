@@ -1,8 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long 
-//
+#include "actor.h" 
 void line(void*,
 	int x1,int y1,
 	int x2,int y2,
@@ -12,55 +8,17 @@ void circleframe(void*,
 	int r, u32 color);
 void backgroundcolor(void*,
 	u32);
-//
-u32 getrandom();
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-//
 static int turn;
 static char data[9];
 
 
 
 
-void ooxx_read(struct window* win)
+void ooxx_read(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
@@ -170,17 +128,17 @@ static void ooxx_stop()
 }
 void ooxx_create(char* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 
-	p->type = 0x656d6167;
-	p->name = 0x78786f6f;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('o','o','x','x',0,0,0,0);
 
-	p->start = (u64)ooxx_start;
-	p->stop = (u64)ooxx_stop;
-	p->list = (u64)ooxx_list;
-	p->choose = (u64)ooxx_choose;
-	p->read = (u64)ooxx_read;
-	p->write = (u64)ooxx_write;
+	p->start = (void*)ooxx_start;
+	p->stop = (void*)ooxx_stop;
+	p->list = (void*)ooxx_list;
+	p->choose = (void*)ooxx_choose;
+	p->read = (void*)ooxx_read;
+	p->write = (void*)ooxx_write;
 }
 void ooxx_delete()
 {

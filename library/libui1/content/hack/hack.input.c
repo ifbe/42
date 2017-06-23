@@ -1,7 +1,4 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h"
 //
 void backgroundcolor(
 	void*, u32);
@@ -19,52 +16,16 @@ void rectframe(void*,
 void circlebody(void*,
 	int x, int y,
 	int r, u32 color);
-//
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static int aaaa = 0;
 
 
 
 
-static void keyboard(struct window* win)
+static void keyboard(struct arena* win)
 {
 	int x,y;
 	int width = win->w;
@@ -98,7 +59,7 @@ static void keyboard(struct window* win)
 		}
 	}
 }
-static void joystick(struct window* win)
+static void joystick(struct arena* win)
 {
 	int j;
 	int width = win->w;
@@ -156,7 +117,7 @@ static void joystick(struct window* win)
 		circlebody(win, width/2, height*7/8, j, 0xffff00);
 	}
 }
-static void touchpad(struct window* win)
+static void touchpad(struct arena* win)
 {
 	int j;
 	int width = win->w;
@@ -171,13 +132,13 @@ static void touchpad(struct window* win)
 		);
 	}
 }
-static void control_read_text(struct window* win)
+static void control_read_text(struct arena* win)
 {
 }
-static void control_read_html(struct window* win)
+static void control_read_html(struct arena* win)
 {
 }
-static void control_read(struct window* win)
+static void control_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -264,16 +225,16 @@ static void control_stop()
 }
 void control_create(void* base,void* addr)
 {
-	struct player* p = addr;
-	p->type = 0x6c6f6f74;
-	p->name = 0x6c6f72746e6f63;
+	struct actor* p = addr;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('i','n','p','u','t',0,0,0);
 
-	p->start = (u64)control_start;
-	p->stop = (u64)control_stop;
-	p->list = (u64)control_list;
-	p->choose = (u64)control_change;
-	p->read = (u64)control_read;
-	p->write = (u64)control_write;
+	p->start = (void*)control_start;
+	p->stop = (void*)control_stop;
+	p->list = (void*)control_list;
+	p->choose = (void*)control_change;
+	p->read = (void*)control_read;
+	p->write = (void*)control_write;
 }
 void control_delete()
 {

@@ -105,7 +105,7 @@ void virtkbd_create(void* base,void* addr)
 	struct actor* p = addr;
 
 	p->type = 0;
-	p->name = hexof('v','k','b','d');
+	p->name = hexof('v','k','b','d',0,0,0,0);
 	p->start = (void*)virtkbd_start;
 	p->stop = (void*)virtkbd_stop;
 	p->list = (void*)virtkbd_list;

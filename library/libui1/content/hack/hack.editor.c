@@ -1,55 +1,18 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
+#include "actor.h"
 
 
 
 
-static void editor_read_text(struct window* win)
+static void editor_read_text(struct arena* win)
 {
 }
-static void editor_read_html(struct window* win)
+static void editor_read_html(struct arena* win)
 {
 }
-static void editor_read_pixel(struct window* win)
+static void editor_read_pixel(struct arena* win)
 {
 }
-static void editor_read(struct window* win)
+static void editor_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -88,16 +51,16 @@ static void editor_stop()
 }
 void editor_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('e','d','i','t','o','r',0,0);
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x726f74696465;
-	p->start = (u64)editor_start;
-	p->stop = (u64)editor_stop;
-	p->list = (u64)editor_list;
-	p->choose = (u64)editor_choose;
-	p->read = (u64)editor_read;
-	p->write = (u64)editor_write;
+	p->start = (void*)editor_start;
+	p->stop = (void*)editor_stop;
+	p->list = (void*)editor_list;
+	p->choose = (void*)editor_choose;
+	p->read = (void*)editor_read;
+	p->write = (void*)editor_write;
 }
 void editor_delete()
 {

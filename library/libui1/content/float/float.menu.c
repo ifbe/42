@@ -265,9 +265,9 @@ static void menu_stop()
 void menu_create(void* base, void* addr)
 {
 	struct actor* p = addr;
-
 	p->type = 0;
-	p->name = hexof('m','e','n','u');
+	p->name = hexof('m','e','n','u',0,0,0,0);
+
 	p->start = (void*)menu_start;
 	p->stop = (void*)menu_stop;
 	p->list = (void*)menu_list;

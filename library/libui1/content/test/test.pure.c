@@ -1,62 +1,21 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//
+#include "actor.h"
 void drawhexadecimal(
 	void*, u64 in, int size,
 	int x, int y, u32 fg, u32 bg);
-//
-void printmemory(char*,int);
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static int flag=0;
 
 
 
 
-static void pure_read_pixel(struct window* win)
+static void pure_read_pixel(struct arena* win)
 {
 	int x,y,w,h;
 	u32 color;
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	w = win->w;
 	h = win->h;
 
@@ -77,16 +36,16 @@ static void pure_read_pixel(struct window* win)
 		win, color & 0xffffff, 4,
 		0, 0, 0x87654321, 0xfedcba98);
 }
-static void pure_read_html(struct window* win)
+static void pure_read_html(struct arena* win)
 {
-	u32* buf = (u32*)(win->buf1);
+	u32* buf = (u32*)(win->buf);
 	pure_read_pixel(win);
 	buf[0]=0;
 }
-static void pure_read_text(struct window* win)
+static void pure_read_text(struct arena* win)
 {
 }
-static void pure_read(struct window* win)
+static void pure_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 	//say("(@2048.read)temp=%x\n",temp);
@@ -135,16 +94,16 @@ static void pure_stop()
 }
 void pure_create(void* uibuf,void* addr)
 {
-	struct player* p = addr;
-	p->type = 0x74736574;
-	p->name = 0x65727570;
+	struct actor* p = addr;
+	p->type = hexof('t','e','s','t',0,0,0,0);
+	p->name = hexof('p','u','r','e',0,0,0,0);
 
-	p->start = (u64)pure_start;
-	p->stop = (u64)pure_stop;
-	p->list = (u64)pure_list;
-	p->choose = (u64)pure_into;
-	p->read = (u64)pure_read;
-	p->write = (u64)pure_write;
+	p->start = (void*)pure_start;
+	p->stop = (void*)pure_stop;
+	p->list = (void*)pure_list;
+	p->choose = (void*)pure_into;
+	p->read = (void*)pure_read;
+	p->write = (void*)pure_write;
 }
 void pure_delete()
 {

@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //
 void drawstring(
 	void*, void* str, int size,
@@ -17,49 +14,10 @@ void rect(void*,
 double calculator(char* postfix, u64 x, u64 y);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
-void double2decstr(double,char*);
-//
-void printmemory(char*,int);
-void say(char*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-//
 static char infix[128];
 static char postfix[128];
 static char result[128];
@@ -77,7 +35,7 @@ static char table[4][8] = {
 
 
 
-static void calculator_read_pixel(struct window* win, struct player* pl)
+static void calculator_read_pixel(struct arena* win, struct actor* pl)
 {
 	u32 fg;
 	int x,y;
@@ -124,19 +82,19 @@ static void calculator_read_pixel(struct window* win, struct player* pl)
 		16, 16+96, 0xffffffff, 0xff000000
 	);
 }
-static void calculator_read_html(struct window* win, struct player* pl)
+static void calculator_read_html(struct arena* win, struct actor* pl)
 {
 }
-static void calculator_read_text(struct window* win, struct player* pl)
+static void calculator_read_text(struct arena* win, struct actor* pl)
 {
 }
-static void calculator_read_cli(struct window* win, struct player* pl)
+static void calculator_read_cli(struct arena* win, struct actor* pl)
 {
 	say("buffer:%s\n", infix);
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_read(struct window* win, struct player* pl)
+static void calculator_read(struct arena* win, struct actor* pl)
 {
 	u64 fmt = win->fmt;
 
@@ -241,16 +199,16 @@ static void calculator_stop()
 }
 void calculator_create(void* base,void* addr)
 {
-	struct player* p = addr;
-	p->type = 0x6c6f6f74;
-	p->name = 0x636c6163;
+	struct actor* p = addr;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('c','a','l','c',0,0,0,0);
 
-	p->start = (u64)calculator_start;
-	p->stop = (u64)calculator_stop;
-	p->list = (u64)calculator_list;
-	p->choose = (u64)calculator_change;
-	p->read = (u64)calculator_read;
-	p->write = (u64)calculator_write;
+	p->start = (void*)calculator_start;
+	p->stop = (void*)calculator_stop;
+	p->list = (void*)calculator_list;
+	p->choose = (void*)calculator_change;
+	p->read = (void*)calculator_read;
+	p->write = (void*)calculator_write;
 }
 void calculator_delete()
 {

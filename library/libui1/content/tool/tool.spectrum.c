@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
 //libui1
@@ -26,65 +23,26 @@ int piano_freq(int);
 int startsound(int rate, int chan, void* buf, int max);
 int stopsound();
 u32 getrandom();
-//
-void printmemory(void*,int);
-void say(void*,...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 //before
 static int maxpower;
 static u16* pcmin;
 static u16* pcmout;
-
 //after
 static double* real;
 static double* imag;
 static double* power;
 static double* phase;
-
 //
 static int area=0;
 
 
 
 
-static void spectrum_read_pixel(struct window* win)
+static void spectrum_read_pixel(struct arena* win)
 {
 	double t,cc,ss;
 	int x,y;
@@ -121,15 +79,15 @@ static void spectrum_read_pixel(struct window* win)
 		);
 	}
 }
-static void spectrum_read_html(struct window* win)
+static void spectrum_read_html(struct arena* win)
 {
 }
-static void spectrum_read_text(struct window* win)
+static void spectrum_read_text(struct arena* win)
 {
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
@@ -141,7 +99,7 @@ static void spectrum_read_text(struct window* win)
 		}
 	}
 }
-static void spectrum_read(struct window* win)
+static void spectrum_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -234,7 +192,7 @@ static void spectrum_list()
 static void spectrum_into()
 {
 }
-void spectrum_start()
+static void spectrum_start()
 {
 	int j;
 	maxpower = 65536;
@@ -243,12 +201,12 @@ void spectrum_start()
 	startsound(44100, 2, pcmin, 0x100000);
 	spectrum_random();
 }
-void spectrum_stop()
+static void spectrum_stop()
 {
 }
 void spectrum_create(void* uibuf,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	pcmin=(void*)(uibuf+0x200000);
 	pcmout=(void*)(uibuf+0x280000);
 	real=(double*)(uibuf+0x300000);
@@ -256,15 +214,15 @@ void spectrum_create(void* uibuf,void* addr)
 	power=(double*)(uibuf+0x380000);
 	phase=(double*)(uibuf+0x3c0000);
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x6d75727463657073;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('s','p','e','c','t','r','u','m');
 
-	p->start = (u64)spectrum_start;
-	p->stop = (u64)spectrum_stop;
-	p->list = (u64)spectrum_list;
-	p->choose = (u64)spectrum_into;
-	p->read = (u64)spectrum_read;
-	p->write = (u64)spectrum_write;
+	p->start = (void*)spectrum_start;
+	p->stop = (void*)spectrum_stop;
+	p->list = (void*)spectrum_list;
+	p->choose = (void*)spectrum_into;
+	p->read = (void*)spectrum_read;
+	p->write = (void*)spectrum_write;
 }
 void spectrum_delete()
 {

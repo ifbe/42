@@ -4,63 +4,21 @@
 3:	replace "example" to "whatname"----->		:9,$s/example/whatname/g
 4:	do your logic in this code
 */
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void say(char*,...);
+#include "actor.h"
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-
-
-
-
-static void example_read_html(struct window* win)
+static void example_read_html(struct arena* win)
 {
 }
-static void example_read_pixel(struct window* win)
+static void example_read_pixel(struct arena* win)
 {
 }
-static void example_read_text(struct window* win)
+static void example_read_text(struct arena* win)
 {
 }
-static void example_read(struct window* win)
+static void example_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -103,16 +61,16 @@ static void example_stop()
 }
 void example_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
+	p->type = hexof('t','e','s','t',0,0,0,0);
+	p->name = hexof('e','x','a','m','p','l','e',0);
 
-	p->type = 0x74736574;
-	p->name = 0x656c706d617865;
-	p->start = (u64)example_start;
-	p->stop = (u64)example_stop;
-	p->list = (u64)example_list;
-	p->choose = (u64)example_change;
-	p->read = (u64)example_read;
-	p->write = (u64)example_write;
+	p->start = (void*)example_start;
+	p->stop = (void*)example_stop;
+	p->list = (void*)example_list;
+	p->choose = (void*)example_change;
+	p->read = (void*)example_read;
+	p->write = (void*)example_write;
 }
 void example_delete()
 {

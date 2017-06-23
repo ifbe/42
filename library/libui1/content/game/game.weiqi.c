@@ -1,7 +1,4 @@
-#define u64 unsigned long long 
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h" 
 //
 void line(void*,
 	int x1,int y1,int x2,int y2, u32 color);
@@ -9,48 +6,10 @@ void circlebody(void*,
 	int x, int y, int r, u32 color);
 void backgroundcolor(void*,
 	u32);
-//
-u32 getrandom();
-void say(char*,...);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-//
 static int turn;
 static int px,py;
 //
@@ -59,15 +18,15 @@ static char* data;
 
 
 
-static void weiqi_read_html(struct window* win)
+static void weiqi_read_html(struct arena* win)
 {
 }
-static void weiqi_read_text(struct window* win)
+static void weiqi_read_text(struct arena* win)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 
 	//
 	for(x=0;x<width*height*4;x++)p[x] = 0;
@@ -93,7 +52,7 @@ static void weiqi_read_text(struct window* win)
 		}
 	}
 }
-static void weiqi_read_pixel(struct window* win)
+static void weiqi_read_pixel(struct arena* win)
 {
 	u32 color;
 	int x,y,half;
@@ -157,7 +116,7 @@ static void weiqi_read_pixel(struct window* win)
 		}
 	}
 }
-static void weiqi_read(struct window* win)
+static void weiqi_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -272,18 +231,18 @@ static void weiqi_stop()
 }
 void weiqi_create(void* base, void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	data = base+0x300000;
 
-	p->type = 0x656d6167;
-	p->name = 0x6971696577;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('w','e','i','q','i',0,0,0);
 
-	p->start = (u64)weiqi_start;
-	p->stop = (u64)weiqi_stop;
-	p->list = (u64)weiqi_list;
-	p->choose = (u64)weiqi_choose;
-	p->read = (u64)weiqi_read;
-	p->write = (u64)weiqi_write;
+	p->start = (void*)weiqi_start;
+	p->stop = (void*)weiqi_stop;
+	p->list = (void*)weiqi_list;
+	p->choose = (void*)weiqi_choose;
+	p->read = (void*)weiqi_read;
+	p->write = (void*)weiqi_write;
 }
 void weiqi_delete()
 {

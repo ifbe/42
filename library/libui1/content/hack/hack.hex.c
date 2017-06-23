@@ -1,8 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//
+#include "actor.h"
 void background1(void*);
 void drawascii(
 	void*, u8 ch, int size,
@@ -14,51 +10,10 @@ void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-//
-int data2hexstr(u64, u8*);
-int cmp(void*, void*);
-//
-int fmt(void*, int, void*, ...);
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
 
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 //flostarea
 static int inputcount = 0;
 static u8 hi[0x100];
@@ -69,7 +24,7 @@ static u8 hi[0x100];
 
 //where
 static u8* databuf=0;
-static u64 windowoffset;
+static u64 arenaoffset;
 static u64 pointeroffset;
 
 
@@ -79,8 +34,8 @@ static u64 pointeroffset;
 static int printmethod=0;
 static int xshift=0;
 static int byteperline=0;
-static int lineperwindow=0;
-static void foreground(struct window* win)
+static int lineperarena=0;
+static void foreground(struct arena* win)
 {
 	//一整页
 	int x,y;
@@ -93,7 +48,7 @@ static void foreground(struct window* win)
 			for(x=0;x<byteperline;x++)
 			{
 				drawbyte(
-					win, databuf[windowoffset + y*byteperline + x], 1,
+					win, databuf[arenaoffset + y*byteperline + x], 1,
 					16*x + xshift, 16*y, 0, 0
 				);
 			}
@@ -107,7 +62,7 @@ static void foreground(struct window* win)
 			for(x=0;x<byteperline;x++)
 			{
 				drawascii(
-					win, databuf[windowoffset + y*byteperline + x], 1,
+					win, databuf[arenaoffset + y*byteperline + x], 1,
 					16*x + xshift, 16*y, 0, 0
 				);
 			}
@@ -118,14 +73,14 @@ static void foreground(struct window* win)
 	{
 	}
 }
-static void floatarea(struct window* win)
+static void floatarea(struct arena* win)
 {
 	u32* screenbuf;
 	int width,height;
 	int thisx,thisy;
 	int x,y;
 
-	screenbuf = (u32*)(win->buf1);
+	screenbuf = (u32*)(win->buf);
 	width = win->w;
 	height = win->h;
 	thisx = (pointeroffset % byteperline) << 4;
@@ -153,7 +108,7 @@ static void floatarea(struct window* win)
 
 	//
 	data2hexstr((u64)databuf, hi + 0x10);
-	data2hexstr(windowoffset, hi + 0x30);
+	data2hexstr(arenaoffset, hi + 0x30);
 	data2hexstr(pointeroffset, hi + 0x50);
 	data2hexstr(0, hi + 0x70);
 
@@ -169,19 +124,19 @@ static void floatarea(struct window* win)
 		}
 	}
 }
-static void hex_read_pixel(struct window* win)
+static void hex_read_pixel(struct arena* win)
 {
 	background1(win);
 	foreground(win);
 	floatarea(win);
 }
-static void hex_read_text(struct window* win)
+static void hex_read_text(struct arena* win)
 {
 	u8 h,l;
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 
 	if(printmethod==0)		//hex
 	{
@@ -191,11 +146,11 @@ static void hex_read_text(struct window* win)
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstr((u64)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
-				h = l = databuf[windowoffset + y*byteperline + x];
+				h = l = databuf[arenaoffset + y*byteperline + x];
 
 				h = ( (h>>4)&0xf ) + 0x30;
 				if(h>0x39)h += 0x7;
@@ -222,11 +177,11 @@ static void hex_read_text(struct window* win)
 			{
 				p[y*width + x] = 0x20;
 			}
-			data2hexstr((u64)databuf + windowoffset + y*byteperline, p + y*width);
+			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
 
 			for(x=0;x<byteperline;x++)
 			{
-				h = databuf[windowoffset + y*byteperline + x];
+				h = databuf[arenaoffset + y*byteperline + x];
 				if( (h>0x20)&&(h<0x80) )
 				{
 					p[xshift + y*width + x*2] = 0x20;
@@ -247,19 +202,19 @@ static void hex_read_text(struct window* win)
 		}
 	}
 }
-static void hex_read_html(struct window* win)
+static void hex_read_html(struct arena* win)
 {
 	float dx,dy;
 	u8 ch;
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 return;
 	//prepare
 	dx = 80.00 / byteperline;
 	x = (pointeroffset % byteperline);
-	dy = 80.00 / lineperwindow;
+	dy = 80.00 / lineperarena;
 	y = (pointeroffset / byteperline);
 
 	//background
@@ -281,7 +236,7 @@ return;
 
 	//foreground
 	if(x>byteperline-9)x-=9;
-	if(y>lineperwindow-5)y-=5;
+	if(y>lineperarena-5)y-=5;
 	p += fmt(
 		p, 0x1000,
 		".fg1{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
@@ -303,13 +258,13 @@ return;
 	);
 	if(printmethod==0)		//hex
 	{
-		for(y=0;y<lineperwindow;y++)
+		for(y=0;y<lineperarena;y++)
 		{
 			p += fmt(p, 0x1000, "<tr>");
 
 			for(x=0;x<byteperline;x++)
 			{
-				ch = databuf[windowoffset + y*byteperline + x];
+				ch = databuf[arenaoffset + y*byteperline + x];
 				p += fmt(
 					p, 0x1000,
 					"<td>%02x</td>", ch
@@ -320,14 +275,14 @@ return;
 
 	else if(printmethod==1)		//ascii
 	{
-		for(y=0;y<lineperwindow;y++)
+		for(y=0;y<lineperarena;y++)
 		{
 			p += fmt(p, 0x1000, "<tr>");
-//windowoffset + y*byteperline
+//arenaoffset + y*byteperline
 
 			for(x=0;x<byteperline;x++)
 			{
-				ch = databuf[windowoffset + y*byteperline + x];
+				ch = databuf[arenaoffset + y*byteperline + x];
 				if((ch > 0x1f) && (ch < 0x7f))
 				{
 					p += fmt(p, 0x1000, "<td>%c</td>", ch);
@@ -356,11 +311,11 @@ return;
 		"</div>",
 
 		(u64)databuf,
-		windowoffset,
+		arenaoffset,
 		pointeroffset
 	);
 }
-static void hex_read(struct window* win)
+static void hex_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 	u64 width = win->w;
@@ -368,7 +323,7 @@ static void hex_read(struct window* win)
 	//text
 	if(fmt == 0x74786574)
 	{
-		lineperwindow = win->h;
+		lineperarena = win->h;
 
 		if(width >= 0x80)
 		{
@@ -397,7 +352,7 @@ static void hex_read(struct window* win)
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		lineperwindow = 16;
+		lineperarena = 16;
 		byteperline = 32;
 		xshift = 0;
 
@@ -407,7 +362,7 @@ static void hex_read(struct window* win)
 	//pixel
 	else
 	{
-		lineperwindow = (win->h)/16;
+		lineperarena = (win->h)/16;
 
 		if(width >= 2048)
 		{
@@ -450,9 +405,9 @@ static void hex_write(struct event* ev)
 		{
 			if( pointeroffset % byteperline == 0 )
 			{
-				if(windowoffset > byteperline * lineperwindow)
+				if(arenaoffset > byteperline * lineperarena)
 				{
-					windowoffset -= byteperline * lineperwindow;
+					arenaoffset -= byteperline * lineperarena;
 				}
 			}
 			else
@@ -464,9 +419,9 @@ static void hex_write(struct event* ev)
 		{
 			if( pointeroffset % byteperline == byteperline-1 )
 			{
-				if(windowoffset < 0x400000 - byteperline*lineperwindow)
+				if(arenaoffset < 0x400000 - byteperline*lineperarena)
 				{
-					windowoffset += byteperline * lineperwindow;
+					arenaoffset += byteperline * lineperarena;
 				}
 			}
 			else
@@ -478,9 +433,9 @@ static void hex_write(struct event* ev)
 		{
 			if( pointeroffset < byteperline )
 			{
-				if(windowoffset >= byteperline)
+				if(arenaoffset >= byteperline)
 				{
-					windowoffset -= byteperline;
+					arenaoffset -= byteperline;
 				}
 			}
 			else
@@ -490,11 +445,11 @@ static void hex_write(struct event* ev)
 		}
 		else if(key==0x28)	//down	0x4d
 		{
-			if( pointeroffset >= (lineperwindow-1) * byteperline )
+			if( pointeroffset >= (lineperarena-1) * byteperline )
 			{
-				if(windowoffset < 0x400000 - byteperline)
+				if(arenaoffset < 0x400000 - byteperline)
 				{
-					windowoffset += byteperline;
+					arenaoffset += byteperline;
 				}
 			}
 			else
@@ -509,7 +464,7 @@ static void hex_write(struct event* ev)
 		{
 			if( pointeroffset < byteperline )
 			{
-				if(windowoffset >= byteperline)windowoffset -= byteperline;
+				if(arenaoffset >= byteperline)arenaoffset -= byteperline;
 			}
 			else
 			{
@@ -518,9 +473,9 @@ static void hex_write(struct event* ev)
 		}
 		else if((key>>48) == 'b')		//back
 		{
-			if( pointeroffset < (lineperwindow-1) * byteperline )
+			if( pointeroffset < (lineperarena-1) * byteperline )
 			{
-				windowoffset += byteperline;
+				arenaoffset += byteperline;
 			}
 			else
 			{
@@ -533,7 +488,7 @@ static void hex_write(struct event* ev)
 			int y = (key>>16)&0xffff;
 			pointeroffset =
 				( (byteperline*x) >> 16 )+
-				( (lineperwindow*y) >> 16 )*byteperline;
+				( (lineperarena*y) >> 16 )*byteperline;
 
 			//浮动框以外的
 			//px=x/(1024/0x40);
@@ -586,7 +541,7 @@ static void hex_start()
 	int j;
 
 	//偏移
-	windowoffset = pointeroffset = 0;
+	arenaoffset = pointeroffset = 0;
 
 	//浮动框
 	for(j=0;j<0x100;j++)hi[j]=0;
@@ -600,18 +555,18 @@ static void hex_stop()
 }
 void hex_create(void* uibuf,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	databuf = uibuf+0x500000;
 
-	p->type = 0x6c6f6f74;
-	p->name = 0x786568;
+	p->type = hexof('t','o','o','l',0,0,0,0);
+	p->name = hexof('h','e','x',0,0,0,0,0);
 
-	p->start = (u64)hex_start;
-	p->stop = (u64)hex_stop;
-	p->list = (u64)hex_list;
-	p->choose = (u64)hex_into;
-	p->read = (u64)hex_read;
-	p->write = (u64)hex_write;
+	p->start = (void*)hex_start;
+	p->stop = (void*)hex_stop;
+	p->list = (void*)hex_list;
+	p->choose = (void*)hex_into;
+	p->read = (void*)hex_read;
+	p->write = (void*)hex_write;
 }
 void hex_delete()
 {

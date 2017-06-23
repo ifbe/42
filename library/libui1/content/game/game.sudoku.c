@@ -1,7 +1,4 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "actor.h" 
 //
 void drawdecimal(
 	void*, int data, int size,
@@ -14,50 +11,10 @@ void rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 body, u32 frame);
-//
-int data2decstr(u64 data,u8* string);
-u32 getrandom();
-//
-int printmemory(char*,int);
-int say(char*,...);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
 //
 static int px,py;
 static char table[9][9];
@@ -218,12 +175,12 @@ void sudoku_solve()
 
 
 
-static void sudoku_read_text(struct window* win)
+static void sudoku_read_text(struct arena* win)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
 	int height = win->h;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<9;y++)
@@ -254,10 +211,10 @@ static void sudoku_read_text(struct window* win)
 		}
 	}
 }
-static void sudoku_read_html(struct window* win)
+static void sudoku_read_html(struct arena* win)
 {
 }
-static void sudoku_read_pixel(struct window* win)
+static void sudoku_read_pixel(struct arena* win)
 {
 	int x,y;
 	int w = win->w;
@@ -317,7 +274,7 @@ static void sudoku_read_pixel(struct window* win)
 		0
 	);
 }
-static void sudoku_read(struct window* win)
+static void sudoku_read(struct arena* win)
 {
 	u64 fmt = win->fmt;
 
@@ -402,18 +359,18 @@ static void sudoku_stop()
 }
 void sudoku_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 	buffer = base+0x300000;
 
-	p->type = 0x656d6167;
-	p->name = 0x756b6f647573;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('s','u','d','o','k','u',0,0);
 
-	p->start = (u64)sudoku_start;
-	p->stop = (u64)sudoku_stop;
-	p->list = (u64)sudoku_list;
-	p->choose = (u64)sudoku_choose;
-	p->read = (u64)sudoku_read;
-	p->write = (u64)sudoku_write;
+	p->start = (void*)sudoku_start;
+	p->stop = (void*)sudoku_stop;
+	p->list = (void*)sudoku_list;
+	p->choose = (void*)sudoku_choose;
+	p->read = (void*)sudoku_read;
+	p->write = (void*)sudoku_write;
 }
 void sudoku_delete()
 {

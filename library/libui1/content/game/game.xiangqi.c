@@ -1,8 +1,4 @@
-#define u64 unsigned long long 
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-//
+#include "actor.h" 
 void drawascii(
 	void*, u8 data, int size,
 	int x, int y, u32 fg, u32 bg);
@@ -12,49 +8,10 @@ void line(void*,
 	int x1,int y1,int x2,int y2, u32 color);
 void backgroundcolor(void*,
 	u32);
-//
-u32 getrandom();
-int fmt(void*, int, void*, ...);
-void say(void*, ...);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u8 data[0xc0];
-};
-struct player
-{
-	u64 type;
-	u64 name;
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	u8 data[0xc0];
-};
-//
 static char data[10][9];
 static int turn;
 static int px,py,qx,qy;
@@ -115,10 +72,10 @@ static int htmlcircle(char* p, int x, int y)
 		textcolor, hanzi
 	);
 }
-static void xiangqi_read_html(struct window* win)
+static void xiangqi_read_html(struct arena* win)
 {
 	int x,y;
-	char* p = (char*)(win->buf1);
+	char* p = (char*)(win->buf);
 	return;
 
 	p += fmt(
@@ -145,12 +102,12 @@ static void xiangqi_read_html(struct window* win)
 
 
 
-static void xiangqi_read_text(struct window* win)
+static void xiangqi_read_text(struct arena* win)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf1);
+	u8* p = (u8*)(win->buf);
 	u8* q;
 
 	//
@@ -193,7 +150,7 @@ static void xiangqi_read_text(struct window* win)
 
 
 
-void xiangqi_read_pixel(struct window* win)
+void xiangqi_read_pixel(struct arena* win)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
@@ -297,7 +254,7 @@ void xiangqi_read_pixel(struct window* win)
 
 
 
-static void xiangqi_read(struct window* win)
+static void xiangqi_read(struct arena* win)
 {
 	u32 fmt = win->fmt;
 
@@ -987,17 +944,17 @@ static void xiangqi_stop()
 }
 void xiangqi_create(void* base,void* addr)
 {
-	struct player* p = addr;
+	struct actor* p = addr;
 
-	p->type = 0x656d6167;
-	p->name = 0x6971676e616978;
+	p->type = hexof('g','a','m','e',0,0,0,0);
+	p->name = hexof('x','i','a','n','g','q','i',0);
 
-	p->start = (u64)xiangqi_start;
-	p->stop = (u64)xiangqi_stop;
-	p->list = (u64)xiangqi_list;
-	p->choose = (u64)xiangqi_choose;
-	p->read = (u64)xiangqi_read;
-	p->write = (u64)xiangqi_write;
+	p->start = (void*)xiangqi_start;
+	p->stop = (void*)xiangqi_stop;
+	p->list = (void*)xiangqi_list;
+	p->choose = (void*)xiangqi_choose;
+	p->read = (void*)xiangqi_read;
+	p->write = (void*)xiangqi_write;
 }
 void xiangqi_delete()
 {
