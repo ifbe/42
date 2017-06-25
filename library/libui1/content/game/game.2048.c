@@ -93,8 +93,8 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct rela
 	//position
 	cx = (win->w) * (rl->cx) / 0x10000;
 	cy = (win->h) * (rl->cy) / 0x10000;
-	w = (win->w) * (rl->width) / 0x10000;
-	h = (win->h) * (rl->height) / 0x10000;
+	w = (win->w) * (rl->wantw) / 0x10000;
+	h = (win->h) * (rl->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
 

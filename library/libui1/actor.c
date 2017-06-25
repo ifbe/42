@@ -106,7 +106,6 @@ int actorread()
 int actorwrite(u64* ev)
 {
 	//prepare
-	int x,y;
 /*
 	if(w+)	//new win
 	if(w-)	//del win
@@ -123,25 +122,27 @@ int actorwrite(u64* ev)
 
 
 	//process
+	int x,y,z,w;
 	u64 why = ev[0];
 	u64 what = ev[1];
-	struct arena* w = (void*)ev[2];
-	struct relation* t = &treaty[1];
-	struct actor* p = t->child_this;
+	struct arena* win = (void*)ev[2];
+	struct relation* rel = &treaty[1];
+	struct actor* act = rel->child_this;
 	//u64 when = ev[3];
 
 	//kbd
 	if(what == 0x64626b)
 	{
-		if(why == 0xf1){w->dim = 1;return 0;}
-		else if(why == 0xf2){w->dim = 2;return 0;}
-		else if(why == 0xf3){w->dim = 3;return 0;}
+		if(why == 0xf1){win->dim = 1;return 0;}
+		else if(why == 0xf2){win->dim = 2;return 0;}
+		else if(why == 0xf3){win->dim = 3;return 0;}
 	}//kbd
 
 	//mouse
 	if((what&0xff)=='p')
 	{
-		if((why>>48)=='r')
+		w = (why>>48)&0xffff;
+		if(w == 'r')
 		{
 			if(what == 0x2b70)tmp = why;
 			else if(what == 0x2d70)tmp = 0;
@@ -151,31 +152,34 @@ int actorwrite(u64* ev)
 				{
 					x = (why&0xffff) - (tmp&0xffff);
 					y = ((why>>16)&0xffff) - ((tmp>>16)&0xffff);
-					t->cx += x;
-					t->cy += y;
+					rel->cx += x;
+					rel->cy += y;
 					tmp = why;
 				}
 			}
 		}
-		else if((why>>48)=='b')
+		else if(w == '?')
 		{
-			t->width = t->width*90/100;
-			t->height = t->height*90/100;
 		}
-		else if((why>>48)=='f')
+		else if(w == 'b')
 		{
-			t->width = t->width*110/100;
-			t->height = t->height*110/100;
+			rel->wantw = rel->wantw*90/100;
+			rel->wanth = rel->wanth*90/100;
+		}
+		else if(w == 'f')
+		{
+			rel->wantw = rel->wantw*110/100;
+			rel->wanth = rel->wanth*110/100;
 		}
 	}//mouse
 
 	//
-	if(w->dim == 1)
+	if(win->dim == 1)
 	{
 		newline = cli_write(&ev[0]);
 		return 0;
 	}
-	else if(w->dim == 2)
+	else if(win->dim == 2)
 	{
 		if( (what == 0x64626b)&&(why == 0x1b) )
 		{
@@ -188,11 +192,11 @@ int actorwrite(u64* ev)
 			actor[1].write(ev);
 			actor[0].write(ev);
 		}
-		return p->write(ev);
+		return act->write(ev);
 	}
-	else //if(w->dim == 3)
+	else //if(win->dim == 3)
 	{
-		say("dim=%d\n",w->dim);
+		say("dim=%d\n",win->dim);
 	}
 
 	return 0;
@@ -307,8 +311,8 @@ int actorstart(int w, int a)
 	}
 	treaty[t].cx = 0x8000 + a*0x80;
 	treaty[t].cy = 0x8000 + a*0x80;
-	treaty[t].width = 0xe000;
-	treaty[t].height = 0xe000;
+	treaty[t].wantw = 0xe000;
+	treaty[t].wanth = 0xe000;
 
 	//
 	treaty[t].parent_type = 0;

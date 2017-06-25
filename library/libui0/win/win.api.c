@@ -270,7 +270,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				return 0;
 			}
 			else if(rightdown>0)k = 'r';
-			else k = 'l';
+			else if(leftdown>0)k = 'l';
+			else k = '?';
 
 			y = (lparam&0xffff0000) / (data->h);
 			x = ((lparam&0xffff)<<16) / (data->w);

@@ -107,28 +107,28 @@ struct relation
 	char padding7[ 8 - sizeof(char*) ];
 
 	//[40,5f]:cartesian coordinate
-	u64 cx;		//centerx
-	u64 cy;		//centery
-	u64 cz;		//centerz
-	u64 ct;
+	u64 cx;
+	u64 cy;
+	u64 cz;
+	u64 cw;
 
 	//[60,7f]:eulerian angle
-	u64 rx;		//pitch
-	u64 ry;		//yaw
-	u64 rz;		//roll
-	u64 rt;
+	u64 pitch;
+	u64 yaw;
+	u64 roll;
+	u64 aaa;
 
 	//[80,9f]:total size(base 0x10000)
-	u64 width;
-	u64 height;
-	u64 depth;
-	u64 time;
+	u64 wantw;
+	u64 wanth;
+	u64 wantd;
+	u64 dim;
 
 	//[a0,bf]:show area(base 0x100000)
-	u64 left;
-	u64 top;
-	u64 right;
-	u64 bottom;
+	u64 realw;
+	u64 realh;
+	u64 reald;
+	u64 haha;
 
 	//[c0,df]:
 	u64 a0;
