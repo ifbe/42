@@ -69,8 +69,13 @@ target:
 	$(compiler) $(cflag) libmem/libdata/search/search.bm.c
 	$(compiler) $(cflag) libmem/libdata/search/search.kmp.c
 	$(compiler) $(cflag) libmem/libdata/search/search.rough.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.bubble.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.gnome.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.heap.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.insert.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.merge.c
 	$(compiler) $(cflag) libmem/libdata/sort/sort.quick.c
+	$(compiler) $(cflag) libmem/libdata/sort/sort.select.c
 	$(compiler) $(cflag) libmem/libdata/trfm/trfm.cosine.c
 	$(compiler) $(cflag) libmem/libdata/trfm/trfm.fourier.c
 	$(compiler) $(cflag) libmem/libdata/trfm/trfm.laplace.c

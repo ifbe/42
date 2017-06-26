@@ -6,15 +6,6 @@
 
 
 
-void quicksort_u8(u8* buf, int len)
-{
-}
-void quicksort_u16(u8* buf, int len)
-{
-}
-void quicksort_u32(u8* buf, int len)
-{
-}
-void quicksort_u64(u8* buf, int len)
+void sort_quick(u8* buf, int len)
 {
 }
