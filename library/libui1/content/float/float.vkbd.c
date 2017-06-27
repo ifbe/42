@@ -63,7 +63,7 @@ static void virtkbd_read(struct arena* win)
 static int virtkbd_write(struct event* ev)
 {
 	int x,y;
-	say("%x,%x\n",x,y);
+	//say("%x,%x\n",x,y);
 
 	if(ev->what == 0x2d70)
 	{
@@ -100,18 +100,19 @@ static void virtkbd_start()
 static void virtkbd_stop()
 {
 }
-void virtkbd_create(void* base,void* addr)
+void virtkbd_create(void* base, struct actor* act)
 {
-	struct actor* p = addr;
+	act->type = 0;
+	act->name = hexof('v','k','b','d',0,0,0,0);
+	act->first = 0;
+	act->last = 0;
 
-	p->type = 0;
-	p->name = hexof('v','k','b','d',0,0,0,0);
-	p->start = (void*)virtkbd_start;
-	p->stop = (void*)virtkbd_stop;
-	p->list = (void*)virtkbd_list;
-	p->choose = (void*)virtkbd_into;
-	p->read = (void*)virtkbd_read;
-	p->write = (void*)virtkbd_write;
+	act->start = (void*)virtkbd_start;
+	act->stop = (void*)virtkbd_stop;
+	act->list = (void*)virtkbd_list;
+	act->choose = (void*)virtkbd_into;
+	act->read = (void*)virtkbd_read;
+	act->write = (void*)virtkbd_write;
 }
 void virtkbd_delete()
 {

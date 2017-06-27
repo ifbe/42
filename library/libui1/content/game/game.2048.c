@@ -504,9 +504,8 @@ static void the2048_start()
 void the2048_delete()
 {
 }
-void the2048_create(void* base, void* addr)
+void the2048_create(void* base, struct actor* act)
 {
-	struct actor* act = addr;
 	buffer = base + 0x300000;
 
 	act->type = hexof('g','a','m','e',0,0,0,0);

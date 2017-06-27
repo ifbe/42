@@ -3,8 +3,7 @@
 
 
 
-int cli_read(void*);
-int cli_write(void*);
+void cli_write(void*);
 void draw_vt100(void*, int, int, int, int);
 
 
@@ -15,7 +14,6 @@ static struct relation* treaty = 0;
 //
 static u64 tmp=0;
 static u32 menu=0;
-static u32 newline=1;
 
 
 
@@ -53,15 +51,9 @@ int actorread()
 		//1d:	cli
 		if(w->dim == 1)
 		{
-			if(newline == 1)
-			{
-				//actor[now].read(w, p, t);
-				cli_read(w);
-				newline = 0;
-			}
 			if(w->fmt == 0x696c63)return 0;
 
-			draw_vt100(w, 0x800, 0x800, 0xf800, 0xf800);
+			draw_vt100(w, 0, 0, 0xffff, 0xffff);
 			return 0;
 		}
 
@@ -113,7 +105,7 @@ int actorwrite(u64* ev)
 */
 	if(ev[1] == 0x727473)
 	{
-		cli_write((void*)ev[0]);
+		cli_write(ev);
 		return 0;
 	}
 	if(ev[2] < 0x1000)ev[2] = (u64)(&arena[0]);
@@ -176,7 +168,7 @@ int actorwrite(u64* ev)
 	//
 	if(win->dim == 1)
 	{
-		newline = cli_write(&ev[0]);
+		cli_write(ev);
 		return 0;
 	}
 	else if(win->dim == 2)

@@ -63,7 +63,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.motion.sensor.c \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
 	library/libsoft0/android/android.flow.vision.qcamera2.c \
-	library/libsoft0/android/android.system.tray.c \
 	library/libsoft0/linux/linux.flow.net.socket.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.folder.c \
@@ -230,18 +229,17 @@ LOCAL_SRC_FILES += \
 	library/libui0/android/android.bitmap.c \
 	library/libui0/cross/cross.net.c \
 	library/libui0/cross/cross.voice.c \
-	library/libui0/display.c
+	library/libui0/arena.c
 
 #4.ui1
 LOCAL_SRC_FILES += \
 	library/libui1/lib1d/term/term.cli.c \
 	library/libui1/lib1d/lib1d.c \
 	library/libui1/lib2d/draw/draw.ascii.c \
-	library/libui1/lib2d/draw/draw.background.c \
+	library/libui1/lib2d/draw/draw.color.c \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
-	library/libui1/lib2d/draw/draw.vt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \
@@ -260,8 +258,8 @@ LOCAL_SRC_FILES += \
 	library/libui1/external/external.title.c \
 	library/libui1/external/external.toast.c \
 	library/libui1/external/external.c \
-	library/libui1/content/float/float.menu.c \
 	library/libui1/content/float/float.vkbd.c \
+	library/libui1/content/float/float.vt100.c \
 	library/libui1/content/game/game.2048.c \
 	library/libui1/content/game/game.chess.c \
 	library/libui1/content/game/game.ooxx.c \
@@ -288,12 +286,13 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/tool/tool.sketchpad.c \
 	library/libui1/content/tool/tool.spectrum.c \
 	library/libui1/content/content.c \
-	library/libui1/ui.c
+	library/libui1/actor.c
 
 
 
 
 #2
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS := -lm -llog -ljnigraphics
 LOCAL_MODULE := finalanswer

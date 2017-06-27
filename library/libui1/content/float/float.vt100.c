@@ -1,4 +1,5 @@
 #include "actor.h"
+int cli_write(void*);
 
 
 
@@ -155,10 +156,112 @@ void draw_vt100(struct arena* win,
 
 
 
-void vt100_create(void* addr)
+static void vt100_read_text(struct arena* win)
 {
-	input = addr + 0x400000;
-	output = addr + 0x500000;
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
+	char* src;
+	char* dst;
+
+	for(y=height/4;y<height*3/4;y++)
+	{
+		for(x=width/4;x<width*3/4;x++)
+		{
+			dst = p + ((x + width*y)<<2);
+			dst[0]=dst[1]=dst[2]=dst[3]=0;
+		}
+	}
+	for(x=width/4;x<=width*3/4;x++)
+	{
+		p[(x + (height/4)*width)<<2] = '-';
+		p[(x + (height*3/4)*width)<<2] = '-';
+	}
+	for(y=height/4;y<=height*3/4;y++)
+	{
+		p[(width/4 + y*width)<<2] = '|';
+		p[(width*3/4 + y*width)<<2] = '|';
+	}
+}
+static void vt100_read_html(struct arena* win)
+{
+	char* p = (char*)(win->buf);
+
+	win->len = fmt(
+		p, 0x1000,
+		"<div style=\""
+		"position:absolute;"
+		"z-index:100;"
+		"left:25%%;"
+		"top:25%%;"
+		"width:50%%;"
+		"height:50%%;"
+		"border:4px solid #000;"
+		"background:#444444;"
+		"color:#000;"
+		"text-align:center;"
+		"\">"
+		"what do you want<hr>%s"
+		"</div>",
+
+		input
+	);
+}
+static void vt100_read(struct arena* win)
+{
+	u64 fmt = win->fmt;
+
+	//text
+	if(fmt == 0x74786574)
+	{
+		vt100_read_text(win);
+	}
+
+	//html
+	else if(fmt == 0x6c6d7468)
+	{
+		vt100_read_html(win);
+	}
+
+	//pixel
+	else
+	{
+		draw_vt100(win, 0x2000, 0x2000, 0xe000, 0x8000);
+	}
+}
+static void vt100_write(struct event* ev)
+{
+	cli_write(ev);
+}
+static void vt100_choose()
+{
+}
+static void vt100_list()
+{
+}
+static void vt100_start()
+{
+}
+static void vt100_stop()
+{
+}
+void vt100_create(void* base, struct actor* act)
+{
+	input = base + 0x400000;
+	output = base + 0x500000;
+
+	act->type = 0;
+	act->name = hexof('v','t','1','0','0',0,0,0);
+	act->first = 0;
+	act->last = 0;
+
+	act->start = (void*)vt100_start;
+	act->stop = (void*)vt100_stop;
+	act->list = (void*)vt100_list;
+	act->choose = (void*)vt100_choose;
+	act->read = (void*)vt100_read;
+	act->write = (void*)vt100_write;
 }
 void vt100_delete()
 {

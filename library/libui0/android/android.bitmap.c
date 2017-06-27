@@ -1,15 +1,14 @@
-#define u64 unsigned long long
-#define u32 unsigned long long
 #include <jni.h>
-#include <android/bitmap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <android/bitmap.h>
+#include "arena.h"
 //
-void characterstart(int);
-void characterstop(int);
-void characterwrite(void* p);
-void characterread();
+void actorstart(int);
+void actorstop(int);
+void actorwrite(void* p);
+void actorread();
 //
 void motion_explain(u64* p);
 void network_explain(u64* p);
@@ -23,18 +22,6 @@ void death();
 
 
 
-struct window
-{
-	u64 type;		//local,cli,voice,vnc,rdp,...
-	u64 fmt;		//rgba8888,vt100...
-	u64 buf;
-	u64 len;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 dim;
-};
 static void* world;
 static struct window* win;
 //
@@ -63,18 +50,18 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	}
 
 	//draw pixel
-	characterread();
+	actorread();
 
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong value)
 {
-	u64 p[4] = {value, type, &win[0], 0};
+	u64 p[4] = {value, type, (u64)&win[0], 0};
 	motion_explain(p);
 	say("event:%x,%x,%x,0\n", p[0], p[1], p[2]);
 
-	characterwrite(p);
+	actorwrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)
 {
@@ -106,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	win[0].w = info.width;
 	win[0].h = info.height;
 	win[0].dim = 2;
-	characterstart(0);
+	actorstart(0);
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)

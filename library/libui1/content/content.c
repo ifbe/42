@@ -3,10 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //float
-void menu_create(u8*,u8*);
-void menu_delete();
 void virtkbd_create(u8*,u8*);
 void virtkbd_delete();
+void vt100_create(u8*,u8*);
+void vt100_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -69,12 +69,12 @@ int content_create(u8* addr)
 {
 	u8* temp = (void*)(addr+0x100000);
 
-	//float.menu
-	menu_create(addr, temp);
-	temp += 0x100;
-
 	//float.virtkbd
 	virtkbd_create(addr, temp);
+	temp += 0x100;
+
+	//float.vt100
+	vt100_create(addr, temp);
 	temp += 0x100;
 
 	//game.2048
@@ -206,6 +206,6 @@ void content_delete()
 	weiqi_delete();
 	xiangqi_delete();
 
-	menu_delete();
+	vt100_delete();
 	virtkbd_delete();
 }
