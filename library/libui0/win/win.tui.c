@@ -13,10 +13,6 @@ void say(void*, ...);
 
 
 //
-struct privdata
-{
-	u64 thread;
-};
 static HANDLE output;
 static int lastwidth=0,lastheight=0;
 static int width,height;
@@ -160,8 +156,6 @@ void windowchange()
 }
 void windowstart(struct window* win)
 {
-	struct privdata* priv;
-
 	win->type = 0;
 	win->fmt = 0x74786574;
 	win->buf = (u64)malloc(0x100000);
@@ -170,8 +164,7 @@ void windowstart(struct window* win)
 	win->w = width;
 	win->h = height;
 
-	priv = (void*)(win->priv);
-	priv->thread = startthread(uievent, win);
+	win->thread = startthread(uievent, win);
 }
 void windowstop()
 {

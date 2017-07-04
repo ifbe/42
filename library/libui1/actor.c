@@ -111,8 +111,8 @@ int actorwrite(u64* ev)
 	u64 why = ev[0];
 	u64 what = ev[1];
 	struct arena* win = (void*)ev[2];
-	struct relation* rel = &treaty[1];
-	struct actor* act = rel->child_this;
+	struct relation* rel;
+	struct actor* act;
 	//u64 when = ev[3];
 
 	//kbd
@@ -123,10 +123,21 @@ int actorwrite(u64* ev)
 		else if(why == 0xf3){win->dim = 3;return 0;}
 	}//kbd
 
-	//mouse
+	//
+	rel = &treaty[win->top];
 	if((what&0xff)=='p')
 	{
+		x = why&0xffff;
+		y = (why>>16)&0xffff;
 		w = (why>>48)&0xffff;
+		if( (x < (rel->cx)-(rel->wantw)/2) |
+			(x > (rel->cx)+(rel->wantw)/2) |
+			(y < (rel->cy)-(rel->wanth)/2) |
+			(y > (rel->cy)+(rel->wanth)/2) )
+		{
+			rel = rel->parent_prev;
+		}
+
 		if(w == 'r')
 		{
 			if(what == 0x2b70)tmp = why;
@@ -177,7 +188,11 @@ int actorwrite(u64* ev)
 			vkbd_write(ev);
 			cli_write(ev);
 		}
-		else act->write(ev);
+		else
+		{
+			act = rel->child_this;
+			act->write(ev);
+		}
 	}
 	else //if(win->dim == 3)
 	{

@@ -16,15 +16,6 @@ void say(char*,...);
 
 
 
-//
-struct privdata
-{
-	u64 thread;
-};
-
-
-
-
 DWORD WINAPI uievent(LPVOID pM)
 {
 	u8 ch;
@@ -78,8 +69,6 @@ void windowwrite()
 }
 void windowstart(struct window* win)
 {
-	struct privdata* priv;
-
 	win->type = 0;
 	win->fmt = 0x696c63;
 	win->buf = 0;
@@ -90,8 +79,7 @@ void windowstart(struct window* win)
 	win->d = 0;
 	win->dim = 1;
 
-	priv = (void*)(win->priv);
-	priv->thread = startthread(uievent, win);
+	win->thread = startthread(uievent, win);
 }
 void windowstop()
 {

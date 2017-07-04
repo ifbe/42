@@ -24,14 +24,6 @@ static WNDCLASS wc;
 static char* AppTitle="haha";
 static char dragpath[MAX_PATH];
 
-//each
-struct privdata
-{
-	u64 thread;
-	HWND wnd;
-	HDC dc;
-};
-
 //temp
 static BITMAPINFO info;
 static TOUCHINPUT touchpoint[10];
@@ -441,22 +433,31 @@ void enabledrag(HWND wnd)
 }
 DWORD WINAPI uievent(struct window* win)
 {
-	struct privdata* priv = (void*)(win->priv);
+	int w;
+	int h;
+	HWND wnd;
+	HDC dc;
 	MSG msg;
 
 	//图形窗口
-	priv->wnd = createmywindow(win->w, win->h);
-	SetWindowLongPtr(priv->wnd, GWLP_USERDATA, (u64)win);
+	w = win->w;
+	h = win->h;
+	wnd = createmywindow(w, h);
+	dc = GetDC(wnd);
+
+	//
+	win->wnd = (u64)wnd;
+	win->dc = (u64)dc;
+	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)win);
 
 	//打开拖拽
-	enabledrag(priv->wnd);
+	enabledrag(wnd);
 
 	//打开触摸
-	RegisterTouchWindow(priv->wnd, 0);
+	RegisterTouchWindow(wnd, 0);
 
 	//bmp
-	priv->dc = GetDC(priv->wnd);
-	bitmapinfo(win->w, win->h);
+	bitmapinfo(w, h);
 
 	//一个一个处理
 	while(GetMessage(&msg, NULL, 0, 0))
@@ -466,10 +467,10 @@ DWORD WINAPI uievent(struct window* win)
 	}
 
 	//关闭触摸
-	UnregisterTouchWindow(priv->wnd);
+	UnregisterTouchWindow(wnd);
 
 	//释放dc
-	ReleaseDC(priv->wnd, priv->dc);
+	ReleaseDC(wnd, dc);
 
 	//退出main
 	eventwrite(0, 0, 0, 0);
@@ -488,9 +489,9 @@ void windowread()
 }
 void windowwrite(struct window* win)
 {
-	struct privdata* priv = (void*)(win->priv);
+	HDC dc = (void*)(win->dc);
 	SetDIBitsToDevice(
-		priv->dc,
+		dc,
 		0, 0,			//目标位置x,y
 		win->w, win->h,		//dib宽,高
 		0, 0,			//来源起始x,y
@@ -515,8 +516,6 @@ void windowchange()
 }
 void windowstart(struct window* win)
 {
-	struct privdata* priv = (void*)(win->priv);
-
 	win->type = 0;
 	win->fmt = 0x6267726138383838;
 	win->len = 2048*1024*4;
@@ -525,7 +524,7 @@ void windowstart(struct window* win)
 	win->w = 512;
 	win->h = 512;
 
-	priv->thread = startthread(uievent, win);
+	win->thread = startthread(uievent, win);
 }
 void windowstop()
 {

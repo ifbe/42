@@ -7,13 +7,6 @@
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 struct arena
 {
 	u64 type;		//local,cli,voice,vnc,rdp,...
@@ -21,22 +14,22 @@ struct arena
 	u64 bot;
 	u64 top;
 
-	u64 buf;
-	u64 len;
-	u64 dim;
-	u64 hah;
-
 	u64 w;
 	u64 h;
 	u64 d;
 	u64 t;
 
-	u64 oldw;
-	u64 oldh;
-	u64 oldd;
-	u64 oldt;
+	u64 buf;
+	u64 len;
+	u64 dim;
+	u64 hah;
 
-	char priv[0x80];
+	u64 wnd;
+	u64 dc;
+	u64 xx;
+	u64 thread;
+
+	u64 input[16];
 };
 struct actor
 {
@@ -141,6 +134,13 @@ struct relation
 	u64 a5;
 	u64 a6;
 	u64 a7;
+};
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 
 
