@@ -85,18 +85,18 @@ struct relation
 	u64 parent_type;
 	void* parent_this;
 	char padding1[ 8 - sizeof(char*) ];
-	struct relation* parent_prev;
+	struct relation* below;
 	char padding2[ 8 - sizeof(char*) ];
-	struct relation* parent_next;
+	struct relation* above;
 	char padding3[ 8 - sizeof(char*) ];
 
 	//[20,3f]:doubly link all shows of this actor
 	u64 child_type;
 	void* child_this;
 	char padding5[ 8 - sizeof(char*) ];
-	struct relation* child_below;
+	struct relation* prev;
 	char padding6[ 8 - sizeof(char*) ];
-	struct relation* child_above;
+	struct relation* next;
 	char padding7[ 8 - sizeof(char*) ];
 
 	//[40,5f]:cartesian coordinate
@@ -149,8 +149,6 @@ struct event
 //
 void content_create(void*, void*);
 void content_delete();
-void external_create(void*, void*);
-void external_delete();
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
@@ -160,14 +158,18 @@ void lib3d_delete();
 //libsoft1
 int double2decstr(double, void*);
 int double2hexstr(double, void*);
-int decstr2data(void* str, u64 data);
-int decstr2datastr(void* dst, void* src, int len);
-int hexstr2data(void* str, u64 data);
-int hexstr2datastr(void* dst, void* src, int len);
 int data2decstr(u64 data,u8* str);
 int data2hexstr(u64 data,u8* str);
 int datastr2decstr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
+
+int decstr2data(void* str, u64 data);
+int decstr2datastr(void* dst, void* src, int len);
+int decstr2double(void* dst, void* src, int len);
+int hexstr2data(void* str, u64 data);
+int hexstr2datastr(void* dst, void* src, int len);
+int hexstr2double(void* dst, void* src, int len);
+
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 int md5sum(void*, void*, int);

@@ -4,6 +4,8 @@
 
 
 void cli_write(void*);
+//2d
+void backgroundcolor(void*,u32);
 void navi_read(void*);
 void navi_write(void*);
 void vkbd_read(void*);
@@ -61,6 +63,10 @@ int actorread()
 		//2d:	rgba
 		else if(ww->dim == 2)
 		{
+			//
+			backgroundcolor(ww, 0);
+
+			//
 			tt = &treaty[ww->bot];
 			for(k=0;k<16;k++)
 			{
@@ -69,8 +75,10 @@ int actorread()
 				pp = tt->child_this;
 				pp->read(ww, pp, tt);
 
-				tt = tt->parent_next;
+				tt = tt->above;
 			}
+
+			//
 			if(menu > 0)
 			{
 				navi_read(ww);
@@ -135,7 +143,7 @@ int actorwrite(u64* ev)
 			(y < (rel->cy)-(rel->wanth)/2) |
 			(y > (rel->cy)+(rel->wanth)/2) )
 		{
-			rel = rel->parent_prev;
+			rel = rel->below;
 		}
 
 		if(w == 'r')
@@ -319,28 +327,28 @@ int actorstart(int w, int a)
 	treaty[t].parent_this = &arena[w];
 	if(arena[w].bot == 0)	//0
 	{
-		treaty[t].parent_prev = 0;
-		treaty[t].parent_next = 0;
+		treaty[t].below = 0;
+		treaty[t].above = 0;
 
 		arena[w].bot = t;
 		//arena[w].top = 0;
 	}
 	else if(arena[w].top == 0)	//1
 	{
-		treaty[arena[w].bot].parent_next = &treaty[t];
+		treaty[arena[w].bot].above = &treaty[t];
 
-		treaty[t].parent_prev = &treaty[arena[w].bot];
-		treaty[t].parent_next = 0;
+		treaty[t].below = &treaty[arena[w].bot];
+		treaty[t].above = 0;
 
 		//arena[w].bot = itself
 		arena[w].top = t;
 	}
 	else	//more
 	{
-		treaty[arena[w].top].parent_next = &treaty[t];
+		treaty[arena[w].top].above = &treaty[t];
 
-		treaty[t].parent_prev = &treaty[arena[w].top];
-		treaty[t].parent_next = 0;
+		treaty[t].below = &treaty[arena[w].top];
+		treaty[t].above = 0;
 
 		//arena[w].bot = itself
 		arena[w].top = t;
@@ -351,26 +359,26 @@ int actorstart(int w, int a)
 	treaty[t].child_this = &actor[a];
 	if(actor[a].first == 0)		//0
 	{
-		treaty[t].child_below = 0;
-		treaty[t].child_above = 0;
+		treaty[t].prev = 0;
+		treaty[t].next = 0;
 
 		actor[a].first = t;
 	}
 	else if(actor[a].last == 0)		//1
 	{
-		treaty[actor[a].first].child_above = &treaty[t];
+		treaty[actor[a].first].next = &treaty[t];
 
-		treaty[t].child_below = &treaty[actor[a].first];
-		treaty[t].child_above = 0;
+		treaty[t].prev = &treaty[actor[a].first];
+		treaty[t].next = 0;
 
 		actor[a].last = t;
 	}
 	else	//more
 	{
-		treaty[actor[a].last].child_above = &treaty[t];
+		treaty[actor[a].last].next = &treaty[t];
 
-		treaty[t].child_below = &treaty[actor[a].last];
-		treaty[t].child_above = 0;
+		treaty[t].prev = &treaty[actor[a].last];
+		treaty[t].next = 0;
 
 		actor[a].last = t;
 	}

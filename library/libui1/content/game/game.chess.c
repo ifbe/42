@@ -68,6 +68,7 @@ static void chess_read(struct arena* win, struct actor* act, struct relation* re
 }
 static void chess_write(struct event* ev)
 {
+	say("@chess:%x,%x\n", ev->why, ev->what);
 }
 
 

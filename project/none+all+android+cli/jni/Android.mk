@@ -255,6 +255,9 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
+	library/libui1/lib2d/float/float.navi.c \
+	library/libui1/lib2d/float/float.vkbd.c \
+	library/libui1/lib2d/float/float.vt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \
@@ -270,11 +273,6 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib3d/model/model.magnify.c \
 	library/libui1/lib3d/model/model.minify.c \
 	library/libui1/lib3d/lib3d.c \
-	library/libui1/external/external.title.c \
-	library/libui1/external/external.toast.c \
-	library/libui1/external/external.c \
-	library/libui1/content/float/float.vkbd.c \
-	library/libui1/content/float/float.vt100.c \
 	library/libui1/content/game/game.2048.c \
 	library/libui1/content/game/game.chess.c \
 	library/libui1/content/game/game.ooxx.c \
