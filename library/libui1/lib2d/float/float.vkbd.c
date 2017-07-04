@@ -29,7 +29,7 @@ static char table[8][8] = {
 
 
 
-static void virtkbd_read(struct arena* win)
+void vkbd_read(struct arena* win)
 {
 	int x,y;
 	int left,top,right,bottom;
@@ -60,7 +60,7 @@ static void virtkbd_read(struct arena* win)
 		}
 	}
 }
-static int virtkbd_write(struct event* ev)
+int vkbd_write(struct event* ev)
 {
 	int x,y;
 	//say("%x,%x\n",x,y);
@@ -88,32 +88,9 @@ static int virtkbd_write(struct event* ev)
 
 
 
-static void virtkbd_into()
+void vkbd_create()
 {
 }
-static void virtkbd_list()
-{
-}
-static void virtkbd_start()
-{
-}
-static void virtkbd_stop()
-{
-}
-void virtkbd_create(void* base, struct actor* act)
-{
-	act->type = 0;
-	act->name = hexof('v','k','b','d',0,0,0,0);
-	act->first = 0;
-	act->last = 0;
-
-	act->start = (void*)virtkbd_start;
-	act->stop = (void*)virtkbd_stop;
-	act->list = (void*)virtkbd_list;
-	act->choose = (void*)virtkbd_into;
-	act->read = (void*)virtkbd_read;
-	act->write = (void*)virtkbd_write;
-}
-void virtkbd_delete()
+void vkbd_delete()
 {
 }

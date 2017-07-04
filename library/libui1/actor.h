@@ -88,7 +88,7 @@ struct actor
 };
 struct relation
 {
-	//[00,1f]:doubly link all arenas of this actor
+	//[00,1f]:doubly link all shows of this arena
 	u64 parent_type;
 	void* parent_this;
 	char padding1[ 8 - sizeof(char*) ];
@@ -97,7 +97,7 @@ struct relation
 	struct relation* parent_next;
 	char padding3[ 8 - sizeof(char*) ];
 
-	//[20,3f]:doubly link all actors of this arena
+	//[20,3f]:doubly link all shows of this actor
 	u64 child_type;
 	void* child_this;
 	char padding5[ 8 - sizeof(char*) ];

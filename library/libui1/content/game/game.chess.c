@@ -12,12 +12,17 @@ void rectbody(void*,
 
 
 
-static void chess_read_pixel(struct arena* win)
+static void chess_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u32 color;
 	int x,y;
-	int w = win->w;
-	int h = win->h;
+	int cx = (win->w) * (rel->cx) / 0x10000;
+	int cy = (win->h) * (rel->cy) / 0x10000;
+	int w = (win->w) * (rel->wantw) / 0x10000 / 8;
+	int h = (win->h) * (rel->wanth) / 0x10000 / 8;
+	if(w >= h)w=h;
+	else h=w;
+
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
@@ -26,39 +31,39 @@ static void chess_read_pixel(struct arena* win)
 			else color = 0xffffff;
 
 			rectbody(win,
-				x*w/8, y*h/8,
-				(x+1)*w/8, (y+1)*h/8,
+				cx+(x-4)*w, cy+(y-4)*h,
+				cx+(x-3)*w, cy+(y-3)*h,
 				color
 			);
 		}
 	}
 }
-static void chess_read_html(struct arena* win)
+static void chess_read_html(struct arena* win, struct actor* act, struct relation* rel)
 {
 }
-static void chess_read_text(struct arena* win)
+static void chess_read_text(struct arena* win, struct actor* act, struct relation* rel)
 {
 }
-static void chess_read(struct arena* win)
+static void chess_read(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text 
 	if(fmt == 0x74786574)
 	{
-		chess_read_text(win);
+		chess_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		chess_read_html(win);
+		chess_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		chess_read_pixel(win);
+		chess_read_pixel(win, act, rel);
 	}
 }
 static void chess_write(struct event* ev)

@@ -4,7 +4,12 @@
 
 
 void cli_write(void*);
-void draw_vt100(void*, int, int, int, int);
+void navi_read(void*);
+void navi_write(void*);
+void vkbd_read(void*);
+void vkbd_write(void*);
+void vt100_read(void*, int, int, int, int);
+void vt100_write(void*);
 
 
 
@@ -20,76 +25,64 @@ static u32 menu=0;
 
 int actorread()
 {
-	int j;
-	struct arena* w;
-	struct actor* p;
-	struct relation* t;
+	int j,k;
+	struct arena* ww;
+	struct relation* tt;
+	struct actor* pp;
 	for(j=0;j<16;j++)
 	{
 		//
-		w = &arena[j];
+		ww = &arena[j];
 
 		//error
-		if(w->fmt == 0)break;
+		if(ww->fmt == 0)break;
 
 		//title
-		//if(w->fmt == 0x)title_read(w);
+		//if(ww->fmt == 0x)title_read(ww);
 
 		//tray
-		//if(w->fmt == 0x)tray_read(w);
+		//if(ww->fmt == 0x)tray_read(ww);
 
 		//voice
-		if(w->fmt == 0x6563696f76)continue;
+		if(ww->fmt == 0x6563696f76)continue;
 
 
 
-
-		//
-		t = &treaty[w->bot];
-		p = t->child_this;
 
 		//1d:	cli
-		if(w->dim == 1)
+		if(ww->dim == 1)
 		{
-			if(w->fmt == 0x696c63)return 0;
+			if(ww->fmt == 0x696c63)return 0;
 
-			draw_vt100(w, 0, 0, 0xffff, 0xffff);
+			vt100_read(ww, 0, 0, 0xffff, 0xffff);
 			return 0;
 		}
 
 		//2d:	rgba
-		else if(w->dim == 2)
+		else if(ww->dim == 2)
 		{
-			p->read(w, p, t);
+			tt = &treaty[ww->bot];
+			for(k=0;k<16;k++)
+			{
+				if(tt == 0)break;
 
+				pp = tt->child_this;
+				pp->read(ww, pp, tt);
+
+				tt = tt->parent_next;
+			}
 			if(menu > 0)
 			{
-				actor[1].read(w, p, t);
-				actor[0].read(w, p, t);
+				navi_read(ww);
+				vkbd_read(ww);
+				vt100_read(ww, 0x2000, 0x2000, 0xe000, 0x8000);
 			}
 			return 0;
 		}
 
 		//3d:	directx, opengl, vulkan
-		else if(w->dim == 3)
+		else if(ww->dim == 3)
 		{
-/*
-			if(w->dim == 1)
-			{
-				carve_term3d(w);
-			}
-			else if(w->dim == 2)
-			{
-				carve_texture(w);
-			}
-			else actor[now].read(w, p, t);
-
-			if(menu > 0)
-			{
-				actor[1].read(w, p, t);
-				actor[0].read(w, p, t);
-			}
-*/
 			return 0;
 		}//dim=3
 	}//for
@@ -181,10 +174,10 @@ int actorwrite(u64* ev)
 
 		if(menu > 0)
 		{
-			actor[1].write(ev);
-			actor[0].write(ev);
+			vkbd_write(ev);
+			cli_write(ev);
 		}
-		return act->write(ev);
+		else act->write(ev);
 	}
 	else //if(win->dim == 3)
 	{
@@ -301,10 +294,10 @@ int actorstart(int w, int a)
 	{
 		if(treaty[t].parent_this == 0)break;
 	}
-	treaty[t].cx = 0x8000 + a*0x80;
-	treaty[t].cy = 0x8000 + a*0x80;
-	treaty[t].wantw = 0xe000;
-	treaty[t].wanth = 0xe000;
+	treaty[t].cx = 0x4000 + a*0x8000;
+	treaty[t].cy = 0x4000 + a*0x8000;
+	treaty[t].wantw = 0x8000;
+	treaty[t].wanth = 0x8000;
 
 	//
 	treaty[t].parent_type = 0;
@@ -339,7 +332,7 @@ int actorstart(int w, int a)
 	}
 
 	//
-	treaty[t].child_type = 1;
+	treaty[t].child_type = 0xffffffff;
 	treaty[t].child_this = &actor[a];
 	if(actor[a].first == 0)		//0
 	{
@@ -350,7 +343,7 @@ int actorstart(int w, int a)
 	}
 	else if(actor[a].last == 0)		//1
 	{
-		treaty[actor[a].first].child_above = 0;
+		treaty[actor[a].first].child_above = &treaty[t];
 
 		treaty[t].child_below = &treaty[actor[a].first];
 		treaty[t].child_above = 0;
@@ -359,7 +352,7 @@ int actorstart(int w, int a)
 	}
 	else	//more
 	{
-		treaty[actor[a].last].child_above = 0;
+		treaty[actor[a].last].child_above = &treaty[t];
 
 		treaty[t].child_below = &treaty[actor[a].last];
 		treaty[t].child_above = 0;
@@ -368,8 +361,7 @@ int actorstart(int w, int a)
 	}
 
 	//
-	actor[a].start();
-	return 0;
+	return t;
 }
 int actorstop()
 {
@@ -398,24 +390,20 @@ void actorcreate(u8* type, u8* addr)
 	//lib3d
 	lib3d_create(addr, 0);
 
-	//special
-	external_create(addr, 0);
-
 	//ordinary
 	content_create(addr, 0);
 
 	//
-	actorstart(0,2);
-	actorstart(0,3);
+	actor[0].start();
+	actorstart(0,0);
+	actor[1].start();
+	actorstart(0,1);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()
 {
 	//say("[c,f):deleteing actor\n");
-	actorstop();
-
 	content_delete();
-	external_delete();
 
 	lib1d_delete();
 	lib2d_delete();

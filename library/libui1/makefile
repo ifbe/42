@@ -9,6 +9,10 @@ target:
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
 	$(compiler) $(cflag) lib2d/draw/draw.shape.c
 	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
+	$(compiler) $(cflag) lib2d/float/float.login.c
+	$(compiler) $(cflag) lib2d/float/float.navi.c
+	$(compiler) $(cflag) lib2d/float/float.vkbd.c
+	$(compiler) $(cflag) lib2d/float/float.vt100.c
 	$(compiler) $(cflag) lib2d/photo/photo.blur.c
 	$(compiler) $(cflag) lib2d/photo/photo.channel.c
 	$(compiler) $(cflag) lib2d/photo/photo.convert.c
@@ -24,14 +28,6 @@ target:
 	$(compiler) $(cflag) lib3d/model/model.magnify.c
 	$(compiler) $(cflag) lib3d/model/model.minify.c
 	$(compiler) $(cflag) lib3d/lib3d.c
-	$(compiler) $(cflag) external/external.notify.c
-	$(compiler) $(cflag) external/external.title.c
-	$(compiler) $(cflag) external/external.toast.c
-	$(compiler) $(cflag) external/external.tray.c
-	$(compiler) $(cflag) external/external.c
-	$(compiler) $(cflag) content/float/float.login.c
-	$(compiler) $(cflag) content/float/float.vkbd.c
-	$(compiler) $(cflag) content/float/float.vt100.c
 	$(compiler) $(cflag) content/game/game.2048.c
 	$(compiler) $(cflag) content/game/game.chess.c
 	$(compiler) $(cflag) content/game/game.ooxx.c

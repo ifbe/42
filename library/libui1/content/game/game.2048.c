@@ -84,17 +84,17 @@ static void cubie(
 		0, 0
 	);
 }
-static void the2048_read_pixel(struct arena* win, struct actor* act, struct relation* rl)
+static void the2048_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int x,y;
 	int cx,cy,w,h;
 	int (*table)[4] = buffer + num*16*4;
 
 	//position
-	cx = (win->w) * (rl->cx) / 0x10000;
-	cy = (win->h) * (rl->cy) / 0x10000;
-	w = (win->w) * (rl->wantw) / 0x10000;
-	h = (win->h) * (rl->wanth) / 0x10000;
+	cx = (win->w) * (rel->cx) / 0x10000;
+	cy = (win->h) * (rel->cy) / 0x10000;
+	w = (win->w) * (rel->wantw) / 0x10000;
+	h = (win->h) * (rel->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
 
@@ -114,7 +114,7 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct rela
 		}
 	}
 }
-static void the2048_read_html(struct arena* win, struct actor* act, struct relation* rl)
+static void the2048_read_html(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int x,y;
 	u32 color;
@@ -154,7 +154,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct relat
 		}
 	}
 }
-static void the2048_read_tui(struct arena* win, struct actor* act, struct relation* rl)
+static void the2048_read_tui(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int x,y,j,k,ret;
 	u8 src[10];
@@ -204,7 +204,7 @@ static void the2048_read_cli()
 	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
 	say("\n");
 }
-static void the2048_read(struct arena* win, struct actor* act, struct relation* rl)
+static void the2048_read(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u64 fmt = win->fmt;
 	u64 dim = win->dim;
@@ -214,13 +214,13 @@ static void the2048_read(struct arena* win, struct actor* act, struct relation* 
 	if(dim == 1)the2048_read_cli();
 
 	//text
-	else if(fmt == 0x74786574)the2048_read_tui(win, act, rl);
+	else if(fmt == 0x74786574)the2048_read_tui(win, act, rel);
 
 	//html
-	else if(fmt == 0x6c6d7468)the2048_read_html(win, act, rl);
+	else if(fmt == 0x6c6d7468)the2048_read_html(win, act, rel);
 
 	//pixel
-	else the2048_read_pixel(win, act, rl);
+	else the2048_read_pixel(win, act, rel);
 }
 
 
