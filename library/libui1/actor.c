@@ -3,6 +3,7 @@
 
 
 
+void motion_explain(void*);
 void cli_write(void*);
 //2d
 void backgroundcolor(void*,u32);
@@ -63,10 +64,6 @@ int actorread()
 		//2d:	rgba
 		else if(ww->dim == 2)
 		{
-			//
-			backgroundcolor(ww, 0);
-
-			//
 			tt = &treaty[ww->bot];
 			for(k=0;k<16;k++)
 			{
@@ -96,7 +93,7 @@ int actorread()
 	}//for
 	return 0;
 }
-int actorwrite(u64* ev)
+int actorwrite(struct event* ev)
 {
 	//prepare
 /*
@@ -104,48 +101,52 @@ int actorwrite(u64* ev)
 	if(w-)	//del win
 	if(w@)	//changed memaddr
 */
-	if(ev[1] == 0x727473)
+	if(ev->what == 0x727473)
 	{
 		cli_write(ev);
 		return 0;
 	}
-	if(ev[2] < 0x1000)ev[2] = (u64)(&arena[0]);
+	if(ev->where < 0x1000)ev->where = (u64)(&arena[0]);
 
 
 
 
 	//process
 	int x,y,z,w;
-	u64 why = ev[0];
-	u64 what = ev[1];
-	struct arena* win = (void*)ev[2];
+	u64 why,what;
+	struct arena* win = (void*)(ev->where);
 	struct relation* rel;
 	struct actor* act;
 	//u64 when = ev[3];
 
-	//kbd
-	if(what == 0x64626b)
-	{
-		if(why == 0xf1){win->dim = 1;return 0;}
-		else if(why == 0xf2){win->dim = 2;return 0;}
-		else if(why == 0xf3){win->dim = 3;return 0;}
-	}//kbd
-
 	//
+	why = ev->why;
+	what = ev->what;
 	rel = &treaty[win->top];
 	if((what&0xff)=='p')
 	{
+		//
 		x = why&0xffff;
 		y = (why>>16)&0xffff;
 		w = (why>>48)&0xffff;
-		if( (x < (rel->cx)-(rel->wantw)/2) |
-			(x > (rel->cx)+(rel->wantw)/2) |
-			(y < (rel->cy)-(rel->wanth)/2) |
-			(y > (rel->cy)+(rel->wanth)/2) )
+		while(1)
 		{
+			if(rel == &treaty[win->bot])break;
+
+			if(x > (int)(rel->cx) - (int)(rel->wantw)/2){
+			if(x < (int)(rel->cx) + (int)(rel->wantw)/2){
+			if(y > (int)(rel->cy) - (int)(rel->wanth)/2){
+			if(y < (int)(rel->cy) + (int)(rel->wanth)/2){
+				break;
+			}
+			}
+			}
+			}
+
 			rel = rel->below;
 		}
 
+		//
 		if(w == 'r')
 		{
 			if(what == 0x2b70)tmp = why;
@@ -175,9 +176,22 @@ int actorwrite(u64* ev)
 			rel->wantw = rel->wantw*110/100;
 			rel->wanth = rel->wanth*110/100;
 		}
+		else
+		{
+			motion_explain(ev);
+		}
 	}//mouse
 
-	//
+	//kbd
+	why = ev->why;
+	what = ev->what;
+	if(what == 0x64626b)
+	{
+		if(why == 0xf1){win->dim = 1;return 0;}
+		else if(why == 0xf2){win->dim = 2;return 0;}
+		else if(why == 0xf3){win->dim = 3;return 0;}
+	}//kbd
+
 	if(win->dim == 1)
 	{
 		cli_write(ev);
@@ -317,8 +331,8 @@ int actorstart(int w, int a)
 	{
 		if(treaty[t].parent_this == 0)break;
 	}
-	treaty[t].cx = 0x4000 + a*0x8000;
-	treaty[t].cy = 0x4000 + a*0x8000;
+	treaty[t].cx = 0x4000 + 0x8000*(a%2);
+	treaty[t].cy = 0x4000 + 0x8000*((a/2)%2);
 	treaty[t].wantw = 0x8000;
 	treaty[t].wanth = 0x8000;
 
@@ -418,9 +432,11 @@ void actorcreate(u8* type, u8* addr)
 
 	//
 	actor[0].start();
-	actorstart(0,0);
-	actor[1].start();
-	actorstart(0,1);
+	actorstart(0, 0);
+	actor[3].start();
+	actorstart(0, 3);
+	actor[2].start();
+	actorstart(0, 2);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()

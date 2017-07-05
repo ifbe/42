@@ -2,6 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//bg
+void bgcolor_create(u8*,u8*);
+void bgcolor_delete();
+void bgpicture_create(u8*,u8*);
+void bgpicture_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -63,6 +68,13 @@ void say(void*, ...);
 int content_create(u8* addr)
 {
 	u8* temp = (void*)(addr+0x100000);
+
+	//
+	bgcolor_create(addr, temp);
+	temp += 0x100;
+
+	bgpicture_create(addr, temp);
+	temp += 0x100;
 
 	//game.2048
 	the2048_create(addr, temp);
@@ -192,4 +204,7 @@ void content_delete()
 	tetris_delete();
 	weiqi_delete();
 	xiangqi_delete();
+
+	bgpicture_delete();
+	bgcolor_delete();
 }

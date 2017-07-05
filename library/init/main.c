@@ -9,7 +9,6 @@ int actorwrite(void* event);
 int arenaread();
 int arenawrite();
 //libsoft1
-void motion_explain(void*);
 void network_explain(void*);
 void sound_explain(void*);
 void vision_explain(void*);
@@ -91,12 +90,7 @@ again:
 
 
 		//3.pre process
-		if(((ev->what)&0xff) == 'p')
-		{
-			//sensor rawdata -> my event
-			motion_explain(ev);
-		}
-		else if(((ev->what)&0xff) == 'n')
+		if(((ev->what)&0xff) == 'n')
 		{
 			//network rawdata -> my event
 			network_explain(ev);

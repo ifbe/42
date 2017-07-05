@@ -5,12 +5,9 @@
 #include <android/bitmap.h>
 #include "arena.h"
 //
-void actorstart(int);
-void actorstop(int);
 void actorwrite(void* p);
 void actorread();
 //
-void motion_explain(u64* p);
 void network_explain(u64* p);
 void sound_explain(u64* p);
 void vision_explain(u64* p);
@@ -58,9 +55,6 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong value)
 {
 	u64 p[4] = {value, type, (u64)&win[0], 0};
-	motion_explain(p);
-	say("event:%x,%x,%x,0\n", p[0], p[1], p[2]);
-
 	actorwrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)
@@ -93,7 +87,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	win[0].w = info.width;
 	win[0].h = info.height;
 	win[0].dim = 2;
-	actorstart(0);
+
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
