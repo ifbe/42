@@ -433,10 +433,14 @@ void actorcreate(u8* type, u8* addr)
 	//
 	actor[0].start();
 	actorstart(0, 0);
-	actor[3].start();
-	actorstart(0, 3);
 	actor[2].start();
 	actorstart(0, 2);
+	actor[3].start();
+	actorstart(0, 3);
+	actor[4].start();
+	actorstart(0, 4);
+	actor[5].start();
+	actorstart(0, 5);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()

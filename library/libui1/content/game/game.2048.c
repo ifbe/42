@@ -17,7 +17,7 @@ void drawdecimal(
 
 //
 static int num;
-static void* buffer;
+static u8 buffer[256];
 
 
 
@@ -88,7 +88,7 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct rela
 {
 	int x,y;
 	int cx,cy,w,h;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	//position
 	cx = (win->w) * (rel->cx) / 0x10000;
@@ -119,7 +119,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct relat
 	int x,y;
 	u32 color;
 	u8* buf = (u8*)(win->buf);
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	buf += fmt(
 		buf, 0x1000,
@@ -162,7 +162,7 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct relati
 	int w = win->w;
 	int h = win->h;
 	u8* buf = (u8*)(win->buf);
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)buf[x]=0;
 	for(y=0;y<4;y++)
@@ -197,7 +197,7 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct relati
 }
 static void the2048_read_cli()
 {
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
 	say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
 	say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
@@ -231,7 +231,7 @@ static void left2048()
 {
 	int x,y;
 	int dst,temp;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	//4对祭品
 	for(y=0;y<4;y++)
@@ -279,7 +279,7 @@ static void right2048()
 {
 	int x,y;
 	int dst,temp;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	for(y=0;y<4;y++)
 	{
@@ -317,7 +317,7 @@ static void up2048()
 {
 	int x,y;
 	int dst,temp;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	for(x=0;x<4;x++)
 	{
@@ -355,7 +355,7 @@ static void down2048()
 {
 	int x,y;
 	int dst,temp;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	for(x=0;x<4;x++)
 	{
@@ -393,7 +393,7 @@ static void new2048()
 {
 	int x,y;
 	int who,temp;
-	int (*table)[4] = buffer + num*16*4;
+	int (*table)[4] = (void*)buffer + num*16*4;
 
 	//how many blank cubie
 	who=0;
@@ -451,9 +451,9 @@ static void the2048_write(struct event* ev)
 		if( (key>=0x25) && (key<=0x28) )
 		{
 			//
-			p = buffer + 64*num;
-			num = (num+1)%0x1000;
-			q = buffer + 64*num;
+			p = (void*)buffer + 64*num;
+			num = (num+1)%4;
+			q = (void*)buffer + 64*num;
 			for(j=0;j<16;j++)q[j] = p[j];
 
 			//
@@ -494,8 +494,7 @@ static void the2048_stop()
 static void the2048_start()
 {
 	int j;
-	u8* buf = buffer;
-	for(j=0;j<0x4000;j++)buf[j] = 0;
+	for(j=0;j<256;j++)buffer[j] = 0;
 
 	//
 	num = 0;
@@ -506,8 +505,6 @@ void the2048_delete()
 }
 void the2048_create(void* base, struct actor* act)
 {
-	buffer = base + 0x300000;
-
 	act->type = hexof('g','a','m','e',0,0,0,0);
 	act->name = hexof('2','0','4','8',0,0,0,0);
 	act->first = 0;

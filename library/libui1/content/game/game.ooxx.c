@@ -18,31 +18,38 @@ static char data[9];
 
 
 
-void ooxx_read(struct arena* win)
+void ooxx_read(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int x,y;
-	int width = win->w;
-	int height = win->h;
-	int min = (width<height) ? width:height;
+	int cx,cy,w,h;
+	cx = (win->w) * (rel->cx) / 0x10000;
+	cy = (win->h) * (rel->cy) / 0x10000;
+	w = (win->w) * (rel->wantw) / 0x10000;
+	h = (win->h) * (rel->wanth) / 0x10000;
+	if(w >= h)w=h;
+	else h=w;
 
-	backgroundcolor(win, 0);
+	//heng
 	line(win,
-		min/16, min/3,
-		min*15/16, min/3,
+		cx-w/2, cy-h/6,
+		cx+w/2, cy-h/6,
 		0xffffffff);
 	line(win,
-		min/16, min*2/3,
-		min*15/16, min*2/3,
-		0xffffffff);
-	line(win,
-		min/3, min/16,
-		min/3, min*15/16,
-		0xffffffff);
-	line(win,
-		min*2/3, min/16,
-		min*2/3, min*16/16,
+		cx-w/2, cy+h/6,
+		cx+w/2, cy+h/6,
 		0xffffffff);
 
+	//shu
+	line(win,
+		cx-w/6, cy-h/2,
+		cx-w/6, cy+h/2,
+		0xffffffff);
+	line(win,
+		cx+w/6, cy-h/2,
+		cx+w/6, cy+h/2,
+		0xffffffff);
+
+	//ox
 	for(y=0;y<3;y++)
 	{
 		for(x=0;x<3;x++)
@@ -50,22 +57,22 @@ void ooxx_read(struct arena* win)
 			if(data[3*y + x] == 'o')
 			{
 				circleframe(win,
-					(2*x+1)*min/6,
-					(2*y+1)*min/6,
-					min/12,
+					cx+(x-1)*w/3,
+					cy+(y-1)*h/3,
+					w/12,
 					0xff
 				);
 			}
 			else if(data[3*y + x] == 'x')
 			{
 				line(win,
-					(4*x+1)*min/12, (4*y+1)*min/12,
-					(4*x+3)*min/12, (4*y+3)*min/12,
+					cx+(4*x-5)*w/12, cy+(4*y-5)*h/12,
+					cx+(4*x-3)*w/12, cy+(4*y-3)*h/12,
 					0xff0000
 				);
 				line(win,
-					(4*x+3)*min/12, (4*y+1)*min/12,
-					(4*x+1)*min/12, (4*y+3)*min/12,
+					cx+(4*x-5)*w/12, cy+(4*y-3)*h/12,
+					cx+(4*x-3)*w/12, cy+(4*y-5)*h/12,
 					0xff0000
 				);
 			}

@@ -38,37 +38,24 @@ static int die=0;
 
 
 
-void snake_read_pixel(struct arena* win)
+void snake_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	//create screen
 	int j;
-	int width = win->w;
-	int height = win->h;
-	backgroundcolor(win, 0);
+	int cx,cy,w,h;
+	cx = (win->w) * (rel->cx) / 0x10000;
+	cy = (win->h) * (rel->cy) / 0x10000;
+	w = (win->w) * (rel->wantw) / 0x10000;
+	h = (win->h) * (rel->wanth) / 0x10000;
+	if(w >= h)w=h;
+	else h=w;
 
 	if(die == 1)
 	{
-		line(win,
-			0, 0,
-			width-1, height-1,
-			0xffffffff
-		);
-		line(win,
-			width-1, 0,
-			0, height-1,
-			0xffffffff
-		);
-	}
-
-	//shadow
-	if( (a.x>=0) && (a.y>=0) )
-	{
 		rectbody(win,
-			a.x * width/worldwidth,
-			a.y * height/worldheight,
-			(a.x+1) * width/worldwidth,
-			(a.y+1) * height/worldheight,
-			0xf
+			cx-w/2, cy-h/2,
+			cx+w/2, cy+h/2,
+			0xffffff
 		);
 	}
 
@@ -77,10 +64,10 @@ void snake_read_pixel(struct arena* win)
 	while(1)
 	{
 		rect(win,
-			snake[j].x * width/worldwidth,
-			snake[j].y * height/worldheight,
-			(snake[j].x+1) * width/worldwidth,
-			(snake[j].y+1) * height/worldheight,
+			(cx-w/2) + w * snake[j].x / worldwidth,
+			(cy-h/2) + h * snake[j].y / worldheight,
+			(cx-w/2) + w * (snake[j].x+1) / worldwidth,
+			(cy-h/2) + h * (snake[j].y+1) / worldheight,
 			0xffffffff,
 			0
 		);
@@ -91,10 +78,10 @@ void snake_read_pixel(struct arena* win)
 
 	//food
 	rect(win,
-		foodx * width/worldwidth,
-		foody * height/worldheight,
-		(foodx+1) * width/worldwidth,
-		(foody+1) * height/worldheight,
+		(cx-w/2) + w * foodx / worldwidth,
+		(cy-h/2) + h * foody / worldheight,
+		(cx-w/2) + w * (foodx+1) / worldwidth,
+		(cy-h/2) + h * (foody+1) / worldheight,
 		0xff00,
 		0
 	);
@@ -103,7 +90,7 @@ void snake_read_pixel(struct arena* win)
 
 
 
-void snake_read_text(struct arena* win)
+void snake_read_text(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int j,t;
 	int width = win->w;
@@ -139,7 +126,7 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html(struct arena* win)
+void snake_read_html(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int j = 0;
 	char* p = (char*)(win->buf);
@@ -175,26 +162,26 @@ void snake_read_html(struct arena* win)
 
 
 
-void snake_read(struct arena* win)
+void snake_read(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		snake_read_text(win);
+		snake_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		snake_read_html(win);
+		snake_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		snake_read_pixel(win);
+		snake_read_pixel(win, act, rel);
 	}
 }
 
