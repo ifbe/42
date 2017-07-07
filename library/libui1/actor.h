@@ -7,78 +7,6 @@
 
 
 
-struct arena
-{
-	u64 type;		//local,cli,voice,vnc,rdp,...
-	u64 fmt;		//rgba8888,vt100...
-	u64 bot;
-	u64 top;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 buf;
-	u64 len;
-	u64 dim;
-	u64 hah;
-
-	u64 wnd;
-	u64 dc;
-	u64 xx;
-	u64 thread;
-
-	u64 input[16];
-};
-struct actor
-{
-	//[0,1f]
-	u64 type;
-	u64 name;
-	u64 first;
-	u64 last;
-
-	//[20,3f]
-	u64 aa;
-	u64 bb;
-	u64 cc;
-	u64 dd;
-
-	//[40,47]
-	int (*create)();
-	char padding0[ 8 - sizeof(char*) ];
-
-	//[48,4f]
-	int (*delete)();
-	char padding1[ 8 - sizeof(char*) ];
-
-	//[50,57]:开始
-	int (*start)();
-	char padding2[ 8 - sizeof(char*) ];
-
-	//[58,5f]:结束
-	int (*stop)();
-	char padding3[ 8 - sizeof(char*) ];
-
-	//[60,67]:观察
-	int (*list)();
-	char padding4[ 8 - sizeof(char*) ];
-
-	//[68,6f]:调整
-	int (*choose)();
-	char padding5[ 8 - sizeof(char*) ];
-
-	//[70,77]:输出
-	int (*read)(void* arena, void* actor, void* treaty);
-	char padding6[ 8 - sizeof(char*) ];
-
-	//[78,7f]:输入
-	int (*write)(void* event);
-	char padding7[ 8 - sizeof(char*) ];
-
-	char priv[0x80];
-};
 struct relation
 {
 	//[00,1f]:doubly link all shows of this arena
@@ -135,6 +63,82 @@ struct relation
 	u64 a6;
 	u64 a7;
 };
+struct arena
+{
+	u64 type;		//local,cli,voice,vnc,rdp,...
+	u64 fmt;		//rgba8888,vt100...
+	struct relation* bot;
+	char pad0[ 8 - sizeof(char*) ];
+	struct relation* top;
+	char pad1[ 8 - sizeof(char*) ];
+
+	u64 w;
+	u64 h;
+	u64 d;
+	u64 t;
+
+	u64 buf;
+	u64 len;
+	u64 dim;
+	u64 hah;
+
+	u64 wnd;
+	u64 dc;
+	u64 xx;
+	u64 thread;
+
+	u64 input[16];
+};
+struct actor
+{
+	//[0,1f]
+	u64 type;
+	u64 name;
+	struct relation* first;
+	char pad0[ 8 - sizeof(char*) ];
+	struct relation* last;
+	char pad1[ 8 - sizeof(char*) ];
+
+	//[20,3f]
+	u64 aa;
+	u64 bb;
+	u64 cc;
+	u64 dd;
+
+	//[40,47]
+	int (*create)();
+	char padding0[ 8 - sizeof(char*) ];
+
+	//[48,4f]
+	int (*delete)();
+	char padding1[ 8 - sizeof(char*) ];
+
+	//[50,57]:开始
+	int (*start)();
+	char padding2[ 8 - sizeof(char*) ];
+
+	//[58,5f]:结束
+	int (*stop)();
+	char padding3[ 8 - sizeof(char*) ];
+
+	//[60,67]:观察
+	int (*list)();
+	char padding4[ 8 - sizeof(char*) ];
+
+	//[68,6f]:调整
+	int (*choose)();
+	char padding5[ 8 - sizeof(char*) ];
+
+	//[70,77]:输出
+	int (*read)(void* rel);
+	char padding6[ 8 - sizeof(char*) ];
+
+	//[78,7f]:输入
+	int (*write)(void* event);
+	char padding7[ 8 - sizeof(char*) ];
+
+	char priv[0x80];
+};
 struct event
 {
 	u64 why;
@@ -146,32 +150,27 @@ struct event
 
 
 
-//
-void content_create(void*, void*);
-void content_delete();
-void lib1d_create(void*, void*);
-void lib1d_delete();
-void lib2d_create(void*, void*);
-void lib2d_delete();
-void lib3d_create(void*, void*);
-void lib3d_delete();
 //libsoft1
 int double2decstr(double, void*);
 int double2hexstr(double, void*);
+
 int data2decstr(u64 data,u8* str);
 int data2hexstr(u64 data,u8* str);
+
 int datastr2decstr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
 
 int decstr2data(void* str, u64 data);
 int decstr2datastr(void* dst, void* src, int len);
 int decstr2double(void* dst, void* src, int len);
+
 int hexstr2data(void* str, u64 data);
 int hexstr2datastr(void* dst, void* src, int len);
 int hexstr2double(void* dst, void* src, int len);
 
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
+
 int md5sum(void*, void*, int);
 int sha1sum(void*, void*, int);
 int sha256sum(void*, void*, int);
@@ -180,6 +179,7 @@ int sha512sum(void*, void*, int);
 //libsoft0
 u32 getrandom();
 u64 gettime();
+
 int readfile(void*, void*, u64, u64);
 int writefile(void*, void*, u64, u64);
 //libhard1

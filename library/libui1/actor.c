@@ -1,18 +1,21 @@
 #include "actor.h"
-
-
-
-
 void motion_explain(void*);
-void cli_write(void*);
+void content_create(void*, void*);
+void content_delete();
+void levitate_create(void*, void*);
+void levitate_delete();
+void lib1d_create(void*, void*);
+void lib1d_delete();
+void lib2d_create(void*, void*);
+void lib2d_delete();
+void lib3d_create(void*, void*);
+void lib3d_delete();
 //2d
-void backgroundcolor(void*,u32);
-void navi_read(void*);
-void navi_write(void*);
-void vkbd_read(void*);
-void vkbd_write(void*);
+void levitate_read(void*);
 void vt100_read(void*, int, int, int, int);
-void vt100_write(void*);
+//
+void cli_write(void*);
+void vkbd_write(void*);
 
 
 
@@ -29,64 +32,59 @@ static u32 menu=0;
 int actorread()
 {
 	int j,k;
-	struct arena* ww;
-	struct relation* tt;
-	struct actor* pp;
+	struct arena* win;
+	struct relation* rel;
+	struct actor* act;
 	for(j=0;j<16;j++)
 	{
 		//
-		ww = &arena[j];
+		win = &arena[j];
 
 		//error
-		if(ww->fmt == 0)break;
+		if(win->fmt == 0)break;
 
 		//title
-		//if(ww->fmt == 0x)title_read(ww);
+		//if(win->fmt == 0x)title_read(win);
 
 		//tray
-		//if(ww->fmt == 0x)tray_read(ww);
+		//if(win->fmt == 0x)tray_read(win);
 
 		//voice
-		if(ww->fmt == 0x6563696f76)continue;
+		if(win->fmt == 0x6563696f76)continue;
 
 
 
 
 		//1d:	cli
-		if(ww->dim == 1)
+		if(win->dim == 1)
 		{
-			if(ww->fmt == 0x696c63)return 0;
+			if(win->fmt == 0x696c63)return 0;
 
-			vt100_read(ww, 0, 0, 0xffff, 0xffff);
+			vt100_read(win, 0, 0, 0xffff, 0xffff);
 			return 0;
 		}
 
 		//2d:	rgba
-		else if(ww->dim == 2)
+		else if(win->dim == 2)
 		{
-			tt = &treaty[ww->bot];
+			rel = win->bot;
 			for(k=0;k<16;k++)
 			{
-				if(tt == 0)break;
+				if(rel == 0)break;
 
-				pp = tt->child_this;
-				pp->read(ww, pp, tt);
+				act = rel->child_this;
+				act->read(rel);
 
-				tt = tt->above;
+				rel = rel->above;
 			}
 
 			//
-			if(menu > 0)
-			{
-				navi_read(ww);
-				vkbd_read(ww);
-				vt100_read(ww, 0x2000, 0x2000, 0xe000, 0x8000);
-			}
+			if(menu > 0)levitate_read(win);
 			return 0;
 		}
 
 		//3d:	directx, opengl, vulkan
-		else if(ww->dim == 3)
+		else if(win->dim == 3)
 		{
 			return 0;
 		}//dim=3
@@ -122,7 +120,7 @@ int actorwrite(struct event* ev)
 	//
 	why = ev->why;
 	what = ev->what;
-	rel = &treaty[win->top];
+	rel = win->top;
 	if((what&0xff)=='p')
 	{
 		//
@@ -131,7 +129,7 @@ int actorwrite(struct event* ev)
 		w = (why>>48)&0xffff;
 		while(1)
 		{
-			if(rel == &treaty[win->bot])break;
+			if(rel == win->bot)break;
 
 			if(x > (int)(rel->cx) - (int)(rel->wantw)/2){
 			if(x < (int)(rel->cx) + (int)(rel->wantw)/2){
@@ -344,28 +342,28 @@ int actorstart(int w, int a)
 		treaty[t].below = 0;
 		treaty[t].above = 0;
 
-		arena[w].bot = t;
-		//arena[w].top = 0;
+		arena[w].bot = &treaty[t];
+		arena[w].top = 0;
 	}
 	else if(arena[w].top == 0)	//1
 	{
-		treaty[arena[w].bot].above = &treaty[t];
+		(arena[w].bot)->above = &treaty[t];
 
-		treaty[t].below = &treaty[arena[w].bot];
+		treaty[t].below = arena[w].bot;
 		treaty[t].above = 0;
 
 		//arena[w].bot = itself
-		arena[w].top = t;
+		arena[w].top = &treaty[t];
 	}
 	else	//more
 	{
-		treaty[arena[w].top].above = &treaty[t];
+		(arena[w].top)->above = &treaty[t];
 
-		treaty[t].below = &treaty[arena[w].top];
+		treaty[t].below = arena[w].top;
 		treaty[t].above = 0;
 
 		//arena[w].bot = itself
-		arena[w].top = t;
+		arena[w].top = &treaty[t];
 	}
 
 	//
@@ -376,25 +374,25 @@ int actorstart(int w, int a)
 		treaty[t].prev = 0;
 		treaty[t].next = 0;
 
-		actor[a].first = t;
+		actor[a].first = &treaty[t];
 	}
 	else if(actor[a].last == 0)		//1
 	{
-		treaty[actor[a].first].next = &treaty[t];
+		(actor[a].first)->next = &treaty[t];
 
-		treaty[t].prev = &treaty[actor[a].first];
+		treaty[t].prev = actor[a].first;
 		treaty[t].next = 0;
 
-		actor[a].last = t;
+		actor[a].last = &treaty[t];
 	}
 	else	//more
 	{
-		treaty[actor[a].last].next = &treaty[t];
+		(actor[a].last)->next = &treaty[t];
 
-		treaty[t].prev = &treaty[actor[a].last];
+		treaty[t].prev = actor[a].last;
 		treaty[t].next = 0;
 
-		actor[a].last = t;
+		actor[a].last = &treaty[t];
 	}
 
 	//
@@ -427,8 +425,11 @@ void actorcreate(u8* type, u8* addr)
 	//lib3d
 	lib3d_create(addr, 0);
 
-	//ordinary
+	//bottom
 	content_create(addr, 0);
+
+	//upper
+	levitate_create(addr, 0);
 
 	//
 	actor[0].start();

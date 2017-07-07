@@ -17,8 +17,10 @@ static void bgcolor_read_pixel(struct arena* win, struct actor* act, struct rela
 {
 	backgroundcolor(win, 0);
 }
-static void bgcolor_read(struct arena* win, struct actor* act, struct relation* rel)
+static void bgcolor_read(struct relation* rel)
 {
+	struct arena* win = rel->parent_this;
+	struct actor* act = rel->child_this;
 	u64 fmt = win->fmt;
 	u64 dim = win->dim;
 

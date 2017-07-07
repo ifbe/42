@@ -118,8 +118,8 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct relat
 {
 	int x,y;
 	u32 color;
-	u8* buf = (u8*)(win->buf);
 	int (*table)[4] = (void*)buffer + num*16*4;
+	u8* buf = (u8*)(win->buf);
 
 	buf += fmt(
 		buf, 0x1000,
@@ -158,11 +158,11 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct relati
 {
 	int x,y,j,k,ret;
 	u8 src[10];
+	int (*table)[4] = (void*)buffer + num*16*4;
 
+	u8* buf = (u8*)(win->buf);
 	int w = win->w;
 	int h = win->h;
-	u8* buf = (u8*)(win->buf);
-	int (*table)[4] = (void*)buffer + num*16*4;
 
 	for(x=0;x<w*h*4;x++)buf[x]=0;
 	for(y=0;y<4;y++)
@@ -204,11 +204,12 @@ static void the2048_read_cli()
 	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
 	say("\n");
 }
-static void the2048_read(struct arena* win, struct actor* act, struct relation* rel)
+static void the2048_read(struct relation* rel)
 {
+	struct arena* win = rel->parent_this;
+	struct actor* act = rel->child_this;
 	u64 fmt = win->fmt;
 	u64 dim = win->dim;
-	//say("@2048.read\n");
 
 	//cli
 	if(dim == 1)the2048_read_cli();

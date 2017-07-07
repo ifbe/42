@@ -255,9 +255,6 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
-	library/libui1/lib2d/float/float.navi.c \
-	library/libui1/lib2d/float/float.vkbd.c \
-	library/libui1/lib2d/float/float.vt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \
@@ -301,6 +298,10 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/tool/tool.sketchpad.c \
 	library/libui1/content/tool/tool.spectrum.c \
 	library/libui1/content/content.c \
+	library/libui1/levitate/lev.navi.c \
+	library/libui1/levitate/lev.vkbd.c \
+	library/libui1/levitate/lev.vt100.c \
+	library/libui1/levitate/lev.c \
 	library/libui1/actor.c
 
 

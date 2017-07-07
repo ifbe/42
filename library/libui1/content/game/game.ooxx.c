@@ -18,7 +18,7 @@ static char data[9];
 
 
 
-void ooxx_read(struct arena* win, struct actor* act, struct relation* rel)
+void ooxx_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	int x,y;
 	int cx,cy,w,h;
@@ -78,6 +78,14 @@ void ooxx_read(struct arena* win, struct actor* act, struct relation* rel)
 			}
 		}//forx
 	}//fory
+}
+static void ooxx_read(struct relation* rel)
+{
+	struct arena* win = rel->parent_this;
+	struct actor* act = rel->child_this;
+	u64 fmt = win->fmt;
+
+	ooxx_read_pixel(win, act, rel);
 }
 
 

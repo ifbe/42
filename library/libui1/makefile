@@ -9,10 +9,6 @@ target:
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
 	$(compiler) $(cflag) lib2d/draw/draw.shape.c
 	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
-	$(compiler) $(cflag) lib2d/float/float.login.c
-	$(compiler) $(cflag) lib2d/float/float.navi.c
-	$(compiler) $(cflag) lib2d/float/float.vkbd.c
-	$(compiler) $(cflag) lib2d/float/float.vt100.c
 	$(compiler) $(cflag) lib2d/photo/photo.blur.c
 	$(compiler) $(cflag) lib2d/photo/photo.channel.c
 	$(compiler) $(cflag) lib2d/photo/photo.convert.c
@@ -58,6 +54,11 @@ target:
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
 	$(compiler) $(cflag) content/content.c
+	$(compiler) $(cflag) levitate/lev.login.c
+	$(compiler) $(cflag) levitate/lev.navi.c
+	$(compiler) $(cflag) levitate/lev.vkbd.c
+	$(compiler) $(cflag) levitate/lev.vt100.c
+	$(compiler) $(cflag) levitate/lev.c
 	$(compiler) $(cflag) actor.c
 clean:
 	rm -f *.o *.a

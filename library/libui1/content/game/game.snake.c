@@ -162,8 +162,10 @@ void snake_read_html(struct arena* win, struct actor* act, struct relation* rel)
 
 
 
-void snake_read(struct arena* win, struct actor* act, struct relation* rel)
+void snake_read(struct relation* rel)
 {
+	struct arena* win = rel->parent_this;
+	struct actor* act = rel->child_this;
 	u64 fmt = win->fmt;
 
 	//text
