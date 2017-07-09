@@ -1,5 +1,4 @@
 #include "actor.h"
-void motion_explain(void*);
 void content_create(void*, void*);
 void content_delete();
 void levitate_create(void*, void*);
@@ -11,11 +10,13 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //2d
-void levitate_read(void*);
-void vt100_read(void*, int, int, int, int);
+int levitate_read(void*);
+int levitate_write(void*);
 //
+void vt100_read(void*, int, int, int, int);
 void cli_write(void*);
-void vkbd_write(void*);
+//
+void motion_explain(void*);
 
 
 
@@ -23,7 +24,6 @@ static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct relation* treaty = 0;
 //
-static u64 tmp=0;
 static u32 menu=0;
 
 
@@ -109,87 +109,33 @@ int actorwrite(struct event* ev)
 
 
 
-	//process
+	//
 	int x,y,z,w;
 	u64 why,what;
 	struct arena* win = (void*)(ev->where);
-	struct relation* rel;
 	struct actor* act;
-	//u64 when = ev[3];
+	struct relation* rel;
 
 	//
 	why = ev->why;
 	what = ev->what;
-	rel = win->top;
-	if((what&0xff)=='p')
+	if((what&0xff) == 'p')
 	{
-		//
-		x = why&0xffff;
-		y = (why>>16)&0xffff;
-		w = (why>>48)&0xffff;
-		while(1)
-		{
-			if(rel == win->bot)break;
+		motion_explain(ev);
+	}
 
-			if(x > (int)(rel->cx) - (int)(rel->wantw)/2){
-			if(x < (int)(rel->cx) + (int)(rel->wantw)/2){
-			if(y > (int)(rel->cy) - (int)(rel->wanth)/2){
-			if(y < (int)(rel->cy) + (int)(rel->wanth)/2){
-				break;
-			}
-			}
-			}
-			}
-
-			rel = rel->below;
-		}
-
-		//
-		if(w == 'r')
-		{
-			if(what == 0x2b70)tmp = why;
-			else if(what == 0x2d70)tmp = 0;
-			else if(what == 0x4070)
-			{
-				if(tmp != 0)
-				{
-					x = (why&0xffff) - (tmp&0xffff);
-					y = ((why>>16)&0xffff) - ((tmp>>16)&0xffff);
-					rel->cx += x;
-					rel->cy += y;
-					tmp = why;
-				}
-			}
-		}
-		else if(w == '?')
-		{
-		}
-		else if(w == 'b')
-		{
-			rel->wantw = rel->wantw*90/100;
-			rel->wanth = rel->wanth*90/100;
-		}
-		else if(w == 'f')
-		{
-			rel->wantw = rel->wantw*110/100;
-			rel->wanth = rel->wanth*110/100;
-		}
-		else
-		{
-			motion_explain(ev);
-		}
-	}//mouse
-
-	//kbd
+	//
 	why = ev->why;
 	what = ev->what;
 	if(what == 0x64626b)
 	{
-		if(why == 0xf1){win->dim = 1;return 0;}
+		if(why == 0x1b){menu ^= 1;return 0;}
+		else if(why == 0xf1){win->dim = 1;return 0;}
 		else if(why == 0xf2){win->dim = 2;return 0;}
 		else if(why == 0xf3){win->dim = 3;return 0;}
-	}//kbd
+	}
 
+	//
 	if(win->dim == 1)
 	{
 		cli_write(ev);
@@ -197,19 +143,14 @@ int actorwrite(struct event* ev)
 	}
 	else if(win->dim == 2)
 	{
-		if( (what == 0x64626b)&&(why == 0x1b) )
-		{
-			menu ^= 1;
-			return 0;
-		}
-
 		if(menu > 0)
 		{
-			vkbd_write(ev);
-			cli_write(ev);
+			levitate_write(ev);
+			return 0;
 		}
 		else
 		{
+			rel = win->top;
 			act = rel->child_this;
 			act->write(ev);
 		}

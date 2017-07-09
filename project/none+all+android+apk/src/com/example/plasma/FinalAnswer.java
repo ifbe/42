@@ -72,7 +72,6 @@ class FinalAnswerView extends View {
 	private static native void Read(Bitmap bitmap);
 	private static native void Write(long type, long value);
 
-	private int doit=1;
 	private Bitmap mBitmap;
 	private int w = getResources().getDisplayMetrics().widthPixels;
 	private int h = getResources().getDisplayMetrics().heightPixels;
@@ -85,11 +84,7 @@ class FinalAnswerView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if(doit==1)
-		{
-			Read(mBitmap);
-			doit=0;
-		}
+		Read(mBitmap);
 
 		// canvas.drawColor(0xFFCCCCCC);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
@@ -137,9 +132,6 @@ class FinalAnswerView extends View {
 			temp=(temp<<16)+(long)(event.getY(index) * 65536 / h);
 			temp=(temp<<16)+(long)(event.getX(index) * 65536 / w);
 			Write(0x2d70 , temp);
-
-			//Read(mBitmap);
-			doit=1;
 		}
 
 		return true;

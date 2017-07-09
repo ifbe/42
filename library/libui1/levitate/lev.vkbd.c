@@ -68,21 +68,22 @@ int vkbd_write(struct event* ev)
 	if(ev->what == 0x2d70)
 	{
 		x = (ev->why)&0xffff;
-		if(x < arealeft)return 1;
-		if(x > arearight)return 1;
+		if(x < arealeft)return 0;
+		if(x > arearight)return 0;
 
 		y = ((ev->why)>>16)&0xffff;
-		if(y < areatop)return 1;
-		if(y > areabottom)return 1;
+		if(y < areatop)return 0;
+		if(y > areabottom)return 0;
 
 		x = (x-arealeft)*8/32768;
 		y = (y-areatop)*8/16384;
 
 		ev->what = 0x72616863;
 		ev->why = table[y][x];
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }
 
 
