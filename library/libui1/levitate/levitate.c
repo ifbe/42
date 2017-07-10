@@ -33,11 +33,27 @@ static int shownavi = 0;
 
 
 
+void levitate_delete()
+{
+	vt100_delete();
+	vkbd_delete();
+	navi_delete();
+}
+void levitate_create(void* base)
+{
+	navi_create(base);
+	vkbd_create(base);
+	vt100_create(base);
+}
+
+
+
+
 
 void levitate_read(struct arena* win)
 {
 	int x0,y0,x1,y1;
-	struct relation* rel = win->bot;
+	struct relation* rel = win->top;
 	while(1)
 	{
 		x0 = (win->w)*((rel->cx)-(rel->wantw/2))/0x10000;
@@ -61,8 +77,13 @@ void levitate_read(struct arena* win)
 }
 int levitate_write(struct event* ev)
 {
-	int x,y,w;
+	int j;
+	int x,y,z,w;
 	struct relation* rel;
+	struct relation* top;
+	struct relation* belowtop;
+	struct relation* belowthis;
+	struct relation* abovethis;
 	struct arena* win = (void*)(ev->where);
 
 	w = (ev->what)&0xff;
@@ -71,6 +92,25 @@ int levitate_write(struct event* ev)
 		x = (ev->why)&0xffff;
 		y = ((ev->why)>>16)&0xffff;
 		w = ((ev->why)>>48)&0xffff;
+		rel = win->top;
+		while(1)
+		{
+			if(rel == 0)break;
+			if(rel == win->bot)break;
+
+			if(x > (int)(rel->cx) - (int)(rel->wantw)/2){
+			if(x < (int)(rel->cx) + (int)(rel->wantw)/2){
+			if(y > (int)(rel->cy) - (int)(rel->wanth)/2){
+			if(y < (int)(rel->cy) + (int)(rel->wanth)/2){
+				break;
+			}
+			}
+			}
+			}
+
+			rel = rel->below;
+		}
+
 		if(ev->what == 0x2b70)
 		{
 			if((y>0xe000)&&(x<0x8000))
@@ -81,42 +121,52 @@ int levitate_write(struct event* ev)
 			}
 			else if(showvt100&1)
 			{
-				w = vkbd_write(ev);
-				if(w == 1)cli_write(ev);
+				j = vkbd_write(ev);
+				if(j == 1)cli_write(ev);
 				return 0;
 			}
 			else
 			{
 				tmp = ev->why;
+				if(rel == 0)return 0;
+				if(rel == win->bot)return 0;
+				if(rel == win->top)return 0;
+
+				rel->below->above = rel->above;
+				rel->above->below = rel->below;
+
+				win->top->above = rel;
+				//win->top->below keep
+
+				rel->below = win->top;
+				rel->above = 0;
+
+				win->top = rel;
+
+				//debug
+				rel = win->bot;
+				for(j=0;j<16;j++)
+				{
+					say("%x", rel);
+					if(rel == 0)break;
+
+					say("->");
+					rel = rel->above;
+				}
+				say("\n");
+				return 0;
 			}
 		}
 		else if(ev->what == 0x2d70)
 		{
 			tmp = 0;
+			return 0;
 		}
 		else if(ev->what == 0x4070)
 		{
+			if(w != ((tmp>>48)&0xffff))return 0;
 			if(tmp != 0)
 			{
-				rel = win->top;
-				while(1)
-				{
-					if(rel == 0)break;
-					if(rel == win->bot)break;
-
-					if(x > (int)(rel->cx) - (int)(rel->wantw)/2){
-					if(x < (int)(rel->cx) + (int)(rel->wantw)/2){
-					if(y > (int)(rel->cy) - (int)(rel->wanth)/2){
-					if(y < (int)(rel->cy) + (int)(rel->wanth)/2){
-						break;
-					}
-					}
-					}
-					}
-
-					rel = rel->below;
-				}
-
 				x = (ev->why&0xffff) - (tmp&0xffff);
 				y = ((ev->why>>16)&0xffff) - ((tmp>>16)&0xffff);
 				rel->cx += x;
@@ -136,18 +186,7 @@ int levitate_write(struct event* ev)
 			rel->wanth = rel->wanth*110/100;
 		}
 		*/
-		return 0;
 	}
-}
-void levitate_delete()
-{
-	vt100_delete();
-	vkbd_delete();
-	navi_delete();
-}
-void levitate_create(void* base)
-{
-	navi_create(base);
-	vkbd_create(base);
-	vt100_create(base);
+
+	return 0;
 }

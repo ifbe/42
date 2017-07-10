@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //bg
 void bgcolor_create(u8*,u8*);
 void bgcolor_delete();
@@ -60,7 +57,7 @@ void stl_delete();
 void qrcode_create(u8*,u8*);
 void qrcode_delete();
 //
-void say(void*, ...);
+void vt100_read(void*, int, int, int, int);
 
 
 
@@ -207,4 +204,53 @@ void content_delete()
 
 	bgpicture_delete();
 	bgcolor_delete();
+}
+
+
+
+
+int content_read(struct arena* win)
+{
+	int j;
+	struct actor* act;
+	struct relation* rel;
+
+	//cli
+	if(win->fmt == 0x696c63)return 0;
+
+	//voice
+	if(win->fmt == 0x6563696f76)return 0;
+
+	//1d:	cli
+	if(win->dim == 1)
+	{
+		vt100_read(win, 0, 0, 0xffff, 0xffff);
+		return 0;
+	}
+
+	//2d:	rgba
+	else if(win->dim == 2)
+	{
+		rel = win->bot;
+		for(j=0;j<16;j++)
+		{
+			if(rel == 0)break;
+
+			act = rel->child_this;
+			act->read(rel);
+
+			rel = rel->above;
+		}
+	}
+
+	//3d:	directx, opengl, vulkan
+	else if(win->dim == 3)
+	{
+	}//dim=3
+
+	//
+	return 0;
+}
+int content_write(struct event* ev)
+{
 }

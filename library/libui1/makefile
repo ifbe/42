@@ -58,7 +58,7 @@ target:
 	$(compiler) $(cflag) levitate/lev.navi.c
 	$(compiler) $(cflag) levitate/lev.vkbd.c
 	$(compiler) $(cflag) levitate/lev.vt100.c
-	$(compiler) $(cflag) levitate/lev.c
+	$(compiler) $(cflag) levitate/levitate.c
 	$(compiler) $(cflag) actor.c
 clean:
 	rm -f *.o *.a

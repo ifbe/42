@@ -9,13 +9,13 @@ void lib2d_create(void*, void*);
 void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
-//2d
+//
+int content_read(void*);
+int content_write(void*);
 int levitate_read(void*);
 int levitate_write(void*);
 //
-void vt100_read(void*, int, int, int, int);
 void cli_write(void*);
-//
 void motion_explain(void*);
 
 
@@ -33,8 +33,7 @@ int actorread()
 {
 	int j,k;
 	struct arena* win;
-	struct relation* rel;
-	struct actor* act;
+
 	for(j=0;j<16;j++)
 	{
 		//
@@ -43,51 +42,9 @@ int actorread()
 		//error
 		if(win->fmt == 0)break;
 
-		//title
-		//if(win->fmt == 0x)title_read(win);
-
-		//tray
-		//if(win->fmt == 0x)tray_read(win);
-
-		//voice
-		if(win->fmt == 0x6563696f76)continue;
-
-
-
-
-		//1d:	cli
-		if(win->dim == 1)
-		{
-			if(win->fmt == 0x696c63)return 0;
-
-			vt100_read(win, 0, 0, 0xffff, 0xffff);
-			return 0;
-		}
-
-		//2d:	rgba
-		else if(win->dim == 2)
-		{
-			rel = win->bot;
-			for(k=0;k<16;k++)
-			{
-				if(rel == 0)break;
-
-				act = rel->child_this;
-				act->read(rel);
-
-				rel = rel->above;
-			}
-
-			//
-			if(menu > 0)levitate_read(win);
-			return 0;
-		}
-
-		//3d:	directx, opengl, vulkan
-		else if(win->dim == 3)
-		{
-			return 0;
-		}//dim=3
+		//
+		content_read(win);
+		if(menu > 0)levitate_read(win);
 	}//for
 	return 0;
 }
@@ -270,10 +227,6 @@ int actorstart(int w, int a)
 	{
 		if(treaty[t].parent_this == 0)break;
 	}
-	treaty[t].cx = 0x4000 + 0x8000*(a%2);
-	treaty[t].cy = 0x4000 + 0x8000*((a/2)%2);
-	treaty[t].wantw = 0x8000;
-	treaty[t].wanth = 0x8000;
 
 	//
 	treaty[t].parent_type = 0;
@@ -374,15 +327,40 @@ void actorcreate(u8* type, u8* addr)
 
 	//
 	actor[0].start();
-	actorstart(0, 0);
+	j = actorstart(0, 0);
+	treaty[j].cx = 0x8000;
+	treaty[j].cy = 0x8000;
+	treaty[j].wantw = 0xffff;
+	treaty[j].wanth = 0xffff;
+
 	actor[2].start();
-	actorstart(0, 2);
+	j = actorstart(0, 2);
+	treaty[j].cx = 0x4000;
+	treaty[j].cy = 0x4000;
+	treaty[j].wantw = 0x8000;
+	treaty[j].wanth = 0x8000;
+
 	actor[3].start();
-	actorstart(0, 3);
+	j = actorstart(0, 3);
+	treaty[j].cx = 0xc000;
+	treaty[j].cy = 0x4000;
+	treaty[j].wantw = 0x8000;
+	treaty[j].wanth = 0x8000;
+
 	actor[4].start();
-	actorstart(0, 4);
+	j = actorstart(0, 4);
+	treaty[j].cx = 0x4000;
+	treaty[j].cy = 0xc000;
+	treaty[j].wantw = 0x8000;
+	treaty[j].wanth = 0x8000;
+
 	actor[5].start();
-	actorstart(0, 5);
+	j = actorstart(0, 5);
+	treaty[j].cx = 0xc000;
+	treaty[j].cy = 0xc000;
+	treaty[j].wantw = 0x8000;
+	treaty[j].wanth = 0x8000;
+
 	//say("[c,f):createed actor\n");
 }
 void actordelete()

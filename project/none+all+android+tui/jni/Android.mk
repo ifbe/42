@@ -301,7 +301,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/levitate/lev.navi.c \
 	library/libui1/levitate/lev.vkbd.c \
 	library/libui1/levitate/lev.vt100.c \
-	library/libui1/levitate/lev.c \
+	library/libui1/levitate/levitate.c \
 	library/libui1/actor.c
 
 

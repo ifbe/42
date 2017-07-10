@@ -49,15 +49,11 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct relation* rel
 	h = (win->h) * (rel->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
-
-	if(die == 1)
-	{
-		rectbody(win,
-			cx-w/2, cy-h/2,
-			cx+w/2, cy+h/2,
-			0xffffff
-		);
-	}
+	rectbody(win,
+		cx-w/2, cy-h/2,
+		cx+w/2, cy+h/2,
+		0x888888
+	);
 
 	//snake
 	j=0;
