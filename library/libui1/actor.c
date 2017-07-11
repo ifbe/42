@@ -347,16 +347,9 @@ void actorcreate(u8* type, u8* addr)
 	treaty[j].wantw = 0x8000;
 	treaty[j].wanth = 0x8000;
 
-	actor[4].start();
-	j = actorstart(0, 4);
+	actor[21].start();
+	j = actorstart(0, 21);
 	treaty[j].cx = 0x4000;
-	treaty[j].cy = 0xc000;
-	treaty[j].wantw = 0x8000;
-	treaty[j].wanth = 0x8000;
-
-	actor[5].start();
-	j = actorstart(0, 5);
-	treaty[j].cx = 0xc000;
 	treaty[j].cy = 0xc000;
 	treaty[j].wantw = 0x8000;
 	treaty[j].wanth = 0x8000;

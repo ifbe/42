@@ -338,7 +338,7 @@ static void snake_stop()
 void snake_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	snake=(struct hehe*)(base+0x300000);
+	snake = base+0x300000;
 
 	p->type = hexof('g','a','m','e',0,0,0,0);
 	p->name = hexof('s','n','a','k','e',0,0,0);
