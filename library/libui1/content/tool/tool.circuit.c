@@ -72,9 +72,9 @@ static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 }
 static void circuit_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
-	int depth;
-	int cx,cy,w,h;
 	struct wirenet* this;
+	int which,depth;
+	int cx,cy,w,h;
 
 	//
 	cx = (win->w) * (rel->cx) / 0x10000;
@@ -83,20 +83,23 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct rela
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
+	which = 0;
+	depth = 0;
 	this = wn;
 	while(1)
 	{
-		if((this->type) == 'V')circuit_read_pixel_battery(win, cx+depth, cy);
-		else if((this->type) == 'R')circuit_read_pixel_resistor(win, cx+depth, cy);
-
-		//same chip next pin
-		this = this->nextpin;
-		if(this == 0)break;
+		if((this->type) == 'V')circuit_read_pixel_battery(win, cx+which, cy+depth);
+		else if((this->type) == 'R')circuit_read_pixel_resistor(win, cx+which, cy+depth);
 
 		//same pin next chip
 		this = this->nextchip;
-		if(this == 0)break;
+		if(this == 0)
+		{
+			line(win, cx, cy-16, cx+which, cy-16, 0x888888);
+			break;
+		}
 
+		which += 32;
 		depth += 32;
 	}
 }
