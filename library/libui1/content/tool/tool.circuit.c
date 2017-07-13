@@ -15,19 +15,19 @@ void line(void*,
 struct wirenet
 {
 	//link all chip on this pin
-	u64 pinnum;			//pin42
-	u64 pinsts;			//high, low?
+	u64 pininfo;
+	u64 order;
 	struct wirenet* lastchip;
 	char pad2[8-sizeof(char*)];
 	struct wirenet* nextchip;
 	char pad3[8-sizeof(char*)];
 
-	//link all pin on this chip
-	u64 type;			//R
-	u64 value;			//1kohm
-	struct wirenet* lastpin;
+	//link all foot on this chip
+	u64 chipinfo;
+	u64 footid;
+	struct wirenet* lastfoot;
 	char pad0[8-sizeof(char*)];
-	struct wirenet* nextpin;
+	struct wirenet* nextfoot;
 	char pad1[8-sizeof(char*)];
 };
 static struct wirenet* wn;
@@ -73,7 +73,7 @@ static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 static void circuit_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	struct wirenet* this;
-	int which,depth;
+	int x,y;
 	int cx,cy,w,h;
 
 	//
@@ -83,24 +83,32 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct rela
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	which = 0;
-	depth = 0;
+	x = 1;
+	y = 1;
 	this = wn;
 	while(1)
 	{
-		if((this->type) == 'V')circuit_read_pixel_battery(win, cx+which, cy+depth);
-		else if((this->type) == 'R')circuit_read_pixel_resistor(win, cx+which, cy+depth);
+		if(this->footid == ('R'<<16)+'i')
+		{
+			circuit_read_pixel_resistor(win, cx+w*(x-8)/16, cy+h*(y-7)/16);
+			x++;
+		}
+		else if(this->footid == ('V'<<16)+'i')
+		{
+			circuit_read_pixel_battery(win, cx+w*(x-8)/16, cy+h*(y-7)/16);
+			x++;
+		}
 
 		//same pin next chip
 		this = this->nextchip;
 		if(this == 0)
 		{
-			line(win, cx, cy-16, cx+which, cy-16, 0x888888);
+			line(win, cx+w*(1-8)/16, cy+h*(y-8)/16, cx+w*(x-9)/16, cy+h*(y-8)/16, 0x888888);
+			x = 1;
+			y++;
 			break;
 		}
 
-		which += 32;
-		depth += 32;
 	}
 }
 static void circuit_read_html(struct arena* win, struct actor* act, struct relation* rel)
@@ -140,20 +148,7 @@ static void circuit_write(struct event* ev)
 
 
 
-static void circuit_list()
-{
-}
-static void circuit_change()
-{
-}
-static void circuit_start()
-{
-	/*
-		  |----V0----|
-	pin1--|----R1----|--pin2
-		  |----R2----|
-	*/
-
+/*
 	//pin1 -- V0
 	wn[0].pinnum = 1;
 	wn[0].pinsts = 0;
@@ -213,6 +208,121 @@ static void circuit_start()
 	wn[5].value = 9000;
 	wn[5].lastpin = &wn[2];
 	wn[5].nextpin = 0;
+*/
+static void circuit_list()
+{
+}
+static void circuit_change(
+	u64 operation, u64 signature,
+	u64 pininfo, u64 order,
+	u64 chipinfo, u64 footid)
+{
+	int j,k;
+	struct wirenet* this;
+	struct wirenet* samepin;
+	struct wirenet* samechip;
+	if(signature != 42)return;
+//say("here\n");
+
+	//search this
+	for(j=0;j<16;j++)
+	{
+		this = &wn[j];
+		if(this->pininfo == 0)break;
+	}
+//say("1\n");
+	//prepare this
+	this->pininfo = pininfo;
+	//this->order = order;
+	this->lastchip = 0;
+	this->nextchip = 0;
+
+	this->chipinfo = chipinfo;
+	this->footid = footid;
+	this->lastfoot = 0;
+	this->nextfoot = 0;
+//say("2\n");
+	//search pin
+	samepin = 0;
+	for(k=0;k<j;k++)
+	{
+		if(wn[k].pininfo == pininfo)
+		{
+			samepin = &wn[k];
+			break;
+		}
+	}
+//say("3\n");
+	//insert pin
+	if(samepin != 0)
+	{
+		while(samepin->nextchip != 0)samepin = samepin->nextchip;
+		samepin->nextchip = this;
+		this->lastchip = samepin;
+	}
+//say("4\n");
+	//search chip
+	samechip = 0;
+	for(k=0;k<j;k++)
+	{
+		if(wn[k].chipinfo == chipinfo)
+		{
+			samechip = &wn[k];
+			break;
+		}
+	}
+//say("5\n");
+	//insert chip
+	if(samechip != 0)
+	{
+		while(samechip->nextfoot != 0)samechip = samechip->nextfoot;
+		samechip->nextfoot = this;
+		this->lastfoot = samechip;
+	}
+//say("6\n");
+}
+static void circuit_start()
+{
+	int j;
+	u8* p = (u8*)wn;
+	for(j=0;j<0x1000;j++)
+	{
+		p[j] = 0;
+	}
+
+/*
+	|-------pin1----
+	|	R1    V2    R3
+	|	----pin2----
+	|	V4    R5
+	|	----pin3----
+	|	R6
+	|-------pin1----
+*/
+	//operation, signature, pininfo, order, chipinfo, footid
+	circuit_change('+', 42, 1, 0, 6, ('R'<<16)+'o');
+	circuit_change('+', 42, 1, 0, 1, ('R'<<16)+'i');
+	circuit_change('+', 42, 1, 0, 2, ('V'<<16)+'i');
+	circuit_change('+', 42, 1, 0, 3, ('R'<<16)+'i');
+	
+	circuit_change('+', 42, 2, 0, 1, ('R'<<16)+'o');
+	circuit_change('+', 42, 2, 0, 2, ('V'<<16)+'o');
+	circuit_change('+', 42, 2, 0, 3, ('R'<<16)+'o');
+	circuit_change('+', 42, 2, 0, 4, ('V'<<16)+'i');
+	circuit_change('+', 42, 2, 0, 5, ('R'<<16)+'i');
+	
+	circuit_change('+', 42, 3, 0, 4, ('V'<<16)+'o');
+	circuit_change('+', 42, 3, 0, 5, ('R'<<16)+'o');
+	circuit_change('+', 42, 3, 0, 6, ('R'<<16)+'i');
+/*
+	for(j=0;j<12;j++)
+	{
+		say("@%x:	%x,%x,%x,	%x,%x,%x,%x\n", &wn[j],
+			wn[j].pininfo, wn[j].lastchip, wn[j].nextchip,
+			wn[j].chipinfo, wn[j].footid, wn[j].lastfoot, wn[j].nextfoot
+		);
+	}
+*/
 }
 static void circuit_stop()
 {
