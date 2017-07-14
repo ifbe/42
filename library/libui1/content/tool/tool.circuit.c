@@ -1,4 +1,8 @@
 #include "actor.h"
+void rectbody(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 void rectframe(void*,
 	int x1, int y1,
 	int x2, int y2,
@@ -70,46 +74,145 @@ static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 {
 	rectframe(win, x-4, y-8, x+4, y+8, 0xffffffff);
 }
-static void circuit_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+static void circuit_read_pixel_element(struct arena* win, struct wirenet* this, int x, int y)
+{
+	int chiptype = (this->footid)>>16;
+	if(chiptype == 'R')
+	{
+		circuit_read_pixel_resistor(win,x,y);
+	}
+	else if(chiptype == 'V')
+	{
+		circuit_read_pixel_battery(win,x,y);
+	}
+	//say("@%x\n",this);
+}
+static void circuit_read_pixel_recursive(
+	struct arena* win, struct wirenet* base, int px, int py,
+	int cx, int cy, int w, int h)
 {
 	struct wirenet* this;
-	int x,y;
-	int cx,cy,w,h;
+	int dx,dy,ret,foottype;
+	if(base == 0)return;
+	if(px<-4)return;
+	if(px>4)return;
+	if(py<-4)return;
+	if(py>4)return;
+	//say("%x\n",base);
 
+	//chip
+	foottype = (base->footid)&0xff;
+	if(foottype != 'i')return;
+	circuit_read_pixel_element(win, base, cx+w*px/16, cy+h*py/16);
+
+	//left
+	if(px <= 0)
+	{
+		dx = -1;
+		this = base;
+		while(1)
+		{
+			this = this->lastchip;
+			if(this == 0)break;
+
+			foottype = (this->footid)&0xff;
+			if(foottype != 'i')continue;
+
+			circuit_read_pixel_element(
+				win, this, cx+w*(px+dx)/16, cy+h*py/16
+			);
+			dx--;
+		}
+	}
+
+	//right
+	if(px >= 0)
+	{
+		dx = 1;
+		this = base;
+		while(1)
+		{
+			this = this->nextchip;
+			if(this == 0)break;
+
+			foottype = (this->footid)&0xff;
+			if(foottype != 'i')continue;
+
+			circuit_read_pixel_element(
+				win, this, cx+w*(px+dx)/16, cy+h*py/16
+			);
+			dx++;
+		}
+	}
+
+	//upper
+	if(py <= 0)
+	{
+		dy = -1;
+		this = base;
+		while(1)
+		{
+			//same chip, last foot
+			this = this->lastfoot;
+			if(this == 0)break;
+
+		}
+	}
+
+	//lower
+	if(py >= 0)
+	{
+		dy = 1;
+		this = base;
+		while(1)
+		{
+			//same chip, next foot
+			this = this->nextfoot;
+			if(this == 0)break;
+
+			//same pin, 'i' foot
+			if(px >= 0)
+			{
+				while(1)
+				{
+					this = this->nextchip;
+					if(this == 0)break;
+
+					foottype = (this->footid)&0xff;
+					if(foottype != 'i')continue;
+
+					circuit_read_pixel_recursive(
+						win, this, px, py+dy,
+						cx, cy, w, h
+					);
+					break;
+				}
+			}
+
+			dy++;
+			break;
+		}
+	}
+}
+static void circuit_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+{
 	//
+	int cx,cy,w,h;
 	cx = (win->w) * (rel->cx) / 0x10000;
 	cy = (win->h) * (rel->cy) / 0x10000;
 	w = (win->w) * (rel->wantw) / 0x10000;
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	x = 1;
-	y = 1;
-	this = wn;
-	while(1)
-	{
-		if(this->footid == ('R'<<16)+'i')
-		{
-			circuit_read_pixel_resistor(win, cx+w*(x-8)/16, cy+h*(y-7)/16);
-			x++;
-		}
-		else if(this->footid == ('V'<<16)+'i')
-		{
-			circuit_read_pixel_battery(win, cx+w*(x-8)/16, cy+h*(y-7)/16);
-			x++;
-		}
-
-		//same pin next chip
-		this = this->nextchip;
-		if(this == 0)
-		{
-			line(win, cx+w*(1-8)/16, cy+h*(y-8)/16, cx+w*(x-9)/16, cy+h*(y-8)/16, 0x888888);
-			x = 1;
-			y++;
-			break;
-		}
-
-	}
+	rectbody(win,
+		cx-w/2, cy-h/2,
+		cx+w/2, cy+h/2,
+		0
+	);
+	circuit_read_pixel_recursive(
+		win, wn, 0, 0,
+		cx, cy, w, h
+	);
 }
 static void circuit_read_html(struct arena* win, struct actor* act, struct relation* rel)
 {
@@ -225,7 +328,7 @@ static void circuit_change(
 //say("here\n");
 
 	//search this
-	for(j=0;j<16;j++)
+	for(j=0;j<100;j++)
 	{
 		this = &wn[j];
 		if(this->pininfo == 0)break;
@@ -297,10 +400,11 @@ static void circuit_start()
 	|	V4    R5
 	|	----pin3----
 	|	R6
+	|   ----pin4----
+	|   R7    R8    R9
 	|-------pin1----
 */
 	//operation, signature, pininfo, order, chipinfo, footid
-	circuit_change('+', 42, 1, 0, 6, ('R'<<16)+'o');
 	circuit_change('+', 42, 1, 0, 1, ('R'<<16)+'i');
 	circuit_change('+', 42, 1, 0, 2, ('V'<<16)+'i');
 	circuit_change('+', 42, 1, 0, 3, ('R'<<16)+'i');
@@ -308,12 +412,24 @@ static void circuit_start()
 	circuit_change('+', 42, 2, 0, 1, ('R'<<16)+'o');
 	circuit_change('+', 42, 2, 0, 2, ('V'<<16)+'o');
 	circuit_change('+', 42, 2, 0, 3, ('R'<<16)+'o');
+
 	circuit_change('+', 42, 2, 0, 4, ('V'<<16)+'i');
 	circuit_change('+', 42, 2, 0, 5, ('R'<<16)+'i');
 	
 	circuit_change('+', 42, 3, 0, 4, ('V'<<16)+'o');
 	circuit_change('+', 42, 3, 0, 5, ('R'<<16)+'o');
+
 	circuit_change('+', 42, 3, 0, 6, ('R'<<16)+'i');
+
+	circuit_change('+', 42, 4, 0, 6, ('R'<<16)+'o');
+
+	circuit_change('+', 42, 4, 0, 7, ('R'<<16)+'i');
+	circuit_change('+', 42, 4, 0, 8, ('R'<<16)+'i');
+	circuit_change('+', 42, 4, 0, 9, ('R'<<16)+'i');
+
+	circuit_change('+', 42, 1, 0, 7, ('R'<<16)+'o');
+	circuit_change('+', 42, 1, 0, 8, ('R'<<16)+'o');
+	circuit_change('+', 42, 1, 0, 9, ('R'<<16)+'o');
 /*
 	for(j=0;j<12;j++)
 	{
