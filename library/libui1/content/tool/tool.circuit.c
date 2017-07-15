@@ -21,17 +21,17 @@ struct wirenet
 	//link all chip on this pin
 	u64 pininfo;
 	u64 order;
-	struct wirenet* lastchip;
+	struct wirenet* samepinlastchip;
 	char pad2[8-sizeof(char*)];
-	struct wirenet* nextchip;
+	struct wirenet* samepinnextchip;
 	char pad3[8-sizeof(char*)];
 
 	//link all foot on this chip
 	u64 chipinfo;
 	u64 footid;
-	struct wirenet* lastfoot;
+	struct wirenet* samechiplastpin;
 	char pad0[8-sizeof(char*)];
-	struct wirenet* nextfoot;
+	struct wirenet* samechipnextpin;
 	char pad1[8-sizeof(char*)];
 };
 static struct wirenet* wn;
@@ -76,7 +76,7 @@ static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 }
 static void circuit_read_pixel_element(struct arena* win, struct wirenet* this, int x, int y)
 {
-	int chiptype = (this->footid)>>16;
+	int chiptype = (this->chipinfo)&0xffff;
 	if(chiptype == 'R')
 	{
 		circuit_read_pixel_resistor(win,x,y);
@@ -92,7 +92,7 @@ static void circuit_read_pixel_recursive(
 	int cx, int cy, int w, int h)
 {
 	struct wirenet* this;
-	int dx,dy,ret,foottype;
+	int dx,dy,ret;
 	if(base == 0)return;
 	if(px<-4)return;
 	if(px>4)return;
@@ -101,8 +101,7 @@ static void circuit_read_pixel_recursive(
 	//say("%x\n",base);
 
 	//chip
-	foottype = (base->footid)&0xff;
-	if(foottype != 'i')return;
+	if((base->footid) != 'i')return;
 	circuit_read_pixel_element(win, base, cx+w*px/16, cy+h*py/16);
 
 	//left
@@ -112,11 +111,9 @@ static void circuit_read_pixel_recursive(
 		this = base;
 		while(1)
 		{
-			this = this->lastchip;
+			this = this->samepinlastchip;
 			if(this == 0)break;
-
-			foottype = (this->footid)&0xff;
-			if(foottype != 'i')continue;
+			if((this->footid) != 'i')continue;
 
 			circuit_read_pixel_element(
 				win, this, cx+w*(px+dx)/16, cy+h*py/16
@@ -132,11 +129,9 @@ static void circuit_read_pixel_recursive(
 		this = base;
 		while(1)
 		{
-			this = this->nextchip;
+			this = this->samepinnextchip;
 			if(this == 0)break;
-
-			foottype = (this->footid)&0xff;
-			if(foottype != 'i')continue;
+			if((this->footid) != 'i')continue;
 
 			circuit_read_pixel_element(
 				win, this, cx+w*(px+dx)/16, cy+h*py/16
@@ -153,7 +148,7 @@ static void circuit_read_pixel_recursive(
 		while(1)
 		{
 			//same chip, last foot
-			this = this->lastfoot;
+			this = this->samechiplastpin;
 			if(this == 0)break;
 
 		}
@@ -167,7 +162,7 @@ static void circuit_read_pixel_recursive(
 		while(1)
 		{
 			//same chip, next foot
-			this = this->nextfoot;
+			this = this->samechipnextpin;
 			if(this == 0)break;
 
 			//same pin, 'i' foot
@@ -175,11 +170,9 @@ static void circuit_read_pixel_recursive(
 			{
 				while(1)
 				{
-					this = this->nextchip;
+					this = this->samepinnextchip;
 					if(this == 0)break;
-
-					foottype = (this->footid)&0xff;
-					if(foottype != 'i')continue;
+					if((this->footid) != 'i')continue;
 
 					circuit_read_pixel_recursive(
 						win, this, px, py+dy,
@@ -247,71 +240,6 @@ static void circuit_read(struct relation* rel)
 static void circuit_write(struct event* ev)
 {
 }
-
-
-
-
-/*
-	//pin1 -- V0
-	wn[0].pinnum = 1;
-	wn[0].pinsts = 0;
-	wn[0].lastchip = 0;
-	wn[0].nextchip = &wn[1];
-	wn[0].type = 'V';
-	wn[0].value = 5;
-	wn[0].lastpin = 0;
-	wn[0].nextpin = &wn[3];
-
-	//pin1 -- R1
-	wn[1].pinnum = 1;
-	wn[1].pinsts = 0;
-	wn[1].lastchip = &wn[0];
-	wn[1].nextchip = &wn[2];
-	wn[1].type = 'R';
-	wn[1].value = 4100;
-	wn[1].lastpin = 0;
-	wn[1].nextpin = &wn[4];
-
-	//pin1 -- R2
-	wn[2].pinnum = 1;
-	wn[2].pinsts = 0;
-	wn[2].lastchip = &wn[1];
-	wn[2].nextchip = 0;
-	wn[2].type = 'R';
-	wn[2].value = 9000;
-	wn[2].lastpin = 0;
-	wn[2].nextpin = &wn[5];
-
-	//pin2 -- V0
-	wn[3].pinnum = 2;
-	wn[3].pinsts = 0;
-	wn[3].lastchip = 0;
-	wn[3].nextchip = &wn[4];
-	wn[3].type = 'V';
-	wn[3].value = 5;
-	wn[3].lastpin = &wn[0];
-	wn[3].nextpin = 0;
-
-	//pin2 -- R1
-	wn[4].pinnum = 2;
-	wn[4].pinsts = 0;
-	wn[4].lastchip = &wn[3];
-	wn[4].nextchip = &wn[5];
-	wn[4].type = 'R';
-	wn[4].value = 4100;
-	wn[4].lastpin = &wn[1];
-	wn[4].nextpin = 0;
-
-	//pin2 -- R2
-	wn[5].pinnum = 2;
-	wn[5].pinsts = 0;
-	wn[5].lastchip = &wn[4];
-	wn[5].nextchip = 0;
-	wn[5].type = 'R';
-	wn[5].value = 9000;
-	wn[5].lastpin = &wn[2];
-	wn[5].nextpin = 0;
-*/
 static void circuit_list()
 {
 }
@@ -322,8 +250,7 @@ static void circuit_change(
 {
 	int j,k;
 	struct wirenet* this;
-	struct wirenet* samepin;
-	struct wirenet* samechip;
+	struct wirenet* temp;
 	if(signature != 42)return;
 //say("here\n");
 
@@ -334,53 +261,58 @@ static void circuit_change(
 		if(this->pininfo == 0)break;
 	}
 //say("1\n");
+
 	//prepare this
 	this->pininfo = pininfo;
 	//this->order = order;
-	this->lastchip = 0;
-	this->nextchip = 0;
+	this->samepinlastchip = 0;
+	this->samepinnextchip = 0;
 
 	this->chipinfo = chipinfo;
 	this->footid = footid;
-	this->lastfoot = 0;
-	this->nextfoot = 0;
+	this->samechiplastpin = 0;
+	this->samechipnextpin = 0;
 //say("2\n");
+
 	//search pin
-	samepin = 0;
+	temp = 0;
 	for(k=0;k<j;k++)
 	{
 		if(wn[k].pininfo == pininfo)
 		{
-			samepin = &wn[k];
+			temp = &wn[k];
 			break;
 		}
 	}
 //say("3\n");
+
 	//insert pin
-	if(samepin != 0)
+	if(temp != 0)
 	{
-		while(samepin->nextchip != 0)samepin = samepin->nextchip;
-		samepin->nextchip = this;
-		this->lastchip = samepin;
+		while(temp->samepinnextchip != 0)temp = temp->samepinnextchip;
+		temp->samepinnextchip = this;
+		this->samepinlastchip = temp;
 	}
 //say("4\n");
+
 	//search chip
-	samechip = 0;
+	temp = 0;
 	for(k=0;k<j;k++)
 	{
 		if(wn[k].chipinfo == chipinfo)
 		{
-			samechip = &wn[k];
+			temp = &wn[k];
 			break;
 		}
 	}
 //say("5\n");
+
 	//insert chip
-	if(samechip != 0)
+	if(temp != 0)
 	{
-		while(samechip->nextfoot != 0)samechip = samechip->nextfoot;
-		samechip->nextfoot = this;
-		this->lastfoot = samechip;
+		while(temp->samechipnextpin != 0)temp = temp->samechipnextpin;
+		temp->samechipnextpin = this;
+		this->samechiplastpin = temp;
 	}
 //say("6\n");
 }
@@ -405,37 +337,37 @@ static void circuit_start()
 	|-------pin1----
 */
 	//operation, signature, pininfo, order, chipinfo, footid
-	circuit_change('+', 42, 1, 0, 1, ('R'<<16)+'i');
-	circuit_change('+', 42, 1, 0, 2, ('V'<<16)+'i');
-	circuit_change('+', 42, 1, 0, 3, ('R'<<16)+'i');
+	circuit_change('+', 42, 1, 0, (1<<16)+'R', 'i');
+	circuit_change('+', 42, 1, 0, (2<<16)+'V', 'i');
+	circuit_change('+', 42, 1, 0, (3<<16)+'R', 'i');
 	
-	circuit_change('+', 42, 2, 0, 1, ('R'<<16)+'o');
-	circuit_change('+', 42, 2, 0, 2, ('V'<<16)+'o');
-	circuit_change('+', 42, 2, 0, 3, ('R'<<16)+'o');
+	circuit_change('+', 42, 2, 0, (1<<16)+'R', 'o');
+	circuit_change('+', 42, 2, 0, (2<<16)+'V', 'o');
+	circuit_change('+', 42, 2, 0, (3<<16)+'R', 'o');
 
-	circuit_change('+', 42, 2, 0, 4, ('V'<<16)+'i');
-	circuit_change('+', 42, 2, 0, 5, ('R'<<16)+'i');
+	circuit_change('+', 42, 2, 0, (4<<16)+'V', 'i');
+	circuit_change('+', 42, 2, 0, (5<<16)+'R', 'i');
 	
-	circuit_change('+', 42, 3, 0, 4, ('V'<<16)+'o');
-	circuit_change('+', 42, 3, 0, 5, ('R'<<16)+'o');
+	circuit_change('+', 42, 3, 0, (4<<16)+'V', 'o');
+	circuit_change('+', 42, 3, 0, (5<<16)+'R', 'o');
 
-	circuit_change('+', 42, 3, 0, 6, ('R'<<16)+'i');
+	circuit_change('+', 42, 3, 0, (6<<16)+'R', 'i');
 
-	circuit_change('+', 42, 4, 0, 6, ('R'<<16)+'o');
+	circuit_change('+', 42, 4, 0, (6<<16)+'R', 'o');
 
-	circuit_change('+', 42, 4, 0, 7, ('R'<<16)+'i');
-	circuit_change('+', 42, 4, 0, 8, ('R'<<16)+'i');
-	circuit_change('+', 42, 4, 0, 9, ('R'<<16)+'i');
+	circuit_change('+', 42, 4, 0, (7<<16)+'R', 'i');
+	circuit_change('+', 42, 4, 0, (8<<16)+'R', 'i');
+	circuit_change('+', 42, 4, 0, (9<<16)+'R', 'i');
 
-	circuit_change('+', 42, 1, 0, 7, ('R'<<16)+'o');
-	circuit_change('+', 42, 1, 0, 8, ('R'<<16)+'o');
-	circuit_change('+', 42, 1, 0, 9, ('R'<<16)+'o');
+	circuit_change('+', 42, 1, 0, (7<<16)+'R', 'o');
+	circuit_change('+', 42, 1, 0, (8<<16)+'R', 'o');
+	circuit_change('+', 42, 1, 0, (9<<16)+'R', 'o');
 /*
 	for(j=0;j<12;j++)
 	{
 		say("@%x:	%x,%x,%x,	%x,%x,%x,%x\n", &wn[j],
-			wn[j].pininfo, wn[j].lastchip, wn[j].nextchip,
-			wn[j].chipinfo, wn[j].footid, wn[j].lastfoot, wn[j].nextfoot
+			wn[j].pininfo, wn[j].samepinlastchip, wn[j].samepinnextchip,
+			wn[j].chipinfo, wn[j].footid, wn[j].samechiplastpin, wn[j].samechipnextpin
 		);
 	}
 */
