@@ -2,29 +2,60 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+
+
+
+
 struct window
 {
-	u64 type;		//local,cli,voice,vnc,rdp,...
-	u64 fmt;		//rgba8888,vt100...
-	u64 bot;
-	u64 top;
+	//local,cli,voice,vnc,rdp,...
+	//rgba8888,vt100...
+	u64 type;
+	u64 fmt;
+	union{
+		struct relation* first;
+		char pad0[8];
+	};
+	union{
+		struct relation* last;
+		char pad1[8];
+	};
 
+	//data
+	union{
+		u64 buf;
+		u64 fd;
+	};
+	union{
+		u64 len;
+		u64 dc;
+	};
+	union{
+		u64 dim;
+		u64 info;
+	};
+	u64 thread;
+
+	//where
+	u64 cx;
+	u64 cy;
+	u64 cz;
+	u64 cw;
+
+	//size
 	u64 w;
 	u64 h;
 	u64 d;
 	u64 t;
 
-	u64 buf;
-	u64 len;
-	u64 dim;
-	u64 hah;
-
-	u64 wnd;
-	u64 dc;
-	u64 xx;
-	u64 thread;
-
-	u64 input[16];
+	union
+	{
+		u64 input[16];
+		u8 priv[0x80];
+	};
 };
 struct event
 {

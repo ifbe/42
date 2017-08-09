@@ -187,7 +187,7 @@ static void circuit_read_pixel_recursive(
 		}
 	}
 }
-static void circuit_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+static void circuit_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	//
 	int cx,cy,w,h;
@@ -207,26 +207,22 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct rela
 		cx, cy, w, h
 	);
 }
-static void circuit_read_html(struct arena* win, struct actor* act, struct relation* rel)
+static void circuit_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void circuit_read_text(struct arena* win, struct actor* act, struct relation* rel)
+static void circuit_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void circuit_read(struct relation* rel)
+static void circuit_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	struct arena* win = rel->parent_this;
-	struct actor* act = rel->child_this;
-	u64 fmt = win->fmt;
-
 	//text
-	if(fmt == 0x74786574)
+	if(win->fmt == 0x74786574)
 	{
 		circuit_read_text(win, act, rel);
 	}
 
 	//html
-	else if(fmt == 0x6c6d7468)
+	else if(win->fmt == 0x6c6d7468)
 	{
 		circuit_read_html(win, act, rel);
 	}
@@ -380,8 +376,8 @@ void circuit_create(void* base,void* addr)
 	struct actor* p = addr;
 	wn = base+0x300000;
 
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('c','i','r','c','u','i','t',0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('c', 'i', 'r', 'c', 'u', 'i', 't', 0);
 
 	p->start = (void*)circuit_start;
 	p->stop = (void*)circuit_stop;

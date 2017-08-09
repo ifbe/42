@@ -18,41 +18,41 @@ static char* eventqueue;        //stdevent
 
 void eventwrite(u64 why, u64 what, u64 where, u64 when)
 {
-        int this,temp;
-        static u64* p;
+	int this,temp;
+	static u64* p;
 
-        //safely update the pointer
-        while(__sync_lock_test_and_set(&lock,1) == 1);
-        this = enq;
-        temp = (this+0x20)%0x100000;
-        if(temp == deq)
-        {
-                //full
-                __sync_lock_release(&lock);
-                say("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
-                return;
-        }
-        enq = temp;
-        __sync_lock_release(&lock);
+	//safely update the pointer
+	while(__sync_lock_test_and_set(&lock,1) == 1);
+	this = enq;
+	temp = (this+0x20)%0x100000;
+	if(temp == deq)
+	{
+		//full
+		__sync_lock_release(&lock);
+		say("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
+		return;
+	}
+	enq = temp;
+	__sync_lock_release(&lock);
 
-        //put event to place
-        p = (u64*)(eventqueue + this);
-        p[0] = why;
-        p[1] = what;
-        p[2] = where;   //where
-        p[3] = when;    //when
+	//put event to place
+	p = (u64*)(eventqueue + this);
+	p[0] = why;
+	p[1] = what;
+	p[2] = where;   //where
+	p[3] = when;    //when
 
-        //debug
-        //say("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);
+	//debug
+	//say("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);
 }
 void* eventread()
 {
-        int ret;
-        if(enq == deq)return 0;
+	int ret;
+	if(enq == deq)return 0;
 
-        ret = deq;
-        deq = (deq+0x20)%0x100000;
-        return eventqueue + ret;
+	ret = deq;
+	deq = (deq+0x20)%0x100000;
+	return eventqueue + ret;
 }
 
 

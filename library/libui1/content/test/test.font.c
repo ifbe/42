@@ -42,8 +42,8 @@ void font_stop()
 void font_create(void* base, void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','e','s','t',0,0,0,0);
-	p->name = hexof('f','o','n','t',0,0,0,0);
+	p->type = hex32('t', 'e', 's', 't');
+	p->name = hex32('f', 'o', 'n', 't');
 
 	p->start = (void*)font_start;
 	p->stop = (void*)font_stop;

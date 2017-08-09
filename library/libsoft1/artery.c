@@ -100,7 +100,6 @@ void arterycreate(u8* type, u8* addr)
 	if( (type == 0)&&(worker != 0) )return;
 
 	//where
-	for(j=0x100000;j<0x200000;j++)addr[j] = 0;
 	worker=(struct element*)(addr+0x100000);
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;

@@ -159,8 +159,8 @@ void qrcode_create(void* base,void* addr)
 	struct actor* p = addr;
 	databuf = base+0x300000;
 
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('q','r','c','o','d','e',0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
 
 	p->start = (void*)qrcode_start;
 	p->stop = (void*)qrcode_stop;

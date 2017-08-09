@@ -2,102 +2,74 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define hexof(a,b,c,d,e,f,g,h) (a | (b<<8) | (c<<16) | (d<<24) | (((u64)e)<<32) | (((u64)f)<<40) | (((u64)g)<<48) | (((u64)h)<<56) )
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 
 
 
 
-struct relation
+struct arena
 {
-	//[00,1f]:doubly link all shows of this arena
-	u64 parent_type;
-	void* parent_this;
-	char padding1[ 8 - sizeof(char*) ];
-	struct relation* below;
-	char padding2[ 8 - sizeof(char*) ];
-	struct relation* above;
-	char padding3[ 8 - sizeof(char*) ];
+	//local,cli,voice,vnc,rdp,...
+	//rgba8888,vt100...
+	u64 type;
+	u64 fmt;
+	union{
+		struct relation* first;
+		char pad0[8];
+	};
+	union{
+		struct relation* last;
+		char pad1[8];
+	};
 
-	//[20,3f]:doubly link all shows of this actor
-	u64 child_type;
-	void* child_this;
-	char padding5[ 8 - sizeof(char*) ];
-	struct relation* prev;
-	char padding6[ 8 - sizeof(char*) ];
-	struct relation* next;
-	char padding7[ 8 - sizeof(char*) ];
+	//data
+	union{
+		u64 buf;
+		u64 fd;
+	};
+	union{
+		u64 len;
+		u64 dc;
+	};
+	union{
+		u64 dim;
+		u64 info;
+	};
+	u64 thread;
 
-	//[40,5f]:cartesian coordinate
+	//where
 	u64 cx;
 	u64 cy;
 	u64 cz;
 	u64 cw;
 
-	//[60,7f]:eulerian angle
-	u64 pitch;
-	u64 yaw;
-	u64 roll;
-	u64 aaa;
-
-	//[80,9f]:total size(base 0x10000)
-	u64 wantw;
-	u64 wanth;
-	u64 wantd;
-	u64 dim;
-
-	//[a0,bf]:show area(base 0x100000)
-	u64 realw;
-	u64 realh;
-	u64 reald;
-	u64 haha;
-
-	//[c0,df]:
-	u64 a0;
-	u64 a1;
-	u64 a2;
-	u64 a3;
-
-	//[e0,ff]:
-	u64 a4;
-	u64 a5;
-	u64 a6;
-	u64 a7;
-};
-struct arena
-{
-	u64 type;		//local,cli,voice,vnc,rdp,...
-	u64 fmt;		//rgba8888,vt100...
-	struct relation* bot;
-	char pad0[ 8 - sizeof(char*) ];
-	struct relation* top;
-	char pad1[ 8 - sizeof(char*) ];
-
+	//size
 	u64 w;
 	u64 h;
 	u64 d;
 	u64 t;
 
-	u64 buf;
-	u64 len;
-	u64 dim;
-	u64 hah;
-
-	u64 wnd;
-	u64 dc;
-	u64 xx;
-	u64 thread;
-
-	u64 input[16];
+	union
+	{
+		u64 input[16];
+		u8 priv[0x80];
+	};
 };
 struct actor
 {
 	//[0,1f]
 	u64 type;
 	u64 name;
-	struct relation* first;
-	char pad0[ 8 - sizeof(char*) ];
-	struct relation* last;
-	char pad1[ 8 - sizeof(char*) ];
+	union{
+		struct relation* first;
+		char pad0[8];
+	};
+	union{
+		struct relation* last;
+		char pad1[8];
+	};
 
 	//[20,3f]
 	u64 aa;
@@ -106,38 +78,123 @@ struct actor
 	u64 dd;
 
 	//[40,47]
-	int (*create)();
-	char padding0[ 8 - sizeof(char*) ];
+	union{
+		int (*create)();
+		char padding0[8];
+	};
 
 	//[48,4f]
-	int (*delete)();
-	char padding1[ 8 - sizeof(char*) ];
+	union{
+		int (*delete)();
+		char padding1[8];
+	};
 
 	//[50,57]:开始
-	int (*start)();
-	char padding2[ 8 - sizeof(char*) ];
+	union{
+		int (*start)();
+		char padding2[8];
+	};
 
 	//[58,5f]:结束
-	int (*stop)();
-	char padding3[ 8 - sizeof(char*) ];
+	union{
+		int (*stop)();
+		char padding3[8];
+	};
 
 	//[60,67]:观察
-	int (*list)();
-	char padding4[ 8 - sizeof(char*) ];
+	union{
+		int (*list)();
+		char padding4[8];
+	};
 
 	//[68,6f]:调整
-	int (*choose)();
-	char padding5[ 8 - sizeof(char*) ];
+	union{
+		int (*choose)();
+		char padding5[8];
+	};
 
 	//[70,77]:输出
-	int (*read)(void* rel);
-	char padding6[ 8 - sizeof(char*) ];
+	union{
+		int (*read)(void* win, void* act, void* rel);
+		char padding6[8];
+	};
 
 	//[78,7f]:输入
-	int (*write)(void* event);
-	char padding7[ 8 - sizeof(char*) ];
+	union{
+		int (*write)(void* event);
+		char padding7[8];
+	};
 
+	//
 	char priv[0x80];
+};
+struct relation
+{
+	//[00,1f]: the pin
+	u64 pininfo;
+	u64 destiny;
+	union{
+		struct relation* samepinlastchip;
+		struct relation* samepinlastfunc;
+		struct relation* samepinlastwin;
+		struct relation* samepinlastact;
+		char padding2[8];
+	};
+	union{
+		struct relation* samepinnextchip;
+		struct relation* samepinnextfunc;
+		struct relation* samepinnextwin;
+		struct relation* samepinnextact;
+		char padding3[8];
+	};
+
+	//[20,3f]: the chip
+	u64 chipinfo;
+	u64 footinfo;		//style
+	union{
+		struct relation* samechiplastpin;
+		struct relation* samefunclastpin;
+		struct relation* samewinlastpin;
+		struct relation* sameactlastpin;
+		char padding6[8];
+	};
+	union{
+		struct relation* samechipnextpin;
+		struct relation* samefuncnextpin;
+		struct relation* samewinnextpin;
+		struct relation* sameactnextpin;
+		char padding7[8];
+	};
+};
+
+
+
+
+struct style
+{
+	//[00,1f]:cartesian coordinate
+	u64 cx;
+	u64 cy;
+	u64 cz;
+	u64 dim;
+
+	//[20,3f]:eulerian angle
+	u64 pitch;
+	u64 yaw;
+	u64 roll;
+	u64 aaa;
+
+	//[40,5f]:total size(base 0x10000)
+	u64 wantw;
+	u64 wanth;
+	u64 wantd;
+	u64 hehe;
+
+	//[60,7f]:show area(base 0x100000)
+	u64 realw;
+	u64 realh;
+	u64 reald;
+	u64 haha;
 };
 struct event
 {

@@ -89,8 +89,8 @@ static void stl_stop()
 void stl_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('s','t','l',0,0,0,0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex32('s', 't', 'l', 0);
 
 	p->start = (void*)stl_start;
 	p->stop = (void*)stl_stop;

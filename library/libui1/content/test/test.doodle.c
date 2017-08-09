@@ -92,8 +92,8 @@ void doodle_stop()
 void doodle_create(void* base, void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','e','s','t',0,0,0,0);
-	p->name = hexof('d','o','o','d','l','e',0,0);
+	p->type = hex32('t', 'e', 's', 't');
+	p->name = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
 
 	p->start = (void*)doodle_start;
 	p->stop = (void*)doodle_stop;

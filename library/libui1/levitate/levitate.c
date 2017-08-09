@@ -52,6 +52,7 @@ void levitate_create(void* base)
 
 void levitate_read(struct arena* win)
 {
+	/*
 	int x0,y0,x1,y1;
 	struct relation* rel = win->top;
 	while(1)
@@ -67,23 +68,25 @@ void levitate_read(struct arena* win)
 			0xff00ff
 		);
 
-		rel = rel->above;
+		rel = rel->samepinnextchip;
 		if(rel == 0)break;
 	}
 
 	if(showvt100&1)vt100_read(win, 0x2000, 0x2000, 0xe000, 0x8000);
 	if(showvkbd&1)vkbd_read(win);
 	navi_read(win);
+	*/
 }
 int levitate_write(struct event* ev)
 {
+/*
 	int j;
 	int x,y,z,w;
 	struct relation* rel;
 	struct relation* top;
-	struct relation* belowtop;
-	struct relation* belowthis;
-	struct relation* abovethis;
+	struct relation* samepinlastchiptop;
+	struct relation* samepinlastchipthis;
+	struct relation* samepinnextchipthis;
 	struct arena* win = (void*)(ev->where);
 
 	w = (ev->what)&0xff;
@@ -108,7 +111,7 @@ int levitate_write(struct event* ev)
 			}
 			}
 
-			rel = rel->below;
+			rel = rel->samepinlastchip;
 		}
 
 		if(ev->what == 0x2b70)
@@ -132,14 +135,14 @@ int levitate_write(struct event* ev)
 				if(rel == win->bot)return 0;
 				if(rel == win->top)return 0;
 
-				rel->below->above = rel->above;
-				rel->above->below = rel->below;
+				rel->samepinlastchip->samepinnextchip = rel->samepinnextchip;
+				rel->samepinnextchip->samepinlastchip = rel->samepinlastchip;
 
-				win->top->above = rel;
-				//win->top->below keep
+				win->top->samepinnextchip = rel;
+				//win->top->samepinlastchip keep
 
-				rel->below = win->top;
-				rel->above = 0;
+				rel->samepinlastchip = win->top;
+				rel->samepinnextchip = 0;
 
 				win->top = rel;
 
@@ -151,7 +154,7 @@ int levitate_write(struct event* ev)
 					if(rel == 0)break;
 
 					say("->");
-					rel = rel->above;
+					rel = rel->samepinnextchip;
 				}
 				say("\n");
 				return 0;
@@ -174,7 +177,6 @@ int levitate_write(struct event* ev)
 				tmp = ev->why;
 			}
 		}
-		/*
 		else if(w == 'b')
 		{
 			rel->wantw = rel->wantw*90/100;
@@ -185,8 +187,7 @@ int levitate_write(struct event* ev)
 			rel->wantw = rel->wantw*110/100;
 			rel->wanth = rel->wanth*110/100;
 		}
-		*/
 	}
-
 	return 0;
+*/
 }

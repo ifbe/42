@@ -9,7 +9,7 @@
 
 
 //voice
-int voicecreate();
+int voicecreate(void*);
 int voicedelete();
 int voicestart(int);
 int voicestop();
@@ -18,7 +18,7 @@ int voicechoose();
 int voiceread();
 int voicewrite(void*);
 //network
-int netwincreate();
+int netwincreate(void*);
 int netwindelete();
 int netwinstart(int);
 int netwinstop();
@@ -27,14 +27,14 @@ int netwinchoose();
 int netwinread();
 int netwinwrite(void*);
 //local
-int windowcreate();
+int windowcreate(void*);
 int windowdelete();
 int windowstart(void*);
 int windowstop();
 int windowlist();
 int windowchoose();
 int windowread();
-int windowwrite(void*);
+int windowwrite(void* dst, void* src);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -50,29 +50,19 @@ void say(void*, ...);
 
 //
 static struct window* arena;
-static int now = 0;
 
 
 
 
-u64 arenaread()
+int arenaread()
 {
 	return 0;
 }
-u64 arenawrite()
+int arenawrite()
 {
-	int j;
-	for(j=0;j<16;j++)
-	{
-		if(arena[j].fmt == 0)break;
-		if(arena[j].fmt == 0x696c63)continue;
-		if(arena[j].fmt == 0x6563696f76)continue;
-
-		if(arena[j].fmt == 0x6c6d7468)netwinwrite(&arena[j]);
-		else windowwrite(&arena[j]);
-	}
-	return 0;
+	windowwrite(&arena[1], &arena[0]);
 }
+/*
 u64 arenalist(u64 dispid, u64 property)
 {
 	int j;
@@ -111,23 +101,20 @@ u64 arenachoose(u64 dispid, u64 property, u64 what)
 
 	return what;
 }
-int arenastart(int type)
+*/
+int arenastart(struct window* win)
 {
-	if(type == 0)
+	win->first = 0;
+	win->last = 0;
+
+	if(win->type == hex32('n', 'e', 't', 0))
 	{
-		arena[now].type = 0;
-		arena[now].fmt = 0;
-		arena[now].bot = 0;
-		arena[now].top = 0;
-
-		arena[now].buf = 0;
-		arena[now].len = 0;
-		arena[now].dim = 2;
-
-		arena[now].w = 512;
-		arena[now].h = 512;
-		windowstart( &(arena[now]) );
-		return now;
+	}
+	else
+	{
+		//win: create window
+		//buf: register bmp&ximage
+		windowstart(win);
 	}
 	return 0;
 }
@@ -138,20 +125,21 @@ int arenastop()
 void arenacreate(u8* type, u8* addr)
 {
 	int j;
-	if(type!=0)return;
+	if(type != 0)return;
+	for(j=0;j<0x400000;j++)addr[j] = 0;
 
-	//table where
+	//create
 	arena = (void*)addr;
-	for(j=0;j<0x100000;j++)addr[j] = 0;
+	windowcreate(arena);
+	voicecreate(arena);
 
-	//local
-	windowcreate();
-	voicecreate();
-
-	//
-	//default window
-	arenastart(0);
-	now = 0;
+	//start
+	arena[0].type = hex32('b', 'u', 'f', 0);
+	arena[0].fmt = hex32('a', 'n', 'y', 0);
+	arena[0].buf = (u64)startmemory(0x100000*16);
+	arena[0].len = 0x100000*16;
+	arenastart(&arena[0]);
+	arenastart(&arena[1]);
 
 	//say("[c,f):createed arena\n");
 }

@@ -25,8 +25,6 @@ int voicestop()
 }
 int voicestart(struct window* win)
 {
-	win->buf = 0;
-	win->fmt = 0x6563696f76;
 	return 0;
 }
 int voicedelete()

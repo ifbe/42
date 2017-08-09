@@ -24,8 +24,6 @@ target:
 	$(compiler) $(cflag) lib3d/model/model.magnify.c
 	$(compiler) $(cflag) lib3d/model/model.minify.c
 	$(compiler) $(cflag) lib3d/lib3d.c
-	$(compiler) $(cflag) content/bg/bg.color.c
-	$(compiler) $(cflag) content/bg/bg.picture.c
 	$(compiler) $(cflag) content/game/game.2048.c
 	$(compiler) $(cflag) content/game/game.chess.c
 	$(compiler) $(cflag) content/game/game.ooxx.c

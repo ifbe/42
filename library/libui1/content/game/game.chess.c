@@ -12,7 +12,7 @@ void rectbody(void*,
 
 
 
-static void chess_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+static void chess_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	u32 color;
 	int x,y;
@@ -38,26 +38,22 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct relati
 		}
 	}
 }
-static void chess_read_html(struct arena* win, struct actor* act, struct relation* rel)
+static void chess_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void chess_read_text(struct arena* win, struct actor* act, struct relation* rel)
+static void chess_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void chess_read(struct relation* rel)
+static void chess_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	struct arena* win = rel->parent_this;
-	struct actor* act = rel->child_this;
-	u64 fmt = win->fmt;
-
 	//text 
-	if(fmt == 0x74786574)
+	if(win->fmt == 0x74786574)
 	{
 		chess_read_text(win, act, rel);
 	}
 
 	//html
-	else if(fmt == 0x6c6d7468)
+	else if(win->fmt == 0x6c6d7468)
 	{
 		chess_read_html(win, act, rel);
 	}
@@ -92,8 +88,8 @@ void chess_create(void* base, void* addr)
 {
 	struct actor* act = addr;
 
-	act->type = hexof('g','a','m','e',0,0,0,0);
-	act->name = hexof('c','h','e','s','s',0,0,0);
+	act->type = hex32('g', 'a', 'm', 'e');
+	act->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
 	act->first = 0;
 	act->last = 0;
 

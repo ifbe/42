@@ -946,8 +946,8 @@ void xiangqi_create(void* base,void* addr)
 {
 	struct actor* p = addr;
 
-	p->type = hexof('g','a','m','e',0,0,0,0);
-	p->name = hexof('x','i','a','n','g','q','i',0);
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
 
 	p->start = (void*)xiangqi_start;
 	p->stop = (void*)xiangqi_stop;

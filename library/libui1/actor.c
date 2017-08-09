@@ -1,4 +1,6 @@
 #include "actor.h"
+#define __act__ hex32('a','c','t',0)
+#define __win__ hex32('w','i','n',0)
 void content_create(void*, void*);
 void content_delete();
 void levitate_create(void*, void*);
@@ -15,14 +17,14 @@ int content_write(void*);
 int levitate_read(void*);
 int levitate_write(void*);
 //
-void cli_write(void*);
-void motion_explain(void*);
+int cli_write(void*);
 
 
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
-static struct relation* treaty = 0;
+static struct style* style = 0;
+static struct relation* connect = 0;
 //
 static u32 menu=0;
 
@@ -31,21 +33,50 @@ static u32 menu=0;
 
 int actorread()
 {
-	int j,k;
-	struct arena* win;
+	int j;
+	struct arena* canvas;		//buffer
 
-	for(j=0;j<16;j++)
+	struct arena* window;		//window
+	struct actor* actor;		//2048?
+
+	struct relation* rel;		//link
+	struct style* st;			//style
+
+	canvas = &arena[0];
+	for(j=1;j<2;j++)
 	{
-		//
-		win = &arena[j];
+		window = &arena[j];
+		if(window->type == 0)break;
+		if(window->type == hex32('b', 'u', 'f', 0))continue;
 
-		//error
-		if(win->fmt == 0)break;
+		//cli
+		if(window->fmt == 0x696c63)return 0;
 
-		//
-		content_read(win);
-		if(menu > 0)levitate_read(win);
+		//voice
+		if(window->fmt == 0x6563696f76)return 0;
+
+		//write
+		rel = window->first;
+		while(1)
+		{
+			if(rel == 0)break;
+			else if(rel->destiny == __win__)
+			{
+				backgroundcolor(canvas, 0xff);
+			}
+			else if(rel->destiny == __act__)
+			{
+				actor = (void*)(rel->chipinfo);
+				st = (void*)(rel->footinfo);
+				actor->read(canvas, actor, st);
+			}
+			rel = rel->samepinnextact;
+		}
+
+		//send
+		arenawrite();
 	}//for
+
 	return 0;
 }
 int actorwrite(struct event* ev)
@@ -55,7 +86,7 @@ int actorwrite(struct event* ev)
 	if(w+)	//new win
 	if(w-)	//del win
 	if(w@)	//changed memaddr
-*/
+	say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 	if(ev->what == 0x727473)
 	{
 		cli_write(ev);
@@ -63,9 +94,10 @@ int actorwrite(struct event* ev)
 	}
 	if(ev->where < 0x1000)ev->where = (u64)(&arena[0]);
 
+*/
 
 
-
+/*
 	//
 	int x,y,z,w;
 	u64 why,what;
@@ -116,7 +148,7 @@ int actorwrite(struct event* ev)
 	{
 		say("dim=%d\n",win->dim);
 	}
-
+*/
 	return 0;
 }
 int actorlist(u8* p)
@@ -171,8 +203,245 @@ int actorlist(u8* p)
 		return 0;
 	}
 }
-int actorchoose(u8* p)
+void* actorchoose(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo)
 {
+	int j;
+	struct relation* this;
+	struct style* st;
+
+	//locate first
+	for(j=0;j<0x400;j++)
+	{
+		if(connect[j].pininfo == 0)
+		{
+			this = &connect[j];
+			break;
+		}
+	}
+
+	//style
+	if(footinfo == 0)footinfo = (u64)&style[j];
+	st = (void*)footinfo;
+	st->cx = getrandom()%0x10000;
+	st->cy = getrandom()%0x10000;
+	st->dim = 2;
+	st->wantw = 0x8000;
+	st->wanth = 0x8000;
+
+	//generate
+	this->pininfo = pininfo;
+	this->destiny = destiny;
+	this->samepinlastact = 0;
+	this->samepinnextact = 0;
+
+	this->chipinfo = chipinfo;
+	this->footinfo = footinfo;
+	this->samewinlastpin = 0;
+	this->samewinnextpin = 0;
+
+	return this;
+}
+int actorstart(struct arena* win, struct actor* act)
+{
+	struct relation* winrel;
+	struct relation* actrel;
+	struct relation* this;
+
+	//win last
+	winrel = win->first;
+	if(winrel != 0)
+	{
+		while(1)
+		{
+			//last rel of win
+			if(winrel->samewinnextpin == 0)break;
+			winrel = winrel->samewinnextpin;
+		}
+	}
+	else
+	{
+		winrel = actorchoose(0xff, __win__, (u64)win, 0);
+		win->first = winrel;
+	}
+
+	//this
+	this = actorchoose(0xff, __act__, (u64)act, 0);
+	this->samepinlastact = winrel;
+	winrel->samepinnextact = this;
+
+
+	//act last
+	actrel = act->first;
+	if(actrel != 0)
+	{
+		while(1)
+		{
+			//last rel of win
+			if(actrel->sameactnextpin == 0)break;
+			actrel = actrel->sameactnextpin;
+		}
+
+		this->sameactlastpin = actrel;
+		actrel->sameactnextpin = this;
+	}
+	else
+	{
+		act->start();
+	}
+}
+int actorstop()
+{
+	return 0;
+}
+void actorcreate(u8* type, u8* addr)
+{
+	int j;
+	if(type != 0)return;
+	if( (type == 0)&&(arena != 0) )return;
+
+	//where
+	arena = (void*)(addr+0);
+	actor = (void*)(addr+0x100000);
+	style = (void*)(addr+0x200000);
+	connect = (void*)(addr+0x300000);
+
+	//lib1d
+	lib1d_create(addr, 0);
+
+	//lib2d
+	lib2d_create(addr, 0);
+
+	//lib3d
+	lib3d_create(addr, 0);
+
+	//bottom
+	content_create(addr, 0);
+
+	//upper
+	levitate_create(addr, 0);
+
+	//
+	actorstart(&arena[1], &actor[0]);
+	//say("[c,f):createed actor\n");
+}
+void actordelete()
+{
+	//say("[c,f):deleteing actor\n");
+	content_delete();
+
+	lib1d_delete();
+	lib2d_delete();
+	lib3d_delete();
+
+	connect = 0;
+	style = 0;
+	actor = 0;
+	arena = 0;
+}
+
+
+
+
+/*
+	actor[0].start();
+	j = actorstart(0, 0);
+	connect[j].cx = 0x8000;
+	connect[j].cy = 0x8000;
+	connect[j].wantw = 0xffff;
+	connect[j].wanth = 0xffff;
+
+	actor[2].start();
+	j = actorstart(0, 2);
+	connect[j].cx = 0x4000;
+	connect[j].cy = 0x4000;
+	connect[j].wantw = 0x8000;
+	connect[j].wanth = 0x8000;
+
+	actor[3].start();
+	j = actorstart(0, 3);
+	connect[j].cx = 0xc000;
+	connect[j].cy = 0x4000;
+	connect[j].wantw = 0x8000;
+	connect[j].wanth = 0x8000;
+
+	actor[21].start();
+	j = actorstart(0, 21);
+	connect[j].cx = 0x4000;
+	connect[j].cy = 0xc000;
+	connect[j].wantw = 0x8000;
+	connect[j].wanth = 0x8000;
+*/
+/*
+	int t;
+	for(t=1;t<50;t++)
+	{
+		if(connect[t].parent_this == 0)break;
+	}
+	//
+	connect[t].parent_type = 0;
+	connect[t].parent_this = &arena[w];
+	if(arena[w].bot == 0)	//0
+	{
+		connect[t].below = 0;
+		connect[t].above = 0;
+
+		arena[w].bot = &connect[t];
+		arena[w].top = 0;
+	}
+	else if(arena[w].top == 0)	//1
+	{
+		(arena[w].bot)->above = &connect[t];
+
+		connect[t].below = arena[w].bot;
+		connect[t].above = 0;
+
+		//arena[w].bot = itself
+		arena[w].top = &connect[t];
+	}
+	else	//more
+	{
+		(arena[w].top)->above = &connect[t];
+
+		connect[t].below = arena[w].top;
+		connect[t].above = 0;
+
+		//arena[w].bot = itself
+		arena[w].top = &connect[t];
+	}
+
+	//
+	connect[t].child_type = 0xffffffff;
+	connect[t].child_this = &actor[a];
+	if(actor[a].first == 0)		//0
+	{
+		connect[t].prev = 0;
+		connect[t].next = 0;
+
+		actor[a].first = &connect[t];
+	}
+	else if(actor[a].last == 0)		//1
+	{
+		(actor[a].first)->next = &connect[t];
+
+		connect[t].prev = actor[a].first;
+		connect[t].next = 0;
+
+		actor[a].last = &connect[t];
+	}
+	else	//more
+	{
+		(actor[a].last)->next = &connect[t];
+
+		connect[t].prev = actor[a].last;
+		connect[t].next = 0;
+
+		actor[a].last = &connect[t];
+	}
+
+	//
+	return t;
+*/
+/*
 	int j,k,ret;
 	struct actor* now;
 
@@ -216,156 +485,7 @@ notfound:
 	return 0;
 
 found:
-	treaty[0].child_this = now;
+	connect[0].child_this = now;
 	now->start();
 	return 1;
-}
-int actorstart(int w, int a)
-{
-	int t;
-	for(t=1;t<50;t++)
-	{
-		if(treaty[t].parent_this == 0)break;
-	}
-
-	//
-	treaty[t].parent_type = 0;
-	treaty[t].parent_this = &arena[w];
-	if(arena[w].bot == 0)	//0
-	{
-		treaty[t].below = 0;
-		treaty[t].above = 0;
-
-		arena[w].bot = &treaty[t];
-		arena[w].top = 0;
-	}
-	else if(arena[w].top == 0)	//1
-	{
-		(arena[w].bot)->above = &treaty[t];
-
-		treaty[t].below = arena[w].bot;
-		treaty[t].above = 0;
-
-		//arena[w].bot = itself
-		arena[w].top = &treaty[t];
-	}
-	else	//more
-	{
-		(arena[w].top)->above = &treaty[t];
-
-		treaty[t].below = arena[w].top;
-		treaty[t].above = 0;
-
-		//arena[w].bot = itself
-		arena[w].top = &treaty[t];
-	}
-
-	//
-	treaty[t].child_type = 0xffffffff;
-	treaty[t].child_this = &actor[a];
-	if(actor[a].first == 0)		//0
-	{
-		treaty[t].prev = 0;
-		treaty[t].next = 0;
-
-		actor[a].first = &treaty[t];
-	}
-	else if(actor[a].last == 0)		//1
-	{
-		(actor[a].first)->next = &treaty[t];
-
-		treaty[t].prev = actor[a].first;
-		treaty[t].next = 0;
-
-		actor[a].last = &treaty[t];
-	}
-	else	//more
-	{
-		(actor[a].last)->next = &treaty[t];
-
-		treaty[t].prev = actor[a].last;
-		treaty[t].next = 0;
-
-		actor[a].last = &treaty[t];
-	}
-
-	//
-	return t;
-}
-int actorstop()
-{
-	return 0;
-}
-void actorcreate(u8* type, u8* addr)
-{
-	int j;
-	if(type != 0)return;
-	if( (type == 0)&&(arena != 0) )return;
-
-	//clean [1m,4m)
-	for(j=0x100000;j<0x400000;j++)addr[j] = 0;
-
-	//where
-	arena = (void*)(addr+0);
-	actor = (void*)(addr+0x100000);
-	treaty = (void*)(addr+0x200000);
-
-	//lib1d
-	lib1d_create(addr, 0);
-
-	//lib2d
-	lib2d_create(addr, 0);
-
-	//lib3d
-	lib3d_create(addr, 0);
-
-	//bottom
-	content_create(addr, 0);
-
-	//upper
-	levitate_create(addr, 0);
-
-	//
-	actor[0].start();
-	j = actorstart(0, 0);
-	treaty[j].cx = 0x8000;
-	treaty[j].cy = 0x8000;
-	treaty[j].wantw = 0xffff;
-	treaty[j].wanth = 0xffff;
-
-	actor[2].start();
-	j = actorstart(0, 2);
-	treaty[j].cx = 0x4000;
-	treaty[j].cy = 0x4000;
-	treaty[j].wantw = 0x8000;
-	treaty[j].wanth = 0x8000;
-
-	actor[3].start();
-	j = actorstart(0, 3);
-	treaty[j].cx = 0xc000;
-	treaty[j].cy = 0x4000;
-	treaty[j].wantw = 0x8000;
-	treaty[j].wanth = 0x8000;
-
-	actor[21].start();
-	j = actorstart(0, 21);
-	treaty[j].cx = 0x4000;
-	treaty[j].cy = 0xc000;
-	treaty[j].wantw = 0x8000;
-	treaty[j].wanth = 0x8000;
-
-	//say("[c,f):createed actor\n");
-}
-void actordelete()
-{
-	//say("[c,f):deleteing actor\n");
-	content_delete();
-
-	lib1d_delete();
-	lib2d_delete();
-	lib3d_delete();
-
-	treaty = 0;
-	actor = 0;
-	arena = 0;
-}
+*/

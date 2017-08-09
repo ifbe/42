@@ -38,7 +38,7 @@ static int die=0;
 
 
 
-void snake_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	//create screen
 	int j;
@@ -86,7 +86,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct relation* rel
 
 
 
-void snake_read_text(struct arena* win, struct actor* act, struct relation* rel)
+void snake_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int j,t;
 	int width = win->w;
@@ -122,7 +122,7 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html(struct arena* win, struct actor* act, struct relation* rel)
+void snake_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 	int j = 0;
 	char* p = (char*)(win->buf);
@@ -158,20 +158,16 @@ void snake_read_html(struct arena* win, struct actor* act, struct relation* rel)
 
 
 
-void snake_read(struct relation* rel)
+void snake_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	struct arena* win = rel->parent_this;
-	struct actor* act = rel->child_this;
-	u64 fmt = win->fmt;
-
 	//text
-	if(fmt == 0x74786574)
+	if(win->fmt == 0x74786574)
 	{
 		snake_read_text(win, act, rel);
 	}
 
 	//html
-	else if(fmt == 0x6c6d7468)
+	else if(win->fmt == 0x6c6d7468)
 	{
 		snake_read_html(win, act, rel);
 	}
@@ -340,8 +336,8 @@ void snake_create(void* base,void* addr)
 	struct actor* p = addr;
 	snake = base+0x300000;
 
-	p->type = hexof('g','a','m','e',0,0,0,0);
-	p->name = hexof('s','n','a','k','e',0,0,0);
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
 
 	p->start = (void*)snake_start;
 	p->stop = (void*)snake_stop;

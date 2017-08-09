@@ -84,7 +84,7 @@ static void cubie(
 		0, 0
 	);
 }
-static void the2048_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	int cx,cy,w,h;
@@ -114,7 +114,7 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct rela
 		}
 	}
 }
-static void the2048_read_html(struct arena* win, struct actor* act, struct relation* rel)
+static void the2048_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	u32 color;
@@ -154,7 +154,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct relat
 		}
 	}
 }
-static void the2048_read_tui(struct arena* win, struct actor* act, struct relation* rel)
+static void the2048_read_tui(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y,j,k,ret;
 	u8 src[10];
@@ -204,21 +204,16 @@ static void the2048_read_cli()
 	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
 	say("\n");
 }
-static void the2048_read(struct relation* rel)
+static void the2048_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	struct arena* win = rel->parent_this;
-	struct actor* act = rel->child_this;
-	u64 fmt = win->fmt;
-	u64 dim = win->dim;
-
 	//cli
-	if(dim == 1)the2048_read_cli();
+	if(rel->dim == 1)the2048_read_cli();
 
 	//text
-	else if(fmt == 0x74786574)the2048_read_tui(win, act, rel);
+	else if(win->fmt == 0x74786574)the2048_read_tui(win, act, rel);
 
 	//html
-	else if(fmt == 0x6c6d7468)the2048_read_html(win, act, rel);
+	else if(win->fmt == 0x6c6d7468)the2048_read_html(win, act, rel);
 
 	//pixel
 	else the2048_read_pixel(win, act, rel);
@@ -506,8 +501,8 @@ void the2048_delete()
 }
 void the2048_create(void* base, struct actor* act)
 {
-	act->type = hexof('g','a','m','e',0,0,0,0);
-	act->name = hexof('2','0','4','8',0,0,0,0);
+	act->type = hex32('g', 'a', 'm', 'e');
+	act->name = hex32('2', '0', '4', '8');
 	act->first = 0;
 	act->last = 0;
 

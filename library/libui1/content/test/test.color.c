@@ -201,8 +201,8 @@ static void color_stop()
 void color_create(void* base, void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','e','s','t',0,0,0,0);
-	p->name = hexof('c','o','l','o','r',0,0,0);
+	p->type = hex32('t', 'e', 's', 't');
+	p->name = hex64('c', 'o', 'l', 'o', 'r', 0, 0, 0);
 
 	p->start = (void*)color_start;
 	p->stop = (void*)color_stop;

@@ -676,8 +676,8 @@ void tetris_create(void* base,void* addr)
 	struct actor* p = addr;
 	table=(u8*)(addr+0x300000);
 
-	p->type = hexof('g','a','m','e',0,0,0,0);
-	p->name = hexof('t','e','t','r','i','s',0,0);
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
 
 	p->start = (void*)tetris_start;
 	p->stop = (void*)tetris_stop;

@@ -95,8 +95,8 @@ static void pure_stop()
 void pure_create(void* uibuf,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','e','s','t',0,0,0,0);
-	p->name = hexof('p','u','r','e',0,0,0,0);
+	p->type = hex32('t', 'e', 's', 't');
+	p->name = hex32('p', 'u', 'r', 'e');
 
 	p->start = (void*)pure_start;
 	p->stop = (void*)pure_stop;

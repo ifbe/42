@@ -24,8 +24,8 @@ static void fs_stop()
 void fs_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('f','s',0,0,0,0,0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex32('f', 's', 0, 0);
 
 	p->start = (void*)fs_start;
 	p->stop = (void*)fs_stop;

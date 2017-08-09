@@ -183,7 +183,6 @@ static void tuxiang(struct arena* win)
 static void sketchpad_read_pixel(struct arena* win)
 {
 	//draw
-	backgroundcolor(win, 0);
 	wangge(win);
 	tuxiang(win);
 
@@ -430,8 +429,8 @@ void sketchpad_create(void* base,void* addr)
 	node = (struct mathnode*)(base+0x200000);
 	databuf = base+0x300000;
 
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('s','k','e','t','c','h',0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
 
 	p->start = (void*)sketchpad_start;
 	p->stop = (void*)sketchpad_stop;

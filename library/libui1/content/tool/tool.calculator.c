@@ -200,8 +200,8 @@ static void calculator_stop()
 void calculator_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('c','a','l','c',0,0,0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex32('c', 'a', 'l', 'c');
 
 	p->start = (void*)calculator_start;
 	p->stop = (void*)calculator_stop;

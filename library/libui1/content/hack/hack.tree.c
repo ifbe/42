@@ -206,8 +206,8 @@ void tree_create(void* base,void* addr)
 	struct actor* p = addr;
 	node=(struct mathnode*)(base+0x200000);
 
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('t','r','e','e',0,0,0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex32('t', 'r', 'e', 'e');
 
 	p->start = (void*)tree_start;
 	p->stop = (void*)tree_stop;

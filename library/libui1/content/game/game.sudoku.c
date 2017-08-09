@@ -362,8 +362,8 @@ void sudoku_create(void* base,void* addr)
 	struct actor* p = addr;
 	buffer = base+0x300000;
 
-	p->type = hexof('g','a','m','e',0,0,0,0);
-	p->name = hexof('s','u','d','o','k','u',0,0);
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
 
 	p->start = (void*)sudoku_start;
 	p->stop = (void*)sudoku_stop;

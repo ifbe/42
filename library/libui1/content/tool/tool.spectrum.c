@@ -49,7 +49,6 @@ static void spectrum_read_pixel(struct arena* win)
 	int width = win->w;
 	int height = win->h;
 
-	backgroundcolor(win, 0);
 	if(win->dim == 1)
 	{
 		for(x=0;x<1024;x++)
@@ -214,8 +213,8 @@ void spectrum_create(void* uibuf,void* addr)
 	power=(double*)(uibuf+0x380000);
 	phase=(double*)(uibuf+0x3c0000);
 
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('s','p','e','c','t','r','u','m');
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
 	p->start = (void*)spectrum_start;
 	p->stop = (void*)spectrum_stop;

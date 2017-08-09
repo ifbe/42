@@ -145,8 +145,8 @@ void browse_create(void* base,void* addr)
 	dstbuf = base+0x300000;
 	pl = addr;
 
-	pl->type = hexof('t','o','o','l',0,0,0,0);
-	pl->name = hexof('b','r','o','w','s','e',0,0);
+	pl->type = hex32('t', 'o', 'o', 'l');
+	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 0, 0);
 
 	pl->start = (void*)browse_start;
 	pl->stop = (void*)browse_stop;

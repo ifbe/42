@@ -18,7 +18,7 @@ static char data[9];
 
 
 
-void ooxx_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	int cx,cy,w,h;
@@ -79,12 +79,8 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 		}//forx
 	}//fory
 }
-static void ooxx_read(struct relation* rel)
+static void ooxx_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	struct arena* win = rel->parent_this;
-	struct actor* act = rel->child_this;
-	u64 fmt = win->fmt;
-
 	ooxx_read_pixel(win, act, rel);
 }
 
@@ -145,8 +141,8 @@ void ooxx_create(char* base,void* addr)
 {
 	struct actor* p = addr;
 
-	p->type = hexof('g','a','m','e',0,0,0,0);
-	p->name = hexof('o','o','x','x',0,0,0,0);
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex32('o', 'o', 'x', 'x');
 
 	p->start = (void*)ooxx_start;
 	p->stop = (void*)ooxx_stop;

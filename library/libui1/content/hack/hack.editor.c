@@ -52,8 +52,8 @@ static void editor_stop()
 void editor_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hexof('t','o','o','l',0,0,0,0);
-	p->name = hexof('e','d','i','t','o','r',0,0);
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('e', 'd', 'i', 't', 'o', 'r', 0, 0);
 
 	p->start = (void*)editor_start;
 	p->stop = (void*)editor_stop;
