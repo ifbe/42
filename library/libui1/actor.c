@@ -16,8 +16,10 @@ int content_read(void*);
 int content_write(void*);
 int levitate_read(void*);
 int levitate_write(void*);
-//
 int cli_write(void*);
+//
+void backgroundcolor(void*, u32);
+void arenawrite();
 
 
 
@@ -222,8 +224,8 @@ void* actorchoose(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo)
 	//style
 	if(footinfo == 0)footinfo = (u64)&style[j];
 	st = (void*)footinfo;
-	st->cx = getrandom()%0x10000;
-	st->cy = getrandom()%0x10000;
+	st->cx = (getrandom()%0x1000)*16;
+	st->cy = (getrandom()%0x1000)*16;
 	st->dim = 2;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
