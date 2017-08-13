@@ -27,11 +27,6 @@ static char* AppTitle="haha";
 static char dragpath[MAX_PATH];
 
 //temp
-static TOUCHINPUT touchpoint[10];
-static int pointercount=0;
-static int pointerid[10];
-
-//temp
 static int leftdown=0;
 static int rightdown=0;
 static POINT pt, pe;
@@ -46,7 +41,8 @@ static RECT rt, re;
 
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	struct window* win = (void*)GetWindowLongPtr(wnd, GWLP_USERDATA);
+	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
+	struct window* win = (void*)addr;
 	switch (msg)
 	{
 		//拖拽文件
@@ -61,33 +57,34 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			DragFinish(hDrop);      //释放hDrop
 
-			eventwrite((u64)dragpath, 0x656c6966, 0, 0);
+			eventwrite((u64)dragpath, 0x656c6966, addr, 0);
 			return 0;
 		}
 
 		//按键
 		case WM_KEYDOWN:
 		{
+			u64 val;
 			switch(wparam)
 			{
 				case 0x70:	//f1
 				{
-					eventwrite(0xf1, 0x64626b, 0, 0);
+					val = 0xf1;
 					break;
 				}
 				case 0x71:	//f2
 				{
-					eventwrite(0xf2, 0x64626b, 0, 0);
+					val = 0xf2;
 					break;
 				}
 				case 0x72:	//f3
 				{
-					eventwrite(0xf3, 0x64626b, 0, 0);
+					val = 0xf3;
 					break;
 				}
 				case 0x73:	//f4
 				{
-					eventwrite(0xf4, 0x64626b, 0, 0);
+					val = 0xf4;
 					break;
 				}
 				case VK_UP:				//up
@@ -95,19 +92,22 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				case VK_RIGHT:			//right
 				case VK_DOWN:			//down
 				{
-					eventwrite(wparam, 0x64626b, 0, 0);
+					val = wparam;
 					break;
 				}
+				default:return 0;
 			}
+
 			//printf("key:%x\n", wparam);
+			eventwrite(val, 0x64626b, addr, 0);
 			return 0;
 		}
 
 		//文字
 		case WM_CHAR:
 		{
-			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, 0, 0);
-			else eventwrite(wparam, 0x72616863, 0, 0);
+			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, addr, 0);
+			else eventwrite(wparam, 0x72616863, addr, 0);
 			return 0;
 		}
 /*
@@ -116,6 +116,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			int i=0;
 			int count=wparam;
+			TOUCHINPUT touchpoint[10];
 			GetTouchInputInfo(
 				(HTOUCHINPUT)lparam,
 				count,
@@ -149,13 +150,18 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if( pointerid[k] == -1 )
+				if( win->touch[k].id == (u16)wparam )
 				{
-					pointerid[k]=(u8)(wparam);
+					//find self
+					break;
+				}
+				if( win->touch[k].id == 0xffff )
+				{
+					//find empty
+					win->touch[k].id = (u16)wparam;
 					break;
 				}
 			}
-			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
 			pt.x = GET_X_LPARAM(lparam);
@@ -163,7 +169,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = (pt.y<<16) / (win->h);
 			x = (pt.x<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -171,11 +177,29 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if( pointerid[k] == (u8)(wparam) )
+				if( win->touch[k].id == (u16)wparam )
 				{
-					pointerid[k]=-1;
+					//find self
+					win->touch[k].id = 0xffff;
 					break;
 				}
+			}
+
+			pt.y = GET_Y_LPARAM(lparam);
+			pt.x = GET_X_LPARAM(lparam);
+			ScreenToClient(wnd, &pt);
+
+			y = (pt.y<<16) / (win->h);
+			x = (pt.x<<16) / (win->w);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+			return 0;
+		}
+		case WM_POINTERUPDATE:
+		{
+			u64 x,y,k;
+			for(k=0;k<10;k++)
+			{
+				if( win->touch[k].id == (u16)wparam )break;
 			}
 			if(k >= 10)return 0;
 
@@ -185,25 +209,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = (pt.y<<16) / (win->h);
 			x = (pt.x<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
-			return 0;
-		}
-		case WM_POINTERUPDATE:
-		{
-			u64 x,y,k;
-			for(k=0;k<10;k++)
-			{
-				if( pointerid[k] == (u8)(wparam) )break;
-			}
-			if(k >= 10)return 0;
-
-			pt.y=GET_Y_LPARAM(lparam);
-			pt.x=GET_X_LPARAM(lparam);
-			ScreenToClient(wnd, &pt);
-
-			y = (pt.y<<16) / (win->h);
-			x = (pt.x<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 			return 0;
 		}
 
@@ -219,12 +225,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if( ((wparam>>16) & 0xffff ) < 0xf000 )
 			{
 				k = 'f';
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			}
 			else
 			{
 				k = 'b';
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+				eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			}
 
 			return 0;
@@ -250,7 +256,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = (lparam&0xffff0000) / (win->h);
 			x = ((lparam&0xffff)<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 			return 0;
 		}
 
@@ -263,7 +269,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'l';
 			y = (lparam&0xffff0000) / (win->h);
 			x = ((lparam&0xffff)<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 			return 0;
 		}
 
@@ -276,7 +282,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'r';
 			y = (lparam&0xffff0000) / (win->h);
 			x = ((lparam&0xffff)<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 			return 0;
 		}
 
@@ -297,7 +303,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'l';
 			y = (lparam&0xffff0000) / (win->h);
 			x = ((lparam&0xffff)<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
 
@@ -318,7 +324,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'r';
 			y = (lparam&0xffff0000) / (win->h);
 			x = ((lparam&0xffff)<<16) / (win->w);
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
 
@@ -335,7 +341,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				win->h = h;
 			}
 
-			eventwrite(lparam, 0x657a6973, 0, 0);
+			eventwrite(lparam, 0x657a6973, addr, 0);
 			return 0;
 		}
 
@@ -502,6 +508,10 @@ void windowstart(struct window* this)
 		return;
 	}
 
+	for(ret=0;ret<16;ret++)
+	{
+		(this->touch[ret]).id = 0xffff;
+	}
 	ret = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
 }
 void windowstop(struct window* this)

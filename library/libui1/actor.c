@@ -83,12 +83,12 @@ int actorread()
 }
 int actorwrite(struct event* ev)
 {
-	//prepare
+	say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 /*
+	//prepare
 	if(w+)	//new win
 	if(w-)	//del win
 	if(w@)	//changed memaddr
-	say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 	if(ev->what == 0x727473)
 	{
 		cli_write(ev);

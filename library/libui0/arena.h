@@ -9,6 +9,24 @@
 
 
 
+struct event
+{
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
+};
+struct point
+{
+	u16 x;
+	u16 y;
+	u16 z;
+	u16 id;
+};
+
+
+
+
 struct window
 {
 	//local,cli,voice,vnc,rdp,...
@@ -51,16 +69,6 @@ struct window
 	u64 d;
 	u64 t;
 
-	union
-	{
-		u64 input[16];
-		u8 priv[0x80];
-	};
-};
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
+	//
+	struct point touch[16];
 };
