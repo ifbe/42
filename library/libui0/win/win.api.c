@@ -406,8 +406,6 @@ void createmywindow(struct window* this)
 	hProc(0x0049, 1);
 
 	//完成
-	this->type = hex32('w', 'i', 'n', 0);
-	this->fmt = hex32('a', 'p', 'i', 0);
 	this->fd = (u64)wnd;
 	this->dc = (u64)dc;
 	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)this);
@@ -507,12 +505,17 @@ void windowstart(struct window* this)
 		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 		return;
 	}
-
-	for(ret=0;ret<16;ret++)
+	else
 	{
-		(this->touch[ret]).id = 0xffff;
+		this->type = hex32('w', 'i', 'n', 0);
+		this->fmt = hex32('a', 'p', 'i', 0);
+
+		for(ret=0;ret<16;ret++)
+		{
+			(this->touch[ret]).id = 0xffff;
+		}
+		ret = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
 	}
-	ret = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
 }
 void windowstop(struct window* this)
 {

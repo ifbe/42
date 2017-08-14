@@ -51,12 +51,12 @@ target:
 	$(compiler) $(cflag) content/tool/tool.qrcode.c
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
+	$(compiler) $(cflag) content/levitate/lev.login.c
+	$(compiler) $(cflag) content/levitate/lev.navi.c
+	$(compiler) $(cflag) content/levitate/lev.vkbd.c
+	$(compiler) $(cflag) content/levitate/lev.vt100.c
+	$(compiler) $(cflag) content/levitate/levitate.c
 	$(compiler) $(cflag) content/content.c
-	$(compiler) $(cflag) levitate/lev.login.c
-	$(compiler) $(cflag) levitate/lev.navi.c
-	$(compiler) $(cflag) levitate/lev.vkbd.c
-	$(compiler) $(cflag) levitate/lev.vt100.c
-	$(compiler) $(cflag) levitate/levitate.c
 	$(compiler) $(cflag) actor.c
 clean:
 	rm -f *.o *.a

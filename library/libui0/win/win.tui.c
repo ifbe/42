@@ -93,13 +93,13 @@ static void attr(u8 bg,u8 fg)
 
 
 
-void windowwrite(struct window* t)
+void windowwrite(struct window* dst, struct window* src)
 {
 	int x,y;
 	u8 ch,bg=0,fg=0;
 	COORD pos = {0,0};
 	u8* p;
-	u8* buf = (u8*)(t->buf);
+	u8* buf = (u8*)(src->buf);
 	SetConsoleCursorPosition(output,pos);
 /*
 	//
@@ -154,17 +154,24 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct window* win)
+void windowstart(struct window* this)
 {
-	win->type = 0;
-	win->fmt = 0x74786574;
-	win->buf = (u64)malloc(0x100000);
-	win->len = 0;
+	if(this->type == hex32('b','u','f',0))
+	{
+		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+		return;
+	}
+	else
+	{
+		this->type = hex32('w','i','n',0);
+		this->fmt = hex32('t','u','i',0);
 
-	win->w = width;
-	win->h = height;
+		this->w = width;
+		this->h = height;
+		this->d = 0;
 
-	win->thread = startthread(uievent, win);
+		this->thread = startthread(uievent, this);
+	}
 }
 void windowstop()
 {

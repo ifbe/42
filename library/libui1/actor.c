@@ -36,9 +36,8 @@ static u32 menu=0;
 int actorread()
 {
 	int j;
-	struct arena* canvas;		//buffer
-
 	struct arena* window;		//window
+	struct arena* canvas;		//buffer
 	struct actor* actor;		//2048?
 
 	struct relation* rel;		//link
@@ -54,10 +53,10 @@ int actorread()
 		//cli
 		if(window->fmt == 0x696c63)return 0;
 
-		//voice
-		if(window->fmt == 0x6563696f76)return 0;
-
-		//write
+		//other
+		canvas->fmt = window->fmt;
+		canvas->w = window->w;
+		canvas->h = window->h;
 		rel = window->first;
 		while(1)
 		{

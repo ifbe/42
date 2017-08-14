@@ -16,70 +16,84 @@ void say(char*,...);
 
 
 
-DWORD WINAPI uievent(LPVOID pM)
+DWORD WINAPI uievent(void* win)
 {
-	u8 ch;
+	u64 why,what,where;
 
 	//
+	where = (u64)win;
 	while(1)
 	{
-		ch = getch();
-		if(ch == 0xe0)
+		why = getch();
+		if(why == 0xe0)
 		{
-			ch = getch();
-			if(ch == 0x48)	//up
+			why = getch();
+			if(why == 0x48)	//up
 			{
-				eventwrite(0x415b1b, 0x72616863, 0, 0);
+				why = 0x415b1b;
 			}
-			else if(ch == 0x50)	//down
+			else if(why == 0x50)	//down
 			{
-				eventwrite(0x425b1b, 0x72616863, 0, 0);
+				why = 0x425b1b;
 			}
-			else if(ch == 0x4d)	//right
+			else if(why == 0x4d)	//right
 			{
-				eventwrite(0x435b1b, 0x72616863, 0, 0);
+				why = 0x435b1b;
 			}
-			else if(ch == 0x4b)	//left
+			else if(why == 0x4b)	//left
 			{
-				eventwrite(0x445b1b, 0x72616863, 0, 0);
+				why = 0x445b1b;
 			}
+			else continue;
+
+			what = hex32('k', 'b', 'd', 0);
 		}
 		else
 		{
-			if(ch == 0x8)ch = 0x7f;
-			eventwrite(ch, 0x72616863, 0, 0);
+			if(why == 0x8)why = 0x7f;
+			what = hex32('c', 'h', 'a', 'r');
 		}
+
+		//send
+		eventwrite(why, what, where, 0);
 	}//while
 }
 
 
 
 
-void windowchange()
+void windowread()
+{
+}
+void windowwrite(struct window* dst, struct window* src)
 {
 }
 void windowlist()
 {
 }
-void windowread()
+void windowchange()
 {
 }
-void windowwrite()
+void windowstart(struct window* this)
 {
-}
-void windowstart(struct window* win)
-{
-	win->type = 0;
-	win->fmt = 0x696c63;
-	win->buf = 0;
-	win->len = 0;
+	if(this->type == hex32('b', 'u', 'f', 0))
+	{
+		this->fmt = hex32('c','l','i',0);
+		return;
+	}
+	else
+	{
+		this->type = hex32('w','i','n',0);
+		this->fmt = hex32('c','l','i',0);
+		this->buf = 0;
+		this->len = 0;
 
-	win->w = 80;
-	win->h = 25;
-	win->d = 0;
-	win->dim = 1;
+		this->w = 80;
+		this->h = 25;
+		this->d = 0;
 
-	win->thread = startthread(uievent, win);
+		this->thread = startthread(uievent, this);
+	}
 }
 void windowstop()
 {

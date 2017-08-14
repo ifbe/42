@@ -207,13 +207,13 @@ static void the2048_read_cli()
 static void the2048_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	//cli
-	if(rel->dim == 1)the2048_read_cli();
+	if(win->fmt == hex32('c','l','i',0))the2048_read_cli();
 
 	//text
-	else if(win->fmt == 0x74786574)the2048_read_tui(win, act, rel);
+	else if(win->fmt == hex32('t','u','i',0))the2048_read_tui(win, act, rel);
 
 	//html
-	else if(win->fmt == 0x6c6d7468)the2048_read_html(win, act, rel);
+	else if(win->fmt == hex32('h','t','m','l'))the2048_read_html(win, act, rel);
 
 	//pixel
 	else the2048_read_pixel(win, act, rel);
