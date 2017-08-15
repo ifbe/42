@@ -226,7 +226,7 @@ static void control_stop()
 void control_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hex32('t', 'o', 'o', 'l');
+	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('i', 'n', 'p', 'u', 't', 0, 0, 0);
 
 	p->start = (void*)control_start;

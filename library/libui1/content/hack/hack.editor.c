@@ -52,7 +52,7 @@ static void editor_stop()
 void editor_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hex32('t', 'o', 'o', 'l');
+	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('e', 'd', 'i', 't', 'o', 'r', 0, 0);
 
 	p->start = (void*)editor_start;

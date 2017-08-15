@@ -35,8 +35,6 @@ void algorithm_create(u8*,u8*);
 void algorithm_delete();
 void browse_create(u8*,u8*);
 void browse_delete();
-void control_create(u8*,u8*);
-void control_delete();
 void hex_create(u8*,u8*);
 void hex_delete();
 void tree_create(u8*,u8*);
@@ -111,10 +109,6 @@ int content_create(u8* addr)
 	hex_create(addr, temp);
 	temp += 0x100;
 
-	//hack.input
-	control_create(addr, temp);
-	temp += 0x100;
-
 	//hack.tree
 	tree_create(addr, temp);
 	temp += 0x100;
@@ -178,7 +172,6 @@ void content_delete()
 
 	tree_delete();
 	hex_delete();
-	control_delete();
 	browse_delete();
 	algorithm_delete();
 

@@ -4,20 +4,6 @@ void rectframe(void*,
 	int,int,
 	u32
 );
-void navi_create(void*);
-void navi_delete();
-void vkbd_create(void*);
-void vkbd_delete();
-void vt100_create(void*);
-void vt100_delete();
-//
-int navi_read(void*);
-int navi_write(void*);
-int vkbd_read(void*);
-int vkbd_write(void*);
-int vt100_read(void*, int, int, int, int);
-int vt100_write(void*);
-//
 void cli_write(void*);
 
 
@@ -29,22 +15,6 @@ static u64 tmp=0;
 static int showvt100 = 0;
 static int showvkbd = 0;
 static int shownavi = 0;
-
-
-
-
-void levitate_delete()
-{
-	vt100_delete();
-	vkbd_delete();
-	navi_delete();
-}
-void levitate_create(void* base)
-{
-	navi_create(base);
-	vkbd_create(base);
-	vt100_create(base);
-}
 
 
 

@@ -3,8 +3,8 @@
 #define __win__ hex32('w','i','n',0)
 void content_create(void*, void*);
 void content_delete();
-void levitate_create(void*, void*);
-void levitate_delete();
+void helper_create(void*, void*);
+void helper_delete();
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
@@ -14,9 +14,7 @@ void lib3d_delete();
 //
 int content_read(void*);
 int content_write(void*);
-int levitate_read(void*);
-int levitate_write(void*);
-int cli_write(void*);
+int term_write(void*);
 //
 void backgroundcolor(void*, u32);
 void arenawrite();
@@ -83,6 +81,11 @@ int actorread()
 int actorwrite(struct event* ev)
 {
 	say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+	if(ev->what == hex32('s','t','r',0))
+	{
+		term_write((void*)(ev->why));
+		term_write("\n");
+	}
 /*
 	//prepare
 	if(w+)	//new win
@@ -315,11 +318,11 @@ void actorcreate(u8* type, u8* addr)
 	//lib3d
 	lib3d_create(addr, 0);
 
-	//bottom
-	content_create(addr, 0);
+	//
+	helper_create(addr, 0);
 
-	//upper
-	levitate_create(addr, 0);
+	//
+	content_create(addr, 0);
 
 	//
 	actorstart(&arena[1], &actor[0]);
@@ -329,6 +332,7 @@ void actordelete()
 {
 	//say("[c,f):deleteing actor\n");
 	content_delete();
+	helper_delete();
 
 	lib1d_delete();
 	lib2d_delete();

@@ -333,7 +333,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			int w = lparam&0xffff;
 			int h = (lparam>>16)&0xffff;
-			printf("wm_size:%d,%d\n", w, h);
+			//printf("wm_size:%d,%d\n", w, h);
 
 			if(win != 0)
 			{
@@ -348,7 +348,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//显示
 		case WM_PAINT:
 		{
-			say("WM_PAINT\n");
+			//say("WM_PAINT\n");
 			goto theend;
 		}
 

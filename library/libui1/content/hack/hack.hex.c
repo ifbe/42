@@ -558,7 +558,7 @@ void hex_create(void* uibuf,void* addr)
 	struct actor* p = addr;
 	databuf = uibuf+0x500000;
 
-	p->type = hex32('t', 'o', 'o', 'l');
+	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('h', 'e', 'x', 0);
 
 	p->start = (void*)hex_start;

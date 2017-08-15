@@ -2,28 +2,6 @@ compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) lib1d/term/term.cli.c
-	$(compiler) $(cflag) lib1d/lib1d.c
-	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
-	$(compiler) $(cflag) lib2d/draw/draw.color.c
-	$(compiler) $(cflag) lib2d/draw/draw.icon.c
-	$(compiler) $(cflag) lib2d/draw/draw.shape.c
-	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
-	$(compiler) $(cflag) lib2d/photo/photo.blur.c
-	$(compiler) $(cflag) lib2d/photo/photo.channel.c
-	$(compiler) $(cflag) lib2d/photo/photo.convert.c
-	$(compiler) $(cflag) lib2d/photo/photo.gray.c
-	$(compiler) $(cflag) lib2d/photo/photo.mosaic.c
-	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
-	$(compiler) $(cflag) lib2d/photo/photo.scale.c
-	$(compiler) $(cflag) lib2d/lib2d.c
-	$(compiler) $(cflag) lib3d/carve/carve.ground.c
-	$(compiler) $(cflag) lib3d/carve/carve.shape.c
-	$(compiler) $(cflag) lib3d/carve/carve.thing.c
-	$(compiler) $(cflag) lib3d/carve/carve.water.c
-	$(compiler) $(cflag) lib3d/model/model.magnify.c
-	$(compiler) $(cflag) lib3d/model/model.minify.c
-	$(compiler) $(cflag) lib3d/lib3d.c
 	$(compiler) $(cflag) content/game/game.2048.c
 	$(compiler) $(cflag) content/game/game.chess.c
 	$(compiler) $(cflag) content/game/game.ooxx.c
@@ -36,7 +14,6 @@ target:
 	$(compiler) $(cflag) content/hack/hack.browse.c
 	$(compiler) $(cflag) content/hack/hack.editor.c
 	$(compiler) $(cflag) content/hack/hack.hex.c
-	$(compiler) $(cflag) content/hack/hack.input.c
 	$(compiler) $(cflag) content/hack/hack.tree.c
 	$(compiler) $(cflag) content/link/link.door.c
 	$(compiler) $(cflag) content/link/link.friend.c
@@ -53,10 +30,40 @@ target:
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
 	$(compiler) $(cflag) content/levitate/lev.login.c
 	$(compiler) $(cflag) content/levitate/lev.navi.c
-	$(compiler) $(cflag) content/levitate/lev.vkbd.c
-	$(compiler) $(cflag) content/levitate/lev.vt100.c
+	$(compiler) $(cflag) content/levitate/lev.joystick.c
+	$(compiler) $(cflag) content/levitate/lev.keyboard.c
 	$(compiler) $(cflag) content/levitate/levitate.c
 	$(compiler) $(cflag) content/content.c
+	$(compiler) $(cflag) helper/helper.term.c
+	$(compiler) $(cflag) helper/helper.wire.c
+	$(compiler) $(cflag) helper/helper.c
+	$(compiler) $(cflag) lib1d/html/html.shape.c
+	$(compiler) $(cflag) lib1d/json/json.shape.c
+	$(compiler) $(cflag) lib1d/latex/latex.shape.c
+	$(compiler) $(cflag) lib1d/xaml/xaml.shape.c
+	$(compiler) $(cflag) lib1d/lib1d.c
+	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
+	$(compiler) $(cflag) lib2d/draw/draw.color.c
+	$(compiler) $(cflag) lib2d/draw/draw.icon.c
+	$(compiler) $(cflag) lib2d/draw/draw.shape.c
+	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
+	$(compiler) $(cflag) lib2d/draw/draw.vt100.c
+	$(compiler) $(cflag) lib2d/photo/photo.blur.c
+	$(compiler) $(cflag) lib2d/photo/photo.channel.c
+	$(compiler) $(cflag) lib2d/photo/photo.convert.c
+	$(compiler) $(cflag) lib2d/photo/photo.gray.c
+	$(compiler) $(cflag) lib2d/photo/photo.mosaic.c
+	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
+	$(compiler) $(cflag) lib2d/photo/photo.scale.c
+	$(compiler) $(cflag) lib2d/lib2d.c
+	$(compiler) $(cflag) lib3d/carve/carve.ground.c
+	$(compiler) $(cflag) lib3d/carve/carve.shape.c
+	$(compiler) $(cflag) lib3d/carve/carve.thing.c
+	$(compiler) $(cflag) lib3d/carve/carve.water.c
+	$(compiler) $(cflag) lib3d/model/model.magnify.c
+	$(compiler) $(cflag) lib3d/model/model.minify.c
+	$(compiler) $(cflag) lib3d/model/model.rotate.c
+	$(compiler) $(cflag) lib3d/lib3d.c
 	$(compiler) $(cflag) actor.c
 clean:
 	rm -f *.o *.a

@@ -206,7 +206,7 @@ void tree_create(void* base,void* addr)
 	struct actor* p = addr;
 	node=(struct mathnode*)(base+0x200000);
 
-	p->type = hex32('t', 'o', 'o', 'l');
+	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('t', 'r', 'e', 'e');
 
 	p->start = (void*)tree_start;
