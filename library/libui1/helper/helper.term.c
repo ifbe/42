@@ -10,6 +10,7 @@ int buf2type(u8* buf,int max,u64* type,u8** name);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
+void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
 
@@ -21,17 +22,18 @@ static char* output = 0;
 
 
 
-void term_list()
+void term_read(u8* input)
 {
-}
-void term_choose(u8* input)
-{
-	say("here\n");
-	if(ncmp(input, "ls", 2) == 0)actorlist(0);
+	//say("here\n");
+	if(ncmp(input, "exit", 2) == 0)
+	{
+		eventwrite(0,0,0,0);
+		return;
+	}
+	else if(ncmp(input, "ls", 2) == 0)actorlist(0);
 	else if(ncmp(input, "cd", 2) == 0)actorlist(0);
-}
-void term_read()
-{
+
+	//command prompt
 	say("[void]");
 }
 void term_write(u8* p)
@@ -48,19 +50,18 @@ void term_write(u8* p)
 		{
 			say("esc\n");
 		}
-		if(*p == 0x8)		//backspace
+		if((*p==0x8)|(*p==0x7f))		//backspace
 		{
-			say("\b");
-
+			say("\b \b");
 			if(*enq <= 0)return;
+
 			(*enq)--;
 			input[*enq] = 0;
 		}
 		else if((*p==0xa)|(*p==0xd))	//enter
 		{
 			say("\n");
-			term_choose(input);
-			term_read();
+			term_read(input);
 
 			for(j=0;j<0x100;j++)input[j] = 0;
 			*enq = 0;
@@ -75,6 +76,12 @@ void term_write(u8* p)
 		//////////////////
 		p++;
 	}
+}
+void term_list()
+{
+}
+void term_choose()
+{
 }
 void term_start()
 {

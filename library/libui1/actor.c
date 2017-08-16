@@ -80,11 +80,29 @@ int actorread()
 }
 int actorwrite(struct event* ev)
 {
-	say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+	struct arena* window;
+	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+
+	//
 	if(ev->what == hex32('s','t','r',0))
 	{
 		term_write((void*)(ev->why));
 		term_write("\n");
+		return 0;
+	}
+
+	//"no window"
+	window = (void*)(ev->where);
+	if(window == 0)return 0;
+
+	//"cli window"
+	if(window->fmt == hex32('c','l','i',0))
+	{
+		if(ev->what == hex32('c','h','a','r'))
+		{
+			term_write(&ev[0]);
+		}
+		return 0;
 	}
 /*
 	//prepare
