@@ -81,6 +81,9 @@ int actorread()
 int actorwrite(struct event* ev)
 {
 	struct arena* window;
+	struct actor* actor;		//2048?
+	struct style* st;			//style
+	struct relation* rel;		//link
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//
@@ -103,6 +106,21 @@ int actorwrite(struct event* ev)
 			term_write(&ev[0]);
 		}
 		return 0;
+	}
+
+	//
+	rel = window->first;
+	if(rel == 0)return 0;
+	if(rel->samepinnextact == 0)return 0;
+	while(1)
+	{
+		if(rel->samepinnextact == 0)break;
+		rel = rel->samepinnextact;
+	}
+	if(1)
+	{
+		actor = (void*)(rel->chipinfo);
+		actor->write(ev);
 	}
 /*
 	//prepare
@@ -244,8 +262,8 @@ void* actorchoose(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo)
 	//style
 	if(footinfo == 0)footinfo = (u64)&style[j];
 	st = (void*)footinfo;
-	st->cx = (getrandom()%0x1000)*16;
-	st->cy = (getrandom()%0x1000)*16;
+	st->cx = 0x4000 + (getrandom()%0x1000)*8;
+	st->cy = 0x4000 + (getrandom()%0x1000)*8;
 	st->dim = 2;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
