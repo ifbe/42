@@ -149,10 +149,10 @@ struct relation
 	u64 pininfo;
 	u64 destiny;
 	union{
-		struct relation* samepinlastchip;
-		struct relation* samepinlastfunc;
-		struct relation* samepinlastwin;
-		struct relation* samepinlastact;
+		struct relation* samepinprevchip;
+		struct relation* samepinprevfunc;
+		struct relation* samepinprevwin;
+		struct relation* samepinprevact;
 		char padding2[8];
 	};
 	union{
@@ -167,10 +167,10 @@ struct relation
 	u64 chipinfo;
 	u64 footinfo;		//style
 	union{
-		struct relation* samechiplastpin;
-		struct relation* samefunclastpin;
-		struct relation* samewinlastpin;
-		struct relation* sameactlastpin;
+		struct relation* samechipprevpin;
+		struct relation* samefuncprevpin;
+		struct relation* samewinprevpin;
+		struct relation* sameactprevpin;
 		char padding6[8];
 	};
 	union{

@@ -65,6 +65,7 @@ int actorread()
 			}
 			else if(rel->destiny == __act__)
 			{
+				//say("%x\n",rel);
 				actor = (void*)(rel->chipinfo);
 				st = (void*)(rel->footinfo);
 				actor->read(canvas, actor, st);
@@ -271,12 +272,12 @@ void* actorchoose(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo)
 	//generate
 	this->pininfo = pininfo;
 	this->destiny = destiny;
-	this->samepinlastact = 0;
+	this->samepinprevact = 0;
 	this->samepinnextact = 0;
 
 	this->chipinfo = chipinfo;
 	this->footinfo = footinfo;
-	this->samewinlastpin = 0;
+	this->samewinprevpin = 0;
 	this->samewinnextpin = 0;
 
 	return this;
@@ -294,8 +295,8 @@ int actorstart(struct arena* win, struct actor* act)
 		while(1)
 		{
 			//last rel of win
-			if(winrel->samewinnextpin == 0)break;
-			winrel = winrel->samewinnextpin;
+			if(winrel->samepinnextwin == 0)break;
+			winrel = winrel->samepinnextwin;
 		}
 	}
 	else
@@ -306,9 +307,8 @@ int actorstart(struct arena* win, struct actor* act)
 
 	//this
 	this = actorchoose(0xff, __act__, (u64)act, 0);
-	this->samepinlastact = winrel;
+	this->samepinprevact = winrel;
 	winrel->samepinnextact = this;
-
 
 	//act last
 	actrel = act->first;
@@ -321,7 +321,7 @@ int actorstart(struct arena* win, struct actor* act)
 			actrel = actrel->sameactnextpin;
 		}
 
-		this->sameactlastpin = actrel;
+		this->sameactprevpin = actrel;
 		actrel->sameactnextpin = this;
 	}
 	else
@@ -361,6 +361,7 @@ void actorcreate(u8* type, u8* addr)
 	content_create(addr, 0);
 
 	//
+	actorstart(&arena[1], &actor[1]);
 	actorstart(&arena[1], &actor[0]);
 	//say("[c,f):createed actor\n");
 }
