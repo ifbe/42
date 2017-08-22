@@ -1,49 +1,36 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<termios.h>
-#include<sys/ioctl.h>
-#include<sys/select.h>
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <sys/select.h>
+#include "arena.h"
 //
 u64 startthread(void*, void*);
 void stopthread();
 //
+u64* eventread();
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
 
 
 //
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-};
 static int mode = 0;
 static u64 thread;
 
 
 
 
-void* uievent(void* p)
+void* uievent(void* win)
 {
 	u8 buf[8];
+	u64 why,what,where;
+
+	//
+	where = (u64)win;
 	while(1)
 	{
 		buf[0] = getchar();
@@ -58,24 +45,30 @@ void* uievent(void* p)
 			buf[1] = getchar();
 			if(buf[1] == 0xff)
 			{
-				eventwrite(buf[0], 0x72616863, 0, 0);
+				why = buf[0];
 			}
-
-			if(buf[1] == 0x5b)
+			else if(buf[1] == 0x5b)
 			{
 				buf[2] = getchar();
 
 				if( (buf[2]>=0x41) && (buf[2]<=0x44) )
 				{
-					eventwrite((buf[2]<<16)+0x5b1b,	0x72616863, 0, 0);
+					why = (buf[2]<<16)+0x5b1b;
 				}
 			}//5b
+			else continue;
+
+			what = hex32('k','b','d',0);
 		}//1b
 
 		else
 		{
-			eventwrite(buf[0], 0x72616863, 0, 0);
+			what = hex32('c','h','a','r');
+			why = buf[0];
 		}
+
+		//send
+		eventwrite(why, what, where, 0);
 	}
 }
 
@@ -116,17 +109,26 @@ void windowwrite()
 
 
 
-void windowstart(struct window* win)
+void windowstart(struct window* this)
 {
-	win->buf1 = 0;
-	win->buf2 = 0;
-	win->fmt = 0x696c63;
-	win->dim = 1;
+	if(this->type == hex32('b','u','f',0))
+	{
+		this->fmt = hex32('c','l','i',0);
+		return;
+	}
+	else
+	{
+		this->type = hex32('w','i','n',0);
+		this->fmt = hex32('c','l','i',0);
+		this->buf = 0;
+		this->len = 0;
 
-	win->w = 80;
-	win->h = 25;
-	win->d = 0;
-	win->t = 0;
+		this->w = 80;
+		this->h = 25;
+		this->d = 0;
+
+		this->thread = startthread(uievent, this);
+	}
 }
 void windowstop()
 {
@@ -134,7 +136,6 @@ void windowstop()
 void windowcreate()
 {
 	windowchange(1);
-	thread = startthread(uievent, 0);
 }
 void windowdelete()
 {

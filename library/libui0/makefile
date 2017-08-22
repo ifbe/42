@@ -1,5 +1,5 @@
 compiler ?= gcc
-cflag ?= -c -O2 -fPIC
+cflag ?= -c -O2 -fPIC -I.
 
 
 

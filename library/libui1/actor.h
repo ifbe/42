@@ -51,10 +51,7 @@ struct arena
 		u64 len;
 		u64 dc;
 	};
-	union{
-		u64 dim;
-		u64 info;
-	};
+	u64 ximage;
 	u64 thread;
 
 	//where

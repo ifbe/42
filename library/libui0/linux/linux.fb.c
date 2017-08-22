@@ -1,19 +1,17 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-#include<fcntl.h>		//	open
-#include<unistd.h>		//	close
-#include<stdio.h>		//	printf
-#include<stdlib.h>		//	malloc
-#include<termios.h>		//	termios,getchar
-#include<sys/ioctl.h>		//	ioctl
-#include<linux/fb.h>		//	framebuffer
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
+#include <fcntl.h>		//open
+#include <unistd.h>		//close
+#include <stdio.h>		//printf
+#include <stdlib.h>		//malloc
+#include <termios.h>		//termios,getchar
+#include <sys/ioctl.h>		//ioctl
+#include <linux/fb.h>		//framebuffer
+#include "arena.h"
 //
 u64 startthread(void*, void*);
 void stopthread();
+//
+u64* eventread();
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -35,79 +33,57 @@ static int xmax=0;
 static int ymax=0;
 static int bpp=0;
 
-//自己的画板
-struct window
+
+
+
+void* uievent(void* win)
 {
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
+	u8 buf[8];
+	u64 why,what,where;
 
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-};
-
-
-
-
-
-
-
-
-void* uievent(void* p)
-{
-	u8 ch;
+	//
+	where = (u64)win;
 	while(1)
 	{
-		ch = getchar();
-		if( (ch == 0xff) | (ch == 0) )
+		buf[0] = getchar();
+		if( (buf[0] == 0) | (buf[0] == 0xff) )
 		{
 			usleep(10000);
 			continue;
 		}
-		else if(ch==0x1b)
+
+		if(buf[0]==0x1b)
 		{
-			ch = getchar();
-			if( (ch == 0xff) | (ch == 0) )
+			buf[1] = getchar();
+			if( (buf[1] == 0) | (buf[1] == 0xff) )
 			{
 				usleep(10000);
-				ch = getchar();
-				if( (ch == 0xff) | (ch == 0) )
-				{
-					eventwrite(0x1b, 0x64626b, 0, 0);
-				}
+				buf[2] = getchar();
+				if(buf[2]==0|buf[2]==0xff)why = 0x1b;
 			}
-
-			else if(ch==0x5b)
+			else if(buf[1] == 0x5b)
 			{
-				ch = getchar();
-				if(ch == 0x41)//up
-				{
-					eventwrite(0x26, 0x64626b, 0, 0);
-				}
-				if(ch == 0x42)//down
-				{
-					eventwrite(0x28, 0x64626b, 0, 0);
-				}
-				if(ch == 0x44)//left
-				{
-					eventwrite(0x25, 0x64626b, 0, 0);
-				}
-				if(ch == 0x43)//right
-				{
-					eventwrite(0x27, 0x64626b, 0, 0);
-				}
+				buf[2] = getchar();
+				if(buf[2] == 0x41)why = 0x26; //up
+				else if(buf[2] == 0x42)why = 0x28; //down
+				else if(buf[2] == 0x44)why = 0x25; //left
+				else if(buf[2] == 0x43)why = 0x27; //right
+				else continue;
 			}//5b
+			else continue;
+
+			what = hex32('k','b','d',0);
 		}//1b
 		else
 		{
-			if(ch == 0x7f)ch = 8;
-			if(ch == 0xa)ch = 0xd;
-
-			eventwrite(ch, 0x72616863, 0, 0);
+			what = hex32('c','h','a','r');
+			why = buf[0];
+			if(buf[0] == 0x7f)why = 8;
+			if(buf[0] == 0xa)why = 0xd;
 		}
+
+		//send
+		eventwrite(why,what,where,0);
 	}//while
 }
 
@@ -118,11 +94,11 @@ void* uievent(void* p)
 
 
 
-void windowwrite(struct window* p)
+void windowwrite(struct window* dst, struct window* src)
 {
 	//
 	int x,y,ret;
-	u8* buf = (void*)(p->buf1);
+	u8* buf = (void*)(src->buf);
 
 	//5,6,5
 	if(bpp==16)
@@ -153,11 +129,26 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct window* p)
+void windowstart(struct window* this)
 {
-	p->buf1 = (u64)malloc(xmax*ymax*4);
-	p->w = xmax;
-	p->h = ymax;
+	int j;
+	this->w = xmax;
+	this->h = ymax;
+        if(this->type == hex32('b','u','f',0))
+        {
+                this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+                return;
+        }
+        else
+        {
+                this->type = hex32('w', 'i', 'n', 0);
+                this->fmt = hex32('f', 'b', 0, 0);
+
+                for(j=0;j<16;j++)
+                {
+                        (this->touch[j]).id = 0xffff;
+                }
+        }
 }
 void windowstop()
 {

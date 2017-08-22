@@ -497,7 +497,7 @@ void windowchange()
 }
 void windowstart(struct window* this)
 {
-	int ret;
+	int j;
 	this->w = 512;
 	this->h = 512;
 	if(this->type == hex32('b','u','f',0))
@@ -510,11 +510,11 @@ void windowstart(struct window* this)
 		this->type = hex32('w', 'i', 'n', 0);
 		this->fmt = hex32('a', 'p', 'i', 0);
 
-		for(ret=0;ret<16;ret++)
+		for(j=0;j<16;j++)
 		{
-			(this->touch[ret]).id = 0xffff;
+			(this->touch[j]).id = 0xffff;
 		}
-		ret = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
+		j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
 	}
 }
 void windowstop(struct window* this)

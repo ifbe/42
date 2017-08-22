@@ -50,11 +50,9 @@ struct window
 	union{
 		u64 len;
 		u64 dc;
+		u64 gc;
 	};
-	union{
-		u64 dim;
-		u64 info;
-	};
+	u64 ximage;
 	u64 thread;
 
 	//where

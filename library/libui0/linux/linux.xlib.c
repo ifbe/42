@@ -1,17 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<unistd.h>
-#include<X11/Xlib.h>
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include "arena.h"
 //
 u64 startthread(void*, void*);
 void stopthread();
+//
+u64* eventread();
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -70,72 +68,47 @@ static u8 xlib2kbd[0x80]={
 0x00,0x25,0x27,0x00,	0x28,0x00,0x00,0x00,	//70,77
 0x00,0x00,0x00,0x00,	0x00,0x00,0x00,0x00,	//78,7f
 };
-
-//global
+//
 static Display* dsp=0;
 static Visual* visual=0;
+static Atom wmDelete;
 //
-struct xlibdata
-{
-	//cfg
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-	int motioncount;
-	int oldx;
-	int oldy;
-
-	//lib
-	Window win;
-	GC gc;
-	Atom wmDelete;
-	XImage* ximage;
-};
+static struct window* palette;
 
 
 
 
-void* uievent(struct xlibdata* p)
+void* uievent(struct window* this)
 {
 	XEvent ev;
-
-	//ximage
-	p->ximage = XCreateImage(
-		dsp, visual, 24, ZPixmap, 0,
-		(void*)p->buf1, p->w, p->h,
-		32, 0
-	);
+	u64 x,y,k;
+	u64 why, what, where;
 
 	//window, gc
-	p->win = XCreateSimpleWindow(
+	this->fd = XCreateSimpleWindow(
 		dsp, RootWindow(dsp,0), 0, 0,
-		p->w, p->h,
+		this->w, this->h,
 		1, 0, 0);
-	p->gc = XCreateGC(dsp, p->win, 0, NULL);
+	this->gc = (u64)XCreateGC(dsp, this->fd, 0, NULL);
 
 	//intercept window delete event 
-	p->wmDelete=XInternAtom(dsp, "WM_DELETE_WINDOW", True);
-	XSetWMProtocols(dsp, p->win, &(p->wmDelete), 1);
+	XSetWMProtocols(dsp, this->fd, &wmDelete, 1);
+
+	//
 	XSelectInput
 	(
-		dsp, p->win,
+		dsp, this->fd,
 		KeyPressMask|KeyReleaseMask|
 		ButtonPressMask|ButtonReleaseMask|
 		ButtonMotionMask|
 		ExposureMask|
 		StructureNotifyMask
 	);
-	XMapWindow(dsp, p->win);
 
-	u64 x,y,k;
+	//
+	XMapWindow(dsp, this->fd);
+
+	where = (u64)this;
 	while(1)
 	{
 	XNextEvent(dsp, &ev);
@@ -144,24 +117,31 @@ void* uievent(struct xlibdata* p)
 		//printf("buttonpress\n");
 		if(ev.xbutton.button==Button4)	//front
 		{
-			x = (ev.xbutton.x<<16) / (p->w);
-			y = (ev.xbutton.y<<16) / (p->h);
+			x = (ev.xbutton.x<<16) / (this->w);
+			y = (ev.xbutton.y<<16) / (this->h);
 			k = 'f';
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+
+			why = x + (y<<16) + (k<<48);
+			what = hex32('p', '+', 0, 0);
+			eventwrite(why, what, where, 0);
 		}
 		else if(ev.xbutton.button==Button5)	//back
 		{
-			x = (ev.xbutton.x<<16) / (p->w);
-			y = (ev.xbutton.y<<16) / (p->h);
+			x = (ev.xbutton.x<<16) / (this->w);
+			y = (ev.xbutton.y<<16) / (this->h);
 			k = 'b';
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, 0, 0);
+
+			why = x + (y<<16) + (k<<48);
+			what = hex32('p', '+', 0, 0);
+			eventwrite(why, what, where, 0);
 		}
+/*
 		else if(ev.xbutton.button==Button1)
 		{
-			p->oldx=ev.xbutton.x;
-			p->oldy=ev.xbutton.y;
+			this->oldx=ev.xbutton.x;
+			this->oldy=ev.xbutton.y;
 		}
-
+*/
 		continue;
 	}
 	else if(ev.type==ButtonRelease)
@@ -169,32 +149,42 @@ void* uievent(struct xlibdata* p)
 		//printf("buttonrelease\n");
 		if(ev.xbutton.button==Button1)
 		{
-		if((p->oldx==ev.xbutton.x)&&
-		   (p->oldy==ev.xbutton.y) )
+/*
+		if((this->oldx==ev.xbutton.x)&&
+		   (this->oldy==ev.xbutton.y) )
 		{
-			x = (ev.xbutton.x<<16) / (p->w);
-			y = (ev.xbutton.y<<16) / (p->h);
+			x = (ev.xbutton.x<<16) / (this->w);
+			y = (ev.xbutton.y<<16) / (this->h);
 			k = 'l';
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, 0, 0);
+
+			why = x + (y<<16) + (k<<48);
+			what = hex32('p', '-', 0, 0);
+			eventwrite(why, what, where, 0);
 		}
+*/
 		}
 	}
 	else if(ev.type==MotionNotify)
 	{
-		p->motioncount = (p->motioncount+1)%5;
-		if(p->motioncount != 0)continue;
-
-		x = (ev.xbutton.x<<16) / (p->w);
-		y = (ev.xbutton.y<<16) / (p->h);
+/*
+		this->motioncount = (this->motioncount+1)%5;
+		if(this->motioncount != 0)continue;
+*/
+		x = (ev.xbutton.x<<16) / (this->w);
+		y = (ev.xbutton.y<<16) / (this->h);
 		k = 'l';
-		eventwrite(x + (y<<16) + (k<<48), 0x4070, 0, 0);
 
-		p->oldx = ev.xbutton.x;
-		p->oldy = ev.xbutton.y;
+		why = x + (y<<16) + (k<<48);
+		what = hex32('p', '@', 0, 0);
+		eventwrite(why, what, where, 0);
+/*
+		this->oldx = ev.xbutton.x;
+		this->oldy = ev.xbutton.y;
+*/
 	}
 	else if(ev.type==ClientMessage)
 	{
-		if (ev.xclient.data.l[0] == p->wmDelete)
+		if (ev.xclient.data.l[0] == wmDelete)
 		{
 			eventwrite(0,0,0,0);
 			break;
@@ -206,101 +196,123 @@ void* uievent(struct xlibdata* p)
 		int y = ev.xconfigure.height;
 		//printf("%d,%d\n",x,y);
 
-		if( (x==p->w) && (y==p->h) )continue;
-		p->w=x;
-		p->h=y;
+		if( (x==this->w) && (y==this->h) )continue;
+		this->w = x;
+		this->h = y;
 
-		p->ximage = XCreateImage(
+		palette->ximage = (u64)XCreateImage(
 			dsp, visual, 24, ZPixmap,
-			0, (void*)p->buf1,
+			0, (void*)(palette->buf),
 			x,y,32,0
 		);
 
-		eventwrite(x+(y<<16), 0x657a6973, 0, 0);
+		why = x + (y<<16);
+		what = hex32('s','i','z','e');
+		eventwrite(why, what, where, 0);
 	}
 	else if(ev.type==Expose)
 	{
-		if(p->buf1==0)continue;
-		if(p->ximage==0)continue;
+		XImage* xi;
+		if(palette == 0)continue;
+
+		xi = (void*)(palette->ximage);
+		if(xi == 0)continue;
+
 		XPutImage(
-			dsp, p->win, p->gc, p->ximage,
+			dsp, this->fd, (void*)(this->gc), xi,
 			0, 0, 0, 0,
-			p->w, p->h
+			this->w, this->h
 		); 
 	}
 	else if(ev.type==KeyPress)
 	{
-		char temp;
 		//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
 		//if (ev.xkey.keycode == keyQ)break;
 		//printf("%x\n",ev.xkey.keycode);
 
 		//普通anscii码
+		what = hex32('c','h','a','r');
 		if((ev.xkey.state&1) == 1)
 		{
-			temp=xlib2upper[ev.xkey.keycode];
-			if(temp!=0)
+			why = xlib2upper[ev.xkey.keycode];
+			if(why != 0)
 			{
-				eventwrite(temp, 0x72616863, 0, 0);
+				eventwrite(why, what, where, 0);
 				continue;
 			}
 		}
 		else
 		{
-			temp=xlib2anscii[ev.xkey.keycode];
-			if(temp!=0)
+			why = xlib2anscii[ev.xkey.keycode];
+			if(why != 0)
 			{
-				eventwrite(temp, 0x72616863, 0, 0);
+				eventwrite(why, what, where, 0);
 				continue;
 			}
 		}
 
 		//控制按键
-		eventwrite(xlib2kbd[ev.xkey.keycode], 0x64626b, 0, 0);
+		why = xlib2kbd[ev.xkey.keycode];
+		what = hex32('k','b','d',0);
+		eventwrite(why, what, where, 0);
 	}
 	}//while
 
 	//
-	XDestroyWindow(dsp, p->win);
+	XDestroyWindow(dsp, this->fd);
 	XCloseDisplay(dsp);
 }
 
 
 
 
+void windowwrite(struct window* this)
+{
+	XEvent ev;
+	memset(&ev,0,sizeof(XEvent));
+	ev.type = Expose;
+	ev.xexpose.display = dsp;
+	ev.xexpose.window = this->fd;
+	XSendEvent(dsp, this->fd, False, ExposureMask, &ev);
+	XFlush(dsp);	//must
+}
+void windowread()
+{
+}
 void windowlist()
 {
 }
 void windowchange()
 {
 }
-void windowread()
+void windowstart(struct window* this)
 {
-}
-void windowwrite(struct xlibdata* p)
-{
-	XEvent ev;
-	memset(&ev,0,sizeof(XEvent));
-	ev.type = Expose;
-	ev.xexpose.display = dsp;
-	ev.xexpose.window = p->win;
-	XSendEvent(dsp, p->win, False, ExposureMask, &ev);
-	XFlush(dsp);	//must
-}
-void windowstart(struct xlibdata* p)
-{
-	int j = sizeof(struct xlibdata);
-	if(j > 256)
+	int j;
+	this->w = 512;
+	this->h = 512;
+	if(this->type == hex32('b','u','f',0))
 	{
-		printf("error@256<%d\n", j);
+		palette = this;
+		palette->ximage = (u64)XCreateImage(
+			dsp, visual, 24, ZPixmap, 0,
+			(void*)(palette->buf), 512, 512,
+			32, 0
+		);
+
+		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+		return;
 	}
+	else
+	{
+		this->type = hex32('w', 'i', 'n', 0);
+                this->fmt = hex32('x', 'l', 'i', 'b');
 
-	//malloc
-	p->buf1 = (u64)malloc(2048*1024*4);
-	if(p->buf1 == 0)printf("error@malloc\n");
-
-	//
-	p->thread = startthread(uievent, p);
+                for(j=0;j<16;j++)
+                {
+                        (this->touch[j]).id = 0xffff;
+                }
+		this->thread = startthread(uievent, this);
+	}
 }
 void windowstop()
 {
@@ -322,6 +334,9 @@ void windowcreate()
 		XCloseDisplay(dsp);
 		exit(1);
 	}
+
+	//
+	wmDelete=XInternAtom(dsp, "WM_DELETE_WINDOW", True);
 }
 void windowdelete()
 {
