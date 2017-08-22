@@ -35,7 +35,7 @@ static char table[4][8] = {
 
 
 
-static void calculator_read_pixel(struct arena* win, struct actor* pl)
+static void calculator_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u32 fg;
 	int x,y;
@@ -82,33 +82,33 @@ static void calculator_read_pixel(struct arena* win, struct actor* pl)
 		16, 16+96, 0xffffffff, 0xff000000
 	);
 }
-static void calculator_read_html(struct arena* win, struct actor* pl)
+static void calculator_read_html(struct arena* win, struct actor* act, struct relation* rel)
 {
 }
-static void calculator_read_text(struct arena* win, struct actor* pl)
+static void calculator_read_text(struct arena* win, struct actor* act, struct relation* rel)
 {
 }
-static void calculator_read_cli(struct arena* win, struct actor* pl)
+static void calculator_read_cli(struct arena* win, struct actor* act, struct relation* rel)
 {
 	say("buffer:%s\n", infix);
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_read(struct arena* win, struct actor* pl)
+static void calculator_read(struct arena* win, struct actor* act, struct relation* rel)
 {
 	u64 fmt = win->fmt;
 
 	//cli
-	if(win->dim == 1)calculator_read_cli(win, pl);
+	//if(rel->dim == 1)calculator_read_cli(win, act, rel);
 
 	//text
-	if(fmt == 0x74786574)calculator_read_text(win, pl);
+	if(fmt == 0x74786574)calculator_read_text(win, act, rel);
 
 	//html
-	else if(fmt == 0x6c6d7468)calculator_read_html(win, pl);
+	else if(fmt == 0x6c6d7468)calculator_read_html(win, act, rel);
 
 	//pixel
-	else calculator_read_pixel(win, pl);
+	else calculator_read_pixel(win, act, rel);
 }
 
 

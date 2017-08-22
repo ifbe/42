@@ -219,20 +219,6 @@ static void sudoku_read_pixel(struct arena* win)
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	if(win->dim == 1)
-	{
-		for(y=0;y<9;y++)
-		{
-			for(x=0;x<9;x++)
-			{
-				if(table[y][x] == 0)continue;
-				say("%d	",table[y][x]);
-			}
-			say("\n");
-		}
-		say("\n");
-		return;
-	}
 
 	for(y=0;y<9;y++)
 	{
@@ -273,6 +259,20 @@ static void sudoku_read_pixel(struct arena* win)
 		(w*2/3)+2, h,
 		0
 	);
+}
+static void sudoku_read_cli()
+{
+	int x,y;
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if(table[y][x] == 0)continue;
+			say("%d	",table[y][x]);
+		}
+		say("\n");
+	}
+	say("\n");
 }
 static void sudoku_read(struct arena* win)
 {

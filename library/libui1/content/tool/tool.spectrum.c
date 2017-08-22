@@ -48,8 +48,8 @@ static void spectrum_read_pixel(struct arena* win)
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-
-	if(win->dim == 1)
+/*
+	if(?????)
 	{
 		for(x=0;x<1024;x++)
 		{
@@ -63,7 +63,7 @@ static void spectrum_read_pixel(struct arena* win)
 		}
 		return;
 	}
-
+*/
 	for(x=0;x<512;x++)
 	{
 		t = x * tau /512.0;
@@ -97,6 +97,9 @@ static void spectrum_read_text(struct arena* win)
 			p[((y*w + x)<<2) + 3] =  0x2;
 		}
 	}
+}
+static void spectrum_read_cli()
+{
 }
 static void spectrum_read(struct arena* win)
 {

@@ -4,31 +4,17 @@ void background1(void*);
 
 
 
-static int lastdim = 2;
-
-
-
-
 static void stl_read_html(struct arena* win)
 {
 }
 static void stl_read_text(struct arena* win)
 {
 }
-static void stl_read_data(struct arena* win)
+static void stl_read_stl(struct arena* win)
 {
 	int j;
-	char* p = (void*)(win->buf);
-	if(win->dim == 2)
-	{
-		background1(win);
-	}
-	else if( (win->dim == 3)&&(lastdim != 3) )
-	{
-		readfile("42.stl", p, 0, 0x800000);
-	}
-
-	lastdim = win->dim;
+	char* buf = (void*)(win->buf);
+	readfile("42.stl", buf, 0, 0x800000);
 }
 static void stl_read(struct arena* win)
 {
@@ -47,9 +33,9 @@ static void stl_read(struct arena* win)
 	}
 
 	//pixel
-	else
+	else if(fmt == hex32('s','t','l',0))
 	{
-		stl_read_data(win);
+		stl_read_stl(win);
 	}
 }
 
