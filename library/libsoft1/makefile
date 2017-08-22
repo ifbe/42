@@ -45,6 +45,32 @@ target:
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c
+	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.aes.c
+	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.des.c
+	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.rsa.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc8.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc16.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc32.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.md5.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha1.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha256.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha512.c
+	$(compiler) $(cflag) libmem/libalgo/hash/hash.string.c
+	$(compiler) $(cflag) libmem/libalgo/keyexch/keyexch.dh.c
+	$(compiler) $(cflag) libmem/libalgo/keyexch/keyexch.ecdhe.c
+	$(compiler) $(cflag) libmem/libalgo/search/search.bm.c
+	$(compiler) $(cflag) libmem/libalgo/search/search.kmp.c
+	$(compiler) $(cflag) libmem/libalgo/search/search.rough.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.bubble.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.gnome.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.heap.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.insert.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.merge.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.quick.c
+	$(compiler) $(cflag) libmem/libalgo/sort/sort.select.c
+	$(compiler) $(cflag) libmem/libalgo/transform/trfm.cosine.c
+	$(compiler) $(cflag) libmem/libalgo/transform/trfm.fourier.c
+	$(compiler) $(cflag) libmem/libalgo/transform/trfm.laplace.c
 	$(compiler) $(cflag) libmem/libdata/acodec/acodec.aac.c
 	$(compiler) $(cflag) libmem/libdata/acodec/acodec.mp3.c
 	$(compiler) $(cflag) libmem/libdata/vcodec/vcodec.avc.c
@@ -53,32 +79,6 @@ target:
 	$(compiler) $(cflag) libmem/libdata/gcode/gcode.qrcode.c
 	$(compiler) $(cflag) libmem/libdata/tcode/tcode.base64.c
 	$(compiler) $(cflag) libmem/libdata/tcode/tcode.huffman.c
-	$(compiler) $(cflag) libmem/libdata/crypt/crypt.aes.c
-	$(compiler) $(cflag) libmem/libdata/crypt/crypt.des.c
-	$(compiler) $(cflag) libmem/libdata/crypt/crypt.rsa.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc8.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc16.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.crc32.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.md5.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha1.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha256.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.sha512.c
-	$(compiler) $(cflag) libmem/libdata/hash/hash.string.c
-	$(compiler) $(cflag) libmem/libdata/keyex/keyex.dh.c
-	$(compiler) $(cflag) libmem/libdata/keyex/keyex.ecdhe.c
-	$(compiler) $(cflag) libmem/libdata/search/search.bm.c
-	$(compiler) $(cflag) libmem/libdata/search/search.kmp.c
-	$(compiler) $(cflag) libmem/libdata/search/search.rough.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.bubble.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.gnome.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.heap.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.insert.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.merge.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.quick.c
-	$(compiler) $(cflag) libmem/libdata/sort/sort.select.c
-	$(compiler) $(cflag) libmem/libdata/trfm/trfm.cosine.c
-	$(compiler) $(cflag) libmem/libdata/trfm/trfm.fourier.c
-	$(compiler) $(cflag) libmem/libdata/trfm/trfm.laplace.c
 	$(compiler) $(cflag) libmem/libdata/data.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
 	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
@@ -110,6 +110,9 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.gpt.c
 	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.mbr.c
 	$(compiler) $(cflag) libmem/libfmt/file.c
+	$(compiler) $(cflag) libmem/libgame/solve.2048.c
+	$(compiler) $(cflag) libmem/libgame/solve.chess.c
+	$(compiler) $(cflag) libmem/libgame/solve.sudoku.c
 	$(compiler) $(cflag) libmem/liblang/assembly/asm.x64.c
 	$(compiler) $(cflag) libmem/liblang/assembly/asm.arm.c
 	$(compiler) $(cflag) libmem/liblang/program/prog.purec.c
