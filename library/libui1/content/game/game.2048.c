@@ -1,13 +1,11 @@
 #include "actor.h"
+//
 void new2048(void*);
 void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
-
-
-
-
+//
 void rect(
 	void* win,
 	int x1, int y1,

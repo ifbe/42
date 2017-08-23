@@ -1,13 +1,19 @@
 #include "actor.h"
-
-
-
-
+//
 void rectbody(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color
 );
+void drawascii(
+	void* win, u8 data, int size,
+	int x, int y, u32 fg, u32 bg);
+
+
+
+
+//
+static u8 buffer[8][8];
 
 
 
@@ -34,6 +40,13 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 				cx+(x-4)*w, cy+(y-4)*h,
 				cx+(x-3)*w, cy+(y-3)*h,
 				color
+			);
+			if(buffer[y][x] == 0)continue;
+
+			drawascii(win,
+				buffer[y][x], 2,
+				cx+(x-4)*w, cy+(y-4)*h,
+				0xffff00ff, 0
 			);
 		}
 	}
@@ -80,6 +93,41 @@ static void chess_choose()
 }
 static void chess_start()
 {
+	int j,k;
+	for(k=0;k<8;k++)
+	{
+		for(j=0;j<8;j++)
+		{
+			buffer[k][j] = 0;
+		}
+	}
+
+	//
+	for(j=0;j<8;j++)
+	{
+		buffer[1][j] = 'p';
+		buffer[6][j] = 'P';
+	}
+
+	//
+	buffer[0][0] = 'r';
+	buffer[0][1] = 'n';
+	buffer[0][2] = 'b';
+	buffer[0][3] = 'k';
+	buffer[0][4] = 'q';
+	buffer[0][5] = 'b';
+	buffer[0][6] = 'n';
+	buffer[0][7] = 'r';
+
+	//
+	buffer[7][0] = 'R';
+	buffer[7][1] = 'N';
+	buffer[7][2] = 'B';
+	buffer[7][3] = 'Q';
+	buffer[7][4] = 'K';
+	buffer[7][5] = 'B';
+	buffer[7][6] = 'N';
+	buffer[7][7] = 'R';
 }
 static void chess_stop()
 {
