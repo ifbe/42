@@ -15,9 +15,10 @@ void lib3d_delete();
 int content_read(void*);
 int content_write(void*);
 int term_write(void*);
-//
 void backgroundcolor(void*, u32);
-void arenawrite();
+//
+void arenaread(void*, void*);
+void arenawrite(void*, void*);
 
 
 
@@ -61,7 +62,7 @@ int actorread()
 			if(rel == 0)break;
 			else if(rel->destiny == __win__)
 			{
-				backgroundcolor(canvas, 0xff);
+				backgroundcolor(canvas, 0xff000000);
 			}
 			else if(rel->destiny == __act__)
 			{
@@ -74,7 +75,7 @@ int actorread()
 		}
 
 		//send
-		arenawrite();
+		arenawrite(&arena[j], &arena[0]);
 	}//for
 
 	return 0;

@@ -1,3 +1,5 @@
+unsigned int getrandom();
+
 int sudoku_random(char* p, int len)
 {
 	int k,ret;

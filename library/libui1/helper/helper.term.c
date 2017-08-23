@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+int arenastart(void*);
+int arenastop(void*);
 int actorlist(void*);
 int actorchoose(void*);
 //
@@ -32,6 +34,7 @@ void term_read(u8* input)
 	}
 	else if(ncmp(input, "ls", 2) == 0)actorlist(0);
 	else if(ncmp(input, "cd", 2) == 0)actorlist(0);
+	else if(ncmp(input, "new", 3) == 0)arenastart(0);
 
 	//command prompt
 	say("[void]");

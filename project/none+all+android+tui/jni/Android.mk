@@ -138,35 +138,35 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmath/math.notation.c \
 	library/libsoft1/libmath/math.prime.c \
 	library/libsoft1/libmath/math.c \
+	library/libsoft1/libmem/libalgo/crypt/crypt.aes.c \
+	library/libsoft1/libmem/libalgo/crypt/crypt.des.c \
+	library/libsoft1/libmem/libalgo/crypt/crypt.rsa.c \
+	library/libsoft1/libmem/libalgo/hash/hash.crc8.c \
+	library/libsoft1/libmem/libalgo/hash/hash.crc16.c \
+	library/libsoft1/libmem/libalgo/hash/hash.crc32.c \
+	library/libsoft1/libmem/libalgo/hash/hash.md5.c \
+	library/libsoft1/libmem/libalgo/hash/hash.sha1.c \
+	library/libsoft1/libmem/libalgo/hash/hash.sha256.c \
+	library/libsoft1/libmem/libalgo/hash/hash.sha512.c \
+	library/libsoft1/libmem/libalgo/hash/hash.string.c \
+	library/libsoft1/libmem/libalgo/keyexch/keyexch.dh.c \
+	library/libsoft1/libmem/libalgo/keyexch/keyexch.ecdhe.c \
+	library/libsoft1/libmem/libalgo/search/search.bm.c \
+	library/libsoft1/libmem/libalgo/search/search.kmp.c \
+	library/libsoft1/libmem/libalgo/search/search.rough.c \
+	library/libsoft1/libmem/libalgo/sort/sort.gnome.c \
+	library/libsoft1/libmem/libalgo/sort/sort.quick.c \
+	library/libsoft1/libmem/libalgo/transform/trfm.cosine.c \
+	library/libsoft1/libmem/libalgo/transform/trfm.fourier.c \
+	library/libsoft1/libmem/libalgo/transform/trfm.laplace.c \
 	library/libsoft1/libmem/libdata/acodec/acodec.aac.c \
 	library/libsoft1/libmem/libdata/acodec/acodec.mp3.c \
 	library/libsoft1/libmem/libdata/vcodec/vcodec.avc.c \
 	library/libsoft1/libmem/libdata/vcodec/vcodec.hevc.c \
-	library/libsoft1/libmem/libdata/crypt/crypt.aes.c \
-	library/libsoft1/libmem/libdata/crypt/crypt.des.c \
-	library/libsoft1/libmem/libdata/crypt/crypt.rsa.c \
 	library/libsoft1/libmem/libdata/gcode/gcode.barcode.c \
 	library/libsoft1/libmem/libdata/gcode/gcode.qrcode.c \
 	library/libsoft1/libmem/libdata/tcode/tcode.base64.c \
 	library/libsoft1/libmem/libdata/tcode/tcode.huffman.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc8.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc16.c \
-	library/libsoft1/libmem/libdata/hash/hash.crc32.c \
-	library/libsoft1/libmem/libdata/hash/hash.md5.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha1.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha256.c \
-	library/libsoft1/libmem/libdata/hash/hash.sha512.c \
-	library/libsoft1/libmem/libdata/hash/hash.string.c \
-	library/libsoft1/libmem/libdata/keyex/keyex.dh.c \
-	library/libsoft1/libmem/libdata/keyex/keyex.ecdhe.c \
-	library/libsoft1/libmem/libdata/search/search.bm.c \
-	library/libsoft1/libmem/libdata/search/search.kmp.c \
-	library/libsoft1/libmem/libdata/search/search.rough.c \
-	library/libsoft1/libmem/libdata/sort/sort.gnome.c \
-	library/libsoft1/libmem/libdata/sort/sort.quick.c \
-	library/libsoft1/libmem/libdata/trfm/trfm.cosine.c \
-	library/libsoft1/libmem/libdata/trfm/trfm.fourier.c \
-	library/libsoft1/libmem/libdata/trfm/trfm.laplace.c \
 	library/libsoft1/libmem/libdata/data.c \
 	library/libsoft1/libmem/libfmt/computer/certificate/cert.pem.c \
 	library/libsoft1/libmem/libfmt/computer/certificate/cert.x509.c \
@@ -198,6 +198,9 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfmt/computer/parttable/pt.gpt.c \
 	library/libsoft1/libmem/libfmt/computer/parttable/pt.mbr.c \
 	library/libsoft1/libmem/libfmt/file.c \
+	library/libsoft1/libmem/libgame/solve.2048.c \
+	library/libsoft1/libmem/libgame/solve.chess.c \
+	library/libsoft1/libmem/libgame/solve.sudoku.c \
 	library/libsoft1/libmem/liblang/assembly/asm.x64.c \
 	library/libsoft1/libmem/liblang/assembly/asm.arm64.c \
 	library/libsoft1/libmem/liblang/program/prog.purec.c \
@@ -248,13 +251,50 @@ LOCAL_SRC_FILES += \
 
 #4.ui1
 LOCAL_SRC_FILES += \
-	library/libui1/lib1d/term/term.cli.c \
+	library/libui1/content/game/game.2048.c \
+	library/libui1/content/game/game.chess.c \
+	library/libui1/content/game/game.ooxx.c \
+	library/libui1/content/game/game.snake.c \
+	library/libui1/content/game/game.sudoku.c \
+	library/libui1/content/game/game.tetris.c \
+	library/libui1/content/game/game.weiqi.c \
+	library/libui1/content/game/game.xiangqi.c \
+	library/libui1/content/hack/hack.algo.c \
+	library/libui1/content/hack/hack.browse.c \
+	library/libui1/content/hack/hack.editor.c \
+	library/libui1/content/hack/hack.hex.c \
+	library/libui1/content/hack/hack.tree.c \
+	library/libui1/content/test/test.color.c \
+	library/libui1/content/test/test.doodle.c \
+	library/libui1/content/test/test.font.c \
+	library/libui1/content/test/test.pure.c \
+	library/libui1/content/tool/tool.3dmodel.c \
+	library/libui1/content/tool/tool.calculator.c \
+	library/libui1/content/tool/tool.camera.c \
+	library/libui1/content/tool/tool.circuit.c \
+	library/libui1/content/tool/tool.qrcode.c \
+	library/libui1/content/tool/tool.sketchpad.c \
+	library/libui1/content/tool/tool.spectrum.c \
+	library/libui1/content/levitate/lev.login.c \
+	library/libui1/content/levitate/lev.navi.c \
+	library/libui1/content/levitate/lev.joystick.c \
+	library/libui1/content/levitate/lev.keyboard.c \
+	library/libui1/content/levitate/levitate.c \
+	library/libui1/content/content.c \
+	library/libui1/helper/helper.term.c \
+	library/libui1/helper/helper.wire.c \
+	library/libui1/helper/helper.c \
+	library/libui1/lib1d/html/html.shape.c \
+	library/libui1/lib1d/json/json.shape.c \
+	library/libui1/lib1d/latex/latex.shape.c \
+	library/libui1/lib1d/xaml/xaml.shape.c \
 	library/libui1/lib1d/lib1d.c \
 	library/libui1/lib2d/draw/draw.ascii.c \
 	library/libui1/lib2d/draw/draw.color.c \
 	library/libui1/lib2d/draw/draw.icon.c \
 	library/libui1/lib2d/draw/draw.shape.c \
 	library/libui1/lib2d/draw/draw.ttf.c \
+	library/libui1/lib2d/draw/draw.vt100.c \
 	library/libui1/lib2d/photo/photo.blur.c \
 	library/libui1/lib2d/photo/photo.channel.c \
 	library/libui1/lib2d/photo/photo.convert.c \
@@ -270,38 +310,6 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib3d/model/model.magnify.c \
 	library/libui1/lib3d/model/model.minify.c \
 	library/libui1/lib3d/lib3d.c \
-	library/libui1/content/bg/bg.color.c \
-	library/libui1/content/bg/bg.picture.c \
-	library/libui1/content/game/game.2048.c \
-	library/libui1/content/game/game.chess.c \
-	library/libui1/content/game/game.ooxx.c \
-	library/libui1/content/game/game.snake.c \
-	library/libui1/content/game/game.sudoku.c \
-	library/libui1/content/game/game.tetris.c \
-	library/libui1/content/game/game.weiqi.c \
-	library/libui1/content/game/game.xiangqi.c \
-	library/libui1/content/hack/hack.algo.c \
-	library/libui1/content/hack/hack.browse.c \
-	library/libui1/content/hack/hack.editor.c \
-	library/libui1/content/hack/hack.hex.c \
-	library/libui1/content/hack/hack.input.c \
-	library/libui1/content/hack/hack.tree.c \
-	library/libui1/content/test/test.color.c \
-	library/libui1/content/test/test.doodle.c \
-	library/libui1/content/test/test.font.c \
-	library/libui1/content/test/test.pure.c \
-	library/libui1/content/tool/tool.3dmodel.c \
-	library/libui1/content/tool/tool.calculator.c \
-	library/libui1/content/tool/tool.camera.c \
-	library/libui1/content/tool/tool.circuit.c \
-	library/libui1/content/tool/tool.qrcode.c \
-	library/libui1/content/tool/tool.sketchpad.c \
-	library/libui1/content/tool/tool.spectrum.c \
-	library/libui1/content/content.c \
-	library/libui1/levitate/lev.navi.c \
-	library/libui1/levitate/lev.vkbd.c \
-	library/libui1/levitate/lev.vt100.c \
-	library/libui1/levitate/levitate.c \
 	library/libui1/actor.c
 
 

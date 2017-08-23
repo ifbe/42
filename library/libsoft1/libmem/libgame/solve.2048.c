@@ -1,3 +1,5 @@
+unsigned int getrandom();
+
 void left2048(int (*table)[4])
 {
 	int x,y;

@@ -54,7 +54,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong value)
 {
-	u64 p[4] = {value, type, (u64)&win[0], 0};
+	u64 p[4] = {value, type, (u64)&win[1], 0};
 	actorwrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)
@@ -79,14 +79,15 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		say("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	win[0].type = 0;
-	win[0].fmt = 0x3838383861626772;
-	win[0].buf = pixels;
-	win[0].len = 0;
+	win[0].type = hex32('b','u','f',0);
+	win[0].fmt = hex64('r','g','b','a','8','8','8','8');
+	win[0].fd = pixels;
+	win[0].dc = 0;
 
-	win[0].w = info.width;
-	win[0].h = info.height;
-	win[0].dim = 2;
+	win[1].type = hex32('w','i','n',0);
+	win[1].fmt = hex64('r','g','b','a','8','8','8','8');
+	win[1].w = info.width;
+	win[1].h = info.height;
 
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
@@ -119,8 +120,6 @@ void windowwrite()
 }
 void windowstart(struct window* win)
 {
-	win->fmt = 0x3838383861626772;
-	win->dim = 2;
 }
 void windowstop()
 {
