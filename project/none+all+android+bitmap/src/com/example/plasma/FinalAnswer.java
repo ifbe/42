@@ -27,44 +27,8 @@ import android.view.MotionEvent;
 import android.view.Display;
 import android.view.WindowManager;
 
-public class FinalAnswer extends Activity
-{
-	static {
-		System.loadLibrary("finalanswer");
-	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Log.i("finalanswer","KeyEvent.KEYCODE_BACK");
-			finish();
-			System.exit(0);
-		}
-		return super.onKeyDown(keyCode, event);
-	}
 
-	//ifuse(bitmap)
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			Display display = getWindowManager().getDefaultDisplay();
-			setContentView(
-					new FinalAnswerView(
-					this, display.getWidth(), display.getHeight())
-			);
-	}
-/*
-	//ifuse(surface)
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.activity_main);
-			SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
-			surfaceHolder = surfaceView.getHolder();
-			surfaceHolder.addCallback(this);
-	}
-*/
-}
 
 class FinalAnswerView extends View {
 	private static native void Start(Bitmap bitmap);
@@ -84,11 +48,13 @@ class FinalAnswerView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		//
 		Read(mBitmap);
 
-		// canvas.drawColor(0xFFCCCCCC);
+		//canvas.drawColor(0xFFCCCCCC);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
-		// force a redraw, with a different time-based pattern.
+
+		//force a redraw, with a different time-based pattern.
 		invalidate();
 	}
 
@@ -135,5 +101,30 @@ class FinalAnswerView extends View {
 		}
 
 		return true;
+	}
+}
+public class FinalAnswer extends Activity
+{
+	static {
+		System.loadLibrary("finalanswer");
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Display display = getWindowManager().getDefaultDisplay();
+		setContentView(
+			new FinalAnswerView(this, display.getWidth(), display.getHeight())
+		);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Log.i("finalanswer","KeyEvent.KEYCODE_BACK");
+			finish();
+			System.exit(0);
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

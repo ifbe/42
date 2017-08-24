@@ -248,7 +248,6 @@ void say(char* str, ...)
 	cur = cur+ret;
 	if(cur > 0xf0000)cur = 0;
 	*outcur = cur;
-
 }
 
 
@@ -256,11 +255,11 @@ void say(char* str, ...)
 
 void printbigint(u8* p, int i)
 {
-        int j;
-        if(i<=0)return;
+	int j;
+	if(i<=0)return;
 
-        say("0x");
-        for(j=i-1;j>=0;j--)say("%02x",p[j]);
+	say("0x");
+	for(j=i-1;j>=0;j--)say("%02x",p[j]);
 }
 void printmemory(u8* addr,int size)
 {
