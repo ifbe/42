@@ -42,20 +42,28 @@ int actorread()
 	struct relation* rel;		//link
 	struct style* st;			//style
 
-	canvas = &arena[0];
 	for(j=1;j<2;j++)
 	{
 		window = &arena[j];
 		if(window->type == 0)break;
-		if(window->type == hex32('b', 'u', 'f', 0))continue;
 
 		//cli
-		if(window->fmt == 0x696c63)return 0;
+		if(window->fmt == hex32('c','l','i',0))return 0;
 
-		//other
-		canvas->fmt = window->fmt;
-		canvas->w = window->w;
-		canvas->h = window->h;
+		//title
+		//if(window->fmt == hex32('c','l','i',0))return 0;
+
+		//canvas
+		if(window->type != hex32('b', 'u', 'f', 0))
+		{
+			canvas = &arena[0];
+			canvas->fmt = window->fmt;
+			canvas->w = window->w;
+			canvas->h = window->h;
+		}
+		else canvas = window;
+
+		//doit
 		rel = window->first;
 		while(1)
 		{

@@ -34,12 +34,16 @@ static ANativeWindow_Buffer buffer;
 
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv* env, jobject obj)
 {
-	if(ANativeWindow_lock(native, buffer.bits, NULL) != 0)
+	if(ANativeWindow_lock(native, &buffer, NULL) != 0)
 	{
 		LOGI("error@read\n");
+		return;
 	}
+	
 
 	//draw pixel
+	arena[1].buf = (u64)(buffer.bits);
+	arena[1].w = buffer.stride;
 	actorread();
 
 	//
@@ -52,23 +56,21 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject surface)
 {
+	int w,h;
 	LOGI("@start\n");
 
 	native = ANativeWindow_fromSurface(env, surface);
-	LOGI("native@%llx\n", (u64)native);
+	LOGI("ANativeWindow_fromSurface:%llx\n", (u64)native);
 
-	ANativeWindow_setBuffersGeometry(native, 0, 0, WINDOW_FORMAT_RGBA_8888);
-	LOGI("2222222222222\n");
+	w = ANativeWindow_getWidth(native);
+	h = ANativeWindow_getHeight(native);
+	ANativeWindow_setBuffersGeometry(native, w, h, WINDOW_FORMAT_RGBA_8888);
+	LOGI("w=%d,h=%d\n", w, h);
 
-	arena[0].type = hex32('b','u','f',0);
-	arena[0].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[0].buf = (u64)(buffer.bits);
-	arena[0].len = 0;
-
-	arena[1].type = hex32('w','i','n',0);
+	arena[1].type = hex32('b','u','f',0);
 	arena[1].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[1].w = 1080;
-	arena[1].h = 500;
+	arena[1].w = w;
+	arena[1].h = h;
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
 {

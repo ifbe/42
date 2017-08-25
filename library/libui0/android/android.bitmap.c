@@ -82,13 +82,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 		LOGI("AndroidBitmap_lockPixels() failed ! error=%d", ret);
 	}
 
-	arena[0].type = hex32('b','u','f',0);
-	arena[0].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[0].buf = pixels;
-	arena[0].len = 0;
-
-	arena[1].type = hex32('w','i','n',0);
+	arena[1].type = hex32('b','u','f',0);
 	arena[1].fmt = hex64('r','g','b','a','8','8','8','8');
+	arena[1].buf = pixels;
+	arena[1].len = 0;
 	arena[1].w = info.width;
 	arena[1].h = info.height;
 
