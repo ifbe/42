@@ -39,7 +39,11 @@ import android.view.SurfaceHolder;
 
 class MyRenderer implements GLSurfaceView.Renderer
 {
-	Random random = new Random();
+	//Random random = new Random();
+
+	public MyRenderer() {
+		Log.i("finalanswer", "@MyRenderer");
+	}
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -56,15 +60,16 @@ class MyRenderer implements GLSurfaceView.Renderer
 
 	@Override
     public void onDrawFrame(GL10 gl) {
-		//Log.i("finalanswer", "@onDrawFrame");
+		Log.i("finalanswer", "@onDrawFrame");
 		//Read();
 
-		float b = random.nextInt(256) / (float)256.0;
-		float g = random.nextInt(256) / (float)256.0;
-		float r = random.nextInt(256) / (float)256.0;
+		//float b = random.nextInt(256) / (float)256.0;
+		//float g = random.nextInt(256) / (float)256.0;
+		//float r = random.nextInt(256) / (float)256.0;
 		//Log.i("finalanswer", b+","+g+","+r);
 
-		gl.glClearColor(b, g, r, 0.0f);
+		//gl.glClearColor(b, g, r, 0.0f);
+		gl.glClearColor(0.3f, 0.6f, 0.9f, 1.0f);
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
     }
 }
@@ -72,26 +77,21 @@ class FinalAnswerView extends GLSurfaceView {
 	private static native void Start(Surface s);
 	private static native void Stop();
 	private static native void Read();
-
 	private final MyRenderer renderer;
+
 	public FinalAnswerView(Context context) {
 		super(context);
+		Log.i("finalanswer", "@FinalAnswerView");
 
-		//gl es 2
 		setEGLContextClientVersion(2);
 
-		//renderer
 		renderer = new MyRenderer();
 		setRenderer(renderer);
-
-		//holder
-		SurfaceHolder holder = getHolder();
-		holder.addCallback(this);
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.i("finalanswer", "@SurfaceCreated");
-		Start(holder.getSurface());
+		//Start(holder.getSurface());
 	}
 
 	public void surfaceChanged(SurfaceHolder holder) {
@@ -100,6 +100,14 @@ class FinalAnswerView extends GLSurfaceView {
 
 	public void surfaceDestoryed(SurfaceHolder holder) {
 		Log.i("finalanswer", "@surfaceDestoryed");
+	}
+
+	public boolean onTouchEvent(MotionEvent event) {
+		int action = event.getActionMasked();
+		int index = event.getActionIndex();
+		int count = event.getPointerCount();
+		Log.i("finalanswer","("+action+","+index+","+count+")");
+		return true;
 	}
 }
 public class FinalAnswer extends Activity
@@ -112,9 +120,24 @@ public class FinalAnswer extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i("finalanswer", "@onCreate");
 
 		view = new FinalAnswerView(this);
 		setContentView(view);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		view.onPause();
+		Log.i("finalanswer", "@onPause");
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		view.onResume();
+		Log.i("finalanswer", "@onResume");
 	}
 
 	@Override
@@ -125,13 +148,5 @@ public class FinalAnswer extends Activity
 			System.exit(0);
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	public boolean onTouchEvent(MotionEvent event) {
-		int action = event.getActionMasked();
-		int index = event.getActionIndex();
-		int count = event.getPointerCount();
-		Log.i("finalanswer","("+action+","+index+","+count+")");
-		return true;
 	}
 }
