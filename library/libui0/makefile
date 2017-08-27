@@ -24,43 +24,6 @@ barefb:
 
 
 
-############################cross#########################
-.PHONY:gles
-gles:
-	rm -f *.o
-	$(compiler) $(cflag) cross/cross.opengl.c
-	$(compiler) $(cflag) cross/cross.net.c
-	$(compiler) $(cflag) cross/cross.voice.c
-	$(compiler) $(cflag) arena.c
-
-.PHONY:glut
-glut:
-	rm -f *.o
-	$(compiler) $(cflag) cross/cross.opengl.c
-	$(compiler) $(cflag) cross/cross.net.c
-	$(compiler) $(cflag) cross/cross.voice.c
-	$(compiler) $(cflag) arena.c
-
-.PHONY:sdl1
-sdl1:
-	rm -f *.o
-	$(compiler) $(cflag) cross/cross.sdl1.c
-	$(compiler) $(cflag) cross/cross.net.c
-	$(compiler) $(cflag) cross/cross.voice.c
-	$(compiler) $(cflag) arena.c
-
-.PHONY:sdl2
-sdl2:
-	rm -f *.o
-	$(compiler) $(cflag) cross/cross.sdl2.c
-	$(compiler) $(cflag) cross/cross.net.c
-	$(compiler) $(cflag) cross/cross.voice.c
-	$(compiler) $(cflag) arena.c
-##########################################################
-
-
-
-
 ############################linux#########################
 .PHONY:linuxcli
 linuxcli:
@@ -110,10 +73,18 @@ linuxxlib:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:linuxgl
-linuxgl:
+.PHONY:linuxgles
+linuxgles:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.opengl.c
+	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
+
+.PHONY:linuxglut
+linuxglut:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.glut.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
@@ -163,10 +134,18 @@ macquartz:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:macgl
-macgl:
+.PHONY:macgles
+macgles:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.opengl.c
+	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
+
+.PHONY:macglut
+macglut:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.glut.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
@@ -208,10 +187,18 @@ winapi:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:wingl
-wingl:
+.PHONY:wingles
+wingles:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.opengl.c
+	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
+
+.PHONY:winglut
+winglut:
+	rm -f *.o
+	$(compiler) $(cflag) cross/cross.glut.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c

@@ -94,6 +94,7 @@ class FinalAnswerView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.i("finalanswer", "@surfaceCreated");
 		Start(holder.getSurface());
+		Read();
 	}
 
 	@Override

@@ -1,11 +1,13 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#include<stdio.h>
-#include<stdlib.h>
-#include<GL/glut.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <GL/freeglut.h>
+#include <GL/glext.h>
+#include "arena.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
+
+
+
+
 u64 startthread(void*, void*);
 int readfile(u64, void*, u64, u64);
 int writefile(u64, void*, u64, u64);
@@ -21,21 +23,8 @@ void eventwrite(u64,u64,u64,u64);
 
 
 
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-};
 static struct window* win;
+static void* buffer;
 //
 static int refresh=0;
 static GLuint texture[1];
@@ -55,6 +44,82 @@ static float object_zoom = 1.0;
 
 
 
+
+void callback_display_vbo()
+{
+	u32 vbo, ibo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x400000, buffer, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &vbo);
+
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4, buffer+0x400000, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &ibo);
+}
+void callback_display_stl()
+{
+	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
+	GLfloat redDiffuseMaterial[] = {1.0, 0.0, 0.0, 1.0};
+	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat greenEmissiveMaterial[] = {0.0, 1.0, 0.0, 1.0};
+
+	GLfloat shininess[] = {128.0};
+	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0, 1.0};
+	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0, 1.0};
+	GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0, 1.0};
+
+	float* p;
+	void* buf = buffer;
+	u32 count = *(u32*)(buf+80);
+	u32 j;
+
+	if(count > 0x147adf)count = 0x147adf;	//64MB
+	buf += 84;
+	//printf("count=%d\n", count);
+	//printmemory(buf, 50);
+
+	//must!!!
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(1.0, 1.0, 1.0);
+	glShadeModel(GL_SMOOTH);
+
+	//
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+	//glMaterialfv(GL_FRONT, GL_EMISSION, greenEmissiveMaterial);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, redDiffuseMaterial);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecularMaterial);
+	glEnable(GL_COLOR_MATERIAL);
+
+	//
+	for(j=0;j<count;j++)
+	{
+		p = buf;
+		buf += 50;
+
+		glBegin(GL_TRIANGLES);
+		glVertex3f(p[3], p[4], p[5]);
+		glVertex3f(p[6], p[7], p[8]);
+		glVertex3f(p[9], p[10], p[11]);
+		glEnd();
+	}
+
+	//
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, blackAmbientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+
+	//
+	glFlush();
+	glutSwapBuffers();
+}
 void callback_display_texture()
 {
 	//thing rotate
@@ -120,8 +185,8 @@ void callback_display_texture()
 		512,
 		0,
 		GL_RGBA,
-		GL_UNSIGNED_BYTE,// 像素的数据类型  
-		(void*)win->buf1	// 数据指针
+		GL_UNSIGNED_BYTE,	//像素的数据类型  
+		buffer		//数据指针
 	);
 	glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
@@ -130,66 +195,6 @@ void callback_display_texture()
 	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, 0.5);
 	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, 0.5);
 	glEnd();
-
-	//
-	glFlush();
-	glutSwapBuffers();
-}
-void callback_display_stl()
-{
-	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
-	GLfloat redDiffuseMaterial[] = {1.0, 0.0, 0.0, 1.0};
-	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat greenEmissiveMaterial[] = {0.0, 1.0, 0.0, 1.0};
-
-	GLfloat shininess[] = {128.0};
-	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0, 1.0};
-	GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0, 1.0};
-
-	float* p;
-	void* pointer = (void*)(win->buf2);
-	u32 count = *(u32*)(pointer+80);
-	u32 j;
-
-	if(count > 0x147adf)count = 0x147adf;	//64MB
-	pointer += 84;
-	//printf("count=%d\n", count);
-	//printmemory(pointer, 50);
-
-	//must!!!
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(1.0, 1.0, 1.0);
-	glShadeModel(GL_SMOOTH);
-
-	//
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
-	//glMaterialfv(GL_FRONT, GL_EMISSION, greenEmissiveMaterial);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, redDiffuseMaterial);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecularMaterial);
-	glEnable(GL_COLOR_MATERIAL);
-
-	//
-	for(j=0;j<count;j++)
-	{
-		p = pointer;
-		pointer += 50;
-
-		glBegin(GL_TRIANGLES);
-		glVertex3f(p[3], p[4], p[5]);
-		glVertex3f(p[6], p[7], p[8]);
-		glVertex3f(p[9], p[10], p[11]);
-		glEnd();
-	}
-
-	//
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, blackAmbientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
 
 	//
 	glFlush();
@@ -214,11 +219,15 @@ void callback_display()
 		0.0,0.0,1.0
 	);
 
-	if(win->dim == 3)
+	if(win->fmt == hex32('v','b','o',0))
+	{
+		callback_display_vbo();
+	}
+	else if(win->fmt == hex32('s','t','l',0))
 	{
 		callback_display_stl();
 	}
-	else
+	else		//if(win->fmt == hex64('r','g','b','a','8','8','8','8'))
 	{
 		callback_display_texture();
 	}
@@ -233,14 +242,26 @@ void callback_idle()
 }
 void callback_keyboard(unsigned char key, int x, int y)
 {
+	u64 what,where;
+	where = (u64)win;
+
 	printf("%x\n",key);
-	if(key == 0x1b)eventwrite(0x1b,0x64626b,0,0);
-	else eventwrite(key, 0x72616863, 0, 0);
+	if(key == 0x1b)
+	{
+		what = hex32('k','b','d',0);
+	}
+	else
+	{
+		what = hex32('c','h','a','r');
+	}
+	eventwrite(key, what, where, 0);
 }
 void callback_special(int key, int x, int y)
 {
-	printf("%x\n",key);
+	u64 what,where;
+	where = (u64)win;
 
+	printf("%x\n",key);
 	if(key == GLUT_KEY_F1)key = 0xf1;
 	else if(key == GLUT_KEY_F2)key = 0xf2;
 	else if(key == GLUT_KEY_F3)key = 0xf3;
@@ -251,7 +272,8 @@ void callback_special(int key, int x, int y)
 	else if(key == GLUT_KEY_DOWN)key = 0x28;
 	else return;
 
-	eventwrite(key, 0x64626b, 0, 0);
+	what = 0x64626b;
+	eventwrite(key, what, where, 0);
 }
 void callback_mouse(int button, int state, int x, int y)
 {
@@ -333,7 +355,7 @@ void* uievent(struct window* p)
 void windowread()
 {
 }
-void windowwrite()
+void windowwrite(struct window* dst, struct window* src)
 {
 	refresh++;
 }
@@ -346,15 +368,19 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct window* p)
+void windowstart(struct window* this)
 {
-	win = p;
-	p->buf1 = (u64)malloc(2048*1024*4);
-	p->buf2 = (u64)malloc(2048*1024*4);
-	p->fmt = 0x3838383861626772;
-	p->w = 512;
-	p->h = 512;
-	p->thread = startthread(uievent, p);
+	if(this->type == hex32('b','u','f',0))
+	{
+		buffer = (void*)(this->buf);
+		return;
+	}
+	win = this;
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex64('r','g','b','a','8','8','8','8');//hex32('v','b','o',0);
+	this->w = 512;
+	this->h = 512;
+	this->thread = startthread(uievent, this);
 }
 void windowdelete()
 {

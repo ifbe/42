@@ -15,7 +15,7 @@ all:
 	cflag="-c -O2"
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2"
-	make -s -C $(library)/libui0 wingl \
+	make -s -C $(library)/libui0 winglut \
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2 -I."
