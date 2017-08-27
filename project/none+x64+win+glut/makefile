@@ -44,7 +44,7 @@ dll:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
+	-lglew32 -lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
@@ -58,6 +58,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
+	-lglew32 -lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.dll

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <GL/glext.h>
 #include "arena.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 
