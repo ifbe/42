@@ -119,8 +119,9 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 }
 static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
 {
-	float* p;
 	int cx,cy,w,h;
+	int* index;
+	float* vertex;
 	int (*table)[4] = (void*)buffer + num*16*4;
 
 	cx = (win->w) * (rel->cx) / 0x10000;
@@ -128,22 +129,35 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 	w = (win->w) * (rel->wantw) / 0x10000;
 	h = (win->h) * (rel->wanth) / 0x10000;
 
-	p = (float*)(win->buf);
-	p[0] = (float)(cx-w);
-	p[1] = (float)(cy-h);
-	p[2] = 0.0;
+	//
+	vertex = (float*)(win->buf);
 
-	p[3] = (float)(cx+w);
-	p[4] = (float)(cy-h);
-	p[5] = 0.0;
+	vertex[0] = (float)(cx-w);
+	vertex[1] = (float)(cy-h);
+	vertex[2] = 0.0;
 
-	p[6] = (float)(cx+w);
-	p[7] = (float)(cy+h);
-	p[8] = 0.0;
+	vertex[3] = (float)(cx+w);
+	vertex[4] = (float)(cy-h);
+	vertex[5] = 0.0;
 
-	p[9] = (float)(cx-w);
-	p[10] = (float)(cy+h);
-	p[11] = 0.0;
+	vertex[6] = (float)(cx+w);
+	vertex[7] = (float)(cy+h);
+	vertex[8] = 0.0;
+
+	vertex[9] = (float)(cx-w);
+	vertex[10] = (float)(cy+h);
+	vertex[11] = 0.0;
+
+	//
+	index = (int*)((win->buf)+0x400000);
+
+	index[0] = 0;
+	index[1] = 1;
+	index[2] = 2;
+
+	index[3] = 1;
+	index[4] = 2;
+	index[5] = 3;
 }
 static void the2048_read_html(struct arena* win, struct actor* act, struct style* rel)
 {

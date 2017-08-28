@@ -24,10 +24,12 @@ void eventwrite(u64,u64,u64,u64);
 
 
 static struct window* win;
-static void* buffer;
-//
+static struct window* src;
 static int refresh=0;
-static GLuint texture[1];
+//
+static GLuint texture;
+static GLuint vertex;
+static GLuint index;
 //
 static int last_x=0;
 static int last_y=0;
@@ -47,18 +49,19 @@ static float object_zoom = 1.0;
 
 void callback_display_vbo()
 {
-	u32 vbo, ibo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x400000, buffer, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &vbo);
+	void* vbobuf = (void*)(src->buf);
+	int vbolen = sizeof(float)*3*4;
+	void* ibobuf = (void*)(src->buf)+0x400000;
+	int ibolen = sizeof(int)*6;
 
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4, buffer+0x400000, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &ibo);
+	glBufferSubData(        GL_ARRAY_BUFFER, 0, vbolen, vbobuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ibolen, ibobuf);
+
+	glColor3f(1.0, 0.0, 1.0);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, sizeof(float)*3, 0);
+	glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, 0);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 void callback_display_stl()
 {
@@ -73,7 +76,7 @@ void callback_display_stl()
 	GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0, 1.0};
 
 	float* p;
-	void* buf = buffer;
+	void* buf = (void*)(src->buf);
 	u32 count = *(u32*)(buf+80);
 	u32 j;
 
@@ -115,17 +118,9 @@ void callback_display_stl()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
-
-	//
-	glFlush();
-	glutSwapBuffers();
 }
 void callback_display_texture()
 {
-	//thing rotate
-	//glRotatef( rotate_x, 1.0, 0.0, 0.0 );
-	//glRotatef( rotate_y, 0.0, 1.0, 0.0 );
-
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
 
@@ -176,7 +171,7 @@ void callback_display_texture()
 
 	//0
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
@@ -185,8 +180,8 @@ void callback_display_texture()
 		512,
 		0,
 		GL_RGBA,
-		GL_UNSIGNED_BYTE,	//像素的数据类型  
-		buffer		//数据指针
+		GL_UNSIGNED_BYTE,		//像素的数据类型  
+		(void*)(src->buf)	//数据指针
 	);
 	glBegin(GL_QUADS);
 	glColor3f(1.0, 1.0, 1.0);
@@ -195,18 +190,14 @@ void callback_display_texture()
 	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, 0.5);
 	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, 0.5);
 	glEnd();
-
-	//
-	glFlush();
-	glutSwapBuffers();
 }
 void callback_display()
 {
 	float ex,ey,ez;
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
-	//glShadeModel(GL_SMOOTH);
 	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
 	//camera rotate
 	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
@@ -219,18 +210,32 @@ void callback_display()
 		0.0,0.0,1.0
 	);
 
-	if(win->fmt == hex32('v','b','o',0))
-	{
-		callback_display_vbo();
-	}
-	else if(win->fmt == hex32('s','t','l',0))
-	{
-		callback_display_stl();
-	}
-	else		//if(win->fmt == hex64('r','g','b','a','8','8','8','8'))
-	{
-		callback_display_texture();
-	}
+	//
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(100.0, 0.0, 0.0);
+	glEnd();
+
+	glColor3f(0.0, 1.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 100.0, 0.0);
+	glEnd();
+
+	glColor3f(0.0, 0.0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(0.0, 0.0, 100.0);
+	glEnd();
+
+	//
+	if(win->fmt == hex32('v','b','o',0))callback_display_vbo();
+	else if(win->fmt == hex32('s','t','l',0))callback_display_stl();
+	else callback_display_texture();
+
+	glFlush();
+	glutSwapBuffers();
 }
 void callback_idle()
 {
@@ -320,26 +325,38 @@ void callback_move(int x,int y)
 
 void* uievent(struct window* p)
 {
+	int ret;
 	int argc=1;
 	char* argv[2];
-
-	//初始化
 	argv[0] = "./a.out";
 	argv[1] = 0;
+
+	//glut
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(p->w, p->h);
 	glutInitWindowPosition(200, 200);
-
-	//创建窗口
 	glutCreateWindow("42");
 	glEnable(GL_DEPTH_TEST);
 
-	//
-	glGenTextures(1, texture);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	//glew
+	ret = glewInit();
+
+	//texture
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//vertex
+	glGenBuffers(1, &vertex);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, (void*)(src->buf), GL_STATIC_DRAW);
+
+	//index
+	glGenBuffers(1, &index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, (void*)(src->buf)+0x400000, GL_STATIC_DRAW);
 
 	//绘制与显示
 	glutIdleFunc(callback_idle);
@@ -351,6 +368,14 @@ void* uievent(struct window* p)
 
 	//
 	glutMainLoop();
+
+	//
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	//exit
+	glDeleteBuffers(1, &vertex);
+	glDeleteBuffers(1, &index);
 }
 void windowread()
 {
@@ -372,12 +397,15 @@ void windowstart(struct window* this)
 {
 	if(this->type == hex32('b','u','f',0))
 	{
-		buffer = (void*)(this->buf);
+		src = this;
 		return;
 	}
 	win = this;
 	this->type = hex32('w','i','n',0);
-	this->fmt = hex64('r','g','b','a','8','8','8','8');//hex32('v','b','o',0);
+	//this->fmt = hex64('r','g','b','a','8','8','8','8');
+	this->fmt = hex32('v','b','o',0);
+	//this->fmt = hex32('s','t','l',0);
+
 	this->w = 512;
 	this->h = 512;
 	this->thread = startthread(uievent, this);
