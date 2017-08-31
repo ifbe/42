@@ -187,6 +187,14 @@ winapi:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
+.PHONY:wind3d
+wind3d:
+	rm -f *.o
+	$(compiler) $(cflag) win/win.d3d.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
+
 .PHONY:wingles
 wingles:
 	rm -f *.o
