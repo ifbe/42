@@ -336,7 +336,7 @@ void fixview()
 	viewmatrix[11] = 0.0f;
 
 	viewmatrix[12] = -camerax*ux - cameray*uy - cameraz*uz;
-	viewmatrix[13] = -camerax*vx - cameray*vy - cameraz*nz;
+	viewmatrix[13] = -camerax*vx - cameray*vy - cameraz*vz;
 	viewmatrix[14] = camerax*nx + cameray*ny + cameraz*nz;
 	viewmatrix[15] = 1.0f;
 /*
@@ -670,24 +670,27 @@ void callback_move(int x,int y)
 	float ty = cameray;
 	if(x>last_x)
 	{
-		camerax = tx*cosine(0.1f) - ty*sine(0.1f);
-		cameray = tx*sine(0.1f) + ty*cosine(0.1f);
+		camerax = tx*cosine(0.1f) + ty*sine(0.1f);
+		cameray = -tx*sine(0.1f) + ty*cosine(0.1f);
 
 		camera_yaw += PI/90;
 	}
 	else if(x<last_x)
 	{
-		camerax = tx*cosine(0.1f) + ty*sine(0.1f);
-		cameray = -tx*sine(0.1f) + ty*cosine(0.1f);
+		camerax = tx*cosine(0.1f) - ty*sine(0.1f);
+		cameray = tx*sine(0.1f) + ty*cosine(0.1f);
 
 		camera_yaw -= PI/90;
 	}
-	else if(y>last_y)
+
+	if(y>last_y)
 	{
+		cameraz += 0.1;
 		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
 	}
 	else if(y<last_y)
 	{
+		cameraz -= 0.1;
 		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
 	}
 
