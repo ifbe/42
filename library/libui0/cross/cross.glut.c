@@ -8,42 +8,41 @@
 
 
 
-u64 startthread(void*, void*);
 int readfile(u64, void*, u64, u64);
 int writefile(u64, void*, u64, u64);
+u64 startthread(void*, void*);
 void sleep_us(int);
 //
 double squareroot(double);
 double cosine(double);
 double sine(double);
 //
+void eventwrite(u64,u64,u64,u64);
 void printmemory(void*, int);
 void say(void*, ...);
-void eventwrite(u64,u64,u64,u64);
 
 
 
 
+//
 static struct window* win;
 static struct window* src;
-static int refresh=0;
 //
 static GLuint vShader;
 static GLuint fShader;
 static GLuint programHandle;
 //
 static GLuint axisvao;
-static GLuint axis;
+static GLuint axishandle;
 //
 static GLuint shapevao;
 static GLuint vertexhandle;
 static GLuint texturehandle;
 static GLuint colorhandle;
 static GLuint indexhandle;
-
 //
-static float camerax = 0.0f;
-static float cameray = 1.0f;
+static float camerax = 1.0f;
+static float cameray = 2.0f;
 static float cameraz = 0.0f;
 static float centerx = 0.0f;
 static float centery = 0.0f;
@@ -53,16 +52,16 @@ static float abovey = 0.0f;
 static float abovez = 1.0f;
 //
 static GLfloat modelmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,  
-	0.0f, 1.0f, 0.0f, 0.0f,  
-	0.0f, 0.0f, 1.0f, 0.0f,  
-	0.0f, 0.0f, 0.0f, 1.0f,  
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f,
 };
 static GLfloat viewmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,  
-	0.0f, 1.0f, 0.0f, 0.0f,  
-	0.0f, 0.0f, 1.0f, 0.0f,  
-	0.0f, 0.0f, 0.0f, 1.0f,  
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f,
 };
 static GLfloat projmatrix[4*4] = {  
 	1.0f, 0.0f, 0.0f, 0.0f,
@@ -97,6 +96,7 @@ unsigned short indexdata[] = {
 	3, 7, 6, 2
 };
 //
+static int refresh=0;
 static int last_x=0;
 static int last_y=0;
 //
@@ -256,8 +256,8 @@ void initVBO()
     glBindVertexArray(axisvao);
 
 	//axis
-    glGenBuffers(1, &axis);
-    glBindBuffer(GL_ARRAY_BUFFER, axis);
+    glGenBuffers(1, &axishandle);
+    glBindBuffer(GL_ARRAY_BUFFER, axishandle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axisData, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
@@ -372,6 +372,11 @@ void fixprojection()
 	0, 0, (f+n)/(f-n), -1,
 	0, 0, (2*f*n)/(f-n), 0
 */
+	float w = (float)(win->w);
+	float h = (float)(win->h);
+	projmatrix[0] = h / w;
+	glViewport(0, 0, win->w, win->h);
+
 	GLint projLoc = glGetUniformLocation(programHandle, "proj");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, projmatrix);
 }
@@ -436,11 +441,10 @@ void callback_display_stl()
 		0.0,0.0,1.0
 	);
 
+	u32 j;
 	float* p;
 	void* buf = (void*)(src->buf);
 	u32 count = *(u32*)(buf+80);
-	u32 j;
-
 	if(count > 0x147adf)count = 0x147adf;	//64MB
 	buf += 84;
 	//printf("count=%d\n", count);
@@ -515,6 +519,9 @@ void callback_display_texture()
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_COLOR_MATERIAL);
+	glDisable(GL_TEXTURE_2D);
+
 	//camera rotate
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
@@ -524,9 +531,6 @@ void callback_display_texture()
 		  0,  0,  0,
 		0.0,0.0,1.0
 	);
-
-	glEnable(GL_COLOR_MATERIAL);
-	glDisable(GL_TEXTURE_2D);
 
 	//1
 	glBegin(GL_QUADS);
@@ -607,11 +611,13 @@ void callback_display()
 }
 void callback_idle()
 {
-	if(refresh <= 0)return;
-	refresh--;
-
 	glutPostRedisplay();
 	sleep_us(1000*20);
+}
+void callback_reshape(int w, int h)
+{
+	win->w = w;
+	win->h = h;
 }
 void callback_keyboard(unsigned char key, int x, int y)
 {
@@ -741,7 +747,6 @@ void* uievent(struct window* p)
 	ret = glewInit();
 
 	//
-	glViewport(0, 0, 512, 512);
 	glEnable(GL_DEPTH_TEST);
     initShader();
     initVBO();
@@ -749,6 +754,7 @@ void* uievent(struct window* p)
 	//绘制与显示
 	glutIdleFunc(callback_idle);
 	glutDisplayFunc(callback_display);
+	glutReshapeFunc(callback_reshape);
 	glutKeyboardFunc(callback_keyboard);
 	glutSpecialFunc(callback_special);
 	glutMouseFunc(callback_mouse);
