@@ -84,10 +84,10 @@ struct actor
 	};
 
 	//[20,3f]
-	u64 aa;
-	u64 bb;
-	u64 cc;
-	u64 dd;
+	u64 buf;
+	u64 len;
+	u64 info;
+	u64 flag;
 
 	//[40,47]
 	union{

@@ -2,7 +2,7 @@
 void drawascii(
 	void*, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
-void rect(void*,
+void drawrect(void*,
 	int x0, int y0,
 	int x1, int y1,
 	u32 bc, u32 fc);
@@ -47,7 +47,7 @@ void vkbd_read(struct arena* win)
 			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/65536;
 			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
 
-			rect(win,
+			drawrect(win,
 				left, top,
 				right, bottom,
 				0xff00ff, 0

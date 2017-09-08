@@ -1,13 +1,11 @@
 #include "actor.h" 
-void line(void*,
+void drawline(void*,
 	int x1,int y1,
 	int x2,int y2,
 	u32 color);
-void circleframe(void*,
+void drawcircle_frame(void*,
 	int x, int y,
 	int r, u32 color);
-void backgroundcolor(void*,
-	u32);
 
 
 
@@ -30,21 +28,21 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	else h=w;
 
 	//heng
-	line(win,
+	drawline(win,
 		cx-w/2, cy-h/6,
 		cx+w/2, cy-h/6,
 		0xffffffff);
-	line(win,
+	drawline(win,
 		cx-w/2, cy+h/6,
 		cx+w/2, cy+h/6,
 		0xffffffff);
 
 	//shu
-	line(win,
+	drawline(win,
 		cx-w/6, cy-h/2,
 		cx-w/6, cy+h/2,
 		0xffffffff);
-	line(win,
+	drawline(win,
 		cx+w/6, cy-h/2,
 		cx+w/6, cy+h/2,
 		0xffffffff);
@@ -56,7 +54,7 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 		{
 			if(data[3*y + x] == 'o')
 			{
-				circleframe(win,
+				drawcircle_frame(win,
 					cx+(x-1)*w/3,
 					cy+(y-1)*h/3,
 					w/12,
@@ -65,12 +63,12 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 			}
 			else if(data[3*y + x] == 'x')
 			{
-				line(win,
+				drawline(win,
 					cx+(4*x-5)*w/12, cy+(4*y-5)*h/12,
 					cx+(4*x-3)*w/12, cy+(4*y-3)*h/12,
 					0xff0000
 				);
-				line(win,
+				drawline(win,
 					cx+(4*x-5)*w/12, cy+(4*y-3)*h/12,
 					cx+(4*x-3)*w/12, cy+(4*y-5)*h/12,
 					0xff0000

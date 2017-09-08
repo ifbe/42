@@ -382,17 +382,8 @@ void fixprojection()
 }
 void callback_display_vbo()
 {
-	//void* vbobuf = (void*)(src->buf);
-	//int vbolen = sizeof(float)*3*4;
-	//void* ibobuf = (void*)(src->buf)+0x400000;
-	//int ibolen = sizeof(int)*6;
-
-	//
-	//glBufferSubData(        GL_ARRAY_BUFFER, 0, vbolen, vbobuf);
-	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ibolen, ibobuf);
-
 	//set
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	//matrix
@@ -774,6 +765,15 @@ void windowread()
 }
 void windowwrite(struct window* dst, struct window* src)
 {
+	//void* vbobuf = (void*)(src->buf);
+	//int vbolen = sizeof(float)*3*4;
+	//void* ibobuf = (void*)(src->buf)+0x400000;
+	//int ibolen = sizeof(int)*6;
+
+	//
+	//glBufferSubData(        GL_ARRAY_BUFFER, 0, vbolen, vbobuf);
+	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ibolen, ibobuf);
+
 	refresh++;
 }
 void windowchange(int what)

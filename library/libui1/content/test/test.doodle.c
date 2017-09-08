@@ -1,23 +1,17 @@
 #include "actor.h"
 //
-void line(void*,
+void drawline(void*,
 	int ax, int ay, int bx, int by, u32 color);
-void bezier(void*,
+void drawbezier(void*,
 	int ax, int ay, int bx, int by, int cx, int cy, u32 color);
-void rectbody(void*,
+void drawrect_body(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void rectframe(void*,
+void drawrect_frame(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void circlebody(void*,
+void drawcircle_body(void*,
 	int cx, int cy, int r, u32 color);
-void circleframe(void*,
+void drawcircle_frame(void*,
 	int cx, int cy, int r, u32 color);
-void sectorbody(void*,
-	int cx, int cy, int r, int start, int end, u32 color);
-void sectorframe(void*,
-	int cx, int cy, int r, int start, int end, u32 color);
-void backgroundcolor(void*,
-	u32);
 
 
 
@@ -32,39 +26,29 @@ void doodle_read(struct arena* win)
 	backgroundcolor(win, 0);
 
 	//rect
-	rectbody(win,
+	drawrect_body(win,
 	10, 10, 90, 90, 0xff00);
-	rectframe(win,
+	drawrect_frame(win,
 	110, 10, 190,90, 0xff00ff);
 
 	//circle
-	circlebody(win,
+	drawcircle_body(win,
 	50, 150, 40, 0xff);
-	circleframe(win,
+	drawcircle_frame(win,
 	150, 150, 40, 0xff0000);
 
 	//moon
-	circlebody(win,
+	drawcircle_body(win,
 	50, 250, 40, 0xffff00);
-	circlebody(win,
+	drawcircle_body(win,
 	40, 240, 40, 0);
 
-	//taiji
-	sectorbody(win,
-	150, 250, 50,  90, 270, 0xffffff);
-	sectorbody(win,
-	150, 250, 50, 270,  90, 0);
-	sectorbody(win,
-	150, 225, 25,  90, 270, 0);
-	sectorbody(win,
-	150, 275, 25, 270,  90, 0xffffff);
-
 	//bezier
-	line(win,
+	drawline(win,
 	0, 256,  px,  py, 0xffff);
-	line(win,
+	drawline(win,
 	512, 256,  px,  py, 0xffff);
-	bezier(win,
+	drawbezier(win,
 	0, 256, 512, 256, px, py, 0xffff);
 }
 void doodle_write(struct event* ev)

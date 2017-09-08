@@ -6,7 +6,7 @@ void drawstring(
 void drawascii(
 	void*, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
-void rect(void*,
+void drawrect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
@@ -42,7 +42,7 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct r
 	int w8 = (win->w)/8;
 	int h8 = (win->h)/8;
 
-	rect(win,
+	drawrect(win,
 		0, 0,
 		w8*8-1, h8*4-1,
 		0, 0xff00
@@ -54,7 +54,7 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct r
 			if(x<4)fg = y*0x10 + x*0x100000;
 			else fg = x*0x10 + y*0x100000;
 
-			rect(win,
+			drawrect(win,
 				w8*x, h8*(y+4),
 				w8*(x+1), h8*(y+5),
 				fg, 0xffffffff

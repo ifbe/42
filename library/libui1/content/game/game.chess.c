@@ -1,6 +1,6 @@
 #include "actor.h"
 //
-void rectbody(void*,
+void drawrect_body(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color
@@ -36,7 +36,7 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 			if(((x+y+32)%2) == 0)color = 0;
 			else color = 0xffffff;
 
-			rectbody(win,
+			drawrect_body(win,
 				cx+(x-4)*w, cy+(y-4)*h,
 				cx+(x-3)*w, cy+(y-3)*h,
 				color

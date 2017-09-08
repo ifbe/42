@@ -3,15 +3,7 @@
 
 
 
-void linesegment(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 color)
-{
-}
-void halfline(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 color)
-{
-}
-void line(struct arena* win,
+void drawline(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int temp;
@@ -71,7 +63,7 @@ void line(struct arena* win,
 
 
 
-void rectframe(struct arena* win,
+void drawrect_frame(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y,n;
@@ -125,7 +117,7 @@ void rectframe(struct arena* win,
 		}
 	}
 }
-void rectbody(struct arena* win,
+void drawrect_body(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y;
@@ -155,46 +147,46 @@ void rectbody(struct arena* win,
 		}
 	}
 }
-void rect(struct arena* win,
+void drawrect(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
-	rectbody(win, x1, y1, x2, y2, bodycolor);
-	rectframe(win, x1, y1, x2, y2, framecolor);
+	drawrect_body(win, x1, y1, x2, y2, bodycolor);
+	drawrect_frame(win, x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void trianglebody(struct arena* win,
+void drawtriangle_body(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
 }
-void triangleframe(struct arena* win,
+void drawtriangle_frame(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
 {
-	line(win,
+	drawline(win,
 	x1, y1, x2, y2, color);
 
-	line(win,
+	drawline(win,
 	x1, y1, x3, y3, color);
 
-	line(win,
+	drawline(win,
 	x2, y2, x3, y3, color);
 }
-void triangle(struct arena* win,
+void drawtriangle(struct arena* win,
 	int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
 {
-	trianglebody(win,
+	drawtriangle_body(win,
 	x1, y1, x2, y2, x3, y3, bodycolor);
 
-	triangleframe(win,
+	drawtriangle_frame(win,
 	x1, y1, x2, y2, x3, y3, framecolor);
 }
 
 
 
 
-void circleframe(struct arena* win,
+void drawcircle_frame(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -232,7 +224,7 @@ void circleframe(struct arena* win,
 		buf[ (y*width) + x2 ] = color;
 	}
 }
-void circlebody(struct arena* win,
+void drawcircle_body(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -272,40 +264,46 @@ void circlebody(struct arena* win,
 		}
 	}
 }
+void drawcircle(struct arena* win,
+	int cx, int cy, int radius, u32 bg, u32 fg)
+{
+	drawcircle_body(win, cx, cy, radius, bg);
+	drawcircle_frame(win, cx, cy, radius, fg);
+}
 
 
 
 
-void ovalbody(struct arena* win,
+void drawoval_body(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void ovalframe(struct arena* win,
+void drawoval_frame(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 }
-void oval(struct arena* win,
+void drawoval(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
-	ovalbody(win,
+	drawoval_body(win,
 	x1, y1, x2, y2, bodycolor);
 
-	ovalbody(win,
+	drawoval_frame(win,
 	x1, y1, x2, y2, framecolor);
 }
 
 
 
 
-void sectorbody(struct arena* win,
+void drawsector_body(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sectorframe(struct arena* win,
+void drawsector_frame(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 color)
 {
 }
-void sector(struct arena* win,
+void drawsector(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
 {
 }
@@ -313,7 +311,7 @@ void sector(struct arena* win,
 
 
 
-void bezier(struct arena* win,
+void drawbezier(struct arena* win,
 	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
 {
 	int x,y,t;

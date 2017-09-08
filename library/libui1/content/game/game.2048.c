@@ -6,14 +6,20 @@ void right2048(void*);
 void up2048(void*);
 void down2048(void*);
 //
-void rect(
+void drawdecimal(
+	void*, int data, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawrect(
 	void* win,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
-void drawdecimal(
-	void*, int data, int size,
-	int x, int y, u32 fg, u32 bg);
+void carvecubie(
+	void* win,
+	float cx, float cy, float cz,
+	float rx, float fy, float rz,
+	float ux, float uy, float uz
+);
 
 
 
@@ -72,7 +78,7 @@ static void cubie(
 			+ (color&0xff00)
 			+ ((color&0xff0000)>>16);
 	}
-	rect(win,
+	drawrect(win,
 		x0, y0,
 		x1, y1,
 		color, 0
@@ -119,10 +125,9 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 }
 static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
 {
+	int x,y;
 	int cx,cy,w,h;
-	int* index;
-	float* vertex;
-	int (*table)[4] = (void*)buffer + num*16*4;
+	int (*tab)[4] = (void*)buffer + num*16*4;
 
 	cx = (win->w) * (rel->cx) / 0x10000;
 	cy = (win->h) * (rel->cy) / 0x10000;
@@ -130,34 +135,17 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	vertex = (float*)(win->buf);
-
-	vertex[0] = (float)(cx-w);
-	vertex[1] = (float)(cy-h);
-	vertex[2] = 0.0;
-
-	vertex[3] = (float)(cx+w);
-	vertex[4] = (float)(cy-h);
-	vertex[5] = 0.0;
-
-	vertex[6] = (float)(cx+w);
-	vertex[7] = (float)(cy+h);
-	vertex[8] = 0.0;
-
-	vertex[9] = (float)(cx-w);
-	vertex[10] = (float)(cy+h);
-	vertex[11] = 0.0;
-
-	//
-	index = (int*)((win->buf)+0x400000);
-
-	index[0] = 0;
-	index[1] = 1;
-	index[2] = 2;
-
-	index[3] = 1;
-	index[4] = 2;
-	index[5] = 3;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			carvecubie(win,
+				cx, cy, 0,
+				w, h, 0,
+				0, 0, tab[y][x]
+			);
+		}
+	}
 }
 static void the2048_read_html(struct arena* win, struct actor* act, struct style* rel)
 {

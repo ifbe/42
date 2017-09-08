@@ -3,7 +3,7 @@ int cli_write(void*);
 
 
 
-void rect(struct arena* win,
+void drawrect(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bc, u32 fc);
 void drawascii(
 	void* win, u8 ch, int size,
@@ -74,7 +74,7 @@ static void printstdout(struct arena* win,
 	int y1 = winh * yy1 / 0x10000;
 	u32* palette;
 	u8* where;
-	rect(win,
+	drawrect(win,
 		x0, y0,
 		x1, y1,
 		0, 0xff00ff

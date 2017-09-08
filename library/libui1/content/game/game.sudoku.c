@@ -8,11 +8,11 @@ void sudoku_solve(void*, void*);
 void drawdecimal(
 	void*, int data, int size,
 	int x, int y, u32 fg, u32 bg);
-void rectbody(void*,
+void drawrect_body(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void rect(void*,
+void drawrect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 body, u32 frame);
@@ -78,7 +78,7 @@ static void sudoku_read_pixel(struct arena* win)
 	{
 		for(x=0;x<9;x++)
 		{
-			rect(win,
+			drawrect(win,
 				x*w/9,	 y*h/9,
 				(x+1)*w/9, (y+1)*h/9,
 				0x888888,	  0
@@ -93,22 +93,22 @@ static void sudoku_read_pixel(struct arena* win)
 			}
 		}
 	}
-	rectbody(win,
+	drawrect_body(win,
 		0, (h/3)-2,
 		w, (h/3)+2,
 		0
 	);
-	rectbody(win,
+	drawrect_body(win,
 		0, (h*2/3)-2,
 		w, (h*2/3)+2,
 		0
 	);
-	rectbody(win,
+	drawrect_body(win,
 		(w/3)-2, 0,
 		(w/3)+2, h,
 		0
 	);
-	rectbody(win,
+	drawrect_body(win,
 		(w*2/3)-2, 0,
 		(w*2/3)+2, h,
 		0

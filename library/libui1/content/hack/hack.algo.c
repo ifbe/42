@@ -1,18 +1,16 @@
 #include "actor.h"
 //
-void backgroundcolor(void*,
-	u32 color);
-void rectbody(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void rectframe(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
 void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
+void drawrect_body(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void drawrect_frame(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
 
 
 
@@ -49,7 +47,7 @@ static void algorithm_read_pixel(struct arena* win)
 	backgroundcolor(win, 0);
 
 	//top
-	rectbody(win,
+	drawrect_body(win,
 		(win->w)/16, (win->h)/16,
 		(win->w)*15/16, (win->h)*7/16,
 		0x40
@@ -60,19 +58,19 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//middle
-	rectbody(win,
+	drawrect_body(win,
 		(win->w)/16, (win->h)*7/16,
 		(win->w)*15/16, (win->h)*9/16,
 		0
 	);
-	rectframe(win,
+	drawrect_frame(win,
 		(win->w/4)+32, (win->h/2)-16,
 		(win->w*3/4)-32, (win->h/2)+16,
 		0xffffffff
 	);
 
 	//middle.left
-	rectframe(win,
+	drawrect_frame(win,
 		(win->w/4)-32, (win->h/2)-16,
 		(win->w/4)+32, (win->h/2)+16,
 		0xffffffff
@@ -83,7 +81,7 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//middle.right
-	rectframe(win,
+	drawrect_frame(win,
 		(win->w*3/4)-32, (win->h/2)-16,
 		(win->w*3/4)+32, (win->h/2)+16,
 		0xffffffff
@@ -94,7 +92,7 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//bottom
-	rectbody(win,
+	drawrect_body(win,
 		(win->w)/16, (win->h)*9/16,
 		(win->w)*15/16, (win->h)*15/16,
 		0x400000

@@ -1,6 +1,6 @@
 #include "actor.h" 
 //
-void rect(void*,
+void drawrect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
@@ -52,7 +52,7 @@ static void cubie(struct arena* win, int x,int y,int z)
 	endy = (y+1)*(win->h)/40 - 1;
 
 	bodycolor=z>0?0xffffffff:0;
-	rect(win,
+	drawrect(win,
 		startx, starty,
 		endx, endy,
 		bodycolor, 0x44444444

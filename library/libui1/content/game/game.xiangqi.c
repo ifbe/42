@@ -2,12 +2,10 @@
 void drawascii(
 	void*, u8 data, int size,
 	int x, int y, u32 fg, u32 bg);
-void circlebody(void*,
+void drawcircle_body(void*,
 	int x, int y, int r, u32 color);
-void line(void*,
+void drawline(void*,
 	int x1,int y1,int x2,int y2, u32 color);
-void backgroundcolor(void*,
-	u32);
 
 
 
@@ -181,7 +179,7 @@ void xiangqi_read_pixel(struct arena* win)
 	//heng
 	for(y=-5;y<5;y++)
 	{
-		line(win,
+		drawline(win,
 			cx - half*8,	cy + half*(2*y+1),
 			cx + half*8,	cy + half*(2*y+1),	0);
 	}
@@ -189,25 +187,25 @@ void xiangqi_read_pixel(struct arena* win)
 	//shu
 	for(x=-4;x<5;x++)
 	{
-		line(win,
+		drawline(win,
 			cx + x*half*2,	cy - half*9,
 			cx + x*half*2,	cy - half*1,	0);
-		line(win,
+		drawline(win,
 			cx + x*half*2,	cy + half*9,
 			cx + x*half*2,	cy + half*1,	0);
 	}
 
 	//pie,na
-	line(win,
+	drawline(win,
 		cx - half*2,	cy - half*9,
 		cx + half*2,	cy - half*5,	0);
-	line(win,
+	drawline(win,
 		cx + half*2,	cy - half*9,
 		cx - half*2,	cy - half*5,	0);
-	line(win,
+	drawline(win,
 		cx - half*2,	cy + half*9,
 		cx + half*2,	cy + half*5,	0);
-	line(win,
+	drawline(win,
 		cx + half*2,	cy + half*9,
 		cx - half*2,	cy + half*5,	0);
 	//chess
@@ -233,7 +231,7 @@ void xiangqi_read_pixel(struct arena* win)
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
-			circlebody(win,
+			drawcircle_body(win,
 				cx + (2*x-8)*half,
 				cy + (2*y-9)*half,
 				half,

@@ -1,11 +1,9 @@
 #include "actor.h" 
 //
-void line(void*,
+void drawline(void*,
 	int x1,int y1,int x2,int y2, u32 color);
-void circlebody(void*,
+void drawcircle_body(void*,
 	int x, int y, int r, u32 color);
-void backgroundcolor(void*,
-	u32);
 
 
 
@@ -75,7 +73,7 @@ static void weiqi_read_pixel(struct arena* win)
 	//heng
 	for(y=-9;y<10;y++)
 	{
-		line(win,
+		drawline(win,
 			cx - half*2*9,	cy + half*2*y,
 			cx + half*2*9,	cy + half*2*y,	0);
 	}
@@ -83,7 +81,7 @@ static void weiqi_read_pixel(struct arena* win)
 	//shu
 	for(x=-9;x<10;x++)
 	{
-		line(win,
+		drawline(win,
 			cx + half*2*x,	cy - half*2*9,
 			cx + half*2*x,	cy + half*2*9,	0);
 	}
@@ -93,7 +91,7 @@ static void weiqi_read_pixel(struct arena* win)
 	{
 		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
 		{
-			circlebody(win,
+			drawcircle_body(win,
 				x, y,
 				half/4, 0
 			);
@@ -109,7 +107,7 @@ static void weiqi_read_pixel(struct arena* win)
 			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffffff;
 			else continue;
 
-			circlebody(win,
+			drawcircle_body(win,
 				cx + half*2*x, cy + half*2*y,
 				half, color
 			);

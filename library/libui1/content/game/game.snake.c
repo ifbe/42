@@ -1,15 +1,9 @@
-#include "actor.h" 
-void backgroundcolor(void*,
-	u32 color);
-void line(void*,
+#include "actor.h"
+void drawrect_body(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void rectbody(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void rect(void*,
+void drawrect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 body, u32 frame);
@@ -49,7 +43,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	h = (win->h) * (rel->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
-	rectbody(win,
+	drawrect_body(win,
 		cx-w/2, cy-h/2,
 		cx+w/2, cy+h/2,
 		0x888888
@@ -59,7 +53,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	j=0;
 	while(1)
 	{
-		rect(win,
+		drawrect(win,
 			(cx-w/2) + w * snake[j].x / worldwidth,
 			(cy-h/2) + h * snake[j].y / worldheight,
 			(cx-w/2) + w * (snake[j].x+1) / worldwidth,
@@ -73,7 +67,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	}
 
 	//food
-	rect(win,
+	drawrect(win,
 		(cx-w/2) + w * foodx / worldwidth,
 		(cy-h/2) + h * foody / worldheight,
 		(cx-w/2) + w * (foodx+1) / worldwidth,

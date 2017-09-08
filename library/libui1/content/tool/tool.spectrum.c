@@ -2,12 +2,10 @@
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
 //libui1
-void line(void*,
+void drawline(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void backgroundcolor(void*,
-	u32);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -69,7 +67,7 @@ static void spectrum_read_pixel(struct arena* win)
 		t = x * tau /512.0;
 		cc = cosine(t) * 256;
 		ss = -sine(t) * 256;
-		line(win,
+		drawline(win,
 			256 + (int)(cc * (1.0 - 2*power[x])),
 			256 + (int)(ss * (1.0 - 2*power[x])),
 			256 + (int)cc,
