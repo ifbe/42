@@ -44,8 +44,6 @@ static void algorithm_read_html(struct arena* win)
 }
 static void algorithm_read_pixel(struct arena* win)
 {
-	backgroundcolor(win, 0);
-
 	//top
 	drawrect_body(win,
 		(win->w)/16, (win->h)/16,

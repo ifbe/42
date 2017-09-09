@@ -174,7 +174,7 @@ void xiangqi_read_pixel(struct arena* win)
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
-	backgroundcolor(win, temp);
+	//backgroundcolor(win, temp);
 
 	//heng
 	for(y=-5;y<5;y++)

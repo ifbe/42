@@ -28,11 +28,11 @@ target:
 	$(compiler) $(cflag) content/tool/tool.qrcode.c
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
-	$(compiler) $(cflag) content/levitate/lev.login.c
-	$(compiler) $(cflag) content/levitate/lev.navi.c
-	$(compiler) $(cflag) content/levitate/lev.joystick.c
-	$(compiler) $(cflag) content/levitate/lev.keyboard.c
-	$(compiler) $(cflag) content/levitate/levitate.c
+	$(compiler) $(cflag) content/levi/levi.login.c
+	$(compiler) $(cflag) content/levi/levi.navi.c
+	$(compiler) $(cflag) content/levi/levi.joystick.c
+	$(compiler) $(cflag) content/levi/levi.keyboard.c
+	$(compiler) $(cflag) content/levi/levi.c
 	$(compiler) $(cflag) content/content.c
 	$(compiler) $(cflag) helper/helper.term.c
 	$(compiler) $(cflag) helper/helper.wire.c

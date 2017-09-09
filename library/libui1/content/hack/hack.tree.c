@@ -124,8 +124,6 @@ static void printnode(struct arena* win, int x,int y,int num)
 }
 static void tree_read(struct arena* win)
 {
-	backgroundcolor(
-		win, 0);
 	drawstring(
 		win, buffer, 1,
 		0, 0, 0xffffffff, 0);

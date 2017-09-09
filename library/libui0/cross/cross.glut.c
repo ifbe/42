@@ -31,15 +31,17 @@ static struct window* src;
 static GLuint vShader;
 static GLuint fShader;
 static GLuint programHandle;
+static GLuint texturehandle;
 //
 static GLuint axisvao;
-static GLuint axishandle;
+static GLuint axispositionhandle;
+static GLuint axiscolorhandle;
 //
 static GLuint shapevao;
-static GLuint vertexhandle;
-static GLuint texturehandle;
-static GLuint colorhandle;
-static GLuint indexhandle;
+static GLuint shapepositionhandle;
+static GLuint shapenormalhandle;
+static GLuint shapecolorhandle;
+static GLuint shapeindexhandle;
 //
 static float camerax = 1.0f;
 static float cameray = 2.0f;
@@ -69,7 +71,8 @@ static GLfloat projmatrix[4*4] = {
 	0.0f, 0.0f, -1.0f, -1.0f,
 	0.0f, 0.0f, -0.2f, 0.0f
 };
-float axisData[] = {
+
+float axispositiondata[] = {
 	-1000.0, 0.0, 0.0,
 	1000.0, 0.0, 0.0,
 	0.0, -1000.0, 0.0,
@@ -77,7 +80,16 @@ float axisData[] = {
 	0.0, 0.0, -1000.0,
 	0.0, 0.0, 1000.0
 };
-float positionData[] = {
+float axiscolordata[] = {
+	0.0, 0.0, 1.0,
+	0.0, 1.0, 0.0,
+	0.0, 1.0, 1.0,
+	1.0, 0.0, 0.0,
+	1.0, 0.0, 1.0,
+	1.0, 1.0, 0.0
+};
+
+float shapepositiondata[] = {
 	-0.5, -0.5, -0.5,
 	0.5, -0.5, -0.5,
 	0.5, 0.5, -0.5,
@@ -87,7 +99,25 @@ float positionData[] = {
 	0.5, 0.5, 0.5,
 	-0.5, 0.5, 0.5,
 };
-unsigned short indexdata[] = {
+float shapenormaldata[] = {
+	0.0, 0.0, -1.0,
+	0.0, -1.0, 0.0,
+	1.0, 0.0, 0.0,
+	0.0, 0.0, 1.0,
+	-1.0, 0.0, 0.0,
+	0.0, 1.0, 0.0
+};
+float shapecolordata[] = {
+	0.0, 0.0, 0.0,
+	0.0, 0.0, 1.0,
+	0.0, 1.0, 0.0,
+	0.0, 1.0, 1.0,
+	1.0, 0.0, 0.0,
+	1.0, 0.0, 1.0,
+	1.0, 1.0, 0.0,
+	1.0, 1.0, 1.0
+};
+unsigned short shapeindexdata[] = {
 	0, 1, 2, 3,
 	0, 1, 5, 4,
 	5, 6, 2, 1,
@@ -115,15 +145,18 @@ static float object_zoom = 1.0;
 
 char vCode[] = {
 	"#version 400\n"
-	"in vec3 position;\n"
+	"layout(location = 0)in vec3 position;\n"
+	"layout(location = 1)in vec3 normal;\n"
+	"layout(location = 2)in vec3 color;\n"
 	"out vec3 vertexcolor;\n"
 	"uniform mat4 model;\n"
 	"uniform mat4 view;\n"
 	"uniform mat4 proj;\n"
 	"void main()\n"
 	"{\n"
-		"vertexcolor = position;\n"
+		"vertexcolor = color;\n"
 		//"gl_Position = vec4(position,1.0);\n"
+		//"vertexcolor = vec3(0.5,0.5,0.5);\n"
 		"gl_Position = proj * view * model * vec4(position,1.0);\n"
 	"}\n"
 };
@@ -251,16 +284,32 @@ void initShader()
 }
 void initVBO()  
 {
+	//
+	glGenTextures(1, &texturehandle);
+	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+
+
 	//axis vao
     glGenVertexArrays(1,&axisvao);
     glBindVertexArray(axisvao);
 
 	//axis
-    glGenBuffers(1, &axishandle);
-    glBindBuffer(GL_ARRAY_BUFFER, axishandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axisData, GL_STATIC_DRAW);
+    glGenBuffers(1, &axispositionhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, axispositionhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axispositiondata, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
+
+    //color
+    glGenBuffers(1, &axiscolorhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, axiscolorhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axiscolordata, GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
 
 
 
@@ -270,32 +319,30 @@ void initVBO()
     glBindVertexArray(shapevao);
 
     //position
-    glGenBuffers(1, &vertexhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, positionData, GL_STATIC_DRAW);
+    glGenBuffers(1, &shapepositionhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapepositiondata, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
-/*
-    //color
-    glGenBuffers(1, &colorhandle);
-    glBindBuffer(GL_COLOR_BUFFER, colorhandle);
-    glBufferData(GL_COLOR_BUFFER, 9*sizeof(float), colorData, GL_STATIC_DRAW);
 
     //common
-    glGenBuffers(1, &common);
-    glBindBuffer(GL_ARRAY_BUFFER, common);
-    glBufferData(GL_ARRAY_BUFFER, 9*sizeof(float), colorData, GL_STATIC_DRAW);
-*/
-    //index
-    glGenBuffers(1, &indexhandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexhandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short)*4*6, indexdata, GL_STATIC_DRAW);
+    glGenBuffers(1, &shapenormalhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapenormaldata, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
 
-	//
-	glGenTextures(1, &texturehandle);
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //color
+    glGenBuffers(1, &shapecolorhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapecolordata, GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+    //index
+    glGenBuffers(1, &shapeindexhandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short)*4*6, shapeindexdata, GL_STATIC_DRAW);
 }
 
 
@@ -752,13 +799,14 @@ void* uievent(struct window* p)
 	glutMotionFunc(callback_move);
 	glutMainLoop();
 
-	//
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 	//exit
-	glDeleteBuffers(1, &vertexhandle);
-	glDeleteBuffers(1, &indexhandle);
+	glDeleteBuffers(1, &axispositionhandle);
+	glDeleteBuffers(1, &shapeindexhandle);
+
+	glDeleteBuffers(1, &shapepositionhandle);
+	glDeleteBuffers(1, &shapenormalhandle);
+	glDeleteBuffers(1, &shapecolorhandle);
+	glDeleteBuffers(1, &shapeindexhandle);
 }
 void windowread()
 {

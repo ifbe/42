@@ -68,7 +68,7 @@ static void weiqi_read_pixel(struct arena* win)
 	{
 		color = 0x8d6f25;
 	}
-	backgroundcolor(win, color);
+	//backgroundcolor(win, color);
 
 	//heng
 	for(y=-9;y<10;y++)

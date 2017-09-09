@@ -1,15 +1,15 @@
 #include "actor.h"
-void rectbody(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void rectframe(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
 void drawline(void*,
 	int x1,int y1,
 	int x2,int y2,
+	u32 color);
+void drawrect_body(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void drawrect_frame(void*,
+	int x1, int y1,
+	int x2, int y2,
 	u32 color);
 
 

@@ -155,8 +155,6 @@ static void control_read(struct arena* win)
 	//pixel
 	else
 	{
-		backgroundcolor(win, 0x444444);
-
 		if(aaaa == 0)joystick(win);
 		else if(aaaa == 1)keyboard(win);
 		else if(aaaa == 2)touchpad(win);

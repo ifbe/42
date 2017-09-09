@@ -25,7 +25,6 @@ static void qrcode_read_pixel(struct arena* win)
 	if(width < height)min = width;
 	else min = height;
 
-	backgroundcolor(win, 0);
 	for(y=0;y<sidelength;y++)
 	{
 		for(x=0;x<sidelength;x++)

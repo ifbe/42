@@ -23,8 +23,6 @@ static int px=0,py=0;
 
 void doodle_read(struct arena* win)
 {
-	backgroundcolor(win, 0);
-
 	//rect
 	drawrect_body(win,
 	10, 10, 90, 90, 0xff00);
