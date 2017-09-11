@@ -42,6 +42,7 @@ target:
 	$(compiler) $(cflag) libflow/flow.c
 	$(compiler) $(cflag) libmath/math.bigint.c
 	$(compiler) $(cflag) libmath/math.calc.c
+	$(compiler) $(cflag) libmath/math.matrix.c
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
 	$(compiler) $(cflag) libmath/math.c

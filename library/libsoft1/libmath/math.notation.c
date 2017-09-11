@@ -8,14 +8,12 @@ void say(char*,...);
 
 
 
-//得到haha：1<haha<10
-//得到counter：十的多少次方
 void kexuejishufa(double* haha,int* counter)
 {
 	int fuhao;
 
 	//double可以精确到小数点后15位
-	if( (haha[0]>-1e-15) && (haha[0]<1e-15) )
+	if(haha[0]*haha[0] < 1e-30)
 	{
 		haha[0] = 1.00;
 		counter[0] = -100000;
