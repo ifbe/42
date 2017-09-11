@@ -17,7 +17,8 @@ void drawrect(
 void carvecubie(
 	void* win,
 	float cx, float cy, float cz,
-	float rx, float fy, float rz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
 	float ux, float uy, float uz
 );
 
@@ -126,23 +127,28 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
-	int cx,cy,w,h;
-	int (*tab)[4] = (void*)buffer + num*16*4;
+	float xxx, yyy, zzz;
 
-	cx = (win->w) * (rel->cx) / 0x10000;
-	cy = (win->h) * (rel->cy) / 0x10000;
-	w = (win->w) * (rel->wantw) / 0x10000;
-	h = (win->h) * (rel->wanth) / 0x10000;
+	int (*tab)[4] = (void*)buffer + num*16*4;
+	float cx = (win->w) * (rel->cx) / 65536.0 / 1000.0;
+	float cy = (win->h) * (rel->cy) / 65536.0 / 1000.0;
+	float w = (win->w) * (rel->wantw) / 65536.0 / 1000.0;
+	float h = (win->h) * (rel->wanth) / 65536.0 / 1000.0;
 
 	//
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
+			xxx = cx + (x+x+1)*w/8;
+			yyy = cy + (y+y+1)*h/8;
+			zzz = (float)tab[y][3-x]/100.0;
+
 			carvecubie(win,
-				cx, cy, 0,
-				w, h, 0,
-				0, 0, tab[y][x]
+				xxx, yyy, zzz,
+				w/16, 0.0, 0.0,
+				0.0, h/16, 0.0,
+				0.0, 0.0, zzz
 			);
 		}
 	}
@@ -214,7 +220,6 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct style*
 					buf[ret + (j*w*4) +(k*4) +3] = 4;
 				}
 			}
-
 
 			//number
 			j=k=0;

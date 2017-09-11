@@ -1,13 +1,18 @@
 #include "actor.h"
-//
-void drawrect_body(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color
-);
 void drawascii(
 	void* win, u8 data, int size,
 	int x, int y, u32 fg, u32 bg);
+void drawrect_body(void*,
+	int x1, int y1,
+	int x2, int y2,
+	u32 color);
+void carvecubie(
+	void* win,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
 
 
 
@@ -51,6 +56,33 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
+static void chess_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+{
+	int x,y;
+	float xxx, yyy, zzz;
+	float cx = (win->w) * (rel->cx) / 65536.0 / 1000.0;
+	float cy = (win->h) * (rel->cy) / 65536.0 / 1000.0;
+	float w = (win->w) * (rel->wantw) / 65536.0 / 1000.0;
+	float h = (win->h) * (rel->wanth) / 65536.0 / 1000.0;
+
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			if(((x+y+32)%2) == 0)zzz = 0.0;
+			else zzz = 0.01;
+
+			xxx = cx + (x+x+1)*w/16;
+			yyy = cy + (y+y+1)*h/16;
+			carvecubie(win,
+				xxx, yyy, zzz,
+				w/32, 0.0, 0.0,
+				0.0, h/32, 0.0,
+				0.0, 0.0, zzz
+			);
+		}
+	}
+}
 static void chess_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
@@ -60,22 +92,16 @@ static void chess_read_text(struct arena* win, struct actor* act, struct style* 
 static void chess_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	//text 
-	if(win->fmt == 0x74786574)
-	{
-		chess_read_text(win, act, rel);
-	}
+	if(win->fmt == 0x74786574)chess_read_text(win, act, rel);
 
 	//html
-	else if(win->fmt == 0x6c6d7468)
-	{
-		chess_read_html(win, act, rel);
-	}
+	else if(win->fmt == 0x6c6d7468)chess_read_html(win, act, rel);
+
+	//vbo
+	else if(win->fmt == hex32('v','b','o',0))chess_read_vbo(win, act, rel);
 
 	//pixel
-	else
-	{
-		chess_read_pixel(win, act, rel);
-	}
+	else chess_read_pixel(win, act, rel);
 }
 static void chess_write(struct event* ev)
 {

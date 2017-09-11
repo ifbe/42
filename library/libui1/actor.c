@@ -57,9 +57,13 @@ int actorread()
 		if(window->type != hex32('b', 'u', 'f', 0))
 		{
 			canvas = &arena[0];
+
 			canvas->fmt = window->fmt;
 			canvas->w = window->w;
 			canvas->h = window->h;
+
+			canvas->info[0] = 0;
+			canvas->info[1] = 0;
 		}
 		else canvas = window;
 

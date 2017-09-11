@@ -27,6 +27,10 @@ void say(void*, ...);
 //
 static struct window* win;
 static struct window* src;
+static int queuehead = 0;
+static int queuetail = 0;
+static int last_x = 0;
+static int last_y = 0;
 //
 static GLuint vShader;
 static GLuint fShader;
@@ -39,9 +43,13 @@ static GLuint axiscolorhandle;
 //
 static GLuint shapevao;
 static GLuint shapepositionhandle;
-static GLuint shapenormalhandle;
-static GLuint shapecolorhandle;
 static GLuint shapeindexhandle;
+//
+static GLuint samplevao;
+static GLuint samplepositionhandle;
+static GLuint samplenormalhandle;
+static GLuint samplecolorhandle;
+static GLuint sampleindexhandle;
 //
 static float camerax = 1.0f;
 static float cameray = 2.0f;
@@ -89,7 +97,7 @@ float axiscolordata[] = {
 	1.0, 1.0, 0.0
 };
 
-float shapepositiondata[] = {
+float samplepositiondata[] = {
 	-0.5, -0.5, -0.5,
 	0.5, -0.5, -0.5,
 	0.5, 0.5, -0.5,
@@ -99,7 +107,7 @@ float shapepositiondata[] = {
 	0.5, 0.5, 0.5,
 	-0.5, 0.5, 0.5,
 };
-float shapenormaldata[] = {
+float samplenormaldata[] = {
 	0.0, 0.0, -1.0,
 	0.0, -1.0, 0.0,
 	1.0, 0.0, 0.0,
@@ -107,7 +115,7 @@ float shapenormaldata[] = {
 	-1.0, 0.0, 0.0,
 	0.0, 1.0, 0.0
 };
-float shapecolordata[] = {
+float samplecolordata[] = {
 	0.0, 0.0, 0.0,
 	0.0, 0.0, 1.0,
 	0.0, 1.0, 0.0,
@@ -117,7 +125,7 @@ float shapecolordata[] = {
 	1.0, 1.0, 0.0,
 	1.0, 1.0, 1.0
 };
-unsigned short shapeindexdata[] = {
+unsigned short sampleindexdata[] = {
 	0, 1, 2, 3,
 	0, 1, 5, 4,
 	5, 6, 2, 1,
@@ -125,10 +133,6 @@ unsigned short shapeindexdata[] = {
 	3, 7, 4, 0,
 	3, 7, 6, 2
 };
-//
-static int refresh=0;
-static int last_x=0;
-static int last_y=0;
 //
 static float camera_pitch = PI/4;
 static float camera_yaw = -PI/2;
@@ -284,11 +288,30 @@ void initShader()
 }
 void initVBO()  
 {
+	void* shapepositiondata = (void*)(src->buf);
+	void* shapeindexdata = (void*)(src->buf)+0x100000;
+
 	//
 	glGenTextures(1, &texturehandle);
 	glBindTexture(GL_TEXTURE_2D, texturehandle);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//shape vao
+    glGenVertexArrays(1,&shapevao);
+    glBindVertexArray(shapevao);
+
+    //shape position
+    glGenBuffers(1, &shapepositionhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapepositiondata, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+	//shape index
+    glGenBuffers(1, &shapeindexhandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata, GL_STATIC_DRAW);
 
 
 
@@ -314,35 +337,35 @@ void initVBO()
 
 
 
-	//vao
-    glGenVertexArrays(1,&shapevao);
-    glBindVertexArray(shapevao);
+	//sample vao
+    glGenVertexArrays(1,&samplevao);
+    glBindVertexArray(samplevao);
 
-    //position
-    glGenBuffers(1, &shapepositionhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapepositiondata, GL_STATIC_DRAW);
+    //sample position
+    glGenBuffers(1, &samplepositionhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, samplepositionhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplepositiondata, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    //common
-    glGenBuffers(1, &shapenormalhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapenormaldata, GL_STATIC_DRAW);
+    //sample common
+    glGenBuffers(1, &samplenormalhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, samplenormalhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplenormaldata, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
-    //color
-    glGenBuffers(1, &shapecolorhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, shapecolordata, GL_STATIC_DRAW);
+    //sample color
+    glGenBuffers(1, &samplecolorhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, samplecolorhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplecolordata, GL_STATIC_DRAW);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(2);
 
-    //index
-    glGenBuffers(1, &shapeindexhandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short)*4*6, shapeindexdata, GL_STATIC_DRAW);
+    //sample index
+    glGenBuffers(1, &sampleindexhandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sampleindexhandle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short)*4*6, sampleindexdata, GL_STATIC_DRAW);
 }
 
 
@@ -427,7 +450,7 @@ void fixprojection()
 	GLint projLoc = glGetUniformLocation(programHandle, "proj");
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, projmatrix);
 }
-void callback_display_vbo()
+void callback_display()
 {
 	//set
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -442,14 +465,242 @@ void callback_display_vbo()
 	glBindVertexArray(axisvao);
 	glDrawArrays(GL_LINES, 0, 6);
 
-	//shape
-	glBindVertexArray(shapevao);
-	glDrawElements(GL_QUADS, 4*6, GL_UNSIGNED_SHORT, 0);
+	if(queuehead == queuetail)
+	{
+		glBindVertexArray(shapevao);
+		glDrawElements(GL_TRIANGLES, src->info[1], GL_UNSIGNED_SHORT, 0);
+	}
+	else
+	{
+		glBindVertexArray(samplevao);
+		glDrawElements(GL_QUADS, 4*6, GL_UNSIGNED_SHORT, 0);
+	}
 
 	//write
 	glFlush();
     glutSwapBuffers();
 }
+void callback_idle()
+{
+	u64 pcount = src->info[0];
+	u64 icount = src->info[1];
+	float* vbobuf = (void*)(src->buf);
+	u16* ibobuf = (void*)(src->buf)+0x100000;
+
+	if(queuehead != queuetail)
+	{
+		glBindVertexArray(shapevao);
+
+		glBindBuffer(           GL_ARRAY_BUFFER, shapepositionhandle);
+		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*pcount, vbobuf);
+
+		glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, ibobuf);
+
+		queuetail++;
+		glutPostRedisplay();
+	}
+}
+void callback_reshape(int w, int h)
+{
+	win->w = w;
+	win->h = h;
+}
+void callback_keyboard(unsigned char key, int x, int y)
+{
+	u64 what,where;
+	where = (u64)win;
+
+	printf("%x\n",key);
+	if(key == 0x1b)
+	{
+		what = hex32('k','b','d',0);
+	}
+	else
+	{
+		what = hex32('c','h','a','r');
+	}
+	eventwrite(key, what, where, 0);
+}
+void callback_special(int key, int x, int y)
+{
+	u64 what,where;
+	where = (u64)win;
+
+	printf("%x\n",key);
+	if(key == GLUT_KEY_F1)key = 0xf1;
+	else if(key == GLUT_KEY_F2)key = 0xf2;
+	else if(key == GLUT_KEY_F3)key = 0xf3;
+	else if(key == GLUT_KEY_F4)key = 0xf4;
+	else if(key == GLUT_KEY_LEFT)key = 0x25;
+	else if(key == GLUT_KEY_UP)key = 0x26;
+	else if(key == GLUT_KEY_RIGHT)key = 0x27;
+	else if(key == GLUT_KEY_DOWN)key = 0x28;
+	else return;
+
+	what = 0x64626b;
+	eventwrite(key, what, where, 0);
+}
+void callback_mouse(int button, int state, int x, int y)
+{
+	float tx = camerax;
+	float ty = cameray;
+	float tz = cameraz;
+	if(state == GLUT_DOWN)
+	{
+		last_x = x;
+		last_y = y;
+	}
+	if(state == GLUT_UP)
+	{
+		if(button == 3)	//wheel_up
+		{
+			camerax = 0.9*tx + 0.1*centerx;
+			cameray = 0.9*ty + 0.1*centery;
+			cameraz = 0.9*tz + 0.1*centerz;
+
+			camera_zoom *= 0.95;
+
+			glutPostRedisplay();
+		}
+		if(button == 4)	//wheel_down
+		{
+			camerax = 1.1*tx - 0.1*centerx;
+			cameray = 1.1*ty - 0.1*centery;
+			cameraz = 1.1*tz - 0.1*centerz;
+
+			camera_zoom *= 1.05263158;
+
+			glutPostRedisplay();
+		}
+		printf("camera_zoom=%f\n",camera_zoom);
+	}
+}
+void callback_move(int x,int y)
+{
+	float tx = camerax;
+	float ty = cameray;
+	if(x>last_x)
+	{
+		camerax = tx*cosine(0.1f) + ty*sine(0.1f);
+		cameray = -tx*sine(0.1f) + ty*cosine(0.1f);
+
+		camera_yaw += PI/90;
+	}
+	else if(x<last_x)
+	{
+		camerax = tx*cosine(0.1f) - ty*sine(0.1f);
+		cameray = tx*sine(0.1f) + ty*cosine(0.1f);
+
+		camera_yaw -= PI/90;
+	}
+
+	if(y>last_y)
+	{
+		cameraz += 0.1;
+		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
+	}
+	else if(y<last_y)
+	{
+		cameraz -= 0.1;
+		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
+	}
+
+	last_x = x;
+	last_y = y;
+	glutPostRedisplay();
+}
+
+
+
+
+void* uievent(struct window* p)
+{
+	int ret;
+	int argc=1;
+	char* argv[2];
+	argv[0] = "./a.out";
+	argv[1] = 0;
+
+	//glut
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
+	glutInitWindowSize(p->w, p->h);
+	glutInitWindowPosition(200, 200);
+	glutCreateWindow("42");
+	glEnable(GL_DEPTH_TEST);
+
+	//glew
+	ret = glewInit();
+
+	//
+	glEnable(GL_DEPTH_TEST);
+    initShader();
+    initVBO();
+
+	//绘制与显示
+	glutIdleFunc(callback_idle);
+	glutDisplayFunc(callback_display);
+	glutReshapeFunc(callback_reshape);
+	glutKeyboardFunc(callback_keyboard);
+	glutSpecialFunc(callback_special);
+	glutMouseFunc(callback_mouse);
+	glutMotionFunc(callback_move);
+	glutMainLoop();
+
+	//exit
+	glDeleteBuffers(1, &axispositionhandle);
+	glDeleteBuffers(1, &axiscolorhandle);
+
+	glDeleteBuffers(1, &samplepositionhandle);
+	glDeleteBuffers(1, &samplenormalhandle);
+	glDeleteBuffers(1, &samplecolorhandle);
+	glDeleteBuffers(1, &sampleindexhandle);
+}
+void windowread()
+{
+}
+void windowwrite(struct window* dst, struct window* src)
+{
+	queuehead++;
+}
+void windowchange(int what)
+{
+}
+void windowlist()
+{
+}
+void windowstop()
+{
+}
+void windowstart(struct window* this)
+{
+	if(this->type == hex32('b','u','f',0))
+	{
+		src = this;
+		return;
+	}
+	win = this;
+	this->type = hex32('w','i','n',0);
+	//this->fmt = hex64('r','g','b','a','8','8','8','8');
+	this->fmt = hex32('v','b','o',0);
+	//this->fmt = hex32('s','t','l',0);
+
+	this->w = 512;
+	this->h = 512;
+	this->thread = startthread(uievent, this);
+}
+void windowdelete()
+{
+}
+void windowcreate()
+{
+}
+
+
+
+
+/*
 void callback_display_stl()
 {
 	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
@@ -647,212 +898,4 @@ void callback_display()
 	else if(win->fmt == hex32('s','t','l',0))callback_display_stl();
 	else callback_display_texture();
 }
-void callback_idle()
-{
-	glutPostRedisplay();
-	sleep_us(1000*20);
-}
-void callback_reshape(int w, int h)
-{
-	win->w = w;
-	win->h = h;
-}
-void callback_keyboard(unsigned char key, int x, int y)
-{
-	u64 what,where;
-	where = (u64)win;
-
-	printf("%x\n",key);
-	if(key == 0x1b)
-	{
-		what = hex32('k','b','d',0);
-	}
-	else
-	{
-		what = hex32('c','h','a','r');
-	}
-	eventwrite(key, what, where, 0);
-}
-void callback_special(int key, int x, int y)
-{
-	u64 what,where;
-	where = (u64)win;
-
-	printf("%x\n",key);
-	if(key == GLUT_KEY_F1)key = 0xf1;
-	else if(key == GLUT_KEY_F2)key = 0xf2;
-	else if(key == GLUT_KEY_F3)key = 0xf3;
-	else if(key == GLUT_KEY_F4)key = 0xf4;
-	else if(key == GLUT_KEY_LEFT)key = 0x25;
-	else if(key == GLUT_KEY_UP)key = 0x26;
-	else if(key == GLUT_KEY_RIGHT)key = 0x27;
-	else if(key == GLUT_KEY_DOWN)key = 0x28;
-	else return;
-
-	what = 0x64626b;
-	eventwrite(key, what, where, 0);
-}
-void callback_mouse(int button, int state, int x, int y)
-{
-	float tx = camerax;
-	float ty = cameray;
-	float tz = cameraz;
-	if(state == GLUT_DOWN)
-	{
-		last_x = x;
-		last_y = y;
-	}
-	if(state == GLUT_UP)
-	{
-		if(button == 3)	//wheel_up
-		{
-			camerax = 0.9*tx + 0.1*centerx;
-			cameray = 0.9*ty + 0.1*centery;
-			cameraz = 0.9*tz + 0.1*centerz;
-
-			camera_zoom *= 0.95;
-
-			glutPostRedisplay();
-		}
-		if(button == 4)	//wheel_down
-		{
-			camerax = 1.1*tx - 0.1*centerx;
-			cameray = 1.1*ty - 0.1*centery;
-			cameraz = 1.1*tz - 0.1*centerz;
-
-			camera_zoom *= 1.05263158;
-
-			glutPostRedisplay();
-		}
-		printf("camera_zoom=%f\n",camera_zoom);
-	}
-}
-void callback_move(int x,int y)
-{
-	float tx = camerax;
-	float ty = cameray;
-	if(x>last_x)
-	{
-		camerax = tx*cosine(0.1f) + ty*sine(0.1f);
-		cameray = -tx*sine(0.1f) + ty*cosine(0.1f);
-
-		camera_yaw += PI/90;
-	}
-	else if(x<last_x)
-	{
-		camerax = tx*cosine(0.1f) - ty*sine(0.1f);
-		cameray = tx*sine(0.1f) + ty*cosine(0.1f);
-
-		camera_yaw -= PI/90;
-	}
-
-	if(y>last_y)
-	{
-		cameraz += 0.1;
-		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
-	}
-	else if(y<last_y)
-	{
-		cameraz -= 0.1;
-		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
-	}
-
-	last_x = x;
-	last_y = y;
-	glutPostRedisplay();
-}
-
-
-
-
-void* uievent(struct window* p)
-{
-	int ret;
-	int argc=1;
-	char* argv[2];
-	argv[0] = "./a.out";
-	argv[1] = 0;
-
-	//glut
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
-	glutInitWindowSize(p->w, p->h);
-	glutInitWindowPosition(200, 200);
-	glutCreateWindow("42");
-	glEnable(GL_DEPTH_TEST);
-
-	//glew
-	ret = glewInit();
-
-	//
-	glEnable(GL_DEPTH_TEST);
-    initShader();
-    initVBO();
-
-	//绘制与显示
-	glutIdleFunc(callback_idle);
-	glutDisplayFunc(callback_display);
-	glutReshapeFunc(callback_reshape);
-	glutKeyboardFunc(callback_keyboard);
-	glutSpecialFunc(callback_special);
-	glutMouseFunc(callback_mouse);
-	glutMotionFunc(callback_move);
-	glutMainLoop();
-
-	//exit
-	glDeleteBuffers(1, &axispositionhandle);
-	glDeleteBuffers(1, &shapeindexhandle);
-
-	glDeleteBuffers(1, &shapepositionhandle);
-	glDeleteBuffers(1, &shapenormalhandle);
-	glDeleteBuffers(1, &shapecolorhandle);
-	glDeleteBuffers(1, &shapeindexhandle);
-}
-void windowread()
-{
-}
-void windowwrite(struct window* dst, struct window* src)
-{
-	//void* vbobuf = (void*)(src->buf);
-	//int vbolen = sizeof(float)*3*4;
-	//void* ibobuf = (void*)(src->buf)+0x400000;
-	//int ibolen = sizeof(int)*6;
-
-	//
-	//glBufferSubData(        GL_ARRAY_BUFFER, 0, vbolen, vbobuf);
-	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ibolen, ibobuf);
-
-	refresh++;
-}
-void windowchange(int what)
-{
-}
-void windowlist()
-{
-}
-void windowstop()
-{
-}
-void windowstart(struct window* this)
-{
-	if(this->type == hex32('b','u','f',0))
-	{
-		src = this;
-		return;
-	}
-	win = this;
-	this->type = hex32('w','i','n',0);
-	//this->fmt = hex64('r','g','b','a','8','8','8','8');
-	this->fmt = hex32('v','b','o',0);
-	//this->fmt = hex32('s','t','l',0);
-
-	this->w = 512;
-	this->h = 512;
-	this->thread = startthread(uievent, this);
-}
-void windowdelete()
-{
-}
-void windowcreate()
-{
-}
+*/

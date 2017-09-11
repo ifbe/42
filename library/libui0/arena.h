@@ -68,5 +68,8 @@ struct window
 	u64 t;
 
 	//
-	struct point touch[16];
+	union{
+		u64 info[16];
+		struct point touch[16];
+	};
 };
