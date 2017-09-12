@@ -45,6 +45,8 @@ target:
 	$(compiler) $(cflag) libmath/math.matrix.c
 	$(compiler) $(cflag) libmath/math.notation.c
 	$(compiler) $(cflag) libmath/math.prime.c
+	$(compiler) $(cflag) libmath/math.quaternion.c
+	$(compiler) $(cflag) libmath/math.vector.c
 	$(compiler) $(cflag) libmath/math.c
 	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.aes.c
 	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.des.c

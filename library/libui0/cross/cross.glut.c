@@ -8,14 +8,23 @@
 
 
 
-int readfile(u64, void*, u64, u64);
-int writefile(u64, void*, u64, u64);
-u64 startthread(void*, void*);
-void sleep_us(int);
+//
+void quaternionnormalize(float*);
+void quaternionrotate(float*, float*);
+//
+void vectornormalize(float*);
+void vectorcross(float*, float*);
+float vectordot(float*, float*);
+float vectorcosine(float*, float*);
 //
 double squareroot(double);
 double cosine(double);
 double sine(double);
+//
+int readfile(u64, void*, u64, u64);
+int writefile(u64, void*, u64, u64);
+u64 startthread(void*, void*);
+void sleep_us(int);
 //
 void eventwrite(u64,u64,u64,u64);
 void printmemory(void*, int);
@@ -51,15 +60,9 @@ static GLuint samplenormalhandle;
 static GLuint samplecolorhandle;
 static GLuint sampleindexhandle;
 //
-static float camerax = 1.0f;
-static float cameray = 2.0f;
-static float cameraz = 0.0f;
-static float centerx = 0.0f;
-static float centery = 0.0f;
-static float centerz = 0.0f;
-static float abovex = 0.0f;
-static float abovey = 0.0f;
-static float abovez = 1.0f;
+static float camera[3] = {1.0f, 2.0f, 0.0f};
+static float center[3] = {0.0f, 0.0f, 0.0f};
+static float above[3] = {0.0f, 0.0f, 1.0f};
 //
 static GLfloat modelmatrix[4*4] = {  
 	1.0f, 0.0f, 0.0f, 0.0f,
@@ -383,18 +386,18 @@ void fixview()
 	float norm;
 
 	//Z = center - camera
-	float nx = centerx - camerax;
-	float ny = centery - cameray;
-	float nz = centerz - cameraz;
+	float nx = center[0] - camera[0];
+	float ny = center[1] - camera[1];
+	float nz = center[2] - camera[2];
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
 	nz /= norm;
 
 	//X = cross(Z, above)
-	float ux = ny*abovez - nz*abovey;
-	float uy = nz*abovex - nx*abovez;
-	float uz = nx*abovey - ny*abovex;
+	float ux = ny*above[2] - nz*above[1];
+	float uy = nz*above[0] - nx*above[2];
+	float uz = nx*above[1] - ny*above[0];
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
@@ -420,15 +423,15 @@ void fixview()
 	viewmatrix[10] = -nz;
 	viewmatrix[11] = 0.0f;
 
-	viewmatrix[12] = -camerax*ux - cameray*uy - cameraz*uz;
-	viewmatrix[13] = -camerax*vx - cameray*vy - cameraz*vz;
-	viewmatrix[14] = camerax*nx + cameray*ny + cameraz*nz;
+	viewmatrix[12] = -camera[0]*ux - camera[1]*uy - camera[2]*uz;
+	viewmatrix[13] = -camera[0]*vx - camera[1]*vy - camera[2]*vz;
+	viewmatrix[14] = camera[0]*nx + camera[1]*ny + camera[2]*nz;
 	viewmatrix[15] = 1.0f;
 /*
-	viewmatrix[0] = cos(camerax);
-	viewmatrix[2] = -sin(camerax);
-	viewmatrix[8] = sin(camerax);
-	viewmatrix[10] = cos(camerax);
+	viewmatrix[0] = cos(camera[0]);
+	viewmatrix[2] = -sin(camera[0]);
+	viewmatrix[8] = sin(camera[0]);
+	viewmatrix[10] = cos(camera[0]);
 	viewmatrix[14] = -1.0f;
 */
 	GLint viewLoc = glGetUniformLocation(programHandle, "view");
@@ -543,9 +546,9 @@ void callback_special(int key, int x, int y)
 }
 void callback_mouse(int button, int state, int x, int y)
 {
-	float tx = camerax;
-	float ty = cameray;
-	float tz = cameraz;
+	float tx = camera[0];
+	float ty = camera[1];
+	float tz = camera[2];
 	if(state == GLUT_DOWN)
 	{
 		last_x = x;
@@ -555,9 +558,9 @@ void callback_mouse(int button, int state, int x, int y)
 	{
 		if(button == 3)	//wheel_up
 		{
-			camerax = 0.9*tx + 0.1*centerx;
-			cameray = 0.9*ty + 0.1*centery;
-			cameraz = 0.9*tz + 0.1*centerz;
+			camera[0] = 0.9*tx + 0.1*center[0];
+			camera[1] = 0.9*ty + 0.1*center[1];
+			camera[2] = 0.9*tz + 0.1*center[2];
 
 			camera_zoom *= 0.95;
 
@@ -565,9 +568,9 @@ void callback_mouse(int button, int state, int x, int y)
 		}
 		if(button == 4)	//wheel_down
 		{
-			camerax = 1.1*tx - 0.1*centerx;
-			cameray = 1.1*ty - 0.1*centery;
-			cameraz = 1.1*tz - 0.1*centerz;
+			camera[0] = 1.1*tx - 0.1*center[0];
+			camera[1] = 1.1*ty - 0.1*center[1];
+			camera[2] = 1.1*tz - 0.1*center[2];
 
 			camera_zoom *= 1.05263158;
 
@@ -578,32 +581,58 @@ void callback_mouse(int button, int state, int x, int y)
 }
 void callback_move(int x,int y)
 {
-	float tx = camerax;
-	float ty = cameray;
+	float t[3] = {0.0, 0.0, 1.0};
+	float v[4] = {camera[0], camera[1], camera[2]};
 	if(x>last_x)
 	{
-		camerax = tx*cosine(0.1f) + ty*sine(0.1f);
-		cameray = -tx*sine(0.1f) + ty*cosine(0.1f);
+		camera[0] = v[0]*cosine(0.05f) + v[1]*sine(0.05f);
+		camera[1] = -v[0]*sine(0.05f) + v[1]*cosine(0.05f);
 
 		camera_yaw += PI/90;
 	}
 	else if(x<last_x)
 	{
-		camerax = tx*cosine(0.1f) - ty*sine(0.1f);
-		cameray = tx*sine(0.1f) + ty*cosine(0.1f);
+		camera[0] = v[0]*cosine(0.05f) - v[1]*sine(0.05f);
+		camera[1] = v[0]*sine(0.05f) + v[1]*cosine(0.05f);
 
 		camera_yaw -= PI/90;
 	}
 
-	if(y>last_y)
+	if(y > last_y)
 	{
-		cameraz += 0.1;
 		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
+		if(vectorcosine(v, t) < 0.9998)
+		{
+			vectorcross(v, t);
+			vectornormalize(v);
+
+			v[0] *= sine(0.02f);
+			v[1] *= sine(0.02f);
+			v[2] *= sine(0.02f);
+			v[3] = cosine(0.02f);
+			quaternionrotate(camera, v);
+		}
+		else
+		{
+		}
 	}
 	else if(y<last_y)
 	{
-		cameraz -= 0.1;
 		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
+		if(vectorcosine(v, t) > -0.9998)
+		{
+			vectorcross(v, t);
+			vectornormalize(v);
+
+			v[0] *= sine(-0.02f);
+			v[1] *= sine(-0.02f);
+			v[2] *= sine(-0.02f);
+			v[3] = cosine(-0.02f);
+			quaternionrotate(camera, v);
+		}
+		else
+		{
+		}
 	}
 
 	last_x = x;
