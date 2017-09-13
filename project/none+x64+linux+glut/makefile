@@ -7,7 +7,7 @@ all:
 	make -s -C $(library)/libhard1
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1
-	make -s -C $(library)/libui0 linuxgl
+	make -s -C $(library)/libui0 linuxglut
 	make -s -C $(library)/libui1
 	make -s a
 	make -s so
@@ -45,6 +45,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-lpulse -lpulse-simple -lpthread -lGL -lGLU -lglut
+	-lpulse -lpulse-simple -lpthread -lglut -lGLEW -lGLU -lGL -lm
 clean:
 	rm -f *.o *.a *.so

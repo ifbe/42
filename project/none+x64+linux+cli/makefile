@@ -45,7 +45,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libui0/*.o \
 	$(library)/libui1/*.o \
-	-lpulse -lpulse-simple -lpthread
+	-lpulse -lpulse-simple -lpthread -lm
 	#-lasound -lpthread
 clean:
 	rm -f *.o *.a *.so
