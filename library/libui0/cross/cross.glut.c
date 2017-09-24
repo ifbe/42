@@ -9,6 +9,8 @@
 
 
 //
+void matrixmultiply(float*, float*);
+//
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
 //
@@ -60,7 +62,7 @@ static GLuint samplenormalhandle;
 static GLuint samplecolorhandle;
 static GLuint sampleindexhandle;
 //
-static float camera[3] = {1.0f, 2.0f, 0.0f};
+static float camera[3] = {1.0f, -2.0f, 1.0f};
 static float center[3] = {0.0f, 0.0f, 0.0f};
 static float above[3] = {0.0f, 0.0f, 1.0f};
 //
@@ -92,12 +94,12 @@ float axispositiondata[] = {
 	0.0, 0.0, 1000.0
 };
 float axiscolordata[] = {
+	0.0, 0.0, 0.5,
 	0.0, 0.0, 1.0,
+	0.0, 0.5, 0.0,
 	0.0, 1.0, 0.0,
-	0.0, 1.0, 1.0,
-	1.0, 0.0, 0.0,
-	1.0, 0.0, 1.0,
-	1.0, 1.0, 0.0
+	0.5, 0.0, 0.0,
+	1.0, 0.0, 0.0
 };
 
 float samplepositiondata[] = {
@@ -156,15 +158,17 @@ char vCode[] = {
 	"layout(location = 1)in vec3 normal;\n"
 	"layout(location = 2)in vec3 color;\n"
 	"out vec3 vertexcolor;\n"
-	"uniform mat4 model;\n"
-	"uniform mat4 view;\n"
-	"uniform mat4 proj;\n"
+	"uniform vec3 ambientcolor;\n"
+	"uniform vec3 diffusecolor;\n"
+	"uniform vec3 diffuseplace;\n"
+	"uniform mat4 mvpmatrix;\n"
 	"void main()\n"
 	"{\n"
-		"vertexcolor = color;\n"
-		//"gl_Position = vec4(position,1.0);\n"
-		//"vertexcolor = vec3(0.5,0.5,0.5);\n"
-		"gl_Position = proj * view * model * vec4(position,1.0);\n"
+		"vec3 N = normalize(normal);"
+		"vec3 S = normalize(vec3(diffuseplace - position));"
+		"vec3 ddd = diffusecolor * max(dot(S, N), 0.0);\n"
+		"vertexcolor = vec3(0.5, 0.5, 0.5) + ambientcolor;\n"
+		"gl_Position = mvpmatrix * vec4(position,1.0);\n"
 	"}\n"
 };
 char fCode[] = {
@@ -377,8 +381,6 @@ void initVBO()
 void fixmodel()
 {
 	//matrix = movematrix * rotatematrix * scalematrix
-	GLint modelLoc = glGetUniformLocation(programHandle, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelmatrix);
 }
 void fixview()
 {
@@ -434,8 +436,6 @@ void fixview()
 	viewmatrix[10] = cos(camera[0]);
 	viewmatrix[14] = -1.0f;
 */
-	GLint viewLoc = glGetUniformLocation(programHandle, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, viewmatrix);
 }
 void fixprojection()
 {
@@ -449,9 +449,37 @@ void fixprojection()
 	float h = (float)(win->h);
 	projmatrix[0] = h / w;
 	glViewport(0, 0, win->w, win->h);
+}
+void fixmatrix()
+{
+	int x;
+	GLfloat temp[4*4];
 
-	GLint projLoc = glGetUniformLocation(programHandle, "proj");
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, projmatrix);
+	fixmodel();
+	fixview();
+	fixprojection();
+
+	for(x=0;x<16;x++)temp[x] = modelmatrix[x];
+	matrixmultiply(temp, viewmatrix);
+	matrixmultiply(temp, projmatrix);
+
+	GLint mvp = glGetUniformLocation(programHandle, "mvpmatrix");
+	glUniformMatrix4fv(mvp, 1, GL_FALSE, temp);
+}
+void fixlight()
+{
+	GLfloat ambientcolor[3] = {0.1f, 0.1f, 0.1f};
+	GLfloat diffuseplace[3] = {0.1f, 0.2f, 5.0f};
+	GLfloat diffusecolor[3] = {0.8f, 0.0f, 0.0f};
+
+	GLint ac = glGetUniformLocation(programHandle, "ambientcolor");
+	glUniform3fv(ac, 1, ambientcolor);
+
+	GLint dc = glGetUniformLocation(programHandle, "diffusecolor");
+	glUniform3fv(dc, 1, diffusecolor);
+
+	GLint dp = glGetUniformLocation(programHandle, "diffuseplace");
+	glUniform3fv(dp, 1, diffuseplace);
 }
 void callback_display()
 {
@@ -459,10 +487,9 @@ void callback_display()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	//matrix
-	fixmodel();
-	fixview();
-	fixprojection();
+	//...
+	fixmatrix();
+	fixlight();
 
 	//axis
 	glBindVertexArray(axisvao);

@@ -140,9 +140,9 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 	{
 		for(x=0;x<4;x++)
 		{
-			xxx = cx + (x+x+1)*w/8;
-			yyy = cy + (y+y+1)*h/8;
-			zzz = (float)tab[y][3-x]/100.0;
+			xxx = cx + (x+x-3)*w/8;
+			yyy = cy - (y+y-3)*h/8;
+			zzz = (float)tab[y][x]/100.0;
 
 			carvecubie(win,
 				xxx, yyy, zzz,

@@ -72,8 +72,8 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* r
 			if(((x+y+32)%2) == 0)zzz = 0.0;
 			else zzz = 0.01;
 
-			xxx = cx + (x+x+1)*w/16;
-			yyy = cy + (y+y+1)*h/16;
+			xxx = cx + (x+x-7)*w/16;
+			yyy = cy - (y+y-7)*h/16;
 			carvecubie(win,
 				xxx, yyy, zzz,
 				w/32, 0.0, 0.0,

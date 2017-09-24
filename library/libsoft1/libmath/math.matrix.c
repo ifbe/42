@@ -41,21 +41,9 @@ void matrixtranspose(float* u)
 void matrixmultiply(float* u, float* v)
 {
 	int j;
-	float w[9];
-	for(j=0;j<9;j++)w[j] = u[j];
+	float w[16];
+	for(j=0;j<16;j++)w[j] = u[j];
 
-	u[0] = w[0]*v[0] + w[1]*v[3] + w[2]*v[6];
-	u[1] = w[0]*v[1] + w[1]*v[4] + w[2]*v[7];
-	u[2] = w[0]*v[2] + w[1]*v[5] + w[3]*v[8];
-
-	u[3] = w[3]*v[0] + w[4]*v[3] + w[5]*v[6];
-	u[4] = w[3]*v[1] + w[4]*v[4] + w[5]*v[7];
-	u[5] = w[3]*v[2] + w[4]*v[5] + w[5]*v[8];
-
-	u[6] = w[6]*v[0] + w[7]*v[3] + w[8]*v[6];
-	u[7] = w[6]*v[1] + w[7]*v[4] + w[8]*v[7];
-	u[8] = w[6]*v[2] + w[7]*v[5] + w[8]*v[8];
-/*
 	u[ 0] = w[ 0]*v[ 0] + w[ 1]*v[ 4] + w[ 2]*v[ 8] + w[ 3]*v[12];
 	u[ 1] = w[ 0]*v[ 1] + w[ 1]*v[ 5] + w[ 2]*v[ 9] + w[ 3]*v[13];
 	u[ 2] = w[ 0]*v[ 2] + w[ 1]*v[ 6] + w[ 2]*v[10] + w[ 3]*v[14];
@@ -75,8 +63,6 @@ void matrixmultiply(float* u, float* v)
 	u[13] = w[12]*v[ 1] + w[13]*v[ 5] + w[14]*v[ 9] + w[15]*v[13];
 	u[14] = w[12]*v[ 2] + w[13]*v[ 6] + w[14]*v[10] + w[15]*v[14];
 	u[15] = w[12]*v[ 3] + w[13]*v[ 7] + w[14]*v[11] + w[15]*v[15];
-
-*/
 }
 void matrixtransform(float* v, float* m)
 {
