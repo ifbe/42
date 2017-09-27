@@ -13,45 +13,20 @@ void carvecubie(struct arena* win,
 	float fx, float fy, float fz,	//height = |fvector|*2
 	float ux, float uy, float uz)	//upper = |uvector|*2
 {
-	u32 pcount = win->info[0];
-	u32 icount = win->info[1];
+	u32 icount = win->info[0];
+	u32 pcount = win->info[1];
+	u32 ncount = win->info[1];
 	void* buf = (void*)(win->buf);
 
-	float* point = buf + (pcount*12);
-	u16* index = buf + 0x100000 + (icount*2);
+	u16* index = buf + (icount*2);
+	float* vertex = buf + 0x100000 + (pcount*12);
+	float* normal = buf + 0x200000 + (ncount*12);
 
-	point[0] = cx - rx;
-	point[1] = cy - fy;
-	point[2] = cz - uz;
+	win->info[0] += 36;
+	win->info[1] += 8;
+	win->info[2] += 8;
 
-	point[3] = cx + rx;
-	point[4] = cy - fy;
-	point[5] = cz - uz;
-
-	point[6] = cx - rx;
-	point[7] = cy + fy;
-	point[8] = cz - uz;
-
-	point[9] = cx + rx;
-	point[10] = cy + fy;
-	point[11] = cz - uz;
-
-	point[12] = cx - rx;
-	point[13] = cy - fy;
-	point[14] = cz + uz;
-
-	point[15] = cx + rx;
-	point[16] = cy - fy;
-	point[17] = cz + uz;
-
-	point[18] = cx - rx;
-	point[19] = cy + fy;
-	point[20] = cz + uz;
-
-	point[21] = cx + rx;
-	point[22] = cy + fy;
-	point[23] = cz + uz;
-
+	//index
 	index[0] = pcount + 0;
 	index[1] = pcount + 1;
 	index[2] = pcount + 2;
@@ -94,8 +69,71 @@ void carvecubie(struct arena* win,
 	index[34] = pcount + 6;
 	index[35] = pcount + 7;
 
-	win->info[0] += 8;
-	win->info[1] += 36;
+	//vertex
+	vertex[0] = cx - rx;
+	vertex[1] = cy - fy;
+	vertex[2] = cz - uz;
+
+	vertex[3] = cx + rx;
+	vertex[4] = cy - fy;
+	vertex[5] = cz - uz;
+
+	vertex[6] = cx - rx;
+	vertex[7] = cy + fy;
+	vertex[8] = cz - uz;
+
+	vertex[9] = cx + rx;
+	vertex[10] = cy + fy;
+	vertex[11] = cz - uz;
+
+	vertex[12] = cx - rx;
+	vertex[13] = cy - fy;
+	vertex[14] = cz + uz;
+
+	vertex[15] = cx + rx;
+	vertex[16] = cy - fy;
+	vertex[17] = cz + uz;
+
+	vertex[18] = cx - rx;
+	vertex[19] = cy + fy;
+	vertex[20] = cz + uz;
+
+	vertex[21] = cx + rx;
+	vertex[22] = cy + fy;
+	vertex[23] = cz + uz;
+
+	//normal
+	normal[0] = -1.0;
+	normal[1] = -1.0;
+	normal[2] = -1.0;
+
+	normal[3] = 1.0;
+	normal[4] = -1.0;
+	normal[5] = -1.0;
+
+	normal[6] = -1.0;
+	normal[7] = 1.0;
+	normal[8] = -1.0;
+
+	normal[9] = 1.0;
+	normal[10] = 1.0;
+	normal[11] = -1.0;
+
+	normal[12] = -1.0;
+	normal[13] = -1.0;
+	normal[14] = 1.0;
+
+	normal[15] = 1.0;
+	normal[16] = -1.0;
+	normal[17] = 1.0;
+
+	normal[18] = -1.0;
+	normal[19] = 1.0;
+	normal[20] = 1.0;
+
+	normal[21] = 1.0;
+	normal[22] = 1.0;
+	normal[23] = 1.0;
 }
 
 

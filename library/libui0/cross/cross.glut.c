@@ -53,14 +53,9 @@ static GLuint axispositionhandle;
 static GLuint axiscolorhandle;
 //
 static GLuint shapevao;
-static GLuint shapepositionhandle;
 static GLuint shapeindexhandle;
-//
-static GLuint samplevao;
-static GLuint samplepositionhandle;
-static GLuint samplenormalhandle;
-static GLuint samplecolorhandle;
-static GLuint sampleindexhandle;
+static GLuint shapepositionhandle;
+static GLuint shapenormalhandle;
 //
 static float camera[3] = {1.0f, -2.0f, 1.0f};
 static float center[3] = {0.0f, 0.0f, 0.0f};
@@ -84,7 +79,7 @@ static GLfloat projmatrix[4*4] = {
 	0.0f, 0.0f, -1.0f, -1.0f,
 	0.0f, 0.0f, -0.2f, 0.0f
 };
-
+//
 float axispositiondata[] = {
 	-1000.0, 0.0, 0.0,
 	1000.0, 0.0, 0.0,
@@ -101,53 +96,6 @@ float axiscolordata[] = {
 	0.5, 0.0, 0.0,
 	1.0, 0.0, 0.0
 };
-
-float samplepositiondata[] = {
-	-0.5, -0.5, -0.5,
-	0.5, -0.5, -0.5,
-	0.5, 0.5, -0.5,
-	-0.5, 0.5, -0.5,
-	-0.5, -0.5, 0.5,
-	0.5, -0.5, 0.5,
-	0.5, 0.5, 0.5,
-	-0.5, 0.5, 0.5,
-};
-float samplenormaldata[] = {
-	0.0, 0.0, -1.0,
-	0.0, -1.0, 0.0,
-	1.0, 0.0, 0.0,
-	0.0, 0.0, 1.0,
-	-1.0, 0.0, 0.0,
-	0.0, 1.0, 0.0
-};
-float samplecolordata[] = {
-	0.0, 0.0, 0.0,
-	0.0, 0.0, 1.0,
-	0.0, 1.0, 0.0,
-	0.0, 1.0, 1.0,
-	1.0, 0.0, 0.0,
-	1.0, 0.0, 1.0,
-	1.0, 1.0, 0.0,
-	1.0, 1.0, 1.0
-};
-unsigned short sampleindexdata[] = {
-	0, 1, 2, 3,
-	0, 1, 5, 4,
-	5, 6, 2, 1,
-	5, 6, 7, 4,
-	3, 7, 4, 0,
-	3, 7, 6, 2
-};
-//
-static float camera_pitch = PI/4;
-static float camera_yaw = -PI/2;
-static float camera_roll = 0.0;
-static float camera_zoom = 2.0;
-//
-static float object_pitch = 0.0;
-static float object_yaw = 0.0;
-static float object_roll = 0.0;
-static float object_zoom = 1.0;
 
 
 
@@ -167,7 +115,7 @@ char vCode[] = {
 		"vec3 N = normalize(normal);"
 		"vec3 S = normalize(vec3(diffuseplace - position));"
 		"vec3 ddd = diffusecolor * max(dot(S, N), 0.0);\n"
-		"vertexcolor = vec3(0.5, 0.5, 0.5) + ambientcolor;\n"
+		"vertexcolor = ambientcolor + ddd;\n"
 		"gl_Position = mvpmatrix * vec4(position,1.0);\n"
 	"}\n"
 };
@@ -295,30 +243,9 @@ void initShader()
 }
 void initVBO()  
 {
-	void* shapepositiondata = (void*)(src->buf);
-	void* shapeindexdata = (void*)(src->buf)+0x100000;
-
-	//
-	glGenTextures(1, &texturehandle);
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	//shape vao
-    glGenVertexArrays(1,&shapevao);
-    glBindVertexArray(shapevao);
-
-    //shape position
-    glGenBuffers(1, &shapepositionhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapepositiondata, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-	//shape index
-    glGenBuffers(1, &shapeindexhandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata, GL_STATIC_DRAW);
+	void* shapeindexdata = (void*)(src->buf);
+	void* shapepositiondata = (void*)(src->buf)+0x100000;
+	void* shapenormaldata = (void*)(src->buf)+0x200000;
 
 
 
@@ -344,35 +271,37 @@ void initVBO()
 
 
 
-	//sample vao
-    glGenVertexArrays(1,&samplevao);
-    glBindVertexArray(samplevao);
+	//shape vao
+    glGenVertexArrays(1,&shapevao);
+    glBindVertexArray(shapevao);
 
-    //sample position
-    glGenBuffers(1, &samplepositionhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, samplepositionhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplepositiondata, GL_STATIC_DRAW);
+	//shape index
+    glGenBuffers(1, &shapeindexhandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata, GL_STATIC_DRAW);
+
+    //shape position
+    glGenBuffers(1, &shapepositionhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapepositiondata, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    //sample common
-    glGenBuffers(1, &samplenormalhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, samplenormalhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplenormaldata, GL_STATIC_DRAW);
+	//shape normal
+    glGenBuffers(1, &shapenormalhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapenormaldata, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
-    //sample color
-    glGenBuffers(1, &samplecolorhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, samplecolorhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*8, samplecolordata, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
 
-    //sample index
-    glGenBuffers(1, &sampleindexhandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sampleindexhandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(short)*4*6, sampleindexdata, GL_STATIC_DRAW);
+
+
+	//
+	glGenTextures(1, &texturehandle);
+	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 
@@ -468,9 +397,9 @@ void fixmatrix()
 }
 void fixlight()
 {
-	GLfloat ambientcolor[3] = {0.1f, 0.1f, 0.1f};
-	GLfloat diffuseplace[3] = {0.1f, 0.2f, 5.0f};
-	GLfloat diffusecolor[3] = {0.8f, 0.0f, 0.0f};
+	GLfloat ambientcolor[3] = {0.2f, 0.2f, 0.2f};
+	GLfloat diffusecolor[3] = {0.8f, 0.8f, 0.8f};
+	GLfloat diffuseplace[3] = {0.0f, 0.0f, 100.0f};
 
 	GLint ac = glGetUniformLocation(programHandle, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -498,12 +427,7 @@ void callback_display()
 	if(queuehead == queuetail)
 	{
 		glBindVertexArray(shapevao);
-		glDrawElements(GL_TRIANGLES, src->info[1], GL_UNSIGNED_SHORT, 0);
-	}
-	else
-	{
-		glBindVertexArray(samplevao);
-		glDrawElements(GL_QUADS, 4*6, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_TRIANGLES, src->info[0], GL_UNSIGNED_SHORT, 0);
 	}
 
 	//write
@@ -512,20 +436,25 @@ void callback_display()
 }
 void callback_idle()
 {
-	u64 pcount = src->info[0];
-	u64 icount = src->info[1];
-	float* vbobuf = (void*)(src->buf);
-	u16* ibobuf = (void*)(src->buf)+0x100000;
+	u64 icount = src->info[0];
+	u64 pcount = src->info[1];
+	u64 ncount = src->info[2];
+	u16* index = (void*)(src->buf);
+	float* vertex = (void*)(src->buf)+0x100000;
+	float* normal = (void*)(src->buf)+0x200000;
 
 	if(queuehead != queuetail)
 	{
 		glBindVertexArray(shapevao);
 
-		glBindBuffer(           GL_ARRAY_BUFFER, shapepositionhandle);
-		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*pcount, vbobuf);
-
 		glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, ibobuf);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, index);
+
+		glBindBuffer(           GL_ARRAY_BUFFER, shapepositionhandle);
+		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*pcount, vertex);
+
+		glBindBuffer(           GL_ARRAY_BUFFER, shapenormalhandle);
+		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*ncount, normal);
 
 		queuetail++;
 		glutPostRedisplay();
@@ -589,8 +518,7 @@ void callback_mouse(int button, int state, int x, int y)
 			camera[1] = 0.9*ty + 0.1*center[1];
 			camera[2] = 0.9*tz + 0.1*center[2];
 
-			camera_zoom *= 0.95;
-
+			//camera_zoom *= 0.95;
 			glutPostRedisplay();
 		}
 		if(button == 4)	//wheel_down
@@ -599,11 +527,9 @@ void callback_mouse(int button, int state, int x, int y)
 			camera[1] = 1.1*ty - 0.1*center[1];
 			camera[2] = 1.1*tz - 0.1*center[2];
 
-			camera_zoom *= 1.05263158;
-
+			//camera_zoom *= 1.05263158;
 			glutPostRedisplay();
 		}
-		printf("camera_zoom=%f\n",camera_zoom);
 	}
 }
 void callback_move(int x,int y)
@@ -615,19 +541,19 @@ void callback_move(int x,int y)
 		camera[0] = v[0]*cosine(0.05f) + v[1]*sine(0.05f);
 		camera[1] = -v[0]*sine(0.05f) + v[1]*cosine(0.05f);
 
-		camera_yaw += PI/90;
+		//camera_yaw += PI/90;
 	}
 	else if(x<last_x)
 	{
 		camera[0] = v[0]*cosine(0.05f) - v[1]*sine(0.05f);
 		camera[1] = v[0]*sine(0.05f) + v[1]*cosine(0.05f);
 
-		camera_yaw -= PI/90;
+		//camera_yaw -= PI/90;
 	}
 
 	if(y > last_y)
 	{
-		if(camera_pitch < PI*44/90)camera_pitch += PI/90;
+		//if(camera_pitch < PI*44/90)camera_pitch += PI/90;
 		if(vectorcosine(v, t) < 0.9998)
 		{
 			vectorcross(v, t);
@@ -645,7 +571,7 @@ void callback_move(int x,int y)
 	}
 	else if(y<last_y)
 	{
-		if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
+		//if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
 		if(vectorcosine(v, t) > -0.9998)
 		{
 			vectorcross(v, t);
@@ -707,11 +633,6 @@ void* uievent(struct window* p)
 	//exit
 	glDeleteBuffers(1, &axispositionhandle);
 	glDeleteBuffers(1, &axiscolorhandle);
-
-	glDeleteBuffers(1, &samplepositionhandle);
-	glDeleteBuffers(1, &samplenormalhandle);
-	glDeleteBuffers(1, &samplecolorhandle);
-	glDeleteBuffers(1, &sampleindexhandle);
 }
 void windowread()
 {
@@ -757,6 +678,16 @@ void windowcreate()
 
 
 /*
+//
+static float camera_pitch = PI/4;
+static float camera_yaw = -PI/2;
+static float camera_roll = 0.0;
+static float camera_zoom = 2.0;
+//
+static float object_pitch = 0.0;
+static float object_yaw = 0.0;
+static float object_roll = 0.0;
+static float object_zoom = 1.0;
 void callback_display_stl()
 {
 	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
