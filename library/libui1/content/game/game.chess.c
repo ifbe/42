@@ -60,12 +60,11 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* r
 {
 	int x,y;
 	float xxx, yyy, zzz;
-	xxx = (float)(rel->cx) - 32768.0;
-	yyy = (float)(rel->cy) - 32768.0;
-	float cx = (win->w) * xxx / 65536.0 / 1000.0;
-	float cy = (win->h) * xxx / 65536.0 / 1000.0;
-	float w = (win->w) * (rel->wantw) / 65536.0 / 1000.0;
-	float h = (win->h) * (rel->wanth) / 65536.0 / 1000.0;
+
+	float cx = (float)(rel->cx) / 65536.0 - 0.5;
+	float cy = (float)(rel->cy) / 65536.0 - 0.5;
+	float w = (float)(rel->wantw) / 65536.0;
+	float h = (float)(rel->wanth) / 65536.0;
 
 	for(y=0;y<8;y++)
 	{
