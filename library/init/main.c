@@ -9,9 +9,9 @@ int actorwrite(void* event);
 int arenaread();
 int arenawrite();
 //libsoft1
-void network_explain(void*);
-void sound_explain(void*);
-void vision_explain(void*);
+int network_explain(void*);
+int sound_explain(void*);
+int vision_explain(void*);
 //libsoft0
 u64 gettime();
 void sleep_us(int);
@@ -92,17 +92,20 @@ again:
 		if(((ev->what)&0xff) == 'n')
 		{
 			//network rawdata -> my event
-			network_explain(ev);
+			ret = network_explain(ev);
+			if(ret != 42)goto again;
 		}
 		else if(((ev->what)&0xff) == 's')
 		{
 			//sound rawdata -> my event
-			sound_explain(ev);
+			ret = sound_explain(ev);
+			if(ret != 42)goto again;
 		}
 		else if(((ev->what)&0xff) == 'v')
 		{
 			//video rawdata -> my event
-			vision_explain(ev);
+			ret = vision_explain(ev);
+			if(ret != 42)goto again;
 		}
 		if(ev->what == 0)goto again;
 

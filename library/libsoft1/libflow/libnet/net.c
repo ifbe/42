@@ -304,7 +304,7 @@ protocol:
 
 	return type;
 }
-void network_explain(u64* p)
+int network_explain(u64* p)
 {
 	int len;
 	u64 type_sock;
@@ -329,25 +329,24 @@ void network_explain(u64* p)
 		if(type_sock == 'B')
 		{
 			netmgr_bt(where, datahome, len);
-			goto pass;
+			return 0;
 		}
 		//wifi
 		if(type_sock == 'W')
 		{
 			netmgr_wifi(where, datahome, len);
-			goto pass;
+			return 0;
 		}
 */
 		//raw
 		if(type_sock == 'R')
 		{
 			len = readsocket(where, datahome, 0, 0x100000);
-			if(len == 0)goto pass;		//sticky
+			if(len == 0)return 0;		//sticky
 			if(len < 0)goto fail;		//wrong
-			datahome[len] = 0;
 
 			netmgr_eth(where, datahome, len);
-			goto pass;
+			return 0;
 		}
 
 		//udp
@@ -356,7 +355,7 @@ void network_explain(u64* p)
 		while(1)
 		{
 			len = readsocket(where, datahome, 0, 0x100000);
-			if(len <= 0)goto pass;		//sticky
+			if(len <= 0)return 0;		//sticky
 
 			netmgr_udp(where, datahome, len);
 		}
@@ -364,9 +363,8 @@ void network_explain(u64* p)
 
 		//read socket
 		len = readsocket(where, datahome, 0, 0x100000);
-		if(len == 0)goto pass;		//sticky
+		if(len == 0)return 0;		//sticky
 		if(len < 0)goto fail;		//wrong
-		datahome[len] = 0;
 
 		//serve socket
 		what = netmgr_tcp(where, datahome, len);
@@ -382,6 +380,7 @@ void network_explain(u64* p)
 			p[1] = obj[where].type_data;
 			//p[2]	//not change
 			//p[3]	//not change
+			return 42;
 		}
 		}
 		else if(what == http)
@@ -390,13 +389,11 @@ void network_explain(u64* p)
 			p[1] = http;
 		}
 	}
-
-pass:
-	return;
+	return 0;
 
 fail:
 	stopsocket(where);
-	return;
+	return 0;
 }
 
 

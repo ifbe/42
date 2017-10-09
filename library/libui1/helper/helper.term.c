@@ -2,6 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//
+int netmgr_write(void*);
+//
 int arenastart(void*);
 int arenastop(void*);
 int actorlist(void*);
@@ -33,8 +36,7 @@ void term_read(u8* input)
 		return;
 	}
 	else if(ncmp(input, "ls", 2) == 0)actorlist(0);
-	else if(ncmp(input, "cd", 2) == 0)actorlist(0);
-	else if(ncmp(input, "new", 3) == 0)arenastart(0);
+	else if(ncmp(input, "net ", 4) == 0)netmgr_write(input+4);
 
 	//command prompt
 	say("[void]");
