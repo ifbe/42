@@ -10,15 +10,11 @@ void actordelete();
 void arenacreate(char*,char*);
 void arenadelete();
 //libsoft
-void sleep_us(int);
-u64 gettime();
 void arterycreate(char*,char*);
 void arterydelete();
 void systemcreate(char*,char*);
 void systemdelete();
 //libhard
-int snatch(void*);
-int release(void*);
 void bodycreate(char*,char*);
 void bodydelete();
 void drivercreate(char*,char*);
@@ -36,12 +32,13 @@ void say(void*, ...);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //raw memory
+static int status = 0;
 static char* rawuniverse=0;	//unaligned
 static char* universe=0;	//aligned
 //processed memory
-static char*     basic=0;		//4m
-static char*      body=0;		//4m
-static char*    memory=0;		//4m
+static char* basic=0;		//4m
+static char* body=0;		//4m
+static char* memory=0;		//4m
 static char* actor=0;		//4m
 
 
@@ -107,8 +104,8 @@ void createuniverse()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 __attribute__((destructor)) void death()
 {
-	//
-	printf("\n");
+	//to avoid second call
+	if(status == 0xdead)return;
 
 	//libui
 	if(actor != 0)
@@ -147,9 +144,10 @@ __attribute__((destructor)) void death()
 	{
 		free(rawuniverse);
 		rawuniverse=0;
-
-		exit(-1);
 	}
+
+	//
+	status = 0xdead;
 }
 void* birth()
 {

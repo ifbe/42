@@ -12,13 +12,16 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //
+int term_read(void*);
+int term_write(void*);
+//
 void* connect_read();
 void* connect_write(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo);
-int term_write(void*);
-void backgroundcolor(void*, u32);
 //
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
+//
+void backgroundcolor(void*, u32);
 
 
 
@@ -153,20 +156,21 @@ int actorlist(u8* p)
 		name = 0;
 		for(j=0;j<0x100;j++)
 		{
-			if(actor[j].name == 0)
+			if(actor[j].type != type)
+			{
+				if(type != 0)say("\n");
+				say("%s:\n",&actor[j].type);
+				ret=0;
+			}
+
+			name = actor[j].name;
+			if(name == 0)
 			{
 				if((ret%8)!=0)say("\n");
 				break;
 			}
 
-			if(actor[j].type != type)
-			{
-				say("\n%s:\n",&actor[j].type);
-				ret=0;
-			}
-			
 			type = actor[j].type;
-			name = actor[j].name;
 			if((ret>0)&&(ret%8==0))say("\n");
 
 			say("	%s", &name);
@@ -274,6 +278,8 @@ void actorcreate(u8* type, u8* addr)
 	//
 	actorstart(&arena[1], &actor[1]);
 	actorstart(&arena[1], &actor[0]);
+
+	term_read("\n");
 	//say("[c,f):createed actor\n");
 }
 void actordelete()
