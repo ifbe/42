@@ -65,7 +65,7 @@ void explainindexnode()
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%.2x ",*(u8*)(datahome+offset+2+i));
+			say("%02x ",*(u8*)(datahome+offset+2+i));
 		}
 		u32 child=BSWAP_32(*(u32*)(datahome+offset+2+keylen));
 		say(",child=%x\n",child);
@@ -129,7 +129,7 @@ void explainleafnode()
 		int i;
 		for(i=0;i<8;i++)
 		{
-			say("%.2x ",*(u8*)(datahome+offset+2+keylen+i));
+			say("%02x ",*(u8*)(datahome+offset+2+keylen+i));
 		}
 		say("\n");
 

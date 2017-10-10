@@ -93,6 +93,7 @@ int actorread()
 }
 int actorwrite(struct event* ev)
 {
+	u64 temp;
 	struct arena* window;
 	struct actor* actor;		//2048?
 	struct style* st;			//style
@@ -107,11 +108,11 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
-	//"no window"
-	window = (void*)(ev->where);
-	if(window == 0)return 0;
+	temp = ev->where;
+	if(temp < 0xffff)return 0;
 
-	//"cli window"
+	//
+	window = (void*)temp;
 	if(window->fmt == hex32('c','l','i',0))
 	{
 		if(ev->what == hex32('c','h','a','r'))

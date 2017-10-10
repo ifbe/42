@@ -51,8 +51,8 @@ static void qrcode_read_html(struct arena* win)
 	u32 color;
 	char* p = (char*)(win->buf);
 
-	p += fmt(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
-	p += fmt(
+	p += mysnprintf(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
+	p += mysnprintf(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
@@ -71,7 +71,7 @@ static void qrcode_read_html(struct arena* win)
 		{
 			if( databuf[(y*sidelength)+x] != 0 )continue;
 
-			p += fmt(
+			p += mysnprintf(
 				p, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%dpx;"
@@ -82,7 +82,7 @@ static void qrcode_read_html(struct arena* win)
 			);
 		}
 	}
-	p += fmt(p, 99, "</div>");
+	p += mysnprintf(p, 99, "</div>");
 }
 static void qrcode_read_text(struct arena* win)
 {

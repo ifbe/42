@@ -110,7 +110,7 @@ int systemi2c_list(char* towhere)
 			{
 				ret=systemi2c_read((y*16)+x,0,&ch,1);
 
-				if(ret>0)printf("%.2x ",x+(y*16));
+				if(ret>0)printf("%02x ",x+(y*16));
 				else printf("-- ");
 			}
 			printf("\n");
@@ -127,7 +127,7 @@ int systemi2c_list(char* towhere)
 			{
 				ret=systemi2c_read(where[1],(y*16)+x,&ch,1);
 
-				if(ret>0)printf("%.2x ",ch);
+				if(ret>0)printf("%02x ",ch);
 				else printf("-- ");
 			}
 			printf("\n");

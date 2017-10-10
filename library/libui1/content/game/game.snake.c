@@ -106,7 +106,7 @@ void snake_read_text(struct arena* win, struct actor* act, struct style* rel)
 
 static int htmlcubie(char* p, u32 color, int x, int y)
 {
-	return fmt(
+	return mysnprintf(
 		p, 0x1000,
 		"<div class=\"rect\" style=\""
 		"left:%.2f%;"
@@ -123,11 +123,11 @@ void snake_read_html(struct arena* win, struct actor* act, struct style* rel)
 
 	if(die == 1)
 	{
-		fmt(p, 0x1000, "boooooooooooooooom");
+		mysnprintf(p, 0x1000, "boooooooooooooooom");
 		return;
 	}
 
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"

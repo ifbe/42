@@ -31,7 +31,7 @@ static int testusb_probe(struct usb_interface* interface,const struct usb_device
 	printk("devicedesc=");
 	for(i=0;i<p[0];i++)
 	{
-		printk("%.2x ",p[i]);
+		printk("%02x ",p[i]);
 	}
 	printk("\n");
 
@@ -47,7 +47,7 @@ static int testusb_probe(struct usb_interface* interface,const struct usb_device
 	printk("configdesc=");
 	for(i=0;i<p[0];i++)
 	{
-		printk("%.2x ",p[i]);
+		printk("%02x ",p[i]);
 	}
 	printk("\n");
 
@@ -63,7 +63,7 @@ static int testusb_probe(struct usb_interface* interface,const struct usb_device
 	printk("ifdesc=");
 	for(i=0;i<p[0];i++)
 	{
-		printk("%.2x ",p[i]);
+		printk("%02x ",p[i]);
 	}
 	printk("\n");
 
@@ -79,7 +79,7 @@ static int testusb_probe(struct usb_interface* interface,const struct usb_device
 	printk("ep0desc=");
 	for(i=0;i<p[0];i++)
 	{
-		printk("%.2x ",p[i]);
+		printk("%02x ",p[i]);
 	}
 	printk("\n");
 

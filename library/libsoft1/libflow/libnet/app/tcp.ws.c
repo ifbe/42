@@ -19,7 +19,7 @@ int cmp(void*, void*);
 u32 getrandom();
 u64 gettime();
 //
-int fmt(void*, int, void*, ...);
+int mysnprintf(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -28,22 +28,22 @@ void say(void*, ...);
 
 struct object
 {
-        //[0x00,0x0f]
-        u64 type_sock;  //raw, bt, udp, tcp?
-        u64 stage0;
-        u64 type_road;  //ssh, tls?
-        u64 stage1;
-        u64 type_app;   //http2, ws, rdp, vnc?
-        u64 stage2;
-        u64 type_data;  //html, rgb?
-        u64 stage3;
+	//[0x00,0x0f]
+	u64 type_sock;  //raw, bt, udp, tcp?
+	u64 stage0;
+	u64 type_road;  //ssh, tls?
+	u64 stage1;
+	u64 type_app;   //http2, ws, rdp, vnc?
+	u64 stage2;
+	u64 type_data;  //html, rgb?
+	u64 stage3;
 
-        //[0x40,0x7f]
-        u8 self[0x20];
-        u8 peer[0x20];
+	//[0x40,0x7f]
+	u8 self[0x20];
+	u8 peer[0x20];
 
-        //[0x80,0xff]
-        u8 data[0x80];
+	//[0x80,0xff]
+	u8 data[0x80];
 };
 
 
@@ -63,14 +63,14 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 
 	//在Sec_WebSocket_Key尾巴上添加一个固定的字符串
 	j = findtail(Sec_WebSocket_Key);
-	j += fmt(Sec_WebSocket_Key + j, 256,
+	j += mysnprintf(Sec_WebSocket_Key + j, 256,
 		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
 	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
 
 	//对这个字符串做一次sha1
 	sha1sum(sha1buf, Sec_WebSocket_Key, j);
 	say("sha1=");
-	for(j=0;j<20;j++)say("%.2x", sha1buf[j]);
+	for(j=0;j<20;j++)say("%02x", sha1buf[j]);
 	say("\n");
 
 	//把sha1的结果以base64格式编码
@@ -78,7 +78,7 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 	say("base64=%s\n", base64buf);
 
 	//把base64的结果作为accept密钥
-	return fmt(buf, 256,
+	return mysnprintf(buf, 256,
 		"HTTP/1.1 101 Switching Protocols\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"
@@ -208,7 +208,7 @@ int websocket_read(u8* buf, int len)
 
 int websocket_write_handshake(u8* buf, int len)
 {
-	return fmt(buf, len,
+	return mysnprintf(buf, len,
 		"GET / HTTP/1.1\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"

@@ -160,7 +160,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	int (*table)[4] = (void*)buffer + num*16*4;
 	u8* buf = (u8*)(win->buf);
 
-	buf += fmt(
+	buf += mysnprintf(
 		buf, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
@@ -180,7 +180,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 			if(table[y][x] == 0)continue;
 
 			color = the2048_color(table[y][x]);
-			buf += fmt(
+			buf += mysnprintf(
 				buf, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%d%%;"

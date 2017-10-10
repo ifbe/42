@@ -87,7 +87,7 @@ static void tetris_read_pixel(struct arena* win)
 
 static int htmlcubie(char* p, int x, int y)
 {
-	return fmt(
+	return mysnprintf(
 		p, 0x1000,
 		"<div class=\"rect\" style=\""
 		"left:%.2f%;"
@@ -101,7 +101,7 @@ static void tetris_read_html(struct arena* win)
 	int x,y;
 	char* p = (char*)(win->buf);
 
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"

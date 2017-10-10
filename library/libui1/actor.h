@@ -247,6 +247,6 @@ int writefile(void*, void*, u64, u64);
 double squareroot(double);
 //libboot1
 void eventwrite(u64,u64,u64,u64);
+int mysnprintf(void*, int, void*, ...);
 int printmemory(void*, int);
-int fmt(void*, int, void*, ...);
 int say(void*, ...);

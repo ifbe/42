@@ -218,7 +218,7 @@ return;
 	y = (pointeroffset / byteperline);
 
 	//background
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<style>"
 		".bg{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;background:#abcdef;color:#000;}",
@@ -228,7 +228,7 @@ return;
 	);
 
 	//table
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		".tb{position:absolute;left:10%;top:10%;width:80%;height:80%;border-collapse:collapse;table-layout:fixed;}"
 		".tb td{border:solid #000 1px;text-align:center;}"
@@ -237,7 +237,7 @@ return;
 	//foreground
 	if(x>byteperline-9)x-=9;
 	if(y>lineperarena-5)y-=5;
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		".fg1{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
 		".fg2{position:absolute;width:%02f%;height:%02f%;left:%02f%;top:%02f%;border:1px solid #000;background:#fedcba;color:#000;}"
@@ -251,7 +251,7 @@ return;
 	);
 
 	//bg, table
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<div class=\"bg\"></div>"
 		"<table class=\"tb\">"
@@ -260,12 +260,12 @@ return;
 	{
 		for(y=0;y<lineperarena;y++)
 		{
-			p += fmt(p, 0x1000, "<tr>");
+			p += mysnprintf(p, 0x1000, "<tr>");
 
 			for(x=0;x<byteperline;x++)
 			{
 				ch = databuf[arenaoffset + y*byteperline + x];
-				p += fmt(
+				p += mysnprintf(
 					p, 0x1000,
 					"<td>%02x</td>", ch
 				);
@@ -277,7 +277,7 @@ return;
 	{
 		for(y=0;y<lineperarena;y++)
 		{
-			p += fmt(p, 0x1000, "<tr>");
+			p += mysnprintf(p, 0x1000, "<tr>");
 //arenaoffset + y*byteperline
 
 			for(x=0;x<byteperline;x++)
@@ -285,19 +285,19 @@ return;
 				ch = databuf[arenaoffset + y*byteperline + x];
 				if((ch > 0x1f) && (ch < 0x7f))
 				{
-					p += fmt(p, 0x1000, "<td>%c</td>", ch);
+					p += mysnprintf(p, 0x1000, "<td>%c</td>", ch);
 				}
 				else
 				{
-					p += fmt(p, 0x1000, "<td>.</td>");
+					p += mysnprintf(p, 0x1000, "<td>.</td>");
 				}
 			}
 		}
 	}
-	p += fmt(p, 0x1000, "</table>");
+	p += mysnprintf(p, 0x1000, "</table>");
 
 	//fg
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<div class=\"fg1\">"
 		"buf:<br />"

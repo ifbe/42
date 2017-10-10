@@ -67,7 +67,7 @@ int stopsocket(u64);
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
 //
-int fmt(void*, int, void*, ...);
+int mysnprintf(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -435,7 +435,7 @@ int netmgr_write(u8* p)
 
 
 	//
-	if(addr[0] == 0)fmt(addr, 10, "0.0.0.0");
+	if(addr[0] == 0)mysnprintf(addr, 10, "0.0.0.0");
 	if(port == 0)port = 2222;
 	//say("%s:%d\n",addr, port);
 

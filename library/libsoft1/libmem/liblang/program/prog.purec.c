@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int fmt(void*, int, void*, ...);
+int mysnprintf(void*, int, void*, ...);
 void say(void*, ...);
 
 
@@ -190,7 +190,7 @@ static void printprophet(u8* p)
 	if(infunc==0)
 	{
 		count = copyname(p , strbuf);
-		count += fmt(
+		count += mysnprintf(
 			strbuf+count,
 			0x80,
 			"	@%d\n{\n",

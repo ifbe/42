@@ -39,8 +39,7 @@ int lowlevel_input(char* buf)
 }
 void lowlevel_output(char* buf, int len)
 {
-	int j;
-	for(j=0;j<len;j++)printf("%c",buf[j]);
+	printf("%.*s", len, buf);
 }
 void deleteserial()
 {

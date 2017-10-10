@@ -58,7 +58,7 @@ static int htmlcircle(char* p, int x, int y)
 	else return 0;
 
 	hanzi = char2hanzi(data[y][x]);
-	return fmt(
+	return mysnprintf(
 		p, 0x1000,
 		"<div class=\"circle\" style=\""
 		"left:%d%;"
@@ -76,7 +76,7 @@ static void xiangqi_read_html(struct arena* win)
 	char* p = (char*)(win->buf);
 	return;
 
-	p += fmt(
+	p += mysnprintf(
 		p, 0x1000,
 		"<style type=\"text/css\">"
 		".circle{"
@@ -139,7 +139,7 @@ static void xiangqi_read_text(struct arena* win)
 			}
 
 			//character
-			if(q != 0)fmt(p+ret, 4, "%s", q);
+			if(q != 0)mysnprintf(p+ret, 4, "%s", q);
 
 		}
 	}

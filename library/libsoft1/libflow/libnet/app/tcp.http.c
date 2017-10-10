@@ -14,7 +14,7 @@ int writefile(u64 name, void* mem, u64 off, u64 len);
 int readsocket(int fd, void* mem, int off, int len);
 int writesocket(int fd, void* mem, int off, int len);
 //
-int fmt(void*, int, void*, ...);
+int mysnprintf(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -52,7 +52,7 @@ int http_write_request(u8* buf, int len, char* url, char* host)
 {
 	if((url==0)|(url[0]==0)){url="/";}
 
-	return fmt(buf, 100,
+	return mysnprintf(buf, 100,
 		"GET %s HTTP/1.1\r\n"
 		"Host: %s\r\n"
 		"Range: bytes=%d-%d\r\n"
@@ -144,7 +144,7 @@ int check_http(struct object* obj, int fd, u8* buf, int len)
 //say("len=%d\n",len);
 
 	//read head	"Content-Length: %d\r\n"
-	ret = fmt(buf+len, 0x100000-len,
+	ret = mysnprintf(buf+len, 0x100000-len,
 		"HTTP/1.1 200 OK\r\n"
 		"Content-type: text/html\r\n"
 		"\r\n"

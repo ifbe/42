@@ -10,7 +10,7 @@ int cmp(void*, void*);
 int readsocket(int fd, u8* addr, int off, int len);
 int writesocket(int fd, u8* addr, int off, int len);
 //
-int fmt(void*, int, void*, ...);
+int mysnprintf(void*, int, void*, ...);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -263,7 +263,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off = 0x16;
 
 	//key_exchange_algorithm
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"diffie-hellman-group-exchange-sha256,"
 		"diffie-hellman-group-exchange-sha1"
 	);
@@ -273,7 +273,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//server_host_key_algorithm
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"ssh-rsa,"
 		"rsa-sha2-256,"
 		"rsa-sha2-512"
@@ -284,7 +284,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//encryption_algorithms_client_to_server
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
@@ -295,7 +295,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//encryption_algorithms_server_to_client
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
 		"3des-cbc"
@@ -306,7 +306,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//mac_algorithms_client_to_server
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
@@ -317,7 +317,7 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//mac_algorithms_server_to_client
-	j = fmt(buf+off+4, 999,
+	j = mysnprintf(buf+off+4, 999,
 		"hmac-sha1,"
 		"hmac-sha2-256,"
 		"hmac-sha2-512"
@@ -328,14 +328,14 @@ static int secureshell_write_0x14(u8* buf, int len)
 	off += 4 + j;
 
 	//compression_algorithms_client_to_server
-	j = fmt(buf+off+4, 999, "none");
+	j = mysnprintf(buf+off+4, 999, "none");
 	buf[off+0] = buf[off+1] = 0;
 	buf[off+2] = (j>>8)&0xff;
 	buf[off+3] = j&0xff;
 	off += 4 + j;
 
 	//compression_algorithms_server_to_client
-	j = fmt(buf+off+4, 999, "none");
+	j = mysnprintf(buf+off+4, 999, "none");
 	buf[off+0] = buf[off+1] = 0;
 	buf[off+2] = (j>>8)&0xff;
 	buf[off+3] = j&0xff;
