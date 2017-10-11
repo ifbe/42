@@ -130,7 +130,7 @@ struct actor
 
 	//[70,77]:输出
 	union{
-		int (*read)(void* win, void* act, void* rel);
+		int (*read)(void* win, void* act, void* style, void* player);
 		char padding6[8];
 	};
 
@@ -145,41 +145,19 @@ struct actor
 };
 struct relation
 {
-	//[00,1f]: the pin
-	u64 pininfo;
-	u64 destiny;
-	union{
-		struct relation* samepinprevchip;
-		struct relation* samepinprevfunc;
-		struct relation* samepinprevwin;
-		struct relation* samepinprevact;
-		char padding2[8];
-	};
-	union{
-		struct relation* samepinnextchip;
-		struct relation* samepinnextfunc;
-		struct relation* samepinnextwin;
-		struct relation* samepinnextact;
-		char padding3[8];
-	};
+	//[0x00,0x1f]
+	u64 destchip;
+	u64 destfoot;
+	u64 desttype;
+	int samepinprevchip;
+	int samepinnextchip;
 
-	//[20,3f]: the chip
-	u64 chipinfo;
-	u64 footinfo;		//style
-	union{
-		struct relation* samechipprevpin;
-		struct relation* samefuncprevpin;
-		struct relation* samewinprevpin;
-		struct relation* sameactprevpin;
-		char padding6[8];
-	};
-	union{
-		struct relation* samechipnextpin;
-		struct relation* samefuncnextpin;
-		struct relation* samewinnextpin;
-		struct relation* sameactnextpin;
-		char padding7[8];
-	};
+	//0x20,0x3f
+	u64 selfchip;
+	u64 selffoot;
+	u64 selftype;
+	int samechipprevpin;
+	int samechipnextpin;
 };
 struct style
 {

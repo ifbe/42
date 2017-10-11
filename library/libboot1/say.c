@@ -52,13 +52,13 @@ u64 fixdata(u64 data, int val)
 	}
 	return data&mask;
 }
-int myvsnprintf(char* buf, int len, char* fmt, va_list arg)
+int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 {
-	int u, v;
-	int src, dst, t;
-	int flag1, flag2, lval, rval;	//%-08.7s
+	int j, k;
+	int src, dst, tmp;
+	int flag1, flag2, lval, rval;	//%-08.7s  %08llx
 	u64 _x;
-    char* _s;
+    u8* _s;
     double _f;
 
 	src = dst = 0;
@@ -76,8 +76,8 @@ int myvsnprintf(char* buf, int len, char* fmt, va_list arg)
 		}
 
 		//%%
-		t = src+1;
-		if(fmt[t] == '%')
+		tmp = src+1;
+		if(fmt[tmp] == '%')
 		{
 			buf[dst] = '%';
 
@@ -87,104 +87,104 @@ int myvsnprintf(char* buf, int len, char* fmt, va_list arg)
 		}
 
 		//flag1: '-', '+', '#'
-		flag1 = fmt[t];
-		if( (flag1=='-') | (flag1=='+') | (flag1=='#') )t++;
+		flag1 = fmt[tmp];
+		if( (flag1=='-') | (flag1=='+') | (flag1=='#') )tmp++;
 		else flag1 = 0;
 
 		//flag2: '0'
-		flag2 = fmt[t];
-		if(flag2 == '0')t++;
+		flag2 = fmt[tmp];
+		if(flag2 == '0')tmp++;
 		else flag2 = 0;
 
 		//lval
 		lval = 0;
-		if(fmt[t] == '*')
+		if(fmt[tmp] == '*')
 		{
 			lval = va_arg(arg, int);
-			t++;
+			tmp++;
 		}
 		else
 		{
-			while( (fmt[t] >= 0x30) && (fmt[t] <= 0x39) )
+			while( (fmt[tmp] >= 0x30) && (fmt[tmp] <= 0x39) )
 			{
-				lval = (lval*10) + (fmt[t]-0x30);
-				t++;
+				lval = (lval*10) + (fmt[tmp]-0x30);
+				tmp++;
 			}
 		}
 
 		//'.'
-		if(fmt[t] == '.')t++;
+		if(fmt[tmp] == '.')tmp++;
 
 		//rval
 		rval = 0;
-		if(fmt[t] == '*')
+		if(fmt[tmp] == '*')
 		{
 			rval = va_arg(arg, int);
-			t++;
+			tmp++;
 		}
 		else
 		{
-			while( (fmt[t] >= 0x30) && (fmt[t] <= 0x39) )
+			while( (fmt[tmp] >= 0x30) && (fmt[tmp] <= 0x39) )
 			{
-				rval = (rval*10) + (fmt[t]-0x30);
-				t++;
+				rval = (rval*10) + (fmt[tmp]-0x30);
+				tmp++;
 			}
 		}
 
 		//type
-		if(fmt[t] == 'd')
+		if(fmt[tmp] == 'd')
 		{
 			_x = va_arg(arg, u64);
 			dst += data2decstr(_x, buf+dst);
 
-			src = t+1;
+			src = tmp+1;
 			continue;
 		}
-		else if(fmt[t] == 'f')
+		else if(fmt[tmp] == 'f')
 		{
 			_f = va_arg(arg, double);
 			dst += double2decstr(_f, buf+dst);
 
-			src = t+1;
+			src = tmp+1;
 			continue;
 		}
-		else if(fmt[t] == 'x')
+		else if(fmt[tmp] == 'x')
 		{
 			_x = va_arg(arg, u64);
 
-			u = data2hexstr(_x, buf+dst);
-			if(u >= lval)
+			j = data2hexstr(_x, buf+dst);
+			if(j >= lval)
 			{
-				dst += u;
+				dst += j;
 			}
 			else
 			{
 				if(flag1 == '-')
 				{
-					for(;u<lval;u++)buf[dst+u] = 0x20;
+					for(;j<lval;j++)buf[dst+j] = 0x20;
 				}
 				else
 				{
 					if(flag2 != '0')flag2 = 0x20;
-					for(v=1;v<=lval-u;v++)buf[dst+lval-v] = buf[dst+u-v];
-					for(v=0;v<lval-u;v++)buf[dst+v] = flag2;
+					for(k=1;k<=lval-j;k++)buf[dst+lval-k] = buf[dst+j-k];
+					for(k=0;k<lval-j;k++)buf[dst+k] = flag2;
 				}
 				dst += lval;
 			}
 
-			src = t+1;
+			src = tmp+1;
 			continue;
 		}
-		else if(fmt[t] == 'c')
+		else if(fmt[tmp] == 'c')
 		{
 			_x = va_arg(arg, int);
 			buf[dst] = _x;
 			dst++;
 
-			src = t+1;
+			src = tmp+1;
 			continue;
 		}
-		else if(fmt[t] == 's')
+		else if(fmt[tmp] == 's')
 		{
 			_s = va_arg(arg, char*);
 			while(1)
@@ -196,7 +196,7 @@ int myvsnprintf(char* buf, int len, char* fmt, va_list arg)
 				dst++;
 				_s++;
 			}
-			src = t+1;
+			src = tmp+1;
 			continue;
 		}
 		else
@@ -204,7 +204,7 @@ int myvsnprintf(char* buf, int len, char* fmt, va_list arg)
 			while(1)
 			{
 				if(dst >= len)goto retlen;
-				if(src > t)break;
+				if(src > tmp)break;
 
 				buf[dst] = fmt[src];
 				dst++;
@@ -219,7 +219,11 @@ retlen:
 	buf[len] = 0;
 	return len;
 }
-int mysnprintf(char* buf, int len, char* fmt, ...)
+
+
+
+
+int mysnprintf(u8* buf, int len, u8* fmt, ...)
 {
 	int ret;
 	va_list arg;
@@ -228,233 +232,7 @@ int mysnprintf(char* buf, int len, char* fmt, ...)
 	va_end(arg);
     return ret;
 }
-
-
-
-
-void printout(int cur, int len)
-{
-	int j,k;
-	u8* p;
-
-	p = outputqueue;
-	j = cur;
-	while(1)
-	{	
-		if(j >= cur+len)
-		{
-			if(j%0x80 == 0)break;
-
-			k = j - (j%0x80);
-			if(k<cur)k=cur;
-
-			lowlevel_output(p+k, j-k);
-			break;
-		}
-		else if(p[j] == '\n')
-		{
-			k = j - (j%0x80);
-			if(k<cur)k=cur;
-
-			lowlevel_output(p+k, j-k+1);
-			j = (j+0x80) - (j%0x80);
-		}
-		else
-		{
-			if(j%0x80 == 0x7f)
-			{
-				k = j - (j%0x80);
-				if(k<cur)k=cur;
-
-				lowlevel_output(p+k, j-k+1);
-			}
-			j++;
-		}
-	}
-}
-int convert_c(char* buf, int align, int k, int ch)
-{
-	if(ch == '\n')
-	{
-		buf[k] = '\n';
-		k += 0x80-((k+align)%0x80);
-	}
-	else if(ch == '	')
-	{
-		do
-		{
-			buf[k] = 0x20;
-			k++;
-		}while( ( (align+k) % 8 ) != 0);
-	}
-	else
-	{
-		buf[k] = ch;
-		k++;
-	}
-	return k;
-}
-int diary(char* buf, int len, char* fmt, va_list arg, int align)
-{
-	int u, v;
-	int src, dst, t;
-	int flag1, flag2, lval, rval;
-	u64 _x;
-    char* _s;
-    double _f;
-
-	src = dst = 0;
-	while(1)
-	{
-		if(dst >= len)return len;
-		if(fmt[src] == 0)return dst;
-		if(fmt[src] != '%')
-		{
-			dst = convert_c(buf, align, dst, fmt[src]);
-			src++;
-			continue;
-		}
-
-		//%%
-		t = src+1;
-		if(fmt[t] == '%')
-		{
-			buf[dst] = '%';
-
-			src += 2;
-			dst++;
-			continue;
-		}
-
-		//flag1: '-', '+', '#'
-		flag1 = fmt[t];
-		if( (flag1=='-') | (flag1=='+') | (flag1=='#') )t++;
-		else flag1 = 0;
-
-		//flag2: '0'
-		flag2 = fmt[t];
-		if(flag2 == '0')t++;
-		else flag2 = 0;
-
-		//lval
-		lval = 0;
-		if(fmt[t] == '*')
-		{
-			lval = va_arg(arg, int);
-			t++;
-		}
-		else
-		{
-			while( (fmt[t] >= 0x30) && (fmt[t] <= 0x39) )
-			{
-				lval = (lval*10) + (fmt[t]-0x30);
-				t++;
-			}
-		}
-
-		//'.'
-		if(fmt[t] == '.')t++;
-
-		//rval
-		rval = 0;
-		if(fmt[t] == '*')
-		{
-			rval = va_arg(arg, int);
-			t++;
-		}
-		else
-		{
-			while( (fmt[t] >= 0x30) && (fmt[t] <= 0x39) )
-			{
-				rval = (rval*10) + (fmt[t]-0x30);
-				t++;
-			}
-		}
-
-		//type
-		if(fmt[t] == 'd')
-		{
-			_x = va_arg(arg, u64);
-			dst += data2decstr(_x, buf+dst);
-
-			src = t+1;
-			continue;
-		}
-		else if(fmt[t] == 'f')
-		{
-			_f = va_arg(arg, double);
-			dst += double2decstr(_f, buf+dst);
-
-			src = t+1;
-			continue;
-		}
-		else if(fmt[t] == 'x')
-		{
-			_x = va_arg(arg, u64);
-
-			u = data2hexstr(_x, buf+dst);
-			if(u >= lval)
-			{
-				dst += u;
-			}
-			else
-			{
-				if(flag1 == '-')
-				{
-					for(;u<lval;u++)buf[dst+u] = 0x20;
-				}
-				else
-				{
-					if(flag2 != '0')flag2 = 0x20;
-					for(v=1;v<=lval-u;v++)buf[dst+lval-v] = buf[dst+u-v];
-					for(v=0;v<lval-u;v++)buf[dst+v] = flag2;
-				}
-				dst += lval;
-			}
-
-			src = t+1;
-			continue;
-		}
-		else if(fmt[t] == 'c')
-		{
-			_x = va_arg(arg, int);
-			dst = convert_c(buf, align, dst, _x);
-
-			src = t+1;
-			continue;
-		}
-		else if(fmt[t] == 's')
-		{
-			_s = va_arg(arg, char*);
-			while(1)
-			{
-				if(dst >= len)return len;
-
-				dst = convert_c(buf, align, dst, *_s);
-
-				_s++;
-				if(*_s == 0)break;
-			}
-			src = t+1;
-			continue;
-		}
-		else
-		{
-			while(1)
-			{
-				if(dst >= len)return len;
-				if(src > t)break;
-
-				buf[dst] = fmt[src];
-				dst++;
-				src++;
-			}
-			continue;
-		}
-	}
-	return dst;
-}
-void say(char* fmt, ...)
+void say(u8* fmt, ...)
 {
 	int cur,ret;
 	va_list arg;
@@ -466,13 +244,15 @@ void say(char* fmt, ...)
 	va_start(arg, fmt);
 
 	//snprintf
-	ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
+	//ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
+	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
 
 	//
 	va_end(arg);
 
 	//debugport
-	printout(cur, ret);
+	//printout(cur, ret);
+	lowlevel_output(outputqueue+cur, ret);
 
 	//write position
 	cur = cur+ret;

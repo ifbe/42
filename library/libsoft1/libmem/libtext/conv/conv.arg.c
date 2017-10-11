@@ -2,8 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printmemory(char*,int);
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -11,23 +11,23 @@ void say(char*,...);
 /*
 (buf,size) -> (argc,argv)
 */
-void buf2arg(u8* buf,int max,int* argc,u8** argv)
+void buf2arg(u8* buf, int len, int* argc, u8** argv)
 {
-	int i;
+	int j;
 	int count=0;
 	int splited=0;
 	argv[0]=0;
 
 	//
-	for(i=0;i<max;i++)
+	for(j=0;j<len;j++)
 	{
 		//finished
-		if( buf[i] == 0 )break;
+		if( buf[j] == 0 )break;
 
 		//blank
-		if( buf[i] <= 0x20 )
+		if( buf[j] <= 0x20 )
 		{
-			buf[i]=0;
+			buf[j]=0;
 			splited=1;
 			continue;
 		}
@@ -45,7 +45,7 @@ void buf2arg(u8* buf,int max,int* argc,u8** argv)
 		//new!
 		if( argv[count]==0 )
 		{
-			argv[count]=buf+i;
+			argv[count]=buf+j;
 		}
 	}//for
 
@@ -57,9 +57,9 @@ void buf2arg(u8* buf,int max,int* argc,u8** argv)
 /*
 	//debug
 	say("count=%x\n",count);
-	for(i=0;i<count;i++)
+	for(j=0;j<count;j++)
 	{
-		say("%x=%s\n",i,argv[i]);
+		say("%x=%s\n",j,argv[j]);
 	}
 */
 }
@@ -71,26 +71,38 @@ void buf2arg(u8* buf,int max,int* argc,u8** argv)
 "card=wlan0" -> "card" , "wlan0"
 "user=name" -> "user" , "name"
 */
-int buf2optval(u8* pp,int max,u8** type,u8** name)
+int buf2optval(u8* buf, int len, u8** type, u8** name)
 {
-	int ii;
-	for(ii=0;ii<max;ii++)
+	int j;
+	for(j=0;j<len;j++)
 	{
-		if(pp[ii]==0)break;
-		if(pp[ii]=='=')break;
+		if(buf[j] == 0)break;
+		if(buf[j] == '=')break;
 	}
 
-	if( pp[ii] != '=' )
+	if( buf[j] != '=' )
 	{
-		*type=0;
-		*name=0;
+		*type = 0;
+		*name = 0;
 	}
 	else
 	{
-		pp[ii]=0;
+		buf[j]=0;
 
-		*type=pp;
-		*name=pp+ii+1;
+		*type = buf;
+		*name = buf+j+1;
 	}
-	return ii;
+	return j;
+}
+
+
+
+
+/*
+"%d%16s%3.5f\n" 71 "wertyui" 3.14159
+*/
+int buf2say(u8* buf, int len)
+{
+	u64 list[64];
+	say(buf, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7]);
 }

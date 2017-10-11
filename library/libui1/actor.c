@@ -15,8 +15,8 @@ void lib3d_delete();
 int term_read(void*);
 int term_write(void*);
 //
-void* connect_read();
-void* connect_write(u64 pininfo, u64 destiny, u64 chipinfo, u64 footinfo);
+void* connect_read(u64);
+int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 //
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
@@ -27,7 +27,6 @@ void backgroundcolor(void*, u32);
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
-static struct style* style = 0;
 //
 static u32 menu=0;
 
@@ -40,9 +39,10 @@ int actorread()
 	struct arena* window;		//window
 	struct arena* canvas;		//buffer
 	struct actor* actor;		//2048?
-
 	struct relation* rel;		//link
+
 	struct style* st;			//style
+	void* pl;
 
 	for(j=1;j<2;j++)
 	{
@@ -74,18 +74,20 @@ int actorread()
 		while(1)
 		{
 			if(rel == 0)break;
-			else if(rel->destiny == __win__)
+
+			if(rel->selftype == 0)
 			{
 				backgroundcolor(canvas, 0xff000000);
 			}
-			else if(rel->destiny == __act__)
+			else if(rel->selftype == __act__)
 			{
 				//say("%x\n",rel);
-				actor = (void*)(rel->chipinfo);
-				st = (void*)(rel->footinfo);
-				actor->read(canvas, actor, st);
+				st = (void*)(rel->destfoot);
+				pl = (void*)(rel->selffoot);
+				actor = (void*)(rel->selfchip);
+				actor->read(canvas, actor, st, pl);
 			}
-			rel = rel->samepinnextact;
+			rel = connect_read(rel->samepinnextchip);
 		}
 
 		//send
@@ -128,15 +130,15 @@ int actorwrite(struct event* ev)
 	//
 	rel = window->first;
 	if(rel == 0)return 0;
-	if(rel->samepinnextact == 0)return 0;
+	if(rel->samepinnextchip == 0)return 0;
 	while(1)
 	{
-		if(rel->samepinnextact == 0)break;
-		rel = rel->samepinnextact;
+		if(rel->samepinnextchip == 0)break;
+		rel = connect_read(rel->samepinnextchip);
 	}
 	if(1)
 	{
-		actor = (void*)(rel->chipinfo);
+		actor = (void*)(rel->selfchip);
 		actor->write(ev);
 	}
 
@@ -148,32 +150,26 @@ int actorlist(u8* p)
 	int j;
 	int ret;
 	u64 type;
-	u64 name;
 	if(p == 0)
 	{
 		ret = 0;
 		type = 0;
-		name = 0;
 		for(j=0;j<0x100;j++)
 		{
 			if(actor[j].type != type)
 			{
 				if(type != 0)say("\n");
-				say("%s:\n",&actor[j].type);
+
+				type = actor[j].type;
+				if(type == 0)break;
+
+				say("%.*s:\n", 8, &type);
 				ret=0;
 			}
 
-			name = actor[j].name;
-			if(name == 0)
-			{
-				if((ret%8)!=0)say("\n");
-				break;
-			}
-
-			type = actor[j].type;
 			if((ret>0)&&(ret%8==0))say("\n");
+			say("	%.*s", 8, &actor[j].name);
 
-			say("	%s", &name);
 			ret++;
 		}
 		return 0;
@@ -200,50 +196,11 @@ void actorchoose()
 }
 int actorstart(struct arena* win, struct actor* act)
 {
-	struct relation* winrel;
-	struct relation* actrel;
-	struct relation* this;
+	connect_write(
+		win, 0, __win__,
+		act, 0, __act__);
 
-	//win last
-	winrel = win->first;
-	if(winrel != 0)
-	{
-		while(1)
-		{
-			//last rel of win
-			if(winrel->samepinnextwin == 0)break;
-			winrel = winrel->samepinnextwin;
-		}
-	}
-	else
-	{
-		winrel = connect_write(0xff, __win__, (u64)win, 0);
-		win->first = winrel;
-	}
-
-	//this
-	this = connect_write(0xff, __act__, (u64)act, 0);
-	this->samepinprevact = winrel;
-	winrel->samepinnextact = this;
-
-	//act last
-	actrel = act->first;
-	if(actrel != 0)
-	{
-		while(1)
-		{
-			//last rel of win
-			if(actrel->sameactnextpin == 0)break;
-			actrel = actrel->sameactnextpin;
-		}
-
-		this->sameactprevpin = actrel;
-		actrel->sameactnextpin = this;
-	}
-	else
-	{
-		act->start();
-	}
+	act->start();
 }
 int actorstop()
 {
@@ -258,7 +215,6 @@ void actorcreate(u8* type, u8* addr)
 	//where
 	arena = (void*)(addr+0);
 	actor = (void*)(addr+0x100000);
-	style = (void*)(addr+0x200000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -292,7 +248,6 @@ void actordelete()
 	lib2d_delete();
 	lib3d_delete();
 
-	style = 0;
 	actor = 0;
 	arena = 0;
 }

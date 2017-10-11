@@ -31,9 +31,29 @@ void term_read(u8* buf)
 {
 	//say("here\n");
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
-	else if(ncmp(buf, "exit", 4) == 0)goto finish;
-	else if(ncmp(buf, "ls", 2) == 0)actorlist(0);
-	else if(ncmp(buf, "net ", 4) == 0)netmgr_write(buf+4);
+	if(ncmp(buf, "exit", 4) == 0)goto finish;
+
+	if(ncmp(buf, "say ", 4) == 0)
+	{
+		say("%s\n", buf+4);
+	}
+	else if(ncmp(buf, "ls", 2) == 0)
+	{
+		actorlist(0);
+	}
+	else if(ncmp(buf, "cd", 2) == 0)
+	{
+	}
+	else if(ncmp(buf, "net ", 4) == 0)
+	{
+		netmgr_write(buf+4);
+	}
+	else if(ncmp(buf, "i2c ", 4) == 0)
+	{
+	}
+	else if(ncmp(buf, "uart ", 5) == 0)
+	{
+	}
 
 	//command prompt
 	say("[void]");

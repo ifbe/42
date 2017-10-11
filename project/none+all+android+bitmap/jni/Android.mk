@@ -260,11 +260,11 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/tool/tool.qrcode.c \
 	library/libui1/content/tool/tool.sketchpad.c \
 	library/libui1/content/tool/tool.spectrum.c \
-	library/libui1/content/levitate/lev.login.c \
-	library/libui1/content/levitate/lev.navi.c \
-	library/libui1/content/levitate/lev.joystick.c \
-	library/libui1/content/levitate/lev.keyboard.c \
-	library/libui1/content/levitate/levitate.c \
+	library/libui1/content/levi/levi.login.c \
+	library/libui1/content/levi/levi.navi.c \
+	library/libui1/content/levi/levi.joystick.c \
+	library/libui1/content/levi/levi.keyboard.c \
+	library/libui1/content/levi/levi.c \
 	library/libui1/content/content.c \
 	library/libui1/helper/helper.term.c \
 	library/libui1/helper/helper.wire.c \
