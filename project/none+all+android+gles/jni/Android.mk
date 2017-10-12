@@ -63,7 +63,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.motion.sensor.c \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
 	library/libsoft0/android/android.flow.vision.qcamera2.c \
-	library/libsoft0/linux/linux.flow.net.socket.c \
+	library/libsoft0/linux/linux.flow.socket.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.folder.c \
 	library/libsoft0/linux/linux.memory.managed.c \
@@ -72,6 +72,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.system.signal.c \
 	library/libsoft0/linux/linux.system.time.c \
 	library/libsoft0/linux/linux.system.thread.c \
+	library/libsoft0/linux/linux.system.watcher.c \
 	library/libsoft0/linux/linux.wire.bt.c \
 	library/libsoft0/linux/linux.wire.gpio.c \
 	library/libsoft0/linux/linux.wire.i2c.c \

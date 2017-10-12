@@ -78,7 +78,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.motion.sensor.c \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
 	library/libsoft0/android/android.flow.vision.qcamera2.c \
-	library/libsoft0/linux/linux.flow.net.socket.c \
+	library/libsoft0/linux/linux.flow.socket.c \
 	library/libsoft0/linux/linux.memory.file.c \
 	library/libsoft0/linux/linux.memory.folder.c \
 	library/libsoft0/linux/linux.memory.managed.c \
@@ -87,6 +87,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.system.signal.c \
 	library/libsoft0/linux/linux.system.time.c \
 	library/libsoft0/linux/linux.system.thread.c \
+	library/libsoft0/linux/linux.system.watcher.c \
 	library/libsoft0/linux/linux.wire.bt.c \
 	library/libsoft0/linux/linux.wire.gpio.c \
 	library/libsoft0/linux/linux.wire.i2c.c \
@@ -275,11 +276,11 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/tool/tool.qrcode.c \
 	library/libui1/content/tool/tool.sketchpad.c \
 	library/libui1/content/tool/tool.spectrum.c \
-	library/libui1/content/levitate/lev.login.c \
-	library/libui1/content/levitate/lev.navi.c \
-	library/libui1/content/levitate/lev.joystick.c \
-	library/libui1/content/levitate/lev.keyboard.c \
-	library/libui1/content/levitate/levitate.c \
+	library/libui1/content/levi/levi.login.c \
+	library/libui1/content/levi/levi.navi.c \
+	library/libui1/content/levi/levi.joystick.c \
+	library/libui1/content/levi/levi.keyboard.c \
+	library/libui1/content/levi/levi.c \
 	library/libui1/content/content.c \
 	library/libui1/helper/helper.term.c \
 	library/libui1/helper/helper.wire.c \

@@ -8,7 +8,10 @@ int deleterandom();
 //signal
 int createsignal(void*);
 int deletesignal();
-//signal
+//epoll,iocp,kqueue
+int createwatcher(void*);
+int deletewatcher();
+//socket
 int createsocket(void*);
 int deletesocket();
 //
@@ -60,6 +63,7 @@ void systemcreate(u8* type, u8* addr)
 	//
 	createrandom(mega0);
 	createsignal(mega0);
+	createwatcher(mega0);
 	createsocket(mega0);
 
 	//
@@ -72,6 +76,7 @@ void systemdelete()
 
 	//
 	deletesocket();
+	deletewatcher();
 	deletesignal();
 	deleterandom();
 }

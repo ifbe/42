@@ -20,13 +20,9 @@
 #define u16 unsigned short
 #define u8 unsigned char
 #define MAXSIZE 4096
-//
-void eventwrite(u64,u64,u64,u64);
-//
-void stopthread();
-u64 startthread(void*, void*);
-u64 gettime();
-u32 getrandom();
+void epoll_add(int);
+void epoll_del(int);
+void epoll_mod(int);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -55,10 +51,6 @@ struct object
 };
 struct object* obj;
 //
-static u64 thread;
-static int alive = 0;
-static int epollfd = 0;
-//
 static int btfd = 0;
 static int rawfd = 0;
 static int tcpfd = 0;
@@ -85,105 +77,6 @@ void peername(u64 fd, u32* buf)
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
 }
-void epoll_del(u64 fd)
-{
-	struct epoll_event ev;
-
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
-	close(fd);
-}
-void epoll_mod(u64 fd)
-{
-	struct epoll_event ev;
-
-	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
-}
-void epoll_add(u64 fd)
-{
-	int flag;
-	struct epoll_event ev;
-	flag = fcntl(fd, F_GETFL, 0);
-	fcntl(fd, F_SETFL, flag | O_NONBLOCK);
-
-	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
-}
-static void* epollthread(void* p)
-{
-int i, fd, ret;
-struct epoll_event epollevent[16];
-
-while(alive)
-{
-	epoll_mod(tcpfd);
-	ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
-	if(ret <= 0)continue;
-
-	//printf("epoll:%d\n",ret);
-	for(i=0; i<ret; i++)
-	{
-	if(epollevent[i].events & EPOLLRDHUP)
-	{
-		printf("rdhup!!!!!!!\n");
-		eventwrite(0, 0x2d6e, fd, gettime());
-	}
-	else if(epollevent[i].events & EPOLLIN)
-	{
-		//ev.fd
-		fd = epollevent[i].data.fd;
-
-		//accept
-		if(fd == tcpfd)
-		{
-		while(1)
-		{
-			struct sockaddr_in haha;
-			socklen_t len = sizeof(struct sockaddr_in);
-
-			fd = accept(tcpfd, (struct sockaddr*)&haha, &len);
-			if(fd == -1)break;
-			if(fd >= MAXSIZE)
-			{
-				printf("fd>MAXSIZE\n");
-				close(fd);
-				continue;
-			}
-
-			memcpy(obj[fd].peer, &haha, 8);
-			obj[fd].type_sock = 't';
-			obj[fd].type_road = 0;
-			epoll_add(fd);
-
-			printf("++++ %d\n",fd);
-			eventwrite(0, 0x2b6e, fd, gettime());
-		}//while
-		}//accept
-
-		//read
-		else
-		{
-			//printf("#### %x\n", fd);
-			eventwrite(0, 0x406e, fd, gettime());
-		}
-	}//EPOLLIN
-	}//for
-
-	//wait for completion
-	//usleep(100000);
-}//while
-
-printf("epoll die!!!\n");
-return 0;
-}
-
-
-
-
 
 
 
@@ -536,20 +429,12 @@ udpnext:
 }
 void deletesocket(int num)
 {
-	alive = 0;
-	if(epollfd>0)close(epollfd);
 }
 void createsocket(void* addr)
 {
 	struct sigaction sa;
-	obj = addr;
-
 	sa.sa_handler=SIG_IGN;
 	sigaction(SIGPIPE, &sa, 0);
 
-	epollfd = epoll_create(MAXSIZE);
-	if(epollfd <= 0)printf("%d,%d@epoll_create\n", epollfd, errno);
-
-	alive = 1;
-	thread = startthread(epollthread, 0);
+	obj = addr;
 }

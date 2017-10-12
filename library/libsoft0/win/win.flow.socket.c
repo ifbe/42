@@ -10,13 +10,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
-int stopsocket(u64);
-//
-void eventwrite(u64,u64,u64,u64);
-u64 startthread(void*, void*);
+void startwatcher(SOCKET);
+void stopwatcher(int);
 void printmemory(void*, ...);
 void say(void* , ...);
+
 
 
 
@@ -47,7 +45,6 @@ struct object
 	u8 overlap[0x80];	//(only per io data)
 };
 static struct object* obj;
-static HANDLE iocpfd;
 //
 static SOCKET btlisten;
 static SOCKET rawlisten;
@@ -75,75 +72,6 @@ void peername(u64 fd, u32* buf)
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
 }
-DWORD WINAPI iocpthread(LPVOID pM)
-{
-	struct per_io_data* pov = NULL;
-	u32* key = 0;
-	char temp[4096];
-	int th;
-	int ret;
-
-	HANDLE hh;
-	SOCKET fd;
-	DWORD trans = 0;
-	DWORD flag = 0;
-
-	th = GetCurrentThreadId();
-	while(1)
-	{
-		ret = GetQueuedCompletionStatus(
-			iocpfd,
-			&trans,
-			(void*)&key,
-			(void*)&pov,
-			INFINITE
-		);
-		if(ret == 0)continue;
-
-		fd = pov->fd;
-		printf("th=%d,ret=%d,trans=%d,listen=%d,this=%d\n",
-			th, ret, trans, *key, fd
-		);
-
-		//accept
-		if(pov->stage == 0)
-		{
-			hh = CreateIoCompletionPort(
-				(void*)fd,
-				iocpfd,
-				(ULONG_PTR)(obj[fd/4].tempdat),
-				0
-			);
-
-			pov->stage = 1;
-			obj[fd/4].type_sock = 't';
-			eventwrite(0, 0x2b6e, fd/4, 0);
-			printf("[%x]++++,hh=%llx\n",fd/4,hh);
-		}
-		else if(trans == 0)
-		{
-			printf("[%x]----\n",fd/4);
-			stopsocket(fd);
-			continue;
-		}
-		else
-		{
-			pov->stage = 1;
-			pov->bufdone.buf = pov->bufing.buf;
-			pov->bufdone.len = trans;
-			eventwrite(0, 0x406e, fd/4, 0);
-			
-			printf("[%x]####\n",fd/4);
-		}
-
-		//all
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-		printf("(recv)ret=%d,err=%d\n", ret, WSAGetLastError());
-	}
-	return 0;
-}
 
 
 
@@ -158,7 +86,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	p = pov->bufdone.buf;
 	c = pov->bufdone.len;
 	for(j=0;j<c;j++)buf[j] = p[j];
-printf("(read)len=%d\n",c);
+//printf("(read)len=%d\n",c);
 	free(pov->bufdone.buf);
 
 	if(c == 0)return -1;	//disconnect
@@ -259,15 +187,10 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		u32* p = (void*)(obj[rawlisten/4].tempdat);
-		*p = rawlisten;
-		CreateIoCompletionPort(
-			(void*)rawlisten,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		//
+		startwatcher(rawlisten);
 
+		//
 		DWORD trans = 0;
 		DWORD flag = 0;
 		struct per_io_data* pov = (void*)(obj[rawlisten/4].overlap);
@@ -278,8 +201,8 @@ u64 startsocket(char* addr, int port, int type)
 		ret = WSARecv(rawlisten, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
 
 		//
-		obj[rawlisten].type_sock = type;
-		obj[rawlisten].type_road = 0;
+		obj[rawlisten/4].type_sock = type;
+		obj[rawlisten/4].type_road = 0;
 		return rawlisten/4;
 	}
 	else if(type == 'r')	//raw
@@ -313,15 +236,10 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		u32* p = (void*)(obj[udplisten/4].tempdat);
-		*p = udplisten;
-		CreateIoCompletionPort(
-			(void*)udplisten,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		//
+		startwatcher(udplisten);
 
+		//
 		DWORD trans = 0;
 		DWORD flag = 0;
 		struct per_io_data* pov = (void*)(obj[udplisten/4].overlap);
@@ -362,15 +280,10 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		u32* p = (void*)(obj[fd/4].tempdat);
-		*p = fd;
-		CreateIoCompletionPort(
-			(void*)fd,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		//
+		startwatcher(fd);
 
+		//
 		DWORD trans = 0;
 		DWORD flag = 0;
 		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
@@ -424,16 +337,8 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-
 		//server.5
-		u32* p = (void*)(obj[tcplisten/4].tempdat);
-		*p = tcplisten;
-		CreateIoCompletionPort(
-			(void*)tcplisten,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		startwatcher(tcplisten);
 
 		//client.1
 		LPFN_ACCEPTEX acceptex = NULL;
@@ -463,7 +368,6 @@ u64 startsocket(char* addr, int port, int type)
 		struct per_io_data* pov;
 		for(j=0;j<1000;j++)
 		{
-			//
 			tmp = WSASocket(
 				AF_INET, SOCK_STREAM, IPPROTO_TCP,
 				0, 0, WSA_FLAG_OVERLAPPED
@@ -510,15 +414,10 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		u32* p = (void*)(obj[fd/4].tempdat);
-		*p = fd;
-		CreateIoCompletionPort(
-			(void*)fd,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		//
+		startwatcher(fd);
 
+		//
 		DWORD trans = 0;
 		DWORD flag = 0;
 		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
@@ -548,15 +447,10 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		u32* p = (void*)(obj[fd/4].tempdat);
-		*p = fd;
-		CreateIoCompletionPort(
-			(void*)fd,
-			iocpfd,
-			(ULONG_PTR)p,
-			0
-		);
+		//
+		startwatcher(fd);
 
+		//
 		DWORD trans = 0;
 		DWORD flag = 0;
 		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
@@ -588,21 +482,5 @@ void createsocket(void* addr)
 	{
 		printf("error@WSAStartup\n");
 		return;
-	}
-
-	//iocp
-	iocpfd = CreateIoCompletionPort(
-		INVALID_HANDLE_VALUE,
-		NULL,
-		0,
-		4
-	);
-
-	int j;
-	SYSTEM_INFO info;
-	GetSystemInfo(&info);
-	for(j=0;j<info.dwNumberOfProcessors*2;j++)
-	{
-		u64 thread = startthread(iocpthread, iocpfd);
 	}
 }

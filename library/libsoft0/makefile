@@ -43,7 +43,7 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
-	$(compiler) $(cflag) linux/linux.flow.net.socket.c
+	$(compiler) $(cflag) linux/linux.flow.socket.c
 	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
 	$(compiler) $(cflag) linux/linux.flow.vision.other.c
 	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
@@ -57,6 +57,7 @@ linux:
 	$(compiler) $(cflag) linux/linux.system.signal.c
 	$(compiler) $(cflag) linux/linux.system.thread.c
 	$(compiler) $(cflag) linux/linux.system.time.c
+	$(compiler) $(cflag) linux/linux.system.watcher.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
@@ -96,7 +97,7 @@ mac:
 .PHONY:win
 win:
 	rm -f linux.*.o mac.*.o
-	$(compiler) $(cflag) win/win.flow.net.socket.c
+	$(compiler) $(cflag) win/win.flow.socket.c
 	$(compiler) $(cflag) win/win.flow.sound.waveinout.c
 	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.memory.file.c
@@ -108,6 +109,7 @@ win:
 	$(compiler) $(cflag) win/win.system.signal.c
 	$(compiler) $(cflag) win/win.system.thread.c
 	$(compiler) $(cflag) win/win.system.time.c
+	$(compiler) $(cflag) win/win.system.watcher.c
 	$(compiler) $(cflag) win/win.wire.bt.c
 	$(compiler) $(cflag) win/win.wire.i2c.c
 	$(compiler) $(cflag) win/win.wire.gpio.c
