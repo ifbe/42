@@ -150,7 +150,7 @@ static int escapesequence(u8* p)
 	int j;
 	int x,y;
 	if(p[0] != 0x1b)return 0;
-	if(p[1] != 0x5b)return 0;
+	if(p[1] != 0x5b)return 1;
 
 	if(p[2] == '?')
 	{
@@ -277,25 +277,105 @@ static int escapesequence(u8* p)
 
 
 
-int lowlevel_input(char* buf)
+int lowlevel_input(u8* buf)
 {
 }
-void lowlevel_output(char* buf, int len)
+void lowlevel_output(u8* buf, int len)
 {
 	int i,j,k=0;
-	for(;j<len;j++)
+	if(pos != 0)
 	{
-		if(buf[j] == 0x1b)
+		if(len < 8)
 		{
+			for(i=0;i<len;i++)last[pos+i] = buf[i];
+		}
+		else
+		{
+			for(i=0;i<8;i++)last[i] = buf[i];
+			buf += 8;
+			len -= 8;
+		}
+
+		j=0;
+		while(1)
+		{
+			if(j>=pos)
+			{
+				for(j=0;j<pos;j++)last[pos] = 0;
+				pos = 0;
+				return;
+			}
+
+			if(buf[j] != 0x1b)
+			{
+				printf("%c", buf[j]);
+				j++;
+				continue;
+			}
+
 			i = escapesequence(buf+j);
 			if(i != 0)
 			{
-				if(j>k)printf("%.*s", j-k, buf+k);
-				k = j+i;
+				printf("%");
+				j += i;
+				continue;
+			}
+
+			if(pos-j < 8)
+			{
+				for(i=0;i<pos-j;i++)last[i] = last[j+i];
+				for(i=j;i<pos;i++)last[i] = 0;
+				pos = j;
+				return;
 			}
 		}
 	}
-	if(len>k)printf("%.*s", len-k, buf+k);
+
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] >= 0xc0)
+		{
+			int ret;
+			char utf8[8];
+			char unicode[8];
+			char gbk[8];
+			if(j>k)printf("%.*s", j-k, buf+k);
+
+			if(buf[j] < 0xe0)i = 2;
+			else if(buf[j] < 0xf0)i = 3;
+			else if(buf[j] < 0xf8)i = 4;
+			else if(buf[j] < 0xfc)i = 5;
+			else if(buf[j] < 0xfe)i = 6;
+			k = j+i;
+
+			utf8[i] = 0;
+			for(i=i-1;i>=0;i--)utf8[i]=buf[j+i];
+			j = k-1;
+
+			ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, (void*)unicode, 4);
+			ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
+			printf("%s",gbk);
+
+		}
+		else if(buf[j] == 0x1b)
+		{
+			if(j+7 >= len)
+			{
+				for(i=0;i<len-j;i++)last[pos+i] = buf[j+i];
+				pos += len-j;
+				break;
+			}
+			if(j>k)printf("%.*s", j-k, buf+k);
+
+			i = escapesequence(buf+j);
+			if(i != 0)
+			{
+				k = j+i;
+				j = k-1;
+			}
+		}
+	}
+	if(j>k)printf("%.*s", j-k, buf+k);
 }
 void createserial(u8* arg)
 {
