@@ -37,7 +37,7 @@ void* systemuart_read(void* p)
 		if(ret < 0)break;
 
 		buf[ret] = 0;
-		printf("%s", buf);
+		say("%s", buf);
 		fflush(stdout);
 	}
 	return 0;

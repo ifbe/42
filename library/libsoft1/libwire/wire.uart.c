@@ -19,17 +19,11 @@ void say(void*, ...);
 
 
 
-//
-static u64* passflag = 0;
-
-
-
-
-static int uart_list()
+int uart_list()
 {
 	return systemuart_list();
 }
-static int uart_choose(u8* p)
+int uart_choose(u8* p)
 {
 	int j;
 	u64 speed = 115200;
@@ -56,26 +50,16 @@ static int uart_choose(u8* p)
 	j = systemuart_choose(name, speed);
 	if(j <= 0)return 0;
 
-	passflag[0] = 1;
 	return 0;
 }
-static int uart_read(u8* p)
+int uart_read(u8* p)
 {
 	systemuart_read();
 	return 0;
 }
-static int uart_write(u8* buf)
+int uart_write(u8* buf)
 {
-	//if(home)cd
 	int len;
-	if(passflag[0] == 0)
-	{
-		if(ncmp(buf, "ls", 2) == 0)uart_list();
-		else uart_choose(buf);
-		return 0;
-	}
-
-	//if(pass)send
 	for(len=0;len<256;len++)
 	{
 		if(buf[len] == 0)break;
@@ -95,8 +79,6 @@ static int uart_stop(u8* p)
 }
 void uart_create(void* world,u64* p)
 {
-	passflag = world+0x100000;
-
 	p[0]=0x6563616669;	//type
 	p[1]=0x74726175;	//id
 	p[2]=(u64)uart_start;

@@ -45,16 +45,14 @@ DWORD WINAPI uievent(void* win)
 				why = 0x445b1b;
 			}
 			else continue;
-
-			what = hex32('k', 'b', 'd', 0);
 		}
 		else
 		{
 			if(why == 0x8)why = 0x7f;
-			what = hex32('c', 'h', 'a', 'r');
 		}
 
 		//send
+		what = hex32('c', 'h', 'a', 'r');
 		eventwrite(why, what, where, 0);
 	}//while
 }

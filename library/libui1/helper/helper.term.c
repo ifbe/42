@@ -5,6 +5,10 @@
 //
 int netmgr_write(void*);
 //
+int uart_list();
+int uart_choose();
+int uart_write(void*);
+//
 int arenastart(void*);
 int arenastop(void*);
 int actorlist(void*);
@@ -23,6 +27,8 @@ void say(void*, ...);
 
 static char* input = 0;
 static char* output = 0;
+static int combo = 0;
+static int goooo = 0;
 
 
 
@@ -53,6 +59,12 @@ void term_read(u8* buf)
 	}
 	else if(ncmp(buf, "uart ", 5) == 0)
 	{
+		if(ncmp(buf+5, "ls", 2) == 0)uart_list();
+		else
+		{
+			uart_choose(buf+5);
+			goooo = 1;
+		}
 	}
 
 	//command prompt
@@ -67,17 +79,41 @@ void term_write(u8* p)
 {
 	int j;
 	int* enq;
-	if(p == 0)return;
 
+	//passthrough?
+	if((p[0] == 0x1b)&&(*(p+1) != 0x5b))
+	{
+		combo++;
+		if(combo >= 2)
+		{
+			combo = 0;
+			goooo = 0;
+		}
+	}
+	else combo = 0;
+
+	//passthrough!
+	if(p == 0)return;
+	if(goooo == 1)
+	{
+		uart_write(p);
+		return;
+	}
+	else if(goooo == 2)
+	{
+		return;
+	}
+
+	//myself
 	enq = (void*)(input+0xffff0);
 	while(1)
 	{
 		if(*p < 8)return;
-		if(*p == 0x1b)
+		if(*p == 0x9)	//tab
 		{
-			say("esc\n");
+			say("tab");
 		}
-		if((*p==0x8)|(*p==0x7f))		//backspace
+		else if((*p==0x8)|(*p==0x7f))		//backspace
 		{
 			say("\b \b");
 			if(*enq <= 0)return;

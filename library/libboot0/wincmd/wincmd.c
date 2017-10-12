@@ -6,12 +6,13 @@
 
 
 
-//
-static HANDLE output=0;
-//
-u8 last[8]={0};
-u8 buf[0x1000];
-//
+static HANDLE output = 0;
+static u8 last[16] = {0};
+static int pos = 0;
+
+
+
+
 static void attr(int val)
 {
 	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -148,6 +149,8 @@ static int escapesequence(u8* p)
 {
 	int j;
 	int x,y;
+	if(p[0] != 0x1b)return 0;
+	if(p[1] != 0x5b)return 0;
 
 	if(p[2] == '?')
 	{
@@ -166,7 +169,7 @@ static int escapesequence(u8* p)
 				}
 				gotoxy(0,0);
 
-				return j;
+				return j+1;
 			}
 		}
 	}
@@ -174,58 +177,62 @@ static int escapesequence(u8* p)
 	//1b 5b 4a bf: openwrt special
 	if(p[2] == 0x4a)
 	{
-		if(p[3] == 0xbf) return 3;
+		if(p[3] == 0xbf) return 4;
 	}
 
 	//1b 5b 4b: erase from here to the end
 	if(p[2] == 0x4b)
 	{
 		printf(" \b");
-		return 2;
+		return 3;
 	}
 
 	//1b 5b 41: cursor up
 	if(p[2] == 0x41)
 	{
-		return 2;
+		printf("a");
+		return 3;
 	}
 
 	//1b 5b 42: cursor down
 	if(p[2] == 0x42)
 	{
-		return 2;
+		printf("b");
+		return 3;
 	}
 
 	//1b 5b 43: cursor forward
 	if(p[2] == 0x43)
 	{
-		return 2;
+		printf("c");
+		return 3;
 	}
 
 	//1b 5b 44: cursor backward
 	if(p[2] == 0x44)
 	{
-		return 2;
+		printf("d");
+		return 3;
 	}
 
 	//1b 5b ? m
 	if(p[3] == 'm')
 	{
 		escapecolor(p+2);
-		return 3;
+		return 4;
 	}
 
 	//1b 5b ? n
 	if(p[3] == 'n')
 	{
-		return 3;
+		return 4;
 	}
 
 	//1b 5b ? ? m
 	if(p[4] == 'm')
 	{
 		escapecolor(p+2);
-		return 4;
+		return 5;
 	}
 
 	if(p[3] == ';')
@@ -235,7 +242,7 @@ static int escapesequence(u8* p)
 		{
 			escapecolor(p+2);
 			escapecolor(p+4);
-			return 5;
+			return 6;
 		}
 
 		//1b 5b ? ; ? ? m
@@ -243,7 +250,7 @@ static int escapesequence(u8* p)
 		{
 			escapecolor(p+2);
 			escapecolor(p+4);
-			return 6;
+			return 7;
 		}
 	}
 
@@ -252,7 +259,7 @@ static int escapesequence(u8* p)
 	{
 		escapecolor(p+2);
 		escapecolor(p+5);
-		return 7;
+		return 8;
 	}
 
 	for(j=2;j<10;j++)
@@ -260,7 +267,7 @@ static int escapesequence(u8* p)
 		if( (p[j] == 'H') | (p[j] == 'f') )
 		{
 			escapeposition(p+2);
-			return j;
+			return j+1;
 		}
 	}
 
@@ -270,90 +277,25 @@ static int escapesequence(u8* p)
 
 
 
-/*
-int fmt1(u8* mem, int max, u8* fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	va_start(args,fmt);
-	ret = vsnprintf(mem, max, fmt, args);
-	va_end(args);
-
-	return ret;
-}
-void say1()
-{
-}
-void say2(u8* fmt , ...)
-{
-	asm("jmp printf");
-}
-void say3(u8* fmt , ...)
-{
-	int j,k,ret;
-	va_list args;
-
-	va_start(args,fmt);
-	if(last[0] != 0)
-	{
-		j = snprintf(buf,10,"%s",last);
-		ret = j + vsnprintf(buf+j, 0x1000, fmt, args);
-		last[0] = 0;
-	}
-	else
-	{
-		ret = vsnprintf(buf, 0x1000, fmt, args);
-	}
-	va_end(args);
-
-	for(j=0;j<ret;j++)
-	{
-		//printf("{%x}",buf[j]);
-
-		if(buf[j] == 0x1b)
-		{
-			//printf("...........{%x,%x,%x,%x,%x}",buf[j+0],buf[j+1],buf[j+2],buf[j+3],buf[j+4]);
-
-			if(buf[j+1] == 0x5b)
-			{
-				//escape sequence must complete
-				for(k=2;k<8;k++)
-				{
-					if(buf[j+k] == 0)
-					{
-						for(;k>=0;k--)last[k] = buf[j+k];
-						return;
-					}
-				}
-				j += escapesequence(buf+j);
-			}//5b
-		}//1b
-		else if(buf[j] == 0x8)
-		{
-			printf("\b");
-		}
-		else if(buf[j] == 0x7f)
-		{
-			printf("\b \b");
-		}
-		else
-		{
-			printf("%c",buf[j]);
-		}
-	}
-}
-*/
-
-
-
-
 int lowlevel_input(char* buf)
 {
 }
 void lowlevel_output(char* buf, int len)
 {
-	printf("%.*s", len, buf);
+	int i,j,k=0;
+	for(;j<len;j++)
+	{
+		if(buf[j] == 0x1b)
+		{
+			i = escapesequence(buf+j);
+			if(i != 0)
+			{
+				if(j>k)printf("%.*s", j-k, buf+k);
+				k = j+i;
+			}
+		}
+	}
+	if(len>k)printf("%.*s", len-k, buf+k);
 }
 void createserial(u8* arg)
 {
