@@ -57,17 +57,12 @@ void* uievent(void* win)
 				}
 			}//5b
 			else continue;
-
-			what = hex32('k','b','d',0);
 		}//1b
 
-		else
-		{
-			what = hex32('c','h','a','r');
-			why = buf[0];
-		}
+		else why = buf[0];
 
 		//send
+		what = hex32('c','h','a','r');
 		eventwrite(why, what, where, 0);
 	}
 }

@@ -114,7 +114,8 @@ int actorwrite(struct event* ev)
 	}
 
 	temp = ev->where;
-	if(temp < 0xffff)return 0;
+	if(temp == 0)temp = (u64)&arena[1];
+	else if(temp < 0xffff)return 0;
 
 	//
 	window = (void*)temp;
@@ -235,7 +236,7 @@ void actorcreate(u8* type, u8* addr)
 	actorstart(&arena[1], &actor[1]);
 	actorstart(&arena[1], &actor[0]);
 
-	term_read("\n");
+	term_read(0);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()

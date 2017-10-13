@@ -36,6 +36,7 @@ static int goooo = 0;
 void term_read(u8* buf)
 {
 	//say("here\n");
+	if(buf == 0)goto empty;
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
 
@@ -66,7 +67,7 @@ void term_read(u8* buf)
 			goooo = 1;
 		}
 	}
-
+empty:
 	//command prompt
 	say("[void]");
 	return;
@@ -79,21 +80,22 @@ void term_write(u8* p)
 {
 	int j;
 	int* enq;
+	if(p == 0)return;
 
 	//passthrough?
 	if((p[0] == 0x1b)&&(*(p+1) != 0x5b))
 	{
 		combo++;
-		if(combo >= 2)
+		if(combo >= 4)
 		{
 			combo = 0;
 			goooo = 0;
+			term_read(0);
 		}
 	}
 	else combo = 0;
 
 	//passthrough!
-	if(p == 0)return;
 	if(goooo == 1)
 	{
 		uart_write(p);

@@ -27,11 +27,11 @@ static void sig_int(int a)
 		if(new-die < 1000*1000)exit(-1);
 		else eventwrite(0, 0, 0, 0);
 	}
-	else eventwrite(0x3, 0x64626b, 0, 0);
+	else eventwrite(0x3, 0x72616863, 0, 0);
 }
 static void sig_tstp(int a)
 {
-	eventwrite(0x1a, 0x64626b, 0, 0);
+	eventwrite(0x1a, 0x72616863, 0, 0);
 }
 
 
