@@ -6,8 +6,11 @@
 int netmgr_write(void*);
 //
 int uart_list();
-int uart_choose();
+int uart_choose(void*);
 int uart_write(void*);
+//
+int i2c_list();
+int i2c_choose(void*);
 //
 int arenastart(void*);
 int arenastop(void*);
@@ -57,6 +60,11 @@ void term_read(u8* buf)
 	}
 	else if(ncmp(buf, "i2c ", 4) == 0)
 	{
+		if(ncmp(buf+4, "ls", 2) == 0)i2c_list();
+		else
+		{
+			i2c_choose(buf+4);
+		}
 	}
 	else if(ncmp(buf, "uart ", 5) == 0)
 	{

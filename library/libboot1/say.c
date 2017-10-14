@@ -58,8 +58,8 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 	int src, dst, tmp;
 	int flag1, flag2, lval, rval;	//%-08.7s  %08llx
 	u64 _x;
-    u8* _s;
-    double _f;
+	u8* _s;
+	double _f;
 
 	src = dst = 0;
 	while(1)
@@ -227,10 +227,12 @@ int mysnprintf(u8* buf, int len, u8* fmt, ...)
 {
 	int ret;
 	va_list arg;
+
 	va_start(arg, fmt);
 	ret = myvsnprintf(buf, len, fmt, arg);
 	va_end(arg);
-    return ret;
+
+	return ret;
 }
 void say(u8* fmt, ...)
 {

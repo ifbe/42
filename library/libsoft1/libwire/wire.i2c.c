@@ -21,6 +21,14 @@ static int i2c_read()
 }
 static int i2c_write(char* p)
 {
+	return 0;
+}
+int i2c_list(char* p)
+{
+	return systemi2c_list(0);
+}
+int i2c_choose(char* p)
+{
 	int ret;
 	u64 data;
 
@@ -67,14 +75,6 @@ static int i2c_write(char* p)
 		systemi2c_choose((int)data,0);
 		return 0;
 	}
-	return 0;
-}
-static int i2c_list(char* p)
-{
-	return systemi2c_list(0);
-}
-static int i2c_choose(char* p)
-{
 	return 0;
 }
 static int i2c_start(u64 type,char* p)
