@@ -114,8 +114,7 @@ int actorwrite(struct event* ev)
 	}
 
 	temp = ev->where;
-	if(temp == 0)temp = (u64)&arena[1];
-	else if(temp < 0xffff)return 0;
+	if(temp < 0xffff)temp = (u64)&arena[1];
 
 	//
 	window = (void*)temp;

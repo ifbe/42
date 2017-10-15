@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "artery.h"
 //
 void sha512sum(void* dst, void* src, int len);
 void rsa2048(
@@ -11,48 +8,15 @@ void rsa2048(
 	u8* modbuf, int modlen);
 int pem2bin(  void* dest, void* mem, int off, int len);
 //
-u32 getrandom();
 int readsocket(   int fd, void* mem, int off, int len);
 int writesocket(  int fd, void* mem, int off, int len);
 int readfile( void* file, void* mem, int off, int len);
 int writefile(void* file, void* mem, int off, int len);
-//
-void printmemory(void*, int);
-void say(void*, ...);
-
-
-
-
-struct object
-{
-	//[0x00,0x0f]
-	u64 type_sock;  //raw, bt, udp, tcp?
-	u64 stage0;
-	u64 type_road;  //ssh, tls?
-	u64 stage1;
-	u64 type_app;   //http2, ws, rdp, vnc?
-	u64 stage2;
-	u64 type_data;  //html, rgb?
-	u64 stage3;
-
-	//[0x40,0x7f]
-	u8 self[0x20];
-	u8 peer[0x20];
-
-	//[0x80,0xff]
-	u8 clientrandom[0x20];
-	u8 serverrandom[0x20];
-	u8 data[0x40];
-};
-
-
 //letsencrypt
 static u8 cert_first[0x1000];
 static u8 cert_second[0x1000];
 static u8 cert_private[256];
 static u8 cert_modulus[256];
-
-
 //testonly
 static u8 fixed[19]= {
 	0x30,0x51,0x30,0x0d,0x06,0x09,0x60,0x86,
@@ -149,7 +113,7 @@ int tls_read_client_hello(struct object* obj, int fd, u8* buf, int len)
 
 	//random
 	q = buf+11;
-	for(j=0;j<0x20;j++)obj[fd].clientrandom[j] = q[j];
+	for(j=0;j<0x20;j++)obj[fd].data[j] = q[j];
 	//printmemory(buf+11, 0x20);
 
 	//sessionid
@@ -370,7 +334,7 @@ int tls_write_server_hello(struct object* obj, int fd, u8* buf, int len)
 	*(u32*)(p+20) = getrandom();
 	*(u32*)(p+24) = getrandom();
 	*(u32*)(p+28) = getrandom();
-	for(j=0;j<0x20;j++)p[j] = obj[fd].serverrandom[j] = p[j];
+	for(j=0;j<0x20;j++)p[j] = obj[fd].data[j+0x20] = p[j];
 	p += 0x20;
 
 	//sessionid length
@@ -655,8 +619,8 @@ int tls_write_server_keyexch(struct object* obj, int fd, u8* buf, int len)
 	)//with cert's private key
 */
 	//put all @ [0,0x84]
-	for(j=0;j<0x20;j++)p[0x00+j] = obj[fd].clientrandom[j];
-	for(j=0;j<0x20;j++)p[0x20+j] = obj[fd].serverrandom[j];
+	for(j=0;j<0x20;j++)p[0x00+j] = obj[fd].data[j];
+	for(j=0;j<0x20;j++)p[0x20+j] = obj[fd].data[j+0x20];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
 	say("c+s+p:\n");
 	printmemory(p, 0x85);

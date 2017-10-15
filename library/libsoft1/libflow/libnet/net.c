@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "artery.h"
 //
 int check_ssh(  void* p, int fd, void* buf, int len);
 int check_tls(  void* p, int fd, void* buf, int len);
@@ -66,40 +63,11 @@ int startsocket(void* addr, int port, int type);
 int stopsocket(u64);
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
-//
-int mysnprintf(void*, int, void*, ...);
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
 
-struct object
-{
-	//[0x00,0x0f]
-	u64 type_sock;	//raw, bt, udp, tcp?
-	u64 stage0;
-	u64 type_road;	//ssh, tls?
-	u64 stage1;
-	u64 type_app;	//http2, ws, rdp, vnc?
-	u64 stage2;
-	u64 type_data;	//html, rgb?
-	u64 stage3;
-
-	//[0x40,0x7f]
-	u8 self[0x20];
-	u8 peer[0x20];
-
-	//[0x80,0xff]
-	u8 data[0x80];
-};
-struct filesys
-{
-	u8 data[256];
-};
 static struct object* obj;
-static struct filesys* fs = 0;
-static u8* dirhome = 0;
 static u8* datahome = 0;
 
 
@@ -643,8 +611,6 @@ int netmgr_delete()
 int netmgr_create(void* w, u64* p)
 {
 	obj = w + 0x000000;
-	fs = w + 0x100000;
-	dirhome = w + 0x200000;
 	datahome = w + 0x300000;
 
 	p[0]=0x776f6c66;

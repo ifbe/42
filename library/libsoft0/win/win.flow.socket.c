@@ -6,14 +6,9 @@
 #include<winsock2.h>
 #include<mswsock.h>
 #include<windows.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include"system.h"
 void startwatcher(SOCKET);
 void stopwatcher(int);
-void printmemory(void*, ...);
-void say(void* , ...);
 
 
 
@@ -25,24 +20,6 @@ struct per_io_data
 	int stage;
 	WSABUF bufing;
 	WSABUF bufdone;
-};
-struct object
-{
-	//[0x00,0x0f]
-	u64 type_sock;  //raw, bt, udp, tcp?
-	u64 stage0;
-	u64 type_road;  //ssh, tls?
-	u64 stage1;
-	u64 type_app;   //http2, ws, rdp, vnc?
-	u64 stage2;
-	u64 type_data;  //html, rgb?
-	u64 stage3;
-
-	//[0x40,0x7f]
-	u8 tempdat[0x40];	//(completion key) | (self and peer addr)
-
-	//[0x80,0xff]
-	u8 overlap[0x80];	//(only per io data)
 };
 static struct object* obj;
 //
@@ -82,7 +59,7 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	char* p;
 	struct per_io_data* pov;
 
-	pov = (void*)(obj[fd].overlap);
+	pov = (void*)(obj[fd].data);
 	p = pov->bufdone.buf;
 	c = pov->bufdone.len;
 	for(j=0;j<c;j++)buf[j] = p[j];
@@ -193,7 +170,7 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		DWORD trans = 0;
 		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[rawlisten/4].overlap);
+		struct per_io_data* pov = (void*)(obj[rawlisten/4].data);
 		pov->fd = rawlisten;
 		pov->stage = 1;
 		pov->bufing.buf = malloc(4096);
@@ -242,7 +219,7 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		DWORD trans = 0;
 		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[udplisten/4].overlap);
+		struct per_io_data* pov = (void*)(obj[udplisten/4].data);
 		pov->fd = udplisten;
 		pov->stage = 1;
 		pov->bufing.buf = malloc(4096);
@@ -286,7 +263,7 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		DWORD trans = 0;
 		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
+		struct per_io_data* pov = (void*)(obj[fd/4].data);
 		pov->fd = fd;
 		pov->stage = 1;
 		pov->bufing.buf = malloc(4096);
@@ -364,7 +341,7 @@ u64 startsocket(char* addr, int port, int type)
 		//clients.2
 		int j;
 		SOCKET tmp;
-		void* pdata = (void*)(obj[tmp/4].tempdat);
+		void* pdata = (void*)(obj[tmp/4].self);
 		struct per_io_data* pov;
 		for(j=0;j<1000;j++)
 		{
@@ -375,7 +352,7 @@ u64 startsocket(char* addr, int port, int type)
 			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
 
 			//
-			pov = (void*)(obj[tmp/4].overlap);
+			pov = (void*)(obj[tmp/4].data);
 			pov->fd = tmp;
 			pov->stage = 0;
 			ret = acceptex(
@@ -420,7 +397,7 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		DWORD trans = 0;
 		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
+		struct per_io_data* pov = (void*)(obj[fd/4].data);
 		pov->fd = fd;
 		pov->stage = 1;
 		pov->bufing.buf = malloc(4096);
@@ -453,7 +430,7 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		DWORD trans = 0;
 		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].overlap);
+		struct per_io_data* pov = (void*)(obj[fd/4].data);
 		pov->fd = fd;
 		pov->stage = 1;
 		pov->bufing.buf = malloc(4096);

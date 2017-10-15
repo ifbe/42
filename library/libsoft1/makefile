@@ -1,5 +1,5 @@
 compiler ?= gcc
-cflag ?= -c -O2 -fPIC
+cflag ?= -c -O2 -fPIC -I.
 target:
 	$(compiler) $(cflag) libbio/bio.chance.c
 	$(compiler) $(cflag) libbio/bio.c

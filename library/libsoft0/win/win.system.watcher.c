@@ -6,17 +6,11 @@
 #include<winsock2.h>
 #include<mswsock.h>
 #include<windows.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include"system.h"
+u64 startthread(void*, void*);
 void stopsocket(SOCKET);
 void startsocket();
-u64 startthread(void*, void*);
-//
 void eventwrite(u64,u64,u64,u64);
-void printmemory(void*, ...);
-void say(void* , ...);
 
 
 
@@ -28,24 +22,6 @@ struct per_io_data
 	int stage;
 	WSABUF bufing;
 	WSABUF bufdone;
-};
-struct object
-{
-	//[0x00,0x0f]
-	u64 type_sock;  //raw, bt, udp, tcp?
-	u64 stage0;
-	u64 type_road;  //ssh, tls?
-	u64 stage1;
-	u64 type_app;   //http2, ws, rdp, vnc?
-	u64 stage2;
-	u64 type_data;  //html, rgb?
-	u64 stage3;
-
-	//[0x40,0x7f]
-	u8 tempdat[0x40];	//(completion key) | (self and peer addr)
-
-	//[0x80,0xff]
-	u8 overlap[0x80];	//(only per io data)
 };
 static struct object* obj;
 static HANDLE iocpfd;
@@ -89,7 +65,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			hh = CreateIoCompletionPort(
 				(void*)fd,
 				iocpfd,
-				(ULONG_PTR)(obj[fd/4].tempdat),
+				(ULONG_PTR)(obj[fd/4].self),
 				0
 			);
 
@@ -127,7 +103,7 @@ void stopwatcher()
 }
 void startwatcher(SOCKET handle)
 {
-	u32* p = (void*)(obj[handle/4].tempdat);
+	u32* p = (void*)(obj[handle/4].self);
 	*p = handle;
 	CreateIoCompletionPort(
 		(void*)handle,

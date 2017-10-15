@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "artery.h"
 //
 int bio_create(void* world,void* func);
 int bio_delete();
@@ -25,61 +22,15 @@ int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //
-void printmemory(void*, int);
-void say(void*, ...);
-//
 void eventwrite(u64,u64,u64,u64);
 void* eventread();
 
 
 
 
-//[0x000000,0x0fffff]:worker
-//[0x100000,0x1fffff]:fs
-//[0x200000,0x2fffff]:dir
-//[0x300000,0x3fffff]:data
-struct element
-{
-	//[00,07]
-	u64 type;
-
-	//[08,0f]
-	u64 id;
-
-	//[10,17]
-	int (*start)(u8*);
-	char padding2[ 8 - sizeof(char*) ];
-
-	//[18,1f]
-	int (*stop)();
-	char padding3[ 8 - sizeof(char*) ];
-
-	//[20,27]
-	int (*list)(u8*);
-	char padding4[ 8 - sizeof(char*) ];
-
-	//[28,2f]
-	int (*choose)(u8*);
-	char padding5[ 8 - sizeof(char*) ];
-
-	//[30,37]
-	int (*read)(u8*);
-	char padding6[ 8 - sizeof(char*) ];
-
-	//[38,3f]
-	int (*write)(u8*);
-	char padding7[ 8 - sizeof(char*) ];
-
-	//[40,ff]
-	u8 data[0xc0];
-};
 static struct element* worker = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
-
-
-
-
 //
 static u8 cmd[256];
 static int len=0;
