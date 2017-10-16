@@ -3,15 +3,6 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void main(int argc,char** argv);
-//libsoft
-void sleep_us(int);
-u64 gettime();
-//libhard
-int snatch(void*);
-int release(void*);
-//libboot
-void say(void*, ...);
-
 
 
 

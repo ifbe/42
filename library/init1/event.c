@@ -11,7 +11,8 @@ void say(char*, ...);
 static int enq = 0;
 static int deq = 0;
 static int lock = 0;
-static char* eventqueue;        //stdevent
+char eventqueue[0x100000];
+//static char* eventqueue;        //stdevent
 
 
 
@@ -53,12 +54,4 @@ void* eventread()
 	ret = deq;
 	deq = (deq+0x20)%0x100000;
 	return eventqueue + ret;
-}
-
-
-
-
-void initevent(void* addr)
-{
-	eventqueue = addr;
 }

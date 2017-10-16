@@ -1,5 +1,6 @@
 clean:
-	make -s -C init clean
+	make -s -C init0 clean
+	make -s -C init1 clean
 	make -s -C libboot0 clean
 	make -s -C libboot1 clean
 	make -s -C libhard0 clean

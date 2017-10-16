@@ -2,6 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+//main
+void* eventread();
+void eventwrite(u64,u64,u64,u64);
 //libui1
 int actorread();
 int actorwrite(void* event);
@@ -21,8 +24,6 @@ void say(void*, ...);
 //
 void* birth();
 void death();
-void* eventread();
-void eventwrite(u64,u64,u64,u64);
 
 
 
