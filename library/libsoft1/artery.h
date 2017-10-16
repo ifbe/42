@@ -15,8 +15,8 @@ struct object
 	u64 stage1;
 
 	//[0x20,0x3f]
-	u64 type_app;	//http2, ws, rdp, vnc?
-	u64 stage2;
+	u64 ignore0;	//http2, ws, rdp, vnc?
+	u64 ignore1;
 	u64 type_data;	//html, rgb?
 	u64 stage3;
 

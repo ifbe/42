@@ -12,9 +12,9 @@ all:
 	make -s -C $(library)/libhard1 \
 	cflag="-c -O2"
 	make -s -C $(library)/libsoft0 win \
-	cflag="-c -O2"
+	cflag="-c -O2 -I."
 	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2"
+	cflag="-c -O2 -I."
 	make -s -C $(library)/libui0 wingl \
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libui1 \
