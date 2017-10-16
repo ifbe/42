@@ -35,7 +35,6 @@ target:
 	$(compiler) $(cflag) content/levi/levi.c
 	$(compiler) $(cflag) content/content.c
 	$(compiler) $(cflag) helper/helper.term.c
-	$(compiler) $(cflag) helper/helper.wire.c
 	$(compiler) $(cflag) helper/helper.c
 	$(compiler) $(cflag) lib1d/html/html.shape.c
 	$(compiler) $(cflag) lib1d/json/json.shape.c

@@ -9,6 +9,13 @@
 
 
 
+struct point
+{
+	u16 x;
+	u16 y;
+	u16 z;
+	u16 id;
+};
 struct event
 {
 	u64 why;
@@ -16,12 +23,21 @@ struct event
 	u64 where;
 	u64 when;
 };
-struct point
+struct relation
 {
-	u16 x;
-	u16 y;
-	u16 z;
-	u16 id;
+	//[0x00,0x1f]
+	u64 destchip;
+	u64 destfoot;
+	u64 desttype;
+	int samepinprevchip;
+	int samepinnextchip;
+
+	//0x20,0x3f
+	u64 selfchip;
+	u64 selffoot;
+	u64 selftype;
+	int samechipprevpin;
+	int samechipnextpin;
 };
 
 
@@ -142,22 +158,6 @@ struct actor
 
 	//
 	char priv[0x80];
-};
-struct relation
-{
-	//[0x00,0x1f]
-	u64 destchip;
-	u64 destfoot;
-	u64 desttype;
-	int samepinprevchip;
-	int samepinnextchip;
-
-	//0x20,0x3f
-	u64 selfchip;
-	u64 selffoot;
-	u64 selftype;
-	int samechipprevpin;
-	int samechipnextpin;
 };
 struct style
 {

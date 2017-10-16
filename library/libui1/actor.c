@@ -16,7 +16,7 @@ int term_read(void*);
 int term_write(void*);
 //
 void* connect_read(u64);
-int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
+int connect_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 //
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
@@ -27,6 +27,8 @@ void backgroundcolor(void*, u32);
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
+static struct style* style = 0;
+static int stlen = 0;
 //
 static u32 menu=0;
 
@@ -196,11 +198,17 @@ void actorchoose()
 }
 int actorstart(struct arena* win, struct actor* act)
 {
-	connect_write(
-		win, 0, __win__,
-		act, 0, __act__);
+	struct style* st = (void*)style + stlen;
+	stlen += sizeof(struct style);
+
+	st->cx = 0x4000 + (getrandom()%0x1000)*8;
+	st->cy = 0x4000 + (getrandom()%0x1000)*8;
+	st->wantw = 0x8000;
+	st->wanth = 0x8000;
+	st->dim = 2;
 
 	act->start();
+	connect_write(win, st, __win__, act, 0, __act__);
 }
 int actorstop()
 {
@@ -215,6 +223,7 @@ void actorcreate(u8* type, u8* addr)
 	//where
 	arena = (void*)(addr+0);
 	actor = (void*)(addr+0x100000);
+	style = (void*)(addr+0x200000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -248,6 +257,7 @@ void actordelete()
 	lib2d_delete();
 	lib3d_delete();
 
+	style = 0;
 	actor = 0;
 	arena = 0;
 }
