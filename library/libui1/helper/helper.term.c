@@ -5,6 +5,9 @@
 //
 int netmgr_write(void*);
 //
+int sound_start();
+int vision_start();
+//
 int uart_list();
 int uart_choose(void*);
 int uart_write(void*);
@@ -75,6 +78,15 @@ void term_read(u8* buf)
 			goooo = 1;
 		}
 	}
+	else if(ncmp(buf, "sound", 5) == 0)
+	{
+		sound_start();
+	}
+	else if(ncmp(buf, "vision", 6) == 0)
+	{
+		vision_start();
+	}
+
 empty:
 	//command prompt
 	say("[void]");

@@ -35,38 +35,60 @@ struct object
 };
 struct element
 {
-	//[00,07]
+	//[00,20]
 	u64 type;
-
-	//[08,0f]
 	u64 id;
+	union{
+		void* first;
+		u64 pad0;
+	};
+	union{
+		void* last;
+		u64 pad1;
+	};
 
-	//[10,17]
-	int (*start)(u8*);
-	char padding2[ 8 - sizeof(char*) ];
+	//[20,3f]
+	u64 buf;
+	u64 len;
+	u64 info;
+	u64 flag;
 
-	//[18,1f]
-	int (*stop)();
-	char padding3[ 8 - sizeof(char*) ];
+	//[40,77]
+	union{
+		int (*create)();
+		char padding0[8];
+	};
+	union{
+		int (*delete)();
+		char padding1[8];
+	};
+	union{
+		int (*start)();
+		char padding2[8];
+	};
+	union{
+		int (*stop)();
+		char padding3[8];
+	};
+	union{
+		int (*list)();
+		char padding4[8];
+	};
+	union{
+		int (*choose)();
+		char padding5[8];
+	};
+	union{
+		int (*read)(void* win, void* act, void* style, void* player);
+		char padding6[8];
+	};
+	union{
+		int (*write)(void* event);
+		char padding7[8];
+	};
 
-	//[20,27]
-	int (*list)(u8*);
-	char padding4[ 8 - sizeof(char*) ];
-
-	//[28,2f]
-	int (*choose)(u8*);
-	char padding5[ 8 - sizeof(char*) ];
-
-	//[30,37]
-	int (*read)(u8*);
-	char padding6[ 8 - sizeof(char*) ];
-
-	//[38,3f]
-	int (*write)(u8*);
-	char padding7[ 8 - sizeof(char*) ];
-
-	//[40,ff]
-	u8 data[0xc0];
+	//[80,ff]
+	u8 data[0x80];
 };
 
 

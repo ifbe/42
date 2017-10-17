@@ -31,9 +31,10 @@ static double* phase;
 
 
 
-//
+static int bb = 0;
 void sound_explain(u64* p)
 {
+	if(bb != 0)say("sound@%x\n",p[0]);
 }
 void sound_output(double* real, double* imag, u16* pcmout)
 {
@@ -62,16 +63,16 @@ void sound_output(double* real, double* imag, u16* pcmout)
 
 
 //
-static void sound_list()
+void sound_list()
 {
 }
-static void sound_choose()
+void sound_choose()
 {
 }
-static void sound_read()
+void sound_read()
 {
 }
-static void sound_write(char* buf)
+void sound_write(char* buf)
 {
 	u64 j;
 	for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
@@ -86,12 +87,14 @@ static void sound_write(char* buf)
 
 	sound_output(real,imag,pcmout);
 }
-static void sound_start()
+void sound_start()
 {
+	bb = 1;
 	startsound(44100, 2, pcmin, 0x40000);
 }
-static void sound_stop()
+void sound_stop()
 {
+	bb = 0;
 	stopsound();
 }
 void sound_create(void* w, u64* p)

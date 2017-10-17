@@ -108,49 +108,35 @@ struct actor
 	u64 info;
 	u64 flag;
 
-	//[40,47]
+	//[40,77]
 	union{
 		int (*create)();
 		char padding0[8];
 	};
-
-	//[48,4f]
 	union{
 		int (*delete)();
 		char padding1[8];
 	};
-
-	//[50,57]:开始
 	union{
 		int (*start)();
 		char padding2[8];
 	};
-
-	//[58,5f]:结束
 	union{
 		int (*stop)();
 		char padding3[8];
 	};
-
-	//[60,67]:观察
 	union{
 		int (*list)();
 		char padding4[8];
 	};
-
-	//[68,6f]:调整
 	union{
 		int (*choose)();
 		char padding5[8];
 	};
-
-	//[70,77]:输出
 	union{
 		int (*read)(void* win, void* act, void* style, void* player);
 		char padding6[8];
 	};
-
-	//[78,7f]:输入
 	union{
 		int (*write)(void* event);
 		char padding7[8];

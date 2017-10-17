@@ -22,9 +22,9 @@ u64 since1970()
 
 u64 gettime()
 {
-        struct timeval t;
-        gettimeofday(&t,0);
-        return (t.tv_sec)*1000*1000 + (t.tv_usec);
+	struct timeval t;
+	gettimeofday(&t,0);
+	return (t.tv_sec)*1000*1000 + (t.tv_usec);
 }
 u64 getdate()
 {

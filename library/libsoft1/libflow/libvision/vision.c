@@ -9,36 +9,39 @@ void say(void*, ...);
 
 
 
+static int bb = 0;
 void vision_explain(u64* p)
 {
-	//say("%llx\n",p[0]);
+	if(bb != 0)say("vision@%x\n",p[0]);
 }
 
 
 
 
-static int vision_list()
+int vision_list()
 {
 	return 0;
 }
-static int vision_choose()
+int vision_choose()
 {
 	return 0;
 }
-static int vision_read()
+int vision_read()
 {
 	return 0;
 }
-static int vision_write()
+int vision_write()
 {
 	return 0;
 }
-static int vision_start()
+int vision_start()
 {
+	bb = 1;
 	return startvision();
 }
-static int vision_stop()
+int vision_stop()
 {
+	bb = 0;
 	return stopvision();
 }
 void vision_create(void* w, u64* p)

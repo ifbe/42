@@ -1,7 +1,5 @@
 library?=../../library
 all:
-	make -s -C $(library)/init0
-	make -s -C $(library)/init1
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1
 	make -s -C $(library)/libhard0 x64
@@ -15,8 +13,6 @@ all:
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/init0/startapp.o \
-	$(library)/init1/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -27,8 +23,6 @@ a:
 	$(library)/libui1/*.o
 so:
 	gcc -shared -o 42.so \
-	$(library)/init0/startapp.o \
-	$(library)/init1/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -39,8 +33,6 @@ so:
 	$(library)/libui1/*.o
 program:
 	gcc -o a.out \
-	$(library)/init0/startapp.o \
-	$(library)/init1/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
