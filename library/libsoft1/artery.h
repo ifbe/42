@@ -10,13 +10,19 @@ struct object
 {
 	//[0x00,0x0f]
 	u64 type_sock;	//raw, bt, udp, tcp?
-	u64 stage0;
-	u64 type_road;	//ssh, tls?
-	u64 stage1;
+	u64 haha;
+	union{
+		void* first;
+		u64 pad0;
+	};
+	union{
+		void* last;
+		u64 pad1;
+	};
 
 	//[0x20,0x3f]
-	u64 ignore0;	//http2, ws, rdp, vnc?
-	u64 ignore1;
+	u64 type_road;	//http2, ws, rdp, vnc?
+	u64 stage1;
 	u64 type_data;	//html, rgb?
 	u64 stage3;
 
