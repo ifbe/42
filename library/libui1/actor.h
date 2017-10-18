@@ -60,7 +60,7 @@ struct arena
 
 	//data
 	union{
-		u64 buf;
+		void* buf;
 		u64 fd;
 	};
 	union{

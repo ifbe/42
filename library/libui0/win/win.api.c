@@ -500,15 +500,9 @@ void windowstart(struct window* this)
 	int j;
 	this->w = 512;
 	this->h = 512;
-	if(this->type == hex32('b','u','f',0))
+	if(this->type == hex32('w','i','n',0))
 	{
 		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-		return;
-	}
-	else
-	{
-		this->type = hex32('w', 'i', 'n', 0);
-		this->fmt = hex32('a', 'p', 'i', 0);
 
 		for(j=0;j<16;j++)
 		{

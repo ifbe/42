@@ -153,9 +153,12 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 			_x = va_arg(arg, u64);
 
 			j = data2hexstr(_x, buf+dst);
-			if(j >= lval)
+			if(lval == 0)dst += j;
+			else if(j == lval)dst += j;
+			else if(j > lval)
 			{
-				dst += j;
+				for(k=0;k<lval;k++)buf[dst+k] = buf[dst+k+j-lval];
+				dst += lval;
 			}
 			else
 			{

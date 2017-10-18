@@ -281,8 +281,8 @@ int serve_ws(struct object* obj, int fd, u8* buf, int len)
 			websocket_write(fd, "haha@3", 6);
 			obj[fd].stage1 = 4;
 
-			obj[fd].type_data = WS;
-			obj[fd].stage3 = 0;
+			obj[fd].type_data = 0x2b77;
+			obj[fd].stage3 = WS;
 		}
 		else
 		{

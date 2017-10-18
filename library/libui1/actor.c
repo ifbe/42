@@ -22,6 +22,7 @@ void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
 void backgroundcolor(void*, u32);
+int actorstart(struct arena* win, struct actor* act);
 
 
 
@@ -38,7 +39,7 @@ static u32 menu=0;
 int actorread_one(struct arena* window)
 {
 	struct arena* canvas;
-	struct actor* actor;		//2048?
+	struct actor* act;		//2048?
 
 	struct relation* rel;		//link
 	struct style* st;			//style
@@ -76,11 +77,12 @@ int actorread_one(struct arena* window)
 		}
 		else if(rel->selftype == __act__)
 		{
-			//say("%x\n",rel);
 			st = (void*)(rel->destfoot);
 			pl = (void*)(rel->selffoot);
-			actor = (void*)(rel->selfchip);
-			actor->read(canvas, actor, st, pl);
+			act = (void*)(rel->selfchip);
+			//say("%x,%x,%x,%x\n", canvas, act, st, pl);
+
+			act->read(canvas, act, st, pl);
 		}
 		rel = connect_read(rel->samepinnextchip);
 	}
@@ -120,13 +122,20 @@ int actorread()
 int actorwrite(struct event* ev)
 {
 	u64 temp;
-	struct arena* window;
-	struct actor* actor;		//2048?
+	struct arena* win;
+	struct actor* act;		//2048?
 	struct style* st;			//style
 	struct relation* rel;		//link
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//
+	if(ev->what == hex32('w','+',0,0))
+	{
+		//say("%x,%x,%x,%x\n", ev->why, ev->what, ev->where, ev->when);
+		temp = arenastart(hex32('w','s',0,0), ev->where);
+		actorstart(&arena[temp], &actor[0]);
+		return 0;
+	}
 	if(ev->what == hex32('s','t','r',0))
 	{
 		term_write((void*)(ev->why));
@@ -134,12 +143,13 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
+	//
 	temp = ev->where;
 	if(temp < 0xffff)temp = (u64)&arena[1];
 
 	//
-	window = (void*)temp;
-	if(window->fmt == hex32('c','l','i',0))
+	win = (void*)temp;
+	if(win->fmt == hex32('c','l','i',0))
 	{
 		if(ev->what == hex32('c','h','a','r'))
 		{
@@ -149,7 +159,7 @@ int actorwrite(struct event* ev)
 	}
 
 	//
-	rel = window->first;
+	rel = win->first;
 	if(rel == 0)return 0;
 	if(rel->samepinnextchip == 0)return 0;
 	while(1)
@@ -159,8 +169,8 @@ int actorwrite(struct event* ev)
 	}
 	if(1)
 	{
-		actor = (void*)(rel->selfchip);
-		actor->write(ev);
+		act = (void*)(rel->selfchip);
+		act->write(ev);
 	}
 
 	return 0;
@@ -219,14 +229,15 @@ int actorstart(struct arena* win, struct actor* act)
 {
 	struct style* st = (void*)style + stlen;
 	stlen += sizeof(struct style);
-
+say("alive1\n");
 	st->cx = 0x4000 + (getrandom()%0x1000)*8;
 	st->cy = 0x4000 + (getrandom()%0x1000)*8;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
 	st->dim = 2;
-
+say("alive2\n");
 	act->start();
+say("alive3\n");
 	connect_write(win, st, __win__, act, 0, __act__);
 }
 int actorstop()

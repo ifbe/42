@@ -11,7 +11,7 @@
 //voice
 int voicecreate(void*);
 int voicedelete();
-int voicestart(int);
+int voicestart(void*);
 int voicestop();
 int voicelist();
 int voicechoose();
@@ -20,7 +20,7 @@ int voicewrite(void*);
 //network
 int netwincreate(void*);
 int netwindelete();
-int netwinstart(int);
+int netwinstart(void*);
 int netwinstop();
 int netwinlist();
 int netwinchoose();
@@ -36,12 +36,15 @@ int windowchoose();
 int windowread();
 int windowwrite(void* dst, void* src);
 //
+int websocket_write(int fd, void* buf, int len);
+//
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 void* startmemory(int);
 int stopmemory(void*);
 //
+void* connect_read(int);
 void connect_write(void*,u64,u64, void*,u64,u64);
 //
 void printmemory(void*, int);
@@ -62,63 +65,70 @@ int arenaread(struct window* dst, struct window* src)
 }
 int arenawrite(struct window* dst, struct window* src)
 {
-	windowwrite(&arena[1], &arena[0]);
+	void* buf;
+	if(dst->type == hex32('w','i','n',0))
+	{
+		windowwrite(&arena[1], &arena[0]);
+	}
+	else if(dst->type == hex32('w','s', 0, 0))
+	{
+		websocket_write(dst->fd, src->buf, src->info[0]);
+	}
 }
-/*
-u64 arenalist(u64 dispid, u64 property)
+int arenastart(u64 type, int fd)
 {
+	struct window* win;
 	int j;
-	if(ncmp("buffer", &property, 8) == 0)return arena[dispid].buf;
-	else if(ncmp("format", &property, 8) == 0)return arena[dispid].fmt;
-	else if(ncmp("width" , &property, 8) == 0)return arena[dispid].w;
-	else if(ncmp("height", &property, 8) == 0)return arena[dispid].h;
-
-	//if(property==unknown)
-	for(j=0;j<10;j++)
+	if(type == hex32('b', 'u', 'f', 0))
 	{
-		if(arena[j].fmt == 0)break;
+		if(arena->type == 0)
+		{
+			arena->type = hex32('b', 'u', 'f', 0);
+			arena->fmt = hex32('a', 'n', 'y', 0);
+			arena->first = 0;
+			arena->last = 0;
 
-		say(
-		"%llx,%llx,%llx,%llx\n"
-		"%llx,%llx,%llx,%llx\n",
-		arena[j].type,
-		arena[j].fmt,
-		arena[j].buf,
-		arena[j].len,
-		arena[j].w,
-		arena[j].h,
-		arena[j].d,
-		arena[j].dim
-		);
+			arena->buf = startmemory(0x100000*16);
+			arena->len = 0x100000*16;
+			windowstart(arena);
+		}
+		return 0;
 	}
-	return 0;
-}
-u64 arenachoose(u64 dispid, u64 property, u64 what)
-{
-	if(ncmp("fmt", &property, 8) == 0)arena[dispid].fmt = what;
-	else if(ncmp("buf", &property, 8) == 0)arena[dispid].buf = what;
-	else if(ncmp("width" , &property, 8) == 0)arena[dispid].w = what;
-	else if(ncmp("height", &property, 8) == 0)arena[dispid].h = what;
-	else what = 0;	//fail
-
-	return what;
-}
-*/
-int arenastart(struct window* win)
-{
-	if(win->type == hex32('b', 'u', 'f', 0))
+	else
 	{
-		win->fmt = hex32('a', 'n', 'y', 0);
+		j = 1;
+		while(1)
+		{
+			win = &arena[j];
+			if(win->type == 0)break;
 
-		win->buf = (u64)startmemory(0x100000*16);
-		win->len = 0x100000*16;
+			j++;
+			if(j >= 0x100)return -1;
+		}
+
+		if(type == hex32('w', 'i', 'n', 0))
+		{
+			win->type = hex32('w', 'i', 'n', 0);
+			win->fmt = 0;
+			win->first = 0;
+			win->last = 0;
+
+			windowstart(win);
+			connect_write(arena, 0, 0, win, 0, 0);
+			return j;
+		}
+		else if(type == hex32('w','s',0,0))
+		{
+			win->type = hex32('w', 's', 0, 0);
+			win->fmt = hex32('h','t','m','l');
+			win->first = 0;
+			win->last = 0;
+
+			win->fd = fd;
+			connect_write(arena, 0, 0, win, 0, 0);
+			return j;
+		}
 	}
-
-	//win: create window
-	//buf: register bmp&ximage
-	windowstart(win);
-	win->first = 0;
-	win->last = 0;
 	return 0;
 }
 int arenastop(struct window* win)
@@ -127,6 +137,8 @@ int arenastop(struct window* win)
 
 	win->type = 0;
 	win->fmt = 0;
+	win->first = 0;
+	win->last = 0;
 	return 0;
 }
 void arenacreate(u8* type, u8* addr)
@@ -141,13 +153,8 @@ void arenacreate(u8* type, u8* addr)
 	voicecreate(arena);
 
 	//
-	arena[0].type = hex32('b', 'u', 'f', 0);
-	arenastart(&arena[0]);
-
-	//
-	arena[1].type = hex32('w', 'i', 'n', 0);
-	arenastart(&arena[1]);
-	connect_write(&arena[0], 0, 0, &arena[1], 0, 0);
+	arenastart(hex32('b', 'u', 'f', 0), 0);
+	arenastart(hex32('w', 'i', 'n', 0), 0);
 
 	//say("[c,f):createed arena\n");
 }

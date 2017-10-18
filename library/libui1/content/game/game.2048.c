@@ -159,9 +159,10 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	u32 color;
 	int (*table)[4] = (void*)buffer + num*16*4;
 	u8* buf = (u8*)(win->buf);
+	int len = 0;
 
-	buf += mysnprintf(
-		buf, 0x1000,
+	len += mysnprintf(
+		buf+len, 0x1000,
 		"<style type=\"text/css\">"
 		".rect{"
 		"border:1px solid #000;"
@@ -180,18 +181,19 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 			if(table[y][x] == 0)continue;
 
 			color = the2048_color(table[y][x]);
-			buf += mysnprintf(
-				buf, 0x1000,
+			len += mysnprintf(
+				buf+len, 0x1000,
 				"<div class=\"rect\" style=\""
 				"left:%d%%;"
 				"top:%d%%;"
 				"background:#%06x;"
 				"\">%d</div>",
 				25*x, 25*y,
-				color, table[y][x]
+				color&0xffffff, table[y][x]
 			);
 		}
 	}
+	win->info[0] = len;
 }
 static void the2048_read_tui(struct arena* win, struct actor* act, struct style* rel)
 {
