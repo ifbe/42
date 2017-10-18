@@ -35,66 +35,85 @@ static u32 menu=0;
 
 
 
-int actorread()
+int actorread_one(struct arena* window)
 {
-	int j;
-	struct arena* window;		//window
-	struct arena* canvas;		//buffer
+	struct arena* canvas;
 	struct actor* actor;		//2048?
-	struct relation* rel;		//link
 
+	struct relation* rel;		//link
 	struct style* st;			//style
 	void* pl;
 
-	for(j=1;j<2;j++)
+	//cli
+	if(window->fmt == hex32('c','l','i',0))return 0;
+
+	//title
+	//if(window->fmt == hex32('c','l','i',0))return 0;
+
+	//canvas
+	if(window->type != hex32('b', 'u', 'f', 0))
 	{
-		window = &arena[j];
-		if(window->type == 0)break;
+		canvas = &arena[0];
 
-		//cli
-		if(window->fmt == hex32('c','l','i',0))return 0;
+		canvas->fmt = window->fmt;
+		canvas->w = window->w;
+		canvas->h = window->h;
 
-		//title
-		//if(window->fmt == hex32('c','l','i',0))return 0;
+		canvas->info[0] = 0;
+		canvas->info[1] = 0;
+	}
+	else canvas = window;
 
-		//canvas
-		if(window->type != hex32('b', 'u', 'f', 0))
+	//doit
+	rel = window->first;
+	while(1)
+	{
+		if(rel == 0)break;
+
+		if(rel->selftype == 0)
 		{
-			canvas = &arena[0];
-
-			canvas->fmt = window->fmt;
-			canvas->w = window->w;
-			canvas->h = window->h;
-
-			canvas->info[0] = 0;
-			canvas->info[1] = 0;
+			backgroundcolor(canvas, 0xff000000);
 		}
-		else canvas = window;
-
-		//doit
-		rel = window->first;
-		while(1)
+		else if(rel->selftype == __act__)
 		{
-			if(rel == 0)break;
-
-			if(rel->selftype == 0)
-			{
-				backgroundcolor(canvas, 0xff000000);
-			}
-			else if(rel->selftype == __act__)
-			{
-				//say("%x\n",rel);
-				st = (void*)(rel->destfoot);
-				pl = (void*)(rel->selffoot);
-				actor = (void*)(rel->selfchip);
-				actor->read(canvas, actor, st, pl);
-			}
-			rel = connect_read(rel->samepinnextchip);
+			//say("%x\n",rel);
+			st = (void*)(rel->destfoot);
+			pl = (void*)(rel->selffoot);
+			actor = (void*)(rel->selfchip);
+			actor->read(canvas, actor, st, pl);
 		}
+		rel = connect_read(rel->samepinnextchip);
+	}
 
-		//send
-		arenawrite(&arena[j], &arena[0]);
-	}//for
+	//send
+	arenawrite(window, &arena[0]);
+}
+int actorread()
+{
+	u64 temp;
+	struct arena* canvas;
+	struct arena* window;
+	struct relation* rel;
+
+	canvas = &arena[0];
+	rel = canvas->first;
+	while(1)
+	{
+		if(rel == 0)break;
+		if(rel->destchip == 0)break;
+
+		if(rel->selfchip != 0)
+		{
+			window = (void*)(rel->selfchip);
+			//say("	%x\n",window);
+
+			actorread_one(window);
+		}
+		//else say("%x\n",rel->destchip);
+
+		temp = rel->samepinnextchip;
+		rel = connect_read(temp);
+	}
 
 	return 0;
 }

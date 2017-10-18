@@ -34,8 +34,8 @@ struct item
 		u64 pad1;
 	};
 };
-static u8 connect[0x100000];
-static int wirelen = 0;
+static u8 wirebuf[0x100000];
+static int wirelen = 0x40;
 
 
 
@@ -47,7 +47,7 @@ void* connect_write_new(
 	struct relation* w;
 	if(wirelen > maxlen-0x40)return 0;
 
-	w = (void*)connect + wirelen;
+	w = (void*)wirebuf + wirelen;
 	wirelen += sizeof(struct relation);
 
 	//1.dest
@@ -99,8 +99,8 @@ int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64
 			w1 = connect_write_new(h1, ufoot, utype, 0, 0, 0);
 			h1->first = w1;
 
-			wc->samechipprevpin = (void*)w1 - (void*)connect;
-			w1->samechipnextpin = (void*)wc - (void*)connect;
+			wc->samechipprevpin = (void*)w1 - (void*)wirebuf;
+			w1->samechipnextpin = (void*)wc - (void*)wirebuf;
 		}
 	}
 
@@ -126,12 +126,11 @@ int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64
 	wc = w1;
 	while(wc->samepinnextchip != 0)
 	{
-		wc = (void*)connect + (wc->samepinnextchip);
+		wc = (void*)wirebuf + (wc->samepinnextchip);
 	}
-	wc->samepinnextchip = (void*)w2 - (void*)connect;
-	w2->samepinprevchip = (void*)wc - (void*)connect;
+	wc->samepinnextchip = (void*)w2 - (void*)wirebuf;
+	w2->samepinprevchip = (void*)wc - (void*)wirebuf;
 	w2->samepinnextchip = 0;		//certainly
-
 
 
 
@@ -139,12 +138,12 @@ int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64
 	wc = h2->first;
 	while(wc->samechipnextpin != 0)
 	{
-		wc = (void*)connect + (wc->samechipnextpin);
+		wc = (void*)wirebuf + (wc->samechipnextpin);
 	}
 	if(wc != w2)
 	{
-		wc->samechipnextpin = (void*)w2 - (void*)connect;
-		w2->samechipprevpin = (void*)wc - (void*)connect;
+		wc->samechipnextpin = (void*)w2 - (void*)wirebuf;
+		w2->samechipprevpin = (void*)wc - (void*)wirebuf;
 		w2->samechipnextpin = 0;
 	}
 
@@ -153,5 +152,5 @@ int connect_write(void* uchip, u64 ufoot, u64 utype, void* bchip, u64 bfoot, u64
 void* connect_read(int off)
 {
 	if(off == 0)return 0;
-	return (void*)connect + off;
+	return (void*)wirebuf + off;
 }

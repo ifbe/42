@@ -42,6 +42,8 @@ int cmp(void*, void*);
 void* startmemory(int);
 int stopmemory(void*);
 //
+void connect_write(void*,u64,u64, void*,u64,u64);
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -104,22 +106,12 @@ u64 arenachoose(u64 dispid, u64 property, u64 what)
 */
 int arenastart(struct window* win)
 {
-	int j;
-	if(win == 0)
-	{
-		for(j=0;j<10;j++)
-		{
-			if(arena[j].type == 0)win = &arena[j];
-		}
-	}
-
 	if(win->type == hex32('b', 'u', 'f', 0))
 	{
-		arena[0].fmt = hex32('a', 'n', 'y', 0);
+		win->fmt = hex32('a', 'n', 'y', 0);
 
-		arena[0].buf = (u64)startmemory(0x100000*16);
-		arena[0].len = 0x100000*16;
-
+		win->buf = (u64)startmemory(0x100000*16);
+		win->len = 0x100000*16;
 	}
 
 	//win: create window
@@ -155,6 +147,7 @@ void arenacreate(u8* type, u8* addr)
 	//
 	arena[1].type = hex32('w', 'i', 'n', 0);
 	arenastart(&arena[1]);
+	connect_write(&arena[0], 0, 0, &arena[1], 0, 0);
 
 	//say("[c,f):createed arena\n");
 }
