@@ -229,15 +229,15 @@ int actorstart(struct arena* win, struct actor* act)
 {
 	struct style* st = (void*)style + stlen;
 	stlen += sizeof(struct style);
-say("alive1\n");
+
 	st->cx = 0x4000 + (getrandom()%0x1000)*8;
 	st->cy = 0x4000 + (getrandom()%0x1000)*8;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
 	st->dim = 2;
-say("alive2\n");
+
 	act->start();
-say("alive3\n");
+
 	connect_write(win, st, __win__, act, 0, __act__);
 }
 int actorstop()

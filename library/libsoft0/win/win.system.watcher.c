@@ -55,9 +55,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		if(ret == 0)continue;
 
 		fd = pov->fd;
-		printf("th=%d,ret=%d,trans=%d,listen=%d,this=%d\n",
-			th, ret, trans, *key, fd
-		);
+		//printf("th=%d,ret=%d,trans=%d,listen=%d,this=%d\n",
+		//th, ret, trans, *key, fd);
 
 		//accept
 		if(pov->stage == 0)
@@ -94,7 +93,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		pov->bufing.buf = malloc(4096);
 		pov->bufing.len = 4096;
 		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-		printf("(recv)ret=%d,err=%d\n", ret, WSAGetLastError());
+		//printf("(recv)ret=%d,err=%d\n", ret, WSAGetLastError());
 	}
 	return 0;
 }
