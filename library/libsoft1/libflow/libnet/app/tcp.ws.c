@@ -58,51 +58,53 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 }
 int websocket_read(u8* buf, int len)
 {
+//#define dbg say
+#define dbg
 	int i,j,k;
 	int type,masked;
 	unsigned char key[4];
 	u64 count;
 
 	//byte0.bit7
-	if((buf[0]&0x80)==0x80)say("tail,");
-	else say("part,");
+	if((buf[0]&0x80)==0x80)dbg("tail,");
+	else dbg("part,");
 
 	//byte0.[3,0]
 	k = buf[0]&0xf;
 	if(k==0)
 	{
 		type=0;
-		say("external,");
+		dbg("external,");
 	}
 	else if(k==1)
 	{
 		type=1;
-		say("text,");
+		dbg("text,");
 	}
 	else if(k==2)
 	{
 		type=2;
-		say("binary,");
+		dbg("binary,");
 	}
 	else if(k==9)
 	{
-		say("ping\n");
+		dbg("ping\n");
 		return 0;
 	}
 	else if(k==0xa)
 	{
-		say("pong\n");
+		dbg("pong\n");
 		return 0;
 	}
 	else if(k==8)
 	{
-		//say("[%d]type8->close\n",fd);
+		//dbg("[%d]type8->close\n",fd);
 		//epoll_del(fd);
 		return -1;
 	}
 	else
 	{
-		//say("[%d]known->close\n",fd);
+		//dbg("[%d]known->close\n",fd);
 		//epoll_del(fd);
 		return -2;
 	}
@@ -111,12 +113,12 @@ int websocket_read(u8* buf, int len)
 	if( (buf[1]>>7) == 1)
 	{
 		masked=1;
-		say("masked,");
+		dbg("masked,");
 	}
 	else
 	{
 		masked=0;
-		say("unmasked,");
+		dbg("unmasked,");
 	}
 
 	//
@@ -144,15 +146,15 @@ int websocket_read(u8* buf, int len)
 		count = k;
 		k = 2;
 	}
-	say("count=%llx,", count);
+	dbg("count=%llx,", count);
 
-	if(masked != 1)say("\n");
+	if(masked != 1)dbg("\n");
 	else
 	{
 		*(u32*)key = *(u32*)(buf + k);
 		j = k;
 		k += 4;
-		say("key=%x\n",*(u32*)key);
+		dbg("key=%x\n",*(u32*)key);
 
 		if(type==1)
 		{
@@ -161,14 +163,14 @@ int websocket_read(u8* buf, int len)
 			for(i=0;i<count;i++)
 			{
 				buf[i] = buf[i+k] ^ key[i%4];
-				//say("%c",buf[j+i]);
+				//dbg("%c",buf[j+i]);
 			}
 			buf[count] = 0;
-			//say("\n");
+			//dbg("\n");
 		}//type=ascii
 	}//masked=1
 
-	say("%s\n",buf);
+	dbg("%s\n",buf);
 	return count;
 }
 
@@ -230,81 +232,108 @@ int websocket_write(u64 fd, void* buf, int len)
 
 #define ws 0x7377
 #define WS 0x5357
-int serve_ws(struct object* obj, int fd, u8* buf, int len)
+int serve_ws_client_hello(struct object* obj, int fd, u8* buf, int len)
 {
-	int ret;
-	u64 temp;
+	printmemory(buf, len);
+	obj[fd].stage1 = 1;
+	return ws;
+}
+int serve_ws_client_data(struct object* obj, int fd, u8* buf, int len)
+{
+	printmemory(buf, len);
+	return ws;
+}
+int serve_ws_server_hello(struct object* obj, int fd, u8* buf, int len)
+{
+	int ret = websocket_read_handshake(fd, buf, len);
+	if(ret <= 0)goto theend;
 
-	temp = obj[fd].type_road;
-	if(temp == ws)
-	{
-		if(buf[0] == 'H')	//response
-		{
-			printmemory(buf, len);
-		}
-		else		//real data
-		{
-		}
-		goto theend;
-	}
+	ret = writesocket(fd, buf, 0, ret);
+	if(ret <= 0)goto theend;
+
+	obj[fd].stage1 = 1;
+
+theend:
+	return WS;
+}
+int serve_ws_server_data(struct object* obj, int fd, u8* buf, int len)
+{
+	u64 temp;
+	len = websocket_read(buf, len);
+	if(len < 0)goto theend;
 
 	temp = obj[fd].stage1;
-	if(temp == 0)
+	if(temp == 1)
 	{
-		//
-		ret = websocket_read_handshake(fd, buf, len);
-		if(ret <= 0)goto theend;
+		say("%.*s\n", len, buf);
 
-		ret = writesocket(fd, buf, 0, ret);
-		if(ret <= 0)goto theend;
+		websocket_write(fd, "four two", 8);
+		obj[fd].stage1 = 2;
+	}
+	else if(temp == 2)
+	{
+		say("%.*s\n", len, buf);
 
-		obj[fd].stage1 = 1;
-		goto theend;
+		websocket_write(fd, "haha@2", 6);
+		obj[fd].stage1 = 3;
+	}
+	else if(temp == 3)
+	{
+		printmemory(buf, len);
+		websocket_write(fd, "success", 7);
+
+		obj[fd].stage1 = 4;
+
+		obj[fd].type_data = 0x2b77;
+		obj[fd].stage3 = WS;
 	}
 	else
 	{
-		ret = websocket_read(buf, len);
-		if(ret < 0)goto theend;
-
-		if(temp == 1)
+		if(ncmp(buf, "kbd ", 4) == 0)
 		{
-			websocket_write(fd, "haha@1", 6);
-			obj[fd].stage1 = 2;
+			obj[fd].type_data = 0x64626b;
+			decstr2data(buf+4, &(obj[fd].stage3));
 		}
-		else if(temp == 2)
+		else if(ncmp(buf, "char ", 5) == 0)
 		{
-			websocket_write(fd, "haha@2", 6);
-			obj[fd].stage1 = 3;
-		}
-		else if(temp == 3)
-		{
-			websocket_write(fd, "haha@3", 6);
-			obj[fd].stage1 = 4;
-
-			obj[fd].type_data = 0x2b77;
-			obj[fd].stage3 = WS;
+			obj[fd].type_data = 0x72616863;
+			decstr2data(buf+5, &(obj[fd].stage3));
 		}
 		else
 		{
-			if(ncmp(buf, "kbd ", 4) == 0)
-			{
-				obj[fd].type_data = 0x64626b;
-				decstr2data(buf+4, &(obj[fd].stage3));
-			}
-			else if(ncmp(buf, "char ", 5) == 0)
-			{
-				obj[fd].type_data = 0x72616863;
-				decstr2data(buf+5, &(obj[fd].stage3));
-			}
-			else
-			{
-				obj[fd].type_data = 0;
-			}
+			obj[fd].type_data = 0;
 		}
 	}
 
 theend:
 	return WS;
+}
+int serve_ws(struct object* obj, int fd, u8* buf, int len)
+{
+	u64 type = obj[fd].type_road;
+	u64 stage = obj[fd].stage1;
+	if(type == ws)
+	{
+		if(stage == 0)
+		{
+			return serve_ws_client_hello(obj, fd, buf, len);
+		}
+		else
+		{
+			return serve_ws_client_data(obj, fd, buf, len);
+		}
+	}
+	else
+	{
+		if(stage == 0)
+		{
+			return serve_ws_server_hello(obj, fd, buf, len);
+		}
+		else
+		{
+			return serve_ws_server_data(obj, fd, buf, len);
+		}
+	}
 }
 int serve_wss(void* p, int fd, u8* buf, int len)
 {
