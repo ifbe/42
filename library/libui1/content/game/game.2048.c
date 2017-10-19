@@ -189,7 +189,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 				"background:#%06x;"
 				"\">%d</div>",
 				25*x, 25*y,
-				color&0xffffff, table[y][x]
+				color, table[y][x]
 			);
 		}
 	}

@@ -134,7 +134,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		//type
 		if(fmt[tmp] == 'd')
 		{
-			_x = va_arg(arg, u64);
+			_x = va_arg(arg, u32);
 			dst += data2decstr(_x, buf+dst);
 
 			src = tmp+1;
