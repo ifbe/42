@@ -94,6 +94,35 @@ static void cubie(
 		0, 0
 	);
 }
+static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+{
+	int x,y;
+	float xxx, yyy, zzz;
+	int (*tab)[4] = (void*)buffer + num*16*4;
+
+	float cx = (float)(rel->cx) / 65536.0 - 0.5;
+	float cy = (float)(rel->cy) / 65536.0 - 0.5;
+	float w = (float)(rel->wantw) / 65536.0;
+	float h = (float)(rel->wanth) / 65536.0;
+
+	//
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			xxx = cx + (x+x-3)*w/8;
+			yyy = cy - (y+y-3)*h/8;
+			zzz = (float)tab[y][x]/100.0;
+
+			carvecubie(win,
+				xxx, yyy, zzz,
+				w/16, 0.0, 0.0,
+				0.0, h/16, 0.0,
+				0.0, 0.0, zzz
+			);
+		}
+	}
+}
 static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
@@ -124,42 +153,19 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 		}
 	}
 }
-static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
-{
-	int x,y;
-	float xxx, yyy, zzz;
-	int (*tab)[4] = (void*)buffer + num*16*4;
-
-	float cx = (float)(rel->cx) / 65536.0 - 0.5;
-	float cy = (float)(rel->cy) / 65536.0 - 0.5;
-	float w = (float)(rel->wantw) / 65536.0;
-	float h = (float)(rel->wanth) / 65536.0;
-
-	//
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			xxx = cx + (x+x-3)*w/8;
-			yyy = cy - (y+y-3)*h/8;
-			zzz = (float)tab[y][x]/100.0;
-
-			carvecubie(win,
-				xxx, yyy, zzz,
-				w/16, 0.0, 0.0,
-				0.0, h/16, 0.0,
-				0.0, 0.0, zzz
-			);
-		}
-	}
-}
 static void the2048_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
-	u32 color;
-	int (*table)[4] = (void*)buffer + num*16*4;
-	u8* buf = (u8*)(win->buf);
+	int cx,cy,w,h;
 	int len = 0;
+	u32 color;
+	u8* buf = (u8*)(win->buf);
+	int (*table)[4] = (void*)buffer + num*16*4;
+
+	cx = (rel->cx) * 100 / 0x10000;
+	cy = (rel->cy) * 100 / 0x10000;
+	w = (rel->wantw) * 25 / 0x10000;
+	h = (rel->wanth) * 25 / 0x10000;
 
 	len += mysnprintf(
 		buf+len, 0x1000,
@@ -168,29 +174,43 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 		"border:1px solid #000;"
 		"position:absolute;"
 		"color:#000;"
-		"width:25%%;"
-		"height:25%%;"
-		"}"
-		"</style>"
+		"width:%d%%;"
+		"height:%d%%;"
+		"}</style>",
+		w, h
 	);
 
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			if(table[y][x] == 0)continue;
-
 			color = the2048_color(table[y][x]);
-			len += mysnprintf(
-				buf+len, 0x1000,
-				"<div class=\"rect\" style=\""
-				"left:%d%%;"
-				"top:%d%%;"
-				"background:#%06x;"
-				"\">%d</div>",
-				25*x, 25*y,
-				color, table[y][x]
-			);
+			if(table[y][x] != 0)
+			{
+				len += mysnprintf(
+					buf+len, 0x1000,
+					"<div class=\"rect\" style=\""
+					"left:%d%%;"
+					"top:%d%%;"
+					"background:#%06x;"
+					"\">%d</div>",
+					cx+(x-2)*w, cy+(y-2)*h,
+					color, table[y][x]
+				);
+			}
+			else
+			{
+				len += mysnprintf(
+					buf+len, 0x1000,
+					"<div class=\"rect\" style=\""
+					"left:%d%%;"
+					"top:%d%%;"
+					"background:#%06x;"
+					"\"></div>",
+					cx+(x-2)*w, cy+(y-2)*h,
+					color
+				);
+			}
 		}
 	}
 	win->info[0] = len;
