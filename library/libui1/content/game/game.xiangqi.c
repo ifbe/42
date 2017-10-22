@@ -70,7 +70,7 @@ static int htmlcircle(char* p, int x, int y)
 		textcolor, hanzi
 	);
 }
-static void xiangqi_read_html(struct arena* win)
+static void xiangqi_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	char* p = (char*)(win->buf);
@@ -100,7 +100,7 @@ static void xiangqi_read_html(struct arena* win)
 
 
 
-static void xiangqi_read_text(struct arena* win)
+static void xiangqi_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -148,17 +148,19 @@ static void xiangqi_read_text(struct arena* win)
 
 
 
-void xiangqi_read_pixel(struct arena* win)
+void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
 	int x,y,half;
-	int cx = (win->w)/2;
-	int cy = (win->h)/2;
+	int cx = (win->w) * (rel->cx) / 0x10000;
+	int cy = (win->h) * (rel->cy) / 0x10000;
+	int w = (win->w) * (rel->wantw) / 0x10000;
+	int h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	if(cy*9 > cx*10)half = cx/9;
-	else half = cy/10;
+	if(h*9 > w*10)half = w/18;
+	else half = h/20;
 
 	//
 	black=0;
@@ -181,7 +183,7 @@ void xiangqi_read_pixel(struct arena* win)
 	{
 		drawline(win,
 			cx - half*8,	cy + half*(2*y+1),
-			cx + half*8,	cy + half*(2*y+1),	0);
+			cx + half*8,	cy + half*(2*y+1),	0xff00ff);
 	}
 
 	//shu
@@ -189,25 +191,25 @@ void xiangqi_read_pixel(struct arena* win)
 	{
 		drawline(win,
 			cx + x*half*2,	cy - half*9,
-			cx + x*half*2,	cy - half*1,	0);
+			cx + x*half*2,	cy - half*1,	0xff00ff);
 		drawline(win,
 			cx + x*half*2,	cy + half*9,
-			cx + x*half*2,	cy + half*1,	0);
+			cx + x*half*2,	cy + half*1,	0xff00ff);
 	}
 
 	//pie,na
 	drawline(win,
 		cx - half*2,	cy - half*9,
-		cx + half*2,	cy - half*5,	0);
+		cx + half*2,	cy - half*5,	0xff00ff);
 	drawline(win,
 		cx + half*2,	cy - half*9,
-		cx - half*2,	cy - half*5,	0);
+		cx - half*2,	cy - half*5,	0xff00ff);
 	drawline(win,
 		cx - half*2,	cy + half*9,
-		cx + half*2,	cy + half*5,	0);
+		cx + half*2,	cy + half*5,	0xff00ff);
 	drawline(win,
 		cx + half*2,	cy + half*9,
-		cx - half*2,	cy + half*5,	0);
+		cx - half*2,	cy + half*5,	0xff00ff);
 	//chess
 	for(y=0;y<10;y++)
 	{
@@ -252,26 +254,26 @@ void xiangqi_read_pixel(struct arena* win)
 
 
 
-static void xiangqi_read(struct arena* win)
+static void xiangqi_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u32 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		xiangqi_read_text(win);
+		xiangqi_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		xiangqi_read_html(win);
+		xiangqi_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		xiangqi_read_pixel(win);
+		xiangqi_read_pixel(win, act, rel);
 	}
 }
 void xiangqi_move(int px, int py, int x, int y)

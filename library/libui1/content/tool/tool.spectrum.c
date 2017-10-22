@@ -40,7 +40,7 @@ static int area=0;
 
 
 
-static void spectrum_read_pixel(struct arena* win)
+static void spectrum_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	double t,cc,ss;
 	int x,y;
@@ -76,10 +76,10 @@ static void spectrum_read_pixel(struct arena* win)
 		);
 	}
 }
-static void spectrum_read_html(struct arena* win)
+static void spectrum_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void spectrum_read_text(struct arena* win)
+static void spectrum_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	int w = win->w;
@@ -99,26 +99,26 @@ static void spectrum_read_text(struct arena* win)
 static void spectrum_read_cli()
 {
 }
-static void spectrum_read(struct arena* win)
+static void spectrum_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		spectrum_read_text(win);
+		spectrum_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		spectrum_read_html(win);
+		spectrum_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		spectrum_read_pixel(win);
+		spectrum_read_pixel(win, act, rel);
 	}
 }
 

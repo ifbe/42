@@ -31,52 +31,51 @@ static unsigned char* table;
 
 
 
-static void cubie(struct arena* win, int x,int y,int z)
+static void cubie(
+	struct arena* win, int z,
+	int x1, int y1, int x2, int y2)
 {
-	u32 bodycolor;
-	int startx,starty,endx,endy;
-	int aa = (win->h)*32/40;
-
-	if(win->w < aa)
-	{
-		startx = (win->w)*x/32;
-		endx = (x+1)*(win->w)/32 -1;
-	}
-	else
-	{
-		startx = (win->w-aa)/2 + (x*aa/32);
-		endx = (win->w-aa)/2 + ((x+1)*aa/32) -1;
-	}
-
-	starty = (win->h)*y/40;
-	endy = (y+1)*(win->h)/40 - 1;
-
-	bodycolor=z>0?0xffffffff:0;
+	u32 bodycolor = z>0?0xffffff:0;
 	drawrect(win,
-		startx, starty,
-		endx, endy,
-		bodycolor, 0x44444444
+		x1, y1,
+		x2, y2,
+		bodycolor,
+		0x44444444
 	);
 }
-static void tetris_read_pixel(struct arena* win)
+static void tetris_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
+	int cx = (win->w) * (rel->cx) / 0x10000;
+	int cy = (win->h) * (rel->cy) / 0x10000;
+	int w = (win->w) * (rel->wantw) / 0x10000 / 32;
+	int h = (win->h) * (rel->wanth) / 0x10000 / 40;
 	for(y=0;y<40;y++)
 	{
 		for(x=0;x<32;x++)
 		{
 			//say("%d ",table[y*32+x]);
-			cubie(win, x,y,table[y*32+x]);
+			cubie(win, table[y*32+x],
+				cx+(x-16)*w, cy+(y-20)*h,
+				cx+(x-15)*w, cy+(y-19)*h);
 		}
 		//say("\n");
 	}
 	//say("\n");
 
 	//print cubies
-	cubie(win, that.x1, that.y1, 1);
-	cubie(win, that.x2, that.y2, 1);
-	cubie(win, that.x3, that.y3, 1);
-	cubie(win, that.x4, that.y4, 1);
+	cubie(win, 1,
+		cx+(that.x1-16)*w, cy+(that.y1-20)*h,
+		cx+(that.x1-15)*w, cy+(that.y1-19)*h);
+	cubie(win, 1,
+		cx+(that.x2-16)*w, cy+(that.y2-20)*h,
+		cx+(that.x2-15)*w, cy+(that.y2-19)*h);
+	cubie(win, 1,
+		cx+(that.x3-16)*w, cy+(that.y3-20)*h,
+		cx+(that.x3-15)*w, cy+(that.y3-19)*h);
+	cubie(win, 1,
+		cx+(that.x4-16)*w, cy+(that.y4-20)*h,
+		cx+(that.x4-15)*w, cy+(that.y4-19)*h);
 
 	//print score
 	//decimal(10,10,score);
@@ -96,7 +95,7 @@ static int htmlcubie(char* p, int x, int y)
 		x*3.1, y*2.5, table[y*32+x]
 	);
 }
-static void tetris_read_html(struct arena* win)
+static void tetris_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	char* p = (char*)(win->buf);
@@ -131,7 +130,7 @@ static void tetris_read_html(struct arena* win)
 
 
 
-static void tetris_read_text(struct arena* win)
+static void tetris_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	int width = win->w;
@@ -174,26 +173,26 @@ static void tetris_read_text(struct arena* win)
 		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
 	}
 }
-static void tetris_read(struct arena* win)
+static void tetris_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		tetris_read_text(win);
+		tetris_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		tetris_read_html(win);
+		tetris_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		tetris_read_pixel(win);
+		tetris_read_pixel(win, act, rel);
 	}
 }
 

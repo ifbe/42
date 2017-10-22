@@ -1,7 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "actor.h"
 //
 int netmgr_write(void*);
 //
@@ -15,8 +12,8 @@ int uart_write(void*);
 int i2c_list();
 int i2c_choose(void*);
 //
-int arenastart(void*);
-int arenastop(void*);
+int arenastart(u64, int);
+int arenastop();
 int actorlist(void*);
 int actorchoose(void*);
 //
@@ -26,7 +23,6 @@ int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 void eventwrite(u64,u64,u64,u64);
-void say(void*, ...);
 
 
 
@@ -49,6 +45,13 @@ void term_read(u8* buf)
 	if(ncmp(buf, "say ", 4) == 0)
 	{
 		say("%s\n", buf+4);
+	}
+	else if(ncmp(buf, "win", 3) == 0)
+	{
+		eventwrite(
+			hex32('w','i','n',0),
+			hex32('w','+',0,0),
+			0, 0);
 	}
 	else if(ncmp(buf, "ls", 2) == 0)
 	{

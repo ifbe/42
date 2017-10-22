@@ -16,10 +16,10 @@ static char* data;
 
 
 
-static void weiqi_read_html(struct arena* win)
+static void weiqi_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void weiqi_read_text(struct arena* win)
+static void weiqi_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -50,15 +50,16 @@ static void weiqi_read_text(struct arena* win)
 		}
 	}
 }
-static void weiqi_read_pixel(struct arena* win)
+static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	u32 color;
 	int x,y,half;
-	int cx = (win->w)/2;
-	int cy = (win->h)/2;
-
-	if(cy > cx)half = cx/20;
-	else half = cy/20;
+	int cx = (win->w) * (rel->cx) / 0x10000;
+	int cy = (win->h) * (rel->cy) / 0x10000;
+	int w = (win->w) * (rel->wantw) / 0x10000 / 19;
+	int h = (win->h) * (rel->wanth) / 0x10000 / 19;
+	if(w < h)half = w / 2;
+	else half = h / 2;
 
 	if( ((win->fmt)&0xffffffff) == 0x61626772)
 	{
@@ -75,7 +76,7 @@ static void weiqi_read_pixel(struct arena* win)
 	{
 		drawline(win,
 			cx - half*2*9,	cy + half*2*y,
-			cx + half*2*9,	cy + half*2*y,	0);
+			cx + half*2*9,	cy + half*2*y,	0xff00ff);
 	}
 
 	//shu
@@ -83,7 +84,7 @@ static void weiqi_read_pixel(struct arena* win)
 	{
 		drawline(win,
 			cx + half*2*x,	cy - half*2*9,
-			cx + half*2*x,	cy + half*2*9,	0);
+			cx + half*2*x,	cy + half*2*9,	0xff00ff);
 	}
 
 	//dian
@@ -103,37 +104,39 @@ static void weiqi_read_pixel(struct arena* win)
 	{
 		for(x=-9;x<=9;x++)
 		{
-			if(data[(y+9)*19 + x+9] == 'b')color = 0;
-			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffffff;
+			if(data[(y+9)*19 + x+9] == 'b')color = 0x444444;
+			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffff;
 			else continue;
 
 			drawcircle_body(win,
-				cx + half*2*x, cy + half*2*y,
-				half, color
+				cx + half*2*x,
+				cy + half*2*y,
+				half,
+				color
 			);
 		}
 	}
 }
-static void weiqi_read(struct arena* win)
+static void weiqi_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		weiqi_read_text(win);
+		weiqi_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		weiqi_read_html(win);
+		weiqi_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		weiqi_read_pixel(win);
+		weiqi_read_pixel(win, act, rel);
 	}
 }
 

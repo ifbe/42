@@ -68,9 +68,9 @@ int arenawrite(struct window* dst, struct window* src)
 	void* buf;
 	if(dst->type == hex32('w','i','n',0))
 	{
-		windowwrite(&arena[1], &arena[0]);
+		windowwrite(dst, &arena[0]);
 	}
-	else if(dst->type == hex32('w','s', 0, 0))
+	else if(dst->type == hex32('W','S', 0, 0))
 	{
 		websocket_write(dst->fd, src->buf, src->info[0]);
 	}

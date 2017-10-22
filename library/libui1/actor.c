@@ -12,15 +12,16 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //
-int term_read(void*);
-int term_write(void*);
-//
 void* connect_read(u64);
 int connect_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 //
+int arenastart(u64, int);
+int arenastop();
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
+int term_read(void*);
+int term_write(void*);
 void backgroundcolor(void*, u32);
 int actorstart(struct arena* win, struct actor* act);
 
@@ -132,8 +133,8 @@ int actorwrite(struct event* ev)
 	if(ev->what == hex32('w','+',0,0))
 	{
 		//say("%x,%x,%x,%x\n", ev->why, ev->what, ev->where, ev->when);
-		temp = arenastart(hex32('w','s',0,0), ev->where);
-		actorstart(&arena[temp], &actor[0]);
+		temp = arenastart(ev->why, ev->where);
+		actorstart(&arena[temp], &actor[getrandom()%8]);
 		return 0;
 	}
 	if(ev->what == hex32('s','t','r',0))
@@ -271,7 +272,7 @@ void actorcreate(u8* type, u8* addr)
 	content_create(addr, 0);
 
 	//
-	actorstart(&arena[1], &actor[1]);
+	actorstart(&arena[1], &actor[getrandom()%8]);
 	actorstart(&arena[1], &actor[0]);
 
 	term_read(0);

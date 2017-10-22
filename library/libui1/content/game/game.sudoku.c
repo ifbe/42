@@ -29,7 +29,7 @@ static u8* buffer;
 
 
 
-static void sudoku_read_text(struct arena* win)
+static void sudoku_read_text(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -65,30 +65,38 @@ static void sudoku_read_text(struct arena* win)
 		}
 	}
 }
-static void sudoku_read_html(struct arena* win)
+static void sudoku_read_html(struct arena* win, struct actor* act, struct style* rel)
 {
 }
-static void sudoku_read_pixel(struct arena* win)
+static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
-	int w = win->w;
-	int h = win->h;
+	int cx = (win->w) * (rel->cx) / 0x10000;
+	int cy = (win->h) * (rel->cy) / 0x10000;
+	int w = (win->w) * (rel->wantw) / 0x10000 / 9;
+	int h = (win->h) * (rel->wanth) / 0x10000 / 9;
 
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
 			drawrect(win,
-				x*w/9,	 y*h/9,
-				(x+1)*w/9, (y+1)*h/9,
-				0x888888,	  0
+				cx+(2*x-9)*w/2,
+				cy+(2*y-9)*h/2,
+				cx+(2*x-7)*w/2,
+				cy+(2*y-7)*h/2,
+				0x888888,
+				0
 			);
 
 			if(table[y][x] != 0)
 			{
 				drawdecimal(
-					win, table[y][x], 4,
-					x*w/9, y*h/9, 0, 0
+					win, table[y][x], 2,
+					cx+(2*x-9)*w/2,
+					cy+(2*y-9)*h/2,
+					0,
+					0
 				);
 			}
 		}
@@ -128,26 +136,26 @@ static void sudoku_read_cli()
 	}
 	say("\n");
 }
-static void sudoku_read(struct arena* win)
+static void sudoku_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		sudoku_read_text(win);
+		sudoku_read_text(win, act, rel);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		sudoku_read_html(win);
+		sudoku_read_html(win, act, rel);
 	}
 
 	//pixel
 	else
 	{
-		sudoku_read_pixel(win);
+		sudoku_read_pixel(win, act, rel);
 	}
 }
 static void sudoku_write(struct event* ev)
