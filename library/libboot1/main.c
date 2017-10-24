@@ -2,12 +2,12 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//main
-void* eventread();
-void eventwrite(u64,u64,u64,u64);
 //libui1
 int actorread();
-int actorwrite(void* event);
+int actorwrite(void*);
+int term_read(void*);
+int term_write(void*);
+int win_cfg(void*);
 //libui0
 int arenaread();
 int arenawrite();
@@ -22,6 +22,8 @@ void sleep_us(int);
 void printmemory(void*, int);
 void say(void*, ...);
 //
+void* eventread();
+void eventwrite(u64,u64,u64,u64);
 void* birth();
 void death();
 
@@ -45,18 +47,18 @@ int main(int argc, char* argv[])
 {
 	//before
 	int ret;
-	struct event temp;
+	u64 temp;
 	struct event* ev;
 
 	birth();
 	//say("@birth\n");
 
 	//config
+	term_read(0);
 	for(ret=1;ret<argc;ret++)
 	{
-		temp.why = (u64)(argv[ret]);
-		temp.what = 0x727473;
-		actorwrite(&temp);
+		term_write(argv[ret]);
+		term_write("\n");
 	}
 
 	//forever
@@ -90,19 +92,25 @@ again:
 
 
 		//3.pre process
-		if(((ev->what)&0xff) == 'n')
+		temp = (ev->what)&0xff;
+		if(temp == 'w')
+		{
+			ret = win_cfg(ev);
+			goto again;
+		}
+		else if(temp == 'n')
 		{
 			//network rawdata -> my event
 			ret = network_explain(ev);
 			if(ret != 42)goto again;
 		}
-		else if(((ev->what)&0xff) == 's')
+		else if(temp == 's')
 		{
 			//sound rawdata -> my event
 			ret = sound_explain(ev);
 			if(ret != 42)goto again;
 		}
-		else if(((ev->what)&0xff) == 'v')
+		else if(temp == 'v')
 		{
 			//video rawdata -> my event
 			ret = vision_explain(ev);

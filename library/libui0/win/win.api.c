@@ -352,10 +352,18 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			goto theend;
 		}
 
+		//关闭
+		case WM_CLOSE:
+		{
+			//
+			eventwrite(0, 0x2d77, addr, 0);
+			return 0;
+		}
+
 		//摧毁
 		case WM_DESTROY:
 		{
-			PostQuitMessage(0);
+			DestroyWindow(wnd);
 			return 0;
 		}
 	}
@@ -410,6 +418,17 @@ void createmywindow(struct window* this)
 	this->dc = (u64)dc;
 	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)this);
 }
+void deletemywindow(struct window* this)
+{
+	HWND wnd = (void*)(this->fd);
+	HDC dc = (void*)(this->dc);
+
+	ReleaseDC(wnd, dc);
+
+	UnregisterTouchWindow(wnd);
+
+	DestroyWindow(wnd);
+}
 DWORD WINAPI uievent()
 {
 	MSG msg;
@@ -425,7 +444,14 @@ DWORD WINAPI uievent()
 	{
 		if(msg.message == WM_USER)
 		{
-			createmywindow((void*)(msg.lParam));
+			if(msg.wParam == hex32('w','+',0,0))
+			{
+				createmywindow((void*)(msg.lParam));
+			}
+			else
+			{
+				deletemywindow((void*)(msg.lParam));
+			}
 		}
 		else
 		{
@@ -513,14 +539,7 @@ void windowstart(struct window* this)
 }
 void windowstop(struct window* this)
 {
-	HWND wnd = (void*)(this->fd);
-	HDC dc = (void*)(this->dc);
-
-	//关闭触摸
-	UnregisterTouchWindow(wnd);
-
-	//释放dc
-	ReleaseDC(wnd, dc);
+	PostThreadMessage(uithread, WM_USER, hex16('w','-'), (LPARAM)this);
 }
 void windowcreate()
 {

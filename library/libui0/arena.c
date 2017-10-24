@@ -75,7 +75,7 @@ int arenawrite(struct window* dst, struct window* src)
 		websocket_write(dst->fd, src->buf, src->info[0]);
 	}
 }
-int arenastart(u64 type, int fd)
+void* arenastart(u64 type, u64 fd)
 {
 	struct window* win;
 	int j;
@@ -92,7 +92,7 @@ int arenastart(u64 type, int fd)
 			arena->len = 0x100000*16;
 			windowstart(arena);
 		}
-		return 0;
+		return arena;
 	}
 	else
 	{
@@ -103,7 +103,7 @@ int arenastart(u64 type, int fd)
 			if(win->type == 0)break;
 
 			j++;
-			if(j >= 0x100)return -1;
+			if(j >= 0x100)return 0;
 		}
 
 		if(type == hex32('w', 'i', 'n', 0))
@@ -115,7 +115,7 @@ int arenastart(u64 type, int fd)
 
 			windowstart(win);
 			connect_write(arena, 0, 0, win, 0, 0);
-			return j;
+			return win;
 		}
 		else if(type == hex32('w','s',0,0))
 		{
@@ -126,7 +126,7 @@ int arenastart(u64 type, int fd)
 
 			win->fd = fd;
 			connect_write(arena, 0, 0, win, 0, 0);
-			return j;
+			return win;
 		}
 	}
 	return 0;
@@ -134,6 +134,7 @@ int arenastart(u64 type, int fd)
 int arenastop(struct window* win)
 {
 	if(win == 0)return 0;
+	windowstop(win);
 
 	win->type = 0;
 	win->fmt = 0;

@@ -15,13 +15,9 @@ void lib3d_delete();
 void* connect_read(u64);
 int connect_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 //
-int arenastart(u64, int);
-int arenastop();
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
-int term_read(void*);
-int term_write(void*);
 void backgroundcolor(void*, u32);
 int actorstart(struct arena* win, struct actor* act);
 
@@ -48,9 +44,6 @@ int actorread_one(struct arena* window)
 
 	//cli
 	if(window->fmt == hex32('c','l','i',0))return 0;
-
-	//title
-	//if(window->fmt == hex32('c','l','i',0))return 0;
 
 	//canvas
 	if(window->type != hex32('b', 'u', 'f', 0))
@@ -125,41 +118,15 @@ int actorwrite(struct event* ev)
 	u64 temp;
 	struct arena* win;
 	struct actor* act;		//2048?
-	struct style* st;			//style
-	struct relation* rel;		//link
+	struct style* sty;		//style
+	struct relation* rel;	//link
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//
-	if(ev->what == hex32('w','+',0,0))
-	{
-		//say("%x,%x,%x,%x\n", ev->why, ev->what, ev->where, ev->when);
-		temp = arenastart(ev->why, ev->where);
-		actorstart(&arena[temp], &actor[getrandom()%8]);
-		return 0;
-	}
-	if(ev->what == hex32('s','t','r',0))
-	{
-		term_write((void*)(ev->why));
-		term_write("\n");
-		return 0;
-	}
-
-	//
 	temp = ev->where;
-	if(temp < 0xffff)temp = (u64)&arena[1];
+	if(temp < 0xffff)win = &arena[1];
+	else win = (void*)temp;
 
-	//
-	win = (void*)temp;
-	if(win->fmt == hex32('c','l','i',0))
-	{
-		if(ev->what == hex32('c','h','a','r'))
-		{
-			term_write(&ev[0]);
-		}
-		return 0;
-	}
-
-	//
 	rel = win->first;
 	if(rel == 0)return 0;
 	if(rel->samepinnextchip == 0)return 0;
@@ -173,7 +140,6 @@ int actorwrite(struct event* ev)
 		act = (void*)(rel->selfchip);
 		act->write(ev);
 	}
-
 	return 0;
 }
 int actorlist(u8* p)
@@ -228,21 +194,23 @@ void actorchoose()
 }
 int actorstart(struct arena* win, struct actor* act)
 {
-	struct style* st = (void*)style + stlen;
+	struct style* st;
+	st = (void*)style + stlen;
 	stlen += sizeof(struct style);
-
 	st->cx = 0x4000 + (getrandom()%0x1000)*8;
 	st->cy = 0x4000 + (getrandom()%0x1000)*8;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
 	st->dim = 2;
 
+	if(act == 0)act = &actor[0];
 	act->start();
 
 	connect_write(win, st, __win__, act, 0, __act__);
 }
-int actorstop()
+int actorstop(struct actor* act)
 {
+	act->stop();
 	return 0;
 }
 void actorcreate(u8* type, u8* addr)
@@ -272,10 +240,9 @@ void actorcreate(u8* type, u8* addr)
 	content_create(addr, 0);
 
 	//
-	actorstart(&arena[1], &actor[getrandom()%8]);
-	actorstart(&arena[1], &actor[0]);
+	actorstart(&arena[1], 0);
+	actorstart(&arena[1], 0);
 
-	term_read(0);
 	//say("[c,f):createed actor\n");
 }
 void actordelete()
