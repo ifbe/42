@@ -42,7 +42,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	
 
 	//draw pixel
-	arena[1].buf = (u64)(buffer.bits);
+	arena[1].buf = buffer.bits;
 	arena[1].w = buffer.stride;
 	actorread();
 

@@ -1,6 +1,11 @@
-#include<stdio.h>
-#include<math.h>
 #define PI 3.14159265358979323846264338327950
+double squareroot(double);
+double sine(double);
+double arcsin(double);
+double cosine(double);
+double arccos(double);
+double tangent(double);
+double arctan2(double, double);
 
 
 
@@ -11,14 +16,14 @@ void axis2quaternion(float* av, float* q)
 {
 	//normalize vector
 	float angle = av[3]*PI/360.0;
-	float norm = sqrt(av[0]*av[0] + av[1]*av[1] + av[2]*av[2]);
-	float sinbynorm = sin(angle)/norm;
+	float norm = squareroot(av[0]*av[0] + av[1]*av[1] + av[2]*av[2]);
+	float sinbynorm = sine(angle)/norm;
 
 	//create quaternion
 	q[0] = av[0]*sinbynorm;
 	q[1] = av[1]*sinbynorm;
 	q[2] = av[2]*sinbynorm;
-	q[3] = cos(angle);
+	q[3] = cosine(angle);
 }
 //in:	pitch,yaw,roll
 //out:	qx,qy,qz,qw
@@ -27,12 +32,12 @@ void eulerian2quaternion(float* eulerian, float* q)
 	float pitch = eulerian[0]*PI/360.0;
 	float yaw = eulerian[1]*PI/360.0;
 	float roll = eulerian[2]*PI/360.0;
-	float cospitch = cos(pitch);
-	float sinpitch = sin(pitch);
-	float cosyaw = cos(yaw);
-	float sinyaw = sin(yaw);
-	float cosroll = cos(roll);
-	float sinroll = sin(roll);
+	float cospitch = cosine(pitch);
+	float sinpitch = sine(pitch);
+	float cosyaw = cosine(yaw);
+	float sinyaw = sine(yaw);
+	float cosroll = cosine(roll);
+	float sinroll = sine(roll);
 
 	q[0] = sinpitch*cosyaw*cosroll - cospitch*sinyaw*sinroll;
 	q[1] = cospitch*sinyaw*cosroll + sinpitch*cosyaw*sinroll;
@@ -52,8 +57,8 @@ void matrix2quaternion(float* matrix, float* q)
 //out:	vx,vy,vz,angle
 void quaternion2axis(float* q, float* av)
 {
-	float angle = acos(q[3]);
-	float scale = sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+	float angle = arccos(q[3]);
+	float scale = squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
 
 	av[0] = q[0]/scale;
 	av[1] = q[1]/scale;
@@ -64,11 +69,11 @@ void quaternion2axis(float* q, float* av)
 //out:	pitch,yaw,roll
 void quaternion2eulerian(float* q, float* eulerian)
 {
-	eulerian[0] = atan2( (q[3]*q[1]+q[2]*q[0])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
+	eulerian[0] = arctan2( (q[3]*q[1]+q[2]*q[0])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
 	eulerian[0] *= 180.0/PI;
-	eulerian[1] = atan2( (q[3]*q[0]+q[1]*q[2])*2 , 1-(q[2]*q[2]+q[0]*q[0])*2 );
+	eulerian[1] = arctan2( (q[3]*q[0]+q[1]*q[2])*2 , 1-(q[2]*q[2]+q[0]*q[0])*2 );
 	eulerian[1] *= 180.0/PI;
-	eulerian[2] = asin(  (q[3]*q[2]-q[1]*q[0])*2 );
+	eulerian[2] = arcsin(  (q[3]*q[2]-q[1]*q[0])*2 );
 	eulerian[2] *= 180.0/PI;
 }
 //in:	qx,qy,qz,qw
@@ -93,7 +98,7 @@ void quaternion2matrix(float* q, float* matrix)
 
 void quaternionnormalize(float* p)
 {
-	float norm = sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2] + p[3]*p[3]);
+	float norm = squareroot(p[0]*p[0] + p[1]*p[1] + p[2]*p[2] + p[3]*p[3]);
 	p[0] /= norm;
 	p[1] /= norm;
 	p[2] /= norm;

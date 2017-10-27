@@ -1,41 +1,24 @@
-#cd ____coderoot____
-#ln -s ____fullpathofme____ ____linkname____
-
-#source ____build/envsetup.sh____
-#lunch ____devicename____
-#mmm ____linkname____
-
-#adb root
-#adb remount
-#adb push coderoot/out/target/product/devicename/system/bin/42 /system/bin/
-
-
-
-
-#0.head
 LOCAL_PATH:=$(call my-dir)/../../..
 include $(CLEAR_VARS)
 
 
 
 
-#0.init
-LOCAL_SRC_FILES := \
-	library/init/startapp.c \
-	library/init/main.c
-
-#1.boot0
+#libboot0
 LOCAL_SRC_FILES += \
-	library/libboot0/none/tx.c \
-	library/libboot0/basic.c
+	library/libboot0/startapp.c \
+	library/libboot0/basic.c \
+	library/libboot0/none/tx.c
 
-#1.boot1
+#libboot1
 LOCAL_SRC_FILES += \
+	library/libboot1/main.c \
+	library/libboot1/debug.c \
 	library/libboot1/say.c \
 	library/libboot1/event.c \
-	library/libboot1/debug.c
+	library/libboot1/connect.c
 
-#2.hard0
+#libhard0
 ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x86/x86.fp.c \
@@ -69,11 +52,11 @@ LOCAL_SRC_FILES += \
 	library/libhard0/driver.c
 endif
 
-#2.hard1
+#libhard1
 LOCAL_SRC_FILES += \
 	library/libhard1/body.c
 
-#3.soft0
+#libsoft0
 LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.motion.sensor.c \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
@@ -97,7 +80,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.wire.wifi.c \
 	library/libsoft0/system.c
 
-#3.soft1
+#libsoft1
 LOCAL_SRC_FILES += \
 	library/libsoft1/libbio/bio.chance.c \
 	library/libsoft1/libbio/bio.c \
@@ -169,8 +152,6 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/tcode/tcode.base64.c \
 	library/libsoft1/libmem/libdata/tcode/tcode.huffman.c \
 	library/libsoft1/libmem/libdata/data.c \
-	library/libsoft1/libmem/libfmt/computer/certificate/cert.pem.c \
-	library/libsoft1/libmem/libfmt/computer/certificate/cert.x509.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
 	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
@@ -180,6 +161,8 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.jpg.c \
 	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.png.c \
 	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.webp.c \
+	library/libsoft1/libmem/libfmt/computer/certificate/cert.pem.c \
+	library/libsoft1/libmem/libfmt/computer/certificate/cert.x509.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.7z.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.cpio.c \
 	library/libsoft1/libmem/libfmt/computer/compress/compress.gz.c \
@@ -243,14 +226,14 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libwire/wire.c \
 	library/libsoft1/artery.c
 
-#4.ui0
+#libui0
 LOCAL_SRC_FILES += \
 	library/libui0/linux/linux.tui.c \
 	library/libui0/cross/cross.net.c \
 	library/libui0/cross/cross.voice.c \
 	library/libui0/arena.c
 
-#4.ui1
+#libui1
 LOCAL_SRC_FILES += \
 	library/libui1/content/game/game.2048.c \
 	library/libui1/content/game/game.chess.c \
@@ -283,7 +266,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/levi/levi.c \
 	library/libui1/content/content.c \
 	library/libui1/helper/helper.term.c \
-	library/libui1/helper/helper.wire.c \
+	library/libui1/helper/helper.win.c \
 	library/libui1/helper/helper.c \
 	library/libui1/lib1d/html/html.shape.c \
 	library/libui1/lib1d/json/json.shape.c \
@@ -317,12 +300,10 @@ LOCAL_SRC_FILES += \
 
 
 #2
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/library/libsoft0 $(LOCAL_PATH)/library/libsoft1 \
+	$(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
-
-LOCAL_SHARED_LIBRARIES += libc
-LOCAL_LDFLAGS := -Wl,--hash-style=sysv
-
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := 42
-include $(BUILD_EXECUTABLE)
+LOCAL_LDLIBS := -lm -llog -ljnigraphics -landroid
+LOCAL_MODULE := finalanswer
+include $(BUILD_SHARED_LIBRARY)

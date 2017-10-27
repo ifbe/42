@@ -4,23 +4,21 @@ include $(CLEAR_VARS)
 
 
 
-#0.init
-LOCAL_SRC_FILES := \
-	library/init/startapp.c \
-	library/init/main.c
-
-#1.boot0
+#libboot0
 LOCAL_SRC_FILES += \
+	library/libboot0/startapp.c \
 	library/libboot0/basic.c \
 	library/libboot0/logcat/logcat.c
 
-#1.boot1
+#libboot1
 LOCAL_SRC_FILES += \
+	library/libboot1/main.c \
+	library/libboot1/debug.c \
 	library/libboot1/say.c \
 	library/libboot1/event.c \
-	library/libboot1/debug.c
+	library/libboot1/connect.c
 
-#2.hard0
+#libhard0
 ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
 	library/libhard0/cpu/x86/x86.fp.c \
@@ -54,11 +52,11 @@ LOCAL_SRC_FILES += \
 	library/libhard0/driver.c
 endif
 
-#2.hard1
+#libhard1
 LOCAL_SRC_FILES += \
 	library/libhard1/body.c
 
-#3.soft0
+#libsoft0
 LOCAL_SRC_FILES += \
 	library/libsoft0/android/android.flow.motion.sensor.c \
 	library/libsoft0/android/android.flow.sound.audiotrack.c \
@@ -82,7 +80,7 @@ LOCAL_SRC_FILES += \
 	library/libsoft0/linux/linux.wire.wifi.c \
 	library/libsoft0/system.c
 
-#3.soft1
+#libsoft1
 LOCAL_SRC_FILES += \
 	library/libsoft1/libbio/bio.chance.c \
 	library/libsoft1/libbio/bio.c \
@@ -228,14 +226,14 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libwire/wire.c \
 	library/libsoft1/artery.c
 
-#4.ui0
+#libui0
 LOCAL_SRC_FILES += \
 	library/libui0/android/android.nativewindow.c \
 	library/libui0/cross/cross.net.c \
 	library/libui0/cross/cross.voice.c \
 	library/libui0/arena.c
 
-#4.ui1
+#libui1
 LOCAL_SRC_FILES += \
 	library/libui1/content/game/game.2048.c \
 	library/libui1/content/game/game.chess.c \
@@ -268,7 +266,7 @@ LOCAL_SRC_FILES += \
 	library/libui1/content/levi/levi.c \
 	library/libui1/content/content.c \
 	library/libui1/helper/helper.term.c \
-	library/libui1/helper/helper.wire.c \
+	library/libui1/helper/helper.win.c \
 	library/libui1/helper/helper.c \
 	library/libui1/lib1d/html/html.shape.c \
 	library/libui1/lib1d/json/json.shape.c \
@@ -302,7 +300,9 @@ LOCAL_SRC_FILES += \
 
 
 #2
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/library/libsoft0 $(LOCAL_PATH)/library/libsoft1 \
+	$(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS := -lm -llog -ljnigraphics -landroid
 LOCAL_MODULE := finalanswer
