@@ -1,3 +1,0 @@
-void rawimg_read()
-{
-}

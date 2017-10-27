@@ -83,35 +83,63 @@ target:
 	$(compiler) $(cflag) libmem/libdata/tcode/tcode.base64.c
 	$(compiler) $(cflag) libmem/libdata/tcode/tcode.huffman.c
 	$(compiler) $(cflag) libmem/libdata/data.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.drum.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.flute.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.piano.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/1.tone/tone.violin.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.bmp.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.flif.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.jpg.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.png.c
-	$(compiler) $(cflag) libmem/libfmt/audiovideo/2.picture/pic.webp.c
-	$(compiler) $(cflag) libmem/libfmt/computer/certificate/cert.pem.c
-	$(compiler) $(cflag) libmem/libfmt/computer/certificate/cert.x509.c
-	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.7z.c
-	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.cpio.c
-	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.gz.c
-	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.tar.c
-	$(compiler) $(cflag) libmem/libfmt/computer/compress/compress.zip.c
-	$(compiler) $(cflag) libmem/libfmt/computer/diskimage/img.raw.c
-	$(compiler) $(cflag) libmem/libfmt/computer/diskimage/img.vhd.c
-	$(compiler) $(cflag) libmem/libfmt/computer/diskimage/img.vmdk.c
-	$(compiler) $(cflag) libmem/libfmt/computer/executable/exec.elf.c
-	$(compiler) $(cflag) libmem/libfmt/computer/executable/exec.macho.c
-	$(compiler) $(cflag) libmem/libfmt/computer/executable/exec.pe.c
-	$(compiler) $(cflag) libmem/libfmt/computer/filesystem/fs.ext.c
-	$(compiler) $(cflag) libmem/libfmt/computer/filesystem/fs.fat.c
-	$(compiler) $(cflag) libmem/libfmt/computer/filesystem/fs.hfs.c
-	$(compiler) $(cflag) libmem/libfmt/computer/filesystem/fs.ntfs.c
-	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.apple.c
-	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.gpt.c
-	$(compiler) $(cflag) libmem/libfmt/computer/parttable/pt.mbr.c
+	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.ape.c
+	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.mp3.c
+	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.ogg.c
+	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.wav.c
+	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.drum.c
+	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.flute.c
+	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.piano.c
+	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.violin.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.bmp.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.flif.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.heif.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.jpg.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.png.c
+	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.webp.c
+	$(compiler) $(cflag) libmem/libfmt/av2.video/video.avi.c
+	$(compiler) $(cflag) libmem/libfmt/av2.video/video.gif.c
+	$(compiler) $(cflag) libmem/libfmt/av2.video/video.mkv.c
+	$(compiler) $(cflag) libmem/libfmt/av2.video/video.mp4.c
+	$(compiler) $(cflag) libmem/libfmt/av2.video/video.rmvb.c
+	$(compiler) $(cflag) libmem/libfmt/av3.model/model.3mf.c
+	$(compiler) $(cflag) libmem/libfmt/av3.model/model.dwg.c
+	$(compiler) $(cflag) libmem/libfmt/av3.model/model.stl.c
+	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.7z.c
+	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.cpio.c
+	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.gz.c
+	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.tar.c
+	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.zip.c
+	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.elf.c
+	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.macho.c
+	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.pe.c
+	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.ext.c
+	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.fat.c
+	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.hfs.c
+	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.ntfs.c
+	$(compiler) $(cflag) libmem/libfmt/it.img/img.raw.c
+	$(compiler) $(cflag) libmem/libfmt/it.img/img.vhd.c
+	$(compiler) $(cflag) libmem/libfmt/it.img/img.vmdk.c
+	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.apple.c
+	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.gpt.c
+	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.mbr.c
+	$(compiler) $(cflag) libmem/libfmt/xx.cert/cert.pem.c
+	$(compiler) $(cflag) libmem/libfmt/xx.cert/cert.x509.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.doc.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.docx.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.latex.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.pdf.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.ppt.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.pptx.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.xls.c
+	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.xlsx.c
+	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.brd.c
+	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.dsn.c
+	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.pcbdoc.c
+	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.schdoc.c
+	$(compiler) $(cflag) libmem/libfmt/xx.font/font.fon.c
+	$(compiler) $(cflag) libmem/libfmt/xx.font/font.otf.c
+	$(compiler) $(cflag) libmem/libfmt/xx.font/font.ttf.c
 	$(compiler) $(cflag) libmem/libfmt/file.c
 	$(compiler) $(cflag) libmem/libgame/solve.2048.c
 	$(compiler) $(cflag) libmem/libgame/solve.chess.c
@@ -121,20 +149,20 @@ target:
 	$(compiler) $(cflag) libmem/liblang/program/prog.purec.c
 	$(compiler) $(cflag) libmem/liblang/program/prog.cpp.c
 	$(compiler) $(cflag) libmem/liblang/lang.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.arg.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.ascii.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.bigint.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.file.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.num.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.url.c
-	$(compiler) $(cflag) libmem/libtext/conv/conv.utf8.c
-	$(compiler) $(cflag) libmem/libtext/count/count.item.c
-	$(compiler) $(cflag) libmem/libtext/count/count.line.c
-	$(compiler) $(cflag) libmem/libtext/diff/diff.cmp.c
-	$(compiler) $(cflag) libmem/libtext/diff/diff.wild.c
-	$(compiler) $(cflag) libmem/libtext/move/move.copy.c
-	$(compiler) $(cflag) libmem/libtext/move/move.swap.c
-	$(compiler) $(cflag) libmem/libtext/text.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.arg.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.ascii.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.bigint.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.file.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.num.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.url.c
+	$(compiler) $(cflag) libmem/libstr/conv/conv.utf8.c
+	$(compiler) $(cflag) libmem/libstr/count/count.item.c
+	$(compiler) $(cflag) libmem/libstr/count/count.line.c
+	$(compiler) $(cflag) libmem/libstr/diff/diff.cmp.c
+	$(compiler) $(cflag) libmem/libstr/diff/diff.wild.c
+	$(compiler) $(cflag) libmem/libstr/move/move.copy.c
+	$(compiler) $(cflag) libmem/libstr/move/move.swap.c
+	$(compiler) $(cflag) libmem/libstr/str.c
 	$(compiler) $(cflag) libmem/memory.c
 	$(compiler) $(cflag) libphys/phys.elec.c
 	$(compiler) $(cflag) libphys/phys.mech.c

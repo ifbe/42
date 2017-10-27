@@ -1,6 +1,11 @@
+double squareroot(double);
+
+
+
+
 void vectornormalize(float* v)
 {
-	float norm = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	float norm = squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 	v[0] /= norm;
 	v[1] /= norm;
 	v[2] /= norm;

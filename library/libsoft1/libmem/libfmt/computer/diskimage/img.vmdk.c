@@ -1,3 +1,0 @@
-void vmdk_read()
-{
-}

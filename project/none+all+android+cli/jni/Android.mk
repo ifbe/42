@@ -152,35 +152,63 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libdata/tcode/tcode.base64.c \
 	library/libsoft1/libmem/libdata/tcode/tcode.huffman.c \
 	library/libsoft1/libmem/libdata/data.c \
-	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.drum.c \
-	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.flute.c \
-	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.piano.c \
-	library/libsoft1/libmem/libfmt/audiovideo/1.tone/tone.violin.c \
-	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.bmp.c \
-	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.flif.c \
-	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.jpg.c \
-	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.png.c \
-	library/libsoft1/libmem/libfmt/audiovideo/2.picture/pic.webp.c \
-	library/libsoft1/libmem/libfmt/computer/certificate/cert.pem.c \
-	library/libsoft1/libmem/libfmt/computer/certificate/cert.x509.c \
-	library/libsoft1/libmem/libfmt/computer/compress/compress.7z.c \
-	library/libsoft1/libmem/libfmt/computer/compress/compress.cpio.c \
-	library/libsoft1/libmem/libfmt/computer/compress/compress.gz.c \
-	library/libsoft1/libmem/libfmt/computer/compress/compress.tar.c \
-	library/libsoft1/libmem/libfmt/computer/compress/compress.zip.c \
-	library/libsoft1/libmem/libfmt/computer/diskimage/img.raw.c \
-	library/libsoft1/libmem/libfmt/computer/diskimage/img.vhd.c \
-	library/libsoft1/libmem/libfmt/computer/diskimage/img.vmdk.c \
-	library/libsoft1/libmem/libfmt/computer/executable/exec.elf.c \
-	library/libsoft1/libmem/libfmt/computer/executable/exec.macho.c \
-	library/libsoft1/libmem/libfmt/computer/executable/exec.pe.c \
-	library/libsoft1/libmem/libfmt/computer/filesystem/fs.ext.c \
-	library/libsoft1/libmem/libfmt/computer/filesystem/fs.fat.c \
-	library/libsoft1/libmem/libfmt/computer/filesystem/fs.hfs.c \
-	library/libsoft1/libmem/libfmt/computer/filesystem/fs.ntfs.c \
-	library/libsoft1/libmem/libfmt/computer/parttable/pt.apple.c \
-	library/libsoft1/libmem/libfmt/computer/parttable/pt.gpt.c \
-	library/libsoft1/libmem/libfmt/computer/parttable/pt.mbr.c \
+	library/libsoft1/libmem/libfmt/av1.audio/audio.ape.c \
+	library/libsoft1/libmem/libfmt/av1.audio/audio.mp3.c \
+	library/libsoft1/libmem/libfmt/av1.audio/audio.ogg.c \
+	library/libsoft1/libmem/libfmt/av1.audio/audio.wav.c \
+	library/libsoft1/libmem/libfmt/av1.tone/tone.drum.c \
+	library/libsoft1/libmem/libfmt/av1.tone/tone.flute.c \
+	library/libsoft1/libmem/libfmt/av1.tone/tone.piano.c \
+	library/libsoft1/libmem/libfmt/av1.tone/tone.violin.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.bmp.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.flif.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.heif.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.jpg.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.png.c \
+	library/libsoft1/libmem/libfmt/av2.picture/pic.webp.c \
+	library/libsoft1/libmem/libfmt/av2.video/video.avi.c \
+	library/libsoft1/libmem/libfmt/av2.video/video.gif.c \
+	library/libsoft1/libmem/libfmt/av2.video/video.mkv.c \
+	library/libsoft1/libmem/libfmt/av2.video/video.mp4.c \
+	library/libsoft1/libmem/libfmt/av2.video/video.rmvb.c \
+	library/libsoft1/libmem/libfmt/av3.model/model.3mf.c \
+	library/libsoft1/libmem/libfmt/av3.model/model.dwg.c \
+	library/libsoft1/libmem/libfmt/av3.model/model.stl.c \
+	library/libsoft1/libmem/libfmt/it.comp/comp.7z.c \
+	library/libsoft1/libmem/libfmt/it.comp/comp.cpio.c \
+	library/libsoft1/libmem/libfmt/it.comp/comp.gz.c \
+	library/libsoft1/libmem/libfmt/it.comp/comp.tar.c \
+	library/libsoft1/libmem/libfmt/it.comp/comp.zip.c \
+	library/libsoft1/libmem/libfmt/it.exec/exec.elf.c \
+	library/libsoft1/libmem/libfmt/it.exec/exec.macho.c \
+	library/libsoft1/libmem/libfmt/it.exec/exec.pe.c \
+	library/libsoft1/libmem/libfmt/it.fs/fs.ext.c \
+	library/libsoft1/libmem/libfmt/it.fs/fs.fat.c \
+	library/libsoft1/libmem/libfmt/it.fs/fs.hfs.c \
+	library/libsoft1/libmem/libfmt/it.fs/fs.ntfs.c \
+	library/libsoft1/libmem/libfmt/it.img/img.raw.c \
+	library/libsoft1/libmem/libfmt/it.img/img.vhd.c \
+	library/libsoft1/libmem/libfmt/it.img/img.vmdk.c \
+	library/libsoft1/libmem/libfmt/it.pt/pt.apple.c \
+	library/libsoft1/libmem/libfmt/it.pt/pt.gpt.c \
+	library/libsoft1/libmem/libfmt/it.pt/pt.mbr.c \
+	library/libsoft1/libmem/libfmt/xx.cert/cert.pem.c \
+	library/libsoft1/libmem/libfmt/xx.cert/cert.x509.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.doc.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.docx.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.latex.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.pdf.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.ppt.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.pptx.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.xls.c \
+	library/libsoft1/libmem/libfmt/xx.doc/doc.xlsx.c \
+	library/libsoft1/libmem/libfmt/xx.ee/ee.brd.c \
+	library/libsoft1/libmem/libfmt/xx.ee/ee.dsn.c \
+	library/libsoft1/libmem/libfmt/xx.ee/ee.pcbdoc.c \
+	library/libsoft1/libmem/libfmt/xx.ee/ee.schdoc.c \
+	library/libsoft1/libmem/libfmt/xx.font/font.fon.c \
+	library/libsoft1/libmem/libfmt/xx.font/font.otf.c \
+	library/libsoft1/libmem/libfmt/xx.font/font.ttf.c \
 	library/libsoft1/libmem/libfmt/file.c \
 	library/libsoft1/libmem/libgame/solve.2048.c \
 	library/libsoft1/libmem/libgame/solve.chess.c \
@@ -190,21 +218,21 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/liblang/program/prog.purec.c \
 	library/libsoft1/libmem/liblang/program/prog.cpp.c \
 	library/libsoft1/libmem/liblang/lang.c \
-	library/libsoft1/libmem/libtext/conv/conv.arg.c \
-	library/libsoft1/libmem/libtext/conv/conv.ascii.c \
-	library/libsoft1/libmem/libtext/conv/conv.bigint.c \
-	library/libsoft1/libmem/libtext/conv/conv.file.c \
-	library/libsoft1/libmem/libtext/conv/conv.num.c \
-	library/libsoft1/libmem/libtext/conv/conv.url.c \
-	library/libsoft1/libmem/libtext/conv/conv.utf8.c \
-	library/libsoft1/libmem/libtext/count/count.item.c \
-	library/libsoft1/libmem/libtext/count/count.line.c \
-	library/libsoft1/libmem/libtext/diff/diff.cmp.c \
-	library/libsoft1/libmem/libtext/diff/diff.diff.c \
-	library/libsoft1/libmem/libtext/diff/diff.wild.c \
-	library/libsoft1/libmem/libtext/move/move.copy.c \
-	library/libsoft1/libmem/libtext/move/move.swap.c \
-	library/libsoft1/libmem/libtext/text.c \
+	library/libsoft1/libmem/libstr/conv/conv.arg.c \
+	library/libsoft1/libmem/libstr/conv/conv.ascii.c \
+	library/libsoft1/libmem/libstr/conv/conv.bigint.c \
+	library/libsoft1/libmem/libstr/conv/conv.file.c \
+	library/libsoft1/libmem/libstr/conv/conv.num.c \
+	library/libsoft1/libmem/libstr/conv/conv.url.c \
+	library/libsoft1/libmem/libstr/conv/conv.utf8.c \
+	library/libsoft1/libmem/libstr/count/count.item.c \
+	library/libsoft1/libmem/libstr/count/count.line.c \
+	library/libsoft1/libmem/libstr/diff/diff.cmp.c \
+	library/libsoft1/libmem/libstr/diff/diff.diff.c \
+	library/libsoft1/libmem/libstr/diff/diff.wild.c \
+	library/libsoft1/libmem/libstr/move/move.copy.c \
+	library/libsoft1/libmem/libstr/move/move.swap.c \
+	library/libsoft1/libmem/libstr/str.c \
 	library/libsoft1/libmem/memory.c \
 	library/libsoft1/libphys/phys.elec.c \
 	library/libsoft1/libphys/phys.mech.c \

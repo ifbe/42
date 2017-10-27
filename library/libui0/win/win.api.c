@@ -35,10 +35,7 @@ static RECT rt, re;
 
 
 
-
-
-
-
+static int alivecount = 0;
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
@@ -417,6 +414,7 @@ void createmywindow(struct window* this)
 	this->fd = (u64)wnd;
 	this->dc = (u64)dc;
 	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)this);
+	alivecount++;
 }
 void deletemywindow(struct window* this)
 {
@@ -428,6 +426,9 @@ void deletemywindow(struct window* this)
 	UnregisterTouchWindow(wnd);
 
 	DestroyWindow(wnd);
+
+	alivecount--;
+	if(alivecount == 0)eventwrite(0,0,0,0);
 }
 DWORD WINAPI uievent()
 {

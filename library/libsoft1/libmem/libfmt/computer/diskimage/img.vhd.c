@@ -1,3 +1,0 @@
-void vhd_read()
-{
-}
