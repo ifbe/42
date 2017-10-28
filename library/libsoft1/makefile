@@ -117,9 +117,9 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.fat.c
 	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.hfs.c
 	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.ntfs.c
-	$(compiler) $(cflag) libmem/libfmt/it.img/img.raw.c
-	$(compiler) $(cflag) libmem/libfmt/it.img/img.vhd.c
-	$(compiler) $(cflag) libmem/libfmt/it.img/img.vmdk.c
+	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.raw.c
+	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.vhd.c
+	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.vmdk.c
 	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.apple.c
 	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.gpt.c
 	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.mbr.c

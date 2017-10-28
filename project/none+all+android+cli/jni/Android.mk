@@ -186,9 +186,9 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libmem/libfmt/it.fs/fs.fat.c \
 	library/libsoft1/libmem/libfmt/it.fs/fs.hfs.c \
 	library/libsoft1/libmem/libfmt/it.fs/fs.ntfs.c \
-	library/libsoft1/libmem/libfmt/it.img/img.raw.c \
-	library/libsoft1/libmem/libfmt/it.img/img.vhd.c \
-	library/libsoft1/libmem/libfmt/it.img/img.vmdk.c \
+	library/libsoft1/libmem/libfmt/it.disk/disk.raw.c \
+	library/libsoft1/libmem/libfmt/it.disk/disk.vhd.c \
+	library/libsoft1/libmem/libfmt/it.disk/disk.vmdk.c \
 	library/libsoft1/libmem/libfmt/it.pt/pt.apple.c \
 	library/libsoft1/libmem/libfmt/it.pt/pt.gpt.c \
 	library/libsoft1/libmem/libfmt/it.pt/pt.mbr.c \

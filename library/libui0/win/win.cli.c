@@ -2,16 +2,18 @@
 #include<conio.h>
 #include<windows.h>
 #include "arena.h"
-
-
-
-
-//
 u64 startthread(void*, void*);
 void stopthread();
 //
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
+
+
+
+
+static STARTUPINFO si;
+static PROCESS_INFORMATION pi;
+static int termcount = 0;
 
 
 
@@ -90,7 +92,18 @@ void windowstart(struct window* this)
 		this->h = 25;
 		this->d = 0;
 
-		this->thread = startthread(uievent, this);
+		if(termcount == 0)
+		{
+			this->thread = startthread(uievent, this);
+			termcount++;
+		}
+		else
+		{
+			CreateProcess("c:\\windows\\system32\\cmd.exe", 0, 0, 0, 0, 
+				CREATE_NEW_CONSOLE, 0, 0, &si, &pi);
+			printf("GetLastError=%d\n",GetLastError());
+			termcount++;
+		}
 	}
 }
 void windowstop()

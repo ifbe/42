@@ -1,0 +1,3 @@
+void rawimg_read()
+{
+}
