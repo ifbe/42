@@ -135,19 +135,19 @@ static void ooxx_start()
 static void ooxx_stop()
 {
 }
-void ooxx_create(char* base,void* addr)
+void ooxx_create(void* base, struct actor* act)
 {
-	struct actor* p = addr;
+	act->type = hex32('g', 'a', 'm', 'e');
+	act->name = hex32('o', 'o', 'x', 'x');
+	act->irel = 0;
+	act->orel = 0;
 
-	p->type = hex32('g', 'a', 'm', 'e');
-	p->name = hex32('o', 'o', 'x', 'x');
-
-	p->start = (void*)ooxx_start;
-	p->stop = (void*)ooxx_stop;
-	p->list = (void*)ooxx_list;
-	p->choose = (void*)ooxx_choose;
-	p->read = (void*)ooxx_read;
-	p->write = (void*)ooxx_write;
+	act->start = (void*)ooxx_start;
+	act->stop = (void*)ooxx_stop;
+	act->list = (void*)ooxx_list;
+	act->choose = (void*)ooxx_choose;
+	act->read = (void*)ooxx_read;
+	act->write = (void*)ooxx_write;
 }
 void ooxx_delete()
 {

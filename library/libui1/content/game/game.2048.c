@@ -357,8 +357,8 @@ void the2048_create(void* base, struct actor* act)
 {
 	act->type = hex32('g', 'a', 'm', 'e');
 	act->name = hex32('2', '0', '4', '8');
-	act->first = 0;
-	act->last = 0;
+	act->irel = 0;
+	act->orel = 0;
 
 	act->start = (void*)the2048_start;
 	act->stop = (void*)the2048_stop;

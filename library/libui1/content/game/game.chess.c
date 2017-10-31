@@ -165,8 +165,8 @@ void chess_create(void* base, void* addr)
 
 	act->type = hex32('g', 'a', 'm', 'e');
 	act->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
-	act->first = 0;
-	act->last = 0;
+	act->irel = 0;
+	act->orel = 0;
 
 	act->start = (void*)chess_start;
 	act->stop = (void*)chess_stop;

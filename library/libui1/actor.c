@@ -59,8 +59,11 @@ int actorread_one(struct arena* window)
 	}
 	else canvas = window;
 
-	//doit
-	rel = window->first;
+	//background
+	backgroundcolor(canvas, 0xff000000);
+
+	//content
+	rel = window->irel;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -81,6 +84,9 @@ int actorread_one(struct arena* window)
 		rel = connect_read(rel->samepinnextchip);
 	}
 
+	//foreground
+	//floatthing()
+
 	//send
 	arenawrite(window, &arena[0]);
 }
@@ -92,20 +98,14 @@ int actorread()
 	struct relation* rel;
 
 	canvas = &arena[0];
-	rel = canvas->first;
+	rel = canvas->irel;
 	while(1)
 	{
 		if(rel == 0)break;
 		if(rel->destchip == 0)break;
 
-		if(rel->selfchip != 0)
-		{
-			window = (void*)(rel->selfchip);
-			//say("	%x\n",window);
-
-			actorread_one(window);
-		}
-		//else say("%x\n",rel->destchip);
+		window = (void*)(rel->selfchip);
+		actorread_one(window);
 
 		temp = rel->samepinnextchip;
 		rel = connect_read(temp);
@@ -127,9 +127,8 @@ int actorwrite(struct event* ev)
 	if(temp < 0xffff)win = &arena[1];
 	else win = (void*)temp;
 
-	rel = win->first;
+	rel = win->irel;
 	if(rel == 0)return 0;
-	if(rel->samepinnextchip == 0)return 0;
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;

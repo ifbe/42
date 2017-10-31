@@ -325,13 +325,15 @@ static void snake_start()
 static void snake_stop()
 {
 }
-void snake_create(void* base,void* addr)
+void snake_create(void* base, void* addr)
 {
 	struct actor* p = addr;
 	snake = base+0x300000;
 
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
 	p->start = (void*)snake_start;
 	p->stop = (void*)snake_stop;

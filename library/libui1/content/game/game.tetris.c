@@ -677,6 +677,8 @@ void tetris_create(void* base,void* addr)
 
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
 	p->start = (void*)tetris_start;
 	p->stop = (void*)tetris_stop;

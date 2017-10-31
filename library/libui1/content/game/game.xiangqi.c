@@ -942,19 +942,19 @@ static void xiangqi_start()
 static void xiangqi_stop()
 {
 }
-void xiangqi_create(void* base,void* addr)
+void xiangqi_create(void* base, struct actor* act)
 {
-	struct actor* p = addr;
+	act->type = hex32('g', 'a', 'm', 'e');
+	act->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	act->irel = 0;
+	act->orel = 0;
 
-	p->type = hex32('g', 'a', 'm', 'e');
-	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
-
-	p->start = (void*)xiangqi_start;
-	p->stop = (void*)xiangqi_stop;
-	p->list = (void*)xiangqi_list;
-	p->choose = (void*)xiangqi_choose;
-	p->read = (void*)xiangqi_read;
-	p->write = (void*)xiangqi_write;
+	act->start = (void*)xiangqi_start;
+	act->stop = (void*)xiangqi_stop;
+	act->list = (void*)xiangqi_list;
+	act->choose = (void*)xiangqi_choose;
+	act->read = (void*)xiangqi_read;
+	act->write = (void*)xiangqi_write;
 }
 void xiangqi_delete()
 {

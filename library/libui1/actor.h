@@ -28,16 +28,18 @@ struct relation
 	//[0x00,0x1f]
 	u64 destchip;
 	u64 destfoot;
-	u64 desttype;
-	int samepinprevchip;
-	int samepinnextchip;
+	u32 desttype;
+	u32 destflag;
+	u32 samepinprevchip;
+	u32 samepinnextchip;
 
 	//0x20,0x3f
 	u64 selfchip;
 	u64 selffoot;
-	u64 selftype;
-	int samechipprevpin;
-	int samechipnextpin;
+	u32 selftype;
+	u32 selfflag;
+	u32 samechipprevpin;
+	u32 samechipnextpin;
 };
 
 
@@ -50,11 +52,11 @@ struct arena
 	u64 type;
 	u64 fmt;
 	union{
-		struct relation* first;
+		struct relation* irel;
 		char pad0[8];
 	};
 	union{
-		struct relation* last;
+		struct relation* orel;
 		char pad1[8];
 	};
 
@@ -94,11 +96,11 @@ struct actor
 	u64 type;
 	u64 name;
 	union{
-		struct relation* first;
+		struct relation* irel;
 		char pad0[8];
 	};
 	union{
-		struct relation* last;
+		struct relation* orel;
 		char pad1[8];
 	};
 

@@ -182,8 +182,8 @@ void algorithm_create(void* base, void* addr)
 
 	pl->type = hex32('h', 'a', 'c', 'k');
 	pl->name = hex32('a', 'l', 'g', 'o');
-	pl->first = 0;
-	pl->last = 0;
+	pl->irel = 0;
+	pl->orel = 0;
 
 	pl->start = (void*)algorithm_start;
 	pl->stop = (void*)algorithm_stop;

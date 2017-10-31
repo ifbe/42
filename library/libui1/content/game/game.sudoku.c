@@ -226,6 +226,8 @@ void sudoku_create(void* base,void* addr)
 
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
 	p->start = (void*)sudoku_start;
 	p->stop = (void*)sudoku_stop;
