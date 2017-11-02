@@ -19,7 +19,9 @@ void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
 void backgroundcolor(void*, u32);
-int actorstart(struct arena* win, struct actor* act);
+void foreground(void*);
+void term_write(void*);
+
 
 
 
@@ -33,7 +35,7 @@ static u32 menu=0;
 
 
 
-int actorread_one(struct arena* window)
+int actorread_one(struct arena* win)
 {
 	struct arena* canvas;
 	struct actor* act;		//2048?
@@ -42,37 +44,39 @@ int actorread_one(struct arena* window)
 	struct style* st;			//style
 	void* pl;
 
-	//cli
-	if(window->fmt == hex32('c','l','i',0))return 0;
+	if(win->fmt == hex32('c','l','i',0))return;
 
 	//canvas
-	if(window->type != hex32('b', 'u', 'f', 0))
+	if(win->type != hex32('b', 'u', 'f', 0))
 	{
 		canvas = &arena[0];
 
-		canvas->fmt = window->fmt;
-		canvas->w = window->w;
-		canvas->h = window->h;
+		canvas->fmt = win->fmt;
+		canvas->w = win->w;
+		canvas->h = win->h;
 
 		canvas->info[0] = 0;
 		canvas->info[1] = 0;
 	}
-	else canvas = window;
+	else canvas = win;
+
+	//
+	rel = win->irel;
+	if(rel == 0)
+	{
+		//default_read(canvas);
+		return 0;
+	}
 
 	//background
 	backgroundcolor(canvas, 0xff000000);
 
 	//content
-	rel = window->irel;
 	while(1)
 	{
 		if(rel == 0)break;
 
-		if(rel->selftype == 0)
-		{
-			backgroundcolor(canvas, 0xff000000);
-		}
-		else if(rel->selftype == __act__)
+		if(rel->selftype == __act__)
 		{
 			st = (void*)(rel->destfoot);
 			pl = (void*)(rel->selffoot);
@@ -85,10 +89,10 @@ int actorread_one(struct arena* window)
 	}
 
 	//foreground
-	//floatthing()
+	//foreground()
 
 	//send
-	arenawrite(window, &arena[0]);
+	arenawrite(win, &arena[0]);
 }
 int actorread()
 {
@@ -127,8 +131,20 @@ int actorwrite(struct event* ev)
 	if(temp < 0xffff)win = &arena[1];
 	else win = (void*)temp;
 
+	//cli
+	if(win->fmt == hex32('c','l','i',0))
+	{
+		term_write(ev);
+		return 0;
+	}
+
 	rel = win->irel;
-	if(rel == 0)return 0;
+	if(rel == 0)
+	{
+		//default_write(ev);
+		return 0;
+	}
+
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;
@@ -239,7 +255,6 @@ void actorcreate(u8* type, u8* addr)
 	content_create(addr, 0);
 
 	//
-	actorstart(&arena[1], 0);
 	actorstart(&arena[1], 0);
 
 	//say("[c,f):createed actor\n");

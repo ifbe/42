@@ -104,6 +104,7 @@ void term_write(u8* p)
 	int j;
 	int* enq;
 	if(p == 0)return;
+	//printf("%02x%02x%02x\n",p[0],p[1],p[2]);return;
 
 	//passthrough?
 	if((p[0] == 0x1b)&&(*(p+1) != 0x5b))

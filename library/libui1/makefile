@@ -15,6 +15,8 @@ target:
 	$(compiler) $(cflag) content/hack/hack.editor.c
 	$(compiler) $(cflag) content/hack/hack.hex.c
 	$(compiler) $(cflag) content/hack/hack.tree.c
+	$(compiler) $(cflag) content/hack/hack.joystick.c
+	$(compiler) $(cflag) content/hack/hack.keyboard.c
 	$(compiler) $(cflag) content/link/link.door.c
 	$(compiler) $(cflag) content/link/link.friend.c
 	$(compiler) $(cflag) content/test/test.color.c
@@ -28,12 +30,8 @@ target:
 	$(compiler) $(cflag) content/tool/tool.qrcode.c
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
-	$(compiler) $(cflag) content/levi/levi.login.c
-	$(compiler) $(cflag) content/levi/levi.navi.c
-	$(compiler) $(cflag) content/levi/levi.joystick.c
-	$(compiler) $(cflag) content/levi/levi.keyboard.c
-	$(compiler) $(cflag) content/levi/levi.c
 	$(compiler) $(cflag) content/content.c
+	$(compiler) $(cflag) helper/helper.login.c
 	$(compiler) $(cflag) helper/helper.term.c
 	$(compiler) $(cflag) helper/helper.win.c
 	$(compiler) $(cflag) helper/helper.c
