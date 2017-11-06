@@ -7,7 +7,6 @@ int actorread();
 int actorwrite(void*);
 int term_read(void*);
 int term_write(void*);
-int win_cfg(void*);
 //libui0
 int arenaread();
 int arenawrite();
@@ -93,12 +92,7 @@ again:
 
 		//3.pre process
 		temp = (ev->what)&0xff;
-		if(temp == 'w')
-		{
-			ret = win_cfg(ev);
-			goto again;
-		}
-		else if(temp == 'n')
+		if(temp == 'n')
 		{
 			//network rawdata -> my event
 			ret = network_explain(ev);
@@ -116,7 +110,6 @@ again:
 			ret = vision_explain(ev);
 			if(ret != 42)goto again;
 		}
-		if(ev->what == 0)goto again;
 
 
 		//4.real process

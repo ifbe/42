@@ -22,6 +22,11 @@ void win_cfg(struct event* ev)
 	if(ev->what == hex32('w','+',0,0))
 	{
 		ret = arenastart(ev->why, ev->where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return;
+		}
 		actorstart(ret, 0);
 	}
 	else if(ev->what == hex32('w','-',0,0))

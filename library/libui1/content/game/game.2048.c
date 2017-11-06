@@ -28,77 +28,34 @@ void carvecubie(
 //
 static int num;
 static u8 buffer[256];
+//
+static u8 len2048[17] = {
+0, 1, 1, 1,
+2, 2, 2, 3,
+3, 3, 4, 4,
+4, 4, 5, 5, 5
+};
+static u32 val2048[17] = {
+   0,    2,    4,    8,
+  16,   32,   64,  128,
+ 256,  512, 1024, 2048,
+4096, 8192,16384,32768,65536
+};
+static u32 color2048[17] = {
+0x444444, 0xfffff0, 0xffffc0, 0x995000,
+0xc05000, 0xb03000, 0xff0000, 0xffffa0,
+0xffff80, 0xffff00, 0xffffb0, 0x233333,
+0x783d72, 0xd73762
+};
 
 
 
 
-u32 the2048_length(int val)
-{
-	if(val == 0)return 0;
-	if(val <= 8)return 1;
-	if(val <= 64)return 2;
-	if(val <= 512)return 3;
-	if(val <= 8192)return 4;
-	if(val <= 65536)return 5;
-	return 6;
-}
-u32 the2048_color(int val)
-{
-	switch(val)
-	{
-		case    0:	return 0x555555;
-		case    2:	return 0xfffff0;
-		case    4:	return 0xffffc0;
-		case    8:	return 0x995000;
-		case   16:	return 0xc05000;
-		case   32:	return 0xb03000;
-		case   64:	return 0xff0000;
-		case  128:	return 0xffffa0;
-		case  256:	return 0xffff80;
-		case  512:	return 0xffff00;
-		case 1024:	return 0xffffb0;
-		case 2048:	return 0x233333;
-		case 4096:	return 0x783d72;
-		case 8192:	return 0xd73762;
-	}
-	return 0;
-}
-static void cubie(
-	struct arena* win, int data,
-	int x0, int y0, int x1, int y1)
-{
-	u32 color;
-	u32 length;
-
-	//color
-	color = the2048_color(data);
-	if( ( (win->fmt)&0xffffffff) == 0x61626772)	//bgra->rgba
-	{
-		color	= 0xff000000
-			+ ((color&0xff)<<16)
-			+ (color&0xff00)
-			+ ((color&0xff0000)>>16);
-	}
-	drawrect(win,
-		x0, y0,
-		x1, y1,
-		color, 0
-	);
-
-	//decimal
-	length = the2048_length(data);
-	if(length == 0)return;
-	drawdecimal(
-		win, data, 4,
-		-(length*16)+(x0+x1)/2, -32+(y0+y1)/2,
-		0, 0
-	);
-}
 static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
 	float xxx, yyy, zzz;
-	int (*tab)[4] = (void*)buffer + num*16*4;
+	u8 (*tab)[4] = (void*)buffer + num*16;
 
 	float cx = (float)(rel->cx) / 65536.0 - 0.5;
 	float cy = (float)(rel->cy) / 65536.0 - 0.5;
@@ -125,9 +82,12 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 }
 static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
+	u32 color;
+	u32 length;
 	int x,y;
 	int cx,cy,w,h;
-	int (*table)[4] = (void*)buffer + num*16*4;
+	int x0,y0,x1,y1;
+	u8 (*table)[4] = (void*)buffer + num*16;
 
 	//position
 	cx = (win->w) * (rel->cx) / 0x10000;
@@ -142,13 +102,35 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 	{
 		for(x=0;x<4;x++)
 		{
-			cubie(
-				win,
-				table[y][x],
-				cx + (x-2)*w/4,
-				cy + (y-2)*h/4,
-				cx + (x-1)*w/4,
-				cy + (y-1)*h/4
+			//color
+			color = color2048[table[y][x]];
+			if( ( (win->fmt)&0xffffffff) == 0x61626772)	//bgra->rgba
+			{
+				color = 0xff000000
+					+ ((color&0xff)<<16)
+					+ (color&0xff00)
+					+ ((color&0xff0000)>>16);
+			}
+
+			//cubie
+			x0 = cx + (x-2)*w/4;
+			y0 = cy + (y-2)*h/4;
+			x1 = cx + (x-1)*w/4;
+			y1 = cy + (y-1)*h/4;
+			drawrect(win,
+				x0, y0,
+				x1, y1,
+				color, 0
+			);
+
+			//decimal
+			length = len2048[table[y][x]];
+			if(length == 0)continue;
+
+			drawdecimal(
+				win, val2048[table[y][x]], 4,
+				-(length*16)+(x0+x1)/2, -32+(y0+y1)/2,
+				0, 0
 			);
 		}
 	}
@@ -160,7 +142,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	int len = 0;
 	u32 color;
 	u8* buf = (u8*)(win->buf);
-	int (*table)[4] = (void*)buffer + num*16*4;
+	u8 (*table)[4] = (void*)buffer + num*16;
 
 	cx = (rel->cx) * 100 / 0x10000;
 	cy = (rel->cy) * 100 / 0x10000;
@@ -184,33 +166,18 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	{
 		for(x=0;x<4;x++)
 		{
-			color = the2048_color(table[y][x]);
-			if(table[y][x] != 0)
-			{
-				len += mysnprintf(
-					buf+len, 0x1000,
-					"<div class=\"rect\" style=\""
-					"left:%d%%;"
-					"top:%d%%;"
-					"background:#%06x;"
-					"\">%d</div>",
-					cx+(x-2)*w, cy+(y-2)*h,
-					color, table[y][x]
-				);
-			}
-			else
-			{
-				len += mysnprintf(
-					buf+len, 0x1000,
-					"<div class=\"rect\" style=\""
-					"left:%d%%;"
-					"top:%d%%;"
-					"background:#%06x;"
-					"\"></div>",
-					cx+(x-2)*w, cy+(y-2)*h,
-					color
-				);
-			}
+			color = color2048[table[y][x]];
+			len += mysnprintf(
+				buf+len, 0x1000,
+				"<div class=\"rect\" style=\""
+				"left:%d%%;"
+				"top:%d%%;"
+				"background:#%06x;\">",
+				cx+(x-2)*w, cy+(y-2)*h, color
+			);
+
+			if(table[y][x] == 0)len += mysnprintf(buf+len, 0x1000, "</div>");
+			else len += mysnprintf(buf+len, 0x1000, "%d</div>", val2048[table[y][x]]);
 		}
 	}
 	win->info[0] = len;
@@ -219,18 +186,18 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct style*
 {
 	int x,y,j,k,ret;
 	u8 src[10];
-	int (*table)[4] = (void*)buffer + num*16*4;
+	u8 (*table)[4] = (void*)buffer + num*16;
 
-	u8* buf = (u8*)(win->buf);
 	int w = win->w;
 	int h = win->h;
+	u8* buf = (u8*)(win->buf);
 
 	for(x=0;x<w*h*4;x++)buf[x]=0;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			data2decstr(table[y][x], src);
+			data2decstr(val2048[table[y][x]], src);
 			ret = w*(4*y+1) + 8*x + 2;
 			ret <<= 2;
 
@@ -257,12 +224,23 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct style*
 }
 static void the2048_read_cli()
 {
-	int (*table)[4] = (void*)buffer + num*16*4;
-	say("%d	%d	%d	%d\n", table[0][0], table[0][1], table[0][2], table[0][3]);
-	say("%d	%d	%d	%d\n", table[1][0], table[1][1], table[1][2], table[1][3]);
-	say("%d	%d	%d	%d\n", table[2][0], table[2][1], table[2][2], table[2][3]);
-	say("%d	%d	%d	%d\n", table[3][0], table[3][1], table[3][2], table[3][3]);
-	say("\n");
+	u8 (*table)[4] = (void*)buffer + num*16;
+	say("%d	", val2048[table[0][0]]);
+	say("%d	", val2048[table[0][1]]);
+	say("%d	", val2048[table[0][2]]);
+	say("%d\n", val2048[table[0][3]]);
+	say("%d	", val2048[table[1][0]]);
+	say("%d	", val2048[table[1][1]]);
+	say("%d	", val2048[table[1][2]]);
+	say("%d\n", val2048[table[1][3]]);
+	say("%d	", val2048[table[2][0]]);
+	say("%d	", val2048[table[2][1]]);
+	say("%d	", val2048[table[2][2]]);
+	say("%d\n", val2048[table[2][3]]);
+	say("%d	", val2048[table[3][0]]);
+	say("%d	", val2048[table[3][1]]);
+	say("%d	", val2048[table[3][2]]);
+	say("%d\n", val2048[table[3][3]]);
 }
 static void the2048_read(struct arena* win, struct actor* act, struct style* rel)
 {
@@ -288,29 +266,28 @@ static void the2048_read(struct arena* win, struct actor* act, struct style* rel
 static void the2048_write(struct event* ev)
 {
 	//kbd
-	u8 key;
-	int j;
-	int* p;
-	int* q;
+	int j,k;
+	u8* p;
+	u8* q;
 	//say("%x,%x\n",ev->why, ev->what);
 
 	//
 	if(ev->what == 0x64626b)
 	{
-		key = (ev->why)&0xff;
-		if( (key>=0x25) && (key<=0x28) )
+		k = (ev->why)&0xff;
+		if( (k>=0x25) && (k<=0x28) )
 		{
 			//
-			p = (void*)buffer + 64*num;
+			p = (void*)buffer + 16*num;
 			num = (num+1)%4;
-			q = (void*)buffer + 64*num;
+			q = (void*)buffer + 16*num;
 			for(j=0;j<16;j++)q[j] = p[j];
 
 			//
-			if(key == 0x25)left2048((void*)q);
-			else if(key == 0x26)up2048((void*)q);
-			else if(key == 0x27)right2048((void*)q);
-			else if(key == 0x28)down2048((void*)q);
+			if(k == 0x25)left2048((void*)q);
+			else if(k == 0x26)up2048((void*)q);
+			else if(k == 0x27)right2048((void*)q);
+			else if(k == 0x28)down2048((void*)q);
 
 			//new number?
 			new2048((void*)q);
@@ -318,7 +295,7 @@ static void the2048_write(struct event* ev)
 	}
 	else if(ev->what == 0x72616863)
 	{
-		if(key == 0x8)
+		if(k == 0x8)
 		{
 			if(num>0)num--;
 		}

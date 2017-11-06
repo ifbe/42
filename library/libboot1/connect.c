@@ -5,6 +5,11 @@
 #define maxlen 0x100000
 #define __act__ hex32('a','c','t',0)
 #define __win__ hex32('w','i','n',0)
+void say(void*, ...);
+
+
+
+
 struct relation
 {
 	//[0x00,0x1f]
@@ -87,7 +92,7 @@ int connect_write(
 	if(wirecur >= wirelen)
 	{
 		say("wire buf not enough\n");
-		return;
+		return 0;
 	}
 
 	//

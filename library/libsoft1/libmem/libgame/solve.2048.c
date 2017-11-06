@@ -1,53 +1,49 @@
+#define u8 unsigned char
 unsigned int getrandom();
 
-void left2048(int (*table)[4])
+
+
+
+void left2048(u8 (*table)[4])
 {
 	int x,y;
 	int dst,temp;
 
-	//4对祭品
 	for(y=0;y<4;y++)
 	{
-		//前三个会去作死
 		for(x=0;x<3;x++)
 		{
-		//前三个里面没死的才会去作死
-		if(table[y][x]!=0)
-		{
-			//开始作死
-			dst=x+1;
-			for(;dst<4;dst++)
+			if(table[y][x] != 0)
 			{
-				//空位置就找下一个
-				if(table[y][dst] == 0)continue;
+				dst = x+1;
+				for(;dst<4;dst++)
+				{
+					if(table[y][dst] == 0)continue;
 
-				//跟自己不一样，没法欺负就跑
-				if(table[y][dst] != table[y][x])break;
+					if(table[y][dst] != table[y][x])break;
 
-				//找到相同的只能活一个，依次排队准备下次
-				table[y][x]=2*table[y][x];	//吃掉别人
-				table[y][dst]=0;		//扔尸体
-				x=dst;		//别
-				break;
-			}
-		}//if
+					table[y][x]++;
+					table[y][dst] = 0;
+					x = dst;
+					break;
+				}
+			}//if
 		}//forx
 
-		//活着的排好队
 		dst=0;
 		for(x=0;x<4;x++)
 		{
-		if(table[y][x]!=0)
-		{
-			temp=table[y][x];
-			table[y][x]=0;
-			table[y][dst]=temp;
-			dst++;
-		}
+			if(table[y][x] != 0)
+			{
+				temp = table[y][x];
+				table[y][x] = 0;
+				table[y][dst] = temp;
+				dst++;
+			}
 		}
 	}//fory
 }
-void right2048(int (*table)[4])
+void right2048(u8 (*table)[4])
 {
 	int x,y;
 	int dst,temp;
@@ -56,35 +52,35 @@ void right2048(int (*table)[4])
 	{
 		for(x=3;x>0;x--)
 		{
-		if(table[y][x]!=0)
-		{
-			dst=x-1;
-			for(;dst>=0;dst--)
+			if(table[y][x] != 0)
 			{
-				if( table[y][dst] == 0 )continue;
-				if( table[y][dst] != table[y][x] )break;
-				table[y][x]=2*table[y][x];
-				table[y][dst]=0;
-				x=dst;
-				break;
-			}
-		}//if
+				dst = x-1;
+				for(;dst>=0;dst--)
+				{
+					if(table[y][dst] == 0 )continue;
+					if(table[y][dst] != table[y][x] )break;
+					table[y][x]++;
+					table[y][dst] = 0;
+					x = dst;
+					break;
+				}
+			}//if
 		}//forx
 
 		dst=3;
 		for(x=3;x>=0;x--)
 		{
-		if(table[y][x]!=0)
-		{
-			temp=table[y][x];
-			table[y][x]=0;
-			table[y][dst]=temp;
-			dst--;
-		}
+			if(table[y][x] != 0)
+			{
+				temp = table[y][x];
+				table[y][x] = 0;
+				table[y][dst] = temp;
+				dst--;
+			}
 		}
 	}//fory
 }
-void up2048(int (*table)[4])
+void up2048(u8 (*table)[4])
 {
 	int x,y;
 	int dst,temp;
@@ -93,35 +89,35 @@ void up2048(int (*table)[4])
 	{
 		for(y=0;y<3;y++)
 		{
-		if(table[y][x]!=0)
-		{
-			dst=y+1;
-			for(;dst<4;dst++)
+			if(table[y][x] != 0)
 			{
-				if( table[dst][x] == 0 )continue;
-				if( table[dst][x] != table[y][x] )break;
-				table[y][x]=2*table[y][x];
-				table[dst][x]=0;
-				y=dst;
-				break;
-			}
-		}//if
+				dst = y+1;
+				for(;dst<4;dst++)
+				{
+					if(table[dst][x] == 0 )continue;
+					if(table[dst][x] != table[y][x] )break;
+					table[y][x]++;
+					table[dst][x] = 0;
+					y = dst;
+					break;
+				}
+			}//if
 		}//fory
 
 		dst=0;
 		for(y=0;y<4;y++)
 		{
-		if(table[y][x]!=0)
-		{
-			temp=table[y][x];
-			table[y][x]=0;
-			table[dst][x]=temp;
-			dst++;
-		}
+			if(table[y][x] != 0)
+			{
+				temp = table[y][x];
+				table[y][x] = 0;
+				table[dst][x] = temp;
+				dst++;
+			}
 		}
 	}//forx
 }
-void down2048(int (*table)[4])
+void down2048(u8 (*table)[4])
 {
 	int x,y;
 	int dst,temp;
@@ -130,75 +126,65 @@ void down2048(int (*table)[4])
 	{
 		for(y=3;y>0;y--)
 		{
-		if(table[y][x]!=0)
-		{
-			dst=y-1;
-			for(;dst>=0;dst--)
+			if(table[y][x] != 0)
 			{
-				if( table[dst][x] == 0 )continue;
-				if( table[dst][x] != table[y][x] )break;
-				table[y][x]=2*table[y][x];
-				table[dst][x]=0;
-				y=dst;
-				break;
-			}
-		}//if
+				dst = y-1;
+				for(;dst>=0;dst--)
+				{
+					if(table[dst][x] == 0 )continue;
+					if(table[dst][x] != table[y][x] )break;
+					table[y][x]++;
+					table[dst][x] = 0;
+					y = dst;
+					break;
+				}
+			}//if
 		}//forx
 
 		dst=3;
 		for(y=3;y>=0;y--)
 		{
-		if(table[y][x]!=0)
-		{
-			temp=table[y][x];
-			table[y][x]=0;
-			table[dst][x]=temp;
-			dst--;
-		}
+			if(table[y][x]!=0)
+			{
+				temp = table[y][x];
+				table[y][x] = 0;
+				table[dst][x] = temp;
+				dst--;
+			}
 		}
 	}//fory
 }
-void new2048(int (*table)[4])
+void new2048(u8 (*table)[4])
 {
-	int x,y;
-	int who,temp;
+	int x,y,temp,count;
 
 	//how many blank cubie
-	who=0;
+	count=0;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			if(table[y][x]==0)who++;
+			if(table[y][x]==0)count++;
 		}
 	}
-	if(who==0)return;
+	if(count==0)return;
+	//say("count=%x\n", count);
 
-	//where
-	temp = getrandom();
-	if(temp<0) temp = -temp;
-	who = temp % who;
-
-	//value
-	temp = getrandom()&0x3;
-	if(temp>=2)temp=4;
-	else temp=2;
-
-	//put
+	//choose which empty cubie
+	count = getrandom() % count;
+	//say("choice=%x\n", count);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			//here=0 : i "can" put here
-			if(table[y][x]==0)
+			if(table[y][x] == 0)
 			{
-				//who=0 : i "want" put here
-				if(who!=0)who--;
-				else
+				if(count == 0)
 				{
-					table[y][x]=temp;
+					table[y][x] = (getrandom()&0x1) + 1;
 					return;
 				}
+				else count--;
 			}//if(empty)
 		}//for(x)
 	}//for(y)

@@ -117,9 +117,9 @@ void* arenastart(u64 type, u64 fd)
 			connect_write(arena, 0, 0, win, 0, 0);
 			return win;
 		}
-		else if(type == hex32('w','s',0,0))
+		else if(type == hex32('W','S',0,0))
 		{
-			win->type = hex32('w', 's', 0, 0);
+			win->type = hex32('W', 'S', 0, 0);
 			win->fmt = hex32('h','t','m','l');
 			win->first = 0;
 			win->last = 0;

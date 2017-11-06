@@ -21,6 +21,7 @@ void arenawrite(void*, void*);
 void backgroundcolor(void*, u32);
 void foreground(void*);
 void term_write(void*);
+void win_cfg(void*);
 
 
 
@@ -44,7 +45,7 @@ int actorread_one(struct arena* win)
 	struct style* st;			//style
 	void* pl;
 
-	if(win->fmt == hex32('c','l','i',0))return;
+	if(win->fmt == hex32('c','l','i',0))return 0;
 
 	//canvas
 	if(win->type != hex32('b', 'u', 'f', 0))
@@ -125,6 +126,13 @@ int actorwrite(struct event* ev)
 	struct style* sty;		//style
 	struct relation* rel;	//link
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+
+	//
+	if(((ev->what)&0xff) == 'w')
+	{
+		win_cfg(ev);
+		return 0;
+	}
 
 	//
 	temp = ev->where;
