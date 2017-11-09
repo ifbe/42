@@ -119,13 +119,11 @@ int actorread()
 }
 int actorwrite(struct event* ev)
 {
+	int ret;
 	u64 temp;
 	struct arena* win;
 	struct actor* act;		//2048?
-	struct style* sty;		//style
 	struct relation* rel;	//link
-	struct point* p;
-	struct point* q;
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//
@@ -147,71 +145,25 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
-	//
-	if(ev->what == hex32('k','b','d',0))
+	ret = keyboard_explain(win, ev);
+	if(ret != 0)return 0;
+
+	if(win->cw == 4)
 	{
-		if(ev->why == 0x1b)
-		{
-			if(win->cw != 4)win->cw = 4;
-			else win->cw = 0;
-			return 0;
-		}
-		else if(ev->why == 0xf1)
-		{
-			if(win->cw != 1)win->cw = 1;
-			else win->cw = 0;
-			return 0;
-		}
-		else if(ev->why == 0xf2)
-		{
-			if(win->cw != 2)win->cw = 2;
-			else win->cw = 0;
-			return 0;
-		}
-		else if(ev->why == 0xf3)
-		{
-			if(win->cw != 3)win->cw = 3;
-			else win->cw = 0;
-			return 0;
-		}
+		ret = point_explain(win, ev);
+		if(ret != 0)return 0;
 	}
 
 	rel = win->irel;
-	if(rel == 0)
-	{
-		//default_write(ev);
-		return 0;
-	}
-
+	if(rel == 0)return 0;
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;
 		rel = connect_read(rel->samepinnextchip);
 	}
 	act = (void*)(rel->selfchip);
-	sty = (void*)(rel->destfoot);
+	act->write(ev);
 
-	if(win->cw != 4)
-	{
-		act->write(ev);
-	}
-	else
-	{
-		if((ev->what == hex32('p','+',0,0)) && ((ev->why>>48)==0x6c))
-		{
-			*(u64*)&(win->touch[10]) = ev->why;
-		}
-		else if((ev->what == hex32('p','@',0,0)) && ((ev->why>>48)==0x6c))
-		{
-			q = (void*)&(win->touch[10]);
-			p = (void*)ev;
-
-			sty->cx += (int)(p->x) - (int)(q->x);
-			sty->cy += (int)(p->y) - (int)(q->y);
-
-			*(u64*)&(win->touch[10]) = ev->why;
-		}
-	}
 	return 0;
 }
 int actorlist(u8* p)
