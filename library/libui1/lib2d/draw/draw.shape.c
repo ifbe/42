@@ -335,3 +335,16 @@ void drawbezier(struct arena* win,
 		buf[y*width + x] = 0xff00;
 	}
 }
+
+
+
+
+void rectread(struct arena* win, struct style* sty)
+{
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w2 = (win->w) * (sty->wantw) / 0x20000;
+	int h2 = (win->h) * (sty->wanth) / 0x20000;
+
+	drawrect_frame(win, cx-w2, cy-h2, cx+w2, cy+h2, 0xff00ff);
+}
