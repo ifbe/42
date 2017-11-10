@@ -1,7 +1,9 @@
 #include "actor.h" 
 //
 void drawline(void*,
-	int x1,int y1,int x2,int y2, u32 color);
+	int x1, int y1, int x2, int y2, u32 color);
+void drawrect_body(void*,
+	int x1, int y1, int x2, int y2, u32 color);
 void drawcircle_body(void*,
 	int x, int y, int r, u32 color);
 
@@ -16,10 +18,10 @@ static char* data;
 
 
 
-static void weiqi_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void weiqi_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void weiqi_read_text(struct arena* win, struct actor* act, struct style* rel)
+static void weiqi_read_text(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -50,33 +52,35 @@ static void weiqi_read_text(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
 	int x,y,half;
-	int cx = (win->w) * (rel->cx) / 0x10000;
-	int cy = (win->h) * (rel->cy) / 0x10000;
-	int w = (win->w) * (rel->wantw) / 0x10000 / 19;
-	int h = (win->h) * (rel->wanth) / 0x10000 / 19;
-	if(w < h)half = w / 2;
-	else half = h / 2;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w = (win->w) * (sty->wantw) / 0x10000;
+	int h = (win->h) * (sty->wanth) / 0x10000;
 
-	if( ((win->fmt)&0xffffffff) == 0x61626772)
+	if(w != h)
 	{
-		color = 0x256f8d;
+		w = (w+h)/2;
+		h = w;
+		sty->wantw = w * 0x10000 / (win->w);
+		sty->wanth = h * 0x10000 / (win->h);
 	}
-	else
-	{
-		color = 0x8d6f25;
-	}
-	//backgroundcolor(win, color);
+	half = w / 38;
+
+	//rgb? bgr?
+	if( ((win->fmt)&0xffffff) == 0x626772)color = 0x256f8d;
+	else color = 0x8d6f25;
+	drawrect_body(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, color);
 
 	//heng
 	for(y=-9;y<10;y++)
 	{
 		drawline(win,
 			cx - half*2*9,	cy + half*2*y,
-			cx + half*2*9,	cy + half*2*y,	0xff00ff);
+			cx + half*2*9,	cy + half*2*y,	0);
 	}
 
 	//shu
@@ -84,7 +88,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		drawline(win,
 			cx + half*2*x,	cy - half*2*9,
-			cx + half*2*x,	cy + half*2*9,	0xff00ff);
+			cx + half*2*x,	cy + half*2*9,	0);
 	}
 
 	//dian
@@ -117,26 +121,26 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void weiqi_read(struct arena* win, struct actor* act, struct style* rel)
+static void weiqi_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		weiqi_read_text(win, act, rel);
+		weiqi_read_text(win, act, sty);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		weiqi_read_html(win, act, rel);
+		weiqi_read_html(win, act, sty);
 	}
 
 	//pixel
 	else
 	{
-		weiqi_read_pixel(win, act, rel);
+		weiqi_read_pixel(win, act, sty);
 	}
 }
 

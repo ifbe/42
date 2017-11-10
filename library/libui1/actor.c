@@ -20,6 +20,9 @@ void arenawrite(void*, void*);
 //
 void backgroundcolor(void*, u32);
 void foreground(void*);
+int rectread(void*, void*);
+int input_explain(void*, void*);
+//
 void term_write(void*);
 void win_cfg(void*);
 

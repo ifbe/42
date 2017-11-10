@@ -144,23 +144,38 @@ void motion_explain(u64* p)
 }
 int mouse_explain(struct arena* win, struct style* sty, struct event* ev)
 {
+	int j;
 	struct point* p;
 	struct point* q;
-	if((ev->why>>48) != 0x6c)return 0;
 
-	if(ev->what == hex32('p','+',0,0))
-	{
-		*(u64*)&(win->touch[10]) = ev->why;
-	}
-	else if(ev->what == hex32('p','@',0,0))
-	{
-		q = (void*)&(win->touch[10]);
-		p = (void*)ev;
+	j = (ev->why) >> 48;
+	if(j == 0x6c)j = 10;
+	if(j > 10)return 0;
 
+	p = (void*)ev;
+	q = (void*)&(win->touch[j]);
+
+	if(ev->what == hex32('p','@',0,0))
+	{
 		sty->cx += (int)(p->x) - (int)(q->x);
 		sty->cy += (int)(p->y) - (int)(q->y);
 
-		*(u64*)&(win->touch[10]) = ev->why;
+		q->x = p->x;
+		q->y = p->y;
+	}
+	else if(ev->what == hex32('p','+',0,0))
+	{
+		q->x = p->x;
+		q->y = p->y;
+	}
+	else if(ev->what == hex32('p','-',0,0))
+	{
+		say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+		if(j == 2)
+		{
+			if(win->cw != 4)win->cw = 4;
+			else win->cw = 0;
+		}
 	}
 	return 0;
 }
