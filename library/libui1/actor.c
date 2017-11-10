@@ -120,10 +120,9 @@ int actorread()
 int actorwrite(struct event* ev)
 {
 	int ret;
-	u64 temp;
 	struct arena* win;
-	struct actor* act;		//2048?
-	struct relation* rel;	//link
+	struct actor* act;
+	struct relation* rel;
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//
@@ -134,9 +133,8 @@ int actorwrite(struct event* ev)
 	}
 
 	//
-	temp = ev->where;
-	if(temp < 0xffff)win = &arena[1];
-	else win = (void*)temp;
+	if(ev->where < 0xffff)win = &arena[1];
+	else win = (void*)(ev->where);
 
 	//cli
 	if(win->fmt == hex32('c','l','i',0))
@@ -145,15 +143,11 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
-	ret = keyboard_explain(win, ev);
-	if(ret != 0)return 0;
+	//
+	ret = input_explain(win, ev);
+	if(ret == 0)return 0;
 
-	if(win->cw == 4)
-	{
-		ret = point_explain(win, ev);
-		if(ret != 0)return 0;
-	}
-
+	//
 	rel = win->irel;
 	if(rel == 0)return 0;
 	while(1)
@@ -227,7 +221,7 @@ int actorstart(struct arena* win, struct actor* act)
 	st->wanth = 0x8000;
 	st->dim = 2;
 
-	if(act == 0)act = &actor[0];
+	if(act == 0)act = &actor[getrandom()%8];
 	act->start();
 
 	connect_write(win, st, __win__, act, 0, __act__);

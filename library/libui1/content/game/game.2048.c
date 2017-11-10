@@ -51,16 +51,16 @@ static u32 color2048[17] = {
 
 
 
-static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	float xxx, yyy, zzz;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
-	float cx = (float)(rel->cx) / 65536.0 - 0.5;
-	float cy = (float)(rel->cy) / 65536.0 - 0.5;
-	float w = (float)(rel->wantw) / 65536.0;
-	float h = (float)(rel->wanth) / 65536.0;
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
 
 	//
 	for(y=0;y<4;y++)
@@ -80,7 +80,7 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
 	u32 length;
@@ -90,12 +90,17 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 	u8 (*table)[4] = (void*)buffer + num*16;
 
 	//position
-	cx = (win->w) * (rel->cx) / 0x10000;
-	cy = (win->h) * (rel->cy) / 0x10000;
-	w = (win->w) * (rel->wantw) / 0x10000;
-	h = (win->h) * (rel->wanth) / 0x10000;
-	if(w >= h)w=h;
-	else h=w;
+	cx = (win->w) * (sty->cx) / 0x10000;
+	cy = (win->h) * (sty->cy) / 0x10000;
+	w = (win->w) * (sty->wantw) / 0x10000;
+	h = (win->h) * (sty->wanth) / 0x10000;
+	if(w != h)
+	{
+		w = (w+h)/2;
+		h = w;
+		sty->wantw = w * 0x10000 / (win->w);
+		sty->wanth = h * 0x10000 / (win->h);
+	}
 
 	//cubies
 	for(y=0;y<4;y++)
@@ -135,7 +140,7 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 		}
 	}
 }
-static void the2048_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void the2048_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int cx,cy,w,h;
@@ -144,10 +149,10 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	u8* buf = (u8*)(win->buf);
 	u8 (*table)[4] = (void*)buffer + num*16;
 
-	cx = (rel->cx) * 100 / 0x10000;
-	cy = (rel->cy) * 100 / 0x10000;
-	w = (rel->wantw) * 25 / 0x10000;
-	h = (rel->wanth) * 25 / 0x10000;
+	cx = (sty->cx) * 100 / 0x10000;
+	cy = (sty->cy) * 100 / 0x10000;
+	w = (sty->wantw) * 25 / 0x10000;
+	h = (sty->wanth) * 25 / 0x10000;
 
 	len += mysnprintf(
 		buf+len, 0x1000,
@@ -182,7 +187,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 	}
 	win->info[0] = len;
 }
-static void the2048_read_tui(struct arena* win, struct actor* act, struct style* rel)
+static void the2048_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,j,k,ret;
 	u8 src[10];
@@ -242,22 +247,22 @@ static void the2048_read_cli()
 	say("%d	", val2048[table[3][2]]);
 	say("%d\n", val2048[table[3][3]]);
 }
-static void the2048_read(struct arena* win, struct actor* act, struct style* rel)
+static void the2048_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	//cli
 	if(win->fmt == hex32('c','l','i',0))the2048_read_cli();
 
 	//text
-	else if(win->fmt == hex32('t','u','i',0))the2048_read_tui(win, act, rel);
+	else if(win->fmt == hex32('t','u','i',0))the2048_read_tui(win, act, sty);
 
 	//html
-	else if(win->fmt == hex32('h','t','m','l'))the2048_read_html(win, act, rel);
+	else if(win->fmt == hex32('h','t','m','l'))the2048_read_html(win, act, sty);
 
 	//vbo
-	else if(win->fmt == hex32('v','b','o',0))the2048_read_vbo(win, act, rel);
+	else if(win->fmt == hex32('v','b','o',0))the2048_read_vbo(win, act, sty);
 
 	//pixel
-	else the2048_read_pixel(win, act, rel);
+	else the2048_read_pixel(win, act, sty);
 }
 
 

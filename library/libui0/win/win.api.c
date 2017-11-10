@@ -42,23 +42,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	struct window* win = (void*)addr;
 	switch (msg)
 	{
-		//拖拽文件
-		case WM_DROPFILES:
-		{
-			HDROP hDrop = (HDROP)wparam;
-			UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
-			int i;
-			for (i = 0; i < nFileNum; i++)  
-			{
-				DragQueryFile(hDrop, i, dragpath, MAX_PATH);//获得拖曳的文件名
-			}
-			DragFinish(hDrop);      //释放hDrop
-
-			eventwrite((u64)dragpath, 0x656c6966, addr, 0);
-			return 0;
-		}
-
-		//按键
 		case WM_KEYDOWN:
 		{
 			u64 val;
@@ -100,7 +83,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//文字
 		case WM_CHAR:
 		{
 			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, addr, 0);
@@ -108,7 +90,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 /*
-		//触摸
 		case WM_TOUCH:
 		{
 			int i=0;
@@ -210,7 +191,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//滚轮
 		case WM_MOUSEWHEEL:
 		{
 			u64 x,y,k;
@@ -233,7 +213,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//鼠标移动
 		case WM_MOUSEMOVE:
 		{
 			u64 x,y,k;
@@ -257,7 +236,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//鼠标左键弹起
 		case WM_LBUTTONUP:
 		{
 			u64 x,y,k;
@@ -270,7 +248,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//鼠标右键弹起
 		case WM_RBUTTONUP:
 		{
 			u64 x,y,k;
@@ -283,7 +260,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//鼠标左键按下
 		case WM_LBUTTONDOWN:
 		{
 			u64 x,y,k;
@@ -304,18 +280,17 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//鼠标右键按下
 		case WM_RBUTTONDOWN:
 		{
 			u64 x,y,k;
 			rightdown=1;
-			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+			GetCursorPos(&pt);
 
 			if(leftdown>0)
 			{
-				GetWindowRect(wnd, &rt);	// 获取窗口位置与大小
-				re.right=rt.right-rt.left;	// 保存窗口宽度
-				re.bottom=rt.bottom-rt.top;	// 保存窗口高度
+				GetWindowRect(wnd, &rt);
+				re.right=rt.right-rt.left;
+				re.bottom=rt.bottom-rt.top;
 			}
 
 			k = 'r';
@@ -325,7 +300,21 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//窗口尺寸改变
+		case WM_DROPFILES:
+		{
+			HDROP hDrop = (HDROP)wparam;
+			UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
+			int i;
+			for (i = 0; i < nFileNum; i++)  
+			{
+				DragQueryFile(hDrop, i, dragpath, MAX_PATH);//获得拖曳的文件名
+			}
+			DragFinish(hDrop);      //释放hDrop
+
+			eventwrite(0x656c6966, 0x4077, addr, 0);
+			return 0;
+		}
+
 		case WM_SIZE:
 		{
 			int w = lparam&0xffff;
@@ -338,18 +327,16 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				win->h = h;
 			}
 
-			eventwrite(lparam, 0x657a6973, addr, 0);
+			eventwrite(0x657a6973, 0x4077, addr, 0);
 			return 0;
 		}
 
-		//显示
 		case WM_PAINT:
 		{
 			//say("WM_PAINT\n");
 			goto theend;
 		}
 
-		//关闭
 		case WM_CLOSE:
 		{
 			//
@@ -357,7 +344,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 
-		//摧毁
 		case WM_DESTROY:
 		{
 			DestroyWindow(wnd);

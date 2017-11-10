@@ -142,23 +142,6 @@ void motion_explain(u64* p)
 		}//last one
 	}//point gone
 }
-int keyboard_explain(struct arena* win, struct event* ev)
-{
-	int j = 0;
-	if(ev->what == hex32('k','b','d',0))
-	{
-		if(ev->why == 0x1b)j = 4;
-		else if(ev->why == 0xf1)j = 1;
-		else if(ev->why == 0xf2)j = 2;
-		else if(ev->why == 0xf3)j = 3;
-	}
-	if(j != 0)
-	{
-		if(j == win->cw)win->cw = 0;
-		else win->cw = j;
-	}
-	return j;
-}
 int mouse_explain(struct arena* win, struct style* sty, struct event* ev)
 {
 	struct point* p;
@@ -196,6 +179,36 @@ int point_explain(struct arena* win, struct event* ev)
 	}
 	sty = (void*)(rel->destfoot);
 	mouse_explain(win, sty, ev);
+
+	return 1;
+}
+int keyboard_explain(struct arena* win, struct event* ev)
+{
+	int j = 0;
+	if(ev->what == hex32('k','b','d',0))
+	{
+		if(ev->why == 0x1b)j = 4;
+		else if(ev->why == 0xf1)j = 1;
+		else if(ev->why == 0xf2)j = 2;
+		else if(ev->why == 0xf3)j = 3;
+	}
+	if(j != 0)
+	{
+		if(j == win->cw)win->cw = 0;
+		else win->cw = j;
+	}
+	return j;
+}
+int input_explain(struct arena* win, struct event* ev)
+{
+	int ret = keyboard_explain(win, ev);
+	if(ret != 0)return 0;
+
+	if(win->cw == 4)
+	{
+		ret = point_explain(win, ev);
+		if(ret != 0)return 0;
+	}
 
 	return 1;
 }

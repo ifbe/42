@@ -7,14 +7,6 @@ int actorstop(void*);
 
 
 
-static char* input = 0;
-static char* output = 0;
-static int combo = 0;
-static int goooo = 0;
-
-
-
-
 void win_cfg(struct event* ev)
 {
 	void* ret;
@@ -33,5 +25,14 @@ void win_cfg(struct event* ev)
 	{
 		ret = (void*)(ev->where);
 		arenastop(ret);
+	}
+	else if(ev->what == hex32('w','@',0,0))
+	{
+		if(ev->why == hex32('f','i','l','e'))
+		{
+			ret = (void*)(ev->where);
+			actorstart(ret, 0);
+		}
+		else say("%.*s\n", 8, ev);
 	}
 }
