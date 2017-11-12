@@ -44,8 +44,8 @@ int cmp(void*, void*);
 void* startmemory(int);
 int stopmemory(void*);
 //
-void* connect_read(int);
-void connect_write(void*,u64,u64, void*,u64,u64);
+void* relation_read(int);
+void relation_write(void*,u64,u64, void*,u64,u64);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -114,7 +114,7 @@ void* arenastart(u64 type, u64 fd)
 			win->last = 0;
 
 			windowstart(win);
-			connect_write(arena, 0, 0, win, 0, 0);
+			relation_write(arena, 0, 0, win, 0, 0);
 			return win;
 		}
 		else if(type == hex32('W','S',0,0))
@@ -125,7 +125,7 @@ void* arenastart(u64 type, u64 fd)
 			win->last = 0;
 
 			win->fd = fd;
-			connect_write(arena, 0, 0, win, 0, 0);
+			relation_write(arena, 0, 0, win, 0, 0);
 			return win;
 		}
 	}

@@ -6,25 +6,125 @@ double squareroot(double);
 
 
 
-//方块
-void carvecubie(struct arena* win,
+void carverect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,	//center xyz
+	float rx, float ry, float rz,	//width = |rvector|*2
+	float fx, float fy, float fz)	//height = |fvector|*2
+{
+	float rr, gg, bb;
+	u32 icount = win->info[0];
+	u32 pcount = win->info[1];
+	u32 ncount = win->info[1];
+	u32 ccount = win->info[1];
+
+	void* buf = (void*)(win->buf);
+	u16* index = buf + (icount*2);
+	float* vertex = buf + 0x100000 + (pcount*12);
+	float* normal = buf + 0x200000 + (ncount*12);
+	float* color  = buf + 0x300000 + (ccount*12);
+
+	win->info[0] += 6;
+	win->info[1] += 4;
+	win->info[2] += 4;
+	win->info[3] += 4;
+
+	//index
+	index[0] = pcount + 0;
+	index[1] = pcount + 1;
+	index[2] = pcount + 2;
+
+	index[3] = pcount + 1;
+	index[4] = pcount + 2;
+	index[5] = pcount + 3;
+
+	//vertex
+	vertex[0] = cx - rx;
+	vertex[1] = cy - fy;
+	vertex[2] = 0.0;
+
+	vertex[3] = cx + rx;
+	vertex[4] = cy - fy;
+	vertex[5] = 0.0;
+
+	vertex[6] = cx - rx;
+	vertex[7] = cy + fy;
+	vertex[8] = 0.0;
+
+	vertex[9] = cx + rx;
+	vertex[10] = cy + fy;
+	vertex[11] = 0.0;
+
+	//normal
+	normal[0] = 0.0;
+	normal[1] = 0.0;
+	normal[2] = 1.0;
+
+	normal[3] = 0.0;
+	normal[4] = 0.0;
+	normal[5] = 1.0;
+
+	normal[6] = 0.0;
+	normal[7] = 0.0;
+	normal[8] = 1.0;
+
+	normal[9] = 0.0;
+	normal[10] = 0.0;
+	normal[11] = 1.0;
+
+	//color
+	bb = (float)(rgb&0xff) / 256.0;
+	gg = (float)((rgb>>8)&0xff) / 256.0;
+	rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	color[0] = rr;
+	color[1] = gg;
+	color[2] = bb;
+
+	color[3] = rr;
+	color[4] = gg;
+	color[5] = bb;
+
+	color[6] = rr;
+	color[7] = gg;
+	color[8] = bb;
+
+	color[9] = rr;
+	color[10] = gg;
+	color[11] = bb;
+}
+
+
+
+
+//正三棱柱
+void carveprism3()
+{
+}
+//正四棱柱
+void carveprism4(
+	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz,	//width = |rvector|*2
 	float fx, float fy, float fz,	//height = |fvector|*2
 	float ux, float uy, float uz)	//upper = |uvector|*2
 {
+	float rr, gg, bb;
 	u32 icount = win->info[0];
 	u32 pcount = win->info[1];
 	u32 ncount = win->info[1];
-	void* buf = (void*)(win->buf);
+	u32 ccount = win->info[1];
 
+	void* buf = (void*)(win->buf);
 	u16* index = buf + (icount*2);
 	float* vertex = buf + 0x100000 + (pcount*12);
 	float* normal = buf + 0x200000 + (ncount*12);
+	float* color  = buf + 0x300000 + (ccount*12);
 
 	win->info[0] += 36;
 	win->info[1] += 8;
 	win->info[2] += 8;
+	win->info[3] += 8;
 
 	//index
 	index[0] = pcount + 0;
@@ -134,13 +234,55 @@ void carvecubie(struct arena* win,
 	normal[21] = 1.0;
 	normal[22] = 1.0;
 	normal[23] = 1.0;
+
+	//color
+	bb = (float)(rgb&0xff) / 256.0;
+	gg = (float)((rgb>>8)&0xff) / 256.0;
+	rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	color[0] = rr;
+	color[1] = gg;
+	color[2] = bb;
+
+	color[3] = rr;
+	color[4] = gg;
+	color[5] = bb;
+
+	color[6] = rr;
+	color[7] = gg;
+	color[8] = bb;
+
+	color[9] = rr;
+	color[10] = gg;
+	color[11] = bb;
+
+	color[12] = rr;
+	color[13] = gg;
+	color[14] = bb;
+
+	color[15] = rr;
+	color[16] = gg;
+	color[17] = bb;
+
+	color[18] = rr;
+	color[19] = gg;
+	color[20] = bb;
+
+	color[21] = rr;
+	color[22] = gg;
+	color[23] = bb;
 }
-
-
-
-
-//圆柱体
-void carvecylinder(struct arena* win,
+//正五棱柱
+void carveprism5()
+{
+}
+//正六棱柱
+void carveprism6()
+{
+}
+//圆柱
+void carvecylinder(
+	struct arena* win,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz,	//radius = |rvector|
 	float ux, float uy, float uz)	//height = |uvector|
@@ -150,8 +292,25 @@ void carvecylinder(struct arena* win,
 
 
 
+//正三棱锥
+void carvepyramid3()
+{
+}
+//正四棱锥
+void carvepyramid4()
+{
+}
+//正四棱锥
+void carvepyramid5()
+{
+}
+//正四棱锥
+void carvepyramid6()
+{
+}
 //圆锥
-void carvecone(struct arena* win,
+void carvecone(
+	struct arena* win,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz,	//radius = |rvector|
 	float ux, float uy, float uz)	//height = |uvector|
@@ -161,8 +320,25 @@ void carvecone(struct arena* win,
 
 
 
+//正四面体
+void carvetetrahedron()
+{
+}
+//正八面体
+void carveoctahedron()
+{
+}
+//正十二面体
+void cavedodecahedron()
+{
+}
+//正二十面体
+void carveicosahedron()
+{
+}
 //球体
-void carvesphere(struct arena* win,
+void carvesphere(
+	struct arena* win,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz)	//radius = |rvector|
 {

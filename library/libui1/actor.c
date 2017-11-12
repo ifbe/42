@@ -12,8 +12,8 @@ void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
 //
-void* connect_read(u64);
-int connect_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
+void* relation_read(u64);
+int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 //
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
@@ -88,7 +88,7 @@ int actorread_one(struct arena* win)
 			act->read(canvas, act, st, pl);
 			if(win->cw == 4)rectread(canvas, st);
 		}
-		rel = connect_read(rel->samepinnextchip);
+		rel = relation_read(rel->samepinnextchip);
 	}
 
 	//foreground
@@ -115,7 +115,7 @@ int actorread()
 		actorread_one(window);
 
 		temp = rel->samepinnextchip;
-		rel = connect_read(temp);
+		rel = relation_read(temp);
 	}
 
 	return 0;
@@ -156,7 +156,7 @@ int actorwrite(struct event* ev)
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;
-		rel = connect_read(rel->samepinnextchip);
+		rel = relation_read(rel->samepinnextchip);
 	}
 	act = (void*)(rel->selfchip);
 	act->write(ev);
@@ -224,10 +224,10 @@ int actorstart(struct arena* win, struct actor* act)
 	st->wanth = 0x8000;
 	st->dim = 2;
 
-	if(act == 0)act = &actor[getrandom()%8];
+	if(act == 0)act = &actor[0];
 	act->start();
 
-	connect_write(win, st, __win__, act, 0, __act__);
+	relation_write(win, st, __win__, act, 0, __act__);
 }
 int actorstop(struct actor* act)
 {

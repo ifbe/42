@@ -6,8 +6,8 @@ void drawrect_body(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void carvecubie(
-	void* win,
+void carveprism4(
+	void* win, u32 color,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz,
@@ -58,8 +58,9 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 }
 static void chess_read_vbo(struct arena* win, struct actor* act, struct style* rel)
 {
+	u32 color;
 	int x,y;
-	float xxx, yyy, zzz;
+	float xxx, yyy;
 
 	float cx = (float)(rel->cx) / 65536.0 - 0.5;
 	float cy = (float)(rel->cy) / 65536.0 - 0.5;
@@ -70,16 +71,17 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* r
 	{
 		for(x=0;x<8;x++)
 		{
-			if(((x+y+32)%2) == 0)zzz = 0.0;
-			else zzz = 0.01;
+			if(((x+y+32)%2) == 0)color = 0;
+			else color = 0xffffff;
 
 			xxx = cx + (x+x-7)*w/16;
 			yyy = cy - (y+y-7)*h/16;
-			carvecubie(win,
-				xxx, yyy, zzz,
+			carveprism4(
+				win, color,
+				xxx, yyy, 0.01,
 				w/32, 0.0, 0.0,
 				0.0, h/32, 0.0,
-				0.0, 0.0, zzz
+				0.0, 0.0, 0.01
 			);
 		}
 	}

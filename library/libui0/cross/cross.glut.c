@@ -50,12 +50,14 @@ static GLuint texturehandle;
 //
 static GLuint axisvao;
 static GLuint axispositionhandle;
+static GLuint axisnormalhandle;
 static GLuint axiscolorhandle;
 //
 static GLuint shapevao;
 static GLuint shapeindexhandle;
 static GLuint shapepositionhandle;
 static GLuint shapenormalhandle;
+static GLuint shapecolorhandle;
 //
 static float camera[3] = {1.0f, -2.0f, 1.0f};
 static float center[3] = {0.0f, 0.0f, 0.0f};
@@ -81,19 +83,27 @@ static GLfloat projmatrix[4*4] = {
 };
 //
 float axispositiondata[] = {
-	-1000.0, 0.0, 0.0,
-	1000.0, 0.0, 0.0,
-	0.0, -1000.0, 0.0,
-	0.0, 1000.0, 0.0,
-	0.0, 0.0, -1000.0,
-	0.0, 0.0, 1000.0
+	-10.0, 0.0, 0.0,
+	10.0, 0.0, 0.0,
+	0.0, -10.0, 0.0,
+	0.0, 10.0, 0.0,
+	0.0, 0.0, -10.0,
+	0.0, 0.0, 10.0
+};
+float axisnormaldata[] = {
+	0.0, 0.0, 1.0,
+	0.0, 0.0, 1.0,
+	0.0, 0.0, 1.0,
+	0.0, 0.0, 1.0,
+	0.0, 0.0, 1.0,
+	0.0, 0.0, 1.0
 };
 float axiscolordata[] = {
-	0.0, 0.0, 0.5,
+	1.0, 1.0, 0.0,
 	0.0, 0.0, 1.0,
-	0.0, 0.5, 0.0,
+	1.0, 0.0, 1.0,
 	0.0, 1.0, 0.0,
-	0.5, 0.0, 0.0,
+	0.0, 1.0, 1.0,
 	1.0, 0.0, 0.0
 };
 
@@ -112,10 +122,11 @@ char vCode[] = {
 	"uniform mat4 mvpmatrix;\n"
 	"void main()\n"
 	"{\n"
-		"vec3 N = normalize(normal);"
-		"vec3 S = normalize(vec3(diffuseplace - position));"
-		"vec3 ddd = diffusecolor * max(dot(S, N), 0.0);\n"
-		"vertexcolor = ambientcolor + ddd;\n"
+		"vec3 N = normalize(normal);\n"
+		"vec3 S = normalize(vec3(diffuseplace - position));\n"
+		"vec3 ambient = color * ambientcolor;\n"
+		"vec3 diffuse = color * diffusecolor * max(dot(S, N), 0.0);\n"
+		"vertexcolor = ambient + diffuse;\n"
 		"gl_Position = mvpmatrix * vec4(position,1.0);\n"
 	"}\n"
 };
@@ -130,12 +141,13 @@ char fCode[] = {
 };
 void initShader()  
 {  
-    //1. 查看GLSL和OpenGL的版本  
-    const GLubyte *renderer = glGetString( GL_RENDERER );  
-    const GLubyte *vendor = glGetString( GL_VENDOR );  
-    const GLubyte *version = glGetString( GL_VERSION );  
-    const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );  
-    GLint major, minor;  
+    //1.查看GLSL和OpenGL的版本  
+    const GLubyte *renderer = glGetString( GL_RENDERER );
+    const GLubyte *vendor = glGetString( GL_VENDOR );
+    const GLubyte *version = glGetString( GL_VERSION );
+    const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+    GLint major, minor;
+
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
     printf("GL Vendor: %s\n", vendor);
@@ -144,108 +156,111 @@ void initShader()
     printf("GLSL Version: %s\n", glslVersion);
     printf("GL Version (integer): %x.%x\n", major, minor);
 
-    //2. 顶点着色器  
+    //2.顶点着色器  
     vShader = glCreateShader(GL_VERTEX_SHADER);
-    if (0 == vShader)  
-    {  
+    if(0 == vShader)
+    {
         printf("ERROR : Create vertex shader failed\n");
-        exit(1);  
-    }  
+        exit(1);
+    }
 
     //把着色器源代码和着色器对象相关联
 	const GLchar* vCodeArray[1] = {vCode};
     glShaderSource(vShader, 1, vCodeArray, NULL);
-    glCompileShader(vShader);  
+    glCompileShader(vShader);
 
-    //检查编译是否成功  
-    GLint compileResult;  
-    glGetShaderiv(vShader,GL_COMPILE_STATUS,&compileResult);  
-    if (GL_FALSE == compileResult)  
-    {  
-        GLint logLen;  
-        //得到编译日志长度  
-        glGetShaderiv(vShader,GL_INFO_LOG_LENGTH,&logLen);  
-        if (logLen > 0)  
-        {  
-            char *log = (char *)malloc(logLen);  
-            GLsizei written;  
-            //得到日志信息并输出  
+    //检查编译是否成功
+    GLint compileResult;
+    glGetShaderiv(vShader,GL_COMPILE_STATUS,&compileResult);
+    if (GL_FALSE == compileResult)
+    {
+        GLint logLen;
+        //得到编译日志长度
+        glGetShaderiv(vShader,GL_INFO_LOG_LENGTH,&logLen);
+        if (logLen > 0)
+        {
+            GLsizei written;
+            char *log = (char *)malloc(logLen);
+
+            //得到日志信息并输出
             glGetShaderInfoLog(vShader,logLen,&written,log);
             printf("vertex shader compile log: %s\n",log);
-            free(log);//释放空间
+            free(log);
         }
     }
 
-    //3. 片断着色器  
+    //3.片断着色器
     fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    if (0 == fShader)  
-    {  
-        printf("ERROR : Create fragment shader failed");  
-        exit(1);  
-    }  
+    if (0 == fShader)
+    {
+        printf("ERROR : Create fragment shader failed");
+        exit(1);
+    }
 
     //把着色器源代码和着色器对象相关联
 	const GLchar* fCodeArray[1] = {fCode};
     glShaderSource(fShader, 1, fCodeArray, NULL);
-    glCompileShader(fShader);  
+    glCompileShader(fShader);
 
-    //检查编译是否成功  
-    glGetShaderiv(fShader,GL_COMPILE_STATUS,&compileResult);  
-    if (GL_FALSE == compileResult)  
-    {  
-        GLint logLen;  
-        //得到编译日志长度  
-        glGetShaderiv(fShader,GL_INFO_LOG_LENGTH,&logLen);  
-        if (logLen > 0)  
-        {  
-            char *log = (char *)malloc(logLen);  
-            GLsizei written;  
-            //得到日志信息并输出  
+    //检查编译是否成功
+    glGetShaderiv(fShader,GL_COMPILE_STATUS,&compileResult);
+    if(GL_FALSE == compileResult)
+    {
+        //得到编译日志长度
+        GLint logLen;
+        glGetShaderiv(fShader,GL_INFO_LOG_LENGTH,&logLen);
+        if(logLen > 0)
+        {
+            GLsizei written;
+            char *log = (char *)malloc(logLen);
+
+            //得到日志信息并输出
             glGetShaderInfoLog(fShader,logLen,&written,log);
             printf("fragment shader compile log: %s\n",log);
-            free(log);//释放空间  
-        }  
-    }  
+            free(log);
+        }
+    }
   
-    //4. 着色器程序  
-    programHandle = glCreateProgram();  
-    if (!programHandle)  
-    {  
+    //4.着色器程序
+    programHandle = glCreateProgram();
+    if(!programHandle)
+    {
         printf("ERROR : create program failed");
-        exit(1);  
+        exit(1);
     }
 
-    //将着色器程序链接到所创建的程序中  
+    //将着色器程序链接到所创建的程序中
     glAttachShader(programHandle,vShader);
     glAttachShader(programHandle,fShader);
     glLinkProgram(programHandle);
 
-    //查询链接的结果  
-    GLint linkStatus;  
-    glGetProgramiv(programHandle,GL_LINK_STATUS,&linkStatus);  
-    if(GL_FALSE == linkStatus)  
-    {  
-        printf("ERROR : link shader program failed");  
-        GLint logLen;  
-        glGetProgramiv(programHandle,GL_INFO_LOG_LENGTH, &logLen);  
-        if (logLen > 0)  
-        {  
-            char *log = (char *)malloc(logLen);  
-            GLsizei written;  
-            glGetProgramInfoLog(programHandle,logLen, &written,log);  
-            printf("Program log :%s\n", log);  
-        }  
-    }  
-    else//链接成功，在OpenGL管线中使用渲染程序  
-    {  
-        glUseProgram(programHandle);  
-    }  
+    //查询链接的结果
+    GLint linkStatus;
+    glGetProgramiv(programHandle,GL_LINK_STATUS,&linkStatus);
+    if(GL_FALSE == linkStatus)
+    {
+        printf("ERROR : link shader program failed");
+        GLint logLen;
+        glGetProgramiv(programHandle,GL_INFO_LOG_LENGTH, &logLen);
+        if(logLen > 0)
+        {
+            char *log = (char *)malloc(logLen);
+            GLsizei written;
+            glGetProgramInfoLog(programHandle,logLen, &written,log);
+            printf("Program log :%s\n", log);
+        }
+    }
+    else	//链接成功，在OpenGL管线中使用渲染程序
+    {
+        glUseProgram(programHandle);
+    }
 }
 void initVBO()  
 {
 	void* shapeindexdata = (void*)(src->buf);
 	void* shapepositiondata = (void*)(src->buf)+0x100000;
 	void* shapenormaldata = (void*)(src->buf)+0x200000;
+	void* shapecolordata = (void*)(src->buf)+0x300000;
 
 
 
@@ -254,14 +269,21 @@ void initVBO()
     glGenVertexArrays(1,&axisvao);
     glBindVertexArray(axisvao);
 
-	//axis
+	//axis vertex
     glGenBuffers(1, &axispositionhandle);
     glBindBuffer(GL_ARRAY_BUFFER, axispositionhandle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axispositiondata, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    //color
+	//axis normal
+    glGenBuffers(1, &axisnormalhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, axisnormalhandle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axisnormaldata, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+
+    //axis color
     glGenBuffers(1, &axiscolorhandle);
     glBindBuffer(GL_ARRAY_BUFFER, axiscolorhandle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axiscolordata, GL_STATIC_DRAW);
@@ -293,6 +315,13 @@ void initVBO()
     glBufferData(GL_ARRAY_BUFFER, 0x100000, shapenormaldata, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
+
+	//shape color
+    glGenBuffers(1, &shapecolorhandle);
+    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapecolordata, GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
 
 
 
@@ -397,9 +426,9 @@ void fixmatrix()
 }
 void fixlight()
 {
-	GLfloat ambientcolor[3] = {0.2f, 0.2f, 0.2f};
-	GLfloat diffusecolor[3] = {0.8f, 0.8f, 0.8f};
-	GLfloat diffuseplace[3] = {0.0f, 0.0f, 100.0f};
+	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
+	GLfloat diffusecolor[3] = {1.0f, 1.0f, 1.0f};
+	GLfloat diffuseplace[3] = {0.0f, 0.0f, 10.0f};
 
 	GLint ac = glGetUniformLocation(programHandle, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -436,29 +465,45 @@ void callback_display()
 }
 void callback_idle()
 {
-	u64 icount = src->info[0];
-	u64 pcount = src->info[1];
-	u64 ncount = src->info[2];
-	u16* index = (void*)(src->buf);
-	float* vertex = (void*)(src->buf)+0x100000;
-	float* normal = (void*)(src->buf)+0x200000;
+	u64 icount;
+	u64 pcount;
+	u64 ncount;
+	u64 ccount;
 
-	if(queuehead != queuetail)
-	{
-		glBindVertexArray(shapevao);
+	u16* index;
+	float* vertex;
+	float* normal;
+	float* color;
 
-		glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, index);
+	if(queuehead == queuetail)return;
 
-		glBindBuffer(           GL_ARRAY_BUFFER, shapepositionhandle);
-		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*pcount, vertex);
+	icount = src->info[0];
+	pcount = src->info[1];
+	ncount = src->info[1];
+	ccount = src->info[1];
+	//printf("%x,%x,%x,%x\n",icount,pcount,ncount,ccount);
 
-		glBindBuffer(           GL_ARRAY_BUFFER, shapenormalhandle);
-		glBufferSubData(        GL_ARRAY_BUFFER, 0, 12*ncount, normal);
+	index = (void*)(src->buf);
+	vertex = (void*)(src->buf)+0x100000;
+	normal = (void*)(src->buf)+0x200000;
+	color = (void*)(src->buf)+0x300000;
 
-		queuetail++;
-		glutPostRedisplay();
-	}
+	glBindVertexArray(shapevao);
+
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, index);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, shapepositionhandle);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*pcount, vertex);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, shapenormalhandle);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*ncount, normal);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, shapecolorhandle);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*ccount, color);
+
+	queuetail++;
+	glutPostRedisplay();
 }
 void callback_reshape(int w, int h)
 {
@@ -632,6 +677,7 @@ void* uievent(struct window* p)
 
 	//exit
 	glDeleteBuffers(1, &axispositionhandle);
+	glDeleteBuffers(1, &axisnormalhandle);
 	glDeleteBuffers(1, &axiscolorhandle);
 }
 void windowread()

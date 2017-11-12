@@ -48,7 +48,7 @@ static int wirelen = 0x100000;
 
 
 
-void* connect_generate(
+void* relation_generate(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)
 {
@@ -81,7 +81,7 @@ void* connect_generate(
 
 //wininfo,  position, 'win',  actor,    0, 'act'
 //actinfo,  which,    'act',  userinfo, what,     'user'
-int connect_write(
+int relation_write(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)
 {
@@ -96,7 +96,7 @@ int connect_write(
 	}
 
 	//
-	ww = connect_generate(uchip, ufoot, utype, bchip, bfoot, btype);
+	ww = relation_generate(uchip, ufoot, utype, bchip, bfoot, btype);
 
 	//dest wire
 	h1 = uchip;
@@ -121,7 +121,7 @@ int connect_write(
 
 	return 1;
 }
-void* connect_read(int off)
+void* relation_read(int off)
 {
 	if(off == 0)return 0;
 	return (void*)wirebuf + off;

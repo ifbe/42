@@ -1,6 +1,6 @@
 #include "actor.h"
-void* connect_read(u64);
-int connect_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
+void* relation_read(u64);
+int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
 
 
@@ -190,7 +190,7 @@ int point_explain(struct arena* win, struct event* ev)
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;
-		rel = connect_read(rel->samepinnextchip);
+		rel = relation_read(rel->samepinnextchip);
 	}
 	sty = (void*)(rel->destfoot);
 	mouse_explain(win, sty, ev);
