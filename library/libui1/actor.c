@@ -39,6 +39,7 @@ static int stlen = 0;
 
 int actorread_one(struct arena* win)
 {
+	int j;
 	struct arena* canvas;
 	struct actor* act;		//2048?
 
@@ -57,8 +58,7 @@ int actorread_one(struct arena* win)
 		canvas->w = win->w;
 		canvas->h = win->h;
 
-		canvas->info[0] = 0;
-		canvas->info[1] = 0;
+		for(j=0;j<16;j++)canvas->info[j] = 0;
 	}
 	else canvas = win;
 
@@ -279,121 +279,3 @@ void actordelete()
 	actor = 0;
 	arena = 0;
 }
-
-
-
-/*
-	//prepare
-	if(w+)	//new win
-	if(w-)	//del win
-	if(w@)	//changed memaddr
-	if(ev->what == 0x727473)
-	{
-		cli_write(ev);
-		return 0;
-	}
-	if(ev->where < 0x1000)ev->where = (u64)(&arena[0]);
-
-*/
-
-
-/*
-	//
-	int x,y,z,w;
-	u64 why,what;
-	struct arena* win = (void*)(ev->where);
-	struct actor* act;
-	struct relation* rel;
-
-	//
-	why = ev->why;
-	what = ev->what;
-	if((what&0xff) == 'p')
-	{
-		motion_explain(ev);
-	}
-
-	//
-	why = ev->why;
-	what = ev->what;
-	if(what == 0x64626b)
-	{
-		if(why == 0x1b){menu ^= 1;return 0;}
-		else if(why == 0xf1){win->dim = 1;return 0;}
-		else if(why == 0xf2){win->dim = 2;return 0;}
-		else if(why == 0xf3){win->dim = 3;return 0;}
-	}
-
-	//
-	if(win->dim == 1)
-	{
-		cli_write(ev);
-		return 0;
-	}
-	else if(win->dim == 2)
-	{
-		if(menu > 0)
-		{
-			levitate_write(ev);
-			return 0;
-		}
-		else
-		{
-			rel = win->top;
-			act = rel->child_this;
-			act->write(ev);
-		}
-	}
-	else //if(win->dim == 3)
-	{
-		say("dim=%d\n",win->dim);
-	}
-*/
-/*
-	int j,k,ret;
-	struct actor* now;
-
-	//exit!
-	if( (p==0) | (cmp(p,"exit")==0) )
-	{
-		say("%x wants to die\n",now);
-		eventwrite(0,0,0,0);
-		return 0;
-	}
-
-	//random
-	ret=cmp(p,"random");
-	if(ret==0)
-	{
-		for(j=0;j<10;j++)
-		{
-			if(actor[j].type != 0)break;	//skip menu|draw
-		}
-		k=j;
-
-		for(;k<0x100000/0x80;k++)
-		{
-			if(actor[k].name == 0)break;
-		}
-
-		ret = ( getrandom() % (k-j) ) + j;
-		now = &actor[ret];
-		goto found;
-	}
-
-	//search
-	ret = actorlist(p);
-	if(ret != 0)
-	{
-		now = &actor[ret];
-		goto found;
-	}
-
-notfound:
-	return 0;
-
-found:
-	connect[0].child_this = now;
-	now->start();
-	return 1;
-*/

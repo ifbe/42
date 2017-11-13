@@ -56,10 +56,10 @@ target:
 	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
 	$(compiler) $(cflag) lib2d/photo/photo.scale.c
 	$(compiler) $(cflag) lib2d/lib2d.c
-	$(compiler) $(cflag) lib3d/carve/carve.ground.c
+	$(compiler) $(cflag) lib3d/carve/carve.point.c
+	$(compiler) $(cflag) lib3d/carve/carve.line.c
+	$(compiler) $(cflag) lib3d/carve/carve.plane.c
 	$(compiler) $(cflag) lib3d/carve/carve.shape.c
-	$(compiler) $(cflag) lib3d/carve/carve.thing.c
-	$(compiler) $(cflag) lib3d/carve/carve.water.c
 	$(compiler) $(cflag) lib3d/model/model.magnify.c
 	$(compiler) $(cflag) lib3d/model/model.minify.c
 	$(compiler) $(cflag) lib3d/model/model.rotate.c

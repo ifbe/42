@@ -54,10 +54,12 @@ static GLuint axisnormalhandle;
 static GLuint axiscolorhandle;
 //
 static GLuint shapevao;
-static GLuint shapeindexhandle;
 static GLuint shapepositionhandle;
 static GLuint shapenormalhandle;
 static GLuint shapecolorhandle;
+static GLuint shapeindexhandle3;
+static GLuint shapeindexhandle2;
+static GLuint shapeindexhandle1;
 //
 static float camera[3] = {1.0f, -2.0f, 1.0f};
 static float center[3] = {0.0f, 0.0f, 0.0f};
@@ -257,10 +259,13 @@ void initShader()
 }
 void initVBO()  
 {
-	void* shapeindexdata = (void*)(src->buf);
-	void* shapepositiondata = (void*)(src->buf)+0x100000;
-	void* shapenormaldata = (void*)(src->buf)+0x200000;
-	void* shapecolordata = (void*)(src->buf)+0x300000;
+	void* shapepositiondata = (void*)(src->buf)+0x800000;
+	void* shapenormaldata = (void*)(src->buf)+0x900000;
+	void* shapecolordata = (void*)(src->buf)+0xa00000;
+
+	void* shapeindexdata3 = (void*)(src->buf)+0xc00000;
+	void* shapeindexdata2 = (void*)(src->buf)+0xd00000;
+	void* shapeindexdata1 = (void*)(src->buf)+0xe00000;
 
 
 
@@ -297,11 +302,6 @@ void initVBO()
     glGenVertexArrays(1,&shapevao);
     glBindVertexArray(shapevao);
 
-	//shape index
-    glGenBuffers(1, &shapeindexhandle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata, GL_STATIC_DRAW);
-
     //shape position
     glGenBuffers(1, &shapepositionhandle);
     glBindBuffer(GL_ARRAY_BUFFER, shapepositionhandle);
@@ -322,6 +322,21 @@ void initVBO()
     glBufferData(GL_ARRAY_BUFFER, 0x100000, shapecolordata, GL_STATIC_DRAW);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(2);
+
+	//shape triangle
+    glGenBuffers(1, &shapeindexhandle3);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle3);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata3, GL_STATIC_DRAW);
+
+	//shape line
+	glGenBuffers(1, &shapeindexhandle2);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata2, GL_STATIC_DRAW);
+
+	//shape point
+	glGenBuffers(1, &shapeindexhandle1);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle1);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata1, GL_STATIC_DRAW);
 
 
 
@@ -458,7 +473,7 @@ void callback_display()
 	if(queuehead == queuetail)
 	{
 		glBindVertexArray(shapevao);
-		glDrawElements(GL_TRIANGLES, src->info[0], GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_TRIANGLES, src->info[12], GL_UNSIGNED_SHORT, 0);
 	}
 
 	//write
@@ -467,33 +482,36 @@ void callback_display()
 }
 void callback_idle()
 {
-	u64 icount;
-	u64 pcount;
-	u64 ncount;
-	u64 ccount;
-
-	u16* index;
+	u64 pcount, ncount, ccount;
+	u64 count3, count2, count1;
 	float* vertex;
 	float* normal;
 	float* color;
+	u16* index3;
+	u16* index2;
+	u16* index1;
 
 	if(queuehead == queuetail)return;
 
-	icount = src->info[0];
-	pcount = src->info[1];
-	ncount = src->info[1];
-	ccount = src->info[1];
-	//printf("%x,%x,%x,%x\n",icount,pcount,ncount,ccount);
+	pcount = src->info[8];
+	ncount = src->info[9];
+	ccount = src->info[10];
+	//tcount = src->info[11];
 
-	index = (void*)(src->buf);
-	vertex = (void*)(src->buf)+0x100000;
-	normal = (void*)(src->buf)+0x200000;
-	color = (void*)(src->buf)+0x300000;
+	count3 = src->info[12];
+	count2 = src->info[13];
+	count1 = src->info[13];
+	//printf("%x,%x,%x\n",pcount,ncount,ccount);
+
+	vertex = (void*)(src->buf)+0x800000;
+	normal = (void*)(src->buf)+0x900000;
+	color = (void*)(src->buf)+0xa00000;
+
+	index3 = (void*)(src->buf)+0xc00000;
+	index2 = (void*)(src->buf)+0xd00000;
+	index1 = (void*)(src->buf)+0xe00000;
 
 	glBindVertexArray(shapevao);
-
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*icount, index);
 
 	glBindBuffer(   GL_ARRAY_BUFFER, shapepositionhandle);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*pcount, vertex);
@@ -504,6 +522,22 @@ void callback_idle()
 	glBindBuffer(   GL_ARRAY_BUFFER, shapecolorhandle);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*ccount, color);
 
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle3);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count3, index3);
+
+	//glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle2);
+	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count2, index2);
+
+	//glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle1);
+	//glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count1, index1);
+
+/*
+	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	glTexImage2D(GL_TEXTURE_2D,	0,
+		GL_RGBA, 512, 512, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
+	);
+*/
 	queuetail++;
 	glutPostRedisplay();
 }
@@ -600,39 +634,25 @@ void callback_move(int x,int y)
 
 	if(y > last_y)
 	{
-		//if(camera_pitch < PI*44/90)camera_pitch += PI/90;
-		if(vectorcosine(v, t) < 0.9998)
-		{
-			vectorcross(v, t);
-			vectornormalize(v);
+		vectorcross(v, t);
+		vectornormalize(v);
 
-			v[0] *= sine(0.02f);
-			v[1] *= sine(0.02f);
-			v[2] *= sine(0.02f);
-			v[3] = cosine(0.02f);
-			quaternionrotate(camera, v);
-		}
-		else
-		{
-		}
+		v[0] *= sine(0.02f);
+		v[1] *= sine(0.02f);
+		v[2] *= sine(0.02f);
+		v[3] = cosine(0.02f);
+		quaternionrotate(camera, v);
 	}
 	else if(y<last_y)
 	{
-		//if(camera_pitch > -PI*44/90)camera_pitch -= PI/90;
-		if(vectorcosine(v, t) > -0.9998)
-		{
-			vectorcross(v, t);
-			vectornormalize(v);
+		vectorcross(v, t);
+		vectornormalize(v);
 
-			v[0] *= sine(-0.02f);
-			v[1] *= sine(-0.02f);
-			v[2] *= sine(-0.02f);
-			v[3] = cosine(-0.02f);
-			quaternionrotate(camera, v);
-		}
-		else
-		{
-		}
+		v[0] *= sine(-0.02f);
+		v[1] *= sine(-0.02f);
+		v[2] *= sine(-0.02f);
+		v[3] = cosine(-0.02f);
+		quaternionrotate(camera, v);
 	}
 
 	last_x = x;
@@ -664,6 +684,7 @@ void* uievent(struct window* p)
 
 	//
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
     initShader();
     initVBO();
 
@@ -721,216 +742,3 @@ void windowdelete()
 void windowcreate()
 {
 }
-
-
-
-
-/*
-//
-static float camera_pitch = PI/4;
-static float camera_yaw = -PI/2;
-static float camera_roll = 0.0;
-static float camera_zoom = 2.0;
-//
-static float object_pitch = 0.0;
-static float object_yaw = 0.0;
-static float object_roll = 0.0;
-static float object_zoom = 1.0;
-void callback_display_stl()
-{
-	GLfloat position[4] = {10.0, 20.0, 50.0, 1.0};
-	GLfloat redDiffuseMaterial[] = {1.0, 0.0, 0.0, 1.0};
-	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat greenEmissiveMaterial[] = {0.0, 1.0, 0.0, 1.0};
-
-	GLfloat shininess[] = {128.0};
-	GLfloat whiteSpecularLight[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat blackAmbientLight[] = {0.0, 0.0, 0.0, 1.0};
-	GLfloat whiteDiffuseLight[] = {1.0, 1.0, 1.0, 1.0};
-
-	float ex,ey,ez;
-	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
-	ey = camera_zoom*cosine(camera_pitch)*sine(camera_yaw);
-	ez = camera_zoom*sine(camera_pitch);
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	//camera rotate
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	gluPerspective(45.0, 1.0, 0.1, 1000.0);
-	gluLookAt(
-		 ex, ey, ez,
-		  0,  0,  0,
-		0.0,0.0,1.0
-	);
-
-	u32 j;
-	float* p;
-	void* buf = (void*)(src->buf);
-	u32 count = *(u32*)(buf+80);
-	if(count > 0x147adf)count = 0x147adf;	//64MB
-	buf += 84;
-	//printf("count=%d\n", count);
-	//printmemory(buf, 50);
-
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	//must!!!
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(1.0, 1.0, 1.0);
-	glShadeModel(GL_SMOOTH);
-
-	//
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
-	//glMaterialfv(GL_FRONT, GL_EMISSION, greenEmissiveMaterial);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, redDiffuseMaterial);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecularMaterial);
-	glEnable(GL_COLOR_MATERIAL);
-
-	//
-	for(j=0;j<count;j++)
-	{
-		p = buf;
-		buf += 50;
-
-		glBegin(GL_TRIANGLES);
-		glVertex3f(p[3], p[4], p[5]);
-		glVertex3f(p[6], p[7], p[8]);
-		glVertex3f(p[9], p[10], p[11]);
-		glEnd();
-	}
-
-	//
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(100.0, 0.0, 0.0);
-	glEnd();
-
-	glColor3f(0.0, 1.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 100.0, 0.0);
-	glEnd();
-
-	glColor3f(0.0, 0.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.0, 0.0, 0.0);
-	glVertex3f(0.0, 0.0, 100.0);
-	glEnd();
-
-	//
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, blackAmbientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteDiffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
-
-	//
-	glFlush();
-	glutSwapBuffers();
-}
-void callback_display_texture()
-{
-	float ex,ey,ez;
-	ex = -camera_zoom*cosine(camera_pitch)*cosine(camera_yaw);
-	ey = camera_zoom*cosine(camera_pitch)*sine(camera_yaw);
-	ez = camera_zoom*sine(camera_pitch);
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	glEnable(GL_COLOR_MATERIAL);
-	glDisable(GL_TEXTURE_2D);
-
-	//camera rotate
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	gluPerspective(45.0, 1.0, 0.1, 1000.0);
-	gluLookAt(
-		 ex, ey, ez,
-		  0,  0,  0,
-		0.0,0.0,1.0
-	);
-
-	//1
-	glBegin(GL_QUADS);
-	glColor3f(   0.0,  0.0,  0.5 );
-	glVertex3f(  0.5, -0.5, -0.5 );
-	glVertex3f(  0.5, -0.5,  0.5 );
-	glVertex3f( -0.5, -0.5,  0.5 );
-	glVertex3f( -0.5, -0.5, -0.5 );
-	glEnd();
-
-	//2
-	glBegin(GL_QUADS);
-	glColor3f(   0.0, 0.5,  0.0 );
-	glVertex3f(  0.5, 0.5, -0.5 );
-	glVertex3f(  0.5, 0.5,  0.5 );
-	glVertex3f( -0.5, 0.5,  0.5 );
-	glVertex3f( -0.5, 0.5, -0.5 );
-	glEnd();
-
-	//3
-	glBegin(GL_QUADS);
-	glColor3f(   0.0,  0.5,  0.5 );
-	glVertex3f( -0.5,  0.5, -0.5 );
-	glVertex3f( -0.5, -0.5, -0.5 );
-	glVertex3f( -0.5, -0.5,  0.5 );
-	glVertex3f( -0.5,  0.5,  0.5 );
-	glEnd();
-
-	//4
-	glBegin(GL_QUADS);
-	glColor3f(  0.5,  0.0,  0.0 );
-	glVertex3f( 0.5,  0.5, -0.5 );
-	glVertex3f( 0.5, -0.5, -0.5 );
-	glVertex3f( 0.5, -0.5,  0.5 );
-	glVertex3f( 0.5,  0.5,  0.5 );
-	glEnd();
-
-	//5
-	glBegin(GL_QUADS);
-	glColor3f(   0.5,  0.0, 0.5 );
-	glVertex3f(  0.5, -0.5, -0.5 );
-	glVertex3f(  0.5,  0.5, -0.5 );
-	glVertex3f( -0.5,  0.5, -0.5 );
-	glVertex3f( -0.5, -0.5, -0.5 );
-	glEnd();
-
-	//0
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
-	glTexImage2D(
-		GL_TEXTURE_2D,
-		0,
-		GL_RGBA,
-		512,
-		512,
-		0,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,		//像素的数据类型  
-		(void*)(src->buf)	//数据指针
-	);
-	glBegin(GL_QUADS);
-	glColor3f(1.0, 1.0, 1.0);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-0.5, 0.5, 0.5);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-0.5, -0.5, 0.5);
-	glTexCoord2f(1.0, 1.0); glVertex3f(0.5, -0.5, 0.5);
-	glTexCoord2f(1.0, 0.0); glVertex3f(0.5, 0.5, 0.5);
-	glEnd();
-
-	//
-	glFlush();
-	glutSwapBuffers();
-}
-void callback_display()
-{
-	if(win->fmt == hex32('v','b','o',0))callback_display_vbo();
-	else if(win->fmt == hex32('s','t','l',0))callback_display_stl();
-	else callback_display_texture();
-}
-*/
