@@ -5,6 +5,7 @@ target:
 	$(compiler) $(cflag) content/game/game.2048.c
 	$(compiler) $(cflag) content/game/game.chess.c
 	$(compiler) $(cflag) content/game/game.ooxx.c
+	$(compiler) $(cflag) content/game/game.rubikscube.c
 	$(compiler) $(cflag) content/game/game.snake.c
 	$(compiler) $(cflag) content/game/game.sudoku.c
 	$(compiler) $(cflag) content/game/game.tetris.c

@@ -39,21 +39,21 @@ void carverect(
 	index[5] = pcount + 3;
 
 	//vertex
-	vertex[0] = cx - rx;
-	vertex[1] = cy - fy;
-	vertex[2] = 0.0;
+	vertex[ 0] = cx - rx - fx;
+	vertex[ 1] = cy - ry - fy;
+	vertex[ 2] = cz - rz - fz;
 
-	vertex[3] = cx + rx;
-	vertex[4] = cy - fy;
-	vertex[5] = 0.0;
+	vertex[ 3] = cx + rx - fx;
+	vertex[ 4] = cy + ry - fy;
+	vertex[ 5] = cz + rz - fz;
 
-	vertex[6] = cx - rx;
-	vertex[7] = cy + fy;
-	vertex[8] = 0.0;
+	vertex[ 6] = cx - rx + fx;
+	vertex[ 7] = cy - ry + fy;
+	vertex[ 8] = cz - rz + fz;
 
-	vertex[9] = cx + rx;
-	vertex[10] = cy + fy;
-	vertex[11] = 0.0;
+	vertex[ 9] = cx + rx + fx;
+	vertex[10] = cy + ry + fy;
+	vertex[11] = cz + rz + fz;
 
 	//normal
 	normal[0] = 0.0;

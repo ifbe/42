@@ -143,6 +143,7 @@ target:
 	$(compiler) $(cflag) libmem/libfmt/file.c
 	$(compiler) $(cflag) libmem/libgame/solve.2048.c
 	$(compiler) $(cflag) libmem/libgame/solve.chess.c
+	$(compiler) $(cflag) libmem/libgame/solve.rubikscube.c
 	$(compiler) $(cflag) libmem/libgame/solve.sudoku.c
 	$(compiler) $(cflag) libmem/liblang/assembly/asm.x64.c
 	$(compiler) $(cflag) libmem/liblang/assembly/asm.arm.c

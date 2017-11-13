@@ -11,6 +11,8 @@ void chess_create(u8*,u8*);
 void chess_delete();
 void ooxx_create(u8*,u8*);
 void ooxx_delete();
+void rubikscube_create(u8*,u8*);
+void rubikscube_delete();
 void snake_create(u8*,u8*);
 void snake_delete();
 void sudoku_create(u8*,u8*);
@@ -75,6 +77,10 @@ int content_create(u8* addr)
 
 	//game.ooxx
 	ooxx_create(addr, temp);
+	temp += 0x100;
+
+	//game.rubikscube
+	rubikscube_create(addr, temp);
 	temp += 0x100;
 
 	//game.snake
@@ -183,6 +189,7 @@ void content_delete()
 	the2048_delete();
 	chess_delete();
 	ooxx_delete();
+	rubikscube_delete();
 	snake_delete();
 	sudoku_delete();
 	tetris_delete();
