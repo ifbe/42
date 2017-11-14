@@ -339,7 +339,7 @@ void drawbezier(struct arena* win,
 
 
 
-void rectread(struct arena* win, struct style* sty)
+void select_2d(struct arena* win, struct style* sty)
 {
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;

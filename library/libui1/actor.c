@@ -13,16 +13,17 @@ void lib3d_create(void*, void*);
 void lib3d_delete();
 //
 void* relation_read(u64);
-int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
-//
+void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
-void backgroundcolor(void*, u32);
-void foreground(void*);
-int rectread(void*, void*);
-int input_explain(void*, void*);
+void bgcolor(void*, u32);
+void carveaxis(void*);
+void select_1d(void*, void*);
+void select_2d(void*, void*);
+void select_3d(void*, void*);
 //
+int input_explain(void*, void*);
 void term_write(void*);
 void win_cfg(void*);
 
@@ -62,6 +63,10 @@ int actorread_one(struct arena* win)
 	}
 	else canvas = win;
 
+	//background
+	if(win->fmt == hex32('v','b','o',0))carveaxis(canvas);
+	else bgcolor(canvas, 0);
+
 	//
 	rel = win->irel;
 	if(rel == 0)
@@ -69,9 +74,6 @@ int actorread_one(struct arena* win)
 		//default_read(canvas);
 		return 0;
 	}
-
-	//background
-	backgroundcolor(canvas, 0xff000000);
 
 	//content
 	while(1)
@@ -86,7 +88,17 @@ int actorread_one(struct arena* win)
 			//say("%x,%x,%x,%x\n", canvas, act, st, pl);
 
 			act->read(canvas, act, st, pl);
-			if(win->cw == 4)rectread(canvas, st);
+			if(win->cw == 4)
+			{
+				if(win->fmt == hex32('v','b','o',0))
+				{
+					select_3d(canvas, st);
+				}
+				else
+				{
+					select_2d(canvas, st);
+				}
+			}
 		}
 		rel = relation_read(rel->samepinnextchip);
 	}

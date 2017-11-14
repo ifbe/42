@@ -2,8 +2,6 @@
 void drawstring(
 	void*, void*, int size,
 	int x, int y, u32 fg, u32 bg);
-void backgroundcolor(
-	void*, u32);
 int netmgr_read();
 int netmgr_write(void*);
 
@@ -53,7 +51,6 @@ static void browse_read_html(struct arena* win)
 }
 static void browse_read_pixel(struct arena* win)
 {
-	backgroundcolor(win, 0);
 	drawstring(
 		win, pl->priv, 1,
 		0, 0, 0xffffffff, 0);

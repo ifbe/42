@@ -16,13 +16,13 @@ void carveline(
 	u32 ncount = win->info[9];
 	u32 ccount = win->info[10];
 	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 icount = win->info[13];
 
 	void* buf = (void*)(win->buf);
 	float* vertex = buf + 0x800000 + (pcount*12);
 	float* normal = buf + 0x900000 + (ncount*12);
 	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	u16* index    = buf + 0xd00000 + (icount*2);
 
 	win->info[8] += 2;
 	win->info[9] += 2;
@@ -59,4 +59,40 @@ void carvebezier(
 	float x2, float y2, float z2,
 	float xc, float yc, float zc)
 {
+}
+
+
+
+
+void carveaxis(struct arena* win)
+{
+	carveline(win, 0xff0000,
+		0.0, 0.0, 0.0,
+		10.0, 0.0, 0.0);
+	carveline(win, 0xff00,
+		0.0, 0.0, 0.0,
+		0.0, 10.0, 0.0);
+	carveline(win, 0xff,
+		0.0, 0.0, 0.0,
+		0.0, 0.0, 10.0);
+}
+void select_3d(struct arena* win, struct style* sty)
+{
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
+
+	carveline(win, 0xff0000,
+		cx-w/2, cy-h/2, 0.0,
+		cx+w/2, cy-h/2, 0.0);
+	carveline(win, 0xff0000,
+		cx-w/2, cy-h/2, 0.0,
+		cx-w/2, cy+h/2, 0.0);
+	carveline(win, 0xff0000,
+		cx+w/2, cy+h/2, 0.0,
+		cx+w/2, cy-h/2, 0.0);
+	carveline(win, 0xff0000,
+		cx+w/2, cy+h/2, 0.0,
+		cx-w/2, cy+h/2, 0.0);
 }

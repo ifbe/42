@@ -1,7 +1,4 @@
 #include "actor.h"
-//
-void backgroundcolor(
-	void*, u32);
 void drawascii(
 	void*, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
@@ -12,8 +9,6 @@ void drawascii(
 void font_read(struct arena* win)
 {
 	int x,y;
-	backgroundcolor(win, 0);
-
 	for(y=2;y<8;y++)
 	{
 		for(x=0;x<16;x++)

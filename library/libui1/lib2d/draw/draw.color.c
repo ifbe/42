@@ -3,7 +3,7 @@
 
 
 
-void backgroundcolor(struct arena* win, u32 color)
+void bgcolor(struct arena* win, u32 color)
 {
 	int x;
 	u32* buf = (u32*)(win->buf);
