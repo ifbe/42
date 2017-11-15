@@ -9,7 +9,7 @@ void say(char*,...);
 
 
 //绝对值
-double absolute(double x)
+double getabs(double x)
 {
 	register double result;
 	__asm __volatile__
@@ -20,14 +20,12 @@ double absolute(double x)
 	);
 	return result;
 }
-/*
 //取整
-double floor(double x)
+double getfloor(double x)
 {
-	register long double value;
+	register double value;
+	__volatile unsigned short int cw, cwtmp;
 
-	__volatile unsigned short int cw;
-	__volatile unsigned short int cwtmp;
 	__asm __volatile("fnstcw %0":"=m"(cw));
 	cwtmp = (cw & 0xf3ff) | 0x0400;
 
@@ -36,11 +34,20 @@ double floor(double x)
 	__asm __volatile("fldcw %0"::"m"(cw));
 	return value;
 }
-*/
+double getceil(double x)
+{
+	register double __value;
+	__volatile unsigned short int __cw, __cwtmp;
 
+	__asm __volatile("fnstcw %0" : "=m" (__cw));
+	__cwtmp = (__cw & 0xf3ff) | 0x0800; /* rounding up */
 
+	__asm __volatile("fldcw %0" : : "m" (__cwtmp));
+	__asm __volatile("frndint" : "=t" (__value) : "0" (x));
+	__asm __volatile("fldcw %0" : : "m" (__cw));
 
-
+	return __value;
+}
 //平方根
 double squareroot(double x)
 {
@@ -118,11 +125,11 @@ double arctan2(double y, double x)
 }
 double arcsin(double x)
 {
-	return arctan2(x, squareroot (1.0 - x * x));
+	return arctan2(x, squareroot(1.0 - x * x));
 }
 double arccos(double x)
 {
-	return arctan2(squareroot (1.0 - x * x), x);
+	return arctan2(squareroot(1.0 - x * x), x);
 }
 
 
@@ -156,6 +163,10 @@ double logarithm(double y,double base)	//y=base^x	->	x=log(y,base)
 
 
 
+
+
+
+
 //result=value*(2^exp)
 double fscale(double value, int exp)
 {
@@ -170,11 +181,7 @@ double fscale(double value, int exp)
 	);
 	return (temp);
 }
-
-
-
-
-//result=2^x-1+1
+//result=2^x-1
 double f2xm1(double x)
 {
 	double result;
@@ -184,7 +191,7 @@ double f2xm1(double x)
 		:"=t" (result)
 		:"0" (x)
 	);
-	return result+1;
+	return result;
 }
 //*/result=x^y
 double power(double x,double y)

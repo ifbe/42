@@ -468,8 +468,8 @@ void fixmatrix()
 	fixprojection();
 
 	for(x=0;x<16;x++)temp[x] = modelmatrix[x];
-	matrixmultiply(temp, viewmatrix);
-	matrixmultiply(temp, projmatrix);
+	matrixmultiply_4(temp, viewmatrix);
+	matrixmultiply_4(temp, projmatrix);
 
 	GLint mvp = glGetUniformLocation(programHandle, "mvpmatrix");
 	glUniformMatrix4fv(mvp, 1, GL_FALSE, temp);
