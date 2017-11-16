@@ -9,8 +9,7 @@
 
 
 //
-void matrixmultiply(float*, float*);
-//
+void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
 //
@@ -46,23 +45,21 @@ static int last_y = 0;
 static GLuint vShader;
 static GLuint fShader;
 static GLuint programHandle;
-static GLuint texturehandle;
 //
-static GLuint axisvao;
-static GLuint axispositionhandle;
-static GLuint axisnormalhandle;
-static GLuint axiscolorhandle;
+static GLuint vertexvbo;
+static GLuint normalvbo;
+static GLuint colorvbo;
+static GLuint texturevbo;
 //
-static GLuint shapevertexhandle;
-static GLuint shapenormalhandle;
-static GLuint shapecolorhandle;
+static GLuint pointvbo;
+static GLuint linevbo;
+static GLuint trianglevbo;
+static GLuint rectanglevbo;
 //
-static GLuint shapevao3;
-static GLuint shapeindexhandle3;
-static GLuint shapevao2;
-static GLuint shapeindexhandle2;
-static GLuint shapevao1;
-static GLuint shapeindexhandle1;
+static GLuint pointvao;
+static GLuint linevao;
+static GLuint trianglevao;
+static GLuint rectanglevao;
 //
 static float camera[3] = {1.0f, -2.0f, 1.0f};
 static float center[3] = {0.0f, 0.0f, 0.0f};
@@ -85,31 +82,6 @@ static GLfloat projmatrix[4*4] = {
 	0.0f, 1.0f, 0.0f, 0.0f,
 	0.0f, 0.0f, -1.0f, -1.0f,
 	0.0f, 0.0f, -0.2f, 0.0f
-};
-//
-float axispositiondata[] = {
-	-10.0, 0.0, 0.0,
-	10.0, 0.0, 0.0,
-	0.0, -10.0, 0.0,
-	0.0, 10.0, 0.0,
-	0.0, 0.0, -10.0,
-	0.0, 0.0, 10.0
-};
-float axisnormaldata[] = {
-	0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0
-};
-float axiscolordata[] = {
-	1.0, 1.0, 0.0,
-	0.0, 0.0, 1.0,
-	1.0, 0.0, 1.0,
-	0.0, 1.0, 0.0,
-	0.0, 1.0, 1.0,
-	1.0, 0.0, 0.0
 };
 
 
@@ -262,125 +234,113 @@ void initShader()
 }
 void initVBO()  
 {
-	void* shapevertexdata = (void*)(src->buf)+0x800000;
-	void* shapenormaldata = (void*)(src->buf)+0x900000;
-	void* shapecolordata = (void*)(src->buf)+0xa00000;
+	void* vertexxyz = (void*)(src->buf)+0x800000;
+	void* normalxyz = (void*)(src->buf)+0x900000;
+	void* colorrgb = (void*)(src->buf)+0xa00000;
+	void* texturexyz = (void*)(src->buf)+0xb00000;
 
-	void* shapeindexdata3 = (void*)(src->buf)+0xc00000;
-	void* shapeindexdata2 = (void*)(src->buf)+0xd00000;
-	void* shapeindexdata1 = (void*)(src->buf)+0xe00000;
+	void* pointindex = (void*)(src->buf)+0xc00000;
+	void* lineindex = (void*)(src->buf)+0xd00000;
+	void* triangleindex = (void*)(src->buf)+0xe00000;
+	void* rectangleindex = (void*)(src->buf)+0xf00000;
 
 
 
-/*
-	//axis vao
-    glGenVertexArrays(1,&axisvao);
-    glBindVertexArray(axisvao);
 
-	//axis vertex
-    glGenBuffers(1, &axispositionhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, axispositionhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axispositiondata, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
+    //[8]vertex
+    glGenBuffers(1, &vertexvbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexxyz, GL_STATIC_DRAW);
 
-	//axis normal
-    glGenBuffers(1, &axisnormalhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, axisnormalhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axisnormaldata, GL_STATIC_DRAW);
+	//[9]normal
+    glGenBuffers(1, &normalvbo);
+    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, normalxyz, GL_STATIC_DRAW);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
-    //axis color
-    glGenBuffers(1, &axiscolorhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, axiscolorhandle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*6, axiscolordata, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
-*/
-
-
-
-    //shape position
-    glGenBuffers(1, &shapevertexhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapevertexhandle);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapevertexdata, GL_STATIC_DRAW);
-
-	//shape normal
-    glGenBuffers(1, &shapenormalhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapenormaldata, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
-	//shape color
-    glGenBuffers(1, &shapecolorhandle);
-    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, shapecolordata, GL_STATIC_DRAW);
+	//[a]color
+    glGenBuffers(1, &colorvbo);
+    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+    glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(2);
 
-	//shape triangle
-    glGenVertexArrays(1,&shapevao3);
-    glBindVertexArray(shapevao3);
-    glBindBuffer(GL_ARRAY_BUFFER, shapevertexhandle);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
-
-    glGenBuffers(1, &shapeindexhandle3);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle3);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata3, GL_STATIC_DRAW);
-
-	//shape line
-    glGenVertexArrays(1,&shapevao2);
-    glBindVertexArray(shapevao2);
-    glBindBuffer(GL_ARRAY_BUFFER, shapevertexhandle);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
-
-	glGenBuffers(1, &shapeindexhandle2);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle2);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata2, GL_STATIC_DRAW);
-
-	//shape point
-    glGenVertexArrays(1,&shapevao1);
-    glBindVertexArray(shapevao1);
-    glBindBuffer(GL_ARRAY_BUFFER, shapevertexhandle);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, shapenormalhandle);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, shapecolorhandle);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
-
-	glGenBuffers(1, &shapeindexhandle1);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle1);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, shapeindexdata1, GL_STATIC_DRAW);
-
-
-
-
-	//
-	glGenTextures(1, &texturehandle);
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	//[b]texture
+	glGenTextures(1, &texturevbo);
+	glBindTexture(GL_TEXTURE_2D, texturevbo);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+	//[c]point
+    glGenVertexArrays(1,&pointvao);
+    glBindVertexArray(pointvao);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &pointvbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pointvbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, pointindex, GL_STATIC_DRAW);
+
+	//[d]line
+    glGenVertexArrays(1,&linevao);
+    glBindVertexArray(linevao);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &linevbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linevbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, lineindex, GL_STATIC_DRAW);
+
+	//[e]triangle
+    glGenVertexArrays(1,&trianglevao);
+    glBindVertexArray(trianglevao);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+    glGenBuffers(1, &trianglevbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
+
+	//[f]rectangle
+    glGenVertexArrays(1,&rectanglevao);
+    glBindVertexArray(rectanglevao);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+    glGenBuffers(1, &rectanglevbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, rectangleindex, GL_STATIC_DRAW);
 }
 
 
@@ -505,14 +465,17 @@ void callback_display()
 
 	if(queuehead == queuetail)
 	{
-		glBindVertexArray(shapevao3);
-		glDrawElements(GL_TRIANGLES, src->info[12], GL_UNSIGNED_SHORT, 0);
+		glBindVertexArray(pointvao);
+		glDrawElements(GL_POINTS, src->info[12], GL_UNSIGNED_SHORT, 0);
 
-		glBindVertexArray(shapevao2);
+		glBindVertexArray(linevao);
 		glDrawElements(GL_LINES, src->info[13], GL_UNSIGNED_SHORT, 0);
 
-		glBindVertexArray(shapevao1);
-		glDrawElements(GL_POINTS, src->info[14], GL_UNSIGNED_SHORT, 0);
+		glBindVertexArray(trianglevao);
+		glDrawElements(GL_TRIANGLES, src->info[14], GL_UNSIGNED_SHORT, 0);
+
+		glBindVertexArray(rectanglevao);
+		glDrawElements(GL_QUADS, src->info[15], GL_UNSIGNED_SHORT, 0);
 	}
 
 	//write
@@ -521,55 +484,65 @@ void callback_display()
 }
 void callback_idle()
 {
-	u64 pcount, ncount, ccount;
-	u64 count3, count2, count1;
-	float* vertex;
-	float* normal;
-	float* color;
-	u16* index3;
-	u16* index2;
-	u16* index1;
+	u64 vertexcount, normalcount, colorcount, texturecount;
+	u64 pointcount, linecount, tricount, rectcount;
+	float* vertexdata;
+	float* normaldata;
+	float* colordata;
+	float* texturedata;
+	u16* pointindex;
+	u16* lineindex;
+	u16* triindex;
+	u16* rectindex;
 
 	if(queuehead == queuetail)return;
 
-	pcount = src->info[8];
-	ncount = src->info[9];
-	ccount = src->info[10];
-	//tcount = src->info[11];
+	vertexcount = src->info[8];
+	normalcount = src->info[9];
+	colorcount = src->info[10];
+	texturecount = src->info[11];
 
-	count3 = src->info[12];
-	count2 = src->info[13];
-	count1 = src->info[14];
-	//printf("%x,%x,%x\n",pcount,ncount,ccount);
+	pointcount = src->info[12];
+	linecount = src->info[13];
+	tricount = src->info[14];
+	rectcount = src->info[15];
 
-	vertex = (void*)(src->buf)+0x800000;
-	normal = (void*)(src->buf)+0x900000;
-	color = (void*)(src->buf)+0xa00000;
+	vertexdata = (void*)(src->buf)+0x800000;
+	normaldata = (void*)(src->buf)+0x900000;
+	colordata = (void*)(src->buf)+0xa00000;
+	texturedata = (void*)(src->buf)+0xb00000;
 
-	index3 = (void*)(src->buf)+0xc00000;
-	index2 = (void*)(src->buf)+0xd00000;
-	index1 = (void*)(src->buf)+0xe00000;
+	pointindex = (void*)(src->buf)+0xc00000;
+	lineindex = (void*)(src->buf)+0xd00000;
+	triindex = (void*)(src->buf)+0xe00000;
+	rectindex = (void*)(src->buf)+0xf00000;
 
-	glBindBuffer(   GL_ARRAY_BUFFER, shapevertexhandle);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*pcount, vertex);
+	glBindBuffer(   GL_ARRAY_BUFFER, vertexvbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*vertexcount, vertexdata);
 
-	glBindBuffer(   GL_ARRAY_BUFFER, shapenormalhandle);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*ncount, normal);
+	glBindBuffer(   GL_ARRAY_BUFFER, normalvbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*normalcount, normaldata);
 
-	glBindBuffer(   GL_ARRAY_BUFFER, shapecolorhandle);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*ccount, color);
+	glBindBuffer(   GL_ARRAY_BUFFER, colorvbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*colorcount, colordata);
+/*
+	glBindBuffer(   GL_ARRAY_BUFFER, texturevbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*texturecount, texturedata);
+*/
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, pointvbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*pointcount, pointindex);
 
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle3);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count3, index3);
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, linevbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*linecount, lineindex);
 
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle2);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count2, index2);
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*tricount, triindex);
 
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, shapeindexhandle1);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*count1, index1);
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*rectcount, rectindex);
 
 /*
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	glBindTexture(GL_TEXTURE_2D, texturevbo);
 	glTexImage2D(GL_TEXTURE_2D,	0,
 		GL_RGBA, 512, 512, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
@@ -734,11 +707,6 @@ void* uievent(struct window* p)
 	glutMouseFunc(callback_mouse);
 	glutMotionFunc(callback_move);
 	glutMainLoop();
-
-	//exit
-	glDeleteBuffers(1, &axispositionhandle);
-	glDeleteBuffers(1, &axisnormalhandle);
-	glDeleteBuffers(1, &axiscolorhandle);
 }
 void windowread()
 {

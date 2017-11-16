@@ -20,18 +20,18 @@ void carvetriangle(
 	u32 ncount = win->info[9];
 	u32 ccount = win->info[10];
 	//u32 tcount = win->info[11];
-	u32 icount = win->info[12];
+	u32 icount = win->info[14];
 
 	void* buf = (void*)(win->buf);
 	float* vertex = buf + 0x800000 + (pcount*12);
 	float* normal = buf + 0x900000 + (ncount*12);
 	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xc00000 + (icount*2);
+	u16* index =    buf + 0xe00000 + (icount*2);
 
 	win->info[8] += 3;
 	win->info[9] += 3;
 	win->info[10] += 3;
-	win->info[12] += 3;
+	win->info[14] += 3;
 
 	//color
 	color[0] = rr;
@@ -91,18 +91,18 @@ void carverect(
 	u32 ncount = win->info[9];
 	u32 ccount = win->info[10];
 	//u32 tcount = win->info[11];
-	u32 icount = win->info[12];
+	u32 icount = win->info[14];
 
 	void* buf = (void*)(win->buf);
 	float* vertex = buf + 0x800000 + (pcount*12);
 	float* normal = buf + 0x900000 + (ncount*12);
 	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xc00000 + (icount*2);
+	u16* index =    buf + 0xe00000 + (icount*2);
 
 	win->info[8] += 4;
 	win->info[9] += 4;
 	win->info[10] += 4;
-	win->info[12] += 6;
+	win->info[14] += 6;
 
 	//color
 	color[0] = rr;

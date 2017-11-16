@@ -26,18 +26,18 @@ void carveprism4(
 	u32 ncount = win->info[9];
 	u32 ccount = win->info[10];
 	//u32 tcount = win->info[11];
-	u32 icount = win->info[12];
+	u32 icount = win->info[14];
 
 	void* buf = (void*)(win->buf);
 	float* vertex = buf + 0x800000 + (pcount*12);
 	float* normal = buf + 0x900000 + (ncount*12);
 	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xc00000 + (icount*2);
+	u16* index    = buf + 0xe00000 + (icount*2);
 
 	win->info[8] += 8;
 	win->info[9] += 8;
 	win->info[10] += 8;
-	win->info[12] += 36;
+	win->info[14] += 36;
 
 	//color
 	color[0] = rr;

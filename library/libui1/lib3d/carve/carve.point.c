@@ -15,18 +15,18 @@ void carvepoint(
 	u32 ncount = win->info[9];
 	u32 ccount = win->info[10];
 	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 icount = win->info[12];
 
 	void* buf = (void*)(win->buf);
 	float* vertex = buf + 0x800000 + (pcount*12);
 	float* normal = buf + 0x900000 + (ncount*12);
 	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	u16* index    = buf + 0xc00000 + (icount*2);
 
 	win->info[8] += 1;
 	win->info[9] += 1;
 	win->info[10] += 1;
-	win->info[14] += 1;
+	win->info[12] += 1;
 
 	color[0] = rr;
 	color[1] = gg;

@@ -1,8 +1,11 @@
 #include<actor.h>
 u32 getrandom();
 double squareroot(double);
-double cosine(double);
 double sine(double);
+double cosine(double);
+double tangent(double);
+double arcsin(double);
+double arccos(double);
 double arctan2(double, double);
 double power(double, double);
 double ln(double);
