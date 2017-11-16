@@ -13,10 +13,10 @@ void carveprism3()
 //正四棱柱
 void carveprism4(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,	//center xyz
-	float rx, float ry, float rz,	//width = |rvector|*2
-	float fx, float fy, float fz,	//height = |fvector|*2
-	float ux, float uy, float uz)	//upper = |uvector|*2
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -106,37 +106,37 @@ void carveprism4(
 	normal[23] = 1.0;
 
 	//vertex
-	vertex[0] = cx - rx;
-	vertex[1] = cy - fy;
-	vertex[2] = cz - uz;
+	vertex[ 0] = cx - rx - fx - ux;
+	vertex[ 1] = cy - ry - fy - uy;
+	vertex[ 2] = cz - rz - fz - uz;
 
-	vertex[3] = cx + rx;
-	vertex[4] = cy - fy;
-	vertex[5] = cz - uz;
+	vertex[ 3] = cx + rx - fx - ux;
+	vertex[ 4] = cy + ry - fy - uy;
+	vertex[ 5] = cz + rz - fz - uz;
 
-	vertex[6] = cx - rx;
-	vertex[7] = cy + fy;
-	vertex[8] = cz - uz;
+	vertex[ 6] = cx - rx + fx - ux;
+	vertex[ 7] = cy - ry + fy - uy;
+	vertex[ 8] = cz - rz + fz - uz;
 
-	vertex[9] = cx + rx;
-	vertex[10] = cy + fy;
-	vertex[11] = cz - uz;
+	vertex[ 9] = cx + rx + fx - ux;
+	vertex[10] = cy + ry + fy - uy;
+	vertex[11] = cz + rz + fz - uz;
 
-	vertex[12] = cx - rx;
-	vertex[13] = cy - fy;
-	vertex[14] = cz + uz;
+	vertex[12] = cx - rx - fx + ux;
+	vertex[13] = cy - ry - fy + uy;
+	vertex[14] = cz - rz - fz + uz;
 
-	vertex[15] = cx + rx;
-	vertex[16] = cy - fy;
-	vertex[17] = cz + uz;
+	vertex[15] = cx + rx - fx + ux;
+	vertex[16] = cy + ry - fy + uy;
+	vertex[17] = cz + rz - fz + uz;
 
-	vertex[18] = cx - rx;
-	vertex[19] = cy + fy;
-	vertex[20] = cz + uz;
+	vertex[18] = cx - rx + fx + ux;
+	vertex[19] = cy - ry + fy + uy;
+	vertex[20] = cz - rz + fz + uz;
 
-	vertex[21] = cx + rx;
-	vertex[22] = cy + fy;
-	vertex[23] = cz + uz;
+	vertex[21] = cx + rx + fx + ux;
+	vertex[22] = cy + ry + fy + uy;
+	vertex[23] = cz + rz + fz + uz;
 
 	//index
 	index[0] = pcount + 0;
