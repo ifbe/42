@@ -590,20 +590,24 @@ void callback_special(int key, int x, int y)
 void callback_mouse(int button, int state, int x, int y)
 {
 	float tx, ty, tz;
-	u64 why, what, where, temp;
-	//printf("%x,%x,%x,%x\n",button,state,x,y);
+	u64 xx,yy,temp;
+	u64 why, what, where;
+	//printf("1111: %x,%x\n",x,y);
 
 	if(win->cw == 4)
 	{
 		where = (u64)win;
-		x = ((x&0xffff)<<16) / (win->w);
-		y = 65536 - ((y&0xffff)<<16) / (win->h);
+		xx = x&0xffff;
+		yy = ((win->h) - y)&0xffff;
+		xx = (xx<<16) / (win->w);
+		yy = (yy<<16) / (win->h);
+
 		if(state == GLUT_DOWN)
 		{
 			if(button == 0)
 			{
 				temp = 'l';
-				why = x + (y<<16) + (temp<<48);
+				why = xx + (yy<<16) + (temp<<48);
 				eventwrite(why, 0x2b70, where, 0);
 			}
 		}
@@ -612,19 +616,19 @@ void callback_mouse(int button, int state, int x, int y)
 			if(button == 0)
 			{
 				temp = 'l';
-				why = x + (y<<16) + (temp<<48);
+				why = xx + (yy<<16) + (temp<<48);
 				eventwrite(why, 0x2d70, where, 0);
 			}
 			else if(button == 3)	//wheel_up
 			{
 				temp = 'f';
-				why = x + (y<<16) + (temp<<48);
+				why = xx + (yy<<16) + (temp<<48);
 				eventwrite(why, 0x2b70, where, 0);
 			}
 			else if(button == 4)	//wheel_down
 			{
 				temp = 'b';
-				why = x + (y<<16) + (temp<<48);
+				why = xx + (yy<<16) + (temp<<48);
 				eventwrite(why, 0x2b70, where, 0);
 			}
 		}
@@ -665,17 +669,20 @@ void callback_move(int x,int y)
 {
 	float t[3];
 	float v[4];
-	u64 why, what, where, temp;
-	//printf("%d,%d\n",x,y);
+	u64 xx,yy,temp;
+	u64 why, what, where;
+	//printf("2222: %d,%d\n",x,y);
 
 	if(win->cw == 4)
 	{
 		where = (u64)win;
-		x = ((x&0xffff)<<16) / (win->w);
-		y = 65536 - ((y&0xffff)<<16) / (win->h);
+		xx = x&0xffff;
+		yy = ((win->h) - y)&0xffff;
+		xx = (xx<<16) / (win->w);
+		yy = (yy<<16) / (win->h);
 
 		temp = 'l';
-		why = x + (y<<16) + (temp<<48);
+		why = xx + (yy<<16) + (temp<<48);
 		eventwrite(why, 0x4070, where, 0);
 		return;
 	}
