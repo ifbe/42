@@ -147,11 +147,24 @@ int mouse_explain(struct arena* win, struct style* sty, struct event* ev)
 	int j;
 	struct point* p;
 	struct point* q;
+	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
 	j = (ev->why) >> 48;
+	if(j == 'f')
+	{
+		sty->wantw = (sty->wantw)*15/16;
+		sty->wanth = (sty->wanth)*15/16;
+		return 0;
+	}
+	else if(j == 'b')
+	{
+		sty->wantw = (sty->wantw)*17/16;
+		sty->wanth = (sty->wanth)*17/16;
+		return 0;
+	}
+
 	if(j == 0x6c)j = 10;
 	if(j > 10)return 0;
-
 	p = (void*)ev;
 	q = (void*)&(win->touch[j]);
 
@@ -170,7 +183,6 @@ int mouse_explain(struct arena* win, struct style* sty, struct event* ev)
 	}
 	else if(ev->what == hex32('p','-',0,0))
 	{
-		say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 		if(j == 2)
 		{
 			if(win->cw != 4)win->cw = 4;

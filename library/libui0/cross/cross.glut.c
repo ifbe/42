@@ -459,10 +459,6 @@ void callback_display()
 	fixmatrix();
 	fixlight();
 
-	//axis
-	//glBindVertexArray(axisvao);
-	//glDrawArrays(GL_LINES, 0, 6);
-
 	if(queuehead == queuetail)
 	{
 		glBindVertexArray(pointvao);
@@ -560,8 +556,8 @@ void callback_keyboard(unsigned char key, int x, int y)
 {
 	u64 what,where;
 	where = (u64)win;
+	//printf("%x\n",key);
 
-	printf("%x\n",key);
 	if(key == 0x1b)
 	{
 		what = hex32('k','b','d',0);
@@ -576,8 +572,8 @@ void callback_special(int key, int x, int y)
 {
 	u64 what,where;
 	where = (u64)win;
+	//printf("%x\n",key);
 
-	printf("%x\n",key);
 	if(key == GLUT_KEY_F1)key = 0xf1;
 	else if(key == GLUT_KEY_F2)key = 0xf2;
 	else if(key == GLUT_KEY_F3)key = 0xf3;
@@ -593,9 +589,48 @@ void callback_special(int key, int x, int y)
 }
 void callback_mouse(int button, int state, int x, int y)
 {
-	float tx = camera[0];
-	float ty = camera[1];
-	float tz = camera[2];
+	float tx, ty, tz;
+	u64 why, what, where, temp;
+	//printf("%x,%x,%x,%x\n",button,state,x,y);
+
+	if(win->cw == 4)
+	{
+		where = (u64)win;
+		x = ((x&0xffff)<<16) / (win->w);
+		y = 65536 - ((y&0xffff)<<16) / (win->h);
+		if(state == GLUT_DOWN)
+		{
+			if(button == 0)
+			{
+				temp = 'l';
+				why = x + (y<<16) + (temp<<48);
+				eventwrite(why, 0x2b70, where, 0);
+			}
+		}
+		else
+		{
+			if(button == 0)
+			{
+				temp = 'l';
+				why = x + (y<<16) + (temp<<48);
+				eventwrite(why, 0x2d70, where, 0);
+			}
+			else if(button == 3)	//wheel_up
+			{
+				temp = 'f';
+				why = x + (y<<16) + (temp<<48);
+				eventwrite(why, 0x2b70, where, 0);
+			}
+			else if(button == 4)	//wheel_down
+			{
+				temp = 'b';
+				why = x + (y<<16) + (temp<<48);
+				eventwrite(why, 0x2b70, where, 0);
+			}
+		}
+		return;
+	}
+
 	if(state == GLUT_DOWN)
 	{
 		last_x = x;
@@ -603,6 +638,9 @@ void callback_mouse(int button, int state, int x, int y)
 	}
 	if(state == GLUT_UP)
 	{
+		tx = camera[0];
+		ty = camera[1];
+		tz = camera[2];
 		if(button == 3)	//wheel_up
 		{
 			camera[0] = 0.9*tx + 0.1*center[0];
@@ -612,7 +650,7 @@ void callback_mouse(int button, int state, int x, int y)
 			//camera_zoom *= 0.95;
 			glutPostRedisplay();
 		}
-		if(button == 4)	//wheel_down
+		else if(button == 4)	//wheel_down
 		{
 			camera[0] = 1.1*tx - 0.1*center[0];
 			camera[1] = 1.1*ty - 0.1*center[1];
@@ -625,8 +663,30 @@ void callback_mouse(int button, int state, int x, int y)
 }
 void callback_move(int x,int y)
 {
-	float t[3] = {0.0, 0.0, 1.0};
-	float v[4] = {camera[0], camera[1], camera[2]};
+	float t[3];
+	float v[4];
+	u64 why, what, where, temp;
+	//printf("%d,%d\n",x,y);
+
+	if(win->cw == 4)
+	{
+		where = (u64)win;
+		x = ((x&0xffff)<<16) / (win->w);
+		y = 65536 - ((y&0xffff)<<16) / (win->h);
+
+		temp = 'l';
+		why = x + (y<<16) + (temp<<48);
+		eventwrite(why, 0x4070, where, 0);
+		return;
+	}
+
+	t[0] = 0.0;
+	t[1] = 0.0;
+	t[2] = 1.0;
+	v[0] = camera[0];
+	v[1] = camera[1];
+	v[2] = camera[2];
+	v[3] = 0.0;
 	if(x>last_x)
 	{
 		camera[0] = v[0]*cosine(0.05f) + v[1]*sine(0.05f);
