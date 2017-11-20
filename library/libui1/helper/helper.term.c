@@ -53,6 +53,10 @@ void term_read(u8* buf)
 			hex32('w','+',0,0),
 			0, 0);
 	}
+	else if(ncmp(buf, "act ", 4) == 0)
+	{
+		actorchoose(buf+4);
+	}
 	else if(ncmp(buf, "ls", 2) == 0)
 	{
 		actorlist(0);

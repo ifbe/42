@@ -1,43 +1,37 @@
-/*
-1:	add name in library/libui1/makefile
-2:	add code in character.c character_create() and character_delete()
-3:	replace "example" to "whatname"----->		:9,$s/example/whatname/g
-4:	do your logic in this code
-*/
 #include "actor.h"
 
 
 
 
-static void example_read_html(struct arena* win)
+static void example_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void example_read_pixel(struct arena* win)
+static void example_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void example_read_text(struct arena* win)
+static void example_read_text(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void example_read(struct arena* win)
+static void example_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
 	//text
 	if(fmt == 0x74786574)
 	{
-		example_read_text(win);
+		example_read_text(win, act, sty);
 	}
 
 	//html
 	else if(fmt == 0x6c6d7468)
 	{
-		example_read_html(win);
+		example_read_html(win, act, sty);
 	}
 
 	//pixel
 	else
 	{
-		example_read_pixel(win);
+		example_read_pixel(win, act, sty);
 	}
 }
 static void example_write(struct event* ev)

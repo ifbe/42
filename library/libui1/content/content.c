@@ -30,6 +30,8 @@ void doodle_create(u8*,u8*);
 void doodle_delete();
 void font_create(u8*,u8*);
 void font_delete();
+void fractal_create(u8*,u8*);
+void fractal_delete();
 void pure_create(u8*,u8*);
 void pure_delete();
 //hack
@@ -123,6 +125,10 @@ int content_create(u8* addr)
 	color_create(addr, temp);
 	temp += 0x100;
 
+	//test.fractal
+	fractal_create(addr, temp);
+	temp += 0x100;
+
 	//test.font
 	font_create(addr, temp);
 	temp += 0x100;
@@ -184,6 +190,7 @@ void content_delete()
 	color_delete();
 	doodle_delete();
 	font_delete();
+	fractal_delete();
 	pure_delete();
 
 	the2048_delete();

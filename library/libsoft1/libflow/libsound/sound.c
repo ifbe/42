@@ -32,9 +32,10 @@ static double* phase;
 
 
 static int bb = 0;
-void sound_explain(u64* p)
+int sound_explain(u64* p)
 {
 	if(bb != 0)say("sound@%x\n",p[0]);
+	return 42;
 }
 void sound_output(double* real, double* imag, u16* pcmout)
 {

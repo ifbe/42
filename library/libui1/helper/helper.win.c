@@ -1,38 +1,79 @@
 #include "actor.h"
+#define __act__ hex32('a','c','t',0)
+#define __win__ hex32('w','i','n',0)
 void* arenastart(u64, u64);
 int arenastop(void*);
 void actorstart(void*, void*);
 int actorstop(void*);
+void* relation_read(u64);
+void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
 
 
 
-void win_cfg(struct event* ev)
+static struct arena* arena = 0;
+static struct actor* actor = 0;
+static struct style* style = 0;
+static int stlen = 0;
+
+
+
+
+void act_add()
+{
+	//copy struct
+}
+void act_del()
+{
+}
+void act_at(struct arena* win, struct actor* act)
+{
+	struct style* st = (void*)style + stlen;
+	stlen += sizeof(struct style);
+
+	st->cx = 0x4000 + (getrandom()%0x1000)*8;
+	st->cy = 0x4000 + (getrandom()%0x1000)*8;
+	st->wantw = 0x8000;
+	st->wanth = 0x8000;
+	st->dim = 2;
+
+	relation_write(win, st, __win__, act, 0, __act__);
+}
+
+
+
+
+void win_add(u64 why, u64 where)
+{
+	void* ret = arenastart(why, where);
+	if(ret == 0)
+	{
+		say("error@w+\n");
+		return;
+	}
+	actorstart(ret, 0);
+}
+void win_del(u64 why, u64 where)
+{
+	void* ret = (void*)where;
+	arenastop(ret);
+}
+void win_at(u64 why, u64 where)
 {
 	void* ret;
-	//say("%x,%x,%x,%x\n", ev->why, ev->what, ev->where, ev->when);
-	if(ev->what == hex32('w','+',0,0))
+	if(why == hex32('f','i','l','e'))
 	{
-		ret = arenastart(ev->why, ev->where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return;
-		}
+		ret = (void*)where;
 		actorstart(ret, 0);
 	}
-	else if(ev->what == hex32('w','-',0,0))
-	{
-		ret = (void*)(ev->where);
-		arenastop(ret);
-	}
-	else if(ev->what == hex32('w','@',0,0))
-	{
-		if(ev->why == hex32('f','i','l','e'))
-		{
-			ret = (void*)(ev->where);
-			actorstart(ret, 0);
-		}
-		else say("%.*s\n", 8, ev);
-	}
+}
+
+
+
+
+void wmgr_create(void* addr)
+{
+	arena = addr + 0;
+	actor = addr + 0x100000;
+	style = addr + 0x200000;
 }

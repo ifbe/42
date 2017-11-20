@@ -17,23 +17,27 @@ void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot,
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
-void bgcolor(void*, u32);
-void carveaxis(void*);
 void select_1d(void*, void*);
 void select_2d(void*, void*);
 void select_3d(void*, void*);
+void bgcolor(void*, u32);
+void carveaxis(void*);
 //
-int input_explain(void*, void*);
+void win_add(u64 why, u64 where);
+void win_del(u64 why, u64 where);
+void win_at(u64 why, u64 where);
+void act_add();
+void act_del();
+void act_at(void*, void*);
+//
 void term_write(void*);
-void win_cfg(void*);
+int input_explain(void*, void*);
 
 
 
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
-static struct style* style = 0;
-static int stlen = 0;
 
 
 
@@ -143,7 +147,9 @@ int actorwrite(struct event* ev)
 	//
 	if(((ev->what)&0xff) == 'w')
 	{
-		win_cfg(ev);
+		if(ev->what == hex32('w','+',0,0))win_add(ev->why, ev->where);
+		else if(ev->what == hex32('w','-',0,0))win_del(ev->why, ev->where);
+		else if(ev->what == hex32('w','@',0,0))win_at(ev->why, ev->where);
 		return 0;
 	}
 
@@ -179,67 +185,61 @@ int actorlist(u8* p)
 {
 	//列出所有“人物”
 	int j;
-	int ret;
-	u64 type;
-	if(p == 0)
+	int ret = 0;
+	u64 type = 0;
+	for(j=0;j<0x100;j++)
 	{
-		ret = 0;
-		type = 0;
-		for(j=0;j<0x100;j++)
+		if(actor[j].type != type)
 		{
-			if(actor[j].type != type)
-			{
-				if(type != 0)say("\n");
+			if(type != 0)say("\n");
 
-				type = actor[j].type;
-				if(type == 0)break;
+			type = actor[j].type;
+			if(type == 0)break;
 
-				say("%.*s:\n", 8, &type);
-				ret=0;
-			}
-
-			if((ret>0)&&(ret%8==0))say("\n");
-			say("	%.*s", 8, &actor[j].name);
-
-			ret++;
+			say("%.*s:\n", 8, &type);
+			ret=0;
 		}
-		return 0;
-	}
 
-	else
-	{
-		//start searching
-		for(j=0;j<0x100;j++)
-		{
-			//all searched
-			if(actor[j].name == 0)return 0;
+		if((ret>0)&&(ret%8==0))say("\n");
+		say("	%.*s", 8, &actor[j].name);
 
-			//lookat this
-			//say("[%s][%s]\n",&actor[j].name, p);
-			ret = ncmp(&actor[j].name, p, 8);
-			if(ret == 0)return j;
-		}
-		return 0;
+		ret++;
 	}
+	return 0;
 }
-void actorchoose()
+void actorchoose(char* p)
 {
+	int j,ret;
+	u64 name;
+	char* q = (char*)&name;
+	for(j=0;j<8;j++)
+	{
+		if(p[j] > 0x20)q[j] = p[j];
+	}
+	for(;j<8;j++)q[j] = 0;
+
+	for(j=0;j<0x100;j++)
+	{
+		//all searched
+		if(actor[j].name == 0)return;
+
+		//lookat this
+		//say("[%s][%s]\n",&actor[j].name, p);
+		ret = ncmp(&actor[j].name, p, 8);
+		if(ret == 0)
+		{
+			actor[j].start();
+			act_at(&arena[1], &actor[j]);
+			return;
+		}
+	}
 }
 int actorstart(struct arena* win, struct actor* act)
 {
-	struct style* st;
-	st = (void*)style + stlen;
-	stlen += sizeof(struct style);
-	st->cx = 0x4000 + (getrandom()%0x1000)*8;
-	st->cy = 0x4000 + (getrandom()%0x1000)*8;
-	st->wantw = 0x8000;
-	st->wanth = 0x8000;
-	st->dim = 2;
-
 	if(act == 0)act = &actor[0];
 	act->start();
 
-	relation_write(win, st, __win__, act, 0, __act__);
+	act_at(win, act);
 }
 int actorstop(struct actor* act)
 {
@@ -255,7 +255,6 @@ void actorcreate(u8* type, u8* addr)
 	//where
 	arena = (void*)(addr+0);
 	actor = (void*)(addr+0x100000);
-	style = (void*)(addr+0x200000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -287,7 +286,6 @@ void actordelete()
 	lib2d_delete();
 	lib3d_delete();
 
-	style = 0;
 	actor = 0;
 	arena = 0;
 }

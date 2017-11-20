@@ -68,7 +68,7 @@ static void camera_write(struct event* ev)
 	else if(type=='v')
 	{
 		vision = (void*)key;
-		printmemory(vision+0xfff, 16);
+		//printmemory(vision+0xfff, 16);
 	}
 }
 

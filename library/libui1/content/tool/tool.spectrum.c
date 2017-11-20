@@ -64,7 +64,7 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 */
 	for(x=0;x<512;x++)
 	{
-		t = x * tau /512.0;
+		t = x * tau / 512.0;
 		cc = cosine(t) * 256;
 		ss = -sine(t) * 256;
 		drawline(win,
@@ -207,12 +207,12 @@ static void spectrum_stop()
 void spectrum_create(void* uibuf,void* addr)
 {
 	struct actor* p = addr;
-	pcmin=(void*)(uibuf+0x200000);
-	pcmout=(void*)(uibuf+0x280000);
-	real=(double*)(uibuf+0x300000);
-	imag=(double*)(uibuf+0x340000);
-	power=(double*)(uibuf+0x380000);
-	phase=(double*)(uibuf+0x3c0000);
+	pcmin=(void*)(uibuf+0x300000);
+	pcmout=(void*)(uibuf+0x340000);
+	real=(double*)(uibuf+0x380000);
+	imag=(double*)(uibuf+0x3a0000);
+	power=(double*)(uibuf+0x3c0000);
+	phase=(double*)(uibuf+0x3e0000);
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');

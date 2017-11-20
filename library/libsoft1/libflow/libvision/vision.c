@@ -10,9 +10,10 @@ void say(void*, ...);
 
 
 static int bb = 0;
-void vision_explain(u64* p)
+int vision_explain(u64* p)
 {
 	if(bb != 0)say("vision@%x\n",p[0]);
+	return 42;
 }
 
 

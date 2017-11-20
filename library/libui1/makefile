@@ -23,6 +23,7 @@ target:
 	$(compiler) $(cflag) content/test/test.color.c
 	$(compiler) $(cflag) content/test/test.doodle.c
 	$(compiler) $(cflag) content/test/test.font.c
+	$(compiler) $(cflag) content/test/test.fractal.c
 	$(compiler) $(cflag) content/test/test.pure.c
 	$(compiler) $(cflag) content/tool/tool.3dmodel.c
 	$(compiler) $(cflag) content/tool/tool.calculator.c
