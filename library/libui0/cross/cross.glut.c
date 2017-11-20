@@ -44,7 +44,8 @@ static int last_y = 0;
 //
 static GLuint vShader;
 static GLuint fShader;
-static GLuint programHandle;
+static GLuint programhandle;
+static GLuint picturehandle;
 //
 static GLuint vertexvbo;
 static GLuint normalvbo;
@@ -96,7 +97,9 @@ char vCode[] = {
 	"uniform vec3 ambientcolor;\n"
 	"uniform vec3 diffusecolor;\n"
 	"uniform vec3 diffuseplace;\n"
-	"uniform mat4 mvpmatrix;\n"
+	"uniform mat4 modviewprojmatrix;\n"
+	"uniform sampler2D texture0;\n"
+	"uniform sampler2D texture1;\n"
 	"void main()\n"
 	"{\n"
 		"vec3 N = normalize(normal);\n"
@@ -104,7 +107,7 @@ char vCode[] = {
 		"vec3 ambient = color * ambientcolor;\n"
 		"vec3 diffuse = color * diffusecolor * max(dot(S, N), 0.0);\n"
 		"vertexcolor = ambient + diffuse;\n"
-		"gl_Position = mvpmatrix * vec4(position,1.0);\n"
+		"gl_Position = modviewprojmatrix * vec4(position,1.0);\n"
 	"}\n"
 };
 char fCode[] = {
@@ -199,41 +202,42 @@ void initShader()
     }
   
     //4.着色器程序
-    programHandle = glCreateProgram();
-    if(!programHandle)
+    programhandle = glCreateProgram();
+    if(!programhandle)
     {
         printf("ERROR : create program failed");
         exit(1);
     }
 
     //将着色器程序链接到所创建的程序中
-    glAttachShader(programHandle,vShader);
-    glAttachShader(programHandle,fShader);
-    glLinkProgram(programHandle);
+    glAttachShader(programhandle,vShader);
+    glAttachShader(programhandle,fShader);
+    glLinkProgram(programhandle);
 
     //查询链接的结果
     GLint linkStatus;
-    glGetProgramiv(programHandle,GL_LINK_STATUS,&linkStatus);
+    glGetProgramiv(programhandle,GL_LINK_STATUS,&linkStatus);
     if(GL_FALSE == linkStatus)
     {
         printf("ERROR : link shader program failed");
         GLint logLen;
-        glGetProgramiv(programHandle,GL_INFO_LOG_LENGTH, &logLen);
+        glGetProgramiv(programhandle,GL_INFO_LOG_LENGTH, &logLen);
         if(logLen > 0)
         {
             char *log = (char *)malloc(logLen);
             GLsizei written;
-            glGetProgramInfoLog(programHandle,logLen, &written,log);
+            glGetProgramInfoLog(programhandle,logLen, &written,log);
             printf("Program log :%s\n", log);
         }
     }
     else	//链接成功，在OpenGL管线中使用渲染程序
     {
-        glUseProgram(programHandle);
+        glUseProgram(programhandle);
     }
 }
 void initVBO()  
 {
+	void* picture = (void*)(src->buf);
 	void* vertexxyz = (void*)(src->buf)+0x800000;
 	void* normalxyz = (void*)(src->buf)+0x900000;
 	void* colorrgb = (void*)(src->buf)+0xa00000;
@@ -246,6 +250,14 @@ void initVBO()
 
 
 
+
+	//[0]picture
+	glGenTextures(1, &picturehandle);
+	glBindTexture(GL_TEXTURE_2D, picturehandle);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     //[8]vertex
     glGenBuffers(1, &vertexvbo);
@@ -265,14 +277,6 @@ void initVBO()
     glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(2);
-
-	//[b]texture
-	glGenTextures(1, &texturevbo);
-	glBindTexture(GL_TEXTURE_2D, texturevbo);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
 	//[c]point
     glGenVertexArrays(1,&pointvao);
@@ -431,7 +435,7 @@ void fixmatrix()
 	matrixmultiply_4(temp, viewmatrix);
 	matrixmultiply_4(temp, projmatrix);
 
-	GLint mvp = glGetUniformLocation(programHandle, "mvpmatrix");
+	GLint mvp = glGetUniformLocation(programhandle, "modviewprojmatrix");
 	glUniformMatrix4fv(mvp, 1, GL_FALSE, temp);
 }
 void fixlight()
@@ -440,14 +444,21 @@ void fixlight()
 	GLfloat diffusecolor[3] = {1.0f, 1.0f, 1.0f};
 	GLfloat diffuseplace[3] = {0.0f, 0.0f, 10.0f};
 
-	GLint ac = glGetUniformLocation(programHandle, "ambientcolor");
+	GLint ac = glGetUniformLocation(programhandle, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
 
-	GLint dc = glGetUniformLocation(programHandle, "diffusecolor");
+	GLint dc = glGetUniformLocation(programhandle, "diffusecolor");
 	glUniform3fv(dc, 1, diffusecolor);
 
-	GLint dp = glGetUniformLocation(programHandle, "diffuseplace");
+	GLint dp = glGetUniformLocation(programhandle, "diffuseplace");
 	glUniform3fv(dp, 1, diffuseplace);
+}
+void fixtexture()
+{
+	//GLint t0 = glGetUniformLocation(u, "texture0");
+	//glUniform1i(t0, 0);
+	//GLint t1 = glGetUniformLocation(u, "texture0");
+	//glUniform1i(t1, 0);
 }
 void callback_display()
 {
@@ -458,21 +469,20 @@ void callback_display()
 	//...
 	fixmatrix();
 	fixlight();
+	fixtexture();
 
-	if(queuehead == queuetail)
-	{
-		glBindVertexArray(pointvao);
-		glDrawElements(GL_POINTS, src->info[12], GL_UNSIGNED_SHORT, 0);
+	//
+	glBindVertexArray(pointvao);
+	glDrawElements(GL_POINTS, src->info[12], GL_UNSIGNED_SHORT, 0);
 
-		glBindVertexArray(linevao);
-		glDrawElements(GL_LINES, src->info[13], GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(linevao);
+	glDrawElements(GL_LINES, src->info[13], GL_UNSIGNED_SHORT, 0);
 
-		glBindVertexArray(trianglevao);
-		glDrawElements(GL_TRIANGLES, src->info[14], GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(trianglevao);
+	glDrawElements(GL_TRIANGLES, src->info[14], GL_UNSIGNED_SHORT, 0);
 
-		glBindVertexArray(rectanglevao);
-		glDrawElements(GL_QUADS, src->info[15], GL_UNSIGNED_SHORT, 0);
-	}
+	glBindVertexArray(rectanglevao);
+	glDrawElements(GL_QUADS, src->info[15], GL_UNSIGNED_SHORT, 0);
 
 	//write
 	glFlush();
