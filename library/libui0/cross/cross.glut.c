@@ -62,9 +62,9 @@ static GLuint linevao;
 static GLuint trianglevao;
 static GLuint rectanglevao;
 //
-static float camera[3] = {1.0f, -2.0f, 1.0f};
-static float center[3] = {0.0f, 0.0f, 0.0f};
-static float above[3] = {0.0f, 0.0f, 1.0f};
+static float camera[4] = {1.0f, -2.0f, 1.0f};
+static float center[4] = {0.0f, 0.0f, 0.0f};
+static float above[4] = {0.0f, 0.0f, 1.0f};
 //
 static GLfloat modelmatrix[4*4] = {  
 	1.0f, 0.0f, 0.0f, 0.0f,
@@ -268,15 +268,11 @@ void initVBO()
     glGenBuffers(1, &normalvbo);
     glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
     glBufferData(GL_ARRAY_BUFFER, 0x100000, normalxyz, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
 
 	//[a]color
     glGenBuffers(1, &colorvbo);
     glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
     glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
 
 	//[c]point
     glGenVertexArrays(1,&pointvao);
