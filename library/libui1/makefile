@@ -18,8 +18,6 @@ target:
 	$(compiler) $(cflag) content/hack/hack.tree.c
 	$(compiler) $(cflag) content/hack/hack.joystick.c
 	$(compiler) $(cflag) content/hack/hack.keyboard.c
-	$(compiler) $(cflag) content/link/link.door.c
-	$(compiler) $(cflag) content/link/link.friend.c
 	$(compiler) $(cflag) content/test/test.color.c
 	$(compiler) $(cflag) content/test/test.doodle.c
 	$(compiler) $(cflag) content/test/test.font.c

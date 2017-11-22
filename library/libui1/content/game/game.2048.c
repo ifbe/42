@@ -14,13 +14,13 @@ void drawrect(
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
-void carverect(
+void carvesolid_rect(
 	void* win, u32 color,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz
 );
-void carveprism4(
+void carvesolid_prism4(
 	void* win, u32 color,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -69,7 +69,7 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 	float w = (float)(sty->wantw) / 65536.0;
 	float h = (float)(sty->wanth) / 65536.0;
 
-	carverect(
+	carvesolid_rect(
 		win, 0x444444,
 		cx, cy, 0.0,
 		w/2, 0.0, 0.0,
@@ -87,7 +87,7 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 			if(tab[y][x] == 0)zzz = 0.1/100.0;
 			else zzz = (float)tab[y][x]/100.0;
 
-			carveprism4(
+			carvesolid_prism4(
 				win, color,
 				xxx, yyy, zzz,
 				w/16, 0.0, 0.0,

@@ -6,7 +6,7 @@ void drawascii(
 void drawbyte(
 	void*, u8 ch, int size,
 	int x, int y, u32 fg, u32 bg);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
@@ -100,7 +100,7 @@ static void floatarea(struct arena* win)
 	thisy+=16;
 	if(thisx > width -xshift -256)thisx -= (256+16);
 	if(thisy >= height - 128)thisy -= (128+16);
-	drawrect_body(win,
+	drawsolid_rect(win,
 		xshift + thisx, thisy,
 		xshift + thisx+256, thisy+128,
 		0xffff

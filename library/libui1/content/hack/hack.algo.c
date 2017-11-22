@@ -3,11 +3,11 @@
 void drawstring(
 	void*, void* str, int size,
 	int x, int y, u32 fg, u32 bg);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void drawrect_frame(void*,
+void drawline_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
@@ -45,7 +45,7 @@ static void algorithm_read_html(struct arena* win)
 static void algorithm_read_pixel(struct arena* win)
 {
 	//top
-	drawrect_body(win,
+	drawsolid_rect(win,
 		(win->w)/16, (win->h)/16,
 		(win->w)*15/16, (win->h)*7/16,
 		0x40
@@ -56,19 +56,19 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//middle
-	drawrect_body(win,
+	drawsolid_rect(win,
 		(win->w)/16, (win->h)*7/16,
 		(win->w)*15/16, (win->h)*9/16,
 		0
 	);
-	drawrect_frame(win,
+	drawline_rect(win,
 		(win->w/4)+32, (win->h/2)-16,
 		(win->w*3/4)-32, (win->h/2)+16,
 		0xffffffff
 	);
 
 	//middle.left
-	drawrect_frame(win,
+	drawline_rect(win,
 		(win->w/4)-32, (win->h/2)-16,
 		(win->w/4)+32, (win->h/2)+16,
 		0xffffffff
@@ -79,7 +79,7 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//middle.right
-	drawrect_frame(win,
+	drawline_rect(win,
 		(win->w*3/4)-32, (win->h/2)-16,
 		(win->w*3/4)+32, (win->h/2)+16,
 		0xffffffff
@@ -90,7 +90,7 @@ static void algorithm_read_pixel(struct arena* win)
 	);
 
 	//bottom
-	drawrect_body(win,
+	drawsolid_rect(win,
 		(win->w)/16, (win->h)*9/16,
 		(win->w)*15/16, (win->h)*15/16,
 		0x400000

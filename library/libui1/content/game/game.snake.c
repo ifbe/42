@@ -1,5 +1,5 @@
 #include "actor.h"
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
@@ -43,7 +43,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	h = (win->h) * (rel->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
-	drawrect_body(win,
+	drawsolid_rect(win,
 		cx-w/2, cy-h/2,
 		cx+w/2, cy+h/2,
 		0x888888

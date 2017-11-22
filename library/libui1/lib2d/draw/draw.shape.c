@@ -63,7 +63,14 @@ void drawline(struct arena* win,
 
 
 
-void drawrect_frame(struct arena* win,
+void drawline_triangle(struct arena* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
+{
+	drawline(win, x1, y1, x2, y2, color);
+	drawline(win, x1, y1, x3, y3, color);
+	drawline(win, x2, y2, x3, y3, color);
+}
+void drawline_rect(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 color)
 {
 	int x,y,n;
@@ -117,76 +124,7 @@ void drawrect_frame(struct arena* win,
 		}
 	}
 }
-void drawrect_body(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 color)
-{
-	int x,y;
-	int width,height;
-	int startx,endx,starty,endy;
-	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-	color |= 0xff000000;
-
-	if(x1<=x2){startx=x1;endx=x2;}
-	else{startx=x2;endx=x1;}
-	if(startx < 0)startx = 0;
-	if(endx >= width)endx = width-1;
-
-	if(y1<=y2){starty=y1;endy=y2;}
-	else{starty=y2;endy=y1;}
-	if(starty < 0)starty = 0;
-	if(endy >= height)endy = height-1;
-
-	for(y=starty;y<=endy;y++)
-	{
-		for(x=startx;x<=endx;x++)
-		{
-			buf[ (y*width) + x ] = color;
-		}
-	}
-}
-void drawrect(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
-{
-	drawrect_body(win, x1, y1, x2, y2, bodycolor);
-	drawrect_frame(win, x1, y1, x2, y2, framecolor);
-}
-
-
-
-
-void drawtriangle_body(struct arena* win,
-	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
-{
-}
-void drawtriangle_frame(struct arena* win,
-	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
-{
-	drawline(win,
-	x1, y1, x2, y2, color);
-
-	drawline(win,
-	x1, y1, x3, y3, color);
-
-	drawline(win,
-	x2, y2, x3, y3, color);
-}
-void drawtriangle(struct arena* win,
-	int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
-{
-	drawtriangle_body(win,
-	x1, y1, x2, y2, x3, y3, bodycolor);
-
-	drawtriangle_frame(win,
-	x1, y1, x2, y2, x3, y3, framecolor);
-}
-
-
-
-
-void drawcircle_frame(struct arena* win,
+void drawline_circle(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -224,7 +162,77 @@ void drawcircle_frame(struct arena* win,
 		buf[ (y*width) + x2 ] = color;
 	}
 }
-void drawcircle_body(struct arena* win,
+void drawline_oval(struct arena* win,
+	int x1, int y1, int x2, int y2, u32 color)
+{
+}
+void drawline_sector(struct arena* win,
+	int cx, int cy, int radius, int start, int end, u32 color)
+{
+}
+void drawline_bezier(struct arena* win,
+	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
+{
+	int x,y,t;
+	int width;
+	int height;
+	u32* buf = (u32*)(win->buf);
+
+	width = win->w;
+	height = win->h;
+
+	for(t=0;t<1000;t++)
+	{
+		x = (1000-t)*(1000-t)*ax + 2*t*(1000-t)*cx + t*t*bx;
+		x /= 1000*1000;
+		if(x<0|x>=width)continue;
+
+		y = (1000-t)*(1000-t)*ay + 2*t*(1000-t)*cy + t*t*by;
+		y /= 1000*1000;
+		if(y<0|y>=height)continue;
+
+		buf[y*width + x] = 0xff00;
+	}
+}
+
+
+
+
+void drawsolid_triangle(struct arena* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 color)
+{
+}
+void drawsolid_rect(struct arena* win,
+	int x1, int y1, int x2, int y2, u32 color)
+{
+	int x,y;
+	int width,height;
+	int startx,endx,starty,endy;
+	u32* buf = (u32*)(win->buf);
+
+	width = win->w;
+	height = win->h;
+	color |= 0xff000000;
+
+	if(x1<=x2){startx=x1;endx=x2;}
+	else{startx=x2;endx=x1;}
+	if(startx < 0)startx = 0;
+	if(endx >= width)endx = width-1;
+
+	if(y1<=y2){starty=y1;endy=y2;}
+	else{starty=y2;endy=y1;}
+	if(starty < 0)starty = 0;
+	if(endy >= height)endy = height-1;
+
+	for(y=starty;y<=endy;y++)
+	{
+		for(x=startx;x<=endx;x++)
+		{
+			buf[ (y*width) + x ] = color;
+		}
+	}
+}
+void drawsolid_circle(struct arena* win,
 	int cx, int cy, int radius, u32 color)
 {
 	int ret;
@@ -264,81 +272,48 @@ void drawcircle_body(struct arena* win,
 		}
 	}
 }
+void drawsolid_oval(struct arena* win,
+	int x1, int y1, int x2, int y2, u32 color)
+{
+}
+void drawsolid_sector(struct arena* win,
+	int cx, int cy, int radius, int start, int end, u32 color)
+{
+}
+
+
+
+
+void drawtriangle(struct arena* win,
+	int x1, int y1, int x2, int y2, int x3, int y3, u32 bodycolor, u32 framecolor)
+{
+	drawsolid_triangle(win, x1, y1, x2, y2, x3, y3, bodycolor);
+	drawline_triangle(win, x1, y1, x2, y2, x3, y3, framecolor);
+}
+void drawrect(struct arena* win,
+	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
+{
+	drawsolid_rect(win, x1, y1, x2, y2, bodycolor);
+	drawline_rect(win, x1, y1, x2, y2, framecolor);
+}
 void drawcircle(struct arena* win,
 	int cx, int cy, int radius, u32 bg, u32 fg)
 {
-	drawcircle_body(win, cx, cy, radius, bg);
-	drawcircle_frame(win, cx, cy, radius, fg);
-}
-
-
-
-
-void drawoval_body(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 color)
-{
-}
-void drawoval_frame(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 color)
-{
+	drawsolid_circle(win, cx, cy, radius, bg);
+	drawline_circle(win, cx, cy, radius, fg);
 }
 void drawoval(struct arena* win,
 	int x1, int y1, int x2, int y2, u32 bodycolor, u32 framecolor)
 {
-	drawoval_body(win,
-	x1, y1, x2, y2, bodycolor);
-
-	drawoval_frame(win,
-	x1, y1, x2, y2, framecolor);
-}
-
-
-
-
-void drawsector_body(struct arena* win,
-	int cx, int cy, int radius, int start, int end, u32 color)
-{
-}
-void drawsector_frame(struct arena* win,
-	int cx, int cy, int radius, int start, int end, u32 color)
-{
+	drawsolid_oval(win, x1, y1, x2, y2, bodycolor);
+	drawline_oval(win, x1, y1, x2, y2, framecolor);
 }
 void drawsector(struct arena* win,
 	int cx, int cy, int radius, int start, int end, u32 bodycolor, u32 framecolor)
 {
+	drawsolid_sector(win, cx, cy, radius, start, end, bodycolor);
+	drawline_sector(win, cx, cy, radius, start, end, framecolor);
 }
-
-
-
-
-void drawbezier(struct arena* win,
-	int ax, int ay, int bx, int by, int cx, int cy, u32 color)
-{
-	int x,y,t;
-	int width;
-	int height;
-	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-
-	for(t=0;t<1000;t++)
-	{
-		x = (1000-t)*(1000-t)*ax + 2*t*(1000-t)*cx + t*t*bx;
-		x /= 1000*1000;
-		if(x<0|x>=width)continue;
-
-		y = (1000-t)*(1000-t)*ay + 2*t*(1000-t)*cy + t*t*by;
-		y /= 1000*1000;
-		if(y<0|y>=height)continue;
-
-		buf[y*width + x] = 0xff00;
-	}
-}
-
-
-
-
 void select_2d(struct arena* win, struct style* sty)
 {
 	int cx = (win->w) * (sty->cx) / 0x10000;
@@ -346,5 +321,5 @@ void select_2d(struct arena* win, struct style* sty)
 	int w2 = (win->w) * (sty->wantw) / 0x20000;
 	int h2 = (win->h) * (sty->wanth) / 0x20000;
 
-	drawrect_frame(win, cx-w2, cy-h2, cx+w2, cy+h2, 0xff00ff);
+	drawline_rect(win, cx-w2, cy-h2, cx+w2, cy+h2, 0xff00ff);
 }

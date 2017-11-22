@@ -1,4 +1,5 @@
 #include "actor.h"
+#define accuracy 18
 #define PI 3.1415926535897932384626433832795028841971693993151
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
@@ -17,11 +18,11 @@ double sine(double);
 
 
 //正3棱柱
-void carveprism3()
+void carvesolid_prism3()
 {
 }
 //正4棱柱
-void carveprism4(
+void carvesolid_prism4(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -192,19 +193,19 @@ void carveprism4(
 	index[35] = pcount + 7;
 }
 //正5棱柱
-void carveprism5()
+void carvesolid_prism5()
 {
 }
 //正6棱柱
-void carveprism6()
+void carvesolid_prism6()
 {
 }
 //圆柱
-void carvecask(
+void carvesolid_cask(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,	//center xyz
-	float rx, float ry, float rz,	//radius = |rvector|
-	float ux, float uy, float uz)	//height = |uvector|
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 	int a,b,j,k;
 	float s,t;
@@ -227,19 +228,19 @@ void carvecask(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xe00000 + (icount*2);
 
-	win->info[8] += 64;
-	win->info[9] += 64;
-	win->info[10] += 64;
-	win->info[14] += 32*3*2;
+	win->info[8] += accuracy*2;
+	win->info[9] += accuracy*2;
+	win->info[10] += accuracy*2;
+	win->info[14] += accuracy*3*2;
 
-	for(j=0;j<32;j++)
+	for(j=0;j<accuracy;j++)
 	{
 		v[0] = ux;
 		v[1] = uy;
 		v[2] = uz;
 		vectornormalize(v);
 
-		t = j*PI/16.0;
+		t = j*PI/accuracy;
 		v[0] *= sine(t);
 		v[1] *= sine(t);
 		v[2] *= sine(t);
@@ -274,20 +275,20 @@ void carvecask(
 		color[a+5] = bb;
 
 		index[a+0] = pcount + j*2;
-		index[a+1] = pcount + ((j+1)%32)*2;
+		index[a+1] = pcount + ((j+1)%accuracy)*2;
 		index[a+2] = pcount + 1 + j*2;
 
-		index[a+3] = pcount + 1 + ((j+1)%32)*2;
-		index[a+4] = pcount + ((j+1)%32)*2;
+		index[a+3] = pcount + 1 + ((j+1)%accuracy)*2;
+		index[a+4] = pcount + ((j+1)%accuracy)*2;
 		index[a+5] = pcount + 1 + j*2;
 	}
 }
 //圆柱
-void carvecylinder(
+void carvesolid_cylinder(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,	//center xyz
-	float rx, float ry, float rz,	//radius = |rvector|
-	float ux, float uy, float uz)	//height = |uvector|
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 	int a,b,j,k;
 	float s,t;
@@ -310,19 +311,19 @@ void carvecylinder(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xe00000 + (icount*2);
 
-	win->info[8] += 64+2;
-	win->info[9] += 64+2;
-	win->info[10] += 64+2;
-	win->info[14] += 32*3*2 + 32*3;
+	win->info[8] += accuracy*2+2;
+	win->info[9] += accuracy*2+2;
+	win->info[10] += accuracy*2+2;
+	win->info[14] += accuracy*3*2 + accuracy*3*2;
 
-	for(j=0;j<32;j++)
+	for(j=0;j<accuracy;j++)
 	{
 		v[0] = ux;
 		v[1] = uy;
 		v[2] = uz;
 		vectornormalize(v);
 
-		t = j*PI/16.0;
+		t = j*PI/accuracy;
 		v[0] *= sine(t);
 		v[1] *= sine(t);
 		v[2] *= sine(t);
@@ -357,16 +358,16 @@ void carvecylinder(
 		color[a+5] = bb;
 
 		index[a+0] = pcount + j*2;
-		index[a+1] = pcount + ((j+1)%32)*2;
+		index[a+1] = pcount + ((j+1)%accuracy)*2;
 		index[a+2] = pcount + 1 + j*2;
 
-		index[a+3] = pcount + 1 + ((j+1)%32)*2;
-		index[a+4] = pcount + ((j+1)%32)*2;
+		index[a+3] = pcount + 1 + ((j+1)%accuracy)*2;
+		index[a+4] = pcount + ((j+1)%accuracy)*2;
 		index[a+5] = pcount + 1 + j*2;
 	}
 
-	a = 32*3*2;
-	b = 32*3*2;
+	a = accuracy*3*2;
+	b = accuracy*3*2;
 
 	vertex[a+0] = cx-ux;
 	vertex[a+1] = cy-uy;
@@ -389,15 +390,15 @@ void carvecylinder(
 	color[a+4] = gg;
 	color[a+5] = bb;
 
-	for(j=0;j<32;j++)
+	for(j=0;j<accuracy;j++)
 	{
-		index[b + (j*6) + 0] = pcount + 64;
+		index[b + (j*6) + 0] = pcount + accuracy*2;
 		index[b + (j*6) + 1] = pcount + (j*2);
-		index[b + (j*6) + 2] = pcount + ((j+1)%32)*2;
+		index[b + (j*6) + 2] = pcount + ((j+1)%accuracy)*2;
 
-		index[b + (j*6) + 3] = pcount + 65;
+		index[b + (j*6) + 3] = pcount + accuracy*2 + 1;
 		index[b + (j*6) + 4] = pcount + 1 + (j*2);
-		index[b + (j*6) + 5] = pcount + 1 + ((j+1)%32)*2;
+		index[b + (j*6) + 5] = pcount + 1 + ((j+1)%accuracy)*2;
 	}
 }
 
@@ -405,23 +406,23 @@ void carvecylinder(
 
 
 //正3棱锥
-void carvepyramid3()
+void carvesolid_pyramid3()
 {
 }
 //正4棱锥
-void carvepyramid4()
+void carvesolid_pyramid4()
 {
 }
 //正5棱锥
-void carvepyramid5()
+void carvesolid_pyramid5()
 {
 }
 //正6棱锥
-void carvepyramid6()
+void carvesolid_pyramid6()
 {
 }
 //圆锥
-void carvecone(
+void carvesolid_cone(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz,	//radius = |rvector|
@@ -433,23 +434,23 @@ void carvecone(
 
 
 //正4面体
-void carvetetrahedron()
+void carvesolid_tetrahedron()
 {
 }
 //正8面体
-void carveoctahedron()
+void carvesolid_octahedron()
 {
 }
 //正12面体
-void cavedodecahedron()
+void cavesolid_dodecahedron()
 {
 }
 //正20面体
-void carveicosahedron()
+void carvesolid_icosahedron()
 {
 }
 //球体
-void carvesphere(
+void carvesolid_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -477,14 +478,14 @@ void carvesphere(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xe00000 + (icount*2);
 
-	win->info[8] += 36*17+2;
-	win->info[9] += 36*17+2;
-	win->info[10] += 36*17+2;
-	win->info[14] += 36*16*6 + 36*3*2;
+	win->info[8] += accuracy*17+2;
+	win->info[9] += accuracy*17+2;
+	win->info[10] += accuracy*17+2;
+	win->info[14] += accuracy*16*6 + accuracy*3*2;
 
-	for(k=-8;k<9;k++)
+	for(k=0;k<17;k++)
 	{
-		s = k*PI/18.0;
+		s = (k-8)*PI/18;
 		t = cosine(s);
 		temprx = rx*t;
 		tempry = ry*t;
@@ -495,20 +496,20 @@ void carvesphere(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=-18;j<18;j++)
+		for(j=0;j<accuracy;j++)
 		{
 			v[0] = ux;
 			v[1] = uy;
 			v[2] = uz;
 			vectornormalize(v);
 
-			t = j*PI/18.0;
+			t = (j-accuracy/2)*PI/accuracy;
 			v[0] *= sine(t);
 			v[1] *= sine(t);
 			v[2] *= sine(t);
 			v[3] = cosine(t);
 
-			a = ((k+8)*36 + (j+18))*3;
+			a = (k*accuracy + j)*3;
 
 			vertex[a+0] = temprx;
 			vertex[a+1] = tempry;
@@ -530,22 +531,22 @@ void carvesphere(
 	}
 	for(k=0;k<16;k++)
 	{
-		a = k*36*6;
-		for(j=0;j<36;j++)
+		a = k*accuracy*6;
+		for(j=0;j<accuracy;j++)
 		{
-			index[a + 6*j + 0] = pcount+(k*36)+j;
-			index[a + 6*j + 1] = pcount+(k*36)+(j+1)%36;
-			index[a + 6*j + 2] = pcount+(k*36)+36+j;
+			index[a + 6*j + 0] = pcount+(k*accuracy)+j;
+			index[a + 6*j + 1] = pcount+(k*accuracy)+(j+1)%accuracy;
+			index[a + 6*j + 2] = pcount+(k*accuracy)+accuracy+j;
 
-			index[a + 6*j + 3] = pcount+(k*36)+(j+1)%36;
-			index[a + 6*j + 4] = pcount+(k*36)+36+j;
-			index[a + 6*j + 5] = pcount+(k*36)+36+(j+1)%36;
+			index[a + 6*j + 3] = pcount+(k*accuracy)+(j+1)%accuracy;
+			index[a + 6*j + 4] = pcount+(k*accuracy)+accuracy+j;
+			index[a + 6*j + 5] = pcount+(k*accuracy)+accuracy+(j+1)%accuracy;
 		}
 	}
 
 	//
-	a = 36*17*3;
-	b = 36*16*6;
+	a = accuracy*17*3;
+	b = accuracy*16*6;
 
 	vertex[a+0] = cx-ux;
 	vertex[a+1] = cy-uy;
@@ -568,14 +569,14 @@ void carvesphere(
 	color[a+4] = gg;
 	color[a+5] = bb;
 
-	for(j=0;j<36;j++)
+	for(j=0;j<accuracy;j++)
 	{
-		index[b + (3*j) +0] = pcount+36*17;
+		index[b + (3*j) +0] = pcount+accuracy*17;
 		index[b + (3*j) +1] = pcount+j;
-		index[b + (3*j) +2] = pcount+(j+1)%36;
+		index[b + (3*j) +2] = pcount+(j+1)%accuracy;
 
-		index[b + (3*j) +(36*3) + 0] = pcount+36*17+1;
-		index[b + (3*j) +(36*3) + 1] = pcount+36*16+j;
-		index[b + (3*j) +(36*3) + 2] = pcount+36*16+(j+1)%36;
+		index[b + (3*j) +(accuracy*3) + 0] = pcount+accuracy*17+1;
+		index[b + (3*j) +(accuracy*3) + 1] = pcount+accuracy*16+j;
+		index[b + (3*j) +(accuracy*3) + 2] = pcount+accuracy*16+(j+1)%accuracy;
 	}
 }

@@ -1,14 +1,9 @@
 #include "actor.h"
 void sudoku_solve(void*, void*);
-
-
-
-
-//
 void drawdecimal(
 	void*, int data, int size,
 	int x, int y, u32 fg, u32 bg);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
@@ -101,22 +96,22 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 			}
 		}
 	}
-	drawrect_body(win,
+	drawsolid_rect(win,
 		0, (h/3)-2,
 		w, (h/3)+2,
 		0
 	);
-	drawrect_body(win,
+	drawsolid_rect(win,
 		0, (h*2/3)-2,
 		w, (h*2/3)+2,
 		0
 	);
-	drawrect_body(win,
+	drawsolid_rect(win,
 		(w/3)-2, 0,
 		(w/3)+2, h,
 		0
 	);
-	drawrect_body(win,
+	drawsolid_rect(win,
 		(w*2/3)-2, 0,
 		(w*2/3)+2, h,
 		0

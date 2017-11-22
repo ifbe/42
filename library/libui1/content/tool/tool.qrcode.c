@@ -1,9 +1,6 @@
 #include "actor.h"
 int qrcode_generate(char* src,char* dst,int sidelength);
-void drawrect_body(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
+void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
 
 
 
@@ -36,7 +33,7 @@ static void qrcode_read_pixel(struct arena* win)
 			if( databuf[(y*sidelength)+x] == 0 )color=0;
 			else color=0xffffffff;
 //say("%d",databuf[(y*sidelength)+x]);
-			drawrect_body(win,
+			drawsolid_rect(win,
 				x1, y1,
 				x2, y2,
 				color

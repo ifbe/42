@@ -9,7 +9,7 @@ void drawrect(
 	int x1, int y1,
 	int x2, int y2,
 	u32 bc, u32 fc);
-void carverect(
+void carvesolid_rect(
 	void* win, u32 color,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -44,7 +44,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 		for(x=0;x<3;x++)
 		{
 			//l
-			carverect(
+			carvesolid_rect(
 				win, 0xff00,
 				cx-w/2, cy-(x-1)*h/3, (y-1)*h/3,
 				0.0, -w/7, 0.0,
@@ -52,7 +52,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			);
 
 			//r
-			carverect(
+			carvesolid_rect(
 				win, 0xff,
 				cx+w/2, cy+(x-1)*h/3, (y-1)*h/3,
 				0.0, w/7, 0.0,
@@ -66,7 +66,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 		for(x=0;x<3;x++)
 		{
 			//f
-			carverect(
+			carvesolid_rect(
 				win, 0xff0000,
 				cx+(x-1)*w/3, cy-h/2, (y-1)*h/3,
 				w/7, 0.0, 0.0,
@@ -74,7 +74,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			);
 
 			//b
-			carverect(
+			carvesolid_rect(
 				win, 0xfa8010,
 				cx-(x-1)*w/3, cy+h/2, (y-1)*h/3,
 				-w/7, 0.0, 0.0,
@@ -88,7 +88,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 		for(x=0;x<3;x++)
 		{
 			//u
-			carverect(
+			carvesolid_rect(
 				win, 0xffffff,
 				cx+(x-1)*w/3, cy+(y-1)*h/3, d/2,
 				w/7, 0.0, 0.0,
@@ -96,7 +96,7 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			);
 
 			//d
-			carverect(
+			carvesolid_rect(
 				win, 0xffff00,
 				cx+(x-1)*w/3, cy+(y-1)*h/3, -d/2,
 				w/7, 0.0, 0.0,

@@ -1,11 +1,11 @@
 #include "actor.h" 
-void drawline(void*,
-	int x1,int y1,
-	int x2,int y2,
-	u32 color);
-void drawcircle_frame(void*,
-	int x, int y,
-	int r, u32 color);
+void drawline(void*, int x1,int y1, int x2,int y2, u32 color);
+void drawline_circle(void*, int x, int y, int r, u32 color);
+void carvesolid_sphere(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz);
 
 
 
@@ -16,6 +16,20 @@ static char data[9];
 
 
 
+void ooxx_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+{
+	float cx = (float)(rel->cx) / 65536.0 - 0.5;
+	float cy = (float)(rel->cy) / 65536.0 - 0.5;
+	float w = (float)(rel->wantw) / 65536.0;
+	float h = (float)(rel->wanth) / 65536.0;
+
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		w/2, 0.0, 0.0,
+		0.0, 0.0, w/2
+	);
+}
 void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
@@ -54,7 +68,7 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 		{
 			if(data[3*y + x] == 'o')
 			{
-				drawcircle_frame(win,
+				drawline_circle(win,
 					cx+(x-1)*w/3,
 					cy+(y-1)*h/3,
 					w/12,
@@ -79,7 +93,11 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 }
 static void ooxx_read(struct arena* win, struct actor* act, struct style* rel)
 {
-	ooxx_read_pixel(win, act, rel);
+	//vbo
+	if(win->fmt == hex32('v','b','o',0))ooxx_read_vbo(win, act, rel);
+
+	//pixel
+	else ooxx_read_pixel(win, act, rel);
 }
 
 

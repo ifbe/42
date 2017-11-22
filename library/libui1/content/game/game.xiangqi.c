@@ -1,9 +1,9 @@
 #include "actor.h"
 void drawline(void*,
 	int x1,int y1,int x2,int y2, u32 color);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void drawcircle_body(void*,
+void drawsolid_circle(void*,
 	int x, int y, int r, u32 color);
 void drawascii(
 	void*, u8 data, int size,
@@ -183,7 +183,7 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
-	drawrect_body(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, temp);
+	drawsolid_rect(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, temp);
 
 	//heng
 	for(y=-5;y<5;y++)
@@ -241,7 +241,7 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
-			drawcircle_body(win,
+			drawsolid_circle(win,
 				cx + (2*x-8)*half,
 				cy + (2*y-9)*half,
 				half,

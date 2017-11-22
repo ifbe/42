@@ -129,78 +129,28 @@ void actorread();
 void actorwrite();
 
 void background1(struct window* win);
-void backgroundcolor(struct window* win,
-	u32 color);
+void backgroundcolor(struct window* win, u32 color);
 
-void line(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void radial(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
+void drawline(struct window* win, int x1, int y1, int x2, int y2, u32 color);
+void drawline_triangle(struct window* win, int x1, int y1, int x2, int y2, int x3, int y3, u32 body, u32 frame);
+void drawline_rect(struct window* win, int x1, int y1, int x2, int y2, u32 frame);
+void drawline_circle(struct window* win, int x, int y, int r, u32 frame);
 
-void circlebody(struct window* win,
-	int x, int y,
-	int r, u32 body);
-void circleframe(struct window* win,
-	int x, int y,
-	int r, u32 frame);
-void circle(struct window* win,
-	int x, int y,
-	int r, u32 body, u32 frame);
+void drawsolid_triangle(struct window* win, int x1, int y1, int x2, int y2, int x3, int y3, u32 body, u32 frame);
+void drawsolid_rect(struct window* win, int x1, int y1, int x2, int y2, u32 body);
+void drawsolid_circle(struct window* win, int x, int y, int r, u32 body);
 
-void rectbody(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body);
-void rectframe(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 frame);
-void rect(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
+void drawtriangle(struct window* win, int x1, int y1, int x2, int y2, int x3, int y3, u32 body, u32 frame);
+void drawrect(struct window* win, int x1, int y1, int x2, int y2, u32 body, u32 frame);
+void drawcircle(struct window* win, int x, int y, int r, u32 body, u32 frame);
 
-void trianglebody(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
-void triangleframe(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
-void triangle(struct window* win,
-	int x1, int y1,
-	int x2, int y2,
-	int x3, int y3,
-	u32 body, u32 frame);
-
-void printascii(
-	struct window* win, char ch, int size,
-	int x, int y, u32 fg, u32 bg);
-void printbyte(
-	struct window* win, char ch,  int size,
-	int x, int y, u32 fg, u32 bg);
-void printstring(
-	struct window* win, char* s, int size,
-	int x, int y, u32 fg, u32 bg);
-void printdecimal(
-	struct window* win, u64 dat, int size,
-	int x, int y, u32 fg, u32 bg);
-void printhexadecimal(
-	struct window* win, u64 dat, int size,
-	int x, int y, u32 fg, u32 bg);
-void printfloat(
-	struct window* win, float dat, int size,
-	int x, int y, u32 fg, u32 bg);
-void printdouble(
-	struct window* win, double dat, int size,
-	int x, int y, u32 fg, u32 bg);
+void drawascii(struct window* win, char ch, int size, int x, int y, u32 fg, u32 bg);
+void drawbyte(struct window* win, char ch,  int size, int x, int y, u32 fg, u32 bg);
+void drawstring(struct window* win, char* s, int size, int x, int y, u32 fg, u32 bg);
+void drawdecimal(struct window* win, u64 dat, int size, int x, int y, u32 fg, u32 bg);
+void drawhexadecimal(struct window* win, u64 dat, int size, int x, int y, u32 fg, u32 bg);
+void drawfloat(struct window* win, float dat, int size, int x, int y, u32 fg, u32 bg);
+void drawdouble(struct window* win, double dat, int size, int x, int y, u32 fg, u32 bg);
 
 //libui0
 void arenacreate(void*, void*);

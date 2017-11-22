@@ -2,9 +2,9 @@
 //
 void drawline(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1, int x2, int y2, u32 color);
-void drawcircle_body(void*,
+void drawsolid_circle(void*,
 	int x, int y, int r, u32 color);
 
 
@@ -73,7 +73,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	//rgb? bgr?
 	if( ((win->fmt)&0xffffff) == 0x626772)color = 0x256f8d;
 	else color = 0x8d6f25;
-	drawrect_body(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, color);
+	drawsolid_rect(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, color);
 
 	//heng
 	for(y=-9;y<10;y++)
@@ -96,7 +96,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
 		{
-			drawcircle_body(win,
+			drawsolid_circle(win,
 				x, y,
 				half/4, 0
 			);
@@ -112,7 +112,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffff;
 			else continue;
 
-			drawcircle_body(win,
+			drawsolid_circle(win,
 				cx + half*2*x,
 				cy + half*2*y,
 				half,

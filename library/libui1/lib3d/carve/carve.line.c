@@ -1,4 +1,5 @@
 #include "actor.h"
+#define accuracy 18
 #define PI 3.1415926535897932384626433832795028841971693993151
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
@@ -66,7 +67,7 @@ void carveline(
 	index[0] = pcount;
 	index[1] = pcount+1;
 }
-void carvetriangle_frame(
+void carveline_triangle(
 	struct arena* win, u32 rgb,
 	float x1, float y1, float z1,
 	float x2, float y2, float z2,
@@ -130,7 +131,7 @@ void carvetriangle_frame(
 	index[4] = pcount;
 	index[5] = pcount+2;
 }
-void carverect_frame(
+void carveline_rect(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -208,7 +209,7 @@ void carverect_frame(
 	index[6] = pcount+0;
 	index[7] = pcount+2;
 }
-void carvecircle_frame(
+void carveline_circle(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -216,7 +217,7 @@ void carvecircle_frame(
 {
 	int j;
 	float t;
-	float v[4];
+	float q[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -234,28 +235,28 @@ void carvecircle_frame(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xd00000 + (icount*2);
 
-	win->info[8] += 36;
-	win->info[9] += 36;
-	win->info[10] += 36;
-	win->info[13] += 72;
+	win->info[8] += accuracy;
+	win->info[9] += accuracy;
+	win->info[10] += accuracy;
+	win->info[13] += accuracy*2;
 
-	for(j=0;j<36;j++)
+	for(j=0;j<accuracy;j++)
 	{
-		v[0] = ux;
-		v[1] = uy;
-		v[2] = uz;
-		vectornormalize(v);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		vectornormalize(q);
 
-		t = j*PI/18.0;
-		v[0] *= sine(t);
-		v[1] *= sine(t);
-		v[2] *= sine(t);
-		v[3] = cosine(t);
+		t = j*PI/accuracy;
+		q[0] *= sine(t);
+		q[1] *= sine(t);
+		q[2] *= sine(t);
+		q[3] = cosine(t);
 
 		vertex[(j*3)+0] = rx;
 		vertex[(j*3)+1] = ry;
 		vertex[(j*3)+2] = rz;
-		quaternionrotate(&vertex[j*3], v);
+		quaternionrotate(&vertex[j*3], q);
 
 		vertex[(j*3)+0] += cx;
 		vertex[(j*3)+1] += cy;
@@ -270,15 +271,17 @@ void carvecircle_frame(
 		color[(j*3)+2] = bb;
 
 		index[(j*2)+0] = pcount+j;
-		index[(j*2)+1] = pcount+j+1;
+		index[(j*2)+1] = pcount+(j+1)%accuracy;
 	}
-	index[71] = pcount;
 }
 
 
 
 
-void carveprism4_frame(
+void carveline_prism3()
+{
+}
+void carveline_prism4(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -432,7 +435,7 @@ void carveprism4_frame(
 	index[22] = pcount+7;
 	index[23] = pcount+6;
 }
-void carvecylinder_frame(
+void carveline_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -459,19 +462,19 @@ void carvecylinder_frame(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xd00000 + (icount*2);
 
-	win->info[8] += 64;
-	win->info[9] += 64;
-	win->info[10] += 64;
-	win->info[13] += 32*6;
+	win->info[8] += accuracy*2;
+	win->info[9] += accuracy*2;
+	win->info[10] += accuracy*2;
+	win->info[13] += accuracy*6;
 
-	for(j=0;j<32;j++)
+	for(j=0;j<accuracy;j++)
 	{
 		v[0] = ux;
 		v[1] = uy;
 		v[2] = uz;
 		vectornormalize(v);
 
-		t = j*PI/16.0;
+		t = j*PI/accuracy;
 		v[0] *= sine(t);
 		v[1] *= sine(t);
 		v[2] *= sine(t);
@@ -506,10 +509,10 @@ void carvecylinder_frame(
 		color[a+5] = bb;
 
 		index[a+0] = pcount + j*2;
-		index[a+1] = pcount + ((j+1)%32)*2;
+		index[a+1] = pcount + ((j+1)%accuracy)*2;
 
 		index[a+2] = pcount + 1 + j*2;
-		index[a+3] = pcount + 1 + ((j+1)%32)*2;
+		index[a+3] = pcount + 1 + ((j+1)%accuracy)*2;
 
 		index[a+4] = pcount + j*2;
 		index[a+5] = pcount + 1 + j*2;
@@ -519,7 +522,7 @@ void carvecylinder_frame(
 
 
 
-void carvesphere_frame(
+void carveline_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -547,14 +550,14 @@ void carvesphere_frame(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xd00000 + (icount*2);
 
-	win->info[8] += 36*17+2;
-	win->info[9] += 36*17+2;
-	win->info[10] += 36*17+2;
-	win->info[13] += 72*17+36*32+36*4;
+	win->info[8] += accuracy*17+2;
+	win->info[9] += accuracy*17+2;
+	win->info[10] += accuracy*17+2;
+	win->info[13] += accuracy*17*2+accuracy*32+accuracy*4;
 
-	for(k=-8;k<9;k++)
+	for(k=0;k<17;k++)
 	{
-		s = k*PI/18.0;
+		s = (k-8)*PI/18;
 		t = cosine(s);
 		temprx = rx*t;
 		tempry = ry*t;
@@ -565,21 +568,21 @@ void carvesphere_frame(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=-18;j<18;j++)
+		for(j=0;j<accuracy;j++)
 		{
 			v[0] = ux;
 			v[1] = uy;
 			v[2] = uz;
 			vectornormalize(v);
 
-			t = j*PI/18.0;
+			t = (j-(accuracy/2))*PI/accuracy;
 			v[0] *= sine(t);
 			v[1] *= sine(t);
 			v[2] *= sine(t);
 			v[3] = cosine(t);
 
-			a = ((k+8)*36 + (j+18))*3;
-			b = ((k+8)*36 + (j+18))*2;
+			a = (k*accuracy + j)*3;
+			b = (k*accuracy + j)*2;
 
 			vertex[a+0] = temprx;
 			vertex[a+1] = tempry;
@@ -598,23 +601,23 @@ void carvesphere_frame(
 			color[a+1] = gg;
 			color[a+2] = bb;
 
-			index[b+0] = pcount+((k+8)*36)+(j+18);
-			index[b+1] = pcount+((k+8)*36)+((j+18)+1)%36;
+			index[b+0] = pcount+(k*accuracy)+j;
+			index[b+1] = pcount+(k*accuracy)+(j+1)%accuracy;
 		}
 	}
-	for(k=0;k<36;k++)
+	for(k=0;k<accuracy;k++)
 	{
-		a = 72*17 + k*32;
+		a = accuracy*17*2 + k*32;
 		for(j=0;j<16;j++)
 		{
-			index[a + 2*j + 0] = pcount+k+(j*36);
-			index[a + 2*j + 1] = pcount+k+(j*36)+36;
+			index[a + 2*j + 0] = pcount+k+(j*accuracy);
+			index[a + 2*j + 1] = pcount+k+(j*accuracy)+accuracy;
 		}
 	}
 
 	//
-	a = 36*17*3;
-	b = 72*17+36*32;
+	a = accuracy*17*3;
+	b = accuracy*17*2+accuracy*32;
 
 	vertex[a+0] = cx-ux;
 	vertex[a+1] = cy-uy;
@@ -637,20 +640,20 @@ void carvesphere_frame(
 	color[a+4] = gg;
 	color[a+5] = bb;
 
-	for(j=0;j<36;j++)
+	for(j=0;j<accuracy;j++)
 	{
-		index[b + 2*j +0] = pcount+36*17;
+		index[b + 2*j +0] = pcount+accuracy*17;
 		index[b + 2*j +1] = pcount+j;
 
-		index[b + 2*j +72] = pcount+36*17+1;
-		index[b + 2*j +73] = pcount+36*16+j;
+		index[b + 2*j + accuracy*2 + 0] = pcount+accuracy*17+1;
+		index[b + 2*j + accuracy*2 + 1] = pcount+accuracy*16+j;
 	}
 }
 
 
 
 
-void carvebezier(
+void carveline_bezier(
 	struct arena* win, u32 rgb,
 	float x1, float y1, float z1,
 	float x2, float y2, float z2,
@@ -681,7 +684,7 @@ void select_3d(struct arena* win, struct style* sty)
 	float h = (float)(sty->wanth) / 65536.0;
 	float d = (w+h)/2;
 
-	carveprism4_frame(
+	carveline_prism4(
 		win, 0xff0000,
 		cx, cy, d/2,
 		w/2, 0.0, 0.0,

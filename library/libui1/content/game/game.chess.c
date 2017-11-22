@@ -2,11 +2,11 @@
 void drawascii(
 	void* win, u8 data, int size,
 	int x, int y, u32 fg, u32 bg);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void carveprism4(
+void carvesolid_prism4(
 	void* win, u32 color,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -38,10 +38,10 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		for(x=0;x<8;x++)
 		{
-			if(((x+y+32)%2) == 0)color = 0;
+			if(((x+y+32)%2) != 0)color = 0x111111;
 			else color = 0xffffff;
 
-			drawrect_body(win,
+			drawsolid_rect(win,
 				cx+(x-4)*w, cy+(y-4)*h,
 				cx+(x-3)*w, cy+(y-3)*h,
 				color
@@ -71,17 +71,17 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* r
 	{
 		for(x=0;x<8;x++)
 		{
-			if(((x+y+32)%2) == 0)color = 0;
+			if(((x+y+32)%2) != 0)color = 0x111111;
 			else color = 0xffffff;
 
 			xxx = cx + (x+x-7)*w/16;
 			yyy = cy - (y+y-7)*h/16;
-			carveprism4(
+			carvesolid_prism4(
 				win, color,
-				xxx, yyy, 0.01,
-				w/32, 0.0, 0.0,
-				0.0, h/32, 0.0,
-				0.0, 0.0, 0.01
+				xxx, yyy, 0.0,
+				w/16, 0.0, 0.0,
+				0.0, h/16, 0.0,
+				0.0, 0.0, 0.0
 			);
 		}
 	}
@@ -95,10 +95,10 @@ static void chess_read_text(struct arena* win, struct actor* act, struct style* 
 static void chess_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	//text 
-	if(win->fmt == 0x74786574)chess_read_text(win, act, rel);
+	if(win->fmt == hex32('t','e','x','t'))chess_read_text(win, act, rel);
 
 	//html
-	else if(win->fmt == 0x6c6d7468)chess_read_html(win, act, rel);
+	else if(win->fmt == hex32('h','t','m','l'))chess_read_html(win, act, rel);
 
 	//vbo
 	else if(win->fmt == hex32('v','b','o',0))chess_read_vbo(win, act, rel);
@@ -108,7 +108,7 @@ static void chess_read(struct arena* win, struct actor* act, struct style* rel)
 }
 static void chess_write(struct event* ev)
 {
-	say("@chess:%x,%x\n", ev->why, ev->what);
+	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
 
 

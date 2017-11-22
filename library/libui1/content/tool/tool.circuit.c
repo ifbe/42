@@ -3,11 +3,11 @@ void drawline(void*,
 	int x1,int y1,
 	int x2,int y2,
 	u32 color);
-void drawrect_body(void*,
+void drawsolid_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
-void drawrect_frame(void*,
+void drawline_rect(void*,
 	int x1, int y1,
 	int x2, int y2,
 	u32 color);
@@ -72,7 +72,7 @@ static void circuit_read_pixel_battery(struct arena* win, int x, int y)
 }
 static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 {
-	drawrect_frame(win, x-4, y-8, x+4, y+8, 0xffffffff);
+	drawline_rect(win, x-4, y-8, x+4, y+8, 0xffffffff);
 }
 static void circuit_read_pixel_element(struct arena* win, struct wirenet* this, int x, int y)
 {
@@ -197,7 +197,7 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct styl
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	drawrect_body(win,
+	drawsolid_rect(win,
 		cx-w/2, cy-h/2,
 		cx+w/2, cy+h/2,
 		0

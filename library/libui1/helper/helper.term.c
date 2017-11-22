@@ -53,10 +53,6 @@ void term_read(u8* buf)
 			hex32('w','+',0,0),
 			0, 0);
 	}
-	else if(ncmp(buf, "act ", 4) == 0)
-	{
-		actorchoose(buf+4);
-	}
 	else if(ncmp(buf, "ls", 2) == 0)
 	{
 		actorlist(0);
@@ -92,6 +88,10 @@ void term_read(u8* buf)
 	else if(ncmp(buf, "vision", 6) == 0)
 	{
 		vision_start();
+	}
+	else
+	{
+		actorchoose(buf);
 	}
 
 empty:

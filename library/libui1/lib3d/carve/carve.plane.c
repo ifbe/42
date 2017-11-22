@@ -1,12 +1,23 @@
 #include "actor.h"
-double sine(double);
-double cosine(double);
+#define accuracy 18
+#define PI 3.1415926535897932384626433832795028841971693993151
+void matrixmultiply_4(float*, float*);
+void quaternionnormalize(float*);
+void quaternionrotate(float*, float*);
+//
+void vectornormalize(float*);
+void vectorcross(float*, float*);
+float vectordot(float*, float*);
+float vectorcosine(float*, float*);
+//
 double squareroot(double);
+double cosine(double);
+double sine(double);
 
 
 
 
-void carvetriangle(
+void carvesolid_triangle(
 	struct arena* win, u32 rgb,
 	float x1, float y1, float z1,
 	float x2, float y2, float z2,
@@ -77,7 +88,7 @@ void carvetriangle(
 	index[1] = pcount + 1;
 	index[2] = pcount + 2;
 }
-void carverect(
+void carvesolid_rect(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,	//center xyz
 	float rx, float ry, float rz,	//width = |rvector|*2
@@ -168,9 +179,80 @@ void carverect(
 
 
 
-void carvecircle(
+void carvesolid_circle(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
-	float rx, float ry, float rz)
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
+	int j;
+	float s,t;
+	float q[4];
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	u32 pcount = win->info[8];
+	u32 ncount = win->info[9];
+	u32 ccount = win->info[10];
+	//u32 tcount = win->info[11];
+	u32 icount = win->info[14];
+
+	void* buf = (void*)(win->buf);
+	float* vertex = buf + 0x800000 + (pcount*12);
+	float* normal = buf + 0x900000 + (ncount*12);
+	float* color  = buf + 0xa00000 + (ccount*12);
+	u16* index =    buf + 0xe00000 + (icount*2);
+
+	win->info[8] += accuracy+1;
+	win->info[9] += accuracy+1;
+	win->info[10] += accuracy+1;
+	win->info[14] += accuracy*3;
+
+	for(j=0;j<accuracy;j++)
+	{
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		vectornormalize(q);
+
+		t = j*PI/accuracy;
+		q[0] *= sine(t);
+		q[1] *= sine(t);
+		q[2] *= sine(t);
+		q[3] = cosine(t);
+
+		vertex[(j*3)+0] = rx;
+		vertex[(j*3)+1] = ry;
+		vertex[(j*3)+2] = rz;
+		quaternionrotate(&vertex[j*3], q);
+
+		vertex[(j*3)+0] += cx;
+		vertex[(j*3)+1] += cy;
+		vertex[(j*3)+2] += cz;
+
+		normal[(j*3)+0] = ux;
+		normal[(j*3)+1] = uy;
+		normal[(j*3)+2] = uz;
+
+		color[(j*3)+0] = rr;
+		color[(j*3)+1] = gg;
+		color[(j*3)+2] = bb;
+
+		index[(j*3)+0] = pcount + accuracy;
+		index[(j*3)+1] = pcount + j;
+		index[(j*3)+2] = pcount + (j+1)%accuracy;
+	}
+	vertex[accuracy*3+0] = cx;
+	vertex[accuracy*3+1] = cy;
+	vertex[accuracy*3+2] = cz;
+
+	normal[accuracy*3+0] = ux;
+	normal[accuracy*3+1] = uy;
+	normal[accuracy*3+2] = uz;
+
+	normal[accuracy*3+0] = rr;
+	normal[accuracy*3+1] = gg;
+	normal[accuracy*3+2] = bb;
 }

@@ -1,31 +1,31 @@
 #include "actor.h"
 void* startmemory(int);
-void carvecylinder_point(
+void carvepoint_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
-void carvecylinder_frame(
+void carveline_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
-void carvecylinder(
+void carvesolid_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
-void carvesphere(
+void carvepoint_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
-void carvesphere_frame(
+void carveline_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
-void carvesphere_point(
+void carvesolid_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -56,7 +56,7 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 	float h = (float)(sty->wanth) / 65536.0;
 	float d = (w+h)/2;
 
-	carvecylinder(
+	carvesolid_cylinder(
 		win, 0xffffff,
 		cx, cy, d/2,
 		d/2, 0.0, 0.0,
