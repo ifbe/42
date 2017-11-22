@@ -5,6 +5,7 @@ void* arenastart(u64, u64);
 int arenastop(void*);
 void actorstart(void*, void*);
 int actorstop(void*);
+void actorchoose(void*);
 void* relation_read(u64);
 void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
@@ -63,8 +64,9 @@ void win_at(u64 why, u64 where)
 	void* ret;
 	if(why == hex32('f','i','l','e'))
 	{
-		ret = (void*)where;
-		actorstart(ret, 0);
+		//ret = (void*)where;
+		//actorstart(ret, 0);
+		actorchoose("stl");
 	}
 }
 

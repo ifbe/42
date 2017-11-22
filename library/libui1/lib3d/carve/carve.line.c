@@ -456,10 +456,10 @@ void carvesphere_frame(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xd00000 + (icount*2);
 
-	win->info[8] += 36*17;
-	win->info[9] += 36*17;
-	win->info[10] += 36*17;
-	win->info[13] += 72*17+72*32;
+	win->info[8] += 36*17+2;
+	win->info[9] += 36*17+2;
+	win->info[10] += 36*17+2;
+	win->info[13] += 72*17+36*32+36*4;
 
 	for(k=-8;k<9;k++)
 	{
@@ -520,6 +520,40 @@ void carvesphere_frame(
 			index[a + 2*j + 0] = pcount+k+(j*36);
 			index[a + 2*j + 1] = pcount+k+(j*36)+36;
 		}
+	}
+
+	//
+	a = 36*17*3;
+	b = 72*17+36*32;
+
+	vertex[a+0] = cx-ux;
+	vertex[a+1] = cy-uy;
+	vertex[a+2] = cz-uz;
+	vertex[a+3] = cx+ux;
+	vertex[a+4] = cy+uy;
+	vertex[a+5] = cz+uz;
+
+	normal[a+0] = 0.0;
+	normal[a+1] = 0.0;
+	normal[a+2] = 1.0;
+	normal[a+3] = 0.0;
+	normal[a+4] = 0.0;
+	normal[a+5] = 1.0;
+
+	color[a+0] = rr;
+	color[a+1] = gg;
+	color[a+2] = bb;
+	color[a+3] = rr;
+	color[a+4] = gg;
+	color[a+5] = bb;
+
+	for(j=0;j<36;j++)
+	{
+		index[b + 2*j +0] = pcount+36*17;
+		index[b + 2*j +1] = pcount+j;
+
+		index[b + 2*j +72] = pcount+36*17+1;
+		index[b + 2*j +73] = pcount+36*16+j;
 	}
 }
 

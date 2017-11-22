@@ -1,42 +1,58 @@
 #include "actor.h"
-void background1(void*);
+void* startmemory(int);
+void carvesphere(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz);
 
 
 
 
-static void stl_read_html(struct arena* win)
+static char* buf;
+
+
+
+
+static void stl_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void stl_read_text(struct arena* win)
+static void stl_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void stl_read_stl(struct arena* win)
+static void stl_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int j;
-	char* buf = (void*)(win->buf);
-	readfile("42.stl", buf, 0, 0x800000);
 }
-static void stl_read(struct arena* win)
+static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
+	float d = (w+h)/2;
+
+	carvesphere(
+		win, 0xffffff,
+		cx, cy, d/2,
+		d/2, 0.0, 0.0,
+		0.0, 0.0, d/2
+	);
+}
+static void stl_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		stl_read_text(win);
-	}
+	//cli
+	if(fmt == hex32('c','l','i',0))stl_read_cli(win, act, sty);
 
 	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		stl_read_html(win);
-	}
+	else if(fmt == hex32('h','t','m','l'))stl_read_html(win, act, sty);
+
+	//vbo
+	else if(fmt == hex32('v','b','o',0))stl_read_vbo(win, act, sty);
 
 	//pixel
-	else if(fmt == hex32('s','t','l',0))
-	{
-		stl_read_stl(win);
-	}
+	else stl_read_pixel(win, act, sty);
 }
 
 
@@ -68,6 +84,8 @@ static void stl_change()
 }
 static void stl_start()
 {
+	buf = (void*)startmemory(0x800000);
+	readfile("42.stl", buf, 0, 0x800000);
 }
 static void stl_stop()
 {
