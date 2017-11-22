@@ -208,6 +208,76 @@ void carverect_frame(
 	index[6] = pcount+0;
 	index[7] = pcount+2;
 }
+void carvecircle_frame(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
+{
+	int j;
+	float t;
+	float v[4];
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	u32 pcount = win->info[8];
+	u32 ncount = win->info[9];
+	u32 ccount = win->info[10];
+	//u32 tcount = win->info[11];
+	u32 icount = win->info[13];
+
+	void* buf = (void*)(win->buf);
+	float* vertex = buf + 0x800000 + (pcount*12);
+	float* normal = buf + 0x900000 + (ncount*12);
+	float* color  = buf + 0xa00000 + (ccount*12);
+	u16* index    = buf + 0xd00000 + (icount*2);
+
+	win->info[8] += 36;
+	win->info[9] += 36;
+	win->info[10] += 36;
+	win->info[13] += 72;
+
+	for(j=0;j<36;j++)
+	{
+		v[0] = ux;
+		v[1] = uy;
+		v[2] = uz;
+		vectornormalize(v);
+
+		t = j*PI/18.0;
+		v[0] *= sine(t);
+		v[1] *= sine(t);
+		v[2] *= sine(t);
+		v[3] = cosine(t);
+
+		vertex[(j*3)+0] = rx;
+		vertex[(j*3)+1] = ry;
+		vertex[(j*3)+2] = rz;
+		quaternionrotate(&vertex[j*3], v);
+
+		vertex[(j*3)+0] += cx;
+		vertex[(j*3)+1] += cy;
+		vertex[(j*3)+2] += cz;
+
+		normal[(j*3)+0] = 0.0;
+		normal[(j*3)+1] = 0.0;
+		normal[(j*3)+2] = 1.0;
+
+		color[(j*3)+0] = rr;
+		color[(j*3)+1] = gg;
+		color[(j*3)+2] = bb;
+
+		index[(j*2)+0] = pcount+j;
+		index[(j*2)+1] = pcount+j+1;
+	}
+	index[71] = pcount;
+}
+
+
+
+
 void carveprism4_frame(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -362,15 +432,16 @@ void carveprism4_frame(
 	index[22] = pcount+7;
 	index[23] = pcount+6;
 }
-void carvecircle_frame(
+void carvecylinder_frame(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int j;
-	float t;
+	int a,b,j,k;
+	float s,t;
 	float v[4];
+	float r[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -388,46 +459,66 @@ void carvecircle_frame(
 	float* color  = buf + 0xa00000 + (ccount*12);
 	u16* index    = buf + 0xd00000 + (icount*2);
 
-	win->info[8] += 36;
-	win->info[9] += 36;
-	win->info[10] += 36;
-	win->info[13] += 72;
+	win->info[8] += 64;
+	win->info[9] += 64;
+	win->info[10] += 64;
+	win->info[13] += 32*6;
 
-	for(j=0;j<36;j++)
+	for(j=0;j<32;j++)
 	{
 		v[0] = ux;
 		v[1] = uy;
 		v[2] = uz;
 		vectornormalize(v);
 
-		t = j*PI/18.0;
+		t = j*PI/16.0;
 		v[0] *= sine(t);
 		v[1] *= sine(t);
 		v[2] *= sine(t);
 		v[3] = cosine(t);
 
-		vertex[(j*3)+0] = rx;
-		vertex[(j*3)+1] = ry;
-		vertex[(j*3)+2] = rz;
-		quaternionrotate(&vertex[j*3], v);
+		a = j*6;
 
-		vertex[(j*3)+0] += cx;
-		vertex[(j*3)+1] += cy;
-		vertex[(j*3)+2] += cz;
+		r[0] = rx;
+		r[1] = ry;
+		r[2] = rz;
+		quaternionrotate(r, v);
 
-		normal[(j*3)+0] = 0.0;
-		normal[(j*3)+1] = 0.0;
-		normal[(j*3)+2] = 1.0;
+		vertex[a+0] = cx - ux + r[0];
+		vertex[a+1] = cy - uy + r[1];
+		vertex[a+2] = cz - uz + r[2];
+		vertex[a+3] = cx + ux + r[0];
+		vertex[a+4] = cy + uy + r[1];
+		vertex[a+5] = cz + uz + r[2];
 
-		color[(j*3)+0] = rr;
-		color[(j*3)+1] = gg;
-		color[(j*3)+2] = bb;
+		normal[a+0] = vertex[a+0] - cx;
+		normal[a+1] = vertex[a+1] - cy;
+		normal[a+2] = vertex[a+2] - cz;
+		normal[a+3] = vertex[a+3] - cx;
+		normal[a+4] = vertex[a+4] - cy;
+		normal[a+5] = vertex[a+5] - cz;
 
-		index[(j*2)+0] = pcount+j;
-		index[(j*2)+1] = pcount+j+1;
+		color[a+0] = rr;
+		color[a+1] = gg;
+		color[a+2] = bb;
+		color[a+3] = rr;
+		color[a+4] = gg;
+		color[a+5] = bb;
+
+		index[a+0] = pcount + j*2;
+		index[a+1] = pcount + ((j+1)%32)*2;
+
+		index[a+2] = pcount + 1 + j*2;
+		index[a+3] = pcount + 1 + ((j+1)%32)*2;
+
+		index[a+4] = pcount + j*2;
+		index[a+5] = pcount + 1 + j*2;
 	}
-	index[71] = pcount;
 }
+
+
+
+
 void carvesphere_frame(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -508,9 +599,8 @@ void carvesphere_frame(
 			color[a+2] = bb;
 
 			index[b+0] = pcount+((k+8)*36)+(j+18);
-			index[b+1] = pcount+((k+8)*36)+(j+18)+1;
+			index[b+1] = pcount+((k+8)*36)+((j+18)+1)%36;
 		}
-		index[b+1] = pcount+((k+8)*36);
 	}
 	for(k=0;k<36;k++)
 	{

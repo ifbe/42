@@ -102,17 +102,17 @@ char vCode[] = {
 	"out vec3 vertexcolor;\n"
 	"void main()\n"
 	"{\n"
-		"vec3 S = normalize(vec3(lightposition - position));\n"
 		"vec3 N = normalize(normal);\n"
-		"vec3 V = normalize(-position);\n"
-		"vec3 R = reflect(-S, N);\n"
-		"float SN = max(dot(S, N), 0.0);\n"
-		"float RV = max(dot(R, V), 0.0);\n"
-		"vec3 ambient = color * ambientcolor;\n"
-		"vec3 diffuse = color * lightcolor * SN;\n"
+		"vec3 L = normalize(vec3(lightposition - position));\n"
+		"vec3 E = normalize(eyeposition-position);\n"
+		"vec3 R = reflect(-L, N);\n"
+		"float SN = max(dot(N, L), 0.0);\n"
+		"float RV = max(dot(R, E), 0.0);\n"
+		"vec3 ambient = ambientcolor;\n"
+		"vec3 diffuse = lightcolor * SN;\n"
 		"vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = color * lightcolor * pow(RV, 8);\n"
-		"vertexcolor = ambient + diffuse + specular;\n"
+		"if(SN>0.0)specular = lightcolor * pow(RV, 8);\n"
+		"vertexcolor = color*(ambient + diffuse + specular);\n"
 		"gl_Position = modelviewproj * vec4(position,1.0);\n"
 	"}\n"
 };
@@ -443,7 +443,7 @@ void fixmatrix()
 void fixlight()
 {
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
-	GLfloat lightcolor[3] = {1.0f, 1.0f, 1.0f};
+	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightposition[3] = {0.0f, 0.0f, 10.0f};
 
 	GLint ac = glGetUniformLocation(programhandle, "ambientcolor");
