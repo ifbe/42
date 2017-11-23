@@ -21,42 +21,6 @@ static u8* output = 0;
 
 
 
-/*
-static void printstdout(struct window* win,
-	int xx0, int yy0, int xx1, int yy1)
-{
-	u8 ch;
-	int x,y;
-	int winw = win->w;
-	int winh = win->h;
-	int x0 = winw * xx0 / 0x10000;
-	int y0 = winh * yy0 / 0x10000;
-	int x1 = winw * xx1 / 0x10000;
-	int y1 = winh * yy1 / 0x10000;
-	h >>= 4;
-	w >>= 3;
-	if(w>0x80)w = 0x80;
-
-	pos = *(u32*)(output+0x100000-16);
-	pos = pos - (pos%0x80);
-	if(pos < h*0x80)pos = 0;
-	else pos -= (h-1)*0x80;
-
-	for(y=0;y<h;y++)
-	{
-		for(x=0;x<w;x++)
-		{
-			ch = output[pos + (y*0x80) + x];
-			if( (ch==0) | (ch=='\n') )break;
-
-			drawascii(
-				win, ch, 1,
-				x*8, (y*16)+(h%16), 0xffffff, 0
-			);
-		}
-	}
-}
-*/
 static void printstdout(struct arena* win,
 	int xx0, int yy0, int xx1, int yy1)
 {

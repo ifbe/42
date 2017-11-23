@@ -35,6 +35,7 @@ target:
 	$(compiler) $(cflag) helper/helper.input.c
 	$(compiler) $(cflag) helper/helper.login.c
 	$(compiler) $(cflag) helper/helper.term.c
+	$(compiler) $(cflag) helper/helper.vt100.c
 	$(compiler) $(cflag) helper/helper.win.c
 	$(compiler) $(cflag) helper/helper.c
 	$(compiler) $(cflag) lib1d/html/html.shape.c
@@ -47,7 +48,6 @@ target:
 	$(compiler) $(cflag) lib2d/draw/draw.icon.c
 	$(compiler) $(cflag) lib2d/draw/draw.shape.c
 	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
-	$(compiler) $(cflag) lib2d/draw/draw.vt100.c
 	$(compiler) $(cflag) lib2d/photo/photo.blur.c
 	$(compiler) $(cflag) lib2d/photo/photo.channel.c
 	$(compiler) $(cflag) lib2d/photo/photo.convert.c

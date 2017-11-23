@@ -1,9 +1,4 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void model_create(void*);
-void model_delete();
+#include<actor.h>
 
 
 
@@ -31,4 +26,5 @@ void lib3d_delete()
 }
 void lib3d_create()
 {
+	//prepare texture
 }

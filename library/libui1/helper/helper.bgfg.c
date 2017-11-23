@@ -4,20 +4,20 @@ void carveaxis(void*);
 
 
 
-void background_read_cli(struct arena* win)
+void background_cli(struct arena* win)
 {
 }
-void background_read_tui(struct arena* win)
+void background_tui(struct arena* win)
 {
 }
-void background_read_html(struct arena* win)
+void background_html(struct arena* win)
 {
 }
-void background_read_vbo(struct arena* win)
+void background_vbo(struct arena* win)
 {
 	carveaxis(win);
 }
-void background_read_pixel(struct arena* win)
+void background_pixel(struct arena* win)
 {
 	int x;
 	int len = (win->w)*(win->h);
@@ -27,21 +27,36 @@ void background_read_pixel(struct arena* win)
 }
 void background(struct arena* win)
 {
-	//cli
-	if(win->fmt == hex32('c','l','i',0))background_read_cli(win);
+	if(win->fmt == hex32('c','l','i',0))background_cli(win);
+	else if(win->fmt == hex32('t','u','i',0))background_tui(win);
+	else if(win->fmt == hex32('h','t','m','l'))background_html(win);
+	else if(win->fmt == hex32('v','b','o',0))background_vbo(win);
+	else background_pixel(win);
+}
 
-	//text
-	else if(win->fmt == hex32('t','u','i',0))background_read_tui(win);
 
-	//html
-	else if(win->fmt == hex32('h','t','m','l'))background_read_html(win);
 
-	//vbo
-	else if(win->fmt == hex32('v','b','o',0))background_read_vbo(win);
 
-	//pixel
-	else background_read_pixel(win);
+void foreground_cli(struct arena* win)
+{
+}
+void foreground_tui(struct arena* win)
+{
+}
+void foreground_html(struct arena* win)
+{
+}
+void foreground_vbo(struct arena* win)
+{
+}
+void foreground_pixel(struct arena* win)
+{
 }
 void foreground(struct arena* win)
 {
+	if(win->fmt == hex32('c','l','i',0))foreground_cli(win);
+	else if(win->fmt == hex32('t','u','i',0))foreground_tui(win);
+	else if(win->fmt == hex32('h','t','m','l'))foreground_html(win);
+	else if(win->fmt == hex32('v','b','o',0))foreground_vbo(win);
+	else foreground_pixel(win);
 }
