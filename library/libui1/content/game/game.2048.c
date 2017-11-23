@@ -270,19 +270,11 @@ static void the2048_read_cli()
 }
 static void the2048_read(struct arena* win, struct actor* act, struct style* sty)
 {
-	//cli
-	if(win->fmt == hex32('c','l','i',0))the2048_read_cli();
-
-	//text
-	else if(win->fmt == hex32('t','u','i',0))the2048_read_tui(win, act, sty);
-
-	//html
-	else if(win->fmt == hex32('h','t','m','l'))the2048_read_html(win, act, sty);
-
-	//vbo
-	else if(win->fmt == hex32('v','b','o',0))the2048_read_vbo(win, act, sty);
-
-	//pixel
+	u64 fmt = win->fmt;
+	if(fmt == hex32('c','l','i',0))the2048_read_cli();
+	else if(fmt == hex32('t','u','i',0))the2048_read_tui(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))the2048_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))the2048_read_vbo(win, act, sty);
 	else the2048_read_pixel(win, act, sty);
 }
 
