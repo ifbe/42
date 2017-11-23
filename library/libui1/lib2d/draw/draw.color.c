@@ -13,17 +13,6 @@ double ln(double);
 
 
 
-void bgcolor(struct arena* win, u32 color)
-{
-	int x;
-	u32* buf = (u32*)(win->buf);
-	color |= 0xff000000;
-
-	for(x=0; x<(win->w)*(win->h); x++)
-	{
-		buf[x] = color;
-	}
-}
 void background1(struct arena* win)
 {
 	int x,y;

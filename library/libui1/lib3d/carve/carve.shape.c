@@ -29,6 +29,10 @@ void carvesolid_prism4(
 	float fx, float fy, float fz,
 	float ux, float uy, float uz)
 {
+	float r[3];
+	float f[3];
+	float u[3];
+
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -83,39 +87,6 @@ void carvesolid_prism4(
 	color[22] = gg;
 	color[23] = bb;
 
-	//normal
-	normal[0] = - rx - fx - ux;
-	normal[1] = - ry - fy - uy;
-	normal[2] = - rz - fz - uz;
-
-	normal[3] = rx - fx - ux;
-	normal[4] = ry - fy - uy;
-	normal[5] = rz - fz - uz;
-
-	normal[6] = - rx + fx - ux;
-	normal[7] = - ry + fy - uy;
-	normal[8] = - rz + fz - uz;
-
-	normal[9] = rx + fx - ux;
-	normal[10] = ry + fy - uy;
-	normal[11] = rz + fz - uz;
-
-	normal[12] = - rx - fx + ux;
-	normal[13] = - ry - fy + uy;
-	normal[14] = - rz - fz + uz;
-
-	normal[15] = rx - fx + ux;
-	normal[16] = ry - fy + uy;
-	normal[17] = rz - fz + uz;
-
-	normal[18] = - rx + fx + ux;
-	normal[19] = - ry + fy + uy;
-	normal[20] = - rz + fz + uz;
-
-	normal[21] = rx + fx + ux;
-	normal[22] = ry + fy + uy;
-	normal[23] = rz + fz + uz;
-
 	//vertex
 	vertex[ 0] = cx - rx - fx - ux;
 	vertex[ 1] = cy - ry - fy - uy;
@@ -148,6 +119,63 @@ void carvesolid_prism4(
 	vertex[21] = cx + rx + fx + ux;
 	vertex[22] = cy + ry + fy + uy;
 	vertex[23] = cz + rz + fz + uz;
+
+	//normal
+	r[0] = rx;
+	r[1] = ry;
+	r[2] = rz;
+	vectornormalize(r);
+	rx = r[0];
+	ry = r[1];
+	rz = r[2];
+
+	f[0] = fx;
+	f[1] = fy;
+	f[2] = fz;
+	vectornormalize(f);
+	fx = f[0];
+	fy = f[1];
+	fz = f[2];
+
+	u[0] = ux;
+	u[1] = uy;
+	u[2] = uz;
+	vectornormalize(u);
+	ux = u[0]*2;
+	uy = u[1]*2;
+	uz = u[2]*2;
+
+	normal[0] = - rx - fx - ux;
+	normal[1] = - ry - fy - uy;
+	normal[2] = - rz - fz - uz;
+
+	normal[3] = rx - fx - ux;
+	normal[4] = ry - fy - uy;
+	normal[5] = rz - fz - uz;
+
+	normal[6] = - rx + fx - ux;
+	normal[7] = - ry + fy - uy;
+	normal[8] = - rz + fz - uz;
+
+	normal[9] = rx + fx - ux;
+	normal[10] = ry + fy - uy;
+	normal[11] = rz + fz - uz;
+
+	normal[12] = - rx - fx + ux;
+	normal[13] = - ry - fy + uy;
+	normal[14] = - rz - fz + uz;
+
+	normal[15] = rx - fx + ux;
+	normal[16] = ry - fy + uy;
+	normal[17] = rz - fz + uz;
+
+	normal[18] = - rx + fx + ux;
+	normal[19] = - ry + fy + uy;
+	normal[20] = - rz + fz + uz;
+
+	normal[21] = rx + fx + ux;
+	normal[22] = ry + fy + uy;
+	normal[23] = rz + fz + uz;
 
 	//index
 	index[0] = pcount + 0;

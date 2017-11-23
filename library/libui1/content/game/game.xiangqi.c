@@ -1,13 +1,17 @@
 #include "actor.h"
-void drawline(void*,
-	int x1,int y1,int x2,int y2, u32 color);
-void drawsolid_rect(void*,
-	int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_circle(void*,
-	int x, int y, int r, u32 color);
 void drawascii(
 	void*, u8 data, int size,
 	int x, int y, u32 fg, u32 bg);
+void drawline(void*, int x1,int y1,int x2,int y2, u32 color);
+void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
+void drawsolid_circle(void*, int x, int y, int r, u32 color);
+void carvesolid_prism4(
+	void* win, u32 color,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
 
 
 
@@ -258,32 +262,38 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		}//forx
 	}//fory
 }
+static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
 
-
-
-
+	carvesolid_prism4(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		w/16, 0.0, 0.0,
+		0.0, h/16, 0.0,
+		0.0, 0.0, w/16
+	);
+}
+static void xiangqi_read_cli()
+{
+}
 static void xiangqi_read(struct arena* win, struct actor* act, struct style* sty)
 {
-	u32 fmt = win->fmt;
+	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		xiangqi_read_text(win, act, sty);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		xiangqi_read_html(win, act, sty);
-	}
-
-	//pixel
-	else
-	{
-		xiangqi_read_pixel(win, act, sty);
-	}
+	if(fmt == hex32('c','l','i',0))xiangqi_read_cli();
+	else if(fmt == hex32('t','e','x','t'))xiangqi_read_text(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))xiangqi_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))xiangqi_read_vbo(win, act, sty);
+	else xiangqi_read_pixel(win, act, sty);
 }
+
+
+
+
 void xiangqi_move(int px, int py, int x, int y)
 {
 	int min, max, t, u;
@@ -868,7 +878,7 @@ void xiangqi_write(struct event* ev)
 			ret = xiangqi_pickup(qx, qy);
 			if(ret > 0)return;
 
-			//是移动操作吗
+			//move?
 			xiangqi_move(px, py, qx, qy);
 		}
 	}
@@ -888,11 +898,11 @@ void xiangqi_write(struct event* ev)
 		if(y < 0)return;
 		if(y > 9)return;
 
-		//是选中操作吗
+		//pick?
 		ret = xiangqi_pickup(x, y);
 		if(ret > 0)return;
 
-		//是移动操作吗
+		//move?
 		xiangqi_move(px, py, x, y);
 		px = py = -1;
 	}

@@ -31,6 +31,7 @@ target:
 	$(compiler) $(cflag) content/tool/tool.sketchpad.c
 	$(compiler) $(cflag) content/tool/tool.spectrum.c
 	$(compiler) $(cflag) content/content.c
+	$(compiler) $(cflag) helper/helper.bgfg.c
 	$(compiler) $(cflag) helper/helper.input.c
 	$(compiler) $(cflag) helper/helper.login.c
 	$(compiler) $(cflag) helper/helper.term.c

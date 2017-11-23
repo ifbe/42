@@ -1,11 +1,15 @@
 #include "actor.h" 
 //
-void drawline(void*,
-	int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_rect(void*,
-	int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_circle(void*,
-	int x, int y, int r, u32 color);
+void drawline(void*, int x1, int y1, int x2, int y2, u32 color);
+void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
+void drawsolid_circle(void*, int x, int y, int r, u32 color);
+void carvesolid_prism4(
+	void* win, u32 color,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
 
 
 
@@ -121,27 +125,33 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
+static void weiqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
+
+	carvesolid_prism4(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		w/16, 0.0, 0.0,
+		0.0, h/16, 0.0,
+		0.0, 0.0, w/16
+	);
+}
+static void weiqi_read_cli()
+{
+}
 static void weiqi_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		weiqi_read_text(win, act, sty);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		weiqi_read_html(win, act, sty);
-	}
-
-	//pixel
-	else
-	{
-		weiqi_read_pixel(win, act, sty);
-	}
+	if(fmt == hex32('c','l','i',0))weiqi_read_cli();
+	else if(fmt == hex32('t','e','x','t'))weiqi_read_text(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))weiqi_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))weiqi_read_vbo(win, act, sty);
+	else weiqi_read_pixel(win, act, sty);
 }
 
 

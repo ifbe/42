@@ -17,11 +17,11 @@ void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot,
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
+void background(void*);
+void foreground(void*);
 void select_1d(void*, void*);
 void select_2d(void*, void*);
 void select_3d(void*, void*);
-void bgcolor(void*, u32);
-void carveaxis(void*);
 //
 void win_add(u64 why, u64 where);
 void win_del(u64 why, u64 where);
@@ -30,6 +30,7 @@ void act_add();
 void act_del();
 void act_at(void*, void*);
 //
+void login_read(void*);
 void term_write(void*);
 int input_explain(void*, void*);
 
@@ -67,16 +68,15 @@ int actorread_one(struct arena* win)
 	}
 	else canvas = win;
 
-	//background
-	if(win->fmt == hex32('v','b','o',0))carveaxis(canvas);
-	else bgcolor(canvas, 0);
+	//bg
+	background(canvas);
 
 	//
 	rel = win->irel;
 	if(rel == 0)
 	{
-		//default_read(canvas);
-		return 0;
+		login_read(canvas);
+		goto theend;
 	}
 
 	//content
@@ -107,10 +107,10 @@ int actorread_one(struct arena* win)
 		rel = relation_read(rel->samepinnextchip);
 	}
 
-	//foreground
+	//fg
 	//foreground()
 
-	//send
+theend:
 	arenawrite(win, &arena[0]);
 }
 int actorread()
@@ -170,7 +170,12 @@ int actorwrite(struct event* ev)
 
 	//
 	rel = win->irel;
-	if(rel == 0)return 0;
+	if(rel == 0)
+	{
+		term_write(ev);
+		return 0;
+	}
+
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;
@@ -270,9 +275,6 @@ void actorcreate(u8* type, u8* addr)
 
 	//
 	content_create(addr, 0);
-
-	//
-	actorstart(&arena[1], 0);
 
 	//say("[c,f):createed actor\n");
 }

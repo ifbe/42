@@ -3,14 +3,14 @@ void sudoku_solve(void*, void*);
 void drawdecimal(
 	void*, int data, int size,
 	int x, int y, u32 fg, u32 bg);
-void drawsolid_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void drawrect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
+void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
+void drawrect(void*, int x1, int y1, int x2, int y2, u32 body, u32 frame);
+void carvesolid_rect(
+	void* win, u32 color,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz
+);
 
 
 
@@ -117,6 +117,39 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 		0
 	);
 }
+static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+{
+	u32 color;
+	int x,y;
+	float xxx, yyy;
+
+	float cx = (float)(rel->cx) / 65536.0 - 0.5;
+	float cy = (float)(rel->cy) / 65536.0 - 0.5;
+	float w = (float)(rel->wantw) / 65536.0;
+	float h = (float)(rel->wanth) / 65536.0;
+
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if((x>2)&&(x<6)&&(y>2)&&(y<6))color = 0xcccccc;
+			else if((x<3)&&(y<3))color = 0x444444;
+			else if((x<3)&&(y>5))color = 0x444444;
+			else if((x>5)&&(y<3))color = 0x444444;
+			else if((x>5)&&(y>5))color = 0x444444;
+			else color = 0x888888;
+
+			xxx = cx + (x+x-8)*w/18;
+			yyy = cy - (y+y-8)*h/18;
+			carvesolid_rect(
+				win, color,
+				xxx, yyy, 0.0,
+				w/18, 0.0, 0.0,
+				0.0, h/18, 0.0
+			);
+		}
+	}
+}
 static void sudoku_read_cli()
 {
 	int x,y;
@@ -135,23 +168,11 @@ static void sudoku_read(struct arena* win, struct actor* act, struct style* rel)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		sudoku_read_text(win, act, rel);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		sudoku_read_html(win, act, rel);
-	}
-
-	//pixel
-	else
-	{
-		sudoku_read_pixel(win, act, rel);
-	}
+	if(fmt == hex32('c','l','i',0))sudoku_read_cli();
+	else if(fmt == hex32('t','e','x','t'))sudoku_read_text(win, act, rel);
+	else if(fmt == hex32('h','t','m','l'))sudoku_read_html(win, act, rel);
+	else if(fmt == hex32('v','b','o',0))sudoku_read_vbo(win, act, rel);
+	else sudoku_read_pixel(win, act, rel);
 }
 static void sudoku_write(struct event* ev)
 {
