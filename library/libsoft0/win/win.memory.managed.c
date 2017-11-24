@@ -6,12 +6,11 @@
 
 void* startmemory(int size)
 {
-        return malloc(size);
+	return malloc(size);
 }
-int stopmemory(void* addr)
+void stopmemory(void* addr)
 {
-        free(addr);
-	return 0;
+	free(addr);
 }
 void creatememory()
 {
