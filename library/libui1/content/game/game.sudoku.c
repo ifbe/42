@@ -1,16 +1,5 @@
 #include "actor.h"
 void sudoku_solve(void*, void*);
-void drawdecimal(
-	void*, int data, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
-void drawrect(void*, int x1, int y1, int x2, int y2, u32 body, u32 frame);
-void carvesolid_rect(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz
-);
 
 
 
@@ -66,6 +55,7 @@ static void sudoku_read_html(struct arena* win, struct actor* act, struct style*
 static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 {
 	int x,y;
+	int t1, t2, t3, t4;
 	int cx = (win->w) * (rel->cx) / 0x10000;
 	int cy = (win->h) * (rel->cy) / 0x10000;
 	int w = (win->w) * (rel->wantw) / 0x10000 / 9;
@@ -75,46 +65,42 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 	{
 		for(x=0;x<9;x++)
 		{
-			drawrect(win,
-				cx+(2*x-9)*w/2,
-				cy+(2*y-9)*h/2,
-				cx+(2*x-7)*w/2,
-				cy+(2*y-7)*h/2,
-				0x888888,
-				0
-			);
+			t1 = cx+(2*x-9)*w/2;
+			t2 = cy+(2*y-9)*h/2;
+			t3 = cx+(2*x-7)*w/2;
+			t4 = cy+(2*y-7)*h/2;
+			drawsolid_rect(win, 0x888888, t1, t2, t3, t4);
+			drawline_rect(win, 0x888888, t1, t2, t3, t4);
 
 			if(table[y][x] != 0)
 			{
 				drawdecimal(
 					win, table[y][x], 2,
-					cx+(2*x-9)*w/2,
-					cy+(2*y-9)*h/2,
-					0,
-					0
+					cx+(2*x-9)*w/2, cy+(2*y-9)*h/2,
+					0, 0
 				);
 			}
 		}
 	}
-	drawsolid_rect(win,
+	drawsolid_rect(
+		win, 0,
 		0, (h/3)-2,
-		w, (h/3)+2,
-		0
+		w, (h/3)+2
 	);
-	drawsolid_rect(win,
+	drawsolid_rect(
+		win, 0,
 		0, (h*2/3)-2,
-		w, (h*2/3)+2,
-		0
+		w, (h*2/3)+2
 	);
-	drawsolid_rect(win,
+	drawsolid_rect(
+		win, 0,
 		(w/3)-2, 0,
-		(w/3)+2, h,
-		0
+		(w/3)+2, h
 	);
-	drawsolid_rect(win,
+	drawsolid_rect(
+		win, 0,
 		(w*2/3)-2, 0,
-		(w*2/3)+2, h,
-		0
+		(w*2/3)+2, h
 	);
 }
 static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* rel)

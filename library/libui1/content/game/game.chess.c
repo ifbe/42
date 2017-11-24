@@ -1,18 +1,4 @@
 #include "actor.h"
-void drawascii(
-	void* win, u8 data, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawsolid_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void carvesolid_prism4(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz
-);
 
 
 
@@ -41,10 +27,9 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 			if(((x+y+32)%2) != 0)color = 0x111111;
 			else color = 0xffffff;
 
-			drawsolid_rect(win,
+			drawsolid_rect(win, color,
 				cx+(x-4)*w, cy+(y-4)*h,
-				cx+(x-3)*w, cy+(y-3)*h,
-				color
+				cx+(x-3)*w, cy+(y-3)*h
 			);
 			if(buffer[y][x] == 0)continue;
 

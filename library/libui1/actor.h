@@ -177,6 +177,154 @@ struct style
 
 
 
+void background(struct arena* win);
+void foreground(struct arena* win);
+void select_1d(struct arena* win, struct style* sty);
+void select_2d(struct arena* win, struct style* sty);
+void select_3d(struct arena* win, struct style* sty);
+
+void drawascii(struct arena* win, u8 data, int size,
+	int x, int y, u32 fg, u32 bg
+);
+void drawbyte(struct arena*, u8 data, int size,
+	int x, int y, u32 fg, u32 bg);
+void drawstring(struct arena*, char* str, int size,
+	int x, int y, u32 fg, u32 bg
+);
+void drawdecimal(struct arena* win, int data, int size,
+	int x, int y, u32 fg, u32 bg
+);
+void drawdouble(struct arena*, double z, int size,
+	int x, int y, u32 fg, u32 bg
+);
+
+void drawline(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2
+);		//left-upper, right-bottom
+void drawline_bezier(struct arena* win, u32 rgb,
+	int ax, int ay, int bx, int by, int cx, int cy
+);		//corner1, corner2, control
+
+void drawline_triangle(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2, int x3, int y3
+);
+void drawline_rect(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2
+);		//left-upper, right-bottom
+void drawline_circle(struct arena* win, u32 rgb,
+	int cx, int cy, int radius
+);
+void drawline_oval(struct arena* win, u32 rgb,
+	int cx, int cy, int rx, int ry, int fx, int fy
+);		//center, right, upper
+void drawline_sector(struct arena* win, u32 rgb,
+	int cx, int cy, int radius, int start, int end
+);		//center, radius, angle1, angle2
+
+void drawsolid_triangle(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2, int x3, int y3
+);
+void drawsolid_rect(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2
+);		//left-upper, right-bottom
+void drawsolid_circle(struct arena* win, u32 rgb,
+	int cx, int cy, int radius
+);
+void drawsolid_oval(struct arena* win, u32 rgb,
+	int cx, int cy, int rx, int ry, int fx, int fy
+);		//center, right, upper
+void drawsolid_sector(struct arena* win, u32 rgb,
+	int cx, int cy, int radius, int start, int end
+);		//center, radius, angle1, angle2
+
+void carvepoint_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvepoint_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvepoint_cone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvepoint_dodecahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carvepoint_icosahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+
+void carveline_dodecahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carveline_cone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carveline_icosahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+
+void carvesolid_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz
+);
+void carvesolid_prism4(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carvesolid_cone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvesolid_dodecahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carvesolid_icosahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+
 //libsoft1
 int double2decstr(double, void*);
 int double2hexstr(double, void*);
@@ -203,14 +351,41 @@ int sha1sum(void*, void*, int);
 int sha256sum(void*, void*, int);
 int sha384sum(void*, void*, int);
 int sha512sum(void*, void*, int);
+
+void matrixtranspose_2(float* u);
+void matrixtranspose_3(float* u);
+void matrixtranspose_4(float* u);
+void matrixmultiply_2(float* d, float* s);
+void matrixmultiply_3(float* d, float* s);
+void matrixmultiply_4(float* d, float* s);
+int matrixinverse_2(float* d, float* s);
+int matrixinverse_3(float* d, float* s);
+int matrixinverse_4(float* d, float* s);
+
+void quaternionnormalize(float*);
+void quaternionmultiply(float* l, float* r);
+void quaternionrotate(float*, float*);
+
+void vectornormalize(float*);
+void vectorcross(float*, float*);
+float vectordot(float*, float*);
+float vectorcosine(float*, float*);
+
 //libsoft0
 u32 getrandom();
 u64 gettime();
 
 int readfile(void*, void*, u64, u64);
 int writefile(void*, void*, u64, u64);
+
 //libhard1
 double squareroot(double);
+double cosine(double);
+double sine(double);
+double log2(double);
+double lg(double);
+double ln(double);
+
 //libboot1
 void eventwrite(u64,u64,u64,u64);
 int mysnprintf(void*, int, void*, ...);

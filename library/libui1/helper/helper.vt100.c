@@ -3,17 +3,6 @@ int cli_write(void*);
 
 
 
-void drawrect(struct arena* win,
-	int x1, int y1, int x2, int y2, u32 bc, u32 fc);
-void drawascii(
-	void* win, u8 ch, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawstring(
-	void*, void* str, int size,
-	int x, int y, u32 fg, u32 bg);
-
-
-
 
 static u8* input = 0;
 static u8* output = 0;
@@ -38,10 +27,8 @@ static void printstdout(struct arena* win,
 	int y1 = winh * yy1 / 0x10000;
 	u32* palette;
 	u8* where;
-	drawrect(win,
-		x0, y0,
-		x1, y1,
-		0, 0xff00ff
+	drawsolid_rect(win, 0,
+		x0, y0, x1, y1
 	);
 
 	//
@@ -78,24 +65,9 @@ static void printstdout(struct arena* win,
 		}
 	}
 
-	//outer
-	palette = (u32*)(win->buf);
-	for(y=y0;y<y1;y++)
-	{
-		for(x=x1-16;x<x1;x++)
-		{
-			palette[winw*y + x] = 0xff888888;
-		}
-	}
-
-	//inner
-	for(y=py0;y<py1;y++)
-	{
-		for(x=x1-16+2;x<x1-2;x++)
-		{
-			palette[winw*y + x] = 0xffffffff;
-		}
-	}
+	//outer, inner
+	drawsolid_rect(win, 0x888888, x1-16,  y0, x1-1,  y1-1);
+	drawsolid_rect(win, 0xffffff, x1-14, py0, x1-3, py1-1);
 }
 static void printstdin(struct arena* win,
 	int xx0, int yy0, int xx1, int yy1)

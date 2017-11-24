@@ -1042,7 +1042,10 @@ void carvesolid_dodecahedron(
 }
 void carvesolid_icosahedron(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz)
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz)
 {
 	int j;
 	float m = 0.52573111211913360602566908484788;

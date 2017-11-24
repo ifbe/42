@@ -1,12 +1,4 @@
 #include "actor.h"
-void drawsolid_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void drawrect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 body, u32 frame);
 
 
 
@@ -32,55 +24,52 @@ static int die=0;
 
 
 
-void snake_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	//create screen
 	int j;
 	int cx,cy,w,h;
-	cx = (win->w) * (rel->cx) / 0x10000;
-	cy = (win->h) * (rel->cy) / 0x10000;
-	w = (win->w) * (rel->wantw) / 0x10000;
-	h = (win->h) * (rel->wanth) / 0x10000;
+	int t1, t2, t3, t4;
+	cx = (win->w) * (sty->cx) / 0x10000;
+	cy = (win->h) * (sty->cy) / 0x10000;
+	w = (win->w) * (sty->wantw) / 0x10000;
+	h = (win->h) * (sty->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
-	drawsolid_rect(win,
+	drawsolid_rect(
+		win, 0x888888,
 		cx-w/2, cy-h/2,
-		cx+w/2, cy+h/2,
-		0x888888
+		cx+w/2, cy+h/2
 	);
 
 	//snake
 	j=0;
 	while(1)
 	{
-		drawrect(win,
-			(cx-w/2) + w * snake[j].x / worldwidth,
-			(cy-h/2) + h * snake[j].y / worldheight,
-			(cx-w/2) + w * (snake[j].x+1) / worldwidth,
-			(cy-h/2) + h * (snake[j].y+1) / worldheight,
-			0xffffffff,
-			0
-		);
+		t1 = (cx-w/2) + w * snake[j].x / worldwidth;
+		t2 = (cy-h/2) + h * snake[j].y / worldheight;
+		t3 = (cx-w/2) + w * (snake[j].x+1) / worldwidth;
+		t4 = (cy-h/2) + h * (snake[j].y+1) / worldheight;
+		drawsolid_rect(win, 0xffffff, t1, t2, t3, t4);
+		drawline_rect(win, 0x000000, t1, t2, t3, t4);
 
 		j++;
 		if(j>=len)break;
 	}
 
 	//food
-	drawrect(win,
-		(cx-w/2) + w * foodx / worldwidth,
-		(cy-h/2) + h * foody / worldheight,
-		(cx-w/2) + w * (foodx+1) / worldwidth,
-		(cy-h/2) + h * (foody+1) / worldheight,
-		0xff00,
-		0
-	);
+	t1 = (cx-w/2) + w * foodx / worldwidth;
+	t2 = (cy-h/2) + h * foody / worldheight;
+	t3 = (cx-w/2) + w * (foodx+1) / worldwidth;
+	t4 = (cy-h/2) + h * (foody+1) / worldheight;
+	drawsolid_rect(win, 0x00ff00, t1, t2, t3, t4);
+	drawline_rect(win, 0x000000, t1, t2, t3, t4);
 }
 
 
 
 
-void snake_read_text(struct arena* win, struct actor* act, struct style* rel)
+void snake_read_text(struct arena* win, struct actor* act, struct style* sty)
 {
 	int j,t;
 	int width = win->w;
@@ -116,7 +105,7 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html(struct arena* win, struct actor* act, struct style* rel)
+void snake_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 	int j = 0;
 	char* p = (char*)(win->buf);
@@ -152,24 +141,24 @@ void snake_read_html(struct arena* win, struct actor* act, struct style* rel)
 
 
 
-void snake_read(struct arena* win, struct actor* act, struct style* rel)
+void snake_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	//text
 	if(win->fmt == 0x74786574)
 	{
-		snake_read_text(win, act, rel);
+		snake_read_text(win, act, sty);
 	}
 
 	//html
 	else if(win->fmt == 0x6c6d7468)
 	{
-		snake_read_html(win, act, rel);
+		snake_read_html(win, act, sty);
 	}
 
 	//pixel
 	else
 	{
-		snake_read_pixel(win, act, rel);
+		snake_read_pixel(win, act, sty);
 	}
 }
 

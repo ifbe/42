@@ -1,7 +1,4 @@
 #include "actor.h"
-void drawascii(
-	void*, u8 ch, int size,
-	int x, int y, u32 fg, u32 bg);
 
 
 
@@ -13,9 +10,9 @@ void font_read(struct arena* win)
 	{
 		for(x=0;x<16;x++)
 		{
-			drawascii(
-				win, x+y*16, 1,
-				x*16, y*16, 0xffffffff, 0);
+			drawascii(win, x+y*16, 1,
+				x*16, y*16, 0xffffffff, 0
+			);
 		}
 	}
 }

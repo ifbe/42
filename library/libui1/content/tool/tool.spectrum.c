@@ -1,20 +1,9 @@
 #include "actor.h"
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
-//libui1
-void drawline(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
-double squareroot(double);
-double cosine(double);
-double sine(double);
-double log2(double);
-double lg(double);
-double ln(double);
 int sound_output(double*, double*, u16*);
 int piano_freq(int);
 //libsoft0
@@ -67,12 +56,11 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 		t = x * tau / 512.0;
 		cc = cosine(t) * 256;
 		ss = -sine(t) * 256;
-		drawline(win,
+		drawline(win, 0xffffff,
 			256 + (int)(cc * (1.0 - 2*power[x])),
 			256 + (int)(ss * (1.0 - 2*power[x])),
 			256 + (int)cc,
-			256 + (int)ss,
-			0xffffff
+			256 + (int)ss
 		);
 	}
 }

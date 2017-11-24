@@ -1,21 +1,7 @@
 #include "actor.h"
-void drawdouble(
-	void*, double z, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawstring(
-	void*, void* str, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawascii(
-	void*, u8 ch, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawline(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32);
-//libsoft
-double calculator(char* postfix);
 void postfix2binarytree(char* postfix,void* out);
 void infix2postfix(char* infix,char* postfix);
+double calculator(char* postfix);
 
 
 

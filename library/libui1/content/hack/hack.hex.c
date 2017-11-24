@@ -1,15 +1,5 @@
 #include "actor.h"
 void background1(void*);
-void drawascii(
-	void*, u8 ch, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawbyte(
-	void*, u8 ch, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawsolid_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
 
 
 
@@ -35,7 +25,7 @@ static int printmethod=0;
 static int xshift=0;
 static int byteperline=0;
 static int lineperarena=0;
-static void foreground(struct arena* win)
+static void showdata(struct arena* win)
 {
 	//一整页
 	int x,y;
@@ -100,10 +90,9 @@ static void floatarea(struct arena* win)
 	thisy+=16;
 	if(thisx > width -xshift -256)thisx -= (256+16);
 	if(thisy >= height - 128)thisy -= (128+16);
-	drawsolid_rect(win,
+	drawsolid_rect(win, 0xffff,
 		xshift + thisx, thisy,
-		xshift + thisx+256, thisy+128,
-		0xffff
+		xshift + thisx+256, thisy+128
 	);
 
 	//
@@ -127,7 +116,7 @@ static void floatarea(struct arena* win)
 static void hex_read_pixel(struct arena* win)
 {
 	background1(win);
-	foreground(win);
+	showdata(win);
 	floatarea(win);
 }
 static void hex_read_text(struct arena* win)

@@ -17,12 +17,6 @@ void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot,
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 //
-void background(void*);
-void foreground(void*);
-void select_1d(void*, void*);
-void select_2d(void*, void*);
-void select_3d(void*, void*);
-//
 void win_add(u64 why, u64 where);
 void win_del(u64 why, u64 where);
 void win_at(u64 why, u64 where);

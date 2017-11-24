@@ -5,28 +5,6 @@ void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
-//
-void drawdecimal(
-	void*, int data, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawrect(
-	void* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 bc, u32 fc);
-void carvesolid_rect(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz
-);
-void carvesolid_prism4(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz
-);
 
 
 
@@ -139,11 +117,10 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 			y0 = cy + (y-2)*h/4;
 			x1 = cx + (x-1)*w/4;
 			y1 = cy + (y-1)*h/4;
-			drawrect(win,
-				x0, y0,
-				x1, y1,
-				color, 0
-			);
+			drawsolid_rect(win, color,
+				x0, y0, x1, y1);
+			drawline_rect(win, 0,
+				x0, y0, x1, y1);
 
 			//decimal
 			length = len2048[tab[y][x]];

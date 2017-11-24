@@ -342,10 +342,11 @@ void drawbyte(
 
 
 void drawstring(
-	struct arena* win,  u8* p, int size,
+	struct arena* win, char* q, int size,
 	int x, int y, u32 fg, u32 bg)
 {
 	int j=0;
+	u8* p = (u8*)q;
 
 	size &= 0x7;
 	if(size==0)size=1;

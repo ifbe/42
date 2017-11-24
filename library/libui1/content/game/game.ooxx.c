@@ -1,11 +1,4 @@
-#include "actor.h" 
-void drawline(void*, int x1,int y1, int x2,int y2, u32 color);
-void drawline_circle(void*, int x, int y, int r, u32 color);
-void carvesolid_sphere(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz);
+#include "actor.h"
 
 
 
@@ -42,24 +35,28 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 	else h=w;
 
 	//heng
-	drawline(win,
+	drawline(
+		win, 0xffffff,
 		cx-w/2, cy-h/6,
-		cx+w/2, cy-h/6,
-		0xffffffff);
-	drawline(win,
+		cx+w/2, cy-h/6
+	);
+	drawline(
+		win, 0xffffff,
 		cx-w/2, cy+h/6,
-		cx+w/2, cy+h/6,
-		0xffffffff);
+		cx+w/2, cy+h/6
+	);
 
 	//shu
-	drawline(win,
+	drawline(
+		win, 0xffffff,
 		cx-w/6, cy-h/2,
-		cx-w/6, cy+h/2,
-		0xffffffff);
-	drawline(win,
+		cx-w/6, cy+h/2
+	);
+	drawline(
+		win, 0xffffff,
 		cx+w/6, cy-h/2,
-		cx+w/6, cy+h/2,
-		0xffffffff);
+		cx+w/6, cy+h/2
+	);
 
 	//ox
 	for(y=0;y<3;y++)
@@ -68,24 +65,22 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 		{
 			if(data[3*y + x] == 'o')
 			{
-				drawline_circle(win,
-					cx+(x-1)*w/3,
-					cy+(y-1)*h/3,
-					w/12,
-					0xff
+				drawline_circle(
+					win, 0xff,
+					cx+(x-1)*w/3, cy+(y-1)*h/3, w/12
 				);
 			}
 			else if(data[3*y + x] == 'x')
 			{
-				drawline(win,
+				drawline(
+					win, 0xff0000,
 					cx+(4*x-5)*w/12, cy+(4*y-5)*h/12,
-					cx+(4*x-3)*w/12, cy+(4*y-3)*h/12,
-					0xff0000
+					cx+(4*x-3)*w/12, cy+(4*y-3)*h/12
 				);
-				drawline(win,
+				drawline(
+					win, 0xff0000,
 					cx+(4*x-5)*w/12, cy+(4*y-3)*h/12,
-					cx+(4*x-3)*w/12, cy+(4*y-5)*h/12,
-					0xff0000
+					cx+(4*x-3)*w/12, cy+(4*y-5)*h/12
 				);
 			}
 		}//forx

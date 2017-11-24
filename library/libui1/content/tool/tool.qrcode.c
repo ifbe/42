@@ -1,48 +1,52 @@
 #include "actor.h"
-int qrcode_generate(char* src,char* dst,int sidelength);
-void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
+int qrcode_generate(char* src,char* dst,int slen);
 
 
 
 
-static int sidelength;
+static int slen;
 static char* databuf;
 
 
 
 
-static void qrcode_read_pixel(struct arena* win)
+static void qrcode_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
-	int x,y,x1,y1,x2,y2;
-	int width,height,min;
-
-	width = win->w;
-	height = win->h;
-	if(width < height)min = width;
-	else min = height;
-
-	for(y=0;y<sidelength;y++)
+	int x,y;
+	int x1,y1,x2,y2;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w = (win->w) * (sty->wantw) / 0x10000;
+	int h = (win->h) * (sty->wanth) / 0x10000;
+	if(w-h<-16 | w-h>16)
 	{
-		for(x=0;x<sidelength;x++)
+		w = (w+h)/2;
+		h = w;
+		sty->wantw = w * 0x10000 / (win->w);
+		sty->wanth = h * 0x10000 / (win->h);
+	}
+
+	for(y=0;y<slen;y++)
+	{
+		for(x=0;x<slen;x++)
 		{
-			x1=x*min/sidelength;
-			y1=y*min/sidelength;
-			x2=(x+1)*min/sidelength-1;
-			y2=(y+1)*min/sidelength-1;
-			if( databuf[(y*sidelength)+x] == 0 )color=0;
+			if( databuf[(y*slen)+x] == 0 )color=0;
 			else color=0xffffffff;
-//say("%d",databuf[(y*sidelength)+x]);
-			drawsolid_rect(win,
-				x1, y1,
-				x2, y2,
-				color
+
+			x1 = cx + (x*w/slen) - w/2;
+			y1 = cy + (y*h/slen) - h/2;
+			x2 = cx + ((x+1)*w/slen) - w/2;
+			y2 = cy + ((y+1)*h/slen) - h/2;
+			drawsolid_rect(
+				win, color,
+				x1, y1, x2, y2
 			);
 		}
 //say("\n");
 	}
 }
-static void qrcode_read_html(struct arena* win)
+static void qrcode_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	u32 color;
@@ -60,13 +64,13 @@ static void qrcode_read_html(struct arena* win)
 		"}"
 		"</style>",
 
-		500/sidelength, 500/sidelength
+		500/slen, 500/slen
 	);
-	for(y=0;y<sidelength;y++)
+	for(y=0;y<slen;y++)
 	{
-		for(x=0;x<sidelength;x++)
+		for(x=0;x<slen;x++)
 		{
-			if( databuf[(y*sidelength)+x] != 0 )continue;
+			if( databuf[(y*slen)+x] != 0 )continue;
 
 			p += mysnprintf(
 				p, 0x1000,
@@ -75,13 +79,13 @@ static void qrcode_read_html(struct arena* win)
 				"top:%dpx;"
 				"background:#000;"
 				"\"></div>",
-				x*500/sidelength, y*500/sidelength
+				x*500/slen, y*500/slen
 			);
 		}
 	}
 	p += mysnprintf(p, 99, "</div>");
 }
-static void qrcode_read_text(struct arena* win)
+static void qrcode_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int width = win->w;
@@ -91,40 +95,34 @@ static void qrcode_read_text(struct arena* win)
 
 	for(y=0;y<100;y++)
 	{
-		if(y >= sidelength)break;
+		if(y >= slen)break;
 		if(y >= height)break;
 		for(x=0;x<100;x++)
 		{
-			if(x >= sidelength)break;
+			if(x >= slen)break;
 			if(x >= width/2)break;
-			if( databuf[(y*sidelength)+x] != 0 )continue;
+			if( databuf[(y*slen)+x] != 0 )continue;
 
 			p[( (y*width+x*2)<<2 ) + 3] = 7;
 			p[( (y*width+x*2)<<2 ) + 7] = 7;
 		}
 	}
 }
-static void qrcode_read(struct arena* win)
+static void qrcode_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void qrcode_read_cli()
+{
+}
+static void qrcode_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		qrcode_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		qrcode_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		qrcode_read_pixel(win);
-	}
+	if(fmt == hex32('c','l','i',0))qrcode_read_cli();
+	else if(fmt == hex32('t','u','i',0))qrcode_read_tui(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))qrcode_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))qrcode_read_vbo(win, act, sty);
+	else qrcode_read_pixel(win, act, sty);
 }
 static void qrcode_write(struct event* ev)
 {
@@ -141,8 +139,8 @@ static void qrcode_into()
 }
 static void qrcode_start()
 {
-	sidelength=49;
-	qrcode_generate("haha",databuf,sidelength);
+	slen=49;
+	qrcode_generate("haha",databuf,slen);
 }
 static void qrcode_stop()
 {

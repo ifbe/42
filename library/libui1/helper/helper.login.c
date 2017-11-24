@@ -1,11 +1,4 @@
 #include "actor.h"
-void vt100_read(struct arena* win, int x0, int y0, int x1, int y1);
-void carvesolid_rect(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz
-);
 
 
 
@@ -30,7 +23,13 @@ void login_read_vbo(struct arena* win)
 }
 void login_read_pixel(struct arena* win)
 {
-	vt100_read(win, 0x4000, 0x4000, 0xc000, 0xc000);
+	int w = win->w;
+	int h = win->h;
+
+	drawsolid_rect(
+		win, 0xffffff,
+		w/4, h/4, w*3/4, h*3/4
+	);
 }
 void login_read(struct arena* win)
 {

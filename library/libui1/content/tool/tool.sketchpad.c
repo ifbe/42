@@ -1,14 +1,4 @@
 #include "actor.h"
-//
-void backgroundcolor(
-	void*, u32);
-void drawstring(
-	void*, void* str, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawdouble(
-	void*, double z, int size,
-	int x,int y, u32 fg, u32 bg);
-//
 double calculator(char* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
 double closestvalue(double first,double second);

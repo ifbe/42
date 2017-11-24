@@ -1,15 +1,4 @@
-#include "actor.h" 
-//
-void drawline(void*, int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_circle(void*, int x, int y, int r, u32 color);
-void carvesolid_prism4(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz
-);
+#include "actor.h"
 
 
 
@@ -77,22 +66,23 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	//rgb? bgr?
 	if( ((win->fmt)&0xffffff) == 0x626772)color = 0x256f8d;
 	else color = 0x8d6f25;
-	drawsolid_rect(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, color);
+	drawsolid_rect(win, color,
+		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
 
 	//heng
 	for(y=-9;y<10;y++)
 	{
-		drawline(win,
+		drawline(win, 0,
 			cx - half*2*9,	cy + half*2*y,
-			cx + half*2*9,	cy + half*2*y,	0);
+			cx + half*2*9,	cy + half*2*y);
 	}
 
 	//shu
 	for(x=-9;x<10;x++)
 	{
-		drawline(win,
+		drawline(win, 0,
 			cx + half*2*x,	cy - half*2*9,
-			cx + half*2*x,	cy + half*2*9,	0);
+			cx + half*2*x,	cy + half*2*9);
 	}
 
 	//dian
@@ -100,10 +90,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
 		{
-			drawsolid_circle(win,
-				x, y,
-				half/4, 0
-			);
+			drawsolid_circle(win, 0, x, y, half/4);
 		}
 	}
 
@@ -116,12 +103,8 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 			else if(data[(y+9)*19 + x+9] == 'w')color = 0xffffff;
 			else continue;
 
-			drawsolid_circle(win,
-				cx + half*2*x,
-				cy + half*2*y,
-				half,
-				color
-			);
+			drawsolid_circle(win, color,
+				cx + half*2*x, cy + half*2*y, half);
 		}
 	}
 }

@@ -1,20 +1,5 @@
 #include "actor.h"
 void rubikscube_generate(void*);
-//
-void drawdecimal(
-	void*, int data, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawrect(
-	void* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 bc, u32 fc);
-void carvesolid_rect(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz
-);
 
 
 
@@ -22,9 +7,9 @@ void carvesolid_rect(
 //l,r,f,b,u,d
 static u8 buffer[6][3][3];
 u32 rubikcolor[6] = {
-	0xff00, 0xff,		//l, r
+	0x00ff00, 0x0000ff,		//l, r
 	0xff0000, 0xfa8010,		//f, b
-	0xffffff, 0xffff00	//u, d
+	0xffffff, 0xffff00		//u, d
 };
 
 

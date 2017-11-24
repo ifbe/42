@@ -1,12 +1,4 @@
-#include "actor.h" 
-void drawrect(void*, int x1, int y1, int x2, int y2, u32 bc, u32 fc);
-void carvesolid_prism4(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz
-);
+#include "actor.h"
 
 
 
@@ -34,17 +26,13 @@ static unsigned char* table;
 
 
 
-static void cubie(
-	struct arena* win, int z,
+static void cubie(struct arena* win, int z,
 	int x1, int y1, int x2, int y2)
 {
 	u32 bodycolor = z>0?0xffffff:0;
-	drawrect(win,
-		x1, y1,
-		x2, y2,
-		bodycolor,
-		0x44444444
-	);
+
+	drawsolid_rect(win, bodycolor, x1, y1, x2, y2);
+	drawline_rect(win, 0x444444, x1, y1, x2, y2);
 }
 static void tetris_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {

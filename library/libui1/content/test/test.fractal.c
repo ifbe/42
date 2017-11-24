@@ -19,7 +19,10 @@ static void fractal_read_pixel(struct arena* win, struct actor* act, struct styl
 	w = (win->w) * (sty->wantw) / 0x10000;
 	h = (win->h) * (sty->wanth) / 0x10000;
 
-	drawrect(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, 0xff0000, 0xff00);
+	drawsolid_rect(win, 0xff0000,
+		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+	drawline_rect(win, 0x00ff00,
+		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
 }
 static void fractal_read_text(struct arena* win, struct actor* act, struct style* sty)
 {

@@ -1,18 +1,6 @@
 #include "actor.h"
 #define accuracy 18
 #define PI 3.1415926535897932384626433832795028841971693993151
-void matrixmultiply_4(float*, float*);
-void quaternionnormalize(float*);
-void quaternionrotate(float*, float*);
-//
-void vectornormalize(float*);
-void vectorcross(float*, float*);
-float vectordot(float*, float*);
-float vectorcosine(float*, float*);
-//
-double squareroot(double);
-double cosine(double);
-double sine(double);
 
 
 
@@ -491,7 +479,10 @@ void carvepoint_dodecahedron(
 }
 void carvepoint_icosahedron(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz)
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz)
 {
 	int j;
 	float m = 0.52573111211913360602566908484788;

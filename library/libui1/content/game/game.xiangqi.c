@@ -1,17 +1,4 @@
 #include "actor.h"
-void drawascii(
-	void*, u8 data, int size,
-	int x, int y, u32 fg, u32 bg);
-void drawline(void*, int x1,int y1,int x2,int y2, u32 color);
-void drawsolid_rect(void*, int x1, int y1, int x2, int y2, u32 color);
-void drawsolid_circle(void*, int x, int y, int r, u32 color);
-void carvesolid_prism4(
-	void* win, u32 color,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz
-);
 
 
 
@@ -187,40 +174,41 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
-	drawsolid_rect(win, cx-w/2, cy-h/2, cx+w/2, cy+h/2, temp);
+	drawsolid_rect(win, temp,
+		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
 
 	//heng
 	for(y=-5;y<5;y++)
 	{
-		drawline(win,
+		drawline(win, 0,
 			cx - half*8,	cy + half*(2*y+1),
-			cx + half*8,	cy + half*(2*y+1),	0);
+			cx + half*8,	cy + half*(2*y+1));
 	}
 
 	//shu
 	for(x=-4;x<5;x++)
 	{
-		drawline(win,
+		drawline(win, 0,
 			cx + x*half*2,	cy - half*9,
-			cx + x*half*2,	cy - half*1,	0);
-		drawline(win,
+			cx + x*half*2,	cy - half*1);
+		drawline(win, 0,
 			cx + x*half*2,	cy + half*9,
-			cx + x*half*2,	cy + half*1,	0);
+			cx + x*half*2,	cy + half*1);
 	}
 
 	//pie,na
-	drawline(win,
+	drawline(win, 0,
 		cx - half*2,	cy - half*9,
-		cx + half*2,	cy - half*5,	0);
-	drawline(win,
+		cx + half*2,	cy - half*5);
+	drawline(win, 0,
 		cx + half*2,	cy - half*9,
-		cx - half*2,	cy - half*5,	0);
-	drawline(win,
+		cx - half*2,	cy - half*5);
+	drawline(win, 0,
 		cx - half*2,	cy + half*9,
-		cx + half*2,	cy + half*5,	0);
-	drawline(win,
+		cx + half*2,	cy + half*5);
+	drawline(win, 0,
 		cx + half*2,	cy + half*9,
-		cx - half*2,	cy + half*5,	0);
+		cx - half*2,	cy + half*5);
 
 	//chess
 	for(y=0;y<10;y++)
@@ -245,12 +233,8 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
-			drawsolid_circle(win,
-				cx + (2*x-8)*half,
-				cy + (2*y-9)*half,
-				half,
-				chesscolor
-			);
+			drawsolid_circle(win, chesscolor,
+				cx + (2*x-8)*half, cy + (2*y-9)*half, half);
 
 			drawascii(
 				win, data[y][x], half/8,

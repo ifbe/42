@@ -1,21 +1,8 @@
 #include "actor.h"
-void drawline(void*,
-	int x1,int y1,
-	int x2,int y2,
-	u32 color);
-void drawsolid_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
-void drawline_rect(void*,
-	int x1, int y1,
-	int x2, int y2,
-	u32 color);
 
 
 
 
-//元件
 struct wirenet
 {
 	//link all chip on this pin
@@ -67,12 +54,15 @@ static void autowire(struct arena* win, int x1, int y1, int x2, int y2)
 
 static void circuit_read_pixel_battery(struct arena* win, int x, int y)
 {
-	drawline(win, x-8, y-4, x+8, y-4, 0xffffffff);
-	drawline(win, x-4, y+4, x+4, y+4, 0xffffffff);
+	drawline(win, 0xffffff,
+		x-8, y-4, x+8, y-4);
+	drawline(win, 0xffffff,
+		x-4, y+4, x+4, y+4);
 }
 static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
 {
-	drawline_rect(win, x-4, y-8, x+4, y+8, 0xffffffff);
+	drawline_rect(win, 0xffffff,
+		x-4, y-8, x+4, y+8);
 }
 static void circuit_read_pixel_element(struct arena* win, struct wirenet* this, int x, int y)
 {
@@ -197,10 +187,9 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct styl
 	h = (win->h) * (rel->wanth) / 0x10000;
 
 	//
-	drawsolid_rect(win,
+	drawsolid_rect(win, 0,
 		cx-w/2, cy-h/2,
-		cx+w/2, cy+h/2,
-		0
+		cx+w/2, cy+h/2
 	);
 	circuit_read_pixel_recursive(
 		win, wn, 0, 0,

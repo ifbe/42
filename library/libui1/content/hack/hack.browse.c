@@ -1,7 +1,4 @@
 #include "actor.h"
-void drawstring(
-	void*, void*, int size,
-	int x, int y, u32 fg, u32 bg);
 int netmgr_read();
 int netmgr_write(void*);
 
