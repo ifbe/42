@@ -1,189 +1,194 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
-target:
-	$(compiler) $(cflag) libbio/bio.chance.c
-	$(compiler) $(cflag) libbio/bio.c
-	$(compiler) $(cflag) libchem/chem.equation.c
-	$(compiler) $(cflag) libchem/chem.c
-	$(compiler) $(cflag) libflow/libmotion/motion.c
-	$(compiler) $(cflag) libflow/libnet/0.phy/phy.bt.c
-	$(compiler) $(cflag) libflow/libnet/0.phy/phy.eth.c
-	$(compiler) $(cflag) libflow/libnet/0.phy/phy.wlan.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.arp.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv4.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.ipv6.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.ipx.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.pppoe.c
-	$(compiler) $(cflag) libflow/libnet/1.link/link.slip.c
-	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.icmp.c
-	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.tcp.c
-	$(compiler) $(cflag) libflow/libnet/2.ip/ip46.udp.c
-	$(compiler) $(cflag) libflow/libnet/2.ip/ipx.spx.c
-	$(compiler) $(cflag) libflow/libnet/3.tran/tcp.ssh.c
-	$(compiler) $(cflag) libflow/libnet/3.tran/tcp.tls.c
-	$(compiler) $(cflag) libflow/libnet/3.tran/udp.quic.c
-	$(compiler) $(cflag) libflow/libnet/app/app.chat.c
-	$(compiler) $(cflag) libflow/libnet/app/app.raw.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.dl.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.ftp.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.http.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.proxy.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.rdp.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.rtmp.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.sql.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.vnc.c
-	$(compiler) $(cflag) libflow/libnet/app/tcp.ws.c
-	$(compiler) $(cflag) libflow/libnet/app/udp.dns.c
-	$(compiler) $(cflag) libflow/libnet/app/udp.hole.c
-	$(compiler) $(cflag) libflow/libnet/app/udp.tftp.c
-	$(compiler) $(cflag) libflow/libnet/net.c
-	$(compiler) $(cflag) libflow/libsound/sound.c
-	$(compiler) $(cflag) libflow/libvision/vision.c
-	$(compiler) $(cflag) libflow/flow.c
-	$(compiler) $(cflag) libmath/math.bigint.c
-	$(compiler) $(cflag) libmath/math.calc.c
-	$(compiler) $(cflag) libmath/math.matrix.c
-	$(compiler) $(cflag) libmath/math.notation.c
-	$(compiler) $(cflag) libmath/math.prime.c
-	$(compiler) $(cflag) libmath/math.quaternion.c
-	$(compiler) $(cflag) libmath/math.vector.c
-	$(compiler) $(cflag) libmath/math.c
-	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.aes.c
-	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.des.c
-	$(compiler) $(cflag) libmem/libalgo/crypt/crypt.rsa.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc8.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc16.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.crc32.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.md5.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha1.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha256.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.sha512.c
-	$(compiler) $(cflag) libmem/libalgo/hash/hash.string.c
-	$(compiler) $(cflag) libmem/libalgo/keyexch/keyexch.dh.c
-	$(compiler) $(cflag) libmem/libalgo/keyexch/keyexch.ecdhe.c
-	$(compiler) $(cflag) libmem/libalgo/search/search.bm.c
-	$(compiler) $(cflag) libmem/libalgo/search/search.kmp.c
-	$(compiler) $(cflag) libmem/libalgo/search/search.rough.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.bubble.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.gnome.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.heap.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.insert.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.merge.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.quick.c
-	$(compiler) $(cflag) libmem/libalgo/sort/sort.select.c
-	$(compiler) $(cflag) libmem/libalgo/transform/trfm.cosine.c
-	$(compiler) $(cflag) libmem/libalgo/transform/trfm.fourier.c
-	$(compiler) $(cflag) libmem/libalgo/transform/trfm.laplace.c
-	$(compiler) $(cflag) libmem/libdata/acodec/acodec.aac.c
-	$(compiler) $(cflag) libmem/libdata/acodec/acodec.mp3.c
-	$(compiler) $(cflag) libmem/libdata/vcodec/vcodec.avc.c
-	$(compiler) $(cflag) libmem/libdata/vcodec/vcodec.hevc.c
-	$(compiler) $(cflag) libmem/libdata/gcode/gcode.barcode.c
-	$(compiler) $(cflag) libmem/libdata/gcode/gcode.qrcode.c
-	$(compiler) $(cflag) libmem/libdata/tcode/tcode.base64.c
-	$(compiler) $(cflag) libmem/libdata/tcode/tcode.huffman.c
-	$(compiler) $(cflag) libmem/libdata/data.c
-	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.ape.c
-	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.mp3.c
-	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.ogg.c
-	$(compiler) $(cflag) libmem/libfmt/av1.audio/audio.wav.c
-	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.drum.c
-	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.flute.c
-	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.piano.c
-	$(compiler) $(cflag) libmem/libfmt/av1.tone/tone.violin.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.bmp.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.flif.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.heif.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.jpg.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.png.c
-	$(compiler) $(cflag) libmem/libfmt/av2.picture/pic.webp.c
-	$(compiler) $(cflag) libmem/libfmt/av2.video/video.avi.c
-	$(compiler) $(cflag) libmem/libfmt/av2.video/video.gif.c
-	$(compiler) $(cflag) libmem/libfmt/av2.video/video.mkv.c
-	$(compiler) $(cflag) libmem/libfmt/av2.video/video.mp4.c
-	$(compiler) $(cflag) libmem/libfmt/av2.video/video.rmvb.c
-	$(compiler) $(cflag) libmem/libfmt/av3.model/model.3mf.c
-	$(compiler) $(cflag) libmem/libfmt/av3.model/model.dwg.c
-	$(compiler) $(cflag) libmem/libfmt/av3.model/model.stl.c
-	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.7z.c
-	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.cpio.c
-	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.gz.c
-	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.tar.c
-	$(compiler) $(cflag) libmem/libfmt/it.comp/comp.zip.c
-	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.elf.c
-	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.macho.c
-	$(compiler) $(cflag) libmem/libfmt/it.exec/exec.pe.c
-	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.ext.c
-	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.fat.c
-	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.hfs.c
-	$(compiler) $(cflag) libmem/libfmt/it.fs/fs.ntfs.c
-	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.raw.c
-	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.vhd.c
-	$(compiler) $(cflag) libmem/libfmt/it.disk/disk.vmdk.c
-	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.apple.c
-	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.gpt.c
-	$(compiler) $(cflag) libmem/libfmt/it.pt/pt.mbr.c
-	$(compiler) $(cflag) libmem/libfmt/xx.cert/cert.pem.c
-	$(compiler) $(cflag) libmem/libfmt/xx.cert/cert.x509.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.doc.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.docx.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.latex.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.pdf.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.ppt.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.pptx.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.xls.c
-	$(compiler) $(cflag) libmem/libfmt/xx.doc/doc.xlsx.c
-	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.brd.c
-	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.dsn.c
-	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.pcbdoc.c
-	$(compiler) $(cflag) libmem/libfmt/xx.ee/ee.schdoc.c
-	$(compiler) $(cflag) libmem/libfmt/xx.font/font.fon.c
-	$(compiler) $(cflag) libmem/libfmt/xx.font/font.otf.c
-	$(compiler) $(cflag) libmem/libfmt/xx.font/font.ttf.c
-	$(compiler) $(cflag) libmem/libfmt/file.c
-	$(compiler) $(cflag) libmem/libgame/solve.2048.c
-	$(compiler) $(cflag) libmem/libgame/solve.chess.c
-	$(compiler) $(cflag) libmem/libgame/solve.rubikscube.c
-	$(compiler) $(cflag) libmem/libgame/solve.sudoku.c
-	$(compiler) $(cflag) libmem/liblang/assembly/asm.x64.c
-	$(compiler) $(cflag) libmem/liblang/assembly/asm.arm.c
-	$(compiler) $(cflag) libmem/liblang/program/prog.purec.c
-	$(compiler) $(cflag) libmem/liblang/program/prog.cpp.c
-	$(compiler) $(cflag) libmem/liblang/lang.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.arg.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.ascii.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.bigint.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.file.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.num.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.url.c
-	$(compiler) $(cflag) libmem/libstr/conv/conv.utf8.c
-	$(compiler) $(cflag) libmem/libstr/count/count.item.c
-	$(compiler) $(cflag) libmem/libstr/count/count.line.c
-	$(compiler) $(cflag) libmem/libstr/diff/diff.cmp.c
-	$(compiler) $(cflag) libmem/libstr/diff/diff.wild.c
-	$(compiler) $(cflag) libmem/libstr/move/move.copy.c
-	$(compiler) $(cflag) libmem/libstr/move/move.swap.c
-	$(compiler) $(cflag) libmem/libstr/str.c
-	$(compiler) $(cflag) libmem/memory.c
-	$(compiler) $(cflag) libphys/phys.elec.c
-	$(compiler) $(cflag) libphys/phys.mech.c
-	$(compiler) $(cflag) libphys/phys.c
-	$(compiler) $(cflag) libsys/sys.folder.c
-	$(compiler) $(cflag) libsys/sys.monitor.c
-	$(compiler) $(cflag) libsys/sys.shell.c
-	$(compiler) $(cflag) libsys/sys.c
-	$(compiler) $(cflag) libwire/wire.bt.c
-	$(compiler) $(cflag) libwire/wire.gpio.c
-	$(compiler) $(cflag) libwire/wire.i2c.c
-	$(compiler) $(cflag) libwire/wire.ir.c
-	$(compiler) $(cflag) libwire/wire.nfc.c
-	$(compiler) $(cflag) libwire/wire.pci.c
-	$(compiler) $(cflag) libwire/wire.spi.c
-	$(compiler) $(cflag) libwire/wire.uart.c
-	$(compiler) $(cflag) libwire/wire.usb.c
-	$(compiler) $(cflag) libwire/wire.wifi.c
-	$(compiler) $(cflag) libwire/wire.zigbee.c
-	$(compiler) $(cflag) libwire/wire.c
-	$(compiler) $(cflag) artery.c
+SRC = libbio/bio.chance.c \
+libbio/bio.c \
+libchem/chem.equation.c \
+libchem/chem.c \
+libflow/libmotion/motion.c \
+libflow/libnet/0.phy/phy.bt.c \
+libflow/libnet/0.phy/phy.eth.c \
+libflow/libnet/0.phy/phy.wlan.c \
+libflow/libnet/1.link/link.arp.c \
+libflow/libnet/1.link/link.ipv4.c \
+libflow/libnet/1.link/link.ipv6.c \
+libflow/libnet/1.link/link.ipx.c \
+libflow/libnet/1.link/link.pppoe.c \
+libflow/libnet/1.link/link.slip.c \
+libflow/libnet/2.ip/ip46.icmp.c \
+libflow/libnet/2.ip/ip46.tcp.c \
+libflow/libnet/2.ip/ip46.udp.c \
+libflow/libnet/2.ip/ipx.spx.c \
+libflow/libnet/3.tran/tcp.ssh.c \
+libflow/libnet/3.tran/tcp.tls.c \
+libflow/libnet/3.tran/udp.quic.c \
+libflow/libnet/app/app.chat.c \
+libflow/libnet/app/app.raw.c \
+libflow/libnet/app/tcp.dl.c \
+libflow/libnet/app/tcp.ftp.c \
+libflow/libnet/app/tcp.http.c \
+libflow/libnet/app/tcp.proxy.c \
+libflow/libnet/app/tcp.rdp.c \
+libflow/libnet/app/tcp.rtmp.c \
+libflow/libnet/app/tcp.sql.c \
+libflow/libnet/app/tcp.vnc.c \
+libflow/libnet/app/tcp.ws.c \
+libflow/libnet/app/udp.dns.c \
+libflow/libnet/app/udp.hole.c \
+libflow/libnet/app/udp.tftp.c \
+libflow/libnet/net.c \
+libflow/libsound/sound.c \
+libflow/libvision/vision.c \
+libflow/flow.c \
+libmath/math.bigint.c \
+libmath/math.calc.c \
+libmath/math.matrix.c \
+libmath/math.notation.c \
+libmath/math.prime.c \
+libmath/math.quaternion.c \
+libmath/math.vector.c \
+libmath/math.c \
+libmem/libalgo/crypt/crypt.aes.c \
+libmem/libalgo/crypt/crypt.des.c \
+libmem/libalgo/crypt/crypt.rsa.c \
+libmem/libalgo/hash/hash.crc8.c \
+libmem/libalgo/hash/hash.crc16.c \
+libmem/libalgo/hash/hash.crc32.c \
+libmem/libalgo/hash/hash.md5.c \
+libmem/libalgo/hash/hash.sha1.c \
+libmem/libalgo/hash/hash.sha256.c \
+libmem/libalgo/hash/hash.sha512.c \
+libmem/libalgo/hash/hash.string.c \
+libmem/libalgo/keyexch/keyexch.dh.c \
+libmem/libalgo/keyexch/keyexch.ecdhe.c \
+libmem/libalgo/search/search.bm.c \
+libmem/libalgo/search/search.kmp.c \
+libmem/libalgo/search/search.rough.c \
+libmem/libalgo/sort/sort.bubble.c \
+libmem/libalgo/sort/sort.gnome.c \
+libmem/libalgo/sort/sort.heap.c \
+libmem/libalgo/sort/sort.insert.c \
+libmem/libalgo/sort/sort.merge.c \
+libmem/libalgo/sort/sort.quick.c \
+libmem/libalgo/sort/sort.select.c \
+libmem/libalgo/transform/trfm.cosine.c \
+libmem/libalgo/transform/trfm.fourier.c \
+libmem/libalgo/transform/trfm.laplace.c \
+libmem/libdata/acodec/acodec.aac.c \
+libmem/libdata/acodec/acodec.mp3.c \
+libmem/libdata/vcodec/vcodec.avc.c \
+libmem/libdata/vcodec/vcodec.hevc.c \
+libmem/libdata/gcode/gcode.barcode.c \
+libmem/libdata/gcode/gcode.qrcode.c \
+libmem/libdata/tcode/tcode.base64.c \
+libmem/libdata/tcode/tcode.huffman.c \
+libmem/libdata/data.c \
+libmem/libfmt/av1.audio/audio.ape.c \
+libmem/libfmt/av1.audio/audio.mp3.c \
+libmem/libfmt/av1.audio/audio.ogg.c \
+libmem/libfmt/av1.audio/audio.wav.c \
+libmem/libfmt/av1.tone/tone.drum.c \
+libmem/libfmt/av1.tone/tone.flute.c \
+libmem/libfmt/av1.tone/tone.piano.c \
+libmem/libfmt/av1.tone/tone.violin.c \
+libmem/libfmt/av2.picture/pic.bmp.c \
+libmem/libfmt/av2.picture/pic.flif.c \
+libmem/libfmt/av2.picture/pic.heif.c \
+libmem/libfmt/av2.picture/pic.jpg.c \
+libmem/libfmt/av2.picture/pic.png.c \
+libmem/libfmt/av2.picture/pic.webp.c \
+libmem/libfmt/av2.video/video.avi.c \
+libmem/libfmt/av2.video/video.gif.c \
+libmem/libfmt/av2.video/video.mkv.c \
+libmem/libfmt/av2.video/video.mp4.c \
+libmem/libfmt/av2.video/video.rmvb.c \
+libmem/libfmt/av3.model/model.3mf.c \
+libmem/libfmt/av3.model/model.dwg.c \
+libmem/libfmt/av3.model/model.stl.c \
+libmem/libfmt/it.comp/comp.7z.c \
+libmem/libfmt/it.comp/comp.cpio.c \
+libmem/libfmt/it.comp/comp.gz.c \
+libmem/libfmt/it.comp/comp.tar.c \
+libmem/libfmt/it.comp/comp.zip.c \
+libmem/libfmt/it.exec/exec.elf.c \
+libmem/libfmt/it.exec/exec.macho.c \
+libmem/libfmt/it.exec/exec.pe.c \
+libmem/libfmt/it.fs/fs.ext.c \
+libmem/libfmt/it.fs/fs.fat.c \
+libmem/libfmt/it.fs/fs.hfs.c \
+libmem/libfmt/it.fs/fs.ntfs.c \
+libmem/libfmt/it.disk/disk.raw.c \
+libmem/libfmt/it.disk/disk.vhd.c \
+libmem/libfmt/it.disk/disk.vmdk.c \
+libmem/libfmt/it.pt/pt.apple.c \
+libmem/libfmt/it.pt/pt.gpt.c \
+libmem/libfmt/it.pt/pt.mbr.c \
+libmem/libfmt/xx.cert/cert.pem.c \
+libmem/libfmt/xx.cert/cert.x509.c \
+libmem/libfmt/xx.doc/doc.doc.c \
+libmem/libfmt/xx.doc/doc.docx.c \
+libmem/libfmt/xx.doc/doc.latex.c \
+libmem/libfmt/xx.doc/doc.pdf.c \
+libmem/libfmt/xx.doc/doc.ppt.c \
+libmem/libfmt/xx.doc/doc.pptx.c \
+libmem/libfmt/xx.doc/doc.xls.c \
+libmem/libfmt/xx.doc/doc.xlsx.c \
+libmem/libfmt/xx.ee/ee.brd.c \
+libmem/libfmt/xx.ee/ee.dsn.c \
+libmem/libfmt/xx.ee/ee.pcbdoc.c \
+libmem/libfmt/xx.ee/ee.schdoc.c \
+libmem/libfmt/xx.font/font.fon.c \
+libmem/libfmt/xx.font/font.otf.c \
+libmem/libfmt/xx.font/font.ttf.c \
+libmem/libfmt/file.c \
+libmem/libgame/solve.2048.c \
+libmem/libgame/solve.chess.c \
+libmem/libgame/solve.rubikscube.c \
+libmem/libgame/solve.sudoku.c \
+libmem/liblang/assembly/asm.x64.c \
+libmem/liblang/assembly/asm.arm.c \
+libmem/liblang/program/prog.purec.c \
+libmem/liblang/program/prog.cpp.c \
+libmem/liblang/lang.c \
+libmem/libstr/conv/conv.arg.c \
+libmem/libstr/conv/conv.ascii.c \
+libmem/libstr/conv/conv.bigint.c \
+libmem/libstr/conv/conv.file.c \
+libmem/libstr/conv/conv.num.c \
+libmem/libstr/conv/conv.url.c \
+libmem/libstr/conv/conv.utf8.c \
+libmem/libstr/count/count.item.c \
+libmem/libstr/count/count.line.c \
+libmem/libstr/diff/diff.cmp.c \
+libmem/libstr/diff/diff.wild.c \
+libmem/libstr/move/move.copy.c \
+libmem/libstr/move/move.swap.c \
+libmem/libstr/str.c \
+libmem/memory.c \
+libphys/phys.elec.c \
+libphys/phys.mech.c \
+libphys/phys.c \
+libsys/sys.folder.c \
+libsys/sys.monitor.c \
+libsys/sys.shell.c \
+libsys/sys.c \
+libwire/wire.bt.c \
+libwire/wire.gpio.c \
+libwire/wire.i2c.c \
+libwire/wire.ir.c \
+libwire/wire.nfc.c \
+libwire/wire.pci.c \
+libwire/wire.spi.c \
+libwire/wire.uart.c \
+libwire/wire.usb.c \
+libwire/wire.wifi.c \
+libwire/wire.zigbee.c \
+libwire/wire.c \
+artery.c
+OBJ = $(patsubst %.c,%.o,$(SRC))
+
+target: $(OBJ)
+%.o: %.c
+	$(compiler) $(cflag) $<
+
 clean:
 	rm -f *.o *.a

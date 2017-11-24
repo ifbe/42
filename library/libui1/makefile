@@ -1,68 +1,72 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
+SRC = content/game/game.2048.c \
+content/game/game.chess.c \
+content/game/game.ooxx.c \
+content/game/game.rubikscube.c \
+content/game/game.snake.c \
+content/game/game.sudoku.c \
+content/game/game.tetris.c \
+content/game/game.weiqi.c \
+content/game/game.xiangqi.c \
+content/hack/hack.algo.c \
+content/hack/hack.browse.c \
+content/hack/hack.editor.c \
+content/hack/hack.hex.c \
+content/hack/hack.tree.c \
+content/hack/hack.joystick.c \
+content/hack/hack.keyboard.c \
+content/test/test.color.c \
+content/test/test.doodle.c \
+content/test/test.font.c \
+content/test/test.fractal.c \
+content/test/test.pure.c \
+content/tool/tool.3dmodel.c \
+content/tool/tool.calculator.c \
+content/tool/tool.camera.c \
+content/tool/tool.circuit.c \
+content/tool/tool.qrcode.c \
+content/tool/tool.sketchpad.c \
+content/tool/tool.spectrum.c \
+content/content.c \
+helper/helper.bgfg.c \
+helper/helper.input.c \
+helper/helper.login.c \
+helper/helper.term.c \
+helper/helper.vt100.c \
+helper/helper.win.c \
+helper/helper.c \
+lib1d/html/html.shape.c \
+lib1d/json/json.shape.c \
+lib1d/latex/latex.shape.c \
+lib1d/xaml/xaml.shape.c \
+lib1d/lib1d.c \
+lib2d/draw/draw.ascii.c \
+lib2d/draw/draw.color.c \
+lib2d/draw/draw.icon.c \
+lib2d/draw/draw.shape.c \
+lib2d/draw/draw.ttf.c \
+lib2d/photo/photo.blur.c \
+lib2d/photo/photo.channel.c \
+lib2d/photo/photo.convert.c \
+lib2d/photo/photo.gray.c \
+lib2d/photo/photo.mosaic.c \
+lib2d/photo/photo.rotate.c \
+lib2d/photo/photo.scale.c \
+lib2d/lib2d.c \
+lib3d/carve/carve.point.c \
+lib3d/carve/carve.line.c \
+lib3d/carve/carve.shape.c \
+lib3d/model/model.magnify.c \
+lib3d/model/model.minify.c \
+lib3d/model/model.rotate.c \
+lib3d/lib3d.c \
+actor.c
+OBJ = $(patsubst %.c,%.o,$(SRC))
 
-target:
-	$(compiler) $(cflag) content/game/game.2048.c
-	$(compiler) $(cflag) content/game/game.chess.c
-	$(compiler) $(cflag) content/game/game.ooxx.c
-	$(compiler) $(cflag) content/game/game.rubikscube.c
-	$(compiler) $(cflag) content/game/game.snake.c
-	$(compiler) $(cflag) content/game/game.sudoku.c
-	$(compiler) $(cflag) content/game/game.tetris.c
-	$(compiler) $(cflag) content/game/game.weiqi.c
-	$(compiler) $(cflag) content/game/game.xiangqi.c
-	$(compiler) $(cflag) content/hack/hack.algo.c
-	$(compiler) $(cflag) content/hack/hack.browse.c
-	$(compiler) $(cflag) content/hack/hack.editor.c
-	$(compiler) $(cflag) content/hack/hack.hex.c
-	$(compiler) $(cflag) content/hack/hack.tree.c
-	$(compiler) $(cflag) content/hack/hack.joystick.c
-	$(compiler) $(cflag) content/hack/hack.keyboard.c
-	$(compiler) $(cflag) content/test/test.color.c
-	$(compiler) $(cflag) content/test/test.doodle.c
-	$(compiler) $(cflag) content/test/test.font.c
-	$(compiler) $(cflag) content/test/test.fractal.c
-	$(compiler) $(cflag) content/test/test.pure.c
-	$(compiler) $(cflag) content/tool/tool.3dmodel.c
-	$(compiler) $(cflag) content/tool/tool.calculator.c
-	$(compiler) $(cflag) content/tool/tool.camera.c
-	$(compiler) $(cflag) content/tool/tool.circuit.c
-	$(compiler) $(cflag) content/tool/tool.qrcode.c
-	$(compiler) $(cflag) content/tool/tool.sketchpad.c
-	$(compiler) $(cflag) content/tool/tool.spectrum.c
-	$(compiler) $(cflag) content/content.c
-	$(compiler) $(cflag) helper/helper.bgfg.c
-	$(compiler) $(cflag) helper/helper.input.c
-	$(compiler) $(cflag) helper/helper.login.c
-	$(compiler) $(cflag) helper/helper.term.c
-	$(compiler) $(cflag) helper/helper.vt100.c
-	$(compiler) $(cflag) helper/helper.win.c
-	$(compiler) $(cflag) helper/helper.c
-	$(compiler) $(cflag) lib1d/html/html.shape.c
-	$(compiler) $(cflag) lib1d/json/json.shape.c
-	$(compiler) $(cflag) lib1d/latex/latex.shape.c
-	$(compiler) $(cflag) lib1d/xaml/xaml.shape.c
-	$(compiler) $(cflag) lib1d/lib1d.c
-	$(compiler) $(cflag) lib2d/draw/draw.ascii.c
-	$(compiler) $(cflag) lib2d/draw/draw.color.c
-	$(compiler) $(cflag) lib2d/draw/draw.icon.c
-	$(compiler) $(cflag) lib2d/draw/draw.shape.c
-	$(compiler) $(cflag) lib2d/draw/draw.ttf.c
-	$(compiler) $(cflag) lib2d/photo/photo.blur.c
-	$(compiler) $(cflag) lib2d/photo/photo.channel.c
-	$(compiler) $(cflag) lib2d/photo/photo.convert.c
-	$(compiler) $(cflag) lib2d/photo/photo.gray.c
-	$(compiler) $(cflag) lib2d/photo/photo.mosaic.c
-	$(compiler) $(cflag) lib2d/photo/photo.rotate.c
-	$(compiler) $(cflag) lib2d/photo/photo.scale.c
-	$(compiler) $(cflag) lib2d/lib2d.c
-	$(compiler) $(cflag) lib3d/carve/carve.point.c
-	$(compiler) $(cflag) lib3d/carve/carve.line.c
-	$(compiler) $(cflag) lib3d/carve/carve.shape.c
-	$(compiler) $(cflag) lib3d/model/model.magnify.c
-	$(compiler) $(cflag) lib3d/model/model.minify.c
-	$(compiler) $(cflag) lib3d/model/model.rotate.c
-	$(compiler) $(cflag) lib3d/lib3d.c
-	$(compiler) $(cflag) actor.c
+target: $(OBJ)
+%.o: %.c
+	$(compiler) $(cflag) $<
+
 clean:
 	rm -f *.o *.a
