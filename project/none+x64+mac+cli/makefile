@@ -1,8 +1,6 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/init \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libboot0 none \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
@@ -24,7 +22,6 @@ all:
 	make -s program
 a:
 	libtool -static -o 42.a \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -36,7 +33,6 @@ a:
 dylib:
 	libtool -dynamic -macosx_version_min 10.12 \
 	-o 42.dylib \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -48,7 +44,6 @@ dylib:
 	-lm -lc
 program:
 	clang \
-	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

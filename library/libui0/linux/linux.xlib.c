@@ -328,7 +328,7 @@ void windowstart(struct window* this)
 			ev.data.l[1] = (void*)this - (void*)theone;
 			XSendEvent(dsp, theone->fd, False, 0, (void*)&ev);
 			XFlush(dsp);	//must
-			printf("%llx\n",this);
+			printf("%llx\n", (u64)this);
 		}
 	}
 }

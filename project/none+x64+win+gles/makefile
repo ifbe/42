@@ -1,10 +1,6 @@
 library?=../../library
 datafile?=../../datafile
 all:
-	make -s -C $(library)/init0 \
-	cflag="-c -O2"
-	make -s -C $(library)/init1 \
-	cflag="-c -O2"
 	make -s -C $(library)/libboot0 wincmd \
 	cflag="-c -O2"
 	make -s -C $(library)/libboot1 \
@@ -26,8 +22,6 @@ all:
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/init0/startapp.o \
-	$(library)/init1/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -38,8 +32,6 @@ a:
 	$(library)/libui1/*.o
 dll:
 	g++ -shared -o 42.dll \
-	$(library)/init0/startapp.o \
-	$(library)/init1/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -53,8 +45,6 @@ program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
 	$(datafile)/42.res \
-	$(library)/init0/startapp.o \
-	$(library)/init0/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

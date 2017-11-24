@@ -1,7 +1,6 @@
 library?=../../library
 res?=../../res
 all:
-	make -s -C $(library)/init
 	make -s -C $(library)/libboot0 none
 	make -s -C $(library)/libboot1
 	make -s -C $(library)/libhard0 x64
@@ -15,7 +14,6 @@ all:
 	make -s program
 a:
 	libtool -static -o 42.a \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -26,7 +24,6 @@ a:
 	$(library)/libui1/*.o
 dylib:
 	libtool -dynamic -o 42.dylib \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -37,7 +34,6 @@ dylib:
 	$(library)/libui1/*.o
 program:
 	clang -framework Foundation \
-	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

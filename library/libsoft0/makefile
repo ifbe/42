@@ -17,6 +17,7 @@ bare:
 	$(compiler) $(cflag) bare/bare.system.signal.c
 	$(compiler) $(cflag) bare/bare.system.thread.c
 	$(compiler) $(cflag) bare/bare.system.time.c
+	$(compiler) $(cflag) bare/bare.system.watcher.c
 	$(compiler) $(cflag) bare/bare.wire.bt.c
 	$(compiler) $(cflag) bare/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/bare.wire.spi.c

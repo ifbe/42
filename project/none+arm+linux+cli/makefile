@@ -1,7 +1,5 @@
 library?=../../library
 all:
-	make -s -C $(library)/init \
-	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libboot0 none \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libboot1 \
@@ -23,7 +21,6 @@ all:
 	make -s program
 a:
 	ar crs 42.a \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -34,7 +31,6 @@ a:
 	$(library)/libui1/*.o
 so:
 	gcc -shared -o 42.so \
-	$(library)/init/startapp.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -45,7 +41,6 @@ so:
 	$(library)/libui1/*.o
 program:
 	gcc -o a.out \
-	$(library)/init/*.o \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

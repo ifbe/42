@@ -1,7 +1,6 @@
 library?=../../library
+linker?=ld
 linux:
-	make -s -C $(library)/init bare \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot0 bare \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
@@ -11,28 +10,15 @@ linux:
 	make -s -C $(library)/libhard1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libsoft0 bare \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
+	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
+	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui0 barecli \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
+	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector"
-	ld -T link.ld \
-	$(library)/init/startbare.o \
-	$(library)/init/main.o \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
-	-o 42.bin
+	cflag="-c -O2 -fPIC -fno-stack-protector -I."
+	make -s link
 cross:
-	make -s -C $(library)/init bare \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot0 bare \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
@@ -42,17 +28,19 @@ cross:
 	make -s -C $(library)/libhard1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libsoft0 bare \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
+	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
+	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui0 barecli \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
+	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
-	x86_64-elf-ld -T link.ld \
-	$(library)/init/startbare.o \
-	$(library)/init/main.o \
-	$(library)/libboot0/*.o \
+	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
+	make -s link compiler=x86_64-elf-ld
+link:
+	$(linker) -T link.ld \
+	$(library)/libboot0/startbare.o \
+	$(library)/libboot0/basic.o \
+	$(library)/libboot0/print.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
 	$(library)/libhard1/*.o \

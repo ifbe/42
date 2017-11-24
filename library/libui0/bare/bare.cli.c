@@ -28,7 +28,6 @@ void windowstart(struct window* win)
 	win->w = 80;
 	win->h = 25;
 	win->d = 0;
-	win->dim = 1;
 }
 void windowstop()
 {

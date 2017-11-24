@@ -4,6 +4,7 @@ cflag ?= -c -O2 -fPIC
 .PHONY:bare
 bare:
 	rm -f *.o
+	$(compiler) $(cflag) startbare.c
 	$(compiler) $(cflag) basic.c
 	$(compiler) $(cflag) bare/print.c
 
