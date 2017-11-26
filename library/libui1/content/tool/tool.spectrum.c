@@ -15,13 +15,13 @@ u32 getrandom();
 
 
 //before
-static int maxpower;
+static int maxamp;
 static u16* pcmin;
 static u16* pcmout;
 //after
 static double* real;
 static double* imag;
-static double* power;
+static double* amplitude;
 static double* phase;
 //
 static int area=0;
@@ -41,7 +41,7 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 		for(x=0;x<1024;x++)
 		{
 			if(pcmin[x]>32768)continue;
-			y = pcmin[x] *height /maxpower /4;
+			y = pcmin[x] *height /maxamp /4;
 			line(win,
 				x*width/1024, (height/4) - y,
 				x*width/1024, (height/4) + y,
@@ -57,8 +57,8 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 		cc = cosine(t) * 256;
 		ss = -sine(t) * 256;
 		drawline(win, 0xffffff,
-			256 + (int)(cc * (1.0 - 2*power[x])),
-			256 + (int)(ss * (1.0 - 2*power[x])),
+			256 + (int)(cc * (1.0 - 2*amplitude[x])),
+			256 + (int)(ss * (1.0 - 2*amplitude[x])),
 			256 + (int)cc,
 			256 + (int)ss
 		);
@@ -77,7 +77,7 @@ static void spectrum_read_text(struct arena* win, struct actor* act, struct styl
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
 	{
-		y = h - (int)(real[x] * (double)h / (double)maxpower);
+		y = h - (int)(real[x] * (double)h / (double)maxamp);
 		for(;y<h;y++)
 		{
 			p[((y*w + x)<<2) + 3] =  0x2;
@@ -91,23 +91,9 @@ static void spectrum_read(struct arena* win, struct actor* act, struct style* re
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		spectrum_read_text(win, act, rel);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		spectrum_read_html(win, act, rel);
-	}
-
-	//pixel
-	else
-	{
-		spectrum_read_pixel(win, act, rel);
-	}
+	if(fmt == 0x74786574)spectrum_read_text(win, act, rel);
+	else if(fmt == 0x6c6d7468)spectrum_read_html(win, act, rel);
+	else spectrum_read_pixel(win, act, rel);
 }
 
 
@@ -126,9 +112,9 @@ void spectrum_random()
 	for(j=0;j<1024;j++)
 	{
 		//say("%lf	%lf\n", real[j], imag[j]);
-		power[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
+		amplitude[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
 	}
-	//say("%lf,%lf,%lf,%lf\n",power[0],power[1],power[2],power[3]);
+	//say("%lf,%lf,%lf,%lf\n",amplitude[0],amplitude[1],amplitude[2],amplitude[3]);
 }
 static void spectrum_write(struct event* ev)
 {
@@ -183,7 +169,7 @@ static void spectrum_into()
 static void spectrum_start()
 {
 	int j;
-	maxpower = 65536;
+	maxamp = 65536;
 
 	//
 	startsound(44100, 2, pcmin, 0x100000);
@@ -199,7 +185,7 @@ void spectrum_create(void* uibuf,void* addr)
 	pcmout=(void*)(uibuf+0x340000);
 	real=(double*)(uibuf+0x380000);
 	imag=(double*)(uibuf+0x3a0000);
-	power=(double*)(uibuf+0x3c0000);
+	amplitude=(double*)(uibuf+0x3c0000);
 	phase=(double*)(uibuf+0x3e0000);
 
 	p->type = hex32('t', 'o', 'o', 'l');

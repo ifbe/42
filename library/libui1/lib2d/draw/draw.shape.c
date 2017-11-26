@@ -60,27 +60,24 @@ void drawline(struct arena* win, u32 rgb,
 	}
 }
 void drawline_bezier(struct arena* win, u32 rgb,
-	int ax, int ay, int bx, int by, int cx, int cy)
+	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;
-	int width;
-	int height;
+	int width = win->w;
+	int height = win->h;
 	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
 
 	for(t=0;t<1000;t++)
 	{
-		x = (1000-t)*(1000-t)*ax + 2*t*(1000-t)*cx + t*t*bx;
+		x = (1000-t)*(1000-t)*x1 + 2*t*(1000-t)*xc + t*t*x2;
 		x /= 1000*1000;
 		if(x<0|x>=width)continue;
 
-		y = (1000-t)*(1000-t)*ay + 2*t*(1000-t)*cy + t*t*by;
+		y = (1000-t)*(1000-t)*y1 + 2*t*(1000-t)*yc + t*t*y2;
 		y /= 1000*1000;
 		if(y<0|y>=height)continue;
 
-		buf[y*width + x] = 0xff00;
+		buf[y*width + x] = rgb;
 	}
 }
 
@@ -284,6 +281,9 @@ void drawsolid_sector(struct arena* win, u32 rgb,
 
 
 
+void drawaxis(struct arena* win)
+{
+}
 void select_2d(struct arena* win, struct style* sty)
 {
 	int cx = (win->w) * (sty->cx) / 0x10000;

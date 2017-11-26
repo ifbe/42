@@ -44,8 +44,53 @@ void carvepoint(
 
 	index[0] = pcount;
 }
-void carvepoint_bezier()
+void carvepoint_bezier(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float xc, float yc, float zc)
 {
+	int j;
+	float t;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	u32 pcount = win->info[8];
+	u32 ncount = win->info[9];
+	u32 ccount = win->info[10];
+	//u32 tcount = win->info[11];
+	u32 icount = win->info[12];
+
+	void* buf = (void*)(win->buf);
+	float* vertex = buf + 0x800000 + (pcount*12);
+	float* normal = buf + 0x900000 + (ncount*12);
+	float* color  = buf + 0xa00000 + (ccount*12);
+	u16* index    = buf + 0xc00000 + (icount*2);
+
+	win->info[8] += accuracy+1;
+	win->info[9] += accuracy+1;
+	win->info[10] += accuracy+1;
+	win->info[12] += accuracy+1;
+
+	for(j=0;j<=accuracy;j++)
+	{
+		t = (float)j / accuracy;
+
+		vertex[3*j+0] = (1.0-t)*(1.0-t)*x1 + 2*t*(1.0-t)*xc + t*t*x2;
+		vertex[3*j+1] = (1.0-t)*(1.0-t)*y1 + 2*t*(1.0-t)*yc + t*t*y2;
+		vertex[3*j+2] = (1.0-t)*(1.0-t)*z1 + 2*t*(1.0-t)*zc + t*t*z2;
+
+		normal[3*j+0] = 0.0;
+		normal[3*j+1] = 0.0;
+		normal[3*j+2] = 1.0;
+
+		color[3*j+0] = rr;
+		color[3*j+1] = gg;
+		color[3*j+2] = bb;
+
+		index[j+0] = pcount + j;
+	}
 }
 
 
@@ -257,7 +302,11 @@ void carvepoint_prism5()
 void carvepoint_prism6()
 {
 }
-void carvepoint_cask()
+void carvepoint_cask(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 }
 void carvepoint_cylinder(

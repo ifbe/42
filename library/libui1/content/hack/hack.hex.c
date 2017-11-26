@@ -1,5 +1,5 @@
 #include "actor.h"
-void background1(void*);
+//void background1(void*);
 
 
 
@@ -115,7 +115,7 @@ static void floatarea(struct arena* win)
 }
 static void hex_read_pixel(struct arena* win)
 {
-	background1(win);
+	//background1(win);
 	showdata(win);
 	floatarea(win);
 }
@@ -545,7 +545,7 @@ static void hex_stop()
 void hex_create(void* uibuf,void* addr)
 {
 	struct actor* p = addr;
-	databuf = uibuf+0x500000;
+	databuf = uibuf;
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('h', 'e', 'x', 0);

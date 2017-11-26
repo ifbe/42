@@ -1,18 +1,6 @@
 #include "actor.h"
 #define accuracy 18
 #define PI 3.1415926535897932384626433832795028841971693993151
-void matrixmultiply_4(float*, float*);
-void quaternionnormalize(float*);
-void quaternionrotate(float*, float*);
-//
-void vectornormalize(float*);
-void vectorcross(float*, float*);
-float vectordot(float*, float*);
-float vectorcosine(float*, float*);
-//
-double squareroot(double);
-double cosine(double);
-double sine(double);
 
 
 
@@ -90,9 +78,9 @@ void carvesolid_triangle(
 }
 void carvesolid_rect(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,	//center xyz
-	float rx, float ry, float rz,	//width = |rvector|*2
-	float fx, float fy, float fz)	//height = |fvector|*2
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;

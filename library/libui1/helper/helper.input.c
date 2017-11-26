@@ -226,15 +226,35 @@ int keyboard_explain(struct arena* win, struct event* ev)
 	}
 	return j;
 }
-int input_explain(struct arena* win, struct event* ev)
+int input_write(struct arena* win, struct event* ev)
 {
-	int ret = keyboard_explain(win, ev);
+	int ret;
+
+	if(win->fmt == hex32('c','l','i',0))
+	{
+		if(ev->what == hex32('c','h','a','r'))
+		{
+			term_write(ev);
+		}
+		return 0;
+	}
+
+	ret = keyboard_explain(win, ev);
 	if(ret != 0)return 0;
 
 	if(win->cw == 4)
 	{
 		ret = point_explain(win, ev);
 		if(ret != 0)return 0;
+	}
+
+	if(win->irel == 0)
+	{
+		if(ev->what == hex32('c','h','a','r'))
+		{
+			term_write(ev);
+		}
+		return 0;
 	}
 
 	return 1;

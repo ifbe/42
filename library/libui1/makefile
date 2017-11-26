@@ -16,6 +16,7 @@ content/hack/hack.hex.c \
 content/hack/hack.tree.c \
 content/hack/hack.joystick.c \
 content/hack/hack.keyboard.c \
+content/test/test.codeimg.c \
 content/test/test.color.c \
 content/test/test.doodle.c \
 content/test/test.font.c \
@@ -42,7 +43,6 @@ lib1d/latex/latex.shape.c \
 lib1d/xaml/xaml.shape.c \
 lib1d/lib1d.c \
 lib2d/draw/draw.ascii.c \
-lib2d/draw/draw.color.c \
 lib2d/draw/draw.icon.c \
 lib2d/draw/draw.shape.c \
 lib2d/draw/draw.ttf.c \

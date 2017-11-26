@@ -26,7 +26,7 @@ void act_at(void*, void*);
 //
 void login_read(void*);
 void term_write(void*);
-int input_explain(void*, void*);
+int input_write(void*, void*);
 
 
 
@@ -80,9 +80,9 @@ int actorread_one(struct arena* win)
 
 		if(rel->selftype == __act__)
 		{
+			act = (void*)(rel->selfchip);
 			st = (void*)(rel->destfoot);
 			pl = (void*)(rel->selffoot);
-			act = (void*)(rel->selfchip);
 			//say("%x,%x,%x,%x\n", canvas, act, st, pl);
 
 			act->read(canvas, act, st, pl);
@@ -102,7 +102,7 @@ int actorread_one(struct arena* win)
 	}
 
 	//fg
-	//foreground()
+	//???
 
 theend:
 	arenawrite(win, &arena[0]);
@@ -138,7 +138,7 @@ int actorwrite(struct event* ev)
 	struct relation* rel;
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
-	//
+	//window event
 	if(((ev->what)&0xff) == 'w')
 	{
 		if(ev->what == hex32('w','+',0,0))win_add(ev->why, ev->where);
@@ -147,29 +147,15 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
-	//
+	//pre process
 	if(ev->where < 0xffff)win = &arena[1];
 	else win = (void*)(ev->where);
 
-	//cli
-	if(win->fmt == hex32('c','l','i',0))
-	{
-		term_write(ev);
-		return 0;
-	}
-
-	//
-	ret = input_explain(win, ev);
+	ret = input_write(win, ev);
 	if(ret == 0)return 0;
 
-	//
+	//real process
 	rel = win->irel;
-	if(rel == 0)
-	{
-		term_write(ev);
-		return 0;
-	}
-
 	while(1)
 	{
 		if(rel->samepinnextchip == 0)break;

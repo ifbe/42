@@ -24,6 +24,8 @@ void weiqi_delete();
 void xiangqi_create(u8*,u8*);
 void xiangqi_delete();
 //test
+void codeimg_create(u8*,u8*);
+void codeimg_delete();
 void color_create(u8*,u8*);
 void color_delete();
 void doodle_create(u8*,u8*);
@@ -121,6 +123,10 @@ int content_create(u8* addr)
 	tree_create(addr, temp);
 	temp += 0x100;
 
+	//test.codeimg
+	codeimg_create(addr, temp);
+	temp += 0x100;
+
 	//test.color
 	color_create(addr, temp);
 	temp += 0x100;
@@ -187,6 +193,7 @@ void content_delete()
 	browse_delete();
 	algorithm_delete();
 
+	codeimg_delete();
 	color_delete();
 	doodle_delete();
 	font_delete();

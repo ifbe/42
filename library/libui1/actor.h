@@ -177,17 +177,20 @@ struct style
 
 
 
-void background(struct arena* win);
-void foreground(struct arena* win);
 void select_1d(struct arena* win, struct style* sty);
 void select_2d(struct arena* win, struct style* sty);
 void select_3d(struct arena* win, struct style* sty);
+
+void background(struct arena* win);
+void foreground(struct arena* win);
+void drawicon_1(struct arena* win, int x0, int y0, int x1, int y1);
 
 void drawascii(struct arena* win, u8 data, int size,
 	int x, int y, u32 fg, u32 bg
 );
 void drawbyte(struct arena*, u8 data, int size,
-	int x, int y, u32 fg, u32 bg);
+	int x, int y, u32 fg, u32 bg
+);
 void drawstring(struct arena*, char* str, int size,
 	int x, int y, u32 fg, u32 bg
 );
@@ -237,6 +240,22 @@ void drawsolid_sector(struct arena* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end
 );		//center, radius, angle1, angle2
 
+void carvepoint(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz
+);
+void carvepoint_bezier(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float xc, float yc, float zc
+);
+void carvepoint_triangle(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3
+);
 void carvepoint_rect(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -250,6 +269,18 @@ void carvepoint_circle(
 	float ux, float uy, float uz
 );
 void carvepoint_cone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvepoint_cask(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvepoint_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -269,18 +300,73 @@ void carvepoint_icosahedron(
 	float fx, float fy, float fz,
 	float ux, float uy, float uz
 );
-
-void carveline_dodecahedron(
+void carvepoint_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
-	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+
+void carveline(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2
+);
+void carveline_bezier(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float xc, float yc, float zc
+);
+void carveline_special(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz,
+	float sa, float da
+);
+void carveline_triangle(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3
+);
+void carveline_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz
+);
+void carveline_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
 	float ux, float uy, float uz
 );
 void carveline_cone(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carveline_prism4(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carveline_cylinder(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carveline_dodecahedron(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
 	float ux, float uy, float uz
 );
 void carveline_icosahedron(
@@ -290,12 +376,36 @@ void carveline_icosahedron(
 	float fx, float fy, float fz,
 	float ux, float uy, float uz
 );
+void carveline_sphere(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
 
+void carvesolid_triangle(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3
+);
 void carvesolid_rect(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz
+);
+void carvesolid_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvesolid_cone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
 );
 void carvesolid_prism4(
 	struct arena* win, u32 rgb,
@@ -304,7 +414,13 @@ void carvesolid_prism4(
 	float fx, float fy, float fz,
 	float ux, float uy, float uz
 );
-void carvesolid_cone(
+void carvesolid_cask(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz
+);
+void carvesolid_cylinder(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
@@ -322,6 +438,12 @@ void carvesolid_icosahedron(
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz,
+	float ux, float uy, float uz
+);
+void carvesolid_sphere(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
 	float ux, float uy, float uz
 );
 
@@ -362,12 +484,12 @@ int matrixinverse_2(float* d, float* s);
 int matrixinverse_3(float* d, float* s);
 int matrixinverse_4(float* d, float* s);
 
-void quaternionnormalize(float*);
+void quaternionnormalize(float* q);
 void quaternionmultiply(float* l, float* r);
-void quaternionrotate(float*, float*);
+void quaternionrotate(float* v, float* q);
 
-void vectornormalize(float*);
-void vectorcross(float*, float*);
+void vectornormalize(float* v);
+void vectorcross(float* d, float* s);
 float vectordot(float*, float*);
 float vectorcosine(float*, float*);
 
@@ -380,12 +502,18 @@ int readfile(void*, void*, u64, u64);
 int writefile(void*, void*, u64, u64);
 
 //libhard1
-double squareroot(double);
 double cosine(double);
 double sine(double);
-double log2(double);
+double tangent(double);
+double arccos(double);
+double arcsin(double);
+double arctan2(double, double);
+
 double lg(double);
 double ln(double);
+double log2(double);
+double squareroot(double);
+double power(double, double);
 
 //libboot1
 void eventwrite(u64,u64,u64,u64);

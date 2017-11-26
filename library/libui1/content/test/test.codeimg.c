@@ -1,62 +1,16 @@
-#include<actor.h>
-u32 getrandom();
-double squareroot(double);
-double sine(double);
-double cosine(double);
-double tangent(double);
-double arcsin(double);
-double arccos(double);
-double arctan2(double, double);
-double power(double, double);
-double ln(double);
+#include "actor.h"
 
-
-
-
-void background1(struct arena* win)
-{
-	int x,y;
-	int width = win->w;
-	int height = win->h;
-	u32* buf = (u32*)(win->buf);
-
-	//用指定颜色清屏
-	for(x=0;x<width*height;x++)
-	{
-		buf[x]=0xfff0f0f0;
-	}
-
-	//上下
-	for(y=0;y<16;y++)
-	{
-		u32 color=0xff404040+(0x0b0b0b*y);
-
-		//上，编译器会不会用rep stosd指令优化呢?
-		u32* p = buf+y*width;
-		for(x=y;x<width-y;x++)p[x]=color;
-
-		//下
-		p = buf+(height-1-y)*width;
-		for(x=y;x<width-y;x++)p[x]=color;
-	}
-	//左右
-	for(x=0;x<16;x++)
-	{
-		u32 color=0xff404040+(0x0b0b0b*x);
-
-		for(y=x;y<height-x;y++)
-		{
-			buf[(y*width)+x]=color;
-			buf[(y*width)+width-1-x]=color;
-		}
-	}
-}
 
 
 
 #define DIM 1024
 #define _sq(x) ((x)*(x))
 #define r(n)(getrandom()%n)
+u32* buffer = 0;
+
+
+
+
 unsigned char RED1(int i,int j)
 {
 	return (char)(_sq(cosine(arctan2(j-512,i-512)/2))*255);
@@ -169,22 +123,96 @@ unsigned char BLUE6(int i,int j)
 	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)(29*((i+DIM)*s+y))%2+(int)(29*((DIM*2-i)*s+y))%2)*127;
 }
-void drawhaha1(struct arena* win)
+
+
+
+
+static void codeimg_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y;
-	int rr,gg,bb;
-	int w = win->w;
-	int h = win->h;
+	int x,y,w,h;
+	int width = win->w;
+	int height = win->h;
 	u32* buf = (u32*)(win->buf);
 
-	for(y=0;y<w;y++)
+	w = width;
+	h = height;
+	if(w > 1024)w = 1024;
+	if(h > 1024)h = 1024;
+	for(y=0;y<h;y++)
 	{
 		for(x=0;x<w;x++)
+		{
+			buf[y*width + x] = buffer[y*1024 + x];
+		}
+	}
+}
+static void codeimg_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void codeimg_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void codeimg_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void codeimg_read_cli()
+{
+}
+static void codeimg_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+	if(fmt == hex32('c','l','i',0))codeimg_read_cli();
+	else if(fmt == hex32('t','u','i',0))codeimg_read_tui(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))codeimg_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))codeimg_read_vbo(win, act, sty);
+	else codeimg_read_pixel(win, act, sty);
+}
+static void codeimg_write(struct event* ev)
+{
+}
+
+
+
+
+static void codeimg_list()
+{
+}
+static void codeimg_change()
+{
+}
+static void codeimg_start()
+{
+	int rr,gg,bb;
+	int x,y;
+	buffer = startmemory(1024*1024*4);
+
+	for(y=0;y<1024;y++)
+	{
+		for(x=0;x<1024;x++)
 		{
 			rr = RED4(x,y);
 			gg = GREEN4(x,y);
 			bb = BLUE4(x,y);
-			buf[(y*w)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+			buffer[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 		}
 	}
+}
+static void codeimg_stop()
+{
+}
+void codeimg_create(void* base,void* addr)
+{
+	struct actor* p = addr;
+	p->type = hex32('t', 'e', 's', 't');
+	p->name = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
+
+	p->start = (void*)codeimg_start;
+	p->stop = (void*)codeimg_stop;
+	p->list = (void*)codeimg_list;
+	p->choose = (void*)codeimg_change;
+	p->read = (void*)codeimg_read;
+	p->write = (void*)codeimg_write;
+}
+void codeimg_delete()
+{
 }
