@@ -127,119 +127,108 @@ char fCode[] = {
 };
 void initShader()  
 {  
-    //1.查看GLSL和OpenGL的版本  
-    const GLubyte *renderer = glGetString( GL_RENDERER );
-    const GLubyte *vendor = glGetString( GL_VENDOR );
-    const GLubyte *version = glGetString( GL_VERSION );
-    const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
-    GLint major, minor;
+	//1.check version
+	const GLubyte *renderer = glGetString( GL_RENDERER );
+	const GLubyte *vendor = glGetString( GL_VENDOR );
+	const GLubyte *version = glGetString( GL_VERSION );
+	const GLubyte *glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+	GLint major, minor;
 
-    glGetIntegerv(GL_MAJOR_VERSION, &major);
-    glGetIntegerv(GL_MINOR_VERSION, &minor);
-    printf("GL Vendor: %s\n", vendor);
-    printf("GL Renderer: %s\n", renderer);
-    printf("GL Version (string): %s\n", version);
-    printf("GLSL Version: %s\n", glslVersion);
-    printf("GL Version (integer): %x.%x\n", major, minor);
+	glGetIntegerv(GL_MAJOR_VERSION, &major);
+	glGetIntegerv(GL_MINOR_VERSION, &minor);
+	printf("GL Vendor: %s\n", vendor);
+	printf("GL Renderer: %s\n", renderer);
+	printf("GL Version (string): %s\n", version);
+	printf("GLSL Version: %s\n", glslVersion);
+	printf("GL Version (integer): %x.%x\n", major, minor);
 
-    //2.顶点着色器  
-    vShader = glCreateShader(GL_VERTEX_SHADER);
-    if(0 == vShader)
-    {
-        printf("ERROR : Create vertex shader failed\n");
-        exit(1);
-    }
+	//2.vertex shader
+	vShader = glCreateShader(GL_VERTEX_SHADER);
+	if(0 == vShader)
+	{
+		printf("ERROR : Create vertex shader failed\n");
+		exit(1);
+	}
 
-    //把着色器源代码和着色器对象相关联
 	const GLchar* vCodeArray[1] = {vCode};
-    glShaderSource(vShader, 1, vCodeArray, NULL);
-    glCompileShader(vShader);
+	glShaderSource(vShader, 1, vCodeArray, NULL);
+	glCompileShader(vShader);
 
-    //检查编译是否成功
-    GLint compileResult;
-    glGetShaderiv(vShader,GL_COMPILE_STATUS,&compileResult);
-    if (GL_FALSE == compileResult)
-    {
-        GLint logLen;
-        //得到编译日志长度
-        glGetShaderiv(vShader,GL_INFO_LOG_LENGTH,&logLen);
-        if (logLen > 0)
-        {
-            GLsizei written;
-            char *log = (char *)malloc(logLen);
+	GLint compileResult;
+	glGetShaderiv(vShader,GL_COMPILE_STATUS,&compileResult);
+	if (GL_FALSE == compileResult)
+	{
+		GLint logLen;
+		//得到编译日志长度
+		glGetShaderiv(vShader,GL_INFO_LOG_LENGTH,&logLen);
+		if (logLen > 0)
+		{
+			GLsizei written;
+			char *log = (char *)malloc(logLen);
 
-            //得到日志信息并输出
-            glGetShaderInfoLog(vShader,logLen,&written,log);
-            printf("vertex shader compile log: %s\n",log);
-            free(log);
-        }
-    }
+			//得到日志信息并输出
+			glGetShaderInfoLog(vShader,logLen,&written,log);
+			printf("vertex shader compile log: %s\n",log);
+			free(log);
+		}
+	}
 
-    //3.片断着色器
-    fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    if (0 == fShader)
-    {
-        printf("ERROR : Create fragment shader failed");
-        exit(1);
-    }
+	//3.fragment shader
+	fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	if (0 == fShader)
+	{
+		printf("ERROR : Create fragment shader failed");
+		exit(1);
+	}
 
-    //把着色器源代码和着色器对象相关联
 	const GLchar* fCodeArray[1] = {fCode};
-    glShaderSource(fShader, 1, fCodeArray, NULL);
-    glCompileShader(fShader);
+	glShaderSource(fShader, 1, fCodeArray, NULL);
+	glCompileShader(fShader);
 
-    //检查编译是否成功
-    glGetShaderiv(fShader,GL_COMPILE_STATUS,&compileResult);
-    if(GL_FALSE == compileResult)
-    {
-        //得到编译日志长度
-        GLint logLen;
-        glGetShaderiv(fShader,GL_INFO_LOG_LENGTH,&logLen);
-        if(logLen > 0)
-        {
-            GLsizei written;
-            char *log = (char *)malloc(logLen);
+	glGetShaderiv(fShader,GL_COMPILE_STATUS,&compileResult);
+	if(GL_FALSE == compileResult)
+	{
+		GLint logLen;
+		glGetShaderiv(fShader,GL_INFO_LOG_LENGTH,&logLen);
+		if(logLen > 0)
+		{
+			GLsizei written;
+			char *log = (char *)malloc(logLen);
 
-            //得到日志信息并输出
-            glGetShaderInfoLog(fShader,logLen,&written,log);
-            printf("fragment shader compile log: %s\n",log);
-            free(log);
-        }
-    }
+			glGetShaderInfoLog(fShader,logLen,&written,log);
+			printf("fragment shader compile log: %s\n",log);
+			free(log);
+		}
+	}
   
-    //4.着色器程序
-    programhandle = glCreateProgram();
-    if(!programhandle)
-    {
-        printf("ERROR : create program failed");
-        exit(1);
-    }
+	//4.glsl program
+	programhandle = glCreateProgram();
+	if(!programhandle)
+	{
+		printf("ERROR : create program failed");
+		exit(1);
+	}
 
-    //将着色器程序链接到所创建的程序中
-    glAttachShader(programhandle,vShader);
-    glAttachShader(programhandle,fShader);
-    glLinkProgram(programhandle);
+	glAttachShader(programhandle,vShader);
+	glAttachShader(programhandle,fShader);
+	glLinkProgram(programhandle);
 
-    //查询链接的结果
-    GLint linkStatus;
-    glGetProgramiv(programhandle,GL_LINK_STATUS,&linkStatus);
-    if(GL_FALSE == linkStatus)
-    {
-        printf("ERROR : link shader program failed");
-        GLint logLen;
-        glGetProgramiv(programhandle,GL_INFO_LOG_LENGTH, &logLen);
-        if(logLen > 0)
-        {
-            char *log = (char *)malloc(logLen);
-            GLsizei written;
-            glGetProgramInfoLog(programhandle,logLen, &written,log);
-            printf("Program log :%s\n", log);
-        }
-    }
-    else	//链接成功，在OpenGL管线中使用渲染程序
-    {
-        glUseProgram(programhandle);
-    }
+	GLint linkStatus;
+	glGetProgramiv(programhandle,GL_LINK_STATUS,&linkStatus);
+	if(GL_FALSE == linkStatus)
+	{
+		printf("ERROR : link shader program failed");
+		GLint logLen;
+		glGetProgramiv(programhandle,GL_INFO_LOG_LENGTH, &logLen);
+		if(logLen > 0)
+		{
+			char *log = (char *)malloc(logLen);
+			GLsizei written;
+			glGetProgramInfoLog(programhandle,logLen, &written,log);
+			printf("Program log :%s\n", log);
+		}
+	}
+	else glUseProgram(programhandle);
 }
 void initVBO()  
 {
@@ -265,86 +254,86 @@ void initVBO()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
-    //[8]vertex
-    glGenBuffers(1, &vertexvbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexxyz, GL_STATIC_DRAW);
+	//[8]vertex
+	glGenBuffers(1, &vertexvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexxyz, GL_STATIC_DRAW);
 
 	//[9]normal
-    glGenBuffers(1, &normalvbo);
-    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, normalxyz, GL_STATIC_DRAW);
+	glGenBuffers(1, &normalvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, normalxyz, GL_STATIC_DRAW);
 
 	//[a]color
-    glGenBuffers(1, &colorvbo);
-    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-    glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
+	glGenBuffers(1, &colorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
 
 	//[c]point
-    glGenVertexArrays(1,&pointvao);
-    glBindVertexArray(pointvao);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
+	glGenVertexArrays(1,&pointvao);
+	glBindVertexArray(pointvao);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &pointvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pointvbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, pointindex, GL_STATIC_DRAW);
 
 	//[d]line
-    glGenVertexArrays(1,&linevao);
-    glBindVertexArray(linevao);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
+	glGenVertexArrays(1,&linevao);
+	glBindVertexArray(linevao);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &linevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, lineindex, GL_STATIC_DRAW);
 
 	//[e]triangle
-    glGenVertexArrays(1,&trianglevao);
-    glBindVertexArray(trianglevao);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
+	glGenVertexArrays(1,&trianglevao);
+	glBindVertexArray(trianglevao);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
 
-    glGenBuffers(1, &trianglevbo);
+	glGenBuffers(1, &trianglevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
 
 	//[f]rectangle
-    glGenVertexArrays(1,&rectanglevao);
-    glBindVertexArray(rectanglevao);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(2);
+	glGenVertexArrays(1,&rectanglevao);
+	glBindVertexArray(rectanglevao);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
 
-    glGenBuffers(1, &rectanglevbo);
+	glGenBuffers(1, &rectanglevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, rectangleindex, GL_STATIC_DRAW);
 }
@@ -491,7 +480,7 @@ void callback_display()
 
 	//write
 	glFlush();
-    glutSwapBuffers();
+	glutSwapBuffers();
 }
 void callback_idle()
 {
@@ -765,7 +754,7 @@ void* uievent(struct window* p)
 
 	//glut
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(p->w, p->h);
 	glutInitWindowPosition(200, 200);
 	glutCreateWindow("42");
@@ -777,8 +766,8 @@ void* uievent(struct window* p)
 	//
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
-    initShader();
-    initVBO();
+	initShader();
+	initVBO();
 
 	//绘制与显示
 	glutIdleFunc(callback_idle);
