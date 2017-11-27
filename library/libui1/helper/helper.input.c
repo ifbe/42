@@ -1,5 +1,6 @@
 #include "actor.h"
 int term_write(void*);
+int login_write(void*, void*);
 void* relation_read(u64);
 int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
@@ -210,52 +211,58 @@ int point_explain(struct arena* win, struct event* ev)
 
 	return 1;
 }
-int keyboard_explain(struct arena* win, struct event* ev)
-{
-	int j = 0;
-	if(ev->what == hex32('k','b','d',0))
-	{
-		if(ev->why == 0x1b)j = 4;
-		else if(ev->why == 0xf1)j = 1;
-		else if(ev->why == 0xf2)j = 2;
-		else if(ev->why == 0xf3)j = 3;
-	}
-	if(j != 0)
-	{
-		if(j == win->cw)win->cw = 0;
-		else win->cw = j;
-	}
-	return j;
-}
 int input_write(struct arena* win, struct event* ev)
 {
 	int ret;
 
-	if(win->fmt == hex32('c','l','i',0))
-	{
-		if(ev->what == hex32('c','h','a','r'))
-		{
-			term_write(ev);
-		}
-		return 0;
-	}
-
-	ret = keyboard_explain(win, ev);
-	if(ret != 0)return 0;
-
-	if(win->cw == 4)
-	{
-		ret = point_explain(win, ev);
-		if(ret != 0)return 0;
-	}
-
+	//no actor
 	if(win->irel == 0)
 	{
+		login_write(win, ev);
+		return 0;
+	}
+
+	//esc,f1,f2,f3,f4
+	if(ev->what == hex32('k','b','d',0))
+	{
+		ret=0;
+
+		if(ev->why == 0x1b)ret = 4;
+		else if(ev->why == 0xf1)ret = 1;
+		else if(ev->why == 0xf2)ret = 2;
+		else if(ev->why == 0xf3)ret = 3;
+
+		if(ret != 0)
+		{
+			if(ret == win->cw)win->cw = 0;
+			else win->cw = ret;
+			return 0;
+		}
+	}
+
+	//chosen
+	if(win->cw == 4)
+	{
+		if(ev->what == __char__)
+		{
+			login_write(win, ev);
+			return 0;
+		}
+		else
+		{
+			ret = point_explain(win, ev);
+			if(ret != 0)return 0;
+		}
+	}
+	else if(win->fmt == hex32('c','l','i',0))
+	{
 		if(ev->what == hex32('c','h','a','r'))
 		{
-			term_write(ev);
+			if(ev->why == 0x1b)
+			{
+				if(win->cw <4)win->cw++;
+			}
 		}
-		return 0;
 	}
 
 	return 1;

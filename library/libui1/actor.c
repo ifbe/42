@@ -16,6 +16,8 @@ void* relation_read(u64);
 void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
+void login_read(void*);
+void login_write(void*, void*);
 //
 void win_add(u64 why, u64 where);
 void win_del(u64 why, u64 where);
@@ -24,8 +26,6 @@ void act_add();
 void act_del();
 void act_at(void*, void*);
 //
-void login_read(void*);
-void term_write(void*);
 int input_write(void*, void*);
 
 
@@ -47,7 +47,11 @@ int actorread_one(struct arena* win)
 	struct style* st;			//style
 	void* pl;
 
-	if(win->fmt == hex32('c','l','i',0))return 0;
+	//cli silent
+	if(win->fmt == hex32('c','l','i',0))
+	{
+		if(win->cw == 4)return;
+	}
 
 	//canvas
 	if(win->type != hex32('b', 'u', 'f', 0))
@@ -147,10 +151,11 @@ int actorwrite(struct event* ev)
 		return 0;
 	}
 
-	//pre process
+	//no window
 	if(ev->where < 0xffff)win = &arena[1];
 	else win = (void*)(ev->where);
 
+	//pre process
 	ret = input_write(win, ev);
 	if(ret == 0)return 0;
 

@@ -221,34 +221,40 @@ static void the2048_read_tui(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void the2048_read_cli()
+static void the2048_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
-	say("%d	", val2048[tab[0][0]]);
-	say("%d	", val2048[tab[0][1]]);
-	say("%d	", val2048[tab[0][2]]);
-	say("%d\n",val2048[tab[0][3]]);
-
-	say("%d	", val2048[tab[1][0]]);
-	say("%d	", val2048[tab[1][1]]);
-	say("%d	", val2048[tab[1][2]]);
-	say("%d\n",val2048[tab[1][3]]);
-
-	say("%d	", val2048[tab[2][0]]);
-	say("%d	", val2048[tab[2][1]]);
-	say("%d	", val2048[tab[2][2]]);
-	say("%d\n",val2048[tab[2][3]]);
-
-	say("%d	", val2048[tab[3][0]]);
-	say("%d	", val2048[tab[3][1]]);
-	say("%d	", val2048[tab[3][2]]);
-	say("%d\n",val2048[tab[3][3]]);
+	say("2048(%x,%x,%x)\n",win,act,sty);
+	say("%d	%d	%d	%d\n",
+		val2048[tab[0][0]],
+		val2048[tab[0][1]],
+		val2048[tab[0][2]],
+		val2048[tab[0][3]]
+	);
+	say("%d	%d	%d	%d\n",
+		val2048[tab[1][0]],
+		val2048[tab[1][1]],
+		val2048[tab[1][2]],
+		val2048[tab[1][3]]
+	);
+	say("%d	%d	%d	%d\n",
+		val2048[tab[2][0]],
+		val2048[tab[2][1]],
+		val2048[tab[2][2]],
+		val2048[tab[2][3]]
+	);
+	say("%d	%d	%d	%d\n",
+		val2048[tab[3][0]],
+		val2048[tab[3][1]],
+		val2048[tab[3][2]],
+		val2048[tab[3][3]]
+	);
 }
 static void the2048_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == hex32('c','l','i',0))the2048_read_cli();
+	if(fmt == hex32('c','l','i',0))the2048_read_cli(win, act, sty);
 	else if(fmt == hex32('t','u','i',0))the2048_read_tui(win, act, sty);
 	else if(fmt == hex32('h','t','m','l'))the2048_read_html(win, act, sty);
 	else if(fmt == hex32('v','b','o',0))the2048_read_vbo(win, act, sty);
@@ -260,39 +266,48 @@ static void the2048_read(struct arena* win, struct actor* act, struct style* sty
 
 static void the2048_write(struct event* ev)
 {
-	//kbd
 	int j,k;
 	u8* p;
 	u8* q;
-	//say("%x,%x\n",ev->why, ev->what);
+	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
-	//
-	if(ev->what == 0x64626b)
+	if(ev->what == hex32('k','b','d',0))
 	{
 		k = (ev->why)&0xff;
 		if( (k>=0x25) && (k<=0x28) )
 		{
-			//
 			p = (void*)buffer + 16*num;
 			num = (num+1)%4;
 			q = (void*)buffer + 16*num;
 			for(j=0;j<16;j++)q[j] = p[j];
 
-			//
-			if(k == 0x25)left2048((void*)q);
-			else if(k == 0x26)up2048((void*)q);
-			else if(k == 0x27)right2048((void*)q);
-			else if(k == 0x28)down2048((void*)q);
+			if(k == 0x25)left2048(q);
+			else if(k == 0x26)up2048(q);
+			else if(k == 0x27)right2048(q);
+			else if(k == 0x28)down2048(q);
 
-			//new number?
-			new2048((void*)q);
+			new2048(q);
 		}
 	}
-	else if(ev->what == 0x72616863)
+	else if(ev->what == hex32('c','h','a','r'))
 	{
-		if(k == 0x8)
+		k = ev->why;
+		if(k == 0x8)num = (num+15)%16;
+
+		k = (k>>16)&0xff;
+		if((k>=0x41)&&(k<=0x44))
 		{
-			if(num>0)num--;
+			p = (void*)buffer + 16*num;
+			num = (num+1)%4;
+			q = (void*)buffer + 16*num;
+			for(j=0;j<16;j++)q[j] = p[j];
+
+			if(k == 0x41)up2048(q);
+			else if(k == 0x42)down2048(q);
+			else if(k == 0x43)right2048(q);
+			else if(k == 0x44)left2048(q);
+
+			new2048(q);
 		}
 	}
 }

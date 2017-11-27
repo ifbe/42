@@ -1,5 +1,6 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
+void term_write(void*);
 
 
 
@@ -9,10 +10,10 @@ void login_read_pixel(struct arena* win)
 	int j;
 	int w = win->w;
 	int h = win->h;
-	drawicon_1(win, w/4, h/4, w*3/4, h*3/4);
-
-	j = 5 * 4 * 4;
-	drawstring(win, "hello", 4, (w/2)-j, (h/2)-32, 0, 0);
+	drawicon_1(win, "hello", w/4, h*2/8, w*3/4, h*3/8);
+	drawicon_1(win, "hello", w/4, h*3/8, w*3/4, h*4/8);
+	drawicon_1(win, "hello", w/4, h*4/8, w*3/4, h*5/8);
+	drawicon_1(win, "hello", w/4, h*5/8, w*3/4, h*6/8);
 }
 void login_read_vbo(struct arena* win)
 {
@@ -94,4 +95,12 @@ void login_read(struct arena* win)
 	else if(win->fmt == hex32('h','t','m','l'))login_read_html(win);
 	else if(win->fmt == hex32('v','b','o',0))login_read_vbo(win);
 	else login_read_pixel(win);
+}
+void login_write(struct arena* win, struct event* ev)
+{
+	//say("%x,%x,%x,%x\n", ev->why, ev->what, ev->where, ev->when);
+	if(ev->what == hex32('c','h','a','r'))
+	{
+		term_write(ev);
+	}
 }
