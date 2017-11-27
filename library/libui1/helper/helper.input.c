@@ -1,4 +1,5 @@
 #include "actor.h"
+int term_write(void*);
 void* relation_read(u64);
 int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
