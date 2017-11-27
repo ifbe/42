@@ -13,53 +13,17 @@ static u8* buffer;
 
 
 
-static void sudoku_read_text(struct arena* win, struct actor* act, struct style* rel)
-{
-	int x,y,j,k,ret,color;
-	int width = win->w;
-	int height = win->h;
-	char* p = (char*)(win->buf);
-
-	for(x=0;x<width*height*4;x++)p[x] = 0;
-	for(y=0;y<9;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			if(table[y][x] == 0)continue;
-
-			//position
-			ret = (3*y+1)*width + 6*x + 2;
-			ret <<= 2;
-
-			//color
-			if( (px == x)&&(py == y) )color = 1;
-			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
-			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
-			else color = 4;
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					p[ret +(j*width*4) +(k*4) +3] = color;
-				}
-			}
-
-			//data
-			p[ret] = table[y][x] + 0x30;
-		}
-	}
-}
-static void sudoku_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void sudoku_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int t1, t2, t3, t4;
-	int cx = (win->w) * (rel->cx) / 0x10000;
-	int cy = (win->h) * (rel->cy) / 0x10000;
-	int w = (win->w) * (rel->wantw) / 0x10000 / 9;
-	int h = (win->h) * (rel->wanth) / 0x10000 / 9;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w = (win->w) * (sty->wantw) / 0x10000 / 9;
+	int h = (win->h) * (sty->wanth) / 0x10000 / 9;
 
 	for(y=0;y<9;y++)
 	{
@@ -103,16 +67,16 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 		(w*2/3)+2, h
 	);
 }
-static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
 	int x,y;
 	float xxx, yyy;
 
-	float cx = (float)(rel->cx) / 65536.0 - 0.5;
-	float cy = (float)(rel->cy) / 65536.0 - 0.5;
-	float w = (float)(rel->wantw) / 65536.0;
-	float h = (float)(rel->wanth) / 65536.0;
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
 
 	for(y=0;y<9;y++)
 	{
@@ -136,9 +100,47 @@ static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void sudoku_read_cli()
+static void sudoku_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+	int x,y,j,k,ret,color;
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
+
+	for(x=0;x<width*height*4;x++)p[x] = 0;
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if(table[y][x] == 0)continue;
+
+			//position
+			ret = (3*y+1)*width + 6*x + 2;
+			ret <<= 2;
+
+			//color
+			if( (px == x)&&(py == y) )color = 1;
+			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
+			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
+			else color = 4;
+			for(j=-1;j<=1;j++)
+			{
+				for(k=-2;k<=3;k++)
+				{
+					p[ret +(j*width*4) +(k*4) +3] = color;
+				}
+			}
+
+			//data
+			p[ret] = table[y][x] + 0x30;
+		}
+	}
+}
+static void sudoku_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
+	say("sudoku(%x,%x,%x)\n",win,act,sty);
+
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -148,17 +150,16 @@ static void sudoku_read_cli()
 		}
 		say("\n");
 	}
-	say("\n");
 }
-static void sudoku_read(struct arena* win, struct actor* act, struct style* rel)
+static void sudoku_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))sudoku_read_cli();
-	else if(fmt == hex32('t','e','x','t'))sudoku_read_text(win, act, rel);
-	else if(fmt == hex32('h','t','m','l'))sudoku_read_html(win, act, rel);
-	else if(fmt == hex32('v','b','o',0))sudoku_read_vbo(win, act, rel);
-	else sudoku_read_pixel(win, act, rel);
+	if(fmt == __cli__)sudoku_read_cli(win, act, sty);
+	else if(fmt == __tui__)sudoku_read_tui(win, act, sty);
+	else if(fmt == __html__)sudoku_read_html(win, act, sty);
+	else if(fmt == __vbo__)sudoku_read_vbo(win, act, sty);
+	else sudoku_read_pixel(win, act, sty);
 }
 static void sudoku_write(struct event* ev)
 {

@@ -9,9 +9,6 @@ static int stllen;
 
 
 
-static void stl_read_cli(struct arena* win, struct actor* act, struct style* sty)
-{
-}
 static void stl_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
@@ -80,11 +77,19 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 		index[j*3 + 2] = pcount + j*3 + 2;
 	}
 }
+static void stl_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void stl_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("stl(%x,%x,%x)\n",win,act,sty);
+}
 static void stl_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
 	if(fmt == hex32('c','l','i',0))stl_read_cli(win, act, sty);
+	else if(fmt == hex32('t','u','i',0))stl_read_tui(win, act, sty);
 	else if(fmt == hex32('h','t','m','l'))stl_read_html(win, act, sty);
 	else if(fmt == hex32('v','b','o',0))stl_read_vbo(win, act, sty);
 	else stl_read_pixel(win, act, sty);

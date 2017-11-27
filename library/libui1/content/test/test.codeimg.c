@@ -155,16 +155,17 @@ static void codeimg_read_html(struct arena* win, struct actor* act, struct style
 static void codeimg_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void codeimg_read_cli()
+static void codeimg_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
+	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
 static void codeimg_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == hex32('c','l','i',0))codeimg_read_cli();
-	else if(fmt == hex32('t','u','i',0))codeimg_read_tui(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))codeimg_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))codeimg_read_vbo(win, act, sty);
+	if(fmt == __cli__)codeimg_read_cli(win, act, sty);
+	else if(fmt == __tui__)codeimg_read_tui(win, act, sty);
+	else if(fmt == __html__)codeimg_read_html(win, act, sty);
+	else if(fmt == __vbo__)codeimg_read_vbo(win, act, sty);
 	else codeimg_read_pixel(win, act, sty);
 }
 static void codeimg_write(struct event* ev)

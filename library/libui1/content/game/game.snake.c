@@ -69,30 +69,6 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 
 
 
-void snake_read_text(struct arena* win, struct actor* act, struct style* sty)
-{
-	int j,t;
-	int width = win->w;
-	int height = win->h;
-	char* p = (char*)(win->buf);
-	for(j=0;j<width*height*4;j++)p[j] = 0;
-
-	j=0;
-	while(1)
-	{
-		t = snake[j].x + snake[j].y * width;
-		p[t<<2]='#';
-
-		j++;
-		if(j>=len)break;
-	}
-
-	t = foodx + foody*width;
-	p[t<<2] = '@';
-}
-
-
-
 static int htmlcubie(char* p, u32 color, int x, int y)
 {
 	return mysnprintf(
@@ -141,25 +117,42 @@ void snake_read_html(struct arena* win, struct actor* act, struct style* sty)
 
 
 
+void snake_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+void snake_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+	int j,t;
+	int width = win->w;
+	int height = win->h;
+	char* p = (char*)(win->buf);
+	for(j=0;j<width*height*4;j++)p[j] = 0;
+
+	j=0;
+	while(1)
+	{
+		t = snake[j].x + snake[j].y * width;
+		p[t<<2]='#';
+
+		j++;
+		if(j>=len)break;
+	}
+
+	t = foodx + foody*width;
+	p[t<<2] = '@';
+}
+void snake_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("snake(%x,%x,%x)\n",win,act,sty);
+}
 void snake_read(struct arena* win, struct actor* act, struct style* sty)
 {
-	//text
-	if(win->fmt == 0x74786574)
-	{
-		snake_read_text(win, act, sty);
-	}
-
-	//html
-	else if(win->fmt == 0x6c6d7468)
-	{
-		snake_read_html(win, act, sty);
-	}
-
-	//pixel
-	else
-	{
-		snake_read_pixel(win, act, sty);
-	}
+	u64 fmt = win->fmt;
+	if(fmt == __cli__)snake_read_cli(win, act, sty);
+	else if(fmt == __tui__)snake_read_tui(win, act, sty);
+	else if(fmt == __html__)snake_read_html(win, act, sty);
+	else if(fmt == __vbo__)snake_read_vbo(win, act, sty);
+	else snake_read_pixel(win, act, sty);
 }
 
 

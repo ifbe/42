@@ -11,7 +11,7 @@ static int flag=0;
 
 
 
-static void pure_read_pixel(struct arena* win)
+static void pure_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,w,h;
 	u32 color;
@@ -36,37 +36,27 @@ static void pure_read_pixel(struct arena* win)
 		win, color & 0xffffff, 4,
 		0, 0, 0x87654321, 0xfedcba98);
 }
-static void pure_read_html(struct arena* win)
-{
-	u32* buf = (u32*)(win->buf);
-	pure_read_pixel(win);
-	buf[0]=0;
-}
-static void pure_read_text(struct arena* win)
+static void pure_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void pure_read(struct arena* win)
+static void pure_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void pure_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void pure_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("pure(%x,%x,%x)\n",win,act,sty);
+}
+static void pure_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	//say("(@2048.read)temp=%x\n",temp);
-
-	//text
-	if(fmt == 0x74786574)
-	{
-		pure_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		pure_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		pure_read_pixel(win);
-	}
+	if(fmt == __cli__)pure_read_cli(win, act, sty);
+	else if(fmt == __tui__)pure_read_tui(win, act, sty);
+	else if(fmt == __html__)pure_read_html(win, act, sty);
+	else if(fmt == __vbo__)pure_read_vbo(win, act, sty);
+	else pure_read_pixel(win, act, sty);
 }
 static void pure_write(struct event* ev)
 {

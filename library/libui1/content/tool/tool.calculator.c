@@ -23,7 +23,7 @@ static char table[4][8] = {
 
 
 
-static void calculator_read_pixel(struct arena* win, struct actor* act, struct relation* rel)
+static void calculator_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 fg;
 	int x,y;
@@ -68,33 +68,31 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct r
 		16, 16+96, 0xffffffff, 0xff000000
 	);
 }
-static void calculator_read_html(struct arena* win, struct actor* act, struct relation* rel)
+static void calculator_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void calculator_read_text(struct arena* win, struct actor* act, struct relation* rel)
+static void calculator_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void calculator_read_cli(struct arena* win, struct actor* act, struct relation* rel)
+static void calculator_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+}
+static void calculator_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("calc(%x,%x,%x)\n",win,act,sty);
 	say("buffer:%s\n", infix);
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_read(struct arena* win, struct actor* act, struct relation* rel)
+static void calculator_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//cli
-	//if(rel->dim == 1)calculator_read_cli(win, act, rel);
-
-	//text
-	if(fmt == 0x74786574)calculator_read_text(win, act, rel);
-
-	//html
-	else if(fmt == 0x6c6d7468)calculator_read_html(win, act, rel);
-
-	//pixel
-	else calculator_read_pixel(win, act, rel);
+	if(fmt == __cli__)calculator_read_cli(win, act, sty);
+	else if(fmt == __tui__)calculator_read_tui(win, act, sty);
+	else if(fmt == __html__)calculator_read_html(win, act, sty);
+	else if(fmt == __vbo__)calculator_read_vbo(win, act, sty);
+	else calculator_read_pixel(win, act, sty);
 }
 
 
@@ -188,6 +186,8 @@ void calculator_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('c', 'a', 'l', 'c');
+	p->irel = 0;
+	p->orel = 0;
 
 	p->start = (void*)calculator_start;
 	p->stop = (void*)calculator_stop;

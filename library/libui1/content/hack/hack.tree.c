@@ -108,7 +108,7 @@ static void printnode(struct arena* win, int x,int y,int num)
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);
 }
-static void tree_read(struct arena* win)
+static void tree_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	drawstring(
 		win, buffer, 1,
@@ -129,6 +129,29 @@ static void tree_read(struct arena* win)
 	{
 		printnode(win, (win->w)/2, 1, node[0].right);
 	}
+}
+static void tree_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void tree_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void tree_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void tree_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("tree(%x,%x,%x)\n",win,act,sty);
+}
+static void tree_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+
+	if(fmt == __cli__)tree_read_cli(win, act, sty);
+	else if(fmt == __tui__)tree_read_tui(win, act, sty);
+	else if(fmt == __html__)tree_read_html(win, act, sty);
+	else if(fmt == __vbo__)tree_read_vbo(win, act, sty);
+	else tree_read_pixel(win, act, sty);
 }
 static void tree_write(struct event* ev)
 {

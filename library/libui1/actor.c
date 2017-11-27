@@ -1,6 +1,4 @@
 #include "actor.h"
-#define __act__ hex32('a','c','t',0)
-#define __win__ hex32('w','i','n',0)
 void content_create(void*, void*);
 void content_delete();
 void helper_create(void*, void*);

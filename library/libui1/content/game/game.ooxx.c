@@ -4,33 +4,19 @@
 
 
 static int turn;
-static char data[9];
+static u8 data[9];
 
 
 
 
-void ooxx_read_vbo(struct arena* win, struct actor* act, struct style* rel)
-{
-	float cx = (float)(rel->cx) / 65536.0 - 0.5;
-	float cy = (float)(rel->cy) / 65536.0 - 0.5;
-	float w = (float)(rel->wantw) / 65536.0;
-	float h = (float)(rel->wanth) / 65536.0;
-
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		w/2, 0.0, 0.0,
-		0.0, 0.0, w/2
-	);
-}
-void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int cx,cy,w,h;
-	cx = (win->w) * (rel->cx) / 0x10000;
-	cy = (win->h) * (rel->cy) / 0x10000;
-	w = (win->w) * (rel->wantw) / 0x10000;
-	h = (win->h) * (rel->wanth) / 0x10000;
+	cx = (win->w) * (sty->cx) / 0x10000;
+	cy = (win->h) * (sty->cy) / 0x10000;
+	w = (win->w) * (sty->wantw) / 0x10000;
+	h = (win->h) * (sty->wanth) / 0x10000;
 	if(w >= h)w=h;
 	else h=w;
 
@@ -86,13 +72,51 @@ void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* rel)
 		}//forx
 	}//fory
 }
-static void ooxx_read(struct arena* win, struct actor* act, struct style* rel)
+static void ooxx_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	//vbo
-	if(win->fmt == hex32('v','b','o',0))ooxx_read_vbo(win, act, rel);
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
 
-	//pixel
-	else ooxx_read_pixel(win, act, rel);
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		w/2, 0.0, 0.0,
+		0.0, 0.0, w/2
+	);
+}
+static void ooxx_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void ooxx_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void ooxx_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	u8 ch;
+	int x,y;
+	say("ooxx(%x,%x,%x)\n",win,act,sty);
+
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<3;x++)
+		{
+			ch = data[y*3 + x];
+			if((ch!='o') && (ch!='x'))say("_	");
+			else say("%c	",ch);
+		}
+		say("\n");
+	}
+}
+static void ooxx_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+	if(fmt == __cli__)ooxx_read_cli(win, act, sty);
+	else if(fmt == __tui__)ooxx_read_tui(win, act, sty);
+	else if(fmt == __vbo__)ooxx_read_vbo(win, act, sty);
+	else if(fmt == __html__)ooxx_read_html(win, act, sty);
+	else ooxx_read_pixel(win, act, sty);
 }
 
 

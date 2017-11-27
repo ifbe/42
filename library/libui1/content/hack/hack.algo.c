@@ -23,13 +23,7 @@ static int reslen;
 
 
 
-static void algorithm_read_text(struct arena* win)
-{
-}
-static void algorithm_read_html(struct arena* win)
-{
-}
-static void algorithm_read_pixel(struct arena* win)
+static void algorithm_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	//top
 	drawsolid_rect(win, 0x40,
@@ -81,27 +75,28 @@ static void algorithm_read_pixel(struct arena* win)
 		(win->w/2)-(reslen*4), (win->h)*3/4, 0xffffffff, 0
 	);
 }
-static void algorithm_read(struct arena* win)
+static void algorithm_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void algorithm_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void algorithm_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void algorithm_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("algorithm(%x,%x,%x)\n",win,act,sty);
+}
+static void algorithm_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		algorithm_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		algorithm_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		algorithm_read_pixel(win);
-	}
+	if(fmt == __cli__)algorithm_read_cli(win, act, sty);
+	else if(fmt == __tui__)algorithm_read_tui(win, act, sty);
+	else if(fmt == __html__)algorithm_read_html(win, act, sty);
+	else if(fmt == __vbo__)algorithm_read_vbo(win, act, sty);
+	else algorithm_read_pixel(win, act, sty);
 }
 static void algorithm_write(struct event* ev)
 {

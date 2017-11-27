@@ -85,6 +85,9 @@ static void qrcode_read_html(struct arena* win, struct actor* act, struct style*
 	}
 	p += mysnprintf(p, 99, "</div>");
 }
+static void qrcode_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
 static void qrcode_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
@@ -108,17 +111,15 @@ static void qrcode_read_tui(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void qrcode_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void qrcode_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-}
-static void qrcode_read_cli()
-{
+	say("qrcode(%x,%x,%x)\n",win,act,sty);
 }
 static void qrcode_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))qrcode_read_cli();
+	if(fmt == hex32('c','l','i',0))qrcode_read_cli(win, act, sty);
 	else if(fmt == hex32('t','u','i',0))qrcode_read_tui(win, act, sty);
 	else if(fmt == hex32('h','t','m','l'))qrcode_read_html(win, act, sty);
 	else if(fmt == hex32('v','b','o',0))qrcode_read_vbo(win, act, sty);

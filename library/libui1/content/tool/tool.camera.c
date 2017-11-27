@@ -14,13 +14,7 @@ static u8* vision = 0;
 
 
 
-void camera_read_text(struct arena* win)
-{
-}
-void camera_read_html(struct arena* win)
-{
-}
-void camera_read_pixel(struct arena* win)
+void camera_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int j;
 	int w = win->w;
@@ -35,27 +29,28 @@ void camera_read_pixel(struct arena* win)
 	);
 	vision = 0;
 }
-static void camera_read(struct arena* win)
+void camera_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+void camera_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+void camera_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+void camera_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("camera(%x,%x,%x)\n",win,act,sty);
+}
+static void camera_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		camera_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		camera_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		camera_read_pixel(win);
-	}
+	if(fmt == __cli__)camera_read_cli(win, act, sty);
+	else if(fmt == __tui__)camera_read_tui(win, act, sty);
+	else if(fmt == __html__)camera_read_html(win, act, sty);
+	else if(fmt == __vbo__)camera_read_vbo(win, act, sty);
+	else camera_read_pixel(win, act, sty);
 }
 static void camera_write(struct event* ev)
 {

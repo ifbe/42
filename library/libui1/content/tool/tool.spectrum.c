@@ -29,7 +29,7 @@ static int area=0;
 
 
 
-static void spectrum_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void spectrum_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	double t,cc,ss;
 	int x,y;
@@ -64,10 +64,13 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 		);
 	}
 }
-static void spectrum_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void spectrum_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void spectrum_read_text(struct arena* win, struct actor* act, struct style* rel)
+static void spectrum_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void spectrum_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int w = win->w;
@@ -84,16 +87,19 @@ static void spectrum_read_text(struct arena* win, struct actor* act, struct styl
 		}
 	}
 }
-static void spectrum_read_cli()
+static void spectrum_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
+	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
-static void spectrum_read(struct arena* win, struct actor* act, struct style* rel)
+static void spectrum_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == 0x74786574)spectrum_read_text(win, act, rel);
-	else if(fmt == 0x6c6d7468)spectrum_read_html(win, act, rel);
-	else spectrum_read_pixel(win, act, rel);
+	if(fmt == hex32('c','l','i',0))spectrum_read_cli(win, act, sty);
+	else if(fmt == hex32('t','u','i',0))spectrum_read_tui(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))spectrum_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))spectrum_read_vbo(win, act, sty);
+	else spectrum_read_pixel(win, act, sty);
 }
 
 

@@ -3,36 +3,31 @@
 
 
 
-static void editor_read_text(struct arena* win)
+static void editor_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void editor_read_html(struct arena* win)
+static void editor_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void editor_read_pixel(struct arena* win)
+static void editor_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void editor_read(struct arena* win)
+static void editor_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void editor_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("editor(%x,%x,%x)\n",win,act,sty);
+}
+static void editor_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		editor_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		editor_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		editor_read_pixel(win);
-	}
+	if(fmt == __cli__)editor_read_cli(win, act, sty);
+	else if(fmt == __tui__)editor_read_tui(win, act, sty);
+	else if(fmt == __html__)editor_read_html(win, act, sty);
+	else if(fmt == __vbo__)editor_read_vbo(win, act, sty);
+	else editor_read_pixel(win, act, sty);
 }
 static void editor_write(struct event* ev)
 {

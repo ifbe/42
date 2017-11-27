@@ -3,7 +3,7 @@
 
 
 
-static void fs_read(struct arena* win)
+static void fs_read(struct arena* win, struct actor* act, struct style* sty)
 {
 }
 static void fs_write(struct event* ev)

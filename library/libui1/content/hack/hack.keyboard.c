@@ -22,7 +22,7 @@ static char table[8][8] = {
 
 
 
-void vkbd_read(struct arena* win)
+void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int left,top,right,bottom;
@@ -50,7 +50,30 @@ void vkbd_read(struct arena* win)
 		}
 	}
 }
-int vkbd_write(struct event* ev)
+static void keyboard_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void keyboard_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void keyboard_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void keyboard_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("keyboard(%x,%x,%x)\n",win,act,sty);
+}
+static void keyboard_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+
+	if(fmt == __cli__)keyboard_read_cli(win, act, sty);
+	else if(fmt == __tui__)keyboard_read_tui(win, act, sty);
+	else if(fmt == __html__)keyboard_read_html(win, act, sty);
+	else if(fmt == __vbo__)keyboard_read_vbo(win, act, sty);
+	else keyboard_read_pixel(win, act, sty);
+}
+int keyboard_write(struct event* ev)
 {
 	int x,y;
 	//say("%x,%x\n",x,y);
@@ -75,13 +98,31 @@ int vkbd_write(struct event* ev)
 
 	return 0;
 }
-
-
-
-
-void vkbd_create()
+void keyboard_list()
 {
 }
-void vkbd_delete()
+void keyboard_change()
+{
+}
+void keyboard_start()
+{
+}
+void keyboard_stop()
+{
+}
+void keyboard_create(void* base,void* addr)
+{
+	struct actor* p = addr;
+	p->type = hex32('h', 'a', 'c', 'k');
+	p->name = hex64('k', 'e', 'y', 'b', 'o', 'a', 'r', 'd');
+
+	p->start = (void*)keyboard_start;
+	p->stop = (void*)keyboard_stop;
+	p->list = (void*)keyboard_list;
+	p->choose = (void*)keyboard_change;
+	p->read = (void*)keyboard_read;
+	p->write = (void*)keyboard_write;
+}
+void keyboard_delete()
 {
 }

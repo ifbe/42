@@ -16,7 +16,25 @@ static int len = 0;
 
 
 
-static void browse_read_text(struct arena* win)
+static void browser_read_html(struct arena* win, struct actor* act, struct style* sty)
+{
+	int j;
+	u8* p = (u8*)(win->buf);
+	for(j=0;j<len;j++)p[j] = dstbuf[j];
+}
+static void browser_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+{
+	drawstring(
+		win, pl->priv, 1,
+		0, 0, 0xffffffff, 0);
+	drawstring(
+		win, dstbuf, 1,
+		0, 16, 0xffffffff, 0);
+}
+static void browser_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void browser_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p = (u8*)(win->buf);
 	int w = win->w;
@@ -40,44 +58,21 @@ static void browse_read_text(struct arena* win)
 		}
 	}
 }
-static void browse_read_html(struct arena* win)
+static void browser_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-	int j;
-	u8* p = (u8*)(win->buf);
-	for(j=0;j<len;j++)p[j] = dstbuf[j];
+	say("browser(%x,%x,%x)\n",win,act,sty);
 }
-static void browse_read_pixel(struct arena* win)
-{
-	drawstring(
-		win, pl->priv, 1,
-		0, 0, 0xffffffff, 0);
-	drawstring(
-		win, dstbuf, 1,
-		0, 16, 0xffffffff, 0);
-}
-static void browse_read(struct arena* win)
+static void browser_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		browse_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		browse_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		browse_read_pixel(win);
-	}
+	if(fmt == __cli__)browser_read_cli(win, act, sty);
+	else if(fmt == __tui__)browser_read_tui(win, act, sty);
+	else if(fmt == __html__)browser_read_html(win, act, sty);
+	else if(fmt == __vbo__)browser_read_vbo(win, act, sty);
+	else browser_read_pixel(win, act, sty);
 }
-static void browse_write(struct event* ev)
+static void browser_write(struct event* ev)
 {
 #define kbd 0x72616863
 #define http 0x70747468
@@ -121,34 +116,34 @@ static void browse_write(struct event* ev)
 
 
 
-static void browse_list()
+static void browser_list()
 {
 }
-static void browse_change()
+static void browser_change()
 {
 }
-static void browse_start()
+static void browser_start()
 {
 }
-static void browse_stop()
+static void browser_stop()
 {
 }
-void browse_create(void* base,void* addr)
+void browser_create(void* base,void* addr)
 {
 	srcbuf = base-0x100000;
 	dstbuf = base+0x300000;
 	pl = addr;
 
 	pl->type = hex32('h', 'a', 'c', 'k');
-	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 0, 0);
+	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
 
-	pl->start = (void*)browse_start;
-	pl->stop = (void*)browse_stop;
-	pl->list = (void*)browse_list;
-	pl->choose = (void*)browse_change;
-	pl->read = (void*)browse_read;
-	pl->write = (void*)browse_write;
+	pl->start = (void*)browser_start;
+	pl->stop = (void*)browser_stop;
+	pl->list = (void*)browser_list;
+	pl->choose = (void*)browser_change;
+	pl->read = (void*)browser_read;
+	pl->write = (void*)browser_write;
 }
-void browse_delete()
+void browser_delete()
 {
 }

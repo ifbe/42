@@ -24,30 +24,24 @@ static void fractal_read_pixel(struct arena* win, struct actor* act, struct styl
 	drawline_rect(win, 0x00ff00,
 		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
 }
-static void fractal_read_text(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+}
+static void fractal_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void fractal_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
 static void fractal_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-
-	//text
-	if(fmt == 0x74786574)
-	{
-		fractal_read_text(win, act, sty);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		fractal_read_html(win, act, sty);
-	}
-
-	//pixel
-	else
-	{
-		fractal_read_pixel(win, act, sty);
-	}
+	if(fmt == __cli__)fractal_read_cli(win, act, sty);
+	else if(fmt == __tui__)fractal_read_tui(win, act, sty);
+	else if(fmt == __html__)fractal_read_html(win, act, sty);
+	else if(fmt == __vbo__)fractal_read_vbo(win, act, sty);
+	else fractal_read_pixel(win, act, sty);
 }
 static void fractal_write(struct event* ev)
 {

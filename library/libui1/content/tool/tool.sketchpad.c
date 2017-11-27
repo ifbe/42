@@ -170,7 +170,7 @@ static void tuxiang(struct arena* win)
 		}
 	}//result2img
 }
-static void sketchpad_read_pixel(struct arena* win)
+static void sketchpad_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	//draw
 	wangge(win);
@@ -196,22 +196,13 @@ skipthese:
 		0, 48, 0xcccccc, 0xff000000
 	);
 }
-
-
-
-
-static void sketchpad_read_html(struct arena* win)
+static void sketchpad_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
-	u32* buf = (u32*)(win->buf);
-
-	sketchpad_read_pixel(win);
-	buf[0]=0;
 }
-
-
-
-
-static void sketchpad_read_text(struct arena* win)
+static void sketchpad_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void sketchpad_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -266,31 +257,19 @@ static void sketchpad_read_text(struct arena* win)
 		p[x*4] = buffer[x];
 	}
 }
-
-
-
-
-static void sketchpad_read(struct arena* win)
+static void sketchpad_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("sketchpad(%x,%x,%x)\n",win,act,sty);
+}
+static void sketchpad_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	//text
-	if(fmt == 0x74786574)
-	{
-		sketchpad_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		sketchpad_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		sketchpad_read_pixel(win);
-	}
+	if(fmt == hex32('c','l','i',0))sketchpad_read_cli(win, act, sty);
+	else if(fmt == hex32('t','u','i',0))sketchpad_read_tui(win, act, sty);
+	else if(fmt == hex32('h','t','m','l'))sketchpad_read_html(win, act, sty);
+	else if(fmt == hex32('v','b','o',0))sketchpad_read_vbo(win, act, sty);
+	else sketchpad_read_pixel(win, act, sty);
 }
 
 

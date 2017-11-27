@@ -113,85 +113,13 @@ static void floatarea(struct arena* win)
 		}
 	}
 }
-static void hex_read_pixel(struct arena* win)
+static void hex_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	//background1(win);
 	showdata(win);
 	floatarea(win);
 }
-static void hex_read_text(struct arena* win)
-{
-	u8 h,l;
-	int x,y;
-	int width = win->w;
-	int height = win->h;
-	u8* p = (u8*)(win->buf);
-
-	if(printmethod==0)		//hex
-	{
-		for(y=0;y<height;y++)
-		{
-			for(x=0;x<xshift;x++)
-			{
-				p[y*width + x] = 0x20;
-			}
-			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
-
-			for(x=0;x<byteperline;x++)
-			{
-				h = l = databuf[arenaoffset + y*byteperline + x];
-
-				h = ( (h>>4)&0xf ) + 0x30;
-				if(h>0x39)h += 0x7;
-				p[xshift + y*width + x*2] = h;
-
-				l = (l&0xf) + 0x30;
-				if(l>0x39)l += 0x7;
-				p[xshift + y*width + x*2 + 1] = l;
-			}
-
-			x=(width-xshift)&0xfffffffe;
-			for(;x<width;x++)
-			{
-				p[y*width + x] = 0x20;
-			}
-		}
-	}
-
-	else if(printmethod==1)		//ascii
-	{
-		for(y=0;y<height;y++)
-		{
-			for(x=0;x<xshift;x++)
-			{
-				p[y*width + x] = 0x20;
-			}
-			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
-
-			for(x=0;x<byteperline;x++)
-			{
-				h = databuf[arenaoffset + y*byteperline + x];
-				if( (h>0x20)&&(h<0x80) )
-				{
-					p[xshift + y*width + x*2] = 0x20;
-					p[xshift + y*width + x*2 + 1] = h;
-				}
-				else
-				{
-					p[xshift + y*width + x*2] = 0x20;
-					p[xshift + y*width + x*2 + 1] = 0x20;
-				}
-			}
-
-			x=(width-xshift)&0xfffffffe;
-			for(;x<width;x++)
-			{
-				p[y*width + x] = 0x20;
-			}
-		}
-	}
-}
-static void hex_read_html(struct arena* win)
+static void hex_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 	float dx,dy;
 	u8 ch;
@@ -304,13 +232,95 @@ return;
 		pointeroffset
 	);
 }
-static void hex_read(struct arena* win)
+static void hex_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void hex_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+	u8 h,l;
+	int x,y;
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
+
+	if(printmethod==0)		//hex
+	{
+		for(y=0;y<height;y++)
+		{
+			for(x=0;x<xshift;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
+
+			for(x=0;x<byteperline;x++)
+			{
+				h = l = databuf[arenaoffset + y*byteperline + x];
+
+				h = ( (h>>4)&0xf ) + 0x30;
+				if(h>0x39)h += 0x7;
+				p[xshift + y*width + x*2] = h;
+
+				l = (l&0xf) + 0x30;
+				if(l>0x39)l += 0x7;
+				p[xshift + y*width + x*2 + 1] = l;
+			}
+
+			x=(width-xshift)&0xfffffffe;
+			for(;x<width;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+		}
+	}
+
+	else if(printmethod==1)		//ascii
+	{
+		for(y=0;y<height;y++)
+		{
+			for(x=0;x<xshift;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+			data2hexstr((u64)databuf + arenaoffset + y*byteperline, p + y*width);
+
+			for(x=0;x<byteperline;x++)
+			{
+				h = databuf[arenaoffset + y*byteperline + x];
+				if( (h>0x20)&&(h<0x80) )
+				{
+					p[xshift + y*width + x*2] = 0x20;
+					p[xshift + y*width + x*2 + 1] = h;
+				}
+				else
+				{
+					p[xshift + y*width + x*2] = 0x20;
+					p[xshift + y*width + x*2 + 1] = 0x20;
+				}
+			}
+
+			x=(width-xshift)&0xfffffffe;
+			for(;x<width;x++)
+			{
+				p[y*width + x] = 0x20;
+			}
+		}
+	}
+}
+static void hex_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("hex(%x,%x,%x)\n",win,act,sty);
+}
+static void hex_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	u64 width = win->w;
 
-	//text
-	if(fmt == 0x74786574)
+	if(fmt == __cli__)
+	{
+		hex_read_cli(win, act, sty);
+	}
+	else if(fmt == __tui__)
 	{
 		lineperarena = win->h;
 
@@ -335,20 +345,20 @@ static void hex_read(struct arena* win)
 			xshift = 0;
 		}
 
-		hex_read_text(win);
+		hex_read_tui(win, act, sty);
 	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
+	else if(fmt == __vbo__)
+	{
+		hex_read_vbo(win, act, sty);
+	}
+	else if(fmt == __html__)
 	{
 		lineperarena = 16;
 		byteperline = 32;
 		xshift = 0;
 
-		hex_read_html(win);
+		hex_read_html(win, act, sty);
 	}
-
-	//pixel
 	else
 	{
 		lineperarena = (win->h)/16;
@@ -379,7 +389,7 @@ static void hex_read(struct arena* win)
 			xshift = 0;
 		}
 
-		hex_read_pixel(win);
+		hex_read_pixel(win, act, sty);
 	}
 }
 static void hex_write(struct event* ev)

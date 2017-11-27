@@ -177,14 +177,14 @@ static void circuit_read_pixel_recursive(
 		}
 	}
 }
-static void circuit_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void circuit_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	//
 	int cx,cy,w,h;
-	cx = (win->w) * (rel->cx) / 0x10000;
-	cy = (win->h) * (rel->cy) / 0x10000;
-	w = (win->w) * (rel->wantw) / 0x10000;
-	h = (win->h) * (rel->wanth) / 0x10000;
+	cx = (win->w) * (sty->cx) / 0x10000;
+	cy = (win->h) * (sty->cy) / 0x10000;
+	w = (win->w) * (sty->wantw) / 0x10000;
+	h = (win->h) * (sty->wanth) / 0x10000;
 
 	//
 	drawsolid_rect(win, 0,
@@ -196,31 +196,28 @@ static void circuit_read_pixel(struct arena* win, struct actor* act, struct styl
 		cx, cy, w, h
 	);
 }
-static void circuit_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void circuit_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void circuit_read_text(struct arena* win, struct actor* act, struct style* rel)
+static void circuit_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void circuit_read(struct arena* win, struct actor* act, struct style* rel)
+static void circuit_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
-	//text
-	if(win->fmt == 0x74786574)
-	{
-		circuit_read_text(win, act, rel);
-	}
+}
+static void circuit_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("circuit(%x,%x,%x)\n",win,act,sty);
+}
+static void circuit_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
 
-	//html
-	else if(win->fmt == 0x6c6d7468)
-	{
-		circuit_read_html(win, act, rel);
-	}
-
-	//pixel
-	else
-	{
-		circuit_read_pixel(win, act, rel);
-	}
+	if(fmt == __cli__)circuit_read_cli(win, act, sty);
+	else if(fmt == __tui__)circuit_read_tui(win, act, sty);
+	else if(fmt == __html__)circuit_read_html(win, act, sty);
+	else if(fmt == __vbo__)circuit_read_vbo(win, act, sty);
+	else circuit_read_pixel(win, act, sty);
 }
 static void circuit_write(struct event* ev)
 {

@@ -99,24 +99,17 @@ static void rubikscube_read_html(struct arena* win, struct actor* act, struct st
 static void rubikscube_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void rubikscube_read_cli()
+static void rubikscube_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
+	say("rubik(%x,%x,%x)\n",win,act,sty);
 }
 static void rubikscube_read(struct arena* win, struct actor* act, struct style* sty)
 {
-	//cli
-	if(win->fmt == hex32('c','l','i',0))rubikscube_read_cli();
-
-	//text
-	else if(win->fmt == hex32('t','u','i',0))rubikscube_read_tui(win, act, sty);
-
-	//html
-	else if(win->fmt == hex32('h','t','m','l'))rubikscube_read_html(win, act, sty);
-
-	//vbo
-	else if(win->fmt == hex32('v','b','o',0))rubikscube_read_vbo(win, act, sty);
-
-	//pixel
+	u64 fmt = win->fmt;
+	if(fmt == __cli__)rubikscube_read_cli(win, act, sty);
+	else if(fmt == __tui__)rubikscube_read_tui(win, act, sty);
+	else if(fmt == __html__)rubikscube_read_html(win, act, sty);
+	else if(fmt == __vbo__)rubikscube_read_vbo(win, act, sty);
 	else rubikscube_read_pixel(win, act, sty);
 }
 

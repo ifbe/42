@@ -11,7 +11,7 @@ static int red=0x8d,green=0x63,blue=0x25;
 
 
 
-static void color_read_pixel(struct arena* win)
+static void color_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,w,h,min;
 	u32 color;
@@ -94,36 +94,27 @@ static void color_read_pixel(struct arena* win)
 		0, 0, 0xffffffff, 0
 	);
 }
-static void color_read_html(struct arena* win)
-{
-	u32* buf = (u32*)(win->buf);
-	color_read_pixel(win);
-	buf[0]=0;
-}
-static void color_read_text(struct arena* win)
+static void color_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void color_read(struct arena* win)
+static void color_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	u32 fmt = win->fmt;
-
-	//text
-	if(fmt == 0x74786574)
-	{
-		color_read_text(win);
-	}
-
-	//html
-	else if(fmt == 0x6c6d7468)
-	{
-		color_read_html(win);
-	}
-
-	//pixel
-	else
-	{
-		color_read_pixel(win);
-	}
+}
+static void color_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+}
+static void color_read_cli(struct arena* win, struct actor* act, struct style* sty)
+{
+	say("color(%x,%x,%x)\n",win,act,sty);
+}
+static void color_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+	if(fmt == __cli__)color_read_cli(win, act, sty);
+	else if(fmt == __tui__)color_read_tui(win, act, sty);
+	else if(fmt == __html__)color_read_html(win, act, sty);
+	else if(fmt == __vbo__)color_read_vbo(win, act, sty);
+	else color_read_pixel(win, act, sty);
 }
 static void color_write(struct event* ev)
 {

@@ -9,14 +9,14 @@ static u8 buffer[8][8];
 
 
 
-static void chess_read_pixel(struct arena* win, struct actor* act, struct style* rel)
+static void chess_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
 	int x,y;
-	int cx = (win->w) * (rel->cx) / 0x10000;
-	int cy = (win->h) * (rel->cy) / 0x10000;
-	int w = (win->w) * (rel->wantw) / 0x10000 / 8;
-	int h = (win->h) * (rel->wanth) / 0x10000 / 8;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w = (win->w) * (sty->wantw) / 0x10000 / 8;
+	int h = (win->h) * (sty->wanth) / 0x10000 / 8;
 	if(w >= h)w=h;
 	else h=w;
 
@@ -41,16 +41,16 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void chess_read_vbo(struct arena* win, struct actor* act, struct style* rel)
+static void chess_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
 	int x,y;
 	float xxx, yyy;
 
-	float cx = (float)(rel->cx) / 65536.0 - 0.5;
-	float cy = (float)(rel->cy) / 65536.0 - 0.5;
-	float w = (float)(rel->wantw) / 65536.0;
-	float h = (float)(rel->wanth) / 65536.0;
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
 
 	for(y=0;y<8;y++)
 	{
@@ -71,25 +71,37 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* r
 		}
 	}
 }
-static void chess_read_html(struct arena* win, struct actor* act, struct style* rel)
+static void chess_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void chess_read_text(struct arena* win, struct actor* act, struct style* rel)
+static void chess_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void chess_read(struct arena* win, struct actor* act, struct style* rel)
+static void chess_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-	//text 
-	if(win->fmt == hex32('t','e','x','t'))chess_read_text(win, act, rel);
+	u8 ch;
+	int x,y;
+	say("chess(%x,%x,%x)\n",win,act,sty);
 
-	//html
-	else if(win->fmt == hex32('h','t','m','l'))chess_read_html(win, act, rel);
-
-	//vbo
-	else if(win->fmt == hex32('v','b','o',0))chess_read_vbo(win, act, rel);
-
-	//pixel
-	else chess_read_pixel(win, act, rel);
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			ch = buffer[y][x];
+			if(ch <= 0x20)say("_	");
+			else say("%c	", ch);
+		}
+		say("\n");
+	}
+}
+static void chess_read(struct arena* win, struct actor* act, struct style* sty)
+{
+	u64 fmt = win->fmt;
+	if(fmt == __cli__)chess_read_cli(win, act, sty);
+	else if(fmt == __tui__)chess_read_tui(win, act, sty);
+	else if(fmt == __vbo__)chess_read_vbo(win, act, sty);
+	else if(fmt == __html__)chess_read_html(win, act, sty);
+	else chess_read_pixel(win, act, sty);
 }
 static void chess_write(struct event* ev)
 {
