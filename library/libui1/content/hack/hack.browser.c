@@ -24,12 +24,8 @@ static void browser_read_html(struct arena* win, struct actor* act, struct style
 }
 static void browser_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	drawstring(
-		win, pl->priv, 1,
-		0, 0, 0xffffffff, 0);
-	drawstring(
-		win, dstbuf, 1,
-		0, 16, 0xffffffff, 0);
+	drawstring(win, 0xffffff, 0, 0, pl->priv, 0);
+	drawstring(win, 0x0000ff, 0, 16, dstbuf, 0);
 }
 static void browser_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {

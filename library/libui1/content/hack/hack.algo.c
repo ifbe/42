@@ -30,9 +30,9 @@ static void algorithm_read_pixel(struct arena* win, struct actor* act, struct st
 		(win->w)/16, (win->h)/16,
 		(win->w)*15/16, (win->h)*7/16
 	);
-	drawstring(
-		win, "makefile", 1,
-		(win->w)/2, (win->h)/4, 0xffffffff, 0
+	drawstring(win, 0xffffff,
+		(win->w)/2, (win->h)/4,
+		"makefile", 0
 	);
 
 	//middle
@@ -50,9 +50,9 @@ static void algorithm_read_pixel(struct arena* win, struct actor* act, struct st
 		(win->w/4)-32, (win->h/2)-16,
 		(win->w/4)+32, (win->h/2)+16
 	);
-	drawstring(
-		win, (char*)&algtype[this], 1,
-		(win->w/4)-16, (win->h/2)-4, 0xffffffff, 0
+	drawstring(win, 0xffffff,
+		(win->w/4)-16, (win->h/2)-4,
+		(char*)&algtype[this], 0
 	);
 
 	//middle.right
@@ -60,9 +60,9 @@ static void algorithm_read_pixel(struct arena* win, struct actor* act, struct st
 		(win->w*3/4)-32, (win->h/2)-16,
 		(win->w*3/4)+32, (win->h/2)+16
 	);
-	drawstring(
-		win, "doit", 1,
-		(win->w*3/4)-16, (win->h/2)-4, 0xffffffff, 0
+	drawstring(win, 0xffffff,
+		(win->w*3/4)-16, (win->h/2)-4,
+		"doit", 0
 	);
 
 	//bottom
@@ -70,9 +70,9 @@ static void algorithm_read_pixel(struct arena* win, struct actor* act, struct st
 		(win->w)/16, (win->h)*9/16,
 		(win->w)*15/16, (win->h)*15/16
 	);
-	drawstring(
-		win, pl->priv, 1,
-		(win->w/2)-(reslen*4), (win->h)*3/4, 0xffffffff, 0
+	drawstring(win, 0xffffff,
+		(win->w/2)-(reslen*4), (win->h)*3/4,
+		pl->priv, 0
 	);
 }
 static void algorithm_read_html(struct arena* win, struct actor* act, struct style* sty)

@@ -46,7 +46,7 @@ void drawicon_1(struct arena* win, u8* str, int x0, int y0, int x1, int y1)
 	for(j=0;j<256;j++)if(str[j] < 0x20)break;
 	x = (x0+x1)/2 - j*4;
 	y = (y0+y1)/2 - 4;
-	drawstring(win, str, 1, x, y, 0, 0);
+	drawstring(win, 0, x, y, str, 0);
 }
 
 

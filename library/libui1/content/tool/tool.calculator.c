@@ -51,22 +51,10 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 			);
 		}
 	}
-	drawstring(
-		win, buffer, 2,
-		16, 16, 0xffffffff, 0xff000000
-	);
-	drawstring(
-		win, infix, 2,
-		16, 16+32, 0xffffffff, 0xff000000
-	);
-	drawstring(
-		win, postfix, 2,
-		16, 16+64, 0xffffffff, 0xff000000
-	);
-	drawstring(
-		win, result, 2,
-		16, 16+96, 0xffffffff, 0xff000000
-	);
+	drawstring(win, 0xffffff, 16, 16, buffer, 0);
+	drawstring(win, 0xffffff, 16, 16+32, infix, 0);
+	drawstring(win, 0xffffff, 16, 16+64, postfix, 0);
+	drawstring(win, 0xffffff, 16, 16+96, result, 0);
 }
 static void calculator_read_html(struct arena* win, struct actor* act, struct style* sty)
 {

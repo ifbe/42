@@ -20,8 +20,8 @@ struct mathnode{
 };
 static struct mathnode* node=0;
 static int count=0;
-static char buffer[128];
-static char postfix[128];
+static u8 buffer[128];
+static u8 postfix[128];
 
 
 
@@ -65,10 +65,7 @@ static void printnode(struct arena* win, int x,int y,int num)
 	//self
 	if(node[num].type == 0x33323130)	//0,1,2,3...
 	{
-		drawdouble(
-			win, node[num].floatpoint, 1,
-			x, temp, 0xffffffff, 0
-		);
+		drawdouble(win, 0xffffff, x, temp, node[num].floatpoint);
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
@@ -110,12 +107,8 @@ static void printnode(struct arena* win, int x,int y,int num)
 }
 static void tree_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	drawstring(
-		win, buffer, 1,
-		0, 0, 0xffffffff, 0);
-	drawstring(
-		win, postfix, 1,
-		0, 16, 0xffffffff, 0);
+	drawstring(win, 0xffffff, 0, 0, buffer, 0);
+	drawstring(win, 0xffffff, 0, 16, postfix, 0);
 	if(node==0)return;
 
 	//等式

@@ -74,12 +74,8 @@ static void printstdin(struct arena* win,
 {
 	int x0 = (win->w)*xx0/0x10000;
 	int y0 = (win->h)*yy0/0x10000;
-	drawstring(
-		win, "[user@42]", 1,
-		x0, y0, 0, 0xffffffff);
-	drawstring(
-		win, input, 1,
-		x0+72, y0, 0, 0xffffffff);
+	drawstring(win, 0xffffff, x0, y0, "[user@42]", 0);
+	drawstring(win, 0xffffff, x0+72, y0, input, 0);
 }
 void vt100_read(struct arena* win,
 	int x0, int y0, int x1, int y1)

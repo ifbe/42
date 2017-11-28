@@ -39,7 +39,7 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 
 	while(alive == 1)
 	{
-		max = 0x200 - (info.enq);
+		max = 0x100000 - (info.enq);
 		if(max > 256)max = 256;
 
 		ret = ReadFile(
@@ -53,7 +53,7 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 		if( (ret > 0) && (count > 0) )
 		{
 			//printf("from %d to %d\n", info.enq, (info.enq + count)%0x200);
-			info.enq = (info.enq + count)%0x200;
+			info.enq = (info.enq + count)%0x100000;
 			eventwrite(
 				(u64)&info,
 				hex32('u','a','r','t'),

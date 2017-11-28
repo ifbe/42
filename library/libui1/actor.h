@@ -204,14 +204,14 @@ void drawascii(struct arena* win, u8 data, int size,
 void drawbyte(struct arena*, u8 data, int size,
 	int x, int y, u32 fg, u32 bg
 );
-void drawstring(struct arena*, char* str, int size,
-	int x, int y, u32 fg, u32 bg
-);
 void drawdecimal(struct arena* win, int data, int size,
 	int x, int y, u32 fg, u32 bg
 );
-void drawdouble(struct arena*, double z, int size,
-	int x, int y, u32 fg, u32 bg
+void drawstring(struct arena*, u32 rgb,
+	int x, int y, u8* buf, int len
+);
+void drawdouble(struct arena*, u32 rgb,
+	int x, int y, double z
 );
 
 void drawline(struct arena* win, u32 rgb,

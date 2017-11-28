@@ -10,7 +10,7 @@ content/game/game.tetris.c \
 content/game/game.weiqi.c \
 content/game/game.xiangqi.c \
 content/hack/hack.algo.c \
-content/hack/hack.browse.c \
+content/hack/hack.browser.c \
 content/hack/hack.editor.c \
 content/hack/hack.hex.c \
 content/hack/hack.tree.c \

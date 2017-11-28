@@ -342,26 +342,22 @@ void drawbyte(
 
 
 void drawstring(
-	struct arena* win, char* q, int size,
-	int x, int y, u32 fg, u32 bg)
+	struct arena* win, u32 rgb,
+	int x, int y, u8* buf, int len)
 {
-	int j=0;
-	u8* p = (u8*)q;
-
-	size &= 0x7;
-	if(size==0)size=1;
-
-	while(1)
+	int j;
+	if(buf == 0)return;
+	if(len == 0)
 	{
-		if(*p == 0x00 )break;
-		if( j >= 0x80 )break;
-
+		for(;len<256;len++)if(buf[len] == 0)break;
+	}
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == 0)break;
 		drawascii(
-			win, *p, size,
-			x+j*size*8, y, fg, bg
+			win, buf[j], 1,
+			x+j*8, y, rgb, 0
 		);
-		j++;
-		p++;
 	}
 }
 
@@ -449,14 +445,12 @@ void drawhexadecimal(
 
 
 
-void drawdouble(
-	struct arena* win, double data, int size,
-	int x,int y, u32 fg, u32 bg)
+void drawdouble(struct arena* win, u32 rgb,
+	int x, int y, double data)
 {
-	char mystr[100];
+	u8 mystr[100];
 	double2decstr(data, mystr);
-	drawstring(
-		win, (void*)mystr, size,
-		x, y, fg, bg
+	drawstring(win, rgb,
+		x, y, mystr, 0
 	);
 }

@@ -84,13 +84,13 @@ static void wangge(struct arena* win)
 
 
 	//网格上对应那一行的x,y坐标值,以及画上网格
-	drawdouble(
-		win, centerx-(scale*width/2)+(wanggex*scale), 1,
-		wanggex, 0+wanggey, 0xffffffff, 0
+	drawdouble(win, 0xffffff,
+		wanggex, 0+wanggey,
+		centerx-(scale*width/2)+(wanggex*scale)
 	);
-	drawdouble(
-		win, centery+(scale*height/2)-(wanggey*scale), 1,
-		wanggex, 16+wanggey, 0xffffffff, 0
+	drawdouble(win, 0xffffff,
+		wanggex, 16+wanggey,
+		centery+(scale*height/2)-(wanggey*scale)
 	);
 
 	for(x=wanggex;x<width;x+=wanggedistance)
@@ -172,29 +172,14 @@ static void tuxiang(struct arena* win)
 }
 static void sketchpad_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	//draw
 	wangge(win);
 	tuxiang(win);
 
-
-	//text
 skipthese:
-	drawstring(
-		win, buffer, 1,
-		0, 0, 0xcccccc, 0xff000000
-	);
-	drawstring(
-		win, infix, 1,
-		0, 16, 0xcccccc, 0xff000000
-	);
-	drawstring(
-		win, postfix, 1,
-		0, 32, 0xcccccc, 0xff000000
-	);
-	drawstring(
-		win, result, 1,
-		0, 48, 0xcccccc, 0xff000000
-	);
+	drawstring(win, 0xcccccc, 0, 0, buffer, 0);
+	drawstring(win, 0xcccccc, 0, 16, infix, 0);
+	drawstring(win, 0xcccccc, 0, 32, postfix, 0);
+	drawstring(win, 0xcccccc, 0, 48, result, 0);
 }
 static void sketchpad_read_html(struct arena* win, struct actor* act, struct style* sty)
 {

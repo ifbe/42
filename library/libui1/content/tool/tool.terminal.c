@@ -8,7 +8,7 @@ int uart_write(void*);
 
 struct uartinfo
 {
-	char* buf;
+	u8* buf;
 	int len;
 	int enq;
 	int deq;
@@ -26,15 +26,52 @@ static void terminal_read_vbo(struct arena* win, struct actor* act, struct style
 }
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	u8* p;
+	int j,k,enq,deq;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int w = (win->w) * (sty->wantw) / 0x20000;
 	int h = (win->h) * (sty->wanth) / 0x20000;
-
-	drawsolid_rect(
-		win, 0xffffff,
+	drawline_rect(win, 0xffffff,
 		cx-w, cy-h, cx+w, cy+h
 	);
+
+	if((status == 0)&&(len == 0))
+	{
+		say("terminal(%x,%x,%x)\n",win,act,sty);
+		uart_list();
+	}
+	if(info == 0)return;
+	p = info->buf;
+	enq = info->enq;
+	deq = info->deq;
+	info->deq = enq;
+	if(enq == deq)return;
+
+	if(enq > deq)
+	{
+		j = w/8;
+		k = enq-deq;
+		if(k>j)k=j;
+		drawstring(win, 0xffffff,
+			cx-w, cy-h, p+deq, k
+		);
+	}
+	else
+	{
+		j = w/8;
+		k = 0x100000-deq;
+		if(k>j)k=j;
+		drawstring(win, 0xffffff,
+			cx-w, cy-h, p+deq, k
+		);
+
+		k = enq;
+		if(k>j)k=j;
+		drawstring(win, 0xffffff,
+			cx-w, cy-h+16, p, k
+		);
+	}
 }
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -68,7 +105,7 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 	{
 		//printmemory(p+deq, 0x200-deq);
 		//printmemory(p, enq);
-		say("%.*s%.*s", 0x200-deq, p+deq, enq, p);
+		say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
 	}
 }
 static void terminal_read(struct arena* win, struct actor* act, struct style* sty)

@@ -206,9 +206,10 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 			{
 				for(j=0;j<rval;j++)
 				{
+					if(_s[j] == 0)break;
 					buf[dst+j] = _s[j];
 				}
-				dst += rval;
+				dst += j;
 			}
 			src = tmp+1;
 			continue;
