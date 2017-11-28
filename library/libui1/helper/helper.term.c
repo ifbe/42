@@ -5,10 +5,6 @@ int netmgr_write(void*);
 int sound_start();
 int vision_start();
 //
-int uart_list();
-int uart_choose(void*);
-int uart_write(void*);
-//
 int i2c_list();
 int i2c_choose(void*);
 //
@@ -29,8 +25,6 @@ void eventwrite(u64,u64,u64,u64);
 
 static char* input = 0;
 static char* output = 0;
-static int combo = 0;
-static int goooo = 0;
 
 
 
@@ -72,15 +66,6 @@ void term_read(u8* buf)
 			i2c_choose(buf+4);
 		}
 	}
-	else if(ncmp(buf, "uart ", 5) == 0)
-	{
-		if(ncmp(buf+5, "ls", 2) == 0)uart_list();
-		else
-		{
-			uart_choose(buf+5);
-			goooo = 1;
-		}
-	}
 	else if(ncmp(buf, "sound", 5) == 0)
 	{
 		sound_start();
@@ -109,30 +94,6 @@ void term_write(u8* p)
 	int* enq;
 	if(p == 0)return;
 	//printf("%02x%02x%02x\n",p[0],p[1],p[2]);return;
-
-	//passthrough?
-	if((p[0] == 0x1b)&&(*(p+1) != 0x5b))
-	{
-		combo++;
-		if(combo >= 4)
-		{
-			combo = 0;
-			goooo = 0;
-			term_read(0);
-		}
-	}
-	else combo = 0;
-
-	//passthrough!
-	if(goooo == 1)
-	{
-		uart_write(p);
-		return;
-	}
-	else if(goooo == 2)
-	{
-		return;
-	}
 
 	//myself
 	enq = (void*)(input+0xffff0);

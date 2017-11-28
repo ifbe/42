@@ -1,33 +1,44 @@
 #include "actor.h"
-void yuyv2rgba(
-	u8* src, int w1, int h1, 
-	u8* dst, int w2, int h2
+void yuyv2rgba(u8* src, u8* dst,
+	int w1, int h1, int sx1, int sy1, int dx1, int dy1,
+	int w2, int h2, int sx2, int sy2, int dx2, int dy2
 );
 void startvision();
 void stopvision();
 
 
 
-
-static u8* vision = 0;
+struct pictureobject
+{
+	void* buf;
+	int len;
+	int width;
+	int height;
+};
+static struct pictureobject* vision = 0;
 
 
 
 
 void camera_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	if(vision == 0)return;
+	u8* screen;
+	u8* buf;
 	int j;
 	int w = win->w;
 	int h = win->h;
-	u8* screen = (u8*)(win->buf);
-	if(vision == 0)return;
+	int cx = w * (sty->cx) / 0x10000;
+	int cy = h * (sty->cy) / 0x10000;
+	int ww = w * (sty->wantw) / 0x10000;
+	int hh = h * (sty->wanth) / 0x10000;
 
-	for(j=0;j<640*480;j++)vision[j*2]=256-vision[j*2];
-	yuyv2rgba(
-		vision, 640, 480,
-		screen, w, h
+	screen = (u8*)(win->buf);
+	buf = vision->buf;
+	yuyv2rgba(buf, screen,
+		640, 480,       0,       0,       0,       0,
+		  w,   h, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2
 	);
-	vision = 0;
 }
 void camera_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -40,7 +51,17 @@ void camera_read_tui(struct arena* win, struct actor* act, struct style* sty)
 }
 void camera_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-	say("camera(%x,%x,%x)\n",win,act,sty);
+	if(vision == 0)
+	{
+		say("camera(%x,%x,%x)\n",win,act,sty);
+	}
+	else
+	{
+		say("%x,%x,%x,%x\n",
+			vision->buf, vision->len,
+			vision->width, vision->height
+		);
+	}
 }
 static void camera_read(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -54,16 +75,14 @@ static void camera_read(struct arena* win, struct actor* act, struct style* sty)
 }
 static void camera_write(struct event* ev)
 {
+	int j;
+	u8* buf;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x72616863)	//'char'
-	{
-	}
-	else if(type=='v')
+	if(type == 'v')
 	{
 		vision = (void*)key;
-		//printmemory(vision+0xfff, 16);
 	}
 }
 

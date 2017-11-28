@@ -1332,3 +1332,31 @@ void carvesolid_sphere(
 		index[b + (3*j) +(accuracy*3) + 2] = pcount+accuracy*16+(j+1)%accuracy;
 	}
 }
+void carvesolid_tokamak(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
+{
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	u32 pcount = win->info[8];
+	u32 ncount = win->info[9];
+	u32 ccount = win->info[10];
+	//u32 tcount = win->info[11];
+	u32 icount = win->info[14];
+
+	void* buf = (void*)(win->buf);
+	float* vertex = buf + 0x800000 + (pcount*12);
+	float* normal = buf + 0x900000 + (ncount*12);
+	float* color  = buf + 0xa00000 + (ccount*12);
+	u16* index    = buf + 0xe00000 + (icount*2);
+
+	win->info[8] += accuracy*17+2;
+	win->info[9] += accuracy*17+2;
+	win->info[10] += accuracy*17+2;
+	win->info[14] += accuracy*16*6 + accuracy*3*2;
+
+}

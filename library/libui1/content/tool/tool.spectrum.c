@@ -33,8 +33,12 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 {
 	double t,cc,ss;
 	int x,y;
-	int width = win->w;
-	int height = win->h;
+	int w = win->w;
+	int h = win->h;
+	int cx = w * (sty->cx) / 0x10000;
+	int cy = h * (sty->cy) / 0x10000;
+	int ww = w * (sty->wantw) / 0x10000;
+	int hh = h * (sty->wanth) / 0x10000;
 /*
 	if(?????)
 	{
@@ -43,24 +47,24 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 			if(pcmin[x]>32768)continue;
 			y = pcmin[x] *height /maxamp /4;
 			line(win,
-				x*width/1024, (height/4) - y,
-				x*width/1024, (height/4) + y,
+				x*w/1024, (height/4) - y,
+				x*h/1024, (height/4) + y,
 				0xffffff
 			);
 		}
 		return;
 	}
 */
-	for(x=0;x<512;x++)
+	for(x=0;x<ww;x++)
 	{
-		t = x * tau / 512.0;
-		cc = cosine(t) * 256;
-		ss = -sine(t) * 256;
+		t = tau / ww * x;
+		cc = cosine(t) * ww / 2;
+		ss = -sine(t) * hh / 2;
 		drawline(win, 0xffffff,
-			256 + (int)(cc * (1.0 - 2*amplitude[x])),
-			256 + (int)(ss * (1.0 - 2*amplitude[x])),
-			256 + (int)cc,
-			256 + (int)ss
+			cx + (int)(cc * (1.0 - 2*amplitude[x])),
+			cy + (int)(ss * (1.0 - 2*amplitude[x])),
+			cx + (int)cc,
+			cy + (int)ss
 		);
 	}
 }

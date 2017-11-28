@@ -41,6 +41,18 @@ public:
 
 
 
+struct pictureobject
+{
+	u8* buf;
+	int len;
+	int width;
+	int height;
+};
+static struct pictureobject obj;
+
+
+
+
 class CallbackObject : public ISampleGrabberCB
 {
 public:
@@ -68,13 +80,12 @@ public:
 	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
 	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
 	{
-		BYTE *p = NULL;
-		int s = pSample->GetActualDataLength();
-		pSample->GetPointer(&p);
+		int len = pSample->GetActualDataLength();
+		pSample->GetPointer(&(obj.buf));
 		pSample->Release();
 
 		//printf("%llx,%x\n", p, s);
-		eventwrite((u64)p, 'v', 0, 0);
+		eventwrite((u64)&obj, 'v', 0, 0);
 		return S_OK;
 	}
 };
@@ -242,7 +253,8 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 	hr = devcfg->GetNumberOfCapabilities(&iCount, &iSize);
 	if(FAILED(hr)){printf("%x@GetNumberOfCapabilities\n",hr);return -2;}
 
-	// Check the size to make sure we pass in the correct structure.
+	obj.width = 1920;
+	obj.height = 1080;
 	if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS))
 	{
 		// Use the video capabilities structure.
@@ -266,8 +278,16 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 						if( (bmp->biWidth== 640) && (bmp->biHeight==480) )
 						{
 							hr = devcfg->SetFormat(pmtConfig);
-							if(SUCCEEDED(hr))printf("	***selected***");
-							else printf("	***%x***", hr);
+							if(SUCCEEDED(hr))
+							{
+								obj.width = 640;
+								obj.height = 480;
+								printf("	***selected***");
+							}
+							else
+							{
+								printf("	***%x***", hr);
+							}
 						}
 					}
 					else printf("???");
