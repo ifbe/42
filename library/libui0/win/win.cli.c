@@ -23,7 +23,6 @@ DWORD WINAPI uievent(void* win)
 	u64 why,what,where;
 
 	//
-	where = (u64)win;
 	while(1)
 	{
 		why = getch();
@@ -48,13 +47,10 @@ DWORD WINAPI uievent(void* win)
 			}
 			else continue;
 		}
-		else
-		{
-			if(why == 0x8)why = 0x7f;
-		}
 
 		//send
 		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
 		eventwrite(why, what, where, 0);
 	}//while
 }

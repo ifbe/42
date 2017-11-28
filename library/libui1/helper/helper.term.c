@@ -66,14 +66,6 @@ void term_read(u8* buf)
 			i2c_choose(buf+4);
 		}
 	}
-	else if(ncmp(buf, "sound", 5) == 0)
-	{
-		sound_start();
-	}
-	else if(ncmp(buf, "vision", 6) == 0)
-	{
-		vision_start();
-	}
 	else
 	{
 		actorchoose(buf);

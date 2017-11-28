@@ -183,7 +183,7 @@ static int escapesequence(u8* p)
 	//1b 5b 4b: erase from here to the end
 	if(p[2] == 0x4b)
 	{
-		printf(" \b");
+		printf("        \b\b\b\b\b\b\b\b");
 		return 3;
 	}
 
@@ -316,7 +316,7 @@ void lowlevel_output(u8* buf, int len)
 			i = escapesequence(buf+j);
 			if(i != 0)
 			{
-				printf("%");
+				printf("?");
 				j += i;
 				continue;
 			}

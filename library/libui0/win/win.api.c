@@ -85,6 +85,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case WM_CHAR:
 		{
+			printf("%x\n",wparam);
 			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, addr, 0);
 			else eventwrite(wparam, 0x72616863, addr, 0);
 			return 0;

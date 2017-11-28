@@ -6,7 +6,17 @@ int uart_write(void*);
 
 
 
+struct uartinfo
+{
+	char* buf;
+	int len;
+	int enq;
+	int deq;
+};
+static struct uartinfo* info;
 int status = 0;
+int len = 0;
+char buf[32];
 
 
 
@@ -34,10 +44,31 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 }
 static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-	if(status == 0)
+	char* p;
+	int enq, deq;
+	if((status == 0)&&(len == 0))
 	{
 		say("terminal(%x,%x,%x)\n",win,act,sty);
 		uart_list();
+	}
+
+	if(info == 0)return;
+	p = info->buf;
+	enq = info->enq;
+	deq = info->deq;
+	info->deq = enq;
+	if(enq == deq)return;
+
+	if(enq > deq)
+	{
+		//printmemory(p+deq, enq-deq);
+		say("%.*s", enq-deq, p+deq);
+	}
+	else
+	{
+		//printmemory(p+deq, 0x200-deq);
+		//printmemory(p, enq);
+		say("%.*s%.*s", 0x200-deq, p+deq, enq, p);
 	}
 }
 static void terminal_read(struct arena* win, struct actor* act, struct style* sty)
@@ -51,16 +82,45 @@ static void terminal_read(struct arena* win, struct actor* act, struct style* st
 }
 static void terminal_write(struct event* ev)
 {
+	u8 ch;
+	if(ev->what == __uart__)
+	{
+		info = (void*)(ev->why);
+		return;
+	}
+
 	if(ev->what == __char__)
 	{
-		if(status == 0)
-		{
-			uart_choose("COM7");
-			status = 1;
-		}
-		else
+		ch = (ev->why)&0xff;
+		if(status != 0)
 		{
 			uart_write((void*)ev);
+			return;
+		}
+		if(ch == 0x8)
+		{
+			if(len > 0)
+			{
+				say("\b \b");
+				len--;
+				buf[len] = 0;
+			}
+			return;
+		}
+
+		say("%c",ch);
+		if(ch == 0xd)
+		{
+			if(len == 0)return;
+
+			uart_choose(buf);
+			status = 1;
+			return;
+		}
+		if(len < 31)
+		{
+			buf[len] = ch;
+			len++;
 		}
 	}
 }

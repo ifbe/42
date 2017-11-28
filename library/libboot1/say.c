@@ -190,14 +190,25 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		else if(fmt[tmp] == 's')
 		{
 			_s = va_arg(arg, char*);
-			while(1)
+			if(rval <= 0)
 			{
-				if(dst >= len)goto retlen;
-				if(*_s == 0)break;
+				while(1)
+				{
+					if(dst >= len)goto retlen;
+					if(*_s == 0)break;
 
-				buf[dst] = *_s;
-				dst++;
-				_s++;
+					buf[dst] = *_s;
+					dst++;
+					_s++;
+				}
+			}
+			else
+			{
+				for(j=0;j<rval;j++)
+				{
+					buf[dst+j] = _s[j];
+				}
+				dst += rval;
 			}
 			src = tmp+1;
 			continue;

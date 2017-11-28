@@ -2,20 +2,31 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
 u64 startthread(void*, void*);
 void stopthread();
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
 
-//
-static int alive=0;
-static u64 thread=0;
-static HANDLE hcom=0;
+
+struct uartinfo
+{
+	char* buf;
+	int len;
+	int enq;
+	int deq;
+};
+static struct uartinfo info;
+static HANDLE hcom = 0;
+static u64 thread = 0;
+static int alive = 0;
 
 
 
@@ -23,24 +34,32 @@ static HANDLE hcom=0;
 DWORD WINAPI systemuart_read(LPVOID pM)
 {
 	int ret;
-	u32 count=0;
-	char buf[256];
+	int max;
+	int count=0;
 
 	while(alive == 1)
 	{
+		max = 0x200 - (info.enq);
+		if(max > 256)max = 256;
+
 		ret = ReadFile(
 			hcom,
-			buf,
-			256,
+			(info.buf)+(info.enq),
+			max,
 			(void*)&count,
 			0
 		);
 
 		if( (ret > 0) && (count > 0) )
 		{
-			buf[count] = 0;
-			say("%s", buf);
-			fflush(stdout);
+			//printf("from %d to %d\n", info.enq, (info.enq + count)%0x200);
+			info.enq = (info.enq + count)%0x200;
+			eventwrite(
+				(u64)&info,
+				hex32('u','a','r','t'),
+				0,
+				0
+			);
 		}
 
 		Sleep(10);
@@ -156,6 +175,15 @@ int systemuart_choose(char* p, int speed)
 		PURGE_RXCLEAR|PURGE_TXCLEAR|PURGE_RXABORT|PURGE_TXABORT
 	);
 	say("PurgeComm:%d\n", ret);
+
+	//
+	if(info.buf == 0)
+	{
+		info.enq = 0;
+		info.deq = 0;
+		info.len = 0x100000;
+		info.buf = (char*)malloc(info.len);
+	}
 
 	//
 	alive = 1;
