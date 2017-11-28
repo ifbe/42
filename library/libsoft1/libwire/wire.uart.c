@@ -6,7 +6,7 @@ int decstr2data(void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int systemuart_list();
+int systemuart_list(u8* p);
 int systemuart_choose(u8* p, int);
 int systemuart_read();
 int systemuart_write(u8*, int);
@@ -19,9 +19,9 @@ void say(void*, ...);
 
 
 
-int uart_list()
+int uart_list(u8* p)
 {
-	return systemuart_list();
+	return systemuart_list(p);
 }
 int uart_choose(u8* p)
 {

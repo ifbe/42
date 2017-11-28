@@ -31,7 +31,7 @@ static int alive = 0;
 
 
 
-DWORD WINAPI systemuart_read(LPVOID pM)
+DWORD WINAPI systemuart_thread(LPVOID pM)
 {
 	int ret;
 	int max;
@@ -66,6 +66,10 @@ DWORD WINAPI systemuart_read(LPVOID pM)
 	}
 	return 0;
 }
+int systemuart_read(char* buf, int len)
+{
+	return 0;
+}
 int systemuart_write(char* buf, int len)
 {
 	u32 count=0;
@@ -85,16 +89,16 @@ int systemuart_write(char* buf, int len)
 
 
 
-int systemuart_list()
+int systemuart_list(u8* p)
 {
-	int j;
+	int j,k=0;
 	HANDLE h;
-	char buf[20];
+
 	for(j=0;j<50;j++)
 	{
-		snprintf(buf, 20, "\\\\.\\COM%d", j);
+		snprintf(p+k, 20, "\\\\.\\COM%d", j);
 		h = CreateFile(
-			buf,
+			p+k,
 			GENERIC_READ | GENERIC_WRITE,
 			0,
 			NULL,
@@ -104,10 +108,11 @@ int systemuart_list()
 		);
 		if(h != INVALID_HANDLE_VALUE)
 		{
-			say("%s\n", buf+4);
 			CloseHandle(h);
+			k += snprintf(p+k, 20, "COM%d\n", j);
 		}
 	}
+	return k;
 }
 int systemuart_choose(char* p, int speed)
 {
@@ -187,7 +192,7 @@ int systemuart_choose(char* p, int speed)
 
 	//
 	alive = 1;
-	thread = startthread(systemuart_read, 0);
+	thread = startthread(systemuart_thread, 0);
 
 	//success
 	return 1;

@@ -1,5 +1,5 @@
 #include "actor.h"
-int uart_list();
+int uart_list(void*);
 int uart_choose(void*);
 int uart_write(void*);
 
@@ -15,19 +15,19 @@ struct uartinfo
 };
 static struct uartinfo* info;
 int status = 0;
-int len = 0;
-char buf[32];
+int listlen = 0;
+char listbuf[0x100];
+int charlen = 0;
+char charbuf[0x100];
 
 
 
 
-static void terminal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
-{
-}
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p;
-	int j,k,enq,deq;
+	int j,k,m,n;
+	int enq,deq;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int w = (win->w) * (sty->wantw) / 0x20000;
@@ -36,11 +36,31 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 		cx-w, cy-h, cx+w, cy+h
 	);
 
-	if((status == 0)&&(len == 0))
+	if((status == 0)&&(charlen == 0))
 	{
-		say("terminal(%x,%x,%x)\n",win,act,sty);
-		uart_list();
+		if(listlen == 0)
+		{
+			listlen = uart_list(listbuf);
+			say("%.*s", listlen, listbuf);
+		}
+
+		m = n = 0;
+		for(j=0;j<listlen;j++)
+		{
+			//say("%c",listbuf[j]);
+			if(listbuf[j] == '\n')
+			{
+				drawstring(win, 0xffffff,
+					cx-w, (cy-h)+(n*16),
+					listbuf+m, j-m
+				);
+				m = j+1;
+				n++;
+			}
+		}
+		return;
 	}
+
 	if(info == 0)return;
 	p = info->buf;
 	enq = info->enq;
@@ -76,17 +96,25 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
+static void terminal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+}
 static void terminal_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
 static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	char* p;
-	int enq, deq;
-	if((status == 0)&&(len == 0))
+	int j, enq, deq;
+	if((status == 0)&&(charlen == 0))
 	{
-		say("terminal(%x,%x,%x)\n",win,act,sty);
-		uart_list();
+		if(listlen == 0)
+		{
+			say("terminal(%x,%x,%x)\n",win,act,sty);
+			listlen = uart_list(listbuf);
+		}
+		say("%.*s", listlen, listbuf);
+		return;
 	}
 
 	if(info == 0)return;
@@ -136,11 +164,11 @@ static void terminal_write(struct event* ev)
 		}
 		if(ch == 0x8)
 		{
-			if(len > 0)
+			if(charlen > 0)
 			{
 				say("\b \b");
-				len--;
-				buf[len] = 0;
+				charlen--;
+				charbuf[charlen] = 0;
 			}
 			return;
 		}
@@ -148,16 +176,16 @@ static void terminal_write(struct event* ev)
 		say("%c",ch);
 		if(ch == 0xd)
 		{
-			if(len == 0)return;
+			if(charlen == 0)return;
 
-			uart_choose(buf);
+			uart_choose(charbuf);
 			status = 1;
 			return;
 		}
-		if(len < 31)
+		if(charlen < 31)
 		{
-			buf[len] = ch;
-			len++;
+			charbuf[charlen] = ch;
+			charlen++;
 		}
 	}
 }
