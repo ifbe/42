@@ -203,6 +203,24 @@ static int drawtext_1b(u8* p, struct txtcfg* cfg)
 
 
 
+void drawutf8_temp(
+	struct arena* win, u32 rgb,
+	int x, int y, u8* buf, int len)
+{
+	u8 ch = 0x30 + ((buf[0]>>4)&0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(
+		win, ch, 1,
+		x, y, rgb, 0
+	);
+
+	ch = 0x30 + (buf[0]&0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(
+		win, ch, 1,
+		x+8, y, rgb, 0
+	);
+}
 void drawtext(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
@@ -241,7 +259,7 @@ void drawtext(
 		}
 		if(flag == 0)continue;
 
-		k = (x1-x0)/8;
+		k = (x1-x0)/8 - cfg.x;
 		if(k > j-last)k = j-last;
 
 		if(k > 0)
@@ -269,11 +287,14 @@ void drawtext(
 		else if(flag == 4)
 		{
 			cfg.x += k;
-			drawsolid_rect(
-				win, cfg.fg,
-				x0 + (cfg.x)*8, y0 + (cfg.y)*16,
-				x0 + (cfg.x)*8+16, y0 + (cfg.y)*16+16
-			);
+			if(8*(cfg.x) < x1-x0-16)
+			{
+				drawutf8_temp(
+					win, cfg.fg,
+					x0 + (cfg.x)*8, y0 + (cfg.y)*16,
+					buf+j, z
+				);
+			}
 			cfg.x += 2;
 
 			last = j+z;

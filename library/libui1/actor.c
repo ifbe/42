@@ -171,7 +171,6 @@ int actorwrite(struct event* ev)
 }
 int actorlist(u8* p)
 {
-	//列出所有“人物”
 	int j;
 	int ret = 0;
 	u64 type = 0;
