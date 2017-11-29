@@ -13,10 +13,17 @@ void printmemory(void*, int);
 
 
 
+struct waveinfo
+{
+        void* buf;
+        int len;
+        int enq;
+        int deq;
+};
+static struct waveinfo info;
 //
 static int alive=0;
 static u64 thread=0;
-static char* buffer;
 //
 static int freq;
 static int chan;
@@ -38,8 +45,8 @@ DWORD WINAPI soundlistener(LPVOID pM)
 
 	while(alive == 1)
 	{
-		headin.lpData = buffer;
-		headin.dwBufferLength = 1024*4;
+		headin.lpData = (info.buf)+(info.enq);
+		headin.dwBufferLength = 4096;
 		headin.dwBytesRecorded = 0;
 		headin.dwUser = 0;
 		headin.dwFlags = 0;
@@ -51,7 +58,8 @@ DWORD WINAPI soundlistener(LPVOID pM)
 		Sleep(23);
 		waveInReset(wavein);
 
-		eventwrite(0, 's', 0, 0);
+		info.enq = (info.enq + 4096) % 0x100000;
+		eventwrite((u64)&info, 's', 0, 0);
 	}
 	return 0;
 }
@@ -92,18 +100,17 @@ void writesound(u8* buf, int len)
 	waveOutPrepareHeader(waveout, &headout, sizeof(WAVEHDR));
 	waveOutWrite(waveout, &headout, sizeof(WAVEHDR));
 }
-void startsound(unsigned int ra, int ch, void* buf, int max)
+void startsound(unsigned int ra, int ch)
 {
 	freq = ra;
 	chan = 1;
-	buffer = buf;
 
 	//both
 	fmt.wFormatTag = WAVE_FORMAT_PCM;	//声音格式为PCM
 	fmt.nChannels = 1;			//采样声道数，2声道
 	fmt.nSamplesPerSec = freq;		//采样率，16000次/秒
 	fmt.wBitsPerSample = 16;		//采样比特，16bits/次
-	fmt.nAvgBytesPerSec = freq*chan;		//每秒多少字节的数据
+	fmt.nAvgBytesPerSec = freq*chan;	//每秒多少字节的数据
 	fmt.nBlockAlign = 2;			//一个块的大小
 	fmt.cbSize = 0;
 
@@ -114,6 +121,14 @@ void startsound(unsigned int ra, int ch, void* buf, int max)
 
 	//out
 	waveOutOpen(&waveout, WAVE_MAPPER, &fmt, (u64)CB, 0L, CALLBACK_FUNCTION);
+	//
+	if(info.buf == 0)
+	{
+		info.enq = 0;
+		info.deq = 0;
+		info.len = 0x100000;
+		info.buf = malloc(info.len);
+	}
 
 	//
 	alive = 1;

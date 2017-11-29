@@ -7,24 +7,27 @@ void ifft(double* real, double* imag, int k);
 int sound_output(double*, double*, u16*);
 int piano_freq(int);
 //libsoft0
-int startsound(int rate, int chan, void* buf, int max);
+int startsound(int rate, int chan);
 int stopsound();
-u32 getrandom();
 
 
 
 
-//before
+struct waveinfo
+{
+	void* buf;
+	int len;
+	int enq;
+	int deq;
+};
+static struct waveinfo* info = 0;
+static int area=0;
 static int maxamp;
-static u16* pcmin;
-static u16* pcmout;
-//after
+//
 static double* real;
 static double* imag;
 static double* amplitude;
 static double* phase;
-//
-static int area=0;
 
 
 
@@ -109,9 +112,15 @@ static void spectrum_read(struct arena* win, struct actor* act, struct style* st
 
 
 
-void spectrum_random()
+void spectrum_fft()
 {
 	int j;
+	u16* pcmin;
+	if(info == 0)return;
+
+	pcmin = (info->buf)+(info->deq);
+	info->deq = info->enq;
+
 	for(j=0;j<1024;j++)
 	{
 		real[j] = (double)pcmin[j] / 65536.0;
@@ -150,20 +159,20 @@ static void spectrum_write(struct event* ev)
 			return;
 		}
 
-		for(j=0;j<1024;j++)real[j]=imag[j]=0.0;
+		for(j=0;j<1024;j++)real[j] = imag[j] = 0.0;
 
 		j = piano_freq(area*12+key);
 		say("%d->",j);
 		j = (j*1024)/44100;
 		say("%d\n",j);
 
-		real[j]=real[1023-j]=65535;
-		sound_output(real, imag, pcmout);
+		//real[j]=real[1023-j]=65535;
+		//sound_output(real, imag, pcmout);
 	}
 	else if(type=='s')
 	{
-		//printmemory(pcmin, 16);
-		spectrum_random();
+		info = (void*)(ev->why);
+		spectrum_fft();
 	}
 }
 
@@ -178,12 +187,8 @@ static void spectrum_into()
 }
 static void spectrum_start()
 {
-	int j;
 	maxamp = 65536;
-
-	//
-	startsound(44100, 2, pcmin, 0x100000);
-	spectrum_random();
+	startsound(44100, 2);
 }
 static void spectrum_stop()
 {
@@ -191,12 +196,10 @@ static void spectrum_stop()
 void spectrum_create(void* uibuf,void* addr)
 {
 	struct actor* p = addr;
-	pcmin=(void*)(uibuf+0x300000);
-	pcmout=(void*)(uibuf+0x340000);
-	real=(double*)(uibuf+0x380000);
-	imag=(double*)(uibuf+0x3a0000);
-	amplitude=(double*)(uibuf+0x3c0000);
-	phase=(double*)(uibuf+0x3e0000);
+	real=(double*)(uibuf+0x300000);
+	imag=(double*)(uibuf+0x340000);
+	amplitude=(double*)(uibuf+0x380000);
+	phase=(double*)(uibuf+0x3c0000);
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
