@@ -174,7 +174,7 @@ static void terminal_write(struct event* ev)
 		}
 
 		say("%c",ch);
-		if(ch == 0xd)
+		if((ch == 0xd)|(ch == 0xa))
 		{
 			if(charlen == 0)return;
 

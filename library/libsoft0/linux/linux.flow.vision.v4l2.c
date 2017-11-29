@@ -26,11 +26,10 @@ void say(void*, ...);
 
 //
 static struct buffer{
-	void *start;
-	char padding[8- sizeof(void*)];
-
-	int length;
-	int status;
+	void *buf;
+	int len;
+	int width;
+	int height;
 }my[24];
 //
 static u64 thread;
@@ -126,8 +125,10 @@ void* visionlistener(void* p)
 			return 0;
 		}
 
-		my[j].length = buf.length;
-		my[j].start = mmap(
+		my[j].width = 640;
+		my[j].height = 480;
+		my[j].len = buf.length;
+		my[j].buf = mmap(
 			NULL,
 			buf.length,
 			PROT_READ|PROT_WRITE,
@@ -136,7 +137,7 @@ void* visionlistener(void* p)
 			buf.m.offset
 		);
 
-		if(my[j].start == MAP_FAILED)
+		if(my[j].buf == MAP_FAILED)
 		{
 			printf("fail@mmap\n");
 			return 0;
@@ -180,8 +181,8 @@ void* visionlistener(void* p)
 		ioctl(fd, VIDIOC_DQBUF, &buf);
 
 		//do
-		//printmemory(my[j].start+0xfff, 16);
-		eventwrite((u64)my[j].start, 'v', 0, 0);
+		//printmemory(my[j].buf+0xfff, 16);
+		eventwrite((u64)&my[j], 'v', 0, 0);
 
 		//enq
 		ioctl(fd, VIDIOC_QBUF, &buf);
@@ -196,7 +197,7 @@ void* visionlistener(void* p)
 	}
 	for(j=0;j<24;j++)
 	{
-		munmap(my[j].start, my[j].length);
+		munmap(my[j].buf, my[j].len);
 	}
 
 	//v4l2_release

@@ -9,37 +9,63 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 u64 startthread(void*, void*);
 void stopthread();
-//
-u64 gettime();
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
 
 
-//
-static int alive = 1;
-static u64 thread;
-//
-static int fd = -1;
-
-
-
-
-void* systemuart_read(void* p)
+struct uartinfo
 {
-	int ret;
-	char buf[256];
+        char* buf;
+        int len;
+        int enq;
+        int deq;
+};
+static struct uartinfo info;
+static int fd = -1;
+static u64 thread;
+static int alive = 1;
+
+
+
+
+void* systemuart_thread(void* p)
+{
+	int ret,max;
 	while(alive == 1)
 	{
-		ret = read(fd, buf, 256);
-		if(ret < 0)break;
+		max = 0x100000 - (info.enq);
+		if(max > 256)max = 256;
 
-		buf[ret] = 0;
-		say("%s", buf);
-		fflush(stdout);
+		ret = read(
+			fd,
+			(info.buf)+(info.enq),
+			256
+		);
+		if(ret < 0)break;
+		if(ret == 0)continue;
+
+		info.enq = (info.enq+ret)%0x100000;
+		eventwrite(
+			(u64)&info,
+			hex32('u','a','r','t'),
+			0,
+			0
+		);
 	}
+	return 0;
+}
+
+
+
+
+int systemuart_read(char* buf, int len)
+{
 	return 0;
 }
 int systemuart_write(char* buf, int len)
@@ -48,13 +74,10 @@ int systemuart_write(char* buf, int len)
 	ret = write(fd, buf, len);
 	return ret;
 }
-
-
-
-
-int systemuart_list()
+int systemuart_list(char* p)
 {
-	return system("ls /dev/tty*");
+	system("ls /dev/tty*");
+	return 0;
 }
 int systemuart_choose(char* p, int speed)
 {
@@ -96,9 +119,17 @@ int systemuart_choose(char* p, int speed)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
+	if(info.buf == 0)
+	{
+		info.enq = 0;
+		info.deq = 0;
+		info.len = 0x100000;
+		info.buf = (char*)malloc(info.len);
+	}
+
 	//thread
 	alive = 1;
-	thread = startthread(systemuart_read, 0);
+	thread = startthread(systemuart_thread, 0);
 
 	//success
 	return 1;

@@ -48,7 +48,7 @@ int actorread_one(struct arena* win)
 	//cli silent
 	if(win->fmt == hex32('c','l','i',0))
 	{
-		if(win->cw == 4)return;
+		if(win->cw == 4)return 0;
 	}
 
 	//canvas

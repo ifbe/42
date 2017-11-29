@@ -66,6 +66,10 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 	}
 	return 0;
 }
+
+
+
+
 int systemuart_read(char* buf, int len)
 {
 	return 0;
@@ -85,10 +89,6 @@ int systemuart_write(char* buf, int len)
 	//say("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
 	return ret;
 }
-
-
-
-
 int systemuart_list(u8* p)
 {
 	int j,k=0;
