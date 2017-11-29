@@ -196,7 +196,14 @@ void select_3d(struct arena* win, struct style* sty);
 
 void background(struct arena* win);
 void foreground(struct arena* win);
-void drawicon_1(struct arena* win, u8* str, int x0, int y0, int x1, int y1);
+void drawicon_1(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
+void drawtext(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
 
 void drawascii(struct arena* win, u8 data, int size,
 	int x, int y, u32 fg, u32 bg

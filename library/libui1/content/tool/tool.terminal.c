@@ -26,7 +26,7 @@ char charbuf[0x100];
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p;
-	int j,k,m,n;
+	int j,k;
 	int enq,deq;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
@@ -36,7 +36,7 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 		cx-w, cy-h, cx+w, cy+h
 	);
 
-	if((status == 0)&&(charlen == 0))
+	if(status == 0)
 	{
 		if(listlen == 0)
 		{
@@ -44,20 +44,10 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 			say("%.*s", listlen, listbuf);
 		}
 
-		m = n = 0;
-		for(j=0;j<listlen;j++)
-		{
-			//say("%c",listbuf[j]);
-			if(listbuf[j] == '\n')
-			{
-				drawstring(win, 0xffffff,
-					cx-w, (cy-h)+(n*16),
-					listbuf+m, j-m
-				);
-				m = j+1;
-				n++;
-			}
-		}
+		drawtext(win, 0xffffff,
+			cx-w, cy-h, cx+w, cy+h,
+			listbuf, listlen
+		);
 		return;
 	}
 
@@ -65,33 +55,34 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	p = info->buf;
 	enq = info->enq;
 	deq = info->deq;
-	info->deq = enq;
-	if(enq == deq)return;
-
-	if(enq > deq)
+	if(enq != deq)
 	{
-		j = w/8;
-		k = enq-deq;
-		if(k>j)k=j;
-		drawstring(win, 0xffffff,
-			cx-w, cy-h, p+deq, k
-		);
-	}
-	else
-	{
-		j = w/8;
-		k = 0x100000-deq;
-		if(k>j)k=j;
-		drawstring(win, 0xffffff,
-			cx-w, cy-h, p+deq, k
-		);
+		info->deq = enq;
 
-		k = enq;
-		if(k>j)k=j;
-		drawstring(win, 0xffffff,
-			cx-w, cy-h+16, p, k
-		);
+		if(enq > deq)
+		{
+			j = w/8;
+			k = enq-deq;
+			if(k>j)k=j;
+			printmemory(p+deq, k);
+		}
+		else
+		{
+			j = w/8;
+			k = 0x100000-deq;
+			if(k>j)k=j;
+			printmemory(p+deq, k);
+
+			k = enq;
+			if(k>j)k=j;
+			printmemory(p, k);
+		}
 	}
+
+	drawtext(win, 0xffffff,
+		cx-w, cy-h, cx+w, cy+h,
+		p, 0x100000
+	);
 }
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
 {

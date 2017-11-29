@@ -46,6 +46,7 @@ lib1d/lib1d.c \
 lib2d/draw/draw.ascii.c \
 lib2d/draw/draw.icon.c \
 lib2d/draw/draw.shape.c \
+lib2d/draw/draw.text.c \
 lib2d/draw/draw.ttf.c \
 lib2d/photo/photo.blur.c \
 lib2d/photo/photo.channel.c \

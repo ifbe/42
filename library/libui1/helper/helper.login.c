@@ -10,10 +10,26 @@ void login_read_pixel(struct arena* win)
 	int j;
 	int w = win->w;
 	int h = win->h;
-	drawicon_1(win, "hello", w/4, h*2/8, w*3/4, h*3/8);
-	drawicon_1(win, "hello", w/4, h*3/8, w*3/4, h*4/8);
-	drawicon_1(win, "hello", w/4, h*4/8, w*3/4, h*5/8);
-	drawicon_1(win, "hello", w/4, h*5/8, w*3/4, h*6/8);
+	drawicon_1(
+		win, 0xff00ff,
+		w/4, h*2/8, w*3/4, h*3/8,
+		"hello", 0
+	);
+	drawicon_1(
+		win, 0x444444,
+		w/4, h*3/8, w*3/4, h*4/8,
+		"hello", 0
+	);
+	drawicon_1(
+		win, 0x444444,
+		w/4, h*4/8, w*3/4, h*5/8,
+		"hello", 0
+	);
+	drawicon_1(
+		win, 0x444444,
+		w/4, h*5/8, w*3/4, h*6/8,
+		"hello", 0
+	);
 }
 void login_read_vbo(struct arena* win)
 {
