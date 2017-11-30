@@ -99,10 +99,10 @@ static void spectrum_read(struct arena* win, struct actor* act, struct style* st
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))spectrum_read_cli(win, act, sty);
-	else if(fmt == hex32('t','u','i',0))spectrum_read_tui(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))spectrum_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))spectrum_read_vbo(win, act, sty);
+	if(fmt == __cli__)spectrum_read_cli(win, act, sty);
+	else if(fmt == __tui__)spectrum_read_tui(win, act, sty);
+	else if(fmt == __vbo__)spectrum_read_vbo(win, act, sty);
+	else if(fmt == __html__)spectrum_read_html(win, act, sty);
 	else spectrum_read_pixel(win, act, sty);
 }
 

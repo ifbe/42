@@ -121,7 +121,22 @@ static void tetris_read_html(struct arena* win, struct actor* act, struct style*
 
 
 
-static void tetris_read_text(struct arena* win, struct actor* act, struct style* sty)
+static void tetris_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+{
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
+
+	carvesolid_prism4(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		w/16, 0.0, 0.0,
+		0.0, h/16, 0.0,
+		0.0, 0.0, w/16
+	);
+}
+static void tetris_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
 	int width = win->w;
@@ -164,21 +179,6 @@ static void tetris_read_text(struct arena* win, struct actor* act, struct style*
 		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
 	}
 }
-static void tetris_read_vbo(struct arena* win, struct actor* act, struct style* sty)
-{
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
-	carvesolid_prism4(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		w/16, 0.0, 0.0,
-		0.0, h/16, 0.0,
-		0.0, 0.0, w/16
-	);
-}
 static void tetris_read_cli()
 {
 }
@@ -186,10 +186,10 @@ static void tetris_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))tetris_read_cli();
-	else if(fmt == hex32('t','e','x','t'))tetris_read_text(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))tetris_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))tetris_read_vbo(win, act, sty);
+	if(fmt == __cli__)tetris_read_cli();
+	else if(fmt == __tui__)tetris_read_tui(win, act, sty);
+	else if(fmt == __vbo__)tetris_read_vbo(win, act, sty);
+	else if(fmt == __html__)tetris_read_html(win, act, sty);
 	else tetris_read_pixel(win, act, sty);
 }
 
