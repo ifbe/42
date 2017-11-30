@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <windows.h>
 #include "arena.h"
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
 //
 u64 startthread(void*, void*);
 void stopthread();
@@ -15,28 +18,20 @@ void say(void*, ...);
 
 //
 static HANDLE output;
-static int lastwidth=0,lastheight=0;
-static int width,height;
 
 
 
 
-#ifndef MOUSE_HWHEELED
-#define MOUSE_HWHEELED 0x0008
-#endif
-
-
-
-
-DWORD WINAPI terminalthread(void* win)
+DWORD WINAPI terminalthread(struct window* win)
 {
 	int j;
 	u64 x,y,w;
 	u64 why, what, where;
     DWORD cNumRead, fdwMode, fdwSaveOldMode;
-    INPUT_RECORD irInBuf[128];
+	HANDLE hStdin, hStdout;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
-	HANDLE hStdin;
+	INPUT_RECORD irInBuf[128];
 	KEY_EVENT_RECORD keyrec;
 	MOUSE_EVENT_RECORD mouserec;
 	WINDOW_BUFFER_SIZE_RECORD wbsrec;
@@ -46,6 +41,13 @@ DWORD WINAPI terminalthread(void* win)
     if(hStdin == INVALID_HANDLE_VALUE)
 	{
         printf("GetStdHandle");
+		return 0;
+	}
+
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	if(hStdout == INVALID_HANDLE_VALUE)
+	{
+        printf("hStdout\n");
 		return 0;
 	}
 
@@ -108,8 +110,9 @@ DWORD WINAPI terminalthread(void* win)
 						{
 							if(mouserec.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 							{
+								GetConsoleScreenBufferInfo(hStdout, &bInfo);
 								x = mouserec.dwMousePosition.X;
-								y = 0;	//mouserec.dwMousePosition.Y;
+								y = mouserec.dwMousePosition.Y - bInfo.srWindow.Top;
 								w = 'l';
 								eventwrite(x+(y<<16)+(w<<48), 0x2b70, 0, 0);
 								//printf("left button press \n");
@@ -156,11 +159,19 @@ DWORD WINAPI terminalthread(void* win)
 				{
 					wbsrec = irInBuf[j].Event.WindowBufferSizeEvent;
 					//printf("Resize:%x,%x\n", wbsrec.dwSize.X, wbsrec.dwSize.Y);
+
+					GetConsoleScreenBufferInfo(hStdout, &bInfo);
+					x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+					y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+					win->w = x;
+					win->h = y;
+					eventwrite(x+(y<<16), __size__, 0, 0);
                     break;
 				}
                 case MENU_EVENT:
 				{
 					//printf("MENU_EVENT\n");
+					eventwrite(0,0,0,0);
                     break;
 				}
                 case FOCUS_EVENT:
@@ -213,15 +224,13 @@ void windowwrite(struct window* dst, struct window* src)
 {
 	int x,y;
 	u8 ch,bg=0,fg=0;
-	COORD pos = {0,0};
 	u8* p;
 	u8* buf = (u8*)(src->buf);
+	int width = src->w;
+	int height = src->h;
+	COORD pos = {0,0};
 	SetConsoleCursorPosition(output,pos);
-/*
-	//
-	buf[width*height]=0;
-	printf("%s",buf);
-*/
+
 	//
 	for(y=0;y<height;y++)
 	{
@@ -272,6 +281,7 @@ void windowchange()
 }
 void windowstart(struct window* this)
 {
+	int width,height;
 	if(this->type == hex32('b','u','f',0))
 	{
 		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
@@ -279,6 +289,11 @@ void windowstart(struct window* this)
 	}
 	else
 	{
+		CONSOLE_SCREEN_BUFFER_INFO bInfo;
+		GetConsoleScreenBufferInfo(output, &bInfo);
+		width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+		height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+
 		this->type = hex32('w','i','n',0);
 		this->fmt = hex32('t','u','i',0);
 
@@ -294,12 +309,7 @@ void windowstop()
 }
 void windowcreate()
 {
-	CONSOLE_SCREEN_BUFFER_INFO bInfo;
-
 	output = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(output, &bInfo );
-	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 }
 void windowdelete()
 {

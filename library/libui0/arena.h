@@ -7,6 +7,7 @@
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 #define __kbd__ hex32('k','b','d',0)
 #define __char__ hex32('c','h','a','r')
+#define __size__ hex32('s','i','z','e')
 
 
 

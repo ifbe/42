@@ -378,7 +378,7 @@ void xiangqi_write(struct event* ev)
 		//say("%d,%d\n",x,y);
 
 		x = (key & 0xffff) / 8;
-		y = ((key >> 16) & 0xffff) / 8;
+		y = ((key >> 16) & 0xffff) / 3;
 
 		if(x < 0)return;
 		if(x > 8)return;
