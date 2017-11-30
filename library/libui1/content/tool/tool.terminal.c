@@ -79,9 +79,20 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 		}
 	}
 
+	k = 0;
+	for(j=enq-1;j>0;j--)
+	{
+		if(p[j] == '\n')k++;
+		if(k+1 > h/8)
+		{
+			j++;
+			break;
+		}
+	}
+
 	drawtext(win, 0xffffff,
 		cx-w, cy-h, cx+w, cy+h,
-		p, 0x100000
+		p+j, 0x100000-j
 	);
 }
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
