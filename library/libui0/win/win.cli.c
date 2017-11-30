@@ -5,6 +5,7 @@
 u64 startthread(void*, void*);
 void stopthread();
 //
+int lowlevel_input();
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
@@ -18,41 +19,16 @@ static int termcount = 0;
 
 
 
-DWORD WINAPI uievent(void* win)
+DWORD WINAPI terminalthread(void* win)
 {
-	u64 why,what,where;
-
-	//
+	u64 why, what, where;
 	while(1)
 	{
-		why = getch();
-		if(why == 0xe0)
-		{
-			why = getch();
-			if(why == 0x48)	//up
-			{
-				why = 0x415b1b;
-			}
-			else if(why == 0x50)	//down
-			{
-				why = 0x425b1b;
-			}
-			else if(why == 0x4d)	//right
-			{
-				why = 0x435b1b;
-			}
-			else if(why == 0x4b)	//left
-			{
-				why = 0x445b1b;
-			}
-			else continue;
-		}
-
-		//send
+		why = lowlevel_input();
 		what = hex32('c', 'h', 'a', 'r');
 		where = (u64)win;
 		eventwrite(why, what, where, 0);
-	}//while
+	}
 }
 
 
@@ -90,7 +66,7 @@ void windowstart(struct window* this)
 
 		if(termcount == 0)
 		{
-			this->thread = startthread(uievent, this);
+			this->thread = startthread(terminalthread, this);
 			termcount++;
 		}
 		else

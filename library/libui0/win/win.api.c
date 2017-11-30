@@ -355,6 +355,21 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 theend:
 	return DefWindowProc(wnd, msg, wparam, lparam);
 }
+DWORD WINAPI terminalthread(void* win)
+{
+	u64 why, what, where;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
+		eventwrite(why, what, where, 0);
+	}
+}
+
+
+
+
 void createmywindow(struct window* this)
 {
 	HWND wnd;
@@ -550,7 +565,10 @@ void windowcreate()
 	//createevent
 	hStartEvent = CreateEvent(0,FALSE,FALSE,0);
 
-	//createthread
+	//terminalthread
+	startthread(terminalthread, 0);
+
+	//uithread
 	uithread = startthread(uievent, 0);
 
 	//waitevent

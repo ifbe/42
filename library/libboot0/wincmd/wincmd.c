@@ -183,35 +183,35 @@ static int escapesequence(u8* p)
 	//1b 5b 4b: erase from here to the end
 	if(p[2] == 0x4b)
 	{
-		printf("        \b\b\b\b\b\b\b\b");
+		//printf("        \b\b\b\b\b\b\b\b");
 		return 3;
 	}
 
 	//1b 5b 41: cursor up
 	if(p[2] == 0x41)
 	{
-		printf("a");
+		//printf("a");
 		return 3;
 	}
 
 	//1b 5b 42: cursor down
 	if(p[2] == 0x42)
 	{
-		printf("b");
+		//printf("b");
 		return 3;
 	}
 
 	//1b 5b 43: cursor forward
 	if(p[2] == 0x43)
 	{
-		printf("c");
+		//printf("c");
 		return 3;
 	}
 
 	//1b 5b 44: cursor backward
 	if(p[2] == 0x44)
 	{
-		printf("d");
+		//printf("d");
 		return 3;
 	}
 
@@ -277,9 +277,6 @@ static int escapesequence(u8* p)
 
 
 
-int lowlevel_input(u8* buf)
-{
-}
 void lowlevel_output(u8* buf, int len)
 {
 	int i,j,k=0;
@@ -316,7 +313,7 @@ void lowlevel_output(u8* buf, int len)
 			i = escapesequence(buf+j);
 			if(i != 0)
 			{
-				printf("?");
+				//printf("?");
 				j += i;
 				continue;
 			}
@@ -376,6 +373,25 @@ void lowlevel_output(u8* buf, int len)
 		}
 	}
 	if(j>k)printf("%.*s", j-k, buf+k);
+}
+int lowlevel_input(u8* buf)
+{
+	u8 ch;
+	while(1)
+	{
+		ch = getch();
+		if(ch == 0xe0)
+		{
+			ch = getch();
+			if(ch == 0x48)return 0x415b1b;
+			else if(ch == 0x50)return 0x425b1b;
+			else if(ch == 0x4d)return 0x435b1b;
+			else if(ch == 0x4b)return 0x445b1b;
+			else continue;
+		}
+		return ch;
+	}
+	
 }
 void createserial(u8* arg)
 {

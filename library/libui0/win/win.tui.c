@@ -20,10 +20,9 @@ static int width,height;
 
 
 
-DWORD WINAPI uievent(LPVOID pM)
+DWORD WINAPI terminalthread(void* win)
 {
-	unsigned char ch;
-
+	u64 why, what, where;
 	while(1)
 	{
 		if(lastwidth != width)
@@ -33,36 +32,10 @@ DWORD WINAPI uievent(LPVOID pM)
 			eventwrite(width + (height<<16), 0x657a6973, 0, 0);
 		}
 
-		ch = getch();
-		if(ch==3)eventwrite(0,0,0,0);
-		else if(ch == 0x1b)
-		{
-			eventwrite(0x1b, 0x64626b, 0, 0);
-		}
-		else if(ch == 0xe0)
-		{
-			ch = getch();
-			if(ch == 0x48)	//up
-			{
-				eventwrite(0x26, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x50)	//down
-			{
-				eventwrite(0x28, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x4b)	//left
-			{
-				eventwrite(0x25, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x4d)	//right
-			{
-				eventwrite(0x27, 0x64626b, 0, 0);
-			}
-		}
-		else
-		{
-			eventwrite(ch, 0x72616863, 0, 0);
-		}
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
+		eventwrite(why, what, where, 0);
 	}
 }
 static void windowsutf8(char* utf8)
@@ -170,7 +143,7 @@ void windowstart(struct window* this)
 		this->h = height;
 		this->d = 0;
 
-		this->thread = startthread(uievent, this);
+		this->thread = startthread(terminalthread, this);
 	}
 }
 void windowstop()
