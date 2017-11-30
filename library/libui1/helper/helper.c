@@ -1,3 +1,4 @@
+void login_create(void*);
 void term_create(void*);
 void vt100_create(void*);
 void wmgr_create(void*);

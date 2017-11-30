@@ -13,7 +13,7 @@ none:
 	rm -f *.o
 	$(compiler) $(cflag) startapp.c
 	$(compiler) $(cflag) basic.c
-	$(compiler) $(cflag) none/tx.c
+	$(compiler) $(cflag) none/stdio.c
 
 .PHONY:wincmd
 wincmd:

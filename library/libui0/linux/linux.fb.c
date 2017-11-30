@@ -10,8 +10,9 @@
 u64 startthread(void*, void*);
 void stopthread();
 //
-u64* eventread();
+int lowlevel_input();
 void eventwrite(u64,u64,u64,u64);
+void say(char*,...);
 
 
 
@@ -36,54 +37,15 @@ static int bpp=0;
 
 
 
-void* uievent(void* win)
+void* terminalthread(void* win)
 {
-	u8 buf[8];
-	u64 why,what,where;
-
-	//
-	where = (u64)win;
+	u64 why, what, where;
 	while(1)
 	{
-		buf[0] = getchar();
-		if( (buf[0] == 0) | (buf[0] == 0xff) )
-		{
-			usleep(10000);
-			continue;
-		}
-
-		if(buf[0]==0x1b)
-		{
-			buf[1] = getchar();
-			if( (buf[1] == 0) | (buf[1] == 0xff) )
-			{
-				usleep(10000);
-				buf[2] = getchar();
-				if(buf[2]==0|buf[2]==0xff)why = 0x1b;
-			}
-			else if(buf[1] == 0x5b)
-			{
-				buf[2] = getchar();
-				if(buf[2] == 0x41)why = 0x26; //up
-				else if(buf[2] == 0x42)why = 0x28; //down
-				else if(buf[2] == 0x44)why = 0x25; //left
-				else if(buf[2] == 0x43)why = 0x27; //right
-				else continue;
-			}//5b
-			else continue;
-
-			what = hex32('k','b','d',0);
-		}//1b
-		else
-		{
-			what = hex32('c','h','a','r');
-			why = buf[0];
-			if(buf[0] == 0x7f)why = 8;
-			if(buf[0] == 0xa)why = 0xd;
-		}
-
-		//send
-		eventwrite(why,what,where,0);
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
+		eventwrite(why, what, where, 0);
 	}//while
 }
 
@@ -134,21 +96,21 @@ void windowstart(struct window* this)
 	int j;
 	this->w = xmax;
 	this->h = ymax;
-        if(this->type == hex32('b','u','f',0))
-        {
-                this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-                return;
-        }
-        else
-        {
-                this->type = hex32('w', 'i', 'n', 0);
-                this->fmt = hex32('f', 'b', 0, 0);
+	if(this->type == hex32('b','u','f',0))
+	{
+		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+		return;
+	}
+	else
+	{
+		this->type = hex32('w', 'i', 'n', 0);
+		this->fmt = hex32('f', 'b', 0, 0);
 
-                for(j=0;j<16;j++)
-                {
-                        (this->touch[j]).id = 0xffff;
-                }
-        }
+		for(j=0;j<16;j++)
+		{
+			(this->touch[j]).id = 0xffff;
+		}
+	}
 }
 void windowstop()
 {
@@ -196,7 +158,7 @@ void windowcreate()
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
 	//
-	thread = startthread(uievent, 0);
+	thread = startthread(terminalthread, 0);
 }
 //__attribute__((destructor)) void destoryfb()
 void windowdelete()

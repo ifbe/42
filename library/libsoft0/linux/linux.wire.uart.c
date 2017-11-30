@@ -76,7 +76,7 @@ int systemuart_write(char* buf, int len)
 }
 int systemuart_list(char* p)
 {
-	system("ls /dev/tty*");
+	int ret = system("ls /dev/tty*");
 	return 0;
 }
 int systemuart_choose(char* p, int speed)

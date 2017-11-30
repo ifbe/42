@@ -1,6 +1,7 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void term_write(void*);
+void actorchoose(void*);
 
 
 

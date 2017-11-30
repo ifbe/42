@@ -158,10 +158,11 @@ static void chess_start()
 static void chess_stop()
 {
 }
-void chess_create(void* base, void* addr)
+void chess_delete()
 {
-	struct actor* act = addr;
-
+}
+void chess_create(void* base, struct actor* act)
+{
 	act->type = hex32('g', 'a', 'm', 'e');
 	act->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
 	act->irel = 0;
@@ -173,7 +174,4 @@ void chess_create(void* base, void* addr)
 	act->choose = (void*)chess_choose;
 	act->read = (void*)chess_read;
 	act->write = (void*)chess_write;
-}
-void chess_delete()
-{
 }

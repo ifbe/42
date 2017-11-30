@@ -172,6 +172,9 @@ static void ooxx_start()
 static void ooxx_stop()
 {
 }
+void ooxx_delete()
+{
+}
 void ooxx_create(void* base, struct actor* act)
 {
 	act->type = hex32('g', 'a', 'm', 'e');
@@ -185,7 +188,4 @@ void ooxx_create(void* base, struct actor* act)
 	act->choose = (void*)ooxx_choose;
 	act->read = (void*)ooxx_read;
 	act->write = (void*)ooxx_write;
-}
-void ooxx_delete()
-{
 }
