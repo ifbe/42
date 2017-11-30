@@ -261,17 +261,22 @@ static const unsigned char asciitable[128*16]={
 0x00,0x70,0xD8,0xD8,0x70,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00		//0x7f DEL
 };
+void drawascii_bitmap(char* buf, int ch)
+{
+	int j;
+	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
+	for(j=0;j<0x10;j++)buf[j] = asciitable[(ch<<4) + j];
+}
 
 
 
 
-//
 void drawascii(
 	struct arena* win, u8 ch, int size,
 	int xxxx, int yyyy, u32 fg, u32 bg)
 {
 	int x,y,j,k;
-	int width,height,offset,flag;
+	int width,height,offset;
 	u8 temp;
 	u8* points;
 	u32* screen;
@@ -287,10 +292,7 @@ void drawascii(
 	size &= 0x7;
 	if(size == 0)size=1;
 
-	flag = bg>>24;
 	fg |= 0xff000000;
-	bg |= 0xff000000;
-
 	for(y=0;y<16;y++)
 	{
 		temp=points[0];
@@ -304,9 +306,7 @@ void drawascii(
 				{
 					offset = ( ( yyyy + y*size + k ) * width ) + xxxx + x*size + j;
 					if(offset < 0)continue;
-
 					if( (temp&0x80) != 0 )screen[offset] = fg;
-					else if(flag != 0)screen[offset] = bg;
 				}//k
 			}//j
 
@@ -360,6 +360,15 @@ void drawstring(
 		);
 	}
 }
+void drawdouble(struct arena* win, u32 rgb,
+	int x, int y, double data)
+{
+	u8 mystr[100];
+	double2decstr(data, mystr);
+	drawstring(win, rgb,
+		x, y, mystr, 0
+	);
+}
 
 
 
@@ -406,10 +415,6 @@ void drawdecimal(
 		dec=dec/10;
 	}
 }
-
-
-
-
 void drawhexadecimal(
 	struct arena* win, u64 hex, int size,
 	int x, int y, u32 fg, u32 bg)
@@ -440,17 +445,4 @@ void drawhexadecimal(
 		);
 		hex=hex>>4;
 	}
-}
-
-
-
-
-void drawdouble(struct arena* win, u32 rgb,
-	int x, int y, double data)
-{
-	u8 mystr[100];
-	double2decstr(data, mystr);
-	drawstring(win, rgb,
-		x, y, mystr, 0
-	);
 }
