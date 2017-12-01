@@ -1,3 +1,8 @@
+void say(void*, ...);
+
+
+
+
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y)
 {
 	int min, max, t, u;

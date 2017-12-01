@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdarg.h>
+#include<conio.h>
 #include<windows.h>
 #define u8 unsigned char
 

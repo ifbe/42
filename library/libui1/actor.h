@@ -216,6 +216,10 @@ void drawstring(struct arena*, u32 rgb,
 void drawdouble(struct arena*, u32 rgb,
 	int x, int y, double z
 );
+void drawtext(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
 void drawvt100(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len

@@ -217,14 +217,10 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	u8* p;
 	int j,k;
 	int enq,deq;
-	int cx = (win->w) / 2;
-	int cy = (win->h) / 2;
-	int ww = (win->w) / 2;
-	int hh = (win->h) / 2;
-	sty->cx = 0x8000;
-	sty->cy = 0x8000;
-	sty->wantw = 0xffff;
-	sty->wanth = 0xffff;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
 
 	drawline_rect(win, 0xffffff,
 		cx-ww, cy-hh, cx+ww, cy+hh
@@ -235,10 +231,10 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 		if(listlen == 0)
 		{
 			listlen = uart_list(listbuf);
-			say("%.*s", listlen, listbuf);
+			if(listlen != 0)say("%.*s", listlen, listbuf);
 		}
 
-		drawvt100(win, 0xffffff,
+		drawtext(win, 0xffffff,
 			cx-ww, cy-hh, cx+ww, cy+hh,
 			listbuf, listlen
 		);
