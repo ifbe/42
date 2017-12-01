@@ -220,6 +220,18 @@ static void attr(u8 bg,u8 fg)
 
 
 
+static void gotoxy(int x, int y)
+{
+	COORD pos;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
+
+	output = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(output, &bInfo);
+
+	pos.X = x;
+	pos.Y = bInfo.srWindow.Top + y;
+	SetConsoleCursorPosition(output, pos);
+}
 void windowwrite(struct window* dst, struct window* src)
 {
 	int x,y;
@@ -228,14 +240,14 @@ void windowwrite(struct window* dst, struct window* src)
 	u8* buf = (u8*)(src->buf);
 	int width = src->w;
 	int height = src->h;
-	COORD pos = {0,0};
-	SetConsoleCursorPosition(output,pos);
+	gotoxy(0, 0);
 
 	//
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
 		{
+			if((x == width-1)&&(y == height-1))break;
 			p = buf + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
@@ -267,8 +279,6 @@ void windowwrite(struct window* dst, struct window* src)
 		}
 	}
 	if(bg != 0)attr(0,0);
-
-	SetConsoleCursorPosition(output,pos);
 }
 void windowread()
 {

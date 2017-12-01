@@ -33,10 +33,9 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 			);
 			if(buffer[y][x] == 0)continue;
 
-			drawascii(win,
-				buffer[y][x], 2,
+			drawascii(win, 0xff00ff,
 				cx+(x-4)*w, cy+(y-4)*h,
-				0xffff00ff, 0
+				buffer[y][x]
 			);
 		}
 	}

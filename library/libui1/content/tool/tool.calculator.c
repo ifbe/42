@@ -45,10 +45,7 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 				w8*x, h8*(y+4),
 				w8*(x+1), h8*(y+5)
 			);
-			drawascii(
-				win, table[y][x], 4,
-				w8*x, h8*(y+4), 0xffffffff, 0
-			);
+			drawascii(win, 0xffffff, w8*x, h8*(y+4), table[y][x]);
 		}
 	}
 	drawstring(win, 0xffffff, 16, 16, buffer, 0);

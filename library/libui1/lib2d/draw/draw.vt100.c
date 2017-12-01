@@ -10,8 +10,15 @@ struct txtcfg
 
 
 
-int drawtext_color(u8* p, struct txtcfg* cfg)
+int drawvt100_color(u8* p, struct txtcfg* cfg)
 {
+	//reset
+	if(p == 0)
+	{
+		cfg->fg = 0xcccccc;
+		return 0;
+	}
+
 	//reset
 	if(p[0] == '0')
 	{
@@ -54,62 +61,63 @@ int drawtext_color(u8* p, struct txtcfg* cfg)
 		return 4;
 	}
 }
-static int drawtext_position(u8* p, struct txtcfg* cfg)
+static int drawvt100_position(u8* p, struct txtcfg* cfg)
 {
-	int t;
-	int x=0,y=0;
-	for(t=0;t<4;t++)
+	int j, k, x=0, y=0;
+	for(k=0;k<4;k++)
 	{
-		if(p[t] == ';')
-		{
-			t++;
-			break;
-		}
-		y = (y*10) + p[t] - 0x30;
+		if(p[k] == ';')break;
 	}
-	for(;t<8;t++)
+	if(k>=4)return 0;
+
+	for(j=0;j<k;j++)
 	{
-		if( (p[t] == 'H') | (p[t] == 'f') )
-		{
-			t++;
-			break;
-		}
-		x = (x*10) + p[t] - 0x30;
+		y = (y*10) + p[j] - 0x30;
+	}
+
+	for(;k<8;k++)
+	{
+		if((p[k] == 'H')|(p[k] == 'f'))break;
+	}
+	if(k>=8)return 0;
+
+	j++;
+	for(;j<k;j++)
+	{
+		x = (x*10) + p[j] - 0x30;
 	}
 
 	cfg->x = x-1;
 	cfg->y = y-1;
+	//say("%x,%x\n",x-1,y-1);
 	return 0;
 }
-static int drawtext_1b(u8* p, struct txtcfg* cfg)
+static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 {
 	int j;
 	int x,y;
 	if(p[0] != 0x1b)return 0;
 	if(p[1] != 0x5b)return 1;
+	//printmemory(p, 16);
 
-	if(p[2] == '?')
+	//1b 5b 4a: Clear screen from cursor down
+	if(p[2] == 'J')
 	{
-		for(j=3;j<8;j++)
-		{
-			if( (p[j] == 'h') | (p[j] == 'l') )
-			{
-				//clear screen&&goto (0,0)
-				return j+1;
-			}
-		}
+		//clearcmd();
+		return 3;
 	}
 
-	//1b 5b 4a bf: openwrt special
-	if(p[2] == 0x4a)
-	{
-		if(p[3] == 0xbf) return 4;
-	}
-
-	//1b 5b 4b: erase from here to the end
-	if(p[2] == 0x4b)
+	//1b 5b 4b: Clear line from cursor right
+	if(p[2] == 'K')
 	{
 		//printf("        \b\b\b\b\b\b\b\b");
+		return 3;
+	}
+
+	//1b 5b m
+	if(p[2] == 'm')
+	{
+		drawvt100_color(0, cfg);
 		return 3;
 	}
 
@@ -141,10 +149,25 @@ static int drawtext_1b(u8* p, struct txtcfg* cfg)
 		return 3;
 	}
 
+	//1b 5b m
+	if((p[2] == 'H')|(p[2] == 'f'))
+	{
+		cfg->x = 0;
+		cfg->y = 0;
+		return 3;
+	}
+
+	//1b 5b m
+	if(p[2] == 'm')
+	{
+		drawvt100_color(0, cfg);
+		return 3;
+	}
+
 	//1b 5b ? m
 	if(p[3] == 'm')
 	{
-		drawtext_color(p+2, cfg);
+		drawvt100_color(p+2, cfg);
 		return 4;
 	}
 
@@ -154,10 +177,22 @@ static int drawtext_1b(u8* p, struct txtcfg* cfg)
 		return 4;
 	}
 
+	//1b 5b ? ? h
+	if(p[4] == 'h')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? l
+	if(p[4] == 'l')
+	{
+		return 5;
+	}
+
 	//1b 5b ? ? m
 	if(p[4] == 'm')
 	{
-		drawtext_color(p+2, cfg);
+		drawvt100_color(p+2, cfg);
 		return 5;
 	}
 
@@ -166,16 +201,16 @@ static int drawtext_1b(u8* p, struct txtcfg* cfg)
 		//1b 5b ? ; ? m
 		if(p[5] == 'm')
 		{
-			drawtext_color(p+2, cfg);
-			drawtext_color(p+4, cfg);
+			drawvt100_color(p+2, cfg);
+			drawvt100_color(p+4, cfg);
 			return 6;
 		}
 
 		//1b 5b ? ; ? ? m
 		else if(p[6] == 'm')
 		{
-			drawtext_color(p+2, cfg);
-			drawtext_color(p+4, cfg);
+			drawvt100_color(p+2, cfg);
+			drawvt100_color(p+4, cfg);
 			return 7;
 		}
 	}
@@ -183,16 +218,17 @@ static int drawtext_1b(u8* p, struct txtcfg* cfg)
 	//1b 5b ? ? ; ? ? m
 	if( (p[4] == ';') && (p[7] == 'm') )
 	{
-		drawtext_color(p+2, cfg);
-		drawtext_color(p+5, cfg);
+		drawvt100_color(p+2, cfg);
+		drawvt100_color(p+5, cfg);
 		return 8;
 	}
 
 	for(j=2;j<10;j++)
 	{
+		if(p[j] == 'r')return j+1;
 		if( (p[j] == 'H') | (p[j] == 'f') )
 		{
-			drawtext_position(p+2, cfg);
+			drawvt100_position(p+2, cfg);
 			return j+1;
 		}
 	}
@@ -209,19 +245,13 @@ void drawutf8_temp(
 {
 	u8 ch = 0x30 + ((buf[0]>>4)&0xf);
 	if(ch > 0x39)ch += 7;
-	drawascii(
-		win, ch, 1,
-		x, y, rgb, 0
-	);
+	drawascii(win, rgb, x, y, ch);
 
 	ch = 0x30 + (buf[0]&0xf);
 	if(ch > 0x39)ch += 7;
-	drawascii(
-		win, ch, 1,
-		x+8, y, rgb, 0
-	);
+	drawascii(win, rgb, x+8, y, ch);
 }
-void drawtext(
+void drawvt100(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
@@ -236,6 +266,8 @@ void drawtext(
 	{
 		if((cfg.y)*16+16 > y1-y0)break;
 
+		x = cfg.x;
+		y = cfg.y;
 		c = cfg.fg;
 		flag = 0;
 
@@ -243,7 +275,7 @@ void drawtext(
 		else if(buf[j] == '\n')flag = 2;
 		else if(buf[j] == 0x1b)
 		{
-			z = drawtext_1b(buf+j, &cfg);
+			z = drawvt100_1b(buf+j, &cfg);
 			if(z >= 2)flag = 3;
 		}
 		else if(buf[j] >= 0x80)
@@ -259,14 +291,14 @@ void drawtext(
 		}
 		if(flag == 0)continue;
 
-		k = (x1-x0)/8 - cfg.x;
+		k = (x1-x0)/8 - x;
 		if(k > j-last)k = j-last;
 
 		if(k > 0)
 		{
 			drawstring(
 				win, c,
-				x0 + (cfg.x)*8, y0 + (cfg.y)*16,
+				x0 + (x*8), y0 + (y*16),
 				buf+last, k
 			);
 		}

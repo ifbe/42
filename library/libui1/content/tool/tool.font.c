@@ -19,12 +19,7 @@ static void font_read_pixel(struct arena* win, struct actor* act, struct style* 
 		if(x+16 > ww*2)continue;
 		if(y+16 > hh*2)break;
 
-		drawascii(win, j, 1,
-			cx-ww + x,
-			cy-hh + y,
-			0xffffff,
-			0
-		);
+		drawascii(win, 0xffffff, cx-ww + x, cy-hh + y, j);
 	}
 }
 static void font_read_html(struct arena* win, struct actor* act, struct style* sty)

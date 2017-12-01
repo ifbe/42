@@ -35,7 +35,6 @@ helper/helper.bgfg.c \
 helper/helper.input.c \
 helper/helper.login.c \
 helper/helper.term.c \
-helper/helper.vt100.c \
 helper/helper.win.c \
 helper/helper.c \
 lib1d/html/html.shape.c \
@@ -46,8 +45,8 @@ lib1d/lib1d.c \
 lib2d/draw/draw.ascii.c \
 lib2d/draw/draw.icon.c \
 lib2d/draw/draw.shape.c \
-lib2d/draw/draw.text.c \
 lib2d/draw/draw.ttf.c \
+lib2d/draw/draw.vt100.c \
 lib2d/photo/photo.blur.c \
 lib2d/photo/photo.channel.c \
 lib2d/photo/photo.convert.c \

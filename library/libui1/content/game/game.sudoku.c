@@ -38,34 +38,17 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 
 			if(table[y][x] != 0)
 			{
-				drawdecimal(
-					win, table[y][x], 2,
+				drawdecimal(win, 0,
 					cx+(2*x-9)*w/2, cy+(2*y-9)*h/2,
-					0, 0
+					table[y][x]
 				);
 			}
 		}
 	}
-	drawsolid_rect(
-		win, 0,
-		0, (h/3)-2,
-		w, (h/3)+2
-	);
-	drawsolid_rect(
-		win, 0,
-		0, (h*2/3)-2,
-		w, (h*2/3)+2
-	);
-	drawsolid_rect(
-		win, 0,
-		(w/3)-2, 0,
-		(w/3)+2, h
-	);
-	drawsolid_rect(
-		win, 0,
-		(w*2/3)-2, 0,
-		(w*2/3)+2, h
-	);
+	drawsolid_rect(win, 0, 0, (h/3)-2, w, (h/3)+2);
+	drawsolid_rect(win, 0, 0, (h*2/3)-2, w, (h*2/3)+2);
+	drawsolid_rect(win, 0, (w/3)-2, 0, (w/3)+2, h);
+	drawsolid_rect(win, 0, (w*2/3)-2, 0, (w*2/3)+2, h);
 }
 static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {

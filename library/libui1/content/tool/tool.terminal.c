@@ -13,16 +13,42 @@ struct uartinfo
 	int enq;
 	int deq;
 };
-static struct uartinfo* info;
-int status = 0;
+static struct uartinfo* old;
+static struct uartinfo new;
 int listlen = 0;
 char listbuf[0x100];
 int charlen = 0;
 char charbuf[0x100];
+int status = 0;
 
 
 
 
+static void queue_copy(char* buf, int len)
+{
+	int j,k;
+	char* p = new.buf;
+	if(p == 0)return;
+
+	k = new.enq;
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == 0)continue;
+		if(buf[j] == 0x7)continue;
+		if(buf[j] != 0x8)
+		{
+			p[k] = buf[j];
+			k = (k+1)%0x100000;
+		}
+		else
+		{
+			k = (k+0xfffff)%0x100000;
+			p[k] = 0;
+			if(*(u32*)(buf+j) == 0x4b5b1b08)j+=3;
+		}
+	}
+	new.enq = k;
+}
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p;
@@ -44,40 +70,34 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 			say("%.*s", listlen, listbuf);
 		}
 
-		drawtext(win, 0xffffff,
+		drawvt100(win, 0xffffff,
 			cx-w, cy-h, cx+w, cy+h,
 			listbuf, listlen
 		);
 		return;
 	}
 
-	if(info == 0)return;
-	p = info->buf;
-	enq = info->enq;
-	deq = info->deq;
+	if(old == 0)return;
+	p = old->buf;
+	enq = old->enq;
+	deq = old->deq;
+	old->deq = enq;
 	if(enq != deq)
 	{
-		info->deq = enq;
-
 		if(enq > deq)
 		{
-			j = w/8;
-			k = enq-deq;
-			if(k>j)k=j;
-			printmemory(p+deq, k);
+			queue_copy(p+deq, enq-deq);
 		}
 		else
 		{
-			j = w/8;
-			k = 0x100000-deq;
-			if(k>j)k=j;
-			printmemory(p+deq, k);
-
-			k = enq;
-			if(k>j)k=j;
-			printmemory(p, k);
+			queue_copy(p+deq, 0x100000-deq);
+			queue_copy(p, enq);
 		}
 	}
+
+	enq = new.enq;
+	p = new.buf;
+	if(p == 0)return;
 
 	k = 0;
 	for(j=enq-1;j>0;j--)
@@ -90,7 +110,7 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 		}
 	}
 
-	drawtext(win, 0xffffff,
+	drawvt100(win, 0xffffff,
 		cx-w, cy-h, cx+w, cy+h,
 		p+j, 0x100000-j
 	);
@@ -107,7 +127,7 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	char* p;
-	int j, enq, deq;
+	int enq, deq;
 	if((status == 0)&&(charlen == 0))
 	{
 		if(listlen == 0)
@@ -119,11 +139,11 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 		return;
 	}
 
-	if(info == 0)return;
-	p = info->buf;
-	enq = info->enq;
-	deq = info->deq;
-	info->deq = enq;
+	if(old == 0)return;
+	p = old->buf;
+	enq = old->enq;
+	deq = old->deq;
+	old->deq = enq;
 	if(enq == deq)return;
 
 	if(enq > deq)
@@ -147,24 +167,27 @@ static void terminal_read(struct arena* win, struct actor* act, struct style* st
 	else if(fmt == __html__)terminal_read_html(win, act, sty);
 	else terminal_read_pixel(win, act, sty);
 }
+
+
+
+
 static void terminal_write(struct event* ev)
 {
-	u8 ch;
+	int j;
 	if(ev->what == __uart__)
 	{
-		info = (void*)(ev->why);
+		old = (void*)(ev->why);
 		return;
 	}
-
 	if(ev->what == __char__)
 	{
-		ch = (ev->why)&0xff;
+		j = (ev->why)&0xff;
 		if(status != 0)
 		{
 			uart_write((void*)ev);
 			return;
 		}
-		if(ch == 0x8)
+		if(j == 0x8)
 		{
 			if(charlen > 0)
 			{
@@ -175,8 +198,8 @@ static void terminal_write(struct event* ev)
 			return;
 		}
 
-		say("%c",ch);
-		if((ch == 0xd)|(ch == 0xa))
+		say("%c",j);
+		if((j == 0xd)|(j == 0xa))
 		{
 			if(charlen == 0)return;
 
@@ -186,7 +209,7 @@ static void terminal_write(struct event* ev)
 		}
 		if(charlen < 31)
 		{
-			charbuf[charlen] = ch;
+			charbuf[charlen] = j;
 			charlen++;
 		}
 	}
@@ -203,6 +226,10 @@ static void terminal_change()
 }
 static void terminal_start()
 {
+	new.enq = 0;
+	new.deq = 0;
+	new.len = 0x100000;
+	new.buf = startmemory(new.len);
 }
 static void terminal_stop()
 {
