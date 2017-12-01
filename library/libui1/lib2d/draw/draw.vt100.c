@@ -61,37 +61,6 @@ int drawvt100_color(u8* p, struct txtcfg* cfg)
 		return 4;
 	}
 }
-static int drawvt100_position(u8* p, struct txtcfg* cfg)
-{
-	int j, k, x=0, y=0;
-	for(k=0;k<4;k++)
-	{
-		if(p[k] == ';')break;
-	}
-	if(k>=4)return 0;
-
-	for(j=0;j<k;j++)
-	{
-		y = (y*10) + p[j] - 0x30;
-	}
-
-	for(;k<8;k++)
-	{
-		if((p[k] == 'H')|(p[k] == 'f'))break;
-	}
-	if(k>=8)return 0;
-
-	j++;
-	for(;j<k;j++)
-	{
-		x = (x*10) + p[j] - 0x30;
-	}
-
-	cfg->x = x-1;
-	cfg->y = y-1;
-	//say("%x,%x\n",x-1,y-1);
-	return 0;
-}
 static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 {
 	int j;
@@ -99,27 +68,6 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 	if(p[0] != 0x1b)return 0;
 	if(p[1] != 0x5b)return 1;
 	//printmemory(p, 16);
-
-	//1b 5b 4a: Clear screen from cursor down
-	if(p[2] == 'J')
-	{
-		//clearcmd();
-		return 3;
-	}
-
-	//1b 5b 4b: Clear line from cursor right
-	if(p[2] == 'K')
-	{
-		//printf("        \b\b\b\b\b\b\b\b");
-		return 3;
-	}
-
-	//1b 5b m
-	if(p[2] == 'm')
-	{
-		drawvt100_color(0, cfg);
-		return 3;
-	}
 
 	//1b 5b 41: cursor up
 	if(p[2] == 0x41)
@@ -149,11 +97,21 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 		return 3;
 	}
 
-	//1b 5b m
+	//1b 5b H/f
 	if((p[2] == 'H')|(p[2] == 'f'))
 	{
-		cfg->x = 0;
-		cfg->y = 0;
+		return 3;
+	}
+
+	//1b 5b J
+	if(p[j+2] == 'J')
+	{
+		return 3;
+	}
+
+	//1b 5b K
+	if(p[j+2] == 'K')
+	{
 		return 3;
 	}
 
@@ -228,11 +186,12 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 		if(p[j] == 'r')return j+1;
 		if( (p[j] == 'H') | (p[j] == 'f') )
 		{
-			drawvt100_position(p+2, cfg);
+			//drawvt100_position(p+2, cfg);
 			return j+1;
 		}
 	}
 
+	printmemory(p, 16);
 	return 0;
 }
 
@@ -243,7 +202,10 @@ void drawutf8_temp(
 	struct arena* win, u32 rgb,
 	int x, int y, u8* buf, int len)
 {
-	u8 ch = 0x30 + ((buf[0]>>4)&0xf);
+	u8 ch;
+	drawsolid_rect(win, 0x888888, x, y, x+16, y+16);
+
+	ch = 0x30 + ((buf[0]>>4)&0xf);
 	if(ch > 0x39)ch += 7;
 	drawascii(win, rgb, x, y, ch);
 
