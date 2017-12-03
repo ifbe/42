@@ -1,19 +1,18 @@
 #include "actor.h"
-void postfix2binarytree(char* postfix,void* out);
-void infix2postfix(char* infix,char* postfix);
-double calculator(char* postfix, u64 x, u64 y);
+void postfix2binarytree(void* postfix, void* out);
+void infix2postfix(void* infix, void* postfix);
+double calculator(void* postfix, u64 x, u64 y);
 
 
 
 
-static char infix[128];
-static char postfix[128];
-static char result[128];
-//
-static char buffer[128];
 static int count=0;
+static u8 buffer[128];
+static u8 infix[128];
+static u8 postfix[128];
+static u8 result[128];
 //
-static char table[4][8] = {
+static u8 table[4][8] = {
 '0', '1', '2', '3', '+', '-', '*', '/',
 '4', '5', '6', '7', '^', '%', '!', ' ',
 '8', '9', 'a', 'b', '<', '>', '(', ')',

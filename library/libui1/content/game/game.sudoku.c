@@ -106,13 +106,7 @@ static void sudoku_read_tui(struct arena* win, struct actor* act, struct style* 
 			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
 			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
 			else color = 4;
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					p[ret +(j*width*4) +(k*4) +3] = color;
-				}
-			}
+			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
 			//data
 			p[ret] = table[y][x] + 0x30;

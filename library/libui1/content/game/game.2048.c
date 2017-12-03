@@ -182,41 +182,20 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 }
 static void the2048_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y,j,k,ret;
-	u8 src[10];
+	int x,y;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
 	int w = win->w;
 	int h = win->h;
 	u8* buf = (u8*)(win->buf);
-
 	for(x=0;x<w*h*4;x++)buf[x]=0;
+
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			data2decstr(val2048[tab[y][x]], src);
-			ret = w*(4*y+1) + 8*x + 2;
-			ret <<= 2;
-
-			//color
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					buf[ret + (j*w*4) +(k*4) +3] = 4;
-				}
-			}
-
-			//number
-			j=k=0;
-			for(j=0;j<10;j++)
-			{
-				if(src[j] == 0)break;
-
-				buf[ret + k] = src[j];
-				k += 4;
-			}
+			gentui_rect(win, 4, x*8, y*4, x*8+5, y*4+2);
+			gentui_decstr(win, 7, x*8+2, y*4+1, val2048[tab[y][x]]);
 		}
 	}
 }

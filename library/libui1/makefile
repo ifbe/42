@@ -37,6 +37,8 @@ helper/helper.login.c \
 helper/helper.term.c \
 helper/helper.win.c \
 helper/helper.c \
+lib1d/cli/print.cli.c \
+lib1d/tui/print.tui.c \
 lib1d/html/html.shape.c \
 lib1d/json/json.shape.c \
 lib1d/latex/latex.shape.c \

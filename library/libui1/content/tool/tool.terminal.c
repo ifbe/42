@@ -15,11 +15,11 @@ struct uartinfo
 };
 static struct uartinfo* old;
 static struct uartinfo new;
-int listlen = 0;
-char listbuf[0x100];
-int charlen = 0;
-char charbuf[0x100];
-int status = 0;
+static u8 listbuf[0x100];
+static int listlen = 0;
+static u8 charbuf[0x100];
+static int charlen = 0;
+static int status = 0;
 
 
 
@@ -78,11 +78,11 @@ static int drawvt100_position(u8* p, int* xx, int* yy)
 	*yy = y;
 	return 1;
 }
-static void queue_copy(char* buf, int len)
+static void queue_copy(u8* buf, int len)
 {
 	int i,j,k;
 	int x,y,z;
-	char* p = new.buf;
+	u8* p = new.buf;
 	if(p == 0)return;
 
 	k = new.enq;
@@ -118,7 +118,7 @@ static void queue_copy(char* buf, int len)
 				for(x=0;x<256;x++)
 				{
 					if(k+x > 0xfffff)break;
-					if(p[k+x] = 0)break;
+					if(p[k+x] == 0)break;
 					if(p[k+x] == '\n')break;
 
 					p[k+x] = 0x20;
@@ -136,7 +136,7 @@ static void queue_copy(char* buf, int len)
 				for(x=0;x<128*25;x++)
 				{
 					if(k+x > 0xfffff)break;
-					if(p[k+x] = 0)break;
+					if(p[k+x] == 0)break;
 					if(p[k+x] == '\n')
 					{
 						y++;
@@ -290,7 +290,7 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 }
 static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
-	char* p;
+	u8* p;
 	int enq, deq;
 	if((status == 0)&&(charlen == 0))
 	{

@@ -108,6 +108,7 @@ int actorread_one(struct arena* win)
 
 theend:
 	arenawrite(win, &arena[0]);
+	return 0;
 }
 int actorread()
 {
@@ -227,6 +228,7 @@ int actorstart(struct arena* win, struct actor* act)
 	act->start();
 
 	act_at(win, act);
+	return 0;
 }
 int actorstop(struct actor* act)
 {

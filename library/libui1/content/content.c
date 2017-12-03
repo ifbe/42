@@ -231,7 +231,9 @@ void content_delete()
 
 int content_read(struct arena* win)
 {
+	return 0;
 }
 int content_write(struct event* ev)
 {
+	return 0;
 }

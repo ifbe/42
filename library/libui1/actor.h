@@ -158,7 +158,7 @@ struct actor
 	};
 
 	//
-	char priv[0x80];
+	u8 priv[0x80];
 };
 struct style
 {
@@ -193,29 +193,18 @@ struct style
 void select_1d(struct arena* win, struct style* sty);
 void select_2d(struct arena* win, struct style* sty);
 void select_3d(struct arena* win, struct style* sty);
-
 void background(struct arena* win);
 void foreground(struct arena* win);
-void drawicon_1(struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1,
-	u8* buf, int len
-);
 
-void drawascii(struct arena* win, u32 rgb,
-	int x, int y, u8 data
-);
-void drawbyte(struct arena* win, u32 rgb,
-	int x, int y, u8 data
-);
-void drawdecimal(struct arena* win, u32 rgb,
-	int x, int y, int data
-);
-void drawstring(struct arena*, u32 rgb,
-	int x, int y, u8* buf, int len
-);
-void drawdouble(struct arena*, u32 rgb,
-	int x, int y, double z
-);
+void gentui_rect(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
+void gentui_utf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
+void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data);
+
+void drawascii(struct arena* win, u32 rgb, int x, int y, u8 data);
+void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 data);
+void drawdecimal(struct arena* win, u32 rgb, int x, int y, int data);
+void drawstring(struct arena*, u32 rgb, int x, int y, u8* buf, int len);
+void drawdouble(struct arena*, u32 rgb, int x, int y, double z);
 void drawtext(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len
@@ -263,6 +252,11 @@ void drawsolid_oval(struct arena* win, u32 rgb,
 void drawsolid_sector(struct arena* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end
 );		//center, radius, angle1, angle2
+
+void drawicon_1(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
 
 void carvepoint(
 	struct arena* win, u32 rgb,

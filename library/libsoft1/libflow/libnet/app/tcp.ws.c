@@ -59,7 +59,7 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 int websocket_read(u8* buf, int len)
 {
 //#define dbg say
-#define dbg
+#define dbg(fmt,...) do{}while(0)
 	int i,j,k;
 	int type,masked;
 	unsigned char key[4];

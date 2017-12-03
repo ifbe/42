@@ -104,5 +104,9 @@ int buf2optval(u8* buf, int len, u8** type, u8** name)
 int buf2say(u8* buf, int len)
 {
 	u64 list[64];
-	say(buf, list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7]);
+	say(buf,
+		list[0], list[1], list[2], list[3],
+		list[4], list[5], list[6], list[7]
+	);
+	return 0;
 }

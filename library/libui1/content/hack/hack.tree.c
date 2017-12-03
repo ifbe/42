@@ -1,7 +1,7 @@
 #include "actor.h"
-void postfix2binarytree(char* postfix,void* out);
-void infix2postfix(char* infix,char* postfix);
-double calculator(char* postfix);
+void postfix2binarytree(void* postfix, void* out);
+void infix2postfix(void* infix, void* postfix);
+double calculator(void* postfix);
 
 
 

@@ -37,6 +37,10 @@ double exponent(double in)
 {
 	return exp(in);
 }
+double power(double a, double b)
+{
+        return pow(a, b);
+}
 
 
 double lg(double in)

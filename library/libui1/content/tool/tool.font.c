@@ -1,5 +1,5 @@
 #include "actor.h"
-void drawascii_bitmap(char* buf, int ch);
+void drawascii_bitmap(u8* buf, int ch);
 static int chosen = 0x20;
 
 

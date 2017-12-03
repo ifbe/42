@@ -189,7 +189,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 's')
 		{
-			_s = va_arg(arg, char*);
+			_s = va_arg(arg, u8*);
 			if(rval <= 0)
 			{
 				while(1)
@@ -285,8 +285,8 @@ void printbigint(u8* p, int i)
 	int j;
 	if(i<=0)return;
 
-	say("0x");
-	for(j=i-1;j>=0;j--)say("%02x",p[j]);
+	say((void*)"0x");
+	for(j=i-1;j>=0;j--)say((void*)"%02x",p[j]);
 }
 void printmemory(u8* addr,int size)
 {
@@ -299,13 +299,13 @@ void printmemory(u8* addr,int size)
 		p = addr+y*16;
 
 		//addr
-		if((y%16) == 0)say( "@%-13x" , (u64)p );
-		else say("+%-13x",y*16);
+		if((y%16) == 0)say((void*)"@%-13x" , (u64)p );
+		else say((void*)"+%-13x",y*16);
 
 		//hex
 		for(x=0;x<=0xf;x++)
 		{
-			say("%02x ",p[x]);
+			say((void*)"%02x ",p[x]);
 		}
 
 		//ascii
@@ -313,28 +313,28 @@ void printmemory(u8* addr,int size)
 		{
 			ch = p[x];
 			if( (ch>=0x7f)|(ch<0x20) )ch=0x20;
-			say("%c",ch);
+			say((void*)"%c",ch);
 		}
-		say("\n");
+		say((void*)"\n");
 	}
 	if(y*16 >= size)return;
 
 	p = addr+y*16;
-	say("+%-13x",y*16);
+	say((void*)"+%-13x",y*16);
 	for(x=0;x<16;x++)
 	{
-		if(x >= size%16)say("   ");
-		else say("%02x ",p[x]);
+		if(x >= size%16)say((void*)"   ");
+		else say((void*)"%02x ",p[x]);
 	}
 	for(x=0;x<16;x++)
 	{
-		if(x >= size%16)say(" ");
+		if(x >= size%16)say((void*)" ");
 		else
 		{
 			ch = p[x];
 			if( (ch>=0x7f)|(ch<0x20) )ch=0x20;
-			say("%c",ch);
+			say((void*)"%c",ch);
 		}
 	}
-	say("\n");
+	say((void*)"\n");
 }

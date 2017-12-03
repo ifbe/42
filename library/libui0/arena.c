@@ -74,6 +74,7 @@ int arenawrite(struct window* dst, struct window* src)
 	{
 		websocket_write(dst->fd, src->buf, src->info[0]);
 	}
+	return 0;
 }
 void* arenastart(u64 type, u64 fd)
 {

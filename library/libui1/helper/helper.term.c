@@ -23,8 +23,8 @@ void eventwrite(u64,u64,u64,u64);
 
 
 
-static char* input = 0;
-static char* output = 0;
+static u8* input = 0;
+static u8* output = 0;
 
 
 

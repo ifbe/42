@@ -214,14 +214,14 @@ static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style*
 }
 static void xiangqi_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y,j,k,ret,color;
+	int x,y,color;
 	int width = win->w;
 	int height = win->h;
-	u8* p = (u8*)(win->buf);
+	u8* buf = (u8*)(win->buf);
 	u8* q;
 
 	//
-	for(x=0;x<width*height*4;x++)p[x] = 0;
+	for(x=0;x<width*height*4;x++)buf[x] = 0;
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
@@ -229,30 +229,19 @@ static void xiangqi_read_tui(struct arena* win, struct actor* act, struct style*
 			q = char2hanzi(data[y][x]);
 			if(q == 0)
 			{
-				if(qx != x)continue;
-				if(qy != y)continue;
+				if(x != qx)continue;
+				if(y != qy)continue;
 			}
-
-			//position
-			ret = (3*y+1)*width + x*8 + 2;
-			ret <<= 2;
 
 			//color
 			if( (px==x)&& (py==y) )color = 5;
 			else if( (qx==x)&& (qy==y) )color = 2;
 			else if(data[y][x] >= 'a')color = 1;
 			else color = 4;
-			for(j=-1;j<=1;j++)
-			{
-				for(k=-2;k<=3;k++)
-				{
-					p[ret +(j*width*4) +(k*4) +3] = color;
-				}
-			}
+			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
 			//character
-			if(q != 0)mysnprintf(p+ret, 4, "%s", q);
-
+			gentui_utf8(win, 0, x*6+2, y*3+1, char2hanzi(data[y][x]), 0);
 		}
 	}
 }

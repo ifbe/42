@@ -1,10 +1,10 @@
 #include "actor.h"
-double calculator(char* postfix, u64 x, u64 y);
+double calculator(void* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
-double closestvalue(double first,double second);
-void kexuejishufa(double* haha,int* counter);
-void postfix2binarytree(char* postfix,void* out);
-void infix2postfix(char* infix,char* postfix);
+double closestvalue(double first, double second);
+void kexuejishufa(double* haha, int* counter);
+void postfix2binarytree(void* postfix, void* out);
+void infix2postfix(void* infix, void* postfix);
 
 
 
@@ -25,13 +25,13 @@ static struct mathnode* node=0;
 
 //
 static int count=0;
-static char buffer[128];
+static u8 buffer[128];
 
 //
-static char infix[128];
-static char postfix[128];
-static char result[128];
-static char* databuf=0;
+static u8 infix[128];
+static u8 postfix[128];
+static u8 result[128];
+static u8* databuf=0;
 
 //
 static double scale=0.0;

@@ -60,6 +60,7 @@ int drawvt100_color(u8* p, struct txtcfg* cfg)
 		else if(p[1] == '7')cfg->bg = 0xcccccc;
 		return 4;
 	}
+	return -1;
 }
 static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 {
