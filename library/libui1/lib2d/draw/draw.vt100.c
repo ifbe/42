@@ -1,0 +1,298 @@
+#include<actor.h>
+struct txtcfg
+{
+	u32 bg;
+	u32 fg;
+	int x;
+	int y;
+};
+
+
+
+
+int drawvt100_color(u8* p, struct txtcfg* cfg)
+{
+	//reset
+	if(p == 0)
+	{
+		cfg->fg = 0xcccccc;
+		return 0;
+	}
+
+	//reset
+	if(p[0] == '0')
+	{
+		cfg->fg = 0xcccccc;
+		return 0;
+	}
+
+	//heavy
+	else if(p[0] == '1')
+	{
+		cfg->fg = 0xffffff;
+		return 1;
+	}
+
+	//foreground
+	if(p[0] == '3')
+	{
+		if(p[1] == '0')cfg->fg = 0x000000;
+		else if(p[1] == '1')cfg->fg = 0xff0000;
+		else if(p[1] == '2')cfg->fg = 0x00ff00;
+		else if(p[1] == '3')cfg->fg = 0xffff00;
+		else if(p[1] == '4')cfg->fg = 0x0000ff;
+		else if(p[1] == '5')cfg->fg = 0xff00ff;
+		else if(p[1] == '6')cfg->fg = 0x00ff00;
+		else if(p[1] == '7')cfg->fg = 0xcccccc;
+		return 3;
+	}
+
+	//background
+	else if(p[0] == '4')
+	{
+		if(p[1] == '0')cfg->bg = 0x000000;
+		else if(p[1] == '1')cfg->bg = 0xff0000;
+		else if(p[1] == '2')cfg->bg = 0x00ff00;
+		else if(p[1] == '3')cfg->bg = 0xffff00;
+		else if(p[1] == '4')cfg->bg = 0x0000ff;
+		else if(p[1] == '5')cfg->bg = 0xff00ff;
+		else if(p[1] == '6')cfg->bg = 0x00ffff;
+		else if(p[1] == '7')cfg->bg = 0xcccccc;
+		return 4;
+	}
+}
+static int drawvt100_1b(u8* p, struct txtcfg* cfg)
+{
+	int j;
+	int x,y;
+	if(p[0] != 0x1b)return 0;
+	if(p[1] != 0x5b)return 1;
+	//printmemory(p, 16);
+
+	//1b 5b 41: cursor up
+	if(p[2] == 0x41)
+	{
+		//printf("a");
+		return 3;
+	}
+
+	//1b 5b 42: cursor down
+	if(p[2] == 0x42)
+	{
+		//printf("b");
+		return 3;
+	}
+
+	//1b 5b 43: cursor forward
+	if(p[2] == 0x43)
+	{
+		//printf("c");
+		return 3;
+	}
+
+	//1b 5b 44: cursor backward
+	if(p[2] == 0x44)
+	{
+		//printf("d");
+		return 3;
+	}
+
+	//1b 5b H/f
+	if((p[2] == 'H')|(p[2] == 'f'))
+	{
+		return 3;
+	}
+
+	//1b 5b J
+	if(p[j+2] == 'J')
+	{
+		return 3;
+	}
+
+	//1b 5b K
+	if(p[j+2] == 'K')
+	{
+		return 3;
+	}
+
+	//1b 5b m
+	if(p[2] == 'm')
+	{
+		drawvt100_color(0, cfg);
+		return 3;
+	}
+
+	//1b 5b ? m
+	if(p[3] == 'm')
+	{
+		drawvt100_color(p+2, cfg);
+		return 4;
+	}
+
+	//1b 5b ? n
+	if(p[3] == 'n')
+	{
+		return 4;
+	}
+
+	//1b 5b ? ? h
+	if(p[4] == 'h')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? l
+	if(p[4] == 'l')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? m
+	if(p[4] == 'm')
+	{
+		drawvt100_color(p+2, cfg);
+		return 5;
+	}
+
+	if(p[3] == ';')
+	{
+		//1b 5b ? ; ? m
+		if(p[5] == 'm')
+		{
+			drawvt100_color(p+2, cfg);
+			drawvt100_color(p+4, cfg);
+			return 6;
+		}
+
+		//1b 5b ? ; ? ? m
+		else if(p[6] == 'm')
+		{
+			drawvt100_color(p+2, cfg);
+			drawvt100_color(p+4, cfg);
+			return 7;
+		}
+	}
+
+	//1b 5b ? ? ; ? ? m
+	if( (p[4] == ';') && (p[7] == 'm') )
+	{
+		drawvt100_color(p+2, cfg);
+		drawvt100_color(p+5, cfg);
+		return 8;
+	}
+
+	for(j=2;j<10;j++)
+	{
+		if(p[j] == 'r')return j+1;
+		if( (p[j] == 'H') | (p[j] == 'f') )
+		{
+			//drawvt100_position(p+2, cfg);
+			return j+1;
+		}
+	}
+
+	printmemory(p, 16);
+	return 0;
+}
+
+
+
+
+void drawutf8_temp(
+	struct arena* win, u32 rgb,
+	int x, int y, u8* buf, int len)
+{
+	u8 ch;
+	drawsolid_rect(win, 0x888888, x, y, x+16, y+16);
+
+	ch = 0x30 + ((buf[0]>>4)&0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, rgb, x, y, ch);
+
+	ch = 0x30 + (buf[0]&0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, rgb, x+8, y, ch);
+}
+void drawvt100(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len)
+{
+	u32 c;
+	int j, k;
+	int x, y, z;
+	int flag, last=0;
+	struct txtcfg cfg = {0x000000, 0xcccccc, 0, 0};
+
+	for(j=0;j<len;j++)
+	{
+		if((cfg.y)*16+16 > y1-y0)break;
+
+		x = cfg.x;
+		y = cfg.y;
+		c = cfg.fg;
+		flag = 0;
+
+		if(buf[j] == 0)flag = 1;
+		else if(buf[j] == '\n')flag = 2;
+		else if(buf[j] == 0x1b)
+		{
+			z = drawvt100_1b(buf+j, &cfg);
+			if(z >= 2)flag = 3;
+		}
+		else if(buf[j] >= 0x80)
+		{
+			if(buf[j] < 0xe0)z = 2;
+			else if(buf[j] < 0xf0)z = 3;
+			else if(buf[j] < 0xf8)z = 4;
+			else if(buf[j] < 0xfc)z = 5;
+			else if(buf[j] < 0xfe)z = 6;
+			else z = 0;
+
+			if(z >= 2)flag = 4;
+		}
+		if(flag == 0)continue;
+
+		k = (x1-x0)/8 - x;
+		if(k > j-last)k = j-last;
+
+		if(k > 0)
+		{
+			drawstring(
+				win, c,
+				x0 + (x*8), y0 + (y*16),
+				buf+last, k
+			);
+		}
+
+		if(flag == 1)break;
+		else if(flag == 2)
+		{
+			cfg.x = 0;
+			cfg.y += 1;
+			last = j+1;
+		}
+		else if(flag == 3)
+		{
+			cfg.x += k;
+			last = j+z;
+			j += z-1;
+		}
+		else if(flag == 4)
+		{
+			cfg.x += k;
+			if(8*(cfg.x) < x1-x0-16)
+			{
+				drawutf8_temp(
+					win, cfg.fg,
+					x0 + (cfg.x)*8, y0 + (cfg.y)*16,
+					buf+j, z
+				);
+			}
+			cfg.x += 2;
+
+			last = j+z;
+			j += z-1;
+		}
+	}
+}

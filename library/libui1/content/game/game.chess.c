@@ -33,10 +33,9 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 			);
 			if(buffer[y][x] == 0)continue;
 
-			drawascii(win,
-				buffer[y][x], 2,
+			drawascii(win, 0xff00ff,
 				cx+(x-4)*w, cy+(y-4)*h,
-				0xffff00ff, 0
+				buffer[y][x]
 			);
 		}
 	}
@@ -158,10 +157,11 @@ static void chess_start()
 static void chess_stop()
 {
 }
-void chess_create(void* base, void* addr)
+void chess_delete()
 {
-	struct actor* act = addr;
-
+}
+void chess_create(void* base, struct actor* act)
+{
 	act->type = hex32('g', 'a', 'm', 'e');
 	act->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
 	act->irel = 0;
@@ -173,7 +173,4 @@ void chess_create(void* base, void* addr)
 	act->choose = (void*)chess_choose;
 	act->read = (void*)chess_read;
 	act->write = (void*)chess_write;
-}
-void chess_delete()
-{
 }

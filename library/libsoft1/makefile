@@ -144,6 +144,7 @@ libmem/libgame/solve.2048.c \
 libmem/libgame/solve.chess.c \
 libmem/libgame/solve.rubikscube.c \
 libmem/libgame/solve.sudoku.c \
+libmem/libgame/solve.xiangqi.c \
 libmem/liblang/assembly/asm.x64.c \
 libmem/liblang/assembly/asm.arm.c \
 libmem/liblang/program/prog.purec.c \

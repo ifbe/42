@@ -10,7 +10,7 @@
 u64 startthread(void*, void*);
 void stopthread();
 //
-u64* eventread();
+int lowlevel_input();
 void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
@@ -24,45 +24,14 @@ static u64 thread;
 
 
 
-void* uievent(void* win)
+void* terminalthread(void* win)
 {
-	u8 buf[8];
-	u64 why,what,where;
-
-	//
-	where = (u64)win;
+	u64 why, what, where;
 	while(1)
 	{
-		buf[0] = getchar();
-		if( (buf[0] == 0) | (buf[0]==0xff) )
-		{
-			usleep(10000);
-			continue;
-		}
-
-		if(buf[0] == 0x1b)
-		{
-			buf[1] = getchar();
-			if(buf[1] == 0xff)
-			{
-				why = buf[0];
-			}
-			else if(buf[1] == 0x5b)
-			{
-				buf[2] = getchar();
-
-				if( (buf[2]>=0x41) && (buf[2]<=0x44) )
-				{
-					why = (buf[2]<<16)+0x5b1b;
-				}
-			}//5b
-			else continue;
-		}//1b
-
-		else why = buf[0];
-
-		//send
-		what = hex32('c','h','a','r');
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
 		eventwrite(why, what, where, 0);
 	}
 }
@@ -122,7 +91,7 @@ void windowstart(struct window* this)
 		this->h = 25;
 		this->d = 0;
 
-		this->thread = startthread(uievent, this);
+		this->thread = startthread(terminalthread, this);
 	}
 }
 void windowstop()

@@ -1,12 +1,12 @@
 #include<stdio.h>
 #include<stdarg.h>
+#include<conio.h>
 #include<windows.h>
 #define u8 unsigned char
 
 
 
 
-static HANDLE output = 0;
 static u8 last[16] = {0};
 static int pos = 0;
 
@@ -15,11 +15,18 @@ static int pos = 0;
 
 static void attr(int val)
 {
-	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(output, val);
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hStdout, val);
 }
 static int escapecolor(u8* p)
 {
+	//reset
+	if(p == 0)
+	{
+		attr(FOREGROUND_BLUE|FOREGROUND_GREEN|FOREGROUND_RED);
+		return 0;
+	}
+
 	//reset
 	if(p[0] == '0')
 	{
@@ -113,35 +120,62 @@ static int escapecolor(u8* p)
 static void gotoxy(int x, int y)
 {
 	COORD pos;
-	pos.X=x;
-	pos.Y=y;
+	HANDLE hStdout;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
-	if(output == 0)output = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleCursorPosition(output, pos);
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(hStdout, &bInfo);
+
+	pos.X = x;
+	pos.Y = bInfo.srWindow.Top + y;
+	SetConsoleCursorPosition(hStdout, pos);
+}
+static void clearcmd()
+{
+	DWORD count;
+	HANDLE hStdout;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
+
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(hStdout, &bInfo);
+
+	COORD pos;
+	pos.X = bInfo.srWindow.Left;
+	pos.Y = bInfo.srWindow.Top;
+	FillConsoleOutputCharacter(
+		hStdout,
+		(TCHAR)' ',
+		bInfo.dwSize.X * bInfo.dwSize.Y,
+		pos,
+		&count
+	);
 }
 static int escapeposition(u8* p)
 {
-	int t;
-	int x=0,y=0;
-	for(t=0;t<4;t++)
+	int j, k, x=0, y=0;
+	for(k=0;k<4;k++)
 	{
-		if(p[t] == ';')
-		{
-			t++;
-			break;
-		}
-		y = (y*10) + p[t] - 0x30;
+		if(p[k] == ';')break;
 	}
-	for(;t<8;t++)
+	if(k>=4)return 0;
+
+	for(j=0;j<k;j++)
 	{
-		if( (p[t] == 'H') | (p[t] == 'f') )
-		{
-			t++;
-			break;
-		}
-		x = (x*10) + p[t] - 0x30;
+		y = (y*10) + p[j] - 0x30;
 	}
-//printf("\n(%d,%d)",x,y);
+
+	for(;k<8;k++)
+	{
+		if((p[k] == 'H')|(p[k] == 'f'))break;
+	}
+	if(k>=8)return 0;
+
+	j++;
+	for(;j<k;j++)
+	{
+		x = (x*10) + p[j] - 0x30;
+	}
+
 	gotoxy(x-1, y-1);
 	return 0;
 }
@@ -151,7 +185,7 @@ static int escapesequence(u8* p)
 	int x,y;
 	if(p[0] != 0x1b)return 0;
 	if(p[1] != 0x5b)return 1;
-
+/*
 	if(p[2] == '?')
 	{
 		for(j=3;j<8;j++)
@@ -173,45 +207,25 @@ static int escapesequence(u8* p)
 			}
 		}
 	}
-
-	//1b 5b 4a bf: openwrt special
-	if(p[2] == 0x4a)
+*/
+	//1b 5b 4a: Clear screen from cursor down
+	if(p[2] == 'J')
 	{
-		if(p[3] == 0xbf) return 4;
-	}
-
-	//1b 5b 4b: erase from here to the end
-	if(p[2] == 0x4b)
-	{
-		printf("        \b\b\b\b\b\b\b\b");
+		clearcmd();
 		return 3;
 	}
 
-	//1b 5b 41: cursor up
-	if(p[2] == 0x41)
+	//1b 5b 4b: Clear line from cursor right
+	if(p[2] == 'K')
 	{
-		printf("a");
+		//printf("        \b\b\b\b\b\b\b\b");
 		return 3;
 	}
 
-	//1b 5b 42: cursor down
-	if(p[2] == 0x42)
+	//1b 5b m
+	if(p[2] == 'm')
 	{
-		printf("b");
-		return 3;
-	}
-
-	//1b 5b 43: cursor forward
-	if(p[2] == 0x43)
-	{
-		printf("c");
-		return 3;
-	}
-
-	//1b 5b 44: cursor backward
-	if(p[2] == 0x44)
-	{
-		printf("d");
+		escapecolor(0);
 		return 3;
 	}
 
@@ -226,6 +240,18 @@ static int escapesequence(u8* p)
 	if(p[3] == 'n')
 	{
 		return 4;
+	}
+
+	//1b 5b ? ? h
+	if(p[4] == 'h')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? l
+	if(p[4] == 'l')
+	{
+		return 5;
 	}
 
 	//1b 5b ? ? m
@@ -264,6 +290,7 @@ static int escapesequence(u8* p)
 
 	for(j=2;j<10;j++)
 	{
+		if(p[j] == 'r')return j+1;
 		if( (p[j] == 'H') | (p[j] == 'f') )
 		{
 			escapeposition(p+2);
@@ -277,9 +304,6 @@ static int escapesequence(u8* p)
 
 
 
-int lowlevel_input(u8* buf)
-{
-}
 void lowlevel_output(u8* buf, int len)
 {
 	int i,j,k=0;
@@ -316,7 +340,7 @@ void lowlevel_output(u8* buf, int len)
 			i = escapesequence(buf+j);
 			if(i != 0)
 			{
-				printf("?");
+				//printf("?");
 				j += i;
 				continue;
 			}
@@ -376,6 +400,25 @@ void lowlevel_output(u8* buf, int len)
 		}
 	}
 	if(j>k)printf("%.*s", j-k, buf+k);
+}
+int lowlevel_input(u8* buf)
+{
+	u8 ch;
+	while(1)
+	{
+		ch = getch();
+		if(ch == 0xe0)
+		{
+			ch = getch();
+			if(ch == 0x48)return 0x415b1b;
+			else if(ch == 0x50)return 0x425b1b;
+			else if(ch == 0x4d)return 0x435b1b;
+			else if(ch == 0x4b)return 0x445b1b;
+			else continue;
+		}
+		return ch;
+	}
+	
 }
 void createserial(u8* arg)
 {

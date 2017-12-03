@@ -43,10 +43,7 @@ void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty
 			drawsolid_rect(win, 0xff00ff, left, top, right, bottom);
 			drawline_rect(win, 0x000000, left, top, right, bottom);
 
-			drawascii(
-				win, table[y][x], 1,
-				left, top, 0xffffffff, 0
-			);
+			drawascii(win, 0xffffff, left, top, table[y][x]);
 		}
 	}
 }

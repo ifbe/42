@@ -14,37 +14,6 @@ static char* data;
 static void weiqi_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void weiqi_read_text(struct arena* win, struct actor* act, struct style* sty)
-{
-	int x,y,j,k,ret,color;
-	int width = win->w;
-	int height = win->h;
-	u8* p = (u8*)(win->buf);
-
-	//
-	for(x=0;x<width*height*4;x++)p[x] = 0;
-	for(y=0;y<19;y++)
-	{
-		for(x=0;x<19;x++)
-		{
-			//position
-			ret = y*width + x*2;
-			ret <<= 2;
-
-			//color
-			if( (px == x) && (py == y) )color = 7;
-			else if(data[(y*19) + x] == 'b')color = 4;
-			else if(data[(y*19) + x] == 'w')color = 1;
-			else continue;
-
-			//
-			p[ret] = 0x20;
-			p[ret + 3] = color;
-			p[ret + 4] = 0x20;
-			p[ret + 7] = color;
-		}
-	}
-}
 static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
@@ -123,17 +92,48 @@ static void weiqi_read_vbo(struct arena* win, struct actor* act, struct style* s
 		0.0, 0.0, w/16
 	);
 }
-static void weiqi_read_cli()
+static void weiqi_read_tui(struct arena* win, struct actor* act, struct style* sty)
+{
+	int x,y,j,k,ret,color;
+	int width = win->w;
+	int height = win->h;
+	u8* p = (u8*)(win->buf);
+
+	//
+	for(x=0;x<width*height*4;x++)p[x] = 0;
+	for(y=0;y<19;y++)
+	{
+		for(x=0;x<19;x++)
+		{
+			//position
+			ret = y*width + x*2;
+			ret <<= 2;
+
+			//color
+			if( (px == x) && (py == y) )color = 7;
+			else if(data[(y*19) + x] == 'b')color = 4;
+			else if(data[(y*19) + x] == 'w')color = 1;
+			else continue;
+
+			//
+			p[ret] = 0x20;
+			p[ret + 3] = color;
+			p[ret + 4] = 0x20;
+			p[ret + 7] = color;
+		}
+	}
+}
+static void weiqi_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 }
 static void weiqi_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))weiqi_read_cli();
-	else if(fmt == hex32('t','e','x','t'))weiqi_read_text(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))weiqi_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))weiqi_read_vbo(win, act, sty);
+	if(fmt == __cli__)weiqi_read_cli(win, act, sty);
+	else if(fmt == __tui__)weiqi_read_tui(win, act, sty);
+	else if(fmt == __vbo__)weiqi_read_vbo(win, act, sty);
+	else if(fmt == __html__)weiqi_read_html(win, act, sty);
 	else weiqi_read_pixel(win, act, sty);
 }
 

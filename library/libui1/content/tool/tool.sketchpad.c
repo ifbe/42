@@ -250,10 +250,10 @@ static void sketchpad_read(struct arena* win, struct actor* act, struct style* s
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))sketchpad_read_cli(win, act, sty);
-	else if(fmt == hex32('t','u','i',0))sketchpad_read_tui(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))sketchpad_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))sketchpad_read_vbo(win, act, sty);
+	if(fmt == __cli__)sketchpad_read_cli(win, act, sty);
+	else if(fmt == __tui__)sketchpad_read_tui(win, act, sty);
+	else if(fmt == __vbo__)sketchpad_read_vbo(win, act, sty);
+	else if(fmt == __html__)sketchpad_read_html(win, act, sty);
 	else sketchpad_read_pixel(win, act, sty);
 }
 

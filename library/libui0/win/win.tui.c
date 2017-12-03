@@ -2,10 +2,14 @@
 #include <stdio.h>
 #include <windows.h>
 #include "arena.h"
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
 //
 u64 startthread(void*, void*);
 void stopthread();
 //
+int lowlevel_input();
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -14,56 +18,179 @@ void say(void*, ...);
 
 //
 static HANDLE output;
-static int lastwidth=0,lastheight=0;
-static int width,height;
 
 
 
 
-DWORD WINAPI uievent(LPVOID pM)
+DWORD WINAPI terminalthread(struct window* win)
 {
-	unsigned char ch;
+	int j;
+	u64 x,y,w;
+	u64 why, what, where;
+    DWORD cNumRead, fdwMode, fdwSaveOldMode;
+	HANDLE hStdin, hStdout;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
-	while(1)
+	INPUT_RECORD irInBuf[128];
+	KEY_EVENT_RECORD keyrec;
+	MOUSE_EVENT_RECORD mouserec;
+	WINDOW_BUFFER_SIZE_RECORD wbsrec;
+
+    // Get the standard input handle
+    hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    if(hStdin == INVALID_HANDLE_VALUE)
 	{
-		if(lastwidth != width)
+        printf("GetStdHandle");
+		return 0;
+	}
+
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	if(hStdout == INVALID_HANDLE_VALUE)
+	{
+        printf("hStdout\n");
+		return 0;
+	}
+
+    // Save the current input mode, to be restored on exit
+    if(!GetConsoleMode(hStdin, &fdwSaveOldMode) )
+	{
+        printf("GetConsoleMode");
+		return 0;
+	}
+
+    // Enable the window and mouse input events
+    fdwMode = ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
+    if(!SetConsoleMode(hStdin, fdwMode) )
+	{
+        printf("SetConsoleMode");
+		return 0;
+	}
+
+    // Loop to read and handle the next 100 input events
+    while(1)
+    {
+        // Wait for the events
+        if(!ReadConsoleInput(
+                hStdin,      // input buffer handle
+                irInBuf,     // buffer to read into
+                128,         // size of read buffer
+                &cNumRead) ) // number of records read
 		{
-			lastwidth = width;
-			lastheight = height;
-			eventwrite(width + (height<<16), 0x657a6973, 0, 0);
+            printf("ReadConsoleInput");
+			return 0;
 		}
 
-		ch = getch();
-		if(ch==3)eventwrite(0,0,0,0);
-		else if(ch == 0x1b)
-		{
-			eventwrite(0x1b, 0x64626b, 0, 0);
-		}
-		else if(ch == 0xe0)
-		{
-			ch = getch();
-			if(ch == 0x48)	//up
-			{
-				eventwrite(0x26, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x50)	//down
-			{
-				eventwrite(0x28, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x4b)	//left
-			{
-				eventwrite(0x25, 0x64626b, 0, 0);
-			}
-			else if(ch == 0x4d)	//right
-			{
-				eventwrite(0x27, 0x64626b, 0, 0);
-			}
-		}
-		else
-		{
-			eventwrite(ch, 0x72616863, 0, 0);
-		}
-	}
+        // Dispatch the events to the appropriate handler
+        for(j = 0; j < cNumRead; j++)
+        {
+            switch(irInBuf[j].EventType)
+            {
+                case KEY_EVENT:
+				{
+					keyrec = irInBuf[j].Event.KeyEvent;
+					if(keyrec.bKeyDown)
+					{
+						if(keyrec.uChar.AsciiChar == 0)
+						{
+							eventwrite(keyrec.wVirtualKeyCode, __kbd__, 0, 0);
+						}
+						else
+						{
+							eventwrite(keyrec.uChar.UnicodeChar, __char__, 0, 0);
+						}
+					}
+                    break;
+				}
+                case MOUSE_EVENT:
+				{
+					mouserec = irInBuf[j].Event.MouseEvent;
+					switch(mouserec.dwEventFlags)
+					{
+						case 0:
+						{
+							if(mouserec.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+							{
+								GetConsoleScreenBufferInfo(hStdout, &bInfo);
+								x = mouserec.dwMousePosition.X;
+								y = mouserec.dwMousePosition.Y - bInfo.srWindow.Top;
+								w = 'l';
+								eventwrite(x+(y<<16)+(w<<48), 0x2b70, 0, 0);
+								//printf("left button press \n");
+							}
+							else if(mouserec.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+							{
+								//printf("right button press \n");
+							}
+							else
+							{
+								//printf("button press\n");
+							}
+							break;
+						}
+						case DOUBLE_CLICK:
+						{
+							//printf("double click\n");
+							break;
+						}
+						case MOUSE_HWHEELED:
+						{
+							//printf("horizontal mouse wheel\n");
+							break;
+						}
+						case MOUSE_MOVED:
+						{
+							//printf("%x,%x\n", mouserec.dwMousePosition.X, mouserec.dwMousePosition.Y);
+							break;
+						}
+						case MOUSE_WHEELED:
+						{
+							//printf("vertical mouse wheel\n");
+							break;
+						}
+						default:
+						{
+							//printf("unknown\n");
+							break;
+						}
+					}
+                    break;
+				}
+                case WINDOW_BUFFER_SIZE_EVENT:
+				{
+					wbsrec = irInBuf[j].Event.WindowBufferSizeEvent;
+					//printf("Resize:%x,%x\n", wbsrec.dwSize.X, wbsrec.dwSize.Y);
+
+					GetConsoleScreenBufferInfo(hStdout, &bInfo);
+					x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+					y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+					win->w = x;
+					win->h = y;
+					eventwrite(x+(y<<16), __size__, 0, 0);
+                    break;
+				}
+                case MENU_EVENT:
+				{
+					//printf("MENU_EVENT\n");
+					eventwrite(0,0,0,0);
+                    break;
+				}
+                case FOCUS_EVENT:
+				{
+					//printf("FOCUS_EVENT\n");
+                    break;
+				}
+                default:
+				{
+                    //printf("Unknown:%x", irInBuf[j].EventType);
+                    break;
+				}
+            }
+        }
+    }
+
+    //Restore input mode on exit
+    SetConsoleMode(hStdin, fdwSaveOldMode);
+    return 0;
 }
 static void windowsutf8(char* utf8)
 {
@@ -93,24 +220,34 @@ static void attr(u8 bg,u8 fg)
 
 
 
+static void gotoxy(int x, int y)
+{
+	COORD pos;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
+
+	output = GetStdHandle(STD_OUTPUT_HANDLE);
+	GetConsoleScreenBufferInfo(output, &bInfo);
+
+	pos.X = x;
+	pos.Y = bInfo.srWindow.Top + y;
+	SetConsoleCursorPosition(output, pos);
+}
 void windowwrite(struct window* dst, struct window* src)
 {
 	int x,y;
 	u8 ch,bg=0,fg=0;
-	COORD pos = {0,0};
 	u8* p;
 	u8* buf = (u8*)(src->buf);
-	SetConsoleCursorPosition(output,pos);
-/*
-	//
-	buf[width*height]=0;
-	printf("%s",buf);
-*/
+	int width = src->w;
+	int height = src->h;
+	gotoxy(0, 0);
+
 	//
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
 		{
+			if((x == width-1)&&(y == height-1))break;
 			p = buf + ((width*y + x)<<2);
 			if(p[0] > 0x80)
 			{
@@ -142,8 +279,6 @@ void windowwrite(struct window* dst, struct window* src)
 		}
 	}
 	if(bg != 0)attr(0,0);
-
-	SetConsoleCursorPosition(output,pos);
 }
 void windowread()
 {
@@ -156,6 +291,7 @@ void windowchange()
 }
 void windowstart(struct window* this)
 {
+	int width,height;
 	if(this->type == hex32('b','u','f',0))
 	{
 		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
@@ -163,6 +299,11 @@ void windowstart(struct window* this)
 	}
 	else
 	{
+		CONSOLE_SCREEN_BUFFER_INFO bInfo;
+		GetConsoleScreenBufferInfo(output, &bInfo);
+		width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+		height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+
 		this->type = hex32('w','i','n',0);
 		this->fmt = hex32('t','u','i',0);
 
@@ -170,7 +311,7 @@ void windowstart(struct window* this)
 		this->h = height;
 		this->d = 0;
 
-		this->thread = startthread(uievent, this);
+		this->thread = startthread(terminalthread, this);
 	}
 }
 void windowstop()
@@ -178,12 +319,7 @@ void windowstop()
 }
 void windowcreate()
 {
-	CONSOLE_SCREEN_BUFFER_INFO bInfo;
-
 	output = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(output, &bInfo );
-	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 }
 void windowdelete()
 {

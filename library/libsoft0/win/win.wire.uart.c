@@ -33,22 +33,16 @@ static int alive = 0;
 
 DWORD WINAPI systemuart_thread(LPVOID pM)
 {
-	int ret;
-	int max;
-	int count=0;
+	int ret, count=0;
+	u8* buf;
 
 	while(alive == 1)
 	{
-		max = 0x100000 - (info.enq);
-		if(max > 256)max = 256;
+		ret = 0x100000 - (info.enq);
+		if(ret > 256)ret = 256;
 
-		ret = ReadFile(
-			hcom,
-			(info.buf)+(info.enq),
-			max,
-			(void*)&count,
-			0
-		);
+		buf = (info.buf)+(info.enq);
+		ret = ReadFile(hcom, buf, ret, (void*)&count, 0);
 
 		if( (ret > 0) && (count > 0) )
 		{

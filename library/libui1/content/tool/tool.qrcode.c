@@ -119,10 +119,10 @@ static void qrcode_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == hex32('c','l','i',0))qrcode_read_cli(win, act, sty);
-	else if(fmt == hex32('t','u','i',0))qrcode_read_tui(win, act, sty);
-	else if(fmt == hex32('h','t','m','l'))qrcode_read_html(win, act, sty);
-	else if(fmt == hex32('v','b','o',0))qrcode_read_vbo(win, act, sty);
+	if(fmt == __cli__)qrcode_read_cli(win, act, sty);
+	else if(fmt == __tui__)qrcode_read_tui(win, act, sty);
+	else if(fmt == __vbo__)qrcode_read_vbo(win, act, sty);
+	else if(fmt == __html__)qrcode_read_html(win, act, sty);
 	else qrcode_read_pixel(win, act, sty);
 }
 static void qrcode_write(struct event* ev)

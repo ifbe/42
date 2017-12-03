@@ -1,4 +1,7 @@
 #include "actor.h"
+void scale_image(void* src, void* dst,
+	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
+	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
 
 
 
@@ -6,7 +9,7 @@
 #define DIM 1024
 #define _sq(x) ((x)*(x))
 #define r(n)(getrandom()%n)
-u32* buffer = 0;
+u32* src = 0;
 
 
 
@@ -129,22 +132,19 @@ unsigned char BLUE6(int i,int j)
 
 static void codeimg_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y,w,h;
+	int x,y;
 	int width = win->w;
 	int height = win->h;
-	u32* buf = (u32*)(win->buf);
+	int cx = width * (sty->cx) / 0x10000;
+	int cy = height * (sty->cy) / 0x10000;
+	int ww = width * (sty->wantw) / 0x20000;
+	int hh = height * (sty->wanth) / 0x20000;
+	u32* dst = (u32*)(win->buf);
 
-	w = width;
-	h = height;
-	if(w > 1024)w = 1024;
-	if(h > 1024)h = 1024;
-	for(y=0;y<h;y++)
-	{
-		for(x=0;x<w;x++)
-		{
-			buf[y*width + x] = buffer[y*1024 + x];
-		}
-	}
+	scale_image(src, dst,
+		1024, 1024, 0, 0, 1024, 1024,
+		width, height, cx-ww, cy-hh, cx+ww, cy+hh
+	);
 }
 static void codeimg_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -185,7 +185,7 @@ static void codeimg_start()
 {
 	int rr,gg,bb;
 	int x,y;
-	buffer = startmemory(1024*1024*4);
+	src = startmemory(1024*1024*4);
 
 	for(y=0;y<1024;y++)
 	{
@@ -194,7 +194,7 @@ static void codeimg_start()
 			rr = RED4(x,y);
 			gg = GREEN4(x,y);
 			bb = BLUE4(x,y);
-			buffer[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+			src[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 		}
 	}
 }

@@ -113,10 +113,6 @@ void snake_read_html(struct arena* win, struct actor* act, struct style* sty)
  
 	htmlcubie(p, 0xff00, foodx, foody);
 }
-
-
-
-
 void snake_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 }

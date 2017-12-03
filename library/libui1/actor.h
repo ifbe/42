@@ -196,22 +196,33 @@ void select_3d(struct arena* win, struct style* sty);
 
 void background(struct arena* win);
 void foreground(struct arena* win);
-void drawicon_1(struct arena* win, u8* str, int x0, int y0, int x1, int y1);
+void drawicon_1(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
 
-void drawascii(struct arena* win, u8 data, int size,
-	int x, int y, u32 fg, u32 bg
+void drawascii(struct arena* win, u32 rgb,
+	int x, int y, u8 data
 );
-void drawbyte(struct arena*, u8 data, int size,
-	int x, int y, u32 fg, u32 bg
+void drawbyte(struct arena* win, u32 rgb,
+	int x, int y, u8 data
 );
-void drawdecimal(struct arena* win, int data, int size,
-	int x, int y, u32 fg, u32 bg
+void drawdecimal(struct arena* win, u32 rgb,
+	int x, int y, int data
 );
 void drawstring(struct arena*, u32 rgb,
 	int x, int y, u8* buf, int len
 );
 void drawdouble(struct arena*, u32 rgb,
 	int x, int y, double z
+);
+void drawtext(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
+void drawvt100(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
 );
 
 void drawline(struct arena* win, u32 rgb,

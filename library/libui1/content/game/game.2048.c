@@ -126,10 +126,9 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 			length = len2048[tab[y][x]];
 			if(length == 0)continue;
 
-			drawdecimal(
-				win, val2048[tab[y][x]], 4,
+			drawdecimal(win, 0,
 				-(length*16)+(x0+x1)/2, -32+(y0+y1)/2,
-				0, 0
+				val2048[tab[y][x]]
 			);
 		}
 	}

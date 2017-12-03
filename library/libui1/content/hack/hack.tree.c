@@ -69,38 +69,24 @@ static void printnode(struct arena* win, int x,int y,int num)
 	}
 	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
 	{
-		drawascii(
-			win, node[num].integer & 0xff, 1,
-			x, temp, 0xffffffff, 0
-		);
+		drawascii(win, 0xffffff, x, temp, node[num].integer & 0xff);
 	}
 	else
 	{
-		drawascii(
-			win, node[num].type & 0xff, 1,
-			x, temp, 0xffffffff, 0
-		);
+		drawascii(win, 0xffffff, x, temp, node[num].type & 0xff);
 	}
 
 	//left
 	if(left!=0&&left<128)
 	{
-		drawline(win,
-			x, 64*y+16,
-			x-offset, 64*y+64,
-			0xffffffff
-		);
+		drawline(win, 0xffffff, x, 64*y+16, x-offset, 64*y+64);
 		printnode(win, x-offset , y+1 , left );
 	}
 
 	//right
 	if(right!=0&&right<128)
 	{
-		drawline(win,
-			x, 64*y+16,
-			x+offset, 64*y+64,
-			0xffffffff
-		);
+		drawline(win, 0xffffff, x, 64*y+16, x+offset, 64*y+64);
 		printnode(win, x+offset , y+1 , right );
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);

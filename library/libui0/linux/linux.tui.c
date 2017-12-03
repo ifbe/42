@@ -1,7 +1,3 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
@@ -10,12 +6,13 @@
 #include<signal.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
+#include"arena.h"
 //
 u64 startthread(void*, void*);
 void stopthread();
 //
+int lowlevel_input();
+void eventwrite(u64,u64,u64,u64);
 void say(char*,...);
 
 
@@ -29,21 +26,6 @@ static int lastwidth=0,lastheight=0;
 static int flag=-1;
 static struct termios old;
 static struct termios new;
-//
-struct window
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-};
 
 
 
@@ -54,10 +36,9 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-void* uievent(struct window* p)
+void* terminalthread(void* win)
 {
-	u8 ch;
-
+	u64 why, what, where;
 	while(1)
 	{
 		if(lastwidth != width)
@@ -67,53 +48,11 @@ void* uievent(struct window* p)
 			eventwrite(width + (height<<16), 0x657a6973, 0, 0);
 		}
 
-		ch = getchar();
-		if( (ch == 0xff) | (ch == 0) )
-		{
-			usleep(10000);
-			continue;
-		}
-		else if(ch==0x1b)
-		{
-			ch = getchar();
-			if( (ch == 0xff) | (ch == 0) )
-			{
-				usleep(10000);
-				ch = getchar();
-				if( (ch == 0xff) | (ch == 0) )
-				{
-					eventwrite(0x1b, 0x64626b, 0, 0);
-				}
-			}
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		where = (u64)win;
+		eventwrite(why, what, where, 0);
 
-			else if(ch==0x5b)
-			{
-				ch = getchar();
-				if(ch == 0x41)//up
-				{
-					eventwrite(0x26, 0x64626b, 0, 0);
-				}
-				if(ch == 0x42)//down
-				{
-					eventwrite(0x28, 0x64626b, 0, 0);
-				}
-				if(ch == 0x44)//left
-				{
-					eventwrite(0x25, 0x64626b, 0, 0);
-				}
-				if(ch == 0x43)//right
-				{
-					eventwrite(0x27, 0x64626b, 0, 0);
-				}
-			}//5b
-		}//1b
-		else
-		{
-			if(ch == 0x7f)ch = 8;
-			if(ch == 0xa)ch = 0xd;
-
-			eventwrite(ch, 0x72616863, 0, 0);
-		}
 	}//while
 }
 static void attr(u8 bg, u8 fg)
@@ -130,17 +69,17 @@ static void attr(u8 bg, u8 fg)
 
 
 
-void windowwrite(struct window* t)
+void windowwrite(struct window* dst, struct window* src)
 {
 	printf("\033[H\033[J");
 /*
-	printf("%s",t->buf);
+	printf("%s",src->buf);
 	fflush(stdout);
 */
 	int x,y;
 	u8 ch,bg=0,fg=0;
 	u8* p;
-	u8* buf = (u8*)t->buf1;
+	u8* buf = (u8*)(src->buf);
 
 	for(y=0;y<height;y++)
 	{
@@ -181,35 +120,31 @@ void windowwrite(struct window* t)
 void windowread(char* addr)
 {
 }
-
-
-
-
 void windowlist()
 {
 }
 void windowchange()
 {
 }
-
-
-
-
-void windowstart(struct window* p)
+void windowstart(struct window* this)
 {
-	p->buf1 = (u64)malloc(0x100000);
-	p->fmt = 0x74786574;
-	p->w = width;
-	p->h = height;
-	p->thread = startthread(uievent, p);
+	if(this->type == hex32('b','u','f',0))
+	{
+		return;
+	}
+	else
+	{
+		this->type = hex32('w','i','n',0);
+		this->fmt = hex32('t','u','i',0);
+		this->w = width;
+		this->h = height;
+
+		this->thread = startthread(terminalthread, this);
+	}
 }
 void windowstop()
 {
 }
-
-
-
-
 void windowcreate()
 {
 	ioctl(0, TIOCGWINSZ, &w);

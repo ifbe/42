@@ -37,9 +37,8 @@ static void showdata(struct arena* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				drawbyte(
-					win, databuf[arenaoffset + y*byteperline + x], 1,
-					16*x + xshift, 16*y, 0, 0
+				drawbyte(win, 0, 16*x + xshift, 16*y,
+					databuf[arenaoffset + y*byteperline + x]
 				);
 			}
 		}
@@ -51,9 +50,8 @@ static void showdata(struct arena* win)
 		{
 			for(x=0;x<byteperline;x++)
 			{
-				drawascii(
-					win, databuf[arenaoffset + y*byteperline + x], 1,
-					16*x + xshift, 16*y, 0, 0
+				drawascii(win, 0, 16*x + xshift, 16*y,
+					databuf[arenaoffset + y*byteperline + x]
 				);
 			}
 		}
@@ -106,9 +104,9 @@ static void floatarea(struct arena* win)
 	{
 		for(x=0;x<32;x++)
 		{
-			drawascii(
-				win, hi[(y*32) + x], 1,
-				xshift + thisx + x*8, thisy + y*16, 0, 0
+			drawascii(win, 0,
+				xshift + thisx + x*8, thisy + y*16,
+				hi[(y*32) + x]
 			);
 		}
 	}
