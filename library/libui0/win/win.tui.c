@@ -201,20 +201,29 @@ static void windowsutf8(char* utf8)
 	ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
 	printf("%s",gbk);
 }
-static void attr(u8 bg,u8 fg)
+static void attr(u8 bg0, u8 fg0)
 {
-	int color;
-	if(bg == 7)color = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
-	else if(bg == 6)color = BACKGROUND_BLUE | BACKGROUND_GREEN;
-	else if(bg == 5)color = BACKGROUND_BLUE | BACKGROUND_RED;
-	else if(bg == 4)color = BACKGROUND_BLUE;
-	else if(bg == 3)color = BACKGROUND_GREEN | BACKGROUND_RED;
-	else if(bg == 2)color = BACKGROUND_GREEN;
-	else if(bg == 1)color = BACKGROUND_RED;
-	else color = 0;
+	int bg1, fg1;
+	if(bg0 == 7)bg1 = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
+	else if(bg0 == 6)bg1 = BACKGROUND_BLUE | BACKGROUND_GREEN;
+	else if(bg0 == 5)bg1 = BACKGROUND_BLUE | BACKGROUND_RED;
+	else if(bg0 == 4)bg1 = BACKGROUND_BLUE;
+	else if(bg0 == 3)bg1 = BACKGROUND_GREEN | BACKGROUND_RED;
+	else if(bg0 == 2)bg1 = BACKGROUND_GREEN;
+	else if(bg0 == 1)bg1 = BACKGROUND_RED;
+	else bg1 = 0;
 
-	//
-	SetConsoleTextAttribute(output, color | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	if(fg0 == 7)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
+	else if(fg0 == 6)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN;
+	else if(fg0 == 5)fg1 = FOREGROUND_BLUE | FOREGROUND_RED;
+	else if(fg0 == 4)fg1 = FOREGROUND_BLUE;
+	else if(fg0 == 3)fg1 = FOREGROUND_GREEN | FOREGROUND_RED;
+	else if(fg0 == 2)fg1 = FOREGROUND_GREEN;
+	else if(fg0 == 1)fg1 = FOREGROUND_RED;
+	else fg1 = 0;
+
+	if(fg1 == 0)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
+	SetConsoleTextAttribute(output, bg1 | fg1);
 }
 
 
@@ -235,7 +244,7 @@ static void gotoxy(int x, int y)
 void windowwrite(struct window* dst, struct window* src)
 {
 	int x,y;
-	u8 ch,bg=0,fg=0;
+	u8 ch, bg=0, fg=7;
 	u8* p;
 	u8* buf = (u8*)(src->buf);
 	int width = src->w;
@@ -252,10 +261,11 @@ void windowwrite(struct window* dst, struct window* src)
 			if(p[0] > 0x80)
 			{
 				//先颜色
-				if(bg != p[7])
+				if((bg != p[7]) | (fg != p[6]) )
 				{
 					bg = p[7];
-					attr(bg,fg);
+					fg = p[6];
+					attr(bg, fg);
 				}
 
 				//这是汉字
@@ -265,10 +275,11 @@ void windowwrite(struct window* dst, struct window* src)
 			else
 			{
 				//先颜色
-				if(bg != p[3])
+				if((bg != p[3]) | (fg != p[2]) )
 				{
 					bg = p[3];
-					attr(bg,fg);
+					fg = p[2];
+					attr(bg, fg);
 				}
 
 				//这是ascii
@@ -278,7 +289,6 @@ void windowwrite(struct window* dst, struct window* src)
 			}
 		}
 	}
-	if(bg != 0)attr(0,0);
 }
 void windowread()
 {

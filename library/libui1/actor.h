@@ -199,6 +199,7 @@ void foreground(struct arena* win);
 void gentui_rect(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
 void gentui_utf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
 void gentui_str(struct arena* win, u32 rgb, int x, int y, u8* str, int len);
+void gentui_text(struct arena* win, u32 rgb, int x, int y, u8* str, int len);
 void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data);
 
 void drawascii(struct arena* win, u32 rgb, int x, int y, u8 data);

@@ -16,10 +16,14 @@ struct uartterm
 	int h;
 	int x;
 	int y;
+	int left;
+	int right;
+	int top;
+	int bottom;
 };
 static u32 getcolor[] = {
-	0x000000, 0xffffff, 0x00ff00, 0xffff00,
-	0x0000ff, 0xff00ff, 0x00ffff, 0xcccccc
+	0x000000, 0xff0000, 0x00ff00, 0xffff00,
+	0x0000ff, 0xff00ff, 0x00ffff, 0xffffff
 };
 
 
@@ -338,13 +342,9 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 	ymax = (y1-y0)/16;
 	if(ymax > 25)ymax = 25;
 
-	y = term->y;
-	if(y > ymax)buf += (y-ymax+1)*w*4;
-
 	cursorx = term->x;
-	cursory = term->y;
-	if(y >= ymax)cursory = ymax-1;
-
+	cursory = (term->y)-(term->top);
+	buf += (term->top)*w*4;
 	for(y=0;y<ymax;y++)
 	{
 		for(x=0;x<xmax;x++)
@@ -352,8 +352,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 			aaa = buf + (w*y*4) + (x*4);
 			if(aaa[0] < 0x80)
 			{
-				bg = aaa[2];
-				fg = aaa[3];
+				bg = aaa[3];
+				fg = aaa[2];
 				bg = getcolor[bg%8];
 				fg = getcolor[fg%8];
 				if(bg != 0)
@@ -380,8 +380,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 			}
 			else
 			{
-				bg = aaa[6];
-				fg = aaa[7];
+				bg = aaa[7];
+				fg = aaa[6];
 				bg = getcolor[bg%8];
 				fg = getcolor[fg%8];
 				if(bg != 0)

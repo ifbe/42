@@ -1,11 +1,4 @@
 #include "actor.h"
-int uart_list(void*);
-int uart_choose(void*);
-int uart_write(void*);
-
-
-
-
 struct uartinfo
 {
 	u8* buf;
@@ -23,7 +16,19 @@ struct uartterm
 	int h;
 	int x;
 	int y;
+	int left;
+	int right;
+	int top;
+	int bottom;
 };
+int uart_list(void*);
+int uart_choose(void*);
+int uart_write(void*);
+void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
+
+
+
+
 static struct uartinfo* old;
 static struct uartterm term;
 static u8 listbuf[0x100];
@@ -314,8 +319,9 @@ static int queue_1b_position(u8* p)
 		x = (x*10) + p[j] - 0x30;
 	}
 
+	say("position:%d,%d\n",x-1,y-1);
 	term.x = x-1;
-	term.y = y-1;
+	term.y = (term.top)+y-1;
 	return 1;
 }
 static int queue_1b(u8* p)
@@ -331,6 +337,7 @@ static int queue_1b(u8* p)
 	if(p[2] == 0x41)
 	{
 		//printf("a");
+		if(term.y > 0)term.y--;
 		return 3;
 	}
 
@@ -338,6 +345,7 @@ static int queue_1b(u8* p)
 	if(p[2] == 0x42)
 	{
 		//printf("b");
+		term.y++;
 		return 3;
 	}
 
@@ -345,6 +353,7 @@ static int queue_1b(u8* p)
 	if(p[2] == 0x43)
 	{
 		//printf("c");
+		if(term.x < term.w-1)term.x++;
 		return 3;
 	}
 
@@ -352,6 +361,7 @@ static int queue_1b(u8* p)
 	if(p[2] == 0x44)
 	{
 		//printf("d");
+		if(term.x > 0)term.x--;
 		return 3;
 	}
 
@@ -359,7 +369,7 @@ static int queue_1b(u8* p)
 	if((p[2] == 'H')|(p[2] == 'f'))
 	{
 		term.x = 0;
-		term.y = 0;
+		term.y = term.top;
 		return 3;
 	}
 
@@ -369,8 +379,13 @@ static int queue_1b(u8* p)
 		x = term.x;
 		y = term.y;
 		w = term.w;
-		buf = (term.buf) + (y+1)*w*4;
-		for(j=0;j<w*24*4;j+=4)buf[j] = 0x20;
+		buf = (term.buf) + y*w*4;
+		for(j=x*4;j<w*25*4;j+=4)
+		{
+			buf[j] = 0x20;
+			buf[j+2] = term.fg;
+			buf[j+3] = term.bg;
+		}
 		return 3;
 	}
 
@@ -381,7 +396,12 @@ static int queue_1b(u8* p)
 		y = term.y;
 		w = term.w;
 		buf = (term.buf) + y*w*4;
-		for(j=x*4;j<w*4;j+=4)buf[j] = 0x20;
+		for(j=x*4;j<w*4;j+=4)
+		{
+			buf[j] = 0x20;
+			buf[j+2] = term.fg;
+			buf[j+3] = term.bg;
+		}
 		return 3;
 	}
 
@@ -480,8 +500,8 @@ static int queue_1b(u8* p)
 		}
 	}
 
-	//printmemory(p, 16);
-	return 0;
+	printmemory(p, 16);
+	return 2;
 }
 static void queue_copy(u8* buf, int len)
 {
@@ -490,7 +510,7 @@ static void queue_copy(u8* buf, int len)
 	int w = term.w;
 	int h = term.h;
 	u8* dst = term.buf;
-	printmemory(buf,len);
+	//printmemory(buf,len);
 
 	for(j=0;j<len;j++)
 	{
@@ -509,7 +529,15 @@ static void queue_copy(u8* buf, int len)
 		else if(buf[j] == '\n')
 		{
 			term.y++;
-			if(y*w >= 0xf0000)term.y=0;
+			if(w*(term.y) >= 0xf0000)
+			{
+				term.y = 0;
+				term.top = 0;
+			}
+			else if(term.top < term.y - 24)
+			{
+				term.top = term.y - 24;
+			}
 		}
 		else if(buf[j] == 0x1b)
 		{
@@ -530,34 +558,27 @@ static void queue_copy(u8* buf, int len)
 			else k = 1;
 
 			y = 4*(w*(term.y) + term.x);
-			dst[y + 7] = term.fg;
-			dst[y + 6] = term.bg;
+			dst[y + 7] = term.bg;
+			dst[y + 6] = term.fg;
 			for(x=0;x<k;x++)dst[y+x] = buf[j+x];
 
 			term.x += 2;
-			if(((term.x)%w) == 0)term.y++;
-			if((term.y)*w >= 0xf0000)term.y=0;
-
 			j += k-1;
 		}
 		else
 		{
 			y = 4*(w*(term.y) + term.x);
-			dst[y + 3] = term.fg;
-			dst[y + 2] = term.bg;
+			dst[y + 3] = term.bg;
+			dst[y + 2] = term.fg;
 			dst[y + 0] = buf[j];
 
 			term.x++;
-			if(((term.x)%w) == 0)term.y++;
-			if((term.y)*w >= 0xf0000)term.y=0;
 		}
 	}
 }
-void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p;
-	int j,k;
 	int enq,deq;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
@@ -594,25 +615,6 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 			queue_copy(p, enq);
 		}
 	}
-/*
-	deq = new.deq;
-	k = new.enq;
-	j = 25;
-	for(;k>deq;k--)
-	{
-		if(p[k] == '\n')
-		{
-			j--;
-			if(j == 0)new.deq = k+1;
-		}
-	}
-
-	deq = new.deq;
-	drawvt100(win, 0xffffff,
-		cx-ww, cy-hh, cx+ww, cy+hh,
-		p+deq, 0x100000-deq
-	);
-*/
 	drawterm(win, &term, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
@@ -623,6 +625,50 @@ static void terminal_read_vbo(struct arena* win, struct actor* act, struct style
 }
 static void terminal_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
+	int x, y, w, h, enq,deq;
+	u32* p;
+	u32* q;
+	u8* buf;
+	if((status == 0)&&(charlen == 0))
+	{
+		if(listlen == 0)
+		{
+			listlen = uart_list(listbuf);
+		}
+		gentui_text(win, 7, 0, 0, listbuf, listlen);
+		return;
+	}
+
+	if(old == 0)return;
+	buf = old->buf;
+	enq = old->enq;
+	deq = old->deq;
+	old->deq = enq;
+
+	if(enq != deq)
+	{
+		if(enq > deq)queue_copy(buf+deq, enq-deq);
+		else
+		{
+			queue_copy(buf+deq, 0x100000-deq);
+			queue_copy(buf, enq);
+		}
+	}
+
+	w = win->w;
+	if(w > term.w)w = term.w;
+	h = win->h;
+	if(h > term.h)h = term.h;
+
+	p = (void*)(win->buf);
+	q = (void*)(term.buf);
+	for(y=0;y<h;y++)
+	{
+		for(x=0;x<w;x++)
+		{
+			p[(win->w)*y + x] = q[(term.w)*(term.top+y) + x];
+		}
+	}
 }
 static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -664,8 +710,8 @@ static void terminal_read(struct arena* win, struct actor* act, struct style* st
 
 static void terminal_write(struct event* ev)
 {
-	int j;
-	u64 temp;
+	u64 tmp;
+	u64 why = ev->why;
 	if(ev->what == __uart__)
 	{
 		old = (void*)(ev->why);
@@ -674,30 +720,28 @@ static void terminal_write(struct event* ev)
 
 	if(ev->what == __kbd__)
 	{
-		j = ev->why;
 		if(status != 0)
 		{
-			if(j == 0x1b)temp = 0x1b;
-			else if(j == 0x25)temp = 0x445b1b;
-			else if(j == 0x26)temp = 0x415b1b;
-			else if(j == 0x27)temp = 0x435b1b;
-			else if(j == 0x28)temp = 0x425b1b;
+			if(why == 0x1b)tmp = 0x1b;
+			else if(why == 0x25)tmp = 0x445b1b;
+			else if(why == 0x26)tmp = 0x415b1b;
+			else if(why == 0x27)tmp = 0x435b1b;
+			else if(why == 0x28)tmp = 0x425b1b;
 			else return;
 
-			uart_write((void*)&temp);
+			uart_write((void*)&tmp);
 		}
 		return;
 	}
 
 	if(ev->what == __char__)
 	{
-		j = (ev->why)&0xff;
 		if(status != 0)
 		{
 			uart_write((void*)ev);
 			return;
 		}
-		if(j == 0x8)
+		if(why == 0x8)
 		{
 			if(charlen > 0)
 			{
@@ -708,8 +752,8 @@ static void terminal_write(struct event* ev)
 			return;
 		}
 
-		say("%c",j);
-		if((j == 0xd)|(j == 0xa))
+		say("%c",why);
+		if((why == 0xd)|(why == 0xa))
 		{
 			if(charlen == 0)
 			{
@@ -723,7 +767,7 @@ static void terminal_write(struct event* ev)
 		}
 		if(charlen < 31)
 		{
-			charbuf[charlen] = j;
+			charbuf[charlen] = why;
 			charlen++;
 		}
 	}
@@ -745,10 +789,14 @@ static void terminal_start()
 	//new.len = 0x100000;
 	//new.buf = startmemory(new.len);
 
-	term.w = 128;
-	term.h = 25;
+	term.left = 0;
+	term.right = 0;
+	term.top = 0;
+	term.bottom = 0;
 	term.x = 0;
 	term.y = 0;
+	term.w = 128;
+	term.h = 25;
 	term.bg = 0;
 	term.fg = 7;
 	term.len = 0x100000;

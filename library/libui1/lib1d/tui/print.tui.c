@@ -37,6 +37,30 @@ void gentui_str(struct arena* win, u32 rgb, int x, int y, u8* str, int len)
 	if(len == 0)while(str[len] != 0)len++;
 	for(j=0;j<len;j++)buf[4*(y*w+x+j)] = str[j];
 }
+void gentui_text(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
+{
+	int j, k;
+	int cc, dy;
+	if(buf == 0)return;
+	if(len == 0)
+	{
+		while(buf[len] != 0)len++;
+	}
+
+	k = 0;
+	dy = 0;
+	for(j=0;j<len;j++)
+	{
+		if((buf[j] != 0)&&(buf[j] != '\n'))continue;
+
+		if(j>k)
+		{
+			gentui_str(win, rgb, x, y+dy, buf+k, j-k);
+		}
+		k = j+1;
+		dy++;
+	}
+}
 void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data)
 {
 	u8 str[16];
