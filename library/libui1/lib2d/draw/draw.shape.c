@@ -281,6 +281,50 @@ void drawsolid_sector(struct arena* win, u32 rgb,
 
 
 
+void drawhyaline_rect(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2)
+{
+	u8 r,g,b,a;
+	int x,y,z;
+	int startx,endx,starty,endy;
+	int width = win->w;
+	int height = win->h;
+	u8* buf = (u8*)(win->buf);
+
+	if(x1<=x2){startx=x1;endx=x2;}
+	else{startx=x2;endx=x1;}
+	if(startx < 0)startx = 0;
+	if(endx >= width)endx = width-1;
+
+	if(y1<=y2){starty=y1;endy=y2;}
+	else{starty=y2;endy=y1;}
+	if(starty < 0)starty = 0;
+	if(endy >= height)endy = height-1;
+
+	b = rgb&0xff;
+	g = (rgb>>8)&0xff;
+	r = (rgb>>16)&0xff;
+	for(y=starty;y<=endy;y++)
+	{
+		for(x=startx;x<=endx;x++)
+		{
+			z = buf[4*(y*width + x) + 0];
+			buf[4*(y*width + x) + 0] = (z/4) + b;
+
+			z = buf[4*(y*width + x) + 1];
+			buf[4*(y*width + x) + 1] = (z/4) + g;
+
+			z = buf[4*(y*width + x) + 2];
+			buf[4*(y*width + x) + 2] = (z/4) + r;
+
+			buf[4*(y*width + x) + 3] = 0xff;
+		}
+	}
+}
+
+
+
+
 void drawaxis(struct arena* win)
 {
 }

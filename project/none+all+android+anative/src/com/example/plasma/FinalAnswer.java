@@ -112,7 +112,9 @@ class FinalAnswerView extends SurfaceView implements SurfaceHolder.Callback {
 		int action = event.getActionMasked();
 		int index = event.getActionIndex();
 		int count = event.getPointerCount();
-		//Log.i("finalanswer","("+action+","+index+","+count+")");
+		int x = (int)event.getX(index);
+		int y = (int)event.getY(index);
+		Log.i("finalanswer","("+action+","+index+","+count+")"+x+","+y);
 
 		Read();
 		return true;

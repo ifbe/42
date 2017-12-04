@@ -198,6 +198,7 @@ void foreground(struct arena* win);
 
 void gentui_rect(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
 void gentui_utf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
+void gentui_str(struct arena* win, u32 rgb, int x, int y, u8* str, int len);
 void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data);
 
 void drawascii(struct arena* win, u32 rgb, int x, int y, u8 data);
@@ -213,6 +214,10 @@ void drawvt100(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len
 );
+void drawicon_1(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len
+);
 
 void drawline(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2
@@ -220,6 +225,7 @@ void drawline(struct arena* win, u32 rgb,
 void drawline_bezier(struct arena* win, u32 rgb,
 	int ax, int ay, int bx, int by, int cx, int cy
 );		//corner1, corner2, control
+
 
 void drawline_triangle(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int x3, int y3
@@ -253,9 +259,11 @@ void drawsolid_sector(struct arena* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end
 );		//center, radius, angle1, angle2
 
-void drawicon_1(struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1,
-	u8* buf, int len
+void drawhyaline_rect(struct arena* win, u32 rgb,
+	int x1, int y1, int x2, int y2
+);
+void drawhyaline_circle(struct arena* win, u32 rgb,
+	int cx, int cy, int radius
 );
 
 void carvepoint(

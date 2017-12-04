@@ -13,8 +13,19 @@ struct uartinfo
 	int enq;
 	int deq;
 };
+struct uartterm
+{
+	u8* buf;
+	u32 len;
+	u32 fg;
+	u32 bg;
+	int w;
+	int h;
+	int x;
+	int y;
+};
 static struct uartinfo* old;
-static struct uartinfo new;
+static struct uartterm term;
 static u8 listbuf[0x100];
 static int listlen = 0;
 static u8 charbuf[0x100];
@@ -23,18 +34,28 @@ static int status = 0;
 
 
 
-
+/*
 static int buffer_goto(u8* buf, int* ret, int x, int y)
 {
-	int j,k;
+	int j = new.deq;
+	int k = *ret;
+	x--;
+	y--;
 
-	j = *ret;
-	for(;j>0;j--)
+	if(y != 0)
 	{
-		if(buf[j] == '\n')
+		if(y > 24)y = 24;
+		for(;j<k;j++)
 		{
-			if(y >= 25)break;
-			else y++;
+			if(buf[j] == '\n')
+			{
+				y--;
+				if(y == 0)
+				{
+					j++;
+					break;
+				}
+			}
 		}
 	}
 
@@ -42,7 +63,6 @@ static int buffer_goto(u8* buf, int* ret, int x, int y)
 	{
 		if(buf[j+k] == '\n')break;
 	}
-	if(k>0)k--;
 
 	say("%x->%x\n", *ret, j+k);
 	*ret = j+k;
@@ -84,6 +104,7 @@ static void queue_copy(u8* buf, int len)
 	int x,y,z;
 	u8* p = new.buf;
 	if(p == 0)return;
+	printmemory(buf,len);
 
 	k = new.enq;
 	for(j=0;j<len;j++)
@@ -107,6 +128,18 @@ static void queue_copy(u8* buf, int len)
 					break;
 				}
 			}
+			continue;
+		}
+		if((buf[j] == 0x1b)&&(buf[j+1] == '='))
+		{
+			j++;
+			printf("e=\n");
+			continue;
+		}
+		if((buf[j] == 0x1b)&&(buf[j+1] == '>'))
+		{
+			j++;
+			printf("e>\n");
 			continue;
 		}
 
@@ -152,10 +185,10 @@ static void queue_copy(u8* buf, int len)
 				continue;
 			}
 
-			//(0,0)
+			//(1,1)
 			if((buf[j+2] == 'H')|(buf[j+2] == 'f'))
 			{
-				buffer_goto(p, &k, 0, 0);
+				buffer_goto(p, &k, 1, 1);
 
 				printmemory(buf+j, 3);
 				j+=2;
@@ -184,6 +217,7 @@ static void queue_copy(u8* buf, int len)
 				x = (buf[j+2]-0x30)*10 + (buf[j+3]-0x30);
 				k = (k+x)%0x100000;
 
+				printf("i am fucking here\n");
 				printmemory(buf+j, 5);
 				j+=4;
 				continue;
@@ -210,8 +244,316 @@ static void queue_copy(u8* buf, int len)
 		p[k] = buf[j];
 		k = (k+1)%0x100000;
 	}
+
 	new.enq = k;
 }
+*/
+int queue_1b_color(u8* p)
+{
+	//reset
+	if(p == 0)
+	{
+		term.fg = 7;
+		term.bg = 0;
+		return 0;
+	}
+
+	//reset
+	if(p[0] == '0')
+	{
+		term.fg = 7;
+		term.bg = 0;
+		return 0;
+	}
+
+	//heavy
+	else if(p[0] == '1')
+	{
+		term.fg = 1;
+		return 1;
+	}
+
+	//foreground
+	if(p[0] == '3')
+	{
+		if((p[1] >= '0')&&(p[1] <= '7'))term.fg = p[1]-0x30;
+		return 3;
+	}
+
+	//background
+	else if(p[0] == '4')
+	{
+		if((p[1] >= '0')&&(p[1] <= '7'))term.bg = p[1]-0x30;
+		return 4;
+	}
+	return -1;
+}
+static int queue_1b_position(u8* p)
+{
+	int j, k, x=0, y=0;
+	for(k=0;k<4;k++)
+	{
+		if(p[k] == ';')break;
+	}
+	if(k>=4)return 0;
+
+	for(j=0;j<k;j++)
+	{
+		y = (y*10) + p[j] - 0x30;
+	}
+
+	for(;k<8;k++)
+	{
+		if((p[k] == 'H')|(p[k] == 'f'))break;
+	}
+	if(k>=8)return 0;
+
+	j++;
+	for(;j<k;j++)
+	{
+		x = (x*10) + p[j] - 0x30;
+	}
+
+	term.x = x-1;
+	term.y = y-1;
+	return 1;
+}
+static int queue_1b(u8* p)
+{
+	int j;
+	int x,y,w;
+	u8* buf = term.buf;
+	if(p[0] != 0x1b)return 0;
+	if(p[1] != 0x5b)return 1;
+	//printmemory(p, 16);
+
+	//1b 5b 41: cursor up
+	if(p[2] == 0x41)
+	{
+		//printf("a");
+		return 3;
+	}
+
+	//1b 5b 42: cursor down
+	if(p[2] == 0x42)
+	{
+		//printf("b");
+		return 3;
+	}
+
+	//1b 5b 43: cursor forward
+	if(p[2] == 0x43)
+	{
+		//printf("c");
+		return 3;
+	}
+
+	//1b 5b 44: cursor backward
+	if(p[2] == 0x44)
+	{
+		//printf("d");
+		return 3;
+	}
+
+	//1b 5b H/f
+	if((p[2] == 'H')|(p[2] == 'f'))
+	{
+		term.x = 0;
+		term.y = 0;
+		return 3;
+	}
+
+	//1b 5b J: Clear screen from cursor down
+	if(p[2] == 'J')
+	{
+		x = term.x;
+		y = term.y;
+		w = term.w;
+		buf = (term.buf) + (y+1)*w*4;
+		for(j=0;j<w*24*4;j+=4)buf[j] = 0x20;
+		return 3;
+	}
+
+	//1b 5b K: Clear line from cursor right
+	if(p[2] == 'K')
+	{
+		x = term.x;
+		y = term.y;
+		w = term.w;
+		buf = (term.buf) + y*w*4;
+		for(j=x*4;j<w*4;j+=4)buf[j] = 0x20;
+		return 3;
+	}
+
+	//1b 5b m
+	if(p[2] == 'm')
+	{
+		queue_1b_color(0);
+		return 3;
+	}
+
+	//1b 5b ? m
+	if(p[3] == 'm')
+	{
+		queue_1b_color(p+2);
+		return 4;
+	}
+
+	//1b 5b ? n
+	if(p[3] == 'n')
+	{
+		return 4;
+	}
+
+	if(p[3] == 'A')
+	{
+		return 4;
+	}
+
+	if(p[3] == 'C')
+	{
+		x = p[2]-0x30;
+		term.x += x;
+		return 4;
+	}
+
+	if(p[4] == 'C')
+	{
+		x = (p[2]-0x30)*10 + (p[3]-0x30);
+		term.x += x;
+		return 5;
+	}
+
+	//1b 5b ? ? h
+	if(p[4] == 'h')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? l
+	if(p[4] == 'l')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? m
+	if(p[4] == 'm')
+	{
+		queue_1b_color(p+2);
+		return 5;
+	}
+
+	if(p[3] == ';')
+	{
+		//1b 5b ? ; ? m
+		if(p[5] == 'm')
+		{
+			queue_1b_color(p+2);
+			queue_1b_color(p+4);
+			return 6;
+		}
+
+		//1b 5b ? ; ? ? m
+		else if(p[6] == 'm')
+		{
+			queue_1b_color(p+2);
+			queue_1b_color(p+4);
+			return 7;
+		}
+	}
+
+	//1b 5b ? ? ; ? ? m
+	if( (p[4] == ';') && (p[7] == 'm') )
+	{
+		queue_1b_color(p+2);
+		queue_1b_color(p+5);
+		return 8;
+	}
+
+	for(j=2;j<10;j++)
+	{
+		if(p[j] == 'r')return j+1;
+		if( (p[j] == 'H') | (p[j] == 'f') )
+		{
+			queue_1b_position(p+2);
+			return j+1;
+		}
+	}
+
+	//printmemory(p, 16);
+	return 0;
+}
+static void queue_copy(u8* buf, int len)
+{
+	int j,k;
+	int x,y;
+	int w = term.w;
+	int h = term.h;
+	u8* dst = term.buf;
+	printmemory(buf,len);
+
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == 0)continue;
+		if(buf[j] == 0x7)continue;
+
+		if(buf[j] == 0x8)
+		{
+			x = term.x;
+			if(x > 0)term.x = x-1;
+		}
+		else if(buf[j] == '\r')
+		{
+			term.x = 0;
+		}
+		else if(buf[j] == '\n')
+		{
+			term.y++;
+			if(y*w >= 0xf0000)term.y=0;
+		}
+		else if(buf[j] == 0x1b)
+		{
+			if(buf[j+1] == '=')j++;
+			else if(buf[j+1] == '>')j++;
+			else
+			{
+				j += queue_1b(buf+j) - 1;
+			}
+		}
+		else if(buf[j] >= 0x80)
+		{
+			if(buf[j] < 0xe0)k = 2;
+			else if(buf[j] < 0xf0)k = 3;
+			else if(buf[j] < 0xf8)k = 4;
+			else if(buf[j] < 0xfc)k = 5;
+			else if(buf[j] < 0xfe)k = 6;
+			else k = 1;
+
+			y = 4*(w*(term.y) + term.x);
+			dst[y + 7] = term.fg;
+			dst[y + 6] = term.bg;
+			for(x=0;x<k;x++)dst[y+x] = buf[j+x];
+
+			term.x += 2;
+			if(((term.x)%w) == 0)term.y++;
+			if((term.y)*w >= 0xf0000)term.y=0;
+
+			j += k-1;
+		}
+		else
+		{
+			y = 4*(w*(term.y) + term.x);
+			dst[y + 3] = term.fg;
+			dst[y + 2] = term.bg;
+			dst[y + 0] = buf[j];
+
+			term.x++;
+			if(((term.x)%w) == 0)term.y++;
+			if((term.y)*w >= 0xf0000)term.y=0;
+		}
+	}
+}
+void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
 static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u8* p;
@@ -221,10 +563,7 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
 	int hh = (win->h) * (sty->wanth) / 0x20000;
-
-	drawline_rect(win, 0xffffff,
-		cx-ww, cy-hh, cx+ww, cy+hh
-	);
+	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	if(status == 0)
 	{
@@ -248,36 +587,33 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	old->deq = enq;
 	if(enq != deq)
 	{
-		if(enq > deq)
-		{
-			queue_copy(p+deq, enq-deq);
-		}
+		if(enq > deq)queue_copy(p+deq, enq-deq);
 		else
 		{
 			queue_copy(p+deq, 0x100000-deq);
 			queue_copy(p, enq);
 		}
 	}
-
-	enq = new.enq;
-	p = new.buf;
-	if(p == 0)return;
-
-	k = 0;
-	for(j=enq-1;j>0;j--)
+/*
+	deq = new.deq;
+	k = new.enq;
+	j = 25;
+	for(;k>deq;k--)
 	{
-		if(p[j] == '\n')k++;
-		if(k+1 > hh/8)
+		if(p[k] == '\n')
 		{
-			j++;
-			break;
+			j--;
+			if(j == 0)new.deq = k+1;
 		}
 	}
 
+	deq = new.deq;
 	drawvt100(win, 0xffffff,
 		cx-ww, cy-hh, cx+ww, cy+hh,
-		p+j, 0x100000-j
+		p+deq, 0x100000-deq
 	);
+*/
+	drawterm(win, &term, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -296,7 +632,7 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 	{
 		if(listlen == 0)
 		{
-			say("terminal(%x,%x,%x)\n",win,act,sty);
+			//say("terminal(%x,%x,%x)\n",win,act,sty);
 			listlen = uart_list(listbuf);
 		}
 		say("%.*s", listlen, listbuf);
@@ -310,17 +646,8 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 	old->deq = enq;
 	if(enq == deq)return;
 
-	if(enq > deq)
-	{
-		//printmemory(p+deq, enq-deq);
-		say("%.*s", enq-deq, p+deq);
-	}
-	else
-	{
-		//printmemory(p+deq, 0x200-deq);
-		//printmemory(p, enq);
-		say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
-	}
+	if(enq > deq)say("%.*s", enq-deq, p+deq);
+	else say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
 }
 static void terminal_read(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -350,7 +677,8 @@ static void terminal_write(struct event* ev)
 		j = ev->why;
 		if(status != 0)
 		{
-			if(j == 0x25)temp = 0x445b1b;
+			if(j == 0x1b)temp = 0x1b;
+			else if(j == 0x25)temp = 0x445b1b;
 			else if(j == 0x26)temp = 0x415b1b;
 			else if(j == 0x27)temp = 0x435b1b;
 			else if(j == 0x28)temp = 0x425b1b;
@@ -383,7 +711,11 @@ static void terminal_write(struct event* ev)
 		say("%c",j);
 		if((j == 0xd)|(j == 0xa))
 		{
-			if(charlen == 0)return;
+			if(charlen == 0)
+			{
+				*(u32*)charbuf = hex32('C','O','M','7');
+				charlen = 4;
+			}
 
 			uart_choose(charbuf);
 			status = 1;
@@ -408,10 +740,19 @@ static void terminal_change()
 }
 static void terminal_start()
 {
-	new.enq = 0;
-	new.deq = 0;
-	new.len = 0x100000;
-	new.buf = startmemory(new.len);
+	//new.enq = 0;
+	//new.deq = 0;
+	//new.len = 0x100000;
+	//new.buf = startmemory(new.len);
+
+	term.w = 128;
+	term.h = 25;
+	term.x = 0;
+	term.y = 0;
+	term.bg = 0;
+	term.fg = 7;
+	term.len = 0x100000;
+	term.buf = startmemory(term.len);
 }
 static void terminal_stop()
 {

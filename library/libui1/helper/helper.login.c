@@ -8,7 +8,13 @@ void actorchoose(void*);
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
-static int chosen;
+static int chosen = 0;
+static void login_this()
+{
+	if(chosen < 0)return;
+	if(chosen > 31)return;
+	actorchoose((void*)&actor[chosen].name);
+}
 
 
 
@@ -98,21 +104,39 @@ void login_read_vbo(struct arena* win)
 		PI*4/3, PI
 	);
 }
-void login_read_tui(struct arena* win)
-{
-}
 void login_read_html(struct arena* win)
 {
+}
+void login_read_tui(struct arena* win)
+{
+	int j,k,x,y;
+	int ww = ((win->w)/2)&0xfffc;
+	int hh = (win->h)/2;
+
+	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);
+
+	for(j=0;j<32;j++)
+	{
+		x = j%4;
+		x = ww + (x-2)*ww/4;
+		y = j/4;
+		y = hh + (y-4);
+		if(j==chosen)k=1;
+		else k=2;
+
+		gentui_rect(win, k, x, y, x+7, y);
+		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
+	}
 }
 void login_read_cli(struct arena* win)
 {
 }
 void login_read(struct arena* win)
 {
-	if(win->fmt == hex32('c','l','i',0))login_read_cli(win);
-	else if(win->fmt == hex32('t','u','i',0))login_read_tui(win);
-	else if(win->fmt == hex32('h','t','m','l'))login_read_html(win);
-	else if(win->fmt == hex32('v','b','o',0))login_read_vbo(win);
+	if(win->fmt == __cli__)login_read_cli(win);
+	else if(win->fmt == __tui__)login_read_tui(win);
+	else if(win->fmt == __vbo__)login_read_vbo(win);
+	else if(win->fmt == __html__)login_read_html(win);
 	else login_read_pixel(win);
 }
 void login_write(struct arena* win, struct event* ev)
@@ -120,6 +144,7 @@ void login_write(struct arena* win, struct event* ev)
 	int x,y;
 	y = (ev->what)&0xff;
 	x = ((ev->what)>>8)&0xff;
+
 	if(y == 'p')
 	{
 		if(x == '@')
@@ -130,17 +155,14 @@ void login_write(struct arena* win, struct event* ev)
 			y = (y*16)>>16;
 			chosen = (y-4)*4 + (x-2);
 		}
-		else if(x == '-')
-		{
-			if((chosen >= 0)&&(chosen<32))
-			{
-				actorchoose((void*)&actor[chosen].name);
-			}
-		}
+		else if(x == '-')login_this();
 	}
-	else if(ev->what == hex32('c','h','a','r'))
+	else if(ev->what == __char__)
 	{
-		term_write(ev);
+		if(ev->why == '=')login_this();
+		else if(ev->why == '+')chosen = (chosen+1)%32;
+		else if(ev->why == '-')chosen = (chosen+31)%32;
+		else term_write(ev);
 	}
 }
 void login_create(void* addr)

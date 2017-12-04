@@ -27,14 +27,19 @@ void gentui_utf8(struct arena* win, u32 rgb, int x, int y, u8* utf, int len)
 	for(j=0;j<len;j++)buf[4*(y*w+x) + j] = utf[j];
 	for(;j<6;j++)buf[4*(y*w+x) + j] = 0;
 }
-void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data)
+void gentui_str(struct arena* win, u32 rgb, int x, int y, u8* str, int len)
 {
-	u8 tmp[16];
-	int j,k;
+	int j;
 	int w = win->w;
 	int h = win->h;
 	u8* buf = (u8*)(win->buf);
-
-	k = data2decstr(data, tmp);
-	for(j=0;j<k;j++)buf[4*(y*w+x+j)] = tmp[j];
+	if(str == 0)return;
+	if(len == 0)while(str[len] != 0)len++;
+	for(j=0;j<len;j++)buf[4*(y*w+x+j)] = str[j];
+}
+void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data)
+{
+	u8 str[16];
+	int len = data2decstr(data, str);
+	gentui_str(win, rgb, x, y, str, len);
 }

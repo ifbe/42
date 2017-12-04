@@ -6,6 +6,21 @@ struct txtcfg
 	int x;
 	int y;
 };
+struct uartterm
+{
+	u8* buf;
+	u32 len;
+	u32 fg;
+	u32 bg;
+	int w;
+	int h;
+	int x;
+	int y;
+};
+static u32 getcolor[] = {
+	0x000000, 0xffffff, 0x00ff00, 0xffff00,
+	0x0000ff, 0xff00ff, 0x00ffff, 0xcccccc
+};
 
 
 
@@ -219,7 +234,7 @@ void drawvt100(
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
-	u32 c;
+	u32 bg, fg;
 	int j, k;
 	int x, y, z;
 	int flag, last=0;
@@ -231,7 +246,8 @@ void drawvt100(
 
 		x = cfg.x;
 		y = cfg.y;
-		c = cfg.fg;
+		bg = cfg.bg;
+		fg = cfg.fg;
 		flag = 0;
 
 		if(buf[j] == 0)flag = 1;
@@ -259,8 +275,13 @@ void drawvt100(
 
 		if(k > 0)
 		{
+			if(bg != 0)drawsolid_rect(
+				win, bg,
+				x0+(x*8), y0 + (y*16),
+				x0+(x*8) + k*8, y0 + (y*16) + 16
+			);
 			drawstring(
-				win, c,
+				win, fg,
 				x0 + (x*8), y0 + (y*16),
 				buf+last, k
 			);
@@ -294,6 +315,99 @@ void drawvt100(
 
 			last = j+z;
 			j += z-1;
+		}
+	}
+}
+
+
+
+
+void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1)
+{
+	u32 bg, fg;
+	int x,y;
+	int xmax, ymax;
+	int cursorx, cursory;
+	int w = term->w;
+	int h = term->h;
+	u8* buf = term->buf;
+	u8* aaa;
+
+	xmax = (x1-x0)/8;
+	if(xmax > w)xmax = w;
+	ymax = (y1-y0)/16;
+	if(ymax > 25)ymax = 25;
+
+	y = term->y;
+	if(y > ymax)buf += (y-ymax+1)*w*4;
+
+	cursorx = term->x;
+	cursory = term->y;
+	if(y >= ymax)cursory = ymax-1;
+
+	for(y=0;y<ymax;y++)
+	{
+		for(x=0;x<xmax;x++)
+		{
+			aaa = buf + (w*y*4) + (x*4);
+			if(aaa[0] < 0x80)
+			{
+				bg = aaa[2];
+				fg = aaa[3];
+				bg = getcolor[bg%8];
+				fg = getcolor[fg%8];
+				if(bg != 0)
+				{
+					drawsolid_rect(
+						win, bg,
+						x0+(x*8), y0 + (y*16),
+						x0+(x*8) + 8, y0 + (y*16) + 16
+					);
+				}
+				drawascii(
+					win, fg,
+					x0 + (x*8), y0 + (y*16),
+					aaa[0]
+				);
+				if((x == cursorx)&&(y == cursory))
+				{
+					drawsolid_rect(
+						win, 0xffffff,
+						x0+(x*8), y0 + (y*16),
+						x0+(x*8) + 8, y0 + (y*16) + 16
+					);
+				}
+			}
+			else
+			{
+				bg = aaa[6];
+				fg = aaa[7];
+				bg = getcolor[bg%8];
+				fg = getcolor[fg%8];
+				if(bg != 0)
+				{
+					drawsolid_rect(
+						win, bg,
+						x0+(x*8), y0 + (y*16),
+						x0+(x*8) + 8, y0 + (y*16) + 16
+					);
+				}
+				drawutf8_temp(
+					win, fg,
+					x0 + (x*8), y0 + (y*16),
+					aaa, 0
+				);
+				if((x == cursorx)&&(y == cursory))
+				{
+					drawsolid_rect(
+						win, 0xffffff,
+						x0+(x*8), y0 + (y*16),
+						x0+(x*8) + 16, y0 + (y*16) + 16
+					);
+				}
+				x++;
+			}
+
 		}
 	}
 }

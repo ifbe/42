@@ -222,15 +222,15 @@ int input_write(struct arena* win, struct event* ev)
 		return 0;
 	}
 
-	//esc,f1,f2,f3,f4
-	if(ev->what == hex32('k','b','d',0))
+	//f1,f2,f3,f4
+	if(ev->what == __kbd__)
 	{
 		ret=0;
 
-		if(ev->why == 0x1b)ret = 4;
-		else if(ev->why == 0xf1)ret = 1;
+		if(ev->why == 0xf1)ret = 1;
 		else if(ev->why == 0xf2)ret = 2;
 		else if(ev->why == 0xf3)ret = 3;
+		else if(ev->why == 0xf4)ret = 4;
 
 		if(ret != 0)
 		{
