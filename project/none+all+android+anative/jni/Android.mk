@@ -67,6 +67,7 @@ library/libsoft0/linux/linux.memory.folder.c \
 library/libsoft0/linux/linux.memory.managed.c \
 library/libsoft0/linux/linux.system.process.c \
 library/libsoft0/linux/linux.system.random.c \
+library/libsoft0/linux/linux.system.shell.c \
 library/libsoft0/linux/linux.system.signal.c \
 library/libsoft0/linux/linux.system.time.c \
 library/libsoft0/linux/linux.system.thread.c \

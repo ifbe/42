@@ -55,6 +55,7 @@ linux:
 	$(compiler) $(cflag) linux/linux.system.power.c
 	$(compiler) $(cflag) linux/linux.system.process.c
 	$(compiler) $(cflag) linux/linux.system.random.c
+	$(compiler) $(cflag) linux/linux.system.shell.c
 	$(compiler) $(cflag) linux/linux.system.signal.c
 	$(compiler) $(cflag) linux/linux.system.thread.c
 	$(compiler) $(cflag) linux/linux.system.time.c
@@ -107,6 +108,7 @@ win:
 	$(compiler) $(cflag) win/win.system.power.c
 	$(compiler) $(cflag) win/win.system.process.c
 	$(compiler) $(cflag) win/win.system.random.c
+	$(compiler) $(cflag) win/win.system.shell.c
 	$(compiler) $(cflag) win/win.system.signal.c
 	$(compiler) $(cflag) win/win.system.thread.c
 	$(compiler) $(cflag) win/win.system.time.c

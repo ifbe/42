@@ -6,6 +6,12 @@ int decstr2data(void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
+int systemshell_list(u8* p);
+int systemshell_choose(u8* p);
+int systemshell_read();
+int systemshell_write(u8*, int);
+int systemshell_start(u8*);
+int systemshell_stop();
 int systemuart_list(u8* p);
 int systemuart_choose(u8* p, int);
 int systemuart_read();
@@ -19,19 +25,28 @@ void say(void*, ...);
 
 
 
+static int type = 0;
+
+
+
+
 int uart_list(u8* p)
 {
-	return systemuart_list(p);
+	int j;
+	j = systemuart_list(p);
+	return j;
 }
 int uart_choose(u8* p)
 {
 	int j;
-	u64 speed = 115200;
 	u8 name[64];
+	u64 speed = 115200;
+	if(p==0)return 0;
 
-	if(p==0)
+	if(ncmp(p, "/dev/ptmx", 9) == 0)
 	{
-		systemuart_choose(0,0);
+		systemshell_choose(p);
+		type = 1;
 		return 0;
 	}
 
@@ -67,7 +82,9 @@ int uart_write(u8* buf)
 	if(len <= 0)return 0;
 	if(len >= 256)return 0;
 
-	return systemuart_write(buf, len);
+	if(type == 0)len = systemuart_write(buf, len);
+	else len = systemshell_write(buf, len);
+	return len;
 }
 static int uart_start(u8* p)
 {
