@@ -1,14 +1,12 @@
 #include "actor.h"
-void content_create(void*, void*);
-void content_delete();
-void helper_create(void*, void*);
-void helper_delete();
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
 void lib2d_delete();
 void lib3d_create(void*, void*);
 void lib3d_delete();
+void lib4d_create(void*, void*);
+void lib4d_delete();
 //
 void* relation_read(u64);
 void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
@@ -254,23 +252,19 @@ void actorcreate(u8* type, u8* addr)
 	//lib3d
 	lib3d_create(addr, 0);
 
-	//
-	helper_create(addr, 0);
-
-	//
-	content_create(addr, 0);
+	//lib4d
+	lib4d_create(addr, 0);
 
 	//say("[c,f):createed actor\n");
 }
 void actordelete()
 {
 	//say("[c,f):deleteing actor\n");
-	content_delete();
-	helper_delete();
 
-	lib1d_delete();
-	lib2d_delete();
+	lib4d_delete();
 	lib3d_delete();
+	lib2d_delete();
+	lib1d_delete();
 
 	actor = 0;
 	arena = 0;

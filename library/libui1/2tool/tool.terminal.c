@@ -510,7 +510,7 @@ static void queue_copy(u8* buf, int len)
 	int w = term.w;
 	int h = term.h;
 	u8* dst = term.buf;
-	//printmemory(buf,len);
+	printmemory(buf,len);
 
 	for(j=0;j<len;j++)
 	{

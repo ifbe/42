@@ -268,43 +268,36 @@ library/libui0/arena.c
 
 #libui1
 LOCAL_SRC_FILES += \
-	library/libui1/content/game/game.2048.c \
-	library/libui1/content/game/game.chess.c \
-	library/libui1/content/game/game.ooxx.c \
-	library/libui1/content/game/game.rubikscube.c \
-	library/libui1/content/game/game.snake.c \
-	library/libui1/content/game/game.sudoku.c \
-	library/libui1/content/game/game.tetris.c \
-	library/libui1/content/game/game.weiqi.c \
-	library/libui1/content/game/game.xiangqi.c \
-	library/libui1/content/hack/hack.algo.c \
-	library/libui1/content/hack/hack.browser.c \
-	library/libui1/content/hack/hack.editor.c \
-	library/libui1/content/hack/hack.hex.c \
-	library/libui1/content/hack/hack.tree.c \
-	library/libui1/content/hack/hack.joystick.c \
-	library/libui1/content/hack/hack.keyboard.c \
-	library/libui1/content/test/test.codeimg.c \
-	library/libui1/content/test/test.color.c \
-	library/libui1/content/test/test.doodle.c \
-	library/libui1/content/test/test.fractal.c \
-	library/libui1/content/test/test.pure.c \
-	library/libui1/content/tool/tool.calculator.c \
-	library/libui1/content/tool/tool.camera.c \
-	library/libui1/content/tool/tool.circuit.c \
-	library/libui1/content/tool/tool.font.c \
-	library/libui1/content/tool/tool.qrcode.c \
-	library/libui1/content/tool/tool.sketchpad.c \
-	library/libui1/content/tool/tool.spectrum.c \
-	library/libui1/content/tool/tool.stl.c \
-	library/libui1/content/tool/tool.terminal.c \
-	library/libui1/content/content.c \
-	library/libui1/helper/helper.bgfg.c \
-	library/libui1/helper/helper.input.c \
-	library/libui1/helper/helper.login.c \
-	library/libui1/helper/helper.term.c \
-	library/libui1/helper/helper.win.c \
-	library/libui1/helper/helper.c \
+	library/libui1/0test/test.codeimg.c \
+	library/libui1/0test/test.color.c \
+	library/libui1/0test/test.doodle.c \
+	library/libui1/0test/test.fractal.c \
+	library/libui1/0test/test.pure.c \
+	library/libui1/1game/game.2048.c \
+	library/libui1/1game/game.chess.c \
+	library/libui1/1game/game.ooxx.c \
+	library/libui1/1game/game.rubikscube.c \
+	library/libui1/1game/game.snake.c \
+	library/libui1/1game/game.sudoku.c \
+	library/libui1/1game/game.tetris.c \
+	library/libui1/1game/game.weiqi.c \
+	library/libui1/1game/game.xiangqi.c \
+	library/libui1/2tool/tool.calculator.c \
+	library/libui1/2tool/tool.camera.c \
+	library/libui1/2tool/tool.circuit.c \
+	library/libui1/2tool/tool.font.c \
+	library/libui1/2tool/tool.qrcode.c \
+	library/libui1/2tool/tool.sketchpad.c \
+	library/libui1/2tool/tool.spectrum.c \
+	library/libui1/2tool/tool.stl.c \
+	library/libui1/2tool/tool.terminal.c \
+	library/libui1/3hack/hack.algo.c \
+	library/libui1/3hack/hack.browser.c \
+	library/libui1/3hack/hack.editor.c \
+	library/libui1/3hack/hack.hex.c \
+	library/libui1/3hack/hack.tree.c \
+	library/libui1/3hack/hack.joystick.c \
+	library/libui1/3hack/hack.keyboard.c \
 	library/libui1/lib1d/cli/print.cli.c \
 	library/libui1/lib1d/tui/print.tui.c \
 	library/libui1/lib1d/html/html.shape.c \
@@ -332,6 +325,17 @@ LOCAL_SRC_FILES += \
 	library/libui1/lib3d/model/model.minify.c \
 	library/libui1/lib3d/model/model.rotate.c \
 	library/libui1/lib3d/lib3d.c \
+	library/libui1/lib4d/asset/asset.font.c \
+	library/libui1/lib4d/asset/asset.image.c \
+	library/libui1/lib4d/asset/asset.sound.c \
+	library/libui1/lib4d/asset/asset.texture.c \
+	library/libui1/lib4d/help/help.bgfg.c \
+	library/libui1/lib4d/help/help.ctx.c \
+	library/libui1/lib4d/help/help.input.c \
+	library/libui1/lib4d/help/help.login.c \
+	library/libui1/lib4d/help/help.term.c \
+	library/libui1/lib4d/help/help.win.c \
+	library/libui1/lib4d/lib4d.c \
 	library/libui1/actor.c
 
 
@@ -339,8 +343,10 @@ LOCAL_SRC_FILES += \
 
 #2
 LOCAL_C_INCLUDES := \
-	$(LOCAL_PATH)/library/libsoft0 $(LOCAL_PATH)/library/libsoft1 \
-	$(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
+	$(LOCAL_PATH)/library/libsoft0 \
+	$(LOCAL_PATH)/library/libsoft1 \
+	$(LOCAL_PATH)/library/libui0 \
+	$(LOCAL_PATH)/library/libui1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS := -lm -llog -ljnigraphics -landroid
 LOCAL_MODULE := finalanswer

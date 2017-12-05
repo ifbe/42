@@ -148,6 +148,7 @@ int systemshell_choose(char* p, int speed)
 			info.buf = (void*)malloc(info.len);
 		}
 		startthread(systemshell_thread, 0);
+		write(master, "unset PROMPT_COMMAND\n", 21);
 	}
 	return 0;
 }
