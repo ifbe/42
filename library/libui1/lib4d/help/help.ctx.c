@@ -43,10 +43,10 @@ void keyboard_delete();
 void tree_create(u8*,u8*);
 void tree_delete();
 //tool
-void camera_create(u8*,u8*);
-void camera_delete();
 void calculator_create(u8*,u8*);
 void calculator_delete();
+void camera_create(u8*,u8*);
+void camera_delete();
 void circuit_create(u8*,u8*);
 void circuit_delete();
 void font_create(u8*,u8*);
@@ -108,30 +108,6 @@ int content_create(u8* addr)
 	xiangqi_create(addr, temp);
 	temp += 0x100;
 
-	//hack.algorithm
-	algorithm_create(addr, temp);
-	temp += 0x100;
-
-	//hack.browser
-	browser_create(addr, temp);
-	temp += 0x100;
-
-	//hack.hex
-	hex_create(addr, temp);
-	temp += 0x100;
-
-	//hack.joystick
-	joystick_create(addr, temp);
-	temp += 0x100;
-
-	//hack.keyboard
-	keyboard_create(addr, temp);
-	temp += 0x100;
-
-	//hack.tree
-	tree_create(addr, temp);
-	temp += 0x100;
-
 	//test.codeimg
 	codeimg_create(addr, temp);
 	temp += 0x100;
@@ -140,12 +116,12 @@ int content_create(u8* addr)
 	color_create(addr, temp);
 	temp += 0x100;
 
-	//test.fractal
-	fractal_create(addr, temp);
-	temp += 0x100;
-
 	//test.doodle
 	doodle_create(addr, temp);
+	temp += 0x100;
+
+	//test.fractal
+	fractal_create(addr, temp);
 	temp += 0x100;
 
 	//test.pure
@@ -188,18 +164,44 @@ int content_create(u8* addr)
 	terminal_create(addr, temp);
 	temp += 0x100;
 
+	//hack.algorithm
+	algorithm_create(addr, temp);
+	temp += 0x100;
+
+	//hack.browser
+	browser_create(addr, temp);
+	temp += 0x100;
+
+	//hack.hex
+	hex_create(addr, temp);
+	temp += 0x100;
+
+	//hack.joystick
+	joystick_create(addr, temp);
+	temp += 0x100;
+
+	//hack.keyboard
+	keyboard_create(addr, temp);
+	temp += 0x100;
+
+	//hack.tree
+	tree_create(addr, temp);
+	temp += 0x100;
+
 	//
 	return temp-addr-0x100000;
 }
 void content_delete()
 {
+	terminal_delete();
 	spectrum_delete();
 	stl_delete();
 	sketchpad_delete();
 	qrcode_delete();
+	font_delete();
 	circuit_delete();
-	calculator_delete();
 	camera_delete();
+	calculator_delete();
 
 	tree_delete();
 	keyboard_delete();
@@ -208,20 +210,19 @@ void content_delete()
 	browser_delete();
 	algorithm_delete();
 
-	codeimg_delete();
-	color_delete();
-	doodle_delete();
-	font_delete();
-	fractal_delete();
-	pure_delete();
-
-	the2048_delete();
-	chess_delete();
-	ooxx_delete();
-	rubikscube_delete();
-	snake_delete();
-	sudoku_delete();
-	tetris_delete();
-	weiqi_delete();
 	xiangqi_delete();
+	weiqi_delete();
+	tetris_delete();
+	sudoku_delete();
+	snake_delete();
+	rubikscube_delete();
+	ooxx_delete();
+	chess_delete();
+	the2048_delete();
+
+	pure_delete();
+	fractal_delete();
+	doodle_delete();
+	color_delete();
+	codeimg_delete();
 }

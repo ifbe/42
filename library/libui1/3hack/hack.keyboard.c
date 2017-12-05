@@ -26,24 +26,22 @@ void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty
 {
 	int x,y;
 	int left,top,right,bottom;
-	int width = win->w;
-	int height = win->h;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
 
 	//[a,z]
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
 		{
-			left = (arealeft + x*(arearight-arealeft)/8)*width/65536;
-			top = (areatop + y*(areabottom-areatop)/8)*height/65536;
-			right = (arealeft + (x+1)*(arearight-arealeft)/8)*width/65536;
-			bottom = (areatop + (y+1)*(areabottom-areatop)/8)*height/65536;
-			//say("====%d,%d,%d,%d\n",left,top,right,bottom);
+			left = cx + (x-4)*ww/4;
+			top = cy + (y-4)*hh/4;
+			right = cx + (x-3)*ww/4;
+			bottom = cy + (y-3)*hh/4;
 
-			drawsolid_rect(win, 0xff00ff, left, top, right, bottom);
-			drawline_rect(win, 0x000000, left, top, right, bottom);
-
-			drawascii(win, 0xffffff, left, top, table[y][x]);
+			drawicon_1(win, 0, left, top, right, bottom, &table[y][x], 1);
 		}
 	}
 }
@@ -74,24 +72,6 @@ int keyboard_write(struct event* ev)
 {
 	int x,y;
 	//say("%x,%x\n",x,y);
-
-	if(ev->what == 0x2d70)
-	{
-		x = (ev->why)&0xffff;
-		if(x < arealeft)return 0;
-		if(x > arearight)return 0;
-
-		y = ((ev->why)>>16)&0xffff;
-		if(y < areatop)return 0;
-		if(y > areabottom)return 0;
-
-		x = (x-arealeft)*8/32768;
-		y = (y-areatop)*8/16384;
-
-		ev->what = 0x72616863;
-		ev->why = table[y][x];
-		return 1;
-	}
 
 	return 0;
 }

@@ -46,10 +46,23 @@ void drawicon_1(
 		}
 	}
 
-	for(j=0;j<256;j++)if(buf[j] < 0x20)break;
-	x = (x0+x1)/2 - j*4;
+	if(buf == 0)return;
+	if(len == 0)
+	{
+		while(buf[len] > 0x20)len++;
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(buf[j] < 0x20){len = j;break;}
+		}
+	}
+	if(len == 0)return;
+
+	x = (x0+x1)/2 - len*4;
 	y = (y0+y1)/2 - 4;
-	drawstring(win, rgb, x, y, buf, 0);
+	drawstring(win, rgb, x, y, buf, len);
 }
 
 

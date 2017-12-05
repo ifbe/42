@@ -5,69 +5,52 @@
 
 static void joystick_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int j;
-	int width = win->w;
-	int height = win->h;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int radius = hh/8;
 
-	for(j=0;j<32;j++)
-	{
-		drawline_rect(win, 0x040404*j,
-			j, j, width-32+j, height-32+j
-		);
-	}
+	//outer
+	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	if(width > height)
-	{
-		j = height/16;
-
-		drawline_rect(win, 0,
-			width*13/32, height*3/4,
-			width/2, height*11/16
-		);
-		drawline_rect(win, 0,
-			width/2, height*3/4,
-			width*19/32, height*11/16
-		);
-
-		drawsolid_circle(win, 0x0000ff, width/8, height/2, j);
-		drawsolid_circle(win, 0x00ff00, width/4, height/4, j);
-		drawsolid_circle(win, 0x00ffff, width/4, height*3/4, j);
-		drawsolid_circle(win, 0xff0000, width*3/8, height/2, j);
-
-		drawsolid_circle(win, 0xff00ff, width*5/8, height/2, j);
-		drawsolid_circle(win, 0xfedcba, width*3/4, height/4, j);
-		drawsolid_circle(win, 0xabcdef, width*3/4, height*3/4, j);
-		drawsolid_circle(win, 0xffff00, width*7/8, height/2, j);
-	}
-	else
-	{
-		j = width/16;
-
-		drawline_rect(win, 0,
-			width/4,height*13/32,width*5/16,height/2);
-		drawline_rect(win, 0,
-			width/4,height/2,width*5/16,height*19/32);
-
-		drawsolid_circle(win, 0x0000ff, width/2, height/8, j);
-		drawsolid_circle(win, 0x00ffff, width/4, height/4, j);
-		drawsolid_circle(win, 0x00ff00, width*3/4, height/4, j);
-		drawsolid_circle(win, 0xff0000, width/2, height*3/8, j);
-
-		drawsolid_circle(win, 0xff00ff, width/2, height*5/8, j);
-		drawsolid_circle(win, 0xabcdef, width/4, height*3/4, j);
-		drawsolid_circle(win, 0xfedcba, width*3/4, height*3/4, j);
-		drawsolid_circle(win, 0xffff00, width/2, height*7/8, j);
-	}
-
-	drawsolid_rect(win, 0xffffff,
-		0, 0, 64, 64
+	//select, start
+	drawline_rect(win, 0xffffff,
+		cx-(ww/8), cy+(hh*11/16),
+		cx, cy+(hh*13/16)
 	);
-	drawsolid_rect(win, 0xffffff,
-		(win->w)-64, 0, (win->w)-1, 64
+	drawline_rect(win, 0xffffff,
+		cx, cy+(hh*11/16),
+		cx+(ww/8), cy+(hh*13/16)
 	);
-	drawsolid_rect(win, 0xffffff,
-		0, (win->h)-64, 64, (win->h)-1
+
+	//left, up, down, right
+	drawsolid_rect(win, 0x0000ff,
+		cx-(ww*5/8)-radius, cy-(radius/2),
+		cx-(ww*5/8)+radius, cy+(radius/2)
 	);
+	drawsolid_rect(win, 0xff0000,
+		cx-(ww*4/8)-(radius/2), cy-(hh/4)-radius,
+		cx-(ww*4/8)+(radius/2), cy-(hh/4)+radius
+	);
+	drawsolid_rect(win, 0x00ffff,
+		cx-(ww*4/8)-(radius/2), cy+(hh/4)-radius,
+		cx-(ww*4/8)+(radius/2), cy+(hh/4)+radius
+	);
+	drawsolid_rect(win, 0xffff00,
+		cx-(ww*3/8)-radius, cy-(radius/2),
+		cx-(ww*3/8)+radius, cy+(radius/2)
+	);
+
+	//y, x, b, a
+	drawsolid_circle(win, 0xff00ff,
+		cx+(ww*3/8), cy, radius);
+	drawsolid_circle(win, 0xfedcba,
+		cx+(ww*4/8), cy-(hh/4), radius);
+	drawsolid_circle(win, 0xabcdef,
+		cx+(ww*4/8), cy+(hh/4), radius);
+	drawsolid_circle(win, 0xffff00,
+		cx+(ww*5/8), cy, radius);
 }
 static void joystick_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
