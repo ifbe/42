@@ -12,17 +12,22 @@ struct uartterm
 	u32 len;
 	u32 fg;
 	u32 bg;
-	int w;
-	int h;
-	int x;
-	int y;
+
+	int width;
+	int height;
+	int vimw;
+	int vimh;
+
 	int left;
 	int right;
 	int top;
 	int bottom;
+
+	int curx;
+	int cury;
 };
 static u32 getcolor[256] = {
-0x010101,0xff4030,0x40c040,0xffc000,0x0080c0,0x802080,0x30c0ff,0xcccccc,
+0x010101,0xff4030,0x40c040,0xffc000,0x0040c0,0x802080,0x30c0ff,0xcccccc,
 0x888888,0xff0000,0x00ff00,0xffff00,0x0000ff,0xff00ff,0x00ffff,0xffffff,
 };
 
@@ -332,8 +337,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 	int x,y;
 	int xmax, ymax;
 	int cursorx, cursory;
-	int w = term->w;
-	int h = term->h;
+	int w = term->width;
+	int h = term->height;
 	u8* buf = term->buf;
 	u8* aaa;
 
@@ -342,8 +347,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 	ymax = (y1-y0)/16;
 	if(ymax > 25)ymax = 25;
 
-	cursorx = term->x;
-	cursory = (term->y)-(term->top);
+	cursorx = term->curx;
+	cursory = (term->cury)-(term->top);
 	buf += (term->top)*w*4;
 	for(y=0;y<ymax;y++)
 	{

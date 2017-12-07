@@ -12,14 +12,19 @@ struct uartterm
 	u32 len;
 	u32 fg;
 	u32 bg;
-	int w;
-	int h;
-	int x;
-	int y;
+
+	int width;
+	int height;
+	int vimw;
+	int vimh;
+
 	int left;
 	int right;
 	int top;
 	int bottom;
+
+	int curx;
+	int cury;
 };
 int uart_list(void*);
 int uart_choose(void*);
@@ -39,220 +44,7 @@ static int status = 0;
 
 
 
-/*
-static int buffer_goto(u8* buf, int* ret, int x, int y)
-{
-	int j = new.deq;
-	int k = *ret;
-	x--;
-	y--;
 
-	if(y != 0)
-	{
-		if(y > 24)y = 24;
-		for(;j<k;j++)
-		{
-			if(buf[j] == '\n')
-			{
-				y--;
-				if(y == 0)
-				{
-					j++;
-					break;
-				}
-			}
-		}
-	}
-
-	for(k=0;k<x;k++)
-	{
-		if(buf[j+k] == '\n')break;
-	}
-
-	say("%x->%x\n", *ret, j+k);
-	*ret = j+k;
-	return 0;
-}
-static int drawvt100_position(u8* p, int* xx, int* yy)
-{
-	int j, k, x=0, y=0;
-	for(k=0;k<4;k++)
-	{
-		if(p[k] == ';')break;
-	}
-	if(k>=4)return 0;
-
-	for(j=0;j<k;j++)
-	{
-		y = (y*10) + p[j] - 0x30;
-	}
-
-	for(;k<8;k++)
-	{
-		if((p[k] == 'H')|(p[k] == 'f'))break;
-	}
-	if(k>=8)return 0;
-
-	j++;
-	for(;j<k;j++)
-	{
-		x = (x*10) + p[j] - 0x30;
-	}
-
-	*xx = x;
-	*yy = y;
-	return 1;
-}
-static void queue_copy(u8* buf, int len)
-{
-	int i,j,k;
-	int x,y,z;
-	u8* p = new.buf;
-	if(p == 0)return;
-	printmemory(buf,len);
-
-	k = new.enq;
-	for(j=0;j<len;j++)
-	{
-		if(buf[j] == 0)continue;
-		if(buf[j] == 0x7)continue;
-		if(buf[j] == 0x8)
-		{
-			k = (k+0xfffff)%0x100000;
-			p[k] = 0x20;
-			continue;
-		}
-		if((buf[j] == 0xd)&&(buf[j+1] != 0xa))
-		{
-			for(x=k;x>0;x--)
-			{
-				y = (x+0xfffff)%0x100000;
-				if(p[y] == '\n')
-				{
-					k = x;
-					break;
-				}
-			}
-			continue;
-		}
-		if((buf[j] == 0x1b)&&(buf[j+1] == '='))
-		{
-			j++;
-			printf("e=\n");
-			continue;
-		}
-		if((buf[j] == 0x1b)&&(buf[j+1] == '>'))
-		{
-			j++;
-			printf("e>\n");
-			continue;
-		}
-
-		if((buf[j] == 0x1b)&&(buf[j+1] == 0x5b))
-		{
-			//Clear line from cursor right
-			if(buf[j+2] == 'K')
-			{
-				for(x=0;x<256;x++)
-				{
-					if(k+x > 0xfffff)break;
-					if(p[k+x] == 0)break;
-					if(p[k+x] == '\n')break;
-
-					p[k+x] = 0x20;
-				}
-
-				printmemory(buf+j, 3);
-				j += 2;
-				continue;
-			}
-
-			//Clear screen from cursor down
-			if(buf[j+2] == 'J')
-			{
-				y = 0;
-				for(x=0;x<128*25;x++)
-				{
-					if(k+x > 0xfffff)break;
-					if(p[k+x] == 0)break;
-					if(p[k+x] == '\n')
-					{
-						y++;
-						if(y >= 25)break;
-						else continue;
-					}
-
-					p[k+x] = 0x20;
-				}
-
-				printmemory(buf+j, 3);
-				j += 2;
-				continue;
-			}
-
-			//(1,1)
-			if((buf[j+2] == 'H')|(buf[j+2] == 'f'))
-			{
-				buffer_goto(p, &k, 1, 1);
-
-				printmemory(buf+j, 3);
-				j+=2;
-				continue;
-			}
-
-			if(buf[j+3] == 'A')
-			{
-				printmemory(buf+j, 4);
-				j+=3;
-				continue;
-			}
-
-			if(buf[j+3] == 'C')
-			{
-				x = buf[j+2]-0x30;
-				k = (k+x)%0x100000;
-
-				printmemory(buf+j, 4);
-				j+=3;
-				continue;
-			}
-
-			if(buf[j+4] == 'C')
-			{
-				x = (buf[j+2]-0x30)*10 + (buf[j+3]-0x30);
-				k = (k+x)%0x100000;
-
-				printf("i am fucking here\n");
-				printmemory(buf+j, 5);
-				j+=4;
-				continue;
-			}
-
-			//position
-			for(z=3;z<8;z++)
-			{
-				if((buf[j+z] == 'H')|(buf[j+z] == 'f'))
-				{
-					i = drawvt100_position(buf+2, &x, &y);
-					if(i != 0)
-					{
-						buffer_goto(p, &k, x, y);
-
-						printmemory(buf+j, z+1);
-						j += z;
-						continue;
-					}
-				}
-			}
-		}
-
-		p[k] = buf[j];
-		k = (k+1)%0x100000;
-	}
-
-	new.enq = k;
-}
-*/
 int queue_1b_color(u8* p)
 {
 	//reset
@@ -293,7 +85,81 @@ int queue_1b_color(u8* p)
 	}
 	return -1;
 }
-static int queue_1b_position(u8* p)
+static int queue_1b_parsergb(u8* p)
+{
+	int j,k;
+
+	//? ;
+	if(p[1] == ';')
+	{
+		queue_1b_color(p+0);
+		queue_1b_color(p+2);
+	}
+
+	//? ? ;
+	if(p[2] == ';')
+	{
+		if(ncmp(p+1, "8;5;", 4) != 0)
+		{
+			queue_1b_color(p+0);
+			queue_1b_color(p+3);
+		}
+
+		//? 8 ; 5 ; a b c ;
+		else
+		{
+			j = 5;
+			k = 0;
+			while(1)
+			{
+				if(p[j] == ';')break;
+				if(p[j] == 'm')break;
+
+				k = (k*10)+p[j];
+				j++;
+			}
+			if(p[0] == '3')term.fg = k;
+			if(p[0] == '4')term.bg = k;
+			if(p[j] == ';')queue_1b_parsergb(p+j+1);
+		}
+	}
+
+	return 0;
+}
+static int queue_1b_parsewh(u8* p)
+{
+	u8* q;
+	int j, k, t;
+	int u=0, v=0;
+	for(k=0;k<4;k++)
+	{
+		if(p[k] == ';')break;
+	}
+	if(k>=4)return 0;
+
+	for(j=0;j<k;j++)
+	{
+		u = (u*10) + p[j] - 0x30;
+	}
+
+	for(;k<8;k++)
+	{
+		if(p[k] == 'r')break;
+	}
+	if(k>=8)return 0;
+
+	j++;
+	for(;j<k;j++)
+	{
+		v = (v*10) + p[j] - 0x30;
+	}
+
+	say("region:%d,%d\n", u, v);
+	term.vimw = u-1;
+	term.vimh = v-1;
+	return 1;
+}
+static int queue_1b_parsexy(u8* p)
 {
 	int j, k, x=0, y=0;
 	for(k=0;k<4;k++)
@@ -319,68 +185,67 @@ static int queue_1b_position(u8* p)
 		x = (x*10) + p[j] - 0x30;
 	}
 
-	say("position:%d,%d\n",x-1,y-1);
-	term.x = x-1;
-	term.y = (term.top)+y-1;
+	say("position:%d,%d,%d,%d\n",x-1,y-1,term.top, term.cury);
+	term.curx = x-1;
+	term.cury = (term.top)+y-1;
 	return 1;
 }
 static int queue_1b(u8* p)
 {
-	int j;
-	int x,y,w;
+	int j,k;
+	int x,y,w,h;
 	u8* buf = term.buf;
 	if(p[0] != 0x1b)return 0;
 	if(p[1] != 0x5b)return 1;
-	//printmemory(p, 16);
+	printmemory(p, 16);
 
 	//1b 5b 41: cursor up
-	if(p[2] == 0x41)
+	if(p[2] == 'A')
 	{
-		//printf("a");
-		if(term.y > 0)term.y--;
+		if(term.top + 1 >= term.cury)term.cury -= 1;
+		else term.cury = term.top;
 		return 3;
 	}
 
 	//1b 5b 42: cursor down
-	if(p[2] == 0x42)
+	if(p[2] == 'B')
 	{
-		//printf("b");
-		term.y++;
+		term.cury += 1;
 		return 3;
 	}
 
 	//1b 5b 43: cursor forward
-	if(p[2] == 0x43)
+	if(p[2] == 'C')
 	{
-		//printf("c");
-		if(term.x < term.w-1)term.x++;
+		if(term.curx < term.width-1)term.curx += 1;
+		else term.curx = term.width-1;
 		return 3;
 	}
 
 	//1b 5b 44: cursor backward
-	if(p[2] == 0x44)
+	if(p[2] == 'D')
 	{
-		//printf("d");
-		if(term.x > 0)term.x--;
+		if(term.curx <= 1)term.curx = 0;
+		else term.curx -= 1;
 		return 3;
 	}
 
 	//1b 5b H/f
 	if((p[2] == 'H')|(p[2] == 'f'))
 	{
-		term.x = 0;
-		term.y = term.top;
+		term.curx = 0;
+		term.cury = term.top;
 		return 3;
 	}
 
 	//1b 5b J: Clear screen from cursor down
 	if(p[2] == 'J')
 	{
-		x = term.x;
-		y = term.y;
-		w = term.w;
+		x = term.curx;
+		y = term.cury;
+		w = term.width;
 		buf = (term.buf) + y*w*4;
-		for(j=x*4;j<w*25*4;j+=4)
+		for(j=x*4;j<w*(term.height)*4;j+=4)
 		{
 			buf[j] = 0x20;
 			buf[j+2] = term.fg;
@@ -392,9 +257,9 @@ static int queue_1b(u8* p)
 	//1b 5b K: Clear line from cursor right
 	if(p[2] == 'K')
 	{
-		x = term.x;
-		y = term.y;
-		w = term.w;
+		x = term.curx;
+		y = term.cury;
+		w = term.width;
 		buf = (term.buf) + y*w*4;
 		for(j=x*4;j<w*4;j+=4)
 		{
@@ -405,43 +270,109 @@ static int queue_1b(u8* p)
 		return 3;
 	}
 
-	//1b 5b m
-	if(p[2] == 'm')
+	//1b 5b L: Insert line
+	if(p[2] == 'L')
 	{
-		queue_1b_color(0);
+		x = term.curx;
+		y = term.cury;
+		w = term.width;
+		h = term.vimh;
+		j = term.top;
+		k = (h-y+j+1)*w*4 - 1;
+		buf = (term.buf) + y*w*4;
+		for(j=k;j>=w*4;j--)buf[j] = buf[j-w*4];
+		for(j=0;j<w*4;j++)buf[j] = 0;
 		return 3;
 	}
 
-	//1b 5b ? m
-	if(p[3] == 'm')
+	//1b 5b M: Delete line
+	if(p[2] == 'M')
 	{
-		queue_1b_color(p+2);
+		x = term.curx;
+		y = term.cury;
+		w = term.width;
+		h = term.vimh;
+		j = term.top;
+		k = (h-1-y+j)*w*4;
+		buf = (term.buf) + y*w*4;
+		for(j=0;j<k;j++)buf[j] = buf[j+(w*4)];
+		return 3;
+	}
+
+	//1b 5b ? 41: cursor up
+	if(p[3] == 'A')
+	{
+		j = p[2]-0x30;
+		if(term.top + j >= term.cury)term.cury -= j;
+		else term.cury = term.top;
 		return 4;
+	}
+
+	//1b 5b ? 42: cursor down
+	else if(p[3] == 'B')
+	{
+		j = p[2]-0x30;
+		term.cury += j;
+		return 4;
+	}
+
+	//1b 5b ? 43: cursor forward
+	if(p[3] == 'C')
+	{
+		j = p[2]-0x30;
+		if(term.curx +j+1 >= term.width)term.curx = term.width-1;
+		else term.curx += j;
+		return 4;
+	}
+
+	//1b 5b ? 44: cursor backward
+	else if(p[3] == 'D')
+	{
+		j = p[2]-0x30;
+		if(term.curx <= j)term.curx = 0;
+		else term.curx -= j;
+		return 4;
+	}
+
+	//1b 5b ? ? 41: cursor up
+	if(p[4] == 'A')
+	{
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		if(term.top + j >= term.cury)term.cury -= j;
+		else term.cury = term.top;
+		return 5;
+	}
+
+	//1b 5b ? ? 42: cursor down
+	if(p[4] == 'B')
+	{
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		term.cury += j;
+		return 5;
+	}
+
+	//1b 5b ? ? 43: cursor forward
+	if(p[4] == 'C')
+	{
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		if(term.curx +j+1 >= term.width)term.curx = term.width-1;
+		else term.curx += j;
+		return 5;
+	}
+
+	//1b 5b ? ? 44: cursor backward
+	else if(p[4] == 'D')
+	{
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		if(term.curx <= j)term.curx = 0;
+		else term.curx -= j;
+		return 5;
 	}
 
 	//1b 5b ? n
 	if(p[3] == 'n')
 	{
 		return 4;
-	}
-
-	if(p[3] == 'A')
-	{
-		return 4;
-	}
-
-	if(p[3] == 'C')
-	{
-		x = p[2]-0x30;
-		term.x += x;
-		return 4;
-	}
-
-	if(p[4] == 'C')
-	{
-		x = (p[2]-0x30)*10 + (p[3]-0x30);
-		term.x += x;
-		return 5;
 	}
 
 	//1b 5b ? ? h
@@ -456,48 +387,53 @@ static int queue_1b(u8* p)
 		return 5;
 	}
 
-	//1b 5b ? ? m
-	if(p[4] == 'm')
+	//1b 5b () () m
+	if((p[2] == 'm') | (p[3] == 'm') | (p[4] == 'm'))
 	{
-		queue_1b_color(p+2);
-		return 5;
-	}
-
-	if(p[3] == ';')
-	{
-		//1b 5b ? ; ? m
-		if(p[5] == 'm')
+		if(p[2] == 'm')
 		{
-			queue_1b_color(p+2);
-			queue_1b_color(p+4);
-			return 6;
+			queue_1b_color(0);
+			return 3;
 		}
-
-		//1b 5b ? ; ? ? m
-		else if(p[6] == 'm')
+		else if(p[3] == 'm')
 		{
 			queue_1b_color(p+2);
-			queue_1b_color(p+4);
-			return 7;
+			return 4;
+		}
+		else if(p[4] == 'm')
+		{
+			queue_1b_color(p+2);
+			return 5;
 		}
 	}
 
-	//1b 5b ? ? ; ? ? m
-	if( (p[4] == ';') && (p[7] == 'm') )
+	j=2;
+	k=3;
+	while(1)
 	{
-		queue_1b_color(p+2);
-		queue_1b_color(p+5);
-		return 8;
-	}
-
-	for(j=2;j<10;j++)
-	{
-		if(p[j] == 'r')return j+1;
-		if( (p[j] == 'H') | (p[j] == 'f') )
+		if(p[j] == 'm')
 		{
-			queue_1b_position(p+2);
+			queue_1b_parsergb(p+2);
 			return j+1;
 		}
+		if(p[j] == 'r')
+		{
+			queue_1b_parsewh(p+2);
+			return j+1;
+		}
+		if( (p[j] == 'H') | (p[j] == 'f') )
+		{
+			queue_1b_parsexy(p+2);
+			return j+1;
+		}
+
+		if(p[j] == ';')k=2;
+		else
+		{
+			k--;
+			if(k < 0)break;
+		}
+		j++;
 	}
 
 	printmemory(p, 16);
@@ -507,10 +443,11 @@ static void queue_copy(u8* buf, int len)
 {
 	int j,k;
 	int x,y;
-	int w = term.w;
-	int h = term.h;
+	int w = term.width;
+	int h = term.height;
 	u8* dst = term.buf;
-	printmemory(buf,len);
+	u8* q;
+	//printmemory(buf,len);
 
 	for(j=0;j<len;j++)
 	{
@@ -519,24 +456,38 @@ static void queue_copy(u8* buf, int len)
 
 		if(buf[j] == 0x8)
 		{
-			x = term.x;
-			if(x > 0)term.x = x-1;
+			x = term.curx;
+			if(x > 0)term.curx = x-1;
 		}
 		else if(buf[j] == '\r')
 		{
-			term.x = 0;
+			term.curx = 0;
 		}
 		else if(buf[j] == '\n')
 		{
-			term.y++;
-			if(w*(term.y) >= 0xf0000)
+			if(term.vimh <= 22)
 			{
-				term.y = 0;
-				term.top = 0;
+				k = (term.width)*4;
+				q = (term.buf) + (term.top)*k;
+
+				x = k*(term.vimw);
+				y = k*(term.vimh);
+				for(;x<y;x++)q[x] = q[x+k];
+				for(;x<y+k;x++)q[x] = 0;
+				//say("scrolling:%d\n",term.vimh);
 			}
-			else if(term.top < term.y - 24)
+			else
 			{
-				term.top = term.y - 24;
+				term.cury++;
+				if(w*(term.cury) >= 0xf0000)
+				{
+					term.cury = 0;
+					term.top = 0;
+				}
+				if(term.top < term.cury - term.height + 1)
+				{
+					term.top = term.cury - term.height + 1;
+				}
 			}
 		}
 		else if(buf[j] == 0x1b)
@@ -545,7 +496,10 @@ static void queue_copy(u8* buf, int len)
 			else if(buf[j+1] == '>')j++;
 			else
 			{
-				j += queue_1b(buf+j) - 1;
+				k = queue_1b(buf+j);
+				//say("k=%d\n",k);
+
+				if(k>2)j += k - 1;
 			}
 		}
 		else if(buf[j] >= 0x80)
@@ -557,22 +511,22 @@ static void queue_copy(u8* buf, int len)
 			else if(buf[j] < 0xfe)k = 6;
 			else k = 1;
 
-			y = 4*(w*(term.y) + term.x);
+			y = 4*(w*(term.cury) + term.curx);
 			dst[y + 7] = term.bg;
 			dst[y + 6] = term.fg;
 			for(x=0;x<k;x++)dst[y+x] = buf[j+x];
 
-			term.x += 2;
+			term.curx += 2;
 			j += k-1;
 		}
 		else
 		{
-			y = 4*(w*(term.y) + term.x);
+			y = 4*(w*(term.cury) + term.curx);
 			dst[y + 3] = term.bg;
 			dst[y + 2] = term.fg;
 			dst[y + 0] = buf[j];
 
-			term.x++;
+			term.curx++;
 		}
 	}
 }
@@ -584,6 +538,17 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
 	int hh = (win->h) * (sty->wanth) / 0x20000;
+
+	if(ww < 8*40)
+	{
+		ww = 8*40;
+		sty->wantw = 80*8*0x10000/(win->w);
+	}
+	if(hh < 8*(term.height))
+	{
+		hh = 8*(term.height);
+		sty->wanth = (term.height)*16*0x10000/(win->h);
+	}
 	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	if(status == 0)
@@ -656,9 +621,9 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 	}
 
 	w = win->w;
-	if(w > term.w)w = term.w;
+	if(w > term.width)w = term.width;
 	h = win->h;
-	if(h > term.h)h = term.h;
+	if(h > term.height)h = term.height;
 
 	p = (void*)(win->buf);
 	q = (void*)(term.buf);
@@ -666,7 +631,7 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 	{
 		for(x=0;x<w;x++)
 		{
-			p[(win->w)*y + x] = q[(term.w)*(term.top+y) + x];
+			p[(win->w)*y + x] = q[(term.width)*(term.top+y) + x];
 		}
 	}
 }
@@ -757,7 +722,7 @@ static void terminal_write(struct event* ev)
 		{
 			if(charlen == 0)
 			{
-				*(u32*)charbuf = hex32('C','O','M','7');
+				*(u32*)charbuf = hex32('C','O','M','8');
 				charlen = 4;
 			}
 
@@ -789,14 +754,16 @@ static void terminal_start()
 	//new.len = 0x100000;
 	//new.buf = startmemory(new.len);
 
+	term.curx = 0;
+	term.cury = 0;
 	term.left = 0;
 	term.right = 0;
 	term.top = 0;
 	term.bottom = 0;
-	term.x = 0;
-	term.y = 0;
-	term.w = 128;
-	term.h = 25;
+	term.vimw = 128;
+	term.vimh = 25;
+	term.width = 128;
+	term.height = 25;
 	term.bg = 0;
 	term.fg = 7;
 	term.len = 0x100000;
