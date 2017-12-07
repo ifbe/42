@@ -30,6 +30,21 @@ static u32 getcolor[256] = {
 0x010101,0xff4030,0x40c040,0xffc000,0x0040c0,0x802080,0x30c0ff,0xcccccc,
 0x888888,0xff0000,0x00ff00,0xffff00,0x0000ff,0xff00ff,0x00ffff,0xffffff,
 };
+void drawvt100_create()
+{
+	int j;
+	int r,g,b;
+	for(r=0;r<6;r++){
+	for(g=0;g<6;g++){
+	for(b=0;b<6;b++){
+		j = 16+(36*r)+(6*g)+b;
+		getcolor[j] = (0x280000*r)|(0x2800*g)|(0x28*b);
+		//say("%x:%x\n",j,getcolor[j]);
+	}
+	}
+	}
+	for(r=232;r<256;r++)getcolor[r] = 0x010101 + 0x0a0a0a*r;
+}
 
 
 
@@ -359,8 +374,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 			{
 				bg = aaa[3];
 				fg = aaa[2];
-				bg = getcolor[bg%8];
-				fg = getcolor[fg%8];
+				bg = getcolor[bg%256];
+				fg = getcolor[fg%256];
 				if(bg != 0)
 				{
 					drawsolid_rect(
@@ -387,8 +402,8 @@ void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, 
 			{
 				bg = aaa[7];
 				fg = aaa[6];
-				bg = getcolor[bg%8];
-				fg = getcolor[fg%8];
+				bg = getcolor[bg%256];
+				fg = getcolor[fg%256];
 				if(bg != 0)
 				{
 					drawsolid_rect(

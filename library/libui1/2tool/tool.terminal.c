@@ -88,6 +88,7 @@ int queue_1b_color(u8* p)
 static int queue_1b_parsergb(u8* p)
 {
 	int j,k;
+	//printmemory(p, 12);
 
 	//? ;
 	if(p[1] == ';')
@@ -99,7 +100,8 @@ static int queue_1b_parsergb(u8* p)
 	//? ? ;
 	if(p[2] == ';')
 	{
-		if(ncmp(p+1, "8;5;", 4) != 0)
+		j = ncmp(p+1, "8;5;", 4);
+		if(j != 0)
 		{
 			queue_1b_color(p+0);
 			queue_1b_color(p+3);
@@ -115,7 +117,7 @@ static int queue_1b_parsergb(u8* p)
 				if(p[j] == ';')break;
 				if(p[j] == 'm')break;
 
-				k = (k*10)+p[j];
+				k = (k*10) + p[j] - 0x30;
 				j++;
 			}
 			if(p[0] == '3')term.fg = k;
@@ -185,7 +187,7 @@ static int queue_1b_parsexy(u8* p)
 		x = (x*10) + p[j] - 0x30;
 	}
 
-	say("position:%d,%d,%d,%d\n",x-1,y-1,term.top, term.cury);
+	//say("position:%d,%d,%d,%d\n",x-1,y-1,term.top, term.cury);
 	term.curx = x-1;
 	term.cury = (term.top)+y-1;
 	return 1;
@@ -198,6 +200,13 @@ static int queue_1b(u8* p)
 	if(p[0] != 0x1b)return 0;
 	if(p[1] != 0x5b)return 1;
 	printmemory(p, 16);
+
+	//1b 5b m
+	if(p[2] == 'm')
+	{
+		queue_1b_color(0);
+		return 3;
+	}
 
 	//1b 5b 41: cursor up
 	if(p[2] == 'A')
@@ -245,12 +254,7 @@ static int queue_1b(u8* p)
 		y = term.cury;
 		w = term.width;
 		buf = (term.buf) + y*w*4;
-		for(j=x*4;j<w*(term.height)*4;j+=4)
-		{
-			buf[j] = 0x20;
-			buf[j+2] = term.fg;
-			buf[j+3] = term.bg;
-		}
+		for(j=x*4;j<w*(term.height)*4;j++)buf[j] = 0;
 		return 3;
 	}
 
@@ -261,12 +265,7 @@ static int queue_1b(u8* p)
 		y = term.cury;
 		w = term.width;
 		buf = (term.buf) + y*w*4;
-		for(j=x*4;j<w*4;j+=4)
-		{
-			buf[j] = 0x20;
-			buf[j+2] = term.fg;
-			buf[j+3] = term.bg;
-		}
+		for(j=x*4;j<w*4;j++)buf[j] = 0;
 		return 3;
 	}
 
@@ -299,6 +298,27 @@ static int queue_1b(u8* p)
 		return 3;
 	}
 
+	//1b 5b ? m
+	if(p[3] == 'd')
+	{
+		j = p[2]-0x30;
+		say("%dd\n",j);
+		return 4;
+	}
+
+	//1b 5b ? m
+	if(p[3] == 'm')
+	{
+		queue_1b_color(p+2);
+		return 4;
+	}
+
+	//1b 5b ? n
+	if(p[3] == 'n')
+	{
+		return 4;
+	}
+
 	//1b 5b ? 41: cursor up
 	if(p[3] == 'A')
 	{
@@ -326,11 +346,46 @@ static int queue_1b(u8* p)
 	}
 
 	//1b 5b ? 44: cursor backward
-	else if(p[3] == 'D')
+	if(p[3] == 'D')
 	{
 		j = p[2]-0x30;
 		if(term.curx <= j)term.curx = 0;
 		else term.curx -= j;
+		return 4;
+	}
+
+	//1b 5b ? G: cursor column
+	if(p[3] == 'G')
+	{
+		j = p[2]-0x30;
+		term.curx = j-1;
+		return 4;
+	}
+
+	//1b 5b ? J: Clear screen from cursor down
+	if(p[3] == 'J')
+	{
+		if(p[2] == '0')
+		{
+			buf = term.buf;
+			j = (term.cury)*(term.width) + term.curx;
+			k = (term.top + term.height)*(term.width);
+		}
+		else if(p[2] == '1')
+		{
+			buf = term.buf;
+			j = (term.top)*(term.width);
+			k = (term.cury)*(term.width) + term.curx;
+		}
+		else 	//2,3
+		{
+			buf = term.buf + (term.top)*(term.width)*4;
+			j = 0;
+			k = (term.height)*(term.width);
+		}
+		j *= 4;
+		k *= 4;
+		for(;j<k;j++)buf[j] = 0;
 		return 4;
 	}
 
@@ -361,7 +416,7 @@ static int queue_1b(u8* p)
 	}
 
 	//1b 5b ? ? 44: cursor backward
-	else if(p[4] == 'D')
+	if(p[4] == 'D')
 	{
 		j = (p[2]-0x30)*10 + (p[3]-0x30);
 		if(term.curx <= j)term.curx = 0;
@@ -369,10 +424,20 @@ static int queue_1b(u8* p)
 		return 5;
 	}
 
-	//1b 5b ? n
-	if(p[3] == 'n')
+	//1b 5b ? ? G: cursor backward
+	if(p[4] == 'G')
 	{
-		return 4;
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		term.curx = j-1;
+		return 5;
+	}
+
+	//1b 5b ? ? d
+	if(p[4] == 'd')
+	{
+		j = (p[2]-0x30)*10 + (p[3]-0x30);
+		say("%xd\n",j);
+		return 5;
 	}
 
 	//1b 5b ? ? h
@@ -387,24 +452,35 @@ static int queue_1b(u8* p)
 		return 5;
 	}
 
-	//1b 5b () () m
-	if((p[2] == 'm') | (p[3] == 'm') | (p[4] == 'm'))
+	//1b 5b ? ? h
+	if(p[4] == 'h')
 	{
-		if(p[2] == 'm')
-		{
-			queue_1b_color(0);
-			return 3;
-		}
-		else if(p[3] == 'm')
-		{
-			queue_1b_color(p+2);
-			return 4;
-		}
-		else if(p[4] == 'm')
-		{
-			queue_1b_color(p+2);
-			return 5;
-		}
+		return 5;
+	}
+
+	//1b 5b ? ? l
+	if(p[4] == 'l')
+	{
+		return 5;
+	}
+
+	//1b 5b ? ? m
+	if(p[4] == 'm')
+	{
+		queue_1b_color(p+2);
+		return 5;
+	}
+
+	//1b 5b '?' ? ? h
+	if( (p[2] == '?') && (p[5] == 'h') )
+	{
+		return 6;
+	}
+
+	//1b 5b '?' ? ? l
+	if( (p[2] == '?') && (p[5] == 'l') )
+	{
+		return 6;
 	}
 
 	j=2;
@@ -427,7 +503,7 @@ static int queue_1b(u8* p)
 			return j+1;
 		}
 
-		if(p[j] == ';')k=2;
+		if(p[j] == ';')k=3;
 		else
 		{
 			k--;
@@ -494,7 +570,8 @@ static void queue_copy(u8* buf, int len)
 		{
 			if(buf[j+1] == '=')j++;
 			else if(buf[j+1] == '>')j++;
-			else
+			else if((buf[j+1] == '(')&&(buf[j+2] == 'B'))j+=2;
+			else if(buf[j+1] == 0x5b)
 			{
 				k = queue_1b(buf+j);
 				//say("k=%d\n",k);
@@ -534,21 +611,15 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 {
 	u8* p;
 	int enq,deq;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = win->w / 2;
+	int cy = win->h / 2;
+	int ww = 320;
+	int hh = 8*(term.height);
+	sty->cx = 0x8000;
+	sty->cy = 0x8000;
+	sty->wantw = 80*8*0x10000/(win->w);
+	sty->wanth = (term.height)*16*0x10000/(win->h);
 
-	if(ww < 8*40)
-	{
-		ww = 8*40;
-		sty->wantw = 80*8*0x10000/(win->w);
-	}
-	if(hh < 8*(term.height))
-	{
-		hh = 8*(term.height);
-		sty->wanth = (term.height)*16*0x10000/(win->h);
-	}
 	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	if(status == 0)
