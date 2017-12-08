@@ -14,6 +14,9 @@ int deletewatcher();
 //socket
 int createsocket(void*);
 int deletesocket();
+//shell
+int createshell(void*);
+int deleteshell();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -65,6 +68,7 @@ void systemcreate(u8* type, u8* addr)
 	createsignal(mega0);
 	createwatcher(mega0);
 	createsocket(mega0);
+	createshell(mega0);
 
 	//
 	//say("[8,c):createed system\n");
@@ -75,6 +79,7 @@ void systemdelete()
 	//say("[8,c):deleteing system\n");
 
 	//
+	deleteshell();
 	deletesocket();
 	deletewatcher();
 	deletesignal();

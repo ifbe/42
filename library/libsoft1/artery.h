@@ -6,10 +6,24 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 #define __fd__ hex32('f','d',0,0)
+#define __uart__ hex32('u','a','r','t')
 
 
 
 
+struct event
+{
+        u64 why;
+        u64 what;
+        u64 where;
+        u64 when;
+};
+struct uartinfo{
+	char* buf;
+	int len;
+	int enq;
+	int deq;
+};
 struct object
 {
 	//[0x00,0x0f]
@@ -31,7 +45,10 @@ struct object
 	u64 stage3;
 
 	//[0x40,0x7f]
-	u8 self[0x20];
+	union{
+		struct uartinfo info;
+		u8 self[0x20];
+	};
 	u8 peer[0x20];
 
 	//[0x80,0xff]
@@ -101,6 +118,8 @@ struct element
 //
 u32 getrandom();
 u64 gettime();
+void eventwrite(u64,u64,u64,u64);
+void* eventread();
 //
 int mysnprintf(void*, int, void*, ...);
 void printmemory(void*, int);

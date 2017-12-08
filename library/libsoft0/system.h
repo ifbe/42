@@ -10,6 +10,13 @@
 
 
 
+struct uartinfo
+{
+	char* buf;
+	int len;
+	int enq;
+	int deq;
+};
 struct object
 {
 	//[0x00,0x0f]
@@ -31,7 +38,10 @@ struct object
 	u64 stage3;
 
 	//[0x40,0x7f]
-	u8 self[0x20];
+	union{
+		struct uartinfo info;
+		u8 self[0x20];
+	};
 	u8 peer[0x20];
 
 	//[0x80,0xff]

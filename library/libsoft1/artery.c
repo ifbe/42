@@ -18,24 +18,47 @@ int wire_create(void* world,void* func);
 int wire_delete();
 //
 int network_explain(void*);
+int readshell(int fd, char* buf, int off, int len);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
-//
-void eventwrite(u64,u64,u64,u64);
-void* eventread();
 
 
 
 
+static struct object* obj = 0;
 static struct element* worker = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
-int artery_explain(void* ev)
+int artery_explain(struct event* ev)
 {
-	return network_explain(ev);
+	int ret;
+	struct uartinfo* info;
+	u64 where = ev->where;
+	u64 type = obj[where].type_sock;
+	if(type == hex32('b','a','s','h'))
+	{
+		info = &obj[where].info;
+		while(1)
+		{
+			ret = 0x100000 - (info->enq);
+			if(ret > 256)ret = 256;
+
+			ret = readshell(where, (info->buf)+(info->enq), 0, ret);
+			if(ret <= 0)break;
+
+			info->enq = ((info->enq)+ret)%0x100000;
+		}
+		ev->why = (u64)info;
+		ev->what = __uart__;
+		return 42;
+	}
+	else
+	{
+		return network_explain(ev);
+	}
 }
 
 
@@ -51,7 +74,8 @@ void arterycreate(u8* type, u8* addr)
 	if( (type == 0)&&(worker != 0) )return;
 
 	//where
-	worker=(struct element*)(addr+0x100000);
+	obj = (struct object*)(addr+0x0);
+	worker = (struct element*)(addr+0x100000);
 	dirhome = addr+0x200000;
 	datahome= addr+0x300000;
 
@@ -85,9 +109,10 @@ void arterydelete()
 	bio_delete();
 
 	//
-	worker = 0;
-	dirhome = 0;
 	datahome = 0;
+	dirhome = 0;
+	worker = 0;
+	obj = 0;
 }
 int arterystart()
 {

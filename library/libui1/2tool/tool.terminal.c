@@ -29,6 +29,8 @@ struct uartterm
 int uart_list(void*);
 int uart_choose(void*);
 int uart_write(void*);
+int startshell();
+int writeshell(int fd, char* buf, int off, int len);
 void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
 
 
@@ -41,6 +43,7 @@ static int listlen = 0;
 static u8 charbuf[0x100];
 static int charlen = 0;
 static int status = 0;
+static int theone = 0;
 
 
 
@@ -746,6 +749,7 @@ static void terminal_read(struct arena* win, struct actor* act, struct style* st
 
 static void terminal_write(struct event* ev)
 {
+	int j;
 	u64 tmp;
 	u64 why = ev->why;
 	if(ev->what == __uart__)
@@ -758,14 +762,16 @@ static void terminal_write(struct event* ev)
 	{
 		if(status != 0)
 		{
-			if(why == 0x1b)tmp = 0x1b;
+			j = 3;
+			if(why == 0x1b){tmp = 0x1b;j=1;}
 			else if(why == 0x25)tmp = 0x445b1b;
 			else if(why == 0x26)tmp = 0x415b1b;
 			else if(why == 0x27)tmp = 0x435b1b;
 			else if(why == 0x28)tmp = 0x425b1b;
 			else return;
 
-			uart_write((void*)&tmp);
+			if(status == 1)uart_write((void*)&tmp);
+			else writeshell(theone, (void*)&tmp, 0, j);
 		}
 		return;
 	}
@@ -774,7 +780,8 @@ static void terminal_write(struct event* ev)
 	{
 		if(status != 0)
 		{
-			uart_write((void*)ev);
+			if(status == 1)uart_write((void*)ev);
+			else writeshell(theone, (void*)ev, 0, 1);
 			return;
 		}
 		if(why == 0x8)
@@ -793,12 +800,14 @@ static void terminal_write(struct event* ev)
 		{
 			if(charlen == 0)
 			{
-				*(u32*)charbuf = hex32('C','O','M','8');
-				charlen = 4;
+				theone = startshell();
+				status = 2;
 			}
-
-			uart_choose(charbuf);
-			status = 1;
+			else
+			{
+				theone = uart_choose(charbuf);
+				status = 1;
+			}
 			return;
 		}
 		if(charlen < 31)

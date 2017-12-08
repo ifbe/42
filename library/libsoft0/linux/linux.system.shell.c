@@ -7,15 +7,12 @@
 #include<signal.h>
 #include<termios.h>
 #include<sys/ioctl.h>
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#include"system.h"
 char* ptsname(int);
 int grantpt(int);
 int unlockpt(int);
+int epoll_add(int);
+//
 u64 startthread(void*, void*);
 void stopthread();
 void eventwrite(u64,u64,u64,u64);
@@ -24,37 +21,14 @@ void say(char*,...);
 
 
 
-struct uartinfo
-{
-	char* buf;
-	int len;
-	int enq;
-	int deq;
-};
-static struct uartinfo info;
+static struct object* obj;
+
+
+
+
+/*
 static u64 thread;
 static int master;
-
-
-
-
-void systemshell_process(char* p)
-{
-	int ret;
-	int slave = open(p, O_RDWR);
-	if(slave == 0)
-	{
-		printf("error@open:%d\n",errno);
-		return;
-	}
-	ret = ioctl(slave, TIOCSCTTY, NULL);
-
-	setsid();
-	dup2(slave, 0);
-	dup2(slave, 1);
-	dup2(slave, 2);
-	execl("/bin/bash", "/bin/bash", NULL);
-}
 void* systemshell_thread(void* p)
 {
 	int ret,max;
@@ -81,52 +55,81 @@ void* systemshell_thread(void* p)
 	}
 	return 0;
 }
+*/
 
 
 
 
-int systemshell_read(char* buf, int len)
-{
-	return 0;
-}
-int systemshell_write(char* buf, int len)
+void systemshell_process(char* p)
 {
 	int ret;
-	ret = write(master, buf, len);
+	int slave = open(p, O_RDWR);
+	if(slave == 0)
+	{
+		printf("error@open:%d\n",errno);
+		return;
+	}
+	ret = ioctl(slave, TIOCSCTTY, NULL);
+
+	setsid();
+	dup2(slave, 0);
+	dup2(slave, 1);
+	dup2(slave, 2);
+	execl("/bin/bash", "/bin/bash", NULL);
+}
+int readshell(int fd, char* buf, int off, int len)
+{
+	int ret;
+	ret = read(fd, buf, len);
 	return ret;
 }
-int systemshell_list(char* p)
+int writeshell(int fd, char* buf, int off, int len)
+{
+	int ret;
+	ret = write(fd, buf, len);
+	return ret;
+}
+int listshell(char* p)
 {
 	int ret = system("ls /dev/pts/");
 	return 0;
 }
-int systemshell_choose(char* p, int speed)
+int changeshell(char* p, int speed)
 {
+	return 0;
+}
+int stopshell()
+{
+	return 0;
+}
+int startshell(char* p)
+{
+	int fd;
 	int ret;
 	char* name;
 
-	master = open("/dev/ptmx", O_RDWR);
-	if(master <= 0)
+	fd = open("/dev/ptmx", O_RDWR);
+	if(fd <= 0)
 	{
 		printf("error@open:%d\n",errno);
 		return -1;
 	}
 
-	ret = grantpt(master);
+	ret = grantpt(fd);
 	if(ret < 0)
 	{
 		printf("error@grantpt:%d\n",errno);
 		return -2;
 	}
 
-	ret = unlockpt(master);
+	ret = unlockpt(fd);
 	if(ret < 0)
 	{
 		printf("error@unlockpt:%d\n",errno);
 		return -3;
 	}
 
-	name = ptsname(master);
+	name = ptsname(fd);
 	if(name == 0)
 	{
 		printf("error@ptsname:%d\n",errno);
@@ -139,7 +142,7 @@ int systemshell_choose(char* p, int speed)
 	else if(ret == 0)systemshell_process(name);
 	else
 	{
-		signal(SIGCHLD, SIG_IGN);
+/*
 		if(info.buf == 0)
 		{
 			info.enq = 0;
@@ -148,25 +151,23 @@ int systemshell_choose(char* p, int speed)
 			info.buf = (void*)malloc(info.len);
 		}
 		startthread(systemshell_thread, 0);
-		write(master, "unset PROMPT_COMMAND\n", 21);
+*/
+		write(fd, "unset PROMPT_COMMAND\n", 21);
+		obj[fd].type_sock = hex32('b','a','s','h');
+		obj[fd].info.enq = 0;
+		obj[fd].info.deq = 0;
+		obj[fd].info.len = 0x100000;
+		obj[fd].info.buf = (void*)malloc(0x100000);
+		epoll_add(fd);
+		return fd;
 	}
 	return 0;
 }
-
-
-
-
-int systemshell_stop()
+void createshell(void* addr)
 {
-	return 0;
+	signal(SIGCHLD, SIG_IGN);
+	obj = addr;
 }
-int systemshell_start(char* p)
-{
-	return 0;
-}
-void systemshell_create()
-{
-}
-void systemshell_delete()
+void deleteshell()
 {
 }
