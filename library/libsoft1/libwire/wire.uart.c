@@ -6,12 +6,12 @@ int decstr2data(void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int systemuart_list(u8* p);
-int systemuart_choose(u8* p, int);
-int systemuart_read();
-int systemuart_write(u8*, int);
-int systemuart_start(u8*);
-int systemuart_stop();
+int startuart(u8* name, int speed);
+int stopuart();
+int listuart(u8* p);
+int chooseuart(u8* p);
+int readuart(int fd, u8* buf, int off, int len);
+int writeuart(int fd, u8* buf, int off, int len);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -19,13 +19,38 @@ void say(void*, ...);
 
 
 
+int uart_read(int fd, u8* buf, int off, int len)
+{
+	readuart(fd, buf, off, len);
+	return 0;
+}
+int uart_write(int fd, u8* buf, int off, int len)
+{
+	for(len=0;len<256;len++)
+	{
+		if(buf[len] == 0)break;
+	}
+	if(len <= 0)return 0;
+	if(len >= 256)return 0;
+
+	len = readuart(fd, buf, off, len);
+	return len;
+}
 int uart_list(u8* p)
 {
 	int j;
-	j = systemuart_list(p);
+	j = listuart(p);
 	return j;
 }
 int uart_choose(u8* p)
+{
+	return 0;
+}
+int uart_stop(u8* p)
+{
+	return 0;
+}
+int uart_start(u8* p)
 {
 	int j;
 	u8 name[64];
@@ -44,36 +69,13 @@ int uart_choose(u8* p)
 	}
 	name[j] = 0;
 
-	j = systemuart_choose(name, speed);
+	j = startuart(name, speed);
 	if(j <= 0)return 0;
 
 	return 0;
 }
-int uart_read(u8* p)
+void uart_delete()
 {
-	systemuart_read();
-	return 0;
-}
-int uart_write(u8* buf)
-{
-	int len;
-	for(len=0;len<256;len++)
-	{
-		if(buf[len] == 0)break;
-	}
-	if(len <= 0)return 0;
-	if(len >= 256)return 0;
-
-	len = systemuart_write(buf, len);
-	return len;
-}
-static int uart_start(u8* p)
-{
-	return systemuart_start(p);
-}
-static int uart_stop(u8* p)
-{
-	return systemuart_stop();
 }
 void uart_create(void* world,u64* p)
 {
@@ -85,8 +87,4 @@ void uart_create(void* world,u64* p)
 	p[5]=(u64)uart_choose;
 	p[6]=(u64)uart_read;
 	p[7]=(u64)uart_write;
-}
-void uart_delete()
-{
-	uart_stop(0);
 }

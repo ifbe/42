@@ -12,50 +12,11 @@ char* ptsname(int);
 int grantpt(int);
 int unlockpt(int);
 int epoll_add(int);
-//
-u64 startthread(void*, void*);
-void stopthread();
-void eventwrite(u64,u64,u64,u64);
-void say(char*,...);
 
 
 
 
 static struct object* obj;
-
-
-
-
-/*
-static u64 thread;
-static int master;
-void* systemshell_thread(void* p)
-{
-	int ret,max;
-	while(1)
-	{
-		max = 0x100000 - (info.enq);
-		if(max > 256)max = 256;
-
-		ret = read(
-			master,
-			(info.buf)+(info.enq),
-			256
-		);
-		if(ret < 0)break;
-		if(ret == 0)continue;
-
-		info.enq = (info.enq+ret)%0x100000;
-		eventwrite(
-			(u64)&info,
-			hex32('u','a','r','t'),
-			0,
-			0
-		);
-	}
-	return 0;
-}
-*/
 
 
 
@@ -153,7 +114,7 @@ int startshell(char* p)
 		startthread(systemshell_thread, 0);
 */
 		write(fd, "unset PROMPT_COMMAND\n", 21);
-		obj[fd].type_sock = hex32('b','a','s','h');
+		obj[fd].type_sock = hex32('u','a','r','t');
 		obj[fd].info.enq = 0;
 		obj[fd].info.deq = 0;
 		obj[fd].info.len = 0x100000;

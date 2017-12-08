@@ -208,19 +208,50 @@ void createfolder()
 
 
 
-void listfolder()
+int listfolder(char* buf, int len, char* dir, char* str)
 {
-	if(folderbody==0)return;
+	int ret,tmp;
+	struct stat statbuf;
+	static DIR* haha;
 
-	//
-	rewinddir(folderbody);
+	//check folder
+	ret=stat(dir, &statbuf);
+	if(ret == -1)
+	{
+		//say("(startfolder error)not exist\n");
+		return -1;
+	}
+	if(!(statbuf.st_mode & S_IFDIR))
+	{
+		//say("(startfolder error)not folder\n");
+		return -2;
+	}
+	if((statbuf.st_mode & S_IFCHR) != 0)
+	{
+		//say("(startfolder error)char device\n");
+		return -3;
+	}
+
+	//try open
+	haha = opendir(dir);
+	if(haha <= 0)
+	{
+		//say("error@opendir\n",errno);
+		return -4;
+	}
+
+	ret = 0;
+	tmp = strlen(str);
 	while(1)
 	{
-		ent=readdir(folderbody);
-		if(ent==NULL)return;
+		ent = readdir(haha);
+		if(ent == NULL)break;
+		if(strncmp(ent->d_name, str, tmp) != 0)continue;
 
-		say("%s\n",ent->d_name);
+		ret += snprintf(buf+ret, len-ret, "%s\n", ent->d_name);
+		if(ret >= len)break;
 	}
+	return ret;
 }
 void choosefolder(char* name)
 {

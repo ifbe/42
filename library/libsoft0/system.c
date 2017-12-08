@@ -1,5 +1,5 @@
-#define QW unsigned long long
-#define DW unsigned int
+#define u64 unsigned long long
+#define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
 //random
@@ -17,6 +17,9 @@ int deletesocket();
 //shell
 int createshell(void*);
 int deleteshell();
+//uart
+int createuart(void*);
+int deleteuart();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -69,6 +72,7 @@ void systemcreate(u8* type, u8* addr)
 	createwatcher(mega0);
 	createsocket(mega0);
 	createshell(mega0);
+	createuart(mega0);
 
 	//
 	//say("[8,c):createed system\n");
@@ -79,6 +83,7 @@ void systemdelete()
 	//say("[8,c):deleteing system\n");
 
 	//
+	deleteuart();
 	deleteshell();
 	deletesocket();
 	deletewatcher();

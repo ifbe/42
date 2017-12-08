@@ -26,9 +26,10 @@ struct uartterm
 	int curx;
 	int cury;
 };
-int uart_list(void*);
-int uart_choose(void*);
-int uart_write(void*);
+int listuart(void*, int);
+int startuart(void*);
+int writeuart(int fd, char* buf, int off, int len);
+int listshell(void*, int);
 int startshell();
 int writeshell(int fd, char* buf, int off, int len);
 void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
@@ -627,12 +628,6 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 
 	if(status == 0)
 	{
-		if(listlen == 0)
-		{
-			listlen = uart_list(listbuf);
-			if(listlen != 0)say("%.*s", listlen, listbuf);
-		}
-
 		drawtext(win, 0xffffff,
 			cx-ww, cy-hh, cx+ww, cy+hh,
 			listbuf, listlen
@@ -670,10 +665,6 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 	u8* buf;
 	if((status == 0)&&(charlen == 0))
 	{
-		if(listlen == 0)
-		{
-			listlen = uart_list(listbuf);
-		}
 		gentui_text(win, 7, 0, 0, listbuf, listlen);
 		return;
 	}
@@ -713,17 +704,9 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 {
 	u8* p;
 	int enq, deq;
-	if((status == 0)&&(charlen == 0))
-	{
-		if(listlen == 0)
-		{
-			//say("terminal(%x,%x,%x)\n",win,act,sty);
-			listlen = uart_list(listbuf);
-		}
-		say("%.*s", listlen, listbuf);
-		return;
-	}
+	//say("terminal(%x,%x,%x)\n",win,act,sty);
 
+	if((status == 0)&&(charlen == 0))return;
 	if(old == 0)return;
 	p = old->buf;
 	enq = old->enq;
@@ -770,8 +753,14 @@ static void terminal_write(struct event* ev)
 			else if(why == 0x28)tmp = 0x425b1b;
 			else return;
 
-			if(status == 1)uart_write((void*)&tmp);
-			else writeshell(theone, (void*)&tmp, 0, j);
+			if(status == 1)
+			{
+				writeuart(theone, (void*)&tmp, 0, j);
+			}
+			else
+			{
+				writeshell(theone, (void*)&tmp, 0, j);
+			}
 		}
 		return;
 	}
@@ -780,8 +769,14 @@ static void terminal_write(struct event* ev)
 	{
 		if(status != 0)
 		{
-			if(status == 1)uart_write((void*)ev);
-			else writeshell(theone, (void*)ev, 0, 1);
+			if(status == 1)
+			{
+				writeuart(theone, (void*)ev, 0, 1);
+			}
+			else
+			{
+				writeshell(theone, (void*)ev, 0, 1);
+			}
 			return;
 		}
 		if(why == 0x8)
@@ -805,7 +800,7 @@ static void terminal_write(struct event* ev)
 			}
 			else
 			{
-				theone = uart_choose(charbuf);
+				theone = startuart(charbuf);
 				status = 1;
 			}
 			return;
@@ -829,10 +824,8 @@ static void terminal_change()
 }
 static void terminal_start()
 {
-	//new.enq = 0;
-	//new.deq = 0;
-	//new.len = 0x100000;
-	//new.buf = startmemory(new.len);
+	listlen = listuart(listbuf, 0x100);
+	if(listlen != 0)say("%.*s", listlen, listbuf);
 
 	term.curx = 0;
 	term.cury = 0;
@@ -841,9 +834,9 @@ static void terminal_start()
 	term.top = 0;
 	term.bottom = 0;
 	term.vimw = 128;
-	term.vimh = 25;
+	term.vimh = 24;
 	term.width = 128;
-	term.height = 25;
+	term.height = 24;
 	term.bg = 0;
 	term.fg = 7;
 	term.len = 0x100000;

@@ -38,7 +38,7 @@ int artery_explain(struct event* ev)
 	struct uartinfo* info;
 	u64 where = ev->where;
 	u64 type = obj[where].type_sock;
-	if(type == hex32('b','a','s','h'))
+	if(type == hex32('u','a','r','t'))
 	{
 		info = &obj[where].info;
 		while(1)

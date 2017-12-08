@@ -64,11 +64,11 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 
 
 
-int systemuart_read(char* buf, int len)
+int readuart(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int systemuart_write(char* buf, int len)
+int writeuart(int fd, char* buf, int off, int len)
 {
 	u32 count=0;
 	int ret;
@@ -83,7 +83,7 @@ int systemuart_write(char* buf, int len)
 	//say("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
 	return ret;
 }
-int systemuart_list(u8* p)
+int listuart(u8* p)
 {
 	int j,k=0;
 	HANDLE h;
@@ -108,7 +108,14 @@ int systemuart_list(u8* p)
 	}
 	return k;
 }
-int systemuart_choose(char* p, int speed)
+int chooseuart()
+{
+	return 0;
+}
+int systemuart_stop()
+{
+}
+int startuart(char* p, int speed)
 {
 	//
 	int ret;
@@ -191,20 +198,9 @@ int systemuart_choose(char* p, int speed)
 	//success
 	return 1;
 }
-
-
-
-
-int systemuart_stop()
-{
-}
-int systemuart_start(char* p)
-{
-}
-int systemuart_create()
-{
-}
 int systemuart_delete()
 {
 }
-
+int systemuart_create(void* addr)
+{
+}

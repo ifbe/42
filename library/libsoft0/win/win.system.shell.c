@@ -12,61 +12,36 @@ void say(char*,...);
 
 
 
-struct uartinfo
-{
-	char* buf;
-	int len;
-	int enq;
-	int deq;
-};
-static struct uartinfo info;
-static u64 thread;
-static int master;
-
-
-
-
 void systemshell_process(char* p)
 {
 }
-void* systemshell_thread(void* p)
-{
-}
-
-
-
-
-int systemshell_read(char* buf, int len)
+int readshell(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int systemshell_write(char* buf, int len)
+int writeshell(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int systemshell_list(char* p)
+int listshell(char* p)
 {
 	return 0;
 }
-int systemshell_choose(char* p)
+int chooseshell(char* p)
 {
 	return 0;
 }
-
-
-
-
-int systemshell_stop()
+int stopshell()
 {
 	return 0;
 }
-int systemshell_start(char* p)
+int startshell(char* p)
 {
 	return 0;
 }
-void systemshell_create()
+void deleteshell()
 {
 }
-void systemshell_delete()
+void createshell(void* addr)
 {
 }

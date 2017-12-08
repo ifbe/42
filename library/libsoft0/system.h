@@ -47,3 +47,12 @@ struct object
 	//[0x80,0xff]
 	u8 data[0x80];
 };
+
+
+
+
+u64 startthread(void*, void*);
+void stopthread();
+void printmemory(void*, int);
+void say(void*, ...);
+void eventwrite(u64,u64,u64,u64);
