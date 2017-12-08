@@ -2,9 +2,6 @@
 //
 int netmgr_write(void*);
 //
-int sound_start();
-int vision_start();
-//
 int i2c_list();
 int i2c_choose(void*);
 //

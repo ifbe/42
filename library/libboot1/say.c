@@ -214,6 +214,36 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 			src = tmp+1;
 			continue;
 		}
+		else if((fmt[tmp] == 'l')&&(fmt[tmp+1] == 'l')&&(fmt[tmp+2] == 'x'))
+		{
+			_x = va_arg(arg, u64);
+
+			j = data2hexstr(_x, buf+dst);
+			if(lval == 0)dst += j;
+			else if(j == lval)dst += j;
+			else if(j > lval)
+			{
+				for(k=0;k<lval;k++)buf[dst+k] = buf[dst+k+j-lval];
+				dst += lval;
+			}
+			else
+			{
+				if(flag1 == '-')
+				{
+					for(;j<lval;j++)buf[dst+j] = 0x20;
+				}
+				else
+				{
+					if(flag2 != '0')flag2 = 0x20;
+					for(k=1;k<=lval-j;k++)buf[dst+lval-k] = buf[dst+j-k];
+					for(k=0;k<lval-j;k++)buf[dst+k] = flag2;
+				}
+				dst += lval;
+			}
+
+			src = tmp+3;
+			continue;
+		}
 		else
 		{
 			while(1)

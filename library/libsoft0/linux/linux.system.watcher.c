@@ -80,7 +80,7 @@ static void* epollthread(void* p)
 			if(epollevent[i].events & EPOLLRDHUP)
 			{
 				printf("rdhup!!!!!!!\n");
-				eventwrite(0, 0x2d6e, fd, gettime());
+				eventwrite('-', __fd__, fd, gettime());
 			}
 			else if(epollevent[i].events & EPOLLIN)
 			{
@@ -107,7 +107,7 @@ static void* epollthread(void* p)
 						epoll_add(cc);
 
 						printf("++++ %d\n",cc);
-						eventwrite(0, 0x2b6e, cc, gettime());
+						eventwrite('+', __fd__, cc, gettime());
 					}//while
 
 					//reset tcpfd
@@ -118,7 +118,7 @@ static void* epollthread(void* p)
 				else
 				{
 					//printf("#### %x\n", fd);
-					eventwrite(0, 0x406e, fd, gettime());
+					eventwrite('@', __fd__, fd, gettime());
 				}
 			}//EPOLLIN
 		}//for

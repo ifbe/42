@@ -277,18 +277,14 @@ int network_explain(u64* p)
 	int len;
 	u64 type_sock;
 
-	//u64 why = p[0];
-	u64 what = p[1] & 0xffff;
+	u64 why = p[0];
+	u64 what = p[1];
 	u64 where = p[2];
 	//u64 when = p[3];
 
-	if(what == 0x2b6e)
-	{
-	}
-	else if(what == 0x2d6e)
-	{
-	}
-	else if(what == 0x406e)
+	if(why == '+'){}
+	else if(why == '-'){}
+	else if(why == '@')
 	{
 		type_sock = obj[where].type_sock;
 		//say("%x\n",type_sock);

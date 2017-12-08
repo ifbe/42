@@ -2,6 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+#define __time__ hex32('t','i','m','e')
+#define __fd__ hex32('f','d',0,0)
 //libui1
 int actorread();
 int actorwrite(void*);
@@ -11,7 +16,7 @@ int term_write(void*);
 int arenaread();
 int arenawrite();
 //libsoft1
-int network_explain(void*);
+int artery_explain(void*);
 int sound_explain(void*);
 int vision_explain(void*);
 //libsoft0
@@ -78,7 +83,7 @@ again:
 
 		//exit or timer
 		if(ev->what == 0)break;		//exit
-		if(ev->what == 0x656d6974)	//time
+		if(ev->what == __time__)	//time
 		{
 			if(ev->when > time+1000000)
 			{
@@ -88,17 +93,17 @@ again:
 			}
 			goto again;
 		}
+		if(ev->what == __fd__)
+		{
+			//network rawdata -> my event
+			ret = artery_explain(ev);
+			if(ret != 42)goto again;
+		}
 
 
 		//3.pre process
 		temp = (ev->what)&0xff;
-		if(temp == 'n')
-		{
-			//network rawdata -> my event
-			ret = network_explain(ev);
-			if(ret != 42)goto again;
-		}
-		else if(temp == 's')
+		if(temp == 's')
 		{
 			//sound rawdata -> my event
 			ret = sound_explain(ev);

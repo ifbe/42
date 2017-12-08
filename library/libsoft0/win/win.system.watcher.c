@@ -70,7 +70,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 			pov->stage = 1;
 			obj[fd/4].type_sock = 't';
-			eventwrite(0, 0x2b6e, fd/4, 0);
+			eventwrite('+', __fd__, fd/4, 0);
 			printf("[%x]++++,hh=%llx\n",fd/4,hh);
 		}
 		else if(trans == 0)
@@ -84,7 +84,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			pov->stage = 1;
 			pov->bufdone.buf = pov->bufing.buf;
 			pov->bufdone.len = trans;
-			eventwrite(0, 0x406e, fd/4, 0);
+			eventwrite('@', __fd__, fd/4, 0);
 			
 			printf("[%x]####\n",fd/4);
 		}

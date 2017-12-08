@@ -17,6 +17,8 @@ int system_delete();
 int wire_create(void* world,void* func);
 int wire_delete();
 //
+int network_explain(void*);
+//
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
 int cmp(void*,void*);
@@ -31,12 +33,10 @@ void* eventread();
 static struct element* worker = 0;
 static u8* dirhome = 0;
 static u8* datahome = 0;
-//
-static u8 cmd[256];
-static int len=0;
-//
-static int theone = 0;
-static int combo = 0;
+int artery_explain(void* ev)
+{
+	return network_explain(ev);
+}
 
 
 
@@ -65,7 +65,6 @@ void arterycreate(u8* type, u8* addr)
 	p += phys_create(addr, p);
 	p += system_create(addr, p);
 	p += wire_create(addr, p);
-	theone = 0;
 
 	//
 	//say("[8,c):createed artery\n");
@@ -98,12 +97,31 @@ int arterystop()
 {
 	return 0;
 }
-//--------------------------------------------------------
+int arterylist()
+{
+	return 0;
+}
+int arterychoose()
+{
+	return 0;
+}
+int arteryread(int fd, u8* buf, int off, int len)
+{
+	return 0;
+}
+int arterywrite(int fd, u8* buf, int off, int len)
+{
+	return 0;
+}
 
 
 
 
-//--------------------------------------------------------
+/*
+static u8 cmd[256];
+static int len=0;
+static int theone = 0;
+static int combo = 0;
 int arterylist(u8* p)
 {
 	int j;
@@ -162,13 +180,8 @@ int arterychoose(u8* p)
 	worker[0].id = worker[theone].id;
 	return 0;
 }
-int arteryread(u8* p)
-{
-	return 0;
-}
 int arterywrite(u8* buffer)
 {
-	//------------------------------------------------------
 	u8* argv[8];
 	int ret;
 	int argc;
@@ -297,4 +310,4 @@ int arterywrite(u8* buffer)
 	}
 	return 1;
 }
-//--------------------------------------------------------
+*/
