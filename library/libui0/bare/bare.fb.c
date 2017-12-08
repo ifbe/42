@@ -27,6 +27,13 @@ void windowstop()
 }
 void windowcreate()
 {
+#define screeninfo 0x2000
+	int j;
+	u64 tmp = *(u32*)screeninfo;
+	u8* buf = (u8*)tmp;
+	//fmt = *(u32*)(screeninfo+8);
+
+	for(j=0;j<256*256*3;j++)buf[j] = 0x54;
 }
 void windowdelete()
 {

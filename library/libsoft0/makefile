@@ -15,6 +15,7 @@ bare:
 	$(compiler) $(cflag) bare/bare.system.process.c
 	$(compiler) $(cflag) bare/bare.system.random.c
 	$(compiler) $(cflag) bare/bare.system.signal.c
+	$(compiler) $(cflag) bare/bare.system.shell.c
 	$(compiler) $(cflag) bare/bare.system.thread.c
 	$(compiler) $(cflag) bare/bare.system.time.c
 	$(compiler) $(cflag) bare/bare.system.watcher.c

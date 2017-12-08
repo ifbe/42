@@ -114,7 +114,7 @@ void arterydelete()
 	worker = 0;
 	obj = 0;
 }
-int arterystart()
+int arterystart(char* name, int flag)
 {
 	return 0;
 }

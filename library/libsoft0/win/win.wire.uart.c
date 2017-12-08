@@ -198,9 +198,9 @@ int startuart(char* p, int speed)
 	//success
 	return 1;
 }
-int systemuart_delete()
+int deleteuart()
 {
 }
-int systemuart_create(void* addr)
+int createuart(void* addr)
 {
 }

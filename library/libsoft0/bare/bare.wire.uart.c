@@ -8,41 +8,33 @@ void say(char*,...);
 
 
 
-void* systemuart_read(void* p)
+int readuart(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int systemuart_write(char* buf, int len)
+int writeuart(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-
-
-
-
-int systemuart_list()
+int listuart()
 {
 	return 0;
 }
-int systemuart_choose(char* p, int speed)
+int chooseuart(char* p, int speed)
 {
 	return 0;
 }
-
-
-
-
-int systemuart_stop()
+int stopuart()
 {
 	return 0;
 }
-int systemuart_start(char* p)
+int startuart(char* p)
 {
 	return 0;
 }
-void systemuart_create()
+void deleteuart()
 {
 }
-void systemuart_delete()
+void createuart()
 {
 }

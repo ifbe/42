@@ -36,23 +36,29 @@ static u8* mega3;
 
 
 
-void systemread()
+int systemread(int fd, char* buf, int off, int len)
 {
+	return 0;
 }
-void systemwrite()
+int systemwrite(int fd, char* buf, int off, int len)
 {
+	return 0;
 }
-void systemlist()
+int systemlist()
 {
+	return 0;
 }
-void systemchoose()
+int systemchoose()
 {
+	return 0;
 }
-void systemstart()
+int systemstart(char* name, int flag)
 {
+	return 0;
 }
-void systemstop()
+int systemstop()
 {
+	return 0;
 }
 void systemcreate(u8* type, u8* addr)
 {

@@ -35,7 +35,7 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s link compiler=x86_64-elf-ld
+	make -s link linker=x86_64-elf-ld
 link:
 	$(linker) -T link.ld \
 	$(library)/libboot0/startbare.o \
