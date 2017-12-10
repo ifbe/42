@@ -17,7 +17,7 @@ linux:
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s link
+	make -s link linker=/opt/cross/bin/x86_64-elf-ld
 cross:
 	make -s -C $(library)/libboot0 bare \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"

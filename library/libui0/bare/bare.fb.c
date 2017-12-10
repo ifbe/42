@@ -33,7 +33,7 @@ void windowcreate()
 	u8* buf = (u8*)tmp;
 	//fmt = *(u32*)(screeninfo+8);
 
-	for(j=0;j<256*256*3;j++)buf[j] = 0x54;
+	for(j=0;j<1024*512*3;j++)buf[j] = 0x54;
 }
 void windowdelete()
 {
