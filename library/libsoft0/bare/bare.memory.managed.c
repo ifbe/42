@@ -13,12 +13,15 @@ static u8 bitmap[1024];		//1m per u8
 
 void* startmemory(int size)
 {
+	int k;
 	u64 j;
-	for(j=0;j<1024;j++)
+
+	k = (size+0xfffff)/0x100000;
+	for(j=32;j<1024;j++)
 	{
 		if(bitmap[j] == 0)
 		{
-			bitmap[j] = 1;
+			for(;k>=0;k--)bitmap[j+k] = 1;
 			return (void*)(j<<20);
 		}
 	}

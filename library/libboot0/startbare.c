@@ -2,9 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define PORT 0x3f8
-void main(int argc,char** argv);
-void out8(u32 port, u8 data);
 //libui
 void actorcreate(void*, void*);
 void actordelete();
@@ -25,6 +22,9 @@ void debugcreate(void*, void*);
 void debugdelete();
 void basiccreate(void*, void*);
 void basicdelete();
+//
+void main(int argc,char** argv);
+void say(void*, ...);
 
 
 
@@ -96,22 +96,17 @@ void* birth()
 	memory = universe + 0x800000;
 	actor = universe + 0xc00000;
 
-out8(PORT, 'a');
 	basiccreate(0, basic);
 	debugcreate(0, basic);
 
-out8(PORT, 'b');
 	drivercreate(0, body);
 	bodycreate(0, body);
 
-out8(PORT, 'c');
 	systemcreate(0, memory);
 	arterycreate(0, memory);
 
-out8(PORT, 'd');
 	arenacreate(0, actor);
 	actorcreate(0, actor);
 
-out8(PORT, 'e');
 	return (void*)0x1000000;
 }

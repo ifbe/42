@@ -12,15 +12,11 @@ int actorread();
 int actorwrite(void*);
 int term_read(void*);
 int term_write(void*);
-//libui0
-int arenaread();
-int arenawrite();
 //libsoft1
 int artery_explain(void*);
 int sound_explain(void*);
 int vision_explain(void*);
 //libsoft0
-u64 gettime();
 void sleep_us(int);
 //libboot
 void printmemory(void*, int);
@@ -41,23 +37,21 @@ struct event
 	u64 where;
 	u64 when;
 };
-static u64 time;
-static int fps;
 
 
 
 
 int main(int argc, char* argv[])
 {
-	//before
+	int fps;
 	int ret;
 	u64 temp;
+	u64 time;
 	struct event* ev;
 
 	birth();
 	//say("@birth\n");
 
-	//config
 	term_read(0);
 	for(ret=1;ret<argc;ret++)
 	{
@@ -65,7 +59,6 @@ int main(int argc, char* argv[])
 		term_write("\n");
 	}
 
-	//forever
 	while(1)
 	{
 		//1.show

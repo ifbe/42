@@ -5,7 +5,7 @@ linux:
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/libhard0 x64 \
+	make -s -C $(library)/libhard0 barex64 \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libhard1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector"
@@ -23,7 +23,7 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libboot1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
-	make -s -C $(library)/libhard0 x64 \
+	make -s -C $(library)/libhard0 barex64 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
 	make -s -C $(library)/libhard1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector"
@@ -40,7 +40,7 @@ link:
 	$(linker) -T link.ld \
 	$(library)/libboot0/startbare.o \
 	$(library)/libboot0/basic.o \
-	$(library)/libboot0/print.o \
+	$(library)/libboot0/8250.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
 	$(library)/libhard1/*.o \

@@ -6,7 +6,7 @@ bare:
 	rm -f *.o
 	$(compiler) $(cflag) startbare.c
 	$(compiler) $(cflag) basic.c
-	$(compiler) $(cflag) bare/print.c
+	$(compiler) $(cflag) bare/8250.c
 
 .PHONY:none
 none:
