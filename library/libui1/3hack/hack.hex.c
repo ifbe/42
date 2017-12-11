@@ -396,37 +396,9 @@ static void hex_write(struct event* ev)
 	u64 key = ev->why;
 	//say("%x,%x\n",type,key);
 
-	if(type==0x64626b)		//'kbd'
+	if(type == __kbd__)	//'kbd'
 	{
-		if(key==0x25)	//left	0x4b
-		{
-			if( pointeroffset % byteperline == 0 )
-			{
-				if(arenaoffset > byteperline * lineperarena)
-				{
-					arenaoffset -= byteperline * lineperarena;
-				}
-			}
-			else
-			{
-				pointeroffset--;
-			}
-		}
-		else if(key==0x27)	//right	0x4d
-		{
-			if( pointeroffset % byteperline == byteperline-1 )
-			{
-				if(arenaoffset < 0x400000 - byteperline*lineperarena)
-				{
-					arenaoffset += byteperline * lineperarena;
-				}
-			}
-			else
-			{
-				pointeroffset++;
-			}
-		}
-		else if(key==0x26)	//up	0x4b
+		if(key == 0x48)	//up
 		{
 			if( pointeroffset < byteperline )
 			{
@@ -440,7 +412,35 @@ static void hex_write(struct event* ev)
 				pointeroffset -= byteperline;
 			}
 		}
-		else if(key==0x28)	//down	0x4d
+		else if(key == 0x4b)	//left
+		{
+			if( pointeroffset % byteperline == 0 )
+			{
+				if(arenaoffset > byteperline * lineperarena)
+				{
+					arenaoffset -= byteperline * lineperarena;
+				}
+			}
+			else
+			{
+				pointeroffset--;
+			}
+		}
+		else if(key == 0x4d)	//right
+		{
+			if( pointeroffset % byteperline == byteperline-1 )
+			{
+				if(arenaoffset < 0x400000 - byteperline*lineperarena)
+				{
+					arenaoffset += byteperline * lineperarena;
+				}
+			}
+			else
+			{
+				pointeroffset++;
+			}
+		}
+		else if(key == 0x50)	//down
 		{
 			if( pointeroffset >= (lineperarena-1) * byteperline )
 			{
@@ -455,7 +455,33 @@ static void hex_write(struct event* ev)
 			}
 		}
 	}
-	else if(type==0x2b70)
+	else if(type == __char__)
+	{
+		if(key == 9)		//tab
+		{
+			printmethod=(printmethod+1)%2;
+		}
+		else if(key == 0x8)			//backspace
+		{
+			if(inputcount!=0)inputcount--;
+			hi[0x80+inputcount]=0;
+		}
+		else if(key == 0xd)			//enter
+		{
+			if(cmp( hi+0x80 , "addr" ) == 0)
+			{
+			}
+		}
+		else
+		{
+			if(inputcount<128)
+			{
+				hi[0x80+inputcount]=key;
+				inputcount++;
+			}
+		}
+	}
+	else if(type == 0x2b70)
 	{
 		if((key>>48) == 'f')	//front
 		{
@@ -490,32 +516,6 @@ static void hex_write(struct event* ev)
 			//浮动框以外的
 			//px=x/(1024/0x40);
 			//py=y/(640/40);
-		}
-	}
-	else if(type==0x72616863)		//'char'
-	{
-		if(key==9)					//tab
-		{
-			printmethod=(printmethod+1)%2;
-		}
-		else if(key==0x8)			//backspace
-		{
-			if(inputcount!=0)inputcount--;
-			hi[0x80+inputcount]=0;
-		}
-		else if(key==0xd)			//enter
-		{
-			if(cmp( hi+0x80 , "addr" ) == 0)
-			{
-			}
-		}
-		else
-		{
-			if(inputcount<128)
-			{
-				hi[0x80+inputcount]=key;
-				inputcount++;
-			}
 		}
 	}
 }

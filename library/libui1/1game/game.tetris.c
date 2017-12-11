@@ -623,14 +623,14 @@ static void tetris_write(struct event* ev)
 	{
 		for(ret=0;ret<20;ret++)if(down()==1)return;
 	}
-	else if(type == 0x64626b)
+	else if(type == __kbd__)
 	{
-		if(key==0x25)left();
-		else if(key==0x27)right();
-		else if(key==0x26)up();
-		else if(key==0x28)down();
+		if(key==0x48)up();
+		else if(key==0x4b)left();
+		else if(key==0x4d)right();
+		else if(key==0x50)down();
 	}
-	else if(type == 0x72616863)
+	else if(type == __char__)
 	{
 		if(key=='a')left();
 		else if(key=='d')right();

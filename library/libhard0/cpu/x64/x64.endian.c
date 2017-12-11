@@ -1,9 +1,6 @@
 unsigned short bswap16(unsigned short old)
 {
-	//not supported
-	//return __builtin_bswap16(old);
-
-	return ((old&0xff00)>>8) + ((old&0xff)<<8);
+	return __builtin_bswap16(old);
 }
 unsigned int bswap32(unsigned int old)
 {

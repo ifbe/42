@@ -105,7 +105,7 @@ static void calculator_write(struct event* ev)
 		if(key == '=')key = 0xd;
 	}
 
-	if(type == 0x72616863)	       //'char'
+	if(type == __char__)
 	{
 		if(key==0x8)		    //backspace
 		{

@@ -249,25 +249,25 @@ static void the2048_write(struct event* ev)
 	u8* q;
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
-	if(ev->what == hex32('k','b','d',0))
+	if(ev->what == __kbd__)
 	{
 		k = (ev->why)&0xff;
-		if( (k>=0x25) && (k<=0x28) )
+		if( (k>=0x48) && (k<=0x50) )
 		{
 			p = (void*)buffer + 16*num;
 			num = (num+1)%4;
 			q = (void*)buffer + 16*num;
 			for(j=0;j<16;j++)q[j] = p[j];
 
-			if(k == 0x25)left2048(q);
-			else if(k == 0x26)up2048(q);
-			else if(k == 0x27)right2048(q);
-			else if(k == 0x28)down2048(q);
+			if(k == 0x48)up2048(q);
+			else if(k == 0x4b)left2048(q);
+			else if(k == 0x4d)right2048(q);
+			else if(k == 0x50)down2048(q);
 
 			new2048(q);
 		}
 	}
-	else if(ev->what == hex32('c','h','a','r'))
+	else if(ev->what == __char__)
 	{
 		k = ev->why;
 		if(k == 0x8)num = (num+15)%16;

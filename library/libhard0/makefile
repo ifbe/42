@@ -47,9 +47,16 @@ barex64:
 	$(compiler) $(cflag) cpu/x64/x64.endian.c
 	$(compiler) $(cflag) cpu/x64/x64.fp.c
 	$(compiler) $(cflag) cpu/x64/x64.port.c
-	$(compiler) $(cflag) storage/acpi.c
-	$(compiler) $(cflag) transfer/pci/pci.c
-	$(compiler) $(cflag) barebone.c
+	$(compiler) $(cflag) cpu/x64/x64.asm.c
+	$(compiler) $(cflag) cpu/x64/x64.page.c
+	$(compiler) $(cflag) cpu/x64/x64.gdt.c
+	$(compiler) $(cflag) -mgeneral-regs-only cpu/x64/x64.idt.c
+	$(compiler) $(cflag) irq/8259.c
+	$(compiler) $(cflag) irq/apic.c
+	$(compiler) $(cflag) irq/ioapic.c
+	$(compiler) $(cflag) bus/input/8042.c
+	$(compiler) $(cflag) bus/pci/pci.c
+	$(compiler) $(cflag) bare.c
 
 .PHONY:winx86
 winx86:

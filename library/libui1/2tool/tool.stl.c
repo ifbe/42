@@ -108,9 +108,6 @@ static void stl_write(struct event* ev)
 		int x = key&0xffff;
 		int y = (key>>16)&0xffff;
 	}
-	if(type == 0x72616863)
-	{
-	}
 }
 
 

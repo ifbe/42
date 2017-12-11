@@ -98,10 +98,10 @@ void* uievent(struct sdldata* p)
 			//say("val=%x\n",val);
 
 			if(val==0x1b)eventwrite(0x1b,0x64626b,0,0);
-			else if(val==0x40000050)eventwrite(0x25,0x64626b,0,0);
-			else if(val==0x40000052)eventwrite(0x26,0x64626b,0,0);
-			else if(val==0x4000004f)eventwrite(0x27,0x64626b,0,0);
-			else if(val==0x40000051)eventwrite(0x28,0x64626b,0,0);
+			else if(val==0x40000052)eventwrite(0x48,0x64626b,0,0);
+			else if(val==0x40000050)eventwrite(0x4b,0x64626b,0,0);
+			else if(val==0x4000004f)eventwrite(0x4d,0x64626b,0,0);
+			else if(val==0x40000051)eventwrite(0x50,0x64626b,0,0);
 			else if(val==0x8)eventwrite(0x8,0x72616863,0,0);
 			else if(val==0xd)eventwrite(0xd,0x72616863,0,0);
 			else if((val>=0x20)&&(val<=0x7e))eventwrite(val, 0x72616863, 0, 0);

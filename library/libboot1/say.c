@@ -39,19 +39,6 @@ void initsay(char* buf)
 
 
 
-u64 fixdata(u64 data, int val)
-{
-	u64 mask;
-	if(val == 0)return data;
-
-	mask = 0;
-	while(val > 0)
-	{
-		mask = (mask<<8) | 0xff;
-		val--;
-	}
-	return data&mask;
-}
 int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 {
 	int j, k;
@@ -150,7 +137,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 'x')
 		{
-			_x = va_arg(arg, u64);
+			_x = va_arg(arg, u32);
 
 			j = data2hexstr(_x, buf+dst);
 			if(lval == 0)dst += j;
@@ -169,7 +156,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 				else
 				{
 					if(flag2 != '0')flag2 = 0x20;
-					for(k=1;k<=lval-j;k++)buf[dst+lval-k] = buf[dst+j-k];
+					for(k=1;k<=j;k++)buf[dst+lval-k] = buf[dst+j-k];
 					for(k=0;k<lval-j;k++)buf[dst+k] = flag2;
 				}
 				dst += lval;
@@ -235,7 +222,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 				else
 				{
 					if(flag2 != '0')flag2 = 0x20;
-					for(k=1;k<=lval-j;k++)buf[dst+lval-k] = buf[dst+j-k];
+					for(k=1;k<=j;k++)buf[dst+lval-k] = buf[dst+j-k];
 					for(k=0;k<lval-j;k++)buf[dst+k] = flag2;
 				}
 				dst += lval;

@@ -27,7 +27,7 @@ DWORD WINAPI terminalthread(struct window* win)
 	int j;
 	u64 x,y,w;
 	u64 why, what, where;
-    DWORD cNumRead, fdwMode, fdwSaveOldMode;
+	DWORD cNumRead, fdwMode, fdwSaveOldMode;
 	HANDLE hStdin, hStdout;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
 
@@ -36,56 +36,56 @@ DWORD WINAPI terminalthread(struct window* win)
 	MOUSE_EVENT_RECORD mouserec;
 	WINDOW_BUFFER_SIZE_RECORD wbsrec;
 
-    // Get the standard input handle
-    hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    if(hStdin == INVALID_HANDLE_VALUE)
+	//Get the standard input handle
+	hStdin = GetStdHandle(STD_INPUT_HANDLE);
+	if(hStdin == INVALID_HANDLE_VALUE)
 	{
-        printf("GetStdHandle");
+		printf("GetStdHandle");
 		return 0;
 	}
 
 	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if(hStdout == INVALID_HANDLE_VALUE)
 	{
-        printf("hStdout\n");
+		printf("hStdout\n");
 		return 0;
 	}
 
-    // Save the current input mode, to be restored on exit
-    if(!GetConsoleMode(hStdin, &fdwSaveOldMode) )
+	//Save the current input mode, to be restored on exit
+	if(!GetConsoleMode(hStdin, &fdwSaveOldMode) )
 	{
-        printf("GetConsoleMode");
+		printf("GetConsoleMode");
 		return 0;
 	}
 
-    // Enable the window and mouse input events
-    fdwMode = ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
-    if(!SetConsoleMode(hStdin, fdwMode) )
+	//Enable the window and mouse input events
+	fdwMode = ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
+	if(!SetConsoleMode(hStdin, fdwMode) )
 	{
-        printf("SetConsoleMode");
+		printf("SetConsoleMode");
 		return 0;
 	}
 
-    // Loop to read and handle the next 100 input events
-    while(1)
-    {
-        // Wait for the events
-        if(!ReadConsoleInput(
-                hStdin,      // input buffer handle
-                irInBuf,     // buffer to read into
-                128,         // size of read buffer
-                &cNumRead) ) // number of records read
+	//Loop to read and handle the next 100 input events
+	while(1)
+	{
+		//Wait for the events
+		if(!ReadConsoleInput(
+			hStdin,		//input buffer handle
+			irInBuf,	//buffer to read into
+			128,		//size of read buffer
+			&cNumRead) )	//number of records read
 		{
-            printf("ReadConsoleInput");
+			printf("ReadConsoleInput");
 			return 0;
 		}
 
-        // Dispatch the events to the appropriate handler
-        for(j = 0; j < cNumRead; j++)
-        {
-            switch(irInBuf[j].EventType)
-            {
-                case KEY_EVENT:
+		//Dispatch the events to the appropriate handler
+		for(j=0;j<cNumRead;j++)
+		{
+			switch(irInBuf[j].EventType)
+			{
+				case KEY_EVENT:
 				{
 					keyrec = irInBuf[j].Event.KeyEvent;
 					if(keyrec.bKeyDown)
@@ -99,9 +99,9 @@ DWORD WINAPI terminalthread(struct window* win)
 							eventwrite(keyrec.uChar.UnicodeChar, __char__, 0, 0);
 						}
 					}
-                    break;
+					break;
 				}
-                case MOUSE_EVENT:
+				case MOUSE_EVENT:
 				{
 					mouserec = irInBuf[j].Event.MouseEvent;
 					switch(mouserec.dwEventFlags)
@@ -153,9 +153,9 @@ DWORD WINAPI terminalthread(struct window* win)
 							break;
 						}
 					}
-                    break;
+					break;
 				}
-                case WINDOW_BUFFER_SIZE_EVENT:
+				case WINDOW_BUFFER_SIZE_EVENT:
 				{
 					wbsrec = irInBuf[j].Event.WindowBufferSizeEvent;
 					//printf("Resize:%x,%x\n", wbsrec.dwSize.X, wbsrec.dwSize.Y);
@@ -166,31 +166,31 @@ DWORD WINAPI terminalthread(struct window* win)
 					win->w = x;
 					win->h = y;
 					eventwrite(x+(y<<16), __size__, 0, 0);
-                    break;
+					break;
 				}
-                case MENU_EVENT:
+				case MENU_EVENT:
 				{
 					//printf("MENU_EVENT\n");
 					eventwrite(0,0,0,0);
-                    break;
+					break;
 				}
-                case FOCUS_EVENT:
+				case FOCUS_EVENT:
 				{
 					//printf("FOCUS_EVENT\n");
-                    break;
+					break;
 				}
-                default:
+				default:
 				{
-                    //printf("Unknown:%x", irInBuf[j].EventType);
-                    break;
+					//printf("Unknown:%x", irInBuf[j].EventType);
+					break;
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 
-    //Restore input mode on exit
-    SetConsoleMode(hStdin, fdwSaveOldMode);
-    return 0;
+	//Restore input mode on exit
+	SetConsoleMode(hStdin, fdwSaveOldMode);
+	return 0;
 }
 static void windowsutf8(char* utf8)
 {

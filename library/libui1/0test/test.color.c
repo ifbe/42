@@ -121,26 +121,26 @@ static void color_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x64626b)
+	if(type == __kbd__)
 	{
-		if(key==0x25)		//left
+		if(key==0x48)		//up
 		{
-			if(blue>0) blue--;
+			if(green>0)green--;
 		}
-		if(key==0x27)		//right
+		else if(key==0x4b)	//left
 		{
-			if(blue<255) blue++;
+			if(blue>0)blue--;
 		}
-		if(key==0x28)		//down
+		else if(key==0x4d)	//right
 		{
-			if(green<255) green++;
+			if(blue<255)blue++;
 		}
-		if(key==0x26)		//up
+		else if(key==0x50)	//down
 		{
-			if(green>0) green--;
+			if(green<255)green++;
 		}
 	}
-	else if(type==0x72616863)
+	else if(type == __char__)
 	{
 		if(key=='+')
 		{

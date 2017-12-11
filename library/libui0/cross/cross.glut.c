@@ -582,10 +582,10 @@ void callback_special(int key, int x, int y)
 	else if(key == GLUT_KEY_F2)key = 0xf2;
 	else if(key == GLUT_KEY_F3)key = 0xf3;
 	else if(key == GLUT_KEY_F4)key = 0xf4;
-	else if(key == GLUT_KEY_LEFT)key = 0x25;
-	else if(key == GLUT_KEY_UP)key = 0x26;
-	else if(key == GLUT_KEY_RIGHT)key = 0x27;
-	else if(key == GLUT_KEY_DOWN)key = 0x28;
+	else if(key == GLUT_KEY_UP)key = 0x48;
+	else if(key == GLUT_KEY_LEFT)key = 0x4b;
+	else if(key == GLUT_KEY_RIGHT)key = 0x4d;
+	else if(key == GLUT_KEY_DOWN)key = 0x50;
 	else return;
 
 	what = 0x64626b;

@@ -157,11 +157,16 @@ void login_write(struct arena* win, struct event* ev)
 		}
 		else if(x == '-')login_this();
 	}
+	else if(ev->what == __kbd__)
+	{
+		if(ev->why == 0x4b)chosen = (chosen+31)%32;
+		else if(ev->why == 0x4d)chosen = (chosen+1)%32;
+	}
 	else if(ev->what == __char__)
 	{
-		if(ev->why == '=')login_this();
-		else if(ev->why == '+')chosen = (chosen+1)%32;
-		else if(ev->why == '-')chosen = (chosen+31)%32;
+		if((ev->why == 0xd)|(ev->why == 0xa))login_this();
+		else if(ev->why == 0x435b1b)chosen = (chosen+1)%32;
+		else if(ev->why == 0x445b1b)chosen = (chosen+31)%32;
 		else term_write(ev);
 	}
 }

@@ -296,23 +296,23 @@ void xiangqi_write(struct event* ev)
 
 	if(what == __kbd__)
 	{
-		if(key == 0x25)	//left
-		{
-			if(qx<1)return;
-			qx--;
-		}
-		else if(key == 0x26)	//up
+		if(key == 0x48)	//up
 		{
 			if(qy<1)return;
 			qy--;
 		}
-		else if(key == 0x27)	//right
+		else if(key == 0x4b)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+		else if(key == 0x4d)	//right
 		{
 			if(qx<0)return;
 			if(qx>=8)return;
 			qx++;
 		}
-		else if(key == 0x28)	//down
+		else if(key == 0x50)	//down
 		{
 			if(qy<0)return;
 			if(qy>=9)return;

@@ -266,7 +266,7 @@ static void sketchpad_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type==0x64626b)			//'kbd'
+	if(type == __kbd__)		//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
 		{
@@ -285,7 +285,7 @@ static void sketchpad_write(struct event* ev)
 			centery += scale*10;
 		}
 	}
-	else if(type==0x72616863)		//'char'
+	else if(type == __char__)	//'char'
 	{
 		if(key==0x8)			//backspace
 		{

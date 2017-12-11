@@ -161,80 +161,74 @@ void newfood()
 }
 void snake_write(struct event* ev)
 {
-	int j;
+	int j,k;
 	u64 type = ev->what;
 	u64 key = ev->why;
 	if(die==1)return;
 
+	k = 0;
 	if(type==0x72616863)
 	{
-		if(key=='a'){type=0x64626b;key=0x25;}
-		else if(key=='w'){type=0x64626b;key=0x26;}
-		else if(key=='d'){type=0x64626b;key=0x27;}
-		else if(key=='s'){type=0x64626b;key=0x28;}
-		else if(key==' '){type=0x2d70;}
+		if(key == 'w')k = 'w';
+		else if(key == 's')k = 's';
+		else if(key == 'a')k = 'a';
+		else if(key == 'd')k = 'd';
 	}
-
-	else if(type==0x2d70)
-	{
-		if(direction==1){type=0x64626b;key=0x25;}
-		else if(direction==2){type=0x64626b;key=0x27;}
-		else if(direction==3){type=0x64626b;key=0x26;}
-		else if(direction==4){type=0x64626b;key=0x28;}
-		else return;
-	}
-
 	if(type==0x64626b)
 	{
-		if(key==0x25)
-		{
-			if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
-			if( (snake[0].x-1) < 0){die=1;return;}
-
-			a.x=snake[0].x;
-			a.y=snake[0].y;
-			snake[0].x--;
-			direction=1;
-		}
-		else if(key==0x27)
-		{
-			if(snake[0].x+1 == snake[1].x)
-			{
-				if(snake[0].y == snake[1].y)return;
-			}
-			if( (snake[0].x+1) >= worldwidth){die=1;return;}
-
-			a.x=snake[0].x;
-			a.y=snake[0].y;
-			snake[0].x++;
-			direction=2;
-		}
-		else if(key==0x26)
-		{
-			if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
-			if( (snake[0].y-1) < 0){die=1;return;}
-
-			a.x=snake[0].x;
-			a.y=snake[0].y;
-			snake[0].y--;
-			direction=3;
-		}
-		else if(key==0x28)
-		{
-			if(snake[0].x == snake[1].x)
-			{
-				if(snake[0].y+1 == snake[1].y)return;
-			}
-			if( (snake[0].y+1) >= worldheight){die=1;return;}
-
-			a.x=snake[0].x;
-			a.y=snake[0].y;
-			snake[0].y++;
-			direction=4;
-		}
-		else return;
+		if(key == 0x48)k = 'w';
+		else if(key == 0x4b)k = 'a';
+		else if(key == 0x50)k = 's';
+		else if(key == 0x4d)k = 'd';
 	}
-	else return;
+	if(k == 0)return;
+
+	if(k == 'a')
+	{
+		if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
+		if( (snake[0].x-1) < 0){die=1;return;}
+
+		a.x=snake[0].x;
+		a.y=snake[0].y;
+		snake[0].x--;
+		direction=1;
+	}
+	else if(key == 'd')
+	{
+		if(snake[0].x+1 == snake[1].x)
+		{
+			if(snake[0].y == snake[1].y)return;
+		}
+		if( (snake[0].x+1) >= worldwidth){die=1;return;}
+
+		a.x=snake[0].x;
+		a.y=snake[0].y;
+		snake[0].x++;
+		direction=2;
+	}
+	else if(key == 'w')
+	{
+		if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
+		if( (snake[0].y-1) < 0){die=1;return;}
+
+		a.x=snake[0].x;
+		a.y=snake[0].y;
+		snake[0].y--;
+		direction=3;
+	}
+	else if(key == 's')
+	{
+		if(snake[0].x == snake[1].x)
+		{
+			if(snake[0].y+1 == snake[1].y)return;
+		}
+		if( (snake[0].y+1) >= worldheight){die=1;return;}
+
+		a.x=snake[0].x;
+		a.y=snake[0].y;
+		snake[0].y++;
+		direction=4;
+	}
 
 	//蛇身往前挪动
 	j=0;

@@ -118,10 +118,10 @@ static void rubikscube_read(struct arena* win, struct actor* act, struct style* 
 
 static void rubikscube_write(struct event* ev)
 {
-	if(ev->what == hex32('k','b','d',0))
+	if(ev->what == __kbd__)
 	{
 	}
-	else if(ev->what == hex32('c','h','a','r'))
+	else if(ev->what == __char__)
 	{
 	}
 }

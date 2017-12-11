@@ -142,25 +142,25 @@ static void sudoku_write(struct event* ev)
 {
 	u64 what = ev->what;
 	u64 key = ev->why;
-	if(what == 0x64626b)
+	if(what == __kbd__)
 	{
-		if(key == 0x25)	//left
-		{
-			if(px<1)return;
-			px--;
-		}
-		else if(key == 0x26)	//up
+		if(key == 0x48)	//up
 		{
 			if(py<1)return;
 			py--;
 		}
-		else if(key == 0x27)	//right
+		else if(key == 0x4b)	//left
+		{
+			if(px<1)return;
+			px--;
+		}
+		else if(key == 0x4d)	//right
 		{
 			if(px<0)return;
 			if(px>=8)return;
 			px++;
 		}
-		else if(key == 0x28)	//down
+		else if(key == 0x50)	//down
 		{
 			if(py<0)return;
 			if(py>=8)return;

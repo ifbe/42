@@ -45,6 +45,8 @@ void initpci()
 {
 	u32 addr,d1,d2;
 	u32 bus,dev,fun;
+	say("@initpci\n");
+
 	for(bus=0;bus<256;bus++)
 	{
 	for(dev=0;dev<32;dev++)

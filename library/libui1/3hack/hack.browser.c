@@ -70,11 +70,10 @@ static void browser_read(struct arena* win, struct actor* act, struct style* sty
 }
 static void browser_write(struct event* ev)
 {
-#define kbd 0x72616863
 #define http 0x70747468
 	u64 type = ev->what;
 	u64 key = ev->why;
-	if(type == kbd)
+	if(type == __char__)
 	{
 		if(key == 0xd)
 		{
