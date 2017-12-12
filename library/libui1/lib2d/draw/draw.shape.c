@@ -3,6 +3,22 @@
 
 
 
+void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
+{
+	int x,y;
+	u8* buf = win->buf;
+	for(y=y0;y<=y1;y++)
+	{
+		for(x=x0;x<=x1;x++)
+		{
+			buf[y*320+x] = rgb;
+		}
+	}
+}
+
+
+
+
 void drawline(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {

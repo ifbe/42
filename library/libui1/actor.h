@@ -18,6 +18,7 @@
 #define __tui__ hex32('t','u','i',0)
 #define __vbo__ hex32('v','b','o',0)
 #define __html__ hex32('h','t','m','l')
+#define __8bit__ hex32('8','b','i','t')
 
 
 

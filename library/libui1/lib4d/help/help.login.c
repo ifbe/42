@@ -2,6 +2,7 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 void term_write(void*);
 void actorchoose(void*);
+void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1);
 
 
 
@@ -37,6 +38,24 @@ void login_read_pixel(struct arena* win)
 			win, color,
 			(x+2)*w, (y+4)*h, (x+3)*w, (y+5)*h,
 			(u8*)&actor[j].name, 8
+		);
+	}
+}
+void login_read_8bit(struct arena* win)
+{
+	int x,y;
+	int j,c;
+	for(j=0;j<32;j++)
+	{
+		if(j == chosen)c = 0x80;
+		else c = 0x42;
+
+		x = j%4;
+		y = j/4;
+		draw8bit_rect(
+			win, c,
+			 81+x*40, 61+y*10,
+			118+x*40, 68+y*10
 		);
 	}
 }
@@ -137,6 +156,7 @@ void login_read(struct arena* win)
 	else if(win->fmt == __tui__)login_read_tui(win);
 	else if(win->fmt == __vbo__)login_read_vbo(win);
 	else if(win->fmt == __html__)login_read_html(win);
+	else if(win->fmt == __8bit__)login_read_8bit(win);
 	else login_read_pixel(win);
 }
 void login_write(struct arena* win, struct event* ev)

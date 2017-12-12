@@ -19,6 +19,13 @@ baretui:
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
+.PHONY:bare8bit
+bare8bit:
+	rm -f *.o
+	$(compiler) $(cflag) bare/bare.8bit.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
 .PHONY:barefb
 barefb:
 	rm -f *.o
