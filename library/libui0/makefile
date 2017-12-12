@@ -12,6 +12,13 @@ barecli:
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
+.PHONY:baretui
+baretui:
+	rm -f *.o
+	$(compiler) $(cflag) bare/bare.tui.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
 .PHONY:barefb
 barefb:
 	rm -f *.o

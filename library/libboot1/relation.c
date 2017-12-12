@@ -41,13 +41,17 @@ struct item
 		u64 pad1;
 	};
 };
-static u8 wirebuf[0x100000];
+static u8* wirebuf;
 static int wirecur = 0x40;
 static int wirelen = 0x100000;
 
 
 
 
+void initrelation(void* addr)
+{
+	wirebuf = addr+0x300000;
+}
 void* relation_generate(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)

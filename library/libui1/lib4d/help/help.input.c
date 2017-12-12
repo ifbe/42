@@ -218,7 +218,14 @@ int input_write(struct arena* win, struct event* ev)
 	//no actor
 	if(win->irel == 0)
 	{
-		login_write(win, ev);
+		if(win->fmt == hex32('c','l','i',0))
+		{
+			term_write(ev);
+		}
+		else
+		{
+			login_write(win, ev);
+		}
 		return 0;
 	}
 

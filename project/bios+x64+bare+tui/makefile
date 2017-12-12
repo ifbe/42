@@ -13,7 +13,7 @@ linux:
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui0 barecli \
+	make -s -C $(library)/libui0 baretui \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
@@ -31,7 +31,7 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui0 barecli \
+	make -s -C $(library)/libui0 baretui \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libui1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."

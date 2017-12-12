@@ -89,10 +89,11 @@ void windowwrite(struct window* dst, struct window* src)
 			if(p[0] > 0x80)
 			{
 				//先颜色
-				if(bg != p[7])
+				if((bg != p[7]) | (fg != p[6]))
 				{
 					bg = p[7];
-					attr(bg,fg);
+					fg = p[6];
+					attr(bg, fg);
 				}
 
 				//这是汉字
@@ -102,10 +103,11 @@ void windowwrite(struct window* dst, struct window* src)
 			else
 			{
 				//先颜色
-				if(bg != p[3])
+				if((bg != p[3]) | (fg != p[2]))
 				{
 					bg = p[3];
-					attr(bg,fg);
+					fg = p[2];
+					attr(bg, fg);
 				}
 
 				//这是ascii

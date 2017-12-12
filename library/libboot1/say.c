@@ -18,9 +18,6 @@ static void* inputqueue;        //stdin
 static void* outputqueue;       //stdout
 	static u64* outcur;			//real position
 	static u64* outwin;			//display position
-static void* journalqueue;      //stderr
-	static u64* logcur;			//real position
-	static u64* logwin;			//display position
 void initsay(char* buf)
 {
 	inputqueue = buf;
@@ -30,10 +27,6 @@ void initsay(char* buf)
 	outputqueue = buf+0x100000;
 	outcur = outputqueue+0x100000-16;
 	outwin = outputqueue+0x100000-8;
-
-	journalqueue = buf+0x200000;
-	logcur = journalqueue+0x100000-16;
-	logwin = journalqueue+0x100000-8;
 }
 
 
