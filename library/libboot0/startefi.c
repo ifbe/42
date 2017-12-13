@@ -43,24 +43,17 @@ static u8* actor = 0;
 
 EFI_STATUS efi_main(EFI_HANDLE H, EFI_SYSTEM_TABLE *S)
 {
-	EFI_STATUS sts;
-	EFI_INPUT_KEY Key;
+	int ret;
 	printinform(H, S);
 
-	sts = S->ConOut->OutputString(S->ConOut, L"42!!\r\n");
-	if(EFI_ERROR(sts))return sts;
+	ret = S->ConOut->OutputString(S->ConOut, L"42!!\r\n");
+	if(EFI_ERROR(ret))return ret;
+
+	ret = S->ConIn->Reset(S->ConIn, FALSE);
+	if(EFI_ERROR(ret))return ret;
 
 	main(0, 0);
-
-	sts = S->ConIn->Reset(S->ConIn, FALSE);
-	if(EFI_ERROR(sts))return sts;
-
-	while(1)
-	{
-		sts = S->ConIn->ReadKeyStroke(S->ConIn, &Key);
-		if(sts != EFI_NOT_READY)break;
-	}
-	return sts;
+	return EFI_SUCCESS;
 }
 
 

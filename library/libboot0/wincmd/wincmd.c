@@ -438,3 +438,11 @@ void createserial(u8* arg)
 void deleteserial()
 {
 }
+void* pollenv()
+{
+	return 0;
+}
+void* waitenv()
+{
+	return 0;
+}

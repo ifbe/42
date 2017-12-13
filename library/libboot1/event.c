@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void* pollenv();
 void say(char*, ...);
 
 
@@ -48,7 +49,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 void* eventread()
 {
 	int ret;
-	if(enq == deq)return 0;
+	if(enq == deq)return pollenv();
 
 	ret = deq;
 	deq = (deq+0x20)%0x100000;

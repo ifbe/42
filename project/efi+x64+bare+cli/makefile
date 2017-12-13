@@ -1,6 +1,5 @@
 library?=../../library
-folder?=$(shell pwd)/gnu-efi
-aflag?=-c -ffreestanding -I$(folder)/inc -I$(folder)/inc/x86_64 -I$(folder)/inc/protocol
+aflag?=-c -ffreestanding -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol
 all:
 	make -s -C $(library)/libboot0 efi \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag)"
@@ -18,9 +17,14 @@ all:
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
 	make -s -C $(library)/libui1 \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
-	x86_64-w64-mingw32-gcc $(aflag) gnu-efi/lib/data.c -o data.o
 	make -s link
 link:
+	x86_64-w64-mingw32-gcc -o data.o \
+	-c -ffreestanding \
+	-I$(library)/gnu-efi/inc \
+	-I$(library)/gnu-efi/inc/x86_64 \
+	-I$(library)/gnu-efi/inc/protocol \
+	$(library)/gnu-efi/lib/data.c
 	x86_64-w64-mingw32-gcc -e efi_main \
 	-nostdlib -fno-use-linker-plugin \
 	-Wl,-dll -shared -Wl,--subsystem,10 \

@@ -50,10 +50,6 @@ int lowlevel_output(char* buf, int len)
 	for(j=0;j<len;j++)write8250_one(buf[j]);
 	return j;
 }
-
-
-
-
 void deleteserial()
 {
 }
@@ -67,4 +63,12 @@ void createserial()
 	out8(PORT + 2, 0xC7);//Enable FIFO, clear them, with 14-byte threshold
 	out8(PORT + 4, 0x0B);//IRQs enabled, RTS/DSR set
 	lowlevel_output("42!\n", 4);
+}
+void* waitenv()
+{
+	return 0;
+}
+void* pollenv()
+{
+	return 0;
 }

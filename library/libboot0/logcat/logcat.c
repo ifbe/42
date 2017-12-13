@@ -59,11 +59,17 @@ void say(char* fmt , ...)
 
 
 
+void createserial()
+{
+}
+void deleteserial()
+{
+}
 int lowlevel_input(char* buf)
 {
 	return 0;
 }
-void lowlevel_output(char* buf, int len)
+int lowlevel_output(char* buf, int len)
 {
 	int j;
 	for(j=0;j<len;j++)
@@ -79,10 +85,13 @@ void lowlevel_output(char* buf, int len)
 			cur = 0;
 		}
 	}
+	return len;
 }
-void createserial()
+void* waitenv()
 {
+        return 0;
 }
-void deleteserial()
+void* pollenv()
 {
+        return 0;
 }

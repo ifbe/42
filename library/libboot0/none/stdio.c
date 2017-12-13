@@ -52,3 +52,11 @@ void deleteserial()
 void createserial()
 {
 }
+void* pollenv()
+{
+	return 0;
+}
+void* waitenv()
+{
+	return 0;
+}
