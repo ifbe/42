@@ -30,6 +30,7 @@
 *.o.d
 *.dll
 *.efi
+*.EFI
 *.so
 *.sys
 *.dylib
