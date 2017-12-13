@@ -38,6 +38,19 @@ barefb:
 
 
 
+############################efi#########################
+.PHONY:eficli
+eficli:
+	rm -f *.o
+	$(compiler) $(cflag) efi/efi.cli.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
+#########################################################
+
+
+
+
 ############################linux#########################
 .PHONY:linuxcli
 linuxcli:

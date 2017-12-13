@@ -3,7 +3,7 @@ cflag ?= -c -O2 -fPIC -I.
 
 .PHONY:bare
 bare:
-	rm -f bsd.*.o linux.*.o mac.*.o win.*.o
+	rm -f *.o
 	$(compiler) $(cflag) bare/bare.flow.net.socket.c
 	$(compiler) $(cflag) bare/bare.flow.sound.c
 	$(compiler) $(cflag) bare/bare.flow.vision.c
@@ -27,9 +27,35 @@ bare:
 	$(compiler) $(cflag) bare/bare.wire.wifi.c
 	$(compiler) $(cflag) system.c
 
+.PHONY:efi
+efi:
+	rm -f *.o
+	$(compiler) $(cflag) efi/efi.flow.net.socket.c
+	$(compiler) $(cflag) efi/efi.flow.sound.c
+	$(compiler) $(cflag) efi/efi.flow.vision.c
+	$(compiler) $(cflag) efi/efi.memory.file.c
+	$(compiler) $(cflag) efi/efi.memory.folder.c
+	$(compiler) $(cflag) efi/efi.memory.managed.c
+	$(compiler) $(cflag) efi/efi.memory.portio.c
+	$(compiler) $(cflag) efi/efi.system.power.c
+	$(compiler) $(cflag) efi/efi.system.process.c
+	$(compiler) $(cflag) efi/efi.system.random.c
+	$(compiler) $(cflag) efi/efi.system.signal.c
+	$(compiler) $(cflag) efi/efi.system.shell.c
+	$(compiler) $(cflag) efi/efi.system.thread.c
+	$(compiler) $(cflag) efi/efi.system.time.c
+	$(compiler) $(cflag) efi/efi.system.watcher.c
+	$(compiler) $(cflag) efi/efi.wire.bt.c
+	$(compiler) $(cflag) efi/efi.wire.i2c.c
+	$(compiler) $(cflag) efi/efi.wire.spi.c
+	$(compiler) $(cflag) efi/efi.wire.uart.c
+	$(compiler) $(cflag) efi/efi.wire.usb.c
+	$(compiler) $(cflag) efi/efi.wire.wifi.c
+	$(compiler) $(cflag) system.c
+
 .PHONY:bsd
 bsd:
-	rm -f bare.*.o linux.*.o mac.*.o win.*.o
+	rm -f *.o
 	$(compiler) $(cflag) bsd/bsd.memory.file.c
 	$(compiler) $(cflag) bsd/bsd.memory.folder.c
 	$(compiler) $(cflag) bsd/bsd.memory.managed.c
@@ -44,7 +70,7 @@ bsd:
 
 .PHONY:linux
 linux:
-	rm -f bare.*.o bsd.*.o mac.*.o win.*.o
+	rm -f *.o
 	$(compiler) $(cflag) linux/linux.flow.socket.c
 	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
 	$(compiler) $(cflag) linux/linux.flow.vision.other.c
@@ -73,7 +99,7 @@ linux:
 
 .PHONY:mac
 mac:
-	rm -f bare.*.o bsd.*.o linux.*.o win.*.o
+	rm -f *.o
 	$(compiler) $(cflag) mac/mac.flow.net.socket.c
 	$(compiler) $(cflag) mac/mac.flow.sound.xxx.c
 	$(compiler) $(cflag) mac/mac.flow.vision.xxx.c
@@ -99,10 +125,10 @@ mac:
 
 .PHONY:win
 win:
-	rm -f linux.*.o mac.*.o
+	rm -f *.o
+	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.flow.socket.c
 	$(compiler) $(cflag) win/win.flow.sound.waveinout.c
-	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.folder.c
 	$(compiler) $(cflag) win/win.memory.managed.c

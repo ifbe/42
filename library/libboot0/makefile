@@ -27,6 +27,7 @@ efi:
 	rm -f *.o
 	$(compiler) $(cflag) startefi.c
 	$(compiler) $(cflag) basic.c
+	$(compiler) $(cflag) efi/print.c
 
 clean:
 	rm -f *.o
