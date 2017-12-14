@@ -46,6 +46,13 @@ eficli:
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
+.PHONY:efifb
+efifb:
+	rm -f *.o
+	$(compiler) $(cflag) efi/efi.fb.c
+	$(compiler) $(cflag) cross/cross.net.c
+	$(compiler) $(cflag) cross/cross.voice.c
+	$(compiler) $(cflag) arena.c
 #########################################################
 
 

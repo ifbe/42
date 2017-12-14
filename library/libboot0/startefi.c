@@ -33,6 +33,9 @@ void say(void*, ...);
 
 
 static int status = 0;
+static void* handle;
+static void* table;
+//
 static u8* basic = 0;
 static u8* body = 0;
 static u8* memory = 0;
@@ -41,19 +44,25 @@ static u8* actor = 0;
 
 
 
-EFI_STATUS efi_main(EFI_HANDLE H, EFI_SYSTEM_TABLE *S)
+EFI_STATUS efi_main(EFI_HANDLE H, EFI_SYSTEM_TABLE *T)
 {
 	int ret;
-	printinform(H, S);
+	handle = H;
+	table = T;
 
-	ret = S->ConOut->OutputString(S->ConOut, L"42!!\r\n");
+	ret = T->ConOut->OutputString(T->ConOut, L"42!!\r\n");
 	if(EFI_ERROR(ret))return ret;
 
-	ret = S->ConIn->Reset(S->ConIn, FALSE);
+	ret = T->ConIn->Reset(T->ConIn, FALSE);
 	if(EFI_ERROR(ret))return ret;
 
 	main(0, 0);
 	return EFI_SUCCESS;
+}
+void gethandleandtable(void** H, void** T)
+{
+	*H = handle;
+	*T = table;
 }
 
 
