@@ -9,6 +9,8 @@
 #define __char__ hex32('c','h','a','r')
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
+void enableirq(int);
+//
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -51,10 +53,12 @@ void init8042()
 {
 	u32* addr;
 	say("@init8042\n");
-
+/*
 	addr = (u32*)(u64)(0xfec00000);
 	addr[0] = 0x10 + (2*1);
 	addr[4] = 0x21;
 	addr[0] = 0x11 + (2*1);
 	addr[4] = 0;
+*/
+	enableirq(1);
 }

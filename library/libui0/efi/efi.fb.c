@@ -6,8 +6,8 @@
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 #define __buf__ hex32('b','u','f',0)
 #define __win__ hex32('w','i','n',0)
-#define __bgra8888__ hex64('r','g','b','a','8','8','8','8')
-#define __bgra8880__ hex64('r','g','b','a','8','8','8','0')
+#define __bgra8888__ hex64('b','g','r','a','8','8','8','8')
+#define __bgra8880__ hex64('b','g','r','a','8','8','8','0')
 void gethandleandtable(void* H, void* T);
 void say(void*, ...);
 
@@ -109,8 +109,8 @@ void windowstart(struct window* this)
 			);
 
 			pix = &(gop->Mode->Info->PixelInformation);
-			if(pix->ReservedMask == 0xff)fmt = __bgra8888__;
-			else fmt = __bgra8880__;
+			if(pix->ReservedMask == 0)fmt = __bgra8880__;
+			else fmt = __bgra8888__;
 
 			this->w = 1024;
 			this->h = 768;

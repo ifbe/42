@@ -4,10 +4,7 @@ static unsigned int seed = 0;
 
 unsigned int getrandom()
 {
-	seed = seed+17;
-	seed = seed*seed;
-	seed = seed+41;
-	seed = seed*seed*seed;
+	seed = 1103515245*seed + 12345;
 	return seed;
 }
 void createrandom()

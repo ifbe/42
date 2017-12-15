@@ -7,6 +7,9 @@ void out8(u16 port, u8 data);
 
 
 
+void isr_825x()
+{
+}
 void init825x()
 {
 	u16 lo = 1192&0xff;

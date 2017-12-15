@@ -12,6 +12,7 @@ void initapic();
 void initioapic();
 //
 void init8042();
+void initrtc();
 void initpci();
 //
 void say(char*,...);
@@ -32,6 +33,7 @@ void drivercreate(char* type,char* addr)
 	//initioapic();
 
 	init8042();
+	initrtc();
 	initpci();
 
 	asm("sti");
