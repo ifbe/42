@@ -20,9 +20,19 @@ u64 since1970()
 
 
 
+void settime()
+{
+}
 u64 gettime()
 {
 	return 1000 * GetTickCount64();
+}
+
+
+
+
+void setdate()
+{
 }
 u64 getdate()
 {

@@ -12,7 +12,7 @@ void lowlevel_output(void*, int);
 
 
 
-static void* inputqueue;        //stdin
+static void* inputqueue;	//stdin
 	static u64* incur;			//real position
 	static u64* inwin;			//insert position
 static void* outputqueue;       //stdout
@@ -112,18 +112,39 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 
 		//type
-		if(fmt[tmp] == 'd')
+		if(fmt[tmp] == 'f')
 		{
-			_x = va_arg(arg, u32);
-			dst += data2decstr(_x, buf+dst);
+			_f = va_arg(arg, double);
+			dst += double2decstr(_f, buf+dst);
 
 			src = tmp+1;
 			continue;
 		}
-		else if(fmt[tmp] == 'f')
+		else if(fmt[tmp] == 'd')
 		{
-			_f = va_arg(arg, double);
-			dst += double2decstr(_f, buf+dst);
+			_x = va_arg(arg, u32);
+			j = data2decstr(_x, buf+dst);
+			if(lval == 0)dst += j;
+			else if(j == lval)dst += j;
+			else if(j > lval)
+			{
+				for(k=0;k<lval;k++)buf[dst+k] = buf[dst+k+j-lval];
+				dst += lval;
+			}
+			else
+			{
+				if(flag1 == '-')
+				{
+					for(;j<lval;j++)buf[dst+j] = 0x20;
+				}
+				else
+				{
+					if(flag2 != '0')flag2 = 0x20;
+					for(k=1;k<=j;k++)buf[dst+lval-k] = buf[dst+j-k];
+					for(k=0;k<lval-j;k++)buf[dst+k] = flag2;
+				}
+				dst += lval;
+			}
 
 			src = tmp+1;
 			continue;

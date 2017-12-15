@@ -19,6 +19,8 @@ void weiqi_delete();
 void xiangqi_create(u8*,u8*);
 void xiangqi_delete();
 //test
+void clock_create(u8*,u8*);
+void clock_delete();
 void codeimg_create(u8*,u8*);
 void codeimg_delete();
 void color_create(u8*,u8*);
@@ -110,6 +112,10 @@ int content_create(u8* addr)
 
 	//test.codeimg
 	codeimg_create(addr, temp);
+	temp += 0x100;
+
+	//test.clock
+	clock_create(addr, temp);
 	temp += 0x100;
 
 	//test.color
@@ -225,4 +231,5 @@ void content_delete()
 	doodle_delete();
 	color_delete();
 	codeimg_delete();
+	clock_delete();
 }

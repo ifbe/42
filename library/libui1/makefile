@@ -1,6 +1,7 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
+0test/test.clock.c \
 0test/test.codeimg.c \
 0test/test.color.c \
 0test/test.doodle.c \

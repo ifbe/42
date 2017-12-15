@@ -20,11 +20,21 @@ u64 since1970()
 
 
 
+void settime(u64 time)
+{
+}
 u64 gettime()
 {
 	struct timeval t;
 	gettimeofday(&t,0);
 	return (t.tv_sec)*1000*1000 + (t.tv_usec);
+}
+
+
+
+
+void setdate(u64 date)
+{
 }
 u64 getdate()
 {

@@ -112,7 +112,7 @@ __attribute__((interrupt)) static void isr_21(void* p)
 }
 __attribute__((interrupt)) static void isr_28(void* p)
 {
-	say("rtc!\n");
+	//say("rtc!\n");
 	isr_rtc();
 	endofirq(8);
 }
