@@ -1,6 +1,7 @@
 #include "actor.h"
 #define accuracy 18
 #define PI 3.1415926535897932384626433832795028841971693993151
+u32 getrandom();
 
 
 
@@ -731,4 +732,46 @@ void carvepoint_sphere(
 
 	index[b+0] = pcount + (accuracy*17) + 0;
 	index[b+1] = pcount + (accuracy*17) + 1;
+}
+
+
+
+
+void carvestarry_random(struct arena* win)
+{
+	u32 j,k;
+	u32 pcount = win->info[8];
+	u32 ncount = win->info[9];
+	u32 ccount = win->info[10];
+	//u32 tcount = win->info[11];
+	u32 icount = win->info[12];
+
+	void* buf = (void*)(win->buf);
+	float* vertex = buf + 0x800000 + (pcount*12);
+	float* normal = buf + 0x900000 + (ncount*12);
+	float* color  = buf + 0xa00000 + (ccount*12);
+	u16* index    = buf + 0xc00000 + (icount*2);
+
+	win->info[8] += 256;
+	win->info[9] += 256;
+	win->info[10] += 256;
+	win->info[12] += 256;
+
+	for(j=0;j<256;j++)
+	{
+		vertex[j*3+0] = (getrandom() % 65536) / 65536.0 - 0.5;
+		vertex[j*3+1] = (getrandom() % 65536) / 65536.0 - 0.5;
+		vertex[j*3+2] = (getrandom() % 65536) / 65536.0;
+
+		normal[j*3+0] = 0.0;
+		normal[j*3+1] = 0.0;
+		normal[j*3+2] = 1.0;
+
+		k = getrandom();
+		color[j*3+0] = (float)(k&0xff) / 256.0;
+		color[j*3+1] = (float)((k>>8)&0xff) / 256.0;
+		color[j*3+2] = (float)((k>>16)&0xff) / 256.0;
+
+		index[j] = pcount+j;
+	}
 }

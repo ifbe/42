@@ -13,6 +13,49 @@ static u8 buffer[mazelens][mazelens];
 
 static void maze_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	int x,y;
+	float fx,fy,fz;
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float ww = (float)(sty->wantw) / 65536.0 / mazesize;
+	float hh = (float)(sty->wanth) / 65536.0 / mazesize;
+
+	for(y=0;y<mazelens;y++)
+	{
+		for(x=0;x<mazelens;x++)
+		{
+			if(((x&1) != 0)&&((y&1) == 0))
+			{
+				if(buffer[y][x] != 0)
+				{
+					fx = (float)x*0.5;
+					fx = cx+(fx-mazesize/2)*ww;
+					fy = cy+(y/2-mazesize/2)*hh;
+					carvesolid_rect(
+						win, 0xffffff,
+						fx, fy, ww/2,
+						ww/2, 0.0, 0.0,
+						0.0, 0.0, ww/2
+					);
+				}
+			}
+			if(((x&1) == 0)&&((y&1) != 0))
+			{
+				if(buffer[y][x] != 0)
+				{
+					fx = cx+(x/2-mazesize/2)*ww;
+					fy = (float)y*0.5;
+					fy = cy+(fy-mazesize/2)*hh;
+					carvesolid_rect(
+						win, 0xffffff,
+						fx, fy, ww/2,
+						0.0, hh/2, 0.0,
+						0.0, 0.0, ww/2
+					);
+				}
+			}
+		}
+	}
 }
 static void maze_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
