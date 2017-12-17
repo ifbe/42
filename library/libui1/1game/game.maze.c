@@ -101,6 +101,41 @@ static void maze_read_html(struct arena* win, struct actor* act, struct style* s
 }
 static void maze_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
+	int x,y;
+	int w = win->w;
+	int h = win->h;
+	u8* buf = win->buf;
+	u8* p;
+
+	for(y=0;y<mazelens;y++)
+	{
+		for(x=0;x<mazelens;x++)
+		{
+			p = buf + (y*w*4) + (x*8);
+			if(((x&1) != 0)&&((y&1) == 0))
+			{
+				if(buffer[y][x] != 0)
+				{
+					mysnprintf(p, 4, "一");
+					continue;
+				}
+			}
+			if(((x&1) == 0)&&((y&1) != 0))
+			{
+				if(buffer[y][x] != 0)
+				{
+					mysnprintf(p, 4, "丨");
+					continue;
+				}
+			}
+			if(((x&1) == 0)&&((y&1) == 0))
+			{
+				mysnprintf(p, 4, "十");
+				continue;
+			}
+			mysnprintf(p, 4, "  ");
+		}
+	}
 }
 static void maze_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -113,7 +148,8 @@ static void maze_read_cli(struct arena* win, struct actor* act, struct style* st
 			{
 				if(buffer[y][x] != 0)
 				{
-					say("-");
+					//say("-");
+					say("一");
 					continue;
 				}
 			}
@@ -121,14 +157,21 @@ static void maze_read_cli(struct arena* win, struct actor* act, struct style* st
 			{
 				if(buffer[y][x] != 0)
 				{
-					say("|");
+					//say("|");
+					say("丨");
 					continue;
 				}
 			}
-			say(" ");
+			if(((x&1) == 0)&&((y&1) == 0))
+			{
+				say("十");
+				continue;
+			}
+			say("  ");
 		}
 		say("\n");
 	}
+	say("\n\n\n\n");
 }
 static void maze_read(struct arena* win, struct actor* act, struct style* sty)
 {

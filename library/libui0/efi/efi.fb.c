@@ -9,7 +9,6 @@
 #define __bgra8888__ hex64('b','g','r','a','8','8','8','8')
 #define __bgra8880__ hex64('b','g','r','a','8','8','8','0')
 void gethandleandtable(void* H, void* T);
-void say(void*, ...);
 
 
 

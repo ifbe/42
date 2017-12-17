@@ -24,12 +24,7 @@ double sine(double);
 //
 int readfile(u64, void*, u64, u64);
 int writefile(u64, void*, u64, u64);
-u64 startthread(void*, void*);
 void sleep_us(int);
-//
-void eventwrite(u64,u64,u64,u64);
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 

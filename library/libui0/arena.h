@@ -48,14 +48,19 @@ struct window
 	//data
 	union{
 		void* buf;
+		void* win;
 		u64 fd;
 	};
 	union{
 		u64 len;
 		u64 dc;
 		u64 gc;
+		void* er;
 	};
-	u64 ximage;
+	union{
+		u64 ximage;
+		void* texture;
+	};
 	u64 thread;
 
 	//where
@@ -76,3 +81,14 @@ struct window
 		struct point touch[16];
 	};
 };
+
+
+
+
+//
+u64 startthread(void*, void*);
+void stopthread(u64);
+//
+void eventwrite(u64,u64,u64,u64);
+void printmemory(void*, int);
+void say(void*, ...);

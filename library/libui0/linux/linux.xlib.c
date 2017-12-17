@@ -4,12 +4,6 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include "arena.h"
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
 
 
 

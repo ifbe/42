@@ -9,13 +9,7 @@
 #include<winuser.h>
 #include<commctrl.h>
 #include "arena.h"
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
 int lowlevel_input();
-void eventwrite(u64, u64, u64, u64);
-void say(char* fmt, ...);
 
 
 

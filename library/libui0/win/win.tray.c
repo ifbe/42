@@ -1,13 +1,8 @@
 #include<windows.h>
+#include"arena.h"
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-u64 startthread(void*, void*);
-void stopthread();
 
 
 

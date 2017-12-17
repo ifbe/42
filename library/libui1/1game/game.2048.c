@@ -118,7 +118,7 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 			drawline_rect(win, 0,
 				x0, y0, x1, y1);
 
-			if(len2048[tab[y][x]] != 0)continue;
+			if(len2048[tab[y][x]] == 0)continue;
 			drawdecimal(win, 0,
 				(x0+x1)/2, -8+(y0+y1)/2,
 				val2048[tab[y][x]]

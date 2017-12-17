@@ -8,17 +8,7 @@
  *  cc OSXWindow.m -o OSXWindow -framework Cocoa
  */
 #import "Cocoa/Cocoa.h"
-struct windata
-{
-	unsigned long long buf1;
-	unsigned long long buf2;
-	unsigned long long fmt;
-	unsigned long long dim;
-	unsigned long long w;
-	unsigned long long h;
-	unsigned long long d;
-	unsigned long long t;
-};
+#import "arena.h"
 CGContextRef  cgcxtref;
 //int main(int argc, const char * argv[])
 
@@ -37,7 +27,7 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct windata* p)
+void windowstart(struct window* this)
 {
 	void* data = malloc(2048*1024*4);
 	CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
@@ -48,9 +38,8 @@ void windowstart(struct windata* p)
 	);
 	CGColorSpaceRelease(colorspace);
 
-	p->buf1 = (unsigned long long)data;
-	p->w = 512;
-	p->h = 512;
+	this->w = 512;
+	this->h = 512;
 }
 void windowstop()
 {

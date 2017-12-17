@@ -1,7 +1,3 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,13 +9,7 @@
 #include <wayland-client-protocol.h>
 #include <wayland-server-protocol.h>
 #include <wayland-egl.h>
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
-void say(char*,...);
+#include "arena.h"
 
 
 

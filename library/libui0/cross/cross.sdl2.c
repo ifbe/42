@@ -2,76 +2,40 @@
 #include<stdlib.h>
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_video.h>
+#include"arena.h"
 #undef main
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
-void sleep_us(int);
-void say(void*, ...);
 
 
 
 
-//
-struct sdldata
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	SDL_Texture* texture;
-};
+static struct window* src;
 
 
 
 
-//自定义的种类码，不是sdl的不要混淆
-//0:退出
-//1:键盘按下
-//2:键盘松开
-//3:鼠标按下
-//4:鼠标松开
-//5:鼠标移动
-//0xff:时间
-void* uievent(struct sdldata* p)
+void* uievent(struct window* this)
 {
 	SDL_Event event;
-	p->window =SDL_CreateWindow(
+	this->win = SDL_CreateWindow(
 		"i am groot!",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		p->w, p->h,
+		this->w, this->h,
 		SDL_WINDOW_OPENGL
 	);
 
-	p->renderer = SDL_CreateRenderer(p->window, -1, 0);
+	this->er = SDL_CreateRenderer(this->win, -1, 0);
 
-	p->texture = SDL_CreateTexture(
-		p->renderer,
+	this->texture = SDL_CreateTexture(
+		this->er,
 		SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		p->w, p->h
+		this->w, this->h
 	);
 
-	//SDL_SetRenderDrawColor(p->renderer, 0, 0, 0, 255);
-	//SDL_RenderClear(p->renderer);
-	//SDL_RenderPresent(p->renderer);
+	//SDL_SetRenderDrawColor(this->er, 0, 0, 0, 255);
+	//SDL_RenderClear(this->er);
+	//SDL_RenderPresent(this->er);
 
 	while(1)
 	{
@@ -85,12 +49,12 @@ void* uievent(struct sdldata* p)
 		else if(event.type == SDL_USEREVENT)
 		{
 			SDL_UpdateTexture(
-				p->texture, NULL,
-				(void*)(p->buf1), (p->w)*4
+				this->texture, NULL,
+				src->buf, (this->w)*4
 			);
-			SDL_RenderClear(p->renderer);
-			SDL_RenderCopy(p->renderer, p->texture, NULL, NULL);
-			SDL_RenderPresent(p->renderer);
+			SDL_RenderClear(this->er);
+			SDL_RenderCopy(this->er, this->texture, NULL, NULL);
+			SDL_RenderPresent(this->er);
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
@@ -98,6 +62,10 @@ void* uievent(struct sdldata* p)
 			//say("val=%x\n",val);
 
 			if(val==0x1b)eventwrite(0x1b,0x64626b,0,0);
+			else if(val==0x4000003a)eventwrite(0xf1,0x64626b,0,0);
+			else if(val==0x4000003b)eventwrite(0xf2,0x64626b,0,0);
+			else if(val==0x4000003c)eventwrite(0xf3,0x64626b,0,0);
+			else if(val==0x4000003d)eventwrite(0xf4,0x64626b,0,0);
 			else if(val==0x40000052)eventwrite(0x48,0x64626b,0,0);
 			else if(val==0x40000050)eventwrite(0x4b,0x64626b,0,0);
 			else if(val==0x4000004f)eventwrite(0x4d,0x64626b,0,0);
@@ -128,9 +96,9 @@ void* uievent(struct sdldata* p)
 	}//while(1)
 
 	//释放sdl
-	SDL_DestroyTexture(p->texture);
-	SDL_DestroyRenderer(p->renderer);
-	SDL_DestroyWindow(p->window); 
+	SDL_DestroyTexture(this->texture);
+	SDL_DestroyRenderer(this->er);
+	SDL_DestroyWindow(this->win); 
 	SDL_Quit(); 
 	return 0;
 }
@@ -160,13 +128,18 @@ void windowchoose()
 void windowstop()
 {
 }
-void windowstart(struct sdldata* p)
+void windowstart(struct window* this)
 {
-	//准备rgb点阵
-	p->buf1 = (u64)malloc(2048*1024*4);
-
-	//
-	p->thread = startthread(uievent, p);
+	this->w = 512;
+        this->h = 512;
+        if(this->type == hex32('b','u','f',0))
+	{
+		src = this;
+	}
+	else
+	{
+		this->thread = startthread(uievent, this);
+	}
 }
 void windowdelete()
 {
