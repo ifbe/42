@@ -9,6 +9,7 @@ SRC = \
 0test/test.pure.c \
 1game/game.2048.c \
 1game/game.chess.c \
+1game/game.maze.c \
 1game/game.ooxx.c \
 1game/game.rubikscube.c \
 1game/game.snake.c \

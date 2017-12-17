@@ -78,17 +78,13 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 static void the2048_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 color;
-	u32 length;
-	int x,y;
-	int cx,cy,w,h;
-	int x0,y0,x1,y1;
+	int x,y,x0,y0,x1,y1;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int w = (win->w) * (sty->wantw) / 0x10000;
+	int h = (win->h) * (sty->wanth) / 0x10000;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
-	//position
-	cx = (win->w) * (sty->cx) / 0x10000;
-	cy = (win->h) * (sty->cy) / 0x10000;
-	w = (win->w) * (sty->wantw) / 0x10000;
-	h = (win->h) * (sty->wanth) / 0x10000;
 	if(w-h<-16 | w-h>16)
 	{
 		w = (w+h)/2;
@@ -122,12 +118,9 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 			drawline_rect(win, 0,
 				x0, y0, x1, y1);
 
-			//decimal
-			length = len2048[tab[y][x]];
-			if(length == 0)continue;
-
+			if(len2048[tab[y][x]] != 0)continue;
 			drawdecimal(win, 0,
-				-(length*16)+(x0+x1)/2, -32+(y0+y1)/2,
+				(x0+x1)/2, -8+(y0+y1)/2,
 				val2048[tab[y][x]]
 			);
 		}

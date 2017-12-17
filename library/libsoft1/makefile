@@ -142,6 +142,7 @@ libmem/libfmt/xx.font/font.ttf.c \
 libmem/libfmt/file.c \
 libmem/libgame/solve.2048.c \
 libmem/libgame/solve.chess.c \
+libmem/libgame/solve.maze.c \
 libmem/libgame/solve.rubikscube.c \
 libmem/libgame/solve.sudoku.c \
 libmem/libgame/solve.xiangqi.c \
