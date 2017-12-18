@@ -55,6 +55,7 @@ lib2d/photo/photo.scale.c \
 lib2d/lib2d.c \
 lib3d/carve/carve.point.c \
 lib3d/carve/carve.line.c \
+lib3d/carve/carve.plane.c \
 lib3d/carve/carve.shape.c \
 lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
