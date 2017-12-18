@@ -4,9 +4,8 @@ void maze_generate(void*, int);
 
 
 
-#define mazesize 16
-#define mazelens mazesize*2+1
-static u8 buffer[mazelens][mazelens];
+#define mazesize 32
+static u8 buffer[mazesize][mazesize];
 
 
 
@@ -20,40 +19,21 @@ static void maze_read_vbo(struct arena* win, struct actor* act, struct style* st
 	float ww = (float)(sty->wantw) / 65536.0 / mazesize;
 	float hh = (float)(sty->wanth) / 65536.0 / mazesize;
 
-	for(y=0;y<mazelens;y++)
+	for(y=0;y<mazesize;y++)
 	{
-		for(x=0;x<mazelens;x++)
+		for(x=0;x<mazesize;x++)
 		{
-			if(((x&1) != 0)&&((y&1) == 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					fx = (float)x*0.5;
-					fx = cx+(fx-mazesize/2)*ww;
-					fy = cy+(y/2-mazesize/2)*hh;
-					carvesolid_rect(
-						win, 0xffffff,
-						fx, fy, ww/2,
-						ww/2, 0.0, 0.0,
-						0.0, 0.0, ww/2
-					);
-				}
-			}
-			if(((x&1) == 0)&&((y&1) != 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					fx = cx+(x/2-mazesize/2)*ww;
-					fy = (float)y*0.5;
-					fy = cy+(fy-mazesize/2)*hh;
-					carvesolid_rect(
-						win, 0xffffff,
-						fx, fy, ww/2,
-						0.0, hh/2, 0.0,
-						0.0, 0.0, ww/2
-					);
-				}
-			}
+			if(buffer[y][x] == 0)continue;
+
+			fx = cx+(x+0.5-mazesize/2)*ww;
+			fy = cy+(y+0.5-mazesize/2)*hh;
+			carvesolid_prism4(
+				win, 0x808080,
+				fx, fy, 0.0,
+				ww/2, 0.0, 0.0,
+				0.0, hh/2, 0.0,
+				0.0, 0.0, ww/2
+			);
 		}
 	}
 }
@@ -65,34 +45,18 @@ static void maze_read_pixel(struct arena* win, struct actor* act, struct style* 
 	int ww = (win->w) * (sty->wantw) / 0x10000 / mazesize;
 	int hh = (win->h) * (sty->wanth) / 0x10000 / mazesize;
 
-	for(y=0;y<mazelens;y++)
+	for(y=0;y<mazesize;y++)
 	{
-		for(x=0;x<mazelens;x++)
+		for(x=0;x<mazesize;x++)
 		{
-			if(((x&1) != 0)&&((y&1) == 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					drawline(win, 0xff,
-						cx+(x/2-mazesize/2)*ww,
-						cy+(y/2-mazesize/2)*hh,
-						cx+(x/2-mazesize/2+1)*ww,
-						cy+(y/2-mazesize/2)*hh
-					);
-				}
-			}
-			if(((x&1) == 0)&&((y&1) != 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					drawline(win, 0xff,
-						cx+(x/2-mazesize/2)*ww,
-						cy+(y/2-mazesize/2)*hh,
-						cx+(x/2-mazesize/2)*ww,
-						cy+(y/2-mazesize/2+1)*hh
-					);
-				}
-			}
+			if(buffer[y][x] == 0)continue;
+
+			drawsolid_rect(win, 0x808080,
+				cx+(x-mazesize/2)*ww,
+				cy+(y-mazesize/2)*hh,
+				cx+(x+1-mazesize/2)*ww,
+				cy+(y+1-mazesize/2)*hh
+			);
 		}
 	}
 }
@@ -107,67 +71,25 @@ static void maze_read_tui(struct arena* win, struct actor* act, struct style* st
 	u8* buf = win->buf;
 	u8* p;
 
-	for(y=0;y<mazelens;y++)
+	for(y=0;y<mazesize;y++)
 	{
-		for(x=0;x<mazelens;x++)
+		for(x=0;x<mazesize;x++)
 		{
 			p = buf + (y*w*4) + (x*8);
-			if(((x&1) != 0)&&((y&1) == 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					mysnprintf(p, 4, "一");
-					continue;
-				}
-			}
-			if(((x&1) == 0)&&((y&1) != 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					mysnprintf(p, 4, "丨");
-					continue;
-				}
-			}
-			if(((x&1) == 0)&&((y&1) == 0))
-			{
-				mysnprintf(p, 4, "十");
-				continue;
-			}
-			mysnprintf(p, 4, "  ");
+			if(buffer[y][x] != 0)mysnprintf(p, 4, "⬛");
+			else mysnprintf(p, 4, "  ");
 		}
 	}
 }
 static void maze_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
-	for(y=0;y<mazelens;y++)
+	for(y=0;y<mazesize;y++)
 	{
-		for(x=0;x<mazelens;x++)
+		for(x=0;x<mazesize;x++)
 		{
-			if(((x&1) != 0)&&((y&1) == 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					//say("-");
-					say("一");
-					continue;
-				}
-			}
-			if(((x&1) == 0)&&((y&1) != 0))
-			{
-				if(buffer[y][x] != 0)
-				{
-					//say("|");
-					say("丨");
-					continue;
-				}
-			}
-			if(((x&1) == 0)&&((y&1) == 0))
-			{
-				say("十");
-				continue;
-			}
-			say("  ");
+			if(buffer[y][x] != 0)say("⬛");	//██
+			else say("  ");
 		}
 		say("\n");
 	}
@@ -208,7 +130,7 @@ static void maze_stop()
 }
 static void maze_start()
 {
-	maze_generate(buffer, mazelens);
+	maze_generate(buffer, mazesize);
 }
 void maze_delete()
 {

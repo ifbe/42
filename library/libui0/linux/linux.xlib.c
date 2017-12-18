@@ -179,26 +179,19 @@ void* uievent(struct window* this)
 		else if(ev.type == ButtonPress)
 		{
 			//printf("buttonpress\n");
-			if(ev.xbutton.button == Button4)	//front
-			{
-				x = (ev.xbutton.x<<16) / (this->w);
-				y = (ev.xbutton.y<<16) / (this->h);
-				k = 'f';
+			k = ev.xbutton.button;
+			if(k == Button1)k = 'l';	//left
+			else if(k == Button1)k = 'r';	//right
+			else if(k == Button1)k = 'm';	//middle
+			else if(k == Button4)k = 'f';	//front
+			else if(k == Button5)k = 'b';	//back
 
-				why = x + (y<<16) + (k<<48);
-				what = hex32('p', '+', 0, 0);
-				eventwrite(why, what, where, 0);
-			}
-			else if(ev.xbutton.button == Button5)	//back
-			{
-				x = (ev.xbutton.x<<16) / (this->w);
-				y = (ev.xbutton.y<<16) / (this->h);
-				k = 'b';
+			x = (ev.xbutton.x<<16) / (this->w);
+			y = (ev.xbutton.y<<16) / (this->h);
 
-				why = x + (y<<16) + (k<<48);
-				what = hex32('p', '+', 0, 0);
-				eventwrite(why, what, where, 0);
-			}
+			why = x + (y<<16) + (k<<48);
+			what = hex32('p', '+', 0, 0);
+			eventwrite(why, what, where, 0);
 
 			continue;
 		}//ButtonPress
