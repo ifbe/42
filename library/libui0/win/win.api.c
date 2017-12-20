@@ -42,14 +42,22 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 val;
 			switch(wparam)
 			{
-				case 0x70:{val = 0xf1;break;}
-				case 0x71:{val = 0xf2;break;}
-				case 0x72:{val = 0xf3;break;}
-				case 0x73:{val = 0xf4;break;}
 				case VK_UP:{val = 0x48;break;}
 				case VK_LEFT:{val = 0x4b;break;}
 				case VK_RIGHT:{val = 0x4d;break;}
 				case VK_DOWN:{val = 0x50;break;}
+				case 0x70:{val = 0xf1;break;}
+				case 0x71:{val = 0xf2;break;}
+				case 0x72:{val = 0xf3;break;}
+				case 0x73:{val = 0xf4;break;}
+				case 0x74:{val = 0xf5;break;}
+				case 0x75:{val = 0xf6;break;}
+				case 0x76:{val = 0xf7;break;}
+				case 0x77:{val = 0xf8;break;}
+				case 0x78:{val = 0xf9;break;}
+				case 0x79:{val = 0xfa;break;}
+				case 0x7a:{val = 0xfb;break;}
+				case 0x7b:{val = 0xfc;break;}
 				default:return 0;
 			}
 

@@ -17,6 +17,8 @@ int system_delete();
 int wire_create(void* world,void* func);
 int wire_delete();
 //
+int sound_explain(void*);
+int vision_explain(void*);
 int network_explain(void*);
 int readshell(int fd, char* buf, int off, int len);
 //
@@ -35,9 +37,16 @@ static u8* datahome = 0;
 int artery_explain(struct event* ev)
 {
 	int ret;
+	u64 where;
+	u64 type;
 	struct uartinfo* info;
-	u64 where = ev->where;
-	u64 type = obj[where].type_sock;
+
+	ret = (ev->what)&0xff;
+	if(ret == 's')return sound_explain(ev);
+	else if(ret == 'v')return vision_explain(ev);
+
+       	where = ev->where;
+       	type = obj[where].type_sock;
 	if(type == hex32('u','a','r','t'))
 	{
 		info = &obj[where].info;

@@ -31,8 +31,8 @@ void login_read_pixel(struct arena* win)
 
 	for(j=0;j<32;j++)
 	{
-		if(j == chosen)color = 0xff00ff;
-		else color = 0x0000ff;
+		if(j == chosen)color = 0x80ff00ff;
+		else color = 0x800000ff;
 
 		x = j%4;
 		y = j/4;

@@ -29,6 +29,7 @@ int input_write(void*, void*);
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
+static struct style* style = 0;
 
 
 
@@ -46,7 +47,7 @@ int actorread_one(struct arena* win)
 	//cli silent
 	if(win->fmt == hex32('c','l','i',0))
 	{
-		if(win->cw == 4)return 0;
+		if(win->cw == 12)return 0;
 	}
 
 	//canvas
@@ -65,15 +66,8 @@ int actorread_one(struct arena* win)
 	//bg
 	background(canvas);
 
-	//
-	rel = win->irel;
-	if(rel == 0)
-	{
-		login_read(canvas);
-		goto theend;
-	}
-
 	//content
+	rel = win->irel;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -84,9 +78,10 @@ int actorread_one(struct arena* win)
 			st = (void*)(rel->destfoot);
 			pl = (void*)(rel->selffoot);
 			//say("%x,%x,%x,%x\n", canvas, act, st, pl);
+			//say("%x\n", rel);
 
 			act->read(canvas, act, st, pl);
-			if(win->cw == 4)
+			if(win->cw == 12)
 			{
 				if(win->fmt == hex32('v','b','o',0))
 				{
@@ -102,7 +97,7 @@ int actorread_one(struct arena* win)
 	}
 
 	//fg
-	//???
+	if((win->irel == 0) | win->cw == 11)login_read(canvas);
 
 theend:
 	arenawrite(win, &arena[0]);
@@ -242,6 +237,7 @@ void actorcreate(u8* type, u8* addr)
 	//where
 	arena = (void*)(addr+0);
 	actor = (void*)(addr+0x100000);
+	style = (void*)(addr+0x200000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -266,6 +262,7 @@ void actordelete()
 	lib2d_delete();
 	lib1d_delete();
 
+	style = 0;
 	actor = 0;
 	arena = 0;
 }

@@ -573,14 +573,22 @@ void callback_special(int key, int x, int y)
 	where = (u64)win;
 	//printf("%x\n",key);
 
-	if(key == GLUT_KEY_F1)key = 0xf1;
-	else if(key == GLUT_KEY_F2)key = 0xf2;
-	else if(key == GLUT_KEY_F3)key = 0xf3;
-	else if(key == GLUT_KEY_F4)key = 0xf4;
-	else if(key == GLUT_KEY_UP)key = 0x48;
+	if(key == GLUT_KEY_UP)key = 0x48;
 	else if(key == GLUT_KEY_LEFT)key = 0x4b;
 	else if(key == GLUT_KEY_RIGHT)key = 0x4d;
 	else if(key == GLUT_KEY_DOWN)key = 0x50;
+	else if(key == GLUT_KEY_F1)key = 0xf1;
+	else if(key == GLUT_KEY_F2)key = 0xf2;
+	else if(key == GLUT_KEY_F3)key = 0xf3;
+	else if(key == GLUT_KEY_F4)key = 0xf4;
+	else if(key == GLUT_KEY_F5)key = 0xf5;
+	else if(key == GLUT_KEY_F6)key = 0xf6;
+	else if(key == GLUT_KEY_F7)key = 0xf7;
+	else if(key == GLUT_KEY_F8)key = 0xf8;
+	else if(key == GLUT_KEY_F9)key = 0xf9;
+	else if(key == GLUT_KEY_F10)key = 0xfa;
+	else if(key == GLUT_KEY_F11)key = 0xfb;
+	else if(key == GLUT_KEY_F12)key = 0xfc;
 	else return;
 
 	what = 0x64626b;
@@ -593,7 +601,7 @@ void callback_mouse(int button, int state, int x, int y)
 	u64 why, what, where;
 	//printf("1111: %x,%x\n",x,y);
 
-	if(win->cw == 4)
+	if(win->cw == 12)
 	{
 		where = (u64)win;
 		xx = x&0xffff;
@@ -672,7 +680,7 @@ void callback_move(int x,int y)
 	u64 why, what, where;
 	//printf("2222: %d,%d\n",x,y);
 
-	if(win->cw == 4)
+	if(win->cw == 12)
 	{
 		where = (u64)win;
 		xx = x&0xffff;

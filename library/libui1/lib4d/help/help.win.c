@@ -20,13 +20,6 @@ static int stlen = 0;
 
 
 
-void act_add()
-{
-	//copy struct
-}
-void act_del()
-{
-}
 void act_at(struct arena* win, struct actor* act)
 {
 	struct style* st = (void*)style + stlen;
@@ -36,7 +29,6 @@ void act_at(struct arena* win, struct actor* act)
 	st->cy = 0x4000 + (getrandom()%0x1000)*8;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
-	st->dim = 2;
 
 	relation_write(win, st, __win__, act, 0, __act__);
 }

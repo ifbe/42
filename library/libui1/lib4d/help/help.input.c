@@ -2,6 +2,7 @@
 int term_write(void*);
 int login_write(void*, void*);
 void* relation_read(u64);
+int relation_swap(void*, void*);
 int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 
 
@@ -144,71 +145,80 @@ void motion_explain(u64* p)
 		}//last one
 	}//point gone
 }
-int mouse_explain(struct arena* win, struct style* sty, struct event* ev)
-{
-	int j;
-	struct point* p;
-	struct point* q;
-	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
-
-	j = (ev->why) >> 48;
-	if(j == 'f')
-	{
-		sty->wantw = (sty->wantw)*15/16;
-		sty->wanth = (sty->wanth)*15/16;
-		return 0;
-	}
-	else if(j == 'b')
-	{
-		sty->wantw = (sty->wantw)*17/16;
-		sty->wanth = (sty->wanth)*17/16;
-		return 0;
-	}
-
-	if(j == 0x6c)j = 10;
-	if(j > 10)return 0;
-	p = (void*)ev;
-	q = (void*)&(win->touch[j]);
-
-	if(ev->what == hex32('p','@',0,0))
-	{
-		sty->cx += (int)(p->x) - (int)(q->x);
-		sty->cy += (int)(p->y) - (int)(q->y);
-
-		q->x = p->x;
-		q->y = p->y;
-	}
-	else if(ev->what == hex32('p','+',0,0))
-	{
-		q->x = p->x;
-		q->y = p->y;
-	}
-	else if(ev->what == hex32('p','-',0,0))
-	{
-		if(j == 2)
-		{
-			if(win->cw != 4)win->cw = 4;
-			else win->cw = 0;
-		}
-	}
-	return 0;
-}
 int point_explain(struct arena* win, struct event* ev)
 {
-	struct style* sty;
-	struct relation* rel;
+	int btn, absx, absy;
+	struct relation* reltop;
+	struct relation* relwow;
+	struct style* stytop;
+	struct style* stywow;
+	struct point* p;
+	struct point* q;
 
-	rel = win->irel;
-	if(rel == 0)return 1;
-
+	reltop = win->irel;
+	if(reltop == 0)return 1;
 	while(1)
 	{
-		if(rel->samepinnextchip == 0)break;
-		rel = relation_read(rel->samepinnextchip);
+		if(reltop->samepinnextchip == 0)
+		{
+			stytop = (void*)(reltop->destfoot);
+			break;
+		}
+		reltop = relation_read(reltop->samepinnextchip);
 	}
-	sty = (void*)(rel->destfoot);
-	mouse_explain(win, sty, ev);
 
+	stywow = 0;
+	p = (void*)ev;
+	relwow = reltop;
+	while(1)
+	{
+		if(relwow == 0)break;
+		stywow = (void*)(relwow->destfoot);
+
+		if(p->x > stywow->cx)absx = (p->x) - (stywow->cx);
+		else absx = (stywow->cx) - (p->x);
+		if(p->y > stywow->cy)absy = (p->y) - (stywow->cy);
+		else absy = (stywow->cy) - (p->y);
+//say("%x,%x,%x,%x\n",absx*2,absy*2,stywow->wantw, stywow->wanth);
+		if((absx*2 <= stywow->wantw)&&(absy*2 <= stywow->wanth))break;
+
+		relwow = relation_read(relwow->samepinprevchip);
+		stywow = 0;
+	}
+	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
+
+	btn = (ev->why) >> 48;
+	if(btn == 'f')
+	{
+		stytop->wantw = (stytop->wantw)*15/16;
+		stytop->wanth = (stytop->wanth)*15/16;
+		return 0;
+	}
+	else if(btn == 'b')
+	{
+		stytop->wantw = (stytop->wantw)*17/16;
+		stytop->wanth = (stytop->wanth)*17/16;
+		return 0;
+	}
+
+	if(btn == 0x6c)btn = 10;
+	if(btn > 10)return 0;
+	q = (void*)&(win->touch[btn]);
+
+	if(ev->what == hex32('p','+',0,0))
+	{
+		q->x = p->x;
+		q->y = p->y;
+		if(stywow != 0)relation_swap(reltop, relwow);
+	}
+	if(ev->what == hex32('p','@',0,0))
+	{
+		stytop->cx += (int)(p->x) - (int)(q->x);
+		stytop->cy += (int)(p->y) - (int)(q->y);
+
+		q->x = p->x;
+		q->y = p->y;
+	}
 	return 1;
 }
 int input_write(struct arena* win, struct event* ev)
@@ -229,15 +239,12 @@ int input_write(struct arena* win, struct event* ev)
 		return 0;
 	}
 
-	//f1,f2,f3,f4
+	//f11, f12
 	if(ev->what == __kbd__)
 	{
 		ret=0;
-
-		if(ev->why == 0xf1)ret = 1;
-		else if(ev->why == 0xf2)ret = 2;
-		else if(ev->why == 0xf3)ret = 3;
-		else if(ev->why == 0xf4)ret = 4;
+		if(ev->why == 0xfb)ret = 11;
+		else if(ev->why == 0xfc)ret = 12;
 
 		if(ret != 0)
 		{
@@ -247,29 +254,17 @@ int input_write(struct arena* win, struct event* ev)
 		}
 	}
 
-	//chosen
-	if(win->cw == 4)
+	if(win->cw == 11)
 	{
-		if(ev->what == __char__)
-		{
-			login_write(win, ev);
-			return 0;
-		}
-		else
-		{
-			ret = point_explain(win, ev);
-			if(ret != 0)return 0;
-		}
+		login_write(win, ev);
+		return 0;
 	}
-	else if(win->fmt == hex32('c','l','i',0))
+
+	//chosen
+	if(win->cw == 12)
 	{
-		if(ev->what == hex32('c','h','a','r'))
-		{
-			if(ev->why == 0x1b)
-			{
-				if(win->cw <4)win->cw++;
-			}
-		}
+		ret = point_explain(win, ev);
+		if(ret != 0)return 0;
 	}
 
 	return 1;

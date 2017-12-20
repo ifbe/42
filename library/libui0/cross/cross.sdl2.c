@@ -61,18 +61,28 @@ void* uievent(struct window* this)
 			int val = event.key.keysym.sym;
 			//say("val=%x\n",val);
 
-			if(val==0x1b)eventwrite(0x1b,0x64626b,0,0);
-			else if(val==0x4000003a)eventwrite(0xf1,0x64626b,0,0);
-			else if(val==0x4000003b)eventwrite(0xf2,0x64626b,0,0);
-			else if(val==0x4000003c)eventwrite(0xf3,0x64626b,0,0);
-			else if(val==0x4000003d)eventwrite(0xf4,0x64626b,0,0);
-			else if(val==0x40000052)eventwrite(0x48,0x64626b,0,0);
-			else if(val==0x40000050)eventwrite(0x4b,0x64626b,0,0);
-			else if(val==0x4000004f)eventwrite(0x4d,0x64626b,0,0);
-			else if(val==0x40000051)eventwrite(0x50,0x64626b,0,0);
-			else if(val==0x8)eventwrite(0x8,0x72616863,0,0);
-			else if(val==0xd)eventwrite(0xd,0x72616863,0,0);
-			else if((val>=0x20)&&(val<=0x7e))eventwrite(val, 0x72616863, 0, 0);
+			if(val >= 0xff)
+			{
+				val &= 0xff;
+				if((val>=0x3a)&&(val<=0x45))val += 0xf1-0x3a;
+				else if(val==0x52)val = 0x48;
+				else if(val==0x50)val = 0x4b;
+				else if(val==0x4f)val = 0x4d;
+				else if(val==0x51)val = 0x50;
+				else continue;
+
+				eventwrite(val,0x64626b,0,0);
+			}
+			else
+			{
+				if(val==0x1b)val = 0x1b;
+				else if(val==0x8)val = 0x8;
+				else if(val==0xd)val = 0xd;
+				else if((val>=0x20)&&(val<=0x7e))val = val;
+				else continue;
+
+				eventwrite(val, 0x72616863, 0, 0);
+			}
 		}
 /*
 		else if (event.type == SDL_TEXTINPUT)

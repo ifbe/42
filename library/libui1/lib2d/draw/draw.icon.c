@@ -19,30 +19,53 @@ void drawicon_1(
 	{
 		for(x=x0+8;x<x1-8;x++)
 		{
-			fb[y*width + x]=0xfff0f0f0;
+			fb[y*width + x] &= 0xfefefefe;
+			fb[y*width + x] >>= 1;
+			fb[y*width + x] |= 0x80000000;
+			fb[y*width + x] += 0x808080;
 		}
 	}
 
 	for(y=0;y<8;y++)
 	{
-		color = 0xff404040+(0x171717*y);
+		color = 0x101010*y;
 
 		p = fb + (y+y0)*width;
-		for(x=x0+y;x<x1-y;x++)p[x]=color;
+		for(x=x0+y;x<x1-y;x++)
+		{
+			p[x] &= 0xfefefefe;
+			p[x] >>= 1;
+			p[x] |= 0x80000000;
+			p[x] += color;
+		}
 
 		p = fb + (y1-1-y)*width;
-		for(x=x0+y;x<x1-y;x++)p[x]=color;
+		for(x=x0+y;x<x1-y;x++)
+		{
+			p[x] &= 0xfefefefe;
+			p[x] >>= 1;
+			p[x] |= 0x80000000;
+			p[x] += color;
+		}
 	}
 
 	for(x=0;x<8;x++)
 	{
-		color = 0xff404040+(0x171717*x);
+		color = 0x101010*x;
 
 		for(y=y0+x;y<y1-x;y++)
 		{
 			p = fb + y*width;
-			p[x0+x]=color;
-			p[x1-1-x]=color;
+
+			p[x0+x] &= 0xfefefefe;
+			p[x0+x] >>= 1;
+			p[x0+x] |= 0x80000000;
+			p[x0+x] += color;
+
+			p[x1-1-x] &= 0xfefefefe;
+			p[x1-1-x] >>= 1;
+			p[x1-1-x] |= 0x80000000;
+			p[x1-1-x] += color;
 		}
 	}
 

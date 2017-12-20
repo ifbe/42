@@ -37,6 +37,7 @@ void isr_8042()
 	ch = in8(0x64);
 	if((ch&1) != 1)return;
 	ch = in8(0x60);
+	say("%02x\n",ch);
 	if(ch == 0xe0)
 	{
 		ch = in8(0x60);
@@ -47,7 +48,9 @@ void isr_8042()
 	}
 	if(ch >= 0x80)return;
 	//say("%02x,%c\n",ch,keymap[ch]);
-	eventwrite(keymap[ch], __char__, 0, 0);
+	if((ch>=0x3b)&&(ch<=0x44))eventwrite(ch-0x3b+0xf1, __kbd__, 0, 0);
+	if((ch>=0x57)&&(ch<=0x58))eventwrite(ch-0x57+0xfb, __kbd__, 0, 0);
+	else eventwrite(keymap[ch], __char__, 0, 0);
 }
 void init8042()
 {
