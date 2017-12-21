@@ -10,13 +10,17 @@ static void clock_read_vbo(struct arena* win, struct actor* act, struct style* s
 static void clock_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
-	int j;
+	int j,k;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x20000;
-	int h = (win->h) * (sty->wanth) / 0x20000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
 	u64 date = getdate();
 	u8* p = (u8*)&date;
+
+	if(ww < hh)j = ww;
+	else j = hh;
+	drawsolid_circle(win, 0x222222, cx, cy, j);
 	for(j=6;j>=0;j--)
 	{
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);

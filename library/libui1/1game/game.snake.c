@@ -32,7 +32,7 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
 	int hh = (win->h) * (sty->wanth) / 0x20000;
-	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//body
 	j=0;

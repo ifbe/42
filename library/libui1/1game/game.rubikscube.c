@@ -92,6 +92,28 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 }
 static void rubikscube_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	u32 bg;
+	int x,y;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x60000;
+	int hh = (win->h) * (sty->wanth) / 0x60000;
+
+	bg = rubikcolor[2];
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<3;x++)
+		{
+			drawsolid_rect(win, bg,
+				cx+1 + ww*(2*x-3), cy+1 + hh*(2*y-3),
+				cx-1 + ww*(2*x-1), cy-1 + hh*(2*y-1)
+			);
+			drawdecimal(win, 0xffffff,
+				cx-4 + ww*2*(x-1), cy-8 + hh*2*(y-1),
+				buffer[2][y][x] & 0xf
+			);
+		}
+	}
 }
 static void rubikscube_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -144,7 +166,7 @@ static void rubikscube_stop()
 }
 static void rubikscube_start()
 {
-	rubikscube_generate(0);
+	rubikscube_generate(buffer);
 }
 void rubikscube_delete()
 {
