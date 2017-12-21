@@ -12,37 +12,19 @@ static u8 data[9];
 static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
-	int cx,cy,w,h;
-	cx = (win->w) * (sty->cx) / 0x10000;
-	cy = (win->h) * (sty->cy) / 0x10000;
-	w = (win->w) * (sty->wantw) / 0x10000;
-	h = (win->h) * (sty->wanth) / 0x10000;
-	if(w >= h)w=h;
-	else h=w;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
+	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//heng
-	drawline(
-		win, 0xffffff,
-		cx-w/2, cy-h/6,
-		cx+w/2, cy-h/6
-	);
-	drawline(
-		win, 0xffffff,
-		cx-w/2, cy+h/6,
-		cx+w/2, cy+h/6
-	);
+	drawline(win, 0xffffff, cx-ww, cy-hh/3, cx+ww, cy-hh/3);
+	drawline(win, 0xffffff, cx-ww, cy+hh/3, cx+ww, cy+hh/3);
 
 	//shu
-	drawline(
-		win, 0xffffff,
-		cx-w/6, cy-h/2,
-		cx-w/6, cy+h/2
-	);
-	drawline(
-		win, 0xffffff,
-		cx+w/6, cy-h/2,
-		cx+w/6, cy+h/2
-	);
+	drawline(win, 0xffffff, cx-ww/3, cy-hh, cx-ww/3, cy+hh);
+	drawline(win, 0xffffff, cx+ww/3, cy-hh, cx+ww/3, cy+hh);
 
 	//ox
 	for(y=0;y<3;y++)
@@ -51,22 +33,19 @@ static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* 
 		{
 			if(data[3*y + x] == 'o')
 			{
-				drawline_circle(
-					win, 0xff,
-					cx+(x-1)*w/3, cy+(y-1)*h/3, w/12
+				drawline_circle(win, 0xff,
+					cx+(x-1)*ww*2/3, cy+(y-1)*hh/3, ww/6
 				);
 			}
 			else if(data[3*y + x] == 'x')
 			{
-				drawline(
-					win, 0xff0000,
-					cx+(4*x-5)*w/12, cy+(4*y-5)*h/12,
-					cx+(4*x-3)*w/12, cy+(4*y-3)*h/12
+				drawline(win, 0xff0000,
+					cx+(4*x-5)*ww/6, cy+(4*y-5)*hh/6,
+					cx+(4*x-3)*ww/6, cy+(4*y-3)*hh/6
 				);
-				drawline(
-					win, 0xff0000,
-					cx+(4*x-5)*w/12, cy+(4*y-3)*h/12,
-					cx+(4*x-3)*w/12, cy+(4*y-5)*h/12
+				drawline(win, 0xff0000,
+					cx+(4*x-5)*ww/6, cy+(4*y-3)*hh/6,
+					cx+(4*x-3)*ww/6, cy+(4*y-5)*hh/6
 				);
 			}
 		}//forx

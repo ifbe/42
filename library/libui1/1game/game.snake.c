@@ -26,30 +26,22 @@ static int die=0;
 
 void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	//create screen
 	int j;
-	int cx,cy,w,h;
 	int t1, t2, t3, t4;
-	cx = (win->w) * (sty->cx) / 0x10000;
-	cy = (win->h) * (sty->cy) / 0x10000;
-	w = (win->w) * (sty->wantw) / 0x10000;
-	h = (win->h) * (sty->wanth) / 0x10000;
-	if(w >= h)w=h;
-	else h=w;
-	drawsolid_rect(
-		win, 0x888888,
-		cx-w/2, cy-h/2,
-		cx+w/2, cy+h/2
-	);
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
+	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	//snake
+	//body
 	j=0;
 	while(1)
 	{
-		t1 = (cx-w/2) + w * snake[j].x / worldwidth;
-		t2 = (cy-h/2) + h * snake[j].y / worldheight;
-		t3 = (cx-w/2) + w * (snake[j].x+1) / worldwidth;
-		t4 = (cy-h/2) + h * (snake[j].y+1) / worldheight;
+		t1 = cx-ww + snake[j].x * 2 * ww / worldwidth;
+		t2 = cy-hh + snake[j].y * 2 * hh / worldheight;
+		t3 = cx-ww + (snake[j].x+1) * 2 * ww / worldwidth;
+		t4 = cy-hh + (snake[j].y+1) * 2 * hh / worldheight;
 		drawsolid_rect(win, 0xffffff, t1, t2, t3, t4);
 		drawline_rect(win, 0x000000, t1, t2, t3, t4);
 
@@ -58,10 +50,10 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	}
 
 	//food
-	t1 = (cx-w/2) + w * foodx / worldwidth;
-	t2 = (cy-h/2) + h * foody / worldheight;
-	t3 = (cx-w/2) + w * (foodx+1) / worldwidth;
-	t4 = (cy-h/2) + h * (foody+1) / worldheight;
+	t1 = cx-ww + foodx * 2 * ww / worldwidth;
+	t2 = cy-hh + foody * 2 * hh / worldheight;
+	t3 = cx-ww + (foodx+1) * 2 * ww / worldwidth;
+	t4 = cy-hh + (foody+1) * 2 * hh / worldheight;
 	drawsolid_rect(win, 0x00ff00, t1, t2, t3, t4);
 	drawline_rect(win, 0x000000, t1, t2, t3, t4);
 }
@@ -183,6 +175,7 @@ void snake_write(struct event* ev)
 	}
 	if(k == 0)return;
 
+	say("%x\n",k);
 	if(k == 'a')
 	{
 		if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
@@ -193,7 +186,7 @@ void snake_write(struct event* ev)
 		snake[0].x--;
 		direction=1;
 	}
-	else if(key == 'd')
+	else if(k == 'd')
 	{
 		if(snake[0].x+1 == snake[1].x)
 		{
@@ -206,7 +199,7 @@ void snake_write(struct event* ev)
 		snake[0].x++;
 		direction=2;
 	}
-	else if(key == 'w')
+	else if(k == 'w')
 	{
 		if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
 		if( (snake[0].y-1) < 0){die=1;return;}
@@ -216,7 +209,7 @@ void snake_write(struct event* ev)
 		snake[0].y--;
 		direction=3;
 	}
-	else if(key == 's')
+	else if(k == 's')
 	{
 		if(snake[0].x == snake[1].x)
 		{

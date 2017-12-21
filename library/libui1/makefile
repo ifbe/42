@@ -3,10 +3,10 @@ cflag ?= -c -O2 -fPIC -I.
 SRC = \
 0test/test.clock.c \
 0test/test.codeimg.c \
-0test/test.color.c \
 0test/test.doodle.c \
+0test/test.example.c \
 0test/test.fractal.c \
-0test/test.pure.c \
+0test/test.palette.c \
 1game/game.2048.c \
 1game/game.chess.c \
 1game/game.maze.c \

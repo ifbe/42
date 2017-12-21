@@ -1,9 +1,4 @@
 #include "actor.h"
-void drawrect(
-	void* win,
-	int x1, int y1,
-	int x2, int y2,
-	u32 bc, u32 fc);
 
 
 
@@ -13,16 +8,13 @@ static void fractal_read_html(struct arena* win, struct actor* act, struct style
 }
 static void fractal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int cx, cy, w, h;
-	cx = (win->w) * (sty->cx) / 0x10000;
-	cy = (win->h) * (sty->cy) / 0x10000;
-	w = (win->w) * (sty->wantw) / 0x10000;
-	h = (win->h) * (sty->wanth) / 0x10000;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
 
-	drawsolid_rect(win, 0xff0000,
-		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
-	drawline_rect(win, 0x00ff00,
-		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+	drawsolid_rect(win, 0xff0000, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawline_rect( win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void fractal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {

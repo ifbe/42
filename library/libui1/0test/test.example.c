@@ -1,4 +1,5 @@
 #include "actor.h"
+u32 getrandom();
 
 
 
@@ -8,6 +9,16 @@ static void example_read_vbo(struct arena* win, struct actor* act, struct style*
 }
 static void example_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	u32 bg,fg;
+	int cx = (sty->cx) * (win->w) / 0x10000;
+	int cy = (sty->cy) * (win->h) / 0x10000;
+	int ww = (sty->wantw) * (win->w) / 0x20000;
+	int hh = (sty->wanth) * (win->h) / 0x20000;
+
+	bg = getrandom()&0xffffff;
+	fg = (~bg)&0xffffff;
+	drawsolid_rect(win, bg, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawhexadecimal(win, fg, cx, cy, bg);
 }
 static void example_read_html(struct arena* win, struct actor* act, struct style* sty)
 {

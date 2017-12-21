@@ -3,56 +3,41 @@
 
 
 //
-static int px=0,py=0;
+static int x1=-99,y1=10;
+static int x2=25,y2=-77;
+static int px=77,py=88;
 
 
 
 
 void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	int w = win->w;
+	int h = win->h;
+	int cx = (sty->cx) * w / 0x10000;
+	int cy = (sty->cy) * h / 0x10000;
+	int ww = (sty->wantw) * w / 0x20000;
+	int hh = (sty->wanth) * h / 0x20000;
+
 	//rect
-	drawsolid_rect(
-		win, 0xff00,
-		10, 10, 90, 90
-	);
-	drawline_rect(
-		win, 0xff00ff,
-		110, 10, 190,90
-	);
+	drawsolid_rect(win, 0x00ff00, 
+		cx-90, cy-90, cx-10, cy-10);
+	drawline_rect(win, 0xff00ff,
+		cx+50, cy-30, cx+60, cy-50);
 
 	//circle
-	drawsolid_circle(
-		win, 0xff,
-		50, 150, 40
-	);
-	drawline_circle(
-		win, 0xff0000, 
-		150, 150, 40
-	);
-
-	//moon
-	drawsolid_circle(
-		win, 0xffff00,
-		50, 250, 40
-	);
-	drawsolid_circle(
-		win, 0, 
-		40, 240, 40
-	);
+	drawsolid_circle(win, 0x0000ff,
+		cx-50, cy+40, 40);
+	drawline_circle(win, 0xff0000,
+		cx+70, cy+80, 40);
 
 	//bezier
-	drawline(
-		win, 0xffff, 
-		0, 256,  px,  py
-	);
-	drawline(
-		win, 0xffff,
-		512, 256,  px,  py
-	);
-	drawline_bezier(
-		win, 0xffff, 
-		0, 256, 512, 256, px, py
-	);
+	drawline(win, 0x00ffff,
+		cx+x1, cy+y1, cx+px, cy+py);
+	drawline(win, 0x00ffff,
+		cx+x2, cy+y2, cx+px, cy+py);
+	drawline_bezier(win, 0xffff,
+		cx+x1, cy+y1, cx+x2, cy+y2, cx+px, cy+py);
 }
 static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {

@@ -97,7 +97,7 @@ int actorread_one(struct arena* win)
 	}
 
 	//fg
-	if((win->irel == 0) | win->cw == 11)login_read(canvas);
+	if((win->irel == 0) | (win->cw == 11))login_read(canvas);
 
 theend:
 	arenawrite(win, &arena[0]);

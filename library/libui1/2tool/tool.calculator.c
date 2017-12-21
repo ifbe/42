@@ -26,31 +26,36 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 {
 	u32 fg;
 	int x,y;
-	int w8 = (win->w)/8;
-	int h8 = (win->h)/8;
+	int cx = (sty->cx) * (win->w) / 0x10000;
+	int cy = (sty->cy) * (win->h) / 0x10000;
+	int w8 = (sty->wantw) * (win->w) / 0x80000;
+	int h8 = (sty->wanth) * (win->h) / 0x80000;
 
-	drawsolid_rect(
-		win, 0,
-		0, 0, w8*8-1, h8*4-1
-	);
+	//display
+	drawsolid_rect(win, 0x222222, cx-w8*4, cy-h8*4, cx+w8*4, cy);
+	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4, buffer, 0);
+	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+16, infix, 0);
+	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+32, postfix, 0);
+	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+48, result, 0);
+
+	//keypad
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<8;x++)
 		{
-			if(x<4)fg = y*0x10 + x*0x100000;
-			else fg = x*0x10 + y*0x100000;
+			fg = 0x444444;
+			if(x<4)fg += (y<<4) + (x<<20);
+			else fg += (x<<4) + (y<<20);
 
 			drawsolid_rect(win, fg,
-				w8*x, h8*(y+4),
-				w8*(x+1), h8*(y+5)
+				cx+w8*(x-4), cy+h8*(y+0),
+				cx+w8*(x-3), cy+h8*(y+1)
 			);
-			drawascii(win, 0xffffff, w8*x, h8*(y+4), table[y][x]);
+			drawascii(win, 0xffffff,
+				cx+w8*(x-4), cy+h8*y, table[y][x]
+			);
 		}
 	}
-	drawstring(win, 0xffffff, 16, 16, buffer, 0);
-	drawstring(win, 0xffffff, 16, 16+32, infix, 0);
-	drawstring(win, 0xffffff, 16, 16+64, postfix, 0);
-	drawstring(win, 0xffffff, 16, 16+96, result, 0);
 }
 static void calculator_read_html(struct arena* win, struct actor* act, struct style* sty)
 {

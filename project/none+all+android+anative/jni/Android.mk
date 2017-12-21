@@ -215,6 +215,7 @@ library/libsoft1/libmem/libfmt/xx.font/font.ttf.c \
 library/libsoft1/libmem/libfmt/file.c \
 library/libsoft1/libmem/libgame/solve.2048.c \
 library/libsoft1/libmem/libgame/solve.chess.c \
+library/libsoft1/libmem/libgame/solve.maze.c \
 library/libsoft1/libmem/libgame/solve.rubikscube.c \
 library/libsoft1/libmem/libgame/solve.sudoku.c \
 library/libsoft1/libmem/libgame/solve.xiangqi.c \
@@ -268,75 +269,78 @@ library/libui0/arena.c
 
 #libui1
 LOCAL_SRC_FILES += \
-	library/libui1/0test/test.codeimg.c \
-	library/libui1/0test/test.color.c \
-	library/libui1/0test/test.doodle.c \
-	library/libui1/0test/test.fractal.c \
-	library/libui1/0test/test.pure.c \
-	library/libui1/1game/game.2048.c \
-	library/libui1/1game/game.chess.c \
-	library/libui1/1game/game.ooxx.c \
-	library/libui1/1game/game.rubikscube.c \
-	library/libui1/1game/game.snake.c \
-	library/libui1/1game/game.sudoku.c \
-	library/libui1/1game/game.tetris.c \
-	library/libui1/1game/game.weiqi.c \
-	library/libui1/1game/game.xiangqi.c \
-	library/libui1/2tool/tool.calculator.c \
-	library/libui1/2tool/tool.camera.c \
-	library/libui1/2tool/tool.circuit.c \
-	library/libui1/2tool/tool.font.c \
-	library/libui1/2tool/tool.qrcode.c \
-	library/libui1/2tool/tool.sketchpad.c \
-	library/libui1/2tool/tool.spectrum.c \
-	library/libui1/2tool/tool.stl.c \
-	library/libui1/2tool/tool.terminal.c \
-	library/libui1/3hack/hack.algo.c \
-	library/libui1/3hack/hack.browser.c \
-	library/libui1/3hack/hack.editor.c \
-	library/libui1/3hack/hack.hex.c \
-	library/libui1/3hack/hack.tree.c \
-	library/libui1/3hack/hack.joystick.c \
-	library/libui1/3hack/hack.keyboard.c \
-	library/libui1/lib1d/cli/print.cli.c \
-	library/libui1/lib1d/tui/print.tui.c \
-	library/libui1/lib1d/html/html.shape.c \
-	library/libui1/lib1d/json/json.shape.c \
-	library/libui1/lib1d/latex/latex.shape.c \
-	library/libui1/lib1d/xaml/xaml.shape.c \
-	library/libui1/lib1d/lib1d.c \
-	library/libui1/lib2d/draw/draw.ascii.c \
-	library/libui1/lib2d/draw/draw.icon.c \
-	library/libui1/lib2d/draw/draw.shape.c \
-	library/libui1/lib2d/draw/draw.ttf.c \
-	library/libui1/lib2d/draw/draw.vt100.c \
-	library/libui1/lib2d/photo/photo.blur.c \
-	library/libui1/lib2d/photo/photo.channel.c \
-	library/libui1/lib2d/photo/photo.convert.c \
-	library/libui1/lib2d/photo/photo.gray.c \
-	library/libui1/lib2d/photo/photo.mosaic.c \
-	library/libui1/lib2d/photo/photo.rotate.c \
-	library/libui1/lib2d/photo/photo.scale.c \
-	library/libui1/lib2d/lib2d.c \
-	library/libui1/lib3d/carve/carve.point.c \
-	library/libui1/lib3d/carve/carve.line.c \
-	library/libui1/lib3d/carve/carve.shape.c \
-	library/libui1/lib3d/model/model.magnify.c \
-	library/libui1/lib3d/model/model.minify.c \
-	library/libui1/lib3d/model/model.rotate.c \
-	library/libui1/lib3d/lib3d.c \
-	library/libui1/lib4d/asset/asset.font.c \
-	library/libui1/lib4d/asset/asset.image.c \
-	library/libui1/lib4d/asset/asset.sound.c \
-	library/libui1/lib4d/asset/asset.texture.c \
-	library/libui1/lib4d/help/help.bgfg.c \
-	library/libui1/lib4d/help/help.ctx.c \
-	library/libui1/lib4d/help/help.input.c \
-	library/libui1/lib4d/help/help.login.c \
-	library/libui1/lib4d/help/help.term.c \
-	library/libui1/lib4d/help/help.win.c \
-	library/libui1/lib4d/lib4d.c \
-	library/libui1/actor.c
+library/libui1/0test/test.clock.c \
+library/libui1/0test/test.codeimg.c \
+library/libui1/0test/test.doodle.c \
+library/libui1/0test/test.example.c \
+library/libui1/0test/test.fractal.c \
+library/libui1/0test/test.palette.c \
+library/libui1/1game/game.2048.c \
+library/libui1/1game/game.chess.c \
+library/libui1/1game/game.maze.c \
+library/libui1/1game/game.ooxx.c \
+library/libui1/1game/game.rubikscube.c \
+library/libui1/1game/game.snake.c \
+library/libui1/1game/game.sudoku.c \
+library/libui1/1game/game.tetris.c \
+library/libui1/1game/game.weiqi.c \
+library/libui1/1game/game.xiangqi.c \
+library/libui1/2tool/tool.calculator.c \
+library/libui1/2tool/tool.camera.c \
+library/libui1/2tool/tool.circuit.c \
+library/libui1/2tool/tool.font.c \
+library/libui1/2tool/tool.qrcode.c \
+library/libui1/2tool/tool.sketchpad.c \
+library/libui1/2tool/tool.spectrum.c \
+library/libui1/2tool/tool.stl.c \
+library/libui1/2tool/tool.terminal.c \
+library/libui1/3hack/hack.algo.c \
+library/libui1/3hack/hack.browser.c \
+library/libui1/3hack/hack.editor.c \
+library/libui1/3hack/hack.hex.c \
+library/libui1/3hack/hack.tree.c \
+library/libui1/3hack/hack.joystick.c \
+library/libui1/3hack/hack.keyboard.c \
+library/libui1/lib1d/cli/print.cli.c \
+library/libui1/lib1d/tui/print.tui.c \
+library/libui1/lib1d/html/html.shape.c \
+library/libui1/lib1d/json/json.shape.c \
+library/libui1/lib1d/latex/latex.shape.c \
+library/libui1/lib1d/xaml/xaml.shape.c \
+library/libui1/lib1d/lib1d.c \
+library/libui1/lib2d/draw/draw.ascii.c \
+library/libui1/lib2d/draw/draw.icon.c \
+library/libui1/lib2d/draw/draw.shape.c \
+library/libui1/lib2d/draw/draw.ttf.c \
+library/libui1/lib2d/draw/draw.vt100.c \
+library/libui1/lib2d/photo/photo.blur.c \
+library/libui1/lib2d/photo/photo.channel.c \
+library/libui1/lib2d/photo/photo.convert.c \
+library/libui1/lib2d/photo/photo.gray.c \
+library/libui1/lib2d/photo/photo.mosaic.c \
+library/libui1/lib2d/photo/photo.rotate.c \
+library/libui1/lib2d/photo/photo.scale.c \
+library/libui1/lib2d/lib2d.c \
+library/libui1/lib3d/carve/carve.point.c \
+library/libui1/lib3d/carve/carve.line.c \
+library/libui1/lib3d/carve/carve.plane.c \
+library/libui1/lib3d/carve/carve.shape.c \
+library/libui1/lib3d/model/model.magnify.c \
+library/libui1/lib3d/model/model.minify.c \
+library/libui1/lib3d/model/model.rotate.c \
+library/libui1/lib3d/lib3d.c \
+library/libui1/lib4d/asset/asset.font.c \
+library/libui1/lib4d/asset/asset.image.c \
+library/libui1/lib4d/asset/asset.sound.c \
+library/libui1/lib4d/asset/asset.texture.c \
+library/libui1/lib4d/help/help.bgfg.c \
+library/libui1/lib4d/help/help.ctx.c \
+library/libui1/lib4d/help/help.input.c \
+library/libui1/lib4d/help/help.login.c \
+library/libui1/lib4d/help/help.term.c \
+library/libui1/lib4d/help/help.win.c \
+library/libui1/lib4d/lib4d.c \
+library/libui1/actor.c
 
 
 

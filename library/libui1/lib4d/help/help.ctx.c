@@ -25,14 +25,14 @@ void clock_create(u8*,u8*);
 void clock_delete();
 void codeimg_create(u8*,u8*);
 void codeimg_delete();
-void color_create(u8*,u8*);
-void color_delete();
 void doodle_create(u8*,u8*);
 void doodle_delete();
+void example_create(u8*,u8*);
+void example_delete();
 void fractal_create(u8*,u8*);
 void fractal_delete();
-void pure_create(u8*,u8*);
-void pure_delete();
+void palette_create(u8*,u8*);
+void palette_delete();
 //hack
 void algorithm_create(u8*,u8*);
 void algorithm_delete();
@@ -65,9 +65,6 @@ void stl_create(u8*,u8*);
 void stl_delete();
 void terminal_create(u8*,u8*);
 void terminal_delete();
-//
-void backgroundcolor(void*, u32);
-void vt100_read(void*, int, int, int, int);
 
 
 
@@ -124,20 +121,20 @@ int content_create(u8* addr)
 	clock_create(addr, temp);
 	temp += 0x100;
 
-	//test.color
-	color_create(addr, temp);
-	temp += 0x100;
-
 	//test.doodle
 	doodle_create(addr, temp);
+	temp += 0x100;
+
+	//test.example
+	example_create(addr, temp);
 	temp += 0x100;
 
 	//test.fractal
 	fractal_create(addr, temp);
 	temp += 0x100;
 
-	//test.pure
-	pure_create(addr, temp);
+	//test.palette
+	palette_create(addr, temp);
 	temp += 0x100;
 
 	//tool.calculator
@@ -233,10 +230,10 @@ void content_delete()
 	chess_delete();
 	the2048_delete();
 
-	pure_delete();
+	palette_delete();
 	fractal_delete();
+	example_delete();
 	doodle_delete();
-	color_delete();
 	codeimg_delete();
 	clock_delete();
 }

@@ -8,7 +8,7 @@ static int arealeft = 16384;
 static int areatop = 32768;
 static int arearight = 49152;
 static int areabottom = 49152;
-static char table[8][8] = {
+static u8 table[8][8] = {
 	'a','b','c','d','e','f','g','h',
 	'i','j','k','l','m','n','o','p',
 	'q','r','s','t','u','v','w','x',
