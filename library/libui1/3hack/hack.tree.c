@@ -8,12 +8,11 @@ double calculator(void* postfix);
 
 struct mathnode{
 
-	u32 type;
-	u32 up;
-	u32 left;
-	u32 right;
+	u16 type;
+	u16 up;
+	u16 left;
+	u16 right;
 	union{
-		char datasize[16];
 		double floatpoint;
 		unsigned long long integer;
 	};
@@ -63,11 +62,11 @@ static void printnode(struct arena* win, int x,int y,int num)
 	}
 
 	//self
-	if(node[num].type == 0x33323130)	//0,1,2,3...
+	if(node[num].type == '0')	//0,1,2,3...
 	{
 		drawdouble(win, 0xffffff, x, temp, node[num].floatpoint);
 	}
-	else if(node[num].type == 0x2f2a2d2b)		//+,-,*,/...
+	else if(node[num].type == '+')		//+,-,*,/...
 	{
 		drawascii(win, 0xffffff, x, temp, node[num].integer & 0xff);
 	}
@@ -98,7 +97,7 @@ static void tree_read_pixel(struct arena* win, struct actor* act, struct style* 
 	if(node==0)return;
 
 	//等式
-	if(node[0].type==0x3d3d3d3d)
+	if(node[0].type == '=')
 	{
 		printnode(win, (win->w)/2, 1, 0);
 	}
@@ -188,7 +187,7 @@ static void tree_stop()
 void tree_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	node=(struct mathnode*)(base+0x200000);
+	node=(struct mathnode*)(base+0x300000);
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('t', 'r', 'e', 'e');

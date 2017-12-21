@@ -1,3 +1,0 @@
-void aac_read()
-{
-}

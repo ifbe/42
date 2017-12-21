@@ -3,25 +3,14 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int data_create(void*,void*);
-int data_delete();
-//
-int file_create(void*,void*);
-int file_delete();
-//
 int lang_create(void*,void*);
 int lang_delete();
 //
 int text_create(void*,void*);
 int text_delete();
 //
-int cmp(void*,void*);
-int hexstr2data(u8*,u64*);
-//
 int readfile(u64 file, u8* mem, u64 offset, u64 count);
 int writefile(u64 file, u8* mem, u64 offset, u64 count);
-int startfile(void*);
-int stopfile(u64);
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -156,12 +145,6 @@ int memory_create(u8* base, u64* p)
 	p[7]=(u64)memory_write;
 	q += 0x100;
 
-	data_create(base, q);
-	q += 0x100;
-
-	file_create(base, q);
-	q += 0x100;
-
 	lang_create(base, q);
 	q += 0x100;
 
@@ -172,12 +155,7 @@ int memory_create(u8* base, u64* p)
 }
 int memory_delete()
 {
-	data_delete();
-
-	file_delete();
-
 	text_delete();
-
 	lang_delete();
 	return 0;
 }

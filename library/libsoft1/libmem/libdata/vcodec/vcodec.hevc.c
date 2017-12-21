@@ -1,3 +1,0 @@
-void hevc_read()
-{
-}

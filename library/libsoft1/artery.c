@@ -6,14 +6,10 @@ int chem_create(void* world,void* func);
 int chem_delete();
 int flow_create(void* world,void* func);
 int flow_delete();
-int math_create(void* world,void* func);
-int math_delete();
 int memory_create(void* world,void* func);
 int memory_delete();
 int phys_create(void* world,void* func);
 int phys_delete();
-int system_create(void* world,void* func);
-int system_delete();
 int wire_create(void* world,void* func);
 int wire_delete();
 //
@@ -93,10 +89,8 @@ void arterycreate(u8* type, u8* addr)
 	p += bio_create(addr, p);
 	p += chem_create(addr, p);
 	p += flow_create(addr, p);
-	p += math_create(addr, p);
 	p += memory_create(addr, p);
 	p += phys_create(addr, p);
-	p += system_create(addr, p);
 	p += wire_create(addr, p);
 
 	//
@@ -109,10 +103,8 @@ void arterydelete()
 
 	//
 	wire_delete();
-	system_delete();
 	phys_delete();
 	memory_delete();
-	math_delete();
 	flow_delete();
 	chem_delete();
 	bio_delete();

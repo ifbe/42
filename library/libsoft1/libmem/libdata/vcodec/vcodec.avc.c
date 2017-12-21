@@ -1,3 +1,0 @@
-void avc_read()
-{
-}
