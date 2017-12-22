@@ -42,48 +42,12 @@ struct relation
 	u32 samechipnextpin;
 };
 static struct relation* recycle = 0;
-static u8* wirebuf = 0;
+static struct relation* wirebuf = 0;
 static int wirecur = 0x40;
 static int wirelen = 0x100000;
-
-
-
-
 void initrelation(void* addr)
 {
 	wirebuf = addr+0x300000;
-}
-void* relation_generate(
-	void* uchip, u64 ufoot, u32 utype,
-	void* bchip, u64 bfoot, u32 btype)
-{
-	struct relation* w = (void*)wirebuf + wirecur;
-	wirecur += sizeof(struct relation);
-
-	//1.dest
-	w->destchip = (u64)uchip;
-	w->destfoot = ufoot;
-
-	w->desttype = utype;
-	w->destflag = 0;
-
-	w->samepinprevchip = 0;
-	w->samepinnextchip = 0;
-
-	//2.self
-	w->selfchip = (u64)bchip;
-	w->selffoot = bfoot;
-
-	w->selftype = btype;
-	w->selfflag = 0;
-
-	w->samechipprevpin = 0;
-	w->samechipnextpin = 0;
-
-	return w;
-}
-void relation_destory(struct relation* p)
-{
 }
 void relation_debug(struct relation* rel)
 {
@@ -103,6 +67,52 @@ void relation_debug(struct relation* rel)
 		rel = next;
 	}
 	say("\n");
+}
+void relation_recycle(struct relation* rel)
+{
+	struct relation* temp;
+	if(rel == 0)return;
+
+	if(wirecur == (void*)rel - (void*)wirebuf + sizeof(struct relation))
+	{
+		wirecur -= sizeof(struct relation);
+		return;
+	}
+
+	rel->samepinprevchip = 0;
+	rel->samepinnextchip = 0;
+
+	if(recycle == 0)
+	{
+		recycle = rel;
+		return;
+	}
+
+	temp = recycle;
+	while(1)
+	{
+		if(temp->samepinnextchip == 0)
+		{
+			temp->samepinnextchip = (void*)rel - (void*)wirebuf;
+			break;
+		}
+		temp = (void*)wirebuf + (temp->samepinnextchip);
+	}
+}
+void* relation_grow()
+{
+	struct relation* temp;
+	if(recycle == 0)
+	{
+       		temp = (void*)wirebuf + wirecur;
+		wirecur += sizeof(struct relation);
+		return temp;
+	}
+
+	temp = recycle;
+	if(temp->samepinnextchip == 0)recycle = 0;
+	else recycle = (void*)wirebuf + (temp->samepinnextchip);
+	return temp;
 }
 void relation_swap(struct relation* m, struct relation* n)
 {
@@ -187,6 +197,71 @@ void relation_swap(struct relation* m, struct relation* n)
 	}
 
 	//relation_debug(uchip->irel);
+}
+
+
+
+
+
+
+
+
+void* relation_generate(
+	void* uchip, u64 ufoot, u32 utype,
+	void* bchip, u64 bfoot, u32 btype)
+{
+	struct relation* w = relation_grow();
+	if(w == 0)return 0;
+
+	//1.dest
+	w->destchip = (u64)uchip;
+	w->destfoot = ufoot;
+
+	w->desttype = utype;
+	w->destflag = 0;
+
+	w->samepinprevchip = 0;
+	w->samepinnextchip = 0;
+
+	//2.self
+	w->selfchip = (u64)bchip;
+	w->selffoot = bfoot;
+
+	w->selftype = btype;
+	w->selfflag = 0;
+
+	w->samechipprevpin = 0;
+	w->samechipnextpin = 0;
+
+	return w;
+}
+void relation_destory(struct relation* this)
+{
+	struct item* uchip;
+	struct relation* prev;
+	struct relation* next;
+	if(this == 0)return;
+
+	if(this->samepinprevchip == 0)prev = 0;
+	else prev = (void*)wirebuf + (this->samepinprevchip);
+	if(this->samepinnextchip == 0)next = 0;
+	else next = (void*)wirebuf + (this->samepinnextchip);
+
+	if(prev != 0)
+	{
+		if(next == 0)prev->samepinnextchip = 0;
+		else prev->samepinnextchip = (void*)next - (void*)wirebuf;
+	}
+	if(next != 0)
+	{
+		if(prev == 0)next->samepinprevchip = 0;
+		else next->samepinprevchip = (void*)prev - (void*)wirebuf;
+	}
+
+	uchip = (void*)(this->destchip);
+	if(this == uchip->irel)uchip->irel = next;
+
+	relation_recycle(this);
 }
 
 

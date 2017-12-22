@@ -9,13 +9,14 @@ void infix2postfix(void* infix, void* postfix);
 
 
 //
-struct mathnode{
-
-	u16 type;
-	u16 up;
+struct mathnode
+{
 	u16 left;
 	u16 right;
-	union{
+	u16 up;
+	u16 type;
+	union
+	{
 		double floatpoint;
 		unsigned long long integer;
 	};

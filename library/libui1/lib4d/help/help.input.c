@@ -3,7 +3,7 @@ int term_write(void*);
 int login_write(void*, void*);
 void* relation_read(u64);
 int relation_swap(void*, void*);
-int relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
+int relation_destory(void*);
 
 
 
@@ -221,6 +221,21 @@ int point_explain(struct arena* win, struct event* ev)
 	}
 	return 1;
 }
+int delete_explain(struct arena* win)
+{
+	struct relation* rel;
+	if(win == 0)return 0;
+	if(win->irel == 0)return 0;
+
+	rel = win->irel;
+	while(1)
+	{
+		if(rel->samepinnextchip == 0)break;
+		rel = relation_read(rel->samepinnextchip);
+	}
+	relation_destory(rel);
+	return 1;
+}
 int input_write(struct arena* win, struct event* ev)
 {
 	int ret;
@@ -254,6 +269,7 @@ int input_write(struct arena* win, struct event* ev)
 		}
 	}
 
+	//build
 	if(win->cw == 11)
 	{
 		login_write(win, ev);
@@ -263,8 +279,16 @@ int input_write(struct arena* win, struct event* ev)
 	//chosen
 	if(win->cw == 12)
 	{
-		ret = point_explain(win, ev);
-		if(ret != 0)return 0;
+		if(ev->what == __char__)
+		{
+			delete_explain(win);
+			return 0;
+		}
+		else
+		{
+			ret = point_explain(win, ev);
+			if(ret != 0)return 0;
+		}
 	}
 
 	return 1;

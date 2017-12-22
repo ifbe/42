@@ -35,6 +35,8 @@ libalgo/sorting/sort.select.c \
 libalgo/transform/trfm.cosine.c \
 libalgo/transform/trfm.fourier.c \
 libalgo/transform/trfm.laplace.c \
+libalgo/tree/tree.binary.c \
+libalgo/tree/tree.redblack.c \
 libflow/libmotion/motion.c \
 libflow/libnet/0.phy/phy.bt.c \
 libflow/libnet/0.phy/phy.eth.c \
