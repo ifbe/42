@@ -22,6 +22,8 @@ libalgo/hash/hash.sha512.c \
 libalgo/hash/hash.string.c \
 libalgo/keyexch/keyexch.dh.c \
 libalgo/keyexch/keyexch.ecdhe.c \
+libalgo/linear/linear.queue.c \
+libalgo/linear/linear.stack.c \
 libalgo/matching/match.bm.c \
 libalgo/matching/match.kmp.c \
 libalgo/matching/match.rough.c \

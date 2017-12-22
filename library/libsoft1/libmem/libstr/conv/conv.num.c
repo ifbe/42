@@ -187,3 +187,42 @@ int double2decstr(double data, u8* str)
 	str[offset]=0;
 	return offset;
 }
+int decstr2double(u8* src, double* data)
+{
+	int j;
+	u64 temp;
+	double asdf;
+
+stage1:
+	temp = 0;
+	for(j=0;j<20;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			temp = (temp*10) + src[j] - 0x30;
+		}
+		else if(src[j] == '.')
+		{
+			j++;
+			*data = (double)temp;
+			goto stage2;
+		}
+		else
+		{
+			*data = (double)temp;
+			return j;
+		}
+	}
+
+stage2:
+	asdf = 0.1;
+	for(;j<30;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			*data += (src[j]-0x30)*asdf;
+			asdf *= 0.1;
+		}
+		else return j;
+	}
+}
