@@ -5,6 +5,8 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 u32 getrandom();
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -32,6 +34,7 @@ void* bintree_grow(struct bintree* root)
 	{
        		temp = (void*)root + (root->up);
 		root->up += 0x10;
+		//say("temp1=%llx\n",temp);
 		return temp;
 	}
 
@@ -44,11 +47,13 @@ void* bintree_grow(struct bintree* root)
 			if((void*)root + (upup->left) == temp)
 			{
 				upup->left = 0;
+				//say("temp2=%llx\n",temp);
 				return temp;
 			}
 			else
 			{
 				upup->right = 0;
+				//say("temp3=%llx\n",temp);
 				return temp;
 			}
 		}
@@ -143,6 +148,43 @@ void* bintree_delete(struct bintree* root, struct bintree* this)
 	else
 	{
 	}
+}
+void bintree_fix(struct bintree* root, int lr,
+	struct bintree* parent, struct bintree* child)
+{
+	if(root == 0)return;
+	if(parent == 0)return;
+	if(child == 0)return;
+
+	if(parent == root)
+	{
+		root->right = (void*)child - (void*)root;
+		child->up = 0;
+	}
+	else if(lr == 'l')
+	{
+		parent->left = (void*)child - (void*)root;
+		child->up = (void*)parent - (void*)root;
+	}
+	else if(lr == 'r')
+	{
+		parent->right = (void*)child - (void*)root;
+		child->up = (void*)parent - (void*)root;
+	}
+}
+void* bintree_getleft(struct bintree* root, struct bintree* this)
+{
+	if(root == 0)return 0;
+	if(this == 0)return 0;
+	if(this->left == 0)return 0;
+	return (void*)root + (this->left);
+}
+void* bintree_getright(struct bintree* root, struct bintree* this)
+{
+	if(root == 0)return 0;
+	if(this == 0)return 0;
+	if(this->right == 0)return 0;
+	return (void*)root + (this->right);
 }
 
 

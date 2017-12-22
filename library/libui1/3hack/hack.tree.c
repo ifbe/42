@@ -1,12 +1,14 @@
 #include "actor.h"
-void postfix2binarytree(void* postfix, void* out);
-void infix2postfix(void* infix, void* postfix);
-double calculator(void* postfix);
+int double2decstr(double, void*);
+void infix2postfix(void*, void*);
+void postfix2binarytree(void*, void*);
+void* bintree_getleft(void*, void*);
+void* bintree_getright(void*, void*);
 
 
 
 
-struct mathnode
+struct bintree
 {
 	u16 left;
 	u16 right;
@@ -14,11 +16,11 @@ struct mathnode
 	u16 type;
 	union
 	{
+		u64 integer;
 		double floatpoint;
-		unsigned long long integer;
 	};
 };
-static struct mathnode* node=0;
+static struct bintree* node=0;
 static int count=0;
 static u8 buffer[128];
 static u8 postfix[128];
@@ -26,18 +28,73 @@ static u8 postfix[128];
 
 
 
-static void printnode(struct arena* win, int x,int y,int num)
+static void printnode(struct arena* win, struct bintree* this, int x, int y,
+	int cx, int cy, int ww, int hh)
 {
-	int left,right;
-	int offset,temp;
+	int j,k;
+	struct bintree* left;
+	struct bintree* right;
+	u8 data[32];
 
-	//拿
-	//say("node:%d\n",num);
-	if(y>13)return;
-	left=node[num].left;
-	right=node[num].right;
+	//0,1,2,3...
+	if(this->type == '0')
+	{
+		j = double2decstr(this->floatpoint, data);
+		drawicon_1(win, 0x0000ff,
+			x-32, cy-hh+y*64-16,
+			x+32, cy-hh+y*64+16,
+			data, j
+		);
+	}
 
-	//偏移
+	//+,-,*,/...
+	else if(this->type == '+')
+	{
+		drawicon_1(win, 0x00ff00,
+			x-32, cy-hh+y*64-16,
+			x+32, cy-hh+y*64+16,
+			(u8*)&(this->integer), 1
+		);
+	}
+
+	//x,y,z
+	else
+	{
+		drawicon_1(win, 0xff0000,
+			x-32, cy-hh+y*64-16,
+			x+32, cy-hh+y*64+16,
+			(u8*)&(this->type), 1
+		);
+	}
+
+	k = ww;
+	for(j=y+1;j>0;j--)k = k>>1;
+
+	left = bintree_getleft(node, this);
+	if(left != 0)
+	{
+		drawline(win, 0xffffff,
+			x, cy-hh+y*64+16,
+			x-k, cy-hh+y*64+48
+		);
+		printnode(win, left, x-k, y+1,
+			cx, cy, ww, hh
+		);
+	}
+
+	right = bintree_getright(node, this);
+	if(right != 0)
+	{
+		drawline(win, 0xffffff,
+			x, cy-hh+y*64+16,
+			x+k, cy-hh+y*64+48
+		);
+		printnode(win, right, x+k, y+1,
+			cx, cy, ww, hh
+		);
+	}
+
+/*
 	offset = (win->w)/4;
 	temp = y;
 	while(1)
@@ -48,33 +105,6 @@ static void printnode(struct arena* win, int x,int y,int num)
 		offset >>= 1;
 	}
 	//say("offset=%d\n",offset);
-
-	//位置
-	temp=y*64;
-	if(node[ node[num].up ].left == num)	//是左边
-	{
-		if(node[num].left==0&&node[num].right==0)	//而且是叶子
-		{
-			if(y>=7)		//而且放不下了
-			{
-				temp+=16;
-			}
-		}
-	}
-
-	//self
-	if(node[num].type == '0')	//0,1,2,3...
-	{
-		drawdouble(win, 0xffffff, x, temp, node[num].floatpoint);
-	}
-	else if(node[num].type == '+')		//+,-,*,/...
-	{
-		drawascii(win, 0xffffff, x, temp, node[num].integer & 0xff);
-	}
-	else
-	{
-		drawascii(win, 0xffffff, x, temp, node[num].type & 0xff);
-	}
 
 	//left
 	if(left!=0&&left<128)
@@ -90,24 +120,27 @@ static void printnode(struct arena* win, int x,int y,int num)
 		printnode(win, x+offset , y+1 , right );
 	}
 	//say("this=%d,left=%d,right=%d\n",num,left,right);
+*/
 }
 static void tree_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	drawstring(win, 0xffffff, 0, 0, buffer, 0);
-	drawstring(win, 0xffffff, 0, 16, postfix, 0);
-	if(node==0)return;
+	struct bintree* right;
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
 
-	//等式
-	if(node[0].type == '=')
-	{
-		printnode(win, (win->w)/2, 1, 0);
-	}
+	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);
+	drawstring(win, 0xffffff, cx-ww, cy-hh+16, postfix, 0);
 
-	//算式
-	else
-	{
-		printnode(win, (win->w)/2, 1, node[0].right);
-	}
+	if(node == 0)return;
+	right = bintree_getright(node, node);
+	if(right == 0)return;
+
+	printnode(win, right, cx, 1,
+		cx, cy, ww, hh
+	);
 }
 static void tree_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -188,7 +221,7 @@ static void tree_stop()
 void tree_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	node=(struct mathnode*)(base+0x300000);
+	node = (struct bintree*)(base+0x300000);
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('t', 'r', 'e', 'e');

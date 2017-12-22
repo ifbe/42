@@ -330,7 +330,7 @@ void printmemory(u8* addr,int size)
 		p = addr+y*16;
 
 		//addr
-		if((y%16) == 0)say((void*)"@%-13x" , (u64)p );
+		if((y%16) == 0)say((void*)"@%-13llx" , (u64)p );
 		else say((void*)"+%-13x",y*16);
 
 		//hex

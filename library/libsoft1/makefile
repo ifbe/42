@@ -27,6 +27,9 @@ libalgo/linear/linear.stack.c \
 libalgo/matching/match.bm.c \
 libalgo/matching/match.kmp.c \
 libalgo/matching/match.rough.c \
+libalgo/notation/nota.calc.c \
+libalgo/notation/nota.postfix.c \
+libalgo/notation/nota.prefix.c \
 libalgo/sorting/sort.bubble.c \
 libalgo/sorting/sort.gnome.c \
 libalgo/sorting/sort.heap.c \
@@ -154,7 +157,6 @@ libsci/libbio/bio.c \
 libsci/libchem/chem.equation.c \
 libsci/libchem/chem.c \
 libsci/libmath/math.bigint.c \
-libsci/libmath/math.calc.c \
 libsci/libmath/math.matrix.c \
 libsci/libmath/math.notation.c \
 libsci/libmath/math.prime.c \
