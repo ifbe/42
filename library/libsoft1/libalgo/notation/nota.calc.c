@@ -15,6 +15,9 @@ int hexstr2data(u8*, u64*);
 int decstr2data(u8*, u64*);
 int decstr2double(u8*, double*);
 //
+void* bintree_getleft(void*, void*);
+void* bintree_getright(void*, void*);
+//
 double cosine(double);
 double sine(double);
 double power(double, double);
@@ -177,94 +180,41 @@ double calculator(u8* postfix, u64 x, u64 y, u64 z)
 	stack_pop(stack, &temp);
 	return temp;
 }
-double sketchpad(struct mathnode* node,double x,double y)
+
+
+
+
+double sketchpad_one(
+	struct mathnode* node, struct mathnode* this,
+	double x, double y)
 {
-	int src=1;
-	double first,second,temp;
-	double result1,result2;
-	u8 stack[0x1000];
-	stack_generate(stack, 0x1000);
+	double a, b;
+	struct mathnode* left;
+	struct mathnode* right;
 
-	result1=0;
-	while(1)
-	{
-		if(node[src].type == 0)
-		{
-			stack_pop(stack, &result2);
-			result2 -= result1;
-			break;
-		}
-		else if(node[src].type == '0')	//0123...
-		{
-			temp = node[src].floatpoint;
-			stack_push(stack, &temp);
-		}
-		else if(node[src].type == 'x')
-		{
-			stack_push(stack, &x);
-		}
-		else if(node[src].type == 'y')
-		{
-			stack_push(stack, &y);
-		}
-		else if(node[src].type == '+')
-		{
-			if(node[src].integer == '+')
-			{
-				stack_pop(stack, &second);
-				stack_pop(stack, &first);
-				temp = first+second;
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == '-')
-			{
-				stack_pop(stack, &second);
-				stack_pop(stack, &first);
-				temp = first-second;
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == '*')
-			{
-				stack_pop(stack, &second);
-				stack_pop(stack, &first);
-				temp = first*second;
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == '/')
-			{
-				stack_pop(stack, &second);
-				stack_pop(stack, &first);
-				temp = first/second;
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == '^')
-			{
-				stack_pop(stack, &second);
-				stack_pop(stack, &first);
-				temp = power(first, second);
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == __cos__)
-			{
-				stack_pop(stack, &first);
-				temp = cosine(first);
-				stack_push(stack, &temp);
-			}
-			else if(node[src].integer == __sin__)
-			{
-				stack_pop(stack, &first);
-				temp = sine(first);
-				stack_push(stack, &temp);
-			}
-		}
-		else if(node[src].type == 0x3d)	//=
-		{
-			stack_pop(stack, &result1);
-		}
+	if(this->type == '0')return this->floatpoint;
+	if(this->type == 'x')return x;
+	if(this->type == 'y')return y;
+	if(this->type != '+')return 0.0;
 
-		//
-		src++;
-	}
+	left = bintree_getleft(node, this);
+	right = bintree_getright(node, this);
+	a = sketchpad_one(node, left, x, y);
+	b = sketchpad_one(node, right, x, y);
 
-	return result2;
+	if(this->integer == '+')return a+b;
+	if(this->integer == '-')return a-b;
+	if(this->integer == '*')return a*b;
+	if(this->integer == '/')return a/b;
+	if(this->integer == '=')return a-b;
+}
+double sketchpad(struct mathnode* node, double x, double y)
+{
+	struct mathnode* root;
+	if(node == 0)return 0.0;
+
+        root = bintree_getright(node, node);
+	if(root == 0)return 0.0;
+
+	return sketchpad_one(node, root, x, y);
 }

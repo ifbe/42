@@ -68,7 +68,7 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 	}
 
 	k = ww;
-	for(j=y+1;j>0;j--)k = k>>1;
+	for(j=y;j>0;j--)k = k>>1;
 
 	left = bintree_getleft(node, this);
 	if(left != 0)
@@ -122,7 +122,7 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 	//say("this=%d,left=%d,right=%d\n",num,left,right);
 */
 }
-static void tree_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	struct bintree* right;
 	int cx = (win->w) * (sty->cx) / 0x10000;
@@ -138,34 +138,32 @@ static void tree_read_pixel(struct arena* win, struct actor* act, struct style* 
 	right = bintree_getright(node, node);
 	if(right == 0)return;
 
-	printnode(win, right, cx, 1,
-		cx, cy, ww, hh
-	);
+	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void tree_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void tree_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void tree_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {
 }
-static void tree_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read_cli(struct arena* win, struct actor* act, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void tree_read(struct arena* win, struct actor* act, struct style* sty)
+static void bintree_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)tree_read_cli(win, act, sty);
-	else if(fmt == __tui__)tree_read_tui(win, act, sty);
-	else if(fmt == __html__)tree_read_html(win, act, sty);
-	else if(fmt == __vbo__)tree_read_vbo(win, act, sty);
-	else tree_read_pixel(win, act, sty);
+	if(fmt == __cli__)bintree_read_cli(win, act, sty);
+	else if(fmt == __tui__)bintree_read_tui(win, act, sty);
+	else if(fmt == __html__)bintree_read_html(win, act, sty);
+	else if(fmt == __vbo__)bintree_read_vbo(win, act, sty);
+	else bintree_read_pixel(win, act, sty);
 }
-static void tree_write(struct event* ev)
+static void bintree_write(struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;
@@ -206,33 +204,33 @@ static void tree_write(struct event* ev)
 
 
 
-static void tree_list()
+static void bintree_list()
 {
 }
-static void tree_into()
+static void bintree_into()
 {
 }
-static void tree_start()
+static void bintree_start()
 {
 }
-static void tree_stop()
+static void bintree_stop()
 {
 }
-void tree_create(void* base,void* addr)
+void bintree_create(void* base,void* addr)
 {
-	struct actor* p = addr;
+	struct actor* act = addr;
 	node = (struct bintree*)(base+0x300000);
 
-	p->type = hex32('h', 'a', 'c', 'k');
-	p->name = hex32('t', 'r', 'e', 'e');
+	act->type = hex32('h', 'a', 'c', 'k');
+	act->name = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
 
-	p->start = (void*)tree_start;
-	p->stop = (void*)tree_stop;
-	p->list = (void*)tree_list;
-	p->choose = (void*)tree_into;
-	p->read = (void*)tree_read;
-	p->write = (void*)tree_write;
+	act->start = (void*)bintree_start;
+	act->stop = (void*)bintree_stop;
+	act->list = (void*)bintree_list;
+	act->choose = (void*)bintree_into;
+	act->read = (void*)bintree_read;
+	act->write = (void*)bintree_write;
 }
-void tree_delete()
+void bintree_delete()
 {
 }

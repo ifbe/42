@@ -17,9 +17,11 @@ SRC = \
 1game/game.tetris.c \
 1game/game.weiqi.c \
 1game/game.xiangqi.c \
+2tool/tool.browser.c \
 2tool/tool.calculator.c \
 2tool/tool.camera.c \
 2tool/tool.circuit.c \
+2tool/tool.editor.c \
 2tool/tool.font.c \
 2tool/tool.qrcode.c \
 2tool/tool.sketchpad.c \
@@ -27,10 +29,9 @@ SRC = \
 2tool/tool.stl.c \
 2tool/tool.terminal.c \
 3hack/hack.algo.c \
-3hack/hack.browser.c \
-3hack/hack.editor.c \
+3hack/hack.bintree.c \
+3hack/hack.bplus.c \
 3hack/hack.hex.c \
-3hack/hack.tree.c \
 3hack/hack.joystick.c \
 3hack/hack.keyboard.c \
 lib1d/cli/print.cli.c \

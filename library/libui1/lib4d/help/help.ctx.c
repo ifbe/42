@@ -21,6 +21,8 @@ void weiqi_delete();
 void xiangqi_create(u8*,u8*);
 void xiangqi_delete();
 //test
+void browser_create(u8*,u8*);
+void browser_delete();
 void clock_create(u8*,u8*);
 void clock_delete();
 void codeimg_create(u8*,u8*);
@@ -36,16 +38,16 @@ void palette_delete();
 //hack
 void algorithm_create(u8*,u8*);
 void algorithm_delete();
-void browser_create(u8*,u8*);
-void browser_delete();
+void bintree_create(u8*,u8*);
+void bintree_delete();
+void bplus_create(u8*,u8*);
+void bplus_delete();
 void hex_create(u8*,u8*);
 void hex_delete();
 void joystick_create(u8*,u8*);
 void joystick_delete();
 void keyboard_create(u8*,u8*);
 void keyboard_delete();
-void tree_create(u8*,u8*);
-void tree_delete();
 //tool
 void calculator_create(u8*,u8*);
 void calculator_delete();
@@ -137,6 +139,10 @@ int content_create(u8* addr)
 	palette_create(addr, temp);
 	temp += 0x100;
 
+	//tool.browser
+	browser_create(addr, temp);
+	temp += 0x100;
+
 	//tool.calculator
 	calculator_create(addr, temp);
 	temp += 0x100;
@@ -177,8 +183,12 @@ int content_create(u8* addr)
 	algorithm_create(addr, temp);
 	temp += 0x100;
 
-	//hack.browser
-	browser_create(addr, temp);
+	//hack.bintree
+	bintree_create(addr, temp);
+	temp += 0x100;
+
+	//hack.bplus
+	bplus_create(addr, temp);
 	temp += 0x100;
 
 	//hack.hex
@@ -191,10 +201,6 @@ int content_create(u8* addr)
 
 	//hack.keyboard
 	keyboard_create(addr, temp);
-	temp += 0x100;
-
-	//hack.tree
-	tree_create(addr, temp);
 	temp += 0x100;
 
 	//
@@ -212,11 +218,12 @@ void content_delete()
 	camera_delete();
 	calculator_delete();
 
-	tree_delete();
 	keyboard_delete();
 	joystick_delete();
 	hex_delete();
 	browser_delete();
+	bplus_delete();
+	bintree_delete();
 	algorithm_delete();
 
 	xiangqi_delete();

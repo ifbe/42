@@ -117,7 +117,7 @@ void* bintree_insert(struct bintree* root, u64 what)
 {
 	if(root == 0)return 0;
 }
-void* bintree_delete(struct bintree* root, struct bintree* this)
+void* bintree_destory(struct bintree* root, struct bintree* this)
 {
 	struct bintree* temp;
 	if(root == 0)return 0;
@@ -198,7 +198,7 @@ void bintree_fell(struct bintree* root, struct bintree* this)
 
 	if(this->left != 0)bintree_fell(root, (void*)root+(this->left));
 	if(this->right != 0)bintree_fell(root, (void*)root+(this->right));
-	bintree_delete(root, this);
+	bintree_destory(root, this);
 }
 void bintree_plant(struct bintree* root)
 {

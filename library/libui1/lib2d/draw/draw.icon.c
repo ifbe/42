@@ -84,7 +84,7 @@ void drawicon_1(
 	if(len == 0)return;
 
 	x = (x0+x1)/2 - len*4;
-	y = (y0+y1)/2 - 4;
+	y = (y0+y1)/2 - 8;
 	drawstring(win, rgb, x, y, buf, len);
 }
 

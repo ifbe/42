@@ -22,6 +22,8 @@ libalgo/hash/hash.sha512.c \
 libalgo/hash/hash.string.c \
 libalgo/keyexch/keyexch.dh.c \
 libalgo/keyexch/keyexch.ecdhe.c \
+libalgo/linear/linear.disjoint.c \
+libalgo/linear/linear.memory.c \
 libalgo/linear/linear.queue.c \
 libalgo/linear/linear.stack.c \
 libalgo/matching/match.bm.c \
@@ -42,6 +44,7 @@ libalgo/transform/trfm.fourier.c \
 libalgo/transform/trfm.laplace.c \
 libalgo/tree/tree.binary.c \
 libalgo/tree/tree.redblack.c \
+libalgo/tree/tree.bplus.c \
 libflow/libmotion/motion.c \
 libflow/libnet/0.phy/phy.bt.c \
 libflow/libnet/0.phy/phy.eth.c \

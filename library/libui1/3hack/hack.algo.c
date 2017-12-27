@@ -6,8 +6,8 @@
 static struct actor* pl;
 //
 static u64 algtype[] = {
-	0x35646d,		//md5
-	0x31616873,		//sha1
+	hex32('m','d','5',0),
+	hex32('s','h','a','1'),
 	0
 };
 static int this = 0;
@@ -25,53 +25,38 @@ static int reslen;
 
 static void algorithm_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	//top
-	drawsolid_rect(win, 0x40,
-		(win->w)/16, (win->h)/16,
-		(win->w)*15/16, (win->h)*7/16
+	int cx = (win->w) * (sty->cx) / 0x10000;
+	int cy = (win->h) * (sty->cy) / 0x10000;
+	int ww = (win->w) * (sty->wantw) / 0x20000;
+	int hh = (win->h) * (sty->wanth) / 0x20000;
+
+	//left: origin
+	drawsolid_rect(win, 0x0000ff,
+		cx - ww, cy - hh*7/8,
+		cx - ww/3, cy + hh*7/8
 	);
 	drawstring(win, 0xffffff,
-		(win->w)/2, (win->h)/4,
+		cx-ww, cy-8,
 		(void*)"makefile", 0
 	);
 
-	//middle
-	drawsolid_rect(win, 0,
-		(win->w)/16, (win->h)*7/16,
-		(win->w)*15/16, (win->h)*9/16
-	);
-	drawline_rect(win, 0xffffff,
-		(win->w/4)+32, (win->h/2)-16,
-		(win->w*3/4)-32, (win->h/2)+16
-	);
-
-	//middle.left
-	drawline_rect(win, 0xffffff,
-		(win->w/4)-32, (win->h/2)-16,
-		(win->w/4)+32, (win->h/2)+16
+	//middle: algorithm
+	drawsolid_rect(win, 0x00ff00,
+		cx - ww/3, cy - hh/8,
+		cx + ww/3, cy + hh/8
 	);
 	drawstring(win, 0xffffff,
-		(win->w/4)-16, (win->h/2)-4,
-		(void*)&algtype[this], 0
-	);
-
-	//middle.right
-	drawline_rect(win, 0xffffff,
-		(win->w*3/4)-32, (win->h/2)-16,
-		(win->w*3/4)+32, (win->h/2)+16
-	);
-	drawstring(win, 0xffffff,
-		(win->w*3/4)-16, (win->h/2)-4,
+		cx - ww/3, cy-8,
 		(void*)"doit", 0
 	);
 
-	//bottom
-	drawsolid_rect(win, 0x400000,
-		(win->w)/16, (win->h)*9/16,
-		(win->w)*15/16, (win->h)*15/16
+	//right: result
+	drawsolid_rect(win, 0xff0000,
+		cx + ww/3, cy - hh*7/8,
+		cx + ww, cy + hh*7/8
 	);
 	drawstring(win, 0xffffff,
-		(win->w/2)-(reslen*4), (win->h)*3/4,
+		cx + ww/3, cy-8,
 		(void*)pl->priv, 0
 	);
 }

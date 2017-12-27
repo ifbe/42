@@ -17,34 +17,29 @@ struct mathnode
 	u16 type;
 	union
 	{
+		u64 integer;
 		double floatpoint;
-		unsigned long long integer;
 	};
 };
-static struct mathnode* node=0;
+static struct mathnode node[0x100];
 
 //
-static int count=0;
 static u8 buffer[128];
-
+static int count=0;
 //
 static u8 infix[128];
 static u8 postfix[128];
 static u8 result[128];
+//
 static u8* databuf=0;
-
-//
-static double scale=0.0;
-static double centerx=0.0;
-static double centery=0.0;
-		//databuf 里面存放计算得到的值的符号
-		//scale=“屏幕”上两个点对于“世界”上的距离
-		//centerxy = “屏幕”对应“世界”哪个点
+static double centerx = 0.0;
+static double centery = 0.0;
+static double scale = 0.0;
 
 
 
 
-//
+/*
 static void wangge(struct arena* win)
 {
 	int temp;
@@ -110,6 +105,7 @@ static void wangge(struct arena* win)
 	}//横线
 
 }
+*/
 static void tuxiang(struct arena* win)
 {
 	int x, y;
@@ -131,9 +127,9 @@ static void tuxiang(struct arena* win)
 		for(x=0;x<width;x++)
 		{
 			rx = centerx + (x - (width/2))*scale;
-			hello=sketchpad(node, rx, ry);
+			hello = sketchpad(node, rx, ry);
 
-			if(hello>0)databuf[width*y+x]=1;
+			if(hello > 0.0)databuf[width*y+x]=1;
 			else databuf[width*y+x]=-1;
 		}
 	}//calculate results
@@ -172,14 +168,63 @@ static void tuxiang(struct arena* win)
 }
 static void sketchpad_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	wangge(win);
-	tuxiang(win);
+	double rx,ry,rw;
+	int x,y,w,counter;
+	int width = win->w;
+	int height = win->h;
+	int cx = (sty->cx) * width / 0x10000;
+	int cy = (sty->cy) * height / 0x10000;
+	int ww = (sty->wantw) * width / 0x20000;
+	int hh = (sty->wanth) * height / 0x20000;
+	u32* buf = (u32*)(win->buf);
+	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	for(y=0;y<hh*2;y++)
+	{
+		ry = centery + (y-hh)*scale;
+		for(x=0;x<ww*2;x++)
+		{
+			rx = centerx + (x-ww)*scale;
+			rw = sketchpad(node, rx, ry);
+
+			if(rw > 0)w = 1;
+			else w = -1;
+			databuf[2*ww*y+x] = w;
+		}
+	}
+
+	for(y=1;y<2*hh-1;y++)
+	{
+		w = (2*hh-1-y)*ww*2;
+		for(x=1;x<2*ww-1;x++)
+		{
+//say("%d,%d\n",x,y);
+			counter=0;
+
+			if(databuf[w+x - 1] == 1)counter++;
+			else counter--;
+
+			if(databuf[w+x + 1] == 1)counter++;
+			else counter--;
+
+			if(databuf[w+x - ww*2] == 1)counter++;
+			else counter--;
+
+			if(databuf[w+x + ww*2] == 1)counter++;
+			else counter--;
+
+			if( (counter!=4) && (counter!=-4) )
+			{
+				buf[(cy-hh+y)*width + (cx-ww+x)]=0xffffffff;
+			}
+		}
+	}//result2img
 
 skipthese:
-	drawstring(win, 0xcccccc, 0, 0, buffer, 0);
-	drawstring(win, 0xcccccc, 0, 16, infix, 0);
-	drawstring(win, 0xcccccc, 0, 32, postfix, 0);
-	drawstring(win, 0xcccccc, 0, 48, result, 0);
+	drawstring(win, 0xcccccc, cx-ww, cy-hh+ 0, buffer, 0);
+	drawstring(win, 0xcccccc, cx-ww, cy-hh+16, infix, 0);
+	drawstring(win, 0xcccccc, cx-ww, cy-hh+32, postfix, 0);
+	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
 }
 static void sketchpad_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -336,14 +381,12 @@ static void sketchpad_write(struct event* ev)
 			//newcenterx=centerx+scale*pointx*(1-1/1.2)
 			centerx += scale * (x*512.0/65536) * (1-1/1.2);
 			centery += scale * (y*512.0/65536) * (1-1/1.2);
-
 			scale /= 1.2;
 		}
 		else if(k == 'b')	//back
 		{
 			centerx += scale * (x*512.0/65536) * (-0.2);
 			centery += scale * (y*512.0/65536) * (-0.2);
-
 			scale *= 1.2;
 		}
 	}
@@ -370,28 +413,27 @@ static void sketchpad_change()
 }
 static void sketchpad_start()
 {
-	centerx=0.00;
-	centery=0.00;
-	scale=1.00;
+	centerx = 0.00;
+	centery = 0.00;
+	scale = 1.00;
 }
 static void sketchpad_stop()
 {
 }
 void sketchpad_create(void* base,void* addr)
 {
-	struct actor* p = addr;
-	node = (struct mathnode*)(base+0x200000);
+	struct actor* act = addr;
 	databuf = base+0x300000;
 
-	p->type = hex32('t', 'o', 'o', 'l');
-	p->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
+	act->type = hex32('t', 'o', 'o', 'l');
+	act->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
 
-	p->start = (void*)sketchpad_start;
-	p->stop = (void*)sketchpad_stop;
-	p->list = (void*)sketchpad_list;
-	p->choose = (void*)sketchpad_change;
-	p->read = (void*)sketchpad_read;
-	p->write = (void*)sketchpad_write;
+	act->start = (void*)sketchpad_start;
+	act->stop = (void*)sketchpad_stop;
+	act->list = (void*)sketchpad_list;
+	act->choose = (void*)sketchpad_change;
+	act->read = (void*)sketchpad_read;
+	act->write = (void*)sketchpad_write;
 }
 void sketchpad_delete()
 {
