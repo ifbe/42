@@ -1,71 +1,109 @@
 #include "actor.h"
+void bplus_prepare(void*, int);
 int bplus_insert(void*, u64);
 int bplus_destory(void*, u64);
-void* bplus_child(void*, u64);
+void* bplus_getleft(void*, void*);
+void* bplus_getright(void*, void*);
+void* bplus_getchild(void*, void*, int);
 
 
 
 
-struct eachdata
+struct indexdata
 {
-	//if(leaf)		//if(index)
-	u32 hash0;		//same
-	u32 hash1;		//same
-	u32 buf;		//ignore
-	u32 len;		//ignore
-	u64 irel;		//bigger childnode
-	u64 orel;		//ignore
+	u64 hash;
+	u64 buf;
 };
-struct bplusnode
+struct leafdata
 {
-	//if(leaf)		//if(index)
-	u32 type;		//same
-	u32 len;		//same
-	u64 parentnode;		//same
-	u64 prevnode;		//smaller childnode
-	u64 nextnode;		//ignore
-	struct eachdata node[3];
+	u64 hash;
+	u64 buf;
+	u64 irel;
+	u64 orel;
 };
-static struct bplusnode* node = 0;
+struct bplushead
+{
+	u64 left:56;
+	u8 type;
+	u64 right:56;
+	u8 len;
+	u64 parent:56;
+	u8 flag;
+	u64 child:56;
+	u8 haha;
+};
+struct bplusindex
+{
+	struct bplushead head;
+	struct leafdata node[6];
+};
+struct bplusleaf
+{
+	struct bplushead head;
+	struct leafdata node[3];
+};
+static struct bplusleaf* node = 0;
 
 
 
 
-static void printnode(struct arena* win, struct bplusnode* this, int x, int y,
+static void printnode(struct arena* win, struct bplusleaf* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
-	int j,k;
-	struct bplusnode* child;
+	int j,k,len;
+	u32 color;
+	struct bplusleaf* child;
 
 	drawicon_1(win, 0x00ff00,
-		x-24, cy-hh+y*64-16,
-		x+24, cy-hh+y*64+16,
+		x-36, cy-hh+y*64-16,
+		x+36, cy-hh+y*64+16,
 		"", 0
 	);
-	for(j=0;j<3;j++)
+
+	len = this->head.len;
+	if(this->head.type == '!')color = 0x00ff00;
+	else color = 0xff00ff;
+
+	for(j=0;j<len;j++)
 	{
-		drawdecimal(win, 0, x+(j*2-3)*8, cy-hh+y*64-8, this->node[j].hash1);
+		drawascii(win, color,
+			x+(j*2-3)*12, cy-hh+y*64-8,
+			this->node[j].hash
+		);
 	}
 
-	if(y>=3)return;
 	k = ww;
 	for(j=y;j>0;j--)k = k>>2;
-
-	for(j=0;j<4;j++)
+	for(j=0;j<len+1;j++)
 	{
-		//child = bplus_child(this, this->node[0].irel);
-		//if(child == 0)return;
-		printnode(win, this, x-k*(2*j-3), y+1, cx, cy, ww, hh);
+		child = bplus_getchild(node, this, (j+4)%5);
+		if(child == 0)continue;
+
+		drawline(win, 0xffffff,
+			x, cy-hh+y*64+16,
+			x+k*(2*j-3), cy-hh+y*64+48
+		);
+		printnode(win, child,
+			x+k*(2*j-3), y+1,
+			cx, cy, ww, hh
+		);
 	}
 }
 static void bplus_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	struct bplusleaf* right;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
 	int hh = (win->h) * (sty->wanth) / 0x20000;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
-	printnode(win, node, cx, 1, cx, cy, ww, hh);
+
+	if(node == 0)return;
+	right = bplus_getright(node, node);
+	if(right == 0)return;
+
+//printmemory(node, 0x800);
+	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
 static void bplus_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -98,6 +136,7 @@ static void bplus_write(struct event* ev)
 	if(type == __char__)
 	{
 		bplus_insert(node, key);
+		printmemory(node, 0x800);
 	}
 }
 
@@ -112,9 +151,7 @@ static void bplus_into()
 }
 static void bplus_start()
 {
-	int j;
-	char* p = (char*)node;
-	for(j=0;j<0x100;j++)p[j] = 0;
+	bplus_prepare(node, 0x100000);
 }
 static void bplus_stop()
 {

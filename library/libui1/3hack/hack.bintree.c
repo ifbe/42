@@ -47,17 +47,7 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 		);
 	}
 
-	//+,-,*,/...
-	else if(this->type == '+')
-	{
-		drawicon_1(win, 0x00ff00,
-			x-32, cy-hh+y*64-16,
-			x+32, cy-hh+y*64+16,
-			(u8*)&(this->integer), 1
-		);
-	}
-
-	//x,y,z
+	//+, -, *, /, x, y, z
 	else
 	{
 		drawicon_1(win, 0xff0000,

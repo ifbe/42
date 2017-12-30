@@ -188,25 +188,26 @@ double sketchpad_one(
 	struct mathnode* node, struct mathnode* this,
 	double x, double y)
 {
+	u16 type;
 	double a, b;
 	struct mathnode* left;
 	struct mathnode* right;
 
-	if(this->type == '0')return this->floatpoint;
-	if(this->type == 'x')return x;
-	if(this->type == 'y')return y;
-	if(this->type != '+')return 0.0;
+	type = this->type;
+	if(type == '0')return this->floatpoint;
+	if(type == 'x')return x;
+	if(type == 'y')return y;
 
 	left = bintree_getleft(node, this);
 	right = bintree_getright(node, this);
 	a = sketchpad_one(node, left, x, y);
 	b = sketchpad_one(node, right, x, y);
 
-	if(this->integer == '+')return a+b;
-	if(this->integer == '-')return a-b;
-	if(this->integer == '*')return a*b;
-	if(this->integer == '/')return a/b;
-	if(this->integer == '=')return a-b;
+	if(type == '+')return a+b;
+	if(type == '-')return a-b;
+	if(type == '*')return a*b;
+	if(type == '/')return a/b;
+	if(type == '=')return a-b;
 }
 double sketchpad(struct mathnode* node, double x, double y)
 {

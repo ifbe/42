@@ -48,6 +48,8 @@ void joystick_create(u8*,u8*);
 void joystick_delete();
 void keyboard_create(u8*,u8*);
 void keyboard_delete();
+void starry_create(u8*,u8*);
+void starry_delete();
 //tool
 void calculator_create(u8*,u8*);
 void calculator_delete();
@@ -203,6 +205,10 @@ int content_create(u8* addr)
 	keyboard_create(addr, temp);
 	temp += 0x100;
 
+	//hack.starry
+	starry_create(addr, temp);
+	temp += 0x100;
+
 	//
 	return temp-addr-0x100000;
 }
@@ -218,6 +224,7 @@ void content_delete()
 	camera_delete();
 	calculator_delete();
 
+	starry_delete();
 	keyboard_delete();
 	joystick_delete();
 	hex_delete();

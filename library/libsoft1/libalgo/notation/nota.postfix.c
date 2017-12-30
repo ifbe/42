@@ -8,7 +8,8 @@
 #define __sin__ hex32('s','i','n',0)
 void bintree_plant(void*);
 void bintree_fell(void*);
-void bintree_fix(void*, int, void*, void*);
+void bintree_setleft(void*, void*, void*);
+void bintree_setright(void*, void*, void*);
 void* bintree_grow(void*);
 //
 int stack_generate(void*, int);
@@ -177,7 +178,7 @@ void postfix2binarytree(u8* src, u8* bintree)
 		if(data == 0)
 		{
 			stack_pop(stack, &parent);
-			bintree_fix(bintree, 'r', bintree, parent);
+			bintree_setright(bintree, bintree, parent);
 			break;
 		}
 
@@ -222,11 +223,10 @@ void postfix2binarytree(u8* src, u8* bintree)
 
 			parent = bintree_grow(bintree);
 			parent->up = 0;
-			parent->type = '+';
-			parent->integer = data;
+			parent->type = data;
 
-			bintree_fix(bintree, 'l', parent, lchild);
-			bintree_fix(bintree, 'r', parent, rchild);
+			bintree_setleft(bintree, parent, lchild);
+			bintree_setright(bintree, parent, rchild);
 
 			stack_push(stack, &parent);
 			src++;

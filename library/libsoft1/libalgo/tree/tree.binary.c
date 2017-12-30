@@ -149,7 +149,12 @@ void* bintree_destory(struct bintree* root, struct bintree* this)
 	{
 	}
 }
-void bintree_fix(struct bintree* root, int lr,
+
+
+
+
+
+void bintree_setleft(struct bintree* root,
 	struct bintree* parent, struct bintree* child)
 {
 	if(root == 0)return;
@@ -161,30 +166,43 @@ void bintree_fix(struct bintree* root, int lr,
 		root->right = (void*)child - (void*)root;
 		child->up = 0;
 	}
-	else if(lr == 'l')
+	else
 	{
 		parent->left = (void*)child - (void*)root;
 		child->up = (void*)parent - (void*)root;
 	}
-	else if(lr == 'r')
+}
+void bintree_setright(struct bintree* root,
+	struct bintree* parent, struct bintree* child)
+{
+	if(root == 0)return;
+	if(parent == 0)return;
+	if(child == 0)return;
+
+	if(parent == root)
+	{
+		root->right = (void*)child - (void*)root;
+		child->up = 0;
+	}
+	else
 	{
 		parent->right = (void*)child - (void*)root;
 		child->up = (void*)parent - (void*)root;
 	}
 }
-void* bintree_getleft(struct bintree* root, struct bintree* this)
+void* bintree_getleft(struct bintree* root, struct bintree* parent)
 {
 	if(root == 0)return 0;
-	if(this == 0)return 0;
-	if(this->left == 0)return 0;
-	return (void*)root + (this->left);
+	if(parent == 0)return 0;
+	if(parent->left == 0)return 0;
+	return (void*)root + (parent->left);
 }
-void* bintree_getright(struct bintree* root, struct bintree* this)
+void* bintree_getright(struct bintree* root, struct bintree* parent)
 {
 	if(root == 0)return 0;
-	if(this == 0)return 0;
-	if(this->right == 0)return 0;
-	return (void*)root + (this->right);
+	if(parent == 0)return 0;
+	if(parent->right == 0)return 0;
+	return (void*)root + (parent->right);
 }
 
 
