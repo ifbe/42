@@ -9,18 +9,6 @@ void* bplus_getchild(void*, void*, int);
 
 
 
-struct indexdata
-{
-	u64 hash;
-	u64 buf;
-};
-struct leafdata
-{
-	u64 hash;
-	u64 buf;
-	u64 irel;
-	u64 orel;
-};
 struct bplushead
 {
 	u64 left:56;
@@ -32,10 +20,22 @@ struct bplushead
 	u64 child:56;
 	u8 haha;
 };
+struct indexdata
+{
+	u64 hash;
+	u64 buf;
+};
 struct bplusindex
 {
 	struct bplushead head;
-	struct leafdata node[6];
+	struct indexdata node[6];
+};
+struct leafdata
+{
+	u64 hash;
+	u64 buf;
+	u64 irel;
+	u64 orel;
 };
 struct bplusleaf
 {
@@ -47,12 +47,13 @@ static struct bplusleaf* node = 0;
 
 
 
-static void printnode(struct arena* win, struct bplusleaf* this, int x, int y,
+static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k,len;
-	u32 color;
-	struct bplusleaf* child;
+	struct bplushead* child;
+	struct bplusleaf* leaf;
+	struct bplusindex* index;
 
 	drawicon_1(win, 0x00ff00,
 		x-36, cy-hh+y*64-16,
@@ -60,16 +61,28 @@ static void printnode(struct arena* win, struct bplusleaf* this, int x, int y,
 		"", 0
 	);
 
-	len = this->head.len;
-	if(this->head.type == '!')color = 0x00ff00;
-	else color = 0xff00ff;
-
-	for(j=0;j<len;j++)
+	len = this->len;
+	if(this->type == '!')
 	{
-		drawascii(win, color,
-			x+(j*2-3)*12, cy-hh+y*64-8,
-			this->node[j].hash
-		);
+		leaf = (struct bplusleaf*)this;
+		for(j=0;j<len;j++)
+		{
+			drawascii(win, 0x00ff00,
+				x+(j*2-3)*12, cy-hh+y*64-8,
+				leaf->node[j].hash
+			);
+		}
+	}
+	else
+	{
+		index = (struct bplusindex*)this;
+		for(j=0;j<len;j++)
+		{
+			drawascii(win, 0xff00ff,
+				x+(j*2-3)*12, cy-hh+y*64-8,
+				index->node[j].hash
+			);
+		}
 	}
 
 	k = ww;
@@ -91,7 +104,7 @@ static void printnode(struct arena* win, struct bplusleaf* this, int x, int y,
 }
 static void bplus_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	struct bplusleaf* right;
+	struct bplushead* right;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
@@ -136,7 +149,7 @@ static void bplus_write(struct event* ev)
 	if(type == __char__)
 	{
 		bplus_insert(node, key);
-		printmemory(node, 0x800);
+		//printmemory(node, 0x800);
 	}
 }
 
