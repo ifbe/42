@@ -1,14 +1,18 @@
 #include "actor.h"
 void bplus_prepare(void*, int);
-int bplus_insert(void*, u64);
-int bplus_destory(void*, u64);
+void bplus_alldone(void*);
+void bplus_debug(void*);
 void* bplus_getleft(void*, void*);
 void* bplus_getright(void*, void*);
+void* bplus_getparent(void*, void*);
 void* bplus_getchild(void*, void*, int);
+int bplus_insert(void*, u64);
+int bplus_destory(void*, u64);
 
 
 
 
+#define pagesize 0x80
 struct bplushead
 {
 	u64 left:56;
@@ -16,9 +20,9 @@ struct bplushead
 	u64 right:56;
 	u8 len;
 	u64 parent:56;
-	u8 flag;
+	u8 lock;
 	u64 child:56;
-	u8 haha;
+	u8 flag;
 };
 struct indexdata
 {
@@ -28,7 +32,7 @@ struct indexdata
 struct bplusindex
 {
 	struct bplushead head;
-	struct indexdata node[6];
+	struct indexdata node[(pagesize-0x20) / 0x10];
 };
 struct leafdata
 {
@@ -40,7 +44,7 @@ struct leafdata
 struct bplusleaf
 {
 	struct bplushead head;
-	struct leafdata node[3];
+	struct leafdata node[(pagesize-0x10) / 0x20];
 };
 static struct bplusleaf* node = 0;
 
@@ -112,7 +116,7 @@ static void bplus_read_pixel(struct arena* win, struct actor* act, struct style*
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	if(node == 0)return;
-	right = bplus_getright(node, node);
+	right = bplus_getparent(node, node);
 	if(right == 0)return;
 
 //printmemory(node, 0x800);
@@ -149,7 +153,8 @@ static void bplus_write(struct event* ev)
 	if(type == __char__)
 	{
 		bplus_insert(node, key);
-		//printmemory(node, 0x800);
+		printmemory(node, 0x800);
+		bplus_debug(node);
 	}
 }
 
