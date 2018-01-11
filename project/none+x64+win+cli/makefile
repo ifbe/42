@@ -13,9 +13,9 @@ all:
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -I."
-	make -s -C $(library)/libui0 wincli \
+	make -s -C $(library)/libuser0 wincli \
 	cflag="-c -O2 -I."
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -I."
 	make -s a
 	make -s dll
@@ -28,8 +28,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 dll:
 	g++ -shared -o 42.dll \
 	$(library)/libboot0/*.o \
@@ -38,8 +38,8 @@ dll:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lole32 -lstrmiids -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
@@ -51,8 +51,8 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lole32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

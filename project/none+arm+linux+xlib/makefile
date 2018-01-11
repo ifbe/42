@@ -12,9 +12,9 @@ all:
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
-	make -s -C $(library)/libui0 linuxxlib \
+	make -s -C $(library)/libuser0 linuxxlib \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast"
 	make -s a
 	make -s so
@@ -27,8 +27,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 so:
 	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o \
@@ -37,8 +37,8 @@ so:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 program:
 	gcc -o a.out \
 	$(library)/libboot0/*.o \
@@ -47,8 +47,8 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lpulse -lpulse-simple -lpthread -lX11 -lm
 	#-lasound -lpthread -lX11 -lm
 clean:

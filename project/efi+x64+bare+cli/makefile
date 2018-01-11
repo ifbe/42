@@ -13,9 +13,9 @@ all:
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
 	make -s -C $(library)/libsoft1 \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
-	make -s -C $(library)/libui0 eficli \
+	make -s -C $(library)/libuser0 eficli \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(aflag) -I."
 	make -s link
 link:
@@ -36,6 +36,6 @@ link:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	data.o -lgcc -o BOOTX64.EFI

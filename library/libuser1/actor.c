@@ -8,12 +8,11 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
-void* relation_read(u64);
-void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 void login_read(void*);
 void login_write(void*, void*);
+int input_write(void*, void*);
 //
 void win_add(u64 why, u64 where);
 void win_del(u64 why, u64 where);
@@ -22,7 +21,11 @@ void act_add();
 void act_del();
 void act_at(void*, void*);
 //
-int input_write(void*, void*);
+void* samepinprevchip(void*);
+void* samepinnextchip(void*);
+void* samechipprevpin(void*);
+void* samechipnextpin(void*);
+void* relation_read(u64);
 
 
 
@@ -93,7 +96,8 @@ int actorread_one(struct arena* win)
 				}
 			}
 		}
-		rel = relation_read(rel->samepinnextchip);
+
+		rel = samepinnextchip(rel);
 	}
 
 	//fg
@@ -105,7 +109,6 @@ theend:
 }
 int actorread()
 {
-	u64 temp;
 	struct arena* canvas;
 	struct arena* window;
 	struct relation* rel;
@@ -120,8 +123,7 @@ int actorread()
 		window = (void*)(rel->selfchip);
 		actorread_one(window);
 
-		temp = rel->samepinnextchip;
-		rel = relation_read(temp);
+		rel = samepinnextchip(rel);
 	}
 
 	return 0;
@@ -132,6 +134,7 @@ int actorwrite(struct event* ev)
 	struct arena* win;
 	struct actor* act;
 	struct relation* rel;
+	struct relation* tmp;
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//window event
@@ -155,8 +158,10 @@ int actorwrite(struct event* ev)
 	rel = win->irel;
 	while(1)
 	{
-		if(rel->samepinnextchip == 0)break;
-		rel = relation_read(rel->samepinnextchip);
+		tmp = samepinnextchip(rel);
+		if(tmp == 0)break;
+
+		rel = tmp;
 	}
 	act = (void*)(rel->selfchip);
 	act->write(ev);

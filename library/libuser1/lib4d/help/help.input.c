@@ -1,9 +1,13 @@
 #include "actor.h"
 int term_write(void*);
 int login_write(void*, void*);
-void* relation_read(u64);
 int relation_swap(void*, void*);
 int relation_destory(void*);
+void* samepinprevchip(void*);
+void* samepinnextchip(void*);
+void* samechipprevpin(void*);
+void* samechipnextpin(void*);
+void* relation_read(u64);
 
 
 
@@ -159,13 +163,12 @@ int point_explain(struct arena* win, struct event* ev)
 	if(reltop == 0)return 1;
 	while(1)
 	{
-		if(reltop->samepinnextchip == 0)
-		{
-			stytop = (void*)(reltop->destfoot);
-			break;
-		}
-		reltop = relation_read(reltop->samepinnextchip);
+		relwow = samepinnextchip(reltop);
+		if(relwow == 0)break;
+
+		reltop = relwow;
 	}
+	stytop = (void*)(reltop->destfoot);
 
 	stywow = 0;
 	p = (void*)ev;
@@ -182,7 +185,7 @@ int point_explain(struct arena* win, struct event* ev)
 //say("%x,%x,%x,%x\n",absx*2,absy*2,stywow->wantw, stywow->wanth);
 		if((absx*2 <= stywow->wantw)&&(absy*2 <= stywow->wanth))break;
 
-		relwow = relation_read(relwow->samepinprevchip);
+		relwow = samepinprevchip(relwow);
 		stywow = 0;
 	}
 	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
@@ -221,17 +224,20 @@ int point_explain(struct arena* win, struct event* ev)
 	}
 	return 1;
 }
-int delete_explain(struct arena* win)
+int delete_thisact(struct arena* win)
 {
 	struct relation* rel;
+	struct relation* tmp;
 	if(win == 0)return 0;
 	if(win->irel == 0)return 0;
 
 	rel = win->irel;
 	while(1)
 	{
-		if(rel->samepinnextchip == 0)break;
-		rel = relation_read(rel->samepinnextchip);
+		tmp = samepinnextchip(rel);
+		if(tmp == 0)break;
+
+		rel = tmp;
 	}
 	relation_destory(rel);
 	return 1;
@@ -281,7 +287,7 @@ int input_write(struct arena* win, struct event* ev)
 	{
 		if(ev->what == __char__)
 		{
-			delete_explain(win);
+			delete_thisact(win);
 			return 0;
 		}
 		else

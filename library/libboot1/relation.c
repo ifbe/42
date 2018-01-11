@@ -309,6 +309,34 @@ int relation_write(
 
 	return 1;
 }
+
+
+
+
+void* samepinprevchip(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samepinprevchip == 0)return 0;
+	return (void*)wirebuf + (rel->samepinprevchip);
+}
+void* samepinnextchip(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samepinnextchip == 0)return 0;
+	return (void*)wirebuf + (rel->samepinnextchip);
+}
+void* samechipprevpin(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samechipprevpin == 0)return 0;
+	return (void*)wirebuf + (rel->samechipprevpin);
+}
+void* samechipnextpin(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samechipnextpin == 0)return 0;
+	return (void*)wirebuf + (rel->samechipnextpin);
+}
 void* relation_read(int off)
 {
 	if(off == 0)return 0;

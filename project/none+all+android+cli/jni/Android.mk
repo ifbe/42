@@ -254,75 +254,75 @@ LOCAL_SRC_FILES += \
 	library/libsoft1/libwire/wire.c \
 	library/libsoft1/artery.c
 
-#libui0
+#libuser0
 LOCAL_SRC_FILES += \
-	library/libui0/linux/linux.cli.c \
-	library/libui0/cross/cross.net.c \
-	library/libui0/cross/cross.voice.c \
-	library/libui0/arena.c
+	library/libuser0/linux/linux.cli.c \
+	library/libuser0/cross/cross.net.c \
+	library/libuser0/cross/cross.voice.c \
+	library/libuser0/arena.c
 
-#libui1
+#libuser1
 LOCAL_SRC_FILES += \
-	library/libui1/content/game/game.2048.c \
-	library/libui1/content/game/game.chess.c \
-	library/libui1/content/game/game.ooxx.c \
-	library/libui1/content/game/game.snake.c \
-	library/libui1/content/game/game.sudoku.c \
-	library/libui1/content/game/game.tetris.c \
-	library/libui1/content/game/game.weiqi.c \
-	library/libui1/content/game/game.xiangqi.c \
-	library/libui1/content/hack/hack.algo.c \
-	library/libui1/content/hack/hack.browse.c \
-	library/libui1/content/hack/hack.editor.c \
-	library/libui1/content/hack/hack.hex.c \
-	library/libui1/content/hack/hack.tree.c \
-	library/libui1/content/test/test.color.c \
-	library/libui1/content/test/test.doodle.c \
-	library/libui1/content/test/test.font.c \
-	library/libui1/content/test/test.pure.c \
-	library/libui1/content/tool/tool.3dmodel.c \
-	library/libui1/content/tool/tool.calculator.c \
-	library/libui1/content/tool/tool.camera.c \
-	library/libui1/content/tool/tool.circuit.c \
-	library/libui1/content/tool/tool.qrcode.c \
-	library/libui1/content/tool/tool.sketchpad.c \
-	library/libui1/content/tool/tool.spectrum.c \
-	library/libui1/content/levi/levi.login.c \
-	library/libui1/content/levi/levi.navi.c \
-	library/libui1/content/levi/levi.joystick.c \
-	library/libui1/content/levi/levi.keyboard.c \
-	library/libui1/content/levi/levi.c \
-	library/libui1/content/content.c \
-	library/libui1/helper/helper.term.c \
-	library/libui1/helper/helper.win.c \
-	library/libui1/helper/helper.c \
-	library/libui1/lib1d/html/html.shape.c \
-	library/libui1/lib1d/json/json.shape.c \
-	library/libui1/lib1d/latex/latex.shape.c \
-	library/libui1/lib1d/xaml/xaml.shape.c \
-	library/libui1/lib1d/lib1d.c \
-	library/libui1/lib2d/draw/draw.ascii.c \
-	library/libui1/lib2d/draw/draw.color.c \
-	library/libui1/lib2d/draw/draw.icon.c \
-	library/libui1/lib2d/draw/draw.shape.c \
-	library/libui1/lib2d/draw/draw.ttf.c \
-	library/libui1/lib2d/draw/draw.vt100.c \
-	library/libui1/lib2d/photo/photo.blur.c \
-	library/libui1/lib2d/photo/photo.channel.c \
-	library/libui1/lib2d/photo/photo.convert.c \
-	library/libui1/lib2d/photo/photo.gray.c \
-	library/libui1/lib2d/photo/photo.mosaic.c \
-	library/libui1/lib2d/photo/photo.rotate.c \
-	library/libui1/lib2d/photo/photo.scale.c \
-	library/libui1/lib2d/lib2d.c \
-	library/libui1/lib3d/carve/carve.ground.c \
-	library/libui1/lib3d/carve/carve.shape.c \
-	library/libui1/lib3d/carve/carve.thing.c \
-	library/libui1/lib3d/carve/carve.water.c \
-	library/libui1/lib3d/model/model.magnify.c \
-	library/libui1/lib3d/model/model.minify.c \
-	library/libui1/lib3d/lib3d.c \
-	library/libui1/actor.c
+	library/libuser1/content/game/game.2048.c \
+	library/libuser1/content/game/game.chess.c \
+	library/libuser1/content/game/game.ooxx.c \
+	library/libuser1/content/game/game.snake.c \
+	library/libuser1/content/game/game.sudoku.c \
+	library/libuser1/content/game/game.tetris.c \
+	library/libuser1/content/game/game.weiqi.c \
+	library/libuser1/content/game/game.xiangqi.c \
+	library/libuser1/content/hack/hack.algo.c \
+	library/libuser1/content/hack/hack.browse.c \
+	library/libuser1/content/hack/hack.editor.c \
+	library/libuser1/content/hack/hack.hex.c \
+	library/libuser1/content/hack/hack.tree.c \
+	library/libuser1/content/test/test.color.c \
+	library/libuser1/content/test/test.doodle.c \
+	library/libuser1/content/test/test.font.c \
+	library/libuser1/content/test/test.pure.c \
+	library/libuser1/content/tool/tool.3dmodel.c \
+	library/libuser1/content/tool/tool.calculator.c \
+	library/libuser1/content/tool/tool.camera.c \
+	library/libuser1/content/tool/tool.circuit.c \
+	library/libuser1/content/tool/tool.qrcode.c \
+	library/libuser1/content/tool/tool.sketchpad.c \
+	library/libuser1/content/tool/tool.spectrum.c \
+	library/libuser1/content/levi/levi.login.c \
+	library/libuser1/content/levi/levi.navi.c \
+	library/libuser1/content/levi/levi.joystick.c \
+	library/libuser1/content/levi/levi.keyboard.c \
+	library/libuser1/content/levi/levi.c \
+	library/libuser1/content/content.c \
+	library/libuser1/helper/helper.term.c \
+	library/libuser1/helper/helper.win.c \
+	library/libuser1/helper/helper.c \
+	library/libuser1/lib1d/html/html.shape.c \
+	library/libuser1/lib1d/json/json.shape.c \
+	library/libuser1/lib1d/latex/latex.shape.c \
+	library/libuser1/lib1d/xaml/xaml.shape.c \
+	library/libuser1/lib1d/lib1d.c \
+	library/libuser1/lib2d/draw/draw.ascii.c \
+	library/libuser1/lib2d/draw/draw.color.c \
+	library/libuser1/lib2d/draw/draw.icon.c \
+	library/libuser1/lib2d/draw/draw.shape.c \
+	library/libuser1/lib2d/draw/draw.ttf.c \
+	library/libuser1/lib2d/draw/draw.vt100.c \
+	library/libuser1/lib2d/photo/photo.blur.c \
+	library/libuser1/lib2d/photo/photo.channel.c \
+	library/libuser1/lib2d/photo/photo.convert.c \
+	library/libuser1/lib2d/photo/photo.gray.c \
+	library/libuser1/lib2d/photo/photo.mosaic.c \
+	library/libuser1/lib2d/photo/photo.rotate.c \
+	library/libuser1/lib2d/photo/photo.scale.c \
+	library/libuser1/lib2d/lib2d.c \
+	library/libuser1/lib3d/carve/carve.ground.c \
+	library/libuser1/lib3d/carve/carve.shape.c \
+	library/libuser1/lib3d/carve/carve.thing.c \
+	library/libuser1/lib3d/carve/carve.water.c \
+	library/libuser1/lib3d/model/model.magnify.c \
+	library/libuser1/lib3d/model/model.minify.c \
+	library/libuser1/lib3d/lib3d.c \
+	library/libuser1/actor.c
 
 
 
@@ -330,7 +330,7 @@ LOCAL_SRC_FILES += \
 #2
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/library/libsoft0 $(LOCAL_PATH)/library/libsoft1 \
-	$(LOCAL_PATH)/library/libui0 $(LOCAL_PATH)/library/libui1
+	$(LOCAL_PATH)/library/libuser0 $(LOCAL_PATH)/library/libuser1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS := -lm -llog -ljnigraphics -landroid
 LOCAL_MODULE := finalanswer

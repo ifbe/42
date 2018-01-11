@@ -7,8 +7,8 @@ all:
 	make -s -C $(library)/libhard1
 	make -s -C $(library)/libsoft0 mac
 	make -s -C $(library)/libsoft1
-	make -s -C $(library)/libui0 macquartz
-	make -s -C $(library)/libui1
+	make -s -C $(library)/libuser0 macquartz
+	make -s -C $(library)/libuser1
 	make -s a
 	make -s dylib
 	make -s program
@@ -20,8 +20,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 dylib:
 	libtool -dynamic -o 42.dylib \
 	$(library)/libboot0/*.o \
@@ -30,8 +30,8 @@ dylib:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 program:
 	clang -framework Foundation \
 	$(library)/libboot0/*.o \
@@ -40,7 +40,7 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 clean:
 	rm -f *.o *.a *.dylib

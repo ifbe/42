@@ -13,9 +13,9 @@ all:
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -I."
-	make -s -C $(library)/libui0 winsdl \
+	make -s -C $(library)/libuser0 winsdl \
 	cflag="-c -O2 -I."
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -I."
 	make -s a
 	make -s dll
@@ -28,8 +28,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 dll:
 	g++ -shared -o 42.dll \
 	$(library)/libboot0/*.o \
@@ -38,8 +38,8 @@ dll:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
@@ -54,8 +54,8 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-Wl,--no-undefined -static -static-libgcc \
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \

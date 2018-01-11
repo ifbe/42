@@ -13,9 +13,9 @@ linux:
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui0 barefb \
+	make -s -C $(library)/libuser0 barefb \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s link linker=/opt/cross/bin/x86_64-elf-ld
 cross:
@@ -31,9 +31,9 @@ cross:
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui0 barefb \
+	make -s -C $(library)/libuser0 barefb \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I."
 	make -s link linker=x86_64-elf-ld
 link:
@@ -46,8 +46,8 @@ link:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-o 42.bin
 clean:
 	rm -f *.out *.bin *.img

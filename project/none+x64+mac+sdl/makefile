@@ -12,9 +12,9 @@ all:
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libsoft1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
-	make -s -C $(library)/libui0 macsdl \
+	make -s -C $(library)/libuser0 macsdl \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
-	make -s -C $(library)/libui1 \
+	make -s -C $(library)/libuser1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s a
 	make -s dylib
@@ -27,8 +27,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 dylib:
 	libtool -dynamic -macosx_version_min 10.12 \
         -o 42.dylib \
@@ -38,8 +38,8 @@ dylib:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lSDL2 -lm -lc
 program:
 	gcc \
@@ -49,8 +49,8 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lSDL2 -lm
 clean:
 	rm -f *.o

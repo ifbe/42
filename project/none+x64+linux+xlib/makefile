@@ -6,8 +6,8 @@ all:
 	make -s -C $(library)/libhard1
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1
-	make -s -C $(library)/libui0 linuxxlib
-	make -s -C $(library)/libui1
+	make -s -C $(library)/libuser0 linuxxlib
+	make -s -C $(library)/libuser1
 	make -s a
 	make -s so
 	make -s program
@@ -19,8 +19,8 @@ a:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 so:
 	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o \
@@ -29,8 +29,8 @@ so:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o
 program:
 	gcc -o a.out \
 	$(library)/libboot0/*.o \
@@ -39,8 +39,8 @@ program:
 	$(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
-	$(library)/libui0/*.o \
-	$(library)/libui1/*.o \
+	$(library)/libuser0/*.o \
+	$(library)/libuser1/*.o \
 	-lpulse -lpulse-simple -lpthread -lX11 -lm
 	#-lasound -lpthread -lX11
 clean:
