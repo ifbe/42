@@ -9,9 +9,11 @@ SRC = \
 0test/test.palette.c \
 1game/game.2048.c \
 1game/game.chess.c \
+1game/game.huarong.c \
 1game/game.maze.c \
 1game/game.ooxx.c \
-1game/game.rubikscube.c \
+1game/game.pegged.c \
+1game/game.rubik.c \
 1game/game.snake.c \
 1game/game.sudoku.c \
 1game/game.tetris.c \

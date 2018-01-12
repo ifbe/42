@@ -4,10 +4,14 @@ void the2048_create(u8*,u8*);
 void the2048_delete();
 void chess_create(u8*,u8*);
 void chess_delete();
+void huarong_create(u8*,u8*);
+void huarong_delete();
 void maze_create(u8*,u8*);
 void maze_delete();
 void ooxx_create(u8*,u8*);
 void ooxx_delete();
+void pegged_create(u8*,u8*);
+void pegged_delete();
 void rubikscube_create(u8*,u8*);
 void rubikscube_delete();
 void snake_create(u8*,u8*);
@@ -85,6 +89,10 @@ int content_create(u8* addr)
 	chess_create(addr, temp);
 	temp += 0x100;
 
+	//game.huarong
+	huarong_create(addr, temp);
+	temp += 0x100;
+
 	//game.maze
 	maze_create(addr, temp);
 	temp += 0x100;
@@ -93,7 +101,11 @@ int content_create(u8* addr)
 	ooxx_create(addr, temp);
 	temp += 0x100;
 
-	//game.rubikscube
+	//game.pegged
+	pegged_create(addr, temp);
+	temp += 0x100;
+
+	//game.rubik
 	rubikscube_create(addr, temp);
 	temp += 0x100;
 
@@ -239,8 +251,10 @@ void content_delete()
 	sudoku_delete();
 	snake_delete();
 	rubikscube_delete();
+	pegged_delete();
 	ooxx_delete();
 	maze_delete();
+	huarong_delete();
 	chess_delete();
 	the2048_delete();
 

@@ -1,8 +1,6 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include "arena.h"
+#define __buf__ hex32('b','u','f',0)
+#define __win__ hex32('w','i','n',0)
 
 
 
@@ -66,7 +64,7 @@ int arenaread(struct window* dst, struct window* src)
 int arenawrite(struct window* dst, struct window* src)
 {
 	void* buf;
-	if(dst->type == hex32('w','i','n',0))
+	if(dst->type == __win__)
 	{
 		windowwrite(dst, &arena[0]);
 	}
@@ -80,12 +78,12 @@ void* arenastart(u64 type, u64 fd)
 {
 	struct window* win;
 	int j;
-	if(type == hex32('b', 'u', 'f', 0))
+	if(type == __buf__)
 	{
 		if(arena->type == 0)
 		{
-			arena->type = hex32('b', 'u', 'f', 0);
-			arena->fmt = hex32('a', 'n', 'y', 0);
+			arena->type = __buf__;
+			arena->fmt = __buf__;
 			arena->first = 0;
 			arena->last = 0;
 
@@ -107,15 +105,18 @@ void* arenastart(u64 type, u64 fd)
 			if(j >= 0x100)return 0;
 		}
 
-		if(type == hex32('w', 'i', 'n', 0))
+		if(type == __win__)
 		{
-			win->type = hex32('w', 'i', 'n', 0);
+			win->type = __win__;
 			win->fmt = 0;
 			win->first = 0;
 			win->last = 0;
 
 			windowstart(win);
-			relation_write(arena, 0, 0, win, 0, 0);
+			relation_write(
+				arena, 0, __buf__,
+				win, 0, __win__
+			);
 			return win;
 		}
 		else if(type == hex32('W','S',0,0))
@@ -126,7 +127,10 @@ void* arenastart(u64 type, u64 fd)
 			win->last = 0;
 
 			win->fd = fd;
-			relation_write(arena, 0, 0, win, 0, 0);
+			relation_write(
+				arena, 0, 0,
+				win, 0, 0
+			);
 			return win;
 		}
 	}
