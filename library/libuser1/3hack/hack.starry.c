@@ -89,7 +89,7 @@ static void starry_read_pixel(struct arena* win, struct actor* act, struct style
 		win, 0xff,
 		cx-32, cy-12,
 		cx+32, cy+12,
-		"root", 0
+		(void*)"root", 0
 	);
 	starry_read_pixel_r(
 		win, win,

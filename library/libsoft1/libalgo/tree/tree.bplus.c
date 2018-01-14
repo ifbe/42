@@ -92,6 +92,7 @@ void* bplus_grow(struct bplushead* head)
 void* bplus_recycle(struct bplushead* head, struct bplusleaf* this)
 {
 	if(head == 0)return 0;
+	return 0;
 }
 
 
@@ -180,6 +181,7 @@ void* bplus_indexadd(struct bplusindex* this, struct indexdata* data)
 	//put
 	bplus_indexcopy(data, &this->node[j]);
 	this->head.len += 1;
+	return &this->node[j];
 }
 void* bplus_indexsplit(struct bplushead* head,
 	struct bplusindex* left, struct indexdata* data)
@@ -286,6 +288,7 @@ void* bplus_indexsplit(struct bplushead* head,
 		if(temp->head.len < 3)bplus_indexadd(temp, &haha);
 		else bplus_indexsplit(head, temp, &haha);
 	}
+	return 0;
 }
 
 
@@ -331,6 +334,7 @@ void* bplus_leafadd(struct bplusleaf* this, struct leafdata* data)
 	//put
 	bplus_leafcopy(data, &this->node[j]);
 	this->head.len += 1;
+	return &this->node[j];
 }
 void* bplus_leafsplit(struct bplushead* head,
 	struct bplusleaf* left, struct leafdata* data)
@@ -421,6 +425,7 @@ void* bplus_leafsplit(struct bplushead* head,
 		if(temp->head.len < 3)bplus_indexadd(temp, &haha);
 		else bplus_indexsplit(head, temp, &haha);
 	}
+	return 0;
 }
 
 
@@ -496,6 +501,7 @@ void* bplus_insert(struct bplushead* head, u64 hash)
 void* bplus_destory(struct bplushead* head, u64 hash)
 {
 	if(head == 0)return 0;
+	return 0;
 }
 
 

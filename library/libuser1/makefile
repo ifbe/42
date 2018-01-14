@@ -9,7 +9,7 @@ SRC = \
 0test/test.palette.c \
 1game/game.2048.c \
 1game/game.chess.c \
-1game/game.huarong.c \
+1game/game.klotski.c \
 1game/game.maze.c \
 1game/game.ooxx.c \
 1game/game.pegged.c \
@@ -33,6 +33,7 @@ SRC = \
 3hack/hack.algo.c \
 3hack/hack.bintree.c \
 3hack/hack.bplus.c \
+3hack/hack.graph.c \
 3hack/hack.hex.c \
 3hack/hack.joystick.c \
 3hack/hack.keyboard.c \

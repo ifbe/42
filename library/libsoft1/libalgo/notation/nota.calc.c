@@ -208,6 +208,7 @@ double sketchpad_one(
 	if(type == '*')return a*b;
 	if(type == '/')return a/b;
 	if(type == '=')return a-b;
+	return 0.0;
 }
 double sketchpad(struct mathnode* node, double x, double y)
 {

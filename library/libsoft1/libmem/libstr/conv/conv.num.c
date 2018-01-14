@@ -223,6 +223,7 @@ stage2:
 			*data += (src[j]-0x30)*asdf;
 			asdf *= 0.1;
 		}
-		else return j;
+		else break;
 	}
+	return j;
 }

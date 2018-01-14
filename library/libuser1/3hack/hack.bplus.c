@@ -62,7 +62,7 @@ static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 	drawicon_1(win, 0x00ff00,
 		x-36, cy-hh+y*64-16,
 		x+36, cy-hh+y*64+16,
-		"", 0
+		(void*)"", 0
 	);
 
 	len = this->len;

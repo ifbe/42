@@ -7,7 +7,7 @@
 //length
 //celltype(char?short?int?)
 //direction(small->big, big->small, ...)
-int sort_bubble(u8* buf, int len)
+void sort_bubble(u8* buf, int len)
 {
 	int j,k;
 	int tmp;

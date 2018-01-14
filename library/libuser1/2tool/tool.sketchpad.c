@@ -241,7 +241,6 @@ static void sketchpad_read_tui(struct arena* win, struct actor* act, struct styl
 	int width = win->w;
 	int height = win->h;
 	u8* p = (u8*)(win->buf);
-	if(node[0].type!=0x3d3d3d3d)return;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<height;y++)

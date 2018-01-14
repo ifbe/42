@@ -84,6 +84,7 @@ int matrixinverse_3(float* d, float* s)
 }
 int matrixinverse_4(float* d, float* s)
 {
+	return 0;
 }
 
 

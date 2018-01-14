@@ -89,13 +89,13 @@ void* bintree_recycle(struct bintree* root, struct bintree* this)
 			temp->left = (void*)this - (void*)root;
 			return this;
 		}
-		if(this->right = 0)
+		if(this->right == 0)
 		{
 			temp->right = (void*)this - (void*)root;
 			return this;
 		}
 
-		if(getrandom()&0x80 == 0x80)
+		if((getrandom()&0x80) == 0x80)
 		{
 			temp = (void*)root + (temp->left);
 		}
@@ -116,6 +116,7 @@ void* bintree_search(struct bintree* root, u64 what)
 void* bintree_insert(struct bintree* root, u64 what)
 {
 	if(root == 0)return 0;
+	return 0;
 }
 void* bintree_destory(struct bintree* root, struct bintree* this)
 {
@@ -148,6 +149,9 @@ void* bintree_destory(struct bintree* root, struct bintree* this)
 	else
 	{
 	}
+
+	//
+	return 0;
 }
 
 
