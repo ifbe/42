@@ -129,7 +129,7 @@ void browser_create(void* base,void* addr)
 	dstbuf = base+0x300000;
 	pl = addr;
 
-	pl->type = hex32('h', 'a', 'c', 'k');
+	pl->type = hex32('t', 'o', 'o', 'l');
 	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
 
 	pl->start = (void*)browser_start;

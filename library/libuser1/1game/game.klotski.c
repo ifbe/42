@@ -97,7 +97,7 @@ static void klotski_stop()
 void klotski_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hex32('t', 'e', 's', 't');
+	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
 
 	p->start = (void*)klotski_start;

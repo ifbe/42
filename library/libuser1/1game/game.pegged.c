@@ -80,7 +80,7 @@ static void pegged_stop()
 void pegged_create(void* base,void* addr)
 {
 	struct actor* p = addr;
-	p->type = hex32('t', 'e', 's', 't');
+	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
 
 	p->start = (void*)pegged_start;

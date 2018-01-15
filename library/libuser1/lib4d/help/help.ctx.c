@@ -1,4 +1,17 @@
 #include "actor.h"
+//test
+void clock_create(u8*,u8*);
+void clock_delete();
+void codeimg_create(u8*,u8*);
+void codeimg_delete();
+void doodle_create(u8*,u8*);
+void doodle_delete();
+void example_create(u8*,u8*);
+void example_delete();
+void fractal_create(u8*,u8*);
+void fractal_delete();
+void palette_create(u8*,u8*);
+void palette_delete();
 //game
 void the2048_create(u8*,u8*);
 void the2048_delete();
@@ -24,37 +37,9 @@ void weiqi_create(u8*,u8*);
 void weiqi_delete();
 void xiangqi_create(u8*,u8*);
 void xiangqi_delete();
-//test
+//tool
 void browser_create(u8*,u8*);
 void browser_delete();
-void clock_create(u8*,u8*);
-void clock_delete();
-void codeimg_create(u8*,u8*);
-void codeimg_delete();
-void doodle_create(u8*,u8*);
-void doodle_delete();
-void example_create(u8*,u8*);
-void example_delete();
-void fractal_create(u8*,u8*);
-void fractal_delete();
-void palette_create(u8*,u8*);
-void palette_delete();
-//hack
-void algorithm_create(u8*,u8*);
-void algorithm_delete();
-void bintree_create(u8*,u8*);
-void bintree_delete();
-void bplus_create(u8*,u8*);
-void bplus_delete();
-void hex_create(u8*,u8*);
-void hex_delete();
-void joystick_create(u8*,u8*);
-void joystick_delete();
-void keyboard_create(u8*,u8*);
-void keyboard_delete();
-void starry_create(u8*,u8*);
-void starry_delete();
-//tool
 void calculator_create(u8*,u8*);
 void calculator_delete();
 void camera_create(u8*,u8*);
@@ -73,6 +58,19 @@ void stl_create(u8*,u8*);
 void stl_delete();
 void terminal_create(u8*,u8*);
 void terminal_delete();
+//hack
+void algorithm_create(u8*,u8*);
+void algorithm_delete();
+void bintree_create(u8*,u8*);
+void bintree_delete();
+void bplus_create(u8*,u8*);
+void bplus_delete();
+void graph_create(u8*,u8*);
+void graph_delete();
+void hex_create(u8*,u8*);
+void hex_delete();
+void input_create(u8*,u8*);
+void input_delete();
 
 
 
@@ -80,6 +78,30 @@ void terminal_delete();
 int content_create(u8* addr)
 {
 	u8* temp = (void*)(addr+0x100000);
+
+	//test.codeimg
+	codeimg_create(addr, temp);
+	temp += 0x100;
+
+	//test.clock
+	clock_create(addr, temp);
+	temp += 0x100;
+
+	//test.doodle
+	doodle_create(addr, temp);
+	temp += 0x100;
+
+	//test.example
+	example_create(addr, temp);
+	temp += 0x100;
+
+	//test.fractal
+	fractal_create(addr, temp);
+	temp += 0x100;
+
+	//test.palette
+	palette_create(addr, temp);
+	temp += 0x100;
 
 	//game.2048
 	the2048_create(addr, temp);
@@ -127,30 +149,6 @@ int content_create(u8* addr)
 
 	//game.xiangqi
 	xiangqi_create(addr, temp);
-	temp += 0x100;
-
-	//test.codeimg
-	codeimg_create(addr, temp);
-	temp += 0x100;
-
-	//test.clock
-	clock_create(addr, temp);
-	temp += 0x100;
-
-	//test.doodle
-	doodle_create(addr, temp);
-	temp += 0x100;
-
-	//test.example
-	example_create(addr, temp);
-	temp += 0x100;
-
-	//test.fractal
-	fractal_create(addr, temp);
-	temp += 0x100;
-
-	//test.palette
-	palette_create(addr, temp);
 	temp += 0x100;
 
 	//tool.browser
@@ -205,20 +203,16 @@ int content_create(u8* addr)
 	bplus_create(addr, temp);
 	temp += 0x100;
 
+	//hack.graph
+	graph_create(addr, temp);
+	temp += 0x100;
+
 	//hack.hex
 	hex_create(addr, temp);
 	temp += 0x100;
 
-	//hack.joystick
-	joystick_create(addr, temp);
-	temp += 0x100;
-
-	//hack.keyboard
-	keyboard_create(addr, temp);
-	temp += 0x100;
-
-	//hack.starry
-	starry_create(addr, temp);
+	//hack.input
+	input_create(addr, temp);
 	temp += 0x100;
 
 	//
@@ -236,10 +230,9 @@ void content_delete()
 	camera_delete();
 	calculator_delete();
 
-	starry_delete();
-	keyboard_delete();
-	joystick_delete();
+	input_delete();
 	hex_delete();
+	graph_delete();
 	browser_delete();
 	bplus_delete();
 	bintree_delete();

@@ -307,9 +307,7 @@ library/libuser1/3hack/hack.bintree.c \
 library/libuser1/3hack/hack.bplus.c \
 library/libuser1/3hack/hack.graph.c \
 library/libuser1/3hack/hack.hex.c \
-library/libuser1/3hack/hack.joystick.c \
-library/libuser1/3hack/hack.keyboard.c \
-library/libuser1/3hack/hack.starry.c \
+library/libuser1/3hack/hack.input.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
 library/libuser1/lib1d/html/html.shape.c \

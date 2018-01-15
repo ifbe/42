@@ -35,9 +35,7 @@ SRC = \
 3hack/hack.bplus.c \
 3hack/hack.graph.c \
 3hack/hack.hex.c \
-3hack/hack.joystick.c \
-3hack/hack.keyboard.c \
-3hack/hack.starry.c \
+3hack/hack.input.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/html/html.shape.c \
