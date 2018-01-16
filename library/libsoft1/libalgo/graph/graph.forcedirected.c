@@ -2,6 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+double squareroot(double);
 
 
 
@@ -12,19 +13,19 @@ struct vertex
 	float y;
 	float z;
 	float w;
-}
-struct link
+};
+struct pair
 {
 	u16 parent;
 	u16 child;
-}
+};
 void forcedirected(
 	struct vertex* obuf, int olen,
 	struct vertex* vbuf, int vlen,
-	struct link* lbuf, int llen)
+	struct pair* lbuf, int llen)
 {
 	int j,k;
-	float x,y,z;
+	float x,y,z,t;
 
 	//coulomb force
 	for(j=0;j<vlen;j++)
@@ -70,7 +71,7 @@ void forcedirected(
 
 		obuf[lbuf[j].parent].x -= x;
 		obuf[lbuf[j].parent].y -= y;
-		obuf[lbuf[j].parnet].z -= z;
+		obuf[lbuf[j].parent].z -= z;
 	}
 
 	//move point
