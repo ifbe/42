@@ -3,7 +3,6 @@
 void term_write(void*);
 void actorchoose(void*);
 void carvestarry_random(void*);
-void carveneural_random(void*);
 void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1);
 
 
@@ -64,8 +63,6 @@ void login_read_8bit(struct arena* win)
 void login_read_vbo(struct arena* win)
 {
 	carvestarry_random(win);
-	carveneural_random(win);
-
 	carveline_circle(
 		win, 0x00bfff,
 		0.0, 0.0, 0.0,

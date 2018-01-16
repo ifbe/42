@@ -1,6 +1,50 @@
 #include "actor.h"
-#define PI 3.141592653
+#define PI 3.1415926535897932384626433832795028841971693993151
 void* samepinnextchip(void*);
+
+
+
+
+struct data
+{
+	u64 type;
+	void* addr;
+};
+struct vertex
+{
+	float x;
+	float y;
+	float z;
+	float w;
+};
+static struct data data[16];
+static struct vertex vbuf[16];
+static int vlen = 0;
+
+
+
+
+int graph_add(u64 type, void* addr)
+{
+	int j;
+	for(j=0;j<vlen;j++)
+	{
+		if(	(data[j].type == type) &&
+			(data[j].addr == addr) )
+		{return j;}
+	}
+
+	j = vlen;
+	vlen++;
+
+	data[j].type = type;
+	data[j].addr = addr;
+
+	vbuf[j].x = (getrandom() & 0xffff) / 65536.0;
+	vbuf[j].y = (getrandom() & 0xffff) / 65536.0;
+	vbuf[j].z = (getrandom() & 0xffff) / 65536.0;
+	return j;
+}
 
 
 
@@ -37,14 +81,17 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 		x = cx + ww * cosine(sa + (2*j+1) * ff);
 		y = cy + hh * sine(sa + (2*j+1) * ff);
 
-		if(rel->selftype == hex32('w','i','n',0))
+		if(rel->selftype == __win__)
 		{
 			color = 0x0000ff;
+			starry_read_pixel_r(
+				win, (void*)act,
+				x, y,
+				ww/2, hh/2,
+				sa+(2*j)*ff, sa+(2*j+2)*ff
+			);
 		}
-		else
-		{
-			color = 0x00ff00;
-		}
+		else color = 0x00ff00;
 
 		act = (void*)(rel->selfchip);
 		drawline(
@@ -58,16 +105,6 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 			x + 32, y + 12,
 			(void*)(&act->name), 8
 		);
-
-		if(color == 0x0000ff)
-		{
-			starry_read_pixel_r(
-				win, (void*)act,
-				x, y,
-				ww/2, hh/2,
-				sa+(2*j)*ff, sa+(2*j+2)*ff
-			);
-		}
 
 		tmp = samepinnextchip(rel);
 		if(tmp == 0)break;
@@ -102,8 +139,80 @@ static void starry_read_pixel(struct arena* win, struct actor* act, struct style
 
 
 
+static void graph_read_vbo_r(struct arena* win, struct arena* this)
+{
+	u32 color;
+	int j, k;
+	struct arena* child;
+	struct relation* rel;
+
+	j = graph_add(__win__, this);
+	rel = this->irel;
+	while(1)
+	{
+		if(rel == 0)return;
+
+		child = (void*)(rel->selfchip);
+		k = graph_add(__win__, child);
+
+		color = 0xffff;
+		if(rel->selftype == __win__)
+		{
+			color = 0xffff00;
+			graph_read_vbo_r(win, child);
+		}
+		carveline(
+			win, color,
+			vbuf[j].x, vbuf[j].y, vbuf[j].z,
+			vbuf[k].x, vbuf[k].y, vbuf[k].z
+		);
+
+		rel = samepinnextchip(rel);
+	}
+}
 static void graph_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	data[0].type = __win__;
+	data[0].addr = win;
+	vbuf[0].x = 0.0;
+	vbuf[0].y = 0.0;
+	vbuf[0].z = 0.0;
+	vlen = 1;
+
+	graph_read_vbo_r(win, win);
+}
+static void graph_read_pixel_r(
+	struct arena* win, struct arena* this,
+	int cx, int cy, int ww, int hh)
+{
+	u32 color;
+	int j, k;
+	struct arena* child;
+	struct relation* rel;
+
+	j = graph_add(__win__, this);
+	rel = this->irel;
+	while(1)
+	{
+		if(rel == 0)return;
+
+		child = (void*)(rel->selfchip);
+		k = graph_add(__win__, child);
+
+		color = 0xffff;
+		if(rel->selftype == __win__)
+		{
+			color = 0xffff00;
+			graph_read_pixel_r(win, child,cx,cy,ww,hh);
+		}
+		drawline(
+			win, color,
+			cx+ww*(vbuf[j].x-0.5), cy+hh*(vbuf[j].y-0.5),
+			cx+ww*(vbuf[k].x-0.5), cy+hh*(vbuf[k].y-0.5)
+		);
+
+		rel = samepinnextchip(rel);
+	}
 }
 static void graph_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -111,8 +220,16 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 	int cy = (sty->cy) * (win->h) / 0x10000;
 	int ww = (sty->wantw) * (win->w) / 0x20000;
 	int hh = (sty->wanth) * (win->h) / 0x20000;
-	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
-	//starry_read_pixel(win, act, sty);
+
+	data[0].type = __win__;
+	data[0].addr = win;
+	vbuf[0].x = 0.5;
+	vbuf[0].y = 0.5;
+	vbuf[0].z = 0.0;
+	vlen = 1;
+
+	drawhyaline_rect(win, 0, cx-ww, cy-hh, cx+ww, cy+hh);
+	graph_read_pixel_r(win, win, cx, cy, ww, hh);
 }
 static void graph_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
