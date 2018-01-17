@@ -20,59 +20,31 @@ void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
 
 
 void drawline(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2)
+	int x0, int y0, int x1, int y1)
 {
-	int temp;
-	int x,y;
-	int width,height;
+	int dx,dy,sx,sy,e1,e2;
+	int w = win->w;
+	int h = win->h;
 	u32* buf = (u32*)(win->buf);
 
-	width = win->w;
-	height = win->h;
+	if(x0 < x1){dx = x1-x0;sx = 1;}
+	else {dx = x0-x1;sx = -1;}
+	if(y0 < y1){dy = y1-y0;sy = 1;}
+	else {dy = y0-y1;sy = -1;}
+	if(dx > dy){e1 = dx/2;}
+	else {e1 = -dy/2;}
+
 	rgb |= 0xff000000;
-
-	if(x1<0)x1=0;
-	if(x1>width)x1=width-1;
-	if(x2<0)x2=0;
-	if(x2>width)x2=width-1;
-	if(y1<0)y1=0;
-	if(y1>=height)y1=height-1;
-	if(y2<0)y2=0;
-	if(y2>=height)y2=height-1;
-//say("(%d,%d)->(%d,%d)\n",x1,y1,x2,y2);
-
-
-
-
-	if(x1 == x2)
+	while(1)
 	{
-		if(y1<=y2){y=y1;temp=y2;}
-		else{y=y2;temp=y1;}
+		if((x0 == x1)&&(y0 == y1))break;
 
-		for(;y<=temp;y++)
-		{
-			buf[ (y*width) + x1 ] = rgb;
-		}
-	}
+		if((x0 >= 0)&&(x0 < w)&&(y0 >= 0)&&(y0 < h))
+		{buf[(y0*w) + x0] = rgb;}
 
-	else
-	{
-		double dx;
-		double k=(double)(y1-y2) / (double)(x1-x2);
-		if(x1<x2){x=x1;temp=x2;}
-		else{x=x2;temp=x1;}
-
-		for(;x<temp;x++)
-		{
-			dx=(double)(x-x1);
-			y=y1+ (int)(k*dx);
-//say("%d,%d\n",x,y);
-			if(y<height)
-			{
-				buf[ (y*width) + x ] = rgb;
-			}
-			else say("wrong\n");
-		}
+		e2 = e1;
+		if(e2 >-dx){e1 -= dy;x0 += sx;}
+		if(e2 < dy){e1 += dx;y0 += sy;}
 	}
 }
 void drawline_bezier(struct arena* win, u32 rgb,

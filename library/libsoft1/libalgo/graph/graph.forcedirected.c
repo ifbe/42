@@ -80,8 +80,8 @@ void forcedirected_2d(
 			obuf[j].x, obuf[j].y
 		);
 */
-		vbuf[j].x += obuf[j].x / 100.0;
-		vbuf[j].y += obuf[j].y / 100.0;
+		vbuf[j].x += obuf[j].x / 50.0;
+		vbuf[j].y += obuf[j].y / 50.0;
 	}
 	//say("\n");
 }
@@ -149,9 +149,9 @@ void forcedirected_3d(
 			obuf[j].x, obuf[j].y, obuf[j].z
 		);
 */
-		vbuf[j].x += obuf[j].x / 100.0;
-		vbuf[j].y += obuf[j].y / 100.0;
-		vbuf[j].z += obuf[j].z / 100.0;
+		vbuf[j].x += obuf[j].x / 50.0;
+		vbuf[j].y += obuf[j].y / 50.0;
+		vbuf[j].z += obuf[j].z / 50.0;
 	}
 	//say("\n");
 }

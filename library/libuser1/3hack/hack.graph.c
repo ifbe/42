@@ -84,6 +84,35 @@ static void graph_traverse(struct arena* this)
 		rel = samepinnextchip(rel);
 	}
 }
+void butane()
+{
+	int j;
+	static u8 table[13][2] =
+	{
+		0,1,0,2,0,3,
+		0,4,
+		4,5,4,6,
+		4,7,
+		7,8,7,9,
+		7,10,
+		10,11,10,12,10,13
+	};
+
+	for(j=0;j<14;j++)
+	{
+		vbuf[j].x = (getrandom() & 0xffff) / 65536.0;
+		vbuf[j].y = (getrandom() & 0xffff) / 65536.0;
+		vbuf[j].z = (getrandom() & 0xffff) / 65536.0;
+	}
+	vlen = 14;
+
+	for(j=0;j<13;j++)
+	{
+		pair[j].parent = table[j][0];
+		pair[j].child = table[j][1];
+	}
+	plen = 13;
+}
 
 
 
@@ -183,7 +212,7 @@ static void graph_read_vbo(struct arena* win, struct actor* act, struct style* s
 	int i,j,k;
 
 	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.5;
+	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
 
 	for(i=0;i<plen;i++)
 	{
@@ -193,6 +222,16 @@ static void graph_read_vbo(struct arena* win, struct actor* act, struct style* s
 			win, 0xff00,
 			vbuf[j].x, vbuf[j].y, vbuf[j].z,
 			vbuf[k].x, vbuf[k].y, vbuf[k].z
+		);
+	}
+	for(j=0;j<vlen;j++)
+	{
+		carvesolid_prism4(
+			win, 0xffffff,
+			vbuf[j].x, vbuf[j].y, vbuf[j].z,
+			0.01, 0.0, 0.0,
+			0.0, 0.01, 0.0,
+			0.0, 0.0, 0.01
 		);
 	}
 }
@@ -205,7 +244,7 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 	int hh = (sty->wanth) * (win->h) / 0x10000;
 
 	forcedirected_2d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.5;
+	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
 
 	drawsolid_rect(win, 0, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2);
 	for(i=0;i<plen;i++)
@@ -214,10 +253,21 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 		k = pair[i].child;
 		drawline(
 			win, 0xffffff,
-			cx+ww*(vbuf[j].x-0.5),
-			cy+hh*(0.5-vbuf[j].y),
-			cx+ww*(vbuf[k].x-0.5),
-			cy+hh*(0.5-vbuf[k].y)
+			cx + ww*(vbuf[j].x),
+			cy - hh*(vbuf[j].y),
+			cx + ww*(vbuf[k].x),
+			cy - hh*(vbuf[k].y)
+		);
+	}
+	for(i=0;i<vlen;i++)
+	{
+		j = cx + ww*(vbuf[i].x);
+		k = cy - hh*(vbuf[i].y);
+		drawicon_1(
+			win, 0xffffff,
+			j-16, k-12,
+			j+16, k+12,
+			"?", 4
 		);
 	}
 }
@@ -235,9 +285,13 @@ static void graph_read(struct arena* win, struct actor* act, struct style* sty)
 	u64 fmt = win->fmt;
 	if(redo == 1)
 	{
-		redo = 0;
-		vlen = plen = 0;
+		redo = vlen = plen = 0;
 		graph_traverse(win);
+	}
+	else if(redo == '1')
+	{
+		redo = vlen = plen = 0;
+		butane();
 	}
 
 	if(fmt == __cli__)graph_read_cli(win, act, sty);
@@ -251,6 +305,7 @@ static void graph_write(struct event* ev)
 	if(ev->what == __char__)
 	{
 		if(ev->why == 0xd)redo = 1;
+		if(ev->why == '1')redo = '1';
 	}
 }
 
