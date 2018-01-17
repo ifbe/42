@@ -14,22 +14,24 @@ void carveline(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 2;
-	win->info[9] += 2;
-	win->info[10] += 2;
-	win->info[13] += 2;
+	win->vertexcount  += 2;
+	win->normalcount  += 2;
+	win->colorcount   += 2;
+	win->texturecount += 2;
+	win->linecount    += 2;
 
 	color[0] = rr;
 	color[1] = gg;
@@ -67,22 +69,24 @@ void carveline_bezier(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy+1;
-	win->info[9] += accuracy+1;
-	win->info[10] += accuracy+1;
-	win->info[13] += accuracy*2;
+	win->vertexcount  += accuracy+1;
+	win->normalcount  += accuracy+1;
+	win->colorcount   += accuracy+1;
+	win->texturecount += accuracy+1;
+	win->linecount    += accuracy*2;
 
 	for(j=0;j<=accuracy;j++)
 	{
@@ -118,22 +122,24 @@ void carveline_special(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy+1;
-	win->info[9] += accuracy+1;
-	win->info[10] += accuracy+1;
-	win->info[13] += accuracy*2;
+	win->vertexcount  += accuracy+1;
+	win->normalcount  += accuracy+1;
+	win->colorcount   += accuracy+1;
+	win->texturecount += accuracy+1;
+	win->linecount    += accuracy*2;
 
 	for(j=0;j<=accuracy;j++)
 	{
@@ -171,22 +177,24 @@ void carveline_triangle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 3;
-	win->info[9] += 3;
-	win->info[10] += 3;
-	win->info[13] += 6;
+	win->vertexcount  += 3;
+	win->normalcount  += 3;
+	win->colorcount   += 3;
+	win->texturecount += 3;
+	win->linecount    += 6;
 
 	color[0] = rr;
 	color[1] = gg;
@@ -235,22 +243,24 @@ void carveline_rect(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 4;
-	win->info[9] += 4;
-	win->info[10] += 4;
-	win->info[13] += 8;
+	win->vertexcount  += 4;
+	win->normalcount  += 4;
+	win->colorcount   += 4;
+	win->texturecount += 4;
+	win->linecount    += 8;
 
 	color[ 0] = rr;
 	color[ 1] = gg;
@@ -317,22 +327,24 @@ void carveline_circle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy;
-	win->info[9] += accuracy;
-	win->info[10] += accuracy;
-	win->info[13] += accuracy*2;
+	win->vertexcount  += accuracy;
+	win->normalcount  += accuracy;
+	win->colorcount   += accuracy;
+	win->texturecount += accuracy;
+	win->linecount    += accuracy*2;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -399,22 +411,24 @@ void carveline_cone(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy+2;
-	win->info[9] += accuracy+2;
-	win->info[10] += accuracy+2;
-	win->info[13] += accuracy*2*3;
+	win->vertexcount  += accuracy+2;
+	win->normalcount  += accuracy+2;
+	win->colorcount   += accuracy+2;
+	win->texturecount += accuracy+2;
+	win->linecount    += accuracy*2*3;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -503,22 +517,24 @@ void carveline_prism4(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 8;
-	win->info[9] += 8;
-	win->info[10] += 8;
-	win->info[13] += 24;
+	win->vertexcount  += 8;
+	win->normalcount  += 8;
+	win->colorcount   += 8;
+	win->texturecount += 8;
+	win->linecount    += 24;
 
 	//color
 	color[0] = rr;
@@ -670,22 +686,24 @@ void carveline_cylinder(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy*2;
-	win->info[9] += accuracy*2;
-	win->info[10] += accuracy*2;
-	win->info[13] += accuracy*6;
+	win->vertexcount  += accuracy*2;
+	win->normalcount  += accuracy*2;
+	win->colorcount   += accuracy*2;
+	win->texturecount += accuracy*2;
+	win->linecount    += accuracy*6;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -763,22 +781,24 @@ void carveline_dodecahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 20;
-	win->info[9] += 20;
-	win->info[10] += 20;
-	win->info[13] += 60;
+	win->vertexcount  += 20;
+	win->normalcount  += 20;
+	win->colorcount   += 20;
+	win->texturecount += 20;
+	win->linecount    += 60;
 
 	//(+-1, +-1, +-1)
 	vertex[ 0] = cx-rx-fx-ux;
@@ -962,22 +982,24 @@ void carveline_icosahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += 12;
-	win->info[9] += 12;
-	win->info[10] += 12;
-	win->info[13] += 60;
+	win->vertexcount  += 12;
+	win->normalcount  += 12;
+	win->colorcount   += 12;
+	win->texturecount += 12;
+	win->linecount    += 60;
 
 	//(+-m, 0, +-n)
 	vertex[ 0] = cx - m;
@@ -1123,22 +1145,24 @@ void carveline_sphere(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xd00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xa00000 + (icount*2);
 
-	win->info[8] += accuracy*17+2;
-	win->info[9] += accuracy*17+2;
-	win->info[10] += accuracy*17+2;
-	win->info[13] += accuracy*17*2+accuracy*32+accuracy*4;
+	win->vertexcount  += accuracy*17+2;
+	win->normalcount  += accuracy*17+2;
+	win->colorcount   += accuracy*17+2;
+	win->texturecount += accuracy*17+2;
+	win->linecount    += accuracy*17*2+accuracy*32+accuracy*4;
 
 	for(k=0;k<17;k++)
 	{

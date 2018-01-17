@@ -37,22 +37,24 @@ void carveaxis(struct arena* win)
 void carvestarry_random(struct arena* win)
 {
 	u32 j,k;
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[12];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->pointcount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xc00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (ccount*12);
+	u16* index     = buf + 0x800000 + (icount*2);
 
-	win->info[8] += 256;
-	win->info[9] += 256;
-	win->info[10] += 256;
-	win->info[12] += 256;
+	win->vertexcount  += 256;
+	win->normalcount  += 256;
+	win->colorcount   += 256;
+	win->texturecount += 256;
+	win->pointcount   += 256;
 
 	for(j=0;j<256;j++)
 	{
@@ -75,25 +77,27 @@ void carvestarry_random(struct arena* win)
 void carveneural_random(struct arena* win)
 {
 	u32 j,k;
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[12];
-	u32 lcount = win->info[13];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->pointcount;
+	u32 lcount = win->linecount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* iindex   = buf + 0xc00000 + (icount*2);
-	u16* lindex   = buf + 0xd00000 + (lcount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (ccount*12);
+	u16* iindex    = buf + 0x800000 + (icount*2);
+	u16* lindex    = buf + 0xa00000 + (lcount*2);
 
-	win->info[8] += 256;
-	win->info[9] += 256;
-	win->info[10] += 256;
-	win->info[12] += 256;
-	win->info[13] += 256;
+	win->vertexcount  += 256;
+	win->normalcount  += 256;
+	win->colorcount   += 256;
+	win->texturecount += 256;
+	win->pointcount   += 256;
+	win->linecount    += 256;
 
 	for(j=0;j<256;j++)
 	{

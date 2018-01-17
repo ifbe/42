@@ -15,8 +15,6 @@ void quaternionrotate(float*, float*);
 //
 void vectornormalize(float*);
 void vectorcross(float*, float*);
-float vectordot(float*, float*);
-float vectorcosine(float*, float*);
 //
 double squareroot(double);
 double cosine(double);
@@ -40,7 +38,7 @@ static int last_y = 0;
 static GLuint vShader;
 static GLuint fShader;
 static GLuint programhandle;
-static GLuint picturehandle;
+static GLuint texturehandle;
 //
 static GLuint vertexvbo;
 static GLuint normalvbo;
@@ -227,27 +225,33 @@ void initShader()
 }
 void initVBO()  
 {
-	void* picture = (void*)(src->buf);
-	void* vertexxyz = (void*)(src->buf)+0x800000;
-	void* normalxyz = (void*)(src->buf)+0x900000;
-	void* colorrgb = (void*)(src->buf)+0xa00000;
-	void* texturexyz = (void*)(src->buf)+0xb00000;
+	void* vertexxyz = (void*)(src->buf)+0x000000;
+	void* normalxyz = (void*)(src->buf)+0x200000;
+	void* colorrgb = (void*)(src->buf)+0x400000;
+	void* texturexyz = (void*)(src->buf)+0x600000;
 
-	void* pointindex = (void*)(src->buf)+0xc00000;
-	void* lineindex = (void*)(src->buf)+0xd00000;
-	void* triangleindex = (void*)(src->buf)+0xe00000;
-	void* rectangleindex = (void*)(src->buf)+0xf00000;
+	void* pointindex = (void*)(src->buf)+0x800000;
+	void* lineindex = (void*)(src->buf)+0xa00000;
+	void* triangleindex = (void*)(src->buf)+0xc00000;
+	void* rectangleindex = (void*)(src->buf)+0xe00000;
 
 
 
 
 	//[0]picture
-	glGenTextures(1, &picturehandle);
-	glBindTexture(GL_TEXTURE_2D, picturehandle);
+	glGenTextures(1, &texturehandle);
+	glBindTexture(GL_TEXTURE_2D, texturehandle);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+/*
+	glBindTexture(GL_TEXTURE_2D, texturevbo);
+	glTexImage2D(GL_TEXTURE_2D,	0,
+		GL_RGBA, 512, 512, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
+	);
+*/
 
 	//[8]vertex
 	glGenBuffers(1, &vertexvbo);
@@ -462,16 +466,16 @@ void callback_display()
 
 	//
 	glBindVertexArray(pointvao);
-	glDrawElements(GL_POINTS, src->info[12], GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_POINTS, src->pointcount, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(linevao);
-	glDrawElements(GL_LINES, src->info[13], GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_LINES, src->linecount, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(trianglevao);
-	glDrawElements(GL_TRIANGLES, src->info[14], GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(rectanglevao);
-	glDrawElements(GL_QUADS, src->info[15], GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_QUADS, src->rectcount, GL_UNSIGNED_SHORT, 0);
 
 	//write
 	glFlush();
@@ -492,25 +496,25 @@ void callback_idle()
 
 	if(queuehead == queuetail)return;
 
-	vertexcount = src->info[8];
-	normalcount = src->info[9];
-	colorcount = src->info[10];
-	texturecount = src->info[11];
+	vertexcount = src->vertexcount;
+	normalcount = src->normalcount;
+	colorcount = src->colorcount;
+	texturecount = src->texturecount;
 
-	pointcount = src->info[12];
-	linecount = src->info[13];
-	tricount = src->info[14];
-	rectcount = src->info[15];
+	pointcount = src->pointcount;
+	linecount = src->linecount;
+	tricount = src->tricount;
+	rectcount = src->rectcount;
 
-	vertexdata = (void*)(src->buf)+0x800000;
-	normaldata = (void*)(src->buf)+0x900000;
-	colordata = (void*)(src->buf)+0xa00000;
-	texturedata = (void*)(src->buf)+0xb00000;
+	vertexdata = (void*)(src->buf)+0x000000;
+	normaldata = (void*)(src->buf)+0x200000;
+	colordata = (void*)(src->buf)+0x400000;
+	texturedata = (void*)(src->buf)+0x600000;
 
-	pointindex = (void*)(src->buf)+0xc00000;
-	lineindex = (void*)(src->buf)+0xd00000;
-	triindex = (void*)(src->buf)+0xe00000;
-	rectindex = (void*)(src->buf)+0xf00000;
+	pointindex = (void*)(src->buf)+0x800000;
+	lineindex = (void*)(src->buf)+0xa00000;
+	triindex = (void*)(src->buf)+0xc00000;
+	rectindex = (void*)(src->buf)+0xe00000;
 
 	glBindBuffer(   GL_ARRAY_BUFFER, vertexvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*vertexcount, vertexdata);
@@ -536,13 +540,6 @@ void callback_idle()
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*rectcount, rectindex);
 
-/*
-	glBindTexture(GL_TEXTURE_2D, texturevbo);
-	glTexImage2D(GL_TEXTURE_2D,	0,
-		GL_RGBA, 512, 512, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
-	);
-*/
 	queuetail++;
 	glutPostRedisplay();
 }

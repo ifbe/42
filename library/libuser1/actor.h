@@ -7,6 +7,7 @@
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
 #define __act__ hex32('a','c','t',0)
+#define __buf__ hex32('b','u','f',0)
 #define __win__ hex32('w','i','n',0)
 //
 #define __kbd__ hex32('k','b','d',0)
@@ -102,6 +103,17 @@ struct arena
 	union{
 		u64 info[16];
 		struct point touch[16];
+		struct
+		{
+			u64 vertexcount;
+			u64 normalcount;
+			u64 colorcount;
+			u64 texturecount;
+			u64 pointcount;
+			u64 linecount;
+			u64 tricount;
+			u64 rectcount;
+		};
 	};
 };
 struct actor

@@ -15,22 +15,24 @@ void carvesolid_triangle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 3;
-	win->info[9] += 3;
-	win->info[10] += 3;
-	win->info[14] += 3;
+	win->vertexcount  += 3;
+	win->normalcount  += 3;
+	win->colorcount   += 3;
+	win->texturecount += 3;
+	win->tricount     += 3;
 
 	//color
 	color[0] = rr;
@@ -86,22 +88,24 @@ void carvesolid_rect(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 4;
-	win->info[9] += 4;
-	win->info[10] += 4;
-	win->info[14] += 6;
+	win->vertexcount  += 4;
+	win->normalcount  += 4;
+	win->colorcount   += 4;
+	win->texturecount += 4;
+	win->tricount     += 6;
 
 	//color
 	color[0] = rr;
@@ -177,22 +181,24 @@ void carvesolid_circle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy+1;
-	win->info[9] += accuracy+1;
-	win->info[10] += accuracy+1;
-	win->info[14] += accuracy*3;
+	win->vertexcount  += accuracy+1;
+	win->normalcount  += accuracy+1;
+	win->colorcount   += accuracy+1;
+	win->texturecount += accuracy+1;
+	win->tricount     += accuracy*3;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -271,22 +277,24 @@ void carvesolid_cone(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy+2;
-	win->info[9] += accuracy+2;
-	win->info[10] += accuracy+2;
-	win->info[14] += accuracy*3*2;
+	win->vertexcount  += accuracy+2;
+	win->normalcount  += accuracy+2;
+	win->colorcount   += accuracy+2;
+	win->texturecount += accuracy+2;
+	win->tricount     += accuracy*3*2;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -377,22 +385,24 @@ void carvesolid_prism4(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 8;
-	win->info[9] += 8;
-	win->info[10] += 8;
-	win->info[14] += 36;
+	win->vertexcount  += 8;
+	win->normalcount  += 8;
+	win->colorcount   += 8;
+	win->texturecount += 8;
+	win->tricount     += 36;
 
 	//color
 	color[0] = rr;
@@ -581,22 +591,24 @@ void carvesolid_cask(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy*2;
-	win->info[9] += accuracy*2;
-	win->info[10] += accuracy*2;
-	win->info[14] += accuracy*3*2;
+	win->vertexcount  += accuracy*2;
+	win->normalcount  += accuracy*2;
+	win->colorcount   += accuracy*2;
+	win->texturecount += accuracy*2;
+	win->tricount     += accuracy*3*2;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -663,22 +675,24 @@ void carvesolid_cylinder(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy*2+2;
-	win->info[9] += accuracy*2+2;
-	win->info[10] += accuracy*2+2;
-	win->info[14] += accuracy*3*4;
+	win->vertexcount  += accuracy*2+2;
+	win->normalcount  += accuracy*2+2;
+	win->colorcount   += accuracy*2+2;
+	win->texturecount += accuracy*2+2;
+	win->tricount     += accuracy*3*4;
 
 	for(j=0;j<accuracy;j++)
 	{
@@ -790,22 +804,24 @@ void carvesolid_dodecahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 20;
-	win->info[9] += 20;
-	win->info[10] += 20;
-	win->info[14] += 12*3*3;
+	win->vertexcount  += 20;
+	win->normalcount  += 20;
+	win->colorcount   += 20;
+	win->texturecount += 20;
+	win->tricount     += 12*3*3;
 
 	//(+-1, +-1, +-1)
 	vertex[ 0] = cx-rx-fx-ux;
@@ -1043,22 +1059,24 @@ void carvesolid_icosahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 12;
-	win->info[9] += 12;
-	win->info[10] += 12;
-	win->info[14] += 60;
+	win->vertexcount  += 12;
+	win->normalcount  += 12;
+	win->colorcount   += 12;
+	win->texturecount += 12;
+	win->tricount     += 60;
 
 	//(+-m, 0, +-n)
 	vertex[ 0] = cx - m;
@@ -1218,22 +1236,24 @@ void carvesolid_sphere(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy*17+2;
-	win->info[9] += accuracy*17+2;
-	win->info[10] += accuracy*17+2;
-	win->info[14] += accuracy*16*6 + accuracy*3*2;
+	win->vertexcount  += accuracy*17+2;
+	win->normalcount  += accuracy*17+2;
+	win->colorcount   += accuracy*17+2;
+	win->texturecount += accuracy*17+2;
+	win->tricount     += accuracy*16*6 + accuracy*3*2;
 
 	for(k=0;k<17;k++)
 	{
@@ -1342,21 +1362,23 @@ void carvesolid_tokamak(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	//u32 tcount = win->info[11];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index    = buf + 0xe00000 + (icount*2);
+	float* vertex  = buf + 0x000000 + (pcount*12);
+	float* normal  = buf + 0x200000 + (ncount*12);
+	float* color   = buf + 0x400000 + (ccount*12);
+	float* texture = buf + 0x600000 + (tcount*12);
+	u16* index     = buf + 0xc00000 + (icount*2);
 
-	win->info[8] += accuracy*17+2;
-	win->info[9] += accuracy*17+2;
-	win->info[10] += accuracy*17+2;
-	win->info[14] += accuracy*16*6 + accuracy*3*2;
+	win->vertexcount  += accuracy*17+2;
+	win->normalcount  += accuracy*17+2;
+	win->colorcount   += accuracy*17+2;
+	win->texturecount += accuracy*17+2;
+	win->tricount     += accuracy*16*6 + accuracy*3*2;
 
 }
