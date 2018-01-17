@@ -1,7 +1,8 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void* samepinnextchip(void*);
-void forcedirected(void*, int, void*, int, void*, int);
+void forcedirected_2d(void*, int, void*, int, void*, int);
+void forcedirected_3d(void*, int, void*, int, void*, int);
 
 
 
@@ -24,10 +25,12 @@ struct pairof
 	u16 child;
 };
 static struct origin orig[16];
-static struct vertex vbuf[16];
-static int vlen = 0;
 static struct pairof pair[16];
+static struct vertex vbuf[16];
+static struct vertex obuf[16];
 static int plen = 0;
+static int vlen = 0;
+static int redo = 1;
 
 
 
@@ -178,9 +181,9 @@ static void starry_read_pixel(struct arena* win, struct actor* act, struct style
 static void graph_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	int i,j,k;
-	vlen = plen = 0;
-	graph_traverse(win);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
+
+	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
+	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.5;
 
 	for(i=0;i<plen;i++)
 	{
@@ -198,14 +201,13 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 	int i,j,k;
 	int cx = (sty->cx) * (win->w) / 0x10000;
 	int cy = (sty->cy) * (win->h) / 0x10000;
-	int ww = (sty->wantw) * (win->w) / 0x20000;
-	int hh = (sty->wanth) * (win->h) / 0x20000;
+	int ww = (sty->wantw) * (win->w) / 0x10000;
+	int hh = (sty->wanth) * (win->h) / 0x10000;
 
-	vlen = plen = 0;
-	graph_traverse(win);
+	forcedirected_2d(obuf, vlen, vbuf, vlen, pair, plen);
 	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.5;
 
-	drawhyaline_rect(win, 0, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(win, 0, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2);
 	for(i=0;i<plen;i++)
 	{
 		j = pair[i].parent;
@@ -213,9 +215,9 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 		drawline(
 			win, 0xffffff,
 			cx+ww*(vbuf[j].x-0.5),
-			cy+hh*(vbuf[j].y-0.5),
+			cy+hh*(0.5-vbuf[j].y),
 			cx+ww*(vbuf[k].x-0.5),
-			cy+hh*(vbuf[k].y-0.5)
+			cy+hh*(0.5-vbuf[k].y)
 		);
 	}
 }
@@ -231,6 +233,13 @@ static void graph_read_cli(struct arena* win, struct actor* act, struct style* s
 static void graph_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
+	if(redo == 1)
+	{
+		redo = 0;
+		vlen = plen = 0;
+		graph_traverse(win);
+	}
+
 	if(fmt == __cli__)graph_read_cli(win, act, sty);
 	else if(fmt == __tui__)graph_read_tui(win, act, sty);
 	else if(fmt == __html__)graph_read_html(win, act, sty);
@@ -239,6 +248,10 @@ static void graph_read(struct arena* win, struct actor* act, struct style* sty)
 }
 static void graph_write(struct event* ev)
 {
+	if(ev->what == __char__)
+	{
+		if(ev->why == 0xd)redo = 1;
+	}
 }
 
 
