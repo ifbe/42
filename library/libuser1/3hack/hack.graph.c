@@ -28,6 +28,7 @@ static struct origin orig[16];
 static struct pairof pair[16];
 static struct vertex vbuf[16];
 static struct vertex obuf[16];
+static int olen = 0;
 static int plen = 0;
 static int vlen = 0;
 static int redo = 1;
@@ -47,6 +48,7 @@ int graph_add(u64 type, void* addr)
 
 	j = vlen;
 	vlen++;
+	olen++;
 
 	orig[j].type = type;
 	orig[j].addr = addr;
@@ -105,6 +107,7 @@ void butane()
 		vbuf[j].z = (getrandom() & 0xffff) / 65536.0;
 	}
 	vlen = 14;
+	olen = 0;
 
 	for(j=0;j<13;j++)
 	{
@@ -242,6 +245,9 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 	int cy = (sty->cy) * (win->h) / 0x10000;
 	int ww = (sty->wantw) * (win->w) / 0x10000;
 	int hh = (sty->wanth) * (win->h) / 0x10000;
+	void* p;
+	struct arena* aa;
+	struct actor* bb;
 
 	forcedirected_2d(obuf, vlen, vbuf, vlen, pair, plen);
 	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
@@ -263,11 +269,26 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		j = cx + ww*(vbuf[i].x);
 		k = cy - hh*(vbuf[i].y);
+
+		p = "?";
+		if(i < olen)
+		{
+			if(orig[i].type == __win__)
+			{
+				aa = orig[i].addr;
+				p = &(aa->fmt);
+			}
+			else if(orig[i].type == __act__)
+			{
+				bb = orig[i].addr;
+				p = &(bb->name);
+			}
+		}
 		drawicon_1(
 			win, 0xffffff,
 			j-16, k-12,
 			j+16, k+12,
-			"?", 4
+			p, 8
 		);
 	}
 }

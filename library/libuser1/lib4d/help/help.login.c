@@ -1,22 +1,15 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void term_write(void*);
-void actorchoose(void*);
 void carvestarry_random(void*);
 void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1);
+void act_at(void*, void*);
 
 
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
-static struct style* style = 0;
 static int chosen = 0;
-static void login_this()
-{
-	if(chosen < 0)return;
-	if(chosen > 31)return;
-	actorchoose((void*)&actor[chosen].name);
-}
 
 
 
@@ -177,26 +170,46 @@ void login_write(struct arena* win, struct event* ev)
 			y = (y*16)>>16;
 			chosen = (y-4)*4 + (x-2);
 		}
-		else if(x == '-')login_this();
+		else if(x == '-')
+		{
+			act_at(win, &actor[chosen]);
+		}
 	}
 	else if(ev->what == __kbd__)
 	{
-		if(ev->why == 0x4b)chosen = (chosen+31)%32;
-		else if(ev->why == 0x4d)chosen = (chosen+1)%32;
+		if(ev->why == 0x4b)
+		{
+			chosen = (chosen+31)%32;
+		}
+		else if(ev->why == 0x4d)
+		{
+			chosen = (chosen+1)%32;
+		}
 	}
 	else if(ev->what == __char__)
 	{
-		if((ev->why == 0xd)|(ev->why == 0xa))login_this();
-		else if(ev->why == 0x435b1b)chosen = (chosen+1)%32;
-		else if(ev->why == 0x445b1b)chosen = (chosen+31)%32;
-		else term_write(ev);
+		if((ev->why == 0xd)|(ev->why == 0xa))
+		{
+			act_at(win, &actor[chosen]);
+		}
+		else if(ev->why == 0x435b1b)
+		{
+			chosen = (chosen+1)%32;
+		}
+		else if(ev->why == 0x445b1b)
+		{
+			chosen = (chosen+31)%32;
+		}
+		else
+		{
+			term_write(ev);
+		}
 	}
 }
 void login_create(void* addr)
 {
 	arena = addr + 0;
 	actor = addr + 0x100000;
-	style = addr + 0x200000;
 }
 void login_delete()
 {

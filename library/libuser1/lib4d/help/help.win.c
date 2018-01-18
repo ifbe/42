@@ -20,6 +20,12 @@ static int stlen = 0;
 
 
 
+void act_add()
+{
+}
+void act_del()
+{
+}
 void act_at(struct arena* win, struct actor* act)
 {
 	struct style* st = (void*)style + stlen;
@@ -44,7 +50,6 @@ void win_add(u64 why, u64 where)
 		say("error@w+\n");
 		return;
 	}
-	actorstart(ret, 0);
 }
 void win_del(u64 why, u64 where)
 {
