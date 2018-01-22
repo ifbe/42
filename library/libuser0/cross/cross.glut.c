@@ -35,15 +35,19 @@ static int queuetail = 0;
 static int last_x = 0;
 static int last_y = 0;
 //
-static GLuint vShader;
-static GLuint fShader;
-static GLuint programhandle;
-static GLuint texturehandle;
+static GLuint simpleprogram;
+static GLuint prettyprogram;
+static GLuint shadowprogram;
+static GLuint pickerprogram;
+static GLuint simpletexture;
+static GLuint prettytexture;
+static GLuint shadowtexture;
+static GLuint pickertexture;
 //
 static GLuint vertexvbo;
 static GLuint normalvbo;
-static GLuint colorvbo;
-static GLuint texturevbo;
+static GLuint colourvbo;
+static GLuint texcorvbo;
 //
 static GLuint pointvbo;
 static GLuint linevbo;
@@ -77,11 +81,33 @@ static GLfloat projmatrix[4*4] = {
 	0.0f, 0.0f, -1.0f, -1.0f,
 	0.0f, 0.0f, -0.2f, 0.0f
 };
+static GLfloat prettymvp[4*4];
 
 
 
 
-char vCode[] = {
+char simplevert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 position;\n"
+	"layout(location = 2)in mediump vec3 color;\n"
+	"uniform mat4 simplemvp;\n"
+	"out mediump vec3 vertexcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vertexcolor = color;\n"
+		"gl_Position = simplemvp * vec4(position,1.0);\n"
+	"}\n"
+};
+char simplefrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 vertexcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vertexcolor,1.0);\n"
+	"}\n"
+};
+char normalvert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 position;\n"
 	"layout(location = 1)in mediump vec3 normal;\n"
@@ -90,8 +116,7 @@ char vCode[] = {
 	"uniform mediump vec3 lightcolor;\n"
 	"uniform mediump vec3 lightposition;\n"
 	"uniform mediump vec3 eyeposition;\n"
-	"uniform mat4 modelviewproj;\n"
-	"uniform mat4 normalmatrix;\n"
+	"uniform mat4 prettymvp;\n"
 	"out mediump vec3 vertexcolor;\n"
 	"void main()\n"
 	"{\n"
@@ -106,10 +131,10 @@ char vCode[] = {
 		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 		"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
 		"vertexcolor = color*(ambient + diffuse + specular);\n"
-		"gl_Position = modelviewproj * vec4(position,1.0);\n"
+		"gl_Position = prettymvp * vec4(position,1.0);\n"
 	"}\n"
 };
-char fCode[] = {
+char normalfrag[] = {
 	"#version 300 es\n"
 	"in mediump vec3 vertexcolor;\n"
 	"out mediump vec4 FragColor;\n"
@@ -118,7 +143,134 @@ char fCode[] = {
 		"FragColor = vec4(vertexcolor,1.0);\n"
 	"}\n"
 };
-void initShader()  
+char shadowvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 position;\n"
+	"out mediump vec3 vertexcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vertexcolor = position;\n"
+		"gl_Position = vec4(position,1.0);\n"
+	"}\n"
+};
+char shadowfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 vertexcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vertexcolor,1.0);\n"
+	"}\n"
+};
+char pickervert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 position;\n"
+	"out mediump vec3 vertexcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vertexcolor = position;\n"
+		"gl_Position = vec4(position,1.0);\n"
+	"}\n"
+};
+char pickerfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 vertexcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vertexcolor,1.0);\n"
+	"}\n"
+};
+void initshader_one(GLuint* prog, void* vert, void* frag)
+{
+	//1.vertex shader
+	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+	if(0 == vShader)
+	{
+		printf("ERROR : Create vertex shader failed\n");
+		exit(1);
+	}
+
+	const GLchar* vCodeArray[1] = {vert};
+	glShaderSource(vShader, 1, vCodeArray, NULL);
+	glCompileShader(vShader);
+
+	GLint compileResult;
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &compileResult);
+	if (GL_FALSE == compileResult)
+	{
+		GLint logLen;
+		//得到编译日志长度
+		glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &logLen);
+		if (logLen > 0)
+		{
+			GLsizei written;
+			char *log = (char*)malloc(logLen);
+
+			//得到日志信息并输出
+			glGetShaderInfoLog(vShader, logLen, &written, log);
+			printf("vertex shader compile log: %s\n",log);
+			free(log);
+		}
+	}
+
+	//2.fragment shader
+	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	if (0 == fShader)
+	{
+		printf("ERROR : Create fragment shader failed");
+		exit(1);
+	}
+
+	const GLchar* fCodeArray[1] = {frag};
+	glShaderSource(fShader, 1, fCodeArray, NULL);
+	glCompileShader(fShader);
+
+	glGetShaderiv(fShader, GL_COMPILE_STATUS, &compileResult);
+	if(GL_FALSE == compileResult)
+	{
+		GLint logLen;
+		glGetShaderiv(fShader, GL_INFO_LOG_LENGTH, &logLen);
+		if(logLen > 0)
+		{
+			GLsizei written;
+			char *log = (char*)malloc(logLen);
+
+			glGetShaderInfoLog(fShader, logLen, &written, log);
+			printf("fragment shader compile log: %s\n",log);
+			free(log);
+		}
+	}
+
+	//3.glsl program
+	*prog = glCreateProgram();
+	if(*prog == 0)
+	{
+		printf("ERROR : create program failed");
+		exit(1);
+	}
+
+	glAttachShader(*prog, vShader);
+	glAttachShader(*prog, fShader);
+	glLinkProgram(*prog);
+
+	GLint linkStatus;
+	glGetProgramiv(*prog, GL_LINK_STATUS, &linkStatus);
+	if(GL_FALSE == linkStatus)
+	{
+		printf("ERROR : link shader program failed");
+		GLint logLen;
+		glGetProgramiv(*prog, GL_INFO_LOG_LENGTH, &logLen);
+		if(logLen > 0)
+		{
+			char *log = (char*)malloc(logLen);
+			GLsizei written;
+			glGetProgramInfoLog(*prog, logLen, &written, log);
+			printf("Program log :%s\n", log);
+		}
+	}
+}
+void initshader()  
 {  
 	//1.check version
 	const GLubyte *renderer = glGetString( GL_RENDERER );
@@ -135,140 +287,62 @@ void initShader()
 	printf("GLSL Version: %s\n", glslVersion);
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
-	//2.vertex shader
-	vShader = glCreateShader(GL_VERTEX_SHADER);
-	if(0 == vShader)
-	{
-		printf("ERROR : Create vertex shader failed\n");
-		exit(1);
-	}
-
-	const GLchar* vCodeArray[1] = {vCode};
-	glShaderSource(vShader, 1, vCodeArray, NULL);
-	glCompileShader(vShader);
-
-	GLint compileResult;
-	glGetShaderiv(vShader,GL_COMPILE_STATUS,&compileResult);
-	if (GL_FALSE == compileResult)
-	{
-		GLint logLen;
-		//得到编译日志长度
-		glGetShaderiv(vShader,GL_INFO_LOG_LENGTH,&logLen);
-		if (logLen > 0)
-		{
-			GLsizei written;
-			char *log = (char *)malloc(logLen);
-
-			//得到日志信息并输出
-			glGetShaderInfoLog(vShader,logLen,&written,log);
-			printf("vertex shader compile log: %s\n",log);
-			free(log);
-		}
-	}
-
-	//3.fragment shader
-	fShader = glCreateShader(GL_FRAGMENT_SHADER);
-	if (0 == fShader)
-	{
-		printf("ERROR : Create fragment shader failed");
-		exit(1);
-	}
-
-	const GLchar* fCodeArray[1] = {fCode};
-	glShaderSource(fShader, 1, fCodeArray, NULL);
-	glCompileShader(fShader);
-
-	glGetShaderiv(fShader,GL_COMPILE_STATUS,&compileResult);
-	if(GL_FALSE == compileResult)
-	{
-		GLint logLen;
-		glGetShaderiv(fShader,GL_INFO_LOG_LENGTH,&logLen);
-		if(logLen > 0)
-		{
-			GLsizei written;
-			char *log = (char *)malloc(logLen);
-
-			glGetShaderInfoLog(fShader,logLen,&written,log);
-			printf("fragment shader compile log: %s\n",log);
-			free(log);
-		}
-	}
-  
-	//4.glsl program
-	programhandle = glCreateProgram();
-	if(!programhandle)
-	{
-		printf("ERROR : create program failed");
-		exit(1);
-	}
-
-	glAttachShader(programhandle,vShader);
-	glAttachShader(programhandle,fShader);
-	glLinkProgram(programhandle);
-
-	GLint linkStatus;
-	glGetProgramiv(programhandle,GL_LINK_STATUS,&linkStatus);
-	if(GL_FALSE == linkStatus)
-	{
-		printf("ERROR : link shader program failed");
-		GLint logLen;
-		glGetProgramiv(programhandle,GL_INFO_LOG_LENGTH, &logLen);
-		if(logLen > 0)
-		{
-			char *log = (char *)malloc(logLen);
-			GLsizei written;
-			glGetProgramInfoLog(programhandle,logLen, &written,log);
-			printf("Program log :%s\n", log);
-		}
-	}
-	else glUseProgram(programhandle);
+	initshader_one(&simpleprogram, simplevert, simplefrag);
+	initshader_one(&prettyprogram, normalvert, normalfrag);
+	initshader_one(&shadowprogram, shadowvert, shadowfrag);
+	initshader_one(&pickerprogram, pickervert, pickerfrag);
+	glUseProgram(prettyprogram);
 }
-void initVBO()  
+void inittexture()
 {
-	void* vertexxyz = (void*)(src->buf)+0x000000;
-	void* normalxyz = (void*)(src->buf)+0x200000;
-	void* colorrgb = (void*)(src->buf)+0x400000;
-	void* texturexyz = (void*)(src->buf)+0x600000;
-
-	void* pointindex = (void*)(src->buf)+0x800000;
-	void* lineindex = (void*)(src->buf)+0xa00000;
-	void* triangleindex = (void*)(src->buf)+0xc00000;
-	void* rectangleindex = (void*)(src->buf)+0xe00000;
-
-
-
-
-	//[0]picture
-	glGenTextures(1, &texturehandle);
-	glBindTexture(GL_TEXTURE_2D, texturehandle);
+	glGenTextures(1, &prettytexture);
+	glBindTexture(GL_TEXTURE_2D, prettytexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 /*
-	glBindTexture(GL_TEXTURE_2D, texturevbo);
+	glBindTexture(GL_TEXTURE_2D, texcorvbo);
 	glTexImage2D(GL_TEXTURE_2D,	0,
 		GL_RGBA, 512, 512, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
 	);
 */
 
-	//[8]vertex
+}
+void initobject()  
+{
+	void* vertexdata = (void*)(src->buf)+0x000000;
+	void* normaldata = (void*)(src->buf)+0x200000;
+	void* colourdata = (void*)(src->buf)+0x400000;
+	void* texcordata = (void*)(src->buf)+0x600000;
+
+	void* pointindex = (void*)(src->buf)+0x800000;
+	void* lineindex = (void*)(src->buf)+0xa00000;
+	void* triangleindex = (void*)(src->buf)+0xc00000;
+	void* rectangleindex = (void*)(src->buf)+0xe00000;
+
+	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexxyz, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexdata, GL_STATIC_DRAW);
 
-	//[9]normal
+	//[2m,4m) normal
 	glGenBuffers(1, &normalvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, normalxyz, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, normaldata, GL_STATIC_DRAW);
 
-	//[a]color
-	glGenBuffers(1, &colorvbo);
-	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, colorrgb, GL_STATIC_DRAW);
+	//[4m,6m) color
+	glGenBuffers(1, &colourvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, colourdata, GL_STATIC_DRAW);
 
-	//[c]point
+	//[6m,8m) texuv
+	glGenBuffers(1, &texcorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, texcorvbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000, texcordata, GL_STATIC_DRAW);
+
+	//[8m,10m) point
 	glGenVertexArrays(1,&pointvao);
 	glBindVertexArray(pointvao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
@@ -277,7 +351,7 @@ void initVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
 
@@ -285,7 +359,7 @@ void initVBO()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pointvbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, pointindex, GL_STATIC_DRAW);
 
-	//[d]line
+	//[10m,12m) line
 	glGenVertexArrays(1,&linevao);
 	glBindVertexArray(linevao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
@@ -294,7 +368,7 @@ void initVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
 
@@ -302,7 +376,7 @@ void initVBO()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, lineindex, GL_STATIC_DRAW);
 
-	//[e]triangle
+	//[12m,14m) triangle
 	glGenVertexArrays(1,&trianglevao);
 	glBindVertexArray(trianglevao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
@@ -311,7 +385,7 @@ void initVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
 
@@ -319,7 +393,7 @@ void initVBO()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
 
-	//[f]rectangle
+	//[14m,16m) rectangle
 	glGenVertexArrays(1,&rectanglevao);
 	glBindVertexArray(rectanglevao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
@@ -328,7 +402,7 @@ void initVBO()
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
 
@@ -415,18 +489,14 @@ void fixprojection()
 void fixmatrix()
 {
 	int x;
-	GLfloat temp[4*4];
 
 	fixmodel();
 	fixview();
 	fixprojection();
 
-	for(x=0;x<16;x++)temp[x] = modelmatrix[x];
-	matrixmultiply_4(temp, viewmatrix);
-	matrixmultiply_4(temp, projmatrix);
-
-	GLint mvp = glGetUniformLocation(programhandle, "modelviewproj");
-	glUniformMatrix4fv(mvp, 1, GL_FALSE, temp);
+	for(x=0;x<16;x++)prettymvp[x] = modelmatrix[x];
+	matrixmultiply_4(prettymvp, viewmatrix);
+	matrixmultiply_4(prettymvp, projmatrix);
 }
 void fixlight()
 {
@@ -434,16 +504,16 @@ void fixlight()
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightposition[3] = {0.0f, 0.0f, 10.0f};
 
-	GLint ac = glGetUniformLocation(programhandle, "ambientcolor");
+	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
 
-	GLint dc = glGetUniformLocation(programhandle, "lightcolor");
+	GLint dc = glGetUniformLocation(prettyprogram, "lightcolor");
 	glUniform3fv(dc, 1, lightcolor);
 
-	GLint dp = glGetUniformLocation(programhandle, "lightposition");
+	GLint dp = glGetUniformLocation(prettyprogram, "lightposition");
 	glUniform3fv(dp, 1, lightposition);
 
-	GLint ep = glGetUniformLocation(programhandle, "eyeposition");
+	GLint ep = glGetUniformLocation(prettyprogram, "eyeposition");
 	glUniform3fv(ep, 1, camera);
 }
 void fixtexture()
@@ -458,18 +528,25 @@ void callback_display()
 	//set
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	//...
 	fixmatrix();
 	fixlight();
 	fixtexture();
 
-	//
+	//no light
+	glUseProgram(simpleprogram);
+	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
+	glUniformMatrix4fv(mvp1, 1, GL_FALSE, prettymvp);
+
 	glBindVertexArray(pointvao);
 	glDrawElements(GL_POINTS, src->pointcount, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(linevao);
 	glDrawElements(GL_LINES, src->linecount, GL_UNSIGNED_SHORT, 0);
+
+	//have light
+	glUseProgram(prettyprogram);
+	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
+	glUniformMatrix4fv(mvp2, 1, GL_FALSE, prettymvp);
 
 	glBindVertexArray(trianglevao);
 	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
@@ -522,10 +599,10 @@ void callback_idle()
 	glBindBuffer(   GL_ARRAY_BUFFER, normalvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*normalcount, normaldata);
 
-	glBindBuffer(   GL_ARRAY_BUFFER, colorvbo);
+	glBindBuffer(   GL_ARRAY_BUFFER, colourvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*colorcount, colordata);
 /*
-	glBindBuffer(   GL_ARRAY_BUFFER, texturevbo);
+	glBindBuffer(   GL_ARRAY_BUFFER, texcorvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*texturecount, texturedata);
 */
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, pointvbo);
@@ -759,15 +836,15 @@ void* uievent(struct window* p)
 	glutInitWindowPosition(200, 200);
 	glutCreateWindow("42");
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 
 	//glew
 	ret = glewInit();
 
 	//
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
-	initShader();
-	initVBO();
+	initshader();
+	inittexture();
+	initobject();
 
 	//绘制与显示
 	glutIdleFunc(callback_idle);

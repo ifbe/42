@@ -58,9 +58,9 @@ void carvestarry_random(struct arena* win)
 
 	for(j=0;j<256;j++)
 	{
-		vertex[j*3+0] = (getrandom() % 65536) / 65536.0 - 0.5;
-		vertex[j*3+1] = (getrandom() % 65536) / 65536.0 - 0.5;
-		vertex[j*3+2] = (getrandom() % 65536) / 65536.0;
+		vertex[j*3+0] = (getrandom() % 32768) / 32768.0 - 0.5;
+		vertex[j*3+1] = (getrandom() % 32768) / 32768.0 - 0.5;
+		vertex[j*3+2] = (getrandom() % 32768) / 32768.0;
 
 		normal[j*3+0] = 0.0;
 		normal[j*3+1] = 0.0;
