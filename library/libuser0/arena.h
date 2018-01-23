@@ -83,8 +83,8 @@ struct window
 		{
 			u64 vertexcount;
 			u64 normalcount;
-			u64 colorcount;
-			u64 texturecount;
+			u64 colourcount;
+			u64 texcorcount;
 			u64 pointcount;
 			u64 linecount;
 			u64 tricount;

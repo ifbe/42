@@ -6,7 +6,7 @@ all:
 	make -s -C $(library)/libhard1
 	make -s -C $(library)/libsoft0 linux
 	make -s -C $(library)/libsoft1
-	make -s -C $(library)/libuser0 linuxgl
+	make -s -C $(library)/libuser0 linuxglfw
 	make -s -C $(library)/libuser1
 	make -s a
 	make -s so
@@ -41,6 +41,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lpulse -lpulse-simple -lpthread -lGL -lGLU -lglut
+	-lglfw -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread
 clean:
 	rm -f *.o *.a *.so

@@ -107,10 +107,10 @@ linuxxlib:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:linuxgles
-linuxgles:
+.PHONY:linuxglfw
+linuxglfw:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.glfw.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
@@ -168,10 +168,10 @@ macquartz:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:macgles
-macgles:
+.PHONY:macglfw
+macglfw:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.glfw.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
@@ -229,10 +229,10 @@ wind3d:
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c
 
-.PHONY:wingles
-wingles:
+.PHONY:winglfw
+winglfw:
 	rm -f *.o
-	$(compiler) $(cflag) cross/cross.gles.c
+	$(compiler) $(cflag) cross/cross.glfw.c
 	$(compiler) $(cflag) cross/cross.net.c
 	$(compiler) $(cflag) cross/cross.voice.c
 	$(compiler) $(cflag) arena.c

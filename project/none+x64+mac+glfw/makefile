@@ -13,7 +13,7 @@ all:
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libsoft1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
-	make -s -C $(library)/libuser0 macgl \
+	make -s -C $(library)/libuser0 macglfw \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libuser1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
@@ -51,6 +51,7 @@ program:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
+	$(library)/libuser1/*.o \
+	-lglfw -lm
 clean:
 	rm -f *.o *.a *.dylib

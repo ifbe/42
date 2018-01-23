@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GLFW/glfw3.h>
 #include "arena.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 
@@ -61,7 +61,7 @@ static GLuint rectanglevbo;
 static float light0[4] = {0.0f, 0.0f, 10.0f};
 static float light1[4] = {0.0f, 10.0f, 0.0f};
 static float light2[4] = {10.0f, 0.0f, 0.0f};
-static float camera[4] = {0.5f, -1.0f, 0.7f};
+static float camera[4] = {1.0f, -2.0f, 1.0f};
 static float center[4] = {0.0f, 0.0f, 0.0f};
 static float above[4] = {0.0f, 0.0f, 1.0f};
 //
@@ -313,20 +313,20 @@ void inittexture()
 		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
 	);
 */
+	/*
+	glGenFramebuffers(1, &shadowfb);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowfb);
+
 	glGenTextures(1, &shadowtexture);
 	glBindTexture(GL_TEXTURE_2D, shadowtexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0,
 		GL_DEPTH_COMPONENT, 1024, 1024, 0,
 		GL_DEPTH_COMPONENT, GL_FLOAT, NULL
 	);
-/*
-	glGenFramebuffers(1, &shadowfb);
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowfb);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture(
 		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 		shadowtexture, 0
@@ -581,10 +581,6 @@ void callback_display()
 
 	glBindVertexArray(rectanglevao);
 	glDrawElements(GL_QUADS, src->rectcount, GL_UNSIGNED_SHORT, 0);
-
-	//write
-	glFlush();
-	glutSwapBuffers();
 }
 void callback_idle()
 {
@@ -646,7 +642,6 @@ void callback_idle()
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*rectcount, rectindex);
 
 	queuetail++;
-	glutPostRedisplay();
 }
 void callback_reshape(int w, int h)
 {
@@ -669,33 +664,6 @@ void callback_keyboard(unsigned char key, int x, int y)
 	}
 	eventwrite(key, what, where, 0);
 }
-void callback_special(int key, int x, int y)
-{
-	u64 what,where;
-	where = (u64)win;
-	//printf("%x\n",key);
-
-	if(key == GLUT_KEY_UP)key = 0x48;
-	else if(key == GLUT_KEY_LEFT)key = 0x4b;
-	else if(key == GLUT_KEY_RIGHT)key = 0x4d;
-	else if(key == GLUT_KEY_DOWN)key = 0x50;
-	else if(key == GLUT_KEY_F1)key = 0xf1;
-	else if(key == GLUT_KEY_F2)key = 0xf2;
-	else if(key == GLUT_KEY_F3)key = 0xf3;
-	else if(key == GLUT_KEY_F4)key = 0xf4;
-	else if(key == GLUT_KEY_F5)key = 0xf5;
-	else if(key == GLUT_KEY_F6)key = 0xf6;
-	else if(key == GLUT_KEY_F7)key = 0xf7;
-	else if(key == GLUT_KEY_F8)key = 0xf8;
-	else if(key == GLUT_KEY_F9)key = 0xf9;
-	else if(key == GLUT_KEY_F10)key = 0xfa;
-	else if(key == GLUT_KEY_F11)key = 0xfb;
-	else if(key == GLUT_KEY_F12)key = 0xfc;
-	else return;
-
-	what = 0x64626b;
-	eventwrite(key, what, where, 0);
-}
 void callback_mouse(int button, int state, int x, int y)
 {
 	float tx, ty, tz;
@@ -711,7 +679,7 @@ void callback_mouse(int button, int state, int x, int y)
 		xx = (xx<<16) / (win->w);
 		yy = (yy<<16) / (win->h);
 
-		if(state == GLUT_DOWN)
+		if(state == 0)	//GLUT_DOWN)
 		{
 			if(button == 0)
 			{
@@ -744,12 +712,12 @@ void callback_mouse(int button, int state, int x, int y)
 		return;
 	}
 
-	if(state == GLUT_DOWN)
+	if(state == 0)	//GLUT_DOWN)
 	{
 		last_x = x;
 		last_y = y;
 	}
-	if(state == GLUT_UP)
+	if(state == 0)	//GLUT_UP)
 	{
 		tx = camera[0];
 		ty = camera[1];
@@ -759,18 +727,12 @@ void callback_mouse(int button, int state, int x, int y)
 			camera[0] = 0.9*tx + 0.1*center[0];
 			camera[1] = 0.9*ty + 0.1*center[1];
 			camera[2] = 0.9*tz + 0.1*center[2];
-
-			//camera_zoom *= 0.95;
-			glutPostRedisplay();
 		}
 		else if(button == 4)	//wheel_down
 		{
 			camera[0] = 1.1*tx - 0.1*center[0];
 			camera[1] = 1.1*ty - 0.1*center[1];
 			camera[2] = 1.1*tz - 0.1*center[2];
-
-			//camera_zoom *= 1.05263158;
-			glutPostRedisplay();
 		}
 	}
 }
@@ -843,7 +805,6 @@ void callback_move(int x,int y)
 
 	last_x = x;
 	last_y = y;
-	glutPostRedisplay();
 }
 
 
@@ -851,39 +812,38 @@ void callback_move(int x,int y)
 
 void* uievent(struct window* p)
 {
-	int ret;
-	int argc=1;
-	char* argv[2];
-	argv[0] = "./a.out";
-	argv[1] = 0;
+	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
+	if(fw == NULL)
+	{
+		printf("error@glfwCreateWindow\n");
+		glfwTerminate();
+		return 0;
+	}
 
-	//glut
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(p->w, p->h);
-	glutInitWindowPosition(200, 200);
-	glutCreateWindow("42");
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
+	glfwMakeContextCurrent(fw);
+	glewExperimental = 1;
 
-	//glew
-	ret = glewInit();
+	if(glewInit() != GLEW_OK)
+	{
+		printf("error@glewInit\n");
+		return 0;
+	}
 
-	//
-	initshader();
-	inittexture();
-	initobject();
+	while(1)
+	{
+		if(glfwWindowShouldClose(fw) != 0)break;
+		if(glfwGetKey(fw, GLFW_KEY_ESCAPE) == GLFW_PRESS)break;
+		glfwSwapBuffers(fw);
+		glfwPollEvents();
+	}
 
-	//绘制与显示
-	glutIdleFunc(callback_idle);
-	glutDisplayFunc(callback_display);
-	glutReshapeFunc(callback_reshape);
-	glutKeyboardFunc(callback_keyboard);
-	glutSpecialFunc(callback_special);
-	glutMouseFunc(callback_mouse);
-	glutMotionFunc(callback_move);
-	glutMainLoop();
+	eventwrite(0,0,0,0);
+	return 0;
 }
+
+
+
+
 void windowread()
 {
 }
@@ -919,7 +879,18 @@ void windowstart(struct window* this)
 }
 void windowdelete()
 {
+	glfwTerminate();
 }
 void windowcreate()
 {
+	if(glfwInit() == 0)
+	{
+		printf("error@glfwInit\n");
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);	//4x antialiasing
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);	//3.3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }

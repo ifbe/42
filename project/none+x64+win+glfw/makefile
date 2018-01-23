@@ -13,7 +13,7 @@ all:
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -I."
-	make -s -C $(library)/libuser0 wingl \
+	make -s -C $(library)/libuser0 winglfw \
 	cflag="-c -O2 -I."
 	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -I."
@@ -40,7 +40,7 @@ dll:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
+	-lglfw -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
@@ -53,6 +53,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
+	-lglfw -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.dll
