@@ -281,6 +281,20 @@ void drawhyaline_circle(struct arena* win, u32 rgb,
 	int cx, int cy, int radius
 );
 
+void carveascii(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8 dat
+);
+void carvestring(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* str, int len
+);
 void carvepoint(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz

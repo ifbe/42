@@ -46,7 +46,7 @@ static GLuint pickertexture;
 static GLuint pointvao;
 static GLuint linevao;
 static GLuint trianglevao;
-static GLuint rectanglevao;
+static GLuint fontvao;
 //
 static GLuint vertexvbo;
 static GLuint normalvbo;
@@ -56,7 +56,7 @@ static GLuint texcorvbo;
 static GLuint pointvbo;
 static GLuint linevbo;
 static GLuint trianglevbo;
-static GLuint rectanglevbo;
+static GLuint fontvbo;
 //
 static float light0[4] = {0.0f, 0.0f, 10.0f};
 static float light1[4] = {0.0f, 10.0f, 0.0f};
@@ -349,7 +349,7 @@ void initobject()
 	void* pointindex = (void*)(src->buf)+0x800000;
 	void* lineindex = (void*)(src->buf)+0xa00000;
 	void* triangleindex = (void*)(src->buf)+0xc00000;
-	void* rectangleindex = (void*)(src->buf)+0xe00000;
+	void* fontindex = (void*)(src->buf)+0xe00000;
 
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
@@ -422,9 +422,9 @@ void initobject()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
 
-	//[14m,16m) rectangle
-	glGenVertexArrays(1,&rectanglevao);
-	glBindVertexArray(rectanglevao);
+	//[14m,16m) font
+	glGenVertexArrays(1,&fontvao);
+	glBindVertexArray(fontvao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
@@ -435,9 +435,9 @@ void initobject()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
 
-	glGenBuffers(1, &rectanglevbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, rectangleindex, GL_STATIC_DRAW);
+	glGenBuffers(1, &fontvbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, fontindex, GL_STATIC_DRAW);
 }
 
 
@@ -579,13 +579,13 @@ void callback_display()
 	glBindVertexArray(trianglevao);
 	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
 
-	glBindVertexArray(rectanglevao);
-	glDrawElements(GL_QUADS, src->rectcount, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(fontvao);
+	glDrawElements(GL_QUADS, src->fontcount, GL_UNSIGNED_SHORT, 0);
 }
 void callback_idle()
 {
 	u64 vertexcount, normalcount, colourcount, texcorcount;
-	u64 pointcount, linecount, tricount, rectcount;
+	u64 pointcount, linecount, tricount, fontcount;
 	float* vertexdata;
 	float* normaldata;
 	float* colourdata;
@@ -593,7 +593,7 @@ void callback_idle()
 	u16* pointindex;
 	u16* lineindex;
 	u16* triindex;
-	u16* rectindex;
+	u16* fontindex;
 
 	if(queuehead == queuetail)return;
 
@@ -605,7 +605,7 @@ void callback_idle()
 	pointcount = src->pointcount;
 	linecount = src->linecount;
 	tricount = src->tricount;
-	rectcount = src->rectcount;
+	fontcount = src->fontcount;
 
 	vertexdata = (void*)(src->buf)+0x000000;
 	normaldata = (void*)(src->buf)+0x200000;
@@ -615,7 +615,7 @@ void callback_idle()
 	pointindex = (void*)(src->buf)+0x800000;
 	lineindex = (void*)(src->buf)+0xa00000;
 	triindex = (void*)(src->buf)+0xc00000;
-	rectindex = (void*)(src->buf)+0xe00000;
+	fontindex = (void*)(src->buf)+0xe00000;
 
 	glBindBuffer(   GL_ARRAY_BUFFER, vertexvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*vertexcount, vertexdata);
@@ -638,8 +638,8 @@ void callback_idle()
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*tricount, triindex);
 
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*rectcount, rectindex);
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, fontvbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*fontcount, fontindex);
 
 	queuetail++;
 }

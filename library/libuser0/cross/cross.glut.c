@@ -9,6 +9,7 @@
 
 
 //
+void drawascii(void* win, u32 rgb, int xx, int yy, u8 ch);
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
@@ -26,6 +27,9 @@ double sine(double);
 //
 static struct window* win;
 static struct window* src;
+static struct window fake;
+static u8 fontdata[128*128*4];
+//
 static int queuehead = 0;
 static int queuetail = 0;
 static int last_x = 0;
@@ -35,6 +39,7 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint shadowprogram;
 static GLuint pickerprogram;
+static GLuint myfontprogram;
 //
 static GLuint shadowfb;
 //
@@ -46,7 +51,7 @@ static GLuint pickertexture;
 static GLuint pointvao;
 static GLuint linevao;
 static GLuint trianglevao;
-static GLuint rectanglevao;
+static GLuint fontvao;
 //
 static GLuint vertexvbo;
 static GLuint normalvbo;
@@ -56,7 +61,7 @@ static GLuint texcorvbo;
 static GLuint pointvbo;
 static GLuint linevbo;
 static GLuint trianglevbo;
-static GLuint rectanglevbo;
+static GLuint fontvbo;
 //
 static float light0[4] = {0.0f, 0.0f, 10.0f};
 static float light1[4] = {0.0f, 10.0f, 0.0f};
@@ -187,6 +192,32 @@ char pickerfrag[] = {
 		"FragColor = vec4(vertexcolor,1.0);\n"
 	"}\n"
 };
+char myfontvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 position;\n"
+	"layout(location = 2)in mediump vec3 color;\n"
+	"layout(location = 3)in mediump vec2 texcoord;\n"
+	"uniform mat4 prettymvp;\n"
+	"out mediump vec3 origcolor;\n"
+	"out mediump vec2 texuv;\n"
+	"void main()\n"
+	"{\n"
+		"gl_Position = prettymvp * vec4(position,1.0);\n"
+		"origcolor = color;\n"
+		"texuv = texcoord;\n"
+	"}\n"
+};
+char myfontfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 origcolor;\n"
+	"in mediump vec2 texuv;\n"
+	"uniform sampler2D texdata;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = texture(texdata, texuv);\n"
+	"}\n"
+};
 void initshader_one(GLuint* prog, void* vert, void* frag)
 {
 	//1.vertex shader
@@ -297,22 +328,32 @@ void initshader()
 	initshader_one(&prettyprogram, prettyvert, prettyfrag);
 	initshader_one(&shadowprogram, shadowvert, shadowfrag);
 	initshader_one(&pickerprogram, pickervert, pickerfrag);
+	initshader_one(&myfontprogram, myfontvert, myfontfrag);
 	glUseProgram(prettyprogram);
 }
 void inittexture()
 {
+	int j;
 	glGenTextures(1, &prettytexture);
 	glBindTexture(GL_TEXTURE_2D, prettytexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-/*
+
+	fake.fmt = hex64('r','g','b','a','8','8','8','8');
+	fake.buf = fontdata;
+	fake.w = fake.h = 128;
+	for(j=0x20;j<0x80;j++)
+	{
+		drawascii(&fake, 0xfedcba, (j&0xf)<<3, j&0xf0, j);
+	}
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, 512, 512, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
+		GL_RGBA, 8*16, 16*8, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, fontdata
 	);
-*/
+
+/*
 	glGenTextures(1, &shadowtexture);
 	glBindTexture(GL_TEXTURE_2D, shadowtexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -323,6 +364,7 @@ void inittexture()
 		GL_DEPTH_COMPONENT, 1024, 1024, 0,
 		GL_DEPTH_COMPONENT, GL_FLOAT, NULL
 	);
+*/
 /*
 	glGenFramebuffers(1, &shadowfb);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowfb);
@@ -349,7 +391,7 @@ void initobject()
 	void* pointindex = (void*)(src->buf)+0x800000;
 	void* lineindex = (void*)(src->buf)+0xa00000;
 	void* triangleindex = (void*)(src->buf)+0xc00000;
-	void* rectangleindex = (void*)(src->buf)+0xe00000;
+	void* fontindex = (void*)(src->buf)+0xe00000;
 
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
@@ -422,9 +464,9 @@ void initobject()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
 
-	//[14m,16m) rectangle
-	glGenVertexArrays(1,&rectanglevao);
-	glBindVertexArray(rectanglevao);
+	//[14m,16m) font
+	glGenVertexArrays(1,&fontvao);
+	glBindVertexArray(fontvao);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
@@ -434,10 +476,13 @@ void initobject()
 	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, texcorvbo);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
 
-	glGenBuffers(1, &rectanglevbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, rectangleindex, GL_STATIC_DRAW);
+	glGenBuffers(1, &fontvbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, fontindex, GL_STATIC_DRAW);
 }
 
 
@@ -579,8 +624,15 @@ void callback_display()
 	glBindVertexArray(trianglevao);
 	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
 
-	glBindVertexArray(rectanglevao);
-	glDrawElements(GL_QUADS, src->rectcount, GL_UNSIGNED_SHORT, 0);
+	//texture
+	glUseProgram(myfontprogram);
+	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
+	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
+	GLint tex = glGetUniformLocation(myfontprogram, "texdata");
+	glUniform1i(tex, 0);
+
+	glBindVertexArray(fontvao);
+	glDrawElements(GL_TRIANGLES, src->fontcount, GL_UNSIGNED_SHORT, 0);
 
 	//write
 	glFlush();
@@ -589,7 +641,7 @@ void callback_display()
 void callback_idle()
 {
 	u64 vertexcount, normalcount, colourcount, texcorcount;
-	u64 pointcount, linecount, tricount, rectcount;
+	u64 pointcount, linecount, tricount, fontcount;
 	float* vertexdata;
 	float* normaldata;
 	float* colourdata;
@@ -597,7 +649,7 @@ void callback_idle()
 	u16* pointindex;
 	u16* lineindex;
 	u16* triindex;
-	u16* rectindex;
+	u16* fontindex;
 
 	if(queuehead == queuetail)return;
 
@@ -609,7 +661,7 @@ void callback_idle()
 	pointcount = src->pointcount;
 	linecount = src->linecount;
 	tricount = src->tricount;
-	rectcount = src->rectcount;
+	fontcount = src->fontcount;
 
 	vertexdata = (void*)(src->buf)+0x000000;
 	normaldata = (void*)(src->buf)+0x200000;
@@ -619,7 +671,7 @@ void callback_idle()
 	pointindex = (void*)(src->buf)+0x800000;
 	lineindex = (void*)(src->buf)+0xa00000;
 	triindex = (void*)(src->buf)+0xc00000;
-	rectindex = (void*)(src->buf)+0xe00000;
+	fontindex = (void*)(src->buf)+0xe00000;
 
 	glBindBuffer(   GL_ARRAY_BUFFER, vertexvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*vertexcount, vertexdata);
@@ -629,10 +681,10 @@ void callback_idle()
 
 	glBindBuffer(   GL_ARRAY_BUFFER, colourvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*colourcount, colourdata);
-/*
+
 	glBindBuffer(   GL_ARRAY_BUFFER, texcorvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*texcorcount, texcordata);
-*/
+
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, pointvbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*pointcount, pointindex);
 
@@ -642,8 +694,8 @@ void callback_idle()
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*tricount, triindex);
 
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, rectanglevbo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*rectcount, rectindex);
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, fontvbo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*fontcount, fontindex);
 
 	queuetail++;
 	glutPostRedisplay();
@@ -864,7 +916,6 @@ void* uievent(struct window* p)
 	glutInitWindowPosition(200, 200);
 	glutCreateWindow("42");
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
 
 	//glew
 	ret = glewInit();

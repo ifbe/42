@@ -35,6 +35,13 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 				0.0, -w/7, 0.0,
 				0.0, 0.0, h/7
 			);
+			carveascii(
+				win, ~0xff00,
+				cx-w/1.99, cy-(x-1)*h/3, (y-1)*h/3,
+				0.0, -w/14, 0.0,
+				0.0, 0.0, h/14,
+				(y*3)+x+0x30
+			);
 
 			//r
 			carvesolid_rect(
@@ -42,6 +49,13 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 				cx+w/2, cy+(x-1)*h/3, (y-1)*h/3,
 				0.0, w/7, 0.0,
 				0.0, 0.0, h/7
+			);
+			carveascii(
+				win, ~0xff,
+				cx+w/1.99, cy+(x-1)*h/3, (y-1)*h/3,
+				0.0, w/14, 0.0,
+				0.0, 0.0, h/14,
+				(y*3)+x+0x30
 			);
 		}
 	}
@@ -57,6 +71,13 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 				w/7, 0.0, 0.0,
 				0.0, 0.0, h/7
 			);
+			carveascii(
+				win, ~0xff0000,
+				cx+(x-1)*w/3, cy-h/1.99, (y-1)*h/3,
+				w/14, 0.0, 0.0,
+				0.0, 0.0, h/14,
+				(y*3)+x+0x30
+			);
 
 			//b
 			carvesolid_rect(
@@ -64,6 +85,13 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 				cx-(x-1)*w/3, cy+h/2, (y-1)*h/3,
 				-w/7, 0.0, 0.0,
 				0.0, 0.0, h/7
+			);
+			carveascii(
+				win, ~0xfa8010,
+				cx-(x-1)*w/3, cy+h/1.99, (y-1)*h/3,
+				-w/14, 0.0, 0.0,
+				0.0, 0.0, h/14,
+				(y*3)+x+0x30
 			);
 		}
 	}
@@ -79,13 +107,27 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 				w/7, 0.0, 0.0,
 				0.0, h/7, 0.0
 			);
+			carveascii(
+				win, ~0xffffff,
+				cx+(x-1)*w/3, cy+(y-1)*h/3, d/1.99,
+				w/14, 0.0, 0.0,
+				0.0, h/14, 0.0,
+				(y*3)+x+0x30
+			);
 
 			//d
 			carvesolid_rect(
 				win, 0xffff00,
 				cx+(x-1)*w/3, cy+(y-1)*h/3, -d/2,
 				w/7, 0.0, 0.0,
-				0.0, h/7, 0.0
+				0.0, -h/7, 0.0
+			);
+			carveascii(
+				win, ~0xffff00,
+				cx+(x-1)*w/3, cy+(y-1)*h/3, -d/1.99,
+				w/14, 0.0, 0.0,
+				0.0, -h/14, 0.0,
+				(y*3)+x+0x30
 			);
 		}
 	}

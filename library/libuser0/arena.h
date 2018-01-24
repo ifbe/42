@@ -88,7 +88,7 @@ struct window
 			u64 pointcount;
 			u64 linecount;
 			u64 tricount;
-			u64 rectcount;
+			u64 fontcount;
 		};
 	};
 };

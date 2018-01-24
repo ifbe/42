@@ -56,6 +56,7 @@ lib2d/photo/photo.mosaic.c \
 lib2d/photo/photo.rotate.c \
 lib2d/photo/photo.scale.c \
 lib2d/lib2d.c \
+lib3d/carve/carve.ascii.c \
 lib3d/carve/carve.point.c \
 lib3d/carve/carve.line.c \
 lib3d/carve/carve.plane.c \
