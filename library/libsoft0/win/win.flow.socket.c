@@ -341,17 +341,18 @@ u64 startsocket(char* addr, int port, int type)
 		//clients.2
 		int j;
 		SOCKET tmp;
-		void* pdata = (void*)(obj[tmp/4].self);
+		void* pdata;
 		struct per_io_data* pov;
-		for(j=0;j<1000;j++)
+		for(j=0;j<0x400;j++)
 		{
 			tmp = WSASocket(
 				AF_INET, SOCK_STREAM, IPPROTO_TCP,
 				0, 0, WSA_FLAG_OVERLAPPED
 			);
-			if((tmp&0x3)|(tmp>=0x4000))printf("%d\n", tmp/4);
+			if(tmp&0x3)printf("%d\n", tmp);
 
 			//
+			pdata = (void*)(obj[tmp/4].self);
 			pov = (void*)(obj[tmp/4].data);
 			pov->fd = tmp;
 			pov->stage = 0;

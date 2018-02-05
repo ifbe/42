@@ -70,21 +70,14 @@ int artery_explain(struct event* ev)
 
 
 //--------------------------------------------------------
-void arterycreate(u8* type, u8* addr)
+void arterycreate(u8* addr)
 {
-	//register new workers and configure inner data
 	u8* p;
-	int j;
-	if(type != 0)return;
-	if( (type == 0)&&(worker != 0) )return;
-
-	//where
 	obj = (struct object*)(addr+0x0);
 	worker = (struct element*)(addr+0x100000);
 	dirhome = addr+0x200000;
-	datahome= addr+0x300000;
+	datahome = addr+0x300000;
 
-	//create
 	p = addr+0x100100;
 	p += bio_create(addr, p);
 	p += chem_create(addr, p);
@@ -93,7 +86,6 @@ void arterycreate(u8* type, u8* addr)
 	p += phys_create(addr, p);
 	p += wire_create(addr, p);
 
-	//
 	//say("[8,c):createed artery\n");
 }
 void arterydelete()

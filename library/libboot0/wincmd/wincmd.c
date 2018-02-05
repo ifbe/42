@@ -3,10 +3,29 @@
 #include<conio.h>
 #include<windows.h>
 #define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+#define __kbd__ hex32('k','b','d',0)
+#define __char__ hex32('c','h','a','r')
+#ifndef MOUSE_HWHEELED
+#define MOUSE_HWHEELED 0x0008
+#endif
+u64 startthread(void*, void*);
+void stopthread();
 
 
 
 
+//
+static HANDLE hStdin;
+static HANDLE hStdout;
+//
+static u8* rawuniverse = 0;
+//
 static u8 last[16] = {0};
 static int pos = 0;
 
@@ -300,10 +319,6 @@ static int escapesequence(u8* p)
 
 	return 0;
 }
-
-
-
-
 void lowlevel_output(u8* buf, int len)
 {
 	int i,j,k=0;
@@ -379,7 +394,6 @@ void lowlevel_output(u8* buf, int len)
 			ret = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, (void*)unicode, 4);
 			ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
 			printf("%s",gbk);
-
 		}
 		else if(buf[j] == 0x1b)
 		{
@@ -401,42 +415,63 @@ void lowlevel_output(u8* buf, int len)
 	}
 	if(j>k)printf("%.*s", j-k, buf+k);
 }
-int lowlevel_input(u8* buf)
+
+
+
+
+int lowlevel_input()
 {
-	u8 ch;
+	DWORD num;
+	int ret,tmp;
+	INPUT_RECORD irInBuf[2];
+	KEY_EVENT_RECORD k0, k1;
+
 	while(1)
 	{
-		ch = getch();
-		if(ch == 0xe0)
+		if(!ReadConsoleInput(hStdin, irInBuf, 2, &num))
 		{
-			ch = getch();
-			if(ch == 0x48)return 0x415b1b;
-			else if(ch == 0x50)return 0x425b1b;
-			else if(ch == 0x4d)return 0x435b1b;
-			else if(ch == 0x4b)return 0x445b1b;
-			else continue;
+			printf("ReadConsoleInput");
+			return 0;
 		}
-		return ch;
+		if(KEY_EVENT != irInBuf[0].EventType)continue;
+
+		k0 = irInBuf[0].Event.KeyEvent;
+		if(0 == k0.bKeyDown)continue;
+
+		if(k0.uChar.AsciiChar == 0)
+		{
+			ret = k0.wVirtualKeyCode;
+
+			if(ret == 0x26)return 0x415b1b;
+			else if(ret == 0x28)return 0x425b1b;
+			else if(ret == 0x27)return 0x435b1b;
+			else if(ret == 0x25)return 0x445b1b;
+			else
+			{
+				//printf("kbd:%x\n", ret);
+				continue;
+			}
+		}
+		else
+		{
+			ret = k0.uChar.UnicodeChar;
+			if(ret < 0x80)return ret;
+
+			k1 = irInBuf[1].Event.KeyEvent;
+			ret = ret | (k1.uChar.UnicodeChar << 8);
+			//printf("%x\n", ret);
+
+			tmp = 0;
+			MultiByteToWideChar(CP_ACP, 0, (void*)&ret, -1, (void*)&tmp, 2);
+			//printf("%x\n", tmp);
+
+			ret = 0;
+			WideCharToMultiByte(CP_UTF8, 0, (void*)&tmp, -1, (void*)&ret, 4, NULL, NULL);
+			//printf("%x\n", ret);
+			return ret;
+		}
 	}
-	
-}
-void createserial(u8* arg)
-{
-	//opened?
-	HWND consolewindow = GetConsoleWindow();
-	if(consolewindow != NULL)return;
-
-	//new
-	AllocConsole();
-	freopen("CONIN$","r",stdin);
-	freopen("CONOUT$","w",stdout);
-
-	//hide
-	consolewindow = GetConsoleWindow();
-	ShowWindow(consolewindow,SW_SHOW);
-}
-void deleteserial()
-{
+	return 0;
 }
 void* pollenv()
 {
@@ -445,4 +480,70 @@ void* pollenv()
 void* waitenv()
 {
 	return 0;
+}
+
+
+
+
+void deleteserial()
+{
+}
+void createserial()
+{
+	//opened?
+	HWND consolewindow = GetConsoleWindow();
+	if(NULL == consolewindow)
+	{
+		//new
+		AllocConsole();
+		freopen("CONIN$","r",stdin);
+		freopen("CONOUT$","w",stdout);
+
+		//hide
+		consolewindow = GetConsoleWindow();
+		ShowWindow(consolewindow,SW_SHOW);
+	}
+
+	hStdin = GetStdHandle(STD_INPUT_HANDLE);
+	if(INVALID_HANDLE_VALUE == hStdin)
+	{
+		printf("error@hStdin\n");
+		exit(-1);
+	}
+
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	if(INVALID_HANDLE_VALUE == hStdout)
+	{
+		printf("error@hStdout\n");
+		exit(-1);
+	}
+}
+void death()
+{
+}
+void* birth()
+{
+#define __size__ 0x1001000
+	u64 j;
+	u64 temp;
+	createserial();
+
+
+	//1.alloc
+	rawuniverse = malloc(__size__);
+	if(NULL == rawuniverse)
+	{
+		printf("no enough momery\n");
+		exit(-1);
+	}
+	for(j=0;j<__size__;j++)rawuniverse[j]=0;
+
+
+	//2.align
+	//[0x   0,0x1001000)	->	[0x1000,0x1001000)
+	//[0x 234,0x1001234)	->	[0x1000,0x1001000)
+	//[0x fff,0x1001fff)	->	[0x1000,0x1001000)
+	//[0x1001,0x1002001)	->	[0x1000,0x1002000)
+	temp = ( (u64)rawuniverse ) & 0xfff;
+	return rawuniverse + 0x1000 - temp;
 }

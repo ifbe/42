@@ -4,7 +4,7 @@ void say(char*,...);
 
 
 
-void drivercreate(char* type,char* addr)
+void drivercreate(char* addr)
 {
 	//say("[4,8):createed driver\n");
 }

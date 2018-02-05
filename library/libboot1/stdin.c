@@ -1,4 +1,10 @@
-#include "actor.h"
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
 int netmgr_write(void*);
 //
@@ -16,19 +22,22 @@ int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 void eventwrite(u64,u64,u64,u64);
+void say(void*, ...);
 
 
 
 
 static u8* input = 0;
-static u8* output = 0;
+void initstdin(void* addr)
+{
+	input = addr;
+}
 
 
 
 
 void term_read(u8* buf)
 {
-	//say("here\n");
 	if(buf == 0)goto empty;
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
@@ -82,7 +91,7 @@ void term_write(u8* p)
 	int j;
 	int* enq;
 	if(p == 0)return;
-	//printf("%02x%02x%02x\n",p[0],p[1],p[2]);return;
+	if(p[0] >= 0x20)say("%s", p);
 
 	//myself
 	enq = (void*)(input+0xffff0);
@@ -95,8 +104,8 @@ void term_write(u8* p)
 		}
 		else if((*p==0x8)|(*p==0x7f))		//backspace
 		{
-			say("\b \b");
 			if(*enq <= 0)return;
+			say("\b \b");
 
 			(*enq)--;
 			input[*enq] = 0;
@@ -111,7 +120,6 @@ void term_write(u8* p)
 		}
 		else
 		{
-			say("%c",*p);
 			input[*enq] = *p;
 			(*enq)++;
 		}
@@ -119,24 +127,4 @@ void term_write(u8* p)
 		//////////////////
 		p++;
 	}
-}
-void term_list()
-{
-}
-void term_choose()
-{
-}
-void term_start()
-{
-}
-void term_stop()
-{
-}
-void term_create(void* addr)
-{
-	input = addr + 0x400000;
-	output = addr + 0x500000;
-}
-void term_delete()
-{
 }

@@ -12,21 +12,14 @@ void lowlevel_output(void*, int);
 
 
 
-static void* inputqueue;	//stdin
-	static u64* incur;			//real position
-	static u64* inwin;			//insert position
-static void* outputqueue;       //stdout
-	static u64* outcur;			//real position
-	static u64* outwin;			//display position
-void initsay(char* buf)
+static void* outputqueue;
+static int outcur;
+static int outwin;
+void initstdout(void* addr)
 {
-	inputqueue = buf;
-	incur = inputqueue+0x100000-16;
-	inwin = inputqueue+0x100000-8;
-
-	outputqueue = buf+0x100000;
-	outcur = outputqueue+0x100000-16;
-	outwin = outputqueue+0x100000-8;
+	outputqueue = addr;
+	outcur = 0;
+	outwin = 0;
 }
 
 
@@ -286,7 +279,7 @@ void say(u8* fmt, ...)
 	va_list arg;
 
 	//read position
-	cur = *outcur;
+	cur = outcur;
 
 	//
 	va_start(arg, fmt);
@@ -305,7 +298,7 @@ void say(u8* fmt, ...)
 	//write position
 	cur = cur+ret;
 	if(cur > 0xf0000)cur = 0;
-	*outcur = cur;
+	outcur = cur;
 }
 
 

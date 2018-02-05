@@ -19,13 +19,6 @@ static EFI_SYSTEM_TABLE* T;
 
 
 
-void deleteserial()
-{
-}
-void createserial()
-{
-	gethandleandtable(&H, &T);
-}
 int lowlevel_input(void* buf)
 {
 	int ret;
@@ -52,6 +45,10 @@ void lowlevel_output(char* buf, int len)
 		}
 	}
 }
+
+
+
+
 void* pollenv()
 {
 	int ret = T->ConIn->ReadKeyStroke(T->ConIn, (void*)ev);
@@ -94,3 +91,43 @@ void* pollenv()
 void* waitenv()
 {
 }
+
+
+
+
+void* birth()
+{
+	int j;
+	u8* mem = (u8*)0x1000000;
+	
+	for(j=0;j<0x1000000;j++)mem[j] = 0;
+	return mem;
+}
+void death()
+{
+}
+
+
+
+
+void gethandleandtable(void** handle, void** table)
+{
+	*handle = H;
+	*table = T;
+}
+EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
+{
+	int ret;
+	H = handle;
+	T = table;
+
+	ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
+	if(EFI_ERROR(ret))return ret;
+
+	ret = table->ConIn->Reset(table->ConIn, FALSE);
+	if(EFI_ERROR(ret))return ret;
+
+	main(0, 0);
+	return EFI_SUCCESS;
+}
+void atexit(){}

@@ -73,7 +73,6 @@ lib4d/help/help.bgfg.c \
 lib4d/help/help.ctx.c \
 lib4d/help/help.login.c \
 lib4d/help/help.input.c \
-lib4d/help/help.term.c \
 lib4d/help/help.win.c \
 lib4d/lib4d.c \
 actor.c

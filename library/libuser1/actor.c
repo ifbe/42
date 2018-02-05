@@ -236,13 +236,8 @@ int actorstop(struct actor* act)
 	act->stop();
 	return 0;
 }
-void actorcreate(u8* type, u8* addr)
+void actorcreate(u8* addr)
 {
-	int j;
-	if(type != 0)return;
-	if( (type == 0)&&(arena != 0) )return;
-
-	//where
 	arena = (void*)(addr+0);
 	actor = (void*)(addr+0x100000);
 	style = (void*)(addr+0x200000);

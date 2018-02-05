@@ -20,7 +20,7 @@ void say(char*,...);
 
 
 
-void drivercreate(char* type,char* addr)
+void drivercreate(void* addr)
 {
 	//say("[4,8):createed driver\n");
 	initpage();

@@ -16,14 +16,30 @@ int term_write(void*);
 //libsoft
 int artery_explain(void*);
 void sleep_us(int);
-//libhard
-int hardware_explain(void*);
 //libboot
 void printmemory(void*, int);
 void say(void*, ...);
 //
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+void actorcreate(void*);
+void actordelete();
+void arenacreate(void*);
+void arenadelete();
+void arterycreate(void*);
+void arterydelete();
+void systemcreate(void*);
+void systemdelete();
+void bodycreate(void*);
+void bodydelete();
+void drivercreate(void*);
+void driverdelete();
+//
+void initstdin(void*);
+void initstdout(void*);
+void initstdev(void*);
+void initstdrel(void*);
 void* birth();
 void death();
 
@@ -41,13 +57,52 @@ struct event
 
 
 
+void beforedawn()
+{
+	//libboot0
+	void* addr = birth();
+
+	//libboot1
+	initstdin( addr+0x000000);
+	initstdout(addr+0x100000);
+	initstdev( addr+0x200000);
+	initstdrel(addr+0x300000);
+
+	//libsoft
+	drivercreate(addr+0x400000);
+	bodycreate(  addr+0x400000);
+
+	//libsoft
+	systemcreate(addr+0x800000);
+	arterycreate(addr+0x800000);
+
+	//libuser
+	arenacreate(addr+0xc00000);
+	actorcreate(addr+0xc00000);
+}
+void afterdusk()
+{
+	//libuser
+	actordelete();
+	arenadelete();
+
+	//libsoft
+	arterydelete();
+	systemdelete();
+
+	//libhard
+	bodydelete();
+	driverdelete();
+
+	//libboot
+	death();
+}
 int main(int argc, char* argv[])
 {
 	int ret;
 	struct event* ev;
 
-	birth();
-	//say("@birth\n");
+	beforedawn();
 
 	term_read(0);
 	for(ret=1;ret<argc;ret++)
@@ -97,8 +152,6 @@ again:
 		actorwrite(ev);
 	}
 
-	//after
-	//say("@death\n");
-	death();
+	afterdusk();
 	return 0;
 }

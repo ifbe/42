@@ -4,30 +4,22 @@ cflag ?= -c -O2 -fPIC
 .PHONY:bare
 bare:
 	rm -f *.o
-	$(compiler) $(cflag) startbare.c
-	$(compiler) $(cflag) basic.c
-	$(compiler) $(cflag) bare/8250.c
+	$(compiler) $(cflag) bare/bare.c
 
 .PHONY:none
 none:
 	rm -f *.o
-	$(compiler) $(cflag) startapp.c
-	$(compiler) $(cflag) basic.c
-	$(compiler) $(cflag) none/stdio.c
+	$(compiler) $(cflag) none/none.c
 
 .PHONY:wincmd
 wincmd:
 	rm -f *.o
-	$(compiler) $(cflag) startapp.c
-	$(compiler) $(cflag) basic.c
 	$(compiler) $(cflag) wincmd/wincmd.c
 
 .PHONY:efi
 efi:
 	rm -f *.o
-	$(compiler) $(cflag) startefi.c
-	$(compiler) $(cflag) basic.c
-	$(compiler) $(cflag) efi/print.c
+	$(compiler) $(cflag) efi/efi.c
 
 clean:
 	rm -f *.o

@@ -1,7 +1,3 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
@@ -9,6 +5,11 @@
 #include<termios.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
+static u8* rawuniverse;
 
 
 
@@ -46,12 +47,10 @@ void lowlevel_output(char* buf, int len)
 {
 	printf("%.*s", len, buf);
 }
-void deleteserial()
-{
-}
-void createserial()
-{
-}
+
+
+
+
 void* pollenv()
 {
 	return 0;
@@ -59,4 +58,36 @@ void* pollenv()
 void* waitenv()
 {
 	return 0;
+}
+
+
+
+
+void death()
+{
+}
+void* birth()
+{
+#define __size__ 0x1001000
+	u64 j;
+	u64 temp;
+
+
+	//1.alloc
+	rawuniverse = malloc(__size__);
+	if(NULL == rawuniverse)
+	{
+		printf("no enough momery\n");
+		exit(-1);
+	}
+	for(j=0;j<__size__;j++)rawuniverse[j]=0;
+
+
+	//2.align
+	//[0x   0,0x1001000)	->	[0x1000,0x1001000)
+	//[0x 234,0x1001234)	->	[0x1000,0x1001000)
+	//[0x fff,0x1001fff)	->	[0x1000,0x1001000)
+	//[0x1001,0x1002001)	->	[0x1000,0x1002000)
+	temp = ( (u64)rawuniverse ) & 0xfff;
+	return rawuniverse + 0x1000 - temp;
 }

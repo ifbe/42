@@ -45,10 +45,14 @@ static struct relation* recycle = 0;
 static struct relation* wirebuf = 0;
 static int wirecur = 0x40;
 static int wirelen = 0x100000;
-void initrelation(void* addr)
+void initstdrel(void* addr)
 {
-	wirebuf = addr+0x300000;
+	wirebuf = addr;
 }
+
+
+
+
 void relation_debug(struct relation* rel)
 {
 	struct relation* next;

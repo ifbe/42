@@ -147,10 +147,9 @@ int arenastop(struct window* win)
 	win->last = 0;
 	return 0;
 }
-void arenacreate(u8* type, u8* addr)
+void arenacreate(u8* addr)
 {
 	int j;
-	if(type != 0)return;
 	for(j=0;j<0x400000;j++)addr[j] = 0;
 
 	//create

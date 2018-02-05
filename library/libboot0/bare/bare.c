@@ -50,6 +50,22 @@ int lowlevel_output(char* buf, int len)
 	for(j=0;j<len;j++)write8250_one(buf[j]);
 	return j;
 }
+
+
+
+
+void* waitenv()
+{
+	return 0;
+}
+void* pollenv()
+{
+	return 0;
+}
+
+
+
+
 void deleteserial()
 {
 }
@@ -64,11 +80,19 @@ void createserial()
 	out8(PORT + 4, 0x0B);//IRQs enabled, RTS/DSR set
 	lowlevel_output("42!\n", 4);
 }
-void* waitenv()
+
+
+
+
+void death()
 {
-	return 0;
 }
-void* pollenv()
+void* birth()
 {
-	return 0;
+	int j;
+	u8* mem = (u8*)0x1000000;
+	createserial();
+
+	for(j=0;j<0x1000000;j++)mem[j] = 0;
+	return mem;
 }

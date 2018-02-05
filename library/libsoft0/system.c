@@ -60,17 +60,16 @@ int systemstop()
 {
 	return 0;
 }
-void systemcreate(u8* type, u8* addr)
+void systemcreate(u8* addr)
 {
 	int j;
-	if(type != 0)return;
 	for(j=0;j<0x400000;j++)addr[j]=0;
 
 	//where
-	mega0=addr;
-	mega1=addr+0x100000;
-	mega2=addr+0x200000;
-	mega3=addr+0x300000;
+	mega0 = addr;
+	mega1 = addr+0x100000;
+	mega2 = addr+0x200000;
+	mega3 = addr+0x300000;
 
 	//
 	createrandom(mega0);
