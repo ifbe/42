@@ -28,6 +28,7 @@ void say(void*, ...);
 
 
 static u8* input = 0;
+static int enq = 0;
 void initstdin(void* addr)
 {
 	input = addr;
@@ -38,35 +39,42 @@ void initstdin(void* addr)
 
 void term_read(u8* buf)
 {
-	if(buf == 0)goto empty;
+	int j;
+	if(buf == 0)goto prompt;
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
+say("%s\n",buf);
+	//proto://ipaddr:port/folder/file
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ncmp(buf+j, "://", 3))
+		{
+			netmgr_write(buf);
+			goto prompt;
+		}
+	}
 
-	if(ncmp(buf, "say ", 4) == 0)
+	if(0 == ncmp(buf, "say ", 4))
 	{
 		say("%s\n", buf+4);
 	}
-	else if(ncmp(buf, "win", 3) == 0)
+	else if(0 == ncmp(buf, "win", 3))
 	{
 		eventwrite(
 			hex32('w','i','n',0),
 			hex32('w','+',0,0),
 			0, 0);
 	}
-	else if(ncmp(buf, "ls", 2) == 0)
+	else if(0 == ncmp(buf, "ls", 2))
 	{
 		actorlist(0);
 	}
-	else if(ncmp(buf, "cd", 2) == 0)
+	else if(0 == ncmp(buf, "cd", 2))
 	{
 	}
-	else if(ncmp(buf, "net ", 4) == 0)
+	else if(0 == ncmp(buf, "i2c ", 4))
 	{
-		netmgr_write(buf+4);
-	}
-	else if(ncmp(buf, "i2c ", 4) == 0)
-	{
-		if(ncmp(buf+4, "ls", 2) == 0)i2c_list();
+		if(0 == ncmp(buf+4, "ls", 2))i2c_list();
 		else
 		{
 			i2c_choose(buf+4);
@@ -77,9 +85,9 @@ void term_read(u8* buf)
 		actorchoose(buf);
 	}
 
-empty:
-	//command prompt
+prompt:
 	say("[void]");
+	enq = 0;
 	return;
 
 finish:
@@ -89,12 +97,10 @@ finish:
 void term_write(u8* p)
 {
 	int j;
-	int* enq;
 	if(p == 0)return;
 	if(p[0] >= 0x20)say("%s", p);
 
 	//myself
-	enq = (void*)(input+0xffff0);
 	while(1)
 	{
 		if(*p < 8)return;
@@ -104,24 +110,25 @@ void term_write(u8* p)
 		}
 		else if((*p==0x8)|(*p==0x7f))		//backspace
 		{
-			if(*enq <= 0)return;
+			if(enq <= 0)return;
 			say("\b \b");
 
-			(*enq)--;
-			input[*enq] = 0;
+			enq--;
+			input[enq] = 0;
 		}
 		else if((*p==0xa)|(*p==0xd))	//enter
 		{
 			say("\n");
+			input[enq] = 0;
 			term_read(input);
 
 			for(j=0;j<0x100;j++)input[j] = 0;
-			*enq = 0;
+			enq = 0;
 		}
 		else
 		{
-			input[*enq] = *p;
-			(*enq)++;
+			input[enq] = *p;
+			enq++;
 		}
 
 		//////////////////

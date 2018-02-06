@@ -24,7 +24,7 @@ static HANDLE output;
 
 DWORD WINAPI terminalthread(struct window* win)
 {
-	int j;
+	int j,ret,tmp;
 	u64 x,y,w;
 	u64 why, what, where;
 	DWORD cNumRead, fdwMode, fdwSaveOldMode;
@@ -83,110 +83,124 @@ DWORD WINAPI terminalthread(struct window* win)
 		//Dispatch the events to the appropriate handler
 		for(j=0;j<cNumRead;j++)
 		{
-			switch(irInBuf[j].EventType)
+			ret = irInBuf[j].EventType;
+			if(KEY_EVENT == ret)
 			{
-				case KEY_EVENT:
-				{
-					keyrec = irInBuf[j].Event.KeyEvent;
-					if(keyrec.bKeyDown)
-					{
-						if(keyrec.uChar.AsciiChar == 0)
-						{
-							eventwrite(keyrec.wVirtualKeyCode, __kbd__, 0, 0);
-						}
-						else
-						{
-							eventwrite(keyrec.uChar.UnicodeChar, __char__, 0, 0);
-						}
-					}
-					break;
-				}
-				case MOUSE_EVENT:
-				{
-					mouserec = irInBuf[j].Event.MouseEvent;
-					switch(mouserec.dwEventFlags)
-					{
-						case 0:
-						{
-							if(mouserec.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-							{
-								GetConsoleScreenBufferInfo(hStdout, &bInfo);
-								x = mouserec.dwMousePosition.X;
-								y = mouserec.dwMousePosition.Y - bInfo.srWindow.Top;
-								w = 'l';
-								eventwrite(x+(y<<16)+(w<<48), 0x2b70, 0, 0);
-								//printf("left button press \n");
-							}
-							else if(mouserec.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-							{
-								//printf("right button press \n");
-							}
-							else
-							{
-								//printf("button press\n");
-							}
-							break;
-						}
-						case DOUBLE_CLICK:
-						{
-							//printf("double click\n");
-							break;
-						}
-						case MOUSE_HWHEELED:
-						{
-							//printf("horizontal mouse wheel\n");
-							break;
-						}
-						case MOUSE_MOVED:
-						{
-							//printf("%x,%x\n", mouserec.dwMousePosition.X, mouserec.dwMousePosition.Y);
-							break;
-						}
-						case MOUSE_WHEELED:
-						{
-							//printf("vertical mouse wheel\n");
-							break;
-						}
-						default:
-						{
-							//printf("unknown\n");
-							break;
-						}
-					}
-					break;
-				}
-				case WINDOW_BUFFER_SIZE_EVENT:
-				{
-					wbsrec = irInBuf[j].Event.WindowBufferSizeEvent;
-					//printf("Resize:%x,%x\n", wbsrec.dwSize.X, wbsrec.dwSize.Y);
+				keyrec = irInBuf[j].Event.KeyEvent;
+				if(0 == keyrec.bKeyDown)continue;
 
-					GetConsoleScreenBufferInfo(hStdout, &bInfo);
-					x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-					y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
-					win->w = x;
-					win->h = y;
-					eventwrite(x+(y<<16), __size__, 0, 0);
-					break;
-				}
-				case MENU_EVENT:
+				if(0 == keyrec.uChar.AsciiChar)
 				{
-					//printf("MENU_EVENT\n");
-					eventwrite(0,0,0,0);
-					break;
+					ret = keyrec.wVirtualKeyCode;
+
+					if((ret < 0x25) | (ret > 0x28))
+					{
+						eventwrite(ret, __kbd__, 0, 0);
+					}
+					else
+					{
+						if(ret == 0x26)ret = 0x415b1b;
+						else if(ret == 0x28)ret = 0x425b1b;
+						else if(ret == 0x27)ret = 0x435b1b;
+						else if(ret == 0x25)ret = 0x445b1b;
+						eventwrite(ret, __char__, 0, 0);
+					}
 				}
-				case FOCUS_EVENT:
+				else
 				{
-					//printf("FOCUS_EVENT\n");
-					break;
-				}
-				default:
-				{
-					//printf("Unknown:%x", irInBuf[j].EventType);
-					break;
+					ret = keyrec.uChar.UnicodeChar;
+					if(ret >= 0x80)
+					{
+						j++;
+						keyrec = irInBuf[j].Event.KeyEvent;
+						ret = ret | (keyrec.uChar.UnicodeChar << 8);
+						//printf("%x\n", ret);
+
+						tmp = 0;
+						MultiByteToWideChar(
+							CP_ACP, 0,
+							(void*)&ret, -1,
+							(void*)&tmp, 2
+						);
+						//printf("%x\n", tmp);
+
+						ret = 0;
+						WideCharToMultiByte(
+							CP_UTF8, 0,
+							(void*)&tmp, -1,
+							(void*)&ret, 4,
+							NULL, NULL
+						);
+						//printf("%x\n", ret);
+					}
+					eventwrite(ret, __char__, 0, 0);
 				}
 			}
-		}
-	}
+			else if(MOUSE_EVENT == ret)
+			{
+				mouserec = irInBuf[j].Event.MouseEvent;
+				ret = mouserec.dwEventFlags;
+
+				if(0 == ret)
+				{
+					if(mouserec.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+					{
+						GetConsoleScreenBufferInfo(hStdout, &bInfo);
+						x = mouserec.dwMousePosition.X;
+						y = mouserec.dwMousePosition.Y - bInfo.srWindow.Top;
+						w = 'l';
+						eventwrite(x+(y<<16)+(w<<48), 0x2b70, 0, 0);
+						//printf("left button press \n");
+					}
+					else if(mouserec.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+					{
+						//printf("right button press \n");
+					}
+					else
+					{
+						//printf("button press\n");
+					}
+				}
+				if(DOUBLE_CLICK == ret)
+				{
+					//printf("double click\n");
+				}
+				if(MOUSE_HWHEELED == ret)
+				{
+					//printf("horizontal mouse wheel\n");
+				}
+				if(MOUSE_MOVED == ret)
+				{
+					//printf("%x,%x\n", mouserec.dwMousePosition.X, mouserec.dwMousePosition.Y);
+				}
+				if(MOUSE_WHEELED == ret)
+				{
+					//printf("vertical mouse wheel\n");
+				}
+			}
+			else if(WINDOW_BUFFER_SIZE_EVENT == ret)
+			{
+				wbsrec = irInBuf[j].Event.WindowBufferSizeEvent;
+				//printf("Resize:%x,%x\n", wbsrec.dwSize.X, wbsrec.dwSize.Y);
+
+				GetConsoleScreenBufferInfo(hStdout, &bInfo);
+				x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+				y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+				win->w = x;
+				win->h = y;
+				eventwrite(x+(y<<16), __size__, 0, 0);
+			}
+			else if(MENU_EVENT == ret)
+			{
+				//printf("MENU_EVENT\n");
+				eventwrite(0,0,0,0);
+			}
+			else if(FOCUS_EVENT == ret)
+			{
+				//printf("FOCUS_EVENT\n");
+			}
+		}//for
+	}//while
 
 	//Restore input mode on exit
 	SetConsoleMode(hStdin, fdwSaveOldMode);

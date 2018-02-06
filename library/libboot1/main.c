@@ -40,8 +40,10 @@ void initstdin(void*);
 void initstdout(void*);
 void initstdev(void*);
 void initstdrel(void*);
+//
 void* birth();
 void death();
+void fixarg(void*, void*);
 
 
 
@@ -57,7 +59,7 @@ struct event
 
 
 
-void beforedawn()
+void* beforedawn()
 {
 	//libboot0
 	void* addr = birth();
@@ -79,6 +81,8 @@ void beforedawn()
 	//libuser
 	arenacreate(addr+0xc00000);
 	actorcreate(addr+0xc00000);
+
+	return addr;
 }
 void afterdusk()
 {
@@ -100,15 +104,16 @@ void afterdusk()
 int main(int argc, char* argv[])
 {
 	int ret;
+	void* addr;
 	struct event* ev;
 
-	beforedawn();
-
+	addr = beforedawn();
 	term_read(0);
+
 	for(ret=1;ret<argc;ret++)
 	{
-		term_write(argv[ret]);
-		term_write("\n");
+		fixarg(addr, argv[ret]);
+		term_read(addr);
 	}
 
 	while(1)

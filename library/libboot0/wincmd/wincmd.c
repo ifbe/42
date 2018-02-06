@@ -462,12 +462,22 @@ int lowlevel_input()
 			//printf("%x\n", ret);
 
 			tmp = 0;
-			MultiByteToWideChar(CP_ACP, 0, (void*)&ret, -1, (void*)&tmp, 2);
+			MultiByteToWideChar(
+				CP_ACP, 0,
+				(void*)&ret, -1,
+				(void*)&tmp, 2
+			);
 			//printf("%x\n", tmp);
 
 			ret = 0;
-			WideCharToMultiByte(CP_UTF8, 0, (void*)&tmp, -1, (void*)&ret, 4, NULL, NULL);
+			WideCharToMultiByte(
+				CP_UTF8, 0,
+				(void*)&tmp, -1,
+				(void*)&ret, 4,
+				NULL, NULL
+			);
 			//printf("%x\n", ret);
+
 			return ret;
 		}
 	}
@@ -480,6 +490,48 @@ void* pollenv()
 void* waitenv()
 {
 	return 0;
+}
+void fixarg(u8* dst, u8* src)
+{
+	u32 ret,tmp;
+	while(1)
+	{
+		if(*src < 0xa)break;
+		if(*src < 0x80)
+		{
+			*dst = *src;
+			dst++;
+			src++;
+			continue;
+		}
+
+		ret = *(u16*)src;
+		src += 2;
+
+		tmp = 0;
+		MultiByteToWideChar(
+			CP_ACP, 0,
+			(void*)&ret, -1,
+			(void*)&tmp, 2
+		);
+		//printf("%x\n", tmp);
+
+		ret = 0;
+		WideCharToMultiByte(
+			CP_UTF8, 0,
+			(void*)&tmp, -1,
+			(void*)&ret, 4,
+			NULL, NULL
+		);
+		//printf("%x\n", ret);
+
+		*(u32*)dst = ret;
+		for(ret=0;ret<4;ret++)
+		{
+			if(*dst >= 0xa)dst++;
+		}
+	}
+	*dst = 0;
 }
 
 
