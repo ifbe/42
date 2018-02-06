@@ -5,7 +5,8 @@
 
 
 
-void carveascii(struct arena* win, u32 rgb,
+void carveascii(
+	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz,
@@ -56,14 +57,14 @@ void carveascii(struct arena* win, u32 rgb,
 	color[10] = 1.0;
 	color[11] = 1.0;
 
-	texture[ 0] = (dat&0xf)/15.9;
-	texture[ 1] = ((dat>>4)+1)/8.0;
-	texture[ 2] = ((dat&0xf)+1)/15.9;
-	texture[ 3] = ((dat>>4)+1)/8.0;
-	texture[ 4] = (dat&0xf)/15.9;
-	texture[ 5] = (dat>>4)/8.0;
-	texture[ 6] = ((dat&0xf)+1)/15.9;
-	texture[ 7] = (dat>>4)/8.0;
+	texture[0] = (dat&0xf)/15.9;
+	texture[1] = ((dat>>4)+1)/8.0;
+	texture[2] = ((dat&0xf)+1)/15.9;
+	texture[3] = ((dat>>4)+1)/8.0;
+	texture[4] = (dat&0xf)/15.9;
+	texture[5] = (dat>>4)/8.0;
+	texture[6] = ((dat&0xf)+1)/15.9;
+	texture[7] = (dat>>4)/8.0;
 
 	index[0] = pcount+0;
 	index[1] = pcount+1;
@@ -71,4 +72,39 @@ void carveascii(struct arena* win, u32 rgb,
 	index[3] = pcount+0;
 	index[4] = pcount+2;
 	index[5] = pcount+3;
+}
+void carvestring(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* buf, int len)
+{
+	int j;
+	float f;
+	if(0 == buf)return;
+	if(0 == len)
+	{
+		while(buf[len] > 0x20)len++;
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(buf[j] < 0x20){len = j;break;}
+		}
+	}
+	if(len == 0)return;
+
+	for(j=0;j<len;j++)
+	{
+		f = (float)(j-len/2)*2;
+		carveascii(
+			win, rgb,
+			cx + (rx*f), cy + (ry*f), cz + (rz*f),
+			rx, ry, rz,
+			fx, fy, fz,
+			buf[j]
+		);
+	}
 }

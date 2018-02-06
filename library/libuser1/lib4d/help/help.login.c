@@ -55,7 +55,9 @@ void login_read_8bit(struct arena* win)
 }
 void login_read_vbo(struct arena* win)
 {
-	carvestarry_random(win);
+	u32 color;
+	int j,k,x,y;
+
 	carveline_circle(
 		win, 0x00bfff,
 		0.0, 0.0, 0.0,
@@ -117,6 +119,30 @@ void login_read_vbo(struct arena* win)
 		0.0, 0.0, 1.0,
 		PI*4/3, PI
 	);
+
+	for(j=0;j<32;j++)
+	{
+		if(j == chosen)
+		{
+			k = 4.0;
+			color = 0xff00ff;
+		}
+		else
+		{
+			k = 1.0;
+			color = 0x0000ff;
+		}
+
+		x = j%4;
+		y = j/4;
+		carvestring(
+			win, color,
+			0.25*(x-1.5), 0.125*(y-3.5), 0.0,
+			1.0/64.0, 0.0, 0.0,
+			0.0, k/64.0, k/64.0,
+			(u8*)&actor[j].name, 8
+		);
+	}
 }
 void login_read_html(struct arena* win)
 {
