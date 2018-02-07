@@ -14,6 +14,7 @@ void say(void*, ...);
 int serve_raw(void* p, int fd, u8* buf, int len)
 {
 	int proto;
+	printmemory(buf, len);
 
 	//
 	say(	"%02x:%02x:%02x:%02x:%02x:%02x->",

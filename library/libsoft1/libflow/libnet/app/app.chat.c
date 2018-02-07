@@ -21,7 +21,7 @@ int serve_chat(void* p, int fd, char* buf, int len)
 	}
 
 	//
-	if(k == 0)say("[%llx]%s", fd, buf);
+	if(k == 0)say("[%llx]%.*s", fd, len, buf);
 	else printmemory(buf, len);
 
 	//

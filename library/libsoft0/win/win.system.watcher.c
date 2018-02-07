@@ -8,8 +8,6 @@
 #include<windows.h>
 #include"system.h"
 u64 startthread(void*, void*);
-void stopsocket(SOCKET);
-void startsocket();
 void eventwrite(u64,u64,u64,u64);
 
 
@@ -18,10 +16,10 @@ void eventwrite(u64,u64,u64,u64);
 struct per_io_data
 {
 	OVERLAPPED overlap;
-	SOCKET fd;
-	int stage;
 	WSABUF bufing;
-	WSABUF bufdone;
+	int count;
+	int stage;
+	SOCKET fd;
 };
 static struct object* obj;
 static HANDLE iocpfd;
@@ -29,17 +27,46 @@ static HANDLE iocpfd;
 
 
 
+void iocp_add(SOCKET fd)
+{
+	u32* pfd = (void*)(obj[fd/4].self);
+	struct per_io_data* pio = (void*)(obj[fd/4].data);
+
+	*pfd = fd;
+	CreateIoCompletionPort(
+		(void*)fd,
+		iocpfd,
+		(ULONG_PTR)pfd,
+		0
+	);
+	if('T' == obj[fd/4].type_sock)return;
+
+	pio->stage = 1;
+	pio->bufing.buf = malloc(4096);
+	pio->bufing.len = 4096;
+}
+void iocp_del(SOCKET fd)
+{
+	struct per_io_data* pio = (void*)(obj[fd/4].data);
+	if(pio->bufing.buf)free(pio->bufing.buf);
+}
+void iocp_mod(SOCKET fd)
+{
+	int ret;
+	DWORD tran = 0;
+	DWORD flag = 0;
+	struct per_io_data* pio = (void*)(obj[fd/4].data);
+	ret = WSARecv(fd, &(pio->bufing), 1, &tran, &flag, (void*)pio, NULL);
+}
 DWORD WINAPI iocpthread(LPVOID pM)
 {
-	struct per_io_data* pov = NULL;
-	u32* key = 0;
-	char temp[4096];
+	u32* pfd = 0;
+	struct per_io_data* pio = NULL;
 	int th;
 	int ret;
-
-	HANDLE hh;
 	SOCKET fd;
-	DWORD trans = 0;
+	SOCKET cc;
+	DWORD tran = 0;
 	DWORD flag = 0;
 
 	th = GetCurrentThreadId();
@@ -47,70 +74,48 @@ DWORD WINAPI iocpthread(LPVOID pM)
 	{
 		ret = GetQueuedCompletionStatus(
 			iocpfd,
-			&trans,
-			(void*)&key,
-			(void*)&pov,
+			&tran,
+			(void*)&pfd,
+			(void*)&pio,
 			INFINITE
 		);
 		if(ret == 0)continue;
 
-		fd = pov->fd;
-		//printf("th=%d,ret=%d,trans=%d,listen=%d,this=%d\n",
-		//th, ret, trans, *key, fd);
+		fd = *pfd;
+		cc = pio->fd;
+		//printf("th=%x,tran=%x,listen=%x,this=%x\n", th, tran, fd, cc);
 
 		//accept
-		if(pov->stage == 0)
+		if(pio->stage == 0)
 		{
-			hh = CreateIoCompletionPort(
-				(void*)fd,
-				iocpfd,
-				(ULONG_PTR)(obj[fd/4].self),
-				0
-			);
+			printf("[%x,%x]++++\n", fd, cc);
+			eventwrite('+', __fd__, cc/4, 0);
 
-			pov->stage = 1;
-			obj[fd/4].type_sock = 't';
-			eventwrite('+', __fd__, fd/4, 0);
-			printf("[%x]++++,hh=%llx\n",fd/4,hh);
+			iocp_add(cc);
+			iocp_mod(cc);
 		}
-		else if(trans == 0)
+		else if(tran == 0)
 		{
-			printf("[%x]----\n",fd/4);
-			stopsocket(fd);
-			continue;
+			printf("[%x]----\n",fd);
+			eventwrite('-', __fd__, fd/4, 0);
+
+			iocp_del(fd);
 		}
 		else
 		{
-			pov->stage = 1;
-			pov->bufdone.buf = pov->bufing.buf;
-			pov->bufdone.len = trans;
+			printf("[%x]####\n",fd);
+			pio->count = tran;
 			eventwrite('@', __fd__, fd/4, 0);
-			
-			printf("[%x]####\n",fd/4);
-		}
 
-		//all
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-		//printf("(recv)ret=%d,err=%d\n", ret, WSAGetLastError());
+			iocp_mod(fd);
+		}
 	}
 	return 0;
 }
-void stopwatcher()
-{
-}
-void startwatcher(SOCKET handle)
-{
-	u32* p = (void*)(obj[handle/4].self);
-	*p = handle;
-	CreateIoCompletionPort(
-		(void*)handle,
-		iocpfd,
-		(ULONG_PTR)p,
-		0
-	);
-}
+
+
+
+
 void deletewatcher()
 {
 }

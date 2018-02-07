@@ -7,8 +7,9 @@
 #include<mswsock.h>
 #include<windows.h>
 #include"system.h"
-void startwatcher(SOCKET);
-void stopwatcher(int);
+void iocp_add(SOCKET);
+void iocp_del(SOCKET);
+void iocp_mod(SOCKET);
 
 
 
@@ -16,10 +17,10 @@ void stopwatcher(int);
 struct per_io_data
 {
 	OVERLAPPED overlap;
-	SOCKET fd;
-	int stage;
 	WSABUF bufing;
-	WSABUF bufdone;
+	int count;
+	int stage;
+	SOCKET fd;
 };
 static struct object* obj;
 //
@@ -57,16 +58,15 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 {
 	int c,j;
 	char* p;
-	struct per_io_data* pov;
-
-	pov = (void*)(obj[fd].data);
-	p = pov->bufdone.buf;
-	c = pov->bufdone.len;
-	for(j=0;j<c;j++)buf[j] = p[j];
-//printf("(read)len=%d\n",c);
-	free(pov->bufdone.buf);
-
+	struct per_io_data* pio = (void*)(obj[fd].data);
+	c = pio->count;
 	if(c == 0)return -1;	//disconnect
+
+	p = pio->bufing.buf;
+	for(j=0;j<c;j++)buf[j] = p[j];
+
+	pio->count = 0;
+	iocp_mod(fd);
 	return c;
 }
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
@@ -94,7 +94,7 @@ int listsocket()
 int choosesocket()
 {
 }
-int stopsocket(u64 fd)
+int stopsocket(SOCKET fd)
 {
 	LPFN_DISCONNECTEX disconnectex = NULL;
 	GUID guiddisconnectex = WSAID_DISCONNECTEX;
@@ -117,7 +117,7 @@ int stopsocket(u64 fd)
 	}
 
 	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
-	printf("[%x]close\n",fd);
+	printf("[%x]close\n", fd*4);
 	return 0;
 }
 u64 startsocket(char* addr, int port, int type)
@@ -138,9 +138,9 @@ u64 startsocket(char* addr, int port, int type)
 		//
 		struct sockaddr_in serAddr;
 		memset(&serAddr, 0, sizeof(serAddr));
-		serAddr.sin_addr.s_addr = inet_addr(addr);
+		serAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 		serAddr.sin_family = PF_INET;
-		serAddr.sin_port = htons(port);
+		serAddr.sin_port = htons(0);
 
 		//
 		if(bind(rawlisten, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
@@ -165,21 +165,10 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		startwatcher(rawlisten);
-
-		//
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[rawlisten/4].data);
-		pov->fd = rawlisten;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(rawlisten, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
-		//
 		obj[rawlisten/4].type_sock = type;
 		obj[rawlisten/4].type_road = 0;
+		iocp_add(rawlisten);
+		iocp_mod(rawlisten);
 		return rawlisten/4;
 	}
 	else if(type == 'r')	//raw
@@ -214,20 +203,10 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		startwatcher(udplisten);
-
-		//
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[udplisten/4].data);
-		pov->fd = udplisten;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(udplisten, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
 		obj[udplisten].type_sock = type;
 		obj[udplisten].type_road = 0;
+		iocp_add(udplisten);
+		iocp_mod(udplisten);
 		return udplisten/4;
 	}
 	else if(type == 'u')	//udp client
@@ -258,20 +237,10 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		startwatcher(fd);
-
-		//
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].data);
-		pov->fd = fd;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
+		iocp_add(fd);
+		iocp_mod(fd);
 		return fd/4;
 	}
 	else if(type == 'T')	//tcp server
@@ -315,7 +284,9 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//server.5
-		startwatcher(tcplisten);
+		obj[tcplisten].type_sock = type;
+		obj[tcplisten].type_road = 0;
+		iocp_add(tcplisten);
 
 		//client.1
 		LPFN_ACCEPTEX acceptex = NULL;
@@ -340,31 +311,31 @@ u64 startsocket(char* addr, int port, int type)
 
 		//clients.2
 		int j;
-		SOCKET tmp;
-		void* pdata;
-		struct per_io_data* pov;
+		SOCKET t;
+		u32* pfd;
+		struct per_io_data* pio;
 		for(j=0;j<0x400;j++)
 		{
-			tmp = WSASocket(
+			t = WSASocket(
 				AF_INET, SOCK_STREAM, IPPROTO_TCP,
 				0, 0, WSA_FLAG_OVERLAPPED
 			);
-			if(tmp&0x3)printf("%d\n", tmp);
+			if(t&0x3)printf("%d\n", t);
 
-			//
-			pdata = (void*)(obj[tmp/4].self);
-			pov = (void*)(obj[tmp/4].data);
-			pov->fd = tmp;
-			pov->stage = 0;
+			pfd = (void*)(obj[t/4].self);
+			*pfd = t;
+
+			pio = (void*)(obj[t/4].data);
+			pio->count = 0;
+			pio->stage = 0;
+			pio->fd = t;
+
 			ret = acceptex(
-				tcplisten, tmp,
-				pdata, 0, 0x20, 0x20, 0,
-				(void*)pov
+				tcplisten, t,
+				(void*)pfd, 0, 0x20, 0x20, 0,
+				(void*)pio
 			);
 		}
-
-		obj[tcplisten].type_sock = type;
-		obj[tcplisten].type_road = 0;
 		return tcplisten/4;
 	}
 	else if(type == 't')	//tcp client
@@ -388,23 +359,13 @@ u64 startsocket(char* addr, int port, int type)
 		if (connect(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@connect\n",GetLastError());
-			stopsocket(fd);
+			stopsocket(fd/4);
 			return 0;
 		}
 
 		//
-		startwatcher(fd);
-
-		//
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].data);
-		pov->fd = fd;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
+		iocp_add(fd);
+		iocp_mod(fd);
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
 		return fd/4;
@@ -426,18 +387,8 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		startwatcher(fd);
-
-		//
-		DWORD trans = 0;
-		DWORD flag = 0;
-		struct per_io_data* pov = (void*)(obj[fd/4].data);
-		pov->fd = fd;
-		pov->stage = 1;
-		pov->bufing.buf = malloc(4096);
-		pov->bufing.len = 4096;
-		ret = WSARecv(fd, &(pov->bufing), 1, &trans, &flag, (void*)pov, NULL);
-
+		iocp_add(fd);
+		iocp_mod(fd);
 		obj[fd].type_sock = type;
 		obj[fd].type_road = 0;
 		return fd/4;
