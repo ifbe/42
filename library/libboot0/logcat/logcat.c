@@ -2,7 +2,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
@@ -10,8 +13,13 @@
 
 
 
-int cur=0;
+static u8* rawuniverse;
 char buffer[0x1000];
+int cur=0;
+
+
+
+
 /*
 int fmt(char* mem, int max, char* fmt, ...)
 {
@@ -59,12 +67,6 @@ void say(char* fmt , ...)
 
 
 
-void createserial()
-{
-}
-void deleteserial()
-{
-}
 int lowlevel_input(char* buf)
 {
 	return 0;
@@ -87,6 +89,10 @@ int lowlevel_output(char* buf, int len)
 	}
 	return len;
 }
+
+
+
+
 void* waitenv()
 {
         return 0;
@@ -94,4 +100,40 @@ void* waitenv()
 void* pollenv()
 {
         return 0;
+}
+void fixarg(u8* dst, u8* src)
+{
+	snprintf(dst, 0x1000, "%s", src);
+}
+
+
+
+
+void death()
+{
+}
+void* birth()
+{
+#define __size__ 0x1001000
+	u64 j;
+	u64 temp;
+
+
+	//1.alloc
+	rawuniverse = malloc(__size__);
+	if(NULL == rawuniverse)
+	{
+		printf("no enough momery\n");
+		exit(-1);
+	}
+	for(j=0;j<__size__;j++)rawuniverse[j]=0;
+
+
+	//2.align
+	//[0x   0,0x1001000)	->	[0x1000,0x1001000)
+	//[0x 234,0x1001234)	->	[0x1000,0x1001000)
+	//[0x fff,0x1001fff)	->	[0x1000,0x1001000)
+	//[0x1001,0x1002001)	->	[0x1000,0x1002000)
+	temp = ( (u64)rawuniverse ) & 0xfff;
+	return rawuniverse + 0x1000 - temp;
 }

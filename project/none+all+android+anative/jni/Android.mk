@@ -6,17 +6,15 @@ include $(CLEAR_VARS)
 
 #libboot0
 LOCAL_SRC_FILES += \
-library/libboot0/startapp.c \
-library/libboot0/basic.c \
 library/libboot0/logcat/logcat.c
 
 #libboot1
 LOCAL_SRC_FILES += \
 library/libboot1/main.c \
-library/libboot1/debug.c \
-library/libboot1/say.c \
-library/libboot1/event.c \
-library/libboot1/relation.c
+library/libboot1/stdin.c \
+library/libboot1/stdout.c \
+library/libboot1/stdev.c \
+library/libboot1/stdrel.c
 
 #libhard0
 ifeq ($(TARGET_ARCH),x86)
@@ -331,6 +329,7 @@ library/libuser1/lib2d/photo/photo.mosaic.c \
 library/libuser1/lib2d/photo/photo.rotate.c \
 library/libuser1/lib2d/photo/photo.scale.c \
 library/libuser1/lib2d/lib2d.c \
+library/libuser1/lib3d/carve/carve.ascii.c \
 library/libuser1/lib3d/carve/carve.point.c \
 library/libuser1/lib3d/carve/carve.line.c \
 library/libuser1/lib3d/carve/carve.plane.c \
@@ -347,7 +346,6 @@ library/libuser1/lib4d/help/help.bgfg.c \
 library/libuser1/lib4d/help/help.ctx.c \
 library/libuser1/lib4d/help/help.input.c \
 library/libuser1/lib4d/help/help.login.c \
-library/libuser1/lib4d/help/help.term.c \
 library/libuser1/lib4d/help/help.win.c \
 library/libuser1/lib4d/lib4d.c \
 library/libuser1/actor.c

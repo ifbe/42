@@ -13,9 +13,23 @@
 void actorwrite(void* p);
 void actorread();
 //
-void network_explain(u64* p);
-void sound_explain(u64* p);
-void vision_explain(u64* p);
+void actorcreate(void*);
+void actordelete();
+void arenacreate(void*);
+void arenadelete();
+void arterycreate(void*);
+void arterydelete();
+void systemcreate(void*);
+void systemdelete();
+void bodycreate(void*);
+void bodydelete();
+void drivercreate(void*);
+void driverdelete();
+//
+void initstdin(void*);
+void initstdout(void*);
+void initstdev(void*);
+void initstdrel(void*);
 //
 void* birth();
 void death();
@@ -79,8 +93,29 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv*
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
 	LOGI("JNI_OnLoad\n");
+
+	//libboot0
 	world = birth();
-	arena = world+0x400000;
+	arena = world+0xc00000;
+
+	//libboot1
+	initstdin( world+0x000000);
+	initstdout(world+0x100000);
+	initstdev( world+0x200000);
+	initstdrel(world+0x300000);
+
+	//libsoft
+	drivercreate(world+0x400000);
+	bodycreate(  world+0x400000);
+
+	//libsoft
+	systemcreate(world+0x800000);
+	arterycreate(world+0x800000);
+
+	//libuser
+	arenacreate(world+0xc00000);
+	actorcreate(world+0xc00000);
+
 	return JNI_VERSION_1_6;
 }
 JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
