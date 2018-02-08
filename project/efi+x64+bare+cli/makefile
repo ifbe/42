@@ -28,9 +28,7 @@ link:
 	x86_64-w64-mingw32-gcc -e efi_main \
 	-nostdlib -fno-use-linker-plugin \
 	-Wl,-dll -shared -Wl,--subsystem,10 \
-	$(library)/libboot0/startefi.o \
-	$(library)/libboot0/basic.o \
-	$(library)/libboot0/print.o \
+	$(library)/libboot0/efi.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
 	$(library)/libhard1/*.o \

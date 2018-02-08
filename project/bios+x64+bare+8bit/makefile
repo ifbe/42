@@ -38,9 +38,7 @@ cross:
 	make -s link linker=x86_64-elf-ld
 link:
 	$(linker) -T link.ld \
-	$(library)/libboot0/startbare.o \
-	$(library)/libboot0/basic.o \
-	$(library)/libboot0/8250.o \
+	$(library)/libboot0/bare.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
 	$(library)/libhard1/*.o \

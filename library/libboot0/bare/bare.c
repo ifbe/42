@@ -3,8 +3,35 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 #define PORT 0x3f8
-void out8(u32 port, u8 data);
 u8 in8(u32 port);
+void out8(u32 port, u8 data);
+void main(int, char**);
+
+
+
+
+void start()
+{
+	main(0, 0);
+}
+void fixarg(u8* dst, u8* src)
+{
+	int j = 0;
+	while(src[j] >= 0x20)
+	{
+		dst[j] = src[j];
+		j++;
+	}
+	dst[j] = 0;
+}
+void* waitenv()
+{
+	return 0;
+}
+void* pollenv()
+{
+	return 0;
+}
 
 
 
@@ -49,18 +76,6 @@ int lowlevel_output(char* buf, int len)
 	int j;
 	for(j=0;j<len;j++)write8250_one(buf[j]);
 	return j;
-}
-
-
-
-
-void* waitenv()
-{
-	return 0;
-}
-void* pollenv()
-{
-	return 0;
 }
 
 

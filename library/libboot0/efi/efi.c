@@ -6,7 +6,7 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-void gethandleandtable(void* H, void* T);
+void main(int, char**);
 void say(void*, ...);
 
 
@@ -90,6 +90,16 @@ void* pollenv()
 }
 void* waitenv()
 {
+}
+void fixarg(u8* dst, u8* src)
+{
+	int j = 0;
+	while(src[j] >= 0x20)
+	{
+		dst[j] = src[j];
+		j++;
+	}
+	dst[j] = 0;
 }
 
 
