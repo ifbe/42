@@ -5,6 +5,7 @@
 
 static u8* stlbuf;
 static int stllen;
+static float left,right,front,back,bottom,upper;
 
 
 
@@ -17,40 +18,50 @@ static void stl_read_pixel(struct arena* win, struct actor* act, struct style* s
 }
 static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	int j, ret;
 	float* p;
-	int j;
-	int ret = *(u32*)(stlbuf+80);
-	//say("%x\n",ret);
+	float cx = (float)(sty->cx) / 65536.0 - 0.5;
+	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float w = (float)(sty->wantw) / 65536.0;
+	float h = (float)(sty->wanth) / 65536.0;
+	float sx,sy,sz,sw,sh,sd;
 
-	u32 pcount = win->info[8];
-	u32 ncount = win->info[9];
-	u32 ccount = win->info[10];
-	u32 icount = win->info[14];
+	u32 pcount = win->vertexcount;
+	u32 ncount = win->normalcount;
+	u32 ccount = win->colorcount;
+	u32 tcount = win->texturecount;
+	u32 icount = win->tricount;
 
 	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x800000 + (pcount*12);
-	float* normal = buf + 0x900000 + (ncount*12);
-	float* color  = buf + 0xa00000 + (ccount*12);
-	u16* index =    buf + 0xe00000 + (icount*2);
+	float* vertex = buf + 0x000000 + (pcount*12);
+	float* normal = buf + 0x200000 + (ncount*12);
+	float* color  = buf + 0x400000 + (ccount*12);
+	u16* index =    buf + 0xc00000 + (icount*2);
 
-	win->info[8] += 3*ret;
-	win->info[9] += 3*ret;
-	win->info[10] += 3*ret;
-	win->info[14] += 3*ret;
+	ret = *(u32*)(stlbuf+80);
+	win->vertexcount += 3*ret;
+	win->normalcount += 3*ret;
+	win->colorcount += 3*ret;
+	win->tricount += 3*ret;
 
+	sx = (left+right)/2;
+	sy = (back+front)/2;
+	sw = right-left;
+	sh = front-back;
 	ret = ret%(0x100000/36);
 	for(j=0;j<ret;j++)
 	{
 		p = (void*)stlbuf + 84 + j*50;
-		vertex[j*9 + 0] = p[3];
-		vertex[j*9 + 1] = p[4];
-		vertex[j*9 + 2] = p[5];
-		vertex[j*9 + 3] = p[6];
-		vertex[j*9 + 4] = p[7];
-		vertex[j*9 + 5] = p[8];
-		vertex[j*9 + 6] = p[9];
-		vertex[j*9 + 7] = p[10];
-		vertex[j*9 + 8] = p[11];
+
+		vertex[j*9 + 0] = cx + (p[3]-sx)/sw*w;
+		vertex[j*9 + 1] = cy + (p[4]-sy)/sw*w;
+		vertex[j*9 + 2] = (p[5]-bottom)/sw*w;
+		vertex[j*9 + 3] = cx + (p[6]-sx)/sw*w;
+		vertex[j*9 + 4] = cy + (p[7]-sy)/sw*w;
+		vertex[j*9 + 5] = (p[8]-bottom)/sw*w;
+		vertex[j*9 + 6] = cx + (p[9]-sx)/sw*w;
+		vertex[j*9 + 7] = cy + (p[10]-sy)/sw*w;
+		vertex[j*9 + 8] = (p[11]-bottom)/sw*w;
 
 		normal[j*9 + 0] = p[0];
 		normal[j*9 + 1] = p[1];
@@ -121,9 +132,43 @@ static void stl_change()
 }
 static void stl_start()
 {
+	float* p;
+	int j,ret;
 	stlbuf = (void*)startmemory(0x800000);
 	stllen = readfile("42.stl", stlbuf, 0, 0x800000);
 	say("%x: %x", stllen, *(u32*)(stlbuf+80));
+
+	left = back = bottom = 100000.0;
+	right = front = upper = -100000.0;
+
+	ret = *(u32*)(stlbuf+80);
+	ret = ret%(0x100000/36);
+	for(j=0;j<ret;j++)
+	{
+		p = (void*)stlbuf + 84 + j*50;
+
+		if(p[3] < left)left = p[3];
+		if(p[3] > right)right = p[3];
+		if(p[4] < back)back = p[4];
+		if(p[4] > front)front = p[4];
+		if(p[5] < bottom)bottom = p[5];
+		if(p[5] > upper)upper = p[5];
+
+		if(p[6] < left)left = p[6];
+		if(p[6] > right)right = p[6];
+		if(p[7] < back)back = p[7];
+		if(p[7] > front)front = p[7];
+		if(p[8] < bottom)bottom = p[8];
+		if(p[8] > upper)upper = p[8];
+
+		if(p[9] < left)left = p[9];
+		if(p[9] > right)right = p[9];
+		if(p[10] < back)back = p[10];
+		if(p[10] > front)front = p[10];
+		if(p[11] < bottom)bottom = p[11];
+		if(p[11] > upper)upper = p[11];
+	}
+	say("%f,%f,%f,%f,%f,%f\n",left,right,back,front,bottom,upper);
 }
 static void stl_stop()
 {
