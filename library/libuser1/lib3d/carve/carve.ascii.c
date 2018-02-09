@@ -12,6 +12,10 @@ void carveascii(
 	float fx, float fy, float fz,
 	u8 dat)
 {
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
 	u32 pcount = win->vertexcount;
 	u32 ncount = win->normalcount;
 	u32 ccount = win->colorcount;
@@ -44,18 +48,18 @@ void carveascii(
 	vertex[10] = cy+ry+fy;
 	vertex[11] = cz+rz+fz;
 
-	color[ 0] = 1.0;
-	color[ 1] = 1.0;
-	color[ 2] = 1.0;
-	color[ 3] = 1.0;
-	color[ 4] = 1.0;
-	color[ 5] = 1.0;
-	color[ 6] = 1.0;
-	color[ 7] = 1.0;
-	color[ 8] = 1.0;
-	color[ 9] = 1.0;
-	color[10] = 1.0;
-	color[11] = 1.0;
+	color[ 0] = rr;
+	color[ 1] = gg;
+	color[ 2] = bb;
+	color[ 3] = rr;
+	color[ 4] = gg;
+	color[ 5] = bb;
+	color[ 6] = rr;
+	color[ 7] = gg;
+	color[ 8] = bb;
+	color[ 9] = rr;
+	color[10] = gg;
+	color[11] = bb;
 
 	texture[0] = (dat&0xf)/15.9;
 	texture[1] = ((dat>>4)+1)/8.0;
@@ -72,6 +76,41 @@ void carveascii(
 	index[3] = pcount+0;
 	index[4] = pcount+2;
 	index[5] = pcount+3;
+}
+void carvedecimal(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 val)
+{
+	int j,len;
+	float f;
+	u8 str[8];
+
+	for(len=0;len<8;len++)
+	{
+		if(0 == val)break;
+		str[len] = 0x30 + (val%10);
+		val = val/10;
+	}
+	if(len == 0)
+	{
+		len = 1;
+		str[0] = '0';
+	}
+
+	for(j=0;j<len;j++)
+	{
+		f = (float)(j-len/2)*2;
+		carveascii(
+			win, rgb,
+			cx + (rx*f), cy + (ry*f), cz + (rz*f),
+			rx, ry, rz,
+			fx, fy, fz,
+			str[len-1-j]
+		);
+	}
 }
 void carvestring(
 	struct arena* win, u32 rgb,

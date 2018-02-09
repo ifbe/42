@@ -139,10 +139,28 @@ void drawascii_bitmap(char* buf, int ch)
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
 	for(j=0;j<0x10;j++)buf[j] = asciitable[(ch<<4) + j];
 }
+void drawascii_alpha(u8* buf, int w, int h, int xx, int yy, u8 ch)
+{
+	u8 temp;
+	u8* points;
+	int x,y,offset;
 
+	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
+	points = asciitable + (ch<<4);
 
+	for(y=0;y<16;y++)
+	{
+		temp = points[y];
+		for(x=0;x<8;x++)
+		{
+			offset = w*(yy+y) + xx+x;
+			if(0 == (temp&0x80))buf[offset] = 0;
+			else buf[offset] = 0xff;
 
-
+			temp<<=1;
+		}//x
+	}//y
+}
 void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 {
 	u8 temp;

@@ -288,6 +288,13 @@ void carveascii(
 	float fx, float fy, float fz,
 	u8 dat
 );
+void carvedecimal(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 dat
+);
 void carvestring(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,

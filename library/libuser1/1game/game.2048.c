@@ -72,12 +72,12 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 				0.0, h/16, 0.0,
 				0.0, 0.0, zzz
 			);
-			carveascii(
+			carvedecimal(
 				win, ~color,
 				xxx, yyy, zzz*2.01,
-				w/32, 0.0, 0.0,
+				w/64, 0.0, 0.0,
 				0.0, h/32, 0.0,
-				tab[y][x]+0x30
+				val2048[tab[y][x]]
 			);
 		}
 	}

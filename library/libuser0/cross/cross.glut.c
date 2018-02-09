@@ -27,8 +27,7 @@ double sine(double);
 //
 static struct window* win;
 static struct window* src;
-static struct window fake;
-static u8 fontdata[128*128*4];
+static u8 fontdata[128*128];
 //
 static int queuehead = 0;
 static int queuetail = 0;
@@ -215,7 +214,7 @@ char myfontfrag[] = {
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = texture(texdata, texuv);\n"
+		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).aaaa;\n"
 	"}\n"
 };
 void initshader_one(GLuint* prog, void* vert, void* frag)
@@ -341,16 +340,16 @@ void inittexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
-	fake.fmt = hex64('r','g','b','a','8','8','8','8');
-	fake.buf = fontdata;
-	fake.w = fake.h = 128;
 	for(j=0x20;j<0x80;j++)
 	{
-		drawascii(&fake, 0xfedcba, (j&0xf)<<3, j&0xf0, j);
+		drawascii_alpha(
+			fontdata, 128, 128,
+			(j&0xf)<<3, j&0xf0, j
+		);
 	}
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, 8*16, 16*8, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, fontdata
+		GL_ALPHA, 8*16, 16*8, 0,
+		GL_ALPHA, GL_UNSIGNED_BYTE, fontdata
 	);
 
 /*
@@ -625,7 +624,11 @@ void callback_display()
 	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
 
 	//texture
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glUseProgram(myfontprogram);
+
 	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
 	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
 	GLint tex = glGetUniformLocation(myfontprogram, "texdata");
@@ -633,6 +636,9 @@ void callback_display()
 
 	glBindVertexArray(fontvao);
 	glDrawElements(GL_TRIANGLES, src->fontcount, GL_UNSIGNED_SHORT, 0);
+
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
 
 	//write
 	glFlush();
