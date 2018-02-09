@@ -9,7 +9,7 @@
 
 
 //
-void drawascii(void* win, u32 rgb, int xx, int yy, u8 ch);
+void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
@@ -604,7 +604,7 @@ void callback_display()
 	fixlight();
 	fixtexture();
 
-	//no light
+	//point&line
 	glUseProgram(simpleprogram);
 	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
 	glUniformMatrix4fv(mvp1, 1, GL_FALSE, cameramvp);
@@ -615,7 +615,7 @@ void callback_display()
 	glBindVertexArray(linevao);
 	glDrawElements(GL_LINES, src->linecount, GL_UNSIGNED_SHORT, 0);
 
-	//have light
+	//triangle
 	glUseProgram(prettyprogram);
 	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
 	glUniformMatrix4fv(mvp2, 1, GL_FALSE, cameramvp);

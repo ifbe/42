@@ -9,6 +9,7 @@
 
 
 //
+void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
@@ -26,6 +27,8 @@ double sine(double);
 //
 static struct window* win;
 static struct window* src;
+static u8 fontdata[128*128];
+//
 static int queuehead = 0;
 static int queuetail = 0;
 static int last_x = 0;
@@ -35,6 +38,7 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint shadowprogram;
 static GLuint pickerprogram;
+static GLuint myfontprogram;
 //
 static GLuint shadowfb;
 //
@@ -187,6 +191,32 @@ char pickerfrag[] = {
 		"FragColor = vec4(vertexcolor,1.0);\n"
 	"}\n"
 };
+char myfontvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 position;\n"
+	"layout(location = 2)in mediump vec3 color;\n"
+	"layout(location = 3)in mediump vec2 texcoord;\n"
+	"uniform mat4 prettymvp;\n"
+	"out mediump vec3 origcolor;\n"
+	"out mediump vec2 texuv;\n"
+	"void main()\n"
+	"{\n"
+		"gl_Position = prettymvp * vec4(position,1.0);\n"
+		"origcolor = color;\n"
+		"texuv = texcoord;\n"
+	"}\n"
+};
+char myfontfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 origcolor;\n"
+	"in mediump vec2 texuv;\n"
+	"uniform sampler2D texdata;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).aaaa;\n"
+	"}\n"
+};
 void initshader_one(GLuint* prog, void* vert, void* frag)
 {
 	//1.vertex shader
@@ -297,22 +327,31 @@ void initshader()
 	initshader_one(&prettyprogram, prettyvert, prettyfrag);
 	initshader_one(&shadowprogram, shadowvert, shadowfrag);
 	initshader_one(&pickerprogram, pickervert, pickerfrag);
+	initshader_one(&myfontprogram, myfontvert, myfontfrag);
 	glUseProgram(prettyprogram);
 }
 void inittexture()
 {
+	int j;
 	glGenTextures(1, &prettytexture);
 	glBindTexture(GL_TEXTURE_2D, prettytexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-/*
+
+	for(j=0x20;j<0x80;j++)
+	{
+		drawascii_alpha(
+			fontdata, 128, 128,
+			(j&0xf)<<3, j&0xf0, j
+		);
+	}
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, 512, 512, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (void*)(src->buf)
+		GL_ALPHA, 8*16, 16*8, 0,
+		GL_ALPHA, GL_UNSIGNED_BYTE, fontdata
 	);
-*/
+
 	/*
 	glGenFramebuffers(1, &shadowfb);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowfb);
@@ -434,6 +473,9 @@ void initobject()
 	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, texcorvbo);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(3);
 
 	glGenBuffers(1, &fontvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
@@ -560,7 +602,7 @@ void callback_display()
 	fixlight();
 	fixtexture();
 
-	//no light
+	//point&line
 	glUseProgram(simpleprogram);
 	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
 	glUniformMatrix4fv(mvp1, 1, GL_FALSE, cameramvp);
@@ -571,7 +613,7 @@ void callback_display()
 	glBindVertexArray(linevao);
 	glDrawElements(GL_LINES, src->linecount, GL_UNSIGNED_SHORT, 0);
 
-	//have light
+	//triangle
 	glUseProgram(prettyprogram);
 	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
 	glUniformMatrix4fv(mvp2, 1, GL_FALSE, cameramvp);
@@ -579,8 +621,22 @@ void callback_display()
 	glBindVertexArray(trianglevao);
 	glDrawElements(GL_TRIANGLES, src->tricount, GL_UNSIGNED_SHORT, 0);
 
+	//texture
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glUseProgram(myfontprogram);
+
+	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
+	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
+	GLint tex = glGetUniformLocation(myfontprogram, "texdata");
+	glUniform1i(tex, 0);
+
 	glBindVertexArray(fontvao);
-	glDrawElements(GL_QUADS, src->fontcount, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, src->fontcount, GL_UNSIGNED_SHORT, 0);
+
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
 }
 void callback_idle()
 {
@@ -625,10 +681,10 @@ void callback_idle()
 
 	glBindBuffer(   GL_ARRAY_BUFFER, colourvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*colourcount, colourdata);
-/*
+
 	glBindBuffer(   GL_ARRAY_BUFFER, texcorvbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 12*texcorcount, texcordata);
-*/
+
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, pointvbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*pointcount, pointindex);
 
@@ -829,10 +885,18 @@ void* uievent(struct window* p)
 		return 0;
 	}
 
+	initshader();
+	inittexture();
+	initobject();
+
 	while(1)
 	{
 		if(glfwWindowShouldClose(fw) != 0)break;
 		if(glfwGetKey(fw, GLFW_KEY_ESCAPE) == GLFW_PRESS)break;
+		printf("1\n");
+		if(queuehead == 0)continue;
+callback_idle();
+callback_display();
 		glfwSwapBuffers(fw);
 		glfwPollEvents();
 	}
