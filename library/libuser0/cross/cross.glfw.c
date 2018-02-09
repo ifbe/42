@@ -33,6 +33,7 @@ static int queuehead = 0;
 static int queuetail = 0;
 static int last_x = 0;
 static int last_y = 0;
+static int pressed = 0;
 //
 static GLuint simpleprogram;
 static GLuint prettyprogram;
@@ -46,6 +47,7 @@ static GLuint simpletexture;
 static GLuint prettytexture;
 static GLuint shadowtexture;
 static GLuint pickertexture;
+static GLuint myfonttexture;
 //
 static GLuint pointvao;
 static GLuint linevao;
@@ -214,7 +216,7 @@ char myfontfrag[] = {
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).aaaa;\n"
+		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).rrrr;\n"
 	"}\n"
 };
 void initshader_one(GLuint* prog, void* vert, void* frag)
@@ -333,8 +335,8 @@ void initshader()
 void inittexture()
 {
 	int j;
-	glGenTextures(1, &prettytexture);
-	glBindTexture(GL_TEXTURE_2D, prettytexture);
+	glGenTextures(1, &myfonttexture);
+	glBindTexture(GL_TEXTURE_2D, myfonttexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -348,8 +350,8 @@ void inittexture()
 		);
 	}
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_ALPHA, 8*16, 16*8, 0,
-		GL_ALPHA, GL_UNSIGNED_BYTE, fontdata
+		GL_RED, 8*16, 16*8, 0,
+		GL_RED, GL_UNSIGNED_BYTE, fontdata
 	);
 
 	/*
@@ -699,27 +701,39 @@ void callback_idle()
 
 	queuetail++;
 }
-void callback_reshape(int w, int h)
+void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
 {
-	win->w = w;
-	win->h = h;
-}
-void callback_keyboard(unsigned char key, int x, int y)
-{
-	u64 what,where;
+	u64 why,what,where;
 	where = (u64)win;
-	//printf("%x\n",key);
+    printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
-	if(key == 0x1b)
+	if(action == 0)return;
+	if(key == 0x100)
+	{
+		why = 0x1b;
+		what = hex32('k','b','d',0);
+	}
+	else if((key >= 0x106)&&(key <= 0x109))
 	{
 		what = hex32('k','b','d',0);
+		if(key == 0x109)why = 48;			//up
+		else if(key == 0x108)why = 0x50;	//down
+		else if(key == 0x107)why = 0x4b;	//left
+		else if(key == 0x106)why = 0x4d;	//right
+	}
+	else if((key >= 0x122)&&(key <= 0x12d))
+	{
+		what = hex32('k','b','d',0);
+		why = 0xf1 + key - 0x122;
 	}
 	else
 	{
 		what = hex32('c','h','a','r');
+		why = key;
 	}
-	eventwrite(key, what, where, 0);
+	eventwrite(why, what, where, 0);
 }
+/*
 void callback_mouse(int button, int state, int x, int y)
 {
 	float tx, ty, tz;
@@ -767,38 +781,25 @@ void callback_mouse(int button, int state, int x, int y)
 		}
 		return;
 	}
-
-	if(state == 0)	//GLUT_DOWN)
-	{
-		last_x = x;
-		last_y = y;
-	}
-	if(state == 0)	//GLUT_UP)
-	{
-		tx = camera[0];
-		ty = camera[1];
-		tz = camera[2];
-		if(button == 3)	//wheel_up
-		{
-			camera[0] = 0.9*tx + 0.1*center[0];
-			camera[1] = 0.9*ty + 0.1*center[1];
-			camera[2] = 0.9*tz + 0.1*center[2];
-		}
-		else if(button == 4)	//wheel_down
-		{
-			camera[0] = 1.1*tx - 0.1*center[0];
-			camera[1] = 1.1*ty - 0.1*center[1];
-			camera[2] = 1.1*tz - 0.1*center[2];
-		}
-	}
 }
-void callback_move(int x,int y)
+*/
+void callback_mouse(GLFWwindow* window, int button, int action, int mods)
+{
+	printf("%x,%x\n", button, action);
+	pressed = action;
+}
+//void callback_move(int x,int y)
+static void callback_move(GLFWwindow* window, double xpos, double ypos)
 {
 	float t[3];
 	float v[4];
 	u64 xx,yy,temp;
 	u64 why, what, where;
-	//printf("2222: %d,%d\n",x,y);
+	int x = (int)xpos;
+	int y = (int)ypos;
+	if(pressed == 0)return;
+	pressed++;
+	if(pressed <= 1)goto theend;
 
 	if(win->cw == 12)
 	{
@@ -859,8 +860,40 @@ void callback_move(int x,int y)
 		quaternionrotate(camera, v);
 	}
 
+theend:
 	last_x = x;
 	last_y = y;
+}
+void callback_scroll(GLFWwindow* window, double x, double y)
+{
+	float tx = camera[0];
+	float ty = camera[1];
+	float tz = camera[2];
+	printf("%f,%f\n", x, y);
+
+	if(y > 0.0)	//wheel_up
+	{
+		camera[0] = 0.9*tx + 0.1*center[0];
+		camera[1] = 0.9*ty + 0.1*center[1];
+		camera[2] = 0.9*tz + 0.1*center[2];
+	}
+	else	//wheel_down
+	{
+		camera[0] = 1.1*tx - 0.1*center[0];
+		camera[1] = 1.1*ty - 0.1*center[1];
+		camera[2] = 1.1*tz - 0.1*center[2];
+	}
+}
+void callback_drop(GLFWwindow* window, int count, const char** paths)
+{
+    int j;
+    for(j=0;j<count;j++)printf("%s\n", paths[j]);
+}
+void callback_reshape(GLFWwindow* window, int w, int h)
+{
+	printf("%x,%x\n", w, h);
+	win->w = w;
+	win->h = h;
 }
 
 
@@ -885,18 +918,26 @@ void* uievent(struct window* p)
 		return 0;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
 	initshader();
 	inittexture();
 	initobject();
 
+	glfwSetDropCallback(fw, callback_drop);
+	glfwSetKeyCallback(fw, callback_keyboard);
+	glfwSetScrollCallback(fw, callback_scroll);
+	glfwSetCursorPosCallback(fw, callback_move);
+	glfwSetMouseButtonCallback(fw, callback_mouse);
+	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 	while(1)
 	{
 		if(glfwWindowShouldClose(fw) != 0)break;
-		if(glfwGetKey(fw, GLFW_KEY_ESCAPE) == GLFW_PRESS)break;
-		printf("1\n");
-		if(queuehead == 0)continue;
-callback_idle();
-callback_display();
+
+		callback_idle();
+		callback_display();
+
 		glfwSwapBuffers(fw);
 		glfwPollEvents();
 	}

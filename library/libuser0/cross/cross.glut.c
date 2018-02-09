@@ -46,6 +46,7 @@ static GLuint simpletexture;
 static GLuint prettytexture;
 static GLuint shadowtexture;
 static GLuint pickertexture;
+static GLuint myfonttexture;
 //
 static GLuint pointvao;
 static GLuint linevao;
@@ -333,8 +334,8 @@ void initshader()
 void inittexture()
 {
 	int j;
-	glGenTextures(1, &prettytexture);
-	glBindTexture(GL_TEXTURE_2D, prettytexture);
+	glGenTextures(1, &myfonttexture);
+	glBindTexture(GL_TEXTURE_2D, myfonttexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
