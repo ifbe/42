@@ -47,6 +47,7 @@ lib2d/draw/draw.ascii.c \
 lib2d/draw/draw.icon.c \
 lib2d/draw/draw.shape.c \
 lib2d/draw/draw.ttf.c \
+lib2d/draw/draw.utf8.c \
 lib2d/draw/draw.vt100.c \
 lib2d/photo/photo.blur.c \
 lib2d/photo/photo.channel.c \
@@ -65,15 +66,12 @@ lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
 lib3d/lib3d.c \
-lib4d/asset/asset.font.c \
-lib4d/asset/asset.image.c \
-lib4d/asset/asset.sound.c \
-lib4d/asset/asset.texture.c \
-lib4d/help/help.bgfg.c \
-lib4d/help/help.ctx.c \
-lib4d/help/help.login.c \
-lib4d/help/help.input.c \
-lib4d/help/help.win.c \
+lib4d/help.asset.c \
+lib4d/help.bgfg.c \
+lib4d/help.ctx.c \
+lib4d/help.login.c \
+lib4d/help.input.c \
+lib4d/help.win.c \
 lib4d/lib4d.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

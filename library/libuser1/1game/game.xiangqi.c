@@ -188,11 +188,17 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 
 			drawsolid_circle(win, chesscolor,
 				cx + (2*x-8)*half, cy + (2*y-9)*half, half);
-
+/*
 			drawascii(win, fontcolor,
 				cx + (2*x-8)*half - (half/8*8/2),
 				cy + (2*y-9)*half - (half/8*16/2),
 				data[y][x]
+			);
+*/
+			drawutf8(win, fontcolor,
+				cx + (2*x-8)*half - (half/8*8/2),
+				cy + (2*y-9)*half - (half/8*16/2),
+				char2hanzi(data[y][x]), 0
 			);
 		}//forx
 	}//fory
