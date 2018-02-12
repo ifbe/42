@@ -36,10 +36,10 @@ static void font_read_html(struct arena* win, struct actor* act, struct style* s
 }
 static void font_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	float cx = (sty->cx) / 0x10000;
-	float cy = (sty->cy) / 0x10000;
-	float ww = (sty->wantw) / 0x20000;
-	float hh = (sty->wanth) / 0x20000;
+	float cx = (sty->cx) / 65536.0 - 0.5;
+	float cy = (sty->cy) / 65536.0 - 0.5;
+	float ww = (sty->wantw) / 131072.0;
+	float hh = (sty->wanth) / 131072.0;
 	carveascii_area(
 		win, 0xffffff,
 		cx, cy, 0.0,

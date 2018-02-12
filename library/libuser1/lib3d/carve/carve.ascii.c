@@ -230,13 +230,13 @@ void carveascii(
 	color[10] = gg;
 	color[11] = bb;
 
-	texture[0] = dat/256.0;
+	texture[0] = (dat+0.0)/256.0;
 	texture[1] = 1.0/256.0;
-	texture[2] = (dat+1)/256.0;
+	texture[2] = (dat+0.5)/256.0;
 	texture[3] = 1.0/256.0;
-	texture[4] = dat/256.0;
+	texture[4] = (dat+0.0)/256.0;
 	texture[5] = 0.0;
-	texture[6] = (dat+1)/256.0;
+	texture[6] = (dat+0.5)/256.0;
 	texture[7] = 0.0;
 
 	index[0] = pcount+0;
@@ -306,7 +306,7 @@ void carvestring(
 
 	for(j=0;j<len;j++)
 	{
-		f = (float)(j-len/2)/2;
+		f = (float)(j-len/2);
 		carveascii(
 			win, rgb,
 			cx + (rx*f), cy + (ry*f), cz + (rz*f),

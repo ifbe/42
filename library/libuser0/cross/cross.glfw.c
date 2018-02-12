@@ -829,7 +829,7 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);
 		eventwrite(why, 0x4070, where, 0);
-		return;
+		goto theend;
 	}
 
 	t[0] = 0.0;
@@ -883,22 +883,42 @@ theend:
 }
 void callback_scroll(GLFWwindow* window, double x, double y)
 {
+	u64 why,where;
 	float tx = camera[0];
 	float ty = camera[1];
 	float tz = camera[2];
 	printf("%f,%f\n", x, y);
 
-	if(y > 0.0)	//wheel_up
+	if(win->cw == 12)
 	{
-		camera[0] = 0.9*tx + 0.1*center[0];
-		camera[1] = 0.9*ty + 0.1*center[1];
-		camera[2] = 0.9*tz + 0.1*center[2];
+		where = (u64)win;
+		if(y > 0.0)	//wheel_up
+		{
+			why = 'f';
+			why = why<<48;
+			eventwrite(why, 0x2b70, where, 0);
+		}
+		else	//wheel_down
+		{
+			why = 'b';
+			why = why<<48;
+			eventwrite(why, 0x2b70, where, 0);
+		}
 	}
-	else	//wheel_down
+	else
 	{
-		camera[0] = 1.1*tx - 0.1*center[0];
-		camera[1] = 1.1*ty - 0.1*center[1];
-		camera[2] = 1.1*tz - 0.1*center[2];
+		if(y > 0.0)	//wheel_up
+		{
+			camera[0] = 0.9*tx + 0.1*center[0];
+			camera[1] = 0.9*ty + 0.1*center[1];
+			camera[2] = 0.9*tz + 0.1*center[2];
+		}
+		else	//wheel_down
+		{
+			camera[0] = 1.1*tx - 0.1*center[0];
+			camera[1] = 1.1*ty - 0.1*center[1];
+			camera[2] = 1.1*tz - 0.1*center[2];
+		}
 	}
 }
 void callback_drop(GLFWwindow* window, int count, const char** paths)
