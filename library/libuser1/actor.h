@@ -216,11 +216,12 @@ void gentui_text(struct arena* win, u32 rgb, int x, int y, u8* str, int len);
 void gentui_decstr(struct arena* win, u32 rgb, int x, int y, int data);
 
 void drawascii(struct arena* win, u32 rgb, int x, int y, u8 data);
+void drawunicode(struct arena* win, u32 rgb, int x, int y, u32 unicode);
+void drawutf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
+void drawstring(struct arena*, u32 rgb, int x, int y, u8* buf, int len);
 void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 data);
 void drawdecimal(struct arena* win, u32 rgb, int x, int y, int data);
 void drawhexadecimal(struct arena* win, u32 rgb, int x, int y, u64 data);
-void drawutf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
-void drawstring(struct arena*, u32 rgb, int x, int y, u8* buf, int len);
 void drawdouble(struct arena*, u32 rgb, int x, int y, double z);
 void drawtext(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,

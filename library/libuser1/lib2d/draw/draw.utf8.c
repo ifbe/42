@@ -13,7 +13,7 @@ void initutf8(void* addr)
 
 
 
-void drawutf8(struct arena* win, u32 rgb, int xx, int yy, u8* ch, int len)
+void drawunicode(struct arena* win, u32 rgb, int xx, int yy, u32 unicode)
 {
 	u16 temp;
 	u16* points;
@@ -22,13 +22,8 @@ void drawutf8(struct arena* win, u32 rgb, int xx, int yy, u8* ch, int len)
 	int height = win->h;
 	u32* screen = (u32*)(win->buf);
 
-	u32 unicode;
-	utf2unicode(ch, &unicode);
-	say("%x\n", unicode);
-
 	if(0 == utf8table)return;
 	points = utf8table + 32*unicode;
-	printmemory(points, 32);
 
 	rgb |= 0xff000000;
 	for(y=0;y<16;y++)
@@ -43,4 +38,10 @@ void drawutf8(struct arena* win, u32 rgb, int xx, int yy, u8* ch, int len)
 			temp<<=1;
 		}//x
 	}//y
+}
+void drawutf8(struct arena* win, u32 rgb, int xx, int yy, u8* ch, int len)
+{
+	u32 unicode;
+	utf2unicode(ch, &unicode);
+	drawunicode(win, rgb, xx, yy, unicode);
 }

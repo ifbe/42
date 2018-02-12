@@ -1,5 +1,14 @@
 #include "actor.h"
 void drawascii_bitmap(u8* buf, int ch);
+void carveascii_area(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz);
+
+
+
+
 static int chosen = 0x20;
 
 
@@ -27,6 +36,16 @@ static void font_read_html(struct arena* win, struct actor* act, struct style* s
 }
 static void font_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	float cx = (sty->cx) / 0x10000;
+	float cy = (sty->cy) / 0x10000;
+	float ww = (sty->wantw) / 0x20000;
+	float hh = (sty->wanth) / 0x20000;
+	carveascii_area(
+		win, 0xffffff,
+		cx, cy, 0.0,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
 }
 static void font_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {

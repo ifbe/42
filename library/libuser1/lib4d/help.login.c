@@ -2,8 +2,14 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 void term_write(void*);
 void carvestarry_random(void*);
-void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1);
 void act_at(void*, void*);
+void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1);
+void carveascii_area(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz);
+
 
 
 
@@ -56,6 +62,49 @@ void login_read_8bit(struct arena* win)
 void login_read_vbo(struct arena* win)
 {
 	u32 color;
+	int j,k;
+	float x,y;
+
+	carveline(
+		win, 0xffffff,
+		0.0, 0.0, 0.0,
+		0.0, 0.0, 1.0
+	);
+	carveascii_area(
+		win, 0xffffff,
+		0.0, 0.0, 0.0,
+		1.0, 0.0, 0.0,
+		0.0, 1.0, 0.0
+	);
+
+	for(j=0;j<32;j++)
+	{
+		if(j == chosen)
+		{
+			k = 4.0;
+			color = 0x00ff00;
+		}
+		else
+		{
+			k = 1.0;
+			color = 0xffffff;
+		}
+
+		x = cosine(j/PI)/8.0;
+		y = sine(j/PI)/8.0;
+		carvestring(
+			win, color,
+			x, y, (j+1)/64.0,
+			x/8, y/8, 0.0,
+			-y/8, x/8, 0.0,
+			(u8*)&actor[j].name, 8
+		);
+	}
+}
+/*
+void login_read_vbo(struct arena* win)
+{
+	u32 color;
 	int j,k,x,y;
 
 	carveline_circle(
@@ -78,26 +127,7 @@ void login_read_vbo(struct arena* win)
 		sqrt3div4, 0.25, 0.0,
 		-sqrt3div4, 0.25, 0.0
 	);
-/*
-	carveline_bezier(
-		win, 0x00bfff,
-		0.0, 0.5, 0.0,
-		0.0, -0.5, 0.0,
-		0.0, 0.0, 0.5
-	);
-	carveline_bezier(
-		win, 0x00bfff,
-		sqrt3div4, -0.25, 0.0,
-		-sqrt3div4, 0.25, 0.0,
-		0.0, 0.0, 1.0
-	);
-	carveline_bezier(
-		win, 0x00bfff,
-		sqrt3div4, 0.25, 0.0,
-		-sqrt3div4, -0.25, 0.0,
-		0.0, 0.0, 1.5
-	);
-*/
+
 	carveline_special(
 		win, 0x00bfff,
 		0.0, 0.0, 0.0,
@@ -144,6 +174,7 @@ void login_read_vbo(struct arena* win)
 		);
 	}
 }
+*/
 void login_read_html(struct arena* win)
 {
 }
