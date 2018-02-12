@@ -10,6 +10,7 @@
 
 //
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
+void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
@@ -27,7 +28,7 @@ double sine(double);
 //
 static struct window* win;
 static struct window* src;
-static u8 fontdata[128*128];
+static u8* fontdata;
 //
 static int queuehead = 0;
 static int queuetail = 0;
@@ -341,17 +342,28 @@ void inittexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
-	for(j=0x20;j<0x80;j++)
+	fontdata = malloc(0x1000*0x1000);
+	if(fontdata != 0)
 	{
-		drawascii_alpha(
-			fontdata, 128, 128,
-			(j&0xf)<<3, j&0xf0, j
+		for(j=0;j<0x10000;j++)
+		{
+			drawunicode_alpha(
+				fontdata, 0x1000, 0x1000,
+				(j&0xff)<<4, (j&0xff00)>>4, j
+			);
+		}
+		for(j=0x20;j<0x80;j++)
+		{
+			drawascii_alpha(
+				fontdata, 0x1000, 0x1000,
+				(j&0xff)<<4, 0, j
+			);
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_ALPHA, 0x1000, 0x1000, 0,
+			GL_ALPHA, GL_UNSIGNED_BYTE, fontdata
 		);
 	}
-	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_ALPHA, 8*16, 16*8, 0,
-		GL_ALPHA, GL_UNSIGNED_BYTE, fontdata
-	);
 
 /*
 	glGenTextures(1, &shadowtexture);

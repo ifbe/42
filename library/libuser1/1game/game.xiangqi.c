@@ -172,16 +172,10 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 			if(data[y][x] < 'A')continue;
 
 			//>0x41
-			else if(data[y][x] <= 'Z')
-			{
-				fontcolor = black;
-			}
+			else if(data[y][x] <= 'Z')fontcolor = black;
 
 			//>0x61
-			else if(data[y][x] <= 'z')
-			{
-				fontcolor = red;
-			}
+			else if(data[y][x] <= 'z')fontcolor = red;
 
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
@@ -205,18 +199,63 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 }
 static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	int x,y;
+	u32 chesscolor, fontcolor, temp;
 	float cx = (float)(sty->cx) / 65536.0 - 0.5;
 	float cy = (float)(sty->cy) / 65536.0 - 0.5;
 	float w = (float)(sty->wantw) / 65536.0;
 	float h = (float)(sty->wanth) / 65536.0;
 
-	carvesolid_prism4(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		w/16, 0.0, 0.0,
-		0.0, h/16, 0.0,
-		0.0, 0.0, w/16
-	);
+	//heng
+	for(y=-5;y<5;y++)
+	{
+		carveline(win, 0x444444,
+			cx-(w*4/9), cy+(2*y+1)*h/20, 0.0,
+			cx+(w*4/9), cy+(2*y+1)*h/20, 0.0
+		);
+	}
+
+	//shu
+	for(x=-4;x<5;x++)
+	{
+		carveline(win, 0x444444,
+			cx+x*w/9, cy-h*1/20, 0.0,
+			cx+x*w/9, cy-h*9/20, 0.0
+		);
+		carveline(win, 0x444444,
+			cx+x*w/9, cy+h*1/20, 0.0,
+			cx+x*w/9, cy+h*9/20, 0.0
+		);
+	}
+
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			//empty
+			if(data[y][x] < 'A')continue;
+
+			//>0x41
+			else if(data[y][x] <= 'Z')fontcolor = 0;
+
+			//>0x61
+			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
+
+			carvesolid_cylinder(
+				win, 0x8d6f25,
+				cx+(w/18)*(2*x-8), cy+(h/20)*(2*y-9), w/40,
+				w/18, 0.0, 0.0,
+				0.0, 0.0, w/40
+			);
+			carveutf8(
+				win, fontcolor,
+				cx+(w/18)*(2*x-8), cy+(h/20)*(2*y-9), w/19,
+				w/36, 0.0, 0.0,
+				0.0, h/40, 0.0,
+				(u8*)char2hanzi(data[y][x]), 0
+			);
+		}
+	}
 }
 static void xiangqi_read_tui(struct arena* win, struct actor* act, struct style* sty)
 {

@@ -719,29 +719,34 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 	where = (u64)win;
     printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
-	if(action == 0)return;
-	if(key == 0x100)
+	if(0 == action)return;
+	if(0x100 == key)
 	{
 		why = 0x1b;
 		what = hex32('k','b','d',0);
 	}
+	else if(0x101 == key)
+	{
+		why = 0xd;
+		what = hex32('c','h','a','r');
+	}
 	else if((key >= 0x106)&&(key <= 0x109))
 	{
-		what = hex32('k','b','d',0);
 		if(key == 0x109)why = 48;			//up
 		else if(key == 0x108)why = 0x50;	//down
 		else if(key == 0x107)why = 0x4b;	//left
 		else if(key == 0x106)why = 0x4d;	//right
+		what = hex32('k','b','d',0);
 	}
 	else if((key >= 0x122)&&(key <= 0x12d))
 	{
-		what = hex32('k','b','d',0);
 		why = 0xf1 + key - 0x122;
+		what = hex32('k','b','d',0);
 	}
 	else
 	{
-		what = hex32('c','h','a','r');
 		why = key;
+		what = hex32('c','h','a','r');
 	}
 	eventwrite(why, what, where, 0);
 }

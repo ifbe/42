@@ -304,6 +304,21 @@ void carvestring(
 	float fx, float fy, float fz,
 	u8* str, int len
 );
+void carveunicode(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 uni
+);
+void carveutf8(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* buf, int len
+);
+
 void carvepoint(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz
