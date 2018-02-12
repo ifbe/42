@@ -90,13 +90,13 @@ void login_read_vbo(struct arena* win)
 			color = 0xffffff;
 		}
 
-		x = cosine(j/PI)/8.0;
-		y = sine(j/PI)/8.0;
+		x = cosine(j/PI)/32.0;
+		y = sine(j/PI)/32.0;
 		carvestring(
 			win, color,
-			x, y, (j+1)/64.0,
-			x/8, y/8, 0.0,
-			-y/8, x/8, 0.0,
+			x*2, y*2, (j+1)/64.0,
+			x/2, y/2, 0.0,
+			-y/2, x/2, 0.0,
 			(u8*)&actor[j].name, 8
 		);
 	}
