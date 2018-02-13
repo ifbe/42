@@ -16,20 +16,49 @@ static int chosen = 0x20;
 
 static void font_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y,j;
+	int x,y,m,n;
 	int cx = (win->w) * (sty->cx) / 0x10000;
 	int cy = (win->h) * (sty->cy) / 0x10000;
 	int ww = (win->w) * (sty->wantw) / 0x20000;
 	int hh = (win->h) * (sty->wanth) / 0x20000;
-	for(j=0x20;j<0x80;j++)
-	{
-		x = (j%16)<<4;
-		y = ((j/16) - 2)<<4;
-		if(x+16 > ww*2)continue;
-		if(y+16 > hh*2)break;
+//say("chosen=%x\n",chosen);
 
-		drawascii(win, 0xffffff, cx-ww + x, cy-hh + y, j);
+	for(y=-(hh&0xfff0);y<(hh&0xfff0);y+=16)
+	{
+		for(x=-(ww&0xfff0);x<(ww&0xfff0);x+=16)
+		{
+			m = (x>>4) + (chosen&0xff);
+			if(m < 0)continue;
+			if(m > 0xff)continue;
+
+			n = (y>>4) + (chosen>>8);
+			if(n < 0)continue;
+			if(n > 0xff)continue;
+
+//say("%d,%d\n",x,y);
+			if((0 == x)|(0 == y))
+			{
+				drawsolid_rect(
+					win, (255-m)+(0x008000)+(n<<16),
+					cx+x, cy+y,
+					cx+x+15, cy+y+15
+				);
+			}
+
+			m = m + (n<<8);
+			if((m > 0x20)&&(m < 0x80))
+			{
+				drawascii(win, 0xffffff, cx+x, cy+y, m);
+			}
+			else
+			{
+				drawunicode(win, 0xffffff, cx+x, cy+y, m);
+			}
+		}
 	}
+
+	drawsolid_rect(win, 0x0000ff, cx-32, cy-16, cx-1, cy-1);
+	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
 }
 static void font_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -89,8 +118,23 @@ static void font_read(struct arena* win, struct actor* act, struct style* sty)
 }
 static void font_write(struct event* ev)
 {
-	chosen++;
-	if((chosen<0x20)|(chosen>=0x80))chosen = 0x20;
+	int k = (ev->why)&0xff;
+	if(k == 0x48)
+	{
+		if(chosen >= 256)chosen -= 256;
+	}
+	else if(k == 0x4b)
+	{
+		if((chosen&0xff) > 0)chosen--;
+	}
+	else if(k == 0x4d)
+	{
+		if((chosen&0xff) < 0xff)chosen++;
+	}
+	else if(k == 0x50)
+	{
+		if(chosen <= 65535-256)chosen += 256;
+	}
 }
 static void font_list()
 {
