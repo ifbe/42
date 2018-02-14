@@ -56,8 +56,8 @@ int check_vmdk(void*);
 //
 int startfile(u8*);
 int stopfile(int);
-int readfile(u64,u8*,u64,u64);
-int writefile(u64,u8*,u64,u64);
+int openreadclose(void*, void*, u64, u64);
+int openwriteclose(void*, void*, u64, u64);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -182,16 +182,9 @@ static int file_write(u8* p)
 	int fd;
 	int ret;
 
-	//open
-	fd = startfile(p);
-	if(fd <= 0)return -1;
-
 	//read
-	ret = readfile(fd, datahome, 0, 0x8000);
+	ret = openreadclose(p, datahome, 0, 0x8000);
 	if(ret <= 0)return 0;
-
-	//close
-	stopfile(fd);
 
 	//11111111
 	ret = mount_what(datahome, 0x8000);

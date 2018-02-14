@@ -57,92 +57,6 @@ static u64 getsize(HANDLE hand,char* path,char* dest)
 
 
 
-//file名字，mem地址，文件内偏移，总字节数
-int writefile(u64 file, u8* mem, u64 off, u64 len)
-{
-	HANDLE hFile;
-	LARGE_INTEGER li;
-	unsigned long written = 0;
-
-	if(file < 0x1000)
-	{
-		li.QuadPart = off;
-		SetFilePointer((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
-		WriteFile((HANDLE)file, mem, len, &written, NULL);
-	}
-	else
-	{
-		//
-		hFile = CreateFile(
-			(void*)file, GENERIC_WRITE, 0,
-			NULL, OPEN_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL, NULL
-		);
-		if(hFile==INVALID_HANDLE_VALUE)
-		{
-			say("error@open\n");
-			return -1;
-		}
-
-		if(off != 0)
-		{
-			li.QuadPart = off;
-			SetFilePointer (hFile,li.LowPart,&li.HighPart,FILE_BEGIN);
-		}
-
-		//
-		WriteFile(hFile, mem, len, &written, NULL);
-
-		//
-		CloseHandle(hFile);
-	}
-}
-//
-int readfile(u64 file,u8* mem,u64 off,u64 len)
-{
-	HANDLE hFile;
-	LARGE_INTEGER li;
-	unsigned long val = 0;
-	int ret;
-
-	if(file < 0x1000)
-	{
-		li.QuadPart = off;
-		SetFilePointer ((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
-		ret = ReadFile((HANDLE)file, mem, len, &val, 0);
-	}
-	else
-	{
-		//
-		hFile = CreateFile(
-			(void*)file, GENERIC_READ, 0,
-			NULL, OPEN_EXISTING,
-			FILE_ATTRIBUTE_NORMAL, NULL
-		);
-		if(hFile==INVALID_HANDLE_VALUE)
-		{
-			say("error@open\n");
-			return -1;
-		}
-
-		if(off != 0)
-		{
-			li.QuadPart = off;
-			SetFilePointer (hFile, li.LowPart, &li.HighPart, FILE_BEGIN);
-		}
-
-		//
-		ret = ReadFile(hFile, mem, len, &val, 0);
-		CloseHandle(hFile);
-	}
-
-	if(ret == 0)say("val=%d\n", ret, val);
-	return val;
-}
-
-
-
-
 void listfile(char* dest)
 {
 	//
@@ -195,11 +109,34 @@ void listfile(char* dest)
 void choosefile(char* buf)
 {
 }
+int writefile(u64 file, u8* mem, u64 off, u64 len)
+{
+	HANDLE hFile;
+	LARGE_INTEGER li;
+	DWORD val;
+	int ret;
 
+	li.QuadPart = off;
+	SetFilePointer((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	ret = WriteFile((HANDLE)file, mem, len, &val, NULL);
 
+	//if(ret == 0)say("val=%d\n", ret, val);
+	return val;
+}
+int readfile(u64 file, u8* mem, u64 off, u64 len)
+{
+	HANDLE hFile;
+	LARGE_INTEGER li;
+	DWORD val;
+	int ret;
 
+	li.QuadPart = off;
+	SetFilePointer ((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	ret = ReadFile((HANDLE)file, mem, len, &val, 0);
 
-//
+	//if(ret == 0)say("val=%d\n", ret, val);
+	return val;
+}
 HANDLE startfile(char* path)
 {
 	//检查
@@ -207,17 +144,22 @@ HANDLE startfile(char* path)
 	if(path[0] == 0)return 0;
 
 	//打开
-	HANDLE hand = CreateFile(path,
-		GENERIC_READ, FILE_SHARE_READ, 0,
-		OPEN_EXISTING, 0, 0
+	HANDLE fd = CreateFile(
+		path,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		0,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		0
 	);
-	if(hand == INVALID_HANDLE_VALUE)
+	if(fd == INVALID_HANDLE_VALUE)
 	{
-		say("(error%d)createfile:%x\n", errno, hand);
+		say("(error%d)createfile:%x\n", errno, fd);
 		return 0;
 	}
 
-	return hand;
+	return fd;
 }
 void stopfile(HANDLE fd)
 {

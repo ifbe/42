@@ -11,10 +11,38 @@ int text_delete();
 //
 int readfile(u64 file, u8* mem, u64 offset, u64 count);
 int writefile(u64 file, u8* mem, u64 offset, u64 count);
+int startfile(void*);
+int stopfile(int);
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
 
+
+
+
+
+int openreadclose(void* name, void* buf, int off, int len)
+{
+	int ret;
+	int fd = startfile(name);
+	if(fd <= 0)return fd;
+
+	ret = readfile(fd, buf, off, len);
+
+	stopfile(fd);
+	return ret;
+}
+int openwriteclose(void* name, void* buf, int off, int len)
+{
+	int ret;
+	int fd = startfile(name);
+	if(fd <= 0)return fd;
+
+	ret = writefile(fd, buf, off, len);
+
+	stopfile(fd);
+	return ret;
+}
 
 
 
@@ -33,44 +61,44 @@ int say(void* str, ...);
 */
 void cleverread(
 	u64 src, u64 count, u64 where,
-	u8* dst, u64 size, u64 want)
+	u8* buf, u64 len, u64 want)
 {
-	u8* rdi=0;    //内存地址
-	u64 rsi=0;    //扇区号
-	u64 rcx=0;    //扇区数量
+	u8* rdi = 0;    //内存地址
+	u64 rsi = 0;    //扇区号
+	u64 rcx = 0;    //扇区数量
 
 	//改rdi,rsi,rcx数值
 	if(where<want)	     //3和4
 	{
-		rdi = dst;
+		rdi = buf;
 		rsi = src+(want-where);
-		if(where+count <= want+size)
+		if(where+count <= want+len)
 		{
 			rcx = count-(want-where);
 		}
 		else
 		{
-			rcx = size;
+			rcx = len;
 		}
 	}
 	else
 	{
-		rdi = dst+(where-want);
+		rdi = buf+(where-want);
 		rsi = src;
-		if(where+count <= want+size)
+		if(where+count <= want+len)
 		{
 			rcx = count;
 		}
 		else
 		{
-			rcx = want+size-where;
+			rcx = want+len-where;
 		}
 	}
 
 /*
 	say(
 		"(%llx,%llx,%llx)->(%llx,%llx,%llx)\n",
-		src,count,where,    dst,size,want
+		src,count,where,    buf,len,want
 	);
 	say(
 		"rdi=%llx,rsi=%llx,rcx=%llx\n",
@@ -97,7 +125,7 @@ void cleverread(
 (来源，数量，是哪) -> (目的，数量，要哪)
 */
 void cleverwrite(
-	u8* src, u64 count, u64 where,
+	u8* buf, u64 len, u64 where,
 	u64 dst, u64 size, u64 want)
 {
 }

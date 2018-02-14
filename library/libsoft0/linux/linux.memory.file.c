@@ -70,121 +70,6 @@ static int trythis(char* src,char* dest)
 
 
 
-//file名字，mem地址，文件内偏移，总字节数
-int writefile(u64 file, char* mem, u64 offset, u64 count)
-{
-	int fd;
-	int ret;
-
-	if(file < 0x1000)
-	{
-		ret=lseek64(file, offset, SEEK_SET);
-		if(ret==-1)
-		{
-			//say("errno:%d,seek:%llx\n",errno,sector);
-			return -2;
-		}
-
-		ret=write(file, mem, count);
-		if(ret==-1)
-		{
-			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
-			return -1;
-		}
-	}
-	else
-	{
-		fd = open((void*)file, O_WRONLY|O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
-		if(fd==-1)
-		{
-			printf("fail@open\n");
-			return -3;
-		}
-
-		if(offset != 0)
-		{
-			ret=lseek64(fd, offset, SEEK_SET);
-			if(ret==-1)
-			{
-				printf("fail@lseek\n");
-				close(fd);
-				return -2;
-			}
-		}
-
-		ret=write(fd, mem, count);
-		if(ret==-1)
-		{
-			printf("fail@write\n");
-			close(fd);
-			return -1;
-		}
-
-		close(fd);
-	}
-
-	//
-	return ret;
-}
-int readfile(u64 file, char* mem, u64 offset, u64 count)
-{
-	int fd;
-	int ret;
-
-	if(file < 0x1000)
-	{
-		ret=lseek64(file, offset, SEEK_SET);
-		if(ret==-1)
-		{
-			//say("errno:%d,seek:%llx\n",errno,sector);
-			return -2;
-		}
-
-		ret=read(file, mem, count);
-		if(ret==-1)
-		{
-			//say("errno:%d,read:%llx,%llx\n",errno,sector,count);
-			return -1;
-		}
-	}
-	else
-	{
-		fd = open((void*)file, O_RDONLY);
-		if(fd==-1)
-		{
-			printf("fail@open\n");
-			return -3;
-		}
-//printf("offset=%llx\n",offset);
-		if(offset != 0)
-		{
-			ret = lseek64(fd, offset, SEEK_SET);
-			if(ret==-1)
-			{
-				printf("fail@lseek\n");
-				close(fd);
-				return -2;
-			}
-		}
-
-		ret = read(fd, mem, count);
-		if(ret==-1)
-		{
-			printf("fail@write\n");
-			close(fd);
-			return -1;
-		}
-
-		close(fd);
-	}
-
-	//
-	return ret;
-}
-
-
-
-
 void listfile(char* dest)
 {
 	//clean
@@ -221,10 +106,46 @@ void listfile(char* dest)
 void choosefile()
 {
 }
+int writefile(u64 fd, char* buf, u64 off, u64 len)
+{
+	int ret;
 
+	ret=lseek64(fd, off, SEEK_SET);
+	if(-1 == ret)
+	{
+		//say("errno:%d,seek:%llx\n", errno, off);
+		return -2;
+	}
 
+	ret = write(fd, buf, len);
+	if(-1 == ret)
+	{
+		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
+		return -1;
+	}
 
+	return ret;
+}
+int readfile(u64 fd, char* buf, u64 off, u64 len)
+{
+	int ret;
 
+	ret = lseek64(fd, off, SEEK_SET);
+	if(-1 == ret)
+	{
+		//say("errno:%d,seek:%llx\n", errno, off);
+		return -2;
+	}
+
+	ret = read(fd, buf, len);
+	if(-1 == ret)
+	{
+		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
+		return -1;
+	}
+
+	return ret;
+}
 int startfile(char* path)
 {
 	//检查
@@ -232,7 +153,10 @@ int startfile(char* path)
 	if(path[0] == 0)return -2;
 
 	//打开
-	return open(path,O_RDONLY | O_LARGEFILE);
+	return open(path,
+		O_RDWR | O_LARGEFILE,
+		S_IRWXU|S_IRWXG|S_IRWXO
+	);
 }
 void stopfile(int fd)
 {

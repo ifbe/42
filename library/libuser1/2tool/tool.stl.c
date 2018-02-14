@@ -1,4 +1,6 @@
 #include "actor.h"
+int openreadclose(void*, void*, u64, u64);
+int openwriteclose(void*, void*, u64, u64);
 
 
 
@@ -135,8 +137,8 @@ static void stl_start()
 	float* p;
 	int j,ret;
 	stlbuf = (void*)startmemory(0x800000);
-	stllen = readfile("42.stl", stlbuf, 0, 0x800000);
-	say("%x: %x", stllen, *(u32*)(stlbuf+80));
+	stllen = openreadclose("42.stl", stlbuf, 0, 0x800000);
+	say("len=%x, count=%x, ", stllen, *(u32*)(stlbuf+80));
 
 	left = back = bottom = 100000.0;
 	right = front = upper = -100000.0;

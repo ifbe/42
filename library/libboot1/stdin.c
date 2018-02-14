@@ -44,11 +44,13 @@ void term_read(u8* buf)
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
 say("%s\n",buf);
+
 	//proto://ipaddr:port/folder/file
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == ncmp(buf+j, "://", 3))
 		{
+			say("type=%.*s, name=%.*s\n", j, buf, 256, buf+j+3);
 			netmgr_write(buf);
 			goto prompt;
 		}
