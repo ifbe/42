@@ -10,7 +10,8 @@ void carveascii_area(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
-	float fx, float fy, float fz)
+	float fx, float fy, float fz,
+	float x0, float y0, float x1, float y1)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -61,14 +62,14 @@ void carveascii_area(
 	color[10] = gg;
 	color[11] = bb;
 
-	texture[0] = 0.0;
-	texture[1] = 1.0;
-	texture[2] = 1.0;
-	texture[3] = 1.0;
-	texture[4] = 0.0;
-	texture[5] = 0.0;
-	texture[6] = 1.0;
-	texture[7] = 0.0;
+	texture[0] = x0;
+	texture[1] = y1;
+	texture[2] = x1;
+	texture[3] = y1;
+	texture[4] = x0;
+	texture[5] = y0;
+	texture[6] = x1;
+	texture[7] = y0;
 
 	index[0] = pcount+0;
 	index[1] = pcount+1;

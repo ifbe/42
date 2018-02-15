@@ -340,8 +340,8 @@ void inittexture()
 	glBindTexture(GL_TEXTURE_2D, myfonttexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 
 	fontdata = malloc(0x1000*0x1000);
 	if(fontdata != 0)
@@ -732,7 +732,7 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 	}
 	else if((key >= 0x106)&&(key <= 0x109))
 	{
-		if(key == 0x109)why = 48;			//up
+		if(key == 0x109)why = 0x48;		//up
 		else if(key == 0x108)why = 0x50;	//down
 		else if(key == 0x107)why = 0x4b;	//left
 		else if(key == 0x106)why = 0x4d;	//right
@@ -816,7 +816,6 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	int y = (int)ypos;
 	if(pressed == 0)return;
 	pressed++;
-	if(pressed <= 1)goto theend;
 
 	if(win->cw == 12)
 	{
@@ -828,7 +827,10 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);
-		eventwrite(why, 0x4070, where, 0);
+		if(pressed <= 2)what = 0x2b70;
+		else what = 0x4070;
+
+		eventwrite(why, what, where, 0);
 		goto theend;
 	}
 

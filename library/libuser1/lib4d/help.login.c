@@ -8,7 +8,9 @@ void carveascii_area(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
-	float fx, float fy, float fz);
+	float fx, float fy, float fz,
+	float x0, float y0, float x1, float y1
+);
 
 
 
@@ -74,7 +76,8 @@ void login_read_vbo(struct arena* win)
 		win, 0xffffff,
 		0.0, 0.0, 0.0,
 		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0
+		0.0, 1.0, 0.0,
+		0.0, 0.0, 1.0, 1.0
 	);
 
 	for(j=0;j<32;j++)

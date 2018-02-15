@@ -198,6 +198,31 @@ struct style
 	u64 realh;
 	u64 reald;
 	u64 haha;
+/*
+	float cx;
+	float cy;
+	float cz;
+	float cw;
+
+	float rx;
+	float ry;
+	float rz;
+	float rw;
+
+	float fx;
+	float fy;
+	float fz;
+	float fw;
+
+	float ux;
+	float uy;
+	float uz;
+	float uw;
+*/
+};
+struct userdata
+{
+	u64 name;
 };
 
 

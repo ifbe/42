@@ -4,7 +4,8 @@ void carveascii_area(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
-	float fx, float fy, float fz);
+	float fx, float fy, float fz,
+	float x0, float y0, float x1, float y1);
 
 
 
@@ -65,15 +66,30 @@ static void font_read_html(struct arena* win, struct actor* act, struct style* s
 }
 static void font_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	float x,y;
 	float cx = (sty->cx) / 65536.0 - 0.5;
 	float cy = (sty->cy) / 65536.0 - 0.5;
 	float ww = (sty->wantw) / 131072.0;
 	float hh = (sty->wanth) / 131072.0;
+	carveline_rect(
+		win, 0x00ff00,
+		cx, cy, 0.0,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+	carveline(win, 0xff0000, cx-ww, cy, 0.0, cx+ww, cy, 0.0);
+	carveline(win, 0xff0000, cx, cy-hh, 0.0, cx, cy+hh, 0.0);
+	carveline(win, 0xff0000, cx-ww, cy-(hh/8.0), 0.0, cx+ww, cy-(hh/8.0), 0.0);
+	carveline(win, 0xff0000, cx+(ww/8.0), cy-hh, 0.0, cx+(ww/8.0), cy+hh, 0.0);
+
+	x = (float)(chosen&0xff) / 256.0;
+	y = (float)(chosen&0xff00) / 65536.0;
 	carveascii_area(
 		win, 0xffffff,
 		cx, cy, 0.0,
 		ww, 0.0, 0.0,
-		0.0, hh, 0.0
+		0.0, hh, 0.0,
+		x-1.0/32, y-1.0/32, x+1.0/32, y+1.0/32
 	);
 }
 static void font_read_tui(struct arena* win, struct actor* act, struct style* sty)
@@ -119,6 +135,7 @@ static void font_read(struct arena* win, struct actor* act, struct style* sty)
 static void font_write(struct event* ev)
 {
 	int k = (ev->why)&0xff;
+	say("k=%x\n",k);
 	if(k == 0x48)
 	{
 		if(chosen >= 256)chosen -= 256;
