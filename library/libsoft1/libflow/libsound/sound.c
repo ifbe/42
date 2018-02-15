@@ -46,7 +46,7 @@ void sound_stop()
 	bb = 0;
 	stopsound();
 }
-void sound_create()
+void sound_create(void* w)
 {
 }
 void sound_delete()

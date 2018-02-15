@@ -600,23 +600,11 @@ int netmgr_start(u64 fd)
 	//say("[%d]in\n",fd);
 	return 0;
 }
-int netmgr_delete()
+void netmgr_delete()
 {
-	return 0;
 }
-int netmgr_create(void* w, u64* p)
+void netmgr_create(void* w)
 {
 	obj = w + 0x000000;
 	datahome = w + 0x300000;
-
-	p[0]=0x776f6c66;
-	p[1]=0x74656e;
-	p[2]=(u64)netmgr_start;
-	p[3]=(u64)netmgr_stop;
-	p[4]=(u64)netmgr_list;
-	p[5]=(u64)netmgr_choose;
-	p[6]=(u64)netmgr_read;
-	p[7]=(u64)netmgr_write;
-
-	return 0x100;
 }

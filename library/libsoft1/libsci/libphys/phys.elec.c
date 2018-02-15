@@ -35,15 +35,6 @@ void electrical_stop()
 }
 void electrical_create(u8* softaddr, u64* p)
 {
-	//
-	p[0]=0x73796870;
-	p[1]=0x63656c65;
-	p[2]=(u64)electrical_start;
-	p[3]=(u64)electrical_stop;
-	p[4]=(u64)electrical_list;
-	p[5]=(u64)electrical_choose;
-	p[6]=(u64)electrical_read;
-	p[7]=(u64)electrical_write;
 }
 void electrical_delete()
 {

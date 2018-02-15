@@ -24,16 +24,8 @@ static void motion_start()
 static void motion_stop()
 {
 }
-void motion_create(void* w, u64* p)
+void motion_create(void* w)
 {
-	p[0]=0x776f6c66;	//type
-	p[1]=0x6e6f69746f6d;	//id
-	p[2]=(u64)motion_start;
-	p[3]=(u64)motion_stop;
-	p[4]=(u64)motion_list;
-	p[5]=(u64)motion_choose;
-	p[6]=(u64)motion_read;
-	p[7]=(u64)motion_write;
 }
 void motion_delete()
 {

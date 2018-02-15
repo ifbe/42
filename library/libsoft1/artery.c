@@ -1,21 +1,18 @@
 #include "artery.h"
 //
-int bio_create(void* world,void* func);
-int bio_delete();
-int chem_create(void* world,void* func);
-int chem_delete();
-int flow_create(void* world,void* func);
+int flow_create(void*);
 int flow_delete();
-int memory_create(void* world,void* func);
-int memory_delete();
-int phys_create(void* world,void* func);
-int phys_delete();
-int wire_create(void* world,void* func);
+int file_create(void*);
+int file_delete();
+int wire_create(void*);
 int wire_delete();
 //
 int sound_explain(void*);
 int vision_explain(void*);
 int network_explain(void*);
+//
+int file_write(void*);
+int netmgr_write(void*);
 int readshell(int fd, char* buf, int off, int len);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
@@ -41,8 +38,8 @@ int artery_explain(struct event* ev)
 	if(ret == 's')return sound_explain(ev);
 	else if(ret == 'v')return vision_explain(ev);
 
-       	where = ev->where;
-       	type = obj[where].type_sock;
+	where = ev->where;
+	type = obj[where].type_sock;
 	if(type == hex32('u','a','r','t'))
 	{
 		info = &obj[where].info;
@@ -72,19 +69,14 @@ int artery_explain(struct event* ev)
 //--------------------------------------------------------
 void arterycreate(u8* addr)
 {
-	u8* p;
 	obj = (struct object*)(addr+0x0);
 	worker = (struct element*)(addr+0x100000);
 	dirhome = addr+0x200000;
 	datahome = addr+0x300000;
 
-	p = addr+0x100100;
-	p += bio_create(addr, p);
-	p += chem_create(addr, p);
-	p += flow_create(addr, p);
-	p += memory_create(addr, p);
-	p += phys_create(addr, p);
-	p += wire_create(addr, p);
+	file_create(addr);
+	flow_create(addr);
+	wire_create(addr);
 
 	//say("[8,c):createed artery\n");
 }
@@ -95,11 +87,8 @@ void arterydelete()
 
 	//
 	wire_delete();
-	phys_delete();
-	memory_delete();
 	flow_delete();
-	chem_delete();
-	bio_delete();
+	file_delete();
 
 	//
 	datahome = 0;
@@ -119,8 +108,45 @@ int arterylist()
 {
 	return 0;
 }
-int arterychoose()
+int arterychoose(u8* buf)
 {
+/*
+	if(0 == ncmp(buf, "i2c ", 4))
+	{
+		if(0 == ncmp(buf+4, "ls", 2))i2c_list();
+		else
+		{
+			i2c_choose(buf+4);
+		}
+	}
+*/
+	int j;
+	u8* type = 0;
+	u8* name = buf;
+
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ncmp(buf+j, "://", 3))
+		{
+			say("type=%.*s, name=%.*s\n", j, buf, 256, buf+j+3);
+			type = buf;
+			name = buf+j+3;
+			break;
+		}
+	}
+
+	if(0 == type)
+	{
+		file_write(name);
+	}
+	if(ncmp(type, "file", 4) == 0)
+	{
+		file_write(name);
+	}
+	else
+	{
+		netmgr_write(buf);
+	}
 	return 0;
 }
 int arteryread(int fd, u8* buf, int off, int len)

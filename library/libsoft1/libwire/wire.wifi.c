@@ -27,16 +27,8 @@ static void wifi_start(u64 type,char* p)
 static void wifi_stop()
 {
 }
-void wifi_create(char* world,u64* p)
+void wifi_create(void* w)
 {
-	p[0]=0x6563616669;	//type
-	p[1]=0x69666977;	//id
-	p[2]=(u64)wifi_start;
-	p[3]=(u64)wifi_stop;
-	p[4]=(u64)wifi_list;
-	p[5]=(u64)wifi_choose;
-	p[6]=(u64)wifi_read;
-	p[7]=(u64)wifi_write;
 }
 void wifi_delete()
 {

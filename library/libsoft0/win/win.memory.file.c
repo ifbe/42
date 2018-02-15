@@ -109,32 +109,28 @@ void listfile(char* dest)
 void choosefile(char* buf)
 {
 }
-int writefile(u64 file, u8* mem, u64 off, u64 len)
+int writefile(HANDLE file, u8* mem, u64 off, u64 len)
 {
-	HANDLE hFile;
 	LARGE_INTEGER li;
 	DWORD val;
 	int ret;
 
 	li.QuadPart = off;
-	SetFilePointer((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
-	ret = WriteFile((HANDLE)file, mem, len, &val, NULL);
-
-	//if(ret == 0)say("val=%d\n", ret, val);
+	SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	ret = WriteFile(file, mem, len, &val, NULL);
+	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
-int readfile(u64 file, u8* mem, u64 off, u64 len)
+int readfile(HANDLE file, u8* mem, u64 off, u64 len)
 {
-	HANDLE hFile;
 	LARGE_INTEGER li;
 	DWORD val;
 	int ret;
 
 	li.QuadPart = off;
-	SetFilePointer ((HANDLE)file, li.LowPart, &li.HighPart, FILE_BEGIN);
-	ret = ReadFile((HANDLE)file, mem, len, &val, 0);
-
-	//if(ret == 0)say("val=%d\n", ret, val);
+	SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	ret = ReadFile(file, mem, len, &val, 0);
+	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
 HANDLE startfile(char* path)
@@ -146,7 +142,7 @@ HANDLE startfile(char* path)
 	//打开
 	HANDLE fd = CreateFile(
 		path,
-		GENERIC_READ,
+		GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_READ,
 		0,
 		OPEN_EXISTING,
@@ -155,7 +151,7 @@ HANDLE startfile(char* path)
 	);
 	if(fd == INVALID_HANDLE_VALUE)
 	{
-		say("(error%d)createfile:%x\n", errno, fd);
+		say("error:%d@createfile:%s\n", GetLastError(), path);
 		return 0;
 	}
 

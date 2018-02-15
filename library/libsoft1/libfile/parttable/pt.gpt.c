@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define hex16(a,b) (a | (b<<8))
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -111,13 +113,18 @@ void parse_gpt(u8* src, u8* dst)
 			//say("unknown\n");
 		}
 
-		dstqword[0]=0x74726170;	//'disk...'
-		dstqword[2]=startlba;
-		dstqword[3]=endlba;
+		dstqword[0] = 0x74726170;
+		dstqword[2] = startlba;
+		dstqword[3] = endlba;
 		for(j=0;j<0x40;j++)
 		{
 			dst[0x40 + j] = src[0x38 + j*2];
 		}
+		say("[%012x,%012x]:	%8.8s, %8.8s, %s\n",
+			dstqword[2], dstqword[3],
+			&dstqword[0], &dstqword[1],
+			dst+0x40
+		);
 
 		//pointer++
 		src += 0x80;

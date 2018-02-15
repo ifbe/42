@@ -77,14 +77,6 @@ int uart_start(u8* p)
 void uart_delete()
 {
 }
-void uart_create(void* world,u64* p)
+void uart_create(void* w)
 {
-	p[0]=0x6563616669;	//type
-	p[1]=0x74726175;	//id
-	p[2]=(u64)uart_start;
-	p[3]=(u64)uart_stop;
-	p[4]=(u64)uart_list;
-	p[5]=(u64)uart_choose;
-	p[6]=(u64)uart_read;
-	p[7]=(u64)uart_write;
 }

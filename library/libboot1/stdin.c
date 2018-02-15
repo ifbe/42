@@ -6,15 +6,10 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
-int netmgr_write(void*);
-//
-int i2c_list();
-int i2c_choose(void*);
-//
-int arenastart(u64, int);
-int arenastop();
 int actorlist(void*);
 int actorchoose(void*);
+int arterylist(void*);
+int arterychoose(void*);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -43,15 +38,13 @@ void term_read(u8* buf)
 	if(buf == 0)goto prompt;
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
-say("%s\n",buf);
 
 	//proto://ipaddr:port/folder/file
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == ncmp(buf+j, "://", 3))
 		{
-			say("type=%.*s, name=%.*s\n", j, buf, 256, buf+j+3);
-			netmgr_write(buf);
+			arterychoose(buf);
 			goto prompt;
 		}
 	}
@@ -73,14 +66,6 @@ say("%s\n",buf);
 	}
 	else if(0 == ncmp(buf, "cd", 2))
 	{
-	}
-	else if(0 == ncmp(buf, "i2c ", 4))
-	{
-		if(0 == ncmp(buf+4, "ls", 2))i2c_list();
-		else
-		{
-			i2c_choose(buf+4);
-		}
 	}
 	else
 	{

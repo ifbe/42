@@ -85,17 +85,8 @@ static int i2c_stop()
 {
 	return systemi2c_stop();
 }
-void i2c_create(char* world,u64* p)
+void i2c_create(void* w)
 {
-	//
-	p[0]=0x6563616669;	//type
-	p[1]=0x633269;		//id
-	p[2]=(u64)i2c_start;
-	p[3]=(u64)i2c_stop;
-	p[4]=(u64)i2c_list;
-	p[5]=(u64)i2c_choose;
-	p[6]=(u64)i2c_read;
-	p[7]=(u64)i2c_write;
 }
 void i2c_delete()
 {
