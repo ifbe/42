@@ -12,7 +12,7 @@ all:
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I."
 	make -s -C $(library)/libsoft1 \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I."
-	make -s -C $(library)/libuser0 linuxcli \
+	make -s -C $(library)/libuser0 linuxglfw \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I."
 	make -s -C $(library)/libuser1 \
 	cflag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I."
@@ -49,7 +49,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lpulse -lpulse-simple -lpthread -lm
+	-lglfw -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lm
 	#-lasound -lpthread -lm
 clean:
 	rm -f *.o *.a *.so

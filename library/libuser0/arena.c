@@ -43,7 +43,7 @@ void* startmemory(int);
 int stopmemory(void*);
 //
 void* relation_read(int);
-void relation_write(void*,u64,u64, void*,u64,u64);
+void relation_write(void*, u64, u32, void*, u64, u32);
 //
 void printmemory(void*, int);
 void say(void*, ...);
