@@ -80,6 +80,11 @@ static int mbrrecord(u8* from, u8* dst)
 
 		dstqword[1] = H + (L<<8);
 	}
+
+	say("[%012x,%012x]:	%8.8s, %8.8s\n",
+		dstqword[2], dstqword[3],
+		&dstqword[0], &dstqword[1]
+	);
 	return 0x10;	//这次翻译了多少
 }
 

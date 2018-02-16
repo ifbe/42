@@ -96,7 +96,7 @@ int parse_png(void*, int);
 int check_webp(void*);
 int parse_webp(void*, int);
 //
-int startfile(u8*);
+int startfile(void*, int);
 int stopfile(int);
 int readfile(u64 file, u8* mem, u64 off, u64 len);
 int writefile(u64 file, u8* mem, u64 off, u64 len);
@@ -146,7 +146,7 @@ static u8* datahome;
 int openreadclose(void* name, void* buf, int off, int len)
 {
 	int ret;
-	int fd = startfile(name);
+	int fd = startfile(name, 'r');
 	if(fd <= 0)return fd;
 
 	ret = readfile(fd, buf, off, len);
@@ -157,7 +157,7 @@ int openreadclose(void* name, void* buf, int off, int len)
 int openwriteclose(void* name, void* buf, int off, int len)
 {
 	int ret;
-	int fd = startfile(name);
+	int fd = startfile(name, 'w');
 	if(fd <= 0)return fd;
 
 	ret = writefile(fd, buf, off, len);
@@ -296,10 +296,11 @@ int file_write(u8* p)
 	u8* q;
 
 	//read
-	len = openreadclose(p, datahome, 0, 0x8000);
+	len = openreadclose(p, datahome, 0, 0x10000);
 	if(len <= 0)
 	{
-		say("error@openreadclose\n");
+		//say("error@openreadclose\n");
+		len = openwriteclose(p, datahome, 0, 0x10000);
 		return 0;
 	}
 

@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <tlhelp32.h>
-
 #define u64 unsigned long long
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
+int utf2unicode(void* src, void* dst);
 void say(char* fmt,...);
 
 static char name[0x20]={
@@ -133,28 +133,80 @@ int readfile(HANDLE file, u8* mem, u64 off, u64 len)
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
-HANDLE startfile(char* path)
+HANDLE startfile(u8* path, int flag)
 {
-	//检查
+	int j,k;
+	HANDLE fd;
 	if(path == 0)return 0;
 	if(path[0] == 0)return 0;
 
-	//打开
-	HANDLE fd = CreateFile(
-		path,
-		GENERIC_READ | GENERIC_WRITE,
-		FILE_SHARE_READ,
-		0,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		0
-	);
-	if(fd == INVALID_HANDLE_VALUE)
+	k = 0;
+	for(j=0;j<0x1000;j++)
+	{
+		if(path[j] >= 0x80)
+		{
+			k = 0xc0;
+			break;
+		}
+	}
+
+	if('w' == flag)flag = OPEN_ALWAYS;
+	else flag = OPEN_EXISTING;
+
+	if(k < 0x80)
+	{
+		fd	= CreateFileA(
+			path,
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ,
+			0,
+			flag,
+			FILE_ATTRIBUTE_NORMAL,
+			0
+		);
+	}
+	else
+	{
+		u16 str[0x1000];
+		k = 0;
+
+		for(j=0;j<0x1000;j++)
+		{
+			if(path[j] < 0x20)
+			{
+				str[k] = 0;
+				break;
+			}
+			else if(path[j] < 0x80)
+			{
+				str[k] = path[j];
+			}
+			else
+			{
+				j += utf2unicode(path+j, &str[k]) - 1;
+			}
+
+			//printf("%x ", str[k]);
+			k += 1;
+		}
+		//printf("\n");
+
+		fd	= CreateFileW(
+			str,
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ,
+			0,
+			flag,
+			FILE_ATTRIBUTE_NORMAL,
+			0
+		);
+	}
+
+	if(INVALID_HANDLE_VALUE == fd)
 	{
 		say("error:%d@createfile:%s\n", GetLastError(), path);
 		return 0;
 	}
-
 	return fd;
 }
 void stopfile(HANDLE fd)
