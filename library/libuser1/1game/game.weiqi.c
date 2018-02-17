@@ -130,10 +130,10 @@ static void weiqi_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)weiqi_read_cli(win, act, sty);
-	else if(fmt == __tui__)weiqi_read_tui(win, act, sty);
-	else if(fmt == __vbo__)weiqi_read_vbo(win, act, sty);
-	else if(fmt == __html__)weiqi_read_html(win, act, sty);
+	if(fmt == _cli_)weiqi_read_cli(win, act, sty);
+	else if(fmt == _tui_)weiqi_read_tui(win, act, sty);
+	else if(fmt == _vbo_)weiqi_read_vbo(win, act, sty);
+	else if(fmt == _html_)weiqi_read_html(win, act, sty);
 	else weiqi_read_pixel(win, act, sty);
 }
 
@@ -147,7 +147,7 @@ void weiqi_write(struct event* ev)
 	u64 what = ev->what;
 	u64 key = ev->why;
 
-	if(what == __kbd__)
+	if(what == _kbd_)
 	{
 		if(key == 0x48)   //up
 		{
@@ -170,7 +170,7 @@ void weiqi_write(struct event* ev)
 			py++;
 		}
 	}
-	else if(what == __char__)
+	else if(what == _char_)
 	{
 		if(key == 0x20)
 		{

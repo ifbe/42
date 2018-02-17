@@ -4,6 +4,11 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define _mbr_ hex32('m','b','r',0)
+#define _ext_ hex32('e','x','t',0)
+#define _fat_ hex32('f','a','t',0)
+#define _hfs_ hex32('h','f','s',0)
+#define _ntfs_ hex32('n','t','f','s')
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -18,7 +23,7 @@ int check_mbr(u8* addr)
 
 	//但是mbr没有特别的标志，只能勉强用55aa确定
 	//所以只能放在check type的最后
-	return 0x72626d;
+	return _mbr_;
 }
 
 
@@ -35,40 +40,42 @@ static int mbrrecord(u8* from, u8* dst)
 	u64* dstqword;
 
 	//
-	type=*(u8*)(from+4);
-	if(type==0)return 0;
-	start=*(u32*)(from+8);
-	size=*(u32*)(from+0xc);
+	type = *(u8*)(from+4);
+	if(type == 0)return 0;
+
+	start = *(u32*)(from+8);
+	size = *(u32*)(from+0xc);
 
 	//类型，子类型，开始，结束
 	dstqword = (u64*)dst;
-	dstqword[0] = 0x74726170; 	//'part'
-	dstqword[2] = start;		//start
-	dstqword[3] = start + size - 1;	//end
+	dstqword[0] = start;		//start
+	dstqword[1] = start + size - 1;	//end
 
 	//拓展分区要递归
-	if( (type==0x5) | (type==0xf) )
+	if( (type == 0x5) | (type == 0xf) )
 	{
 		say("extend@start\n");
-		dstqword[1]=0x646e65747865;
-		return 66666;
+		dstqword[1] = '~';
+		return 0;
 	}
 
 	//其他普通分区
-	if( (type==0x4) | (type==0x6) | (type==0xb) )
+	if(	(0x4 == type) |
+		(0x6 == type) |
+		(0xb == type) )
 	{
 		//say("fat\n");
-		dstqword[1]=0x746166;
+		dstqword[2] = _fat_;
 	}
-	else if( type==0x7 )
+	else if(0x7 == type)
 	{
 		//say("ntfs\n");
-		dstqword[1]=0x7366746e;
+		dstqword[2] = _ntfs_;
 	}
-	else if( type==0x83 )
+	else if(0x83 == type)
 	{
 		//say("ext\n");
-		dstqword[1]=0x747865;
+		dstqword[2] = _ext_;
 	}
 	else
 	{
@@ -78,12 +85,12 @@ static int mbrrecord(u8* from, u8* dst)
 		L = (type&0xf) + 0x30;
 		if(L>0x39)L += 7;
 
-		dstqword[1] = H + (L<<8);
+		dstqword[2] = H + (L<<8);
 	}
 
-	say("[%012x,%012x]:	%8.8s, %8.8s\n",
-		dstqword[2], dstqword[3],
-		&dstqword[0], &dstqword[1]
+	say("[%012x,%012x]:	%8.8s\n",
+		dstqword[0], dstqword[1],
+		&dstqword[2]
 	);
 	return 0x10;	//这次翻译了多少
 }
@@ -91,7 +98,7 @@ static int mbrrecord(u8* from, u8* dst)
 
 
 
-//mbr:			[+0x1be,+0x1fd],每个0x10,总共4个
+//[+0x1be,+0x1fd],每个0x10,总共4个
 //[+0]:活动标记
 //[+0x1,+0x3]:开始磁头柱面扇区
 //[+0x4]:分区类型
@@ -101,45 +108,18 @@ static int mbrrecord(u8* from, u8* dst)
 void parse_mbr(u8* src, u8* dst)
 {
 	int j,ret;
-	ret = check_mbr(src);
-	if(ret > 0)say("mbr\n");
-	else{say("not mbr\n");return;}
-
-	//clear
-	u64* dstqword=(u64*)dst;
-	for(j=0; j<0x10000; j++)
-	{
-		dst[j] = 0;
-	}
+	for(j=0;j<0x10000;j++)dst[j] = 0;
 
 	//主分区
-	ret=mbrrecord(src+0x1be,dst);
-	if(ret>0)
-	{
-		dst += 0x80;
-		dstqword = (u64*)dst;
-	}
+	ret = mbrrecord(src+0x1be,dst);
+	if(ret > 0)dst += 0x80;
 
-	ret=mbrrecord(src+0x1ce,dst);
-	if(ret>0)
-	{
-		dst += 0x80;
-		dstqword = (u64*)dst;
-	}
+	ret = mbrrecord(src+0x1ce,dst);
+	if(ret > 0)dst += 0x80;
 
-	ret=mbrrecord(src+0x1de,dst);
-	if(ret>0)
-	{
-		dst+=0x80;
-		dstqword = (u64*)dst;
-	}
+	ret = mbrrecord(src+0x1de,dst);
+	if(ret > 0)dst += 0x80;
 
-	ret=mbrrecord(src+0x1ee,dst);
-	if(ret>0)
-	{
-		dst+=0x80;
-		dstqword = (u64*)dst;
-	}
-
-	//逻辑分区
+	ret = mbrrecord(src+0x1ee,dst);
+	if(ret > 0)dst += 0x80;
 }

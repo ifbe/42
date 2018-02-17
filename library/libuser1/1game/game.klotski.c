@@ -58,10 +58,10 @@ static void klotski_read_cli(struct arena* win, struct actor* act, struct style*
 static void klotski_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)klotski_read_cli(win, act, sty);
-	else if(fmt == __tui__)klotski_read_tui(win, act, sty);
-	else if(fmt == __html__)klotski_read_html(win, act, sty);
-	else if(fmt == __vbo__)klotski_read_vbo(win, act, sty);
+	if(fmt == _cli_)klotski_read_cli(win, act, sty);
+	else if(fmt == _tui_)klotski_read_tui(win, act, sty);
+	else if(fmt == _html_)klotski_read_html(win, act, sty);
+	else if(fmt == _vbo_)klotski_read_vbo(win, act, sty);
 	else klotski_read_pixel(win, act, sty);
 }
 static void klotski_write(struct event* ev)

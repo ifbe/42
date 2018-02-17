@@ -101,10 +101,10 @@ static void stl_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)stl_read_cli(win, act, sty);
-	else if(fmt == __tui__)stl_read_tui(win, act, sty);
-	else if(fmt == __vbo__)stl_read_vbo(win, act, sty);
-	else if(fmt == __html__)stl_read_html(win, act, sty);
+	if(fmt == _cli_)stl_read_cli(win, act, sty);
+	else if(fmt == _tui_)stl_read_tui(win, act, sty);
+	else if(fmt == _vbo_)stl_read_vbo(win, act, sty);
+	else if(fmt == _html_)stl_read_html(win, act, sty);
 	else stl_read_pixel(win, act, sty);
 }
 

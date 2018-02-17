@@ -170,10 +170,10 @@ static void rubikscube_read_cli(struct arena* win, struct actor* act, struct sty
 static void rubikscube_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)rubikscube_read_cli(win, act, sty);
-	else if(fmt == __tui__)rubikscube_read_tui(win, act, sty);
-	else if(fmt == __html__)rubikscube_read_html(win, act, sty);
-	else if(fmt == __vbo__)rubikscube_read_vbo(win, act, sty);
+	if(fmt == _cli_)rubikscube_read_cli(win, act, sty);
+	else if(fmt == _tui_)rubikscube_read_tui(win, act, sty);
+	else if(fmt == _html_)rubikscube_read_html(win, act, sty);
+	else if(fmt == _vbo_)rubikscube_read_vbo(win, act, sty);
 	else rubikscube_read_pixel(win, act, sty);
 }
 
@@ -182,10 +182,10 @@ static void rubikscube_read(struct arena* win, struct actor* act, struct style* 
 
 static void rubikscube_write(struct event* ev)
 {
-	if(ev->what == __kbd__)
+	if(ev->what == _kbd_)
 	{
 	}
-	else if(ev->what == __char__)
+	else if(ev->what == _char_)
 	{
 	}
 }

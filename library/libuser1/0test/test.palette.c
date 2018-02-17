@@ -60,10 +60,10 @@ static void palette_read_cli(struct arena* win, struct actor* act, struct style*
 static void palette_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)palette_read_cli(win, act, sty);
-	else if(fmt == __tui__)palette_read_tui(win, act, sty);
-	else if(fmt == __html__)palette_read_html(win, act, sty);
-	else if(fmt == __vbo__)palette_read_vbo(win, act, sty);
+	if(fmt == _cli_)palette_read_cli(win, act, sty);
+	else if(fmt == _tui_)palette_read_tui(win, act, sty);
+	else if(fmt == _html_)palette_read_html(win, act, sty);
+	else if(fmt == _vbo_)palette_read_vbo(win, act, sty);
 	else palette_read_pixel(win, act, sty);
 }
 static void palette_write(struct event* ev)
@@ -71,7 +71,7 @@ static void palette_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == __kbd__)
+	if(type == _kbd_)
 	{
 		if(key==0x48)		//up
 		{
@@ -90,7 +90,7 @@ static void palette_write(struct event* ev)
 			if(green<255)green++;
 		}
 	}
-	else if(type == __char__)
+	else if(type == _char_)
 	{
 		if(key=='+')
 		{

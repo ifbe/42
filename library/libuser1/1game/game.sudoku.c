@@ -128,17 +128,17 @@ static void sudoku_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)sudoku_read_cli(win, act, sty);
-	else if(fmt == __tui__)sudoku_read_tui(win, act, sty);
-	else if(fmt == __html__)sudoku_read_html(win, act, sty);
-	else if(fmt == __vbo__)sudoku_read_vbo(win, act, sty);
+	if(fmt == _cli_)sudoku_read_cli(win, act, sty);
+	else if(fmt == _tui_)sudoku_read_tui(win, act, sty);
+	else if(fmt == _html_)sudoku_read_html(win, act, sty);
+	else if(fmt == _vbo_)sudoku_read_vbo(win, act, sty);
 	else sudoku_read_pixel(win, act, sty);
 }
 static void sudoku_write(struct event* ev)
 {
 	u64 what = ev->what;
 	u64 key = ev->why;
-	if(what == __kbd__)
+	if(what == _kbd_)
 	{
 		if(key == 0x48)	//up
 		{

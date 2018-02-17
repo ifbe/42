@@ -42,10 +42,10 @@ static void pegged_read_cli(struct arena* win, struct actor* act, struct style* 
 static void pegged_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)pegged_read_cli(win, act, sty);
-	else if(fmt == __tui__)pegged_read_tui(win, act, sty);
-	else if(fmt == __html__)pegged_read_html(win, act, sty);
-	else if(fmt == __vbo__)pegged_read_vbo(win, act, sty);
+	if(fmt == _cli_)pegged_read_cli(win, act, sty);
+	else if(fmt == _tui_)pegged_read_tui(win, act, sty);
+	else if(fmt == _html_)pegged_read_html(win, act, sty);
+	else if(fmt == _vbo_)pegged_read_vbo(win, act, sty);
 	else pegged_read_pixel(win, act, sty);
 }
 static void pegged_write(struct event* ev)

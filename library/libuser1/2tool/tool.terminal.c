@@ -720,10 +720,10 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 static void terminal_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)terminal_read_cli(win, act, sty);
-	else if(fmt == __tui__)terminal_read_tui(win, act, sty);
-	else if(fmt == __vbo__)terminal_read_vbo(win, act, sty);
-	else if(fmt == __html__)terminal_read_html(win, act, sty);
+	if(fmt == _cli_)terminal_read_cli(win, act, sty);
+	else if(fmt == _tui_)terminal_read_tui(win, act, sty);
+	else if(fmt == _vbo_)terminal_read_vbo(win, act, sty);
+	else if(fmt == _html_)terminal_read_html(win, act, sty);
 	else terminal_read_pixel(win, act, sty);
 }
 
@@ -735,13 +735,13 @@ static void terminal_write(struct event* ev)
 	int j;
 	u64 tmp;
 	u64 why = ev->why;
-	if(ev->what == __uart__)
+	if(ev->what == _uart_)
 	{
 		old = (void*)(ev->why);
 		return;
 	}
 
-	if(ev->what == __kbd__)
+	if(ev->what == _kbd_)
 	{
 		if(status != 0)
 		{
@@ -765,7 +765,7 @@ static void terminal_write(struct event* ev)
 		return;
 	}
 
-	if(ev->what == __char__)
+	if(ev->what == _char_)
 	{
 		if(status != 0)
 		{

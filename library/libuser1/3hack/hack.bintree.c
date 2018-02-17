@@ -147,10 +147,10 @@ static void bintree_read(struct arena* win, struct actor* act, struct style* sty
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)bintree_read_cli(win, act, sty);
-	else if(fmt == __tui__)bintree_read_tui(win, act, sty);
-	else if(fmt == __html__)bintree_read_html(win, act, sty);
-	else if(fmt == __vbo__)bintree_read_vbo(win, act, sty);
+	if(fmt == _cli_)bintree_read_cli(win, act, sty);
+	else if(fmt == _tui_)bintree_read_tui(win, act, sty);
+	else if(fmt == _html_)bintree_read_html(win, act, sty);
+	else if(fmt == _vbo_)bintree_read_vbo(win, act, sty);
 	else bintree_read_pixel(win, act, sty);
 }
 static void bintree_write(struct event* ev)
@@ -158,7 +158,7 @@ static void bintree_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == __char__)
+	if(type == _char_)
 	{
 		if(key==0x8)			//backspace
 		{

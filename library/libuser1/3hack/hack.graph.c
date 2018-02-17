@@ -71,16 +71,16 @@ static void graph_traverse(struct arena* this)
 	struct arena* child;
 	struct relation* rel;
 
-	j = graph_add(__win__, this);
+	j = graph_add(_win_, this);
 	rel = this->irel;
 	while(1)
 	{
 		if(rel == 0)return;
 
 		child = (void*)(rel->selfchip);
-		k = graph_add(__win__, child);
+		k = graph_add(_win_, child);
 
-		if(rel->selftype == __win__)graph_traverse(child);
+		if(rel->selftype == _win_)graph_traverse(child);
 		graph_pair(j, k);
 
 		rel = samepinnextchip(rel);
@@ -152,7 +152,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 		x = cx + ww * cosine(sa + (2*j+1) * ff);
 		y = cy + hh * sine(sa + (2*j+1) * ff);
 
-		if(rel->selftype == __win__)
+		if(rel->selftype == _win_)
 		{
 			color = 0x0000ff;
 			starry_read_pixel_r(
@@ -273,12 +273,12 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 		p = "?";
 		if(i < olen)
 		{
-			if(orig[i].type == __win__)
+			if(orig[i].type == _win_)
 			{
 				aa = orig[i].addr;
 				p = &(aa->fmt);
 			}
-			else if(orig[i].type == __act__)
+			else if(orig[i].type == _act_)
 			{
 				bb = orig[i].addr;
 				p = &(bb->name);
@@ -315,15 +315,15 @@ static void graph_read(struct arena* win, struct actor* act, struct style* sty)
 		butane();
 	}
 
-	if(fmt == __cli__)graph_read_cli(win, act, sty);
-	else if(fmt == __tui__)graph_read_tui(win, act, sty);
-	else if(fmt == __html__)graph_read_html(win, act, sty);
-	else if(fmt == __vbo__)graph_read_vbo(win, act, sty);
+	if(fmt == _cli_)graph_read_cli(win, act, sty);
+	else if(fmt == _tui_)graph_read_tui(win, act, sty);
+	else if(fmt == _html_)graph_read_html(win, act, sty);
+	else if(fmt == _vbo_)graph_read_vbo(win, act, sty);
 	else graph_read_pixel(win, act, sty);
 }
 static void graph_write(struct event* ev)
 {
-	if(ev->what == __char__)
+	if(ev->what == _char_)
 	{
 		if(ev->why == 0xd)redo = 1;
 		if(ev->why == '1')redo = '1';

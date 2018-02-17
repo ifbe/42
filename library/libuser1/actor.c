@@ -48,13 +48,13 @@ int actorread_one(struct arena* win)
 	void* pl;
 
 	//cli silent
-	if(win->fmt == __cli__)
+	if(win->fmt == _cli_)
 	{
 		if(win->cw == 12)return 0;
 	}
 
 	//canvas
-	if(win->type != __buf__)
+	if(win->type != _buf_)
 	{
 		canvas = &arena[0];
 
@@ -67,7 +67,7 @@ int actorread_one(struct arena* win)
 	else canvas = win;
 
 	//bg
-	if((win->fmt != __vbo__) | (win->cw == 12))
+	if((win->fmt != _vbo_) | (win->cw == 12))
 	{
 		background(canvas);
 	}
@@ -78,7 +78,7 @@ int actorread_one(struct arena* win)
 	{
 		if(rel == 0)break;
 
-		if(rel->selftype == __act__)
+		if(rel->selftype == _act_)
 		{
 			act = (void*)(rel->selfchip);
 			st = (void*)(rel->destfoot);
@@ -89,7 +89,7 @@ int actorread_one(struct arena* win)
 			act->read(canvas, act, st, pl);
 			if(win->cw == 12)
 			{
-				if(win->fmt == __vbo__)
+				if(win->fmt == _vbo_)
 				{
 					select_3d(canvas, st);
 				}

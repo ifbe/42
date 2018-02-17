@@ -62,10 +62,10 @@ static void browser_read(struct arena* win, struct actor* act, struct style* sty
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)browser_read_cli(win, act, sty);
-	else if(fmt == __tui__)browser_read_tui(win, act, sty);
-	else if(fmt == __html__)browser_read_html(win, act, sty);
-	else if(fmt == __vbo__)browser_read_vbo(win, act, sty);
+	if(fmt == _cli_)browser_read_cli(win, act, sty);
+	else if(fmt == _tui_)browser_read_tui(win, act, sty);
+	else if(fmt == _html_)browser_read_html(win, act, sty);
+	else if(fmt == _vbo_)browser_read_vbo(win, act, sty);
 	else browser_read_pixel(win, act, sty);
 }
 static void browser_write(struct event* ev)
@@ -73,7 +73,7 @@ static void browser_write(struct event* ev)
 #define http 0x70747468
 	u64 type = ev->what;
 	u64 key = ev->why;
-	if(type == __char__)
+	if(type == _char_)
 	{
 		if(key == 0xd)
 		{

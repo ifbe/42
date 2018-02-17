@@ -207,11 +207,11 @@ void login_read_cli(struct arena* win)
 }
 void login_read(struct arena* win)
 {
-	if(win->fmt == __cli__)login_read_cli(win);
-	else if(win->fmt == __tui__)login_read_tui(win);
-	else if(win->fmt == __vbo__)login_read_vbo(win);
-	else if(win->fmt == __html__)login_read_html(win);
-	else if(win->fmt == __8bit__)login_read_8bit(win);
+	if(win->fmt == _cli_)login_read_cli(win);
+	else if(win->fmt == _tui_)login_read_tui(win);
+	else if(win->fmt == _vbo_)login_read_vbo(win);
+	else if(win->fmt == _html_)login_read_html(win);
+	else if(win->fmt == _8bit_)login_read_8bit(win);
 	else login_read_pixel(win);
 }
 void login_write(struct arena* win, struct event* ev)
@@ -235,7 +235,7 @@ void login_write(struct arena* win, struct event* ev)
 			act_at(win, &actor[chosen]);
 		}
 	}
-	else if(ev->what == __kbd__)
+	else if(ev->what == _kbd_)
 	{
 		if(ev->why == 0x4b)
 		{
@@ -246,7 +246,7 @@ void login_write(struct arena* win, struct event* ev)
 			chosen = (chosen+1)%32;
 		}
 	}
-	else if(ev->what == __char__)
+	else if(ev->what == _char_)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{

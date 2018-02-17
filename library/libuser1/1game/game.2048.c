@@ -232,10 +232,10 @@ static void the2048_read_cli(struct arena* win, struct actor* act, struct style*
 static void the2048_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)the2048_read_cli(win, act, sty);
-	else if(fmt == __tui__)the2048_read_tui(win, act, sty);
-	else if(fmt == __html__)the2048_read_html(win, act, sty);
-	else if(fmt == __vbo__)the2048_read_vbo(win, act, sty);
+	if(fmt == _cli_)the2048_read_cli(win, act, sty);
+	else if(fmt == _tui_)the2048_read_tui(win, act, sty);
+	else if(fmt == _html_)the2048_read_html(win, act, sty);
+	else if(fmt == _vbo_)the2048_read_vbo(win, act, sty);
 	else the2048_read_pixel(win, act, sty);
 }
 
@@ -249,7 +249,7 @@ static void the2048_write(struct event* ev)
 	u8* q;
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
-	if(ev->what == __kbd__)
+	if(ev->what == _kbd_)
 	{
 		k = (ev->why)&0xff;
 		if( (k>=0x48) && (k<=0x50) )
@@ -267,7 +267,7 @@ static void the2048_write(struct event* ev)
 			new2048(q);
 		}
 	}
-	else if(ev->what == __char__)
+	else if(ev->what == _char_)
 	{
 		k = ev->why;
 		if(k == 0x8)num = (num+15)%16;

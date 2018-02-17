@@ -158,8 +158,8 @@ void arenacreate(u8* addr)
 	voicecreate(arena);
 
 	//
-	arenastart(hex32('b', 'u', 'f', 0), 0);
-	arenastart(hex32('w', 'i', 'n', 0), 0);
+	arenastart(__buf__, 0);
+	arenastart(__win__, 0);
 
 	//say("[c,f):createed arena\n");
 }

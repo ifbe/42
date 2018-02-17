@@ -286,16 +286,15 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case WM_DROPFILES:
 		{
+			int j;
 			HDROP hDrop = (HDROP)wparam;
-			UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
-			int i;
-			for (i = 0; i < nFileNum; i++)  
+			UINT nNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			for(j=0;j<nNum;j++)  
 			{
-				DragQueryFile(hDrop, i, dragpath, MAX_PATH);//获得拖曳的文件名
+				DragQueryFile(hDrop, j, dragpath, MAX_PATH);
+				printf("%s\n", dragpath);
 			}
-			DragFinish(hDrop);      //释放hDrop
-
-			eventwrite(0x656c6966, 0x4077, addr, 0);
+			DragFinish(hDrop);
 			return 0;
 		}
 

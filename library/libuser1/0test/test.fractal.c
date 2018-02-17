@@ -29,10 +29,10 @@ static void fractal_read_cli(struct arena* win, struct actor* act, struct style*
 static void fractal_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)fractal_read_cli(win, act, sty);
-	else if(fmt == __tui__)fractal_read_tui(win, act, sty);
-	else if(fmt == __html__)fractal_read_html(win, act, sty);
-	else if(fmt == __vbo__)fractal_read_vbo(win, act, sty);
+	if(fmt == _cli_)fractal_read_cli(win, act, sty);
+	else if(fmt == _tui_)fractal_read_tui(win, act, sty);
+	else if(fmt == _html_)fractal_read_html(win, act, sty);
+	else if(fmt == _vbo_)fractal_read_vbo(win, act, sty);
 	else fractal_read_pixel(win, act, sty);
 }
 static void fractal_write(struct event* ev)

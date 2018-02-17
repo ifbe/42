@@ -186,10 +186,10 @@ static void tetris_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)tetris_read_cli();
-	else if(fmt == __tui__)tetris_read_tui(win, act, sty);
-	else if(fmt == __vbo__)tetris_read_vbo(win, act, sty);
-	else if(fmt == __html__)tetris_read_html(win, act, sty);
+	if(fmt == _cli_)tetris_read_cli();
+	else if(fmt == _tui_)tetris_read_tui(win, act, sty);
+	else if(fmt == _vbo_)tetris_read_vbo(win, act, sty);
+	else if(fmt == _html_)tetris_read_html(win, act, sty);
 	else tetris_read_pixel(win, act, sty);
 }
 
@@ -623,14 +623,14 @@ static void tetris_write(struct event* ev)
 	{
 		for(ret=0;ret<20;ret++)if(down()==1)return;
 	}
-	else if(type == __kbd__)
+	else if(type == _kbd_)
 	{
 		if(key==0x48)up();
 		else if(key==0x4b)left();
 		else if(key==0x4d)right();
 		else if(key==0x50)down();
 	}
-	else if(type == __char__)
+	else if(type == _char_)
 	{
 		if(key=='a')left();
 		else if(key=='d')right();

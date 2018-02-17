@@ -139,10 +139,10 @@ static void bplus_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)bplus_read_cli(win, act, sty);
-	else if(fmt == __tui__)bplus_read_tui(win, act, sty);
-	else if(fmt == __html__)bplus_read_html(win, act, sty);
-	else if(fmt == __vbo__)bplus_read_vbo(win, act, sty);
+	if(fmt == _cli_)bplus_read_cli(win, act, sty);
+	else if(fmt == _tui_)bplus_read_tui(win, act, sty);
+	else if(fmt == _html_)bplus_read_html(win, act, sty);
+	else if(fmt == _vbo_)bplus_read_vbo(win, act, sty);
 	else bplus_read_pixel(win, act, sty);
 }
 static void bplus_write(struct event* ev)
@@ -150,7 +150,7 @@ static void bplus_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == __char__)
+	if(type == _char_)
 	{
 		bplus_insert(node, key);
 		printmemory(node, 0x800);

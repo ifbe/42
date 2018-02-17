@@ -1,6 +1,6 @@
 #include "actor.h"
-#define __act__ hex32('a','c','t',0)
-#define __win__ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
+#define _win_ hex32('w','i','n',0)
 void* arenastart(u64, u64);
 int arenastop(void*);
 void actorstart(void*, void*);
@@ -36,7 +36,7 @@ void act_at(struct arena* win, struct actor* act)
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
 
-	relation_write(win, st, __win__, act, 0, __act__);
+	relation_write(win, st, _win_, act, 0, _act_);
 }
 
 
@@ -58,13 +58,6 @@ void win_del(u64 why, u64 where)
 }
 void win_at(u64 why, u64 where)
 {
-	void* ret;
-	if(why == hex32('f','i','l','e'))
-	{
-		//ret = (void*)where;
-		//actorstart(ret, 0);
-		actorchoose("stl");
-	}
 }
 
 

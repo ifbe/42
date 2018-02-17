@@ -136,10 +136,10 @@ void snake_read_cli(struct arena* win, struct actor* act, struct style* sty)
 void snake_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)snake_read_cli(win, act, sty);
-	else if(fmt == __tui__)snake_read_tui(win, act, sty);
-	else if(fmt == __html__)snake_read_html(win, act, sty);
-	else if(fmt == __vbo__)snake_read_vbo(win, act, sty);
+	if(fmt == _cli_)snake_read_cli(win, act, sty);
+	else if(fmt == _tui_)snake_read_tui(win, act, sty);
+	else if(fmt == _html_)snake_read_html(win, act, sty);
+	else if(fmt == _vbo_)snake_read_vbo(win, act, sty);
 	else snake_read_pixel(win, act, sty);
 }
 

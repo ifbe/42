@@ -43,10 +43,10 @@ static void clock_read_cli(struct arena* win, struct actor* act, struct style* s
 static void clock_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)clock_read_cli(win, act, sty);
-	else if(fmt == __tui__)clock_read_tui(win, act, sty);
-	else if(fmt == __html__)clock_read_html(win, act, sty);
-	else if(fmt == __vbo__)clock_read_vbo(win, act, sty);
+	if(fmt == _cli_)clock_read_cli(win, act, sty);
+	else if(fmt == _tui_)clock_read_tui(win, act, sty);
+	else if(fmt == _html_)clock_read_html(win, act, sty);
+	else if(fmt == _vbo_)clock_read_vbo(win, act, sty);
 	else clock_read_pixel(win, act, sty);
 }
 static void clock_write(struct event* ev)

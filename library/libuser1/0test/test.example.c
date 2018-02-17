@@ -32,10 +32,10 @@ static void example_read_cli(struct arena* win, struct actor* act, struct style*
 static void example_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)example_read_cli(win, act, sty);
-	else if(fmt == __tui__)example_read_tui(win, act, sty);
-	else if(fmt == __html__)example_read_html(win, act, sty);
-	else if(fmt == __vbo__)example_read_vbo(win, act, sty);
+	if(fmt == _cli_)example_read_cli(win, act, sty);
+	else if(fmt == _tui_)example_read_tui(win, act, sty);
+	else if(fmt == _html_)example_read_html(win, act, sty);
+	else if(fmt == _vbo_)example_read_vbo(win, act, sty);
 	else example_read_pixel(win, act, sty);
 }
 static void example_write(struct event* ev)

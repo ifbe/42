@@ -4,6 +4,14 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+#define _gpt_ hex32('m','b','r',0)
+#define _EFI_PART_ hex64('E','F','I',' ','P','A','R','T')
+#define _ext_ hex32('e','x','t',0)
+#define _fat_ hex32('f','a','t',0)
+#define _hfs_ hex32('h','f','s',0)
+#define _ntfs_ hex32('n','t','f','s')
+u32 crc32(u32 crc, u8* buf, u32 len);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -12,25 +20,25 @@ void say(void*, ...);
 
 int check_gpt(u8* addr)
 {
-	//第一个扇区末尾必须有0x55，0xaa这个标志
-	u64 temp=*(u16*)(addr+0x1fe);
-	if(temp != 0xaa55 ) return 0;
+	//[1fe, 1ff] = (0xaa，0x55)
+	u64 temp = *(u16*)(addr+0x1fe);
+	if(temp != 0xaa55)return 0;
 
-	//第二个扇区开头必须是"EFI PART"
-	temp=*(u64*)(addr+0x200);
-	if( temp != 0x5452415020494645 ) return 0;
+	//[200, 207] = "EFI PART"
+	temp = *(u64*)(addr+0x200);
+	if(temp != _EFI_PART_)return 0;
 
 	//检查crc32校验正确还是错误
 	//
 
 	//最终确定
-	return 0x747067;	//'gpt'
+	return _gpt_;	//'gpt'
 }
 
 
 
 
-//gpt:			[+0x400,+0x4400],每个0x80,总共0x80个
+//[+0x400,+0x4400],每个0x80,总共0x80个
 //[+0,+0xf]:类型guid
 //[+0x10,+0x1f]:分区guid
 //[+0x20,+0x27]:起始lba
@@ -39,17 +47,22 @@ int check_gpt(u8* addr)
 //[+0x38,+0x7f]:名字
 void parse_gpt(u8* src, u8* dst)
 {
-	int i=0,j=0;
+	int j=0, k=0;
+	u32 crc;
 	u64* srcqword;
 	u64* dstqword;
 
-	i = check_gpt(src);
-	if(i > 0)say("gpt\n");
-	else{say("not gpt\n");return;}
+	j = src[0x20c];
+	if(j >= 0x14)j -= 0x14;
+	crc = crc32(0, src + 0x200, 0x10);
+	crc = crc32(crc, src + 0x214, 4);
+	crc = crc32(crc, src + 0x214, j);
+	say("head crc:	%x, %x\n", *(u32*)(src+0x210), crc);
+	say("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
 
 	src += 0x400;
-	for(j=0;j<0x10000;j++)dst[j] = 0;
-	for(i=0;i<0x80;i++)	//0x80 partitions per disk
+	for(k=0;k<0x10000;k++)dst[k] = 0;
+	for(j=0;j<0x80;j++)	//0x80 partitions per disk
 	{
 		//先取数字出来
 		srcqword = (u64*)src;
@@ -67,63 +80,53 @@ void parse_gpt(u8* src, u8* dst)
 		u64 endlba = srcqword[5];
 
 		//不同分区类型
-		if(firsthalf==0x477284830fc63daf)
+		if(firsthalf == 0x477284830fc63daf)
 		{
-			if(secondhalf==0xe47d47d8693d798e)
+			if(secondhalf == 0xe47d47d8693d798e)
 			{
-				dstqword[1]=0x747865;		//ext
+				dstqword[2] = _ext_;
 				//say("ext\n");
 			}
 		}
-		if(firsthalf==0x477284830fc63daf)
+		else if(firsthalf == 0x11d2f81fc12a7328)
 		{
-			if(secondhalf==0xe47d47d8693d798e)
+			if(secondhalf == 0x3bc93ec9a0004bba)
 			{
-				dstqword[1]=0x747865;		//ext
-				//say("ext\n");
-			}
-		}
-		else if(firsthalf==0x11d2f81fc12a7328)
-		{
-			if(secondhalf==0x3bc93ec9a0004bba)
-			{
-				dstqword[1]=0x746166;		//fat
+				dstqword[2] = _fat_;
 				//say("fat\n");
 			}
 		}
-		else if(firsthalf==0x11aa000048465300)
+		else if(firsthalf == 0x11aa000048465300)
 		{
-			if(secondhalf==0xacec4365300011aa)
+			if(secondhalf == 0xacec4365300011aa)
 			{
-				dstqword[1]=0x736668;		//hfs
+				dstqword[2] = _hfs_;
 				//say("hfs\n");
 			}
 		}
-		else if(firsthalf==0x4433b9e5ebd0a0a2)
+		else if(firsthalf == 0x4433b9e5ebd0a0a2)
 		{
-			if(secondhalf==0xc79926b7b668c087)
+			if(secondhalf == 0xc79926b7b668c087)
 			{
-				dstqword[1]=0x7366746e;		//ntfs
+				dstqword[2] = _ntfs_;
 				//say("ntfs\n");
 			}
 		}
 		else
 		{
-			dstqword[1]=0x3f;
+			dstqword[2]=0x3f;
 			//say("unknown\n");
 		}
 
-		dstqword[0] = 0x74726170;
-		dstqword[2] = startlba;
-		dstqword[3] = endlba;
-		for(j=0;j<0x40;j++)
+		dstqword[0] = startlba;
+		dstqword[1] = endlba;
+		for(k=0;k<0x40;k++)
 		{
-			dst[0x40 + j] = src[0x38 + j*2];
+			dst[0x40 + k] = src[0x38 + k*2];
 		}
-		say("[%012x,%012x]:	%8.8s, %8.8s, %s\n",
-			dstqword[2], dstqword[3],
-			&dstqword[0], &dstqword[1],
-			dst+0x40
+		say("[%012x,%012x]:	%8.8s	%s\n",
+			dstqword[0], dstqword[1],
+			&dstqword[2], dst+0x40
 		);
 
 		//pointer++

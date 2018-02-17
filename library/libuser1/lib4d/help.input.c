@@ -261,7 +261,7 @@ int input_write(struct arena* win, struct event* ev)
 	}
 
 	//f11, f12
-	if(ev->what == __kbd__)
+	if(ev->what == _kbd_)
 	{
 		ret=0;
 		if(ev->why == 0xfb)ret = 11;
@@ -285,7 +285,7 @@ int input_write(struct arena* win, struct event* ev)
 	//chosen
 	if(win->cw == 12)
 	{
-		if(ev->what == __char__)
+		if(ev->what == _char_)
 		{
 			delete_thisact(win);
 			return 0;

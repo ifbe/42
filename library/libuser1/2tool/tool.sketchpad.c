@@ -294,10 +294,10 @@ static void sketchpad_read(struct arena* win, struct actor* act, struct style* s
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)sketchpad_read_cli(win, act, sty);
-	else if(fmt == __tui__)sketchpad_read_tui(win, act, sty);
-	else if(fmt == __vbo__)sketchpad_read_vbo(win, act, sty);
-	else if(fmt == __html__)sketchpad_read_html(win, act, sty);
+	if(fmt == _cli_)sketchpad_read_cli(win, act, sty);
+	else if(fmt == _tui_)sketchpad_read_tui(win, act, sty);
+	else if(fmt == _vbo_)sketchpad_read_vbo(win, act, sty);
+	else if(fmt == _html_)sketchpad_read_html(win, act, sty);
 	else sketchpad_read_pixel(win, act, sty);
 }
 
@@ -310,7 +310,7 @@ static void sketchpad_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == __kbd__)		//'kbd'
+	if(type == _kbd_)		//'kbd'
 	{
 		if(key==0x25)			//left	0x4b
 		{
@@ -329,7 +329,7 @@ static void sketchpad_write(struct event* ev)
 			centery += scale*10;
 		}
 	}
-	else if(type == __char__)	//'char'
+	else if(type == _char_)	//'char'
 	{
 		if(key==0x8)			//backspace
 		{

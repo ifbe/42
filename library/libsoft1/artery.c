@@ -1,4 +1,6 @@
 #include "artery.h"
+#define _file_ hex32('f','i','l','e')
+#define _FILE_ hex32('F','I','L','E')
 //
 int flow_create(void*);
 int flow_delete();
@@ -11,7 +13,7 @@ int sound_explain(void*);
 int vision_explain(void*);
 int network_explain(void*);
 //
-int file_write(void*);
+int file_write(void*, int);
 int netmgr_write(void*);
 int readshell(int fd, char* buf, int off, int len);
 //
@@ -137,11 +139,15 @@ int arterychoose(u8* buf)
 
 	if(0 == type)
 	{
-		file_write(name);
+		file_write(name, _file_);
 	}
-	if(ncmp(type, "file", 4) == 0)
+	else if(ncmp(type, "file", 4) == 0)
 	{
-		file_write(name);
+		file_write(name, _file_);
+	}
+	else if(ncmp(type, "FILE", 4) == 0)
+	{
+		file_write(name, _FILE_);
 	}
 	else
 	{

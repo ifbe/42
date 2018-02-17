@@ -91,10 +91,10 @@ static void ooxx_read_cli(struct arena* win, struct actor* act, struct style* st
 static void ooxx_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == __cli__)ooxx_read_cli(win, act, sty);
-	else if(fmt == __tui__)ooxx_read_tui(win, act, sty);
-	else if(fmt == __vbo__)ooxx_read_vbo(win, act, sty);
-	else if(fmt == __html__)ooxx_read_html(win, act, sty);
+	if(fmt == _cli_)ooxx_read_cli(win, act, sty);
+	else if(fmt == _tui_)ooxx_read_tui(win, act, sty);
+	else if(fmt == _vbo_)ooxx_read_vbo(win, act, sty);
+	else if(fmt == _html_)ooxx_read_html(win, act, sty);
 	else ooxx_read_pixel(win, act, sty);
 }
 

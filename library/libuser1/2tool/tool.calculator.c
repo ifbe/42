@@ -77,10 +77,10 @@ static void calculator_read(struct arena* win, struct actor* act, struct style* 
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)calculator_read_cli(win, act, sty);
-	else if(fmt == __tui__)calculator_read_tui(win, act, sty);
-	else if(fmt == __html__)calculator_read_html(win, act, sty);
-	else if(fmt == __vbo__)calculator_read_vbo(win, act, sty);
+	if(fmt == _cli_)calculator_read_cli(win, act, sty);
+	else if(fmt == _tui_)calculator_read_tui(win, act, sty);
+	else if(fmt == _html_)calculator_read_html(win, act, sty);
+	else if(fmt == _vbo_)calculator_read_vbo(win, act, sty);
 	else calculator_read_pixel(win, act, sty);
 }
 
@@ -110,7 +110,7 @@ static void calculator_write(struct event* ev)
 		if(key == '=')key = 0xd;
 	}
 
-	if(type == __char__)
+	if(type == _char_)
 	{
 		if(key==0x8)		    //backspace
 		{

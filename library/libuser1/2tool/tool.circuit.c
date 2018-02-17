@@ -213,10 +213,10 @@ static void circuit_read(struct arena* win, struct actor* act, struct style* sty
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)circuit_read_cli(win, act, sty);
-	else if(fmt == __tui__)circuit_read_tui(win, act, sty);
-	else if(fmt == __html__)circuit_read_html(win, act, sty);
-	else if(fmt == __vbo__)circuit_read_vbo(win, act, sty);
+	if(fmt == _cli_)circuit_read_cli(win, act, sty);
+	else if(fmt == _tui_)circuit_read_tui(win, act, sty);
+	else if(fmt == _html_)circuit_read_html(win, act, sty);
+	else if(fmt == _vbo_)circuit_read_vbo(win, act, sty);
 	else circuit_read_pixel(win, act, sty);
 }
 static void circuit_write(struct event* ev)

@@ -297,10 +297,10 @@ static void xiangqi_read(struct arena* win, struct actor* act, struct style* sty
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)xiangqi_read_cli(win, act, sty);
-	else if(fmt == __tui__)xiangqi_read_tui(win, act, sty);
-	else if(fmt == __vbo__)xiangqi_read_vbo(win, act, sty);
-	else if(fmt == __html__)xiangqi_read_html(win, act, sty);
+	if(fmt == _cli_)xiangqi_read_cli(win, act, sty);
+	else if(fmt == _tui_)xiangqi_read_tui(win, act, sty);
+	else if(fmt == _vbo_)xiangqi_read_vbo(win, act, sty);
+	else if(fmt == _html_)xiangqi_read_html(win, act, sty);
 	else xiangqi_read_pixel(win, act, sty);
 }
 
@@ -339,7 +339,7 @@ void xiangqi_write(struct event* ev)
 	u64 key = ev->why;
 	u64 what = ev->what;
 
-	if(what == __kbd__)
+	if(what == _kbd_)
 	{
 		if(key == 0x48)	//up
 		{
@@ -365,7 +365,7 @@ void xiangqi_write(struct event* ev)
 		}
 	}
 
-	else if(what == __char__)
+	else if(what == _char_)
 	{
 		if(key == 0x20)
 		{

@@ -1,10 +1,7 @@
-/*
-from github
-but i have forgotten that address
-*/
-typedef unsigned long ulong;
-typedef unsigned char u8;
-typedef unsigned int uint;
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+#define u64 unsigned long long
 
 
 
@@ -64,11 +61,11 @@ static const unsigned long crc_table[256] = {
   0x2d02ef8dL
 };
 
-unsigned long crc32(ulong crc,const u8 *buf,uint len)
+u32 crc32(u32 crc, u8* buf, u32 len)
 {
 	crc = crc ^ 0xffffffffL;	//^ = xor
 
-	while (len >= 8)
+	while(len >= 8)
 	{
 		crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
 		crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
@@ -82,7 +79,7 @@ unsigned long crc32(ulong crc,const u8 *buf,uint len)
 		len -= 8;
 	}
 
-	while (len)
+	while(len)
 	{
 		crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
 		len--;

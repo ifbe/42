@@ -134,10 +134,10 @@ static void hex_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)hex_read_cli(win, act, sty);
-	else if(fmt == __tui__)hex_read_tui(win, act, sty);
-	else if(fmt == __vbo__)hex_read_vbo(win, act, sty);
-	else if(fmt == __html__)hex_read_html(win, act, sty);
+	if(fmt == _cli_)hex_read_cli(win, act, sty);
+	else if(fmt == _tui_)hex_read_tui(win, act, sty);
+	else if(fmt == _vbo_)hex_read_vbo(win, act, sty);
+	else if(fmt == _html_)hex_read_html(win, act, sty);
 	else hex_read_pixel(win, act, sty);
 }
 static void hex_write(struct event* ev)
@@ -146,7 +146,7 @@ static void hex_write(struct event* ev)
 	u64 key = ev->why;
 	//say("%x,%x\n",type,key);
 
-	if(type == __kbd__)	//'kbd'
+	if(type == _kbd_)	//'kbd'
 	{
 		if(key == 0x48)	//up
 		{
@@ -161,7 +161,7 @@ static void hex_write(struct event* ev)
 		{
 		}
 	}
-	else if(type == __char__)
+	else if(type == _char_)
 	{
 		if(key == 9)		//tab
 		{

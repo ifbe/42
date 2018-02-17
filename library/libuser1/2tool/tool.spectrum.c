@@ -119,10 +119,10 @@ static void spectrum_read(struct arena* win, struct actor* act, struct style* st
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == __cli__)spectrum_read_cli(win, act, sty);
-	else if(fmt == __tui__)spectrum_read_tui(win, act, sty);
-	else if(fmt == __vbo__)spectrum_read_vbo(win, act, sty);
-	else if(fmt == __html__)spectrum_read_html(win, act, sty);
+	if(fmt == _cli_)spectrum_read_cli(win, act, sty);
+	else if(fmt == _tui_)spectrum_read_tui(win, act, sty);
+	else if(fmt == _vbo_)spectrum_read_vbo(win, act, sty);
+	else if(fmt == _html_)spectrum_read_html(win, act, sty);
 	else spectrum_read_pixel(win, act, sty);
 }
 
@@ -159,7 +159,7 @@ static void spectrum_write(struct event* ev)
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == __char__)
+	if(type == _char_)
 	{
 		if( (key>=0x31) && (key<=0x39) )
 		{
