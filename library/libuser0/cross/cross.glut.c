@@ -779,8 +779,6 @@ void callback_mouse(int button, int state, int x, int y)
 		where = (u64)win;
 		xx = x&0xffff;
 		yy = ((win->h) - y)&0xffff;
-		xx = (xx<<16) / (win->w);
-		yy = (yy<<16) / (win->h);
 
 		if(state == GLUT_DOWN)
 		{
@@ -858,8 +856,6 @@ void callback_move(int x,int y)
 		where = (u64)win;
 		xx = x&0xffff;
 		yy = ((win->h) - y)&0xffff;
-		xx = (xx<<16) / (win->w);
-		yy = (yy<<16) / (win->h);
 
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);

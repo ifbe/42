@@ -42,8 +42,8 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 	float xxx, yyy, zzz;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float cx = (float)(sty->cx);
+	float cy = (float)(sty->cy);
 	float w = (float)(sty->wantw) / 65536.0;
 	float h = (float)(sty->wanth) / 65536.0;
 
@@ -86,8 +86,8 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
+	int cx = sty->cx;
+	int cy = sty->cy;
 	int w = (win->w) * (sty->wantw) / 0x10000;
 	int h = (win->h) * (sty->wanth) / 0x10000;
 	u8 (*tab)[4] = (void*)buffer + num*16;

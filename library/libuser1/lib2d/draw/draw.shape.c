@@ -318,8 +318,8 @@ void drawaxis(struct arena* win)
 }
 void select_2d(struct arena* win, struct style* sty)
 {
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
+	int cx = sty->cx;
+	int cy = sty->cy;
 	int w2 = (win->w) * (sty->wantw) / 0x20000;
 	int h2 = (win->h) * (sty->wanth) / 0x20000;
 

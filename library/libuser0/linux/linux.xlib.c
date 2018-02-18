@@ -179,15 +179,14 @@ void* uievent(struct window* this)
 		else if(ev.type == ButtonPress)
 		{
 			//printf("buttonpress\n");
+			x = ev.xbutton.x;
+			y = ev.xbutton.y;
 			k = ev.xbutton.button;
 			if(k == Button1)k = 'l';	//left
 			else if(k == Button1)k = 'r';	//right
 			else if(k == Button1)k = 'm';	//middle
 			else if(k == Button4)k = 'f';	//front
 			else if(k == Button5)k = 'b';	//back
-
-			x = (ev.xbutton.x<<16) / (this->w);
-			y = (ev.xbutton.y<<16) / (this->h);
 
 			why = x + (y<<16) + (k<<48);
 			what = hex32('p', '+', 0, 0);
@@ -203,8 +202,8 @@ void* uievent(struct window* this)
 		}//ButtonRelease
 		else if(ev.type == MotionNotify)
 		{
-			x = (ev.xbutton.x<<16) / (this->w);
-			y = (ev.xbutton.y<<16) / (this->h);
+			x = ev.xbutton.x;
+			y = ev.xbutton.y;
 			k = 'l';
 
 			why = x + (y<<16) + (k<<48);

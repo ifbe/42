@@ -8,8 +8,8 @@ u32 getrandom();
 
 void select_3d(struct arena* win, struct style* sty)
 {
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
+	float cx = (float)(sty->cx);
+	float cy = (float)(sty->cy);
 	float w = (float)(sty->wantw) / 65536.0;
 	float h = (float)(sty->wanth) / 65536.0;
 	float d = (w+h)/2;

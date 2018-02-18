@@ -132,8 +132,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (win->h);
-			x = (pt.x<<16) / (win->w);
+			y = pt.y;
+			x = pt.x;
 			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
@@ -154,8 +154,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (win->h);
-			x = (pt.x<<16) / (win->w);
+			y = pt.y;
+			x = pt.x;
 			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 			return 0;
 		}
@@ -172,8 +172,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (win->h);
-			x = (pt.x<<16) / (win->w);
+			y = pt.y;
+			x = pt.x;
 			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 			return 0;
 		}
@@ -184,19 +184,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			GetCursorPos(&pt);
 			ScreenToClient(wnd, &pt);
 
-			y = (pt.y<<16) / (win->h);
-			x = (pt.x<<16) / (win->w);
-			if( ((wparam>>16) & 0xffff ) < 0xf000 )
-			{
-				k = 'f';
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
-			}
-			else
-			{
-				k = 'b';
-				eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
-			}
+			if( ((wparam>>16) & 0xffff ) < 0xf000 )k = 'f';
+			else k = 'b';
 
+			y = pt.y;
+			x = pt.x;
+			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
 
@@ -217,8 +210,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			else if(leftdown>0)k = 'l';
 			else k = '?';
 
-			y = (lparam&0xffff0000) / (win->h);
-			x = ((lparam&0xffff)<<16) / (win->w);
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
 			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 			return 0;
 		}
@@ -241,8 +234,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			rightdown=0;
 
 			k = 'r';
-			y = (lparam&0xffff0000) / (win->h);
-			x = ((lparam&0xffff)<<16) / (win->w);
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
 			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 			return 0;
 		}
@@ -261,8 +254,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			
 			k = 'l';
-			y = (lparam&0xffff0000) / (win->h);
-			x = ((lparam&0xffff)<<16) / (win->w);
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
 			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}
@@ -281,8 +274,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 
 			k = 'r';
-			y = (lparam&0xffff0000) / (win->h);
-			x = ((lparam&0xffff)<<16) / (win->w);
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
 			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 			return 0;
 		}

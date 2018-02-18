@@ -218,6 +218,7 @@ int point_explain(struct arena* win, struct event* ev)
 	{
 		stytop->cx += (int)(p->x) - (int)(q->x);
 		stytop->cy += (int)(p->y) - (int)(q->y);
+		say("%x,%x\n", stytop->cx, stytop->cy);
 
 		q->x = p->x;
 		q->y = p->y;

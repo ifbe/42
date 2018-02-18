@@ -31,8 +31,8 @@ void act_at(struct arena* win, struct actor* act)
 	struct style* st = (void*)style + stlen;
 	stlen += sizeof(struct style);
 
-	st->cx = 0x4000 + (getrandom()%0x1000)*8;
-	st->cy = 0x4000 + (getrandom()%0x1000)*8;
+	st->cx = 0;
+	st->cy = 0;
 	st->wantw = 0x8000;
 	st->wanth = 0x8000;
 

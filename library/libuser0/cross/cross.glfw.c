@@ -822,8 +822,6 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 		where = (u64)win;
 		xx = x&0xffff;
 		yy = ((win->h) - y)&0xffff;
-		xx = (xx<<16) / (win->w);
-		yy = (yy<<16) / (win->h);
 
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);
