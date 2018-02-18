@@ -37,21 +37,22 @@ static u32 color2048[17] = {
 
 static void the2048_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
+	u8 (*tab)[4] = (void*)buffer + num*16;
 	u32 color;
 	int x,y;
 	float xxx, yyy, zzz;
-	u8 (*tab)[4] = (void*)buffer + num*16;
-
-	float cx = (float)(sty->cx);
-	float cy = (float)(sty->cy);
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	carvesolid_rect(
 		win, 0x444444,
 		cx, cy, 0.0,
-		w/2, 0.0, 0.0,
-		0.0, h/2, 0.0
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
 	);
 	for(y=0;y<4;y++)
 	{
@@ -60,23 +61,23 @@ static void the2048_read_vbo(struct arena* win, struct actor* act, struct style*
 			color = color2048[tab[y][x]];
 			//say("%x\n",color);
 
-			xxx = cx + (x+x-3)*w/8;
-			yyy = cy - (y+y-3)*h/8;
-			if(tab[y][x] == 0)zzz = 0.1/100.0;
-			else zzz = (float)tab[y][x]/100.0;
+			xxx = cx + (x+x-3)*ww/4;
+			yyy = cy - (y+y-3)*hh/4;
+			zzz = val2048[tab[y][x]];
+			zzz = zzz * dd / 1000.0;
 
 			carvesolid_prism4(
 				win, color,
 				xxx, yyy, zzz,
-				w/16, 0.0, 0.0,
-				0.0, h/16, 0.0,
+				ww/8, 0.0, 0.0,
+				0.0, hh/8, 0.0,
 				0.0, 0.0, zzz
 			);
 			carvedecimal(
 				win, ~color,
-				xxx, yyy, zzz*2.01,
-				w/64, 0.0, 0.0,
-				0.0, h/32, 0.0,
+				xxx, yyy, (zzz*2.0)+(dd/100.0),
+				ww/16, 0.0, 0.0,
+				0.0, hh/16, 0.0,
 				val2048[tab[y][x]]
 			);
 		}
@@ -86,19 +87,13 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int w = (win->w) * (sty->wantw) / 0x10000;
-	int h = (win->h) * (sty->wanth) / 0x10000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	u8 (*tab)[4] = (void*)buffer + num*16;
-
-	if(w-h<-16 | w-h>16)
-	{
-		w = (w+h)/2;
-		h = w;
-		sty->wantw = w * 0x10000 / (win->w);
-		sty->wanth = h * 0x10000 / (win->h);
-	}
 
 	//cubies
 	for(y=0;y<4;y++)
@@ -116,10 +111,10 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 			}
 
 			//cubie
-			x0 = cx + (x-2)*w/4;
-			y0 = cy + (y-2)*h/4;
-			x1 = cx + (x-1)*w/4;
-			y1 = cy + (y-1)*h/4;
+			x0 = cx + (x-2)*ww/2;
+			y0 = cy + (y-2)*hh/2;
+			x1 = cx + (x-1)*ww/2;
+			y1 = cy + (y-1)*hh/2;
 			drawsolid_rect(win, color,
 				x0, y0, x1, y1);
 			drawline_rect(win, 0,
@@ -135,17 +130,17 @@ static void the2048_read_pixel(struct arena* win, struct actor* act, struct styl
 }
 static void the2048_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
+	u8 (*tab)[4] = (void*)buffer + num*16;
 	int x,y;
-	int cx,cy,w,h;
 	int len = 0;
 	u32 color;
 	u8* buf = (u8*)(win->buf);
-	u8 (*tab)[4] = (void*)buffer + num*16;
-
-	cx = (sty->cx) * 100 / 0x10000;
-	cy = (sty->cy) * 100 / 0x10000;
-	w = (sty->wantw) * 25 / 0x10000;
-	h = (sty->wanth) * 25 / 0x10000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	len += mysnprintf(
 		buf+len, 0x1000,
@@ -157,7 +152,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 		"width:%d%%;"
 		"height:%d%%;"
 		"}</style>",
-		w, h
+		ww, hh
 	);
 
 	for(y=0;y<4;y++)
@@ -171,7 +166,7 @@ static void the2048_read_html(struct arena* win, struct actor* act, struct style
 				"left:%d%%;"
 				"top:%d%%;"
 				"background:#%06x;\">",
-				cx+(x-2)*w, cy+(y-2)*h, color
+				cx+(x-2)*ww, cy+(y-2)*hh, color
 			);
 
 			if(tab[y][x] == 0)len += mysnprintf(buf+len, 0x1000, "</div>");

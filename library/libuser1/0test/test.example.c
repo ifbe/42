@@ -10,10 +10,12 @@ static void example_read_vbo(struct arena* win, struct actor* act, struct style*
 static void example_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	u32 bg,fg;
-	int cx = (sty->cx) * (win->w) / 0x10000;
-	int cy = (sty->cy) * (win->h) / 0x10000;
-	int ww = (sty->wantw) * (win->w) / 0x20000;
-	int hh = (sty->wanth) * (win->h) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	bg = getrandom()&0xffffff;
 	fg = (~bg)&0xffffff;

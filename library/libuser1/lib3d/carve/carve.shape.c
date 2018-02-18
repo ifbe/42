@@ -6,33 +6,11 @@ u32 getrandom();
 
 
 
-void select_3d(struct arena* win, struct style* sty)
-{
-	float cx = (float)(sty->cx);
-	float cy = (float)(sty->cy);
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-	float d = (w+h)/2;
-
-	carveline_prism4(
-		win, 0xff0000,
-		cx, cy, d/2,
-		w/2, 0.0, 0.0,
-		0.0, h/2, 0.0,
-		0.0, 0.0, d/2
-	);
-}
 void carveaxis(struct arena* win)
 {
-	carveline(win, 0xff0000,
-		0.0, 0.0, 0.0,
-		10.0, 0.0, 0.0);
-	carveline(win, 0xff00,
-		0.0, 0.0, 0.0,
-		0.0, 10.0, 0.0);
-	carveline(win, 0xff,
-		0.0, 0.0, 0.0,
-		0.0, 0.0, 10.0);
+	carveline(win, 0xff0000, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0);
+	carveline(win, 0x00ff00, 0.0, 0.0, 0.0, 0.0, 10000.0, 0.0);
+	carveline(win, 0x0000ff, 0.0, 0.0, 0.0, 0.0, 0.0, 10000.0);
 }
 void carvestarry_random(struct arena* win)
 {

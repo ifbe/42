@@ -99,19 +99,12 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
 	int x,y,half;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000;
-	int h = (win->h) * (sty->wanth) / 0x10000;
-
-	if(w/9 != h/10)
-	{
-		h = (w*10 + h*9)/18;
-		w = h*9/10;
-		sty->wantw = w * 0x10000 / (win->w);
-		sty->wanth = h * 0x10000 / (win->h);
-	}
-	half = h/20;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//
 	black=0;
@@ -127,8 +120,7 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		red = 0xff0000;
 		brown = 0x8d8736;
 	}
-	drawsolid_rect(win, temp,
-		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+	drawsolid_rect(win, temp, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//heng
 	for(y=-5;y<5;y++)
@@ -201,17 +193,19 @@ static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style*
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//heng
 	for(y=-5;y<5;y++)
 	{
 		carveline(win, 0x444444,
-			cx-(w*4/9), cy+(2*y+1)*h/20, 0.0,
-			cx+(w*4/9), cy+(2*y+1)*h/20, 0.0
+			cx-(ww*4/9), cy+(2*y+1)*hh/20, 0.0,
+			cx+(ww*4/9), cy+(2*y+1)*hh/20, 0.0
 		);
 	}
 
@@ -219,12 +213,12 @@ static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style*
 	for(x=-4;x<5;x++)
 	{
 		carveline(win, 0x444444,
-			cx+x*w/9, cy-h*1/20, 0.0,
-			cx+x*w/9, cy-h*9/20, 0.0
+			cx+x*ww/9, cy-hh*1/20, 0.0,
+			cx+x*ww/9, cy-hh*9/20, 0.0
 		);
 		carveline(win, 0x444444,
-			cx+x*w/9, cy+h*1/20, 0.0,
-			cx+x*w/9, cy+h*9/20, 0.0
+			cx+x*ww/9, cy+hh*1/20, 0.0,
+			cx+x*ww/9, cy+hh*9/20, 0.0
 		);
 	}
 
@@ -243,15 +237,27 @@ static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style*
 
 			carvesolid_cylinder(
 				win, 0x8d6f25,
-				cx+(w/18)*(2*x-8), cy+(h/20)*(2*y-9), w/40,
-				w/18, 0.0, 0.0,
-				0.0, 0.0, w/40
+				cx+(ww/18)*(2*x-8),
+				cy+(hh/20)*(2*y-9),
+				ww/40,
+				ww/18,
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				ww/40
 			);
 			carveutf8(
 				win, fontcolor,
-				cx+(w/18)*(2*x-8), cy+(h/20)*(2*y-9), w/19,
-				w/36, 0.0, 0.0,
-				0.0, h/40, 0.0,
+				cx+(ww/18)*(2*x-8),
+				cy+(hh/20)*(2*y-9),
+				ww/19,
+				ww/36,
+				0.0,
+				0.0,
+				0.0,
+				hh/40,
+				0.0,
 				(u8*)char2hanzi(data[y][x]), 0
 			);
 		}

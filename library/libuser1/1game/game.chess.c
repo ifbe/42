@@ -13,13 +13,12 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 {
 	u32 color;
 	int x,y;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000 / 8;
-	int h = (win->h) * (sty->wanth) / 0x10000 / 8;
-	if(w >= h)w=h;
-	else h=w;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
@@ -28,13 +27,13 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 			else color = 0xffffff;
 
 			drawsolid_rect(win, color,
-				cx+(x-4)*w, cy+(y-4)*h,
-				cx+(x-3)*w, cy+(y-3)*h
+				cx+(x-4)*ww, cy+(y-4)*hh,
+				cx+(x-3)*ww, cy+(y-3)*hh
 			);
 			if(buffer[y][x] == 0)continue;
 
 			drawascii(win, 0xff00ff,
-				cx+(x-4)*w, cy+(y-4)*h,
+				cx+(x-4)*ww, cy+(y-4)*hh,
 				buffer[y][x]
 			);
 		}
@@ -45,12 +44,12 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* s
 	u32 color;
 	int x,y;
 	float xxx, yyy;
-
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
@@ -58,13 +57,13 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* s
 			if(((x+y+32)%2) != 0)color = 0x111111;
 			else color = 0xffffff;
 
-			xxx = cx + (x+x-7)*w/16;
-			yyy = cy - (y+y-7)*h/16;
+			xxx = cx + (x+x-7)*ww/16;
+			yyy = cy - (y+y-7)*hh/16;
 			carvesolid_prism4(
 				win, color,
 				xxx, yyy, 0.0,
-				w/16, 0.0, 0.0,
-				0.0, h/16, 0.0,
+				ww/16, 0.0, 0.0,
+				0.0, hh/16, 0.0,
 				0.0, 0.0, 0.0
 			);
 		}

@@ -18,10 +18,12 @@ static int chosen = 0x20;
 static void font_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,m,n;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 //say("chosen=%x\n",chosen);
 
 	for(y=-(hh&0xfff0);y<(hh&0xfff0);y+=16)
@@ -67,10 +69,12 @@ static void font_read_html(struct arena* win, struct actor* act, struct style* s
 static void font_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	float x,y;
-	float cx = (sty->cx) / 65536.0 - 0.5;
-	float cy = (sty->cy) / 65536.0 - 0.5;
-	float ww = (sty->wantw) / 131072.0;
-	float hh = (sty->wanth) / 131072.0;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	carveline_rect(
 		win, 0x00ff00,
 		cx, cy, 0.0,

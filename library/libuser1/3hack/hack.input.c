@@ -24,10 +24,12 @@ static u8 table[8][8] = {
 
 static void joystick_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	int radius = hh/8;
 
 	//outer
@@ -92,10 +94,12 @@ void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty
 {
 	int x,y;
 	int left,top,right,bottom;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//[a,z]
 	for(y=0;y<8;y++)

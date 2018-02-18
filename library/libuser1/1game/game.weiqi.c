@@ -18,25 +18,17 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 {
 	u32 color;
 	int x,y,half;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000;
-	int h = (win->h) * (sty->wanth) / 0x10000;
-
-	if(w != h)
-	{
-		w = (w+h)/2;
-		h = w;
-		sty->wantw = w * 0x10000 / (win->w);
-		sty->wanth = h * 0x10000 / (win->h);
-	}
-	half = w / 38;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//rgb? bgr?
 	if( ((win->fmt)&0xffffff) == 0x626772)color = 0x256f8d;
 	else color = 0x8d6f25;
-	drawsolid_rect(win, color,
-		cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+	drawsolid_rect(win, color, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//heng
 	for(y=-9;y<10;y++)
@@ -79,17 +71,18 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 }
 static void weiqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	carvesolid_prism4(
 		win, 0xffffff,
-		cx, cy, 0.0,
-		w/16, 0.0, 0.0,
-		0.0, h/16, 0.0,
-		0.0, 0.0, w/16
+		cx, cy, cz,
+		ww/16, 0.0, 0.0,
+		0.0, hh/16, 0.0,
+		0.0, 0.0, dd/16
 	);
 }
 static void weiqi_read_tui(struct arena* win, struct actor* act, struct style* sty)

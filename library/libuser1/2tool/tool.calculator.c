@@ -26,17 +26,19 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 {
 	u32 fg;
 	int x,y;
-	int cx = (sty->cx) * (win->w) / 0x10000;
-	int cy = (sty->cy) * (win->h) / 0x10000;
-	int w8 = (sty->wantw) * (win->w) / 0x80000;
-	int h8 = (sty->wanth) * (win->h) / 0x80000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx / 4;
+	int hh = sty->i_fy / 4;
+	int dd = sty->i_uz / 4;
 
 	//display
-	drawsolid_rect(win, 0x222222, cx-w8*4, cy-h8*4, cx+w8*4, cy);
-	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4, buffer, 0);
-	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+16, infix, 0);
-	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+32, postfix, 0);
-	drawstring(win, 0xffffff, cx-w8*4, cy-h8*4+48, result, 0);
+	drawsolid_rect(win, 0x222222, cx-ww*4, cy-hh*4, cx+ww*4, cy);
+	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4, buffer, 0);
+	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+16, infix, 0);
+	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+32, postfix, 0);
+	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+48, result, 0);
 
 	//keypad
 	for(y=0;y<4;y++)
@@ -48,11 +50,11 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 			else fg += (x<<4) + (y<<20);
 
 			drawsolid_rect(win, fg,
-				cx+w8*(x-4), cy+h8*(y+0),
-				cx+w8*(x-3), cy+h8*(y+1)
+				cx+ww*(x-4), cy+hh*(y+0),
+				cx+ww*(x-3), cy+hh*(y+1)
 			);
 			drawascii(win, 0xffffff,
-				cx+w8*(x-4), cy+h8*y, table[y][x]
+				cx+ww*(x-4), cy+hh*y, table[y][x]
 			);
 		}
 	}

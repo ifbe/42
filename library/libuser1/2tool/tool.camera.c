@@ -28,16 +28,18 @@ void camera_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	int j;
 	int w = win->w;
 	int h = win->h;
-	int cx = w * (sty->cx) / 0x10000;
-	int cy = h * (sty->cy) / 0x10000;
-	int ww = w * (sty->wantw) / 0x10000;
-	int hh = h * (sty->wanth) / 0x10000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	screen = (u8*)(win->buf);
 	buf = vision->buf;
-	yuyv2rgba(buf, screen,
-		640, 480,       0,       0,       0,       0,
-		  w,   h, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2
+	yuyv2rgba(buf, screen, 
+		640, 480, 0, 0, 0, 0,
+		w, h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
 void camera_read_html(struct arena* win, struct actor* act, struct style* sty)

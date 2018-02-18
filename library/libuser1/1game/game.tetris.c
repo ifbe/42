@@ -26,8 +26,7 @@ static unsigned char* table;
 
 
 
-static void cubie(struct arena* win, int z,
-	int x1, int y1, int x2, int y2)
+static void cubie(struct arena* win, int z, int x1, int y1, int x2, int y2)
 {
 	u32 bodycolor = z>0?0xffffff:0;
 
@@ -37,18 +36,20 @@ static void cubie(struct arena* win, int z,
 static void tetris_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000 / 32;
-	int h = (win->h) * (sty->wanth) / 0x10000 / 40;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	for(y=0;y<40;y++)
 	{
 		for(x=0;x<32;x++)
 		{
 			//say("%d ",table[y*32+x]);
 			cubie(win, table[y*32+x],
-				cx+(x-16)*w, cy+(y-20)*h,
-				cx+(x-15)*w, cy+(y-19)*h);
+				cx+(x-16)*ww, cy+(y-20)*hh,
+				cx+(x-15)*ww, cy+(y-19)*hh);
 		}
 		//say("\n");
 	}
@@ -56,17 +57,17 @@ static void tetris_read_pixel(struct arena* win, struct actor* act, struct style
 
 	//print cubies
 	cubie(win, 1,
-		cx+(that.x1-16)*w, cy+(that.y1-20)*h,
-		cx+(that.x1-15)*w, cy+(that.y1-19)*h);
+		cx+(that.x1-16)*ww, cy+(that.y1-20)*hh,
+		cx+(that.x1-15)*ww, cy+(that.y1-19)*hh);
 	cubie(win, 1,
-		cx+(that.x2-16)*w, cy+(that.y2-20)*h,
-		cx+(that.x2-15)*w, cy+(that.y2-19)*h);
+		cx+(that.x2-16)*ww, cy+(that.y2-20)*hh,
+		cx+(that.x2-15)*ww, cy+(that.y2-19)*hh);
 	cubie(win, 1,
-		cx+(that.x3-16)*w, cy+(that.y3-20)*h,
-		cx+(that.x3-15)*w, cy+(that.y3-19)*h);
+		cx+(that.x3-16)*ww, cy+(that.y3-20)*hh,
+		cx+(that.x3-15)*ww, cy+(that.y3-19)*hh);
 	cubie(win, 1,
-		cx+(that.x4-16)*w, cy+(that.y4-20)*h,
-		cx+(that.x4-15)*w, cy+(that.y4-19)*h);
+		cx+(that.x4-16)*ww, cy+(that.y4-20)*hh,
+		cx+(that.x4-15)*ww, cy+(that.y4-19)*hh);
 
 	//print score
 	//decimal(10,10,score);
@@ -123,17 +124,18 @@ static void tetris_read_html(struct arena* win, struct actor* act, struct style*
 
 static void tetris_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	carvesolid_prism4(
 		win, 0xffffff,
-		cx, cy, 0.0,
-		w/16, 0.0, 0.0,
-		0.0, h/16, 0.0,
-		0.0, 0.0, w/16
+		cx, cy, cz,
+		ww/16, 0.0, 0.0,
+		0.0, hh/16, 0.0,
+		0.0, 0.0, dd/16
 	);
 }
 static void tetris_read_tui(struct arena* win, struct actor* act, struct style* sty)

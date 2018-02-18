@@ -175,6 +175,7 @@ struct actor
 };
 struct style
 {
+/*
 	//[00,1f]:cartesian coordinate
 	u64 cx;
 	u64 cy;
@@ -198,27 +199,48 @@ struct style
 	u64 realh;
 	u64 reald;
 	u64 haha;
-/*
-	float cx;
-	float cy;
-	float cz;
-	float cw;
-
-	float rx;
-	float ry;
-	float rz;
-	float rw;
-
-	float fx;
-	float fy;
-	float fz;
-	float fw;
-
-	float ux;
-	float uy;
-	float uz;
-	float uw;
 */
+	//real
+	float r_cx;
+	float r_cy;
+	float r_cz;
+	float r_cw;
+
+	float r_rx;
+	float r_ry;
+	float r_rz;
+	float r_rw;
+
+	float r_fx;
+	float r_fy;
+	float r_fz;
+	float r_fw;
+
+	float r_ux;
+	float r_uy;
+	float r_uz;
+	float r_uw;
+
+	//imag
+	float i_cx;
+	float i_cy;
+	float i_cz;
+	float i_cw;
+
+	float i_rx;
+	float i_ry;
+	float i_rz;
+	float i_rw;
+
+	float i_fx;
+	float i_fy;
+	float i_fz;
+	float i_fw;
+
+	float i_ux;
+	float i_uy;
+	float i_uz;
+	float i_uw;
 };
 struct userdata
 {

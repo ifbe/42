@@ -615,15 +615,12 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 {
 	u8* p;
 	int enq,deq;
-	int cx = win->w / 2;
-	int cy = win->h / 2;
-	int ww = 320;
-	int hh = 8*(term.height);
-	sty->cx = 0x8000;
-	sty->cy = 0x8000;
-	sty->wantw = 80*8*0x10000/(win->w);
-	sty->wanth = (term.height)*16*0x10000/(win->h);
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	if(status == 0)

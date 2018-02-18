@@ -178,12 +178,12 @@ int point_explain(struct arena* win, struct event* ev)
 		if(relwow == 0)break;
 		stywow = (void*)(relwow->destfoot);
 
-		if(p->x > stywow->cx)absx = (p->x) - (stywow->cx);
-		else absx = (stywow->cx) - (p->x);
-		if(p->y > stywow->cy)absy = (p->y) - (stywow->cy);
-		else absy = (stywow->cy) - (p->y);
-//say("%x,%x,%x,%x\n",absx*2,absy*2,stywow->wantw, stywow->wanth);
-		if((absx*2 <= stywow->wantw)&&(absy*2 <= stywow->wanth))break;
+		if(p->x > stywow->i_cx)absx = (p->x) - (stywow->i_cx);
+		else absx = (stywow->i_cx) - (p->x);
+		if(p->y > stywow->i_cy)absy = (p->y) - (stywow->i_cy);
+		else absy = (stywow->i_cy) - (p->y);
+
+		if((absx*2 <= stywow->i_rx)&&(absy*2 <= stywow->i_fy))break;
 
 		relwow = samepinprevchip(relwow);
 		stywow = 0;
@@ -193,14 +193,16 @@ int point_explain(struct arena* win, struct event* ev)
 	btn = (ev->why) >> 48;
 	if(btn == 'f')
 	{
-		stytop->wantw = (stytop->wantw)*15/16;
-		stytop->wanth = (stytop->wanth)*15/16;
+		stytop->i_rx = (stytop->i_rx)*15/16;
+		stytop->i_fy = (stytop->i_fy)*15/16;
+		stytop->i_uz = (stytop->i_uz)*15/16;
 		return 0;
 	}
 	else if(btn == 'b')
 	{
-		stytop->wantw = (stytop->wantw)*17/16;
-		stytop->wanth = (stytop->wanth)*17/16;
+		stytop->i_rx = (stytop->i_rx)*17/16;
+		stytop->i_fy = (stytop->i_fy)*17/16;
+		stytop->i_uz = (stytop->i_uz)*17/16;
 		return 0;
 	}
 
@@ -216,9 +218,9 @@ int point_explain(struct arena* win, struct event* ev)
 	}
 	if(ev->what == hex32('p','@',0,0))
 	{
-		stytop->cx += (int)(p->x) - (int)(q->x);
-		stytop->cy += (int)(p->y) - (int)(q->y);
-		say("%x,%x\n", stytop->cx, stytop->cy);
+		stytop->i_cx += (int)(p->x) - (int)(q->x);
+		stytop->i_cy += (int)(p->y) - (int)(q->y);
+		//say("%x,%x\n", stytop->i_cx, stytop->i_cy);
 
 		q->x = p->x;
 		q->y = p->y;

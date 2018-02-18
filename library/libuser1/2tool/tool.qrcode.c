@@ -15,17 +15,12 @@ static void qrcode_read_pixel(struct arena* win, struct actor* act, struct style
 	u32 color;
 	int x,y;
 	int x1,y1,x2,y2;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000;
-	int h = (win->h) * (sty->wanth) / 0x10000;
-	if(w-h<-16 | w-h>16)
-	{
-		w = (w+h)/2;
-		h = w;
-		sty->wantw = w * 0x10000 / (win->w);
-		sty->wanth = h * 0x10000 / (win->h);
-	}
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	for(y=0;y<slen;y++)
 	{
@@ -34,10 +29,10 @@ static void qrcode_read_pixel(struct arena* win, struct actor* act, struct style
 			if( databuf[(y*slen)+x] == 0 )color=0;
 			else color=0xffffffff;
 
-			x1 = cx + (x*w/slen) - w/2;
-			y1 = cy + (y*h/slen) - h/2;
-			x2 = cx + ((x+1)*w/slen) - w/2;
-			y2 = cy + ((y+1)*h/slen) - h/2;
+			x1 = cx + (x*ww/slen) - ww/2;
+			y1 = cy + (y*hh/slen) - hh/2;
+			x2 = cx + ((x+1)*ww/slen) - ww/2;
+			y2 = cy + ((y+1)*hh/slen) - hh/2;
 			drawsolid_rect(
 				win, color,
 				x1, y1, x2, y2

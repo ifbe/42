@@ -64,10 +64,10 @@ static GLuint linevbo;
 static GLuint trianglevbo;
 static GLuint fontvbo;
 //
-static float light0[4] = {0.0f, 0.0f, 10.0f};
+static float light0[4] = {0.0f, 0.0f, 1000.0f};
 static float light1[4] = {0.0f, 10.0f, 0.0f};
 static float light2[4] = {10.0f, 0.0f, 0.0f};
-static float camera[4] = {0.5f, -1.0f, 0.7f};
+static float camera[4] = {50.0f, -100.0f, 70.0f};
 static float center[4] = {0.0f, 0.0f, 0.0f};
 static float above[4] = {0.0f, 0.0f, 1.0f};
 //

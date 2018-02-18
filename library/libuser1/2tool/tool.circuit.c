@@ -179,21 +179,18 @@ static void circuit_read_pixel_recursive(
 }
 static void circuit_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	//
-	int cx,cy,w,h;
-	cx = (win->w) * (sty->cx) / 0x10000;
-	cy = (win->h) * (sty->cy) / 0x10000;
-	w = (win->w) * (sty->wantw) / 0x10000;
-	h = (win->h) * (sty->wanth) / 0x10000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//
-	drawsolid_rect(win, 0,
-		cx-w/2, cy-h/2,
-		cx+w/2, cy+h/2
-	);
+	drawsolid_rect(win, 0, cx-ww, cy-hh, cx+ww, cy+hh);
 	circuit_read_pixel_recursive(
 		win, wn, 0, 0,
-		cx, cy, w, h
+		cx, cy, ww, hh
 	);
 }
 static void circuit_read_html(struct arena* win, struct actor* act, struct style* sty)

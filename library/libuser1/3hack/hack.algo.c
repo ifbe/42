@@ -27,10 +27,12 @@ static int reslen;
 
 static void algorithm_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//left: origin
 	drawsolid_rect(win, 0x0000ff,

@@ -25,10 +25,12 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 {
 	int j, ret;
 	float* p;
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	float sx,sy,sz,sw,sh,sd;
 
 	u32 pcount = win->vertexcount;
@@ -58,15 +60,15 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 	{
 		p = (void*)stlbuf + 84 + j*50;
 
-		vertex[j*9 + 0] = cx + (p[3]-sx)/sw*w;
-		vertex[j*9 + 1] = cy + (p[4]-sy)/sw*w;
-		vertex[j*9 + 2] = (p[5]-bottom)/sw*w;
-		vertex[j*9 + 3] = cx + (p[6]-sx)/sw*w;
-		vertex[j*9 + 4] = cy + (p[7]-sy)/sw*w;
-		vertex[j*9 + 5] = (p[8]-bottom)/sw*w;
-		vertex[j*9 + 6] = cx + (p[9]-sx)/sw*w;
-		vertex[j*9 + 7] = cy + (p[10]-sy)/sw*w;
-		vertex[j*9 + 8] = (p[11]-bottom)/sw*w;
+		vertex[j*9 + 0] = cx + (p[3]-sx)/sw*ww;
+		vertex[j*9 + 1] = cy + (p[4]-sy)/sw*ww;
+		vertex[j*9 + 2] = (p[5]-bottom)/sw*ww;
+		vertex[j*9 + 3] = cx + (p[6]-sx)/sw*ww;
+		vertex[j*9 + 4] = cy + (p[7]-sy)/sw*ww;
+		vertex[j*9 + 5] = (p[8]-bottom)/sw*ww;
+		vertex[j*9 + 6] = cx + (p[9]-sx)/sw*ww;
+		vertex[j*9 + 7] = cy + (p[10]-sy)/sw*ww;
+		vertex[j*9 + 8] = (p[11]-bottom)/sw*ww;
 
 		normal[j*9 + 0] = p[0];
 		normal[j*9 + 1] = p[1];

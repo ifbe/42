@@ -20,26 +20,29 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 {
 	int x,y;
 	int t1, t2, t3, t4;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int w = (win->w) * (sty->wantw) / 0x10000 / 9;
-	int h = (win->h) * (sty->wanth) / 0x10000 / 9;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx *2/9;
+	int hh = sty->i_fy *2/9;
+	int dd = sty->i_uz *2/9;
 
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			t1 = cx+(2*x-9)*w/2;
-			t2 = cy+(2*y-9)*h/2;
-			t3 = cx+(2*x-7)*w/2;
-			t4 = cy+(2*y-7)*h/2;
+			t1 = cx+(2*x-9)*ww/2;
+			t2 = cy+(2*y-9)*hh/2;
+			t3 = cx+(2*x-7)*ww/2;
+			t4 = cy+(2*y-7)*hh/2;
 			drawsolid_rect(win, 0xcccccc, t1, t2, t3, t4);
 			drawline_rect(win, 0x222222, t1, t2, t3, t4);
 
 			if(table[y][x] != 0)
 			{
 				drawdecimal(win, 0,
-					cx+(2*x-9)*w/2, cy+(2*y-9)*h/2,
+					cx+(2*x-9)*ww/2,
+					cy+(2*y-9)*hh/2,
 					table[y][x]
 				);
 			}
@@ -51,12 +54,12 @@ static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* 
 	u32 color;
 	int x,y;
 	float xxx, yyy;
-
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -68,13 +71,13 @@ static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* 
 			else if((x>5)&&(y>5))color = 0x444444;
 			else color = 0x888888;
 
-			xxx = cx + (x+x-8)*w/18;
-			yyy = cy - (y+y-8)*h/18;
+			xxx = cx + (x+x-8)*ww/18;
+			yyy = cy - (y+y-8)*hh/18;
 			carvesolid_rect(
 				win, color,
 				xxx, yyy, 0.0,
-				w/18, 0.0, 0.0,
-				0.0, h/18, 0.0
+				ww/18, 0.0, 0.0,
+				0.0, hh/18, 0.0
 			);
 		}
 	}

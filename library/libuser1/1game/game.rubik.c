@@ -18,11 +18,12 @@ u32 rubikcolor[6] = {
 static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-	float d = w;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	for(y=0;y<3;y++)
 	{
@@ -31,30 +32,30 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			//l
 			carvesolid_rect(
 				win, 0xff00,
-				cx-w/2, cy-(x-1)*h/3, (y-1)*h/3,
-				0.0, -w/7, 0.0,
-				0.0, 0.0, h/7
+				cx-ww/2, cy-(x-1)*hh/3, (y-1)*hh/3,
+				0.0, -ww/7, 0.0,
+				0.0, 0.0, hh/7
 			);
 			carveascii(
 				win, ~0xff00,
-				cx-w/1.99, cy-(x-1)*h/3, (y-1)*h/3,
-				0.0, -w/14, 0.0,
-				0.0, 0.0, h/14,
+				cx-ww/1.99, cy-(x-1)*hh/3, (y-1)*hh/3,
+				0.0, -ww/14, 0.0,
+				0.0, 0.0, hh/14,
 				(y*3)+x+0x30
 			);
 
 			//r
 			carvesolid_rect(
 				win, 0xff,
-				cx+w/2, cy+(x-1)*h/3, (y-1)*h/3,
-				0.0, w/7, 0.0,
-				0.0, 0.0, h/7
+				cx+ww/2, cy+(x-1)*hh/3, (y-1)*hh/3,
+				0.0, ww/7, 0.0,
+				0.0, 0.0, hh/7
 			);
 			carveascii(
 				win, ~0xff,
-				cx+w/1.99, cy+(x-1)*h/3, (y-1)*h/3,
-				0.0, w/14, 0.0,
-				0.0, 0.0, h/14,
+				cx+ww/1.99, cy+(x-1)*hh/3, (y-1)*hh/3,
+				0.0, ww/14, 0.0,
+				0.0, 0.0, hh/14,
 				(y*3)+x+0x30
 			);
 		}
@@ -67,30 +68,30 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			//f
 			carvesolid_rect(
 				win, 0xff0000,
-				cx+(x-1)*w/3, cy-h/2, (y-1)*h/3,
-				w/7, 0.0, 0.0,
-				0.0, 0.0, h/7
+				cx+(x-1)*ww/3, cy-hh/2, (y-1)*hh/3,
+				ww/7, 0.0, 0.0,
+				0.0, 0.0, hh/7
 			);
 			carveascii(
 				win, ~0xff0000,
-				cx+(x-1)*w/3, cy-h/1.99, (y-1)*h/3,
-				w/14, 0.0, 0.0,
-				0.0, 0.0, h/14,
+				cx+(x-1)*ww/3, cy-hh/1.99, (y-1)*hh/3,
+				ww/14, 0.0, 0.0,
+				0.0, 0.0, hh/14,
 				(y*3)+x+0x30
 			);
 
 			//b
 			carvesolid_rect(
 				win, 0xfa8010,
-				cx-(x-1)*w/3, cy+h/2, (y-1)*h/3,
-				-w/7, 0.0, 0.0,
-				0.0, 0.0, h/7
+				cx-(x-1)*ww/3, cy+hh/2, (y-1)*hh/3,
+				-ww/7, 0.0, 0.0,
+				0.0, 0.0, hh/7
 			);
 			carveascii(
 				win, ~0xfa8010,
-				cx-(x-1)*w/3, cy+h/1.99, (y-1)*h/3,
-				-w/14, 0.0, 0.0,
-				0.0, 0.0, h/14,
+				cx-(x-1)*ww/3, cy+hh/1.99, (y-1)*hh/3,
+				-ww/14, 0.0, 0.0,
+				0.0, 0.0, hh/14,
 				(y*3)+x+0x30
 			);
 		}
@@ -103,30 +104,30 @@ static void rubikscube_read_vbo(struct arena* win, struct actor* act, struct sty
 			//u
 			carvesolid_rect(
 				win, 0xffffff,
-				cx+(x-1)*w/3, cy+(y-1)*h/3, d/2,
-				w/7, 0.0, 0.0,
-				0.0, h/7, 0.0
+				cx+(x-1)*ww/3, cy+(y-1)*hh/3, dd/2,
+				ww/7, 0.0, 0.0,
+				0.0, hh/7, 0.0
 			);
 			carveascii(
 				win, ~0xffffff,
-				cx+(x-1)*w/3, cy+(y-1)*h/3, d/1.99,
-				w/14, 0.0, 0.0,
-				0.0, h/14, 0.0,
+				cx+(x-1)*ww/3, cy+(y-1)*hh/3, dd/1.99,
+				ww/14, 0.0, 0.0,
+				0.0, hh/14, 0.0,
 				(y*3)+x+0x30
 			);
 
 			//d
 			carvesolid_rect(
 				win, 0xffff00,
-				cx+(x-1)*w/3, cy+(y-1)*h/3, -d/2,
-				w/7, 0.0, 0.0,
-				0.0, -h/7, 0.0
+				cx+(x-1)*ww/3, cy+(y-1)*hh/3, -dd/2,
+				ww/7, 0.0, 0.0,
+				0.0, -hh/7, 0.0
 			);
 			carveascii(
 				win, ~0xffff00,
-				cx+(x-1)*w/3, cy+(y-1)*h/3, -d/1.99,
-				w/14, 0.0, 0.0,
-				0.0, -h/14, 0.0,
+				cx+(x-1)*ww/3, cy+(y-1)*hh/3, -dd/1.99,
+				ww/14, 0.0, 0.0,
+				0.0, -hh/14, 0.0,
 				(y*3)+x+0x30
 			);
 		}
@@ -136,10 +137,12 @@ static void rubikscube_read_pixel(struct arena* win, struct actor* act, struct s
 {
 	u32 bg;
 	int x,y;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x60000;
-	int hh = (win->h) * (sty->wanth) / 0x60000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx / 3;
+	int hh = sty->i_fy / 3;
+	int dd = sty->i_uz / 3;
 
 	bg = rubikcolor[2];
 	for(y=0;y<3;y++)

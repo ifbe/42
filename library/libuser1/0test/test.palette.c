@@ -15,10 +15,12 @@ static void palette_read_pixel(struct arena* win, struct actor* act, struct styl
 	int x,y,min,type;
 	int w = win->w;
 	int h = win->h;
-	int cx = (sty->cx) * w / 0x10000;
-	int cy = (sty->cy) * h / 0x10000;
-	int ww = (sty->wantw) * w / 0x20000;
-	int hh = (sty->wanth) * h / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	u32* buf = (u32*)(win->buf);
 	u32 palette;
 

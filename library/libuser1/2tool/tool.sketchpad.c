@@ -172,10 +172,12 @@ static void sketchpad_read_pixel(struct arena* win, struct actor* act, struct st
 	int x,y,w,counter;
 	int width = win->w;
 	int height = win->h;
-	int cx = (sty->cx) * width / 0x10000;
-	int cy = (sty->cy) * height / 0x10000;
-	int ww = (sty->wantw) * width / 0x20000;
-	int hh = (sty->wanth) * height / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	u32* buf = (u32*)(win->buf);
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 

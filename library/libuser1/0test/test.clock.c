@@ -11,10 +11,12 @@ static void clock_read_pixel(struct arena* win, struct actor* act, struct style*
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
 	int j,k;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	u64 date = getdate();
 	u8* p = (u8*)&date;
 

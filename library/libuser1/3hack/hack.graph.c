@@ -186,11 +186,12 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 }
 static void starry_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	drawicon_1(
@@ -241,10 +242,12 @@ static void graph_read_vbo(struct arena* win, struct actor* act, struct style* s
 static void graph_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int i,j,k;
-	int cx = (sty->cx) * (win->w) / 0x10000;
-	int cy = (sty->cy) * (win->h) / 0x10000;
-	int ww = (sty->wantw) * (win->w) / 0x10000;
-	int hh = (sty->wanth) * (win->h) / 0x10000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	void* p;
 	struct arena* aa;
 	struct actor* bb;

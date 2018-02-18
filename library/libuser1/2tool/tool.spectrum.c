@@ -39,10 +39,10 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	int cx = w * (sty->cx) / 0x10000;
-	int cy = h * (sty->cy) / 0x10000;
-	int ww = w * (sty->wantw) / 0x10000;
-	int hh = h * (sty->wanth) / 0x10000;
+	int cx = sty->r_cx;
+	int cy = sty->r_cy;
+	int ww = sty->r_rx;
+	int hh = sty->r_ry;
 /*
 	if(?????)
 	{
@@ -79,10 +79,10 @@ static void spectrum_read_vbo(struct arena* win, struct actor* act, struct style
 {
 	int x;
 	float cc,ss;
-	float cx = (sty->cx) / 65536.0 - 0.5;
-	float cy = (sty->cy) / 65536.0 - 0.5;
-	float ww = (sty->wantw) / 131072.0;
-	float hh = (sty->wanth) / 131072.0;
+	int cx = sty->r_cx;
+	int cy = sty->r_cy;
+	int ww = sty->r_rx;
+	int hh = sty->r_ry;
 	for(x=0;x<512;x++)
 	{
 		cc = cosine(x*tau/512);

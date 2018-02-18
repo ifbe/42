@@ -12,10 +12,12 @@ static u8 data[9];
 static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y;
-	int cx = (win->w) * (sty->cx) / 0x10000;
-	int cy = (win->h) * (sty->cy) / 0x10000;
-	int ww = (win->w) * (sty->wantw) / 0x20000;
-	int hh = (win->h) * (sty->wanth) / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//heng
@@ -53,16 +55,17 @@ static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* 
 }
 static void ooxx_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
-
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	carvesolid_sphere(
 		win, 0xffffff,
 		cx, cy, 0.0,
-		w/2, 0.0, 0.0,
-		0.0, 0.0, w/2
+		ww, 0.0, 0.0,
+		0.0, 0.0, hh
 	);
 }
 static void ooxx_read_html(struct arena* win, struct actor* act, struct style* sty)

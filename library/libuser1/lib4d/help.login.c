@@ -70,13 +70,13 @@ void login_read_vbo(struct arena* win)
 	carveline(
 		win, 0xffffff,
 		0.0, 0.0, 0.0,
-		0.0, 0.0, 1.0
+		0.0, 0.0, 100.0
 	);
 	carveascii_area(
 		win, 0xffffff,
 		0.0, 0.0, 0.0,
-		1.0, 0.0, 0.0,
-		0.0, 1.0, 0.0,
+		100.0, 0.0, 0.0,
+		0.0, 100.0, 0.0,
 		0.0, 0.0, 1.0, 1.0
 	);
 
@@ -97,9 +97,9 @@ void login_read_vbo(struct arena* win)
 		y = sine(j/PI)/32.0;
 		carvestring(
 			win, color,
-			x*2, y*2, (j+1)/64.0,
-			x/2, y/2, 0.0,
-			-y/2, x/2, 0.0,
+			x*256, y*256, j+1,
+			x*64, y*64, 0.0,
+			-y*64, x*64, 0.0,
 			(u8*)&actor[j].name, 8
 		);
 	}
@@ -225,9 +225,9 @@ void login_write(struct arena* win, struct event* ev)
 		if(x == '@')
 		{
 			x = (ev->why)&0xffff;
-			x = (x*8)>>16;
+			x = (x*8) / (win->w);
 			y = ((ev->why)>>16)&0xffff;
-			y = (y*16)>>16;
+			y = (y*16) / (win->h);
 			chosen = (y-4)*4 + (x-2);
 		}
 		else if(x == '-')

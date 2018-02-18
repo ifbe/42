@@ -14,10 +14,12 @@ void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int w = win->w;
 	int h = win->h;
-	int cx = (sty->cx) * w / 0x10000;
-	int cy = (sty->cy) * h / 0x10000;
-	int ww = (sty->wantw) * w / 0x20000;
-	int hh = (sty->wanth) * h / 0x20000;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	//rect
 	drawsolid_rect(win, 0x00ff00, 
@@ -41,17 +43,17 @@ void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 }
 static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	float cx = (float)(sty->cx) / 65536.0 - 0.5;
-	float cy = (float)(sty->cy) / 65536.0 - 0.5;
-	float w = (float)(sty->wantw) / 65536.0;
-	float h = (float)(sty->wanth) / 65536.0;
+	int cx = sty->r_cx;
+	int cy = sty->r_cy;
+	int ww = sty->r_rx;
+	int hh = sty->r_ry;
 
 	carvesolid_icosahedron(
 		win, 0xffffff,
 		cx, cy, 0.0,
-		w/2, 0.0, 0.0,
-		0.0, w/2, 0.0,
-		0.0, 0.0, w/2
+		ww/2, 0.0, 0.0,
+		0.0, ww/2, 0.0,
+		0.0, 0.0, ww/2
 	);
 }
 static void doodle_read_html(struct arena* win, struct actor* act, struct style* sty)
