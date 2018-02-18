@@ -1,10 +1,13 @@
 #include "actor.h"
+#define _drop_ hex32('d','r','o','p')
 int openreadclose(void*, void*, u64, u64);
 int openwriteclose(void*, void*, u64, u64);
+int windowread(int type, char* buf);
 
 
 
 
+static u8* buffer;
 static u8* stlbuf;
 static int stllen;
 static float left,right,front,back,bottom,upper;
@@ -113,6 +116,7 @@ static void stl_read(struct arena* win, struct actor* act, struct style* sty)
 
 static void stl_write(struct event* ev)
 {
+	int ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
@@ -120,6 +124,11 @@ static void stl_write(struct event* ev)
 	{
 		int x = key&0xffff;
 		int y = (key>>16)&0xffff;
+	}
+	else if(_drop_ == type)
+	{
+		ret = windowread(type, buffer);
+		say("%s", buffer);
 	}
 }
 
@@ -175,9 +184,11 @@ static void stl_start()
 static void stl_stop()
 {
 }
-void stl_create(void* base,void* addr)
+void stl_create(void* base, void* addr)
 {
 	struct actor* p = addr;
+	buffer = base+0x300000;
+
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('s', 't', 'l', 0);
 

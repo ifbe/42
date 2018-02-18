@@ -491,22 +491,25 @@ void* waitenv()
 {
 	return 0;
 }
-void fixarg(u8* dst, u8* src)
+int fixarg(u8* dst, u8* src)
 {
+	int j,k;
 	u32 ret,tmp;
+
+	j = k = 0;
 	while(1)
 	{
-		if(*src < 0xa)break;
-		if(*src < 0x80)
+		if(src[j] < 0xa)break;
+		if(src[j] < 0x80)
 		{
-			*dst = *src;
-			dst++;
-			src++;
+			dst[k] = src[j];
+			k++;
+			j++;
 			continue;
 		}
 
-		ret = *(u16*)src;
-		src += 2;
+		ret = *(u16*)(src+j);
+		j += 2;
 
 		tmp = 0;
 		MultiByteToWideChar(
@@ -525,13 +528,15 @@ void fixarg(u8* dst, u8* src)
 		);
 		//printf("%x\n", ret);
 
-		*(u32*)dst = ret;
+		*(u32*)(dst+k) = ret;
 		for(ret=0;ret<4;ret++)
 		{
-			if(*dst >= 0xa)dst++;
+			if(dst[k] >= 0xa)k++;
 		}
 	}
-	*dst = 0;
+
+	dst[k] = 0;
+	return k;
 }
 
 

@@ -9,17 +9,20 @@
 #include<winuser.h>
 #include<commctrl.h>
 #include "arena.h"
+#define _drop_ hex32('d','r','o','p')
+#define _size_ hex32('s','i','z','e')
 int lowlevel_input();
+int fixarg(void* dst, void* src);
 
 
 
 
 //global
+static char* AppTitle="haha";
 static u64 uithread;
 static HANDLE hStartEvent;
 static WNDCLASS wc;
-static char* AppTitle="haha";
-static char dragpath[MAX_PATH];
+static HDROP hDrop;
 
 //temp
 static int leftdown=0;
@@ -286,15 +289,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case WM_DROPFILES:
 		{
-			int j;
-			HDROP hDrop = (HDROP)wparam;
-			UINT nNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-			for(j=0;j<nNum;j++)  
-			{
-				DragQueryFile(hDrop, j, dragpath, MAX_PATH);
-				printf("%s\n", dragpath);
-			}
-			DragFinish(hDrop);
+			hDrop = (HDROP)wparam;
+			eventwrite(0, _drop_, addr, 0);
 			return 0;
 		}
 
@@ -453,7 +449,7 @@ DWORD WINAPI uievent()
 
 
 
-void windowwrite(struct window* dst, struct window* src)
+int windowwrite(struct window* dst, struct window* src)
 {
 	BITMAPINFO info;
 	int w = dst->w;
@@ -490,14 +486,33 @@ void windowwrite(struct window* dst, struct window* src)
 		DIB_RGB_COLORS	//颜色格式
 	);
 	//printf("result:%x\n",result);
+	return 0;
 }
-void windowread()
+int windowread(int type, char* buf)
 {
+	int j,ret=0;
+	char temp[0x1000];
+
+	UINT nNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	for(j=0;j<nNum;j++)  
+	{
+		DragQueryFile(hDrop, j, temp, MAX_PATH);
+		//printf("%d,%s\n", ret, buf);
+
+		ret += fixarg(buf+ret, temp);
+		buf[ret] = '\n';
+		ret++;
+	}
+	DragFinish(hDrop);
+
+	buf[ret] = 0;
+	return ret;
 }
-void windowlist()
+int windowlist()
 {
+	return 0;
 }
-void windowchange()
+int windowchange()
 {
 	//RECT rc;
 	//GetWindowRect(win, &rc);
@@ -505,8 +520,9 @@ void windowchange()
 
 	//窗口标题
 	//SetWindowText(win, "hahahaha");
+	return 0;
 }
-void windowstart(struct window* this)
+int windowstart(struct window* this)
 {
 	int j;
 	this->w = 512;
@@ -521,12 +537,19 @@ void windowstart(struct window* this)
 		}
 		j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
 	}
+	return 0;
 }
-void windowstop(struct window* this)
+int windowstop(struct window* this)
 {
-	PostThreadMessage(uithread, WM_USER, hex16('w','-'), (LPARAM)this);
+	PostThreadMessage(
+		uithread,
+		WM_USER,
+		hex16('w','-'),
+		(LPARAM)this
+	);
+	return 0;
 }
-void windowcreate()
+int windowcreate()
 {
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WindowProc;
@@ -541,7 +564,7 @@ void windowcreate()
 	if(!RegisterClass(&wc))
 	{
 		printf("error@RegisterClass\n");
-		return;
+		return 0;
 	}
 
 	//createevent
@@ -558,7 +581,9 @@ void windowcreate()
 
 	//deleteevent
     CloseHandle(hStartEvent);
+	return 0;
 }
-void windowdelete()
+int windowdelete()
 {
+	return 0;
 }
