@@ -395,35 +395,27 @@ void inittexture()
 }
 void initobject()  
 {
-	void* vertexdata = (void*)(src->buf)+0x000000;
-	void* normaldata = (void*)(src->buf)+0x200000;
-	void* colourdata = (void*)(src->buf)+0x400000;
-	void* texcordata = (void*)(src->buf)+0x600000;
-
-	void* pointindex = (void*)(src->buf)+0x800000;
-	void* lineindex = (void*)(src->buf)+0xa00000;
-	void* triangleindex = (void*)(src->buf)+0xc00000;
-	void* fontindex = (void*)(src->buf)+0xe00000;
+	void* temp = (void*)(src->buf);
 
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexdata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[2m,4m) normal
 	glGenBuffers(1, &normalvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, normaldata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[4m,6m) color
 	glGenBuffers(1, &colourvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, colourdata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[6m,8m) texuv
 	glGenBuffers(1, &texcorvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, texcorvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, texcordata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[8m,10m) point
 	glGenVertexArrays(1,&pointvao);
@@ -440,7 +432,7 @@ void initobject()
 
 	glGenBuffers(1, &pointvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pointvbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, pointindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[10m,12m) line
 	glGenVertexArrays(1,&linevao);
@@ -457,7 +449,7 @@ void initobject()
 
 	glGenBuffers(1, &linevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, lineindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[12m,14m) triangle
 	glGenVertexArrays(1,&trianglevao);
@@ -474,7 +466,7 @@ void initobject()
 
 	glGenBuffers(1, &trianglevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[14m,16m) font
 	glGenVertexArrays(1,&fontvao);
@@ -494,7 +486,7 @@ void initobject()
 
 	glGenBuffers(1, &fontvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, fontindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 }
 
 

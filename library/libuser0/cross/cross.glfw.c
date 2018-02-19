@@ -4,13 +4,16 @@
 #include <GLFW/glfw3.h>
 #include "arena.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
+#define _drop_ hex32('d','r','o','p')
 
 
 
 
+int fixarg(void* dst, void* src);
 //
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
+//
 void matrixmultiply_4(float*, float*);
 void quaternionnormalize(float*);
 void quaternionrotate(float*, float*);
@@ -28,6 +31,7 @@ double sine(double);
 //
 static struct window* win;
 static struct window* src;
+static u8* dragdata[0x1000];
 static u8* fontdata;
 //
 static int queuehead = 0;
@@ -394,35 +398,27 @@ void inittexture()
 }
 void initobject()  
 {
-	void* vertexdata = (void*)(src->buf)+0x000000;
-	void* normaldata = (void*)(src->buf)+0x200000;
-	void* colourdata = (void*)(src->buf)+0x400000;
-	void* texcordata = (void*)(src->buf)+0x600000;
-
-	void* pointindex = (void*)(src->buf)+0x800000;
-	void* lineindex = (void*)(src->buf)+0xa00000;
-	void* triangleindex = (void*)(src->buf)+0xc00000;
-	void* fontindex = (void*)(src->buf)+0xe00000;
+	void* temp = (void*)(src->buf);
 
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, vertexdata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[2m,4m) normal
 	glGenBuffers(1, &normalvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, normalvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, normaldata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[4m,6m) color
 	glGenBuffers(1, &colourvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, colourvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, colourdata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[6m,8m) texuv
 	glGenBuffers(1, &texcorvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, texcorvbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, texcordata, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp, GL_STATIC_DRAW);
 
 	//[8m,10m) point
 	glGenVertexArrays(1,&pointvao);
@@ -439,7 +435,7 @@ void initobject()
 
 	glGenBuffers(1, &pointvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pointvbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, pointindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[10m,12m) line
 	glGenVertexArrays(1,&linevao);
@@ -456,7 +452,7 @@ void initobject()
 
 	glGenBuffers(1, &linevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, linevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, lineindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[12m,14m) triangle
 	glGenVertexArrays(1,&trianglevao);
@@ -473,7 +469,7 @@ void initobject()
 
 	glGenBuffers(1, &trianglevbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, trianglevbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, triangleindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 
 	//[14m,16m) font
 	glGenVertexArrays(1,&fontvao);
@@ -493,7 +489,7 @@ void initobject()
 
 	glGenBuffers(1, &fontvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, fontindex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
 }
 
 
@@ -750,56 +746,6 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 	}
 	eventwrite(why, what, where, 0);
 }
-/*
-void callback_mouse(int button, int state, int x, int y)
-{
-	float tx, ty, tz;
-	u64 xx,yy,temp;
-	u64 why, what, where;
-	//printf("1111: %x,%x\n",x,y);
-
-	if(win->cw == 12)
-	{
-		where = (u64)win;
-		xx = x&0xffff;
-		yy = ((win->h) - y)&0xffff;
-		xx = (xx<<16) / (win->w);
-		yy = (yy<<16) / (win->h);
-
-		if(state == 0)	//GLUT_DOWN)
-		{
-			if(button == 0)
-			{
-				temp = 'l';
-				why = xx + (yy<<16) + (temp<<48);
-				eventwrite(why, 0x2b70, where, 0);
-			}
-		}
-		else
-		{
-			if(button == 0)
-			{
-				temp = 'l';
-				why = xx + (yy<<16) + (temp<<48);
-				eventwrite(why, 0x2d70, where, 0);
-			}
-			else if(button == 3)	//wheel_up
-			{
-				temp = 'f';
-				why = xx + (yy<<16) + (temp<<48);
-				eventwrite(why, 0x2b70, where, 0);
-			}
-			else if(button == 4)	//wheel_down
-			{
-				temp = 'b';
-				why = xx + (yy<<16) + (temp<<48);
-				eventwrite(why, 0x2b70, where, 0);
-			}
-		}
-		return;
-	}
-}
-*/
 void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 {
 	printf("%x,%x\n", button, action);
@@ -923,8 +869,14 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 }
 void callback_drop(GLFWwindow* window, int count, const char** paths)
 {
-    int j;
-    for(j=0;j<count;j++)printf("%s\n", paths[j]);
+    int j,ret=0;
+    for(j=0;j<count;j++)
+	{
+		//printf("%s\n", paths[j]);
+		ret += snprintf((void*)dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
+	}
+
+	eventwrite(0, _drop_, (u64)win, 0);
 }
 void callback_reshape(GLFWwindow* window, int w, int h)
 {
@@ -986,8 +938,9 @@ void* uievent(struct window* p)
 
 
 
-void windowread()
+int windowread(int type, char* buf)
 {
+	return snprintf(buf, 0x1000, "%s", dragdata);
 }
 void windowwrite(struct window* dst, struct window* src)
 {

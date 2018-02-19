@@ -65,6 +65,8 @@ void bintree_create(u8*,u8*);
 void bintree_delete();
 void bplus_create(u8*,u8*);
 void bplus_delete();
+void fs_create(u8*,u8*);
+void fs_delete();
 void graph_create(u8*,u8*);
 void graph_delete();
 void hex_create(u8*,u8*);
@@ -201,6 +203,10 @@ int content_create(u8* addr)
 
 	//hack.bplus
 	bplus_create(addr, temp);
+	temp += 0x100;
+
+	//hack.fs
+	fs_create(addr, temp);
 	temp += 0x100;
 
 	//hack.graph

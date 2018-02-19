@@ -10,6 +10,7 @@
 #define _buf_ hex32('b','u','f',0)
 #define _win_ hex32('w','i','n',0)
 //
+#define _drop_ hex32('d','r','o','p')
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _i2c_ hex32('i','2','c',0)

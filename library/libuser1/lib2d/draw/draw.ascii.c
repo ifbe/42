@@ -223,12 +223,6 @@ void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 		drawascii(win, rgb, x+j*8, y, buf[j]);
 	}
 }
-void drawdouble(struct arena* win, u32 rgb, int x, int y, double data)
-{
-	u8 mystr[100];
-	double2decstr(data, mystr);
-	drawstring(win, rgb, x, y, mystr, 0);
-}
 void drawtext(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
@@ -264,6 +258,12 @@ void drawtext(
 
 
 
+void drawdouble(struct arena* win, u32 rgb, int x, int y, double data)
+{
+	u8 mystr[100];
+	double2decstr(data, mystr);
+	drawstring(win, rgb, x, y, mystr, 0);
+}
 void drawdecimal(struct arena* win, u32 rgb, int x, int y, int dec)
 {
 	char ch;

@@ -1,5 +1,4 @@
 #include "actor.h"
-#define _drop_ hex32('d','r','o','p')
 int openreadclose(void*, void*, u64, u64);
 int openwriteclose(void*, void*, u64, u64);
 int windowread(int type, char* buf);
@@ -11,6 +10,46 @@ static u8* buffer;
 static u8* stlbuf;
 static int stllen;
 static float left,right,front,back,bottom,upper;
+void stl_prep(void* name)
+{
+	float* p;
+	int j,ret;
+	
+	stllen = openreadclose(name, stlbuf, 0, 0x800000);
+	say("len=%x, count=%x, ", stllen, *(u32*)(stlbuf+80));
+
+	left = back = bottom = 100000.0;
+	right = front = upper = -100000.0;
+
+	ret = *(u32*)(stlbuf+80);
+	ret = ret%(0x200000/36);
+	for(j=0;j<ret;j++)
+	{
+		p = (void*)stlbuf + 84 + j*50;
+
+		if(p[3] < left)left = p[3];
+		if(p[3] > right)right = p[3];
+		if(p[4] < back)back = p[4];
+		if(p[4] > front)front = p[4];
+		if(p[5] < bottom)bottom = p[5];
+		if(p[5] > upper)upper = p[5];
+
+		if(p[6] < left)left = p[6];
+		if(p[6] > right)right = p[6];
+		if(p[7] < back)back = p[7];
+		if(p[7] > front)front = p[7];
+		if(p[8] < bottom)bottom = p[8];
+		if(p[8] > upper)upper = p[8];
+
+		if(p[9] < left)left = p[9];
+		if(p[9] > right)right = p[9];
+		if(p[10] < back)back = p[10];
+		if(p[10] > front)front = p[10];
+		if(p[11] < bottom)bottom = p[11];
+		if(p[11] > upper)upper = p[11];
+	}
+	say("%f,%f,%f,%f,%f,%f\n",left,right,back,front,bottom,upper);
+}
 
 
 
@@ -20,6 +59,13 @@ static void stl_read_html(struct arena* win, struct actor* act, struct style* st
 }
 static void stl_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
+	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -31,7 +77,7 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	float sx,sy,sz,sw,sh,sd;
+	float sx,sy,f;
 
 	u32 pcount = win->vertexcount;
 	u32 ncount = win->normalcount;
@@ -46,6 +92,8 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 	u16* index =    buf + 0xc00000 + (icount*2);
 
 	ret = *(u32*)(stlbuf+80);
+	ret = ret%(0x1f0000/36);
+
 	win->vertexcount += 3*ret;
 	win->normalcount += 3*ret;
 	win->colorcount += 3*ret;
@@ -53,22 +101,20 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 
 	sx = (left+right)/2;
 	sy = (back+front)/2;
-	sw = right-left;
-	sh = front-back;
-	ret = ret%(0x100000/36);
+	f = 2.0*(ww+hh)/(right-left+front-back);
 	for(j=0;j<ret;j++)
 	{
 		p = (void*)stlbuf + 84 + j*50;
 
-		vertex[j*9 + 0] = cx + (p[3]-sx)/sw*ww;
-		vertex[j*9 + 1] = cy + (p[4]-sy)/sw*ww;
-		vertex[j*9 + 2] = (p[5]-bottom)/sw*ww;
-		vertex[j*9 + 3] = cx + (p[6]-sx)/sw*ww;
-		vertex[j*9 + 4] = cy + (p[7]-sy)/sw*ww;
-		vertex[j*9 + 5] = (p[8]-bottom)/sw*ww;
-		vertex[j*9 + 6] = cx + (p[9]-sx)/sw*ww;
-		vertex[j*9 + 7] = cy + (p[10]-sy)/sw*ww;
-		vertex[j*9 + 8] = (p[11]-bottom)/sw*ww;
+		vertex[j*9 + 0] = cx + (p[3]-sx)*f;
+		vertex[j*9 + 1] = cy + (p[4]-sy)*f;
+		vertex[j*9 + 2] = (p[5]-bottom)*f;
+		vertex[j*9 + 3] = cx + (p[6]-sx)*f;
+		vertex[j*9 + 4] = cy + (p[7]-sy)*f;
+		vertex[j*9 + 5] = (p[8]-bottom)*f;
+		vertex[j*9 + 6] = cx + (p[9]-sx)*f;
+		vertex[j*9 + 7] = cy + (p[10]-sy)*f;
+		vertex[j*9 + 8] = (p[11]-bottom)*f;
 
 		normal[j*9 + 0] = p[0];
 		normal[j*9 + 1] = p[1];
@@ -118,7 +164,7 @@ static void stl_read(struct arena* win, struct actor* act, struct style* sty)
 
 static void stl_write(struct event* ev)
 {
-	int ret;
+	int j,ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
@@ -131,6 +177,16 @@ static void stl_write(struct event* ev)
 	{
 		ret = windowread(type, buffer);
 		say("%s", buffer);
+
+		for(j=0;j<ret;j++)
+		{
+			if(buffer[j] < 0x20)
+			{
+				buffer[j] = 0;
+				break;
+			}
+		}
+		stl_prep(buffer);
 	}
 }
 
@@ -145,43 +201,8 @@ static void stl_change()
 }
 static void stl_start()
 {
-	float* p;
-	int j,ret;
 	stlbuf = (void*)startmemory(0x800000);
-	stllen = openreadclose("42.stl", stlbuf, 0, 0x800000);
-	say("len=%x, count=%x, ", stllen, *(u32*)(stlbuf+80));
-
-	left = back = bottom = 100000.0;
-	right = front = upper = -100000.0;
-
-	ret = *(u32*)(stlbuf+80);
-	ret = ret%(0x100000/36);
-	for(j=0;j<ret;j++)
-	{
-		p = (void*)stlbuf + 84 + j*50;
-
-		if(p[3] < left)left = p[3];
-		if(p[3] > right)right = p[3];
-		if(p[4] < back)back = p[4];
-		if(p[4] > front)front = p[4];
-		if(p[5] < bottom)bottom = p[5];
-		if(p[5] > upper)upper = p[5];
-
-		if(p[6] < left)left = p[6];
-		if(p[6] > right)right = p[6];
-		if(p[7] < back)back = p[7];
-		if(p[7] > front)front = p[7];
-		if(p[8] < bottom)bottom = p[8];
-		if(p[8] > upper)upper = p[8];
-
-		if(p[9] < left)left = p[9];
-		if(p[9] > right)right = p[9];
-		if(p[10] < back)back = p[10];
-		if(p[10] > front)front = p[10];
-		if(p[11] < bottom)bottom = p[11];
-		if(p[11] > upper)upper = p[11];
-	}
-	say("%f,%f,%f,%f,%f,%f\n",left,right,back,front,bottom,upper);
+	stl_prep("42.stl");
 }
 static void stl_stop()
 {

@@ -1,78 +1,23 @@
 #include "actor.h"
-//void background1(void*);
 
 
 
 
-//flostarea
-static int inputcount = 0;
-static u8 hi[0x100];
-	//[0,0x1f]:target,value
-	//[0x20,0x3f]:base,value
-	//[0x40,0x5f]:offset,value
-	//[0x60,0x7f]:data,value
-
-//where
-static u8* databuf=0;
+static u8* databuf = 0;
+static int printmethod = 0;
 static u64 arenaoffset;
 static u64 pointeroffset;
-static int printmethod=0;
-
-
-
-
-/*
-static void floatarea(struct arena* win)
+void hex_prep(void* name)
 {
-	u32* screenbuf;
-	int width,height;
-	int thisx,thisy;
-	int x,y;
+	int ret = openreadclose(name, databuf, 0, 0x1000);
+	if(ret <= 0)return;
 
-	screenbuf = (u32*)(win->buf);
-	width = win->w;
-	height = win->h;
-	thisx = (pointeroffset % byteperline) << 4;
-	thisy = (pointeroffset / byteperline) << 4;
-
-	//byte框
-	for(y=thisy;y<thisy+16;y++)
-	{
-		for(x=thisx;x<thisx+16;x++)
-		{
-			screenbuf[xshift + y*width + x] = ~screenbuf[xshift + y*width + x];
-		}
-	}
-
-	//256*128的详情框
-	thisx+=16;
-	thisy+=16;
-	if(thisx > width -xshift -256)thisx -= (256+16);
-	if(thisy >= height - 128)thisy -= (128+16);
-	drawsolid_rect(win, 0xffff,
-		xshift + thisx, thisy,
-		xshift + thisx+256, thisy+128
-	);
-
-	//
-	data2hexstr((u64)databuf, hi + 0x10);
-	data2hexstr(arenaoffset, hi + 0x30);
-	data2hexstr(pointeroffset, hi + 0x50);
-	data2hexstr(0, hi + 0x70);
-
-	//target,base,offset,data
-	for(y=0;y<8;y++)
-	{
-		for(x=0;x<32;x++)
-		{
-			drawascii(win, 0,
-				xshift + thisx + x*8, thisy + y*16,
-				hi[(y*32) + x]
-			);
-		}
-	}
+	databuf[ret] = 0;
 }
-*/
+
+
+
+
 static void hex_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
 	int x,y,nx,ny;
@@ -82,7 +27,7 @@ static void hex_read_pixel(struct arena* win, struct actor* act, struct style* s
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	drawhyaline_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ny = hh/8;
 	nx = ww/8;
@@ -144,62 +89,25 @@ static void hex_read(struct arena* win, struct actor* act, struct style* sty)
 }
 static void hex_write(struct event* ev)
 {
+	int j,ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
 	//say("%x,%x\n",type,key);
 
-	if(type == _kbd_)	//'kbd'
+	if(_drop_ == type)
 	{
-		if(key == 0x48)	//up
+		ret = windowread(type, databuf);
+		say("%s", databuf);
+
+		for(j=0;j<ret;j++)
 		{
-		}
-		else if(key == 0x4b)	//left
-		{
-		}
-		else if(key == 0x4d)	//right
-		{
-		}
-		else if(key == 0x50)	//down
-		{
-		}
-	}
-	else if(type == _char_)
-	{
-		if(key == 9)		//tab
-		{
-			printmethod=(printmethod+1)%2;
-		}
-		else if(key == 0x8)			//backspace
-		{
-			if(inputcount!=0)inputcount--;
-			hi[0x80+inputcount]=0;
-		}
-		else if(key == 0xd)			//enter
-		{
-			if(cmp( hi+0x80 , "addr" ) == 0)
+			if(databuf[j] < 0x20)
 			{
+				databuf[j] = 0;
+				break;
 			}
 		}
-		else
-		{
-			if(inputcount<128)
-			{
-				hi[0x80+inputcount]=key;
-				inputcount++;
-			}
-		}
-	}
-	else if(type == 0x2b70)
-	{
-		if((key>>48) == 'f')	//front
-		{
-		}
-		else if((key>>48) == 'b')		//back
-		{
-		}
-		else
-		{
-		}
+		hex_prep(databuf);
 	}
 }
 
@@ -218,17 +126,6 @@ static void hex_into()
 }
 static void hex_start()
 {
-	int j;
-
-	//偏移
-	arenaoffset = pointeroffset = 0;
-
-	//浮动框
-	for(j=0;j<0x100;j++)hi[j]=0;
-	*(u64*)hi=0x3a746567726174;
-	*(u64*)(hi+0x20)=0x3a65736162;
-	*(u64*)(hi+0x40)=0x3a74657366666f;
-	*(u64*)(hi+0x60)=0x3a61746164;
 }
 static void hex_stop()
 {
@@ -236,7 +133,7 @@ static void hex_stop()
 void hex_create(void* uibuf,void* addr)
 {
 	struct actor* p = addr;
-	databuf = uibuf;
+	databuf = uibuf + 0x300000;
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('h', 'e', 'x', 0);

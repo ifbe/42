@@ -33,6 +33,7 @@ SRC = \
 3hack/hack.algo.c \
 3hack/hack.bintree.c \
 3hack/hack.bplus.c \
+3hack/hack.fs.c \
 3hack/hack.graph.c \
 3hack/hack.hex.c \
 3hack/hack.input.c \
