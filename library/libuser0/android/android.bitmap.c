@@ -55,9 +55,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	//
 	AndroidBitmap_unlockPixels(env, bitmap);
 }
-JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong value)
+JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong data)
 {
-	u64 p[4] = {value, type, (u64)&arena[1], 0};
+	u64 p[4] = {data, type, (u64)&arena[1], 0};
+	say("@Write:%x,%x\n", type, data);
 	actorwrite(p);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject bitmap)

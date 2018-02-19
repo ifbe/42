@@ -232,7 +232,10 @@ void login_write(struct arena* win, struct event* ev)
 		}
 		else if(x == '-')
 		{
-			act_at(win, &actor[chosen]);
+			if((chosen >= 0) && (chosen < 32))
+			{
+				act_at(win, &actor[chosen]);
+			}
 		}
 	}
 	else if(ev->what == _kbd_)

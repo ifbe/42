@@ -95,11 +95,11 @@ int lowlevel_output(char* buf, int len)
 
 void* waitenv()
 {
-        return 0;
+	return 0;
 }
 void* pollenv()
 {
-        return 0;
+	return 0;
 }
 void fixarg(u8* dst, u8* src)
 {

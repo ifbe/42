@@ -77,6 +77,8 @@ class MyRenderer implements GLSurfaceView.Renderer
 */
 class FinalAnswerView extends SurfaceView implements SurfaceHolder.Callback {
 	private static native void Start(Surface s);
+	private static native void Stop();
+	private static native void Write(long type, long data);
 	private static native void Read();
 
 	private SurfaceHolder holder;
@@ -112,10 +114,25 @@ class FinalAnswerView extends SurfaceView implements SurfaceHolder.Callback {
 		int action = event.getActionMasked();
 		int index = event.getActionIndex();
 		int count = event.getPointerCount();
-		int x = (int)event.getX(index);
-		int y = (int)event.getY(index);
-		Log.i("finalanswer","("+action+","+index+","+count+")"+x+","+y);
+		long k = event.getPointerId(index);
+		long x = (long)event.getX(index);
+		long y = (long)event.getY(index);
+		long what;
+		long why;
+		Log.i("finalanswer",action + ":" + k + "," + x + "," + y);
 
+		k = 'l';
+		why = x + (y<<16) + (k<<48);
+		what = 0x4070;
+		switch(action)
+		{
+			case 0:what = 0x2b70;break;
+			case 1:what = 0x2d70;break;
+			case 5:what = 0x2b70;break;
+			case 6:what = 0x2d70;break;
+		}
+
+		Write(what, why);
 		Read();
 		return true;
 	}
