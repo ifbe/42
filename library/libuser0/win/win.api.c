@@ -222,8 +222,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			leftdown=0;
 
 			k = 'l';
-			y = (lparam&0xffff0000) / (win->h);
-			x = ((lparam&0xffff)<<16) / (win->w);
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
 			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 			return 0;
 		}

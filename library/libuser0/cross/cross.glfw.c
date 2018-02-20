@@ -970,7 +970,7 @@ void windowstart(struct window* this)
 
 	this->w = 512;
 	this->h = 512;
-	this->thread = startthread(uievent, this);
+	startthread(uievent, this);
 }
 void windowdelete()
 {

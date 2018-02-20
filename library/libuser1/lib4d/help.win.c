@@ -59,24 +59,24 @@ void act_del()
 }
 void act_at(struct arena* win, struct actor* act)
 {
-	int w = (win->w) / 2;
-	int h = (win->h) / 2;
+	int w = win->w;
+	int h = win->h;
 	int d = (w+h) / 2;
 	struct style* st = (void*)style + stlen;
 	stlen += sizeof(struct style);
 
-	st->i_cx = w;
-	st->i_cy = h;
+	st->i_cx = w /2;
+	st->i_cy = h /2;
 	st->i_cz = 0.0;
-	st->i_rx = w / 2;
+	st->i_rx = w *49/100;
 	st->i_ry = 0.0;
 	st->i_rz = 0.0;
 	st->i_fx = 0.0;
-	st->i_fy = h / 2;
+	st->i_fy = h *49/100;
 	st->i_fz = 0.0;
 	st->i_ux = 0.0;
 	st->i_uy = 0.0;
-	st->i_uz = d / 2;
+	st->i_uz = d *49/100;
 
 	relation_write(win, st, _win_, act, 0, _act_);
 }

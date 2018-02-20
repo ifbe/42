@@ -11,12 +11,14 @@ static u8* buffer;
 void fs_prep(void* name)
 {
 	int ret;
+	u64 type;
 
 	ret = openreadclose(name, fsbuf, 0, 0x1000);
 	if(ret <= 0)return;
 	fsbuf[ret] = 0;
 
-	file_read(fsbuf, ret);
+	type = file_read(fsbuf, ret);
+	say("type=%.8s\n", &type);
 }
 
 

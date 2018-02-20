@@ -78,15 +78,23 @@ struct arena
 
 	//data
 	union{
-		void* buf;
 		u64 fd;
+		void* win;
 	};
 	union{
 		u64 len;
 		u64 dc;
+		u64 gc;
+		void* er;
 	};
-	u64 ximage;
-	u64 thread;
+	union{
+		u64 ximage;
+		void* texture;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
 
 	//where
 	u64 cx;

@@ -304,6 +304,7 @@ library/libuser1/2tool/tool.terminal.c \
 library/libuser1/3hack/hack.algo.c \
 library/libuser1/3hack/hack.bintree.c \
 library/libuser1/3hack/hack.bplus.c \
+library/libuser1/3hack/hack.fs.c \
 library/libuser1/3hack/hack.graph.c \
 library/libuser1/3hack/hack.hex.c \
 library/libuser1/3hack/hack.input.c \

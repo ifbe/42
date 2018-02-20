@@ -47,9 +47,8 @@ struct window
 
 	//data
 	union{
-		void* buf;
-		void* win;
 		u64 fd;
+		void* win;
 	};
 	union{
 		u64 len;
@@ -61,7 +60,10 @@ struct window
 		u64 ximage;
 		void* texture;
 	};
-	u64 thread;
+	union{
+		u64 addr;
+		void* buf;
+	};
 
 	//where
 	u64 cx;

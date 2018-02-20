@@ -35,11 +35,11 @@ void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 
 	//bezier
 	drawline(win, 0x00ffff,
-		cx+x1, cy+y1, cx+px, cy+py);
+		cx+x1, cy+y1, px, py);
 	drawline(win, 0x00ffff,
-		cx+x2, cy+y2, cx+px, cy+py);
+		cx+x2, cy+y2, px, py);
 	drawline_bezier(win, 0xffff,
-		cx+x1, cy+y1, cx+x2, cy+y2, cx+px, cy+py);
+		cx+x1, cy+y1, cx+x2, cy+y2, px, py);
 }
 static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
