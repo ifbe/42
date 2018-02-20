@@ -49,7 +49,7 @@ int utf2unicode(unsigned char* src,unsigned int* dst)
 			+ ((src[2]&0x3f)<<12)	//src[2:5,2:0]
 			+ ((src[3]&0x3f)<<6)	//src[3:5,3:0]
 			+ (src[4]&0x3f);	//src[4:5,4:0]
-		return 4;
+		return 5;
 	}
 
 	//[0xf0,0xf7]:六字节字符
@@ -61,10 +61,10 @@ int utf2unicode(unsigned char* src,unsigned int* dst)
 			+ ((src[3]&0x3f)<<12)	//src[3:5,3:0]
 			+ ((src[4]&0x3f)<<6)	//src[4:5,4:0]
 			+ (src[5]&0x3f);	//src[5:5,5:0]
-		return 4;
+		return 6;
 	}
 
-	return 0;
+	return 1;
 }
 int unicode2utf(unsigned int src,unsigned char* dst)
 {

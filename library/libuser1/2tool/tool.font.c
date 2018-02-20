@@ -26,9 +26,11 @@ static void font_read_pixel(struct arena* win, struct actor* act, struct style* 
 	int dd = sty->i_uz;
 //say("chosen=%x\n",chosen);
 
-	for(y=-(hh&0xfff0);y<(hh&0xfff0);y+=16)
+	ww &= 0xfff0;
+	hh &= 0xfff0;
+	for(y=-hh;y<hh;y+=16)
 	{
-		for(x=-(ww&0xfff0);x<(ww&0xfff0);x+=16)
+		for(x=-ww;x<ww;x+=16)
 		{
 			m = (x>>4) + (chosen&0xff);
 			if(m < 0)continue;

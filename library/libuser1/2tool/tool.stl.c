@@ -59,6 +59,10 @@ static void stl_read_html(struct arena* win, struct actor* act, struct style* st
 }
 static void stl_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
+	float* p;
+	float sx,sy,f;
+	float v[3][3];
+	int x,y,j,ret;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
@@ -66,18 +70,51 @@ static void stl_read_pixel(struct arena* win, struct actor* act, struct style* s
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	sx = (left+right)/2;
+	sy = (back+front)/2;
+
+	if(right-left > front-back)f = 2.0*ww/(right-left);
+	else f = 2.0*hh/(front-back);
+
+	ret = *(u32*)(stlbuf+80);
+	ret = ret % ((0x800000-0x84)/50);
+	for(j=0;j<ret;j++)
+	{
+		p = (void*)stlbuf + 84 + j*50;
+
+		v[0][0] = cx + (p[3]-sx)*f;
+		v[0][1] = cy + (p[4]-sy)*f;
+		v[0][2] = (p[5]-bottom)*f;
+		v[1][0] = cx + (p[6]-sx)*f;
+		v[1][1] = cy + (p[7]-sy)*f;
+		v[1][2] = (p[8]-bottom)*f;
+		v[2][0] = cx + (p[9]-sx)*f;
+		v[2][1] = cy + (p[10]-sy)*f;
+		v[2][2] = (p[11]-bottom)*f;
+/*
+		for(y=0;y<3;y++)
+		{
+			say("%f,%f,%f\n", v[y][0], v[y][1], v[y][2]);
+		}
+		say("\n");
+*/
+		drawline(win, 0xffffff, v[0][0], v[0][1], v[1][0], v[1][1]);
+		drawline(win, 0xffffff, v[0][0], v[0][1], v[2][0], v[2][1]);
+		drawline(win, 0xffffff, v[1][0], v[1][1], v[2][0], v[2][1]);
+	}
 }
 static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	int j, ret;
 	float* p;
+	float sx,sy,f;
+	int j, ret;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	float sx,sy,f;
 
 	u32 pcount = win->vertexcount;
 	u32 ncount = win->normalcount;
@@ -101,7 +138,10 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 
 	sx = (left+right)/2;
 	sy = (back+front)/2;
-	f = 2.0*(ww+hh)/(right-left+front-back);
+
+	if(right-left > front-back)f = 2.0*ww/(right-left);
+	else f = 2.0*hh/(front-back);
+
 	for(j=0;j<ret;j++)
 	{
 		p = (void*)stlbuf + 84 + j*50;

@@ -1,4 +1,5 @@
 #include "actor.h"
+int utf2unicode(u8* src,u32* dst);
 
 
 
@@ -20,7 +21,8 @@ void hex_prep(void* name)
 
 static void hex_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	int x,y,nx,ny;
+	u32 unicode, color;
+	int x,y,j;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
@@ -29,37 +31,55 @@ static void hex_read_pixel(struct arena* win, struct actor* act, struct style* s
 	int dd = sty->i_uz;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	ny = hh/8;
-	nx = ww/8;
-	if(nx > 0x40)nx = 0x40;
-	else if(nx > 0x20)nx = 0x20;
-	else if(nx > 0x10)nx = 0x10;
-	else if(nx > 0x8)nx = 0x8;
-	else if(nx > 0x4)nx = 0x4;
+	ww &= 0xfff0;
+	hh &= 0xfff0;
 	if(printmethod == 0)		//hex
 	{
-		for(y=0;y<ny;y++)
+		for(y=-hh;y<hh;y+=16)
 		{
-			for(x=0;x<nx;x++)
+			for(x=-256;x<256;x+=16)
 			{
-				drawbyte(win, 0xffffff,
-					cx+16*(x-nx/2), cy+16*(y-ny/2),
-					databuf[arenaoffset + y*nx + x]
-				);
+				if(x >= ww)continue;
+				if(x < -ww)continue;
+				drawsolid_rect(
+					win, ((0xf0-y)<<18)|((0xf0-x)<<2),
+					cx+x, cy+y, cx+x+15, cy+y+15);
+
+				j = ((y+hh)<<1) + ((x+256)>>4);
+				drawbyte(win, 0xffffff, cx+x, cy+y, databuf[j]);
 			}
 		}
 	}
-
-	else if(printmethod == 1)	//ascii
+	else
 	{
-		for(y=0;y<ny;y++)
+		color = 0xff;
+		for(y=-hh;y<hh;y+=16)
 		{
-			for(x=0;x<nx;x++)
+			for(x=-256;x<256;x+=16)
 			{
-				drawascii(win, 0xffffff,
-					cx+16*(x-nx/2), cy+16*(y-ny/2),
-					databuf[arenaoffset + y*nx + x]
-				);
+				if(x >= ww)continue;
+				if(x < -ww)continue;
+
+				j = ((y+hh)<<1) + ((x+256)>>4);
+				if(databuf[j] < 0x80)
+				{
+					drawsolid_rect(win, color,
+						cx+x, cy+y, cx+x+15, cy+y+15
+					);
+					drawascii(win, 0xffffff, cx+x, cy+y, databuf[j]);
+				}
+				else
+				{
+					drawsolid_rect(win, color,
+						cx+x, cy+y, cx+x+47, cy+y+47
+					);
+
+					j = utf2unicode(&databuf[j], &unicode);
+					drawunicode(win, 0xffffff, cx+x, cy+y, unicode);
+					x += 0x10*(j-1);
+				}
+
+				color = (~color) & 0xff00ff;
 			}
 		}
 	}
@@ -108,6 +128,10 @@ static void hex_write(struct event* ev)
 			}
 		}
 		hex_prep(databuf);
+	}
+	else if(_char_ == type)
+	{
+		if('	' == key)printmethod ^= 1;
 	}
 }
 
