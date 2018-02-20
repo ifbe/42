@@ -36,7 +36,7 @@ static void ooxx_read_pixel(struct arena* win, struct actor* act, struct style* 
 			if(data[3*y + x] == 'o')
 			{
 				drawline_circle(win, 0xff,
-					cx+(x-1)*ww*2/3, cy+(y-1)*hh/3, ww/6
+					cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, ww/6
 				);
 			}
 			else if(data[3*y + x] == 'x')

@@ -105,6 +105,7 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
+	half = (ww+hh)/20;
 
 	//
 	black=0;

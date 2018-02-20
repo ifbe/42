@@ -29,10 +29,10 @@ static void qrcode_read_pixel(struct arena* win, struct actor* act, struct style
 			if( databuf[(y*slen)+x] == 0 )color=0;
 			else color=0xffffffff;
 
-			x1 = cx + (x*ww/slen) - ww/2;
-			y1 = cy + (y*hh/slen) - hh/2;
-			x2 = cx + ((x+1)*ww/slen) - ww/2;
-			y2 = cy + ((y+1)*hh/slen) - hh/2;
+			x1 = cx + (x*ww*2/slen) - ww;
+			y1 = cy + (y*hh*2/slen) - hh;
+			x2 = cx + ((x+1)*ww*2/slen) - ww;
+			y2 = cy + ((y+1)*hh*2/slen) - hh;
 			drawsolid_rect(
 				win, color,
 				x1, y1, x2, y2

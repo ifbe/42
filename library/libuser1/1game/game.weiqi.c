@@ -24,6 +24,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
+	half = (ww+hh)/38;
 
 	//rgb? bgr?
 	if( ((win->fmt)&0xffffff) == 0x626772)color = 0x256f8d;
@@ -51,7 +52,7 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 	{
 		for(x = cx - half*2*6; x <= cx + half*2*6; x += half*2*6)
 		{
-			drawsolid_circle(win, 0, x, y, half/4);
+			drawsolid_circle(win, 0, x, y, half/3);
 		}
 	}
 

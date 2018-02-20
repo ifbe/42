@@ -16,8 +16,8 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
+	int ww = sty->i_rx/4;
+	int hh = sty->i_fy/4;
 	int dd = sty->i_uz;
 	for(y=0;y<8;y++)
 	{

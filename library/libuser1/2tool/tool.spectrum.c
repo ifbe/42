@@ -39,10 +39,12 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 	int x,y;
 	int w = win->w;
 	int h = win->h;
-	int cx = sty->r_cx;
-	int cy = sty->r_cy;
-	int ww = sty->r_rx;
-	int hh = sty->r_ry;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 /*
 	if(?????)
 	{
@@ -62,8 +64,8 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 	for(x=0;x<ww;x++)
 	{
 		t = tau / ww * x;
-		cc = cosine(t) * ww / 2;
-		ss = -sine(t) * hh / 2;
+		cc = cosine(t) * ww;
+		ss = -sine(t) * hh;
 		drawline(win, 0xffffff,
 			cx + (int)(cc * (1.0 - 2*amp[x])),
 			cy + (int)(ss * (1.0 - 2*amp[x])),

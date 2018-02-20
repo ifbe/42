@@ -374,20 +374,18 @@ static void sketchpad_write(struct event* ev)
 		int k = (key>>48)&0xffff;
 		int x = key&0xffff;
 		int y = (key>>16)&0xffff;
-		x = x - 0x8000;
-		y = 0x8000 - y;
 		if(k == 'f')	//front
 		{
 			//centerx+scale*pointx = x = newcenterx+scale/1.2*pointx
 			//newcenterx=centerx+scale*pointx*(1-1/1.2)
-			centerx += scale * (x*512.0/65536) * (1-1/1.2);
-			centery += scale * (y*512.0/65536) * (1-1/1.2);
+			centerx += scale * x * (1-1/1.2);
+			centery += scale * y * (1-1/1.2);
 			scale /= 1.2;
 		}
 		else if(k == 'b')	//back
 		{
-			centerx += scale * (x*512.0/65536) * (-0.2);
-			centery += scale * (y*512.0/65536) * (-0.2);
+			centerx += scale * x * (-0.2);
+			centery += scale * y * (-0.2);
 			scale *= 1.2;
 		}
 	}

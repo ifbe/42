@@ -32,8 +32,7 @@ struct point
 
 struct window
 {
-	//local,cli,voice,vnc,rdp,...
-	//rgba8888,vt100...
+	//[00,1f]
 	u64 type;
 	u64 fmt;
 	union{
@@ -45,7 +44,7 @@ struct window
 		char pad1[8];
 	};
 
-	//data
+	//[20,3f]data
 	union{
 		u64 fd;
 		void* win;
@@ -65,19 +64,28 @@ struct window
 		void* buf;
 	};
 
-	//where
-	u64 cx;
-	u64 cy;
-	u64 cz;
-	u64 cw;
+	//[40,7f]vec
+	int cx;
+	int cy;
+	int cz;
+	int cw;
 
-	//size
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
+	int w;		//rx
+	int ry;
+	int rz;
+	int rw;
 
-	//
+	int fx;
+	int h;		//fy
+	int fz;
+	int fw;
+
+	int ux;
+	int uy;
+	int d;		//uz
+	int uw;
+
+	//[80,ff]
 	union{
 		u64 info[16];
 		struct point touch[16];

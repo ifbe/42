@@ -26,12 +26,12 @@ static unsigned char* table;
 
 
 
-static void cubie(struct arena* win, int z, int x1, int y1, int x2, int y2)
+static void cubie(struct arena* win, int z, int x0, int y0, int x1, int y1)
 {
 	u32 bodycolor = z>0?0xffffff:0;
 
-	drawsolid_rect(win, bodycolor, x1, y1, x2, y2);
-	drawline_rect(win, 0x444444, x1, y1, x2, y2);
+	drawsolid_rect(win, bodycolor, x0, y0, x1, y1);
+	drawline_rect(win, 0x444444, x0, y0, x1, y1);
 }
 static void tetris_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -39,8 +39,8 @@ static void tetris_read_pixel(struct arena* win, struct actor* act, struct style
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
+	int ww = sty->i_rx/16;
+	int hh = sty->i_fy/20;
 	int dd = sty->i_uz;
 	for(y=0;y<40;y++)
 	{
@@ -669,10 +669,9 @@ static void tetris_start()
 static void tetris_stop()
 {
 }
-void tetris_create(void* base,void* addr)
+void tetris_create(void* base, struct actor* p)
 {
-	struct actor* p = addr;
-	table=(u8*)(addr+0x300000);
+	table = (u8*)(base+0x300000);
 
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
