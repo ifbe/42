@@ -5,9 +5,11 @@ void* arenastart(u64, u64);
 int arenastop(void*);
 void actorstart(void*, void*);
 int actorstop(void*);
-void actorchoose(void*);
 void* relation_read(u64);
-void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot, u64 btype);
+void relation_write(
+	void* uchip, void* ufoot, u64 utype,
+	void* bchip, void* bfoot, u64 btype
+);
 
 
 
@@ -15,7 +17,11 @@ void relation_write(void* uchip, void* ufoot, u64 utype, void* bchip, u64 bfoot,
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
-static int stlen = 0;
+static struct compo* compo = 0;
+static int winlen = 0;
+static int actlen = 0;
+static int stylen = 0;
+static int comlen = 0;
 
 
 
@@ -62,23 +68,35 @@ void act_at(struct arena* win, struct actor* act)
 	int w = win->w;
 	int h = win->h;
 	int d = (w+h) / 2;
-	struct style* st = (void*)style + stlen;
-	stlen += sizeof(struct style);
+	struct style* sty;
+	struct compo* com;
 
-	st->i_cx = w /2;
-	st->i_cy = h /2;
-	st->i_cz = 0.0;
-	st->i_rx = w *49/100;
-	st->i_ry = 0.0;
-	st->i_rz = 0.0;
-	st->i_fx = 0.0;
-	st->i_fy = h *49/100;
-	st->i_fz = 0.0;
-	st->i_ux = 0.0;
-	st->i_uy = 0.0;
-	st->i_uz = d *49/100;
+	sty = (void*)style + stylen;
+	stylen += sizeof(struct style);
+	sty->i_cx = w /2;
+	sty->i_cy = h /2;
+	sty->i_cz = 0.0;
+	sty->i_rx = w *49/100;
+	sty->i_ry = 0.0;
+	sty->i_rz = 0.0;
+	sty->i_fx = 0.0;
+	sty->i_fy = h *49/100;
+	sty->i_fz = 0.0;
+	sty->i_ux = 0.0;
+	sty->i_uy = 0.0;
+	sty->i_uz = d *49/100;
 
-	relation_write(win, st, _win_, act, 0, _act_);
+	com = (void*)compo + comlen;
+	comlen += sizeof(struct compo);
+	com->flag0 = 0;
+	com->flag1 = 1;
+	com->flag2 = 2;
+	com->flag3 = 3;
+
+	relation_write(
+		win, sty, _win_,
+		act, com, _act_
+	);
 }
 
 
@@ -107,7 +125,8 @@ void win_at(u64 why, u64 where)
 
 void wmgr_create(void* addr)
 {
-	arena = addr + 0;
+	arena = addr + 0x000000;
 	actor = addr + 0x100000;
 	style = addr + 0x200000;
+	compo = addr + 0x300000;
 }

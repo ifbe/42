@@ -61,13 +61,17 @@ void windowstart(struct window* this)
 
 		if(termcount == 0)
 		{
-			this->thread = startthread(terminalthread, this);
+			u64 thread = startthread(terminalthread, this);
 			termcount++;
 		}
 		else
 		{
-			CreateProcess("c:\\windows\\system32\\cmd.exe", 0, 0, 0, 0, 
-				CREATE_NEW_CONSOLE, 0, 0, &si, &pi);
+			CreateProcess(
+				"c:\\windows\\system32\\cmd.exe",
+				0, 0, 0, 0,
+				CREATE_NEW_CONSOLE, 0, 0,
+				&si, &pi
+			);
 			printf("GetLastError=%d\n",GetLastError());
 			termcount++;
 		}

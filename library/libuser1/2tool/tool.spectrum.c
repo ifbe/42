@@ -81,10 +81,12 @@ static void spectrum_read_vbo(struct arena* win, struct actor* act, struct style
 {
 	int x;
 	float cc,ss;
-	int cx = sty->r_cx;
-	int cy = sty->r_cy;
-	int ww = sty->r_rx;
-	int hh = sty->r_ry;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 	for(x=0;x<512;x++)
 	{
 		cc = cosine(x*tau/512);

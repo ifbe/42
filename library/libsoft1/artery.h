@@ -13,10 +13,10 @@
 
 struct event
 {
-        u64 why;
-        u64 what;
-        u64 where;
-        u64 when;
+	u64 why;
+	u64 what;
+	u64 where;
+	u64 when;
 };
 struct uartinfo{
 	char* buf;

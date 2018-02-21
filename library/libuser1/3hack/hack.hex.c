@@ -1,5 +1,8 @@
 #include "actor.h"
+int openreadclose(void*, void*, u64, u64);
+int openwriteclose(void*, void*, u64, u64);
 int utf2unicode(u8* src,u32* dst);
+int windowread(int type, char* buf);
 
 
 

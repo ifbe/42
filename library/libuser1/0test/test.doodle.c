@@ -43,10 +43,12 @@ void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 }
 static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* sty)
 {
-	int cx = sty->r_cx;
-	int cy = sty->r_cy;
-	int ww = sty->r_rx;
-	int hh = sty->r_ry;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
 
 	carvesolid_icosahedron(
 		win, 0xffffff,

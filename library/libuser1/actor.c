@@ -40,12 +40,12 @@ static struct style* style = 0;
 int actorread_one(struct arena* win)
 {
 	int j;
-	struct arena* canvas;
-	struct actor* act;		//2048?
+	struct relation* rel;
 
-	struct relation* rel;		//link
-	struct style* st;			//style
-	void* pl;
+	struct arena* tmp;
+	struct actor* act;
+	struct style* sty;
+	struct compo* com;
 
 	//cli silent
 	if(win->fmt == _cli_)
@@ -53,23 +53,23 @@ int actorread_one(struct arena* win)
 		if(win->cw == 12)return 0;
 	}
 
-	//canvas
+	//tmp
 	if(win->type != _buf_)
 	{
-		canvas = &arena[0];
+		tmp = &arena[0];
 
-		canvas->fmt = win->fmt;
-		canvas->w = win->w;
-		canvas->h = win->h;
+		tmp->fmt = win->fmt;
+		tmp->w = win->w;
+		tmp->h = win->h;
 
-		for(j=0;j<16;j++)canvas->info[j] = 0;
+		for(j=0;j<16;j++)tmp->info[j] = 0;
 	}
-	else canvas = win;
+	else tmp = win;
 
 	//bg
 	if((win->fmt != _vbo_) | (win->cw == 12))
 	{
-		background(canvas);
+		background(tmp);
 	}
 
 	//content
@@ -81,21 +81,21 @@ int actorread_one(struct arena* win)
 		if(rel->selftype == _act_)
 		{
 			act = (void*)(rel->selfchip);
-			st = (void*)(rel->destfoot);
-			pl = (void*)(rel->selffoot);
-			//say("%x,%x,%x,%x\n", canvas, act, st, pl);
+			sty = (void*)(rel->destfoot);
+			com = (void*)(rel->selffoot);
+			//say("%x,%x,%x,%x\n", tmp, act, sty, com);
 			//say("%x\n", rel);
 
-			act->read(canvas, act, st, pl);
+			act->read(tmp, act, sty, com);
 			if(win->cw == 12)
 			{
 				if(win->fmt == _vbo_)
 				{
-					select_3d(canvas, st);
+					select_3d(tmp, sty);
 				}
 				else
 				{
-					select_2d(canvas, st);
+					select_2d(tmp, sty);
 				}
 			}
 		}
@@ -104,7 +104,7 @@ int actorread_one(struct arena* win)
 	}
 
 	//fg
-	if((win->irel == 0) | (win->cw == 11))login_read(canvas);
+	if((win->irel == 0) | (win->cw == 11))login_read(tmp);
 
 theend:
 	arenawrite(win, &arena[0]);
@@ -112,12 +112,12 @@ theend:
 }
 int actorread()
 {
-	struct arena* canvas;
+	struct arena* tmp;
 	struct arena* window;
 	struct relation* rel;
 
-	canvas = &arena[0];
-	rel = canvas->irel;
+	tmp = &arena[0];
+	rel = tmp->irel;
 	while(1)
 	{
 		if(rel == 0)break;

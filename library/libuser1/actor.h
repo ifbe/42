@@ -192,53 +192,26 @@ struct actor
 };
 struct style
 {
-/*
-	//[00,1f]:cartesian coordinate
-	u64 cx;
-	u64 cy;
-	u64 cz;
-	u64 dim;
+	int flag0;
+	int flag1;
+	int flag2;
+	int flag3;
 
-	//[20,3f]:eulerian angle
-	u64 pitch;
-	u64 yaw;
-	u64 roll;
-	u64 aaa;
+	int flag4;
+	int flag5;
+	int flag6;
+	int flag7;
 
-	//[40,5f]:total size(base 0x10000)
-	u64 wantw;
-	u64 wanth;
-	u64 wantd;
-	u64 hehe;
+	int flag8;
+	int flag9;
+	int flaga;
+	int flagb;
 
-	//[60,7f]:show area(base 0x100000)
-	u64 realw;
-	u64 realh;
-	u64 reald;
-	u64 haha;
-*/
-	//real
-	float r_cx;
-	float r_cy;
-	float r_cz;
-	float r_cw;
+	int flagc;
+	int flagd;
+	int flage;
+	int flagf;
 
-	float r_rx;
-	float r_ry;
-	float r_rz;
-	float r_rw;
-
-	float r_fx;
-	float r_fy;
-	float r_fz;
-	float r_fw;
-
-	float r_ux;
-	float r_uy;
-	float r_uz;
-	float r_uw;
-
-	//imag
 	float i_cx;
 	float i_cy;
 	float i_cz;
@@ -259,9 +232,47 @@ struct style
 	float i_uz;
 	float i_uw;
 };
-struct userdata
+struct compo
 {
-	u64 name;
+	int flag0;
+	int flag1;
+	int flag2;
+	int flag3;
+
+	int flag4;
+	int flag5;
+	int flag6;
+	int flag7;
+
+	int flag8;
+	int flag9;
+	int flaga;
+	int flagb;
+
+	int flagc;
+	int flagd;
+	int flage;
+	int flagf;
+
+	float o_cx;
+	float o_cy;
+	float o_cz;
+	float o_cw;
+
+	float o_rx;
+	float o_ry;
+	float o_rz;
+	float o_rw;
+
+	float o_fx;
+	float o_fy;
+	float o_fz;
+	float o_fw;
+
+	float o_ux;
+	float o_uy;
+	float o_uz;
+	float o_uw;
 };
 
 

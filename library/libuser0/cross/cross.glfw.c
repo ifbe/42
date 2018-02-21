@@ -96,6 +96,46 @@ static GLfloat projmatrix[4*4] = {
 };
 static GLfloat cameramvp[4*4];
 static GLfloat light0mvp[4*4];
+/*
+//point
+static int pointcount;
+static GLuint pointvao;
+static GLuint vbo_pointvertex;
+static GLuint vbo_pointcolour;
+static GLfloat* data_pointvertex;
+static GLfloat* data_pointcolour;
+//line
+static int linecount;
+static GLuint linevao;
+static GLuint vbo_lineindex;
+static GLuint vbo_linevertex;
+static GLuint vbo_linecolour;
+static GLuint* data_lineindex;
+static GLfloat* data_linevertex;
+static GLfloat* data_linecolour;
+//trigon
+static int trigoncount;
+static GLuint trigonvao;
+static GLuint vbo_trigonindex;
+static GLuint vbo_trigonvertex;
+static GLuint vbo_trigoncolour;
+static GLuint vbo_trigonnormal;
+static GLuint* data_trigonindex;
+static GLfloat* data_trigonvertex;
+static GLfloat* data_trigoncolour;
+static GLfloat* data_trigonnormal;
+//tex0(4096*4096)
+static int fontcount;
+static GLuint fontvao;
+static GLuint vbo_fontindex;
+static GLuint vbo_fontvertex;
+static GLuint vbo_fontcolour;
+static GLuint vbo_fonttexcoo;
+static GLuint* data_fontindex;
+static GLfloat* data_fontvertex;
+static GLfloat* data_fontcolour;
+static GLfloat* data_fonttexcoo;
+*/
 
 
 
@@ -399,7 +439,25 @@ void inittexture()
 void initobject()  
 {
 	void* temp = (void*)(src->buf);
-
+/*
+	//point
+	glGenBuffers(vbo_pointvertex);
+	glGenBuffers(vbo_pointcolour);
+	//line
+	glGenBuffers(vbo_lineindex);
+	glGenBuffers(vbo_linevertex);
+	glGenBuffers(vbo_linecolour);
+	//trigon
+	glGenBuffers(vbo_trigonindex);
+	glGenBuffers(vbo_trigonvertex);
+	glGenBuffers(vbo_trigoncolour);
+	glGenBuffers(vbo_trigonnormal);
+	//tex0(4096*4096)
+	glGenBuffers(vbo_fontindex);
+	glGenBuffers(vbo_fontvertex);
+	glGenBuffers(vbo_fontcolour);
+	glGenBuffers(vbo_fonttexcoo);
+*/
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);

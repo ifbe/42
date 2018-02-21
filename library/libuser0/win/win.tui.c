@@ -335,7 +335,7 @@ void windowstart(struct window* this)
 		this->h = height;
 		this->d = 0;
 
-		this->thread = startthread(terminalthread, this);
+		u64 thread = startthread(terminalthread, this);
 	}
 }
 void windowstop()
