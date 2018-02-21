@@ -37,6 +37,7 @@ SRC = \
 3hack/hack.graph.c \
 3hack/hack.hex.c \
 3hack/hack.input.c \
+3hack/hack.login.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/html/html.shape.c \
@@ -70,9 +71,8 @@ lib3d/lib3d.c \
 lib4d/help.asset.c \
 lib4d/help.bgfg.c \
 lib4d/help.ctx.c \
-lib4d/help.login.c \
 lib4d/help.input.c \
-lib4d/help.win.c \
+lib4d/help.output.c \
 lib4d/lib4d.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

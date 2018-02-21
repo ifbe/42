@@ -8,31 +8,101 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
+void* arenastart(u64, u64);
+int arenastop(void*);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
+//
 void login_read(void*);
 void login_write(void*, void*);
 int input_write(void*, void*);
-//
-void win_add(u64 why, u64 where);
-void win_del(u64 why, u64 where);
-void win_at(u64 why, u64 where);
-void act_add();
-void act_del();
-void act_at(void*, void*);
 //
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
 void* samechipprevpin(void*);
 void* samechipnextpin(void*);
 void* relation_read(u64);
-
+void relation_write(
+	void* uchip, void* ufoot, u64 utype,
+	void* bchip, void* bfoot, u64 btype
+);
 
 
 
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
+static struct compo* compo = 0;
+static int winlen = 0;
+static int actlen = 0;
+static int stylen = 0;
+static int comlen = 0;
+
+
+
+
+void act_add()
+{
+}
+void act_del()
+{
+}
+void act_at(struct arena* win, struct actor* act)
+{
+	int w = win->w;
+	int h = win->h;
+	int d = (w+h) / 2;
+	struct style* sty;
+	struct compo* com;
+
+	sty = (void*)style + stylen;
+	stylen += sizeof(struct style);
+	sty->i_cx = w /2;
+	sty->i_cy = h /2;
+	sty->i_cz = 0.0;
+	sty->i_rx = w *49/100;
+	sty->i_ry = 0.0;
+	sty->i_rz = 0.0;
+	sty->i_fx = 0.0;
+	sty->i_fy = h *49/100;
+	sty->i_fz = 0.0;
+	sty->i_ux = 0.0;
+	sty->i_uy = 0.0;
+	sty->i_uz = d *49/100;
+
+	com = (void*)compo + comlen;
+	comlen += sizeof(struct compo);
+	com->flag0 = 0;
+	com->flag1 = 1;
+	com->flag2 = 2;
+	com->flag3 = 3;
+
+	relation_write(
+		win, sty, _win_,
+		act, com, _act_
+	);
+}
+
+
+
+
+void win_add(u64 why, u64 where)
+{
+	void* ret = arenastart(why, where);
+	if(ret == 0)
+	{
+		say("error@w+\n");
+		return;
+	}
+}
+void win_del(u64 why, u64 where)
+{
+	void* ret = (void*)where;
+	arenastop(ret);
+}
+void win_at(u64 why, u64 where)
+{
+}
 
 
 
@@ -67,10 +137,7 @@ int actorread_one(struct arena* win)
 	else tmp = win;
 
 	//bg
-	if((win->fmt != _vbo_) | (win->cw == 12))
-	{
-		background(tmp);
-	}
+	if((_vbo_ != win->fmt) | (12 == win->cw))background(tmp);
 
 	//content
 	rel = win->irel;
@@ -104,7 +171,8 @@ int actorread_one(struct arena* win)
 	}
 
 	//fg
-	if((win->irel == 0) | (win->cw == 11))login_read(tmp);
+	if((11 == win->cw) | (0 == win->irel))login_read(tmp);
+	if((12 == win->cw) | (_vbo_ != win->fmt))foreground(tmp);
 
 theend:
 	arenawrite(win, &arena[0]);
@@ -238,9 +306,10 @@ int actorstop(struct actor* act)
 }
 void actorcreate(u8* addr)
 {
-	arena = (void*)(addr+0);
+	arena = (void*)(addr+0x000000);
 	actor = (void*)(addr+0x100000);
 	style = (void*)(addr+0x200000);
+	compo = (void*)(addr+0x300000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -265,6 +334,7 @@ void actordelete()
 	lib2d_delete();
 	lib1d_delete();
 
+	compo = 0;
 	style = 0;
 	actor = 0;
 	arena = 0;

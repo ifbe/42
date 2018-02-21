@@ -210,13 +210,13 @@ int point_explain(struct arena* win, struct event* ev)
 	if(btn > 10)return 0;
 	q = (void*)&(win->touch[btn]);
 
-	if(ev->what == hex32('p','+',0,0))
+	if(hex32('p','+',0,0) == ev->what)
 	{
 		q->x = p->x;
 		q->y = p->y;
 		if(stywow != 0)relation_swap(reltop, relwow);
 	}
-	if(ev->what == hex32('p','@',0,0))
+	else if(hex32('p','@',0,0) == ev->what)
 	{
 		stytop->i_cx += (int)(p->x) - (int)(q->x);
 		stytop->i_cy += (int)(p->y) - (int)(q->y);
@@ -247,10 +247,10 @@ int delete_thisact(struct arena* win)
 }
 int input_write(struct arena* win, struct event* ev)
 {
-	int ret;
+	int x,y,ret;
 
 	//no actor
-	if(win->irel == 0)
+	if(0 == win->irel)
 	{
 		if(win->fmt == hex32('c','l','i',0))
 		{
@@ -264,7 +264,7 @@ int input_write(struct arena* win, struct event* ev)
 	}
 
 	//f11, f12
-	if(ev->what == _kbd_)
+	if(_kbd_ == ev->what)
 	{
 		ret=0;
 		if(ev->why == 0xfb)ret = 11;
@@ -278,15 +278,30 @@ int input_write(struct arena* win, struct event* ev)
 		}
 	}
 
+	if(hex32('p','-',0,0) == ev->what)
+	{
+		x = (ev->why)&0xffff;
+		y = ((ev->why)>>16)&0xffff;
+		if(win->w < win->h)ret = win->h;
+		else ret = win->w;
+
+		ret >>= 4;
+		if((x+ret > win->w) && (y+ret > win->h))
+		{
+			if(12 == win->cw)win->cw = 0;
+			else win->cw = 12;
+			return 0;
+		}
+	}
 	//build
-	if(win->cw == 11)
+	if(11 == win->cw)
 	{
 		login_write(win, ev);
 		return 0;
 	}
 
 	//chosen
-	if(win->cw == 12)
+	if(12 == win->cw)
 	{
 		if(ev->what == _char_)
 		{

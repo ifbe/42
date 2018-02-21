@@ -27,10 +27,10 @@ void background_pixel(struct arena* win)
 }
 void background(struct arena* win)
 {
-	if(win->fmt == hex32('c','l','i',0))background_cli(win);
-	else if(win->fmt == hex32('t','u','i',0))background_tui(win);
-	else if(win->fmt == hex32('h','t','m','l'))background_html(win);
-	else if(win->fmt == hex32('v','b','o',0))background_vbo(win);
+	if(_cli_ == win->fmt)background_cli(win);
+	else if(_tui_ == win->fmt)background_tui(win);
+	else if(_html_ == win->fmt)background_html(win);
+	else if(_vbo_ == win->fmt)background_vbo(win);
 	else background_pixel(win);
 }
 
@@ -51,12 +51,27 @@ void foreground_vbo(struct arena* win)
 }
 void foreground_pixel(struct arena* win)
 {
+	int w = win->w;
+	int h = win->h;
+	int t;
+	if(w < h)t = h;
+	else t = w;
+
+	t >>= 5;
+	drawsolid_circle(
+		win, 0xabcdef,
+		w-t, h-t, t/2
+	);
+	drawsolid_circle(
+		win, 0xc08040,
+		w-t, h-t, t/4
+	);
 }
 void foreground(struct arena* win)
 {
-	if(win->fmt == hex32('c','l','i',0))foreground_cli(win);
-	else if(win->fmt == hex32('t','u','i',0))foreground_tui(win);
-	else if(win->fmt == hex32('h','t','m','l'))foreground_html(win);
-	else if(win->fmt == hex32('v','b','o',0))foreground_vbo(win);
+	if(_cli_ == win->fmt)foreground_cli(win);
+	else if(_tui_ == win->fmt)foreground_tui(win);
+	else if(_html_ == win->fmt)foreground_html(win);
+	else if(_vbo_ == win->fmt)foreground_vbo(win);
 	else foreground_pixel(win);
 }
