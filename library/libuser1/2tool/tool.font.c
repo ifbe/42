@@ -176,13 +176,15 @@ void font_create(void* base, void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('f', 'o', 'n', 't');
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)font_start;
-	p->stop = (void*)font_stop;
-	p->list = (void*)font_list;
-	p->choose = (void*)font_change;
-	p->read = (void*)font_read;
-	p->write = (void*)font_write;
+	p->onstart = (void*)font_start;
+	p->onstop = (void*)font_stop;
+	p->onlist = (void*)font_list;
+	p->onchoose = (void*)font_change;
+	p->onread = (void*)font_read;
+	p->onwrite = (void*)font_write;
 }
 void font_delete()
 {

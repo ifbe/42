@@ -84,13 +84,15 @@ void pegged_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)pegged_start;
-	p->stop = (void*)pegged_stop;
-	p->list = (void*)pegged_list;
-	p->choose = (void*)pegged_change;
-	p->read = (void*)pegged_read;
-	p->write = (void*)pegged_write;
+	p->onstart = (void*)pegged_start;
+	p->onstop = (void*)pegged_stop;
+	p->onlist = (void*)pegged_list;
+	p->onchoose = (void*)pegged_change;
+	p->onread = (void*)pegged_read;
+	p->onwrite = (void*)pegged_write;
 }
 void pegged_delete()
 {

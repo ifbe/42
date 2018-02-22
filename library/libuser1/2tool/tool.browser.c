@@ -9,9 +9,9 @@ static struct actor* pl;
 static int count = 0;
 //
 static u64 fd = 0;
+static int len = 0;
 static u8* srcbuf = 0;
 static u8* dstbuf = 0;
-static int len = 0;
 
 
 
@@ -24,7 +24,7 @@ static void browser_read_html(struct arena* win, struct actor* act, struct style
 }
 static void browser_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 {
-	drawstring(win, 0xffffff, 0, 0, pl->priv, 0);
+	//drawstring(win, 0xffffff, 0, 0, pl->priv, 0);
 	drawstring(win, 0x0000ff, 0, 16, dstbuf, 0);
 }
 static void browser_read_vbo(struct arena* win, struct actor* act, struct style* sty)
@@ -39,7 +39,7 @@ static void browser_read_tui(struct arena* win, struct actor* act, struct style*
 
 	//
 	for(x=0;x<w*h*4;x++)p[x] = 0;
-	for(x=0;x<w;x++)p[x<<2] = pl->priv[x];
+	//for(x=0;x<w;x++)p[x<<2] = pl->priv[x];
 
 	//
 	y = w;
@@ -73,6 +73,7 @@ static void browser_write(struct event* ev)
 #define http 0x70747468
 	u64 type = ev->what;
 	u64 key = ev->why;
+/*
 	if(type == _char_)
 	{
 		if(key == 0xd)
@@ -92,7 +93,8 @@ static void browser_write(struct event* ev)
 			if(count<0xbf)count++;
 		}
 	}
-	else if(type == http)
+*/
+	if(type == http)
 	{
 		int src=0,dst=0;
 		fd = ev->where;
@@ -125,19 +127,18 @@ static void browser_stop()
 }
 void browser_create(void* base,void* addr)
 {
-	srcbuf = base-0x100000;
-	dstbuf = base+0x300000;
 	pl = addr;
-
 	pl->type = hex32('t', 'o', 'o', 'l');
 	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
+	pl->irel = 0;
+	pl->orel = 0;
 
-	pl->start = (void*)browser_start;
-	pl->stop = (void*)browser_stop;
-	pl->list = (void*)browser_list;
-	pl->choose = (void*)browser_change;
-	pl->read = (void*)browser_read;
-	pl->write = (void*)browser_write;
+	pl->onstart = (void*)browser_start;
+	pl->onstop = (void*)browser_stop;
+	pl->onlist = (void*)browser_list;
+	pl->onchoose = (void*)browser_change;
+	pl->onread = (void*)browser_read;
+	pl->onwrite = (void*)browser_write;
 }
 void browser_delete()
 {

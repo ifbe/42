@@ -166,10 +166,10 @@ void chess_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)chess_start;
-	act->stop = (void*)chess_stop;
-	act->list = (void*)chess_list;
-	act->choose = (void*)chess_choose;
-	act->read = (void*)chess_read;
-	act->write = (void*)chess_write;
+	act->onstart = (void*)chess_start;
+	act->onstop = (void*)chess_stop;
+	act->onlist = (void*)chess_list;
+	act->onchoose = (void*)chess_choose;
+	act->onread = (void*)chess_read;
+	act->onwrite = (void*)chess_write;
 }

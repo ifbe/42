@@ -148,47 +148,75 @@ struct actor
 	};
 
 	//[20,3f]
+	u64 vao;
+	u64 vbo;
+	u64 inf;
 	u64 buf;
-	u64 len;
-	u64 info;
-	u64 flag;
 
-	//[40,7f]
+	//[40,7f]vec
+	int cx;
+	int cy;
+	int cz;
+	int cw;
+
+	int rx;
+	int ry;
+	int rz;
+	int rw;
+
+	int fx;
+	int fy;
+	int fz;
+	int fw;
+
+	int ux;
+	int uy;
+	int uz;
+	int uw;
+
+	//[80,bf]
 	union{
-		int (*create)();
+		int (*oncreate)();
 		char padding0[8];
 	};
 	union{
-		int (*delete)();
+		int (*ondelete)();
 		char padding1[8];
 	};
 	union{
-		int (*start)();
+		int (*onstart)(void* act, void* pl);
 		char padding2[8];
 	};
 	union{
-		int (*stop)();
+		int (*onstop)();
 		char padding3[8];
 	};
 	union{
-		int (*list)();
+		int (*onlist)();
 		char padding4[8];
 	};
 	union{
-		int (*choose)();
+		int (*onchoose)();
 		char padding5[8];
 	};
 	union{
-		int (*read)(void* win, void* act, void* style, void* player);
+		int (*onread)(void* win, void* act, void* style, void* player);
 		char padding6[8];
 	};
 	union{
-		int (*write)(void* event);
+		int (*onwrite)(void* event);
 		char padding7[8];
 	};
 
-	//
-	u8 priv[0x80];
+	//[c0,ff]
+	u64 onfunc0;
+	u64 onfunc1;
+	u64 onfunc2;
+	u64 onfunc3;
+	u64 onfunc4;
+	u64 onfunc5;
+	u64 onfunc6;
+	u64 onfunc7;
 };
 struct style
 {

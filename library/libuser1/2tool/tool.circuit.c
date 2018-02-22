@@ -361,13 +361,15 @@ void circuit_create(void* base,void* addr)
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('c', 'i', 'r', 'c', 'u', 'i', 't', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)circuit_start;
-	p->stop = (void*)circuit_stop;
-	p->list = (void*)circuit_list;
-	p->choose = (void*)circuit_change;
-	p->read = (void*)circuit_read;
-	p->write = (void*)circuit_write;
+	p->onstart = (void*)circuit_start;
+	p->onstop = (void*)circuit_stop;
+	p->onlist = (void*)circuit_list;
+	p->onchoose = (void*)circuit_change;
+	p->onread = (void*)circuit_read;
+	p->onwrite = (void*)circuit_write;
 }
 void circuit_delete()
 {

@@ -164,10 +164,10 @@ void ooxx_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)ooxx_start;
-	act->stop = (void*)ooxx_stop;
-	act->list = (void*)ooxx_list;
-	act->choose = (void*)ooxx_choose;
-	act->read = (void*)ooxx_read;
-	act->write = (void*)ooxx_write;
+	act->onstart = (void*)ooxx_start;
+	act->onstop = (void*)ooxx_stop;
+	act->onlist = (void*)ooxx_list;
+	act->onchoose = (void*)ooxx_choose;
+	act->onread = (void*)ooxx_read;
+	act->onwrite = (void*)ooxx_write;
 }

@@ -254,13 +254,15 @@ void stl_create(void* base, void* addr)
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('s', 't', 'l', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)stl_start;
-	p->stop = (void*)stl_stop;
-	p->list = (void*)stl_list;
-	p->choose = (void*)stl_change;
-	p->read = (void*)stl_read;
-	p->write = (void*)stl_write;
+	p->onstart = (void*)stl_start;
+	p->onstop = (void*)stl_stop;
+	p->onlist = (void*)stl_list;
+	p->onchoose = (void*)stl_change;
+	p->onread = (void*)stl_read;
+	p->onwrite = (void*)stl_write;
 }
 void stl_delete()
 {

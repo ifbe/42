@@ -59,10 +59,12 @@ static void algorithm_read_pixel(struct arena* win, struct actor* act, struct st
 		cx + ww/3, cy - hh*7/8,
 		cx + ww, cy + hh*7/8
 	);
+/*
 	drawstring(win, 0xffffff,
 		cx + ww/3, cy-8,
 		(void*)pl->priv, 0
 	);
+*/
 }
 static void algorithm_read_html(struct arena* win, struct actor* act, struct style* sty)
 {
@@ -109,7 +111,7 @@ static void algorithm_write(struct event* ev)
 			return;
 		}
 		if(x<0xb000)return;
-
+/*
 		int ret = openreadclose("makefile", buffer, 0, 0x100000);
 		if(algtype[this] == 0x35646d)
 		{
@@ -125,6 +127,7 @@ static void algorithm_write(struct event* ev)
 			pl->priv[40] = 0;
 			reslen = 40;
 		}
+*/
 	}
 }
 static void algorithm_list()
@@ -135,7 +138,7 @@ static void algorithm_choose()
 }
 static void algorithm_start()
 {
-	pl->priv[0] = 0;
+	//pl->priv[0] = 0;
 }
 static void algorithm_stop()
 {
@@ -150,12 +153,12 @@ void algorithm_create(void* base, void* addr)
 	pl->irel = 0;
 	pl->orel = 0;
 
-	pl->start = (void*)algorithm_start;
-	pl->stop = (void*)algorithm_stop;
-	pl->list = (void*)algorithm_list;
-	pl->choose = (void*)algorithm_choose;
-	pl->read = (void*)algorithm_read;
-	pl->write = (void*)algorithm_write;
+	pl->onstart = (void*)algorithm_start;
+	pl->onstop = (void*)algorithm_stop;
+	pl->onlist = (void*)algorithm_list;
+	pl->onchoose = (void*)algorithm_choose;
+	pl->onread = (void*)algorithm_read;
+	pl->onwrite = (void*)algorithm_write;
 }
 void algorithm_delete()
 {

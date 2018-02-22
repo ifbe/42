@@ -75,13 +75,15 @@ void clock_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)clock_start;
-	p->stop = (void*)clock_stop;
-	p->list = (void*)clock_list;
-	p->choose = (void*)clock_change;
-	p->read = (void*)clock_read;
-	p->write = (void*)clock_write;
+	p->onstart = (void*)clock_start;
+	p->onstop = (void*)clock_stop;
+	p->onlist = (void*)clock_list;
+	p->onchoose = (void*)clock_change;
+	p->onread = (void*)clock_read;
+	p->onwrite = (void*)clock_write;
 }
 void clock_delete()
 {

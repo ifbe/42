@@ -61,13 +61,15 @@ void fractal_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)fractal_start;
-	p->stop = (void*)fractal_stop;
-	p->list = (void*)fractal_list;
-	p->choose = (void*)fractal_change;
-	p->read = (void*)fractal_read;
-	p->write = (void*)fractal_write;
+	p->onstart = (void*)fractal_start;
+	p->onstop = (void*)fractal_stop;
+	p->onlist = (void*)fractal_list;
+	p->onchoose = (void*)fractal_change;
+	p->onread = (void*)fractal_read;
+	p->onwrite = (void*)fractal_write;
 }
 void fractal_delete()
 {

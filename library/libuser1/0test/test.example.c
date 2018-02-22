@@ -76,13 +76,15 @@ void example_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)example_start;
-	p->stop = (void*)example_stop;
-	p->list = (void*)example_list;
-	p->choose = (void*)example_change;
-	p->read = (void*)example_read;
-	p->write = (void*)example_write;
+	p->onstart = (void*)example_start;
+	p->onstop = (void*)example_stop;
+	p->onlist = (void*)example_list;
+	p->onchoose = (void*)example_change;
+	p->onread = (void*)example_read;
+	p->onwrite = (void*)example_write;
 }
 void example_delete()
 {

@@ -332,10 +332,10 @@ void the2048_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)the2048_start;
-	act->stop = (void*)the2048_stop;
-	act->list = (void*)the2048_list;
-	act->choose = (void*)the2048_choose;
-	act->read = (void*)the2048_read;
-	act->write = (void*)the2048_write;
+	act->onstart = (void*)the2048_start;
+	act->onstop = (void*)the2048_stop;
+	act->onlist = (void*)the2048_list;
+	act->onchoose = (void*)the2048_choose;
+	act->onread = (void*)the2048_read;
+	act->onwrite = (void*)the2048_write;
 }

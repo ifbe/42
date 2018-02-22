@@ -49,13 +49,15 @@ void editor_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('e', 'd', 'i', 't', 'o', 'r', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)editor_start;
-	p->stop = (void*)editor_stop;
-	p->list = (void*)editor_list;
-	p->choose = (void*)editor_choose;
-	p->read = (void*)editor_read;
-	p->write = (void*)editor_write;
+	p->onstart = (void*)editor_start;
+	p->onstop = (void*)editor_stop;
+	p->onlist = (void*)editor_list;
+	p->onchoose = (void*)editor_choose;
+	p->onread = (void*)editor_read;
+	p->onwrite = (void*)editor_write;
 }
 void editor_delete()
 {

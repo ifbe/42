@@ -146,13 +146,15 @@ void palette_create(void* base, void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('p', 'a', 'l', 'e', 't', 't', 'e', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)palette_start;
-	p->stop = (void*)palette_stop;
-	p->list = (void*)palette_list;
-	p->choose = (void*)palette_into;
-	p->read = (void*)palette_read;
-	p->write = (void*)palette_write;
+	p->onstart = (void*)palette_start;
+	p->onstop = (void*)palette_stop;
+	p->onlist = (void*)palette_list;
+	p->onchoose = (void*)palette_into;
+	p->onread = (void*)palette_read;
+	p->onwrite = (void*)palette_write;
 }
 void palette_delete()
 {

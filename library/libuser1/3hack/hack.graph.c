@@ -353,13 +353,15 @@ void graph_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)graph_start;
-	p->stop = (void*)graph_stop;
-	p->list = (void*)graph_list;
-	p->choose = (void*)graph_change;
-	p->read = (void*)graph_read;
-	p->write = (void*)graph_write;
+	p->onstart = (void*)graph_start;
+	p->onstop = (void*)graph_stop;
+	p->onlist = (void*)graph_list;
+	p->onchoose = (void*)graph_change;
+	p->onread = (void*)graph_read;
+	p->onwrite = (void*)graph_write;
 }
 void graph_delete()
 {

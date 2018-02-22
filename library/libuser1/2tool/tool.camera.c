@@ -110,13 +110,15 @@ void camera_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)camera_start;
-	p->stop = (void*)camera_stop;
-	p->list = (void*)camera_list;
-	p->choose = (void*)camera_into;
-	p->read = (void*)camera_read;
-	p->write = (void*)camera_write;
+	p->onstart = (void*)camera_start;
+	p->onstop = (void*)camera_stop;
+	p->onlist = (void*)camera_list;
+	p->onchoose = (void*)camera_into;
+	p->onread = (void*)camera_read;
+	p->onwrite = (void*)camera_write;
 }
 void camera_delete()
 {

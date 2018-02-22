@@ -153,7 +153,7 @@ int actorread_one(struct arena* win)
 			//say("%x,%x,%x,%x\n", tmp, act, sty, com);
 			//say("%x\n", rel);
 
-			act->read(tmp, act, sty, com);
+			act->onread(tmp, act, sty, com);
 			if(win->cw == 12)
 			{
 				if(win->fmt == _vbo_)
@@ -235,7 +235,7 @@ int actorwrite(struct event* ev)
 		rel = tmp;
 	}
 	act = (void*)(rel->selfchip);
-	act->write(ev);
+	act->onwrite(ev);
 
 	return 0;
 }
@@ -285,7 +285,7 @@ void actorchoose(char* p)
 		ret = ncmp(&actor[j].name, p, 8);
 		if(ret == 0)
 		{
-			actor[j].start();
+			actor[j].onstart(&actor[j], 0);
 			act_at(&arena[1], &actor[j]);
 			return;
 		}
@@ -294,14 +294,14 @@ void actorchoose(char* p)
 int actorstart(struct arena* win, struct actor* act)
 {
 	if(act == 0)act = &actor[0];
-	act->start();
+	act->onstart(act, 0);
 
 	act_at(win, act);
 	return 0;
 }
 int actorstop(struct actor* act)
 {
-	act->stop();
+	act->onstop();
 	return 0;
 }
 void actorcreate(u8* addr)

@@ -847,13 +847,15 @@ void terminal_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('t', 'e', 'r', 'm');
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)terminal_start;
-	p->stop = (void*)terminal_stop;
-	p->list = (void*)terminal_list;
-	p->choose = (void*)terminal_change;
-	p->read = (void*)terminal_read;
-	p->write = (void*)terminal_write;
+	p->onstart = (void*)terminal_start;
+	p->onstop = (void*)terminal_stop;
+	p->onlist = (void*)terminal_list;
+	p->onchoose = (void*)terminal_change;
+	p->onread = (void*)terminal_read;
+	p->onwrite = (void*)terminal_write;
 }
 void terminal_delete()
 {

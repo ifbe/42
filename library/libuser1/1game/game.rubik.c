@@ -223,10 +223,10 @@ void rubikscube_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)rubikscube_start;
-	act->stop = (void*)rubikscube_stop;
-	act->list = (void*)rubikscube_list;
-	act->choose = (void*)rubikscube_choose;
-	act->read = (void*)rubikscube_read;
-	act->write = (void*)rubikscube_write;
+	act->onstart = (void*)rubikscube_start;
+	act->onstop = (void*)rubikscube_stop;
+	act->onlist = (void*)rubikscube_list;
+	act->onchoose = (void*)rubikscube_choose;
+	act->onread = (void*)rubikscube_read;
+	act->onwrite = (void*)rubikscube_write;
 }

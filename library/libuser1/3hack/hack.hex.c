@@ -164,13 +164,15 @@ void hex_create(void* uibuf,void* addr)
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('h', 'e', 'x', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)hex_start;
-	p->stop = (void*)hex_stop;
-	p->list = (void*)hex_list;
-	p->choose = (void*)hex_into;
-	p->read = (void*)hex_read;
-	p->write = (void*)hex_write;
+	p->onstart = (void*)hex_start;
+	p->onstop = (void*)hex_stop;
+	p->onlist = (void*)hex_list;
+	p->onchoose = (void*)hex_into;
+	p->onread = (void*)hex_read;
+	p->onwrite = (void*)hex_write;
 }
 void hex_delete()
 {

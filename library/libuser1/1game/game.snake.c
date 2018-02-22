@@ -302,12 +302,12 @@ void snake_create(void* base, void* addr)
 	p->irel = 0;
 	p->orel = 0;
 
-	p->start = (void*)snake_start;
-	p->stop = (void*)snake_stop;
-	p->list = (void*)snake_list;
-	p->choose = (void*)snake_choose;
-	p->read = (void*)snake_read;
-	p->write = (void*)snake_write;
+	p->onstart = (void*)snake_start;
+	p->onstop = (void*)snake_stop;
+	p->onlist = (void*)snake_list;
+	p->onchoose = (void*)snake_choose;
+	p->onread = (void*)snake_read;
+	p->onwrite = (void*)snake_write;
 }
 void snake_delete()
 {

@@ -104,13 +104,15 @@ void doodle_create(void* base, void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)doodle_start;
-	p->stop = (void*)doodle_stop;
-	p->list = (void*)doodle_list;
-	p->choose = (void*)doodle_change;
-	p->read = (void*)doodle_read;
-	p->write = (void*)doodle_write;
+	p->onstart = (void*)doodle_start;
+	p->onstop = (void*)doodle_stop;
+	p->onlist = (void*)doodle_list;
+	p->onchoose = (void*)doodle_change;
+	p->onread = (void*)doodle_read;
+	p->onwrite = (void*)doodle_write;
 }
 void doodle_delete()
 {

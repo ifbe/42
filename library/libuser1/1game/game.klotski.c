@@ -101,13 +101,15 @@ void klotski_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)klotski_start;
-	p->stop = (void*)klotski_stop;
-	p->list = (void*)klotski_list;
-	p->choose = (void*)klotski_change;
-	p->read = (void*)klotski_read;
-	p->write = (void*)klotski_write;
+	p->onstart = (void*)klotski_start;
+	p->onstop = (void*)klotski_stop;
+	p->onlist = (void*)klotski_list;
+	p->onchoose = (void*)klotski_change;
+	p->onread = (void*)klotski_read;
+	p->onwrite = (void*)klotski_write;
 }
 void klotski_delete()
 {

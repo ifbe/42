@@ -164,13 +164,15 @@ void input_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('i', 'n', 'p', 'u', 't', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)input_start;
-	p->stop = (void*)input_stop;
-	p->list = (void*)input_list;
-	p->choose = (void*)input_change;
-	p->read = (void*)input_read;
-	p->write = (void*)input_write;
+	p->onstart = (void*)input_start;
+	p->onstop = (void*)input_stop;
+	p->onlist = (void*)input_list;
+	p->onchoose = (void*)input_change;
+	p->onread = (void*)input_read;
+	p->onwrite = (void*)input_write;
 }
 void input_delete()
 {

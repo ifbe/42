@@ -148,13 +148,15 @@ void qrcode_create(void* base,void* addr)
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)qrcode_start;
-	p->stop = (void*)qrcode_stop;
-	p->list = (void*)qrcode_list;
-	p->choose = (void*)qrcode_into;
-	p->read = (void*)qrcode_read;
-	p->write = (void*)qrcode_write;
+	p->onstart = (void*)qrcode_start;
+	p->onstop = (void*)qrcode_stop;
+	p->onlist = (void*)qrcode_list;
+	p->onchoose = (void*)qrcode_into;
+	p->onread = (void*)qrcode_read;
+	p->onwrite = (void*)qrcode_write;
 }
 void qrcode_delete()
 {

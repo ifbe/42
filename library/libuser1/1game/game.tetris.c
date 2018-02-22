@@ -678,12 +678,12 @@ void tetris_create(void* base, struct actor* p)
 	p->irel = 0;
 	p->orel = 0;
 
-	p->start = (void*)tetris_start;
-	p->stop = (void*)tetris_stop;
-	p->list = (void*)tetris_list;
-	p->choose = (void*)tetris_choose;
-	p->read = (void*)tetris_read;
-	p->write = (void*)tetris_write;
+	p->onstart = (void*)tetris_start;
+	p->onstop = (void*)tetris_stop;
+	p->onlist = (void*)tetris_list;
+	p->onchoose = (void*)tetris_choose;
+	p->onread = (void*)tetris_read;
+	p->onwrite = (void*)tetris_write;
 }
 void tetris_delete()
 {

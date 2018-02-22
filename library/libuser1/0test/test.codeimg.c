@@ -208,13 +208,15 @@ void codeimg_create(void* base,void* addr)
 	struct actor* p = addr;
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)codeimg_start;
-	p->stop = (void*)codeimg_stop;
-	p->list = (void*)codeimg_list;
-	p->choose = (void*)codeimg_change;
-	p->read = (void*)codeimg_read;
-	p->write = (void*)codeimg_write;
+	p->onstart = (void*)codeimg_start;
+	p->onstop = (void*)codeimg_stop;
+	p->onlist = (void*)codeimg_list;
+	p->onchoose = (void*)codeimg_change;
+	p->onread = (void*)codeimg_read;
+	p->onwrite = (void*)codeimg_write;
 }
 void codeimg_delete()
 {

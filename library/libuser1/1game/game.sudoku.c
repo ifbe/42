@@ -208,12 +208,12 @@ void sudoku_create(void* base,void* addr)
 	p->irel = 0;
 	p->orel = 0;
 
-	p->start = (void*)sudoku_start;
-	p->stop = (void*)sudoku_stop;
-	p->list = (void*)sudoku_list;
-	p->choose = (void*)sudoku_choose;
-	p->read = (void*)sudoku_read;
-	p->write = (void*)sudoku_write;
+	p->onstart = (void*)sudoku_start;
+	p->onstop = (void*)sudoku_stop;
+	p->onlist = (void*)sudoku_list;
+	p->onchoose = (void*)sudoku_choose;
+	p->onread = (void*)sudoku_read;
+	p->onwrite = (void*)sudoku_write;
 }
 void sudoku_delete()
 {

@@ -426,13 +426,15 @@ void sketchpad_create(void* base,void* addr)
 
 	act->type = hex32('t', 'o', 'o', 'l');
 	act->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
+	act->irel = 0;
+	act->orel = 0;
 
-	act->start = (void*)sketchpad_start;
-	act->stop = (void*)sketchpad_stop;
-	act->list = (void*)sketchpad_list;
-	act->choose = (void*)sketchpad_change;
-	act->read = (void*)sketchpad_read;
-	act->write = (void*)sketchpad_write;
+	act->onstart = (void*)sketchpad_start;
+	act->onstop = (void*)sketchpad_stop;
+	act->onlist = (void*)sketchpad_list;
+	act->onchoose = (void*)sketchpad_change;
+	act->onread = (void*)sketchpad_read;
+	act->onwrite = (void*)sketchpad_write;
 }
 void sketchpad_delete()
 {

@@ -215,13 +215,15 @@ void bintree_create(void* base,void* addr)
 
 	act->type = hex32('h', 'a', 'c', 'k');
 	act->name = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
+	act->irel = 0;
+	act->orel = 0;
 
-	act->start = (void*)bintree_start;
-	act->stop = (void*)bintree_stop;
-	act->list = (void*)bintree_list;
-	act->choose = (void*)bintree_into;
-	act->read = (void*)bintree_read;
-	act->write = (void*)bintree_write;
+	act->onstart = (void*)bintree_start;
+	act->onstop = (void*)bintree_stop;
+	act->onlist = (void*)bintree_list;
+	act->onchoose = (void*)bintree_into;
+	act->onread = (void*)bintree_read;
+	act->onwrite = (void*)bintree_write;
 }
 void bintree_delete()
 {

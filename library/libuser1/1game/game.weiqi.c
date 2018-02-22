@@ -231,12 +231,12 @@ void weiqi_create(void* base, void* addr)
 	p->irel = 0;
 	p->orel = 0;
 
-	p->start = (void*)weiqi_start;
-	p->stop = (void*)weiqi_stop;
-	p->list = (void*)weiqi_list;
-	p->choose = (void*)weiqi_choose;
-	p->read = (void*)weiqi_read;
-	p->write = (void*)weiqi_write;
+	p->onstart = (void*)weiqi_start;
+	p->onstop = (void*)weiqi_stop;
+	p->onlist = (void*)weiqi_list;
+	p->onchoose = (void*)weiqi_choose;
+	p->onread = (void*)weiqi_read;
+	p->onwrite = (void*)weiqi_write;
 }
 void weiqi_delete()
 {

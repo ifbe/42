@@ -206,10 +206,10 @@ void maze_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)maze_start;
-	act->stop = (void*)maze_stop;
-	act->list = (void*)maze_list;
-	act->choose = (void*)maze_choose;
-	act->read = (void*)maze_read;
-	act->write = (void*)maze_write;
+	act->onstart = (void*)maze_start;
+	act->onstop = (void*)maze_stop;
+	act->onlist = (void*)maze_list;
+	act->onchoose = (void*)maze_choose;
+	act->onread = (void*)maze_read;
+	act->onwrite = (void*)maze_write;
 }

@@ -180,12 +180,12 @@ void calculator_create(void* base,void* addr)
 	p->irel = 0;
 	p->orel = 0;
 
-	p->start = (void*)calculator_start;
-	p->stop = (void*)calculator_stop;
-	p->list = (void*)calculator_list;
-	p->choose = (void*)calculator_change;
-	p->read = (void*)calculator_read;
-	p->write = (void*)calculator_write;
+	p->onstart = (void*)calculator_start;
+	p->onstop = (void*)calculator_stop;
+	p->onlist = (void*)calculator_list;
+	p->onchoose = (void*)calculator_change;
+	p->onread = (void*)calculator_read;
+	p->onwrite = (void*)calculator_write;
 }
 void calculator_delete()
 {

@@ -98,13 +98,15 @@ void fs_create(void* base,void* addr)
 
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('f', 's', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)fs_start;
-	p->stop = (void*)fs_stop;
-	p->list = (void*)fs_list;
-	p->choose = (void*)fs_into;
-	p->read = (void*)fs_read;
-	p->write = (void*)fs_write;
+	p->onstart = (void*)fs_start;
+	p->onstop = (void*)fs_stop;
+	p->onlist = (void*)fs_list;
+	p->onchoose = (void*)fs_into;
+	p->onread = (void*)fs_read;
+	p->onwrite = (void*)fs_write;
 }
 void fs_delete()
 {

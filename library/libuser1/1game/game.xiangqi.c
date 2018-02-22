@@ -493,12 +493,12 @@ void xiangqi_create(void* base, struct actor* act)
 	act->irel = 0;
 	act->orel = 0;
 
-	act->start = (void*)xiangqi_start;
-	act->stop = (void*)xiangqi_stop;
-	act->list = (void*)xiangqi_list;
-	act->choose = (void*)xiangqi_choose;
-	act->read = (void*)xiangqi_read;
-	act->write = (void*)xiangqi_write;
+	act->onstart = (void*)xiangqi_start;
+	act->onstop = (void*)xiangqi_stop;
+	act->onlist = (void*)xiangqi_list;
+	act->onchoose = (void*)xiangqi_choose;
+	act->onread = (void*)xiangqi_read;
+	act->onwrite = (void*)xiangqi_write;
 }
 void xiangqi_delete()
 {

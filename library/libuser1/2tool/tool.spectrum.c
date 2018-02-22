@@ -239,13 +239,15 @@ void spectrum_create(void* uibuf,void* addr)
 
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
+	p->irel = 0;
+	p->orel = 0;
 
-	p->start = (void*)spectrum_start;
-	p->stop = (void*)spectrum_stop;
-	p->list = (void*)spectrum_list;
-	p->choose = (void*)spectrum_into;
-	p->read = (void*)spectrum_read;
-	p->write = (void*)spectrum_write;
+	p->onstart = (void*)spectrum_start;
+	p->onstop = (void*)spectrum_stop;
+	p->onlist = (void*)spectrum_list;
+	p->onchoose = (void*)spectrum_into;
+	p->onread = (void*)spectrum_read;
+	p->onwrite = (void*)spectrum_write;
 }
 void spectrum_delete()
 {

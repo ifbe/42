@@ -183,13 +183,15 @@ void bplus_create(void* base,void* addr)
 
 	act->type = hex32('h', 'a', 'c', 'k');
 	act->name = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	act->irel = 0;
+	act->orel = 0;
 
-	act->start = (void*)bplus_start;
-	act->stop = (void*)bplus_stop;
-	act->list = (void*)bplus_list;
-	act->choose = (void*)bplus_into;
-	act->read = (void*)bplus_read;
-	act->write = (void*)bplus_write;
+	act->onstart = (void*)bplus_start;
+	act->onstop = (void*)bplus_stop;
+	act->onlist = (void*)bplus_list;
+	act->onchoose = (void*)bplus_into;
+	act->onread = (void*)bplus_read;
+	act->onwrite = (void*)bplus_write;
 }
 void bplus_delete()
 {
