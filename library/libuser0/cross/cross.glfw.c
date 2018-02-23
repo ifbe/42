@@ -36,6 +36,8 @@ static u8* fontdata;
 //
 static int queuehead = 0;
 static int queuetail = 0;
+static int width = 512;
+static int height = 512;
 static int last_x = 0;
 static int last_y = 0;
 static int pressed = 0;
@@ -620,10 +622,10 @@ void fixprojection()
 	0, 0, (f+n)/(f-n), -1,
 	0, 0, (2*f*n)/(f-n), 0
 */
-	float w = (float)(win->w);
-	float h = (float)(win->h);
+	float w = (float)width;
+	float h = (float)height;
 	projmatrix[0] = h / w;
-	glViewport(0, 0, win->w, win->h);
+	glViewport(0, 0, width, height);
 }
 void fixmatrix()
 {
@@ -821,11 +823,11 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	if(pressed == 0)return;
 	pressed++;
 
-	if(win->cw == 12)
+	if(win->flag0 == 12)
 	{
 		where = (u64)win;
 		xx = x&0xffff;
-		yy = ((win->h) - y)&0xffff;
+		yy = (height - y)&0xffff;
 
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);
@@ -893,7 +895,7 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 	float tz = camera[2];
 	printf("%f,%f\n", x, y);
 
-	if(win->cw == 12)
+	if(win->flag0 == 12)
 	{
 		where = (u64)win;
 		if(y > 0.0)	//wheel_up
@@ -939,8 +941,8 @@ void callback_drop(GLFWwindow* window, int count, const char** paths)
 void callback_reshape(GLFWwindow* window, int w, int h)
 {
 	printf("%x,%x\n", w, h);
-	win->w = w;
-	win->h = h;
+	width = w;
+	height = h;
 }
 
 

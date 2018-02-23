@@ -68,22 +68,31 @@ struct window
 	int cx;
 	int cy;
 	int cz;
-	int cw;
+	int flag0;
 
-	int w;		//rx
+	union{
+		int rx;
+		int w;
+	};
 	int ry;
 	int rz;
-	int rw;
+	int flag1;
 
 	int fx;
-	int h;		//fy
+	union{
+		int fy;
+		int h;
+	};
 	int fz;
-	int fw;
+	int flag2;
 
 	int ux;
 	int uy;
-	int d;		//uz
-	int uw;
+	union{
+		int uz;
+		int d;
+	};
+	int flag3;
 
 	//[80,ff]
 	union{

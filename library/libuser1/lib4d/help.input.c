@@ -272,8 +272,8 @@ int input_write(struct arena* win, struct event* ev)
 
 		if(ret != 0)
 		{
-			if(ret == win->cw)win->cw = 0;
-			else win->cw = ret;
+			if(ret == win->flag0)win->flag0 = 0;
+			else win->flag0 = ret;
 			return 0;
 		}
 	}
@@ -288,20 +288,20 @@ int input_write(struct arena* win, struct event* ev)
 		ret >>= 4;
 		if((x+ret > win->w) && (y+ret > win->h))
 		{
-			if(12 == win->cw)win->cw = 0;
-			else win->cw = 12;
+			if(12 == win->flag0)win->flag0 = 0;
+			else win->flag0 = 12;
 			return 0;
 		}
 	}
 	//build
-	if(11 == win->cw)
+	if(11 == win->flag0)
 	{
 		login_write(win, ev);
 		return 0;
 	}
 
 	//chosen
-	if(12 == win->cw)
+	if(12 == win->flag0)
 	{
 		if(ev->what == _char_)
 		{

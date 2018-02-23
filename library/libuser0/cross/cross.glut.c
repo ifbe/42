@@ -32,6 +32,8 @@ static u8* fontdata;
 //
 static int queuehead = 0;
 static int queuetail = 0;
+static int width = 512;
+static int height = 512;
 static int last_x = 0;
 static int last_y = 0;
 //
@@ -559,10 +561,10 @@ void fixprojection()
 	0, 0, (f+n)/(f-n), -1,
 	0, 0, (2*f*n)/(f-n), 0
 */
-	float w = (float)(win->w);
-	float h = (float)(win->h);
+	float w = (float)width;
+	float h = (float)height;
 	projmatrix[0] = h / w;
-	glViewport(0, 0, win->w, win->h);
+	glViewport(0, 0, width, height);
 }
 void fixmatrix()
 {
@@ -713,8 +715,8 @@ void callback_idle()
 }
 void callback_reshape(int w, int h)
 {
-	win->w = w;
-	win->h = h;
+	width = w;
+	height = h;
 }
 void callback_keyboard(unsigned char key, int x, int y)
 {
@@ -766,11 +768,11 @@ void callback_mouse(int button, int state, int x, int y)
 	u64 why, what, where;
 	//printf("1111: %x,%x\n",x,y);
 
-	if(win->cw == 12)
+	if(win->flag0 == 12)
 	{
 		where = (u64)win;
 		xx = x&0xffff;
-		yy = ((win->h) - y)&0xffff;
+		yy = (height - y)&0xffff;
 
 		if(state == GLUT_DOWN)
 		{
@@ -843,11 +845,11 @@ void callback_move(int x,int y)
 	u64 why, what, where;
 	//printf("2222: %d,%d\n",x,y);
 
-	if(win->cw == 12)
+	if(win->flag0 == 12)
 	{
 		where = (u64)win;
 		xx = x&0xffff;
-		yy = ((win->h) - y)&0xffff;
+		yy = (height - y)&0xffff;
 
 		temp = 'l';
 		why = xx + (yy<<16) + (temp<<48);
