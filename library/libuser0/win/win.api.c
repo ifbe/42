@@ -442,13 +442,13 @@ DWORD WINAPI uievent()
 
 
 
-int windowwrite(struct window* dst, struct window* src)
+int windowwrite(struct window* dst)
 {
 	BITMAPINFO info;
 	int w = dst->w;
 	int h = dst->h;
 	HDC dc = (void*)(dst->dc);
-	void* buf = (void*)(src->buf);
+	void* buf = (void*)(dst->buf);
 
 	//bitmapinfo(w,h);
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -518,18 +518,17 @@ int windowchange()
 int windowstart(struct window* this)
 {
 	int j;
+	if(this == 0)return 0;
+
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 	this->w = 512;
 	this->h = 512;
-	if(this->type == hex32('w','i','n',0))
-	{
-		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-		for(j=0;j<16;j++)
-		{
-			(this->touch[j]).id = 0xffff;
-		}
-		j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
-	}
+	for(j=0;j<16;j++)(this->touch[j]).id = 0xffff;
+	this->buf = malloc(2048*2048*4);
+	j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)this);
+
 	return 0;
 }
 int windowstop(struct window* this)

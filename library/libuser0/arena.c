@@ -39,12 +39,6 @@ int websocket_write(int fd, void* buf, int len);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-void* startmemory(int);
-int stopmemory(void*);
-//
-void* relation_read(int);
-void relation_write(void*, u64, u32, void*, u64, u32);
-//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -76,65 +70,37 @@ int arenawrite(struct window* dst, struct window* src)
 }
 void* arenastart(u64 type, u64 fd)
 {
-	struct window* win;
-	int j;
-	if(type == __buf__)
+	struct window* win = 0;
+	int j = 0;
+	while(1)
 	{
-		if(arena->type == 0)
-		{
-			arena->type = __buf__;
-			arena->fmt = __buf__;
-			arena->first = 0;
-			arena->last = 0;
+		win = &arena[j];
+		if(win->type == 0)break;
 
-			arena->buf = startmemory(0x100000*16);
-			arena->len = 0x100000*16;
-			windowstart(arena);
-		}
-		return arena;
+		j++;
+		if(j >= 0x100)return 0;
 	}
-	else
+
+	if(type == __win__)
 	{
-		j = 1;
-		while(1)
-		{
-			win = &arena[j];
-			if(win->type == 0)break;
+		win->type = __win__;
+		win->fmt = 0;
+		win->first = 0;
+		win->last = 0;
 
-			j++;
-			if(j >= 0x100)return 0;
-		}
-
-		if(type == __win__)
-		{
-			win->type = __win__;
-			win->fmt = 0;
-			win->first = 0;
-			win->last = 0;
-
-			windowstart(win);
-			relation_write(
-				arena, 0, __buf__,
-				win, 0, __win__
-			);
-			return win;
-		}
-		else if(type == hex32('W','S',0,0))
-		{
-			win->type = hex32('W', 'S', 0, 0);
-			win->fmt = hex32('h','t','m','l');
-			win->first = 0;
-			win->last = 0;
-
-			win->fd = fd;
-			relation_write(
-				arena, 0, 0,
-				win, 0, 0
-			);
-			return win;
-		}
+		windowstart(win);
 	}
-	return 0;
+	else if(type == hex32('W','S',0,0))
+	{
+		win->type = hex32('W', 'S', 0, 0);
+		win->fmt = hex32('h','t','m','l');
+		win->first = 0;
+		win->last = 0;
+
+		win->fd = fd;
+	}
+
+	return win;
 }
 int arenastop(struct window* win)
 {
@@ -158,7 +124,6 @@ void arenacreate(u8* addr)
 	voicecreate(arena);
 
 	//
-	arenastart(__buf__, 0);
 	arenastart(__win__, 0);
 
 	//say("[c,f):createed arena\n");

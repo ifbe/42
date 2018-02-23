@@ -99,44 +99,40 @@ static GLfloat projmatrix[4*4] = {
 static GLfloat cameramvp[4*4];
 static GLfloat light0mvp[4*4];
 /*
-//point
-static int pointcount;
-static GLuint pointvao;
-static GLuint vbo_pointvertex;
-static GLuint vbo_pointcolour;
-static GLfloat* data_pointvertex;
-static GLfloat* data_pointcolour;
-//line
-static int linecount;
-static GLuint linevao;
-static GLuint vbo_lineindex;
-static GLuint vbo_linevertex;
-static GLuint vbo_linecolour;
-static GLuint* data_lineindex;
-static GLfloat* data_linevertex;
-static GLfloat* data_linecolour;
-//trigon
-static int trigoncount;
-static GLuint trigonvao;
-static GLuint vbo_trigonindex;
-static GLuint vbo_trigonvertex;
-static GLuint vbo_trigoncolour;
-static GLuint vbo_trigonnormal;
-static GLuint* data_trigonindex;
-static GLfloat* data_trigonvertex;
-static GLfloat* data_trigoncolour;
-static GLfloat* data_trigonnormal;
-//tex0(4096*4096)
-static int fontcount;
-static GLuint fontvao;
-static GLuint vbo_fontindex;
-static GLuint vbo_fontvertex;
-static GLuint vbo_fontcolour;
-static GLuint vbo_fonttexcoo;
-static GLuint* data_fontindex;
-static GLfloat* data_fontvertex;
-static GLfloat* data_fontcolour;
-static GLfloat* data_fonttexcoo;
+struct texandobj
+{
+	GLuint globj;
+	GLuint flag;
+	GLuint len;
+	u8* buf;
+};
+static struct eachone
+{
+	GLuint program;
+	GLuint vao;
+	GLuint vbo;
+	GLuint tex0;
+	GLuint tex1;
+	GLfloat light0vertex[3];
+	GLfloat light0color[3];
+	GLfloat light1vertex[3];
+	GLfloat light1color[3];
+	GLfloat modmat[4][4];
+};
+//0:	tex0
+//1~31:	tex1~31
+//32:	point
+//33:	line
+//34:	trigon
+//35:	font
+//36~?:	other
+static struct texandobj mod[0x1000];
+//0:	point
+//1:	line
+//2:	trigon
+//3:	font
+//4:	other
+static struct eachone each[0x1000];
 */
 
 

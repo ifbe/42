@@ -27,10 +27,11 @@ void background_pixel(struct arena* win)
 }
 void background(struct arena* win)
 {
-	if(_cli_ == win->fmt)background_cli(win);
-	else if(_tui_ == win->fmt)background_tui(win);
-	else if(_html_ == win->fmt)background_html(win);
-	else if(_vbo_ == win->fmt)background_vbo(win);
+	u64 fmt = win->fmt;
+	if(_cli_ == fmt)background_cli(win);
+	else if(_tui_ == fmt)background_tui(win);
+	else if(_html_ == fmt)background_html(win);
+	else if(_vbo_ == fmt)background_vbo(win);
 	else background_pixel(win);
 }
 
@@ -69,9 +70,10 @@ void foreground_pixel(struct arena* win)
 }
 void foreground(struct arena* win)
 {
-	if(_cli_ == win->fmt)foreground_cli(win);
-	else if(_tui_ == win->fmt)foreground_tui(win);
-	else if(_html_ == win->fmt)foreground_html(win);
-	else if(_vbo_ == win->fmt)foreground_vbo(win);
+	u64 fmt = win->fmt;
+	if(_cli_ == fmt)foreground_cli(win);
+	else if(_tui_ == fmt)foreground_tui(win);
+	else if(_html_ == fmt)foreground_html(win);
+	else if(_vbo_ == fmt)foreground_vbo(win);
 	else foreground_pixel(win);
 }

@@ -105,23 +105,7 @@ void win_at(u64 why, u64 where)
 
 int actorread()
 {
-	struct arena* tmp;
-	struct arena* window;
-	struct relation* rel;
-
-	tmp = &arena[0];
-	rel = tmp->irel;
-	while(1)
-	{
-		if(rel == 0)break;
-		if(rel->destchip == 0)break;
-
-		window = (void*)(rel->selfchip);
-		actoroutput(window);
-
-		rel = samepinnextchip(rel);
-	}
-
+	actoroutput(&arena[0]);
 	return 0;
 }
 int actorwrite(struct event* ev)
@@ -140,7 +124,7 @@ int actorwrite(struct event* ev)
 	}
 
 	//no window
-	if(ev->where < 0xffff)win = &arena[1];
+	if(ev->where < 0xffff)win = &arena[0];
 	else win = (void*)(ev->where);
 
 	//pre process
@@ -194,7 +178,7 @@ void actorchoose(char* p)
 		if(ret == 0)
 		{
 			actor[j].onstart(&actor[j], 0);
-			act_at(&arena[1], &actor[j]);
+			act_at(&arena[0], &actor[j]);
 			return;
 		}
 	}

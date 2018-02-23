@@ -62,7 +62,6 @@ int actoroutput(struct arena* win)
 	int j;
 	struct relation* rel;
 
-	struct arena* tmp;
 	struct actor* act;
 	struct style* sty;
 	struct compo* com;
@@ -73,21 +72,8 @@ int actoroutput(struct arena* win)
 		if(win->flag0 == 12)return 0;
 	}
 
-	//tmp
-	if(win->type != _buf_)
-	{
-		tmp = &arena[0];
-
-		tmp->fmt = win->fmt;
-		tmp->w = win->w;
-		tmp->h = win->h;
-
-		for(j=0;j<16;j++)tmp->info[j] = 0;
-	}
-	else tmp = win;
-
 	//bg
-	if((_vbo_ != win->fmt) | (12 == win->flag0))background(tmp);
+	if((_vbo_ != win->fmt) | (12 == win->flag0))background(win);
 
 	//content
 	rel = win->irel;
@@ -100,14 +86,14 @@ int actoroutput(struct arena* win)
 			act = (void*)(rel->selfchip);
 			sty = (void*)(rel->destfoot);
 			com = (void*)(rel->selffoot);
-			//say("%x,%x,%x,%x\n", tmp, act, sty, com);
+			//say("%x,%x,%x,%x\n", win, act, sty, com);
 			//say("%x\n", rel);
 
-			act->onread(tmp, act, sty, com);
+			act->onread(win, act, sty, com);
 			if(win->flag0 == 12)
 			{
-				if(win->fmt == _vbo_)select_3d(tmp, sty);
-				else select_2d(tmp, sty);
+				if(win->fmt == _vbo_)select_3d(win, sty);
+				else select_2d(win, sty);
 			}
 		}
 
@@ -115,8 +101,8 @@ int actoroutput(struct arena* win)
 	}
 
 	//fg
-	if((11 == win->flag0) | (0 == win->irel))login_read(tmp);
-	if((12 == win->flag0) | (_vbo_ != win->fmt))foreground(tmp);
+	if((11 == win->flag0) | (0 == win->irel))login_read(win);
+	if((12 == win->flag0) | (_vbo_ != win->fmt))foreground(win);
 
 theend:
 	arenawrite(win, &arena[0]);

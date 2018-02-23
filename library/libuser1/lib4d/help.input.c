@@ -308,6 +308,7 @@ int actorinput(struct arena* win, struct event* ev)
 			return 0;
 		}
 	}
+
 	//build
 	if(11 == win->flag0)
 	{
@@ -339,6 +340,7 @@ int actorinput(struct arena* win, struct event* ev)
 
 		rel = tmp;
 	}
+
 	act = (void*)(rel->selfchip);
 	act->onwrite(ev);
 
