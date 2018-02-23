@@ -176,23 +176,29 @@ static void bplus_start()
 static void bplus_stop()
 {
 }
-void bplus_create(void* base,void* addr)
+static void bplus_delete()
 {
-	struct actor* act = addr;
-	node = base+0x300000;
-
-	act->type = hex32('h', 'a', 'c', 'k');
-	act->name = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
-	act->irel = 0;
-	act->orel = 0;
-
-	act->onstart = (void*)bplus_start;
-	act->onstop = (void*)bplus_stop;
-	act->onlist = (void*)bplus_list;
-	act->onchoose = (void*)bplus_into;
-	act->onread = (void*)bplus_read;
-	act->onwrite = (void*)bplus_write;
 }
-void bplus_delete()
+static void bplus_create()
 {
+}
+
+
+
+
+void bplus_register(struct actor* p)
+{
+	p->type = hex32('h', 'a', 'c', 'k');
+	p->name = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)bplus_create;
+	p->ondelete = (void*)bplus_delete;
+	p->onstart  = (void*)bplus_start;
+	p->onstop   = (void*)bplus_stop;
+	p->onlist   = (void*)bplus_list;
+	p->onchoose = (void*)bplus_into;
+	p->onread   = (void*)bplus_read;
+	p->onwrite  = (void*)bplus_write;
 }

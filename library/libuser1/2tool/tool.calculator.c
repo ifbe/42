@@ -85,10 +85,6 @@ static void calculator_read(struct arena* win, struct actor* act, struct style* 
 	else if(fmt == _vbo_)calculator_read_vbo(win, act, sty);
 	else calculator_read_pixel(win, act, sty);
 }
-
-
-
-
 static void calculator_write(struct event* ev)
 {
 	double final;
@@ -150,14 +146,13 @@ static void calculator_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
 static void calculator_list()
 {
 }
 static void calculator_change()
+{
+}
+static void calculator_stop()
 {
 }
 static void calculator_start()
@@ -169,24 +164,29 @@ static void calculator_start()
 	buffer[3] = 0;
 	count = 3;
 }
-static void calculator_stop()
+static void calculator_delete()
 {
 }
-void calculator_create(void* base,void* addr)
+static void calculator_create()
 {
-	struct actor* p = addr;
+}
+
+
+
+
+void calculator_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('c', 'a', 'l', 'c');
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)calculator_start;
-	p->onstop = (void*)calculator_stop;
-	p->onlist = (void*)calculator_list;
+	p->oncreate = (void*)calculator_create;
+	p->ondelete = (void*)calculator_delete;
+	p->onstart  = (void*)calculator_start;
+	p->onstop   = (void*)calculator_stop;
+	p->onlist   = (void*)calculator_list;
 	p->onchoose = (void*)calculator_change;
-	p->onread = (void*)calculator_read;
-	p->onwrite = (void*)calculator_write;
-}
-void calculator_delete()
-{
+	p->onread   = (void*)calculator_read;
+	p->onwrite  = (void*)calculator_write;
 }

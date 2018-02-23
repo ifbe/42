@@ -168,21 +168,9 @@ static void maze_read(struct arena* win, struct actor* act, struct style* sty)
 	else if(fmt == _vbo_)maze_read_vbo(win, act, sty);
 	else maze_read_pixel(win, act, sty);
 }
-
-
-
-
 static void maze_write(struct event* ev)
 {
 }
-
-
-
-
-
-
-
-
 static void maze_list()
 {
 }
@@ -196,20 +184,29 @@ static void maze_start()
 {
 	maze_generate(buffer, mazesize);
 }
-void maze_delete()
+static void maze_delete()
 {
 }
-void maze_create(void* base, struct actor* act)
+static void maze_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex32('m', 'a', 'z', 'e');
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)maze_start;
-	act->onstop = (void*)maze_stop;
-	act->onlist = (void*)maze_list;
-	act->onchoose = (void*)maze_choose;
-	act->onread = (void*)maze_read;
-	act->onwrite = (void*)maze_write;
+
+
+
+void maze_register(struct actor* p)
+{
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex32('m', 'a', 'z', 'e');
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)maze_create;
+	p->ondelete = (void*)maze_delete;
+	p->onstart  = (void*)maze_start;
+	p->onstop   = (void*)maze_stop;
+	p->onlist   = (void*)maze_list;
+	p->onchoose = (void*)maze_choose;
+	p->onread   = (void*)maze_read;
+	p->onwrite  = (void*)maze_write;
 }

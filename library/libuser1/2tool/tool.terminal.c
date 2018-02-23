@@ -842,21 +842,29 @@ static void terminal_start()
 static void terminal_stop()
 {
 }
-void terminal_create(void* base,void* addr)
+static void terminal_delete()
 {
-	struct actor* p = addr;
+}
+static void terminal_create()
+{
+}
+
+
+
+
+void terminal_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('t', 'e', 'r', 'm');
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)terminal_start;
-	p->onstop = (void*)terminal_stop;
-	p->onlist = (void*)terminal_list;
+	p->oncreate = (void*)terminal_create;
+	p->ondelete = (void*)terminal_delete;
+	p->onstart  = (void*)terminal_start;
+	p->onstop   = (void*)terminal_stop;
+	p->onlist   = (void*)terminal_list;
 	p->onchoose = (void*)terminal_change;
-	p->onread = (void*)terminal_read;
-	p->onwrite = (void*)terminal_write;
-}
-void terminal_delete()
-{
+	p->onread   = (void*)terminal_read;
+	p->onwrite  = (void*)terminal_write;
 }

@@ -261,14 +261,13 @@ void snake_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
 static void snake_list()
 {
 }
 static void snake_choose()
+{
+}
+static void snake_stop()
 {
 }
 static void snake_start()
@@ -289,26 +288,29 @@ static void snake_start()
 
 	die=0;
 }
-static void snake_stop()
+static void snake_delete()
 {
 }
-void snake_create(void* base, void* addr)
+static void snake_create()
 {
-	struct actor* p = addr;
-	snake = base+0x300000;
+}
 
+
+
+
+void snake_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)snake_start;
-	p->onstop = (void*)snake_stop;
-	p->onlist = (void*)snake_list;
+	p->oncreate = (void*)snake_create;
+	p->ondelete = (void*)snake_delete;
+	p->onstart  = (void*)snake_start;
+	p->onstop   = (void*)snake_stop;
+	p->onlist   = (void*)snake_list;
 	p->onchoose = (void*)snake_choose;
-	p->onread = (void*)snake_read;
-	p->onwrite = (void*)snake_write;
-}
-void snake_delete()
-{
+	p->onread   = (void*)snake_read;
+	p->onwrite  = (void*)snake_write;
 }

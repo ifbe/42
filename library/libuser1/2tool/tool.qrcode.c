@@ -123,10 +123,6 @@ static void qrcode_read(struct arena* win, struct actor* act, struct style* sty)
 static void qrcode_write(struct event* ev)
 {
 }
-
-
-
-
 static void qrcode_list()
 {
 }
@@ -141,23 +137,30 @@ static void qrcode_start()
 static void qrcode_stop()
 {
 }
-void qrcode_create(void* base,void* addr)
+static void qrcode_delete()
 {
-	struct actor* p = addr;
-	databuf = base+0x300000;
+}
+static void qrcode_create(struct actor* act)
+{
+	databuf = (act->buf) + 0x300000;
+}
 
+
+
+
+void qrcode_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)qrcode_start;
-	p->onstop = (void*)qrcode_stop;
-	p->onlist = (void*)qrcode_list;
+	p->oncreate = (void*)qrcode_create;
+	p->ondelete = (void*)qrcode_delete;
+	p->onstart  = (void*)qrcode_start;
+	p->onstop   = (void*)qrcode_stop;
+	p->onlist   = (void*)qrcode_list;
 	p->onchoose = (void*)qrcode_into;
-	p->onread = (void*)qrcode_read;
-	p->onwrite = (void*)qrcode_write;
-}
-void qrcode_delete()
-{
+	p->onread   = (void*)qrcode_read;
+	p->onwrite  = (void*)qrcode_write;
 }

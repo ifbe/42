@@ -109,37 +109,41 @@ static void browser_write(struct event* ev)
 		len = dst;
 	}
 }
-
-
-
-
 static void browser_list()
 {
 }
 static void browser_change()
 {
 }
-static void browser_start()
-{
-}
 static void browser_stop()
 {
 }
-void browser_create(void* base,void* addr)
+static void browser_start()
 {
-	pl = addr;
-	pl->type = hex32('t', 'o', 'o', 'l');
-	pl->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
-	pl->irel = 0;
-	pl->orel = 0;
-
-	pl->onstart = (void*)browser_start;
-	pl->onstop = (void*)browser_stop;
-	pl->onlist = (void*)browser_list;
-	pl->onchoose = (void*)browser_change;
-	pl->onread = (void*)browser_read;
-	pl->onwrite = (void*)browser_write;
 }
-void browser_delete()
+static void browser_delete()
 {
+}
+static void browser_create()
+{
+}
+
+
+
+
+void browser_register(struct actor* p)
+{
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)browser_create;
+	p->ondelete = (void*)browser_delete;
+	p->onstart  = (void*)browser_start;
+	p->onstop   = (void*)browser_stop;
+	p->onlist   = (void*)browser_list;
+	p->onchoose = (void*)browser_change;
+	p->onread   = (void*)browser_read;
+	p->onwrite  = (void*)browser_write;
 }

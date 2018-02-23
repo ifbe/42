@@ -100,10 +100,6 @@ static void ooxx_read(struct arena* win, struct actor* act, struct style* sty)
 	else if(fmt == _html_)ooxx_read_html(win, act, sty);
 	else ooxx_read_pixel(win, act, sty);
 }
-
-
-
-
 void ooxx_write(struct event* ev)
 {
 	char val;
@@ -134,10 +130,6 @@ say("%d,%d\n",x,y);
 		turn++;
 	}
 }
-
-
-
-
 static void ooxx_list()
 {
 }
@@ -154,20 +146,29 @@ static void ooxx_start()
 static void ooxx_stop()
 {
 }
-void ooxx_delete()
+static void ooxx_delete()
 {
 }
-void ooxx_create(void* base, struct actor* act)
+static void ooxx_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex32('o', 'o', 'x', 'x');
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)ooxx_start;
-	act->onstop = (void*)ooxx_stop;
-	act->onlist = (void*)ooxx_list;
-	act->onchoose = (void*)ooxx_choose;
-	act->onread = (void*)ooxx_read;
-	act->onwrite = (void*)ooxx_write;
+
+
+
+void ooxx_register(struct actor* p)
+{
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex32('o', 'o', 'x', 'x');
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)ooxx_create;
+	p->ondelete = (void*)ooxx_delete;
+	p->onstart  = (void*)ooxx_start;
+	p->onstop   = (void*)ooxx_stop;
+	p->onlist   = (void*)ooxx_list;
+	p->onchoose = (void*)ooxx_choose;
+	p->onread   = (void*)ooxx_read;
+	p->onwrite  = (void*)ooxx_write;
 }

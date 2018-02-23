@@ -171,21 +171,29 @@ static void font_start()
 static void font_stop()
 {
 }
-void font_create(void* base, void* addr)
+static void font_delete()
 {
-	struct actor* p = addr;
+}
+static void font_create()
+{
+}
+
+
+
+
+void font_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('f', 'o', 'n', 't');
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)font_start;
-	p->onstop = (void*)font_stop;
-	p->onlist = (void*)font_list;
+	p->oncreate = (void*)font_create;
+	p->ondelete = (void*)font_delete;
+	p->onstart  = (void*)font_start;
+	p->onstop   = (void*)font_stop;
+	p->onlist   = (void*)font_list;
 	p->onchoose = (void*)font_change;
-	p->onread = (void*)font_read;
-	p->onwrite = (void*)font_write;
-}
-void font_delete()
-{
+	p->onread   = (void*)font_read;
+	p->onwrite  = (void*)font_write;
 }

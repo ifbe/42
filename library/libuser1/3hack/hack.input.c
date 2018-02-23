@@ -128,10 +128,6 @@ static void keyboard_read_cli(struct arena* win, struct actor* act, struct style
 {
 	say("keyboard(%x,%x,%x)\n",win,act,sty);
 }
-
-
-
-
 static void input_read(struct arena* win, struct actor* act, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -159,21 +155,29 @@ static void input_stop()
 static void input_start()
 {
 }
-void input_create(void* base,void* addr)
+static void input_delete()
 {
-	struct actor* p = addr;
+}
+static void input_create()
+{
+}
+
+
+
+
+void input_register(struct actor* p)
+{
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('i', 'n', 'p', 'u', 't', 0, 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)input_start;
-	p->onstop = (void*)input_stop;
-	p->onlist = (void*)input_list;
+	p->oncreate = (void*)input_create;
+	p->ondelete = (void*)input_delete;
+	p->onstart  = (void*)input_start;
+	p->onstop   = (void*)input_stop;
+	p->onlist   = (void*)input_list;
 	p->onchoose = (void*)input_change;
-	p->onread = (void*)input_read;
-	p->onwrite = (void*)input_write;
-}
-void input_delete()
-{
+	p->onread   = (void*)input_read;
+	p->onwrite  = (void*)input_write;
 }

@@ -192,10 +192,6 @@ static void bintree_write(struct event* ev)
 		}
 	}//'char'
 }
-
-
-
-
 static void bintree_list()
 {
 }
@@ -208,23 +204,29 @@ static void bintree_start()
 static void bintree_stop()
 {
 }
-void bintree_create(void* base,void* addr)
+static void bintree_delete()
 {
-	struct actor* act = addr;
-	node = (struct bintree*)(base+0x300000);
-
-	act->type = hex32('h', 'a', 'c', 'k');
-	act->name = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
-	act->irel = 0;
-	act->orel = 0;
-
-	act->onstart = (void*)bintree_start;
-	act->onstop = (void*)bintree_stop;
-	act->onlist = (void*)bintree_list;
-	act->onchoose = (void*)bintree_into;
-	act->onread = (void*)bintree_read;
-	act->onwrite = (void*)bintree_write;
 }
-void bintree_delete()
+static void bintree_create()
 {
+}
+
+
+
+
+void bintree_register(struct actor* p)
+{
+	p->type = hex32('h', 'a', 'c', 'k');
+	p->name = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)bintree_create;
+	p->ondelete = (void*)bintree_delete;
+	p->onstart  = (void*)bintree_start;
+	p->onstop   = (void*)bintree_stop;
+	p->onlist   = (void*)bintree_list;
+	p->onchoose = (void*)bintree_into;
+	p->onread   = (void*)bintree_read;
+	p->onwrite  = (void*)bintree_write;
 }

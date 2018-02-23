@@ -6,7 +6,6 @@ int windowread(int type, char* buf);
 
 
 
-static u8* buffer;
 static u8* stlbuf;
 static int stllen;
 static float left,right,front,back,bottom,upper;
@@ -215,6 +214,7 @@ static void stl_write(struct event* ev)
 	}
 	else if(_drop_ == type)
 	{
+		char buffer[0x1000];
 		ret = windowread(type, buffer);
 		say("%s", buffer);
 
@@ -239,31 +239,37 @@ static void stl_list()
 static void stl_change()
 {
 }
-static void stl_start()
-{
-	stlbuf = (void*)startmemory(0x800000);
-	stl_prep("42.stl");
-}
 static void stl_stop()
 {
 }
-void stl_create(void* base, void* addr)
+static void stl_start()
 {
-	struct actor* p = addr;
-	buffer = base+0x300000;
+	stl_prep("42.stl");
+}
+static void stl_delete()
+{
+}
+static void stl_create()
+{
+	stlbuf = (void*)startmemory(0x800000);
+}
 
+
+
+
+void stl_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex32('s', 't', 'l', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)stl_start;
-	p->onstop = (void*)stl_stop;
-	p->onlist = (void*)stl_list;
+	p->oncreate = (void*)stl_create;
+	p->ondelete = (void*)stl_delete;
+	p->onstart  = (void*)stl_start;
+	p->onstop   = (void*)stl_stop;
+	p->onlist   = (void*)stl_list;
 	p->onchoose = (void*)stl_change;
-	p->onread = (void*)stl_read;
-	p->onwrite = (void*)stl_write;
-}
-void stl_delete()
-{
+	p->onread   = (void*)stl_read;
+	p->onwrite  = (void*)stl_write;
 }

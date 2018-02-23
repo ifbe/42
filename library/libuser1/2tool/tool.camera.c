@@ -87,39 +87,43 @@ static void camera_write(struct event* ev)
 		vision = (void*)key;
 	}
 }
-
-
-
-
 static void camera_list()
 {
 }
 static void camera_into()
 {
 }
-static void camera_start()
-{
-	startvision();
-}
 static void camera_stop()
 {
 	stopvision();
 }
-void camera_create(void* base,void* addr)
+static void camera_start()
 {
-	struct actor* p = addr;
+	startvision();
+}
+static void camera_delete()
+{
+}
+static void camera_create()
+{
+}
+
+
+
+
+void camera_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)camera_start;
-	p->onstop = (void*)camera_stop;
-	p->onlist = (void*)camera_list;
+	p->oncreate = (void*)camera_create;
+	p->ondelete = (void*)camera_delete;
+	p->onstart  = (void*)camera_start;
+	p->onstop   = (void*)camera_stop;
+	p->onlist   = (void*)camera_list;
 	p->onchoose = (void*)camera_into;
-	p->onread = (void*)camera_read;
-	p->onwrite = (void*)camera_write;
-}
-void camera_delete()
-{
+	p->onread   = (void*)camera_read;
+	p->onwrite  = (void*)camera_write;
 }

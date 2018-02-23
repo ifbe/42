@@ -44,21 +44,29 @@ static void editor_start()
 static void editor_stop()
 {
 }
-void editor_create(void* base,void* addr)
+static void editor_delete()
 {
-	struct actor* p = addr;
+}
+static void editor_create()
+{
+}
+
+
+
+
+void editor_register(struct actor* p)
+{
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('e', 'd', 'i', 't', 'o', 'r', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)editor_start;
-	p->onstop = (void*)editor_stop;
-	p->onlist = (void*)editor_list;
+	p->oncreate = (void*)editor_create;
+	p->ondelete = (void*)editor_delete;
+	p->onstart  = (void*)editor_start;
+	p->onstop   = (void*)editor_stop;
+	p->onlist   = (void*)editor_list;
 	p->onchoose = (void*)editor_choose;
-	p->onread = (void*)editor_read;
-	p->onwrite = (void*)editor_write;
-}
-void editor_delete()
-{
+	p->onread   = (void*)editor_read;
+	p->onwrite  = (void*)editor_write;
 }

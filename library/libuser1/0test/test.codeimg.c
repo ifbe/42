@@ -173,14 +173,13 @@ static void codeimg_read(struct arena* win, struct actor* act, struct style* sty
 static void codeimg_write(struct event* ev)
 {
 }
-
-
-
-
 static void codeimg_list()
 {
 }
 static void codeimg_change()
+{
+}
+static void codeimg_stop()
 {
 }
 static void codeimg_start()
@@ -200,24 +199,29 @@ static void codeimg_start()
 		}
 	}
 }
-static void codeimg_stop()
+void codeimg_delete()
 {
 }
-void codeimg_create(void* base,void* addr)
+void codeimg_create()
 {
-	struct actor* p = addr;
+}
+
+
+
+
+void codeimg_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)codeimg_start;
-	p->onstop = (void*)codeimg_stop;
-	p->onlist = (void*)codeimg_list;
+	p->oncreate = (void*)codeimg_create;
+	p->ondelete = (void*)codeimg_delete;
+	p->onstart  = (void*)codeimg_start;
+	p->onstop   = (void*)codeimg_stop;
+	p->onlist   = (void*)codeimg_list;
 	p->onchoose = (void*)codeimg_change;
-	p->onread = (void*)codeimg_read;
-	p->onwrite = (void*)codeimg_write;
-}
-void codeimg_delete()
-{
+	p->onread   = (void*)codeimg_read;
+	p->onwrite  = (void*)codeimg_write;
 }

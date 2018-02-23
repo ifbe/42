@@ -5,8 +5,6 @@ int openwriteclose(void*, void*, u64, u64);
 
 
 
-static struct actor* pl;
-//
 static u64 algtype[] = {
 	hex32('m','d','5',0),
 	hex32('s','h','a','1'),
@@ -143,23 +141,29 @@ static void algorithm_start()
 static void algorithm_stop()
 {
 }
-void algorithm_create(void* base, void* addr)
+static void algorithm_delete()
 {
-	pl = addr;
-	buffer = base+0x300000;
-
-	pl->type = hex32('h', 'a', 'c', 'k');
-	pl->name = hex32('a', 'l', 'g', 'o');
-	pl->irel = 0;
-	pl->orel = 0;
-
-	pl->onstart = (void*)algorithm_start;
-	pl->onstop = (void*)algorithm_stop;
-	pl->onlist = (void*)algorithm_list;
-	pl->onchoose = (void*)algorithm_choose;
-	pl->onread = (void*)algorithm_read;
-	pl->onwrite = (void*)algorithm_write;
 }
-void algorithm_delete()
+static void algorithm_create()
 {
+}
+
+
+
+
+void algorithm_register(struct actor* p)
+{
+	p->type = hex32('h', 'a', 'c', 'k');
+	p->name = hex32('a', 'l', 'g', 'o');
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)algorithm_create;
+	p->ondelete = (void*)algorithm_delete;
+	p->onstart  = (void*)algorithm_start;
+	p->onstop   = (void*)algorithm_stop;
+	p->onlist   = (void*)algorithm_list;
+	p->onchoose = (void*)algorithm_choose;
+	p->onread   = (void*)algorithm_read;
+	p->onwrite  = (void*)algorithm_write;
 }

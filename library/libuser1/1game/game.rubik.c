@@ -179,10 +179,6 @@ static void rubikscube_read(struct arena* win, struct actor* act, struct style* 
 	else if(fmt == _vbo_)rubikscube_read_vbo(win, act, sty);
 	else rubikscube_read_pixel(win, act, sty);
 }
-
-
-
-
 static void rubikscube_write(struct event* ev)
 {
 	if(ev->what == _kbd_)
@@ -192,14 +188,6 @@ static void rubikscube_write(struct event* ev)
 	{
 	}
 }
-
-
-
-
-
-
-
-
 static void rubikscube_list()
 {
 }
@@ -213,20 +201,29 @@ static void rubikscube_start()
 {
 	rubikscube_generate(buffer);
 }
-void rubikscube_delete()
+static void rubikscube_delete()
 {
 }
-void rubikscube_create(void* base, struct actor* act)
+static void rubikscube_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)rubikscube_start;
-	act->onstop = (void*)rubikscube_stop;
-	act->onlist = (void*)rubikscube_list;
-	act->onchoose = (void*)rubikscube_choose;
-	act->onread = (void*)rubikscube_read;
-	act->onwrite = (void*)rubikscube_write;
+
+
+
+void rubikscube_register(struct actor* p)
+{
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)rubikscube_create;
+	p->ondelete = (void*)rubikscube_delete;
+	p->onstart  = (void*)rubikscube_start;
+	p->onstop   = (void*)rubikscube_stop;
+	p->onlist   = (void*)rubikscube_list;
+	p->onchoose = (void*)rubikscube_choose;
+	p->onread   = (void*)rubikscube_read;
+	p->onwrite  = (void*)rubikscube_write;
 }

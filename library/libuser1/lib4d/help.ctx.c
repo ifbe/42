@@ -1,78 +1,43 @@
 #include "actor.h"
 //test
-void clock_create(u8*,u8*);
-void clock_delete();
-void codeimg_create(u8*,u8*);
-void codeimg_delete();
-void doodle_create(u8*,u8*);
-void doodle_delete();
-void example_create(u8*,u8*);
-void example_delete();
-void fractal_create(u8*,u8*);
-void fractal_delete();
-void palette_create(u8*,u8*);
-void palette_delete();
+void clock_register(void*);
+void codeimg_register(void*);
+void doodle_register(void*);
+void example_register(void*);
+void fractal_register(void*);
+void palette_register(void*);
 //game
-void the2048_create(u8*,u8*);
-void the2048_delete();
-void chess_create(u8*,u8*);
-void chess_delete();
-void klotski_create(u8*,u8*);
-void klotski_delete();
-void maze_create(u8*,u8*);
-void maze_delete();
-void ooxx_create(u8*,u8*);
-void ooxx_delete();
-void pegged_create(u8*,u8*);
-void pegged_delete();
-void rubikscube_create(u8*,u8*);
-void rubikscube_delete();
-void snake_create(u8*,u8*);
-void snake_delete();
-void sudoku_create(u8*,u8*);
-void sudoku_delete();
-void tetris_create(u8*,u8*);
-void tetris_delete();
-void weiqi_create(u8*,u8*);
-void weiqi_delete();
-void xiangqi_create(u8*,u8*);
-void xiangqi_delete();
+void the2048_register(void*);
+void chess_register(void*);
+void klotski_register(void*);
+void maze_register(void*);
+void ooxx_register(void*);
+void pegged_register(void*);
+void rubikscube_register(void*);
+void snake_register(void*);
+void sudoku_register(void*);
+void tetris_register(void*);
+void weiqi_register(void*);
+void xiangqi_register(void*);
 //tool
-void browser_create(u8*,u8*);
-void browser_delete();
-void calculator_create(u8*,u8*);
-void calculator_delete();
-void camera_create(u8*,u8*);
-void camera_delete();
-void circuit_create(u8*,u8*);
-void circuit_delete();
-void font_create(u8*,u8*);
-void font_delete();
-void qrcode_create(u8*,u8*);
-void qrcode_delete();
-void sketchpad_create(u8*,u8*);
-void sketchpad_delete();
-void spectrum_create(u8*,u8*);
-void spectrum_delete();
-void stl_create(u8*,u8*);
-void stl_delete();
-void terminal_create(u8*,u8*);
-void terminal_delete();
+void browser_register(void*);
+void calculator_register(void*);
+void camera_register(void*);
+void circuit_register(void*);
+void font_register(void*);
+void qrcode_register(void*);
+void sketchpad_register(void*);
+void spectrum_register(void*);
+void stl_register(void*);
+void terminal_register(void*);
 //hack
-void algorithm_create(u8*,u8*);
-void algorithm_delete();
-void bintree_create(u8*,u8*);
-void bintree_delete();
-void bplus_create(u8*,u8*);
-void bplus_delete();
-void fs_create(u8*,u8*);
-void fs_delete();
-void graph_create(u8*,u8*);
-void graph_delete();
-void hex_create(u8*,u8*);
-void hex_delete();
-void input_create(u8*,u8*);
-void input_delete();
+void algorithm_register(void*);
+void bintree_register(void*);
+void bplus_register(void*);
+void fs_register(void*);
+void graph_register(void*);
+void hex_register(void*);
+void input_register(void*);
 
 
 
@@ -82,143 +47,143 @@ int content_create(u8* addr)
 	u8* temp = (void*)(addr+0x100000);
 
 	//test.codeimg
-	codeimg_create(addr, temp);
+	codeimg_register(temp);
 	temp += 0x100;
 
 	//test.clock
-	clock_create(addr, temp);
+	clock_register(temp);
 	temp += 0x100;
 
 	//test.doodle
-	doodle_create(addr, temp);
+	doodle_register(temp);
 	temp += 0x100;
 
 	//test.example
-	example_create(addr, temp);
+	example_register(temp);
 	temp += 0x100;
 
 	//test.fractal
-	fractal_create(addr, temp);
+	fractal_register(temp);
 	temp += 0x100;
 
 	//test.palette
-	palette_create(addr, temp);
+	palette_register(temp);
 	temp += 0x100;
 
 	//game.2048
-	the2048_create(addr, temp);
+	the2048_register(temp);
 	temp += 0x100;
 
 	//game.chess
-	chess_create(addr, temp);
+	chess_register(temp);
 	temp += 0x100;
 
 	//game.klotski
-	klotski_create(addr, temp);
+	klotski_register(temp);
 	temp += 0x100;
 
 	//game.maze
-	maze_create(addr, temp);
+	maze_register(temp);
 	temp += 0x100;
 
 	//game.ooxx
-	ooxx_create(addr, temp);
+	ooxx_register(temp);
 	temp += 0x100;
 
 	//game.pegged
-	pegged_create(addr, temp);
+	pegged_register(temp);
 	temp += 0x100;
 
 	//game.rubik
-	rubikscube_create(addr, temp);
+	rubikscube_register(temp);
 	temp += 0x100;
 
 	//game.snake
-	snake_create(addr, temp);
+	snake_register(temp);
 	temp += 0x100;
 
 	//game.sudoku
-	sudoku_create(addr, temp);
+	sudoku_register(temp);
 	temp += 0x100;
 
 	//game.tetris
-	tetris_create(addr, temp);
+	tetris_register(temp);
 	temp += 0x100;
 
 	//game.weiqi
-	weiqi_create(addr, temp);
+	weiqi_register(temp);
 	temp += 0x100;
 
 	//game.xiangqi
-	xiangqi_create(addr, temp);
+	xiangqi_register(temp);
 	temp += 0x100;
 
 	//tool.browser
-	browser_create(addr, temp);
+	browser_register(temp);
 	temp += 0x100;
 
 	//tool.calculator
-	calculator_create(addr, temp);
+	calculator_register(temp);
 	temp += 0x100;
 
 	//tool.camera
-	camera_create(addr, temp);
+	camera_register(temp);
 	temp += 0x100;
 
 	//tool.circuit
-	circuit_create(addr, temp);
+	circuit_register(temp);
 	temp += 0x100;
 
 	//tool.font
-	font_create(addr, temp);
+	font_register(temp);
 	temp += 0x100;
 
 	//tool.qrcode
-	qrcode_create(addr, temp);
+	qrcode_register(temp);
 	temp += 0x100;
 
 	//tool.sketchpad
-	sketchpad_create(addr, temp);
+	sketchpad_register(temp);
 	temp += 0x100;
 
 	//tool.stl
-	stl_create(addr, temp);
+	stl_register(temp);
 	temp += 0x100;
 
 	//tool.spectrum
-	spectrum_create(addr, temp);
+	spectrum_register(temp);
 	temp += 0x100;
 
 	//tool.terminal
-	terminal_create(addr, temp);
+	terminal_register(temp);
 	temp += 0x100;
 
 	//hack.algorithm
-	algorithm_create(addr, temp);
+	algorithm_register(temp);
 	temp += 0x100;
 
 	//hack.bintree
-	bintree_create(addr, temp);
+	bintree_register(temp);
 	temp += 0x100;
 
 	//hack.bplus
-	bplus_create(addr, temp);
+	bplus_register(temp);
 	temp += 0x100;
 
 	//hack.fs
-	fs_create(addr, temp);
+	fs_register(temp);
 	temp += 0x100;
 
 	//hack.graph
-	graph_create(addr, temp);
+	graph_register(temp);
 	temp += 0x100;
 
 	//hack.hex
-	hex_create(addr, temp);
+	hex_register(temp);
 	temp += 0x100;
 
 	//hack.input
-	input_create(addr, temp);
+	input_register(temp);
 	temp += 0x100;
 
 	//
@@ -226,41 +191,4 @@ int content_create(u8* addr)
 }
 void content_delete()
 {
-	terminal_delete();
-	spectrum_delete();
-	stl_delete();
-	sketchpad_delete();
-	qrcode_delete();
-	font_delete();
-	circuit_delete();
-	camera_delete();
-	calculator_delete();
-
-	input_delete();
-	hex_delete();
-	graph_delete();
-	browser_delete();
-	bplus_delete();
-	bintree_delete();
-	algorithm_delete();
-
-	xiangqi_delete();
-	weiqi_delete();
-	tetris_delete();
-	sudoku_delete();
-	snake_delete();
-	rubikscube_delete();
-	pegged_delete();
-	ooxx_delete();
-	maze_delete();
-	klotski_delete();
-	chess_delete();
-	the2048_delete();
-
-	palette_delete();
-	fractal_delete();
-	example_delete();
-	doodle_delete();
-	codeimg_delete();
-	clock_delete();
 }

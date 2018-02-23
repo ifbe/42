@@ -160,7 +160,10 @@ struct actor
 	u64 vao;
 	u64 vbo;
 	u64 inf;
-	u64 buf;
+	union{
+		u64 addr;
+		void* buf;
+	};
 
 	//[40,7f]vec
 	int cx;

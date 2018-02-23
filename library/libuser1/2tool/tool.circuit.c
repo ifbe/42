@@ -295,6 +295,9 @@ static void circuit_change(
 	}
 //say("6\n");
 }
+static void circuit_stop()
+{
+}
 static void circuit_start()
 {
 	int j;
@@ -351,26 +354,29 @@ static void circuit_start()
 	}
 */
 }
-static void circuit_stop()
+static void circuit_delete()
 {
 }
-void circuit_create(void* base,void* addr)
+static void circuit_create()
 {
-	struct actor* p = addr;
-	wn = base+0x300000;
+}
 
+
+
+
+void circuit_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('c', 'i', 'r', 'c', 'u', 'i', 't', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)circuit_start;
-	p->onstop = (void*)circuit_stop;
-	p->onlist = (void*)circuit_list;
+	p->oncreate = (void*)circuit_create;
+	p->ondelete = (void*)circuit_delete;
+	p->onstart  = (void*)circuit_start;
+	p->onstop   = (void*)circuit_stop;
+	p->onlist   = (void*)circuit_list;
 	p->onchoose = (void*)circuit_change;
-	p->onread = (void*)circuit_read;
-	p->onwrite = (void*)circuit_write;
-}
-void circuit_delete()
-{
+	p->onread   = (void*)circuit_read;
+	p->onwrite  = (void*)circuit_write;
 }

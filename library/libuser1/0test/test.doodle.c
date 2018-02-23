@@ -77,7 +77,7 @@ static void doodle_read(struct arena* win, struct actor* act, struct style* sty)
 	else if(fmt == _vbo_)doodle_read_vbo(win, act, sty);
 	else doodle_read_pixel(win, act, sty);
 }
-void doodle_write(struct event* ev)
+static void doodle_write(struct event* ev)
 {
 	u64 what = ev->what;
 	u64 why = ev->why;
@@ -87,33 +87,41 @@ void doodle_write(struct event* ev)
 		py = (why >> 16) & 0xffff;
 	}
 }
-void doodle_list()
+static void doodle_list()
 {
 }
-void doodle_change()
+static void doodle_change()
 {
 }
-void doodle_start()
+static void doodle_stop()
 {
 }
-void doodle_stop()
+static void doodle_start()
 {
 }
-void doodle_create(void* base, void* addr)
+static void doodle_delete()
 {
-	struct actor* p = addr;
+}
+static void doodle_create()
+{
+}
+
+
+
+
+void doodle_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)doodle_start;
-	p->onstop = (void*)doodle_stop;
-	p->onlist = (void*)doodle_list;
+	p->oncreate = (void*)doodle_create;
+	p->ondelete = (void*)doodle_delete;
+	p->onstart  = (void*)doodle_start;
+	p->onstop   = (void*)doodle_stop;
+	p->onlist   = (void*)doodle_list;
 	p->onchoose = (void*)doodle_change;
-	p->onread = (void*)doodle_read;
-	p->onwrite = (void*)doodle_write;
-}
-void doodle_delete()
-{
+	p->onread   = (void*)doodle_read;
+	p->onwrite  = (void*)doodle_write;
 }

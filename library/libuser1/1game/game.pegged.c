@@ -53,10 +53,6 @@ static void pegged_read(struct arena* win, struct actor* act, struct style* sty)
 static void pegged_write(struct event* ev)
 {
 }
-
-
-
-
 static void pegged_list()
 {
 }
@@ -79,21 +75,29 @@ static void pegged_start()
 static void pegged_stop()
 {
 }
-void pegged_create(void* base,void* addr)
+static void pegged_delete()
 {
-	struct actor* p = addr;
+}
+static void pegged_create()
+{
+}
+
+
+
+
+void pegged_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)pegged_start;
-	p->onstop = (void*)pegged_stop;
-	p->onlist = (void*)pegged_list;
+	p->oncreate = (void*)pegged_create;
+	p->ondelete = (void*)pegged_delete;
+	p->onstart  = (void*)pegged_start;
+	p->onstop   = (void*)pegged_stop;
+	p->onlist   = (void*)pegged_list;
 	p->onchoose = (void*)pegged_change;
-	p->onread = (void*)pegged_read;
-	p->onwrite = (void*)pegged_write;
-}
-void pegged_delete()
-{
+	p->onread   = (void*)pegged_read;
+	p->onwrite  = (void*)pegged_write;
 }

@@ -125,10 +125,6 @@ static void palette_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
 static void palette_list()
 {
 }
@@ -141,22 +137,29 @@ static void palette_start()
 static void palette_stop()
 {
 }
-void palette_create(void* base, void* addr)
+static void palette_delete()
 {
-	struct actor* p = addr;
+}
+static void palette_create()
+{
+}
+
+
+
+
+void palette_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('p', 'a', 'l', 'e', 't', 't', 'e', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)palette_start;
-	p->onstop = (void*)palette_stop;
-	p->onlist = (void*)palette_list;
+	p->oncreate = (void*)palette_create;
+	p->ondelete = (void*)palette_delete;
+	p->onstart  = (void*)palette_start;
+	p->onstop   = (void*)palette_stop;
+	p->onlist   = (void*)palette_list;
 	p->onchoose = (void*)palette_into;
-	p->onread = (void*)palette_read;
-	p->onwrite = (void*)palette_write;
+	p->onread   = (void*)palette_read;
+	p->onwrite  = (void*)palette_write;
 }
-void palette_delete()
-{
-}
-

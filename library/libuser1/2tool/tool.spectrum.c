@@ -211,14 +211,13 @@ static void spectrum_write(struct event* ev)
 		say("%d,%f,%f\n", k, max, k*22000.0/512.0);
 	}
 }
-
-
-
-
 static void spectrum_list()
 {
 }
 static void spectrum_into()
+{
+}
+static void spectrum_stop()
 {
 }
 static void spectrum_start()
@@ -226,29 +225,34 @@ static void spectrum_start()
 	maxamp = 65536;
 	startsound(44100, 2);
 }
-static void spectrum_stop()
+static void spectrum_delete()
 {
 }
-void spectrum_create(void* uibuf,void* addr)
+static void spectrum_create(struct actor* act)
 {
-	struct actor* p = addr;
-	real = (double*)(uibuf+0x300000);
-	imag = (double*)(uibuf+0x340000);
-	amp = (double*)(uibuf+0x380000);
-	phase = (double*)(uibuf+0x3c0000);
+	void* buf = act->buf;
+	real  = (double*)(buf+0x300000);
+	imag  = (double*)(buf+0x340000);
+	amp   = (double*)(buf+0x380000);
+	phase = (double*)(buf+0x3c0000);
+}
 
+
+
+
+void spectrum_register(struct actor* p)
+{
 	p->type = hex32('t', 'o', 'o', 'l');
 	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)spectrum_start;
-	p->onstop = (void*)spectrum_stop;
-	p->onlist = (void*)spectrum_list;
+	p->oncreate = (void*)spectrum_create;
+	p->ondelete = (void*)spectrum_delete;
+	p->onstart  = (void*)spectrum_start;
+	p->onstop   = (void*)spectrum_stop;
+	p->onlist   = (void*)spectrum_list;
 	p->onchoose = (void*)spectrum_into;
-	p->onread = (void*)spectrum_read;
-	p->onwrite = (void*)spectrum_write;
-}
-void spectrum_delete()
-{
+	p->onread   = (void*)spectrum_read;
+	p->onwrite  = (void*)spectrum_write;
 }

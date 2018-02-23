@@ -137,14 +137,6 @@ static void hex_write(struct event* ev)
 		if('	' == key)printmethod ^= 1;
 	}
 }
-
-
-
-
-
-
-
-
 static void hex_list()
 {
 }
@@ -157,23 +149,29 @@ static void hex_start()
 static void hex_stop()
 {
 }
-void hex_create(void* uibuf,void* addr)
+static void hex_delete()
 {
-	struct actor* p = addr;
-	databuf = uibuf + 0x300000;
+}
+static void hex_create()
+{
+}
 
+
+
+
+void hex_register(struct actor* p)
+{
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('h', 'e', 'x', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)hex_start;
-	p->onstop = (void*)hex_stop;
-	p->onlist = (void*)hex_list;
+	p->oncreate = (void*)hex_create;
+	p->ondelete = (void*)hex_delete;
+	p->onstart  = (void*)hex_start;
+	p->onstop   = (void*)hex_stop;
+	p->onlist   = (void*)hex_list;
 	p->onchoose = (void*)hex_into;
-	p->onread = (void*)hex_read;
-	p->onwrite = (void*)hex_write;
-}
-void hex_delete()
-{
+	p->onread   = (void*)hex_read;
+	p->onwrite  = (void*)hex_write;
 }

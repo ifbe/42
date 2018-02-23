@@ -433,14 +433,13 @@ void xiangqi_write(struct event* ev)
 		px = py = -1;
 	}
 }
-
-
-
-
 static void xiangqi_list()
 {
 }
 static void xiangqi_choose()
+{
+}
+static void xiangqi_stop()
 {
 }
 static void xiangqi_start()
@@ -483,23 +482,29 @@ static void xiangqi_start()
 	data[7][1]='z';
 	data[7][7]='z';
 }
-static void xiangqi_stop()
+static void xiangqi_delete()
 {
 }
-void xiangqi_create(void* base, struct actor* act)
+static void xiangqi_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)xiangqi_start;
-	act->onstop = (void*)xiangqi_stop;
-	act->onlist = (void*)xiangqi_list;
-	act->onchoose = (void*)xiangqi_choose;
-	act->onread = (void*)xiangqi_read;
-	act->onwrite = (void*)xiangqi_write;
-}
-void xiangqi_delete()
+
+
+
+void xiangqi_register(struct actor* p)
 {
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)xiangqi_create;
+	p->ondelete = (void*)xiangqi_delete;
+	p->onstart  = (void*)xiangqi_start;
+	p->onstop   = (void*)xiangqi_stop;
+	p->onlist   = (void*)xiangqi_list;
+	p->onchoose = (void*)xiangqi_choose;
+	p->onread   = (void*)xiangqi_read;
+	p->onwrite  = (void*)xiangqi_write;
 }

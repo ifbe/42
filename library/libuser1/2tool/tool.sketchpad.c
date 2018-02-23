@@ -400,10 +400,6 @@ static void sketchpad_write(struct event* ev)
 		int y = (key>>16)&0xffff;
 	}
 }
-
-
-
-
 static void sketchpad_list()
 {
 }
@@ -419,23 +415,30 @@ static void sketchpad_start()
 static void sketchpad_stop()
 {
 }
-void sketchpad_create(void* base,void* addr)
+static void sketchpad_delete()
 {
-	struct actor* act = addr;
-	databuf = base+0x300000;
-
-	act->type = hex32('t', 'o', 'o', 'l');
-	act->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
-	act->irel = 0;
-	act->orel = 0;
-
-	act->onstart = (void*)sketchpad_start;
-	act->onstop = (void*)sketchpad_stop;
-	act->onlist = (void*)sketchpad_list;
-	act->onchoose = (void*)sketchpad_change;
-	act->onread = (void*)sketchpad_read;
-	act->onwrite = (void*)sketchpad_write;
 }
-void sketchpad_delete()
+static void sketchpad_create(struct actor* act)
 {
+	databuf = (act->buf) + 0x300000;
+}
+
+
+
+
+void sketchpad_register(struct actor* p)
+{
+	p->type = hex32('t', 'o', 'o', 'l');
+	p->name = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)sketchpad_create;
+	p->ondelete = (void*)sketchpad_delete;
+	p->onstart  = (void*)sketchpad_start;
+	p->onstop   = (void*)sketchpad_stop;
+	p->onlist   = (void*)sketchpad_list;
+	p->onchoose = (void*)sketchpad_change;
+	p->onread   = (void*)sketchpad_read;
+	p->onwrite  = (void*)sketchpad_write;
 }

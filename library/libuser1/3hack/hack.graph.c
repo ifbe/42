@@ -332,10 +332,6 @@ static void graph_write(struct event* ev)
 		if(ev->why == '1')redo = '1';
 	}
 }
-
-
-
-
 static void graph_list()
 {
 }
@@ -348,21 +344,29 @@ static void graph_start()
 static void graph_stop()
 {
 }
-void graph_create(void* base,void* addr)
+static void graph_delete()
 {
-	struct actor* p = addr;
+}
+static void graph_create()
+{
+}
+
+
+
+
+void graph_register(struct actor* p)
+{
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)graph_start;
-	p->onstop = (void*)graph_stop;
-	p->onlist = (void*)graph_list;
+	p->oncreate = (void*)graph_create;
+	p->ondelete = (void*)graph_delete;
+	p->onstart  = (void*)graph_start;
+	p->onstop   = (void*)graph_stop;
+	p->onlist   = (void*)graph_list;
 	p->onchoose = (void*)graph_change;
-	p->onread = (void*)graph_read;
-	p->onwrite = (void*)graph_write;
-}
-void graph_delete()
-{
+	p->onread   = (void*)graph_read;
+	p->onwrite  = (void*)graph_write;
 }

@@ -96,21 +96,29 @@ static void klotski_start()
 static void klotski_stop()
 {
 }
-void klotski_create(void* base,void* addr)
+static void klotski_delete()
 {
-	struct actor* p = addr;
+}
+static void klotski_create()
+{
+}
+
+
+
+
+void klotski_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)klotski_start;
-	p->onstop = (void*)klotski_stop;
-	p->onlist = (void*)klotski_list;
+	p->oncreate = (void*)klotski_create;
+	p->ondelete = (void*)klotski_delete;
+	p->onstart  = (void*)klotski_start;
+	p->onstop   = (void*)klotski_stop;
+	p->onlist   = (void*)klotski_list;
 	p->onchoose = (void*)klotski_change;
-	p->onread = (void*)klotski_read;
-	p->onwrite = (void*)klotski_write;
-}
-void klotski_delete()
-{
+	p->onread   = (void*)klotski_read;
+	p->onwrite  = (void*)klotski_write;
 }

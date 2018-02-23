@@ -167,18 +167,13 @@ static void sudoku_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
-
-
-
-
 static void sudoku_list()
 {
 }
 static void sudoku_choose()
+{
+}
+static void sudoku_stop()
 {
 }
 static void sudoku_start()
@@ -195,26 +190,29 @@ static void sudoku_start()
 	}
 	sudoku_solve(table, buffer);
 }
-static void sudoku_stop()
+static void sudoku_delete()
 {
 }
-void sudoku_create(void* base,void* addr)
+static void sudoku_create()
 {
-	struct actor* p = addr;
-	buffer = base+0x300000;
+}
 
+
+
+
+void sudoku_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)sudoku_start;
-	p->onstop = (void*)sudoku_stop;
-	p->onlist = (void*)sudoku_list;
+	p->oncreate = (void*)sudoku_create;
+	p->ondelete = (void*)sudoku_delete;
+	p->onstart  = (void*)sudoku_start;
+	p->onstop   = (void*)sudoku_stop;
+	p->onlist   = (void*)sudoku_list;
 	p->onchoose = (void*)sudoku_choose;
-	p->onread = (void*)sudoku_read;
-	p->onwrite = (void*)sudoku_write;
-}
-void sudoku_delete()
-{
+	p->onread   = (void*)sudoku_read;
+	p->onwrite  = (void*)sudoku_write;
 }

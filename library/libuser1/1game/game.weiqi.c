@@ -193,14 +193,13 @@ void weiqi_write(struct event* ev)
 		turn++;
 	}
 }
-
-
-
-
 static void weiqi_list()
 {
 }
 static void weiqi_choose()
+{
+}
+static void weiqi_stop()
 {
 }
 static void weiqi_start()
@@ -218,26 +217,29 @@ static void weiqi_start()
 		}
 	}
 }
-static void weiqi_stop()
+static void weiqi_delete()
 {
 }
-void weiqi_create(void* base, void* addr)
+static void weiqi_create()
 {
-	struct actor* p = addr;
-	data = base+0x300000;
+}
 
+
+
+
+void weiqi_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)weiqi_start;
-	p->onstop = (void*)weiqi_stop;
-	p->onlist = (void*)weiqi_list;
+	p->oncreate = (void*)weiqi_create;
+	p->ondelete = (void*)weiqi_delete;
+	p->onstart  = (void*)weiqi_start;
+	p->onstop   = (void*)weiqi_stop;
+	p->onlist   = (void*)weiqi_list;
 	p->onchoose = (void*)weiqi_choose;
-	p->onread = (void*)weiqi_read;
-	p->onwrite = (void*)weiqi_write;
-}
-void weiqi_delete()
-{
+	p->onread   = (void*)weiqi_read;
+	p->onwrite  = (void*)weiqi_write;
 }

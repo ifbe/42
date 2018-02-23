@@ -54,37 +54,41 @@ static void clock_read(struct arena* win, struct actor* act, struct style* sty)
 static void clock_write(struct event* ev)
 {
 }
-
-
-
-
 static void clock_list()
 {
 }
 static void clock_change()
 {
 }
-static void clock_start()
-{
-}
 static void clock_stop()
 {
 }
-void clock_create(void* base,void* addr)
+static void clock_start()
 {
-	struct actor* p = addr;
+}
+static void clock_delete()
+{
+}
+static void clock_create()
+{
+}
+
+
+
+
+void clock_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('c', 'l', 'o', 'c', 'k', 0, 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)clock_start;
-	p->onstop = (void*)clock_stop;
-	p->onlist = (void*)clock_list;
+	p->oncreate = (void*)clock_create;
+	p->ondelete = (void*)clock_delete;
+	p->onstart  = (void*)clock_start;
+	p->onstop   = (void*)clock_stop;
+	p->onlist   = (void*)clock_list;
 	p->onchoose = (void*)clock_change;
-	p->onread = (void*)clock_read;
-	p->onwrite = (void*)clock_write;
-}
-void clock_delete()
-{
+	p->onread   = (void*)clock_read;
+	p->onwrite  = (void*)clock_write;
 }

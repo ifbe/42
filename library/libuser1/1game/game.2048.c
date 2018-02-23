@@ -296,14 +296,6 @@ static void the2048_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
-
-
-
-
 static void the2048_list()
 {
 }
@@ -322,20 +314,29 @@ static void the2048_start()
 	num = 0;
 	new2048((void*)buffer);
 }
-void the2048_delete()
+static void the2048_delete()
 {
 }
-void the2048_create(void* base, struct actor* act)
+static void the2048_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex32('2', '0', '4', '8');
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)the2048_start;
-	act->onstop = (void*)the2048_stop;
-	act->onlist = (void*)the2048_list;
-	act->onchoose = (void*)the2048_choose;
-	act->onread = (void*)the2048_read;
-	act->onwrite = (void*)the2048_write;
+
+
+
+void the2048_register(struct actor* p)
+{
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex32('2', '0', '4', '8');
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)the2048_create;
+	p->ondelete = (void*)the2048_delete;
+	p->onstart  = (void*)the2048_start;
+	p->onstop   = (void*)the2048_stop;
+	p->onlist   = (void*)the2048_list;
+	p->onchoose = (void*)the2048_choose;
+	p->onread   = (void*)the2048_read;
+	p->onwrite  = (void*)the2048_write;
 }

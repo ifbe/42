@@ -156,20 +156,29 @@ static void chess_start()
 static void chess_stop()
 {
 }
-void chess_delete()
+static void chess_delete()
 {
 }
-void chess_create(void* base, struct actor* act)
+static void chess_create()
 {
-	act->type = hex32('g', 'a', 'm', 'e');
-	act->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
-	act->irel = 0;
-	act->orel = 0;
+}
 
-	act->onstart = (void*)chess_start;
-	act->onstop = (void*)chess_stop;
-	act->onlist = (void*)chess_list;
-	act->onchoose = (void*)chess_choose;
-	act->onread = (void*)chess_read;
-	act->onwrite = (void*)chess_write;
+
+
+
+void chess_register(struct actor* p)
+{
+	p->type = hex32('g', 'a', 'm', 'e');
+	p->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)chess_create;
+	p->ondelete = (void*)chess_delete;
+	p->onstart  = (void*)chess_start;
+	p->onstop   = (void*)chess_stop;
+	p->onlist   = (void*)chess_list;
+	p->onchoose = (void*)chess_choose;
+	p->onread   = (void*)chess_read;
+	p->onwrite  = (void*)chess_write;
 }

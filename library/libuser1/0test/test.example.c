@@ -65,27 +65,35 @@ static void example_list()
 static void example_change()
 {
 }
-static void example_start()
-{
-}
 static void example_stop()
 {
 }
-void example_create(void* base,void* addr)
+static void example_start()
 {
-	struct actor* p = addr;
+}
+static void example_delete()
+{
+}
+static void example_create()
+{
+}
+
+
+
+
+void example_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)example_start;
-	p->onstop = (void*)example_stop;
-	p->onlist = (void*)example_list;
+	p->oncreate = (void*)example_create;
+	p->ondelete = (void*)example_delete;
+	p->onstart  = (void*)example_start;
+	p->onstop   = (void*)example_stop;
+	p->onlist   = (void*)example_list;
 	p->onchoose = (void*)example_change;
-	p->onread = (void*)example_read;
-	p->onwrite = (void*)example_write;
-}
-void example_delete()
-{
+	p->onread   = (void*)example_read;
+	p->onwrite  = (void*)example_write;
 }

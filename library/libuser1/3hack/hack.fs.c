@@ -91,23 +91,29 @@ static void fs_start()
 static void fs_stop()
 {
 }
-void fs_create(void* base,void* addr)
+static void fs_delete()
 {
-	struct actor* p = addr;
-	buffer = base+0x300000;
+}
+static void fs_create()
+{
+}
 
+
+
+
+void fs_register(struct actor* p)
+{
 	p->type = hex32('h', 'a', 'c', 'k');
 	p->name = hex32('f', 's', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)fs_start;
-	p->onstop = (void*)fs_stop;
-	p->onlist = (void*)fs_list;
+	p->oncreate = (void*)fs_create;
+	p->ondelete = (void*)fs_delete;
+	p->onstart  = (void*)fs_start;
+	p->onstop   = (void*)fs_stop;
+	p->onlist   = (void*)fs_list;
 	p->onchoose = (void*)fs_into;
-	p->onread = (void*)fs_read;
-	p->onwrite = (void*)fs_write;
-}
-void fs_delete()
-{
+	p->onread   = (void*)fs_read;
+	p->onwrite  = (void*)fs_write;
 }

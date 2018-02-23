@@ -50,27 +50,35 @@ static void fractal_list()
 static void fractal_change()
 {
 }
-static void fractal_start()
-{
-}
 static void fractal_stop()
 {
 }
-void fractal_create(void* base,void* addr)
+static void fractal_start()
 {
-	struct actor* p = addr;
+}
+static void fractal_delete()
+{
+}
+static void fractal_create()
+{
+}
+
+
+
+
+void fractal_register(struct actor* p)
+{
 	p->type = hex32('t', 'e', 's', 't');
 	p->name = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)fractal_start;
-	p->onstop = (void*)fractal_stop;
-	p->onlist = (void*)fractal_list;
+	p->oncreate = (void*)fractal_create;
+	p->ondelete = (void*)fractal_delete;
+	p->onstart  = (void*)fractal_start;
+	p->onstop   = (void*)fractal_stop;
+	p->onlist   = (void*)fractal_list;
 	p->onchoose = (void*)fractal_change;
-	p->onread = (void*)fractal_read;
-	p->onwrite = (void*)fractal_write;
-}
-void fractal_delete()
-{
+	p->onread   = (void*)fractal_read;
+	p->onwrite  = (void*)fractal_write;
 }

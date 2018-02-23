@@ -644,10 +644,6 @@ static void tetris_write(struct event* ev)
 		}
 	}
 }
-
-
-
-
 static void tetris_list()
 {
 }
@@ -669,22 +665,29 @@ static void tetris_start()
 static void tetris_stop()
 {
 }
-void tetris_create(void* base, struct actor* p)
+static void tetris_delete()
 {
-	table = (u8*)(base+0x300000);
+}
+static void tetris_create()
+{
+}
 
+
+
+
+void tetris_register(struct actor* p)
+{
 	p->type = hex32('g', 'a', 'm', 'e');
 	p->name = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
 	p->irel = 0;
 	p->orel = 0;
 
-	p->onstart = (void*)tetris_start;
-	p->onstop = (void*)tetris_stop;
-	p->onlist = (void*)tetris_list;
+	p->oncreate = (void*)tetris_create;
+	p->ondelete = (void*)tetris_delete;
+	p->onstart  = (void*)tetris_start;
+	p->onstop   = (void*)tetris_stop;
+	p->onlist   = (void*)tetris_list;
 	p->onchoose = (void*)tetris_choose;
-	p->onread = (void*)tetris_read;
-	p->onwrite = (void*)tetris_write;
-}
-void tetris_delete()
-{
+	p->onread   = (void*)tetris_read;
+	p->onwrite  = (void*)tetris_write;
 }
