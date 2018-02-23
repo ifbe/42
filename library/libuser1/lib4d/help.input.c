@@ -12,11 +12,23 @@ void* relation_read(u64);
 
 
 
-//touch
+//
 static u64 pointenter[10];
 static u64 pointleave[10];
 static int pointcount=0;
 static int pointmax=0;
+//
+static struct arena* arena = 0;
+static struct actor* actor = 0;
+static struct style* style = 0;
+static struct compo* compo = 0;
+void helpin_create(void* addr)
+{
+	arena = addr + 0x000000;
+	actor = addr + 0x100000;
+	style = addr + 0x000000;
+	compo = addr + 0x100000;
+}
 
 
 
@@ -245,9 +257,12 @@ int delete_thisact(struct arena* win)
 	relation_destory(rel);
 	return 1;
 }
-int input_write(struct arena* win, struct event* ev)
+int actorinput(struct arena* win, struct event* ev)
 {
 	int x,y,ret;
+	struct actor* act;
+	struct relation* rel;
+	struct relation* tmp;
 
 	//no actor
 	if(0 == win->irel)
@@ -314,6 +329,18 @@ int input_write(struct arena* win, struct event* ev)
 			if(ret != 0)return 0;
 		}
 	}
+
+	//real process
+	rel = win->irel;
+	while(1)
+	{
+		tmp = samepinnextchip(rel);
+		if(tmp == 0)break;
+
+		rel = tmp;
+	}
+	act = (void*)(rel->selfchip);
+	act->onwrite(ev);
 
 	return 1;
 }

@@ -7,6 +7,9 @@ void login_create(void*);
 
 void lib4d_create(void* addr)
 {
+	helpin_create(addr);
+	helpout_create(addr);
+
 	asset_create(addr);
 	content_create(addr);
 	login_create(addr);

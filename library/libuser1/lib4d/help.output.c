@@ -1,6 +1,12 @@
 #include "actor.h"
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
+void arenaread(void*, void*);
+void arenawrite(void*, void*);
+void* samepinprevchip(void*);
+void* samepinnextchip(void*);
+void* samechipprevpin(void*);
+void* samechipnextpin(void*);
 
 
 
@@ -9,10 +15,13 @@ static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
 static struct compo* compo = 0;
-static int winlen = 0;
-static int actlen = 0;
-static int stylen = 0;
-static int comlen = 0;
+void helpout_create(void* addr)
+{
+	arena = addr + 0x000000;
+	actor = addr + 0x100000;
+	style = addr + 0x000000;
+	compo = addr + 0x100000;
+}
 
 
 
@@ -43,4 +52,73 @@ void select_3d(struct arena* win, struct style* sty)
 		0.0, hh, 0.0,
 		0.0, 0.0, dd/2
 	);
+}
+
+
+
+
+int actoroutput(struct arena* win)
+{
+	int j;
+	struct relation* rel;
+
+	struct arena* tmp;
+	struct actor* act;
+	struct style* sty;
+	struct compo* com;
+
+	//cli silent
+	if(win->fmt == _cli_)
+	{
+		if(win->flag0 == 12)return 0;
+	}
+
+	//tmp
+	if(win->type != _buf_)
+	{
+		tmp = &arena[0];
+
+		tmp->fmt = win->fmt;
+		tmp->w = win->w;
+		tmp->h = win->h;
+
+		for(j=0;j<16;j++)tmp->info[j] = 0;
+	}
+	else tmp = win;
+
+	//bg
+	if((_vbo_ != win->fmt) | (12 == win->flag0))background(tmp);
+
+	//content
+	rel = win->irel;
+	while(1)
+	{
+		if(rel == 0)break;
+
+		if(rel->selftype == _act_)
+		{
+			act = (void*)(rel->selfchip);
+			sty = (void*)(rel->destfoot);
+			com = (void*)(rel->selffoot);
+			//say("%x,%x,%x,%x\n", tmp, act, sty, com);
+			//say("%x\n", rel);
+
+			act->onread(tmp, act, sty, com);
+			if(win->flag0 == 12)
+			{
+				if(win->fmt == _vbo_)select_3d(tmp, sty);
+				else select_2d(tmp, sty);
+			}
+		}
+
+		rel = samepinnextchip(rel);
+	}
+
+	//fg
+	if((11 == win->flag0) | (0 == win->irel))login_read(tmp);
+	if((12 == win->flag0) | (_vbo_ != win->fmt))foreground(tmp);
+
+theend:
+	arenawrite(win, &arena[0]);
+	return 0;
 }

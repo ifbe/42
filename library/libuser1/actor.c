@@ -9,13 +9,9 @@ void lib4d_create(void*, void*);
 void lib4d_delete();
 //
 void* arenastart(u64, u64);
-int arenastop(void*);
-void arenaread(void*, void*);
-void arenawrite(void*, void*);
-//
-void login_read(void*);
-void login_write(void*, void*);
-int input_write(void*, void*);
+void arenastop(void*);
+int actorinput(void*, void*);
+int actoroutput(void*);
 //
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
@@ -107,77 +103,6 @@ void win_at(u64 why, u64 where)
 
 
 
-int actorread_one(struct arena* win)
-{
-	int j;
-	struct relation* rel;
-
-	struct arena* tmp;
-	struct actor* act;
-	struct style* sty;
-	struct compo* com;
-
-	//cli silent
-	if(win->fmt == _cli_)
-	{
-		if(win->cw == 12)return 0;
-	}
-
-	//tmp
-	if(win->type != _buf_)
-	{
-		tmp = &arena[0];
-
-		tmp->fmt = win->fmt;
-		tmp->w = win->w;
-		tmp->h = win->h;
-
-		for(j=0;j<16;j++)tmp->info[j] = 0;
-	}
-	else tmp = win;
-
-	//bg
-	if((_vbo_ != win->fmt) | (12 == win->cw))background(tmp);
-
-	//content
-	rel = win->irel;
-	while(1)
-	{
-		if(rel == 0)break;
-
-		if(rel->selftype == _act_)
-		{
-			act = (void*)(rel->selfchip);
-			sty = (void*)(rel->destfoot);
-			com = (void*)(rel->selffoot);
-			//say("%x,%x,%x,%x\n", tmp, act, sty, com);
-			//say("%x\n", rel);
-
-			act->onread(tmp, act, sty, com);
-			if(win->cw == 12)
-			{
-				if(win->fmt == _vbo_)
-				{
-					select_3d(tmp, sty);
-				}
-				else
-				{
-					select_2d(tmp, sty);
-				}
-			}
-		}
-
-		rel = samepinnextchip(rel);
-	}
-
-	//fg
-	if((11 == win->cw) | (0 == win->irel))login_read(tmp);
-	if((12 == win->cw) | (_vbo_ != win->fmt))foreground(tmp);
-
-theend:
-	arenawrite(win, &arena[0]);
-	return 0;
-}
 int actorread()
 {
 	struct arena* tmp;
@@ -192,7 +117,7 @@ int actorread()
 		if(rel->destchip == 0)break;
 
 		window = (void*)(rel->selfchip);
-		actorread_one(window);
+		actoroutput(window);
 
 		rel = samepinnextchip(rel);
 	}
@@ -203,9 +128,6 @@ int actorwrite(struct event* ev)
 {
 	int ret;
 	struct arena* win;
-	struct actor* act;
-	struct relation* rel;
-	struct relation* tmp;
 	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
 
 	//window event
@@ -222,21 +144,7 @@ int actorwrite(struct event* ev)
 	else win = (void*)(ev->where);
 
 	//pre process
-	ret = input_write(win, ev);
-	if(ret == 0)return 0;
-
-	//real process
-	rel = win->irel;
-	while(1)
-	{
-		tmp = samepinnextchip(rel);
-		if(tmp == 0)break;
-
-		rel = tmp;
-	}
-	act = (void*)(rel->selfchip);
-	act->onwrite(ev);
-
+	ret = actorinput(win, ev);
 	return 0;
 }
 int actorlist(u8* p)
