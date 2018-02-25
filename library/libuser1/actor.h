@@ -188,7 +188,7 @@ struct actor
 
 	//[80,bf]
 	union{
-		int (*oncreate)();
+		int (*oncreate)(void* actor);
 		char padding0[8];
 	};
 	union{
@@ -196,7 +196,7 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* act, void* pl);
+		int (*onstart)(void* actor, void* compo);
 		char padding2[8];
 	};
 	union{
@@ -212,11 +212,11 @@ struct actor
 		char padding5[8];
 	};
 	union{
-		int (*onread)(void* win, void* act, void* style, void* player);
+		int (*onread)(void* arena, void* style, void* actor, void* compo);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(void* event);
+		int (*onwrite)(void* actor, void* compo, void* event);
 		char padding7[8];
 	};
 

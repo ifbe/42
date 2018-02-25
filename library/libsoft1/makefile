@@ -51,7 +51,9 @@ libalgo/solve/solve.2048.c \
 libalgo/solve/solve.chess.c \
 libalgo/solve/solve.maze.c \
 libalgo/solve/solve.rubik.c \
+libalgo/solve/solve.snake.c \
 libalgo/solve/solve.sudoku.c \
+libalgo/solve/solve.tetris.c \
 libalgo/solve/solve.xiangqi.c \
 libalgo/sorting/sort.bubble.c \
 libalgo/sorting/sort.gnome.c \

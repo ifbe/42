@@ -10,7 +10,9 @@ static int px=77,py=88;
 
 
 
-void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+void doodle_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int w = win->w;
 	int h = win->h;
@@ -41,7 +43,9 @@ void doodle_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	drawline_bezier(win, 0xffff,
 		cx+x1, cy+y1, cx+x2, cy+y2, px, py);
 }
-static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void doodle_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -58,26 +62,36 @@ static void doodle_read_vbo(struct arena* win, struct actor* act, struct style* 
 		0.0, 0.0, ww/2
 	);
 }
-static void doodle_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void doodle_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void doodle_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void doodle_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void doodle_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void doodle_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
-	say("doodle(%x,%x,%x)\n",win,act,sty);
+	say("doodle(%x,%x,%x)\n", win, sty, act, com);
 }
-static void doodle_read(struct arena* win, struct actor* act, struct style* sty)
+static void doodle_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)doodle_read_cli(win, act, sty);
-	else if(fmt == _tui_)doodle_read_tui(win, act, sty);
-	else if(fmt == _html_)doodle_read_html(win, act, sty);
-	else if(fmt == _vbo_)doodle_read_vbo(win, act, sty);
-	else doodle_read_pixel(win, act, sty);
+	if(fmt == _cli_)doodle_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)doodle_read_tui(win, sty, act, com);
+	else if(fmt == _html_)doodle_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)doodle_read_vbo(win, sty, act, com);
+	else doodle_read_pixel(win, sty, act, com);
 }
-static void doodle_write(struct event* ev)
+static void doodle_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	u64 what = ev->what;
 	u64 why = ev->why;

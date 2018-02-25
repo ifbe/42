@@ -5,13 +5,13 @@ u32 getrandom();
 
 
 static void example_read_vbo(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
 static void example_read_pixel(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 bg,fg;
 	int cx = sty->i_cx;
@@ -27,32 +27,34 @@ static void example_read_pixel(
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
 static void example_read_html(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
 static void example_read_tui(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
 static void example_read_cli(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
 static void example_read(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)example_read_cli(win, act, sty, com);
-	else if(fmt == _tui_)example_read_tui(win, act, sty, com);
-	else if(fmt == _html_)example_read_html(win, act, sty, com);
-	else if(fmt == _vbo_)example_read_vbo(win, act, sty, com);
-	else example_read_pixel(win, act, sty, com);
+	if(fmt == _cli_)example_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)example_read_tui(win, sty, act, com);
+	else if(fmt == _html_)example_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)example_read_vbo(win, sty, act, com);
+	else example_read_pixel(win, sty, act, com);
 }
-static void example_write(struct event* ev)
+static void example_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 

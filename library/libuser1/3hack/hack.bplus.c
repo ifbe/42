@@ -106,7 +106,9 @@ static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 		);
 	}
 }
-static void bplus_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	struct bplushead* right;
 	int cx = sty->i_cx;
@@ -124,30 +126,42 @@ static void bplus_read_pixel(struct arena* win, struct actor* act, struct style*
 //printmemory(node, 0x800);
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void bplus_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void bplus_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void bplus_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void bplus_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bplus_read(struct arena* win, struct actor* act, struct style* sty)
+static void bplus_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)bplus_read_cli(win, act, sty);
-	else if(fmt == _tui_)bplus_read_tui(win, act, sty);
-	else if(fmt == _html_)bplus_read_html(win, act, sty);
-	else if(fmt == _vbo_)bplus_read_vbo(win, act, sty);
-	else bplus_read_pixel(win, act, sty);
+	if(fmt == _cli_)bplus_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)bplus_read_tui(win, sty, act, com);
+	else if(fmt == _html_)bplus_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)bplus_read_vbo(win, sty, act, com);
+	else bplus_read_pixel(win, sty, act, com);
 }
-static void bplus_write(struct event* ev)
+static void bplus_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;

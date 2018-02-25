@@ -3,10 +3,14 @@
 
 
 
-static void puzzle_read()
+static void puzzle_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void puzzle_write()
+static void puzzle_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void puzzle_list()

@@ -13,10 +13,14 @@ static u8* buffer;
 
 
 
-static void sudoku_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int t1, t2, t3, t4;
@@ -49,7 +53,9 @@ static void sudoku_read_pixel(struct arena* win, struct actor* act, struct style
 		}
 	}
 }
-static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 color;
 	int x,y;
@@ -82,7 +88,9 @@ static void sudoku_read_vbo(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void sudoku_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -112,7 +120,9 @@ static void sudoku_read_tui(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void sudoku_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	say("sudoku(%x,%x,%x)\n",win,act,sty);
@@ -127,17 +137,21 @@ static void sudoku_read_cli(struct arena* win, struct actor* act, struct style* 
 		say("\n");
 	}
 }
-static void sudoku_read(struct arena* win, struct actor* act, struct style* sty)
+static void sudoku_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)sudoku_read_cli(win, act, sty);
-	else if(fmt == _tui_)sudoku_read_tui(win, act, sty);
-	else if(fmt == _html_)sudoku_read_html(win, act, sty);
-	else if(fmt == _vbo_)sudoku_read_vbo(win, act, sty);
-	else sudoku_read_pixel(win, act, sty);
+	if(fmt == _cli_)sudoku_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)sudoku_read_tui(win, sty, act, com);
+	else if(fmt == _html_)sudoku_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)sudoku_read_vbo(win, sty, act, com);
+	else sudoku_read_pixel(win, sty, act, com);
 }
-static void sudoku_write(struct event* ev)
+static void sudoku_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	u64 what = ev->what;
 	u64 key = ev->why;

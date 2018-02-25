@@ -15,7 +15,9 @@ static int chosen = 0x20;
 
 
 
-static void font_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void font_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,m,n;
 	int cx = sty->i_cx;
@@ -65,10 +67,14 @@ static void font_read_pixel(struct arena* win, struct actor* act, struct style* 
 	drawsolid_rect(win, 0x0000ff, cx-32, cy-16, cx-1, cy-1);
 	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
 }
-static void font_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void font_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void font_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void font_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	float x,y;
 	int cx = sty->i_cx;
@@ -98,10 +104,14 @@ static void font_read_vbo(struct arena* win, struct actor* act, struct style* st
 		x-1.0/32, y-1.0/32, x+1.0/32, y+1.0/32
 	);
 }
-static void font_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void font_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void font_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void font_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	u8 ch;
@@ -128,17 +138,21 @@ static void font_read_cli(struct arena* win, struct actor* act, struct style* st
 		say("\n");
 	}
 }
-static void font_read(struct arena* win, struct actor* act, struct style* sty)
+static void font_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)font_read_cli(win, act, sty);
-	else if(fmt == _tui_)font_read_tui(win, act, sty);
-	else if(fmt == _html_)font_read_html(win, act, sty);
-	else if(fmt == _vbo_)font_read_vbo(win, act, sty);
-	else font_read_pixel(win, act, sty);
+	if(fmt == _cli_)font_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)font_read_tui(win, sty, act, com);
+	else if(fmt == _html_)font_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)font_read_vbo(win, sty, act, com);
+	else font_read_pixel(win, sty, act, com);
 }
-static void font_write(struct event* ev)
+static void font_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int k = (ev->why)&0xff;
 	say("k=%x\n",k);

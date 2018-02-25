@@ -184,7 +184,9 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 		rel = tmp;
 	}
 }
-static void starry_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void starry_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -207,11 +209,9 @@ static void starry_read_pixel(struct arena* win, struct actor* act, struct style
 		-PI, PI
 	);
 }
-
-
-
-
-static void graph_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int i,j,k;
 
@@ -239,7 +239,9 @@ static void graph_read_vbo(struct arena* win, struct actor* act, struct style* s
 		);
 	}
 }
-static void graph_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int i,j,k;
 	int cx = sty->i_cx;
@@ -295,16 +297,24 @@ static void graph_read_pixel(struct arena* win, struct actor* act, struct style*
 		);
 	}
 }
-static void graph_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void graph_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void graph_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void graph_read(struct arena* win, struct actor* act, struct style* sty)
+static void graph_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 	if(redo == 1)
@@ -318,13 +328,15 @@ static void graph_read(struct arena* win, struct actor* act, struct style* sty)
 		butane();
 	}
 
-	if(fmt == _cli_)graph_read_cli(win, act, sty);
-	else if(fmt == _tui_)graph_read_tui(win, act, sty);
-	else if(fmt == _html_)graph_read_html(win, act, sty);
-	else if(fmt == _vbo_)graph_read_vbo(win, act, sty);
-	else graph_read_pixel(win, act, sty);
+	if(fmt == _cli_)graph_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)graph_read_tui(win, sty, act, com);
+	else if(fmt == _html_)graph_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)graph_read_vbo(win, sty, act, com);
+	else graph_read_pixel(win, sty, act, com);
 }
-static void graph_write(struct event* ev)
+static void graph_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	if(ev->what == _char_)
 	{

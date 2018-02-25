@@ -611,7 +611,9 @@ static void queue_copy(u8* buf, int len)
 		}
 	}
 }
-static void terminal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8* p;
 	int enq,deq;
@@ -648,13 +650,19 @@ static void terminal_read_pixel(struct arena* win, struct actor* act, struct sty
 	}
 	drawterm(win, &term, cx-ww, cy-hh, cx+ww, cy+hh);
 }
-static void terminal_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void terminal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void terminal_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x, y, w, h, enq,deq;
 	u32* p;
@@ -697,7 +705,9 @@ static void terminal_read_tui(struct arena* win, struct actor* act, struct style
 		}
 	}
 }
-static void terminal_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8* p;
 	int enq, deq;
@@ -714,20 +724,24 @@ static void terminal_read_cli(struct arena* win, struct actor* act, struct style
 	if(enq > deq)say("%.*s", enq-deq, p+deq);
 	else say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
 }
-static void terminal_read(struct arena* win, struct actor* act, struct style* sty)
+static void terminal_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)terminal_read_cli(win, act, sty);
-	else if(fmt == _tui_)terminal_read_tui(win, act, sty);
-	else if(fmt == _vbo_)terminal_read_vbo(win, act, sty);
-	else if(fmt == _html_)terminal_read_html(win, act, sty);
-	else terminal_read_pixel(win, act, sty);
+	if(fmt == _cli_)terminal_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)terminal_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)terminal_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)terminal_read_html(win, sty, act, com);
+	else terminal_read_pixel(win, sty, act, com);
 }
 
 
 
 
-static void terminal_write(struct event* ev)
+static void terminal_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j;
 	u64 tmp;

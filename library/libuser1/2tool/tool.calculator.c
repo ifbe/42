@@ -22,7 +22,9 @@ static u8 table[4][8] = {
 
 
 
-static void calculator_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 fg;
 	int x,y;
@@ -59,33 +61,45 @@ static void calculator_read_pixel(struct arena* win, struct actor* act, struct s
 		}
 	}
 }
-static void calculator_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void calculator_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void calculator_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void calculator_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("calc(%x,%x,%x)\n",win,act,sty);
 	say("buffer:%s\n", infix);
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_read(struct arena* win, struct actor* act, struct style* sty)
+static void calculator_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)calculator_read_cli(win, act, sty);
-	else if(fmt == _tui_)calculator_read_tui(win, act, sty);
-	else if(fmt == _html_)calculator_read_html(win, act, sty);
-	else if(fmt == _vbo_)calculator_read_vbo(win, act, sty);
-	else calculator_read_pixel(win, act, sty);
+	if(fmt == _cli_)calculator_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)calculator_read_tui(win, sty, act, com);
+	else if(fmt == _html_)calculator_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)calculator_read_vbo(win, sty, act, com);
+	else calculator_read_pixel(win, sty, act, com);
 }
-static void calculator_write(struct event* ev)
+static void calculator_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	double final;
 	int x,y,ret;

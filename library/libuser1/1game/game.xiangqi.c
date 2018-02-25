@@ -64,7 +64,9 @@ static int htmlcircle(char* p, int x, int y)
 		textcolor, hanzi
 	);
 }
-static void xiangqi_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void xiangqi_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	char* p = (char*)(win->buf);
@@ -94,7 +96,9 @@ static void xiangqi_read_html(struct arena* win, struct actor* act, struct style
 
 
 
-void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+void xiangqi_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
@@ -190,7 +194,9 @@ void xiangqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		}//forx
 	}//fory
 }
-static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void xiangqi_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -264,7 +270,9 @@ static void xiangqi_read_vbo(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void xiangqi_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void xiangqi_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,color;
 	int width = win->w;
@@ -297,18 +305,22 @@ static void xiangqi_read_tui(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void xiangqi_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void xiangqi_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void xiangqi_read(struct arena* win, struct actor* act, struct style* sty)
+static void xiangqi_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)xiangqi_read_cli(win, act, sty);
-	else if(fmt == _tui_)xiangqi_read_tui(win, act, sty);
-	else if(fmt == _vbo_)xiangqi_read_vbo(win, act, sty);
-	else if(fmt == _html_)xiangqi_read_html(win, act, sty);
-	else xiangqi_read_pixel(win, act, sty);
+	if(fmt == _cli_)xiangqi_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)xiangqi_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)xiangqi_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)xiangqi_read_html(win, sty, act, com);
+	else xiangqi_read_pixel(win, sty, act, com);
 }
 
 
@@ -340,7 +352,9 @@ int xiangqi_pickup(int x, int y)
 
 	return 0;
 }
-void xiangqi_write(struct event* ev)
+void xiangqi_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int x, y, ret;
 	u64 key = ev->why;

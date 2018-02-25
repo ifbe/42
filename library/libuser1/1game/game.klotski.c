@@ -20,10 +20,14 @@ static u32 color[10] =
 
 
 
-static void klotski_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void klotski_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int cx = sty->i_cx;
@@ -48,25 +52,35 @@ static void klotski_read_pixel(struct arena* win, struct actor* act, struct styl
 		}
 	}
 }
-static void klotski_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void klotski_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void klotski_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void klotski_read(struct arena* win, struct actor* act, struct style* sty)
+static void klotski_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)klotski_read_cli(win, act, sty);
-	else if(fmt == _tui_)klotski_read_tui(win, act, sty);
-	else if(fmt == _html_)klotski_read_html(win, act, sty);
-	else if(fmt == _vbo_)klotski_read_vbo(win, act, sty);
-	else klotski_read_pixel(win, act, sty);
+	if(fmt == _cli_)klotski_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)klotski_read_tui(win, sty, act, com);
+	else if(fmt == _html_)klotski_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)klotski_read_vbo(win, sty, act, com);
+	else klotski_read_pixel(win, sty, act, com);
 }
-static void klotski_write(struct event* ev)
+static void klotski_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 

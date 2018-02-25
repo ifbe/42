@@ -3,10 +3,14 @@
 
 
 
-static void mahjong_read()
+static void mahjong_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void mahjong_write()
+static void mahjong_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void mahjong_list()

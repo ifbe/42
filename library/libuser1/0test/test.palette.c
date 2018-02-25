@@ -10,7 +10,9 @@ static u32 blue = 0x25;
 
 
 
-static void palette_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,min,type;
 	int w = win->w;
@@ -45,30 +47,42 @@ static void palette_read_pixel(struct arena* win, struct actor* act, struct styl
 	palette = (red<<16)+(green<<8)+blue;
 	drawhexadecimal(win, palette, cx, cy, palette);
 }
-static void palette_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void palette_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void palette_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void palette_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("palette(%x,%x,%x)\n",win,act,sty);
 	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
 }
-static void palette_read(struct arena* win, struct actor* act, struct style* sty)
+static void palette_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)palette_read_cli(win, act, sty);
-	else if(fmt == _tui_)palette_read_tui(win, act, sty);
-	else if(fmt == _html_)palette_read_html(win, act, sty);
-	else if(fmt == _vbo_)palette_read_vbo(win, act, sty);
-	else palette_read_pixel(win, act, sty);
+	if(fmt == _cli_)palette_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)palette_read_tui(win, sty, act, com);
+	else if(fmt == _html_)palette_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)palette_read_vbo(win, sty, act, com);
+	else palette_read_pixel(win, sty, act, com);
 }
-static void palette_write(struct event* ev)
+static void palette_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;

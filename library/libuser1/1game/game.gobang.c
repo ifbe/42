@@ -3,10 +3,14 @@
 
 
 
-static void gobang_read()
+static void gobang_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void gobang_write()
+static void gobang_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void gobang_list()

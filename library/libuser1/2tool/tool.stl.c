@@ -1,7 +1,8 @@
 #include "actor.h"
 int openreadclose(void*, void*, u64, u64);
 int openwriteclose(void*, void*, u64, u64);
-int windowread(int type, char* buf);
+int windowread(int type, void* buf);
+int windowwrite(int type, void* buf);
 
 
 
@@ -53,10 +54,14 @@ void stl_prep(void* name)
 
 
 
-static void stl_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void stl_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	float* p;
 	float sx,sy,f;
@@ -103,7 +108,9 @@ static void stl_read_pixel(struct arena* win, struct actor* act, struct style* s
 		drawline(win, 0xffffff, v[1][0], v[1][1], v[2][0], v[2][1]);
 	}
 }
-static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	float* p;
 	float sx,sy,f;
@@ -180,28 +187,36 @@ static void stl_read_vbo(struct arena* win, struct actor* act, struct style* sty
 		index[j*3 + 2] = pcount + j*3 + 2;
 	}
 }
-static void stl_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void stl_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("stl(%x,%x,%x)\n",win,act,sty);
 }
-static void stl_read(struct arena* win, struct actor* act, struct style* sty)
+static void stl_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)stl_read_cli(win, act, sty);
-	else if(fmt == _tui_)stl_read_tui(win, act, sty);
-	else if(fmt == _vbo_)stl_read_vbo(win, act, sty);
-	else if(fmt == _html_)stl_read_html(win, act, sty);
-	else stl_read_pixel(win, act, sty);
+	if(fmt == _cli_)stl_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)stl_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)stl_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)stl_read_html(win, sty, act, com);
+	else stl_read_pixel(win, sty, act, com);
 }
 
 
 
 
-static void stl_write(struct event* ev)
+static void stl_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j,ret;
 	u64 type = ev->what;

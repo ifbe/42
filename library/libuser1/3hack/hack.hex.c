@@ -22,7 +22,9 @@ void hex_prep(void* name)
 
 
 
-static void hex_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 unicode, color;
 	int x,y,j;
@@ -87,30 +89,42 @@ static void hex_read_pixel(struct arena* win, struct actor* act, struct style* s
 		}
 	}
 }
-static void hex_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void hex_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void hex_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void hex_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
-static void hex_read(struct arena* win, struct actor* act, struct style* sty)
+static void hex_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)hex_read_cli(win, act, sty);
-	else if(fmt == _tui_)hex_read_tui(win, act, sty);
-	else if(fmt == _vbo_)hex_read_vbo(win, act, sty);
-	else if(fmt == _html_)hex_read_html(win, act, sty);
-	else hex_read_pixel(win, act, sty);
+	if(fmt == _cli_)hex_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)hex_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)hex_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)hex_read_html(win, sty, act, com);
+	else hex_read_pixel(win, sty, act, com);
 }
-static void hex_write(struct event* ev)
+static void hex_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j,ret;
 	u64 type = ev->what;

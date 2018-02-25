@@ -90,7 +90,7 @@ int actoroutput(struct arena* win)
 			//say("%x,%x,%x,%x\n", win, act, sty, com);
 			//say("%x\n", rel);
 
-			act->onread(win, act, sty, com);
+			act->onread(win, sty, act, com);
 			if(win->flag0 == 12)
 			{
 				if(win->fmt == _vbo_)select_3d(win, sty);

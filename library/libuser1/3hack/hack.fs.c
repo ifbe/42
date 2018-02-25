@@ -25,19 +25,29 @@ void fs_prep(void* name)
 
 
 
-static void fs_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fs_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fs_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fs_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fs_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -48,17 +58,21 @@ static void fs_read_pixel(struct arena* win, struct actor* act, struct style* st
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, fsbuf, 0x1000);
 }
-static void fs_read(struct arena* win, struct actor* act, struct style* sty)
+static void fs_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)fs_read_cli(win, act, sty);
-	else if(fmt == _tui_)fs_read_tui(win, act, sty);
-	else if(fmt == _vbo_)fs_read_vbo(win, act, sty);
-	else if(fmt == _html_)fs_read_html(win, act, sty);
-	else fs_read_pixel(win, act, sty);
+	if(fmt == _cli_)fs_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)fs_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)fs_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)fs_read_html(win, sty, act, com);
+	else fs_read_pixel(win, sty, act, com);
 }
-static void fs_write(struct event* ev)
+static void fs_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j,ret;
 	u64 type = ev->what;

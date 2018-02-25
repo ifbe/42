@@ -261,6 +261,7 @@ int actorinput(struct arena* win, struct event* ev)
 {
 	int x,y,ret;
 	struct actor* act;
+	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
 
@@ -342,7 +343,8 @@ int actorinput(struct arena* win, struct event* ev)
 	}
 
 	act = (void*)(rel->selfchip);
-	act->onwrite(ev);
+	com = (void*)(rel->selffoot);
+	act->onwrite(act, com, ev);
 
 	return 1;
 }

@@ -1,4 +1,11 @@
 #include "actor.h"
+#define width 32
+#define height 32
+int tetris_generate(void* buf, int w, int h);
+int tetris_left(void* buf, int w, int h);
+int tetris_right(void* buf, int w, int h);
+int tetris_up(void* buf, int w, int h);
+int tetris_down(void* buf, int w, int h);
 
 
 
@@ -19,42 +26,44 @@ typedef struct stucture
 	int y4;
 }structure;
 static structure that;
-//
-static int score=0;
-static unsigned char* table;
+static u8 buf[width*height];
 
 
 
 
-static void cubie(struct arena* win, int z, int x0, int y0, int x1, int y1)
+static void tetris_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
-	u32 bodycolor = z>0?0xffffff:0;
-
-	drawsolid_rect(win, bodycolor, x0, y0, x1, y1);
-	drawline_rect(win, 0x444444, x0, y0, x1, y1);
-}
-static void tetris_read_pixel(struct arena* win, struct actor* act, struct style* sty)
-{
+	u32 c;
 	int x,y;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx/16;
-	int hh = sty->i_fy/20;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	for(y=0;y<40;y++)
+	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<32;x++)
+		for(x=0;x<width;x++)
 		{
-			//say("%d ",table[y*32+x]);
-			cubie(win, table[y*32+x],
-				cx+(x-16)*ww, cy+(y-20)*hh,
-				cx+(x-15)*ww, cy+(y-19)*hh);
+			//say("%d ",buf[y*width+x]);
+			if(0 == buf[y*width+x])continue;
+			else if(1 == buf[y*width+x])c = 0xffffff;
+			else c = 0x00ff00;
+
+			drawsolid_rect(win, c,
+				cx-ww+1 + ((x+0)*2*ww)/width,
+				cy-hh+1 + ((y+0)*2*hh)/height,
+				cx-ww-1 + ((x+1)*2*ww)/width,
+				cy-hh-1 + ((y+1)*2*hh)/height);
 		}
 		//say("\n");
 	}
 	//say("\n");
-
+/*
 	//print cubies
 	cubie(win, 1,
 		cx+(that.x1-16)*ww, cy+(that.y1-20)*hh,
@@ -68,9 +77,7 @@ static void tetris_read_pixel(struct arena* win, struct actor* act, struct style
 	cubie(win, 1,
 		cx+(that.x4-16)*ww, cy+(that.y4-20)*hh,
 		cx+(that.x4-15)*ww, cy+(that.y4-19)*hh);
-
-	//print score
-	//decimal(10,10,score);
+*/
 }
 
 
@@ -84,10 +91,12 @@ static int htmlcubie(char* p, int x, int y)
 		"left:%.2f%;"
 		"top:%.2f%;"
 		"\">%d</div>",
-		x*3.1, y*2.5, table[y*32+x]
+		x*3.1, y*2.5, buf[y*width+x]
 	);
 }
-static void tetris_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void tetris_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	char* p = (char*)(win->buf);
@@ -104,11 +113,11 @@ static void tetris_read_html(struct arena* win, struct actor* act, struct style*
 		"}"
 		"</style>"
 	);
-	for(y=0;y<40;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<32;x++)
+		for(x=0;x<width;x++)
 		{
-			if(table[y*32+x] == 0)continue;
+			if(buf[y*width+x] == 0)continue;
 			p += htmlcubie(p, x, y);
 		}
 	}
@@ -122,7 +131,9 @@ static void tetris_read_html(struct arena* win, struct actor* act, struct style*
 
 
 
-static void tetris_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void tetris_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -138,509 +149,95 @@ static void tetris_read_vbo(struct arena* win, struct actor* act, struct style* 
 		0.0, 0.0, dd/16
 	);
 }
-static void tetris_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void tetris_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
-	int width = win->w;
-	int height = win->h;
+	int w = win->w;
+	int h = win->h;
 	char* p = (char*)(win->buf);
 
-	for(x=0;x<width*height*4;x++)p[x]=0;
-	if(height>=40)
-	{
-		for(y=0;y<40;y++)
-		{
-			for(x=0;x<32;x++)
-			{
-				if(table[y*32+x])
-				{
-					p[(y*width+x)<<2]='#';
-				}
-			}
-		}
-		p[(that.x1 + that.y1*width)<<2]='#';
-		p[(that.x2 + that.y2*width)<<2]='#';
-		p[(that.x3 + that.y3*width)<<2]='#';
-		p[(that.x4 + that.y4*width)<<2]='#';
-	}
-	else
+	for(x=0;x<w*h*4;x++)p[x]=0;
+	if(h>=height)
 	{
 		for(y=0;y<height;y++)
 		{
-			for(x=0;x<32;x++)
+			for(x=0;x<width;x++)
 			{
-				if(table[32*(y+40-height) + x])
+				if(buf[y*width+x])
 				{
-					p[(y*width+x)<<2]='#';
+					p[(y*w+x)<<2]='#';
 				}
 			}
 		}
-		p[(that.x1 + (that.y1-40+height)*width)<<2]='#';
-		p[(that.x2 + (that.y2-40+height)*width)<<2]='#';
-		p[(that.x3 + (that.y3-40+height)*width)<<2]='#';
-		p[(that.x4 + (that.y4-40+height)*width)<<2]='#';
+		p[(that.x1 + that.y1*w)<<2]='#';
+		p[(that.x2 + that.y2*w)<<2]='#';
+		p[(that.x3 + that.y3*w)<<2]='#';
+		p[(that.x4 + that.y4*w)<<2]='#';
+	}
+	else
+	{
+		for(y=0;y<h;y++)
+		{
+			for(x=0;x<width;x++)
+			{
+				if(buf[width*(y+height-h) + x])
+				{
+					p[(y*w+x)<<2]='#';
+				}
+			}
+		}
+		p[(that.x1 + (that.y1-height+h)*w)<<2]='#';
+		p[(that.x2 + (that.y2-height+h)*w)<<2]='#';
+		p[(that.x3 + (that.y3-height+h)*w)<<2]='#';
+		p[(that.x4 + (that.y4-height+h)*w)<<2]='#';
 	}
 }
-static void tetris_read_cli()
+static void tetris_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void tetris_read(struct arena* win, struct actor* act, struct style* sty)
+static void tetris_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)tetris_read_cli();
-	else if(fmt == _tui_)tetris_read_tui(win, act, sty);
-	else if(fmt == _vbo_)tetris_read_vbo(win, act, sty);
-	else if(fmt == _html_)tetris_read_html(win, act, sty);
-	else tetris_read_pixel(win, act, sty);
+	if(fmt == _cli_)tetris_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)tetris_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)tetris_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)tetris_read_html(win, sty, act, com);
+	else tetris_read_pixel(win, sty, act, com);
 }
-
-
-
-
-
-
-static void generate()
-{
-	if(that.type==0)
-	{
-		//	0000
-		if(that.direction==1 | that.direction==3)
-		{
-			that.x1=that.x;
-			that.x2=that.x +1;
-			that.x3=that.x +2;
-			that.x4=that.x +3;
-			that.y1=that.y2=that.y3=that.y4=that.y;
-		}
-
-		//	0
-		//	0
-		//	0
-		//	0
-		if(that.direction==0 | that.direction==2)
-		{
-			that.x1=that.x2=that.x3=that.x4=that.x;
-			that.y1=that.y;
-			that.y2=that.y +1;
-			that.y3=that.y +2;
-			that.y4=that.y +3;
-		}
-	}
-	if(that.type==1)
-	{
-		//	000
-		//	 0
-		if(that.direction==0)
-		{	that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x;
-			that.y4=that.y +1;
-		}
-
-		//	0
-		//	00
-		//	0
-		if(that.direction==1)
-		{	that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x;
-			that.y2=that.y -1;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x +1;
-			that.y4=that.y;
-		}
-
-		//	 0
-		//	000
-		if(that.direction==2)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x;
-			that.y4=that.y -1;
-		}
-
-		//	 0
-		//	00
-		//	 0
-		if(that.direction==3)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x;
-			that.y4=that.y -1;
-		}
-	}
-	if(that.type==2)
-	{
-		//	0
-		//	00
-		//	 0
-		if(that.direction==0|that.direction==2)
-		{	that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x -1;
-			that.y3=that.y -1;
-			that.x4=that.x;
-			that.y4=that.y+1;
-		}
-
-		//	 00
-		//	00
-		if(that.direction==1|that.direction==3)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x +1;
-			that.y2=that.y;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x -1;
-			that.y4=that.y +1;
-		}
-	}
-	if(that.type==3)
-	{
-		//	 0
-		//	00
-		//	0
-		if(that.direction==0|that.direction==2)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x +1;
-			that.y2=that.y;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x +1;
-			that.y4=that.y -1;
-		}
-
-		//	00
-		//	 00
-		if(that.direction==1|that.direction==3)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x +1;
-			that.y2=that.y;
-			that.x3=that.x;
-			that.y3=that.y -1;
-			that.x4=that.x -1;
-			that.y4=that.y -1;
-		}
-	}
-	if(that.type==4)
-	{
-		//	00
-		//	0
-		//	0
-		if(that.direction==0)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x;
-			that.y2=that.y -1;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x +1;
-			that.y4=that.y -1;
-		}
-
-		//	0
-		//	000
-		if(that.direction==1)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x -1;
-			that.y4=that.y -1;
-		}
-
-		//	 0
-		//	 0
-		//	00
-		if(that.direction==2)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x;
-			that.y2=that.y -1;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x -1;
-			that.y4=that.y +1;
-		}
-
-		//	000
-		//	  0
-		if(that.direction==3)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x +1;
-			that.y4=that.y +1;
-		}
-	}
-	if(that.type==5)
-	{
-		//	00
-		//	 0
-		//	 0
-		if(that.direction==0)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x;
-			that.y2=that.y -1;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x -1;
-			that.y4=that.y -1;
-		}
-
-		//	000
-		//	0
-		if(that.direction==1)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x -1;
-			that.y4=that.y +1;
-		}
-
-		//	0
-		//	0
-		//	00
-		if(that.direction==2)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x;
-			that.y2=that.y -1;
-			that.x3=that.x;
-			that.y3=that.y +1;
-			that.x4=that.x +1;
-			that.y4=that.y +1;
-		}
-
-		//	  0
-		//	000
-		if(that.direction==3)
-		{
-			that.x1=that.x;
-			that.y1=that.y;
-			that.x2=that.x -1;
-			that.y2=that.y;
-			that.x3=that.x +1;
-			that.y3=that.y;
-			that.x4=that.x +1;
-			that.y4=that.y -1;
-		}
-	}
-
-	//	00
-	//	00
-	if(that.type==6)
-	{
-		that.x1=that.x;
-		that.y1=that.y;
-		that.x2=that.x +1;
-		that.y2=that.y;
-		that.x3=that.x;
-		that.y3=that.y +1;
-		that.x4=that.x +1;
-		that.y4=that.y +1;
-	}
-}
-
-
-
-
-static int check()
-{
-	unsigned int temp;
-
-	//left
-	if(that.x1<0)return 1;
-	if(that.x2<0)return 2;
-	if(that.x3<0)return 3;
-	if(that.x4<0)return 4;
-
-	//right
-	if(that.x1>31)return 5;
-	if(that.x2>31)return 6;
-	if(that.x3>31)return 7;
-	if(that.x4>31)return 8;
-
-	//collision
-	if(table[32 * that.y1 + that.x1] != 0)return 9;
-	if(table[32 * that.y2 + that.x2] != 0)return 10;
-	if(table[32 * that.y3 + that.x3] != 0)return 11;
-	if(table[32 * that.y4 + that.x4] != 0)return 12;
-
-	//success
-	return 0;
-}
-
-
-static void left()
-{
-	if(that.x1>0&&that.x2>0&&that.x3>0&&that.x4>0)
-	{
-		that.x --;
-		that.x1 --;
-		that.x2 --;
-		that.x3 --;
-		that.x4 --;
-		if(check() != 0)
-		{
-			that.x ++;
-			that.x1 ++;
-			that.x2 ++;
-			that.x3 ++;
-			that.x4 ++;
-		}
-	}
-}
-static void right()
-{
-	if(that.x1<31&&that.x2<31&&that.x3<31&&that.x4<31)
-	{
-		that.x ++;
-		that.x1 ++;
-		that.x2 ++;
-		that.x3 ++;
-		that.x4 ++;
-		if(check() != 0)
-		{
-			that.x --;
-			that.x1 --;
-			that.x2 --;
-			that.x3 --;
-			that.x4 --;
-		}
-	}
-}
-static void up()
-{
-	that.direction=(that.direction +1)%4;
-	generate();
-	if(check() != 0)
-	{
-		that.direction=(that.direction+3)%4;
-	}
-	generate();
-}
-static int down()
-{
-	int x,y,count;
-
-	that.y ++;
-	that.y1 ++;
-	that.y2 ++;
-	that.y3 ++;
-	that.y4 ++;
-	if(check() < 9)return 0;
-
-	that.y --;
-	that.y1 --;
-	that.y2 --;
-	that.y3 --;
-	that.y4 --;
-
-	table[32 * that.y1 + that.x1]=1;
-	table[32 * that.y2 + that.x2]=1;
-	table[32 * that.y3 + that.x3]=1;
-	table[32 * that.y4 + that.x4]=1;
-
-	y=39;
-	while(1)
-	{
-		count=0;
-		for(x=0;x<32;x++)
-		{
-			if(table[32*y+x]>0)count++;
-		}
-
-		if(count==32)
-		{
-			//
-			for(x=y*32+31;x>32;x--)
-			{
-				table[x]=table[x-32];
-			}
-		}
-
-		else
-		{
-			y--;
-			if(y==0)break;
-		}
-	}
-
-	//
-	that.x=getrandom() %27+1;
-	that.y=1;
-	that.type=getrandom() % 7;
-	that.direction=getrandom() & 0x3;
-	generate();
-	return 1;
-}
-static void tetris_write(struct event* ev)
+static void tetris_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x2d70)
+	if(type == _kbd_)
 	{
-		for(ret=0;ret<20;ret++)if(down()==1)return;
-	}
-	else if(type == _kbd_)
-	{
-		if(key==0x48)up();
-		else if(key==0x4b)left();
-		else if(key==0x4d)right();
-		else if(key==0x50)down();
+		if(key==0x48)tetris_up(buf, width, height);
+		else if(key==0x4b)tetris_left(buf, width, height);
+		else if(key==0x4d)tetris_right(buf, width, height);
+		else if(key==0x50)tetris_down(buf, width, height);
 	}
 	else if(type == _char_)
 	{
-		if(key=='a')left();
-		else if(key=='d')right();
-		else if(key=='w')up();
-		else if(key=='s')down();
+		if(key=='a')tetris_left(buf, width, height);
+		else if(key=='d')tetris_right(buf, width, height);
+		else if(key=='w')tetris_up(buf, width, height);
+		else if(key=='s')tetris_down(buf, width, height);
 		else if(key==' ')
 		{
-			for(ret=0;ret<20;ret++)if(down()==1)return;
+			for(ret=0;ret<20;ret++)
+			{
+				if(1 == tetris_down(buf, width, height))return;
+			}
 		}
 	}
 }
@@ -652,15 +249,7 @@ static void tetris_choose()
 }
 static void tetris_start()
 {
-	int x;
-	for(x= 0*32;x<40*32;x++) table[x]=0;
-	for(x=40*32;x<41*32;x++) table[x]=1;
-
-	that.x=getrandom() %27 +1;
-	that.y=1;
-	that.type=5;
-	that.direction=2;
-	generate();
+	tetris_generate(buf, width, height);
 }
 static void tetris_stop()
 {

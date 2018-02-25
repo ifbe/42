@@ -130,7 +130,9 @@ unsigned char BLUE6(int i,int j)
 
 
 
-static void codeimg_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int width = win->w;
@@ -148,29 +150,41 @@ return;
 		width, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-static void codeimg_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void codeimg_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void codeimg_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void codeimg_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
-static void codeimg_read(struct arena* win, struct actor* act, struct style* sty)
+static void codeimg_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)codeimg_read_cli(win, act, sty);
-	else if(fmt == _tui_)codeimg_read_tui(win, act, sty);
-	else if(fmt == _html_)codeimg_read_html(win, act, sty);
-	else if(fmt == _vbo_)codeimg_read_vbo(win, act, sty);
-	else codeimg_read_pixel(win, act, sty);
+	if(fmt == _cli_)codeimg_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)codeimg_read_tui(win, sty, act, com);
+	else if(fmt == _html_)codeimg_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)codeimg_read_vbo(win, sty, act, com);
+	else codeimg_read_pixel(win, sty, act, com);
 }
-static void codeimg_write(struct event* ev)
+static void codeimg_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void codeimg_list()

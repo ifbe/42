@@ -20,7 +20,9 @@ static struct pictureobject* vision = 0;
 
 
 
-void camera_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+void camera_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	if(vision == 0)return;
 	u8* screen;
@@ -42,16 +44,24 @@ void camera_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 		w, h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-void camera_read_html(struct arena* win, struct actor* act, struct style* sty)
+void camera_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-void camera_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+void camera_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-void camera_read_tui(struct arena* win, struct actor* act, struct style* sty)
+void camera_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-void camera_read_cli(struct arena* win, struct actor* act, struct style* sty)
+void camera_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	if(vision == 0)
 	{
@@ -65,17 +75,21 @@ void camera_read_cli(struct arena* win, struct actor* act, struct style* sty)
 		);
 	}
 }
-static void camera_read(struct arena* win, struct actor* act, struct style* sty)
+static void camera_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)camera_read_cli(win, act, sty);
-	else if(fmt == _tui_)camera_read_tui(win, act, sty);
-	else if(fmt == _html_)camera_read_html(win, act, sty);
-	else if(fmt == _vbo_)camera_read_vbo(win, act, sty);
-	else camera_read_pixel(win, act, sty);
+	if(fmt == _cli_)camera_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)camera_read_tui(win, sty, act, com);
+	else if(fmt == _html_)camera_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)camera_read_vbo(win, sty, act, com);
+	else camera_read_pixel(win, sty, act, com);
 }
-static void camera_write(struct event* ev)
+static void camera_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j;
 	u8* buf;

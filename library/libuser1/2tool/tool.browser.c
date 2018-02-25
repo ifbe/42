@@ -16,21 +16,29 @@ static u8* dstbuf = 0;
 
 
 
-static void browser_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int j;
 	u8* p = (u8*)(win->buf);
 	for(j=0;j<len;j++)p[j] = dstbuf[j];
 }
-static void browser_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	//drawstring(win, 0xffffff, 0, 0, pl->priv, 0);
 	drawstring(win, 0x0000ff, 0, 16, dstbuf, 0);
 }
-static void browser_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void browser_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8* p = (u8*)(win->buf);
 	int w = win->w;
@@ -54,21 +62,27 @@ static void browser_read_tui(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void browser_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
 }
-static void browser_read(struct arena* win, struct actor* act, struct style* sty)
+static void browser_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)browser_read_cli(win, act, sty);
-	else if(fmt == _tui_)browser_read_tui(win, act, sty);
-	else if(fmt == _html_)browser_read_html(win, act, sty);
-	else if(fmt == _vbo_)browser_read_vbo(win, act, sty);
-	else browser_read_pixel(win, act, sty);
+	if(fmt == _cli_)browser_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)browser_read_tui(win, sty, act, com);
+	else if(fmt == _html_)browser_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)browser_read_vbo(win, sty, act, com);
+	else browser_read_pixel(win, sty, act, com);
 }
-static void browser_write(struct event* ev)
+static void browser_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 #define http 0x70747468
 	u64 type = ev->what;

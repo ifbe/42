@@ -33,7 +33,9 @@ static double* phase;
 
 
 
-static void spectrum_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	double t,cc,ss;
 	int x,y;
@@ -74,10 +76,14 @@ static void spectrum_read_pixel(struct arena* win, struct actor* act, struct sty
 		);
 	}
 }
-static void spectrum_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void spectrum_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x;
 	float cc,ss;
@@ -98,7 +104,9 @@ static void spectrum_read_vbo(struct arena* win, struct actor* act, struct style
 		);
 	}
 }
-static void spectrum_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int w = win->w;
@@ -115,19 +123,23 @@ static void spectrum_read_tui(struct arena* win, struct actor* act, struct style
 		}
 	}
 }
-static void spectrum_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
-static void spectrum_read(struct arena* win, struct actor* act, struct style* sty)
+static void spectrum_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)spectrum_read_cli(win, act, sty);
-	else if(fmt == _tui_)spectrum_read_tui(win, act, sty);
-	else if(fmt == _vbo_)spectrum_read_vbo(win, act, sty);
-	else if(fmt == _html_)spectrum_read_html(win, act, sty);
-	else spectrum_read_pixel(win, act, sty);
+	if(fmt == _cli_)spectrum_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)spectrum_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)spectrum_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)spectrum_read_html(win, sty, act, com);
+	else spectrum_read_pixel(win, sty, act, com);
 }
 
 
@@ -156,7 +168,9 @@ void spectrum_fft()
 	}
 	//say("%lf,%lf,%lf,%lf\n",amp[0],amp[1],amp[2],amp[3]);
 }
-static void spectrum_write(struct event* ev)
+static void spectrum_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j,k;
 	float max;

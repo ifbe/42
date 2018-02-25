@@ -22,7 +22,9 @@ static u8 table[8][8] = {
 
 
 
-static void joystick_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void joystick_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -73,16 +75,24 @@ static void joystick_read_pixel(struct arena* win, struct actor* act, struct sty
 	drawsolid_circle(win, 0xffff00,
 		cx+(ww*5/8), cy, radius);
 }
-static void joystick_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void joystick_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void joystick_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void joystick_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void joystick_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void joystick_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void joystick_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void joystick_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("joystick(%x,%x,%x)\n",win,act,sty);
 }
@@ -90,7 +100,9 @@ static void joystick_read_cli(struct arena* win, struct actor* act, struct style
 
 
 
-void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+void keyboard_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int left,top,right,bottom;
@@ -115,30 +127,42 @@ void keyboard_read_pixel(struct arena* win, struct actor* act, struct style* sty
 		}
 	}
 }
-static void keyboard_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void keyboard_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void keyboard_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void keyboard_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void keyboard_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void keyboard_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void keyboard_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void keyboard_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("keyboard(%x,%x,%x)\n",win,act,sty);
 }
-static void input_read(struct arena* win, struct actor* act, struct style* sty)
+static void input_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)keyboard_read_cli(win, act, sty);
-	else if(fmt == _tui_)keyboard_read_tui(win, act, sty);
-	else if(fmt == _html_)keyboard_read_html(win, act, sty);
-	else if(fmt == _vbo_)keyboard_read_vbo(win, act, sty);
-	else keyboard_read_pixel(win, act, sty);
+	if(fmt == _cli_)keyboard_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)keyboard_read_tui(win, sty, act, com);
+	else if(fmt == _html_)keyboard_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)keyboard_read_vbo(win, sty, act, com);
+	else keyboard_read_pixel(win, sty, act, com);
 }
-static void input_write(struct event* ev)
+static void input_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int x,y;
 	//say("%x,%x\n",x,y);

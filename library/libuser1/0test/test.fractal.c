@@ -3,10 +3,14 @@
 
 
 
-static void fractal_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fractal_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -18,26 +22,36 @@ static void fractal_read_pixel(struct arena* win, struct actor* act, struct styl
 	drawsolid_rect(win, 0xff0000, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawline_rect( win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 }
-static void fractal_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fractal_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void fractal_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
-static void fractal_read(struct arena* win, struct actor* act, struct style* sty)
+static void fractal_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)fractal_read_cli(win, act, sty);
-	else if(fmt == _tui_)fractal_read_tui(win, act, sty);
-	else if(fmt == _html_)fractal_read_html(win, act, sty);
-	else if(fmt == _vbo_)fractal_read_vbo(win, act, sty);
-	else fractal_read_pixel(win, act, sty);
+	if(fmt == _cli_)fractal_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)fractal_read_tui(win, sty, act, com);
+	else if(fmt == _html_)fractal_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)fractal_read_vbo(win, sty, act, com);
+	else fractal_read_pixel(win, sty, act, com);
 }
-static void fractal_write(struct event* ev)
+static void fractal_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 

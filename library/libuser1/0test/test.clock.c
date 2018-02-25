@@ -4,10 +4,14 @@ u64 getdate();
 
 
 
-static void clock_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void clock_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
 	int j,k;
@@ -28,13 +32,19 @@ static void clock_read_pixel(struct arena* win, struct actor* act, struct style*
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
 	}
 }
-static void clock_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void clock_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void clock_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 date = getdate();
 	u8* p = (u8*)&date;
@@ -42,16 +52,20 @@ static void clock_read_cli(struct arena* win, struct actor* act, struct style* s
 	say(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
 		p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 }
-static void clock_read(struct arena* win, struct actor* act, struct style* sty)
+static void clock_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)clock_read_cli(win, act, sty);
-	else if(fmt == _tui_)clock_read_tui(win, act, sty);
-	else if(fmt == _html_)clock_read_html(win, act, sty);
-	else if(fmt == _vbo_)clock_read_vbo(win, act, sty);
-	else clock_read_pixel(win, act, sty);
+	if(fmt == _cli_)clock_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)clock_read_tui(win, sty, act, com);
+	else if(fmt == _html_)clock_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)clock_read_vbo(win, sty, act, com);
+	else clock_read_pixel(win, sty, act, com);
 }
-static void clock_write(struct event* ev)
+static void clock_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void clock_list()

@@ -9,7 +9,9 @@ static u8 buffer[8][8];
 
 
 
-static void chess_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 color;
 	int x,y;
@@ -39,7 +41,9 @@ static void chess_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void chess_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 color;
 	int x,y;
@@ -69,13 +73,19 @@ static void chess_read_vbo(struct arena* win, struct actor* act, struct style* s
 		}
 	}
 }
-static void chess_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void chess_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void chess_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8 ch;
 	int x,y;
@@ -92,16 +102,20 @@ static void chess_read_cli(struct arena* win, struct actor* act, struct style* s
 		say("\n");
 	}
 }
-static void chess_read(struct arena* win, struct actor* act, struct style* sty)
+static void chess_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)chess_read_cli(win, act, sty);
-	else if(fmt == _tui_)chess_read_tui(win, act, sty);
-	else if(fmt == _vbo_)chess_read_vbo(win, act, sty);
-	else if(fmt == _html_)chess_read_html(win, act, sty);
-	else chess_read_pixel(win, act, sty);
+	if(fmt == _cli_)chess_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)chess_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)chess_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)chess_read_html(win, sty, act, com);
+	else chess_read_pixel(win, sty, act, com);
 }
-static void chess_write(struct event* ev)
+static void chess_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }

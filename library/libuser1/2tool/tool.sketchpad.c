@@ -166,7 +166,9 @@ static void tuxiang(struct arena* win)
 		}
 	}//result2img
 }
-static void sketchpad_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	double rx,ry,rw;
 	int x,y,w,counter;
@@ -228,13 +230,19 @@ skipthese:
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+32, postfix, 0);
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
 }
-static void sketchpad_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void sketchpad_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void sketchpad_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -288,25 +296,31 @@ static void sketchpad_read_tui(struct arena* win, struct actor* act, struct styl
 		p[x*4] = buffer[x];
 	}
 }
-static void sketchpad_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
-static void sketchpad_read(struct arena* win, struct actor* act, struct style* sty)
+static void sketchpad_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)sketchpad_read_cli(win, act, sty);
-	else if(fmt == _tui_)sketchpad_read_tui(win, act, sty);
-	else if(fmt == _vbo_)sketchpad_read_vbo(win, act, sty);
-	else if(fmt == _html_)sketchpad_read_html(win, act, sty);
-	else sketchpad_read_pixel(win, act, sty);
+	if(fmt == _cli_)sketchpad_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)sketchpad_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)sketchpad_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)sketchpad_read_html(win, sty, act, com);
+	else sketchpad_read_pixel(win, sty, act, com);
 }
 
 
 
 
-static void sketchpad_write(struct event* ev)
+static void sketchpad_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int ret;
 	u64 type = ev->what;

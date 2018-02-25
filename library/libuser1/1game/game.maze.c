@@ -11,7 +11,9 @@ static u8 buffer[mazesize][mazesize];
 
 
 
-static void maze_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,z,w;
 	float fx,fy,fz;
@@ -78,7 +80,9 @@ static void maze_read_vbo(struct arena* win, struct actor* act, struct style* st
 		}
 	}
 }
-static void maze_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,w;
 	int cx = sty->i_cx;
@@ -124,10 +128,14 @@ static void maze_read_pixel(struct arena* win, struct actor* act, struct style* 
 		}
 	}
 }
-static void maze_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void maze_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	int w = win->w;
@@ -145,7 +153,9 @@ static void maze_read_tui(struct arena* win, struct actor* act, struct style* st
 		}
 	}
 }
-static void maze_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	for(y=0;y<mazesize;y++)
@@ -159,16 +169,20 @@ static void maze_read_cli(struct arena* win, struct actor* act, struct style* st
 	}
 	say("\n\n\n\n");
 }
-static void maze_read(struct arena* win, struct actor* act, struct style* sty)
+static void maze_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)maze_read_cli(win, act, sty);
-	else if(fmt == _tui_)maze_read_tui(win, act, sty);
-	else if(fmt == _html_)maze_read_html(win, act, sty);
-	else if(fmt == _vbo_)maze_read_vbo(win, act, sty);
-	else maze_read_pixel(win, act, sty);
+	if(fmt == _cli_)maze_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)maze_read_tui(win, sty, act, com);
+	else if(fmt == _html_)maze_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)maze_read_vbo(win, sty, act, com);
+	else maze_read_pixel(win, sty, act, com);
 }
-static void maze_write(struct event* ev)
+static void maze_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void maze_list()

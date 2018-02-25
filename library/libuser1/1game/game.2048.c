@@ -36,8 +36,8 @@ static u32 color2048[17] = {
 
 
 static void the2048_read_vbo(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8 (*tab)[4] = (void*)buffer + num*16;
 	u32 color;
@@ -86,8 +86,8 @@ static void the2048_read_vbo(
 	}
 }
 static void the2048_read_pixel(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
@@ -133,8 +133,8 @@ static void the2048_read_pixel(
 	}
 }
 static void the2048_read_html(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8 (*tab)[4] = (void*)buffer + num*16;
 	int x,y;
@@ -182,8 +182,8 @@ static void the2048_read_html(
 	win->info[0] = len;
 }
 static void the2048_read_tui(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)buffer + num*16;
@@ -203,8 +203,8 @@ static void the2048_read_tui(
 	}
 }
 static void the2048_read_cli(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
@@ -235,25 +235,28 @@ static void the2048_read_cli(
 	);
 }
 static void the2048_read(
-	struct arena* win, struct actor* act,
-	struct style* sty, struct compo* com)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)the2048_read_cli(win, act, sty, com);
-	else if(fmt == _tui_)the2048_read_tui(win, act, sty, com);
-	else if(fmt == _html_)the2048_read_html(win, act, sty, com);
-	else if(fmt == _vbo_)the2048_read_vbo(win, act, sty, com);
-	else the2048_read_pixel(win, act, sty, com);
+	if(fmt == _cli_)the2048_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)the2048_read_tui(win, sty, act, com);
+	else if(fmt == _html_)the2048_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)the2048_read_vbo(win, sty, act, com);
+	else the2048_read_pixel(win, sty, act, com);
 }
 
 
 
 
-static void the2048_write(struct event* ev)
+static void the2048_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	int j,k;
 	u8* p;
 	u8* q;
+	say("%llx,%llx,%llx\n", act, com, ev);
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
 	if(ev->what == _kbd_)

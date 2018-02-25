@@ -3,10 +3,14 @@
 
 
 
-static void brick_read()
+static void brick_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void brick_write()
+static void brick_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void brick_list()

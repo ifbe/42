@@ -3,10 +3,14 @@
 
 
 
-static void poker_read()
+static void poker_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void poker_write()
+static void poker_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void poker_list()

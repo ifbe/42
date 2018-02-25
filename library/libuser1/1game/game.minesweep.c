@@ -3,10 +3,14 @@
 
 
 
-static void minesweep_read()
+static void minesweep_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void minesweep_write()
+static void minesweep_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 }
 static void minesweep_list()

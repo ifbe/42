@@ -1,30 +1,29 @@
 #include "actor.h"
+#define width 32
+#define height 32
+int snake_generate(void* buf, int w, int h);
+int snake_left(void* buf, int w, int h);
+int snake_right(void* buf, int w, int h);
+int snake_up(void* buf, int w, int h);
+int snake_down(void* buf, int w, int h);
 
 
 
 
-struct hehe{
-	int x;
-	int y;
+struct snake
+{
+	u8 x;
+	u8 y;
+	u16 next;
 };
-static struct hehe* snake;
-static struct hehe a;
-static struct hehe b;
-//
-static int len;
-static int direction;
-//
-static int worldwidth;
-static int worldheight;
-static int foodx;
-static int foody;
-static int score=0;
-static int die=0;
+static struct snake buf[width*height];
 
 
 
 
-void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+void snake_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int j;
 	int t1, t2, t3, t4;
@@ -37,27 +36,26 @@ void snake_read_pixel(struct arena* win, struct actor* act, struct style* sty)
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//body
-	j=0;
+	j = 1;
 	while(1)
 	{
-		t1 = cx-ww + snake[j].x * 2 * ww / worldwidth;
-		t2 = cy-hh + snake[j].y * 2 * hh / worldheight;
-		t3 = cx-ww + (snake[j].x+1) * 2 * ww / worldwidth;
-		t4 = cy-hh + (snake[j].y+1) * 2 * hh / worldheight;
-		drawsolid_rect(win, 0xffffff, t1, t2, t3, t4);
-		drawline_rect(win, 0x000000, t1, t2, t3, t4);
+		//say("[%x]=%x,%x,%x\n", j, buf[j].x, buf[j].y, buf[j].next);
+		t1 = cx-ww + buf[j].x * 2 * ww / width;
+		t2 = cy-hh + buf[j].y * 2 * hh / height;
+		t3 = cx-ww + (buf[j].x+1) * 2 * ww / width;
+		t4 = cy-hh + (buf[j].y+1) * 2 * hh / height;
+		drawsolid_rect(win, 0xffffff, t1+1, t2+1, t3-1, t4-1);
 
-		j++;
-		if(j>=len)break;
+		if(buf[j].next <= 1)break;
+		j = buf[j].next;
 	}
 
 	//food
-	t1 = cx-ww + foodx * 2 * ww / worldwidth;
-	t2 = cy-hh + foody * 2 * hh / worldheight;
-	t3 = cx-ww + (foodx+1) * 2 * ww / worldwidth;
-	t4 = cy-hh + (foody+1) * 2 * hh / worldheight;
-	drawsolid_rect(win, 0x00ff00, t1, t2, t3, t4);
-	drawline_rect(win, 0x000000, t1, t2, t3, t4);
+	t1 = cx-ww + buf[0].x * 2 * ww / width;
+	t2 = cy-hh + buf[0].y * 2 * hh / height;
+	t3 = cx-ww + (buf[0].x+1) * 2 * ww / width;
+	t4 = cy-hh + (buf[0].y+1) * 2 * hh / height;
+	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
 
 
@@ -75,16 +73,12 @@ static int htmlcubie(char* p, u32 color, int x, int y)
 		x*3.1, y*3.1, color
 	);
 }
-void snake_read_html(struct arena* win, struct actor* act, struct style* sty)
+void snake_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int j = 0;
 	char* p = (char*)(win->buf);
-
-	if(die == 1)
-	{
-		mysnprintf(p, 0x1000, "boooooooooooooooom");
-		return;
-	}
 
 	p += mysnprintf(
 		p, 0x1000,
@@ -97,168 +91,68 @@ void snake_read_html(struct arena* win, struct actor* act, struct style* sty)
 		"}"
 		"</style>"
 	);
-	while(1)
-	{
-		p += htmlcubie(p, 0xffffff, snake[j].x, snake[j].y);
-
-		j++;
-		if(j>=len)break;
-	}
  
-	htmlcubie(p, 0xff00, foodx, foody);
+	htmlcubie(p, 0xff00, buf[0].x, buf[0].y);
 }
-void snake_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+void snake_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-void snake_read_tui(struct arena* win, struct actor* act, struct style* sty)
+void snake_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int j,t;
-	int width = win->w;
-	int height = win->h;
+	int w = win->w;
+	int h = win->h;
 	char* p = (char*)(win->buf);
-	for(j=0;j<width*height*4;j++)p[j] = 0;
+	for(j=0;j<w*h*4;j++)p[j] = 0;
 
-	j=0;
-	while(1)
-	{
-		t = snake[j].x + snake[j].y * width;
-		p[t<<2]='#';
-
-		j++;
-		if(j>=len)break;
-	}
-
-	t = foodx + foody*width;
+	t = buf[0].x + buf[0].y*w;
 	p[t<<2] = '@';
 }
-void snake_read_cli(struct arena* win, struct actor* act, struct style* sty)
+void snake_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	say("snake(%x,%x,%x)\n",win,act,sty);
 }
-void snake_read(struct arena* win, struct actor* act, struct style* sty)
+void snake_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)snake_read_cli(win, act, sty);
-	else if(fmt == _tui_)snake_read_tui(win, act, sty);
-	else if(fmt == _html_)snake_read_html(win, act, sty);
-	else if(fmt == _vbo_)snake_read_vbo(win, act, sty);
-	else snake_read_pixel(win, act, sty);
+	if(fmt == _cli_)snake_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)snake_read_tui(win, sty, act, com);
+	else if(fmt == _html_)snake_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)snake_read_vbo(win, sty, act, com);
+	else snake_read_pixel(win, sty, act, com);
 }
 
 
 
 
-void newfood()
+void snake_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
-	foodx=getrandom() % worldwidth;
-	foody=getrandom() % worldheight;
-}
-void snake_write(struct event* ev)
-{
-	int j,k;
 	u64 type = ev->what;
 	u64 key = ev->why;
-	if(die==1)return;
 
-	k = 0;
-	if(type==0x72616863)
+	if(_char_ == type)
 	{
-		if(key == 'w')k = 'w';
-		else if(key == 's')k = 's';
-		else if(key == 'a')k = 'a';
-		else if(key == 'd')k = 'd';
+		if(key == 'w')snake_up(buf, width, height);
+		else if(key == 's')snake_down(buf, width, height);
+		else if(key == 'a')snake_left(buf, width, height);
+		else if(key == 'd')snake_right(buf, width, height);
 	}
-	if(type==0x64626b)
+	if(_kbd_ == type)
 	{
-		if(key == 0x48)k = 'w';
-		else if(key == 0x4b)k = 'a';
-		else if(key == 0x50)k = 's';
-		else if(key == 0x4d)k = 'd';
-	}
-	if(k == 0)return;
-
-	say("%x\n",k);
-	if(k == 'a')
-	{
-		if( (snake[0].x-1 == snake[1].x) && (snake[0].y == snake[1].y) )return;
-		if( (snake[0].x-1) < 0){die=1;return;}
-
-		a.x=snake[0].x;
-		a.y=snake[0].y;
-		snake[0].x--;
-		direction=1;
-	}
-	else if(k == 'd')
-	{
-		if(snake[0].x+1 == snake[1].x)
-		{
-			if(snake[0].y == snake[1].y)return;
-		}
-		if( (snake[0].x+1) >= worldwidth){die=1;return;}
-
-		a.x=snake[0].x;
-		a.y=snake[0].y;
-		snake[0].x++;
-		direction=2;
-	}
-	else if(k == 'w')
-	{
-		if( (snake[0].x == snake[1].x) && (snake[0].y-1 == snake[1].y) )return;
-		if( (snake[0].y-1) < 0){die=1;return;}
-
-		a.x=snake[0].x;
-		a.y=snake[0].y;
-		snake[0].y--;
-		direction=3;
-	}
-	else if(k == 's')
-	{
-		if(snake[0].x == snake[1].x)
-		{
-			if(snake[0].y+1 == snake[1].y)return;
-		}
-		if( (snake[0].y+1) >= worldheight){die=1;return;}
-
-		a.x=snake[0].x;
-		a.y=snake[0].y;
-		snake[0].y++;
-		direction=4;
-	}
-
-	//蛇身往前挪动
-	j=0;
-	while(1)
-	{
-		j++;
-		if(j >= len)break;
-
-		b.x = snake[j].x;
-		b.y = snake[j].y;
-		snake[j].x = a.x;
-		snake[j].y = a.y;
-		a.x = b.x;
-		a.y = b.y;
-
-		if(snake[j].x==snake[0].x)
-		{
-			if(snake[j].y==snake[0].y)
-			{
-				die=1;
-				return;
-			}
-		}
-	}
-
-	//吃到食物
-	if(snake[0].x==foodx)
-	{
-		if(snake[0].y==foody)
-		{
-			snake[j].x = a.x;
-			snake[j].y = a.y;
-			len++;
-			newfood();
-		}
+		if(key == 0x48)snake_up(buf, width, height);
+		else if(key == 0x4b)snake_left(buf, width, height);
+		else if(key == 0x4d)snake_right(buf, width, height);
+		else if(key == 0x50)snake_down(buf, width, height);
 	}
 }
 static void snake_list()
@@ -272,21 +166,7 @@ static void snake_stop()
 }
 static void snake_start()
 {
-	worldwidth = 32;
-	worldheight = 32;
-
-	newfood();
-	snake[0].x = foodx;
-	snake[0].y = foody;
-	newfood();
-
-	a.x = -1;
-	b.x = -1;
-
-	len=1;
-	direction=1;
-
-	die=0;
+	snake_generate(buf, width, height);
 }
 static void snake_delete()
 {

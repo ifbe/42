@@ -11,10 +11,14 @@ static char* data;
 
 
 
-static void weiqi_read_html(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u32 color;
 	int x,y,half;
@@ -70,7 +74,9 @@ static void weiqi_read_pixel(struct arena* win, struct actor* act, struct style*
 		}
 	}
 }
-static void weiqi_read_vbo(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
@@ -86,7 +92,9 @@ static void weiqi_read_vbo(struct arena* win, struct actor* act, struct style* s
 		0.0, 0.0, dd/16
 	);
 }
-static void weiqi_read_tui(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	int x,y,j,k,ret,color;
 	int width = win->w;
@@ -117,24 +125,30 @@ static void weiqi_read_tui(struct arena* win, struct actor* act, struct style* s
 		}
 	}
 }
-static void weiqi_read_cli(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 }
-static void weiqi_read(struct arena* win, struct actor* act, struct style* sty)
+static void weiqi_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)weiqi_read_cli(win, act, sty);
-	else if(fmt == _tui_)weiqi_read_tui(win, act, sty);
-	else if(fmt == _vbo_)weiqi_read_vbo(win, act, sty);
-	else if(fmt == _html_)weiqi_read_html(win, act, sty);
-	else weiqi_read_pixel(win, act, sty);
+	if(fmt == _cli_)weiqi_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)weiqi_read_tui(win, sty, act, com);
+	else if(fmt == _vbo_)weiqi_read_vbo(win, sty, act, com);
+	else if(fmt == _html_)weiqi_read_html(win, sty, act, com);
+	else weiqi_read_pixel(win, sty, act, com);
 }
 
 
 
 
-void weiqi_write(struct event* ev)
+void weiqi_write(
+	struct actor* act, struct compo* com,
+	struct event* ev)
 {
 	char val;
 	int x,y;
