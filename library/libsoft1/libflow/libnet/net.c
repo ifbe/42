@@ -35,11 +35,11 @@ int ssh_server(  void* p, int fd, void* buf, int len);
 int tls_client(  void* p, int fd, void* buf, int len);
 int tls_server(  void* p, int fd, void* buf, int len);
 //udp
+int dns_client(  void* p, int fd, void* buf, int len);
 int dns_server(  void* p, int fd, void* buf, int len);
-int dns_server(  void* p, int fd, void* buf, int len);
+int hole_client( void* p, int fd, void* buf, int len);
 int hole_server( void* p, int fd, void* buf, int len);
-int hole_server( void* p, int fd, void* buf, int len);
-int tftp_server( void* p, int fd, void* buf, int len);
+int tftp_client( void* p, int fd, void* buf, int len);
 int tftp_server( void* p, int fd, void* buf, int len);
 //tcp
 int http_client( void* p, int fd, void* buf, int len);

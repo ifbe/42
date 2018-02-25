@@ -1,6 +1,7 @@
 #include "actor.h"
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
+void login_read(void*);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 void* samepinprevchip(void*);

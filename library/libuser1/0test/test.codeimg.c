@@ -199,10 +199,10 @@ static void codeimg_start()
 		}
 	}
 }
-void codeimg_delete()
+static void codeimg_delete()
 {
 }
-void codeimg_create()
+static void codeimg_create()
 {
 }
 

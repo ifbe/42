@@ -41,13 +41,16 @@ struct object
 	};
 
 	//[0x20,0x3f]
-	struct
-	{
-		u64 what;
-		u64 flag;
-		u64 len;
-		u64 buf;
-	}info;
+	union{
+		struct uartinfo info;
+		struct
+		{
+			u64 what;
+			u64 flag;
+			u64 len;
+			u64 buf;
+		};
+	};
 
 	//[0x40,0x7f]
 	u8 self[0x20];

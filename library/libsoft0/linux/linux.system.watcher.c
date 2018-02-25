@@ -85,7 +85,7 @@ static void* epollthread(void* p)
 			else if(epollevent[i].events & EPOLLIN)
 			{
 				//accept
-				if(obj[fd].type_sock == 'T')
+				if(obj[fd].sock == 'T')
 				{
 					while(1)
 					{
@@ -102,8 +102,8 @@ static void* epollthread(void* p)
 						}
 
 						memcpy(obj[cc].peer, &haha, 8);
-						obj[cc].type_sock = 't';
-						obj[cc].type_road = 0;
+						obj[cc].sock = 't';
+						obj[cc].type = 0;
 						epoll_add(cc);
 
 						printf("++++ %d\n",cc);

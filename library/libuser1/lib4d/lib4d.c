@@ -1,3 +1,5 @@
+void helpin_create(void*);
+void helpout_create(void*);
 void asset_create(void*);
 void content_create(void*);
 void login_create(void*);

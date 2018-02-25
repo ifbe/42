@@ -70,7 +70,7 @@ int startuart(char* p, int speed)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
-	obj[fd].type_sock = hex32('u','a','r','t');
+	obj[fd].sock = hex32('u','a','r','t');
 	obj[fd].info.enq = 0;
 	obj[fd].info.deq = 0;
 	obj[fd].info.len = 0x100000;

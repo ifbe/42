@@ -114,7 +114,7 @@ int startshell(char* p)
 		startthread(systemshell_thread, 0);
 */
 		ret = write(fd, "unset PROMPT_COMMAND\n", 21);
-		obj[fd].type_sock = hex32('u','a','r','t');
+		obj[fd].sock = hex32('u','a','r','t');
 		obj[fd].info.enq = 0;
 		obj[fd].info.deq = 0;
 		obj[fd].info.len = 0x100000;

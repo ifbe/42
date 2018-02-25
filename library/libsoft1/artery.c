@@ -109,10 +109,13 @@ int arterystop()
 int arterylist()
 {
 	int j;
+	void* addr;
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == obj[j].sock)continue;
-		say("[%x]=%x\n", j, obj[j].sock);
+
+		addr = (void*)(&obj[j]);
+		say("[%x]=(%.8s,%.8s)\n", j, addr, addr+8);
 	}
 	return 0;
 }
