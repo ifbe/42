@@ -6,7 +6,7 @@
 
 
 
-int serve_proxy(void* obj, int fd, u8* buf, int len)
+int proxy_client(void* obj, int fd, u8* buf, int len)
 {
 	//http CONNECT
 
@@ -16,5 +16,9 @@ int serve_proxy(void* obj, int fd, u8* buf, int len)
 
 	//shadow sock
 
+	return 0;
+}
+int proxy_server(void* obj, int fd, u8* buf, int len)
+{
 	return 0;
 }

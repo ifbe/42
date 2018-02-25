@@ -109,36 +109,6 @@ void say(void*, ...);
 
 
 
-struct object
-{
-	u64 type0;
-	u64 stage0;
-	u64 type1;
-	u64 stage1;
-	u64 type2;
-	u64 stage2;
-	u64 type3;
-	u64 stage3;
-
-	u8 data[0xc0];
-};
-struct filesystem
-{
-	//
-	u64 magic;	//mnt
-	u64 parent;	//fs[fs[this].parent].read?
-	u64 start;
-	u64 stop;
-	u64 list;
-	u64 choose;
-	u64 read;
-	u64 write;
-
-	//
-	u8 data[0xc0];
-};
-static struct object* obj;
-static struct filesystem* fs;
 static u8* dirhome;
 static u8* datahome;
 
@@ -400,8 +370,6 @@ int file_stop()
 }
 int file_create(void* softaddr, u64* p)
 {
-	obj = softaddr;
-	fs = softaddr + 0x100000;
 	dirhome = softaddr + 0x200000;
 	datahome = softaddr + 0x300000;
 }

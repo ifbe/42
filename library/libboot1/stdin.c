@@ -62,6 +62,7 @@ void term_read(u8* buf)
 	}
 	else if(0 == ncmp(buf, "ls", 2))
 	{
+		arterylist(0);
 		actorlist(0);
 	}
 	else if(0 == ncmp(buf, "cd", 2))

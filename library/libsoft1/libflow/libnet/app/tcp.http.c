@@ -90,7 +90,7 @@ int http_read(u8* buf, int len)
 #define proxy 0x79786f7270
 #define WS 0x5357
 #define ws 0x7377
-int check_http(struct object* obj, int fd, u8* buf, int len)
+int http_check(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
 
@@ -134,19 +134,19 @@ int check_http(struct object* obj, int fd, u8* buf, int len)
 byebye:
 	return 0;
 }
-int serve_http(struct object* obj, int fd, u8* buf, int len)
+int http_client(struct object* obj, int fd, u8* buf, int len)
 {
-	u64 type = obj[fd].type_road;
-	if(type == http)
-	{
-		//printmemory(buf, len);
-		return http;
-	}
-
-	//http 1.1 persistent connection
 	return 0;
 }
-int serve_https(struct object* obj, int fd, u8* buf, int len)
+int http_server(struct object* obj, int fd, u8* buf, int len)
+{
+	return 0;
+}
+int https_client(struct object* obj, int fd, u8* buf, int len)
+{
+	return 0;
+}
+int https_server(struct object* obj, int fd, u8* buf, int len)
 {
 	return 0;
 }

@@ -110,12 +110,16 @@ int dns_write_answer(u8* buf, int len)
 
 
 
-#define DNS 0x534e44
 #define dns 0x736e64
-int serve_dns(struct object* obj, int fd, u8* buf, int len)
+#define DNS 0x534e44
+int dns_client(struct object* obj, int fd, u8* buf, int len)
+{
+	return 0;
+}
+int dns_server(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
-	u64 type = obj[fd].type_road;
+	u64 type = obj[fd].type;
 	if(type == DNS)
 	{
 		ret = dns_write_answer(buf, len);

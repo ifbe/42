@@ -5,9 +5,28 @@ int writesocket(int, void*, int, int);
 
 
 
-#define HOLE 0x454c4f48
 #define hole 0x656c6f68
-int serve_hole_s(struct object* obj, int fd, u8* buf, int len)
+#define HOLE 0x454c4f48
+int hole_client(struct object* obj, int fd, u8* buf, int len)
+{
+	u64* aa;
+	u64* bb;
+	if((buf[0] == 2) && (buf[1] == 0) )
+	{
+		aa = (void*)(obj[fd].peer);
+		bb = (void*)buf;
+
+		say("target=%llx\n",bb[0]);
+		aa[0] = bb[0];
+
+		writesocket(fd, "hole\n", 0, 5);
+		writesocket(fd, "hole\n", 0, 5);
+	}
+
+	printmemory(buf, len);
+	return 0;
+}
+int hole_server(struct object* obj, int fd, u8* buf, int len)
 {
 	u64* aa;
 	u64* bb;
@@ -50,31 +69,5 @@ int serve_hole_s(struct object* obj, int fd, u8* buf, int len)
 			aa[0] = aa[1] = 0;
 		}
 	}
-	return 0;
-}
-int serve_hole_c(struct object* obj, int fd, u8* buf, int len)
-{
-	u64* aa;
-	u64* bb;
-	if((buf[0] == 2) && (buf[1] == 0) )
-	{
-		aa = (void*)(obj[fd].peer);
-		bb = (void*)buf;
-
-		say("target=%llx\n",bb[0]);
-		aa[0] = bb[0];
-
-		writesocket(fd, "hole\n", 0, 5);
-		writesocket(fd, "hole\n", 0, 5);
-	}
-
-	printmemory(buf, len);
-	return 0;
-}
-int serve_hole(struct object* obj, int fd, u8* buf, int len)
-{
-	u64 type = obj[fd].type_road;
-	if(type == HOLE)serve_hole_s(obj, fd, buf, len);
-	else if(type == hole)serve_hole_c(obj, fd, buf, len);
 	return 0;
 }

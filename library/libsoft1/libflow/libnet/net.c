@@ -1,43 +1,71 @@
 #include "artery.h"
 //
-int check_ssh(  void* p, int fd, void* buf, int len);
-int check_tls(  void* p, int fd, void* buf, int len);
-int check_http( void* p, int fd, void* buf, int len);
-int check_rtmp( void* p, int fd, void* buf, int len);
+int ssh_check(  void* p, int fd, void* buf, int len);
+int tls_check(  void* p, int fd, void* buf, int len);
+int http_check( void* p, int fd, void* buf, int len);
+int rtmp_check( void* p, int fd, void* buf, int len);
 //phy
-int serve_bt(   void* p, int fd, void* buf, int len);
-int serve_eth(  void* p, int fd, void* buf, int len);
-int serve_wifi( void* p, int fd, void* buf, int len);
+int bt_client(   void* p, int fd, void* buf, int len);
+int bt_server(   void* p, int fd, void* buf, int len);
+int eth_client(  void* p, int fd, void* buf, int len);
+int eth_server(  void* p, int fd, void* buf, int len);
+int wifi_client( void* p, int fd, void* buf, int len);
+int wifi_server( void* p, int fd, void* buf, int len);
 //link
-int serve_arp(  void* p, int fd, void* buf, int len);
-int serve_ppp(  void* p, int fd, void* buf, int len);
+int arp_client(  void* p, int fd, void* buf, int len);
+int arp_server(  void* p, int fd, void* buf, int len);
+int ppp_client(  void* p, int fd, void* buf, int len);
+int ppp_server(  void* p, int fd, void* buf, int len);
 //ip
-int serve_icmp( void* p, int fd, void* buf, int len);
-int serve_ipv4( void* p, int fd, void* buf, int len);
-int serve_ipv6( void* p, int fd, void* buf, int len);
+int icmp_client( void* p, int fd, void* buf, int len);
+int icmp_server( void* p, int fd, void* buf, int len);
+int ipv4_client( void* p, int fd, void* buf, int len);
+int ipv4_server( void* p, int fd, void* buf, int len);
+int ipv6_client( void* p, int fd, void* buf, int len);
+int ipv6_server( void* p, int fd, void* buf, int len);
 //tran
-int serve_udp(  void* p, int fd, void* buf, int len);
-int serve_tcp(  void* p, int fd, void* buf, int len);
-int serve_quic( void* p, int fd, void* buf, int len);
-int serve_ssh(  void* p, int fd, void* buf, int len);
-int serve_tls(  void* p, int fd, void* buf, int len);
+int udp_client(  void* p, int fd, void* buf, int len);
+int udp_server(  void* p, int fd, void* buf, int len);
+int tcp_client(  void* p, int fd, void* buf, int len);
+int tcp_server(  void* p, int fd, void* buf, int len);
+int quic_client( void* p, int fd, void* buf, int len);
+int quic_server( void* p, int fd, void* buf, int len);
+int ssh_client(  void* p, int fd, void* buf, int len);
+int ssh_server(  void* p, int fd, void* buf, int len);
+int tls_client(  void* p, int fd, void* buf, int len);
+int tls_server(  void* p, int fd, void* buf, int len);
 //udp
-int serve_dns(  void* p, int fd, void* buf, int len);
-int serve_hole( void* p, int fd, void* buf, int len);
-int serve_tftp( void* p, int fd, void* buf, int len);
+int dns_server(  void* p, int fd, void* buf, int len);
+int dns_server(  void* p, int fd, void* buf, int len);
+int hole_server( void* p, int fd, void* buf, int len);
+int hole_server( void* p, int fd, void* buf, int len);
+int tftp_server( void* p, int fd, void* buf, int len);
+int tftp_server( void* p, int fd, void* buf, int len);
 //tcp
-int serve_http( void* p, int fd, void* buf, int len);
-int serve_https(void* p, int fd, void* buf, int len);
-int serve_proxy(void* p, int fd, void* buf, int len);
-int serve_rdp(  void* p, int fd, void* buf, int len);
-int serve_rtmp( void* p, int fd, void* buf, int len);
-int serve_sql(  void* p, int fd, void* buf, int len);
-int serve_vnc(  void* p, int fd, void* buf, int len);
-int serve_ws(   void* p, int fd, void* buf, int len);
-int serve_wss(  void* p, int fd, void* buf, int len);
+int http_client( void* p, int fd, void* buf, int len);
+int http_server( void* p, int fd, void* buf, int len);
+int https_client(void* p, int fd, void* buf, int len);
+int https_server(void* p, int fd, void* buf, int len);
+int proxy_client(void* p, int fd, void* buf, int len);
+int proxy_server(void* p, int fd, void* buf, int len);
+int rdp_client(  void* p, int fd, void* buf, int len);
+int rdp_server(  void* p, int fd, void* buf, int len);
+int rtmp_client( void* p, int fd, void* buf, int len);
+int rtmp_server( void* p, int fd, void* buf, int len);
+int sql_client(  void* p, int fd, void* buf, int len);
+int sql_server(  void* p, int fd, void* buf, int len);
+int vnc_client(  void* p, int fd, void* buf, int len);
+int vnc_server(  void* p, int fd, void* buf, int len);
+int ws_client(   void* p, int fd, void* buf, int len);
+int ws_server(   void* p, int fd, void* buf, int len);
+int ws_event(struct event* ev, void* buf);
+int wss_client(  void* p, int fd, void* buf, int len);
+int wss_server(  void* p, int fd, void* buf, int len);
 //debug
-int serve_chat( void* p, int fd, void* buf, int len);
-int serve_raw(  void* p, int fd, void* buf, int len);
+int chat_client( void* p, int fd, void* buf, int len);
+int chat_server( void* p, int fd, void* buf, int len);
+int raw_client(  void* p, int fd, void* buf, int len);
+int raw_server(  void* p, int fd, void* buf, int len);
 //
 int tftp_write(void*, int);
 int tls_write_client_hello(void*, int);
@@ -165,35 +193,26 @@ void netmgr_bt(int fd, u8* buf, int len)
 }
 void netmgr_eth(int fd, u8* buf, int len)
 {
-	serve_raw(obj, fd, buf, len);
+	raw_server(obj, fd, buf, len);
 }
 void netmgr_wifi(int fd, u8* buf, int len)
 {
 }
 void netmgr_udp(int fd, u8* buf, int len)
 {
-	u64 type = obj[fd].type_road;
-	if( (type == DNS) | (type == dns) )
-	{
-		serve_dns(obj, fd, buf, len);
-		return;
-	}
-	else if( (type == HOLE) | (type == hole) )
-	{
-		serve_hole(obj, fd, buf, len);
-		return;
-	}
-	else if( (type == TFTP) | (type == tftp) )
-	{
-		serve_tftp(obj, fd, buf, len);
-		return;
-	}
+	u64 type = obj[fd].type;
+	if(dns == type)dns_client(obj, fd, buf, len);
+	else if(DNS == type)dns_server(obj, fd, buf, len);
+	else if(type == hole)hole_client(obj, fd, buf, len);
+	else if(type == HOLE)hole_server(obj, fd, buf, len);
+	else if(type == tftp)tftp_client(obj, fd, buf, len);
+	else if(type == TFTP)tftp_server(obj, fd, buf, len);
 	else say("type=%llx\n",type);
 }
 u64 netmgr_tcp(int fd, u8* buf, int len)
 {
 	int ret;
-	u64 type = obj[fd].type_road;
+	u64 type = obj[fd].type;
 	if(type != 0)goto protocol;
 
 
@@ -202,16 +221,16 @@ u64 netmgr_tcp(int fd, u8* buf, int len)
 handshake:
 	obj[fd].stage1 = 0;
 
-	type = check_ssh(obj, fd, buf, len);
+	type = ssh_check(obj, fd, buf, len);
 	if(type != 0)return type;
 
-	type = check_tls(obj, fd, buf, len);
+	type = tls_check(obj, fd, buf, len);
 	if(type != 0)goto protocol;
 
-	type = check_rtmp(obj, fd, buf, len);
+	type = rtmp_check(obj, fd, buf, len);
 	if(type != 0)goto protocol;
 
-	type = check_http(obj, fd, buf, len);
+	type = http_check(obj, fd, buf, len);
 	if(type != 0)goto protocol;
 
 	if(type == 0)return 0;
@@ -220,90 +239,77 @@ handshake:
 
 
 protocol:
-	if( (type==CHAT) | (type==chat) )
-	{
-		type = serve_chat(obj, fd, buf, len);
-	}
-	else if( (type==HTTP) | (type==http) )
-	{
-		type = serve_http(obj, fd, buf, len);
-	}
-	else if( (type==WS) | (type==ws) )
-	{
-		type = serve_ws(obj, fd, buf, len);
-	}
-	else if( (type==TLS) | (type==tls) )
-	{
-		type = serve_tls(obj, fd, buf, len);
-	}
-	else if( (type==HTTPS) | (type==https) )
-	{
-		type = serve_https(obj, fd, buf, len);
-	}
-	else if( (type==WSS) | (type==wss) )
-	{
-		type = serve_wss(obj, fd, buf, len);
-	}
-	else if( (type==SSH) | (type==ssh) )
-	{
-		type = serve_ssh(obj, fd, buf, len);
-	}
-	else if( (type==PROXY) | (type==proxy) )
-	{
-		type = serve_proxy(obj, fd, buf, len);
-	}
-	else if( (type==RDP) | (type==rdp) )
-	{
-		type = serve_rdp(obj, fd, buf, len);
-	}
-	else if( (type==VNC) | (type==vnc) )
-	{
-		type = serve_vnc(obj, fd, buf, len);
-	}
-	else if( (type==RTMP) | (type==rtmp) )
-	{
-		type = serve_rtmp(obj, fd, buf, len);
-	}
-	else if( (type==SQL) | (type==sql) )
-	{
-		type = serve_sql(obj, fd, buf, len);
-	}
-	else printmemory(buf, len);
+	if(chat == type)type = chat_client(obj, fd, buf, len);
+	else if(CHAT == type)type = chat_server(obj, fd, buf, len);
 
+	else if(http == type)type = http_client(obj, fd, buf, len);
+	else if(HTTP == type)type = http_server(obj, fd, buf, len);
+
+	else if(ws == type)type = ws_client(obj, fd, buf, len);
+	else if(WS == type)type = ws_server(obj, fd, buf, len);
+
+	else if(tls == type)type = tls_client(obj, fd, buf, len);
+	else if(TLS == type)type = tls_server(obj, fd, buf, len);
+
+	else if(https == type)type = https_client(obj, fd, buf, len);
+	else if(HTTPS == type)type = https_server(obj, fd, buf, len);
+
+	else if(wss == type)type = wss_client(obj, fd, buf, len);
+	else if(WSS == type)type = wss_server(obj, fd, buf, len);
+
+	else if(ssh == type)type = ssh_client(obj, fd, buf, len);
+	else if(SSH == type)type = ssh_server(obj, fd, buf, len);
+
+	else if(proxy == type)type = proxy_client(obj, fd, buf, len);
+	else if(PROXY == type)type = proxy_server(obj, fd, buf, len);
+
+	else if(rdp == type)type = rdp_client(obj, fd, buf, len);
+	else if(RDP == type)type = rdp_server(obj, fd, buf, len);
+
+	else if(vnc == type)type = vnc_client(obj, fd, buf, len);
+	else if(VNC == type)type = vnc_server(obj, fd, buf, len);
+
+	else if(rtmp == type)type = rtmp_client(obj, fd, buf, len);
+	else if(RTMP == type)type = rtmp_server(obj, fd, buf, len);
+
+	else if(sql == type)type = sql_client(obj, fd, buf, len);
+	else if(SQL == type)type = sql_server(obj, fd, buf, len);
+
+	else printmemory(buf, len);
 	return type;
 }
-int network_explain(u64* p)
+int network_explain(struct event* ev)
 {
 	int len;
-	u64 type_sock;
+	u64 sock;
 
-	u64 why = p[0];
-	u64 what = p[1];
-	u64 where = p[2];
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
 	//u64 when = p[3];
 
 	if(why == '+'){}
 	else if(why == '-'){}
 	else if(why == '@')
 	{
-		type_sock = obj[where].type_sock;
-		//say("%x\n",type_sock);
+		sock = obj[where].sock;
+		//say("%x\n",sock);
 /*
 		//bluetooth
-		if(type_sock == 'B')
+		if(sock == 'B')
 		{
 			netmgr_bt(where, datahome, len);
 			return 0;
 		}
 		//wifi
-		if(type_sock == 'W')
+		if(sock == 'W')
 		{
 			netmgr_wifi(where, datahome, len);
 			return 0;
 		}
 */
 		//raw
-		if(type_sock == 'R')
+		if(sock == 'R')
 		{
 			len = readsocket(where, datahome, 0, 0x100000);
 			if(len == 0)return 0;		//sticky
@@ -314,7 +320,7 @@ int network_explain(u64* p)
 		}
 
 		//udp
-		if( (type_sock == 'U')|(type_sock == 'u') )
+		if( (sock == 'U')|(sock == 'u') )
 		{
 		while(1)
 		{
@@ -335,22 +341,16 @@ int network_explain(u64* p)
 		if(what == 0)goto fail;
 
 		//change event
-		obj[where].type_road = what;
-		if(what == WS)
+		obj[where].type = what;
+		if((what == WS) && (obj[where].stage1 >= 4))
 		{
-		if( (obj[where].stage1 >= 4) && (obj[where].type_data != 0) )
-		{
-			p[0] = obj[where].stage3;
-			p[1] = obj[where].type_data;
-			//p[2]	//not change
-			//p[3]	//not change
+			ws_event(ev, datahome);
 			return 42;
-		}
 		}
 		else if(what == http)
 		{
-			p[0] = len;
-			p[1] = http;
+			ev->why = len;
+			ev->what = http;
 		}
 	}
 	return 0;
@@ -548,7 +548,7 @@ int netmgr_write(u8* p)
 	}
 
 
-	obj[fd].type_road = tmp;
+	obj[fd].type = tmp;
 	obj[fd].stage1 = 0;
 	return fd;
 }
@@ -560,16 +560,16 @@ int netmgr_list(u8* p)
 	{
 		for(j=0;j<4096;j++)
 		{
-			if(obj[j].type_sock == 0)continue;
+			if(obj[j].sock == 0)continue;
 
 			say("%d:	%llx,%llx\n",
-				j, obj[j].type_sock, obj[j].type_road);
+				j, obj[j].sock, obj[j].type);
 		}
 		return 0;
 	}
 
 	decstr2data(p, &fd);
-	say("%llx,%llx\n", obj[fd].type_sock, obj[fd].type_road);
+	say("%llx,%llx\n", obj[fd].sock, obj[fd].type);
 	return 0;
 }
 int netmgr_choose(u8* p)

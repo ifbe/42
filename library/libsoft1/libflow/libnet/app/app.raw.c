@@ -11,7 +11,11 @@ void say(void*, ...);
 
 #define RAW 0x574152
 #define raw 0x776172
-int serve_raw(void* p, int fd, u8* buf, int len)
+int raw_client(void* p, int fd, u8* buf, int len)
+{
+	return 0;
+}
+int raw_server(void* p, int fd, u8* buf, int len)
 {
 	int proto;
 	printmemory(buf, len);

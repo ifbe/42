@@ -232,110 +232,81 @@ int websocket_write(u64 fd, void* buf, int len)
 
 #define ws 0x7377
 #define WS 0x5357
-int serve_ws_client_hello(struct object* obj, int fd, u8* buf, int len)
+#define wss 0x737377
+#define WSS 0x535357
+int ws_client(struct object* obj, int fd, u8* buf, int len)
 {
+	int stage;
 	printmemory(buf, len);
-	obj[fd].stage1 = 1;
+
+	stage = obj[fd].stage1;
+	if(stage == 0)obj[fd].stage1 = 1;
+
 	return ws;
 }
-int serve_ws_client_data(struct object* obj, int fd, u8* buf, int len)
+int ws_server(struct object* obj, int fd, u8* buf, int len)
 {
-	printmemory(buf, len);
-	return ws;
-}
-int serve_ws_server_hello(struct object* obj, int fd, u8* buf, int len)
-{
-	int ret = websocket_read_handshake(fd, buf, len);
-	if(ret <= 0)goto theend;
+	int ret = obj[fd].stage1;
+	if(ret == 0)
+	{
+		int ret = websocket_read_handshake(fd, buf, len);
+		if(ret <= 0)goto theend;
 
-	ret = writesocket(fd, buf, 0, ret);
-	if(ret <= 0)goto theend;
+		ret = writesocket(fd, buf, 0, ret);
+		if(ret <= 0)goto theend;
 
-	obj[fd].stage1 = 1;
+		obj[fd].stage1 = 1;
+		goto theend;
+	}
 
-theend:
-	return WS;
-}
-int serve_ws_server_data(struct object* obj, int fd, u8* buf, int len)
-{
-	u64 temp;
 	len = websocket_read(buf, len);
 	if(len < 0)goto theend;
 
-	temp = obj[fd].stage1;
-	if(temp == 1)
+	ret = obj[fd].stage1;
+	if(ret == 1)
 	{
 		say("%.*s\n", len, buf);
 
 		websocket_write(fd, "four two", 8);
 		obj[fd].stage1 = 2;
 	}
-	else if(temp == 2)
+	else if(ret == 2)
 	{
 		say("%.*s\n", len, buf);
 
 		websocket_write(fd, "haha@2", 6);
 		obj[fd].stage1 = 3;
 	}
-	else if(temp == 3)
+	else if(ret == 3)
 	{
 		printmemory(buf, len);
 		websocket_write(fd, "success", 7);
 
 		obj[fd].stage1 = 4;
-
-		obj[fd].type_data = 0x2b77;
-		obj[fd].stage3 = WS;
-	}
-	else
-	{
-		if(ncmp(buf, "kbd ", 4) == 0)
-		{
-			obj[fd].type_data = 0x64626b;
-			decstr2data(buf+4, &(obj[fd].stage3));
-		}
-		else if(ncmp(buf, "char ", 5) == 0)
-		{
-			obj[fd].type_data = 0x72616863;
-			decstr2data(buf+5, &(obj[fd].stage3));
-		}
-		else
-		{
-			obj[fd].type_data = 0;
-		}
 	}
 
 theend:
 	return WS;
 }
-int serve_ws(struct object* obj, int fd, u8* buf, int len)
+int wss_client(struct object* obj, int fd, u8* buf, int len)
 {
-	u64 type = obj[fd].type_road;
-	u64 stage = obj[fd].stage1;
-	if(type == ws)
-	{
-		if(stage == 0)
-		{
-			return serve_ws_client_hello(obj, fd, buf, len);
-		}
-		else
-		{
-			return serve_ws_client_data(obj, fd, buf, len);
-		}
-	}
-	else
-	{
-		if(stage == 0)
-		{
-			return serve_ws_server_hello(obj, fd, buf, len);
-		}
-		else
-		{
-			return serve_ws_server_data(obj, fd, buf, len);
-		}
-	}
+	return wss;
 }
-int serve_wss(void* p, int fd, u8* buf, int len)
+int wss_server(struct object* obj, int fd, u8* buf, int len)
 {
+	return WSS;
+}
+int ws_event(struct event* ev, void* buf)
+{
+	if(ncmp(buf, "kbd ", 4) == 0)
+	{
+		ev->what = hex32('k','b','d',0);
+		decstr2data(buf+4, &(ev->why));
+	}
+	else if(ncmp(buf, "char ", 5) == 0)
+	{
+		ev->what = hex32('c','h','a','r');
+		decstr2data(buf+5, &(ev->why));
+	}
 	return 0;
 }

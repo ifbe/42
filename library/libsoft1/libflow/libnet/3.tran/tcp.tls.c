@@ -1005,13 +1005,13 @@ void tls_stop()
 
 #define TLS 0x534c54
 #define tls 0x736c74
-int serve_tls_c(struct object* obj, int fd, u8* buf, int len)
+int tls_client(struct object* obj, int fd, u8* buf, int len)
 {
 	//printmemory(buf, len);
 	tls_read(obj, fd, buf, len);
 	return tls;
 }
-int serve_tls_s(struct object* obj, int fd, u8* buf, int len)
+int tls_server(struct object* obj, int fd, u8* buf, int len)
 {
 	//tls >>>> ascii
 	len = tls_read(obj, fd, buf, len);
@@ -1027,16 +1027,7 @@ good:
 error:
 	return 0;
 }
-int serve_tls(struct object* obj, int fd, u8* buf, int len)
-{
-	if(obj[fd].type_road == tls)
-	{
-		return serve_tls_c(obj, fd, buf, len);
-	}
-
-	return serve_tls_s(obj, fd, buf, len);
-}
-int check_tls(struct object* obj, int fd, u8* buf, int len)
+int tls_check(struct object* obj, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x16)return TLS;
 	return 0;

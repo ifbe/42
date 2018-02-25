@@ -41,10 +41,10 @@ int artery_explain(struct event* ev)
 	else if(ret == 'v')return vision_explain(ev);
 
 	where = ev->where;
-	type = obj[where].type_sock;
+	type = obj[where].sock;
 	if(type == hex32('u','a','r','t'))
 	{
-		info = &obj[where].info;
+		info = (void*)(&obj[where].info);
 		while(1)
 		{
 			ret = 0x100000 - (info->enq);
@@ -108,6 +108,12 @@ int arterystop()
 }
 int arterylist()
 {
+	int j;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].sock)continue;
+		say("[%x]=%x\n", j, obj[j].sock);
+	}
 	return 0;
 }
 int arterychoose(u8* buf)

@@ -496,7 +496,7 @@ void ssh_stop()
 
 #define SSH 0x485353
 #define ssh 0x687373
-int serve_ssh_c(struct object* obj, int fd, u8* buf, int len)
+int ssh_client(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
@@ -530,9 +530,9 @@ int serve_ssh_c(struct object* obj, int fd, u8* buf, int len)
 	}
 	else printmemory(buf,len);
 
-	return 0;
+	return ssh;
 }
-int serve_ssh_s(struct object* obj, int fd, u8* buf, int len)
+int ssh_server(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret = secureshell_read(buf, len);
 	if(ret == 0x14)
@@ -557,28 +557,9 @@ int serve_ssh_s(struct object* obj, int fd, u8* buf, int len)
 	}
 	else printmemory(buf,len);
 
-	return 0;
+	return SSH;
 }
-int serve_ssh(struct object* obj, int fd, u8* buf, int len)
-{
-	int ret=0;
-	u64 type;
-
-	type = obj[fd].type_road;
-	if(type == ssh)
-	{
-		serve_ssh_c(obj, fd, buf, len);
-		return ssh;
-	}
-	else if(type == SSH)
-	{
-		serve_ssh_s(obj, fd, buf, len);
-		return SSH;
-	}
-
-	return 0;
-}
-int check_ssh(void* p, int fd, u8* buf, int len)
+int ssh_check(void* p, int fd, u8* buf, int len)
 {
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{

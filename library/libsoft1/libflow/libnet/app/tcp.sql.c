@@ -96,7 +96,7 @@ int sql_write_loginrequest(u8* buf, int len)
 
 #define SQL 0x4c5153
 #define sql 0x6c7173
-int serve_sql(struct object* obj, int fd, u8* buf, int len)
+int sql_client(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
 	printmemory(buf, len);
@@ -117,4 +117,8 @@ int serve_sql(struct object* obj, int fd, u8* buf, int len)
 		say("error@serve_sql\n");
 	}
 	return sql;
+}
+int sql_server(struct object* obj, int fd, u8* buf, int len)
+{
+	return 0;
 }

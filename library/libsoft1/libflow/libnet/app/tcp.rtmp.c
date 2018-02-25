@@ -14,12 +14,16 @@ void say(void*, ...);
 
 #define RTMP 0x504d5452
 #define rtmp 0x706d7472
-int check_rtmp(void* p, int fd, u8* buf, int len)
+int rtmp_check(void* p, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x3)return RTMP;
 	return 0;
 }
-int serve_rtmp(void* p, int fd, u8* buf, int len)
+int rtmp_client(void* p, int fd, u8* buf, int len)
+{
+	return 0;
+}
+int rtmp_server(void* p, int fd, u8* buf, int len)
 {
 	return 0;
 }
