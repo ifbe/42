@@ -1,14 +1,12 @@
 #include "actor.h"
-void sudoku_solve(void*, void*);
+void sudoku_solve(void*);
 
 
 
 
 //
 static int px,py;
-static char table[9][9];
-//
-static u8* buffer;
+static u8 table[9][9];
 
 
 
@@ -202,7 +200,7 @@ static void sudoku_start()
 			table[y][x] = 0;
 		}
 	}
-	sudoku_solve(table, buffer);
+	sudoku_solve(table);
 }
 static void sudoku_delete()
 {

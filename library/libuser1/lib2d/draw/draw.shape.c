@@ -47,7 +47,7 @@ void drawline(struct arena* win, u32 rgb,
 		if(e2 < dy){e1 += dx;y0 += sy;}
 	}
 }
-void drawline_bezier(struct arena* win, u32 rgb,
+void drawbezier(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;

@@ -354,10 +354,9 @@ void drawicon_1(struct arena* win, u32 rgb,
 void drawline(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2
 );		//left-upper, right-bottom
-void drawline_bezier(struct arena* win, u32 rgb,
+void drawbezier(struct arena* win, u32 rgb,
 	int ax, int ay, int bx, int by, int cx, int cy
 );		//corner1, corner2, control
-
 
 void drawline_triangle(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int x3, int y3

@@ -1,6 +1,26 @@
 #include "actor.h"
 #define accuracy 24
 #define PI 3.1415926535897932384626433832795028841971693993151
+struct texandobj
+{
+	GLuint obj;
+	GLuint len;
+	u8* buf;
+};
+struct eachone
+{
+	GLuint program;
+	GLuint vao;
+	GLuint vbo;
+	GLuint ibo;
+	GLuint tex0;
+	GLuint tex1;
+	GLfloat light0vertex[3];
+	GLfloat light0color[3];
+	GLfloat light1vertex[3];
+	GLfloat light1color[3];
+	GLfloat modmat[4][4];
+};
 
 
 

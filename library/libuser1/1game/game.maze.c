@@ -1,12 +1,13 @@
 #include "actor.h"
-void maze_generate(void*, int);
+void maze_generate(void* buf, int w, int h);
 
 
 
 
-#define mazesize 32
-#define halfsize (mazesize/2)
-static u8 buffer[mazesize][mazesize];
+#define width 32
+#define height 32
+#define halfsize (width/2)
+static u8 buffer[height][width];
 
 
 
@@ -20,13 +21,13 @@ static void maze_read_vbo(
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx / mazesize;
-	int hh = sty->i_fy / mazesize;
+	int ww = sty->i_rx / width;
+	int hh = sty->i_fy / height;
 	int dd = sty->i_uz;
 
-	for(y=0;y<mazesize;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<mazesize;x++)
+		for(x=0;x<width;x++)
 		{
 			w = buffer[y][x];
 			if((w&1) == 1)	//left
@@ -88,13 +89,13 @@ static void maze_read_pixel(
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx / mazesize;
-	int hh = sty->i_fy / mazesize;
+	int ww = sty->i_rx *2/width;
+	int hh = sty->i_fy *2/height;
 	int dd = sty->i_uz;
 
-	for(y=0;y<mazesize;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<mazesize;x++)
+		for(x=0;x<width;x++)
 		{
 			w = buffer[y][x];
 			if((w&1) == 1)	//left
@@ -143,9 +144,9 @@ static void maze_read_tui(
 	u8* buf = win->buf;
 	u8* p;
 
-	for(y=0;y<mazesize;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<mazesize;x++)
+		for(x=0;x<width;x++)
 		{
 			p = buf + (y*w*4) + (x*8);
 			if(buffer[y][x] != 0)mysnprintf(p, 4, "⬛");
@@ -158,9 +159,9 @@ static void maze_read_cli(
 	struct actor* act, struct compo* com)
 {
 	int x,y;
-	for(y=0;y<mazesize;y++)
+	for(y=0;y<height;y++)
 	{
-		for(x=0;x<mazesize;x++)
+		for(x=0;x<width;x++)
 		{
 			if(buffer[y][x] != 0)say("⬛");	//██
 			else say("  ");
@@ -196,7 +197,7 @@ static void maze_stop()
 }
 static void maze_start()
 {
-	maze_generate(buffer, mazesize);
+	maze_generate(buffer, width, height);
 }
 static void maze_delete()
 {

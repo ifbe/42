@@ -9,7 +9,6 @@ void scale_image(void* src, void* dst,
 #define DIM 1024
 #define _sq(x) ((x)*(x))
 #define r(n)(getrandom()%n)
-u32* src = 0;
 
 
 
@@ -143,8 +142,9 @@ static void codeimg_read_pixel(
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
+	u32* src = (u32*)(act->buf);
 	u32* dst = (u32*)(win->buf);
-return;
+
 	scale_image(src, dst,
 		1024, 1024, 0, 0, 1024, 1024,
 		width, height, cx-ww, cy-hh, cx+ww, cy+hh
@@ -196,11 +196,12 @@ static void codeimg_change()
 static void codeimg_stop()
 {
 }
-static void codeimg_start()
+static void codeimg_start(struct actor* act, struct compo* com)
 {
 	int rr,gg,bb;
 	int x,y;
-	src = startmemory(1024*1024*4);
+	u32* src = startmemory(1024*1024*4);
+	act->buf = src;
 
 	for(y=0;y<1024;y++)
 	{

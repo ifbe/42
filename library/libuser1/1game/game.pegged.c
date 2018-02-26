@@ -20,18 +20,25 @@ static void pegged_read_pixel(
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	drawline_rect(win, 0xff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	for(y=0;y<7;y++)
 	{
 		for(x=0;x<7;x++)
 		{
 			if(data[y][x] == 0)continue;
+
+			drawline_rect(
+				win, 0x808080,
+				cx+(2*x-7)*ww/7,
+				cy+(2*y-7)*hh/7,
+				cx+(2*x-5)*ww/7,
+				cy+(2*y-5)*hh/7
+			);
 			drawsolid_circle(
 				win, 0xffffff,
-				cx+(x-3)*ww/4,
-				cy+(y-3)*hh/4,
-				ww/32
+				cx+(x-3)*ww*2/7,
+				cy+(y-3)*hh*2/7,
+				ww/14
 			);
 		}
 	}

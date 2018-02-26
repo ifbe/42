@@ -36,11 +36,11 @@ struct window
 	u64 type;
 	u64 fmt;
 	union{
-		struct relation* first;
+		struct relation* irel;
 		char pad0[8];
 	};
 	union{
-		struct relation* last;
+		struct relation* orel;
 		char pad1[8];
 	};
 
@@ -58,6 +58,7 @@ struct window
 	union{
 		u64 ximage;
 		void* texture;
+		void* pass;
 	};
 	union{
 		u64 addr;

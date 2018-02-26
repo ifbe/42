@@ -28,26 +28,7 @@ double sine(double);
 
 
 
-//
-static struct window* win;
-static struct window* src;
-static u8* dragdata[0x1000];
-static u8* fontdata;
-//
-static int queuehead = 0;
-static int queuetail = 0;
-static int width = 512;
-static int height = 512;
-static int last_x = 0;
-static int last_y = 0;
-static int pressed = 0;
-//
-static GLuint simpleprogram;
-static GLuint prettyprogram;
-static GLuint shadowprogram;
-static GLuint pickerprogram;
-static GLuint myfontprogram;
-//
+/*
 static GLuint shadowfb;
 //
 static GLuint simpletexture;
@@ -98,19 +79,63 @@ static GLfloat projmatrix[4*4] = {
 };
 static GLfloat cameramvp[4*4];
 static GLfloat light0mvp[4*4];
-/*
+*/
+//
+static struct window* win;
+static u8* dragdata[0x1000];
+static u8* fontdata;
+//
+static int queuehead = 0;
+static int queuetail = 0;
+static int width = 512;
+static int height = 512;
+static int last_x = 0;
+static int last_y = 0;
+static int pressed = 0;
+//
+static GLuint simpleprogram;
+static GLuint prettyprogram;
+static GLuint shadowprogram;
+static GLuint pickerprogram;
+static GLuint myfontprogram;
+//
+static float light0[4] = {0.0f, 0.0f, 1000.0f};
+static float light1[4] = {0.0f, 10.0f, 0.0f};
+static float light2[4] = {10.0f, 0.0f, 0.0f};
+static float camera[4] = {100.0f, -200.0f, 100.0f};
+static float center[4] = {0.0f, 0.0f, 0.0f};
+static float above[4] = {0.0f, 0.0f, 1.0f};
+static GLfloat modelmatrix[4*4] = {  
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f,
+};
+static GLfloat viewmatrix[4*4] = {  
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f,
+};
+static GLfloat projmatrix[4*4] = {  
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, -1.0f, -1.0f,
+	0.0f, 0.0f, -0.2f, 0.0f
+};
+//
 struct texandobj
 {
-	GLuint globj;
-	GLuint flag;
+	GLuint obj;
 	GLuint len;
 	u8* buf;
 };
-static struct eachone
+struct eachone
 {
 	GLuint program;
 	GLuint vao;
 	GLuint vbo;
+	GLuint ibo;
 	GLuint tex0;
 	GLuint tex1;
 	GLfloat light0vertex[3];
@@ -133,7 +158,6 @@ static struct texandobj mod[0x1000];
 //3:	font
 //4:	other
 static struct eachone each[0x1000];
-*/
 
 
 
@@ -378,35 +402,42 @@ void initshader()
 void inittexture()
 {
 	int j;
-	glGenTextures(1, &myfonttexture);
-	glBindTexture(GL_TEXTURE_2D, myfonttexture);
+	u8* buf;
+	GLuint tex;
+
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 
-	fontdata = malloc(0x1000*0x1000);
-	if(fontdata != 0)
+	buf = malloc(0x1000*0x1000);
+	if(buf != 0)
 	{
 		for(j=0;j<0x10000;j++)
 		{
 			drawunicode_alpha(
-				fontdata, 0x1000, 0x1000,
+				buf, 0x1000, 0x1000,
 				(j&0xff)<<4, (j&0xff00)>>4, j
 			);
 		}
 		for(j=0x20;j<0x80;j++)
 		{
 			drawascii_alpha(
-				fontdata, 0x1000, 0x1000,
+				buf, 0x1000, 0x1000,
 				(j&0xff)<<4, 0, j
 			);
 		}
 		glTexImage2D(GL_TEXTURE_2D, 0,
 			GL_RED, 0x1000, 0x1000, 0,
-			GL_RED, GL_UNSIGNED_BYTE, fontdata
+			GL_RED, GL_UNSIGNED_BYTE, buf
 		);
 	}
+
+	mod[0].obj = tex;
+	mod[0].len = 0x1000*0x1000;
+	mod[0].buf = buf;
 
 	/*
 	glGenFramebuffers(1, &shadowfb);
@@ -436,26 +467,121 @@ void inittexture()
 }
 void initobject()  
 {
-	void* temp = (void*)(src->buf);
-/*
+	void* temp1 = malloc(0x1000000);
+	void* temp2 = malloc(0x100000);
+	void* temp3 = malloc(0x1000000);
+	void* temp4 = malloc(0x100000);
+	void* temp5 = malloc(0x1000000);
+	void* temp6 = malloc(0x100000);
+	void* temp7 = malloc(0x1000000);
+
+	//info
+	mod[0x20].buf = 0;
+	mod[0x20].len = 0x28;
+
+	//point: 0x21=obj(vertex,color)
+	mod[0x21].buf = temp1;
+	mod[0x21].len = 0;
+	glGenBuffers(1, &mod[0x21].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x21].obj);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp1, GL_STATIC_DRAW);
+
+
+	//line: 0x22=ibo, 0x23=obj(vertex,color)
+	mod[0x22].buf = temp2;
+	mod[0x22].len = 0;
+	glGenBuffers(1, &mod[0x22].obj);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp2, GL_STATIC_DRAW);
+
+	mod[0x23].buf = temp3;
+	mod[0x23].len = 0;
+	glGenBuffers(1, &mod[0x23].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x23].obj);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp3, GL_STATIC_DRAW);
+
+
+	//trigon: 0x24=ibo, 0x25=obj(vertex,color,normal)
+	mod[0x24].buf = temp4;
+	mod[0x24].len = 0;
+	glGenBuffers(1, &mod[0x24].obj);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x24].obj);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp4, GL_STATIC_DRAW);
+
+	mod[0x25].buf = temp5;
+	mod[0x25].len = 0;
+	glGenBuffers(1, &mod[0x25].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x25].obj);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp5, GL_STATIC_DRAW);
+
+
+	//font: 0x26=ibo, 0x27=obj(vertex,color,texcoor)
+	mod[0x26].buf = temp6;
+	mod[0x26].len = 0;
+	glGenBuffers(1, &mod[0x26].obj);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp6, GL_STATIC_DRAW);
+
+	mod[0x27].buf = temp7;
+	mod[0x27].len = 0;
+	glGenBuffers(1, &mod[0x27].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x27].obj);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp7, GL_STATIC_DRAW);
+
+
 	//point
-	glGenBuffers(vbo_pointvertex);
-	glGenBuffers(vbo_pointcolour);
+	glGenVertexArrays(1, &each[0].vao);
+	glBindVertexArray(each[0].vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x21].obj);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
 	//line
-	glGenBuffers(vbo_lineindex);
-	glGenBuffers(vbo_linevertex);
-	glGenBuffers(vbo_linecolour);
+	glGenVertexArrays(1, &each[1].vao);
+	glBindVertexArray(each[1].vao);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x23].obj);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
 	//trigon
-	glGenBuffers(vbo_trigonindex);
-	glGenBuffers(vbo_trigonvertex);
-	glGenBuffers(vbo_trigoncolour);
-	glGenBuffers(vbo_trigonnormal);
-	//tex0(4096*4096)
-	glGenBuffers(vbo_fontindex);
-	glGenBuffers(vbo_fontvertex);
-	glGenBuffers(vbo_fontcolour);
-	glGenBuffers(vbo_fonttexcoo);
-*/
+	glGenVertexArrays(1, &each[2].vao);
+	glBindVertexArray(each[2].vao);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x24].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x25].obj);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+	//font
+	glGenVertexArrays(1, &each[3].vao);
+	glBindVertexArray(each[3].vao);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x27].obj);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+/*
+	void* temp = (void*)(src->buf);
+
 	//[0m,2m) vertex
 	glGenBuffers(1, &vertexvbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexvbo);
@@ -546,6 +672,7 @@ void initobject()
 	glGenBuffers(1, &fontvbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fontvbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp, GL_STATIC_DRAW);
+*/
 }
 
 
@@ -623,7 +750,7 @@ void fixprojection()
 	projmatrix[0] = h / w;
 	glViewport(0, 0, width, height);
 }
-void fixmatrix()
+void fixmatrix(GLfloat* cameramvp)
 {
 	int x;
 
@@ -659,6 +786,7 @@ void fixtexture()
 	//GLint t1 = glGetUniformLocation(u, "texture0");
 	//glUniform1i(t1, 0);
 }
+/*
 void callback_display()
 {
 	//set
@@ -762,6 +890,81 @@ void callback_idle()
 
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, fontvbo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 2*fontcount, fontindex);
+
+	queuetail++;
+}
+*/
+void callback_display()
+{
+	GLfloat cameramvp[4*4];
+
+	//set
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	fixmatrix(cameramvp);
+	fixlight();
+	fixtexture();
+
+	//point&line
+	glUseProgram(simpleprogram);
+	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
+	glUniformMatrix4fv(mvp1, 1, GL_FALSE, cameramvp);
+
+	glBindVertexArray(each[0].vao);
+	glDrawArrays(GL_POINTS, 0, mod[0x21].len);
+
+	glBindVertexArray(each[1].vao);
+	glDrawElements(GL_LINES, 2*mod[0x22].len, GL_UNSIGNED_SHORT, 0);
+
+	//triangle
+	glUseProgram(prettyprogram);
+	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
+	glUniformMatrix4fv(mvp2, 1, GL_FALSE, cameramvp);
+
+	glBindVertexArray(each[2].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[0x24].len, GL_UNSIGNED_SHORT, 0);
+
+	//texture
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glUseProgram(myfontprogram);
+
+	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
+	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
+	GLint tex = glGetUniformLocation(myfontprogram, "texdata");
+	glUniform1i(tex, 0);
+
+	glBindVertexArray(each[3].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[0x26].len, GL_UNSIGNED_SHORT, 0);
+
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
+}
+void callback_idle()
+{
+	if(queuehead == queuetail)return;
+
+	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x21].obj);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x21].len, mod[0x21].buf);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x23].obj);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x23].len, mod[0x23].buf);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x25].obj);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x25].len, mod[0x25].buf);
+
+	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x27].obj);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x27].len, mod[0x27].buf);
+
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x22].len, mod[0x22].buf);
+
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x24].obj);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x24].len, mod[0x24].buf);
+
+	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x26].len, mod[0x26].buf);
 
 	queuetail++;
 }
@@ -998,7 +1201,7 @@ int windowread(int type, char* buf)
 {
 	return snprintf(buf, 0x1000, "%s", dragdata);
 }
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct window* dst)
 {
 	queuehead++;
 }
@@ -1013,19 +1216,16 @@ void windowstop()
 }
 void windowstart(struct window* this)
 {
-	if(this->type == hex32('b','u','f',0))
-	{
-		src = this;
-		return;
-	}
 	win = this;
-	this->type = hex32('w','i','n',0);
-	//this->fmt = hex64('r','g','b','a','8','8','8','8');
-	this->fmt = hex32('v','b','o',0);
-	//this->fmt = hex32('s','t','l',0);
 
-	this->w = 512;
-	this->h = 512;
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('v','b','o',0);
+	this->irel = 0;
+	this->orel = 0;
+
+	this->buf = mod;
+	this->pass = each;
+
 	startthread(uievent, this);
 }
 void windowdelete()
@@ -1037,6 +1237,7 @@ void windowcreate()
 	if(glfwInit() == 0)
 	{
 		printf("error@glfwInit\n");
+		return;
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 4);	//4x antialiasing

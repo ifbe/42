@@ -3,10 +3,8 @@
 
 
 
-static int turn;
-static int px,py;
-//
-static char* data;
+static int px, py, turn;
+static u8 data[19*19];
 
 
 

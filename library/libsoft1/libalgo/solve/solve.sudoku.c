@@ -1,4 +1,10 @@
-unsigned int getrandom();
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
+u32 getrandom();
+
+
+
 
 int sudoku_random(char* p, int len)
 {
@@ -15,7 +21,7 @@ int sudoku_random(char* p, int len)
 
 	return ret;
 }
-int sudoku_possiable(char (*table)[9], char* p, int px, int py)
+int sudoku_possiable(u8 (*table)[9], u8* p, int px, int py)
 {
 	int x,y,ret;
 	int basex, basey;
@@ -73,10 +79,11 @@ int sudoku_possiable(char (*table)[9], char* p, int px, int py)
 	p[ret] = 0;
 	return ret;
 }
-void sudoku_solve(char (*table)[9], char* buffer)
+void sudoku_solve(u8 (*table)[9])
 {
 	int x,y,t,ret;
 	int mode,count,timeout;
+	u8 buffer[0x1000];
 
 /*
 	for(y=0;y<9;y++)

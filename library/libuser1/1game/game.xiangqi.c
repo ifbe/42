@@ -5,8 +5,7 @@ void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
 
 static char data[10][9];
-static int turn;
-static int px,py,qx,qy;
+static int px, py, qx, qy, turn;
 
 
 
@@ -102,16 +101,14 @@ void xiangqi_read_pixel(
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
-	int x,y,half;
+	int x,y;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-	half = (ww+hh)/20;
 
-	//
 	black=0;
 	if( ((win->fmt)&0xffffffff) == 0x61626772)
 	{
@@ -130,35 +127,51 @@ void xiangqi_read_pixel(
 	//heng
 	for(y=-5;y<5;y++)
 	{
-		drawline(win, 0,
-			cx - half*8,	cy + half*(2*y+1),
-			cx + half*8,	cy + half*(2*y+1));
+		drawline(
+			win, 0,
+			cx - ww*8/9,
+			cy + hh*(2*y+1)/10,
+			cx + ww*8/9,
+			cy + hh*(2*y+1)/10
+		);
 	}
 
 	//shu
 	for(x=-4;x<5;x++)
 	{
 		drawline(win, 0,
-			cx + x*half*2,	cy - half*9,
-			cx + x*half*2,	cy - half*1);
+			cx + x*ww*2/9,	cy - hh*9/10,
+			cx + x*ww*2/9,	cy - hh/10);
 		drawline(win, 0,
-			cx + x*half*2,	cy + half*9,
-			cx + x*half*2,	cy + half*1);
+			cx + x*ww*2/9,	cy + hh*9/10,
+			cx + x*ww*2/9,	cy + hh/10);
 	}
 
 	//pie,na
 	drawline(win, 0,
-		cx - half*2,	cy - half*9,
-		cx + half*2,	cy - half*5);
+		cx - ww*2/9,
+		cy - hh*9/10,
+		cx + ww*2/9,
+		cy - hh*5/10
+	);
 	drawline(win, 0,
-		cx + half*2,	cy - half*9,
-		cx - half*2,	cy - half*5);
+		cx + ww*2/9,
+		cy - hh*9/10,
+		cx - ww*2/9,
+		cy - hh*5/10
+	);
 	drawline(win, 0,
-		cx - half*2,	cy + half*9,
-		cx + half*2,	cy + half*5);
+		cx - ww*2/9,
+		cy + hh*9/10,
+		cx + ww*2/9,
+		cy + hh*5/10
+	);
 	drawline(win, 0,
-		cx + half*2,	cy + half*9,
-		cx - half*2,	cy + half*5);
+		cx + ww*2/9,
+		cy + hh*9/10,
+		cx - ww*2/9,
+		cy + hh*5/10
+	);
 
 	//chess
 	for(y=0;y<10;y++)
@@ -177,18 +190,16 @@ void xiangqi_read_pixel(
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
-			drawsolid_circle(win, chesscolor,
-				cx + (2*x-8)*half, cy + (2*y-9)*half, half);
-/*
-			drawascii(win, fontcolor,
-				cx + (2*x-8)*half - (half/8*8/2),
-				cy + (2*y-9)*half - (half/8*16/2),
-				data[y][x]
+			drawsolid_circle(
+				win, chesscolor,
+				cx + (2*x-8)*ww/9,
+				cy + (2*y-9)*hh/10,
+				hh/10
 			);
-*/
+
 			drawutf8(win, fontcolor,
-				cx + (2*x-8)*half - (half/8*8/2),
-				cy + (2*y-9)*half - (half/8*16/2),
+				(cx-8) + (2*x-8)*ww/9,
+				(cy-8) + (2*y-9)*hh/10,
 				char2hanzi(data[y][x]), 0
 			);
 		}//forx

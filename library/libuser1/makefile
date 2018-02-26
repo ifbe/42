@@ -13,6 +13,7 @@ SRC = \
 1game/game.maze.c \
 1game/game.ooxx.c \
 1game/game.pegged.c \
+1game/game.poker.c \
 1game/game.rubik.c \
 1game/game.snake.c \
 1game/game.sudoku.c \

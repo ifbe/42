@@ -14,7 +14,8 @@ static void palette_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	int x,y,min,type;
+	int g,b;
+	int x,y,type;
 	int w = win->w;
 	int h = win->h;
 	int cx = sty->i_cx;
@@ -24,28 +25,26 @@ static void palette_read_pixel(
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
 	u32* buf = (u32*)(win->buf);
-	u32 palette;
+	u32 pal;
 
 	type = (win->fmt)&0xffffff;
-	if(type == 0x626772)type = 1;
-	else if(type == 0x726762)type = 2;
+	if(hex32('r','g','b',0) == type)type = 1;
+	else if(hex32('b','g','r',0) == type)type = 2;
 	else type = 0;
 
-	min = 128;
-	if(ww < 128)min = ww;
-	if(hh < 128)min = hh;
-	for(y=0;y<min*2;y++)
+	for(y=-hh;y<hh;y++)
 	{
-		for(x=0;x<min*2;x++)
+		for(x=-ww;x<ww;x++)
 		{
-			palette = 0xff000000 + ((y+128-min)<<8);
-			if(type == 1)palette += red + ((x+128-min)<<16);
-			else if(type == 2)palette += x + ((red+128-min)<<16);
-			buf[w*(cy+y-min) + (cx+x-min)] = palette;
+			b = 128+(x*128/ww);
+			g = 128+(y*128/hh);
+			if(type == 1)pal = red + (b<<16);
+			else if(type == 2)pal = b + (red<<16);
+			buf[w*(cy+y) + cx+x] = pal | (g<<8) | 0xff000000;
 		}
 	}
-	palette = (red<<16)+(green<<8)+blue;
-	drawhexadecimal(win, palette, cx, cy, palette);
+	pal = (red<<16)+(green<<8)+blue;
+	drawhexadecimal(win, pal, cx, cy, pal);
 }
 static void palette_read_html(
 	struct arena* win, struct style* sty,

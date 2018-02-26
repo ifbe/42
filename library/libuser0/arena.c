@@ -85,8 +85,8 @@ void* arenastart(u64 type, u64 fd)
 	{
 		win->type = __win__;
 		win->fmt = 0;
-		win->first = 0;
-		win->last = 0;
+		win->irel = 0;
+		win->orel = 0;
 
 		windowstart(win);
 	}
@@ -94,8 +94,8 @@ void* arenastart(u64 type, u64 fd)
 	{
 		win->type = hex32('W', 'S', 0, 0);
 		win->fmt = hex32('h','t','m','l');
-		win->first = 0;
-		win->last = 0;
+		win->irel = 0;
+		win->orel = 0;
 
 		win->fd = fd;
 	}
@@ -109,8 +109,8 @@ int arenastop(struct window* win)
 
 	win->type = 0;
 	win->fmt = 0;
-	win->first = 0;
-	win->last = 0;
+	win->irel = 0;
+	win->orel = 0;
 	return 0;
 }
 void arenacreate(u8* addr)

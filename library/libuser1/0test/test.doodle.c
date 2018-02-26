@@ -1,11 +1,9 @@
 #include "actor.h"
-
-
-
-//
-static int x1=-99,y1=10;
-static int x2=25,y2=-77;
-static int px=77,py=88;
+double arctan2(double,double);
+double cosine(double);
+double sine(double);
+static int px=0;
+static int py=0;
 
 
 
@@ -14,6 +12,8 @@ void doodle_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	float f;
+	int x0,y0,x1,y1;
 	int w = win->w;
 	int h = win->h;
 	int cx = sty->i_cx;
@@ -23,25 +23,25 @@ void doodle_read_pixel(
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
 
-	//rect
-	drawsolid_rect(win, 0x00ff00, 
-		cx-90, cy-90, cx-10, cy-10);
-	drawline_rect(win, 0xff00ff,
-		cx+50, cy-30, cx+60, cy-50);
-
 	//circle
-	drawsolid_circle(win, 0x0000ff,
-		cx-50, cy+40, 40);
-	drawline_circle(win, 0xff0000,
-		cx+70, cy+80, 40);
+	drawsolid_circle(win, 0x00ffff, cx, cy, ww);
+	drawsolid_circle(win, 0x404040, cx+ww/2, cy, ww/2);
+	drawsolid_circle(win, 0x404040, cx-ww/2, cy, ww/2);
 
-	//bezier
-	drawline(win, 0x00ffff,
-		cx+x1, cy+y1, px, py);
-	drawline(win, 0x00ffff,
-		cx+x2, cy+y2, px, py);
-	drawline_bezier(win, 0xffff,
-		cx+x1, cy+y1, cx+x2, cy+y2, px, py);
+	f = arctan2(py-cy, px-cx+(ww/2));
+	x0 = (int)(cosine(f)*ww*1/4) + (cx-ww/2);
+	y0 = (int)(sine(f)*ww*1/4) + (cy+y0);
+	f = arctan2(py-cy, px-cx-(ww/2));
+	x1 = (int)(cosine(f)*ww*1/4) + (cx+ww/2);
+	y1 = (int)(sine(f)*ww*1/4) + (cy+y1);
+
+	drawsolid_circle(win, 0xff0000, x0, y0, ww/4);
+	drawsolid_circle(win, 0xff0000, x1, y1, ww/4);
+
+	drawline(win, 0xffffff, x0, y0, px, py);
+	drawline(win, 0xffffff, x1, y1, px, py);
+
+	drawbezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
 static void doodle_read_vbo(
 	struct arena* win, struct style* sty,
@@ -95,10 +95,10 @@ static void doodle_write(
 {
 	u64 what = ev->what;
 	u64 why = ev->why;
-	if(what == 0x2d70)
+	if(0x4070 == what)
 	{
-		px = why & 0xffff;
-		py = (why >> 16) & 0xffff;
+		px = why&0xffff;
+		py = (why>>16)&0xffff;
 	}
 }
 static void doodle_list()

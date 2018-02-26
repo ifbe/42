@@ -1,12 +1,81 @@
 #include "actor.h"
+static u16 symbol[16] = 
+{
+	'A','1',   '2','3',
+	'4','5',   '6','7',
+	'8','9',0x3031,'J',
+	'Q','K',   '!'
+};
 
 
 
+static void poker_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+	int j;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
+	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
+	for(j=0;j<108/4;j++)
+	{
+		drawsolid_rect(
+			win, 0xc0c0c0,
+			cx + (j-13)*ww/27 - (ww/4),
+			cy - (j/2) + (hh/2),
+			cx + (j-13)*ww/27 + (ww/4),
+			cy - (j/2) + hh
+		);
+		drawline_rect(
+			win, 0x404040,
+			cx + (j-13)*ww/27 - (ww/4),
+			cy - (j/2) + (hh/2),
+			cx + (j-13)*ww/27 + (ww/4),
+			cy - (j/2) + hh
+		);
+		drawascii(
+			win, 0xffffff,
+			cx + (j-13)*ww/27 - (ww/4),
+			cy - (j/2) + (hh/2),
+			symbol[j/2]
+		);
+	}
+}
+static void poker_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+}
+static void poker_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+}
+static void poker_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+}
+static void poker_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+}
 static void poker_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	u64 fmt = win->fmt;
+	if(fmt == _cli_)poker_read_cli(win, sty, act, com);
+	else if(fmt == _tui_)poker_read_tui(win, sty, act, com);
+	else if(fmt == _html_)poker_read_html(win, sty, act, com);
+	else if(fmt == _vbo_)poker_read_vbo(win, sty, act, com);
+	else poker_read_pixel(win, sty, act, com);
 }
 static void poker_write(
 	struct actor* act, struct compo* com,

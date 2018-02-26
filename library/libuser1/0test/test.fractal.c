@@ -1,26 +1,60 @@
 #include "actor.h"
+static double centerx = 0.0;
+static double centery = 0.0;
+static double width = 1.0;
+static double height = 1.0;
 
 
 
 
-static void fractal_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct compo* com)
+int fractal_check(double x, double y)
 {
+	int j;
+	double tx,ty;
+	double fx = 0.0;
+	double fy = 0.0;
+	for(j=0;j<255;j++)
+	{
+		tx = fx*fx - fy*fy + x;
+		ty = 2*fx*fy + y;
+		if(tx*tx + ty*ty > 4)break;
+		fx = tx;
+		fy = ty;
+	}
+	return j;
 }
 static void fractal_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	u32 c;
+	int x,y;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-
-	drawsolid_rect(win, 0xff0000, cx-ww, cy-hh, cx+ww, cy+hh);
+	int w = win->w;
+	u32* buf = win->buf;
 	drawline_rect( win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	for(y=1-hh;y<hh;y++)
+	{
+		for(x=1-ww;x<ww;x++)
+		{
+			c = fractal_check(
+				centerx + 2.0*x*width/ww,
+				centery + 2.0*y*height/hh
+			);
+			buf[w*(cy+y) + cx+x] = 0xff000000 | (c*0x010101);
+		}
+	}
+}
+static void fractal_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
 }
 static void fractal_read_vbo(
 	struct arena* win, struct style* sty,
@@ -53,11 +87,31 @@ static void fractal_write(
 	struct actor* act, struct compo* com,
 	struct event* ev)
 {
+	//say("%llx,%llx\n",ev->why, ev->what);
+	u64 why = ev->why;
+	u64 what = ev->what;
+	if(0x2b70 == what)
+	{
+		why >>= 48;
+		if('f' == why)
+		{
+			width *= 0.9;
+			height *= 0.9;
+		}
+		else if('b' == why)
+		{
+			width *= 1.1;
+			height *= 1.1;
+		}
+	}
+	if(_kbd_ == what)
+	{
+		if(why == 0x48)centery -= height*0.1;
+		else if(why == 0x4b)centerx -= width*0.1;
+		else if(why == 0x4d)centerx += width*0.1;
+		else if(why == 0x50)centery += height*0.1;
+	}
 }
-
-
-
-
 static void fractal_list()
 {
 }

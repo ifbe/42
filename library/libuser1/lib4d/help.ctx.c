@@ -13,6 +13,7 @@ void klotski_register(void*);
 void maze_register(void*);
 void ooxx_register(void*);
 void pegged_register(void*);
+void poker_register(void*);
 void rubikscube_register(void*);
 void snake_register(void*);
 void sudoku_register(void*);
@@ -92,6 +93,10 @@ int content_create(u8* addr)
 
 	//game.pegged
 	pegged_register(temp);
+	temp += 0x100;
+
+	//game.poker
+	poker_register(temp);
 	temp += 0x100;
 
 	//game.rubik
