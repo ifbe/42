@@ -3,6 +3,11 @@ int openreadclose(void*, void*, u64, u64);
 int openwriteclose(void*, void*, u64, u64);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
+void carvestl(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float sx, float sy, float sz,
+	void* stlbuf, int stllen, float f);
 
 
 
@@ -112,80 +117,24 @@ static void stl_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	float* p;
-	float sx,sy,f;
-	int j, ret;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
-
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->tricount;
-
-	void* buf = (void*)(win->buf);
-	float* vertex = buf + 0x000000 + (pcount*12);
-	float* normal = buf + 0x200000 + (ncount*12);
-	float* color  = buf + 0x400000 + (ccount*12);
-	u16* index =    buf + 0xc00000 + (icount*2);
-
-	ret = *(u32*)(stlbuf+80);
-	ret = ret%(0x1f0000/36);
-
-	win->vertexcount += 3*ret;
-	win->normalcount += 3*ret;
-	win->colorcount += 3*ret;
-	win->tricount += 3*ret;
-
-	sx = (left+right)/2;
-	sy = (back+front)/2;
-
+	float f;
+	float sx = (left+right)/2;
+	float sy = (back+front)/2;
 	if(right-left > front-back)f = 2.0*ww/(right-left);
 	else f = 2.0*hh/(front-back);
 
-	for(j=0;j<ret;j++)
-	{
-		p = (void*)stlbuf + 84 + j*50;
-
-		vertex[j*9 + 0] = cx + (p[3]-sx)*f;
-		vertex[j*9 + 1] = cy + (p[4]-sy)*f;
-		vertex[j*9 + 2] = (p[5]-bottom)*f;
-		vertex[j*9 + 3] = cx + (p[6]-sx)*f;
-		vertex[j*9 + 4] = cy + (p[7]-sy)*f;
-		vertex[j*9 + 5] = (p[8]-bottom)*f;
-		vertex[j*9 + 6] = cx + (p[9]-sx)*f;
-		vertex[j*9 + 7] = cy + (p[10]-sy)*f;
-		vertex[j*9 + 8] = (p[11]-bottom)*f;
-
-		normal[j*9 + 0] = p[0];
-		normal[j*9 + 1] = p[1];
-		normal[j*9 + 2] = p[2];
-		normal[j*9 + 3] = p[0];
-		normal[j*9 + 4] = p[1];
-		normal[j*9 + 5] = p[2];
-		normal[j*9 + 6] = p[0];
-		normal[j*9 + 7] = p[1];
-		normal[j*9 + 8] = p[2];
-
-		color[j*9 + 0] = 1.0;
-		color[j*9 + 1] = 1.0;
-		color[j*9 + 2] = 1.0;
-		color[j*9 + 3] = 1.0;
-		color[j*9 + 4] = 1.0;
-		color[j*9 + 5] = 1.0;
-		color[j*9 + 6] = 1.0;
-		color[j*9 + 7] = 1.0;
-		color[j*9 + 8] = 1.0;
-
-		index[j*3 + 0] = pcount + j*3 + 0;
-		index[j*3 + 1] = pcount + j*3 + 1;
-		index[j*3 + 2] = pcount + j*3 + 2;
-	}
+	carvestl(
+		win, 0xffffff,
+		cx, cy, cz,
+		sx, sy, bottom,
+		stlbuf, stllen, f
+	);
 }
 static void stl_read_tui(
 	struct arena* win, struct style* sty,
@@ -259,6 +208,7 @@ static void stl_stop()
 }
 static void stl_start()
 {
+	stlbuf = (void*)startmemory(0x800000);
 	stl_prep("42.stl");
 }
 static void stl_delete()
@@ -266,7 +216,6 @@ static void stl_delete()
 }
 static void stl_create()
 {
-	stlbuf = (void*)startmemory(0x800000);
 }
 
 

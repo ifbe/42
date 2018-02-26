@@ -256,7 +256,7 @@ static void the2048_write(
 	int j,k;
 	u8* p;
 	u8* q;
-	say("%llx,%llx,%llx\n", act, com, ev);
+	//say("%llx,%llx,%llx\n", act, com, ev);
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
 	if(ev->what == _kbd_)

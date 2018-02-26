@@ -59,12 +59,12 @@ static void ooxx_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	float cx = (float)(sty->i_cx);
+	float cy = (float)(sty->i_cy);
+	float cz = (float)(sty->i_cz);
+	float ww = (float)(sty->i_rx);
+	float hh = (float)(sty->i_fy);
+	float dd = (float)(sty->i_uz);
 	carvesolid_sphere(
 		win, 0xffffff,
 		cx, cy, 0.0,

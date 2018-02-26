@@ -1,7 +1,31 @@
 #include "actor.h"
-#define accuracy 18
+#define acc 18
 #define PI 3.1415926535897932384626433832795028841971693993151
 u32 getrandom();
+
+
+
+
+struct texandobj
+{
+	u32 obj;
+	u32 len;
+	void* buf;
+};
+struct eachone
+{
+	u32 program;
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
+	u32 tex0;
+	u32 tex1;
+	float light0vertex[3];
+	float light0color[3];
+	float light1vertex[3];
+	float light1color[3];
+	float modmat[4][4];
+};
 
 
 
@@ -94,5 +118,68 @@ void carveneural_random(struct arena* win)
 
 		iindex[j] = pcount+j;
 		lindex[j] = pcount+j;
+	}
+}
+void carvestl(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float sx, float sy, float sz,
+	void* stlbuf, int stllen, float f)
+{
+	float* p;
+	int j, k, ret;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	struct texandobj* mod = win->buf;
+	int ilen = mod[0x24].len;
+	int vlen = mod[0x25].len;
+	u16* ibuf = (mod[0x24].buf) + (6*ilen);
+	float* vbuf = (mod[0x25].buf) + (36*vlen);
+
+	ret = *(u32*)(stlbuf+80);
+	ret = ret%65536;
+	mod[0x24].len += ret;
+	mod[0x25].len += ret*3;
+
+	for(j=0;j<ret;j++)
+	{
+		p = (void*)stlbuf + 84 + j*50;
+		k = j*27;
+
+		vbuf[k+ 0] = cx + (p[3]-sx)*f;
+		vbuf[k+ 1] = cy + (p[4]-sy)*f;
+		vbuf[k+ 2] = (p[5]-sz)*f;
+		vbuf[k+ 3] = 1.0;
+		vbuf[k+ 4] = 1.0;
+		vbuf[k+ 5] = 1.0;
+		vbuf[k+ 6] = p[0];
+		vbuf[k+ 7] = p[1];
+		vbuf[k+ 8] = p[2];
+
+		vbuf[k+ 9] = cx + (p[6]-sx)*f;
+		vbuf[k+10] = cy + (p[7]-sy)*f;
+		vbuf[k+11] = (p[8]-sz)*f;
+		vbuf[k+12] = 1.0;
+		vbuf[k+13] = 1.0;
+		vbuf[k+14] = 1.0;
+		vbuf[k+15] = p[0];
+		vbuf[k+16] = p[1];
+		vbuf[k+17] = p[2];
+
+		vbuf[k+18] = cx + (p[9]-sx)*f;
+		vbuf[k+19] = cy + (p[10]-sy)*f;
+		vbuf[k+20] = (p[11]-sz)*f;
+		vbuf[k+21] = 1.0;
+		vbuf[k+22] = 1.0;
+		vbuf[k+23] = 1.0;
+		vbuf[k+24] = p[0];
+		vbuf[k+25] = p[1];
+		vbuf[k+26] = p[2];
+
+		ibuf[j*3 + 0] = vlen + j*3 + 0;
+		ibuf[j*3 + 1] = vlen + j*3 + 1;
+		ibuf[j*3 + 2] = vlen + j*3 + 2;
 	}
 }

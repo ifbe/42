@@ -34,30 +34,30 @@ static void rubikscube_read_vbo(
 			//l
 			carvesolid_rect(
 				win, 0xff00,
-				cx-ww/2, cy-(x-1)*hh/3, (y-1)*hh/3,
-				0.0, -ww/7, 0.0,
-				0.0, 0.0, hh/7
+				cx-ww*2/2, cy-(x-1)*hh*2/3, (y-1)*hh*2/3,
+				0.0, -ww*2/7, 0.0,
+				0.0, 0.0, hh*2/7
 			);
 			carveascii(
 				win, ~0xff00,
-				cx-ww/1.99, cy-(x-1)*hh/3, (y-1)*hh/3,
-				0.0, -ww/14, 0.0,
-				0.0, 0.0, hh/14,
+				cx-ww*2/1.99, cy-(x-1)*hh*2/3, (y-1)*hh*2/3,
+				0.0, -ww*2/14, 0.0,
+				0.0, 0.0, hh*2/14,
 				(y*3)+x+0x30
 			);
 
 			//r
 			carvesolid_rect(
 				win, 0xff,
-				cx+ww/2, cy+(x-1)*hh/3, (y-1)*hh/3,
-				0.0, ww/7, 0.0,
-				0.0, 0.0, hh/7
+				cx+ww*2/2, cy+(x-1)*hh*2/3, (y-1)*hh*2/3,
+				0.0, ww*2/7, 0.0,
+				0.0, 0.0, hh*2/7
 			);
 			carveascii(
 				win, ~0xff,
-				cx+ww/1.99, cy+(x-1)*hh/3, (y-1)*hh/3,
-				0.0, ww/14, 0.0,
-				0.0, 0.0, hh/14,
+				cx+ww*2/1.99, cy+(x-1)*hh*2/3, (y-1)*hh*2/3,
+				0.0, ww*2/14, 0.0,
+				0.0, 0.0, hh*2/14,
 				(y*3)+x+0x30
 			);
 		}
@@ -70,30 +70,30 @@ static void rubikscube_read_vbo(
 			//f
 			carvesolid_rect(
 				win, 0xff0000,
-				cx+(x-1)*ww/3, cy-hh/2, (y-1)*hh/3,
-				ww/7, 0.0, 0.0,
-				0.0, 0.0, hh/7
+				cx+(x-1)*ww*2/3, cy-hh*2/2, (y-1)*hh*2/3,
+				ww*2/7, 0.0, 0.0,
+				0.0, 0.0, hh*2/7
 			);
 			carveascii(
 				win, ~0xff0000,
-				cx+(x-1)*ww/3, cy-hh/1.99, (y-1)*hh/3,
-				ww/14, 0.0, 0.0,
-				0.0, 0.0, hh/14,
+				cx+(x-1)*ww*2/3, cy-hh*2/1.99, (y-1)*hh*2/3,
+				ww*2/14, 0.0, 0.0,
+				0.0, 0.0, hh*2/14,
 				(y*3)+x+0x30
 			);
 
 			//b
 			carvesolid_rect(
 				win, 0xfa8010,
-				cx-(x-1)*ww/3, cy+hh/2, (y-1)*hh/3,
-				-ww/7, 0.0, 0.0,
-				0.0, 0.0, hh/7
+				cx-(x-1)*ww*2/3, cy+hh*2/2, (y-1)*hh*2/3,
+				-ww*2/7, 0.0, 0.0,
+				0.0, 0.0, hh*2/7
 			);
 			carveascii(
 				win, ~0xfa8010,
-				cx-(x-1)*ww/3, cy+hh/1.99, (y-1)*hh/3,
-				-ww/14, 0.0, 0.0,
-				0.0, 0.0, hh/14,
+				cx-(x-1)*ww*2/3, cy+hh*2/1.99, (y-1)*hh*2/3,
+				-ww*2/14, 0.0, 0.0,
+				0.0, 0.0, hh*2/14,
 				(y*3)+x+0x30
 			);
 		}
@@ -106,30 +106,30 @@ static void rubikscube_read_vbo(
 			//u
 			carvesolid_rect(
 				win, 0xffffff,
-				cx+(x-1)*ww/3, cy+(y-1)*hh/3, dd/2,
-				ww/7, 0.0, 0.0,
-				0.0, hh/7, 0.0
+				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, dd*2/2,
+				ww*2/7, 0.0, 0.0,
+				0.0, hh*2/7, 0.0
 			);
 			carveascii(
 				win, ~0xffffff,
-				cx+(x-1)*ww/3, cy+(y-1)*hh/3, dd/1.99,
-				ww/14, 0.0, 0.0,
-				0.0, hh/14, 0.0,
+				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, dd*2/1.99,
+				ww*2/14, 0.0, 0.0,
+				0.0, hh*2/14, 0.0,
 				(y*3)+x+0x30
 			);
 
 			//d
 			carvesolid_rect(
 				win, 0xffff00,
-				cx+(x-1)*ww/3, cy+(y-1)*hh/3, -dd/2,
-				ww/7, 0.0, 0.0,
-				0.0, -hh/7, 0.0
+				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, -dd*2/2,
+				ww*2/7, 0.0, 0.0,
+				0.0, -hh*2/7, 0.0
 			);
 			carveascii(
 				win, ~0xffff00,
-				cx+(x-1)*ww/3, cy+(y-1)*hh/3, -dd/1.99,
-				ww/14, 0.0, 0.0,
-				0.0, -hh/14, 0.0,
+				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, -dd*2/1.99,
+				ww*2/14, 0.0, 0.0,
+				0.0, -hh*2/14, 0.0,
 				(y*3)+x+0x30
 			);
 		}

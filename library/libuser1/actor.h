@@ -318,12 +318,6 @@ struct compo
 
 
 
-void select_1d(struct arena* win, struct style* sty);
-void select_2d(struct arena* win, struct style* sty);
-void select_3d(struct arena* win, struct style* sty);
-void background(struct arena* win);
-void foreground(struct arena* win);
-
 void gentui_rect(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
 void gentui_utf8(struct arena* win, u32 rgb, int x, int y, u8* buf, int len);
 void gentui_str(struct arena* win, u32 rgb, int x, int y, u8* str, int len);

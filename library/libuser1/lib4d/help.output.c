@@ -1,7 +1,8 @@
 #include "actor.h"
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
-void login_read(void*);
+void background(void*);
+void foreground(void*);
 void arenaread(void*, void*);
 void arenawrite(void*, void*);
 void* samepinprevchip(void*);
@@ -74,7 +75,7 @@ int actoroutput(struct arena* win)
 	}
 
 	//bg
-	if((_vbo_ != win->fmt) | (12 == win->flag0))background(win);
+	background(win);
 
 	//content
 	rel = win->irel;
@@ -102,8 +103,7 @@ int actoroutput(struct arena* win)
 	}
 
 	//fg
-	if((11 == win->flag0) | (0 == win->irel))login_read(win);
-	if((12 == win->flag0) | (_vbo_ != win->fmt))foreground(win);
+	foreground(win);
 
 theend:
 	arenawrite(win, &arena[0]);

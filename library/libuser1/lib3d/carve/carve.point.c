@@ -1,6 +1,26 @@
 #include "actor.h"
-#define accuracy 18
+#define acc 18
 #define PI 3.1415926535897932384626433832795028841971693993151
+struct texandobj
+{
+	u32 obj;
+	u32 len;
+	void* buf;
+};
+struct eachone
+{
+	u32 program;
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
+	u32 tex0;
+	u32 tex1;
+	float light0vertex[3];
+	float light0color[3];
+	float light1vertex[3];
+	float light1color[3];
+	float modmat[4][4];
+};
 
 
 
@@ -13,38 +33,16 @@ void carvepoint(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += 1;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += 1;
-	win->normalcount  += 1;
-	win->colorcount   += 1;
-	win->texturecount += 1;
-	win->pointcount   += 1;
-
-	color[0] = rr;
-	color[1] = gg;
-	color[2] = bb;
-
-	normal[0] = 0.0;
-	normal[1] = 0.0;
-	normal[2] = 1.0;
-
-	vertex[0] = cx;
-	vertex[1] = cy;
-	vertex[2] = cz;
-
-	index[0] = pcount;
+	buf[0] = cx;
+	buf[1] = cy;
+	buf[2] = cz;
+	buf[3] = rr;
+	buf[4] = gg;
+	buf[5] = bb;
 }
 void carvepoint_bezier(
 	struct arena* win, u32 rgb,
@@ -58,42 +56,20 @@ void carvepoint_bezier(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += acc;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += accuracy+1;
-	win->normalcount  += accuracy+1;
-	win->colorcount   += accuracy+1;
-	win->texturecount += accuracy+1;
-	win->pointcount   += accuracy+1;
-
-	for(j=0;j<=accuracy;j++)
+	for(j=0;j<=acc;j++)
 	{
-		t = (float)j / accuracy;
+		t = (float)j / acc;
 
-		vertex[3*j+0] = (1.0-t)*(1.0-t)*x1 + 2*t*(1.0-t)*xc + t*t*x2;
-		vertex[3*j+1] = (1.0-t)*(1.0-t)*y1 + 2*t*(1.0-t)*yc + t*t*y2;
-		vertex[3*j+2] = (1.0-t)*(1.0-t)*z1 + 2*t*(1.0-t)*zc + t*t*z2;
-
-		normal[3*j+0] = 0.0;
-		normal[3*j+1] = 0.0;
-		normal[3*j+2] = 1.0;
-
-		color[3*j+0] = rr;
-		color[3*j+1] = gg;
-		color[3*j+2] = bb;
-
-		index[j+0] = pcount + j;
+		buf[6*j+0] = (1.0-t)*(1.0-t)*x1 + 2*t*(1.0-t)*xc + t*t*x2;
+		buf[6*j+1] = (1.0-t)*(1.0-t)*y1 + 2*t*(1.0-t)*yc + t*t*y2;
+		buf[6*j+2] = (1.0-t)*(1.0-t)*z1 + 2*t*(1.0-t)*zc + t*t*z2;
+		buf[6*j+3] = rr;
+		buf[6*j+4] = gg;
+		buf[6*j+5] = bb;
 	}
 }
 
@@ -120,7 +96,7 @@ void carvepoint_circle(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int a,b,j,k;
+	int j,k;
 	float s,t;
 	float q[4];
 	float r[4];
@@ -129,58 +105,34 @@ void carvepoint_circle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += acc;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += accuracy;
-	win->normalcount  += accuracy;
-	win->colorcount   += accuracy;
-	win->texturecount += accuracy;
-	win->pointcount   += accuracy;
-
-	for(j=0;j<accuracy;j++)
+	for(j=0;j<acc;j++)
 	{
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
 		vectornormalize(q);
 
-		t = j*PI/accuracy;
+		t = j*PI/acc;
 		q[0] *= sine(t);
 		q[1] *= sine(t);
 		q[2] *= sine(t);
 		q[3] = cosine(t);
-
-		a = j*3;
 
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
 		quaternionrotate(r, q);
 
-		vertex[a+0] = cx + r[0];
-		vertex[a+1] = cy + r[1];
-		vertex[a+2] = cz + r[2];
-
-		normal[a+0] = ux;
-		normal[a+1] = uy;
-		normal[a+2] = uz;
-
-		color[a+0] = rr;
-		color[a+1] = gg;
-		color[a+2] = bb;
-
-		index[j] = pcount+j;
+		buf[6*j+0] = cx + r[0];
+		buf[6*j+1] = cy + r[1];
+		buf[6*j+2] = cz + r[2];
+		buf[6*j+3] = rr;
+		buf[6*j+4] = gg;
+		buf[6*j+5] = bb;
 	}
 }
 
@@ -205,7 +157,7 @@ void carvepoint_cone(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int a,b,j,k;
+	int j,k;
 	float s,t;
 	float q[4];
 	float r[4];
@@ -214,85 +166,51 @@ void carvepoint_cone(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += acc+2;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += accuracy+2;
-	win->normalcount  += accuracy+2;
-	win->colorcount   += accuracy+2;
-	win->texturecount += accuracy+2;
-	win->pointcount   += accuracy+2;
-
-	for(j=0;j<accuracy;j++)
+	for(j=0;j<acc;j++)
 	{
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
 		vectornormalize(q);
 
-		t = j*PI/accuracy;
+		t = j*PI/acc;
 		q[0] *= sine(t);
 		q[1] *= sine(t);
 		q[2] *= sine(t);
 		q[3] = cosine(t);
-
-		a = j*3;
 
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
 		quaternionrotate(r, q);
 
-		vertex[a+0] = cx + r[0];
-		vertex[a+1] = cy + r[1];
-		vertex[a+2] = cz + r[2];
-
-		normal[a+0] = ux;
-		normal[a+1] = uy;
-		normal[a+2] = uz;
-
-		color[a+0] = rr;
-		color[a+1] = gg;
-		color[a+2] = bb;
-
-		index[j] = pcount+j;
+		buf[6*j+0] = cx + r[0];
+		buf[6*j+1] = cy + r[1];
+		buf[6*j+2] = cz + r[2];
+		buf[6*j+3] = rr;
+		buf[6*j+4] = gg;
+		buf[6*j+5] = bb;
 	}
 
-	a = accuracy*3;
+	j = acc*6;
 
-	vertex[a+0] = cx;
-	vertex[a+1] = cy;
-	vertex[a+2] = cz;
-	vertex[a+3] = cx+ux;
-	vertex[a+4] = cy+uy;
-	vertex[a+5] = cz+uz;
+	buf[j+ 0] = cx;
+	buf[j+ 1] = cy;
+	buf[j+ 2] = cz;
+	buf[j+ 3] = rr;
+	buf[j+ 4] = gg;
+	buf[j+ 5] = bb;
 
-	normal[a+0] = -ux;
-	normal[a+1] = -uy;
-	normal[a+2] = -uz;
-	normal[a+3] = ux;
-	normal[a+4] = uy;
-	normal[a+5] = uz;
-
-	color[a+0] = rr;
-	color[a+1] = gg;
-	color[a+2] = bb;
-	color[a+3] = rr;
-	color[a+4] = gg;
-	color[a+5] = bb;
-
-	index[accuracy+0] = pcount+accuracy;
-	index[accuracy+1] = pcount+accuracy+1;
+	buf[j+ 6] = cx+ux;
+	buf[j+ 7] = cy+uy;
+	buf[j+ 8] = cz+uz;
+	buf[j+ 9] = rr;
+	buf[j+10] = gg;
+	buf[j+11] = bb;
 }
 
 
@@ -323,7 +241,7 @@ void carvepoint_cylinder(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int a,b,j,k;
+	int j,k;
 	float s,t;
 	float q[4];
 	float r[4];
@@ -332,69 +250,43 @@ void carvepoint_cylinder(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += acc*2;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += accuracy*2;
-	win->normalcount  += accuracy*2;
-	win->colorcount   += accuracy*2;
-	win->texturecount += accuracy*2;
-	win->pointcount   += accuracy*2;
-
-	for(j=0;j<accuracy;j++)
+	for(j=0;j<acc;j++)
 	{
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
 		vectornormalize(q);
 
-		t = j*PI/accuracy;
+		t = j*PI/acc;
 		q[0] *= sine(t);
 		q[1] *= sine(t);
 		q[2] *= sine(t);
 		q[3] = cosine(t);
-
-		b = j*2;
-		a = j*6;
 
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
 		quaternionrotate(r, q);
 
-		vertex[a+0] = cx - ux + r[0];
-		vertex[a+1] = cy - uy + r[1];
-		vertex[a+2] = cz - uz + r[2];
-		vertex[a+3] = cx + ux + r[0];
-		vertex[a+4] = cy + uy + r[1];
-		vertex[a+5] = cz + uz + r[2];
+		k = j*12;
 
-		normal[a+0] = vertex[a+0] - cx;
-		normal[a+1] = vertex[a+1] - cy;
-		normal[a+2] = vertex[a+2] - cz;
-		normal[a+3] = vertex[a+3] - cx;
-		normal[a+4] = vertex[a+4] - cy;
-		normal[a+5] = vertex[a+5] - cz;
+		buf[k+ 0] = cx - ux + r[0];
+		buf[k+ 1] = cy - uy + r[1];
+		buf[k+ 2] = cz - uz + r[2];
+		buf[k+ 3] = rr;
+		buf[k+ 4] = gg;
+		buf[k+ 5] = bb;
 
-		color[a+0] = rr;
-		color[a+1] = gg;
-		color[a+2] = bb;
-		color[a+3] = rr;
-		color[a+4] = gg;
-		color[a+5] = bb;
-
-		index[b+0] = pcount + 2*j + 0;
-		index[b+1] = pcount + 2*j + 1;
+		buf[k+ 6] = cx + ux + r[0];
+		buf[k+ 7] = cy + uy + r[1];
+		buf[k+ 8] = cz + uz + r[2];
+		buf[k+ 9] = rr;
+		buf[k+10] = gg;
+		buf[k+11] = bb;
 	}
 }
 
@@ -422,121 +314,100 @@ void carvepoint_dodecahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += 20;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += 20;
-	win->normalcount  += 20;
-	win->colorcount   += 20;
-	win->texturecount += 20;
-	win->pointcount   += 20;
+	for(j=0;j<20*6;j+=6)
+	{
+		buf[j + 3] = rr;
+		buf[j + 4] = gg;
+		buf[j + 5] = bb;
+	}
 
 	//(+-1, +-1, +-1)
-	vertex[ 0] = cx-rx-fx-ux;
-	vertex[ 1] = cy-ry-fy-uy;
-	vertex[ 2] = cz-rz-fz-uz;
+	buf[  0] = cx-rx-fx-ux;
+	buf[  1] = cy-ry-fy-uy;
+	buf[  2] = cz-rz-fz-uz;
 
-	vertex[ 3] = cx+rx-fx-ux;
-	vertex[ 4] = cy+ry-fy-uy;
-	vertex[ 5] = cz+rz-fz-uz;
+	buf[  6] = cx+rx-fx-ux;
+	buf[  7] = cy+ry-fy-uy;
+	buf[  8] = cz+rz-fz-uz;
 
-	vertex[ 6] = cx-rx+fx-ux;
-	vertex[ 7] = cy-ry+fy-uy;
-	vertex[ 8] = cz-rz+fz-uz;
+	buf[ 12] = cx-rx+fx-ux;
+	buf[ 13] = cy-ry+fy-uy;
+	buf[ 14] = cz-rz+fz-uz;
 
-	vertex[ 9] = cx+rx+fx-ux;
-	vertex[10] = cy+ry+fy-uy;
-	vertex[11] = cz+rz+fz-uz;
+	buf[ 18] = cx+rx+fx-ux;
+	buf[ 19] = cy+ry+fy-uy;
+	buf[ 20] = cz+rz+fz-uz;
 
-	vertex[12] = cx-rx-fx+ux;
-	vertex[13] = cy-ry-fy+uy;
-	vertex[14] = cz-rz-fz+uz;
+	buf[ 24] = cx-rx-fx+ux;
+	buf[ 25] = cy-ry-fy+uy;
+	buf[ 26] = cz-rz-fz+uz;
 
-	vertex[15] = cx+rx-fx+ux;
-	vertex[16] = cy+ry-fy+uy;
-	vertex[17] = cz+rz-fz+uz;
+	buf[ 30] = cx+rx-fx+ux;
+	buf[ 31] = cy+ry-fy+uy;
+	buf[ 32] = cz+rz-fz+uz;
 
-	vertex[18] = cx-rx+fx+ux;
-	vertex[19] = cy-ry+fy+uy;
-	vertex[20] = cz-rz+fz+uz;
+	buf[ 36] = cx-rx+fx+ux;
+	buf[ 37] = cy-ry+fy+uy;
+	buf[ 38] = cz-rz+fz+uz;
 
-	vertex[21] = cx+rx+fx+ux;
-	vertex[22] = cy+ry+fy+uy;
-	vertex[23] = cz+rz+fz+uz;
+	buf[ 42] = cx+rx+fx+ux;
+	buf[ 43] = cy+ry+fy+uy;
+	buf[ 44] = cz+rz+fz+uz;
 
 	//(0, +-a, +-b)
-	vertex[24] = cx - a*fx - b*ux;
-	vertex[25] = cy - a*fy - b*uy;
-	vertex[26] = cz - a*fz - b*uz;
+	buf[ 48] = cx - a*fx - b*ux;
+	buf[ 49] = cy - a*fy - b*uy;
+	buf[ 50] = cz - a*fz - b*uz;
 
-	vertex[27] = cx + a*fx - b*ux;
-	vertex[28] = cy + a*fy - b*uy;
-	vertex[29] = cz + a*fz - b*uz;
+	buf[ 54] = cx + a*fx - b*ux;
+	buf[ 55] = cy + a*fy - b*uy;
+	buf[ 56] = cz + a*fz - b*uz;
 
-	vertex[30] = cx - a*fx + b*ux;
-	vertex[31] = cy - a*fy + b*uy;
-	vertex[32] = cz - a*fz + b*uz;
+	buf[ 60] = cx - a*fx + b*ux;
+	buf[ 61] = cy - a*fy + b*uy;
+	buf[ 62] = cz - a*fz + b*uz;
 
-	vertex[33] = cx + a*fx + b*ux;
-	vertex[34] = cy + a*fy + b*uy;
-	vertex[35] = cz + a*fz + b*uz;
+	buf[ 66] = cx + a*fx + b*ux;
+	buf[ 67] = cy + a*fy + b*uy;
+	buf[ 68] = cz + a*fz + b*uz;
 
 	//(+-b, 0, +-a)
-	vertex[36] = cx - b*rx - a*ux;
-	vertex[37] = cy - b*ry - a*uy;
-	vertex[38] = cz - b*rz - a*uz;
+	buf[ 72] = cx - b*rx - a*ux;
+	buf[ 73] = cy - b*ry - a*uy;
+	buf[ 74] = cz - b*rz - a*uz;
 
-	vertex[39] = cx + b*rx - a*ux;
-	vertex[40] = cy + b*ry - a*uy;
-	vertex[41] = cz + b*rz - a*uz;
+	buf[ 78] = cx + b*rx - a*ux;
+	buf[ 79] = cy + b*ry - a*uy;
+	buf[ 80] = cz + b*rz - a*uz;
 
-	vertex[42] = cx - b*rx + a*ux;
-	vertex[43] = cy - b*ry + a*uy;
-	vertex[44] = cz - b*rz + a*uz;
+	buf[ 84] = cx - b*rx + a*ux;
+	buf[ 85] = cy - b*ry + a*uy;
+	buf[ 86] = cz - b*rz + a*uz;
 
-	vertex[45] = cx + b*rx + a*ux;
-	vertex[46] = cy + b*ry + a*uy;
-	vertex[47] = cz + b*rz + a*uz;
+	buf[ 90] = cx + b*rx + a*ux;
+	buf[ 91] = cy + b*ry + a*uy;
+	buf[ 92] = cz + b*rz + a*uz;
 
 	//(+-a, +-b, 0)
-	vertex[48] = cx - a*rx - b*fx;
-	vertex[49] = cy - a*ry - b*fy;
-	vertex[50] = cz - a*rz - b*fz;
+	buf[ 96] = cx - a*rx - b*fx;
+	buf[ 97] = cy - a*ry - b*fy;
+	buf[ 98] = cz - a*rz - b*fz;
 
-	vertex[51] = cx + a*rx - b*fx;
-	vertex[52] = cy + a*ry - b*fy;
-	vertex[53] = cz + a*rz - b*fz;
+	buf[102] = cx + a*rx - b*fx;
+	buf[103] = cy + a*ry - b*fy;
+	buf[104] = cz + a*rz - b*fz;
 
-	vertex[54] = cx - a*rx + b*fx;
-	vertex[55] = cy - a*ry + b*fy;
-	vertex[56] = cz - a*rz + b*fz;
+	buf[108] = cx - a*rx + b*fx;
+	buf[109] = cy - a*ry + b*fy;
+	buf[110] = cz - a*rz + b*fz;
 
-	vertex[57] = cx + a*rx + b*fx;
-	vertex[58] = cy + a*ry + b*fy;
-	vertex[59] = cz + a*rz + b*fz;
-
-	for(j=0;j<20;j++)
-	{
-		normal[j*3 + 0] = 0.0;
-		normal[j*3 + 1] = 0.0;
-		normal[j*3 + 2] = 1.0;
-
-		color[j*3 + 0] = rr;
-		color[j*3 + 1] = gg;
-		color[j*3 + 2] = bb;
-
-		index[j] = pcount+j;
-	}
+	buf[114] = cx + a*rx + b*fx;
+	buf[115] = cy + a*ry + b*fy;
+	buf[116] = cz + a*rz + b*fz;
 }
 void carvepoint_icosahedron(
 	struct arena* win, u32 rgb,
@@ -553,88 +424,67 @@ void carvepoint_icosahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += 12;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += 12;
-	win->normalcount  += 12;
-	win->colorcount   += 12;
-	win->texturecount += 12;
-	win->pointcount   += 12;
+	for(j=0;j<12*6;j+=6)
+	{
+		buf[j + 0] = rr;
+		buf[j + 1] = gg;
+		buf[j + 2] = bb;
+	}
 
 	//(+-m, 0, +-n)
-	vertex[ 0] = cx - m;
-	vertex[ 1] = cy;
-	vertex[ 2] = cz - n;
+	buf[ 0] = cx - m;
+	buf[ 1] = cy;
+	buf[ 2] = cz - n;
 
-	vertex[ 3] = cx + m;
-	vertex[ 4] = cy;
-	vertex[ 5] = cz - n;
+	buf[ 6] = cx + m;
+	buf[ 7] = cy;
+	buf[ 8] = cz - n;
 
-	vertex[ 6] = cx - m;
-	vertex[ 7] = cy;
-	vertex[ 8] = cz + n;
+	buf[12] = cx - m;
+	buf[13] = cy;
+	buf[14] = cz + n;
 
-	vertex[ 9] = cx + m;
-	vertex[10] = cy;
-	vertex[11] = cz + n;
+	buf[18] = cx + m;
+	buf[19] = cy;
+	buf[20] = cz + n;
 
 	//(0, +-n, +-m)
-	vertex[12] = cx;
-	vertex[13] = cy - n;
-	vertex[14] = cz - m;
+	buf[24] = cx;
+	buf[25] = cy - n;
+	buf[26] = cz - m;
 
-	vertex[15] = cx;
-	vertex[16] = cy + n;
-	vertex[17] = cz - m;
+	buf[30] = cx;
+	buf[31] = cy + n;
+	buf[32] = cz - m;
 
-	vertex[18] = cx;
-	vertex[19] = cy - n;
-	vertex[20] = cz + m;
+	buf[36] = cx;
+	buf[37] = cy - n;
+	buf[38] = cz + m;
 
-	vertex[21] = cx;
-	vertex[22] = cy + n;
-	vertex[23] = cz + m;
+	buf[42] = cx;
+	buf[43] = cy + n;
+	buf[44] = cz + m;
 
 	//(+-n, +-m, 0)
-	vertex[24] = cx - n;
-	vertex[25] = cy - m;
-	vertex[26] = cz;
+	buf[48] = cx - n;
+	buf[49] = cy - m;
+	buf[50] = cz;
 
-	vertex[27] = cx + n;
-	vertex[28] = cy - m;
-	vertex[29] = cz;
+	buf[54] = cx + n;
+	buf[55] = cy - m;
+	buf[56] = cz;
 
-	vertex[30] = cx - n;
-	vertex[31] = cy + m;
-	vertex[32] = cz;
+	buf[60] = cx - n;
+	buf[61] = cy + m;
+	buf[62] = cz;
 
-	vertex[33] = cx + n;
-	vertex[34] = cy + m;
-	vertex[35] = cz;
-
-	for(j=0;j<12;j++)
-	{
-		normal[j*3 + 0] = 0.0;
-		normal[j*3 + 1] = 0.0;
-		normal[j*3 + 2] = 1.0;
-
-		color[j*3 + 0] = rr;
-		color[j*3 + 1] = gg;
-		color[j*3 + 2] = bb;
-
-		index[j] = pcount+j;
-	}
+	buf[66] = cx + n;
+	buf[67] = cy + m;
+	buf[68] = cz;
 }
 void carvepoint_sphere(
 	struct arena* win, u32 rgb,
@@ -642,7 +492,7 @@ void carvepoint_sphere(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int a,b,j,k;
+	int j,k,a;
 	float s,t;
 	float q[4];
 	float tempcx,tempcy,tempcz;
@@ -652,24 +502,9 @@ void carvepoint_sphere(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
-
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += accuracy*17+2;
-	win->normalcount  += accuracy*17+2;
-	win->colorcount   += accuracy*17+2;
-	win->texturecount += accuracy*17+2;
-	win->pointcount   += accuracy*17+2;
+	struct texandobj* mod = win->buf;
+	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
+	mod[0x21].len += acc*17+2;
 
 	for(k=0;k<17;k++)
 	{
@@ -684,67 +519,49 @@ void carvepoint_sphere(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=0;j<accuracy;j++)
+		for(j=0;j<acc;j++)
 		{
 			q[0] = ux;
 			q[1] = uy;
 			q[2] = uz;
 			vectornormalize(q);
 
-			t = (j-(accuracy/2))*PI/accuracy;
+			t = (j-(acc/2))*PI/acc;
 			q[0] *= sine(t);
 			q[1] *= sine(t);
 			q[2] *= sine(t);
 			q[3] = cosine(t);
 
-			b = k*accuracy + j;
-			a = b*3;
+			a = (k*acc + j)*6;
 
-			vertex[a+0] = temprx;
-			vertex[a+1] = tempry;
-			vertex[a+2] = temprz;
-			quaternionrotate(&vertex[a], q);
+			buf[a+0] = temprx;
+			buf[a+1] = tempry;
+			buf[a+2] = temprz;
+			quaternionrotate(&buf[a], q);
 
-			vertex[a+0] += tempcx;
-			vertex[a+1] += tempcy;
-			vertex[a+2] += tempcz;
+			buf[a+0] += tempcx;
+			buf[a+1] += tempcy;
+			buf[a+2] += tempcz;
 
-			normal[a+0] = vertex[a+0] - cx;
-			normal[a+1] = vertex[a+1] - cy;
-			normal[a+2] = vertex[a+2] - cz;
-
-			color[a+0] = rr;
-			color[a+1] = gg;
-			color[a+2] = bb;
-
-			index[b] = pcount + (k*accuracy) + j;
+			buf[a+3] = rr;
+			buf[a+4] = gg;
+			buf[a+5] = bb;
 		}
 	}
 
-	a = accuracy*17*3;
-	b = accuracy*17;
+	a = acc*17*6;
 
-	vertex[a+0] = cx-ux;
-	vertex[a+1] = cy-uy;
-	vertex[a+2] = cz-uz;
-	vertex[a+3] = cx+ux;
-	vertex[a+4] = cy+uy;
-	vertex[a+5] = cz+uz;
+	buf[a+ 0] = cx-ux;
+	buf[a+ 1] = cy-uy;
+	buf[a+ 2] = cz-uz;
+	buf[a+ 3] = rr;
+	buf[a+ 4] = gg;
+	buf[a+ 5] = bb;
 
-	normal[a+0] = 0.0;
-	normal[a+1] = 0.0;
-	normal[a+2] = 1.0;
-	normal[a+3] = 0.0;
-	normal[a+4] = 0.0;
-	normal[a+5] = 1.0;
-
-	color[a+0] = rr;
-	color[a+1] = gg;
-	color[a+2] = bb;
-	color[a+3] = rr;
-	color[a+4] = gg;
-	color[a+5] = bb;
-
-	index[b+0] = pcount + (accuracy*17) + 0;
-	index[b+1] = pcount + (accuracy*17) + 1;
+	buf[a+ 6] = cx+ux;
+	buf[a+ 7] = cy+uy;
+	buf[a+ 8] = cz+uz;
+	buf[a+ 9] = rr;
+	buf[a+10] = gg;
+	buf[a+11] = bb;
 }

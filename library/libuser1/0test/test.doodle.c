@@ -57,9 +57,9 @@ static void doodle_read_vbo(
 	carvesolid_icosahedron(
 		win, 0xffffff,
 		cx, cy, 0.0,
-		ww/2, 0.0, 0.0,
-		0.0, ww/2, 0.0,
-		0.0, 0.0, ww/2
+		ww, 0.0, 0.0,
+		0.0, ww, 0.0,
+		0.0, 0.0, ww
 	);
 }
 static void doodle_read_html(

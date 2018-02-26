@@ -1,7 +1,31 @@
 #include "actor.h"
-#define accuracy 18
+#define acc 18
 #define PI 3.1415926535897932384626433832795028841971693993151
 int utf2unicode(u8* src,u32* dst);
+
+
+
+
+struct texandobj
+{
+	u32 obj;
+	u32 len;
+	void* buf;
+};
+struct eachone
+{
+	u32 program;
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
+	u32 tex0;
+	u32 tex1;
+	float light0vertex[3];
+	float light0color[3];
+	float light1vertex[3];
+	float light1color[3];
+	float modmat[4][4];
+};
 
 
 
@@ -17,66 +41,56 @@ void carveascii_area(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->rectcount;
+	struct texandobj* mod = win->buf;
+	int ilen = mod[0x26].len;
+	int vlen = mod[0x27].len;
+	u16* ibuf = (mod[0x26].buf) + (6*ilen);
+	float* vbuf = (mod[0x27].buf) + (36*vlen);
+	mod[0x26].len += 2;
+	mod[0x27].len += 4;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*8);
-	u16* index     = buf + 0xe00000 + (icount*2);
+	vbuf[ 0] = cx-rx-fx;
+	vbuf[ 1] = cy-ry-fy;
+	vbuf[ 2] = cz-rz-fz;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+	vbuf[ 6] = x0;
+	vbuf[ 7] = y1;
 
-	win->vertexcount  += 4;
-	win->normalcount  += 4;
-	win->colorcount   += 4;
-	win->texturecount += 4;
-	win->rectcount   += 6;
+	vbuf[ 9] = cx+rx-fx;
+	vbuf[10] = cy+ry-fy;
+	vbuf[11] = cz+rz-fz;
+	vbuf[12] = rr;
+	vbuf[13] = gg;
+	vbuf[14] = bb;
+	vbuf[15] = x1;
+	vbuf[16] = y1;
 
-	vertex[ 0] = cx-rx-fx;
-	vertex[ 1] = cy-ry-fy;
-	vertex[ 2] = cz-rz-fz;
-	vertex[ 3] = cx+rx-fx;
-	vertex[ 4] = cy+ry-fy;
-	vertex[ 5] = cz+rz-fz;
-	vertex[ 6] = cx-rx+fx;
-	vertex[ 7] = cy-ry+fy;
-	vertex[ 8] = cz-rz+fz;
-	vertex[ 9] = cx+rx+fx;
-	vertex[10] = cy+ry+fy;
-	vertex[11] = cz+rz+fz;
+	vbuf[18] = cx-rx+fx;
+	vbuf[19] = cy-ry+fy;
+	vbuf[20] = cz-rz+fz;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+	vbuf[24] = x0;
+	vbuf[25] = y0;
 
-	color[ 0] = rr;
-	color[ 1] = gg;
-	color[ 2] = bb;
-	color[ 3] = rr;
-	color[ 4] = gg;
-	color[ 5] = bb;
-	color[ 6] = rr;
-	color[ 7] = gg;
-	color[ 8] = bb;
-	color[ 9] = rr;
-	color[10] = gg;
-	color[11] = bb;
+	vbuf[27] = cx+rx+fx;
+	vbuf[28] = cy+ry+fy;
+	vbuf[29] = cz+rz+fz;
+	vbuf[30] = rr;
+	vbuf[31] = gg;
+	vbuf[32] = bb;
+	vbuf[33] = x1;
+	vbuf[34] = y0;
 
-	texture[0] = x0;
-	texture[1] = y1;
-	texture[2] = x1;
-	texture[3] = y1;
-	texture[4] = x0;
-	texture[5] = y0;
-	texture[6] = x1;
-	texture[7] = y0;
-
-	index[0] = pcount+0;
-	index[1] = pcount+1;
-	index[2] = pcount+3;
-	index[3] = pcount+0;
-	index[4] = pcount+2;
-	index[5] = pcount+3;
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+3;
+	ibuf[3] = vlen+0;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
 }
 
 
@@ -93,66 +107,56 @@ void carveunicode(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->rectcount;
+	struct texandobj* mod = win->buf;
+	int ilen = mod[0x26].len;
+	int vlen = mod[0x27].len;
+	u16* ibuf = (mod[0x26].buf) + (6*ilen);
+	float* vbuf = (mod[0x27].buf) + (36*vlen);
+	mod[0x26].len += 2;
+	mod[0x27].len += 4;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*8);
-	u16* index     = buf + 0xe00000 + (icount*2);
+	vbuf[ 0] = cx-rx-fx;
+	vbuf[ 1] = cy-ry-fy;
+	vbuf[ 2] = cz-rz-fz;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+	vbuf[ 6] = (unicode&0xff)/256.0;
+	vbuf[ 7] = ((unicode>>8)+1)/256.0;
 
-	win->vertexcount  += 4;
-	win->normalcount  += 4;
-	win->colorcount   += 4;
-	win->texturecount += 4;
-	win->rectcount   += 6;
+	vbuf[ 9] = cx+rx-fx;
+	vbuf[10] = cy+ry-fy;
+	vbuf[11] = cz+rz-fz;
+	vbuf[12] = rr;
+	vbuf[13] = gg;
+	vbuf[14] = bb;
+	vbuf[15] = ((unicode&0xff)+1)/256.0;
+	vbuf[16] = ((unicode>>8)+1)/256.0;
 
-	vertex[ 0] = cx-rx-fx;
-	vertex[ 1] = cy-ry-fy;
-	vertex[ 2] = cz-rz-fz;
-	vertex[ 3] = cx+rx-fx;
-	vertex[ 4] = cy+ry-fy;
-	vertex[ 5] = cz+rz-fz;
-	vertex[ 6] = cx-rx+fx;
-	vertex[ 7] = cy-ry+fy;
-	vertex[ 8] = cz-rz+fz;
-	vertex[ 9] = cx+rx+fx;
-	vertex[10] = cy+ry+fy;
-	vertex[11] = cz+rz+fz;
+	vbuf[18] = cx-rx+fx;
+	vbuf[19] = cy-ry+fy;
+	vbuf[20] = cz-rz+fz;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+	vbuf[24] = (unicode&0xff)/256.0;
+	vbuf[25] = (unicode>>8)/256.0;
 
-	color[ 0] = rr;
-	color[ 1] = gg;
-	color[ 2] = bb;
-	color[ 3] = rr;
-	color[ 4] = gg;
-	color[ 5] = bb;
-	color[ 6] = rr;
-	color[ 7] = gg;
-	color[ 8] = bb;
-	color[ 9] = rr;
-	color[10] = gg;
-	color[11] = bb;
+	vbuf[27] = cx+rx+fx;
+	vbuf[28] = cy+ry+fy;
+	vbuf[29] = cz+rz+fz;
+	vbuf[30] = rr;
+	vbuf[31] = gg;
+	vbuf[32] = bb;
+	vbuf[33] = ((unicode&0xff)+1)/256.0;
+	vbuf[34] = (unicode>>8)/256.0;
 
-	texture[0] = (unicode&0xff)/256.0;
-	texture[1] = ((unicode>>8)+1)/256.0;
-	texture[2] = ((unicode&0xff)+1)/256.0;
-	texture[3] = ((unicode>>8)+1)/256.0;
-	texture[4] = (unicode&0xff)/256.0;
-	texture[5] = (unicode>>8)/256.0;
-	texture[6] = ((unicode&0xff)+1)/256.0;
-	texture[7] = (unicode>>8)/256.0;
-
-	index[0] = pcount+0;
-	index[1] = pcount+1;
-	index[2] = pcount+3;
-	index[3] = pcount+0;
-	index[4] = pcount+2;
-	index[5] = pcount+3;
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+3;
+	ibuf[3] = vlen+0;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
 }
 void carveutf8(
 	struct arena* win, u32 rgb,
@@ -186,66 +190,56 @@ void carveascii(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->rectcount;
+	struct texandobj* mod = win->buf;
+	int ilen = mod[0x26].len;
+	int vlen = mod[0x27].len;
+	u16* ibuf = (mod[0x26].buf) + (6*ilen);
+	float* vbuf = (mod[0x27].buf) + (36*vlen);
+	mod[0x26].len += 2;
+	mod[0x27].len += 4;
 
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (tcount*8);
-	u16* index     = buf + 0xe00000 + (icount*2);
+	vbuf[ 0] = cx-rx-fx;
+	vbuf[ 1] = cy-ry-fy;
+	vbuf[ 2] = cz-rz-fz;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+	vbuf[ 6] = (dat+0.0)/256.0;
+	vbuf[ 7] = 1.0/256.0;
 
-	win->vertexcount  += 4;
-	win->normalcount  += 4;
-	win->colorcount   += 4;
-	win->texturecount += 4;
-	win->rectcount   += 6;
+	vbuf[ 9] = cx+rx-fx;
+	vbuf[10] = cy+ry-fy;
+	vbuf[11] = cz+rz-fz;
+	vbuf[12] = rr;
+	vbuf[13] = gg;
+	vbuf[14] = bb;
+	vbuf[15] = (dat+0.5)/256.0;
+	vbuf[16] = 1.0/256.0;
 
-	vertex[ 0] = cx-rx-fx;
-	vertex[ 1] = cy-ry-fy;
-	vertex[ 2] = cz-rz-fz;
-	vertex[ 3] = cx+rx-fx;
-	vertex[ 4] = cy+ry-fy;
-	vertex[ 5] = cz+rz-fz;
-	vertex[ 6] = cx-rx+fx;
-	vertex[ 7] = cy-ry+fy;
-	vertex[ 8] = cz-rz+fz;
-	vertex[ 9] = cx+rx+fx;
-	vertex[10] = cy+ry+fy;
-	vertex[11] = cz+rz+fz;
+	vbuf[18] = cx-rx+fx;
+	vbuf[19] = cy-ry+fy;
+	vbuf[20] = cz-rz+fz;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+	vbuf[24] = (dat+0.0)/256.0;
+	vbuf[25] = 0.0;
 
-	color[ 0] = rr;
-	color[ 1] = gg;
-	color[ 2] = bb;
-	color[ 3] = rr;
-	color[ 4] = gg;
-	color[ 5] = bb;
-	color[ 6] = rr;
-	color[ 7] = gg;
-	color[ 8] = bb;
-	color[ 9] = rr;
-	color[10] = gg;
-	color[11] = bb;
+	vbuf[27] = cx+rx+fx;
+	vbuf[28] = cy+ry+fy;
+	vbuf[29] = cz+rz+fz;
+	vbuf[30] = rr;
+	vbuf[31] = gg;
+	vbuf[32] = bb;
+	vbuf[33] = (dat+0.5)/256.0;
+	vbuf[34] = 0.0;
 
-	texture[0] = (dat+0.0)/256.0;
-	texture[1] = 1.0/256.0;
-	texture[2] = (dat+0.5)/256.0;
-	texture[3] = 1.0/256.0;
-	texture[4] = (dat+0.0)/256.0;
-	texture[5] = 0.0;
-	texture[6] = (dat+0.5)/256.0;
-	texture[7] = 0.0;
-
-	index[0] = pcount+0;
-	index[1] = pcount+1;
-	index[2] = pcount+3;
-	index[3] = pcount+0;
-	index[4] = pcount+2;
-	index[5] = pcount+3;
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+3;
+	ibuf[3] = vlen+0;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
 }
 void carvedecimal(
 	struct arena* win, u32 rgb,

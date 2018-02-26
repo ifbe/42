@@ -128,7 +128,7 @@ struct texandobj
 {
 	GLuint obj;
 	GLuint len;
-	u8* buf;
+	void* buf;
 };
 struct eachone
 {
@@ -165,7 +165,7 @@ static struct eachone each[0x1000];
 char simplevert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 position;\n"
-	"layout(location = 2)in mediump vec3 color;\n"
+	"layout(location = 1)in mediump vec3 color;\n"
 	"uniform mat4 simplemvp;\n"
 	"out mediump vec3 vertexcolor;\n"
 	"void main()\n"
@@ -186,8 +186,8 @@ char simplefrag[] = {
 char prettyvert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 position;\n"
-	"layout(location = 1)in mediump vec3 normal;\n"
-	"layout(location = 2)in mediump vec3 color;\n"
+	"layout(location = 1)in mediump vec3 color;\n"
+	"layout(location = 2)in mediump vec3 normal;\n"
 	"uniform mat4 prettymvp;\n"
 	"uniform mat4 light0mvp;\n"
 	"uniform mediump vec3 ambientcolor;\n"
@@ -263,8 +263,8 @@ char pickerfrag[] = {
 char myfontvert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 position;\n"
-	"layout(location = 2)in mediump vec3 color;\n"
-	"layout(location = 3)in mediump vec2 texcoord;\n"
+	"layout(location = 1)in mediump vec3 color;\n"
+	"layout(location = 2)in mediump vec2 texcoord;\n"
 	"uniform mat4 prettymvp;\n"
 	"out mediump vec3 origcolor;\n"
 	"out mediump vec2 texuv;\n"
@@ -412,7 +412,8 @@ void inittexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 
-	buf = malloc(0x1000*0x1000);
+	mod[0].obj = tex;
+	buf = mod[0].buf;
 	if(buf != 0)
 	{
 		for(j=0;j<0x10000;j++)
@@ -435,9 +436,6 @@ void inittexture()
 		);
 	}
 
-	mod[0].obj = tex;
-	mod[0].len = 0x1000*0x1000;
-	mod[0].buf = buf;
 
 	/*
 	glGenFramebuffers(1, &shadowfb);
@@ -467,66 +465,40 @@ void inittexture()
 }
 void initobject()  
 {
-	void* temp1 = malloc(0x1000000);
-	void* temp2 = malloc(0x100000);
-	void* temp3 = malloc(0x1000000);
-	void* temp4 = malloc(0x100000);
-	void* temp5 = malloc(0x1000000);
-	void* temp6 = malloc(0x100000);
-	void* temp7 = malloc(0x1000000);
-
-	//info
-	mod[0x20].buf = 0;
-	mod[0x20].len = 0x28;
-
 	//point: 0x21=obj(vertex,color)
-	mod[0x21].buf = temp1;
-	mod[0x21].len = 0;
 	glGenBuffers(1, &mod[0x21].obj);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x21].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp1, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x21].buf, GL_STATIC_DRAW);
 
 
 	//line: 0x22=ibo, 0x23=obj(vertex,color)
-	mod[0x22].buf = temp2;
-	mod[0x22].len = 0;
 	glGenBuffers(1, &mod[0x22].obj);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp2, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x22].buf, GL_STATIC_DRAW);
 
-	mod[0x23].buf = temp3;
-	mod[0x23].len = 0;
 	glGenBuffers(1, &mod[0x23].obj);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x23].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp3, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x23].buf, GL_STATIC_DRAW);
 
 
 	//trigon: 0x24=ibo, 0x25=obj(vertex,color,normal)
-	mod[0x24].buf = temp4;
-	mod[0x24].len = 0;
 	glGenBuffers(1, &mod[0x24].obj);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x24].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp4, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x24].buf, GL_STATIC_DRAW);
 
-	mod[0x25].buf = temp5;
-	mod[0x25].len = 0;
 	glGenBuffers(1, &mod[0x25].obj);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x25].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp5, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x25].buf, GL_STATIC_DRAW);
 
 
 	//font: 0x26=ibo, 0x27=obj(vertex,color,texcoor)
-	mod[0x26].buf = temp6;
-	mod[0x26].len = 0;
 	glGenBuffers(1, &mod[0x26].obj);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, temp6, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x26].buf, GL_STATIC_DRAW);
 
-	mod[0x27].buf = temp7;
-	mod[0x27].len = 0;
 	glGenBuffers(1, &mod[0x27].obj);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x27].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, temp7, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x27].buf, GL_STATIC_DRAW);
 
 
 	//point
@@ -944,7 +916,7 @@ void callback_display()
 void callback_idle()
 {
 	if(queuehead == queuetail)return;
-
+say("%x,%x\n",mod[0x26].len, mod[0x27].len);
 	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x21].obj);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x21].len, mod[0x21].buf);
 
@@ -1147,7 +1119,7 @@ void callback_reshape(GLFWwindow* window, int w, int h)
 
 
 
-void* uievent(struct window* p)
+void* uievent(struct window* this)
 {
 	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
 	if(fw == NULL)
@@ -1225,6 +1197,33 @@ void windowstart(struct window* this)
 
 	this->buf = mod;
 	this->pass = each;
+	this->w = 512;
+	this->h = 512;
+
+	mod[0x00].buf = malloc(0x1000*0x1000);
+	mod[0x00].len = 0x1000*0x1000;
+	//mod[0x00].buf = malloc(0x1000*0x1000);
+	//mod[0x00].len = 0x1000*0x1000;
+	//mod[0x00].buf = malloc(0x1000*0x1000);
+	//mod[0x00].len = 0x1000*0x1000;
+	//mod[0x00].buf = malloc(0x1000*0x1000);
+	//mod[0x00].len = 0x1000*0x1000;
+	mod[0x20].buf = 0;
+	mod[0x20].len = 0x28;
+	mod[0x21].buf = malloc(0x1000*0x1000);
+	mod[0x21].len = 0;
+	mod[0x22].buf = malloc(0x1000*0x100);
+	mod[0x22].len = 0;
+	mod[0x23].buf = malloc(0x1000*0x1000);
+	mod[0x23].len = 0;
+	mod[0x24].buf = malloc(0x1000*0x100);
+	mod[0x24].len = 0;
+	mod[0x25].buf = malloc(0x1000*0x1000);
+	mod[0x25].len = 0;
+	mod[0x26].buf = malloc(0x1000*0x100);
+	mod[0x26].len = 0;
+	mod[0x27].buf = malloc(0x1000*0x1000);
+	mod[0x27].len = 0;
 
 	startthread(uievent, this);
 }
