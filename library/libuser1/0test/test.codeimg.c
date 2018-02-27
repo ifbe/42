@@ -154,6 +154,18 @@ static void codeimg_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
+	carvesolid_rect(
+		win, 0xffffff,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
 }
 static void codeimg_read_html(
 	struct arena* win, struct style* sty,

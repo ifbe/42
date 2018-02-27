@@ -8,6 +8,34 @@ static void pegged_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	int x,y;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
+
+	for(y=0;y<7;y++)
+	{
+		for(x=0;x<7;x++)
+		{
+			if(data[y][x] == 0)continue;
+
+			carveline_rect(
+				win, 0x808080,
+				cx+(2*x-6)*ww/7, cy+(2*y-6)*hh/7, 0.0,
+				ww/7, 0.0, 0.0,
+				0.0, hh/7, 0.0
+			);
+			carvesolid_sphere(
+				win, 0xffffff,
+				cx+(x-3)*ww*2/7, cy+(y-3)*hh*2/7, 0.0,
+				ww/14, 0.0, 0.0,
+				0.0, 0.0, ww/14
+			);
+		}
+	}
 }
 static void pegged_read_pixel(
 	struct arena* win, struct style* sty,

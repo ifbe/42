@@ -1,4 +1,5 @@
 #include "actor.h"
+#define PI 3.1415926535897932384626433832795028841971693993151
 u64 getdate();
 
 
@@ -8,6 +9,41 @@ static void clock_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	float f0,f1,f2;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
+	u64 date = getdate();
+	u8* p = (u8*)&date;
+
+	carvesolid_circle(
+		win, 0xc0c0c0,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, 0.0, ww
+	);
+
+	f0 = PI/4 - (p[0]*PI*2.0/60.0);
+	f1 = PI/4 - (p[1]*PI*2.0/60.0);
+	f2 = PI/4 - (p[2]*PI*2.0/12.0);
+	carveline(
+		win, 0xff0000,
+		cx, cy, 0.0,
+		cx+cosine(f0)*ww, cy+sine(f0)*hh, 0.0
+	);
+	carveline(
+		win, 0xff00,
+		cx, cy, 0.0,
+		cx+cosine(f1)*ww*3/4, cy+sine(f1)*hh*3/4, 0.0
+	);
+	carveline(
+		win, 0xff,
+		cx, cy, 0.0,
+		cx+cosine(f2)*ww*2/4, cy+sine(f2)*hh*2/4, 0.0
+	);
 }
 static void clock_read_pixel(
 	struct arena* win, struct style* sty,

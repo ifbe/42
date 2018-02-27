@@ -70,6 +70,12 @@ static void chess_read_vbo(
 				0.0, hh/8, 0.0,
 				0.0, 0.0, 0.0
 			);
+			carvesolid_cone(
+				win, 0xffff00,
+				xxx, yyy, 0.0,
+				ww/16, 0.0, 0.0,
+				0.0, 0.0, ww/8
+			);
 		}
 	}
 }

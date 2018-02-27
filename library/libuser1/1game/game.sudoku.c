@@ -11,11 +11,6 @@ static u8 table[9][9];
 
 
 
-static void sudoku_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct compo* com)
-{
-}
 static void sudoku_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
@@ -55,7 +50,7 @@ static void sudoku_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	u32 color;
+	u32 c;
 	int x,y;
 	float xxx, yyy;
 	int cx = sty->i_cx;
@@ -68,23 +63,39 @@ static void sudoku_read_vbo(
 	{
 		for(x=0;x<9;x++)
 		{
-			if((x>2)&&(x<6)&&(y>2)&&(y<6))color = 0xcccccc;
-			else if((x<3)&&(y<3))color = 0x444444;
-			else if((x<3)&&(y>5))color = 0x444444;
-			else if((x>5)&&(y<3))color = 0x444444;
-			else if((x>5)&&(y>5))color = 0x444444;
-			else color = 0x888888;
+			if((x>2)&&(x<6)&&(y>2)&&(y<6))c = 0xcccccc;
+			else if((x<3)&&(y<3))c = 0x444444;
+			else if((x<3)&&(y>5))c = 0x444444;
+			else if((x>5)&&(y<3))c = 0x444444;
+			else if((x>5)&&(y>5))c = 0x444444;
+			else c = 0x888888;
 
-			xxx = cx + (x+x-8)*ww/18;
-			yyy = cy - (y+y-8)*hh/18;
-			carvesolid_rect(
-				win, color,
-				xxx, yyy, 0.0,
-				ww/18, 0.0, 0.0,
-				0.0, hh/18, 0.0
+			xxx = cx-ww + (x+x+1)*ww/9;
+			yyy = cy-hh + (y+y+1)*hh/9;
+			carvesolid_prism4(
+				win, c,
+				xxx, yyy, ww/18,
+				ww/10, 0.0, 0.0,
+				0.0, hh/10, 0.0,
+				0.0, 0.0, ww/18
 			);
+			if(table[y][x] != 0)
+			{
+				carveascii(
+					win, ~c,
+					xxx, yyy, ww/8,
+					ww/18, 0.0, 0.0,
+					0.0, hh/18, 0.0,
+					0x30+table[y][x]
+				);
+			}
 		}
 	}
+}
+static void sudoku_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
 }
 static void sudoku_read_tui(
 	struct arena* win, struct style* sty,

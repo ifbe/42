@@ -235,7 +235,7 @@ void carvesolid_cone(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int j,k;
+	int a,b,j;
 	float s,t;
 	float q[4];
 	float r[4];
@@ -270,50 +270,51 @@ void carvesolid_cone(
 		r[2] = rz;
 		quaternionrotate(r, q);
 
-		k = j*6;
+		a = j*9;
+		b = j*6;
 
-		vbuf[k+0] = cx + r[0];
-		vbuf[k+1] = cy + r[1];
-		vbuf[k+2] = cz + r[2];
-		vbuf[k+3] = rr;
-		vbuf[k+4] = gg;
-		vbuf[k+5] = bb;
-		vbuf[k+6] = vbuf[k+0] - cx;
-		vbuf[k+7] = vbuf[k+1] - cy;
-		vbuf[k+8] = vbuf[k+2] - cz;
+		vbuf[a+0] = cx + r[0];
+		vbuf[a+1] = cy + r[1];
+		vbuf[a+2] = cz + r[2];
+		vbuf[a+3] = rr;
+		vbuf[a+4] = gg;
+		vbuf[a+5] = bb;
+		vbuf[a+6] = vbuf[a+0] - cx;
+		vbuf[a+7] = vbuf[a+1] - cy;
+		vbuf[a+8] = vbuf[a+2] - cz;
 
 		//bottom
-		ibuf[k+0] = vlen+acc;
-		ibuf[k+1] = vlen+j;
-		ibuf[k+2] = vlen+(j+1)%acc;
+		ibuf[b+0] = vlen+acc;
+		ibuf[b+1] = vlen+j;
+		ibuf[b+2] = vlen+(j+1)%acc;
 
 		//upper
-		ibuf[k+3] = vlen+acc+1;
-		ibuf[k+4] = vlen+j;
-		ibuf[k+5] = vlen+(j+1)%acc;
+		ibuf[b+3] = vlen+acc+1;
+		ibuf[b+4] = vlen+j;
+		ibuf[b+5] = vlen+(j+1)%acc;
 	}
 
-	k = acc*6;
+	a = acc*9;
 
-	vbuf[k+ 0] = cx;
-	vbuf[k+ 1] = cy;
-	vbuf[k+ 2] = cz;
-	vbuf[k+ 3] = rr;
-	vbuf[k+ 4] = gg;
-	vbuf[k+ 5] = bb;
-	vbuf[k+ 6] = -ux;
-	vbuf[k+ 7] = -uy;
-	vbuf[k+ 8] = -uz;
+	vbuf[a+ 0] = cx;
+	vbuf[a+ 1] = cy;
+	vbuf[a+ 2] = cz;
+	vbuf[a+ 3] = rr;
+	vbuf[a+ 4] = gg;
+	vbuf[a+ 5] = bb;
+	vbuf[a+ 6] = -ux;
+	vbuf[a+ 7] = -uy;
+	vbuf[a+ 8] = -uz;
 
-	vbuf[k+ 9] = cx+ux;
-	vbuf[k+10] = cy+uy;
-	vbuf[k+11] = cz+uz;
-	vbuf[k+12] = rr;
-	vbuf[k+13] = gg;
-	vbuf[k+14] = bb;
-	vbuf[k+15] = ux;
-	vbuf[k+16] = uy;
-	vbuf[k+18] = uz;
+	vbuf[a+ 9] = cx+ux;
+	vbuf[a+10] = cy+uy;
+	vbuf[a+11] = cz+uz;
+	vbuf[a+12] = rr;
+	vbuf[a+13] = gg;
+	vbuf[a+14] = bb;
+	vbuf[a+15] = ux;
+	vbuf[a+16] = uy;
+	vbuf[a+18] = uz;
 }
 
 
@@ -541,6 +542,25 @@ void carvesolid_cylinder(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+	carvesolid_circle(
+		win, rgb,
+		cx+ux, cy+uy, cz+uz,
+		rx, ry, rz,
+		ux, uy, uz
+	);
+	carvesolid_circle(
+		win, rgb,
+		cx-ux, cy-uy, cz-uz,
+		rx, ry, rz,
+		-ux, -uy, -uz
+	);
+	carvesolid_cask(
+		win, rgb,
+		cx, cy, cz,
+		rx, ry, rz,
+		ux, uy, uz
+	);
+/*
 	int a,b,j,k;
 	float s,t;
 	float q[4];
@@ -641,6 +661,7 @@ void carvesolid_cylinder(
 		ibuf[b + (j*6) + 4] = vlen + 1 + (j*2);
 		ibuf[b + (j*6) + 5] = vlen + 1 + ((j+1)%acc)*2;
 	}
+*/
 }
 
 
@@ -1065,6 +1086,7 @@ void carvesolid_sphere(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+#define odd ((acc&0xfffe)+1)
 	int a,b,j,k;
 	float s,t;
 	float q[4];
@@ -1080,12 +1102,12 @@ void carvesolid_sphere(
 	int vlen = mod[0x25].len;
 	u16* ibuf = (mod[0x24].buf) + (6*ilen);
 	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc*34;
-	mod[0x25].len += acc*17+2;
+	mod[0x24].len += odd*(odd-2)*2;
+	mod[0x25].len += odd*(odd-2)+2;
 
-	for(k=0;k<17;k++)
+	for(k=0;k<(odd-2);k++)
 	{
-		s = (k-8)*PI/18;
+		s = (k+1-(odd/2))*PI/(odd-1);
 		t = cosine(s);
 		temprx = rx*t;
 		tempry = ry*t;
@@ -1096,20 +1118,20 @@ void carvesolid_sphere(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=0;j<acc;j++)
+		for(j=0;j<odd;j++)
 		{
 			q[0] = ux;
 			q[1] = uy;
 			q[2] = uz;
 			vectornormalize(q);
 
-			t = (j-acc/2)*PI/acc;
+			t = j*PI/odd;
 			q[0] *= sine(t);
 			q[1] *= sine(t);
 			q[2] *= sine(t);
 			q[3] = cosine(t);
 
-			a = (k*acc + j)*9;
+			a = (k*odd + j)*9;
 
 			vbuf[a+0] = temprx;
 			vbuf[a+1] = tempry;
@@ -1127,24 +1149,24 @@ void carvesolid_sphere(
 			vbuf[a+8] = vbuf[a+2] - cz;
 		}
 	}
-	for(k=0;k<16;k++)
+	for(k=0;k<(odd-3);k++)
 	{
-		a = k*acc*6;
-		for(j=0;j<acc;j++)
+		a = k*odd*6;
+		for(j=0;j<odd;j++)
 		{
-			ibuf[a + 6*j + 0] = vlen+(k*acc)+j;
-			ibuf[a + 6*j + 1] = vlen+(k*acc)+(j+1)%acc;
-			ibuf[a + 6*j + 2] = vlen+(k*acc)+acc+j;
+			ibuf[a + 6*j + 0] = vlen+(k*odd)+j;
+			ibuf[a + 6*j + 1] = vlen+(k*odd)+(j+1)%odd;
+			ibuf[a + 6*j + 2] = vlen+(k*odd)+odd+j;
 
-			ibuf[a + 6*j + 3] = vlen+(k*acc)+(j+1)%acc;
-			ibuf[a + 6*j + 4] = vlen+(k*acc)+acc+j;
-			ibuf[a + 6*j + 5] = vlen+(k*acc)+acc+(j+1)%acc;
+			ibuf[a + 6*j + 3] = vlen+(k*odd)+(j+1)%odd;
+			ibuf[a + 6*j + 4] = vlen+(k*odd)+odd+j;
+			ibuf[a + 6*j + 5] = vlen+(k*odd)+odd+(j+1)%odd;
 		}
 	}
 
 	//
-	a = acc*17*9;
-	b = acc*16*6;
+	a = odd*(odd-2)*9;
+	b = odd*(odd-3)*6;
 
 	vbuf[a+0] = cx-ux;
 	vbuf[a+1] = cy-uy;
@@ -1166,15 +1188,15 @@ void carvesolid_sphere(
 	vbuf[a+16] = uy;
 	vbuf[a+17] = uz;
 
-	for(j=0;j<acc;j++)
+	for(j=0;j<odd;j++)
 	{
-		ibuf[b + (3*j) +0] = vlen+acc*17;
+		ibuf[b + (3*j) +0] = vlen+odd*(odd-2);
 		ibuf[b + (3*j) +1] = vlen+j;
-		ibuf[b + (3*j) +2] = vlen+(j+1)%acc;
+		ibuf[b + (3*j) +2] = vlen+(j+1)%odd;
 
-		ibuf[b + (3*j) +(acc*3) + 0] = vlen+acc*17+1;
-		ibuf[b + (3*j) +(acc*3) + 1] = vlen+acc*16+j;
-		ibuf[b + (3*j) +(acc*3) + 2] = vlen+acc*16+(j+1)%acc;
+		ibuf[b + (3*j) +(odd*3) + 0] = vlen+odd*(odd-2)+1;
+		ibuf[b + (3*j) +(odd*3) + 1] = vlen+odd*(odd-3)+j;
+		ibuf[b + (3*j) +(odd*3) + 2] = vlen+odd*(odd-3)+(j+1)%odd;
 	}
 }
 void carvesolid_tokamak(

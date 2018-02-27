@@ -47,19 +47,63 @@ static void doodle_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	float f;
+	float x0,y0,x1,y1;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
 
-	carvesolid_icosahedron(
-		win, 0xffffff,
-		cx, cy, 0.0,
+	carvesolid_circle(
+		win, 0x00ffff,
+		cx, cy, ww/128,
 		ww, 0.0, 0.0,
-		0.0, ww, 0.0,
 		0.0, 0.0, ww
+	);
+	carvesolid_circle(
+		win, 0x404040,
+		cx-ww/2, cy, ww/64,
+		ww/2, 0.0, 0.0,
+		0.0, 0.0, ww
+	);
+	carvesolid_circle(
+		win, 0x404040,
+		cx+ww/2, cy, ww/64,
+		ww/2, 0.0, 0.0,
+		0.0, 0.0, ww
+	);
+
+	f = arctan2(py-cy, px-cx+(ww/2));
+	x0 = (cosine(f)*ww*1/4) + (cx-ww/2);
+	y0 = (sine(f)*ww*1/4) + (cy+y0);
+	f = arctan2(py-cy, px-cx-(ww/2));
+	x1 = (cosine(f)*ww*1/4) + (cx+ww/2);
+	y1 = (sine(f)*ww*1/4) + (cy+y1);
+
+	carvesolid_circle(
+		win, 0xff0000,
+		x0, y0, ww/32,
+		ww/4, 0.0, 0.0,
+		0.0, 0.0, ww
+	);
+	carvesolid_circle(
+		win, 0xff0000,
+		x1, y1, ww/32,
+		ww/4, 0.0, 0.0,
+		0.0, 0.0, ww
+	);
+
+	carveline(
+		win, 0xffffff,
+		x0, y0, ww/32,
+		px, py, ww/32
+	);
+	carveline(
+		win, 0xffffff,
+		x1, y1, ww/32,
+		px, py, ww/32
 	);
 }
 static void doodle_read_html(

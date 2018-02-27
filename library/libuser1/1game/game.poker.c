@@ -50,6 +50,29 @@ static void poker_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	int j;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
+	carvesolid_rect(
+		win, 0x404040,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+
+	for(j=0;j<13;j++)
+	{
+		carvesolid_rect(
+			win, 0xc08040,
+			(cx-ww/2)+(j*ww/16), cy-(hh*(48+j)/64), ww/16,
+			ww/24, 0.0, 0.0,
+			0.0, 0.0, ww/16
+		);
+	}
 }
 static void poker_read_html(
 	struct arena* win, struct style* sty,

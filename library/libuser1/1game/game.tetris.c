@@ -79,6 +79,31 @@ static void tetris_read_pixel(
 		cx+(that.x4-15)*ww, cy+(that.y4-19)*hh);
 */
 }
+static void tetris_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+	int x,y;
+	int cx = sty->i_cx;
+	int cy = sty->i_cy;
+	int cz = sty->i_cz;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
+	int dd = sty->i_uz;
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			carvesolid_prism4(
+				win, 0xffffff,
+				(cx-ww)+(2*x+1)*ww/width, (cy-ww)+(2*y+1)*hh/height, ww/width,
+				ww/(width+1), 0.0, 0.0,
+				0.0, hh/(height+1), 0.0,
+				0.0, 0.0, ww/width
+			);
+		}
+	}
+}
 
 
 
@@ -126,28 +151,6 @@ static void tetris_read_html(
 	p += htmlcubie(p, that.x2, that.y2);
 	p += htmlcubie(p, that.x3, that.y3);
 	p += htmlcubie(p, that.x4, that.y4);
-}
-
-
-
-
-static void tetris_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct compo* com)
-{
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
-	carvesolid_prism4(
-		win, 0xffffff,
-		cx, cy, cz,
-		ww/16, 0.0, 0.0,
-		0.0, hh/16, 0.0,
-		0.0, 0.0, dd/16
-	);
 }
 static void tetris_read_tui(
 	struct arena* win, struct style* sty,

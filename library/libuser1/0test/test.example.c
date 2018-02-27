@@ -14,6 +14,12 @@ static void example_read_vbo(
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
+	carvesolid_rect(
+		win, getrandom(),
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
 }
 static void example_read_pixel(
 	struct arena* win, struct style* sty,

@@ -157,9 +157,18 @@ struct actor
 	};
 
 	//[20,3f]
-	u64 vao;
-	u64 vbo;
-	u64 inf;
+	union{
+		u64 fd;
+		void* what0;
+	};
+	union{
+		u64 abc;
+		void* what1;
+	};
+	union{
+		u64 vbo;
+		void* unique;
+	};
 	union{
 		u64 addr;
 		void* buf;

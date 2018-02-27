@@ -492,6 +492,7 @@ void carvepoint_sphere(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+#define odd ((acc&0xfffe)+1)
 	int j,k,a;
 	float s,t;
 	float q[4];
@@ -504,11 +505,11 @@ void carvepoint_sphere(
 
 	struct texandobj* mod = win->buf;
 	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += acc*17+2;
+	mod[0x21].len += odd*(odd-2)+2;
 
-	for(k=0;k<17;k++)
+	for(k=0;k<(odd-2);k++)
 	{
-		s = (k-8)*PI/18;
+		s = (k+1-(odd/2))*PI/(odd-1);
 		t = cosine(s);
 		temprx = rx*t;
 		tempry = ry*t;
@@ -519,20 +520,20 @@ void carvepoint_sphere(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=0;j<acc;j++)
+		for(j=0;j<odd;j++)
 		{
 			q[0] = ux;
 			q[1] = uy;
 			q[2] = uz;
 			vectornormalize(q);
 
-			t = (j-(acc/2))*PI/acc;
+			t = j*PI/odd;
 			q[0] *= sine(t);
 			q[1] *= sine(t);
 			q[2] *= sine(t);
 			q[3] = cosine(t);
 
-			a = (k*acc + j)*6;
+			a = (k*odd + j)*6;
 
 			buf[a+0] = temprx;
 			buf[a+1] = tempry;
@@ -549,7 +550,7 @@ void carvepoint_sphere(
 		}
 	}
 
-	a = acc*17*6;
+	a = odd*(odd/2)*6;
 
 	buf[a+ 0] = cx-ux;
 	buf[a+ 1] = cy-uy;

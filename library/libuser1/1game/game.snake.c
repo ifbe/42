@@ -57,6 +57,23 @@ void snake_read_pixel(
 	t4 = cy-hh + (buf[0].y+1) * 2 * hh / height;
 	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
+void snake_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct compo* com)
+{
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
+	carveline_rect(
+		win, 0x404040,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+}
 
 
 
@@ -93,11 +110,6 @@ void snake_read_html(
 	);
  
 	htmlcubie(p, 0xff00, buf[0].x, buf[0].y);
-}
-void snake_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct compo* com)
-{
 }
 void snake_read_tui(
 	struct arena* win, struct style* sty,

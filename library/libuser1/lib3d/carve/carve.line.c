@@ -923,6 +923,7 @@ void carveline_sphere(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+#define odd ((acc&0xfffe)+1)
 	int a,b,j,k;
 	float s,t;
 	float v[4];
@@ -938,12 +939,12 @@ void carveline_sphere(
 	int vlen = mod[0x23].len;
 	u16* ibuf = (mod[0x22].buf) + (4*ilen);
 	float* vbuf  = (mod[0x23].buf) + (24*vlen);
-	mod[0x22].len += acc*(17+16+2);
-	mod[0x23].len += acc*17+2;
+	mod[0x22].len += odd*(odd+odd-2);
+	mod[0x23].len += odd*(odd-2)+2;
 
-	for(k=0;k<17;k++)
+	for(k=0;k<(odd-2);k++)
 	{
-		s = (k-8)*PI/18;
+		s = (k+1-(odd/2))*PI/(odd-1);
 		t = cosine(s);
 		temprx = rx*t;
 		tempry = ry*t;
@@ -954,21 +955,21 @@ void carveline_sphere(
 		tempcy = cy + uy*t;
 		tempcz = cz + uz*t;
 
-		for(j=0;j<acc;j++)
+		for(j=0;j<odd;j++)
 		{
 			v[0] = ux;
 			v[1] = uy;
 			v[2] = uz;
 			vectornormalize(v);
 
-			t = (j-(acc/2))*PI/acc;
+			t = j*PI/odd;
 			v[0] *= sine(t);
 			v[1] *= sine(t);
 			v[2] *= sine(t);
 			v[3] = cosine(t);
 
-			a = (k*acc + j)*6;
-			b = (k*acc + j)*2;
+			a = (k*odd + j)*6;
+			b = (k*odd + j)*2;
 
 			vbuf[a+0] = temprx;
 			vbuf[a+1] = tempry;
@@ -983,24 +984,22 @@ void carveline_sphere(
 			vbuf[a+4] = gg;
 			vbuf[a+5] = bb;
 
-			ibuf[b+0] = vlen+(k*acc)+j;
-			ibuf[b+1] = vlen+(k*acc)+(j+1)%acc;
+			ibuf[b+0] = vlen+(k*odd)+j;
+			ibuf[b+1] = vlen+(k*odd)+(j+1)%odd;
 		}
 	}
-	for(k=0;k<acc;k++)
+
+	for(k=0;k<odd;k++)
 	{
-		a = acc*17*4 + k*64;
-		for(j=0;j<16;j++)
+		a = odd*(odd-2)*2 + k*(odd-3)*2;
+		for(j=0;j<(odd-3);j++)
 		{
-			ibuf[a + 2*j + 0] = vlen+k+(j*acc);
-			ibuf[a + 2*j + 1] = vlen+k+(j*acc)+acc;
+			ibuf[a + 2*j + 0] = vlen+k+(j*odd);
+			ibuf[a + 2*j + 1] = vlen+k+(j*odd)+odd;
 		}
 	}
 
-	//
-	a = acc*17*6;
-	b = acc*17*2+acc*32;
-
+	a = odd*(odd-2)*6;
 	vbuf[a+ 0] = cx-ux;
 	vbuf[a+ 1] = cy-uy;
 	vbuf[a+ 2] = cz-uz;
@@ -1015,12 +1014,13 @@ void carveline_sphere(
 	vbuf[a+10] = gg;
 	vbuf[a+11] = bb;
 
-	for(j=0;j<acc;j++)
+	b = odd*(odd-2)*2+odd*(odd-3)*2;
+	for(j=0;j<odd;j++)
 	{
-		ibuf[b + 2*j +0] = vlen+acc*17;
+		ibuf[b + 2*j +0] = vlen+odd*(odd-2);
 		ibuf[b + 2*j +1] = vlen+j;
 
-		ibuf[b + 2*j + acc*2 + 0] = vlen+acc*17+1;
-		ibuf[b + 2*j + acc*2 + 1] = vlen+acc*16+j;
+		ibuf[b + 2*j + odd*2 + 0] = vlen+odd*(odd-2)+1;
+		ibuf[b + 2*j + odd*2 + 1] = vlen+odd*(odd-3)+j;
 	}
 }

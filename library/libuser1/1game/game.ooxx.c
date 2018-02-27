@@ -59,18 +59,25 @@ static void ooxx_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	int x,y;
 	float cx = (float)(sty->i_cx);
 	float cy = (float)(sty->i_cy);
 	float cz = (float)(sty->i_cz);
 	float ww = (float)(sty->i_rx);
 	float hh = (float)(sty->i_fy);
 	float dd = (float)(sty->i_uz);
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		ww, 0.0, 0.0,
-		0.0, 0.0, hh
-	);
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<3;x++)
+		{
+			carvesolid_sphere(
+				win, 0xffffff,
+				(cx-ww)+(2*x+1)*ww/3, (cy-hh)+(2*y+1)*hh/3, 0.0,
+				ww/3, 0.0, 0.0,
+				0.0, 0.0, ww/3
+			);
+		}
+	}
 }
 static void ooxx_read_html(
 	struct arena* win, struct style* sty,
