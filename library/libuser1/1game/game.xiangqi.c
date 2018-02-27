@@ -218,25 +218,31 @@ static void xiangqi_read_vbo(
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
 
-	//heng
+	carvesolid_rect(
+		win, 0x8d6f25,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
 	for(y=-5;y<5;y++)
 	{
-		carveline(win, 0x444444,
-			cx-(ww*4/9), cy+(2*y+1)*hh/20, 0.0,
-			cx+(ww*4/9), cy+(2*y+1)*hh/20, 0.0
+		carveline(
+			win, 0x222222,
+			cx-(ww*8/9), cy+(2*y+1)*hh/10, 0.0,
+			cx+(ww*8/9), cy+(2*y+1)*hh/10, 0.0
 		);
 	}
-
-	//shu
 	for(x=-4;x<5;x++)
 	{
-		carveline(win, 0x444444,
-			cx+x*ww/9, cy-hh*1/20, 0.0,
-			cx+x*ww/9, cy-hh*9/20, 0.0
+		carveline(
+			win, 0x222222,
+			cx+x*ww*2/9, cy-hh*1/10, 0.0,
+			cx+x*ww*2/9, cy-hh*9/10, 0.0
 		);
-		carveline(win, 0x444444,
-			cx+x*ww/9, cy+hh*1/20, 0.0,
-			cx+x*ww/9, cy+hh*9/20, 0.0
+		carveline(
+			win, 0x222222,
+			cx+x*ww*2/9, cy+hh*1/10, 0.0,
+			cx+x*ww*2/9, cy+hh*9/10, 0.0
 		);
 	}
 
@@ -254,28 +260,16 @@ static void xiangqi_read_vbo(
 			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
 
 			carvesolid_cylinder(
-				win, 0x8d6f25,
-				cx+(ww/18)*(2*x-8),
-				cy+(hh/20)*(2*y-9),
-				ww/40,
-				ww/18,
-				0.0,
-				0.0,
-				0.0,
-				0.0,
-				ww/40
+				win, 0xf9d65b,
+				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww/20,
+				ww/9, 0.0, 0.0,
+				0.0, 0.0, ww/20
 			);
 			carveutf8(
 				win, fontcolor,
-				cx+(ww/18)*(2*x-8),
-				cy+(hh/20)*(2*y-9),
-				ww/19,
-				ww/36,
-				0.0,
-				0.0,
-				0.0,
-				hh/40,
-				0.0,
+				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww*2/19,
+				ww/18, 0.0, 0.0,
+				0.0, hh/20, 0.0,
 				(u8*)char2hanzi(data[y][x]), 0
 			);
 		}

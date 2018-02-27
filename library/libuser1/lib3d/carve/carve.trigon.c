@@ -150,7 +150,7 @@ void carvesolid_circle(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
-	int j,k;
+	int a,b,j;
 	float s,t;
 	float q[4];
 
@@ -179,37 +179,39 @@ void carvesolid_circle(
 		q[2] *= sine(t);
 		q[3] = cosine(t);
 
-		k = j*6;
-		vbuf[k+0] = rx;
-		vbuf[k+1] = ry;
-		vbuf[k+2] = rz;
-		quaternionrotate(&vbuf[k], q);
+		a = j*9;
+		b = j*3;
 
-		vbuf[k+0] += cx;
-		vbuf[k+1] += cy;
-		vbuf[k+2] += cz;
-		vbuf[k+3] = rr;
-		vbuf[k+4] = gg;
-		vbuf[k+5] = bb;
-		vbuf[k+6] = ux;
-		vbuf[k+7] = uy;
-		vbuf[k+8] = uz;
+		vbuf[a+0] = rx;
+		vbuf[a+1] = ry;
+		vbuf[a+2] = rz;
+		quaternionrotate(&vbuf[a], q);
 
-		ibuf[k+0] = vlen + acc;
-		ibuf[k+1] = vlen + j;
-		ibuf[k+2] = vlen + (j+1)%acc;
+		vbuf[a+0] += cx;
+		vbuf[a+1] += cy;
+		vbuf[a+2] += cz;
+		vbuf[a+3] = rr;
+		vbuf[a+4] = gg;
+		vbuf[a+5] = bb;
+		vbuf[a+6] = ux;
+		vbuf[a+7] = uy;
+		vbuf[a+8] = uz;
+
+		ibuf[b+0] = vlen + acc;
+		ibuf[b+1] = vlen + j;
+		ibuf[b+2] = vlen + (j+1)%acc;
 	}
 
-	k = acc*6;
-	vbuf[k+0] = cx;
-	vbuf[k+1] = cy;
-	vbuf[k+2] = cz;
-	vbuf[k+3] = rr;
-	vbuf[k+4] = gg;
-	vbuf[k+5] = bb;
-	vbuf[k+6] = ux;
-	vbuf[k+7] = uy;
-	vbuf[k+8] = uz;
+	a = acc*9;
+	vbuf[a+0] = cx;
+	vbuf[a+1] = cy;
+	vbuf[a+2] = cz;
+	vbuf[a+3] = rr;
+	vbuf[a+4] = gg;
+	vbuf[a+5] = bb;
+	vbuf[a+6] = ux;
+	vbuf[a+7] = uy;
+	vbuf[a+8] = uz;
 }
 
 
@@ -327,10 +329,7 @@ void carvesolid_prism4(
 	float fx, float fy, float fz,
 	float ux, float uy, float uz)
 {
-	float r[3];
-	float f[3];
-	float u[3];
-
+	int j;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -341,129 +340,121 @@ void carvesolid_prism4(
 	u16* ibuf = (mod[0x24].buf) + (6*ilen);
 	float* vbuf = (mod[0x25].buf) + (36*vlen);
 	mod[0x24].len += 12;
-	mod[0x25].len += 8;
+	mod[0x25].len += 24;
 
-	vbuf[ 0] = cx - rx - fx - ux;
-	vbuf[ 1] = cy - ry - fy - uy;
-	vbuf[ 2] = cz - rz - fz - uz;
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
-	vbuf[ 6] = - rx - fx - ux;
-	vbuf[ 7] = - ry - fy - uy;
-	vbuf[ 8] = - rz - fz - uz;
+	for(j=0;j<24*9;j+=9)
+	{
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+		vbuf[j+6] = 0.0;
+		vbuf[j+7] = 0.0;
+		vbuf[j+8] = 0.0;
+	}
 
-	vbuf[ 9] = cx + rx - fx - ux;
-	vbuf[10] = cy + ry - fy - uy;
-	vbuf[11] = cz + rz - fz - uz;
-	vbuf[12] = rr;
-	vbuf[13] = gg;
-	vbuf[14] = bb;
-	vbuf[15] = rx - fx - ux;
-	vbuf[16] = ry - fy - uy;
-	vbuf[17] = rz - fz - uz;
+	vbuf[2*9+0] = vbuf[1*9+0] = vbuf[0*9+0] = cx - rx - fx - ux;
+	vbuf[2*9+1] = vbuf[1*9+1] = vbuf[0*9+1] = cy - ry - fy - uy;
+	vbuf[2*9+2] = vbuf[1*9+2] = vbuf[0*9+2] = cz - rz - fz - uz;
+	vbuf[0*9+8] = -1.0;
+	vbuf[1*9+7] = -1.0;
+	vbuf[2*9+6] = -1.0;
 
-	vbuf[18] = cx - rx + fx - ux;
-	vbuf[19] = cy - ry + fy - uy;
-	vbuf[20] = cz - rz + fz - uz;
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
-	vbuf[24] = - rx + fx - ux;
-	vbuf[25] = - ry + fy - uy;
-	vbuf[26] = - rz + fz - uz;
+	vbuf[5*9+0] = vbuf[4*9+0] = vbuf[3*9+0] = cx + rx - fx - ux;
+	vbuf[5*9+1] = vbuf[4*9+1] = vbuf[3*9+1] = cy + ry - fy - uy;
+	vbuf[5*9+2] = vbuf[4*9+2] = vbuf[3*9+2] = cz + rz - fz - uz;
+	vbuf[3*9+8] = -1.0;
+	vbuf[4*9+7] = -1.0;
+	vbuf[5*9+6] = 1.0;
 
-	vbuf[27] = cx + rx + fx - ux;
-	vbuf[28] = cy + ry + fy - uy;
-	vbuf[29] = cz + rz + fz - uz;
-	vbuf[30] = rr;
-	vbuf[31] = gg;
-	vbuf[32] = bb;
-	vbuf[33] = rx + fx - ux;
-	vbuf[34] = ry + fy - uy;
-	vbuf[35] = rz + fz - uz;
+	vbuf[8*9+0] = vbuf[7*9+0] = vbuf[6*9+0] = cx - rx + fx - ux;
+	vbuf[8*9+1] = vbuf[7*9+1] = vbuf[6*9+1] = cy - ry + fy - uy;
+	vbuf[8*9+2] = vbuf[7*9+2] = vbuf[6*9+2] = cz - rz + fz - uz;
+	vbuf[6*9+8] = -1.0;
+	vbuf[7*9+7] = 1.0;
+	vbuf[8*9+6] = -1.0;
 
-	vbuf[36] = cx - rx - fx + ux;
-	vbuf[37] = cy - ry - fy + uy;
-	vbuf[38] = cz - rz - fz + uz;
-	vbuf[39] = rr;
-	vbuf[40] = gg;
-	vbuf[41] = bb;
-	vbuf[42] = - rx - fx + ux;
-	vbuf[43] = - ry - fy + uy;
-	vbuf[44] = - rz - fz + uz;
+	vbuf[11*9+0] = vbuf[10*9+0] = vbuf[9*9+0] = cx + rx + fx - ux;
+	vbuf[11*9+1] = vbuf[10*9+1] = vbuf[9*9+1] = cy + ry + fy - uy;
+	vbuf[11*9+2] = vbuf[10*9+2] = vbuf[9*9+2] = cz + rz + fz - uz;
+	vbuf[ 9*9+8] = -1.0;
+	vbuf[10*9+7] = 1.0;
+	vbuf[11*9+6] = 1.0;
 
-	vbuf[45] = cx + rx - fx + ux;
-	vbuf[46] = cy + ry - fy + uy;
-	vbuf[47] = cz + rz - fz + uz;
-	vbuf[48] = rr;
-	vbuf[49] = gg;
-	vbuf[50] = bb;
-	vbuf[51] = rx - fx + ux;
-	vbuf[52] = ry - fy + uy;
-	vbuf[53] = rz - fz + uz;
+	vbuf[14*9+0] = vbuf[13*9+0] = vbuf[12*9+0] = cx - rx - fx + ux;
+	vbuf[14*9+1] = vbuf[13*9+1] = vbuf[12*9+1] = cy - ry - fy + uy;
+	vbuf[14*9+2] = vbuf[13*9+2] = vbuf[12*9+2] = cz - rz - fz + uz;
+	vbuf[12*9+8] = 1.0;
+	vbuf[13*9+7] = -1.0;
+	vbuf[14*9+6] = 1.0;
 
-	vbuf[54] = cx - rx + fx + ux;
-	vbuf[55] = cy - ry + fy + uy;
-	vbuf[56] = cz - rz + fz + uz;
-	vbuf[57] = rr;
-	vbuf[58] = gg;
-	vbuf[59] = bb;
-	vbuf[60] = - rx + fx + ux;
-	vbuf[61] = - ry + fy + uy;
-	vbuf[62] = - rz + fz + uz;
+	vbuf[17*9+0] = vbuf[16*9+0] = vbuf[15*9+0] = cx + rx - fx + ux;
+	vbuf[17*9+1] = vbuf[16*9+1] = vbuf[15*9+1] = cy + ry - fy + uy;
+	vbuf[17*9+2] = vbuf[16*9+2] = vbuf[15*9+2] = cz + rz - fz + uz;
+	vbuf[15*9+8] = 1.0;
+	vbuf[16*9+7] = -1.0;
+	vbuf[17*9+6] = 1.0;
 
-	vbuf[63] = cx + rx + fx + ux;
-	vbuf[64] = cy + ry + fy + uy;
-	vbuf[65] = cz + rz + fz + uz;
-	vbuf[66] = rr;
-	vbuf[67] = gg;
-	vbuf[68] = bb;
-	vbuf[69] = rx + fx + ux;
-	vbuf[70] = ry + fy + uy;
-	vbuf[71] = rz + fz + uz;
+	vbuf[20*9+0] = vbuf[19*9+0] = vbuf[18*9+0] = cx - rx + fx + ux;
+	vbuf[20*9+1] = vbuf[19*9+1] = vbuf[18*9+1] = cy - ry + fy + uy;
+	vbuf[20*9+2] = vbuf[19*9+2] = vbuf[18*9+2] = cz - rz + fz + uz;
+	vbuf[18*9+8] = 1.0;
+	vbuf[19*9+7] = 1.0;
+	vbuf[20*9+6] = -1.0;
 
-	ibuf[ 0] = vlen + 0;
-	ibuf[ 1] = vlen + 1;
-	ibuf[ 2] = vlen + 2;
-	ibuf[ 3] = vlen + 1;
-	ibuf[ 4] = vlen + 2;
-	ibuf[ 5] = vlen + 3;
+	vbuf[23*9+0] = vbuf[22*9+0] = vbuf[21*9+0] = cx + rx + fx + ux;
+	vbuf[23*9+1] = vbuf[22*9+1] = vbuf[21*9+1] = cy + ry + fy + uy;
+	vbuf[23*9+2] = vbuf[22*9+2] = vbuf[21*9+2] = cz + rz + fz + uz;
+	vbuf[21*9+8] = 1.0;
+	vbuf[22*9+7] = 1.0;
+	vbuf[23*9+6] = 1.0;
 
-	ibuf[ 6] = vlen + 0;
-	ibuf[ 7] = vlen + 1;
-	ibuf[ 8] = vlen + 4;
-	ibuf[ 9] = vlen + 1;
-	ibuf[10] = vlen + 4;
-	ibuf[11] = vlen + 5;
+	//bottom
+	ibuf[ 0] = vlen + 0 + 0;
+	ibuf[ 1] = vlen + 0 + 3;
+	ibuf[ 2] = vlen + 0 + 6;
+	ibuf[ 3] = vlen + 0 + 3;
+	ibuf[ 4] = vlen + 0 + 6;
+	ibuf[ 5] = vlen + 0 + 9;
 
-	ibuf[12] = vlen + 1;
-	ibuf[13] = vlen + 3;
-	ibuf[14] = vlen + 5;
-	ibuf[15] = vlen + 3;
-	ibuf[16] = vlen + 5;
-	ibuf[17] = vlen + 7;
+	//near
+	ibuf[ 6] = vlen + 1 + 0;
+	ibuf[ 7] = vlen + 1 + 3;
+	ibuf[ 8] = vlen + 1 + 12;
+	ibuf[ 9] = vlen + 1 + 3;
+	ibuf[10] = vlen + 1 + 12;
+	ibuf[11] = vlen + 1 + 15;
 
-	ibuf[18] = vlen + 2;
-	ibuf[19] = vlen + 3;
-	ibuf[20] = vlen + 6;
-	ibuf[21] = vlen + 3;
-	ibuf[22] = vlen + 6;
-	ibuf[23] = vlen + 7;
+	//right
+	ibuf[12] = vlen + 2 + 3;
+	ibuf[13] = vlen + 2 + 9;
+	ibuf[14] = vlen + 2 + 15;
+	ibuf[15] = vlen + 2 + 9;
+	ibuf[16] = vlen + 2 + 15;
+	ibuf[17] = vlen + 2 + 21;
 
-	ibuf[24] = vlen + 0;
-	ibuf[25] = vlen + 2;
-	ibuf[26] = vlen + 4;
-	ibuf[27] = vlen + 2;
-	ibuf[28] = vlen + 4;
-	ibuf[29] = vlen + 6;
+	//far
+	ibuf[18] = vlen + 1 + 6;
+	ibuf[19] = vlen + 1 + 9;
+	ibuf[20] = vlen + 1 + 18;
+	ibuf[21] = vlen + 1 + 9;
+	ibuf[22] = vlen + 1 + 18;
+	ibuf[23] = vlen + 1 + 21;
 
-	ibuf[30] = vlen + 4;
-	ibuf[31] = vlen + 5;
-	ibuf[32] = vlen + 6;
-	ibuf[33] = vlen + 5;
-	ibuf[34] = vlen + 6;
-	ibuf[35] = vlen + 7;
+	//left
+	ibuf[24] = vlen + 2 + 0;
+	ibuf[25] = vlen + 2 + 6;
+	ibuf[26] = vlen + 2 + 12;
+	ibuf[27] = vlen + 2 + 6;
+	ibuf[28] = vlen + 2 + 12;
+	ibuf[29] = vlen + 2 + 18;
+
+	//top
+	ibuf[30] = vlen + 0 + 12;
+	ibuf[31] = vlen + 0 + 15;
+	ibuf[32] = vlen + 0 + 18;
+	ibuf[33] = vlen + 0 + 15;
+	ibuf[34] = vlen + 0 + 18;
+	ibuf[35] = vlen + 0 + 21;
 }
 void carvesolid_prism5()
 {
@@ -564,8 +555,8 @@ void carvesolid_cylinder(
 	int vlen = mod[0x25].len;
 	u16* ibuf = (mod[0x24].buf) + (6*ilen);
 	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc * 4;
-	mod[0x25].len += acc + 2;
+	mod[0x24].len += 4*acc;
+	mod[0x25].len += 2*acc + 2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -608,13 +599,13 @@ void carvesolid_cylinder(
 		vbuf[a+16] = vbuf[a+10] - cy;
 		vbuf[a+17] = vbuf[a+11] - cz;
 
-		ibuf[a+0] = vlen + j*2;
-		ibuf[a+1] = vlen + ((j+1)%acc)*2;
-		ibuf[a+2] = vlen + 1 + j*2;
+		ibuf[b+0] = vlen + j*2;
+		ibuf[b+1] = vlen + ((j+1)%acc)*2;
+		ibuf[b+2] = vlen + 1 + j*2;
 
-		ibuf[a+3] = vlen + 1 + ((j+1)%acc)*2;
-		ibuf[a+4] = vlen + ((j+1)%acc)*2;
-		ibuf[a+5] = vlen + 1 + j*2;
+		ibuf[b+3] = vlen + 1 + ((j+1)%acc)*2;
+		ibuf[b+4] = vlen + ((j+1)%acc)*2;
+		ibuf[b+5] = vlen + 1 + j*2;
 	}
 
 	a = acc*18;

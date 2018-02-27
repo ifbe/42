@@ -6,7 +6,6 @@ void maze_generate(void* buf, int w, int h);
 
 #define width 32
 #define height 32
-#define halfsize (width/2)
 static u8 buffer[height][width];
 
 
@@ -18,12 +17,12 @@ static void maze_read_vbo(
 {
 	int x,y,z,w;
 	float fx,fy,fz;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx / width;
-	int hh = sty->i_fy / height;
-	int dd = sty->i_uz;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
 
 	for(y=0;y<height;y++)
 	{
@@ -32,49 +31,49 @@ static void maze_read_vbo(
 			w = buffer[y][x];
 			if((w&1) == 1)	//left
 			{
-				fx = cx+(x+0.0-halfsize)*ww;
-				fy = cy+(y+0.5-halfsize)*hh;
-				fz = ww/4;
+				fx = (cx-ww) + ((2*x+0)*ww/width);
+				fy = (cy-hh) + ((2*y+1)*hh/height);
+				fz = ww / width;
 				carvesolid_rect(
 					win, 0x808080,
 					fx, fy, fz,
-					0.0, hh/2, 0.0,
+					0.0, hh/height, 0.0,
 					0.0, 0.0, fz
 				);
 			}
 			if((w&2) == 2)	//right
 			{
-				fx = cx+(x+1.0-halfsize)*ww;
-				fy = cy+(y+0.5-halfsize)*hh;
-				fz = ww/4;
+				fx = (cx-ww) + ((2*x+2)*ww/width);
+				fy = (cy-hh) + ((2*y+1)*hh/height);
+				fz = ww / width;
 				carvesolid_rect(
 					win, 0x909090,
 					fx, fy, fz,
-					0.0, -hh/2, 0.0,
-					0.0, 0.0, fz
-				);
-			}
-			if((w&8) == 8)	//up	//careful,different
-			{
-				fx = cx+(x+0.5-halfsize)*ww;
-				fy = cy+(y+1.0-halfsize)*hh;
-				fz = ww/4;
-				carvesolid_rect(
-					win, 0x606060,
-					fx, fy, fz,
-					ww/2, 0.0, 0.0,
+					0.0, -hh/height, 0.0,
 					0.0, 0.0, fz
 				);
 			}
 			if((w&4) == 4)	//down	//careful,different
 			{
-				fx = cx+(x+0.5-halfsize)*ww;
-				fy = cy+(y+0.0-halfsize)*hh;
-				fz = ww/4;
+				fx = (cx-ww) + ((2*x+1)*ww/width);
+				fy = (cy-hh) + ((2*y+0)*hh/height);
+				fz = ww / width;
 				carvesolid_rect(
 					win, 0x707070,
 					fx, fy, fz,
-					-ww/2, 0.0, 0.0,
+					-ww/width, 0.0, 0.0,
+					0.0, 0.0, fz
+				);
+			}
+			if((w&8) == 8)	//up	//careful,different
+			{
+				fx = (cx-ww) + ((2*x+1)*ww/width);
+				fy = (cy-hh) + ((2*y+2)*hh/height);
+				fz = ww / width;
+				carvesolid_rect(
+					win, 0x606060,
+					fx, fy, fz,
+					ww/width, 0.0, 0.0,
 					0.0, 0.0, fz
 				);
 			}
@@ -89,8 +88,8 @@ static void maze_read_pixel(
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
-	int ww = sty->i_rx *2/width;
-	int hh = sty->i_fy *2/height;
+	int ww = sty->i_rx;
+	int hh = sty->i_fy;
 	int dd = sty->i_uz;
 
 	for(y=0;y<height;y++)
@@ -100,30 +99,42 @@ static void maze_read_pixel(
 			w = buffer[y][x];
 			if((w&1) == 1)	//left
 			{
-				drawline(win, 0x808080,
-				cx+(x+0-halfsize)*ww, cy+(y+0-halfsize)*hh,
-				cx+(x+0-halfsize)*ww, cy+(y+1-halfsize)*hh
+				drawline(
+					win, 0x808080,
+					(cx-ww) + (2*x+0)*ww/width,
+					(cy-hh) + (2*y+0)*hh/height,
+					(cx-ww) + (2*x+0)*ww/width,
+					(cy-hh) + (2*y+2)*hh/height
 				);
 			}
 			if((w&2) == 2)	//right
 			{
-				drawline(win, 0x808080,
-				cx-1+(x+1-halfsize)*ww, cy+(y+0-halfsize)*hh,
-				cx-1+(x+1-halfsize)*ww, cy+(y+1-halfsize)*hh
+				drawline(
+					win, 0x808080,
+					(cx-ww-1) + (2*x+2)*ww/width,
+					(cy-hh)   + (2*y+0)*hh/height,
+					(cx-ww-1) + (2*x+2)*ww/width,
+					(cy-hh)   + (2*y+2)*hh/height
 				);
 			}
 			if((w&4) == 4)	//up
 			{
-				drawline(win, 0x808080,
-				cx+(x+0-halfsize)*ww, cy+(y-halfsize)*hh,
-				cx+(x+1-halfsize)*ww, cy+(y-halfsize)*hh
+				drawline(
+					win, 0x808080,
+					(cx-ww) + (2*x+0)*ww/width,
+					(cy-hh) + (2*y+0)*hh/height,
+					(cx-ww) + (2*x+2)*ww/width,
+					(cy-hh) + (2*y+0)*hh/height
 				);
 			}
 			if((w&8) == 8)	//down
 			{
-				drawline(win, 0x808080,
-				cx+(x+0-halfsize)*ww, cy-1+(y+1-halfsize)*hh,
-				cx+(x+1-halfsize)*ww, cy-1+(y+1-halfsize)*hh
+				drawline(
+					win, 0x808080,
+					(cx-ww)   + (2*x+0)*ww/width,
+					(cy-hh-1) + (2*y+2)*hh/height,
+					(cx-ww)   + (2*x+2)*ww/width,
+					(cy-hh-1) + (2*y+2)*hh/height
 				);
 			}
 		}

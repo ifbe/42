@@ -205,16 +205,16 @@ int point_explain(struct arena* win, struct event* ev)
 	btn = (ev->why) >> 48;
 	if(btn == 'f')
 	{
-		stytop->i_rx = (stytop->i_rx)*15/16;
-		stytop->i_fy = (stytop->i_fy)*15/16;
-		stytop->i_uz = (stytop->i_uz)*15/16;
+		stytop->i_rx = (stytop->i_rx)*17/16;
+		stytop->i_fy = (stytop->i_fy)*17/16;
+		stytop->i_uz = (stytop->i_uz)*17/16;
 		return 0;
 	}
 	else if(btn == 'b')
 	{
-		stytop->i_rx = (stytop->i_rx)*17/16;
-		stytop->i_fy = (stytop->i_fy)*17/16;
-		stytop->i_uz = (stytop->i_uz)*17/16;
+		stytop->i_rx = (stytop->i_rx)*15/16;
+		stytop->i_fy = (stytop->i_fy)*15/16;
+		stytop->i_uz = (stytop->i_uz)*15/16;
 		return 0;
 	}
 

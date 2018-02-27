@@ -61,13 +61,13 @@ static void chess_read_vbo(
 			if(((x+y+32)%2) != 0)color = 0x111111;
 			else color = 0xffffff;
 
-			xxx = cx + (x+x-7)*ww/16;
-			yyy = cy - (y+y-7)*hh/16;
+			xxx = cx + (x+x-7)*ww/8;
+			yyy = cy - (y+y-7)*hh/8;
 			carvesolid_prism4(
 				win, color,
 				xxx, yyy, 0.0,
-				ww/16, 0.0, 0.0,
-				0.0, hh/16, 0.0,
+				ww/8, 0.0, 0.0,
+				0.0, hh/8, 0.0,
 				0.0, 0.0, 0.0
 			);
 		}
