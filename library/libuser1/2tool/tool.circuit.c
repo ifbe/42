@@ -1,206 +1,103 @@
 #include "actor.h"
+#define width 32
+#define height 32
+u32 getrandom();
+static u8 data[height][width];
 
 
 
 
-struct wirenet
-{
-	//link all chip on this pin
-	u64 pininfo;
-	u64 order;
-	struct wirenet* samepinlastchip;
-	char pad2[8-sizeof(char*)];
-	struct wirenet* samepinnextchip;
-	char pad3[8-sizeof(char*)];
-
-	//link all foot on this chip
-	u64 chipinfo;
-	u64 footid;
-	struct wirenet* samechiplastpin;
-	char pad0[8-sizeof(char*)];
-	struct wirenet* samechipnextpin;
-	char pad1[8-sizeof(char*)];
-};
-static struct wirenet* wn;
-
-
-
-
-/*
-static void autowire(struct arena* win, int x1, int y1, int x2, int y2)
-{
-	int j;
-	if(x1<x2)
-	{
-		j=y1-100;
-		if(j > y2-100)j=y2-100;
-		line(win, x1, y1, x1, j, 0xffffffff);
-		line(win, x2, y2, x2, j, 0xffffffff);
-		line(win, x1, j, x2, j, 0xffffffff);
-	}
-	else
-	{
-		j=y1+100;
-		if(j < y2+100)j=y2+100;
-		line(win, x1, y1, x1, j, 0xffffffff);
-		line(win, x2, y2, x2, j, 0xffffffff);
-		line(win, x1, j, x2, j, 0xffffffff);
-	}
-}
-*/
-
-
-
-
-static void circuit_read_pixel_battery(struct arena* win, int x, int y)
-{
-	drawline(win, 0xffffff,
-		x-8, y-4, x+8, y-4);
-	drawline(win, 0xffffff,
-		x-4, y+4, x+4, y+4);
-}
-static void circuit_read_pixel_resistor(struct arena* win, int x, int y)
-{
-	drawline_rect(win, 0xffffff,
-		x-4, y-8, x+4, y+8);
-}
-static void circuit_read_pixel_element(struct arena* win, struct wirenet* this, int x, int y)
-{
-	int chiptype = (this->chipinfo)&0xffff;
-	if(chiptype == 'R')
-	{
-		circuit_read_pixel_resistor(win,x,y);
-	}
-	else if(chiptype == 'V')
-	{
-		circuit_read_pixel_battery(win,x,y);
-	}
-	//say("@%x\n",this);
-}
-static void circuit_read_pixel_recursive(
-	struct arena* win, struct wirenet* base, int px, int py,
-	int cx, int cy, int w, int h)
-{
-	struct wirenet* this;
-	int dx,dy,ret;
-	if(base == 0)return;
-	if(px<-4)return;
-	if(px>4)return;
-	if(py<-4)return;
-	if(py>4)return;
-	//say("%x\n",base);
-
-	//chip
-	if((base->footid) != 'i')return;
-	circuit_read_pixel_element(win, base, cx+w*px/16, cy+h*py/16);
-
-	//left
-	if(px <= 0)
-	{
-		dx = -1;
-		this = base;
-		while(1)
-		{
-			this = this->samepinlastchip;
-			if(this == 0)break;
-			if((this->footid) != 'i')continue;
-
-			circuit_read_pixel_element(
-				win, this, cx+w*(px+dx)/16, cy+h*py/16
-			);
-			dx--;
-		}
-	}
-
-	//right
-	if(px >= 0)
-	{
-		dx = 1;
-		this = base;
-		while(1)
-		{
-			this = this->samepinnextchip;
-			if(this == 0)break;
-			if((this->footid) != 'i')continue;
-
-			circuit_read_pixel_element(
-				win, this, cx+w*(px+dx)/16, cy+h*py/16
-			);
-			dx++;
-		}
-	}
-
-	//upper
-	if(py <= 0)
-	{
-		dy = -1;
-		this = base;
-		while(1)
-		{
-			//same chip, last foot
-			this = this->samechiplastpin;
-			if(this == 0)break;
-
-		}
-	}
-
-	//lower
-	if(py >= 0)
-	{
-		dy = 1;
-		this = base;
-		while(1)
-		{
-			//same chip, next foot
-			this = this->samechipnextpin;
-			if(this == 0)break;
-
-			//same pin, 'i' foot
-			if(px >= 0)
-			{
-				while(1)
-				{
-					this = this->samepinnextchip;
-					if(this == 0)break;
-					if((this->footid) != 'i')continue;
-
-					circuit_read_pixel_recursive(
-						win, this, px, py+dy,
-						cx, cy, w, h
-					);
-					break;
-				}
-			}
-
-			dy++;
-			break;
-		}
-	}
-}
 static void circuit_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	u32 c;
+	int x,y;
+	int xxx,yyy;
 	int cx = sty->i_cx;
 	int cy = sty->i_cy;
 	int cz = sty->i_cz;
 	int ww = sty->i_rx;
 	int hh = sty->i_fy;
 	int dd = sty->i_uz;
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			drawline_rect(
+				win, 0x404040,
+				cx-ww + (x+x+0)*ww/width,
+				cy-hh + (y+y+0)*hh/height,
+				cx-ww + (x+x+2)*ww/width,
+				cy-hh + (y+y+2)*hh/height
+			);
 
-	//
-	drawsolid_rect(win, 0, cx-ww, cy-hh, cx+ww, cy+hh);
-	circuit_read_pixel_recursive(
-		win, wn, 0, 0,
-		cx, cy, ww, hh
-	);
+			if(1 == data[y][x])c = 0xffffff;
+			else if(2 == data[y][x])c = 0xffff00;
+			else if(4 == data[y][x])c = 0xff00ff;
+			else if(8 == data[y][x])c = 0xff0000;
+			else if(16 == data[y][x])c = 0xffff;
+			else if(32 == data[y][x])c = 0xff00;
+			else if(64 == data[y][x])c = 0xff;
+			else continue;
+
+			drawsolid_rect(
+				win, c,
+				cx-ww + (x+x+0)*ww/width,
+				cy-hh + (y+y+0)*hh/height,
+				cx-ww + (x+x+2)*ww/width,
+				cy-hh + (y+y+2)*hh/height
+			);
+		}
+	}
 }
-static void circuit_read_html(
+static void circuit_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
+	u32 c;
+	int x,y;
+	float xxx, yyy;
+	float cx = sty->i_cx;
+	float cy = sty->i_cy;
+	float cz = sty->i_cz;
+	float ww = sty->i_rx;
+	float hh = sty->i_fy;
+	float dd = sty->i_uz;
+
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			xxx = cx-ww + (x+x+1)*ww/width;
+			yyy = cy-hh + (y+y+1)*hh/height;
+			carveline_rect(
+				win, 0x404040,
+				xxx, yyy, 0.0,
+				ww/width, 0.0, 0.0,
+				0.0, hh/height, 0.0
+			);
+
+			if(1 == data[y][x])c = 0xffffff;
+			else if(2 == data[y][x])c = 0xffff00;
+			else if(4 == data[y][x])c = 0xff00ff;
+			else if(8 == data[y][x])c = 0xff0000;
+			else if(16 == data[y][x])c = 0xffff;
+			else if(32 == data[y][x])c = 0xff00;
+			else if(64 == data[y][x])c = 0xff;
+			else continue;
+
+			carvesolid_prism4(
+				win, c,
+				xxx, yyy, ww/width/2,
+				ww/width, 0.0, 0.0,
+				0.0, hh/height, 0.0,
+				0.0, 0.0, ww/width/2
+			);
+		}
+	}
 }
-static void circuit_read_vbo(
+static void circuit_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
@@ -236,137 +133,28 @@ static void circuit_write(
 static void circuit_list()
 {
 }
-static void circuit_change(
-	u64 operation, u64 signature,
-	u64 pininfo, u64 order,
-	u64 chipinfo, u64 footid)
+static void circuit_change()
 {
-	int j,k;
-	struct wirenet* this;
-	struct wirenet* temp;
-	if(signature != 42)return;
-//say("here\n");
-
-	//search this
-	for(j=0;j<100;j++)
-	{
-		this = &wn[j];
-		if(this->pininfo == 0)break;
-	}
-//say("1\n");
-
-	//prepare this
-	this->pininfo = pininfo;
-	//this->order = order;
-	this->samepinlastchip = 0;
-	this->samepinnextchip = 0;
-
-	this->chipinfo = chipinfo;
-	this->footid = footid;
-	this->samechiplastpin = 0;
-	this->samechipnextpin = 0;
-//say("2\n");
-
-	//search pin
-	temp = 0;
-	for(k=0;k<j;k++)
-	{
-		if(wn[k].pininfo == pininfo)
-		{
-			temp = &wn[k];
-			break;
-		}
-	}
-//say("3\n");
-
-	//insert pin
-	if(temp != 0)
-	{
-		while(temp->samepinnextchip != 0)temp = temp->samepinnextchip;
-		temp->samepinnextchip = this;
-		this->samepinlastchip = temp;
-	}
-//say("4\n");
-
-	//search chip
-	temp = 0;
-	for(k=0;k<j;k++)
-	{
-		if(wn[k].chipinfo == chipinfo)
-		{
-			temp = &wn[k];
-			break;
-		}
-	}
-//say("5\n");
-
-	//insert chip
-	if(temp != 0)
-	{
-		while(temp->samechipnextpin != 0)temp = temp->samechipnextpin;
-		temp->samechipnextpin = this;
-		this->samechiplastpin = temp;
-	}
-//say("6\n");
 }
 static void circuit_stop()
 {
 }
-static void circuit_start()
+static void circuit_start(struct actor* act, struct compo* com)
 {
-	int j;
-	u8* p = (u8*)wn;
-	for(j=0;j<0x1000;j++)
+	int x,y;
+	for(y=0;y<height;y++)
 	{
-		p[j] = 0;
+		for(x=0;x<width;x++)
+		{
+			data[y][x] = 0;
+		}
 	}
 
-/*
-	|-------pin1----
-	|	R1    V2    R3
-	|	----pin2----
-	|	V4    R5
-	|	----pin3----
-	|	R6
-	|   ----pin4----
-	|   R7    R8    R9
-	|-------pin1----
-*/
-	//operation, signature, pininfo, order, chipinfo, footid
-	circuit_change('+', 42, 1, 0, (1<<16)+'R', 'i');
-	circuit_change('+', 42, 1, 0, (2<<16)+'V', 'i');
-	circuit_change('+', 42, 1, 0, (3<<16)+'R', 'i');
-	
-	circuit_change('+', 42, 2, 0, (1<<16)+'R', 'o');
-	circuit_change('+', 42, 2, 0, (2<<16)+'V', 'o');
-	circuit_change('+', 42, 2, 0, (3<<16)+'R', 'o');
-
-	circuit_change('+', 42, 2, 0, (4<<16)+'V', 'i');
-	circuit_change('+', 42, 2, 0, (5<<16)+'R', 'i');
-	
-	circuit_change('+', 42, 3, 0, (4<<16)+'V', 'o');
-	circuit_change('+', 42, 3, 0, (5<<16)+'R', 'o');
-
-	circuit_change('+', 42, 3, 0, (6<<16)+'R', 'i');
-
-	circuit_change('+', 42, 4, 0, (6<<16)+'R', 'o');
-
-	circuit_change('+', 42, 4, 0, (7<<16)+'R', 'i');
-	circuit_change('+', 42, 4, 0, (8<<16)+'R', 'i');
-	circuit_change('+', 42, 4, 0, (9<<16)+'R', 'i');
-
-	circuit_change('+', 42, 1, 0, (7<<16)+'R', 'o');
-	circuit_change('+', 42, 1, 0, (8<<16)+'R', 'o');
-	circuit_change('+', 42, 1, 0, (9<<16)+'R', 'o');
-/*
-	for(j=0;j<12;j++)
+	for(x=0;x<7;x++)
 	{
-		say("@%x:	%x,%x,%x,	%x,%x,%x,%x\n", &wn[j],
-			wn[j].pininfo, wn[j].samepinlastchip, wn[j].samepinnextchip,
-			wn[j].chipinfo, wn[j].footid, wn[j].samechiplastpin, wn[j].samechipnextpin
-		);
+		data[getrandom()%height][getrandom()%width] = 1<<x;
+		data[getrandom()%height][getrandom()%width] = 1<<x;
 	}
-*/
 }
 static void circuit_delete()
 {
