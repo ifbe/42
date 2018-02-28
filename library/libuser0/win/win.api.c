@@ -326,17 +326,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 theend:
 	return DefWindowProc(wnd, msg, wparam, lparam);
 }
-DWORD WINAPI terminalthread(void* win)
-{
-	u64 why, what, where;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = hex32('c', 'h', 'a', 'r');
-		where = (u64)win;
-		eventwrite(why, what, where, 0);
-	}
-}
 
 
 
@@ -437,6 +426,16 @@ DWORD WINAPI uievent()
 	//退出main
 	eventwrite(0, 0, 0, 0);
 	return 0;
+}
+DWORD WINAPI terminalthread(void* win)
+{
+	u64 why, what;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		eventwrite(why, what, 0, 0);
+	}
 }
 
 

@@ -12,6 +12,7 @@ void* arenastart(u64, u64);
 void arenastop(void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
+int term_write(void*);
 //
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
@@ -105,30 +106,44 @@ void win_at(u64 why, u64 where)
 
 int actorread()
 {
-	actoroutput(&arena[0]);
+	int j;
+	for(j=0;j<16;j++)
+	{
+		if(0 == arena[j].type)break;
+		actoroutput(&arena[j]);
+	}
 	return 0;
 }
 int actorwrite(struct event* ev)
 {
 	int ret;
 	struct arena* win;
-	//say("%x,%x,%x\n", ev->why, ev->what, ev->where);
+	u64 why, what, where, when;
+
+	why = ev->why;
+	what = ev->what;
+	where = ev->where;
+	//say("%x,%x,%x\n", why, what, where);
 
 	//window event
-	if(((ev->what)&0xff) == 'w')
+	if('w' == (what&0xff))
 	{
-		if(ev->what == hex32('w','+',0,0))win_add(ev->why, ev->where);
-		else if(ev->what == hex32('w','-',0,0))win_del(ev->why, ev->where);
-		else if(ev->what == hex32('w','@',0,0))win_at(ev->why, ev->where);
+		if(hex32('w','+',0,0) == what)win_add(why, where);
+		else if(hex32('w','-',0,0) == what)win_del(why, where);
+		else if(hex32('w','@',0,0) == what)win_at(why, where);
 		return 0;
 	}
 
 	//no window
-	if(ev->where < 0xffff)win = &arena[0];
-	else win = (void*)(ev->where);
-
-	//pre process
-	ret = actorinput(win, ev);
+	if(where < 0xffff)
+	{
+		if(_char_ == what)term_write(ev);
+	}
+	else
+	{
+		win = (void*)where;
+		ret = actorinput(win, ev);
+	}
 	return 0;
 }
 int actorlist(u8* p)

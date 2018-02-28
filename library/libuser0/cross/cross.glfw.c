@@ -916,7 +916,8 @@ void callback_display()
 void callback_idle()
 {
 	if(queuehead == queuetail)return;
-say("%x,%x\n",mod[0x26].len, mod[0x27].len);
+//say("%x,%x\n",mod[0x26].len, mod[0x27].len);
+
 	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x21].obj);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x21].len, mod[0x21].buf);
 
@@ -1165,6 +1166,16 @@ void* uievent(struct window* this)
 	eventwrite(0,0,0,0);
 	return 0;
 }
+void* terminalthread(void* win)
+{
+	u64 why, what;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		eventwrite(why, what, 0, 0);
+	}
+}
 
 
 
@@ -1244,4 +1255,6 @@ void windowcreate()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	startthread(terminalthread, 0);
 }
