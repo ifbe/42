@@ -8,8 +8,16 @@
 //
 int actorlist(void*);
 int actorchoose(void*);
+int arenalist(void*);
+int arenachoose(void*);
 int arterylist(void*);
 int arterychoose(void*);
+int systemlist(void*);
+int systemchoose(void*);
+int bodylist(void*);
+int bodychoose(void*);
+int driverlist(void*);
+int driverchoose(void*);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -62,7 +70,17 @@ void term_read(u8* buf)
 	}
 	else if(0 == ncmp(buf, "ls", 2))
 	{
+		say("----------------\n");
+		driverlist(0);
+		say("----------------\n");
+		bodylist(0);
+		say("----------------\n");
+		systemlist(0);
+		say("----------------\n");
 		arterylist(0);
+		say("----------------\n");
+		arenalist(0);
+		say("----------------\n");
 		actorlist(0);
 	}
 	else if(0 == ncmp(buf, "cd", 2))

@@ -134,6 +134,14 @@ int actorwrite(struct event* ev)
 int actorlist(u8* p)
 {
 	int j;
+	for(j=0;j<0x100;j++)
+	{
+		if(0 == actor[j].name)break;
+		say("[%03x]: %.8s,%.8s\n", j, &actor[j].type, &actor[j].name);
+	}
+	if(0 == j)say("empty actor\n");
+/*
+	int j;
 	int ret = 0;
 	u64 type = 0;
 	for(j=0;j<0x100;j++)
@@ -154,6 +162,7 @@ int actorlist(u8* p)
 
 		ret++;
 	}
+*/
 	return 0;
 }
 void actorchoose(char* p)

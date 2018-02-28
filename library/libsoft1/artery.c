@@ -108,15 +108,7 @@ int arterystop()
 }
 int arterylist()
 {
-	int j;
-	void* addr;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == obj[j].sock)continue;
-
-		addr = (void*)(&obj[j]);
-		say("[%x]=(%.8s,%.8s)\n", j, addr, addr+8);
-	}
+	say("empth artery\n");
 	return 0;
 }
 int arterychoose(u8* buf)

@@ -20,6 +20,25 @@ void say(char*,...);
 
 
 
+void driverread()
+{
+}
+void driverwrite()
+{
+}
+void driverlist()
+{
+	say("empty driver\n");
+}
+void driverchoose()
+{
+}
+void driverstart()
+{
+}
+void driverstop()
+{
+}
 void drivercreate(void* addr)
 {
 	//say("[4,8):createed driver\n");

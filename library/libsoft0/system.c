@@ -1,7 +1,4 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
+#include "system.h"
 //random
 int createrandom(void*);
 int deleterandom();
@@ -28,10 +25,7 @@ void say(void*, ...);
 
 
 //
-static u8* mega0;
-static u8* mega1;
-static u8* mega2;
-static u8* mega3;
+static struct object* obj;
 
 
 
@@ -46,6 +40,18 @@ int systemwrite(int fd, char* buf, int off, int len)
 }
 int systemlist()
 {
+	int j,k=0;
+	void* addr;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].sock)continue;
+
+		k++;
+		addr = (void*)(&obj[j]);
+		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+	}
+
+	if(0 == k)say("empth system\n");
 	return 0;
 }
 int systemchoose()
@@ -66,18 +72,15 @@ void systemcreate(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j]=0;
 
 	//where
-	mega0 = addr;
-	mega1 = addr+0x100000;
-	mega2 = addr+0x200000;
-	mega3 = addr+0x300000;
+	obj = (void*)addr;
 
 	//
-	createrandom(mega0);
-	createsignal(mega0);
-	createwatcher(mega0);
-	createsocket(mega0);
-	createshell(mega0);
-	createuart(mega0);
+	createrandom(obj);
+	createsignal(obj);
+	createwatcher(obj);
+	createsocket(obj);
+	createshell(obj);
+	createuart(obj);
 
 	//
 	//say("[8,c):createed system\n");

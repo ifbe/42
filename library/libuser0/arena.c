@@ -68,6 +68,21 @@ int arenawrite(struct window* dst, struct window* src)
 	}
 	return 0;
 }
+int arenalist()
+{
+	int j;
+	for(j=0;j<0x100;j++)
+	{
+		if(0 == arena[j].type)break;
+		say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+	}
+
+	if(0 == j)say("empty arena\n");
+	return 0;
+}
+int arenachoose()
+{
+}
 void* arenastart(u64 type, u64 fd)
 {
 	struct window* win = 0;
