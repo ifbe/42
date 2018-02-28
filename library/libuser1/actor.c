@@ -53,25 +53,25 @@ void act_at(struct arena* win, struct actor* act)
 
 	sty = (void*)style + stylen;
 	stylen += sizeof(struct style);
-	sty->i_cx = w /2;
-	sty->i_cy = h /2;
-	sty->i_cz = 0.0;
-	sty->i_rx = w *49/100;
-	sty->i_ry = 0.0;
-	sty->i_rz = 0.0;
-	sty->i_fx = 0.0;
-	sty->i_fy = h *49/100;
-	sty->i_fz = 0.0;
-	sty->i_ux = 0.0;
-	sty->i_uy = 0.0;
-	sty->i_uz = d *49/100;
+	sty->cx = w /2;
+	sty->cy = h /2;
+	sty->cz = 0.0;
+	sty->rx = w *49/100;
+	sty->ry = 0.0;
+	sty->rz = 0.0;
+	sty->fx = 0.0;
+	sty->fy = h *49/100;
+	sty->fz = 0.0;
+	sty->ux = 0.0;
+	sty->uy = 0.0;
+	sty->uz = d *49/100;
 
 	com = (void*)compo + comlen;
 	comlen += sizeof(struct compo);
-	com->flag0 = 0;
-	com->flag1 = 1;
-	com->flag2 = 2;
-	com->flag3 = 3;
+	com->flag00 = 0;
+	com->flag01 = 1;
+	com->flag02 = 2;
+	com->flag03 = 3;
 
 	relation_write(
 		win, sty, _win_,

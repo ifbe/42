@@ -117,12 +117,12 @@ static void bintree_read_pixel(
 	struct actor* act, struct compo* com)
 {
 	struct bintree* right;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);

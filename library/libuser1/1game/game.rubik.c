@@ -20,12 +20,12 @@ static void rubikscube_read_vbo(
 	struct actor* act, struct compo* com)
 {
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	for(y=0;y<3;y++)
 	{
@@ -141,12 +141,12 @@ static void rubikscube_read_pixel(
 {
 	u32 bg;
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx / 3;
-	int hh = sty->i_fy / 3;
-	int dd = sty->i_uz / 3;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx / 3;
+	int hh = sty->fy / 3;
+	int dd = sty->uz / 3;
 
 	bg = rubikcolor[2];
 	for(y=0;y<3;y++)

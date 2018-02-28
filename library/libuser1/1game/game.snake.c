@@ -27,12 +27,12 @@ void snake_read_pixel(
 {
 	int j;
 	int t1, t2, t3, t4;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//body
@@ -61,12 +61,12 @@ void snake_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	float cx = sty->i_cx;
-	float cy = sty->i_cy;
-	float cz = sty->i_cz;
-	float ww = sty->i_rx;
-	float hh = sty->i_fy;
-	float dd = sty->i_uz;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
 	carveline_rect(
 		win, 0x404040,
 		cx, cy, cz,

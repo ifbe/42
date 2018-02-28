@@ -43,12 +43,12 @@ static void the2048_read_vbo(
 	u32 color;
 	int x,y;
 	float xxx, yyy, zzz;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	carvesolid_rect(
 		win, 0x444444,
@@ -91,12 +91,12 @@ static void the2048_read_pixel(
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
 	//cubies
@@ -141,12 +141,12 @@ static void the2048_read_html(
 	int len = 0;
 	u32 color;
 	u8* buf = (u8*)(win->buf);
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	len += mysnprintf(
 		buf+len, 0x1000,

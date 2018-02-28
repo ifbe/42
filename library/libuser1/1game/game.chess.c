@@ -15,12 +15,12 @@ static void chess_read_pixel(
 {
 	u32 color;
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx/4;
-	int hh = sty->i_fy/4;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
@@ -29,13 +29,13 @@ static void chess_read_pixel(
 			else color = 0xffffff;
 
 			drawsolid_rect(win, color,
-				cx+(x-4)*ww, cy+(y-4)*hh,
-				cx+(x-3)*ww, cy+(y-3)*hh
+				(cx-ww)+(2*x+0)*ww/8, (cy-hh)+(2*y+0)*hh/8,
+				(cx-ww)+(2*x+2)*ww/8, (cy-hh)+(2*y+2)*hh/8
 			);
 			if(buffer[y][x] == 0)continue;
 
 			drawascii(win, 0xff00ff,
-				cx+(x-4)*ww, cy+(y-4)*hh,
+				(cx-ww-4)+(2*x+1)*ww/8, (cy-hh-8)+(2*y+1)*hh/8,
 				buffer[y][x]
 			);
 		}
@@ -48,12 +48,12 @@ static void chess_read_vbo(
 	u32 color;
 	int x,y;
 	float xxx, yyy;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)

@@ -17,29 +17,29 @@ static void sudoku_read_pixel(
 {
 	int x,y;
 	int t1, t2, t3, t4;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx *2/9;
-	int hh = sty->i_fy *2/9;
-	int dd = sty->i_uz *2/9;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			t1 = cx+(2*x-9)*ww/2;
-			t2 = cy+(2*y-9)*hh/2;
-			t3 = cx+(2*x-7)*ww/2;
-			t4 = cy+(2*y-7)*hh/2;
+			t1 = (cx-ww)+(2*x+0)*ww/9;
+			t2 = (cy-hh)+(2*y+0)*hh/9;
+			t3 = (cx-ww)+(2*x+2)*ww/9;
+			t4 = (cy-hh)+(2*y+2)*hh/9;
 			drawsolid_rect(win, 0xcccccc, t1, t2, t3, t4);
 			drawline_rect(win, 0x222222, t1, t2, t3, t4);
 
 			if(table[y][x] != 0)
 			{
 				drawdecimal(win, 0,
-					cx+(2*x-9)*ww/2,
-					cy+(2*y-9)*hh/2,
+					(cx-ww-4)+(2*x+1)*ww/9,
+					(cy-hh-8)+(2*y+1)*hh/9,
 					table[y][x]
 				);
 			}
@@ -53,12 +53,12 @@ static void sudoku_read_vbo(
 	u32 c;
 	int x,y;
 	float xxx, yyy;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)

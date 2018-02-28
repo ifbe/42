@@ -17,12 +17,12 @@ static void qrcode_read_pixel(
 	u32 color;
 	int x,y;
 	int x1,y1,x2,y2;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	for(y=0;y<slen;y++)
 	{

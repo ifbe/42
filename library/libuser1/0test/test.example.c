@@ -8,12 +8,12 @@ static void example_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	carvesolid_rect(
 		win, getrandom(),
 		cx, cy, cz,
@@ -26,12 +26,12 @@ static void example_read_pixel(
 	struct actor* act, struct compo* com)
 {
 	u32 bg,fg;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	bg = getrandom()&0xffffff;
 	fg = (~bg)&0xffffff;

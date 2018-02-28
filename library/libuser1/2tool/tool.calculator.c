@@ -28,12 +28,12 @@ static void calculator_read_pixel(
 {
 	u32 fg;
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx / 4;
-	int hh = sty->i_fy / 4;
-	int dd = sty->i_uz / 4;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx / 4;
+	int hh = sty->fy / 4;
+	int dd = sty->uz / 4;
 
 	//display
 	drawsolid_rect(win, 0x222222, cx-ww*4, cy-hh*4, cx+ww*4, cy);

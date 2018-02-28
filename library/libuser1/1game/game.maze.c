@@ -17,12 +17,12 @@ static void maze_read_vbo(
 {
 	int x,y,z,w;
 	float fx,fy,fz;
-	float cx = sty->i_cx;
-	float cy = sty->i_cy;
-	float cz = sty->i_cz;
-	float ww = sty->i_rx;
-	float hh = sty->i_fy;
-	float dd = sty->i_uz;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
 
 	for(y=0;y<height;y++)
 	{
@@ -85,12 +85,12 @@ static void maze_read_pixel(
 	struct actor* act, struct compo* com)
 {
 	int x,y,w;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	for(y=0;y<height;y++)
 	{

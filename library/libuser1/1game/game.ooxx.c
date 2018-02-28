@@ -14,12 +14,12 @@ static void ooxx_read_pixel(
 	struct actor* act, struct compo* com)
 {
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//heng
@@ -60,12 +60,12 @@ static void ooxx_read_vbo(
 	struct actor* act, struct compo* com)
 {
 	int x,y;
-	float cx = (float)(sty->i_cx);
-	float cy = (float)(sty->i_cy);
-	float cz = (float)(sty->i_cz);
-	float ww = (float)(sty->i_rx);
-	float hh = (float)(sty->i_fy);
-	float dd = (float)(sty->i_uz);
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
 	for(y=0;y<3;y++)
 	{
 		for(x=0;x<3;x++)

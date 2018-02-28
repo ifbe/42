@@ -102,12 +102,12 @@ void xiangqi_read_pixel(
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
 	int x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	black=0;
 	if( ((win->fmt)&0xffffffff) == 0x61626772)
@@ -211,12 +211,12 @@ static void xiangqi_read_vbo(
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	carvesolid_rect(
 		win, 0x8d6f25,

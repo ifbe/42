@@ -241,87 +241,93 @@ struct actor
 };
 struct style
 {
-	int flag0;
-	int flag1;
-	int flag2;
-	int flag3;
+	//[00,0f]:
+	u64 type;
+	u64 name;
 
-	int flag4;
-	int flag5;
-	int flag6;
-	int flag7;
+	//[10,1f]: center
+	float cx;
+	float cy;
+	float cz;
+	float cw;
 
-	int flag8;
-	int flag9;
-	int flaga;
-	int flagb;
+	//[20,2f]: left
+	float lx;
+	float ly;
+	float lz;
+	float ltype;
 
-	int flagc;
-	int flagd;
-	int flage;
-	int flagf;
+	//[30,3f]: right
+	float rx;
+	float ry;
+	float rz;
+	float rtype;
 
-	float i_cx;
-	float i_cy;
-	float i_cz;
-	float i_cw;
+	//[40,4f]: near
+	float nx;
+	float ny;
+	float nz;
+	float ntype;
 
-	float i_rx;
-	float i_ry;
-	float i_rz;
-	float i_rw;
+	//[50,5f]: far
+	float fx;
+	float fy;
+	float fz;
+	float ftype;
 
-	float i_fx;
-	float i_fy;
-	float i_fz;
-	float i_fw;
+	//[60,6f]: bottom
+	float bx;
+	float by;
+	float bz;
+	float btype;
 
-	float i_ux;
-	float i_uy;
-	float i_uz;
-	float i_uw;
+	//[70,7f]: upper
+	float ux;
+	float uy;
+	float uz;
+	float utype;
 };
 struct compo
 {
-	int flag0;
-	int flag1;
-	int flag2;
-	int flag3;
+	int flag00;
+	int flag01;
+	int flag02;
+	int flag03;
 
-	int flag4;
-	int flag5;
-	int flag6;
-	int flag7;
+	int flag04;
+	int flag05;
+	int flag06;
+	int flag07;
 
-	int flag8;
-	int flag9;
-	int flaga;
-	int flagb;
+	int flag08;
+	int flag09;
+	int flag0a;
+	int flag0b;
 
-	int flagc;
-	int flagd;
-	int flage;
-	int flagf;
+	int flag0c;
+	int flag0d;
+	int flag0e;
+	int flag0f;
 
-	float o_cx;
-	float o_cy;
-	float o_cz;
-	float o_cw;
+	int flag10;
+	int flag11;
+	int flag12;
+	int flag13;
 
-	float o_rx;
-	float o_ry;
-	float o_rz;
-	float o_rw;
+	int flag14;
+	int flag15;
+	int flag16;
+	int flag17;
 
-	float o_fx;
-	float o_fy;
-	float o_fz;
-	float o_fw;
+	int flag18;
+	int flag19;
+	int flag1a;
+	int flag1b;
 
-	float o_ux;
-	float o_uy;
-	float o_uz;
-	float o_uw;
+	int flag1c;
+	int flag1d;
+	int flag1e;
+	int flag1f;
 };
 
 

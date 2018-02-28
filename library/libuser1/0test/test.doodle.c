@@ -16,12 +16,12 @@ void doodle_read_pixel(
 	int x0,y0,x1,y1;
 	int w = win->w;
 	int h = win->h;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 
 	//circle
 	drawsolid_circle(win, 0x00ffff, cx, cy, ww);
@@ -49,12 +49,12 @@ static void doodle_read_vbo(
 {
 	float f;
 	float x0,y0,x1,y1;
-	float cx = sty->i_cx;
-	float cy = sty->i_cy;
-	float cz = sty->i_cz;
-	float ww = sty->i_rx;
-	float hh = sty->i_fy;
-	float dd = sty->i_uz;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
 
 	carvesolid_circle(
 		win, 0x00ffff,

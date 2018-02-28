@@ -136,12 +136,12 @@ static void codeimg_read_pixel(
 	int x,y;
 	int width = win->w;
 	int height = win->h;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	u32* src = (u32*)(act->buf);
 	u32* dst = (u32*)(win->buf);
 
@@ -154,12 +154,12 @@ static void codeimg_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	carvesolid_rect(
 		win, 0xffffff,
 		cx, cy, cz,

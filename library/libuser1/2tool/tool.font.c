@@ -20,12 +20,12 @@ static void font_read_pixel(
 	struct actor* act, struct compo* com)
 {
 	int x,y,m,n;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 //say("chosen=%x\n",chosen);
 
 	ww &= 0xfff0;
@@ -77,12 +77,12 @@ static void font_read_vbo(
 	struct actor* act, struct compo* com)
 {
 	float x,y;
-	int cx = sty->i_cx;
-	int cy = sty->i_cy;
-	int cz = sty->i_cz;
-	int ww = sty->i_rx;
-	int hh = sty->i_fy;
-	int dd = sty->i_uz;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
 	carveline_rect(
 		win, 0x00ff00,
 		cx, cy, 0.0,
