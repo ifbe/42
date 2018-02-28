@@ -12,7 +12,6 @@ void* arenastart(u64, u64);
 void arenastop(void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
-int term_write(void*);
 //
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
@@ -135,11 +134,7 @@ int actorwrite(struct event* ev)
 	}
 
 	//no window
-	if(where < 0xffff)
-	{
-		if(_char_ == what)term_write(ev);
-	}
-	else
+	if(0 != where)
 	{
 		win = (void*)where;
 		ret = actorinput(win, ev);
