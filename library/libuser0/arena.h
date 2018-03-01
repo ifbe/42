@@ -56,7 +56,8 @@ struct window
 		void* er;
 	};
 	union{
-		u64 ximage;
+		u64 haha;
+		void* ximage;
 		void* texture;
 		void* pass;
 	};

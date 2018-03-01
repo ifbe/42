@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include "arena.h"
+int lowlevel_input();
 
 
 
@@ -65,20 +66,20 @@ static u8 xlib2kbd[0x80]={
 //
 static Display* dsp = 0;
 static Visual* visual = 0;
-static Window root = 0;
 static Atom wmDelete;
 static Atom wmCreate;
 //
-static struct window* palette;
-static struct window* theone;
-static void* maptab[0x1000];
+static void* winmap[0x100];
+static Window fdmap[0x100];
+static int fuckyou = 0;
 
 
 
 
-static int fuckyou=0;
-void createmywindow(struct window* this)
+void createmywindow(int j)
 {
+	struct window* this = winmap[j];
+
 	//window, gc
 	this->fd = XCreateSimpleWindow(
 		dsp, RootWindow(dsp,0), 0, 0,
@@ -102,47 +103,67 @@ void createmywindow(struct window* this)
 
 	//
 	XMapWindow(dsp, this->fd);
-	maptab[(this->fd) & 0xfff] = this;
-	fuckyou++;
+	fdmap[j] = this->fd;
 }
 void* uievent(struct window* this)
 {
 	u64 x,y,k;
 	u64 why, what, where;
-	Window win;
+	Window fd;
 	XEvent ev;
 	XAnyEvent* pev;
-	pev = (void*)&ev;
 
-	createmywindow(this);
+	createmywindow(1);
 	while(1)
 	{
 		XNextEvent(dsp, &ev);
-		win = pev->window;
-		this = maptab[win&0xfff];
-		where = (u64)this;
+		pev = (void*)&ev;
+		fd = pev->window;
+		if(ev.type == ClientMessage)printf("abcdef\n");
+
+		this = 0;
+		for(k=0;k<0x100;k++)
+		{
+			if(fdmap[k] == fd)
+			{
+				this = winmap[k];
+				where = (u64)this;
+				break;
+			}
+		}
 
 		if(ev.type == ClientMessage)
 		{
-			//printf("ClientMessage\n");
 			if(ev.xclient.data.l[0] == wmCreate)
 			{
-				createmywindow((void*)theone + ev.xclient.data.l[1]);
+				printf("wmCreate\n");
+				k = ev.xclient.data.l[1];
+				createmywindow(k);
+				continue;
 			}
 			else if(ev.xclient.data.l[0] == wmDelete)
 			{
-				maptab[((u64)win) & 0xfff] = 0;
-				XDestroyWindow(dsp, win);
-				fuckyou--;
-
-				if(fuckyou <= 0)
+				printf("wmDelete:%x,%x\n",k,fd);
+				XDestroyWindow(dsp, fd);
+				if((k>0)&&(k<256))
 				{
-					eventwrite(0,0,0,0);
+					winmap[k] = 0;
+					fdmap[k] = 0;
+				}
+
+				fuckyou--;
+				if(fuckyou <= 1)
+				{
+					eventwrite(0, 0, 0, 0);
 					break;
 				}
 			}
-		}//ClientMessage
-		else if(ev.type == ConfigureNotify)
+			else printf("ClientMessage\n");
+			continue;
+		}
+		if(0 == this)continue;
+
+		if(ev.type == ConfigureNotify)
 		{
 			int x = ev.xconfigure.width;
 			int y = ev.xconfigure.height;
@@ -152,10 +173,10 @@ void* uievent(struct window* this)
 			this->w = x;
 			this->h = y;
 
-			palette->ximage = (u64)XCreateImage(
+			this->ximage = XCreateImage(
 				dsp, visual, 24, ZPixmap,
-				0, (void*)(palette->buf),
-				x,y,32,0
+				0, this->buf,
+				x, y, 32, 0
 			);
 
 			why = x + (y<<16);
@@ -165,9 +186,9 @@ void* uievent(struct window* this)
 		else if(ev.type == Expose)
 		{
 			XImage* xi;
-			if(palette == 0)continue;
+			if(this == 0)continue;
 
-			xi = (void*)(palette->ximage);
+			xi = this->ximage;
 			if(xi == 0)continue;
 
 			XPutImage(
@@ -178,27 +199,33 @@ void* uievent(struct window* this)
 		}//Expose
 		else if(ev.type == ButtonPress)
 		{
-			//printf("buttonpress\n");
 			x = ev.xbutton.x;
 			y = ev.xbutton.y;
 			k = ev.xbutton.button;
 			if(k == Button1)k = 'l';	//left
-			else if(k == Button1)k = 'r';	//right
-			else if(k == Button1)k = 'm';	//middle
+			else if(k == Button2)k = 'r';	//right
+			else if(k == Button3)k = 'm';	//middle
 			else if(k == Button4)k = 'f';	//front
 			else if(k == Button5)k = 'b';	//back
 
 			why = x + (y<<16) + (k<<48);
 			what = hex32('p', '+', 0, 0);
 			eventwrite(why, what, where, 0);
-
-			continue;
 		}//ButtonPress
 		else if(ev.type == ButtonRelease)
 		{
-			if(ev.xbutton.button == Button1)
-			{
-			}
+			x = ev.xbutton.x;
+			y = ev.xbutton.y;
+			k = ev.xbutton.button;
+			if(k == Button1)k = 'l';	//left
+			else if(k == Button2)k = 'r';	//right
+			else if(k == Button3)k = 'm';	//middle
+			else if(k == Button4)k = 'f';	//front
+			else if(k == Button5)k = 'b';	//back
+
+			why = x + (y<<16) + (k<<48);
+			what = hex32('p', '-', 0, 0);
+			eventwrite(why, what, where, 0);
 		}//ButtonRelease
 		else if(ev.type == MotionNotify)
 		{
@@ -246,6 +273,16 @@ void* uievent(struct window* this)
 
 	XCloseDisplay(dsp);
 }
+void* terminalthread(void* win)
+{
+	u64 why, what;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		eventwrite(why, what, 0, 0);
+	}
+}
 
 
 
@@ -254,7 +291,6 @@ void windowwrite(struct window* dst, struct window* src)
 {
 	XEvent ev;
 	u64 fd = dst->fd;
-	if(maptab[fd & 0xfff] == 0)return;
 
 	memset(&ev,0,sizeof(XEvent));
 	ev.type = Expose;
@@ -262,8 +298,6 @@ void windowwrite(struct window* dst, struct window* src)
 	ev.xexpose.window = fd;
 	XSendEvent(dsp, fd, False, ExposureMask, &ev);
 	XFlush(dsp);	//must
-
-	usleep(10000);
 }
 void windowread()
 {
@@ -277,46 +311,44 @@ void windowchange()
 void windowstart(struct window* this)
 {
 	int j;
+	this->type = hex32('w', 'i', 'n', 0);
+	this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 	this->w = 512;
 	this->h = 512;
-	if(this->type == hex32('b','u','f',0))
+
+	this->buf = malloc(0x1000000);
+	this->ximage = XCreateImage(
+		dsp, visual, 24, ZPixmap, 0,
+		this->buf, 512, 512,
+		32, 0
+	);
+
+	if(fuckyou <= 1)
 	{
-		palette = this;
-		palette->ximage = (u64)XCreateImage(
-			dsp, visual, 24, ZPixmap, 0,
-			(void*)(palette->buf), 512, 512,
-			32, 0
-		);
-		return;
+		winmap[1] = this;
+		startthread(uievent, this);
 	}
 	else
 	{
-		this->type = hex32('w', 'i', 'n', 0);
-		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+		for(j=1;j<0x100;j++)
+		{
+			if(0 == winmap[j])break;
+		}
+		winmap[j] = this;
 
-                for(j=0;j<16;j++)
-                {
-                        (this->touch[j]).id = 0xffff;
-                }
-		if(fuckyou == 0)
-		{
-			theone = this;
-			this->thread = startthread(uievent, this);
-		}
-		else
-		{
-			XClientMessageEvent ev;
-			memset(&ev,0,sizeof(XClientMessageEvent));
-			ev.type = ClientMessage;
-			ev.window = root;
-			ev.format = 32;
-			ev.data.l[0] = wmCreate;
-			ev.data.l[1] = (void*)this - (void*)theone;
-			XSendEvent(dsp, theone->fd, False, 0, (void*)&ev);
-			XFlush(dsp);	//must
-			printf("%llx\n", (u64)this);
-		}
+		XClientMessageEvent ev;
+		memset(&ev, 0, sizeof(XClientMessageEvent));
+		ev.type = ClientMessage;
+		ev.window = fdmap[0];
+		ev.format = 32;
+		ev.data.l[0] = wmCreate;
+		ev.data.l[1] = j;
+		XSendEvent(dsp, fdmap[1], False, 0, (void*)&ev);
+		XFlush(dsp);	//must
 	}
+
+	for(j=0;j<16;j++){(this->touch[j]).id = 0xffff;}
+	fuckyou++;
 }
 void windowstop()
 {
@@ -324,7 +356,12 @@ void windowstop()
 void windowcreate()
 {
 	int j;
-	for(j=0;j<0x1000;j++)maptab[j] = 0;
+	Window root;
+	for(j=0;j<0x100;j++)
+	{
+		winmap[j] = 0;
+		fdmap[j] = 0;
+	}
 
 	//must
 	XInitThreads();
@@ -336,7 +373,7 @@ void windowcreate()
 
 	//visual
 	visual = DefaultVisual(dsp, 0);
-	if(visual->class!=TrueColor)
+	if(visual->class != TrueColor)
 	{
 		fprintf(stderr, "Cannot handle non true color visual ...\n");
 		XCloseDisplay(dsp);
@@ -346,6 +383,14 @@ void windowcreate()
 	//
 	wmDelete = XInternAtom(dsp, "WM_DELETE_WINDOW", True);
 	wmCreate = XInternAtom(dsp, "WM_CREATE_WINDOW", True);
+
+	//
+	winmap[0] = (void*)0x1000;
+	fdmap[0] = root;
+	fuckyou = 1;
+
+	//
+	startthread(terminalthread, 0);
 }
 void windowdelete()
 {

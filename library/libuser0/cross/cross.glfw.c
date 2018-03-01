@@ -9,6 +9,7 @@
 
 
 
+int lowlevel_input();
 int fixarg(void* dst, void* src);
 //
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
