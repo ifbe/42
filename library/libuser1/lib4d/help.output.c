@@ -106,6 +106,6 @@ int actoroutput(struct arena* win)
 	foreground(win);
 
 theend:
-	arenawrite(win, &arena[0]);
+	arenaread(win, &arena[0]);
 	return 0;
 }

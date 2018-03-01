@@ -12,6 +12,8 @@
 //libuser
 int actorread();
 int actorwrite(void*);
+int arenaread();
+int arenawrite(void*);
 int term_read(void*);
 int term_write(void*);
 //libsoft
@@ -155,10 +157,12 @@ again:
 		}
 
 		//libuser.arena/actor: new, del, chg, etc
-		if(_win_ == ev->what)
+		ret = (ev->what)&0xff;
+		if('w' == ret)
 		{
+			arenawrite(ev);
+			continue;
 		}
-
 
 		//foreach changed: actor_read, window_write
 		actorwrite(ev);

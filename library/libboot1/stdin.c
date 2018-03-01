@@ -30,11 +30,14 @@ void say(void*, ...);
 
 
 
+static u64 path[8];
+static int pos = 0;
 static u8* input = 0;
 static int enq = 0;
 void initstdin(void* addr)
 {
 	input = addr;
+	enq = 0;
 }
 
 
@@ -66,7 +69,9 @@ void term_read(u8* buf)
 		eventwrite(
 			hex32('w','i','n',0),
 			hex32('w','+',0,0),
-			0, 0);
+			0,
+			0
+		);
 	}
 	else if(0 == ncmp(buf, "ls", 2))
 	{
@@ -85,14 +90,34 @@ void term_read(u8* buf)
 	}
 	else if(0 == ncmp(buf, "cd", 2))
 	{
+		if(buf[2] < 0x20)pos = 0;
+		else
+		{
+			path[pos] = 0;
+			for(j=0;j<8;j++)
+			{
+				if(buf[3+j] < 0x20)break;
+				((u8*)&path[pos])[j] = buf[3+j];
+			}
+			pos += 1;
+		}
 	}
 	else
 	{
-		actorchoose(buf);
+		if(0 != pos)
+		{
+		}
+		else actorchoose(buf);
 	}
 
 prompt:
-	say("[void]");
+	if(0 != pos)
+	{
+		say("[");
+		for(j=0;j<pos;j++)say("%s/", &path[j]);
+		say("]");
+	}
+	else say("[void]");
 	enq = 0;
 	return;
 

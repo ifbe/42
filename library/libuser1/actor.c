@@ -82,27 +82,6 @@ void act_at(struct arena* win, struct actor* act)
 
 
 
-void win_add(u64 why, u64 where)
-{
-	void* ret = arenastart(why, where);
-	if(ret == 0)
-	{
-		say("error@w+\n");
-		return;
-	}
-}
-void win_del(u64 why, u64 where)
-{
-	void* ret = (void*)where;
-	arenastop(ret);
-}
-void win_at(u64 why, u64 where)
-{
-}
-
-
-
-
 int actorread()
 {
 	int j;
@@ -123,15 +102,6 @@ int actorwrite(struct event* ev)
 	what = ev->what;
 	where = ev->where;
 	//say("%x,%x,%x\n", why, what, where);
-
-	//window event
-	if('w' == (what&0xff))
-	{
-		if(hex32('w','+',0,0) == what)win_add(why, where);
-		else if(hex32('w','-',0,0) == what)win_del(why, where);
-		else if(hex32('w','@',0,0) == what)win_at(why, where);
-		return 0;
-	}
 
 	//no window
 	if(0 != where)

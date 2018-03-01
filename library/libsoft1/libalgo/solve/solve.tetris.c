@@ -35,17 +35,17 @@ int tetris_left(u8* buf, int w, int h)
 			}
 		}
 	}
-	if(k != 4)return;
+	if(k != 4)return 0;
 
-	if(m[0] <= 0)return;
-	if(m[1] <= 0)return;
-	if(m[2] <= 0)return;
-	if(m[3] <= 0)return;
+	if(m[0] <= 0)return 0;
+	if(m[1] <= 0)return 0;
+	if(m[2] <= 0)return 0;
+	if(m[3] <= 0)return 0;
 
-	if(0 != (buf[(n[0]*w) + m[0]-1]&0x1))return;
-	if(0 != (buf[(n[1]*w) + m[1]-1]&0x1))return;
-	if(0 != (buf[(n[2]*w) + m[2]-1]&0x1))return;
-	if(0 != (buf[(n[3]*w) + m[3]-1]&0x1))return;
+	if(0 != (buf[(n[0]*w) + m[0]-1]&0x1))return 0;
+	if(0 != (buf[(n[1]*w) + m[1]-1]&0x1))return 0;
+	if(0 != (buf[(n[2]*w) + m[2]-1]&0x1))return 0;
+	if(0 != (buf[(n[3]*w) + m[3]-1]&0x1))return 0;
 
 	buf[(n[0]*w) + m[0]] = 0;
 	buf[(n[1]*w) + m[1]] = 0;
@@ -56,6 +56,7 @@ int tetris_left(u8* buf, int w, int h)
 	buf[(n[1]*w) + m[1]-1] = 0x80;
 	buf[(n[2]*w) + m[2]-1] = 0x80;
 	buf[(n[3]*w) + m[3]-1] = 0x80;
+	return 1;
 }
 int tetris_right(u8* buf, int w, int h)
 {
@@ -76,17 +77,17 @@ int tetris_right(u8* buf, int w, int h)
 			}
 		}
 	}
-	if(k != 4)return;
+	if(k != 4)return 0;
 
-	if(m[0]+1 >= w)return;
-	if(m[1]+1 >= w)return;
-	if(m[2]+1 >= w)return;
-	if(m[3]+1 >= w)return;
+	if(m[0]+1 >= w)return 0;
+	if(m[1]+1 >= w)return 0;
+	if(m[2]+1 >= w)return 0;
+	if(m[3]+1 >= w)return 0;
 
-	if(0 != (buf[(n[0]*w) + m[0]+1]&0x1))return;
-	if(0 != (buf[(n[1]*w) + m[1]+1]&0x1))return;
-	if(0 != (buf[(n[2]*w) + m[2]+1]&0x1))return;
-	if(0 != (buf[(n[3]*w) + m[3]+1]&0x1))return;
+	if(0 != (buf[(n[0]*w) + m[0]+1]&0x1))return 0;
+	if(0 != (buf[(n[1]*w) + m[1]+1]&0x1))return 0;
+	if(0 != (buf[(n[2]*w) + m[2]+1]&0x1))return 0;
+	if(0 != (buf[(n[3]*w) + m[3]+1]&0x1))return 0;
 
 	buf[(n[0]*w) + m[0]] = 0;
 	buf[(n[1]*w) + m[1]] = 0;
@@ -97,6 +98,7 @@ int tetris_right(u8* buf, int w, int h)
 	buf[(n[1]*w) + m[1]+1] = 0x80;
 	buf[(n[2]*w) + m[2]+1] = 0x80;
 	buf[(n[3]*w) + m[3]+1] = 0x80;
+	return 1;
 }
 int tetris_up(u8* buf, int w, int h)
 {
@@ -120,7 +122,7 @@ int tetris_down(u8* buf, int w, int h)
 			}
 		}
 	}
-	if(k != 4)return;
+	if(k != 4)return 0;
 
 	if(n[0]+1 >= h)goto merged;
 	if(n[1]+1 >= h)goto merged;

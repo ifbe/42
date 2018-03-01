@@ -51,38 +51,6 @@ static struct window* arena;
 
 
 
-int arenaread(struct window* dst, struct window* src)
-{
-	return 0;
-}
-int arenawrite(struct window* dst, struct window* src)
-{
-	void* buf;
-	if(dst->type == __win__)
-	{
-		windowwrite(dst, &arena[0]);
-	}
-	else if(dst->type == hex32('W','S', 0, 0))
-	{
-		websocket_write(dst->fd, src->buf, src->info[0]);
-	}
-	return 0;
-}
-int arenalist()
-{
-	int j;
-	for(j=0;j<0x100;j++)
-	{
-		if(0 == arena[j].type)break;
-		say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
-	}
-
-	if(0 == j)say("empty arena\n");
-	return 0;
-}
-int arenachoose()
-{
-}
 void* arenastart(u64 type, u64 fd)
 {
 	struct window* win = 0;
@@ -127,6 +95,60 @@ int arenastop(struct window* win)
 	win->irel = 0;
 	win->orel = 0;
 	return 0;
+}
+int arenaread(struct window* dst, struct window* src)
+{
+	void* buf;
+	if(dst->type == __win__)
+	{
+		windowwrite(dst, &arena[0]);
+	}
+	else if(dst->type == hex32('W','S', 0, 0))
+	{
+		websocket_write(dst->fd, src->buf, src->info[0]);
+	}
+	return 0;
+}
+int arenawrite(struct event* ev)
+{
+	void* ret;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+
+	if(hex32('w','+',0,0) == what)
+	{
+		ret = arenastart(why, where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return 0;
+		}
+	}
+	else if(hex32('w','-',0,0) == what)
+	{
+		ret = (void*)where;
+		arenastop(ret);
+	}
+	else
+	{
+	}
+	return 0;
+}
+int arenalist()
+{
+	int j;
+	for(j=0;j<0x100;j++)
+	{
+		if(0 == arena[j].type)break;
+		say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+	}
+
+	if(0 == j)say("empty arena\n");
+	return 0;
+}
+int arenachoose()
+{
 }
 void arenacreate(u8* addr)
 {
