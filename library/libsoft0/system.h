@@ -10,13 +10,6 @@
 
 
 
-struct uartinfo
-{
-	char* buf;
-	int len;
-	int enq;
-	int deq;
-};
 struct object
 {
 	//[0x00,0x0f]
@@ -32,9 +25,12 @@ struct object
 	};
 
 	//[0x20,0x3f]
-	union{
-		struct uartinfo info;
-		u8 padding[0x20];
+	struct
+	{
+		u64 fd;
+		u64 flag;
+		u64 len;
+		u64 buf;
 	};
 
 	//[0x40,0x7f]

@@ -5,25 +5,6 @@
 
 
 
-
-//voice
-int voicecreate(void*);
-int voicedelete();
-int voicestart(void*);
-int voicestop();
-int voicelist();
-int voicechoose();
-int voiceread();
-int voicewrite(void*);
-//network
-int netwincreate(void*);
-int netwindelete();
-int netwinstart(void*);
-int netwinstop();
-int netwinlist();
-int netwinchoose();
-int netwinread();
-int netwinwrite(void*);
 //local
 int windowcreate(void*);
 int windowdelete();
@@ -47,6 +28,7 @@ void say(void*, ...);
 
 //
 static struct window* arena;
+static int cur = 0;
 
 
 
@@ -64,7 +46,7 @@ void* arenastart(u64 type, u64 fd)
 		if(j >= 0x100)return 0;
 	}
 
-	if(type == __win__)
+	if(__win__ == type)
 	{
 		win->type = __win__;
 		win->fmt = 0;
@@ -73,7 +55,7 @@ void* arenastart(u64 type, u64 fd)
 
 		windowstart(win);
 	}
-	else if(type == hex32('W','S',0,0))
+	else if(hex32('W','S',0,0) == type)
 	{
 		win->type = hex32('W', 'S', 0, 0);
 		win->fmt = hex32('h','t','m','l');
@@ -99,11 +81,11 @@ int arenastop(struct window* win)
 int arenaread(struct window* dst, struct window* src)
 {
 	void* buf;
-	if(dst->type == __win__)
+	if(__win__ == dst->type)
 	{
 		windowwrite(dst, &arena[0]);
 	}
-	else if(dst->type == hex32('W','S', 0, 0))
+	else if(hex32('W','S', 0, 0) == dst->type)
 	{
 		websocket_write(dst->fd, src->buf, src->info[0]);
 	}
@@ -157,8 +139,9 @@ void arenacreate(u8* addr)
 
 	//create
 	arena = (void*)addr;
+	soundcreate(arena);
+	videocreate(arena);
 	windowcreate(arena);
-	voicecreate(arena);
 
 	//
 	arenastart(__win__, 0);

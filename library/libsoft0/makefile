@@ -126,9 +126,7 @@ mac:
 .PHONY:win
 win:
 	rm -f *.o
-	g++ $(cflag) -fno-rtti win/win.flow.vision.directshow.cpp
 	$(compiler) $(cflag) win/win.flow.socket.c
-	$(compiler) $(cflag) win/win.flow.sound.waveinout.c
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.folder.c
 	$(compiler) $(cflag) win/win.memory.managed.c

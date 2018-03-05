@@ -278,7 +278,15 @@ protocol:
 	else printmemory(buf, len);
 	return type;
 }
-int network_explain(struct event* ev)
+
+
+
+
+int netmgr_read()
+{
+	return 0;
+}
+int netmgr_write(struct event* ev)
 {
 	int len;
 	u64 sock;
@@ -359,19 +367,27 @@ fail:
 	stopsocket(where);
 	return 0;
 }
-
-
-
-
-
-
-
-
-int netmgr_read()
+int netmgr_list(u8* p)
 {
+	int j;
+	u64 fd=0;
+	if(p==0)
+	{
+		for(j=0;j<4096;j++)
+		{
+			if(obj[j].sock == 0)continue;
+
+			say("%d:	%llx,%llx\n",
+				j, obj[j].sock, obj[j].type);
+		}
+		return 0;
+	}
+
+	decstr2data(p, &fd);
+	say("%llx,%llx\n", obj[fd].sock, obj[fd].type);
 	return 0;
 }
-int netmgr_write(u8* p)
+int netmgr_cd(u8* p, int t)
 {
 	//
 	int ret;
@@ -551,30 +567,6 @@ int netmgr_write(u8* p)
 	obj[fd].type = tmp;
 	obj[fd].stage1 = 0;
 	return fd;
-}
-int netmgr_list(u8* p)
-{
-	int j;
-	u64 fd=0;
-	if(p==0)
-	{
-		for(j=0;j<4096;j++)
-		{
-			if(obj[j].sock == 0)continue;
-
-			say("%d:	%llx,%llx\n",
-				j, obj[j].sock, obj[j].type);
-		}
-		return 0;
-	}
-
-	decstr2data(p, &fd);
-	say("%llx,%llx\n", obj[fd].sock, obj[fd].type);
-	return 0;
-}
-int netmgr_choose(u8* p)
-{
-	return 0;
 }
 int netmgr_stop(u8* p)
 {

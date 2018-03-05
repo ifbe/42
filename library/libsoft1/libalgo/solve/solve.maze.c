@@ -1,96 +1,107 @@
 #include"artery.h"
+#define left 0x1
+#define right 0x2
+#define up 0x4
+#define down 0x8
 u32 getrandom();
 
 
 
 
-void maze_unblock(u8* data, int size, int x, int y, int mask)
+void maze_unblock(u8* data, int w, int h, int x, int y, int mask)
 {
-	if((mask&1) == 1)
+	if(left == (mask&left))
 	{
-		data[size*y+x] &= ~0x1;
-		if(x>0)data[size*y+x-1] &= ~0x2;
+		data[w*y+x] &= ~left;
+		if(x>0)data[w*y+x-1] &= ~right;
 	}
-	else if((mask&2) == 2)
+	else if(right == (mask&right))
 	{
-		data[size*y+x] &= ~0x2;
-		if(x<size-1)data[size*y+x+1] &= ~0x1;
+		data[w*y+x] &= ~right;
+		if(x<w-1)data[w*y+x+1] &= ~left;
 	}
-	else if((mask&4) == 4)
+	else if(up == (mask&up))
 	{
-		data[size*y+x] &= ~0x4;
-		if(y>0)data[size*(y-1)+x] &= ~0x8;
+		data[w*y+x] &= ~up;
+		if(y>0)data[w*(y-1)+x] &= ~down;
 	}
-	else if((mask&8) == 8)
+	else if(down == (mask&down))
 	{
-		data[size*y+x] &= ~0x8;
-		if(y<size-1)data[size*(y+1)+x] &= ~0x4;
+		data[w*y+x] &= ~down;
+		if(y<h-1)data[w*(y+1)+x] &= ~up;
 	}
-/*
-	else if((mask&0x10) == 0x10)
-	{
-		data[size*size*z+size*y+x] &= ~0x10;
-		if(z>0)data[size*size*(z-1)+size*y+x-1] &= ~0x20;
-	}
-	else if((mask&0x20) == 0x20)
-	{
-		data[size*size*z+size*y+x] &= ~0x20;
-		if(z<size-1)data[size*size*(z+1)+size*y+x] &= ~0x10;
-	}
-*/
 }
-
-
-
-
-int maze_available(u8* data, int size, int x, int y)
+void maze_block(u8* data, int w, int h, int x, int y, int mask)
+{
+	if(left == (mask&left))
+	{
+		data[w*y+x] |= left;
+		if(x>0)data[w*y+x-1] |= right;
+	}
+	else if(right == (mask&right))
+	{
+		data[w*y+x] |= right;
+		if(x<w-1)data[w*y+x+1] |= left;
+	}
+	else if(up == (mask&up))
+	{
+		data[w*y+x] |= up;
+		if(y>0)data[w*(y-1)+x] |= down;
+	}
+	else if(down == (mask&down))
+	{
+		data[w*y+x] |= down;
+		if(y<h-1)data[w*(y+1)+x] |= up;
+	}
+}
+int maze_available(u8* data, int w, int h, int x, int y)
 {
 	u8 count;
 	u8 asdf[4];
-	u8 this = data[(size*y)+x];
+	u8 this = data[(w*y)+x];
 
 	//random choose one direction
 	count = 0;
-	if((this&0x1) == 0x1)
+	if(left == (this&left))
 	{
 		if(x > 0)
 		{
-		if((data[(size*y)+x-1]&0x80)==0)
+		if((data[(w*y)+x-1]&0x80)==0)
 		{
-			asdf[count] = 1;
+			asdf[count] = left;
 			count++;
 		}
 		}
 	}
-	if((this&0x2) == 0x2)
+	if(right == (this&right))
 	{
-		if(x < size-1)
+		if(x < w-1)
 		{
-		if((data[(size*y)+x+1]&0x80)==0)
+		if((data[(w*y)+x+1]&0x80)==0)
 		{
-			asdf[count] = 2;
+			asdf[count] = right;
 			count++;
 		}
 		}
 	}
-	if((this&0x4) == 0x4)
+	if(up == (this&up))
 	{
 		if(y > 0)
 		{
-		if((data[x+(y-1)*size]&0x80)==0)
+		if((data[x+(y-1)*w]&0x80)==0)
 		{
-			asdf[count] = 4;
+			asdf[count] = up;
 			count++;
 		}
 		}
 	}
-	if((this&0x8) == 0x8)
+	if(down == (this&down))
 	{
-		if(y < size-1)
+		if(y < h-1)
 		{
-		if((data[x+(y+1)*size]&0x80)==0)
+		if((data[x+(y+1)*w]&0x80)==0)
 		{
-			asdf[count] = 8;
+			asdf[count] = down;
 			count++;
 		}
 		}
@@ -101,27 +112,26 @@ int maze_available(u8* data, int size, int x, int y)
 	count = asdf[count];
 	return count;
 }
-void maze_generate_dfs(u8* data, int size, int x, int y)
+void maze_generate_dfs(u8* data, int w, int h, int x, int y)
 {
-	u8* this;
-	u8 wall;
+	int tmp;
 
 	//visited -> return
-	this = data+(size*y)+x;
-	if((this[0]&0x80) == 0x80)return;
-	this[0] |= 0x80;
+	tmp = (w*y)+x;
+	if(0x80 == (data[tmp]&0x80))return;
+	data[tmp] |= 0x80;
 
 	//go into
 	while(1)
 	{
-		wall = maze_available(data, size, x, y);
-		if(wall == 0)break;
+		tmp = maze_available(data, w, h, x, y);
+		if(tmp == 0)break;
 
-		maze_unblock(data, size, x, y, wall);
-		if(wall == 1)maze_generate_dfs(data, size, x-1, y);
-		else if(wall == 2)maze_generate_dfs(data, size, x+1, y);
-		else if(wall == 4)maze_generate_dfs(data, size, x, y-1);
-		else if(wall == 8)maze_generate_dfs(data, size, x, y+1);
+		maze_unblock(data, w, h, x, y, tmp);
+		if(      left == tmp)maze_generate_dfs(data, w, h, x-1, y);
+		else if(right == tmp)maze_generate_dfs(data, w, h, x+1, y);
+		else if(   up == tmp)maze_generate_dfs(data, w, h, x, y-1);
+		else if( down == tmp)maze_generate_dfs(data, w, h, x, y+1);
 	}
 }
 void maze_generate_kruskal()
@@ -130,26 +140,111 @@ void maze_generate_kruskal()
 void maze_generate_prim()
 {
 }
-void maze_generate(u8* data, int size)
+void maze_generate(u8* data, int w, int h)
 {
 	int x,y;
-	for(y=0;y<size;y++)
+	for(y=0;y<h;y++)
 	{
-		for(x=0;x<size;x++)
+		for(x=0;x<w;x++)
 		{
-			//data[y*size+x] = getrandom()&0xf;
-			data[y*size+x] = 0xf;
+			//data[y*w+x] = getrandom()&0xf;
+			data[y*w+x] = 0xf;
 		}
 	}
-/*
-	maze_unblock(data, size, 0, 0, 1);
-	maze_unblock(data, size, 2, 3, 1);
-	maze_unblock(data, size, 2, 3, 2);
-	maze_unblock(data, size, 2, 3, 4);
-	maze_unblock(data, size, 2, 3, 8);
-*/
-	maze_generate_dfs(data, size, 0, 0);
+
+	maze_generate_dfs(data, w, h, 0, 0);
+
+	for(y=0;y<h;y++)
+	{
+		for(x=0;x<w;x++)
+		{
+			data[y*w+x] &= 0xf;
+		}
+	}
 }
-void maze_solve()
+
+
+
+
+void maze_solve_dfs(u8* data, int w, int h)
 {
+	int x,y,t;
+	int sp,tmp;
+	u8 xstack[0x1000];
+	u8 ystack[0x1000];
+	u8 mask[0x1000];
+
+	xstack[0] = 0;
+	ystack[0] = 0;
+	mask[0] = 0;
+	sp = 1;
+	while(1)
+	{
+		if(sp <= 0)break;
+
+		x = xstack[sp-1];
+		y = ystack[sp-1];
+		if((x == w-1)&&(y == h-1))break;
+
+		t = mask[sp-1];
+		tmp = data[(w*y)+x]&0xf;
+//say("%d,%d,%d,%d\n",x,y,t,tmp);
+		if((0 == (t&left)) && (0 == (tmp&left)) && (x>0))
+		{
+			mask[sp-1] |= left;
+
+			xstack[sp] = x-1;
+			ystack[sp] = y;
+			mask[sp] = right;
+
+			sp++;
+			continue;
+		}
+		if((0 == (t&right)) && (0 == (tmp&right)) && (x<w-1))
+		{
+			mask[sp-1] |= right;
+
+			xstack[sp] = x+1;
+			ystack[sp] = y;
+			mask[sp] = left;
+
+			sp++;
+			continue;
+		}
+		if((0 == (t&up)) && (0 == (tmp&up)) && (y>0))
+		{
+			mask[sp-1] |= up;
+
+			xstack[sp] = x;
+			ystack[sp] = y-1;
+			mask[sp] = down;
+
+			sp++;
+			continue;
+		}
+		if((0 == (t&down)) && (0 == (tmp&down)) && (y<h-1))
+		{
+			mask[sp-1] |= down;
+
+			xstack[sp] = x;
+			ystack[sp] = y+1;
+			mask[sp] = up;
+
+			sp++;
+			continue;
+		}
+
+		sp--;
+	}
+
+	for(t=0;t<sp;t++)
+	{
+		x = xstack[t];
+		y = ystack[t];
+		data[(w*y)+x] |= 0x80;
+	}
+}
+void maze_solve(u8* data, int w, int h)
+{
+	maze_solve_dfs(data, w, h);
 }

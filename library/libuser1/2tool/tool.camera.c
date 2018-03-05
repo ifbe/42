@@ -1,21 +1,22 @@
 #include "actor.h"
-void yuyv2rgba(u8* src, u8* dst,
-	int w1, int h1, int sx1, int sy1, int dx1, int dy1,
-	int w2, int h2, int sx2, int sy2, int dx2, int dy2
+void yuyv2rgba(
+	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
+	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
-void startvision();
-void stopvision();
+void videostart();
+void videostop();
+void* videoread(int);
 
 
 
 struct pictureobject
 {
-	void* buf;
-	int len;
-	int width;
-	int height;
+	u64 buf;
+	u64 len;
+	u64 width;
+	u64 height;
 };
-static struct pictureobject* vision = 0;
+static int cur = -1;
 
 
 
@@ -24,9 +25,6 @@ void camera_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	if(vision == 0)return;
-	u8* screen;
-	u8* buf;
 	int j;
 	int w = win->w;
 	int h = win->h;
@@ -36,12 +34,22 @@ void camera_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	u8* src;
+	u8* dst;
+	struct pictureobject* img;
 
-	screen = (u8*)(win->buf);
-	buf = vision->buf;
-	yuyv2rgba(buf, screen, 
-		640, 480, 0, 0, 0, 0,
-		w, h, cx-ww, cy-hh, cx+ww, cy+hh
+	img = videoread(cur);
+	if(0 == img)return;
+
+	src = (u8*)(img->buf);
+	if(0 == src)return;
+
+	dst = (u8*)(win->buf);
+	if(0 == dst)return;
+
+	yuyv2rgba(
+		  src, 0, 640, 480,     0,     0,     0,     0,
+		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
 void camera_read_html(
@@ -63,17 +71,16 @@ void camera_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct compo* com)
 {
-	if(vision == 0)
-	{
-		say("camera(%x,%x,%x)\n",win,act,sty);
-	}
-	else
-	{
-		say("%x,%x,%x,%x\n",
-			vision->buf, vision->len,
-			vision->width, vision->height
-		);
-	}
+	struct pictureobject* img;
+	say("camera(%x,%x,%x)\n",win,act,sty);
+
+	img = videoread(cur);
+	if(0 == img)return;
+
+	say(
+		"%llx,%llx,%llx,%llx\n",
+		img->buf, img->len, img->width, img->height
+	);
 }
 static void camera_read(
 	struct arena* win, struct style* sty,
@@ -92,14 +99,10 @@ static void camera_write(
 	struct event* ev)
 {
 	int j;
-	u8* buf;
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 'v')
-	{
-		vision = (void*)key;
-	}
+	if(type == 'v')cur = key;
 }
 static void camera_list()
 {
@@ -109,16 +112,16 @@ static void camera_into()
 }
 static void camera_stop()
 {
-	stopvision();
+	videostop();
 }
-static void camera_start()
+static void camera_start(struct actor* act, struct compo* com)
 {
-	startvision();
+	videostart();
 }
 static void camera_delete()
 {
 }
-static void camera_create()
+static void camera_create(struct actor* act)
 {
 }
 

@@ -129,17 +129,6 @@ struct arena
 	union{
 		u64 info[16];
 		struct point touch[16];
-		struct
-		{
-			u64 vertexcount;
-			u64 normalcount;
-			u64 colorcount;
-			u64 texturecount;
-			u64 pointcount;
-			u64 linecount;
-			u64 tricount;
-			u64 rectcount;
-		};
 	};
 };
 struct actor

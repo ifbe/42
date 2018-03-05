@@ -260,7 +260,26 @@ int file_read(u8* buf, int len)
 
 	return 0;
 }
-int file_write(u8* p, int t)
+int file_write()
+{
+	return 0;
+}
+int file_ls()
+{
+	int j;
+	u8* p8;
+	u64* p64;
+	for(j=0;j<0x10;j++)
+	{
+		p8 = dirhome + j*0x80;
+		p64 = (void*)p8;
+		if(p64[0] == 0)break;
+
+		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
+	}
+	return 0;
+}
+int file_cd(u8* p, int t)
 {
 	int j,k;
 	int len;
@@ -339,25 +358,6 @@ int file_write(u8* p, int t)
 	//unknown
 	else printmemory(datahome, 0x200);
 
-	return 0;
-}
-int file_ls()
-{
-	int j;
-	u8* p8;
-	u64* p64;
-	for(j=0;j<0x10;j++)
-	{
-		p8 = dirhome + j*0x80;
-		p64 = (void*)p8;
-		if(p64[0] == 0)break;
-
-		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
-	}
-	return 0;
-}
-int file_cd()
-{
 	return 0;
 }
 int file_start()

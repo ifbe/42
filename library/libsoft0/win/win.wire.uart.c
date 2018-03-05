@@ -1,17 +1,8 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<windows.h>
-u64 startthread(void*, void*);
-void stopthread();
-void eventwrite(u64,u64,u64,u64);
-void say(char*,...);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <windows.h>
+#include "system.h"
 
 
 
@@ -112,7 +103,7 @@ int chooseuart()
 {
 	return 0;
 }
-int systemuart_stop()
+int stopuart()
 {
 }
 int startuart(char* p, int speed)

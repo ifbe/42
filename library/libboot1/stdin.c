@@ -14,10 +14,10 @@ int arterylist(void*);
 int arterychoose(void*);
 int systemlist(void*);
 int systemchoose(void*);
-int bodylist(void*);
-int bodychoose(void*);
 int driverlist(void*);
 int driverchoose(void*);
+int devicelist(void*);
+int devicechoose(void*);
 //
 int buf2arg(u8* buf,int max,int* argc,u8** argv);
 int buf2type(u8* buf,int max,u64* type,u8** name);
@@ -76,9 +76,9 @@ void term_read(u8* buf)
 	else if(0 == ncmp(buf, "ls", 2))
 	{
 		say("----------------\n");
-		driverlist(0);
+		devicelist(0);
 		say("----------------\n");
-		bodylist(0);
+		driverlist(0);
 		say("----------------\n");
 		systemlist(0);
 		say("----------------\n");

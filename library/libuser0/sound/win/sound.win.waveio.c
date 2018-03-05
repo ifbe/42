@@ -63,10 +63,6 @@ DWORD WINAPI soundlistener(LPVOID pM)
 	}
 	return 0;
 }
-
-
-
-
 static void CALLBACK CB(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
 {
 	switch (uMsg)
@@ -82,16 +78,16 @@ static void CALLBACK CB(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, 
 
 
 
-void listsound()
+void soundlist()
 {
 }
-void choosesound()
+void soundchoose()
 {
 }
-void readsound(u8* buf, int len)
+void soundread(u8* buf, int len)
 {
 }
-void writesound(u8* buf, int len)
+void soundwrite(u8* buf, int len)
 {
 	headout.dwLoops = 0L;
 	headout.lpData = buf;
@@ -100,7 +96,12 @@ void writesound(u8* buf, int len)
 	waveOutPrepareHeader(waveout, &headout, sizeof(WAVEHDR));
 	waveOutWrite(waveout, &headout, sizeof(WAVEHDR));
 }
-void startsound(unsigned int ra, int ch)
+void soundstop()
+{
+	waveInClose(wavein);
+	waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
+}
+void soundstart(unsigned int ra, int ch)
 {
 	freq = ra;
 	chan = 1;
@@ -134,14 +135,9 @@ void startsound(unsigned int ra, int ch)
 	alive = 1;
 	thread = startthread(soundlistener, 0);
 }
-void stopsound()
-{
-	waveInClose(wavein);
-	waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
-}
-void createsound()
+void sounddelete()
 {
 }
-void deletesound()
+void soundcreate()
 {
 }

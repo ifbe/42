@@ -100,17 +100,6 @@ struct window
 	union{
 		u64 info[16];
 		struct point touch[16];
-		struct
-		{
-			u64 vertexcount;
-			u64 normalcount;
-			u64 colourcount;
-			u64 texcorcount;
-			u64 pointcount;
-			u64 linecount;
-			u64 tricount;
-			u64 fontcount;
-		};
 	};
 };
 
@@ -121,6 +110,11 @@ struct window
 u64 startthread(void*, void*);
 void stopthread(u64);
 //
+void* startmemory();
+void* stopmemory(void*);
+//
+void* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
 void printmemory(void*, int);
 void say(void*, ...);

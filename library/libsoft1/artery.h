@@ -18,12 +18,6 @@ struct event
 	u64 where;
 	u64 when;
 };
-struct uartinfo{
-	char* buf;
-	int len;
-	int enq;
-	int deq;
-};
 struct object
 {
 	//[0x00,0x0f]
@@ -41,15 +35,12 @@ struct object
 	};
 
 	//[0x20,0x3f]
-	union{
-		struct uartinfo info;
-		struct
-		{
-			u64 what;
-			u64 flag;
-			u64 len;
-			u64 buf;
-		};
+	struct
+	{
+		u64 fd;
+		u64 flag;
+		u64 len;
+		u64 buf;
 	};
 
 	//[0x40,0x7f]
@@ -63,7 +54,7 @@ struct element
 {
 	//[00,20]
 	u64 type;
-	u64 id;
+	u64 name;
 	union{
 		void* irel;
 		u64 pad0;

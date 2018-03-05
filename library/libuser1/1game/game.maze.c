@@ -1,5 +1,6 @@
 #include "actor.h"
 void maze_generate(void* buf, int w, int h);
+void maze_solve(void* buf, int w, int h);
 
 
 
@@ -100,42 +101,94 @@ static void maze_read_pixel(
 			if((w&1) == 1)	//left
 			{
 				drawline(
-					win, 0x808080,
+					win, 0xff0000,
 					(cx-ww) + (2*x+0)*ww/width,
 					(cy-hh) + (2*y+0)*hh/height,
 					(cx-ww) + (2*x+0)*ww/width,
 					(cy-hh) + (2*y+2)*hh/height
 				);
 			}
+			else if((w&0x80) == 0x80)
+			{
+				drawline(
+					win, 0x00ff00,
+					(cx-ww) + (2*x+0)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height
+				);
+			}
+
 			if((w&2) == 2)	//right
 			{
 				drawline(
-					win, 0x808080,
+					win, 0x00ffff,
 					(cx-ww-1) + (2*x+2)*ww/width,
 					(cy-hh)   + (2*y+0)*hh/height,
 					(cx-ww-1) + (2*x+2)*ww/width,
 					(cy-hh)   + (2*y+2)*hh/height
 				);
 			}
+			else if((w&0x80) == 0x80)
+			{
+				drawline(
+					win, 0x00ff00,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height,
+					(cx-ww) + (2*x+2)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height
+				);
+			}
+
 			if((w&4) == 4)	//up
 			{
 				drawline(
-					win, 0x808080,
+					win, 0x0000ff,
 					(cx-ww) + (2*x+0)*ww/width,
 					(cy-hh) + (2*y+0)*hh/height,
 					(cx-ww) + (2*x+2)*ww/width,
 					(cy-hh) + (2*y+0)*hh/height
 				);
 			}
+			else if((w&0x80) == 0x80)
+			{
+				drawline(
+					win, 0x00ff00,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+0)*hh/height,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height
+				);
+			}
+
 			if((w&8) == 8)	//down
 			{
 				drawline(
-					win, 0x808080,
+					win, 0xffff00,
 					(cx-ww)   + (2*x+0)*ww/width,
 					(cy-hh-1) + (2*y+2)*hh/height,
 					(cx-ww)   + (2*x+2)*ww/width,
 					(cy-hh-1) + (2*y+2)*hh/height
 				);
+			}
+			else if((w&0x80) == 0x80)
+			{
+				drawline(
+					win, 0x00ff00,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+1)*hh/height,
+					(cx-ww) + (2*x+1)*ww/width,
+					(cy-hh) + (2*y+2)*hh/height
+				);
+				/*
+				drawsolid_rect(
+					win, 0x00ff00,
+					(cx-ww) + (4*x+1)*ww/width/2,
+					(cy-hh) + (4*y+1)*hh/height/2,
+					(cx-ww) + (4*x+3)*ww/width/2,
+					(cy-hh) + (4*y+3)*hh/height/2
+				);
+				*/
 			}
 		}
 	}
@@ -209,6 +262,7 @@ static void maze_stop()
 static void maze_start()
 {
 	maze_generate(buffer, width, height);
+	maze_solve(buffer, width, height);
 }
 static void maze_delete()
 {

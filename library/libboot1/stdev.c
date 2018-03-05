@@ -37,15 +37,16 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 		say("droping event: %llx,%llx,%llx,%llx\n", why, what, where, when);
 		return;
 	}
-	enq = temp;
-	__sync_lock_release(&lock);
 
 	//put event to place
 	p = (u64*)(eventqueue + this);
 	p[0] = why;
 	p[1] = what;
-	p[2] = where;   //where
-	p[3] = when;    //when
+	p[2] = where;
+	p[3] = when;
+
+	enq = temp;
+	__sync_lock_release(&lock);
 
 	//debug
 	//say("%llx,%llx,%llx,%llx\n", p[0], p[1], p[2], p[3]);

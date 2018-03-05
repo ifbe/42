@@ -1,6 +1,6 @@
 #include "actor.h"
 int netmgr_read();
-int netmgr_write(void*);
+int netmgr_cd(void*);
 
 
 
@@ -92,7 +92,7 @@ static void browser_write(
 	{
 		if(key == 0xd)
 		{
-			netmgr_write(pl->priv);
+			netmgr_cd(pl->priv);
 			for(;count>=0;count--)pl->priv[count] = 0;
 			count = 0;
 		}

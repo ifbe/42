@@ -1,3 +1,0 @@
-void gpio_read()
-{
-}

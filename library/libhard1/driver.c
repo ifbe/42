@@ -1,4 +1,3 @@
-#define u64 unsigned long long
 void say(char*,...);
 
 

@@ -38,6 +38,7 @@ void carveaxis(struct arena* win)
 }
 void carvestarry_random(struct arena* win)
 {
+/*
 	u32 j,k;
 	u32 pcount = win->vertexcount;
 	u32 ncount = win->normalcount;
@@ -75,9 +76,11 @@ void carvestarry_random(struct arena* win)
 
 		index[j] = pcount+j;
 	}
+*/
 }
 void carveneural_random(struct arena* win)
 {
+/*
 	u32 j,k;
 	u32 pcount = win->vertexcount;
 	u32 ncount = win->normalcount;
@@ -119,6 +122,7 @@ void carveneural_random(struct arena* win)
 		iindex[j] = pcount+j;
 		lindex[j] = pcount+j;
 	}
+*/
 }
 void carvestl(
 	struct arena* win, u32 rgb,

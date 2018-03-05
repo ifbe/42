@@ -43,12 +43,13 @@ public:
 
 struct pictureobject
 {
-	u8* buf;
-	int len;
-	int width;
-	int height;
+	u64 buf;
+	u64 len;
+	u64 width;
+	u64 height;
 };
-static struct pictureobject obj;
+static struct pictureobject obj[60];
+static int abc = 0;
 
 
 
@@ -80,12 +81,15 @@ public:
 	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
 	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
 	{
-		int len = pSample->GetActualDataLength();
-		pSample->GetPointer(&(obj.buf));
+		BYTE** buf = (BYTE**)(&(obj[abc].buf));
+		obj[abc].len = pSample->GetActualDataLength();
+		pSample->GetPointer(buf);
 		pSample->Release();
 
-		//printf("%llx,%x\n", p, s);
-		eventwrite((u64)&obj, 'v', 0, 0);
+		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
+		eventwrite(abc, 'v', 0, 0);
+
+		abc = (abc+1)%60;
 		return S_OK;
 	}
 };
@@ -253,8 +257,8 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 	hr = devcfg->GetNumberOfCapabilities(&iCount, &iSize);
 	if(FAILED(hr)){printf("%x@GetNumberOfCapabilities\n",hr);return -2;}
 
-	obj.width = 1920;
-	obj.height = 1080;
+	obj[0].width = 1920;
+	obj[0].height = 1080;
 	if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS))
 	{
 		// Use the video capabilities structure.
@@ -280,8 +284,8 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 							hr = devcfg->SetFormat(pmtConfig);
 							if(SUCCEEDED(hr))
 							{
-								obj.width = 640;
-								obj.height = 480;
+								obj[0].width = 640;
+								obj[0].height = 480;
 								printf("	***selected***");
 							}
 							else
@@ -460,31 +464,33 @@ fail:
 extern "C" {
 
 
-void listvision()
+void* videoread(int id)
+{
+	if((id>=0)&&(id<60))return &obj[id];
+	return &obj[(abc+59)%60];;
+}
+void videowrite()
 {
 }
-void choosevision()
+void videostop()
 {
+	//shutupdie();
 }
-void readvision()
-{
-}
-void writevision()
-{
-}
-void startvision()
+void videostart()
 {
 	letsgo();
 	//Sleep(5000);
 }
-void stopvision()
-{
-	//shutupdie();
-}
-void createvision()
+void videolist()
 {
 }
-void deletevision()
+void videochoose()
+{
+}
+void videodelete()
+{
+}
+void videocreate()
 {
 }
 

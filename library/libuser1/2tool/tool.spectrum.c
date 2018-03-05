@@ -6,10 +6,10 @@ void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
 int piano_freq(int);
 //libsoft0
-int readsound(void* buf, int len);
-int writesound(void* buf, int len);
-int startsound(int rate, int chan);
-int stopsound();
+int soundread(void* buf, int len);
+int soundwrite(void* buf, int len);
+int soundstart(int rate, int chan);
+int soundstop();
 
 
 
@@ -203,7 +203,7 @@ static void spectrum_write(
 		say("%d\n",j);
 
 		real[j] = 1.0;
-		writesound(real, 1024*2);
+		soundwrite(real, 1024*2);
 		//real[j]=real[1023-j]=65535;
 		//sound_output(real, imag, pcmout);
 	}
@@ -233,11 +233,12 @@ static void spectrum_into()
 }
 static void spectrum_stop()
 {
+	soundstop();
 }
-static void spectrum_start()
+static void spectrum_start(struct actor* act, struct compo* com)
 {
 	maxamp = 65536;
-	startsound(44100, 2);
+	soundstart(44100, 2);
 }
 static void spectrum_delete()
 {

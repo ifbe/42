@@ -5,26 +5,35 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define _char_ hex32('c','h','a','r')
-#define _int_ hex32('i','n','t',0)
-#define _fd_ hex32('f','d',0,0)
-#define _win_ hex32('w','i','n',0)
 //libuser
+#define _char_ hex32('c','h','a','r')
+#define _win_ hex32('w','i','n',0)
 int actorread();
 int actorwrite(void*);
 int arenaread();
 int arenawrite(void*);
+//libsoft
+#define _fd_ hex32('f','d',0,0)
+#define _sys_ hex32('s','y','s',0)
+int arteryread();
+int arterywrite(void*);
+int systemread();
+int systemwrite(void*);
+void sleep_us(int);
+//libhard
+#define _drv_ hex32('d','r','v',0)
+#define _dev_ hex32('i','n','t',0)
+int driverread();
+int driverwrite(void*);
+int systemread();
+int systemwrite(void*);
+//libboot
 int term_read(void*);
 int term_write(void*);
-//libsoft
-int artery_explain(void*);
-void sleep_us(int);
-//libboot
+void eventwrite(u64,u64,u64,u64);
+void* eventread();
 void printmemory(void*, int);
 void say(void*, ...);
-//
-void* eventread();
-void eventwrite(u64,u64,u64,u64);
 //
 void actorcreate(void*);
 void actordelete();
@@ -74,8 +83,8 @@ void* beforedawn()
 	initstdrel(addr+0x300000);
 
 	//libsoft
+	devicecreate(addr+0x400000);
 	drivercreate(addr+0x400000);
-	bodycreate(  addr+0x400000);
 
 	//libsoft
 	systemcreate(addr+0x800000);
@@ -98,8 +107,8 @@ void afterdusk()
 	systemdelete();
 
 	//libhard
-	bodydelete();
 	driverdelete();
+	devicedelete();
 
 	//libboot
 	death();
@@ -132,6 +141,8 @@ again:
 			goto again;
 		}
 		if(0 == ev->what)break;
+
+		say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 		if(_char_ == ev->what)
 		{
 			if(0 == ev->where)
@@ -140,23 +151,37 @@ again:
 				continue;
 			}
 		}
-/*
-		//libhard.interrupt: succeeding activities
-		if(_int_ == ev->what)
+
+		//libhard0
+		if(_dev_ == ev->what)
 		{
-			hardware_explain(ev);
-		}
-*/
-		//libsoft.file/socket: receiving events
-		ret = (ev->what)&0xff;
-		if((_fd_ == ev->what)|('s' == ret)|('v' == ret))
-		{
-			//network rawdata -> my event
-			ret = artery_explain(ev);
+			ret = devicewrite(ev);
 			if(ret != 42)goto again;
 		}
 
-		//libuser.arena/actor: new, del, chg, etc
+		//libhard1
+		if(_drv_ == ev->what)
+		{
+			ret = driverwrite(ev);
+			if(ret != 42)goto again;
+		}
+
+		//libsoft0
+		if(_sys_ == ev->what)
+		{
+			ret = systemwrite(ev);
+			if(ret != 42)goto again;
+		}
+
+		//libsoft1
+		ret = (ev->what)&0xff;
+		if(_fd_ == ev->what)
+		{
+			ret = arterywrite(ev);
+			if(ret != 42)goto again;
+		}
+
+		//libuser0
 		ret = (ev->what)&0xff;
 		if('w' == ret)
 		{
@@ -164,7 +189,7 @@ again:
 			continue;
 		}
 
-		//foreach changed: actor_read, window_write
+		//libuser1
 		actorwrite(ev);
 	}
 
