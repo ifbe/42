@@ -56,6 +56,8 @@ efifb:
 .PHONY:linuxcli
 linuxcli:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.cli.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -63,6 +65,8 @@ linuxcli:
 .PHONY:linuxtui
 linuxtui:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.tui.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -70,6 +74,8 @@ linuxtui:
 .PHONY:linuxfb
 linuxfb:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.fb.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -77,6 +83,8 @@ linuxfb:
 .PHONY:linuxgtk
 linuxgtk:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` local/linux/local.linux.gtk.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -84,6 +92,8 @@ linuxgtk:
 .PHONY:linuxwayland
 linuxwayland:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.wayland.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -91,6 +101,8 @@ linuxwayland:
 .PHONY:linuxxlib
 linuxxlib:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.xlib.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -98,6 +110,8 @@ linuxxlib:
 .PHONY:linuxglfw
 linuxglfw:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.glfw.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -105,6 +119,8 @@ linuxglfw:
 .PHONY:linuxglut
 linuxglut:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.glut.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -112,6 +128,8 @@ linuxglut:
 .PHONY:linuxsdl
 linuxsdl:
 	rm -f *.o
+	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
+	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c

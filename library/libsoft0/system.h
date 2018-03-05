@@ -25,12 +25,12 @@ struct object
 	};
 
 	//[0x20,0x3f]
-	struct
-	{
-		u64 fd;
-		u64 flag;
-		u64 len;
-		u64 buf;
+	u64 fd;
+	u64 flag;
+	u64 len;
+	union{
+		u64 addr;
+		void* buf;
 	};
 
 	//[0x40,0x7f]

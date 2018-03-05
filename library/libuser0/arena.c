@@ -5,6 +5,12 @@
 
 
 
+//
+int videocreate(void*);
+int videodelete();
+//
+int soundcreate(void*);
+int sounddelete();
 //local
 int windowcreate(void*);
 int windowdelete();
@@ -14,7 +20,7 @@ int windowlist();
 int windowchoose();
 int windowread();
 int windowwrite(void* dst, void* src);
-//
+//remote
 int websocket_write(int fd, void* buf, int len);
 //
 int ncmp(void*, void*, int);

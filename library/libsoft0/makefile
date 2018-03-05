@@ -72,9 +72,6 @@ bsd:
 linux:
 	rm -f *.o
 	$(compiler) $(cflag) linux/linux.flow.socket.c
-	$(compiler) $(cflag) linux/linux.flow.vision.v4l2.c
-	$(compiler) $(cflag) linux/linux.flow.vision.other.c
-	$(compiler) $(cflag) linux/linux.flow.sound.pulseaudio.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.folder.c
 	$(compiler) $(cflag) linux/linux.memory.managed.c

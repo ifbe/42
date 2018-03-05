@@ -25,8 +25,8 @@ void sleep_us(int);
 #define _dev_ hex32('i','n','t',0)
 int driverread();
 int driverwrite(void*);
-int systemread();
-int systemwrite(void*);
+int deviceread();
+int devicewrite(void*);
 //libboot
 int term_read(void*);
 int term_write(void*);
@@ -43,10 +43,10 @@ void arterycreate(void*);
 void arterydelete();
 void systemcreate(void*);
 void systemdelete();
-void bodycreate(void*);
-void bodydelete();
 void drivercreate(void*);
 void driverdelete();
+void devicecreate(void*);
+void devicedelete();
 //
 void initstdin(void*);
 void initstdout(void*);

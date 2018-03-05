@@ -71,10 +71,7 @@ int startuart(char* p, int speed)
 	tcsetattr(fd,TCSANOW,&option);
 
 	obj[fd].sock = hex32('u','a','r','t');
-	obj[fd].info.enq = 0;
-	obj[fd].info.deq = 0;
-	obj[fd].info.len = 0x100000;
-	obj[fd].info.buf = (void*)malloc(0x100000);
+	obj[fd].buf = (void*)malloc(0x100000);
 	epoll_add(fd);
 
 	return fd;

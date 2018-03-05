@@ -103,22 +103,10 @@ int startshell(char* p)
 	else if(ret == 0)systemshell_process(name);
 	else
 	{
-/*
-		if(info.buf == 0)
-		{
-			info.enq = 0;
-			info.deq = 0;
-			info.len = 0x100000;
-			info.buf = (void*)malloc(info.len);
-		}
-		startthread(systemshell_thread, 0);
-*/
 		ret = write(fd, "unset PROMPT_COMMAND\n", 21);
+
 		obj[fd].sock = hex32('u','a','r','t');
-		obj[fd].info.enq = 0;
-		obj[fd].info.deq = 0;
-		obj[fd].info.len = 0x100000;
-		obj[fd].info.buf = (void*)malloc(0x100000);
+		obj[fd].buf = (void*)malloc(0x100000);
 		epoll_add(fd);
 		return fd;
 	}
