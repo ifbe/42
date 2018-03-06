@@ -19,6 +19,7 @@ void background_tui(struct arena* win)
 }
 void background_html(struct arena* win)
 {
+	win->len = 0;
 }
 void background_vbo(struct arena* win)
 {

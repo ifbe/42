@@ -113,6 +113,9 @@ fail:
 }
 void term_cmd(u8* buf)
 {
+	if(0 == buf)return;
+	if(buf[0] < 0x20)return;
+
 	if(0 == pos)goto fail;
 	else if(_device_ == path[0])devicechoose(buf);
 	else if(_driver_ == path[0])driverchoose(buf);

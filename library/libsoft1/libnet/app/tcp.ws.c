@@ -260,6 +260,8 @@ int ws_server(struct object* obj, int fd, u8* buf, int len)
 	}
 
 	obj[fd].stage1 = 2;
+	obj[fd].len = len;
+	obj[fd].buf = buf;
 
 theend:
 	return WS;

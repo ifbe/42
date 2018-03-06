@@ -81,12 +81,12 @@ struct arena
 		void* win;
 	};
 	union{
-		u64 len;
 		u64 dc;
 		u64 gc;
 		void* er;
 	};
 	union{
+		u64 len;
 		u64 ximage;
 		void* texture;
 	};
@@ -126,10 +126,7 @@ struct arena
 	int flag3;
 
 	//[80,ff]
-	union{
-		u64 info[16];
-		struct point touch[16];
-	};
+	struct point touch[16];
 };
 struct actor
 {

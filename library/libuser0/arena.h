@@ -50,13 +50,12 @@ struct window
 		void* win;
 	};
 	union{
-		u64 len;
 		u64 dc;
 		u64 gc;
 		void* er;
 	};
 	union{
-		u64 haha;
+		u64 len;
 		void* ximage;
 		void* texture;
 		void* pass;

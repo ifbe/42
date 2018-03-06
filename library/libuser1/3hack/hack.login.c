@@ -24,20 +24,20 @@ static int chosen = 0;
 
 void login_read_pixel(struct arena* win)
 {
-	u32 color;
+	u32 c;
 	int x,y,j;
 	int w = (win->w)/8;
 	int h = (win->h)/16;
 
 	for(j=0;j<32;j++)
 	{
-		if(j == chosen)color = 0x80ff00ff;
-		else color = 0x800000ff;
+		if(j == chosen)c = 0x80ff00ff;
+		else c = 0x800000ff;
 
 		x = j%4;
 		y = j/4;
 		drawicon_1(
-			win, color,
+			win, c,
 			(x+2)*w, (y+4)*h, (x+3)*w, (y+5)*h,
 			(u8*)&actor[j].name, 8
 		);
@@ -63,7 +63,7 @@ void login_read_8bit(struct arena* win)
 }
 void login_read_vbo(struct arena* win)
 {
-	u32 color;
+	u32 c;
 	int j,k;
 	float x,y;
 
@@ -85,18 +85,18 @@ void login_read_vbo(struct arena* win)
 		if(j == chosen)
 		{
 			k = 4.0;
-			color = 0x00ff00;
+			c = 0x00ff00;
 		}
 		else
 		{
 			k = 1.0;
-			color = 0xffffff;
+			c = 0xffffff;
 		}
 
 		x = cosine(j/PI)/32.0;
 		y = sine(j/PI)/32.0;
 		carvestring(
-			win, color,
+			win, c,
 			x*256, y*256, j+1,
 			x*64, y*64, 0.0,
 			-y*64, x*64, 0.0,
@@ -106,6 +106,25 @@ void login_read_vbo(struct arena* win)
 }
 void login_read_html(struct arena* win)
 {
+	u32 c;
+	int j;
+	int len = win->len;
+	u8* buf = win->buf;
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == actor[j].name)break;
+
+		if(j == chosen)c = 0xff0000;
+		else c = 0xffffff;
+
+		len += mysnprintf(
+			buf+len, 0x1000,
+			"<div style=\"float:left;width:25%%;color:#%06x;\">%.8s</div>",
+			c, (u8*)&actor[j].name
+		);
+	}
+	win->len = len;
 }
 void login_read_tui(struct arena* win)
 {

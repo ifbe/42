@@ -27,9 +27,9 @@ static u8* datahome = 0;
 
 
 //--------------------------------------------------------
-int arteryread()
+void* arteryread(int fd)
 {
-	return 0;
+	return &obj[fd];
 }
 int arterywrite(struct event* ev)
 {

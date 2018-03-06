@@ -17,18 +17,29 @@ int sounddelete();
 //local
 int windowcreate(void*);
 int windowdelete();
-int windowstart(void*);
-int windowstop();
 int windowlist();
 int windowchoose();
+int windowstart(void*);
+int windowstop();
 int windowread();
 int windowwrite(void* win);
 //remote
 int wsclient_start(void* win);
+int wsclient_stop(void* win);
+int wsclient_read(void* win);
+int wsclient_write(void* win);
 int wsserver_start(void* win);
+int wsserver_stop(void* win);
+int wsserver_read(void* win);
 int wsserver_write(void* win);
 int vncclient_start(void* win);
+int vncclient_stop(void* win);
+int vncclient_read(void* win);
+int vncclient_write(void* win);
 int vncserver_start(void* win);
+int vncserver_stop(void* win);
+int vncserver_read(void* win);
+int vncserver_write(void* win);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -139,11 +150,12 @@ int arenaread(struct window* win)
 }
 int arenawrite(struct event* ev)
 {
+	int j;
 	void* ret;
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
-	say("@arenawrite:%llx,%llx,%llx\n\n\n\n\n", why, what, where);
+	//say("@arenawrite:%llx,%llx,%llx\n\n\n\n\n", why, what, where);
 
 	if(hex32('w','+',0,0) == what)
 	{
@@ -161,6 +173,15 @@ int arenawrite(struct event* ev)
 	}
 	else
 	{
+		if(where >= 0x1000)return 0;
+
+		for(j=0;j<0x100;j++)
+		{
+			if((_WS_ == arena[j].type)&&(where == arena[j].fd))
+			{
+				wsserver_read(&arena[j]);
+			}
+		}
 	}
 	return 0;
 }
