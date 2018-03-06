@@ -1,3 +1,6 @@
+#define u8 unsigned char
+#define u16 unsigned short
+#define u32 unsigned int
 #define u64 unsigned long long
 void say(char*,...);
 
@@ -10,18 +13,19 @@ void deviceread()
 void devicewrite()
 {
 }
-void devicelist()
-{
-	say("empth device\n");
-}
-void devicechoose()
-{
-}
 void devicestart()
 {
 }
 void devicestop()
 {
+}
+void devicelist(u8* buf)
+{
+	say("empth device\n");
+}
+void devicechoose(u8* buf)
+{
+	say("@device: %s\n", buf);
 }
 void devicecreate(char* addr)
 {

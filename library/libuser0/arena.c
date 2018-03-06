@@ -164,7 +164,7 @@ int arenawrite(struct event* ev)
 	}
 	return 0;
 }
-int arenalist()
+int arenalist(u8* buf)
 {
 	int j;
 	for(j=0;j<0x100;j++)
@@ -176,8 +176,11 @@ int arenalist()
 	if(0 == j)say("empty arena\n");
 	return 0;
 }
-int arenachoose()
+int arenachoose(u8* buf)
 {
+	if(0 == buf)return 0;
+	if(0 == ncmp(buf, "win", 3))arenastart(_win_, 0);
+	else say("@arena: %s\n", buf);
 }
 void arenacreate(u8* addr)
 {

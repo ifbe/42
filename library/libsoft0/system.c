@@ -38,7 +38,15 @@ int systemwrite(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int systemlist()
+int systemstart(char* name, int flag)
+{
+	return 0;
+}
+int systemstop()
+{
+	return 0;
+}
+int systemlist(u8* buf)
 {
 	int j,k=0;
 	void* addr;
@@ -54,16 +62,9 @@ int systemlist()
 	if(0 == k)say("empth system\n");
 	return 0;
 }
-int systemchoose()
+int systemchoose(u8* buf)
 {
-	return 0;
-}
-int systemstart(char* name, int flag)
-{
-	return 0;
-}
-int systemstop()
-{
+	say("@system: %s\n", buf);
 	return 0;
 }
 void systemcreate(u8* addr)

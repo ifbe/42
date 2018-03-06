@@ -35,7 +35,15 @@ int arterywrite(struct event* ev)
 {
 	return netmgr_write(ev);
 }
-int arterylist()
+int arterystop()
+{
+	return 0;
+}
+int arterystart(char* name, int flag)
+{
+	return 0;
+}
+int arterylist(u8* buf)
 {
 	say("empth artery\n");
 	return 0;
@@ -83,14 +91,6 @@ int arterychoose(u8* buf)
 	{
 		netmgr_cd(buf, 0);
 	}
-	return 0;
-}
-int arterystop()
-{
-	return 0;
-}
-int arterystart(char* name, int flag)
-{
 	return 0;
 }
 void arterydelete()

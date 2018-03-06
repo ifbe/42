@@ -111,6 +111,19 @@ int actorwrite(struct event* ev)
 	}
 	return 0;
 }
+int actorstart(struct arena* win, struct actor* act)
+{
+	if(act == 0)act = &actor[0];
+	act->onstart(act, 0);
+
+	act_at(win, act);
+	return 0;
+}
+int actorstop(struct actor* act)
+{
+	act->onstop();
+	return 0;
+}
 int actorlist(u8* p)
 {
 	int j;
@@ -171,19 +184,6 @@ void actorchoose(char* p)
 			return;
 		}
 	}
-}
-int actorstart(struct arena* win, struct actor* act)
-{
-	if(act == 0)act = &actor[0];
-	act->onstart(act, 0);
-
-	act_at(win, act);
-	return 0;
-}
-int actorstop(struct actor* act)
-{
-	act->onstop();
-	return 0;
 }
 void actorcreate(u8* addr)
 {
