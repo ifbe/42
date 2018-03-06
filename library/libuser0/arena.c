@@ -1,6 +1,9 @@
 #include "arena.h"
-#define __buf__ hex32('b','u','f',0)
-#define __win__ hex32('w','i','n',0)
+#define _win_ hex32('w','i','n',0)
+#define _WS_ hex32('W','S',0,0)
+#define _ws_ hex32('w','s',0,0)
+#define _VNC_ hex32('V','N','C',0)
+#define _vnc_ hex32('v','n','c',0)
 
 
 
@@ -19,9 +22,13 @@ int windowstop();
 int windowlist();
 int windowchoose();
 int windowread();
-int windowwrite(void* dst, void* src);
+int windowwrite(void* win);
 //remote
-int websocket_write(int fd, void* buf, int len);
+int wsclient_start(void* win);
+int wsserver_start(void* win);
+int wsserver_write(void* win);
+int vncclient_start(void* win);
+int vncserver_start(void* win);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -52,23 +59,56 @@ void* arenastart(u64 type, u64 fd)
 		if(j >= 0x100)return 0;
 	}
 
-	if(__win__ == type)
+	if(_win_ == type)
 	{
-		win->type = __win__;
+		win->type = _win_;
 		win->fmt = 0;
 		win->irel = 0;
 		win->orel = 0;
 
 		windowstart(win);
 	}
-	else if(hex32('W','S',0,0) == type)
+	else if(_ws_ == type)
 	{
-		win->type = hex32('W', 'S', 0, 0);
+		win->type = _ws_;
+		win->fmt = hex32('d','a','t','a');
+		win->irel = 0;
+		win->orel = 0;
+
+		//be client, accept data
+		wsclient_start(win);
+	}
+	else if(_WS_ == type)
+	{
+		win->type = _WS_;
 		win->fmt = hex32('h','t','m','l');
 		win->irel = 0;
 		win->orel = 0;
 
+		//be server, output data
 		win->fd = fd;
+		wsserver_start(win);
+	}
+	else if(_vnc_ == type)
+	{
+		win->type = _vnc_;
+		win->fmt = hex32('d','a','t','a');
+		win->irel = 0;
+		win->orel = 0;
+
+		//be client, accept data
+		vncclient_start(win);
+	}
+	else if(_VNC_ == type)
+	{
+		win->type = _VNC_;
+		win->fmt = 0;
+		win->irel = 0;
+		win->orel = 0;
+
+		//be server, output data
+		win->fd = fd;
+		vncserver_start(win);
 	}
 
 	return win;
@@ -84,16 +124,16 @@ int arenastop(struct window* win)
 	win->orel = 0;
 	return 0;
 }
-int arenaread(struct window* dst, struct window* src)
+int arenaread(struct window* win)
 {
 	void* buf;
-	if(__win__ == dst->type)
+	if(_win_ == win->type)
 	{
-		windowwrite(dst, &arena[0]);
+		windowwrite(win);
 	}
-	else if(hex32('W','S', 0, 0) == dst->type)
+	else if(hex32('W','S', 0, 0) == win->type)
 	{
-		websocket_write(dst->fd, src->buf, src->info[0]);
+		wsserver_write(win);
 	}
 	return 0;
 }
@@ -103,6 +143,7 @@ int arenawrite(struct event* ev)
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
+	say("@arenawrite:%llx,%llx,%llx\n\n\n\n\n", why, what, where);
 
 	if(hex32('w','+',0,0) == what)
 	{
@@ -150,7 +191,7 @@ void arenacreate(u8* addr)
 	windowcreate(arena);
 
 	//
-	arenastart(__win__, 0);
+	arenastart(_win_, 0);
 
 	//say("[c,f):createed arena\n");
 }

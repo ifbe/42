@@ -1,93 +1,68 @@
 #include"arena.h"
 //
-int websocket_write(u64, u8*, int);
-int rdp_write(u64, u8*, int);
-int vnc_write(u64, u8*, int);
-int count_strlen(void*);
-//
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
+//
+int websocket_read(void*, int);
+int websocket_write(u64, u8*, int);
 
 
 
 
-static struct window* win=0;
-static int user[10];
+/*
+	len = websocket_read(buf, len);
+	if(len < 0)goto theend;
 
-
-
-
-int netwinread()
-{
-	return 0;
-}
-int netwinwrite(struct window* win)
-{
-	void* buf;
-	int j,k,len;
-
-	buf = (void*)win->buf;
-	len = count_strlen(buf);
-	for(j=0;j<10;j++)
+	ret = obj[fd].stage1;
+	if(ret == 1)
 	{
-		if(user[j] == 0)continue;
+		say("%.*s\n", len, buf);
 
-		k = websocket_write(user[j], buf, len);
-		if(k <= 0)user[j] = 0;
+		websocket_write(fd, "four two", 8);
+		obj[fd].stage1 = 2;
+	}
+	else if(ret == 2)
+	{
+		say("%.*s\n", len, buf);
+
+		websocket_write(fd, "haha@2", 6);
+		obj[fd].stage1 = 3;
+	}
+	else if(ret == 3)
+	{
+		printmemory(buf, len);
+		websocket_write(fd, "success", 7);
+
+		obj[fd].stage1 = 4;
 	}
 
-	return 0;
-}
-int netwinlist()
+int ws_event(struct event* ev, void* buf)
 {
-	return 0;
-}
-int netwinchoose(int j)
-{
-	return 0;
-}
-int netwinstop(int fd)
-{
-	int j;
-	for(j=0;j<10;j++)
+	if(ncmp(buf, "kbd ", 4) == 0)
 	{
-		if(user[j] == fd)
-		{
-			user[j] = 0;
-			break;
-		}
+		ev->what = hex32('k','b','d',0);
+		decstr2data(buf+4, &(ev->why));
+	}
+	else if(ncmp(buf, "char ", 5) == 0)
+	{
+		ev->what = hex32('c','h','a','r');
+		decstr2data(buf+5, &(ev->why));
 	}
 	return 0;
-}
-int netwinstart(int fd)
+}*/
+int wsclient_start(struct window* win)
 {
-	int j;
-	for(j=0;j<10;j++)
-	{
-		if(user[j] != 0)
-		{
-			if(user[j] == fd)break;	//already in
-			else continue;		//another one
-		}
-
-		user[j] = fd;
-		break;
-	}
-	return 0;
 }
-int netwindelete()
+
+
+
+
+int wsserver_start(struct window* win)
 {
-	return 0;
 }
-int netwincreate(void* uibase, void* uithis)
+int wsserver_write(struct window* win)
 {
-	int j;
-	for(j=0;j<10;j++)user[j] = 0;
-
-	win = uithis;
-	win->fmt = 0x6c6d7468;
-	win->w = 512;
-	win->h = 512;
-
-	return 0;
+	if(0 == win)return 0;
+	say("@wsserverwrite: fd=%x\n", win->fd);
+	websocket_write(win->fd, "fuck", 4);
 }

@@ -9,24 +9,28 @@ cflag ?= -c -O2 -fPIC -I.
 barecli:
 	rm -f *.o
 	$(compiler) $(cflag) local/bare/local.bare.cli.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 .PHONY:baretui
 baretui:
 	rm -f *.o
 	$(compiler) $(cflag) local/bare/local.bare.tui.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 .PHONY:bare8bit
 bare8bit:
 	rm -f *.o
 	$(compiler) $(cflag) local/bare/local.bare.8bit.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 .PHONY:barefb
 barefb:
 	rm -f *.o
 	$(compiler) $(cflag) local/bare/local.bare.fb.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 ##########################################################
@@ -39,12 +43,14 @@ barefb:
 eficli:
 	rm -f *.o
 	$(compiler) $(cflag) local/efi/local.efi.cli.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 .PHONY:efifb
 efifb:
 	rm -f *.o
 	$(compiler) $(cflag) local/efi/local.efi.fb.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 #########################################################
@@ -59,6 +65,7 @@ linuxcli:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.cli.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -68,6 +75,7 @@ linuxtui:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.tui.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -77,6 +85,7 @@ linuxfb:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.fb.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -86,6 +95,7 @@ linuxgtk:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` local/linux/local.linux.gtk.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -95,6 +105,7 @@ linuxwayland:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.wayland.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -104,6 +115,7 @@ linuxxlib:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.xlib.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -113,6 +125,7 @@ linuxglfw:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.glfw.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -122,6 +135,7 @@ linuxglut:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.glut.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -131,6 +145,7 @@ linuxsdl:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/local.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 #########################################################
@@ -143,6 +158,7 @@ linuxsdl:
 maccli:
 	rm -f *.o
 	$(compiler) $(cflag) local/mac/mac.cli.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -150,6 +166,7 @@ maccli:
 mactui:
 	rm -f *.o
 	$(compiler) $(cflag) local/mac/mac.tui.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -157,6 +174,7 @@ mactui:
 maccocoa:
 	rm -f *.o
 	$(compiler) $(cflag) local/mac/local.mac.cocoa.m
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -164,6 +182,7 @@ maccocoa:
 macquartz:
 	rm -f *.o
 	$(compiler) $(cflag) local/mac/local.mac.quartz.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -171,6 +190,7 @@ macquartz:
 macglfw:
 	rm -f *.o
 	$(compiler) $(cflag) local/local.glfw.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -178,6 +198,7 @@ macglfw:
 macglut:
 	rm -f *.o
 	$(compiler) $(cflag) local/local.glut.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -185,6 +206,7 @@ macglut:
 macsdl:
 	rm -f *.o
 	$(compiler) $(cflag) local/local.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 #########################################################
@@ -199,6 +221,7 @@ wincli:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.cli.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -208,6 +231,7 @@ wintui:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.tui.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -217,6 +241,7 @@ winapi:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.api.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -226,6 +251,7 @@ wind3d:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.d3d.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -244,6 +270,7 @@ winglut:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/local.glut.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -253,6 +280,7 @@ winsdl:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/local.sdl2.c
+	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 ##########################################################

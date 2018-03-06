@@ -350,9 +350,19 @@ int netmgr_write(struct event* ev)
 
 		//change event
 		obj[where].type = what;
-		if((what == WS) && (obj[where].stage1 >= 4))
+		if(WS == what)
 		{
-			ws_event(ev, datahome);
+			//say("stage1=%d\n", obj[where].stage1);
+			if(1 == obj[where].stage1)
+			{
+				ev->why = hex32('W','S',0,0);
+				ev->what = hex32('w','+',0,0);
+			}
+			else
+			{
+				ev->why = len;
+				ev->what = hex32('w','@',0,0);
+			}
 			return 42;
 		}
 		else if(what == http)

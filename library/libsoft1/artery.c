@@ -33,8 +33,7 @@ int arteryread()
 }
 int arterywrite(struct event* ev)
 {
-	netmgr_write(ev);
-	return 0;
+	return netmgr_write(ev);
 }
 int arterylist()
 {

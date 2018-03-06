@@ -142,7 +142,7 @@ again:
 		}
 		if(0 == ev->what)break;
 
-		say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
+		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 		if(_char_ == ev->what)
 		{
 			if(0 == ev->where)
