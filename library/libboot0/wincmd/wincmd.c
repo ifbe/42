@@ -434,11 +434,19 @@ int lowlevel_input()
 			return 0;
 		}
 		if(KEY_EVENT != irInBuf[0].EventType)continue;
+//printmemory(&irInBuf[0], sizeof(INPUT_RECORD));
+//printmemory(&irInBuf[1], sizeof(INPUT_RECORD));
 
 		k0 = irInBuf[0].Event.KeyEvent;
+		k1 = irInBuf[1].Event.KeyEvent;
 		if(0 == k0.bKeyDown)continue;
+//printf("%x,%x,%x,%x\n", k0.wVirtualKeyCode, k0.uChar.UnicodeChar, k1.wVirtualKeyCode, k1.uChar.UnicodeChar);
 
-		if(k0.uChar.AsciiChar == 0)
+		if((2 == num)&&(0x10 == k0.wVirtualKeyCode))
+		{
+			return k1.uChar.UnicodeChar;
+		}
+		else if(k0.uChar.AsciiChar == 0)
 		{
 			ret = k0.wVirtualKeyCode;
 

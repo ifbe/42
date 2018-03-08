@@ -88,7 +88,11 @@ int actorwrite(struct event* ev)
 	win = (void*)where;
 	
 	//no actor
-	if(0 == win->irel)login_write(win, ev);
+	if(0 == win->irel)
+	{
+		if(_cli_ == win->fmt)term_write(ev);
+		else login_write(win, ev);
+	}
 	else actorinput(win, ev);
 	return 0;
 }
@@ -126,22 +130,38 @@ int actorstart(struct arena* win, struct actor* act)
 	act->onstart(act, pin);
 	return 0;
 }
-int actorlist(u8* p)
+void* actorlist(u8* buf, int len)
 {
-	int j;
-	for(j=0;j<0x100;j++)
+	int j,k;
+	u8* p;
+	if(0 == buf)
 	{
-		if(0 == actor[j].name)break;
-		say("[%03x]: %.8s,%.8s\n", j, &actor[j].type, &actor[j].name);
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			say("[%03x]: %.8s,%.8s\n", j, &actor[j].type, &actor[j].name);
+		}
+		if(0 == j)say("empty actor\n");
 	}
-	if(0 == j)say("empty actor\n");
+	else
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			p = (void*)(&actor[j].name);
+
+			for(k=0;k<8;k++)
+			{
+				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
+				if(buf[k] != p[k])break;
+			}
+		}
+	}
 	return 0;
 }
-void actorchoose(u8* buf)
+void actorchoose(u8* buf, int len)
 {
-	//<win0 style="width:50%;height:50%;"> = <2048 pinid="">
-	//<win1 style="width:50%;height:50%;"> = <xiangqi pinid="black;expert;">
-	//<win2 style="width:49%;height:49%;"> = <weiqi pinid="white;idot;">
+	//<2048>0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0</2048>
 	say("@actor:%s\n", buf);
 /*
 	int j,ret;

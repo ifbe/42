@@ -218,19 +218,25 @@ int arenawrite(struct event* ev)
 	}
 	return 0;
 }
-int arenalist(u8* buf)
+void* arenalist(u8* buf, int len)
 {
 	int j;
-	for(j=0;j<0x100;j++)
+	if(0 == buf)
 	{
-		if(0 == arena[j].type)break;
-		say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == arena[j].type)break;
+			say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+		}
+		if(0 == j)say("empty arena\n");
 	}
-
-	if(0 == j)say("empty arena\n");
+	else
+	{
+		return &arena[0];
+	}
 	return 0;
 }
-int arenachoose(u8* buf)
+int arenachoose(u8* buf, int len)
 {
 	//xiangqi.black@win2.center
 	if(0 == buf)return 0;

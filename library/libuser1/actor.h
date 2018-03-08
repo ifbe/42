@@ -649,8 +649,8 @@ int datastr2decstr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
 
 int decstr2data(void* str, u64 data);
-int decstr2datastr(void* dst, void* src, int len);
-int decstr2double(void* dst, void* src, int len);
+int decstr2datastr(void* src, void* dst);
+int decstr2double(void* src, void* dst);
 
 int hexstr2data(void* str, u64 data);
 int hexstr2datastr(void* dst, void* src, int len);

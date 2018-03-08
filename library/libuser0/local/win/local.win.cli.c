@@ -43,38 +43,30 @@ void windowchange()
 }
 void windowstart(struct window* this)
 {
-	if(this->type == hex32('b', 'u', 'f', 0))
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('c','l','i',0);
+	this->buf = 0;
+	this->len = 0;
+
+	this->w = 80;
+	this->h = 25;
+	this->d = 0;
+
+	if(termcount == 0)
 	{
-		this->fmt = hex32('c','l','i',0);
-		return;
+		u64 thread = startthread(terminalthread, this);
+		termcount++;
 	}
 	else
 	{
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex32('c','l','i',0);
-		this->buf = 0;
-		this->len = 0;
-
-		this->w = 80;
-		this->h = 25;
-		this->d = 0;
-
-		if(termcount == 0)
-		{
-			u64 thread = startthread(terminalthread, this);
-			termcount++;
-		}
-		else
-		{
-			CreateProcess(
-				"c:\\windows\\system32\\cmd.exe",
-				0, 0, 0, 0,
-				CREATE_NEW_CONSOLE, 0, 0,
-				&si, &pi
-			);
-			printf("GetLastError=%d\n",GetLastError());
-			termcount++;
-		}
+		CreateProcess(
+			"c:\\windows\\system32\\cmd.exe",
+			0, 0, 0, 0,
+			CREATE_NEW_CONSOLE, 0, 0,
+			&si, &pi
+		);
+		printf("GetLastError=%d\n",GetLastError());
+		termcount++;
 	}
 }
 void windowstop()

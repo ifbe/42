@@ -89,14 +89,20 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		if(fmt[tmp] == '.')tmp++;
 
 		//rval
-		rval = 0;
 		if(fmt[tmp] == '*')
 		{
 			rval = va_arg(arg, int);
 			tmp++;
 		}
+		else if( (fmt[tmp] < 0x30) | (fmt[tmp] > 0x39) )
+		{
+			rval = -1000;
+		}
 		else
 		{
+			rval = fmt[tmp]-0x30;
+			tmp++;
+
 			while( (fmt[tmp] >= 0x30) && (fmt[tmp] <= 0x39) )
 			{
 				rval = (rval*10) + (fmt[tmp]-0x30);
@@ -184,7 +190,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		else if(fmt[tmp] == 's')
 		{
 			_s = va_arg(arg, u8*);
-			if(rval <= 0)
+			if(rval < 0)
 			{
 				while(1)
 				{

@@ -38,7 +38,6 @@ hack/hack.fs.c \
 hack/hack.graph.c \
 hack/hack.hex.c \
 hack/hack.input.c \
-hack/hack.login.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/html/html.css.c \
@@ -72,6 +71,7 @@ lib3d/lib3d.c \
 lib4d/help.asset.c \
 lib4d/help.bgfg.c \
 lib4d/help.ctx.c \
+lib4d/help.empty.c \
 lib4d/help.input.c \
 lib4d/help.output.c \
 lib4d/lib4d.c \

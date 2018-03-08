@@ -5,6 +5,8 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+#define _win_ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
 #define _device_ hex64('d','e','v','i','c','e',0,0)
 #define _driver_ hex64('d','r','i','v','e','r',0,0)
 #define _system_ hex64('s','y','s','t','e','m',0,0)
@@ -12,21 +14,24 @@
 #define _arena_ hex64('a','r','e','n','a',0,0,0)
 #define _actor_ hex64('a','c','t','o','r',0,0,0)
 //
-int actorlist(void*);
-int actorchoose(void*);
-int arenalist(void*);
-int arenachoose(void*);
-int arterylist(void*);
-int arterychoose(void*);
-int systemlist(void*);
-int systemchoose(void*);
-int driverlist(void*);
-int driverchoose(void*);
-int devicelist(void*);
-int devicechoose(void*);
+void* actorlist(void*, int);
+int actorchoose(void*, int);
+void* arenalist(void*, int);
+int arenachoose(void*, int);
+void* arterylist(void*, int);
+int arterychoose(void*, int);
+void* systemlist(void*, int);
+int systemchoose(void*, int);
+void* driverlist(void*, int);
+int driverchoose(void*, int);
+void* devicelist(void*, int);
+int devicechoose(void*, int);
 //
-int buf2arg(u8* buf,int max,int* argc,u8** argv);
-int buf2type(u8* buf,int max,u64* type,u8** name);
+void* stylealloc();
+void* pinidalloc();
+int parsestyle(void*, void*, int);
+int parsepinid(void*, void*, int);
+//
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
@@ -48,50 +53,49 @@ void initstdin(void* addr)
 
 
 
-void term_ls(u8* buf)
+
+void term_ls0(u8* buf)
+{
+	say("----------------\n");
+	devicelist(0, 0);
+	say("----------------\n");
+	driverlist(0, 0);
+	say("----------------\n");
+	systemlist(0, 0);
+	say("----------------\n");
+	arterylist(0, 0);
+	say("----------------\n");
+	arenalist(0, 0);
+	say("----------------\n");
+	actorlist(0, 0);
+}
+void term_lsn(u8* buf)
 {
 	int j;
-	if(0 == buf)goto fail;
 	if(buf[2] < 0x20)
 	{
-		if(0 == pos)goto fail;
-		else if(_device_ == path[0])devicelist(0);
-		else if(_driver_ == path[0])driverlist(0);
-		else if(_system_ == path[0])systemlist(0);
-		else if(_artery_ == path[0])arterylist(0);
-		else if(_arena_ == path[0])arenalist(0);
-		else if(_actor_ == path[0])actorlist(0);
+		if(_device_ == path[0])devicelist(0, 0);
+		else if(_driver_ == path[0])driverlist(0, 0);
+		else if(_system_ == path[0])systemlist(0, 0);
+		else if(_artery_ == path[0])arterylist(0, 0);
+		else if(_arena_ == path[0])arenalist(0, 0);
+		else if(_actor_ == path[0])actorlist(0, 0);
 		return;
 	}
+	for(j=2;j<0x1000;j++){if(buf[j] > 0x20)break;}
 
-	for(j=2;j<0x1000;j++)
-	{
-		if(buf[j] > 0x20)break;
-	}
-
-	say("ls(%s)\n", buf+j);
-	return;
-
-fail:
-	say("----------------\n");
-	devicelist(0);
-	say("----------------\n");
-	driverlist(0);
-	say("----------------\n");
-	systemlist(0);
-	say("----------------\n");
-	arterylist(0);
-	say("----------------\n");
-	arenalist(0);
-	say("----------------\n");
-	actorlist(0);
+	if(0 == ncmp(buf+j, "device", 6))devicelist(0, 0);
+	else if(0 == ncmp(buf+j, "driver", 6))driverlist(0, 0);
+	else if(0 == ncmp(buf+j, "system", 6))systemlist(0, 0);
+	else if(0 == ncmp(buf+j, "artery", 6))arterylist(0, 0);
+	else if(0 == ncmp(buf+j, "arena", 5))arenalist(0, 0);
+	else if(0 == ncmp(buf+j, "actor", 5))actorlist(0, 0);
+	else say("ls(%s)\n", buf+j);
 }
-void term_cd(u8* buf)
+void term_cd0(u8* buf)
 {
 	int j,k;
 	u8* pp;
-	if(0 == buf)goto fail;
-	if(buf[2] < 0x20)goto fail;
 
 	for(j=2;j<0x1000;j++)
 	{
@@ -111,23 +115,76 @@ void term_cd(u8* buf)
 fail:
 	pos = 0;
 }
-void term_cmd(u8* buf)
+void term_cdn(u8* buf)
+{
+	if(0 == buf)pos = 0;
+	else if(buf[2] < 0x20)pos = 0;
+}
+void term_cmd0(u8* buf)
+{
+	int j,len;
+	int a=-1,b=-1;
+	u8 cssbuf[0x100];
+	u8 pinbuf[0x100];
+	void* win;
+	void* act;
+	u8* css;
+	u8* pin;
+	for(j=0;j<0x1000;j++){if(*buf <= 0x20)buf++;}
+
+	//split l and r
+	for(j=0;j<0x1000;j++)
+	{
+		if(buf[j] < 0x20){len = j;break;}
+		else if('=' == buf[j]){a = j;}
+	}
+	if(a < 0){say("?: %s\n",buf);return;}
+
+	//eat non-char
+	for(;len>0;len--){if(buf[len-1] > 0x20)break;}
+	for(b=a+1;b<len;b++){if(buf[b] > 0x20)break;}
+	for(a=a-1;a>=0;a--){if(buf[a] > 0x20)break;}
+	//say("lval=%.*s\nrval=%.*s\n", a+1, buf, len-b, buf+b);
+
+	//<aaaa> = <bbbb>
+	if( ('<' != buf[0]) | ('>' != buf[a]) )return;
+	if( ('<' != buf[b]) | ('>' != buf[len-1]) )return;
+
+	//<arena/win0 style="width:50%;height:50%;">
+	//<actor/xiangqi pinid="black;expert;">
+	//say("<%.*s> = <%.*s>\n", a-1, buf+1, len-b-2, buf+b+1);
+
+	//find
+	win = arenalist(buf+1, 8);
+	if(0 == win)return;
+	act = actorlist(buf+b+1, 8);
+	if(0 == act)return;
+
+	//parse
+	parsestyle(cssbuf, buf+1, a-1);
+	//parsepinid(pinbuf, buf+b+1, len-b-2);
+
+	//foot
+	css = stylealloc();
+	pin = pinidalloc();
+	for(j=0;j<0x80;j++)css[j] = cssbuf[j];
+	for(j=0;j<0x80;j++)pin[j] = pinbuf[j];
+
+	//rel
+	say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
+	relation_write(win, css, _win_, act, pin, _act_);
+}
+void term_cmdn(u8* buf)
 {
 	if(0 == buf)return;
 	if(buf[0] < 0x20)return;
 
-	if(0 == pos)goto fail;
-	else if(_device_ == path[0])devicechoose(buf);
-	else if(_driver_ == path[0])driverchoose(buf);
-	else if(_system_ == path[0])systemchoose(buf);
-	else if(_artery_ == path[0])arterychoose(buf);
-	else if(_arena_ == path[0])arenachoose(buf);
-	else if(_actor_ == path[0])actorchoose(buf);
-	else goto fail;
-	return;
-	
-fail:
-	say("?: %s\n", buf);
+	else if(_device_ == path[0])devicechoose(buf, 0);
+	else if(_driver_ == path[0])driverchoose(buf, 0);
+	else if(_system_ == path[0])systemchoose(buf, 0);
+	else if(_artery_ == path[0])arterychoose(buf, 0);
+	else if(_arena_ == path[0])arenachoose(buf, 0);
+	else if(_actor_ == path[0])actorchoose(buf, 0);
 }
 void term_read(u8* buf)
 {
@@ -136,19 +193,22 @@ void term_read(u8* buf)
 	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
 	if(ncmp(buf, "exit", 4) == 0)goto finish;
 
-	//proto://ipaddr:port/folder/file
-	for(j=0;j<0x1000;j++)
+	//
+	if(0 == ncmp(buf, "ls", 2))
 	{
-		if(0 == ncmp(buf+j, "://", 3))
-		{
-			arterychoose(buf);
-			goto prompt;
-		}
+		if(0 == pos)term_ls0(buf);
+		else term_lsn(buf);
 	}
-
-	if(0 == ncmp(buf, "ls", 2))term_ls(buf);
-	else if(0 == ncmp(buf, "cd", 2))term_cd(buf);
-	else term_cmd(buf);
+	else if(0 == ncmp(buf, "cd", 2))
+	{
+		if(0 == pos)term_cd0(buf);
+		else term_cdn(buf);
+	}
+	else
+	{
+		if(0 == pos)term_cmd0(buf);
+		else term_cmdn(buf);
+	}
 
 prompt:
 	if(0 != pos)
