@@ -1,0 +1,212 @@
+#include "actor.h"
+
+
+
+
+//max=32768
+static int arealeft = 16384;
+static int areatop = 32768;
+static int arearight = 49152;
+static int areabottom = 49152;
+static u8 table[8][8] = {
+	'a','b','c','d','e','f','g','h',
+	'i','j','k','l','m','n','o','p',
+	'q','r','s','t','u','v','w','x',
+	'y','z',' ',' ',' ',' ',0x8,0xd,
+	'0','1','2','3','4','5','6','7',
+	'8','9',' ',' ',' ',' ',' ',' ',
+	'+','-','*','/',' ',' ',' ',' ',
+	'=',' ',' ',' ',' ',' ',' ',' '
+};
+
+
+
+
+static void joystick_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	int radius = hh/8;
+
+	//outer
+	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	//select, start
+	drawline_rect(win, 0xffffff,
+		cx-(ww/8), cy+(hh*11/16),
+		cx, cy+(hh*13/16)
+	);
+	drawline_rect(win, 0xffffff,
+		cx, cy+(hh*11/16),
+		cx+(ww/8), cy+(hh*13/16)
+	);
+
+	//left, up, down, right
+	drawsolid_rect(win, 0x0000ff,
+		cx-(ww*5/8)-radius, cy-(radius/2),
+		cx-(ww*5/8)+radius, cy+(radius/2)
+	);
+	drawsolid_rect(win, 0xff0000,
+		cx-(ww*4/8)-(radius/2), cy-(hh/4)-radius,
+		cx-(ww*4/8)+(radius/2), cy-(hh/4)+radius
+	);
+	drawsolid_rect(win, 0x00ffff,
+		cx-(ww*4/8)-(radius/2), cy+(hh/4)-radius,
+		cx-(ww*4/8)+(radius/2), cy+(hh/4)+radius
+	);
+	drawsolid_rect(win, 0xffff00,
+		cx-(ww*3/8)-radius, cy-(radius/2),
+		cx-(ww*3/8)+radius, cy+(radius/2)
+	);
+
+	//y, x, b, a
+	drawsolid_circle(win, 0xff00ff,
+		cx+(ww*3/8), cy, radius);
+	drawsolid_circle(win, 0xfedcba,
+		cx+(ww*4/8), cy-(hh/4), radius);
+	drawsolid_circle(win, 0xabcdef,
+		cx+(ww*4/8), cy+(hh/4), radius);
+	drawsolid_circle(win, 0xffff00,
+		cx+(ww*5/8), cy, radius);
+}
+static void joystick_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void joystick_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void joystick_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void joystick_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	say("joystick(%x,%x,%x)\n",win,act,sty);
+}
+
+
+
+
+void keyboard_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	int left,top,right,bottom;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+
+	//[a,z]
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			left = cx + (x-4)*ww/4;
+			top = cy + (y-4)*hh/4;
+			right = cx + (x-3)*ww/4;
+			bottom = cy + (y-3)*hh/4;
+
+			drawicon_1(win, 0, left, top, right, bottom, &table[y][x], 1);
+		}
+	}
+}
+static void keyboard_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void keyboard_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void keyboard_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void keyboard_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	say("keyboard(%x,%x,%x)\n",win,act,sty);
+}
+static void input_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u64 fmt = win->fmt;
+
+	if(fmt == _cli_)keyboard_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)keyboard_read_tui(win, sty, act, pin);
+	else if(fmt == _html_)keyboard_read_html(win, sty, act, pin);
+	else if(fmt == _vbo_)keyboard_read_vbo(win, sty, act, pin);
+	else keyboard_read_pixel(win, sty, act, pin);
+}
+static void input_write(
+	struct actor* act, struct pinid* pin,
+	struct event* ev)
+{
+	int x,y;
+	//say("%x,%x\n",x,y);
+}
+static void input_list()
+{
+}
+static void input_change()
+{
+}
+static void input_stop(struct actor* act, struct pinid* pin)
+{
+}
+static void input_start(struct actor* act, struct pinid* pin)
+{
+}
+static void input_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(_copy_ == act->type)stopmemory(act->buf);
+}
+static void input_create(struct actor* act)
+{
+	if(0 == act)return;
+	if(_orig_ == act->type)act->buf = table;
+	if(_copy_ == act->type)act->buf = startmemory(64);
+}
+
+
+
+
+void input_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('i', 'n', 'p', 'u', 't', 0, 0, 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)input_create;
+	p->ondelete = (void*)input_delete;
+	p->onstart  = (void*)input_start;
+	p->onstop   = (void*)input_stop;
+	p->onlist   = (void*)input_list;
+	p->onchoose = (void*)input_change;
+	p->onread   = (void*)input_read;
+	p->onwrite  = (void*)input_write;
+}

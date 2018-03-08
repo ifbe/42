@@ -52,15 +52,13 @@ void say(void*, ...);
 
 //
 static struct window* arena;
-static int cur = 0;
-
-
-
-
-void* arenastart(u64 type, u64 fd)
+static struct style* style = 0;
+static int winlen = 0;
+static int stylen = 0;
+void* arenaalloc()
 {
-	struct window* win = 0;
-	int j = 0;
+	int j;
+	struct window* win;
 	while(1)
 	{
 		win = &arena[j];
@@ -69,6 +67,40 @@ void* arenastart(u64 type, u64 fd)
 		j++;
 		if(j >= 0x100)return 0;
 	}
+	return win;
+}
+void* stylealloc()
+{
+	struct style* sty = (void*)style + stylen;
+	stylen += sizeof(struct style);
+
+	sty->cx = 0.0;
+	sty->cy = 0.0;
+	sty->cz = 0.0;
+
+	sty->rx = 0.0;
+	sty->ry = 0.0;
+	sty->rz = 0.0;
+
+	sty->fx = 0.0;
+	sty->fy = 0.0;
+	sty->fz = 0.0;
+
+	sty->ux = 0.0;
+	sty->uy = 0.0;
+	sty->uz = 0.0;
+
+	return sty;
+}
+
+
+
+
+void* arenastart(u64 type, u64 fd)
+{
+	int j = 0;
+	struct window* win = arenaalloc();
+	if(0 == win)return 0;
 
 	if(_win_ == type)
 	{
@@ -199,6 +231,7 @@ int arenalist(u8* buf)
 }
 int arenachoose(u8* buf)
 {
+	//xiangqi.black@win2.center
 	if(0 == buf)return 0;
 	if(0 == ncmp(buf, "win", 3))arenastart(_win_, 0);
 	else say("@arena: %s\n", buf);
@@ -208,8 +241,13 @@ void arenacreate(u8* addr)
 	int j;
 	for(j=0;j<0x400000;j++)addr[j] = 0;
 
+	arena = (void*)(addr+0x000000);
+	//actor = (void*)(addr+0x100000);
+	style = (void*)(addr+0x200000);
+	//pinid = (void*)(addr+0x300000);
+
 	//create
-	arena = (void*)addr;
+	//remotecreate(arena);
 	soundcreate(arena);
 	videocreate(arena);
 	windowcreate(arena);
@@ -226,4 +264,7 @@ void arenadelete()
 
 	//1024*1024*4
 	windowdelete();
+	videodelete();
+	sounddelete();
+	//remotedelete();
 }

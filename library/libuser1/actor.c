@@ -8,6 +8,7 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
+void* stylealloc();
 void* arenastart(u64, u64);
 void arenastop(void*);
 int actorinput(void*, void*);
@@ -28,55 +29,34 @@ void relation_write(
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
-static struct compo* compo = 0;
-static int winlen = 0;
+static struct pinid* pinid = 0;
 static int actlen = 0;
-static int stylen = 0;
-static int comlen = 0;
-
-
-
-
-void act_add()
+static int pinlen = 0;
+void* actoralloc()
 {
+	int j;
+	struct actor* act;
+	while(1)
+	{
+		act = &actor[j];
+		if(act->type == 0)break;
+
+		j++;
+		if(j >= 0x100)return 0;
+	}
+	return act;
 }
-void act_del()
+void* pinidalloc()
 {
-}
-void act_at(struct arena* win, struct actor* act)
-{
-	int w = win->w;
-	int h = win->h;
-	int d = (w+h) / 2;
-	struct style* sty;
-	struct compo* com;
+	struct pinid* pin = (void*)pinid + pinlen;
+	pinlen += sizeof(struct pinid);
 
-	sty = (void*)style + stylen;
-	stylen += sizeof(struct style);
-	sty->cx = w /2;
-	sty->cy = h /2;
-	sty->cz = 0.0;
-	sty->rx = w *49/100;
-	sty->ry = 0.0;
-	sty->rz = 0.0;
-	sty->fx = 0.0;
-	sty->fy = h *49/100;
-	sty->fz = 0.0;
-	sty->ux = 0.0;
-	sty->uy = 0.0;
-	sty->uz = d *49/100;
+	pin->flag00 = 0;
+	pin->flag01 = 1;
+	pin->flag02 = 2;
+	pin->flag03 = 3;
 
-	com = (void*)compo + comlen;
-	comlen += sizeof(struct compo);
-	com->flag00 = 0;
-	com->flag01 = 1;
-	com->flag02 = 2;
-	com->flag03 = 3;
-
-	relation_write(
-		win, sty, _win_,
-		act, com, _act_
-	);
+	return pin;
 }
 
 
@@ -113,10 +93,31 @@ int actorwrite(struct event* ev)
 }
 int actorstart(struct arena* win, struct actor* act)
 {
-	if(act == 0)act = &actor[0];
-	act->onstart(act, 0);
+	int w = win->w;
+	int h = win->h;
+	int d = (w+h) / 2;
+	struct style* sty;
+	struct pinid* pin;
 
-	act_at(win, act);
+	sty = stylealloc();
+	if(0 == sty)return;
+
+	pin = pinidalloc();
+	if(0 == pin)return;
+
+	sty->cx = w/2;
+	sty->cy = h/2;
+	sty->cz = 0.0;
+	sty->rx = 256;
+	sty->fy = 256;
+	sty->uz = 256;
+
+	relation_write(
+		win, sty, _win_,
+		act, pin, _act_
+	);
+
+	act->onstart(act, pin);
 	return 0;
 }
 int actorstop(struct actor* act)
@@ -133,33 +134,15 @@ int actorlist(u8* p)
 		say("[%03x]: %.8s,%.8s\n", j, &actor[j].type, &actor[j].name);
 	}
 	if(0 == j)say("empty actor\n");
-/*
-	int j;
-	int ret = 0;
-	u64 type = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if(actor[j].type != type)
-		{
-			if(type != 0)say("\n");
-
-			type = actor[j].type;
-			if(type == 0)break;
-
-			say("%.*s:\n", 8, &type);
-			ret=0;
-		}
-
-		if((ret>0)&&(ret%8==0))say("\n");
-		say("	%.*s", 8, &actor[j].name);
-
-		ret++;
-	}
-*/
 	return 0;
 }
-void actorchoose(char* p)
+void actorchoose(u8* buf)
 {
+	//<win0 style="width:50%;height:50%;"> = <2048 pinid="">
+	//<win1 style="width:50%;height:50%;"> = <xiangqi pinid="black;expert;">
+	//<win2 style="width:49%;height:49%;"> = <weiqi pinid="white;idot;">
+	say("@actor:%s\n", buf);
+/*
 	int j,ret;
 	u64 name;
 	char* q = (char*)&name;
@@ -184,13 +167,14 @@ void actorchoose(char* p)
 			return;
 		}
 	}
+*/
 }
 void actorcreate(u8* addr)
 {
 	arena = (void*)(addr+0x000000);
 	actor = (void*)(addr+0x100000);
 	style = (void*)(addr+0x200000);
-	compo = (void*)(addr+0x300000);
+	pinid = (void*)(addr+0x300000);
 
 	//lib1d
 	lib1d_create(addr, 0);
@@ -215,7 +199,7 @@ void actordelete()
 	lib2d_delete();
 	lib1d_delete();
 
-	compo = 0;
+	pinid = 0;
 	style = 0;
 	actor = 0;
 	arena = 0;

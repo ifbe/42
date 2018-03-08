@@ -101,6 +101,54 @@ struct window
 		struct point touch[16];
 	};
 };
+struct style
+{
+	//[00,0f]:
+	u64 type;
+	u64 name;
+
+	//[10,1f]: center
+	float cx;
+	float cy;
+	float cz;
+	float cw;
+
+	//[20,2f]: left
+	float lx;
+	float ly;
+	float lz;
+	float ltype;
+
+	//[30,3f]: right
+	float rx;
+	float ry;
+	float rz;
+	float rtype;
+
+	//[40,4f]: near
+	float nx;
+	float ny;
+	float nz;
+	float ntype;
+
+	//[50,5f]: far
+	float fx;
+	float fy;
+	float fz;
+	float ftype;
+
+	//[60,6f]: bottom
+	float bx;
+	float by;
+	float bz;
+	float btype;
+
+	//[70,7f]: upper
+	float ux;
+	float uy;
+	float uz;
+	float utype;
+};
 
 
 

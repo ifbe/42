@@ -1,0 +1,534 @@
+#include "actor.h"
+void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
+
+
+
+
+static char data[10][9];
+static int px, py, qx, qy, turn;
+
+
+
+
+void* char2hanzi(int val)
+{
+	switch(val)
+	{
+		case 'a':return "车";
+		case 'b':return "马";
+		case 'c':return "象";
+		case 'd':return "士";
+		case 'e':return "将";
+		case 's':return "卒";
+		case 'z':return "炮";
+
+		case 'A':return "车";
+		case 'B':return "马";
+		case 'C':return "相";
+		case 'D':return "仕";
+		case 'E':return "帅";
+		case 'S':return "兵";
+		case 'Z':return "炮";
+
+		default:return 0;
+	}
+}
+static int htmlcircle(char* p, int x, int y)
+{
+	u32 textcolor;
+	char* hanzi;
+	char ch;
+
+	ch = data[y][x];
+	if( (ch>='a') && (ch<='z') )
+	{
+		textcolor=0;
+	}
+	else if( (ch >='A') && (ch <= 'Z') )
+	{
+		textcolor=0xff0000;
+	}
+	else return 0;
+
+	hanzi = char2hanzi(data[y][x]);
+	return mysnprintf(
+		p, 0x1000,
+		"<div class=\"circle\" style=\""
+		"left:%d%;"
+		"top:%d%;"
+		"background:#ffff00;"
+		"color:#%06x;"
+		"\"><br>%s</div>",
+		x*11, y*10,
+		textcolor, hanzi
+	);
+}
+static void xiangqi_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	char* p = (char*)(win->buf);
+	return;
+
+	p += mysnprintf(
+		p, 0x1000,
+		"<style type=\"text/css\">"
+		".circle{"
+		"position:absolute;"
+		"border-radius:50%;"
+		"width:10%;"
+		"height:10%;"
+		"text-align:center;"
+		"}"
+		"</style>"
+	);
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			p += htmlcircle(p, x, y);
+		}//forx
+	}//fory
+}
+
+
+
+
+void xiangqi_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 black, brown, red;
+	u32 chesscolor, fontcolor, temp;
+	int x,y;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+
+	black=0;
+	if( ((win->fmt)&0xffffffff) == 0x61626772)
+	{
+		temp = 0x256f8d;
+		red = 0xff;
+		brown = 0x36878d;
+	}
+	else
+	{
+		temp = 0x8d6f25;
+		red = 0xff0000;
+		brown = 0x8d8736;
+	}
+	drawsolid_rect(win, temp, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	//heng
+	for(y=-5;y<5;y++)
+	{
+		drawline(
+			win, 0,
+			cx - ww*8/9,
+			cy + hh*(2*y+1)/10,
+			cx + ww*8/9,
+			cy + hh*(2*y+1)/10
+		);
+	}
+
+	//shu
+	for(x=-4;x<5;x++)
+	{
+		drawline(win, 0,
+			cx + x*ww*2/9,	cy - hh*9/10,
+			cx + x*ww*2/9,	cy - hh/10);
+		drawline(win, 0,
+			cx + x*ww*2/9,	cy + hh*9/10,
+			cx + x*ww*2/9,	cy + hh/10);
+	}
+
+	//pie,na
+	drawline(win, 0,
+		cx - ww*2/9,
+		cy - hh*9/10,
+		cx + ww*2/9,
+		cy - hh*5/10
+	);
+	drawline(win, 0,
+		cx + ww*2/9,
+		cy - hh*9/10,
+		cx - ww*2/9,
+		cy - hh*5/10
+	);
+	drawline(win, 0,
+		cx - ww*2/9,
+		cy + hh*9/10,
+		cx + ww*2/9,
+		cy + hh*5/10
+	);
+	drawline(win, 0,
+		cx + ww*2/9,
+		cy + hh*9/10,
+		cx - ww*2/9,
+		cy + hh*5/10
+	);
+
+	//chess
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			//empty
+			if(data[y][x] < 'A')continue;
+
+			//>0x41
+			else if(data[y][x] <= 'Z')fontcolor = black;
+
+			//>0x61
+			else if(data[y][x] <= 'z')fontcolor = red;
+
+			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
+			else chesscolor = brown;
+
+			drawsolid_circle(
+				win, chesscolor,
+				cx + (2*x-8)*ww/9,
+				cy + (2*y-9)*hh/10,
+				hh/10
+			);
+
+			drawutf8(win, fontcolor,
+				(cx-8) + (2*x-8)*ww/9,
+				(cy-8) + (2*y-9)*hh/10,
+				char2hanzi(data[y][x]), 0
+			);
+		}//forx
+	}//fory
+}
+static void xiangqi_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	u32 chesscolor, fontcolor, temp;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+
+	carvesolid_rect(
+		win, 0x8d6f25,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+	for(y=-5;y<5;y++)
+	{
+		carveline(
+			win, 0x222222,
+			cx-(ww*8/9), cy+(2*y+1)*hh/10, 0.0,
+			cx+(ww*8/9), cy+(2*y+1)*hh/10, 0.0
+		);
+	}
+	for(x=-4;x<5;x++)
+	{
+		carveline(
+			win, 0x222222,
+			cx+x*ww*2/9, cy-hh*1/10, 0.0,
+			cx+x*ww*2/9, cy-hh*9/10, 0.0
+		);
+		carveline(
+			win, 0x222222,
+			cx+x*ww*2/9, cy+hh*1/10, 0.0,
+			cx+x*ww*2/9, cy+hh*9/10, 0.0
+		);
+	}
+
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			//empty
+			if(data[y][x] < 'A')continue;
+
+			//>0x41
+			else if(data[y][x] <= 'Z')fontcolor = 0;
+
+			//>0x61
+			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
+
+			carvesolid_cylinder(
+				win, 0xf9d65b,
+				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww/20,
+				ww/9, 0.0, 0.0,
+				0.0, 0.0, ww/20
+			);
+			carveutf8(
+				win, fontcolor,
+				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww*2/19,
+				ww/18, 0.0, 0.0,
+				0.0, hh/20, 0.0,
+				(u8*)char2hanzi(data[y][x]), 0
+			);
+		}
+	}
+}
+static void xiangqi_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y,color;
+	int width = win->w;
+	int height = win->h;
+	u8* buf = (u8*)(win->buf);
+	u8* q;
+
+	//
+	for(x=0;x<width*height*4;x++)buf[x] = 0;
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			q = char2hanzi(data[y][x]);
+			if(q == 0)
+			{
+				if(x != qx)continue;
+				if(y != qy)continue;
+			}
+
+			//color
+			if( (px==x)&& (py==y) )color = 5;
+			else if( (qx==x)&& (qy==y) )color = 2;
+			else if(data[y][x] >= 'a')color = 1;
+			else color = 4;
+			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
+
+			//character
+			gentui_utf8(win, 0, x*6+2, y*3+1, char2hanzi(data[y][x]), 0);
+		}
+	}
+}
+static void xiangqi_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void xiangqi_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u64 fmt = win->fmt;
+
+	if(fmt == _cli_)xiangqi_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)xiangqi_read_tui(win, sty, act, pin);
+	else if(fmt == _vbo_)xiangqi_read_vbo(win, sty, act, pin);
+	else if(fmt == _html_)xiangqi_read_html(win, sty, act, pin);
+	else xiangqi_read_pixel(win, sty, act, pin);
+}
+
+
+
+
+int xiangqi_pickup(int x, int y)
+{
+	if( (x==px) && (y==py) )
+	{
+		px = py = -1;
+		return 1;
+	}
+
+	//chess choosing
+	if( (px<0) | (py<0) | (data[py][px] == 0) )
+	{
+		if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
+		{
+			px = x;
+			py = y;
+		}
+		if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
+		{
+			px = x;
+			py = y;
+		}
+		return 2;
+	}
+
+	return 0;
+}
+void xiangqi_write(
+	struct actor* act, struct pinid* pin,
+	struct event* ev)
+{
+	int x, y, ret;
+	u64 key = ev->why;
+	u64 what = ev->what;
+
+	if(what == _kbd_)
+	{
+		if(key == 0x48)	//up
+		{
+			if(qy<1)return;
+			qy--;
+		}
+		else if(key == 0x4b)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+		else if(key == 0x4d)	//right
+		{
+			if(qx<0)return;
+			if(qx>=8)return;
+			qx++;
+		}
+		else if(key == 0x50)	//down
+		{
+			if(qy<0)return;
+			if(qy>=9)return;
+			qy++;
+		}
+	}
+
+	else if(what == _char_)
+	{
+		if(key == 0x20)
+		{
+			ret = xiangqi_pickup(qx, qy);
+			if(ret > 0)return;
+
+			//move?
+			xiangqi_move(data, &turn, px, py, qx, qy);
+		}
+		else if(key == 0x415b1b)
+		{
+			if(qy<1)return;	//up
+			qy--;
+		}
+		else if(key == 0x425b1b)	//down
+		{
+			if(qy<0)return;
+			if(qy>=9)return;
+			qy++;
+		}
+		else if(key == 0x435b1b)	//right
+		{
+			if(qx<0)return;
+			if(qx>=8)return;
+			qx++;
+		}
+		else if(key == 0x445b1b)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+	}
+
+	else if(what == 0x2b70)
+	{
+		//x = key & 0xffff;
+		//y = (key >> 16) & 0xffff;
+		//say("%d,%d => ",x,y);
+
+		//x = (x*9)>>16;
+		//y = (y*10)>>16;
+		//say("%d,%d\n",x,y);
+
+		x = (key & 0xffff) / 6;
+		y = ((key >> 16) & 0xffff) / 3;
+
+		if(x < 0)return;
+		if(x > 8)return;
+		if(y < 0)return;
+		if(y > 9)return;
+
+		//pick?
+		ret = xiangqi_pickup(x, y);
+		if(ret > 0)return;
+
+		//move?
+		xiangqi_move(data, &turn, px, py, x, y);
+		px = py = -1;
+	}
+}
+static void xiangqi_list()
+{
+}
+static void xiangqi_choose()
+{
+}
+static void xiangqi_stop()
+{
+}
+static void xiangqi_start()
+{
+	int j;
+	char* p=(char*)data;
+
+	px = py = -1;
+	qx = qy = 0;
+	turn = 0;
+	for(j=0;j<90;j++)p[j]=0;
+
+
+
+
+	for(j=0;j<=4;j++)
+	{
+		//(black)JU,MA,XIANG,SHI,JIANG
+		data[0][ j ]='A' + j;
+		data[0][8-j]='A' + j;
+		
+		//(red)ju,ma,xiang,shi,jiang
+		data[9][ j ]='a' + j;
+		data[9][8-j]='a' + j;
+	}
+	for(j=0;j<5;j++)
+	{
+		//(red)SOLDIER
+		data[3][j*2]='S';
+
+		//(black)soldier
+		data[6][j*2]='s';
+	}
+
+	//(red)PAO
+	data[2][1]='Z';
+	data[2][7]='Z';
+
+	//(black)pao
+	data[7][1]='z';
+	data[7][7]='z';
+}
+static void xiangqi_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(_copy_ == act->type)stopmemory(act->buf);
+}
+static void xiangqi_create(struct actor* act)
+{
+	if(0 == act)return;
+	if(_orig_ == act->type)act->buf = data;
+	if(_copy_ == act->type)act->buf = startmemory(10*9);
+}
+
+
+
+
+void xiangqi_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	p->irel = 0;
+	p->orel = 0;
+
+	p->oncreate = (void*)xiangqi_create;
+	p->ondelete = (void*)xiangqi_delete;
+	p->onstart  = (void*)xiangqi_start;
+	p->onstop   = (void*)xiangqi_stop;
+	p->onlist   = (void*)xiangqi_list;
+	p->onchoose = (void*)xiangqi_choose;
+	p->onread   = (void*)xiangqi_read;
+	p->onwrite  = (void*)xiangqi_write;
+}
