@@ -132,6 +132,7 @@ void* arenastart(u64 type, u64 fd)
 		win->fd = fd;
 		wsserver_start(win);
 	}
+/*
 	else if(_vnc_ == type)
 	{
 		win->type = _vnc_;
@@ -153,7 +154,7 @@ void* arenastart(u64 type, u64 fd)
 		win->fd = fd;
 		vncserver_start(win);
 	}
-
+*/
 	return win;
 }
 int arenastop(struct window* win)

@@ -84,11 +84,17 @@ int actorwrite(struct event* ev)
 	//say("%x,%x,%x\n", why, what, where);
 
 	//no window
-	if(0 != where)
-	{
-		win = (void*)where;
-		ret = actorinput(win, ev);
-	}
+	if(0 == where)return 0;
+	win = (void*)where;
+	
+	//no actor
+	if(0 == win->irel)login_write(win, ev);
+	else actorinput(win, ev);
+	return 0;
+}
+int actorstop(struct actor* act)
+{
+	act->onstop();
 	return 0;
 }
 int actorstart(struct arena* win, struct actor* act)
@@ -118,11 +124,6 @@ int actorstart(struct arena* win, struct actor* act)
 	);
 
 	act->onstart(act, pin);
-	return 0;
-}
-int actorstop(struct actor* act)
-{
-	act->onstop();
 	return 0;
 }
 int actorlist(u8* p)

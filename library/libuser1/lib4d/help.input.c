@@ -265,20 +265,6 @@ int actorinput(struct arena* win, struct event* ev)
 	struct relation* rel;
 	struct relation* tmp;
 
-	//no actor
-	if(0 == win->irel)
-	{
-		if(win->fmt == hex32('c','l','i',0))
-		{
-			term_write(ev);
-		}
-		else
-		{
-			login_write(win, ev);
-		}
-		return 0;
-	}
-
 	//f11, f12
 	if(_kbd_ == ev->what)
 	{

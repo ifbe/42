@@ -6,14 +6,21 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 #include "arena.h"
-#define __int__ hex32('i','n','t',0)
-#define __fd__ hex32('f','d',0,0)
-#define __win__ hex32('w','i','n',0)
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 //
-void actorwrite(void* p);
-void actorread();
+#define _char_ hex32('c','h','a','r')
+#define _win_ hex32('w','i','n',0)
+int actorread();
+int actorwrite(void*);
+int arenaread();
+int arenawrite(void*);
+#define _fd_ hex32('f','d',0,0)
+#define _sys_ hex32('s','y','s',0)
+int arteryread();
+int arterywrite(void*);
+int systemread();
+int systemwrite();
 //
 void actorcreate(void*);
 void actordelete();
@@ -23,10 +30,10 @@ void arterycreate(void*);
 void arterydelete();
 void systemcreate(void*);
 void systemdelete();
-void bodycreate(void*);
-void bodydelete();
 void drivercreate(void*);
 void driverdelete();
+void devicecreate(void*);
+void devicedelete();
 //
 void initstdin(void*);
 void initstdout(void*);
@@ -57,7 +64,6 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	struct event* ev;
 	while(1)
 	{
-
 		//
 		if(ANativeWindow_lock(native, &buffer, NULL) != 0)
 		{
@@ -66,8 +72,8 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		}
 
 		//draw pixel
-		arena[1].buf = buffer.bits;
-		arena[1].w = buffer.stride;
+		arena[0].buf = buffer.bits;
+		arena[0].w = buffer.stride;
 		actorread();
 
 		//
@@ -80,10 +86,10 @@ say("@Read: %llx,%llx,%llx\n", ev->why, ev->what, ev->where);
 
 		//libsoft.file/socket: receiving events
 		ret = (ev->what)&0xff;
-		if((ev->what == __fd__)|(ret == 's')|(ret == 'v'))
+		if(_fd_ == ev->what)
 		{
 			//network rawdata -> my event
-			ret = artery_explain(ev);
+			ret = arterywrite(ev);
 			if(ret != 42)goto again;
 		}
 
@@ -97,7 +103,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 	u64 why, what, where;
 	say("@Write:%x,%x\n", type, data);
 
-	where = (u64)&arena[1];
+	where = (u64)&arena[0];
 	eventwrite(data, type, where, 0);
 
 	if(0x2b70 == type)temp = data;
@@ -134,10 +140,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	ANativeWindow_setBuffersGeometry(native, w, h, WINDOW_FORMAT_RGBA_8888);
 	LOGI("w=%d,h=%d\n", w, h);
 
-	arena[1].type = hex32('b','u','f',0);
-	arena[1].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[1].w = w;
-	arena[1].h = h;
+	arena[0].type = hex32('w','i','n',0);
+	arena[0].fmt = hex64('r','g','b','a','8','8','8','8');
+	arena[0].w = w;
+	arena[0].h = h;
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
 {
@@ -157,8 +163,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	initstdrel(world+0x300000);
 
 	//libsoft
+	devicecreate(world+0x400000);
 	drivercreate(world+0x400000);
-	bodycreate(  world+0x400000);
 
 	//libsoft
 	systemcreate(world+0x800000);
@@ -184,8 +190,8 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 	systemdelete();
 
 	//libhard
-	bodydelete();
 	driverdelete();
+	devicedelete();
 
 	death();
 }

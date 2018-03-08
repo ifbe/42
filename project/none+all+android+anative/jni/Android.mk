@@ -21,38 +21,38 @@ ifeq ($(TARGET_ARCH),x86)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/x86/x86.fp.c \
 library/libhard0/cpu/x86/x86.port.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 ifeq ($(TARGET_ARCH),x86_64)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/x64/x64.fp.c \
 library/libhard0/cpu/x64/x64.port.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 ifeq ($(TARGET_ARCH),arm)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/arm/arm.fp.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 ifeq ($(TARGET_ARCH),arm64)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/arm64/arm64.fp.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 ifeq ($(TARGET_ARCH),mips)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/mips/mips.fp.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 ifeq ($(TARGET_ARCH),mips64)
 LOCAL_SRC_FILES += \
 library/libhard0/cpu/mips64/mips64.fp.c \
-library/libhard0/driver.c
+library/libhard0/device.c
 endif
 
 #libhard1
 LOCAL_SRC_FILES += \
-library/libhard1/body.c
+library/libhard1/driver.c
 
 #libsoft0
 LOCAL_SRC_FILES += \
@@ -131,7 +131,9 @@ library/libsoft1/libalgo/solve/solve.2048.c \
 library/libsoft1/libalgo/solve/solve.chess.c \
 library/libsoft1/libalgo/solve/solve.maze.c \
 library/libsoft1/libalgo/solve/solve.rubik.c \
+library/libsoft1/libalgo/solve/solve.snake.c \
 library/libsoft1/libalgo/solve/solve.sudoku.c \
+library/libsoft1/libalgo/solve/solve.tetris.c \
 library/libsoft1/libalgo/solve/solve.xiangqi.c \
 library/libsoft1/libalgo/sorting/sort.bubble.c \
 library/libsoft1/libalgo/sorting/sort.gnome.c \
@@ -204,41 +206,37 @@ library/libsoft1/libfile/video/video.mkv.c \
 library/libsoft1/libfile/video/video.mp4.c \
 library/libsoft1/libfile/video/video.rmvb.c \
 library/libsoft1/libfile/file.c \
-library/libsoft1/libflow/libmotion/motion.c \
-library/libsoft1/libflow/libnet/0.phy/phy.bt.c \
-library/libsoft1/libflow/libnet/0.phy/phy.eth.c \
-library/libsoft1/libflow/libnet/0.phy/phy.wlan.c \
-library/libsoft1/libflow/libnet/1.link/link.arp.c \
-library/libsoft1/libflow/libnet/1.link/link.ipv4.c \
-library/libsoft1/libflow/libnet/1.link/link.ipv6.c \
-library/libsoft1/libflow/libnet/1.link/link.ipx.c \
-library/libsoft1/libflow/libnet/1.link/link.pppoe.c \
-library/libsoft1/libflow/libnet/1.link/link.slip.c \
-library/libsoft1/libflow/libnet/2.ip/ip46.icmp.c \
-library/libsoft1/libflow/libnet/2.ip/ip46.tcp.c \
-library/libsoft1/libflow/libnet/2.ip/ip46.udp.c \
-library/libsoft1/libflow/libnet/2.ip/ipx.spx.c \
-library/libsoft1/libflow/libnet/3.tran/tcp.ssh.c \
-library/libsoft1/libflow/libnet/3.tran/tcp.tls.c \
-library/libsoft1/libflow/libnet/3.tran/udp.quic.c \
-library/libsoft1/libflow/libnet/app/app.chat.c \
-library/libsoft1/libflow/libnet/app/app.raw.c \
-library/libsoft1/libflow/libnet/app/tcp.dl.c \
-library/libsoft1/libflow/libnet/app/tcp.ftp.c \
-library/libsoft1/libflow/libnet/app/tcp.http.c \
-library/libsoft1/libflow/libnet/app/tcp.proxy.c \
-library/libsoft1/libflow/libnet/app/tcp.rdp.c \
-library/libsoft1/libflow/libnet/app/tcp.rtmp.c \
-library/libsoft1/libflow/libnet/app/tcp.sql.c \
-library/libsoft1/libflow/libnet/app/tcp.vnc.c \
-library/libsoft1/libflow/libnet/app/tcp.ws.c \
-library/libsoft1/libflow/libnet/app/udp.dns.c \
-library/libsoft1/libflow/libnet/app/udp.hole.c \
-library/libsoft1/libflow/libnet/app/udp.tftp.c \
-library/libsoft1/libflow/libnet/net.c \
-library/libsoft1/libflow/libsound/sound.c \
-library/libsoft1/libflow/libvision/vision.c \
-library/libsoft1/libflow/flow.c \
+library/libsoft1/libnet/0.phy/phy.bt.c \
+library/libsoft1/libnet/0.phy/phy.eth.c \
+library/libsoft1/libnet/0.phy/phy.wlan.c \
+library/libsoft1/libnet/1.link/link.arp.c \
+library/libsoft1/libnet/1.link/link.ipv4.c \
+library/libsoft1/libnet/1.link/link.ipv6.c \
+library/libsoft1/libnet/1.link/link.ipx.c \
+library/libsoft1/libnet/1.link/link.pppoe.c \
+library/libsoft1/libnet/1.link/link.slip.c \
+library/libsoft1/libnet/2.ip/ip46.icmp.c \
+library/libsoft1/libnet/2.ip/ip46.tcp.c \
+library/libsoft1/libnet/2.ip/ip46.udp.c \
+library/libsoft1/libnet/2.ip/ipx.spx.c \
+library/libsoft1/libnet/3.tran/tcp.ssh.c \
+library/libsoft1/libnet/3.tran/tcp.tls.c \
+library/libsoft1/libnet/3.tran/udp.quic.c \
+library/libsoft1/libnet/app/app.chat.c \
+library/libsoft1/libnet/app/app.raw.c \
+library/libsoft1/libnet/app/tcp.dl.c \
+library/libsoft1/libnet/app/tcp.ftp.c \
+library/libsoft1/libnet/app/tcp.http.c \
+library/libsoft1/libnet/app/tcp.proxy.c \
+library/libsoft1/libnet/app/tcp.rdp.c \
+library/libsoft1/libnet/app/tcp.rtmp.c \
+library/libsoft1/libnet/app/tcp.sql.c \
+library/libsoft1/libnet/app/tcp.vnc.c \
+library/libsoft1/libnet/app/tcp.ws.c \
+library/libsoft1/libnet/app/udp.dns.c \
+library/libsoft1/libnet/app/udp.hole.c \
+library/libsoft1/libnet/app/udp.tftp.c \
+library/libsoft1/libnet/net.c \
 library/libsoft1/libsci/libbio/bio.chance.c \
 library/libsoft1/libsci/libchem/chem.equation.c \
 library/libsoft1/libsci/libmath/math.bigint.c \
@@ -249,69 +247,59 @@ library/libsoft1/libsci/libmath/math.quaternion.c \
 library/libsoft1/libsci/libmath/math.vector.c \
 library/libsoft1/libsci/libphys/phys.elec.c \
 library/libsoft1/libsci/libphys/phys.mech.c \
-library/libsoft1/libwire/wire.bt.c \
-library/libsoft1/libwire/wire.gpio.c \
-library/libsoft1/libwire/wire.i2c.c \
-library/libsoft1/libwire/wire.ir.c \
-library/libsoft1/libwire/wire.nfc.c \
-library/libsoft1/libwire/wire.pci.c \
-library/libsoft1/libwire/wire.spi.c \
-library/libsoft1/libwire/wire.uart.c \
-library/libsoft1/libwire/wire.usb.c \
-library/libsoft1/libwire/wire.wifi.c \
-library/libsoft1/libwire/wire.zigbee.c \
-library/libsoft1/libwire/wire.c \
 library/libsoft1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
-library/libuser0/android/android.nativewindow.c \
-library/libuser0/cross/cross.net.c \
-library/libuser0/cross/cross.voice.c \
+library/libuser0/local/android/local.android.nativewindow.c \
+library/libuser0/remote/remote.ws.c \
+library/libuser0/sound/sound.c \
+library/libuser0/video/video.c \
 library/libuser0/arena.c
 
 #libuser1
 LOCAL_SRC_FILES += \
-library/libuser1/0test/test.clock.c \
-library/libuser1/0test/test.codeimg.c \
-library/libuser1/0test/test.doodle.c \
-library/libuser1/0test/test.example.c \
-library/libuser1/0test/test.fractal.c \
-library/libuser1/0test/test.palette.c \
-library/libuser1/1game/game.2048.c \
-library/libuser1/1game/game.chess.c \
-library/libuser1/1game/game.klotski.c \
-library/libuser1/1game/game.maze.c \
-library/libuser1/1game/game.ooxx.c \
-library/libuser1/1game/game.pegged.c \
-library/libuser1/1game/game.rubik.c \
-library/libuser1/1game/game.snake.c \
-library/libuser1/1game/game.sudoku.c \
-library/libuser1/1game/game.tetris.c \
-library/libuser1/1game/game.weiqi.c \
-library/libuser1/1game/game.xiangqi.c \
-library/libuser1/2tool/tool.browser.c \
-library/libuser1/2tool/tool.calculator.c \
-library/libuser1/2tool/tool.camera.c \
-library/libuser1/2tool/tool.circuit.c \
-library/libuser1/2tool/tool.editor.c \
-library/libuser1/2tool/tool.font.c \
-library/libuser1/2tool/tool.qrcode.c \
-library/libuser1/2tool/tool.sketchpad.c \
-library/libuser1/2tool/tool.spectrum.c \
-library/libuser1/2tool/tool.stl.c \
-library/libuser1/2tool/tool.terminal.c \
-library/libuser1/3hack/hack.algo.c \
-library/libuser1/3hack/hack.bintree.c \
-library/libuser1/3hack/hack.bplus.c \
-library/libuser1/3hack/hack.fs.c \
-library/libuser1/3hack/hack.graph.c \
-library/libuser1/3hack/hack.hex.c \
-library/libuser1/3hack/hack.input.c \
-library/libuser1/3hack/hack.login.c \
+library/libuser1/test/test.clock.c \
+library/libuser1/test/test.codeimg.c \
+library/libuser1/test/test.doodle.c \
+library/libuser1/test/test.example.c \
+library/libuser1/test/test.fractal.c \
+library/libuser1/test/test.palette.c \
+library/libuser1/game/game.2048.c \
+library/libuser1/game/game.chess.c \
+library/libuser1/game/game.klotski.c \
+library/libuser1/game/game.maze.c \
+library/libuser1/game/game.ooxx.c \
+library/libuser1/game/game.pegged.c \
+library/libuser1/game/game.poker.c \
+library/libuser1/game/game.rubik.c \
+library/libuser1/game/game.snake.c \
+library/libuser1/game/game.sudoku.c \
+library/libuser1/game/game.tetris.c \
+library/libuser1/game/game.weiqi.c \
+library/libuser1/game/game.xiangqi.c \
+library/libuser1/tool/tool.browser.c \
+library/libuser1/tool/tool.calculator.c \
+library/libuser1/tool/tool.camera.c \
+library/libuser1/tool/tool.circuit.c \
+library/libuser1/tool/tool.editor.c \
+library/libuser1/tool/tool.font.c \
+library/libuser1/tool/tool.qrcode.c \
+library/libuser1/tool/tool.sketchpad.c \
+library/libuser1/tool/tool.spectrum.c \
+library/libuser1/tool/tool.stl.c \
+library/libuser1/tool/tool.terminal.c \
+library/libuser1/hack/hack.algo.c \
+library/libuser1/hack/hack.bintree.c \
+library/libuser1/hack/hack.bplus.c \
+library/libuser1/hack/hack.fs.c \
+library/libuser1/hack/hack.graph.c \
+library/libuser1/hack/hack.hex.c \
+library/libuser1/hack/hack.input.c \
+library/libuser1/hack/hack.login.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
-library/libuser1/lib1d/html/html.shape.c \
+library/libuser1/lib1d/html/html.css.c \
 library/libuser1/lib1d/json/json.shape.c \
 library/libuser1/lib1d/latex/latex.shape.c \
 library/libuser1/lib1d/xaml/xaml.shape.c \
@@ -333,8 +321,8 @@ library/libuser1/lib2d/lib2d.c \
 library/libuser1/lib3d/carve/carve.ascii.c \
 library/libuser1/lib3d/carve/carve.point.c \
 library/libuser1/lib3d/carve/carve.line.c \
-library/libuser1/lib3d/carve/carve.plane.c \
-library/libuser1/lib3d/carve/carve.shape.c \
+library/libuser1/lib3d/carve/carve.trigon.c \
+library/libuser1/lib3d/carve/carve.other.c \
 library/libuser1/lib3d/model/model.magnify.c \
 library/libuser1/lib3d/model/model.minify.c \
 library/libuser1/lib3d/model/model.rotate.c \

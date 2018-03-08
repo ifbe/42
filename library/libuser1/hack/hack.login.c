@@ -14,9 +14,7 @@ void carveascii_area(
 
 
 
-static struct arena* arena = 0;
 static struct actor* actor = 0;
-static int chosen = 0;
 
 
 
@@ -25,19 +23,20 @@ void login_read_pixel(struct arena* win)
 {
 	u32 c;
 	int x,y,j;
-	int w = (win->w)/8;
-	int h = (win->h)/16;
+	int w = win->w;
+	int h = win->h;
 
-	for(j=0;j<32;j++)
+	for(j=0;j<64;j++)
 	{
-		if(j == chosen)c = 0x80ff00ff;
+		if(j == win->flag0)c = 0x80ff00ff;
 		else c = 0x800000ff;
 
 		x = j%4;
 		y = j/4;
 		drawicon_1(
 			win, c,
-			(x+2)*w, (y+4)*h, (x+3)*w, (y+5)*h,
+			(x+2)*w/8, (y+8)*h/32,
+			(x+3)*w/8, (y+9)*h/32,
 			(u8*)&actor[j].name, 8
 		);
 	}
@@ -46,9 +45,9 @@ void login_read_8bit(struct arena* win)
 {
 	int x,y;
 	int j,c;
-	for(j=0;j<32;j++)
+	for(j=0;j<64;j++)
 	{
-		if(j == chosen)c = 0x80;
+		if(j == win->flag0)c = 0x80;
 		else c = 0x42;
 
 		x = j%4;
@@ -79,9 +78,9 @@ void login_read_vbo(struct arena* win)
 		0.0, 0.0, 1.0, 1.0
 	);
 
-	for(j=0;j<32;j++)
+	for(j=0;j<64;j++)
 	{
-		if(j == chosen)
+		if(j == win->flag0)
 		{
 			k = 4.0;
 			c = 0x00ff00;
@@ -114,7 +113,7 @@ void login_read_html(struct arena* win)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == chosen)c = 0xff0000;
+		if(j == win->flag0)c = 0xff0000;
 		else c = 0xffffff;
 
 		len += mysnprintf(
@@ -133,14 +132,17 @@ void login_read_tui(struct arena* win)
 
 	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);
 
-	for(j=0;j<32;j++)
+	for(j=0;j<64;j++)
 	{
+		if(0 == actor[j].name)break;
+
+		if(j == win->flag0)k=1;
+		else k=2;
+
 		x = j%4;
 		x = ww + (x-2)*ww/4;
 		y = j/4;
 		y = hh + (y-4);
-		if(j==chosen)k=1;
-		else k=2;
 
 		gentui_rect(win, k, x, y, x+7, y);
 		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
@@ -160,9 +162,10 @@ void login_read(struct arena* win)
 }
 void login_write(struct arena* win, struct event* ev)
 {
-	int x,y;
+	int x,y,j,flag0;
 	y = (ev->what)&0xff;
 	x = ((ev->what)>>8)&0xff;
+	flag0 = win->flag0;
 
 	if(y == 'p')
 	{
@@ -171,47 +174,50 @@ void login_write(struct arena* win, struct event* ev)
 			x = (ev->why)&0xffff;
 			x = (x*8) / (win->w);
 			y = ((ev->why)>>16)&0xffff;
-			y = (y*16) / (win->h);
-			chosen = (y-4)*4 + (x-2);
+			y = (y*32) / (win->h);
+
+			j = (y-8)*4 + (x-2);
+			if((j>=0)&&(j<0x64))win->flag0 = j;
 		}
 		else if(x == '-')
 		{
-			if((chosen >= 0) && (chosen < 32))
+			if((win->flag0 >= 0) && (flag0 < 64))
 			{
-				actorstart(win, &actor[chosen]);
+				actorstart(win, &actor[flag0]);
+				win->flag0 = 0;
 			}
-		}
-	}
-	else if(ev->what == _kbd_)
-	{
-		if(ev->why == 0x4b)
-		{
-			chosen = (chosen+31)%32;
-		}
-		else if(ev->why == 0x4d)
-		{
-			chosen = (chosen+1)%32;
 		}
 	}
 	else if(ev->what == _char_)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{
-			actorstart(win, &actor[chosen]);
+			actorstart(win, &actor[flag0]);
+			win->flag0 = 0;
 		}
 		else if(ev->why == 0x435b1b)
 		{
-			chosen = (chosen+1)%32;
+			flag0 = (flag0+1)%64;
 		}
 		else if(ev->why == 0x445b1b)
 		{
-			chosen = (chosen+31)%32;
+			flag0 = (flag0+31)%64;
+		}
+	}
+	else if(ev->what == _kbd_)
+	{
+		if(ev->why == 0x4b)
+		{
+			flag0 = (flag0+63)%64;
+		}
+		else if(ev->why == 0x4d)
+		{
+			flag0 = (flag0+1)%64;
 		}
 	}
 }
 void login_create(void* addr)
 {
-	arena = addr + 0;
 	actor = addr + 0x100000;
 }
 void login_delete()
