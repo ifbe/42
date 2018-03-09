@@ -39,7 +39,7 @@ void initdriver(void*);
 int driverread();
 int driverwrite(void*);
 //libhard0
-#define _dev_ hex32('i','n','t',0)
+#define _dev_ hex32('d','e','v',0)
 void freedevice();
 void initdevice(void*);
 int deviceread();
@@ -55,7 +55,7 @@ void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
 //libboot0
-#define _01_ hex32('0','1','0','1')
+#define _0101_ hex32('0','1','0','1')
 void death();
 void* birth();
 void eventwrite(u64,u64,u64,u64);
