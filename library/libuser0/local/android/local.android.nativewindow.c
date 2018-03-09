@@ -8,42 +8,60 @@
 #include "arena.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-//
+//libuser1
 #define _char_ hex32('c','h','a','r')
-#define _win_ hex32('w','i','n',0)
+void freeactor();
+void initactor(void*);
 int actorread();
 int actorwrite(void*);
+//libuser0
+#define _win_ hex32('w','i','n',0)
+void freearena();
+void initarena(void*);
 int arenaread();
 int arenawrite(void*);
+//libsoft1
 #define _fd_ hex32('f','d',0,0)
-#define _sys_ hex32('s','y','s',0)
+void freeartery();
+void initartery(void*);
 int arteryread();
 int arterywrite(void*);
+//libsoft0
+#define _sys_ hex32('s','y','s',0)
+void freesystem();
+void initsystem(void*);
 int systemread();
 int systemwrite();
-//
-void actorcreate(void*);
-void actordelete();
-void arenacreate(void*);
-void arenadelete();
-void arterycreate(void*);
-void arterydelete();
-void systemcreate(void*);
-void systemdelete();
-void drivercreate(void*);
-void driverdelete();
-void devicecreate(void*);
-void devicedelete();
-//
+//libhard1
+#define _drv_ hex32('d','r','v',0)
+void freedriver();
+void initdriver(void*);
+int driverread();
+int driverwrite(void*);
+//libhard0
+#define _dev_ hex32('i','n','t',0)
+void freedevice();
+void initdevice(void*);
+int deviceread();
+int devicewrite(void*);
+//libboot1
+#define _hash_ hex32('h','a','s','h')
+void freestdin();
 void initstdin(void*);
+void freestdout();
 void initstdout(void*);
+void freestdev();
 void initstdev(void*);
+void freestdrel();
 void initstdrel(void*);
-//
-void* birth();
+//libboot0
+#define _01_ hex32('0','1','0','1')
 void death();
-void* eventread();
+void* birth();
 void eventwrite(u64,u64,u64,u64);
+void* eventread();
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -153,27 +171,26 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 {
 	LOGI("JNI_OnLoad\n");
 
-	//libboot0
+	//libboot
 	world = birth();
-
-	//libboot1
 	initstdin( world+0x000000);
 	initstdout(world+0x100000);
 	initstdev( world+0x200000);
 	initstdrel(world+0x300000);
 
 	//libsoft
-	devicecreate(world+0x400000);
-	drivercreate(world+0x400000);
+	initdevice(world+0x400000);
+	initdriver(world+0x400000);
 
 	//libsoft
-	systemcreate(world+0x800000);
-	arterycreate(world+0x800000);
+	initsystem(world+0x800000);
+	initartery(world+0x800000);
 
 	//libuser
-	arenacreate(world+0xc00000);
-	actorcreate(world+0xc00000);
+	initarena(world+0xc00000);
+	initactor(world+0xc00000);
 
+	//
 	arena = world+0xc00000;
 	return JNI_VERSION_1_6;
 }
@@ -182,17 +199,22 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 	LOGI("JNI_OnUnLoad\n");
 
 	//libuser
-	actordelete();
-	arenadelete();
+	freeactor();
+	freearena();
 
 	//libsoft
-	arterydelete();
-	systemdelete();
+	freeartery();
+	freesystem();
 
 	//libhard
-	driverdelete();
-	devicedelete();
+	freedriver();
+	freedevice();
 
+	//libboot
+	freestdev();
+	freestdrel();
+	freestdout();
+	freestdin();
 	death();
 }
 

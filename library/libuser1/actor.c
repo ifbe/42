@@ -8,7 +8,7 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
-void* stylealloc();
+void* allocstyle();
 void* arenastart(u64, u64);
 void arenastop(void*);
 int actorinput(void*, void*);
@@ -32,21 +32,21 @@ static struct style* style = 0;
 static struct pinid* pinid = 0;
 static int actlen = 0;
 static int pinlen = 0;
-void* actoralloc()
+void* allocactor()
 {
 	int j;
 	struct actor* act;
 	while(1)
 	{
 		act = &actor[j];
-		if(act->type == 0)break;
+		if(0 == act->type)break;
 
 		j++;
 		if(j >= 0x100)return 0;
 	}
 	return act;
 }
-void* pinidalloc()
+void* allocpinid()
 {
 	struct pinid* pin = (void*)pinid + pinlen;
 	pinlen += sizeof(struct pinid);
@@ -62,6 +62,53 @@ void* pinidalloc()
 
 
 
+int actordelete(struct actor* act)
+{
+	if(0 == act)return 0;
+	act->ondelete(act);
+	return 0;
+}
+int actorcreate(struct actor* act)
+{
+	if(0 == act)return 0;
+	act->oncreate(act);
+	return 0;
+}
+int actorstop(struct actor* act)
+{
+	if(0 == act)return 0;
+	act->onstop();
+	return 0;
+}
+int actorstart(struct arena* win, struct actor* act)
+{
+	int w = win->w;
+	int h = win->h;
+	int d = (w+h) / 2;
+	struct style* sty;
+	struct pinid* pin;
+
+	sty = allocstyle();
+	if(0 == sty)return;
+
+	pin = allocpinid();
+	if(0 == pin)return;
+
+	sty->cx = w/2;
+	sty->cy = h/2;
+	sty->cz = 0.0;
+	sty->rx = 256;
+	sty->fy = 256;
+	sty->uz = 256;
+
+	relation_write(
+		win, sty, _win_,
+		act, pin, _act_
+	);
+
+	act->onstart(act, pin);
+	return 0;
+}
 int actorread()
 {
 	int j;
@@ -94,40 +141,6 @@ int actorwrite(struct event* ev)
 		else login_write(win, ev);
 	}
 	else actorinput(win, ev);
-	return 0;
-}
-int actorstop(struct actor* act)
-{
-	act->onstop();
-	return 0;
-}
-int actorstart(struct arena* win, struct actor* act)
-{
-	int w = win->w;
-	int h = win->h;
-	int d = (w+h) / 2;
-	struct style* sty;
-	struct pinid* pin;
-
-	sty = stylealloc();
-	if(0 == sty)return;
-
-	pin = pinidalloc();
-	if(0 == pin)return;
-
-	sty->cx = w/2;
-	sty->cy = h/2;
-	sty->cz = 0.0;
-	sty->rx = 256;
-	sty->fy = 256;
-	sty->uz = 256;
-
-	relation_write(
-		win, sty, _win_,
-		act, pin, _act_
-	);
-
-	act->onstart(act, pin);
 	return 0;
 }
 void* actorlist(u8* buf, int len)
@@ -190,28 +203,11 @@ void actorchoose(u8* buf, int len)
 	}
 */
 }
-void actorcreate(u8* addr)
-{
-	arena = (void*)(addr+0x000000);
-	actor = (void*)(addr+0x100000);
-	style = (void*)(addr+0x200000);
-	pinid = (void*)(addr+0x300000);
 
-	//lib1d
-	lib1d_create(addr, 0);
 
-	//lib2d
-	lib2d_create(addr, 0);
 
-	//lib3d
-	lib3d_create(addr, 0);
 
-	//lib4d
-	lib4d_create(addr, 0);
-
-	//say("[c,f):createed actor\n");
-}
-void actordelete()
+void freeactor()
 {
 	//say("[c,f):deleteing actor\n");
 
@@ -224,4 +220,18 @@ void actordelete()
 	style = 0;
 	actor = 0;
 	arena = 0;
+}
+void initactor(u8* addr)
+{
+	arena = (void*)(addr+0x000000);
+	actor = (void*)(addr+0x100000);
+	style = (void*)(addr+0x200000);
+	pinid = (void*)(addr+0x300000);
+
+	lib1d_create(addr, 0);
+	lib2d_create(addr, 0);
+	lib3d_create(addr, 0);
+	lib4d_create(addr, 0);
+
+	//say("[c,f):createed actor\n");
 }

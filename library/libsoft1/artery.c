@@ -26,14 +26,13 @@ static u8* datahome = 0;
 
 
 
-//--------------------------------------------------------
-void* arteryread(int fd)
+int arterydelete()
 {
-	return &obj[fd];
+	return 0;
 }
-int arterywrite(struct event* ev)
+int arterycreate()
 {
-	return netmgr_write(ev);
+	return 0;
 }
 int arterystop()
 {
@@ -42,6 +41,14 @@ int arterystop()
 int arterystart(char* name, int flag)
 {
 	return 0;
+}
+void* arteryread(int fd)
+{
+	return &obj[fd];
+}
+int arterywrite(struct event* ev)
+{
+	return netmgr_write(ev);
 }
 int arterylist(u8* buf)
 {
@@ -93,22 +100,23 @@ int arterychoose(u8* buf)
 	}
 	return 0;
 }
-void arterydelete()
-{
-	//
-	//say("[8,c):deleteing artery\n");
 
-	//
+
+
+
+void freeartery()
+{
+	//say("[8,c):freeing artery\n");
+
 	netmgr_delete();
 	file_delete();
 
-	//
 	datahome = 0;
 	dirhome = 0;
 	worker = 0;
 	obj = 0;
 }
-void arterycreate(u8* addr)
+void initartery(u8* addr)
 {
 	obj = (struct object*)(addr+0x0);
 	worker = (struct element*)(addr+0x100000);
@@ -118,5 +126,5 @@ void arterycreate(u8* addr)
 	file_create(addr);
 	netmgr_create(addr);
 
-	//say("[8,c):createed artery\n");
+	//say("[8,c):inited artery\n");
 }

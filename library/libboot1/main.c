@@ -5,56 +5,63 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-//libuser
+//libuser1
 #define _char_ hex32('c','h','a','r')
-#define _win_ hex32('w','i','n',0)
+void freeactor();
+void initactor(void*);
 int actorread();
 int actorwrite(void*);
+//libuser0
+#define _win_ hex32('w','i','n',0)
+void freearena();
+void initarena(void*);
 int arenaread();
 int arenawrite(void*);
-//libsoft
+//libsoft1
 #define _fd_ hex32('f','d',0,0)
-#define _sys_ hex32('s','y','s',0)
+void freeartery();
+void initartery(void*);
 int arteryread();
 int arterywrite(void*);
+//libsoft0
+#define _sys_ hex32('s','y','s',0)
+void freesystem();
+void initsystem(void*);
 int systemread();
 int systemwrite(void*);
-void sleep_us(int);
-//libhard
+int sleep_us(int);
+//libhard1
 #define _drv_ hex32('d','r','v',0)
-#define _dev_ hex32('i','n','t',0)
+void freedriver();
+void initdriver(void*);
 int driverread();
 int driverwrite(void*);
+//libhard0
+#define _dev_ hex32('i','n','t',0)
+void freedevice();
+void initdevice(void*);
 int deviceread();
 int devicewrite(void*);
-//libboot
+//libboot1
+#define _hash_ hex32('h','a','s','h')
+void freestdin();
+void initstdin(void*);
+void freestdout();
+void initstdout(void*);
+void freestdev();
+void initstdev(void*);
+void freestdrel();
+void initstdrel(void*);
 int term_read(void*);
 int term_write(void*);
+//libboot0
+#define _01_ hex32('0','1','0','1')
+void death();
+void* birth();
 void eventwrite(u64,u64,u64,u64);
 void* eventread();
 void printmemory(void*, int);
 void say(void*, ...);
-//
-void actorcreate(void*);
-void actordelete();
-void arenacreate(void*);
-void arenadelete();
-void arterycreate(void*);
-void arterydelete();
-void systemcreate(void*);
-void systemdelete();
-void drivercreate(void*);
-void driverdelete();
-void devicecreate(void*);
-void devicedelete();
-//
-void initstdin(void*);
-void initstdout(void*);
-void initstdev(void*);
-void initstdrel(void*);
-//
-void* birth();
-void death();
 void fixarg(void*, void*);
 
 
@@ -73,44 +80,46 @@ struct event
 
 void* beforedawn()
 {
-	//libboot0
+	//libboot
 	void* addr = birth();
-
-	//libboot1
 	initstdin( addr+0x000000);
 	initstdout(addr+0x100000);
 	initstdev( addr+0x200000);
 	initstdrel(addr+0x300000);
 
 	//libsoft
-	devicecreate(addr+0x400000);
-	drivercreate(addr+0x400000);
+	initdevice(addr+0x400000);
+	initdriver(addr+0x400000);
 
 	//libsoft
-	systemcreate(addr+0x800000);
-	arterycreate(addr+0x800000);
+	initsystem(addr+0x800000);
+	initartery(addr+0x800000);
 
 	//libuser
-	arenacreate(addr+0xc00000);
-	actorcreate(addr+0xc00000);
+	initarena(addr+0xc00000);
+	initactor(addr+0xc00000);
 
 	return addr;
 }
 void afterdusk()
 {
 	//libuser
-	actordelete();
-	arenadelete();
+	freeactor();
+	freearena();
 
 	//libsoft
-	arterydelete();
-	systemdelete();
+	freeartery();
+	freesystem();
 
 	//libhard
-	driverdelete();
-	devicedelete();
+	freedriver();
+	freedevice();
 
 	//libboot
+	freestdev();
+	freestdrel();
+	freestdout();
+	freestdin();
 	death();
 }
 int main(int argc, char* argv[])

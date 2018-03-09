@@ -55,7 +55,7 @@ static struct window* arena;
 static struct style* style = 0;
 static int winlen = 0;
 static int stylen = 0;
-void* arenaalloc()
+void* allocarena()
 {
 	int j;
 	struct window* win;
@@ -69,7 +69,7 @@ void* arenaalloc()
 	}
 	return win;
 }
-void* stylealloc()
+void* allocstyle()
 {
 	struct style* sty = (void*)style + stylen;
 	stylen += sizeof(struct style);
@@ -96,10 +96,29 @@ void* stylealloc()
 
 
 
+int arenadelete()
+{
+	return 0;
+}
+int arenacreate()
+{
+	return 0;
+}
+int arenastop(struct window* win)
+{
+	if(win == 0)return 0;
+	windowstop(win);
+
+	win->type = 0;
+	win->fmt = 0;
+	win->irel = 0;
+	win->orel = 0;
+	return 0;
+}
 void* arenastart(u64 type, u64 fd)
 {
 	int j = 0;
-	struct window* win = arenaalloc();
+	struct window* win = allocarena();
 	if(0 == win)return 0;
 
 	if(_win_ == type)
@@ -156,17 +175,6 @@ void* arenastart(u64 type, u64 fd)
 	}
 */
 	return win;
-}
-int arenastop(struct window* win)
-{
-	if(win == 0)return 0;
-	windowstop(win);
-
-	win->type = 0;
-	win->fmt = 0;
-	win->irel = 0;
-	win->orel = 0;
-	return 0;
 }
 int arenaread(struct window* win)
 {
@@ -243,7 +251,20 @@ int arenachoose(u8* buf, int len)
 	if(0 == ncmp(buf, "win", 3))arenastart(_win_, 0);
 	else say("@arena: %s\n", buf);
 }
-void arenacreate(u8* addr)
+
+
+
+
+void freearena()
+{
+	//say("[c,f):freeing arena\n");
+
+	windowdelete();
+	videodelete();
+	sounddelete();
+	//remotedelete();
+}
+void initarena(u8* addr)
 {
 	int j;
 	for(j=0;j<0x400000;j++)addr[j] = 0;
@@ -253,25 +274,12 @@ void arenacreate(u8* addr)
 	style = (void*)(addr+0x200000);
 	//pinid = (void*)(addr+0x300000);
 
-	//create
 	//remotecreate(arena);
 	soundcreate(arena);
 	videocreate(arena);
 	windowcreate(arena);
 
-	//
 	arenastart(_win_, 0);
 
-	//say("[c,f):createed arena\n");
-}
-void arenadelete()
-{
-	//
-	//say("[c,f):deleteing arena\n");
-
-	//1024*1024*4
-	windowdelete();
-	videodelete();
-	sounddelete();
-	//remotedelete();
+	//say("[c,f):inited arena\n");
 }

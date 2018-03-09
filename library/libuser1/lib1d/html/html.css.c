@@ -37,32 +37,34 @@ void parsestyle(struct style* sty, u8* buf, int len)
 			else if(0 == ncmp(buf+k, "left:", 5))
 			{
 				decstr2double(buf+k+5, &f);
-				say("l=%f\n", f);
+				//say("l=%f\n", f);
 
 				sty->lx = f;
 			}
 			else if(0 == ncmp(buf+k, "right:", 6))
 			{
 				decstr2double(buf+k+6, &f);
-				say("r=%f\n", f);
+				//say("r=%f\n", f);
 
 				sty->rx = f;
 			}
 			else if(0 == ncmp(buf+k, "top:", 4))
 			{
 				decstr2double(buf+k+4, &f);
-				say("t=%f\n", f);
+				//say("t=%f\n", f);
 
 				sty->fy = f;
 			}
 			else if(0 == ncmp(buf+k, "bottom:", 7))
 			{
 				decstr2double(buf+k+7, &f);
-				say("b=%f\n", f);
+				//say("b=%f\n", f);
 
 				sty->ny = f;
 			}
 			k = j+1;
 		}
 	}
+
+	say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
 }

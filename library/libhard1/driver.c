@@ -7,31 +7,49 @@ void say(char*,...);
 
 
 
-void driverread()
+int driverdelete()
 {
+	return 0;
 }
-void driverwrite()
+int drivercreate()
 {
+	return 0;
 }
-void driverstart()
+int driverstop()
 {
+	return 0;
 }
-void driverstop()
+int driverstart()
 {
+	return 0;
 }
-void driverlist(u8* buf)
+int driverread()
+{
+	return 0;
+}
+int driverwrite()
+{
+	return 0;
+}
+int driverlist(u8* buf)
 {
 	say("empth driver\n");
+	return 0;
 }
-void driverchoose(u8* buf)
+int driverchoose(u8* buf)
 {
 	say("@driver: %s\n", buf);
+	return 0;
 }
-void drivercreate(char* addr)
+
+
+
+
+void freedriver()
 {
-	//say("[4,8):createed driver\n");
+	//say("[4,8):freeing driver\n");
 }
-void driverdelete()
+void initdriver(void* addr)
 {
-	//say("[4,8):deleteing driver\n");
+	//say("[4,8):inited driver\n");
 }

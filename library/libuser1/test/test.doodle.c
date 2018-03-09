@@ -16,7 +16,7 @@ void doodle_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float f;
+	float c,s,f;
 	int x0,y0,x1,y1;
 	int w = win->w;
 	int h = win->h;
@@ -33,11 +33,16 @@ void doodle_read_pixel(
 	drawsolid_circle(win, 0x404040, cx-ww/2, cy, ww/2);
 
 	f = arctan2(py-cy, px-cx+(ww/2));
-	x0 = (int)(cosine(f)*ww*1/4) + (cx-ww/2);
-	y0 = (int)(sine(f)*ww*1/4) + (cy+y0);
+	c = cosine(f);
+	s = sine(f);
+	x0 = (int)(c*ww/4) + (cx-ww/2);
+	y0 = (int)(s*ww/4) + cy;
+
 	f = arctan2(py-cy, px-cx-(ww/2));
-	x1 = (int)(cosine(f)*ww*1/4) + (cx+ww/2);
-	y1 = (int)(sine(f)*ww*1/4) + (cy+y1);
+	c = cosine(f);
+	s = sine(f);
+	x1 = (int)(c*ww/4) + (cx+ww/2);
+	y1 = (int)(s*ww/4) + cy;
 
 	drawsolid_circle(win, 0xff0000, x0, y0, ww/4);
 	drawsolid_circle(win, 0xff0000, x1, y1, ww/4);

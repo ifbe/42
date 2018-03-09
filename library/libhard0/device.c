@@ -7,31 +7,49 @@ void say(char*,...);
 
 
 
-void deviceread()
+int devicedelete()
 {
+	return 0;
 }
-void devicewrite()
+int devicecreate()
 {
+	return 0;
 }
-void devicestart()
+int devicestop()
 {
+	return 0;
 }
-void devicestop()
+int devicestart()
 {
+	return 0;
 }
-void devicelist(u8* buf)
+int deviceread()
+{
+	return 0;
+}
+int devicewrite()
+{
+	return 0;
+}
+int devicelist(u8* buf)
 {
 	say("empth device\n");
+	return 0;
 }
-void devicechoose(u8* buf)
+int devicechoose(u8* buf)
 {
 	say("@device: %s\n", buf);
+	return 0;
 }
-void devicecreate(char* addr)
+
+
+
+
+void freedevice()
 {
-	//say("[4,8):createed device\n");
+	//say("[4,8):freeing device\n");
 }
-void devicedelete()
+void initdevice(void* addr)
 {
-	//say("[4,8):deleteing device\n");
+	//say("[4,8):inited device\n");
 }

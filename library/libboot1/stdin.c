@@ -27,8 +27,8 @@ int driverchoose(void*, int);
 void* devicelist(void*, int);
 int devicechoose(void*, int);
 //
-void* stylealloc();
-void* pinidalloc();
+void* allocstyle();
+void* allocpinid();
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);
 //
@@ -45,11 +45,6 @@ static u64 path[8];
 static int pos = 0;
 static u8* input = 0;
 static int enq = 0;
-void initstdin(void* addr)
-{
-	input = addr;
-	enq = 0;
-}
 
 
 
@@ -124,8 +119,6 @@ void term_cmd0(u8* buf)
 {
 	int j,len;
 	int a=-1,b=-1;
-	u8 cssbuf[0x100];
-	u8 pinbuf[0x100];
 	void* win;
 	void* act;
 	u8* css;
@@ -161,14 +154,10 @@ void term_cmd0(u8* buf)
 	if(0 == act)return;
 
 	//parse
-	parsestyle(cssbuf, buf+1, a-1);
-	//parsepinid(pinbuf, buf+b+1, len-b-2);
-
-	//foot
-	css = stylealloc();
-	pin = pinidalloc();
-	for(j=0;j<0x80;j++)css[j] = cssbuf[j];
-	for(j=0;j<0x80;j++)pin[j] = pinbuf[j];
+	css = allocstyle();
+	pin = allocpinid();
+	parsestyle(css, buf+1, a-1);
+	//parsepinid(pin, buf+b+1, len-b-2);
 
 	//rel
 	say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
@@ -265,4 +254,16 @@ void term_write(u8* p)
 		//////////////////
 		p++;
 	}
+}
+
+
+
+
+void initstdin(void* addr)
+{
+	input = addr;
+	enq = 0;
+}
+void freestdin()
+{
 }

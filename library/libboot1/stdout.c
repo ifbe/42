@@ -15,12 +15,6 @@ void lowlevel_output(void*, int);
 static void* outputqueue;
 static int outcur;
 static int outwin;
-void initstdout(void* addr)
-{
-	outputqueue = addr;
-	outcur = 0;
-	outwin = 0;
-}
 
 
 
@@ -367,4 +361,17 @@ void printmemory(u8* addr,int size)
 		}
 	}
 	say((void*)"\n");
+}
+
+
+
+
+void initstdout(void* addr)
+{
+	outputqueue = addr;
+	outcur = 0;
+	outwin = 0;
+}
+void freestdout()
+{
 }

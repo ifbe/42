@@ -27,7 +27,7 @@ static void font_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-//say("chosen=%x\n",chosen);
+	drawline_rect(win, 0xff, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ww &= 0xfff0;
 	hh &= 0xfff0;
@@ -155,23 +155,26 @@ static void font_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev)
 {
-	int k = (ev->why)&0xff;
-	say("k=%x\n",k);
-	if(k == 0x48)
+	int k;
+	if(_kbd_ == ev->what)
 	{
-		if(chosen >= 256)chosen -= 256;
-	}
-	else if(k == 0x4b)
-	{
-		if((chosen&0xff) > 0)chosen--;
-	}
-	else if(k == 0x4d)
-	{
-		if((chosen&0xff) < 0xff)chosen++;
-	}
-	else if(k == 0x50)
-	{
-		if(chosen <= 65535-256)chosen += 256;
+		k = ev->why;
+		if(k == 0x48)
+		{
+			if(chosen >= 256)chosen -= 256;
+		}
+		else if(k == 0x4b)
+		{
+			if((chosen&0xff) > 0)chosen--;
+		}
+		else if(k == 0x4d)
+		{
+			if((chosen&0xff) < 0xff)chosen++;
+		}
+		else if(k == 0x50)
+		{
+			if(chosen <= 65535-256)chosen += 256;
+		}
 	}
 }
 static void font_list()

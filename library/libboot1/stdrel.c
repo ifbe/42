@@ -45,10 +45,6 @@ static struct relation* recycle = 0;
 static struct relation* wirebuf = 0;
 static int wirecur = 0x40;
 static int wirelen = 0x100000;
-void initstdrel(void* addr)
-{
-	wirebuf = addr;
-}
 
 
 
@@ -345,4 +341,15 @@ void* relation_read(int off)
 {
 	if(off == 0)return 0;
 	return (void*)wirebuf + off;
+}
+
+
+
+
+void initstdrel(void* addr)
+{
+	wirebuf = addr;
+}
+void freestdrel()
+{
 }

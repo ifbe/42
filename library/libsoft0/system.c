@@ -30,11 +30,15 @@ static struct object* obj;
 
 
 
-int systemread(int fd, char* buf, int off, int len)
+int systemdelete()
 {
 	return 0;
 }
-int systemwrite(int fd, char* buf, int off, int len)
+int systemcreate()
+{
+	return 0;
+}
+int systemstop()
 {
 	return 0;
 }
@@ -42,7 +46,11 @@ int systemstart(char* name, int flag)
 {
 	return 0;
 }
-int systemstop()
+int systemread(int fd, char* buf, int off, int len)
+{
+	return 0;
+}
+int systemwrite(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
@@ -67,35 +75,32 @@ int systemchoose(u8* buf)
 	say("@system: %s\n", buf);
 	return 0;
 }
-void systemcreate(u8* addr)
+
+
+
+
+void freesystem()
 {
-	int j;
-	for(j=0;j<0x400000;j++)addr[j]=0;
+	//say("[8,c):freeing system\n");
 
-	//where
-	obj = (void*)addr;
-
-	//
-	createrandom(obj);
-	createsignal(obj);
-	createwatcher(obj);
-	createsocket(obj);
-	createshell(obj);
-	createuart(obj);
-
-	//
-	//say("[8,c):createed system\n");
-}
-void systemdelete()
-{
-	//
-	//say("[8,c):deleteing system\n");
-
-	//
 	deleteuart();
 	deleteshell();
 	deletesocket();
 	deletewatcher();
 	deletesignal();
 	deleterandom();
+}
+void initsystem(u8* addr)
+{
+	int j;
+	for(j=0;j<0x400000;j++)addr[j]=0;
+
+	createrandom(addr);
+	createsignal(addr);
+	createwatcher(addr);
+	createsocket(addr);
+	createshell(addr);
+	createuart(addr);
+
+	//say("[8,c):inited system\n");
 }

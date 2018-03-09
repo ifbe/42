@@ -296,7 +296,6 @@ library/libuser1/hack/hack.fs.c \
 library/libuser1/hack/hack.graph.c \
 library/libuser1/hack/hack.hex.c \
 library/libuser1/hack/hack.input.c \
-library/libuser1/hack/hack.login.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
 library/libuser1/lib1d/html/html.css.c \
@@ -330,6 +329,7 @@ library/libuser1/lib3d/lib3d.c \
 library/libuser1/lib4d/help.asset.c \
 library/libuser1/lib4d/help.bgfg.c \
 library/libuser1/lib4d/help.ctx.c \
+library/libuser1/lib4d/help.empty.c \
 library/libuser1/lib4d/help.input.c \
 library/libuser1/lib4d/help.output.c \
 library/libuser1/lib4d/lib4d.c \
