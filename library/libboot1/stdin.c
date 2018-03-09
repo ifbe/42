@@ -35,6 +35,7 @@ int parsepinid(void*, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
+void relation_write(void*, void*, int, void*, void*, int);
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 

@@ -8,21 +8,16 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
-void* allocstyle();
 void* arenastart(u64, u64);
 void arenastop(void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
+void* allocstyle();
 //
-void* samepinprevchip(void*);
-void* samepinnextchip(void*);
-void* samechipprevpin(void*);
-void* samechipnextpin(void*);
+void term_write(void*);
+void login_write(void*, void*);
 void* relation_read(u64);
-void relation_write(
-	void* uchip, void* ufoot, u64 utype,
-	void* bchip, void* bfoot, u64 btype
-);
+void relation_write(void*, void*, u64, void*, void*, u64);
 
 
 
@@ -89,10 +84,10 @@ int actorstart(struct arena* win, struct actor* act)
 	struct pinid* pin;
 
 	sty = allocstyle();
-	if(0 == sty)return;
+	if(0 == sty)return 0;
 
 	pin = allocpinid();
-	if(0 == pin)return;
+	if(0 == pin)return 0;
 
 	sty->cx = w/2;
 	sty->cy = h/2;
