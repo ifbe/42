@@ -49,10 +49,10 @@ void select_3d(struct arena* win, struct style* sty)
 
 	carveline_prism4(
 		win, 0xff0000,
-		cx, cy, dd/2,
+		cx, cy, cz,
 		ww, 0.0, 0.0,
 		0.0, hh, 0.0,
-		0.0, 0.0, dd/2
+		0.0, 0.0, dd
 	);
 }
 

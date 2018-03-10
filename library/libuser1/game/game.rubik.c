@@ -1,16 +1,14 @@
 #include "actor.h"
-void rubikscube_generate(void*);
+#define level 3
+void rubikscube_generate(void*, int);
+void rubikscube_solve(void*, int);
 
 
 
 
-//l,r,f,b,u,d
-static u8 buffer[6][3][3];
-u32 rubikcolor[6] = {
-	0x00ff00, 0x0000ff,		//l, r
-	0xff0000, 0xfa8010,		//f, b
-	0xffffff, 0xffff00		//u, d
-};
+//left, right, near, far, bottom, upper
+u32 rubikcolor[6] = {0x00ff00,0x0000ff,0xff0000,0xfa8010,0xffff00,0xffffff};
+static u8 buffer[6][4][4];
 
 
 
@@ -27,110 +25,68 @@ static void rubikscube_read_vbo(
 	int hh = sty->fy;
 	int dd = sty->uz;
 
-	for(y=0;y<3;y++)
+	for(y=0;y<level;y++)
 	{
-		for(x=0;x<3;x++)
+		for(x=0;x<level;x++)
 		{
-			//l
+			//left
 			carvesolid_rect(
 				win, 0xff00,
-				cx-ww*2/2, cy-(x-1)*hh*2/3, (y-1)*hh*2/3,
-				0.0, -ww*2/7, 0.0,
-				0.0, 0.0, hh*2/7
-			);
-			carveascii(
-				win, ~0xff00,
-				cx-ww*2/1.99, cy-(x-1)*hh*2/3, (y-1)*hh*2/3,
-				0.0, -ww*2/14, 0.0,
-				0.0, 0.0, hh*2/14,
-				(y*3)+x+0x30
+				cx-ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				0.0, -hh/(level+0.5), 0.0,
+				0.0, 0.0, dd/(level+0.5)
 			);
 
-			//r
+			//right
 			carvesolid_rect(
 				win, 0xff,
-				cx+ww*2/2, cy+(x-1)*hh*2/3, (y-1)*hh*2/3,
-				0.0, ww*2/7, 0.0,
-				0.0, 0.0, hh*2/7
-			);
-			carveascii(
-				win, ~0xff,
-				cx+ww*2/1.99, cy+(x-1)*hh*2/3, (y-1)*hh*2/3,
-				0.0, ww*2/14, 0.0,
-				0.0, 0.0, hh*2/14,
-				(y*3)+x+0x30
+				cx+ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				0.0, hh/(level+0.5), 0.0,
+				0.0, 0.0, dd/(level+0.5)
 			);
 		}
 	}
 
-	for(y=0;y<3;y++)
+	for(y=0;y<level;y++)
 	{
-		for(x=0;x<3;x++)
+		for(x=0;x<level;x++)
 		{
-			//f
+			//near
 			carvesolid_rect(
 				win, 0xff0000,
-				cx+(x-1)*ww*2/3, cy-hh*2/2, (y-1)*hh*2/3,
-				ww*2/7, 0.0, 0.0,
-				0.0, 0.0, hh*2/7
-			);
-			carveascii(
-				win, ~0xff0000,
-				cx+(x-1)*ww*2/3, cy-hh*2/1.99, (y-1)*hh*2/3,
-				ww*2/14, 0.0, 0.0,
-				0.0, 0.0, hh*2/14,
-				(y*3)+x+0x30
+				cx-ww+(2*x+1)*ww/level, cy-hh, -dd+(2*y+1)*dd/level,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, 0.0, dd/(level+0.5)
 			);
 
-			//b
+			//far
 			carvesolid_rect(
 				win, 0xfa8010,
-				cx-(x-1)*ww*2/3, cy+hh*2/2, (y-1)*hh*2/3,
-				-ww*2/7, 0.0, 0.0,
-				0.0, 0.0, hh*2/7
-			);
-			carveascii(
-				win, ~0xfa8010,
-				cx-(x-1)*ww*2/3, cy+hh*2/1.99, (y-1)*hh*2/3,
-				-ww*2/14, 0.0, 0.0,
-				0.0, 0.0, hh*2/14,
-				(y*3)+x+0x30
+				cx-ww+(2*x+1)*ww/level, cy+hh, -dd+(2*y+1)*dd/level,
+				-ww/(level+0.5), 0.0, 0.0,
+				0.0, 0.0, dd/(level+0.5)
 			);
 		}
 	}
 
-	for(y=0;y<3;y++)
+	for(y=0;y<level;y++)
 	{
-		for(x=0;x<3;x++)
+		for(x=0;x<level;x++)
 		{
-			//u
-			carvesolid_rect(
-				win, 0xffffff,
-				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, dd*2/2,
-				ww*2/7, 0.0, 0.0,
-				0.0, hh*2/7, 0.0
-			);
-			carveascii(
-				win, ~0xffffff,
-				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, dd*2/1.99,
-				ww*2/14, 0.0, 0.0,
-				0.0, hh*2/14, 0.0,
-				(y*3)+x+0x30
-			);
-
-			//d
+			//bottom
 			carvesolid_rect(
 				win, 0xffff00,
-				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, -dd*2/2,
-				ww*2/7, 0.0, 0.0,
-				0.0, -hh*2/7, 0.0
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, -dd,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, -hh/(level+0.5), 0.0
 			);
-			carveascii(
-				win, ~0xffff00,
-				cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, -dd*2/1.99,
-				ww*2/14, 0.0, 0.0,
-				0.0, -hh*2/14, 0.0,
-				(y*3)+x+0x30
+
+			//upper
+			carvesolid_rect(
+				win, 0xffffff,
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, dd,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, hh/(level+0.5), 0.0
 			);
 		}
 	}
@@ -144,22 +100,79 @@ static void rubikscube_read_pixel(
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;
-	int ww = sty->rx / 3;
-	int hh = sty->fy / 3;
-	int dd = sty->uz / 3;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	bg = rubikcolor[2];
-	for(y=0;y<3;y++)
+	for(y=0;y<level;y++)
 	{
-		for(x=0;x<3;x++)
+		for(x=0;x<level;x++)
 		{
+			//left
+			bg = rubikcolor[0];
 			drawsolid_rect(win, bg,
-				cx+1 + ww*(2*x-3), cy+1 + hh*(2*y-3),
-				cx-1 + ww*(2*x-1), cy-1 + hh*(2*y-1)
+				(cx-ww+1) + (2*x+0)*ww/4/level,
+				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
+				(cx-ww-1) + (2*x+2)*ww/4/level,
+				(cy-hh-1) + (2*y+2+2*level)*hh/4/level
 			);
-			drawdecimal(win, 0xffffff,
-				cx-4 + ww*2*(x-1), cy-8 + hh*2*(y-1),
-				buffer[2][y][x] & 0xf
+
+			//right
+			bg = rubikcolor[1];
+			drawsolid_rect(win, bg,
+				(cx-ww+1) + (2*x+0+4*level)*ww/4/level,
+				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
+				(cx-ww-1) + (2*x+2+4*level)*ww/4/level,
+				(cy-hh-1) + (2*y+2+2*level)*hh/4/level
+			);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//near
+			bg = rubikcolor[2];
+			drawsolid_rect(win, bg,
+				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
+				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
+				(cx-ww-1) + (2*x+2+2*level)*ww/4/level,
+				(cy-hh-1) + (2*y+2+2*level)*hh/4/level
+			);
+
+			//far
+			bg = rubikcolor[3];
+			drawsolid_rect(win, bg,
+				(cx-ww+1) + (2*x+0+6*level)*ww/4/level,
+				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
+				(cx-ww-1) + (2*x+2+6*level)*ww/4/level,
+				(cy-hh-1) + (2*y+2+2*level)*hh/4/level
+			);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//bottom
+			bg = rubikcolor[4];
+			drawsolid_rect(win, bg,
+				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
+				(cy-hh+1) + (2*y+0+4*level)*hh/4/level,
+				(cx-ww-1) + (2*x+2+2*level)*ww/4/level,
+				(cy-hh-1) + (2*y+2+4*level)*hh/4/level
+			);
+
+			//upper
+			bg = rubikcolor[5];
+			drawsolid_rect(win, bg,
+				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
+				(cy-hh+1) + (2*y+0)*hh/4/level,
+				(cx-ww-1) + (2*x+2+2*level)*ww/4/level,
+				(cy-hh-1) + (2*y+2)*hh/4/level
 			);
 		}
 	}
@@ -213,7 +226,7 @@ static void rubikscube_stop(struct actor* act, struct pinid* pin)
 }
 static void rubikscube_start(struct actor* act, struct pinid* pin)
 {
-	rubikscube_generate(buffer);
+	rubikscube_generate(buffer, level);
 }
 static void rubikscube_delete(struct actor* act)
 {
@@ -224,7 +237,7 @@ static void rubikscube_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = startmemory(54);
+	if(_copy_ == act->type)act->buf = startmemory(6*4*4);
 }
 
 
