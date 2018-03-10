@@ -372,6 +372,7 @@ int file_create(void* softaddr, u64* p)
 {
 	dirhome = softaddr + 0x200000;
 	datahome = softaddr + 0x300000;
+	return 0;
 }
 int file_delete()
 {

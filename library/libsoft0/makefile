@@ -98,8 +98,6 @@ linux:
 mac:
 	rm -f *.o
 	$(compiler) $(cflag) mac/mac.flow.net.socket.c
-	$(compiler) $(cflag) mac/mac.flow.sound.xxx.c
-	$(compiler) $(cflag) mac/mac.flow.vision.xxx.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac/mac.memory.folder.c
 	$(compiler) $(cflag) mac/mac.memory.managed.c
@@ -107,9 +105,11 @@ mac:
 	$(compiler) $(cflag) mac/mac.system.power.c
 	$(compiler) $(cflag) mac/mac.system.process.c
 	$(compiler) $(cflag) mac/mac.system.random.c
+	$(compiler) $(cflag) mac/mac.system.shell.c
 	$(compiler) $(cflag) mac/mac.system.signal.c
 	$(compiler) $(cflag) mac/mac.system.thread.c
 	$(compiler) $(cflag) mac/mac.system.time.c
+	$(compiler) $(cflag) mac/mac.system.watcher.c
 	$(compiler) $(cflag) mac/mac.wire.bt.c
 	$(compiler) $(cflag) mac/mac.wire.i2c.c
 	$(compiler) $(cflag) mac/mac.wire.gpio.c

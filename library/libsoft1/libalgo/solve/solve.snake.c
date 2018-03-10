@@ -18,6 +18,7 @@ int snake_newfood(struct snake* buf, int w, int h)
 {
 	buf[0].x = getrandom() % w;
 	buf[0].y = getrandom() % h;
+	return 0;
 }
 int snake_generate(struct snake* buf, int w, int h)
 {
@@ -36,6 +37,7 @@ int snake_generate(struct snake* buf, int w, int h)
 	}
 
 	snake_newfood(buf, w, h);
+	return 0;
 }
 int snake_left(struct snake* buf, int w, int h)
 {
@@ -89,6 +91,7 @@ int snake_left(struct snake* buf, int w, int h)
 	buf[n].x = x;
 	buf[n].y = y;
 	if(m != n)buf[n].next = m;
+	return 0;
 }
 int snake_right(struct snake* buf, int w, int h)
 {
@@ -143,6 +146,7 @@ int snake_right(struct snake* buf, int w, int h)
 	buf[n].x = x;
 	buf[n].y = y;
 	if(m != n)buf[n].next = m;
+	return 0;
 }
 int snake_up(struct snake* buf, int w, int h)
 {
@@ -197,6 +201,7 @@ int snake_up(struct snake* buf, int w, int h)
 	buf[n].x = x;
 	buf[n].y = y;
 	if(m != n)buf[n].next = m;
+	return 0;
 }
 int snake_down(struct snake* buf, int w, int h)
 {
@@ -251,4 +256,5 @@ int snake_down(struct snake* buf, int w, int h)
 	buf[n].x = x;
 	buf[n].y = y;
 	if(m != n)buf[n].next = m;
+	return 0;
 }

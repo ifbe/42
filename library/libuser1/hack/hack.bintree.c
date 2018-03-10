@@ -116,6 +116,7 @@ static void bintree_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct bintree* node;
 	struct bintree* right;
 	int cx = sty->cx;
 	int cy = sty->cy;
@@ -128,6 +129,7 @@ static void bintree_read_pixel(
 	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);
 	drawstring(win, 0xffffff, cx-ww, cy-hh+16, postfix, 0);
 
+	node = act->buf;
 	if(node == 0)return;
 	right = bintree_getright(node, node);
 	if(right == 0)return;

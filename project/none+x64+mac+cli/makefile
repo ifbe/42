@@ -10,13 +10,13 @@ all:
 	make -s -C $(library)/libhard1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libsoft0 mac \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
 	make -s -C $(library)/libsoft1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
 	make -s -C $(library)/libuser0 maccli \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
 	make -s -C $(library)/libuser1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
 	make -s a
 	make -s dylib
 	make -s program

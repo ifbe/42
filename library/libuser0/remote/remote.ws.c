@@ -53,6 +53,7 @@ int ws_event(struct event* ev, void* buf)
 }*/
 int wsclient_start(struct window* win)
 {
+	return 0;
 }
 
 

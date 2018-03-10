@@ -250,7 +250,9 @@ int arenachoose(u8* buf, int len)
 	if(0 == buf)return 0;
 	if(0 == ncmp(buf, "win", 3))arenastart(_win_, 0);
 	else say("@arena: %s\n", buf);
+	return 0;
 }
+
 
 
 

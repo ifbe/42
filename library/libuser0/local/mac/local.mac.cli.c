@@ -91,12 +91,14 @@ void windowwrite()
 }
 void windowstart(struct window* win)
 {
-	win->fmt = 0x696c63;
+	win->type = hex32('w','i','n',0);
+	win->fmt = hex32('c','l','i',0);;
+	win->buf = 0;
+	win->len = 0;
 
 	win->w = 80;
 	win->h = 25;
 	win->d = 0;
-	win->t = 0;
 }
 void windowstop()
 {

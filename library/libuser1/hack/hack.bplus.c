@@ -110,6 +110,7 @@ static void bplus_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct bplusleaf* node;
 	struct bplushead* right;
 	int cx = sty->cx;
 	int cy = sty->cy;
@@ -119,6 +120,7 @@ static void bplus_read_pixel(
 	int dd = sty->uz;
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
+	node = act->buf;
 	if(node == 0)return;
 	right = bplus_getparent(node, node);
 	if(right == 0)return;

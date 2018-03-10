@@ -94,6 +94,7 @@ void initsystem(u8* addr)
 {
 	int j;
 	for(j=0;j<0x400000;j++)addr[j]=0;
+	obj = (void*)addr;
 
 	createrandom(addr);
 	createsignal(addr);

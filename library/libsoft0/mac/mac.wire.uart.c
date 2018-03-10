@@ -1,19 +1,24 @@
-void systemuart_read()
+void readuart()
 {
 }
-void systemuart_write()
+void writeuart()
 {
 }
-void systemuart_list()
+void listuart()
 {
 }
-void systemuart_choose()
+void chooseuart()
 {
 }
-void systemuart_start()
+void stopuart()
 {
 }
-void systemuart_stop()
+void startuart()
 {
 }
-
+void deleteuart()
+{
+}
+void createuart()
+{
+}

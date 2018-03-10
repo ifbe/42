@@ -9,12 +9,14 @@ int tetris_newfood(u8* buf, int w, int h)
 	buf[(1*w)+7] = 0x80;
 	buf[(2*w)+7] = 0x80;
 	buf[(3*w)+7] = 0x80;
+	return 0;
 }
 int tetris_generate(u8* buf, int w, int h)
 {
 	int j;
 	for(j=0;j<w*h;j++)buf[j] = 0;
 	tetris_newfood(buf, w, h);
+	return 0;
 }
 int tetris_left(u8* buf, int w, int h)
 {
@@ -102,6 +104,7 @@ int tetris_right(u8* buf, int w, int h)
 }
 int tetris_up(u8* buf, int w, int h)
 {
+	return 0;
 }
 int tetris_down(u8* buf, int w, int h)
 {

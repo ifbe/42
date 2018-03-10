@@ -1,5 +1,5 @@
 #include "actor.h"
-int qrcode_generate(char* src,char* dst,int slen);
+int qrcode_generate(void* src, void* dst, int len);
 
 
 

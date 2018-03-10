@@ -157,33 +157,41 @@ linuxsdl:
 .PHONY:maccli
 maccli:
 	rm -f *.o
-	$(compiler) $(cflag) local/mac/mac.cli.c
+	$(compiler) $(cflag) local/mac/local.mac.cli.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:mactui
 mactui:
 	rm -f *.o
-	$(compiler) $(cflag) local/mac/mac.tui.c
+	$(compiler) $(cflag) local/mac/local.mac.tui.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:maccocoa
 maccocoa:
 	rm -f *.o
-	$(compiler) $(cflag) local/mac/local.mac.cocoa.m
+	$(compiler) $(cflag) local/mac/local.local.mac.cocoa.m
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:macquartz
 macquartz:
 	rm -f *.o
-	$(compiler) $(cflag) local/mac/local.mac.quartz.c
+	$(compiler) $(cflag) local/mac/local.local.mac.quartz.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:macglfw
@@ -192,6 +200,8 @@ macglfw:
 	$(compiler) $(cflag) local/local.glfw.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:macglut
@@ -200,6 +210,8 @@ macglut:
 	$(compiler) $(cflag) local/local.glut.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 
 .PHONY:macsdl
@@ -208,6 +220,8 @@ macsdl:
 	$(compiler) $(cflag) local/local.sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
+	$(compiler) $(cflag) sound/sound.c
+	$(compiler) $(cflag) video/video.c
 	$(compiler) $(cflag) arena.c
 #########################################################
 

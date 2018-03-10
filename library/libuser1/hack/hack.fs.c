@@ -1,7 +1,7 @@
 #include "actor.h"
 int openreadclose(void*, void*, u64, u64);
 int openwriteclose(void*, void*, u64, u64);
-int windowread(int type, char* buf);
+int windowread(int type, void* buf);
 u64 file_read(void*, int);
 
 

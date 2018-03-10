@@ -59,7 +59,7 @@ void* waitenv()
 {
 	return 0;
 }
-void fixarg(u8* dst, u8* src)
+void fixarg(void* dst, void* src)
 {
 	snprintf(dst, 0x1000, "%s", src);
 }

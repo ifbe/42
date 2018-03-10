@@ -6,17 +6,17 @@ u32 getrandom();
 
 
 
-int sudoku_random(char* p, int len)
+int sudoku_random(u8* buf, int len)
 {
 	int k,ret;
 	if(len == 0)return 0;
 
 	k = getrandom()%len;
-	ret = p[k];
+	ret = buf[k];
 	if(len > 1)
 	{
-		p[k] = p[len-1];
-		p[len-1] = 0;
+		buf[k] = buf[len-1];
+		buf[len-1] = 0;
 	}
 
 	return ret;
