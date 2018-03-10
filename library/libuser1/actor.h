@@ -190,23 +190,23 @@ struct actor
 		char padding0[8];
 	};
 	union{
-		int (*ondelete)();
+		int (*ondelete)(void* actor);
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* actor, void* compo);
+		int (*onstart)(void* actor, void* pinid);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)();
+		int (*onstop)(void* actor, void* pinid);
 		char padding3[8];
 	};
 	union{
-		int (*onlist)();
+		int (*onlist)(void* actor, void* pinid, void* buf, int len);
 		char padding4[8];
 	};
 	union{
-		int (*onchoose)();
+		int (*onchoose)(void* actor, void* pinid, void* buf, int len);
 		char padding5[8];
 	};
 	union{

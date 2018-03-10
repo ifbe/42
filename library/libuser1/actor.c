@@ -8,16 +8,10 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
-void* arenastart(u64, u64);
-void arenastop(void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
-void* allocstyle();
-//
-void term_write(void*);
-void login_write(void*, void*);
-void* relation_read(u64);
-void relation_write(void*, void*, u64, void*, void*, u64);
+int login_write(void*, void*);
+int term_write(void*);
 
 
 
@@ -69,73 +63,16 @@ int actorcreate(struct actor* act)
 	act->oncreate(act);
 	return 0;
 }
-int actorstop(struct actor* act)
+int actorstop(struct actor* act, struct pinid* pin)
 {
 	if(0 == act)return 0;
-	act->onstop();
+	act->onstop(act, pin);
 	return 0;
 }
-int actorstart(struct arena* win, struct actor* act)
+int actorstart(struct actor* act, struct pinid* pin)
 {
-	int w = win->w;
-	int h = win->h;
-	int d = (w+h) / 2;
-	struct style* sty;
-	struct pinid* pin;
-
-	sty = allocstyle();
-	if(0 == sty)return 0;
-
-	pin = allocpinid();
-	if(0 == pin)return 0;
-
-	sty->cx = w/2;
-	sty->cy = h/2;
-	sty->cz = 0.0;
-	sty->rx = 256;
-	sty->fy = 256;
-	sty->uz = 256;
-
-	relation_write(
-		win, sty, _win_,
-		act, pin, _act_
-	);
-
+	if(0 == act)return 0;
 	act->onstart(act, pin);
-	return 0;
-}
-int actorread()
-{
-	int j;
-	for(j=0;j<16;j++)
-	{
-		if(0 == arena[j].type)break;
-		actoroutput(&arena[j]);
-	}
-	return 0;
-}
-int actorwrite(struct event* ev)
-{
-	int ret;
-	struct arena* win;
-	u64 why, what, where, when;
-
-	why = ev->why;
-	what = ev->what;
-	where = ev->where;
-	//say("%x,%x,%x\n", why, what, where);
-
-	//no window
-	if(0 == where)return 0;
-	win = (void*)where;
-	
-	//no actor
-	if(0 == win->irel)
-	{
-		if(_cli_ == win->fmt)term_write(ev);
-		else login_write(win, ev);
-	}
-	else actorinput(win, ev);
 	return 0;
 }
 void* actorlist(u8* buf, int len)
@@ -170,33 +107,43 @@ void* actorlist(u8* buf, int len)
 void actorchoose(u8* buf, int len)
 {
 	//<2048>0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0</2048>
+	//<sudoku></sudoku>
 	say("@actor:%s\n", buf);
-/*
-	int j,ret;
-	u64 name;
-	char* q = (char*)&name;
-	for(j=0;j<8;j++)
-	{
-		if(p[j] > 0x20)q[j] = p[j];
-	}
-	for(;j<8;j++)q[j] = 0;
 
-	for(j=0;j<0x100;j++)
+}
+int actorread()
+{
+	int j;
+	for(j=0;j<16;j++)
 	{
-		//all searched
-		if(actor[j].name == 0)return;
-
-		//lookat this
-		//say("[%s][%s]\n",&actor[j].name, p);
-		ret = ncmp(&actor[j].name, p, 8);
-		if(ret == 0)
-		{
-			actor[j].onstart(&actor[j], 0);
-			act_at(&arena[0], &actor[j]);
-			return;
-		}
+		if(0 == arena[j].type)break;
+		actoroutput(&arena[j]);
 	}
-*/
+	return 0;
+}
+int actorwrite(struct event* ev)
+{
+	int ret;
+	struct arena* win;
+	u64 why, what, where, when;
+
+	why = ev->why;
+	what = ev->what;
+	where = ev->where;
+	//say("%x,%x,%x\n", why, what, where);
+
+	//no window
+	if(0 == where)return 0;
+	win = (void*)where;
+	
+	//no actor
+	if(0 == win->irel)
+	{
+		if(_cli_ == win->fmt)term_write(ev);
+		else login_write(win, ev);
+	}
+	else actorinput(win, ev);
+	return 0;
 }
 
 

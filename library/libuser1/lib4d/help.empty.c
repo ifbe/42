@@ -1,6 +1,10 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void actorstart(void*, void*);
+void* allocstyle();
+void* allocpinid();
+void* relation_read(u64);
+void relation_write(void*, void*, u64, void*, void*, u64);
+//
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -15,6 +19,36 @@ void carveascii_area(
 
 
 static struct actor* actor = 0;
+int arenaactor(struct arena* win, struct actor* act)
+{
+	int w = win->w;
+	int h = win->h;
+	int d = (w+h) / 2;
+	struct style* sty;
+	struct pinid* pin;
+
+	sty = allocstyle();
+	if(0 == sty)return 0;
+
+	pin = allocpinid();
+	if(0 == pin)return 0;
+
+	sty->cx = w/2;
+	sty->cy = h/2;
+	sty->cz = 0.0;
+	sty->rx = 256;
+	sty->fy = 256;
+	sty->uz = 256;
+
+	relation_write(
+		win, sty, _win_,
+		act, pin, _act_
+	);
+
+	//windowstart(win, sty);
+	act->onstart(act, pin);
+	return 0;
+}
 
 
 
@@ -183,7 +217,7 @@ void login_write(struct arena* win, struct event* ev)
 		{
 			if((win->flag0 >= 0) && (flag0 < 64))
 			{
-				actorstart(win, &actor[flag0]);
+				arenaactor(win, &actor[flag0]);
 				win->flag0 = 0;
 			}
 		}
@@ -192,7 +226,7 @@ void login_write(struct arena* win, struct event* ev)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{
-			actorstart(win, &actor[flag0]);
+			arenaactor(win, &actor[flag0]);
 			win->flag0 = 0;
 		}
 		else if(ev->why == 0x435b1b)

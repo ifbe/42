@@ -132,7 +132,7 @@ void term_cmd0(u8* buf)
 		if(buf[j] < 0x20){len = j;break;}
 		else if('=' == buf[j]){a = j;}
 	}
-	if(a < 0){say("?: %s\n",buf);return;}
+	if(a < 0)return;
 
 	//eat non-char
 	for(;len>0;len--){if(buf[len-1] > 0x20)break;}
