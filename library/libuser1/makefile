@@ -40,10 +40,11 @@ hack/hack.hex.c \
 hack/hack.input.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
-lib1d/html/html.css.c \
-lib1d/json/json.shape.c \
-lib1d/latex/latex.shape.c \
-lib1d/xaml/xaml.shape.c \
+lib1d/json/json.c \
+lib1d/latex/latex.c \
+lib1d/xml/html.c \
+lib1d/xml/xaml.c \
+lib1d/xml/xml.c \
 lib1d/lib1d.c \
 lib2d/draw/draw.ascii.c \
 lib2d/draw/draw.icon.c \

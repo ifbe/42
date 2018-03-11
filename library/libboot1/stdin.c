@@ -5,14 +5,14 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define _win_ hex32('w','i','n',0)
-#define _act_ hex32('a','c','t',0)
 #define _device_ hex64('d','e','v','i','c','e',0,0)
 #define _driver_ hex64('d','r','i','v','e','r',0,0)
 #define _system_ hex64('s','y','s','t','e','m',0,0)
 #define _artery_ hex64('a','r','t','e','r','y',0,0)
 #define _arena_ hex64('a','r','e','n','a',0,0,0)
 #define _actor_ hex64('a','c','t','o','r',0,0,0)
+#define _json_ hex32('j','s','o','n')
+#define _xml_ hex32('x','m','l',0)
 //
 void* actorlist(void*, int);
 int actorchoose(void*, int);
@@ -27,15 +27,11 @@ int driverchoose(void*, int);
 void* devicelist(void*, int);
 int devicechoose(void*, int);
 //
-void* allocstyle();
-void* allocpinid();
-int parsestyle(void*, void*, int);
-int parsepinid(void*, void*, int);
-//
+int arenaactor_file(int, void*);
+int arenaactor_arg(int, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-void relation_write(void*, void*, int, void*, void*, int);
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -118,51 +114,19 @@ void term_cdn(u8* buf)
 }
 void term_cmd0(u8* buf)
 {
-	int j,len;
-	int a=-1,b=-1;
-	void* win;
-	void* act;
-	u8* css;
-	u8* pin;
-	for(j=0;j<0x1000;j++){if(*buf <= 0x20)buf++;}
+	if(0 == buf)return;
+	if(buf[0] < 0x20)return;
 
-	//split l and r
-	for(j=0;j<0x1000;j++)
+	if(0 == ncmp(buf, "--", 2))
 	{
-		if(buf[j] < 0x20){len = j;break;}
-		else if('=' == buf[j]){a = j;}
+		buf += 2;
+		if(0 == ncmp(buf, "json=", 5))arenaactor_file(_json_, buf+5);
+		else if(0 == ncmp(buf, "xml=", 4))arenaactor_file(_xml_, buf+4);
 	}
-	if(a < 0)return;
-
-	//eat non-char
-	for(;len>0;len--){if(buf[len-1] > 0x20)break;}
-	for(b=a+1;b<len;b++){if(buf[b] > 0x20)break;}
-	for(a=a-1;a>=0;a--){if(buf[a] > 0x20)break;}
-	//say("lval=%.*s\nrval=%.*s\n", a+1, buf, len-b, buf+b);
-
-	//<aaaa> = <bbbb>
-	if( ('<' != buf[0]) | ('>' != buf[a]) )return;
-	if( ('<' != buf[b]) | ('>' != buf[len-1]) )return;
-
-	//<arena/win0 style="width:50%;height:50%;">
-	//<actor/xiangqi pinid="black;expert;">
-	//say("<%.*s> = <%.*s>\n", a-1, buf+1, len-b-2, buf+b+1);
-
-	//find
-	win = arenalist(buf+1, 8);
-	if(0 == win)return;
-	act = actorlist(buf+b+1, 8);
-	if(0 == act)return;
-
-	//parse
-	css = allocstyle();
-	pin = allocpinid();
-	parsestyle(css, buf+1, a-1);
-	//parsepinid(pin, buf+b+1, len-b-2);
-
-	//rel
-	say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
-	relation_write(win, css, _win_, act, pin, _act_);
+	else
+	{
+		arenaactor_arg(0, buf);
+	}
 }
 void term_cmdn(u8* buf)
 {
@@ -176,12 +140,27 @@ void term_cmdn(u8* buf)
 	else if(_arena_ == path[0])arenachoose(buf, 0);
 	else if(_actor_ == path[0])actorchoose(buf, 0);
 }
+
+
+
+
+void term_prompt()
+{
+	int j;
+	if(0 != pos)
+	{
+		say("[");
+		for(j=0;j<pos;j++)say("%s/", &path[j]);
+		say("]");
+	}
+	else say("[void]");
+}
 void term_read(u8* buf)
 {
 	int j;
-	if(buf == 0)goto prompt;
-	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto finish;
-	if(ncmp(buf, "exit", 4) == 0)goto finish;
+	if(buf == 0)goto finish;
+	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto byebye;
+	if(ncmp(buf, "exit", 4) == 0)goto byebye;
 
 	//
 	if(0 == ncmp(buf, "ls", 2))
@@ -200,18 +179,12 @@ void term_read(u8* buf)
 		else term_cmdn(buf);
 	}
 
-prompt:
-	if(0 != pos)
-	{
-		say("[");
-		for(j=0;j<pos;j++)say("%s/", &path[j]);
-		say("]");
-	}
-	else say("[void]");
+finish:
+	term_prompt();
 	enq = 0;
 	return;
 
-finish:
+byebye:
 	eventwrite(0,0,0,0);
 	return;
 }
@@ -227,7 +200,11 @@ void term_write(u8* p)
 		if(*p < 8)return;
 		if(*p == 0x9)	//tab
 		{
-			say("tab");
+			say("\n");
+			for(j=0;j<4;j++)say("tab%d\n",j);
+
+			term_prompt();
+			say("%s", input);
 		}
 		else if((*p==0x8)|(*p==0x7f))		//backspace
 		{

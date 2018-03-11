@@ -298,10 +298,11 @@ library/libuser1/hack/hack.hex.c \
 library/libuser1/hack/hack.input.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
-library/libuser1/lib1d/html/html.css.c \
-library/libuser1/lib1d/json/json.shape.c \
-library/libuser1/lib1d/latex/latex.shape.c \
-library/libuser1/lib1d/xaml/xaml.shape.c \
+library/libuser1/lib1d/json/json.c \
+library/libuser1/lib1d/latex/latex.c \
+library/libuser1/lib1d/xml/html.c \
+library/libuser1/lib1d/xml/xaml.c \
+library/libuser1/lib1d/xml/xml.c \
 library/libuser1/lib1d/lib1d.c \
 library/libuser1/lib2d/draw/draw.ascii.c \
 library/libuser1/lib2d/draw/draw.icon.c \
