@@ -4,10 +4,17 @@
 #define _xml_ hex32('x','m','l',0)
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);
+int parsejson(void*, int);
+int parsehtml(void*, int);
+int parsexml(void*, int);
+//
 void* arenalist();
 void* allocstyle();
 void* actorlist();
 void* allocpinid();
+//
+int openreadclose(void*, void*, u64, u64);
+int openwriteclose(void*, void*, u64, u64);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 //
@@ -111,19 +118,21 @@ void arenaactor_arg(int type, u8* buf)
 }
 void arenaactor_file(int fmt, u8* buf)
 {
-	u64 tmp;
+	int ret;
+	u8 data[0x10000];
+
+	if(0 == buf)return;
+	say("parsing: %s\n", buf);
+
 	if(_json_ == fmt)
 	{
-		
+		ret = openreadclose(buf, data, 0, 0x10000);
+		parsejson(data, ret);
 	}
 	else if(_xml_ == fmt)
 	{
-		
-	}
-	else
-	{
-		tmp = fmt;
-		say("%.8s: %s\n", &tmp, buf);
+		ret = openreadclose(buf, data, 0, 0x10000);
+		parsexml(data, ret);
 	}
 }
 

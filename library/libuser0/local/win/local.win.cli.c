@@ -41,6 +41,9 @@ void windowlist()
 void windowchange()
 {
 }
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	this->type = hex32('w','i','n',0);
@@ -69,12 +72,19 @@ void windowstart(struct window* this)
 		termcount++;
 	}
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
 {
 }
-void windowdelete()
+
+
+
+
+void initwindow()
+{
+}
+void freewindow()
 {
 }

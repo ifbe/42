@@ -308,6 +308,9 @@ void windowlist()
 void windowchange()
 {
 }
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	int j;
@@ -350,10 +353,17 @@ void windowstart(struct window* this)
 	for(j=0;j<16;j++){(this->touch[j]).id = 0xffff;}
 	fuckyou++;
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
+{
+}
+
+
+
+
+void initwindow()
 {
 	int j;
 	Window root;
@@ -392,6 +402,6 @@ void windowcreate()
 	//
 	startthread(terminalthread, 0);
 }
-void windowdelete()
+void freewindow()
 {
 }

@@ -30,3 +30,13 @@ int soundcreate()
 {
 	return 0;
 }
+
+
+
+
+void initmic()
+{
+}
+void freemic()
+{
+}

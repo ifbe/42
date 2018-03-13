@@ -253,3 +253,13 @@ void windowdelete()
 {
 	say("@windowdelete\n");
 }
+
+
+
+
+void initwindow()
+{
+}
+void freewindow()
+{
+}

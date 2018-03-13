@@ -129,13 +129,12 @@ int main(int argc, char* argv[])
 	struct event* ev;
 
 	addr = beforedawn();
-	term_read(0);
-
 	for(ret=1;ret<argc;ret++)
 	{
 		fixarg(addr, argv[ret]);
 		term_read(addr);
 	}
+	term_write("\n");
 
 	while(1)
 	{

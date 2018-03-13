@@ -983,3 +983,13 @@ void windowdelete()
 void windowcreate()
 {
 }
+
+
+
+
+void initwindow()
+{
+}
+void freewindow()
+{
+}

@@ -122,6 +122,9 @@ void windowlist()
 void windowchange()
 {
 }
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	if(this->type == hex32('b','u','f',0))
@@ -138,10 +141,17 @@ void windowstart(struct window* this)
 		this->thread = startthread(terminalthread, this);
 	}
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
+{
+}
+
+
+
+
+void initwindow()
 {
 	ioctl(0, TIOCGWINSZ, &w);
 	width=w.ws_col;
@@ -157,7 +167,7 @@ void windowcreate()
 	tcsetattr(STDIN_FILENO,TCSANOW,&new);
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 }
-void windowdelete()
+void freewindow()
 {
 	if(flag!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
 }

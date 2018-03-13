@@ -1,4 +1,5 @@
 #include "actor.h"
+void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
 
@@ -458,59 +459,89 @@ static void xiangqi_list()
 static void xiangqi_choose()
 {
 }
-static void xiangqi_stop()
+static void xiangqi_stop(struct actor* act, struct pinid* pin)
 {
 }
-static void xiangqi_start()
+static void xiangqi_start(struct actor* act, struct pinid* pin)
 {
 	int j;
-	char* p=(char*)data;
+	char* p = (char*)data;
 
 	px = py = -1;
 	qx = qy = 0;
 	turn = 0;
-	for(j=0;j<90;j++)p[j]=0;
 
-
-
-
-	for(j=0;j<=4;j++)
+	for(j=0;j<90;j++)
 	{
-		//(black)JU,MA,XIANG,SHI,JIANG
-		data[0][ j ]='A' + j;
-		data[0][8-j]='A' + j;
-		
-		//(red)ju,ma,xiang,shi,jiang
-		data[9][ j ]='a' + j;
-		data[9][8-j]='a' + j;
+		if(0 != p[j])break;
 	}
-	for(j=0;j<5;j++)
-	{
-		//(red)SOLDIER
-		data[3][j*2]='S';
-
-		//(black)soldier
-		data[6][j*2]='s';
-	}
-
-	//(red)PAO
-	data[2][1]='Z';
-	data[2][7]='Z';
-
-	//(black)pao
-	data[7][1]='z';
-	data[7][7]='z';
+	if(j >= 90)xiangqi_generate(data);
 }
-static void xiangqi_delete(struct actor* act)
+static void xiangqi_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	else if(_ORIG_ == act->type)
+	{
+		act->type = _orig_;
+	}
+	else if(_COPY_ == act->type)
+	{
+		stopmemory(act->buf);
+		act->type = _copy_;
+	}
 }
-static void xiangqi_create(struct actor* act)
+static void xiangqi_create(struct actor* act, u8* buf)
 {
+	u8* p;
+	int j,k;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = startmemory(10*9);
+	else if(_orig_ == act->type)
+	{
+		act->buf = data;
+		act->type = _ORIG_;
+	}
+	else if(_copy_ == act->type)
+	{
+		act->buf = startmemory(10*9);
+		act->type = _COPY_;
+	}
+
+	if(0 == buf)return;
+	p = act->buf;
+	k = 0;
+	for(j=0;j<16;j++)p[j] = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if(buf[j] >= 0x80)
+		{
+			//say("%.3s", buf+j);
+			if(0 == ncmp(buf+j, "车", 3))p[k] = 'a';
+			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'b';
+			else if(0 == ncmp(buf+j, "象", 3))p[k] = 'c';
+			else if(0 == ncmp(buf+j, "士", 3))p[k] = 'd';
+			else if(0 == ncmp(buf+j, "将", 3))p[k] = 'e';
+			else if(0 == ncmp(buf+j, "卒", 3))p[k] = 's';
+			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'z';
+			else if(0 == ncmp(buf+j, "车", 3))p[k] = 'A';
+			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'B';
+			else if(0 == ncmp(buf+j, "相", 3))p[k] = 'C';
+			else if(0 == ncmp(buf+j, "仕", 3))p[k] = 'D';
+			else if(0 == ncmp(buf+j, "帅", 3))p[k] = 'E';
+			else if(0 == ncmp(buf+j, "兵", 3))p[k] = 'S';
+			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'Z';
+
+			j += 2;
+			k++;
+		}
+		else if(buf[j] >= 0x30)
+		{
+			//say("%c", buf[j]);
+			p[k] = 0;
+			k++;
+		}
+		if(k >= 90)break;
+	}
+	say("\n");
 }
 
 

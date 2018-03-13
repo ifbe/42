@@ -9,14 +9,15 @@
 
 
 //
-int videocreate(void*);
-int videodelete();
-//
-int soundcreate(void*);
-int sounddelete();
+void initremote(void*);
+void freeremote();
+void initsound(void*);
+void freesound();
+void initvideo(void*);
+void freevideo();
+void initwindow(void*);
+void freewindow();
 //local
-int windowcreate(void*);
-int windowdelete();
 int windowlist();
 int windowchoose();
 int windowstart(void*);
@@ -244,12 +245,29 @@ void* arenalist(u8* buf, int len)
 	}
 	return 0;
 }
-int arenachoose(u8* buf, int len)
+void* arenachoose(u8* buf, int len)
 {
-	//xiangqi.black@win2.center
-	if(0 == buf)return 0;
-	if(0 == ncmp(buf, "win", 3))arenastart(_win_, 0);
-	else say("@arena: %s\n", buf);
+	u64 name = 0;
+	int id = 0;
+	u8* data = 0;
+	int dl = 0;
+
+	parsexml_detail(buf, len, &name, &id, &data, &dl);
+	say("%.*s\n", len, buf);
+	say("%llx, %x\n", name, id);
+	say("%.*s\n", dl, data);
+
+	if(_win_ == name)
+	{
+		if((id>0)&&(id<0x1000))
+		{
+			if(0 == arena[id].type)
+			{
+				arenastart(_win_, 0);
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -261,9 +279,9 @@ void freearena()
 {
 	//say("[c,f):freeing arena\n");
 
-	windowdelete();
-	videodelete();
-	sounddelete();
+	freewindow();
+	freecamera();
+	freemic();
 	//remotedelete();
 }
 void initarena(u8* addr)
@@ -277,9 +295,9 @@ void initarena(u8* addr)
 	//pinid = (void*)(addr+0x300000);
 
 	//remotecreate(arena);
-	soundcreate(arena);
-	videocreate(arena);
-	windowcreate(arena);
+	initmic(arena);
+	initcamera(arena);
+	initwindow(arena);
 
 	arenastart(_win_, 0);
 

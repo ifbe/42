@@ -307,22 +307,57 @@ static void the2048_stop(struct actor* act, struct pinid* pin)
 static void the2048_start(struct actor* act, struct pinid* pin)
 {
 	int j;
-	for(j=0;j<256;j++)buffer[j] = 0;
-
-	//
+	for(j=0;j<16;j++)
+	{
+		if(0 != buffer[j])break;
+	}
+	if(j >= 16)new2048(buffer);
 	num = 0;
-	new2048((void*)buffer);
 }
-static void the2048_delete(struct actor* act)
+static void the2048_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	else if(_ORIG_ == act->type)
+	{
+		act->type = _orig_;
+	}
+	else if(_COPY_ == act->type)
+	{
+		stopmemory(act->buf);
+		act->type = _copy_;
+	}
 }
-static void the2048_create(struct actor* act)
+static void the2048_create(struct actor* act, u8* buf)
 {
+	u8* p;
+	int j,k;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = startmemory(256);
+	else if(_orig_ == act->type)
+	{
+		act->buf = buffer;
+		act->type = _ORIG_;
+	}
+	else if(_copy_ == act->type)
+	{
+		act->buf = startmemory(256);
+		act->type = _COPY_;
+	}
+
+	if(0 == buf)return;
+	p = act->buf;
+	k = 0;
+	for(j=0;j<16;j++)p[j] = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if((buf[j]>=0x30)&&(buf[j]<=0x39))
+		{
+			//say("%c", buf[j]);
+			p[k] = buf[j]-0x30;
+			k++;
+		}
+		if(k >= 16)break;
+	}
+	say("\n");
 }
 static void the2048_list(u8* buf)
 {

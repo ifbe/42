@@ -245,3 +245,13 @@ void videodelete()
 void videocreate()
 {
 }
+
+
+
+
+void initcamera()
+{
+}
+void freecamera()
+{
+}

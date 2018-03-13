@@ -494,4 +494,13 @@ void videocreate()
 {
 }
 
+
+
+
+void initcamera()
+{
+}
+void freecamera()
+{
+}
 }

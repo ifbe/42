@@ -158,9 +158,9 @@ void term_prompt()
 void term_read(u8* buf)
 {
 	int j;
-	if(buf == 0)goto finish;
-	if( (buf[0] == 'q') && (buf[1] < 0x20) )goto byebye;
-	if(ncmp(buf, "exit", 4) == 0)goto byebye;
+	if(0 == buf)return;
+	if(('q' == buf[0])&&(0x20 > buf[1]))goto byebye;
+	if(0 == ncmp(buf, "exit", 4))goto byebye;
 
 	//
 	if(0 == ncmp(buf, "ls", 2))
@@ -180,7 +180,6 @@ void term_read(u8* buf)
 	}
 
 finish:
-	term_prompt();
 	enq = 0;
 	return;
 
@@ -219,6 +218,7 @@ void term_write(u8* p)
 			say("\n");
 			input[enq] = 0;
 			term_read(input);
+			term_prompt();
 
 			for(j=0;j<0x100;j++)input[j] = 0;
 			enq = 0;

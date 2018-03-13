@@ -7,7 +7,9 @@
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
 #define _orig_ hex32('o','r','i','g')
+#define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
+#define _COPY_ hex32('C','O','P','Y')
 //
 #define _act_ hex32('a','c','t',0)
 #define _buf_ hex32('b','u','f',0)
@@ -186,11 +188,11 @@ struct actor
 
 	//[80,bf]
 	union{
-		int (*oncreate)(void* actor);
+		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
 	};
 	union{
-		int (*ondelete)(void* actor);
+		int (*ondelete)(void* actor, void* buf);
 		char padding1[8];
 	};
 	union{

@@ -63,10 +63,9 @@ void windowread(char* where)
 void windowwrite()
 {
 }
-
-
-
-
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	if(this->type == hex32('b','u','f',0))
@@ -88,14 +87,21 @@ void windowstart(struct window* this)
 		thread = startthread(terminalthread, this);
 	}
 }
-void windowstop()
+void windowcreate()
 {
 }
-void windowcreate()
+void windowdelete()
+{
+}
+
+
+
+
+void initwindow()
 {
 	windowchange(1);
 }
-void windowdelete()
+void freewindow()
 {
 	windowchange(0);
 }

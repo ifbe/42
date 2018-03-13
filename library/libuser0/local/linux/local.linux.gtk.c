@@ -53,16 +53,26 @@ void windowread()
 void windowwrite()
 {
 }
+void windowstop()
+{
+}
 void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
 {
+}
+
+
+
+
+void initwindow()
+{
 	thread = startthread(uievent, 0);
 }
-void windowdelete()
+void freewindow()
 {
 }

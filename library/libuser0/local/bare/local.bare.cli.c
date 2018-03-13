@@ -46,3 +46,13 @@ void windowcreate()
 void windowdelete()
 {
 }
+
+
+
+
+void initwindow()
+{
+}
+void freewindow()
+{
+}

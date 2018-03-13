@@ -1,4 +1,5 @@
 #include "actor.h"
+void sudoku_generate(void*);
 void sudoku_solve(void*);
 
 
@@ -6,7 +7,7 @@ void sudoku_solve(void*);
 
 //
 static int px,py;
-static u8 table[9][9];
+static u8 data[9][9];
 
 
 
@@ -35,12 +36,12 @@ static void sudoku_read_pixel(
 			drawsolid_rect(win, 0xcccccc, t1, t2, t3, t4);
 			drawline_rect(win, 0x222222, t1, t2, t3, t4);
 
-			if(table[y][x] != 0)
+			if(data[y][x] != 0)
 			{
 				drawdecimal(win, 0,
 					(cx-ww-4)+(2*x+1)*ww/9,
 					(cy-hh-8)+(2*y+1)*hh/9,
-					table[y][x]
+					data[y][x]
 				);
 			}
 		}
@@ -79,14 +80,14 @@ static void sudoku_read_vbo(
 				0.0, hh/10, 0.0,
 				0.0, 0.0, ww/18
 			);
-			if(table[y][x] != 0)
+			if(data[y][x] != 0)
 			{
 				carveascii(
 					win, ~c,
 					xxx, yyy, ww/8,
 					ww/18, 0.0, 0.0,
 					0.0, hh/18, 0.0,
-					0x30+table[y][x]
+					0x30+data[y][x]
 				);
 			}
 		}
@@ -111,7 +112,7 @@ static void sudoku_read_tui(
 	{
 		for(x=0;x<9;x++)
 		{
-			if(table[y][x] == 0)continue;
+			if(data[y][x] == 0)continue;
 
 			//position
 			ret = (3*y+1)*width + 6*x + 2;
@@ -125,7 +126,7 @@ static void sudoku_read_tui(
 			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
 			//data
-			p[ret] = table[y][x] + 0x30;
+			p[ret] = data[y][x] + 0x30;
 		}
 	}
 }
@@ -140,8 +141,8 @@ static void sudoku_read_cli(
 	{
 		for(x=0;x<9;x++)
 		{
-			if(table[y][x] == 0)continue;
-			say("%d	",table[y][x]);
+			if(data[y][x] == 0)continue;
+			say("%d	",data[y][x]);
 		}
 		say("\n");
 	}
@@ -201,28 +202,62 @@ static void sudoku_stop(struct actor* act, struct pinid* pin)
 }
 static void sudoku_start(struct actor* act, struct pinid* pin)
 {
-	int x,y;
+	u8* p;
+	int j;
 	px = py = 0;
 
-	for(y=0;y<9;y++)
+	p = (u8*)data;
+	for(j=0;j<81;j++)
 	{
-		for(x=0;x<9;x++)
-		{
-			table[y][x] = 0;
-		}
+		if(0 != p[j])break;
 	}
-	sudoku_solve(table);
+	if(j >= 81)sudoku_generate(data);
+	else sudoku_solve(data);
 }
-static void sudoku_delete(struct actor* act)
+static void sudoku_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	else if(_ORIG_ == act->type)
+	{
+		act->type = _orig_;
+	}
+	else if(_COPY_ == act->type)
+	{
+		stopmemory(act->buf);
+		act->type = _copy_;
+	}
 }
-static void sudoku_create(struct actor* act)
+static void sudoku_create(struct actor* act, u8* buf)
 {
+	u8* p;
+	int j,k;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = table;
-	if(_copy_ == act->type)act->buf = startmemory(81);
+	else if(_orig_ == act->type)
+	{
+		act->buf = data;
+		act->type = _ORIG_;
+	}
+	else if(_copy_ == act->type)
+	{
+		act->buf = startmemory(81);
+		act->type = _COPY_;
+	}
+
+	if(0 == buf)return;
+	p = act->buf;
+	k = 0;
+	for(j=0;j<81;j++)p[j] = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if((buf[j]>=0x30)&&(buf[j]<=0x39))
+		{
+			//say("%c", buf[j]);
+			p[k] = buf[j]-0x30;
+			k++;
+		}
+		if(k >= 81)break;
+	}
+	say("\n");
 }
 
 

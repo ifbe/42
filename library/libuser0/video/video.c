@@ -30,3 +30,13 @@ int videocreate()
 {
 	return 0;
 }
+
+
+
+
+void initcamera()
+{
+}
+void freecamera()
+{
+}

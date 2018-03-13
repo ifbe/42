@@ -1,5 +1,4 @@
 #include "actor.h"
-int ncmp(void*, void*, int);
 
 
 
@@ -114,4 +113,7 @@ void parsestyle(struct style* sty, u8* buf, int len)
 	}
 
 	say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
+}
+void parsehtml(u8* buf, int len)
+{
 }

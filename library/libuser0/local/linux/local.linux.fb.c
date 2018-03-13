@@ -85,6 +85,9 @@ void windowlist()
 void windowchange()
 {
 }
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	int j;
@@ -106,10 +109,17 @@ void windowstart(struct window* this)
 		}
 	}
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
+{
+}
+
+
+
+
+void initwindow()
 {
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
@@ -155,7 +165,7 @@ void windowcreate()
 	thread = startthread(terminalthread, 0);
 }
 //__attribute__((destructor)) void destoryfb()
-void windowdelete()
+void freewindow()
 {
 	//close(inputfp);
 	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);

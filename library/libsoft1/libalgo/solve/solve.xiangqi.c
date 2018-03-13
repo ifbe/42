@@ -3,6 +3,38 @@ void say(void*, ...);
 
 
 
+void xiangqi_generate(char (*data)[9])
+{
+	int j;
+	for(j=0;j<90;j++)data[0][j] = 0;
+
+	for(j=0;j<=4;j++)
+	{
+		//(black)JU,MA,XIANG,SHI,JIANG
+		data[0][ j ]='A' + j;
+		data[0][8-j]='A' + j;
+		
+		//(red)ju,ma,xiang,shi,jiang
+		data[9][ j ]='a' + j;
+		data[9][8-j]='a' + j;
+	}
+	for(j=0;j<5;j++)
+	{
+		//(red)SOLDIER
+		data[3][j*2]='S';
+
+		//(black)soldier
+		data[6][j*2]='s';
+	}
+
+	//(red)PAO
+	data[2][1]='Z';
+	data[2][7]='Z';
+
+	//(black)pao
+	data[7][1]='z';
+	data[7][7]='z';
+}
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y)
 {
 	int min, max, t, u;

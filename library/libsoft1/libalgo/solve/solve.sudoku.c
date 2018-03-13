@@ -1,155 +1,111 @@
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
-u32 getrandom();
 
 
 
 
-int sudoku_random(u8* buf, int len)
+void sudoku_try(u8 (*data)[9], u8 (*stack)[9], int x, int y)
 {
-	int k,ret;
-	if(len == 0)return 0;
+	int j,k;
+	int basex,basey;
+	u8 val[10];
 
-	k = getrandom()%len;
-	ret = buf[k];
-	if(len > 1)
+	for(j=0;j<10;j++)val[j] = 0;
+	basex = x - (x%3);
+	basey = y - (y%3);
+	for(j=0;j<9;j++)
 	{
-		buf[k] = buf[len-1];
-		buf[len-1] = 0;
+		k = data[y][j];
+		if(0 != k)val[k] = 1;
+
+		k = data[j][x];
+		if(0 != k)val[k] = 1;
+
+		k = data[basey+(j/3)][basex+(j%3)];
+		if(0 != k)val[k] = 1;
 	}
 
-	return ret;
+	k = stack[y][x];
+	for(j=k+1;j<10;j++)
+	{
+		if(0 == val[j])
+		{
+			data[y][x] = j;
+			stack[y][x] = j;
+			//say("k=%d,j=%d\n", k, j);
+			break;
+		}
+	}
 }
-int sudoku_possiable(u8 (*table)[9], u8* p, int px, int py)
+void sudoku_solve(u8 (*data)[9])
 {
-	int x,y,ret;
-	int basex, basey;
-	for(x=0;x<10;x++)p[x] = x;
+	int x,y,t;
+	u8 haha[9][9];
+	u8 stack[9][9];
 
-	//heng
-	for(x=0;x<9;x++)
-	{
-		ret = table[py][x];
-		if( (ret >= 1) && (ret <= 9) )
-		{
-			p[ret] = 0;
-		}
-	}
-
-	//shu
-	for(y=0;y<9;y++)
-	{
-		ret = table[y][px];
-		if( (ret >= 1) && (ret <= 9) )
-		{
-			p[ret] = 0;
-		}
-	}
-
-	//quan
-	basex = px - (px%3);
-	basey = py - (py%3);
-	for(y=0;y<3;y++)
-	{
-		for(x=0;x<3;x++)
-		{
-			ret = table[basey+y][basex+x];
-			if( (ret >= 1) && (ret <= 9) )
-			{
-				p[ret] = 0;
-			}
-		}
-	}
-
-//say("%d,%d:	",px,py);
-	//sort
-	ret=0;
-	for(x=1;x<10;x++)
-	{
-		if(p[x] == 0)continue;
-
-		p[ret] = p[x];
-//say("%d ",p[ret]);
-
-		ret++;
-	}
-//say("\n");
-
-	p[ret] = 0;
-	return ret;
-}
-void sudoku_solve(u8 (*table)[9])
-{
-	int x,y,t,ret;
-	int mode,count,timeout;
-	u8 buffer[0x1000];
-
-/*
+	//prepare
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			ret = sudoku_possiable(x,y);
-			table[y][x] = sudoku_random(possiable);
+			haha[y][x] = data[y][x];
+			stack[y][x] = 0;
 		}
 	}
-*/
-	t = 0;		//第几个了
-	mode = 0;	//进入还是回头
-	timeout = 0;
-	while(timeout < 9999)
+
+	//backtrack
+	t = 0;
+	while(1)
 	{
+		//say("t=%d\n",t);
+		//printmemory(haha, t);
+		//printmemory(stack, t);
 		y = t/9;
 		x = t%9;
-
-		//这是头一次进
-		if(mode == 0)
+		if(0 == haha[y][x])
 		{
-			count = sudoku_possiable(table, buffer + 10*t, x, y);
-		}
-
-		//这一次是回头
-		else
-		{
-			for(count=0;count<10;count++)
+			sudoku_try(haha, stack, x, y);
+			if(0 == haha[y][x])
 			{
-				if(buffer[10*t + count] == 0)break;
+				stack[y][x] = 0;
+				while(1)
+				{
+					t--;
+					if(t < 0)return;
+
+					y = t/9;
+					x = t%9;
+					if(0 == data[y][x])
+					{
+						haha[y][x] = 0;
+						break;
+					}
+				}
+				continue;
 			}
 		}
 
-		//只能回头
-		if(count == 0)
-		{
-			if(t == 0)break;	//失败退出
-
-			table[y][x] = 0;
-			t--;
-			mode = 1;
-		}
-
-		//继续回头
-		else if( (count == 1) && (mode != 0) )
-		{
-			if(t == 0)break;	//失败退出
-
-			table[y][x] = 0;
-			t--;
-			mode = 1;
-		}
-
-		//选一个
-		else
-		{
-			ret = sudoku_random(buffer+10*t, count);
-			table[y][x] = ret;
-
-			t++;
-			mode = 0;
-
-			if(t >= 81)break;	//成功退出
-		}
-
-		timeout++;
+		t++;
+		if(t >= 81)break;
 	}
+	if(t < 81)return;
+
+	//success
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			data[y][x] = haha[y][x];
+		}
+	}
+}
+void sudoku_generate(u8 (*data)[9])
+{
+	int x,y;
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)data[y][x] = 0;
+	}
+	sudoku_solve(data);
 }

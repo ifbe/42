@@ -177,3 +177,13 @@ void sounddelete()
 void soundcreate()
 {
 }
+
+
+
+
+void initmic()
+{
+}
+void freemic()
+{
+}

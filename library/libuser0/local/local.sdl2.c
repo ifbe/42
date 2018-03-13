@@ -156,6 +156,15 @@ void windowdelete()
 }
 void windowcreate()
 {
-	//准备sdl
+}
+
+
+
+
+void initwindow()
+{
 	SDL_Init(SDL_INIT_EVERYTHING);
+}
+void freewindow()
+{
 }

@@ -1239,11 +1239,21 @@ void windowstart(struct window* this)
 
 	startthread(uievent, this);
 }
-void windowdelete()
+void deletewindow()
+{
+}
+void createwindow()
+{
+}
+
+
+
+
+void freewindow()
 {
 	glfwTerminate();
 }
-void windowcreate()
+void initwindow()
 {
 	if(glfwInit() == 0)
 	{

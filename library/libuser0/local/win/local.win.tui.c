@@ -313,6 +313,9 @@ void windowlist()
 void windowchange()
 {
 }
+void windowstop()
+{
+}
 void windowstart(struct window* this)
 {
 	int width,height;
@@ -338,13 +341,20 @@ void windowstart(struct window* this)
 		u64 thread = startthread(terminalthread, this);
 	}
 }
-void windowstop()
+void windowdelete()
 {
 }
 void windowcreate()
 {
+}
+
+
+
+
+void initwindow()
+{
 	output = GetStdHandle(STD_OUTPUT_HANDLE);
 }
-void windowdelete()
+void freewindow()
 {
 }
