@@ -2,19 +2,9 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define _json_ hex32('j','s','o','n')
 #define _xml_ hex32('x','m','l',0)
-int parsestyle(void*, void*, int);
-int parsepinid(void*, void*, int);
-int parsejson(void*, int);
-int parsehtml(void*, int);
-int parsexml(void*, int);
-//
-void* arenalist();
 void* allocstyle();
-void* actorlist();
 void* allocpinid();
 //
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 //
@@ -65,75 +55,6 @@ int arenaactor(struct arena* win, struct actor* act)
 	//win->onstart(win, sty);
 	act->onstart(act, pin);
 	return 0;
-}
-void arenaactor_arg(int type, u8* buf)
-{
-	int j,len;
-	int a=-1,b=-1;
-	struct arena* win;
-	struct actor* act;
-	u8* css;
-	u8* pin;
-	for(j=0;j<0x1000;j++){if(*buf <= 0x20)buf++;}
-
-	//split l and r
-	for(j=0;j<0x1000;j++)
-	{
-		if(buf[j] < 0x20){len = j;break;}
-		else if('=' == buf[j]){a = j;}
-	}
-	if(a < 0)return;
-
-	//eat non-char
-	for(;len>0;len--){if(buf[len-1] > 0x20)break;}
-	for(b=a+1;b<len;b++){if(buf[b] > 0x20)break;}
-	for(a=a-1;a>=0;a--){if(buf[a] > 0x20)break;}
-	//say("lval=%.*s\nrval=%.*s\n", a+1, buf, len-b, buf+b);
-
-	//<aaaa> = <bbbb>
-	if( ('<' != buf[0]) | ('>' != buf[a]) )return;
-	if( ('<' != buf[b]) | ('>' != buf[len-1]) )return;
-
-	//<arena/win0 style="width:50%;height:50%;">
-	//<actor/xiangqi pinid="black;expert;">
-	//say("<%.*s> = <%.*s>\n", a-1, buf+1, len-b-2, buf+b+1);
-
-	//find
-	win = arenalist(buf+1, 8);
-	if(0 == win)return;
-	act = actorlist(buf+b+1, 8);
-	if(0 == act)return;
-
-	//parse
-	css = allocstyle();
-	pin = allocpinid();
-	parsestyle(css, buf+1, a-1);
-	//parsepinid(pin, buf+b+1, len-b-2);
-
-	//rel
-	//say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
-	//win->onstart(win, cs);
-	act->onstart(act, pin);
-	relation_write(win, css, _win_, act, pin, _act_);
-}
-void arenaactor_file(int fmt, u8* buf)
-{
-	int ret;
-	u8 data[0x10000];
-
-	if(0 == buf)return;
-	say("parsing: %s\n", buf);
-
-	if(_json_ == fmt)
-	{
-		ret = openreadclose(buf, data, 0, 0x10000);
-		parsejson(data, ret);
-	}
-	else if(_xml_ == fmt)
-	{
-		ret = openreadclose(buf, data, 0, 0x10000);
-		parsexml(data, ret);
-	}
 }
 
 

@@ -11,8 +11,6 @@
 #define _artery_ hex64('a','r','t','e','r','y',0,0)
 #define _arena_ hex64('a','r','e','n','a',0,0,0)
 #define _actor_ hex64('a','c','t','o','r',0,0,0)
-#define _json_ hex32('j','s','o','n')
-#define _xml_ hex32('x','m','l',0)
 //
 void* actorlist(void*, int);
 int actorchoose(void*, int);
@@ -27,11 +25,13 @@ int driverchoose(void*, int);
 void* devicelist(void*, int);
 int devicechoose(void*, int);
 //
-int arenaactor_file(int, void*);
-int arenaactor_arg(int, void*);
+int parsejson(void*, int);
+int parsexml(void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
+int openreadclose(void*, void*, u64, u64);
+int openwriteclose(void*, void*, u64, u64);
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -114,18 +114,30 @@ void term_cdn(u8* buf)
 }
 void term_cmd0(u8* buf)
 {
+	int ret;
+	u8 data[0x10000];
 	if(0 == buf)return;
 	if(buf[0] < 0x20)return;
 
 	if(0 == ncmp(buf, "--", 2))
 	{
 		buf += 2;
-		if(0 == ncmp(buf, "json=", 5))arenaactor_file(_json_, buf+5);
-		else if(0 == ncmp(buf, "xml=", 4))arenaactor_file(_xml_, buf+4);
+		if(0 == ncmp(buf, "json=", 5))
+		{
+			ret = openreadclose(buf+5, data, 0, 0x10000);
+			parsejson(data, ret);
+		}
+		else if(0 == ncmp(buf, "xml=", 4))
+		{
+			ret = openreadclose(buf+4, data, 0, 0x10000);
+			parsexml(data, ret);
+		}
 	}
 	else
 	{
-		arenaactor_arg(0, buf);
+		for(ret=0;ret<0x1000;ret++){if(buf[ret] < 0x20)break;}
+
+		parsexml_relation(buf, ret);
 	}
 }
 void term_cmdn(u8* buf)

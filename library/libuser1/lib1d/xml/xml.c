@@ -2,8 +2,15 @@
 #define _arena_ hex32('w','i','n',0)
 #define _actor_ hex32('a','c','t',0)
 #define _relation_ hex32('r','e','l',0)
-int arenachoose(u8* buf, int len);
+void* allocpinid();
+void* allocstyle();
+void* actorlist(void*, int);
+void* arenalist(void*, int);
 int actorchoose(u8* buf, int len);
+int arenachoose(u8* buf, int len);
+//
+int parsestyle(void*, void*, int);
+int parsepinid(void*, void*, int);
 
 
 
@@ -51,6 +58,66 @@ void parsexml_detail(
 		p++;
 	}
 }
+void parsexml_relation(u8* buf, int len)
+{
+	//say("%.*s\n", len, buf);
+
+	int j,k,a,b,m,n;
+	struct arena* win;
+	struct actor* act;
+	u8* css;
+	u8* pin;
+
+	for(j=0;j<len;j++)
+	{
+		if('>' == buf[j])
+		{
+			b = j;
+			j++;
+			break;
+		}
+		if('<' == buf[j])
+		{
+			a = j+1;
+			if('$' == buf[a])a++;
+		}
+	}
+	say("%.*s\n", b-a, buf+a);
+
+	for(;j<len;j++)
+	{
+		if('>' == buf[j])
+		{
+			n = j;
+			j++;
+			break;
+		}
+		if('<' == buf[j])
+		{
+			m = j+1;
+			if('$' == buf[m])m++;
+		}
+	}
+	say("%.*s\n", n-m, buf+m);
+
+	//find
+	win = arenalist(buf+a, b-a);
+	if(0 == win)return;
+	act = actorlist(buf+m, n-m);
+	if(0 == act)return;
+
+	//parse
+	css = allocstyle();
+	pin = allocpinid();
+	parsestyle(css, buf+a, b-a);
+	parsepinid(pin, buf+m, n-m);
+
+	//rel
+	//say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
+	//win->onstart(win, cs);
+	act->onstart(act, pin);
+	relation_write(win, css, _win_, act, pin, _act_);
+}
 void parsexml(u8* buf, int len)
 {
 	int j,k,m,n;
@@ -63,17 +130,18 @@ void parsexml(u8* buf, int len)
 	{
 		if('<' == buf[j])
 		{
-			m = -1;
+			m = n = -1;
 			for(k=j+1;k<len;k++)
 			{
 				if('>' == buf[k])
 				{
 					if(m < 0)m = k;
+					if(n < 0)n = k;
 					break;
 				}
 				if(buf[k] <= 0x20)
 				{
-					if(m < 0)m = k;
+					if(n < 0)n = k;
 				}
 			}
 			//say("%.*s\n", k-j+1, buf+j);
@@ -101,6 +169,14 @@ void parsexml(u8* buf, int len)
 						actorchoose(buf+sb[sp], k+1-sb[sp]);
 					}
 				}
+			}
+			else if('$' == buf[j+1])
+			{
+				for(k=k+1;k<len;k++)
+				{
+					if('>' == buf[k])break;
+				}
+				parsexml_relation(buf+j, k-j+1);
 			}
 			else
 			{

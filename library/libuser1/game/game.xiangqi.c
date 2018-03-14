@@ -110,8 +110,8 @@ void xiangqi_read_pixel(
 	int hh = sty->fy;
 	int dd = sty->uz;
 
-	black=0;
-	if( ((win->fmt)&0xffffffff) == 0x61626772)
+	black = 0;
+	if(0x626772 == (win->fmt&0xffffff))
 	{
 		temp = 0x256f8d;
 		red = 0xff;
@@ -179,14 +179,17 @@ void xiangqi_read_pixel(
 	{
 		for(x=0;x<9;x++)
 		{
+			if(*(u8*)pin == 'r')temp = data[y][x];
+			else temp = data[9-y][8-x];
+
 			//empty
-			if(data[y][x] < 'A')continue;
+			if(temp < 'A')continue;
 
 			//>0x41
-			else if(data[y][x] <= 'Z')fontcolor = black;
+			else if(temp <= 'Z')fontcolor = black;
 
 			//>0x61
-			else if(data[y][x] <= 'z')fontcolor = red;
+			else if(temp <= 'z')fontcolor = red;
 
 			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
@@ -201,7 +204,7 @@ void xiangqi_read_pixel(
 			drawutf8(win, fontcolor,
 				(cx-8) + (2*x-8)*ww/9,
 				(cy-8) + (2*y-9)*hh/10,
-				char2hanzi(data[y][x]), 0
+				char2hanzi(temp), 0
 			);
 		}//forx
 	}//fory

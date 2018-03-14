@@ -2,7 +2,23 @@
 
 
 
-
+void parsepinid(u8* pin, u8* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)
+	{
+		if('\"' == buf[j])
+		{
+			buf += j+1;
+			len -= j+1;
+		}
+	}
+	for(j=0;j<len;j++)
+	{
+		if('\"' == buf[j])break;
+		pin[j] = buf[j];
+	}
+}
 void parsestyle(struct style* sty, u8* buf, int len)
 {
 	double f;

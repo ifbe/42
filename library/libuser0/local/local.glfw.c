@@ -1200,6 +1200,12 @@ void windowstop()
 }
 void windowstart(struct window* this)
 {
+	if(0 != win)
+	{
+		this->type = 0;
+		this->fmt = 0;
+		return;
+	}
 	win = this;
 
 	this->type = hex32('w','i','n',0);
@@ -1255,6 +1261,7 @@ void freewindow()
 }
 void initwindow()
 {
+	win = 0;
 	if(glfwInit() == 0)
 	{
 		printf("error@glfwInit\n");

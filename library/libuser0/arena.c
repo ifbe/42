@@ -242,7 +242,13 @@ void* arenalist(u8* buf, int len)
 	}
 	else
 	{
-		return &arena[0];
+		for(j=0;j<len;j++){if('@' == buf[j])break;}
+
+		j = buf[j+1]-0x30;
+		if(j >= 10)j = 0;
+
+		if(0 == arena[j].type)return 0;
+		return &arena[j];
 	}
 	return 0;
 }
