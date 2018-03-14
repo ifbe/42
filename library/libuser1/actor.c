@@ -8,6 +8,7 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
+int parsexml_detail(void*, int, void*, void*, void*, void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
 int login_write(void*, void*);

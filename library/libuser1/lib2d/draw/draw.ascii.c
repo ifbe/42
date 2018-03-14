@@ -209,6 +209,40 @@ void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
 
 
 
+void drawascii_scale(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8 ch)
+{
+	u8 temp;
+	u8* points;
+	int x,y,offset;
+	int width = win->w;
+	int height = win->h;
+	u32* screen = (u32*)(win->buf);
+
+	if((xx<0)|(xx+8>width)|(yy<0)|(yy+16>height))return;
+	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
+	points = asciitable + (ch<<4);
+
+	rgb |= 0xff000000;
+	for(y=0;y<16;y++)
+	{
+		temp = points[y];
+		for(x=0;x<8;x++)
+		{
+			offset = width*(yy+y) + xx+x;
+			if(offset < 0)continue;
+			if( (temp&0x80) != 0 )screen[offset] = rgb;
+
+			temp<<=1;
+		}//x
+	}//y
+}
+
+
+
+
 void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;

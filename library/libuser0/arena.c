@@ -9,12 +9,12 @@
 
 
 //
+void initcamera(void*);
+void freecamera();
+void initmic(void*);
+void freemic();
 void initremote(void*);
 void freeremote();
-void initsound(void*);
-void freesound();
-void initvideo(void*);
-void freevideo();
 void initwindow(void*);
 void freewindow();
 //local
@@ -42,6 +42,7 @@ int vncserver_stop(void* win);
 int vncserver_read(void* win);
 int vncserver_write(void* win);
 //
+int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //

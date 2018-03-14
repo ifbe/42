@@ -296,8 +296,10 @@ void login_write(struct arena* win, struct event* ev)
 			y = ((ev->why)>>16)&0xffff;
 			y = (y*32) / (win->h);
 
-			j = (y-8)*4 + (x-2);
-			if((j>=0)&&(j<0x64))win->flag0 = j;
+			if((x>=2)&&(x<6)&&(y>=8)&&(y<24))
+			{
+				win->flag0 = (y-8)*4 + (x-2);
+			}
 		}
 		else if(x == '-')
 		{
