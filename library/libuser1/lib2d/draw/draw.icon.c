@@ -6,7 +6,7 @@
 void drawicon_1(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
-	u32 m,n;
+	u32 r,g,b,a,m;
 	int x,y;
 	int width = win->w;
 	int height = win->h;
@@ -20,12 +20,26 @@ void drawicon_1(struct arena* win, u32 rgb,
 		{
 			if(x < 0)continue;
 			if(x >= width)continue;
+/*
 			if(x-x0+y-y0 < 4)continue;
 			else if(x-x0+y1-y < 4)continue;
 			else if(x1-x+y-y0 < 4)continue;
 			else if(x1-x+y1-y < 4)continue;
-
+*/
 			m = fb[y*width+x];
+			a = (rgb>>24)&0xff;
+
+			r = (m&0xff)*(0x100-a) + 0xff*a;
+			r = (r>>8)&0xff;
+
+			g = ((m>> 8)&0xff)*(0x100-a) + 0xff*a;
+			g = (g>>8)&0xff;
+
+			b = ((m>>16)&0xff)*(0x100-a) + 0xff*a;
+			b = (b>>8)&0xff;
+
+			m = r + (g<<8) + (b<<16);
+/*
 			if(y-y0 < 4)
 			{
 				m &= 0xf0f0f0;
@@ -55,7 +69,7 @@ void drawicon_1(struct arena* win, u32 rgb,
 				m &= 0xf0f0f0;
 				m >>= 4;
 				m += 0x808080;
-			}
+			}*/
 			fb[y*width+x] = m | 0xff000000;
 		}
 	}

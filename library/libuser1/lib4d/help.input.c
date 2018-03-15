@@ -290,8 +290,9 @@ int actorinput(struct arena* win, struct event* ev)
 		ret >>= 4;
 		if((x+ret > win->w) && (y+ret > win->h))
 		{
-			if(12 == win->flag0)win->flag0 = 0;
-			else win->flag0 = 12;
+			if(0 == win->flag0)win->flag0 = 12;
+			else if(12 == win->flag0)win->flag0 = 11;
+			else win->flag0 = 0;
 			return 0;
 		}
 	}

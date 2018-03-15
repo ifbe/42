@@ -5,6 +5,8 @@
 void* allocstyle();
 void* allocpinid();
 //
+void* samepinprevchip(void*);
+void* samepinnextchip(void*);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 //
@@ -21,6 +23,7 @@ void carveascii_area(
 
 
 
+static struct arena* arena = 0;
 static struct actor* actor = 0;
 int arenaactor(struct arena* win, struct actor* act)
 {
@@ -62,24 +65,66 @@ int arenaactor(struct arena* win, struct actor* act)
 
 void login_read_pixel(struct arena* win)
 {
+	struct relation* rel;
 	u32 c;
-	int x,y,j;
+	int x,y,j,k;
 	int w = win->w;
 	int h = win->h;
 
+	//arena
 	for(j=0;j<64;j++)
 	{
-		if(j == win->flag0)c = 0x80ff00ff;
-		else c = 0x800000ff;
+		c = arena[j].type;
+		if(0 == c)break;
+		else if(win == &arena[j])c = 0xffff00ff;
+		else c = 0x80ffffff;
 
-		x = j%4;
-		y = j/4;
+		x = j%8;
+		y = j/8;
 		drawicon_1(
 			win, c,
-			(x+2)*w/8, (y+8)*h/32,
-			(x+3)*w/8, (y+9)*h/32,
+			(x+0)*w/8+1, h-1 - (y+1)*h/32,
+			(x+1)*w/8-1, h+1 - (y+0)*h/32,
+			(u8*)&arena[j].type, 8
+		);
+	}
+
+	//actor
+	for(j=0;j<64;j++)
+	{
+		c = actor[j].type & 0xff;
+		if(0 == c)break;
+		else if(j == win->flag3)c = 0xffff00ff;
+		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
+		else c = 0x80ffffff;
+
+		x = j%8;
+		y = j/8;
+		drawicon_1(
+			win, c,
+			(x+0)*w/8+1, (y+0)*h/32+1,
+			(x+1)*w/8-1, (y+1)*h/32-1,
 			(u8*)&actor[j].name, 8
 		);
+	}
+
+	for(j=0;j<8;j++)
+	{
+		if(0 == arena[j].type)break;
+		rel = arena[j].irel;
+		while(1)
+		{
+			if(0 == rel)break;
+			k = (void*)(rel->selfchip) - (void*)actor;
+			k = k / sizeof(struct actor);
+			drawline(win, 0xffeeff,
+				(2*(k%8)+1)*w/16,
+				(2*(k/8)+1)*h/64,
+				(2*(j%8)+1)*w/16,
+				h-(2*(j/8)+1)*h/64
+			);
+			rel = samepinnextchip(rel);
+		}
 	}
 }
 void login_read_8bit(struct arena* win)
@@ -88,7 +133,7 @@ void login_read_8bit(struct arena* win)
 	int j,c;
 	for(j=0;j<64;j++)
 	{
-		if(j == win->flag0)c = 0x80;
+		if(j == win->flag3)c = 0x80;
 		else c = 0x42;
 
 		x = j%4;
@@ -121,7 +166,7 @@ void login_read_vbo(struct arena* win)
 
 	for(j=0;j<64;j++)
 	{
-		if(j == win->flag0)
+		if(j == win->flag3)
 		{
 			k = 4.0;
 			c = 0x00ff00;
@@ -154,7 +199,7 @@ void login_read_html(struct arena* win)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == win->flag0)c = 0xff0000;
+		if(j == win->flag3)c = 0xff0000;
 		else c = 0xffffff;
 
 		len += mysnprintf(
@@ -177,7 +222,7 @@ void login_read_tui(struct arena* win)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == win->flag0)k=1;
+		if(j == win->flag3)k=1;
 		else k=2;
 
 		x = j%4;
@@ -203,10 +248,10 @@ void login_read(struct arena* win)
 }
 void login_write(struct arena* win, struct event* ev)
 {
-	int x,y,j,flag0;
+	int x,y,j,flag3;
 	y = (ev->what)&0xff;
 	x = ((ev->what)>>8)&0xff;
-	flag0 = win->flag0;
+	flag3 = win->flag3;
 
 	if(y == 'p')
 	{
@@ -217,17 +262,21 @@ void login_write(struct arena* win, struct event* ev)
 			y = ((ev->why)>>16)&0xffff;
 			y = (y*32) / (win->h);
 
-			if((x>=2)&&(x<6)&&(y>=8)&&(y<24))
+			if((x>=0)&&(x<8)&&(y>=0)&&(y<8))
 			{
-				win->flag0 = (y-8)*4 + (x-2);
+				win->flag3 = y*8 + x;
 			}
 		}
 		else if(x == '-')
 		{
-			if((win->flag0 >= 0) && (flag0 < 64))
+			if((flag3 >= 0) && (flag3 < 64))
 			{
-				arenaactor(win, &actor[flag0]);
+				if((actor[flag3].type&0xff) < 'a')return;
+				actor[flag3].oncreate(&actor[flag3], 0);
+
+				arenaactor(win, &actor[flag3]);
 				win->flag0 = 0;
+				win->flag3 = 0;
 			}
 		}
 	}
@@ -235,32 +284,34 @@ void login_write(struct arena* win, struct event* ev)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{
-			arenaactor(win, &actor[flag0]);
+			arenaactor(win, &actor[flag3]);
 			win->flag0 = 0;
+			win->flag3 = 0;
 		}
 		else if(ev->why == 0x435b1b)
 		{
-			flag0 = (flag0+1)%64;
+			win->flag3 = (flag3+1)%64;
 		}
 		else if(ev->why == 0x445b1b)
 		{
-			flag0 = (flag0+31)%64;
+			win->flag3 = (flag3+63)%64;
 		}
 	}
 	else if(ev->what == _kbd_)
 	{
 		if(ev->why == 0x4b)
 		{
-			flag0 = (flag0+63)%64;
+			win->flag3 = (flag3+63)%64;
 		}
 		else if(ev->why == 0x4d)
 		{
-			flag0 = (flag0+1)%64;
+			win->flag3 = (flag3+1)%64;
 		}
 	}
 }
 void login_create(void* addr)
 {
+	arena = addr + 0x000000;
 	actor = addr + 0x100000;
 }
 void login_delete()
