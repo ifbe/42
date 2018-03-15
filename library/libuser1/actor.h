@@ -131,7 +131,11 @@ struct arena
 	int flag3;
 
 	//[80,ff]
-	struct point touch[16];
+	u8 onfunc[0x80];
+
+	//[100,1ff]
+	struct point touchdown[16];
+	struct point touchmove[16];
 };
 struct actor
 {
@@ -229,6 +233,9 @@ struct actor
 	u64 onfunc5;
 	u64 onfunc6;
 	u64 onfunc7;
+
+	//[100,1ff]
+	u8 detail[0x100];
 };
 struct style
 {

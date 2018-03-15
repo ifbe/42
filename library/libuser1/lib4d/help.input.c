@@ -220,7 +220,7 @@ int point_explain(struct arena* win, struct event* ev)
 
 	if(btn == 0x6c)btn = 10;
 	if(btn > 10)return 0;
-	q = (void*)&(win->touch[btn]);
+	q = (void*)&(win->touchdown[btn]);
 
 	if(hex32('p','+',0,0) == ev->what)
 	{

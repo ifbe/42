@@ -56,12 +56,18 @@ int actordelete(struct actor* act, u8* buf)
 {
 	if(0 == act)return 0;
 	act->ondelete(act, buf);
+
+	if(_ORIG_ == act->type)act->type = _orig_;
+	else if(_COPY_ == act->type)act->type = _copy_;
 	return 0;
 }
 int actorcreate(struct actor* act, u8* buf)
 {
 	if(0 == act)return 0;
 	act->oncreate(act, buf);
+
+	if(_orig_ == act->type)act->type = _ORIG_;
+	else if(_copy_ == act->type)act->type = _COPY_;
 	return 0;
 }
 int actorstop(struct actor* act, struct pinid* pin)

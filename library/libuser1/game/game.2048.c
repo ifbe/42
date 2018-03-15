@@ -317,31 +317,19 @@ static void the2048_start(struct actor* act, struct pinid* pin)
 static void the2048_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	else if(_ORIG_ == act->type)
-	{
-		act->type = _orig_;
-	}
-	else if(_COPY_ == act->type)
+	if((_COPY_ == act->type)&&(0 != act->buf))
 	{
 		stopmemory(act->buf);
-		act->type = _copy_;
 	}
+	act->buf = 0;
 }
 static void the2048_create(struct actor* act, u8* buf)
 {
 	u8* p;
 	int j,k;
 	if(0 == act)return;
-	else if(_orig_ == act->type)
-	{
-		act->buf = buffer;
-		act->type = _ORIG_;
-	}
-	else if(_copy_ == act->type)
-	{
-		act->buf = startmemory(256);
-		act->type = _COPY_;
-	}
+	else if(_orig_ == act->type)act->buf = buffer;
+	else if(_copy_ == act->type)act->buf = startmemory(256);
 
 	if(0 == buf)return;
 	p = act->buf;

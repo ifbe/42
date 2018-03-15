@@ -6,8 +6,10 @@ void* allocpinid();
 void* allocstyle();
 void* actorlist(void*, int);
 void* arenalist(void*, int);
-int actorchoose(u8* buf, int len);
-int arenachoose(u8* buf, int len);
+void* actorchoose(u8* buf, int len);
+void* arenachoose(u8* buf, int len);
+void* actorcreate(void*, u8*);
+void* actordelete(void*, u8*);
 //
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);

@@ -483,31 +483,19 @@ static void xiangqi_start(struct actor* act, struct pinid* pin)
 static void xiangqi_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	else if(_ORIG_ == act->type)
-	{
-		act->type = _orig_;
-	}
-	else if(_COPY_ == act->type)
+	if((_COPY_ == act->type)&&(0 != act->buf))
 	{
 		stopmemory(act->buf);
-		act->type = _copy_;
 	}
+	act->buf = 0;
 }
 static void xiangqi_create(struct actor* act, u8* buf)
 {
 	u8* p;
 	int j,k;
 	if(0 == act)return;
-	else if(_orig_ == act->type)
-	{
-		act->buf = data;
-		act->type = _ORIG_;
-	}
-	else if(_copy_ == act->type)
-	{
-		act->buf = startmemory(10*9);
-		act->type = _COPY_;
-	}
+	else if(_orig_ == act->type)act->buf = data;
+	else if(_copy_ == act->type)act->buf = startmemory(10*9);
 
 	if(0 == buf)return;
 	p = act->buf;

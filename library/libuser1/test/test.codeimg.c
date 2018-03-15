@@ -228,7 +228,11 @@ static void codeimg_start(struct actor* act, struct pinid* pin)
 static void codeimg_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if((_COPY_ == act->type)&&(0 != act->buf))
+	{
+		stopmemory(act->buf);
+	}
+	act->buf = 0;
 }
 static void codeimg_create(struct actor* act)
 {

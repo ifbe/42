@@ -96,10 +96,11 @@ struct window
 	int flag3;
 
 	//[80,ff]
-	union{
-		u64 info[16];
-		struct point touch[16];
-	};
+	u8 onfunc[0x80];
+
+	//[100,1ff]
+	struct point touchdown[16];
+	struct point touchmove[16];
 };
 struct style
 {
