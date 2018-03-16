@@ -34,7 +34,7 @@ void helpin_create(void* addr)
 
 
 
-int point_explain(struct arena* win, struct event* ev)
+int playwithactor(struct arena* win, struct event* ev)
 {
 	struct relation* reltop;
 	struct relation* relwow;
@@ -94,11 +94,33 @@ int point_explain(struct arena* win, struct event* ev)
 	if(hex32('p','@',0,0) == ev->what)
 	{
 		if(btn > 10)btn = 10;
-		if(0 != win->touchdown[10].z)
+		if(0 != win->touchdown[btn].z)
 		{
 			stytop->cx += x - (win->touchmove[btn].x);
 			stytop->cy += y - (win->touchmove[btn].y);
 			//say("%x,%x\n", stytop->cx, stytop->cy);
+		}
+		if(1 >= btn)
+		{
+			if(0==win->touchdown[0].z)return 0;
+			if(0==win->touchdown[1].z)return 0;
+
+			if(0 == btn)
+			{
+				x -= (win->touchmove[1].x);
+				y -= (win->touchmove[1].y);
+			}
+			if(1 == btn)
+			{
+				x -= (win->touchmove[0].x);
+				y -= (win->touchmove[0].y);
+			}
+
+			absx = (win->touchmove[0].x) - (win->touchmove[1].x);
+			absy = (win->touchmove[0].y) - (win->touchmove[1].y);
+			stytop->rx = (stytop->rx) * (x*x+y*y) / (absx*absx+absy*absy);
+			stytop->fy = (stytop->fy) * (x*x+y*y) / (absx*absx+absy*absy);
+			stytop->uz = (stytop->uz) * (x*x+y*y) / (absx*absx+absy*absy);
 		}
 	}
 	else if(hex32('p','+',0,0) == ev->what)
@@ -183,7 +205,7 @@ int actorinput(struct arena* win, struct event* ev)
 	if(12 == win->flag0)
 	{
 		if(what == _char_)delete_topone(win);
-		else point_explain(win, ev);
+		else playwithactor(win, ev);
 		goto lastword;
 	}
 

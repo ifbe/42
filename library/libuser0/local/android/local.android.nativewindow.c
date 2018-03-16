@@ -100,7 +100,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 again:
 		ev = eventread();
 		if(ev == 0)break;
-say("@Read: %llx,%llx,%llx\n", ev->why, ev->what, ev->where);
+//say("@Read: %llx,%llx,%llx\n", ev->why, ev->what, ev->where);
 
 		//libsoft.file/socket: receiving events
 		ret = (ev->what)&0xff;
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 {
 	int dx, dy;
 	u64 why, what, where;
-	say("@Write:%x,%x\n", type, data);
+	say("@Write:%llx,%llx\n", type, data);
 
 	where = (u64)&arena[0];
 	eventwrite(data, type, where, 0);
@@ -130,12 +130,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 		dx = (data&0xffff) - (temp&0xffff);
 		dy = ((data>>16)&0xffff) - ((temp>>16)&0xffff);
 
-		if(dy > 1000)
-		{
-			if(dx > 500)why = 0xfc;
-			else if(dx < -500)why = 0xfb;
-		}
-		else if(dy < -200)why = 0x48;
+		if(dy < -200)why = 0x48;
 		else if(dy > 200)why = 0x50;
 		else if(dx < -200)why = 0x4b;
 		else if(dx > 200)why = 0x4d;
@@ -165,6 +160,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
 {
+	LOGI("@stop\n");
 }
 //correct:"On","Load"        wrong:"on","load"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)

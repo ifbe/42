@@ -108,31 +108,42 @@ class FinalAnswerView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.i("finalanswer", "@surfaceDestroyed");
+		Stop();
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getActionMasked();
 		int index = event.getActionIndex();
 		int count = event.getPointerCount();
-		long k = event.getPointerId(index);
-		long x = (long)event.getX(index);
-		long y = (long)event.getY(index);
-		long what;
-		long why;
-		Log.i("finalanswer",action + ":" + k + "," + x + "," + y);
+		long x, y, k;
+		long why, what=0;
+		//Log.i("finalanswer",action + ":" + k + "," + x + "," + y);
 
-		k = 'l';
-		why = x + (y<<16) + (k<<48);
-		what = 0x4070;
-		switch(action)
+		if(2 == action)
 		{
-			case 0:what = 0x2b70;break;
-			case 1:what = 0x2d70;break;
-			case 5:what = 0x2b70;break;
-			case 6:what = 0x2d70;break;
+			what = 0x4070;
+			for(k=0;k<count;k++)
+			{
+				x = (long)event.getX((int)k);
+				y = (long)event.getY((int)k);
+				why = x + (y<<16) + (k<<48);
+				Write(what, why);
+			}
+		}
+		else
+		{
+			if(0 == action)what = 0x2b70;
+			else if(1 == action)what = 0x2d70;
+			else if(5 == action)what = 0x2b70;
+			else if(6 == action)what = 0x2d70;
+
+			x = (long)event.getX(index);
+			y = (long)event.getY(index);
+			k = event.getPointerId(index);
+			why = x + (y<<16) + (k<<48);
+			Write(what, why);
 		}
 
-		Write(what, why);
 		Read();
 		return true;
 	}
