@@ -65,21 +65,31 @@ void foreground_vbo(struct arena* win)
 }
 void foreground_pixel(struct arena* win)
 {
+	int j;
 	int w = win->w;
 	int h = win->h;
-	int t;
-	if(w < h)t = h;
-	else t = w;
+	if(w < h)j = h;
+	else j = w;
 
-	t >>= 5;
+	j >>= 5;
 	drawsolid_circle(
 		win, 0xabcdef,
-		w-t, h-t, t/2
+		w-j, h-j, j/2
 	);
 	drawsolid_circle(
 		win, 0xc08040,
-		w-t, h-t, t/4
+		w-j, h-j, j/4
 	);
+
+	for(j=0;j<11;j++)
+	{
+		if(0 == win->touchdown[j].z)continue;
+
+		drawline(win, 0xff00ff,
+			win->touchdown[j].x, win->touchdown[j].y,
+			win->touchmove[j].x, win->touchmove[j].y
+		);
+	}
 }
 void foreground(struct arena* win)
 {

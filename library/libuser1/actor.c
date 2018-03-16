@@ -11,8 +11,7 @@ void lib4d_delete();
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int actorinput(void*, void*);
 int actoroutput(void*);
-int login_write(void*, void*);
-int term_write(void*);
+int touch_explain(struct arena* win, struct event* ev);
 
 
 
@@ -98,27 +97,10 @@ int actorread()
 }
 int actorwrite(struct event* ev)
 {
-	int ret;
-	struct arena* win;
-	u64 why, what, where, when;
+	struct arena* win = (void*)(ev->where);
+	if(0 == win)return 0;
 
-	why = ev->why;
-	what = ev->what;
-	where = ev->where;
-	//say("%x,%x,%x\n", why, what, where);
-
-	//no window
-	if(0 == where)return 0;
-	win = (void*)where;
-	
-	//no actor
-	if(0 == win->irel)
-	{
-		if(_cli_ == win->fmt)term_write(ev);
-		else login_write(win, ev);
-	}
-	else actorinput(win, ev);
-	return 0;
+	return actorinput(win, ev);
 }
 void* actorlist(u8* buf, int len)
 {

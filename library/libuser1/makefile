@@ -74,6 +74,7 @@ lib4d/help.bgfg.c \
 lib4d/help.ctx.c \
 lib4d/help.input.c \
 lib4d/help.output.c \
+lib4d/help.touch.c \
 lib4d/lib4d.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

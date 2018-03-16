@@ -291,11 +291,10 @@ void login_read(struct arena* win)
 }
 void login_write(struct arena* win, struct event* ev)
 {
+	int j,k,x,y,flag3;
 	struct arena* p;
 	struct actor* q;
-	u16* src;
-	u16* dst;
-	int j,k,x,y,flag3;
+
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
 	flag3 = win->flag3;
@@ -308,18 +307,10 @@ void login_write(struct arena* win, struct event* ev)
 		y = (y*32) / (win->h);
 		if('@' == k)
 		{
-			src = (u16*)(&ev->why);
-			dst = (u16*)(&win->touchmove[10]);
-			dst[0] = src[0];
-			dst[1] = src[1];
 			if(y < 8)win->flag3 = x + (y*8);
 		}
 		else if('+' == k)
 		{
-			src = (u16*)(&ev->why);
-			dst = (u16*)(&win->touchdown[10]);
-			dst[0] = src[0];
-			dst[1] = src[1];
 			if(y < 8)win->flag3 = x + (y*8);
 		}
 		else if('-' == k)
