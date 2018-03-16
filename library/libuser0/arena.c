@@ -1,5 +1,8 @@
 #include "arena.h"
+#define _cam_ hex32('c','a','m',0)
+#define _mic_ hex32('m','i','c',0)
 #define _win_ hex32('w','i','n',0)
+//
 #define _WS_ hex32('W','S',0,0)
 #define _ws_ hex32('w','s',0,0)
 #define _VNC_ hex32('V','N','C',0)
@@ -8,23 +11,42 @@
 
 
 
-//
-void initcamera(void*);
-void freecamera();
+//cam
+void initcam(void*);
+void freecam();
+int videocreate(void*);
+int videodelete(void*);
+int videostart(void*);
+int videostop(void*);
+int videoread(void*);
+int videowrite(void*);
+int videolist();
+int videochoose();
+//mic
 void initmic(void*);
 void freemic();
-void initremote(void*);
-void freeremote();
+int soundcreate(void*);
+int sounddelete(void*);
+int soundstart(void*);
+int soundstop(void*);
+int soundread(void*);
+int soundwrite(void*);
+int soundlist();
+int soundchoose();
+//local
 void initwindow(void*);
 void freewindow();
-//local
+int windowcreate(void*);
+int windowdelete(void*);
+int windowstart(void*);
+int windowstop(void*);
+int windowread(void*);
+int windowwrite(void*);
 int windowlist();
 int windowchoose();
-int windowstart(void*);
-int windowstop();
-int windowread();
-int windowwrite(void* win);
 //remote
+void initremote(void*);
+void freeremote();
 int wsclient_start(void* win);
 int wsclient_stop(void* win);
 int wsclient_read(void* win);
@@ -64,7 +86,7 @@ void* allocarena()
 	while(1)
 	{
 		win = &arena[j];
-		if(win->type == 0)break;
+		if(0 == win->type)break;
 
 		j++;
 		if(j >= 0x100)return 0;
@@ -117,7 +139,7 @@ int arenastop(struct window* win)
 	win->orel = 0;
 	return 0;
 }
-void* arenastart(u64 type, u64 fd)
+void* arenastart(u64 type, u64 addr)
 {
 	int j = 0;
 	struct window* win = allocarena();
@@ -127,17 +149,31 @@ void* arenastart(u64 type, u64 fd)
 	{
 		win->type = _win_;
 		win->fmt = 0;
-		win->irel = 0;
-		win->orel = 0;
 
 		windowstart(win);
+	}
+	else if(_cam_ == type)
+	{
+		if(0 == addr)return 0;
+		say("cam://%s\n", (void*)addr);
+
+		win->type = _cam_;
+		win->fmt = hex32('y','u','v',0);
+		videostart(win);
+	}
+	else if(_mic_ == type)
+	{
+		if(0 == addr)return 0;
+		say("mic://%s\n", (void*)addr);
+
+		win->type = _mic_;
+		win->fmt = hex32('p','c','m',0);
+		soundstart(win);
 	}
 	else if(_ws_ == type)
 	{
 		win->type = _ws_;
 		win->fmt = hex32('d','a','t','a');
-		win->irel = 0;
-		win->orel = 0;
 
 		//be client, accept data
 		wsclient_start(win);
@@ -146,11 +182,9 @@ void* arenastart(u64 type, u64 fd)
 	{
 		win->type = _WS_;
 		win->fmt = hex32('h','t','m','l');
-		win->irel = 0;
-		win->orel = 0;
 
 		//be server, output data
-		win->fd = fd;
+		win->fd = addr;
 		wsserver_start(win);
 	}
 /*
@@ -176,18 +210,27 @@ void* arenastart(u64 type, u64 fd)
 		vncserver_start(win);
 	}
 */
+	win->irel = 0;
+	win->orel = 0;
 	return win;
 }
-int arenaread(struct window* win)
+int arenaread()
 {
-	void* buf;
-	if(_win_ == win->type)
+	int j;
+	struct window* win;
+	for(j=0;j<16;j++)
 	{
-		windowwrite(win);
-	}
-	else if(hex32('W','S', 0, 0) == win->type)
-	{
-		wsserver_write(win);
+		win = &arena[j];
+		if(0 == win->type)break;
+
+		if(_win_ == win->type)
+		{
+			windowwrite(win);
+		}
+		else if(_WS_ == win->type)
+		{
+			wsserver_write(win);
+		}
 	}
 	return 0;
 }
@@ -286,9 +329,9 @@ void freearena()
 {
 	//say("[c,f):freeing arena\n");
 
-	freewindow();
-	freecamera();
+	freecam();
 	freemic();
+	freewindow();
 	//remotedelete();
 }
 void initarena(u8* addr)
@@ -302,9 +345,9 @@ void initarena(u8* addr)
 	//pinid = (void*)(addr+0x300000);
 
 	//remotecreate(arena);
-	initmic(arena);
-	initcamera(arena);
 	initwindow(arena);
+	initmic(arena);
+	initcam(arena);
 
 	arenastart(_win_, 0);
 

@@ -25,8 +25,9 @@ int driverchoose(void*, int);
 void* devicelist(void*, int);
 int devicechoose(void*, int);
 //
-int parsejson(void*, int);
+int parsexml_relation(void*, int);
 int parsexml(void*, int);
+int parsejson(void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //

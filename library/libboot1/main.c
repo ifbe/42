@@ -139,6 +139,7 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		actorread();
+		arenaread();
 		//say("after\n");
 
 again:

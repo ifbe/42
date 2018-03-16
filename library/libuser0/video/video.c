@@ -34,9 +34,9 @@ int videocreate()
 
 
 
-void initcamera()
+void initcam()
 {
 }
-void freecamera()
+void freecam()
 {
 }

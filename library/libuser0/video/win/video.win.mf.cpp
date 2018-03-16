@@ -22,3 +22,13 @@ void createvision()
 void deletevision()
 {
 }
+
+
+
+
+void initcam()
+{
+}
+void freecam()
+{
+}

@@ -3,8 +3,6 @@
 #define _win_ hex32('w','i','n',0)
 void background(void*);
 void foreground(void*);
-void arenaread(void*);
-void arenawrite(void*);
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
 void* samechipprevpin(void*);
@@ -104,8 +102,4 @@ int actoroutput(struct arena* win)
 
 	//fg
 	foreground(win);
-
-theend:
-	arenaread(win);
-	return 0;
 }

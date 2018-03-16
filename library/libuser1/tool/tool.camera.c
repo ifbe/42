@@ -1,22 +1,10 @@
 #include "actor.h"
+#define _cam_ hex32('c','a','m',0)
 void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
-void videostart();
-void videostop();
-void* videoread(int);
-
-
-
-struct pictureobject
-{
-	u64 buf;
-	u64 len;
-	u64 width;
-	u64 height;
-};
-static int cur = -1;
+void* arenastart(u64, void*);
 
 
 
@@ -36,12 +24,8 @@ void camera_read_pixel(
 	int dd = sty->uz;
 	u8* src;
 	u8* dst;
-	struct pictureobject* img;
 
-	img = videoread(cur);
-	if(0 == img)return;
-
-	src = (u8*)(img->buf);
+	src = (u8*)(act->buf);
 	if(0 == src)return;
 
 	dst = (u8*)(win->buf);
@@ -71,16 +55,8 @@ void camera_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct pictureobject* img;
-	say("camera(%x,%x,%x)\n",win,act,sty);
-
-	img = videoread(cur);
-	if(0 == img)return;
-
-	say(
-		"%llx,%llx,%llx,%llx\n",
-		img->buf, img->len, img->width, img->height
-	);
+	u8* src = act->buf;
+	say("src@%llx\n", src);
 }
 static void camera_read(
 	struct arena* win, struct style* sty,
@@ -101,8 +77,6 @@ static void camera_write(
 	int j;
 	u64 type = ev->what;
 	u64 key = ev->why;
-
-	if(type == 'v')cur = key;
 }
 static void camera_list()
 {
@@ -112,22 +86,18 @@ static void camera_into()
 }
 static void camera_stop(struct actor* act, struct pinid* pin)
 {
-	videostop();
 }
 static void camera_start(struct actor* act, struct pinid* pin)
 {
-	videostart();
 }
 static void camera_delete(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)stopmemory(act->buf);
 }
 static void camera_create(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = startmemory(128);
+	arenastart(_cam_, "0");
 }
 
 

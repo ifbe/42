@@ -350,7 +350,11 @@ void windowstart(struct window* this)
 		XFlush(dsp);	//must
 	}
 
-	for(j=0;j<16;j++){(this->touch[j]).id = 0xffff;}
+	for(j=0;j<16;j++)
+	{
+		this->touchdown[j].id = 0xffff;
+		this->touchmove[j].id = 0xffff;
+	}
 	fuckyou++;
 }
 void windowdelete()

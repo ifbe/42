@@ -55,6 +55,8 @@ void* allocpinid()
 int actordelete(struct actor* act, u8* buf)
 {
 	if(0 == act)return 0;
+	if(_orig_ == act->type)return 0;
+	if(_copy_ == act->type)return 0;
 	act->ondelete(act, buf);
 
 	if(_ORIG_ == act->type)act->type = _orig_;
@@ -64,8 +66,10 @@ int actordelete(struct actor* act, u8* buf)
 int actorcreate(struct actor* act, u8* buf)
 {
 	if(0 == act)return 0;
-	act->oncreate(act, buf);
+	if(_ORIG_ == act->type)return 0;
+	if(_COPY_ == act->type)return 0;
 
+	act->oncreate(act, buf);
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return 0;
@@ -87,7 +91,7 @@ int actorread()
 	int j;
 	for(j=0;j<16;j++)
 	{
-		if(0 == arena[j].type)break;
+		if(_win_ != arena[j].type)break;
 		actoroutput(&arena[j]);
 	}
 	return 0;

@@ -13,6 +13,8 @@ void* actordelete(void*, u8*);
 //
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);
+void* relation_read(u64);
+void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
 

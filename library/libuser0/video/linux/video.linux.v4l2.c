@@ -8,18 +8,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <linux/videodev2.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
-void printmemory(void*, int);
-void say(void*, ...);
+#include "arena.h"
 
 
 
@@ -233,7 +222,7 @@ int videostop()
 	alive = 0;
 	return 0;
 }
-int videostart()
+int videostart(struct window* win)
 {
 	alive = 1;
 	startthread(visionlistener, 0);
@@ -249,9 +238,9 @@ void videocreate()
 
 
 
-void initcamera()
+void initcam()
 {
 }
-void freecamera()
+void freecam()
 {
 }
