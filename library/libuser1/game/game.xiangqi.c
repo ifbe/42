@@ -34,68 +34,6 @@ void* char2hanzi(int val)
 		default:return 0;
 	}
 }
-static int htmlcircle(char* p, int x, int y)
-{
-	u32 textcolor;
-	char* hanzi;
-	char ch;
-
-	ch = data[y][x];
-	if( (ch>='a') && (ch<='z') )
-	{
-		textcolor=0;
-	}
-	else if( (ch >='A') && (ch <= 'Z') )
-	{
-		textcolor=0xff0000;
-	}
-	else return 0;
-
-	hanzi = char2hanzi(data[y][x]);
-	return mysnprintf(
-		p, 0x1000,
-		"<div class=\"circle\" style=\""
-		"left:%d%;"
-		"top:%d%;"
-		"background:#ffff00;"
-		"color:#%06x;"
-		"\"><br>%s</div>",
-		x*11, y*10,
-		textcolor, hanzi
-	);
-}
-static void xiangqi_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int x,y;
-	char* p = (char*)(win->buf);
-	return;
-
-	p += mysnprintf(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".circle{"
-		"position:absolute;"
-		"border-radius:50%;"
-		"width:10%;"
-		"height:10%;"
-		"text-align:center;"
-		"}"
-		"</style>"
-	);
-	for(y=0;y<10;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			p += htmlcircle(p, x, y);
-		}//forx
-	}//fory
-}
-
-
-
-
 void xiangqi_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -278,6 +216,28 @@ static void xiangqi_read_vbo(
 			);
 		}
 	}
+}
+static void xiangqi_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y,c;
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(buf+len, 0x100000-len, "<xiangqi>");
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			c = data[y][x];
+			if(0 == c)c = '0';
+			len += mysnprintf(buf+len, 0x100000-len, "%c ", c);
+		}//forx
+	}//fory
+	len += mysnprintf(buf+len, 0x100000-len, "</xiangqi>\n");
+
+	win->len = len;
 }
 static void xiangqi_read_tui(
 	struct arena* win, struct style* sty,

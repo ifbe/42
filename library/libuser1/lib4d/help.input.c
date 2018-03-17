@@ -8,7 +8,6 @@ void* samepinnextchip(void*);
 void* samechipprevpin(void*);
 void* samechipnextpin(void*);
 void* relation_read(u64);
-void touch_explain(struct arena* win, struct event* ev);
 
 
 
@@ -167,14 +166,16 @@ int actorinput(struct arena* win, struct event* ev)
 
 	if(_kbd_ == what)
 	{
-		ret=0;
-		if(why == 0xfb)ret = 11;
-		else if(why == 0xfc)ret = 12;
-
-		if(ret != 0)
+		if(why == 0xfb)
 		{
-			if(ret == win->flag0)win->flag0 = 0;
-			else win->flag0 = ret;
+			if(win->theone)win->theone = 0;
+			else win->theone = 1;
+			goto lastword;
+		}
+		else if(why == 0xfc)
+		{
+			if(win->edit)win->edit = 0;
+			else win->edit = 1;
 			goto lastword;
 		}
 	}
@@ -187,22 +188,30 @@ int actorinput(struct arena* win, struct event* ev)
 		else ret = win->w;
 
 		ret >>= 4;
-		if((x+ret > win->w) && (y+ret > win->h))
+		if(y+ret > win->h)
 		{
-			if(0 == win->flag0)win->flag0 = 12;
-			else if(12 == win->flag0)win->flag0 = 11;
-			else win->flag0 = 0;
-			goto lastword;
+			if(x+ret > win->w)
+			{
+				if(win->theone)win->theone = 0;
+				else win->theone = 1;
+				goto lastword;
+			}
+			if(x < ret)
+			{
+				if(win->edit)win->edit = 0;
+				else win->edit = 1;
+				goto lastword;
+			}
 		}
 	}
 
-	if(11 == win->flag0)
+	if(win->theone)
 	{
 		login_write(win, ev);
 		goto lastword;
 	}
 
-	if(12 == win->flag0)
+	if(win->edit)
 	{
 		if(what == _char_)delete_topone(win);
 		else playwithactor(win, ev);
@@ -223,6 +232,5 @@ int actorinput(struct arena* win, struct event* ev)
 	act->onwrite(act, com, ev);
 
 lastword:
-	if('p' == (ev->what & 0xff))touch_explain(win, ev);
 	return 1;
 }

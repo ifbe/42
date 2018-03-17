@@ -77,7 +77,7 @@ struct window
 	};
 	int ry;
 	int rz;
-	int flag1;
+	int dirty;
 
 	int fx;
 	union{

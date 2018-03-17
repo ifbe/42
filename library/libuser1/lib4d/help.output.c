@@ -34,7 +34,7 @@ void select_2d(struct arena* win, struct style* sty)
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
 void select_3d(struct arena* win, struct style* sty)
 {
@@ -69,7 +69,7 @@ int actoroutput(struct arena* win)
 	//cli silent
 	if(win->fmt == _cli_)
 	{
-		if(win->flag0 == 12)return 0;
+		if(win->edit)return 0;
 	}
 
 	//bg
@@ -90,7 +90,7 @@ int actoroutput(struct arena* win)
 			//say("%x\n", rel);
 
 			act->onread(win, sty, act, com);
-			if(win->flag0 == 12)
+			if(win->edit)
 			{
 				if(win->fmt == _vbo_)select_3d(win, sty);
 				else select_2d(win, sty);

@@ -227,9 +227,10 @@ int arenaread()
 		{
 			windowwrite(win);
 		}
-		else if(_WS_ == win->type)
+		else if((_WS_ == win->type)|(0 != win->dirty))
 		{
 			wsserver_write(win);
+			win->dirty = 0;
 		}
 	}
 	return 0;

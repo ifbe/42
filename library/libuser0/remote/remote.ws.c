@@ -86,12 +86,7 @@ int wsserver_write(struct window* win)
 {
 	if(0 == win)return 0;
 	if(0 == win->buf)return 0;
-	if(0 == win->len)
-	{
-		win->len = 4;
-		*(u32*)(win->buf) = hex32('h','a','h','a');
-	}
-	//say("@wsserverwrite: fd=%x\n", win->fd);
+	if(0 == win->len)return 0;
 
 	websocket_write(win->fd, win->buf, win->len);
 	return 0;

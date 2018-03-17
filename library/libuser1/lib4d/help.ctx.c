@@ -137,7 +137,7 @@ void login_read_pixel(struct arena* win)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
-		else if(j == win->flag3)c = 0xffff00ff;
+		else if(j == win->theone)c = 0xffff00ff;
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
@@ -176,7 +176,7 @@ void login_read_8bit(struct arena* win)
 	int j,c;
 	for(j=0;j<64;j++)
 	{
-		if(j == win->flag3)c = 0x80;
+		if(j == win->theone)c = 0x80;
 		else c = 0x42;
 
 		x = j%4;
@@ -209,7 +209,7 @@ void login_read_vbo(struct arena* win)
 
 	for(j=0;j<64;j++)
 	{
-		if(j == win->flag3)
+		if(j == win->theone)
 		{
 			k = 4.0;
 			c = 0x00ff00;
@@ -233,24 +233,21 @@ void login_read_vbo(struct arena* win)
 }
 void login_read_html(struct arena* win)
 {
-	u32 c;
 	int j;
 	int len = win->len;
 	u8* buf = win->buf;
 
+	len += mysnprintf(buf+len, 0x100000-len, "<actor>");
 	for(j=0;j<64;j++)
 	{
 		if(0 == actor[j].name)break;
-
-		if(j == win->flag3)c = 0xff0000;
-		else c = 0xffffff;
-
 		len += mysnprintf(
-			buf+len, 0x1000,
-			"<div style=\"float:left;width:25%%;color:#%06x;\">%.8s</div>",
-			c, (u8*)&actor[j].name
+			buf+len, 0x100000-len,
+			"%.8s ", (u8*)&actor[j].name
 		);
 	}
+	len += mysnprintf(buf+len, 0x100000-len, "</actor>\n");
+
 	win->len = len;
 }
 void login_read_tui(struct arena* win)
@@ -265,7 +262,7 @@ void login_read_tui(struct arena* win)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == win->flag3)k=1;
+		if(j == win->theone)k=1;
 		else k=2;
 
 		x = j%4;
@@ -292,13 +289,13 @@ void login_read(struct arena* win)
 void login_write(struct arena* win, struct event* ev)
 {
 	int x, y, z;
-	int j, k, flag3;
+	int j, k, theone;
 	struct arena* p;
 	struct actor* q;
 
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
-	flag3 = win->flag3;
+	theone = win->theone;
 
 	if(j == 'p')
 	{
@@ -311,11 +308,11 @@ void login_write(struct arena* win, struct event* ev)
 
 		if('@' == k)
 		{
-			if(y < 8)win->flag3 = x + (y*8);
+			if(y < 8)win->theone = x + (y*8);
 		}
 		else if('+' == k)
 		{
-			if(y < 8)win->flag3 = x + (y*8);
+			if(y < 8)win->theone = x + (y*8);
 		}
 		else if('-' == k)
 		{
@@ -331,11 +328,11 @@ void login_write(struct arena* win, struct event* ev)
 
 			if((j==x)&&(k==y))
 			{
-				flag3 = x + (y*8);
+				theone = x + (y*8);
 				if(y<16)
 				{
-					q = &actor[flag3];
-					if((q->type)&0xff < 'a')return;
+					q = &actor[theone];
+					if(0 == q->type)return;
 					actorcreate(q, 0);
 				}
 				else
@@ -368,36 +365,34 @@ void login_write(struct arena* win, struct event* ev)
 				say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
 			}
 
-			win->flag0 = 0;
-			win->flag3 = 0;
+			win->theone = 0;
 		}
 	}
 	else if(_char_ == ev->what)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{
-			arenaactor(win, &actor[flag3]);
-			win->flag0 = 0;
-			win->flag3 = 0;
+			arenaactor(win, &actor[theone]);
+			win->theone = 0;
 		}
 		else if(ev->why == 0x435b1b)
 		{
-			win->flag3 = (flag3+1)%64;
+			win->theone = (theone+1)%64;
 		}
 		else if(ev->why == 0x445b1b)
 		{
-			win->flag3 = (flag3+63)%64;
+			win->theone = (theone+63)%64;
 		}
 	}
 	else if(_kbd_ == ev->what)
 	{
 		if(ev->why == 0x4b)
 		{
-			win->flag3 = (flag3+63)%64;
+			win->theone = (theone+63)%64;
 		}
 		else if(ev->why == 0x4d)
 		{
-			win->flag3 = (flag3+1)%64;
+			win->theone = (theone+1)%64;
 		}
 	}
 }

@@ -104,7 +104,7 @@ struct arena
 	int cx;
 	int cy;
 	int cz;
-	int flag0;
+	int edit;
 
 	union{
 		int rx;
@@ -112,7 +112,7 @@ struct arena
 	};
 	int ry;
 	int rz;
-	int flag1;
+	int dirty;
 
 	int fx;
 	union{
@@ -120,7 +120,7 @@ struct arena
 		int h;
 	};
 	int fz;
-	int flag2;
+	int vkbd;
 
 	int ux;
 	int uy;
@@ -128,7 +128,7 @@ struct arena
 		int uz;
 		int d;
 	};
-	int flag3;
+	int theone;
 
 	//[80,ff]
 	u8 onfunc[0x80];

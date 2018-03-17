@@ -61,7 +61,7 @@ void foreground_html(struct arena* win)
 }
 void foreground_vbo(struct arena* win)
 {
-	if(12 == win->flag0)carveaxis(win);
+	if(win->edit)carveaxis(win);
 }
 void foreground_pixel(struct arena* win)
 {
@@ -72,6 +72,14 @@ void foreground_pixel(struct arena* win)
 	else j = w;
 
 	j >>= 5;
+	drawsolid_circle(
+		win, 0xabcdef,
+		j, h-j, j/2
+	);
+	drawsolid_circle(
+		win, 0xc08040,
+		j, h-j, j/4
+	);
 	drawsolid_circle(
 		win, 0xabcdef,
 		w-j, h-j, j/2
@@ -94,7 +102,7 @@ void foreground_pixel(struct arena* win)
 void foreground(struct arena* win)
 {
 	u64 fmt = win->fmt;
-	if((11 == win->flag0) | (0 == win->irel))login_read(win);
+	if((win->theone) | (0 == win->irel))login_read(win);
 
 	if(_cli_ == fmt)foreground_cli(win);
 	else if(_tui_ == fmt)foreground_tui(win);

@@ -1,4 +1,6 @@
 #include "actor.h"
+#define _WS_ hex32('W','S',0,0)
+#define _ws_ hex32('w','s',0,0)
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
@@ -90,17 +92,40 @@ int actorread()
 	int j;
 	for(j=0;j<16;j++)
 	{
-		if(_win_ != arena[j].type)break;
-		actoroutput(&arena[j]);
+		if(0 == arena[j].type)continue;
+		else if(_win_ == arena[j].type)
+		{
+			actoroutput(&arena[j]);
+		}
+		else if(_WS_ == arena[j].type)
+		{
+			if(0 != arena[j].dirty)
+			{
+				actoroutput(&arena[j]);
+			}
+		}
 	}
 	return 0;
 }
 int actorwrite(struct event* ev)
 {
+	int j;
 	struct arena* win = (void*)(ev->where);
 	if(0 == win)return 0;
 
-	return actorinput(win, ev);
+	actorinput(win, ev);
+
+	if('p' == (ev->what&0xff))
+	{
+		touch_explain(win, ev);
+		win->dirty = 1;
+		if('@' == (ev->what>>8)&0xff)return 0;
+	}
+	for(j=0;j<16;j++)
+	{
+		if(0 == arena[j].type)continue;
+		if(_WS_ == arena[j].type)arena[j].dirty = 1;
+	}
 }
 void* actorlist(u8* buf, int len)
 {

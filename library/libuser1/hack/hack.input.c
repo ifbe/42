@@ -3,25 +3,6 @@
 
 
 
-//max=32768
-static int arealeft = 16384;
-static int areatop = 32768;
-static int arearight = 49152;
-static int areabottom = 49152;
-static u8 table[8][8] = {
-	'a','b','c','d','e','f','g','h',
-	'i','j','k','l','m','n','o','p',
-	'q','r','s','t','u','v','w','x',
-	'y','z',' ',' ',' ',' ',0x8,0xd,
-	'0','1','2','3','4','5','6','7',
-	'8','9',' ',' ',' ',' ',' ',' ',
-	'+','-','*','/',' ',' ',' ',' ',
-	'=',' ',' ',' ',' ',' ',' ',' '
-};
-
-
-
-
 static void joystick_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -104,26 +85,58 @@ void keyboard_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
-	int left,top,right,bottom;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int x,y,c,l;
+	int w = win->w;
+	int h = win->h;
 
-	//[a,z]
-	for(y=0;y<8;y++)
+	for(y=0;y<16;y++)
 	{
-		for(x=0;x<8;x++)
+		for(x=0;x<16;x++)
 		{
-			left = cx + (x-4)*ww/4;
-			top = cy + (y-4)*hh/4;
-			right = cx + (x-3)*ww/4;
-			bottom = cy + (y-3)*hh/4;
+			l = 1;
+			c = x+(y<<4);
+			if(0x80 <= c)
+			{
+				l = 1;
+				c = ' ';
+			}
+			else if(0x0 == c)
+			{
+				l = 2;
+				c = hex32('\\','0',0,0);
+			}
+			else if(0x7 == c)
+			{
+				l = 3;
+				c = hex32('b','e','l',0);
+			}
+			else if(0x8 == c)
+			{
+				l = 2;
+				c = hex32('b','s',0,0);
+			}
+			else if(0x9 == c)
+			{
+				l = 2;
+				c = hex32('\\','t',0,0);
+			}
+			else if(0xa == c)
+			{
+				l = 2;
+				c = hex32('\\','n',0,0);
+			}
+			else if(0xd == c)
+			{
+				l = 2;
+				c = hex32('\\','r',0,0);
+			}
 
-			drawicon_1(win, 0, left, top, right, bottom, &table[y][x], 1);
+			drawicon_1(
+				win, 0x40ffffff,
+				(x*w/16)+1, (h/2)+(y*h/32)+1,
+				((x+1)*w/16)-1, (h/2)+((y+1)*h/32)-1,
+				(u8*)&c, l
+			);
 		}
 	}
 }
@@ -187,8 +200,6 @@ static void input_delete(struct actor* act)
 static void input_create(struct actor* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = table;
-	if(_copy_ == act->type)act->buf = startmemory(64);
 }
 
 
