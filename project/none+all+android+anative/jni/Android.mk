@@ -333,6 +333,7 @@ library/libuser1/lib4d/help.ctx.c \
 library/libuser1/lib4d/help.input.c \
 library/libuser1/lib4d/help.output.c \
 library/libuser1/lib4d/help.touch.c \
+library/libuser1/lib4d/help.vkbd.c \
 library/libuser1/lib4d/lib4d.c \
 library/libuser1/actor.c
 

@@ -1,4 +1,5 @@
 #include "actor.h"
+void vkbd_read(void*);
 void carveaxis(void*);
 void login_read(void*);
 struct texandobj
@@ -66,28 +67,7 @@ void foreground_vbo(struct arena* win)
 void foreground_pixel(struct arena* win)
 {
 	int j;
-	int w = win->w;
-	int h = win->h;
-	if(w < h)j = h;
-	else j = w;
-
-	j >>= 5;
-	drawsolid_circle(
-		win, 0xabcdef,
-		j, h-j, j/2
-	);
-	drawsolid_circle(
-		win, 0xc08040,
-		j, h-j, j/4
-	);
-	drawsolid_circle(
-		win, 0xabcdef,
-		w-j, h-j, j/2
-	);
-	drawsolid_circle(
-		win, 0xc08040,
-		w-j, h-j, j/4
-	);
+	vkbd_read(win);
 
 	for(j=0;j<11;j++)
 	{

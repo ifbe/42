@@ -1,6 +1,8 @@
 #include "actor.h"
 int term_write(void*);
 int login_write(void*, void*);
+int vkbd_write(void*, void*);
+//
 int relation_swap(void*, void*);
 int relation_destory(void*);
 void* samepinprevchip(void*);
@@ -157,12 +159,28 @@ int actorinput(struct arena* win, struct event* ev)
 	why = ev->why;
 	what = ev->what;
 
+	if('p' == (what&0xff))
+	{
+		ret = vkbd_write(win, ev);
+		if(0 != ret)goto rightway;
+	}
+
 	if(0 == win->irel)
 	{
 		if(_cli_ == win->fmt)term_write(ev);
 		else login_write(win, ev);
 		goto lastword;
 	}
+
+	if(win->theone)
+	{
+		login_write(win, ev);
+		goto lastword;
+	}
+
+rightway:
+	why = ev->why;
+	what = ev->what;
 
 	if(_kbd_ == what)
 	{
@@ -180,37 +198,6 @@ int actorinput(struct arena* win, struct event* ev)
 		}
 	}
 
-	if(hex32('p','-',0,0) == ev->what)
-	{
-		x = (ev->why)&0xffff;
-		y = ((ev->why)>>16)&0xffff;
-		if(win->w < win->h)ret = win->h;
-		else ret = win->w;
-
-		ret >>= 4;
-		if(y+ret > win->h)
-		{
-			if(x+ret > win->w)
-			{
-				if(win->theone)win->theone = 0;
-				else win->theone = 1;
-				goto lastword;
-			}
-			if(x < ret)
-			{
-				if(win->edit)win->edit = 0;
-				else win->edit = 1;
-				goto lastword;
-			}
-		}
-	}
-
-	if(win->theone)
-	{
-		login_write(win, ev);
-		goto lastword;
-	}
-
 	if(win->edit)
 	{
 		if(what == _char_)delete_topone(win);
@@ -219,6 +206,7 @@ int actorinput(struct arena* win, struct event* ev)
 	}
 
 	rel = win->irel;
+	if(0 == rel)goto lastword;
 	while(1)
 	{
 		tmp = samepinnextchip(rel);

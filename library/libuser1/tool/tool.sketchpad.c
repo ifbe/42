@@ -437,7 +437,7 @@ static void sketchpad_delete(struct actor* act)
 static void sketchpad_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = startmemory(0x100000);
+	act->buf = databuf = startmemory(0x100000);
 }
 
 
