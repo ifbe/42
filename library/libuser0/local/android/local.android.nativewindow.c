@@ -66,8 +66,6 @@ void say(void*, ...);
 
 
 
-//
-u64 temp;
 static void* world;
 static struct window* arena;
 static ANativeWindow* native;
@@ -121,26 +119,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 {
 	int dx, dy;
 	u64 why, what, where;
-	say("@Write:%llx,%llx\n", type, data);
+	//say("@Write:%llx,%llx\n", type, data);
 
 	where = (u64)&arena[0];
 	eventwrite(data, type, where, 0);
-
-	if(0x2b70 == type)temp = data;
-	if(0x2d70 == type)
-	{
-		dx = (data&0xffff) - (temp&0xffff);
-		dy = ((data>>16)&0xffff) - ((temp>>16)&0xffff);
-
-		if(dy < -200)why = 0x48;
-		else if(dy > 200)why = 0x50;
-		else if(dx < -200)why = 0x4b;
-		else if(dx > 200)why = 0x4d;
-		else return;
-
-		what = hex32('k','b','d',0);
-		eventwrite(why, what, where, 0);
-	}
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject surface)
 {

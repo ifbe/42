@@ -106,32 +106,16 @@ static void calculator_write(
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x2d70)
+	if(_char_ == type)
 	{
-		x = key&0xffff;
-		y = (key>>16)&0xffff;
-
-		x = x*8 / 512;
-		y = y*8 / 512;
-		if(y < 4)return;
-
-		type = 0x72616863;
-		key = table[y-4][x];
-
-		if(key == '`')key = 0x8;
-		if(key == '=')key = 0xd;
-	}
-
-	if(type == _char_)
-	{
-		if(key==0x8)		    //backspace
+		if(0x8 == key)
 		{
 			if(count <= 0)return;
 
 			count--;
 			buffer[count] = 0x20;
 		}
-		else if(key==0xd)	       //enter
+		else if(0xd == key)
 		{
 			//清空输入区
 			for(ret=0;ret<count;ret++)

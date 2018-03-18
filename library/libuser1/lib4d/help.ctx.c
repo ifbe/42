@@ -50,6 +50,8 @@ void* allocpinid();
 //
 void* samepinprevchip(void*);
 void* samepinnextchip(void*);
+void* samechipprevpin(void*);
+void* samechipnextpin(void*);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 //
@@ -159,19 +161,35 @@ void login_read_pixel(struct arena* win)
 	for(j=0;j<8;j++)
 	{
 		if(0 == arena[j].type)break;
+
 		rel = arena[j].irel;
 		while(1)
 		{
 			if(0 == rel)break;
 			k = (void*)(rel->selfchip) - (void*)actor;
 			k = k / sizeof(struct actor);
-			drawline(win, 0xffeeff,
+			drawline(win, 0xffc0ff,
 				(2*(k%8)+1)*w/16,
 				(2*(k/8)+1)*h/64,
 				(2*(j%8)+1)*w/16,
 				d-(2*(j/8)+1)*h/64
 			);
 			rel = samepinnextchip(rel);
+		}
+
+		rel = arena[j].orel;
+		while(1)
+		{
+			if(0 == rel)break;
+			k = (void*)(rel->destchip) - (void*)actor;
+			k = k / sizeof(struct actor);
+			drawline(win, 0xc0ffc0,
+				(2*(k%8)+1)*w/16,
+				(2*(k/8)+1)*h/64,
+				(2*(j%8)+1)*w/16,
+				d-(2*(j/8)+1)*h/64
+			);
+			rel = samechipnextpin(rel);
 		}
 	}
 }

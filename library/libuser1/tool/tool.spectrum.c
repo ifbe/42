@@ -12,6 +12,13 @@ int soundread(void* buf, int len);
 int soundwrite(void* buf, int len);
 int soundstart(int rate, int chan);
 int soundstop();
+//
+void* samepinprevchip(void*);
+void* samepinnextchip(void*);
+void* samechipprevpin(void*);
+void* samechipnextpin(void*);
+void* relation_read(u64);
+void relation_write(void*, void*, u64, void*, void*, u64);
 
 
 
@@ -246,6 +253,7 @@ static void spectrum_delete(struct actor* act)
 }
 static void spectrum_create(struct actor* act)
 {
+	struct arena* win;
 	if(0 == act)return;
 	void* buf = startmemory(0x100000);
 	act->buf = buf;
@@ -255,7 +263,13 @@ static void spectrum_create(struct actor* act)
 	amp   = (double*)(buf+0x80000);
 	phase = (double*)(buf+0xc0000);
 
-	arenastart(_mic_, "0");
+	win = arenastart(_mic_, "0");
+	say("win=%llx\n",win);
+	if(0 == win)return;
+
+	relation_write(act, 0, _act_, win, 0, _win_);
+	say("%llx,%llx\n", win->irel, win->orel);
+	say("%llx,%llx\n", act->irel, act->orel);
 }
 
 

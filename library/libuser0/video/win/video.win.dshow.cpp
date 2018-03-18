@@ -49,6 +49,7 @@ struct pictureobject
 	u64 height;
 };
 static struct pictureobject obj[60];
+static struct window* win;
 static int abc = 0;
 
 
@@ -87,7 +88,7 @@ public:
 		pSample->Release();
 
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
-		eventwrite(abc, 'v', 0, 0);
+		eventwrite(abc, 'v', (u64)win, 0);
 
 		abc = (abc+1)%60;
 		return S_OK;
@@ -464,10 +465,8 @@ fail:
 extern "C" {
 
 
-void* videoread(int id)
+void videoread()
 {
-	if((id>=0)&&(id<60))return &obj[id];
-	return &obj[(abc+59)%60];;
 }
 void videowrite()
 {
@@ -476,8 +475,9 @@ void videostop()
 {
 	//shutupdie();
 }
-void videostart()
+void videostart(struct window* p)
 {
+	win = p;
 	letsgo();
 	//Sleep(5000);
 }

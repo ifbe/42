@@ -228,7 +228,7 @@ int arenawrite(struct event* ev)
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
-	//say("@arenawrite:%llx,%llx,%llx\n\n\n\n\n", why, what, where);
+	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
 
 	if(hex32('w','+',0,0) == what)
 	{
