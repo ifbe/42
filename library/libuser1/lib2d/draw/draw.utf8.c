@@ -41,9 +41,10 @@ void drawunicode(struct arena* win, u32 rgb, int xx, int yy, u32 unicode)
 	u16 temp;
 	u16* points;
 	int x,y,offset;
-	int width = win->w;
-	int height = win->h;
-	u32* screen = (u32*)(win->buf);
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
+	u32* buf = (u32*)(win->buf);
 
 	if(0 == utf8table)return;
 	points = utf8table + 32*(unicode&0xffff);
@@ -54,9 +55,9 @@ void drawunicode(struct arena* win, u32 rgb, int xx, int yy, u32 unicode)
 		temp = points[y];
 		for(x=0;x<16;x++)
 		{
-			offset = width*(yy+y) + xx+x;
+			offset = stride*(yy+y) + xx+x;
 			if(offset < 0)continue;
-			if( (temp&0x1) != 0 )screen[offset] = rgb;
+			if( (temp&0x1) != 0 )buf[offset] = rgb;
 
 			temp = temp>>1;
 		}//x

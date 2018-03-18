@@ -7,8 +7,8 @@ void eventwrite(u64,u64,u64,u64);
 void vkbd_read_pixel(struct arena* win)
 {
 	int x,y,c,l,rgb;
-	int w = win->w;
-	int h = win->h;
+	int w = win->width;
+	int h = win->height;
 	if(0 == win->vkbd)goto haha;
 
 	for(y=0;y<16;y++)
@@ -18,7 +18,7 @@ void vkbd_read_pixel(struct arena* win)
 			l = 2;
 			c = x+(y<<4);
 			if(c == win->vkbd)rgb = 0xffff00ff;
-			else rgb = 0x80ffffff;
+			else rgb = 0x40808080;
 
 			if(0x0 == c)c = hex32('\\','0',0,0);
 			else if(0x7 == c)c = hex32('\\','a',0,0);
@@ -94,8 +94,8 @@ void vkbd_read(struct arena* win)
 int vkbd_write(struct arena* win, struct event* ev)
 {
 	int x,y,ret;
-	int w = win->w;
-	int h = win->h;
+	int w = win->width;
+	int h = win->height;
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
@@ -116,7 +116,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 		y = ((ev->why)>>16)&0xffff;
 		if(x<y)ret = x>>4;
 		else ret = y>>4;
-		if((y+ret > win->h) && (x+ret > win->w))
+		if((y+ret > h) && (x+ret > w))
 		{
 			if(win->vkbd)win->vkbd = 0;
 			else win->vkbd = 1;

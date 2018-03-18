@@ -86,56 +86,22 @@ void keyboard_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y,c,l;
-	int w = win->w;
-	int h = win->h;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int ww = sty->rx;
+	int hh = sty->fy;
 
-	for(y=0;y<16;y++)
+	for(y=0;y<6;y++)
 	{
 		for(x=0;x<16;x++)
 		{
-			l = 1;
-			c = x+(y<<4);
-			if(0x80 <= c)
-			{
-				l = 1;
-				c = ' ';
-			}
-			else if(0x0 == c)
-			{
-				l = 2;
-				c = hex32('\\','0',0,0);
-			}
-			else if(0x7 == c)
-			{
-				l = 3;
-				c = hex32('b','e','l',0);
-			}
-			else if(0x8 == c)
-			{
-				l = 2;
-				c = hex32('b','s',0,0);
-			}
-			else if(0x9 == c)
-			{
-				l = 2;
-				c = hex32('\\','t',0,0);
-			}
-			else if(0xa == c)
-			{
-				l = 2;
-				c = hex32('\\','n',0,0);
-			}
-			else if(0xd == c)
-			{
-				l = 2;
-				c = hex32('\\','r',0,0);
-			}
-
 			drawicon_1(
 				win, 0x40ffffff,
-				(x*w/16)+1, (h/2)+(y*h/32)+1,
-				((x+1)*w/16)-1, (h/2)+((y+1)*h/32)-1,
-				(u8*)&c, l
+				(cx-ww+1)+(2*x*ww/16),
+				(cy-hh+1)+(2*y*hh/6),
+				(cx-ww-1)+((2*x+2)*ww/16),
+				(cy-hh-1)+((2*y+2)*hh/6),
+				".", l
 			);
 		}
 	}

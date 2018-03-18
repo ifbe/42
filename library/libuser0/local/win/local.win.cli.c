@@ -51,9 +51,8 @@ void windowstart(struct window* this)
 	this->buf = 0;
 	this->len = 0;
 
-	this->w = 80;
-	this->h = 25;
-	this->d = 0;
+	this->width = this->stride = 80;
+	this->height = 25;
 
 	if(termcount == 0)
 	{

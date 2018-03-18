@@ -31,12 +31,14 @@ void windowstart(struct window* this)
 	}
 	else
 	{
-		this->w = 320;
-		this->h = 200;
 		this->type = hex32('w','i','n',0);
 		this->fmt = hex32('8','b','i','t');
-		this->buf = (void*)(u64)0xa0000;
+
 		this->len = 320*200;
+		this->buf = (void*)(u64)0xa0000;
+
+		this->width = this->stride = 320;
+		this->height = 200;
 	}
 }
 void windowstop()

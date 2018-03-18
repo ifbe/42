@@ -29,22 +29,16 @@ void windowchoose()
 }
 void windowstart(struct window* this)
 {
-	int j;
-	u64 tmp;
-	this->w = 1024;
-	this->h = 768;
-	if(this->type == hex32('b','u','f',0))
-	{
-	}
-	else
-	{
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex64('b','g','r','a','8','8','8','8');
+	u32* tmp;
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex64('b','g','r','a','8','8','8','8');
+
+	this->width = this->stride = 1024;
+	this->height = 768;
 
 #define screeninfo 0x2000
-		tmp = *(u32*)screeninfo;
-		this->buf = (void*)tmp;
-	}
+	tmp = *(u32*)screeninfo;
+	this->buf = (void*)tmp;
 }
 void windowstop()
 {

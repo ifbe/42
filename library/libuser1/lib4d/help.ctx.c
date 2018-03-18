@@ -71,8 +71,8 @@ static struct actor* actor = 0;
 int arenaactor(struct arena* win, struct actor* act)
 {
 	int min;
-	int w = win->w;
-	int h = win->h;
+	int w = win->width;
+	int h = win->height;
 	int d = (w+h) / 2;
 	struct style* sty;
 	struct pinid* pin;
@@ -109,28 +109,10 @@ int arenaactor(struct arena* win, struct actor* act)
 void login_read_pixel(struct arena* win)
 {
 	struct relation* rel;
-	u32 c;
+	u32 c,d;
 	int x,y,j,k;
-	int w = win->w;
-	int h = win->h;
-
-	//arena
-	for(j=0;j<64;j++)
-	{
-		c = arena[j].type;
-		if(0 == c)break;
-		else if(win == &arena[j])c = 0xffff00ff;
-		else c = 0x80ffffff;
-
-		x = j%8;
-		y = j/8;
-		drawicon_1(
-			win, c,
-			(x+0)*w/8+1, h-1 - (y+1)*h/32,
-			(x+1)*w/8-1, h+1 - (y+0)*h/32,
-			(u8*)&arena[j].type, 8
-		);
-	}
+	int w = win->width;
+	int h = win->height;
 
 	//actor
 	for(j=0;j<64;j++)
@@ -151,6 +133,29 @@ void login_read_pixel(struct arena* win)
 		);
 	}
 
+	//arena
+	d = h;
+	if(win->vkbd)d /= 2;
+	for(j=0;j<64;j++)
+	{
+		c = arena[j].type;
+		if(0 == c)break;
+		else if(win == &arena[j])c = 0xffff00ff;
+		else c = 0x80ffffff;
+
+		x = j%8;
+		y = j/8;
+		drawicon_1(
+			win, c,
+			(x+0)*w/8+1, d-1 - (y+1)*h/32,
+			(x+1)*w/8-1, d+1 - (y+0)*h/32,
+			(u8*)&arena[j].type, 8
+		);
+	}
+
+	//wire
+	d = h;
+	if(win->vkbd)d /= 2;
 	for(j=0;j<8;j++)
 	{
 		if(0 == arena[j].type)break;
@@ -164,7 +169,7 @@ void login_read_pixel(struct arena* win)
 				(2*(k%8)+1)*w/16,
 				(2*(k/8)+1)*h/64,
 				(2*(j%8)+1)*w/16,
-				h-(2*(j/8)+1)*h/64
+				d-(2*(j/8)+1)*h/64
 			);
 			rel = samepinnextchip(rel);
 		}
@@ -253,8 +258,8 @@ void login_read_html(struct arena* win)
 void login_read_tui(struct arena* win)
 {
 	int j,k,x,y;
-	int ww = ((win->w)/2)&0xfffc;
-	int hh = (win->h)/2;
+	int ww = ((win->stride)/2)&0xfffc;
+	int hh = (win->height)/2;
 
 	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);
 
@@ -286,23 +291,75 @@ void login_read(struct arena* win)
 	else if(win->fmt == _8bit_)login_read_8bit(win);
 	else login_read_pixel(win);
 }
-void login_write(struct arena* win, struct event* ev)
+
+
+
+
+void login_drag(struct arena* win, int j, int k, int x, int y)
 {
-	int x, y, z;
-	int j, k, theone;
 	struct arena* p;
 	struct actor* q;
+	if(win->vkbd)
+	{
+		if((k>8)&&(k<16))k += 16;
+		if((y>8)&&(y<16))y += 16;
+	}
+
+	if((j==x)&&(k==y))
+	{
+		win->theone = x + (y*8);
+		if(y<16)
+		{
+			q = &actor[win->theone];
+			if(0 == q->type)return;
+			actorcreate(q, 0);
+		}
+		else
+		{
+			y = 31-y;
+			say("@arena:%d\n", (y*8)+x);
+		}
+		return;
+	}
+	else if((k<16)&&(y>=16))
+	{
+		y = 31-y;
+		p = &arena[x + (y*8)];
+		if(0 == p->type)return;
+
+		q = &actor[j + (k*8)];
+		if(0 == q->type)return;
+
+		arenaactor(p, q);
+	}
+	else if((y<16)&&(k>=16))
+	{
+		k = 31-k;
+		p = &arena[j + (k*8)];
+		if(0 == p->type)return;
+
+		q = &actor[x + (y*8)];
+		if(0 == q->type)return;
+
+		say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
+	}
+}
+void login_write(struct arena* win, struct event* ev)
+{
+	int j, k;
+	int x, y, z;
+	int width = win->width;
+	int height = win->height;
 
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
-	theone = win->theone;
 
 	if(j == 'p')
 	{
 		x = (ev->why)&0xffff;
-		x = (x*8) / (win->w);
+		x = (x*8) / width;
 		y = ((ev->why)>>16)&0xffff;
-		y = (y*32) / (win->h);
+		y = (y*32) / height;
 		z = ((ev->why)>>48)&0xffff;
 		if(z > 10)z = 10;
 
@@ -317,82 +374,43 @@ void login_write(struct arena* win, struct event* ev)
 		else if('-' == k)
 		{
 			j = win->touchdown[z].x;
-			j = (j*8) / (win->w);
+			j = (j*8) / width;
 			k = win->touchdown[z].y;
-			k = (k*32) / (win->h);
+			k = (k*32) / height;
 
 			if((j<0)|(j>=8))return;
 			if((k<0)|(k>=32))return;
 			if((x<0)|(x>=8))return;
 			if((y<0)|(y>=32))return;
 
-			if((j==x)&&(k==y))
-			{
-				theone = x + (y*8);
-				if(y<16)
-				{
-					q = &actor[theone];
-					if(0 == q->type)return;
-					actorcreate(q, 0);
-				}
-				else
-				{
-					y = 31-y;
-					say("@arena:%d\n", (y*8)+x);
-				}
-				return;
-			}
-			else if((k<16)&&(y>=16))
-			{
-				y = 31-y;
-				p = &arena[x + (y*8)];
-				if(0 == p->type)return;
-
-				q = &actor[j + (k*8)];
-				if(0 == q->type)return;
-
-				arenaactor(p, q);
-			}
-			else if((y<16)&&(k>=16))
-			{
-				k = 31-k;
-				p = &arena[j + (k*8)];
-				if(0 == p->type)return;
-
-				q = &actor[x + (y*8)];
-				if(0 == q->type)return;
-
-				say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
-			}
-
-			win->theone = 0;
+			login_drag(win, j, k, x, y);
 		}
 	}
 	else if(_char_ == ev->what)
 	{
 		if((ev->why == 0xd)|(ev->why == 0xa))
 		{
-			arenaactor(win, &actor[theone]);
+			arenaactor(win, &actor[win->theone]);
 			win->theone = 0;
 		}
 		else if(ev->why == 0x435b1b)
 		{
-			win->theone = (theone+1)%64;
+			win->theone = (win->theone+1)%64;
 		}
 		else if(ev->why == 0x445b1b)
 		{
-			win->theone = (theone+63)%64;
+			win->theone = (win->theone+63)%64;
 		}
 	}
 	else if(_kbd_ == ev->what)
 	{
 		if(ev->why == 0x4b)
 		{
-			win->theone = (theone+63)%64;
+			win->theone = (win->theone+63)%64;
 		}
 		else if(ev->why == 0x4d)
 		{
-			win->theone = (theone+1)%64;
+			win->theone = (win->theone+1)%64;
 		}
 	}
 }

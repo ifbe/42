@@ -65,38 +65,63 @@ struct window
 		void* buf;
 	};
 
-	//[40,7f]vec
+	//[40,7f]func
+	u64 oncreate;
+	u64 ondelete;
+	u64 onstart;
+	u64 onstop;
+	u64 onread;
+	u64 onwrite;
+	u64 onlist;
+	u64 onchoose;
+
+	//[80,ff]: w,h,d,s
+	int width;
+	int height;
+	int depth;
+	int stride;
+
+	//[90,9f]: center
 	int cx;
 	int cy;
 	int cz;
-	int flag0;
+	int vkbd;
 
-	union{
-		int rx;
-		int w;
-	};
+	//[a0,af]: right
+	int rx;
 	int ry;
 	int rz;
-	int dirty;
+	int theone;
 
+	//[b0,bf]: far
 	int fx;
-	union{
-		int fy;
-		int h;
-	};
+	int fy;
 	int fz;
-	int flag2;
+	int edit;
 
+	//[c0,cf]: upper
 	int ux;
 	int uy;
-	union{
-		int uz;
-		int d;
-	};
-	int flag3;
+	int uz;
+	int other;
 
-	//[80,ff]
-	u8 onfunc[0x80];
+	//[d0,df]
+	int dirtyx0;
+	int dirtyy0;
+	int dirtyz0;
+	int dirty;
+
+	//[e0,ef]
+	int dirtyx1;
+	int dirtyy1;
+	int dirtyz1;
+	int dirtyw1;
+
+	//[f0,ff]
+	int dirtyx2;
+	int dirtyy2;
+	int dirtyz2;
+	int dirtyw2;
 
 	//[100,1ff]
 	struct point touchdown[16];
@@ -114,41 +139,41 @@ struct style
 	float cz;
 	float cw;
 
-	//[20,2f]: left
-	float lx;
-	float ly;
-	float lz;
-	float ltype;
-
-	//[30,3f]: right
+	//[20,2f]: right
 	float rx;
 	float ry;
 	float rz;
 	float rtype;
 
-	//[40,4f]: near
-	float nx;
-	float ny;
-	float nz;
-	float ntype;
-
-	//[50,5f]: far
+	//[30,3f]: far
 	float fx;
 	float fy;
 	float fz;
 	float ftype;
 
-	//[60,6f]: bottom
-	float bx;
-	float by;
-	float bz;
-	float btype;
-
-	//[70,7f]: upper
+	//[40,4f]: upper
 	float ux;
 	float uy;
 	float uz;
 	float utype;
+
+	//[50,5f]: left
+	float lx;
+	float ly;
+	float lz;
+	float ltype;
+
+	//[60,6f]: near
+	float nx;
+	float ny;
+	float nz;
+	float ntype;
+
+	//[70,7f]: bottom
+	float bx;
+	float by;
+	float bz;
+	float btype;
 };
 
 

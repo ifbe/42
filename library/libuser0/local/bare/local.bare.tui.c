@@ -52,17 +52,11 @@ void windowchange()
 }
 void windowstart(struct window* this)
 {
-	if(this->type == hex32('b','u','f',0))
-	{
-		return;
-	}
-	else
-	{
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex32('t','u','i',0);
-		this->w = 80;
-		this->h = 25;
-	}
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('t','u','i',0);
+
+	this->width = this->stride = 80;
+	this->height = 25;
 }
 void windowstop()
 {

@@ -93,12 +93,12 @@ void windowstart(struct window* win)
 {
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex32('c','l','i',0);;
-	win->buf = 0;
-	win->len = 0;
 
-	win->w = 80;
-	win->h = 25;
-	win->d = 0;
+	win->len = 0;
+	win->buf = 0;
+
+	win->width = win->stride = 80;
+	win->height = 25;
 }
 void windowstop()
 {

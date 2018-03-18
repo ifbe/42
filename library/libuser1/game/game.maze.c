@@ -203,8 +203,7 @@ static void maze_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int w = win->w;
-	int h = win->h;
+	int stride = win->stride;
 	u8* buf = win->buf;
 	u8* p;
 
@@ -212,7 +211,7 @@ static void maze_read_tui(
 	{
 		for(x=0;x<width;x++)
 		{
-			p = buf + (y*w*4) + (x*8);
+			p = buf + (y*stride*4) + (x*8);
 			if(buffer[y][x] != 0)mysnprintf(p, 4, "⬛");
 			else mysnprintf(p, 4, "  ");
 		}

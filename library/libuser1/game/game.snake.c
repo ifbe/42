@@ -116,12 +116,10 @@ void snake_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int j,t;
-	int w = win->w;
-	int h = win->h;
+	int stride = win->stride;
 	char* p = (char*)(win->buf);
-	for(j=0;j<w*h*4;j++)p[j] = 0;
 
-	t = buf[0].x + buf[0].y*w;
+	t = buf[0].x + buf[0].y*stride;
 	p[t<<2] = '@';
 }
 void snake_read_cli(

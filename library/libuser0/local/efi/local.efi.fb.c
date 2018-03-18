@@ -55,69 +55,65 @@ void windowstart(struct window* this)
 	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
 	EFI_PIXEL_BITMASK* pix;
 
-	if(this->type == __buf__)
+	ret = service->LocateHandleBuffer(
+		ByProtocol,
+		&gEfiGraphicsOutputProtocolGuid,
+		NULL,
+		&hlen,
+		&hbuf
+	);
+	if(ret != EFI_SUCCESS){say("@LocateHandleBuffer\n");return;}
+
+	ret = service->HandleProtocol(
+		hbuf[0],
+		&gEfiGraphicsOutputProtocolGuid,
+		(void**)&gop
+	);
+	if(ret != EFI_SUCCESS){say("@HandleProtocol\n");return;}
+
+	num = 0;
+	chosen = -1;
+	while(1)
 	{
+		ret = gop->QueryMode(gop, num, &size, &info);
+		if(ret != EFI_SUCCESS)break;
+
+		if((info->HorizontalResolution==1024)
+		&&(info->VerticalResolution == 768))
+		{
+			chosen = num;
+			break;
+		}
+
+		say("%x,%x,%x\n",
+			info->HorizontalResolution,
+			info->VerticalResolution,
+			info->PixelFormat
+		);
+		num++;
 	}
-	else
+	if(chosen >= 0)
 	{
-		ret = service->LocateHandleBuffer(
-			ByProtocol,
-			&gEfiGraphicsOutputProtocolGuid,
-			NULL,
-			&hlen,
-			&hbuf
+		ret = gop->SetMode(gop, chosen);
+		if(ret != EFI_SUCCESS){say("@SetMode\n");return;};
+
+		say("%x,%x\n",
+			gop->Mode->FrameBufferBase,
+			gop->Mode->FrameBufferSize
 		);
-		if(ret != EFI_SUCCESS){say("@LocateHandleBuffer\n");return;}
 
-		ret = service->HandleProtocol(
-			hbuf[0],
-			&gEfiGraphicsOutputProtocolGuid,
-			(void**)&gop
-		);
-		if(ret != EFI_SUCCESS){say("@HandleProtocol\n");return;}
+		pix = &(gop->Mode->Info->PixelInformation);
+		if(pix->ReservedMask == 0)fmt = __bgra8880__;
+		else fmt = __bgra8888__;
 
-		num = 0;
-		chosen = -1;
-		while(1)
-		{
-			ret = gop->QueryMode(gop, num, &size, &info);
-			if(ret != EFI_SUCCESS)break;
+		this->type = __win__;
+		this->fmt = fmt;
 
-			if((info->HorizontalResolution==1024)
-			&&(info->VerticalResolution == 768))
-			{
-				chosen = num;
-				break;
-			}
+		this->buf = (void*)(gop->Mode->FrameBufferBase);
+		this->len = gop->Mode->FrameBufferSize;
 
-			say("%x,%x,%x\n",
-				info->HorizontalResolution,
-				info->VerticalResolution,
-				info->PixelFormat
-			);
-			num++;
-		}
-		if(chosen >= 0)
-		{
-			ret = gop->SetMode(gop, chosen);
-			if(ret != EFI_SUCCESS){say("@SetMode\n");return;};
-
-			say("%x,%x\n",
-				gop->Mode->FrameBufferBase,
-				gop->Mode->FrameBufferSize
-			);
-
-			pix = &(gop->Mode->Info->PixelInformation);
-			if(pix->ReservedMask == 0)fmt = __bgra8880__;
-			else fmt = __bgra8888__;
-
-			this->w = 1024;
-			this->h = 768;
-			this->type = __win__;
-			this->fmt = fmt;
-			this->buf = (void*)(gop->Mode->FrameBufferBase);
-			this->len = gop->Mode->FrameBufferSize;
-		}
+		this->width = this->stride = 1024;
+		this->height = 768;
 	}
 }
 void windowstop()

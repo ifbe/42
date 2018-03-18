@@ -90,8 +90,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		}
 
 		//draw pixel
+		//LOGI("width=%d,stride=%d\n", buffer.width, buffer.stride);
 		arena[0].buf = buffer.bits;
-		arena[0].w = buffer.stride;
+		arena[0].width = buffer.width;
+		arena[0].stride = buffer.stride;
 		actorread();
 
 		//
@@ -155,8 +157,8 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 
 	arena[0].type = hex32('w','i','n',0);
 	arena[0].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[0].w = w;
-	arena[0].h = h;
+	arena[0].width = w;
+	arena[0].height = h;
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
 {

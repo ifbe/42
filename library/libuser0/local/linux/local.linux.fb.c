@@ -50,11 +50,11 @@ void* terminalthread(void* win)
 
 
 
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct window* win)
 {
 	//
 	int x,y,ret;
-	u8* buf = (void*)(src->buf);
+	u8* buf = (void*)(win->buf);
 
 	//5,6,5
 	if(bpp==16)
@@ -91,22 +91,18 @@ void windowstop()
 void windowstart(struct window* this)
 {
 	int j;
-	this->w = xmax;
-	this->h = ymax;
-	if(this->type == hex32('b','u','f',0))
-	{
-		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-		return;
-	}
-	else
-	{
-		this->type = hex32('w', 'i', 'n', 0);
-		this->fmt = hex32('f', 'b', 0, 0);
 
-		for(j=0;j<16;j++)
-		{
-			(this->touch[j]).id = 0xffff;
-		}
+	this->type = hex32('w', 'i', 'n', 0);
+	this->fmt = hex32('f', 'b', 0, 0);
+
+	this->width = this->stride = xmax;
+	this->height = ymax;
+
+	this->buf = malloc(0x1000000);
+
+	for(j=0;j<16;j++)
+	{
+		(this->touch[j]).id = 0xffff;
 	}
 }
 void windowdelete()

@@ -95,25 +95,11 @@ void* allocarena()
 }
 void* allocstyle()
 {
-	struct style* sty = (void*)style + stylen;
+	int j;
+	u8* sty = (void*)style + stylen;
 	stylen += sizeof(struct style);
 
-	sty->cx = 0.0;
-	sty->cy = 0.0;
-	sty->cz = 0.0;
-
-	sty->rx = 0.0;
-	sty->ry = 0.0;
-	sty->rz = 0.0;
-
-	sty->fx = 0.0;
-	sty->fy = 0.0;
-	sty->fz = 0.0;
-
-	sty->ux = 0.0;
-	sty->uy = 0.0;
-	sty->uz = 0.0;
-
+	for(j=0;j<sizeof(struct style);j++)sty[j] = 0;
 	return sty;
 }
 

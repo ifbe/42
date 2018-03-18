@@ -83,7 +83,7 @@ void createmywindow(int j)
 	//window, gc
 	this->fd = XCreateSimpleWindow(
 		dsp, RootWindow(dsp,0), 0, 0,
-		this->w, this->h,
+		this->width, this->height,
 		1, 0, 0);
 	this->gc = (u64)XCreateGC(dsp, this->fd, 0, NULL);
 
@@ -169,9 +169,12 @@ void* uievent(struct window* this)
 			int y = ev.xconfigure.height;
 			//printf("%d,%d\n",x,y);
 
-			if( (x == this->w) && (y == this->h) )continue;
-			this->w = x;
-			this->h = y;
+			if(x == this->width)
+			{
+				if(y == this->height)continue;
+			}
+			this->width = this->stride = x;
+			this->height = y;
 
 			this->ximage = XCreateImage(
 				dsp, visual, 24, ZPixmap,
@@ -194,7 +197,7 @@ void* uievent(struct window* this)
 			XPutImage(
 				dsp, this->fd, (void*)(this->gc), xi,
 				0, 0, 0, 0,
-				this->w, this->h
+				this->width, this->height
 			); 
 		}//Expose
 		else if(ev.type == ButtonPress)
@@ -316,8 +319,9 @@ void windowstart(struct window* this)
 	int j;
 	this->type = hex32('w', 'i', 'n', 0);
 	this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-	this->w = 512;
-	this->h = 512;
+
+	this->width = this->stride = 512;
+	this->height = 512;
 
 	this->buf = malloc(0x1000000);
 	this->ximage = XCreateImage(

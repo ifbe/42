@@ -1,6 +1,6 @@
 #include "actor.h"
-#define width 32
-#define height 32
+#define WIDTH 32
+#define HEIGHT 32
 int tetris_generate(void* buf, int w, int h);
 int tetris_left(void* buf, int w, int h);
 int tetris_right(void* buf, int w, int h);
@@ -26,7 +26,7 @@ typedef struct stucture
 	int y4;
 }structure;
 static structure that;
-static u8 buf[width*height];
+static u8 buf[WIDTH*HEIGHT];
 
 
 
@@ -45,20 +45,20 @@ static void tetris_read_pixel(
 	int dd = sty->uz;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	for(y=0;y<height;y++)
+	for(y=0;y<HEIGHT;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<WIDTH;x++)
 		{
-			//say("%d ",buf[y*width+x]);
-			if(0 == buf[y*width+x])continue;
-			else if(1 == buf[y*width+x])c = 0xffffff;
+			//say("%d ",buf[y*WIDTH+x]);
+			if(0 == buf[y*WIDTH+x])continue;
+			else if(1 == buf[y*WIDTH+x])c = 0xffffff;
 			else c = 0x00ff00;
 
 			drawsolid_rect(win, c,
-				cx-ww+1 + ((x+0)*2*ww)/width,
-				cy-hh+1 + ((y+0)*2*hh)/height,
-				cx-ww-1 + ((x+1)*2*ww)/width,
-				cy-hh-1 + ((y+1)*2*hh)/height);
+				cx-ww+1 + ((x+0)*2*ww)/WIDTH,
+				cy-hh+1 + ((y+0)*2*hh)/HEIGHT,
+				cx-ww-1 + ((x+1)*2*ww)/WIDTH,
+				cy-hh-1 + ((y+1)*2*hh)/HEIGHT);
 		}
 		//say("\n");
 	}
@@ -90,16 +90,16 @@ static void tetris_read_vbo(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	for(y=0;y<height;y++)
+	for(y=0;y<HEIGHT;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<WIDTH;x++)
 		{
 			carvesolid_prism4(
 				win, 0xffffff,
-				(cx-ww)+(2*x+1)*ww/width, (cy-ww)+(2*y+1)*hh/height, ww/width,
-				ww/(width+1), 0.0, 0.0,
-				0.0, hh/(height+1), 0.0,
-				0.0, 0.0, ww/width
+				(cx-ww)+(2*x+1)*ww/WIDTH, (cy-ww)+(2*y+1)*hh/HEIGHT, ww/WIDTH,
+				ww/(WIDTH+1), 0.0, 0.0,
+				0.0, hh/(HEIGHT+1), 0.0,
+				0.0, 0.0, ww/WIDTH
 			);
 		}
 	}
@@ -116,7 +116,7 @@ static int htmlcubie(char* p, int x, int y)
 		"left:%.2f%;"
 		"top:%.2f%;"
 		"\">%d</div>",
-		x*3.1, y*2.5, buf[y*width+x]
+		x*3.1, y*2.5, buf[y*WIDTH+x]
 	);
 }
 static void tetris_read_html(
@@ -133,16 +133,16 @@ static void tetris_read_html(
 		"border:1px solid #000;"
 		"background:#fff;"
 		"position:absolute;"
-		"width:3.1%;"
-		"height:2.5%;"
+		"WIDTH:3.1%;"
+		"HEIGHT:2.5%;"
 		"}"
 		"</style>"
 	);
-	for(y=0;y<height;y++)
+	for(y=0;y<HEIGHT;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<WIDTH;x++)
 		{
-			if(buf[y*width+x] == 0)continue;
+			if(buf[y*WIDTH+x] == 0)continue;
 			p += htmlcubie(p, x, y);
 		}
 	}
@@ -157,18 +157,18 @@ static void tetris_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int w = win->w;
-	int h = win->h;
+	int w = win->stride;
+	int h = win->height;
 	char* p = (char*)(win->buf);
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
-	if(h>=height)
+	if(h>=HEIGHT)
 	{
-		for(y=0;y<height;y++)
+		for(y=0;y<HEIGHT;y++)
 		{
-			for(x=0;x<width;x++)
+			for(x=0;x<WIDTH;x++)
 			{
-				if(buf[y*width+x])
+				if(buf[y*WIDTH+x])
 				{
 					p[(y*w+x)<<2]='#';
 				}
@@ -183,18 +183,18 @@ static void tetris_read_tui(
 	{
 		for(y=0;y<h;y++)
 		{
-			for(x=0;x<width;x++)
+			for(x=0;x<WIDTH;x++)
 			{
-				if(buf[width*(y+height-h) + x])
+				if(buf[WIDTH*(y+HEIGHT-h) + x])
 				{
 					p[(y*w+x)<<2]='#';
 				}
 			}
 		}
-		p[(that.x1 + (that.y1-height+h)*w)<<2]='#';
-		p[(that.x2 + (that.y2-height+h)*w)<<2]='#';
-		p[(that.x3 + (that.y3-height+h)*w)<<2]='#';
-		p[(that.x4 + (that.y4-height+h)*w)<<2]='#';
+		p[(that.x1 + (that.y1-HEIGHT+h)*w)<<2]='#';
+		p[(that.x2 + (that.y2-HEIGHT+h)*w)<<2]='#';
+		p[(that.x3 + (that.y3-HEIGHT+h)*w)<<2]='#';
+		p[(that.x4 + (that.y4-HEIGHT+h)*w)<<2]='#';
 	}
 }
 static void tetris_read_cli(
@@ -224,22 +224,22 @@ static void tetris_write(
 
 	if(type == _kbd_)
 	{
-		if(key==0x48)tetris_up(buf, width, height);
-		else if(key==0x4b)tetris_left(buf, width, height);
-		else if(key==0x4d)tetris_right(buf, width, height);
-		else if(key==0x50)tetris_down(buf, width, height);
+		if(key==0x48)tetris_up(buf, WIDTH, HEIGHT);
+		else if(key==0x4b)tetris_left(buf, WIDTH, HEIGHT);
+		else if(key==0x4d)tetris_right(buf, WIDTH, HEIGHT);
+		else if(key==0x50)tetris_down(buf, WIDTH, HEIGHT);
 	}
 	else if(type == _char_)
 	{
-		if(key=='a')tetris_left(buf, width, height);
-		else if(key=='d')tetris_right(buf, width, height);
-		else if(key=='w')tetris_up(buf, width, height);
-		else if(key=='s')tetris_down(buf, width, height);
+		if(key=='a')tetris_left(buf, WIDTH, HEIGHT);
+		else if(key=='d')tetris_right(buf, WIDTH, HEIGHT);
+		else if(key=='w')tetris_up(buf, WIDTH, HEIGHT);
+		else if(key=='s')tetris_down(buf, WIDTH, HEIGHT);
 		else if(key==' ')
 		{
 			for(ret=0;ret<20;ret++)
 			{
-				if(1 == tetris_down(buf, width, height))return;
+				if(1 == tetris_down(buf, WIDTH, HEIGHT))return;
 			}
 		}
 	}
@@ -255,7 +255,7 @@ static void tetris_stop(struct actor* act, struct pinid* pin)
 }
 static void tetris_start(struct actor* act, struct pinid* pin)
 {
-	tetris_generate(buf, width, height);
+	tetris_generate(buf, WIDTH, HEIGHT);
 }
 static void tetris_delete(struct actor* act)
 {
@@ -266,7 +266,7 @@ static void tetris_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buf;
-	if(_copy_ == act->type)act->buf = startmemory(width*height);
+	if(_copy_ == act->type)act->buf = startmemory(WIDTH*HEIGHT);
 }
 
 

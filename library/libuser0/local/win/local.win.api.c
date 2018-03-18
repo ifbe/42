@@ -33,13 +33,13 @@ static RECT rt, re;
 
 
 
-int windowwrite(struct window* dst)
+int windowwrite(struct window* win)
 {
 	BITMAPINFO info;
-	int w = dst->w;
-	int h = dst->h;
-	HDC dc = (void*)(dst->dc);
-	void* buf = (void*)(dst->buf);
+	int w = win->width;
+	int h = win->height;
+	HDC dc = (void*)(win->dc);
+	void* buf = (void*)(win->buf);
 
 	//bitmapinfo(w,h);
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -113,8 +113,8 @@ int windowstart(struct window* this)
 
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-	this->w = 512;
-	this->h = 512;
+	this->width = this->stride = 512;
+	this->height = 512;
 
 	for(j=0;j<16;j++)
 	{
@@ -158,7 +158,7 @@ void windowcreate(struct window* this)
 	//创建窗口
 	wnd = CreateWindow(
 		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-		100, 100, (this->w)+16, (this->h)+39,
+		100, 100, (this->width)+16, (this->height)+39,
 		NULL, NULL, 0, NULL);
 	if(!wnd)return;
 
@@ -463,8 +463,8 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if(win != 0)
 			{
-				win->w = w;
-				win->h = h;
+				win->width = win->stride = w;
+				win->height = h;
 			}
 
 			eventwrite(0x657a6973, 0x4077, addr, 0);

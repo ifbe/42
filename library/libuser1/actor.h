@@ -100,38 +100,63 @@ struct arena
 		void* buf;
 	};
 
-	//[40,7f]vec
+	//[40,7f]func
+	u64 oncreate;
+	u64 ondelete;
+	u64 onstart;
+	u64 onstop;
+	u64 onread;
+	u64 onwrite;
+	u64 onlist;
+	u64 onchoose;
+
+	//[80,ff]: w,h,d,s
+	int width;
+	int height;
+	int depth;
+	int stride;
+
+	//[90,9f]: center
 	int cx;
 	int cy;
 	int cz;
-	int edit;
-
-	union{
-		int rx;
-		int w;
-	};
-	int ry;
-	int rz;
-	int dirty;
-
-	int fx;
-	union{
-		int fy;
-		int h;
-	};
-	int fz;
 	int vkbd;
 
-	int ux;
-	int uy;
-	union{
-		int uz;
-		int d;
-	};
+	//[a0,af]: right
+	int rx;
+	int ry;
+	int rz;
 	int theone;
 
-	//[80,ff]
-	u8 onfunc[0x80];
+	//[b0,bf]: far
+	int fx;
+	int fy;
+	int fz;
+	int edit;
+
+	//[c0,cf]: upper
+	int ux;
+	int uy;
+	int uz;
+	int other;
+
+	//[d0,df]
+	int dirtyx0;
+	int dirtyy0;
+	int dirtyz0;
+	int dirty;
+
+	//[e0,ef]
+	int dirtyx1;
+	int dirtyy1;
+	int dirtyz1;
+	int dirtyw1;
+
+	//[f0,ff]
+	int dirtyx2;
+	int dirtyy2;
+	int dirtyz2;
+	int dirtyw2;
 
 	//[100,1ff]
 	struct point touchdown[16];
@@ -170,27 +195,6 @@ struct actor
 	};
 
 	//[40,7f]vec
-	int cx;
-	int cy;
-	int cz;
-	int cw;
-
-	int rx;
-	int ry;
-	int rz;
-	int rw;
-
-	int fx;
-	int fy;
-	int fz;
-	int fw;
-
-	int ux;
-	int uy;
-	int uz;
-	int uw;
-
-	//[80,bf]
 	union{
 		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
@@ -224,15 +228,53 @@ struct actor
 		char padding7[8];
 	};
 
-	//[c0,ff]
-	u64 onfunc0;
-	u64 onfunc1;
-	u64 onfunc2;
-	u64 onfunc3;
-	u64 onfunc4;
-	u64 onfunc5;
-	u64 onfunc6;
-	u64 onfunc7;
+	//[+00,+0f]: center
+	int test0;
+	int test1;
+	int test2;
+	int test3;
+
+	//[+10,+1f]: center
+	int cx;
+	int cy;
+	int cz;
+	int cw;
+
+	//[+20,+2f]: right
+	int rx;
+	int ry;
+	int rz;
+	int rw;
+
+	//[+30,+3f]: far
+	int fx;
+	int fy;
+	int fz;
+	int fw;
+
+	//[+40,+4f]: upper
+	int ux;
+	int uy;
+	int uz;
+	int uw;
+
+	//[+50,+5f]: left
+	int lx;
+	int ly;
+	int lz;
+	int ltype;
+
+	//[+60,+6f]: near
+	int nx;
+	int ny;
+	int nz;
+	int ntype;
+
+	//[+70,+7f]: bottom
+	int bx;
+	int by;
+	int bz;
+	int btype;
 
 	//[100,1ff]
 	u8 detail[0x100];
@@ -249,41 +291,41 @@ struct style
 	float cz;
 	float cw;
 
-	//[20,2f]: left
-	float lx;
-	float ly;
-	float lz;
-	float ltype;
-
-	//[30,3f]: right
+	//[20,2f]: right
 	float rx;
 	float ry;
 	float rz;
 	float rtype;
 
-	//[40,4f]: near
-	float nx;
-	float ny;
-	float nz;
-	float ntype;
-
-	//[50,5f]: far
+	//[30,3f]: far
 	float fx;
 	float fy;
 	float fz;
 	float ftype;
 
-	//[60,6f]: bottom
-	float bx;
-	float by;
-	float bz;
-	float btype;
-
-	//[70,7f]: upper
+	//[40,4f]: upper
 	float ux;
 	float uy;
 	float uz;
 	float utype;
+
+	//[50,5f]: left
+	float lx;
+	float ly;
+	float lz;
+	float ltype;
+
+	//[60,6f]: near
+	float nx;
+	float ny;
+	float nz;
+	float ntype;
+
+	//[70,7f]: bottom
+	float bx;
+	float by;
+	float bz;
+	float btype;
 };
 struct pinid
 {

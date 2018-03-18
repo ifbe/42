@@ -127,19 +127,14 @@ void windowstop()
 }
 void windowstart(struct window* this)
 {
-	if(this->type == hex32('b','u','f',0))
-	{
-		return;
-	}
-	else
-	{
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex32('t','u','i',0);
-		this->w = width;
-		this->h = height;
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('t','u','i',0);
 
-		this->thread = startthread(terminalthread, this);
-	}
+	this->width = this->stride = width;
+	this->height = height;
+
+	this->buf = malloc(0x100000);
+	this->thread = startthread(terminalthread, this);
 }
 void windowdelete()
 {

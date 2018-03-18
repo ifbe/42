@@ -1,4 +1,5 @@
 #include<actor.h>
+u32 getrandom();
 
 
 
@@ -6,10 +7,11 @@
 void drawicon_1(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
-	u32 r,g,b,a,m;
-	int x,y;
-	int width = win->w;
-	int height = win->h;
+	u32 r,g,b,a;
+	int x,y,m,n;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* fb = (u32*)(win->buf);
 
 	for(y=y0;y<y1;y++)
@@ -26,7 +28,7 @@ void drawicon_1(struct arena* win, u32 rgb,
 			else if(x1-x+y-y0 < 4)continue;
 			else if(x1-x+y1-y < 4)continue;
 */
-			m = fb[y*width+x];
+			m = fb[y*stride+x];
 			a = (rgb>>24)&0xff;
 
 			r = (m&0xff)*(0x100-a) + 0xff*a;
@@ -38,39 +40,8 @@ void drawicon_1(struct arena* win, u32 rgb,
 			b = ((m>>16)&0xff)*(0x100-a) + 0xff*a;
 			b = (b>>8)&0xff;
 
-			m = r + (g<<8) + (b<<16);
-/*
-			if(y-y0 < 4)
-			{
-				m &= 0xf0f0f0;
-				m >>= (y-y0);
-				m += 0x202020 * (y-y0);
-			}
-			else if(y1-y < 4)
-			{
-				m &= 0xf0f0f0;
-				m >>= (y1-y);
-				m += 0x202020 * (y1-y);
-			}
-			else if(x-x0 < 4)
-			{
-				m &= 0xf0f0f0;
-				m >>= (x-x0);
-				m += 0x202020 * (x-x0);
-			}
-			else if(x1-x < 4)
-			{
-				m &= 0xf0f0f0;
-				m >>= (x1-x);
-				m += 0x202020 * (x1-x);
-			}
-			else
-			{
-				m &= 0xf0f0f0;
-				m >>= 4;
-				m += 0x808080;
-			}*/
-			fb[y*width+x] = m | 0xff000000;
+			m = r | (g<<8) | (b<<16) | 0xff000000;
+			fb[y*stride+x] = m;
 		}
 	}
 

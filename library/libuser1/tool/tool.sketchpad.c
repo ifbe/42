@@ -112,8 +112,8 @@ static void tuxiang(struct arena* win)
 	int value1, value2, counter;
 	double rx, ry, hello;
 
-	int width = win->w;
-	int height = win->h;
+	int width = win->stride;
+	int height = win->height;
 	u32* buf = (u32*)(win->buf);
 
 
@@ -172,16 +172,14 @@ static void sketchpad_read_pixel(
 {
 	double rx,ry,rw;
 	int x,y,w,counter;
-	int width = win->w;
-	int height = win->h;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
-	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	for(y=0;y<hh*2;y++)
 	{
@@ -219,7 +217,7 @@ static void sketchpad_read_pixel(
 
 			if( (counter!=4) && (counter!=-4) )
 			{
-				buf[(cy-hh+y)*width + (cx-ww+x)]=0xffffffff;
+				buf[(cy-hh+y)*stride + (cx-ww+x)]=0xffffffff;
 			}
 		}
 	}//result2img
@@ -248,8 +246,8 @@ static void sketchpad_read_tui(
 	int value1, value2, counter;
 	double rx, ry, hello;
 
-	int width = win->w;
-	int height = win->h;
+	int width = win->stride;
+	int height = win->height;
 	u8* p = (u8*)(win->buf);
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;

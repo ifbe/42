@@ -94,10 +94,9 @@ static void qrcode_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int width = win->w;
-	int height = win->h;
+	int width = win->stride;
+	int height = win->height;
 	u8* p = (u8*)(win->buf);
-	for(x=0;x<width*height*4;x++)p[x] = 0;
 
 	for(y=0;y<100;y++)
 	{

@@ -40,7 +40,7 @@ static void fractal_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	int w = win->w;
+	int w = win->stride;
 	u32* buf = win->buf;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 

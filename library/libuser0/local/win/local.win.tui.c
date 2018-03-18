@@ -186,8 +186,8 @@ DWORD WINAPI terminalthread(struct window* win)
 				GetConsoleScreenBufferInfo(hStdout, &bInfo);
 				x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 				y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
-				win->w = x;
-				win->h = y;
+				win->width = win->stride = x;
+				win->height = y;
 				eventwrite(x+(y<<16), __size__, 0, 0);
 			}
 			else if(MENU_EVENT == ret)
@@ -255,14 +255,14 @@ static void gotoxy(int x, int y)
 	pos.Y = bInfo.srWindow.Top + y;
 	SetConsoleCursorPosition(output, pos);
 }
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct window* win)
 {
 	int x,y;
 	u8 ch, bg=0, fg=7;
 	u8* p;
-	u8* buf = (u8*)(src->buf);
-	int width = src->w;
-	int height = src->h;
+	u8* buf = (u8*)(win->buf);
+	int width = win->width;
+	int height = win->height;
 	gotoxy(0, 0);
 
 	//
@@ -319,27 +319,19 @@ void windowstop()
 void windowstart(struct window* this)
 {
 	int width,height;
-	if(this->type == hex32('b','u','f',0))
-	{
-		this->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-		return;
-	}
-	else
-	{
-		CONSOLE_SCREEN_BUFFER_INFO bInfo;
-		GetConsoleScreenBufferInfo(output, &bInfo);
-		width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
-		height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
+	CONSOLE_SCREEN_BUFFER_INFO bInfo;
+	GetConsoleScreenBufferInfo(output, &bInfo);
+	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
+	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex32('t','u','i',0);
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('t','u','i',0);
 
-		this->w = width;
-		this->h = height;
-		this->d = 0;
+	this->width = this->stride = width;
+	this->height = height;
 
-		u64 thread = startthread(terminalthread, this);
-	}
+	this->buf = malloc(0x100000);
+	u64 thread = startthread(terminalthread, this);
 }
 void windowdelete()
 {

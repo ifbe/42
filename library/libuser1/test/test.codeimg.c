@@ -134,8 +134,8 @@ static void codeimg_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int width = win->w;
-	int height = win->h;
+	int width = win->stride;
+	int height = win->height;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;

@@ -18,8 +18,6 @@ void doodle_read_pixel(
 {
 	float c,s,f;
 	int x0,y0,x1,y1;
-	int w = win->w;
-	int h = win->h;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;

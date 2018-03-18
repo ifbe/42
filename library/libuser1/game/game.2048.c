@@ -160,11 +160,6 @@ static void the2048_read_tui(
 	int x,y;
 	u8 (*tab)[4] = (void*)buffer + num*16;
 
-	int w = win->w;
-	int h = win->h;
-	u8* buf = (u8*)(win->buf);
-	for(x=0;x<w*h*4;x++)buf[x]=0;
-
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)

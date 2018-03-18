@@ -156,13 +156,15 @@ int actorinput(struct arena* win, struct event* ev)
 	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
+
+stage0:
 	why = ev->why;
 	what = ev->what;
 
 	if('p' == (what&0xff))
 	{
 		ret = vkbd_write(win, ev);
-		if(0 != ret)goto rightway;
+		if(0 != ret)goto stage1;
 	}
 
 	if(0 == win->irel)
@@ -172,13 +174,7 @@ int actorinput(struct arena* win, struct event* ev)
 		goto lastword;
 	}
 
-	if(win->theone)
-	{
-		login_write(win, ev);
-		goto lastword;
-	}
-
-rightway:
+stage1:
 	why = ev->why;
 	what = ev->what;
 
@@ -198,6 +194,12 @@ rightway:
 		}
 	}
 
+	if(win->theone)
+	{
+		login_write(win, ev);
+		goto lastword;
+	}
+
 	if(win->edit)
 	{
 		if(what == _char_)delete_topone(win);
@@ -205,6 +207,7 @@ rightway:
 		goto lastword;
 	}
 
+stage2:
 	rel = win->irel;
 	if(0 == rel)goto lastword;
 	while(1)

@@ -103,11 +103,9 @@ static void sudoku_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y,j,k,ret,color;
-	int width = win->w;
-	int height = win->h;
+	int stride = win->stride;
 	char* p = (char*)(win->buf);
 
-	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -115,7 +113,7 @@ static void sudoku_read_tui(
 			if(data[y][x] == 0)continue;
 
 			//position
-			ret = (3*y+1)*width + 6*x + 2;
+			ret = (3*y+1)*stride + 6*x + 2;
 			ret <<= 2;
 
 			//color

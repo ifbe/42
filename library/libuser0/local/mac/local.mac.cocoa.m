@@ -38,8 +38,8 @@ void windowstart(struct window* this)
 	);
 	CGColorSpaceRelease(colorspace);
 
-	this->w = 512;
-	this->h = 512;
+	this->width = this->stride = 512;
+	this->height = 512;
 }
 void windowstop()
 {

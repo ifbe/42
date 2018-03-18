@@ -1,6 +1,8 @@
 #include "actor.h"
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
+#define _mic_ hex32('m','i','c',0)
+void* arenastart(u64, void*);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -39,8 +41,6 @@ static void spectrum_read_pixel(
 {
 	double t,cc,ss;
 	int x,y;
-	int w = win->w;
-	int h = win->h;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;
@@ -109,11 +109,10 @@ static void spectrum_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int w = win->w;
-	int h = win->h;
+	int w = win->stride;
+	int h = win->height;
 	u8* p = (u8*)(win->buf);
 
-	for(x=0;x<w*h*4;x++)p[x]=0;
 	for(x=0;x<w;x++)
 	{
 		y = h - (int)(real[x] * (double)h / (double)maxamp);
@@ -255,6 +254,8 @@ static void spectrum_create(struct actor* act)
 	imag  = (double*)(buf+0x40000);
 	amp   = (double*)(buf+0x80000);
 	phase = (double*)(buf+0xc0000);
+
+	arenastart(_mic_, "0");
 }
 
 

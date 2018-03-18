@@ -23,8 +23,9 @@ void drawline(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	int dx,dy,sx,sy,e1,e2;
-	int w = win->w;
-	int h = win->h;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
 
 	if(x0 < x1){dx = x1-x0;sx = 1;}
@@ -39,8 +40,8 @@ void drawline(struct arena* win, u32 rgb,
 	{
 		if((x0 == x1)&&(y0 == y1))break;
 
-		if((x0 >= 0)&&(x0 < w)&&(y0 >= 0)&&(y0 < h))
-		{buf[(y0*w) + x0] = rgb;}
+		if((x0 >= 0)&&(x0 < width)&&(y0 >= 0)&&(y0 < height))
+		{buf[(y0*stride) + x0] = rgb;}
 
 		e2 = e1;
 		if(e2 >-dx){e1 -= dy;x0 += sx;}
@@ -51,8 +52,9 @@ void drawbezier(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;
-	int width = win->w;
-	int height = win->h;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
 
 	for(t=0;t<1000;t++)
@@ -65,7 +67,7 @@ void drawbezier(struct arena* win, u32 rgb,
 		y /= 1000*1000;
 		if(y<0|y>=height)continue;
 
-		buf[y*width + x] = rgb;
+		buf[y*stride + x] = rgb;
 	}
 }
 
@@ -83,13 +85,11 @@ void drawline_rect(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y,n;
-	int width,height;
 	int startx,endx,starty,endy;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-	rgb |= 0xff000000;
 
 	if(x1<x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -97,6 +97,7 @@ void drawline_rect(struct arena* win, u32 rgb,
 	else{starty=y2;endy=y1;}
 	//say("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
 
+	rgb |= 0xff000000;
 	for(n=0;n<2;n++)
 	{
 		for(x=startx;x<endx;x++)
@@ -105,7 +106,7 @@ void drawline_rect(struct arena* win, u32 rgb,
 			if(starty >= width)break;
 			if(x > width-1)break;
 			if(x < 0)x=0;
-			buf[((starty+n)*width) + x] = rgb;
+			buf[((starty+n)*stride) + x] = rgb;
 		}
 		for(x=startx;x<endx;x++)
 		{
@@ -113,7 +114,7 @@ void drawline_rect(struct arena* win, u32 rgb,
 			if(endy > height-1)break;
 			if(x > width-1)break;
 			if(x < 0)x=0;
-			buf[((endy-n)*width) + x] = rgb;
+			buf[((endy-n)*stride) + x] = rgb;
 		}
 		for(y=starty;y<endy;y++)
 		{
@@ -121,7 +122,7 @@ void drawline_rect(struct arena* win, u32 rgb,
 			if(startx >= width)break;
 			if(y > height-1)break;
 			if(y < 0)y = 0;
-			buf[(y*width) + startx+n] = rgb;
+			buf[(y*stride) + startx+n] = rgb;
 		}
 		for(y=starty;y<endy;y++)
 		{
@@ -129,23 +130,19 @@ void drawline_rect(struct arena* win, u32 rgb,
 			if(endx > width-1)break;
 			if(y > height-1)break;
 			if(y < 0)y = 0;
-			buf[(y*width) + endx-n] = rgb;
+			buf[(y*stride) + endx-n] = rgb;
 		}
 	}
 }
 void drawline_circle(struct arena* win, u32 rgb,
 	int cx, int cy, int radius)
 {
-	int ret;
-	int x,y;
-	int x1,x2;
-	int y1,y2;
-	int width,height;
+	int x, y, ret;
+	int x1, y1, x2, y2;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-	rgb |= 0xff000000;
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -155,6 +152,7 @@ void drawline_circle(struct arena* win, u32 rgb,
 	if(y2<0)y2=0;
 	if(y2>=height)y2=height-1;
 
+	rgb |= 0xff000000;
 	for(y=y1;y<=y2;y++)
 	{
 		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
@@ -167,8 +165,8 @@ void drawline_circle(struct arena* win, u32 rgb,
 		if(x2<0)x2=0;
 		if(x2>=width)x2=width-1;
 
-		buf[ (y*width) + x1 ] = rgb;
-		buf[ (y*width) + x2 ] = rgb;
+		buf[ (y*stride) + x1 ] = rgb;
+		buf[ (y*stride) + x2 ] = rgb;
 	}
 }
 void drawline_oval(struct arena* win, u32 rgb,
@@ -191,13 +189,11 @@ void drawsolid_rect(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y;
-	int width,height;
 	int startx,endx,starty,endy;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-	rgb |= 0xff000000;
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -209,27 +205,24 @@ void drawsolid_rect(struct arena* win, u32 rgb,
 	if(starty < 0)starty = 0;
 	if(endy >= height)endy = height-1;
 
+	rgb |= 0xff000000;
 	for(y=starty;y<=endy;y++)
 	{
 		for(x=startx;x<=endx;x++)
 		{
-			buf[ (y*width) + x ] = rgb;
+			buf[ (y*stride) + x ] = rgb;
 		}
 	}
 }
 void drawsolid_circle(struct arena* win, u32 rgb,
 	int cx, int cy, int radius)
 {
-	int ret;
-	int x,y;
-	int x1,x2;
-	int y1,y2;
-	int width,height;
+	int x, y, ret;
+	int x1, y1, x2, y2;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
-
-	width = win->w;
-	height = win->h;
-	rgb |= 0xff000000;
 
 	y1=cy-radius;
 	if(y1<0)y1=0;
@@ -239,6 +232,7 @@ void drawsolid_circle(struct arena* win, u32 rgb,
 	if(y2<0)y2=0;
 	if(y2>=height)y2=height-1;
 
+	rgb |= 0xff000000;
 	for(y=y1;y<=y2;y++)
 	{
 		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
@@ -253,7 +247,7 @@ void drawsolid_circle(struct arena* win, u32 rgb,
 
 		for(x=x1;x<=x2;x++)
 		{
-			buf[ (y*width) + x ] = rgb;
+			buf[ (y*stride) + x ] = rgb;
 		}
 	}
 }
@@ -275,9 +269,10 @@ void drawhyaline_rect(struct arena* win, u32 rgb,
 	u8 r,g,b,a;
 	int x,y,z;
 	int startx,endx,starty,endy;
-	int width = win->w;
-	int height = win->h;
-	u8* buf = (u8*)(win->buf);
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
+	u32* buf = (u32*)(win->buf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -296,16 +291,16 @@ void drawhyaline_rect(struct arena* win, u32 rgb,
 	{
 		for(x=startx;x<=endx;x++)
 		{
-			z = buf[4*(y*width + x) + 0];
-			buf[4*(y*width + x) + 0] = (z/4) + b;
+			z = buf[4*(y*stride + x) + 0];
+			buf[4*(y*stride + x) + 0] = (z/4) + b;
 
-			z = buf[4*(y*width + x) + 1];
-			buf[4*(y*width + x) + 1] = (z/4) + g;
+			z = buf[4*(y*stride + x) + 1];
+			buf[4*(y*stride + x) + 1] = (z/4) + g;
 
-			z = buf[4*(y*width + x) + 2];
-			buf[4*(y*width + x) + 2] = (z/4) + r;
+			z = buf[4*(y*stride + x) + 2];
+			buf[4*(y*stride + x) + 2] = (z/4) + r;
 
-			buf[4*(y*width + x) + 3] = 0xff;
+			buf[4*(y*stride + x) + 3] = 0xff;
 		}
 	}
 }

@@ -17,14 +17,11 @@ static void palette_read_pixel(
 {
 	int g,b;
 	int x,y,type;
-	int w = win->w;
-	int h = win->h;
 	int cx = sty->cx;
 	int cy = sty->cy;
-	int cz = sty->cz;
 	int ww = sty->rx;
 	int hh = sty->fy;
-	int dd = sty->uz;
+	int w = win->stride;
 	u32* buf = (u32*)(win->buf);
 	u32 pal;
 

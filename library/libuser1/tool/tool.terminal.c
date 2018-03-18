@@ -690,9 +690,9 @@ static void terminal_read_tui(
 		}
 	}
 
-	w = win->w;
+	w = win->width;
+	h = win->height;
 	if(w > term.width)w = term.width;
-	h = win->h;
 	if(h > term.height)h = term.height;
 
 	p = (void*)(win->buf);
@@ -701,7 +701,7 @@ static void terminal_read_tui(
 	{
 		for(x=0;x<w;x++)
 		{
-			p[(win->w)*y + x] = q[(term.width)*(term.top+y) + x];
+			p[(win->stride)*y + x] = q[(term.width)*(term.top+y) + x];
 		}
 	}
 }

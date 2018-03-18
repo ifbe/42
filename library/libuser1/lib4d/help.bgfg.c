@@ -31,10 +31,10 @@ void background_vbo(struct arena* win)
 void background_pixel(struct arena* win)
 {
 	int x;
-	int len = (win->w)*(win->h);
+	int len = (win->stride)*(win->height);
 	u32* buf = (u32*)(win->buf);
 
-	for(x=0; x<len; x++)buf[x] = 0xff000000;
+	for(x=0;x<len;x++)buf[x] = 0xff000000;
 }
 void background(struct arena* win)
 {

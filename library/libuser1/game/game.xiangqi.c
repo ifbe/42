@@ -244,13 +244,11 @@ static void xiangqi_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y,color;
-	int width = win->w;
-	int height = win->h;
+	int width = win->stride;
+	int height = win->height;
 	u8* buf = (u8*)(win->buf);
 	u8* q;
 
-	//
-	for(x=0;x<width*height*4;x++)buf[x] = 0;
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)

@@ -14,21 +14,6 @@
 
 
 
-//
-struct waylanddata
-{
-	u64 buf1;
-	u64 buf2;
-	u64 fmt;
-	u64 dim;
-
-	u64 w;
-	u64 h;
-	u64 d;
-	u64 t;
-
-	u64 thread;
-};
 //display
 static struct wl_display *display = NULL;
 static struct wl_registry *registry = NULL;
@@ -240,7 +225,7 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
 
 
 
-void* uievent(struct waylanddata* p)
+void* uievent(struct window* p)
 {
 	struct wl_shm_pool* pool;
 	int ret;
@@ -299,7 +284,7 @@ void* uievent(struct waylanddata* p)
 	}
 
 	//
-	shm_data = mmap((void*)p->buf1, 2048*1024*4,
+	shm_data = mmap(p->buf, 2048*1024*4,
 		PROT_READ | PROT_WRITE, MAP_FIXED|MAP_SHARED, fd, 0);
 	if (shm_data == MAP_FAILED) {
 		fprintf(stderr, "mmap failed: %m\n");
@@ -311,8 +296,8 @@ void* uievent(struct waylanddata* p)
 	pool = wl_shm_create_pool(shm, fd, 2048*1024*4);
 	buffer = wl_shm_pool_create_buffer(
 		pool, 0,
-		p->w, p->h,
-		(p->w)*4,
+		p->width, p->height,
+		(p->width)*4,
 		WL_SHM_FORMAT_XRGB8888
 	);
 	wl_shm_pool_destroy(pool);
@@ -328,11 +313,11 @@ void* uievent(struct waylanddata* p)
 void windowread()
 {
 }
-void windowwrite(struct waylanddata* p)
+void windowwrite(struct window* p)
 {
 	wl_display_dispatch(display);
-	wl_surface_damage(surface, 0, 0, p->w, p->h);
-	wl_surface_attach(surface, (void*)p->buf1, 0, 0);
+	wl_surface_damage(surface, 0, 0, p->width, p->height);
+	wl_surface_attach(surface, p->buf, 0, 0);
 	wl_surface_commit(surface);
 }
 void windowlist()
@@ -341,15 +326,15 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct waylanddata* p)
+void windowstart(struct window* p)
 {
-	//
 	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
 
-	//wait for thread
-	p->buf1 = m - (m&0xfffff) + 0x100000;
-	p->w = 512;
-	p->h = 512;
+	p->len = 0;
+	p->buf = m - (m&0xfffff) + 0x100000;
+
+	p->width = p->stride = 512;
+	p->height = 512;
 	p->thread = startthread(uievent, p);
 }
 void windowstop()
