@@ -18,7 +18,7 @@ int videocreate(void*);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
-int videoread(void*);
+int videoread(void* win, void* sty, void* act, void* pin);
 int videowrite(void*);
 int videolist();
 int videochoose();
@@ -29,7 +29,7 @@ int soundcreate(void*);
 int sounddelete(void*);
 int soundstart(void*);
 int soundstop(void*);
-int soundread(void*);
+int soundread(void* win, void* sty, void* act, void* pin);
 int soundwrite(void*);
 int soundlist();
 int soundchoose();
@@ -40,7 +40,7 @@ int windowcreate(void*);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
-int windowread(void*);
+int windowread(void* win, void* sty, void* act, void* pin);
 int windowwrite(void*);
 int windowlist();
 int windowchoose();
@@ -67,6 +67,9 @@ int vncserver_write(void* win);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
+//
+void* samechipnextpin(void*);
+void* samechipprevpin(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -203,7 +206,12 @@ void* arenastart(u64 type, u64 addr)
 int arenaread()
 {
 	int j;
+	struct relation* rel;
 	struct window* win;
+	void* act;
+	void* sty;
+	void* pin;
+
 	for(j=0;j<16;j++)
 	{
 		win = &arena[j];
@@ -217,6 +225,32 @@ int arenaread()
 		{
 			wsserver_write(win);
 			win->dirty = 0;
+		}
+		else if(_cam_ == win->type)
+		{
+			rel = win->orel;
+			while(1)
+			{
+				if(0 == rel)break;
+				act = (void*)(rel->destchip);
+				pin = (void*)(rel->destfoot);
+				sty = (void*)(rel->selffoot);
+				videoread(win, sty, act, pin);
+				rel = samechipnextpin(rel);
+			}
+		}
+		else if(_mic_ == win->type)
+		{
+			rel = win->orel;
+			while(1)
+			{
+				if(0 == rel)break;
+				act = (void*)(rel->destchip);
+				pin = (void*)(rel->destfoot);
+				sty = (void*)(rel->selffoot);
+				soundread(win, sty, act, pin);
+				rel = samechipnextpin(rel);
+			}
 		}
 	}
 	return 0;

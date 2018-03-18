@@ -12,6 +12,13 @@
 
 
 
+struct point
+{
+	u16 x;
+	u16 y;
+	u16 z;
+	u16 id;
+};
 struct event
 {
 	u64 why;
@@ -19,12 +26,23 @@ struct event
 	u64 where;
 	u64 when;
 };
-struct point
+struct relation
 {
-	u16 x;
-	u16 y;
-	u16 z;
-	u16 id;
+	//[0x00,0x1f]
+	u64 destchip;
+	u64 destfoot;
+	u32 desttype;
+	u32 destflag;
+	u32 samepinprevchip;
+	u32 samepinnextchip;
+
+	//0x20,0x3f
+	u64 selfchip;
+	u64 selffoot;
+	u32 selftype;
+	u32 selfflag;
+	u32 samechipprevpin;
+	u32 samechipnextpin;
 };
 
 
@@ -178,8 +196,10 @@ struct style
 
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-//
 u64 startthread(void*, void*);
 void stopthread(u64);
 //
@@ -191,3 +211,7 @@ void eventwrite(u64,u64,u64,u64);
 //
 void printmemory(void*, int);
 void say(void*, ...);
+
+#ifdef __cplusplus
+}
+#endif

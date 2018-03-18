@@ -2,13 +2,11 @@
 #include <dshow.h>
 #include <rpc.h>
 #include <rpcndr.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "arena.h"
+#define _cam_ hex32('c','a','m',0)
+
 #pragma comment(lib, "ole32")
 #pragma comment(lib, "strmiids")
-EXTERN_C void eventwrite(u64,u64,u64,u64);
 EXTERN_C const CLSID CLSID_NullRenderer;
 EXTERN_C const CLSID CLSID_SampleGrabber;
 
@@ -49,7 +47,7 @@ struct pictureobject
 	u64 height;
 };
 static struct pictureobject obj[60];
-static struct window* win;
+static struct window* working;
 static int abc = 0;
 
 
@@ -88,7 +86,7 @@ public:
 		pSample->Release();
 
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
-		eventwrite(abc, 'v', (u64)win, 0);
+		eventwrite(abc, _cam_, (u64)working, 0);
 
 		abc = (abc+1)%60;
 		return S_OK;
@@ -465,8 +463,12 @@ fail:
 extern "C" {
 
 
-void videoread()
+void videoread(
+	struct window* win, struct style* sty,
+	void* act, void* pin)
 {
+	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
+	if(0 == act)return;
 }
 void videowrite()
 {
@@ -475,9 +477,9 @@ void videostop()
 {
 	//shutupdie();
 }
-void videostart(struct window* p)
+void videostart(struct window* win)
 {
-	win = p;
+	working = win;
 	letsgo();
 	//Sleep(5000);
 }

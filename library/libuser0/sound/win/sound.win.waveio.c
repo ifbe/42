@@ -1,24 +1,17 @@
 #include <stdio.h>
 #include <windows.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void eventwrite(u64,u64,u64,u64);
-//
-u64 startthread(void*, void*);
-void stopthread();
-void printmemory(void*, int);
+#include "arena.h"
+#define _mic_ hex32('m','i','c',0)
 
 
 
 
 struct waveinfo
 {
-        void* buf;
-        int len;
-        int enq;
-        int deq;
+	void* buf;
+	int len;
+	int enq;
+	int deq;
 };
 static struct waveinfo info;
 //
@@ -59,7 +52,7 @@ DWORD WINAPI soundlistener(LPVOID pM)
 		waveInReset(wavein);
 
 		info.enq = (info.enq + 4096) % 0x100000;
-		eventwrite((u64)&info, 's', 0, 0);
+		eventwrite((u64)&info, _mic_, 0, 0);
 	}
 	return 0;
 }
@@ -84,8 +77,12 @@ void soundlist()
 void soundchoose()
 {
 }
-void soundread(u8* buf, int len)
+void soundread(
+	struct window* win, struct style* sty,
+	void* act, void* pin)
 {
+	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
+	if(0 == act)return;
 }
 void soundwrite(u8* buf, int len)
 {
