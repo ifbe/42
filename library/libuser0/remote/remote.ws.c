@@ -51,7 +51,21 @@ int ws_event(struct event* ev, void* buf)
 	}
 	return 0;
 }*/
-int wsclient_start(struct arena* win)
+int wsclient_start(struct arena* win, u8* str)
+{
+	return 0;
+}
+int wsclient_stop(struct arena* win)
+{
+	return 0;
+}
+int wsclient_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	return 0;
+}
+int wsclient_write(struct arena* win)
 {
 	return 0;
 }
@@ -70,7 +84,9 @@ int wsserver_stop(struct arena* win)
 {
 	return 0;
 }
-int wsserver_read(struct arena* win)
+int wsserver_read(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int len;
 	struct arena* w = arteryread(win->fd);

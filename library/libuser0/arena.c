@@ -47,13 +47,13 @@ int windowchoose();
 //remote
 void initremote(void*);
 void freeremote();
-int wsclient_start(void* win);
+int wsclient_start(void* win, u8* str);
 int wsclient_stop(void* win);
-int wsclient_read(void* win);
+int wsclient_read(void* win, void* sty, void* act, void* pin);
 int wsclient_write(void* win);
 int wsserver_start(void* win);
 int wsserver_stop(void* win);
-int wsserver_read(void* win);
+int wsserver_read(void* win, void* sty, void* act, void* pin);
 int wsserver_write(void* win);
 int vncclient_start(void* win);
 int vncclient_stop(void* win);
@@ -161,11 +161,14 @@ void* arenastart(u64 type, u64 addr)
 	}
 	else if(_ws_ == type)
 	{
+		if(0 == addr)return 0;
+		say("ws://%s\n", (void*)addr);
+
 		win->type = _ws_;
 		win->fmt = hex32('d','a','t','a');
 
 		//be client, accept data
-		wsclient_start(win);
+		wsclient_start(win, (void*)addr);
 	}
 	else if(_WS_ == type)
 	{
@@ -221,11 +224,6 @@ int arenaread()
 		{
 			windowwrite(win);
 		}
-		else if((_WS_ == win->type)|(0 != win->dirty))
-		{
-			wsserver_write(win);
-			win->dirty = 0;
-		}
 		else if(_cam_ == win->type)
 		{
 			rel = win->orel;
@@ -251,6 +249,24 @@ int arenaread()
 				soundread(win, sty, act, pin);
 				rel = samesrcnextdst(rel);
 			}
+		}
+		else if(_ws_ == win->type)
+		{
+			rel = win->orel;
+			while(1)
+			{
+				if(0 == rel)break;
+				act = (void*)(rel->destchip);
+				pin = (void*)(rel->destfoot);
+				sty = (void*)(rel->selffoot);
+				wsclient_read(win, sty, act, pin);
+				rel = samesrcnextdst(rel);
+			}
+		}
+		else if((_WS_ == win->type)|(0 != win->dirty))
+		{
+			wsserver_write(win);
+			win->dirty = 0;
 		}
 	}
 	return 0;
@@ -286,7 +302,7 @@ int arenawrite(struct event* ev)
 		{
 			if((_WS_ == arena[j].type)&&(where == arena[j].fd))
 			{
-				wsserver_read(&arena[j]);
+				wsserver_read(&arena[j], 0, 0, 0);
 			}
 		}
 	}

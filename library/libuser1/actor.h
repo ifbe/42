@@ -30,6 +30,11 @@
 
 
 
+struct mystring
+{
+	int len;
+	u8 buf[0];
+};
 struct point
 {
 	u16 x;
