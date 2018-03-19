@@ -63,7 +63,7 @@ static void attr(u8 bg, u8 fg)
 
 
 
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* src)
 {
 	printf("\033[H\033[J");
 /*
@@ -125,7 +125,7 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex32('t','u','i',0);

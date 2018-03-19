@@ -5,10 +5,10 @@ int vkbd_write(void*, void*);
 //
 int relation_swap(void*, void*);
 int relation_destory(void*);
-void* samepinprevchip(void*);
-void* samepinnextchip(void*);
-void* samechipprevpin(void*);
-void* samechipnextpin(void*);
+void* samedstprevsrc(void*);
+void* samedstnextsrc(void*);
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
 void* relation_read(u64);
 
 
@@ -51,7 +51,7 @@ int playwithactor(struct arena* win, struct event* ev)
 	if(reltop == 0)return 1;
 	while(1)
 	{
-		relwow = samepinnextchip(reltop);
+		relwow = samedstnextsrc(reltop);
 		if(relwow == 0)break;
 
 		reltop = relwow;
@@ -72,7 +72,7 @@ int playwithactor(struct arena* win, struct event* ev)
 
 		if((absx <= stywow->rx)&&(absy <= stywow->fy))break;
 
-		relwow = samepinprevchip(relwow);
+		relwow = samedstprevsrc(relwow);
 		stywow = 0;
 	}
 	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
@@ -140,7 +140,7 @@ int delete_topone(struct arena* win)
 	rel = win->irel;
 	while(1)
 	{
-		tmp = samepinnextchip(rel);
+		tmp = samedstnextsrc(rel);
 		if(tmp == 0)break;
 
 		rel = tmp;
@@ -212,7 +212,7 @@ stage2:
 	if(0 == rel)goto lastword;
 	while(1)
 	{
-		tmp = samepinnextchip(rel);
+		tmp = samedstnextsrc(rel);
 		if(tmp == 0)break;
 
 		rel = tmp;

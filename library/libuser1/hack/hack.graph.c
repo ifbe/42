@@ -1,6 +1,6 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void* samepinnextchip(void*);
+void* samedstnextsrc(void*);
 void forcedirected_2d(void*, int, void*, int, void*, int);
 void forcedirected_3d(void*, int, void*, int, void*, int);
 
@@ -83,7 +83,7 @@ static void graph_traverse(struct arena* this)
 		if(rel->selftype == _win_)graph_traverse(child);
 		graph_pair(j, k);
 
-		rel = samepinnextchip(rel);
+		rel = samedstnextsrc(rel);
 	}
 }
 void butane()
@@ -135,7 +135,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 	while(1)
 	{
 		if(rel == 0)break;
-		rel = samepinnextchip(rel);
+		rel = samedstnextsrc(rel);
 		k++;
 	}
 	//say("k=%x\n",k);
@@ -177,7 +177,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 			(void*)(&act->name), 8
 		);
 
-		tmp = samepinnextchip(rel);
+		tmp = samedstnextsrc(rel);
 		if(tmp == 0)break;
 
 		j += 1;

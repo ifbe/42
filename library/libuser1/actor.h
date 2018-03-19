@@ -51,16 +51,16 @@ struct relation
 	u64 destfoot;
 	u32 desttype;
 	u32 destflag;
-	u32 samepinprevchip;
-	u32 samepinnextchip;
+	u32 samedstprevsrc;
+	u32 samedstnextsrc;
 
 	//0x20,0x3f
 	u64 selfchip;
 	u64 selffoot;
 	u32 selftype;
 	u32 selfflag;
-	u32 samechipprevpin;
-	u32 samechipnextpin;
+	u32 samesrcprevdst;
+	u32 samesrcnextdst;
 };
 
 
@@ -229,10 +229,10 @@ struct actor
 	};
 
 	//[+00,+0f]: center
-	int test0;
-	int test1;
-	int test2;
-	int test3;
+	int width;
+	int height;
+	int depth;
+	int stride;
 
 	//[+10,+1f]: center
 	int cx;

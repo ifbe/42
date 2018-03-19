@@ -22,7 +22,7 @@ static HANDLE output;
 
 
 
-DWORD WINAPI terminalthread(struct window* win)
+DWORD WINAPI terminalthread(struct arena* win)
 {
 	int j,ret,tmp;
 	u64 x,y,w;
@@ -255,7 +255,7 @@ static void gotoxy(int x, int y)
 	pos.Y = bInfo.srWindow.Top + y;
 	SetConsoleCursorPosition(output, pos);
 }
-void windowwrite(struct window* win)
+void windowwrite(struct arena* win)
 {
 	int x,y;
 	u8 ch, bg=0, fg=7;
@@ -316,7 +316,7 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	int width,height;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;

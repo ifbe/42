@@ -33,22 +33,22 @@ struct relation
 	u64 destfoot;
 	u32 desttype;
 	u32 destflag;
-	u32 samepinprevchip;
-	u32 samepinnextchip;
+	u32 samedstprevsrc;
+	u32 samedstnextsrc;
 
 	//0x20,0x3f
 	u64 selfchip;
 	u64 selffoot;
 	u32 selftype;
 	u32 selfflag;
-	u32 samechipprevpin;
-	u32 samechipnextpin;
+	u32 samesrcprevdst;
+	u32 samesrcnextdst;
 };
 
 
 
 
-struct window
+struct arena
 {
 	//[00,1f]
 	u64 type;
@@ -145,6 +145,123 @@ struct window
 	struct point touchdown[16];
 	struct point touchmove[16];
 };
+struct actor
+{
+	//[0,1f]
+	u64 type;
+	u64 name;
+	union{
+		struct relation* irel;
+		char pad0[8];
+	};
+	union{
+		struct relation* orel;
+		char pad1[8];
+	};
+
+	//[20,3f]
+	union{
+		u64 fd;
+		void* what0;
+	};
+	union{
+		u64 abc;
+		void* what1;
+	};
+	union{
+		u64 vbo;
+		void* unique;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[40,7f]vec
+	union{
+		int (*oncreate)(void* actor, void* buf);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(void* actor, void* buf);
+		char padding1[8];
+	};
+	union{
+		int (*onstart)(void* actor, void* pinid);
+		char padding2[8];
+	};
+	union{
+		int (*onstop)(void* actor, void* pinid);
+		char padding3[8];
+	};
+	union{
+		int (*onlist)(void* actor, void* pinid, void* buf, int len);
+		char padding4[8];
+	};
+	union{
+		int (*onchoose)(void* actor, void* pinid, void* buf, int len);
+		char padding5[8];
+	};
+	union{
+		int (*onread)(void* arena, void* style, void* actor, void* compo);
+		char padding6[8];
+	};
+	union{
+		int (*onwrite)(void* actor, void* compo, void* event);
+		char padding7[8];
+	};
+
+	//[+00,+0f]: center
+	int width;
+	int height;
+	int depth;
+	int stride;
+
+	//[+10,+1f]: center
+	int cx;
+	int cy;
+	int cz;
+	int cw;
+
+	//[+20,+2f]: right
+	int rx;
+	int ry;
+	int rz;
+	int rw;
+
+	//[+30,+3f]: far
+	int fx;
+	int fy;
+	int fz;
+	int fw;
+
+	//[+40,+4f]: upper
+	int ux;
+	int uy;
+	int uz;
+	int uw;
+
+	//[+50,+5f]: left
+	int lx;
+	int ly;
+	int lz;
+	int ltype;
+
+	//[+60,+6f]: near
+	int nx;
+	int ny;
+	int nz;
+	int ntype;
+
+	//[+70,+7f]: bottom
+	int bx;
+	int by;
+	int bz;
+	int btype;
+
+	//[100,1ff]
+	u8 detail[0x100];
+};
 struct style
 {
 	//[00,0f]:
@@ -192,6 +309,48 @@ struct style
 	float by;
 	float bz;
 	float btype;
+};
+struct pinid
+{
+	int flag00;
+	int flag01;
+	int flag02;
+	int flag03;
+
+	int flag04;
+	int flag05;
+	int flag06;
+	int flag07;
+
+	int flag08;
+	int flag09;
+	int flag0a;
+	int flag0b;
+
+	int flag0c;
+	int flag0d;
+	int flag0e;
+	int flag0f;
+
+	int flag10;
+	int flag11;
+	int flag12;
+	int flag13;
+
+	int flag14;
+	int flag15;
+	int flag16;
+	int flag17;
+
+	int flag18;
+	int flag19;
+	int flag1a;
+	int flag1b;
+
+	int flag1c;
+	int flag1d;
+	int flag1e;
+	int flag1f;
 };
 
 

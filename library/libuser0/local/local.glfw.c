@@ -82,7 +82,7 @@ static GLfloat cameramvp[4*4];
 static GLfloat light0mvp[4*4];
 */
 //
-static struct window* win;
+static struct arena* win;
 static u8* dragdata[0x1000];
 static u8* fontdata;
 //
@@ -1121,7 +1121,7 @@ void callback_reshape(GLFWwindow* window, int w, int h)
 
 
 
-void* uievent(struct window* this)
+void* uievent(struct arena* this)
 {
 	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
 	if(fw == NULL)
@@ -1185,7 +1185,7 @@ int windowread(int type, char* buf)
 {
 	return snprintf(buf, 0x1000, "%s", dragdata);
 }
-void windowwrite(struct window* dst)
+void windowwrite(struct arena* dst)
 {
 	queuehead++;
 }
@@ -1198,7 +1198,7 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	if(0 != win)
 	{

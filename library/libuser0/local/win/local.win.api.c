@@ -33,7 +33,7 @@ static RECT rt, re;
 
 
 
-int windowwrite(struct window* win)
+int windowwrite(struct arena* win)
 {
 	BITMAPINFO info;
 	int w = win->width;
@@ -106,7 +106,7 @@ int windowchange()
 	//SetWindowText(win, "hahahaha");
 	return 0;
 }
-int windowstart(struct window* this)
+int windowstart(struct arena* this)
 {
 	int j;
 	if(this == 0)return 0;
@@ -126,7 +126,7 @@ int windowstart(struct window* this)
 
 	return 0;
 }
-int windowstop(struct window* this)
+int windowstop(struct arena* this)
 {
 	PostThreadMessage(
 		uithread,
@@ -136,7 +136,7 @@ int windowstop(struct window* this)
 	);
 	return 0;
 }
-void windowdelete(struct window* this)
+void windowdelete(struct arena* this)
 {
 	HWND wnd = (void*)(this->fd);
 	HDC dc = (void*)(this->dc);
@@ -150,7 +150,7 @@ void windowdelete(struct window* this)
 	alivecount--;
 	if(alivecount == 0)eventwrite(0,0,0,0);
 }
-void windowcreate(struct window* this)
+void windowcreate(struct arena* this)
 {
 	HWND wnd;
 	HDC dc;
@@ -205,7 +205,7 @@ void windowcreate(struct window* this)
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
-	struct window* win = (void*)addr;
+	struct arena* win = (void*)addr;
 	switch (msg)
 	{
 		case WM_KEYDOWN:

@@ -48,10 +48,10 @@ int actordelete(void*, u8*);
 void* allocstyle();
 void* allocpinid();
 //
-void* samepinprevchip(void*);
-void* samepinnextchip(void*);
-void* samechipprevpin(void*);
-void* samechipnextpin(void*);
+void* samedstprevsrc(void*);
+void* samedstnextsrc(void*);
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 //
@@ -174,7 +174,7 @@ void login_read_pixel(struct arena* win)
 				(2*(j%8)+1)*w/16,
 				d-(2*(j/8)+1)*h/64
 			);
-			rel = samepinnextchip(rel);
+			rel = samedstnextsrc(rel);
 		}
 
 		rel = arena[j].orel;
@@ -189,7 +189,7 @@ void login_read_pixel(struct arena* win)
 				(2*(j%8)+1)*w/16,
 				d-(2*(j/8)+1)*h/64
 			);
-			rel = samechipnextpin(rel);
+			rel = samesrcnextdst(rel);
 		}
 	}
 }

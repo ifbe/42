@@ -78,8 +78,8 @@ void soundchoose()
 {
 }
 void soundread(
-	struct window* win, struct style* sty,
-	void* act, void* pin)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;

@@ -27,7 +27,7 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	void* data = malloc(2048*1024*4);
 	CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);

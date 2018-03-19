@@ -14,6 +14,7 @@ void gethandleandtable(void* H, void* T);
 
 
 static EFI_BOOT_SERVICES* service;
+static void* screen = 0;
 
 
 
@@ -21,15 +22,15 @@ static EFI_BOOT_SERVICES* service;
 void windowread()
 {
 }
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* src)
 {
 	int j;
 	int bpp;
 	u32* ibuf = src->buf;
-	u32* obuf = dst->buf;
+	u32* obuf = screen;
 
-	if(dst->fmt == __bgra8888__)bpp = 4;
-	else if(dst->fmt == __bgra8880__)bpp = 3;
+	if(src->fmt == __bgra8888__)bpp = 4;
+	else if(src->fmt == __bgra8880__)bpp = 3;
 	else return;
 
 	for(j=0;j<1024*768-1;j++)
@@ -44,7 +45,7 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	int ret, num, chosen;
 	u64 fmt;
@@ -102,6 +103,7 @@ void windowstart(struct window* this)
 			gop->Mode->FrameBufferSize
 		);
 
+		screen = (void*)(gop->Mode->FrameBufferBase);
 		pix = &(gop->Mode->Info->PixelInformation);
 		if(pix->ReservedMask == 0)fmt = __bgra8880__;
 		else fmt = __bgra8888__;
@@ -109,7 +111,7 @@ void windowstart(struct window* this)
 		this->type = __win__;
 		this->fmt = fmt;
 
-		this->buf = (void*)(gop->Mode->FrameBufferBase);
+		this->buf = (void*)0x2000000;
 		this->len = gop->Mode->FrameBufferSize;
 
 		this->width = this->stride = 1024;

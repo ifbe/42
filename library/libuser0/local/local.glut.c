@@ -26,8 +26,8 @@ double sine(double);
 
 
 //
-static struct window* win;
-static struct window* src;
+static struct arena* win;
+static struct arena* src;
 static u8* fontdata;
 //
 static int queuehead = 0;
@@ -910,7 +910,7 @@ void callback_move(int x,int y)
 
 
 
-void* uievent(struct window* p)
+void* uievent(struct arena* p)
 {
 	int ret;
 	int argc=1;
@@ -947,7 +947,7 @@ void* uievent(struct window* p)
 void windowread()
 {
 }
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* win)
 {
 	queuehead++;
 }
@@ -960,7 +960,7 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	if(this->type == hex32('b','u','f',0))
 	{

@@ -47,8 +47,9 @@ struct pictureobject
 	u64 height;
 };
 static struct pictureobject obj[60];
-static struct window* working;
-static int abc = 0;
+static struct arena* working;
+static int enq = 0;
+static int deq = 0;
 
 
 
@@ -80,15 +81,15 @@ public:
 	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
 	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
 	{
-		BYTE** buf = (BYTE**)(&(obj[abc].buf));
-		obj[abc].len = pSample->GetActualDataLength();
+		BYTE** buf = (BYTE**)(&(obj[enq].buf));
+		obj[enq].len = pSample->GetActualDataLength();
 		pSample->GetPointer(buf);
 		pSample->Release();
 
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
-		eventwrite(abc, _cam_, (u64)working, 0);
+		eventwrite(enq, _cam_, (u64)working, 0);
 
-		abc = (abc+1)%60;
+		enq = (enq+1)%60;
 		return S_OK;
 	}
 };
@@ -464,11 +465,16 @@ extern "C" {
 
 
 void videoread(
-	struct window* win, struct style* sty,
-	void* act, void* pin)
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
+
+	act->width = act->stride = 640;
+	act->height = 480;
+	act->buf = (void*)(obj[deq].buf);
+	deq = enq;
 }
 void videowrite()
 {
@@ -477,7 +483,7 @@ void videostop()
 {
 	//shutupdie();
 }
-void videostart(struct window* win)
+void videostart(struct arena* win)
 {
 	working = win;
 	letsgo();

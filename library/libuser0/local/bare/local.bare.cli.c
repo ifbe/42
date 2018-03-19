@@ -19,7 +19,7 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex32('c','l','i',0);

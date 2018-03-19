@@ -23,7 +23,7 @@ void death();
 
 //
 static void* world;
-static struct window* arena;
+static struct arena* arena;
 
 
 

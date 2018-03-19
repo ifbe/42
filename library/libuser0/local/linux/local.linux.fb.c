@@ -50,7 +50,7 @@ void* terminalthread(void* win)
 
 
 
-void windowwrite(struct window* win)
+void windowwrite(struct arena* win)
 {
 	//
 	int x,y,ret;
@@ -88,7 +88,7 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	int j;
 

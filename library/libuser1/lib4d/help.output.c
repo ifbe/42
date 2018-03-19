@@ -3,10 +3,10 @@
 #define _win_ hex32('w','i','n',0)
 void background(void*);
 void foreground(void*);
-void* samepinprevchip(void*);
-void* samepinnextchip(void*);
-void* samechipprevpin(void*);
-void* samechipnextpin(void*);
+void* samedstprevsrc(void*);
+void* samedstnextsrc(void*);
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
 
 
 
@@ -97,7 +97,7 @@ int actoroutput(struct arena* win)
 			}
 		}
 
-		rel = samepinnextchip(rel);
+		rel = samedstnextsrc(rel);
 	}
 
 	//fg

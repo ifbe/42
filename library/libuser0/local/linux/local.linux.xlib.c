@@ -78,7 +78,7 @@ static int fuckyou = 0;
 
 void createmywindow(int j)
 {
-	struct window* this = winmap[j];
+	struct arena* this = winmap[j];
 
 	//window, gc
 	this->fd = XCreateSimpleWindow(
@@ -105,7 +105,7 @@ void createmywindow(int j)
 	XMapWindow(dsp, this->fd);
 	fdmap[j] = this->fd;
 }
-void* uievent(struct window* this)
+void* uievent(struct arena* this)
 {
 	u64 x,y,k;
 	u64 why, what, where;
@@ -290,10 +290,10 @@ void* terminalthread(void* win)
 
 
 
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* win)
 {
 	XEvent ev;
-	u64 fd = dst->fd;
+	u64 fd = win->fd;
 
 	memset(&ev,0,sizeof(XEvent));
 	ev.type = Expose;
@@ -314,7 +314,7 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	int j;
 	this->type = hex32('w', 'i', 'n', 0);

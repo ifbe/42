@@ -8,12 +8,12 @@
 
 
 
-static struct window* src;
+static struct arena* src;
 
 
 
 
-void* uievent(struct window* this)
+void* uievent(struct arena* this)
 {
 	SDL_Event event;
 	this->win = SDL_CreateWindow(
@@ -138,18 +138,12 @@ void windowchoose()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
+	src = this;
 	this->w = 512;
         this->h = 512;
-        if(this->type == hex32('b','u','f',0))
-	{
-		src = this;
-	}
-	else
-	{
-		this->thread = startthread(uievent, this);
-	}
+	startthread(uievent, this);
 }
 void windowdelete()
 {

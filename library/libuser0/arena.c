@@ -68,8 +68,8 @@ int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-void* samechipnextpin(void*);
-void* samechipprevpin(void*);
+void* samesrcnextdst(void*);
+void* samesrcprevdst(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -78,14 +78,14 @@ void say(void*, ...);
 
 
 //
-static struct window* arena;
+static struct arena* arena = 0;
 static struct style* style = 0;
 static int winlen = 0;
 static int stylen = 0;
 void* allocarena()
 {
 	int j;
-	struct window* win;
+	struct arena* win;
 	while(1)
 	{
 		win = &arena[j];
@@ -117,7 +117,7 @@ int arenacreate()
 {
 	return 0;
 }
-int arenastop(struct window* win)
+int arenastop(struct arena* win)
 {
 	if(win == 0)return 0;
 	windowstop(win);
@@ -131,7 +131,7 @@ int arenastop(struct window* win)
 void* arenastart(u64 type, u64 addr)
 {
 	int j = 0;
-	struct window* win = allocarena();
+	struct arena* win = allocarena();
 	if(0 == win)return 0;
 
 	if(_win_ == type)
@@ -207,10 +207,10 @@ int arenaread()
 {
 	int j;
 	struct relation* rel;
-	struct window* win;
-	void* act;
-	void* sty;
-	void* pin;
+	struct arena* win;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
 
 	for(j=0;j<16;j++)
 	{
@@ -236,7 +236,7 @@ int arenaread()
 				pin = (void*)(rel->destfoot);
 				sty = (void*)(rel->selffoot);
 				videoread(win, sty, act, pin);
-				rel = samechipnextpin(rel);
+				rel = samesrcnextdst(rel);
 			}
 		}
 		else if(_mic_ == win->type)
@@ -249,7 +249,7 @@ int arenaread()
 				pin = (void*)(rel->destfoot);
 				sty = (void*)(rel->selffoot);
 				soundread(win, sty, act, pin);
-				rel = samechipnextpin(rel);
+				rel = samesrcnextdst(rel);
 			}
 		}
 	}

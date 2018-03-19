@@ -51,7 +51,7 @@ int ws_event(struct event* ev, void* buf)
 	}
 	return 0;
 }*/
-int wsclient_start(struct window* win)
+int wsclient_start(struct arena* win)
 {
 	return 0;
 }
@@ -59,21 +59,21 @@ int wsclient_start(struct window* win)
 
 
 
-int wsserver_start(struct window* win)
+int wsserver_start(struct arena* win)
 {
 	if(0 == buffer)buffer = startmemory(0x100000);
 
 	win->buf = buffer;
 	return 0;
 }
-int wsserver_stop(struct window* win)
+int wsserver_stop(struct arena* win)
 {
 	return 0;
 }
-int wsserver_read(struct window* win)
+int wsserver_read(struct arena* win)
 {
 	int len;
-	struct window* w = arteryread(win->fd);
+	struct arena* w = arteryread(win->fd);
 
 	len = websocket_read(w->buf, w->len);
 	if(len < 0)return 0;
@@ -82,7 +82,7 @@ int wsserver_read(struct window* win)
 	say("%.*s\n", len, w->buf);
 	return 0;
 }
-int wsserver_write(struct window* win)
+int wsserver_write(struct arena* win)
 {
 	if(0 == win)return 0;
 	if(0 == win->buf)return 0;

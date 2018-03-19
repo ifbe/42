@@ -13,10 +13,10 @@ int soundwrite(void* buf, int len);
 int soundstart(int rate, int chan);
 int soundstop();
 //
-void* samepinprevchip(void*);
-void* samepinnextchip(void*);
-void* samechipprevpin(void*);
-void* samechipnextpin(void*);
+void* samedstprevsrc(void*);
+void* samedstnextsrc(void*);
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
 void* relation_read(u64);
 void relation_write(void*, void*, u64, void*, void*, u64);
 

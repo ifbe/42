@@ -89,7 +89,7 @@ void windowread()
 void windowwrite()
 {
 }
-void windowstart(struct window* win)
+void windowstart(struct arena* win)
 {
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex32('c','l','i',0);;

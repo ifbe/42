@@ -32,7 +32,7 @@ DWORD WINAPI terminalthread(void* win)
 void windowread()
 {
 }
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* win)
 {
 }
 void windowlist()
@@ -44,7 +44,7 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex32('c','l','i',0);

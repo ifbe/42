@@ -222,7 +222,7 @@ int videostop()
 	alive = 0;
 	return 0;
 }
-int videostart(struct window* win)
+int videostart(struct arena* win)
 {
 	alive = 1;
 	startthread(visionlistener, 0);

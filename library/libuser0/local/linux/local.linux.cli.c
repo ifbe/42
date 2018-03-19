@@ -66,26 +66,18 @@ void windowwrite()
 void windowstop()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
-	if(this->type == hex32('b','u','f',0))
-	{
-		this->fmt = hex32('c','l','i',0);
-		return;
-	}
-	else
-	{
-		this->type = hex32('w','i','n',0);
-		this->fmt = hex32('c','l','i',0);
+	this->type = hex32('w','i','n',0);
+	this->fmt = hex32('c','l','i',0);
 
-		this->buf = 0;
-		this->len = 0;
+	this->buf = 0;
+	this->len = 0;
 
-		this->width = this->stride = 80;
-		this->height = 25;
+	this->width = this->stride = 80;
+	this->height = 25;
 
-		thread = startthread(terminalthread, this);
-	}
+	thread = startthread(terminalthread, this);
 }
 void windowcreate()
 {

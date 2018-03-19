@@ -3,7 +3,7 @@
 
 
 
-void windowwrite(struct window* dst, struct window* src)
+void windowwrite(struct arena* src)
 {
 	int x,y;
 	u8 bg=0,fg=0,c=0;
@@ -50,7 +50,7 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct window* this)
+void windowstart(struct arena* this)
 {
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex32('t','u','i',0);

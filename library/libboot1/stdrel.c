@@ -30,16 +30,16 @@ struct relation
 	u64 destfoot;
 	u32 desttype;
 	u32 destflag;
-	u32 samepinprevchip;
-	u32 samepinnextchip;
+	u32 samedstprevsrc;
+	u32 samedstnextsrc;
 
 	//0x20,0x3f
 	u64 selfchip;
 	u64 selffoot;
 	u32 selftype;
 	u32 selfflag;
-	u32 samechipprevpin;
-	u32 samechipnextpin;
+	u32 samesrcprevdst;
+	u32 samesrcnextdst;
 };
 static struct relation* recycle = 0;
 static struct relation* wirebuf = 0;
@@ -57,11 +57,11 @@ void relation_debug(struct relation* rel)
 	{
 		say("%x->",rel);
 
-		if(rel->samepinnextchip == 0){say("a");break;}
-		next = (void*)wirebuf + (rel->samepinnextchip);
+		if(rel->samedstnextsrc == 0){say("a");break;}
+		next = (void*)wirebuf + (rel->samedstnextsrc);
 
-		if(next->samepinprevchip == 0){say("b");break;}
-		temp = (void*)wirebuf + (next->samepinprevchip);
+		if(next->samedstprevsrc == 0){say("b");break;}
+		temp = (void*)wirebuf + (next->samedstprevsrc);
 
 		if(temp == rel)say("<-");
 		rel = next;
@@ -79,8 +79,8 @@ void relation_recycle(struct relation* rel)
 		return;
 	}
 
-	rel->samepinprevchip = 0;
-	rel->samepinnextchip = 0;
+	rel->samedstprevsrc = 0;
+	rel->samedstnextsrc = 0;
 
 	if(recycle == 0)
 	{
@@ -91,12 +91,12 @@ void relation_recycle(struct relation* rel)
 	temp = recycle;
 	while(1)
 	{
-		if(temp->samepinnextchip == 0)
+		if(temp->samedstnextsrc == 0)
 		{
-			temp->samepinnextchip = (void*)rel - (void*)wirebuf;
+			temp->samedstnextsrc = (void*)rel - (void*)wirebuf;
 			break;
 		}
-		temp = (void*)wirebuf + (temp->samepinnextchip);
+		temp = (void*)wirebuf + (temp->samedstnextsrc);
 	}
 }
 void* relation_grow()
@@ -110,8 +110,8 @@ void* relation_grow()
 	}
 
 	temp = recycle;
-	if(temp->samepinnextchip == 0)recycle = 0;
-	else recycle = (void*)wirebuf + (temp->samepinnextchip);
+	if(temp->samedstnextsrc == 0)recycle = 0;
+	else recycle = (void*)wirebuf + (temp->samedstnextsrc);
 	return temp;
 }
 void relation_swap(struct relation* m, struct relation* n)
@@ -132,67 +132,67 @@ void relation_swap(struct relation* m, struct relation* n)
 	if(uchip->irel == m)uchip->irel = n;
 	else if(uchip->irel == n)uchip->irel = m;
 
-	if(m->samepinprevchip != 0)
-	{mprev = (void*)wirebuf + (m->samepinprevchip);}
-	if(m->samepinnextchip != 0)
-	{mnext = (void*)wirebuf + (m->samepinnextchip);}
-	if(n->samepinprevchip != 0)
-	{nprev = (void*)wirebuf + (n->samepinprevchip);}
-	if(n->samepinnextchip != 0)
-	{nnext = (void*)wirebuf + (n->samepinnextchip);}
+	if(m->samedstprevsrc != 0)
+	{mprev = (void*)wirebuf + (m->samedstprevsrc);}
+	if(m->samedstnextsrc != 0)
+	{mnext = (void*)wirebuf + (m->samedstnextsrc);}
+	if(n->samedstprevsrc != 0)
+	{nprev = (void*)wirebuf + (n->samedstprevsrc);}
+	if(n->samedstnextsrc != 0)
+	{nnext = (void*)wirebuf + (n->samedstnextsrc);}
 //say("%x,%x,%x,%x\n",mprev,mnext,nprev,nnext);
 
 	if(mnext == n)
 	{
 //say("case1\n");
-		m->samepinnextchip = n->samepinnextchip;
-		n->samepinprevchip = m->samepinprevchip;
-		m->samepinprevchip = (void*)n - (void*)wirebuf;
-		n->samepinnextchip = (void*)m - (void*)wirebuf;
+		m->samedstnextsrc = n->samedstnextsrc;
+		n->samedstprevsrc = m->samedstprevsrc;
+		m->samedstprevsrc = (void*)n - (void*)wirebuf;
+		n->samedstnextsrc = (void*)m - (void*)wirebuf;
 		mnext = 0;
 		nprev = 0;
 	}
 	else if(mprev == n)
 	{
 //say("case2\n");
-		m->samepinprevchip = n->samepinprevchip;
-		n->samepinnextchip = m->samepinnextchip;
-		n->samepinprevchip = (void*)m - (void*)wirebuf;
-		m->samepinnextchip = (void*)n - (void*)wirebuf;
+		m->samedstprevsrc = n->samedstprevsrc;
+		n->samedstnextsrc = m->samedstnextsrc;
+		n->samedstprevsrc = (void*)m - (void*)wirebuf;
+		m->samedstnextsrc = (void*)n - (void*)wirebuf;
 		mprev = 0;
 		nnext = 0;
 	}
 	else
 	{
 //say("case3\n");
-		temp = m->samepinprevchip;
-		m->samepinprevchip = n->samepinprevchip;
-		n->samepinprevchip = temp;
+		temp = m->samedstprevsrc;
+		m->samedstprevsrc = n->samedstprevsrc;
+		n->samedstprevsrc = temp;
 
-		temp = m->samepinnextchip;
-		m->samepinnextchip = n->samepinnextchip;
-		n->samepinnextchip = temp;
+		temp = m->samedstnextsrc;
+		m->samedstnextsrc = n->samedstnextsrc;
+		n->samedstnextsrc = temp;
 	}
 
 	//say("!!!!%x,%x,%x,%x\n",mprev,mnext,nprev,nnext);
 	if(mprev != 0)
 	{
-		mprev->samepinnextchip = (void*)n - (void*)wirebuf;
+		mprev->samedstnextsrc = (void*)n - (void*)wirebuf;
 		//say("1:%x->%x\n",mprev,n);
 	}
 	if(mnext != 0)
 	{
-		mnext->samepinprevchip = (void*)n - (void*)wirebuf;
+		mnext->samedstprevsrc = (void*)n - (void*)wirebuf;
 		//say("2:%x->%x\n",mnext,n);
 	}
 	if(nprev != 0)
 	{
-		nprev->samepinnextchip = (void*)m - (void*)wirebuf;
+		nprev->samedstnextsrc = (void*)m - (void*)wirebuf;
 		//say("3:%x->%x\n",nprev,m);
 	}
 	if(nnext != 0)
 	{
-		nnext->samepinprevchip = (void*)m - (void*)wirebuf;
+		nnext->samedstprevsrc = (void*)m - (void*)wirebuf;
 		//say("4:%x->%x\n",nnext,m);
 	}
 
@@ -220,8 +220,8 @@ void* relation_generate(
 	w->desttype = utype;
 	w->destflag = 0;
 
-	w->samepinprevchip = 0;
-	w->samepinnextchip = 0;
+	w->samedstprevsrc = 0;
+	w->samedstnextsrc = 0;
 
 	//2.self
 	w->selfchip = (u64)bchip;
@@ -230,8 +230,8 @@ void* relation_generate(
 	w->selftype = btype;
 	w->selfflag = 0;
 
-	w->samechipprevpin = 0;
-	w->samechipnextpin = 0;
+	w->samesrcprevdst = 0;
+	w->samesrcnextdst = 0;
 
 	return w;
 }
@@ -242,20 +242,20 @@ void relation_destory(struct relation* this)
 	struct relation* next;
 	if(this == 0)return;
 
-	if(this->samepinprevchip == 0)prev = 0;
-	else prev = (void*)wirebuf + (this->samepinprevchip);
-	if(this->samepinnextchip == 0)next = 0;
-	else next = (void*)wirebuf + (this->samepinnextchip);
+	if(this->samedstprevsrc == 0)prev = 0;
+	else prev = (void*)wirebuf + (this->samedstprevsrc);
+	if(this->samedstnextsrc == 0)next = 0;
+	else next = (void*)wirebuf + (this->samedstnextsrc);
 
 	if(prev != 0)
 	{
-		if(next == 0)prev->samepinnextchip = 0;
-		else prev->samepinnextchip = (void*)next - (void*)wirebuf;
+		if(next == 0)prev->samedstnextsrc = 0;
+		else prev->samedstnextsrc = (void*)next - (void*)wirebuf;
 	}
 	if(next != 0)
 	{
-		if(prev == 0)next->samepinprevchip = 0;
-		else next->samepinprevchip = (void*)prev - (void*)wirebuf;
+		if(prev == 0)next->samedstprevsrc = 0;
+		else next->samedstprevsrc = (void*)prev - (void*)wirebuf;
 	}
 
 	uchip = (void*)(this->destchip);
@@ -292,9 +292,9 @@ int relation_write(
 	else
 	{
 		wc = h1->irel;
-		while(wc->samepinnextchip != 0)wc = (void*)wirebuf + (wc->samepinnextchip);
-		wc->samepinnextchip = (void*)ww - (void*)wirebuf;
-		ww->samepinprevchip = (void*)wc - (void*)wirebuf;
+		while(wc->samedstnextsrc != 0)wc = (void*)wirebuf + (wc->samedstnextsrc);
+		wc->samedstnextsrc = (void*)ww - (void*)wirebuf;
+		ww->samedstprevsrc = (void*)wc - (void*)wirebuf;
 	}
 
 	h2 = bchip;
@@ -302,40 +302,12 @@ int relation_write(
 	else
 	{
 		wc = h2->orel;
-		while(wc->samechipnextpin != 0)wc = (void*)wirebuf + (wc->samechipnextpin);
-		wc->samechipnextpin = (void*)ww - (void*)wirebuf;
-		ww->samechipprevpin = (void*)wc - (void*)wirebuf;
+		while(wc->samesrcnextdst != 0)wc = (void*)wirebuf + (wc->samesrcnextdst);
+		wc->samesrcnextdst = (void*)ww - (void*)wirebuf;
+		ww->samesrcprevdst = (void*)wc - (void*)wirebuf;
 	}
 
 	return 1;
-}
-
-
-
-
-void* samepinprevchip(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samepinprevchip == 0)return 0;
-	return (void*)wirebuf + (rel->samepinprevchip);
-}
-void* samepinnextchip(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samepinnextchip == 0)return 0;
-	return (void*)wirebuf + (rel->samepinnextchip);
-}
-void* samechipprevpin(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samechipprevpin == 0)return 0;
-	return (void*)wirebuf + (rel->samechipprevpin);
-}
-void* samechipnextpin(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samechipnextpin == 0)return 0;
-	return (void*)wirebuf + (rel->samechipnextpin);
 }
 void* relation_read(int off)
 {
@@ -346,6 +318,30 @@ void* relation_read(int off)
 
 
 
+void* samedstprevsrc(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samedstprevsrc == 0)return 0;
+	return (void*)wirebuf + (rel->samedstprevsrc);
+}
+void* samedstnextsrc(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samedstnextsrc == 0)return 0;
+	return (void*)wirebuf + (rel->samedstnextsrc);
+}
+void* samesrcprevdst(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samesrcprevdst == 0)return 0;
+	return (void*)wirebuf + (rel->samesrcprevdst);
+}
+void* samesrcnextdst(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samesrcnextdst == 0)return 0;
+	return (void*)wirebuf + (rel->samesrcnextdst);
+}
 void initstdrel(void* addr)
 {
 	wirebuf = addr;

@@ -67,7 +67,7 @@ void say(void*, ...);
 
 
 static void* world;
-static struct window* arena;
+static struct arena* arena;
 static ANativeWindow* native;
 static ANativeWindow_Buffer buffer;
 
