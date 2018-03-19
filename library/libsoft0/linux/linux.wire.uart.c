@@ -70,7 +70,7 @@ int startuart(char* p, int speed)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
-	obj[fd].sock = hex32('u','a','r','t');
+	obj[fd].type = hex32('u','a','r','t');
 	obj[fd].buf = (void*)malloc(0x100000);
 	epoll_add(fd);
 

@@ -105,7 +105,7 @@ int startshell(char* p)
 	{
 		ret = write(fd, "unset PROMPT_COMMAND\n", 21);
 
-		obj[fd].sock = hex32('u','a','r','t');
+		obj[fd].type = hex32('u','a','r','t');
 		obj[fd].buf = (void*)malloc(0x100000);
 		epoll_add(fd);
 		return fd;

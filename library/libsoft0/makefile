@@ -71,6 +71,7 @@ bsd:
 .PHONY:linux
 linux:
 	rm -f *.o
+	$(compiler) $(cflag) linux/linux.flow.epoll.c
 	$(compiler) $(cflag) linux/linux.flow.socket.c
 	$(compiler) $(cflag) linux/linux.memory.file.c
 	$(compiler) $(cflag) linux/linux.memory.folder.c
@@ -83,7 +84,6 @@ linux:
 	$(compiler) $(cflag) linux/linux.system.signal.c
 	$(compiler) $(cflag) linux/linux.system.thread.c
 	$(compiler) $(cflag) linux/linux.system.time.c
-	$(compiler) $(cflag) linux/linux.system.watcher.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
@@ -123,6 +123,7 @@ mac:
 .PHONY:win
 win:
 	rm -f *.o
+	$(compiler) $(cflag) win/win.flow.iocp.c
 	$(compiler) $(cflag) win/win.flow.socket.c
 	$(compiler) $(cflag) win/win.memory.file.c
 	$(compiler) $(cflag) win/win.memory.folder.c
@@ -134,7 +135,6 @@ win:
 	$(compiler) $(cflag) win/win.system.signal.c
 	$(compiler) $(cflag) win/win.system.thread.c
 	$(compiler) $(cflag) win/win.system.time.c
-	$(compiler) $(cflag) win/win.system.watcher.c
 	$(compiler) $(cflag) win/win.wire.bt.c
 	$(compiler) $(cflag) win/win.wire.i2c.c
 	$(compiler) $(cflag) win/win.wire.gpio.c

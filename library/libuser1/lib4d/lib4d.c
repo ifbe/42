@@ -13,6 +13,7 @@ void lib4d_create(void* addr)
 
 	asset_create(addr);
 	content_create(addr);
+	login_create(addr);
 }
 void lib4d_delete()
 {

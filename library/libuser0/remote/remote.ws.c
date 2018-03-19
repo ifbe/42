@@ -1,4 +1,6 @@
 #include"arena.h"
+#define _WS_ hex32('W','S',0,0)
+#define _ws_ hex32('w','s',0,0)
 //
 int readsocket(int, void*, int, int);
 int writesocket(int, void*, int, int);
@@ -7,6 +9,7 @@ int websocket_read(void*, int);
 int websocket_write(u64, u8*, int);
 //
 void* arteryread(int fd);
+void* arterystart(int type, u8* name);
 
 
 
@@ -53,6 +56,8 @@ int ws_event(struct event* ev, void* buf)
 }*/
 int wsclient_start(struct arena* win, u8* str)
 {
+	void* ret = arterystart(_ws_, str);
+	say("ret=%llx\n", ret);
 	return 0;
 }
 int wsclient_stop(struct arena* win)

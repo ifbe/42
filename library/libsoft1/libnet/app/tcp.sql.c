@@ -96,12 +96,12 @@ int sql_write_loginrequest(u8* buf, int len)
 
 #define SQL 0x4c5153
 #define sql 0x6c7173
-int sql_client(struct object* obj, int fd, u8* buf, int len)
+int sql_client(struct element* ele, int fd, u8* buf, int len)
 {
 	int ret;
 	printmemory(buf, len);
 
-	if(obj[fd].stage1 == 0)
+	if(ele[fd].stage1 == 0)
 	{
 		ret = sql_read_serverhello(buf, len);
 		if(ret <= 0)return 0;
@@ -110,7 +110,7 @@ int sql_client(struct object* obj, int fd, u8* buf, int len)
 		if(ret <= 0)return 0;
 
 		writesocket(fd, buf, 0, ret);
-		obj[fd].stage1 = 1;
+		ele[fd].stage1 = 1;
 	}
 	else
 	{
@@ -118,7 +118,7 @@ int sql_client(struct object* obj, int fd, u8* buf, int len)
 	}
 	return sql;
 }
-int sql_server(struct object* obj, int fd, u8* buf, int len)
+int sql_server(struct element* ele, int fd, u8* buf, int len)
 {
 	return 0;
 }

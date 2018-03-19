@@ -89,7 +89,7 @@ int tls_read_server_hello(u8* buf, int len)
 	say("}serverhello\n\n");
 	return len+5;
 }
-int tls_read_client_hello(struct object* obj, int fd, u8* buf, int len)
+int tls_read_client_hello(struct element* ele, int fd, u8* buf, int len)
 {
 	int j, k;
 	struct bothhello* p = (void*)buf;
@@ -113,7 +113,7 @@ int tls_read_client_hello(struct object* obj, int fd, u8* buf, int len)
 
 	//random
 	q = buf+11;
-	for(j=0;j<0x20;j++)obj[fd].data[j] = q[j];
+	for(j=0;j<0x20;j++)ele[fd].data[j] = q[j];
 	//printmemory(buf+11, 0x20);
 
 	//sessionid
@@ -316,7 +316,7 @@ int tls_write_client_hello(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_write_server_hello(struct object* obj, int fd, u8* buf, int len)
+int tls_write_server_hello(struct element* ele, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -334,7 +334,7 @@ int tls_write_server_hello(struct object* obj, int fd, u8* buf, int len)
 	*(u32*)(p+20) = getrandom();
 	*(u32*)(p+24) = getrandom();
 	*(u32*)(p+28) = getrandom();
-	for(j=0;j<0x20;j++)p[j] = obj[fd].data[j+0x20] = p[j];
+	for(j=0;j<0x20;j++)p[j] = ele[fd].data[j+0x20] = p[j];
 	p += 0x20;
 
 	//sessionid length
@@ -569,7 +569,7 @@ int tls_write_client_keyexch(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_write_server_keyexch(struct object* obj, int fd, u8* buf, int len)
+int tls_write_server_keyexch(struct element* ele, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -619,8 +619,8 @@ int tls_write_server_keyexch(struct object* obj, int fd, u8* buf, int len)
 	)//with cert's private key
 */
 	//put all @ [0,0x84]
-	for(j=0;j<0x20;j++)p[0x00+j] = obj[fd].data[j];
-	for(j=0;j<0x20;j++)p[0x20+j] = obj[fd].data[j+0x20];
+	for(j=0;j<0x20;j++)p[0x00+j] = ele[fd].data[j];
+	for(j=0;j<0x20;j++)p[0x20+j] = ele[fd].data[j+0x20];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
 	say("c+s+p:\n");
 	printmemory(p, 0x85);
@@ -868,7 +868,7 @@ int tls_write_both_data(u8* buf, int len)
 
 
 
-int tls_read(struct object* obj, int fd, u8* buf, int len)
+int tls_read(struct element* ele, int fd, u8* buf, int len)
 {
 	int ret=0;
 	int stage;
@@ -876,14 +876,14 @@ int tls_read(struct object* obj, int fd, u8* buf, int len)
 	if(buf[0] == 0x17)
 	{
 		ret = tls_read_both_data(buf,len);
-		obj[fd].stage1 = 0xff;
+		ele[fd].stage1 = 0xff;
 	}
 	else if(buf[0] == 0x16)
 	{
 		if(buf[5] == 1)
 		{
-			ret = tls_read_client_hello(obj, fd, buf, len);
-			obj[fd].stage1 = 1;
+			ret = tls_read_client_hello(ele, fd, buf, len);
+			ele[fd].stage1 = 1;
 		}
 		else if(buf[5] == 2)
 		{
@@ -891,21 +891,21 @@ int tls_read(struct object* obj, int fd, u8* buf, int len)
 			ret += tls_read_server_certificate(buf+ret, len);
 			ret += tls_read_server_keyexch(buf+ret, len);
 			ret += tls_read_server_done(buf+ret, len);
-			obj[fd].stage1 = 2;
+			ele[fd].stage1 = 2;
 		}
 		else if(buf[5] == 16)
 		{
 			ret = tls_read_client_keyexch(buf, len);
 			ret += tls_read_client_cipherspec(buf+ret, len);
 			ret += tls_read_client_hellorequest(buf+ret, len);
-			obj[fd].stage1 = 16;
+			ele[fd].stage1 = 16;
 		}
 		else if(buf[5] == 4)
 		{
 			ret = tls_read_server_newsession(buf, len);
 			ret += tls_read_server_cipherspec(buf+ret, len);
 			ret += tls_read_server_encrypthandshake(buf+ret, len);
-			obj[fd].stage1 = 4;
+			ele[fd].stage1 = 4;
 		}
 	}
 	else
@@ -916,10 +916,10 @@ int tls_read(struct object* obj, int fd, u8* buf, int len)
 
 	return ret;
 }
-int tls_write(struct object* obj, int fd, u8* buf, int len)
+int tls_write(struct element* ele, int fd, u8* buf, int len)
 {
 	int ret;
-	int stage = obj[fd].stage1;
+	int stage = ele[fd].stage1;
 
 	if(stage == 0)
 	{
@@ -927,9 +927,9 @@ int tls_write(struct object* obj, int fd, u8* buf, int len)
 	}
 	else if(stage == 1)
 	{
-		ret = tls_write_server_hello(obj, fd, buf, len);
+		ret = tls_write_server_hello(ele, fd, buf, len);
 		ret += tls_write_server_certificate(buf+ret, len);
-		ret += tls_write_server_keyexch(obj, fd, buf+ret, len);
+		ret += tls_write_server_keyexch(ele, fd, buf+ret, len);
 		ret += tls_write_server_done(buf+ret, len);
 	}
 	else if(stage == 2)
@@ -999,26 +999,34 @@ void tls_start()
 void tls_stop()
 {
 }
+void tls_create()
+{
+	
+}
+void tls_delete()
+{
+	
+}
 
 
 
 
 #define TLS 0x534c54
 #define tls 0x736c74
-int tls_client(struct object* obj, int fd, u8* buf, int len)
+int tls_client(struct element* ele, int fd, u8* buf, int len)
 {
 	//printmemory(buf, len);
-	tls_read(obj, fd, buf, len);
+	tls_read(ele, fd, buf, len);
 	return tls;
 }
-int tls_server(struct object* obj, int fd, u8* buf, int len)
+int tls_server(struct element* ele, int fd, u8* buf, int len)
 {
 	//tls >>>> ascii
-	len = tls_read(obj, fd, buf, len);
+	len = tls_read(ele, fd, buf, len);
 	if(len < 0)goto error;
 
 	//bin >>>> tls
-	len = tls_write(obj, fd, buf, len);
+	len = tls_write(ele, fd, buf, len);
 	if(len <= 0)goto error;
 
 good:
@@ -1027,7 +1035,7 @@ good:
 error:
 	return 0;
 }
-int tls_check(struct object* obj, int fd, u8* buf, int len)
+int tls_check(struct element* ele, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x16)return TLS;
 	return 0;

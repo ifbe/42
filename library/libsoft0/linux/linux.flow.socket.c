@@ -63,7 +63,7 @@ int writesocket(int fd, u8* buf, int off, int len)
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
 
-	type = obj[fd].sock;
+	type = obj[fd].type;
 	if( (type == 'U') | (type == 'u') )
 	{
 		ret = sendto(
@@ -83,7 +83,7 @@ int readsocket(int fd, u8* buf, int off, int len)
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
 
-	type = obj[fd].sock;
+	type = obj[fd].type;
 	if( (type == 'U') | (type == 'u') )
 	{
 		ret = sizeof(struct sockaddr_in);
@@ -134,8 +134,8 @@ int choosesocket()
 void stopsocket(int x)
 {
 	int ret = close(x);
-	obj[x].sock = 0;
 	obj[x].type = 0;
+	obj[x].name = 0;
 	printf("---- %d %d, %d\n", x, ret, errno);
 
 	//epoll_del(x);
@@ -186,14 +186,14 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//done
-		obj[rawfd].sock = type;
-		obj[rawfd].type = 0;
+		obj[rawfd].type = type;
+		obj[rawfd].name = 0;
 		epoll_add(rawfd);
 		return rawfd;
 	}
 	if(type == 'r')		//raw
 	{
-		return rawfd;
+		return 0;
 	}
 	else if(type == 'U')	//UDP
 	{
@@ -237,8 +237,8 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//done
-		obj[udpfd].sock = type;
-		obj[udpfd].type = 0;
+		obj[udpfd].type = type;
+		obj[udpfd].name = 0;
 		epoll_add(udpfd);
 		return udpfd;
 	}
@@ -293,8 +293,8 @@ udpnext:
 		peer->sin_addr.s_addr = inet_addr(addr);
 
 		//done
-		obj[udpfd].sock = type;
-		obj[udpfd].type = 0;
+		obj[udpfd].type = type;
+		obj[udpfd].name = 0;
 		epoll_add(udpfd);
 		return udpfd;
 	}
@@ -343,8 +343,8 @@ udpnext:
 		listen(tcpfd, 5);
 
 		//done
-		obj[tcpfd].sock = type;
-		obj[tcpfd].type = 0;
+		obj[tcpfd].type = type;
+		obj[tcpfd].name = 0;
 		epoll_add(tcpfd);
 		return tcpfd;
 	}
@@ -386,18 +386,18 @@ udpnext:
 		}
 
 		//done
-		obj[fd].sock = type;
-		obj[fd].type = 0;
+		obj[fd].type = type;
+		obj[fd].name = 0;
 		epoll_add(fd);
 		return fd;
 	}
 	else if(type == 'B')	//BT
 	{
-		return btfd;
+		return 0;
 	}
 	else if(type == 'b')	//bt
 	{
-		return btfd;
+		return 0;
 	}
 	else printf("error@type\n");
 	return 0;

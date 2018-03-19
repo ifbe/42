@@ -73,6 +73,7 @@ lib4d/help.asset.c \
 lib4d/help.bgfg.c \
 lib4d/help.ctx.c \
 lib4d/help.input.c \
+lib4d/help.login.c \
 lib4d/help.output.c \
 lib4d/help.touch.c \
 lib4d/help.vkbd.c \

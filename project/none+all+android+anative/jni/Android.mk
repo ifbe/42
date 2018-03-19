@@ -59,6 +59,7 @@ LOCAL_SRC_FILES += \
 library/libsoft0/android/android.flow.motion.sensor.c \
 library/libsoft0/android/android.flow.sound.audiotrack.c \
 library/libsoft0/android/android.flow.vision.qcamera2.c \
+library/libsoft0/linux/linux.flow.epoll.c \
 library/libsoft0/linux/linux.flow.socket.c \
 library/libsoft0/linux/linux.memory.file.c \
 library/libsoft0/linux/linux.memory.folder.c \
@@ -69,7 +70,6 @@ library/libsoft0/linux/linux.system.shell.c \
 library/libsoft0/linux/linux.system.signal.c \
 library/libsoft0/linux/linux.system.time.c \
 library/libsoft0/linux/linux.system.thread.c \
-library/libsoft0/linux/linux.system.watcher.c \
 library/libsoft0/linux/linux.wire.bt.c \
 library/libsoft0/linux/linux.wire.gpio.c \
 library/libsoft0/linux/linux.wire.i2c.c \
@@ -331,6 +331,7 @@ library/libuser1/lib4d/help.asset.c \
 library/libuser1/lib4d/help.bgfg.c \
 library/libuser1/lib4d/help.ctx.c \
 library/libuser1/lib4d/help.input.c \
+library/libuser1/lib4d/help.login.c \
 library/libuser1/lib4d/help.output.c \
 library/libuser1/lib4d/help.touch.c \
 library/libuser1/lib4d/help.vkbd.c \

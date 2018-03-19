@@ -165,16 +165,15 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[rawlisten/4].sock = type;
-		obj[rawlisten/4].type = 0;
+		obj[rawlisten/4].type = type;
+		obj[rawlisten/4].name = 0;
 		iocp_add(rawlisten);
 		iocp_mod(rawlisten);
 		return rawlisten/4;
 	}
 	else if(type == 'r')	//raw
 	{
-		SOCKET fd;
-		return fd/4;
+		return 0;
 	}
 	else if(type == 'U')	//UDP
 	{
@@ -203,8 +202,8 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[udplisten].sock = type;
-		obj[udplisten].type = 0;
+		obj[udplisten/4].type = type;
+		obj[udplisten/4].name = 0;
 		iocp_add(udplisten);
 		iocp_mod(udplisten);
 		return udplisten/4;
@@ -237,8 +236,8 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd].sock = type;
-		obj[fd].type = 0;
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;
@@ -284,8 +283,8 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//server.5
-		obj[tcplisten].sock = type;
-		obj[tcplisten].type = 0;
+		obj[tcplisten].type = type;
+		obj[tcplisten].name = 0;
 		iocp_add(tcplisten);
 
 		//client.1
@@ -364,15 +363,15 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
-		obj[fd].sock = type;
-		obj[fd].type = 0;
 		return fd/4;
 	}
 	else if(type == 'B')	//bluetooth server
 	{
-		return btlisten/4;
+		return 0;
 	}
 	else if(type == 'b')	//bluetooth client
 	{
@@ -387,10 +386,10 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
-		obj[fd].sock = type;
-		obj[fd].type = 0;
 		return fd/4;
 	}
 	else printf("error@type\n");

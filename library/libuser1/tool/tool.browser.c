@@ -67,6 +67,7 @@ static void browser_write(
 	{
 		haha->len = 0;
 		win = arenastart(hex32('w','s',0,0), buf);
+		relation_write(act, 0, _act_, win, 0, _win_);
 	}
 	else if(0x8 == ev->why)
 	{

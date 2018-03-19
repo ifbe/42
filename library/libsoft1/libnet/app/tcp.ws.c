@@ -234,19 +234,19 @@ int websocket_write(u64 fd, void* buf, int len)
 #define WS 0x5357
 #define wss 0x737377
 #define WSS 0x535357
-int ws_client(struct object* obj, int fd, u8* buf, int len)
+int ws_client(struct element* ele, int fd, u8* buf, int len)
 {
 	int stage;
 	printmemory(buf, len);
 
-	stage = obj[fd].stage1;
-	if(stage == 0)obj[fd].stage1 = 1;
+	stage = ele[fd].stage1;
+	if(stage == 0)ele[fd].stage1 = 1;
 
 	return ws;
 }
-int ws_server(struct object* obj, int fd, u8* buf, int len)
+int ws_server(struct element* ele, int fd, u8* buf, int len)
 {
-	int ret = obj[fd].stage1;
+	int ret = ele[fd].stage1;
 	if(ret == 0)
 	{
 		int ret = websocket_read_handshake(fd, buf, len);
@@ -255,22 +255,22 @@ int ws_server(struct object* obj, int fd, u8* buf, int len)
 		ret = writesocket(fd, buf, 0, ret);
 		if(ret <= 0)goto theend;
 
-		obj[fd].stage1 = 1;
+		ele[fd].stage1 = 1;
 		goto theend;
 	}
 
-	obj[fd].stage1 = 2;
-	obj[fd].len = len;
-	obj[fd].buf = buf;
+	ele[fd].stage1 = 2;
+	ele[fd].len = len;
+	ele[fd].buf = buf;
 
 theend:
 	return WS;
 }
-int wss_client(struct object* obj, int fd, u8* buf, int len)
+int wss_client(struct element* ele, int fd, u8* buf, int len)
 {
 	return wss;
 }
-int wss_server(struct object* obj, int fd, u8* buf, int len)
+int wss_server(struct element* ele, int fd, u8* buf, int len)
 {
 	return WSS;
 }

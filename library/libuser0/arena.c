@@ -377,9 +377,7 @@ void initarena(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j] = 0;
 
 	arena = (void*)(addr+0x000000);
-	//actor = (void*)(addr+0x100000);
 	style = (void*)(addr+0x200000);
-	//pinid = (void*)(addr+0x300000);
 
 	//remotecreate(arena);
 	initwindow(arena);

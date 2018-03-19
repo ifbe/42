@@ -272,7 +272,7 @@ void drawhyaline_rect(struct arena* win, u32 rgb,
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
+	u8* buf = (u8*)(win->buf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}
@@ -284,21 +284,22 @@ void drawhyaline_rect(struct arena* win, u32 rgb,
 	if(starty < 0)starty = 0;
 	if(endy >= height)endy = height-1;
 
-	b = rgb&0xff;
-	g = (rgb>>8)&0xff;
+	a = (rgb>>24)&0xff;
 	r = (rgb>>16)&0xff;
+	g = (rgb>>8)&0xff;
+	b = rgb&0xff;
 	for(y=starty;y<=endy;y++)
 	{
 		for(x=startx;x<=endx;x++)
 		{
 			z = buf[4*(y*stride + x) + 0];
-			buf[4*(y*stride + x) + 0] = (z/4) + b;
+			buf[4*(y*stride + x) + 0] = (z*(0x100-a) + b*a)>>8;
 
 			z = buf[4*(y*stride + x) + 1];
-			buf[4*(y*stride + x) + 1] = (z/4) + g;
+			buf[4*(y*stride + x) + 1] = (z*(0x100-a) + g*a)>>8;
 
 			z = buf[4*(y*stride + x) + 2];
-			buf[4*(y*stride + x) + 2] = (z/4) + r;
+			buf[4*(y*stride + x) + 2] = (z*(0x100-a) + r*a)>>8;
 
 			buf[4*(y*stride + x) + 3] = 0xff;
 		}

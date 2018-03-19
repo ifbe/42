@@ -39,7 +39,7 @@ void iocp_add(SOCKET fd)
 		(ULONG_PTR)pfd,
 		0
 	);
-	if('T' == obj[fd/4].sock)return;
+	if('T' == obj[fd/4].type)return;
 
 	pio->stage = 1;
 	pio->bufing.buf = malloc(4096);
@@ -91,8 +91,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			printf("[%x,%x]++++\n", fd, cc);
 			eventwrite('+', __fd__, cc/4, 0);
 
-			obj[cc/4].sock = 't';
-			obj[cc/4].type = 0;
+			obj[cc/4].type = 't';
+			obj[cc/4].name = 0;
 
 			iocp_add(cc);
 			iocp_mod(cc);
@@ -102,8 +102,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			printf("[%x]----\n",fd);
 			eventwrite('-', __fd__, fd/4, 0);
 
-			obj[cc/4].sock = 0;
 			obj[cc/4].type = 0;
+			obj[cc/4].name = 0;
 
 			iocp_del(fd);
 		}

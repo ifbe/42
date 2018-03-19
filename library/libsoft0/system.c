@@ -25,7 +25,10 @@ void say(void*, ...);
 
 
 //
-static struct object* obj;
+static struct object* obj = 0;
+static void* ppp = 0;
+static int objlen = 0;
+static int ppplen = 0;
 
 
 
@@ -42,7 +45,7 @@ int systemstop()
 {
 	return 0;
 }
-int systemstart(char* name, int flag)
+int systemstart()
 {
 	return 0;
 }
@@ -60,7 +63,7 @@ int systemlist(u8* buf)
 	void* addr;
 	for(j=0;j<0x1000;j++)
 	{
-		if(0 == obj[j].sock)continue;
+		if(0 == obj[j].type)continue;
 
 		k++;
 		addr = (void*)(&obj[j]);
@@ -94,7 +97,9 @@ void initsystem(u8* addr)
 {
 	int j;
 	for(j=0;j<0x400000;j++)addr[j]=0;
-	obj = (void*)addr;
+
+	obj = (void*)(addr+0x000000);
+	ppp = (void*)(addr+0x200000);
 
 	createrandom(addr);
 	createsignal(addr);
