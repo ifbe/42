@@ -1,11 +1,6 @@
 #include "artery.h"
 #define _uart_ hex32('u','a','r','t')
 //
-int netmgr_create(void*);
-int netmgr_delete();
-int netmgr_cd(void*, int);
-int netmgr_write(void*);
-//
 int tftp_write(void*, int);
 int tls_write_client_hello(void*, int);
 int secureshell_write_handshake(void*, int);
@@ -18,6 +13,10 @@ void ssh_start();
 void ssh_stop();
 void tls_start();
 void tls_stop();
+//
+u64 netmgr_eth(void*, int, void*, int);
+u64 netmgr_udp(void*, int, void*, int);
+u64 netmgr_tcp(void*, int, void*, int);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
@@ -56,7 +55,7 @@ int arterydelete()
 int arterycreate(u64 type, u8* name)
 {
 	int j,k,fd,ret;
-	u8 addr[0x100];	//127.0.0.1
+	u8 host[0x100];	//127.0.0.1
 	int port;	//2222
 	u8* url;	//dir/file.html
 	u8* t;		//http
@@ -107,20 +106,20 @@ int arterycreate(u64 type, u8* name)
 
 	//decode ipaddr
 	port = 80;
-	ret = parseurl(name, 0x100, addr, &port);
-	say("ip=%s,port=%d,url=%s\n", addr, port, name+ret);
+	url = name + parseurl(name, 0x100, host, &port);
+	say("host=%s,port=%d,url=%s\n", host, port, url);
 
 	//raw family
 	if(_RAW_ == type)		//raw server
 	{
-		fd = startsocket(addr, port, 'R');
+		fd = startsocket(host, port, 'R');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _RAW_;
 	}
 	else if(_raw_ == type)	//raw client
 	{
-		fd = startsocket(addr, port, 'r');
+		fd = startsocket(host, port, 'r');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _raw_;
@@ -135,28 +134,28 @@ int arterycreate(u64 type, u8* name)
 	//udp family
 	else if(_UDP_ == type)	//udp server
 	{
-		fd = startsocket(addr, port, 'U');
+		fd = startsocket(host, port, 'U');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _UDP_;
 	}
 	else if(_udp_ == type)	//udp client
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(host, port, 'u');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _udp_;
 	}
 	else if(_DNS_ == type)	//DNS server
 	{
-		fd = startsocket(addr, port, 'U');
+		fd = startsocket(host, port, 'U');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _DNS_;
 	}
 	else if(_dns_ == type)	//DNS client
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(host, port, 'u');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _dns_;
@@ -165,14 +164,14 @@ int arterycreate(u64 type, u8* name)
 	}
 	else if(_HOLE_ == type)	//p2p server
 	{
-		fd = startsocket(addr, port, 'U');
+		fd = startsocket(host, port, 'U');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _HOLE_;
 	}
 	else if(_hole_ == type)	//p2p client
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(host, port, 'u');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _hole_;
@@ -180,14 +179,14 @@ int arterycreate(u64 type, u8* name)
 	}
 	else if(_TFTP_ == type)	//tftp server
 	{
-		fd = startsocket(addr, port, 'U');
+		fd = startsocket(host, port, 'U');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _TFTP_;
 	}
 	else if(_tftp_ == type)	//tftp client
 	{
-		fd = startsocket(addr, port, 'u');
+		fd = startsocket(host, port, 'u');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _tftp_;
@@ -198,14 +197,14 @@ int arterycreate(u64 type, u8* name)
 	//tcp family
 	else if(_TCP_ == type)	//tcp server
 	{
-		fd = startsocket(addr, port, 'T');
+		fd = startsocket(host, port, 'T');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _TCP_;
 	}
 	else if(_tcp_ == type)	//tcp client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _tcp_;
@@ -213,14 +212,14 @@ int arterycreate(u64 type, u8* name)
 	else if(_SSH_ == type)	//ssh server
 	{
 		ssh_start();
-		fd = startsocket(addr, port, 'T');
+		fd = startsocket(host, port, 'T');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _SSH_;
 	}
 	else if(_ssh_ == type)	//ssh client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _ssh_;
@@ -230,14 +229,14 @@ int arterycreate(u64 type, u8* name)
 	else if(_TLS_ == type)	//tls server
 	{
 		tls_start();
-		fd = startsocket(addr, port, 'T');
+		fd = startsocket(host, port, 'T');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _TLS_;
 	}
 	else if(_tls_ == type)	//tls client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _tls_;
@@ -246,23 +245,23 @@ int arterycreate(u64 type, u8* name)
 	}
 	else if(_sql_ == type)	//sql client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _sql_;
 	}
 	else if(_http_ == type)	//http client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _http_;
-		ret = http_write_request(datahome, 0x100000, url, addr);
+		ret = http_write_request(datahome, 0x100000, url, host);
 		ret = writesocket(fd, datahome, 0, ret);
 	}
 	else if(_ws_ == type)	//ws client
 	{
-		fd = startsocket(addr, port, 't');
+		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _ws_;
@@ -272,8 +271,16 @@ int arterycreate(u64 type, u8* name)
 
 	return fd;
 }
-int arterystop()
+int arterystop(int fd)
 {
+	if(_file_ == obj[fd].type)
+	{
+		stopfile(fd);
+	}
+	else
+	{
+		stopsocket(fd);
+	}
 	return 0;
 }
 int arterystart()
@@ -286,7 +293,66 @@ void* arteryread(int fd)
 }
 int arterywrite(struct event* ev)
 {
-	return netmgr_write(ev);
+	int len;
+	u64 type;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+
+	if(why == '+')return 0;
+	else if(why == '-')return 0;
+
+	type = obj[where].type;
+
+	//raw
+	if(type == 'R')
+	{
+		len = readsocket(where, datahome, 0, 0x100000);
+		if(len <= 0)return 0;
+
+		netmgr_eth(obj, where, datahome, len);
+		return 0;
+	}
+
+	//udp
+	if( (type == 'U')|(type == 'u') )
+	{
+		while(1)
+		{
+			len = readsocket(where, datahome, 0, 0x100000);
+			if(len <= 0)return 0;		//sticky
+
+			netmgr_udp(obj, where, datahome, len);
+		}
+	}
+
+	//read socket
+	len = readsocket(where, datahome, 0, 0x100000);
+	if(len == 0)return 0;		//sticky
+	if(len < 0)goto fail;		//wrong
+
+	//serve socket
+	what = netmgr_tcp(obj, where, datahome, len);
+	if(what == 0)goto fail;
+
+	//change event
+	obj[where].name = what;
+	if(_WS_ == what)
+	{
+		ev->why = len;
+		ev->what = hex32('w','@',0,0);
+		return 42;
+	}
+	else if(_http_ == what)
+	{
+		ev->why = len;
+		ev->what = _http_;
+	}
+	return 0;
+
+fail:
+	stopsocket(where);
+	return 0;
 }
 int arterylist(u8* buf, int len)
 {
@@ -322,8 +388,6 @@ void freeartery()
 {
 	//say("[8,c):freeing artery\n");
 
-	netmgr_delete();
-
 	qqq = 0;
 	ele = 0;
 	ppp = 0;
@@ -335,8 +399,6 @@ void initartery(void* addr)
 	ele = addr+0x100000;
 	ppp = addr+0x200000;
 	qqq = addr+0x300000;
-
-	netmgr_create(addr);
 
 	//say("[8,c):inited artery\n");
 }

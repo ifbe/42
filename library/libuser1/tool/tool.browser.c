@@ -1,5 +1,6 @@
 #include "actor.h"
 void* arenastart(u64 type, void* addr);
+void* arterycreate(u64 type, void* addr);
 void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
@@ -66,8 +67,8 @@ static void browser_write(
 	if(0xd == ev->why)
 	{
 		haha->len = 0;
-		win = arenastart(hex32('w','s',0,0), buf);
-		relation_write(act, 0, _act_, win, 0, _win_);
+		win = arterycreate(0, buf);
+		//relation_write(act, 0, _act_, win, 0, _win_);
 	}
 	else if(0x8 == ev->why)
 	{

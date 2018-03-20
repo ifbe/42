@@ -80,25 +80,21 @@ int writesocket(int, void*, int, int);
 
 
 
-static struct object* obj;
-static u8* datahome = 0;
-
-
-
-
-void netmgr_bt(int fd, u8* buf, int len)
+void netmgr_bt(struct object* obj, int fd, u8* buf, int len)
 {
 }
-void netmgr_eth(int fd, u8* buf, int len)
+void netmgr_eth(struct object* obj, int fd, u8* buf, int len)
 {
 	raw_server(obj, fd, buf, len);
 }
-void netmgr_wifi(int fd, u8* buf, int len)
+void netmgr_wifi(struct object* obj, int fd, u8* buf, int len)
 {
 }
-void netmgr_udp(int fd, u8* buf, int len)
+void netmgr_udp(struct object* obj, int fd, u8* buf, int len)
 {
 	u64 name = obj[fd].name;
+	printmemory(buf, len);
+
 	if(_dns_ == name)dns_client(obj, fd, buf, len);
 	else if(_DNS_ == name)dns_server(obj, fd, buf, len);
 	else if(_hole_ == name)hole_client(obj, fd, buf, len);
@@ -107,7 +103,7 @@ void netmgr_udp(int fd, u8* buf, int len)
 	else if(_TFTP_ == name)tftp_server(obj, fd, buf, len);
 	else say("name=%llx\n",name);
 }
-u64 netmgr_tcp(int fd, u8* buf, int len)
+u64 netmgr_tcp(struct object* obj, int fd, u8* buf, int len)
 {
 	int ret;
 	u64 name = obj[fd].name;
@@ -173,133 +169,4 @@ protocol:
 
 	else printmemory(buf, len);
 	return name;
-}
-
-
-
-
-int netmgr_read()
-{
-	return 0;
-}
-int netmgr_write(struct event* ev)
-{
-	int len;
-	u64 type;
-
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	//u64 when = p[3];
-
-	if(why == '+'){}
-	else if(why == '-'){}
-	else if(why == '@')
-	{
-		type = obj[where].type;
-		//say("%x\n",type);
-/*
-		//bluetooth
-		if(type == 'B')
-		{
-			netmgr_bt(where, datahome, len);
-			return 0;
-		}
-		//wifi
-		if(type == 'W')
-		{
-			netmgr_wifi(where, datahome, len);
-			return 0;
-		}
-*/
-		//raw
-		if(type == 'R')
-		{
-			len = readsocket(where, datahome, 0, 0x100000);
-			if(len == 0)return 0;		//sticky
-			if(len < 0)goto fail;		//wrong
-
-			netmgr_eth(where, datahome, len);
-			return 0;
-		}
-
-		//udp
-		if( (type == 'U')|(type == 'u') )
-		{
-		while(1)
-		{
-			len = readsocket(where, datahome, 0, 0x100000);
-			if(len <= 0)return 0;		//sticky
-
-			netmgr_udp(where, datahome, len);
-		}
-		}
-
-		//read socket
-		len = readsocket(where, datahome, 0, 0x100000);
-		if(len == 0)return 0;		//sticky
-		if(len < 0)goto fail;		//wrong
-
-		//serve socket
-		what = netmgr_tcp(where, datahome, len);
-		if(what == 0)goto fail;
-
-		//change event
-		obj[where].name = what;
-		if(_WS_ == what)
-		{
-			ev->why = len;
-			ev->what = hex32('w','@',0,0);
-			return 42;
-		}
-		else if(_http_ == what)
-		{
-			ev->why = len;
-			ev->what = _http_;
-		}
-	}
-	return 0;
-
-fail:
-	stopsocket(where);
-	return 0;
-}
-int netmgr_list()
-{
-	return 0;
-}
-int netmgr_cd()
-{
-	return 0;
-}
-int netmgr_stop(u8* p)
-{
-	int j;
-	u64 fd=0;
-	if(p==0)
-	{
-		for(j=6;j<1024;j++)
-		{
-			stopsocket(j);
-			return 0;
-		}
-	}
-
-	decstr2data(p, &fd);
-	stopsocket(fd);
-
-	//say("[%d]out\n",fd);
-	return 0;
-}
-int netmgr_start()
-{
-	return 0;
-}
-void netmgr_delete()
-{
-}
-void netmgr_create(void* w)
-{
-	obj = w + 0x000000;
-	datahome = w + 0x300000;
 }
