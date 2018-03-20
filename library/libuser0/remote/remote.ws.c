@@ -9,7 +9,7 @@ int websocket_read(void*, int);
 int websocket_write(u64, u8*, int);
 //
 void* arteryread(int fd);
-void* arterystart(int type, u8* name);
+void* arterycreate(int type, u8* name);
 
 
 
@@ -56,7 +56,7 @@ int ws_event(struct event* ev, void* buf)
 }*/
 int wsclient_start(struct arena* win, u8* str)
 {
-	void* ret = arterystart(_ws_, str);
+	void* ret = arterycreate(_ws_, str);
 	say("ret=%llx\n", ret);
 	return 0;
 }

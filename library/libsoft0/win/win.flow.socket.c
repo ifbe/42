@@ -122,7 +122,18 @@ int stopsocket(SOCKET fd)
 }
 u64 startsocket(char* addr, int port, int type)
 {
+	struct hostent* host;
 	int ret;
+	for(ret=0;ret<256;ret++)
+	{
+		if((addr[ret]>='a')&&(addr[ret]<='z'))
+		{
+			host = gethostbyname(addr);
+			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+			break;
+		}
+	}
+
 	if(type == 'R')		//RAW
 	{
 		rawlisten = WSASocket(
@@ -282,11 +293,6 @@ u64 startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//server.5
-		obj[tcplisten].type = type;
-		obj[tcplisten].name = 0;
-		iocp_add(tcplisten);
-
 		//client.1
 		LPFN_ACCEPTEX acceptex = NULL;
 		GUID guidacceptex = WSAID_ACCEPTEX;
@@ -335,6 +341,10 @@ u64 startsocket(char* addr, int port, int type)
 				(void*)pio
 			);
 		}
+
+		obj[tcplisten/4].type = type;
+		obj[tcplisten/4].name = 0;
+		iocp_add(tcplisten);
 		return tcplisten/4;
 	}
 	else if(type == 't')	//tcp client

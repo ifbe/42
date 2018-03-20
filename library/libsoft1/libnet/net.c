@@ -67,8 +67,6 @@ int chat_server( void* p, int fd, void* buf, int len);
 int raw_client(  void* p, int fd, void* buf, int len);
 int raw_server(  void* p, int fd, void* buf, int len);
 //
-int buf2net(u8* p, int max, u8* type, u8* addr, int* port);
-int movsb(void*, void*, int);
 int decstr2data(void*, void*);
 int hexstr2data(void*, void*);
 int ncmp(void*, void*, int);

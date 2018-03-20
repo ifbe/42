@@ -31,8 +31,8 @@ void carveascii_area(
 struct object
 {
 	//[0x00,0x0f]
-	u64 sock;	//raw, bt, udp, tcp?
-	u64 type;
+	u64 type;	//raw, bt, udp, tcp?
+	u64 name;
 	union{
 		void* irel;
 		u64 pad0;
@@ -209,14 +209,14 @@ void login_read_pixel(struct arena* win)
 	d = h*3/4;
 	for(j=0;j<0x1000;j++)
 	{
-		if(0 == obj[j].sock)continue;
+		if(0 == obj[j].type)continue;
 		x = (j%64)%8;
 		y = (j%64)/8;
 		drawicon_1(
 			win, 0x80ffffff,
 			(x+0)*w/8+1, (y+0)*h/32+1+d,
 			(x+1)*w/8-1, (y+1)*h/32-1+d,
-			(u8*)&obj[j], 8
+			(u8*)&obj[j].name, 8
 		);
 	}
 

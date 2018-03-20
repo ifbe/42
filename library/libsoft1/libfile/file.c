@@ -109,12 +109,6 @@ void say(void*, ...);
 
 
 
-static u8* dirhome;
-static u8* datahome;
-
-
-
-
 int openreadclose(void* name, void* buf, int off, int len)
 {
 	int ret;
@@ -227,120 +221,57 @@ void cleverwrite(
 
 
 
-int file_read(u8* buf, int len)
+int file_read(u8* buf, int len, u8* dst, int max)
 {
+	u64 type;
+
 	//picture
-	if(check_bmp(buf) != 0)return _bmp_;
-	else if(check_flif(buf) != 0)return _flif_;
-	else if(check_jpg(buf) != 0)return _jpg_;
-	else if(check_png(buf) != 0)return _png_;
-	else if(check_webp(buf) != 0)return _webp_;
+	if(check_bmp(buf) != 0)type = _bmp_;
+	else if(check_flif(buf) != 0)type = _flif_;
+	else if(check_jpg(buf) != 0)type = _jpg_;
+	else if(check_png(buf) != 0)type = _png_;
+	else if(check_webp(buf) != 0)type = _webp_;
 
 	//compress
-	else if(check_7z(buf) != 0)return _7z_;
-	else if(check_cpio(buf) != 0)return _cpio_;
-	else if(check_gz(buf) != 0)return _gz_;
-	else if(check_tar(buf) != 0)return _tar_;
-	else if(check_zip(buf) != 0)return _zip_;
+	else if(check_7z(buf) != 0)type = _7z_;
+	else if(check_cpio(buf) != 0)type = _cpio_;
+	else if(check_gz(buf) != 0)type = _gz_;
+	else if(check_tar(buf) != 0)type = _tar_;
+	else if(check_zip(buf) != 0)type = _zip_;
 
 	//executable
-	else if(check_elf(buf) != 0)return _elf_;
-	else if(check_macho(buf) != 0)return _macho_;
-	else if(check_pe(buf) != 0)return _pe_;
+	else if(check_elf(buf) != 0)type = _elf_;
+	else if(check_macho(buf) != 0)type = _macho_;
+	else if(check_pe(buf) != 0)type = _pe_;
 
 	//filesystem
-	else if(check_ext(buf) != 0)return _ext_;
-	else if(check_fat(buf) != 0)return _fat_;
-	else if(check_hfs(buf) != 0)return _hfs_;
-	else if(check_ntfs(buf) != 0)return _ntfs_;
+	else if(check_ext(buf) != 0)type = _ext_;
+	else if(check_fat(buf) != 0)type = _fat_;
+	else if(check_hfs(buf) != 0)type = _hfs_;
+	else if(check_ntfs(buf) != 0)type = _ntfs_;
 
 	//parttable
-	else if(check_gpt(buf) != 0)return _gpt_;
-	else if(check_mbr(buf) != 0)return _mbr_;
-
-	return 0;
-}
-int file_write()
-{
-	return 0;
-}
-int file_ls()
-{
-	int j;
-	u8* p8;
-	u64* p64;
-	for(j=0;j<0x10;j++)
-	{
-		p8 = dirhome + j*0x80;
-		p64 = (void*)p8;
-		if(p64[0] == 0)break;
-
-		say("%-16s%-16s%s\n", p8, p8+8, p8+0x40);
-	}
-	return 0;
-}
-int file_cd(u8* p, int t)
-{
-	int j,k;
-	int len;
-	u64 type;
-	u8* q;
-
-	if(_FILE_ == t)
-	{
-		len = openwriteclose(p, datahome, 0, 0x10000);
-		return 0;
-	}
-
-	//read
-	len = openreadclose(p, datahome, 0, 0x10000);
-	if(len <= 0)
-	{
-		say("error@openreadclose\n");
-		return 0;
-	}
-
-	//11111111
-	type = file_read(datahome, len);
-	if(0 == type)
-	{
-		j = 0;
-		while(p[j] >= 0x20)j++;
-
-		for(;j >= 0;j--)
-		{
-			if('.' == p[j])
-			{
-				j++;
-				q = (void*)&type;
-				for(k=0;k<4;k++)
-				{
-					if(0 == p[j+k])break;
-					q[k] = p[j+k];
-				}
-				break;
-			}
-		}
-	}
+	else if(check_gpt(buf) != 0)type = _gpt_;
+	else if(check_mbr(buf) != 0)type = _mbr_;
 
 	//picture
-	if(_bmp_ == type)parse_bmp(datahome, len);
-	else if(_flif_ == type)parse_flif(datahome, len);
-	else if(_jpg_ == type)parse_jpg(datahome, len);
-	else if(_png_ == type)parse_png(datahome, len);
-	else if(_webp_ == type)parse_webp(datahome, len);
+	if(_bmp_ == type)parse_bmp(buf, len);
+	else if(_flif_ == type)parse_flif(buf, len);
+	else if(_jpg_ == type)parse_jpg(buf, len);
+	else if(_png_ == type)parse_png(buf, len);
+	else if(_webp_ == type)parse_webp(buf, len);
 
 	//compress
-	else if(_7z_ == type)parse_7z(datahome);
-	else if(_cpio_ == type)parse_cpio(datahome);
-	else if(_gz_ == type)parse_gz(datahome);
-	else if(_tar_ == type)parse_tar(datahome);
-	else if(_zip_ == type)parse_zip(datahome);
+	else if(_7z_ == type)parse_7z(buf);
+	else if(_cpio_ == type)parse_cpio(buf);
+	else if(_gz_ == type)parse_gz(buf);
+	else if(_tar_ == type)parse_tar(buf);
+	else if(_zip_ == type)parse_zip(buf);
 
 	//executable
-	else if(_elf_ == type)parse_elf(datahome);
-	else if(_macho_ == type)parse_macho(datahome);
-	else if(_pe_ == type)parse_pe(datahome);
+	else if(_elf_ == type)parse_elf(buf);
+	else if(_macho_ == type)parse_macho(buf);
+	else if(_pe_ == type)parse_pe(buf);
 
 	//filesystem
 	else if(_ext_ == type)say("ext\n");
@@ -349,32 +280,18 @@ int file_cd(u8* p, int t)
 	else if(_ntfs_ == type)say("ntfs\n");
 
 	//model
-	else if(_stl_ == type)parse_stl(datahome);
+	else if(_stl_ == type)parse_stl(buf);
 
 	//parttable
-	else if(_gpt_ == type)parse_gpt(datahome, dirhome);
-	else if(_mbr_ == type)parse_mbr(datahome, dirhome);
+	//else if(_gpt_ == type)parse_gpt(buf, dirhome);
+	//else if(_mbr_ == type)parse_mbr(buf, dirhome);
 
 	//unknown
-	else printmemory(datahome, 0x200);
+	else printmemory(buf, 0x200);
 
 	return 0;
 }
-int file_start()
-{
-	return 0;
-}
-int file_stop()
-{
-	return 0;
-}
-int file_create(void* softaddr, u64* p)
-{
-	dirhome = softaddr + 0x200000;
-	datahome = softaddr + 0x300000;
-	return 0;
-}
-int file_delete()
+int file_write(u8* buf, int len, u8* dst, u8* max)
 {
 	return 0;
 }

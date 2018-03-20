@@ -87,6 +87,7 @@ static void browser_write(
 		if(len < 0xfc)
 		{
 			buf[len] = ev->why;
+			buf[len+1] = 0;
 			haha->len = len+1;
 		}
 	}
