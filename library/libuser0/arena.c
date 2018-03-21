@@ -84,17 +84,13 @@ static int winlen = 0;
 static int stylen = 0;
 void* allocarena()
 {
-	struct arena* win;
-	int j=0;
-	while(1)
+	int j;
+	for(j=0;j<0x100;j++)
 	{
-		win = &arena[j];
-		if(0 == win->type)break;
-
-		j++;
-		if(j >= 0x100)return 0;
+		if(0 == arena[j].type)break;
 	}
-	return win;
+	if(j >= 0x100)return 0;
+	return &arena[j];
 }
 void* allocstyle()
 {

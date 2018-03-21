@@ -6,65 +6,64 @@
 
 
 
-struct waveinfo
-{
-	void* buf;
-	int len;
-	int enq;
-	int deq;
-};
-static struct waveinfo info;
-//
-static int alive=0;
-static u64 thread=0;
-//
-static int freq;
-static int chan;
+static struct arena* working;
 static WAVEFORMATEX fmt;
+static int alive = 0;
 //
 static HWAVEIN wavein;
-static WAVEHDR headin;
+static WAVEHDR headin[8];
+static u8* ibuf = 0;
+static int icur = 0;
 //
 static HWAVEOUT waveout;
-static WAVEHDR headout;
+static WAVEHDR headout[8];
+static u8* obuf = 0;
+static int ocur = 0;
+static int olen = 0;
 
 
 
 
-DWORD WINAPI soundlistener(LPVOID pM)
+static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
 {
-	int ret;
-	u32 count=0;
-
-	while(alive == 1)
+	//printf("@icb\n");
+	if(WIM_DATA == uMsg)
 	{
-		headin.lpData = (info.buf)+(info.enq);
-		headin.dwBufferLength = 4096;
-		headin.dwBytesRecorded = 0;
-		headin.dwUser = 0;
-		headin.dwFlags = 0;
-		headin.dwLoops = 1;
-
-		waveInPrepareHeader(wavein, &headin, sizeof(WAVEHDR));
-		waveInAddBuffer(wavein, &headin, sizeof (WAVEHDR));
-		waveInStart(wavein);
-		Sleep(23);
-		waveInReset(wavein);
-
-		info.enq = (info.enq + 4096) % 0x100000;
-		eventwrite((u64)&info, _mic_, 0, 0);
-	}
-	return 0;
-}
-static void CALLBACK CB(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
-{
-	switch (uMsg)
-	{
-		case WOM_DONE://上次缓存播放完成,触发该事件
+		//printf("WIM_DATA:%d\n", icur);
+		struct relation* orel = working->orel;
+		if(0 != orel)
 		{
-			headout.dwBufferLength = 0;
-			//printf("done\n");
+			working->len = 1024*2;
+			working->buf = ibuf + (1024*2*icur);
+			eventwrite((u64)orel, _act_, orel->destchip, 0);
 		}
+
+		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
+		icur = (icur+1)%8;
+	}
+	else if(WIM_OPEN == uMsg)
+	{
+		printf("WIM_OPEN\n");
+	}
+	else if(WIM_CLOSE == uMsg)
+	{
+		printf("WIM_CLOSE\n");
+	}
+}
+static void CALLBACK ocb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
+{
+	//printf("@ocb\n");
+	if(WIM_DATA == uMsg)
+	{
+		printf("WOM_DONE\n");
+	}
+	else if(WOM_OPEN == uMsg)
+	{
+		printf("WOM_OPEN\n");
+	}
+	else if(WOM_CLOSE == uMsg)
+	{
+		printf("WOM_CLOSE\n");
 	}
 }
 
@@ -81,56 +80,73 @@ void soundread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
 }
 void soundwrite(u8* buf, int len)
 {
-	headout.dwLoops = 0L;
-	headout.lpData = buf;
-	headout.dwBufferLength = len;
-	headout.dwFlags = 0L;
-	waveOutPrepareHeader(waveout, &headout, sizeof(WAVEHDR));
-	waveOutWrite(waveout, &headout, sizeof(WAVEHDR));
+	int j;
+	if(0 == obuf)obuf = malloc(0x100000);
+	if(len >= 0x100000)return;
+
+	if(olen+len >= 0x100000)olen = 0;
+	for(j=0;j<len;j++)obuf[olen+j] = buf[j];
+
+	headout[ocur].lpData = obuf+olen;
+	headout[ocur].dwBufferLength = len;
+	headout[ocur].dwFlags = 0L;
+	headout[ocur].dwLoops = 0L;
+	waveOutPrepareHeader(waveout, &headout[ocur], sizeof(WAVEHDR));
+	waveOutWrite(waveout, &headout[ocur], sizeof(WAVEHDR));
+
+	olen = olen+len;
 }
 void soundstop()
 {
 	waveInClose(wavein);
-	waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
+	waveOutClose(waveout);
+	//waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
 }
-void soundstart(unsigned int ra, int ch)
+void soundstart(struct arena* win)
 {
-	freq = ra;
-	chan = 1;
+	int j;
+	working = win;
 
 	//both
-	fmt.wFormatTag = WAVE_FORMAT_PCM;	//声音格式为PCM
-	fmt.nChannels = 1;			//采样声道数，2声道
-	fmt.nSamplesPerSec = freq;		//采样率，16000次/秒
-	fmt.wBitsPerSample = 16;		//采样比特，16bits/次
-	fmt.nAvgBytesPerSec = freq*chan;	//每秒多少字节的数据
-	fmt.nBlockAlign = 2;			//一个块的大小
+	fmt.wFormatTag = WAVE_FORMAT_PCM;
+	fmt.nAvgBytesPerSec = 44100*2;
+	fmt.nSamplesPerSec = 44100;
+	fmt.wBitsPerSample = 16;
+	fmt.nChannels = 1;
+	fmt.nBlockAlign = 2;
 	fmt.cbSize = 0;
 
 	//in
-	HANDLE wait;
-	wait = CreateEvent(NULL, 0, 0, NULL);
-	waveInOpen(&wavein, WAVE_MAPPER, &fmt, (DWORD_PTR)wait, 0L, CALLBACK_EVENT);
+	waveInOpen(
+		&wavein, WAVE_MAPPER,
+		&fmt, (DWORD_PTR)icb,
+		0L, CALLBACK_FUNCTION
+	);
+	waveOutOpen(
+		&waveout, WAVE_MAPPER,
+		&fmt, (DWORD_PTR)ocb,
+		0L, CALLBACK_FUNCTION
+	);
 
-	//out
-	waveOutOpen(&waveout, WAVE_MAPPER, &fmt, (u64)CB, 0L, CALLBACK_FUNCTION);
-	//
-	if(info.buf == 0)
+	icur = 0;
+	ibuf = malloc(1024*2*8);
+	for(j=0;j<8;j++)
 	{
-		info.enq = 0;
-		info.deq = 0;
-		info.len = 0x100000;
-		info.buf = malloc(info.len);
+		headin[j].lpData = ibuf + (1024*2*j);
+		headin[j].dwBufferLength = 1024*2;
+		headin[j].dwBytesRecorded = 0;
+		headin[j].dwUser = 0;
+		headin[j].dwFlags = 0;
+		headin[j].dwLoops = 1;
+		waveInPrepareHeader(wavein, &headin[j], sizeof(WAVEHDR));
+		waveInAddBuffer(wavein, &headin[j], sizeof (WAVEHDR));
 	}
 
-	//
-	alive = 1;
-	thread = startthread(soundlistener, 0);
+	waveInStart(wavein);
 }
 void sounddelete()
 {

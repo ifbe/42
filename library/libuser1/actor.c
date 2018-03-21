@@ -132,8 +132,16 @@ int actorread()
 int actorwrite(struct event* ev)
 {
 	int j;
+	struct actor* act;
 	struct arena* win = (void*)(ev->where);
 	if(0 == win)return 0;
+
+	if(_act_ == ev->what)
+	{
+		act = (void*)(ev->where);
+		act->onwrite(act, 0, ev);
+		return;
+	}
 
 	actorinput(win, ev);
 

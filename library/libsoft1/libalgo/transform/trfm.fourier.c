@@ -7,9 +7,9 @@ double sine(double);
 
 
 //W(kn, N) = cos(kn*2PI/N) - jsin(kn*2PI/N)
-void fft(double real[], double imag[], int k)
+void fft(float real[], float imag[], int k)
 {
-	double re1, im1, facr, faci;
+	float re1, im1, facr, faci;
 	int i, j, m, n, step, factor;
 	int len = 1<<k;
 
@@ -70,7 +70,7 @@ void fft(double real[], double imag[], int k)
 
 }
 
-void ifft(double real[], double imag[], int k)
+void ifft(float real[], float imag[], int k)
 {
 	int i;
 	int N = 1<<k;

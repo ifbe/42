@@ -1,5 +1,9 @@
 #include "system.h"
 #define _fd_ hex32('f','d',0,0)
+#define _art_ hex32('a','r','t',0)
+#define _win_ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
+//
 #define _uart_ hex32('u','a','r','t')
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
@@ -230,9 +234,15 @@ int systemwrite(struct event* ev)
 		return 0;
 	}
 
+	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
 	ret = readsocket(where, ppp, 0, 0x100000);
-	say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
-	return 0;
+	obj[where].len = ret;
+	obj[where].buf = ppp;
+
+	ev->why = (u64)orel;
+	ev->what = _act_;
+	ev->where = orel->dstchip;
+	return 42;
 }
 int systemlist(u8* buf, int len)
 {

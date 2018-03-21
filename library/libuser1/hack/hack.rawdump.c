@@ -28,11 +28,10 @@ static void rawdump_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	drawtext(
-		win, 0xffffff,
-		cx-ww, cy-hh, cx+ww-1, cy+hh-1,
-		act->buf, act->len
-	);
+	int len = act->len;
+	u8* buf = act->buf;
+	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
+	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1, buf, len);
 }
 static void rawdump_read_html(
 	struct arena* win, struct style* sty,
@@ -68,6 +67,27 @@ static void rawdump_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev)
 {
+	struct relation* rel;
+	struct actor* tmp;
+	u8* src;
+	u8* dst;
+	int len;
+	int j;
+
+	if(_act_ == ev->what)
+	{
+		say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
+		rel = (void*)(ev->why);
+		tmp = (void*)(rel->selfchip);
+		len = tmp->len;
+		src = tmp->buf;
+		dst = (act->buf)+(act->len);
+
+		for(j=0;j<len;j++)dst[j] = src[j];
+		dst[j] = '\n';
+
+		act->len += len;
+	}
 }
 static void rawdump_stop(struct actor* act, struct pinid* pin)
 {

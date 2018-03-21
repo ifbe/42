@@ -1,11 +1,17 @@
 #include "actor.h"
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
+#define cccc 444.0
+#define dddd 498.3731494493616
+#define eeee 559.4049461533237
+#define ffff 592.6688952514953
+#define gggg 665.2483421332466
+#define aaaa 746.7160167452985
+#define bbbb 838.1603896613437
 #define tau PI*2
 #define _mic_ hex32('m','i','c',0)
-void* arenacreate(u64, void*);
 //libsoft1
-void fft(double* real, double* imag, int k);
-void ifft(double* real, double* imag, int k);
+void fft(float* real, float* imag, int k);
+void ifft(float* real, float* imag, int k);
 int piano_freq(int);
 //libsoft0
 int soundread(void* buf, int len);
@@ -18,26 +24,22 @@ void* samedstnextsrc(void*);
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* relation_read(u64);
-void relation_write(void*, void*, u64, void*, void*, u64);
+void* relation_write(void*, void*, u64, void*, void*, u64);
+void* arenacreate(u64, void*);
 
 
 
 
-struct waveinfo
+struct perframe
 {
-	void* buf;
-	int len;
-	int enq;
-	int deq;
+	float real[1024];
+	float imag[1024];
+	float amp[1024];
+	float phase[1024];
 };
-static struct waveinfo* info = 0;
-static int area=0;
-static int maxamp;
-//
-static double* real;
-static double* imag;
-static double* amp;
-static double* phase;
+static struct perframe* frame;
+static int cur = 0;
+static int that;
 
 
 
@@ -46,7 +48,7 @@ static void spectrum_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	double t,cc,ss;
+	float t,cc,ss;
 	int x,y;
 	int cx = sty->cx;
 	int cy = sty->cy;
@@ -54,22 +56,10 @@ static void spectrum_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-/*
-	if(?????)
-	{
-		for(x=0;x<1024;x++)
-		{
-			if(pcmin[x]>32768)continue;
-			y = pcmin[x] *height /maxamp /4;
-			line(win,
-				x*w/1024, (height/4) - y,
-				x*h/1024, (height/4) + y,
-				0xffffff
-			);
-		}
-		return;
-	}
-*/
+	float* real = frame[cur].real;
+	float* imag = frame[cur].imag;
+	float* amp = frame[cur].amp;
+
 	for(x=0;x<ww;x++)
 	{
 		t = tau / ww * x;
@@ -82,6 +72,7 @@ static void spectrum_read_pixel(
 			cy + (int)ss
 		);
 	}
+	drawdecimal(win, 0xffffff, cx-ww, cy-hh, that);
 }
 static void spectrum_read_html(
 	struct arena* win, struct style* sty,
@@ -100,6 +91,10 @@ static void spectrum_read_vbo(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	float* real = frame[cur].real;
+	float* imag = frame[cur].imag;
+	float* amp = frame[cur].amp;
+
 	for(x=0;x<512;x++)
 	{
 		cc = cosine(x*tau/512);
@@ -119,10 +114,13 @@ static void spectrum_read_tui(
 	int w = win->stride;
 	int h = win->height;
 	u8* p = (u8*)(win->buf);
+	float* real = frame[cur].real;
+	float* imag = frame[cur].imag;
+	float* amp = frame[cur].amp;
 
 	for(x=0;x<w;x++)
 	{
-		y = h - (int)(real[x] * (double)h / (double)maxamp);
+		y = h - (int)(real[x] * (float)h / 65536.0);
 		for(;y<h;y++)
 		{
 			p[((y*w + x)<<2) + 3] =  0x2;
@@ -147,88 +145,86 @@ static void spectrum_read(
 	else if(fmt == _html_)spectrum_read_html(win, sty, act, pin);
 	else spectrum_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-void spectrum_fft()
-{
-	int j;
-	u16* pcmin;
-	if(info == 0)return;
-
-	pcmin = (info->buf)+(info->deq);
-	info->deq = info->enq;
-
-	for(j=0;j<1024;j++)
-	{
-		real[j] = (double)pcmin[j] / 65536.0;
-		imag[j] = 0.0;
-	}
-
-	fft(real, imag, 10);
-	for(j=0;j<1024;j++)
-	{
-		//say("%lf	%lf\n", real[j], imag[j]);
-		amp[j]=squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
-	}
-	//say("%lf,%lf,%lf,%lf\n",amp[0],amp[1],amp[2],amp[3]);
-}
 static void spectrum_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev)
 {
+	float f;
 	int j,k;
-	float max;
-	u64 type = ev->what;
-	u64 key = ev->why;
+	struct actor* tmp;
+	struct relation* rel;
+	float* real;
+	float* imag;
+	float* amp;
+	u16* pcmin;
+	u16* pcmout;
 
-	if(type == _char_)
+	if(_act_ == ev->what)
 	{
-		if( (key>=0x31) && (key<=0x39) )
+		rel = (void*)(ev->why);
+		tmp = (void*)(rel->selfchip);
+		pcmin = tmp->buf;
+
+		cur = (cur+1)%32;
+		real = frame[cur].real;
+		imag = frame[cur].imag;
+		amp = frame[cur].amp;
+
+		for(j=0;j<1024;j++)
 		{
-			key -= 0x31;
+			real[j] = (float)pcmin[j] / 65536.0;
+			imag[j] = 0.0;
 		}
-		else if(key == '0')key = 9;
-		else if(key == '-')key = 10;
-		else if(key == '=')key = 11;
-		else
-		{
-			if( (key>='a') && (key<='z') )
-			{
-				area = key - 'a';
-			}
-			return;
-		}
-
-		for(j=0;j<1024;j++)real[j] = imag[j] = 0.0;
-
-		j = piano_freq(area*12+key);
-		say("%d->",j);
-		j = (j*1024)/44100;
-		say("%d\n",j);
-
-		real[j] = 1.0;
-		soundwrite(real, 1024*2);
-		//real[j]=real[1023-j]=65535;
-		//sound_output(real, imag, pcmout);
-	}
-	else if(type=='s')
-	{
-		info = (void*)(ev->why);
-		spectrum_fft();
+		fft(real, imag, 10);
+		//say("%f,%f\n",real[0],imag[0]);
 
 		k = 0;
-		max = 0.0;
-		for(j=20;j<512;j++)
+		f = 0.0;
+		for(j=0;j<512;j++)
 		{
-			if(amp[j] > max)
+			amp[j] = squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
+			if(j < 1)continue;
+
+			if(amp[j] > f)
 			{
 				k = j;
-				max = amp[j];
+				f = amp[j];
+				//say("%f,%f\n",real[j],imag[j]);
 			}
 		}
-		say("%d,%f,%f\n", k, max, k*22000.0/512.0);
+		//say("k=%d\n",k);
+		that = k*44100/1024;
+	}
+	else if(_char_ == ev->what)
+	{
+		real = frame[32].real;
+		imag = frame[32].imag;
+		for(j=0;j<1024;j++)
+		{
+			real[j] = 0.0;
+			imag[j] = 0.0;
+		}
+
+		k = ev->why;
+		if('c' == k)f = cccc;
+		else if('d' == k)f = dddd;
+		else if('e' == k)f = eeee;
+		else if('f' == k)f = ffff;
+		else if('g' == k)f = gggg;
+		else if('a' == k)f = aaaa;
+		else if('b' == k)f = bbbb;
+
+		j = (f*1024)/44100;
+		real[j] = 256.0;
+		real[1024-j] = 256.0;
+
+		ifft(real, imag, 10);
+		pcmout = (act->buf)+0xc0000;
+		for(j=0;j<1024*16;j++)
+		{
+			pcmout[j] = (int)(real[j%1024]*65535.0);
+		}
+		soundwrite(pcmout, 1024*2*16);
 	}
 }
 static void spectrum_list()
@@ -239,12 +235,9 @@ static void spectrum_into()
 }
 static void spectrum_stop(struct actor* act, struct pinid* pin)
 {
-	soundstop();
 }
 static void spectrum_start(struct actor* act, struct pinid* pin)
 {
-	maxamp = 65536;
-	soundstart(44100, 2);
 }
 static void spectrum_delete(struct actor* act)
 {
@@ -256,12 +249,9 @@ static void spectrum_create(struct actor* act)
 	struct arena* win;
 	if(0 == act)return;
 	void* buf = startmemory(0x100000);
-	act->buf = buf;
 
-	real  = (double*)(buf+0x00000);
-	imag  = (double*)(buf+0x40000);
-	amp   = (double*)(buf+0x80000);
-	phase = (double*)(buf+0xc0000);
+	act->buf = buf;
+	frame = buf;
 
 	win = arenacreate(_mic_, "0");
 	say("win=%llx\n",win);

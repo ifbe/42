@@ -5,6 +5,8 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+#define _win_ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _size_ hex32('s','i','z','e')

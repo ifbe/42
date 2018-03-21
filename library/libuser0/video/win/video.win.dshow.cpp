@@ -49,7 +49,6 @@ struct pictureobject
 static struct pictureobject obj[60];
 static struct arena* working;
 static int enq = 0;
-static int cur = 0;
 
 
 
@@ -87,9 +86,15 @@ public:
 		pSample->Release();
 
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
-		eventwrite(enq, _cam_, (u64)working, 0);
+		struct relation* orel = working->orel;
+		if(0 != orel)
+		{
+			working->width = working->stride = 640;
+			working->height = 480;
+			working->buf = (void*)(obj[enq].buf);
+			eventwrite((u64)orel, _act_, orel->destchip, 0);
+		}
 
-		cur = enq;
 		enq = (enq+1)%60;
 		return S_OK;
 	}
@@ -471,10 +476,6 @@ void videoread(
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
-
-	act->width = act->stride = 640;
-	act->height = 480;
-	act->buf = (void*)(obj[cur].buf);
 }
 void videowrite()
 {

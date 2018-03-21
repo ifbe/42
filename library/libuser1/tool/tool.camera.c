@@ -75,9 +75,18 @@ static void camera_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev)
 {
-	int j;
-	u64 type = ev->what;
-	u64 key = ev->why;
+	struct relation* rel;
+	struct actor* tmp;
+	if(_act_ == ev->what)
+	{
+		rel = (void*)(ev->why);
+		tmp = (void*)(rel->selfchip);
+
+		act->buf = tmp->buf;
+		act->width = tmp->width;
+		act->stride = tmp->stride;
+		act->height = tmp->height;
+	}
 }
 static void camera_list()
 {
