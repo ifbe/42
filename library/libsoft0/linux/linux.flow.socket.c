@@ -1,21 +1,22 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<errno.h>
-#include<fcntl.h>
-#include<signal.h>
-#include<unistd.h>
-#include<signal.h>
-#include<arpa/inet.h>
-#include<linux/if_ether.h>
-#include<net/if.h>
-#include<netinet/in.h>
-#include<netinet/ether.h>
-#include<sys/epoll.h>
-#include<sys/ioctl.h>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include"system.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <unistd.h>
+#include <signal.h>
+#include <arpa/inet.h>
+#include <linux/if_ether.h>
+#include <netdb.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <netinet/ether.h>
+#include <sys/epoll.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include "system.h"
 #define MAXSIZE 4096
 void epoll_add(int);
 void epoll_del(int);
@@ -145,6 +146,16 @@ int startsocket(char* addr, int port, int type)
 {
 	int fd;
 	int ret;
+	struct hostent* host;
+	for(ret=0;ret<256;ret++)
+	{
+		if((addr[ret]>='a')&&(addr[ret]<='z'))
+		{
+			host = gethostbyname(addr);
+			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+			break;
+		}
+	}
 	if(type == 'R')		//RAW
 	{
 		int ret;
