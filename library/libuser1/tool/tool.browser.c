@@ -1,5 +1,6 @@
 #include "actor.h"
-void* arterycreate(u64 type, void* addr);
+int arterycreate(u64 type, void* addr);
+void* arteryread(int);
 void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
@@ -21,6 +22,7 @@ static void browser_read_pixel(
 	struct mystring* str = (void*)(act->detail);
 	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 	drawstring(win, 0xffffff, cx-ww, cy-hh, str->buf, str->len);
+	drawtext(win, 0xffffff, cx-ww, cy-hh+16, cx+ww-1, cy+hh-1, act->buf, act->len);
 }
 static void browser_read_vbo(
 	struct arena* win, struct style* sty,
@@ -54,10 +56,29 @@ static void browser_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev)
 {
-	struct arena* win;
+	int j,fd;
+	struct actor* tmp;
+	struct relation* rel;
 	struct mystring* haha;
 	int len;
+	void* addr;
 	u8* buf;
+	u8* src;
+	u8* dst;
+	if(_act_ == ev->what)
+	{
+		rel = (void*)(ev->why);
+		tmp = (void*)(rel->selfchip);
+		len = tmp->len;
+		src = tmp->buf;
+		dst = (act->buf)+(act->len);
+
+		for(j=0;j<len;j++)dst[j] = src[j];
+		dst[j] = 0;
+
+		act->len += len;
+		return;
+	}
 	if(_char_ != ev->what)return;
 
 	haha = (void*)(act->detail);
@@ -65,9 +86,12 @@ static void browser_write(
 	buf = haha->buf;
 	if(0xd == ev->why)
 	{
+		act->len = 0;
 		haha->len = 0;
-		win = arterycreate(0, buf);
-		//relation_write(act, 0, _act_, win, 0, _win_);
+
+		fd = arterycreate(0, buf);
+		addr = arteryread(fd);
+		relation_write(act, 0, _act_, addr, 0, _fd_);
 	}
 	else if(0x8 == ev->why)
 	{
@@ -114,6 +138,7 @@ static void browser_create(struct actor* act)
 	int j;
 	if(0 == act)return;
 
+	act->len = 0;
 	act->buf = startmemory(0x100000);
 	for(j=0;j<0x100;j++)act->detail[j] = 0;
 }

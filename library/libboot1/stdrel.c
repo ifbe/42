@@ -269,7 +269,7 @@ void relation_destory(struct relation* this)
 
 //wininfo,  position, 'win',  actor,    0, 'act'
 //actinfo,  which,    'act',  userinfo, what,     'user'
-int relation_write(
+void* relation_write(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)
 {
@@ -307,7 +307,7 @@ int relation_write(
 		ww->samesrcprevdst = (void*)wc - (void*)wirebuf;
 	}
 
-	return 1;
+	return ww;
 }
 void* relation_read(int off)
 {

@@ -12,8 +12,9 @@
 #define _COPY_ hex32('C','O','P','Y')
 //
 #define _act_ hex32('a','c','t',0)
-#define _buf_ hex32('b','u','f',0)
 #define _win_ hex32('w','i','n',0)
+#define _art_ hex32('a','r','t',0)
+#define _fd_ hex32('f','d',0,0)
 //
 #define _drop_ hex32('d','r','o','p')
 #define _kbd_ hex32('k','b','d',0)

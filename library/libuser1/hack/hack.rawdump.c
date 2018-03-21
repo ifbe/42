@@ -76,7 +76,6 @@ static void rawdump_write(
 
 	if(_act_ == ev->what)
 	{
-		say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
 		rel = (void*)(ev->why);
 		tmp = (void*)(rel->selfchip);
 		len = tmp->len;
@@ -84,7 +83,7 @@ static void rawdump_write(
 		dst = (act->buf)+(act->len);
 
 		for(j=0;j<len;j++)dst[j] = src[j];
-		dst[j] = '\n';
+		dst[j] = 0;
 
 		act->len += len;
 	}
