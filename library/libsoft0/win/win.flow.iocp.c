@@ -62,14 +62,13 @@ DWORD WINAPI iocpthread(LPVOID pM)
 {
 	u32* pfd = 0;
 	struct per_io_data* pio = NULL;
-	int th;
-	int ret;
+	int tmp, ret;
 	SOCKET fd;
 	SOCKET cc;
 	DWORD tran = 0;
 	DWORD flag = 0;
 
-	th = GetCurrentThreadId();
+	tmp = GetCurrentThreadId();
 	while(1)
 	{
 		ret = GetQueuedCompletionStatus(
@@ -83,37 +82,45 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 		fd = *pfd;
 		cc = pio->fd;
-		//printf("th=%x,tran=%x,listen=%x,this=%x\n", th, tran, fd, cc);
+		//printf("tmp=%x,tran=%x,listen=%x,this=%x\n", tmp, tran, fd, cc);
 
 		//accept
 		if(pio->stage == 0)
 		{
-			printf("[%x,%x]++++\n", fd, cc);
-			eventwrite('+', __fd__, cc/4, 0);
+			tmp = fd/4;
+			ret = cc/4;
+			//printf("[%x,%x]++++\n", tmp, ret);
+			eventwrite('+', _fd_, ret, 0);
 
-			obj[cc/4].type = 't';
-			obj[cc/4].name = 0;
+			ret = cc/4;
+			obj[ret].type = 't';
+			obj[ret].name = 0;
+			obj[ret].irel = 0;
+			obj[ret].orel = 0;
+			obj[ret].selffd = ret;
+			obj[ret].thatfd = tmp;
 
 			iocp_add(cc);
 			iocp_mod(cc);
 		}
 		else if(tran == 0)
 		{
-			printf("[%x]----\n",fd);
-			eventwrite('-', __fd__, fd/4, 0);
+			ret = fd/4;
+			//printf("[%x]----\n", ret);
+			eventwrite('-', _fd_, ret, 0);
 
-			obj[cc/4].type = 0;
-			obj[cc/4].name = 0;
+			obj[ret].type = 0;
+			obj[ret].name = 0;
 
 			iocp_del(fd);
 		}
 		else
 		{
-			printf("[%x]####\n",fd);
 			pio->count = tran;
-			eventwrite('@', __fd__, fd/4, 0);
 
-			iocp_mod(fd);
+			ret = fd/4;
+			//printf("[%x]####\n", ret);
+			eventwrite('@', _fd_, ret, 0);
 		}
 	}
 	return 0;

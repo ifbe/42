@@ -39,6 +39,7 @@ void fs_register(void*);
 void graph_register(void*);
 void hex_register(void*);
 void input_register(void*);
+void rawdump_register(void*);
 
 
 
@@ -192,5 +193,9 @@ void content_create(void* addr)
 
 	//hack.input
 	input_register(temp);
+	temp += sizeof(struct actor);
+
+	//hack.rawdump
+	rawdump_register(temp);
 	temp += sizeof(struct actor);
 }

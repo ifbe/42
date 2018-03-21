@@ -49,7 +49,7 @@ struct pictureobject
 static struct pictureobject obj[60];
 static struct arena* working;
 static int enq = 0;
-static int deq = 0;
+static int cur = 0;
 
 
 
@@ -89,6 +89,7 @@ public:
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
 		eventwrite(enq, _cam_, (u64)working, 0);
 
+		cur = enq;
 		enq = (enq+1)%60;
 		return S_OK;
 	}
@@ -473,8 +474,7 @@ void videoread(
 
 	act->width = act->stride = 640;
 	act->height = 480;
-	act->buf = (void*)(obj[deq].buf);
-	deq = enq;
+	act->buf = (void*)(obj[cur].buf);
 }
 void videowrite()
 {

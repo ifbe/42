@@ -2,6 +2,8 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define _json_ hex32('j','s','o','n')
 #define _xml_ hex32('x','m','l',0)
+#define _art_ hex32('a','r','t',0)
+#define _fd_ hex32('f','d',0,0)
 //
 int actorcreate(void*, u8*);
 int actordelete(void*, u8*);
@@ -220,9 +222,66 @@ void login_read_pixel(struct arena* win)
 		);
 	}
 
-	//wire
-	d = h/4;
-	for(j=0;j<8;j++)
+	//actor.irel
+	for(j=0;j<64;j++)
+	{
+		if(0 == actor[j].name)continue;
+
+		rel = actor[j].irel;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_fd_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+48)*h/64
+				);
+			}
+			else if(_art_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)ele;
+				k = k / sizeof(struct element);
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+32)*h/64
+				);
+			}
+			else if(_win_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+16)*h/64
+				);
+			}
+			else if(_act_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+				drawline(win, 0xffffff,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1)*h/64
+				);
+			}
+			rel = samedstnextsrc(rel);
+		}
+	}
+
+	//arena.irel
+	for(j=0;j<64;j++)
 	{
 		if(0 == arena[j].type)break;
 
@@ -230,32 +289,172 @@ void login_read_pixel(struct arena* win)
 		while(1)
 		{
 			if(0 == rel)break;
-			k = (void*)(rel->selfchip) - (void*)actor;
-			k = k / sizeof(struct actor);
-			drawline(win, 0xffc0ff,
-				(2*(k%8)+1)*w/16,
-				(2*(k/8)+1)*h/64,
-				(2*(j%8)+1)*w/16,
-				(2*(j/8)+1)*h/64+d
-			);
+			if(_fd_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+16)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+48)*h/64
+				);
+			}
+			else if(_art_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)ele;
+				k = k / sizeof(struct element);
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+16)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+32)*h/64
+				);
+			}
+			else if(_win_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+				drawline(win, 0xffffff,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+16)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+16)*h/64
+				);
+			}
+			else if(_act_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+				drawline(win, 0xffc0ff,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+16)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1)*h/64
+				);
+			}
+
 			rel = samedstnextsrc(rel);
 		}
+	}
+/*
+	//element.irel
+	for(j=0;j<64;j++)
+	{
+		if(0 == ele[j].type)break;
 
-		rel = arena[j].orel;
+		rel = ele[j].irel;
 		while(1)
 		{
 			if(0 == rel)break;
-			k = (void*)(rel->destchip) - (void*)actor;
-			k = k / sizeof(struct actor);
-			drawline(win, 0xc0ffc0,
-				(2*(k%8)+1)*w/16,
-				(2*(k/8)+1)*h/64,
-				(2*(j%8)+1)*w/16,
-				(2*(j/8)+1)*h/64+d
-			);
-			rel = samesrcnextdst(rel);
+			if(_fd_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+32)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+48)*h/64
+				);
+			}
+			else if(_art_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)ele;
+				k = k / sizeof(struct element);
+				drawline(win, 0xffffff,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+32)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+32)*h/64
+				);
+			}
+			else if(_win_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+				drawline(win, 0xc0ffc0,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+32)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+16)*h/64
+				);
+			}
+			else if(_act_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+				drawline(win, 0xffc0ff,
+					(2*(j%8)+1)*w/16,
+					(2*(j/8)+1+32)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1)*h/64
+				);
+			}
+			rel = samedstnextsrc(rel);
 		}
 	}
+
+	//object.irel
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].type)break;
+
+		rel = obj[j].irel;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_fd_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+				drawline(win, 0xffffff,
+					(2*((j%64)%8)+1)*w/16,
+					(2*((j%64)/8)+1+48)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+48)*h/64
+				);
+			}
+			else if(_art_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)ele;
+				k = k / sizeof(struct element);
+				drawline(win, 0xffc0ff,
+					(2*((j%64)%8)+1)*w/16,
+					(2*((j%64)/8)+1+48)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+32)*h/64
+				);
+			}
+			else if(_win_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+				drawline(win, 0xffc0ff,
+					(2*((j%64)%8)+1)*w/16,
+					(2*((j%64)/8)+1+48)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1+16)*h/64
+				);
+			}
+			else if(_act_ == rel->selftype)
+			{
+				k = (void*)(rel->selfchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+				drawline(win, 0xffc0ff,
+					(2*((j%64)%8)+1)*w/16,
+					(2*((j%64)/8)+1+48)*h/64,
+					(2*(k%8)+1)*w/16,
+					(2*(k/8)+1)*h/64
+				);
+			}
+			rel = samedstnextsrc(rel);
+		}
+	}
+*/
 }
 void login_read_8bit(struct arena* win)
 {

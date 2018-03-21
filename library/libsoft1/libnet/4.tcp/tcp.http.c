@@ -28,10 +28,8 @@ int http_write_request(u8* buf, int len, char* url, char* host)
 
 	return mysnprintf(buf, 100,
 		"GET %s HTTP/1.1\r\n"
-		"Host: %s\r\n"
-		"Range: bytes=%d-%d\r\n"
 		"\r\n",
-		url, host, 0, 0xfff
+		url
 	);
 }
 int http_write_file(u8* buf, int len, u8* name)
@@ -102,7 +100,7 @@ int http_check(struct object* obj, int fd, u8* buf, int len)
 
 	//parse
 	if(GET[0] != '/')return 0;
-	if(GET[1]<=' ')GET = indexhtml;
+	if(GET[1] <= ' ')GET = indexhtml;
 	else
 	{
 		for(ret=0;ret<256;ret++)

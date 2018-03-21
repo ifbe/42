@@ -84,8 +84,8 @@ static int winlen = 0;
 static int stylen = 0;
 void* allocarena()
 {
-	int j;
 	struct arena* win;
+	int j=0;
 	while(1)
 	{
 		win = &arena[j];
@@ -109,15 +109,7 @@ void* allocstyle()
 
 
 
-int arenadelete()
-{
-	return 0;
-}
-int arenacreate()
-{
-	return 0;
-}
-int arenastop(struct arena* win)
+int arenadelete(struct arena* win)
 {
 	if(win == 0)return 0;
 	windowstop(win);
@@ -128,7 +120,7 @@ int arenastop(struct arena* win)
 	win->orel = 0;
 	return 0;
 }
-void* arenastart(u64 type, u64 addr)
+void* arenacreate(u64 type, u64 addr)
 {
 	int j = 0;
 	struct arena* win = allocarena();
@@ -206,6 +198,14 @@ void* arenastart(u64 type, u64 addr)
 	win->orel = 0;
 	return win;
 }
+int arenastop()
+{
+	return 0;
+}
+int arenastart()
+{
+	return 0;
+}
 int arenaread()
 {
 	int j;
@@ -282,7 +282,7 @@ int arenawrite(struct event* ev)
 
 	if(hex32('w','+',0,0) == what)
 	{
-		ret = arenastart(why, where);
+		ret = arenacreate(why, where);
 		if(ret == 0)
 		{
 			say("error@w+\n");
@@ -292,7 +292,7 @@ int arenawrite(struct event* ev)
 	else if(hex32('w','-',0,0) == what)
 	{
 		ret = (void*)where;
-		arenastop(ret);
+		arenadelete(ret);
 	}
 	else
 	{
@@ -350,7 +350,7 @@ void* arenachoose(u8* buf, int len)
 		{
 			if(0 == arena[id].type)
 			{
-				arenastart(_win_, 0);
+				arenacreate(_win_, 0);
 			}
 		}
 	}
@@ -384,7 +384,7 @@ void initarena(u8* addr)
 	initmic(arena);
 	initcam(arena);
 
-	arenastart(_win_, 0);
+	arenacreate(_win_, 0);
 
 	//say("[c,f):inited arena\n");
 }

@@ -1,5 +1,4 @@
 #include "actor.h"
-void* arenastart(u64 type, void* addr);
 void* arterycreate(u64 type, void* addr);
 void* relation_write(void*, void*, u64, void*, void*, u64);
 

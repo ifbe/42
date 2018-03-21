@@ -38,6 +38,7 @@ hack/hack.fs.c \
 hack/hack.graph.c \
 hack/hack.hex.c \
 hack/hack.input.c \
+hack/hack.rawdump.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/json/json.c \

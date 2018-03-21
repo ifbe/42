@@ -585,6 +585,7 @@ void createserial()
 }
 void death()
 {
+	free(rawuniverse);
 }
 void* birth()
 {
@@ -605,10 +606,11 @@ void* birth()
 
 
 	//2.align
-	//[0x   0,0x1001000)	->	[0x1000,0x1001000)
+	//[0x   0,0x1001000)	->	[0x0000,0x1000000)
 	//[0x 234,0x1001234)	->	[0x1000,0x1001000)
 	//[0x fff,0x1001fff)	->	[0x1000,0x1001000)
 	//[0x1001,0x1002001)	->	[0x1000,0x1002000)
 	temp = ( (u64)rawuniverse ) & 0xfff;
-	return rawuniverse + 0x1000 - temp;
+	if(0 != temp)temp = 0x1000 - temp;
+	return rawuniverse + temp;
 }

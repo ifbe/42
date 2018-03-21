@@ -107,7 +107,7 @@ again:
 		if(_fd_ == ev->what)
 		{
 			//network rawdata -> my event
-			ret = arterywrite(ev);
+			ret = systemwrite(ev);
 			if(ret != 42)goto again;
 		}
 

@@ -18,6 +18,8 @@ u64 netmgr_eth(void*, int, void*, int);
 u64 netmgr_udp(void*, int, void*, int);
 u64 netmgr_tcp(void*, int, void*, int);
 //
+int systemcreate(u64 type, u8* name);
+int systemdelete(int);
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
 int readsocket(int fd, void* buf, int off, int len);
@@ -48,8 +50,16 @@ void* allocelement()
 
 
 
-int arterydelete()
+int arterydelete(int fd)
 {
+	if(_file_ == obj[fd].type)
+	{
+		stopfile(fd);
+	}
+	else
+	{
+		stopsocket(fd);
+	}
 	return 0;
 }
 int arterycreate(u64 type, u8* name)
@@ -78,31 +88,15 @@ int arterycreate(u64 type, u8* name)
 		}
 	}
 	if(0 == type)return 0;
-	say("type=%llx, name=%s\n", type, name);
-
-	//file family
-	if(_FILE_ == type)
-	{
-		fd = startfile(name, 'w');
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _file_;
-		obj[fd].name = _FILE_;
-		return fd;
-	}
-	else if(_file_ == type)
-	{
-		fd = startfile(name, 'r');
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _file_;
-		obj[fd].name = _file_;
-		return fd;
-	}
-	else if(_uart_ == type)
-	{
-		return 0;
-	}
+	if(_uart_ == type)return systemcreate(_uart_, name);
+	else if(_FILE_ == type)return systemcreate(_FILE_, name);
+	else if(_file_ == type)return systemcreate(_file_, name);
+	else if(_RAW_ == type)return systemcreate(_RAW_, name);
+	else if(_raw_ == type)return systemcreate(_raw_, name);
+	else if(_UDP_ == type)return systemcreate(_UDP_, name);
+	else if(_udp_ == type)return systemcreate(_udp_, name);
+	else if(_TCP_ == type)return systemcreate(_TCP_, name);
+	else if(_tcp_ == type)return systemcreate(_tcp_, name);
 
 	//decode ipaddr
 	port = 80;
@@ -110,21 +104,7 @@ int arterycreate(u64 type, u8* name)
 	say("host=%s,port=%d,url=%s\n", host, port, url);
 
 	//raw family
-	if(_RAW_ == type)		//raw server
-	{
-		fd = startsocket(host, port, 'R');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _RAW_;
-	}
-	else if(_raw_ == type)	//raw client
-	{
-		fd = startsocket(host, port, 'r');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _raw_;
-	}
-	else if(_ICMP_ == type)
+	if(_ICMP_ == type)
 	{
 	}
 	else if(_icmp_ == type)
@@ -132,20 +112,6 @@ int arterycreate(u64 type, u8* name)
 	}
 
 	//udp family
-	else if(_UDP_ == type)	//udp server
-	{
-		fd = startsocket(host, port, 'U');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _UDP_;
-	}
-	else if(_udp_ == type)	//udp client
-	{
-		fd = startsocket(host, port, 'u');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _udp_;
-	}
 	else if(_DNS_ == type)	//DNS server
 	{
 		fd = startsocket(host, port, 'U');
@@ -195,20 +161,6 @@ int arterycreate(u64 type, u8* name)
 	}
 
 	//tcp family
-	else if(_TCP_ == type)	//tcp server
-	{
-		fd = startsocket(host, port, 'T');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _TCP_;
-	}
-	else if(_tcp_ == type)	//tcp client
-	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _tcp_;
-	}
 	else if(_SSH_ == type)	//ssh server
 	{
 		ssh_start();
@@ -257,6 +209,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _http_;
 		ret = http_write_request(datahome, 0x100000, url, host);
+		printmemory(datahome, ret);
 		ret = writesocket(fd, datahome, 0, ret);
 	}
 	else if(_ws_ == type)	//ws client
@@ -271,16 +224,8 @@ int arterycreate(u64 type, u8* name)
 
 	return fd;
 }
-int arterystop(int fd)
+int arterystop()
 {
-	if(_file_ == obj[fd].type)
-	{
-		stopfile(fd);
-	}
-	else
-	{
-		stopsocket(fd);
-	}
 	return 0;
 }
 int arterystart()
@@ -293,17 +238,9 @@ void* arteryread(int fd)
 }
 int arterywrite(struct event* ev)
 {
-	int len;
-	u64 type;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-
-	if(why == '+')return 0;
-	else if(why == '-')return 0;
-
-	type = obj[where].type;
-
+	return 0;
+}
+/*
 	//raw
 	if(type == 'R')
 	{
@@ -320,17 +257,18 @@ int arterywrite(struct event* ev)
 		while(1)
 		{
 			len = readsocket(where, datahome, 0, 0x100000);
-			if(len <= 0)return 0;		//sticky
+			if(len <= 0)return 0;
 
 			netmgr_udp(obj, where, datahome, len);
 		}
+		return 0;
 	}
 
 	//read socket
 	len = readsocket(where, datahome, 0, 0x100000);
 	if(len == 0)return 0;		//sticky
 	if(len < 0)goto fail;		//wrong
-
+printmemory(datahome, len);
 	//serve socket
 	what = netmgr_tcp(obj, where, datahome, len);
 	if(what == 0)goto fail;
@@ -353,10 +291,21 @@ int arterywrite(struct event* ev)
 fail:
 	stopsocket(where);
 	return 0;
-}
+}*/
 int arterylist(u8* buf, int len)
 {
-	say("empth artery\n");
+	int j,k=0;
+	void* addr;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ele[j].type)continue;
+
+		k++;
+		addr = (void*)(&ele[j]);
+		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+	}
+
+	if(0 == k)say("empth artery\n");
 	return 0;
 }
 int arterychoose(u8* buf, int len)

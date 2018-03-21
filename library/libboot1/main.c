@@ -18,20 +18,20 @@ void initarena(void*);
 int arenaread();
 int arenawrite(void*);
 //libsoft1
-#define _fd_ hex32('f','d',0,0)
+#define _art_ hex32('a','r','t',0)
 void freeartery();
 void initartery(void*);
 int arteryread();
 int arterywrite(void*);
 //libsoft0
-#define _sys_ hex32('s','y','s',0)
+#define _fd_ hex32('f','d',0,0)
 void freesystem();
 void initsystem(void*);
 int systemread();
 int systemwrite(void*);
 int sleep_us(int);
 //libhard1
-#define _drv_ hex32('d','r','v',0)
+#define _dri_ hex32('d','r','v',0)
 void freedriver();
 void initdriver(void*);
 int driverread();
@@ -140,6 +140,10 @@ int main(int argc, char* argv[])
 	{
 		actorread();
 		arenaread();
+		//arteryread();
+		//systemread();
+		//driverread();
+		//deviceread();
 		//say("after\n");
 
 again:
@@ -152,15 +156,12 @@ again:
 		if(0 == ev->what)break;
 
 		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
-		if(_char_ == ev->what)
+		if((_char_ == ev->what)&&(0 == ev->where))
 		{
-			if(0 == ev->where)
-			{
-				term_write(ev);
-				continue;
-			}
+			term_write(ev);
+			continue;
 		}
-
+/*
 		//libhard0
 		if(_dev_ == ev->what)
 		{
@@ -169,22 +170,21 @@ again:
 		}
 
 		//libhard1
-		if(_drv_ == ev->what)
+		if(_dri_ == ev->what)
 		{
 			ret = driverwrite(ev);
 			if(ret != 42)goto again;
 		}
-
+*/
 		//libsoft0
-		if(_sys_ == ev->what)
+		if(_fd_ == ev->what)
 		{
 			ret = systemwrite(ev);
 			if(ret != 42)goto again;
 		}
 
 		//libsoft1
-		ret = (ev->what)&0xff;
-		if(_fd_ == ev->what)
+		if(_art_ == ev->what)
 		{
 			ret = arterywrite(ev);
 			if(ret != 42)goto again;

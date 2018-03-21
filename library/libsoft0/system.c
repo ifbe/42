@@ -1,4 +1,15 @@
 #include "system.h"
+#define _fd_ hex32('f','d',0,0)
+#define _uart_ hex32('u','a','r','t')
+#define _FILE_ hex32('F','I','L','E')
+#define _file_ hex32('f','i','l','e')
+//
+#define _RAW_ hex32('R','A','W',0)
+#define _raw_ hex32('r','a','w',0)
+#define _UDP_ hex32('U','D','P',0)
+#define _udp_ hex32('u','d','p',0)
+#define _TCP_ hex32('T','C','P',0)
+#define _tcp_ hex32('t','c','p',0)
 //random
 int createrandom(void*);
 int deleterandom();
@@ -18,6 +29,16 @@ int deleteshell();
 int createuart(void*);
 int deleteuart();
 //
+int startsocket(void* addr, int port, int type);
+int stopsocket(int);
+int readsocket(int fd, void* buf, int off, int len);
+int writesocket(int fd, void* buf, int off, int len);
+int startfile(void*, int);
+int stopfile(int);
+int readfile(int fd, void* buf, int off, int len);
+int writefile(int fd, void* buf, int off, int len);
+//
+int parseurl(u8* buf, int len, u8* addr, int* port);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -33,13 +54,118 @@ static int ppplen = 0;
 
 
 
-int systemdelete()
+int systemdelete(int fd)
 {
+	if(_file_ == obj[fd].type)
+	{
+		stopfile(fd);
+	}
+	else
+	{
+		stopsocket(fd);
+	}
 	return 0;
 }
-int systemcreate()
+int systemcreate(u64 type, u8* name)
 {
-	return 0;
+	int j,k,fd,ret;
+	u8 host[0x100];	//127.0.0.1
+	int port;	//2222
+	u8* url;	//dir/file.html
+	u8* t;		//http
+
+	if(0 == type)
+	{
+		for(j=0;j<0x1000;j++)
+		{
+			if(0 == ncmp(name+j, "://", 3))
+			{
+				t = (u8*)&type;
+				for(k=0;k<j;k++)
+				{
+					if(k >= 8)break;
+					t[k] = name[k];
+				}
+				name += j+3;
+				break;
+			}
+		}
+	}
+	if(0 == type)return 0;
+
+	//file family
+	if(_FILE_ == type)
+	{
+		fd = startfile(name, 'w');
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _file_;
+		obj[fd].name = _FILE_;
+		return fd;
+	}
+	else if(_file_ == type)
+	{
+		fd = startfile(name, 'r');
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _file_;
+		obj[fd].name = _file_;
+		return fd;
+	}
+	else if(_uart_ == type)
+	{
+		return 0;
+	}
+
+	//decode ipaddr
+	port = 80;
+	url = name + parseurl(name, 0x100, host, &port);
+	say("host=%s,port=%d,url=%s\n", host, port, url);
+
+	if(_RAW_ == type)		//raw server
+	{
+		fd = startsocket(host, port, 'R');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _RAW_;
+	}
+	else if(_raw_ == type)	//raw client
+	{
+		fd = startsocket(host, port, 'r');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _raw_;
+	}
+	else if(_UDP_ == type)	//udp server
+	{
+		fd = startsocket(host, port, 'U');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _UDP_;
+	}
+	else if(_udp_ == type)	//udp client
+	{
+		fd = startsocket(host, port, 'u');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _udp_;
+	}
+	else if(_TCP_ == type)	//tcp server
+	{
+		fd = startsocket(host, port, 'T');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _TCP_;
+	}
+	else if(_tcp_ == type)	//tcp client
+	{
+		fd = startsocket(host, port, 't');
+		if(0 >= fd)return 0;
+
+		obj[fd].name = _tcp_;
+	}
+
+	return fd;
 }
 int systemstop()
 {
@@ -49,15 +175,66 @@ int systemstart()
 {
 	return 0;
 }
-int systemread(int fd, char* buf, int off, int len)
+void* systemread(int fd)
 {
+	return &obj[fd];
+}
+int systemwrite(struct event* ev)
+{
+	int ret;
+	struct relation* irel;
+	struct relation* orel;
+	u64 type,name;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+	say("%llx,%llx,%llx\n",why,what,where);
+
+	if(why == '+')
+	{
+		say("come:%x(from:%x)\n", where, obj[where].thatfd);
+		return 0;
+	}
+	else if(why == '-')
+	{
+		say("gone:%x\n", where);
+		return 0;
+	}
+
+	type = obj[where].type;
+	name = obj[where].name;
+	if(0 != name)
+	{
+		irel = obj[where].irel;
+		orel = obj[where].orel;
+	}
+	else
+	{
+		ret = obj[where].thatfd;
+		irel = obj[ret].irel;
+		orel = obj[ret].orel;
+	}
+	say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
+
+	if(0 == orel)
+	{
+		ret = readsocket(where, ppp, 0, 0x100000);
+		if(ret == 0)return 0;
+		if(ret < 0)
+		{
+			stopsocket(where);
+			return 0;
+		}
+
+		printmemory(ppp, ret);
+		return 0;
+	}
+
+	ret = readsocket(where, ppp, 0, 0x100000);
+	say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
 	return 0;
 }
-int systemwrite(int fd, char* buf, int off, int len)
-{
-	return 0;
-}
-int systemlist(u8* buf)
+int systemlist(u8* buf, int len)
 {
 	int j,k=0;
 	void* addr;
@@ -73,9 +250,25 @@ int systemlist(u8* buf)
 	if(0 == k)say("empth system\n");
 	return 0;
 }
-int systemchoose(u8* buf)
+int systemchoose(u8* buf, int len)
 {
-	say("@system: %s\n", buf);
+	int j;
+	u8 data[0x1000];
+	if(0 == len)
+	{
+		systemcreate(0, buf);
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(0 == buf[j])break;
+			data[j] = buf[j];
+		}
+		data[j] = 0;
+
+		systemcreate(0, data);
+	}
 	return 0;
 }
 

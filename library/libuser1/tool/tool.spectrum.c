@@ -2,7 +2,7 @@
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
 #define _mic_ hex32('m','i','c',0)
-void* arenastart(u64, void*);
+void* arenacreate(u64, void*);
 //libsoft1
 void fft(double* real, double* imag, int k);
 void ifft(double* real, double* imag, int k);
@@ -263,7 +263,7 @@ static void spectrum_create(struct actor* act)
 	amp   = (double*)(buf+0x80000);
 	phase = (double*)(buf+0xc0000);
 
-	win = arenastart(_mic_, "0");
+	win = arenacreate(_mic_, "0");
 	say("win=%llx\n",win);
 	if(0 == win)return;
 

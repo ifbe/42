@@ -296,6 +296,7 @@ library/libuser1/hack/hack.fs.c \
 library/libuser1/hack/hack.graph.c \
 library/libuser1/hack/hack.hex.c \
 library/libuser1/hack/hack.input.c \
+library/libuser1/hack/hack.rawdump.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
 library/libuser1/lib1d/json/json.c \

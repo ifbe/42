@@ -58,7 +58,6 @@ int vnc_client(  void* p, int fd, void* buf, int len);
 int vnc_server(  void* p, int fd, void* buf, int len);
 int ws_client(   void* p, int fd, void* buf, int len);
 int ws_server(   void* p, int fd, void* buf, int len);
-int ws_event(struct event* ev, void* buf);
 int wss_client(  void* p, int fd, void* buf, int len);
 int wss_server(  void* p, int fd, void* buf, int len);
 //debug

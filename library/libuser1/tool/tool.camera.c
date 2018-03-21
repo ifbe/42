@@ -4,7 +4,7 @@ void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
-void* arenastart(u64, void*);
+void* arenacreate(u64, void*);
 void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
@@ -100,7 +100,7 @@ static void camera_create(struct actor* act)
 	struct arena* win;
 	if(0 == act)return;
 
-	win = arenastart(_cam_, "0");
+	win = arenacreate(_cam_, "0");
 	say("win=%llx\n",win);
 	if(0 == win)return;
 

@@ -236,12 +236,6 @@ int websocket_write(u64 fd, void* buf, int len)
 #define WSS 0x535357
 int ws_client(struct element* ele, int fd, u8* buf, int len)
 {
-	int stage;
-	printmemory(buf, len);
-
-	stage = ele[fd].stage1;
-	if(stage == 0)ele[fd].stage1 = 1;
-
 	return ws;
 }
 int ws_server(struct element* ele, int fd, u8* buf, int len)

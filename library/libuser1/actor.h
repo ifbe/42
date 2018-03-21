@@ -125,43 +125,43 @@ struct arena
 	int cx;
 	int cy;
 	int cz;
-	int vkbd;
+	int dirty;
 
 	//[a0,af]: right
 	int rx;
 	int ry;
 	int rz;
-	int theone;
+	int vkbd;
 
 	//[b0,bf]: far
 	int fx;
 	int fy;
 	int fz;
-	int edit;
+	int theone;
 
 	//[c0,cf]: upper
 	int ux;
 	int uy;
 	int uz;
-	int other;
+	int edit;
 
 	//[d0,df]
 	int dirtyx0;
 	int dirtyy0;
 	int dirtyz0;
-	int dirty;
+	int flag0;
 
 	//[e0,ef]
 	int dirtyx1;
 	int dirtyy1;
 	int dirtyz1;
-	int dirtyw1;
+	int flag1;
 
 	//[f0,ff]
 	int dirtyx2;
 	int dirtyy2;
 	int dirtyz2;
-	int dirtyw2;
+	int flag2;
 
 	//[100,1ff]
 	struct point touchdown[16];
@@ -191,7 +191,7 @@ struct actor
 		void* what1;
 	};
 	union{
-		u64 vbo;
+		u64 len;
 		void* unique;
 	};
 	union{
@@ -243,7 +243,7 @@ struct actor
 	int cx;
 	int cy;
 	int cz;
-	int cw;
+	int dirty;
 
 	//[+20,+2f]: right
 	int rx;

@@ -23,11 +23,6 @@ struct per_io_data
 	SOCKET fd;
 };
 static struct object* obj;
-//
-static SOCKET btlisten;
-static SOCKET rawlisten;
-static SOCKET tcplisten;
-static SOCKET udplisten;
 
 
 
@@ -60,13 +55,13 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	char* p;
 	struct per_io_data* pio = (void*)(obj[fd].data);
 	c = pio->count;
-	if(c == 0)return -1;	//disconnect
+	if(c == 0)return 0;	//disconnect
 
 	p = pio->bufing.buf;
 	for(j=0;j<c;j++)buf[j] = p[j];
 
 	pio->count = 0;
-	iocp_mod(fd);
+	iocp_mod(fd*4);
 	return c;
 }
 int writesocket(u64 fd, u8* buf, u64 off, u64 len)
@@ -100,7 +95,7 @@ int stopsocket(SOCKET fd)
 	GUID guiddisconnectex = WSAID_DISCONNECTEX;
 	DWORD dwret = 0;
 	int ret = WSAIoctl(
-		tcplisten,
+		fd*4,
 		SIO_GET_EXTENSION_FUNCTION_POINTER,
 		&guiddisconnectex,
 		sizeof(guiddisconnectex),
@@ -112,7 +107,7 @@ int stopsocket(SOCKET fd)
 	);
 	if(ret != 0)
 	{
-		printf("error@WSAIoctl\n");
+		printf("error@stopsocket.WSAIoctl\n");
 		return 0;
 	}
 
@@ -136,11 +131,11 @@ u64 startsocket(char* addr, int port, int type)
 
 	if(type == 'R')		//RAW
 	{
-		rawlisten = WSASocket(
+		SOCKET fd = WSASocket(
 			PF_INET, SOCK_RAW, IPPROTO_IP,
 			0, 0, WSA_FLAG_OVERLAPPED
 		);
-		if(rawlisten == SOCKET_ERROR)
+		if(fd == SOCKET_ERROR)
 		{
 			printf("error:%d@socket\n", GetLastError());
 			return 0;
@@ -154,7 +149,7 @@ u64 startsocket(char* addr, int port, int type)
 		serAddr.sin_port = htons(0);
 
 		//
-		if(bind(rawlisten, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
+		if(bind(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@bind\n", GetLastError());
 			return 0;
@@ -162,25 +157,25 @@ u64 startsocket(char* addr, int port, int type)
 
 		//
 		int one=1;
-		if(WSAIoctl(rawlisten, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
+		if(WSAIoctl(fd, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
 		{
 			printf("error:%d@WSAIoctl\n", GetLastError());
 			return 0;
 		}
 
 		//
-		if(setsockopt(rawlisten, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
+		if(setsockopt(fd, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
 		{
 			printf("error:%d@setsockopt\n", GetLastError());
 			return 0;
 		}
 
 		//
-		obj[rawlisten/4].type = type;
-		obj[rawlisten/4].name = 0;
-		iocp_add(rawlisten);
-		iocp_mod(rawlisten);
-		return rawlisten/4;
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
+		iocp_add(fd);
+		iocp_mod(fd);
+		return fd/4;
 	}
 	else if(type == 'r')	//raw
 	{
@@ -193,7 +188,7 @@ u64 startsocket(char* addr, int port, int type)
 		SOCKADDR_IN servaddr;
 
 		//
-		udplisten = WSASocket(
+		SOCKET fd = WSASocket(
 			AF_INET, SOCK_DGRAM, 0,
 			0, 0, WSA_FLAG_OVERLAPPED
 		);
@@ -204,20 +199,20 @@ u64 startsocket(char* addr, int port, int type)
 		servaddr.sin_addr.s_addr = INADDR_ANY;
 
 		//
-		ret = bind(udplisten, (SOCKADDR*)&servaddr, addrlen);
+		ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 		if(ret == SOCKET_ERROR)
 		{
 			printf("error@bind\n");
-			closesocket(udplisten);
+			closesocket(fd);
 			return 0;
 		}
 
 		//
-		obj[udplisten/4].type = type;
-		obj[udplisten/4].name = 0;
-		iocp_add(udplisten);
-		iocp_mod(udplisten);
-		return udplisten/4;
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
+		iocp_add(fd);
+		iocp_mod(fd);
+		return fd/4;
 	}
 	else if(type == 'u')	//udp client
 	{
@@ -260,11 +255,11 @@ u64 startsocket(char* addr, int port, int type)
 		SOCKADDR_IN servaddr;
 
 		//server.1
-		tcplisten = WSASocket(
+		SOCKET fd = WSASocket(
 			AF_INET, SOCK_STREAM, IPPROTO_TCP,
 			0, 0, WSA_FLAG_OVERLAPPED
 		);
-		if(tcplisten == INVALID_SOCKET)
+		if(fd == INVALID_SOCKET)
 		{
 			printf("error@wsasocket\n");
 			return 0;
@@ -276,20 +271,20 @@ u64 startsocket(char* addr, int port, int type)
 		servaddr.sin_addr.s_addr = INADDR_ANY;
 
 		//server.3
-		ret = bind(tcplisten, (SOCKADDR*)&servaddr, addrlen);
+		ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 		if(ret == SOCKET_ERROR)
 		{
 			printf("error@bind\n");
-			closesocket(tcplisten);
+			closesocket(fd);
 			return 0;
 		}
 
 		//server.4
-		ret = listen(tcplisten, SOMAXCONN);
+		ret = listen(fd, SOMAXCONN);
 		if(ret == -1)
 		{
 			printf("error@listen\n");
-			closesocket(tcplisten);
+			closesocket(fd);
 			return 0;
 		}
 
@@ -298,7 +293,7 @@ u64 startsocket(char* addr, int port, int type)
 		GUID guidacceptex = WSAID_ACCEPTEX;
 		DWORD dwret = 0;
 		ret = WSAIoctl(
-			tcplisten,
+			fd,
 			SIO_GET_EXTENSION_FUNCTION_POINTER,
 			&guidacceptex,
 			sizeof(guidacceptex),
@@ -336,16 +331,16 @@ u64 startsocket(char* addr, int port, int type)
 			pio->fd = t;
 
 			ret = acceptex(
-				tcplisten, t,
+				fd, t,
 				(void*)pfd, 0, 0x20, 0x20, 0,
 				(void*)pio
 			);
 		}
 
-		obj[tcplisten/4].type = type;
-		obj[tcplisten/4].name = 0;
-		iocp_add(tcplisten);
-		return tcplisten/4;
+		obj[fd/4].type = type;
+		obj[fd/4].name = 0;
+		iocp_add(fd);
+		return fd/4;
 	}
 	else if(type == 't')	//tcp client
 	{
