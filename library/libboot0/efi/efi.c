@@ -6,7 +6,6 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-void main(int, char**);
 void say(void*, ...);
 
 
@@ -125,7 +124,7 @@ void gethandleandtable(void** handle, void** table)
 	*handle = H;
 	*table = T;
 }
-EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
+EFI_STATUS efi_hack(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
 {
 	int ret;
 	H = handle;

@@ -212,26 +212,13 @@ again:
 /*
 #include <efi.h>
 #include <efilib.h>
-static EFI_HANDLE H;
-static EFI_SYSTEM_TABLE* T;
-void gethandleandtable(void** handle, void** table)
-{
-	*handle = H;
-	*table = T;
-}
+EFI_STATUS efi_hack(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table);
 EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
 {
-	int ret;
-	H = handle;
-	T = table;
-
-	ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
-	if(EFI_ERROR(ret))return ret;
-
-	ret = table->ConIn->Reset(table->ConIn, FALSE);
-	if(EFI_ERROR(ret))return ret;
+	efi_hack(handle, table);
 
 	main(0, 0);
+
 	return EFI_SUCCESS;
 }
 void atexit(){}
@@ -241,71 +228,15 @@ void atexit(){}
 #ifdef __ANDROID__
 #include <stdio.h>
 #include <stdlib.h>
-#include <EGL/egl.h>
-#include <GLES/gl.h>
-#include <android/log.h>
-#include <android_native_app_glue.h>
-#define LOG_TAG "finalanswer"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-static struct android_app* theapp;
-static void* thewin;
-void* getandroidapp()
-{
-	return theapp;
-}
-void setandroidapp(void* win)
-{
-	thewin = win;
-}
-static void handle_cmd(struct android_app* app, int32_t cmd)
-{
-	LOGI("app=%llx,cmd=%x\n", (u64)app, cmd);
-}
-static int32_t handle_input(struct android_app* app, AInputEvent* ev)
-{
-	int32_t type;
-	int32_t source;
-	//LOGI("app=%llx,ev=%llx\n", (u64)app, (u64)ev);
-
-	type = AInputEvent_getType(ev);
-	if(AINPUT_EVENT_TYPE_MOTION == type)
-	{
-		source = AInputEvent_getSource(ev);
-		if(AINPUT_EVENT_TYPE_KEY)
-		{
-			eventwrite(0,0,0,0);
-			theapp->destroyRequested = 1;
-		}
-		else if(AINPUT_SOURCE_TOUCHSCREEN == source)
-		{
-		}
-		else if(AINPUT_SOURCE_TRACKBALL == source)
-		{
-		}
-	}
-}
-void android_main(struct android_app* app)
+void android_loop(void* app);
+void android_main(void* app)
 {
 	app_dummy();
-	app->onAppCmd = handle_cmd;
-    app->onInputEvent = handle_input;
 
-	theapp = app;
 	startthread(main, 0);
 
-	while(1)
-	{
-		int ident;
-		int events;
-		struct android_poll_source* source;
-		while ((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-		{
-			if(source)source->process(app, source);
-			if(app->destroyRequested)goto byebye;
-		}
-	}
+	android_loop(app);
 
-byebye:
 	exit(0);
 }
 #endif
