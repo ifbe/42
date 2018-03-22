@@ -350,5 +350,7 @@ LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/library/libuser1
 LOCAL_CFLAGS := -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast
 LOCAL_LDLIBS := -lm -llog -ljnigraphics -landroid
+LOCAL_STATIC_LIBRARIES := android_native_app_glue
 LOCAL_MODULE := finalanswer
 include $(BUILD_SHARED_LIBRARY)
+$(call import-module,android/native_app_glue)
