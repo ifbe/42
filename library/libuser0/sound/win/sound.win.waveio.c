@@ -35,7 +35,8 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 		{
 			working->len = 1024*2;
 			working->buf = ibuf + (1024*2*icur);
-			eventwrite((u64)orel, _act_, orel->destchip, 0);
+			actorwrite(orel);
+			eventwrite(0, _act_, (u64)working, 0);
 		}
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
@@ -82,7 +83,7 @@ void soundread(
 {
 	if(0 == act)return;
 }
-void soundwrite(u8* buf, int len)
+void soundwrite(int dev, int time, u8* buf, int len)
 {
 	int j;
 	if(0 == obuf)obuf = malloc(0x100000);

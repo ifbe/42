@@ -236,10 +236,6 @@ void* arteryread(int fd)
 {
 	return &obj[fd];
 }
-int arterywrite(struct event* ev)
-{
-	return 0;
-}
 /*
 	//raw
 	if(type == 'R')
@@ -333,6 +329,10 @@ int arterychoose(u8* buf, int len)
 
 
 
+int arteryevent(struct event* ev)
+{
+	return 0;
+}
 void freeartery()
 {
 	//say("[8,c):freeing artery\n");

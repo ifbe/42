@@ -10,38 +10,38 @@
 void freeactor();
 void initactor(void*);
 int actorread();
-int actorwrite(void*);
+int actorevent(void*);
 //libuser0
 #define _win_ hex32('w','i','n',0)
 void freearena();
 void initarena(void*);
 int arenaread();
-int arenawrite(void*);
+int arenaevent(void*);
 //libsoft1
 #define _art_ hex32('a','r','t',0)
 void freeartery();
 void initartery(void*);
 int arteryread();
-int arterywrite(void*);
+int arteryevent(void*);
 //libsoft0
 #define _fd_ hex32('f','d',0,0)
 void freesystem();
 void initsystem(void*);
 int systemread();
-int systemwrite(void*);
+int systemevent(void*);
 int sleep_us(int);
 //libhard1
 #define _dri_ hex32('d','r','v',0)
 void freedriver();
 void initdriver(void*);
 int driverread();
-int driverwrite(void*);
+int driverevent(void*);
 //libhard0
 #define _dev_ hex32('d','e','v',0)
 void freedevice();
 void initdevice(void*);
 int deviceread();
-int devicewrite(void*);
+int deviceevent(void*);
 //libboot1
 #define _hash_ hex32('h','a','s','h')
 void freestdin();
@@ -150,7 +150,7 @@ again:
 		ev = eventread();
 		if(0 == ev)
 		{
-			sleep_us(1000);
+			sleep_us(10000);
 			goto again;
 		}
 		if(0 == ev->what)break;
@@ -165,43 +165,72 @@ again:
 		//libhard0
 		if(_dev_ == ev->what)
 		{
-			ret = devicewrite(ev);
+			ret = deviceevent(ev);
 			if(ret != 42)goto again;
 		}
 
 		//libhard1
 		if(_dri_ == ev->what)
 		{
-			ret = driverwrite(ev);
+			ret = driverevent(ev);
 			if(ret != 42)goto again;
 		}
 */
 		//libsoft0
 		if(_fd_ == ev->what)
 		{
-			ret = systemwrite(ev);
-			if(ret != 42)goto again;
+			ret = systemevent(ev);
+			if(42 == ret)continue;
+			else goto again;
 		}
 
 		//libsoft1
 		if(_art_ == ev->what)
 		{
-			ret = arterywrite(ev);
-			if(ret != 42)goto again;
+			ret = arteryevent(ev);
+			if(42 == ret)continue;
+			else goto again;
 		}
 
 		//libuser0
 		ret = (ev->what)&0xff;
 		if('w' == ret)
 		{
-			arenawrite(ev);
+			ret = arenaevent(ev);
 			continue;
 		}
 
 		//libuser1
-		actorwrite(ev);
+		actorevent(ev);
 	}
 
 	afterdusk();
 	return 0;
 }
+
+
+/*
+#include <efi.h>
+#include <efilib.h>
+EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
+{
+}
+*/
+
+
+/*
+#include <EGL/egl.h>
+#include <GLES/gl.h>
+#include <android/log.h>
+#include <android/sensor.h>
+#include <android_native_app_glue>
+void android_main(android_app* app)
+{
+	Appdata data;
+	app_dummy();
+
+	data.mApplication = application;
+	data.mGraphicsService = new GraphicsService(app);
+	Engine app(&data);
+}
+*/

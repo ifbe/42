@@ -226,9 +226,9 @@ int arenaread()
 			while(1)
 			{
 				if(0 == rel)break;
-				act = (void*)(rel->destchip);
-				pin = (void*)(rel->destfoot);
-				sty = (void*)(rel->selffoot);
+				act = (void*)(rel->dstchip);
+				pin = (void*)(rel->dstfoot);
+				sty = (void*)(rel->srcfoot);
 				videoread(win, sty, act, pin);
 				rel = samesrcnextdst(rel);
 			}
@@ -239,9 +239,9 @@ int arenaread()
 			while(1)
 			{
 				if(0 == rel)break;
-				act = (void*)(rel->destchip);
-				pin = (void*)(rel->destfoot);
-				sty = (void*)(rel->selffoot);
+				act = (void*)(rel->dstchip);
+				pin = (void*)(rel->dstfoot);
+				sty = (void*)(rel->srcfoot);
 				soundread(win, sty, act, pin);
 				rel = samesrcnextdst(rel);
 			}
@@ -252,9 +252,9 @@ int arenaread()
 			while(1)
 			{
 				if(0 == rel)break;
-				act = (void*)(rel->destchip);
-				pin = (void*)(rel->destfoot);
-				sty = (void*)(rel->selffoot);
+				act = (void*)(rel->dstchip);
+				pin = (void*)(rel->dstfoot);
+				sty = (void*)(rel->srcfoot);
 				wsclient_read(win, sty, act, pin);
 				rel = samesrcnextdst(rel);
 			}
@@ -267,42 +267,8 @@ int arenaread()
 	}
 	return 0;
 }
-int arenawrite(struct event* ev)
+void arenawrite(struct relation* rel)
 {
-	int j;
-	void* ret;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
-
-	if(hex32('w','+',0,0) == what)
-	{
-		ret = arenacreate(why, where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return 0;
-		}
-	}
-	else if(hex32('w','-',0,0) == what)
-	{
-		ret = (void*)where;
-		arenadelete(ret);
-	}
-	else
-	{
-		if(where >= 0x1000)return 0;
-
-		for(j=0;j<0x100;j++)
-		{
-			if((_WS_ == arena[j].type)&&(where == arena[j].fd))
-			{
-				wsserver_read(&arena[j], 0, 0, 0);
-			}
-		}
-	}
-	return 0;
 }
 void* arenalist(u8* buf, int len)
 {
@@ -358,6 +324,35 @@ void* arenachoose(u8* buf, int len)
 
 
 
+int arenaevent(struct event* ev)
+{
+	int j;
+	void* ret;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
+
+	if(_win_ == what)
+	{
+		return 42;
+	}
+	else if(hex32('w','+',0,0) == what)
+	{
+		ret = arenacreate(why, where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return 0;
+		}
+	}
+	else if(hex32('w','-',0,0) == what)
+	{
+		ret = (void*)where;
+		arenadelete(ret);
+	}
+	return 0;
+}
 void freearena()
 {
 	//say("[c,f):freeing arena\n");

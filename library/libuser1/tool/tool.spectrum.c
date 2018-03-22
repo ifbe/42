@@ -14,10 +14,8 @@ void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
 int piano_freq(int);
 //libsoft0
-int soundread(void* buf, int len);
-int soundwrite(void* buf, int len);
-int soundstart(int rate, int chan);
-int soundstop();
+int soundread(int dev, int time, void* buf, int len);
+int soundwrite(int dev, int time, void* buf, int len);
 //
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
@@ -39,6 +37,7 @@ struct perframe
 };
 static struct perframe* frame;
 static int cur = 0;
+static int haha;
 static int that;
 
 
@@ -60,19 +59,33 @@ static void spectrum_read_pixel(
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
 
-	for(x=0;x<ww;x++)
+	if(haha&1)
 	{
-		t = tau / ww * x;
-		cc = cosine(t) * ww;
-		ss = -sine(t) * hh;
-		drawline(win, 0xffffff,
-			cx + (int)(cc * (1.0 - 2*amp[x])),
-			cy + (int)(ss * (1.0 - 2*amp[x])),
-			cx + (int)cc,
-			cy + (int)ss
-		);
+		for(x=0;x<512;x++)
+		{
+			t = tau / 512 * x;
+			cc = cosine(t) * ww;
+			ss = -sine(t) * hh;
+			drawline(win, 0xffffff,
+				cx + (int)(cc * (1.0 - 2*amp[x])),
+				cy + (int)(ss * (1.0 - 2*amp[x])),
+				cx + (int)cc,
+				cy + (int)ss
+			);
+		}
 	}
-	drawdecimal(win, 0xffffff, cx-ww, cy-hh, that);
+	else
+	{
+		for(x=0;x<512;x++)
+		{
+			t = (float)hh*amp[x]*2;
+			drawline(win, 0xffffff,
+				cx-ww + (x*2+1)*ww/512, cy+hh,
+				cx-ww + (x*2+1)*ww/512, cy+hh-(int)t
+			);
+		}
+	}
+	drawdecimal(win, 0xffffff, cx, cy, that);
 }
 static void spectrum_read_html(
 	struct arena* win, struct style* sty,
@@ -147,22 +160,20 @@ static void spectrum_read(
 }
 static void spectrum_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct event* ev, int type)
 {
 	float f;
 	int j,k;
 	struct actor* tmp;
-	struct relation* rel;
 	float* real;
 	float* imag;
 	float* amp;
 	u16* pcmin;
 	u16* pcmout;
 
-	if(_act_ == ev->what)
+	if(_win_ == type)
 	{
-		rel = (void*)(ev->why);
-		tmp = (void*)(rel->selfchip);
+		tmp = (void*)ev;
 		pcmin = tmp->buf;
 
 		cur = (cur+1)%32;
@@ -206,7 +217,8 @@ static void spectrum_write(
 		}
 
 		k = ev->why;
-		if('c' == k)f = cccc;
+		if((k>='0')&&(k<='9'))haha=k;
+		else if('c' == k)f = cccc;
 		else if('d' == k)f = dddd;
 		else if('e' == k)f = eeee;
 		else if('f' == k)f = ffff;
@@ -224,7 +236,7 @@ static void spectrum_write(
 		{
 			pcmout[j] = (int)(real[j%1024]*65535.0);
 		}
-		soundwrite(pcmout, 1024*2*16);
+		soundwrite(0, 0, pcmout, 1024*2*16);
 	}
 }
 static void spectrum_list()

@@ -54,27 +54,23 @@ static void browser_read(
 }
 static void browser_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct event* ev, int type)
 {
-	int j,fd;
+	int j,fd,len;
 	struct actor* tmp;
-	struct relation* rel;
 	struct mystring* haha;
-	int len;
 	void* addr;
 	u8* buf;
 	u8* src;
-	u8* dst;
-	if(_act_ == ev->what)
+	if(_fd_ == type)
 	{
-		rel = (void*)(ev->why);
-		tmp = (void*)(rel->selfchip);
+		tmp = (void*)ev;
 		len = tmp->len;
 		src = tmp->buf;
-		dst = (act->buf)+(act->len);
 
-		for(j=0;j<len;j++)dst[j] = src[j];
-		dst[j] = 0;
+		buf = (act->buf)+(act->len);
+		for(j=0;j<len;j++)buf[j] = src[j];
+		buf[j] = 0;
 
 		act->len += len;
 		return;

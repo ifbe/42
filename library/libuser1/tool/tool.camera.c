@@ -73,15 +73,12 @@ static void camera_read(
 }
 static void camera_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct event* ev, int type)
 {
-	struct relation* rel;
 	struct actor* tmp;
-	if(_act_ == ev->what)
+	if(_win_ == type)
 	{
-		rel = (void*)(ev->why);
-		tmp = (void*)(rel->selfchip);
-
+		tmp = (void*)ev;
 		act->buf = tmp->buf;
 		act->width = tmp->width;
 		act->stride = tmp->stride;

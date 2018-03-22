@@ -56,14 +56,14 @@ int playwithactor(struct arena* win, struct event* ev)
 
 		reltop = relwow;
 	}
-	stytop = (void*)(reltop->destfoot);
+	stytop = (void*)(reltop->dstfoot);
 
 	stywow = 0;
 	relwow = reltop;
 	while(1)
 	{
 		if(relwow == 0)break;
-		stywow = (void*)(relwow->destfoot);
+		stywow = (void*)(relwow->dstfoot);
 
 		if(x > stywow->cx)absx = x - (stywow->cx);
 		else absx = (stywow->cx) - x;
@@ -218,9 +218,9 @@ stage2:
 		rel = tmp;
 	}
 
-	act = (void*)(rel->selfchip);
-	com = (void*)(rel->selffoot);
-	act->onwrite(act, com, ev);
+	act = (void*)(rel->srcchip);
+	com = (void*)(rel->srcfoot);
+	act->onwrite(act, com, ev, 0);
 
 lastword:
 	return 1;

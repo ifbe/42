@@ -43,6 +43,11 @@ int readfile(int fd, void* buf, int off, int len);
 int writefile(int fd, void* buf, int off, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
+void actorwrite(void*);
+void arenawrite(void*);
+void arterywrite(void*);
+//void systemwrite(void*);
+//
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -183,7 +188,52 @@ void* systemread(int fd)
 {
 	return &obj[fd];
 }
-int systemwrite(struct event* ev)
+void systemwrite(struct relation* rel)
+{
+	struct object* obj = (void*)(rel->dstchip);
+}
+int systemlist(u8* buf, int len)
+{
+	int j,k=0;
+	void* addr;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].type)continue;
+
+		k++;
+		addr = (void*)(&obj[j]);
+		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+	}
+
+	if(0 == k)say("empth system\n");
+	return 0;
+}
+int systemchoose(u8* buf, int len)
+{
+	int j;
+	u8 data[0x1000];
+	if(0 == len)
+	{
+		systemcreate(0, buf);
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(0 == buf[j])break;
+			data[j] = buf[j];
+		}
+		data[j] = 0;
+
+		systemcreate(0, data);
+	}
+	return 0;
+}
+
+
+
+
+int systemevent(struct event* ev)
 {
 	int ret;
 	struct relation* irel;
@@ -238,53 +288,13 @@ int systemwrite(struct event* ev)
 	ret = readsocket(where, ppp, 0, 0x100000);
 	obj[where].len = ret;
 	obj[where].buf = ppp;
-
-	ev->why = (u64)orel;
-	ev->what = _act_;
-	ev->where = orel->dstchip;
-	return 42;
-}
-int systemlist(u8* buf, int len)
-{
-	int j,k=0;
-	void* addr;
-	for(j=0;j<0x1000;j++)
+	if(_act_ == orel->dsttype)
 	{
-		if(0 == obj[j].type)continue;
-
-		k++;
-		addr = (void*)(&obj[j]);
-		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
-	}
-
-	if(0 == k)say("empth system\n");
-	return 0;
-}
-int systemchoose(u8* buf, int len)
-{
-	int j;
-	u8 data[0x1000];
-	if(0 == len)
-	{
-		systemcreate(0, buf);
-	}
-	else
-	{
-		for(j=0;j<len;j++)
-		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
-		}
-		data[j] = 0;
-
-		systemcreate(0, data);
+		actorwrite(orel);
+		return 42;
 	}
 	return 0;
 }
-
-
-
-
 void freesystem()
 {
 	//say("[8,c):freeing system\n");

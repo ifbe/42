@@ -13,37 +13,37 @@
 void freeactor();
 void initactor(void*);
 int actorread();
-int actorwrite(void*);
+int actorevent(void*);
 //libuser0
 #define _win_ hex32('w','i','n',0)
 void freearena();
 void initarena(void*);
 int arenaread();
-int arenawrite(void*);
+int arenaevent(void*);
 //libsoft1
 #define _fd_ hex32('f','d',0,0)
 void freeartery();
 void initartery(void*);
 int arteryread();
-int arterywrite(void*);
+int arteryevent(void*);
 //libsoft0
 #define _sys_ hex32('s','y','s',0)
 void freesystem();
 void initsystem(void*);
 int systemread();
-int systemwrite();
+int systemevent();
 //libhard1
 #define _drv_ hex32('d','r','v',0)
 void freedriver();
 void initdriver(void*);
 int driverread();
-int driverwrite(void*);
+int driverevent(void*);
 //libhard0
 #define _dev_ hex32('d','e','v',0)
 void freedevice();
 void initdevice(void*);
 int deviceread();
-int devicewrite(void*);
+int deviceevent(void*);
 //libboot1
 #define _hash_ hex32('h','a','s','h')
 void freestdin();
@@ -107,12 +107,13 @@ again:
 		if(_fd_ == ev->what)
 		{
 			//network rawdata -> my event
-			ret = systemwrite(ev);
-			if(ret != 42)goto again;
+			ret = systemevent(ev);
+			if(42 == ret)continue;
+			else goto again;
 		}
 
 		//foreach changed: actor_read, window_write
-		actorwrite(ev);
+		actorevent(ev);
 	}
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong data)

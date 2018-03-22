@@ -81,11 +81,11 @@ int actoroutput(struct arena* win)
 	{
 		if(rel == 0)break;
 
-		if(rel->selftype == _act_)
+		if(rel->srctype == _act_)
 		{
-			act = (void*)(rel->selfchip);
-			sty = (void*)(rel->destfoot);
-			com = (void*)(rel->selffoot);
+			act = (void*)(rel->srcchip);
+			sty = (void*)(rel->dstfoot);
+			com = (void*)(rel->srcfoot);
 			//say("%x,%x,%x,%x\n", win, act, sty, com);
 			//say("%x\n", rel);
 

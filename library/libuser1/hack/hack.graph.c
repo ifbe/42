@@ -77,10 +77,10 @@ static void graph_traverse(struct arena* this)
 	{
 		if(rel == 0)return;
 
-		child = (void*)(rel->selfchip);
+		child = (void*)(rel->srcchip);
 		k = graph_add(_win_, child);
 
-		if(rel->selftype == _win_)graph_traverse(child);
+		if(rel->srctype == _win_)graph_traverse(child);
 		graph_pair(j, k);
 
 		rel = samedstnextsrc(rel);
@@ -146,13 +146,13 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 	while(1)
 	{
 		if(rel == 0)break;
-//say("%x,%llx\n",rel,rel->selftype);
+//say("%x,%llx\n",rel,rel->srctype);
 
 		ff = (da-sa) / k;
 		x = cx + ww * cosine(sa + (2*j+1) * ff);
 		y = cy + hh * sine(sa + (2*j+1) * ff);
 
-		if(rel->selftype == _win_)
+		if(rel->srctype == _win_)
 		{
 			color = 0x0000ff;
 			starry_read_pixel_r(
@@ -164,7 +164,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 		}
 		else color = 0x00ff00;
 
-		act = (void*)(rel->selfchip);
+		act = (void*)(rel->srcchip);
 		drawline(
 			win, color,
 			cx, cy,

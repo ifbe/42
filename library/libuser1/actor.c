@@ -129,33 +129,19 @@ int actorread()
 	}
 	return 0;
 }
-int actorwrite(struct event* ev)
+int actorwrite(struct relation* rel)
 {
-	int j;
 	struct actor* act;
-	struct arena* win = (void*)(ev->where);
-	if(0 == win)return 0;
+	if(0 == rel)return 0;
+	if(_act_ != rel->dsttype)return 0;
 
-	if(_act_ == ev->what)
-	{
-		act = (void*)(ev->where);
-		act->onwrite(act, 0, ev);
-		return;
-	}
+	act = (void*)(rel->dstchip);
+	if(0 == act)return;
 
-	actorinput(win, ev);
-
-	if('p' == (ev->what&0xff))
-	{
-		touch_explain(win, ev);
-		win->dirty = 1;
-		if('@' == (ev->what>>8)&0xff)return 0;
-	}
-	for(j=0;j<16;j++)
-	{
-		if(0 == arena[j].type)continue;
-		if(_WS_ == arena[j].type)arena[j].dirty = 1;
-	}
+	act->onwrite(
+		act, 0,
+		(void*)(rel->srcchip), rel->srctype
+	);
 }
 void* actorlist(u8* buf, int len)
 {
@@ -224,6 +210,26 @@ void* actorchoose(u8* buf, int len)
 
 
 
+int actorevent(struct event* ev)
+{
+	int j;
+	struct actor* act;
+	struct arena* win = (void*)(ev->where);
+	if(0 == win)return 0;
+
+	actorinput(win, ev);
+	if('p' == (ev->what&0xff))
+	{
+		touch_explain(win, ev);
+		win->dirty = 1;
+		if('@' == (ev->what>>8)&0xff)return 0;
+	}
+	for(j=0;j<16;j++)
+	{
+		if(0 == arena[j].type)continue;
+		if(_WS_ == arena[j].type)arena[j].dirty = 1;
+	}
+}
 void freeactor()
 {
 	//say("[c,f):deleteing actor\n");

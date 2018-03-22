@@ -92,7 +92,8 @@ public:
 			working->width = working->stride = 640;
 			working->height = 480;
 			working->buf = (void*)(obj[enq].buf);
-			eventwrite((u64)orel, _act_, orel->destchip, 0);
+			actorwrite(orel);
+			eventwrite(0, _act_, (u64)working, 0);
 		}
 
 		enq = (enq+1)%60;
