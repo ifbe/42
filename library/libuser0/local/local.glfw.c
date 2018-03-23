@@ -996,7 +996,7 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	if(pressed == 0)return;
 	pressed++;
 
-	if(win->flag0 == 12)
+	if(win->edit)
 	{
 		where = (u64)win;
 		xx = x&0xffff;
@@ -1068,7 +1068,7 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 	float tz = camera[2];
 	printf("%f,%f\n", x, y);
 
-	if(win->flag0 == 12)
+	if(win->edit)
 	{
 		where = (u64)win;
 		if(y > 0.0)	//wheel_up
@@ -1215,8 +1215,10 @@ void windowstart(struct arena* this)
 
 	this->buf = mod;
 	this->pass = each;
-	this->w = 512;
-	this->h = 512;
+
+	this->width = 512;
+	this->height = 512;
+	this->depth = 512;
 
 	mod[0x00].buf = malloc(0x1000*0x1000);
 	mod[0x00].len = 0x1000*0x1000;

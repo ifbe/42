@@ -304,7 +304,7 @@ void carvestring(
 		f = (float)(j-len/2);
 		carveascii(
 			win, rgb,
-			cx + (rx*f), cy + (ry*f), cz + (rz*f),
+			cx + (rx*j), cy + (ry*j), cz + (rz*j),
 			rx/2, ry/2, rz/2,
 			fx, fy, fz,
 			buf[j]
