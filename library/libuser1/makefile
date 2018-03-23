@@ -26,6 +26,7 @@ tool/tool.camera.c \
 tool/tool.circuit.c \
 tool/tool.editor.c \
 tool/tool.font.c \
+tool/tool.piano.c \
 tool/tool.qrcode.c \
 tool/tool.sketchpad.c \
 tool/tool.spectrum.c \
@@ -39,6 +40,7 @@ hack/hack.graph.c \
 hack/hack.hex.c \
 hack/hack.input.c \
 hack/hack.rawdump.c \
+hack/hack.switch.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/json/json.c \

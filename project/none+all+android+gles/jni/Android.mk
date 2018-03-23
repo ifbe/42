@@ -284,6 +284,7 @@ library/libuser1/tool/tool.camera.c \
 library/libuser1/tool/tool.circuit.c \
 library/libuser1/tool/tool.editor.c \
 library/libuser1/tool/tool.font.c \
+library/libuser1/tool/tool.piano.c \
 library/libuser1/tool/tool.qrcode.c \
 library/libuser1/tool/tool.sketchpad.c \
 library/libuser1/tool/tool.spectrum.c \
@@ -297,6 +298,7 @@ library/libuser1/hack/hack.graph.c \
 library/libuser1/hack/hack.hex.c \
 library/libuser1/hack/hack.input.c \
 library/libuser1/hack/hack.rawdump.c \
+library/libuser1/hack/hack.switch.c \
 library/libuser1/lib1d/cli/print.cli.c \
 library/libuser1/lib1d/tui/print.tui.c \
 library/libuser1/lib1d/json/json.c \

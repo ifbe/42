@@ -1,18 +1,10 @@
 #include "actor.h"
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
-#define cccc 444.0
-#define dddd 498.3731494493616
-#define eeee 559.4049461533237
-#define ffff 592.6688952514953
-#define gggg 665.2483421332466
-#define aaaa 746.7160167452985
-#define bbbb 838.1603896613437
 #define tau PI*2
 #define _mic_ hex32('m','i','c',0)
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
-int piano_freq(int);
 //libsoft0
 int soundread(int dev, int time, void* buf, int len);
 int soundwrite(int dev, int time, void* buf, int len);
@@ -55,11 +47,34 @@ static void spectrum_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	u16* pcm;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
 
-	if(haha&1)
+	if(0x30 == haha)
+	{
+		pcm = (act->buf)+0x80000;
+		for(x=0;x<0x2000;x++)
+		{
+			drawline(win, 0xffffff,
+				cx-ww + (x*2+1)*ww/0x2000, cy+hh,
+				cx-ww + (x*2+1)*ww/0x2000, cy+hh-(pcm[x]*hh/65536)
+			);
+		}
+	}
+	else if(haha&1)
+	{
+		for(x=0;x<512;x++)
+		{
+			t = (float)hh*amp[x]*2;
+			drawline(win, 0xffffff,
+				cx-ww + (x*2+1)*ww/512, cy+hh,
+				cx-ww + (x*2+1)*ww/512, cy+hh-(int)t
+			);
+		}
+	}
+	else
 	{
 		for(x=0;x<512;x++)
 		{
@@ -71,17 +86,6 @@ static void spectrum_read_pixel(
 				cy + (int)(ss * (1.0 - 2*amp[x])),
 				cx + (int)cc,
 				cy + (int)ss
-			);
-		}
-	}
-	else
-	{
-		for(x=0;x<512;x++)
-		{
-			t = (float)hh*amp[x]*2;
-			drawline(win, 0xffffff,
-				cx-ww + (x*2+1)*ww/512, cy+hh,
-				cx-ww + (x*2+1)*ww/512, cy+hh-(int)t
 			);
 		}
 	}
@@ -162,21 +166,24 @@ static void spectrum_write(
 	struct actor* act, struct pinid* pin,
 	struct event* ev, int type)
 {
-	float f;
 	int j,k;
-	struct actor* tmp;
+	float f;
 	float* real;
 	float* imag;
 	float* amp;
 	u16* pcmin;
-	u16* pcmout;
+	u16* origin;
+	struct actor* tmp;
 
 	if(_win_ == type)
 	{
 		tmp = (void*)ev;
-		pcmin = tmp->buf;
+		origin = tmp->buf;
+		pcmin = (act->buf)+0x80000+((cur/4)*1024*2);
 
 		cur = (cur+1)%32;
+		for(j=0;j<1024;j++)pcmin[j] = origin[j];
+
 		real = frame[cur].real;
 		imag = frame[cur].imag;
 		amp = frame[cur].amp;
@@ -208,35 +215,8 @@ static void spectrum_write(
 	}
 	else if(_char_ == ev->what)
 	{
-		real = frame[32].real;
-		imag = frame[32].imag;
-		for(j=0;j<1024;j++)
-		{
-			real[j] = 0.0;
-			imag[j] = 0.0;
-		}
-
 		k = ev->why;
 		if((k>='0')&&(k<='9'))haha=k;
-		else if('c' == k)f = cccc;
-		else if('d' == k)f = dddd;
-		else if('e' == k)f = eeee;
-		else if('f' == k)f = ffff;
-		else if('g' == k)f = gggg;
-		else if('a' == k)f = aaaa;
-		else if('b' == k)f = bbbb;
-
-		j = (f*1024)/44100;
-		real[j] = 256.0;
-		real[1024-j] = 256.0;
-
-		ifft(real, imag, 10);
-		pcmout = (act->buf)+0xc0000;
-		for(j=0;j<1024*16;j++)
-		{
-			pcmout[j] = (int)(real[j%1024]*65535.0);
-		}
-		soundwrite(0, 0, pcmout, 1024*2*16);
 	}
 }
 static void spectrum_list()

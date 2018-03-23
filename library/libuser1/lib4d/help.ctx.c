@@ -26,6 +26,7 @@ void calculator_register(void*);
 void camera_register(void*);
 void circuit_register(void*);
 void font_register(void*);
+void piano_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
@@ -40,6 +41,7 @@ void graph_register(void*);
 void hex_register(void*);
 void input_register(void*);
 void rawdump_register(void*);
+void switch_register(void*);
 
 
 
@@ -147,6 +149,10 @@ void content_create(void* addr)
 	font_register(temp);
 	temp += sizeof(struct actor);
 
+	//tool.piano
+	piano_register(temp);
+	temp += sizeof(struct actor);
+
 	//tool.qrcode
 	qrcode_register(temp);
 	temp += sizeof(struct actor);
@@ -197,5 +203,9 @@ void content_create(void* addr)
 
 	//hack.rawdump
 	rawdump_register(temp);
+	temp += sizeof(struct actor);
+
+	//hack.switch
+	switch_register(temp);
 	temp += sizeof(struct actor);
 }
