@@ -101,7 +101,7 @@ void keyboard_read_pixel(
 				(cy-hh+1)+(2*y*hh/6),
 				(cx-ww-1)+((2*x+2)*ww/16),
 				(cy-hh-1)+((2*y+2)*hh/6),
-				".", l
+				(void*)".", l
 			);
 		}
 	}

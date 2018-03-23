@@ -43,6 +43,9 @@ int readfile(int fd, void* buf, int off, int len);
 int writefile(int fd, void* buf, int off, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
+//
 void actorwrite(void*);
 void arenawrite(void*);
 void arterywrite(void*);

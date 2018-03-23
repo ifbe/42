@@ -44,7 +44,7 @@ static int elelen = 0;
 static int qqqlen = 0;
 void* allocelement()
 {
-	
+	return 0;
 }
 
 

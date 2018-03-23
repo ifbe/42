@@ -136,12 +136,13 @@ int actorwrite(struct relation* rel)
 	if(_act_ != rel->dsttype)return 0;
 
 	act = (void*)(rel->dstchip);
-	if(0 == act)return;
+	if(0 == act)return 0;
 
 	act->onwrite(
 		act, 0,
 		(void*)(rel->srcchip), rel->srctype
 	);
+	return 0;
 }
 void* actorlist(u8* buf, int len)
 {
@@ -222,13 +223,14 @@ int actorevent(struct event* ev)
 	{
 		touch_explain(win, ev);
 		win->dirty = 1;
-		if('@' == (ev->what>>8)&0xff)return 0;
+		if('@' == ((ev->what>>8)&0xff))return 0;
 	}
 	for(j=0;j<16;j++)
 	{
 		if(0 == arena[j].type)continue;
 		if(_WS_ == arena[j].type)arena[j].dirty = 1;
 	}
+	return 0;
 }
 void freeactor()
 {

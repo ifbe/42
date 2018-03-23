@@ -102,4 +102,5 @@ int actoroutput(struct arena* win)
 
 	//fg
 	foreground(win);
+	return 0;
 }

@@ -11,6 +11,7 @@
 #define u64 unsigned long long
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -55,7 +56,7 @@ void* pollenv()
 {
 	return 0;
 }
-void fixarg(u8* dst, u8* src)
+void fixarg(char* dst, char* src)
 {
 	snprintf(dst, 0x1000, "%s", src);
 }
@@ -133,7 +134,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 		{
 			a = AMotionEvent_getAction(ev);
 			c = AMotionEvent_getPointerCount(ev);
-			say("a=%x,c=%x\n",a,c);
+			LOGI("a=%x,c=%x\n",a,c);
 
 			j = (a>>8)&0xf;
 			a &= 0xf;
@@ -164,6 +165,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 		{
 		}
 	}
+	return 0;
 }
 void android_loop(struct android_app* app)
 {

@@ -1,8 +1,9 @@
 #include "actor.h"
 #define _UDP_ hex32('U','D','P',0)
 #define _fd_ hex32('f','d',0,0)
-void* systemread(int fd);
 int systemcreate(u64, void*);
+void* systemread(int fd);
+void* relation_write(void*,void*,u64,void*,void*,u64);
 
 
 

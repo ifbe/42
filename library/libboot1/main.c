@@ -56,10 +56,12 @@ int term_read(void*);
 int term_write(void*);
 //libboot0
 #define _0101_ hex32('0','1','0','1')
-void death();
+void* death();
 void* birth();
-void eventwrite(u64,u64,u64,u64);
+void* eventwrite(u64,u64,u64,u64);
 void* eventread();
+void* startthread(void*, void*);
+void* stopthread();
 void printmemory(void*, int);
 void say(void*, ...);
 void fixarg(void*, void*);
@@ -228,6 +230,7 @@ void atexit(){}
 #ifdef __ANDROID__
 #include <stdio.h>
 #include <stdlib.h>
+void app_dummy();
 void android_loop(void* app);
 void android_main(void* app)
 {
