@@ -226,11 +226,11 @@ struct actor
 		char padding5[8];
 	};
 	union{
-		int (*onread)(void* arena, void* style, void* actor, void* compo);
+		int (*onread)(void* dc,void* df,void* sc,void* sf);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(void* actor, void* compo, void* event, int type);
+		int (*onwrite)(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 		char padding7[8];
 	};
 

@@ -141,7 +141,8 @@ static void input_read(
 }
 static void input_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int x,y;
 	//say("%x,%x\n",x,y);

@@ -46,10 +46,10 @@ int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-void actorwrite(void*);
-void arenawrite(void*);
-void arterywrite(void*);
-//void systemwrite(void*);
+void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+void arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -191,9 +191,8 @@ void* systemread(int fd)
 {
 	return &obj[fd];
 }
-void systemwrite(struct relation* rel)
+void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
-	struct object* obj = (void*)(rel->dstchip);
 }
 int systemlist(u8* buf, int len)
 {
@@ -289,11 +288,15 @@ int systemevent(struct event* ev)
 
 	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
 	ret = readsocket(where, ppp, 0, 0x100000);
-	obj[where].len = ret;
-	obj[where].buf = ppp;
+	if(ret <= 0)return 0;
+
 	if(_act_ == orel->dsttype)
 	{
-		actorwrite(orel);
+		actorwrite(
+			(void*)(orel->dstchip), (void*)(orel->dstfoot),
+			(void*)(orel->srcchip), (void*)(orel->srcfoot),
+			ppp, ret
+		);
 		return 42;
 	}
 	return 0;

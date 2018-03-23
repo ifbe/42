@@ -66,24 +66,15 @@ static void switch_read(
 
 static void switch_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
-	struct relation* rel;
-	struct actor* tmp;
-	u8* src;
-	u8* dst;
-	int len;
 	int j;
-
-	if(_act_ == ev->what)
+	u8* dst;
+	if(0 != win)
 	{
-		rel = (void*)(ev->why);
-		tmp = (void*)(rel->srcchip);
-		len = tmp->len;
-		src = tmp->buf;
 		dst = (act->buf)+(act->len);
-
-		for(j=0;j<len;j++)dst[j] = src[j];
+		for(j=0;j<len;j++)dst[j] = buf[j];
 		dst[j] = 0;
 
 		act->len += len;

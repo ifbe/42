@@ -741,7 +741,8 @@ static void terminal_read(
 
 static void terminal_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int j;
 	u64 tmp;

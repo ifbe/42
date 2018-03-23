@@ -51,7 +51,8 @@ static void editor_read(
 }
 static void editor_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void editor_list()

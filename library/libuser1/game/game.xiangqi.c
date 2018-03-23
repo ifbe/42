@@ -321,7 +321,8 @@ int xiangqi_pickup(int x, int y)
 }
 void xiangqi_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int x, y, ret;
 	u64 key = ev->why;

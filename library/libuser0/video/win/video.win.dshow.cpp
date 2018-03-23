@@ -41,7 +41,10 @@ public:
 
 struct pictureobject
 {
-	u64 buf;
+	union{
+		u64 addr;
+		BYTE* buf;
+	};
 	u64 len;
 	u64 width;
 	u64 height;
@@ -80,7 +83,7 @@ public:
 	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
 	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
 	{
-		BYTE** buf = (BYTE**)(&(obj[enq].buf));
+		BYTE** buf = &(obj[enq].buf);
 		obj[enq].len = pSample->GetActualDataLength();
 		pSample->GetPointer(buf);
 		pSample->Release();
@@ -91,8 +94,11 @@ public:
 		{
 			working->width = working->stride = 640;
 			working->height = 480;
-			working->buf = (void*)(obj[enq].buf);
-			actorwrite(orel);
+			actorwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				obj[enq].buf, 0
+			);
 			eventwrite(0, _act_, (u64)working, 0);
 		}
 

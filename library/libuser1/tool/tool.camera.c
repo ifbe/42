@@ -73,16 +73,13 @@ static void camera_read(
 }
 static void camera_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev, int type)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
-	struct actor* tmp;
-	if(_win_ == type)
+	if(0 != win)
 	{
-		tmp = (void*)ev;
-		act->buf = tmp->buf;
-		act->width = tmp->width;
-		act->stride = tmp->stride;
-		act->height = tmp->height;
+		act->buf = buf;
+		return;
 	}
 }
 static void camera_list()

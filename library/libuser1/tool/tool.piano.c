@@ -98,7 +98,8 @@ static void piano_read(
 }
 static void piano_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int j,k;
 	float f;
@@ -106,6 +107,8 @@ static void piano_write(
 	float* imag;
 	float* amp;
 	u16* pcmout;
+	if(0 != win)return;
+
 	if(_char_ == ev->what)
 	{
 		k = ev->why;

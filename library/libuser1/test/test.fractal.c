@@ -102,7 +102,8 @@ static void fractal_read(
 }
 static void fractal_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	//say("%llx,%llx\n",ev->why, ev->what);
 	u64 why = ev->why;

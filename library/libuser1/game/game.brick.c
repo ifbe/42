@@ -14,7 +14,8 @@ static void brick_read(
 }
 static void brick_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void brick_stop(struct actor* act, struct pinid* pin)

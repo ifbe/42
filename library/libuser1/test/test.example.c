@@ -70,7 +70,8 @@ static void example_read(
 }
 static void example_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void example_list()

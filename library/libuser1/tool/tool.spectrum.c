@@ -27,7 +27,6 @@ struct perframe
 	float amp[1024];
 	float phase[1024];
 };
-static struct perframe* frame;
 static int cur = 0;
 static int haha;
 static int that;
@@ -48,6 +47,7 @@ static void spectrum_read_pixel(
 	int hh = sty->fy;
 	int dd = sty->uz;
 	u16* pcm;
+	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
@@ -108,6 +108,7 @@ static void spectrum_read_vbo(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
@@ -131,6 +132,7 @@ static void spectrum_read_tui(
 	int w = win->stride;
 	int h = win->height;
 	u8* p = (u8*)(win->buf);
+	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
@@ -164,33 +166,29 @@ static void spectrum_read(
 }
 static void spectrum_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev, int type)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 	int j,k;
 	float f;
 	float* real;
 	float* imag;
 	float* amp;
-	u16* pcmin;
-	u16* origin;
-	struct actor* tmp;
+	struct perframe* frame = act->buf;
+	u16* pcmbuf = (act->buf)+0x80000+((cur/4)*1024*2);
+	u16* pcmin = (void*)buf;
 
-	if(_win_ == type)
+	if(0 != win)
 	{
-		tmp = (void*)ev;
-		origin = tmp->buf;
-		pcmin = (act->buf)+0x80000+((cur/4)*1024*2);
-
 		cur = (cur+1)%32;
-		for(j=0;j<1024;j++)pcmin[j] = origin[j];
-
 		real = frame[cur].real;
 		imag = frame[cur].imag;
 		amp = frame[cur].amp;
 
 		for(j=0;j<1024;j++)
 		{
-			real[j] = (float)pcmin[j] / 65536.0;
+			pcmbuf[j] = pcmin[j];
+			real[j] = (float)pcmbuf[j] / 65536.0;
 			imag[j] = 0.0;
 		}
 		fft(real, imag, 10);
@@ -212,8 +210,11 @@ static void spectrum_write(
 		}
 		//say("k=%d\n",k);
 		that = k*44100/1024;
+		return;
 	}
-	else if(_char_ == ev->what)
+
+	struct event* ev = (void*)buf;
+	if(_char_ == ev->what)
 	{
 		k = ev->why;
 		if((k>='0')&&(k<='9'))haha=k;
@@ -240,10 +241,9 @@ static void spectrum_create(struct actor* act)
 {
 	struct arena* win;
 	if(0 == act)return;
-	void* buf = startmemory(0x100000);
 
-	act->buf = buf;
-	frame = buf;
+	act->buf = startmemory(0x100000);
+	if(0 == act->buf)return;
 
 	win = arenacreate(_mic_, "0");
 	say("win=%llx\n",win);

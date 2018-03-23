@@ -54,27 +54,25 @@ static void browser_read(
 }
 static void browser_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev, int type)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
-	int j,fd,len;
-	struct actor* tmp;
-	struct mystring* haha;
+	int j,fd;
+	u8* dst;
 	void* addr;
-	u8* buf;
-	u8* src;
-	if(_fd_ == type)
-	{
-		tmp = (void*)ev;
-		len = tmp->len;
-		src = tmp->buf;
+	struct mystring* haha;
 
-		buf = (act->buf)+(act->len);
-		for(j=0;j<len;j++)buf[j] = src[j];
-		buf[j] = 0;
+	if(0 != win)
+	{
+		dst = (act->buf)+(act->len);
+		for(j=0;j<len;j++)dst[j] = buf[j];
+		dst[j] = 0;
 
 		act->len += len;
 		return;
 	}
+
+	struct event* ev = (void*)buf;
 	if(_char_ != ev->what)return;
 
 	haha = (void*)(act->detail);

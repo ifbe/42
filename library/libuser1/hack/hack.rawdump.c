@@ -89,17 +89,15 @@ void queuepacket(u8* dst, int max, u8* buf, int len)
 }
 static void rawdump_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev, int type)
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
-	struct actor* tmp;
-	u8* src;
-	u8* dst;
-	int len;
 	int j;
+	u8* dst;
+	struct actor* tmp;
 
-	if(_fd_ == type)
+	if(0 != win)
 	{
-		tmp = (void*)ev;
 /*
 		queuepacket(
 			act->buf, 0x400,
@@ -107,11 +105,8 @@ static void rawdump_write(
 			tmp->buf, tmp->len
 		);
 */
-		len = tmp->len;
-		src = tmp->buf;
-
 		dst = (act->buf)+(act->len);
-		for(j=0;j<len;j++)dst[j] = src[j];
+		for(j=0;j<len;j++)dst[j] = buf[j];
 		dst[j] = 0;
 
 		act->len += len;

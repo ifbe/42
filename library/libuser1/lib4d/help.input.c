@@ -220,7 +220,7 @@ stage2:
 
 	act = (void*)(rel->srcchip);
 	com = (void*)(rel->srcfoot);
-	act->onwrite(act, com, ev, 0);
+	act->onwrite(act, com, 0, 0, ev, 0);
 
 lastword:
 	return 1;

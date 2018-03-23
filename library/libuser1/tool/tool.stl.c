@@ -165,7 +165,8 @@ static void stl_read(
 
 static void stl_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int j,ret;
 	u64 type = ev->what;

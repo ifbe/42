@@ -362,9 +362,9 @@ struct pinid
 #ifdef __cplusplus
 extern "C" {
 #endif
-void actorwrite(void*);
-void arterywrite(void*);
-void systemwrite(void*);
+void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 
 u64 startthread(void*, void*);
 void stopthread(u64);

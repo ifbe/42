@@ -129,19 +129,13 @@ int actorread()
 	}
 	return 0;
 }
-int actorwrite(struct relation* rel)
+int actorwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
-	struct actor* act;
-	if(0 == rel)return 0;
-	if(_act_ != rel->dsttype)return 0;
-
-	act = (void*)(rel->dstchip);
-	if(0 == act)return 0;
-
-	act->onwrite(
-		act, 0,
-		(void*)(rel->srcchip), rel->srctype
-	);
+	//say("%llx,%llx,%llx,%llx,%x\n",act,pin,win,sty,buf,len);
+	act->onwrite(act, pin, win, sty, buf, len);
 	return 0;
 }
 void* actorlist(u8* buf, int len)

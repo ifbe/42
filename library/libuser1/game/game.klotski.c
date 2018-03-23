@@ -92,7 +92,8 @@ static void klotski_read(
 }
 static void klotski_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 

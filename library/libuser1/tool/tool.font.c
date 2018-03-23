@@ -153,7 +153,8 @@ static void font_read(
 }
 static void font_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	int k;
 	if(_kbd_ == ev->what)

@@ -14,7 +14,8 @@ static void puzzle_read(
 }
 static void puzzle_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void puzzle_list()

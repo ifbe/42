@@ -91,7 +91,8 @@ static void palette_read(
 }
 static void palette_write(
 	struct actor* act, struct pinid* pin,
-	struct event* ev)
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	u64 type = ev->what;
 	u64 key = ev->why;
