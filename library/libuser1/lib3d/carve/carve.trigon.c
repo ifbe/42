@@ -1,5 +1,7 @@
 #include "actor.h"
 #define acc 18
+#define trigoni 0x26
+#define trigonv 0x27
 #define PI 3.1415926535897932384626433832795028841971693993151
 struct texandobj
 {
@@ -36,12 +38,12 @@ void carvesolid_triangle(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 1;
-	mod[0x25].len += 3;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 1;
+	mod[trigonv].len += 3;
 
 	vbuf[ 0] = x1;
 	vbuf[ 1] = y1;
@@ -88,12 +90,12 @@ void carvesolid_rect(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 2;
-	mod[0x25].len += 4;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 2;
+	mod[trigonv].len += 4;
 
 	vbuf[ 0] = cx - rx - fx;
 	vbuf[ 1] = cy - ry - fy;
@@ -159,12 +161,12 @@ void carvesolid_circle(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc;
-	mod[0x25].len += acc+1;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += acc;
+	mod[trigonv].len += acc+1;
 
 	for(j=0;j<acc;j++)
 	{
@@ -245,12 +247,12 @@ void carvesolid_cone(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc*2;
-	mod[0x25].len += acc+2;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += acc*2;
+	mod[trigonv].len += acc+2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -336,12 +338,12 @@ void carvesolid_prism4(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 12;
-	mod[0x25].len += 24;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 12;
+	mod[trigonv].len += 24;
 
 	for(j=0;j<24*9;j+=9)
 	{
@@ -479,12 +481,12 @@ void carvesolid_cask(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc*2;
-	mod[0x25].len += acc*2;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += acc*2;
+	mod[trigonv].len += acc*2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -571,12 +573,12 @@ void carvesolid_cylinder(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 4*acc;
-	mod[0x25].len += 2*acc + 2;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 4*acc;
+	mod[trigonv].len += 2*acc + 2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -689,12 +691,12 @@ void carvesolid_dodecahedron(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 36;
-	mod[0x25].len += 20;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 36;
+	mod[trigonv].len += 20;
 
 	//(+-1, +-1, +-1)
 	vbuf[ 0] = cx-rx-fx-ux;
@@ -932,12 +934,12 @@ void carvesolid_icosahedron(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += 20;
-	mod[0x25].len += 12;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += 20;
+	mod[trigonv].len += 12;
 
 	//(+-m, 0, +-n)
 	vbuf[ 0] = cx - m;
@@ -1098,12 +1100,12 @@ void carvesolid_sphere(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += odd*(odd-2)*2;
-	mod[0x25].len += odd*(odd-2)+2;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += odd*(odd-2)*2;
+	mod[trigonv].len += odd*(odd-2)+2;
 
 	for(k=0;k<(odd-2);k++)
 	{
@@ -1210,10 +1212,10 @@ void carvesolid_tokamak(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
-	mod[0x24].len += acc*acc*2;
-	mod[0x25].len += acc*acc;
+	int ilen = mod[trigoni].len;
+	int vlen = mod[trigonv].len;
+	u16* ibuf = (mod[trigoni].buf) + (6*ilen);
+	float* vbuf = (mod[trigonv].buf) + (36*vlen);
+	mod[trigoni].len += acc*acc*2;
+	mod[trigonv].len += acc*acc;
 }

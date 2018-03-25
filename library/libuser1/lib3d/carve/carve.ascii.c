@@ -1,5 +1,7 @@
 #include "actor.h"
 #define acc 18
+#define fonti 0x28
+#define fontv 0x29
 #define PI 3.1415926535897932384626433832795028841971693993151
 int utf2unicode(u8* src,u32* dst);
 
@@ -42,12 +44,12 @@ void carveascii_area(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x26].len;
-	int vlen = mod[0x27].len;
-	u16* ibuf = (mod[0x26].buf) + (6*ilen);
-	float* vbuf = (mod[0x27].buf) + (36*vlen);
-	mod[0x26].len += 2;
-	mod[0x27].len += 4;
+	int ilen = mod[fonti].len;
+	int vlen = mod[fontv].len;
+	u16* ibuf = (mod[fonti].buf) + (6*ilen);
+	float* vbuf = (mod[fontv].buf) + (36*vlen);
+	mod[fonti].len += 2;
+	mod[fontv].len += 4;
 
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
@@ -107,13 +109,14 @@ void carveunicode(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
+	int q = ((unicode&0xffff)/0x4000)*2;
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x26].len;
-	int vlen = mod[0x27].len;
-	u16* ibuf = (mod[0x26].buf) + (6*ilen);
-	float* vbuf = (mod[0x27].buf) + (36*vlen);
-	mod[0x26].len += 2;
-	mod[0x27].len += 4;
+	int ilen = mod[fonti+q].len;
+	int vlen = mod[fontv+q].len;
+	u16* ibuf = (mod[fonti+q].buf) + (6*ilen);
+	float* vbuf = (mod[fontv+q].buf) + (36*vlen);
+	mod[fonti+q].len += 2;
+	mod[fontv+q].len += 4;
 
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
@@ -121,8 +124,8 @@ void carveunicode(
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
-	vbuf[ 6] = (unicode&0xff)/256.0;
-	vbuf[ 7] = ((unicode>>8)+1)/256.0;
+	vbuf[ 6] = (unicode&0x7f)/128.0;
+	vbuf[ 7] = ((unicode>>7)+1)/128.0;
 
 	vbuf[ 9] = cx+rx-fx;
 	vbuf[10] = cy+ry-fy;
@@ -130,8 +133,8 @@ void carveunicode(
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
-	vbuf[15] = ((unicode&0xff)+1)/256.0;
-	vbuf[16] = ((unicode>>8)+1)/256.0;
+	vbuf[15] = ((unicode&0x7f)+1)/128.0;
+	vbuf[16] = ((unicode>>7)+1)/128.0;
 
 	vbuf[18] = cx-rx+fx;
 	vbuf[19] = cy-ry+fy;
@@ -139,8 +142,8 @@ void carveunicode(
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
-	vbuf[24] = (unicode&0xff)/256.0;
-	vbuf[25] = (unicode>>8)/256.0;
+	vbuf[24] = (unicode&0x7f)/128.0;
+	vbuf[25] = (unicode>>7)/128.0;
 
 	vbuf[27] = cx+rx+fx;
 	vbuf[28] = cy+ry+fy;
@@ -148,8 +151,8 @@ void carveunicode(
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
-	vbuf[33] = ((unicode&0xff)+1)/256.0;
-	vbuf[34] = (unicode>>8)/256.0;
+	vbuf[33] = ((unicode&0x7f)+1)/128.0;
+	vbuf[34] = (unicode>>7)/128.0;
 
 	ibuf[0] = vlen+0;
 	ibuf[1] = vlen+1;
@@ -191,12 +194,12 @@ void carveascii(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x26].len;
-	int vlen = mod[0x27].len;
-	u16* ibuf = (mod[0x26].buf) + (6*ilen);
-	float* vbuf = (mod[0x27].buf) + (36*vlen);
-	mod[0x26].len += 2;
-	mod[0x27].len += 4;
+	int ilen = mod[fonti].len;
+	int vlen = mod[fontv].len;
+	u16* ibuf = (mod[fonti].buf) + (6*ilen);
+	float* vbuf = (mod[fontv].buf) + (36*vlen);
+	mod[fonti].len += 2;
+	mod[fontv].len += 4;
 
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
@@ -204,8 +207,8 @@ void carveascii(
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
-	vbuf[ 6] = (dat+0.0)/256.0;
-	vbuf[ 7] = 1.0/256.0;
+	vbuf[ 6] = (dat+0.0)/128.0;
+	vbuf[ 7] = 1.0/128.0;
 
 	vbuf[ 9] = cx+rx-fx;
 	vbuf[10] = cy+ry-fy;
@@ -213,8 +216,8 @@ void carveascii(
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
-	vbuf[15] = (dat+0.5)/256.0;
-	vbuf[16] = 1.0/256.0;
+	vbuf[15] = (dat+1.0)/128.0;
+	vbuf[16] = 1.0/128.0;
 
 	vbuf[18] = cx-rx+fx;
 	vbuf[19] = cy-ry+fy;
@@ -222,7 +225,7 @@ void carveascii(
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
-	vbuf[24] = (dat+0.0)/256.0;
+	vbuf[24] = (dat+0.0)/128.0;
 	vbuf[25] = 0.0;
 
 	vbuf[27] = cx+rx+fx;
@@ -231,7 +234,7 @@ void carveascii(
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
-	vbuf[33] = (dat+0.5)/256.0;
+	vbuf[33] = (dat+1.0)/128.0;
 	vbuf[34] = 0.0;
 
 	ibuf[0] = vlen+0;
@@ -284,7 +287,6 @@ void carvestring(
 	u8* buf, int len)
 {
 	int j;
-	float f;
 	if(0 == buf)return;
 	if(0 == len)
 	{
@@ -301,10 +303,9 @@ void carvestring(
 
 	for(j=0;j<len;j++)
 	{
-		f = (float)(j-len/2);
 		carveascii(
 			win, rgb,
-			cx + (rx*j), cy + (ry*j), cz + (rz*j),
+			cx + (rx*j/2), cy + (ry*j/2), cz + (rz*j/2),
 			rx/2, ry/2, rz/2,
 			fx, fy, fz,
 			buf[j]

@@ -1,5 +1,6 @@
 #include "actor.h"
 #define acc 18
+#define stlv 0x25
 #define PI 3.1415926535897932384626433832795028841971693993151
 u32 getrandom();
 
@@ -137,15 +138,12 @@ void carvestl(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[0x24].len;
-	int vlen = mod[0x25].len;
-	u16* ibuf = (mod[0x24].buf) + (6*ilen);
-	float* vbuf = (mod[0x25].buf) + (36*vlen);
+	int vlen = mod[stlv].len;
+	float* vbuf = (mod[stlv].buf) + (36*vlen);
 
 	ret = *(u32*)(stlbuf+80);
-	ret = ret%65536;
-	mod[0x24].len += ret;
-	mod[0x25].len += ret*3;
+	ret = ret%(0x1000000/36);
+	mod[stlv].len += ret*3;
 
 	for(j=0;j<ret;j++)
 	{
@@ -181,9 +179,5 @@ void carvestl(
 		vbuf[k+24] = p[0];
 		vbuf[k+25] = p[1];
 		vbuf[k+26] = p[2];
-
-		ibuf[j*3 + 0] = vlen + j*3 + 0;
-		ibuf[j*3 + 1] = vlen + j*3 + 1;
-		ibuf[j*3 + 2] = vlen + j*3 + 2;
 	}
 }

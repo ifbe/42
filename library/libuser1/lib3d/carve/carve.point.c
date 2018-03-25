@@ -1,5 +1,6 @@
 #include "actor.h"
 #define acc 18
+#define pointv 0x21
 #define PI 3.1415926535897932384626433832795028841971693993151
 struct texandobj
 {
@@ -34,8 +35,8 @@ void carvepoint(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += 1;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += 1;
 
 	buf[0] = cx;
 	buf[1] = cy;
@@ -57,8 +58,8 @@ void carvepoint_bezier(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += acc;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += acc;
 
 	for(j=0;j<=acc;j++)
 	{
@@ -106,8 +107,8 @@ void carvepoint_circle(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += acc;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += acc;
 
 	for(j=0;j<acc;j++)
 	{
@@ -167,8 +168,8 @@ void carvepoint_cone(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += acc+2;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += acc+2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -251,8 +252,8 @@ void carvepoint_cylinder(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += acc*2;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += acc*2;
 
 	for(j=0;j<acc;j++)
 	{
@@ -315,8 +316,8 @@ void carvepoint_dodecahedron(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += 20;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += 20;
 
 	for(j=0;j<20*6;j+=6)
 	{
@@ -425,8 +426,8 @@ void carvepoint_icosahedron(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += 12;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += 12;
 
 	for(j=0;j<12*6;j+=6)
 	{
@@ -504,8 +505,8 @@ void carvepoint_sphere(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	float* buf  = (mod[0x21].buf) + (24*mod[0x21].len);
-	mod[0x21].len += odd*(odd-2)+2;
+	float* buf  = (mod[pointv].buf) + (24*mod[pointv].len);
+	mod[pointv].len += odd*(odd-2)+2;
 
 	for(k=0;k<(odd-2);k++)
 	{

@@ -26,7 +26,7 @@ void background_vbo(struct arena* win)
 {
 	int j;
 	struct texandobj* mod = win->buf;
-	for(j=0x21;j<0x28;j++)mod[j].len = 0;
+	for(j=0x21;j<0x30;j++)mod[j].len = 0;
 }
 void background_pixel(struct arena* win)
 {
