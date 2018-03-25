@@ -118,6 +118,7 @@ void carveunicode(
 	mod[fonti+q].len += 2;
 	mod[fontv+q].len += 4;
 
+	unicode = unicode&0x3fff;
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
 	vbuf[ 2] = cz-rz-fz;

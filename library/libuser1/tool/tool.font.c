@@ -96,13 +96,13 @@ static void font_read_vbo(
 	carveline(win, 0xff0000, cx+(ww/8.0), cy-hh, 0.0, cx+(ww/8.0), cy+hh, 0.0);
 
 	x = (float)(chosen&0xff) / 256.0;
-	y = (float)(chosen&0xff00) / 65536.0;
+	y = (float)(chosen&0xff80) / 65536.0;
 	carveascii_area(
 		win, 0xffffff,
 		cx, cy, 0.0,
 		ww, 0.0, 0.0,
 		0.0, hh, 0.0,
-		x-1.0/32, y-1.0/32, x+1.0/32, y+1.0/32
+		x-1.0/16, y-1.0/16, x+1.0/16, y+1.0/16
 	);
 }
 static void font_read_tui(

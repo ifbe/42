@@ -486,9 +486,9 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.5, 8*y-31.5, 64.0,
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
+			8*x-31.0, 8*y-31.0, 64.0,
+			2.0, 0.0, 0.0,
+			0.0, 2.0, 0.0,
 			(u8*)&actor[j].name, 8
 		);
 	}
@@ -505,9 +505,9 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.5, 8*y-31.5, 48.0,
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
+			8*x-31.0, 8*y-31.0, 48.0,
+			2.0, 0.0, 0.0,
+			0.0, 2.0, 0.0,
 			(u8*)&arena[j].type, 8
 		);
 	}
@@ -520,9 +520,9 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.5, 8*y-31.5, 32.0,
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
+			8*x-31.0, 8*y-31.0, 32.0,
+			2.0, 0.0, 0.0,
+			0.0, 2.0, 0.0,
 			(u8*)&ele[j].type, 8
 		);
 	}
@@ -535,9 +535,9 @@ void login_read_vbo(struct arena* win)
 		y = j/64;
 		carvestring(
 			win, c,
-			x-31.5, y-31.5, 16.0,
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
+			x-31.0, y-31.0, 16.0,
+			2.0, 0.0, 0.0,
+			0.0, 2.0, 0.0,
 			(u8*)&ele[j].type, 8
 		);
 	}

@@ -84,10 +84,6 @@ static GLfloat light0mvp[4*4];
 //
 static struct arena* win;
 static u8* dragdata[0x1000];
-static u8* font0000;
-static u8* font4000;
-static u8* font8000;
-static u8* fontc000;
 //
 static int queuehead = 0;
 static int queuetail = 0;
@@ -214,7 +210,7 @@ char prettyvert[] = {
 		"mediump vec3 ambient = ambientcolor;\n"
 		"mediump vec3 diffuse = lightcolor * SN;\n"
 		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
+		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
 		"vertexcolor = color*(ambient + diffuse + specular);\n"
 		"gl_Position = prettymvp * vec4(position,1.0);\n"
 	"}\n"
@@ -420,7 +416,7 @@ void inittexture()
 		{
 			drawunicode_alpha(
 				buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>4, j
+				(j&0x7f)<<4, (j&0xff80)>>3, j
 			);
 		}
 		for(j=0x20;j<0x80;j++)
@@ -430,8 +426,9 @@ void inittexture()
 				j<<4, 0, j
 			);
 		}
+
 		glGenTextures(1, &(mod[0].obj));
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0+0);
 		glBindTexture(GL_TEXTURE_2D, mod[0].obj);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -451,11 +448,12 @@ void inittexture()
 		{
 			drawunicode_alpha(
 				buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>4, j+0x4000
+				(j&0x7f)<<4, (j&0xff80)>>3, j+0x4000
 			);
 		}
+
 		glGenTextures(1, &(mod[1].obj));
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE0+1);
 		glBindTexture(GL_TEXTURE_2D, mod[1].obj);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -475,11 +473,12 @@ void inittexture()
 		{
 			drawunicode_alpha(
 				buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>4, j+0x8000
+				(j&0x7f)<<4, (j&0xff80)>>3, j+0x8000
 			);
 		}
+
 		glGenTextures(1, &(mod[2].obj));
-		glActiveTexture(GL_TEXTURE2);
+		glActiveTexture(GL_TEXTURE0+2);
 		glBindTexture(GL_TEXTURE_2D, mod[2].obj);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -500,11 +499,13 @@ void inittexture()
 		{
 			drawunicode_alpha(
 				buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>4, j+0xc000
+				(j&0x7f)<<4, (j&0xff80)>>3, j+0xc000
 			);
 		}
+
 		glGenTextures(1, &(mod[3].obj));
-		glActiveTexture(GL_TEXTURE3);
+		glActiveTexture(GL_TEXTURE0+3);
+		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, mod[3].obj);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -883,21 +884,20 @@ void callback_display()
 
 	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
 	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
-	GLint tex = glGetUniformLocation(myfontprogram, "texdata");
 
-	glUniform1i(tex, 0);
+	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 0);
 	glBindVertexArray(each[4].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x28].len, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(tex, 1);
+	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 1);
 	glBindVertexArray(each[5].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x2a].len, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(tex, 2);
+	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 2);
 	glBindVertexArray(each[6].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x2c].len, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(tex, 3);
+	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 3);
 	glBindVertexArray(each[7].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x2e].len, GL_UNSIGNED_SHORT, 0);
 
@@ -937,7 +937,7 @@ void callback_idle()
 
 	//font4000
 	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x2a].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x2a].len, mod[0x2a].buf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x2a].len, mod[0x2a].buf);
 	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x2b].obj);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x2b].len, mod[0x2b].buf);
 
@@ -1154,7 +1154,6 @@ void* uievent(struct arena* this)
 	}
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
 	initshader();
 	inittexture();
 	initobject();
