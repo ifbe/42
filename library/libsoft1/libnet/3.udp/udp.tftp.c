@@ -1,6 +1,4 @@
 #include "artery.h"
-int readsocket(int, void*, int, int);
-int writesocket(int, void*, int, int);
 
 
 

@@ -109,7 +109,7 @@ void listfile(char* dest)
 void choosefile(char* buf)
 {
 }
-int writefile(HANDLE file, u8* mem, u64 off, u64 len)
+int writefile(HANDLE file, u64 off, u8* mem, u64 len)
 {
 	LARGE_INTEGER li;
 	DWORD val;
@@ -121,7 +121,7 @@ int writefile(HANDLE file, u8* mem, u64 off, u64 len)
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
-int readfile(HANDLE file, u8* mem, u64 off, u64 len)
+int readfile(HANDLE file, u64 off, u8* mem, u64 len)
 {
 	LARGE_INTEGER li;
 	DWORD val;

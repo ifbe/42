@@ -89,18 +89,23 @@ public:
 		pSample->Release();
 
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
+		working->width = working->stride = 640;
+		working->height = 480;
 		struct relation* orel = working->orel;
-		if(0 != orel)
+		while(1)
 		{
-			working->width = working->stride = 640;
-			working->height = 480;
-			actorwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				(void*)(orel->srcchip), (void*)(orel->srcfoot),
-				obj[enq].buf, 0
-			);
-			eventwrite(0, _act_, (u64)working, 0);
+			if(0 == orel)break;
+			if(_act_ == orel->dsttype)
+			{
+				actorwrite(
+					(void*)(orel->dstchip), (void*)(orel->dstfoot),
+					(void*)(orel->srcchip), (void*)(orel->srcfoot),
+					obj[enq].buf, 640*480*3/2
+				);
+			}
+			orel = (struct relation*)samesrcnextdst(orel);
 		}
+		eventwrite(0, _act_, (u64)working, 0);
 
 		enq = (enq+1)%60;
 		return S_OK;

@@ -8,10 +8,8 @@ void rsa2048(
 	u8* modbuf, int modlen);
 int pem2bin(  void* dest, void* mem, int off, int len);
 //
-int readsocket(   int fd, void* mem, int off, int len);
-int writesocket(  int fd, void* mem, int off, int len);
-int openreadclose(void* name, void* mem, int off, int len);
-int openwriteclose(void* name, void* mem, int off, int len);
+int openreadclose(void* name, int off, void* mem, int len);
+int openwriteclose(void* name, int off, void* mem, int len);
 //letsencrypt
 static u8 cert_first[0x1000];
 static u8 cert_second[0x1000];
@@ -962,7 +960,7 @@ void tls_start()
 	u8 buf[0x2000];
 
 	//cert1,2,3......
-	fl = openreadclose("fullchain.pem", buf, 0, 0x2000);
+	fl = openreadclose("fullchain.pem", 0, buf, 0x2000);
 	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
 
 	j = pem2bin(cert_first+3, buf, 0, fl);
@@ -982,7 +980,7 @@ void tls_start()
 	printmemory(cert_second, j+3);
 
 	//private and modulus
-	j = openreadclose("privkey.pem", buf, 0, 0x2000);
+	j = openreadclose("privkey.pem", 0, buf, 0x2000);
 	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
 
 	j = pem2bin(buf, buf, 0, j);
@@ -1030,7 +1028,7 @@ int tls_server(struct element* ele, int fd, u8* buf, int len)
 	if(len <= 0)goto error;
 
 good:
-	writesocket(fd, buf, 0, len);
+	writesocket(fd, 0, buf, len);
 	return TLS;
 error:
 	return 0;

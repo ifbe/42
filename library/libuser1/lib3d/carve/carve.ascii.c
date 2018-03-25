@@ -32,12 +32,12 @@ struct eachone
 
 
 
-void carveascii_area(
+void carveascii(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float fx, float fy, float fz,
-	float x0, float y0, float x1, float y1)
+	u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -57,8 +57,8 @@ void carveascii_area(
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
-	vbuf[ 6] = x0;
-	vbuf[ 7] = y1;
+	vbuf[ 6] = (dat+0.0)/128.0;
+	vbuf[ 7] = 1.0/128.0;
 
 	vbuf[ 9] = cx+rx-fx;
 	vbuf[10] = cy+ry-fy;
@@ -66,8 +66,8 @@ void carveascii_area(
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
-	vbuf[15] = x1;
-	vbuf[16] = y1;
+	vbuf[15] = (dat+1.0)/128.0;
+	vbuf[16] = 1.0/128.0;
 
 	vbuf[18] = cx-rx+fx;
 	vbuf[19] = cy-ry+fy;
@@ -75,8 +75,8 @@ void carveascii_area(
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
-	vbuf[24] = x0;
-	vbuf[25] = y0;
+	vbuf[24] = (dat+0.0)/128.0;
+	vbuf[25] = 0.0;
 
 	vbuf[27] = cx+rx+fx;
 	vbuf[28] = cy+ry+fy;
@@ -84,8 +84,8 @@ void carveascii_area(
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
-	vbuf[33] = x1;
-	vbuf[34] = y0;
+	vbuf[33] = (dat+1.0)/128.0;
+	vbuf[34] = 0.0;
 
 	ibuf[0] = vlen+0;
 	ibuf[1] = vlen+1;
@@ -94,10 +94,6 @@ void carveascii_area(
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-
-
-
-
 void carveunicode(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -162,6 +158,10 @@ void carveunicode(
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
+
+
+
+
 void carveutf8(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -178,72 +178,6 @@ void carveutf8(
 		fx, fy, fz,
 		unicode
 	);
-}
-
-
-
-
-void carveascii(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	u8 dat)
-{
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	struct texandobj* mod = win->buf;
-	int ilen = mod[fonti].len;
-	int vlen = mod[fontv].len;
-	u16* ibuf = (mod[fonti].buf) + (6*ilen);
-	float* vbuf = (mod[fontv].buf) + (36*vlen);
-	mod[fonti].len += 2;
-	mod[fontv].len += 4;
-
-	vbuf[ 0] = cx-rx-fx;
-	vbuf[ 1] = cy-ry-fy;
-	vbuf[ 2] = cz-rz-fz;
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
-	vbuf[ 6] = (dat+0.0)/128.0;
-	vbuf[ 7] = 1.0/128.0;
-
-	vbuf[ 9] = cx+rx-fx;
-	vbuf[10] = cy+ry-fy;
-	vbuf[11] = cz+rz-fz;
-	vbuf[12] = rr;
-	vbuf[13] = gg;
-	vbuf[14] = bb;
-	vbuf[15] = (dat+1.0)/128.0;
-	vbuf[16] = 1.0/128.0;
-
-	vbuf[18] = cx-rx+fx;
-	vbuf[19] = cy-ry+fy;
-	vbuf[20] = cz-rz+fz;
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
-	vbuf[24] = (dat+0.0)/128.0;
-	vbuf[25] = 0.0;
-
-	vbuf[27] = cx+rx+fx;
-	vbuf[28] = cy+ry+fy;
-	vbuf[29] = cz+rz+fz;
-	vbuf[30] = rr;
-	vbuf[31] = gg;
-	vbuf[32] = bb;
-	vbuf[33] = (dat+1.0)/128.0;
-	vbuf[34] = 0.0;
-
-	ibuf[0] = vlen+0;
-	ibuf[1] = vlen+1;
-	ibuf[2] = vlen+3;
-	ibuf[3] = vlen+0;
-	ibuf[4] = vlen+2;
-	ibuf[5] = vlen+3;
 }
 void carvedecimal(
 	struct arena* win, u32 rgb,

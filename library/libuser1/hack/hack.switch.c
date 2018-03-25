@@ -1,8 +1,15 @@
 #include "actor.h"
 #define _UDP_ hex32('U','D','P',0)
+#define _udp_ hex32('u','d','p',0)
+#define _tcp_ hex32('t','c','p',0)
+#define _cam_ hex32('c','a','m',0)
 #define _fd_ hex32('f','d',0,0)
 int systemcreate(u64, void*);
 void* systemread(int fd);
+void* arenacreate(int, void*);
+void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//
+void* samesrcnextdst(void*);
 void* relation_write(void*,void*,u64,void*,void*,u64);
 
 
@@ -73,11 +80,24 @@ static void switch_write(
 	u8* dst;
 	if(0 != win)
 	{
-		dst = (act->buf)+(act->len);
+		dst = act->buf;
 		for(j=0;j<len;j++)dst[j] = buf[j];
 		dst[j] = 0;
 
-		act->len += len;
+		struct relation* orel = act->orel;
+		while(1)
+		{
+			if(0 == orel)break;
+			if(_fd_ == orel->dsttype)
+			{
+				systemwrite(
+					(void*)(orel->dstchip), (void*)(orel->dstfoot),
+					(void*)(orel->srcchip), (void*)(orel->srcfoot),
+					act->buf, len
+				);
+			}
+			orel = samesrcnextdst(orel);
+		}
 	}
 }
 static void switch_stop(struct actor* act, struct pinid* pin)
@@ -102,11 +122,12 @@ static void switch_create(struct actor* act, u8* buf)
 	if(0 == act)return;
 	else if(_orig_ == act->type)act->buf = startmemory(0x100000);
 
-	fd = systemcreate(_UDP_, "127.0.0.1:2222");
+	//act => fd
+	fd = systemcreate(_udp_, "127.0.0.1:2222");
 	if(fd <= 0)return;
 
 	addr = systemread(fd);
-	relation_write(act, 0, _act_, addr, 0, _fd_);
+	relation_write(addr, 0, _fd_, act, 0, _act_);
 }
 static void switch_list(u8* buf)
 {

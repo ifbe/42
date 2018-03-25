@@ -1,7 +1,12 @@
-void readsocket()
+#include "system.h"
+
+
+
+
+void readsocket(int fd, int pos, u8* buf, int len)
 {
 }
-void writesocket()
+void writesocket(int fd, int pos, u8* buf, int len)
 {
 }
 void listsocket()

@@ -736,6 +736,7 @@ void login_drag(struct arena* win, int j, int k, int x, int y)
 		{
 			y = y-8;
 			say("@arena:%d\n", (y*8)+x);
+			//arenacreate(0,0);
 		}
 		return;
 	}
@@ -748,6 +749,7 @@ void login_drag(struct arena* win, int j, int k, int x, int y)
 		q = &actor[j + (k*8)];
 		if(0 == q->type)return;
 
+		actorcreate(q, 0);
 		arenaactor(p, q);
 	}
 	else if((y<8)&&(k>=8))
@@ -759,7 +761,9 @@ void login_drag(struct arena* win, int j, int k, int x, int y)
 		q = &actor[x + (y*8)];
 		if(0 == q->type)return;
 
-		say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
+		//say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
+		actorcreate(q, 0);
+		relation_write(q, 0, _act_, p, 0, _win_);
 	}
 }
 void login_write(struct arena* win, struct event* ev)

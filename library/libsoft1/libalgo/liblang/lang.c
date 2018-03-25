@@ -10,8 +10,8 @@ int cmp(void*,void*);
 int hexstr2data(void*, void*);
 int decstr2data(void*, void*);
 //
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 //
 int printmemory(void* addr, int count);
 int say(void* str, ...);
@@ -36,7 +36,7 @@ static int lang_write(u8* p)
 {
 	int ret;
 
-	ret = openreadclose(p, datahome, 0, 0x100000);
+	ret = openreadclose(p, 0, datahome, 0x100000);
 	if(ret<=0)return 0;
 
 	purec_start();

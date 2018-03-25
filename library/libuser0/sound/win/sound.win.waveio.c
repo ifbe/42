@@ -31,15 +31,20 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 	{
 		//printf("WIM_DATA:%d\n", icur);
 		struct relation* orel = working->orel;
-		if((0 != orel)&&(_act_ == orel->dsttype))
+		while(1)
 		{
-			actorwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				(void*)(orel->srcchip), (void*)(orel->srcfoot),
-				ibuf + (1024*2*icur), 1024*2
-			);
-			eventwrite(0, _act_, (u64)working, 0);
+			if(0 == orel)break;
+			if(_act_ == orel->dsttype)
+			{
+				actorwrite(
+					(void*)(orel->dstchip), (void*)(orel->dstfoot),
+					(void*)(orel->srcchip), (void*)(orel->srcfoot),
+					ibuf + (1024*2*icur), 1024*2
+				);
+			}
+			orel = (struct relation*)samesrcnextdst(orel);
 		}
+		eventwrite(0, _act_, (u64)working, 0);
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%8;

@@ -1,6 +1,6 @@
 #include "actor.h"
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 int utf2unicode(u8* src,u32* dst);
 int windowread(int type, void* buf);
 
@@ -11,7 +11,7 @@ static u8 databuf[0x1000];
 static int printmethod = 0;
 void hex_prep(void* name)
 {
-	int ret = openreadclose(name, databuf, 0, 0x1000);
+	int ret = openreadclose(name, 0, databuf, 0x1000);
 	if(ret <= 0)return;
 
 	databuf[ret] = 0;

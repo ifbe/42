@@ -17,17 +17,17 @@ void tls_stop();
 u64 netmgr_eth(void*, int, void*, int);
 u64 netmgr_udp(void*, int, void*, int);
 u64 netmgr_tcp(void*, int, void*, int);
-//
 int systemcreate(u64 type, u8* name);
 int systemdelete(int);
+//
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
-int readsocket(int fd, void* buf, int off, int len);
-int writesocket(int fd, void* buf, int off, int len);
+int readsocket(int fd, int off, void* buf, int len);
+int writesocket(int fd, int off, void* buf, int len);
 int startfile(void*, int);
 int stopfile(int);
-int readfile(int fd, void* buf, int off, int len);
-int writefile(int fd, void* buf, int off, int len);
+int readfile(int fd, int off, void* buf, int len);
+int writefile(int fd, int off, void* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -126,7 +126,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _dns_;
 		ret = dns_write_query(datahome, 666, url+1, 666);
-		writesocket(fd, datahome, 0, ret);
+		writesocket(fd, 0, datahome, ret);
 	}
 	else if(_HOLE_ == type)	//p2p server
 	{
@@ -141,7 +141,7 @@ int arterycreate(u64 type, u8* name)
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _hole_;
-		writesocket(fd, url+1, 0, 16);
+		writesocket(fd, 0, url+1, 16);
 	}
 	else if(_TFTP_ == type)	//tftp server
 	{
@@ -157,7 +157,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _tftp_;
 		ret = tftp_write(datahome, 0x100000);
-		ret = writesocket(fd, datahome, 0, ret);
+		ret = writesocket(fd, 0, datahome, ret);
 	}
 
 	//tcp family
@@ -176,7 +176,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _ssh_;
 		ret = secureshell_write_handshake(datahome, 0x100000);
-		ret = writesocket(fd, datahome, 0, ret);
+		ret = writesocket(fd, 0, datahome, ret);
 	}
 	else if(_TLS_ == type)	//tls server
 	{
@@ -193,7 +193,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _tls_;
 		ret = tls_write_client_hello(datahome, 0x100000);
-		ret = writesocket(fd, datahome, 0, ret);
+		ret = writesocket(fd, 0, datahome, ret);
 	}
 	else if(_sql_ == type)	//sql client
 	{
@@ -210,7 +210,7 @@ int arterycreate(u64 type, u8* name)
 		obj[fd].name = _http_;
 		ret = http_write_request(datahome, 0x100000, url, host);
 		printmemory(datahome, ret);
-		ret = writesocket(fd, datahome, 0, ret);
+		ret = writesocket(fd, 0, datahome, ret);
 	}
 	else if(_ws_ == type)	//ws client
 	{
@@ -219,7 +219,7 @@ int arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _ws_;
 		ret = websocket_write_handshake(datahome, 0x100000);
-		ret = writesocket(fd, datahome, 0, ret);
+		ret = writesocket(fd, 0, datahome, ret);
 	}
 
 	return fd;
@@ -240,7 +240,7 @@ void* arteryread(int fd)
 	//raw
 	if(type == 'R')
 	{
-		len = readsocket(where, datahome, 0, 0x100000);
+		len = readsocket(where, 0, datahome, 0x100000);
 		if(len <= 0)return 0;
 
 		netmgr_eth(obj, where, datahome, len);
@@ -252,7 +252,7 @@ void* arteryread(int fd)
 	{
 		while(1)
 		{
-			len = readsocket(where, datahome, 0, 0x100000);
+			len = readsocket(where, 0, datahome, 0x100000);
 			if(len <= 0)return 0;
 
 			netmgr_udp(obj, where, datahome, len);
@@ -261,7 +261,7 @@ void* arteryread(int fd)
 	}
 
 	//read socket
-	len = readsocket(where, datahome, 0, 0x100000);
+	len = readsocket(where, 0, datahome, 0x100000);
 	if(len == 0)return 0;		//sticky
 	if(len < 0)goto fail;		//wrong
 printmemory(datahome, len);

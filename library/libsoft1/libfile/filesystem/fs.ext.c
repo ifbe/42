@@ -3,10 +3,10 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int cleverread(u64,u64,u64,	u8*,u64,u64);
-int cleverwrite(u64,u64,u64,	u8*,u64,u64);
-int readfile(u8* file, u8* mem, u64 offset, u64 count);
-int writefile(u8* file, u8* mem, u64 offset, u64 count);
+int cleverread(u64, u64, u64, u8*, u64, u64);
+int cleverwrite(u64, u64, u64, u8*, u64, u64);
+int readfile(u8* fd, u64 off, u8* mem, u64 len);
+int writefile(u8* fd, u64 off, u8* mem, u64 len);
 //用了别人的
 void printmemory(void*, int);
 void say(void*, ...);
@@ -47,7 +47,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readfile(0, blockrecord, sector*0x200, 0x200);
+	readfile(0, sector*0x200, blockrecord, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	u8* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -94,7 +94,7 @@ static u8* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		readfile(0, rdi, where*0x200, count*inodesize*0x200);
+		readfile(0, where*0x200, rdi, count*inodesize*0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -191,7 +191,7 @@ static int explaininode(u64 inode,u64 wantwhere)
 			temp=block0+(*(u32*)rsi)*blocksize;
 			say("sector:%x\n",temp);
 
-			readfile(0, rdi, temp*0x200, blocksize*0x200);
+			readfile(0, temp*0x200, rdi, blocksize*0x200);
 			rdi+=0x200*blocksize;
 		}
 
@@ -340,7 +340,7 @@ static int ext_start(u64 sector)
 	block0 = sector;
 
 	//读分区前8扇区，检查magic值
-	ret = readfile(0, pbr, block0*0x200, 0x1000);
+	ret = readfile(0, block0*0x200, pbr, 0x1000);
 	ret = check_ext(pbr);
 	if(ret == 0)return -1;
 

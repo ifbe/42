@@ -35,12 +35,12 @@ int deleteuart();
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
-int readsocket(int fd, void* buf, int off, int len);
-int writesocket(int fd, void* buf, int off, int len);
+int readsocket(int fd, int off, void* buf, int len);
+int writesocket(int fd, int off, void* buf, int len);
 int startfile(void*, int);
 int stopfile(int);
-int readfile(int fd, void* buf, int off, int len);
-int writefile(int fd, void* buf, int off, int len);
+int readfile(int fd, int off, void* buf, int len);
+int writefile(int fd, int off, void* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -50,6 +50,9 @@ void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 //void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -193,6 +196,9 @@ void* systemread(int fd)
 }
 void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
+	int fd = (dc - (void*)obj) / sizeof(struct object);
+	int ret = writesocket(fd, 0, buf, len);
+	say("fd=%x,buf=%llx,len=%x,ret=%x\n",fd,buf,len,ret);
 }
 int systemlist(u8* buf, int len)
 {
@@ -274,7 +280,7 @@ int systemevent(struct event* ev)
 
 	if(0 == orel)
 	{
-		ret = readsocket(where, ppp, 0, 0x100000);
+		ret = readsocket(where, 0, ppp, 0x100000);
 		if(ret == 0)return 0;
 		if(ret < 0)
 		{
@@ -287,19 +293,23 @@ int systemevent(struct event* ev)
 	}
 
 	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
-	ret = readsocket(where, ppp, 0, 0x100000);
+	ret = readsocket(where, 0, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
-	if(_act_ == orel->dsttype)
+	while(1)
 	{
-		actorwrite(
-			(void*)(orel->dstchip), (void*)(orel->dstfoot),
-			(void*)(orel->srcchip), (void*)(orel->srcfoot),
-			ppp, ret
-		);
-		return 42;
+		if(0 == orel)break;
+		if(_act_ == orel->dsttype)
+		{
+			actorwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				ppp, ret
+			);
+		}
+		orel = samesrcnextdst(orel);
 	}
-	return 0;
+	return 42;
 }
 void freesystem()
 {

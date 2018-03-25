@@ -1,11 +1,11 @@
 #include "actor.h"
 void drawascii_bitmap(u8* buf, int ch);
-void carveascii_area(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float x0, float y0, float x1, float y1);
+void carveunicode_surround(
+	struct arena*,u32,
+	float,float,float,
+	float,float,float,
+	float,float,float,
+	int, int);
 
 
 
@@ -77,24 +77,40 @@ static void font_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float x,y;
+	int x,y,dx,dy;
+	int left,right,near,far;
 	int cx = sty->cx;
 	int cy = sty->cy;
-	int cz = sty->cz;
 	int ww = sty->rx;
 	int hh = sty->fy;
-	int dd = sty->uz;
+	carveline(win, 0xffffff, cx, cy-hh, 0.0, cx, cy+hh, 0.0);
+	carveline(win, 0xffffff, cx-ww, cy, 0.0, cx+ww, cy, 0.0);
 	carveline_rect(
-		win, 0x00ff00,
+		win, 0xffffff,
 		cx, cy, 0.0,
 		ww, 0.0, 0.0,
 		0.0, hh, 0.0
 	);
-	carveline(win, 0xff0000, cx-ww, cy, 0.0, cx+ww, cy, 0.0);
-	carveline(win, 0xff0000, cx, cy-hh, 0.0, cx, cy+hh, 0.0);
-	carveline(win, 0xff0000, cx-ww, cy-(hh/8.0), 0.0, cx+ww, cy-(hh/8.0), 0.0);
-	carveline(win, 0xff0000, cx+(ww/8.0), cy-hh, 0.0, cx+(ww/8.0), cy+hh, 0.0);
-
+	for(y=-4;y<4;y++)
+	{
+		for(x=-4;x<4;x++)
+		{
+			dx = x + (chosen&0xff);
+			dy = y + ((chosen>>8)&0xff);
+			if(dx < 0)continue;
+			if(dy < 0)continue;
+			if(dx >= 256)continue;
+			if(dy >= 256)continue;
+			carveunicode(
+				win, 0xffffff,
+				cx+(2*x+1)*ww/8, cy+(2*y+1)*hh/8, 0.0,
+				ww/8, 0.0, 0.0,
+				0.0, hh/8, 0.0,
+				chosen+x+(y*256)
+			);
+		}
+	}
+/*
 	x = (float)(chosen&0xff) / 256.0;
 	y = (float)(chosen&0xff80) / 65536.0;
 	carveascii_area(
@@ -104,6 +120,7 @@ static void font_read_vbo(
 		0.0, hh, 0.0,
 		x-1.0/16, y-1.0/16, x+1.0/16, y+1.0/16
 	);
+*/
 }
 static void font_read_tui(
 	struct arena* win, struct style* sty,

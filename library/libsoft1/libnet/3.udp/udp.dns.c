@@ -1,6 +1,4 @@
 #include "artery.h"
-int readsocket(int, void*, int, int);
-int writesocket(int, void*, int, int);
 
 
 
@@ -123,7 +121,7 @@ int dns_server(struct object* obj, int fd, u8* buf, int len)
 	if(type == DNS)
 	{
 		ret = dns_write_answer(buf, len);
-		writesocket(fd, buf, 0, len+16);
+		writesocket(fd, 0, buf, len+16);
 	}
 	if(type == dns)
 	{

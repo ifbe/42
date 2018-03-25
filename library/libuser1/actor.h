@@ -746,8 +746,6 @@ u32 getrandom();
 u64 gettime();
 void* startmemory(int);
 void stopmemory();
-int readfile(void*, void*, u64, u64);
-int writefile(void*, void*, u64, u64);
 
 //libhard1
 double cosine(double);

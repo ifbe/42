@@ -11,10 +11,10 @@ void peername(u64 fd, u32* buf)
 
 
 
-void writesocket()
+void writesocket(int fd, int cur, void* buf, int len)
 {
 }
-void readsocket()
+void readsocket(int fd, int cur, void* buf, int len)
 {
 }
 void listsocket()
@@ -29,7 +29,7 @@ void stopsocket()
 void startsocket(char* addr, int port, int type)
 {
 }
-void deletesocket(int num)
+void deletesocket(int fd)
 {
 }
 void createsocket()

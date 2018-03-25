@@ -49,7 +49,7 @@ void peername(u64 fd, u32* buf)
 
 
 
-int readsocket(u64 fd, u8* buf, u64 off, u64 len)
+int readsocket(int fd, int off, u8* buf, int len)
 {
 	int c,j;
 	char* p;
@@ -64,23 +64,32 @@ int readsocket(u64 fd, u8* buf, u64 off, u64 len)
 	iocp_mod(fd*4);
 	return c;
 }
-int writesocket(u64 fd, u8* buf, u64 off, u64 len)
+int writesocket(int fd, int off, u8* buf, int len)
 {
-	int ret;
+	int j,ret;
 	DWORD dwret;
 	WSABUF wbuf;
-/*
-	if(st == IPPROTO_UDP)
+
+	ret = obj[fd].type;
+	if(('u' == ret) | ('U' == ret))
 	{
-		ret = sizeof(struct sockaddr_in);
-		ret = sendto(fd, buf, len, 0, (void*)&serAddr, ret);
+		while(1)
+		{
+			if(len <= 1024)break;
+
+			wbuf.buf = buf;
+			wbuf.len = 1024;
+
+			buf += 1024;
+			len -= 1024;
+		}
 	}
-*/
+
 	wbuf.buf = buf;
 	wbuf.len = len;
 	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
 
-	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
+	printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
 int listsocket()

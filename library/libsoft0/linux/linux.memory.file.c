@@ -106,7 +106,7 @@ void listfile(char* dest)
 void choosefile()
 {
 }
-int writefile(u64 fd, char* buf, u64 off, u64 len)
+int writefile(u64 fd, u64 off, char* buf, u64 len)
 {
 	int ret;
 
@@ -126,7 +126,7 @@ int writefile(u64 fd, char* buf, u64 off, u64 len)
 
 	return ret;
 }
-int readfile(u64 fd, char* buf, u64 off, u64 len)
+int readfile(u64 fd, u64 off, char* buf, u64 len)
 {
 	int ret;
 

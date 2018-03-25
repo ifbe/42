@@ -10,8 +10,6 @@ int findhead(void* p);
 int findtail(void* p);
 u8* findstr(void* src, int max, void* target, int tarlen);
 //
-int readsocket(int fd, u8* addr, int offset, int count);
-int writesocket(int fd, u8* addr, int offset, int count);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 
@@ -222,8 +220,8 @@ int websocket_write(u64 fd, void* buf, int len)
 	}
 
 	//write
-	ret = writesocket(fd, headbuf, 0, headlen);
-	ret = writesocket(fd, buf, 0, len);
+	ret = writesocket(fd, 0, headbuf, headlen);
+	ret = writesocket(fd, 0, buf, len);
 	return ret;
 }
 
@@ -246,7 +244,7 @@ int ws_server(struct element* ele, int fd, u8* buf, int len)
 		int ret = websocket_read_handshake(fd, buf, len);
 		if(ret <= 0)goto theend;
 
-		ret = writesocket(fd, buf, 0, ret);
+		ret = writesocket(fd, 0, buf, ret);
 		if(ret <= 0)goto theend;
 
 		ele[fd].stage1 = 1;

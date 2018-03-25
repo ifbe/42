@@ -100,8 +100,8 @@ int parse_webp(void*, int);
 //
 int startfile(void*, int);
 int stopfile(int);
-int readfile(u64 file, u8* mem, u64 off, u64 len);
-int writefile(u64 file, u8* mem, u64 off, u64 len);
+int readfile(u64 file, u64 off, u8* mem, u64 len);
+int writefile(u64 file, u64 off, u8* mem, u64 len);
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -109,24 +109,24 @@ void say(void*, ...);
 
 
 
-int openreadclose(void* name, void* buf, int off, int len)
+int openreadclose(void* name, int off, void* buf, int len)
 {
 	int ret;
 	int fd = startfile(name, 'r');
 	if(fd <= 0)return fd;
 
-	ret = readfile(fd, buf, off, len);
+	ret = readfile(fd, off, buf, len);
 
 	stopfile(fd);
 	return ret;
 }
-int openwriteclose(void* name, void* buf, int off, int len)
+int openwriteclose(void* name, int off, void* buf, int len)
 {
 	int ret;
 	int fd = startfile(name, 'w');
 	if(fd <= 0)return fd;
 
-	ret = writefile(fd, buf, off, len);
+	ret = writefile(fd, off, buf, len);
 
 	stopfile(fd);
 	return ret;
@@ -193,7 +193,7 @@ void cleverread(
 		rdi,rsi,rcx
 	);
 */
-	readfile(0, rdi, rsi, rcx);
+	readfile(0, rsi, rdi, rcx);
 }
 
 

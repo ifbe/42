@@ -6,10 +6,8 @@ int findtail(void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int openreadclose(void* name, void* mem, u64 off, u64 len);
-int openwriteclose(void* name, void* mem, u64 off, u64 len);
-int readsocket(int fd, void* mem, int off, int len);
-int writesocket(int fd, void* mem, int off, int len);
+int openreadclose(void* name, u64 off, void* mem, u64 len);
+int openwriteclose(void* name, u64 off, void* mem, u64 len);
 
 
 
@@ -37,7 +35,7 @@ int http_write_file(u8* buf, int len, u8* name)
 	int ret;
 	say("file=%s\n",name);
 
-	ret = openreadclose(name, buf, 0, 0x100000);
+	ret = openreadclose(name, 0, buf, 0x100000);
 	if(ret <= 0)
 	{
 		*(u32*)buf = 0x343034;
@@ -124,10 +122,10 @@ int http_check(struct object* obj, int fd, u8* buf, int len)
 //say("ret=%d\n",ret);
 
 	//send head
-	ret = writesocket(fd, buf+len, 0, ret);
+	ret = writesocket(fd, 0, buf+len, ret);
 
 	//send body
-	ret = writesocket(fd, buf, 0, len);
+	ret = writesocket(fd, 0, buf, len);
 
 byebye:
 	return 0;

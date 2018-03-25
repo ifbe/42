@@ -3,9 +3,6 @@
 void generatePG(void*, int, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-//
-int readsocket(int fd, u8* addr, int off, int len);
-int writesocket(int fd, u8* addr, int off, int len);
 
 
 
@@ -522,11 +519,11 @@ int ssh_client(struct object* obj, int fd, u8* buf, int len)
 	{
 		//protocol
 		ret = secureshell_write_0x14(buf, len);
-		writesocket(fd, buf, 0, ret);
+		writesocket(fd, 0, buf, ret);
 
 		//keyexch
 		ret = secureshell_write_0x1e(buf, len);
-		writesocket(fd, buf, 0, ret);
+		writesocket(fd, 0, buf, ret);
 	}
 	else printmemory(buf,len);
 
@@ -539,21 +536,21 @@ int ssh_server(struct object* obj, int fd, u8* buf, int len)
 	{
 		//secureshell_write(buf, len);
 		ret = secureshell_write_0x14(buf, len);
-		writesocket(fd, buf, 0, ret);
+		writesocket(fd, 0, buf, ret);
 	}
 	else if(ret == 0x1e)
 	{
 		//try
 		ret = secureshell_write_0x1f(buf, len);
 		ret += secureshell_write_0x15(buf+ret, len);
-		writesocket(fd, buf, 0, ret);
+		writesocket(fd, 0, buf, ret);
 	}
 	else if(ret == 0x22)
 	{
 		//try
 		ret = secureshell_write_0x1f(buf, len);
 		ret += secureshell_write_0x15(buf+ret, len);
-		writesocket(fd, buf, 0, ret);
+		writesocket(fd, 0, buf, ret);
 	}
 	else printmemory(buf,len);
 
@@ -563,7 +560,7 @@ int ssh_check(void* p, int fd, u8* buf, int len)
 {
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{
-		writesocket(fd, version, 0, sizeof(version)-1);
+		writesocket(fd, 0, version, sizeof(version)-1);
 		return SSH;
 	}
 

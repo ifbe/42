@@ -362,6 +362,9 @@ struct pinid
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void* samesrcnextdst(void*);
+
 void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);

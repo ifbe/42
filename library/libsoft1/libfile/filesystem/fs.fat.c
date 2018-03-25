@@ -3,8 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-int readfile(u8* file, u8* mem, u64 offset, u64 count);
-int writefile(u8* file, u8* mem, u64 offset, u64 count);
+int readfile(u8* fd, u64 off, u8* mem, u64 len);
+int writefile(u8* fd, u64 off, u8* mem, u64 len);
 //用了别人的
 void printmemory(void*, int);
 void say(void*, ...);
@@ -130,8 +130,8 @@ static int fat16_data(u8* dest,u64 cluster)
 
 		//读一个簇
 		readfile(0,
-			rdi,
 			(cluster2+clustersize*(cluster-2))*0x200,
+			rdi,
 			clustersize*0x200
 		);
 
@@ -152,12 +152,12 @@ static void fat16_root()
 	//fat16的fat区最多0xffff个簇记录*每个记录2个字节<=0x20000=0x100个扇区
 	//data区最大0xffff个簇*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
 	say("reading whole fat table\n");
-	readfile(0, fatbuffer, fat0*0x200, 0x20000);
+	readfile(0, fat0*0x200, fatbuffer, 0x20000);
 	//printmemory(fatbuffer,0x1000);
 
 	//fat16根目录最多512个记录=0x20*0x200=0x4000字节=32个扇区
 	say("cd %x\n",fat0+fatsize*2);
-	readfile(0, datahome, (fat0+fatsize*2)*0x200, 0x4000);
+	readfile(0, (fat0+fatsize*2)*0x200, datahome, 0x4000);
 	explaindirectory();
 
 	say("\n");
@@ -208,8 +208,8 @@ static void checkcacheforcluster(u64 cluster)
 	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
 	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
 	readfile(0,
-		fatbuffer,
 		(fat0+(whatwewant/0x80))*0x200,
+		fatbuffer,
 		0x40000
 	);
 
@@ -226,8 +226,8 @@ static void fat32_data(u8* dest,u64 cluster,u64 start,u64 count)
 	while(rdi<dest+count)
 	{
 		readfile(0,
-			rdi,
 			(cluster2+clustersize*(cluster-2))*0x200,
+			rdi,
 			clustersize*0x200
 		);
 		rdi+=clustersize*0x200;
@@ -395,7 +395,7 @@ int fat_start(u64 sector)
 	firstsector=sector;
 
 	//读取pbr，检查种类和版本
-	ret = readfile(0, pbr, firstsector*0x200, 0x200); //pbr
+	ret = readfile(0, firstsector*0x200, pbr, 0x200); //pbr
 	ret = check_fat(pbr);
 	if(ret==16)		//这是fat16
 	{

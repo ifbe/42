@@ -1,6 +1,6 @@
 #include "actor.h"
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 
 
 
@@ -108,7 +108,7 @@ static void algorithm_write(
 		int x=key&0xffff;
 		int y=(key>>16)&0xffff;
 /*
-		int ret = openreadclose("makefile", buffer, 0, 0x100000);
+		int ret = openreadclose("makefile", 0, buffer, 0x100000);
 		if(algtype[this] == 0x35646d)
 		{
 			md5sum(temp, buffer, ret);

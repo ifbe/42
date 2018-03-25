@@ -31,8 +31,8 @@ int parsejson(void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -125,12 +125,12 @@ void term_cmd0(u8* buf)
 		buf += 2;
 		if(0 == ncmp(buf, "json=", 5))
 		{
-			ret = openreadclose(buf+5, data, 0, 0x10000);
+			ret = openreadclose(buf+5, 0, data, 0x10000);
 			parsejson(data, ret);
 		}
 		else if(0 == ncmp(buf, "xml=", 4))
 		{
-			ret = openreadclose(buf+4, data, 0, 0x10000);
+			ret = openreadclose(buf+4, 0, data, 0x10000);
 			parsexml(data, ret);
 		}
 	}

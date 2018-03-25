@@ -1,6 +1,6 @@
 #include "actor.h"
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
 void carvestl(
@@ -20,7 +20,7 @@ void stl_prep(void* name)
 	float* p;
 	int j,ret;
 	
-	stllen = openreadclose(name, stlbuf, 0, 0x800000);
+	stllen = openreadclose(name, 0, stlbuf, 0x800000);
 	say("len=%x, count=%x, ", stllen, *(u32*)(stlbuf+80));
 
 	left = back = bottom = 100000.0;

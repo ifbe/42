@@ -98,6 +98,7 @@ static void rawdump_write(
 
 	if(0 != win)
 	{
+		say("@rawdump_write\n");
 /*
 		queuepacket(
 			act->buf, 0x400,
@@ -105,11 +106,19 @@ static void rawdump_write(
 			tmp->buf, tmp->len
 		);
 */
-		dst = (act->buf)+(act->len);
+		if((act->len)+len > 0x100000)
+		{
+			dst = act->buf;
+			act->len = len;
+		}
+		else
+		{
+			dst = (act->buf)+(act->len);
+			act->len += len;
+		}
+
 		for(j=0;j<len;j++)dst[j] = buf[j];
 		dst[j] = 0;
-
-		act->len += len;
 	}
 }
 static void rawdump_stop(struct actor* act, struct pinid* pin)

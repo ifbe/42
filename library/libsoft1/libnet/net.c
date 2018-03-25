@@ -70,11 +70,6 @@ int decstr2data(void*, void*);
 int hexstr2data(void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-//
-int startsocket(void* addr, int port, int type);
-int stopsocket(u64);
-int readsocket(int, void*, int, int);
-int writesocket(int, void*, int, int);
 
 
 

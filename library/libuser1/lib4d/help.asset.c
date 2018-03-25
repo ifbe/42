@@ -2,8 +2,8 @@
 void initutf8(void*);
 void* startmemory(int);
 //
-int openreadclose(void* name, void* buf, int off, int len);
-int openwriteclose(void* name, void* buf, int off, int len);
+int openreadclose(void* name, int off, void* buf, int len);
+int openwriteclose(void* name, int off, void* buf, int len);
 
 
 
@@ -20,7 +20,7 @@ void asset_create()
 	utf8data = startmemory(0x200000);
 	if(utf8data != 0)
 	{
-		j = openreadclose("datafile/unicode.raw", utf8data, 0, 0x200000);
+		j = openreadclose("datafile/unicode.raw", 0, utf8data, 0x200000);
 		if(j < 0x200000)say("error@unicode\n");
 
 		for(j=0;j<0x200000;j++)

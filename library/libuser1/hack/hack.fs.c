@@ -1,6 +1,6 @@
 #include "actor.h"
-int openreadclose(void*, void*, u64, u64);
-int openwriteclose(void*, void*, u64, u64);
+int openreadclose(void*, u64, void*, u64);
+int openwriteclose(void*, u64, void*, u64);
 int windowread(int type, void* buf);
 u64 file_read(void*, int);
 
@@ -14,7 +14,7 @@ void fs_prep(void* name)
 	int ret;
 	u64 type;
 
-	ret = openreadclose(name, fsbuf, 0, 0x1000);
+	ret = openreadclose(name, 0, fsbuf, 0x1000);
 	if(ret <= 0)return;
 	fsbuf[ret] = 0;
 

@@ -2,9 +2,6 @@
 #define _WS_ hex32('W','S',0,0)
 #define _ws_ hex32('w','s',0,0)
 //
-int readsocket(int, void*, int, int);
-int writesocket(int, void*, int, int);
-//
 int websocket_read(void*, int);
 int websocket_write(u64, u8*, int);
 //
