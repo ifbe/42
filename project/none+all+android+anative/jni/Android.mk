@@ -236,7 +236,6 @@ library/libsoft1/libnet/4.tcp/tcp.ssh.c \
 library/libsoft1/libnet/4.tcp/tcp.tls.c \
 library/libsoft1/libnet/4.tcp/tcp.ws.c \
 library/libsoft1/libnet/app/app.chat.c \
-library/libsoft1/libnet/net.c \
 library/libsoft1/libsci/libbio/bio.chance.c \
 library/libsoft1/libsci/libchem/chem.equation.c \
 library/libsoft1/libsci/libmath/math.bigint.c \
@@ -252,6 +251,7 @@ library/libsoft1/artery.c
 #libuser0
 LOCAL_SRC_FILES += \
 library/libuser0/local/android/local.android.nativewindow.c \
+library/libuser0/remote/remote.http.c \
 library/libuser0/remote/remote.ws.c \
 library/libuser0/sound/sound.c \
 library/libuser0/video/video.c \

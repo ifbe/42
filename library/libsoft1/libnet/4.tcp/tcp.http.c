@@ -12,14 +12,6 @@ int openwriteclose(void* name, u64 off, void* mem, u64 len);
 
 
 
-static u8* Connection = 0;
-static u8* Upgrade = 0;
-static u8* GET = 0;
-static u8 indexhtml[] = "/index.html";
-
-
-
-
 int http_write_request(u8* buf, int len, char* url, char* host)
 {
 	if((url==0)|(url[0]==0)){url="/";}
@@ -30,6 +22,23 @@ int http_write_request(u8* buf, int len, char* url, char* host)
 		url
 	);
 }
+int http_write_response(u8* buf, int len, char* url, char* host)
+{
+	return 0;
+}
+
+
+
+
+/*
+static u8* Connection = 0;
+static u8* Upgrade = 0;
+static u8* GET = 0;
+static u8 indexhtml[] = "/index.html";
+
+
+
+
 int http_write_file(u8* buf, int len, u8* name)
 {
 	int ret;
@@ -64,14 +73,7 @@ int http_read(u8* buf, int len)
 		p += ret;
 		if(p > buf+len)break;
 	}//while
-/*
-	//debug
-	say("GET@%llx,Connection@%llx,Upgrade@%llx\n",
-		(u64)GET,
-		(u64)Connection,
-		(u64)Upgrade
-	);
-*/
+
 	return 0;
 }
 
@@ -146,3 +148,4 @@ int https_server(struct object* obj, int fd, u8* buf, int len)
 {
 	return 0;
 }
+*/

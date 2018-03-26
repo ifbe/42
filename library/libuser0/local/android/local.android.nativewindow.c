@@ -58,10 +58,6 @@ void initstdrel(void*);
 #define _0101_ hex32('0','1','0','1')
 void death();
 void* birth();
-void eventwrite(u64,u64,u64,u64);
-void* eventread();
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
@@ -92,7 +88,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		arena[0].buf = buffer.bits;
 		arena[0].width = buffer.width;
 		arena[0].stride = buffer.stride;
-		actorread();
+		actorread(arena[0]);
 
 		//
 		ANativeWindow_unlockAndPost(native);

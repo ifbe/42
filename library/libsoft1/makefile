@@ -98,7 +98,6 @@ libnet/4.tcp/tcp.sql.c \
 libnet/4.tcp/tcp.vnc.c \
 libnet/4.tcp/tcp.ws.c \
 libnet/app/app.chat.c \
-libnet/net.c \
 libfile/audio/audio.ape.c \
 libfile/audio/audio.mp3.c \
 libfile/audio/audio.ogg.c \

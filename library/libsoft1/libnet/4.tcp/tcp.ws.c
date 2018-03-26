@@ -1,5 +1,4 @@
 #include "artery.h"
-void eventwrite(u64,u64,u64,u64);
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(void* o, void* i, int len);
@@ -9,9 +8,6 @@ int findzero(void* p);
 int findhead(void* p);
 int findtail(void* p);
 u8* findstr(void* src, int max, void* target, int tarlen);
-//
-int ncmp(void*, void*, int);
-int cmp(void*, void*);
 
 
 

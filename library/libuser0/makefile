@@ -255,6 +255,7 @@ winapi:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.api.c
+	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
 	$(compiler) $(cflag) arena.c

@@ -265,18 +265,15 @@ int systemevent(struct event* ev)
 
 	type = obj[where].type;
 	name = obj[where].name;
-	if(0 != name)
-	{
-		irel = obj[where].irel;
-		orel = obj[where].orel;
-	}
-	else
+	irel = obj[where].irel;
+	orel = obj[where].orel;
+	if((0 == name)&&(0 == irel)&&(0 == orel))
 	{
 		ret = obj[where].thatfd;
 		irel = obj[ret].irel;
 		orel = obj[ret].orel;
 	}
-	say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
+	//say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
 
 	if(0 == orel)
 	{
@@ -302,6 +299,14 @@ int systemevent(struct event* ev)
 		if(_act_ == orel->dsttype)
 		{
 			actorwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				ppp, ret
+			);
+		}
+		if(_win_ == orel->dsttype)
+		{
+			arenawrite(
 				(void*)(orel->dstchip), (void*)(orel->dstfoot),
 				(void*)(orel->srcchip), (void*)(orel->srcfoot),
 				ppp, ret

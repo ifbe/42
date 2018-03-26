@@ -3,6 +3,8 @@
 #define _mic_ hex32('m','i','c',0)
 #define _win_ hex32('w','i','n',0)
 //
+#define _HTTP_ hex32('H','T','T','P')
+#define _http_ hex32('h','t','t','p')
 #define _WS_ hex32('W','S',0,0)
 #define _ws_ hex32('w','s',0,0)
 #define _VNC_ hex32('V','N','C',0)
@@ -11,9 +13,15 @@
 
 
 
-//cam
 void initcam(void*);
 void freecam();
+void initmic(void*);
+void freemic();
+void initwindow(void*);
+void freewindow();
+void initremote(void*);
+void freeremote();
+//cam
 int videocreate(void*);
 int videodelete(void*);
 int videostart(void*);
@@ -23,8 +31,6 @@ int videowrite(void*);
 int videolist();
 int videochoose();
 //mic
-void initmic(void*);
-void freemic();
 int soundcreate(void*);
 int sounddelete(void*);
 int soundstart(void*);
@@ -34,8 +40,6 @@ int soundwrite(void*);
 int soundlist();
 int soundchoose();
 //local
-void initwindow(void*);
-void freewindow();
 int windowcreate(void*);
 int windowdelete(void*);
 int windowstart(void*);
@@ -45,25 +49,35 @@ int windowwrite(void*);
 int windowlist();
 int windowchoose();
 //remote
-void initremote(void*);
-void freeremote();
-int wsclient_start(void* win, u8* str);
-int wsclient_stop(void* win);
-int wsclient_read(void* win, void* sty, void* act, void* pin);
-int wsclient_write(void* win);
-int wsserver_start(void* win);
-int wsserver_stop(void* win);
-int wsserver_read(void* win, void* sty, void* act, void* pin);
-int wsserver_write(void* win);
-int vncclient_start(void* win);
-int vncclient_stop(void* win);
-int vncclient_read(void* win);
-int vncclient_write(void* win);
-int vncserver_start(void* win);
-int vncserver_stop(void* win);
-int vncserver_read(void* win);
-int vncserver_write(void* win);
+int httpclient_create(void* win, u8* str);
+int httpserver_create(void* win, u8* str);
+int wsclient_create(void* win, u8* str);
+int wsserver_create(void* win, u8* str);
+int vncclient_create(void* win, u8* str);
+int vncserver_create(void* win, u8* str);
 //
+int httpclient_delete(void* win);
+int httpserver_delete(void* win);
+int wsclient_delete(void* win);
+int wsserver_delete(void* win);
+int vncclient_delete(void* win);
+int vncserver_delete(void* win);
+//
+int httpclient_read(void* dc,void* df,void* sc,void* sf);
+int httpserver_read(void* dc,void* df,void* sc,void* sf);
+int wsclient_read(void* dc, void* df, void* act, void* pin);
+int wsserver_read(void* dc, void* df, void* act, void* pin);
+int vncclient_read(void* dc);
+int vncserver_read(void* dc);
+//
+int httpclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+int httpserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+int wsclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+int wsserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+int vncclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+int vncserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
+//
+int actorread(void*, void*, void*, void*);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -116,7 +130,7 @@ int arenadelete(struct arena* win)
 	win->orel = 0;
 	return 0;
 }
-void* arenacreate(u64 type, u64 addr)
+void* arenacreate(u64 type, u8* addr)
 {
 	int j = 0;
 	struct arena* win = allocarena();
@@ -126,72 +140,60 @@ void* arenacreate(u64 type, u64 addr)
 	{
 		win->type = _win_;
 		win->fmt = 0;
-
+		win->irel = 0;
+		win->orel = 0;
 		windowstart(win);
 	}
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
-		say("cam://%s\n", (void*)addr);
-
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
+		win->irel = 0;
+		win->orel = 0;
 		videostart(win);
 	}
 	else if(_mic_ == type)
 	{
 		if(0 == addr)return 0;
-		say("mic://%s\n", (void*)addr);
-
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
+		win->irel = 0;
+		win->orel = 0;
 		soundstart(win);
 	}
-	else if(_ws_ == type)
+	else if(_http_ == type)
 	{
 		if(0 == addr)return 0;
-		say("ws://%s\n", (void*)addr);
-
-		win->type = _ws_;
+		win->type = _http_;
 		win->fmt = hex32('d','a','t','a');
+		win->irel = 0;
+		win->orel = 0;
 
 		//be client, accept data
-		wsclient_start(win, (void*)addr);
+		httpclient_create(win, addr);
+	}
+	else if(_HTTP_ == type)
+	{
+		win->type = _HTTP_;
+		win->fmt = hex32('d','a','t','a');
+		win->irel = 0;
+		win->orel = 0;
+
+		//be server, output data
+		httpserver_create(win, addr);
 	}
 	else if(_WS_ == type)
 	{
 		win->type = _WS_;
 		win->fmt = hex32('h','t','m','l');
-
-		//be server, output data
-		win->fd = addr;
-		wsserver_start(win);
-	}
-/*
-	else if(_vnc_ == type)
-	{
-		win->type = _vnc_;
-		win->fmt = hex32('d','a','t','a');
-		win->irel = 0;
-		win->orel = 0;
-
-		//be client, accept data
-		vncclient_start(win);
-	}
-	else if(_VNC_ == type)
-	{
-		win->type = _VNC_;
-		win->fmt = 0;
 		win->irel = 0;
 		win->orel = 0;
 
 		//be server, output data
-		win->fd = fd;
-		vncserver_start(win);
+		wsserver_create(win, addr);
 	}
-*/
-	win->irel = 0;
-	win->orel = 0;
+
 	return win;
 }
 int arenastop()
@@ -214,61 +216,24 @@ int arenaread()
 	for(j=0;j<16;j++)
 	{
 		win = &arena[j];
-		if(0 == win->type)break;
+		if(0 == win->type)continue;
 
 		if(_win_ == win->type)
 		{
+			actorread(win, 0, 0, 0);
 			windowwrite(win);
-		}
-		else if(_cam_ == win->type)
-		{
-			rel = win->orel;
-			while(1)
-			{
-				if(0 == rel)break;
-				act = (void*)(rel->dstchip);
-				pin = (void*)(rel->dstfoot);
-				sty = (void*)(rel->srcfoot);
-				videoread(win, sty, act, pin);
-				rel = samesrcnextdst(rel);
-			}
-		}
-		else if(_mic_ == win->type)
-		{
-			rel = win->orel;
-			while(1)
-			{
-				if(0 == rel)break;
-				act = (void*)(rel->dstchip);
-				pin = (void*)(rel->dstfoot);
-				sty = (void*)(rel->srcfoot);
-				soundread(win, sty, act, pin);
-				rel = samesrcnextdst(rel);
-			}
-		}
-		else if(_ws_ == win->type)
-		{
-			rel = win->orel;
-			while(1)
-			{
-				if(0 == rel)break;
-				act = (void*)(rel->dstchip);
-				pin = (void*)(rel->dstfoot);
-				sty = (void*)(rel->srcfoot);
-				wsclient_read(win, sty, act, pin);
-				rel = samesrcnextdst(rel);
-			}
-		}
-		else if((_WS_ == win->type)|(0 != win->dirty))
-		{
-			wsserver_write(win);
-			win->dirty = 0;
 		}
 	}
 	return 0;
 }
-void arenawrite(struct relation* rel)
+void arenawrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
 {
+	struct arena* win = dc;
+	if(_HTTP_ == win->type)
+	{
+		say("it is here\n");
+		httpserver_write(dc,df,sc,sf,buf,len);
+	}
 }
 void* arenalist(u8* buf, int len)
 {
@@ -338,13 +303,13 @@ int arenaevent(struct event* ev)
 		return 42;
 	}
 	else if(hex32('w','+',0,0) == what)
-	{
+	{/*
 		ret = arenacreate(why, where);
 		if(ret == 0)
 		{
 			say("error@w+\n");
 			return 0;
-		}
+		}*/
 	}
 	else if(hex32('w','-',0,0) == what)
 	{
@@ -376,6 +341,7 @@ void initarena(u8* addr)
 	initcam(arena);
 
 	arenacreate(_win_, 0);
+	arenacreate(_HTTP_, 0);
 
 	//say("[c,f):inited arena\n");
 }

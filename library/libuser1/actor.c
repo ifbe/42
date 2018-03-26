@@ -87,46 +87,11 @@ int actorstart(struct actor* act, struct pinid* pin)
 	act->onstart(act, pin);
 	return 0;
 }
-int actorread()
+int actorread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
-	int j;
-/*
-	for(j=0;j<64;j++)
-	{
-		if(0 == actor[j].name)continue;
-		if(0 == actor[j].dirty)continue;
-
-		//for all related arena:
-		dx0 = cx-ww;
-		dy0 = cy-hh;
-		dx1 = cx+ww;
-		dy1 = cy+hh;
-		if(behind something)
-		{
-			...
-		}
-		win->dirtyx0 = dx0;
-		win->dirtyy0 = dy0;
-		win->dirtyx1 = dx1;
-		win->dirtyy1 = dy1;
-	}
-*/
-	for(j=0;j<16;j++)
-	{
-		if(0 == arena[j].type)continue;
-
-		else if(_win_ == arena[j].type)
-		{
-			actoroutput(&arena[j]);
-		}
-		else if(_WS_ == arena[j].type)
-		{
-			if(0 != arena[j].dirty)
-			{
-				actoroutput(&arena[j]);
-			}
-		}
-	}
+	actoroutput(win);
 	return 0;
 }
 int actorwrite(

@@ -183,10 +183,17 @@ struct element
 
 
 
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
+//
+int readsocket(u64,u64,void*,u64);
+int writesocket(u64,u64,void*,u64);
+int readfile(u64,u64,void*,u64);
+int writefile(u64,u64,void*,u64);
 //
 u32 getrandom();
 u64 gettime();
-void eventwrite(u64,u64,u64,u64);
+void* eventwrite(u64,u64,u64,u64);
 void* eventread();
 //
 int mysnprintf(void*, int, void*, ...);

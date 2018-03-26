@@ -22,12 +22,8 @@ int systemdelete(int);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
-int readsocket(int fd, int off, void* buf, int len);
-int writesocket(int fd, int off, void* buf, int len);
 int startfile(void*, int);
 int stopfile(int);
-int readfile(int fd, int off, void* buf, int len);
-int writefile(int fd, int off, void* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);

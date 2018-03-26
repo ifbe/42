@@ -363,11 +363,12 @@ struct pinid
 extern "C" {
 #endif
 
-void* samesrcnextdst(void*);
-
 void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+
+int ncmp(void*,void*,int);
+int cmp(void*,void*);
 
 u64 startthread(void*, void*);
 void stopthread(u64);
@@ -375,8 +376,14 @@ void stopthread(u64);
 void* startmemory();
 void* stopmemory(void*);
 //
+void* samesrcprevdst(void*);
+void* samesrcnextdst(void*);
+void* samedstprevsrc(void*);
+void* samedstnextsrc(void*);
+void* relation_write(void*,void*,u64,void*,void*,u64);
+//
 void* eventread();
-void eventwrite(u64,u64,u64,u64);
+void* eventwrite(u64,u64,u64,u64);
 //
 void printmemory(void*, int);
 void say(void*, ...);

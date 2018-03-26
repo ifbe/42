@@ -51,13 +51,13 @@ int ws_event(struct event* ev, void* buf)
 	}
 	return 0;
 }*/
-int wsclient_start(struct arena* win, u8* str)
+int wsclient_create(struct arena* win, u8* str)
 {
 	void* ret = arterycreate(_ws_, str);
 	say("ret=%llx\n", ret);
 	return 0;
 }
-int wsclient_stop(struct arena* win)
+int wsclient_delete(struct arena* win)
 {
 	return 0;
 }
@@ -75,14 +75,14 @@ int wsclient_write(struct arena* win)
 
 
 
-int wsserver_start(struct arena* win)
+int wsserver_create(struct arena* win)
 {
 	if(0 == buffer)buffer = startmemory(0x100000);
 
 	win->buf = buffer;
 	return 0;
 }
-int wsserver_stop(struct arena* win)
+int wsserver_delete(struct arena* win)
 {
 	return 0;
 }

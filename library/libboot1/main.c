@@ -140,13 +140,8 @@ int main(int argc, char* argv[])
 
 	while(1)
 	{
-		actorread();
+		//force redraw
 		arenaread();
-		//arteryread();
-		//systemread();
-		//driverread();
-		//deviceread();
-		//say("after\n");
 
 again:
 		ev = eventread();
