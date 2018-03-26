@@ -104,6 +104,10 @@ static void* epollthread(void* p)
 						memcpy(obj[cc].peer, &haha, 8);
 						obj[cc].type = 't';
 						obj[cc].name = 0;
+						obj[cc].irel = 0;
+						obj[cc].orel = 0;
+						obj[cc].selffd = cc;
+						obj[cc].thatfd = fd;
 						epoll_add(cc);
 
 						printf("++++ %d\n",cc);

@@ -69,8 +69,9 @@ static int ppplen = 0;
 
 
 
-int systemdelete(int fd)
+int systemdelete(void* addr)
 {
+	int fd = (addr - (void*)obj) / sizeof(struct object);
 	if(_file_ == obj[fd].type)
 	{
 		stopfile(fd);
@@ -81,7 +82,7 @@ int systemdelete(int fd)
 	}
 	return 0;
 }
-int systemcreate(u64 type, u8* name)
+void* systemcreate(u64 type, u8* name)
 {
 	int j,k,fd,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -116,7 +117,7 @@ int systemcreate(u64 type, u8* name)
 
 		obj[fd].type = _file_;
 		obj[fd].name = _FILE_;
-		return fd;
+		goto success;
 	}
 	else if(_file_ == type)
 	{
@@ -125,7 +126,7 @@ int systemcreate(u64 type, u8* name)
 
 		obj[fd].type = _file_;
 		obj[fd].name = _file_;
-		return fd;
+		goto success;
 	}
 	else if(_uart_ == type)
 	{
@@ -180,7 +181,8 @@ int systemcreate(u64 type, u8* name)
 		obj[fd].name = _tcp_;
 	}
 
-	return fd;
+success:
+	return &obj[fd];
 }
 int systemstop()
 {
@@ -190,15 +192,14 @@ int systemstart()
 {
 	return 0;
 }
-void* systemread(int fd)
+int systemread(void* dc,void* df,void* sc,void* sf)
 {
-	return &obj[fd];
+	return 0;
 }
-void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
 	int fd = (dc - (void*)obj) / sizeof(struct object);
-	int ret = writesocket(fd, 0, buf, len);
-	say("fd=%x,buf=%llx,len=%x,ret=%x\n",fd,buf,len,ret);
+	return writesocket(fd, 0, buf, len);
 }
 int systemlist(u8* buf, int len)
 {
@@ -300,7 +301,7 @@ int systemevent(struct event* ev)
 		{
 			actorwrite(
 				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				&obj[where], 0,
 				ppp, ret
 			);
 		}
@@ -308,7 +309,7 @@ int systemevent(struct event* ev)
 		{
 			arenawrite(
 				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				&obj[where], 0,
 				ppp, ret
 			);
 		}

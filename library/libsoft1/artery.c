@@ -17,7 +17,7 @@ void tls_stop();
 u64 netmgr_eth(void*, int, void*, int);
 u64 netmgr_udp(void*, int, void*, int);
 u64 netmgr_tcp(void*, int, void*, int);
-int systemcreate(u64 type, u8* name);
+void* systemcreate(u64 type, u8* name);
 int systemdelete(int);
 //
 int startsocket(void* addr, int port, int type);
@@ -40,25 +40,19 @@ static int elelen = 0;
 static int qqqlen = 0;
 void* allocelement()
 {
-	return 0;
+	void* addr = &ele[elelen];
+	elelen += 1;
+	return addr;
 }
 
 
 
 
-int arterydelete(int fd)
+int arterydelete(void* ele)
 {
-	if(_file_ == obj[fd].type)
-	{
-		stopfile(fd);
-	}
-	else
-	{
-		stopsocket(fd);
-	}
 	return 0;
 }
-int arterycreate(u64 type, u8* name)
+void* arterycreate(u64 type, u8* name)
 {
 	int j,k,fd,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -207,6 +201,7 @@ int arterycreate(u64 type, u8* name)
 		ret = http_write_request(datahome, 0x100000, url, host);
 		printmemory(datahome, ret);
 		ret = writesocket(fd, 0, datahome, ret);
+		return &obj[fd];
 	}
 	else if(_ws_ == type)	//ws client
 	{
@@ -218,7 +213,8 @@ int arterycreate(u64 type, u8* name)
 		ret = writesocket(fd, 0, datahome, ret);
 	}
 
-	return fd;
+success:
+	return &ele[fd];
 }
 int arterystop()
 {
@@ -228,62 +224,14 @@ int arterystart()
 {
 	return 0;
 }
-void* arteryread(int fd)
+int arteryread(void* dc,void* df,void* sc,void* sf)
 {
-	return &obj[fd];
+	return 0;
 }
-/*
-	//raw
-	if(type == 'R')
-	{
-		len = readsocket(where, 0, datahome, 0x100000);
-		if(len <= 0)return 0;
-
-		netmgr_eth(obj, where, datahome, len);
-		return 0;
-	}
-
-	//udp
-	if( (type == 'U')|(type == 'u') )
-	{
-		while(1)
-		{
-			len = readsocket(where, 0, datahome, 0x100000);
-			if(len <= 0)return 0;
-
-			netmgr_udp(obj, where, datahome, len);
-		}
-		return 0;
-	}
-
-	//read socket
-	len = readsocket(where, 0, datahome, 0x100000);
-	if(len == 0)return 0;		//sticky
-	if(len < 0)goto fail;		//wrong
-printmemory(datahome, len);
-	//serve socket
-	what = netmgr_tcp(obj, where, datahome, len);
-	if(what == 0)goto fail;
-
-	//change event
-	obj[where].name = what;
-	if(_WS_ == what)
-	{
-		ev->why = len;
-		ev->what = hex32('w','@',0,0);
-		return 42;
-	}
-	else if(_http_ == what)
-	{
-		ev->why = len;
-		ev->what = _http_;
-	}
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+{
 	return 0;
-
-fail:
-	stopsocket(where);
-	return 0;
-}*/
+}
 int arterylist(u8* buf, int len)
 {
 	int j,k=0;

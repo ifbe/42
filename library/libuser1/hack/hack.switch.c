@@ -4,9 +4,8 @@
 #define _tcp_ hex32('t','c','p',0)
 #define _cam_ hex32('c','a','m',0)
 #define _fd_ hex32('f','d',0,0)
-int systemcreate(u64, void*);
-void* systemread(int fd);
 void* arenacreate(int, void*);
+void* systemcreate(u64, void*);
 void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 //
 void* samesrcnextdst(void*);
@@ -117,16 +116,13 @@ static void switch_delete(struct actor* act, u8* buf)
 }
 static void switch_create(struct actor* act, u8* buf)
 {
-	int fd;
 	void* addr;
 	if(0 == act)return;
 	else if(_orig_ == act->type)act->buf = startmemory(0x100000);
 
-	//act => fd
-	fd = systemcreate(_udp_, "127.0.0.1:2222");
-	if(fd <= 0)return;
+	addr = systemcreate(_udp_, "127.0.0.1:2222");
+	if(0 == addr)return;
 
-	addr = systemread(fd);
 	relation_write(addr, 0, _fd_, act, 0, _act_);
 }
 static void switch_list(u8* buf)

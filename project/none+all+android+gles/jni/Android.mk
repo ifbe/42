@@ -235,7 +235,6 @@ library/libsoft1/libnet/4.tcp/tcp.vnc.c \
 library/libsoft1/libnet/4.tcp/tcp.ssh.c \
 library/libsoft1/libnet/4.tcp/tcp.tls.c \
 library/libsoft1/libnet/4.tcp/tcp.ws.c \
-library/libsoft1/libnet/app/app.chat.c \
 library/libsoft1/libsci/libbio/bio.chance.c \
 library/libsoft1/libsci/libchem/chem.equation.c \
 library/libsoft1/libsci/libmath/math.bigint.c \

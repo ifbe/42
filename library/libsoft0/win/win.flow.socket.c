@@ -121,7 +121,6 @@ int stopsocket(SOCKET fd)
 	}
 
 	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
-	printf("[%x]close\n", fd*4);
 	return 0;
 }
 u64 startsocket(char* addr, int port, int type)

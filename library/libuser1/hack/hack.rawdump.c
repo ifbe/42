@@ -1,8 +1,7 @@
 #include "actor.h"
 #define _UDP_ hex32('U','D','P',0)
 #define _fd_ hex32('f','d',0,0)
-int systemcreate(u64, void*);
-void* systemread(int fd);
+void* systemcreate(u64, void*);
 void* relation_write(void*,void*,u64,void*,void*,u64);
 
 
@@ -138,15 +137,13 @@ static void rawdump_delete(struct actor* act, u8* buf)
 }
 static void rawdump_create(struct actor* act, u8* buf)
 {
-	int fd;
 	void* addr;
 	if(0 == act)return;
 	else if(_orig_ == act->type)act->buf = startmemory(0x100000);
 
-	fd = systemcreate(_UDP_, "127.0.0.1:2222");
-	if(fd <= 0)return;
+	addr = systemcreate(_UDP_, "127.0.0.1:2222");
+	if(0 == addr)return;
 
-	addr = systemread(fd);
 	relation_write(act, 0, _act_, addr, 0, _fd_);
 }
 static void rawdump_list(u8* buf)

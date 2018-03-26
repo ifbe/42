@@ -1,6 +1,5 @@
 #include "actor.h"
-int arterycreate(u64 type, void* addr);
-void* arteryread(int);
+void* arterycreate(u64 type, void* addr);
 void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
@@ -57,18 +56,19 @@ static void browser_write(
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
-	int j,fd;
+	int j;
 	u8* dst;
 	void* addr;
 	struct mystring* haha;
 
 	if(0 != win)
 	{
-		dst = (act->buf)+(act->len);
+		dst = act->buf;
+		act->len = len;
+
 		for(j=0;j<len;j++)dst[j] = buf[j];
 		dst[j] = 0;
 
-		act->len += len;
 		return;
 	}
 
@@ -83,8 +83,7 @@ static void browser_write(
 		act->len = 0;
 		haha->len = 0;
 
-		fd = arterycreate(0, buf);
-		addr = arteryread(fd);
+		addr = arterycreate(0, buf);
 		relation_write(act, 0, _act_, addr, 0, _fd_);
 	}
 	else if(0x8 == ev->why)
