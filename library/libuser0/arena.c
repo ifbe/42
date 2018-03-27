@@ -122,8 +122,13 @@ void* allocstyle()
 int arenadelete(struct arena* win)
 {
 	if(win == 0)return 0;
+
+	//1.close
 	windowstop(win);
 
+	//2.unlink
+
+	//3.cleanup
 	win->type = 0;
 	win->fmt = 0;
 	win->irel = 0;
@@ -139,7 +144,7 @@ void* arenacreate(u64 type, u8* addr)
 	if(_win_ == type)
 	{
 		win->type = _win_;
-		win->fmt = 0;
+		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		win->irel = 0;
 		win->orel = 0;
 		windowstart(win);
@@ -223,6 +228,11 @@ int arenaread()
 			actorread(win, 0, 0, 0);
 			windowwrite(win);
 		}
+		else if(_WS_ == win->type)
+		{
+			actorread(win, 0, 0, 0);
+			wsserver_write(win,0,0,0,0,0);
+		}
 	}
 	return 0;
 }
@@ -231,8 +241,11 @@ void arenawrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
 	struct arena* win = dc;
 	if(_HTTP_ == win->type)
 	{
-		say("it is here\n");
 		httpserver_write(dc,df,sc,sf,buf,len);
+	}
+	else if(_WS_ == win->type)
+	{
+		wsserver_write(dc,df,sc,sf,buf,len);
 	}
 }
 void* arenalist(u8* buf, int len)
@@ -330,10 +343,12 @@ void freearena()
 void initarena(u8* addr)
 {
 	int j;
-	for(j=0;j<0x400000;j++)addr[j] = 0;
-
 	arena = (void*)(addr+0x000000);
 	style = (void*)(addr+0x200000);
+
+#define max (0x100000/sizeof(struct arena))
+	for(j=0;j<0x400000;j++)addr[j]=0;
+	for(j=0;j<max;j++)arena[j].tier = _win_;
 
 	//remotecreate(arena);
 	initwindow(arena);
@@ -342,6 +357,5 @@ void initarena(u8* addr)
 
 	arenacreate(_win_, 0);
 	arenacreate(_HTTP_, 0);
-
 	//say("[c,f):inited arena\n");
 }

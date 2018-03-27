@@ -30,62 +30,6 @@ void carveascii_area(
 
 
 
-struct object
-{
-	//[0x00,0x0f]
-	u64 type;	//raw, bt, udp, tcp?
-	u64 name;
-	union{
-		void* irel;
-		u64 pad0;
-	};
-	union{
-		void* orel;
-		u64 pad1;
-	};
-
-	//[0x20,0x3f]
-	u64 fd;
-	u64 flag;
-	u64 len;
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[0x40,0x7f]
-	u8 self[0x20];
-	u8 peer[0x20];
-
-	//[0x80,0xff]
-	u8 data[0x80];
-};
-struct element
-{
-	//[00,20]
-	u64 type;	//http, tls, ssh
-	u64 stage1;
-	union{
-		void* irel;
-		u64 pad0;
-	};
-	union{
-		void* orel;
-		u64 pad1;
-	};
-
-	//[20,3f]
-	u64 fd;
-	u64 flag;
-	u64 len;
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[40,ff]
-	u8 data[0xc0];
-};
 static struct object* obj = 0;
 static struct element* ele = 0;
 static struct arena* arena = 0;
@@ -188,7 +132,7 @@ void login_read_pixel(struct arena* win)
 			win, c,
 			(x+0)*w/8+1, (y+0)*h/32+1+d,
 			(x+1)*w/8-1, (y+1)*h/32-1+d,
-			(u8*)&arena[j].type, 8
+			(u8*)&arena[j].fmt, 8
 		);
 	}
 
@@ -237,9 +181,9 @@ void login_read_pixel(struct arena* win)
 				k = k / sizeof(struct object);
 				k %= 64;
 				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+48)*h/64
 				);
 			}
@@ -248,9 +192,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+32)*h/64
 				);
 			}
@@ -259,9 +203,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+16)*h/64
 				);
 			}
@@ -270,9 +214,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline(win, 0xffffff,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1)*h/64
 				);
 			}
@@ -295,9 +239,9 @@ void login_read_pixel(struct arena* win)
 				k = k / sizeof(struct object);
 				k %= 64;
 				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1+16)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+48)*h/64
 				);
 			}
@@ -306,9 +250,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1+16)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+32)*h/64
 				);
 			}
@@ -317,9 +261,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline(win, 0xffffff,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1+16)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1+16)*h/64
 				);
 			}
@@ -328,9 +272,9 @@ void login_read_pixel(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline(win, 0xffc0ff,
-					(2*(j%8)+1)*w/16,
+					(2*(j%8)+1)*w/16-8,
 					(2*(j/8)+1+16)*h/64,
-					(2*(k%8)+1)*w/16,
+					(2*(k%8)+1)*w/16+8,
 					(2*(k/8)+1)*h/64
 				);
 			}
@@ -718,52 +662,145 @@ void login_read(struct arena* win)
 
 
 
-void login_drag(struct arena* win, int j, int k, int x, int y)
+void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 {
+	struct object* o;
+	struct element* e;
 	struct arena* p;
 	struct actor* q;
 
-	if((j==x)&&(k==y))
+	if((x0==x1)&&(y0==y1))
 	{
-		win->theone = x + (y*8);
-		if(y<8)
+		win->theone = x1 + (y1*8);
+		if(y1<8)
 		{
 			q = &actor[win->theone];
 			if(0 == q->type)return;
 			actorcreate(q, 0);
 		}
-		else
+		else if(y1<16)
 		{
-			y = y-8;
-			say("@arena:%d\n", (y*8)+x);
+			y1 = y1-8;
+			say("@arena:%d\n", (y1*8)+x1);
 			//arenacreate(0,0);
+		}
+		else if(y1<24)
+		{
+			y1 = y1-16;
+			say("@element:%d\n", (y1*8)+x1);
+		}
+		else if(y1<32)
+		{
+			y1 = y1-24;
+			say("@object:%d\n", (y1*8)+x1);
 		}
 		return;
 	}
-	else if((k<8)&&(y>=8))
+
+	if(y0 < 8)
 	{
-		y = y-8;
-		p = &arena[x + (y*8)];
-		if(0 == p->type)return;
+		if(y1 < 8)
+		{
+			say("actor@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 16)
+		{
+			y1 = y1-8;
+			p = &arena[x1 + (y1*8)];
+			if(0 == p->type)return;
 
-		q = &actor[j + (k*8)];
-		if(0 == q->type)return;
+			q = &actor[x0 + (y0*8)];
+			if(0 == q->type)return;
 
-		actorcreate(q, 0);
-		arenaactor(p, q);
+			actorcreate(q, 0);
+			arenaactor(p, q);
+		}
+		else if(y1 < 24)
+		{
+			y1 = y1-16;
+			say("actor@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 32)
+		{
+			y1 = y1-24;
+			say("actor@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
+		}
 	}
-	else if((y<8)&&(k>=8))
+	else if(y0 < 16)
 	{
-		k = k-8;
-		p = &arena[j + (k*8)];
-		if(0 == p->type)return;
+		y0 = y0-8;
+		if(y1 < 8)
+		{
+			p = &arena[x0 + (y0*8)];
+			if(0 == p->type)return;
 
-		q = &actor[x + (y*8)];
-		if(0 == q->type)return;
+			q = &actor[x1 + (y1*8)];
+			if(0 == q->type)return;
 
-		//say("actor:%d to arena:%d\n", x+(y*8), j+(k*8));
-		actorcreate(q, 0);
-		relation_write(q, 0, _act_, p, 0, _win_);
+			actorcreate(q, 0);
+			relation_write(q, 0, _act_, p, 0, _win_);
+		}
+		else if(y1 < 16)
+		{
+			y1 = y1-8;
+			say("arena@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 24)
+		{
+			y1 = y1-16;
+			say("arena@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 32)
+		{
+			y1 = y1-24;
+			say("arena@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+	}
+	else if(y0 < 24)
+	{
+		y0 = y0-16;
+		if(y1 < 8)
+		{
+			say("element@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 16)
+		{
+			y1 = y1-8;
+			say("element@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 24)
+		{
+			y1 = y1-16;
+			say("element@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 32)
+		{
+			y1 = y1-24;
+			say("element@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+	}
+	else if(y0 < 32)
+	{
+		y0 = y0-24;
+		if(y1 < 8)
+		{
+			say("object@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 16)
+		{
+			y1 = y1-8;
+			say("object@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 24)
+		{
+			y1 = y1-16;
+			say("object@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 32)
+		{
+			y1 = y1-24;
+			say("object@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
+		}
 	}
 }
 void login_write(struct arena* win, struct event* ev)

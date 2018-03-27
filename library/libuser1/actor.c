@@ -207,10 +207,14 @@ void freeactor()
 }
 void initactor(u8* addr)
 {
+	int j;
 	arena = (void*)(addr+0x000000);
 	actor = (void*)(addr+0x100000);
 	style = (void*)(addr+0x200000);
 	pinid = (void*)(addr+0x300000);
+
+#define max (0x100000/sizeof(struct actor))
+	for(j=0;j<max;j++)actor[j].tier = _act_;
 
 	lib1d_create(addr, 0);
 	lib2d_create(addr, 0);

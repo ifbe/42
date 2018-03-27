@@ -55,7 +55,8 @@ struct relation
 struct arena
 {
 	//[00,1f]
-	u64 type;
+	u32 tier;
+	u32 type;
 	u64 fmt;
 	union{
 		struct relation* irel;
@@ -152,7 +153,8 @@ struct arena
 struct actor
 {
 	//[0,1f]
-	u64 type;
+	u32 tier;
+	u32 type;
 	u64 name;
 	union{
 		struct relation* irel;

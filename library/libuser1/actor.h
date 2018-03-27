@@ -72,10 +72,69 @@ struct relation
 
 
 
+struct object
+{
+	//[0x00,0x0f]
+	u32 tier;
+	u32 type;	//raw, bt, udp, tcp?
+	u64 name;
+	union{
+		void* irel;
+		u64 pad0;
+	};
+	union{
+		void* orel;
+		u64 pad1;
+	};
+
+	//[0x20,0x3f]
+	u64 fd;
+	u64 flag;
+	u64 len;
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[0x40,0x7f]
+	u8 self[0x20];
+	u8 peer[0x20];
+
+	//[0x80,0xff]
+	u8 data[0x80];
+};
+struct element
+{
+	//[00,20]
+	u32 tier;
+	u32 type;	//http, tls, ssh
+	u64 stage1;
+	union{
+		void* irel;
+		u64 pad0;
+	};
+	union{
+		void* orel;
+		u64 pad1;
+	};
+
+	//[20,3f]
+	u64 fd;
+	u64 flag;
+	u64 len;
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[40,ff]
+	u8 data[0xc0];
+};
 struct arena
 {
 	//[00,1f]
-	u64 type;
+	u32 tier;
+	u32 type;
 	u64 fmt;
 	union{
 		struct relation* irel;
@@ -171,7 +230,8 @@ struct arena
 struct actor
 {
 	//[0,1f]
-	u64 type;
+	u32 tier;
+	u32 type;
 	u64 name;
 	union{
 		struct relation* irel;

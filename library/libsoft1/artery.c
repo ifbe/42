@@ -1,5 +1,6 @@
 #include "artery.h"
 #define _uart_ hex32('u','a','r','t')
+#define _art_ hex32('a','r','t',0)
 //
 int tftp_write(void*, int);
 int tls_write_client_hello(void*, int);
@@ -288,10 +289,14 @@ void freeartery()
 }
 void initartery(void* addr)
 {
+	int j;
 	obj = addr+0x000000;
 	ele = addr+0x100000;
 	ppp = addr+0x200000;
 	qqq = addr+0x300000;
+
+#define max (0x100000/sizeof(struct element))
+	for(j=0;j<max;j++)ele[j].tier = _art_;
 
 	//say("[8,c):inited artery\n");
 }

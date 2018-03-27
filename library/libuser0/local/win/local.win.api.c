@@ -136,67 +136,13 @@ int windowstop(struct arena* this)
 	);
 	return 0;
 }
-void windowdelete(struct arena* this)
+int windowcreate(struct arena* this)
 {
-	HWND wnd = (void*)(this->fd);
-	HDC dc = (void*)(this->dc);
-
-	ReleaseDC(wnd, dc);
-
-	UnregisterTouchWindow(wnd);
-
-	DestroyWindow(wnd);
-
-	alivecount--;
-	if(alivecount == 0)eventwrite(0,0,0,0);
+	return 0;
 }
-void windowcreate(struct arena* this)
+int windowdelete(struct arena* this)
 {
-	HWND wnd;
-	HDC dc;
-
-	//创建窗口
-	wnd = CreateWindow(
-		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-		100, 100, (this->width)+16, (this->height)+39,
-		NULL, NULL, 0, NULL);
-	if(!wnd)return;
-
-	//dc
-	dc = GetDC(wnd);
-
-	//透明
-	LONG t = GetWindowLong(wnd, GWL_EXSTYLE);
-	SetWindowLong(wnd, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(wnd, 0, 0xf8, LWA_ALPHA);
-
-	//显示窗口
-	ShowWindow(wnd, SW_SHOW);
-	UpdateWindow(wnd);
-
-	//打开触摸
-	RegisterTouchWindow(wnd, 0);
-
-	//打开拖拽
-	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT, u32);
-	DragAcceptFiles(wnd, TRUE);
-
-	HMODULE hUser = LoadLibraryA("user32.dll");
-	if(!hUser){say("failed to load\n");exit(-1);}
-
-	ChangeWindowMessageFilterProc hProc;
-	hProc = (ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
-	if(!hProc){say("can't drag\n");exit(-1);}
-
-	hProc(WM_COPYDATA, 1);
-	hProc(WM_DROPFILES, 1);
-	hProc(0x0049, 1);
-
-	//完成
-	this->fd = (u64)wnd;
-	this->dc = (u64)dc;
-	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)this);
-	alivecount++;
+	return 0;
 }
 
 
@@ -494,6 +440,68 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 theend:
 	return DefWindowProc(wnd, msg, wparam, lparam);
 }
+void windowclose(struct arena* this)
+{
+	HWND wnd = (void*)(this->fd);
+	HDC dc = (void*)(this->dc);
+
+	ReleaseDC(wnd, dc);
+
+	UnregisterTouchWindow(wnd);
+
+	DestroyWindow(wnd);
+
+	alivecount--;
+	if(alivecount == 0)eventwrite(0,0,0,0);
+}
+void windowopen(struct arena* this)
+{
+	HWND wnd;
+	HDC dc;
+
+	//创建窗口
+	wnd = CreateWindow(
+		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
+		100, 100, (this->width)+16, (this->height)+39,
+		NULL, NULL, 0, NULL);
+	if(!wnd)return;
+
+	//dc
+	dc = GetDC(wnd);
+
+	//透明
+	LONG t = GetWindowLong(wnd, GWL_EXSTYLE);
+	SetWindowLong(wnd, GWL_EXSTYLE, t | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(wnd, 0, 0xf8, LWA_ALPHA);
+
+	//显示窗口
+	ShowWindow(wnd, SW_SHOW);
+	UpdateWindow(wnd);
+
+	//打开触摸
+	RegisterTouchWindow(wnd, 0);
+
+	//打开拖拽
+	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT, u32);
+	DragAcceptFiles(wnd, TRUE);
+
+	HMODULE hUser = LoadLibraryA("user32.dll");
+	if(!hUser){say("failed to load\n");exit(-1);}
+
+	ChangeWindowMessageFilterProc hProc;
+	hProc = (ChangeWindowMessageFilterProc)GetProcAddress(hUser, "ChangeWindowMessageFilter");
+	if(!hProc){say("can't drag\n");exit(-1);}
+
+	hProc(WM_COPYDATA, 1);
+	hProc(WM_DROPFILES, 1);
+	hProc(0x0049, 1);
+
+	//完成
+	this->fd = (u64)wnd;
+	this->dc = (u64)dc;
+	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)this);
+	alivecount++;
+}
 DWORD WINAPI uievent()
 {
 	MSG msg;
@@ -511,11 +519,11 @@ DWORD WINAPI uievent()
 		{
 			if(msg.wParam == hex32('w','+',0,0))
 			{
-				windowcreate((void*)(msg.lParam));
+				windowopen((void*)(msg.lParam));
 			}
 			else
 			{
-				windowdelete((void*)(msg.lParam));
+				windowclose((void*)(msg.lParam));
 			}
 		}
 		else

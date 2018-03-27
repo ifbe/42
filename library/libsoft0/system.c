@@ -331,10 +331,12 @@ void freesystem()
 void initsystem(u8* addr)
 {
 	int j;
-	for(j=0;j<0x400000;j++)addr[j]=0;
-
 	obj = (void*)(addr+0x000000);
 	ppp = (void*)(addr+0x200000);
+
+#define max (0x100000/sizeof(struct object))
+	for(j=0;j<0x400000;j++)addr[j]=0;
+	for(j=0;j<max;j++)obj[j].tier = _fd_;
 
 	createrandom(addr);
 	createsignal(addr);

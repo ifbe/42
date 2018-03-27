@@ -4,9 +4,10 @@
 #define _fd_ hex32('f','d',0,0)
 void* relation_write(void*,void*,u64,void*,void*,u64);
 void* arenacreate(u64, void*);
+int wsserver_write(void*,void*,void*,void*,void*,int);
 //
-int systemdelete(void*);
 void* systemcreate(u64, void*);
+int systemdelete(void*);
 
 
 
@@ -79,7 +80,9 @@ int httpserver_write(
 		if(0 == addr)return 0;
 
 		relation_write(addr, 0, _win_, act, 0, _fd_);
-		//wsserver_write(addr, 0, act, 0, buf, len);
+		relation_write(act, 0, _fd_, addr, 0, _win_);
+
+		wsserver_write(addr, 0, act, 0, buf, len);
 		return 0;
 	}
 	else if(0 != GET)

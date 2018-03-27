@@ -126,7 +126,8 @@ struct relation
 struct object
 {
 	//[0x00,0x0f]
-	u64 type;	//raw, bt, udp, tcp?
+	u32 tier;
+	u32 type;	//raw, bt, udp, tcp?
 	u64 name;
 	union{
 		void* irel;
@@ -156,7 +157,8 @@ struct object
 struct element
 {
 	//[00,20]
-	u64 type;	//http, tls, ssh
+	u32 tier;
+	u32 type;	//http, tls, ssh
 	u64 stage1;
 	union{
 		void* irel;

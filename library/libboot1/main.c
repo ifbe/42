@@ -62,9 +62,11 @@ void* eventwrite(u64,u64,u64,u64);
 void* eventread();
 void* startthread(void*, void*);
 void* stopthread();
+//
+void openwriteclose(void*,int,void*,int);
+void fixarg(void*, void*);
 void printmemory(void*, int);
 void say(void*, ...);
-void fixarg(void*, void*);
 
 
 
@@ -201,6 +203,7 @@ again:
 		actorevent(ev);
 	}
 
+	openwriteclose("universe.bin",0,addr,0x1000000);
 	afterdusk();
 	return 0;
 }

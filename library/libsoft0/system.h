@@ -41,7 +41,8 @@ struct relation
 struct object
 {
 	//[0x00,0x0f]
-	u64 type;	//raw, bt, udp, tcp?
+	u32 tier;
+	u32 type;	//raw, bt, udp, tcp?
 	u64 name;
 	union{
 		void* irel;

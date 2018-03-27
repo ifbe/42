@@ -47,7 +47,10 @@ int wsserver_read(
 {
 	return 0;
 }
-int wsserver_write(struct arena* win)
+int wsserver_write(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin,
+	u8* buf, int len)
 {
 	if(0 == win)return 0;
 	if(0 == win->buf)return 0;
