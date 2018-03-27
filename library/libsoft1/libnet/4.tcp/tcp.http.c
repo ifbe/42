@@ -32,7 +32,6 @@ int http_help(void* act, void* pin, u8* buf, int len)
 	u8* POST = 0;
 	u8* Upgrade = 0;
 	u8* Connection = 0;
-
 	for(j=0;j<=len;j++)
 	{
 		if((j<len)&&(0xd != buf[j])&&(0xa != buf[j]))continue;
@@ -46,9 +45,13 @@ int http_help(void* act, void* pin, u8* buf, int len)
 		if(0xa == buf[j+1])j++;
 		k = j+1;
 	}
-	if((0 != Connection)&&(0 != Upgrade))return hex32('w','s',0,0);
 
-	if(0 != GET)
+	//websocket
+	if((0 != Connection)&&(0 != Upgrade))
+	{
+		return hex32('w','s',0,0);
+	}
+	else if(0 != GET)
 	{
 		k = mysnprintf(temp,0x1000,
 			"HTTP/1.1 200 OK\r\n"
@@ -59,12 +62,15 @@ int http_help(void* act, void* pin, u8* buf, int len)
 		);
 		systemwrite(act, pin, 0, 0, temp, k);
 		systemwrite(act, pin, 0, 0, buf, len);
+		if(0 != Connection)
+		{
+			if(0 == ncmp(Connection, "keep-alive", 10))return 0;
+		}
+	}
+	else if(0 != POST)
+	{
 	}
 
-	if(0 != Connection)
-	{
-		if(0 == ncmp(Connection, "keep-alive", 10))return 0;
-	}
 	systemdelete(act);
 	return 0;
 }
