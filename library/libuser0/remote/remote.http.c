@@ -8,6 +8,9 @@ int wsserver_write(void*,void*,void*,void*,void*,int);
 //
 void* systemcreate(u64, void*);
 int systemdelete(void*);
+//
+int websocket_write_handshake(u8* buf, int len);
+int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
 
 
 
@@ -76,18 +79,18 @@ int httpserver_write(
 	//ws request
 	if((0 != Connection)&&(0 != Upgrade))
 	{
+		ret = websocket_read_handshake(buf, len, buffer, 0x1000);
+		ret = systemwrite(act, pin, win, sty, buffer, ret);
+
 		addr = arenacreate(_WS_, act);
 		if(0 == addr)return 0;
 
 		relation_write(addr, 0, _win_, act, 0, _fd_);
 		relation_write(act, 0, _fd_, addr, 0, _win_);
-
-		wsserver_write(addr, 0, act, 0, buf, len);
 		return 0;
 	}
 	else if(0 != GET)
 	{
-		if(0 == buffer)buffer = startmemory(0x100000);
 		win->buf = buffer;
 		win->fmt = hex32('h','t','m','l');
 
@@ -141,6 +144,7 @@ int httpserver_delete(struct arena* win)
 int httpserver_create(struct arena* win, void* str)
 {
 	void* tmp;
+	if(0 == buffer)buffer = startmemory(0x100000);
 	if(0 == str)str = "127.0.0.1:2222";
 
 	tmp = systemcreate(_TCP_, str);

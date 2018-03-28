@@ -87,20 +87,15 @@ int actorstart(struct actor* act, struct pinid* pin)
 	act->onstart(act, pin);
 	return 0;
 }
-int actorread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+int actorread(void* dc,void* df,void* sc,void* sf)
 {
-	actoroutput(win);
+	actoroutput(dc);
 	return 0;
 }
-int actorwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	//say("%llx,%llx,%llx,%llx,%x\n",act,pin,win,sty,buf,len);
-	act->onwrite(act, pin, win, sty, buf, len);
+	struct actor* act = dc;
+	act->onwrite(act, df, sc, sf, buf, len);
 	return 0;
 }
 void* actorlist(u8* buf, int len)

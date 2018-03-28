@@ -12,12 +12,22 @@ u8* findstr(void* src, int max, void* target, int tarlen);
 
 
 
-int websocket_read_handshake(u64 fd, u8* buf, int len)
+int websocket_write_handshake(u8* buf, int len)
+{
+	return mysnprintf(buf, len,
+		"GET / HTTP/1.1\r\n"
+		"Upgrade: websocket\r\n"
+		"Connection: Upgrade\r\n"
+		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
+		"\r\n"
+	);
+}
+int websocket_read_handshake(u8* buf, int len, u8* dst, int max)
 {
 	int j;
+	u8 sha1buf[0x100];
+	u8 base64buf[0x100];
 	u8* Sec_WebSocket_Key;
-	u8* sha1buf = buf+0x1000;
-	u8* base64buf = buf+0x2000;
 
 	//
 	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
@@ -41,7 +51,7 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 	say("base64=%s\n", base64buf);
 
 	//把base64的结果作为accept密钥
-	return mysnprintf(buf, 256,
+	return mysnprintf(dst, 256,
 		"HTTP/1.1 101 Switching Protocols\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"
@@ -50,13 +60,17 @@ int websocket_read_handshake(u64 fd, u8* buf, int len)
 		base64buf
 	);
 }
-int websocket_read(u8* buf, int len)
+
+
+
+
+int websocket_read(u8* buf, int len, u8* dst, int max)
 {
 //#define dbg say
 #define dbg(fmt,...) do{}while(0)
 	int i,j,k;
 	int type,masked;
-	unsigned char key[4];
+	u8 key[4];
 	u64 count;
 
 	//byte0.bit7
@@ -119,7 +133,7 @@ int websocket_read(u8* buf, int len)
 	k = buf[1]&0x7f;
 	if(k==127)
 	{
-		count	= ((u64)buf[2]<<56)
+		count = ((u64)buf[2]<<56)
 			+ ((u64)buf[3]<<48)
 			+ ((u64)buf[4]<<40)
 			+ ((u64)buf[5]<<32)
@@ -131,8 +145,7 @@ int websocket_read(u8* buf, int len)
 	}
 	else if(k==126)
 	{
-		count	= (buf[2]<<8)
-			+ (buf[3]);
+		count = (buf[2]<<8) + (buf[3]);
 		k = 4;
 	}
 	else
@@ -152,78 +165,59 @@ int websocket_read(u8* buf, int len)
 
 		if(type==1)
 		{
-			buf[0] &= 0x8f;
-			buf[1] &= 0x7f;
+			dst[0] = buf[0]&0x8f;
+			dst[1] = buf[1]&0x7f;
 			for(i=0;i<count;i++)
 			{
-				buf[i] = buf[i+k] ^ key[i%4];
+				dst[i] = buf[i+k] ^ key[i%4];
 				//dbg("%c",buf[j+i]);
 			}
-			buf[count] = 0;
+			dst[count] = 0;
 			//dbg("\n");
 		}//type=ascii
 	}//masked=1
 
-	dbg("%s\n",buf);
+	dbg("%s\n",dst);
 	return count;
 }
-
-
-
-
-int websocket_write_handshake(u8* buf, int len)
+int websocket_write(u8* buf, int len, u8* dst, int max)
 {
-	return mysnprintf(buf, len,
-		"GET / HTTP/1.1\r\n"
-		"Upgrade: websocket\r\n"
-		"Connection: Upgrade\r\n"
-		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
-		"\r\n"
-	);
-}
-int websocket_write(u64 fd, void* buf, int len)
-{
-	u8 headbuf[16];
-	int headlen;
-	int ret;
+	int hl;
 
 	//len
-	headbuf[0] = 0x81;
+	dst[0] = 0x81;
 	if(len<=125)
 	{
-		headlen = 2;
-		headbuf[1] = len;
+		hl = 2;
+		dst[1] = len;
 	}
 	else if(len<0xffff)
 	{
-		headlen = 4;
-		headbuf[1] = 126;
-		headbuf[2] = (len>>8)&0xff;
-		headbuf[3] = len&0xff;
+		hl = 4;
+		dst[1] = 126;
+		dst[2] = (len>>8)&0xff;
+		dst[3] = len&0xff;
 	}
 	else
 	{
-		headlen = 10;
-		headbuf[1] = 127;
-		headbuf[2] = 0;
-		headbuf[3] = 0;
-		headbuf[4] = 0;
-		headbuf[5] = 0;
-		headbuf[6] = (len>>24)&0xff;
-		headbuf[7] = (len>>16)&0xff;
-		headbuf[8] = (len>>8)&0xff;
-		headbuf[9] = (len)&0xff;
+		hl = 10;
+		dst[1] = 127;
+		dst[2] = 0;
+		dst[3] = 0;
+		dst[4] = 0;
+		dst[5] = 0;
+		dst[6] = (len>>24)&0xff;
+		dst[7] = (len>>16)&0xff;
+		dst[8] = (len>>8)&0xff;
+		dst[9] = (len)&0xff;
 	}
 
-	//write
-	ret = writesocket(fd, 0, headbuf, headlen);
-	ret = writesocket(fd, 0, buf, len);
-	return ret;
+	return hl;
 }
 
 
 
-
+/*
 #define ws 0x7377
 #define WS 0x5357
 #define wss 0x737377
@@ -262,3 +256,4 @@ int wss_server(struct element* ele, int fd, u8* buf, int len)
 {
 	return WSS;
 }
+*/

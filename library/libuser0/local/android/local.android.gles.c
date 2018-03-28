@@ -23,18 +23,22 @@ static ANativeWindow_Buffer buffer;
 
 
 
-void windowread()
+void windowread(void* dc,void* df,void* sc,void* sf)
 {
-}
-void windowwrite(struct arena* win)
-{
-	ANativeWindow_unlockAndPost(native);
-
+	struct arena* win = sc;
 	ANativeWindow_lock(native, &buffer, NULL);
+
 	win->buf = buffer.bits;
 	win->width = buffer.width;
 	win->height = buffer.height;
 	win->stride = buffer.stride;
+
+	actorread(win,0,0,0);
+
+	ANativeWindow_unlockAndPost(native);
+}
+void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
 }
 void windowstart(struct arena* win)
 {

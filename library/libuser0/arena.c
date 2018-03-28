@@ -209,9 +209,10 @@ int arenastart()
 {
 	return 0;
 }
-int arenaread()
+int arenaread(void* dc,void* df,void* sc,void* sf)
 {
 	int j;
+	u64 time;
 	struct relation* rel;
 	struct arena* win;
 	struct actor* act;
@@ -222,21 +223,17 @@ int arenaread()
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
-
 		if(_win_ == win->type)
 		{
-			actorread(win, 0, 0, 0);
-			windowwrite(win);
-		}
-		else if(_WS_ == win->type)
-		{
-			actorread(win, 0, 0, 0);
-			wsserver_write(win,0,0,0,0,0);
+			time = gettime();
+			windowread(0, 0, win, 0);
+			time = gettime() - time;
+			say("delta=%d\n",time);
 		}
 	}
 	return 0;
 }
-void arenawrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
+int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct arena* win = dc;
 	if(_HTTP_ == win->type)
@@ -247,6 +244,7 @@ void arenawrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
 	{
 		wsserver_write(dc,df,sc,sf,buf,len);
 	}
+	return 0;
 }
 void* arenalist(u8* buf, int len)
 {

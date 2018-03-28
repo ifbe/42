@@ -801,6 +801,16 @@ void vectorcross(float* d, float* s);
 float vectordot(float*, float*);
 float vectorcosine(float*, float*);
 
+//
+int actorread(void* dc,void* df,void* sc,void* sf);
+int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arenaread(void* dc,void* df,void* sc,void* sf);
+int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arteryread(void* dc,void* df,void* sc,void* sf);
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int systemread(void* dc,void* df,void* sc,void* sf);
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+
 //libsoft0
 u32 getrandom();
 u64 gettime();

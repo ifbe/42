@@ -365,13 +365,21 @@ struct pinid
 extern "C" {
 #endif
 
-void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-
+int actorread(void* dc,void* df,void* sc,void* sf);
+int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arenaread(void* dc,void* df,void* sc,void* sf);
+int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arteryread(void* dc,void* df,void* sc,void* sf);
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int systemread(void* dc,void* df,void* sc,void* sf);
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
-
+//
+u64 getdate();
+u64 gettime();
+//
 u64 startthread(void*, void*);
 void stopthread(u64);
 //
@@ -387,6 +395,7 @@ void* relation_write(void*,void*,u64,void*,void*,u64);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
+int mysnprintf(void*,int,char*,...);
 void printmemory(void*, int);
 void say(void*, ...);
 

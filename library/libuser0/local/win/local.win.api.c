@@ -33,47 +33,9 @@ static RECT rt, re;
 
 
 
-int windowwrite(struct arena* win)
+int windowread(void* dc,void* df,void* sc,void* sf)
 {
-	BITMAPINFO info;
-	int w = win->width;
-	int h = win->height;
-	HDC dc = (void*)(win->dc);
-	void* buf = (void*)(win->buf);
-
-	//bitmapinfo(w,h);
-	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biWidth = w;
-	info.bmiHeader.biHeight = -h;
-	info.bmiHeader.biPlanes = 1;
-	info.bmiHeader.biBitCount = 32;
-	info.bmiHeader.biCompression = 0;
-	info.bmiHeader.biSizeImage = w*h*4;
-	info.bmiHeader.biXPelsPerMeter = 0;
-	info.bmiHeader.biYPelsPerMeter = 0;
-	info.bmiHeader.biClrUsed = 0;
-	info.bmiHeader.biClrImportant = 0;
-	info.bmiColors[0].rgbBlue = 255;
-	info.bmiColors[0].rgbGreen = 255;
-	info.bmiColors[0].rgbRed = 255;
-	info.bmiColors[0].rgbReserved = 255;
-
-	//write bmp to win
-	SetDIBitsToDevice(
-		dc,
-		0, 0,		//目标位置x,y
-		w, h,		//dib宽,高
-		0, 0,		//来源起始x,y
-		0, h,		//起始扫描线,数组中扫描线数量,
-		buf,		//rbg颜色数组
-		&info,		//bitmapinfo
-		DIB_RGB_COLORS	//颜色格式
-	);
-	//printf("result:%x\n",result);
-	return 0;
-}
-int windowread(int type, char* buf)
-{
+/*
 	int j,ret=0;
 	char temp[0x1000];
 
@@ -91,6 +53,45 @@ int windowread(int type, char* buf)
 
 	buf[ret] = 0;
 	return ret;
+*/
+	BITMAPINFO info;
+	struct arena* win = sc;
+	int w = win->width;
+	int h = win->height;
+	HDC hdc = (void*)(win->dc);
+	void* buf = (void*)(win->buf);
+	actorread(win, 0, 0, 0);
+
+	//
+	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	info.bmiHeader.biWidth = w;
+	info.bmiHeader.biHeight = -h;
+	info.bmiHeader.biPlanes = 1;
+	info.bmiHeader.biBitCount = 32;
+	info.bmiHeader.biCompression = 0;
+	info.bmiHeader.biSizeImage = w*h*4;
+	info.bmiHeader.biXPelsPerMeter = 0;
+	info.bmiHeader.biYPelsPerMeter = 0;
+	info.bmiHeader.biClrUsed = 0;
+	info.bmiHeader.biClrImportant = 0;
+	info.bmiColors[0].rgbBlue = 255;
+	info.bmiColors[0].rgbGreen = 255;
+	info.bmiColors[0].rgbRed = 255;
+	info.bmiColors[0].rgbReserved = 255;
+	SetDIBitsToDevice(
+		hdc,
+		0, 0,		//目标位置x,y
+		w, h,		//dib宽,高
+		0, 0,		//来源起始x,y
+		0, h,		//起始扫描线,数组中扫描线数量,
+		buf,		//rbg颜色数组
+		&info,		//bitmapinfo
+		DIB_RGB_COLORS	//颜色格式
+	);
+}
+int windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+{
+	return 0;
 }
 int windowlist()
 {

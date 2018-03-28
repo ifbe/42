@@ -73,8 +73,18 @@ struct object
 
 
 
+int actorread(void* dc,void* df,void* sc,void* sf);
+int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arenaread(void* dc,void* df,void* sc,void* sf);
+int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int arteryread(void* dc,void* df,void* sc,void* sf);
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int systemread(void* dc,void* df,void* sc,void* sf);
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//
 u64 startthread(void*, void*);
 void stopthread();
+//
 void printmemory(void*, int);
 void say(void*, ...);
 void eventwrite(u64,u64,u64,u64);

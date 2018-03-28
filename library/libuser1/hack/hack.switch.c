@@ -6,7 +6,6 @@
 #define _fd_ hex32('f','d',0,0)
 void* arenacreate(int, void*);
 void* systemcreate(u64, void*);
-void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 //
 void* samesrcnextdst(void*);
 void* relation_write(void*,void*,u64,void*,void*,u64);

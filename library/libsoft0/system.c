@@ -46,11 +46,6 @@ int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-void actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-void arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-void arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-//void systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-//
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 //
