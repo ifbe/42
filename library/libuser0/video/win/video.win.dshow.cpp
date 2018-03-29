@@ -105,7 +105,6 @@ public:
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
-		eventwrite(0, _act_, (u64)working, 0);
 
 		enq = (enq+1)%60;
 		return S_OK;
@@ -390,13 +389,13 @@ void letsgo()
 	if(FAILED(hr)){printf("error %x@SetFiltergraph\n",hr);goto fail;}
 
 	hr = m_pGraph->QueryInterface(IID_IMediaControl,(LPVOID *) &g_pMC);
-    if (FAILED(hr)){printf("mediacontrol\n");return;}
+	if (FAILED(hr)){printf("mediacontrol\n");return;}
 
-    hr = m_pGraph->QueryInterface(IID_IVideoWindow, (LPVOID *) &g_pVW);
-    if (FAILED(hr)){printf("videowindow\n");return;}
+	hr = m_pGraph->QueryInterface(IID_IVideoWindow, (LPVOID *) &g_pVW);
+	if (FAILED(hr)){printf("videowindow\n");return;}
 
-    hr = m_pGraph->QueryInterface(IID_IMediaEventEx, (LPVOID *) &g_pME);
-    if (FAILED(hr)){printf("mediaevent\n");return;}
+	hr = m_pGraph->QueryInterface(IID_IMediaEventEx, (LPVOID *) &g_pME);
+	if (FAILED(hr)){printf("mediaevent\n");return;}
 
 
 
@@ -454,7 +453,7 @@ void letsgo()
 
 	hr = configgraph(devcfg);
 
-    hr = m_pGraph->Connect(devout, samplein);
+	hr = m_pGraph->Connect(devout, samplein);
 	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
 
 	hr = pGrabber->GetConnectedMediaType(&mt);

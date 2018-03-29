@@ -44,7 +44,6 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
-		eventwrite(0, _act_, (u64)working, 0);
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%8;

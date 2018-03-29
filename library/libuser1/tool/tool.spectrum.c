@@ -40,7 +40,7 @@ static void spectrum_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	u16* pcm;
+	short* pcm;
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
@@ -52,8 +52,8 @@ static void spectrum_read_pixel(
 		for(x=0;x<0x2000;x++)
 		{
 			drawline(win, 0xffffff,
-				cx-ww + (x*2+1)*ww/0x2000, cy+hh,
-				cx-ww + (x*2+1)*ww/0x2000, cy+hh-(pcm[x]*hh/65536)
+				cx-ww + (x*2+1)*ww/0x2000, cy,
+				cx-ww + (x*2+1)*ww/0x2000, cy-(pcm[x]*hh/65536)
 			);
 		}
 	}
@@ -169,8 +169,8 @@ static void spectrum_write(
 	float* imag;
 	float* amp;
 	struct perframe* frame = act->buf;
-	u16* pcmbuf = (act->buf)+0x80000+((cur/4)*1024*2);
-	u16* pcmin = (void*)buf;
+	short* pcmbuf = (act->buf)+0x80000+((cur/4)*1024*2);
+	short* pcmin = (void*)buf;
 
 	if(0 != win)
 	{
@@ -182,7 +182,7 @@ static void spectrum_write(
 		for(j=0;j<1024;j++)
 		{
 			pcmbuf[j] = pcmin[j];
-			real[j] = (float)pcmbuf[j] / 65536.0;
+			real[j] = (float)pcmbuf[j] / 32768.0;
 			imag[j] = 0.0;
 		}
 		fft(real, imag, 10);

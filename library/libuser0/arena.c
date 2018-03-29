@@ -81,6 +81,7 @@ int actorread(void*, void*, void*, void*);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
+int sleep_us(int);
 
 
 

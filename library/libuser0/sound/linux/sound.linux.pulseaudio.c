@@ -6,37 +6,19 @@
 #include <unistd.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-//
-u64* eventread();
-void eventwrite(u64,u64,u64,u64);
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
-void printmemory(void*, int);
-void say(void*, ...);
+#include "arena.h"
 
 
 
 
-struct waveinfo
-{
-	void* buf;
-	int len;
-	int enq;
-	int deq;
-};
-static struct waveinfo info;
-//
+static struct arena* working;
 static int alive = 1;
 static u64 thread;
 //
-static int freq;
-static int channel;
+static u8* ibuf = 0;
+static u8* obuf = 0;
+static int icur = 0;
+static int ocur = 0;
 //
 static pa_simple* s_in;
 static pa_simple* s_out;
@@ -53,28 +35,43 @@ static const pa_sample_spec ss =
 void* soundlistener(void* p)
 {
 	int ret,err;
+	pa_usec_t latency;
 	while(alive)
 	{
-		pa_usec_t latency;
-
-		latency = pa_simple_get_latency(s_in, &err);
-		if(latency == (pa_usec_t)-1)
+		if ((latency = pa_simple_get_latency(s_in, &err)) == (pa_usec_t) -1)
 		{
 			printf("error@pa_simple_get_latency:%s\n", pa_strerror(err));
 			goto finish;
 		}
-		//fprintf(stderr, "In:  %0.0f usec	\r\n", (float)latency);
+ 		fprintf(stderr, "In: %0.0f usec\n", (float)latency);
 
-		pa_simple_read(s_in, (info.buf)+(info.enq), 2048, &err);
+		ret = pa_simple_read(s_in, ibuf+(1024*2*icur), 2048, &err);
 		if(err < 0)
 		{
 			printf("fail@pa_simple_read:%s\n", pa_strerror(err));
 			goto finish;
 		}
+		usleep(1000000*10/441);
 
-		info.enq = (info.enq + 4096) % 0x100000;
-		eventwrite((u64)&info, 's', 0, 0);
-		usleep(10000*1024/441);
+		struct relation* orel = working->orel;
+		while(1)
+		{
+			if(0 == orel)break;
+			if(_act_ == orel->dsttype)
+			{
+				actorwrite(
+					(void*)(orel->dstchip), (void*)(orel->dstfoot),
+					(void*)(orel->srcchip), (void*)(orel->srcfoot),
+					ibuf + (1024*2*icur), 1024*2
+				);
+			}
+			orel = (struct relation*)samesrcnextdst(orel);
+		}
+		icur = (icur+1)%8;
+
+		//info.enq = (info.enq + 4096) % 0x100000;
+		//eventwrite((u64)&info, 's', 0, 0);
+		//usleep(10000*1024/441);
 	}
 
 finish:
@@ -92,11 +89,11 @@ int soundchoose()
 {
 	return 0;
 }
-int soundread(char* buf, int frame)
+int soundread(int dev, int time, u8* buf, int len)
 {
 	return 0;
 }
-int soundwrite(char* buf, int frame)
+int soundwrite(int dev, int time, u8* buf, int len)
 {
 	int err;
 	pa_usec_t latency;
@@ -106,34 +103,31 @@ int soundwrite(char* buf, int frame)
 		printf("error@pa_simple_get_latency:%s\n", pa_strerror(err));
 		goto finish;
 	}
-	//fprintf(stderr, "Out: %0.0f usec	\r\n", (float)latency);
+	fprintf(stderr, "Out: %0.0f usec\n", (float)latency);
 
-
-	if (pa_simple_write(s_out, buf, 44100, &err) < 0)
+	if (pa_simple_write(s_out, buf, len/2, &err) < 0)
 	{
 		printf("error@pa_simple_write:%s\n", pa_strerror(err));
 		goto finish;
 	}
 
+	if(pa_simple_drain(s_out, &err) < 0)
+        {
+                printf("error@pa_simple_drain:%s\n", pa_strerror(err));
+        }
 finish:
 	return 0;
 }
 void soundstop()
 {
-	int err;
-
 	alive = 0;
-	if(pa_simple_drain(s_out, &err) < 0)
-	{
-		printf("error@pa_simple_drain:%s\n", pa_strerror(err));
-	}
-
 	if (s_in)pa_simple_free(s_in);
 	if (s_out)pa_simple_free(s_out);
 }
-int soundstart(unsigned int rate, int ch)
+int soundstart(struct arena* win)
 {
 	int error;
+	working = win;
 
 	//out
 	s_out = pa_simple_new(NULL, "42", PA_STREAM_PLAYBACK, NULL,
@@ -153,22 +147,14 @@ int soundstart(unsigned int rate, int ch)
 		return 0;
 	}
 
-	//
-	freq = rate;
-	channel = ch;
-
-	//
-	if(info.buf == 0)
-	{
-		info.enq = 0;
-		info.deq = 0;
-		info.len = 0x100000;
-		info.buf = malloc(info.len);
-	}
+	ibuf = malloc(0x100000);
+	obuf = malloc(0x100000);
+	icur = 0;
+	ocur = 0;
 
 	//thread
 	alive = 1;
-	thread = startthread(soundlistener, 0);
+	thread = threadcreate(soundlistener, 0);
 	return 1;
 }
 void sounddelete()

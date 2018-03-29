@@ -107,19 +107,19 @@ void createmywindow(int j)
 }
 void* uievent(struct arena* this)
 {
+	struct event myev;
 	u64 x,y,k;
-	u64 why, what, where;
 	Window fd;
-	XEvent ev;
+	XEvent xev;
 	XAnyEvent* pev;
 
 	createmywindow(1);
 	while(1)
 	{
-		XNextEvent(dsp, &ev);
-		pev = (void*)&ev;
+		XNextEvent(dsp, &xev);
+		pev = (void*)&xev;
 		fd = pev->window;
-		if(ev.type == ClientMessage)printf("abcdef\n");
+		if(xev.type == ClientMessage)printf("abcdef\n");
 
 		this = 0;
 		for(k=0;k<0x100;k++)
@@ -127,21 +127,20 @@ void* uievent(struct arena* this)
 			if(fdmap[k] == fd)
 			{
 				this = winmap[k];
-				where = (u64)this;
 				break;
 			}
 		}
 
-		if(ev.type == ClientMessage)
+		if(xev.type == ClientMessage)
 		{
-			if(ev.xclient.data.l[0] == wmCreate)
+			if(xev.xclient.data.l[0] == wmCreate)
 			{
 				printf("wmCreate\n");
-				k = ev.xclient.data.l[1];
+				k = xev.xclient.data.l[1];
 				createmywindow(k);
 				continue;
 			}
-			else if(ev.xclient.data.l[0] == wmDelete)
+			else if(xev.xclient.data.l[0] == wmDelete)
 			{
 				printf("wmDelete:%x,%x\n",k,fd);
 				XDestroyWindow(dsp, fd);
@@ -163,10 +162,10 @@ void* uievent(struct arena* this)
 		}
 		if(0 == this)continue;
 
-		if(ev.type == ConfigureNotify)
+		if(xev.type == ConfigureNotify)
 		{
-			int x = ev.xconfigure.width;
-			int y = ev.xconfigure.height;
+			int x = xev.xconfigure.width;
+			int y = xev.xconfigure.height;
 			//printf("%d,%d\n",x,y);
 
 			if(x == this->width)
@@ -182,11 +181,11 @@ void* uievent(struct arena* this)
 				x, y, 32, 0
 			);
 
-			why = x + (y<<16);
-			what = hex32('s','i','z','e');
-			eventwrite(why, what, where, 0);
+			//why = x + (y<<16);
+			//what = hex32('s','i','z','e');
+			//eventwrite(why, what, where, 0);
 		}//ConfigureNotify
-		else if(ev.type == Expose)
+		else if(xev.type == Expose)
 		{
 			XImage* xi;
 			if(this == 0)continue;
@@ -200,77 +199,89 @@ void* uievent(struct arena* this)
 				this->width, this->height
 			); 
 		}//Expose
-		else if(ev.type == ButtonPress)
+		else if(xev.type == ButtonPress)
 		{
-			x = ev.xbutton.x;
-			y = ev.xbutton.y;
-			k = ev.xbutton.button;
+			x = xev.xbutton.x;
+			y = xev.xbutton.y;
+			k = xev.xbutton.button;
 			if(k == Button1)k = 'l';	//left
 			else if(k == Button2)k = 'r';	//right
 			else if(k == Button3)k = 'm';	//middle
 			else if(k == Button4)k = 'f';	//front
 			else if(k == Button5)k = 'b';	//back
 
-			why = x + (y<<16) + (k<<48);
-			what = hex32('p', '+', 0, 0);
-			eventwrite(why, what, where, 0);
+			myev.why = x + (y<<16) + (k<<48);
+			myev.what = hex32('p', '+', 0, 0);
+			myev.where = (u64)this;
+			actorwrite(0, 0, this, 0, &myev, 0x20);
+			//eventwrite(why, what, where, 0);
 		}//ButtonPress
-		else if(ev.type == ButtonRelease)
+		else if(xev.type == ButtonRelease)
 		{
-			x = ev.xbutton.x;
-			y = ev.xbutton.y;
-			k = ev.xbutton.button;
+			x = xev.xbutton.x;
+			y = xev.xbutton.y;
+			k = xev.xbutton.button;
 			if(k == Button1)k = 'l';	//left
 			else if(k == Button2)k = 'r';	//right
 			else if(k == Button3)k = 'm';	//middle
 			else if(k == Button4)k = 'f';	//front
 			else if(k == Button5)k = 'b';	//back
 
-			why = x + (y<<16) + (k<<48);
-			what = hex32('p', '-', 0, 0);
-			eventwrite(why, what, where, 0);
+			myev.why = x + (y<<16) + (k<<48);
+			myev.what = hex32('p', '-', 0, 0);
+			myev.where = (u64)this;
+			actorwrite(0, 0, this, 0, &myev, 0x20);
+			//eventwrite(why, what, where, 0);
 		}//ButtonRelease
-		else if(ev.type == MotionNotify)
+		else if(xev.type == MotionNotify)
 		{
-			x = ev.xbutton.x;
-			y = ev.xbutton.y;
+			x = xev.xbutton.x;
+			y = xev.xbutton.y;
 			k = 'l';
 
-			why = x + (y<<16) + (k<<48);
-			what = hex32('p', '@', 0, 0);
-			eventwrite(why, what, where, 0);
+			myev.why = x + (y<<16) + (k<<48);
+			myev.what = hex32('p', '@', 0, 0);
+			myev.where = (u64)this;
+			actorwrite(0, 0, this, 0, &myev, 0x20);
+			//eventwrite(why, what, where, 0);
 		}//MotionNotify
-		else if(ev.type == KeyPress)
+		else if(xev.type == KeyPress)
 		{
 			//KeyCode keyQ = XKeysymToKeycode(dsp, XStringToKeysym("Q"));
-			//if (ev.xkey.keycode == keyQ)break;
-			//printf("%x\n",ev.xkey.keycode);
+			//if (xev.xkey.keycode == keyQ)break;
+			//printf("%x\n",xev.xkey.keycode);
 
 			//普通anscii码
-			what = hex32('c','h','a','r');
-			if((ev.xkey.state&1) == 1)
+			myev.what = hex32('c','h','a','r');
+			if((xev.xkey.state&1) == 1)
 			{
-				why = xlib2upper[ev.xkey.keycode];
-				if(why != 0)
+				myev.why = xlib2upper[xev.xkey.keycode];
+				if(myev.why != 0)
 				{
-					eventwrite(why, what, where, 0);
+					//eventwrite(why, what, where, 0);
+					myev.where = (u64)this;
+					actorwrite(0, 0, this, 0, &myev, 0x20);
 					continue;
 				}
 			}
 			else
 			{
-				why = xlib2anscii[ev.xkey.keycode];
-				if(why != 0)
+				myev.why = xlib2anscii[xev.xkey.keycode];
+				if(myev.why != 0)
 				{
-					eventwrite(why, what, where, 0);
+					//eventwrite(why, what, where, 0);
+					myev.where = (u64)this;
+					actorwrite(0, 0, this, 0, &myev, 0x20);
 					continue;
 				}
 			}
 
 			//控制按键
-			why = xlib2kbd[ev.xkey.keycode];
-			what = hex32('k','b','d',0);
-			eventwrite(why, what, where, 0);
+			myev.why = xlib2kbd[xev.xkey.keycode];
+			myev.what = hex32('k','b','d',0);
+			myev.where = (u64)this;
+			actorwrite(0, 0, this, 0, &myev, 0x20);
+			//eventwrite(why, what, where, 0);
 		}//KeyPress
 	}//while
 
@@ -290,19 +301,20 @@ void* terminalthread(void* win)
 
 
 
-void windowwrite(struct arena* win)
+void windowread(void* dc,void* df,void* sc,void* sf)
 {
-	XEvent ev;
-	u64 fd = win->fd;
+	XEvent xev;
+	struct arena* win = sc;
+	actorread(win, 0, 0, 0);
 
-	memset(&ev,0,sizeof(XEvent));
-	ev.type = Expose;
-	ev.xexpose.display = dsp;
-	ev.xexpose.window = fd;
-	XSendEvent(dsp, fd, False, ExposureMask, &ev);
+	memset(&xev,0,sizeof(XEvent));
+	xev.type = Expose;
+	xev.xexpose.display = dsp;
+	xev.xexpose.window = win->fd;
+	XSendEvent(dsp, win->fd, False, ExposureMask, &xev);
 	XFlush(dsp);	//must
 }
-void windowread()
+void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
 }
 void windowlist()
@@ -333,7 +345,7 @@ void windowstart(struct arena* this)
 	if(fuckyou <= 1)
 	{
 		winmap[1] = this;
-		startthread(uievent, this);
+		threadcreate(uievent, this);
 	}
 	else
 	{
@@ -343,14 +355,14 @@ void windowstart(struct arena* this)
 		}
 		winmap[j] = this;
 
-		XClientMessageEvent ev;
-		memset(&ev, 0, sizeof(XClientMessageEvent));
-		ev.type = ClientMessage;
-		ev.window = fdmap[0];
-		ev.format = 32;
-		ev.data.l[0] = wmCreate;
-		ev.data.l[1] = j;
-		XSendEvent(dsp, fdmap[1], False, 0, (void*)&ev);
+		XClientMessageEvent xev;
+		memset(&xev, 0, sizeof(XClientMessageEvent));
+		xev.type = ClientMessage;
+		xev.window = fdmap[0];
+		xev.format = 32;
+		xev.data.l[0] = wmCreate;
+		xev.data.l[1] = j;
+		XSendEvent(dsp, fdmap[1], False, 0, (void*)&xev);
 		XFlush(dsp);	//must
 	}
 
@@ -408,7 +420,7 @@ void initwindow()
 	fuckyou = 1;
 
 	//
-	startthread(terminalthread, 0);
+	threadcreate(terminalthread, 0);
 }
 void freewindow()
 {

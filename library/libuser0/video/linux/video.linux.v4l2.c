@@ -24,6 +24,7 @@ struct buffer{
 	u64 height;
 };
 static struct buffer info[24];
+static struct arena* working = 0;
 static int cur = 0;
 static int alive = 1;
 
@@ -174,7 +175,20 @@ void* visionlistener(void* p)
 
 		//do
 		//printmemory(info[cur].buf+0xfff, 16);
-		eventwrite(cur, 'v', 0, 0);
+		struct relation* orel = working->orel;
+		while(1)
+		{
+			if(0 == orel)break;
+			if(_act_ == orel->dsttype)
+			{
+				actorwrite(
+					(void*)(orel->dstchip), (void*)(orel->dstfoot),
+					(void*)(orel->srcchip), (void*)(orel->srcfoot),
+					info[cur].buf, 640*480*3/2
+				);
+			}
+			orel = (struct relation*)samesrcnextdst(orel);
+		}
 
 		//enq
 		ioctl(fd, VIDIOC_QBUF, &buf);
@@ -225,7 +239,8 @@ int videostop()
 int videostart(struct arena* win)
 {
 	alive = 1;
-	startthread(visionlistener, 0);
+	working = win;
+	threadcreate(visionlistener, 0);
 	return 1;
 }
 void videodelete()
