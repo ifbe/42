@@ -171,13 +171,13 @@ static void ooxx_start(struct actor* act, struct pinid* pin)
 static void ooxx_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void ooxx_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = startmemory(16);
+	if(_copy_ == act->type)act->buf = memorycreate(16);
 }
 
 

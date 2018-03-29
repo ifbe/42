@@ -216,31 +216,15 @@ static void sudoku_start(struct actor* act, struct pinid* pin)
 static void sudoku_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	else if(_ORIG_ == act->type)
-	{
-		act->type = _orig_;
-	}
-	else if(_COPY_ == act->type)
-	{
-		stopmemory(act->buf);
-		act->type = _copy_;
-	}
+	if(_COPY_ == act->type)memorydelete(act->buf);
 }
 static void sudoku_create(struct actor* act, u8* buf)
 {
 	u8* p;
 	int j,k;
 	if(0 == act)return;
-	else if(_orig_ == act->type)
-	{
-		act->buf = data;
-		act->type = _ORIG_;
-	}
-	else if(_copy_ == act->type)
-	{
-		act->buf = startmemory(81);
-		act->type = _COPY_;
-	}
+	else if(_orig_ == act->type)act->buf = data;
+	else if(_copy_ == act->type)act->buf = memorycreate(81);
 
 	if(0 == buf)return;
 	p = act->buf;

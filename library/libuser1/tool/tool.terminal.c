@@ -837,7 +837,7 @@ static void terminal_change()
 static void terminal_stop()
 {
 }
-static void terminal_start()
+static void terminal_start(struct actor* act, struct pinid* pin)
 {
 	listlen = listuart(listbuf, 0x100);
 	if(listlen != 0)say("%.*s", listlen, listbuf);
@@ -855,17 +855,17 @@ static void terminal_start()
 	term.bg = 0;
 	term.fg = 7;
 	term.len = 0x100000;
-	term.buf = startmemory(term.len);
+	term.buf = act->buf;
 }
 static void terminal_delete(struct actor* act)
 {
 	if(0 == act)return;
-	stopmemory(act->buf);
+	memorydelete(act->buf);
 }
 static void terminal_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = startmemory(0x1000);
+	act->buf = memorycreate(0x100000);
 }
 
 

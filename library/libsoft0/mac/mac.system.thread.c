@@ -8,12 +8,12 @@
 
 
 
-u64 startthread(void* func, void* args)
+u64 threadcreate(void* func, void* args)
 {
 	unsigned long long id;
 	pthread_create((void*)&id, NULL, func, args);
 	return id;
 }
-void stopthread()
+void threaddelete(u64 h)
 {
 }

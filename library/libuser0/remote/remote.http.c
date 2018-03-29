@@ -2,10 +2,8 @@
 #define _TCP_ hex32('T','C','P',0)
 #define _WS_ hex32('W','S',0,0)
 #define _fd_ hex32('f','d',0,0)
-void* relation_write(void*,void*,u64,void*,void*,u64);
 void* arenacreate(u64, void*);
-int wsserver_write(void*,void*,void*,void*,void*,int);
-//
+int arenadelete(void*);
 void* systemcreate(u64, void*);
 int systemdelete(void*);
 //
@@ -85,8 +83,8 @@ int httpserver_write(
 		addr = arenacreate(_WS_, act);
 		if(0 == addr)return 0;
 
-		relation_write(addr, 0, _win_, act, 0, _fd_);
-		relation_write(act, 0, _fd_, addr, 0, _win_);
+		relationcreate(addr, 0, _win_, act, 0, _fd_);
+		relationcreate(act, 0, _fd_, addr, 0, _win_);
 		return 0;
 	}
 	else if(0 != GET)
@@ -144,12 +142,12 @@ int httpserver_delete(struct arena* win)
 int httpserver_create(struct arena* win, void* str)
 {
 	void* tmp;
-	if(0 == buffer)buffer = startmemory(0x100000);
+	if(0 == buffer)buffer = memorycreate(0x100000);
 	if(0 == str)str = "127.0.0.1:2222";
 
 	tmp = systemcreate(_TCP_, str);
 	if(tmp == 0)return 0;
 
-	relation_write(win, 0, _win_, tmp, 0, _fd_);
+	relationcreate(win, 0, _win_, tmp, 0, _fd_);
 	return 0;
 }

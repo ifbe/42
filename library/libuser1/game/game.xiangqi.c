@@ -444,7 +444,7 @@ static void xiangqi_delete(struct actor* act, u8* buf)
 	if(0 == act)return;
 	if((_COPY_ == act->type)&&(0 != act->buf))
 	{
-		stopmemory(act->buf);
+		memorydelete(act->buf);
 	}
 	act->buf = 0;
 }
@@ -454,7 +454,7 @@ static void xiangqi_create(struct actor* act, u8* buf)
 	int j,k;
 	if(0 == act)return;
 	else if(_orig_ == act->type)act->buf = data;
-	else if(_copy_ == act->type)act->buf = startmemory(10*9);
+	else if(_copy_ == act->type)act->buf = memorycreate(10*9);
 
 	if(0 == buf)return;
 	p = act->buf;

@@ -214,12 +214,12 @@ static void stl_start()
 static void stl_delete(struct actor* act)
 {
 	if(0 == act)return;
-	stopmemory(act->buf);
+	memorydelete(act->buf);
 }
 static void stl_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = startmemory(0x800000);
+	act->buf = memorycreate(0x800000);
 }
 
 

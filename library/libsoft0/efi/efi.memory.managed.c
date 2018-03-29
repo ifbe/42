@@ -6,12 +6,17 @@
 
 
 
-static u8 bitmap[1024];		//1m per u8
+static u8 bitmap[1024] = {
+	1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1
+};
 
 
 
 
-void* startmemory(int size)
+void* memorycreate(int size)
 {
 	int k;
 	u64 j;
@@ -28,18 +33,10 @@ void* startmemory(int size)
 
 	return 0;
 }
-int stopmemory(void* addr)
+int memorydelete(void* addr)
 {
 	u64 j = (u64)addr;
 	j >>= 20;
 	bitmap[j] = 0;
 	return 0;
-}
-void creatememory()
-{
-	int j;
-	for(j=0;j<32;j++)bitmap[j] = 1;
-}
-void deletememory()
-{
 }

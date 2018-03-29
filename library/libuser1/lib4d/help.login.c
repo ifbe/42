@@ -5,18 +5,6 @@
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
 //
-int actorcreate(void*, u8*);
-int actordelete(void*, u8*);
-void* allocstyle();
-void* allocpinid();
-//
-void* samedstprevsrc(void*);
-void* samedstnextsrc(void*);
-void* samesrcprevdst(void*);
-void* samesrcnextdst(void*);
-void* relation_read(u64);
-void relation_write(void*, void*, u64, void*, void*, u64);
-//
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -26,6 +14,11 @@ void carveascii_area(
 	float rx, float ry, float rz,
 	float fx, float fy, float fz,
 	float x0, float y0, float x1, float y1);
+//
+int actorcreate(void*, u8*);
+int actordelete(void*, u8*);
+void* allocstyle();
+void* allocpinid();
 
 
 
@@ -73,10 +66,7 @@ int arenaactor(struct arena* win, struct actor* act)
 	sty->fy = min;
 	sty->uz = min;
 
-	relation_write(
-		win, sty, _win_,
-		act, pin, _act_
-	);
+	relationcreate(win, sty, _win_, act, pin, _act_);
 
 	//win->onstart(win, sty);
 	act->onstart(act, pin);
@@ -738,7 +728,7 @@ void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			if(0 == q->type)return;
 
 			actorcreate(q, 0);
-			relation_write(q, 0, _act_, p, 0, _win_);
+			relationcreate(q, 0, _act_, p, 0, _win_);
 		}
 		else if(y1 < 16)
 		{

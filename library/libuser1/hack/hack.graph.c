@@ -360,13 +360,13 @@ static void graph_start(struct actor* act, struct pinid* pin)
 static void graph_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void graph_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = orig;
-	if(_copy_ == act->type)act->buf = startmemory(0x1000);
+	if(_copy_ == act->type)act->buf = memorycreate(0x1000);
 }
 
 

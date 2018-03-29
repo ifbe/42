@@ -1,6 +1,5 @@
 #include "actor.h"
 void initutf8(void*);
-void* startmemory(int);
 //
 int openreadclose(void* name, int off, void* buf, int len);
 int openwriteclose(void* name, int off, void* buf, int len);
@@ -17,7 +16,7 @@ static u16* bgmdata = 0;
 void asset_create()
 {
 	int j,k;
-	utf8data = startmemory(0x200000);
+	utf8data = memorycreate(0x200000);
 	if(utf8data != 0)
 	{
 		j = openreadclose("datafile/unicode.raw", 0, utf8data, 0x200000);

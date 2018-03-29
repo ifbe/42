@@ -17,9 +17,6 @@
 #include<sys/types.h>
 #include"system.h"
 #define MAXSIZE 4096
-u64 gettime();
-u64 startthread(void*, void*);
-void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -150,5 +147,5 @@ void createwatcher(void* addr)
 	if(epollfd <= 0)printf("%d,%d@epoll_create\n", epollfd, errno);
 
 	alive = 1;
-	thread = startthread(epollthread, 0);
+	thread = threadcreate(epollthread, 0);
 }

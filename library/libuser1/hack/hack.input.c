@@ -162,7 +162,6 @@ static void input_start(struct actor* act, struct pinid* pin)
 static void input_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
 }
 static void input_create(struct actor* act)
 {

@@ -377,27 +377,29 @@ int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 int ncmp(void*,void*,int);
 int cmp(void*,void*);
 //
+u32 getrandom();
 u64 getdate();
 u64 gettime();
 //
-u64 startthread(void*, void*);
-void stopthread(u64);
+u64 threadcreate(void*, void*);
+void threaddelete(u64);
 //
-void* startmemory();
-void* stopmemory(void*);
+void* memorycreate(int);
+int memorydelete(void*);
 //
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
-void* relation_write(void*,void*,u64,void*,void*,u64);
+void* relationcreate(void*,void*,u64,void*,void*,u64);
+int relationdelete(void*);
 //
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-int mysnprintf(void*,int,char*,...);
-void printmemory(void*, int);
-void say(void*, ...);
+int mysnprintf(void*, int, void*, ...);
+int printmemory(void*, int);
+int say(void*, ...);
 
 #ifdef __cplusplus
 }

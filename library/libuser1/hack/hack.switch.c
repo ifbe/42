@@ -6,9 +6,6 @@
 #define _fd_ hex32('f','d',0,0)
 void* arenacreate(int, void*);
 void* systemcreate(u64, void*);
-//
-void* samesrcnextdst(void*);
-void* relation_write(void*,void*,u64,void*,void*,u64);
 
 
 
@@ -107,22 +104,19 @@ static void switch_start(struct actor* act, struct pinid* pin)
 static void switch_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(0 != act->buf)
-	{
-		stopmemory(act->buf);
-	}
+	if(0 != act->buf)memorydelete(act->buf);
 	act->buf = 0;
 }
 static void switch_create(struct actor* act, u8* buf)
 {
 	void* addr;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = startmemory(0x100000);
+	else if(_orig_ == act->type)act->buf = memorycreate(0x100000);
 
 	addr = systemcreate(_udp_, "127.0.0.1:2222");
 	if(0 == addr)return;
 
-	relation_write(addr, 0, _fd_, act, 0, _act_);
+	relationcreate(addr, 0, _fd_, act, 0, _act_);
 }
 static void switch_list(u8* buf)
 {

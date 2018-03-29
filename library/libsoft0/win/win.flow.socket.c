@@ -49,22 +49,23 @@ void peername(u64 fd, u32* buf)
 
 
 
-int readsocket(int fd, int off, u8* buf, int len)
+int readsocket(int fd, int off, void* buf, int len)
 {
 	int c,j;
-	char* p;
+	char* src;
+	char* dst = buf;
 	struct per_io_data* pio = (void*)(obj[fd].data);
 	c = pio->count;
 	if(c == 0)return 0;	//disconnect
 
-	p = pio->bufing.buf;
-	for(j=0;j<c;j++)buf[j] = p[j];
+	src = pio->bufing.buf;
+	for(j=0;j<c;j++)dst[j] = src[j];
 
 	pio->count = 0;
 	iocp_mod(fd*4);
 	return c;
 }
-int writesocket(int fd, int off, u8* buf, int len)
+int writesocket(int fd, int off, void* buf, int len)
 {
 	int j,ret;
 	DWORD dwret;

@@ -13,8 +13,6 @@ void* actordelete(void*, u8*);
 //
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);
-void* relation_read(u64);
-void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
 
@@ -120,7 +118,7 @@ void parsexml_relation(u8* buf, int len)
 	//say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
 	//win->onstart(win, cs);
 	act->onstart(act, pin);
-	relation_write(win, css, _win_, act, pin, _act_);
+	relationcreate(win, css, _win_, act, pin, _act_);
 }
 void parsexml(u8* buf, int len)
 {

@@ -5,7 +5,6 @@ void yuyv2rgba(
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
 void* arenacreate(u64, void*);
-void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
 
@@ -107,7 +106,7 @@ static void camera_create(struct actor* act)
 	say("win=%llx\n",win);
 	if(0 == win)return;
 
-	relation_write(act, 0, _act_, win, 0, _win_);
+	relationcreate(act, 0, _act_, win, 0, _win_);
 	say("%llx,%llx\n", win->irel, win->orel);
 	say("%llx,%llx\n", act->irel, act->orel);
 }

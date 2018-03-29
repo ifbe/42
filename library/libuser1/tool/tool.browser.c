@@ -1,6 +1,5 @@
 #include "actor.h"
 void* arterycreate(u64 type, void* addr);
-void* relation_write(void*, void*, u64, void*, void*, u64);
 
 
 
@@ -84,7 +83,7 @@ static void browser_write(
 		haha->len = 0;
 
 		addr = arterycreate(0, buf);
-		relation_write(act, 0, _act_, addr, 0, _fd_);
+		relationcreate(act, 0, _act_, addr, 0, _fd_);
 	}
 	else if(0x8 == ev->why)
 	{
@@ -124,7 +123,7 @@ static void browser_start(struct actor* act, struct pinid* pin)
 static void browser_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void browser_create(struct actor* act)
 {
@@ -132,7 +131,7 @@ static void browser_create(struct actor* act)
 	if(0 == act)return;
 
 	act->len = 0;
-	act->buf = startmemory(0x100000);
+	act->buf = memorycreate(0x100000);
 	for(j=0;j<0x100;j++)act->detail[j] = 0;
 }
 

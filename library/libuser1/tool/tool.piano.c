@@ -168,12 +168,12 @@ static void piano_start(struct actor* act, struct pinid* pin)
 static void piano_delete(struct actor* act)
 {
 	if(0 == act)return;
-	stopmemory(act->buf);
+	memorydelete(act->buf);
 }
 static void piano_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = startmemory(0x100000);
+	act->buf = memorycreate(0x100000);
 	frame = act->buf;
 }
 

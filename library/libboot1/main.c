@@ -60,8 +60,8 @@ void* death();
 void* birth();
 void* eventwrite(u64,u64,u64,u64);
 void* eventread();
-void* startthread(void*, void*);
-void* stopthread();
+void* threadcreate(void*, void*);
+void* threaddelete(u64);
 //
 void openwriteclose(void*,int,void*,int);
 void fixarg(void*, void*);
@@ -234,7 +234,7 @@ void android_main(void* app)
 {
 	app_dummy();
 
-	startthread(main, 0);
+	threadcreate(main, 0);
 
 	android_loop(app);
 

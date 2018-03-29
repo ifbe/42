@@ -1,5 +1,4 @@
 #include "actor.h"
-void eventwrite(u64,u64,u64,u64);
 
 
 

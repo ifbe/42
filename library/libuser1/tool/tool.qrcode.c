@@ -154,13 +154,13 @@ static void qrcode_start(struct actor* act, struct pinid* pin)
 static void qrcode_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void qrcode_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = databuf;
-	if(_copy_ == act->type)act->buf = startmemory(49*49);
+	if(_copy_ == act->type)act->buf = memorycreate(49*49);
 }
 
 

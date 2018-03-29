@@ -260,13 +260,13 @@ static void weiqi_start(struct actor* act, struct pinid* pin)
 static void weiqi_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void weiqi_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = startmemory(19*19);
+	if(_copy_ == act->type)act->buf = memorycreate(19*19);
 }
 
 

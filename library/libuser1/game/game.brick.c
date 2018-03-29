@@ -33,7 +33,7 @@ static void brick_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = startmemory(16);
+	if(_copy_ == act->type)act->buf = memorycreate(16);
 }
 static void brick_list()
 {

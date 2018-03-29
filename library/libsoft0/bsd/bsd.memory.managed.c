@@ -4,18 +4,12 @@
 
 
 
-void* startmemory(int size)
+void* memorycreate(int size)
 {
 	return malloc(size);
 }
-int stopmemory(void* addr)
+int memorydelete(void* addr)
 {
 	free(addr);
 	return 0;
-}
-void creatememory()
-{
-}
-void deletememory()
-{
 }

@@ -68,52 +68,6 @@ void relation_debug(struct relation* rel)
 	}
 	say("\n");
 }
-void relation_recycle(struct relation* rel)
-{
-	struct relation* temp;
-	if(rel == 0)return;
-
-	if(wirecur == (void*)rel - (void*)wirebuf + sizeof(struct relation))
-	{
-		wirecur -= sizeof(struct relation);
-		return;
-	}
-
-	rel->samedstprevsrc = 0;
-	rel->samedstnextsrc = 0;
-
-	if(recycle == 0)
-	{
-		recycle = rel;
-		return;
-	}
-
-	temp = recycle;
-	while(1)
-	{
-		if(temp->samedstnextsrc == 0)
-		{
-			temp->samedstnextsrc = (void*)rel - (void*)wirebuf;
-			break;
-		}
-		temp = (void*)wirebuf + (temp->samedstnextsrc);
-	}
-}
-void* relation_grow()
-{
-	struct relation* temp;
-	if(recycle == 0)
-	{
-       		temp = (void*)wirebuf + wirecur;
-		wirecur += sizeof(struct relation);
-		return temp;
-	}
-
-	temp = recycle;
-	if(temp->samedstnextsrc == 0)recycle = 0;
-	else recycle = (void*)wirebuf + (temp->samedstnextsrc);
-	return temp;
-}
 void relation_swap(struct relation* m, struct relation* n)
 {
 	u64 temp;
@@ -198,14 +152,52 @@ void relation_swap(struct relation* m, struct relation* n)
 
 	//relation_debug(uchip->irel);
 }
+void relation_recycle(struct relation* rel)
+{
+	struct relation* temp;
+	if(rel == 0)return;
 
+	if(wirecur == (void*)rel - (void*)wirebuf + sizeof(struct relation))
+	{
+		wirecur -= sizeof(struct relation);
+		return;
+	}
 
+	rel->samedstprevsrc = 0;
+	rel->samedstnextsrc = 0;
 
+	if(recycle == 0)
+	{
+		recycle = rel;
+		return;
+	}
 
+	temp = recycle;
+	while(1)
+	{
+		if(temp->samedstnextsrc == 0)
+		{
+			temp->samedstnextsrc = (void*)rel - (void*)wirebuf;
+			break;
+		}
+		temp = (void*)wirebuf + (temp->samedstnextsrc);
+	}
+}
+void* relation_grow()
+{
+	struct relation* temp;
+	if(recycle == 0)
+	{
+		temp = (void*)wirebuf + wirecur;
+		wirecur += sizeof(struct relation);
+		return temp;
+	}
 
-
-
-
+	temp = recycle;
+	if(temp->samedstnextsrc == 0)recycle = 0;
+	else recycle = (void*)wirebuf + (temp->samedstnextsrc);
+	return temp;
+}
 void* relation_generate(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)
@@ -235,7 +227,44 @@ void* relation_generate(
 
 	return w;
 }
-void relation_destory(struct relation* this)
+
+
+
+
+void* samedstprevsrc(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samedstprevsrc == 0)return 0;
+	return (void*)wirebuf + (rel->samedstprevsrc);
+}
+void* samedstnextsrc(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samedstnextsrc == 0)return 0;
+	return (void*)wirebuf + (rel->samedstnextsrc);
+}
+void* samesrcprevdst(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samesrcprevdst == 0)return 0;
+	return (void*)wirebuf + (rel->samesrcprevdst);
+}
+void* samesrcnextdst(struct relation* rel)
+{
+	if(rel == 0)return 0;
+	if(rel->samesrcnextdst == 0)return 0;
+	return (void*)wirebuf + (rel->samesrcnextdst);
+}
+void* relationread(int off)
+{
+	if(off == 0)return 0;
+	return (void*)wirebuf + off;
+}
+void* relationwrite()
+{
+	return 0;
+}
+void relationdelete(struct relation* this)
 {
 	struct item* uchip;
 	struct relation* prev;
@@ -263,13 +292,7 @@ void relation_destory(struct relation* this)
 
 	relation_recycle(this);
 }
-
-
-
-
-//wininfo,  position, 'win',  actor,    0, 'act'
-//actinfo,  which,    'act',  userinfo, what,     'user'
-void* relation_write(
+void* relationcreate(
 	void* uchip, u64 ufoot, u32 utype,
 	void* bchip, u64 bfoot, u32 btype)
 {
@@ -309,39 +332,10 @@ void* relation_write(
 
 	return ww;
 }
-void* relation_read(int off)
-{
-	if(off == 0)return 0;
-	return (void*)wirebuf + off;
-}
 
 
 
 
-void* samedstprevsrc(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samedstprevsrc == 0)return 0;
-	return (void*)wirebuf + (rel->samedstprevsrc);
-}
-void* samedstnextsrc(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samedstnextsrc == 0)return 0;
-	return (void*)wirebuf + (rel->samedstnextsrc);
-}
-void* samesrcprevdst(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samesrcprevdst == 0)return 0;
-	return (void*)wirebuf + (rel->samesrcprevdst);
-}
-void* samesrcnextdst(struct relation* rel)
-{
-	if(rel == 0)return 0;
-	if(rel->samesrcnextdst == 0)return 0;
-	return (void*)wirebuf + (rel->samesrcnextdst);
-}
 void initstdrel(void* addr)
 {
 	wirebuf = addr;

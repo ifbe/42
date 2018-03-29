@@ -7,8 +7,6 @@
 #include<mswsock.h>
 #include<windows.h>
 #include"system.h"
-u64 startthread(void*, void*);
-void eventwrite(u64,u64,u64,u64);
 
 
 
@@ -149,6 +147,6 @@ void createwatcher(void* addr)
 	GetSystemInfo(&info);
 	for(j=0;j<info.dwNumberOfProcessors*2;j++)
 	{
-		u64 thread = startthread(iocpthread, iocpfd);
+		u64 thread = threadcreate(iocpthread, iocpfd);
 	}
 }

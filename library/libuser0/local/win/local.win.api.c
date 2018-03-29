@@ -17,10 +17,11 @@ int fixarg(void* dst, void* src);
 
 
 
+static u64 termthread;
+static u64 uithread;
 //global
 static int alivecount = 0;
 static char* AppTitle="haha";
-static u64 uithread;
 static HANDLE hStartEvent;
 static WNDCLASS wc;
 static HDROP hDrop;
@@ -570,10 +571,10 @@ void initwindow()
 	hStartEvent = CreateEvent(0,FALSE,FALSE,0);
 
 	//terminalthread
-	startthread(terminalthread, 0);
+	termthread = threadcreate(terminalthread, 0);
 
 	//uithread
-	uithread = startthread(uievent, 0);
+	uithread = threadcreate(uievent, 0);
 
 	//waitevent
 	WaitForSingleObject(hStartEvent,INFINITE);

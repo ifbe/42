@@ -261,13 +261,13 @@ static void tetris_start(struct actor* act, struct pinid* pin)
 static void tetris_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void tetris_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buf;
-	if(_copy_ == act->type)act->buf = startmemory(WIDTH*HEIGHT);
+	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT);
 }
 
 

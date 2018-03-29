@@ -4,12 +4,6 @@ int login_write(void*, void*);
 int vkbd_write(void*, void*);
 //
 int relation_swap(void*, void*);
-int relation_destory(void*);
-void* samedstprevsrc(void*);
-void* samedstnextsrc(void*);
-void* samesrcprevdst(void*);
-void* samesrcnextdst(void*);
-void* relation_read(u64);
 
 
 
@@ -145,7 +139,7 @@ int delete_topone(struct arena* win)
 
 		rel = tmp;
 	}
-	relation_destory(rel);
+	relationdelete(rel);
 	return 1;
 }
 int actorinput(struct arena* win, struct event* ev)

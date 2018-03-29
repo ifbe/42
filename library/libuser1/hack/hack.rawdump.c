@@ -2,7 +2,6 @@
 #define _UDP_ hex32('U','D','P',0)
 #define _fd_ hex32('f','d',0,0)
 void* systemcreate(u64, void*);
-void* relation_write(void*,void*,u64,void*,void*,u64);
 
 
 
@@ -129,22 +128,19 @@ static void rawdump_start(struct actor* act, struct pinid* pin)
 static void rawdump_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(0 != act->buf)
-	{
-		stopmemory(act->buf);
-	}
+	if(0 != act->buf)memorydelete(act->buf);
 	act->buf = 0;
 }
 static void rawdump_create(struct actor* act, u8* buf)
 {
 	void* addr;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = startmemory(0x100000);
+	else if(_orig_ == act->type)act->buf = memorycreate(0x100000);
 
 	addr = systemcreate(_UDP_, "127.0.0.1:2222");
 	if(0 == addr)return;
 
-	relation_write(act, 0, _act_, addr, 0, _fd_);
+	relationcreate(act, 0, _act_, addr, 0, _fd_);
 }
 static void rawdump_list(u8* buf)
 {

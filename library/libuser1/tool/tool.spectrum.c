@@ -9,12 +9,6 @@ void ifft(float* real, float* imag, int k);
 int soundread(int dev, int time, void* buf, int len);
 int soundwrite(int dev, int time, void* buf, int len);
 //
-void* samedstprevsrc(void*);
-void* samedstnextsrc(void*);
-void* samesrcprevdst(void*);
-void* samesrcnextdst(void*);
-void* relation_read(u64);
-void* relation_write(void*, void*, u64, void*, void*, u64);
 void* arenacreate(u64, void*);
 
 
@@ -235,21 +229,21 @@ static void spectrum_start(struct actor* act, struct pinid* pin)
 static void spectrum_delete(struct actor* act)
 {
 	if(0 == act)return;
-	stopmemory(act->buf);
+	memorydelete(act->buf);
 }
 static void spectrum_create(struct actor* act)
 {
 	struct arena* win;
 	if(0 == act)return;
 
-	act->buf = startmemory(0x100000);
+	act->buf = memorycreate(0x100000);
 	if(0 == act->buf)return;
 
 	win = arenacreate(_mic_, "0");
 	say("win=%llx\n",win);
 	if(0 == win)return;
 
-	relation_write(act, 0, _act_, win, 0, _win_);
+	relationcreate(act, 0, _act_, win, 0, _win_);
 	say("%llx,%llx\n", win->irel, win->orel);
 	say("%llx,%llx\n", act->irel, act->orel);
 }

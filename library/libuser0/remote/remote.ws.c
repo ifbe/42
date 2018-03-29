@@ -80,7 +80,7 @@ int wsserver_delete(struct arena* win)
 }
 int wsserver_create(struct arena* win)
 {
-	if(0 == buffer)buffer = startmemory(0x100000);
+	if(0 == buffer)buffer = memorycreate(0x100000);
 
 	win->buf = buffer;
 	return 0;

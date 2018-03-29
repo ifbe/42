@@ -1,6 +1,5 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-u64 getdate();
 
 
 
@@ -120,13 +119,13 @@ static void clock_start(struct actor* act, struct pinid* pin)
 static void clock_delete(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_copy_ == act->type)stopmemory(act->buf);
+	//if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void clock_create(struct actor* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = startmemory(256);
+	//if(_copy_ == act->type)act->buf = memorycreate(256);
 }
 
 

@@ -81,12 +81,6 @@ int actorread(void*, void*, void*, void*);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-//
-void* samesrcnextdst(void*);
-void* samesrcprevdst(void*);
-//
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 

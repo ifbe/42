@@ -184,7 +184,7 @@ int startuart(char* p, int speed)
 
 	//
 	alive = 1;
-	thread = startthread(systemuart_thread, 0);
+	thread = threadcreate(systemuart_thread, 0);
 
 	//success
 	return 1;

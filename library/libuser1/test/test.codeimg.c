@@ -231,14 +231,14 @@ static void codeimg_delete(struct actor* act)
 	if(0 == act)return;
 	if((_COPY_ == act->type)&&(0 != act->buf))
 	{
-		stopmemory(act->buf);
+		memorydelete(act->buf);
 	}
 	act->buf = 0;
 }
 static void codeimg_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = startmemory(1024*1024*4);
+	act->buf = memorycreate(1024*1024*4);
 }
 
 

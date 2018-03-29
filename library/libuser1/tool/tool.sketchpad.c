@@ -431,12 +431,12 @@ static void sketchpad_start(struct actor* act, struct pinid* pin)
 static void sketchpad_delete(struct actor* act)
 {
 	if(0 == act)return;
-	stopmemory(act->buf);
+	memorydelete(act->buf);
 }
 static void sketchpad_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = databuf = startmemory(0x100000);
+	act->buf = databuf = memorycreate(0x100000);
 }
 
 

@@ -89,14 +89,10 @@ static void example_start(struct actor* act, struct pinid* pin)
 static void example_delete(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = startmemory(256);
 }
 static void example_create(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = startmemory(256);
 }
 
 

@@ -9,10 +9,6 @@ void down2048(void*);
 
 
 
-//
-static int num;
-static u8 buffer[256];
-//
 static u8 len2048[17] = {
 0, 1, 1, 1,
 2, 2, 2, 3,
@@ -39,7 +35,7 @@ static void the2048_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8 (*tab)[4] = (void*)buffer + num*16;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 	u32 color;
 	int x,y;
 	float xxx, yyy, zzz;
@@ -97,7 +93,7 @@ static void the2048_read_pixel(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	u8 (*tab)[4] = (void*)buffer + num*16;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
 	//cubies
 	for(y=0;y<4;y++)
@@ -139,7 +135,7 @@ static void the2048_read_html(
 	int x,y;
 	int len = win->len;
 	u8* buf = win->buf;
-	u8 (*tab)[4] = (void*)buffer + num*16;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
 	len += mysnprintf(buf+len, 0x100000-len, "<2048>");
 	for(y=0;y<4;y++)
@@ -158,7 +154,7 @@ static void the2048_read_tui(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	u8 (*tab)[4] = (void*)buffer + num*16;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
 	for(y=0;y<4;y++)
 	{
@@ -173,7 +169,7 @@ static void the2048_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8 (*tab)[4] = (void*)buffer + num*16;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
 	say("2048(%x,%x,%x,%x)\n", win, act, sty, pin);
 	say("%d	%d	%d	%d\n",
@@ -232,9 +228,9 @@ static void the2048_write(
 		k = (ev->why)&0xff;
 		if( (k>=0x48) && (k<=0x50) )
 		{
-			p = (void*)buffer + 16*num;
-			num = (num+1)%4;
-			q = (void*)buffer + 16*num;
+			p = (void*)(act->buf) + 16*(act->len);
+			(act->len) = ((act->len)+1)%4;
+			q = (void*)(act->buf) + 16*(act->len);
 			for(j=0;j<16;j++)q[j] = p[j];
 
 			if(k == 0x48)up2048(q);
@@ -248,14 +244,14 @@ static void the2048_write(
 	else if(ev->what == _char_)
 	{
 		k = ev->why;
-		if(k == 0x8)num = (num+15)%16;
+		if(k == 0x8)(act->len) = ((act->len)+15)%16;
 
 		k = (k>>16)&0xff;
 		if((k>=0x41)&&(k<=0x44))
 		{
-			p = (void*)buffer + 16*num;
-			num = (num+1)%4;
-			q = (void*)buffer + 16*num;
+			p = (void*)(act->buf) + 16*(act->len);
+			(act->len) = ((act->len)+1)%4;
+			q = (void*)(act->buf) + 16*(act->len);
 			for(j=0;j<16;j++)q[j] = p[j];
 
 			if(k == 0x41)up2048(q);
@@ -273,20 +269,11 @@ static void the2048_stop(struct actor* act, struct pinid* pin)
 static void the2048_start(struct actor* act, struct pinid* pin)
 {
 	int j;
-	for(j=0;j<16;j++)
-	{
-		if(0 != buffer[j])break;
-	}
-	if(j >= 16)new2048(buffer);
-	num = 0;
+	if(0 == act->len)new2048((act->buf));
 }
 static void the2048_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if((_COPY_ == act->type)&&(0 != act->buf))
-	{
-		stopmemory(act->buf);
-	}
 	act->buf = 0;
 }
 static void the2048_create(struct actor* act, u8* buf)
@@ -294,8 +281,8 @@ static void the2048_create(struct actor* act, u8* buf)
 	u8* p;
 	int j,k;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = buffer;
-	else if(_copy_ == act->type)act->buf = startmemory(256);
+	act->buf = ((void*)act) + 0x100;
+	act->len = 0;
 
 	if(0 == buf)return;
 	p = act->buf;
@@ -312,6 +299,7 @@ static void the2048_create(struct actor* act, u8* buf)
 		if(k >= 16)break;
 	}
 	say("\n");
+	act->len = 16;
 }
 static void the2048_list(u8* buf)
 {
