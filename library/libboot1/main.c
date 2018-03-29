@@ -147,11 +147,7 @@ int main(int argc, char* argv[])
 
 again:
 		ev = eventread();
-		if(0 == ev)
-		{
-			sleep_us(10000);
-			goto again;
-		}
+		if(0 == ev)continue;
 		if(0 == ev->what)break;
 
 		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);

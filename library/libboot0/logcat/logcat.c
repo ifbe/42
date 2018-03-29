@@ -12,6 +12,7 @@
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 void eventwrite(u64,u64,u64,u64);
+int actorwrite(void*,void*,void*,void*,void*,int);
 
 
 
@@ -114,7 +115,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 }
 static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 {
-	u64 why;
+	u64 why[4];
 	int x,y,a,c,j;
 	int32_t type;
 	int32_t source;
@@ -144,9 +145,13 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				{
 					x = AMotionEvent_getX(ev, j);
 					y = AMotionEvent_getY(ev, j);
-					why = j;
-					why = x+(y<<16)+(why<<48);
-					eventwrite(why, 0x4070, (u64)thewin, 0);
+					why[0] = j;
+					why[0] = x+(y<<16)+(why[0]<<48);
+					//eventwrite(why, 0x4070, (u64)thewin, 0);
+
+					why[1] = 0x4070;
+					why[2] = (u64)thewin;
+					actorwrite(0,0,thewin,0,why,0x20);
 				}
 			}
 			else
@@ -156,9 +161,13 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 				x = AMotionEvent_getX(ev, j);
 				y = AMotionEvent_getY(ev, j);
-				why = AMotionEvent_getPointerId(ev, j);
-				why = x+(y<<16)+(why<<48);
-				eventwrite(why, a, (u64)thewin, 0);
+				why[0] = AMotionEvent_getPointerId(ev, j);
+				why[0] = x+(y<<16)+(why[0]<<48);
+				//eventwrite(why, a, (u64)thewin, 0);
+
+				why[1] = a;
+				why[2] = (u64)thewin;
+				actorwrite(0,0,thewin,0,why,0x20);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)

@@ -94,8 +94,36 @@ int actorread(void* dc,void* df,void* sc,void* sf)
 }
 int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	struct actor* act = dc;
-	act->onwrite(act, df, sc, sf, buf, len);
+	struct relation* rel;
+	struct event* ev;
+	struct actor* act;
+	struct arena* win;
+	if(dc != 0)
+	{
+		act = dc;
+		act->onwrite(act, df, sc, sf, buf, len);
+
+		rel = act->orel;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_win_ == rel->dsttype)
+			{
+				win = (void*)(rel->dstchip);
+				win->enq += 1;
+			}
+			rel = samesrcnextdst(rel);
+		}
+	}
+	else
+	{
+		win = sc;
+		ev = buf;
+		actorinput(win, ev);
+
+		if('p' == (ev->what&0xff))touch_explain(win, ev);
+		win->enq += 1;
+	}
 	return 0;
 }
 void* actorlist(u8* buf, int len)
@@ -178,11 +206,6 @@ int actorevent(struct event* ev)
 		touch_explain(win, ev);
 		win->dirty = 1;
 		if('@' == ((ev->what>>8)&0xff))return 0;
-	}
-	for(j=0;j<16;j++)
-	{
-		if(0 == arena[j].type)continue;
-		if(_WS_ == arena[j].type)arena[j].dirty = 1;
 	}
 	return 0;
 }

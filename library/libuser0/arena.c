@@ -142,6 +142,8 @@ void* arenacreate(u64 type, u8* addr)
 		win->irel = 0;
 		win->orel = 0;
 		windowstart(win);
+		win->enq = 1;
+		win->deq = 0;
 	}
 	else if(_cam_ == type)
 	{
@@ -219,6 +221,13 @@ int arenaread(void* dc,void* df,void* sc,void* sf)
 		if(0 == win->type)continue;
 		if(_win_ == win->type)
 		{
+			if(win->enq == win->deq)
+			{
+				sleep_us(1000);
+				continue;
+			}
+			win->deq = win->enq;
+
 			time = gettime();
 			windowread(0, 0, win, 0);
 			time = gettime() - time;

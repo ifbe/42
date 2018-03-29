@@ -215,13 +215,13 @@ struct arena
 	int dirtyx1;
 	int dirtyy1;
 	int dirtyz1;
-	int flag1;
+	int enq;
 
 	//[f0,ff]
 	int dirtyx2;
 	int dirtyy2;
 	int dirtyz2;
-	int flag2;
+	int deq;
 
 	//[100,1ff]
 	struct point touchdown[16];

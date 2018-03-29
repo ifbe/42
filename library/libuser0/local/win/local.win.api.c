@@ -154,6 +154,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
 	struct arena* win = (void*)addr;
+	struct event ev;
 	switch (msg)
 	{
 		case WM_KEYDOWN:
@@ -181,15 +182,33 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 
 			//printf("key:%x\n", wparam);
-			eventwrite(val, 0x64626b, addr, 0);
+			//eventwrite(val, 0x64626b, addr, 0);
+			ev.why = val;
+			ev.what = 0x64626b;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
 		case WM_CHAR:
 		{
 			//printf("%x\n",wparam);
-			if(wparam==0x1b)eventwrite(0x1b, 0x64626b, addr, 0);
-			else eventwrite(wparam, 0x72616863, addr, 0);
+			if(wparam==0x1b)
+			{
+				//eventwrite(0x1b, 0x64626b, addr, 0);
+				ev.why = 0x1b;
+				ev.what = 0x64626b;
+				ev.where = addr;
+				actorwrite(0, 0, win, 0, &ev, 0x20);
+			}
+			else
+			{
+				//eventwrite(wparam, 0x72616863, addr, 0);
+				ev.why = wparam;
+				ev.what = 0x72616863;
+				ev.where = addr;
+				actorwrite(0, 0, win, 0, &ev, 0x20);
+			}
 			return 0;
 		}
 /*
@@ -250,7 +269,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = pt.y;
 			x = pt.x;
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -272,7 +296,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = pt.y;
 			x = pt.x;
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2d70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
@@ -290,7 +319,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = pt.y;
 			x = pt.x;
-			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x4070;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -305,7 +339,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = pt.y;
 			x = pt.x;
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -328,7 +367,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);
-			eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x4070;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -340,7 +384,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'l';
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2d70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -352,7 +401,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'r';
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);
-			eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2d70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -372,7 +426,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'l';
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -392,7 +451,12 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			k = 'r';
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);
-			eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 
@@ -415,7 +479,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				win->height = h;
 			}
 
-			eventwrite(0x657a6973, 0x4077, addr, 0);
+			//eventwrite(0x657a6973, 0x4077, addr, 0);
 			return 0;
 		}
 
