@@ -143,7 +143,10 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		//force redraw
+		//actorread();
 		arenaread();
+		//arteryread();
+		//systemread();
 
 again:
 		ev = eventread();
