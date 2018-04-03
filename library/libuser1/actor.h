@@ -68,6 +68,23 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
+struct texandobj
+{
+	u32 program;
+	u32 vao;
+
+	u32 tex;
+	u32 tlen;
+	void* tbuf;
+
+	u32 ibo;
+	u32 ilen;
+	void* ibuf;
+
+	u32 vbo;
+	u32 vlen;
+	void* vbuf;
+};
 
 
 

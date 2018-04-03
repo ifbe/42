@@ -29,59 +29,6 @@ double sine(double);
 
 
 
-/*
-static GLuint shadowfb;
-//
-static GLuint simpletexture;
-static GLuint prettytexture;
-static GLuint shadowtexture;
-static GLuint pickertexture;
-static GLuint myfonttexture;
-//
-static GLuint pointvao;
-static GLuint linevao;
-static GLuint trianglevao;
-static GLuint fontvao;
-//
-static GLuint vertexvbo;
-static GLuint normalvbo;
-static GLuint colourvbo;
-static GLuint texcorvbo;
-//
-static GLuint pointvbo;
-static GLuint linevbo;
-static GLuint trianglevbo;
-static GLuint fontvbo;
-//
-static float light0[4] = {0.0f, 0.0f, 1000.0f};
-static float light1[4] = {0.0f, 10.0f, 0.0f};
-static float light2[4] = {10.0f, 0.0f, 0.0f};
-static float camera[4] = {100.0f, -200.0f, 100.0f};
-static float center[4] = {0.0f, 0.0f, 0.0f};
-static float above[4] = {0.0f, 0.0f, 1.0f};
-//
-static GLfloat modelmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-};
-static GLfloat viewmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-};
-static GLfloat projmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, -1.0f, -1.0f,
-	0.0f, 0.0f, -0.2f, 0.0f
-};
-static GLfloat cameramvp[4*4];
-static GLfloat light0mvp[4*4];
-*/
-//
 static struct arena* win;
 static u8* dragdata[0x1000];
 //
@@ -96,7 +43,6 @@ static int pressed = 0;
 static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint shadowprogram;
-static GLuint pickerprogram;
 static GLuint myfontprogram;
 //
 static float light0[4] = {0.0f, 0.0f, 1000.0f};
@@ -126,42 +72,33 @@ static GLfloat projmatrix[4*4] = {
 //
 struct texandobj
 {
-	GLuint obj;
-	GLuint len;
-	void* buf;
-};
-struct eachone
-{
 	GLuint program;
 	GLuint vao;
-	GLuint vbo;
+
+	GLuint tex;
+	GLuint tlen;
+	void* tbuf;
+
 	GLuint ibo;
-	GLuint tex0;
-	GLuint tex1;
-	GLfloat light0vertex[3];
-	GLfloat light0color[3];
-	GLfloat light1vertex[3];
-	GLfloat light1color[3];
-	GLfloat modmat[4][4];
+	GLuint ilen;
+	void* ibuf;
+
+	GLuint vbo;
+	GLuint vlen;
+	void* vbuf;
 };
-//0:	tex0
-//1~31:	tex1~31
-//32:	point
-//33:	line
-//34:	trigon
-//35:	????
-//36:	font0000
-//37:	font4000
-//38:	font8000
-//39:	fontc000
-//40~?:	other
-static struct texandobj mod[0x1000];
-//0:	point
-//1:	line
-//2:	trigon
-//3:	font
-//4:	other
-static struct eachone each[0x1000];
+//0x00+0:	font0000
+//0x00+1:	font4000
+//0x00+2:	font8000
+//0x00+3:	fontc000
+//0x00+?:	tex?
+//0x80+0:	????
+//0x80+1:	point(drawarray)
+//0x80+2:	line(drawarray)
+//0x80+3:	trigon(drawarray)
+//0x80+4:	line(drawelement)
+//0x80+5:	trigon(drawelement)
+static struct texandobj mod[256];
 
 
 
@@ -237,25 +174,6 @@ char shadowvert[] = {
 	"}\n"
 };
 char shadowfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 vertexcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vertexcolor,1.0);\n"
-	"}\n"
-};
-char pickervert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 position;\n"
-	"out mediump vec3 vertexcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vertexcolor = position;\n"
-		"gl_Position = vec4(position,1.0);\n"
-	"}\n"
-};
-char pickerfrag[] = {
 	"#version 300 es\n"
 	"in mediump vec3 vertexcolor;\n"
 	"out mediump vec4 FragColor;\n"
@@ -396,125 +314,248 @@ void initshader()
 	printf("GLSL Version: %s\n", glslVersion);
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
-	initshader_one(&simpleprogram, simplevert, simplefrag);
-	initshader_one(&prettyprogram, prettyvert, prettyfrag);
-	initshader_one(&shadowprogram, shadowvert, shadowfrag);
-	initshader_one(&pickerprogram, pickervert, pickerfrag);
 	initshader_one(&myfontprogram, myfontvert, myfontfrag);
-	glUseProgram(prettyprogram);
+	mod[0].program = myfontprogram;
+	mod[1].program = myfontprogram;
+	mod[2].program = myfontprogram;
+	mod[3].program = myfontprogram;
+	initshader_one(&simpleprogram, simplevert, simplefrag);
+	mod[0x81].program = simpleprogram;
+	mod[0x82].program = simpleprogram;
+	mod[0x84].program = simpleprogram;
+	initshader_one(&prettyprogram, prettyvert, prettyfrag);
+	mod[0x83].program = prettyprogram;
+	mod[0x85].program = prettyprogram;
+	initshader_one(&shadowprogram, shadowvert, shadowfrag);
 }
 void inittexture()
 {
 	int j;
 	u8* buf;
 
-	//0000
-	buf = mod[0].buf;
+	//[0000,3fff]
+	buf = mod[0].tbuf;
 	if(buf != 0)
 	{
 		for(j=0x80;j<0x4000;j++)
 		{
-			drawunicode_alpha(
-				buf, 2048, 2048,
+			drawunicode_alpha(buf, 2048, 2048, 
 				(j&0x7f)<<4, (j&0xff80)>>3, j
 			);
 		}
 		for(j=0x20;j<0x80;j++)
 		{
-			drawascii_alpha(
-				buf, 2048, 2048,
+			drawascii_alpha(buf, 2048, 2048,
 				j<<4, 0, j
 			);
 		}
 
-		glGenTextures(1, &(mod[0].obj));
-		glActiveTexture(GL_TEXTURE0+0);
-		glBindTexture(GL_TEXTURE_2D, mod[0].obj);
+		//tex0
+		glGenTextures(1, &(mod[0].tex));
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, mod[0].tex);
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[0].tbuf
+		);
+
+		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[0].buf
+
+		//vao
+		glGenVertexArrays(1, &mod[0].vao);
+		glBindVertexArray(mod[0].vao);
+
+		//ibo
+		glGenBuffers(1, &mod[0].ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+			mod[0].ibuf, GL_STATIC_DRAW
 		);
+
+		//vbo
+		glGenBuffers(1, &mod[0].vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
+		glBufferData(GL_ARRAY_BUFFER, 0x200000,
+			mod[0].vbuf, GL_STATIC_DRAW
+		);
+
+		//attr
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+		glEnableVertexAttribArray(2);
 	}
 
-	//4000
-	buf = mod[1].buf;
+
+	//[4000,7fff]
+	buf = mod[1].tbuf;
 	if(buf != 0)
 	{
 		for(j=0;j<0x4000;j++)
 		{
-			drawunicode_alpha(
-				buf, 2048, 2048,
+			drawunicode_alpha(buf, 2048, 2048,
 				(j&0x7f)<<4, (j&0xff80)>>3, j+0x4000
 			);
 		}
 
-		glGenTextures(1, &(mod[1].obj));
-		glActiveTexture(GL_TEXTURE0+1);
-		glBindTexture(GL_TEXTURE_2D, mod[1].obj);
+		//tex1
+		glGenTextures(1, &(mod[1].tex));
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, mod[1].tex);
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[1].tbuf
+		);
+
+		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[1].buf
+
+		//vao
+		glGenVertexArrays(1, &mod[1].vao);
+		glBindVertexArray(mod[1].vao);
+
+		//ibo
+		glGenBuffers(1, &mod[1].ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+			mod[1].ibuf, GL_STATIC_DRAW
 		);
+
+		//vbo
+		glGenBuffers(1, &mod[1].vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
+		glBufferData(GL_ARRAY_BUFFER, 0x200000,
+			mod[1].vbuf, GL_STATIC_DRAW
+		);
+
+		//attr
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+		glEnableVertexAttribArray(2);
 	}
 
-	//8000
-	buf = mod[2].buf;
+
+	//[8000,bfff]
+	buf = mod[2].tbuf;
 	if(buf != 0)
 	{
 		for(j=0;j<0x4000;j++)
 		{
-			drawunicode_alpha(
-				buf, 2048, 2048,
+			drawunicode_alpha(buf, 2048, 2048,
 				(j&0x7f)<<4, (j&0xff80)>>3, j+0x8000
 			);
 		}
 
-		glGenTextures(1, &(mod[2].obj));
-		glActiveTexture(GL_TEXTURE0+2);
-		glBindTexture(GL_TEXTURE_2D, mod[2].obj);
+		//tex2
+		glGenTextures(1, &(mod[2].tex));
+		glActiveTexture(GL_TEXTURE0 + 2);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, mod[2].tex);
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[2].tbuf
+		);
+
+		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[2].buf
+
+		//vao
+		glGenVertexArrays(1, &mod[2].vao);
+		glBindVertexArray(mod[2].vao);
+
+		//ibo
+		glGenBuffers(1, &mod[2].ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+			mod[2].ibuf, GL_STATIC_DRAW
 		);
 
+		//vbo
+		glGenBuffers(1, &mod[2].vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
+		glBufferData(GL_ARRAY_BUFFER, 0x200000,
+			mod[2].vbuf, GL_STATIC_DRAW
+		);
+
+		//attr
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+		glEnableVertexAttribArray(2);
 	}
 
-	//c000
-	buf = mod[3].buf;
+
+	//[c000,ffff]
+	buf = mod[3].tbuf;
 	if(buf != 0)
 	{
 		for(j=0;j<0x4000;j++)
 		{
-			drawunicode_alpha(
-				buf, 2048, 2048,
+			drawunicode_alpha(buf, 2048, 2048,
 				(j&0x7f)<<4, (j&0xff80)>>3, j+0xc000
 			);
 		}
 
-		glGenTextures(1, &(mod[3].obj));
-		glActiveTexture(GL_TEXTURE0+3);
+		//texture3
+		glGenTextures(1, &(mod[3].tex));
+		glActiveTexture(GL_TEXTURE0 + 3);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, mod[3].obj);
+		glBindTexture(GL_TEXTURE_2D, mod[3].tex);
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[3].tbuf
+		);
+
+		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[3].buf
+
+		//vao
+		glGenVertexArrays(1, &mod[3].vao);
+		glBindVertexArray(mod[3].vao);
+
+		//ibo
+		glGenBuffers(1, &mod[3].ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+			mod[3].ibuf, GL_STATIC_DRAW
 		);
+
+		//vbo
+		glGenBuffers(1, &mod[3].vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
+		glBufferData(GL_ARRAY_BUFFER, 0x200000,
+			mod[3].vbuf, GL_STATIC_DRAW
+		);
+
+		//attr
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+		glEnableVertexAttribArray(2);
 	}
 
 	/*
@@ -545,83 +586,15 @@ void inittexture()
 }
 void initobject()  
 {
-	//point: 0x21=obj(vertex,color)
-	glGenBuffers(1, &mod[0x21].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x21].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x21].buf, GL_STATIC_DRAW);
+	//drawarray.point(vertex,color)
+	glGenVertexArrays(1, &mod[0x81].vao);
+	glBindVertexArray(mod[0x81].vao);
 
-
-	//line: 0x22=ibo, 0x23=obj(vertex,color)
-	glGenBuffers(1, &mod[0x22].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x22].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x23].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x23].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x23].buf, GL_STATIC_DRAW);
-
-
-	//stl: 0x25=obj(vertex,color)
-	glGenBuffers(1, &mod[0x25].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x25].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x25].buf, GL_STATIC_DRAW);
-
-
-	//trigon: 0x26=ibo, 0x27=obj(vertex,color,normal)
-	glGenBuffers(1, &mod[0x26].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x26].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x27].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x27].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[0x27].buf, GL_STATIC_DRAW);
-
-
-	//font0000: 0x28=ibo, 0x29=obj(vertex,color,texcoor)
-	glGenBuffers(1, &mod[0x28].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x28].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x28].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x29].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x29].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x29].buf, GL_STATIC_DRAW);
-
-
-	//font4000: 0x2a=ibo, 0x2b=obj(vertex,color,texcoor)
-	glGenBuffers(1, &mod[0x2a].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2a].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x2a].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x2b].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2b].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x2b].buf, GL_STATIC_DRAW);
-
-
-	//font8000: 0x2c=ibo, 0x2d=obj(vertex,color,texcoor)
-	glGenBuffers(1, &mod[0x2c].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2c].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x2c].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x2d].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2d].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x2d].buf, GL_STATIC_DRAW);
-
-
-	//fontc000: 0x2e=ibo, 0x2f=obj(vertex,color,texcoor)
-	glGenBuffers(1, &mod[0x2e].obj);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2e].obj);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[0x2e].buf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[0x2f].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2f].obj);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[0x2f].buf, GL_STATIC_DRAW);
-
-
-	//point
-	glGenVertexArrays(1, &each[0].vao);
-	glBindVertexArray(each[0].vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x21].obj);
+	glGenBuffers(1, &mod[0x81].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x81].vbuf, GL_STATIC_DRAW
+	);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -629,12 +602,15 @@ void initobject()
 	glEnableVertexAttribArray(1);
 
 
-	//line
-	glGenVertexArrays(1, &each[1].vao);
-	glBindVertexArray(each[1].vao);
+	//drawarray.line(vertex,color)
+	glGenVertexArrays(1, &mod[0x82].vao);
+	glBindVertexArray(mod[0x82].vao);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x23].obj);
+	glGenBuffers(1, &mod[0x82].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x82].vbuf, GL_STATIC_DRAW
+	);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -642,27 +618,15 @@ void initobject()
 	glEnableVertexAttribArray(1);
 
 
-	//stl
-	glGenVertexArrays(1, &each[2].vao);
-	glBindVertexArray(each[2].vao);
+	//drawarray.trigon(vertex,colour,normal)
+	glGenVertexArrays(1, &mod[0x83].vao);
+	glBindVertexArray(mod[0x83].vao);
 
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x24].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x25].obj);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-	//trigon
-	glGenVertexArrays(1, &each[3].vao);
-	glBindVertexArray(each[3].vao);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x27].obj);
+	glGenBuffers(1, &mod[0x83].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
+		mod[0x83].vbuf, GL_STATIC_DRAW
+	);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -672,57 +636,44 @@ void initobject()
 	glEnableVertexAttribArray(2);
 
 
-	//font0000
-	glGenVertexArrays(1, &each[4].vao);
-	glBindVertexArray(each[4].vao);
+	//drawelement.line(vertex,color)
+	glGenVertexArrays(1, &mod[0x84].vao);
+	glBindVertexArray(mod[0x84].vao);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x28].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x29].obj);
+	glGenBuffers(1, &mod[0x84].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x84].ibuf, GL_STATIC_DRAW
+	);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glGenBuffers(1, &mod[0x84].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x84].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
 
 
-	//font4000
-	glGenVertexArrays(1, &each[5].vao);
-	glBindVertexArray(each[5].vao);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2a].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2b].obj);
+	//drawelement.trigon(vertex,color,normal)
+	glGenVertexArrays(1, &mod[0x85].vao);
+	glBindVertexArray(mod[0x85].vao);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
+	glGenBuffers(1, &mod[0x85].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x85].ibuf, GL_STATIC_DRAW
+	);
 
-
-	//font8000
-	glGenVertexArrays(1, &each[6].vao);
-	glBindVertexArray(each[6].vao);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2c].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2d].obj);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-	//fontc000
-	glGenVertexArrays(1, &each[7].vao);
-	glBindVertexArray(each[7].vao);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x2e].obj);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x2f].obj);
+	glGenBuffers(1, &mod[0x85].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
+		mod[0x85].vbuf, GL_STATIC_DRAW
+	);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -744,7 +695,7 @@ void fixview()
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
 
-	//Z = center - camera
+	//front = center - camera
 	float nx = center[0] - camera[0];
 	float ny = center[1] - camera[1];
 	float nz = center[2] - camera[2];
@@ -753,7 +704,7 @@ void fixview()
 	ny /= norm;
 	nz /= norm;
 
-	//X = cross(Z, above)
+	//right = cross(front, above)
 	float ux = ny*above[2] - nz*above[1];
 	float uy = nz*above[0] - nx*above[2];
 	float uz = nx*above[1] - ny*above[0];
@@ -762,7 +713,7 @@ void fixview()
 	uy /= norm;
 	uz /= norm;
 
-	//above = cross(X, Z)
+	//above = cross(right, front)
 	float vx = uy*nz - uz*ny;
 	float vy = uz*nx - ux*nz;
 	float vz = ux*ny - uy*nx;
@@ -848,33 +799,48 @@ void callback_display()
 	GLfloat cameramvp[4*4];
 
 	//set
+	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
 	fixmatrix(cameramvp);
-	fixlight();
 	fixtexture();
+
+
+
 
 	//point,line
 	glUseProgram(simpleprogram);
 	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
 	glUniformMatrix4fv(mvp1, 1, GL_FALSE, cameramvp);
 
-	glBindVertexArray(each[0].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x21].len);
+	glBindVertexArray(mod[0x81].vao);
+	glDrawArrays(GL_POINTS, 0, mod[0x81].vlen);
 
-	glBindVertexArray(each[1].vao);
-	glDrawElements(GL_LINES, 2*mod[0x22].len, GL_UNSIGNED_SHORT, 0);
+	//glBindVertexArray(mod[0x82].vao);
+	//glDrawArrays(GL_LINES, 0, 2*mod[0x82].vlen);
+
+	glBindVertexArray(mod[0x84].vao);
+	glDrawElements(GL_LINES, 2*mod[0x84].ilen, GL_UNSIGNED_SHORT, 0);
+
+
+
 
 	//stl,triangle
 	glUseProgram(prettyprogram);
+	fixlight();
+
 	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
 	glUniformMatrix4fv(mvp2, 1, GL_FALSE, cameramvp);
 
-	glBindVertexArray(each[2].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[0x25].len);
+	//glBindVertexArray(mod[0x83].vao);
+	//glDrawArrays(GL_TRIANGLES, 0, 3*mod[0x83].vlen);
 
-	glBindVertexArray(each[3].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x26].len, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[0x85].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
+
+	
+
 
 	//font0000,4000,8000,c000
 	glDepthMask(GL_FALSE);
@@ -886,111 +852,137 @@ void callback_display()
 	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
 
 	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 0);
-	glBindVertexArray(each[4].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x28].len, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[0].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[0].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 1);
-	glBindVertexArray(each[5].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x2a].len, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[1].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[1].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 2);
-	glBindVertexArray(each[6].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x2c].len, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[2].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[2].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 3);
-	glBindVertexArray(each[7].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x2e].len, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[3].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-void callback_idle()
+void callback_update()
 {
 	if(queuehead == queuetail)return;
-//say("%x,%x\n",mod[0x26].len, mod[0x27].len);
-
-	//point
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x21].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x21].len, mod[0x21].buf);
-
-	//line
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x22].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x22].len, mod[0x22].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x23].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x23].len, mod[0x23].buf);
-
-	//stl
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x25].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x25].len, mod[0x25].buf);
-
-	//trigon
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x26].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x26].len, mod[0x26].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x27].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x27].len, mod[0x27].buf);
 
 	//font0000
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x28].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x28].len, mod[0x28].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x29].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x29].len, mod[0x29].buf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		6*mod[0].ilen, mod[0].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		36*mod[0].vlen,mod[0].vbuf);
 
 	//font4000
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x2a].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x2a].len, mod[0x2a].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x2b].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x2b].len, mod[0x2b].buf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		6*mod[1].ilen, mod[1].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		36*mod[1].vlen, mod[1].vbuf);
 
 	//font8000
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x2c].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x2c].len, mod[0x2c].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x2d].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x2d].len, mod[0x2d].buf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		6*mod[2].ilen,mod[2].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		36*mod[2].vlen,mod[2].vbuf);
 
 	//fontc000
-	glBindBuffer(   GL_ELEMENT_ARRAY_BUFFER, mod[0x2e].obj);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x2e].len, mod[0x2e].buf);
-	glBindBuffer(   GL_ARRAY_BUFFER, mod[0x2f].obj);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x2f].len, mod[0x2f].buf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		6*mod[3].ilen, mod[3].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		36*mod[3].vlen, mod[3].vbuf);
+
+	//drawarray: point
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		24*mod[0x81].vlen, mod[0x81].vbuf);
+
+	//drawarray: line
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		24*mod[0x82].vlen, mod[0x82].vbuf);
+
+	//drawarray: trigon
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		36*mod[0x83].vlen, mod[0x83].vbuf);
+
+	//drawelement: line
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		4*mod[0x84].ilen, mod[0x84].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0,
+		24*mod[0x84].vlen, mod[0x84].vbuf);
+
+	//drawelement: trigon
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+		6*mod[0x85].ilen, mod[0x85].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER,0,
+		36*mod[0x85].vlen, mod[0x85].vbuf);
 
 	queuetail++;
 }
 void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
 {
-	u64 why,what,where;
-	where = (u64)win;
+	struct event e;
     printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
 	if(0x100 == key)
 	{
-		why = 0x1b;
-		what = hex32('k','b','d',0);
+		e.why = 0x1b;
+		e.what = hex32('k','b','d',0);
 	}
 	else if(0x101 == key)
 	{
-		why = 0xd;
-		what = hex32('c','h','a','r');
+		e.why = 0xd;
+		e.what = hex32('c','h','a','r');
 	}
 	else if((key >= 0x106)&&(key <= 0x109))
 	{
-		if(key == 0x109)why = 0x48;		//up
-		else if(key == 0x108)why = 0x50;	//down
-		else if(key == 0x107)why = 0x4b;	//left
-		else if(key == 0x106)why = 0x4d;	//right
-		what = hex32('k','b','d',0);
+		if(key == 0x109)e.why = 0x48;		//up
+		else if(key == 0x108)e.why = 0x50;	//down
+		else if(key == 0x107)e.why = 0x4b;	//left
+		else if(key == 0x106)e.why = 0x4d;	//right
+		e.what = hex32('k','b','d',0);
 	}
 	else if((key >= 0x122)&&(key <= 0x12d))
 	{
-		why = 0xf1 + key - 0x122;
-		what = hex32('k','b','d',0);
+		e.why = 0xf1 + key - 0x122;
+		e.what = hex32('k','b','d',0);
 	}
 	else
 	{
-		why = key;
-		what = hex32('c','h','a','r');
+		e.why = key;
+		e.what = hex32('c','h','a','r');
 	}
-	eventwrite(why, what, where, 0);
+
+	e.where = (u64)win;
+	actorwrite(0, 0, win, 0, &e, 0x20);
+	//eventwrite(why, what, where, 0);
 }
 void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 {
@@ -1000,10 +992,10 @@ void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 //void callback_move(int x,int y)
 static void callback_move(GLFWwindow* window, double xpos, double ypos)
 {
+	u64 xx,yy,temp;
+	struct event e;
 	float t[3];
 	float v[4];
-	u64 xx,yy,temp;
-	u64 why, what, where;
 	int x = (int)xpos;
 	int y = (int)ypos;
 	if(pressed == 0)return;
@@ -1011,16 +1003,17 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 
 	if(win->edit)
 	{
-		where = (u64)win;
 		xx = x&0xffff;
 		yy = (height - y)&0xffff;
 
 		temp = 'l';
-		why = xx + (yy<<16) + (temp<<48);
-		if(pressed <= 2)what = 0x2b70;
-		else what = 0x4070;
+		e.why = xx + (yy<<16) + (temp<<48);
+		if(pressed <= 2)e.what = 0x2b70;
+		else e.what = 0x4070;
 
-		eventwrite(why, what, where, 0);
+		e.where = (u64)win;
+		actorwrite(0, 0, win, 0, &e, 0x20);
+		//eventwrite(why, what, where, 0);
 		goto theend;
 	}
 
@@ -1075,7 +1068,7 @@ theend:
 }
 void callback_scroll(GLFWwindow* window, double x, double y)
 {
-	u64 why,where;
+	struct event e;
 	float tx = camera[0];
 	float ty = camera[1];
 	float tz = camera[2];
@@ -1083,18 +1076,19 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 
 	if(win->edit)
 	{
-		where = (u64)win;
+		e.where = (u64)win;
+		e.what = 0x2b70;
 		if(y > 0.0)	//wheel_up
 		{
-			why = 'f';
-			why = why<<48;
-			eventwrite(why, 0x2b70, where, 0);
+			e.why = ((u64)'f')<<48;
+			actorwrite(0, 0, win, 0, &e, 0x20);
+			//eventwrite(why, 0x2b70, where, 0);
 		}
 		else	//wheel_down
 		{
-			why = 'b';
-			why = why<<48;
-			eventwrite(why, 0x2b70, where, 0);
+			e.why = ((u64)'b')<<48;
+			actorwrite(0, 0, win, 0, &e, 0x20);
+			//eventwrite(why, 0x2b70, where, 0);
 		}
 	}
 	else
@@ -1136,6 +1130,7 @@ void callback_reshape(GLFWwindow* window, int w, int h)
 
 void* uievent(struct arena* this)
 {
+	//1.glfw
 	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
 	if(fw == NULL)
 	{
@@ -1143,32 +1138,35 @@ void* uievent(struct arena* this)
 		glfwTerminate();
 		return 0;
 	}
-
 	glfwMakeContextCurrent(fw);
-	glewExperimental = 1;
 
+	//2.glew
+	glewExperimental = 1;
 	if(glewInit() != GLEW_OK)
 	{
 		printf("error@glewInit\n");
 		return 0;
 	}
 
-	glEnable(GL_DEPTH_TEST);
+	//3.init
 	initshader();
 	inittexture();
 	initobject();
 
+	//4.callbacks
 	glfwSetDropCallback(fw, callback_drop);
 	glfwSetKeyCallback(fw, callback_keyboard);
 	glfwSetScrollCallback(fw, callback_scroll);
 	glfwSetCursorPosCallback(fw, callback_move);
 	glfwSetMouseButtonCallback(fw, callback_mouse);
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
+
+	//5.wait
 	while(1)
 	{
 		if(glfwWindowShouldClose(fw) != 0)break;
 
-		callback_idle();
+		callback_update();
 		callback_display();
 
 		glfwSwapBuffers(fw);
@@ -1192,13 +1190,16 @@ void* terminalthread(void* win)
 
 
 
-int windowread(int type, char* buf)
+int windowread(void* dc,void* df,void* sc,void* sf)
 {
-	return snprintf(buf, 0x1000, "%s", dragdata);
-}
-void windowwrite(struct arena* dst)
-{
+	struct arena* win = sc;
+	actorread(win, 0, 0, 0);
 	queuehead++;
+
+	//return snprintf(buf, 0x1000, "%s", dragdata);
+}
+void windowwrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
+{
 }
 void windowchange(int what)
 {
@@ -1224,72 +1225,70 @@ void windowstart(struct arena* this)
 	this->irel = 0;
 	this->orel = 0;
 
-	this->buf = mod;
-	this->pass = each;
-
 	this->width = 512;
 	this->height = 512;
 	this->depth = 512;
 
-	//font0000,4000,8000,c000
-	mod[0x00].buf = malloc(0x400000);
-	mod[0x00].len = 0x400000;
-	mod[0x01].buf = malloc(0x400000);
-	mod[0x01].len = 0x400000;
-	mod[0x02].buf = malloc(0x400000);
-	mod[0x02].len = 0x400000;
-	mod[0x03].buf = malloc(0x400000);
-	mod[0x03].len = 0x400000;
+	this->len = 0x100;
+	this->buf = mod;
 
-	//point
-	mod[0x20].buf = 0;
-	mod[0x20].len = 0x30;
-	mod[0x21].buf = malloc(0x200000);
-	mod[0x21].len = 0;
+	//[0000,3fff]
+	mod[0].tbuf = malloc(0x400000);
+	mod[0].tlen = 0x400000;
+	mod[0].vbuf = malloc(0x200000);
+	mod[0].vlen = 0;
+	mod[0].ibuf = malloc(0x100000);
+	mod[0].ilen = 0;
 
-	//line
-	mod[0x22].buf = malloc(0x100000);
-	mod[0x22].len = 0;
-	mod[0x23].buf = malloc(0x200000);
-	mod[0x23].len = 0;
+	//[4000,7fff]
+	mod[1].tbuf = malloc(0x400000);
+	mod[1].tlen = 0x400000;
+	mod[1].vbuf = malloc(0x200000);
+	mod[1].vlen = 0;
+	mod[1].ibuf = malloc(0x100000);
+	mod[1].ilen = 0;
 
-	//stl
-	mod[0x24].buf = 0;
-	mod[0x24].len = 0;
-	mod[0x25].buf = malloc(0x1000000);
-	mod[0x25].len = 0;
+	//[8000,bfff]
+	mod[2].tbuf = malloc(0x400000);
+	mod[2].tlen = 0x400000;
+	mod[2].vbuf = malloc(0x200000);
+	mod[2].vlen = 0;
+	mod[2].ibuf = malloc(0x100000);
+	mod[2].ilen = 0;
 
-	//trigon
-	mod[0x26].buf = malloc(0x100000);
-	mod[0x26].len = 0;
-	mod[0x27].buf = malloc(0x1000000);
-	mod[0x27].len = 0;
+	//[c000,ffff]
+	mod[3].tbuf = malloc(0x400000);
+	mod[3].tlen = 0x400000;
+	mod[3].vbuf = malloc(0x200000);
+	mod[3].vlen = 0;
+	mod[3].ibuf = malloc(0x100000);
+	mod[3].ilen = 0;
 
-	//font0000
-	mod[0x28].buf = malloc(0x100000);
-	mod[0x28].len = 0;
-	mod[0x29].buf = malloc(0x200000);
-	mod[0x29].len = 0;
+	//drawarray.point
+	mod[0x81].vbuf = malloc(0x100000);
+	mod[0x81].vlen = 0;
 
-	//font4000
-	mod[0x2a].buf = malloc(0x100000);
-	mod[0x2a].len = 0;
-	mod[0x2b].buf = malloc(0x200000);
-	mod[0x2b].len = 0;
+	//drawarray.line
+	mod[0x82].vbuf = malloc(0x100000);
+	mod[0x82].vlen = 0;
 
-	//font8000
-	mod[0x2c].buf = malloc(0x100000);
-	mod[0x2c].len = 0;
-	mod[0x2d].buf = malloc(0x200000);
-	mod[0x2d].len = 0;
+	//drawarray.trigon
+	mod[0x83].vbuf = malloc(0x1000000);
+	mod[0x83].vlen = 0;
 
-	//fontc000
-	mod[0x2e].buf = malloc(0x100000);
-	mod[0x2e].len = 0;
-	mod[0x2f].buf = malloc(0x200000);
-	mod[0x2f].len = 0;
+	//drawelement.line
+	mod[0x84].ibuf = malloc(0x100000);
+	mod[0x84].ilen = 0;
+	mod[0x84].vbuf = malloc(0x100000);
+	mod[0x84].vlen = 0;
 
-	startthread(uievent, this);
+	//drawelement.trigon
+	mod[0x85].ibuf = malloc(0x100000);
+	mod[0x85].ilen = 0;
+	mod[0x85].vbuf = malloc(0x1000000);
+	mod[0x85].vlen = 0;
+
+	threadcreate(uievent, this);
 }
 void deletewindow()
 {
@@ -1320,5 +1319,5 @@ void initwindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	startthread(terminalthread, 0);
+	threadcreate(terminalthread, 0);
 }

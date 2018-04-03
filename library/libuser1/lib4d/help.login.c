@@ -442,14 +442,17 @@ void login_read_vbo(struct arena* win)
 			8*x-31.0, 8*y-31.0, 48.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
-			(u8*)&arena[j].type, 8
+			(u8*)&arena[j].fmt, 8
 		);
 	}
 
 	//artery
 	for(j=0;j<64;j++)
 	{
-		if(0 == obj[j].type)continue;
+		c = ele[j].type;
+		if(0 == c)continue;
+		c = 0x80ffffff;
+
 		x = j%8;
 		y = j/8;
 		carvestring(
@@ -464,7 +467,10 @@ void login_read_vbo(struct arena* win)
 	//system
 	for(j=0;j<0x1000;j++)
 	{
-		if(0 == obj[j].type)continue;
+		c = obj[j].type;
+		if(0 == c)continue;
+		c = 0x80ffffff;
+
 		x = j%64;
 		y = j/64;
 		carvestring(
@@ -472,7 +478,7 @@ void login_read_vbo(struct arena* win)
 			x-31.0, y-31.0, 16.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
-			(u8*)&ele[j].type, 8
+			(u8*)&obj[j].name, 8
 		);
 	}
 

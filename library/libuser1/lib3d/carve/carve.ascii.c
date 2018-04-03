@@ -1,33 +1,8 @@
 #include "actor.h"
 #define acc 18
-#define fonti 0x28
-#define fontv 0x29
+#define fontv 0x0
 #define PI 3.1415926535897932384626433832795028841971693993151
 int utf2unicode(u8* src,u32* dst);
-
-
-
-
-struct texandobj
-{
-	u32 obj;
-	u32 len;
-	void* buf;
-};
-struct eachone
-{
-	u32 program;
-	u32 vao;
-	u32 vbo;
-	u32 ibo;
-	u32 tex0;
-	u32 tex1;
-	float light0vertex[3];
-	float light0color[3];
-	float light1vertex[3];
-	float light1color[3];
-	float modmat[4][4];
-};
 
 
 
@@ -44,12 +19,12 @@ void carveascii(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->buf;
-	int ilen = mod[fonti].len;
-	int vlen = mod[fontv].len;
-	u16* ibuf = (mod[fonti].buf) + (6*ilen);
-	float* vbuf = (mod[fontv].buf) + (36*vlen);
-	mod[fonti].len += 2;
-	mod[fontv].len += 4;
+	int ilen = mod[fontv].ilen;
+	int vlen = mod[fontv].vlen;
+	u16* ibuf = (mod[fontv].ibuf) + (6*ilen);
+	float* vbuf = (mod[fontv].vbuf) + (36*vlen);
+	mod[fontv].ilen += 2;
+	mod[fontv].vlen += 4;
 
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
@@ -105,14 +80,14 @@ void carveunicode(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	int q = ((unicode&0xffff)/0x4000)*2;
+	int q = ((unicode&0xffff)/0x4000);
 	struct texandobj* mod = win->buf;
-	int ilen = mod[fonti+q].len;
-	int vlen = mod[fontv+q].len;
-	u16* ibuf = (mod[fonti+q].buf) + (6*ilen);
-	float* vbuf = (mod[fontv+q].buf) + (36*vlen);
-	mod[fonti+q].len += 2;
-	mod[fontv+q].len += 4;
+	int ilen = mod[fontv+q].ilen;
+	int vlen = mod[fontv+q].vlen;
+	u16* ibuf = (mod[fontv+q].ibuf) + (6*ilen);
+	float* vbuf = (mod[fontv+q].vbuf) + (36*vlen);
+	mod[fontv+q].ilen += 2;
+	mod[fontv+q].vlen += 4;
 
 	unicode = unicode&0x3fff;
 	vbuf[ 0] = cx-rx-fx;

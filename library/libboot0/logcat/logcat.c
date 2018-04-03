@@ -112,6 +112,65 @@ void setandroidapp(void* win)
 static void handle_cmd(struct android_app* app, int32_t cmd)
 {
 	LOGI("app=%llx,cmd=%x\n", (u64)app, cmd);
+	if(APP_CMD_START == cmd)
+	{
+		LOGI("APP_CMD_START");
+	}
+	else if(APP_CMD_RESUME == cmd)
+	{
+		LOGI("APP_CMD_RESUME");
+	}
+	else if(APP_CMD_PAUSE == cmd)
+	{
+		LOGI("APP_CMD_PAUSE");
+	}
+	else if(APP_CMD_STOP == cmd)
+	{
+		LOGI("APP_CMD_STOP");
+	}
+	else if(APP_CMD_DESTROY == cmd)
+	{
+		LOGI("APP_CMD_DESTROY");
+	}
+	else if(APP_CMD_GAINED_FOCUS == cmd)
+	{
+		LOGI("APP_CMD_GAINED_FOCUS");
+	}
+	else if(APP_CMD_LOST_FOCUS == cmd)
+	{
+		LOGI("APP_CMD_LOST_FOCUS");
+	}
+	else if(APP_CMD_INIT_WINDOW == cmd)
+	{
+		LOGI("APP_CMD_INIT_WINDOW");
+		//initDisplay(appState);
+	}
+	else if(APP_CMD_WINDOW_RESIZED == cmd)
+	{
+		LOGI("APP_CMD_WINDOW_RESIZED");
+	}
+	else if(APP_CMD_TERM_WINDOW == cmd)
+	{
+		LOGI("APP_CMD_TERM_WINDOW");
+		//appState->windowInitialized = false;
+		//termDisplay(appState);
+	}
+	else if(APP_CMD_SAVE_STATE == cmd)
+	{
+		LOGI("APP_CMD_SAVE_STATE");
+		//app->savedState = malloc(sizeof(SavedState));
+		//app->savedStateSize = sizeof(SavedState);
+		//app->savedState = appState->savedState;
+	}
+	else if(APP_CMD_CONFIG_CHANGED == cmd)
+	{
+		LOGI("APP_CMD_CONFIG_CHANGED");
+	}
+	else
+	{
+		LOGI("Unknown CMD: %d", cmd);
+	}
+	//appState->running = (appState->resumed && appState->windowInitialized && appState->focused);
 }
 static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 {

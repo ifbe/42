@@ -2,12 +2,6 @@
 void vkbd_read(void*);
 void carveaxis(void*);
 void login_read(void*);
-struct texandobj
-{
-	u32 obj;
-	u32 len;
-	void* buf;
-};
 
 
 
@@ -26,7 +20,16 @@ void background_vbo(struct arena* win)
 {
 	int j;
 	struct texandobj* mod = win->buf;
-	for(j=0x21;j<0x30;j++)mod[j].len = 0;
+	for(j=0;j<4;j++)
+	{
+		mod[j].ilen = 0;
+		mod[j].vlen = 0;
+	}
+	for(j=0x81;j<=0x85;j++)
+	{
+		mod[j].ilen = 0;
+		mod[j].vlen = 0;
+	}
 }
 void background_pixel(struct arena* win)
 {
