@@ -35,6 +35,7 @@ double sine(double);
 
 //
 static struct android_app* app = 0;
+static struct arena* win;
 static int32_t width = 512;
 static int32_t height = 512;
 //
@@ -46,12 +47,6 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint myfontprogram;
 //
-static float light0[4] = {0.0f, 0.0f, 1000.0f};
-static float light1[4] = {0.0f, 10.0f, 0.0f};
-static float light2[4] = {10.0f, 0.0f, 0.0f};
-static float camera[4] = {100.0f, -100.0f, 100.0f};
-static float center[4] = {0.0f, 0.0f, 0.0f};
-static float above[4] = {0.0f, 0.0f, 1.0f};
 static GLfloat modelmatrix[4*4] = {  
 	1.0f, 0.0f, 0.0f, 0.0f,
 	0.0f, 1.0f, 0.0f, 0.0f,
@@ -119,7 +114,6 @@ char prettyvert[] = {
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec3 normal;\n"
 	"uniform mat4 prettymvp;\n"
-	"uniform mat4 light0mvp;\n"
 	"uniform mediump vec3 ambientcolor;\n"
 	"uniform mediump vec3 lightcolor;\n"
 	"uniform mediump vec3 lightposition;\n"
@@ -629,7 +623,7 @@ void fixmodel()
 	//matrix = movematrix * rotatematrix * scalematrix
 }
 void fixview()
-{
+{/*
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
 
@@ -675,13 +669,61 @@ void fixview()
 	viewmatrix[13] = -camera[0]*vx - camera[1]*vy - camera[2]*vz;
 	viewmatrix[14] = camera[0]*nx + camera[1]*ny + camera[2]*nz;
 	viewmatrix[15] = 1.0f;
-/*
-	viewmatrix[0] = cos(camera[0]);
-	viewmatrix[2] = -sin(camera[0]);
-	viewmatrix[8] = sin(camera[0]);
-	viewmatrix[10] = cos(camera[0]);
-	viewmatrix[14] = -1.0f;
 */
+
+	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
+	float norm;
+	float cx = win->cx;
+	float cy = win->cy;
+	float cz = win->cz;
+
+	//n = front
+	float nx = win->fx;
+	float ny = win->fy;
+	float nz = win->fz;
+	norm = squareroot(nx*nx + ny*ny + nz*nz);
+	nx /= norm;
+	ny /= norm;
+	nz /= norm;
+
+	//v = above
+	float vx = win->ux;
+	float vy = win->uy;
+	float vz = win->uz;
+	norm = squareroot(vx*vx + vy*vy + vz*vz);
+	vx /= norm;
+	vy /= norm;
+	vz /= norm;
+
+	//u = right = cross(front, above)
+	float ux = ny*vz - nz*vy;
+	float uy = nz*vx - nx*vz;
+	float uz = nx*vy - ny*vx;
+
+	//v = above = cross(right, front)
+	vx = uy*nz - uz*ny;
+	vy = uz*nx - ux*nz;
+	vz = ux*ny - uy*nx;
+
+	viewmatrix[0] = ux;
+	viewmatrix[1] = vx;
+	viewmatrix[2] = -nx;
+	viewmatrix[3] = 0.0f;
+
+	viewmatrix[4] = uy;
+	viewmatrix[5] = vy;
+	viewmatrix[6] = -ny;
+	viewmatrix[7] = 0.0f;
+
+	viewmatrix[8] = uz;
+	viewmatrix[9] = vz;
+	viewmatrix[10] = -nz;
+	viewmatrix[11] = 0.0f;
+
+	viewmatrix[12] = -cx*ux - cy*uy - cz*uz;
+	viewmatrix[13] = -cx*vx - cy*vy - cz*vz;
+	viewmatrix[14] = cx*nx + cy*ny + cz*nz;
+	viewmatrix[15] = 1.0f;
 }
 void fixprojection()
 {
@@ -711,8 +753,13 @@ void fixmatrix(GLfloat* cameramvp)
 }
 void fixlight()
 {
+	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
+	GLfloat camera[3];
+	camera[0] = win->cx;
+	camera[1] = win->cy;
+	camera[2] = win->cz;
 
 	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -874,15 +921,16 @@ void callback_update()
 }
 void windowread(void* dc,void* df,void* sc,void* sf)
 {
-	float x,y;
 	struct arena* win = sc;
 	actorread(win, 0, 0, 0);
 
+/*
+	float x,y;
 	x = camera[0];
 	y = camera[1];
 	camera[0] = cos(0.1)*x - sin(0.1)*y;
 	camera[1] = sin(0.1)*x + cos(0.1)*y;
-/*
+
 	x = trianglevertex[1][0];
 	y = trianglevertex[1][1];
 	trianglevertex[1][0] = cos(0.1)*x - sin(0.1)*y;
@@ -925,8 +973,9 @@ void windowstop()
 	context = EGL_NO_CONTEXT;
 	surface = EGL_NO_SURFACE;
 }
-void windowstart(struct arena* win)
+void windowstart(struct arena* w)
 {
+	win = w;
 	setandroidapp(win);
 
 	//
@@ -976,17 +1025,29 @@ void windowstart(struct arena* win)
 	LOGI("GL Renderer = %s\n", glGetString(GL_RENDERER));
 	LOGI("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 
-	win->type = hex32('w','i','n',0);
-	win->fmt = hex32('v','b','o',0);
-	win->irel = 0;
-	win->orel = 0;
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('v','b','o',0);
+	w->irel = 0;
+	w->orel = 0;
 
-	win->width = width;
-	win->height = height;
-	win->depth = width+height;
+	w->width = width;
+	w->height = height;
+	w->depth = (width+height)/2;
 
-	win->len = 0x100;
-	win->buf = mod;
+	w->cx = 100.0;
+	w->cy = -100.0;
+	w->cz = 100.0;
+
+	w->fx = -(w->cx);
+	w->fy = -(w->cy);
+	w->fz = -(w->cz);
+
+	w->ux = 0.0;
+	w->uy = 0.0;
+	w->uz = 1.0;
+
+	w->len = 0x100;
+	w->buf = mod;
 
 	//[0000,3fff]
 	mod[0].tbuf = malloc(0x400000);

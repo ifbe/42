@@ -258,7 +258,7 @@ void* arenalist(u8* buf, int len)
 		for(j=0;j<0x100;j++)
 		{
 			if(0 == arena[j].type)break;
-			say("[%03x]: %.8s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
 		}
 		if(0 == j)say("empty arena\n");
 	}

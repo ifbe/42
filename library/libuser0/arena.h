@@ -105,27 +105,27 @@ struct arena
 	int stride;
 
 	//[90,9f]: center
-	int cx;
-	int cy;
-	int cz;
+	float cx;
+	float cy;
+	float cz;
 	int dirty;
 
 	//[a0,af]: right
-	int rx;
-	int ry;
-	int rz;
+	float rx;
+	float ry;
+	float rz;
 	int vkbd;
 
 	//[b0,bf]: far
-	int fx;
-	int fy;
-	int fz;
+	float fx;
+	float fy;
+	float fz;
 	int theone;
 
 	//[c0,cf]: upper
-	int ux;
-	int uy;
-	int uz;
+	float ux;
+	float uy;
+	float uz;
 	int edit;
 
 	//[d0,df]

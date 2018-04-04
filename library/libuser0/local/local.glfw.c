@@ -44,13 +44,11 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint shadowprogram;
 static GLuint myfontprogram;
-//
-static float light0[4] = {0.0f, 0.0f, 1000.0f};
-static float light1[4] = {0.0f, 10.0f, 0.0f};
-static float light2[4] = {10.0f, 0.0f, 0.0f};
-static float camera[4] = {100.0f, -200.0f, 100.0f};
+/*
+static float camera[4] = {100.0f, -100.0f, 100.0f};
 static float center[4] = {0.0f, 0.0f, 0.0f};
 static float above[4] = {0.0f, 0.0f, 1.0f};
+*/
 static GLfloat modelmatrix[4*4] = {  
 	1.0f, 0.0f, 0.0f, 0.0f,
 	0.0f, 1.0f, 0.0f, 0.0f,
@@ -130,7 +128,6 @@ char prettyvert[] = {
 	"layout(location = 1)in mediump vec3 color;\n"
 	"layout(location = 2)in mediump vec3 normal;\n"
 	"uniform mat4 prettymvp;\n"
-	"uniform mat4 light0mvp;\n"
 	"uniform mediump vec3 ambientcolor;\n"
 	"uniform mediump vec3 lightcolor;\n"
 	"uniform mediump vec3 lightposition;\n"
@@ -693,30 +690,58 @@ void fixmodel()
 void fixview()
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
-	float norm;
+	//float cx = center[0];
+	//float cy = center[1];
+	//float cz = center[2];
 
-	//front = center - camera
-	float nx = center[0] - camera[0];
-	float ny = center[1] - camera[1];
-	float nz = center[2] - camera[2];
+	//n = front = center - camera
+	//float nx = center[0] - camera[0];
+	//float ny = center[1] - camera[1];
+	//float nz = center[2] - camera[2];
+
+	//u = right = cross(front, above)
+	//float ux = ny*above[2] - nz*above[1];
+	//float uy = nz*above[0] - nx*above[2];
+	//float uz = nx*above[1] - ny*above[0];
+
+	//v = above = cross(right, front)
+	//vx = uy*nz - uz*ny;
+	//vy = uz*nx - ux*nz;
+	//vz = ux*ny - uy*nx;
+
+	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
+	float norm;
+	float cx = win->cx;
+	float cy = win->cy;
+	float cz = win->cz;
+
+	//n = front
+	float nx = win->fx;
+	float ny = win->fy;
+	float nz = win->fz;
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
 	nz /= norm;
 
-	//right = cross(front, above)
-	float ux = ny*above[2] - nz*above[1];
-	float uy = nz*above[0] - nx*above[2];
-	float uz = nx*above[1] - ny*above[0];
-	norm = squareroot(ux*ux + uy*uy + uz*uz);
-	ux /= norm;
-	uy /= norm;
-	uz /= norm;
+	//v = above
+	float vx = win->ux;
+	float vy = win->uy;
+	float vz = win->uz;
+	norm = squareroot(vx*vx + vy*vy + vz*vz);
+	vx /= norm;
+	vy /= norm;
+	vz /= norm;
 
-	//above = cross(right, front)
-	float vx = uy*nz - uz*ny;
-	float vy = uz*nx - ux*nz;
-	float vz = ux*ny - uy*nx;
+	//u = right = cross(front, above)
+	float ux = ny*vz - nz*vy;
+	float uy = nz*vx - nx*vz;
+	float uz = nx*vy - ny*vx;
+
+	//v = above = cross(right, front)
+	vx = uy*nz - uz*ny;
+	vy = uz*nx - ux*nz;
+	vz = ux*ny - uy*nx;
 
 	viewmatrix[0] = ux;
 	viewmatrix[1] = vx;
@@ -733,17 +758,10 @@ void fixview()
 	viewmatrix[10] = -nz;
 	viewmatrix[11] = 0.0f;
 
-	viewmatrix[12] = -camera[0]*ux - camera[1]*uy - camera[2]*uz;
-	viewmatrix[13] = -camera[0]*vx - camera[1]*vy - camera[2]*vz;
-	viewmatrix[14] = camera[0]*nx + camera[1]*ny + camera[2]*nz;
+	viewmatrix[12] = -cx*ux - cy*uy - cz*uz;
+	viewmatrix[13] = -cx*vx - cy*vy - cz*vz;
+	viewmatrix[14] = cx*nx + cy*ny + cz*nz;
 	viewmatrix[15] = 1.0f;
-/*
-	viewmatrix[0] = cos(camera[0]);
-	viewmatrix[2] = -sin(camera[0]);
-	viewmatrix[8] = sin(camera[0]);
-	viewmatrix[10] = cos(camera[0]);
-	viewmatrix[14] = -1.0f;
-*/
 }
 void fixprojection()
 {
@@ -772,8 +790,13 @@ void fixmatrix(GLfloat* cameramvp)
 }
 void fixlight()
 {
+	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
+	GLfloat camera[3];
+	camera[0] = win->cx;
+	camera[1] = win->cy;
+	camera[2] = win->cz;
 
 	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -986,8 +1009,23 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 }
 void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 {
+	u64 xx,yy,temp;
+	struct event e;
+
 	printf("%x,%x\n", button, action);
 	pressed = action;
+
+	if(0 == action)
+	{
+		xx = last_x&0xffff;
+		yy = last_y&0xffff;
+
+		temp = 'l';
+		e.why = xx + (yy<<16) + (temp<<48);
+		e.what = 0x2d70;
+		e.where = (u64)win;
+		actorwrite(0, 0, win, 0, &e, 0x20);
+	}
 }
 //void callback_move(int x,int y)
 static void callback_move(GLFWwindow* window, double xpos, double ypos)
@@ -1000,21 +1038,22 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	int y = (int)ypos;
 	if(pressed == 0)return;
 	pressed++;
-
+/*
 	if(win->edit)
 	{
-		xx = x&0xffff;
-		yy = (height - y)&0xffff;
+*/
+	xx = x&0xffff;
+	yy = y&0xffff;
 
-		temp = 'l';
-		e.why = xx + (yy<<16) + (temp<<48);
-		if(pressed <= 2)e.what = 0x2b70;
-		else e.what = 0x4070;
+	temp = 'l';
+	e.why = xx + (yy<<16) + (temp<<48);
+	if(pressed <= 2)e.what = 0x2b70;
+	else e.what = 0x4070;
 
-		e.where = (u64)win;
-		actorwrite(0, 0, win, 0, &e, 0x20);
-		//eventwrite(why, what, where, 0);
-		goto theend;
+	e.where = (u64)win;
+	actorwrite(0, 0, win, 0, &e, 0x20);
+
+/*	goto theend;
 	}
 
 	t[0] = 0.0;
@@ -1061,6 +1100,7 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 		v[3] = cosine(-0.02f);
 		quaternionrotate(camera, v);
 	}
+*/
 
 theend:
 	last_x = x;
@@ -1069,30 +1109,28 @@ theend:
 void callback_scroll(GLFWwindow* window, double x, double y)
 {
 	struct event e;
-	float tx = camera[0];
-	float ty = camera[1];
-	float tz = camera[2];
 	printf("%f,%f\n", x, y);
 
-	if(win->edit)
+	e.where = (u64)win;
+	e.what = 0x2b70;
+	if(y > 0.0)	//wheel_up
 	{
-		e.where = (u64)win;
-		e.what = 0x2b70;
-		if(y > 0.0)	//wheel_up
-		{
-			e.why = ((u64)'f')<<48;
-			actorwrite(0, 0, win, 0, &e, 0x20);
-			//eventwrite(why, 0x2b70, where, 0);
-		}
-		else	//wheel_down
-		{
-			e.why = ((u64)'b')<<48;
-			actorwrite(0, 0, win, 0, &e, 0x20);
-			//eventwrite(why, 0x2b70, where, 0);
-		}
+		e.why = ((u64)'f')<<48;
+		actorwrite(0, 0, win, 0, &e, 0x20);
+		//eventwrite(why, 0x2b70, where, 0);
 	}
+	else	//wheel_down
+	{
+		e.why = ((u64)'b')<<48;
+		actorwrite(0, 0, win, 0, &e, 0x20);
+		//eventwrite(why, 0x2b70, where, 0);
+	}
+/*
 	else
 	{
+		//float tx = camera[0];
+		//float ty = camera[1];
+		//float tz = camera[2];
 		if(y > 0.0)	//wheel_up
 		{
 			camera[0] = 0.9*tx + 0.1*center[0];
@@ -1106,6 +1144,7 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 			camera[2] = 1.1*tz - 0.1*center[2];
 		}
 	}
+*/
 }
 void callback_drop(GLFWwindow* window, int count, const char** paths)
 {
@@ -1218,7 +1257,6 @@ void windowstart(struct arena* this)
 		this->fmt = 0;
 		return;
 	}
-	win = this;
 
 	this->type = hex32('w','i','n',0);
 	this->fmt = hex32('v','b','o',0);
@@ -1228,6 +1266,19 @@ void windowstart(struct arena* this)
 	this->width = 512;
 	this->height = 512;
 	this->depth = 512;
+	this->stride = 512;
+
+	this->cx = 100.0;
+	this->cy = -100.0;
+	this->cz = 100.0;
+
+	this->fx = -this->cx;
+	this->fy = -this->cy;
+	this->fz = -this->cz;
+
+	this->ux = 0.0;
+	this->uy = 0.0;
+	this->uz = 1.0;
 
 	this->len = 0x100;
 	this->buf = mod;
@@ -1288,6 +1339,7 @@ void windowstart(struct arena* this)
 	mod[0x85].vbuf = malloc(0x1000000);
 	mod[0x85].vlen = 0;
 
+	win = this;
 	threadcreate(uievent, this);
 }
 void deletewindow()

@@ -53,7 +53,7 @@ static void spectrum_read_pixel(
 		{
 			drawline(win, 0xffffff,
 				cx-ww + (x*2+1)*ww/0x2000, cy,
-				cx-ww + (x*2+1)*ww/0x2000, cy-(pcm[x]*hh/65536)
+				cx-ww + (x*2+1)*ww/0x2000, cy-(pcm[x]*hh/32768)
 			);
 		}
 	}
@@ -61,7 +61,7 @@ static void spectrum_read_pixel(
 	{
 		for(x=0;x<512;x++)
 		{
-			t = (float)hh*amp[x]*2;
+			t = (float)hh*amp[x]*16;
 			drawline(win, 0xffffff,
 				cx-ww + (x*2+1)*ww/512, cy+hh,
 				cx-ww + (x*2+1)*ww/512, cy+hh-(int)t
@@ -76,8 +76,8 @@ static void spectrum_read_pixel(
 			cc = cosine(t) * ww;
 			ss = -sine(t) * hh;
 			drawline(win, 0xffffff,
-				cx + (int)(cc * (1.0 - 2*amp[x])),
-				cy + (int)(ss * (1.0 - 2*amp[x])),
+				cx + (int)(cc * (1.0 - 16*amp[x])),
+				cy + (int)(ss * (1.0 - 16*amp[x])),
 				cx + (int)cc,
 				cy + (int)ss
 			);

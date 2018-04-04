@@ -142,6 +142,79 @@ int delete_topone(struct arena* win)
 	relationdelete(rel);
 	return 1;
 }
+int move_camera(struct arena* win, struct event* ev)
+{
+	float c,s;
+	float x,y,z;
+	float vx,vy,vz;
+	float tx,ty,tz;
+	int x0,y0,x1,y1,btn;
+
+	btn = (ev->why)>>48;
+	if(0x4070 == ev->what)
+	{
+		if(btn > 10)btn = 10;
+		x0 = win->touchmove[btn].x;
+		y0 = win->touchmove[btn].y;
+		x1 = (ev->why)&0xffff;
+		y1 = ((ev->why)>>16)&0xffff;
+say("x0=%x,x1=%x\n",x0,x1);
+
+		//target = camera+front
+		tx = (win->cx)+(win->fx);
+		ty = (win->cy)+(win->fy);
+		tz = (win->cz)+(win->fz);
+
+		//vector = -front
+		vx = -(win->fx);
+		vy = -(win->fy);
+		vz = -(win->fz);
+
+		c = cosine(0.05f);
+		if(x0 < x1)s = sine(0.05f);
+		else s = sine(-0.05f);
+
+		//rotate
+		x = vx*c + vy*s;
+		y = -vx*s + vy*c;
+		z = vz;
+
+		//camera = target+vector
+		win->cx = tx+x;
+		win->cy = ty+y;
+		win->cz = tz+z;
+
+		//front = -vector
+		win->fx = -x;
+		win->fy = -y;
+		win->fz = -z;
+	}
+	else if(0x2b70 == ev->what)
+	{
+		if('f' == btn)
+		{
+			x = 0.1*(win->fx);
+			y = 0.1*(win->fy);
+			z = 0.1*(win->fz);
+		}
+		else if('b' == btn)
+		{
+			x = -0.1*(win->fx);
+			y = -0.1*(win->fy);
+			z = -0.1*(win->fz);
+		}
+		else return 0;
+
+		win->cx += x;
+		win->cy += y;
+		win->cz += z;
+
+		win->fx -= x;
+		win->fy -= y;
+		win->fz -= z;
+	}
+	return 0;
+}
 int actorinput(struct arena* win, struct event* ev)
 {
 	u64 why,what;
@@ -150,6 +223,7 @@ int actorinput(struct arena* win, struct event* ev)
 	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
+	say("%x,%x,%x\n",ev->why,ev->what,ev->where);
 
 stage0:
 	why = ev->why;
@@ -157,6 +231,8 @@ stage0:
 
 	if('p' == (what&0xff))
 	{
+		if(_vbo_ == win->fmt)move_camera(win, ev);
+
 		ret = vkbd_write(win, ev);
 		if(0 != ret)goto stage1;
 	}

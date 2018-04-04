@@ -1,16 +1,16 @@
 #include "actor.h"
-#define _arena_ hex32('w','i','n',0)
-#define _actor_ hex32('a','c','t',0)
 #define _relation_ hex32('r','e','l',0)
+void* systemlist(void*, int);
+void* arterylist(void*, int);
+void* arenalist(void*, int);
+void* actorlist(void*, int);
+void* systemchoose(u8* buf, int len);
+void* arterychoose(u8* buf, int len);
+void* arenachoose(u8* buf, int len);
+void* actorchoose(u8* buf, int len);
+//
 void* allocpinid();
 void* allocstyle();
-void* actorlist(void*, int);
-void* arenalist(void*, int);
-void* actorchoose(u8* buf, int len);
-void* arenachoose(u8* buf, int len);
-void* actorcreate(void*, u8*);
-void* actordelete(void*, u8*);
-//
 int parsestyle(void*, void*, int);
 int parsepinid(void*, void*, int);
 
@@ -64,7 +64,8 @@ void parsexml_relation(u8* buf, int len)
 {
 	//say("%.*s\n", len, buf);
 
-	int j,k,a,b,m,n;
+	int j,k,p,q;
+	int a,b,m,n;
 	struct arena* win;
 	struct actor* act;
 	u8* css;
@@ -103,22 +104,81 @@ void parsexml_relation(u8* buf, int len)
 	say("%.*s\n", n-m, buf+m);
 
 	//find
-	win = arenalist(buf+a, b-a);
-	if(0 == win)return;
-	act = actorlist(buf+m, n-m);
-	if(0 == act)return;
+	if(0 == ncmp(buf+a, "system/", 7))
+	{
+		p = _fd_;
+		a += 7;
+		win = systemlist(buf+a, b-a);
+		if(0 == win)return;
+	}
+	else if(0 == ncmp(buf+a, "artery/", 7))
+	{
+		p = _art_;
+		a += 7;
+		win = arterylist(buf+a, b-a);
+		if(0 == win)return;
+	}
+	else if(0 == ncmp(buf+a, "arena/", 6))
+	{
+		p = _win_;
+		a += 6;
+		win = arenalist(buf+a, b-a);
+		if(0 == win)return;
+	}
+	else if(0 == ncmp(buf+a, "actor/", 6))
+	{
+		p = _act_;
+		a += 6;
+		win = actorlist(buf+a, b-a);
+		if(0 == win)return;
+	}
+	else return;
 
-	//parse
-	css = allocstyle();
-	pin = allocpinid();
-	parsestyle(css, buf+a, b-a);
-	parsepinid(pin, buf+m, n-m);
+	if(0 == ncmp(buf+m, "system/", 7))
+	{
+		q = _fd_;
+		m += 7;
+		act = systemlist(buf+m, n-m);
+		if(0 == act)return;
+	}
+	else if(0 == ncmp(buf+m, "artery/", 7))
+	{
+		q = _art_;
+		m += 7;
+		act = arterylist(buf+m, n-m);
+		if(0 == act)return;
+	}
+	else if(0 == ncmp(buf+m, "arena/", 6))
+	{
+		q = _win_;
+		m += 6;
+		act = arenalist(buf+m, n-m);
+		if(0 == act)return;
+	}
+	else if(0 == ncmp(buf+m, "actor/", 6))
+	{
+		q = _act_;
+		m += 6;
+		act = actorlist(buf+m, n-m);
+		if(0 == act)return;
+	}
+	else return;
 
-	//rel
-	//say("%llx,%llx,%llx,%llx\n", win, css, act, pin);
-	//win->onstart(win, cs);
-	act->onstart(act, pin);
-	relationcreate(win, css, _win_, act, pin, _act_);
+	if((_win_ == p)&&(_act_ == q))
+	{
+		css = allocstyle();
+		pin = allocpinid();
+
+		parsestyle(css, buf+a, b-a);
+		parsepinid(pin, buf+m, n-m);
+
+		act->onstart(act, pin);
+		relationcreate(win, css, _win_, act, pin, _act_);
+	}
+	else
+	{
+		relationcreate(win, 0, p, act, 0, q);
+	}
 }
 void parsexml(u8* buf, int len)
 {
@@ -158,14 +218,25 @@ void parsexml(u8* buf, int len)
 				{
 					if(_relation_ == ret)
 					{
+						//say("relation");
 						say("%.*s\n", k+1-sb[sp], buf+sb[sp]);
 					}
-					else if(_arena_ == ret)
+					else if(_fd_ == ret)
+					{
+						//say("system");
+						systemchoose(buf+sb[sp], k+1-sb[sp]);
+					}
+					else if(_art_ == ret)
+					{
+						//say("artery");
+						arterychoose(buf+sb[sp], k+1-sb[sp]);
+					}
+					else if(_win_ == ret)
 					{
 						//say("arena");
 						arenachoose(buf+sb[sp], k+1-sb[sp]);
 					}
-					else if(_actor_ == ret)
+					else if(_act_ == ret)
 					{
 						//say("actor");
 						actorchoose(buf+sb[sp], k+1-sb[sp]);
@@ -189,8 +260,10 @@ void parsexml(u8* buf, int len)
 				if(1 == sp)
 				{
 					if(0 == ncmp(buf+j+1, "relation", 8))ret = _relation_;
-					else if(0 == ncmp(buf+j+1, "arena", 5))ret = _arena_;
-					else if(0 == ncmp(buf+j+1, "actor", 5))ret = _actor_;
+					else if(0 == ncmp(buf+j+1, "system", 6))ret = _fd_;
+					else if(0 == ncmp(buf+j+1, "artery", 6))ret = _art_;
+					else if(0 == ncmp(buf+j+1, "arena", 5))ret = _win_;
+					else if(0 == ncmp(buf+j+1, "actor", 5))ret = _act_;
 				}
 			}
 

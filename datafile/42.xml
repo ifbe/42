@@ -1,3 +1,11 @@
+<system>
+	<fuckyou></fuckyou>
+</system>
+
+<artery>
+	<fuckyou></fuckyou>
+</artery>
+
 <arena>
 	<win@0>width:512;height:512;</win>
 	<win@1>width:512;height:512;</win>
@@ -36,8 +44,9 @@
 </actor>
 
 <relation>
-	<$win@0 "x:128;y:128;r:128;f:128;"> = <$2048@0>
-	<$win@0 "x:384;y:128;r:128;f:128;"> = <$sudoku@0>
-	<$win@0 "x:128;y:384;r:128;f:128;"> = <$xiangqi@0 "red">
-	<$win@1 "x:256;y:256;r:256;f:256;"> = <$xiangqi@0 "black">
+	<$arena/win@0 "x:128;y:128;r:128;f:128;"> = <$actor/2048@0>
+	<$arena/win@0 "x:384;y:128;r:128;f:128;"> = <$actor/sudoku@0>
+	<$arena/win@0 "x:128;y:384;r:128;f:128;"> = <$actor/xiangqi@0 "red">
+	<$arena/win@1 "x:256;y:256;r:256;f:256;"> = <$actor/xiangqi@0 "black">
+	<$actor/weiqi@0 "black"> = <$arena/win@1>
 </relation>

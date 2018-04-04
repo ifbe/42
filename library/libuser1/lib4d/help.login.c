@@ -406,6 +406,21 @@ void login_read_vbo(struct arena* win)
 		0.0, 32.0, 0.0,
 		0.0, 0.0, 32.0
 	);
+	carveline_rect(win, 0x0000ff,
+		0.0, 0.0, 16.0,
+		32.0, 0.0, 0.0,
+		0.0, 32.0, 0.0
+	);
+	carveline_rect(win, 0x00ff00,
+		0.0, 0.0, 32.0,
+		32.0, 0.0, 0.0,
+		0.0, 32.0, 0.0
+	);
+	carveline_rect(win, 0xff0000,
+		0.0, 0.0, 48.0,
+		32.0, 0.0, 0.0,
+		0.0, 32.0, 0.0
+	);
 
 	//actor
 	for(j=0;j<64;j++)

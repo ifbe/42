@@ -135,7 +135,7 @@ void* actorlist(u8* buf, int len)
 		for(j=0;j<0x100;j++)
 		{
 			if(0 == actor[j].name)break;
-			say("[%03x]: %.8s,%.8s\n", j, &actor[j].type, &actor[j].name);
+			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
 		}
 		if(0 == j)say("empty actor\n");
 	}

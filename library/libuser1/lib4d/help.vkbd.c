@@ -90,6 +90,10 @@ void vkbd_read(struct arena* win)
 	else if(fmt == _vbo_)vkbd_read_vbo(win);
 	else vkbd_read_pixel(win);
 }
+
+
+
+
 int vkbd_write(struct arena* win, struct event* ev)
 {
 	int x,y,ret;
