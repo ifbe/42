@@ -1,7 +1,9 @@
 #include "actor.h"
+#define PI 3.1415926535897932384626433832795028841971693993151
+#define tau (PI*2)
 #define acc 24
 #define linev 0x84
-#define PI 3.1415926535897932384626433832795028841971693993151
+void quaternionoperation(float*, float*, float);
 
 
 
@@ -116,6 +118,59 @@ void carveline_special(
 		ibuf[2*j + 1] = vlen + j+1;
 	}
 }
+void carveline_yshape(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3)
+{
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	struct texandobj* mod = win->buf;
+	int ilen = mod[linev].ilen;
+	int vlen = mod[linev].vlen;
+	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
+	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
+	mod[linev].ilen += 3;
+	mod[linev].vlen += 4;
+
+	vbuf[ 0] = x1;
+	vbuf[ 1] = y1;
+	vbuf[ 2] = z1;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+
+	vbuf[ 6] = x2;
+	vbuf[ 7] = y2;
+	vbuf[ 8] = z2;
+	vbuf[ 9] = rr;
+	vbuf[10] = gg;
+	vbuf[11] = bb;
+
+	vbuf[12] = x3;
+	vbuf[13] = y3;
+	vbuf[14] = z3;
+	vbuf[15] = rr;
+	vbuf[16] = gg;
+	vbuf[17] = bb;
+
+	vbuf[18] = (x1+x2+x3)/3;
+	vbuf[19] = (y1+y2+y3)/3;
+	vbuf[20] = (z1+z2+z3)/3;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+3;
+	ibuf[2] = vlen+1;
+	ibuf[3] = vlen+3;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
+}
 
 
 
@@ -221,6 +276,99 @@ void carveline_rect(
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
+void carveline_hexagon(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
+{
+	float v[4];
+	float q[4];
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	struct texandobj* mod = win->buf;
+	int ilen = mod[linev].ilen;
+	int vlen = mod[linev].vlen;
+	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
+	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
+	mod[linev].ilen += 6;
+	mod[linev].vlen += 6;
+
+	//0
+	vbuf[ 0] = cx + rx;
+	vbuf[ 1] = cy + ry;
+	vbuf[ 2] = cz + rz;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+
+	//180
+	vbuf[18] = cx - rx;
+	vbuf[19] = cy - ry;
+	vbuf[20] = cz - rz;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+
+	v[0] = rx;
+	v[1] = ry;
+	v[2] = rz;
+	q[0] = ux;
+	q[1] = uy;
+	q[2] = uz;
+	quaternionoperation(v, q, PI/3);
+
+	//60
+	vbuf[ 6] = cx + v[0];
+	vbuf[ 7] = cy + v[1];
+	vbuf[ 8] = cz + v[2];
+	vbuf[ 9] = rr;
+	vbuf[10] = gg;
+	vbuf[11] = bb;
+
+	//240
+	vbuf[24] = cx - v[0];
+	vbuf[25] = cy - v[1];
+	vbuf[26] = cz - v[2];
+	vbuf[27] = rr;
+	vbuf[28] = gg;
+	vbuf[29] = bb;
+
+	v[0] -= rx;
+	v[1] -= ry;
+	v[2] -= rz;
+
+	//120
+	vbuf[12] = cx + v[0];
+	vbuf[13] = cy + v[1];
+	vbuf[14] = cz + v[2];
+	vbuf[15] = rr;
+	vbuf[16] = gg;
+	vbuf[17] = bb;
+
+	//300
+	vbuf[30] = cx - v[0];
+	vbuf[31] = cy - v[1];
+	vbuf[32] = cz - v[2];
+	vbuf[33] = rr;
+	vbuf[34] = gg;
+	vbuf[35] = bb;
+
+	ibuf[0] = vlen;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+1;
+	ibuf[3] = vlen+2;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
+	ibuf[6] = vlen+3;
+	ibuf[7] = vlen+4;
+	ibuf[8] = vlen+4;
+	ibuf[9] = vlen+5;
+	ibuf[10] = vlen+5;
+	ibuf[11] = vlen+0;
+}
 void carveline_circle(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
@@ -228,7 +376,6 @@ void carveline_circle(
 	float ux, float uy, float uz)
 {
 	int j;
-	float t;
 	float q[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -248,18 +395,10 @@ void carveline_circle(
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		vbuf[6*j+0] = rx;
 		vbuf[6*j+1] = ry;
 		vbuf[6*j+2] = rz;
-		quaternionrotate(&vbuf[6*j], q);
+		quaternionoperation(&vbuf[6*j], q, j*tau/acc);
 
 		vbuf[6*j+0] += cx;
 		vbuf[6*j+1] += cy;
@@ -314,23 +453,15 @@ void carveline_cone(
 
 	for(j=0;j<acc;j++)
 	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
-		a = j*6;
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		quaternionoperation(r, q, j*tau/acc);
+
+		a = j*6;
 
 		vbuf[a+0] = cx + r[0];
 		vbuf[a+1] = cy + r[1];
@@ -394,7 +525,7 @@ void carveline_prism4(
 	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
 	mod[linev].ilen += 12;
 	mod[linev].vlen += 8;
-say("%x,%x\n", mod[linev].ilen, mod[linev].vlen);
+
 	vbuf[ 0] = cx - rx - fx - ux;
 	vbuf[ 1] = cy - ry - fy - uy;
 	vbuf[ 2] = cz - rz - fz - uz;
@@ -495,8 +626,8 @@ void carveline_cylinder(
 {
 	int a,b,j,k;
 	float s,t;
-	float v[4];
 	float r[4];
+	float q[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -512,25 +643,16 @@ void carveline_cylinder(
 
 	for(j=0;j<acc;j++)
 	{
-		v[0] = ux;
-		v[1] = uy;
-		v[2] = uz;
-		vectornormalize(v);
-
-		t = j*PI/acc;
-		v[0] *= sine(t);
-		v[1] *= sine(t);
-		v[2] *= sine(t);
-		v[3] = cosine(t);
-
-		a = j*12;
-		b = j*6;
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, v);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		quaternionoperation(r, q, j*tau/acc);
 
+		a = j*12;
+		b = j*6;
 		vbuf[a+ 0] = cx - ux + r[0];
 		vbuf[a+ 1] = cy - uy + r[1];
 		vbuf[a+ 2] = cz - uz + r[2];
@@ -907,7 +1029,7 @@ void carveline_sphere(
 #define odd ((acc&0xfffe)+1)
 	int a,b,j,k;
 	float s,t;
-	float v[4];
+	float q[4];
 	float tempcx,tempcy,tempcz;
 	float temprx,tempry,temprz;
 
@@ -938,24 +1060,16 @@ void carveline_sphere(
 
 		for(j=0;j<odd;j++)
 		{
-			v[0] = ux;
-			v[1] = uy;
-			v[2] = uz;
-			vectornormalize(v);
-
-			t = j*PI/odd;
-			v[0] *= sine(t);
-			v[1] *= sine(t);
-			v[2] *= sine(t);
-			v[3] = cosine(t);
-
 			a = (k*odd + j)*6;
 			b = (k*odd + j)*2;
 
+			q[0] = ux;
+			q[1] = uy;
+			q[2] = uz;
 			vbuf[a+0] = temprx;
 			vbuf[a+1] = tempry;
 			vbuf[a+2] = temprz;
-			quaternionrotate(&vbuf[a], v);
+			quaternionoperation(&vbuf[a], q, j*tau/odd);
 
 			vbuf[a+0] += tempcx;
 			vbuf[a+1] += tempcy;

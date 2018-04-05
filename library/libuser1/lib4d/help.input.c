@@ -3,6 +3,7 @@ int term_write(void*);
 int login_write(void*, void*);
 int vkbd_write(void*, void*);
 //
+void camera_deltaxy(struct arena* win, int x, int y);
 int relation_swap(void*, void*);
 
 
@@ -144,10 +145,7 @@ int delete_topone(struct arena* win)
 }
 int move_camera(struct arena* win, struct event* ev)
 {
-	float c,s;
 	float x,y,z;
-	float vx,vy,vz;
-	float tx,ty,tz;
 	int x0,y0,x1,y1,btn;
 
 	btn = (ev->why)>>48;
@@ -158,36 +156,8 @@ int move_camera(struct arena* win, struct event* ev)
 		y0 = win->touchmove[btn].y;
 		x1 = (ev->why)&0xffff;
 		y1 = ((ev->why)>>16)&0xffff;
-say("x0=%x,x1=%x\n",x0,x1);
 
-		//target = camera+front
-		tx = (win->cx)+(win->fx);
-		ty = (win->cy)+(win->fy);
-		tz = (win->cz)+(win->fz);
-
-		//vector = -front
-		vx = -(win->fx);
-		vy = -(win->fy);
-		vz = -(win->fz);
-
-		c = cosine(0.05f);
-		if(x0 < x1)s = sine(0.05f);
-		else s = sine(-0.05f);
-
-		//rotate
-		x = vx*c + vy*s;
-		y = -vx*s + vy*c;
-		z = vz;
-
-		//camera = target+vector
-		win->cx = tx+x;
-		win->cy = ty+y;
-		win->cz = tz+z;
-
-		//front = -vector
-		win->fx = -x;
-		win->fy = -y;
-		win->fz = -z;
+		camera_deltaxy(win, x1-x0, y1-y0);
 	}
 	else if(0x2b70 == ev->what)
 	{

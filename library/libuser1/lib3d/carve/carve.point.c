@@ -1,7 +1,9 @@
 #include "actor.h"
+#define PI 3.1415926535897932384626433832795028841971693993151
+#define tau (PI*2)
 #define acc 18
 #define pointv 0x81
-#define PI 3.1415926535897932384626433832795028841971693993151
+void quaternionoperation(float*, float*, float);
 
 
 
@@ -92,21 +94,13 @@ void carvepoint_circle(
 
 	for(j=0;j<acc;j++)
 	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		quaternionoperation(r, q, j*tau/acc);
 
 		buf[6*j+0] = cx + r[0];
 		buf[6*j+1] = cy + r[1];
@@ -153,21 +147,13 @@ void carvepoint_cone(
 
 	for(j=0;j<acc;j++)
 	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		quaternionoperation(r, q, j*tau/acc);
 
 		buf[6*j+0] = cx + r[0];
 		buf[6*j+1] = cy + r[1];
@@ -237,21 +223,13 @@ void carvepoint_cylinder(
 
 	for(j=0;j<acc;j++)
 	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		q[0] = ux;
+		q[1] = uy;
+		q[2] = uz;
+		quaternionoperation(r, q, j*tau/acc);
 
 		k = j*12;
 
@@ -503,23 +481,14 @@ void carvepoint_sphere(
 
 		for(j=0;j<odd;j++)
 		{
-			q[0] = ux;
-			q[1] = uy;
-			q[2] = uz;
-			vectornormalize(q);
-
-			t = j*PI/odd;
-			q[0] *= sine(t);
-			q[1] *= sine(t);
-			q[2] *= sine(t);
-			q[3] = cosine(t);
-
 			a = (k*odd + j)*6;
-
 			buf[a+0] = temprx;
 			buf[a+1] = tempry;
 			buf[a+2] = temprz;
-			quaternionrotate(&buf[a], q);
+			q[0] = ux;
+			q[1] = uy;
+			q[2] = uz;
+			quaternionoperation(&buf[a], q, j*tau/odd);
 
 			buf[a+0] += tempcx;
 			buf[a+1] += tempcy;

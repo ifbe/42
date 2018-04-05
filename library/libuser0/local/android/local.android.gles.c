@@ -20,12 +20,6 @@ void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 //
 void matrixmultiply_4(float*, float*);
-void quaternionnormalize(float*);
-void quaternionrotate(float*, float*);
-//
-void vectornormalize(float*);
-void vectorcross(float*, float*);
-//
 double squareroot(double);
 double cosine(double);
 double sine(double);
@@ -623,61 +617,14 @@ void fixmodel()
 	//matrix = movematrix * rotatematrix * scalematrix
 }
 void fixview()
-{/*
-	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
-	float norm;
-
-	//front = center - camera
-	float nx = center[0] - camera[0];
-	float ny = center[1] - camera[1];
-	float nz = center[2] - camera[2];
-	norm = squareroot(nx*nx + ny*ny + nz*nz);
-	nx /= norm;
-	ny /= norm;
-	nz /= norm;
-
-	//right = cross(front, above)
-	float ux = ny*above[2] - nz*above[1];
-	float uy = nz*above[0] - nx*above[2];
-	float uz = nx*above[1] - ny*above[0];
-	norm = squareroot(ux*ux + uy*uy + uz*uz);
-	ux /= norm;
-	uy /= norm;
-	uz /= norm;
-
-	//above = cross(right, front)
-	float vx = uy*nz - uz*ny;
-	float vy = uz*nx - ux*nz;
-	float vz = ux*ny - uy*nx;
-
-	viewmatrix[0] = ux;
-	viewmatrix[1] = vx;
-	viewmatrix[2] = -nx;
-	viewmatrix[3] = 0.0f;
-
-	viewmatrix[4] = uy;
-	viewmatrix[5] = vy;
-	viewmatrix[6] = -ny;
-	viewmatrix[7] = 0.0f;
-
-	viewmatrix[8] = uz;
-	viewmatrix[9] = vz;
-	viewmatrix[10] = -nz;
-	viewmatrix[11] = 0.0f;
-
-	viewmatrix[12] = -camera[0]*ux - camera[1]*uy - camera[2]*uz;
-	viewmatrix[13] = -camera[0]*vx - camera[1]*vy - camera[2]*vz;
-	viewmatrix[14] = camera[0]*nx + camera[1]*ny + camera[2]*nz;
-	viewmatrix[15] = 1.0f;
-*/
-
+{
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
 	float cx = win->cx;
 	float cy = win->cy;
 	float cz = win->cz;
 
-	//n = front
+	//uvn.n = front
 	float nx = win->fx;
 	float ny = win->fy;
 	float nz = win->fz;
@@ -686,24 +633,23 @@ void fixview()
 	ny /= norm;
 	nz /= norm;
 
-	//v = above
-	float vx = win->ux;
-	float vy = win->uy;
-	float vz = win->uz;
+	//uvn.u = right = cross(front,(0,0,1))
+	float ux = ny*1 - nz*0;
+	float uy = nz*0 - nx*1;
+	float uz = nx*0 - ny*0;
+	norm = squareroot(ux*ux + uy*uy + uz*uz);
+	ux /= norm;
+	uy /= norm;
+	uz /= norm;
+
+	//uvn.v = above cross(right, front)
+	float vx = uy*nz - uz*ny;
+	float vy = uz*nx - ux*nz;
+	float vz = ux*ny - uy*nx;
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
 	vz /= norm;
-
-	//u = right = cross(front, above)
-	float ux = ny*vz - nz*vy;
-	float uy = nz*vx - nx*vz;
-	float uz = nx*vy - ny*vx;
-
-	//v = above = cross(right, front)
-	vx = uy*nz - uz*ny;
-	vy = uz*nx - ux*nz;
-	vz = ux*ny - uy*nx;
 
 	viewmatrix[0] = ux;
 	viewmatrix[1] = vx;
@@ -1034,9 +980,9 @@ void windowstart(struct arena* w)
 	w->height = height;
 	w->depth = (width+height)/2;
 
-	w->cx = 100.0;
-	w->cy = -100.0;
-	w->cz = 100.0;
+	w->cx = 512.0;
+	w->cy = -512.0;
+	w->cz = 512.0;
 
 	w->fx = -(w->cx);
 	w->fy = -(w->cy);

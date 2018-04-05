@@ -1,7 +1,9 @@
 #include "actor.h"
+#define PI 3.1415926535897932384626433832795028841971693993151
+#define tau (PI*2)
 #define acc 18
 #define trigonv 0x85
-#define PI 3.1415926535897932384626433832795028841971693993151
+void quaternionoperation(float*, float*, float);
 
 
 
@@ -152,21 +154,13 @@ void carvesolid_circle(
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		a = j*9;
 		b = j*3;
 
 		vbuf[a+0] = rx;
 		vbuf[a+1] = ry;
 		vbuf[a+2] = rz;
-		quaternionrotate(&vbuf[a], q);
+		quaternionoperation(&vbuf[a], q, j*tau/acc);
 
 		vbuf[a+0] += cx;
 		vbuf[a+1] += cy;
@@ -238,18 +232,10 @@ void carvesolid_cone(
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		quaternionoperation(r, q, j*tau/acc);
 
 		a = j*9;
 		b = j*6;
@@ -472,18 +458,10 @@ void carvesolid_cask(
 		q[0] = ux;
 		q[1] = uy;
 		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
 		r[0] = rx;
 		r[1] = ry;
 		r[2] = rz;
-		quaternionrotate(r, q);
+		quaternionoperation(r, q, j*tau/acc);
 
 		a = j*18;
 		b = j*6;
@@ -541,108 +519,6 @@ void carvesolid_cylinder(
 		rx, ry, rz,
 		ux, uy, uz
 	);
-/*
-	int a,b,j,k;
-	float s,t;
-	float q[4];
-	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	struct texandobj* mod = win->buf;
-	int ilen = mod[trigonv].len;
-	int vlen = mod[trigonv].len;
-	u16* ibuf = (mod[trigonv].buf) + (6*ilen);
-	float* vbuf = (mod[trigonv].buf) + (36*vlen);
-	mod[trigonv].len += 4*acc;
-	mod[trigonv].len += 2*acc + 2;
-
-	for(j=0;j<acc;j++)
-	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		vectornormalize(q);
-
-		t = j*PI/acc;
-		q[0] *= sine(t);
-		q[1] *= sine(t);
-		q[2] *= sine(t);
-		q[3] = cosine(t);
-
-		r[0] = rx;
-		r[1] = ry;
-		r[2] = rz;
-		quaternionrotate(r, q);
-
-		a = j*18;
-		b = j*6;
-
-		vbuf[a+0] = cx - ux + r[0];
-		vbuf[a+1] = cy - uy + r[1];
-		vbuf[a+2] = cz - uz + r[2];
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - cx;
-		vbuf[a+7] = vbuf[a+1] - cy;
-		vbuf[a+8] = vbuf[a+2] - cz;
-
-		vbuf[a+ 9] = cx + ux + r[0];
-		vbuf[a+10] = cy + uy + r[1];
-		vbuf[a+11] = cz + uz + r[2];
-		vbuf[a+12] = rr;
-		vbuf[a+13] = gg;
-		vbuf[a+14] = bb;
-		vbuf[a+15] = vbuf[a+ 9] - cx;
-		vbuf[a+16] = vbuf[a+10] - cy;
-		vbuf[a+17] = vbuf[a+11] - cz;
-
-		ibuf[b+0] = vlen + j*2;
-		ibuf[b+1] = vlen + ((j+1)%acc)*2;
-		ibuf[b+2] = vlen + 1 + j*2;
-
-		ibuf[b+3] = vlen + 1 + ((j+1)%acc)*2;
-		ibuf[b+4] = vlen + ((j+1)%acc)*2;
-		ibuf[b+5] = vlen + 1 + j*2;
-	}
-
-	a = acc*18;
-	b = acc*6;
-
-	vbuf[a+0] = cx-ux;
-	vbuf[a+1] = cy-uy;
-	vbuf[a+2] = cz-uz;
-	vbuf[a+3] = rr;
-	vbuf[a+4] = gg;
-	vbuf[a+5] = bb;
-	vbuf[a+6] = -ux;
-	vbuf[a+7] = -uy;
-	vbuf[a+8] = -uz;
-
-	vbuf[a+ 9] = cx+ux;
-	vbuf[a+10] = cy+uy;
-	vbuf[a+11] = cz+uz;
-	vbuf[a+12] = rr;
-	vbuf[a+13] = gg;
-	vbuf[a+14] = bb;
-	vbuf[a+15] = ux;
-	vbuf[a+16] = uy;
-	vbuf[a+17] = uz;
-
-	for(j=0;j<acc;j++)
-	{
-		ibuf[b + (j*6) + 0] = vlen + acc*2;
-		ibuf[b + (j*6) + 1] = vlen + (j*2);
-		ibuf[b + (j*6) + 2] = vlen + ((j+1)%acc)*2;
-
-		ibuf[b + (j*6) + 3] = vlen + acc*2 + 1;
-		ibuf[b + (j*6) + 4] = vlen + 1 + (j*2);
-		ibuf[b + (j*6) + 5] = vlen + 1 + ((j+1)%acc)*2;
-	}
-*/
 }
 
 
@@ -1101,23 +977,14 @@ void carvesolid_sphere(
 
 		for(j=0;j<odd;j++)
 		{
-			q[0] = ux;
-			q[1] = uy;
-			q[2] = uz;
-			vectornormalize(q);
-
-			t = j*PI/odd;
-			q[0] *= sine(t);
-			q[1] *= sine(t);
-			q[2] *= sine(t);
-			q[3] = cosine(t);
-
 			a = (k*odd + j)*9;
-
 			vbuf[a+0] = temprx;
 			vbuf[a+1] = tempry;
 			vbuf[a+2] = temprz;
-			quaternionrotate(&vbuf[a], q);
+			q[0] = ux;
+			q[1] = uy;
+			q[2] = uz;
+			quaternionoperation(&vbuf[a], q, j*tau/odd);
 
 			vbuf[a+0] += tempcx;
 			vbuf[a+1] += tempcy;

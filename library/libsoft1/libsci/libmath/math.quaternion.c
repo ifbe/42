@@ -140,3 +140,19 @@ void quaternionrotate(float* v, float* q)
 	v[1] += q[3]*j[1] + k[1];
 	v[2] += q[3]*j[2] + k[2];
 }
+void quaternionoperation(float* v, float* a, float delta)
+{
+	float c,s,norm;
+	float q[4];
+
+	norm = squareroot(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
+	c = cosine(delta/2);
+	s = sine(delta/2);
+
+	q[0] = a[0]*s/norm;
+	q[1] = a[1]*s/norm;
+	q[2] = a[2]*s/norm;
+	q[3] = c;
+
+	quaternionrotate(v, q);
+}

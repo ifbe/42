@@ -1,7 +1,9 @@
 #include "actor.h"
-#define acc 18
-#define stlv 0x83
 #define PI 3.1415926535897932384626433832795028841971693993151
+#define tau (PI*2)
+#define acc 18
+#define stlv 0x85
+void quaternionoperation(float*, float*, float);
 u32 getrandom();
 
 
@@ -13,6 +15,182 @@ void carveaxis(struct arena* win)
 	carveline(win, 0x00ff00, 0.0, 0.0, 0.0, 0.0, 10000.0, 0.0);
 	carveline(win, 0x0000ff, 0.0, 0.0, 0.0, 0.0, 0.0, 10000.0);
 }
+void carvedrone_node(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
+{
+	float j;
+	float up[3];
+	float tt[3];
+	float v0[3];
+	float v1[3];
+	float v2[3];
+
+	up[0] = ux;
+	up[1] = uy;
+	up[2] = uz;
+	tt[0] = rx;
+	tt[1] = ry;
+	tt[2] = rz;
+	quaternionoperation(tt, up, tau/3);
+
+	v0[0] = cx + rx;
+	v0[1] = cy + ry;
+	v0[2] = cz + rz;
+	v1[0] = cx + tt[0];
+	v1[1] = cy + tt[1];
+	v1[2] = cz + tt[2];
+	v2[0] = cx - tt[0] - rx;
+	v2[1] = cy - tt[1] - ry;
+	v2[2] = cz - tt[2] - rz;
+	carveline_triangle(
+		win, 0x404040,
+		v0[0], v0[1], v0[2],
+		v1[0], v1[1], v1[2],
+		v2[0], v2[1], v2[2]
+	);
+	carveline_yshape(
+		win, 0x404040,
+		v0[0], v0[1], v0[2],
+		v1[0], v1[1], v1[2],
+		v2[0], v2[1], v2[2]
+	);
+	carveline_yshape(
+		win, 0xffffff,
+		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2,
+		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2,
+		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2
+	);
+
+	j = squareroot(rx*rx+ry*ry+rz*rz)/32;
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx, cy, cz,
+		j, 0.0, 0.0,
+		0.0, 0.0, j
+	);
+}
+void carvedrone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
+{
+	float up[3];
+	float tt[3];
+	float v0[3];
+	float v1[3];
+	float v2[3];
+
+	up[0] = ux;
+	up[1] = uy;
+	up[2] = uz;
+	tt[0] = rx;
+	tt[1] = ry;
+	tt[2] = rz;
+	quaternionoperation(tt, up, tau/3);
+	v0[0] = rx;
+	v0[1] = ry;
+	v0[2] = rz;
+	v1[0] = tt[0];
+	v1[1] = tt[1];
+	v1[2] = tt[2];
+	v2[0] = -tt[0]-rx;
+	v2[1] = -tt[1]-ry;
+	v2[2] = -tt[2]-rz;
+
+	//0
+	carvedrone_node(
+		win, rgb,
+		cx, cy, cz,
+		rx, ry, rz,
+		ux, uy, uz
+	);
+
+	//123
+	carvedrone_node(
+		win, rgb,
+		cx+v0[0]*2, cy+v0[1]*2, cz+v0[2]*2,
+		-v0[0], -v0[1], -v0[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v1[0]*2, cy+v1[1]*2, cz+v1[2]*2,
+		-v1[0], -v1[1], -v1[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v2[0]*2, cy+v2[1]*2, cz+v2[2]*2,
+		-v2[0], -v2[1], -v2[2],
+		ux, uy, uz
+	);
+
+	//456
+	carvedrone_node(
+		win, rgb,
+		cx+v0[0]+v1[0], cy+v0[1]+v1[1], cz+v0[2]+v1[2],
+		-v2[0], -v2[1], -v2[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v1[0]+v2[0], cy+v1[1]+v2[1], cz+v1[2]+v2[2],
+		-v0[0], -v0[1], -v0[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v2[0]+v0[0], cy+v2[1]+v0[1], cz+v2[2]+v0[2],
+		-v1[0], -v1[1], -v1[2],
+		ux, uy, uz
+	);
+
+	//789abc
+	carvedrone_node(
+		win, rgb,
+		cx+v1[0]-v0[0], cy+v1[1]-v0[1], cz+v1[2]-v0[2],
+		v0[0], v0[1], v0[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v2[0]-v0[0], cy+v2[1]-v0[1], cz+v2[2]-v0[2],
+		v0[0], v0[1], v0[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v0[0]-v1[0], cy+v0[1]-v1[1], cz+v0[2]-v1[2],
+		v1[0], v1[1], v1[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v2[0]-v1[0], cy+v2[1]-v1[1], cz+v2[2]-v1[2],
+		v1[0], v1[1], v1[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v0[0]-v2[0], cy+v0[1]-v2[1], cz+v0[2]-v2[2],
+		v2[0], v2[1], v2[2],
+		ux, uy, uz
+	);
+	carvedrone_node(
+		win, rgb,
+		cx+v1[0]-v2[0], cy+v1[1]-v2[1], cz+v1[2]-v2[2],
+		v2[0], v2[1], v2[2],
+		ux, uy, uz
+	);
+}
+
+
+
+
 void carvestarry_random(struct arena* win)
 {
 /*
