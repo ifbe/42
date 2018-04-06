@@ -793,16 +793,12 @@ void fixtexture()
 void callback_display()
 {
 	GLfloat cameramvp[4*4];
+	fixmatrix(cameramvp);
 
 	//set
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	fixmatrix(cameramvp);
-	fixtexture();
-
-
 
 
 	//point,line
@@ -820,8 +816,6 @@ void callback_display()
 	glDrawElements(GL_LINES, 2*mod[0x84].ilen, GL_UNSIGNED_SHORT, 0);
 
 
-
-
 	//stl,triangle
 	glUseProgram(prettyprogram);
 	fixlight();
@@ -834,8 +828,6 @@ void callback_display()
 
 	glBindVertexArray(mod[0x85].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
-
-	
 
 
 	//font0000,4000,8000,c000

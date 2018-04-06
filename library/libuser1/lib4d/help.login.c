@@ -400,12 +400,6 @@ void login_read_vbo(struct arena* win)
 	//carveline(win, 0xffffff,-32.0, 32.0, 0.0,-32.0, 32.0, 64.0);
 	//carveline(win, 0xffffff, 32.0,-32.0, 0.0, 32.0,-32.0, 64.0);
 	//carveline(win, 0xffffff, 32.0, 32.0, 0.0, 32.0, 32.0, 64.0);
-	carveline_prism4(win, 0xffffff,
-		0.0, 0.0, 32.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0,
-		0.0, 0.0, 32.0
-	);
 	carveline_rect(win, 0x0000ff,
 		0.0, 0.0, 16.0,
 		32.0, 0.0, 0.0,
@@ -418,6 +412,11 @@ void login_read_vbo(struct arena* win)
 	);
 	carveline_rect(win, 0xff0000,
 		0.0, 0.0, 48.0,
+		32.0, 0.0, 0.0,
+		0.0, 32.0, 0.0
+	);
+	carveline_rect(win, 0xffffff,
+		0.0, 0.0, 64.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);

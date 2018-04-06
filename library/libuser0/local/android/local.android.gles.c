@@ -719,24 +719,15 @@ void fixlight()
 	GLint ep = glGetUniformLocation(prettyprogram, "eyeposition");
 	glUniform3fv(ep, 1, camera);
 }
-void fixtexture()
-{
-	//GLint t0 = glGetUniformLocation(u, "texture0");
-	//glUniform1i(t0, 0);
-	//GLint t1 = glGetUniformLocation(u, "texture0");
-	//glUniform1i(t1, 0);
-}
 void callback_display()
 {
 	GLfloat cameramvp[4*4];
+	fixmatrix(cameramvp);
 
 	//set
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	fixmatrix(cameramvp);
-	fixtexture();
 
 	//point,line
 	glUseProgram(simpleprogram);
@@ -936,6 +927,7 @@ void windowstart(struct arena* w)
 		EGL_GREEN_SIZE, 8,
 		EGL_RED_SIZE, 8,
 		EGL_ALPHA_SIZE, 8,
+		EGL_DEPTH_SIZE, 16,
 		EGL_NONE
 	};
 	EGLConfig config;

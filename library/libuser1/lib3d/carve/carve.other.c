@@ -46,13 +46,13 @@ void carvedrone_node(
 	v2[1] = cy - tt[1] - ry;
 	v2[2] = cz - tt[2] - rz;
 	carveline_triangle(
-		win, 0x404040,
+		win, 0x402040,
 		v0[0], v0[1], v0[2],
 		v1[0], v1[1], v1[2],
 		v2[0], v2[1], v2[2]
 	);
 	carveline_yshape(
-		win, 0x404040,
+		win, 0x204020,
 		v0[0], v0[1], v0[2],
 		v1[0], v1[1], v1[2],
 		v2[0], v2[1], v2[2]
