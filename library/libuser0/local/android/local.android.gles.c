@@ -16,6 +16,7 @@
 void* getandroidapp();
 void setandroidapp(void*);
 //
+void asset_create();
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 //
@@ -236,23 +237,246 @@ GLuint createProgram(const char* v, const char* f)
 }
 void initshader()
 {
+	myfontprogram = createProgram(myfontvert, myfontfrag);
+	if (!myfontprogram) {
+		LOGI("Could not create program");
+		return;
+	}
+	mod[0].program = myfontprogram;
+	mod[1].program = myfontprogram;
+	mod[2].program = myfontprogram;
+	mod[3].program = myfontprogram;
+
 	simpleprogram = createProgram(simplevert, simplefrag);
 	if (!simpleprogram) {
 		LOGI("Could not create program");
 		return;
 	}
+	mod[0x81].program = simpleprogram;
+	mod[0x82].program = simpleprogram;
+	mod[0x84].program = simpleprogram;
 
 	prettyprogram = createProgram(prettyvert, prettyfrag);
 	if (!prettyprogram) {
 		LOGI("Could not create program");
 		return;
 	}
+	mod[0x83].program = prettyprogram;
+	mod[0x85].program = prettyprogram;
+}
+void initobject()  
+{
+//---------------------0--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[0].vao);
+	glBindVertexArray(mod[0].vao);
 
-	myfontprogram = createProgram(myfontvert, myfontfrag);
-	if (!myfontprogram) {
-		LOGI("Could not create program");
-		return;
-	}
+	//ibo
+	glGenBuffers(1, &mod[0].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[0].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[0].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//----------------------1--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[1].vao);
+	glBindVertexArray(mod[1].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[1].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[1].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[1].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[1].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-----------------------2--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[2].vao);
+	glBindVertexArray(mod[2].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[2].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[2].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[2].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[2].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-------------------------3--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[3].vao);
+	glBindVertexArray(mod[3].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[3].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[3].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[3].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[3].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-------------------------0x81--------------------------
+//drawarray.point(vertex,color)
+	glGenVertexArrays(1, &mod[0x81].vao);
+	glBindVertexArray(mod[0x81].vao);
+
+	glGenBuffers(1, &mod[0x81].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x81].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
+
+//-------------------------0x82--------------------------
+	//drawarray.line(vertex,color)
+	glGenVertexArrays(1, &mod[0x82].vao);
+	glBindVertexArray(mod[0x82].vao);
+
+	glGenBuffers(1, &mod[0x82].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x82].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
+
+//-------------------------0x83---------------------------
+	//drawarray.trigon(vertex,colour,normal)
+	glGenVertexArrays(1, &mod[0x83].vao);
+	glBindVertexArray(mod[0x83].vao);
+
+	glGenBuffers(1, &mod[0x83].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
+		mod[0x83].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-------------------------0x84---------------------------
+	//drawelement.line(vertex,color)
+	glGenVertexArrays(1, &mod[0x84].vao);
+	glBindVertexArray(mod[0x84].vao);
+
+	glGenBuffers(1, &mod[0x84].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x84].ibuf, GL_STATIC_DRAW
+	);
+
+	glGenBuffers(1, &mod[0x84].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x84].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
+
+//------------------------0x85-------------------------
+	//drawelement.trigon(vertex,color,normal)
+	glGenVertexArrays(1, &mod[0x85].vao);
+	glBindVertexArray(mod[0x85].vao);
+
+	glGenBuffers(1, &mod[0x85].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x85].ibuf, GL_STATIC_DRAW
+	);
+
+	glGenBuffers(1, &mod[0x85].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
+		mod[0x85].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
 }
 void inittexture()
 {
@@ -263,6 +487,7 @@ void inittexture()
 	buf = mod[0].tbuf;
 	if(buf != 0)
 	{
+		for(j=0;j<0x400000;j++)buf[j] = 0;
 		for(j=0x80;j<0x4000;j++)
 		{
 			drawunicode_alpha(buf, 2048, 2048, 
@@ -276,47 +501,16 @@ void inittexture()
 			);
 		}
 
-		//tex0
 		glGenTextures(1, &(mod[0].tex));
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_ALPHA, 2048, 2048, 0,
-			GL_ALPHA, GL_UNSIGNED_BYTE, mod[0].tbuf
-		);
-
-		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		//vao
-		glGenVertexArrays(1, &mod[0].vao);
-		glBindVertexArray(mod[0].vao);
-
-		//ibo
-		glGenBuffers(1, &mod[0].ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-			mod[0].ibuf, GL_STATIC_DRAW
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_ALPHA, 2048, 2048, 0,
+			GL_ALPHA, GL_UNSIGNED_BYTE, mod[0].tbuf
 		);
-
-		//vbo
-		glGenBuffers(1, &mod[0].vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
-		glBufferData(GL_ARRAY_BUFFER, 0x200000,
-			mod[0].vbuf, GL_STATIC_DRAW
-		);
-
-		//attr
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-		glEnableVertexAttribArray(2);
 	}
 
 
@@ -324,6 +518,7 @@ void inittexture()
 	buf = mod[1].tbuf;
 	if(buf != 0)
 	{
+		for(j=0;j<0x400000;j++)buf[j] = 0;
 		for(j=0;j<0x4000;j++)
 		{
 			drawunicode_alpha(buf, 2048, 2048,
@@ -331,47 +526,16 @@ void inittexture()
 			);
 		}
 
-		//tex1
 		glGenTextures(1, &(mod[1].tex));
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[1].tbuf
-		);
-
-		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		//vao
-		glGenVertexArrays(1, &mod[1].vao);
-		glBindVertexArray(mod[1].vao);
-
-		//ibo
-		glGenBuffers(1, &mod[1].ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-			mod[1].ibuf, GL_STATIC_DRAW
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[1].tbuf
 		);
-
-		//vbo
-		glGenBuffers(1, &mod[1].vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
-		glBufferData(GL_ARRAY_BUFFER, 0x200000,
-			mod[1].vbuf, GL_STATIC_DRAW
-		);
-
-		//attr
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-		glEnableVertexAttribArray(2);
 	}
 
 
@@ -379,6 +543,7 @@ void inittexture()
 	buf = mod[2].tbuf;
 	if(buf != 0)
 	{
+		for(j=0;j<0x400000;j++)buf[j] = 0;
 		for(j=0;j<0x4000;j++)
 		{
 			drawunicode_alpha(buf, 2048, 2048,
@@ -386,47 +551,16 @@ void inittexture()
 			);
 		}
 
-		//tex2
 		glGenTextures(1, &(mod[2].tex));
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[2].tbuf
-		);
-
-		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		//vao
-		glGenVertexArrays(1, &mod[2].vao);
-		glBindVertexArray(mod[2].vao);
-
-		//ibo
-		glGenBuffers(1, &mod[2].ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-			mod[2].ibuf, GL_STATIC_DRAW
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[2].tbuf
 		);
-
-		//vbo
-		glGenBuffers(1, &mod[2].vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
-		glBufferData(GL_ARRAY_BUFFER, 0x200000,
-			mod[2].vbuf, GL_STATIC_DRAW
-		);
-
-		//attr
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-		glEnableVertexAttribArray(2);
 	}
 
 
@@ -434,6 +568,7 @@ void inittexture()
 	buf = mod[3].tbuf;
 	if(buf != 0)
 	{
+		for(j=0;j<0x400000;j++)buf[j] = 0;
 		for(j=0;j<0x4000;j++)
 		{
 			drawunicode_alpha(buf, 2048, 2048,
@@ -441,47 +576,16 @@ void inittexture()
 			);
 		}
 
-		//texture3
 		glGenTextures(1, &(mod[3].tex));
-		glActiveTexture(GL_TEXTURE0 + 3);
-		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[3].tbuf
-		);
-
-		//param
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		//vao
-		glGenVertexArrays(1, &mod[3].vao);
-		glBindVertexArray(mod[3].vao);
-
-		//ibo
-		glGenBuffers(1, &mod[3].ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-			mod[3].ibuf, GL_STATIC_DRAW
+		glTexImage2D(GL_TEXTURE_2D, 0,
+			GL_RED, 2048, 2048, 0,
+			GL_RED, GL_UNSIGNED_BYTE, mod[3].tbuf
 		);
-
-		//vbo
-		glGenBuffers(1, &mod[3].vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
-		glBufferData(GL_ARRAY_BUFFER, 0x200000,
-			mod[3].vbuf, GL_STATIC_DRAW
-		);
-
-		//attr
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-		glEnableVertexAttribArray(2);
 	}
 
 	/*
@@ -509,104 +613,6 @@ void inittexture()
 		printf("error@fbo\n");
 	}
 */
-}
-void initobject()  
-{
-	//drawarray.point(vertex,color)
-	glGenVertexArrays(1, &mod[0x81].vao);
-	glBindVertexArray(mod[0x81].vao);
-
-	glGenBuffers(1, &mod[0x81].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000,
-		mod[0x81].vbuf, GL_STATIC_DRAW
-	);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-	//drawarray.line(vertex,color)
-	glGenVertexArrays(1, &mod[0x82].vao);
-	glBindVertexArray(mod[0x82].vao);
-
-	glGenBuffers(1, &mod[0x82].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000,
-		mod[0x82].vbuf, GL_STATIC_DRAW
-	);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-	//drawarray.trigon(vertex,colour,normal)
-	glGenVertexArrays(1, &mod[0x83].vao);
-	glBindVertexArray(mod[0x83].vao);
-
-	glGenBuffers(1, &mod[0x83].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
-		mod[0x83].vbuf, GL_STATIC_DRAW
-	);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-	//drawelement.line(vertex,color)
-	glGenVertexArrays(1, &mod[0x84].vao);
-	glBindVertexArray(mod[0x84].vao);
-
-	glGenBuffers(1, &mod[0x84].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-		mod[0x84].ibuf, GL_STATIC_DRAW
-	);
-
-	glGenBuffers(1, &mod[0x84].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000,
-		mod[0x84].vbuf, GL_STATIC_DRAW
-	);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-
-	//drawelement.trigon(vertex,color,normal)
-	glGenVertexArrays(1, &mod[0x85].vao);
-	glBindVertexArray(mod[0x85].vao);
-
-	glGenBuffers(1, &mod[0x85].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-		mod[0x85].ibuf, GL_STATIC_DRAW
-	);
-
-	glGenBuffers(1, &mod[0x85].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
-		mod[0x85].vbuf, GL_STATIC_DRAW
-	);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
 }
 
 
@@ -731,8 +737,7 @@ void callback_display()
 
 	//point,line
 	glUseProgram(simpleprogram);
-	GLint mvp1 = glGetUniformLocation(simpleprogram, "simplemvp");
-	glUniformMatrix4fv(mvp1, 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(simpleprogram, "simplemvp"), 1, GL_FALSE, cameramvp);
 
 	glBindVertexArray(mod[0x81].vao);
 	glDrawArrays(GL_POINTS, 0, mod[0x81].vlen);
@@ -745,10 +750,8 @@ void callback_display()
 
 	//stl,triangle
 	glUseProgram(prettyprogram);
+	glUniformMatrix4fv(glGetUniformLocation(prettyprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	fixlight();
-
-	GLint mvp2 = glGetUniformLocation(prettyprogram, "prettymvp");
-	glUniformMatrix4fv(mvp2, 1, GL_FALSE, cameramvp);
 
 	//glBindVertexArray(mod[0x83].vao);
 	//glDrawArrays(GL_TRIANGLES, 0, 3*mod[0x83].vlen);
@@ -760,24 +763,28 @@ void callback_display()
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glUseProgram(myfontprogram);
-
-	GLint mvp3 = glGetUniformLocation(myfontprogram, "prettymvp");
-	glUniformMatrix4fv(mvp3, 1, GL_FALSE, cameramvp);
-
+	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
 	glBindVertexArray(mod[0].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0].ilen, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 1);
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
 	glBindVertexArray(mod[1].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[1].ilen, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 2);
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
 	glBindVertexArray(mod[2].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[2].ilen, GL_UNSIGNED_SHORT, 0);
 
-	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 3);
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
 	glBindVertexArray(mod[3].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
 
@@ -786,6 +793,7 @@ void callback_display()
 }
 void callback_update()
 {
+	//say("%x,%x,%x,%x\n",mod[0].ilen,mod[1].ilen,mod[2].ilen,mod[3].ilen);
 	//font0000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
@@ -1019,6 +1027,10 @@ void windowstart(struct arena* w)
 	mod[3].ibuf = malloc(0x100000);
 	mod[3].ilen = 0;
 
+	//
+	//mod[0x80].vbuf = 
+	//mod[0x80].vlen = 
+
 	//drawarray.point
 	mod[0x81].vbuf = malloc(0x100000);
 	mod[0x81].vlen = 0;
@@ -1043,9 +1055,13 @@ void windowstart(struct arena* w)
 	mod[0x85].vbuf = malloc(0x1000000);
 	mod[0x85].vlen = 0;
 
+	//
 	initshader();
-	inittexture();
 	initobject();
+
+	//
+	asset_create();
+	inittexture();
 }
 void windowcreate()
 {

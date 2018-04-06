@@ -3,7 +3,7 @@ int term_write(void*);
 int login_write(void*, void*);
 int vkbd_write(void*, void*);
 //
-void camera_deltaxy(struct arena* win, int x, int y);
+void camera_event(struct arena* win, struct event* ev);
 int relation_swap(void*, void*);
 
 
@@ -138,90 +138,6 @@ int delete_topone(struct arena* win)
 	relationdelete(rel);
 	return 1;
 }
-int move_camera(struct arena* win, struct event* ev)
-{
-	float x,y,z;
-	int x0,y0,x1,y1,btn;
-
-	btn = (ev->why)>>48;
-	if(0x4070 == ev->what)
-	{
-		if(btn > 10)btn = 10;
-		if((0 == btn)|(10 == btn))
-		{
-			x0 = win->touchmove[btn].x;
-			y0 = win->touchmove[btn].y;
-			x1 = (ev->why)&0xffff;
-			y1 = ((ev->why)>>16)&0xffff;
-			camera_deltaxy(win, x1-x0, y1-y0);
-		}
-		else
-		{
-			if(0==win->touchdown[0].z)return 0;
-			if(0==win->touchdown[1].z)return 0;
-
-			x1 = (ev->why)&0xffff;
-			y1 = ((ev->why)>>16)&0xffff;
-			if(0 == btn)
-			{
-				x1 -= (win->touchmove[1].x);
-				y1 -= (win->touchmove[1].y);
-			}
-			if(1 == btn)
-			{
-				x1 -= (win->touchmove[0].x);
-				y1 -= (win->touchmove[0].y);
-			}
-
-			x0 = (win->touchmove[0].x) - (win->touchmove[1].x);
-			y0 = (win->touchmove[0].y) - (win->touchmove[1].y);
-			if((x0*x0+y0*y0) < (x1*x1+y1*y1))
-			{
-				x = 0.05*(win->fx);
-				y = 0.05*(win->fy);
-				z = 0.05*(win->fz);
-			}
-			else
-			{
-				x = -0.05*(win->fx);
-				y = -0.05*(win->fy);
-				z = -0.05*(win->fz);
-			}
-			win->cx += x;
-			win->cy += y;
-			win->cz += z;
-
-			win->fx -= x;
-			win->fy -= y;
-			win->fz -= z;
-		}
-	}
-	else if(0x2b70 == ev->what)
-	{
-		if('f' == btn)
-		{
-			x = 0.1*(win->fx);
-			y = 0.1*(win->fy);
-			z = 0.1*(win->fz);
-		}
-		else if('b' == btn)
-		{
-			x = -0.1*(win->fx);
-			y = -0.1*(win->fy);
-			z = -0.1*(win->fz);
-		}
-		else return 0;
-
-		win->cx += x;
-		win->cy += y;
-		win->cz += z;
-
-		win->fx -= x;
-		win->fy -= y;
-		win->fz -= z;
-	}
-	return 0;
-}
 int actorinput(struct arena* win, struct event* ev)
 {
 	u64 why,what;
@@ -230,7 +146,7 @@ int actorinput(struct arena* win, struct event* ev)
 	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
-	say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
+	//say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
 
 stage0:
 	why = ev->why;
@@ -238,7 +154,8 @@ stage0:
 
 	if('p' == (what&0xff))
 	{
-		if(_vbo_ == win->fmt)move_camera(win, ev);
+		if((_vbo_ == win->fmt)&&(0 == win->edit))
+		{camera_event(win, ev);}
 
 		ret = vkbd_write(win, ev);
 		if(0 != ret)goto stage1;

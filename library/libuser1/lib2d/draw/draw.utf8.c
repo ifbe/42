@@ -20,7 +20,7 @@ void drawunicode_alpha(u8* buf, int w, int h, int xx, int yy, u32 unicode)
 	int x,y,offset;
 
 	if(0 == utf8table)return;
-	points = utf8table + 32*unicode;
+	points = utf8table + 32*(unicode&0xffff);
 
 	for(y=0;y<16;y++)
 	{

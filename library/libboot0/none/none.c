@@ -59,7 +59,7 @@ void* waitenv()
 {
 	return 0;
 }
-void fixarg(void* dst, void* src)
+void fixarg(char* dst, char* src)
 {
 	snprintf(dst, 0x1000, "%s", src);
 }
@@ -73,8 +73,12 @@ void death()
 void* birth()
 {
 #define __size__ 0x1001000
-	u64 j;
+	int j;
 	u64 temp;
+
+
+	//0.chdir
+	j = chdir("datafile/");
 
 
 	//1.alloc

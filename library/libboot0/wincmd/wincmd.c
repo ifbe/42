@@ -590,9 +590,14 @@ void death()
 void* birth()
 {
 #define __size__ 0x1001000
-	u64 j;
+	int j;
 	u64 temp;
+
+
+	//0.chdir
 	createserial();
+	chdir("datafile/");
+
 
 
 	//1.alloc

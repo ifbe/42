@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <EGL/egl.h>
 #include <GLES/gl.h>
 #include <android/log.h>
@@ -74,6 +75,13 @@ void* birth()
 #define __size__ 0x1001000
 	u64 j;
 	u64 temp;
+	char buf[0x100];
+
+
+	//0.chdir
+	chdir("/sdcard/");
+	getcwd(buf, 0x100);
+	LOGI("%.100s\n", buf);
 
 
 	//1.alloc
@@ -239,7 +247,8 @@ void android_loop(struct android_app* app)
 {
 	theapp = app;
 	app->onAppCmd = handle_cmd;
-    app->onInputEvent = handle_input;
+	app->onInputEvent = handle_input;
+
 	while(1)
 	{
 		int ident;

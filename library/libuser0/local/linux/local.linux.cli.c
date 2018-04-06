@@ -77,7 +77,7 @@ void windowstart(struct arena* this)
 	this->width = this->stride = 80;
 	this->height = 25;
 
-	thread = startthread(terminalthread, this);
+	thread = threadcreate(terminalthread, this);
 }
 void windowcreate()
 {

@@ -10,7 +10,7 @@ void carveunicode_surround(
 
 
 
-static int chosen = 0x20;
+static int chosen = 0x4040;
 static u8 buffer[16];
 
 
@@ -91,36 +91,33 @@ static void font_read_vbo(
 		ww, 0.0, 0.0,
 		0.0, hh, 0.0
 	);
-	for(y=-4;y<4;y++)
+	for(y=-32;y<32;y++)
 	{
-		for(x=-4;x<4;x++)
+		for(x=-32;x<32;x++)
 		{
 			dx = x + (chosen&0xff);
 			dy = y + ((chosen>>8)&0xff);
 			if(dx < 0)continue;
 			if(dy < 0)continue;
-			if(dx >= 256)continue;
-			if(dy >= 256)continue;
+			if(dx > 0xff)continue;
+			if(dy > 0xff)continue;
+
 			carveunicode(
 				win, 0xffffff,
-				cx+(2*x+1)*ww/8, cy+(2*y+1)*hh/8, 0.0,
-				ww/8, 0.0, 0.0,
-				0.0, hh/8, 0.0,
-				chosen+x+(y*256)
+				cx+(2*x+1)*ww/2/32, cy+(2*y+1)*hh/2/32, 0.0,
+				ww/2/32, 0.0, 0.0,
+				0.0, hh/2/32, 0.0,
+				(dy<<8)+dx
 			);
 		}
 	}
-/*
-	x = (float)(chosen&0xff) / 256.0;
-	y = (float)(chosen&0xff80) / 65536.0;
-	carveascii_area(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0,
-		x-1.0/16, y-1.0/16, x+1.0/16, y+1.0/16
+	carvehexadecimal(
+		win, 0xff,
+		cx, cy, 4.0,
+		ww/4, 0.0, 0.0,
+		0.0, hh/4, 0.0,
+		chosen
 	);
-*/
 }
 static void font_read_tui(
 	struct arena* win, struct style* sty,
