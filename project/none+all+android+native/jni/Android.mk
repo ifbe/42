@@ -264,6 +264,7 @@ library/libuser1/test/test.doodle.c \
 library/libuser1/test/test.example.c \
 library/libuser1/test/test.fractal.c \
 library/libuser1/test/test.palette.c \
+library/libuser1/test/test.planet.c \
 library/libuser1/game/game.2048.c \
 library/libuser1/game/game.chess.c \
 library/libuser1/game/game.klotski.c \

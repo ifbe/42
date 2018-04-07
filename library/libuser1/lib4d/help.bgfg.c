@@ -2,11 +2,6 @@
 void vkbd_read(void*);
 void carveaxis(void*);
 void login_read(void*);
-void carvedrone(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz);
 
 
 
@@ -35,11 +30,6 @@ void background_vbo(struct arena* win)
 		mod[j].ilen = 0;
 		mod[j].vlen = 0;
 	}
-	carvedrone(win, 0xffffff,
-		0.0, 0.0, 0.0,
-		0.0, 256.0, 0.0,
-		0.0, 0.0, 1.0
-	);
 }
 void background_pixel(struct arena* win)
 {

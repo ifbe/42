@@ -830,7 +830,7 @@ void callback_display()
 }
 void callback_update()
 {
-	if(queuehead == queuetail)return;
+	actorread(win, 0, 0, 0);
 
 	//font0000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
@@ -1094,10 +1094,6 @@ void* terminalthread(void* win)
 
 int windowread(void* dc,void* df,void* sc,void* sf)
 {
-	struct arena* win = sc;
-	actorread(win, 0, 0, 0);
-	queuehead++;
-
 	//return snprintf(buf, 0x1000, "%s", dragdata);
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)

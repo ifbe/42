@@ -6,6 +6,7 @@ void doodle_register(void*);
 void example_register(void*);
 void fractal_register(void*);
 void palette_register(void*);
+void planet_register(void*);
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -75,6 +76,10 @@ void content_create(void* addr)
 
 	//test.palette
 	palette_register(temp);
+	temp += sizeof(struct actor);
+
+	//test.planet
+	planet_register(temp);
 	temp += sizeof(struct actor);
 
 	//game.2048

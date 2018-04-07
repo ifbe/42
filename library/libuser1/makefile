@@ -7,6 +7,7 @@ test/test.doodle.c \
 test/test.example.c \
 test/test.fractal.c \
 test/test.palette.c \
+test/test.planet.c \
 game/game.2048.c \
 game/game.chess.c \
 game/game.klotski.c \

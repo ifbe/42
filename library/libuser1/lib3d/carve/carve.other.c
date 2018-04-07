@@ -63,13 +63,10 @@ void carvedrone_node(
 		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2,
 		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2
 	);
-
-	j = squareroot(rx*rx+ry*ry+rz*rz)/32;
-	carvesolid_sphere(
+	carveline(
 		win, 0xffffff,
 		cx, cy, cz,
-		j, 0.0, 0.0,
-		0.0, 0.0, j
+		cx, cy, cz+16.0
 	);
 }
 void carvedrone(

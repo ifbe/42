@@ -375,6 +375,7 @@ void carveline_circle(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+#define lineacc (acc*2)
 	int j;
 	float q[4];
 
@@ -387,10 +388,10 @@ void carveline_circle(
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
 	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += acc;
-	mod[linev].vlen += acc;
+	mod[linev].ilen += lineacc;
+	mod[linev].vlen += lineacc;
 
-	for(j=0;j<acc;j++)
+	for(j=0;j<lineacc;j++)
 	{
 		q[0] = ux;
 		q[1] = uy;
@@ -398,7 +399,7 @@ void carveline_circle(
 		vbuf[6*j+0] = rx;
 		vbuf[6*j+1] = ry;
 		vbuf[6*j+2] = rz;
-		quaternionoperation(&vbuf[6*j], q, j*tau/acc);
+		quaternionoperation(&vbuf[6*j], q, j*tau/lineacc);
 
 		vbuf[6*j+0] += cx;
 		vbuf[6*j+1] += cy;
@@ -409,7 +410,7 @@ void carveline_circle(
 		vbuf[6*j+5] = bb;
 
 		ibuf[2*j+0] = vlen+j;
-		ibuf[2*j+1] = vlen+(j+1)%acc;
+		ibuf[2*j+1] = vlen+(j+1)%lineacc;
 	}
 }
 

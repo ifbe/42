@@ -4,21 +4,19 @@
 #define _xml_ hex32('x','m','l',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
-//
-void draw8bit_rect(
-	struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1);
-void carveascii_area(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float x0, float y0, float x1, float y1);
-//
 int actorcreate(void*, u8*);
 int actordelete(void*, u8*);
 void* allocstyle();
 void* allocpinid();
+//
+void draw8bit_rect(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1);
+void carvedrone(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz);
 
 
 
@@ -396,10 +394,11 @@ void login_read_vbo(struct arena* win)
 	u32 c;
 	int j,k;
 	float x,y;
-	//carveline(win, 0xffffff,-32.0,-32.0, 0.0,-32.0,-32.0, 64.0);
-	//carveline(win, 0xffffff,-32.0, 32.0, 0.0,-32.0, 32.0, 64.0);
-	//carveline(win, 0xffffff, 32.0,-32.0, 0.0, 32.0,-32.0, 64.0);
-	//carveline(win, 0xffffff, 32.0, 32.0, 0.0, 32.0, 32.0, 64.0);
+	carvedrone(win, 0xffffff,
+		0.0, 0.0, 0.0,
+		0.0, 256.0, 0.0,
+		0.0, 0.0, 1.0
+	);
 	carveline_rect(win, 0x0000ff,
 		0.0, 0.0, 16.0,
 		32.0, 0.0, 0.0,
