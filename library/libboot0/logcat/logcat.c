@@ -79,7 +79,7 @@ void* birth()
 
 
 	//0.chdir
-	chdir("/sdcard/");
+	chdir("/sdcard/42/datafile/");
 	getcwd(buf, 0x100);
 	LOGI("%.100s\n", buf);
 
