@@ -18,7 +18,7 @@ void carvesolid_triangle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -70,7 +70,7 @@ void carvesolid_rect(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -141,7 +141,7 @@ void carvesolid_circle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -219,7 +219,7 @@ void carvesolid_cone(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -302,7 +302,7 @@ void carvesolid_prism4(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -445,7 +445,7 @@ void carvesolid_cask(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -545,7 +545,7 @@ void carvesolid_dodecahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -788,7 +788,7 @@ void carvesolid_icosahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -954,7 +954,7 @@ void carvesolid_sphere(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
@@ -1057,7 +1057,7 @@ void carvesolid_tokamak(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);

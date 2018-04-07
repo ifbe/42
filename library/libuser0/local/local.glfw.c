@@ -26,8 +26,6 @@ double sine(double);
 static struct arena* win;
 static u8* dragdata[0x1000];
 //
-static int queuehead = 0;
-static int queuetail = 0;
 static int width = 512;
 static int height = 512;
 static int last_x = 0;
@@ -36,8 +34,8 @@ static int pressed = 0;
 //
 static GLuint simpleprogram;
 static GLuint prettyprogram;
-static GLuint shadowprogram;
 static GLuint myfontprogram;
+static GLuint directprogram;
 /*
 static float camera[4] = {100.0f, -100.0f, 100.0f};
 static float center[4] = {0.0f, 0.0f, 0.0f};
@@ -192,11 +190,37 @@ char myfontfrag[] = {
 	"#version 300 es\n"
 	"in mediump vec3 origcolor;\n"
 	"in mediump vec2 texuv;\n"
-	"uniform sampler2D texdata;\n"
+	"uniform sampler2D tex2d;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).rrrr;\n"
+		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).rrrr;\n"
+	"}\n"
+};
+char directvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 colour;\n"
+	"layout(location = 2)in mediump vec2 texcoo;\n"
+	"uniform mat4 prettymvp;\n"
+	"out mediump vec3 origcolor;\n"
+	"out mediump vec2 texuv;\n"
+	"void main()\n"
+	"{\n"
+		"gl_Position = prettymvp * vec4(vertex,1.0);\n"
+		"origcolor = colour;\n"
+		"texuv = texcoo;\n"
+	"}\n"
+};
+char directfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 origcolor;\n"
+	"in mediump vec2 texuv;\n"
+	"uniform sampler2D tex2d;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv);\n"
 	"}\n"
 };
 GLuint compileShader(GLenum type, const char* source)
@@ -296,7 +320,8 @@ void initshader()
 	mod[0x83].program = prettyprogram;
 	mod[0x85].program = prettyprogram;
 
-	shadowprogram = shaderprogram(shadowvert, shadowfrag);
+	directprogram = shaderprogram(directvert, directfrag);
+	mod[4].program = directprogram;
 }
 void initobject()  
 {
@@ -412,6 +437,27 @@ void initobject()
 	glEnableVertexAttribArray(2);
 
 
+//-------------------------4--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[4].vao);
+	glBindVertexArray(mod[4].vao);
+
+	//vbo
+	glGenBuffers(1, &mod[4].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[4].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
 //-------------------------0x81--------------------------
 //drawarray.point(vertex,colour)
 	glGenVertexArrays(1, &mod[0x81].vao);
@@ -515,112 +561,110 @@ void initobject()
 void inittexture()
 {
 	int j;
-	u8* buf;
+	u8* buf = win->buf;
 
-	//[0000,3fff]
-	buf = mod[0].tbuf;
-	if(buf != 0)
+
+//---------------------[0000,3fff]------------------------
+	for(j=0;j<0x400000;j++)buf[j] = 0;
+	for(j=0x80;j<0x4000;j++)
 	{
-		for(j=0;j<0x400000;j++)buf[j] = 0;
-		for(j=0x80;j<0x4000;j++)
-		{
-			drawunicode_alpha(buf, 2048, 2048, 
-				(j&0x7f)<<4, (j&0xff80)>>3, j
-			);
-		}
-		for(j=0x20;j<0x80;j++)
-		{
-			drawascii_alpha(buf, 2048, 2048,
-				j<<4, 0, j
-			);
-		}
-
-		glGenTextures(1, &(mod[0].tex));
-		glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[0].tbuf
+		drawunicode_alpha(buf, 2048, 2048, 
+			(j&0x7f)<<4, (j&0xff80)>>3, j
+		);
+	}
+	for(j=0x20;j<0x80;j++)
+	{
+		drawascii_alpha(buf, 2048, 2048,
+			j<<4, 0, j
 		);
 	}
 
+	glGenTextures(1, &(mod[0].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RED, 2048, 2048, 0,
+		GL_RED, GL_UNSIGNED_BYTE, buf
+	);
 
-	//[4000,7fff]
-	buf = mod[1].tbuf;
-	if(buf != 0)
+
+//---------------------[4000,7fff]----------------------
+	for(j=0;j<0x400000;j++)buf[j] = 0;
+	for(j=0;j<0x4000;j++)
 	{
-		for(j=0;j<0x400000;j++)buf[j] = 0;
-		for(j=0;j<0x4000;j++)
-		{
-			drawunicode_alpha(buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>3, j+0x4000
-			);
-		}
-
-		glGenTextures(1, &(mod[1].tex));
-		glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[1].tbuf
+		drawunicode_alpha(buf, 2048, 2048,
+			(j&0x7f)<<4, (j&0xff80)>>3, j+0x4000
 		);
 	}
 
+	glGenTextures(1, &(mod[1].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RED, 2048, 2048, 0,
+		GL_RED, GL_UNSIGNED_BYTE, buf
+	);
 
-	//[8000,bfff]
-	buf = mod[2].tbuf;
-	if(buf != 0)
+
+//------------------[8000,bfff]---------------------
+	for(j=0;j<0x400000;j++)buf[j] = 0;
+	for(j=0;j<0x4000;j++)
 	{
-		for(j=0;j<0x400000;j++)buf[j] = 0;
-		for(j=0;j<0x4000;j++)
-		{
-			drawunicode_alpha(buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>3, j+0x8000
-			);
-		}
-
-		glGenTextures(1, &(mod[2].tex));
-		glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[2].tbuf
+		drawunicode_alpha(buf, 2048, 2048,
+			(j&0x7f)<<4, (j&0xff80)>>3, j+0x8000
 		);
 	}
 
+	glGenTextures(1, &(mod[2].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RED, 2048, 2048, 0,
+		GL_RED, GL_UNSIGNED_BYTE, buf
+	);
 
-	//[c000,ffff]
-	buf = mod[3].tbuf;
-	if(buf != 0)
+
+//----------------[c000,ffff]--------------------
+	for(j=0;j<0x400000;j++)buf[j] = 0;
+	for(j=0;j<0x4000;j++)
 	{
-		for(j=0;j<0x400000;j++)buf[j] = 0;
-		for(j=0;j<0x4000;j++)
-		{
-			drawunicode_alpha(buf, 2048, 2048,
-				(j&0x7f)<<4, (j&0xff80)>>3, j+0xc000
-			);
-		}
-
-		glGenTextures(1, &(mod[3].tex));
-		glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0,
-			GL_RED, 2048, 2048, 0,
-			GL_RED, GL_UNSIGNED_BYTE, mod[3].tbuf
+		drawunicode_alpha(buf, 2048, 2048,
+			(j&0x7f)<<4, (j&0xff80)>>3, j+0xc000
 		);
 	}
+
+	glGenTextures(1, &(mod[3].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RED, 2048, 2048, 0,
+		GL_RED, GL_UNSIGNED_BYTE, buf
+	);
+
+
+//------------------2d screen--------------------
+	glGenTextures(1, &(mod[4].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RGBA, 1024, 1024, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, buf
+	);
 
 	/*
 	glGenFramebuffers(1, &shadowfb);
@@ -777,7 +821,7 @@ void callback_display()
 	glDrawArrays(GL_POINTS, 0, mod[0x81].vlen);
 
 	//glBindVertexArray(mod[0x82].vao);
-	//glDrawArrays(GL_LINES, 0, 2*mod[0x82].vlen);
+	//glDrawArrays(GL_LINES, 0, mod[0x82].vlen);
 
 	glBindVertexArray(mod[0x84].vao);
 	glDrawElements(GL_LINES, 2*mod[0x84].ilen, GL_UNSIGNED_SHORT, 0);
@@ -788,8 +832,8 @@ void callback_display()
 	glUniformMatrix4fv(glGetUniformLocation(prettyprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	fixlight();
 
-	//glBindVertexArray(mod[0x83].vao);
-	//glDrawArrays(GL_TRIANGLES, 0, 3*mod[0x83].vlen);
+	glBindVertexArray(mod[0x83].vao);
+	glDrawArrays(GL_TRIANGLES, 0, mod[0x83].vlen);
 
 	glBindVertexArray(mod[0x85].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
@@ -802,7 +846,7 @@ void callback_display()
 
 	glUseProgram(myfontprogram);
 	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 0);
+	glUniform1i(glGetUniformLocation(myfontprogram, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
@@ -824,84 +868,93 @@ void callback_display()
 	glBindVertexArray(mod[3].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
 
-	glUseProgram(0);
+	glUseProgram(directprogram);
+	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniform1i(glGetUniformLocation(myfontprogram, "tex2d"), 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
+	glBindVertexArray(mod[4].vao);
+	glDrawArrays(GL_TRIANGLES, 0, mod[4].vlen);
+
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
 void callback_update()
 {
+//--------------------------------
+	win->fmt = hex64('r','g','b','a','8','8','8','8');
+	win->height = 1024;
+	win->width = win->stride = 1024;
+	actorread(win, 0, 0, 0);
+
+	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RGBA, 1024, 1024, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, win->buf
+	);
+
+//--------------------------------
+	win->fmt = hex32('v','b','o',0);
 	actorread(win, 0, 0, 0);
 
 	//font0000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		6*mod[0].ilen, mod[0].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0].ilen, mod[0].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		36*mod[0].vlen,mod[0].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0].vlen,mod[0].vbuf);
 
 	//font4000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		6*mod[1].ilen, mod[1].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[1].ilen, mod[1].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		36*mod[1].vlen, mod[1].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[1].vlen, mod[1].vbuf);
 
 	//font8000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		6*mod[2].ilen,mod[2].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[2].ilen,mod[2].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		36*mod[2].vlen,mod[2].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[2].vlen,mod[2].vbuf);
 
 	//fontc000
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		6*mod[3].ilen, mod[3].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[3].ilen, mod[3].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		36*mod[3].vlen, mod[3].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[3].vlen, mod[3].vbuf);
+
+	//2d screen
+	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[4].vlen, mod[4].vbuf);
 
 	//drawarray: point
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		24*mod[0x81].vlen, mod[0x81].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x81].vlen, mod[0x81].vbuf);
 
 	//drawarray: line
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		24*mod[0x82].vlen, mod[0x82].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x82].vlen, mod[0x82].vbuf);
 
 	//drawarray: trigon
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		36*mod[0x83].vlen, mod[0x83].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x83].vlen, mod[0x83].vbuf);
 
 	//drawelement: line
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		4*mod[0x84].ilen, mod[0x84].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x84].ilen, mod[0x84].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0,
-		24*mod[0x84].vlen, mod[0x84].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x84].vlen, mod[0x84].vbuf);
 
 	//drawelement: trigon
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-		6*mod[0x85].ilen, mod[0x85].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x85].ilen, mod[0x85].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER,0,
-		36*mod[0x85].vlen, mod[0x85].vbuf);
-
-	queuetail++;
+	glBufferSubData(GL_ARRAY_BUFFER,0, 36*mod[0x85].vlen, mod[0x85].vbuf);
 }
 void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
 {
@@ -1108,71 +1161,67 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
+void windowstart(struct arena* w)
 {
 	if(0 != win)
 	{
-		this->type = 0;
-		this->fmt = 0;
+		w->type = 0;
+		w->fmt = 0;
 		return;
 	}
 
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex32('v','b','o',0);
-	this->irel = 0;
-	this->orel = 0;
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('v','b','o',0);
+	w->irel = 0;
+	w->orel = 0;
 
-	this->width = 512;
-	this->height = 512;
-	this->depth = 512;
-	this->stride = 512;
+	w->mod = mod;
+	w->buf = malloc(0x400000);
 
-	this->cx = 512.0;
-	this->cy = -512.0;
-	this->cz = 512.0;
+	w->width = 512;
+	w->height = 512;
+	w->depth = 512;
+	w->stride = 512;
 
-	this->fx = -this->cx;
-	this->fy = -this->cy;
-	this->fz = -this->cz;
+	w->cx = 512.0;
+	w->cy = -512.0;
+	w->cz = 512.0;
 
-	this->ux = 0.0;
-	this->uy = 0.0;
-	this->uz = 1.0;
+	w->fx = -w->cx;
+	w->fy = -w->cy;
+	w->fz = -w->cz;
 
-	this->len = 0x100;
-	this->buf = mod;
+	w->ux = 0.0;
+	w->uy = 0.0;
+	w->uz = 1.0;
 
 	//[0000,3fff]
-	mod[0].tbuf = malloc(0x400000);
-	mod[0].tlen = 0x400000;
 	mod[0].vbuf = malloc(0x200000);
 	mod[0].vlen = 0;
 	mod[0].ibuf = malloc(0x100000);
 	mod[0].ilen = 0;
 
 	//[4000,7fff]
-	mod[1].tbuf = malloc(0x400000);
-	mod[1].tlen = 0x400000;
 	mod[1].vbuf = malloc(0x200000);
 	mod[1].vlen = 0;
 	mod[1].ibuf = malloc(0x100000);
 	mod[1].ilen = 0;
 
 	//[8000,bfff]
-	mod[2].tbuf = malloc(0x400000);
-	mod[2].tlen = 0x400000;
 	mod[2].vbuf = malloc(0x200000);
 	mod[2].vlen = 0;
 	mod[2].ibuf = malloc(0x100000);
 	mod[2].ilen = 0;
 
 	//[c000,ffff]
-	mod[3].tbuf = malloc(0x400000);
-	mod[3].tlen = 0x400000;
 	mod[3].vbuf = malloc(0x200000);
 	mod[3].vlen = 0;
 	mod[3].ibuf = malloc(0x100000);
 	mod[3].ilen = 0;
+
+	//2d screen
+	mod[4].vbuf = malloc(0x100000);
+	mod[4].vlen = 0;
 
 	//drawarray.point
 	mod[0x81].vbuf = malloc(0x100000);
@@ -1198,8 +1247,8 @@ void windowstart(struct arena* this)
 	mod[0x85].vbuf = malloc(0x1000000);
 	mod[0x85].vlen = 0;
 
-	win = this;
-	threadcreate(uievent, this);
+	win = w;
+	threadcreate(uievent, w);
 }
 void deletewindow()
 {

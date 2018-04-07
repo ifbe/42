@@ -45,12 +45,7 @@ void carvedrone_node(
 	v2[0] = cx - tt[0] - rx;
 	v2[1] = cy - tt[1] - ry;
 	v2[2] = cz - tt[2] - rz;
-	carveline_triangle(
-		win, 0x402040,
-		v0[0], v0[1], v0[2],
-		v1[0], v1[1], v1[2],
-		v2[0], v2[1], v2[2]
-	);
+
 	carveline_yshape(
 		win, 0x204020,
 		v0[0], v0[1], v0[2],
@@ -58,15 +53,60 @@ void carvedrone_node(
 		v2[0], v2[1], v2[2]
 	);
 	carveline_yshape(
+		win, 0x204020,
+		v0[0], v0[1], v0[2]+16.0,
+		v1[0], v1[1], v1[2]+16.0,
+		v2[0], v2[1], v2[2]+16.0
+	);
+
+	carveline_yshape(
 		win, 0xffffff,
 		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2,
 		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2,
 		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2
 	);
+	carveline_yshape(
+		win, 0xffffff,
+		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2+16.0,
+		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2+16.0,
+		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2+16.0
+	);
+
 	carveline(
 		win, 0xffffff,
 		cx, cy, cz,
 		cx, cy, cz+16.0
+	);
+	carvesolid_triangle(
+		win, 0x808080,
+		v0[0], v0[1], v0[2],
+		v1[0], v1[1], v1[2],
+		v2[0], v2[1], v2[2]
+	);
+	carvesolid_triangle(
+		win, 0x808080,
+		v0[0], v0[1], v0[2]+16.0,
+		v1[0], v1[1], v1[2]+16.0,
+		v2[0], v2[1], v2[2]+16.0
+	);
+
+	carvesolid_rect(
+		win, 0x604020,
+		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2+8.0,
+		(v0[0]-v1[0])/2, (v0[1]-v1[1])/2, (v0[2]-v1[2])/2,
+		0.0, 0.0, 8.0
+	);
+	carvesolid_rect(
+		win, 0x206040,
+		(v2[0]+v1[0])/2, (v2[1]+v1[1])/2, (v2[2]+v1[2])/2+8.0,
+		(v2[0]-v1[0])/2, (v2[1]-v1[1])/2, (v2[2]-v1[2])/2,
+		0.0, 0.0, 8.0
+	);
+	carvesolid_rect(
+		win, 0x204060,
+		(v0[0]+v2[0])/2, (v0[1]+v2[1])/2, (v0[2]+v2[2])/2+8.0,
+		(v0[0]-v2[0])/2, (v0[1]-v2[1])/2, (v0[2]-v2[2])/2,
+		0.0, 0.0, 8.0
 	);
 }
 void carvedrone(
@@ -75,8 +115,11 @@ void carvedrone(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+	int x,y;
 	float up[3];
 	float tt[3];
+	float xx[3];
+	float yy[3];
 	float v0[3];
 	float v1[3];
 	float v2[3];
@@ -98,6 +141,40 @@ void carvedrone(
 	v2[1] = -tt[1]-ry;
 	v2[2] = -tt[2]-rz;
 
+	xx[0] = v1[0]-v2[0];
+	xx[1] = v1[1]-v2[1];
+	xx[2] = v1[2]-v2[2];
+	yy[0] = rx*3/2;
+	yy[1] = ry*3/2;
+	yy[2] = rz*3/2;
+	for(y=-2;y<=2;y++)
+	{
+		for(x=-2;x<=2;x++)
+		{
+			tt[0] = cx+xx[0]*x+yy[0]*y;
+			tt[1] = cy+xx[1]*x+yy[1]*y;
+			tt[2] = cz+xx[2]*x+yy[2]*y;
+			if(y%2)
+			{
+				tt[0] += xx[0]/2;
+				tt[1] += xx[1]/2;
+				tt[2] += xx[2]/2;
+			}
+			carvedrone_node(
+				win, rgb,
+				tt[0], tt[1], tt[2],
+				0.95*rx, 0.95*ry, 0.95*rz,
+				ux, uy, uz
+			);
+			carvedrone_node(
+				win, rgb,
+				tt[0]+(rx-xx[0])/2, tt[1]+(ry-xx[1])/2, tt[2]+(rz-xx[2])/2,
+				-0.95*rx, -0.95*ry, -0.95*rz,
+				ux, uy, uz
+			);
+		}
+	}
+/*
 	//0
 	carvedrone_node(
 		win, rgb,
@@ -183,6 +260,7 @@ void carvedrone(
 		v2[0], v2[1], v2[2],
 		ux, uy, uz
 	);
+*/
 }
 
 
@@ -190,91 +268,9 @@ void carvedrone(
 
 void carvestarry_random(struct arena* win)
 {
-/*
-	u32 j,k;
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
-
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (ccount*12);
-	u16* index     = buf + 0x800000 + (icount*2);
-
-	win->vertexcount  += 256;
-	win->normalcount  += 256;
-	win->colorcount   += 256;
-	win->texturecount += 256;
-	win->pointcount   += 256;
-
-	for(j=0;j<256;j++)
-	{
-		vertex[j*3+0] = (getrandom() % 32768) / 32768.0 - 0.5;
-		vertex[j*3+1] = (getrandom() % 32768) / 32768.0 - 0.5;
-		vertex[j*3+2] = (getrandom() % 32768) / 32768.0;
-
-		normal[j*3+0] = 0.0;
-		normal[j*3+1] = 0.0;
-		normal[j*3+2] = 1.0;
-
-		k = getrandom();
-		color[j*3+0] = (float)(k&0xff) / 256.0;
-		color[j*3+1] = (float)((k>>8)&0xff) / 256.0;
-		color[j*3+2] = (float)((k>>16)&0xff) / 256.0;
-
-		index[j] = pcount+j;
-	}
-*/
 }
 void carveneural_random(struct arena* win)
 {
-/*
-	u32 j,k;
-	u32 pcount = win->vertexcount;
-	u32 ncount = win->normalcount;
-	u32 ccount = win->colorcount;
-	u32 tcount = win->texturecount;
-	u32 icount = win->pointcount;
-	u32 lcount = win->linecount;
-
-	void* buf = (void*)(win->buf);
-	float* vertex  = buf + 0x000000 + (pcount*12);
-	float* normal  = buf + 0x200000 + (ncount*12);
-	float* color   = buf + 0x400000 + (ccount*12);
-	float* texture = buf + 0x600000 + (ccount*12);
-	u16* iindex    = buf + 0x800000 + (icount*2);
-	u16* lindex    = buf + 0xa00000 + (lcount*2);
-
-	win->vertexcount  += 256;
-	win->normalcount  += 256;
-	win->colorcount   += 256;
-	win->texturecount += 256;
-	win->pointcount   += 256;
-	win->linecount    += 256;
-
-	for(j=0;j<256;j++)
-	{
-		vertex[j*3+0] = (getrandom() % 65536) / 65536.0 - 0.5;
-		vertex[j*3+1] = (getrandom() % 65536) / 65536.0 - 0.5;
-		vertex[j*3+2] = (getrandom() % 65536) / 65536.0;
-
-		normal[j*3+0] = 0.0;
-		normal[j*3+1] = 0.0;
-		normal[j*3+2] = 1.0;
-
-		k = getrandom();
-		color[j*3+0] = (float)(k&0xff) / 256.0;
-		color[j*3+1] = (float)((k>>8)&0xff) / 256.0;
-		color[j*3+2] = (float)((k>>16)&0xff) / 256.0;
-
-		iindex[j] = pcount+j;
-		lindex[j] = pcount+j;
-	}
-*/
 }
 void carvestl(
 	struct arena* win, u32 rgb,
@@ -288,7 +284,7 @@ void carvestl(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int vlen = mod[stlv].vlen;
 	float* vbuf = (mod[stlv].vbuf) + (36*vlen);
 

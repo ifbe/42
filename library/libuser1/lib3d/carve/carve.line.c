@@ -17,7 +17,7 @@ void carveline(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -54,7 +54,7 @@ void carveline_bezier(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -92,7 +92,7 @@ void carveline_special(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -128,7 +128,7 @@ void carveline_yshape(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -185,7 +185,7 @@ void carveline_triangle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -231,7 +231,7 @@ void carveline_rect(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -288,7 +288,7 @@ void carveline_hexagon(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -383,7 +383,7 @@ void carveline_circle(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -444,7 +444,7 @@ void carveline_cone(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -519,7 +519,7 @@ void carveline_prism4(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -634,7 +634,7 @@ void carveline_cylinder(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -703,7 +703,7 @@ void carveline_dodecahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -889,7 +889,7 @@ void carveline_icosahedron(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
@@ -1038,7 +1038,7 @@ void carveline_sphere(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);

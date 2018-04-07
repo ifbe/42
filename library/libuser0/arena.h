@@ -79,9 +79,9 @@ struct arena
 	};
 	union{
 		u64 len;
+		void* mod;
 		void* ximage;
 		void* texture;
-		void* pass;
 	};
 	union{
 		u64 addr;

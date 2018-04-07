@@ -15,7 +15,7 @@ void carveascii(
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[0].ilen;
 	int vlen = mod[0].vlen;
 	u16* ibuf = (mod[0].ibuf) + (6*ilen);
@@ -78,7 +78,7 @@ void carveunicode(
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	int vvv = (unicode&0xffff)/0x4000;
-	struct texandobj* mod = win->buf;
+	struct texandobj* mod = win->mod;
 	int ilen = mod[vvv].ilen;
 	int vlen = mod[vvv].vlen;
 	u16* ibuf = (mod[vvv].ibuf) + (6*ilen);

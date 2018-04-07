@@ -174,7 +174,8 @@ struct arena
 	};
 	union{
 		u64 len;
-		u64 ximage;
+		void* mod;
+		void* ximage;
 		void* texture;
 	};
 	union{
