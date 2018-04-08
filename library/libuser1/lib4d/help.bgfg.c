@@ -22,12 +22,12 @@ void background_vbo(struct arena* win)
 	float* f;
 	float* p;
 	struct texandobj* mod = win->mod;
-	for(j=0;j<5;j++)
+	for(j=0;j<8;j++)
 	{
 		mod[j].ilen = 0;
 		mod[j].vlen = 0;
 	}
-	for(j=0x81;j<=0x85;j++)
+	for(j=0x80;j<0x88;j++)
 	{
 		mod[j].ilen = 0;
 		mod[j].vlen = 0;
@@ -95,6 +95,7 @@ void background_vbo(struct arena* win)
 	f[51] = 1.0;
 	f[52] = 0.0;
 	f[53] = 0.0;
+
 }
 void background_pixel(struct arena* win)
 {
@@ -130,6 +131,7 @@ void foreground_html(struct arena* win)
 }
 void foreground_vbo(struct arena* win)
 {
+	vkbd_read(win);
 	if(win->edit)carveaxis(win);
 }
 void foreground_pixel(struct arena* win)

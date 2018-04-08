@@ -69,6 +69,10 @@ lib3d/carve/carve.point.c \
 lib3d/carve/carve.line.c \
 lib3d/carve/carve.trigon.c \
 lib3d/carve/carve.other.c \
+lib3d/carve/carve2d.ascii.c \
+lib3d/carve/carve2d.point.c \
+lib3d/carve/carve2d.line.c \
+lib3d/carve/carve2d.trigon.c \
 lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \

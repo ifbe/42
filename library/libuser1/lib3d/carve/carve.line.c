@@ -2,7 +2,7 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 24
-#define linev 0x84
+#define linev 0x81
 void quaternionoperation(float*, float*, float);
 
 

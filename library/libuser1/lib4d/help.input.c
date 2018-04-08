@@ -146,7 +146,7 @@ int actorinput(struct arena* win, struct event* ev)
 	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
-	//say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
+	say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
 
 stage0:
 	why = ev->why;

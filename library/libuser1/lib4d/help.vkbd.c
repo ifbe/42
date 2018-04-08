@@ -68,10 +68,39 @@ haha:
 	);
 
 }
-void vkbd_read_html(struct arena* win)
-{
-}
 void vkbd_read_vbo(struct arena* win)
+{
+	float j,k;
+	int x,y;
+	int w = win->width;
+	int h = win->height;
+	if(0 == win->vkbd)goto haha;
+
+	for(y=0;y<16;y++)
+	{
+		for(x=0;x<16;x++)
+		{
+			carvesolid2d_rect(win, 0xffffff,
+				(x-7.5)/8.0, (y-15.5)/16.0,
+				1.0/17, 0.0, 0.0, 0.5/17
+			);
+		}
+	}
+
+haha:
+	if(w<h)x = w>>4;
+	else x = h>>4;
+	j = (float)x / (float)w;
+	k = (float)x / (float)h;
+
+	carvesolid2d_circle(
+		win, 0xabcdef,
+		1.0-j, k-1.0,
+		j, 0.0,
+		0.0, k
+	);
+}
+void vkbd_read_html(struct arena* win)
 {
 }
 void vkbd_read_tui(struct arena* win)
@@ -119,6 +148,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 		y = ((ev->why)>>16)&0xffff;
 		if(x<y)ret = x>>4;
 		else ret = y>>4;
+say("w=%x,h=%x,x=%x,y=%x,ret=%x\n",w,h,x,y,ret);
 		if((y+ret > h) && (x+ret > w))
 		{
 			if(win->vkbd)win->vkbd = 0;

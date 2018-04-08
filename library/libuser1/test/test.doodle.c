@@ -67,19 +67,19 @@ static void doodle_read_vbo(
 		win, 0x00ffff,
 		cx, cy, ww/128,
 		ww, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh, 0.0
 	);
 	carvesolid_circle(
 		win, 0x404040,
 		cx-ww/2, cy, ww/64,
 		ww/2, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh/2, 0.0
 	);
 	carvesolid_circle(
 		win, 0x404040,
 		cx+ww/2, cy, ww/64,
 		ww/2, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh/2, 0.0
 	);
 
 	f = arctan2(py-cy, px-cx+(ww/2));
@@ -93,13 +93,13 @@ static void doodle_read_vbo(
 		win, 0xff0000,
 		x0, y0, ww/32,
 		ww/4, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh/4, 0.0
 	);
 	carvesolid_circle(
 		win, 0xff0000,
 		x1, y1, ww/32,
 		ww/4, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh/4, 0.0
 	);
 
 	carveline(

@@ -22,7 +22,7 @@ static void clock_read_vbo(
 		win, 0xc0c0c0,
 		cx, cy, cz,
 		ww, 0.0, 0.0,
-		0.0, 0.0, ww
+		0.0, hh, 0.0
 	);
 
 	f0 = PI/4 - (p[0]*PI*2.0/60.0);

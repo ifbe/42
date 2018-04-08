@@ -114,7 +114,7 @@ static void weiqi_read_vbo(
 				win, 0x0,
 				m, n, ww/19/4,
 				ww/19/4, 0.0, 0.0,
-				0.0, 0.0, 1.0
+				0.0, hh/19/4, 0.0
 			);
 		}
 	}

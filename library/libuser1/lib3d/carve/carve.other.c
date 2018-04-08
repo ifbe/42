@@ -2,7 +2,7 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 18
-#define stlv 0x85
+#define stlv 0x82
 void quaternionoperation(float*, float*, float);
 u32 getrandom();
 

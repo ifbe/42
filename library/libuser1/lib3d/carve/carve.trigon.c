@@ -2,7 +2,7 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 18
-#define trigonv 0x85
+#define trigonv 0x83
 void quaternionoperation(float*, float*, float);
 
 
@@ -131,12 +131,12 @@ void carvesolid_circle(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+	float fx, float fy, float fz)
 {
+#define circieacc (acc*2)
 	int a,b,j;
-	float s,t;
-	float q[4];
-
+	float c,s;
+	float ux,uy,uz;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -146,38 +146,37 @@ void carvesolid_circle(
 	int vlen = mod[trigonv].vlen;
 	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
 	float* vbuf = (mod[trigonv].vbuf) + (36*vlen);
-	mod[trigonv].ilen += acc;
-	mod[trigonv].vlen += acc+1;
+	mod[trigonv].ilen += circieacc;
+	mod[trigonv].vlen += circieacc+1;
 
-	for(j=0;j<acc;j++)
+	ux = ry*fz - rz*fy;
+	uy = rz*fx - rx*fz;
+	uz = rx*fy - ry*fx;
+	for(j=0;j<circieacc;j++)
 	{
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
 		a = j*9;
 		b = j*3;
 
-		vbuf[a+0] = rx;
-		vbuf[a+1] = ry;
-		vbuf[a+2] = rz;
-		quaternionoperation(&vbuf[a], q, j*tau/acc);
+		c = cosine(j*tau/circieacc);
+		s = sine(j*tau/circieacc);
+		vbuf[a+0] = cx + rx*c + fx*s;
+		vbuf[a+1] = cy + ry*c + fy*s;
+		vbuf[a+2] = cz + rz*c + fz*s;
 
-		vbuf[a+0] += cx;
-		vbuf[a+1] += cy;
-		vbuf[a+2] += cz;
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
 		vbuf[a+5] = bb;
+
 		vbuf[a+6] = ux;
 		vbuf[a+7] = uy;
 		vbuf[a+8] = uz;
 
-		ibuf[b+0] = vlen + acc;
+		ibuf[b+0] = vlen + circieacc;
 		ibuf[b+1] = vlen + j;
-		ibuf[b+2] = vlen + (j+1)%acc;
+		ibuf[b+2] = vlen + (j+1)%circieacc;
 	}
 
-	a = acc*9;
+	a = circieacc*9;
 	vbuf[a+0] = cx;
 	vbuf[a+1] = cy;
 	vbuf[a+2] = cz;
@@ -501,17 +500,27 @@ void carvesolid_cylinder(
 	float rx, float ry, float rz,
 	float ux, float uy, float uz)
 {
+	float f[3];
+	float q[4];
+	q[0] = ux;
+	q[1] = uy;
+	q[2] = uz;
+	f[0] = rx;
+	f[1] = ry;
+	f[2] = rz;
+	quaternionoperation(f, q, PI/2);
+
 	carvesolid_circle(
 		win, rgb,
 		cx+ux, cy+uy, cz+uz,
 		rx, ry, rz,
-		ux, uy, uz
+		f[0], f[1], f[2]
 	);
 	carvesolid_circle(
 		win, rgb,
 		cx-ux, cy-uy, cz-uz,
 		rx, ry, rz,
-		-ux, -uy, -uz
+		-f[0], -f[1], -f[2]
 	);
 	carvesolid_cask(
 		win, rgb,

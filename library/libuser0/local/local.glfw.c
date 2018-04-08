@@ -36,6 +36,7 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint myfontprogram;
 static GLuint directprogram;
+static GLuint glsl2dprogram;
 /*
 static float camera[4] = {100.0f, -100.0f, 100.0f};
 static float center[4] = {0.0f, 0.0f, 0.0f};
@@ -93,6 +94,26 @@ static struct texandobj mod[256];
 
 
 
+char glsl2dvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec2 vertex;\n"
+	"layout(location = 1)in mediump vec3 colour;\n"
+	"out mediump vec3 vcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vcolor = colour;\n"
+		"gl_Position = vec4(vertex, 0.0, 1.0);\n"
+	"}\n"
+};
+char glsl2dfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 vcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vcolor,1.0);\n"
+	"}\n"
+};
 char simplevert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -142,27 +163,6 @@ char prettyvert[] = {
 	"}\n"
 };
 char prettyfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
-	"}\n"
-};
-char shadowvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"uniform mat4 lightmvp;\n"
-	"uniform sampler2D shadowmap;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = vertex;\n"
-		"gl_Position = vec4(vertex,1.0);\n"
-	"}\n"
-};
-char shadowfrag[] = {
 	"#version 300 es\n"
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
@@ -306,22 +306,27 @@ void initshader()
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
 	myfontprogram = shaderprogram(myfontvert, myfontfrag);
-	mod[0].program = myfontprogram;
-	mod[1].program = myfontprogram;
-	mod[2].program = myfontprogram;
-	mod[3].program = myfontprogram;
-
-	simpleprogram = shaderprogram(simplevert, simplefrag);
-	mod[0x81].program = simpleprogram;
-	mod[0x82].program = simpleprogram;
-	mod[0x84].program = simpleprogram;
-
-	prettyprogram = shaderprogram(prettyvert, prettyfrag);
-	mod[0x83].program = prettyprogram;
-	mod[0x85].program = prettyprogram;
+	mod[0x00].program = myfontprogram;
+	mod[0x01].program = myfontprogram;
+	mod[0x02].program = myfontprogram;
+	mod[0x03].program = myfontprogram;
 
 	directprogram = shaderprogram(directvert, directfrag);
-	mod[4].program = directprogram;
+	mod[0x04].program = directprogram;
+
+	simpleprogram = shaderprogram(simplevert, simplefrag);
+	mod[0x80].program = simpleprogram;
+	mod[0x81].program = simpleprogram;
+
+	prettyprogram = shaderprogram(prettyvert, prettyfrag);
+	mod[0x82].program = prettyprogram;
+	mod[0x83].program = prettyprogram;
+
+	glsl2dprogram = shaderprogram(glsl2dvert, glsl2dfrag);
+	mod[0x84].program = glsl2dprogram;
+	mod[0x85].program = glsl2dprogram;
+	mod[0x86].program = glsl2dprogram;
+	mod[0x87].program = glsl2dprogram;
 }
 void initobject()  
 {
@@ -458,10 +463,33 @@ void initobject()
 	glEnableVertexAttribArray(2);
 
 
-//-------------------------0x81--------------------------
+//-------------------------0x80--------------------------
 //drawarray.point(vertex,colour)
+	glGenVertexArrays(1, &mod[0x80].vao);
+	glBindVertexArray(mod[0x80].vao);
+
+	glGenBuffers(1, &mod[0x80].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x80].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x80].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
+
+
+//-------------------------0x81--------------------------
+	//drawelement.line(vertex,colour)
 	glGenVertexArrays(1, &mod[0x81].vao);
 	glBindVertexArray(mod[0x81].vao);
+
+	glGenBuffers(1, &mod[0x81].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x81].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x81].ibuf, GL_STATIC_DRAW
+	);
 
 	glGenBuffers(1, &mod[0x81].vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
@@ -475,27 +503,35 @@ void initobject()
 	glEnableVertexAttribArray(1);
 
 
-//-------------------------0x82--------------------------
-	//drawarray.line(vertex,colour)
+//-------------------------0x82---------------------------
+	//drawarray.trigon(vertex,colour,normal)
 	glGenVertexArrays(1, &mod[0x82].vao);
 	glBindVertexArray(mod[0x82].vao);
 
 	glGenBuffers(1, &mod[0x82].vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
 		mod[0x82].vbuf, GL_STATIC_DRAW
 	);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
 
 
 //-------------------------0x83---------------------------
-	//drawarray.trigon(vertex,colour,normal)
+	//drawelement.trigon(vertex,colour,normal)
 	glGenVertexArrays(1, &mod[0x83].vao);
 	glBindVertexArray(mod[0x83].vao);
+
+	glGenBuffers(1, &mod[0x83].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x83].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x83].ibuf, GL_STATIC_DRAW
+	);
 
 	glGenBuffers(1, &mod[0x83].vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
@@ -511,16 +547,9 @@ void initobject()
 	glEnableVertexAttribArray(2);
 
 
-//-------------------------0x84---------------------------
-	//drawelement.line(vertex,colour)
+//------------------------0x84--------------------------
 	glGenVertexArrays(1, &mod[0x84].vao);
 	glBindVertexArray(mod[0x84].vao);
-
-	glGenBuffers(1, &mod[0x84].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
-		mod[0x84].ibuf, GL_STATIC_DRAW
-	);
 
 	glGenBuffers(1, &mod[0x84].vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
@@ -535,7 +564,6 @@ void initobject()
 
 
 //------------------------0x85-------------------------
-	//drawelement.trigon(vertex,colour,normal)
 	glGenVertexArrays(1, &mod[0x85].vao);
 	glBindVertexArray(mod[0x85].vao);
 
@@ -547,16 +575,36 @@ void initobject()
 
 	glGenBuffers(1, &mod[0x85].vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000,
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
 		mod[0x85].vbuf, GL_STATIC_DRAW
 	);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
+
+
+//------------------------0x86-------------------------
+	glGenVertexArrays(1, &mod[0x86].vao);
+	glBindVertexArray(mod[0x86].vao);
+
+	glGenBuffers(1, &mod[0x86].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x86].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[0x86].ibuf, GL_STATIC_DRAW
+	);
+
+	glGenBuffers(1, &mod[0x86].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x86].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x100000,
+		mod[0x86].vbuf, GL_STATIC_DRAW
+	);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+	glEnableVertexAttribArray(1);
 }
 void inittexture()
 {
@@ -808,42 +856,57 @@ void callback_display()
 	fixmatrix(cameramvp);
 
 	//set
+	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 
 
+//--------------------glsl2dprogram------------------
+	//point,line
+	glUseProgram(glsl2dprogram);
+
+	glBindVertexArray(mod[0x84].vao);
+	glDrawArrays(GL_POINTS, 0, mod[0x84].vlen);
+
+	glBindVertexArray(mod[0x85].vao);
+	glDrawElements(GL_LINES, 2*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
+
+	glBindVertexArray(mod[0x86].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[0x86].ilen, GL_UNSIGNED_SHORT, 0);
+
+
+//--------------------simpleprogram------------------
 	//point,line
 	glUseProgram(simpleprogram);
 	glUniformMatrix4fv(glGetUniformLocation(simpleprogram, "simplemvp"), 1, GL_FALSE, cameramvp);
 
+	glBindVertexArray(mod[0x80].vao);
+	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
+
 	glBindVertexArray(mod[0x81].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x81].vlen);
-
-	//glBindVertexArray(mod[0x82].vao);
-	//glDrawArrays(GL_LINES, 0, mod[0x82].vlen);
-
-	glBindVertexArray(mod[0x84].vao);
-	glDrawElements(GL_LINES, 2*mod[0x84].ilen, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_LINES, 2*mod[0x81].ilen, GL_UNSIGNED_SHORT, 0);
 
 
+//--------------------prettyprogram------------------
 	//stl,triangle
 	glUseProgram(prettyprogram);
 	glUniformMatrix4fv(glGetUniformLocation(prettyprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	fixlight();
 
+	glBindVertexArray(mod[0x82].vao);
+	glDrawArrays(GL_TRIANGLES, 0, mod[0x82].vlen);
+
 	glBindVertexArray(mod[0x83].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[0x83].vlen);
-
-	glBindVertexArray(mod[0x85].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, 3*mod[0x83].ilen, GL_UNSIGNED_SHORT, 0);
 
 
-	//font0000,4000,8000,c000
+	//
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+//--------------------myfontprogram------------------
 	glUseProgram(myfontprogram);
 	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	glUniform1i(glGetUniformLocation(myfontprogram, "tex2d"), 0);
@@ -868,6 +931,8 @@ void callback_display()
 	glBindVertexArray(mod[3].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
 
+
+//------------------directprogram-------------------
 	glUseProgram(directprogram);
 	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
 	glUniform1i(glGetUniformLocation(myfontprogram, "tex2d"), 0);
@@ -877,6 +942,8 @@ void callback_display()
 	glBindVertexArray(mod[4].vao);
 	glDrawArrays(GL_TRIANGLES, 0, mod[4].vlen);
 
+
+	//
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
@@ -896,6 +963,8 @@ void callback_update()
 
 //--------------------------------
 	win->fmt = hex32('v','b','o',0);
+	win->height = height;
+	win->width = win->stride = width;
 	actorread(win, 0, 0, 0);
 
 	//font0000
@@ -930,31 +999,49 @@ void callback_update()
 	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[4].vlen, mod[4].vbuf);
 
+
+//----------------------3d---------------------
 	//drawarray: point
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x80].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x80].vlen, mod[0x80].vbuf);
+
+	//drawelement: line
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x81].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x81].ilen, mod[0x81].ibuf);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x81].vlen, mod[0x81].vbuf);
 
-	//drawarray: line
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x82].vlen, mod[0x82].vbuf);
-
 	//drawarray: trigon
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x82].vlen, mod[0x82].vbuf);
+
+	//drawelement: trigon
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x83].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x83].ilen, mod[0x83].ibuf);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x83].vlen, mod[0x83].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER,0, 36*mod[0x83].vlen, mod[0x83].vbuf);
 
-	//drawelement: line
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x84].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x84].ilen, mod[0x84].ibuf);
 
+//----------------------2d---------------------
+	//drawarray: point
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x84].vlen, mod[0x84].vbuf);
 
-	//drawelement: trigon
+	//drawelement: line
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x85].ilen, mod[0x85].ibuf);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x85].ilen, mod[0x85].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER,0, 36*mod[0x85].vlen, mod[0x85].vbuf);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x85].vlen, mod[0x85].vbuf);
+
+	//drawelement: trigon
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x86].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x86].ilen, mod[0x86].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[0x86].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[0x86].vlen, mod[0x86].vbuf);
 }
 void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
 {
@@ -1223,29 +1310,43 @@ void windowstart(struct arena* w)
 	mod[4].vbuf = malloc(0x100000);
 	mod[4].vlen = 0;
 
+//--------------------3d-------------------
 	//drawarray.point
+	mod[0x80].vbuf = malloc(0x100000);
+	mod[0x80].vlen = 0;
+
+	//drawelement.line
+	mod[0x81].ibuf = malloc(0x100000);
+	mod[0x81].ilen = 0;
 	mod[0x81].vbuf = malloc(0x100000);
 	mod[0x81].vlen = 0;
 
-	//drawarray.line
-	mod[0x82].vbuf = malloc(0x100000);
+	//drawarray.trigon
+	mod[0x82].vbuf = malloc(0x1000000);
 	mod[0x82].vlen = 0;
 
-	//drawarray.trigon
+	//drawelement.trigon
+	mod[0x83].ibuf = malloc(0x100000);
+	mod[0x83].ilen = 0;
 	mod[0x83].vbuf = malloc(0x1000000);
 	mod[0x83].vlen = 0;
 
-	//drawelement.line
-	mod[0x84].ibuf = malloc(0x100000);
-	mod[0x84].ilen = 0;
+//----------------------2d--------------------
+	//drawarray.point
 	mod[0x84].vbuf = malloc(0x100000);
 	mod[0x84].vlen = 0;
 
-	//drawelement.trigon
+	//drawelement.line
 	mod[0x85].ibuf = malloc(0x100000);
 	mod[0x85].ilen = 0;
-	mod[0x85].vbuf = malloc(0x1000000);
+	mod[0x85].vbuf = malloc(0x100000);
 	mod[0x85].vlen = 0;
+
+	//drawelement.trigon
+	mod[0x86].ibuf = malloc(0x100000);
+	mod[0x86].ilen = 0;
+	mod[0x86].vbuf = malloc(0x100000);
+	mod[0x86].vlen = 0;
 
 	win = w;
 	threadcreate(uievent, w);
