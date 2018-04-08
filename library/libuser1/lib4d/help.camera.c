@@ -118,6 +118,8 @@ int camera_event(struct arena* win, struct event* ev)
 	if(0x4070 == ev->what)
 	{
 		if(btn > 10)btn = 10;
+		if(0 == win->touchdown[btn].z)return 0;
+
 		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
 		{
 			x1 = (ev->why)&0xffff;

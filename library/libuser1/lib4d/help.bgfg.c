@@ -1,6 +1,5 @@
 #include "actor.h"
 void vkbd_read(void*);
-void carveaxis(void*);
 void login_read(void*);
 
 
@@ -131,8 +130,24 @@ void foreground_html(struct arena* win)
 }
 void foreground_vbo(struct arena* win)
 {
+	int j;
+	float x0,y0,x1,y1;
 	vkbd_read(win);
-	if(win->edit)carveaxis(win);
+
+	for(j=0;j<11;j++)
+	{
+		if(0 == win->touchdown[j].z)continue;
+
+		x0 = (float)(win->touchdown[j].x) / (float)(win->width);
+		x0 = x0*2 - 1.0;
+		y0 = (float)(win->touchdown[j].y) / (float)(win->height);
+		y0 = 1.0 - y0*2;
+		x1 = (float)(win->touchmove[j].x) / (float)(win->width);
+		x1 = x1*2 - 1.0;
+		y1 = (float)(win->touchmove[j].y) / (float)(win->height);
+		y1 = 1.0 - y1*2;
+		carveline2d(win, 0xff00ff, x0, y0, x1, y1);
+	}
 }
 void foreground_pixel(struct arena* win)
 {

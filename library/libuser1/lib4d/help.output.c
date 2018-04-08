@@ -1,12 +1,12 @@
 #include "actor.h"
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
-void background(void*);
-void foreground(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
+void background(void*);
+void foreground(void*);
 
 
 
@@ -28,12 +28,17 @@ void helpout_create(void* addr)
 
 void select_2d(struct arena* win, struct style* sty)
 {
+	int w = win->width;
+	int h = win->height;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+
+	drawline(win, 0xffffff, 0, w, h/2, h/2);
+	drawline(win, 0xffffff, w/2, w/2, 0, h);
 	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
 void select_3d(struct arena* win, struct style* sty)
@@ -45,6 +50,9 @@ void select_3d(struct arena* win, struct style* sty)
 	int hh = sty->fy;
 	int dd = sty->uz;
 
+	carveline(win, 0xff0000, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0);
+	carveline(win, 0x00ff00, 0.0, 0.0, 0.0, 0.0, 10000.0, 0.0);
+	carveline(win, 0x0000ff, 0.0, 0.0, 0.0, 0.0, 0.0, 10000.0);
 	carveline_prism4(
 		win, 0xff0000,
 		cx, cy, cz+dd,

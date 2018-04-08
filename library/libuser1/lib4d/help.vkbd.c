@@ -71,7 +71,7 @@ haha:
 void vkbd_read_vbo(struct arena* win)
 {
 	float j,k;
-	int x,y;
+	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
 	if(0 == win->vkbd)goto haha;
@@ -80,8 +80,13 @@ void vkbd_read_vbo(struct arena* win)
 	{
 		for(x=0;x<16;x++)
 		{
-			carvesolid2d_rect(win, 0xffffff,
-				(x-7.5)/8.0, (y-15.5)/16.0,
+			c = x+(y<<4);
+			if(c == win->vkbd)rgb = 0xff00ff;
+			else rgb = 0x808080;
+
+			carvesolid2d_rect(
+				win, rgb,
+				(x-7.5)/8.0, -(y+0.5)/16.0,
 				1.0/17, 0.0, 0.0, 0.5/17
 			);
 		}

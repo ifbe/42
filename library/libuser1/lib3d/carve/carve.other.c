@@ -9,12 +9,6 @@ u32 getrandom();
 
 
 
-void carveaxis(struct arena* win)
-{
-	carveline(win, 0xff0000, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0);
-	carveline(win, 0x00ff00, 0.0, 0.0, 0.0, 0.0, 10000.0, 0.0);
-	carveline(win, 0x0000ff, 0.0, 0.0, 0.0, 0.0, 0.0, 10000.0);
-}
 void carvedrone_node(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,

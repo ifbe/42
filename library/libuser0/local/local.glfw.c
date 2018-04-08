@@ -17,20 +17,14 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 //
 void matrixmultiply_4(float*, float*);
 double squareroot(double);
-double cosine(double);
-double sine(double);
 
 
 
 
 static struct arena* win;
 static u8* dragdata[0x1000];
-//
 static int width = 512;
 static int height = 512;
-static int last_x = 0;
-static int last_y = 0;
-static int pressed = 0;
 //
 static GLuint simpleprogram;
 static GLuint prettyprogram;
@@ -60,7 +54,6 @@ static GLfloat projmatrix[4*4] = {
 	0.0f, 0.0f, -1.0f, -1.0f,
 	0.0f, 0.0f, -0.2f, 0.0f
 };
-//
 struct texandobj
 {
 	GLuint program;
@@ -1084,19 +1077,26 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 }
 void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 {
-	u64 xx,yy,temp;
+	u64 x,y,temp;
 	struct event e;
+	double xpos, ypos;
 
-	printf("%x,%x\n", button, action);
-	pressed = action;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	x = ((int)xpos)&0xffff;
+	y = ((int)ypos)&0xffff;
 
-	if(0 == action)
+	if(1 == action)
 	{
-		xx = last_x&0xffff;
-		yy = last_y&0xffff;
-
 		temp = 'l';
-		e.why = xx + (yy<<16) + (temp<<48);
+		e.why = x + (y<<16) + (temp<<48);
+		e.what = 0x2b70;
+		e.where = (u64)win;
+		actorwrite(0, 0, win, 0, &e, 0x20);
+	}
+	else if(0 == action)
+	{
+		temp = 'l';
+		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2d70;
 		e.where = (u64)win;
 		actorwrite(0, 0, win, 0, &e, 0x20);
@@ -1105,29 +1105,17 @@ void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 //void callback_move(int x,int y)
 static void callback_move(GLFWwindow* window, double xpos, double ypos)
 {
-	u64 xx,yy,temp;
+	u64 x,y,temp;
 	struct event e;
-	float t[3];
-	float v[4];
-	int x = (int)xpos;
-	int y = (int)ypos;
-	if(pressed == 0)return;
-	pressed++;
 
-	xx = x&0xffff;
-	yy = y&0xffff;
+	x = ((int)xpos)&0xffff;
+	y = ((int)ypos)&0xffff;
 
 	temp = 'l';
-	e.why = xx + (yy<<16) + (temp<<48);
-	if(pressed <= 2)e.what = 0x2b70;
-	else e.what = 0x4070;
-
+	e.why = x + (y<<16) + (temp<<48);
+	e.what = 0x4070;
 	e.where = (u64)win;
 	actorwrite(0, 0, win, 0, &e, 0x20);
-
-theend:
-	last_x = x;
-	last_y = y;
 }
 void callback_scroll(GLFWwindow* window, double x, double y)
 {
