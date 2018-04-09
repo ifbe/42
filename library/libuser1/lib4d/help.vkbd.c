@@ -76,6 +76,10 @@ void vkbd_read_vbo(struct arena* win)
 	int h = win->height;
 	if(0 == win->vkbd)goto haha;
 
+	if(w<h)x = w/17;
+	else x = h/17;
+	j = (float)x / (float)w;
+	k = (float)x / (float)h;
 	for(y=0;y<16;y++)
 	{
 		for(x=0;x<16;x++)
@@ -86,9 +90,45 @@ void vkbd_read_vbo(struct arena* win)
 
 			carvesolid2d_rect(
 				win, rgb,
-				(x-7.5)/8.0, -(y+0.5)/16.0,
-				1.0/17, 0.0, 0.0, 0.5/17
+				(x-7.5)/8.0, -(y+0.5)/16.0, 0.0,
+				1.0/17, 0.0, 0.0,
+				0.0, 0.5/17, 0.0
 			);
+			if(y >= 8)continue;
+
+			if((0!=c)&&(7!=c)&&(8!=c)&&(9!=c)&&(0xa!=c)&&(0xd!=c))
+			{
+				carve2d_ascii(
+					win, 0xffffff,
+					(x-7.5)/8.0, -(y+0.5)/16.0, -0.01,
+					j, 0.0, 0.0,
+					0.0, k/2, 0.0,
+					c
+				);
+			}
+			else
+			{
+				if(0x0 == c)c = '0';
+				else if(0x7 == c)c = 'a';
+				else if(0x8 == c)c = 'b';
+				else if(0x9 == c)c = 't';
+				else if(0xa == c)c = 'n';
+				else if(0xd == c)c = 'r';
+				carve2d_ascii(
+					win, 0xffffff,
+					(x-7.5)/8.0, -(y+0.5)/16.0, -0.01,
+					j, 0.0, 0.0,
+					0.0, k/2, 0.0,
+					'\\'
+				);
+				carve2d_ascii(
+					win, 0xffffff,
+					(x-7.5)/8.0+j, -(y+0.5)/16.0, -0.01,
+					j, 0.0, 0.0,
+					0.0, k/2, 0.0,
+					c
+				);
+			}
 		}
 	}
 
@@ -100,9 +140,15 @@ haha:
 
 	carvesolid2d_circle(
 		win, 0xabcdef,
-		1.0-j, k-1.0,
-		j, 0.0,
-		0.0, k
+		1.0-j, k-1.0, -0.01,
+		j, 0.0, 0.0,
+		0.0, k, 0.0
+	);
+	carvesolid2d_circle(
+		win, 0xc08040,
+		1.0-j, k-1.0, -0.02,
+		j/2, 0.0, 0.0,
+		0.0, k/2, 0.0
 	);
 }
 void vkbd_read_html(struct arena* win)

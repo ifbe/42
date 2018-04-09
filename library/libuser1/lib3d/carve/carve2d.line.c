@@ -8,8 +8,10 @@ void quaternionoperation(float*, float*, float);
 
 
 
-void carveline2d(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2)
+void carveline2d(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -40,8 +42,11 @@ void carveline2d(struct arena* win, u32 rgb,
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
 }
-void carveline2d_bezier(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2, float xc, float yc)
+void carveline2d_bezier(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float xc, float yc, float zc)
 {
 	int j;
 	float t;
@@ -74,8 +79,11 @@ void carveline2d_bezier(struct arena* win, u32 rgb,
 		ibuf[2*j+1] = vlen + j+1;
 	}
 }
-void carveline2d_yshape(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2, float x3, float y3)
+void carveline2d_yshape(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -128,8 +136,11 @@ void carveline2d_yshape(struct arena* win, u32 rgb,
 
 
 
-void carveline2d_triangle(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2, float x3, float y3)
+void carveline2d_triangle(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -171,8 +182,11 @@ void carveline2d_triangle(struct arena* win, u32 rgb,
 	ibuf[4] = vlen;
 	ibuf[5] = vlen+2;
 }
-void carveline2d_rect(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy)
+void carveline2d_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -223,8 +237,11 @@ void carveline2d_rect(struct arena* win, u32 rgb,
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
-void carveline2d_hexagon(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float ux, float uy)
+void carveline2d_hexagon(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 	float v[4];
 	float q[4];
@@ -313,8 +330,11 @@ void carveline2d_hexagon(struct arena* win, u32 rgb,
 	ibuf[10] = vlen+5;
 	ibuf[11] = vlen+0;
 }
-void carveline2d_circle(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float ux, float uy)
+void carveline2d_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 #define lineacc (acc*2)
 	int j;

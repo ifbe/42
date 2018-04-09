@@ -8,7 +8,9 @@ void quaternionoperation(float*, float*, float);
 
 
 
-void carvepoint2d(struct arena* win, u32 rgb, float cx, float cy)
+void carvepoint2d(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -25,8 +27,11 @@ void carvepoint2d(struct arena* win, u32 rgb, float cx, float cy)
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void carvepoint2d_bezier(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2, float xc, float yc)
+void carvepoint2d_bezier(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float xc, float yc, float zc)
 {
 	int j;
 	float t;
@@ -54,16 +59,25 @@ void carvepoint2d_bezier(struct arena* win, u32 rgb,
 
 
 
-void carvepoint2d_triangle(struct arena* win, u32 rgb,
-	float x0, float y0, float x1, float y1, float x2, float y2)
+void carvepoint2d_triangle(
+	struct arena* win, u32 rgb,
+	float x0, float y0, float z0,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2)
 {
 }
-void carvepoint2d_rect(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float ux, float uy)
+void carvepoint2d_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 }
-void carvepoint2d_circle(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float ux, float uy)
+void carvepoint2d_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float ux, float uy, float uz)
 {
 	int j,k;
 	float s,t;

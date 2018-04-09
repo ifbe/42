@@ -38,9 +38,10 @@ static EGLDisplay display = EGL_NO_DISPLAY;
 static EGLContext context = EGL_NO_CONTEXT;
 static EGLSurface surface = EGL_NO_SURFACE;
 //
+static GLuint font3dprogram;
+static GLuint font2dprogram;
 static GLuint simpleprogram;
 static GLuint prettyprogram;
-static GLuint myfontprogram;
 static GLuint directprogram;
 static GLuint glsl2dprogram;
 //
@@ -86,13 +87,13 @@ static struct texandobj mod[256];
 
 char glsl2dvert[] = {
 	"#version 300 es\n"
-	"layout(location = 0)in mediump vec2 vertex;\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"out mediump vec3 vcolor;\n"
 	"void main()\n"
 	"{\n"
 		"vcolor = colour;\n"
-		"gl_Position = vec4(vertex, 0.0, 1.0);\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n"
 };
 char glsl2dfrag[] = {
@@ -161,7 +162,7 @@ char prettyfrag[] = {
 		"FragColor = vec4(vcolor,1.0);\n"
 	"}\n"
 };
-char myfontvert[] = {
+char font3dvert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
@@ -176,7 +177,7 @@ char myfontvert[] = {
 		"texuv = texcoord;\n"
 	"}\n"
 };
-char myfontfrag[] = {
+char font3dfrag[] = {
 	"#version 300 es\n"
 	"in mediump vec3 origcolor;\n"
 	"in mediump vec2 texuv;\n"
@@ -185,6 +186,31 @@ char myfontfrag[] = {
 	"void main()\n"
 	"{\n"
 		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).aaaa;\n"
+	"}\n"
+};
+char font2dvert[] = {
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 colour;\n"
+	"layout(location = 2)in mediump vec2 texcoo;\n"
+	"out mediump vec3 origcolor;\n"
+	"out mediump vec2 texuv;\n"
+	"void main()\n"
+	"{\n"
+		"gl_Position = vec4(vertex,1.0);\n"
+		"origcolor = colour;\n"
+		"texuv = texcoo;\n"
+	"}\n"
+};
+char font2dfrag[] = {
+	"#version 300 es\n"
+	"in mediump vec3 origcolor;\n"
+	"in mediump vec2 texuv;\n"
+	"uniform sampler2D tex2d;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).aaaa;\n"
 	"}\n"
 };
 char directvert[] = {
@@ -285,15 +311,25 @@ GLuint createProgram(const char* v, const char* f)
 }
 void initshader()
 {
-	myfontprogram = createProgram(myfontvert, myfontfrag);
-	if (!myfontprogram) {
+	font3dprogram = createProgram(font3dvert, font3dfrag);
+	if (!font3dprogram) {
 		LOGI("Could not create program");
 		return;
 	}
-	mod[0].program = myfontprogram;
-	mod[1].program = myfontprogram;
-	mod[2].program = myfontprogram;
-	mod[3].program = myfontprogram;
+	mod[0].program = font3dprogram;
+	mod[1].program = font3dprogram;
+	mod[2].program = font3dprogram;
+	mod[3].program = font3dprogram;
+
+	font2dprogram = createProgram(font2dvert, font2dfrag);
+	if (!font3dprogram) {
+		LOGI("Could not create program");
+		return;
+	}
+	mod[4].program = font3dprogram;
+	mod[5].program = font3dprogram;
+	mod[6].program = font3dprogram;
+	mod[7].program = font3dprogram;
 
 	simpleprogram = createProgram(simplevert, simplefrag);
 	if (!simpleprogram) {
@@ -434,7 +470,7 @@ void initobject()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
 	glEnableVertexAttribArray(2);
 
-
+/*
 //-------------------------4--------------------------
 	//vao
 	glGenVertexArrays(1, &mod[4].vao);
@@ -454,7 +490,119 @@ void initobject()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
 	glEnableVertexAttribArray(2);
+*/
 
+
+//---------------------4--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[4].vao);
+	glBindVertexArray(mod[4].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[4].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[4].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[4].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[4].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[4].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//----------------------5--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[5].vao);
+	glBindVertexArray(mod[5].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[5].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[5].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[5].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[5].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[5].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[5].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-----------------------6--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[6].vao);
+	glBindVertexArray(mod[6].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[6].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[6].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[6].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[6].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[6].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[6].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
+
+
+//-------------------------7--------------------------
+	//vao
+	glGenVertexArrays(1, &mod[7].vao);
+	glBindVertexArray(mod[7].vao);
+
+	//ibo
+	glGenBuffers(1, &mod[7].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[7].ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000,
+		mod[7].ibuf, GL_STATIC_DRAW
+	);
+
+	//vbo
+	glGenBuffers(1, &mod[7].vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[7].vbo);
+	glBufferData(GL_ARRAY_BUFFER, 0x200000,
+		mod[7].vbuf, GL_STATIC_DRAW
+	);
+
+	//attr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+	glEnableVertexAttribArray(2);
 
 //-------------------------0x80--------------------------
 //drawarray.point(vertex,colour)
@@ -897,11 +1045,11 @@ void callback_display()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-//--------------------myfontprogram------------------
+//--------------------font3dprogram------------------
 	//font0000,4000,8000,c000
-	glUseProgram(myfontprogram);
-	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	glUniform1i(glGetUniformLocation(myfontprogram, "texdata"), 0);
+	glUseProgram(font3dprogram);
+	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniform1i(glGetUniformLocation(font3dprogram, "texdata"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
@@ -922,10 +1070,36 @@ void callback_display()
 	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
 	glBindVertexArray(mod[3].vao);
 	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
+
+
+//--------------------font2dprogram------------------
+	glUseProgram(font2dprogram);
+	glUniform1i(glGetUniformLocation(font2dprogram, "tex2d"), 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
+	glBindVertexArray(mod[4].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[4].ilen, GL_UNSIGNED_SHORT, 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
+	glBindVertexArray(mod[5].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[5].ilen, GL_UNSIGNED_SHORT, 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
+	glBindVertexArray(mod[6].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[6].ilen, GL_UNSIGNED_SHORT, 0);
+
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
+	glBindVertexArray(mod[7].vao);
+	glDrawElements(GL_TRIANGLES, 3*mod[7].ilen, GL_UNSIGNED_SHORT, 0);
+
 /*
 	glUseProgram(directprogram);
-	glUniformMatrix4fv(glGetUniformLocation(myfontprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	glUniform1i(glGetUniformLocation(myfontprogram, "tex2d"), 0);
+	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniform1i(glGetUniformLocation(font3dprogram, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
@@ -983,6 +1157,36 @@ void callback_update()
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[3].vlen, mod[3].vbuf);
+
+
+//----------------------font2d---------------------
+	//font0000
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[4].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[4].ilen, mod[4].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[4].vlen,mod[4].vbuf);
+
+	//font4000
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[5].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[5].ilen, mod[5].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[5].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[5].vlen, mod[5].vbuf);
+
+	//font8000
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[6].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[6].ilen,mod[6].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[6].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[6].vlen,mod[6].vbuf);
+
+	//fontc000
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[7].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[7].ilen, mod[7].ibuf);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mod[7].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[7].vlen, mod[7].vbuf);
 
 
 //----------------------3d---------------------
@@ -1127,6 +1331,8 @@ void windowstart(struct arena* w)
 	w->uy = 0.0;
 	w->uz = 1.0;
 
+
+//--------------------font3d-------------------
 	//[0000,3fff]
 	mod[0].vbuf = malloc(0x200000);
 	mod[0].vlen = 0;
@@ -1150,10 +1356,37 @@ void windowstart(struct arena* w)
 	mod[3].vlen = 0;
 	mod[3].ibuf = malloc(0x100000);
 	mod[3].ilen = 0;
-
+/*
 	//2d screen
 	mod[4].vbuf = malloc(0x100000);
 	mod[4].vlen = 0;
+*/
+
+//--------------------font2d-------------------
+	//[0000,3fff]
+	mod[4].vbuf = malloc(0x200000);
+	mod[4].vlen = 0;
+	mod[4].ibuf = malloc(0x100000);
+	mod[4].ilen = 0;
+
+	//[4000,7fff]
+	mod[5].vbuf = malloc(0x200000);
+	mod[5].vlen = 0;
+	mod[5].ibuf = malloc(0x100000);
+	mod[5].ilen = 0;
+
+	//[8000,bfff]
+	mod[6].vbuf = malloc(0x200000);
+	mod[6].vlen = 0;
+	mod[6].ibuf = malloc(0x100000);
+	mod[6].ilen = 0;
+
+	//[c000,ffff]
+	mod[7].vbuf = malloc(0x200000);
+	mod[7].vlen = 0;
+	mod[7].ibuf = malloc(0x100000);
+	mod[7].ilen = 0;
+
 
 //--------------------3d-------------------
 	//drawarray.point
@@ -1175,6 +1408,7 @@ void windowstart(struct arena* w)
 	mod[0x83].ilen = 0;
 	mod[0x83].vbuf = malloc(0x1000000);
 	mod[0x83].vlen = 0;
+
 
 //----------------------2d--------------------
 	//drawarray.point

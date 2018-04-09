@@ -326,6 +326,7 @@ library/libuser1/lib3d/carve/carve.point.c \
 library/libuser1/lib3d/carve/carve.line.c \
 library/libuser1/lib3d/carve/carve.trigon.c \
 library/libuser1/lib3d/carve/carve.other.c \
+library/libuser1/lib3d/carve/carve2d.ascii.c \
 library/libuser1/lib3d/carve/carve2d.point.c \
 library/libuser1/lib3d/carve/carve2d.line.c \
 library/libuser1/lib3d/carve/carve2d.trigon.c \

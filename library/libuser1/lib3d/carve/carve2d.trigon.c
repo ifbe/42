@@ -8,8 +8,11 @@ void quaternionoperation(float*, float*, float);
 
 
 
-void carvesolid2d_triangle(struct arena* win, u32 rgb,
-	float x1, float y1, float x2, float y2, float x3, float y3)
+void carvesolid2d_triangle(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -48,8 +51,11 @@ void carvesolid2d_triangle(struct arena* win, u32 rgb,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carvesolid2d_rect(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy)
+void carvesolid2d_rect(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -100,8 +106,11 @@ void carvesolid2d_rect(struct arena* win, u32 rgb,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carvesolid2d_circle(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy)
+void carvesolid2d_circle(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz)
 {
 	int a,b,j;
 	float c,s;
@@ -126,7 +135,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 		s = sine(j*tau/acc);
 		vbuf[a+0] = cx + rx*c + fx*s;
 		vbuf[a+1] = cy + ry*c + fy*s;
-		vbuf[a+2] = 0.0;
+		vbuf[a+2] = cz;
 
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;

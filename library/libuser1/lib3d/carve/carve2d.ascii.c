@@ -1,27 +1,32 @@
 #include "actor.h"
+#define font2d 4
 int utf2unicode(u8* src,u32* dst);
 
 
 
 
-void carve2d_ascii(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u8 dat)
+void carve2d_ascii(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->mod;
-	int ilen = mod[0].ilen;
-	int vlen = mod[0].vlen;
-	u16* ibuf = (mod[0].ibuf) + (6*ilen);
-	float* vbuf = (mod[0].vbuf) + (36*vlen);
-	mod[0].ilen += 2;
-	mod[0].vlen += 4;
+	int ilen = mod[font2d].ilen;
+	int vlen = mod[font2d].vlen;
+	u16* ibuf = (mod[font2d].ibuf) + (6*ilen);
+	float* vbuf = (mod[font2d].vbuf) + (36*vlen);
+	mod[font2d].ilen += 2;
+	mod[font2d].vlen += 4;
 
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
-	vbuf[ 2] = 0.0;
+	vbuf[ 2] = cz;
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
@@ -30,7 +35,7 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 
 	vbuf[ 9] = cx+rx-fx;
 	vbuf[10] = cy+ry-fy;
-	vbuf[11] = 0.0;
+	vbuf[11] = cz;
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
@@ -39,7 +44,7 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 
 	vbuf[18] = cx-rx+fx;
 	vbuf[19] = cy-ry+fy;
-	vbuf[20] = 0.0;
+	vbuf[20] = cz;
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
@@ -48,7 +53,7 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 
 	vbuf[27] = cx+rx+fx;
 	vbuf[28] = cy+ry+fy;
-	vbuf[29] = 0.0;
+	vbuf[29] = cz;
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
@@ -62,8 +67,12 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carve2d_unicode(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u32 unicode)
+void carve2d_unicode(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 unicode)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -71,17 +80,17 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 
 	int vvv = (unicode&0xffff)/0x4000;
 	struct texandobj* mod = win->mod;
-	int ilen = mod[vvv].ilen;
-	int vlen = mod[vvv].vlen;
-	u16* ibuf = (mod[vvv].ibuf) + (6*ilen);
-	float* vbuf = (mod[vvv].vbuf) + (36*vlen);
-	mod[vvv].ilen += 2;
-	mod[vvv].vlen += 4;
+	int ilen = mod[font2d+vvv].ilen;
+	int vlen = mod[font2d+vvv].vlen;
+	u16* ibuf = (mod[font2d+vvv].ibuf) + (6*ilen);
+	float* vbuf = (mod[font2d+vvv].vbuf) + (36*vlen);
+	mod[font2d+vvv].ilen += 2;
+	mod[font2d+vvv].vlen += 4;
 
 	unicode = unicode&0x3fff;
 	vbuf[ 0] = cx-rx-fx;
 	vbuf[ 1] = cy-ry-fy;
-	vbuf[ 2] = 0.0;
+	vbuf[ 2] = cz;
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
@@ -90,7 +99,7 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 
 	vbuf[ 9] = cx+rx-fx;
 	vbuf[10] = cy+ry-fy;
-	vbuf[11] = 0.0;
+	vbuf[11] = cz;
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
@@ -99,7 +108,7 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 
 	vbuf[18] = cx-rx+fx;
 	vbuf[19] = cy-ry+fy;
-	vbuf[20] = 0.0;
+	vbuf[20] = cz;
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
@@ -108,7 +117,7 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 
 	vbuf[27] = cx+rx+fx;
 	vbuf[28] = cy+ry+fy;
-	vbuf[29] = 0.0;
+	vbuf[29] = cz;
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
@@ -126,21 +135,29 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 
 
 
-void carve2d_utf8(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u8* buf, int len)
+void carve2d_utf8(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* buf, int len)
 {
 	u32 unicode;
 	utf2unicode(buf, &unicode);
 	carve2d_unicode(
 		win, rgb,
-		cx, cy,
-		rx, ry,
-		fx, fy,
+		cx, cy, cz,
+		rx, ry, rz,
+		fx, fy, fz,
 		unicode
 	);
 }
-void carve2d_decimal(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u32 val)
+void carve2d_decimal(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 val)
 {
 	int j,len;
 	float f;
@@ -161,16 +178,21 @@ void carve2d_decimal(struct arena* win, u32 rgb,
 	for(j=0;j<len;j++)
 	{
 		f = (float)(j-len/2)*2;
-		carve2d_ascii(win, rgb,
-			cx + (rx*f), cy + (ry*f),
-			rx, ry,
-			fx, fy,
+		carve2d_ascii(
+			win, rgb,
+			cx + (rx*f), cy + (ry*f), cz,
+			rx, ry, rz,
+			fx, fy, fz,
 			str[len-1-j]
 		);
 	}
 }
-void carve2d_hexadecimal(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u32 val)
+void carve2d_hexadecimal(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u32 val)
 {
 	int j,len;
 	float f;
@@ -192,16 +214,21 @@ void carve2d_hexadecimal(struct arena* win, u32 rgb,
 	for(j=0;j<len;j++)
 	{
 		f = (float)((j-len/2)*2+1);
-		carve2d_ascii(win, rgb,
-			cx + (rx*f), cy + (ry*f),
-			rx, ry,
-			fx, fy,
+		carve2d_ascii(
+			win, rgb,
+			cx + (rx*f), cy + (ry*f), cz,
+			rx, ry, rz,
+			fx, fy, fz,
 			str[len-1-j]
 		);
 	}
 }
-void carve2d_string(struct arena* win, u32 rgb,
-	float cx, float cy, float rx, float ry, float fx, float fy, u8* buf, int len)
+void carve2d_string(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* buf, int len)
 {
 	int j;
 	if(0 == buf)return;
@@ -220,10 +247,11 @@ void carve2d_string(struct arena* win, u32 rgb,
 
 	for(j=0;j<len;j++)
 	{
-		carve2d_ascii(	win, rgb,
-			cx + (rx*j/2), cy + (ry*j/2),
-			rx/2, ry/2,
-			fx, fy,
+		carve2d_ascii(
+			win, rgb,
+			cx + (rx*j/2), cy + (ry*j/2), cz,
+			rx/2, ry/2, rz,
+			fx, fy, fz,
 			buf[j]
 		);
 	}
