@@ -132,8 +132,6 @@ void foreground_vbo(struct arena* win)
 {
 	int j;
 	float x0,y0,x1,y1;
-	vkbd_read(win);
-
 	for(j=0;j<11;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
@@ -148,12 +146,11 @@ void foreground_vbo(struct arena* win)
 		y1 = 1.0 - y1*2;
 		carveline2d(win, 0xff00ff, x0, y0, 0.0, x1, y1, 0.0);
 	}
+	vkbd_read(win);
 }
 void foreground_pixel(struct arena* win)
 {
 	int j;
-	vkbd_read(win);
-
 	for(j=0;j<11;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
@@ -163,6 +160,7 @@ void foreground_pixel(struct arena* win)
 			win->touchmove[j].x, win->touchmove[j].y
 		);
 	}
+	vkbd_read(win);
 }
 void foreground(struct arena* win)
 {

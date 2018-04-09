@@ -71,28 +71,28 @@ void carvesolid2d_rect(
 
 	vbuf[ 0] = cx - rx - fx;
 	vbuf[ 1] = cy - ry - fy;
-	vbuf[ 2] = 0.0;
+	vbuf[ 2] = cz;
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 
 	vbuf[ 6] = cx + rx - fx;
 	vbuf[ 7] = cy + ry - fy;
-	vbuf[ 8] = 0.0;
+	vbuf[ 8] = cz;
 	vbuf[ 9] = rr;
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
 	vbuf[12] = cx - rx + fx;
 	vbuf[13] = cy - ry + fy;
-	vbuf[14] = 0.0;
+	vbuf[14] = cz;
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
 
 	vbuf[18] = cx + rx + fx;
 	vbuf[19] = cy + ry + fy;
-	vbuf[20] = 0.0;
+	vbuf[20] = cz;
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;

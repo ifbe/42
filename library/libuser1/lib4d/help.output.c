@@ -37,8 +37,8 @@ void select_2d(struct arena* win, struct style* sty)
 	int hh = sty->fy;
 	int dd = sty->uz;
 
-	drawline(win, 0xffffff, 0, w, h/2, h/2);
-	drawline(win, 0xffffff, w/2, w/2, 0, h);
+	drawline(win, 0xffffff, 0, h/2, w, h/2);
+	drawline(win, 0xffffff, w/2, 0, w/2, h);
 	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
 void select_3d(struct arena* win, struct style* sty)
