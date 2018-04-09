@@ -71,19 +71,34 @@ void vkbd_read_pixel(struct arena* win)
 		}
 	}
 
-	for(c=0;c<8;c++)
+	c = win->vkbd;
+	x = ((c&0xf)-1)/2;
+	y = (((c>>4)&0xf)-1)/2;
+	if((1 == x)&&(6 == y))y = 0;	//down
+	else if((1 == x)&&(4 == y))y = 1;	//up
+	else if((0 == x)&&(5 == y))y = 2;	//left
+	else if((2 == x)&&(5 == y))y = 3;	//right
+	else if((4 == x)&&(5 == y))y = 4;
+	else if((5 == x)&&(6 == y))y = 5;
+	else if((5 == x)&&(4 == y))y = 6;
+	else if((6 == x)&&(5 == y))y = 7;
+	else y = 10;
+
+	for(x=0;x<8;x++)
 	{
+		if(x == y)c = 0xff00ff;
+		else c = 0xffffff;
 		drawsolid_circle(
-			win, 0xffffff,
-			(button[c][0])*w/16,
-			(button[c][1]+24)*h/32,
+			win, c,
+			(button[x][0])*w/16,
+			(button[x][1]+24)*h/32,
 			(w+h)/64
 		);
 		drawascii(
 			win, 0,
-			(button[c][0])*w/16-4,
-			(button[c][1]+24)*h/32-8,
-			button[c][2]
+			(button[x][0])*w/16-4,
+			(button[x][1]+24)*h/32-8,
+			button[x][2]
 		);
 	}
 
@@ -110,7 +125,7 @@ void vkbd_read_vbo(struct arena* win)
 	if(0 == win->vkbd)goto haha;
 
 	carvesolid2d_rect(
-		win, rgb,
+		win, 0,
 		0.0, -0.5, 0.0,
 		1.0, 0.0, 0.0,
 		0.0, 0.5, 0.0
@@ -179,13 +194,27 @@ void vkbd_read_vbo(struct arena* win)
 		}
 	}
 
-	for(c=0;c<8;c++)
-	{
-		m = (float)(button[c][0]) - 8.0;
-		n = (float)(button[c][1]) - 16.0;
+	c = win->vkbd;
+	x = ((c&0xf)-1)/2;
+	y = (((c>>4)&0xf)-1)/2;
+	if((1 == x)&&(4 == y))y = 0;	//up
+	else if((1 == x)&&(6 == y))y = 1;	//down
+	else if((0 == x)&&(5 == y))y = 2;	//left
+	else if((2 == x)&&(5 == y))y = 3;	//right
+	else if((4 == x)&&(5 == y))y = 4;
+	else if((5 == x)&&(4 == y))y = 5;
+	else if((5 == x)&&(6 == y))y = 6;
+	else if((6 == x)&&(5 == y))y = 7;
+	else y = 10;
 
+	for(x=0;x<8;x++)
+	{
+		if(x == y)c = 0xff00ff;
+		else c = 0xffffff;
+		m = (float)(button[x][0]) - 8.0;
+		n = (float)(button[x][1]) - 16.0;
 		carvesolid2d_circle(
-			win, 0xffffff,
+			win, c,
 			m/8.0, n/16.0, -0.01,
 			2.0/17, 0.0, 0.0,
 			0.0, 1.0/17, 0.0
@@ -195,7 +224,7 @@ void vkbd_read_vbo(struct arena* win)
 			(m+0.5)/8.0, n/16.0, -0.02,
 			j*2, 0.0, 0.0,
 			0.0, k, 0.0,
-			button[c][2]
+			button[x][2]
 		);
 	}
 
@@ -243,6 +272,7 @@ void vkbd_read(struct arena* win)
 
 int vkbd_write(struct arena* win, struct event* ev)
 {
+	u64 why,what;
 	int x,y,ret;
 	int w = win->width;
 	int h = win->height;
@@ -274,8 +304,28 @@ int vkbd_write(struct arena* win, struct event* ev)
 		y = y*32/h;
 		ret = x + (y*16) - 256;
 
-		if(ret < 0x80)eventwrite(ret, _char_, (u64)win, 0);
-		else eventwrite(ret, _kbd_, (u64)win, 0);
+		if(ret < 0x80)
+		{
+			why = ret;
+			what = _char_;
+		}
+		else
+		{
+			what = _kbd_;
+			if(ret >= 0xf0)why = ret;
+			else
+			{
+				x = ((ret&0xf)-1)/2;
+				y = (((ret>>4)&0xf)-1)/2;
+
+				if((1 == x)&&(4 == y))why = 0x48;	//up
+				if((0 == x)&&(5 == y))why = 0x4b;	//left
+				if((2 == x)&&(5 == y))why = 0x4d;	//right
+				if((1 == x)&&(6 == y))why = 0x50;	//down
+			}
+		}
+
+		eventwrite(why, what, (u64)win, 0);
 		return 1;
 	}
 	return 1;

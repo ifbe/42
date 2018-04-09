@@ -954,7 +954,7 @@ void fixprojection()
 	float h = (float)height;
 	projmatrix[0] = h / w;
 	glViewport(0, 0, width, height);
-	say("width=%d,height=%d\n",width,height);
+	//say("width=%d,height=%d\n",width,height);
 }
 void fixmatrix(GLfloat* cameramvp)
 {
