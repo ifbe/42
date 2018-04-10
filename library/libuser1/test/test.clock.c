@@ -4,6 +4,29 @@
 
 
 
+static void clock_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
+	int j,k;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	u64 date = getdate();
+	u8* p = (u8*)&date;
+
+	if(ww < hh)j = ww;
+	else j = hh;
+	drawsolid_circle(win, 0x222222, cx, cy, j);
+	for(j=6;j>=0;j--)
+	{
+		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
+	}
+}
 static void clock_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -44,33 +67,25 @@ static void clock_read_vbo(
 		cx+cosine(f2)*ww*2/4, cy+sine(f2)*hh*2/4, 0.0
 	);
 }
-static void clock_read_pixel(
+static void clock_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
-	int j,k;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	u64 date = getdate();
-	u8* p = (u8*)&date;
-
-	if(ww < hh)j = ww;
-	else j = hh;
-	drawsolid_circle(win, 0x222222, cx, cy, j);
-	for(j=6;j>=0;j--)
-	{
-		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
-	}
 }
 static void clock_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"clock\" style=\"width:100%%;height:100px;background-color:#7c89da;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void clock_read_tui(
 	struct arena* win, struct style* sty,
@@ -95,6 +110,7 @@ static void clock_read(
 	if(fmt == _cli_)clock_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)clock_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)clock_read_html(win, sty, act, pin);
+	else if(fmt == _json_)clock_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)clock_read_vbo(win, sty, act, pin);
 	else clock_read_pixel(win, sty, act, pin);
 }

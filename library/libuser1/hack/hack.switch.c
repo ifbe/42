@@ -10,17 +10,6 @@ void* systemcreate(u64, void*);
 
 
 
-static void switch_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-}
 static void switch_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -36,10 +25,36 @@ static void switch_read_pixel(
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1, buf, len);
 }
+static void switch_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+}
+static void switch_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void switch_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"switch\" style=\"width:100%%;height:100px;background-color:#7d9c8a;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void switch_read_tui(
 	struct arena* win, struct style* sty,
@@ -59,6 +74,7 @@ static void switch_read(
 	if(fmt == _cli_)switch_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)switch_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)switch_read_html(win, sty, act, pin);
+	else if(fmt == _json_)switch_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)switch_read_vbo(win, sty, act, pin);
 	else switch_read_pixel(win, sty, act, pin);
 }

@@ -63,15 +63,30 @@ static void piano_read_pixel(
 		);
 	}
 }
-static void piano_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void piano_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void piano_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void piano_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"piano\" style=\"width:100%%;height:100px;background-color:#48e1a9;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void piano_read_tui(
 	struct arena* win, struct style* sty,
@@ -92,8 +107,9 @@ static void piano_read(
 
 	if(fmt == _cli_)piano_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)piano_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)piano_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)piano_read_html(win, sty, act, pin);
+	else if(fmt == _json_)piano_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)piano_read_vbo(win, sty, act, pin);
 	else piano_read_pixel(win, sty, act, pin);
 }
 static void piano_write(

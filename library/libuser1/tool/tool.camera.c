@@ -36,15 +36,30 @@ void camera_read_pixel(
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-void camera_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 void camera_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+void camera_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+void camera_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"camera\" style=\"width:100%%;height:100px;background-color:#1984ea;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 void camera_read_tui(
 	struct arena* win, struct style* sty,
@@ -67,6 +82,7 @@ static void camera_read(
 	if(fmt == _cli_)camera_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)camera_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)camera_read_html(win, sty, act, pin);
+	else if(fmt == _json_)camera_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)camera_read_vbo(win, sty, act, pin);
 	else camera_read_pixel(win, sty, act, pin);
 }

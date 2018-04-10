@@ -4,23 +4,6 @@ u32 getrandom();
 
 
 
-static void example_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	carvesolid_rect(
-		win, getrandom(),
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
-}
 static void example_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -38,10 +21,42 @@ static void example_read_pixel(
 	drawsolid_rect(win, bg, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
+static void example_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	carvesolid_rect(
+		win, getrandom(),
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+}
+static void example_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void example_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"example\" style=\"width:100%%;height:100px;background-color:#82a977;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void example_read_tui(
 	struct arena* win, struct style* sty,
@@ -53,10 +68,6 @@ static void example_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-
-
-
-
 static void example_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -65,6 +76,7 @@ static void example_read(
 	if(fmt == _cli_)example_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)example_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)example_read_html(win, sty, act, pin);
+	else if(fmt == _json_)example_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)example_read_vbo(win, sty, act, pin);
 	else example_read_pixel(win, sty, act, pin);
 }

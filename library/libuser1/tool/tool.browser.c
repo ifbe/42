@@ -4,11 +4,6 @@ void* arterycreate(u64 type, void* addr);
 
 
 
-static void browser_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void browser_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -26,6 +21,26 @@ static void browser_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void browser_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void browser_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"browser\" style=\"width:100%%;height:100px;background-color:#87c9da;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void browser_read_tui(
 	struct arena* win, struct style* sty,
@@ -47,6 +62,7 @@ static void browser_read(
 	if(fmt == _cli_)browser_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)browser_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)browser_read_html(win, sty, act, pin);
+	else if(fmt == _json_)browser_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)browser_read_vbo(win, sty, act, pin);
 	else browser_read_pixel(win, sty, act, pin);
 }

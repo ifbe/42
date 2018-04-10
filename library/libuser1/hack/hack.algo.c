@@ -58,15 +58,30 @@ static void algorithm_read_pixel(
 	);
 */
 }
-static void algorithm_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void algorithm_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void algorithm_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void algorithm_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"algo\" style=\"width:100%%;height:100px;background-color:#123456;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void algorithm_read_tui(
 	struct arena* win, struct style* sty,
@@ -88,6 +103,7 @@ static void algorithm_read(
 	if(fmt == _cli_)algorithm_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)algorithm_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)algorithm_read_html(win, sty, act, pin);
+	else if(fmt == _json_)algorithm_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)algorithm_read_vbo(win, sty, act, pin);
 	else algorithm_read_pixel(win, sty, act, pin);
 }

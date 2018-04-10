@@ -209,36 +209,10 @@ static void starry_read_pixel(
 		-PI, PI
 	);
 }
-static void graph_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int i,j,k;
 
-	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
 
-	for(i=0;i<plen;i++)
-	{
-		j = pair[i].parent;
-		k = pair[i].child;
-		carveline(
-			win, 0xff00,
-			vbuf[j].x, vbuf[j].y, vbuf[j].z,
-			vbuf[k].x, vbuf[k].y, vbuf[k].z
-		);
-	}
-	for(j=0;j<vlen;j++)
-	{
-		carvesolid_prism4(
-			win, 0xffffff,
-			vbuf[j].x, vbuf[j].y, vbuf[j].z,
-			0.01, 0.0, 0.0,
-			0.0, 0.01, 0.0,
-			0.0, 0.0, 0.01
-		);
-	}
-}
+
+
 static void graph_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -297,10 +271,55 @@ static void graph_read_pixel(
 		);
 	}
 }
+static void graph_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int i,j,k;
+
+	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
+	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
+
+	for(i=0;i<plen;i++)
+	{
+		j = pair[i].parent;
+		k = pair[i].child;
+		carveline(
+			win, 0xff00,
+			vbuf[j].x, vbuf[j].y, vbuf[j].z,
+			vbuf[k].x, vbuf[k].y, vbuf[k].z
+		);
+	}
+	for(j=0;j<vlen;j++)
+	{
+		carvesolid_prism4(
+			win, 0xffffff,
+			vbuf[j].x, vbuf[j].y, vbuf[j].z,
+			0.01, 0.0, 0.0,
+			0.0, 0.01, 0.0,
+			0.0, 0.0, 0.01
+		);
+	}
+}
+static void graph_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void graph_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"graph\" style=\"width:100%%;height:100px;background-color:#c8a7d9;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void graph_read_tui(
 	struct arena* win, struct style* sty,
@@ -331,6 +350,7 @@ static void graph_read(
 	if(fmt == _cli_)graph_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)graph_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)graph_read_html(win, sty, act, pin);
+	else if(fmt == _json_)graph_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)graph_read_vbo(win, sty, act, pin);
 	else graph_read_pixel(win, sty, act, pin);
 }

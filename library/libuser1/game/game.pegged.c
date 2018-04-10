@@ -4,39 +4,6 @@ static u8 data[7][7];
 
 
 
-static void pegged_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int x,y;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-
-	for(y=0;y<7;y++)
-	{
-		for(x=0;x<7;x++)
-		{
-			if(data[y][x] == 0)continue;
-
-			carveline_rect(
-				win, 0x808080,
-				cx+(2*x-6)*ww/7, cy+(2*y-6)*hh/7, 0.0,
-				ww/7, 0.0, 0.0,
-				0.0, hh/7, 0.0
-			);
-			carvesolid_sphere(
-				win, 0xffffff,
-				cx+(x-3)*ww*2/7, cy+(y-3)*hh*2/7, 0.0,
-				ww/14, 0.0, 0.0,
-				0.0, 0.0, ww/14
-			);
-		}
-	}
-}
 static void pegged_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -71,10 +38,57 @@ static void pegged_read_pixel(
 		}
 	}
 }
+static void pegged_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
+
+	for(y=0;y<7;y++)
+	{
+		for(x=0;x<7;x++)
+		{
+			if(data[y][x] == 0)continue;
+
+			carveline_rect(
+				win, 0x808080,
+				cx+(2*x-6)*ww/7, cy+(2*y-6)*hh/7, 0.0,
+				ww/7, 0.0, 0.0,
+				0.0, hh/7, 0.0
+			);
+			carvesolid_sphere(
+				win, 0xffffff,
+				cx+(x-3)*ww*2/7, cy+(y-3)*hh*2/7, 0.0,
+				ww/14, 0.0, 0.0,
+				0.0, 0.0, ww/14
+			);
+		}
+	}
+}
+static void pegged_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void pegged_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"pegged\" style=\"width:100%%;height:100px;background-color:#cccccc;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void pegged_read_tui(
 	struct arena* win, struct style* sty,
@@ -94,6 +108,7 @@ static void pegged_read(
 	if(fmt == _cli_)pegged_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)pegged_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)pegged_read_html(win, sty, act, pin);
+	else if(fmt == _json_)pegged_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)pegged_read_vbo(win, sty, act, pin);
 	else pegged_read_pixel(win, sty, act, pin);
 }

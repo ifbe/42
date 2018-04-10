@@ -650,15 +650,30 @@ static void terminal_read_pixel(
 	}
 	drawterm(win, &term, cx-ww, cy-hh, cx+ww, cy+hh);
 }
-static void terminal_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void terminal_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void terminal_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void terminal_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"term\" style=\"width:100%%;height:100px;background-color:#f0ac2b;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void terminal_read_tui(
 	struct arena* win, struct style* sty,
@@ -731,8 +746,9 @@ static void terminal_read(
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terminal_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)terminal_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)terminal_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)terminal_read_html(win, sty, act, pin);
+	else if(fmt == _json_)terminal_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)terminal_read_vbo(win, sty, act, pin);
 	else terminal_read_pixel(win, sty, act, pin);
 }
 

@@ -9,11 +9,6 @@ static u8 data[19*19];
 
 
 
-static void weiqi_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void weiqi_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -119,6 +114,25 @@ static void weiqi_read_vbo(
 		}
 	}
 }
+static void weiqi_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void weiqi_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"weiqi\" style=\"width:100%%;height:100px;background-color:#f9d65b;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
+}
 static void weiqi_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -163,8 +177,9 @@ static void weiqi_read(
 
 	if(fmt == _cli_)weiqi_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)weiqi_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)weiqi_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)weiqi_read_html(win, sty, act, pin);
+	else if(fmt == _json_)weiqi_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)weiqi_read_vbo(win, sty, act, pin);
 	else weiqi_read_pixel(win, sty, act, pin);
 }
 

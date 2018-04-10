@@ -12,75 +12,6 @@ static u8 buffer[height][width];
 
 
 
-static void maze_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int x,y,z,w;
-	float fx,fy,fz;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-
-	for(y=0;y<height;y++)
-	{
-		for(x=0;x<width;x++)
-		{
-			w = buffer[y][x];
-			if((w&1) == 1)	//left
-			{
-				fx = (cx-ww) + ((2*x+0)*ww/width);
-				fy = (cy-hh) + ((2*y+1)*hh/height);
-				fz = ww / width;
-				carvesolid_rect(
-					win, 0x808080,
-					fx, fy, fz,
-					0.0, hh/height, 0.0,
-					0.0, 0.0, fz
-				);
-			}
-			if((w&2) == 2)	//right
-			{
-				fx = (cx-ww) + ((2*x+2)*ww/width);
-				fy = (cy-hh) + ((2*y+1)*hh/height);
-				fz = ww / width;
-				carvesolid_rect(
-					win, 0x909090,
-					fx, fy, fz,
-					0.0, -hh/height, 0.0,
-					0.0, 0.0, fz
-				);
-			}
-			if((w&4) == 4)	//down	//careful,different
-			{
-				fx = (cx-ww) + ((2*x+1)*ww/width);
-				fy = (cy-hh) + ((2*y+0)*hh/height);
-				fz = ww / width;
-				carvesolid_rect(
-					win, 0x707070,
-					fx, fy, fz,
-					-ww/width, 0.0, 0.0,
-					0.0, 0.0, fz
-				);
-			}
-			if((w&8) == 8)	//up	//careful,different
-			{
-				fx = (cx-ww) + ((2*x+1)*ww/width);
-				fy = (cy-hh) + ((2*y+2)*hh/height);
-				fz = ww / width;
-				carvesolid_rect(
-					win, 0x606060,
-					fx, fy, fz,
-					ww/width, 0.0, 0.0,
-					0.0, 0.0, fz
-				);
-			}
-		}
-	}
-}
 static void maze_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -193,10 +124,93 @@ static void maze_read_pixel(
 		}
 	}
 }
+static void maze_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y,z,w;
+	float fx,fy,fz;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float ww = sty->rx;
+	float hh = sty->fy;
+	float dd = sty->uz;
+
+	for(y=0;y<height;y++)
+	{
+		for(x=0;x<width;x++)
+		{
+			w = buffer[y][x];
+			if((w&1) == 1)	//left
+			{
+				fx = (cx-ww) + ((2*x+0)*ww/width);
+				fy = (cy-hh) + ((2*y+1)*hh/height);
+				fz = ww / width;
+				carvesolid_rect(
+					win, 0x808080,
+					fx, fy, fz,
+					0.0, hh/height, 0.0,
+					0.0, 0.0, fz
+				);
+			}
+			if((w&2) == 2)	//right
+			{
+				fx = (cx-ww) + ((2*x+2)*ww/width);
+				fy = (cy-hh) + ((2*y+1)*hh/height);
+				fz = ww / width;
+				carvesolid_rect(
+					win, 0x909090,
+					fx, fy, fz,
+					0.0, -hh/height, 0.0,
+					0.0, 0.0, fz
+				);
+			}
+			if((w&4) == 4)	//down	//careful,different
+			{
+				fx = (cx-ww) + ((2*x+1)*ww/width);
+				fy = (cy-hh) + ((2*y+0)*hh/height);
+				fz = ww / width;
+				carvesolid_rect(
+					win, 0x707070,
+					fx, fy, fz,
+					-ww/width, 0.0, 0.0,
+					0.0, 0.0, fz
+				);
+			}
+			if((w&8) == 8)	//up	//careful,different
+			{
+				fx = (cx-ww) + ((2*x+1)*ww/width);
+				fy = (cy-hh) + ((2*y+2)*hh/height);
+				fz = ww / width;
+				carvesolid_rect(
+					win, 0x606060,
+					fx, fy, fz,
+					ww/width, 0.0, 0.0,
+					0.0, 0.0, fz
+				);
+			}
+		}
+	}
+}
+static void maze_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void maze_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"maze\" style=\"width:100%%;height:100px;background-color:#444444;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void maze_read_tui(
 	struct arena* win, struct style* sty,
@@ -241,6 +255,7 @@ static void maze_read(
 	if(fmt == _cli_)maze_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)maze_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)maze_read_html(win, sty, act, pin);
+	else if(fmt == _json_)maze_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)maze_read_vbo(win, sty, act, pin);
 	else maze_read_pixel(win, sty, act, pin);
 }

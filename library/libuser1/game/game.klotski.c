@@ -20,23 +20,6 @@ static u32 color[10] =
 
 
 
-static void klotski_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	carvesolid_rect(
-		win, 0xffffff,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
-}
 static void klotski_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -64,10 +47,41 @@ static void klotski_read_pixel(
 		}
 	}
 }
+static void klotski_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	carvesolid_rect(
+		win, 0xffffff,
+		cx, cy, cz,
+		ww, 0.0, 0.0,
+		0.0, hh, 0.0
+	);
+}
+static void klotski_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void klotski_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"klotski\" style=\"width:100%%;height:100px;background-color:black;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void klotski_read_tui(
 	struct arena* win, struct style* sty,
@@ -87,6 +101,7 @@ static void klotski_read(
 	if(fmt == _cli_)klotski_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)klotski_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)klotski_read_html(win, sty, act, pin);
+	else if(fmt == _json_)klotski_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)klotski_read_vbo(win, sty, act, pin);
 	else klotski_read_pixel(win, sty, act, pin);
 }

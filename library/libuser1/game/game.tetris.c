@@ -104,53 +104,24 @@ static void tetris_read_vbo(
 		}
 	}
 }
-
-
-
-
-static int htmlcubie(char* p, int x, int y)
+static void tetris_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
-	return mysnprintf(
-		p, 0x1000,
-		"<div class=\"rect\" style=\""
-		"left:%.2f%;"
-		"top:%.2f%;"
-		"\">%d</div>",
-		x*3.1, y*2.5, buf[y*WIDTH+x]
-	);
 }
 static void tetris_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
-	char* p = (char*)(win->buf);
+	int len = win->len;
+	u8* buf = win->buf;
 
-	p += mysnprintf(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".rect{"
-		"border:1px solid #000;"
-		"background:#fff;"
-		"position:absolute;"
-		"WIDTH:3.1%;"
-		"HEIGHT:2.5%;"
-		"}"
-		"</style>"
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"tetris\" style=\"width:100%%;height:100px;background-color:#111111;\">"
 	);
-	for(y=0;y<HEIGHT;y++)
-	{
-		for(x=0;x<WIDTH;x++)
-		{
-			if(buf[y*WIDTH+x] == 0)continue;
-			p += htmlcubie(p, x, y);
-		}
-	}
-
-	p += htmlcubie(p, that.x1, that.y1);
-	p += htmlcubie(p, that.x2, that.y2);
-	p += htmlcubie(p, that.x3, that.y3);
-	p += htmlcubie(p, that.x4, that.y4);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void tetris_read_tui(
 	struct arena* win, struct style* sty,
@@ -210,8 +181,9 @@ static void tetris_read(
 
 	if(fmt == _cli_)tetris_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)tetris_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)tetris_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)tetris_read_html(win, sty, act, pin);
+	else if(fmt == _json_)tetris_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)tetris_read_vbo(win, sty, act, pin);
 	else tetris_read_pixel(win, sty, act, pin);
 }
 static void tetris_write(

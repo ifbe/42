@@ -79,10 +79,24 @@ static void ooxx_read_vbo(
 		}
 	}
 }
+static void ooxx_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void ooxx_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"ooxx\" style=\"width:100%%;height:100px;background-color:#111111;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void ooxx_read_tui(
 	struct arena* win, struct style* sty,
@@ -115,8 +129,9 @@ static void ooxx_read(
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)ooxx_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)ooxx_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)ooxx_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)ooxx_read_html(win, sty, act, pin);
+	else if(fmt == _json_)ooxx_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)ooxx_read_vbo(win, sty, act, pin);
 	else ooxx_read_pixel(win, sty, act, pin);
 }
 void ooxx_write(

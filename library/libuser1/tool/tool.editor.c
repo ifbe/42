@@ -7,11 +7,6 @@ static u8 buffer[16];
 
 
 
-static void editor_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void editor_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -21,6 +16,26 @@ static void editor_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void editor_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void editor_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"editor\" style=\"width:100%%;height:100px;background-color:#4e819a;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void editor_read_tui(
 	struct arena* win, struct style* sty,
@@ -33,10 +48,6 @@ static void editor_read_cli(
 {
 	say("editor(%x,%x,%x)\n",win,act,sty);
 }
-
-
-
-
 static void editor_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -46,6 +57,7 @@ static void editor_read(
 	if(fmt == _cli_)editor_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)editor_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)editor_read_html(win, sty, act, pin);
+	else if(fmt == _json_)editor_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)editor_read_vbo(win, sty, act, pin);
 	else editor_read_pixel(win, sty, act, pin);
 }

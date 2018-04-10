@@ -13,84 +13,6 @@ static u8 buffer[6][4][4];
 
 
 
-static void rubikscube_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-
-	for(y=0;y<level;y++)
-	{
-		for(x=0;x<level;x++)
-		{
-			//left
-			carvesolid_rect(
-				win, 0xff00,
-				cx-ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
-				0.0, -hh/(level+0.5), 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
-
-			//right
-			carvesolid_rect(
-				win, 0xff,
-				cx+ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
-				0.0, hh/(level+0.5), 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
-		}
-	}
-
-	for(y=0;y<level;y++)
-	{
-		for(x=0;x<level;x++)
-		{
-			//near
-			carvesolid_rect(
-				win, 0xff0000,
-				cx-ww+(2*x+1)*ww/level, cy-hh, -dd+(2*y+1)*dd/level,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
-
-			//far
-			carvesolid_rect(
-				win, 0xfa8010,
-				cx-ww+(2*x+1)*ww/level, cy+hh, -dd+(2*y+1)*dd/level,
-				-ww/(level+0.5), 0.0, 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
-		}
-	}
-
-	for(y=0;y<level;y++)
-	{
-		for(x=0;x<level;x++)
-		{
-			//bottom
-			carvesolid_rect(
-				win, 0xffff00,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, -dd,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, -hh/(level+0.5), 0.0
-			);
-
-			//upper
-			carvesolid_rect(
-				win, 0xffffff,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, dd,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, hh/(level+0.5), 0.0
-			);
-		}
-	}
-}
 static void rubikscube_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -177,10 +99,102 @@ static void rubikscube_read_pixel(
 		}
 	}
 }
+static void rubikscube_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//left
+			carvesolid_rect(
+				win, 0xff00,
+				cx-ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				0.0, -hh/(level+0.5), 0.0,
+				0.0, 0.0, dd/(level+0.5)
+			);
+
+			//right
+			carvesolid_rect(
+				win, 0xff,
+				cx+ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				0.0, hh/(level+0.5), 0.0,
+				0.0, 0.0, dd/(level+0.5)
+			);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//near
+			carvesolid_rect(
+				win, 0xff0000,
+				cx-ww+(2*x+1)*ww/level, cy-hh, -dd+(2*y+1)*dd/level,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, 0.0, dd/(level+0.5)
+			);
+
+			//far
+			carvesolid_rect(
+				win, 0xfa8010,
+				cx-ww+(2*x+1)*ww/level, cy+hh, -dd+(2*y+1)*dd/level,
+				-ww/(level+0.5), 0.0, 0.0,
+				0.0, 0.0, dd/(level+0.5)
+			);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//bottom
+			carvesolid_rect(
+				win, 0xffff00,
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, -dd,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, -hh/(level+0.5), 0.0
+			);
+
+			//upper
+			carvesolid_rect(
+				win, 0xffffff,
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, dd,
+				ww/(level+0.5), 0.0, 0.0,
+				0.0, hh/(level+0.5), 0.0
+			);
+		}
+	}
+}
+static void rubikscube_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void rubikscube_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"rubik\" style=\"width:100%%;height:100px;background-color:#404040;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 static void rubikscube_read_tui(
 	struct arena* win, struct style* sty,
@@ -201,6 +215,7 @@ static void rubikscube_read(
 	if(fmt == _cli_)rubikscube_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)rubikscube_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)rubikscube_read_html(win, sty, act, pin);
+	else if(fmt == _json_)rubikscube_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)rubikscube_read_vbo(win, sty, act, pin);
 	else rubikscube_read_pixel(win, sty, act, pin);
 }

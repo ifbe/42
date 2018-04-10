@@ -25,26 +25,6 @@ void fs_prep(void* name)
 
 
 
-static void fs_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-static void fs_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-static void fs_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-static void fs_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void fs_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -58,6 +38,41 @@ static void fs_read_pixel(
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, fsbuf, 0x1000);
 }
+static void fs_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void fs_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void fs_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"fs\" style=\"width:100%%;height:100px;background-color:#465097;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
+}
+static void fs_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void fs_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void fs_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -66,8 +81,9 @@ static void fs_read(
 
 	if(fmt == _cli_)fs_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)fs_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)fs_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)fs_read_html(win, sty, act, pin);
+	else if(fmt == _json_)fs_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)fs_read_vbo(win, sty, act, pin);
 	else fs_read_pixel(win, sty, act, pin);
 }
 static void fs_write(

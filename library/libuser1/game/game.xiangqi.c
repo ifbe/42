@@ -249,7 +249,7 @@ static void xiangqi_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"xiangqi\" style=\"width:100%%;height:100px;background-color:#256f8d;\">"
+		"<div id=\"xiangqi\" style=\"width:100%%;height:100px;background-color:#8d6f25;\">"
 	);
 	for(y=0;y<10;y++)
 	{

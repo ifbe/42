@@ -61,10 +61,25 @@ static void palette_read_vbo(
 		0.0, hh, 0.0
 	);
 }
+static void palette_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void palette_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"palette\" style=\"width:100%%;height:100px;background-color:#f624ab;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void palette_read_tui(
 	struct arena* win, struct style* sty,
@@ -86,6 +101,7 @@ static void palette_read(
 	if(fmt == _cli_)palette_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)palette_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)palette_read_html(win, sty, act, pin);
+	else if(fmt == _json_)palette_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)palette_read_vbo(win, sty, act, pin);
 	else palette_read_pixel(win, sty, act, pin);
 }

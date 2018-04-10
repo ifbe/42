@@ -113,10 +113,25 @@ static void doodle_read_vbo(
 		px, py, ww/32
 	);
 }
+static void doodle_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void doodle_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"doodle\" style=\"width:100%%;height:100px;background-color:#28a779;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void doodle_read_tui(
 	struct arena* win, struct style* sty,
@@ -137,6 +152,7 @@ static void doodle_read(
 	if(fmt == _cli_)doodle_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)doodle_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)doodle_read_html(win, sty, act, pin);
+	else if(fmt == _json_)doodle_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)doodle_read_vbo(win, sty, act, pin);
 	else doodle_read_pixel(win, sty, act, pin);
 }

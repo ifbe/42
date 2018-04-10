@@ -43,51 +43,30 @@ static void qrcode_read_pixel(
 //say("\n");
 	}
 }
-static void qrcode_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int x,y;
-	u32 color;
-	char* p = (char*)(win->buf);
-
-	p += mysnprintf(p, 0x1000, "<div style=\"width:500px;height:500px;background:#fff\">");
-	p += mysnprintf(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".rect{"
-		"border:1px solid #000;"
-		"position:absolute;"
-		"width:%dpx;"
-		"height:%dpx;"
-		"}"
-		"</style>",
-
-		500/slen, 500/slen
-	);
-	for(y=0;y<slen;y++)
-	{
-		for(x=0;x<slen;x++)
-		{
-			if( databuf[(y*slen)+x] != 0 )continue;
-
-			p += mysnprintf(
-				p, 0x1000,
-				"<div class=\"rect\" style=\""
-				"left:%dpx;"
-				"top:%dpx;"
-				"background:#000;"
-				"\"></div>",
-				x*500/slen, y*500/slen
-			);
-		}
-	}
-	p += mysnprintf(p, 99, "</div>");
-}
 static void qrcode_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void qrcode_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void qrcode_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"qrcode\" style=\"width:100%%;height:100px;background-color:#e127a9;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void qrcode_read_tui(
 	struct arena* win, struct style* sty,
@@ -127,8 +106,9 @@ static void qrcode_read(
 
 	if(fmt == _cli_)qrcode_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)qrcode_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)qrcode_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)qrcode_read_html(win, sty, act, pin);
+	else if(fmt == _json_)qrcode_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)qrcode_read_vbo(win, sty, act, pin);
 	else qrcode_read_pixel(win, sty, act, pin);
 }
 static void qrcode_write(

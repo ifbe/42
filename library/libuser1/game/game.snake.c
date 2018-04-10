@@ -74,42 +74,24 @@ void snake_read_vbo(
 		0.0, hh, 0.0
 	);
 }
-
-
-
-
-static int htmlcubie(char* p, u32 color, int x, int y)
+void snake_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
-	return mysnprintf(
-		p, 0x1000,
-		"<div class=\"rect\" style=\""
-		"left:%.2f%;"
-		"top:%.2f%;"
-		"background:#%06x;"
-		"\"></div>",
-		x*3.1, y*3.1, color
-	);
 }
 void snake_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int j = 0;
-	char* p = (char*)(win->buf);
+	int len = win->len;
+	u8* buf = win->buf;
 
-	p += mysnprintf(
-		p, 0x1000,
-		"<style type=\"text/css\">"
-		".rect{"
-		"border:1px solid #000;"
-		"position:absolute;"
-		"width:3.1%;"
-		"height:3.1%;"
-		"}"
-		"</style>"
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"snake\" style=\"width:100%%;height:100px;background-color:#808080;\">"
 	);
- 
-	htmlcubie(p, 0xff00, buf[0].x, buf[0].y);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+	win->len = len;
 }
 void snake_read_tui(
 	struct arena* win, struct style* sty,
@@ -136,6 +118,7 @@ void snake_read(
 	if(fmt == _cli_)snake_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)snake_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)snake_read_html(win, sty, act, pin);
+	else if(fmt == _json_)snake_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)snake_read_vbo(win, sty, act, pin);
 	else snake_read_pixel(win, sty, act, pin);
 }

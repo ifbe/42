@@ -128,15 +128,30 @@ static void bplus_read_pixel(
 //printmemory(node, 0x800);
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void bplus_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
 static void bplus_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+}
+static void bplus_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void bplus_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"bplus\" style=\"width:100%%;height:100px;background-color:#289467;\">"
+	);
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
+
+	win->len = len;
 }
 static void bplus_read_tui(
 	struct arena* win, struct style* sty,
@@ -158,6 +173,7 @@ static void bplus_read(
 	if(fmt == _cli_)bplus_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)bplus_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)bplus_read_html(win, sty, act, pin);
+	else if(fmt == _json_)bplus_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)bplus_read_vbo(win, sty, act, pin);
 	else bplus_read_pixel(win, sty, act, pin);
 }
