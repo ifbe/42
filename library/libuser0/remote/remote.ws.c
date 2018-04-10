@@ -52,23 +52,22 @@ int wsserver_write(
 	struct actor* act, struct pinid* pin,
 	u8* buf, int len)
 {
-	int ret;
-	int rl,hl;
-	u8 hb[16];
+	int readlen, headlen, ret;
+	u8 headbuf[16];
 	if(0 == win)return 0;
 	if(0 == act)return 0;
 	say("%.4s,%.4s\n",win,act);
 
 	//received message
-	rl = websocket_read(buf, len, buffer, 0x100000);
-	say("@wsserver_write:%.*s\n", rl, buffer);
+	readlen = websocket_read(buf, len, buffer, 0x100000);
+	say("@wsserver_write:%.*s\n", readlen, buffer);
 
 	//get current
 	actorread(win,0,0,0);
 
 	//send message
-	hl = websocket_write(win->buf, win->len, hb, 16);
-	ret = systemwrite(act, pin, win, sty, hb, hl);
+	headlen = websocket_write(win->buf, win->len, headbuf, 16);
+	ret = systemwrite(act, pin, win, sty, headbuf, headlen);
 	ret = systemwrite(act, pin, win, sty, win->buf, win->len);
 	return 0;
 }

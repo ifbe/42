@@ -24,8 +24,9 @@
 //
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
-#define _vbo_ hex32('v','b','o',0)
 #define _html_ hex32('h','t','m','l')
+#define _json_ hex32('j','s','o','n')
+#define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
 
 

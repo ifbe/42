@@ -97,7 +97,7 @@ int httpserver_write(
 		ret = mysnprintf(
 			(win->buf)+(win->len),0x1000,
 			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"
+			"Content-type: text/html\r\n"
 			"Content-Length: %d\r\n"
 			"\r\n",
 			win->len
@@ -128,7 +128,6 @@ int httpserver_write(
 		}
 	}
 
-	systemdelete(act);
 	return 0;
 }
 int httpserver_read()

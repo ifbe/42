@@ -54,15 +54,17 @@ static int ppplen = 0;
 
 
 
-int systemdelete(void* addr)
+int systemdelete(struct object* addr)
 {
-	int fd = (addr - (void*)obj) / sizeof(struct object);
+	int fd = ((void*)addr - (void*)obj) / sizeof(struct object);
 	if(_file_ == obj[fd].type)
 	{
 		stopfile(fd);
 	}
 	else
 	{
+		if(0 != addr->irel)relationdelete(addr->irel);
+		if(0 != addr->orel)relationdelete(addr->orel);
 		stopsocket(fd);
 	}
 	return 0;
@@ -246,6 +248,10 @@ int systemevent(struct event* ev)
 	else if(why == '-')
 	{
 		say("gone:%x\n", where);
+		irel = obj[where].irel;
+		orel = obj[where].orel;
+		relationdelete(irel);
+		relationdelete(orel);
 		return 0;
 	}
 

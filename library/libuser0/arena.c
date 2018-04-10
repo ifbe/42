@@ -178,7 +178,7 @@ void* arenacreate(u64 type, u8* addr)
 	else if(_HTTP_ == type)
 	{
 		win->type = _HTTP_;
-		win->fmt = hex32('d','a','t','a');
+		win->fmt = hex32('h','t','m','l');
 		win->irel = 0;
 		win->orel = 0;
 
@@ -188,7 +188,7 @@ void* arenacreate(u64 type, u8* addr)
 	else if(_WS_ == type)
 	{
 		win->type = _WS_;
-		win->fmt = hex32('h','t','m','l');
+		win->fmt = hex32('j','s','o','n');
 		win->irel = 0;
 		win->orel = 0;
 

@@ -5,15 +5,13 @@ void login_read(void*);
 
 
 
-void background_cli(struct arena* win)
+void background_pixel(struct arena* win)
 {
-}
-void background_tui(struct arena* win)
-{
-}
-void background_html(struct arena* win)
-{
-	win->len = 0;
+	int x;
+	int len = (win->stride)*(win->height);
+	u32* buf = (u32*)(win->buf);
+
+	for(x=0;x<len;x++)buf[x] = 0xff000000;
 }
 void background_vbo(struct arena* win)
 {
@@ -30,13 +28,19 @@ void background_vbo(struct arena* win)
 		mod[j].vlen = 0;
 	}
 }
-void background_pixel(struct arena* win)
+void background_json(struct arena* win)
 {
-	int x;
-	int len = (win->stride)*(win->height);
-	u32* buf = (u32*)(win->buf);
-
-	for(x=0;x<len;x++)buf[x] = 0xff000000;
+	win->len = mysnprintf(win->buf, 0x100000, "{\n");
+}
+void background_html(struct arena* win)
+{
+	win->len = mysnprintf(win->buf, 0x100000, "<html><body>\n");
+}
+void background_tui(struct arena* win)
+{
+}
+void background_cli(struct arena* win)
+{
 }
 void background(struct arena* win)
 {
@@ -46,6 +50,7 @@ void background(struct arena* win)
 	if(_cli_ == fmt)background_cli(win);
 	else if(_tui_ == fmt)background_tui(win);
 	else if(_html_ == fmt)background_html(win);
+	else if(_json_ == fmt)background_json(win);
 	else if(_vbo_ == fmt)background_vbo(win);
 	else background_pixel(win);
 }
@@ -53,14 +58,19 @@ void background(struct arena* win)
 
 
 
-void foreground_cli(struct arena* win)
+void foreground_pixel(struct arena* win)
 {
-}
-void foreground_tui(struct arena* win)
-{
-}
-void foreground_html(struct arena* win)
-{
+	int j;
+	for(j=0;j<11;j++)
+	{
+		if(0 == win->touchdown[j].z)continue;
+
+		drawline(win, 0xff00ff,
+			win->touchdown[j].x, win->touchdown[j].y,
+			win->touchmove[j].x, win->touchmove[j].y
+		);
+	}
+	vkbd_read(win);
 }
 void foreground_vbo(struct arena* win)
 {
@@ -82,19 +92,29 @@ void foreground_vbo(struct arena* win)
 	}
 	vkbd_read(win);
 }
-void foreground_pixel(struct arena* win)
+void foreground_json(struct arena* win)
 {
-	int j;
-	for(j=0;j<11;j++)
-	{
-		if(0 == win->touchdown[j].z)continue;
+	int len = win->len;
+	u8* buf = win->buf;
 
-		drawline(win, 0xff00ff,
-			win->touchdown[j].x, win->touchdown[j].y,
-			win->touchmove[j].x, win->touchmove[j].y
-		);
-	}
-	vkbd_read(win);
+	len += mysnprintf(buf+len, 0x100000-len, "}\n");
+
+	win->len = len;
+}
+void foreground_html(struct arena* win)
+{
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(buf+len, 0x100000-len, "</body></html>");
+
+	win->len = len;
+}
+void foreground_tui(struct arena* win)
+{
+}
+void foreground_cli(struct arena* win)
+{
 }
 void foreground(struct arena* win)
 {
@@ -104,6 +124,7 @@ void foreground(struct arena* win)
 	if(_cli_ == fmt)foreground_cli(win);
 	else if(_tui_ == fmt)foreground_tui(win);
 	else if(_html_ == fmt)foreground_html(win);
+	else if(_json_ == fmt)foreground_json(win);
 	else if(_vbo_ == fmt)foreground_vbo(win);
 	else foreground_pixel(win);
 }

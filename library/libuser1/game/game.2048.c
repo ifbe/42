@@ -128,7 +128,7 @@ static void the2048_read_pixel(
 		}
 	}
 }
-static void the2048_read_html(
+static void the2048_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -137,7 +137,31 @@ static void the2048_read_html(
 	u8* buf = win->buf;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
-	len += mysnprintf(buf+len, 0x100000-len, "<2048>");
+	len += mysnprintf(buf+len, 0x100000-len, "{\"2048\" : ");
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			len += mysnprintf(buf+len, 0x100000-len, "\"%d\",", tab[y][x]);
+		}//forx
+	}//fory
+	len += mysnprintf(buf+len, 0x100000-len, "}\n");
+
+	win->len = len;
+}
+static void the2048_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"2048\" style=\"width:100%%;height:100px;background-color:#444444;\">"
+	);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -145,7 +169,7 @@ static void the2048_read_html(
 			len += mysnprintf(buf+len, 0x100000-len, "%d ", tab[y][x]);
 		}//forx
 	}//fory
-	len += mysnprintf(buf+len, 0x100000-len, "</2048>\n");
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
 	win->len = len;
 }
@@ -205,6 +229,7 @@ static void the2048_read(
 	if(fmt == _cli_)the2048_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)the2048_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)the2048_read_html(win, sty, act, pin);
+	else if(fmt == _json_)the2048_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)the2048_read_vbo(win, sty, act, pin);
 	else the2048_read_pixel(win, sty, act, pin);
 }

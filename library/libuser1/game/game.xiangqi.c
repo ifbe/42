@@ -217,6 +217,28 @@ static void xiangqi_read_vbo(
 		}
 	}
 }
+static void xiangqi_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y,c;
+	int len = win->len;
+	u8* buf = win->buf;
+
+	len += mysnprintf(buf+len, 0x100000-len, "{\"xiangqi\" : ");
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			c = data[y][x];
+			if(0 == c)c = '0';
+			len += mysnprintf(buf+len, 0x100000-len, "\"%c\",", c);
+		}//forx
+	}//fory
+	len += mysnprintf(buf+len, 0x100000-len, "}\n");
+
+	win->len = len;
+}
 static void xiangqi_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -225,7 +247,10 @@ static void xiangqi_read_html(
 	int len = win->len;
 	u8* buf = win->buf;
 
-	len += mysnprintf(buf+len, 0x100000-len, "<xiangqi>");
+	len += mysnprintf(
+		buf+len, 0x100000-len,
+		"<div id=\"xiangqi\" style=\"width:100%%;height:100px;background-color:#256f8d;\">"
+	);
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
@@ -235,7 +260,7 @@ static void xiangqi_read_html(
 			len += mysnprintf(buf+len, 0x100000-len, "%c ", c);
 		}//forx
 	}//fory
-	len += mysnprintf(buf+len, 0x100000-len, "</xiangqi>\n");
+	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
 	win->len = len;
 }
@@ -285,8 +310,9 @@ static void xiangqi_read(
 
 	if(fmt == _cli_)xiangqi_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)xiangqi_read_tui(win, sty, act, pin);
-	else if(fmt == _vbo_)xiangqi_read_vbo(win, sty, act, pin);
 	else if(fmt == _html_)xiangqi_read_html(win, sty, act, pin);
+	else if(fmt == _json_)xiangqi_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)xiangqi_read_vbo(win, sty, act, pin);
 	else xiangqi_read_pixel(win, sty, act, pin);
 }
 
