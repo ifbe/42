@@ -55,7 +55,7 @@ void camera_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"camera\" style=\"width:100%%;height:100px;background-color:#1984ea;\">"
+		"<div id=\"camera\" style=\"width:50%%;height:100px;float:left;background-color:#1984ea;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

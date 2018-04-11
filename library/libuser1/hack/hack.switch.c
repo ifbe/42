@@ -50,7 +50,7 @@ static void switch_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"switch\" style=\"width:100%%;height:100px;background-color:#7d9c8a;\">"
+		"<div id=\"switch\" style=\"width:50%%;height:100px;float:left;background-color:#7d9c8a;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

@@ -128,7 +128,7 @@ static void weiqi_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"weiqi\" style=\"width:100%%;height:100px;background-color:#f9d65b;\">"
+		"<div id=\"weiqi\" style=\"width:50%%;height:100px;float:left;background-color:#f9d65b;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;

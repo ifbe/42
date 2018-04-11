@@ -12,8 +12,8 @@ void carvestl(
 
 
 
-static u8* stlbuf;
-static int stllen;
+static u8* stlbuf = 0;
+static int stllen = 0;
 static float left,right,front,back,bottom,upper;
 void stl_prep(void* name)
 {
@@ -21,13 +21,16 @@ void stl_prep(void* name)
 	int j,ret;
 	
 	stllen = openreadclose(name, 0, stlbuf, 0x800000);
-	say("len=%x, count=%x, ", stllen, *(u32*)(stlbuf+80));
+	say("stllen=%x\n",stllen);
+	if(stllen <= 0)return;
 
 	left = back = bottom = 100000.0;
 	right = front = upper = -100000.0;
 
 	ret = *(u32*)(stlbuf+80);
+	say("len=%x, count=%x, ", stllen, ret);
 	ret = ret%(0x200000/36);
+
 	for(j=0;j<ret;j++)
 	{
 		p = (void*)stlbuf + 84 + j*50;
@@ -74,6 +77,7 @@ static void stl_read_pixel(
 	int hh = sty->fy;
 	int dd = sty->uz;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
+	if(stllen <= 0)return;
 
 	sx = (left+right)/2;
 	sy = (back+front)/2;
@@ -112,15 +116,17 @@ static void stl_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float sx,sy,f;
 	int cx = sty->cx;
 	int cy = sty->cy;
 	int cz = sty->cz;
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
-	float f;
-	float sx = (left+right)/2;
-	float sy = (back+front)/2;
+	if(stllen <= 0)return;
+
+	sx = (left+right)/2;
+	sy = (back+front)/2;
 	if(right-left > front-back)f = 2.0*ww/(right-left);
 	else f = 2.0*hh/(front-back);
 
@@ -145,7 +151,7 @@ static void stl_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"stl\" style=\"width:100%%;height:100px;background-color:#3368a9;\">"
+		"<div id=\"stl\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

@@ -88,7 +88,7 @@ void snake_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"snake\" style=\"width:100%%;height:100px;background-color:#808080;\">"
+		"<div id=\"snake\" style=\"width:50%%;height:100px;float:left;background-color:#808080;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;

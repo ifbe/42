@@ -147,7 +147,7 @@ static void bplus_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"bplus\" style=\"width:100%%;height:100px;background-color:#289467;\">"
+		"<div id=\"bplus\" style=\"width:50%%;height:100px;float:left;background-color:#289467;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

@@ -247,7 +247,7 @@ static void sketchpad_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"sketch\" style=\"width:100%%;height:100px;background-color:#e712a9;\">"
+		"<div id=\"sketch\" style=\"width:50%%;height:100px;float:left;background-color:#e712a9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

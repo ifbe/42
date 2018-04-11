@@ -160,7 +160,7 @@ static void the2048_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"2048\" style=\"width:100%%;height:100px;background-color:#444444;\">"
+		"<div id=\"2048\" style=\"width:50%%;height:100px;float:left;background-color:#444444;\">"
 	);
 	for(y=0;y<4;y++)
 	{

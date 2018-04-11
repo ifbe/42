@@ -191,7 +191,7 @@ static void rubikscube_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"rubik\" style=\"width:100%%;height:100px;background-color:#404040;\">"
+		"<div id=\"rubik\" style=\"width:50%%;height:100px;float:left;background-color:#404040;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;

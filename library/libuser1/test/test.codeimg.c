@@ -181,7 +181,7 @@ static void codeimg_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"codeimg\" style=\"width:100%%;height:100px;background-color:#0000ff;\">"
+		"<div id=\"codeimg\" style=\"width:50%%;height:100px;float:left;background-color:#0000ff;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
@@ -227,20 +227,6 @@ static void codeimg_stop(struct actor* act, struct pinid* pin)
 }
 static void codeimg_start(struct actor* act, struct pinid* pin)
 {
-	int rr,gg,bb;
-	int x,y;
-	u32* src = act->buf;
-
-	for(y=0;y<1024;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			rr = RED4(x,y);
-			gg = GREEN4(x,y);
-			bb = BLUE4(x,y);
-			src[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-		}
-	}
 }
 static void codeimg_delete(struct actor* act)
 {
@@ -253,8 +239,24 @@ static void codeimg_delete(struct actor* act)
 }
 static void codeimg_create(struct actor* act)
 {
+	int rr,gg,bb;
+	int x,y;
+	u32* src;
 	if(0 == act)return;
-	act->buf = memorycreate(1024*1024*4);
+
+	src = memorycreate(1024*1024*4);
+	act->buf = src;
+
+	for(y=0;y<1024;y++)
+	{
+		for(x=0;x<1024;x++)
+		{
+			rr = RED4(x,y);
+			gg = GREEN4(x,y);
+			bb = BLUE4(x,y);
+			src[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+		}
+	}
 }
 
 

@@ -34,7 +34,15 @@ void background_json(struct arena* win)
 }
 void background_html(struct arena* win)
 {
-	win->len = mysnprintf(win->buf, 0x100000, "<html><body>\n");
+	win->len = mysnprintf(
+		win->buf, 0x100000,
+		"<html>"
+		"<head>\n"
+		"<meta charset=\"UTF-8\">"
+		"<style>*{margin:0;padding:0;}</style>"
+		"</head>\n"
+		"<body style=\"width:100%%;height:100%%;\">"
+	);
 }
 void background_tui(struct arena* win)
 {

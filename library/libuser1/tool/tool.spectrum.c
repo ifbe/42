@@ -127,7 +127,7 @@ static void spectrum_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"spectrum\" style=\"width:100%%;height:100px;background-color:#7ae129;\">"
+		"<div id=\"spectrum\" style=\"width:50%%;height:100px;float:left;background-color:#7ae129;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

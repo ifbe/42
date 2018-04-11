@@ -36,7 +36,7 @@ static void browser_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"browser\" style=\"width:100%%;height:100px;background-color:#87c9da;\">"
+		"<div id=\"browser\" style=\"width:50%%;height:100px;float:left;background-color:#87c9da;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

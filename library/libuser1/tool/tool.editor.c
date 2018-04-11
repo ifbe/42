@@ -31,7 +31,7 @@ static void editor_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"editor\" style=\"width:100%%;height:100px;background-color:#4e819a;\">"
+		"<div id=\"editor\" style=\"width:50%%;height:100px;float:left;background-color:#4e819a;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

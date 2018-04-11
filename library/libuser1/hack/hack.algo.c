@@ -77,7 +77,7 @@ static void algorithm_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"algo\" style=\"width:100%%;height:100px;background-color:#123456;\">"
+		"<div id=\"algo\" style=\"width:50%%;height:100px;float:left;background-color:#123456;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

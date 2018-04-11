@@ -82,7 +82,7 @@ static void piano_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"piano\" style=\"width:100%%;height:100px;background-color:#48e1a9;\">"
+		"<div id=\"piano\" style=\"width:50%%;height:100px;float:left;background-color:#48e1a9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

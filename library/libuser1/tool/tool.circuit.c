@@ -111,7 +111,7 @@ static void circuit_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"circuit\" style=\"width:100%%;height:100px;background-color:#e8194a;\">"
+		"<div id=\"circuit\" style=\"width:50%%;height:100px;float:left;background-color:#e8194a;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

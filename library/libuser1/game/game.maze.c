@@ -207,7 +207,7 @@ static void maze_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"maze\" style=\"width:100%%;height:100px;background-color:#444444;\">"
+		"<div id=\"maze\" style=\"width:50%%;height:100px;float:left;background-color:#444444;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;

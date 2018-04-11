@@ -118,7 +118,7 @@ static void tetris_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"tetris\" style=\"width:100%%;height:100px;background-color:#111111;\">"
+		"<div id=\"tetris\" style=\"width:50%%;height:100px;float:left;background-color:#111111;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;

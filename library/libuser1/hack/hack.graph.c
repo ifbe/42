@@ -315,7 +315,7 @@ static void graph_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"graph\" style=\"width:100%%;height:100px;background-color:#c8a7d9;\">"
+		"<div id=\"graph\" style=\"width:50%%;height:100px;float:left;background-color:#c8a7d9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

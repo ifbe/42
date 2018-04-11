@@ -46,7 +46,7 @@ static void rawdump_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"rawdump\" style=\"width:100%%;height:100px;background-color:#39c8a7;\">"
+		"<div id=\"rawdump\" style=\"width:50%%;height:100px;float:left;background-color:#39c8a7;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

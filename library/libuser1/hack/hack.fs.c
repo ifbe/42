@@ -57,7 +57,7 @@ static void fs_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"fs\" style=\"width:100%%;height:100px;background-color:#465097;\">"
+		"<div id=\"fs\" style=\"width:50%%;height:100px;float:left;background-color:#465097;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

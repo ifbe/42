@@ -125,7 +125,7 @@ static void keyboard_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"input\" style=\"width:100%%;height:100px;background-color:#a7c8d9;\">"
+		"<div id=\"input\" style=\"width:50%%;height:100px;float:left;background-color:#a7c8d9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 

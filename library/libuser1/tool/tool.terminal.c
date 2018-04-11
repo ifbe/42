@@ -669,7 +669,7 @@ static void terminal_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"term\" style=\"width:100%%;height:100px;background-color:#f0ac2b;\">"
+		"<div id=\"term\" style=\"width:50%%;height:100px;float:left;background-color:#f0ac2b;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
