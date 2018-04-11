@@ -1,5 +1,6 @@
 #include "actor.h"
-void* arterycreate(u64 type, void* addr);
+#define _http_ hex32('h','t','t','p')
+void* arenacreate(u64 type, void* addr);
 
 
 
@@ -98,8 +99,8 @@ static void browser_write(
 		act->len = 0;
 		haha->len = 0;
 
-		addr = arterycreate(0, buf);
-		relationcreate(act, 0, _act_, addr, 0, _fd_);
+		addr = arenacreate(_http_, buf);
+		relationcreate(act, 0, _act_, addr, 0, _win_);
 	}
 	else if(0x8 == ev->why)
 	{

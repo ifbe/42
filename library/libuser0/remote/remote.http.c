@@ -2,8 +2,12 @@
 #define _TCP_ hex32('T','C','P',0)
 #define _WS_ hex32('W','S',0,0)
 #define _fd_ hex32('f','d',0,0)
+void* actorcreate(u64, void*);
+int actordelete(void*);
 void* arenacreate(u64, void*);
 int arenadelete(void*);
+void* arterycreate(u64, void*);
+int arterydelete(void*);
 void* systemcreate(u64, void*);
 int systemdelete(void*);
 //
@@ -25,6 +29,8 @@ int httpclient_write(
 {
 	if(0 == win)return 0;
 	if(0 == act)return 0;
+
+	say("%.*s\n", len, buf);
 	return 0;
 }
 int httpclient_read()
@@ -35,8 +41,10 @@ int httpclient_delete(struct arena* win)
 {
 	return 0;
 }
-int httpclient_create(struct arena* win)
+int httpclient_create(struct arena* win, void* str)
 {
+	void* addr = arterycreate(0, str);
+	relationcreate(win, 0, _win_, addr, 0, _fd_);
 	return 0;
 }
 

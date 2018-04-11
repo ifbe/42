@@ -244,6 +244,10 @@ int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	{
 		httpserver_write(dc,df,sc,sf,buf,len);
 	}
+	else if(_http_ == win->type)
+	{
+		httpclient_write(dc,df,sc,sf,buf,len);
+	}
 	else if(_WS_ == win->type)
 	{
 		wsserver_write(dc,df,sc,sf,buf,len);

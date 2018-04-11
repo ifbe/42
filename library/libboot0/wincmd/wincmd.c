@@ -1,7 +1,8 @@
-#include<stdio.h>
-#include<stdarg.h>
-#include<conio.h>
-#include<windows.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <conio.h>
+#include <direct.h>
+#include <windows.h>
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
@@ -596,7 +597,7 @@ void* birth()
 
 	//0.chdir
 	createserial();
-	chdir("datafile/");
+	_chdir("datafile/");
 
 
 
