@@ -14,14 +14,15 @@ int systemdelete(void*);
 
 
 
-int http_write_request(u8* buf, int len, char* url, char* host)
+int http_write_request(u8* buf, int len, char* host, char* url)
 {
 	if((url==0)|(url[0]==0)){url="/";}
 
 	return mysnprintf(buf, 100,
 		"GET %s HTTP/1.1\r\n"
+		"Host: %s\r\n"
 		"\r\n",
-		url
+		url, host
 	);
 }
 int http_help(void* act, void* pin, u8* buf, int len)

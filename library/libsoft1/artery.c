@@ -199,7 +199,7 @@ void* arterycreate(u64 type, u8* name)
 		if(0 >= fd)return 0;
 
 		obj[fd].name = _http_;
-		ret = http_write_request(datahome, 0x100000, url, host);
+		ret = http_write_request(datahome, 0x100000, host, url);
 		printmemory(datahome, ret);
 		ret = writesocket(fd, 0, datahome, ret);
 		return &obj[fd];
