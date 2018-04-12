@@ -35,6 +35,8 @@ int deleteuart();
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
+int startuart(void*, int);
+int stopuart(int);
 int startfile(void*, int);
 int stopfile(int);
 //
@@ -117,6 +119,12 @@ void* systemcreate(u64 type, u8* name)
 	}
 	else if(_uart_ == type)
 	{
+		fd = startuart(name, 115200);
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _uart_;
+		obj[fd].name = _uart_;
+		goto success;
 		return 0;
 	}
 

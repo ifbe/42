@@ -1,11 +1,5 @@
 #include "actor.h"
-struct uartinfo
-{
-	u8* buf;
-	int len;
-	int enq;
-	int deq;
-};
+#define _uart_ hex32('u','a','r','t')
 struct uartterm
 {
 	u8* buf;
@@ -27,17 +21,19 @@ struct uartterm
 	int cury;
 };
 int listuart(void*, int);
-int startuart(void*);
-int writeuart(int fd, char* buf, int off, int len);
+int startuart(void*, int);
+int writeuart(int fd, int off, char* buf, int len);
+//
 int listshell(void*, int);
 int startshell();
-int writeshell(int fd, char* buf, int off, int len);
+int writeshell(int fd, int off, char* buf, int len);
+//
+void* systemcreate(u64 type, u8* name);
 void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1);
 
 
 
 
-static struct uartinfo* old;
 static struct uartterm term;
 static u8 listbuf[0x100];
 static int listlen = 0;
@@ -615,7 +611,6 @@ static void terminal_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8* p;
 	int enq,deq;
 	int cx = sty->cx;
 	int cy = sty->cy;
@@ -634,20 +629,6 @@ static void terminal_read_pixel(
 		return;
 	}
 
-	if(old == 0)return;
-	p = old->buf;
-	enq = old->enq;
-	deq = old->deq;
-	old->deq = enq;
-	if(enq != deq)
-	{
-		if(enq > deq)queue_copy(p+deq, enq-deq);
-		else
-		{
-			queue_copy(p+deq, 0x100000-deq);
-			queue_copy(p, enq);
-		}
-	}
 	drawterm(win, &term, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void terminal_read_vbo(
@@ -689,22 +670,6 @@ static void terminal_read_tui(
 		return;
 	}
 
-	if(old == 0)return;
-	buf = old->buf;
-	enq = old->enq;
-	deq = old->deq;
-	old->deq = enq;
-
-	if(enq != deq)
-	{
-		if(enq > deq)queue_copy(buf+deq, enq-deq);
-		else
-		{
-			queue_copy(buf+deq, 0x100000-deq);
-			queue_copy(buf, enq);
-		}
-	}
-
 	w = win->width;
 	h = win->height;
 	if(w > term.width)w = term.width;
@@ -729,7 +694,7 @@ static void terminal_read_cli(
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 
 	if((status == 0)&&(charlen == 0))return;
-	if(old == 0)return;
+/*
 	p = old->buf;
 	enq = old->enq;
 	deq = old->deq;
@@ -738,6 +703,7 @@ static void terminal_read_cli(
 
 	if(enq > deq)say("%.*s", enq-deq, p+deq);
 	else say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
+*/
 }
 static void terminal_read(
 	struct arena* win, struct style* sty,
@@ -755,19 +721,15 @@ static void terminal_read(
 
 
 
-static void terminal_write(
+static void terminal_write_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	struct event* ev)
 {
+	void* addr;
 	int j;
 	u64 tmp;
 	u64 why = ev->why;
-	if(ev->what == _uart_)
-	{
-		old = (void*)(ev->why);
-		return;
-	}
 
 	if(ev->what == _kbd_)
 	{
@@ -783,11 +745,11 @@ static void terminal_write(
 
 			if(status == 1)
 			{
-				writeuart(theone, (void*)&tmp, 0, j);
+				writeuart(theone, 0, (void*)&tmp, j);
 			}
 			else
 			{
-				writeshell(theone, (void*)&tmp, 0, j);
+				writeshell(theone, 0, (void*)&tmp, j);
 			}
 		}
 		return;
@@ -799,11 +761,11 @@ static void terminal_write(
 		{
 			if(status == 1)
 			{
-				writeuart(theone, (void*)ev, 0, 1);
+				writeuart(theone, 0, (void*)ev, 1);
 			}
 			else
 			{
-				writeshell(theone, (void*)ev, 0, 1);
+				writeshell(theone, 0, (void*)ev, 1);
 			}
 			return;
 		}
@@ -828,7 +790,9 @@ static void terminal_write(
 			}
 			else
 			{
-				theone = startuart(charbuf);
+				//theone = startuart(charbuf, 115200);
+				addr = systemcreate(_uart_, charbuf);
+				relationcreate(act, 0, _act_, addr, 0, _fd_);
 				status = 1;
 			}
 			return;
@@ -839,6 +803,22 @@ static void terminal_write(
 			charlen++;
 		}
 	}
+}
+static void terminal_write_data(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	say("%.*s", len, buf);
+	queue_copy(buf, len);
+}
+static void terminal_write(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	void* buf, int len)
+{
+	if(0 == win)terminal_write_event(act, pin, win, sty, buf);
+	else terminal_write_data(act, pin, win, sty, buf, len);
 }
 
 

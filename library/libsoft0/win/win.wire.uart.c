@@ -3,6 +3,7 @@
 #include <string.h>
 #include <windows.h>
 #include "system.h"
+#define _uart_ hex32('u','a','r','t')
 
 
 
@@ -15,7 +16,10 @@ struct uartinfo
 	int deq;
 };
 static struct uartinfo info;
+//
+static struct object* obj = 0;
 static HANDLE hcom = 0;
+//
 static u64 thread = 0;
 static int alive = 0;
 
@@ -25,6 +29,7 @@ static int alive = 0;
 DWORD WINAPI systemuart_thread(LPVOID pM)
 {
 	int ret, count=0;
+	struct relation* orel;
 	u8* buf;
 
 	while(alive == 1)
@@ -38,13 +43,24 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 		if( (ret > 0) && (count > 0) )
 		{
 			//printf("from %d to %d\n", info.enq, (info.enq + count)%0x200);
+
+			orel = obj[1].orel;
+			while(1)
+			{
+				if(0 == orel)break;
+				if(_act_ == orel->dsttype)
+				{
+					actorwrite(
+						(void*)(orel->dstchip), (void*)(orel->dstfoot),
+						(void*)(orel->srcchip), (void*)(orel->srcfoot),
+						buf, count
+					);
+				}
+				orel = (struct relation*)samesrcnextdst(orel);
+			}
+
+			//eventwrite((u64)&info, _uart_, 0, 0);
 			info.enq = (info.enq + count)%0x100000;
-			eventwrite(
-				(u64)&info,
-				hex32('u','a','r','t'),
-				0,
-				0
-			);
 		}
 
 		Sleep(10);
@@ -55,11 +71,11 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 
 
 
-int readuart(int fd, char* buf, int off, int len)
+int readuart(int fd, int off, char* buf, int len)
 {
 	return 0;
 }
-int writeuart(int fd, char* buf, int off, int len)
+int writeuart(int fd, int off, char* buf, int len)
 {
 	u32 count=0;
 	int ret;
@@ -133,6 +149,7 @@ int startuart(char* p, int speed)
 		0,
 		NULL
 	);
+	say("hcom=%x\n",hcom);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
 		say("err:%d@open\n",GetLastError());
@@ -194,4 +211,5 @@ int deleteuart()
 }
 int createuart(void* addr)
 {
+	obj = addr;
 }
