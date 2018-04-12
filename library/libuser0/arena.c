@@ -164,17 +164,6 @@ void* arenacreate(u64 type, u8* addr)
 		win->orel = 0;
 		soundstart(win);
 	}
-	else if(_http_ == type)
-	{
-		if(0 == addr)return 0;
-		win->type = _http_;
-		win->fmt = hex32('d','a','t','a');
-		win->irel = 0;
-		win->orel = 0;
-
-		//be client, accept data
-		httpclient_create(win, addr);
-	}
 	else if(_HTTP_ == type)
 	{
 		win->type = _HTTP_;
@@ -232,7 +221,7 @@ int arenaread(void* dc,void* df,void* sc,void* sf)
 			time = gettime();
 			windowread(0, 0, win, 0);
 			time = gettime() - time;
-			say("delta=%d\n",time);
+			//say("delta=%d\n",time);
 		}
 	}
 	return 0;

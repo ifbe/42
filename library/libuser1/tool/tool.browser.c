@@ -1,6 +1,6 @@
 #include "actor.h"
 #define _http_ hex32('h','t','t','p')
-void* arenacreate(u64 type, void* addr);
+void* arterycreate(u64 type, void* addr);
 
 
 
@@ -67,28 +67,19 @@ static void browser_read(
 	else if(fmt == _vbo_)browser_read_vbo(win, sty, act, pin);
 	else browser_read_pixel(win, sty, act, pin);
 }
-static void browser_write(
+
+
+
+
+static void browser_write_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	u8* buf, int len)
+	struct event* ev)
 {
-	int j;
-	u8* dst;
-	void* addr;
+	int len;
+	u8* buf;
+	void* art;
 	struct mystring* haha;
-
-	if(0 != win)
-	{
-		dst = act->buf;
-		act->len = len;
-
-		for(j=0;j<len;j++)dst[j] = buf[j];
-		dst[j] = 0;
-
-		return;
-	}
-
-	struct event* ev = (void*)buf;
 	if(_char_ != ev->what)return;
 
 	haha = (void*)(act->detail);
@@ -99,8 +90,8 @@ static void browser_write(
 		act->len = 0;
 		haha->len = 0;
 
-		addr = arenacreate(_http_, buf);
-		relationcreate(act, 0, _act_, addr, 0, _win_);
+		art = arterycreate(0, buf);
+		relationcreate(act, 0, _act_, art, 0, _art_);
 	}
 	else if(0x8 == ev->why)
 	{
@@ -125,6 +116,32 @@ static void browser_write(
 		}
 	}
 }
+static void browser_write_data(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	int j;
+	u8* dst;
+
+	dst = (act->buf)+(act->len);
+	act->len += len;
+
+	for(j=0;j<len;j++)dst[j] = buf[j];
+	dst[j] = 0;
+}
+static void browser_write(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	void* buf, int len)
+{
+	if(0 == win)browser_write_event(act, pin, win, sty, buf);
+	else browser_write_data(act, pin, win, sty, buf, len);
+}
+
+
+
+
 static void browser_list()
 {
 }

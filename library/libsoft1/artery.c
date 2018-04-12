@@ -1,23 +1,9 @@
 #include "artery.h"
 #define _uart_ hex32('u','a','r','t')
 #define _art_ hex32('a','r','t',0)
+int httpclient_create(struct element* ele, void* buf, void* url, void* host);
+int httpclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int tftp_write(void*, int);
-int tls_write_client_hello(void*, int);
-int secureshell_write_handshake(void*, int);
-int websocket_write_handshake(void*, int);
-int http_write_request(void*, int, void*, void*);
-int dns_write_query(void*, int, void*, int);
-void quic_start();
-void quic_stop();
-void ssh_start();
-void ssh_stop();
-void tls_start();
-void tls_stop();
-//
-u64 netmgr_eth(void*, int, void*, int);
-u64 netmgr_udp(void*, int, void*, int);
-u64 netmgr_tcp(void*, int, void*, int);
 void* systemcreate(u64 type, u8* name);
 int systemdelete(int);
 //
@@ -56,6 +42,8 @@ int arterydelete(void* ele)
 void* arterycreate(u64 type, u8* name)
 {
 	int j,k,fd,ret;
+	struct element* e;
+
 	u8 host[0x100];	//127.0.0.1
 	int port;	//2222
 	u8* url;	//dir/file.html
@@ -198,11 +186,17 @@ void* arterycreate(u64 type, u8* name)
 		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _http_;
-		ret = http_write_request(datahome, 0x100000, host, url);
-		printmemory(datahome, ret);
+		e = allocelement();
+		if(0 == e)return 0;
+
+		ret = httpclient_create(e, datahome, url, host);
+		if(ret <= 0)return 0;
+printmemory(datahome, ret);
 		ret = writesocket(fd, 0, datahome, ret);
-		return &obj[fd];
+		if(ret <= 0)return 0;
+
+		relationcreate(e, 0, _art_, &obj[fd], 0, _fd_);
+		return e;
 	}
 	else if(_ws_ == type)	//ws client
 	{
@@ -214,8 +208,7 @@ void* arterycreate(u64 type, u8* name)
 		ret = writesocket(fd, 0, datahome, ret);
 	}
 
-success:
-	return &ele[fd];
+	return 0;
 }
 int arterystop()
 {
@@ -231,6 +224,10 @@ int arteryread(void* dc,void* df,void* sc,void* sf)
 }
 int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
+	struct element* ele = dc;
+	//say("%llx,%llx,%llx,%llx{\n%.*s}\n", dc, df, sc, sf, len, buf);
+
+	if(_http_ == ele->type)httpclient_write(dc, df, sc, sf, buf, len);
 	return 0;
 }
 int arterylist(u8* buf, int len)

@@ -296,9 +296,17 @@ int systemevent(struct event* ev)
 				ppp, ret
 			);
 		}
-		if(_win_ == orel->dsttype)
+		else if(_win_ == orel->dsttype)
 		{
 			arenawrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				&obj[where], 0,
+				ppp, ret
+			);
+		}
+		else if(_art_ == orel->dsttype)
+		{
+			arterywrite(
 				(void*)(orel->dstchip), (void*)(orel->dstfoot),
 				&obj[where], 0,
 				ppp, ret

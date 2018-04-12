@@ -1,4 +1,8 @@
 #include "artery.h"
+#define _win_ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
+#define _TCP_ hex32('T','C','P',0)
+#define _tcp_ hex32('t','c','p',0)
 //
 int findzero(void*);
 int findhead(void*);
@@ -14,17 +18,6 @@ int systemdelete(void*);
 
 
 
-int http_write_request(u8* buf, int len, char* host, char* url)
-{
-	if((url==0)|(url[0]==0)){url="/";}
-
-	return mysnprintf(buf, 100,
-		"GET %s HTTP/1.1\r\n"
-		"Host: %s\r\n"
-		"\r\n",
-		url, host
-	);
-}
 int http_help(void* act, void* pin, u8* buf, int len)
 {
 	char temp[0x1000];
@@ -74,6 +67,72 @@ int http_help(void* act, void* pin, u8* buf, int len)
 
 	systemdelete(act);
 	return 0;
+}
+
+
+
+
+int httpclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	struct relation* orel;
+	if(0 == ele)return 0;
+	if(0 == obj)return 0;
+	//say("%.*s\n", len, buf);
+	parsehtml(buf, len);
+
+	orel = ele->orel;
+	while(1)
+	{
+		if(0 == orel)break;
+		if(_act_ == orel->dsttype)
+		{
+			actorwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				ele, 0,
+				buf, len
+			);
+		}
+		orel = samesrcnextdst(orel);
+	}
+
+	return 0;
+}
+int httpclient_read()
+{
+	return 0;
+}
+int httpclient_delete(struct element* ele)
+{
+	return 0;
+}
+int httpclient_create(struct element* ele, u8* buf, u8* url, u8* host)
+{
+/*
+	void* addr = systemcreate(0, str);
+	fd = startsocket(host, port, 't');
+	if(0 >= fd)return 0;
+
+	obj[fd].name = _http_;
+	ret = http_write_request(datahome, 0x100000, host, url);
+	printmemory(datahome, ret);
+	ret = writesocket(fd, 0, datahome, ret);
+	return &obj[fd];
+	relationcreate(win, 0, _win_, addr, 0, _fd_);
+	return 0;
+*/
+	if(0 == url)url = "/";
+	else if(0 == url[0])url="/";
+
+	ele->type = hex32('h','t','t','p');
+	return mysnprintf(buf, 0x1000,
+		"GET %s HTTP/1.1\r\n"
+		"Host: %s\r\n"
+		"\r\n",
+		url, host
+	);
 }
 
 

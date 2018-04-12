@@ -13,40 +13,12 @@ int systemdelete(void*);
 //
 int websocket_write_handshake(u8* buf, int len);
 int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
+void parsehtml(u8* buf, int len);
 
 
 
 
 static u8* buffer = 0;
-
-
-
-
-int httpclient_write(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin,
-	u8* buf, int len)
-{
-	if(0 == win)return 0;
-	if(0 == act)return 0;
-
-	say("%.*s\n", len, buf);
-	return 0;
-}
-int httpclient_read()
-{
-	return 0;
-}
-int httpclient_delete(struct arena* win)
-{
-	return 0;
-}
-int httpclient_create(struct arena* win, void* str)
-{
-	void* addr = arterycreate(0, str);
-	relationcreate(win, 0, _win_, addr, 0, _fd_);
-	return 0;
-}
 
 
 

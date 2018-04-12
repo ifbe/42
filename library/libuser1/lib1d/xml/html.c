@@ -130,6 +130,21 @@ void parsestyle(struct style* sty, u8* buf, int len)
 
 	say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
 }
+
+
+
+
 void parsehtml(u8* buf, int len)
 {
+	int j,k=0;
+	for(j=0;j<=len;j++)
+	{
+		if((j == len)|(0xa == buf[j])|(0xd == buf[j]))
+		{
+			say("[%.*s]\n", j-k, buf+k);
+
+			if(0xd == buf[j])j++;
+			k = j+1;
+		}
+	}
 }

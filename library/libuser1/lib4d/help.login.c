@@ -128,7 +128,7 @@ void login_read_pixel(struct arena* win)
 	d = h/2;
 	for(j=0;j<64;j++)
 	{
-		if(0 == obj[j].type)continue;
+		if(0 == ele[j].type)continue;
 		x = j%8;
 		y = j/8;
 		drawicon_1(
