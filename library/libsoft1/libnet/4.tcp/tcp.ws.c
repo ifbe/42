@@ -1,4 +1,8 @@
 #include "artery.h"
+#define _win_ hex32('w','i','n',0)
+#define _act_ hex32('a','c','t',0)
+#define _TCP_ hex32('T','C','P',0)
+#define _tcp_ hex32('t','c','p',0)
 void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(void* o, void* i, int len);
@@ -12,16 +16,6 @@ u8* findstr(void* src, int max, void* target, int tarlen);
 
 
 
-int websocket_write_handshake(u8* buf, int len)
-{
-	return mysnprintf(buf, len,
-		"GET / HTTP/1.1\r\n"
-		"Upgrade: websocket\r\n"
-		"Connection: Upgrade\r\n"
-		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
-		"\r\n"
-	);
-}
 int websocket_read_handshake(u8* buf, int len, u8* dst, int max)
 {
 	int j;
@@ -217,6 +211,49 @@ int websocket_write(u8* buf, int len, u8* dst, int max)
 
 
 
+
+int wsclient_read()
+{
+	return 0;
+}
+int wsclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int wsclient_delete(struct element* ele)
+{
+	//unlink
+	//delete
+	return 0;
+}
+int wsclient_create(struct element* ele, char* buf, char* host, char* url)
+{
+	int ret;
+	void* obj = systemcreate(_tcp_, host);
+	if(0 == obj)return 0;
+
+	if(0 == url)url = "/";
+	else if(0 == url[0])url="/";
+	ret = mysnprintf(buf, 0x1000,
+		"GET %s HTTP/1.1\r\n"
+		"Upgrade: websocket\r\n"
+		"Connection: Upgrade\r\n"
+		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
+		"\r\n",
+		url
+	);
+
+	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	if(ret <= 0)return 0;
+
+	ele->type = hex32('w','s',0,0);
+	ele->stage1 = 0;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 1;
+}
 /*
 #define ws 0x7377
 #define WS 0x5357

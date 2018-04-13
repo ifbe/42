@@ -341,7 +341,7 @@ void printmemory(u8* buf, int len)
 			if((c<0x20)|(c>=0x7f))c = 0x20;
 			tmp[14+48+j] = c;
 		}
-		say("%.*s\n", 14+48+16, tmp);
+		say((void*)"%.*s\n", 14+48+16, tmp);
 
 		buf += 16;
 		len -= 16;

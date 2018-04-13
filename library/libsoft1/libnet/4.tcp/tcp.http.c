@@ -9,11 +9,8 @@ int findhead(void*);
 int findtail(void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-//
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
-int systemwrite(void*,void*,void*,void*,void*,int);
-int systemdelete(void*);
 
 
 
@@ -134,31 +131,28 @@ int httpclient_delete(struct element* ele)
 {
 	return 0;
 }
-int httpclient_create(struct element* ele, u8* buf, u8* url, u8* host)
+int httpclient_create(struct element* ele, char* buf, char* host, char* url)
 {
-/*
-	void* addr = systemcreate(0, str);
-	fd = startsocket(host, port, 't');
-	if(0 >= fd)return 0;
+	int ret;
+	void* obj = systemcreate(_tcp_, host);
+	if(0 == obj)return 0;
 
-	obj[fd].name = _http_;
-	ret = http_write_request(datahome, 0x100000, host, url);
-	printmemory(datahome, ret);
-	ret = writesocket(fd, 0, datahome, ret);
-	return &obj[fd];
-	relationcreate(win, 0, _win_, addr, 0, _fd_);
-	return 0;
-*/
 	if(0 == url)url = "/";
 	else if(0 == url[0])url="/";
-
-	ele->type = hex32('h','t','t','p');
-	return mysnprintf(buf, 0x1000,
+	ret = mysnprintf(buf, 0x1000,
 		"GET %s HTTP/1.1\r\n"
 		"Host: %s\r\n"
 		"\r\n",
 		url, host
 	);
+
+	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	if(ret <= 0)return 0;
+
+	ele->type = hex32('h','t','t','p');
+	ele->stage1 = 0;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 1;
 }
 
 

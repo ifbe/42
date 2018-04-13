@@ -6,6 +6,8 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 #define _fd_ hex32('f','d',0,0)
+#define _art_ hex32('a','r','t',0)
+//
 #define _uart_ hex32('u','a','r','t')
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
@@ -193,6 +195,9 @@ int arteryread(void* dc,void* df,void* sc,void* sf);
 int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
 int systemread(void* dc,void* df,void* sc,void* sf);
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+//
+void* systemcreate(u64 type, void* name);
+int systemdelete(void*);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);

@@ -131,7 +131,12 @@ void* systemcreate(u64 type, u8* name)
 	//decode ipaddr
 	port = 80;
 	url = name + parseurl(name, 0x100, host, &port);
-	say("host=%s,port=%d,url=%s\n", host, port, url);
+	say(
+		"host=%s:%d\n"
+		"url=%s\n",
+		host, port,
+		url
+	);
 
 	if(_RAW_ == type)		//raw server
 	{

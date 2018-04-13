@@ -15,32 +15,6 @@ static void* buffer = 0;
 
 
 
-int wsclient_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	return 0;
-}
-int wsclient_write(struct arena* win)
-{
-	return 0;
-}
-int wsclient_delete(struct arena* win)
-{
-	//unlink
-	//delete
-	return 0;
-}
-int wsclient_create(struct arena* win, u8* str)
-{
-	void* ret = arterycreate(_ws_, str);
-	say("ret=%llx\n", ret);
-	return 0;
-}
-
-
-
-
 int wsserver_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)

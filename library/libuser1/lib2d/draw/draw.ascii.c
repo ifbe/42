@@ -275,20 +275,21 @@ void drawtext(
 
 	k = 0;
 	dy = 0;
-	for(j=0;j<len;j++)
+	for(j=0;j<=len;j++)
 	{
 		if(dy+16 > y1-y0)break;
-		if((buf[j] != 0)&&(buf[j] != '\n'))continue;
-
-		cc = (x1-x0)/8;
-		if(cc > j-k)cc = j-k;
-
-		if(cc > 0)
+		if((j==len)|('\n'==buf[j]))
 		{
-			drawstring(win, rgb, x0, y0+dy, buf+k, cc);
+			cc = (x1-x0)/8;
+			if(cc > j-k)cc = j-k;
+
+			if(cc > 0)
+			{
+				drawstring(win, rgb, x0, y0+dy, buf+k, cc);
+			}
+			k = j+1;
+			dy += 16;
 		}
-		k = j+1;
-		dy += 16;
 	}
 }
 

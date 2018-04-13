@@ -38,10 +38,10 @@ void background_html(struct arena* win)
 		win->buf, 0x100000,
 		"<html>"
 		"<head>\n"
-		"<meta charset=\"UTF-8\">"
-		"<style>*{margin:0;padding:0;}</style>"
+		"<meta charset=\"UTF-8\">\n"
+		"<style>*{margin:0;padding:0;}</style>\n"
 		"</head>\n"
-		"<body style=\"width:100%%;height:100%%;\">"
+		"<body style=\"width:100%%;height:100%%;\">\n"
 	);
 }
 void background_tui(struct arena* win)

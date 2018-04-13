@@ -1,16 +1,13 @@
 #include "artery.h"
-#define _uart_ hex32('u','a','r','t')
-#define _art_ hex32('a','r','t',0)
-int httpclient_create(struct element* ele, void* buf, void* url, void* host);
+int httpclient_create(struct element* ele, void* buf, void* host, void* url);
+int wsclient_create(struct element* ele, void* buf, void* host, void* url);
+int sshclient_create(struct element* ele, void* buf, void* host, void* url);
+int tlslient_create(struct element* ele, void* buf, void* host, void* url);
+//
 int httpclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
-void* systemcreate(u64 type, u8* name);
-int systemdelete(int);
-//
-int startsocket(void* addr, int port, int type);
-int stopsocket(int);
-int startfile(void*, int);
-int stopfile(int);
+int wsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tlsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -41,11 +38,10 @@ int arterydelete(void* ele)
 }
 void* arterycreate(u64 type, u8* name)
 {
-	int j,k,fd,ret;
+	int j,fd,ret,port;
 	struct element* e;
 
 	u8 host[0x100];	//127.0.0.1
-	int port;	//2222
 	u8* url;	//dir/file.html
 	u8* t;		//http
 
@@ -56,10 +52,10 @@ void* arterycreate(u64 type, u8* name)
 			if(0 == ncmp(name+j, "://", 3))
 			{
 				t = (u8*)&type;
-				for(k=0;k<j;k++)
+				for(ret=0;ret<j;ret++)
 				{
-					if(k >= 8)break;
-					t[k] = name[k];
+					if(ret >= 8)break;
+					t[ret] = name[ret];
 				}
 				name += j+3;
 				break;
@@ -79,9 +75,15 @@ void* arterycreate(u64 type, u8* name)
 
 	//decode ipaddr
 	port = 80;
-	url = name + parseurl(name, 0x100, host, &port);
-	say("host=%s,port=%d,url=%s\n", host, port, url);
+	ret = parseurl(name, 0x100, host, &port);
 
+	mysnprintf(host, 80, "%.*s", ret, name);
+	say("host=%s\n", host);
+
+	url = name + ret;
+	say("url=%s\n", url);
+
+/*
 	//raw family
 	if(_ICMP_ == type)
 	{
@@ -181,31 +183,22 @@ void* arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _sql_;
 	}
-	else if(_http_ == type)	//http client
+*/
+	if(_http_ == type)	//http client
 	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
-
 		e = allocelement();
 		if(0 == e)return 0;
 
-		ret = httpclient_create(e, datahome, url, host);
-		if(ret <= 0)return 0;
-printmemory(datahome, ret);
-		ret = writesocket(fd, 0, datahome, ret);
-		if(ret <= 0)return 0;
-
-		relationcreate(e, 0, _art_, &obj[fd], 0, _fd_);
+		httpclient_create(e, datahome, host, url);
 		return e;
 	}
 	else if(_ws_ == type)	//ws client
 	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
+		e = allocelement();
+		if(0 == e)return 0;
 
-		obj[fd].name = _ws_;
-		ret = websocket_write_handshake(datahome, 0x100000);
-		ret = writesocket(fd, 0, datahome, ret);
+		wsclient_create(e, datahome, host, url);
+		return e;
 	}
 
 	return 0;
