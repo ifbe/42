@@ -77,11 +77,37 @@ int httpclient_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	int j,k;
 	struct relation* orel;
 	if(0 == ele)return 0;
 	if(0 == obj)return 0;
 	//say("%.*s\n", len, buf);
-	parsehtml(buf, len);
+
+	if(0 == ele->stage1)
+	{
+		k = 0;
+		for(j=0;j<=len;j++)
+		{
+			if((j>=len)|(0xa == buf[j])|(0xd == buf[j]))
+			{
+				say("%.*s\n", j-k, buf+k);
+				if(j >= len)break;
+				if((0xd == buf[k])&&(0xa == buf[k+1]))
+				{
+					buf += k+2;
+					len -= k+2;
+					break;
+				}
+
+				if(0xd == buf[j])j++;
+				k = j+1;
+			}
+		}
+	}
+
+	ele->stage1 += 1;
+	printmemory(buf, len);
+	if(len <= 0)return 0;
 
 	orel = ele->orel;
 	while(1)
