@@ -299,6 +299,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 			else win->vkbd = 1;
 			return 1;
 		}
+		if(0 == win->vkbd)return 0;
 
 		x = x*16/w;
 		y = y*32/h;

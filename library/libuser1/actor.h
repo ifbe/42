@@ -314,51 +314,51 @@ struct actor
 	};
 
 	//[+00,+0f]: center
-	int width;
-	int height;
-	int depth;
+	float width;
+	float height;
+	float depth;
 	int stride;
 
 	//[+10,+1f]: center
-	int cx;
-	int cy;
-	int cz;
+	float cx;
+	float cy;
+	float cz;
 	int dirty;
 
 	//[+20,+2f]: right
-	int rx;
-	int ry;
-	int rz;
+	float rx;
+	float ry;
+	float rz;
 	int rw;
 
 	//[+30,+3f]: far
-	int fx;
-	int fy;
-	int fz;
+	float fx;
+	float fy;
+	float fz;
 	int fw;
 
 	//[+40,+4f]: upper
-	int ux;
-	int uy;
-	int uz;
+	float ux;
+	float uy;
+	float uz;
 	int uw;
 
 	//[+50,+5f]: left
-	int lx;
-	int ly;
-	int lz;
+	float lx;
+	float ly;
+	float lz;
 	int ltype;
 
 	//[+60,+6f]: near
-	int nx;
-	int ny;
-	int nz;
+	float nx;
+	float ny;
+	float nz;
 	int ntype;
 
 	//[+70,+7f]: bottom
-	int bx;
-	int by;
-	int bz;
+	float bx;
+	float by;
+	float bz;
 	int btype;
 
 	//[100,1ff]

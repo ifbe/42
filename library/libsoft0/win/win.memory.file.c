@@ -117,6 +117,7 @@ int writefile(HANDLE file, u64 off, void* mem, u64 len)
 
 	li.QuadPart = off;
 	SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
+
 	ret = WriteFile(file, mem, len, &val, NULL);
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
@@ -129,6 +130,7 @@ int readfile(HANDLE file, u64 off, void* mem, u64 len)
 
 	li.QuadPart = off;
 	SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
+
 	ret = ReadFile(file, mem, len, &val, 0);
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
