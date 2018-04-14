@@ -31,8 +31,8 @@ void* char2hanzi(int val)
 		case 'S':return "兵";
 		case 'Z':return "炮";
 
-		default:return 0;
 	}
+	return "";
 }
 void xiangqi_read_pixel(
 	struct arena* win, struct style* sty,
@@ -243,26 +243,36 @@ static void xiangqi_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y,c;
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y,len;
+	u8* buf;
+	struct htmlpiece* hp = win->hp;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"xiangqi\" style=\"width:50%%;height:100px;float:left;background-color:#8d6f25;\">"
+	//<head>
+	len = hp[1].len;
+	buf = hp[1].buf;
+	len += mysnprintf(buf+len, 0x100000-len,
+		".xiangqi{width:11%%;height:10%%;float:left;border-radius:5px;}\n"
+	);
+	hp[1].len = len;
+
+	//<body>
+	len = hp[2].len;
+	buf = hp[2].buf;
+	len += mysnprintf(buf+len, 0x100000-len,
+		"<div style=\"width:50%%;height:50%%;float:left;background-color:#8d6f25;text-align:center;\">"
 	);
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			c = data[y][x];
-			if(0 == c)c = '0';
-			len += mysnprintf(buf+len, 0x100000-len, "%c ", c);
+			len += mysnprintf(buf+len, 0x100000-len,
+				"<div class=\"xiangqi\">%s</div>",
+				char2hanzi(data[y][x])
+			);
 		}//forx
 	}//fory
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
+	hp[2].len = len;
 }
 static void xiangqi_read_tui(
 	struct arena* win, struct style* sty,

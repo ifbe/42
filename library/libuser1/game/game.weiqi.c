@@ -4,7 +4,7 @@
 
 
 static int px, py, turn;
-static u8 data[19*19];
+static u8 data[19][19];
 
 
 
@@ -54,8 +54,8 @@ static void weiqi_read_pixel(
 	{
 		for(x=-9;x<=9;x++)
 		{
-			if(data[(y+9)*19 + x+9] == 'b')c = 0x444444;
-			else if(data[(y+9)*19 + x+9] == 'w')c = 0xffffff;
+			if(data[y+9][x+9] == 'b')c = 0x444444;
+			else if(data[y+9][x+9] == 'w')c = 0xffffff;
 			else continue;
 
 			drawsolid_circle(
@@ -123,15 +123,36 @@ static void weiqi_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y,len;
+	u8* buf;
+	struct htmlpiece* hp = win->hp;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"weiqi\" style=\"width:50%%;height:100px;float:left;background-color:#f9d65b;\">"
+	//<head>
+	len = hp[1].len;
+	buf = hp[1].buf;
+	len += mysnprintf(buf+len, 0x100000-len,
+		".weiqi{width:5.26%%;height:5%%;float:left;border-radius:5px;}\n"
 	);
+	hp[1].len = len;
+
+	//<body>
+	len = hp[2].len;
+	buf = hp[2].buf;
+	len += mysnprintf(buf+len, 0x100000-len,
+		"<div style=\"width:50%%;height:50%%;float:left;background-color:#f9d65b;text-align:center;\">"
+	);
+	for(y=0;y<19;y++)
+	{
+		for(x=0;x<19;x++)
+		{
+			len += mysnprintf(buf+len, 0x100000-len,
+				"<div class=\"weiqi\">%d</div>",
+				data[y][x]
+			);
+		}//forx
+	}//fory
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+	hp[2].len = len;
 }
 static void weiqi_read_tui(
 	struct arena* win, struct style* sty,
@@ -152,8 +173,8 @@ static void weiqi_read_tui(
 
 			//color
 			if( (px == x) && (py == y) )color = 7;
-			else if(data[(y*19) + x] == 'b')color = 4;
-			else if(data[(y*19) + x] == 'w')color = 1;
+			else if(data[y][x] == 'b')color = 4;
+			else if(data[y][x] == 'w')color = 1;
 			else continue;
 
 			//
@@ -223,8 +244,8 @@ void weiqi_write(
 	{
 		if(key == 0x20)
 		{
-			if((turn&1)==0)data[(py*19)+px] = 'b';
-			else data[(py*19)+px] = 'w';
+			if((turn&1)==0)data[py][px] = 'b';
+			else data[py][px] = 'w';
 			turn++;
 		}
 	}
@@ -243,8 +264,8 @@ void weiqi_write(
 		if(y<0)return;
 		if(y>18)return;
 
-		if((turn&0x1) == 0)data[(y*19) + x] = 'b';
-		else data[(y*19) + x] = 'w';
+		if((turn&0x1) == 0)data[y][x] = 'b';
+		else data[y][x] = 'w';
 		turn++;
 	}
 }
@@ -266,10 +287,7 @@ static void weiqi_start(struct actor* act, struct pinid* pin)
 
 	for(y=0;y<19;y++)
 	{
-		for(x=0;x<19;x++)
-		{
-			data[y*19 + x] = 0;
-		}
+		for(x=0;x<19;x++)data[y][x] = 0;
 	}
 }
 static void weiqi_delete(struct actor* act)

@@ -32,11 +32,6 @@
 
 
 
-struct mystring
-{
-	int len;
-	u8 buf[0];
-};
 struct point
 {
 	u16 x;
@@ -68,6 +63,20 @@ struct relation
 	u32 srcflag;
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
+};
+
+
+
+
+struct mystring
+{
+	int len;
+	u8 buf[0];
+};
+struct htmlpiece
+{
+	int len;
+	void* buf;
 };
 struct texandobj
 {
@@ -175,6 +184,7 @@ struct arena
 	};
 	union{
 		u64 len;
+		void* hp;
 		void* mod;
 		void* ximage;
 		void* texture;
