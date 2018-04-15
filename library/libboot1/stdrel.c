@@ -199,15 +199,15 @@ void* relation_grow()
 	return temp;
 }
 void* relation_generate(
-	void* uchip, u64 ufoot, u32 utype,
-	void* bchip, u64 bfoot, u32 btype)
+	void* uchip, void* ufoot, u32 utype,
+	void* bchip, void* bfoot, u32 btype)
 {
 	struct relation* w = relation_grow();
 	if(w == 0)return 0;
 
 	//1.dest
 	w->destchip = (u64)uchip;
-	w->destfoot = ufoot;
+	w->destfoot = (u64)ufoot;
 
 	w->desttype = utype;
 	w->destflag = 0;
@@ -217,7 +217,7 @@ void* relation_generate(
 
 	//2.self
 	w->selfchip = (u64)bchip;
-	w->selffoot = bfoot;
+	w->selffoot = (u64)bfoot;
 
 	w->selftype = btype;
 	w->selfflag = 0;
@@ -293,8 +293,8 @@ void relationdelete(struct relation* this)
 	relation_recycle(this);
 }
 void* relationcreate(
-	void* uchip, u64 ufoot, u32 utype,
-	void* bchip, u64 bfoot, u32 btype)
+	void* uchip, void* ufoot, u32 utype,
+	void* bchip, void* bfoot, u32 btype)
 {
 	struct item* h1;
 	struct item* h2;

@@ -392,7 +392,7 @@ void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
-void* relationcreate(void*,void*,u64,void*,void*,u64);
+void* relationcreate(void*,void*,int,void*,void*,int);
 int relationdelete(void*);
 //
 void* eventread();
