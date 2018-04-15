@@ -123,36 +123,27 @@ static void weiqi_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y,len;
-	u8* buf;
-	struct htmlpiece* hp = win->hp;
+	int x,y;
 
 	//<head>
-	len = hp[1].len;
-	buf = hp[1].buf;
-	len += mysnprintf(buf+len, 0x100000-len,
-		".weiqi{width:5.26%%;height:5%%;float:left;border-radius:5px;}\n"
+	htmlprintf(win, 1,
+		".wqbg{width:50%%;height:50%%;float:left;background-color:#f9d65b;text-align:center;}\n"
+		".wqfg{width:5.26%%;height:5.26%%;float:left;background-color:#ffffff;border-radius:50%%;}\n"
 	);
-	hp[1].len = len;
 
 	//<body>
-	len = hp[2].len;
-	buf = hp[2].buf;
-	len += mysnprintf(buf+len, 0x100000-len,
-		"<div style=\"width:50%%;height:50%%;float:left;background-color:#f9d65b;text-align:center;\">"
-	);
+	htmlprintf(win, 2, "<div class=\"wqbg\">\n");
 	for(y=0;y<19;y++)
 	{
 		for(x=0;x<19;x++)
 		{
-			len += mysnprintf(buf+len, 0x100000-len,
-				"<div class=\"weiqi\">%d</div>",
+			htmlprintf(win, 2,
+				"<div class=\"wqfg\">%d</div>\n",
 				data[y][x]
 			);
 		}//forx
 	}//fory
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	hp[2].len = len;
+	htmlprintf(win, 2, "</div>\n");
 }
 static void weiqi_read_tui(
 	struct arena* win, struct style* sty,

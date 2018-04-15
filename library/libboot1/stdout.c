@@ -2,7 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#include<stdarg.h>
 int data2decstr(u64 data, void* str);
 int data2hexstr(u64 data, void* str);
 int double2decstr(double data, void* str);
@@ -19,7 +18,7 @@ static int outwin;
 
 
 
-int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
+int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 {
 	int j, k;
 	int src, dst, tmp;
@@ -67,7 +66,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		lval = 0;
 		if(fmt[tmp] == '*')
 		{
-			lval = va_arg(arg, int);
+			lval = __builtin_va_arg(arg, int);
 			tmp++;
 		}
 		else
@@ -85,7 +84,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		//rval
 		if(fmt[tmp] == '*')
 		{
-			rval = va_arg(arg, int);
+			rval = __builtin_va_arg(arg, int);
 			tmp++;
 		}
 		else if( (fmt[tmp] < 0x30) | (fmt[tmp] > 0x39) )
@@ -107,7 +106,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		//type
 		if(fmt[tmp] == 'f')
 		{
-			_f = va_arg(arg, double);
+			_f = __builtin_va_arg(arg, double);
 			dst += double2decstr(_f, buf+dst);
 
 			src = tmp+1;
@@ -115,7 +114,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 'd')
 		{
-			_x = va_arg(arg, u32);
+			_x = __builtin_va_arg(arg, u32);
 			j = data2decstr(_x, buf+dst);
 			if(lval == 0)dst += j;
 			else if(j == lval)dst += j;
@@ -144,7 +143,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 'x')
 		{
-			_x = va_arg(arg, u32);
+			_x = __builtin_va_arg(arg, u32);
 
 			j = data2hexstr(_x, buf+dst);
 			if(lval == 0)dst += j;
@@ -174,7 +173,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 'c')
 		{
-			_x = va_arg(arg, int);
+			_x = __builtin_va_arg(arg, int);
 			buf[dst] = _x;
 			dst++;
 
@@ -183,7 +182,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if(fmt[tmp] == 's')
 		{
-			_s = va_arg(arg, u8*);
+			_s = __builtin_va_arg(arg, u8*);
 			if(rval < 0)
 			{
 				while(1)
@@ -210,7 +209,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, va_list arg)
 		}
 		else if((fmt[tmp] == 'l')&&(fmt[tmp+1] == 'l')&&(fmt[tmp+2] == 'x'))
 		{
-			_x = va_arg(arg, u64);
+			_x = __builtin_va_arg(arg, u64);
 
 			j = data2hexstr(_x, buf+dst);
 			if(lval == 0)dst += j;
@@ -265,31 +264,31 @@ retlen:
 int mysnprintf(u8* buf, int len, u8* fmt, ...)
 {
 	int ret;
-	va_list arg;
+	__builtin_va_list arg;
 
-	va_start(arg, fmt);
+	__builtin_va_start(arg, fmt);
 	ret = myvsnprintf(buf, len, fmt, arg);
-	va_end(arg);
+	__builtin_va_end(arg);
 
 	return ret;
 }
 void say(u8* fmt, ...)
 {
 	int cur,ret;
-	va_list arg;
+	__builtin_va_list arg;
 
 	//read position
 	cur = outcur;
 
 	//
-	va_start(arg, fmt);
+	__builtin_va_start(arg, fmt);
 
 	//snprintf
 	//ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
 	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
 
 	//
-	va_end(arg);
+	__builtin_va_end(arg);
 
 	//debugport
 	//printout(cur, ret);

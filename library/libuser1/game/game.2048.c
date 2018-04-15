@@ -153,37 +153,28 @@ static void the2048_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y,len;
-	u8* buf;
-	struct htmlpiece* hp = win->hp;
+	int x,y;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
 	//<head>
-	len = hp[1].len;
-	buf = hp[1].buf;
-	len += mysnprintf(buf+len, 0x100000-len,
-		".g2048{width:25%%;height:25%%;float:left;}\n"
+	htmlprintf(win, 1,
+		".b2048{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".g2048{width:24.8%%;height:24.8%%;margin:0.1%%;float:left;}\n"
 	);
-	hp[1].len = len;
 
 	//<body>
-	len = hp[2].len;
-	buf = hp[2].buf;
-	len += mysnprintf(buf+len, 0x100000-len,
-		"<div style=\"width:50%%;height:50%%;float:left;background-color:#444444;text-align:center;\">"
-	);
+	htmlprintf(win, 2, "<div class=\"b2048\">\n");
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			len += mysnprintf(buf+len, 0x100000-len,
-				"<div class=\"g2048\" style=\"background-color:#%06x\">%d</div>",
+			htmlprintf(win, 2,
+				"<div class=\"g2048\" style=\"background-color:#%06x\">%d</div>\n",
 				color2048[tab[y][x]], val2048[tab[y][x]]
 			);
 		}//forx
 	}//fory
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	hp[2].len = len;
+	htmlprintf(win, 2, "</div>\n");
 }
 static void the2048_read_tui(
 	struct arena* win, struct style* sty,

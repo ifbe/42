@@ -88,15 +88,30 @@ static void chess_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y,color;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"chess\" style=\"width:50%%;height:100px;float:left;background-color:#111111;\">"
+	//<head>
+	htmlprintf(win, 1,
+		".chbg{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".chfg{width:12.5%%;height:12.5%%;float:left;}\n"
 	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+
+	//<body>
+	htmlprintf(win, 2, "<div class=\"chbg\">\n");
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			if(0 != ((x+y)%2))color = 0x111111;
+			else color = 0xffffff;
+
+			htmlprintf(win, 2,
+				"<div class=\"chfg\" style=\"background-color:#%06x\">%d</div>\n",
+				color, buffer[y][x]
+			);
+		}
+	}
+	htmlprintf(win, 2, "</div>\n");
 }
 static void chess_read_tui(
 	struct arena* win, struct style* sty,

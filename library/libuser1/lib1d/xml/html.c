@@ -2,6 +2,28 @@
 
 
 
+
+int htmlprintf(struct arena* win, int i, u8* fmt, ...)
+{
+	__builtin_va_list arg;
+	struct htmlpiece* hp;
+	if(i<1)return 0;
+	if(i>2)return 0;
+
+	__builtin_va_start(arg, fmt);
+
+	hp = win->hp;
+	hp[i].len += myvsnprintf(
+		hp[i].buf+hp[i].len, 0x100000-hp[i].len,
+		fmt, arg
+	);
+
+	__builtin_va_end(arg);
+}
+
+
+
+
 void parsepinid(u8* pin, u8* buf, int len)
 {
 	int j;
