@@ -64,10 +64,9 @@ int arenaactor(struct arena* win, struct actor* act)
 	sty->fy = min;
 	sty->uz = min;
 
-	relationcreate(win, sty, _win_, act, pin, _act_);
-
-	//win->onstart(win, sty);
+	act->oncreate(act, 0);
 	act->onstart(act, pin);
+	relationcreate(win, sty, _win_, act, pin, _act_);
 	return 0;
 }
 
