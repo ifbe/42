@@ -102,15 +102,27 @@ static void sudoku_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"sudoku\" style=\"width:50%%;height:100px;float:left;background-color:#cccccc;\">"
+	//<head>
+	htmlprintf(win, 1,
+		".sudokubg{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".sudokufg{width:10.9%%;height:10.9%%;float:left;background-color:#ccc;margin:0.1%%;}\n"
 	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+
+	//<body>
+	htmlprintf(win, 2, "<div class=\"sudokubg\">\n");
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			htmlprintf(win, 2,
+				"<div class=\"sudokufg\">%c</div>\n",
+				0x30+data[y][x]
+			);
+		}//forx
+	}//fory
+	htmlprintf(win, 2, "</div>\n");
 }
 static void sudoku_read_tui(
 	struct arena* win, struct style* sty,

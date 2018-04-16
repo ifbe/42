@@ -4,7 +4,7 @@
 
 
 static int turn;
-static u8 data[9];
+static u8 data[3][3];
 
 
 
@@ -35,13 +35,13 @@ static void ooxx_read_pixel(
 	{
 		for(x=0;x<3;x++)
 		{
-			if(data[3*y + x] == 'o')
+			if('o' == data[y][x])
 			{
 				drawline_circle(win, 0xff,
 					cx+(x-1)*ww*2/3, cy+(y-1)*hh*2/3, ww/6
 				);
 			}
-			else if(data[3*y + x] == 'x')
+			else if('x' == data[y][x])
 			{
 				drawline(win, 0xff0000,
 					cx+(4*x-5)*ww/6, cy+(4*y-5)*hh/6,
@@ -88,15 +88,29 @@ static void ooxx_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y;
+	char p[2];
+	p[0] = p[1] = 0;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"ooxx\" style=\"width:50%%;height:100px;float:left;background-color:#111111;\">"
+	//<head>
+	htmlprintf(win, 1,
+		".oxbg{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".oxfg{width:33%%;height:33%%;float:left;background-color:#ccc;margin:0.1%%;}\n"
 	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+
+	//<body>
+	htmlprintf(win, 2, "<div class=\"oxbg\">\n");
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<3;x++)
+		{
+			p[0] = data[y][x];
+			if(('o' != p[0])&&('x' != p[0]))p[0] = 0;
+
+			htmlprintf(win, 2, "<div class=\"oxfg\">%s</div>\n", p);
+		}//forx
+	}//fory
+	htmlprintf(win, 2, "</div>\n");
 }
 static void ooxx_read_tui(
 	struct arena* win, struct style* sty,
@@ -115,7 +129,7 @@ static void ooxx_read_cli(
 	{
 		for(x=0;x<3;x++)
 		{
-			ch = data[y*3 + x];
+			ch = data[y][x];
 			if((ch!='o') && (ch!='x'))say("_	");
 			else say("%c	",ch);
 		}
@@ -158,12 +172,12 @@ void ooxx_write(
 		x = x*3/min;
 		y = y*3/min;
 say("%d,%d\n",x,y);
-		if(data[y*3 + x] != 0)return;
+		if(0 != data[y][x])return;
 
 		if((turn&0x1) == 0x1)val='o';
 		else val='x';
 
-		data[y*3 + x] = val;
+		data[y][x] = val;
 		turn++;
 	}
 }
@@ -178,10 +192,13 @@ static void ooxx_stop(struct actor* act, struct pinid* pin)
 }
 static void ooxx_start(struct actor* act, struct pinid* pin)
 {
-	int j;
+	int x,y;
 
 	turn=0;
-	for(j=0;j<9;j++)data[j]=0;
+	for(y=0;y<3;y++)
+	{
+		for(x=0;x<3;x++)data[y][x] = 0;
+	}
 }
 static void ooxx_delete(struct actor* act)
 {

@@ -26,7 +26,7 @@ typedef struct stucture
 	int y4;
 }structure;
 static structure that;
-static u8 buf[WIDTH*HEIGHT];
+static u8 data[HEIGHT][WIDTH];
 
 
 
@@ -50,8 +50,8 @@ static void tetris_read_pixel(
 		for(x=0;x<WIDTH;x++)
 		{
 			//say("%d ",buf[y*WIDTH+x]);
-			if(0 == buf[y*WIDTH+x])continue;
-			else if(1 == buf[y*WIDTH+x])c = 0xffffff;
+			if(0 == data[y][x])continue;
+			else if(1 == data[y][x])c = 0xffffff;
 			else c = 0x00ff00;
 
 			drawsolid_rect(win, c,
@@ -113,15 +113,25 @@ static void tetris_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int x,y;
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"tetris\" style=\"width:50%%;height:100px;float:left;background-color:#111111;\">"
+	//<head>
+	htmlprintf(win, 1,
+		".tetrisbg{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".tetrisfg{width:%f%%;height:%f%%;float:left;background-color:#ccc;margin:0.1%%;}\n",
+		100.0/WIDTH-0.21, 100.0/HEIGHT-0.22
 	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+
+	//<body>
+	htmlprintf(win, 2, "<div class=\"tetrisbg\">\n");
+	for(y=0;y<HEIGHT;y++)
+	{
+		for(x=0;x<WIDTH;x++)
+		{
+			htmlprintf(win, 2, "<div class=\"tetrisfg\"></div>\n");
+		}//forx
+	}//fory
+	htmlprintf(win, 2, "</div>\n");
 }
 static void tetris_read_tui(
 	struct arena* win, struct style* sty,
@@ -139,7 +149,7 @@ static void tetris_read_tui(
 		{
 			for(x=0;x<WIDTH;x++)
 			{
-				if(buf[y*WIDTH+x])
+				if(data[y][x])
 				{
 					p[(y*w+x)<<2]='#';
 				}
@@ -156,7 +166,7 @@ static void tetris_read_tui(
 		{
 			for(x=0;x<WIDTH;x++)
 			{
-				if(buf[WIDTH*(y+HEIGHT-h) + x])
+				if(data[y+HEIGHT-h][x])
 				{
 					p[(y*w+x)<<2]='#';
 				}
@@ -197,22 +207,22 @@ static void tetris_write(
 
 	if(type == _kbd_)
 	{
-		if(key==0x48)tetris_up(buf, WIDTH, HEIGHT);
-		else if(key==0x4b)tetris_left(buf, WIDTH, HEIGHT);
-		else if(key==0x4d)tetris_right(buf, WIDTH, HEIGHT);
-		else if(key==0x50)tetris_down(buf, WIDTH, HEIGHT);
+		if(key==0x48)tetris_up(data, WIDTH, HEIGHT);
+		else if(key==0x4b)tetris_left(data, WIDTH, HEIGHT);
+		else if(key==0x4d)tetris_right(data, WIDTH, HEIGHT);
+		else if(key==0x50)tetris_down(data, WIDTH, HEIGHT);
 	}
 	else if(type == _char_)
 	{
-		if(key=='a')tetris_left(buf, WIDTH, HEIGHT);
-		else if(key=='d')tetris_right(buf, WIDTH, HEIGHT);
-		else if(key=='w')tetris_up(buf, WIDTH, HEIGHT);
-		else if(key=='s')tetris_down(buf, WIDTH, HEIGHT);
+		if(key=='a')tetris_left(data, WIDTH, HEIGHT);
+		else if(key=='d')tetris_right(data, WIDTH, HEIGHT);
+		else if(key=='w')tetris_up(data, WIDTH, HEIGHT);
+		else if(key=='s')tetris_down(data, WIDTH, HEIGHT);
 		else if(key==' ')
 		{
 			for(ret=0;ret<20;ret++)
 			{
-				if(1 == tetris_down(buf, WIDTH, HEIGHT))return;
+				if(1 == tetris_down(data, WIDTH, HEIGHT))return;
 			}
 		}
 	}
@@ -228,7 +238,7 @@ static void tetris_stop(struct actor* act, struct pinid* pin)
 }
 static void tetris_start(struct actor* act, struct pinid* pin)
 {
-	tetris_generate(buf, WIDTH, HEIGHT);
+	tetris_generate(data, WIDTH, HEIGHT);
 }
 static void tetris_delete(struct actor* act)
 {
@@ -238,7 +248,7 @@ static void tetris_delete(struct actor* act)
 static void tetris_create(struct actor* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buf;
+	if(_orig_ == act->type)act->buf = data;
 	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT);
 }
 
