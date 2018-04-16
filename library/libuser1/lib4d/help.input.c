@@ -6,6 +6,7 @@ int vkbd_write(void*, void*);
 int playwith2d(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
 void camera_event(struct arena* win, struct event* ev);
+void target_event(struct arena* win, struct event* ev);
 
 
 
@@ -56,23 +57,49 @@ stage0:
 
 	if('p' == (what&0xff))
 	{
-		ret = vkbd_write(win, ev);
-		if(0 != ret)goto stage1;
+		if(0x2d70 == what)
+		{
+			x = why&0xffff;
+			y = (why>>16)&0xffff;
+			if(x<y)ret = x>>4;
+			else ret = y>>4;
 
+			//open or close vkbd
+			if((x+ret > win->width) && (y+ret > win->height))
+			{
+				if(win->vkbd)win->vkbd = 0;
+				else win->vkbd = 1;
+				goto lastword;
+			}
+		}
+
+		//call vkbd
+		if(0 != win->vkbd)
+		{
+			ret = vkbd_write(win, ev);
+			if(0 != ret)goto lastword;
+		}
+
+		//rotate camera
 		if((_vbo_ == win->fmt)&&(0 == win->edit))
-		{camera_event(win, ev);}
-	}
-
-	if(0 == win->irel)
-	{
-		if(_cli_ == win->fmt)term_write(ev);
-		else login_write(win, ev);
-		goto lastword;
+		{
+			camera_event(win, ev);
+		}
 	}
 
 stage1:
 	why = ev->why;
 	what = ev->what;
+
+	//empty window
+	if(0 == win->irel)
+	{
+		if((_cli_ == win->fmt)&&(_char_ == what))
+		{
+			term_write(ev);
+			goto lastword;
+		}
+	}
 
 	if(_kbd_ == what)
 	{
@@ -87,6 +114,10 @@ stage1:
 			if(win->edit)win->edit = 0;
 			else win->edit = 1;
 			goto lastword;
+		}
+		else if((0x48==why)|(0x50==why)|(0x4b==why)|(0x4d==why))
+		{
+			target_event(win, ev);
 		}
 	}
 

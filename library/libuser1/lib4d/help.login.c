@@ -4,8 +4,8 @@
 #define _xml_ hex32('x','m','l',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
-int actorcreate(void*, u8*);
-int actordelete(void*, u8*);
+void* actorcreate(void*, u8*);
+void* actordelete(void*, u8*);
 void* allocstyle();
 void* allocpinid();
 //
@@ -393,28 +393,32 @@ void login_read_vbo(struct arena* win)
 	u32 c;
 	int j,k;
 	float x,y;
+	float cx = win->target.cx;
+	float cy = win->target.cy;
+	float cz = win->target.cz;
+
 	carvedrone(win, 0xffffff,
 		0.0, 0.0, 0.0,
 		0.0, 256.0, 0.0,
 		0.0, 0.0, 1.0
 	);
 	carveline_rect(win, 0x0000ff,
-		0.0, 0.0, 16.0,
+		cx, cy, cz+16.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
 	carveline_rect(win, 0x00ff00,
-		0.0, 0.0, 32.0,
+		cx, cy, cz+32.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
 	carveline_rect(win, 0xff0000,
-		0.0, 0.0, 48.0,
+		cx, cy, cz+48.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
 	carveline_rect(win, 0xffffff,
-		0.0, 0.0, 64.0,
+		cx, cy, cz+64.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
@@ -432,7 +436,7 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.0, 8*y-31.0, 64.0,
+			cx+8*x-31.0, cy+8*y-31.0, cz+64.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
 			(u8*)&actor[j].name, 8
@@ -451,7 +455,7 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.0, 8*y-31.0, 48.0,
+			cx+8*x-31.0, cy+8*y-31.0, cz+48.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
 			(u8*)&arena[j].fmt, 8
@@ -469,7 +473,7 @@ void login_read_vbo(struct arena* win)
 		y = j/8;
 		carvestring(
 			win, c,
-			8*x-31.0, 8*y-31.0, 32.0,
+			cx+8*x-31.0, cy+8*y-31.0, cz+32.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
 			(u8*)&ele[j].type, 8
@@ -487,7 +491,7 @@ void login_read_vbo(struct arena* win)
 		y = j/64;
 		carvestring(
 			win, c,
-			x-31.0, y-31.0, 16.0,
+			cx+x-31.0, cy+y-31.0, cz+16.0,
 			2.0, 0.0, 0.0,
 			0.0, 2.0, 0.0,
 			(u8*)&obj[j].name, 8
@@ -508,8 +512,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 64.0,
-					(k%64)-31.5, (k/64)-31.5, 16.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
+					cx-31.5+(k%64),  cy-31.5+(k/64),  cz+16.0
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -517,8 +521,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 64.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 32.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+32.0
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -526,8 +530,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 64.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 48.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+48.0
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -535,8 +539,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 64.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 64.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+64.0
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -557,8 +561,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 48.0,
-					(k%64)-31.5, (k/64)-31.5, 16.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
+					cx-31.5+(k%64),  cy-31.5+(k/64),  cz+16.0
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -566,8 +570,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				carveline(win, 0xc0ffc0,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 48.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 32.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+32.0
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -575,8 +579,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				carveline(win, 0xffffff,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 48.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 48.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+48.0
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -584,8 +588,8 @@ void login_read_vbo(struct arena* win)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				carveline(win, 0xffc0ff,
-					8*(j%8)-31.5, 8*(j/8)-31.5, 48.0,
-					8*(k%8)-31.5, 8*(k/8)-31.5, 64.0
+					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
+					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+64.0
 				);
 			}
 

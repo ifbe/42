@@ -3,7 +3,7 @@
 
 
 
-int htmlprintf(struct arena* win, int i, u8* fmt, ...)
+int htmlprintf(struct arena* win, int i, char* fmt, ...)
 {
 	__builtin_va_list arg;
 	struct htmlpiece* hp;
@@ -19,6 +19,7 @@ int htmlprintf(struct arena* win, int i, u8* fmt, ...)
 	);
 
 	__builtin_va_end(arg);
+	return 0;
 }
 
 

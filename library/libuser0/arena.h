@@ -48,6 +48,96 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
+struct style
+{
+	//[00,0f]:
+	u64 type;
+	u64 name;
+
+	//[10,1f]: center
+	float cx;
+	float cy;
+	float cz;
+	float cw;
+
+	//[20,2f]: right
+	float rx;
+	float ry;
+	float rz;
+	float rw;
+
+	//[30,3f]: far
+	float fx;
+	float fy;
+	float fz;
+	float fw;
+
+	//[40,4f]: upper
+	float ux;
+	float uy;
+	float uz;
+	float uw;
+
+	//[50,5f]: left
+	float lx;
+	float ly;
+	float lz;
+	float lw;
+
+	//[60,6f]: near
+	float nx;
+	float ny;
+	float nz;
+	float nw;
+
+	//[70,7f]: bottom
+	float bx;
+	float by;
+	float bz;
+	float bw;
+};
+struct pinid
+{
+	int flag00;
+	int flag01;
+	int flag02;
+	int flag03;
+
+	int flag04;
+	int flag05;
+	int flag06;
+	int flag07;
+
+	int flag08;
+	int flag09;
+	int flag0a;
+	int flag0b;
+
+	int flag0c;
+	int flag0d;
+	int flag0e;
+	int flag0f;
+
+	int flag10;
+	int flag11;
+	int flag12;
+	int flag13;
+
+	int flag14;
+	int flag15;
+	int flag16;
+	int flag17;
+
+	int flag18;
+	int flag19;
+	int flag1a;
+	int flag1b;
+
+	int flag1c;
+	int flag1d;
+	int flag1e;
+	int flag1f;
+};
 
 
 
@@ -99,57 +189,64 @@ struct arena
 	u64 onlist;
 	u64 onchoose;
 
-	//[80,ff]: w,h,d,s
+	//[80,ff]
 	int width;
 	int height;
 	int depth;
 	int stride;
 
-	//[90,9f]: center
-	float cx;
-	float cy;
-	float cz;
+	//[90,9f]
+	int flag10;
+	int flag11;
+	int flag12;
 	int dirty;
 
-	//[a0,af]: right
-	float rx;
-	float ry;
-	float rz;
+	//[a0,af]
+	int flag20;
+	int flag21;
+	int flag22;
 	int vkbd;
 
-	//[b0,bf]: far
-	float fx;
-	float fy;
-	float fz;
+	//[b0,bf]
+	int flag30;
+	int flag31;
+	int flag32;
 	int theone;
 
-	//[c0,cf]: upper
-	float ux;
-	float uy;
-	float uz;
+	//[c0,cf]
+	int flag40;
+	int flag41;
+	int flag42;
 	int edit;
 
 	//[d0,df]
-	int dirtyx0;
-	int dirtyy0;
-	int dirtyz0;
+	int flag50;
+	int flag51;
+	int flag52;
 	int flag0;
 
 	//[e0,ef]
-	int dirtyx1;
-	int dirtyy1;
-	int dirtyz1;
+	int flag60;
+	int flag61;
+	int flag62;
 	int enq;
 
 	//[f0,ff]
-	int dirtyx2;
-	int dirtyy2;
-	int dirtyz2;
+	int flag70;
+	int flag71;
+	int flag72;
 	int deq;
 
 	//[100,1ff]
+	struct style target;
+	struct style camera;
+
+	//[200,2ff]
 	struct point touchdown[16];
 	struct point touchmove[16];
+
+	//[300,3ff]
+	u8 detail[0x100];
 };
 struct actor
 {
@@ -268,96 +365,6 @@ struct actor
 
 	//[100,1ff]
 	u8 detail[0x100];
-};
-struct style
-{
-	//[00,0f]:
-	u64 type;
-	u64 name;
-
-	//[10,1f]: center
-	float cx;
-	float cy;
-	float cz;
-	float cw;
-
-	//[20,2f]: right
-	float rx;
-	float ry;
-	float rz;
-	float rtype;
-
-	//[30,3f]: far
-	float fx;
-	float fy;
-	float fz;
-	float ftype;
-
-	//[40,4f]: upper
-	float ux;
-	float uy;
-	float uz;
-	float utype;
-
-	//[50,5f]: left
-	float lx;
-	float ly;
-	float lz;
-	float ltype;
-
-	//[60,6f]: near
-	float nx;
-	float ny;
-	float nz;
-	float ntype;
-
-	//[70,7f]: bottom
-	float bx;
-	float by;
-	float bz;
-	float btype;
-};
-struct pinid
-{
-	int flag00;
-	int flag01;
-	int flag02;
-	int flag03;
-
-	int flag04;
-	int flag05;
-	int flag06;
-	int flag07;
-
-	int flag08;
-	int flag09;
-	int flag0a;
-	int flag0b;
-
-	int flag0c;
-	int flag0d;
-	int flag0e;
-	int flag0f;
-
-	int flag10;
-	int flag11;
-	int flag12;
-	int flag13;
-
-	int flag14;
-	int flag15;
-	int flag16;
-	int flag17;
-
-	int flag18;
-	int flag19;
-	int flag1a;
-	int flag1b;
-
-	int flag1c;
-	int flag1d;
-	int flag1e;
-	int flag1f;
 };
 
 

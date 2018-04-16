@@ -891,14 +891,14 @@ void fixview()
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
-	float cx = win->cx;
-	float cy = win->cy;
-	float cz = win->cz;
+	float cx = win->camera.cx;
+	float cy = win->camera.cy;
+	float cz = win->camera.cz;
 
 	//uvn.n = front
-	float nx = win->fx;
-	float ny = win->fy;
-	float nz = win->fz;
+	float nx = win->camera.fx;
+	float ny = win->camera.fy;
+	float nz = win->camera.fz;
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
@@ -974,9 +974,9 @@ void fixlight()
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat camera[3];
-	camera[0] = win->cx;
-	camera[1] = win->cy;
-	camera[2] = win->cz;
+	camera[0] = win->camera.cx;
+	camera[1] = win->camera.cy;
+	camera[2] = win->camera.cz;
 
 	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -1319,18 +1319,35 @@ void windowstart(struct arena* w)
 	w->height = height;
 	w->depth = (width+height)/2;
 
-	w->cx = 512.0;
-	w->cy = -512.0;
-	w->cz = 512.0;
+	//target
+	w->target.cx = 0.0;
+	w->target.cy = 0.0;
+	w->target.cz = 0.0;
 
-	w->fx = -(w->cx);
-	w->fy = -(w->cy);
-	w->fz = -(w->cz);
+	w->target.rx = 1.0;
+	w->target.ry = 0.0;
+	w->target.rz = 0.0;
 
-	w->ux = 0.0;
-	w->uy = 0.0;
-	w->uz = 1.0;
+	w->target.fx = 0.0;
+	w->target.fy = 1.0;
+	w->target.fz = 0.0;
 
+	w->target.ux = 0.0;
+	w->target.uy = 0.0;
+	w->target.uz = 1.0;
+
+	//camera
+	w->camera.cx = 512.0;
+	w->camera.cy = -512.0;
+	w->camera.cz = 512.0;
+
+	w->camera.fx = (w->target.cx)-(w->camera.cx);
+	w->camera.fy = (w->target.cy)-(w->camera.cy);
+	w->camera.fz = (w->target.cz)-(w->camera.cz);
+
+	w->camera.ux = 0.0;
+	w->camera.uy = 0.0;
+	w->camera.uz = 1.0;
 
 //--------------------font3d-------------------
 	//[0000,3fff]

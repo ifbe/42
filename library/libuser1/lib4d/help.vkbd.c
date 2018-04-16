@@ -280,27 +280,16 @@ int vkbd_write(struct arena* win, struct event* ev)
 	x = (ev->why)&0xffff;
 	y = ((ev->why)>>16)&0xffff;
 	if(y*2 < h)return 0;
+	if(0 == win->vkbd)return 0;
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		if(0 == win->vkbd)return 0;
 		x = x*16/w;
 		y = y*32/h;
 		win->vkbd = x + (y*16) - 256;
 	}
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		if(x<y)ret = x>>4;
-		else ret = y>>4;
-
-		if((y+ret > h) && (x+ret > w))
-		{
-			if(win->vkbd)win->vkbd = 0;
-			else win->vkbd = 1;
-			return 1;
-		}
-		if(0 == win->vkbd)return 0;
-
 		x = x*16/w;
 		y = y*32/h;
 		ret = x + (y*16) - 256;
