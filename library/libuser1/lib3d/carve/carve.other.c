@@ -256,6 +256,42 @@ void carvedrone(
 	);
 */
 }
+void carvesnowman(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz)
+{
+	//head
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx, cy, cz+80.0,
+		16.0, 0.0, 0.0,
+		0.0, 0.0, 16.0
+	);
+
+	//body
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx, cy, cz+32.0,
+		32.0, 0.0, 0.0,
+		0.0, 0.0, 32.0
+	);
+
+	//left hand
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx-28.0, cy, cz+28.0+32.0,
+		8.0, 0.0, 0.0,
+		0.0, 0.0, 8.0
+	);
+
+	//right hand
+	carvesolid_sphere(
+		win, 0xffffff,
+		cx+28.0, cy, cz+28.0+32.0,
+		8.0, 0.0, 0.0,
+		0.0, 0.0, 8.0
+	);
+}
 
 
 

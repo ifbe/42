@@ -51,10 +51,10 @@ int actorinput(struct arena* win, struct event* ev)
 	struct relation* tmp;
 	//say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
 
-stage0:
 	why = ev->why;
 	what = ev->what;
 
+//-----------------virtual keyboard---------------------
 	if('p' == (what&0xff))
 	{
 		if(0x2d70 == what)
@@ -87,10 +87,7 @@ stage0:
 		}
 	}
 
-stage1:
-	why = ev->why;
-	what = ev->what;
-
+//------------------------consume myself--------------------
 	//empty window
 	if(0 == win->irel)
 	{
@@ -135,7 +132,7 @@ stage1:
 		goto lastword;
 	}
 
-stage2:
+//------------------------pass over-----------------------
 	rel = win->irel;
 	if(0 == rel)goto lastword;
 	while(1)

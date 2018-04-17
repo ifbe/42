@@ -17,6 +17,9 @@ void carvedrone(
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
 	float ux, float uy, float uz);
+void carvesnowman(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz);
 
 
 
@@ -397,27 +400,37 @@ void login_read_vbo(struct arena* win)
 	float cy = win->target.cy;
 	float cz = win->target.cz;
 
-	carvedrone(win, 0xffffff,
+	carvedrone(
+		win, 0xffffff,
 		0.0, 0.0, 0.0,
 		0.0, 256.0, 0.0,
 		0.0, 0.0, 1.0
 	);
-	carveline_rect(win, 0x0000ff,
+	carvesnowman(
+		win, 0xffffff,
+		cx, cy, cz
+	);
+
+	carveline_rect(
+		win, 0x0000ff,
 		cx, cy, cz+16.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
-	carveline_rect(win, 0x00ff00,
+	carveline_rect(
+		win, 0x00ff00,
 		cx, cy, cz+32.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
-	carveline_rect(win, 0xff0000,
+	carveline_rect(
+		win, 0xff0000,
 		cx, cy, cz+48.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
 	);
-	carveline_rect(win, 0xffffff,
+	carveline_rect(
+		win, 0xffffff,
 		cx, cy, cz+64.0,
 		32.0, 0.0, 0.0,
 		0.0, 32.0, 0.0
