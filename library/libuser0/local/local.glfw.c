@@ -1111,6 +1111,7 @@ void callback_display()
 }
 void callback_update()
 {
+/*
 //--------------------------------
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
 	win->height = 1024;
@@ -1122,7 +1123,7 @@ void callback_update()
 		GL_RGBA, 1024, 1024, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, win->buf
 	);
-
+*/
 //--------------------------------
 	win->fmt = hex32('v','b','o',0);
 	win->height = height;
@@ -1355,10 +1356,6 @@ void callback_reshape(GLFWwindow* window, int w, int h)
 	width = w;
 	height = h;
 }
-
-
-
-
 void* uievent(struct arena* this)
 {
 	//1.glfw
@@ -1406,16 +1403,6 @@ void* uievent(struct arena* this)
 
 	eventwrite(0,0,0,0);
 	return 0;
-}
-void* terminalthread(void* win)
-{
-	u64 why, what;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = hex32('c', 'h', 'a', 'r');
-		eventwrite(why, what, 0, 0);
-	}
 }
 
 
@@ -1612,6 +1599,4 @@ void initwindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	threadcreate(terminalthread, 0);
 }

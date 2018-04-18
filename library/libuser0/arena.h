@@ -199,7 +199,7 @@ struct arena
 	int flag10;
 	int flag11;
 	int flag12;
-	int dirty;
+	int fuck;
 
 	//[a0,af]
 	int flag20;

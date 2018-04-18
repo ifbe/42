@@ -11,7 +11,6 @@
 #include "arena.h"
 #define _drop_ hex32('d','r','o','p')
 #define _size_ hex32('s','i','z','e')
-int lowlevel_input();
 int fixarg(void* dst, void* src);
 
 
@@ -603,16 +602,10 @@ DWORD WINAPI uievent()
 	eventwrite(0, 0, 0, 0);
 	return 0;
 }
-DWORD WINAPI terminalthread(void* win)
-{
-	u64 why, what;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = hex32('c', 'h', 'a', 'r');
-		eventwrite(why, what, 0, 0);
-	}
-}
+
+
+
+
 void initwindow()
 {
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -633,9 +626,6 @@ void initwindow()
 
 	//createevent
 	hStartEvent = CreateEvent(0,FALSE,FALSE,0);
-
-	//terminalthread
-	termthread = threadcreate(terminalthread, 0);
 
 	//uithread
 	uithread = threadcreate(uievent, 0);

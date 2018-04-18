@@ -40,7 +40,7 @@ dll:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
@@ -53,6 +53,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lgdi32 -lole32 -lstrmiids -lwinmm -lws2_32
+	-lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

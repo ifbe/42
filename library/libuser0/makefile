@@ -256,6 +256,7 @@ wincli:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/win/local.win.cli.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -267,6 +268,7 @@ wintui:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/win/local.win.tui.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -278,6 +280,7 @@ winapi:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/win/local.win.api.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -289,6 +292,7 @@ wind3d:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/win/local.win.d3d.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -300,6 +304,7 @@ winglfw:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/local.glfw.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.ws.c
@@ -310,6 +315,7 @@ winglut:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/local.glut.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -321,6 +327,7 @@ winsdl:
 	rm -f *.o
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
+	$(compiler) $(cflag) local/win/local.win.tray.c
 	$(compiler) $(cflag) local/local.sdl2.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c

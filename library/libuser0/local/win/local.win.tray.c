@@ -1,12 +1,33 @@
-#include<windows.h>
-#include"arena.h"
+#include <windows.h>
+#include <xinput.h>
+#include "arena.h"
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
+int lowlevel_input();
+void sleep_us(int);
 
 
 
 
+static char* xname[16] = {
+	"XINPUT_GAMEPAD_DPAD_UP",		//0x0001
+	"XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
+	"XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
+	"XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
+	"XINPUT_GAMEPAD_START",			//0x0010
+	"XINPUT_GAMEPAD_BACK",			//0x0020
+	"XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
+	"XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
+	"XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
+	"XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
+	"????1",	//0x0400
+	"????2",	//0x0800
+	"XINPUT_GAMEPAD_A",		//0x1000
+	"XINPUT_GAMEPAD_B",		//0x2000
+	"XINPUT_GAMEPAD_X",		//0x4000
+	"XINPUT_GAMEPAD_Y"		//0x8000
+};
 //
 static HWND console;		//console window
 static HWND dummy;
@@ -107,14 +128,117 @@ DWORD WINAPI trayworker()
 		DispatchMessage(&msg);
 	}
 }
-void createtray()
+
+
+
+
+void joyprint(int id, XINPUT_GAMEPAD g)
+{
+	int j;
+	short t[4]; 
+	struct event ev;
+
+	if(	(0 == g.wButtons) &&
+		(8 >= g.bLeftTrigger) &&
+		(8 >= g.bRightTrigger) &&
+		(-2048 < g.sThumbLX) && (2048 > g.sThumbLX) &&
+		(-2048 < g.sThumbLY) && (2048 > g.sThumbLY) &&
+		(-2048 < g.sThumbRX) && (2048 > g.sThumbRX) &&
+		(-2048 < g.sThumbRY) && (2048 > g.sThumbRY) )
+	{
+		return;
+	}
+/*
+	say(
+		"%x:\n"
+		"	%x,%x\n"
+		"	%d,%d\n"
+		"	%d,%d\n",
+		id,
+		g.bLeftTrigger, g.bRightTrigger,
+		g.sThumbLX, g.sThumbLY,
+		g.sThumbRX, g.sThumbRY
+	);*/
+	for(j=0;j<16;j++)
+	{
+		if(g.wButtons & (1<<j))
+		{
+			//say("	%s\n", xname[j]);
+		}
+	}
+
+	t[0] = g.sThumbLX;
+	t[1] = g.sThumbLY;
+	t[2] = 'l';
+	t[3] = id;
+	ev.why = *(u64*)t;
+	ev.what = hex32('j','o','y',0);
+	ev.where = 0;
+	actorwrite(0, 0, 0, 0, &ev, 0x20);
+
+	t[0] = g.sThumbRX;
+	t[1] = g.sThumbRY;
+	t[2] = 'r';
+	t[3] = id;
+	ev.why = *(u64*)t;
+	ev.what = hex32('j','o','y',0);
+	ev.where = 0;
+	actorwrite(0, 0, 0, 0, &ev, 0x20);
+}
+void* joystickthread(void* win)
+{
+	XINPUT_STATE s;
+
+	while(1)
+	{
+		if(ERROR_SUCCESS == XInputGetState(0, &s))
+		{
+			joyprint(0, s.Gamepad);
+		}
+		if(ERROR_SUCCESS == XInputGetState(1, &s))
+		{
+			joyprint(1, s.Gamepad);
+		}
+		if(ERROR_SUCCESS == XInputGetState(2, &s))
+		{
+			joyprint(2, s.Gamepad);
+		}
+		if(ERROR_SUCCESS == XInputGetState(3, &s))
+		{
+			joyprint(3, s.Gamepad);
+		}
+
+		sleep_us(10000);
+	}
+}
+
+
+
+
+void* terminalthread(void* win)
+{
+	u64 why, what;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = hex32('c', 'h', 'a', 'r');
+		eventwrite(why, what, 0, 0);
+	}
+}
+
+
+
+
+void inittray()
 {
 	console = GetConsoleWindow();
-	//ShowWindow(console, SW_SHOW);
+	threadcreate(terminalthread, 0);
 
-	startthread(trayworker, 0);
+	threadcreate(joystickthread, 0);
+
+	//threadcreate(trayworker, 0);
 }
-void deletetray()
+void freetray()
 {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
 }

@@ -13,6 +13,8 @@
 
 
 
+void inittray(void*);
+void freetray();
 void initcam(void*);
 void freecam();
 void initmic(void*);
@@ -345,10 +347,12 @@ void initarena(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j]=0;
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
-	//remotecreate(arena);
-	initwindow(arena);
+	inittray(arena);
 	initmic(arena);
 	initcam(arena);
+
+	initwindow(arena);
+	//initremote(arena);
 
 	arenacreate(_win_, 0);
 	arenacreate(_HTTP_, 0);

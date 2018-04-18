@@ -117,7 +117,9 @@ int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	}
 	else
 	{
-		win = sc;
+		if(sc != 0)win = sc;
+		else win = &arena[0];
+
 		ev = buf;
 		actorinput(win, ev);
 
@@ -198,15 +200,16 @@ int actorevent(struct event* ev)
 	int j;
 	struct actor* act;
 	struct arena* win = (void*)(ev->where);
-	if(0 == win)return 0;
+	if(0 == win)win = &arena[0];
 
 	actorinput(win, ev);
 	if('p' == (ev->what&0xff))
 	{
 		touch_explain(win, ev);
-		win->dirty = 1;
+		win->enq += 1;
 		if('@' == ((ev->what>>8)&0xff))return 0;
 	}
+
 	return 0;
 }
 void freeactor()

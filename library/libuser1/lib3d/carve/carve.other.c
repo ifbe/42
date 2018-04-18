@@ -141,9 +141,9 @@ void carvedrone(
 	yy[0] = rx*3/2;
 	yy[1] = ry*3/2;
 	yy[2] = rz*3/2;
-	for(y=-2;y<=2;y++)
+	for(y=-4;y<=4;y++)
 	{
-		for(x=-2;x<=2;x++)
+		for(x=-4;x<=4;x++)
 		{
 			tt[0] = cx+xx[0]*x+yy[0]*y;
 			tt[1] = cy+xx[1]*x+yy[1]*y;

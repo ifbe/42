@@ -49,7 +49,7 @@ int actorinput(struct arena* win, struct event* ev)
 	struct compo* com;
 	struct relation* rel;
 	struct relation* tmp;
-	//say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
+	say("%llx,%llx,%llx\n",ev->why,ev->what,ev->where);
 
 	why = ev->why;
 	what = ev->what;
@@ -88,6 +88,12 @@ int actorinput(struct arena* win, struct event* ev)
 	}
 
 //------------------------consume myself--------------------
+#define _joy_ hex32('j','o','y',0)
+	if(_joy_ == what)
+	{
+		camera_event(win, ev);
+	}
+
 	//empty window
 	if(0 == win->irel)
 	{
@@ -97,7 +103,6 @@ int actorinput(struct arena* win, struct event* ev)
 			goto lastword;
 		}
 	}
-
 	if(_kbd_ == what)
 	{
 		if(why == 0xfb)

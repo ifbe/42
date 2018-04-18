@@ -1,8 +1,12 @@
+#define s8 char
+#define s16 short
+#define s32 int
+#define s64 long long
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-int data2decstr(u64 data, void* str);
+int data2decstr(s64 data, void* str);
 int data2hexstr(u64 data, void* str);
 int double2decstr(double data, void* str);
 void lowlevel_input(void*);
@@ -23,6 +27,7 @@ int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 	int j, k;
 	int src, dst, tmp;
 	int flag1, flag2, lval, rval;	//%-08.7s  %08llx
+	s64 _d;
 	u64 _x;
 	u8* _s;
 	double _f;
@@ -112,10 +117,46 @@ int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 			src = tmp+1;
 			continue;
 		}
+		else if(fmt[tmp] == 'c')
+		{
+			_x = __builtin_va_arg(arg, int);
+			buf[dst] = _x;
+			dst++;
+
+			src = tmp+1;
+			continue;
+		}
+		else if(fmt[tmp] == 's')
+		{
+			_s = __builtin_va_arg(arg, u8*);
+			if(rval < 0)
+			{
+				while(1)
+				{
+					if(dst >= len)goto retlen;
+					if(*_s == 0)break;
+
+					buf[dst] = *_s;
+					dst++;
+					_s++;
+				}
+			}
+			else
+			{
+				for(j=0;j<rval;j++)
+				{
+					if(_s[j] == 0)break;
+					buf[dst+j] = _s[j];
+				}
+				dst += j;
+			}
+			src = tmp+1;
+			continue;
+		}
 		else if(fmt[tmp] == 'd')
 		{
-			_x = __builtin_va_arg(arg, u32);
-			j = data2decstr(_x, buf+dst);
+			_d = __builtin_va_arg(arg, int);
+			j = data2decstr(_d, buf+dst);
 			if(lval == 0)dst += j;
 			else if(j == lval)dst += j;
 			else if(j > lval)
@@ -168,42 +209,6 @@ int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 				dst += lval;
 			}
 
-			src = tmp+1;
-			continue;
-		}
-		else if(fmt[tmp] == 'c')
-		{
-			_x = __builtin_va_arg(arg, int);
-			buf[dst] = _x;
-			dst++;
-
-			src = tmp+1;
-			continue;
-		}
-		else if(fmt[tmp] == 's')
-		{
-			_s = __builtin_va_arg(arg, u8*);
-			if(rval < 0)
-			{
-				while(1)
-				{
-					if(dst >= len)goto retlen;
-					if(*_s == 0)break;
-
-					buf[dst] = *_s;
-					dst++;
-					_s++;
-				}
-			}
-			else
-			{
-				for(j=0;j<rval;j++)
-				{
-					if(_s[j] == 0)break;
-					buf[dst+j] = _s[j];
-				}
-				dst += j;
-			}
 			src = tmp+1;
 			continue;
 		}

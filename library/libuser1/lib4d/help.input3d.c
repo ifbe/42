@@ -88,13 +88,36 @@ void camera_deltaxy(struct arena* win, int dx, int dy)
 {
 	float delta;
 
-	if(dx > 0)delta = 0.02;
-	else delta = -0.02;
+	if(dx < 0)delta = -0.05;
+	else if(dx > 0)delta = 0.05;
+	else delta = 0;
 	camera_deltax(win, delta);
 
-	if(dy > 0)delta = 0.02;
-	else delta = -0.02;
+	if(dy < 0)delta = -0.02;
+	else if(dy > 0)delta = 0.02;
+	else delta = 0;
 	camera_deltay(win, delta);
+}
+void target_deltaxy(struct arena* win, int x, int y)
+{
+	float norm;
+	float tx, ty;
+	float dx, dy;
+	tx = win->camera.fx;
+	ty = win->camera.fy;
+	norm = squareroot(tx*tx+ty*ty);
+	tx /= norm;
+	ty /= norm;
+
+	dx = 10.0*x*ty;
+	dy = -10.0*x*tx;
+	dx += 10.0*y*tx;
+	dy += 10.0*y*ty;
+
+	win->target.cx += dx;
+	win->target.cy += dy;
+	win->camera.cx += dx;
+	win->camera.cy += dy;
 }
 void camera_zoom(struct arena* win, float delta)
 {
@@ -110,27 +133,56 @@ void camera_zoom(struct arena* win, float delta)
 	win[0].camera.fy -= y;
 	win[0].camera.fz -= z;
 }
+
+
+
+
 int camera_event(struct arena* win, struct event* ev)
 {
-	float x,y,z;
-	int x0,y0,x1,y1,btn;
+	short* t;
+	int x0,y0,x1,y1,id;
 
-	btn = (ev->why)>>48;
+#define _joy_ hex32('j','o','y',0)
+	if(_joy_ == ev->what)
+	{
+		t = (short*)&ev->why;
+		x0 = t[0];
+		if(x0 < -8192)x0 = -1;
+		else if(x0 > 8192)x0 = 1;
+		else x0 = 0;
+
+		y0 = t[1];
+		if(y0 < -8192)y0 = -1;
+		else if(y0 > 8192)y0 = 1;
+		else y0 = 0;
+
+		if('l' == t[2])
+		{
+			target_deltaxy(win, x0, y0);
+		}
+		else if('r' == t[2])
+		{
+			camera_deltaxy(win, x0, -y0);
+		}
+		return 0;
+	}
+
+	id = (ev->why)>>48;
 	if(0x4070 == ev->what)
 	{
-		if(btn > 10)btn = 10;
-		if(0 == win->touchdown[btn].z)return 0;
+		if(id > 10)id = 10;
+		if(0 == win->touchdown[id].z)return 0;
 
 		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
 		{
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
-			if(0 == btn)
+			if(0 == id)
 			{
 				x1 -= (win->touchmove[1].x);
 				y1 -= (win->touchmove[1].y);
 			}
-			if(1 == btn)
+			if(1 == id)
 			{
 				x1 -= (win->touchmove[0].x);
 				y1 -= (win->touchmove[0].y);
@@ -142,10 +194,10 @@ int camera_event(struct arena* win, struct event* ev)
 			if((x0*x0+y0*y0) < (x1*x1+y1*y1))camera_zoom(win, 0.05);
 			else camera_zoom(win, -0.05);
 		}
-		else if((0 == btn)|(10 == btn))
+		else if((0 == id)|(10 == id))
 		{
-			x0 = win->touchmove[btn].x;
-			y0 = win->touchmove[btn].y;
+			x0 = win->touchmove[id].x;
+			y0 = win->touchmove[id].y;
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 			camera_deltaxy(win, x1-x0, y1-y0);
@@ -153,39 +205,19 @@ int camera_event(struct arena* win, struct event* ev)
 	}
 	else if(0x2b70 == ev->what)
 	{
-		if('f' == btn)camera_zoom(win, 0.1);
-		if('b' == btn)camera_zoom(win, -0.1);
+		if('f' == id)camera_zoom(win, 0.1);
+		if('b' == id)camera_zoom(win, -0.1);
 	}
 	return 0;
 }
-
-
-
-
 int target_event(struct arena* win, struct event* ev)
 {
 	if(_kbd_ != ev->what)return 0;
 
-	if(0x4b == ev->why)
-	{
-		win->target.cx -= 10.0;
-		win->camera.cx -= 10.0;
-	}
-	else if(0x4d == ev->why)
-	{
-		win->target.cx += 10.0;
-		win->camera.cx += 10.0;
-	}
-	else if(0x48 == ev->why)
-	{
-		win->target.cy += 10.0;
-		win->camera.cy += 10.0;
-	}
-	else if(0x50 == ev->why)
-	{
-		win->target.cy -= 10.0;
-		win->camera.cy -= 10.0;
-	}
+	if(0x4b == ev->why)target_deltaxy(win, -1, 0);
+	else if(0x4d == ev->why)target_deltaxy(win, 1, 0);
+	else if(0x48 == ev->why)target_deltaxy(win, 0, 1);
+	else if(0x50 == ev->why)target_deltaxy(win, 0, -1);
 
 	return 0;
 }
@@ -203,7 +235,7 @@ int playwith3d(struct arena* win, struct event* ev)
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
-	int btn = ((ev->why)>>48)&0xffff;
+	int id = ((ev->why)>>48)&0xffff;
 
 	reltop = win->irel;
 	if(reltop == 0)return 1;
@@ -235,14 +267,14 @@ int playwith3d(struct arena* win, struct event* ev)
 	}
 	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
 
-	if('f' == btn)
+	if('f' == id)
 	{
 		stytop->rx = (stytop->rx)*17/16;
 		stytop->fy = (stytop->fy)*17/16;
 		stytop->uz = (stytop->uz)*17/16;
 		return 0;
 	}
-	else if('b' == btn)
+	else if('b' == id)
 	{
 		stytop->rx = (stytop->rx)*15/16;
 		stytop->fy = (stytop->fy)*15/16;
@@ -252,24 +284,24 @@ int playwith3d(struct arena* win, struct event* ev)
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		if(btn > 10)btn = 10;
-		if(0 != win->touchdown[btn].z)
+		if(id > 10)id = 10;
+		if(0 != win->touchdown[id].z)
 		{
-			stytop->cx += x - (win->touchmove[btn].x);
-			stytop->cy -= y - (win->touchmove[btn].y);
+			stytop->cx += x - (win->touchmove[id].x);
+			stytop->cy -= y - (win->touchmove[id].y);
 			//say("%x,%x\n", stytop->cx, stytop->cy);
 		}
-		if(1 >= btn)
+		if(1 >= id)
 		{
 			if(0==win->touchdown[0].z)return 0;
 			if(0==win->touchdown[1].z)return 0;
 
-			if(0 == btn)
+			if(0 == id)
 			{
 				x -= (win->touchmove[1].x);
 				y -= (win->touchmove[1].y);
 			}
-			if(1 == btn)
+			if(1 == id)
 			{
 				x -= (win->touchmove[0].x);
 				y -= (win->touchmove[0].y);

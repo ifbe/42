@@ -29,8 +29,33 @@ int decstr2data(u8* src, void* dst)
 	else *(u32*)dst = data&0xffffffff;
 	return j;
 }
-int data2decstr(u64 data,u8* string)
+int data2decstr(long long data, u8* str)
 {
+	int j,k,f;
+	char temp[32];
+
+	if(0 == data){str[0] = '0';return 1;}
+	if(data > 0)f = 0;
+	else{f = -1;data = -data;}
+
+	k = 0;
+	while(1)
+	{
+		if(0 == data)break;
+
+		temp[k] = (data % 10) + 0x30;
+		k++;
+		data = data / 10;
+	}
+	if(f != 0){temp[k] = '-';k++;}
+
+	for(j=k-1;j>=0;j--)
+	{
+		*str = temp[j];
+		str++;
+	}
+	return k;
+/*
 	int j,max;
 	u64 temp;
 
@@ -51,6 +76,7 @@ int data2decstr(u64 data,u8* string)
 	}
 
 	return max;
+*/
 }
 
 
