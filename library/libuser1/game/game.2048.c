@@ -35,7 +35,7 @@ static void the2048_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4];
 	u32 color;
 	int x,y;
 	float xxx, yyy, zzz;
@@ -45,6 +45,9 @@ static void the2048_read_vbo(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+
+	if(0 == act->buf)tab = ((void*)act) + 0x100;
+	else tab = (void*)(act->buf) + (act->len)*16;
 
 	carvesolid_rect(
 		win, 0x444444,

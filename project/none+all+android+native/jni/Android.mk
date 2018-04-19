@@ -335,7 +335,6 @@ library/libuser1/lib3d/model/model.minify.c \
 library/libuser1/lib3d/model/model.rotate.c \
 library/libuser1/lib3d/lib3d.c \
 library/libuser1/lib4d/help.asset.c \
-library/libuser1/lib4d/help.bgfg.c \
 library/libuser1/lib4d/help.ctx.c \
 library/libuser1/lib4d/help.input.c \
 library/libuser1/lib4d/help.input2d.c \

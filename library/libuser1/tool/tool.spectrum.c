@@ -166,6 +166,7 @@ static void spectrum_read(
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
+	if(0 == act->buf)return;
 
 	if(fmt == _cli_)spectrum_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)spectrum_read_tui(win, sty, act, pin);

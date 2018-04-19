@@ -59,22 +59,33 @@ int actorinput(struct arena* win, struct event* ev)
 	{
 		if(0x2d70 == what)
 		{
-			x = why&0xffff;
-			y = (why>>16)&0xffff;
+			x = win->width;
+			y = win->height;
 			if(x<y)ret = x>>4;
 			else ret = y>>4;
 
 			//open or close vkbd
-			if((x+ret > win->width) && (y+ret > win->height))
+			x = why&0xffff;
+			y = (why>>16)&0xffff;
+			if(y+ret > win->height)
 			{
-				if(win->vkbd)win->vkbd = 0;
-				else win->vkbd = 1;
-				goto lastword;
+				if(x+ret > win->width)
+				{
+					if(win->vkbd < 0)win->vkbd = (int)'j'<<8;
+					else win->vkbd = -1;
+					goto lastword;
+				}
+				else if(x < ret)
+				{
+					if(win->vkbd < 0)win->vkbd = (int)'k'<<8;
+					else win->vkbd = -1;
+					goto lastword;
+				}
 			}
 		}
 
 		//call vkbd
-		if(0 != win->vkbd)
+		if(win->vkbd >= 0)
 		{
 			ret = vkbd_write(win, ev);
 			if(0 != ret)goto lastword;
@@ -84,6 +95,7 @@ int actorinput(struct arena* win, struct event* ev)
 		if((_vbo_ == win->fmt)&&(0 == win->edit))
 		{
 			camera_event(win, ev);
+			goto lastword;
 		}
 	}
 
@@ -102,13 +114,18 @@ int actorinput(struct arena* win, struct event* ev)
 			term_write(ev);
 			goto lastword;
 		}
+		else if(win->theone < 0)
+		{
+			win->theone = 0;
+		}
 	}
+
 	if(_kbd_ == what)
 	{
 		if(why == 0xfb)
 		{
-			if(win->theone)win->theone = 0;
-			else win->theone = 1;
+			if(win->theone < 0)win->theone = 0;
+			else win->theone = -1;
 			goto lastword;
 		}
 		else if(why == 0xfc)
@@ -117,13 +134,9 @@ int actorinput(struct arena* win, struct event* ev)
 			else win->edit = 1;
 			goto lastword;
 		}
-		else if((0x48==why)|(0x50==why)|(0x4b==why)|(0x4d==why))
-		{
-			target_event(win, ev);
-		}
 	}
 
-	if(win->theone)
+	if(win->theone >= 0)
 	{
 		login_write(win, ev);
 		goto lastword;

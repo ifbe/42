@@ -10,24 +10,30 @@ void sleep_us(int);
 
 
 
-static char* xname[16] = {
-	"XINPUT_GAMEPAD_DPAD_UP",		//0x0001
-	"XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
-	"XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
-	"XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
-	"XINPUT_GAMEPAD_START",			//0x0010
-	"XINPUT_GAMEPAD_BACK",			//0x0020
-	"XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
-	"XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
-	"XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
-	"XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
-	"????1",	//0x0400
-	"????2",	//0x0800
-	"XINPUT_GAMEPAD_A",		//0x1000
-	"XINPUT_GAMEPAD_B",		//0x2000
-	"XINPUT_GAMEPAD_X",		//0x4000
-	"XINPUT_GAMEPAD_Y"		//0x8000
+struct xxxx
+{
+	u8 val;
+	char* name;
 };
+static struct xxxx xtab[16] = {
+	0x48, "XINPUT_GAMEPAD_DPAD_UP",		//0x0001
+	0x50, "XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
+	0x4b, "XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
+	0x4d, "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
+	's', "XINPUT_GAMEPAD_START",			//0x0010
+	'b', "XINPUT_GAMEPAD_BACK",			//0x0020
+	0xff, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
+	0xff, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
+	0xff, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
+	0xff, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
+	0xff, "????1",	//0x0400
+	0xff, "????2",	//0x0800
+	'a', "XINPUT_GAMEPAD_A",		//0x1000
+	'b', "XINPUT_GAMEPAD_B",		//0x2000
+	'x', "XINPUT_GAMEPAD_X",		//0x4000
+	'y', "XINPUT_GAMEPAD_Y"		//0x8000
+};
+static int btn = 0;
 //
 static HWND console;		//console window
 static HWND dummy;
@@ -134,10 +140,11 @@ DWORD WINAPI trayworker()
 
 void joyprint(int id, XINPUT_GAMEPAD g)
 {
-	int j;
+	int j,k;
 	short t[4]; 
 	struct event ev;
 
+/*
 	if(	(0 == g.wButtons) &&
 		(8 >= g.bLeftTrigger) &&
 		(8 >= g.bRightTrigger) &&
@@ -148,7 +155,6 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	{
 		return;
 	}
-/*
 	say(
 		"%x:\n"
 		"	%x,%x\n"
@@ -159,31 +165,48 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		g.sThumbLX, g.sThumbLY,
 		g.sThumbRX, g.sThumbRY
 	);*/
+
 	for(j=0;j<16;j++)
 	{
-		if(g.wButtons & (1<<j))
+		//say("	%s\n", xtab[j].name);
+
+		k = 1<<j;
+		if((0 != (g.wButtons&k)) && (0 == (btn&k)))
 		{
-			//say("	%s\n", xname[j]);
+			eventwrite(xtab[j].val, _kbd_, 0, 0);
 		}
 	}
+	btn = g.wButtons;
 
-	t[0] = g.sThumbLX;
-	t[1] = g.sThumbLY;
-	t[2] = 'l';
-	t[3] = id;
-	ev.why = *(u64*)t;
-	ev.what = hex32('j','o','y',0);
-	ev.where = 0;
-	actorwrite(0, 0, 0, 0, &ev, 0x20);
+	if(	(g.sThumbLX < -2048) |
+		(g.sThumbLX > 2048) |
+		(g.sThumbLY < -2048) |
+		(g.sThumbLY > 2048) )
+	{
+		t[0] = g.sThumbLX;
+		t[1] = g.sThumbLY;
+		t[2] = 'l';
+		t[3] = id;
+		ev.why = *(u64*)t;
+		ev.what = hex32('j','o','y',0);
+		ev.where = 0;
+		actorwrite(0, 0, 0, 0, &ev, 0x20);
+	}
 
-	t[0] = g.sThumbRX;
-	t[1] = g.sThumbRY;
-	t[2] = 'r';
-	t[3] = id;
-	ev.why = *(u64*)t;
-	ev.what = hex32('j','o','y',0);
-	ev.where = 0;
-	actorwrite(0, 0, 0, 0, &ev, 0x20);
+	if(	(g.sThumbRX < -2048) |
+		(g.sThumbRX > 2048) |
+		(g.sThumbRY < -2048) |
+		(g.sThumbRY > 2048) )
+	{
+		t[0] = g.sThumbRX;
+		t[1] = g.sThumbRY;
+		t[2] = 'r';
+		t[3] = id;
+		ev.why = *(u64*)t;
+		ev.what = hex32('j','o','y',0);
+		ev.where = 0;
+		actorwrite(0, 0, 0, 0, &ev, 0x20);
+	}
 }
 void* joystickthread(void* win)
 {

@@ -78,7 +78,6 @@ lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
 lib3d/lib3d.c \
 lib4d/help.asset.c \
-lib4d/help.bgfg.c \
 lib4d/help.ctx.c \
 lib4d/help.input.c \
 lib4d/help.input2d.c \

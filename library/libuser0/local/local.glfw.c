@@ -1458,17 +1458,17 @@ void windowstart(struct arena* w)
 	w->target.cy = 0.0;
 	w->target.cz = 0.0;
 
-	w->target.rx = 1.0;
+	w->target.rx = 512.0;
 	w->target.ry = 0.0;
 	w->target.rz = 0.0;
 
 	w->target.fx = 0.0;
-	w->target.fy = 1.0;
+	w->target.fy = 512.0;
 	w->target.fz = 0.0;
 
 	w->target.ux = 0.0;
 	w->target.uy = 0.0;
-	w->target.uz = 1.0;
+	w->target.uz = 512.0;
 
 	//camera
 	w->camera.cx = 512.0;

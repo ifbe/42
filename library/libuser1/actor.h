@@ -568,6 +568,7 @@ void carvehexadecimal(       struct arena* win, u32 rgb, float cx, float cy, flo
 void carveunicode(           struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u32 uni);
 void carveutf8(              struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* buf, int len);
 void carvestring(            struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* str, int len);
+void carvestring_center(     struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* str, int len);
 
 void carvepoint(             struct arena* win, u32 rgb, float cx, float cy, float cz);
 void carvepoint_bezier(      struct arena* win, u32 rgb, float x1, float y1, float z1, float x2, float y2, float z2, float xc, float yc, float zc);

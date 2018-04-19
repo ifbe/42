@@ -57,15 +57,36 @@ int arenaactor(struct arena* win, struct actor* act)
 	pin = allocpinid();
 	if(0 == pin)return 0;
 
-	sty->cx = w/2;
-	sty->cy = h/2;
-	sty->cz = 0.0;
+	if(_vbo_ == win->fmt)
+	{
+		sty->cx = win->target.cx;
+		sty->cy = win->target.cy;
+		sty->cz = win->target.cz;
 
-	if(w<h)min = w/2;
-	else min = h/2;
-	sty->rx = min;
-	sty->fy = min;
-	sty->uz = min;
+		sty->rx = win->target.rx;
+		sty->ry = win->target.ry;
+		sty->rz = win->target.rz;
+
+		sty->fx = win->target.fx;
+		sty->fy = win->target.fy;
+		sty->fz = win->target.fz;
+
+		sty->ux = win->target.ux;
+		sty->uy = win->target.uy;
+		sty->uz = win->target.uz;
+	}
+	else
+	{
+		sty->cx = w/2;
+		sty->cy = h/2;
+		sty->cz = 0.0;
+
+		if(w<h)min = w/2;
+		else min = h/2;
+		sty->rx = min;
+		sty->fy = min;
+		sty->uz = min;
+	}
 
 	act->oncreate(act, 0);
 	act->onstart(act, pin);
@@ -393,13 +414,44 @@ void login_read_pixel(struct arena* win)
 void login_read_vbo(struct arena* win)
 {
 	struct relation* rel;
-	u32 c;
-	int j,k;
+	int j,k,c;
 	float x,y;
 	float cx = win->target.cx;
 	float cy = win->target.cy;
 	float cz = win->target.cz;
+	float rx = win->target.rx;
+	float ry = win->target.ry;
+	float rz = win->target.rz;
+	float fx = win->target.fx;
+	float fy = win->target.fy;
+	float fz = win->target.fz;
+	float ux = win->target.ux;
+	float uy = win->target.uy;
+	float uz = win->target.uz;
 
+	j = win->theone;
+	if((j >= 0)&&(j <= 64))
+	{
+		carveline_prism4(
+			win, 0x808080,
+			cx+ux, cy+uy, cz+uz,
+			rx, ry, rz,
+			fx, fy, fz,
+			ux, uy, uz
+		);
+		carvestring_center(
+			win, 0x808080,
+			cx+ux, cy+uy, cz+uz,
+			rx/2, ry/2, rz/2,
+			fx/2, fy/2, fz/2,
+			(u8*)&actor[j].name, 8
+		);
+		if(actor[j].type != 0)
+		{
+			actor[j].onread(win, &win->target, &actor[j], 0);
+		}
+	}
+/*
 	carvedrone(
 		win, 0xffffff,
 		0.0, 0.0, 0.0,
@@ -410,7 +462,8 @@ void login_read_vbo(struct arena* win)
 		win, 0xffffff,
 		cx, cy, cz
 	);
-
+*/
+/*
 	carveline_rect(
 		win, 0x0000ff,
 		cx, cy, cz+16.0,
@@ -609,6 +662,7 @@ void login_read_vbo(struct arena* win)
 			rel = samedstnextsrc(rel);
 		}
 	}
+*/
 }
 void login_read_8bit(struct arena* win)
 {
@@ -873,33 +927,43 @@ void login_write(struct arena* win, struct event* ev)
 	}
 	else if(_char_ == ev->what)
 	{
-		if((ev->why == 0xd)|(ev->why == 0xa))
+		if((0xd == ev->why)|(0xa == ev->why))
 		{
 			act = &actor[win->theone];
-			win->theone = 0;
+			win->theone = -1;
 			if(0 == act->type)return;
 
 			actorcreate(act, 0);
 			arenaactor(win, act);
 		}
-		else if(ev->why == 0x435b1b)
+		else if(0x435b1b == ev->why)
 		{
 			win->theone = (win->theone+1)%64;
 		}
-		else if(ev->why == 0x445b1b)
+		else if(0x445b1b == ev->why)
 		{
 			win->theone = (win->theone+63)%64;
 		}
 	}
 	else if(_kbd_ == ev->what)
 	{
-		if(ev->why == 0x4b)
+		if('a' == ev->why)
+		{
+			act = &actor[win->theone];
+			win->theone = -1;
+			if(0 == act->type)return;
+
+			actorcreate(act, 0);
+			arenaactor(win, act);
+		}
+		else if(0x4b == ev->why)
 		{
 			win->theone = (win->theone+63)%64;
 		}
-		else if(ev->why == 0x4d)
+		else if(0x4d == ev->why)
 		{
 			win->theone = (win->theone+1)%64;
 		}
+		say("theone=%d\n",win->theone);
 	}
 }
