@@ -170,7 +170,9 @@ int camera_event(struct arena* win, struct event* ev)
 	id = (ev->why)>>48;
 	if(0x4070 == ev->what)
 	{
-		if(id > 10)id = 10;
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
 		if(0 == win->touchdown[id].z)return 0;
 
 		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
@@ -194,13 +196,29 @@ int camera_event(struct arena* win, struct event* ev)
 			if((x0*x0+y0*y0) < (x1*x1+y1*y1))camera_zoom(win, 0.05);
 			else camera_zoom(win, -0.05);
 		}
-		else if((0 == id)|(10 == id))
+		else
 		{
 			x0 = win->touchmove[id].x;
 			y0 = win->touchmove[id].y;
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
-			camera_deltaxy(win, x1-x0, y1-y0);
+
+			if((0 == id)|(11 == id))
+			{
+				camera_deltaxy(win, x1-x0, y1-y0);
+			}
+			else if(10 == id)
+			{
+				if(x1 < x0)x0 = -1;
+				else if(x1 > x0)x0 = 1;
+				else x0 = 0;
+
+				if(y1 < y0)y0 = -1;
+				else if(y1 > y0)y0 = 1;
+				else y0 = 0;
+
+				target_deltaxy(win, x0, -y0);
+			}
 		}
 	}
 	else if(0x2b70 == ev->what)

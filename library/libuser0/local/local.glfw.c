@@ -1289,7 +1289,9 @@ void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 
 	if(1 == action)
 	{
-		temp = 'l';
+		if(0 == button)temp = 'l';
+		else temp = 'r';
+
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2b70;
 		e.where = (u64)win;
@@ -1297,7 +1299,9 @@ void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 	}
 	else if(0 == action)
 	{
-		temp = 'l';
+		if(0 == button)temp = 'l';
+		else temp = 'r';
+
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2d70;
 		e.where = (u64)win;
@@ -1310,10 +1314,13 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	u64 x,y,temp;
 	struct event e;
 
+	if(0 != glfwGetMouseButton(window, 0))temp = 'l';
+	else if(0 != glfwGetMouseButton(window, 1))temp = 'r';
+	else return;
+
 	x = ((int)xpos)&0xffff;
 	y = ((int)ypos)&0xffff;
 
-	temp = 'l';
 	e.why = x + (y<<16) + (temp<<48);
 	e.what = 0x4070;
 	e.where = (u64)win;
