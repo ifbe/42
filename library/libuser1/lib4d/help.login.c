@@ -938,11 +938,12 @@ void login_write(struct arena* win, struct event* ev)
 		}
 		else if(0x435b1b == ev->why)
 		{
-			win->theone = (win->theone+1)%64;
+			j = win->theone + 1;
+			if(0 != actor[j].type)win->theone += 1;
 		}
 		else if(0x445b1b == ev->why)
 		{
-			win->theone = (win->theone+63)%64;
+			if(win->theone > 0)win->theone -= 1;
 		}
 	}
 	else if(_kbd_ == ev->what)
@@ -958,11 +959,12 @@ void login_write(struct arena* win, struct event* ev)
 		}
 		else if(0x4b == ev->why)
 		{
-			win->theone = (win->theone+63)%64;
+			if(win->theone > 0)win->theone -= 1;
 		}
 		else if(0x4d == ev->why)
 		{
-			win->theone = (win->theone+1)%64;
+			j = win->theone + 1;
+			if(0 != actor[j].type)win->theone += 1;
 		}
 		say("theone=%d\n",win->theone);
 	}
