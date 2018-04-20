@@ -145,6 +145,7 @@ static void planet_read_vbo(
 		win, color[0],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -162,6 +163,7 @@ static void planet_read_vbo(
 		win, color[1],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -179,6 +181,7 @@ static void planet_read_vbo(
 		win, color[2],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -196,6 +199,7 @@ static void planet_read_vbo(
 		win, color[3],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -213,6 +217,7 @@ static void planet_read_vbo(
 		win, color[4],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -230,6 +235,7 @@ static void planet_read_vbo(
 		win, color[5],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -247,6 +253,7 @@ static void planet_read_vbo(
 		win, color[6],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -264,6 +271,7 @@ static void planet_read_vbo(
 		win, color[7],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 
@@ -281,6 +289,7 @@ static void planet_read_vbo(
 		win, color[8],
 		x, y, 0.0,
 		r, 0.0, 0.0,
+		0.0, r, 0.0,
 		0.0, 0.0, r
 	);
 }

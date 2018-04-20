@@ -169,7 +169,18 @@ void foreground_vbo(struct arena* win)
 		y1 = 1.0 - y1*2;
 		carveline2d(win, 0xff00ff, x0, y0, 0.0, x1, y1, 0.0);
 	}
+
 	vkbd_read(win);
+	if(win->theone < 0)
+	{
+		carveline_sphere(
+			win, 0xffffff,
+			win->target.cx, win->target.cy, win->target.cz,
+			16.0, 0.0, 0.0,
+			0.0, 16.0, 0.0,
+			0.0, 0.0, 16.0
+		);
+	}
 }
 void foreground_json(struct arena* win)
 {

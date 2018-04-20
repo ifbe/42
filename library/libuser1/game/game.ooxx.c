@@ -74,6 +74,7 @@ static void ooxx_read_vbo(
 				win, 0xffffff,
 				(cx-ww)+(2*x+1)*ww/3, (cy-hh)+(2*y+1)*hh/3, 0.0,
 				ww/3, 0.0, 0.0,
+				0.0, ww/3, 0.0,
 				0.0, 0.0, ww/3
 			);
 		}

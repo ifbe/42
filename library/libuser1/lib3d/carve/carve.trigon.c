@@ -950,14 +950,15 @@ void carvesolid_sphere(
 	struct arena* win, u32 rgb,
 	float cx, float cy, float cz,
 	float rx, float ry, float rz,
+	float fx, float fy, float fz,
 	float ux, float uy, float uz)
 {
 #define odd ((acc&0xfffe)+1)
 	int a,b,j,k;
-	float s,t;
-	float q[4];
+	float c,s;
 	float tempcx,tempcy,tempcz;
 	float temprx,tempry,temprz;
+	float tempfx,tempfy,tempfz;
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -974,19 +975,23 @@ void carvesolid_sphere(
 	for(k=0;k<(odd-2);k++)
 	{
 		s = (k+1-(odd/2))*PI/(odd-1);
-		t = cosine(s);
-		temprx = rx*t;
-		tempry = ry*t;
-		temprz = rz*t;
+		c = cosine(s);
+		s = sine(s);
 
-		t = sine(s);
-		tempcx = cx + ux*t;
-		tempcy = cy + uy*t;
-		tempcz = cz + uz*t;
+		tempcx = cx + ux*s;
+		tempcy = cy + uy*s;
+		tempcz = cz + uz*s;
+		temprx = rx*c;
+		tempry = ry*c;
+		temprz = rz*c;
+		tempfx = fx*c;
+		tempfy = fy*c;
+		tempfz = fz*c;
 
 		for(j=0;j<odd;j++)
 		{
 			a = (k*odd + j)*9;
+/*
 			vbuf[a+0] = temprx;
 			vbuf[a+1] = tempry;
 			vbuf[a+2] = temprz;
@@ -994,10 +999,15 @@ void carvesolid_sphere(
 			q[1] = uy;
 			q[2] = uz;
 			quaternionoperation(&vbuf[a], q, j*tau/odd);
-
 			vbuf[a+0] += tempcx;
 			vbuf[a+1] += tempcy;
 			vbuf[a+2] += tempcz;
+*/
+			c = cosine(j*tau/odd);
+			s = sine(j*tau/odd);
+			vbuf[a+0] = tempcx + temprx*c + tempfx*s;
+			vbuf[a+1] = tempcy + tempry*c + tempfy*s;
+			vbuf[a+2] = tempcz + temprz*c + tempfz*s;
 			vbuf[a+3] = rr;
 			vbuf[a+4] = gg;
 			vbuf[a+5] = bb;

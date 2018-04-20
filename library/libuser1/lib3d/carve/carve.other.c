@@ -265,6 +265,7 @@ void carvesnowman(
 		win, 0xffffff,
 		cx, cy, cz+80.0,
 		16.0, 0.0, 0.0,
+		0.0, 16.0, 0.0,
 		0.0, 0.0, 16.0
 	);
 
@@ -273,6 +274,7 @@ void carvesnowman(
 		win, 0xffffff,
 		cx, cy, cz+32.0,
 		32.0, 0.0, 0.0,
+		0.0, 32.0, 0.0,
 		0.0, 0.0, 32.0
 	);
 
@@ -281,6 +283,7 @@ void carvesnowman(
 		win, 0xffffff,
 		cx-28.0, cy, cz+28.0+32.0,
 		8.0, 0.0, 0.0,
+		0.0, 8.0, 0.0,
 		0.0, 0.0, 8.0
 	);
 
@@ -289,6 +292,7 @@ void carvesnowman(
 		win, 0xffffff,
 		cx+28.0, cy, cz+28.0+32.0,
 		8.0, 0.0, 0.0,
+		0.0, 8.0, 0.0,
 		0.0, 0.0, 8.0
 	);
 }

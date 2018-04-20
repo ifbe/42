@@ -66,6 +66,7 @@ static void pegged_read_vbo(
 				win, 0xffffff,
 				cx+(x-3)*ww*2/7, cy+(y-3)*hh*2/7, 0.0,
 				ww/14, 0.0, 0.0,
+				0.0, ww/14, 0.0,
 				0.0, 0.0, ww/14
 			);
 		}
