@@ -24,9 +24,9 @@ void camera_deltax(struct arena* win, float delta)
 	cz = win[0].camera.cz;
 
 	//vector = -front
-	vx = tx-cx;
-	vy = ty-cy;
-	vz = tz-cz;
+	vx = cx-tx;
+	vy = cy-ty;
+	vz = cz-tz;
 
 	c = cosine(delta);
 	s = sine(delta);
@@ -64,9 +64,18 @@ void camera_deltay(struct arena* win, float delta)
 	cz = win[0].camera.cz;
 
 	//vector = -front
-	v[0] = tx-cx;
-	v[1] = ty-cy;
-	v[2] = tz-cz;
+	v[0] = cx-tx;
+	v[1] = cy-ty;
+	v[2] = cz-tz;
+
+	//cos=dot(v1,v2) / (|v1|*|v2|)
+	q[0] = cosine(delta)*cosine(delta);
+	q[1] = (v[2]*v[2]) / (v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+	if(q[0] < q[1])
+	{
+		//(v[2]>0&&delta>0) or (v[2]<0&&delta<0)
+		if(v[2]*delta > 0)return;
+	}
 
 	//right = cross(front, (0,0,1))
 	q[0] = v[1]*1 - v[2]*0;
@@ -88,15 +97,18 @@ void camera_deltaxy(struct arena* win, int dx, int dy)
 {
 	float delta;
 
-	if(dx < 0)delta = -0.05;
-	else if(dx > 0)delta = 0.05;
-	else delta = 0;
-	camera_deltax(win, delta);
-
-	if(dy < 0)delta = -0.02;
-	else if(dy > 0)delta = 0.02;
-	else delta = 0;
-	camera_deltay(win, delta);
+	if(0 != dx)
+	{
+		if(dx < 0)delta = -0.05;
+		else if(dx > 0)delta = 0.05;
+		camera_deltax(win, delta);
+	}
+	if(0 != dy)
+	{
+		if(dy < 0)delta = -0.02;
+		else if(dy > 0)delta = 0.02;
+		camera_deltay(win, delta);
+	}
 }
 void target_deltaxy(struct arena* win, int x, int y)
 {
