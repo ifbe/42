@@ -232,10 +232,7 @@ void carve2d_string(
 {
 	int j;
 	if(0 == buf)return;
-	if(0 == len)
-	{
-		while(buf[len] > 0x20)len++;
-	}
+	if(0 == len){while(buf[len] > 0x20)len++;}
 	else
 	{
 		for(j=0;j<len;j++)
@@ -249,8 +246,40 @@ void carve2d_string(
 	{
 		carve2d_ascii(
 			win, rgb,
-			cx + (rx*j/2), cy + (ry*j/2), cz,
+			cx + (rx/2)*(j+1), cy + (ry/2)*(j+1), cz + (rz/2)*(j+1),
 			rx/2, ry/2, rz,
+			fx, fy, fz,
+			buf[j]
+		);
+	}
+}
+void carvestring2d_center(
+	struct arena* win, u32 rgb,
+	float cx, float cy, float cz,
+	float rx, float ry, float rz,
+	float fx, float fy, float fz,
+	u8* buf, int len)
+{
+	int j;
+	if(0 == buf)return;
+	if(0 == len){while(buf[len] > 0x20)len++;}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(buf[j] < 0x20){len = j;break;}
+		}
+	}
+	if(len == 0)return;
+
+	for(j=0;j<len;j++)
+	{
+		carve2d_ascii(
+			win, rgb,
+			cx + (rx/4)*(2*j-len+2),
+			cy + (ry/4)*(2*j-len+2),
+			cz + (rz/4)*(2*j-len+2),
+			rx/2, ry/2, rz/2,
 			fx, fy, fz,
 			buf[j]
 		);

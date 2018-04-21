@@ -3,7 +3,8 @@ void carvearrorkey2d(
 	void*, u32,
 	float, float, float,
 	float, float, float,
-	float, float, float);
+	float, float, float,
+	int, int, int, int);
 static u8 button[16][3] = {
 	{3, 1, '.'},
 	{3, 5, '.'},
@@ -141,16 +142,12 @@ haha:
 }
 void vkbd_read_vbo(struct arena* win)
 {
-	float j,k,m,n;
+	u8 ch[8];
+	float j,k;
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
 	if(win->vkbd < 0)goto haha;
-
-	if(w<h)x = w/17;
-	else x = h/17;
-	j = (float)x / (float)w;
-	k = (float)x / (float)h;
 
 	carvesolid2d_rect(
 		win, 0x202020,
@@ -159,80 +156,98 @@ void vkbd_read_vbo(struct arena* win)
 		0.0, 0.25, 0.0
 	);
 
-	for(y=0;y<8;y++)
+	c = ((win->vkbd)>>8)&0xff;
+	if('k' == c)
 	{
-		for(x=0;x<16;x++)
+		if(w<h)x = w/17;
+		else x = h/17;
+		j = (float)x / (float)w;
+		k = (float)x / (float)h;
+
+		for(y=0;y<8;y++)
 		{
-			c = x+(y<<4);
-			if(c == (win->vkbd&0xff))rgb = 0xff00ff;
-			else rgb = 0x808080;
-
-			carvesolid2d_rect(
-				win, rgb,
-				(x-7.5)/8.0, (y-15.5)/16.0, -0.001,
-				1.0/17, 0.0, 0.0,
-				0.0, 0.5/17, 0.0
-			);
-
-			if((0!=c)&&(7!=c)&&(8!=c)&&(9!=c)&&(0xa!=c)&&(0xd!=c))
+			for(x=0;x<16;x++)
 			{
-				carve2d_ascii(
-					win, 0xffffff,
-					(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
-					j, 0.0, 0.0,
-					0.0, k/2, 0.0,
-					c
+				c = x+(y<<4);
+				if(c == (win->vkbd&0xff))rgb = 0xff00ff;
+				else rgb = 0x808080;
+
+				carvesolid2d_rect(
+					win, rgb,
+					(x-7.5)/8.0, (y-15.5)/16.0, -0.001,
+					1.0/17, 0.0, 0.0,
+					0.0, 0.5/17, 0.0
 				);
-			}
-			else
-			{
-				if(0x0 == c)c = '0';
-				else if(0x7 == c)c = 'a';
-				else if(0x8 == c)c = 'b';
-				else if(0x9 == c)c = 't';
-				else if(0xa == c)c = 'n';
-				else if(0xd == c)c = 'r';
-				carve2d_ascii(
-					win, 0xffffff,
-					(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
-					j, 0.0, 0.0,
-					0.0, k/2, 0.0,
-					'\\'
-				);
-				carve2d_ascii(
-					win, 0xffffff,
-					(x-7.5)/8.0+j, (y-15.5)/16.0, -0.002,
-					j, 0.0, 0.0,
-					0.0, k/2, 0.0,
-					c
-				);
+
+				if((0!=c)&&(7!=c)&&(8!=c)&&(9!=c)&&(0xa!=c)&&(0xd!=c))
+				{
+					carve2d_ascii(
+						win, 0xffffff,
+						(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
+						j, 0.0, 0.0,
+						0.0, k/2, 0.0,
+						c
+					);
+				}
+				else
+				{
+					if(0x0 == c)c = '0';
+					else if(0x7 == c)c = 'a';
+					else if(0x8 == c)c = 'b';
+					else if(0x9 == c)c = 't';
+					else if(0xa == c)c = 'n';
+					else if(0xd == c)c = 'r';
+					carve2d_ascii(
+						win, 0xffffff,
+						(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
+						j, 0.0, 0.0,
+						0.0, k/2, 0.0,
+						'\\'
+					);
+					carve2d_ascii(
+						win, 0xffffff,
+						(x-7.5)/8.0+j, (y-15.5)/16.0, -0.002,
+						j, 0.0, 0.0,
+						0.0, k/2, 0.0,
+						c
+					);
+				}
 			}
 		}
 	}
-	carvearrorkey2d(
-		win, 0xff00ff,
-		-0.75, -3.0/8, 0.0,
-		0.25, 0.0, 0.0,
-		0.0, 1.0/8, 0.0
-	);
-	carvearrorkey2d(
-		win, 0xff00ff,
-		-0.25, -3.0/8, 0.0,
-		0.25, 0.0, 0.0,
-		0.0, 1.0/8, 0.0
-	);
-	carvearrorkey2d(
-		win, 0xff00ff,
-		0.25, -3.0/8, 0.0,
-		0.25, 0.0, 0.0,
-		0.0, 1.0/8, 0.0
-	);
-	carvearrorkey2d(
-		win, 0xff00ff,
-		0.75, -3.0/8, 0.0,
-		0.25, 0.0, 0.0,
-		0.0, 1.0/8, 0.0
-	);
+	else if('j' == c)
+	{
+		y = h/4;
+		j = (float)y / (float)w;
+		k = (float)y / (float)h;
+
+		ch[0] = 'l';
+		ch[1] = 'r';
+		ch[2] = 'n';
+		ch[3] = 'f';
+		ch[4] = 'x';
+		ch[5] = 'b';
+		ch[6] = 'a';
+		ch[7] = 'y';
+		for(x=0;x<8;x++)
+		{
+			if(ch[x] == (win->vkbd&0xff))ch[x] -= 0x20;
+		}
+
+		carvearrorkey2d(
+			win, 0xff00ff,
+			j-1.0, k-1.0, 0.0,
+			j, 0.0, 0.0,
+			0.0, k, 0.0,
+			ch[0], ch[1], ch[2], ch[3]
+		);
+		carvearrorkey2d(
+			win, 0xff00ff,
+			1.0-j, k-1.0, 0.0,
+			j, 0.0, 0.0,
+			0.0, k, 0.0,
+			ch[4], ch[5], ch[6], ch[7]
+		);
 /*
 	else if('j' == c)
 	{
@@ -291,6 +306,17 @@ void vkbd_read_vbo(struct arena* win)
 		}
 	}
 */
+	}
+	else
+	{
+		carvestring2d_center(
+			win, 0xffffff,
+			0.0, -0.75, -0.02,
+			0.2, 0.0, 0.0,
+			0.0, 0.1, 0.0,
+			(void*)"fuckyou", 7
+		);
+	}
 
 haha:
 	if(w<h)x = w>>4;
@@ -346,43 +372,54 @@ int vkbd_write(struct arena* win, struct event* ev)
 	y = ((ev->why)>>16)&0xffff;
 	if(y < h*3/4)return 0;
 
-	x = x*16/w;
-	y = 31 - (y*32/h);
-	ret = x + (y*16);
-
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		x = ((win->vkbd)>>8)&0xff;
-		if('k' == x)
+		ret = ((win->vkbd)>>8)&0xff;
+		if('k' == ret)
 		{
-			why = ret;
-			what = _char_;
+			x = x*16/w;
+			y = 31 - (y*32/h);
+			ret = x + (y*16);
+
+			win->vkbd = ((int)'k'<<8) + ret;
+			eventwrite(ret, _char_, (u64)win, 0);
 		}
-		else if('j' == x)
+		else if('j' == ret)
 		{
-			what = _kbd_;
-			if(ret >= 0xf0)why = ret;
+			ret = h/12;
+			y = (h-y)/ret;
+			if(x*2 < w)
+			{
+				x = x/ret;
+				if((0==x)&&(1==y))ret = 'l';
+				else if((2==x)&&(y==1))ret = 'r';
+				else if((1==x)&&(y==0))ret = 'n';
+				else if((1==x)&&(y==2))ret = 'f';
+				else ret = 0;
+			}
 			else
 			{
-				x = ((ret&0xf)-1)/2;
-				y = (((ret>>4)&0xf)-1)/2;
+				x = w-x;
+				x = x/ret;
+				if((0==x)&&(1==y))ret = 'b';
+				else if((2==x)&&(y==1))ret = 'x';
+				else if((1==x)&&(y==0))ret = 'a';
+				else if((1==x)&&(y==2))ret = 'y';
+				else ret = 0;
+			}
 
-				if((1 == x)&&(0 == y))why = 0x50;	//down
-				else if((0 == x)&&(1 == y))why = 0x4b;	//left
-				else if((2 == x)&&(1 == y))why = 0x4d;	//right
-				else if((1 == x)&&(2 == y))why = 0x48;	//up
-				else if((5 == x)&&(0 == y))why = 'a';	//a
-				else if((6 == x)&&(1 == y))why = 'b';	//b
-				else if((4 == x)&&(1 == y))why = 'x';	//x
-				else if((5 == x)&&(2 == y))why = 'y';	//y
-				else goto byebye;
-
-				eventwrite(why, what, (u64)win, 0);
+			win->vkbd = ((int)'j'<<8) + ret;
+			if(0 != ret)
+			{
+				if('l' == ret)ret = 0x4b;
+				else if('r' == ret)ret = 0x4d;
+				else if('f' == ret)ret = 0x48;
+				else if('n' == ret)ret = 0x50;
+				eventwrite(ret, _kbd_, (u64)win, 0);
 			}
 		}
 	}
 
 byebye:
-	win->vkbd = (win->vkbd & 0xff00) + ret;
 	return 1;
 }

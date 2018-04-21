@@ -22,12 +22,12 @@ static struct xxxx xtab[16] = {
 	0x4d, "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
 	's', "XINPUT_GAMEPAD_START",			//0x0010
 	'b', "XINPUT_GAMEPAD_BACK",			//0x0020
-	0xff, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
-	0xff, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
-	0xff, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
-	0xff, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
-	0xff, "????1",	//0x0400
-	0xff, "????2",	//0x0800
+	0, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
+	0, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
+	0, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
+	0, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
+	0, "????1",	//0x0400
+	0, "????2",	//0x0800
 	'a', "XINPUT_GAMEPAD_A",		//0x1000
 	'b', "XINPUT_GAMEPAD_B",		//0x2000
 	'x', "XINPUT_GAMEPAD_X",		//0x4000
@@ -168,11 +168,12 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 
 	for(j=0;j<16;j++)
 	{
-		//say("	%s\n", xtab[j].name);
-
 		k = 1<<j;
 		if((0 != (g.wButtons&k)) && (0 == (btn&k)))
 		{
+			//say("	%x:%s\n", k, xtab[j].name);
+
+			if(0 == xtab[j].val)continue;
 			eventwrite(xtab[j].val, _kbd_, 0, 0);
 		}
 	}
@@ -185,7 +186,8 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	{
 		t[0] = g.sThumbLX;
 		t[1] = g.sThumbLY;
-		t[2] = 'l';
+		if(g.wButtons&0x40)t[2] = 'L';
+		else t[2] = 'l';
 		t[3] = id;
 		ev.why = *(u64*)t;
 		ev.what = hex32('j','o','y',0);
@@ -200,7 +202,8 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	{
 		t[0] = g.sThumbRX;
 		t[1] = g.sThumbRY;
-		t[2] = 'r';
+		if(g.wButtons&0x80)t[2] = 'R';
+		else t[2] = 'r';
 		t[3] = id;
 		ev.why = *(u64*)t;
 		ev.what = hex32('j','o','y',0);

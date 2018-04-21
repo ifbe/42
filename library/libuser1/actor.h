@@ -527,6 +527,7 @@ void carve2d_hexadecimal(      struct arena* win, u32 rgb, float cx, float cy, f
 void carve2d_unicode(          struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u32 uni);
 void carve2d_utf8(             struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* buf, int len);
 void carve2d_string(           struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* str, int len);
+void carvestring2d_center(     struct arena* win, u32 rgb, float cx, float cy, float cz, float rx, float ry, float rz, float fx, float fy, float fz, u8* str, int len);
 
 void carvepoint2d(             struct arena* win, u32 rgb, float cx, float cy, float cz);
 void carvepoint2d_bezier(      struct arena* win, u32 rgb, float x1, float y1, float z1, float x2, float y2, float z2, float xc, float yc, float zc);

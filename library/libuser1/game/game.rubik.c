@@ -110,6 +110,7 @@ static void rubikscube_read_vbo(
 	int ww = sty->rx;
 	int hh = sty->fy;
 	int dd = sty->uz;
+	cz += dd;
 
 	for(y=0;y<level;y++)
 	{
@@ -118,7 +119,7 @@ static void rubikscube_read_vbo(
 			//left
 			carvesolid_rect(
 				win, 0xff00,
-				cx-ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				cx-ww, cy-hh+(2*x+1)*hh/level, cz-dd+(2*y+1)*dd/level,
 				0.0, -hh/(level+0.5), 0.0,
 				0.0, 0.0, dd/(level+0.5)
 			);
@@ -126,7 +127,7 @@ static void rubikscube_read_vbo(
 			//right
 			carvesolid_rect(
 				win, 0xff,
-				cx+ww, cy-hh+(2*x+1)*hh/level, -dd+(2*y+1)*dd/level,
+				cx+ww, cy-hh+(2*x+1)*hh/level, cz-dd+(2*y+1)*dd/level,
 				0.0, hh/(level+0.5), 0.0,
 				0.0, 0.0, dd/(level+0.5)
 			);
@@ -140,7 +141,7 @@ static void rubikscube_read_vbo(
 			//near
 			carvesolid_rect(
 				win, 0xff0000,
-				cx-ww+(2*x+1)*ww/level, cy-hh, -dd+(2*y+1)*dd/level,
+				cx-ww+(2*x+1)*ww/level, cy-hh, cz-dd+(2*y+1)*dd/level,
 				ww/(level+0.5), 0.0, 0.0,
 				0.0, 0.0, dd/(level+0.5)
 			);
@@ -148,7 +149,7 @@ static void rubikscube_read_vbo(
 			//far
 			carvesolid_rect(
 				win, 0xfa8010,
-				cx-ww+(2*x+1)*ww/level, cy+hh, -dd+(2*y+1)*dd/level,
+				cx-ww+(2*x+1)*ww/level, cy+hh, cz-dd+(2*y+1)*dd/level,
 				-ww/(level+0.5), 0.0, 0.0,
 				0.0, 0.0, dd/(level+0.5)
 			);
@@ -162,7 +163,7 @@ static void rubikscube_read_vbo(
 			//bottom
 			carvesolid_rect(
 				win, 0xffff00,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, -dd,
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, cz-dd,
 				ww/(level+0.5), 0.0, 0.0,
 				0.0, -hh/(level+0.5), 0.0
 			);
@@ -170,7 +171,7 @@ static void rubikscube_read_vbo(
 			//upper
 			carvesolid_rect(
 				win, 0xffffff,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, dd,
+				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, cz+dd,
 				ww/(level+0.5), 0.0, 0.0,
 				0.0, hh/(level+0.5), 0.0
 			);
