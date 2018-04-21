@@ -4,7 +4,7 @@ void carvearrorkey2d(
 	float, float, float,
 	float, float, float,
 	float, float, float,
-	int, int, int, int);
+	int, int, int, int, int, int);
 static u8 button[16][3] = {
 	{3, 1, '.'},
 	{3, 5, '.'},
@@ -142,7 +142,7 @@ haha:
 }
 void vkbd_read_vbo(struct arena* win)
 {
-	u8 ch[8];
+	u8 ch[12];
 	float j,k;
 	int x,y,c,rgb;
 	int w = win->width;
@@ -217,7 +217,7 @@ void vkbd_read_vbo(struct arena* win)
 	}
 	else if('j' == c)
 	{
-		y = h/4;
+		y = h*3/16;
 		j = (float)y / (float)w;
 		k = (float)y / (float)h;
 
@@ -225,10 +225,14 @@ void vkbd_read_vbo(struct arena* win)
 		ch[1] = 'r';
 		ch[2] = 'n';
 		ch[3] = 'f';
-		ch[4] = 'x';
-		ch[5] = 'b';
-		ch[6] = 'a';
-		ch[7] = 'y';
+		ch[4] = '-';
+		ch[5] = '+';
+		ch[6] = 'x';
+		ch[7] = 'b';
+		ch[8] = 'a';
+		ch[9] = 'y';
+		ch[10] = '-';
+		ch[11] = '+';
 		for(x=0;x<8;x++)
 		{
 			if(ch[x] == (win->vkbd&0xff))ch[x] -= 0x20;
@@ -239,14 +243,14 @@ void vkbd_read_vbo(struct arena* win)
 			j-1.0, k-1.0, 0.0,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
-			ch[0], ch[1], ch[2], ch[3]
+			ch[0], ch[1], ch[2], ch[3], ch[4], ch[5]
 		);
 		carvearrorkey2d(
 			win, 0xff00ff,
 			1.0-j, k-1.0, 0.0,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
-			ch[4], ch[5], ch[6], ch[7]
+			ch[6], ch[7], ch[8], ch[9], ch[10], ch[11]
 		);
 /*
 	else if('j' == c)
@@ -386,7 +390,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 		}
 		else if('j' == ret)
 		{
-			ret = h/12;
+			ret = h/16;
 			y = (h-y)/ret;
 			if(x*2 < w)
 			{
