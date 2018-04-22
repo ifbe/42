@@ -162,6 +162,7 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 int camera_event(struct arena* win, struct event* ev)
 {
 	short* t;
+	float x,y,z,w;
 	int x0,y0,x1,y1,id;
 
 #define _joy_ hex32('j','o','y',0)
@@ -196,8 +197,18 @@ int camera_event(struct arena* win, struct event* ev)
 		}
 		if(_rs_ == t[2])
 		{
+			x = win[0].camera.cx - win[0].target.cx;
+			y = win[0].camera.cy - win[0].target.cy;
+			z = win[0].camera.cz - win[0].target.cz;
+			w = squareroot(x*x + y*y + z*z);
+
+			win[0].camera.fx = 0.0;
+			win[0].camera.fy = w*0.7071067811865476;
+			win[0].camera.fz = -w*0.7071067811865476;
+
 			win[0].camera.cx = win[0].target.cx;
-			win[0].camera.fx = 0;
+			win[0].camera.cy = win[0].target.cy - win[0].camera.fy;
+			win[0].camera.cz = win[0].target.cz - win[0].camera.fz;
 			return 0;
 		}
 
