@@ -34,7 +34,7 @@ void vkbd_read_pixel(struct arena* win)
 	int h = win->height;
 	if(win->vkbd < 0)goto haha;
 
-	c = ((win->vkbd)>>8)&0xff;
+	c = ((win->vkbd)>>16)&0xff;
 	if('k' == c)
 	{
 		drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
@@ -44,7 +44,7 @@ void vkbd_read_pixel(struct arena* win)
 			{
 				l = 2;
 				c = x+(y<<4);
-				if(c == (win->vkbd&0xff))rgb = 0xffff00ff;
+				if(c == (win->vkbd&0xffff))rgb = 0xffff00ff;
 				else rgb = 0x20808080;
 
 				//joystick area
@@ -91,7 +91,7 @@ void vkbd_read_pixel(struct arena* win)
 	}
 	else if('j' == c)
 	{
-		c = (win->vkbd)&0xff;
+		c = (win->vkbd)&0xffff;
 		x = ((c&0xf)-1)/2;
 		y = (((c>>4)&0xf)-1)/2;
 		if((1 == x)&&(0 == y))y = 0;	//up
@@ -156,7 +156,7 @@ void vkbd_read_vbo(struct arena* win)
 		0.0, 0.25, 0.0
 	);
 
-	c = ((win->vkbd)>>8)&0xff;
+	c = ((win->vkbd)>>16)&0xff;
 	if('k' == c)
 	{
 		if(w<h)x = w/17;
@@ -169,7 +169,7 @@ void vkbd_read_vbo(struct arena* win)
 			for(x=0;x<16;x++)
 			{
 				c = x+(y<<4);
-				if(c == (win->vkbd&0xff))rgb = 0xff00ff;
+				if(c == (win->vkbd&0xffff))rgb = 0xff00ff;
 				else rgb = 0x808080;
 
 				carvesolid2d_rect(
@@ -235,7 +235,7 @@ void vkbd_read_vbo(struct arena* win)
 		ch[11] = '+';
 		for(x=0;x<8;x++)
 		{
-			if(ch[x] == (win->vkbd&0xff))ch[x] -= 0x20;
+			if(ch[x] == (win->vkbd&0xffff))ch[x] -= 0x20;
 		}
 
 		carvearrorkey2d(
@@ -252,64 +252,6 @@ void vkbd_read_vbo(struct arena* win)
 			0.0, k, 0.0,
 			ch[6], ch[7], ch[8], ch[9], ch[10], ch[11]
 		);
-/*
-	else if('j' == c)
-	{
-		c = (win->vkbd)&0xff;
-		x = ((c&0xf)-1)/2;
-		y = (((c>>4)&0xf)-1)/2;
-		for(c=0;c<16;c++)
-		{
-			if((x==button[c][0])&&(y==button[c][1]))break;
-		}
-		y = c;
-
-		carvesolid2d_circle(
-			win, 0x404040,
-			-5.0/8, 9.0/16-1.0, -0.001,
-			6.0/16, 0.0, 0.0,
-			0.0, 3.0/16, 0.0
-		);
-		carvesolid2d_circle(
-			win, 0x404040,
-			5.0/8, 9.0/16-1.0, -0.001,
-			6.0/16, 0.0, 0.0,
-			0.0, 3.0/16, 0.0
-		);
-		carvesolid2d_circle(
-			win, 0x404040,
-			-5.0/8, 3.0/16-1.0, -0.001,
-			6.0/16, 0.0, 0.0,
-			0.0, 3.0/16, 0.0
-		);
-		carvesolid2d_circle(
-			win, 0x404040,
-			5.0/8, 3.0/16-1.0, -0.001,
-			6.0/16, 0.0, 0.0,
-			0.0, 3.0/16, 0.0
-		);
-		for(x=0;x<16;x++)
-		{
-			if(x == y)c = 0xff00ff;
-			else c = 0xffffff;
-			m = (float)(button[x][0]) - 8.0;
-			n = (float)(button[x][1]) - 16.0;
-			carvesolid2d_circle(
-				win, c,
-				m/8.0, n/16.0, -0.9,
-				2.0/17, 0.0, 0.0,
-				0.0, 1.0/17, 0.0
-			);
-			carve2d_ascii(
-				win, 0x0000ff,
-				(m+0.5)/8.0, n/16.0, -0.9,
-				j*2, 0.0, 0.0,
-				0.0, k, 0.0,
-				button[x][2]
-			);
-		}
-	}
-*/
 	}
 	else
 	{
@@ -366,7 +308,7 @@ void vkbd_read(struct arena* win)
 
 int vkbd_write(struct arena* win, struct event* ev)
 {
-	u64 why,what;
+	short tmp[4];
 	int x,y,w,h,ret;
 	if(win->vkbd < 0)return 0;
 
@@ -378,14 +320,14 @@ int vkbd_write(struct arena* win, struct event* ev)
 
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		ret = ((win->vkbd)>>8)&0xff;
+		ret = ((win->vkbd)>>16)&0xff;
 		if('k' == ret)
 		{
 			x = x*16/w;
 			y = 31 - (y*32/h);
 			ret = x + (y*16);
 
-			win->vkbd = ((int)'k'<<8) + ret;
+			win->vkbd = ((int)'k'<<16) + ret;
 			eventwrite(ret, _char_, (u64)win, 0);
 		}
 		else if('j' == ret)
@@ -399,6 +341,9 @@ int vkbd_write(struct arena* win, struct event* ev)
 				else if((2==x)&&(y==1))ret = 'r';
 				else if((1==x)&&(y==0))ret = 'n';
 				else if((1==x)&&(y==2))ret = 'f';
+				else if((0==x)&&(y==3))ret = _lt_;
+				else if((2==x)&&(y==3))ret = _lb_;
+				else if((1==x)&&(y==1))ret = _ls_;
 				else ret = 0;
 			}
 			else
@@ -409,18 +354,18 @@ int vkbd_write(struct arena* win, struct event* ev)
 				else if((2==x)&&(y==1))ret = 'x';
 				else if((1==x)&&(y==0))ret = 'a';
 				else if((1==x)&&(y==2))ret = 'y';
+				else if((2==x)&&(y==3))ret = _rt_;
+				else if((0==x)&&(y==3))ret = _rb_;
+				else if((1==x)&&(y==1))ret = _rs_;
 				else ret = 0;
 			}
 
-			win->vkbd = ((int)'j'<<8) + ret;
-			if(0 != ret)
-			{
-				if('l' == ret)ret = 0x4b;
-				else if('r' == ret)ret = 0x4d;
-				else if('f' == ret)ret = 0x48;
-				else if('n' == ret)ret = 0x50;
-				eventwrite(ret, _kbd_, (u64)win, 0);
-			}
+			tmp[0] = 0;
+			tmp[1] = 0;
+			tmp[2] = ret;
+			tmp[3] = 0;
+			eventwrite(*(u64*)tmp, _joy_, (u64)win, 0);
+			win->vkbd = ((int)'j'<<16) + ret;
 		}
 	}
 

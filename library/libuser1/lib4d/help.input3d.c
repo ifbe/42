@@ -1,10 +1,4 @@
 #include "actor.h"
-#define _ls_ hex16('l','s')
-#define _rs_ hex16('r','s')
-#define _lb_ hex16('l','b')
-#define _rb_ hex16('r','b')
-#define _lt_ hex16('l','t')
-#define _rt_ hex16('r','t')
 int relation_swap(void*, void*);
 void quaternionoperation(float*, float*, float);
 

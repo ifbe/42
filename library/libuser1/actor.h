@@ -17,6 +17,7 @@
 #define _fd_ hex32('f','d',0,0)
 //
 #define _drop_ hex32('d','r','o','p')
+#define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _i2c_ hex32('i','2','c',0)
@@ -28,6 +29,13 @@
 #define _json_ hex32('j','s','o','n')
 #define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
+//
+#define _ls_ hex16('l','s')
+#define _rs_ hex16('r','s')
+#define _lb_ hex16('l','b')
+#define _rb_ hex16('r','b')
+#define _lt_ hex16('l','t')
+#define _rt_ hex16('r','t')
 
 
 

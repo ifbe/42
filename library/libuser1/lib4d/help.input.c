@@ -71,13 +71,13 @@ int actorinput(struct arena* win, struct event* ev)
 			{
 				if(x+ret > win->width)
 				{
-					if(win->vkbd < 0)win->vkbd = (int)'j'<<8;
+					if(win->vkbd < 0)win->vkbd = (int)'j'<<16;
 					else win->vkbd = -1;
 					goto lastword;
 				}
 				else if(x < ret)
 				{
-					if(win->vkbd < 0)win->vkbd = (int)'k'<<8;
+					if(win->vkbd < 0)win->vkbd = (int)'k'<<16;
 					else win->vkbd = -1;
 					goto lastword;
 				}
