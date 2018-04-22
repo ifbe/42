@@ -1,4 +1,10 @@
 #include "actor.h"
+#define _ls_ hex16('l','s')
+#define _rs_ hex16('r','s')
+#define _lb_ hex16('l','b')
+#define _rb_ hex16('r','b')
+#define _lt_ hex16('l','t')
+#define _rt_ hex16('r','t')
 int relation_swap(void*, void*);
 void quaternionoperation(float*, float*, float);
 
@@ -110,33 +116,6 @@ void camera_deltaxy(struct arena* win, int dx, int dy)
 		camera_deltay(win, delta);
 	}
 }
-void target_deltaxy(struct arena* win, int x, int y)
-{
-	float norm;
-	float tx, ty;
-	float dx, dy;
-
-	if(x < 0)x = -1;
-	else if(x > 0)x = 1;
-	if(y < 0)y = -1;
-	else if(y > 0)y = 1;
-
-	tx = win->camera.fx;
-	ty = win->camera.fy;
-	norm = squareroot(tx*tx+ty*ty);
-	tx /= norm;
-	ty /= norm;
-
-	dx = 10.0*x*ty;
-	dy = -10.0*x*tx;
-	dx += 10.0*y*tx;
-	dy += 10.0*y*ty;
-
-	win->target.cx += dx;
-	win->target.cy += dy;
-	win->camera.cx += dx;
-	win->camera.cy += dy;
-}
 void camera_zoom(struct arena* win, float delta)
 {
 	float x = delta*(win[0].camera.fx);
@@ -151,6 +130,37 @@ void camera_zoom(struct arena* win, float delta)
 	win[0].camera.fy -= y;
 	win[0].camera.fz -= z;
 }
+void target_deltaxyz(struct arena* win, int x, int y, int z)
+{
+	float norm;
+	float tx, ty;
+	float dx, dy, dz;
+
+	if(x < 0)x = -1;
+	else if(x > 0)x = 1;
+	if(y < 0)y = -1;
+	else if(y > 0)y = 1;
+
+	tx = win->camera.fx;
+	ty = win->camera.fy;
+	norm = squareroot(tx*tx+ty*ty);
+	tx /= norm;
+	ty /= norm;
+
+	dx = 10.0*x*ty;
+	dx += 10.0*y*tx;
+	dy = -10.0*x*tx;
+	dy += 10.0*y*ty;
+	dz = 10*z;
+
+	win->target.cx += dx;
+	win->target.cy += dy;
+	win->target.cz += dz;
+
+	win->camera.cx += dx;
+	win->camera.cy += dy;
+	win->camera.cz += dz;
+}
 
 
 
@@ -164,14 +174,36 @@ int camera_event(struct arena* win, struct event* ev)
 	if(_joy_ == ev->what)
 	{
 		t = (short*)&ev->why;
-		if('L' == t[2])
+		if(_lb_ == t[2])
+		{
+			target_deltaxyz(win, 0, 0, 1);
+			return 0;
+		}
+		if(_lt_ == t[2])
+		{
+			target_deltaxyz(win, 0, 0, -1);
+			return 0;
+		}
+		if(_ls_ == t[2])
+		{
+			win[0].camera.cz -= win[0].target.cz;
+			win[0].target.cz = 0;
+			return 0;
+		}
+		if(_rb_ == t[2])
+		{
+			camera_zoom(win, -0.1);
+			return 0;
+		}
+		if(_rt_ == t[2])
 		{
 			camera_zoom(win, 0.1);
 			return 0;
 		}
-		if('R' == t[2])
+		if(_rs_ == t[2])
 		{
-			camera_zoom(win, -0.1);
+			win[0].camera.cx = win[0].target.cx;
+			win[0].camera.fx = 0;
 			return 0;
 		}
 
@@ -187,7 +219,7 @@ int camera_event(struct arena* win, struct event* ev)
 
 		if('l' == t[2])
 		{
-			target_deltaxy(win, x0, y0);
+			target_deltaxyz(win, x0, y0, 0);
 		}
 		else if('r' == t[2])
 		{
@@ -236,7 +268,7 @@ int camera_event(struct arena* win, struct event* ev)
 			{
 				if(x1*2 < win->width)
 				{
-					target_deltaxy(win, x1-x0, y0-y1);
+					target_deltaxyz(win, x1-x0, y0-y1, 0);
 				}
 				else
 				{
@@ -245,7 +277,7 @@ int camera_event(struct arena* win, struct event* ev)
 			}
 			else if(10 == id)
 			{
-				target_deltaxy(win, x1-x0, y0-y1);
+				target_deltaxyz(win, x1-x0, y0-y1, 0);
 			}
 			else if(11 == id)
 			{
@@ -264,10 +296,10 @@ int target_event(struct arena* win, struct event* ev)
 {
 	if(_kbd_ != ev->what)return 0;
 
-	if(0x4b == ev->why)target_deltaxy(win, -1, 0);
-	else if(0x4d == ev->why)target_deltaxy(win, 1, 0);
-	else if(0x48 == ev->why)target_deltaxy(win, 0, 1);
-	else if(0x50 == ev->why)target_deltaxy(win, 0, -1);
+	if(0x4b == ev->why)target_deltaxyz(win, -1, 0, 0);
+	else if(0x4d == ev->why)target_deltaxyz(win, 1, 0, 0);
+	else if(0x48 == ev->why)target_deltaxyz(win, 0, 1, 0);
+	else if(0x50 == ev->why)target_deltaxyz(win, 0, -1, 0);
 
 	return 0;
 }

@@ -4,6 +4,13 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
+#define _ls_ hex16('l','s')
+#define _rs_ hex16('r','s')
+#define _lb_ hex16('l','b')
+#define _rb_ hex16('r','b')
+#define _lt_ hex16('l','t')
+#define _rt_ hex16('r','t')
+#define _joy_ hex32('j','o','y',0)
 int lowlevel_input();
 void sleep_us(int);
 
@@ -12,7 +19,7 @@ void sleep_us(int);
 
 struct xxxx
 {
-	u8 val;
+	u16 val;
 	char* name;
 };
 static struct xxxx xtab[16] = {
@@ -20,18 +27,18 @@ static struct xxxx xtab[16] = {
 	0x50, "XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
 	0x4b, "XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
 	0x4d, "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
-	's', "XINPUT_GAMEPAD_START",			//0x0010
-	'b', "XINPUT_GAMEPAD_BACK",			//0x0020
-	0, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
-	0, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
-	0, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
-	0, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
-	0, "????1",	//0x0400
-	0, "????2",	//0x0800
-	'a', "XINPUT_GAMEPAD_A",		//0x1000
-	'b', "XINPUT_GAMEPAD_B",		//0x2000
-	'x', "XINPUT_GAMEPAD_X",		//0x4000
-	'y', "XINPUT_GAMEPAD_Y"		//0x8000
+	'+',  "XINPUT_GAMEPAD_START",			//0x0010
+	'-',  "XINPUT_GAMEPAD_BACK",			//0x0020
+	_ls_, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
+	_rs_, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
+	_lb_, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
+	_rb_, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
+	0,    "????1",	//0x0400
+	0,    "????2",	//0x0800
+	'a',  "XINPUT_GAMEPAD_A",		//0x1000
+	'b',  "XINPUT_GAMEPAD_B",		//0x2000
+	'x',  "XINPUT_GAMEPAD_X",		//0x4000
+	'y',  "XINPUT_GAMEPAD_Y"		//0x8000
 };
 static int btn = 0;
 //
@@ -144,69 +151,71 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	short t[4]; 
 	struct event ev;
 
-/*
-	if(	(0 == g.wButtons) &&
-		(8 >= g.bLeftTrigger) &&
-		(8 >= g.bRightTrigger) &&
-		(-2048 < g.sThumbLX) && (2048 > g.sThumbLX) &&
-		(-2048 < g.sThumbLY) && (2048 > g.sThumbLY) &&
-		(-2048 < g.sThumbRX) && (2048 > g.sThumbRX) &&
-		(-2048 < g.sThumbRY) && (2048 > g.sThumbRY) )
-	{
-		return;
-	}
-	say(
-		"%x:\n"
-		"	%x,%x\n"
-		"	%d,%d\n"
-		"	%d,%d\n",
-		id,
-		g.bLeftTrigger, g.bRightTrigger,
-		g.sThumbLX, g.sThumbLY,
-		g.sThumbRX, g.sThumbRY
-	);*/
-
 	for(j=0;j<16;j++)
 	{
+		if(0 == xtab[j].val)continue;
+
 		k = 1<<j;
 		if((0 != (g.wButtons&k)) && (0 == (btn&k)))
 		{
 			//say("	%x:%s\n", k, xtab[j].name);
 
-			if(0 == xtab[j].val)continue;
-			eventwrite(xtab[j].val, _kbd_, 0, 0);
+			t[0] = 0;
+			t[1] = 0;
+			t[2] = xtab[j].val;
+			t[3] = id;
+			ev.why = *(u64*)t;
+			ev.what = _joy_;
+			ev.where = 0;
+			actorwrite(0, 0, 0, 0, &ev, 0x20);
 		}
 	}
 	btn = g.wButtons;
 
-	if(	(g.sThumbLX < -2048) |
-		(g.sThumbLX > 2048) |
-		(g.sThumbLY < -2048) |
-		(g.sThumbLY > 2048) )
+	if(g.bLeftTrigger > 8)
 	{
-		t[0] = g.sThumbLX;
-		t[1] = g.sThumbLY;
-		if(g.wButtons&0x40)t[2] = 'L';
-		else t[2] = 'l';
+		t[0] = g.bLeftTrigger;
+		t[1] = 0;
+		t[2] = _lt_;
 		t[3] = id;
 		ev.why = *(u64*)t;
-		ev.what = hex32('j','o','y',0);
+		ev.what = _joy_;
 		ev.where = 0;
 		actorwrite(0, 0, 0, 0, &ev, 0x20);
 	}
 
-	if(	(g.sThumbRX < -2048) |
-		(g.sThumbRX > 2048) |
-		(g.sThumbRY < -2048) |
-		(g.sThumbRY > 2048) )
+	if(g.bRightTrigger > 8)
+	{
+		t[0] = g.bRightTrigger;
+		t[1] = 0;
+		t[2] = _rt_;
+		t[3] = id;
+		ev.why = *(u64*)t;
+		ev.what = _joy_;
+		ev.where = 0;
+		actorwrite(0, 0, 0, 0, &ev, 0x20);
+	}
+
+	if(	(g.sThumbLX < -2048) | (g.sThumbLX > 2048) | (g.sThumbLY < -2048) | (g.sThumbLY > 2048) )
+	{
+		t[0] = g.sThumbLX;
+		t[1] = g.sThumbLY;
+		t[2] = 'l';
+		t[3] = id;
+		ev.why = *(u64*)t;
+		ev.what = _joy_;
+		ev.where = 0;
+		actorwrite(0, 0, 0, 0, &ev, 0x20);
+	}
+
+	if(	(g.sThumbRX < -2048) | (g.sThumbRX > 2048) | (g.sThumbRY < -2048) | (g.sThumbRY > 2048) )
 	{
 		t[0] = g.sThumbRX;
 		t[1] = g.sThumbRY;
-		if(g.wButtons&0x80)t[2] = 'R';
-		else t[2] = 'r';
+		t[2] = 'r';
 		t[3] = id;
 		ev.why = *(u64*)t;
-		ev.what = hex32('j','o','y',0);
+		ev.what = _joy_;
 		ev.where = 0;
 		actorwrite(0, 0, 0, 0, &ev, 0x20);
 	}
