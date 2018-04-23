@@ -6,6 +6,7 @@ test/test.codeimg.c \
 test/test.doodle.c \
 test/test.example.c \
 test/test.fractal.c \
+test/test.house.c \
 test/test.palette.c \
 test/test.planet.c \
 game/game.2048.c \

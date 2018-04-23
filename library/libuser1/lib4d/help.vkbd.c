@@ -225,17 +225,17 @@ void vkbd_read_vbo(struct arena* win)
 		ch[1] = 'r';
 		ch[2] = 'n';
 		ch[3] = 'f';
-		ch[4] = '-';
-		ch[5] = '+';
+		ch[4] = 't';
+		ch[5] = 'b';
 		ch[6] = 'x';
 		ch[7] = 'b';
 		ch[8] = 'a';
 		ch[9] = 'y';
-		ch[10] = '-';
-		ch[11] = '+';
+		ch[10] = 't';
+		ch[11] = 'b';
 		for(x=0;x<8;x++)
 		{
-			if(ch[x] == (win->vkbd&0xffff))ch[x] -= 0x20;
+			if(ch[x] == (win->vkbd&0xff))ch[x] -= 0x20;
 		}
 
 		carvearrorkey2d(
@@ -337,10 +337,10 @@ int vkbd_write(struct arena* win, struct event* ev)
 			if(x*2 < w)
 			{
 				x = x/ret;
-				if((0==x)&&(1==y))ret = 'l';
-				else if((2==x)&&(y==1))ret = 'r';
-				else if((1==x)&&(y==0))ret = 'n';
-				else if((1==x)&&(y==2))ret = 'f';
+				if((0==x)&&(1==y))ret = _dl_;
+				else if((2==x)&&(y==1))ret = _dr_;
+				else if((1==x)&&(y==0))ret = _dn_;
+				else if((1==x)&&(y==2))ret = _df_;
 				else if((0==x)&&(y==3))ret = _lt_;
 				else if((2==x)&&(y==3))ret = _lb_;
 				else if((1==x)&&(y==1))ret = _ls_;
@@ -350,10 +350,10 @@ int vkbd_write(struct arena* win, struct event* ev)
 			{
 				x = w-x;
 				x = x/ret;
-				if((0==x)&&(1==y))ret = 'b';
-				else if((2==x)&&(y==1))ret = 'x';
-				else if((1==x)&&(y==0))ret = 'a';
-				else if((1==x)&&(y==2))ret = 'y';
+				if((0==x)&&(1==y))ret = _kb_;
+				else if((2==x)&&(y==1))ret = _kx_;
+				else if((1==x)&&(y==0))ret = _ka_;
+				else if((1==x)&&(y==2))ret = _ky_;
 				else if((2==x)&&(y==3))ret = _rt_;
 				else if((0==x)&&(y==3))ret = _rb_;
 				else if((1==x)&&(y==1))ret = _rs_;

@@ -4,12 +4,22 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
-#define _ls_ hex16('l','s')
-#define _rs_ hex16('r','s')
-#define _lb_ hex16('l','b')
-#define _rb_ hex16('r','b')
+#define _dl_ hex16('d','l')
+#define _dr_ hex16('d','r')
+#define _dn_ hex16('d','n')
+#define _df_ hex16('d','f')
+#define _ka_ hex16('k','a')
+#define _kb_ hex16('k','b')
+#define _kx_ hex16('k','x')
+#define _ky_ hex16('k','y')
 #define _lt_ hex16('l','t')
 #define _rt_ hex16('r','t')
+#define _lb_ hex16('l','b')
+#define _rb_ hex16('r','b')
+#define _ls_ hex16('l','s')
+#define _rs_ hex16('r','s')
+#define _ll_ hex16('l','l')
+#define _rr_ hex16('r','r')
 #define _joy_ hex32('j','o','y',0)
 int lowlevel_input();
 void sleep_us(int);
@@ -23,22 +33,22 @@ struct xxxx
 	char* name;
 };
 static struct xxxx xtab[16] = {
-	'f', "XINPUT_GAMEPAD_DPAD_UP",		//0x0001
-	'n', "XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
-	'l', "XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
-	'r', "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
-	'+', "XINPUT_GAMEPAD_START",			//0x0010
-	'-', "XINPUT_GAMEPAD_BACK",			//0x0020
-	_ls_,"XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
-	_rs_,"XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
-	_lb_,"XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
-	_rb_,"XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
-	0,   "????1",	//0x0400
-	0,   "????2",	//0x0800
-	'a', "XINPUT_GAMEPAD_A",		//0x1000
-	'b', "XINPUT_GAMEPAD_B",		//0x2000
-	'x', "XINPUT_GAMEPAD_X",		//0x4000
-	'y', "XINPUT_GAMEPAD_Y"		//0x8000
+	_df_, "XINPUT_GAMEPAD_DPAD_UP",		//0x0001
+	_dn_, "XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
+	_dl_, "XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
+	_dr_, "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
+	_rr_, "XINPUT_GAMEPAD_START",			//0x0010
+	_ll_, "XINPUT_GAMEPAD_BACK",			//0x0020
+	_ls_, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
+	_rs_, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
+	_lb_, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
+	_rb_, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
+	0, "????1",	//0x0400
+	0, "????2",	//0x0800
+	_ka_, "XINPUT_GAMEPAD_A",		//0x1000
+	_kb_, "XINPUT_GAMEPAD_B",		//0x2000
+	_kx_, "XINPUT_GAMEPAD_X",		//0x4000
+	_ky_, "XINPUT_GAMEPAD_Y"		//0x8000
 };
 static int btn = 0;
 //

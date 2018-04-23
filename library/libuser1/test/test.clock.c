@@ -31,40 +31,54 @@ static void clock_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float f0,f1,f2;
+	float a,c,s;
 	float cx = sty->cx;
 	float cy = sty->cy;
 	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	float rx = sty->rx;
+	float ry = sty->ry;
+	float rz = sty->rz;
+	float fx = sty->fx;
+	float fy = sty->fy;
+	float fz = sty->fz;
+	float ux = sty->ux;
+	float uy = sty->uy;
+	float uz = sty->uz;
 	u64 date = getdate();
 	u8* p = (u8*)&date;
 
 	carvesolid_circle(
 		win, 0xc0c0c0,
 		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
+		rx, ry, rz,
+		fx, fy, fz
 	);
 
-	f0 = PI/4 - (p[0]*PI*2.0/60.0);
-	f1 = PI/4 - (p[1]*PI*2.0/60.0);
-	f2 = PI/4 - (p[2]*PI*2.0/12.0);
+	a = PI/4 - (p[0]*PI*2.0/60.0);
+	c = cosine(a);
+	s = sine(a);
 	carveline(
 		win, 0xff0000,
-		cx, cy, 0.0,
-		cx+cosine(f0)*ww, cy+sine(f0)*hh, 0.0
+		cx, cy, cz,
+		cx+(rx*c+fx*s), cy+(ry*c+fy*s), cz+(rz*c+fz*s)
 	);
+
+	a = PI/4 - (p[1]*PI*2.0/60.0);
+	c = cosine(a);
+	s = sine(a);
 	carveline(
 		win, 0xff00,
-		cx, cy, 0.0,
-		cx+cosine(f1)*ww*3/4, cy+sine(f1)*hh*3/4, 0.0
+		cx, cy, cz,
+		cx+(rx*c+fx*s)*3/4, cy+(ry*c+fy*s)*3/4, cz+(rz*c+fz*s)*3/4
 	);
+
+	a = PI/4 - (p[2]*PI*2.0/12.0);
+	c = cosine(a);
+	s = sine(a);
 	carveline(
 		win, 0xff,
-		cx, cy, 0.0,
-		cx+cosine(f2)*ww*2/4, cy+sine(f2)*hh*2/4, 0.0
+		cx, cy, cz,
+		cx+(rx*c+fx*s)*2/4, cy+(ry*c+fy*s)*2/4, cz+(rz*c+fz*s)*2/4
 	);
 }
 static void clock_read_json(

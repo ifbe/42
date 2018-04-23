@@ -30,12 +30,22 @@
 #define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
 //
-#define _ls_ hex16('l','s')
-#define _rs_ hex16('r','s')
-#define _lb_ hex16('l','b')
-#define _rb_ hex16('r','b')
+#define _dl_ hex16('d','l')
+#define _dr_ hex16('d','r')
+#define _dn_ hex16('d','n')
+#define _df_ hex16('d','f')
+#define _ka_ hex16('k','a')
+#define _kb_ hex16('k','b')
+#define _kx_ hex16('k','x')
+#define _ky_ hex16('k','y')
 #define _lt_ hex16('l','t')
 #define _rt_ hex16('r','t')
+#define _lb_ hex16('l','b')
+#define _rb_ hex16('r','b')
+#define _ls_ hex16('l','s')
+#define _rs_ hex16('r','s')
+#define _ll_ hex16('l','l')
+#define _rr_ hex16('r','r')
 
 
 

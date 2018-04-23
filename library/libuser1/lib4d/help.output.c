@@ -39,19 +39,25 @@ void select_2d(struct arena* win, struct style* sty)
 }
 void select_3d(struct arena* win, struct style* sty)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float rx = sty->rx;
+	float ry = sty->ry;
+	float rz = sty->rz;
+	float fx = sty->fx;
+	float fy = sty->fy;
+	float fz = sty->fz;
+	float ux = sty->ux;
+	float uy = sty->uy;
+	float uz = sty->uz;
 
 	carveline_prism4(
 		win, 0xff0000,
-		cx, cy, cz+dd,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0,
-		0.0, 0.0, dd
+		cx+ux, cy+uy, cz+uz,
+		rx, ry, rz,
+		fx, fy, fz,
+		ux, uy, uz
 	);
 }
 

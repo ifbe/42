@@ -5,6 +5,7 @@ void codeimg_register(void*);
 void doodle_register(void*);
 void example_register(void*);
 void fractal_register(void*);
+void house_register(void*);
 void palette_register(void*);
 void planet_register(void*);
 //game
@@ -72,6 +73,10 @@ void content_create(void* addr)
 
 	//test.fractal
 	fractal_register(temp);
+	temp += sizeof(struct actor);
+
+	//test.house
+	house_register(temp);
 	temp += sizeof(struct actor);
 
 	//test.palette

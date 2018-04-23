@@ -90,22 +90,9 @@ int actorinput(struct arena* win, struct event* ev)
 			ret = vkbd_write(win, ev);
 			if(0 != ret)goto lastword;
 		}
-
-		//rotate camera
-		if((_vbo_ == win->fmt)&&(0 == win->edit))
-		{
-			camera_event(win, ev);
-			goto lastword;
-		}
 	}
 
 //------------------------consume myself--------------------
-#define _joy_ hex32('j','o','y',0)
-	if(_joy_ == what)
-	{
-		camera_event(win, ev);
-	}
-
 	//empty window
 	if(0 == win->irel)
 	{
@@ -120,6 +107,7 @@ int actorinput(struct arena* win, struct event* ev)
 		}
 	}
 
+	//switch mode
 	if(_kbd_ == what)
 	{
 		if(why == 0xfb)
@@ -135,18 +123,43 @@ int actorinput(struct arena* win, struct event* ev)
 			goto lastword;
 		}
 	}
-
-	if(win->theone >= 0)
+	if(_joy_ == what)
 	{
-		login_write(win, ev);
-		goto lastword;
+		ret = (why>>32)&0xffff;
+		if(_ll_ == ret)
+		{
+			if(win->theone < 0)win->theone = 0;
+			else win->theone = -1;
+			goto lastword;
+		}
+		else if(_rr_ == ret)
+		{
+			if(win->edit)win->edit = 0;
+			else win->edit = 1;
+			goto lastword;
+		}
 	}
 
+	//change style
 	if(win->edit)
 	{
 		if(what == _char_)delete_topone(win);
 		else if(_vbo_ == win->fmt)playwith3d(win, ev);
 		else playwith2d(win, ev);
+		goto lastword;
+	}
+
+	//rotate camera
+	if(_vbo_ == win->fmt)
+	{
+		camera_event(win, ev);
+		goto lastword;
+	}
+
+	//login panel(non gles)
+	if(win->theone >= 0)
+	{
+		login_write(win, ev);
 		goto lastword;
 	}
 

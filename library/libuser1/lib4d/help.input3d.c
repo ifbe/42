@@ -1,6 +1,10 @@
 #include "actor.h"
 int relation_swap(void*, void*);
 void quaternionoperation(float*, float*, float);
+//
+int arenaprev(struct arena* win);
+int arenanext(struct arena* win);
+int arenalogin(struct arena* win);
 
 
 
@@ -165,37 +169,51 @@ int camera_event(struct arena* win, struct event* ev)
 	float x,y,z,w;
 	int x0,y0,x1,y1,id;
 
-#define _joy_ hex32('j','o','y',0)
 	if(_joy_ == ev->what)
 	{
 		t = (short*)&ev->why;
-		if(_lb_ == t[2])
+		if(_ka_ == t[2])
+		{
+			arenalogin(win);
+			return 0;
+		}
+		else if(_dl_ == t[2])
+		{
+			arenaprev(win);
+			return 0;
+		}
+		else if(_dr_ == t[2])
+		{
+			arenanext(win);
+			return 0;
+		}
+		else if(_lb_ == t[2])
 		{
 			target_deltaxyz(win, 0, 0, 1);
 			return 0;
 		}
-		if(_lt_ == t[2])
+		else if(_lt_ == t[2])
 		{
 			target_deltaxyz(win, 0, 0, -1);
 			return 0;
 		}
-		if(_ls_ == t[2])
+		else if(_ls_ == t[2])
 		{
 			win[0].camera.cz -= win[0].target.cz;
 			win[0].target.cz = 0;
 			return 0;
 		}
-		if(_rb_ == t[2])
+		else if(_rb_ == t[2])
 		{
 			camera_zoom(win, -0.1);
 			return 0;
 		}
-		if(_rt_ == t[2])
+		else if(_rt_ == t[2])
 		{
 			camera_zoom(win, 0.1);
 			return 0;
 		}
-		if(_rs_ == t[2])
+		else if(_rs_ == t[2])
 		{
 			x = win[0].camera.cx - win[0].target.cx;
 			y = win[0].camera.cy - win[0].target.cy;
@@ -312,13 +330,246 @@ int target_event(struct arena* win, struct event* ev)
 
 
 
+int joystick2style(struct style* sty, short* tmp)
+{
+	int x0,y0;
+	float c,s;
+	float tx,ty,tz;
+
+	if(_dl_ == tmp[2])
+	{
+		//dpad left
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx -= tx;
+		sty->ry -= ty;
+		sty->rz -= tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if(_dr_ == tmp[2])
+	{
+		//dpad right
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx -= tx;
+		sty->ry -= ty;
+		sty->rz -= tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if(_dn_ == tmp[2])
+	{
+		//dpad down
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx -= tx;
+		sty->fy -= ty;
+		sty->fz -= tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if(_df_ == tmp[2])
+	{
+		//dpad up
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx -= tx;
+		sty->fy -= ty;
+		sty->fz -= tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if(_lt_ == tmp[2])
+	{
+		//left trigger
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux -= tx;
+		sty->uy -= ty;
+		sty->uz -= tz;
+
+		sty->cx += tx*2;
+		sty->cy += ty*2;
+		sty->cz += tz*2;
+		return 0;
+	}
+	else if(_lb_ == tmp[2])
+	{
+		//left bumper
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux -= tx;
+		sty->uy -= ty;
+		sty->uz -= tz;
+		return 0;
+	}
+	else if(_kx_ == tmp[2])
+	{
+		//key x
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx += tx;
+		sty->ry += ty;
+		sty->rz += tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if(_kb_ == tmp[2])
+	{
+		//key b
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx += tx;
+		sty->ry += ty;
+		sty->rz += tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if(_ka_ == tmp[2])
+	{
+		//key a
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx += tx;
+		sty->fy += ty;
+		sty->fz += tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if(_ky_ == tmp[2])
+	{
+		//key y
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx += tx;
+		sty->fy += ty;
+		sty->fz += tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if(_rt_ == tmp[2])
+	{
+		//right trigger
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux += tx;
+		sty->uy += ty;
+		sty->uz += tz;
+
+		sty->cx -= tx*2;
+		sty->cy -= ty*2;
+		sty->cz -= tz*2;
+		return 0;
+	}
+	else if(_rb_ == tmp[2])
+	{
+		//right bumper
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux += tx;
+		sty->uy += ty;
+		sty->uz += tz;
+		return 0;
+	}
+
+	x0 = tmp[0];
+	if(x0 < -8192)x0 = -1;
+	else if(x0 > 8192)x0 = 1;
+	else x0 = 0;
+
+	y0 = tmp[1];
+	if(y0 < -8192)y0 = -1;
+	else if(y0 > 8192)y0 = 1;
+	else y0 = 0;
+
+	if('l' == tmp[2])
+	{
+		sty->cx += (sty->rx)*x0/16 + (sty->fx)*y0/16;
+		sty->cy += (sty->ry)*x0/16 + (sty->fy)*y0/16;
+		sty->cz += (sty->rz)*x0/16 + (sty->fz)*y0/16;
+	}
+	else if('r' == tmp[2])
+	{
+		if(x0 < 0)
+		{
+			c = cosine(0.05);
+			s = sine(0.05);
+		}
+		else if(x0 > 0)
+		{
+			c = cosine(-0.05);
+			s = sine(-0.05);
+		}
+		else return 0;
+
+		tx = sty->rx;
+		ty = sty->ry;
+		sty->rx = tx*c - ty*s;
+		sty->ry = tx*s + ty*c;
+
+		tx = sty->fx;
+		ty = sty->fy;
+		sty->fx = tx*c - ty*s;
+		sty->fy = tx*s + ty*c;
+	}
+	return 0;
+}
 int playwith3d(struct arena* win, struct event* ev)
 {
 	struct relation* reltop;
 	struct relation* relwow;
 	struct style* stytop;
 	struct style* stywow;
-	int absx, absy;
+	int absx, absy, aaa, bbb;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
@@ -354,17 +605,39 @@ int playwith3d(struct arena* win, struct event* ev)
 	}
 	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
 
+	if(_joy_ == ev->what)
+	{
+		joystick2style(stytop, (void*)ev);
+		return 0;
+	}
+
 	if('f' == id)
 	{
 		stytop->rx = (stytop->rx)*17/16;
+		stytop->ry = (stytop->ry)*17/16;
+		stytop->rz = (stytop->rz)*17/16;
+
+		stytop->fx = (stytop->fx)*17/16;
 		stytop->fy = (stytop->fy)*17/16;
+		stytop->fz = (stytop->fz)*17/16;
+
+		stytop->ux = (stytop->ux)*17/16;
+		stytop->uy = (stytop->uy)*17/16;
 		stytop->uz = (stytop->uz)*17/16;
 		return 0;
 	}
 	else if('b' == id)
 	{
 		stytop->rx = (stytop->rx)*15/16;
+		stytop->ry = (stytop->ry)*15/16;
+		stytop->rz = (stytop->rz)*15/16;
+
+		stytop->fx = (stytop->fx)*15/16;
 		stytop->fy = (stytop->fy)*15/16;
+		stytop->fz = (stytop->fz)*15/16;
+
+		stytop->ux = (stytop->ux)*15/16;
+		stytop->uy = (stytop->uy)*15/16;
 		stytop->uz = (stytop->uz)*15/16;
 		return 0;
 	}
@@ -396,9 +669,21 @@ int playwith3d(struct arena* win, struct event* ev)
 
 			absx = (win->touchmove[0].x) - (win->touchmove[1].x);
 			absy = (win->touchmove[0].y) - (win->touchmove[1].y);
-			stytop->rx = (stytop->rx) * (x*x+y*y) / (absx*absx+absy*absy);
-			stytop->fy = (stytop->fy) * (x*x+y*y) / (absx*absx+absy*absy);
-			stytop->uz = (stytop->uz) * (x*x+y*y) / (absx*absx+absy*absy);
+
+			aaa = x*x+y*y;
+			bbb = absx*absx + absy*absy;
+
+			stytop->rx = (stytop->rx) * aaa / bbb;
+			stytop->ry = (stytop->ry) * aaa / bbb;
+			stytop->rz = (stytop->rz) * aaa / bbb;
+
+			stytop->fx = (stytop->fx) * aaa / bbb;
+			stytop->fy = (stytop->fy) * aaa / bbb;
+			stytop->fz = (stytop->fz) * aaa / bbb;
+
+			stytop->ux = (stytop->ux) * aaa / bbb;
+			stytop->uy = (stytop->uy) * aaa / bbb;
+			stytop->uz = (stytop->uz) * aaa / bbb;
 		}
 	}
 	else if(hex32('p','+',0,0) == ev->what)

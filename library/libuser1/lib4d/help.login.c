@@ -93,6 +93,27 @@ int arenaactor(struct arena* win, struct actor* act)
 	relationcreate(win, sty, _win_, act, pin, _act_);
 	return 0;
 }
+int arenalogin(struct arena* win)
+{
+	struct actor* act = &actor[win->theone];
+	if(0 != act->type)
+	{
+		actorcreate(act, 0);
+		arenaactor(win, act);
+	}
+	return 0;
+}
+int arenaprev(struct arena* win)
+{
+	if(win->theone > 0)win->theone -= 1;
+	return 0;
+}
+int arenanext(struct arena* win)
+{
+	int j = win->theone + 1;
+	if(0 != actor[j].type)win->theone += 1;
+	return 0;
+}
 
 
 
@@ -925,16 +946,24 @@ void login_write(struct arena* win, struct event* ev)
 			login_drag(win, j, k, x, y);
 		}
 	}
+	else if(_kbd_ == ev->what)
+	{
+		if(0x4b == ev->why)
+		{
+			if(win->theone > 0)win->theone -= 1;
+		}
+		else if(0x4d == ev->why)
+		{
+			j = win->theone + 1;
+			if(0 != actor[j].type)win->theone += 1;
+		}
+		//say("theone=%d\n",win->theone);
+	}
 	else if(_char_ == ev->what)
 	{
 		if((0xd == ev->why)|(0xa == ev->why))
 		{
-			act = &actor[win->theone];
-			win->theone = -1;
-			if(0 == act->type)return;
-
-			actorcreate(act, 0);
-			arenaactor(win, act);
+			arenalogin(win);
 		}
 		else if(0x435b1b == ev->why)
 		{
@@ -945,27 +974,5 @@ void login_write(struct arena* win, struct event* ev)
 		{
 			if(win->theone > 0)win->theone -= 1;
 		}
-	}
-	else if(_kbd_ == ev->what)
-	{
-		if('a' == ev->why)
-		{
-			act = &actor[win->theone];
-			win->theone = -1;
-			if(0 == act->type)return;
-
-			actorcreate(act, 0);
-			arenaactor(win, act);
-		}
-		else if(0x4b == ev->why)
-		{
-			if(win->theone > 0)win->theone -= 1;
-		}
-		else if(0x4d == ev->why)
-		{
-			j = win->theone + 1;
-			if(0 != actor[j].type)win->theone += 1;
-		}
-		say("theone=%d\n",win->theone);
 	}
 }
