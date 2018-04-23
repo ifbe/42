@@ -4,7 +4,7 @@ void carvearrorkey2d(
 	float, float, float,
 	float, float, float,
 	float, float, float,
-	int, int, int, int, int, int);
+	u8*, int);
 static u8 button[16][3] = {
 	{3, 1, '.'},
 	{3, 5, '.'},
@@ -23,6 +23,8 @@ static u8 button[16][3] = {
 	{13, 11, 'y'},
 	{15, 9, 'b'}
 };
+static u16 joyl[8]={_dl_, _dr_, _dn_, _df_, _lt_, _lb_, _ls_, _ll_};
+static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
 
 
@@ -142,7 +144,7 @@ haha:
 }
 void vkbd_read_vbo(struct arena* win)
 {
-	u8 ch[12];
+	u8 ch[8];
 	float j,k;
 	int x,y,c,rgb;
 	int w = win->width;
@@ -227,30 +229,36 @@ void vkbd_read_vbo(struct arena* win)
 		ch[3] = 'f';
 		ch[4] = 't';
 		ch[5] = 'b';
-		ch[6] = 'x';
-		ch[7] = 'b';
-		ch[8] = 'a';
-		ch[9] = 'y';
-		ch[10] = 't';
-		ch[11] = 'b';
-		for(x=0;x<8;x++)
-		{
-			if(ch[x] == (win->vkbd&0xff))ch[x] -= 0x20;
-		}
+		ch[6] = 's';
+		ch[7] = '-';
 
+		y = (win->vkbd)&0xffff;
+		for(x=0;x<7;x++){if(joyl[x] == y)ch[x] -= 0x20;}
 		carvearrorkey2d(
 			win, 0xff00ff,
 			j-1.0, k-1.0, 0.0,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
-			ch[0], ch[1], ch[2], ch[3], ch[4], ch[5]
+			ch, 1
 		);
+
+		ch[0] = 'x';
+		ch[1] = 'b';
+		ch[2] = 'a';
+		ch[3] = 'y';
+		ch[4] = 't';
+		ch[5] = 'b';
+		ch[6] = 's';
+		ch[7] = '+';
+
+		y = (win->vkbd)&0xffff;
+		for(x=0;x<7;x++){if(joyr[x] == y)ch[x] -= 0x20;}
 		carvearrorkey2d(
 			win, 0xff00ff,
 			1.0-j, k-1.0, 0.0,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
-			ch[6], ch[7], ch[8], ch[9], ch[10], ch[11]
+			ch, -1
 		);
 	}
 	else
