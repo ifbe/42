@@ -54,63 +54,74 @@ static void doodle_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float f;
-	float x0,y0,x1,y1;
+	float a,c,s;
+	float x,y,z;
 	float cx = sty->cx;
 	float cy = sty->cy;
 	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	float rx = sty->rx;
+	float ry = sty->ry;
+	float rz = sty->rz;
+	float fx = sty->fx;
+	float fy = sty->fy;
+	float fz = sty->fz;
+	float ux = sty->ux;
+	float uy = sty->uy;
+	float uz = sty->uz;
 
 	carvesolid_circle(
 		win, 0x00ffff,
-		cx, cy, ww/128,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
+		cx, cy, cz,
+		rx, ry, rz,
+		fx, fy, fz
 	);
 	carvesolid_circle(
 		win, 0x404040,
-		cx-ww/2, cy, ww/64,
-		ww/2, 0.0, 0.0,
-		0.0, hh/2, 0.0
+		cx-rx/2+ux/8, cy-ry/2+uy/8, cz-rz/2+uz/8,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2
 	);
 	carvesolid_circle(
 		win, 0x404040,
-		cx+ww/2, cy, ww/64,
-		ww/2, 0.0, 0.0,
-		0.0, hh/2, 0.0
+		cx+rx/2+ux/8, cy+ry/2+uy/8, cz+rz/2+uz/8,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2
 	);
 
-	f = arctan2(py-cy, px-cx+(ww/2));
-	x0 = (cosine(f)*ww*1/4) + (cx-ww/2);
-	y0 = (sine(f)*ww*1/4) + (cy+y0);
-	f = arctan2(py-cy, px-cx-(ww/2));
-	x1 = (cosine(f)*ww*1/4) + (cx+ww/2);
-	y1 = (sine(f)*ww*1/4) + (cy+y1);
-
+	a = arctan2(py-cy+ry, px-cx+rx);
+	c = cosine(a);
+	s = sine(a);
+	x = cx-rx/2+(rx*c+fx*s)/4+ux/4;
+	y = cy-ry/2+(ry*c+fy*s)/4+uy/4;
+	z = cz-rz/2+(rz*c+fz*s)/4+uz/4;
 	carvesolid_circle(
 		win, 0xff0000,
-		x0, y0, ww/32,
-		ww/4, 0.0, 0.0,
-		0.0, hh/4, 0.0
-	);
-	carvesolid_circle(
-		win, 0xff0000,
-		x1, y1, ww/32,
-		ww/4, 0.0, 0.0,
-		0.0, hh/4, 0.0
-	);
-
-	carveline(
-		win, 0xffffff,
-		x0, y0, ww/32,
-		px, py, ww/32
+		x, y, z,
+		rx/4, ry/4, rz/4,
+		fx/4, fy/4, fz/4
 	);
 	carveline(
 		win, 0xffffff,
-		x1, y1, ww/32,
-		px, py, ww/32
+		x, y, z,
+		px, py, 0.0
+	);
+
+	a = arctan2(py-cy-rx, px-cx-ry);
+	c = cosine(a);
+	s = sine(a);
+	x = cx+rx/2+(rx*c+fx*s)/4+ux/4;
+	y = cy+ry/2+(ry*c+fy*s)/4+uy/4;
+	z = cz+rz/2+(rz*c+fz*s)/4+uz/4;
+	carvesolid_circle(
+		win, 0xff0000,
+		x, y, z,
+		rx/4, ry/4, rz/4,
+		fx/4, fy/4, fz/4
+	);
+	carveline(
+		win, 0xffffff,
+		x, y, z,
+		px, py, 0.0
 	);
 }
 static void doodle_read_json(

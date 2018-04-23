@@ -25,17 +25,61 @@ static void example_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	carvesolid_rect(
-		win, getrandom(),
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
+	float cx = sty->cx;
+	float cy = sty->cy;
+	float cz = sty->cz;
+	float rx = sty->rx;
+	float ry = sty->ry;
+	float rz = sty->rz;
+	float fx = sty->fx;
+	float fy = sty->fy;
+	float fz = sty->fz;
+	float ux = sty->ux;
+	float uy = sty->uy;
+	float uz = sty->uz;
+
+	carvepoint_sphere(
+		win, 0xffffff,
+		cx-rx/2-fx/2+ux/2, cy-ry/2-fy/2+uy/2, cz-rz/2-fz/2+uz/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
+	);
+	carveline_sphere(
+		win, 0xffffff,
+		cx+rx/2-fx/2+ux/2, cy+ry/2-fy/2+uy/2, cz+rz/2-fz/2+uz/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
+	);
+	carvesolid_sphere(
+		win, 0xff00ff,
+		cx-rx/2+fx/2+ux/2, cy-ry/2+fy/2+uy/2, cz-rz/2+fz/2+uz/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
+	);
+
+	carvepoint_sphere(
+		win, 0xffffff,
+		cx-rx/2-fx/2+ux*3/2, cy-ry/2-fy/2+uy*3/2, cz-rz/2-fz/2+uz*3/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
+	);
+	carveline_sphere(
+		win, 0xffffff,
+		cx+rx/2-fx/2+ux*3/2, cy+ry/2-fy/2+uy*3/2, cz+rz/2-fz/2+uz*3/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
+	);
+	carvesolid_sphere(
+		win, 0x87cefa,
+		cx-rx/2+fx/2+ux*3/2, cy-ry/2+fy/2+uy*3/2, cz-rz/2+fz/2+uz*3/2,
+		rx/2, ry/2, rz/2,
+		fx/2, fy/2, fz/2,
+		ux/2, uy/2, uz/2
 	);
 }
 static void example_read_json(

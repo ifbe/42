@@ -14,6 +14,7 @@ void carvesolid_triangle(
 	float x2, float y2, float z2,
 	float x3, float y3, float z3)
 {
+	float n[3];
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -25,6 +26,10 @@ void carvesolid_triangle(
 	float* vbuf = (mod[trigonv].vbuf) + (36*vlen);
 	mod[trigonv].ilen += 1;
 	mod[trigonv].vlen += 3;
+
+	n[0] = (y2-y1)*(z3-z1) - (z2-z1)*(y3-y1);
+	n[1] = (z2-z1)*(x3-x1) - (x2-x1)*(z3-z1);
+	n[2] = (x2-x1)*(y3-y1) - (y2-y1)*(x3-x1);
 
 	vbuf[ 0] = x1;
 	vbuf[ 1] = y1;
@@ -66,6 +71,7 @@ void carvesolid_rect(
 	float rx, float ry, float rz,
 	float fx, float fy, float fz)
 {
+	float n[3];
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -78,15 +84,19 @@ void carvesolid_rect(
 	mod[trigonv].ilen += 2;
 	mod[trigonv].vlen += 4;
 
+	n[0] = ry*fz - rz*fy;
+	n[1] = rz*fx - rx*fz;
+	n[2] = rx*fy - ry*fx;
+
 	vbuf[ 0] = cx - rx - fx;
 	vbuf[ 1] = cy - ry - fy;
 	vbuf[ 2] = cz - rz - fz;
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
-	vbuf[ 6] = 0.0;
-	vbuf[ 7] = 0.0;
-	vbuf[ 8] = 1.0;
+	vbuf[ 6] = n[0];
+	vbuf[ 7] = n[1];
+	vbuf[ 8] = n[2];
 
 	vbuf[ 9] = cx + rx - fx;
 	vbuf[10] = cy + ry - fy;
@@ -94,9 +104,9 @@ void carvesolid_rect(
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
-	vbuf[15] = 0.0;
-	vbuf[16] = 0.0;
-	vbuf[17] = 1.0;
+	vbuf[15] = n[0];
+	vbuf[16] = n[1];
+	vbuf[17] = n[2];
 
 	vbuf[18] = cx - rx + fx;
 	vbuf[19] = cy - ry + fy;
@@ -104,9 +114,9 @@ void carvesolid_rect(
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
-	vbuf[24] = 0.0;
-	vbuf[25] = 0.0;
-	vbuf[26] = 1.0;
+	vbuf[24] = n[0];
+	vbuf[25] = n[1];
+	vbuf[26] = n[2];
 
 	vbuf[27] = cx + rx + fx;
 	vbuf[28] = cy + ry + fy;
@@ -114,9 +124,9 @@ void carvesolid_rect(
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
-	vbuf[33] = 0.0;
-	vbuf[34] = 0.0;
-	vbuf[35] = 1.0;
+	vbuf[33] = n[0];
+	vbuf[34] = n[1];
+	vbuf[35] = n[2];
 
 	//index
 	ibuf[0] = vlen + 0;

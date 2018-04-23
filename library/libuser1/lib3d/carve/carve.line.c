@@ -1044,7 +1044,7 @@ void carveline_sphere(
 	int vlen = mod[linev].vlen;
 	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
 	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += odd*(odd+odd-2);
+	mod[linev].ilen += odd*(odd+odd-3);
 	mod[linev].vlen += odd*(odd-2)+2;
 
 	for(k=0;k<(odd-2);k++)
