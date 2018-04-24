@@ -297,7 +297,8 @@ library/libuser1/hack/hack.bplus.c \
 library/libuser1/hack/hack.fs.c \
 library/libuser1/hack/hack.graph.c \
 library/libuser1/hack/hack.hex.c \
-library/libuser1/hack/hack.input.c \
+library/libuser1/hack/hack.joystick.c \
+library/libuser1/hack/hack.keyboard.c \
 library/libuser1/hack/hack.rawdump.c \
 library/libuser1/hack/hack.switch.c \
 library/libuser1/lib1d/cli/print.cli.c \

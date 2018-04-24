@@ -40,7 +40,8 @@ hack/hack.bplus.c \
 hack/hack.fs.c \
 hack/hack.graph.c \
 hack/hack.hex.c \
-hack/hack.input.c \
+hack/hack.joystick.c \
+hack/hack.keyboard.c \
 hack/hack.rawdump.c \
 hack/hack.switch.c \
 lib1d/cli/print.cli.c \

@@ -41,7 +41,8 @@ void bplus_register(void*);
 void fs_register(void*);
 void graph_register(void*);
 void hex_register(void*);
-void input_register(void*);
+void joystick_register(void*);
+void keyboard_register(void*);
 void rawdump_register(void*);
 void switch_register(void*);
 
@@ -207,8 +208,12 @@ void content_create(void* addr)
 	hex_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.input
-	input_register(temp);
+	//hack.joystick
+	joystick_register(temp);
+	temp += sizeof(struct actor);
+
+	//hack.keyboard
+	keyboard_register(temp);
 	temp += sizeof(struct actor);
 
 	//hack.rawdump
