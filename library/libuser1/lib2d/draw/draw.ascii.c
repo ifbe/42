@@ -168,12 +168,12 @@ void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 	u8 temp;
 	u8* points;
 	int x,y,offset;
-	int w = win->width;
-	int h = win->height;
-	int s = win->stride;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
 	u32* screen = (u32*)(win->buf);
 
-	if((xx<0)|(xx+8>w)|(yy<0)|(yy+16>h))return;
+	if((xx<0)|(xx+8>width)|(yy<0)|(yy+16>height))return;
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
 	points = asciitable + (ch<<4);
 
@@ -183,14 +183,64 @@ void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 		temp = points[y];
 		for(x=0;x<8;x++)
 		{
-			offset = s*(yy+y) + xx+x;
-			if(offset < 0)continue;
-			if( (temp&0x80) != 0 )screen[offset] = rgb;
+			offset = stride*(yy+y) + xx+x;
+			if((offset >= 0)&&(offset < stride*height))
+			{
+				if( (temp&0x80) != 0 )screen[offset] = rgb;
+			}
 
 			temp<<=1;
 		}//x
 	}//y
 }
+void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
+{
+	u8 temp;
+	u8* points;
+	int x,y,j,k,m,n,scale,offset;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
+	u32* screen = (u32*)(win->buf);
+
+	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
+	points = asciitable + (ch<<4);
+
+	rgb |= 0xff000000;
+	scale = (y1-y0)/16;
+	x0 = (x0+x1)/2 - 4*scale;
+	y0 = (y0+y1)/2 - 8*scale;
+	for(y=0;y<16;y++)
+	{
+		temp = points[y];
+		for(x=0;x<8;x++)
+		{
+			for(k=0;k<scale;k++)
+			{
+				n = y0+y*scale+k;
+				if(n < 0)continue;
+				if(n >= height)continue;
+				for(j=0;j<scale;j++)
+				{
+					m = x0+j+x*scale;
+					if(m < 0)continue;
+					if(m >= width)continue;
+
+					offset = stride*n + m;
+					if((offset >= 0)&&(offset < stride*height))
+					{
+						if( (temp&0x80) != 0 )screen[offset] = rgb;
+					}
+				}
+			}
+			temp<<=1;
+		}//x
+	}//y
+}
+
+
+
+
 void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
 {
 	int i;
@@ -206,46 +256,6 @@ void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
 	if(ch>0x39)ch+=0x7;
 	drawascii(win, rgb, x+8, y, ch);
 }
-
-
-
-
-void drawascii_scale(
-	struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1,
-	u8 ch)
-{
-	u8 temp;
-	u8* points;
-	int x,y,offset;
-	int w = win->width;
-	int h = win->height;
-	int s = win->stride;
-	u32* screen = (u32*)(win->buf);
-
-	if((x0<0)|(x1>=w))return;
-	if((y0<0)|(y1>=h))return;
-	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
-	points = asciitable + (ch<<4);
-
-	rgb |= 0xff000000;
-	for(y=0;y<16;y++)
-	{
-		temp = points[y];
-		for(x=0;x<8;x++)
-		{
-			offset = s*(y0+y) + x0+x;
-			if(offset < 0)continue;
-			if( (temp&0x80) != 0 )screen[offset] = rgb;
-
-			temp<<=1;
-		}//x
-	}//y
-}
-
-
-
-
 void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;
@@ -260,6 +270,27 @@ void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 		drawascii(win, rgb, x+j*8, y, buf[j]);
 	}
 }
+void drawstring_center(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
+{
+	int j;
+	if(buf == 0)return;
+	if(len == 0)
+	{
+		for(;len<256;len++)if(buf[len] == 0)break;
+	}
+
+	y -= 8;
+	x -= 4*len;
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == 0)break;
+		drawascii(win, rgb, x+j*8, y, buf[j]);
+	}
+}
+
+
+
+
 void drawtext(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,

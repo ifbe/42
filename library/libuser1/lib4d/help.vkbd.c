@@ -25,10 +25,12 @@ void vkbd_read_pixel(struct arena* win)
 	int h = win->height;
 	if(win->vkbd < 0)goto haha;
 
+	//bg
+	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+
 	c = ((win->vkbd)>>16)&0xff;
 	if('k' == c)
 	{
-		drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 		for(y=0;y<8;y++)
 		{
 			for(x=0;x<16;x++)
@@ -107,6 +109,10 @@ void vkbd_read_pixel(struct arena* win)
 		y = (win->vkbd)&0xffff;
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
+	}
+	else
+	{
+		drawstring_center(win, 0xffffff, w/2, h*7/8, (void*)"helloworld", 10);
 	}
 
 haha:

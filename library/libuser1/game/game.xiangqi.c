@@ -139,9 +139,11 @@ void xiangqi_read_pixel(
 				hh/10
 			);
 
-			drawutf8(win, fontcolor,
-				(cx-8) + (2*x-8)*ww/9,
-				(cy-8) + (2*y-9)*hh/10,
+			drawutf8_fit(win, fontcolor,
+				cx + (2*x-9)*ww/9,
+				cy + (2*y-10)*hh/10,
+				cx + (2*x-7)*ww/9,
+				cy + (2*y-8)*hh/10,
 				char2hanzi(temp), 0
 			);
 		}//forx
