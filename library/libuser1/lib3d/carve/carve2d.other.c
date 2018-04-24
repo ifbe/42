@@ -93,88 +93,90 @@ void carvearrorkey2d(
 
 //-----------------------characters-----------------------------
 	//x-: left
-	if(buf[0] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[0] += 0x20;}
+	if(buf[0]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6-rx/2, cy+ry/6-ry/2, cz+rz/6-rz/2-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[0]
+		buf[0]&0x7f
 	);
 
 	//x+: right
-	if(buf[1] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[1] += 0x20;}
+	if(buf[1]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6+rx/2, cy+ry/6+ry/2, cz+rz/6+rz/2-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[1]
+		buf[1]&0x7f
 	);
 
 	//y-: near
-	if(buf[2] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[2] += 0x20;}
+	if(buf[2]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6-fx/2, cy+ry/6-fy/2, cz+rz/6-fz/2-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[2]
+		buf[2]&0x7f
 	);
 
 	//y+: far
-	if(buf[3] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[3] += 0x20;}
+	if(buf[3]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6+fx/2, cy+ry/6+fy/2, cz+rz/6+fz/2-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[3]
+		buf[3]&0x7f
 	);
 
 	//z-: trigger
-	if(buf[4] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[4] += 0x20;}
+	if(buf[4]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx-rx/3+fx*7/6, cy-ry/3+fy*7/6, cz-rz/3+fz*7/6-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[4]
+		buf[4]&0x7f
 	);
 
 	//z+: bumper
-	if(buf[5] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[5] += 0x20;}
+	if(buf[5]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6+rx/2+fx*7/6, cy+ry/6+ry/2+fy*7/6, cz+rz/6+rz/2+fz*7/6-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[5]
+		buf[5]&0x7f
 	);
 
 	//press
-	if(buf[6] >= 'a'){c = 0xffffff;}
-	else {c = 0xff00ff;buf[6] += 0x20;}
+	if(buf[6]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
 		win, c,
 		cx+rx/6, cy+ry/6, cz+rz/6-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[6]
+		buf[6]&0x7f
 	);
 
 	//select or start
+	if(buf[7]&0x80)c = 0xff00ff;
+	else c = 0xffffff;
 	carve2d_ascii(
-		win, 0xffffff,
+		win, c,
 		cx+rx*t+rx/6+fx/2, cy+ry*t+ry/6+fy/2, cz+rz*t+rz/6+fz/2-0.99,
 		rx/3, ry/3, rz/3,
 		fx/3, fy/3, fz/3,
-		buf[7]
+		buf[7]&0x7f
 	);
 }

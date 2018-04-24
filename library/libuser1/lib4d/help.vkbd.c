@@ -233,7 +233,7 @@ void vkbd_read_vbo(struct arena* win)
 		ch[7] = '-';
 
 		y = (win->vkbd)&0xffff;
-		for(x=0;x<7;x++){if(joyl[x] == y)ch[x] -= 0x20;}
+		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
 			j-1.0, k-1.0, 0.0,
@@ -252,7 +252,7 @@ void vkbd_read_vbo(struct arena* win)
 		ch[7] = '+';
 
 		y = (win->vkbd)&0xffff;
-		for(x=0;x<7;x++){if(joyr[x] == y)ch[x] -= 0x20;}
+		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
 			1.0-j, k-1.0, 0.0,
@@ -268,7 +268,7 @@ void vkbd_read_vbo(struct arena* win)
 			0.0, -0.75, -0.02,
 			0.2, 0.0, 0.0,
 			0.0, 0.1, 0.0,
-			(void*)"fuckyou", 7
+			(void*)"helloworld", 10
 		);
 	}
 
@@ -340,24 +340,24 @@ int vkbd_write(struct arena* win, struct event* ev)
 		}
 		else if('j' == ret)
 		{
-			ret = h/16;
-			y = (h-y)/ret;
+			y = (h-y)*16/h;
 			if(x*2 < w)
 			{
-				x = x/ret;
+				x = x*16/h;
 				if((0==x)&&(1==y))ret = _dl_;
-				else if((2==x)&&(y==1))ret = _dr_;
-				else if((1==x)&&(y==0))ret = _dn_;
-				else if((1==x)&&(y==2))ret = _df_;
-				else if((0==x)&&(y==3))ret = _lt_;
-				else if((2==x)&&(y==3))ret = _lb_;
-				else if((1==x)&&(y==1))ret = _ls_;
+				else if((2==x)&&(1==y))ret = _dr_;
+				else if((1==x)&&(0==y))ret = _dn_;
+				else if((1==x)&&(2==y))ret = _df_;
+				else if((0==x)&&(3==y))ret = _lt_;
+				else if((2==x)&&(3==y))ret = _lb_;
+				else if((1==x)&&(1==y))ret = _ls_;
+				else if((3==x)&&(2==y))ret = _ll_;
 				else ret = 0;
 			}
 			else
 			{
 				x = w-x;
-				x = x/ret;
+				x = x*16/h;
 				if((0==x)&&(1==y))ret = _kb_;
 				else if((2==x)&&(y==1))ret = _kx_;
 				else if((1==x)&&(y==0))ret = _ka_;
@@ -365,15 +365,19 @@ int vkbd_write(struct arena* win, struct event* ev)
 				else if((2==x)&&(y==3))ret = _rt_;
 				else if((0==x)&&(y==3))ret = _rb_;
 				else if((1==x)&&(y==1))ret = _rs_;
+				else if((3==x)&&(y==2))ret = _rr_;
 				else ret = 0;
 			}
-
-			tmp[0] = 0;
-			tmp[1] = 0;
-			tmp[2] = ret;
-			tmp[3] = 0;
-			eventwrite(*(u64*)tmp, _joy_, (u64)win, 0);
 			win->vkbd = ((int)'j'<<16) + ret;
+
+			if(0 != ret)
+			{
+				tmp[0] = 0;
+				tmp[1] = 0;
+				tmp[2] = ret;
+				tmp[3] = 0;
+				eventwrite(*(u64*)tmp, _joy_, (u64)win, 0);
+			}
 		}
 	}
 

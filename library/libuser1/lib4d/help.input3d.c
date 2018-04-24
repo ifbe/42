@@ -169,6 +169,27 @@ int camera_event(struct arena* win, struct event* ev)
 	float x,y,z,w;
 	int x0,y0,x1,y1,id;
 
+	if(_char_ == ev->what)
+	{
+		if((0xa == ev->why)|(0xd == ev->why))
+		{
+			arenalogin(win);
+			return 0;
+		}
+	}
+	else if(_kbd_ == ev->what)
+	{
+		if(0x4b == ev->why)
+		{
+			arenaprev(win);
+			return 0;
+		}
+		else if(0x4d == ev->why)
+		{
+			arenanext(win);
+			return 0;
+		}
+	}
 	if(_joy_ == ev->what)
 	{
 		t = (short*)&ev->why;
@@ -565,6 +586,7 @@ int joystick2style(struct style* sty, short* tmp)
 }
 int playwith3d(struct arena* win, struct event* ev)
 {
+	float c,s,tx,ty;
 	struct relation* reltop;
 	struct relation* relwow;
 	struct style* stytop;
@@ -644,13 +666,10 @@ int playwith3d(struct arena* win, struct event* ev)
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		if(id > 10)id = 10;
-		if(0 != win->touchdown[id].z)
-		{
-			stytop->cx += x - (win->touchmove[id].x);
-			stytop->cy -= y - (win->touchmove[id].y);
-			//say("%x,%x\n", stytop->cx, stytop->cy);
-		}
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
+
 		if(1 >= id)
 		{
 			if(0==win->touchdown[0].z)return 0;
@@ -684,6 +703,36 @@ int playwith3d(struct arena* win, struct event* ev)
 			stytop->ux = (stytop->ux) * aaa / bbb;
 			stytop->uy = (stytop->uy) * aaa / bbb;
 			stytop->uz = (stytop->uz) * aaa / bbb;
+		}
+		else if(10 == id)
+		{
+			stytop->cx += x - (win->touchmove[id].x);
+			stytop->cy -= y - (win->touchmove[id].y);
+			//say("%x,%x\n", stytop->cx, stytop->cy);
+		}
+		else if(11 == id)
+		{
+			if(x > win->touchdown[id].x)
+			{
+				c = cosine(0.05);
+				s = sine(0.05);
+			}
+			else if(x < win->touchdown[id].x)
+			{
+				c = cosine(-0.05);
+				s = sine(-0.05);
+			}
+			else return 0;
+
+			tx = stytop->rx;
+			ty = stytop->ry;
+			stytop->rx = tx*c - ty*s;
+			stytop->ry = tx*s + ty*c;
+
+			tx = stytop->fx;
+			ty = stytop->fy;
+			stytop->fx = tx*c - ty*s;
+			stytop->fy = tx*s + ty*c;
 		}
 	}
 	else if(hex32('p','+',0,0) == ev->what)
