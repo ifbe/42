@@ -243,55 +243,63 @@ static void the2048_read(
 
 
 
+static void the2048_move(struct actor* act, int op)
+{
+	int j;
+	u8* p;
+	u8* q;
+
+	p = (void*)(act->buf) + 16*(act->len);
+	(act->len) = ((act->len)+1)%4;
+	q = (void*)(act->buf) + 16*(act->len);
+	for(j=0;j<16;j++)q[j] = p[j];
+
+	if('f' == op)up2048(q);
+	else if('l' == op)left2048(q);
+	else if('r' == op)right2048(q);
+	else if('n' == op)down2048(q);
+
+	new2048(q);
+}
 static void the2048_write(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	int j,k;
-	u8* p;
-	u8* q;
+	int k;
 	//say("%llx,%llx,%llx\n", act, pin, ev);
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
-	if(ev->what == _kbd_)
-	{
-		k = (ev->why)&0xff;
-		if( (k>=0x48) && (k<=0x50) )
-		{
-			p = (void*)(act->buf) + 16*(act->len);
-			(act->len) = ((act->len)+1)%4;
-			q = (void*)(act->buf) + 16*(act->len);
-			for(j=0;j<16;j++)q[j] = p[j];
-
-			if(k == 0x48)up2048(q);
-			else if(k == 0x4b)left2048(q);
-			else if(k == 0x4d)right2048(q);
-			else if(k == 0x50)down2048(q);
-
-			new2048(q);
-		}
-	}
-	else if(ev->what == _char_)
+	if(ev->what == _char_)
 	{
 		k = ev->why;
-		if(k == 0x8)(act->len) = ((act->len)+15)%16;
+		if(k == 0x8)
+		{
+			act->len = ((act->len)+15)%16;
+			return;
+		}
 
 		k = (k>>16)&0xff;
-		if((k>=0x41)&&(k<=0x44))
-		{
-			p = (void*)(act->buf) + 16*(act->len);
-			(act->len) = ((act->len)+1)%4;
-			q = (void*)(act->buf) + 16*(act->len);
-			for(j=0;j<16;j++)q[j] = p[j];
-
-			if(k == 0x41)up2048(q);
-			else if(k == 0x42)down2048(q);
-			else if(k == 0x43)right2048(q);
-			else if(k == 0x44)left2048(q);
-
-			new2048(q);
-		}
+		if(0x41 == k)the2048_move(act, 'f');
+		else if(0x42 == k)the2048_move(act, 'n');
+		else if(0x43 == k)the2048_move(act, 'r');
+		else if(0x44 == k)the2048_move(act, 'l');
+	}
+	else if(ev->what == _kbd_)
+	{
+		k = (ev->why)&0xff;
+		if(0x48 == k)the2048_move(act, 'f');
+		else if(0x4b == k)the2048_move(act, 'l');
+		else if(0x4d == k)the2048_move(act, 'r');
+		else if(0x50 == k)the2048_move(act, 'n');
+	}
+	else if(ev->what == _joy_)
+	{
+		k = ((ev->why)>>32)&0xffff;
+		if(_df_ == k)the2048_move(act, 'f');
+		else if(_dl_ == k)the2048_move(act, 'l');
+		else if(_dr_ == k)the2048_move(act, 'r');
+		else if(_dn_ == k)the2048_move(act, 'n');
 	}
 }
 static void the2048_stop(struct actor* act, struct pinid* pin)

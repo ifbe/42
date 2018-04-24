@@ -4,25 +4,13 @@ void carvearrorkey2d(
 	float, float, float,
 	float, float, float,
 	float, float, float,
-	u8*, int);
-static u8 button[16][3] = {
-	{3, 1, '.'},
-	{3, 5, '.'},
-	{1, 3, '.'},
-	{5, 3, '.'},
-	{11, 3, '.'},
-	{13, 1, '.'},
-	{13, 5, '.'},
-	{15, 3, '.'},
-	{3, 7, 'n'},
-	{3, 11, 'f'},
-	{1, 9, 'l'},
-	{5, 9, 'r'},
-	{11, 9, 'x'},
-	{13, 7, 'a'},
-	{13, 11, 'y'},
-	{15, 9, 'b'}
-};
+	u8*, int
+);
+void drawarrorkey2d(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int t
+);
 static u16 joyl[8]={_dl_, _dr_, _dn_, _df_, _lt_, _lb_, _ls_, _ll_};
 static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
@@ -31,6 +19,7 @@ static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
 void vkbd_read_pixel(struct arena* win)
 {
+	u8 ch[8];
 	int x,y,c,l,rgb;
 	int w = win->width;
 	int h = win->height;
@@ -93,40 +82,31 @@ void vkbd_read_pixel(struct arena* win)
 	}
 	else if('j' == c)
 	{
-		c = (win->vkbd)&0xffff;
-		x = ((c&0xf)-1)/2;
-		y = (((c>>4)&0xf)-1)/2;
-		if((1 == x)&&(0 == y))y = 0;	//up
-		else if((1 == x)&&(2 == y))y = 1;	//down
-		else if((0 == x)&&(1 == y))y = 2;	//left
-		else if((2 == x)&&(1 == y))y = 3;	//right
-		else if((4 == x)&&(1 == y))y = 4;
-		else if((5 == x)&&(0 == y))y = 5;
-		else if((5 == x)&&(2 == y))y = 6;
-		else if((6 == x)&&(1 == y))y = 7;
-		else y = 16;
+		ch[0] = 'l';
+		ch[1] = 'r';
+		ch[2] = 'n';
+		ch[3] = 'f';
+		ch[4] = 't';
+		ch[5] = 'b';
+		ch[6] = 's';
+		ch[7] = '-';
 
-		drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
-		drawsolid_circle(win, 0x404040, w*1/4, h*7/8, h/8);
-		drawsolid_circle(win, 0x404040, w*3/4, h*7/8, h/8);
+		y = (win->vkbd)&0xffff;
+		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
+		drawarrorkey2d(win, 0xff00ff, 0, h*13/16, h*3/16, h, ch, 1);
 
-		for(x=0;x<16;x++)
-		{
-			if(x == y)c = 0xff00ff;
-			else c = 0xffffff;
-			drawsolid_circle(
-				win, c,
-				(button[x][0])*w/16,
-				(32-button[x][1])*h/32,
-				(w+h)/64
-			);
-			drawascii(
-				win, 0,
-				(button[x][0])*w/16-4,
-				(32-button[x][1])*h/32-8,
-				button[x][2]
-			);
-		}
+		ch[0] = 'x';
+		ch[1] = 'b';
+		ch[2] = 'a';
+		ch[3] = 'y';
+		ch[4] = 't';
+		ch[5] = 'b';
+		ch[6] = 's';
+		ch[7] = '+';
+
+		y = (win->vkbd)&0xffff;
+		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
+		drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 	}
 
 haha:

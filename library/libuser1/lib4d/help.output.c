@@ -160,7 +160,8 @@ void foreground_pixel(struct arena* win)
 void foreground_vbo(struct arena* win)
 {
 	int j;
-	float x0,y0,x1,y1;
+	float x0,y0,z0;
+	float x1,y1,z1;
 	for(j=0;j<11;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
@@ -179,13 +180,16 @@ void foreground_vbo(struct arena* win)
 	vkbd_read(win);
 	if(win->theone < 0)
 	{
-		carveline_sphere(
-			win, 0xffffff,
-			win->target.cx, win->target.cy, win->target.cz,
-			16.0, 0.0, 0.0,
-			0.0, 16.0, 0.0,
-			0.0, 0.0, 16.0
-		);
+		x0 = win->target.cx;
+		y0 = win->target.cy;
+		z0 = win->target.cz;
+		carvepoint(win, 0xff0000, x0, y0, z0);
+
+		j = (win->width + win->height) / 128;
+		x0 = (float)j / (float)(win->width);
+		y0 = (float)j / (float)(win->height);
+		carveline2d(win, 0xffffff, -x0, 0.0, -0.99, x0, 0.0, -0.99);
+		carveline2d(win, 0xffffff, 0.0, -y0, -0.99, 0.0, y0, -0.99);
 	}
 }
 void foreground_json(struct arena* win)
