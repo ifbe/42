@@ -4,10 +4,12 @@
 #define _xml_ hex32('x','m','l',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
-void* actorcreate(void*, u8*);
-void* actordelete(void*, u8*);
 void* allocstyle();
 void* allocpinid();
+void* actorcreate(void*, u8*);
+void* actordelete(void*, u8*);
+void* actorstart(void*, void*);
+void* actorstop(void*, void*);
 //
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
@@ -88,19 +90,15 @@ int arenaactor(struct arena* win, struct actor* act)
 		sty->uz = min;
 	}
 
-	act->oncreate(act, 0);
-	act->onstart(act, pin);
+	actorcreate(act, 0);
+	actorstart(act, pin);
 	relationcreate(win, sty, _win_, act, pin, _act_);
 	return 0;
 }
 int arenalogin(struct arena* win)
 {
 	struct actor* act = &actor[win->theone];
-	if(0 != act->type)
-	{
-		actorcreate(act, 0);
-		arenaactor(win, act);
-	}
+	if(0 != act->type)arenaactor(win, act);
 	return 0;
 }
 int arenaprev(struct arena* win)
@@ -812,7 +810,6 @@ void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			q = &actor[x0 + (y0*8)];
 			if(0 == q->type)return;
 
-			actorcreate(q, 0);
 			arenaactor(p, q);
 		}
 		else if(y1 < 24)
