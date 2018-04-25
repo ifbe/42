@@ -79,7 +79,8 @@ void drawunicode_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1,
 	points = utf8table + 32*(unicode&0xffff);
 
 	rgb |= 0xff000000;
-	scale = (y1-y0)/16;
+	if(y1-y0<x1-x0)scale = (y1-y0)/16;
+	else scale = (x1-x0)/16;
 	x0 = (x0+x1)/2 - 8*scale;
 	y0 = (y0+y1)/2 - 8*scale;
 	for(y=0;y<16;y++)

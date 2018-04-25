@@ -163,6 +163,10 @@ void drawascii_alpha(u8* buf, int w, int h, int xx, int yy, u8 ch)
 		}//x
 	}//y
 }
+
+
+
+
 void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 {
 	u8 temp;
@@ -193,54 +197,6 @@ void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 		}//x
 	}//y
 }
-void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
-{
-	u8 temp;
-	u8* points;
-	int x,y,j,k,m,n,scale,offset;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* screen = (u32*)(win->buf);
-
-	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
-	points = asciitable + (ch<<4);
-
-	rgb |= 0xff000000;
-	scale = (y1-y0)/16;
-	x0 = (x0+x1)/2 - 4*scale;
-	y0 = (y0+y1)/2 - 8*scale;
-	for(y=0;y<16;y++)
-	{
-		temp = points[y];
-		for(x=0;x<8;x++)
-		{
-			for(k=0;k<scale;k++)
-			{
-				n = y0+y*scale+k;
-				if(n < 0)continue;
-				if(n >= height)continue;
-				for(j=0;j<scale;j++)
-				{
-					m = x0+j+x*scale;
-					if(m < 0)continue;
-					if(m >= width)continue;
-
-					offset = stride*n + m;
-					if((offset >= 0)&&(offset < stride*height))
-					{
-						if( (temp&0x80) != 0 )screen[offset] = rgb;
-					}
-				}
-			}
-			temp<<=1;
-		}//x
-	}//y
-}
-
-
-
-
 void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
 {
 	int i;
@@ -270,63 +226,6 @@ void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 		drawascii(win, rgb, x+j*8, y, buf[j]);
 	}
 }
-void drawstring_center(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
-{
-	int j;
-	if(buf == 0)return;
-	if(len == 0)
-	{
-		for(;len<256;len++)if(buf[len] == 0)break;
-	}
-
-	y -= 8;
-	x -= 4*len;
-	for(j=0;j<len;j++)
-	{
-		if(buf[j] == 0)break;
-		drawascii(win, rgb, x+j*8, y, buf[j]);
-	}
-}
-
-
-
-
-void drawtext(
-	struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1,
-	u8* buf, int len)
-{
-	int j, k;
-	int cc, dy;
-	if(buf == 0)return;
-	if(len == 0)
-	{
-		while(buf[len] != 0)len++;
-	}
-
-	k = 0;
-	dy = 0;
-	for(j=0;j<=len;j++)
-	{
-		if(dy+16 > y1-y0)break;
-		if((j==len)|('\n'==buf[j]))
-		{
-			cc = (x1-x0)/8;
-			if(cc > j-k)cc = j-k;
-
-			if(cc > 0)
-			{
-				drawstring(win, rgb, x0, y0+dy, buf+k, cc);
-			}
-			k = j+1;
-			dy += 16;
-		}
-	}
-}
-
-
-
-
 void drawdouble(struct arena* win, u32 rgb, int x, int y, double data)
 {
 	u8 mystr[100];
@@ -386,4 +285,135 @@ void drawhexadecimal(struct arena* win, u32 rgb, int x, int y, u64 hex)
 
 		hex=hex>>4;
 	}
+}
+void drawtext(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len)
+{
+	int j, k;
+	int cc, dy;
+	if(buf == 0)return;
+	if(len == 0)
+	{
+		while(buf[len] != 0)len++;
+	}
+
+	k = 0;
+	dy = 0;
+	for(j=0;j<=len;j++)
+	{
+		if(dy+16 > y1-y0)break;
+		if((j==len)|('\n'==buf[j]))
+		{
+			cc = (x1-x0)/8;
+			if(cc > j-k)cc = j-k;
+
+			if(cc > 0)
+			{
+				drawstring(win, rgb, x0, y0+dy, buf+k, cc);
+			}
+			k = j+1;
+			dy += 16;
+		}
+	}
+}
+
+
+
+
+void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
+{
+	u8 temp;
+	u8* points;
+	int x,y,j,k,m,n,scale,offset;
+	int width = win->width;
+	int height = win->height;
+	int stride = win->stride;
+	u32* screen = (u32*)(win->buf);
+
+	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
+	points = asciitable + (ch<<4);
+
+	rgb |= 0xff000000;
+	if(y1-y0 < (x1-x0)*2)scale = (y1-y0)/16;
+	else scale = (x1-x0)/8;
+	x0 = (x0+x1)/2 - 4*scale;
+	y0 = (y0+y1)/2 - 8*scale;
+	for(y=0;y<16;y++)
+	{
+		temp = points[y];
+		for(x=0;x<8;x++)
+		{
+			for(k=0;k<scale;k++)
+			{
+				n = y0+y*scale+k;
+				if(n < 0)continue;
+				if(n >= height)continue;
+				for(j=0;j<scale;j++)
+				{
+					m = x0+j+x*scale;
+					if(m < 0)continue;
+					if(m >= width)continue;
+
+					offset = stride*n + m;
+					if((offset >= 0)&&(offset < stride*height))
+					{
+						if( (temp&0x80) != 0 )screen[offset] = rgb;
+					}
+				}
+			}
+			temp<<=1;
+		}//x
+	}//y
+}
+void drawstring_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
+{
+	int j,scale;
+	if(buf == 0)return;
+	if(len == 0)
+	{
+		for(;len<256;len++)if(buf[len] == 0)break;
+	}
+
+	if((y1-y0)*len < (x1-x0)*2)scale = (y1-y0)/16;
+	else scale = (x1-x0)/len/8;
+	if(scale <= 0)scale = 1;
+	x0 = (x0+x1)/2 - scale*4*(len-1);
+	y0 = (y0+y1)/2;
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == 0)break;
+		drawascii_fit(
+			win, rgb,
+			x0+scale*(8*j-4), y0-8*scale,
+			x0+scale*(8*j+4), y0+8*scale,
+			buf[j]
+		);
+	}
+}
+void drawdec_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, int dec)
+{
+	int len = 0;
+	u8 ch[22];
+
+	if(dec < 0)
+	{
+		ch[21-len] = '-';
+		len = 1;
+		dec = -dec;
+	}
+
+	while(1)
+	{
+		ch[21-len] = (dec%10)+0x30;
+		dec /= 10;
+		len++;
+		if(0 == dec)break;
+	}
+
+	drawstring_fit(win, rgb, x0, y0, x1, y1, ch+22-len, len);
+}
+void drawhex_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u64 dec)
+{
 }

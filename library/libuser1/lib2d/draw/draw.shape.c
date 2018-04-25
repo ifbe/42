@@ -322,47 +322,47 @@ void drawarrorkey2d(struct arena* win, u32 rgb,
 	if(buf[0]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx-r*2/3, cy, r/3);
-	drawascii(win, 0xffffff, cx-4-r*2/3, cy-8, buf[0]&0x7f);
+	drawascii_fit(win, 0xffffff, cx-r, cy-r/3, cx-r/3, cy+r/3, buf[0]&0x7f);
 
 	//x+: right
 	if(buf[1]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx+r*2/3, cy, r/3);
-	drawascii(win, 0xffffff, cx-4+r*2/3, cy-8, buf[1]&0x7f);
+	drawascii_fit(win, 0xffffff, cx+r/3, cy-r/3, cx+r, cy+r/3, buf[1]&0x7f);
 
 	//y-: near
 	if(buf[2]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx, cy+r*2/3, r/3);
-	drawascii(win, 0xffffff, cx-4, cy-8+r*2/3, buf[2]&0x7f);
+	drawascii_fit(win, 0xffffff, cx-r/3, cy+r/3, cx+r/3, cy+r, buf[2]&0x7f);
 
 	//y+: far
 	if(buf[3]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx, cy-r*2/3, r/3);
-	drawascii(win, 0xffffff, cx-4, cy-8-r*2/3, buf[3]&0x7f);
+	drawascii_fit(win, 0xffffff, cx-r/3, cy-r, cx+r/3, cy-r/3, buf[3]&0x7f);
 
 	//z-: trigger
 	if(buf[4]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx-r*2/3, cy-r*4/3, r/3);
-	drawascii(win, 0xffffff, cx-4-r*2/3, cy-8-r*4/3, buf[4]&0x7f);
+	drawascii_fit(win, 0xffffff, cx-r, cy-r*5/3, cx-r/3, cy-r, buf[4]&0x7f);
 
 	//z+: bumper
 	if(buf[5]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx+r*2/3, cy-r*4/3, r/3);
-	drawascii(win, 0xffffff, cx-4+r*2/3, cy-8-r*4/3, buf[5]&0x7f);
+	drawascii_fit(win, 0xffffff, cx+r/3, cy-r*5/3, cx+r, cy-r, buf[5]&0x7f);
 
 	//press
 	if(buf[6]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx, cy, r/3);
-	drawascii(win, 0xffffff, cx-4, cy-8, buf[6]&0x7f);
+	drawascii_fit(win, 0xffffff, cx-r/3, cy-r/3, cx+r/3, cy+r/3, buf[6]&0x7f);
 
 	//select or start
 	if(buf[7]&0x80)c = 0xff00ff;
 	else c = 0x808080;
 	drawsolid_circle(win, c, cx+r*t*4/3, cy-r*2/3, r/3);
-	drawascii(win, 0xffffff, cx-4+r*t*4/3, cy-8-r*2/3, buf[7]&0x7f);
+	drawascii_fit(win, 0xffffff, cx+r*t*4/3-r/3, cy-r, cx+r*t*4/3+r/3, cy-r/3, buf[7]&0x7f);
 }

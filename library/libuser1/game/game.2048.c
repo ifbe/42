@@ -31,6 +31,52 @@ static u32 color2048[17] = {
 
 
 
+static void the2048_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 color;
+	int x,y,x0,y0,x1,y1;
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int cz = sty->cz;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	int dd = sty->uz;
+	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+
+	//cubies
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			//color
+			color = color2048[tab[y][x]];
+			if( ( (win->fmt)&0xffffff) == 0x626772)	//bgra->rgba
+			{
+				color = 0xff000000
+					+ ((color&0xff)<<16)
+					+ (color&0xff00)
+					+ ((color&0xff0000)>>16);
+			}
+
+			//cubie
+			x0 = (cx+1) + (x-2)*ww/2;
+			y0 = (cy+1) + (y-2)*hh/2;
+			x1 = (cx-1) + (x-1)*ww/2;
+			y1 = (cy-1) + (y-1)*hh/2;
+			drawsolid_rect(win, color, x0, y0, x1, y1);
+
+			if(len2048[tab[y][x]] == 0)continue;
+			drawdec_fit(
+				win, 0,
+				x0, y0*3/4+y1/4,
+				x1, y0/4+y1*3/4,
+				val2048[tab[y][x]]
+			);
+		}
+	}
+}
 static void the2048_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -79,53 +125,6 @@ static void the2048_read_vbo(
 				xxx, yyy, (zzz*2.0)+(dd/100.0),
 				ww/16, 0.0, 0.0,
 				0.0, hh/16, 0.0,
-				val2048[tab[y][x]]
-			);
-		}
-	}
-}
-static void the2048_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	u32 color;
-	int x,y,x0,y0,x1,y1;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
-
-	//cubies
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			//color
-			color = color2048[tab[y][x]];
-			if( ( (win->fmt)&0xffffff) == 0x626772)	//bgra->rgba
-			{
-				color = 0xff000000
-					+ ((color&0xff)<<16)
-					+ (color&0xff00)
-					+ ((color&0xff0000)>>16);
-			}
-
-			//cubie
-			x0 = cx + (x-2)*ww/2;
-			y0 = cy + (y-2)*hh/2;
-			x1 = cx + (x-1)*ww/2;
-			y1 = cy + (y-1)*hh/2;
-			drawsolid_rect(win, color,
-				x0, y0, x1, y1);
-			drawline_rect(win, 0,
-				x0, y0, x1, y1);
-
-			if(len2048[tab[y][x]] == 0)continue;
-			drawdecimal(win, 0,
-				(x0+x1)/2, -8+(y0+y1)/2,
 				val2048[tab[y][x]]
 			);
 		}

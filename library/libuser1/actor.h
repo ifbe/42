@@ -513,14 +513,12 @@ void drawdecimal(       struct arena* win, u32 rgb, int cx, int cy, int data);
 void drawhexadecimal(   struct arena* win, u32 rgb, int cx, int cy, u64 data);
 void drawdouble(        struct arena* win, u32 rgb, int cx, int cy, double z);
 
-void drawstring_center( struct arena* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawdec_center(    struct arena* win, u32 rgb, int cx, int cy, int data);
-void drawhex_center(    struct arena* win, u32 rgb, int cx, int cy, u64 data);
-void drawdouble_center( struct arena* win, u32 rgb, int cx, int cy, double z);
-
 void drawascii_fit(     struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
 void drawunicode_fit(   struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
 void drawutf8_fit(      struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawstring_fit(    struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawdec_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, int);
+void drawhex_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u64);
 
 void drawtext(          struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 void drawvt100(         struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);

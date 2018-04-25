@@ -112,7 +112,7 @@ void vkbd_read_pixel(struct arena* win)
 	}
 	else
 	{
-		drawstring_center(win, 0xffffff, w/2, h*7/8, (void*)"helloworld", 10);
+		drawstring_fit(win, 0xffffff, w*1/4, h*13/16, w*3/4, h*15/16, (void*)"helloworld", 10);
 	}
 
 haha:

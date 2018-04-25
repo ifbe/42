@@ -139,6 +139,11 @@ int actorinput(struct arena* win, struct event* ev)
 		}
 	}
 
+	//config new one
+	if((win->theone >= 0)&&(win->edit))
+	{
+	}
+
 	//build new
 	if(win->theone >= 0)
 	{

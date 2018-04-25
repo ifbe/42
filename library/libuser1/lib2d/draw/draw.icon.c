@@ -59,9 +59,7 @@ void drawicon_1(struct arena* win, u32 rgb,
 	}
 	if(len == 0)return;
 
-	x = (x0+x1)/2 - len*4;
-	y = (y0+y1)/2 - 8;
-	drawstring(win, rgb, x, y, buf, len);
+	drawstring_fit(win, rgb, x0, y0, x1, y1, buf, len);
 }
 void drawicon_normal(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
