@@ -15,19 +15,40 @@ void keyboard_read_pixel(
 	int hh = sty->fy;
 
 	buf[1] = 0;
-	for(y=0;y<8;y++)
+	if(ww >= hh)
 	{
-		for(x=0;x<16;x++)
+		for(y=0;y<8;y++)
 		{
-			buf[0] = y*16+x;
-			drawicon_1(
-				win, 0x40ffffff,
-				(cx-ww+1)+(2*x*ww/16),
-				(cy-hh+1)+(2*y*hh/8),
-				(cx-ww-1)+((2*x+2)*ww/16),
-				(cy-hh-1)+((2*y+2)*hh/8),
-				buf, 1
-			);
+			for(x=0;x<16;x++)
+			{
+				buf[0] = y*16+x;
+				drawicon_1(
+					win, 0x40ffffff,
+					(cx-ww+1)+(2*x*ww/16),
+					(cy-hh+1)+(2*y*hh/8),
+					(cx-ww-1)+((2*x+2)*ww/16),
+					(cy-hh-1)+((2*y+2)*hh/8),
+					buf, 1
+				);
+			}
+		}
+	}
+	else
+	{
+		for(y=0;y<8;y++)
+		{
+			for(x=0;x<16;x++)
+			{
+				buf[0] = y*16+x;
+				drawicon_1(
+					win, 0x40ffffff,
+					(cx-ww+1)+(2*y*ww/8),
+					(cy-hh+1)+(2*x*hh/16),
+					(cx-ww-1)+((2*y+2)*ww/8),
+					(cy-hh-1)+((2*x+2)*hh/16),
+					buf, 1
+				);
+			}
 		}
 	}
 }
