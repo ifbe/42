@@ -1,12 +1,11 @@
 #include "actor.h"
 int term_write(void*);
-int login_write(void*, void*);
 int vkbd_write(void*, void*);
 //
+int login_write(struct arena* win, struct event* ev);
 int playwith2d(struct arena* win, struct event* ev);
+int camera_event(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
-void camera_event(struct arena* win, struct event* ev);
-void target_event(struct arena* win, struct event* ev);
 
 
 
@@ -140,26 +139,21 @@ int actorinput(struct arena* win, struct event* ev)
 		}
 	}
 
+	//build new
+	if(win->theone >= 0)
+	{
+		//rotate camera
+		if(_vbo_ == win->fmt)camera_event(win, ev);
+		else login_write(win, ev);
+		goto lastword;
+	}
+
 	//change style
 	if(win->edit)
 	{
 		if(what == _char_)delete_topone(win);
 		else if(_vbo_ == win->fmt)playwith3d(win, ev);
 		else playwith2d(win, ev);
-		goto lastword;
-	}
-
-	//rotate camera
-	if(_vbo_ == win->fmt)
-	{
-		camera_event(win, ev);
-		goto lastword;
-	}
-
-	//login panel(non gles)
-	if(win->theone >= 0)
-	{
-		login_write(win, ev);
 		goto lastword;
 	}
 

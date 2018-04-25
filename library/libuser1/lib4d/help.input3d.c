@@ -336,17 +336,6 @@ int camera_event(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int target_event(struct arena* win, struct event* ev)
-{
-	if(_kbd_ != ev->what)return 0;
-
-	if(0x4b == ev->why)target_deltaxyz(win, -1, 0, 0);
-	else if(0x4d == ev->why)target_deltaxyz(win, 1, 0, 0);
-	else if(0x48 == ev->why)target_deltaxyz(win, 0, 1, 0);
-	else if(0x50 == ev->why)target_deltaxyz(win, 0, -1, 0);
-
-	return 0;
-}
 
 
 
