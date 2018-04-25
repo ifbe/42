@@ -1254,6 +1254,11 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 		e.why = 0xd;
 		e.what = hex32('c','h','a','r');
 	}
+	else if(0x103 == key)
+	{
+		e.why = 0x8;
+		e.what = hex32('c','h','a','r');
+	}
 	else if((key >= 0x106)&&(key <= 0x109))
 	{
 		if(key == 0x109)e.why = 0x48;		//up
@@ -1269,6 +1274,7 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 	}
 	else
 	{
+		if((key >= 'A')|(key <= 'Z'))key += 0x20;
 		e.why = key;
 		e.what = hex32('c','h','a','r');
 	}

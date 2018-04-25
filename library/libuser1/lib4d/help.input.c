@@ -22,24 +22,10 @@ void helpin_create(void* addr)
 	style = addr + 0x000000;
 	compo = addr + 0x100000;
 }
-int delete_topone(struct arena* win)
-{
-	struct relation* rel;
-	struct relation* tmp;
-	if(win == 0)return 0;
-	if(win->irel == 0)return 0;
 
-	rel = win->irel;
-	while(1)
-	{
-		tmp = samedstnextsrc(rel);
-		if(tmp == 0)break;
 
-		rel = tmp;
-	}
-	relationdelete(rel);
-	return 1;
-}
+
+
 int actorinput(struct arena* win, struct event* ev)
 {
 	u64 why,what;
@@ -156,9 +142,9 @@ int actorinput(struct arena* win, struct event* ev)
 	//change style
 	if(win->edit)
 	{
-		if(what == _char_)delete_topone(win);
-		else if(_vbo_ == win->fmt)playwith3d(win, ev);
+		if(_vbo_ == win->fmt)playwith3d(win, ev);
 		else playwith2d(win, ev);
+
 		goto lastword;
 	}
 

@@ -573,6 +573,197 @@ int joystick2style(struct style* sty, short* tmp)
 	}
 	return 0;
 }
+int keyboard2style(struct style* sty, short tmp)
+{
+	int x0,y0;
+	float c,s;
+	float tx,ty,tz;
+
+	if('s' == tmp)
+	{
+		//dpad left
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx -= tx;
+		sty->ry -= ty;
+		sty->rz -= tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if('f' == tmp)
+	{
+		//dpad right
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx -= tx;
+		sty->ry -= ty;
+		sty->rz -= tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if('d' == tmp)
+	{
+		//dpad down
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx -= tx;
+		sty->fy -= ty;
+		sty->fz -= tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if('e' == tmp)
+	{
+		//dpad up
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx -= tx;
+		sty->fy -= ty;
+		sty->fz -= tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if('w' == tmp)
+	{
+		//left trigger
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux -= tx;
+		sty->uy -= ty;
+		sty->uz -= tz;
+
+		sty->cx += tx*2;
+		sty->cy += ty*2;
+		sty->cz += tz*2;
+		return 0;
+	}
+	else if('r' == tmp)
+	{
+		//left bumper
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux -= tx;
+		sty->uy -= ty;
+		sty->uz -= tz;
+		return 0;
+	}
+	else if('j' == tmp)
+	{
+		//key x
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx += tx;
+		sty->ry += ty;
+		sty->rz += tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if('l' == tmp)
+	{
+		//key b
+		tx = (sty->rx)/16;
+		ty = (sty->ry)/16;
+		tz = (sty->rz)/16;
+
+		sty->rx += tx;
+		sty->ry += ty;
+		sty->rz += tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if('k' == tmp)
+	{
+		//key a
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx += tx;
+		sty->fy += ty;
+		sty->fz += tz;
+
+		sty->cx -= tx;
+		sty->cy -= ty;
+		sty->cz -= tz;
+		return 0;
+	}
+	else if('i' == tmp)
+	{
+		//key y
+		tx = (sty->fx)/16;
+		ty = (sty->fy)/16;
+		tz = (sty->fz)/16;
+
+		sty->fx += tx;
+		sty->fy += ty;
+		sty->fz += tz;
+
+		sty->cx += tx;
+		sty->cy += ty;
+		sty->cz += tz;
+		return 0;
+	}
+	else if('u' == tmp)
+	{
+		//right trigger
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux += tx;
+		sty->uy += ty;
+		sty->uz += tz;
+
+		sty->cx -= tx*2;
+		sty->cy -= ty*2;
+		sty->cz -= tz*2;
+		return 0;
+	}
+	else if('o' == tmp)
+	{
+		//right bumper
+		tx = (sty->ux)/16;
+		ty = (sty->uy)/16;
+		tz = (sty->uz)/16;
+
+		sty->ux += tx;
+		sty->uy += ty;
+		sty->uz += tz;
+		return 0;
+	}
+}
 int playwith3d(struct arena* win, struct event* ev)
 {
 	float c,s,tx,ty;
@@ -615,13 +806,19 @@ int playwith3d(struct arena* win, struct event* ev)
 		stywow = 0;
 	}
 	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
+	//printmemory(ev,0x20);
 
+	if(_char_ == ev->what)
+	{
+		if(8 == ev->why)relationdelete(reltop);
+		else keyboard2style(stytop, (ev->why)&0xff);
+		return 0;
+	}
 	if(_joy_ == ev->what)
 	{
 		joystick2style(stytop, (void*)ev);
 		return 0;
 	}
-
 	if('f' == id)
 	{
 		stytop->rx = (stytop->rx)*17/16;
@@ -637,7 +834,7 @@ int playwith3d(struct arena* win, struct event* ev)
 		stytop->uz = (stytop->uz)*17/16;
 		return 0;
 	}
-	else if('b' == id)
+	if('b' == id)
 	{
 		stytop->rx = (stytop->rx)*15/16;
 		stytop->ry = (stytop->ry)*15/16;
@@ -652,7 +849,6 @@ int playwith3d(struct arena* win, struct event* ev)
 		stytop->uz = (stytop->uz)*15/16;
 		return 0;
 	}
-
 	if(hex32('p','@',0,0) == ev->what)
 	{
 		if('l' == id)id = 10;
