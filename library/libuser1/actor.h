@@ -319,46 +319,46 @@ struct arena
 	int stride;
 
 	//[90,9f]
-	int flag10;
-	int flag11;
-	int flag12;
-	int fuck;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
 
 	//[a0,af]
 	int flag20;
 	int flag21;
 	int flag22;
-	int vkbd;
+	int enq;
 
 	//[b0,bf]
 	int flag30;
 	int flag31;
 	int flag32;
-	int theone;
+	int deq;
 
 	//[c0,cf]
 	int flag40;
 	int flag41;
-	int flag42;
-	int edit;
+	int vkbddata;
+	int vkbdtype;
 
 	//[d0,df]
 	int flag50;
 	int flag51;
-	int flag52;
-	int flag0;
+	int menudata;
+	int menutype;
 
 	//[e0,ef]
 	int flag60;
 	int flag61;
 	int flag62;
-	int enq;
+	int flag6;
 
 	//[f0,ff]
 	int flag70;
 	int flag71;
 	int flag72;
-	int deq;
+	int flag7;
 
 	//[100,1ff]
 	struct style target;

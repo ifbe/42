@@ -97,19 +97,25 @@ int arenaactor(struct arena* win, struct actor* act)
 }
 int arenalogin(struct arena* win)
 {
-	struct actor* act = &actor[win->theone];
-	if(0 != act->type)arenaactor(win, act);
+	struct actor* act;
+	int j = win->menudata;
+	if(j<0)return 0;
+
+	act = &actor[j];
+	if(0 == act->type)return 0;
+
+	arenaactor(win, act);
 	return 0;
 }
 int arenaprev(struct arena* win)
 {
-	if(win->theone > 0)win->theone -= 1;
+	if(win->menudata > 0)win->menudata -= 1;
 	return 0;
 }
 int arenanext(struct arena* win)
 {
-	int j = win->theone + 1;
-	if(0 != actor[j].type)win->theone += 1;
+	int j = win->menudata + 1;
+	if(0 != actor[j].type)win->menudata += 1;
 	return 0;
 }
 
@@ -133,7 +139,7 @@ void login_read_pixel(struct arena* win)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
-		else if(j == win->theone)c = 0xffff00ff;
+		else if(j == win->menudata)c = 0xffff00ff;
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
@@ -448,7 +454,7 @@ void login_read_vbo(struct arena* win)
 	float uy = win->target.uy;
 	float uz = win->target.uz;
 
-	j = win->theone;
+	j = win->menudata;
 	if((j >= 0)&&(j <= 64))
 	{
 		carveline_prism4(
@@ -513,7 +519,7 @@ void login_read_vbo(struct arena* win)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
-		else if(j == win->theone)c = 0xffff00ff;
+		else if(j == win->menudata)c = 0xffff00ff;
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
@@ -689,7 +695,7 @@ void login_read_8bit(struct arena* win)
 	int j,c;
 	for(j=0;j<64;j++)
 	{
-		if(j == win->theone)c = 0x80;
+		if(j == win->menudata)c = 0x80;
 		else c = 0x42;
 
 		x = j%4;
@@ -732,7 +738,7 @@ void login_read_tui(struct arena* win)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == win->theone)k=1;
+		if(j == win->menudata)k=1;
 		else k=2;
 
 		x = j%4;
@@ -769,10 +775,10 @@ void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 
 	if((x0==x1)&&(y0==y1))
 	{
-		win->theone = x1 + (y1*8);
+		win->menudata = x1 + (y1*8);
 		if(y1<8)
 		{
-			q = &actor[win->theone];
+			q = &actor[win->menudata];
 			if(0 == q->type)return;
 			actorcreate(q, 0);
 		}
@@ -897,6 +903,96 @@ void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		{
 			y1 = y1-24;
 			say("object@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+	}
+}
+void login_write(struct arena* win, struct event* ev)
+{
+	short* t;
+	struct actor* act;
+	int j, k;
+	int x, y, z;
+	int width = win->width;
+	int height = win->height;
+
+	j = (ev->what)&0xff;
+	k = ((ev->what)>>8)&0xff;
+
+	if(j == 'p')
+	{
+		x = (ev->why)&0xffff;
+		x = (x*8) / width;
+		y = ((ev->why)>>16)&0xffff;
+		y = (y*32) / height;
+		z = ((ev->why)>>48)&0xffff;
+		if(z > 10)z = 10;
+
+		if('@' == k)
+		{
+			if(y < 8)win->menudata = x + (y*8);
+		}
+		else if('+' == k)
+		{
+			if(y < 8)win->menudata = x + (y*8);
+		}
+		else if('-' == k)
+		{
+			j = win->touchdown[z].x;
+			j = (j*8) / width;
+			k = win->touchdown[z].y;
+			k = (k*32) / height;
+
+			if((j<0)|(j>=8))return;
+			if((k<0)|(k>=32))return;
+			if((x<0)|(x>=8))return;
+			if((y<0)|(y>=32))return;
+
+			login_drag(win, j, k, x, y);
+		}
+	}
+	else if(_char_ == ev->what)
+	{
+		if((0xd == ev->why)|(0xa == ev->why))
+		{
+			arenalogin(win);
+		}
+		else if(0x435b1b == ev->why)
+		{
+			arenanext(win);
+		}
+		else if(0x445b1b == ev->why)
+		{
+			arenaprev(win);
+		}
+	}
+	if(_joy_ == ev->what)
+	{
+		t = (short*)&ev->why;
+		if(_ka_ == t[2])
+		{
+			arenalogin(win);
+			return;
+		}
+		else if(_dl_ == t[2])
+		{
+			arenaprev(win);
+			return;
+		}
+		else if(_dr_ == t[2])
+		{
+			arenanext(win);
+			return;
+		}
+	}
+	else if(_kbd_ == ev->what)
+	{
+		if(0x4b == ev->why)
+		{
+			arenaprev(win);
+		}
+		else if(0x4d == ev->why)
+		{
+			arenanext(win);
 		}
 	}
 }

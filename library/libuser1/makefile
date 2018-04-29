@@ -80,15 +80,15 @@ lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
 lib3d/lib3d.c \
-lib4d/help.asset.c \
-lib4d/help.ctx.c \
-lib4d/help.input.c \
-lib4d/help.input2d.c \
-lib4d/help.input3d.c \
-lib4d/help.login.c \
-lib4d/help.output.c \
-lib4d/help.touch.c \
-lib4d/help.vkbd.c \
+lib4d/help.asset.file.c \
+lib4d/help.asset.func.c \
+lib4d/help.mode.camera.c \
+lib4d/help.mode.edit.c \
+lib4d/help.mode.login.c \
+lib4d/help.mode.menu.c \
+lib4d/help.mode.none.c \
+lib4d/help.vkbd.test.c \
+lib4d/help.vkbd.full.c \
 lib4d/lib4d.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

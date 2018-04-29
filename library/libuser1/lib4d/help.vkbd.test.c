@@ -23,12 +23,12 @@ void vkbd_read_pixel(struct arena* win)
 	int x,y,c,l,rgb;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbd < 0)goto haha;
+	if(win->vkbdtype < 0)goto haha;
 
 	//bg
 	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
-	c = ((win->vkbd)>>16)&0xff;
+	c = ((win->vkbdtype)>>16)&0xff;
 	if('k' == c)
 	{
 		for(y=0;y<8;y++)
@@ -37,7 +37,7 @@ void vkbd_read_pixel(struct arena* win)
 			{
 				l = 2;
 				c = x+(y<<4);
-				if(c == (win->vkbd&0xffff))rgb = 0xffff00ff;
+				if(c == (win->vkbdtype&0xffff))rgb = 0xffff00ff;
 				else rgb = 0x20808080;
 
 				//joystick area
@@ -93,7 +93,7 @@ void vkbd_read_pixel(struct arena* win)
 		ch[6] = 's';
 		ch[7] = '-';
 
-		y = (win->vkbd)&0xffff;
+		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, 0, h*13/16, h*3/16, h, ch, 1);
 
@@ -106,7 +106,7 @@ void vkbd_read_pixel(struct arena* win)
 		ch[6] = 's';
 		ch[7] = '+';
 
-		y = (win->vkbd)&0xffff;
+		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 	}
@@ -135,7 +135,7 @@ void vkbd_read_vbo(struct arena* win)
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbd < 0)goto haha;
+	if(win->vkbdtype < 0)goto haha;
 
 	carvesolid2d_rect(
 		win, 0x202020,
@@ -144,7 +144,7 @@ void vkbd_read_vbo(struct arena* win)
 		0.0, 0.25, 0.0
 	);
 
-	c = ((win->vkbd)>>16)&0xff;
+	c = ((win->vkbdtype)>>16)&0xff;
 	if('k' == c)
 	{
 		if(w<h)x = w/17;
@@ -157,7 +157,7 @@ void vkbd_read_vbo(struct arena* win)
 			for(x=0;x<16;x++)
 			{
 				c = x+(y<<4);
-				if(c == (win->vkbd&0xffff))rgb = 0xff00ff;
+				if(c == (win->vkbdtype&0xffff))rgb = 0xff00ff;
 				else rgb = 0x808080;
 
 				carvesolid2d_rect(
@@ -218,7 +218,7 @@ void vkbd_read_vbo(struct arena* win)
 		ch[6] = 's';
 		ch[7] = '-';
 
-		y = (win->vkbd)&0xffff;
+		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
@@ -237,7 +237,7 @@ void vkbd_read_vbo(struct arena* win)
 		ch[6] = 's';
 		ch[7] = '+';
 
-		y = (win->vkbd)&0xffff;
+		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
@@ -304,7 +304,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-	if(win->vkbd < 0)return 0;
+	if(win->vkbdtype < 0)return 0;
 
 	w = win->width;
 	h = win->height;
@@ -314,14 +314,14 @@ int vkbd_write(struct arena* win, struct event* ev)
 
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		ret = ((win->vkbd)>>16)&0xff;
+		ret = ((win->vkbdtype)>>16)&0xff;
 		if('k' == ret)
 		{
 			x = x*16/w;
 			y = 31 - (y*32/h);
 			ret = x + (y*16);
 
-			win->vkbd = ((int)'k'<<16) + ret;
+			win->vkbdtype = ((int)'k'<<16) + ret;
 			eventwrite(ret, _char_, (u64)win, 0);
 		}
 		else if('j' == ret)
@@ -354,7 +354,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 				else if((3==x)&&(y==2))ret = _rr_;
 				else ret = 0;
 			}
-			win->vkbd = ((int)'j'<<16) + ret;
+			win->vkbdtype = ((int)'j'<<16) + ret;
 
 			if(0 != ret)
 			{
