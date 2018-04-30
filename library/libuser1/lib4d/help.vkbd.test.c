@@ -370,3 +370,46 @@ int vkbd_write(struct arena* win, struct event* ev)
 byebye:
 	return 1;
 }
+int actorinput_vkbd(struct arena* win, struct event* ev)
+{
+	int x,y,ret;
+	int why = ev->why;
+	int what = ev->what;
+	if('p' == (what&0xff))
+	{
+		if(0x2d70 == what)
+		{
+			x = win->width;
+			y = win->height;
+			if(x<y)ret = x>>4;
+			else ret = y>>4;
+
+			//open or close vkbd
+			x = why&0xffff;
+			y = (why>>16)&0xffff;
+			if(y+ret > win->height)
+			{
+				if(x+ret > win->width)
+				{
+					if(win->vkbdtype < 0)win->vkbdtype = (int)'j'<<16;
+					else win->vkbdtype = -1;
+					return 1;
+				}
+				else if(x < ret)
+				{
+					if(win->vkbdtype < 0)win->vkbdtype = (int)'k'<<16;
+					else win->vkbdtype = -1;
+					return 1;
+				}
+			}
+		}
+
+		//call vkbd
+		if(win->vkbdtype >= 0)
+		{
+			ret = vkbd_write(win, ev);
+			if(0 != ret)return 1;
+		}
+	}
+	return 0;
+}

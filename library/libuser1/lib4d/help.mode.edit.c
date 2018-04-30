@@ -962,6 +962,7 @@ int keyboard2style(struct style* sty, short tmp)
 		sty->uz += tz;
 		return 0;
 	}
+	return 0;
 }
 int playwith3d(struct arena* win, struct event* ev)
 {

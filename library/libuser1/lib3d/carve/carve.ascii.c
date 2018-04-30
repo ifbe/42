@@ -266,7 +266,7 @@ void carvestring_center(
 	if(0 == buf)return;
 	if(0 == len)
 	{
-		while(buf[len] > 0x20)len++;
+		while(buf[len] >= 0x20)len++;
 	}
 	else
 	{

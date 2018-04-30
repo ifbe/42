@@ -1,4 +1,10 @@
 #include "actor.h"
+static char* name[4] = {
+	"0.choose object ",
+	"1.adjust posture",
+	"2.edit existing ",
+	"3.pass through  ",
+};
 
 
 
@@ -35,12 +41,12 @@ void actoroutput_menu_vbo(struct arena* win)
 			0.4, 0.0, 0.0,
 			0.0, 0.1, 0.0
 		);
-		carve2d_decimal(
+		carvestring2d_center(
 			win, 0xffffff,
 			0.0, (3-j*2)/8.0, -0.6,
-			0.4, 0.0, 0.0,
-			0.0, 0.1, 0.0,
-			j
+			0.1, 0.0, 0.0,
+			0.0, 0.05, 0.0,
+			(u8*)name[j], 0
 		);
 	}
 }
@@ -62,11 +68,11 @@ void actoroutput_menu_pixel(struct arena* win)
 			win->width*5/16,  win->height*(17+j*8)/64,
 			win->width*11/16, win->height*(23+j*8)/64
 		);
-		drawdec_fit(
+		drawstring_fit(
 			win, 0xffffff,
 			win->width*5/16,  win->height*(17+j*8)/64,
 			win->width*11/16, win->height*(23+j*8)/64,
-			j
+			(u8*)name[j], 0
 		);
 	}
 }
@@ -79,4 +85,58 @@ void actoroutput_menu(struct arena* win)
 	else if(_json_ == fmt)actoroutput_menu_json(win);
 	else if(_vbo_ == fmt)actoroutput_menu_vbo(win);
 	else actoroutput_menu_pixel(win);
+}
+int actorinput_menu(struct arena* win, struct event* ev)
+{
+	int x, y, ret;
+	ret = ev->what;
+
+	if('p' == (ret&0xff))
+	{
+		x = (ev->why)&0xffff;
+		y = ((ev->why)>>16)&0xffff;
+		x = x*4/(win->width);
+		y = y*8/(win->height);
+		if((x >= 1)&&(x <= 2))
+		{
+			if((y >= 2)&&(y <= 5))
+			{
+				if(hex32('p','-',0,0) == ret)win->menutype = y-2;
+				else win->menutype = (y-2) | 0xffff0000;
+			}
+		}
+	}
+	else if(_joy_ == ret)
+	{
+		x = ((ev->why)>>32)&0xffff;
+		if(_df_ == x)
+		{
+			y = win->menutype & 3;
+			y = (y-1)%4;
+			win->menutype = y | 0xffff0000;
+		}
+		else if(_dn_ == x)
+		{
+			y = win->menutype & 3;
+			y = (y+1)%4;
+			win->menutype = y | 0xffff0000;
+		}
+	}
+	if(_kbd_ == ret)
+	{
+		x = ev->why;
+		if(0x48 == x)
+		{
+			y = win->menutype & 3;
+			y = (y-1)%4;
+			win->menutype = y | 0xffff0000;
+		}
+		else if(0x50 == x)
+		{
+			y = win->menutype & 3;
+			y = (y+1)%4;
+			win->menutype = y | 0xffff0000;
+		}
+	}
+	return 0;
 }

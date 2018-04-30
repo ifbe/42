@@ -233,6 +233,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 void* joystickthread(void* win)
 {
 	XINPUT_STATE s;
+	Sleep(1);
 
 	while(1)
 	{

@@ -8,6 +8,16 @@ static void house_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int cx = sty->cx;
+	int cy = sty->cy;
+	int ww = sty->rx;
+	int hh = sty->fy;
+	drawline(win, 0x404040, cx-ww, cy-hh/3, cx, cy-hh);
+	drawline(win, 0x404040, cx+ww, cy-hh/3, cx, cy-hh);
+	drawline_rect(win, 0x404040, cx-ww, cy-hh/3, cx+ww, cy+hh);
+	drawline_rect(win, 0x404040, cx-ww/3, cy+hh/3, cx+ww/3, cy+hh);
+	drawline_rect(win, 0x404040, cx-ww*5/6, cy-hh*1/6, cx-ww*3/6, cy+hh*1/6);
+	drawline_rect(win, 0x404040, cx+ww*3/6, cy-hh*1/6, cx+ww*5/6, cy+hh*1/6);
 }
 static void house_read_vbo(
 	struct arena* win, struct style* sty,

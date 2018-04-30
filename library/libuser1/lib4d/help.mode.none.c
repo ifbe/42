@@ -1,6 +1,5 @@
 #include "actor.h"
 int term_write(void*);
-int vkbd_write(void*, void*);
 //
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
@@ -14,6 +13,9 @@ int login_write(struct arena* win, struct event* ev);
 int playwith2d(struct arena* win, struct event* ev);
 int camera_event(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
+//
+int actorinput_vkbd(struct arena* win, struct event* ev);
+int actorinput_menu(struct arena* win, struct event* ev);
 
 
 
@@ -40,49 +42,6 @@ void helpout_create(void* addr)
 
 
 
-int actorinput_vkbd(struct arena* win, struct event* ev)
-{
-	int x,y,ret;
-	int why = ev->why;
-	int what = ev->what;
-	if('p' == (what&0xff))
-	{
-		if(0x2d70 == what)
-		{
-			x = win->width;
-			y = win->height;
-			if(x<y)ret = x>>4;
-			else ret = y>>4;
-
-			//open or close vkbd
-			x = why&0xffff;
-			y = (why>>16)&0xffff;
-			if(y+ret > win->height)
-			{
-				if(x+ret > win->width)
-				{
-					if(win->vkbdtype < 0)win->vkbdtype = (int)'j'<<16;
-					else win->vkbdtype = -1;
-					return 1;
-				}
-				else if(x < ret)
-				{
-					if(win->vkbdtype < 0)win->vkbdtype = (int)'k'<<16;
-					else win->vkbdtype = -1;
-					return 1;
-				}
-			}
-		}
-
-		//call vkbd
-		if(win->vkbdtype >= 0)
-		{
-			ret = vkbd_write(win, ev);
-			if(0 != ret)return 1;
-		}
-	}
-	return 0;
-}
 int actorinput_special(struct arena* win, struct event* ev)
 {
 	int h16, l16, ret, val;
@@ -107,7 +66,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 		l16 = ret & 0xffff;
 		if(0 != h16)
 		{
-			l16 = (l16+1)%2;
+			l16 = (l16+1)%4;
 			win->menutype = (h16 << 16) | l16;
 			return 1;
 		}
@@ -122,19 +81,17 @@ int actorinput_special(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int actorinput_menu(struct arena* win, struct event* ev)
-{
-	return 0;
-}
 int actorinput_new(struct arena* win, struct event* ev)
 {
 	if(_vbo_ == win->fmt)camera_event(win, ev);
 	else login_write(win, ev);
+	return 0;
 }
 int actorinput_edit(struct arena* win, struct event* ev)
 {
 	if(_vbo_ == win->fmt)playwith3d(win, ev);
 	else playwith2d(win, ev);
+	return 0;
 }
 int actorinput_pass(struct arena* win, struct event* ev)
 {
@@ -365,14 +322,12 @@ void foreground_pixel(struct arena* win)
 			win->touchmove[j].x, win->touchmove[j].y
 		);
 	}
-	vkbd_read(win);
 }
 void foreground_vbo(struct arena* win)
 {
 	int j;
 	float x0,y0,z0;
 	float x1,y1,z1;
-	vkbd_read(win);
 
 	for(j=0;j<11;j++)
 	{
@@ -437,6 +392,7 @@ void foreground(struct arena* win)
 	u64 fmt = win->fmt;
 	if(0 != (win->menutype>>16))actoroutput_menu(win);
 	else if(0 == win->menutype)login_read(win);
+	vkbd_read(win);
 
 	if(_cli_ == fmt)foreground_cli(win);
 	else if(_tui_ == fmt)foreground_tui(win);

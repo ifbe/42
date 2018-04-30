@@ -262,7 +262,7 @@ void carvestring2d_center(
 {
 	int j;
 	if(0 == buf)return;
-	if(0 == len){while(buf[len] > 0x20)len++;}
+	if(0 == len){while(buf[len] >= 0x20)len++;}
 	else
 	{
 		for(j=0;j<len;j++)

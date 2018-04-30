@@ -337,15 +337,15 @@ library/libuser1/lib3d/model/model.magnify.c \
 library/libuser1/lib3d/model/model.minify.c \
 library/libuser1/lib3d/model/model.rotate.c \
 library/libuser1/lib3d/lib3d.c \
-library/libuser1/lib4d/help.asset.c \
-library/libuser1/lib4d/help.ctx.c \
-library/libuser1/lib4d/help.input.c \
-library/libuser1/lib4d/help.input2d.c \
-library/libuser1/lib4d/help.input3d.c \
-library/libuser1/lib4d/help.login.c \
-library/libuser1/lib4d/help.output.c \
-library/libuser1/lib4d/help.touch.c \
-library/libuser1/lib4d/help.vkbd.c \
+library/libuser1/lib4d/help.asset.file.c \
+library/libuser1/lib4d/help.asset.func.c \
+library/libuser1/lib4d/help.mode.camera.c \
+library/libuser1/lib4d/help.mode.edit.c \
+library/libuser1/lib4d/help.mode.login.c \
+library/libuser1/lib4d/help.mode.menu.c \
+library/libuser1/lib4d/help.mode.none.c \
+library/libuser1/lib4d/help.vkbd.test.c \
+library/libuser1/lib4d/help.vkbd.full.c \
 library/libuser1/lib4d/lib4d.c \
 library/libuser1/actor.c
 
