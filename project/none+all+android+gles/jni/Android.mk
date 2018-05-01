@@ -337,15 +337,19 @@ library/libuser1/lib3d/model/model.magnify.c \
 library/libuser1/lib3d/model/model.minify.c \
 library/libuser1/lib3d/model/model.rotate.c \
 library/libuser1/lib3d/lib3d.c \
-library/libuser1/lib4d/help.asset.file.c \
-library/libuser1/lib4d/help.asset.func.c \
-library/libuser1/lib4d/help.mode.camera.c \
-library/libuser1/lib4d/help.mode.edit.c \
-library/libuser1/lib4d/help.mode.login.c \
-library/libuser1/lib4d/help.mode.menu.c \
-library/libuser1/lib4d/help.mode.none.c \
-library/libuser1/lib4d/help.vkbd.test.c \
-library/libuser1/lib4d/help.vkbd.full.c \
+library/libuser1/lib4d/asset/asset.file.c \
+library/libuser1/lib4d/asset/asset.func.c \
+library/libuser1/lib4d/mode/mode0.camera.c \
+library/libuser1/lib4d/mode/mode0.overview.c \
+library/libuser1/lib4d/mode/mode1.detail.c \
+library/libuser1/lib4d/mode/mode2.posture.c \
+library/libuser1/lib4d/mode/mode3.edit2d.c \
+library/libuser1/lib4d/mode/mode3.edit3d.c \
+library/libuser1/lib4d/mode/mode4.deliver.c \
+library/libuser1/lib4d/mode/mode.menu.c \
+library/libuser1/lib4d/mode/mode.none.c \
+library/libuser1/lib4d/vkbd/vkbd.test.c \
+library/libuser1/lib4d/vkbd/vkbd.full.c \
 library/libuser1/lib4d/lib4d.c \
 library/libuser1/actor.c
 

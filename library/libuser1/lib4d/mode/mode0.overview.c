@@ -753,7 +753,7 @@ void login_read_tui(struct arena* win)
 void login_read_cli(struct arena* win)
 {
 }
-void login_read(struct arena* win)
+void actoroutput_overview(struct arena* win)
 {
 	if(win->fmt == _cli_)login_read_cli(win);
 	else if(win->fmt == _tui_)login_read_tui(win);

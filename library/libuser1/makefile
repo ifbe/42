@@ -80,15 +80,19 @@ lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
 lib3d/lib3d.c \
-lib4d/help.asset.file.c \
-lib4d/help.asset.func.c \
-lib4d/help.mode.camera.c \
-lib4d/help.mode.edit.c \
-lib4d/help.mode.login.c \
-lib4d/help.mode.menu.c \
-lib4d/help.mode.none.c \
-lib4d/help.vkbd.test.c \
-lib4d/help.vkbd.full.c \
+lib4d/asset/asset.file.c \
+lib4d/asset/asset.func.c \
+lib4d/mode/mode0.camera.c \
+lib4d/mode/mode0.overview.c \
+lib4d/mode/mode1.detail.c \
+lib4d/mode/mode2.posture.c \
+lib4d/mode/mode3.edit2d.c \
+lib4d/mode/mode3.edit3d.c \
+lib4d/mode/mode4.deliver.c \
+lib4d/mode/mode.menu.c \
+lib4d/mode/mode.none.c \
+lib4d/vkbd/vkbd.test.c \
+lib4d/vkbd/vkbd.full.c \
 lib4d/lib4d.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

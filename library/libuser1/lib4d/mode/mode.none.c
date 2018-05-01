@@ -1,21 +1,26 @@
 #include "actor.h"
 int term_write(void*);
-//
-void* samedstprevsrc(void*);
-void* samedstnextsrc(void*);
-void* samesrcprevdst(void*);
-void* samesrcnextdst(void*);
-void vkbd_read(void*);
-void login_read(void*);
-void actoroutput_menu(void*);
-//
-int login_write(struct arena* win, struct event* ev);
-int playwith2d(struct arena* win, struct event* ev);
-int camera_event(struct arena* win, struct event* ev);
-int playwith3d(struct arena* win, struct event* ev);
-//
+//vkbd
+int vkbd_read(void*);
 int actorinput_vkbd(struct arena* win, struct event* ev);
+//menu
+int actoroutput_menu(struct arena*);
 int actorinput_menu(struct arena* win, struct event* ev);
+//mode0
+int actoroutput_overview(struct arena*);
+int login_write(struct arena* win, struct event* ev);
+int camera_event(struct arena* win, struct event* ev);
+//mode1
+int actoroutput_detail(struct arena*);
+//mode2
+int actoroutput_posture(struct arena*);
+//mode3
+int actoroutput_edit(struct arena*);
+int playwith2d(struct arena* win, struct event* ev);
+int playwith3d(struct arena* win, struct event* ev);
+//mode4
+int actoroutput_deliver(struct arena* win);
+int actorinput_deliver(struct arena* win, struct event* ev);
 
 
 
@@ -66,7 +71,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 		l16 = ret & 0xffff;
 		if(0 != h16)
 		{
-			l16 = (l16+1)%4;
+			l16 = (l16+1)%8;
 			win->menutype = (h16 << 16) | l16;
 			return 1;
 		}
@@ -80,40 +85,6 @@ int actorinput_special(struct arena* win, struct event* ev)
 		return 1;
 	}
 	return 0;
-}
-int actorinput_new(struct arena* win, struct event* ev)
-{
-	if(_vbo_ == win->fmt)camera_event(win, ev);
-	else login_write(win, ev);
-	return 0;
-}
-int actorinput_edit(struct arena* win, struct event* ev)
-{
-	if(_vbo_ == win->fmt)playwith3d(win, ev);
-	else playwith2d(win, ev);
-	return 0;
-}
-int actorinput_pass(struct arena* win, struct event* ev)
-{
-	struct actor* act;
-	struct compo* com;
-	struct relation* rel;
-	struct relation* tmp;
-
-	rel = win->irel;
-	if(0 == rel)return 0;
-
-	while(1)
-	{
-		tmp = samedstnextsrc(rel);
-		if(tmp == 0)break;
-
-		rel = tmp;
-	}
-
-	act = (void*)(rel->srcchip);
-	com = (void*)(rel->srcfoot);
-	return act->onwrite(act, com, 0, 0, ev, 0);
 }
 void actorinput_touch(struct arena* win, struct event* ev)
 {
@@ -164,64 +135,31 @@ void actorinput(struct arena* win, struct event* ev)
 	if(0 != h16)
 	{
 		ret = actorinput_menu(win, ev);
-		goto theend;
 	}
 	else if(0 == l16)
 	{
-		ret = actorinput_new(win, ev);
-		goto theend;
+		if(_vbo_ == win->fmt)camera_event(win, ev);
+		else login_write(win, ev);
 	}
 	else if(1 == l16)
 	{
-		ret = actorinput_edit(win, ev);
-		goto theend;
 	}
-
-	//else
-	ret = actorinput_pass(win, ev);
-	//goto theend;
+	else if(2 == l16)
+	{
+	}
+	else if(3 == l16)
+	{
+		if(_vbo_ == win->fmt)playwith3d(win, ev);
+		else playwith2d(win, ev);
+	}
+	else
+	{
+		actorinput_deliver(win, ev);
+	}
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	win->enq += 1;
-}
-
-
-
-
-void select_2d(struct arena* win, struct style* sty)
-{
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-
-	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
-}
-void select_3d(struct arena* win, struct style* sty)
-{
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
-
-	carveline_prism4(
-		win, 0xff0000,
-		cx+ux, cy+uy, cz+uz,
-		rx, ry, rz,
-		fx, fy, fz,
-		ux, uy, uz
-	);
 }
 
 
@@ -297,8 +235,6 @@ void background_cli(struct arena* win)
 void background(struct arena* win)
 {
 	u64 fmt = win->fmt;
-	//if((_vbo_ != win->fmt) | (12 == win->flag0));
-
 	if(_cli_ == fmt)background_cli(win);
 	else if(_tui_ == fmt)background_tui(win);
 	else if(_html_ == fmt)background_html(win);
@@ -390,10 +326,6 @@ void foreground_cli(struct arena* win)
 void foreground(struct arena* win)
 {
 	u64 fmt = win->fmt;
-	if(0 != (win->menutype>>16))actoroutput_menu(win);
-	else if(0 == win->menutype)login_read(win);
-	vkbd_read(win);
-
 	if(_cli_ == fmt)foreground_cli(win);
 	else if(_tui_ == fmt)foreground_tui(win);
 	else if(_html_ == fmt)foreground_html(win);
@@ -407,12 +339,6 @@ void foreground(struct arena* win)
 
 int actoroutput(struct arena* win)
 {
-	int j;
-	struct relation* rel;
-
-	struct actor* act;
-	struct style* sty;
-	struct compo* com;
 /*
 	//cli silent
 	if(win->fmt == _cli_)
@@ -420,33 +346,24 @@ int actoroutput(struct arena* win)
 		if(win->edit)return 0;
 	}
 */
+	int h16, l16, ret;
+
 	//bg
 	background(win);
 
-	//content
-	rel = win->irel;
-	while(1)
-	{
-		if(rel == 0)break;
+	//context
+	ret = win->menutype;
+	l16 = ret&0xffff;
+	h16 = (ret>>16)&0xffff;
+	if(0 != h16)actoroutput_menu(win);
+	else if(0 == l16)actoroutput_overview(win);
+	else if(1 == l16)actoroutput_detail(win);
+	else if(2 == l16)actoroutput_posture(win);
+	else if(3 == l16)actoroutput_edit(win);
+	else actoroutput_deliver(win);
 
-		if(rel->srctype == _act_)
-		{
-			act = (void*)(rel->srcchip);
-			sty = (void*)(rel->dstfoot);
-			com = (void*)(rel->srcfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, com);
-			//say("%x\n", rel);
-
-			act->onread(win, sty, act, com);
-			if(1 == win->menutype)
-			{
-				if(win->fmt == _vbo_)select_3d(win, sty);
-				else select_2d(win, sty);
-			}
-		}
-
-		rel = samedstnextsrc(rel);
-	}
+	//vkbd
+	vkbd_read(win);
 
 	//fg
 	foreground(win);
