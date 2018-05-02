@@ -277,7 +277,7 @@ void foreground_vbo(struct arena* win)
 		x1 = x1*2 - 1.0;
 		y1 = (float)(win->touchmove[j].y) / (float)(win->height);
 		y1 = 1.0 - y1*2;
-		carveline2d(win, 0xff00ff, x0, y0, 0.0, x1, y1, 0.0);
+		carveline2d(win, 0xff00ff, x0, y0, -0.99, x1, y1, -0.99);
 	}
 
 	if(1)

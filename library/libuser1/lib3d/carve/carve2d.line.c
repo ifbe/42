@@ -1,5 +1,6 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
+#define halfsqrt3 0.8660254037844386
 #define tau (PI*2)
 #define acc 24
 #define linev 0x85
@@ -27,20 +28,76 @@ void carveline2d(
 
 	vbuf[ 0] = x1;
 	vbuf[ 1] = y1;
-	vbuf[ 2] = 0.0;
+	vbuf[ 2] = z1;
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 
 	vbuf[ 6] = x2;
 	vbuf[ 7] = y2;
-	vbuf[ 8] = 0.0;
+	vbuf[ 8] = z2;
 	vbuf[ 9] = rr;
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
+}
+void carveline2d_arrow(
+	struct arena* win, u32 rgb,
+	float x1, float y1, float z1,
+	float x2, float y2, float z2)
+{
+	float x,y;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	struct texandobj* mod = win->mod;
+	int ilen = mod[linev].ilen;
+	int vlen = mod[linev].vlen;
+	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
+	float* vbuf = (mod[linev].vbuf) + (24*vlen);
+	mod[linev].ilen += 3;
+	mod[linev].vlen += 4;
+
+	vbuf[ 0] = x1;
+	vbuf[ 1] = y1;
+	vbuf[ 2] = z1;
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+
+	vbuf[ 6] = x2;
+	vbuf[ 7] = y2;
+	vbuf[ 8] = z2;
+	vbuf[ 9] = rr;
+	vbuf[10] = gg;
+	vbuf[11] = bb;
+
+	x = (x1-x2)/8;
+	y = (y1-y2)/8;
+
+	vbuf[12] = x2 + halfsqrt3*x + 0.5*y;
+	vbuf[13] = y2 - 0.5*x + halfsqrt3*y;
+	vbuf[14] = z2;
+	vbuf[15] = rr;
+	vbuf[16] = gg;
+	vbuf[17] = bb;
+
+	vbuf[18] = x2 + halfsqrt3*x - 0.5*y;
+	vbuf[19] = y2 + 0.5*x + halfsqrt3*y;
+	vbuf[20] = z2;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+
+	ibuf[0] = vlen;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+2;
+	ibuf[3] = vlen+1;
+	ibuf[4] = vlen+3;
+	ibuf[5] = vlen+1;
 }
 void carveline2d_bezier(
 	struct arena* win, u32 rgb,

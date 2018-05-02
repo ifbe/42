@@ -1,4 +1,5 @@
 #include "actor.h"
+#define halfsqrt3 0.8660254037844386
 
 
 
@@ -47,6 +48,23 @@ void drawline(struct arena* win, u32 rgb,
 		if(e2 >-dx){e1 -= dy;x0 += sx;}
 		if(e2 < dy){e1 += dx;y0 += sy;}
 	}
+}
+void drawline_arrow(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1)
+{
+	float x,y,a,b;
+	drawline(win, rgb, x0, y0, x1, y1);
+
+	x = (x0-x1)/8.0;
+	y = (y0-y1)/8.0;
+
+	a = x1 + halfsqrt3*x + 0.5*y;
+	b = y1 - 0.5*x + halfsqrt3*y;
+	drawline(win, rgb, x1, y1, (int)a, (int)b);
+
+	a = x1 + halfsqrt3*x - 0.5*y;
+	b = y1 + 0.5*x + halfsqrt3*y;
+	drawline(win, rgb, x1, y1, (int)a, (int)b);
 }
 void drawbezier(struct arena* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
