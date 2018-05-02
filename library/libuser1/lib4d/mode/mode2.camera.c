@@ -161,7 +161,7 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 
 
 
-int camera_event(struct arena* win, struct event* ev)
+int camera_event_3d(struct arena* win, struct event* ev)
 {
 	short* t;
 	float x,y,z,w;
@@ -332,5 +332,156 @@ int camera_event(struct arena* win, struct event* ev)
 		if('f' == id)camera_zoom(win, 0.1);
 		if('b' == id)camera_zoom(win, -0.1);
 	}
+	return 0;
+}
+int camera_event_2d(struct arena* win, struct event* ev)
+{
+	short* t;
+	float x,y,z,w;
+	int x0,y0,x1,y1,id;
+
+	if(_char_ == ev->what)
+	{
+		if((0xa == ev->why)|(0xd == ev->why))
+		{
+			arenalogin(win);
+			return 0;
+		}
+	}
+	else if(_kbd_ == ev->what)
+	{
+		if(0x4b == ev->why)
+		{
+			arenaprev(win);
+			return 0;
+		}
+		else if(0x4d == ev->why)
+		{
+			arenanext(win);
+			return 0;
+		}
+	}
+	if(_joy_ == ev->what)
+	{
+		t = (short*)&ev->why;
+		if(_ka_ == t[2])
+		{
+			arenalogin(win);
+			return 0;
+		}
+		else if(_dl_ == t[2])
+		{
+			arenaprev(win);
+			return 0;
+		}
+		else if(_dr_ == t[2])
+		{
+			arenanext(win);
+			return 0;
+		}
+		else if(_ls_ == t[2])
+		{
+			win[0].target.cx = win->width/2;
+			win[0].target.cy = win->height/2;
+			win[0].target.rx = win->width/3;
+			win[0].target.ry = 0;
+			win[0].target.fx = win->height/3;
+			win[0].target.fy = 0;
+			return 0;
+		}
+
+		x0 = t[0];
+		if(x0 < -8192)x0 = -1;
+		else if(x0 > 8192)x0 = 1;
+		else x0 = 0;
+
+		y0 = t[1];
+		if(y0 < -8192)y0 = -1;
+		else if(y0 > 8192)y0 = 1;
+		else y0 = 0;
+
+		if('l' == t[2])
+		{
+			win[0].target.cx += x0*16;
+			win[0].target.cy += y0*16;
+		}
+		return 0;
+	}
+
+	id = (ev->why)>>48;
+	if(0x4070 == ev->what)
+	{
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
+		if(0 == win->touchdown[id].z)return 0;
+
+		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
+		{
+			x1 = (ev->why)&0xffff;
+			y1 = ((ev->why)>>16)&0xffff;
+			if(0 == id)
+			{
+				x1 -= (win->touchmove[1].x);
+				y1 -= (win->touchmove[1].y);
+			}
+			if(1 == id)
+			{
+				x1 -= (win->touchmove[0].x);
+				y1 -= (win->touchmove[0].y);
+			}
+
+			x0 = (win->touchmove[0].x) - (win->touchmove[1].x);
+			y0 = (win->touchmove[0].y) - (win->touchmove[1].y);
+
+			if((x0*x0+y0*y0) > (x1*x1+y1*y1))
+			{
+				win->target.rx = win->target.rx*15/16;
+				win->target.ry = win->target.ry*15/16;
+				win->target.fx = win->target.fx*15/16;
+				win->target.fy = win->target.fy*15/16;
+			}
+			else
+			{
+				win->target.rx = win->target.rx*17/16;
+				win->target.ry = win->target.ry*17/16;
+				win->target.fx = win->target.fx*17/16;
+				win->target.fy = win->target.fy*17/16;
+			}
+		}
+		else
+		{
+			x0 = win->touchmove[id].x;
+			y0 = win->touchmove[id].y;
+			x1 = (ev->why)&0xffff;
+			y1 = ((ev->why)>>16)&0xffff;
+
+			win->target.cx += x1-x0;
+			win->target.cy += y1-y0;
+		}
+	}
+	else if(0x2b70 == ev->what)
+	{
+		if('f' == id)
+		{
+			win->target.rx = win->target.rx*17/16;
+			win->target.ry = win->target.ry*17/16;
+			win->target.fx = win->target.fx*17/16;
+			win->target.fy = win->target.fy*17/16;
+		}
+		if('b' == id)
+		{
+			win->target.rx = win->target.rx*15/16;
+			win->target.ry = win->target.ry*15/16;
+			win->target.fx = win->target.fx*15/16;
+			win->target.fy = win->target.fy*15/16;
+		}
+	}
+	return 0;
+}
+int camera_event(struct arena* win, struct event* ev)
+{
+	if(_vbo_ == win->fmt)camera_event_3d(win, ev);
+	else camera_event_2d(win, ev);
 	return 0;
 }

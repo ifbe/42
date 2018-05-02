@@ -34,14 +34,14 @@ static struct actor* actor = 0;
 
 
 
-void login_create(void* addr)
+void overview_create(void* addr)
 {
 	obj = addr - 0x400000;
 	ele = addr - 0x300000;
 	arena = addr + 0x000000;
 	actor = addr + 0x100000;
 }
-void login_delete()
+void overview_delete()
 {
 }
 int arenaactor(struct arena* win, struct actor* act)
@@ -122,7 +122,7 @@ int arenanext(struct arena* win)
 
 
 
-void login_read_pixel(struct arena* win)
+void overview_read_pixel(struct arena* win)
 {
 	struct relation* rel;
 	u32 c,d;
@@ -436,83 +436,16 @@ void login_read_pixel(struct arena* win)
 	}
 */
 }
-void login_read_vbo(struct arena* win)
+void overview_read_vbo(struct arena* win)
 {
 	struct relation* rel;
-	int j,k,c;
-	float x,y;
-	float cx = win->target.cx;
-	float cy = win->target.cy;
-	float cz = win->target.cz;
-	float rx = win->target.rx;
-	float ry = win->target.ry;
-	float rz = win->target.rz;
-	float fx = win->target.fx;
-	float fy = win->target.fy;
-	float fz = win->target.fz;
-	float ux = win->target.ux;
-	float uy = win->target.uy;
-	float uz = win->target.uz;
+	int x,y,j,k,c;
+	int w = win->width;
+	int h = win->height;
 
-	j = win->menudata;
-	if((j >= 0)&&(j <= 64))
-	{
-		carveline_prism4(
-			win, 0x808080,
-			cx+ux, cy+uy, cz+uz,
-			rx, ry, rz,
-			fx, fy, fz,
-			ux, uy, uz
-		);
-		carvestring_center(
-			win, 0x808080,
-			cx+ux, cy+uy, cz+uz,
-			rx/2, ry/2, rz/2,
-			fx/2, fy/2, fz/2,
-			(u8*)&actor[j].name, 8
-		);
-		if(actor[j].type != 0)
-		{
-			actor[j].onread(win, &win->target, &actor[j], 0);
-		}
-	}
-/*
-	carvedrone(
-		win, 0xffffff,
-		0.0, 0.0, 0.0,
-		0.0, 256.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	carvesnowman(
-		win, 0xffffff,
-		cx, cy, cz
-	);
-*/
-/*
-	carveline_rect(
-		win, 0x0000ff,
-		cx, cy, cz+16.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0
-	);
-	carveline_rect(
-		win, 0x00ff00,
-		cx, cy, cz+32.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0
-	);
-	carveline_rect(
-		win, 0xff0000,
-		cx, cy, cz+48.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0
-	);
-	carveline_rect(
-		win, 0xffffff,
-		cx, cy, cz+64.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0
-	);
+	carveline2d(win, 0x0000ff, -1.0, 0.5, 0.0, 1.0, 0.5, 0.0);
+	carveline2d(win, 0x00ff00, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	carveline2d(win, 0xff0000, -1.0,-0.5, 0.0, 1.0,-0.5, 0.0);
 
 	//actor
 	for(j=0;j<64;j++)
@@ -525,11 +458,17 @@ void login_read_vbo(struct arena* win)
 
 		x = j%8;
 		y = j/8;
-		carvestring(
+		carvesolid2d_rect(
+			win, 0x404040,
+			(x*2-7)/8.0, (31-y*2)/32.0, 0.0,
+			4.0/33, 0.0, 0.0,
+			0.0, 1.0/34, 0.0
+		);
+		carvestring2d_center(
 			win, c,
-			cx+8*x-31.0, cy+8*y-31.0, cz+64.0,
-			2.0, 0.0, 0.0,
-			0.0, 2.0, 0.0,
+			(x*2-7)/8.0, (31-y*2)/32.0, -0.01,
+			1.0/16, 0.0, 0.0,
+			0.0, 1.0/32, 0.0,
 			(u8*)&actor[j].name, 8
 		);
 	}
@@ -544,11 +483,17 @@ void login_read_vbo(struct arena* win)
 
 		x = j%8;
 		y = j/8;
-		carvestring(
+		carvesolid2d_rect(
+			win, 0x404040,
+			(x*2-7)/8.0, (15-y*2)/32.0, 0.0,
+			4.0/33, 0.0, 0.0,
+			0.0, 1.0/34, 0.0
+		);
+		carvestring2d_center(
 			win, c,
-			cx+8*x-31.0, cy+8*y-31.0, cz+48.0,
-			2.0, 0.0, 0.0,
-			0.0, 2.0, 0.0,
+			(x*2-7)/8.0, (15-y*2)/32.0, -0.01,
+			1.0/16, 0.0, 0.0,
+			0.0, 1.0/32, 0.0,
 			(u8*)&arena[j].fmt, 8
 		);
 	}
@@ -556,17 +501,20 @@ void login_read_vbo(struct arena* win)
 	//artery
 	for(j=0;j<64;j++)
 	{
-		c = ele[j].type;
-		if(0 == c)continue;
-		c = 0x80ffffff;
-
+		if(0 == ele[j].type)continue;
 		x = j%8;
 		y = j/8;
-		carvestring(
-			win, c,
-			cx+8*x-31.0, cy+8*y-31.0, cz+32.0,
-			2.0, 0.0, 0.0,
-			0.0, 2.0, 0.0,
+		carvesolid2d_rect(
+			win, 0x404040,
+			(x*2-7)/8.0, (-1-y*2)/32.0, 0.0,
+			4.0/33, 0.0, 0.0,
+			0.0, 1.0/34, 0.0
+		);
+		carvestring2d_center(
+			win, 0x80ffffff,
+			(x*2-7)/8.0, (-1-y*2)/32.0, -0.01,
+			1.0/16, 0.0, 0.0,
+			0.0, 1.0/32, 0.0,
 			(u8*)&ele[j].type, 8
 		);
 	}
@@ -574,17 +522,20 @@ void login_read_vbo(struct arena* win)
 	//system
 	for(j=0;j<0x1000;j++)
 	{
-		c = obj[j].type;
-		if(0 == c)continue;
-		c = 0x80ffffff;
-
-		x = j%64;
-		y = j/64;
-		carvestring(
-			win, c,
-			cx+x-31.0, cy+y-31.0, cz+16.0,
-			2.0, 0.0, 0.0,
-			0.0, 2.0, 0.0,
+		if(0 == obj[j].type)continue;
+		x = (j%64)%8;
+		y = (j%64)/8;
+		carvesolid2d_rect(
+			win, 0x404040,
+			(x*2-7)/8.0, (-17-y*2)/32.0, 0.0,
+			4.0/33, 0.0, 0.0,
+			0.0, 1.0/34, 0.0
+		);
+		carvestring2d_center(
+			win, 0x80ffffff,
+			(x*2-7)/8.0, (-17-y*2)/32.0, -0.01,
+			1.0/16, 0.0, 0.0,
+			0.0, 1.0/32, 0.0,
 			(u8*)&obj[j].name, 8
 		);
 	}
@@ -602,36 +553,37 @@ void login_read_vbo(struct arena* win)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
-					cx-31.5+(k%64),  cy-31.5+(k/64),  cz+16.0
+				k %= 64;
+				carveline2d(win, 0xc0ffc0,
+					((j%8)*2-7)/8.0, (31-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (-17-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+32.0
+				carveline2d(win, 0xc0ffc0,
+					((j%8)*2-7)/8.0, (31-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (-1-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+48.0
+				carveline2d(win, 0xc0ffc0,
+					((j%8)*2-7)/8.0, (31-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (15-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+64.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+64.0
+				carveline2d(win, 0xffffff,
+					((j%8)*2-7)/8.0, (31-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (31-(k/8)*2)/32.0, -0.01
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -651,45 +603,45 @@ void login_read_vbo(struct arena* win)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
-					cx-31.5+(k%64),  cy-31.5+(k/64),  cz+16.0
+				k %= 64;
+				carveline2d(win, 0xc0ffc0,
+					((j%8)*2-7)/8.0, (15-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (-17-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				carveline(win, 0xc0ffc0,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+32.0
+				carveline2d(win, 0xc0ffc0,
+					((j%8)*2-7)/8.0, (15-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (-1-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				carveline(win, 0xffffff,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+48.0
+				carveline2d(win, 0xffffff,
+					((j%8)*2-7)/8.0, (15-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (15-(k/8)*2)/32.0, -0.01
 				);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				carveline(win, 0xffc0ff,
-					cx-31.5+(j%8)*8, cy-31.5+(j/8)*8, cz+48.0,
-					cx-31.5+(k%8)*8, cy-31.5+(k/8)*8, cz+64.0
+				carveline2d(win, 0xffc0ff,
+					((j%8)*2-7)/8.0, (15-(j/8)*2)/32.0, -0.01,
+					((k%8)*2-7)/8.0, (31-(k/8)*2)/32.0, -0.01
 				);
 			}
 
 			rel = samedstnextsrc(rel);
 		}
 	}
-*/
 }
-void login_read_8bit(struct arena* win)
+void overview_read_8bit(struct arena* win)
 {
 	int x,y;
 	int j,c;
@@ -707,7 +659,7 @@ void login_read_8bit(struct arena* win)
 		);
 	}
 }
-void login_read_html(struct arena* win)
+void overview_read_html(struct arena* win)
 {
 	int j;
 	int len = win->len;
@@ -726,7 +678,7 @@ void login_read_html(struct arena* win)
 
 	win->len = len;
 }
-void login_read_tui(struct arena* win)
+void overview_read_tui(struct arena* win)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -750,23 +702,23 @@ void login_read_tui(struct arena* win)
 		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
 	}
 }
-void login_read_cli(struct arena* win)
+void overview_read_cli(struct arena* win)
 {
 }
 void actoroutput_overview(struct arena* win)
 {
-	if(win->fmt == _cli_)login_read_cli(win);
-	else if(win->fmt == _tui_)login_read_tui(win);
-	else if(win->fmt == _vbo_)login_read_vbo(win);
-	else if(win->fmt == _html_)login_read_html(win);
-	else if(win->fmt == _8bit_)login_read_8bit(win);
-	else login_read_pixel(win);
+	if(win->fmt == _cli_)overview_read_cli(win);
+	else if(win->fmt == _tui_)overview_read_tui(win);
+	else if(win->fmt == _vbo_)overview_read_vbo(win);
+	else if(win->fmt == _html_)overview_read_html(win);
+	else if(win->fmt == _8bit_)overview_read_8bit(win);
+	else overview_read_pixel(win);
 }
 
 
 
 
-void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
+void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 {
 	struct object* o;
 	struct element* e;
@@ -906,7 +858,7 @@ void login_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-void login_write(struct arena* win, struct event* ev)
+void actorinput_overview(struct arena* win, struct event* ev)
 {
 	short* t;
 	struct actor* act;
@@ -947,7 +899,7 @@ void login_write(struct arena* win, struct event* ev)
 			if((x<0)|(x>=8))return;
 			if((y<0)|(y>=32))return;
 
-			login_drag(win, j, k, x, y);
+			overview_drag(win, j, k, x, y);
 		}
 	}
 	else if(_char_ == ev->what)

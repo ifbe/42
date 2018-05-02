@@ -139,7 +139,7 @@ void vkbd_read_vbo(struct arena* win)
 
 	carvesolid2d_rect(
 		win, 0x202020,
-		0.0, -0.75, 0.0,
+		0.0, -0.75, -0.1,
 		1.0, 0.0, 0.0,
 		0.0, 0.25, 0.0
 	);
@@ -162,7 +162,7 @@ void vkbd_read_vbo(struct arena* win)
 
 				carvesolid2d_rect(
 					win, rgb,
-					(x-7.5)/8.0, (y-15.5)/16.0, -0.001,
+					(x-7.5)/8.0, (y-15.5)/16.0, -0.2,
 					1.0/17, 0.0, 0.0,
 					0.0, 0.5/17, 0.0
 				);
@@ -171,7 +171,7 @@ void vkbd_read_vbo(struct arena* win)
 				{
 					carve2d_ascii(
 						win, 0xffffff,
-						(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
+						(x-7.5)/8.0, (y-15.5)/16.0, -0.3,
 						j, 0.0, 0.0,
 						0.0, k/2, 0.0,
 						c
@@ -187,14 +187,14 @@ void vkbd_read_vbo(struct arena* win)
 					else if(0xd == c)c = 'r';
 					carve2d_ascii(
 						win, 0xffffff,
-						(x-7.5)/8.0, (y-15.5)/16.0, -0.002,
+						(x-7.5)/8.0, (y-15.5)/16.0, -0.3,
 						j, 0.0, 0.0,
 						0.0, k/2, 0.0,
 						'\\'
 					);
 					carve2d_ascii(
 						win, 0xffffff,
-						(x-7.5)/8.0+j, (y-15.5)/16.0, -0.002,
+						(x-7.5)/8.0+j, (y-15.5)/16.0, -0.3,
 						j, 0.0, 0.0,
 						0.0, k/2, 0.0,
 						c
@@ -222,7 +222,7 @@ void vkbd_read_vbo(struct arena* win)
 		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
-			j-1.0, k-1.0, 0.0,
+			j-1.0, k-1.0, -0.1,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
 			ch, 1
@@ -241,7 +241,7 @@ void vkbd_read_vbo(struct arena* win)
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		carvearrorkey2d(
 			win, 0xff00ff,
-			1.0-j, k-1.0, 0.0,
+			1.0-j, k-1.0, -0.1,
 			j, 0.0, 0.0,
 			0.0, k, 0.0,
 			ch, -1
@@ -251,7 +251,7 @@ void vkbd_read_vbo(struct arena* win)
 	{
 		carvestring2d_center(
 			win, 0xffffff,
-			0.0, -0.75, -0.02,
+			0.0, -0.75, -0.5,
 			0.2, 0.0, 0.0,
 			0.0, 0.1, 0.0,
 			(void*)"helloworld", 10

@@ -145,8 +145,41 @@ void* arenacreate(u64 type, u8* addr)
 		win->irel = 0;
 		win->orel = 0;
 		windowstart(win);
+
 		win->enq = 1;
 		win->deq = 0;
+		win->vkbdtype = ((int)'j')<<16;
+		win->menutype = 0;
+
+		//target
+		win->target.cx = 0.0;
+		win->target.cy = 0.0;
+		win->target.cz = 0.0;
+
+		win->target.rx = 256.0;
+		win->target.ry = 0.0;
+		win->target.rz = 0.0;
+
+		win->target.fx = 0.0;
+		win->target.fy = 256.0;
+		win->target.fz = 0.0;
+
+		win->target.ux = 0.0;
+		win->target.uy = 0.0;
+		win->target.uz = 256.0;
+
+		//camera
+		win->camera.cx = 0.0;
+		win->camera.cy = -1024.0;
+		win->camera.cz = 1024.0;
+
+		win->camera.fx = (win->target.cx)-(win->camera.cx);
+		win->camera.fy = (win->target.cy)-(win->camera.cy);
+		win->camera.fz = (win->target.cz)-(win->camera.cz);
+
+		win->camera.ux = 0.0;
+		win->camera.uy = 0.0;
+		win->camera.uz = 1.0;
 	}
 	else if(_cam_ == type)
 	{

@@ -1238,7 +1238,11 @@ void callback_update()
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x86].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[0x86].vlen, mod[0x86].vbuf);
 }
-void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
+
+
+
+
+static void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mods)
 {
 	struct event e;
     printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
@@ -1283,7 +1287,7 @@ void callback_keyboard(GLFWwindow* window, int key, int scan, int action, int mo
 	actorwrite(0, 0, win, 0, &e, 0x20);
 	//eventwrite(why, what, where, 0);
 }
-void callback_mouse(GLFWwindow* window, int button, int action, int mods)
+static void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 {
 	u64 x,y,temp;
 	struct event e;
@@ -1314,15 +1318,13 @@ void callback_mouse(GLFWwindow* window, int button, int action, int mods)
 		actorwrite(0, 0, win, 0, &e, 0x20);
 	}
 }
-//void callback_move(int x,int y)
 static void callback_move(GLFWwindow* window, double xpos, double ypos)
 {
 	u64 x,y,temp;
 	struct event e;
 
-	if(0 != glfwGetMouseButton(window, 0))temp = 'l';
-	else if(0 != glfwGetMouseButton(window, 1))temp = 'r';
-	else return;
+	if(0 != glfwGetMouseButton(window, 1))temp = 'r';
+	else temp = 'l';
 
 	x = ((int)xpos)&0xffff;
 	y = ((int)ypos)&0xffff;
@@ -1332,7 +1334,7 @@ static void callback_move(GLFWwindow* window, double xpos, double ypos)
 	e.where = (u64)win;
 	actorwrite(0, 0, win, 0, &e, 0x20);
 }
-void callback_scroll(GLFWwindow* window, double x, double y)
+static void callback_scroll(GLFWwindow* window, double x, double y)
 {
 	struct event e;
 	printf("%f,%f\n", x, y);
@@ -1352,7 +1354,7 @@ void callback_scroll(GLFWwindow* window, double x, double y)
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 }
-void callback_drop(GLFWwindow* window, int count, const char** paths)
+static void callback_drop(GLFWwindow* window, int count, const char** paths)
 {
     int j,ret=0;
     for(j=0;j<count;j++)
@@ -1363,13 +1365,13 @@ void callback_drop(GLFWwindow* window, int count, const char** paths)
 
 	eventwrite(0, _drop_, (u64)win, 0);
 }
-void callback_reshape(GLFWwindow* window, int w, int h)
+static void callback_reshape(GLFWwindow* window, int w, int h)
 {
 	printf("%x,%x\n", w, h);
 	width = w;
 	height = h;
 }
-void* uievent(struct arena* this)
+static void* uievent(struct arena* this)
 {
 	//1.glfw
 	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
@@ -1458,36 +1460,6 @@ void windowstart(struct arena* w)
 	w->height = 512;
 	w->depth = 512;
 	w->stride = 512;
-
-	//target
-	w->target.cx = 0.0;
-	w->target.cy = 0.0;
-	w->target.cz = 0.0;
-
-	w->target.rx = 512.0;
-	w->target.ry = 0.0;
-	w->target.rz = 0.0;
-
-	w->target.fx = 0.0;
-	w->target.fy = 512.0;
-	w->target.fz = 0.0;
-
-	w->target.ux = 0.0;
-	w->target.uy = 0.0;
-	w->target.uz = 512.0;
-
-	//camera
-	w->camera.cx = 512.0;
-	w->camera.cy = -512.0;
-	w->camera.cz = 512.0;
-
-	w->camera.fx = (w->target.cx)-(w->camera.cx);
-	w->camera.fy = (w->target.cy)-(w->camera.cy);
-	w->camera.fz = (w->target.cz)-(w->camera.cz);
-
-	w->camera.ux = 0.0;
-	w->camera.uy = 0.0;
-	w->camera.uz = 1.0;
 
 //--------------------font3d-------------------
 	//[0000,3fff]

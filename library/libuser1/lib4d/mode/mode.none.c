@@ -8,12 +8,12 @@ int actoroutput_menu(struct arena*);
 int actorinput_menu(struct arena* win, struct event* ev);
 //mode0
 int actoroutput_overview(struct arena*);
-int login_write(struct arena* win, struct event* ev);
-int camera_event(struct arena* win, struct event* ev);
+int actorinput_overview(struct arena* win, struct event* ev);
 //mode1
 int actoroutput_detail(struct arena*);
 //mode2
 int actoroutput_posture(struct arena*);
+int camera_event(struct arena* win, struct event* ev);
 //mode3
 int actoroutput_edit(struct arena*);
 int playwith2d(struct arena* win, struct event* ev);
@@ -134,18 +134,18 @@ void actorinput(struct arena* win, struct event* ev)
 	l16 = ret & 0xffff;
 	if(0 != h16)
 	{
-		ret = actorinput_menu(win, ev);
+		actorinput_menu(win, ev);
 	}
 	else if(0 == l16)
 	{
-		if(_vbo_ == win->fmt)camera_event(win, ev);
-		else login_write(win, ev);
+		actorinput_overview(win, ev);
 	}
 	else if(1 == l16)
 	{
 	}
 	else if(2 == l16)
 	{
+		camera_event(win, ev);
 	}
 	else if(3 == l16)
 	{

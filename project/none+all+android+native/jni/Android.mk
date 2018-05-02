@@ -339,9 +339,9 @@ library/libuser1/lib3d/model/model.rotate.c \
 library/libuser1/lib3d/lib3d.c \
 library/libuser1/lib4d/asset/asset.file.c \
 library/libuser1/lib4d/asset/asset.func.c \
-library/libuser1/lib4d/mode/mode0.camera.c \
 library/libuser1/lib4d/mode/mode0.overview.c \
 library/libuser1/lib4d/mode/mode1.detail.c \
+library/libuser1/lib4d/mode/mode2.camera.c \
 library/libuser1/lib4d/mode/mode2.posture.c \
 library/libuser1/lib4d/mode/mode3.edit2d.c \
 library/libuser1/lib4d/mode/mode3.edit3d.c \

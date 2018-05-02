@@ -1319,36 +1319,6 @@ void windowstart(struct arena* w)
 	w->height = height;
 	w->depth = (width+height)/2;
 
-	//target
-	w->target.cx = 0.0;
-	w->target.cy = 0.0;
-	w->target.cz = 0.0;
-
-	w->target.rx = 512.0;
-	w->target.ry = 0.0;
-	w->target.rz = 0.0;
-
-	w->target.fx = 0.0;
-	w->target.fy = 512.0;
-	w->target.fz = 0.0;
-
-	w->target.ux = 0.0;
-	w->target.uy = 0.0;
-	w->target.uz = 512.0;
-
-	//camera
-	w->camera.cx = 512.0;
-	w->camera.cy = -512.0;
-	w->camera.cz = 512.0;
-
-	w->camera.fx = (w->target.cx)-(w->camera.cx);
-	w->camera.fy = (w->target.cy)-(w->camera.cy);
-	w->camera.fz = (w->target.cz)-(w->camera.cz);
-
-	w->camera.ux = 0.0;
-	w->camera.uy = 0.0;
-	w->camera.uz = 1.0;
-
 //--------------------font3d-------------------
 	//[0000,3fff]
 	mod[0].vbuf = malloc(0x200000);

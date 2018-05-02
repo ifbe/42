@@ -522,8 +522,8 @@ int playwith3d(struct arena* win, struct event* ev)
 
 		if(1 >= id)
 		{
-			if(0==win->touchdown[0].z)return 0;
-			if(0==win->touchdown[1].z)return 0;
+			if(0 == win->touchdown[0].z)return 0;
+			if(0 == win->touchdown[1].z)return 0;
 
 			if(0 == id)
 			{
@@ -556,12 +556,14 @@ int playwith3d(struct arena* win, struct event* ev)
 		}
 		else if(10 == id)
 		{
+			if(0 == win->touchdown[id].z)return 0;
 			stytop->cx += x - (win->touchmove[id].x);
 			stytop->cy -= y - (win->touchmove[id].y);
 			//say("%x,%x\n", stytop->cx, stytop->cy);
 		}
 		else if(11 == id)
 		{
+			if(0 == win->touchdown[id].z)return 0;
 			if(x > win->touchdown[id].x)
 			{
 				c = cosine(0.05);
