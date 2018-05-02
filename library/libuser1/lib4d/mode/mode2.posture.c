@@ -75,7 +75,7 @@ void actoroutput_posture_pixel(struct arena* win)
 	int ux = win->target.ux;
 	int uy = win->target.uy;
 	int uz = win->target.uz;
-say("(%d,%d),(%d,%d),(%d,%d)\n",cx,cy,rx,ry,fx,fy);
+
 	drawline(win, 0x00ff00, cx-rx-fx, cy-ry-fy, cx-rx+fx, cy-ry+fy);
 	drawline(win, 0x00ff00, cx+rx-fx, cy+ry-fy, cx+rx+fx, cy+ry+fy);
 	drawline(win, 0x00ff00, cx-rx-fx, cy-ry-fy, cx+rx-fx, cy+ry-fy);

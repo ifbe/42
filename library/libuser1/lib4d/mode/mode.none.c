@@ -145,12 +145,12 @@ void actorinput(struct arena* win, struct event* ev)
 	}
 	else if(2 == l16)
 	{
-		camera_event(win, ev);
+		if(_vbo_ == win->fmt)playwith3d(win, ev);
+		else playwith2d(win, ev);
 	}
 	else if(3 == l16)
 	{
-		if(_vbo_ == win->fmt)playwith3d(win, ev);
-		else playwith2d(win, ev);
+		camera_event(win, ev);
 	}
 	else
 	{
@@ -358,8 +358,8 @@ int actoroutput(struct arena* win)
 	if(0 != h16)actoroutput_menu(win);
 	else if(0 == l16)actoroutput_overview(win);
 	else if(1 == l16)actoroutput_detail(win);
-	else if(2 == l16)actoroutput_posture(win);
-	else if(3 == l16)actoroutput_edit(win);
+	else if(2 == l16)actoroutput_edit(win);
+	else if(3 == l16)actoroutput_posture(win);
 	else actoroutput_deliver(win);
 
 	//vkbd

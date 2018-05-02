@@ -1,9 +1,9 @@
 #include "actor.h"
 static char* name[8] = {
-	"0.world overview",
-	"1.element detail",
-	"2.adjust posture",
-	"3.edit existing ",
+	"0.overview world",
+	"1.overview the 1",
+	"2.adjust   world",
+	"3.adjust   the 1",
 	"4.pass through  ",
 	"5.              ",
 	"6.              ",
