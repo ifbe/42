@@ -48,7 +48,7 @@ void carveline2d_arrow(
 	float x1, float y1, float z1,
 	float x2, float y2, float z2)
 {
-	float x,y;
+	float x,y,a;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -75,8 +75,11 @@ void carveline2d_arrow(
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
-	x = (x1-x2)/8;
-	y = (y1-y2)/8;
+	x = x1-x2;
+	y = y1-y2;
+	a = squareroot(x*x+y*y);
+	x = x/a/32;
+	y = y/a/32;
 
 	vbuf[12] = x2 + halfsqrt3*x + 0.5*y;
 	vbuf[13] = y2 - 0.5*x + halfsqrt3*y;
