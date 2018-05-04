@@ -8,7 +8,7 @@ int actoroutput_detail_vbo(struct arena* win)
 	int j;
 	struct relation* rel;
 	carveline2d_rect(
-		win, 0x404040,
+		win, 0xffffff,
 		0.0, 0.0, -0.5,
 		0.25, 0.0, 0.0,
 		0.0, 0.5, 0.0

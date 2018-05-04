@@ -21,6 +21,9 @@ int playwith3d(struct arena* win, struct event* ev);
 //mode4
 int actoroutput_deliver(struct arena* win);
 int actorinput_deliver(struct arena* win, struct event* ev);
+//mode5
+int actoroutput_oneonone(struct arena* win);
+int actorinput_oneonone(struct arena* win, struct event* ev);
 
 
 
@@ -152,9 +155,13 @@ void actorinput(struct arena* win, struct event* ev)
 	{
 		camera_event(win, ev);
 	}
-	else
+	else if(4 == l16)
 	{
 		actorinput_deliver(win, ev);
+	}
+	else if(5 == l16)
+	{
+		actorinput_oneonone(win, ev);
 	}
 
 theend:
@@ -360,7 +367,8 @@ int actoroutput(struct arena* win)
 	else if(1 == l16)actoroutput_detail(win);
 	else if(2 == l16)actoroutput_edit(win);
 	else if(3 == l16)actoroutput_posture(win);
-	else actoroutput_deliver(win);
+	else if(4 == l16)actoroutput_deliver(win);
+	else if(5 == l16)actoroutput_oneonone(win);
 
 	//vkbd
 	vkbd_read(win);

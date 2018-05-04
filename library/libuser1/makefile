@@ -84,11 +84,12 @@ lib4d/asset/asset.file.c \
 lib4d/asset/asset.func.c \
 lib4d/mode/mode0.overview.c \
 lib4d/mode/mode1.detail.c \
-lib4d/mode/mode2.camera.c \
-lib4d/mode/mode2.posture.c \
-lib4d/mode/mode3.edit2d.c \
-lib4d/mode/mode3.edit3d.c \
+lib4d/mode/mode2.edit2d.c \
+lib4d/mode/mode2.edit3d.c \
+lib4d/mode/mode3.camera.c \
+lib4d/mode/mode3.posture.c \
 lib4d/mode/mode4.deliver.c \
+lib4d/mode/mode5.oneonone.c \
 lib4d/mode/mode.menu.c \
 lib4d/mode/mode.none.c \
 lib4d/vkbd/vkbd.test.c \
