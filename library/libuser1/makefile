@@ -9,6 +9,7 @@ test/test.fractal.c \
 test/test.house.c \
 test/test.palette.c \
 test/test.planet.c \
+test/test.tree.c \
 game/game.2048.c \
 game/game.chess.c \
 game/game.klotski.c \

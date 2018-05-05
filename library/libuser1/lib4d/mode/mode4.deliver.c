@@ -8,7 +8,7 @@ int actoroutput_deliver(struct arena* win)
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
-	struct compo* com;
+	struct pinid* pin;
 
 	rel = win->irel;
 	while(1)
@@ -19,11 +19,11 @@ int actoroutput_deliver(struct arena* win)
 		{
 			act = (void*)(rel->srcchip);
 			sty = (void*)(rel->dstfoot);
-			com = (void*)(rel->srcfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, com);
+			pin = (void*)(rel->srcfoot);
+			//say("%x,%x,%x,%x\n", win, act, sty, pin);
 			//say("%x\n", rel);
 
-			act->onread(win, sty, act, com);
+			act->onread(win, sty, act, pin);
 		}
 
 		rel = samedstnextsrc(rel);
@@ -33,7 +33,7 @@ int actoroutput_deliver(struct arena* win)
 int actorinput_deliver(struct arena* win, struct event* ev)
 {
 	struct actor* act;
-	struct compo* com;
+	struct pinid* pin;
 	struct relation* rel;
 	struct relation* tmp;
 
@@ -49,6 +49,6 @@ int actorinput_deliver(struct arena* win, struct event* ev)
 	}
 
 	act = (void*)(rel->srcchip);
-	com = (void*)(rel->srcfoot);
-	return act->onwrite(act, com, 0, 0, ev, 0);
+	pin = (void*)(rel->srcfoot);
+	return act->onwrite(act, pin, 0, 0, ev, 0);
 }

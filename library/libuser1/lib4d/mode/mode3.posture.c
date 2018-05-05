@@ -94,7 +94,7 @@ int actoroutput_posture(struct arena* win)
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
-	struct compo* com;
+	struct pinid* pin;
 
 	//origin world
 	rel = win->irel;
@@ -106,11 +106,11 @@ int actoroutput_posture(struct arena* win)
 		{
 			act = (void*)(rel->srcchip);
 			sty = (void*)(rel->dstfoot);
-			com = (void*)(rel->srcfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, com);
+			pin = (void*)(rel->srcfoot);
+			//say("%x,%x,%x,%x\n", win, act, sty, pin);
 			//say("%x\n", rel);
 
-			act->onread(win, sty, act, com);
+			act->onread(win, sty, act, pin);
 		}
 
 		rel = samedstnextsrc(rel);

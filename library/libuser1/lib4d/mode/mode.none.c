@@ -31,20 +31,20 @@ int actorinput_oneonone(struct arena* win, struct event* ev);
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
-static struct compo* compo = 0;
+static struct pinid* pinid = 0;
 void helpin_create(void* addr)
 {
 	arena = addr + 0x000000;
 	actor = addr + 0x100000;
 	style = addr + 0x000000;
-	compo = addr + 0x100000;
+	pinid = addr + 0x100000;
 }
 void helpout_create(void* addr)
 {
 	arena = addr + 0x000000;
 	actor = addr + 0x100000;
 	style = addr + 0x200000;
-	compo = addr + 0x300000;
+	pinid = addr + 0x300000;
 }
 
 

@@ -8,6 +8,7 @@ void fractal_register(void*);
 void house_register(void*);
 void palette_register(void*);
 void planet_register(void*);
+void tree_register(void*);
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -86,6 +87,10 @@ void content_create(void* addr)
 
 	//test.planet
 	planet_register(temp);
+	temp += sizeof(struct actor);
+
+	//test.tree
+	tree_register(temp);
 	temp += sizeof(struct actor);
 
 	//game.2048

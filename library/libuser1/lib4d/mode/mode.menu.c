@@ -7,7 +7,7 @@ static char* name[4] = {
 	"0.overview",
 	"1.adjust  ",
 	"2.interact",
-	"3.        "
+	"3.????????"
 };
 
 
@@ -27,95 +27,98 @@ void actoroutput_menu_json(struct arena* win)
 }
 void actoroutput_menu_vbo(struct arena* win)
 {
-	int j,k,c;
+	int j,k,m,n;
+	m = win->menutype & 7;
+	n = win->menutype & 1;
+
+	if(0 == n)k = 0xffff00;
+	else k = 0x404040;
 	carvesolid2d_rect(
-		win, 0x404040,
-		0.0, 0.0, -0.2,
-		1.0, 0.0, 0.0,
+		win, k,
+		-7.0/16, 0.0, -0.4,
+		1.0/16, 0.0, 0.0,
 		0.0, 0.5, 0.0
 	);
 
-	k = win->menutype & 1;
-	for(j=0;j<2;j++)
-	{
-		if(j == k)c = 0xff00ff;
-		else c = 0x808080;
-		carvestring2d_center(
-			win, c,
-			(j*6-3)*0.25, 0.0, -0.6,
-			0.125, 0.0, 0.0,
-			0.0, 1.0/16, 0.0,
-			(u8*)target[j], 0
-		);
-	}
+	if(1 == n)k = 0x00ffff;
+	else k = 0x404040;
+	carvesolid2d_rect(
+		win, k,
+		7.0/16, 0.0, -0.4,
+		1.0/16, 0.0, 0.0,
+		0.0, 0.5, 0.0
+	);
 
-	k = (win->menutype>>1)&0xff;
-	for(j=0;j<4;j++)
+	for(j=0;j<8;j++)
 	{
-		if(j == k)c = 0xff00ff;
-		else c = 0x808080;
+		if(j == m)
+		{
+			if(0 == (j&1))k = 0xffff00;
+			else k = 0x00ffff;
+		}
+		else k = 0x404040;
+
 		carvesolid2d_rect(
-			win, c,
-			0.0, (3-j*2)/8.0, -0.4,
-			0.49, 0.0, 0.0,
-			0.0, 0.1, 0.0
+			win, k,
+			((j&1)*2-1)/24.0, (7-j*2)/16.0, -0.4,
+			1.0/3, 0.0, 0.0,
+			0.0, 1.0/17, 0.0
 		);
 		carvestring2d_center(
-			win, 0xffffff,
-			0.0, (3-j*2)/8.0, -0.6,
-			1.0/16, 0.0, 0.0,
-			0.0, 1.0/16, 0.0,
-			(u8*)name[j], 0
+			win, ~k,
+			0.0, (7-j*2)/16.0, -0.6,
+			1.0/17, 0.0, 0.0,
+			0.0, 1.0/33, 0.0,
+			(u8*)name[j/2], 0
 		);
 	}
 }
 void actoroutput_menu_pixel(struct arena* win)
 {
-	int x,y,j,k,c;
+	int j,k,m,n,x,y;
+	m = win->menutype & 7;
+	n = win->menutype & 1;
+
+	if(0 == n)k = 0xffff00;
+	else k = 0x404040;
 	drawsolid_rect(
-		win, 0x404040,
-		0,   win->height/4,
-		win->width, win->height*3/4
+		win, k,
+		win->width*3/16, win->height*4/16,
+		win->width*4/16, win->height*11/16
 	);
 
-	k = win->menutype & 1;
-	x = (win->width/8);
-	y = (win->height/32);
-	for(j=0;j<2;j++)
-	{
-		if(j == k)c = 0xff00ff;
-		else c = 0x808080;
-		drawstring_fit(
-			win, c,
-			(win->width)*(j*6+1)/8 - x,
-			(win->height/2) - y,
-			(win->width)*(j*6+1)/8 + x,
-			(win->height/2) + y,
-			(u8*)target[j], 0
-		);
-	}
+	if(1 == n)k = 0x00ffff;
+	else k = 0x404040;
+	drawsolid_rect(
+		win, k,
+		win->width*12/16, win->height*5/16,
+		win->width*13/16, win->height*12/16
+	);
 
-	k = (win->menutype>>1)&0xff;
-	x = (win->width/4)-2;
-	y = (win->height/16)-2;
-	for(j=0;j<4;j++)
+	x = (win->width)/4;
+	y = (win->height)/32-2;
+	for(j=0;j<8;j++)
 	{
-		if(j == k)c = 0xff00ff;
-		else c = 0x808080;
+		if(j == m)
+		{
+			if(0 == (j&1))k = 0xffff00;
+			else k = 0x00ffff;
+		}
+		else k = 0x404040;
 		drawsolid_rect(
-			win, c,
-			(win->width/2) - x,
-			(win->height*(5+j*2)/16) - y,
-			(win->width/2) + x,
-			(win->height*(5+j*2)/16) + y
+			win, k,
+			(win->width)*(8+(j&1))/16 - x,
+			(win->height*(9+j*2)/32) - y,
+			(win->width)*(7+(j&1))/16 + x,
+			(win->height*(9+j*2)/32) + y
 		);
 		drawstring_fit(
-			win, 0xffffff,
-			(win->width/2) - x,
-			(win->height*(5+j*2)/16) - y,
-			(win->width/2) + x,
-			(win->height*(5+j*2)/16) + y,
-			(u8*)name[j], 0
+			win, ~k,
+			(win->width/2) - x/2,
+			(win->height*(9+j*2)/32) - y,
+			(win->width/2) + x/2,
+			(win->height*(9+j*2)/32) + y,
+			(u8*)name[j/2], 0
 		);
 	}
 }
@@ -138,12 +141,12 @@ int actorinput_menu(struct arena* win, struct event* ev)
 	{
 		x = (ev->why)&0xffff;
 		y = ((ev->why)>>16)&0xffff;
-		x = x*2/(win->width);
-		y = y*8/(win->height);
-		if((y >= 2)&&(y <= 5))
+		x = x*4/(win->width);
+		y = y*16/(win->height);
+		if((x >= 1)&&(x < 3)&&(y >= 4)&&(y < 12))
 		{
-			if(hex32('p','-',0,0) == ret)win->menutype = ((y-2)<<1)+x;
-			else win->menutype = 0xffff0000 | ((y-2)<<1) + x;
+			if(hex32('p','-',0,0) == ret)win->menutype = (y-4);
+			else win->menutype = 0xffff0000 | (y-4);
 		}
 		return 0;
 	}
