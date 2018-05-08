@@ -148,7 +148,7 @@ void* arenacreate(u64 type, u8* addr)
 
 		win->enq = 1;
 		win->deq = 0;
-		win->vkbdtype = ((int)'j')<<16;
+		win->vkbdtype = 0;
 		win->menutype = 0;
 
 		//target

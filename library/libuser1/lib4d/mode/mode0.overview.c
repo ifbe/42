@@ -661,22 +661,6 @@ void overview_read_8bit(struct arena* win)
 }
 void overview_read_html(struct arena* win)
 {
-	int j;
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(buf+len, 0x100000-len, "<actor>");
-	for(j=0;j<64;j++)
-	{
-		if(0 == actor[j].name)break;
-		len += mysnprintf(
-			buf+len, 0x100000-len,
-			"%.8s ", (u8*)&actor[j].name
-		);
-	}
-	len += mysnprintf(buf+len, 0x100000-len, "</actor>\n");
-
-	win->len = len;
 }
 void overview_read_tui(struct arena* win)
 {

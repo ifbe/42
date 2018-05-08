@@ -14,13 +14,21 @@ static void weiqi_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	u32 c;
-	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int x, y, cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->cx;
+		cy = sty->cy;
+		ww = sty->rx;
+		hh = sty->fy;
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	//rgb? bgr?
 	if( ((win->fmt)&0xffffff) == 0x626772)c = 0x256f8d;

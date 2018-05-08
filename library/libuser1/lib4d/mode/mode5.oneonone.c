@@ -23,7 +23,7 @@ int actoroutput_oneonone(struct arena* win)
 			//say("%x,%x,%x,%x\n", win, act, sty, pin);
 			//say("%x\n", rel);
 
-			act->onread(win, sty, act, pin);
+			act->onread(win, 0, act, pin);
 			break;
 		}
 

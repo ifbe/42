@@ -37,13 +37,23 @@ static void the2048_read_pixel(
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+
+	if(sty)
+	{
+		cx = sty->cx;
+		cy = sty->cy;
+		ww = sty->rx;
+		hh = sty->fy;
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	//cubies
 	for(y=0;y<4;y++)

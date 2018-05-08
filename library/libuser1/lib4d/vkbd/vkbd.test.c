@@ -25,12 +25,12 @@ void vkbd_read_pixel(struct arena* win)
 	int h = win->height;
 	if(win->vkbdtype < 0)goto haha;
 
-	//bg
-	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
-
 	c = ((win->vkbdtype)>>16)&0xff;
 	if('k' == c)
 	{
+		//bg
+		drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+
 		for(y=0;y<8;y++)
 		{
 			for(x=0;x<16;x++)
@@ -84,6 +84,9 @@ void vkbd_read_pixel(struct arena* win)
 	}
 	else if('j' == c)
 	{
+		//bg
+		drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+
 		ch[0] = 'l';
 		ch[1] = 'r';
 		ch[2] = 'n';
@@ -110,11 +113,12 @@ void vkbd_read_pixel(struct arena* win)
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 	}
+/*
 	else
 	{
 		drawstring_fit(win, 0xffffff, w*1/4, h*13/16, w*3/4, h*15/16, (void*)"helloworld", 10);
 	}
-
+*/
 haha:
 	if(w<h)x = w>>5;
 	else x = h>>5;
@@ -137,13 +141,6 @@ void vkbd_read_vbo(struct arena* win)
 	int h = win->height;
 	if(win->vkbdtype < 0)goto haha;
 
-	carvesolid2d_rect(
-		win, 0x202020,
-		0.0, -0.75, -0.1,
-		1.0, 0.0, 0.0,
-		0.0, 0.25, 0.0
-	);
-
 	c = ((win->vkbdtype)>>16)&0xff;
 	if('k' == c)
 	{
@@ -151,6 +148,13 @@ void vkbd_read_vbo(struct arena* win)
 		else x = h/17;
 		j = (float)x / (float)w;
 		k = (float)x / (float)h;
+
+		carvesolid2d_rect(
+			win, 0x202020,
+			0.0, -0.75, -0.1,
+			1.0, 0.0, 0.0,
+			0.0, 0.25, 0.0
+		);
 
 		for(y=0;y<8;y++)
 		{
@@ -209,6 +213,13 @@ void vkbd_read_vbo(struct arena* win)
 		j = (float)y / (float)w;
 		k = (float)y / (float)h;
 
+		carvesolid2d_rect(
+			win, 0x202020,
+			0.0, -0.75, -0.1,
+			1.0, 0.0, 0.0,
+			0.0, 0.25, 0.0
+		);
+
 		ch[0] = 'l';
 		ch[1] = 'r';
 		ch[2] = 'n';
@@ -247,6 +258,7 @@ void vkbd_read_vbo(struct arena* win)
 			ch, -1
 		);
 	}
+/*
 	else
 	{
 		carvestring2d_center(
@@ -257,7 +269,7 @@ void vkbd_read_vbo(struct arena* win)
 			(void*)"helloworld", 10
 		);
 	}
-
+*/
 haha:
 	if(w<h)x = w>>4;
 	else x = h>>4;
@@ -304,7 +316,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-	if(win->vkbdtype < 0)return 0;
+	if(win->vkbdtype <= 0)return 0;
 
 	w = win->width;
 	h = win->height;
@@ -391,14 +403,14 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 			{
 				if(x+ret > win->width)
 				{
-					if(win->vkbdtype < 0)win->vkbdtype = (int)'j'<<16;
-					else win->vkbdtype = -1;
+					if(win->vkbdtype > 0)win->vkbdtype = 0;
+					else win->vkbdtype = (int)'j'<<16;
 					return 1;
 				}
 				else if(x < ret)
 				{
-					if(win->vkbdtype < 0)win->vkbdtype = (int)'k'<<16;
-					else win->vkbdtype = -1;
+					if(win->vkbdtype > 0)win->vkbdtype = 0;
+					else win->vkbdtype = (int)'k'<<16;
 					return 1;
 				}
 			}

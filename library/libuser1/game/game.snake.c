@@ -1,6 +1,6 @@
 #include "actor.h"
-#define width 32
-#define height 32
+#define WIDTH 32
+#define HEIGHT 32
 int snake_generate(void* buf, int w, int h);
 int snake_left(void* buf, int w, int h);
 int snake_right(void* buf, int w, int h);
@@ -16,7 +16,7 @@ struct snake
 	u8 y;
 	u16 next;
 };
-static struct snake buf[width*height];
+static struct snake buf[WIDTH*HEIGHT];
 
 
 
@@ -27,12 +27,21 @@ void snake_read_pixel(
 {
 	int j;
 	int t1, t2, t3, t4;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->cx;
+		cy = sty->cy;
+		ww = sty->rx;
+		hh = sty->fy;
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	//body
@@ -40,10 +49,10 @@ void snake_read_pixel(
 	while(1)
 	{
 		//say("[%x]=%x,%x,%x\n", j, buf[j].x, buf[j].y, buf[j].next);
-		t1 = cx-ww + buf[j].x * 2 * ww / width;
-		t2 = cy-hh + buf[j].y * 2 * hh / height;
-		t3 = cx-ww + (buf[j].x+1) * 2 * ww / width;
-		t4 = cy-hh + (buf[j].y+1) * 2 * hh / height;
+		t1 = cx-ww + buf[j].x * 2 * ww / WIDTH;
+		t2 = cy-hh + buf[j].y * 2 * hh / HEIGHT;
+		t3 = cx-ww + (buf[j].x+1) * 2 * ww / WIDTH;
+		t4 = cy-hh + (buf[j].y+1) * 2 * hh / HEIGHT;
 		drawsolid_rect(win, 0xffffff, t1+1, t2+1, t3-1, t4-1);
 
 		if(buf[j].next <= 1)break;
@@ -51,10 +60,10 @@ void snake_read_pixel(
 	}
 
 	//food
-	t1 = cx-ww + buf[0].x * 2 * ww / width;
-	t2 = cy-hh + buf[0].y * 2 * hh / height;
-	t3 = cx-ww + (buf[0].x+1) * 2 * ww / width;
-	t4 = cy-hh + (buf[0].y+1) * 2 * hh / height;
+	t1 = cx-ww + buf[0].x * 2 * ww / WIDTH;
+	t2 = cy-hh + buf[0].y * 2 * hh / HEIGHT;
+	t3 = cx-ww + (buf[0].x+1) * 2 * ww / WIDTH;
+	t4 = cy-hh + (buf[0].y+1) * 2 * hh / HEIGHT;
 	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
 void snake_read_vbo(
@@ -87,8 +96,8 @@ void snake_read_html(
 /*
 	//<head>
 	htmlprintf(win, 1,
-		".snakebg{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
-		".snakefg{width:14%%;height:14%%;float:left;background-color:#ccc;margin:0.1%%;}\n"
+		".snakebg{WIDTH:50%%;HEIGHT:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".snakefg{WIDTH:14%%;HEIGHT:14%%;float:left;background-color:#ccc;margin:0.1%%;}\n"
 	);
 
 	//<body>
@@ -149,17 +158,17 @@ void snake_write(
 
 	if(_char_ == type)
 	{
-		if(key == 'w')snake_up(buf, width, height);
-		else if(key == 's')snake_down(buf, width, height);
-		else if(key == 'a')snake_left(buf, width, height);
-		else if(key == 'd')snake_right(buf, width, height);
+		if(key == 'w')snake_up(buf, WIDTH, HEIGHT);
+		else if(key == 's')snake_down(buf, WIDTH, HEIGHT);
+		else if(key == 'a')snake_left(buf, WIDTH, HEIGHT);
+		else if(key == 'd')snake_right(buf, WIDTH, HEIGHT);
 	}
 	if(_kbd_ == type)
 	{
-		if(key == 0x48)snake_up(buf, width, height);
-		else if(key == 0x4b)snake_left(buf, width, height);
-		else if(key == 0x4d)snake_right(buf, width, height);
-		else if(key == 0x50)snake_down(buf, width, height);
+		if(key == 0x48)snake_up(buf, WIDTH, HEIGHT);
+		else if(key == 0x4b)snake_left(buf, WIDTH, HEIGHT);
+		else if(key == 0x4d)snake_right(buf, WIDTH, HEIGHT);
+		else if(key == 0x50)snake_down(buf, WIDTH, HEIGHT);
 	}
 }
 static void snake_list()
@@ -173,7 +182,7 @@ static void snake_stop(struct actor* act, struct pinid* pin)
 }
 static void snake_start(struct actor* act, struct pinid* pin)
 {
-	snake_generate(buf, width, height);
+	snake_generate(buf, WIDTH, HEIGHT);
 }
 static void snake_delete(struct actor* act)
 {
@@ -184,7 +193,7 @@ static void snake_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buf;
-	if(_copy_ == act->type)act->buf = memorycreate(width*height*4);
+	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT*4);
 }
 
 

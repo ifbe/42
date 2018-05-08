@@ -40,13 +40,21 @@ void xiangqi_read_pixel(
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
-	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int x, y, cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->cx;
+		cy = sty->cy;
+		ww = sty->rx;
+		hh = sty->fy;
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	black = 0;
 	if(0x626772 == (win->fmt&0xffffff))

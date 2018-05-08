@@ -18,12 +18,21 @@ static void sudoku_read_pixel(
 {
 	int x,y;
 	int t1, t2, t3, t4;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->cx;
+		cy = sty->cy;
+		ww = sty->rx;
+		hh = sty->fy;
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	for(y=0;y<9;y++)
 	{
