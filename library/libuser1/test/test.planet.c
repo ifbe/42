@@ -1,34 +1,23 @@
 #include "actor.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
-#define diameter_sun 1384376.0
-#define diameter_mercury   4880.0
-#define diameter_venus    12103.6
-#define diameter_earth    12756.3
-#define diameter_mars      6794.0
-#define diameter_jupiter 142984.0
-#define diameter_saturn  120536.0
-#define diameter_uranus   51118.0
-#define diameter_neptune  49532.0
-#define distance_mercury   57910000.0
-#define distance_venus    108200000.0
-#define distance_earth    149600000.0
-#define distance_mars     227940000.0
-#define distance_jupiter  778330000.0
-#define distance_saturn  1429400000.0
-#define distance_uranus  2870990000.0
-#define distance_neptune 4504000000.0
-#define period_mercury    87.969
-#define period_venus     224.7
-#define period_earth     365.25636
-#define period_mars      687.0
-#define period_jupiter  4332.0
-#define period_saturn  10775.0
-#define period_uranus  30681.5
-#define period_neptune 60194.0
-u32 color[9] = {0xffff00,
-	0xffc200, 0xffc200, 0x0000ff, 0xff0000,
-	0x8a36cf, 0xf5deb3, 0x87ceeb, 0x191970
+struct plannet
+{
+	float diameter;
+	float distance;
+	float period;
+	u32 color;
+};
+static struct plannet data[9] = {
+	{1384376.0,          0.0, 999999999.99999, 0xffff00},		//sun
+	{   4880.0,   57910000.0,        87.96900, 0xffc200},		//mercury
+	{  12103.6,  108200000.0,       224.70000, 0xffc200},		//venus
+	{  12756.3,  149600000.0,       365.25636, 0x0000ff},		//earth
+	{   6794.0,  227940000.0,       687.00000, 0xff0000},		//mars
+	{ 142984.0,  778330000.0,      4332.00000, 0x8a36cf},		//jupiter
+	{ 120536.0, 1429400000.0,     10775.00000, 0xf5deb3},		//saturn
+	{  51118.0, 2870990000.0,     30681.50000, 0x87ceeb},		//uranus
+	{  49532.0, 4504000000.0,     60194.00000, 0x191970}		//neptune
 };
 
 
@@ -39,259 +28,84 @@ static void planet_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	u32 c;
-	int x,y,l,r;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int x,y,l,r,j;
+	int cx, cy, ww, hh;
 	u64 t = gettime() / 10000;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
-	c = color[0];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	r = ww*diameter_sun/distance_neptune;
-	x = cx;
-	y = cy;
-	drawsolid_circle(win, c, x, y, r);
+	for(j=0;j<9;j++)
+	{
+		c = data[j].color;
+		if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
 
-	c = color[1];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_mercury/distance_neptune;
-	r = 1024*ww*diameter_mercury/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_mercury);
-	y = cy + l*sine(tau*t/period_mercury);
-	drawsolid_circle(win, c, x, y, r);
+		l = ww*data[j].distance/data[8].distance;
+		r = ww*data[j].diameter/data[8].distance;
+		if(j>0)r *= 1024;
+		drawline_circle(win, 0x404040, cx, cy, l);
 
-	c = color[2];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_venus/distance_neptune;
-	r = 1024*ww*diameter_venus/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_venus);
-	y = cy + l*sine(tau*t/period_venus);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[3];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_earth/distance_neptune;
-	r = 1024*ww*diameter_earth/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_earth);
-	y = cy + l*sine(tau*t/period_earth);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[4];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_mars/distance_neptune;
-	r = 1024*ww*diameter_mars/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_mars);
-	y = cy + l*sine(tau*t/period_mars);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[5];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_jupiter/distance_neptune;
-	r = 1024*ww*diameter_jupiter/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_jupiter);
-	y = cy + l*sine(tau*t/period_jupiter);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[6];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_saturn/distance_neptune;
-	r = 1024*ww*diameter_saturn/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_saturn);
-	y = cy + l*sine(tau*t/period_saturn);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[7];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_uranus/distance_neptune;
-	r = 1024*ww*diameter_uranus/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_uranus);
-	y = cy + l*sine(tau*t/period_uranus);
-	drawsolid_circle(win, c, x, y, r);
-
-	c = color[8];
-	if('r' == (win->fmt&0xff))c = ((c>>16)&0xff) + (c&0xff00) + ((c&0xff)<<16);
-	l = ww*distance_neptune/distance_neptune;
-	r = 1024*ww*diameter_neptune/distance_neptune;
-	drawline_circle(win, 0x404040, cx, cy, l);
-	x = cx + l*cosine(tau*t/period_neptune);
-	y = cy + l*sine(tau*t/period_neptune);
-	drawsolid_circle(win, c, x, y, r);
+		x = cx + l*cosine(tau*t/data[j].period);
+		y = cy + l*sine(tau*t/data[j].period);
+		drawsolid_circle(win, c, x, y, r);
+	}
 }
 static void planet_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float x, y, l, r;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	int j;
+	float l, r;
+	float a, c, s;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 	u64 t = gettime() / 10000;
 
-	r = ww*diameter_sun/distance_neptune;
-	x = cx;
-	y = cy;
-	carvesolid_sphere(
-		win, color[0],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
+	for(j=0;j<9;j++)
+	{
+		l = data[j].distance/data[8].distance;
+		tr[0] = vr[0]*l;
+		tr[1] = vr[1]*l;
+		tr[2] = vr[2]*l;
+		tu[0] = vu[0]*l;
+		tu[1] = vu[1]*l;
+		tu[2] = vu[2]*l;
+		carveline_circle(win, 0x404040, vc, tr, tu);
 
-	l = ww*distance_mercury/distance_neptune;
-	r = 1024*ww*diameter_mercury/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_mercury);
-	y = cy + l*sine(tau*t/period_mercury);
-	carvesolid_sphere(
-		win, color[1],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
+		r = data[j].diameter/data[8].distance;
+		if(j>0)r *= 1024;
+		tr[0] = vr[0]*r;
+		tr[1] = vr[1]*r;
+		tr[2] = vr[2]*r;
+		tf[0] = vf[0]*r;
+		tf[1] = vf[1]*r;
+		tf[2] = vf[2]*r;
+		tu[0] = vu[0]*r;
+		tu[1] = vu[1]*r;
+		tu[2] = vu[2]*r;
 
-	l = ww*distance_venus/distance_neptune;
-	r = 1024*ww*diameter_venus/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_venus);
-	y = cy + l*sine(tau*t/period_venus);
-	carvesolid_sphere(
-		win, color[2],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_earth/distance_neptune;
-	r = 1024*ww*diameter_earth/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_earth);
-	y = cy + l*sine(tau*t/period_earth);
-	carvesolid_sphere(
-		win, color[3],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_mars/distance_neptune;
-	r = 1024*ww*diameter_mars/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_mars);
-	y = cy + l*sine(tau*t/period_mars);
-	carvesolid_sphere(
-		win, color[4],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_jupiter/distance_neptune;
-	r = 1024*ww*diameter_jupiter/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_jupiter);
-	y = cy + l*sine(tau*t/period_jupiter);
-	carvesolid_sphere(
-		win, color[5],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_saturn/distance_neptune;
-	r = 1024*ww*diameter_saturn/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_saturn);
-	y = cy + l*sine(tau*t/period_saturn);
-	carvesolid_sphere(
-		win, color[6],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_uranus/distance_neptune;
-	r = 1024*ww*diameter_uranus/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_uranus);
-	y = cy + l*sine(tau*t/period_uranus);
-	carvesolid_sphere(
-		win, color[7],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
-
-	l = ww*distance_neptune/distance_neptune;
-	r = 1024*ww*diameter_neptune/distance_neptune;
-	carveline_circle(
-		win, 0x404040,
-		cx, cy, 0.0,
-		l, 0.0, 0.0,
-		0.0, 0.0, 1.0
-	);
-	x = cx + l*cosine(tau*t/period_neptune);
-	y = cy + l*sine(tau*t/period_neptune);
-	carvesolid_sphere(
-		win, color[8],
-		x, y, 0.0,
-		r, 0.0, 0.0,
-		0.0, r, 0.0,
-		0.0, 0.0, r
-	);
+		a = tau*t/data[j].period;
+		c = cosine(a);
+		s = sine(a);
+		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
+		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
+		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
+		carvesolid_sphere(win, data[j].color, tc, tr, tf, tu);
+	}
 }
 static void planet_read_json(
 	struct arena* win, struct style* sty,

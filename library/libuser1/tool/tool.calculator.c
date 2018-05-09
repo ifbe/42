@@ -28,19 +28,28 @@ static void calculator_read_pixel(
 {
 	u32 fg;
 	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx / 4;
-	int hh = sty->fy / 4;
-	int dd = sty->uz / 4;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy);
 
 	//display
-	drawsolid_rect(win, 0x222222, cx-ww*4, cy-hh*4, cx+ww*4, cy);
-	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4, buffer, 0);
-	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+16, infix, 0);
-	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+32, postfix, 0);
-	drawstring(win, 0xffffff, cx-ww*4, cy-hh*4+48, result, 0);
+	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);
+	drawstring(win, 0xffffff, cx-ww, cy-hh+16, infix, 0);
+	drawstring(win, 0xffffff, cx-ww, cy-hh+32, postfix, 0);
+	drawstring(win, 0xffffff, cx-ww, cy-hh+48, result, 0);
 
 	//keypad
 	for(y=0;y<4;y++)
@@ -52,11 +61,11 @@ static void calculator_read_pixel(
 			else fg += (x<<4) + (y<<20);
 
 			drawsolid_rect(win, fg,
-				cx+ww*(x-4), cy+hh*(y+0),
-				cx+ww*(x-3), cy+hh*(y+1)
+				cx+ww*(x-4)/4, cy+hh*(y+0)/4,
+				cx+ww*(x-3)/4, cy+hh*(y+1)/4
 			);
 			drawascii(win, 0xffffff,
-				cx+ww*(x-4), cy+hh*y, table[y][x]
+				cx+ww*(x-4)/4, cy+hh*y/4, table[y][x]
 			);
 		}
 	}

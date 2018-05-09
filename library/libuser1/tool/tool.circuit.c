@@ -1,8 +1,8 @@
 #include "actor.h"
-#define width 32
-#define height 32
+#define WIDTH 32
+#define HEIGHT 32
 u32 getrandom();
-static u8 data[height][width];
+static u8 data[HEIGHT][WIDTH];
 
 
 
@@ -14,22 +14,31 @@ static void circuit_read_pixel(
 	u32 c;
 	int x,y;
 	int xxx,yyy;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	for(y=0;y<height;y++)
+	int cx, cy, ww, hh;
+	if(sty)
 	{
-		for(x=0;x<width;x++)
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+	for(y=0;y<HEIGHT;y++)
+	{
+		for(x=0;x<WIDTH;x++)
 		{
 			drawline_rect(
 				win, 0x404040,
-				cx-ww + (x+x+0)*ww/width,
-				cy-hh + (y+y+0)*hh/height,
-				cx-ww + (x+x+2)*ww/width,
-				cy-hh + (y+y+2)*hh/height
+				cx-ww + (x+x+0)*ww/WIDTH,
+				cy-hh + (y+y+0)*hh/HEIGHT,
+				cx-ww + (x+x+2)*ww/WIDTH,
+				cy-hh + (y+y+2)*hh/HEIGHT
 			);
 
 			if(1 == data[y][x])c = 0xffffff;
@@ -43,10 +52,10 @@ static void circuit_read_pixel(
 
 			drawsolid_rect(
 				win, c,
-				cx-ww + (x+x+0)*ww/width,
-				cy-hh + (y+y+0)*hh/height,
-				cx-ww + (x+x+2)*ww/width,
-				cy-hh + (y+y+2)*hh/height
+				cx-ww + (x+x+0)*ww/WIDTH,
+				cy-hh + (y+y+0)*hh/HEIGHT,
+				cx-ww + (x+x+2)*ww/WIDTH,
+				cy-hh + (y+y+2)*hh/HEIGHT
 			);
 		}
 	}
@@ -57,26 +66,29 @@ static void circuit_read_vbo(
 {
 	u32 c;
 	int x,y;
-	float xxx, yyy;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
-	for(y=0;y<height;y++)
+	for(y=0;y<HEIGHT;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<WIDTH;x++)
 		{
-			xxx = cx-ww + (x+x+1)*ww/width;
-			yyy = cy-hh + (y+y+1)*hh/height;
-			carveline_rect(
-				win, 0x404040,
-				xxx, yyy, 0.0,
-				ww/width, 0.0, 0.0,
-				0.0, hh/height, 0.0
-			);
+			f[0] = (x+x+1)/WIDTH - 1.0;
+			f[1] = (y+y+1)/HEIGHT - 1.0;
+			f[2] = 1.0/36;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / WIDTH;
+			tr[1] = vr[1] / WIDTH;
+			tr[2] = vr[2] / WIDTH;
+			tf[0] = vf[0] / HEIGHT;
+			tf[1] = vf[1] / HEIGHT;
+			tf[2] = vf[2] / HEIGHT;
+			carveline_rect(win, 0x404040, tc, tr, tf);
 
 			if(1 == data[y][x])c = 0xffffff;
 			else if(2 == data[y][x])c = 0xffff00;
@@ -87,13 +99,13 @@ static void circuit_read_vbo(
 			else if(64 == data[y][x])c = 0xff;
 			else continue;
 
-			carvesolid_prism4(
-				win, c,
-				xxx, yyy, ww/width/2,
-				ww/width, 0.0, 0.0,
-				0.0, hh/height, 0.0,
-				0.0, 0.0, ww/width/2
-			);
+			tu[0] = vu[0]/64;
+			tu[1] = vu[1]/64;
+			tu[2] = vu[2]/64;
+			tc[0] += tu[0];
+			tc[1] += tu[1];
+			tc[2] += tu[2];
+			carvesolid_prism4(win, c, tc, tr, tf, tu);
 		}
 	}
 }
@@ -159,9 +171,9 @@ static void circuit_stop(struct actor* act, struct pinid* pin)
 static void circuit_start(struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	for(y=0;y<height;y++)
+	for(y=0;y<HEIGHT;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<WIDTH;x++)
 		{
 			data[y][x] = 0;
 		}
@@ -169,8 +181,8 @@ static void circuit_start(struct actor* act, struct pinid* pin)
 
 	for(x=0;x<7;x++)
 	{
-		data[getrandom()%height][getrandom()%width] = 1<<x;
-		data[getrandom()%height][getrandom()%width] = 1<<x;
+		data[getrandom()%HEIGHT][getrandom()%WIDTH] = 1<<x;
+		data[getrandom()%HEIGHT][getrandom()%WIDTH] = 1<<x;
 	}
 }
 static void circuit_delete(struct actor* act)
@@ -182,7 +194,7 @@ static void circuit_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(width*height);
+	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT);
 }
 
 

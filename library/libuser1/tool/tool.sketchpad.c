@@ -172,14 +172,24 @@ static void sketchpad_read_pixel(
 {
 	double rx,ry,rw;
 	int x,y,w,counter;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
 	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
+
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	for(y=0;y<hh*2;y++)
 	{

@@ -3,11 +3,7 @@ int openreadclose(void*, u64, void*, u64);
 int openwriteclose(void*, u64, void*, u64);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
-void carvestl(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float sx, float sy, float sz,
-	void* stlbuf, int stllen, float f);
+void carvestl(void*, u32, vec3, vec3, vec3, vec3, void*, int);
 
 
 
@@ -101,12 +97,21 @@ static void stl_read_pixel(
 	float f;
 	float v[3][3];
 	int j,ret;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	if(0 == (act->buf))return;
@@ -137,24 +142,14 @@ static void stl_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float f;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vr;
 	if(act->buf == 0)return;
 	if(act->len == 0)return;
 
-	if((act->width) > (act->height))f = 2.0*ww/(act->width);
-	else f = 2.0*hh/(act->height);
-	carvestl(
-		win, 0xffffff,
-		cx, cy, cz,
-		act->cx, act->cy, act->bx,
-		(act->buf), (act->len), f
-	);
+	carvestl(win, 0xffffff, vc, vr, vf, vu, act, 0);
 }
 static void stl_read_json(
 	struct arena* win, struct style* sty,

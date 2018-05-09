@@ -61,33 +61,33 @@ int arenaactor(struct arena* win, struct actor* act)
 
 	if(_vbo_ == win->fmt)
 	{
-		sty->cx = win->target.cx;
-		sty->cy = win->target.cy;
-		sty->cz = win->target.cz;
+		sty->vc[0] = win->target.vc[0];
+		sty->vc[1] = win->target.vc[1];
+		sty->vc[2] = win->target.vc[2];
 
-		sty->rx = win->target.rx;
-		sty->ry = win->target.ry;
-		sty->rz = win->target.rz;
+		sty->vr[0] = win->target.vr[0];
+		sty->vr[1] = win->target.vr[1];
+		sty->vr[2] = win->target.vr[2];
 
-		sty->fx = win->target.fx;
-		sty->fy = win->target.fy;
-		sty->fz = win->target.fz;
+		sty->vf[0] = win->target.vf[0];
+		sty->vf[1] = win->target.vf[1];
+		sty->vf[2] = win->target.vf[2];
 
-		sty->ux = win->target.ux;
-		sty->uy = win->target.uy;
-		sty->uz = win->target.uz;
+		sty->vu[0] = win->target.vu[0];
+		sty->vu[1] = win->target.vu[1];
+		sty->vu[2] = win->target.vu[2];
 	}
 	else
 	{
-		sty->cx = w/2;
-		sty->cy = h/2;
-		sty->cz = 0.0;
+		sty->vc[0] = w/2;
+		sty->vc[1] = h/2;
+		sty->vc[2] = 0.0;
 
 		if(w<h)min = w/2;
 		else min = h/2;
-		sty->rx = min;
-		sty->fy = min;
-		sty->uz = min;
+		sty->vr[0] = min;
+		sty->vf[1] = min;
+		sty->vu[2] = min;
 	}
 
 	actorcreate(act, 0);

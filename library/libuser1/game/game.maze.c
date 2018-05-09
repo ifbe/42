@@ -20,10 +20,10 @@ static void maze_read_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -138,13 +138,11 @@ static void maze_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y,z,w;
-	float fx,fy,fz;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
 	for(y=0;y<HEIGHT;y++)
 	{
@@ -153,51 +151,67 @@ static void maze_read_vbo(
 			w = buffer[y][x];
 			if((w&1) == 1)	//left
 			{
-				fx = (cx-ww) + ((2*x+0)*ww/WIDTH);
-				fy = (cy-hh) + ((2*y+1)*hh/HEIGHT);
-				fz = ww / WIDTH;
-				carvesolid_rect(
-					win, 0x808080,
-					fx, fy, fz,
-					0.0, hh/HEIGHT, 0.0,
-					0.0, 0.0, fz
-				);
+				f[0] = (2.0*x+0.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				f[2] = 1.0 / (WIDTH+HEIGHT);
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+				tr[0] = vf[0] / HEIGHT;
+				tr[1] = vf[1] / HEIGHT;
+				tr[2] = vf[2] / HEIGHT;
+				tf[0] = vu[0] / (WIDTH+HEIGHT);
+				tf[0] = vu[1] / (WIDTH+HEIGHT);
+				tf[0] = vu[2] / (WIDTH+HEIGHT);
+				carvesolid_rect(win, 0x808080, tc, tr, tf);
 			}
 			if((w&2) == 2)	//right
 			{
-				fx = (cx-ww) + ((2*x+2)*ww/WIDTH);
-				fy = (cy-hh) + ((2*y+1)*hh/HEIGHT);
-				fz = ww / WIDTH;
-				carvesolid_rect(
-					win, 0x909090,
-					fx, fy, fz,
-					0.0, -hh/HEIGHT, 0.0,
-					0.0, 0.0, fz
-				);
+				f[0] = (2.0*x+2.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				f[2] = 1.0 / (WIDTH+HEIGHT);
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+				tr[0] = -vf[0] / HEIGHT;
+				tr[1] = -vf[1] / HEIGHT;
+				tr[2] = -vf[2] / HEIGHT;
+				tf[0] = vu[0] / (WIDTH+HEIGHT);
+				tf[0] = vu[1] / (WIDTH+HEIGHT);
+				tf[0] = vu[2] / (WIDTH+HEIGHT);
+				carvesolid_rect(win, 0x909090, tc, tr, tf);
 			}
 			if((w&4) == 4)	//down	//careful,different
 			{
-				fx = (cx-ww) + ((2*x+1)*ww/WIDTH);
-				fy = (cy-hh) + ((2*y+0)*hh/HEIGHT);
-				fz = ww / WIDTH;
-				carvesolid_rect(
-					win, 0x707070,
-					fx, fy, fz,
-					-ww/WIDTH, 0.0, 0.0,
-					0.0, 0.0, fz
-				);
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+0.0)/HEIGHT - 1.0;
+				f[2] = 1.0 / (WIDTH+HEIGHT);
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+				tr[0] = -vr[0] / WIDTH;
+				tr[1] = -vr[1] / WIDTH;
+				tr[2] = -vr[2] / WIDTH;
+				tf[0] = vu[0] / (WIDTH+HEIGHT);
+				tf[0] = vu[1] / (WIDTH+HEIGHT);
+				tf[0] = vu[2] / (WIDTH+HEIGHT);
+				carvesolid_rect(win, 0x707070, tc, tr, tf);
 			}
 			if((w&8) == 8)	//up	//careful,different
 			{
-				fx = (cx-ww) + ((2*x+1)*ww/WIDTH);
-				fy = (cy-hh) + ((2*y+2)*hh/HEIGHT);
-				fz = ww / WIDTH;
-				carvesolid_rect(
-					win, 0x606060,
-					fx, fy, fz,
-					ww/WIDTH, 0.0, 0.0,
-					0.0, 0.0, fz
-				);
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+2.0)/HEIGHT - 1.0;
+				f[2] = 1.0 / (WIDTH+HEIGHT);
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+				tr[0] = vr[0] / WIDTH;
+				tr[1] = vr[1] / WIDTH;
+				tr[2] = vr[2] / WIDTH;
+				tf[0] = vu[0] / (WIDTH+HEIGHT);
+				tf[0] = vu[1] / (WIDTH+HEIGHT);
+				tf[0] = vu[2] / (WIDTH+HEIGHT);
+				carvesolid_rect(win, 0x606060, tc, tr, tf);
 			}
 		}
 	}

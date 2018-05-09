@@ -10,12 +10,21 @@ static void clock_read_pixel(
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
 	int j,k;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	u64 date = getdate();
 	u8* p = (u8*)&date;
 
@@ -32,54 +41,38 @@ static void clock_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	float a,c,s;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 	u64 date = getdate();
 	u8* p = (u8*)&date;
-
-	carvesolid_circle(
-		win, 0xc0c0c0,
-		cx, cy, cz,
-		rx, ry, rz,
-		fx, fy, fz
-	);
+	carvesolid_circle(win, 0xc0c0c0, vc, vr, vf);
 
 	a = PI/4 - (p[0]*PI*2.0/60.0);
 	c = cosine(a);
 	s = sine(a);
-	carveline(
-		win, 0xff0000,
-		cx, cy, cz,
-		cx+(rx*c+fx*s), cy+(ry*c+fy*s), cz+(rz*c+fz*s)
-	);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
+	carveline(win, 0xff0000, vc, tr);
 
 	a = PI/4 - (p[1]*PI*2.0/60.0);
 	c = cosine(a);
 	s = sine(a);
-	carveline(
-		win, 0xff00,
-		cx, cy, cz,
-		cx+(rx*c+fx*s)*3/4, cy+(ry*c+fy*s)*3/4, cz+(rz*c+fz*s)*3/4
-	);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
+	carveline(win, 0x00ff00, vc, tr);
 
 	a = PI/4 - (p[2]*PI*2.0/12.0);
 	c = cosine(a);
 	s = sine(a);
-	carveline(
-		win, 0xff,
-		cx, cy, cz,
-		cx+(rx*c+fx*s)*2/4, cy+(ry*c+fy*s)*2/4, cz+(rz*c+fz*s)*2/4
-	);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
+	carveline(win, 0x0000ff, vc, tr);
 }
 static void clock_read_json(
 	struct arena* win, struct style* sty,

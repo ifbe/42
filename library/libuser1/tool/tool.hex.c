@@ -26,12 +26,21 @@ static void hex_read_pixel(
 {
 	u32 unicode, color;
 	int x,y,j;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ww &= 0xfff0;

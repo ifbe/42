@@ -42,10 +42,10 @@ static void the2048_read_pixel(
 
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -91,52 +91,53 @@ static void the2048_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8 (*tab)[4];
-	u32 color;
+	u32 rgb;
 	int x,y;
-	float xxx, yyy, zzz;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	u8 (*tab)[4];
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x444444, vc, vr, vf);
 
 	if(0 == act->buf)tab = ((void*)act) + 0x100;
 	else tab = (void*)(act->buf) + (act->len)*16;
-
-	carvesolid_rect(
-		win, 0x444444,
-		cx, cy, 0.0,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
 		{
-			color = color2048[tab[y][x]];
-			//say("%x\n",color);
+			rgb = color2048[tab[y][x]];
+			//say("%x\n", rgb);
 
-			xxx = cx + (x+x-3)*ww/4;
-			yyy = cy - (y+y-3)*hh/4;
-			zzz = val2048[tab[y][x]];
-			zzz = zzz * dd / 1000.0;
+			f[0] = (x+x-3) / 4.0;
+			f[1] = (3-y-y) / 4.0;
+			f[2] = val2048[tab[y][x]] / 2048.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 
-			carvesolid_prism4(
-				win, color,
-				xxx, yyy, zzz,
-				ww/8, 0.0, 0.0,
-				0.0, hh/8, 0.0,
-				0.0, 0.0, zzz
-			);
-			carvedecimal(
-				win, ~color,
-				xxx, yyy, (zzz*2.0)+(dd/100.0),
-				ww/16, 0.0, 0.0,
-				0.0, hh/16, 0.0,
-				val2048[tab[y][x]]
-			);
+			tr[0] = vr[0]/5;
+			tr[1] = vr[1]/5;
+			tr[2] = vr[2]/5;
+			tf[0] = vf[0]/5;
+			tf[1] = vf[1]/5;
+			tf[2] = vf[2]/5;
+			tu[0] = vu[0]*f[2];
+			tu[1] = vu[1]*f[2];
+			tu[2] = vu[2]*f[2];
+			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
+
+			tc[0] += tu[0] + vu[0]*0.01;
+			tc[1] += tu[1] + vu[1]*0.01;
+			tc[2] += tu[2] + vu[2]*0.01;
+			tr[0] = vr[0]/16;
+			tr[1] = vr[1]/16;
+			tr[2] = vr[2]/16;
+			tf[0] = vf[0]/16;
+			tf[1] = vf[1]/16;
+			tf[2] = vf[2]/16;
+			carvedecimal(win, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
 }

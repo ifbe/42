@@ -18,12 +18,21 @@ void doodle_read_pixel(
 {
 	float c,s,f;
 	int x0,y0,x1,y1;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	//circle
 	drawsolid_circle(win, 0x00ffff, cx, cy, ww);
@@ -55,74 +64,62 @@ static void doodle_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	float a,c,s;
-	float x,y,z;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_circle(win, 0x00ffff, vc, vr, vf);
 
-	carvesolid_circle(
-		win, 0x00ffff,
-		cx, cy, cz,
-		rx, ry, rz,
-		fx, fy, fz
-	);
-	carvesolid_circle(
-		win, 0x404040,
-		cx-rx/2+ux/8, cy-ry/2+uy/8, cz-rz/2+uz/8,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2
-	);
-	carvesolid_circle(
-		win, 0x404040,
-		cx+rx/2+ux/8, cy+ry/2+uy/8, cz+rz/2+uz/8,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2
-	);
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
 
-	a = arctan2(py-cy+ry, px-cx+rx);
+	tc[0] = vc[0]-vr[0]/2+tu[0]/8;
+	tc[1] = vc[1]-vr[1]/2+tu[1]/8;
+	tc[2] = vc[2]-vr[2]/2+tu[2]/8,
+	carvesolid_circle(win, 0x404040, tc, tr, tf);
+
+	tc[0] = vc[0]+vr[0]/2+tu[0]/8;
+	tc[1] = vc[1]+vr[1]/2+tu[1]/8;
+	tc[2] = vc[2]+vr[2]/2+tu[2]/8;
+	carvesolid_circle(win, 0x404040, tc, tr, tf);
+
+	tr[0] = vr[0]/4;
+	tr[1] = vr[1]/4;
+	tr[2] = vr[2]/4;
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
+
+	a = arctan2(py-vc[1]+vr[1], px-vc[0]+vr[0]);
 	c = cosine(a);
 	s = sine(a);
-	x = cx-rx/2+(rx*c+fx*s)/4+ux/4;
-	y = cy-ry/2+(ry*c+fy*s)/4+uy/4;
-	z = cz-rz/2+(rz*c+fz*s)/4+uz/4;
-	carvesolid_circle(
-		win, 0xff0000,
-		x, y, z,
-		rx/4, ry/4, rz/4,
-		fx/4, fy/4, fz/4
-	);
-	carveline(
-		win, 0xffffff,
-		x, y, z,
-		px, py, 0.0
-	);
+	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+tu[0]/4;
+	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+tu[1]/4;
+	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+tu[2]/4;
+	carvesolid_circle(win, 0xff0000, tc, tr, tf);
 
-	a = arctan2(py-cy-rx, px-cx-ry);
+	tu[0] = px;
+	tu[1] = py;
+	tu[2] = 0.0;
+	carveline(win, 0xffffff, tc, tu);
+
+	a = arctan2(py-vc[1]-vr[0], px-vc[0]-vr[1]);
 	c = cosine(a);
 	s = sine(a);
-	x = cx+rx/2+(rx*c+fx*s)/4+ux/4;
-	y = cy+ry/2+(ry*c+fy*s)/4+uy/4;
-	z = cz+rz/2+(rz*c+fz*s)/4+uz/4;
-	carvesolid_circle(
-		win, 0xff0000,
-		x, y, z,
-		rx/4, ry/4, rz/4,
-		fx/4, fy/4, fz/4
-	);
-	carveline(
-		win, 0xffffff,
-		x, y, z,
-		px, py, 0.0
-	);
+	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+tu[0]/4;
+	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+tu[1]/4;
+	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+tu[2]/4;
+	carvesolid_circle(win, 0xff0000, tc, tr, tf);
+
+	tu[0] = px;
+	tu[1] = py;
+	tu[2] = 0.0;
+	carveline(win, 0xffffff, tc, tu);
 }
 static void doodle_read_json(
 	struct arena* win, struct style* sty,

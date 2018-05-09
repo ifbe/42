@@ -8,10 +8,21 @@ static void house_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	drawline(win, 0x404040, cx-ww, cy-hh/3, cx, cy-hh);
 	drawline(win, 0x404040, cx+ww, cy-hh/3, cx, cy-hh);
 	drawline_rect(win, 0x404040, cx-ww, cy-hh/3, cx+ww, cy+hh);
@@ -23,82 +34,92 @@ static void house_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
-
-	//ground
-	carvesolid_rect(
-		win, 0x404040,
-		cx, cy, cz,
-		rx, ry, rz,
-		fx, fy, rz
-	);
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x404040, vc, vr, vf);
 
 	//left
-	carvesolid_rect(
-		win, 0xc0c0c0,
-		cx-rx+ux*3/4, cy-ry+uy*3/4, cz-rz+uz*3/4,
-		fx, fy, fz,
-		ux*3/4, uy*3/4, uz*3/4
-	);
-	carvesolid_triangle(
-		win, 0xc0c0c0,
-		cx-rx+ux*2,      cy-ry+uy*2,      cz-rz+uz*2,
-		cx-rx-fx+ux*3/2, cy-ry-fy+uy*3/2, cz-rz-fz+uz*3/2,
-		cx-rx+fx+ux*3/2, cy-ry+fy+uy*3/2, cz-rz+fz+uz*3/2
-	);
+	tc[0] = vc[0]-vr[0]+vu[0]*3/4;
+	tc[1] = vc[1]-vr[1]+vu[1]*3/4;
+	tc[2] = vc[2]-vr[2]+vu[2]*3/4;
+	tu[0] = vu[0]*3/4;
+	tu[1] = vu[1]*3/4;
+	tu[2] = vu[2]*3/4;
+	carvesolid_rect(win, 0xc0c0c0, tc, vf, tu);
+
+	tr[0] = vc[0]-vr[0]+vu[0]*2;
+	tr[1] = vc[1]-vr[1]+vu[1]*2;
+	tr[2] = vc[2]-vr[2]+vu[2]*2;
+	tf[0] = vc[0]-vr[0]-vf[0]+vu[0]*3/2;
+	tf[1] = vc[1]-vr[1]-vf[1]+vu[1]*3/2;
+	tf[2] = vc[2]-vr[2]-vf[2]+vu[2]*3/2;
+	tu[0] = vc[0]-vr[0]+vf[0]+vu[0]*3/2;
+	tu[1] = vc[1]-vr[1]+vf[1]+vu[1]*3/2;
+	tu[2] = vc[2]-vr[2]+vf[2]+vu[2]*3/2;
+	carvesolid_triangle(win, 0xc0c0c0, tr, tf, tu);
 
 	//right
-	carvesolid_rect(
-		win, 0xc0c0c0,
-		cx+rx+ux*3/4, cy+ry*uy*3/4, cz+rz+uz*3/4,
-		-fx, -fy, -fz,
-		ux*3/4, uy*3/4, uz*3/4
-	);
-	carvesolid_triangle(
-		win, 0xc0c0c0,
-		cx+rx+ux*2,      cy+ry+uy*2,      cz+rz+uz*2,
-		cx+rx-fx+ux*3/2, cy+ry-fy+uy*3/2, cz+rz-fz+uz*3/2,
-		cx+rx+fx+ux*3/2, cy+ry+fy+uy*3/2, cz+rz+fz+uz*3/2
-	);
+	tc[0] = vc[0]+vr[0]+vu[0]*3/4;
+	tc[1] = vc[1]+vr[1]*vu[1]*3/4;
+	tc[2] = vc[2]+vr[2]+vu[2]*3/4;
+	tr[0] = -vf[0];
+	tr[1] = -vf[1];
+	tr[2] = -vf[2];
+	tf[0] = vu[0]*3/4;
+	tf[1] = vu[1]*3/4;
+	tf[2] = vu[2]*3/4;
+	carvesolid_rect(win, 0xc0c0c0, tc, tr, tf);
+
+	tr[0] = vc[0]+vr[0]+vu[0]*2;
+	tr[1] = vc[1]+vr[1]+vu[1]*2;
+	tr[2] = vc[2]+vr[2]+vu[2]*2;
+	tf[0] = vc[0]+vr[0]-vf[0]+vu[0]*3/2;
+	tf[1] = vc[1]+vr[1]-vf[1]+vu[1]*3/2;
+	tf[2] = vc[2]+vr[2]-vf[2]+vu[2]*3/2;
+	tu[0] = vc[0]+vr[0]+vf[0]+vu[0]*3/2;
+	tu[1] = vc[1]+vr[1]+vf[1]+vu[1]*3/2;
+	tu[2] = vc[2]+vr[2]+vf[2]+vu[2]*3/2;
+	carvesolid_triangle(win, 0xc0c0c0, tr, tf, tu);
 
 	//back
-	carvesolid_rect(
-		win, 0xc0c0c0,
-		cx+fx+ux*3/4, cy+fy+uy*3/4, cz+fz+uz*3/4,
-		rx, ry, rz,
-		ux*3/4, uy*3/4, uz*3/4
-	);
-	carvesolid_rect(
-		win, 0xffffff,
-		cx+fx/2+ux*7/4, cy+fy/2+uy*7/4, cz+fz/2+uz*7/4,
-		-rx, -ry, -rz,
-		ux/4-fx/2, uy/4-fy/2, uz/4-fz/2
-	);
+	tc[0] = vc[0]+vf[0]+vu[0]*3/4;
+	tc[1] = vc[1]+vf[1]+vu[1]*3/4;
+	tc[2] = vc[2]+vf[2]+vu[2]*3/4;
+	tf[0] = vu[0]*3/4;
+	tf[1] = vu[1]*3/4;
+	tf[2] = vu[2]*3/4;
+	carvesolid_rect(win, 0xc0c0c0, tc, vr, tf);
+
+	tc[0] = vc[0]+vf[0]/2+vu[0]*7/4;
+	tc[1] = vc[1]+vf[1]/2+vu[1]*7/4;
+	tc[2] = vc[2]+vf[2]/2+vu[2]*7/4;
+	tr[0] = -vr[0];
+	tr[1] = -vr[1];
+	tr[2] = -vr[2];
+	tf[0] = vu[0]/4-vf[0]/2;
+	tf[1] = vu[1]/4-vf[1]/2;
+	tf[2] = vu[2]/4-vf[2]/2;
+	carvesolid_rect(win, 0xffffff, tc, tr, tf);
 
 	//front
-	carvesolid_rect(
-		win, 0xc0c0c0,
-		cx-fx+ux*3/4, cy-fy+uy*3/4, cz-fz+uz*3/4,
-		rx, ry, rz,
-		ux*3/4, uy*3/4, uz*3/4
-	);
-	carvesolid_rect(
-		win, 0xffffff,
-		cx-fx/2+ux*7/4, cy-fy/2+uy*7/4, cz-fz/2+uz*7/4,
-		rx, ry, rz,
-		ux/4+fx/2, uy/4+fy/2, uz/4+fz/2
-	);
+	tc[0] = vc[0]-vf[0]+vu[0]*3/4;
+	tc[1] = vc[1]-vf[1]+vu[1]*3/4;
+	tc[2] = vc[2]-vf[2]+vu[2]*3/4;
+	tf[0] = vu[0]*3/4;
+	tf[1] = vu[1]*3/4;
+	tf[2] = vu[2]*3/4;
+	carvesolid_rect(win, 0xc0c0c0, tc, vr, tf);
+
+	tc[0] = vc[0]-vf[0]/2+vu[0]*7/4;
+	tc[1] = vc[1]-vf[1]/2+vu[1]*7/4;
+	tc[2] = vc[2]-vf[2]/2+vu[2]*7/4;
+	tf[0] = vu[0]/4+vf[0]/2;
+	tf[1] = vu[1]/4+vf[1]/2;
+	tf[2] = vu[2]/4+vf[2]/2;
+	carvesolid_rect(win, 0xffffff, tc, vr, tf);
 }
 static void house_read_json(
 	struct arena* win, struct style* sty,

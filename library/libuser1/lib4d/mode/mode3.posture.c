@@ -25,18 +25,11 @@ void posture_create(void* addr)
 void actoroutput_posture_vbo(struct arena* win)
 {
 	int j;
-	float cx = win->target.cx;
-	float cy = win->target.cy;
-	float cz = win->target.cz;
-	float rx = win->target.rx;
-	float ry = win->target.ry;
-	float rz = win->target.rz;
-	float fx = win->target.fx;
-	float fy = win->target.fy;
-	float fz = win->target.fz;
-	float ux = win->target.ux;
-	float uy = win->target.uy;
-	float uz = win->target.uz;
+	vec3 tc, tr, tf;
+	float* vc = win->target.vc;
+	float* vr = win->target.vr;
+	float* vf = win->target.vf;
+	float* vu = win->target.vu;
 
 	j = win->menudata;
 	if(j < 0)goto skip;
@@ -45,36 +38,34 @@ void actoroutput_posture_vbo(struct arena* win)
 	actor[j].onread(win, &win->target, &actor[j], 0);
 
 skip:
-	carveline_prism4(
-		win, 0x00ff00,
-		cx+ux, cy+uy, cz+uz,
-		rx, ry, rz,
-		fx, fy, fz,
-		ux, uy, uz
-	);
-	carvestring_center(
-		win, 0x00ff00,
-		cx+ux, cy+uy, cz+uz,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		(u8*)&actor[j].name, 8
-	);
+	tc[0] = vc[0] + vu[0];
+	tc[1] = vc[1] + vu[1];
+	tc[2] = vc[2] + vu[2];
+	carveline_prism4(win, 0x00ff00, tc, vr, vf, vu);
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	carvestring_center(win, 0x00ff00, tc, tr, tf,
+		(u8*)&actor[j].name, 8);
 }
 void actoroutput_posture_pixel(struct arena* win)
 {
 	int j;
-	int cx = win->target.cx;
-	int cy = win->target.cy;
-	int cz = win->target.cz;
-	int rx = win->target.rx;
-	int ry = win->target.ry;
-	int rz = win->target.rz;
-	int fx = win->target.fx;
-	int fy = win->target.fy;
-	int fz = win->target.fz;
-	int ux = win->target.ux;
-	int uy = win->target.uy;
-	int uz = win->target.uz;
+	int cx = win->target.vc[0];
+	int cy = win->target.vc[1];
+	int cz = win->target.vc[2];
+	int rx = win->target.vr[0];
+	int ry = win->target.vr[1];
+	int rz = win->target.vr[2];
+	int fx = win->target.vf[0];
+	int fy = win->target.vf[1];
+	int fz = win->target.vf[2];
+	int ux = win->target.vu[0];
+	int uy = win->target.vu[1];
+	int uz = win->target.vu[2];
 
 	j = win->menudata;
 	if(j < 0)goto skip;

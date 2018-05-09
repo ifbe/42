@@ -8,9 +8,7 @@ void quaternionoperation(float*, float*, float);
 
 
 
-void carvepoint(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz)
+void carvepoint(struct arena* win, u32 rgb, vec3 vc)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -20,18 +18,15 @@ void carvepoint(
 	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
 	mod[pointv].vlen += 1;
 
-	vbuf[0] = cx;
-	vbuf[1] = cy;
-	vbuf[2] = cz;
+	vbuf[0] = vc[0];
+	vbuf[1] = vc[1];
+	vbuf[2] = vc[2];
 	vbuf[3] = rr;
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void carvepoint_bezier(
-	struct arena* win, u32 rgb,
-	float x1, float y1, float z1,
-	float x2, float y2, float z2,
-	float xc, float yc, float zc)
+void carvepoint_bezier(struct arena* win, u32 rgb,
+	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
 	float t;
@@ -47,9 +42,9 @@ void carvepoint_bezier(
 	{
 		t = (float)j / acc;
 
-		vbuf[6*j+0] = (1.0-t)*(1.0-t)*x1 + 2*t*(1.0-t)*xc + t*t*x2;
-		vbuf[6*j+1] = (1.0-t)*(1.0-t)*y1 + 2*t*(1.0-t)*yc + t*t*y2;
-		vbuf[6*j+2] = (1.0-t)*(1.0-t)*z1 + 2*t*(1.0-t)*zc + t*t*z2;
+		vbuf[6*j+0] = (1.0-t)*(1.0-t)*va[0] + 2*t*(1.0-t)*vt[0] + t*t*vb[0];
+		vbuf[6*j+1] = (1.0-t)*(1.0-t)*va[1] + 2*t*(1.0-t)*vt[1] + t*t*vb[1];
+		vbuf[6*j+2] = (1.0-t)*(1.0-t)*va[2] + 2*t*(1.0-t)*vt[2] + t*t*vb[2];
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;
 		vbuf[6*j+5] = bb;
@@ -59,29 +54,19 @@ void carvepoint_bezier(
 
 
 
-void carvepoint_triangle(
-	struct arena* win, u32 rgb,
-	float x1, float y1, float z1,
-	float x2, float y2, float z2,
-	float x3, float y3, float z3)
+void carvepoint_triangle(struct arena* win, u32 rgb,
+	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint_rect(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint_rect(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 }
-void carvepoint_circle(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint_circle(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
-	float q[4];
 	float r[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -94,17 +79,14 @@ void carvepoint_circle(
 
 	for(j=0;j<acc;j++)
 	{
-		r[0] = rx;
-		r[1] = ry;
-		r[2] = rz;
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		quaternionoperation(r, q, j*tau/acc);
+		r[0] = vr[0];
+		r[1] = vr[1];
+		r[2] = vr[2];
+		quaternionoperation(r, vu, j*tau/acc);
 
-		vbuf[6*j+0] = cx + r[0];
-		vbuf[6*j+1] = cy + r[1];
-		vbuf[6*j+2] = cz + r[2];
+		vbuf[6*j+0] = vc[0] + r[0];
+		vbuf[6*j+1] = vc[1] + r[1];
+		vbuf[6*j+2] = vc[2] + r[2];
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;
 		vbuf[6*j+5] = bb;
@@ -126,15 +108,11 @@ void carvepoint_pyramid5()
 void carvepoint_pyramid6()
 {
 }
-void carvepoint_cone(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint_cone(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
-	float q[4];
 	float r[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -147,17 +125,14 @@ void carvepoint_cone(
 
 	for(j=0;j<acc;j++)
 	{
-		r[0] = rx;
-		r[1] = ry;
-		r[2] = rz;
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
-		quaternionoperation(r, q, j*tau/acc);
+		r[0] = vr[0];
+		r[1] = vr[1];
+		r[2] = vr[2];
+		quaternionoperation(r, vu, j*tau/acc);
 
-		vbuf[6*j+0] = cx + r[0];
-		vbuf[6*j+1] = cy + r[1];
-		vbuf[6*j+2] = cz + r[2];
+		vbuf[6*j+0] = vc[0] + r[0];
+		vbuf[6*j+1] = vc[1] + r[1];
+		vbuf[6*j+2] = vc[2] + r[2];
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;
 		vbuf[6*j+5] = bb;
@@ -165,16 +140,16 @@ void carvepoint_cone(
 
 	j = acc*6;
 
-	vbuf[j+ 0] = cx;
-	vbuf[j+ 1] = cy;
-	vbuf[j+ 2] = cz;
+	vbuf[j+ 0] = vc[0];
+	vbuf[j+ 1] = vc[1];
+	vbuf[j+ 2] = vc[2];
 	vbuf[j+ 3] = rr;
 	vbuf[j+ 4] = gg;
 	vbuf[j+ 5] = bb;
 
-	vbuf[j+ 6] = cx+ux;
-	vbuf[j+ 7] = cy+uy;
-	vbuf[j+ 8] = cz+uz;
+	vbuf[j+ 6] = vc[0]+vu[0];
+	vbuf[j+ 7] = vc[1]+vu[1];
+	vbuf[j+ 8] = vc[2]+vu[2];
 	vbuf[j+ 9] = rr;
 	vbuf[j+10] = gg;
 	vbuf[j+11] = bb;
@@ -195,18 +170,12 @@ void carvepoint_prism5()
 void carvepoint_prism6()
 {
 }
-void carvepoint_cask(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint_cask(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 }
-void carvepoint_cylinder(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint_cylinder(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
@@ -223,26 +192,26 @@ void carvepoint_cylinder(
 
 	for(j=0;j<acc;j++)
 	{
-		r[0] = rx;
-		r[1] = ry;
-		r[2] = rz;
-		q[0] = ux;
-		q[1] = uy;
-		q[2] = uz;
+		r[0] = vr[0];
+		r[1] = vr[1];
+		r[2] = vr[2];
+		q[0] = vu[0];
+		q[1] = vu[1];
+		q[2] = vu[2];
 		quaternionoperation(r, q, j*tau/acc);
 
 		k = j*12;
 
-		vbuf[k+ 0] = cx - ux + r[0];
-		vbuf[k+ 1] = cy - uy + r[1];
-		vbuf[k+ 2] = cz - uz + r[2];
+		vbuf[k+ 0] = vc[0] - vu[0] + r[0];
+		vbuf[k+ 1] = vc[1] - vu[1] + r[1];
+		vbuf[k+ 2] = vc[2] - vu[2] + r[2];
 		vbuf[k+ 3] = rr;
 		vbuf[k+ 4] = gg;
 		vbuf[k+ 5] = bb;
 
-		vbuf[k+ 6] = cx + ux + r[0];
-		vbuf[k+ 7] = cy + uy + r[1];
-		vbuf[k+ 8] = cz + uz + r[2];
+		vbuf[k+ 6] = vc[0] + vu[0] + r[0];
+		vbuf[k+ 7] = vc[1] + vu[1] + r[1];
+		vbuf[k+ 8] = vc[2] + vu[2] + r[2];
 		vbuf[k+ 9] = rr;
 		vbuf[k+10] = gg;
 		vbuf[k+11] = bb;
@@ -258,12 +227,8 @@ void carvepoint_tetrahedron()
 void carvepoint_octahedron()
 {
 }
-void carvepoint_dodecahedron(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz)
+void carvepoint_dodecahedron(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
 	float a = 1.618;
@@ -285,95 +250,91 @@ void carvepoint_dodecahedron(
 	}
 
 	//(+-1, +-1, +-1)
-	vbuf[  0] = cx-rx-fx-ux;
-	vbuf[  1] = cy-ry-fy-uy;
-	vbuf[  2] = cz-rz-fz-uz;
+	vbuf[  0] = vc[0]-vr[0]-vf[0]-vu[0];
+	vbuf[  1] = vc[1]-vr[1]-vf[1]-vu[1];
+	vbuf[  2] = vc[2]-vr[2]-vf[2]-vu[2];
 
-	vbuf[  6] = cx+rx-fx-ux;
-	vbuf[  7] = cy+ry-fy-uy;
-	vbuf[  8] = cz+rz-fz-uz;
+	vbuf[  6] = vc[0]+vr[0]-vf[0]-vu[0];
+	vbuf[  7] = vc[1]+vr[1]-vf[1]-vu[1];
+	vbuf[  8] = vc[2]+vr[2]-vf[2]-vu[2];
 
-	vbuf[ 12] = cx-rx+fx-ux;
-	vbuf[ 13] = cy-ry+fy-uy;
-	vbuf[ 14] = cz-rz+fz-uz;
+	vbuf[ 12] = vc[0]-vr[0]+vf[0]-vu[0];
+	vbuf[ 13] = vc[1]-vr[1]+vf[1]-vu[1];
+	vbuf[ 14] = vc[2]-vr[2]+vf[2]-vu[2];
 
-	vbuf[ 18] = cx+rx+fx-ux;
-	vbuf[ 19] = cy+ry+fy-uy;
-	vbuf[ 20] = cz+rz+fz-uz;
+	vbuf[ 18] = vc[0]+vr[0]+vf[0]-vu[0];
+	vbuf[ 19] = vc[1]+vr[1]+vf[1]-vu[1];
+	vbuf[ 20] = vc[2]+vr[2]+vf[2]-vu[2];
 
-	vbuf[ 24] = cx-rx-fx+ux;
-	vbuf[ 25] = cy-ry-fy+uy;
-	vbuf[ 26] = cz-rz-fz+uz;
+	vbuf[ 24] = vc[0]-vr[0]-vf[0]+vu[0];
+	vbuf[ 25] = vc[1]-vr[1]-vf[1]+vu[1];
+	vbuf[ 26] = vc[2]-vr[2]-vf[2]+vu[2];
 
-	vbuf[ 30] = cx+rx-fx+ux;
-	vbuf[ 31] = cy+ry-fy+uy;
-	vbuf[ 32] = cz+rz-fz+uz;
+	vbuf[ 30] = vc[0]+vr[0]-vf[0]+vu[0];
+	vbuf[ 31] = vc[1]+vr[1]-vf[1]+vu[1];
+	vbuf[ 32] = vc[2]+vr[2]-vf[2]+vu[2];
 
-	vbuf[ 36] = cx-rx+fx+ux;
-	vbuf[ 37] = cy-ry+fy+uy;
-	vbuf[ 38] = cz-rz+fz+uz;
+	vbuf[ 36] = vc[0]-vr[0]+vf[0]+vu[0];
+	vbuf[ 37] = vc[1]-vr[1]+vf[1]+vu[1];
+	vbuf[ 38] = vc[2]-vr[2]+vf[2]+vu[2];
 
-	vbuf[ 42] = cx+rx+fx+ux;
-	vbuf[ 43] = cy+ry+fy+uy;
-	vbuf[ 44] = cz+rz+fz+uz;
+	vbuf[ 42] = vc[0]+vr[0]+vf[0]+vu[0];
+	vbuf[ 43] = vc[1]+vr[1]+vf[1]+vu[1];
+	vbuf[ 44] = vc[2]+vr[2]+vf[2]+vu[2];
 
 	//(0, +-a, +-b)
-	vbuf[ 48] = cx - a*fx - b*ux;
-	vbuf[ 49] = cy - a*fy - b*uy;
-	vbuf[ 50] = cz - a*fz - b*uz;
+	vbuf[ 48] = vc[0] - a*vf[0] - b*vu[0];
+	vbuf[ 49] = vc[1] - a*vf[1] - b*vu[1];
+	vbuf[ 50] = vc[2] - a*vf[2] - b*vu[2];
 
-	vbuf[ 54] = cx + a*fx - b*ux;
-	vbuf[ 55] = cy + a*fy - b*uy;
-	vbuf[ 56] = cz + a*fz - b*uz;
+	vbuf[ 54] = vc[0] + a*vf[0] - b*vu[0];
+	vbuf[ 55] = vc[1] + a*vf[1] - b*vu[1];
+	vbuf[ 56] = vc[2] + a*vf[2] - b*vu[2];
 
-	vbuf[ 60] = cx - a*fx + b*ux;
-	vbuf[ 61] = cy - a*fy + b*uy;
-	vbuf[ 62] = cz - a*fz + b*uz;
+	vbuf[ 60] = vc[0] - a*vf[0] + b*vu[0];
+	vbuf[ 61] = vc[1] - a*vf[1] + b*vu[1];
+	vbuf[ 62] = vc[2] - a*vf[2] + b*vu[2];
 
-	vbuf[ 66] = cx + a*fx + b*ux;
-	vbuf[ 67] = cy + a*fy + b*uy;
-	vbuf[ 68] = cz + a*fz + b*uz;
+	vbuf[ 66] = vc[0] + a*vf[0] + b*vu[0];
+	vbuf[ 67] = vc[1] + a*vf[1] + b*vu[1];
+	vbuf[ 68] = vc[2] + a*vf[2] + b*vu[2];
 
 	//(+-b, 0, +-a)
-	vbuf[ 72] = cx - b*rx - a*ux;
-	vbuf[ 73] = cy - b*ry - a*uy;
-	vbuf[ 74] = cz - b*rz - a*uz;
+	vbuf[ 72] = vc[0] - b*vr[0] - a*vu[0];
+	vbuf[ 73] = vc[1] - b*vr[1] - a*vu[1];
+	vbuf[ 74] = vc[2] - b*vr[2] - a*vu[2];
 
-	vbuf[ 78] = cx + b*rx - a*ux;
-	vbuf[ 79] = cy + b*ry - a*uy;
-	vbuf[ 80] = cz + b*rz - a*uz;
+	vbuf[ 78] = vc[0] + b*vr[0] - a*vu[0];
+	vbuf[ 79] = vc[1] + b*vr[1] - a*vu[1];
+	vbuf[ 80] = vc[2] + b*vr[2] - a*vu[2];
 
-	vbuf[ 84] = cx - b*rx + a*ux;
-	vbuf[ 85] = cy - b*ry + a*uy;
-	vbuf[ 86] = cz - b*rz + a*uz;
+	vbuf[ 84] = vc[0] - b*vr[0] + a*vu[0];
+	vbuf[ 85] = vc[1] - b*vr[1] + a*vu[1];
+	vbuf[ 86] = vc[2] - b*vr[2] + a*vu[2];
 
-	vbuf[ 90] = cx + b*rx + a*ux;
-	vbuf[ 91] = cy + b*ry + a*uy;
-	vbuf[ 92] = cz + b*rz + a*uz;
+	vbuf[ 90] = vc[0] + b*vr[0] + a*vu[0];
+	vbuf[ 91] = vc[1] + b*vr[1] + a*vu[1];
+	vbuf[ 92] = vc[2] + b*vr[2] + a*vu[2];
 
 	//(+-a, +-b, 0)
-	vbuf[ 96] = cx - a*rx - b*fx;
-	vbuf[ 97] = cy - a*ry - b*fy;
-	vbuf[ 98] = cz - a*rz - b*fz;
+	vbuf[ 96] = vc[0] - a*vr[0] - b*vf[0];
+	vbuf[ 97] = vc[1] - a*vr[1] - b*vf[1];
+	vbuf[ 98] = vc[2] - a*vr[2] - b*vf[2];
 
-	vbuf[102] = cx + a*rx - b*fx;
-	vbuf[103] = cy + a*ry - b*fy;
-	vbuf[104] = cz + a*rz - b*fz;
+	vbuf[102] = vc[0] + a*vr[0] - b*vf[0];
+	vbuf[103] = vc[1] + a*vr[1] - b*vf[1];
+	vbuf[104] = vc[2] + a*vr[2] - b*vf[2];
 
-	vbuf[108] = cx - a*rx + b*fx;
-	vbuf[109] = cy - a*ry + b*fy;
-	vbuf[110] = cz - a*rz + b*fz;
+	vbuf[108] = vc[0] - a*vr[0] + b*vf[0];
+	vbuf[109] = vc[1] - a*vr[1] + b*vf[1];
+	vbuf[110] = vc[2] - a*vr[2] + b*vf[2];
 
-	vbuf[114] = cx + a*rx + b*fx;
-	vbuf[115] = cy + a*ry + b*fy;
-	vbuf[116] = cz + a*rz + b*fz;
+	vbuf[114] = vc[0] + a*vr[0] + b*vf[0];
+	vbuf[115] = vc[1] + a*vr[1] + b*vf[1];
+	vbuf[116] = vc[2] + a*vr[2] + b*vf[2];
 }
-void carvepoint_icosahedron(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz)
+void carvepoint_icosahedron(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
 	float m = 0.52573111211913360602566908484788;
@@ -395,69 +356,63 @@ void carvepoint_icosahedron(
 	}
 
 	//(+-m, 0, +-n)
-	vbuf[ 0] = cx - m;
-	vbuf[ 1] = cy;
-	vbuf[ 2] = cz - n;
+	vbuf[ 0] = vc[0] - m;
+	vbuf[ 1] = vc[1];
+	vbuf[ 2] = vc[2] - n;
 
-	vbuf[ 6] = cx + m;
-	vbuf[ 7] = cy;
-	vbuf[ 8] = cz - n;
+	vbuf[ 6] = vc[0] + m;
+	vbuf[ 7] = vc[1];
+	vbuf[ 8] = vc[2] - n;
 
-	vbuf[12] = cx - m;
-	vbuf[13] = cy;
-	vbuf[14] = cz + n;
+	vbuf[12] = vc[0] - m;
+	vbuf[13] = vc[1];
+	vbuf[14] = vc[2] + n;
 
-	vbuf[18] = cx + m;
-	vbuf[19] = cy;
-	vbuf[20] = cz + n;
+	vbuf[18] = vc[0] + m;
+	vbuf[19] = vc[1];
+	vbuf[20] = vc[2] + n;
 
 	//(0, +-n, +-m)
-	vbuf[24] = cx;
-	vbuf[25] = cy - n;
-	vbuf[26] = cz - m;
+	vbuf[24] = vc[0];
+	vbuf[25] = vc[1] - n;
+	vbuf[26] = vc[2] - m;
 
-	vbuf[30] = cx;
-	vbuf[31] = cy + n;
-	vbuf[32] = cz - m;
+	vbuf[30] = vc[0];
+	vbuf[31] = vc[1] + n;
+	vbuf[32] = vc[2] - m;
 
-	vbuf[36] = cx;
-	vbuf[37] = cy - n;
-	vbuf[38] = cz + m;
+	vbuf[36] = vc[0];
+	vbuf[37] = vc[1] - n;
+	vbuf[38] = vc[2] + m;
 
-	vbuf[42] = cx;
-	vbuf[43] = cy + n;
-	vbuf[44] = cz + m;
+	vbuf[42] = vc[0];
+	vbuf[43] = vc[1] + n;
+	vbuf[44] = vc[2] + m;
 
 	//(+-n, +-m, 0)
-	vbuf[48] = cx - n;
-	vbuf[49] = cy - m;
-	vbuf[50] = cz;
+	vbuf[48] = vc[0] - n;
+	vbuf[49] = vc[1] - m;
+	vbuf[50] = vc[2];
 
-	vbuf[54] = cx + n;
-	vbuf[55] = cy - m;
-	vbuf[56] = cz;
+	vbuf[54] = vc[0] + n;
+	vbuf[55] = vc[1] - m;
+	vbuf[56] = vc[2];
 
-	vbuf[60] = cx - n;
-	vbuf[61] = cy + m;
-	vbuf[62] = cz;
+	vbuf[60] = vc[0] - n;
+	vbuf[61] = vc[1] + m;
+	vbuf[62] = vc[2];
 
-	vbuf[66] = cx + n;
-	vbuf[67] = cy + m;
-	vbuf[68] = cz;
+	vbuf[66] = vc[0] + n;
+	vbuf[67] = vc[1] + m;
+	vbuf[68] = vc[2];
 }
-void carvepoint_sphere(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz,
-	float ux, float uy, float uz)
+void carvepoint_sphere(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 #define odd ((acc&0xfffe)+1)
 	int j,k,a;
 	float c,s;
-	float tempcx,tempcy,tempcz;
-	float temprx,tempry,temprz;
-	float tempfx,tempfy,tempfz;
+	vec3 tc, tr, tf;
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -473,15 +428,15 @@ void carvepoint_sphere(
 		c = cosine(s);
 		s = sine(s);
 
-		tempcx = cx + ux*s;
-		tempcy = cy + uy*s;
-		tempcz = cz + uz*s;
-		temprx = rx*c;
-		tempry = ry*c;
-		temprz = rz*c;
-		tempfx = fx*c;
-		tempfy = fy*c;
-		tempfz = fz*c;
+		tc[0] = vc[0] + vu[0]*s;
+		tc[1] = vc[1] + vu[1]*s;
+		tc[2] = vc[2] + vu[2]*s;
+		tr[0] = vr[0]*c;
+		tr[1] = vr[1]*c;
+		tr[2] = vr[2]*c;
+		tf[0] = vf[0]*c;
+		tf[1] = vf[1]*c;
+		tf[2] = vf[2]*c;
 
 		for(j=0;j<odd;j++)
 		{
@@ -489,9 +444,9 @@ void carvepoint_sphere(
 
 			c = cosine(j*tau/odd);
 			s = sine(j*tau/odd);
-			vbuf[a+0] = tempcx + temprx*c + tempfx*s;
-			vbuf[a+1] = tempcy + tempry*c + tempfy*s;
-			vbuf[a+2] = tempcz + temprz*c + tempfz*s;
+			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
+			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
+			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
 
 			vbuf[a+3] = rr;
 			vbuf[a+4] = gg;
@@ -501,16 +456,16 @@ void carvepoint_sphere(
 
 	a = odd*(odd/2)*6;
 
-	vbuf[a+ 0] = cx-ux;
-	vbuf[a+ 1] = cy-uy;
-	vbuf[a+ 2] = cz-uz;
+	vbuf[a+ 0] = vc[0]-vu[0];
+	vbuf[a+ 1] = vc[1]-vu[1];
+	vbuf[a+ 2] = vc[2]-vu[2];
 	vbuf[a+ 3] = rr;
 	vbuf[a+ 4] = gg;
 	vbuf[a+ 5] = bb;
 
-	vbuf[a+ 6] = cx+ux;
-	vbuf[a+ 7] = cy+uy;
-	vbuf[a+ 8] = cz+uz;
+	vbuf[a+ 6] = vc[0]+vu[0];
+	vbuf[a+ 7] = vc[1]+vu[1];
+	vbuf[a+ 8] = vc[2]+vu[2];
 	vbuf[a+ 9] = rr;
 	vbuf[a+10] = gg;
 	vbuf[a+11] = bb;

@@ -7,12 +7,23 @@ void keyboard_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
 	u8 buf[2];
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int x,y;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	buf[1] = 0;
 	if(ww >= hh)

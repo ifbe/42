@@ -30,10 +30,10 @@ void snake_read_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -70,18 +70,6 @@ void snake_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-	carveline_rect(
-		win, 0x404040,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
 }
 void snake_read_json(
 	struct arena* win, struct style* sty,

@@ -16,10 +16,10 @@ static void ooxx_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -67,26 +67,6 @@ static void ooxx_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-	for(y=0;y<3;y++)
-	{
-		for(x=0;x<3;x++)
-		{
-			carvesolid_sphere(
-				win, 0xffffff,
-				(cx-ww)+(2*x+1)*ww/3, (cy-hh)+(2*y+1)*hh/3, 0.0,
-				ww/3, 0.0, 0.0,
-				0.0, ww/3, 0.0,
-				0.0, 0.0, ww/3
-			);
-		}
-	}
 }
 static void ooxx_read_json(
 	struct arena* win, struct style* sty,

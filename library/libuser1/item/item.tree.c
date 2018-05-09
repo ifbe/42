@@ -8,10 +8,21 @@ static void tree_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	drawline(win, 0x6a4b23, cx-ww, cy+hh, cx+ww, cy+hh);
 	drawsolid_rect(win, 0x404040, cx-ww/4, cy, cx+ww/4, cy+hh);
@@ -25,62 +36,82 @@ static void tree_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
 
-	//ground
-	carvesolid_rect(
-		win, 0x6a4b23,
-		cx, cy, cz,
-		rx, ry, rz,
-		fx, fy, rz
-	);
-	carvesolid_prism4(
-		win, 0x404040,
-		cx+ux/2, cy+uy/2, cz+uz/2,
-		rx/8, ry/8, rz/8,
-		fx/8, fy/8, fz/8,
-		ux/2, uy/2, uz/2
-	);
+	tc[0] = vc[0]+vu[0]/2;
+	tc[1] = vc[1]+vu[1]/2;
+	tc[2] = vc[2]+vu[2]/2;
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	tu[0] = vu[0]/2;
+	tu[1] = vu[1]/2;
+	tu[2] = vu[2]/2;
+	carvesolid_prism4(win, 0x404040, tc, tr, tf, tu);
 
-	carvesolid_prism4(
-		win, 0x00ff00,
-		cx+ux*9/8, cy+uy*9/8, cz+uz*9/8,
-		rx*7/8, ry*7/8, rz*7/8,
-		fx*7/8, fy*7/8, fz*7/8,
-		ux/8, uy/8, uz/8
-	);
-	carvesolid_prism4(
-		win, 0x00ff00,
-		cx+ux*11/8, cy+uy*11/8, cz+uz*11/8,
-		rx*5/8, ry*5/8, rz*5/8,
-		fx*5/8, fy*5/8, fz*5/8,
-		ux/8, uy/8, uz/8
-	);
-	carvesolid_prism4(
-		win, 0x00ff00,
-		cx+ux*13/8, cy+uy*13/8, cz+uz*13/8,
-		rx*3/8, ry*3/8, rz*3/8,
-		fx*3/8, fy*3/8, fz*3/8,
-		ux/8, uy/8, uz/8
-	);
-	carvesolid_prism4(
-		win, 0x00ff00,
-		cx+ux*15/8, cy+uy*15/8, cz+uz*15/8,
-		rx/8, ry/8, rz/8,
-		fx/8, fy/8, fz/8,
-		ux/8, uy/8, uz/8
-	);
+	tc[0] = vc[0]+vu[0]*9/8;
+	tc[1] = vc[1]+vu[1]*9/8;
+	tc[2] = vc[2]+vu[2]*9/8;
+	tr[0] = vr[0]*7/8;
+	tr[1] = vr[1]*7/8;
+	tr[2] = vr[2]*7/8,
+	tf[0] = vf[0]*7/8;
+	tf[1] = vf[1]*7/8;
+	tf[2] = vf[2]*7/8;
+	tu[0] = vu[0]/8;
+	tu[1] = vu[1]/8;
+	tu[2] = vu[2]/8;
+	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+
+	tc[0] = vc[0]+vu[0]*11/8;
+	tc[1] = vc[1]+vu[1]*11/8;
+	tc[2] = vc[2]+vu[2]*11/8;
+	tr[0] = vr[0]*5/8;
+	tr[1] = vr[1]*5/8;
+	tr[2] = vr[2]*5/8;
+	tf[0] = vf[0]*5/8;
+	tf[1] = vf[1]*5/8;
+	tf[2] = vf[2]*5/8;
+	tu[0] = vu[0]/8;
+	tu[1] = vu[1]/8;
+	tu[2] = vu[2]/8;
+	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+
+	tc[0] = vc[0]+vu[0]*13/8;
+	tc[1] = vc[1]+vu[1]*13/8;
+	tc[2] = vc[2]+vu[2]*13/8;
+	tr[0] = vr[0]*3/8;
+	tr[1] = vr[1]*3/8;
+	tr[2] = vr[2]*3/8;
+	tf[0] = vf[0]*3/8;
+	tf[1] = vf[1]*3/8;
+	tf[2] = vf[2]*3/8;
+	tu[0] = vu[0]/8;
+	tu[1] = vu[1]/8;
+	tu[2] = vu[2]/8;
+	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+
+	tc[0] = vc[0]+vu[0]*15/8;
+	tc[1] = vc[1]+vu[1]*15/8;
+	tc[2] = vc[2]+vu[2]*15/8;
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	tu[0] = vu[0]/8;
+	tu[1] = vu[1]/8;
+	tu[2] = vu[2]/8;
+	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
 }
 static void tree_read_json(
 	struct arena* win, struct style* sty,

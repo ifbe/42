@@ -36,13 +36,21 @@ static void piano_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 color;
-	int x,y;
-	int x1,y1,x2,y2;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	int j;
 	for(j=0;j<7;j++)

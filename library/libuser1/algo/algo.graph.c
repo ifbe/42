@@ -12,13 +12,6 @@ struct origin
 	u64 type;
 	void* addr;
 };
-struct vertex
-{
-	float x;
-	float y;
-	float z;
-	float w;
-};
 struct pairof
 {
 	u16 parent;
@@ -26,8 +19,8 @@ struct pairof
 };
 static struct origin orig[16];
 static struct pairof pair[16];
-static struct vertex vbuf[16];
-static struct vertex obuf[16];
+static vec3 vbuf[16];
+static vec3 obuf[16];
 static int olen = 0;
 static int plen = 0;
 static int vlen = 0;
@@ -53,9 +46,9 @@ int graph_add(u64 type, void* addr)
 	orig[j].type = type;
 	orig[j].addr = addr;
 
-	vbuf[j].x = (getrandom() & 0xffff) / 65536.0;
-	vbuf[j].y = (getrandom() & 0xffff) / 65536.0;
-	vbuf[j].z = (getrandom() & 0xffff) / 65536.0;
+	vbuf[j][0] = (getrandom() & 0xffff) / 65536.0;
+	vbuf[j][1] = (getrandom() & 0xffff) / 65536.0;
+	vbuf[j][2] = (getrandom() & 0xffff) / 65536.0;
 	return j;
 }
 void graph_pair(int parent, int child)
@@ -102,9 +95,9 @@ void butane()
 
 	for(j=0;j<14;j++)
 	{
-		vbuf[j].x = (getrandom() & 0xffff) / 65536.0;
-		vbuf[j].y = (getrandom() & 0xffff) / 65536.0;
-		vbuf[j].z = (getrandom() & 0xffff) / 65536.0;
+		vbuf[j][0] = (getrandom() & 0xffff) / 65536.0;
+		vbuf[j][1] = (getrandom() & 0xffff) / 65536.0;
+		vbuf[j][2] = (getrandom() & 0xffff) / 65536.0;
 	}
 	vlen = 14;
 	olen = 0;
@@ -188,12 +181,10 @@ static void starry_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	drawicon_1(
@@ -217,19 +208,17 @@ static void graph_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int i,j,k;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	void* p;
 	struct arena* aa;
 	struct actor* bb;
+	void* p;
+	int i,j,k;
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
 
 	forcedirected_2d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
+	vbuf[0][0] = vbuf[0][1] = vbuf[0][2] = 0.0;
 
 	drawsolid_rect(win, 0, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2);
 	for(i=0;i<plen;i++)
@@ -238,16 +227,16 @@ static void graph_read_pixel(
 		k = pair[i].child;
 		drawline(
 			win, 0xffffff,
-			cx + ww*(vbuf[j].x),
-			cy - hh*(vbuf[j].y),
-			cx + ww*(vbuf[k].x),
-			cy - hh*(vbuf[k].y)
+			cx + ww*(vbuf[j][0]),
+			cy - hh*(vbuf[j][1]),
+			cx + ww*(vbuf[k][0]),
+			cy - hh*(vbuf[k][1])
 		);
 	}
 	for(i=0;i<vlen;i++)
 	{
-		j = cx + ww*(vbuf[i].x);
-		k = cy - hh*(vbuf[i].y);
+		j = cx + ww*(vbuf[i][0]);
+		k = cy - hh*(vbuf[i][1]);
 
 		p = "?";
 		if(i < olen)
@@ -276,29 +265,25 @@ static void graph_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int i,j,k;
+	vec3 vr, vf, vu;
 
 	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0].x = vbuf[0].y = vbuf[0].z = 0.0;
+	vbuf[0][0] = vbuf[0][1] = vbuf[0][2] = 0.0;
 
 	for(i=0;i<plen;i++)
 	{
 		j = pair[i].parent;
 		k = pair[i].child;
-		carveline(
-			win, 0xff00,
-			vbuf[j].x, vbuf[j].y, vbuf[j].z,
-			vbuf[k].x, vbuf[k].y, vbuf[k].z
-		);
+		carveline(win, 0xff00, vbuf[j], vbuf[k]);
 	}
+
+	vr[0] = vf[1] = vu[2] = 0.01;
+	vr[1] = vr[2] = 0.0;
+	vf[0] = vr[2] = 0.0;
+	vu[0] = vu[1] = 0.0;
 	for(j=0;j<vlen;j++)
 	{
-		carvesolid_prism4(
-			win, 0xffffff,
-			vbuf[j].x, vbuf[j].y, vbuf[j].z,
-			0.01, 0.0, 0.0,
-			0.0, 0.01, 0.0,
-			0.0, 0.0, 0.01
-		);
+		carvesolid_prism4(win, 0xffffff, vbuf[j], vr, vf, vu);
 	}
 }
 static void graph_read_json(

@@ -14,10 +14,10 @@ static void poker_read_pixel(
 	int j, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -58,29 +58,6 @@ static void poker_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int j;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-	carvesolid_rect(
-		win, 0x404040,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
-
-	for(j=0;j<13;j++)
-	{
-		carvesolid_rect(
-			win, 0xc08040,
-			(cx-ww/2)+(j*ww/16), cy-(hh*(48+j)/64), ww/16,
-			ww/24, 0.0, 0.0,
-			0.0, 0.0, ww/16
-		);
-	}
 }
 static void poker_read_json(
 	struct arena* win, struct style* sty,

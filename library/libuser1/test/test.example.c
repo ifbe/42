@@ -9,12 +9,21 @@ static void example_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	u32 bg,fg;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	bg = getrandom()&0xffffff;
 	fg = (~bg)&0xffffff;
@@ -25,62 +34,51 @@ static void example_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float rx = sty->rx;
-	float ry = sty->ry;
-	float rz = sty->rz;
-	float fx = sty->fx;
-	float fy = sty->fy;
-	float fz = sty->fz;
-	float ux = sty->ux;
-	float uy = sty->uy;
-	float uz = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
-	carvepoint_sphere(
-		win, 0xffffff,
-		cx-rx/2-fx/2+ux/2, cy-ry/2-fy/2+uy/2, cz-rz/2-fz/2+uz/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
-	carveline_sphere(
-		win, 0xffffff,
-		cx+rx/2-fx/2+ux/2, cy+ry/2-fy/2+uy/2, cz+rz/2-fz/2+uz/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
-	carvesolid_sphere(
-		win, 0xff00ff,
-		cx-rx/2+fx/2+ux/2, cy-ry/2+fy/2+uy/2, cz-rz/2+fz/2+uz/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	tu[0] = vu[0]/2;
+	tu[1] = vu[1]/2;
+	tu[2] = vu[2]/2;
 
-	carvepoint_sphere(
-		win, 0xffffff,
-		cx-rx/2-fx/2+ux*3/2, cy-ry/2-fy/2+uy*3/2, cz-rz/2-fz/2+uz*3/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
-	carveline_sphere(
-		win, 0xffffff,
-		cx+rx/2-fx/2+ux*3/2, cy+ry/2-fy/2+uy*3/2, cz+rz/2-fz/2+uz*3/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
-	carvesolid_sphere(
-		win, 0x87cefa,
-		cx-rx/2+fx/2+ux*3/2, cy-ry/2+fy/2+uy*3/2, cz-rz/2+fz/2+uz*3/2,
-		rx/2, ry/2, rz/2,
-		fx/2, fy/2, fz/2,
-		ux/2, uy/2, uz/2
-	);
+	tc[0] = vc[0]-vr[0]/2-vf[0]/2+vu[0]/2;
+	tc[1] = vc[1]-vr[1]/2-vf[1]/2+vu[1]/2;
+	tc[2] = vc[2]-vr[2]/2-vf[2]/2+vu[2]/2,
+	carvepoint_sphere(win, 0xffffff, tc, tr, tf, tu);
+
+	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]/2;
+	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]/2;
+	tc[2] = vc[2]+vr[2]/2-vf[2]/2+vu[2]/2;
+	carveline_sphere(win, 0xffffff, tc, tr, tf, tu);
+
+	tc[0] = vc[0]-vr[0]/2+vf[0]/2+vu[0]/2;
+	tc[1] = vc[1]-vr[1]/2+vf[1]/2+vu[1]/2;
+	tc[2] = vc[2]-vr[2]/2+vf[2]/2+vu[2]/2;
+	carvesolid_sphere(win, 0xff00ff, tc, tr, tf, tu);
+
+	tc[0] = vc[0]-vr[0]/2-vf[0]/2+vu[0]*3/2;
+	tc[1] = vc[1]-vr[1]/2-vf[1]/2+vu[1]*3/2;
+	tc[2] = vc[2]-vr[2]/2-vf[2]/2+vu[2]*3/2;
+	carvepoint_sphere(win, 0xffffff, tc, tr, tf, tu);
+
+	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]*3/2;
+	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]*3/2;
+	tc[2] = vc[2]+vr[2]/2-vf[2]/2+vu[2]*3/2;
+	carveline_sphere(win, 0xffffff, tc, tr, tf, tu);
+
+	tc[0] = vc[0]-vr[0]/2+vf[0]/2+vu[0]*3/2;
+	tc[1] = vc[1]-vr[1]/2+vf[1]/2+vu[1]*3/2;
+	tc[2] = vc[2]-vr[2]/2+vf[2]/2+vu[2]*3/2;
+	carvesolid_sphere(win, 0x87cefa, tc, tr, tf, tu);
 }
 static void example_read_json(
 	struct arena* win, struct style* sty,

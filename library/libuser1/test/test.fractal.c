@@ -34,12 +34,21 @@ static void fractal_read_pixel(
 {
 	u32 c;
 	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	int w = win->stride;
 	u32* buf = win->buf;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
@@ -60,18 +69,6 @@ static void fractal_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	carvesolid_rect(
-		win, 0xffffff,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
 }
 static void fractal_read_json(
 	struct arena* win, struct style* sty,

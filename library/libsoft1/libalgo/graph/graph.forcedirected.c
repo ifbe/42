@@ -1,28 +1,17 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "artery.h"
 double squareroot(double);
-void say(void*, ...);
 
 
 
 
-struct vertex
-{
-	float x;
-	float y;
-	float z;
-	float w;
-};
 struct pair
 {
 	u16 parent;
 	u16 child;
 };
 void forcedirected_2d(
-	struct vertex* obuf, int olen,
-	struct vertex* vbuf, int vlen,
+	vec3 obuf[], int olen,
+	vec3 vbuf[], int vlen,
 	struct pair* lbuf, int llen)
 {
 	int j,k;
@@ -32,13 +21,13 @@ void forcedirected_2d(
 	//coulomb force
 	for(j=0;j<vlen;j++)
 	{
-		obuf[j].x = obuf[j].y = 0.0;
+		obuf[j][0] = obuf[j][1] = 0.0;
 		for(k=0;k<vlen;k++)
 		{
 			if(j == k)continue;
 
-			x = vbuf[j].x - vbuf[k].x;
-			y = vbuf[j].y - vbuf[k].y;
+			x = vbuf[j][0] - vbuf[k][0];
+			y = vbuf[j][1] - vbuf[k][1];
 
 			//F = (vec/r)*(k*q1*q2)/(r^2)
 			//F = vec*(k*q1*q2*)/(r^3)
@@ -47,8 +36,8 @@ void forcedirected_2d(
 			x *= t;
 			y *= t;
 
-			obuf[j].x += x;
-			obuf[j].y += y;
+			obuf[j][0] += x;
+			obuf[j][1] += y;
 			//say("%d,%d,%f,%f\n",j,k,x,y);
 		}
 	}
@@ -56,19 +45,19 @@ void forcedirected_2d(
 	//spring force
 	for(j=0;j<llen;j++)
 	{
-		x = vbuf[lbuf[j].parent].x - vbuf[lbuf[j].child].x;
-		y = vbuf[lbuf[j].parent].y - vbuf[lbuf[j].child].y;
+		x = vbuf[lbuf[j].parent][0] - vbuf[lbuf[j].child][0];
+		y = vbuf[lbuf[j].parent][1] - vbuf[lbuf[j].child][1];
 
 		//F = vec*k*r
 		t = squareroot(x*x + y*y);
 		x /= t;
 		y /= t;
 
-		obuf[lbuf[j].child].x += x;
-		obuf[lbuf[j].child].y += y;
+		obuf[lbuf[j].child][0] += x;
+		obuf[lbuf[j].child][1] += y;
 
-		obuf[lbuf[j].parent].x -= x;
-		obuf[lbuf[j].parent].y -= y;
+		obuf[lbuf[j].parent][0] -= x;
+		obuf[lbuf[j].parent][1] -= y;
 	}
 
 	//move point
@@ -76,18 +65,18 @@ void forcedirected_2d(
 	{
 /*
 		say("%f,%f -> %f,%f\n",
-			vbuf[j].x, vbuf[j].y,
-			obuf[j].x, obuf[j].y
+			vbuf[j][0], vbuf[j][1],
+			obuf[j][0], obuf[j][1]
 		);
 */
-		vbuf[j].x += obuf[j].x / 50.0;
-		vbuf[j].y += obuf[j].y / 50.0;
+		vbuf[j][0] += obuf[j][0] / 50.0;
+		vbuf[j][1] += obuf[j][1] / 50.0;
 	}
 	//say("\n");
 }
 void forcedirected_3d(
-	struct vertex* obuf, int olen,
-	struct vertex* vbuf, int vlen,
+	vec3 obuf[], int olen,
+	vec3 vbuf[], int vlen,
 	struct pair* lbuf, int llen)
 {
 	int j,k;
@@ -96,13 +85,13 @@ void forcedirected_3d(
 	//coulomb force
 	for(j=0;j<vlen;j++)
 	{
-		obuf[j].x = obuf[j].y = obuf[j].z = 0.0;
+		obuf[j][0] = obuf[j][1] = obuf[j][2] = 0.0;
 		for(k=0;k<vlen;k++)
 		{
 			if(j == k)continue;
-			x = vbuf[j].x - vbuf[k].x;
-			y = vbuf[j].y - vbuf[k].y;
-			z = vbuf[j].z - vbuf[k].z;
+			x = vbuf[j][0] - vbuf[k][0];
+			y = vbuf[j][1] - vbuf[k][1];
+			z = vbuf[j][2] - vbuf[k][2];
 
 			//F = (vec/r)*(k*q1*q2)/(r^2)
 			//F = vec*(k*q1*q2*)/(r^3)
@@ -112,18 +101,18 @@ void forcedirected_3d(
 			y *= t;
 			z *= t;
 
-			obuf[j].x += x;
-			obuf[j].y += y;
-			obuf[j].z += z;
+			obuf[j][0] += x;
+			obuf[j][1] += y;
+			obuf[j][2] += z;
 		}
 	}
 
 	//spring force
 	for(j=0;j<llen;j++)
 	{
-		x = vbuf[lbuf[j].parent].x - vbuf[lbuf[j].child].x;
-		y = vbuf[lbuf[j].parent].y - vbuf[lbuf[j].child].y;
-		z = vbuf[lbuf[j].parent].z - vbuf[lbuf[j].child].z;
+		x = vbuf[lbuf[j].parent][0] - vbuf[lbuf[j].child][0];
+		y = vbuf[lbuf[j].parent][1] - vbuf[lbuf[j].child][1];
+		z = vbuf[lbuf[j].parent][2] - vbuf[lbuf[j].child][2];
 
 		//F = vec*k*r
 		t = squareroot(x*x + y*y + z*z);
@@ -131,13 +120,13 @@ void forcedirected_3d(
 		y /= t;
 		z /= t;
 
-		obuf[lbuf[j].child].x += x;
-		obuf[lbuf[j].child].y += y;
-		obuf[lbuf[j].child].z += z;
+		obuf[lbuf[j].child][0] += x;
+		obuf[lbuf[j].child][1] += y;
+		obuf[lbuf[j].child][2] += z;
 
-		obuf[lbuf[j].parent].x -= x;
-		obuf[lbuf[j].parent].y -= y;
-		obuf[lbuf[j].parent].z -= z;
+		obuf[lbuf[j].parent][0] -= x;
+		obuf[lbuf[j].parent][1] -= y;
+		obuf[lbuf[j].parent][2] -= z;
 	}
 
 	//move point
@@ -145,13 +134,13 @@ void forcedirected_3d(
 	{
 /*
 		say("%f,%f,%f -> %f,%f,%f\n",
-			vbuf[j].x, vbuf[j].y, vbuf[j].z,
-			obuf[j].x, obuf[j].y, obuf[j].z
+			vbuf[j][0], vbuf[j][1], vbuf[j][2],
+			obuf[j][0], obuf[j][1], obuf[j][2]
 		);
 */
-		vbuf[j].x += obuf[j].x / 50.0;
-		vbuf[j].y += obuf[j].y / 50.0;
-		vbuf[j].z += obuf[j].z / 50.0;
+		vbuf[j][0] += obuf[j][0] / 50.0;
+		vbuf[j][1] += obuf[j][1] / 50.0;
+		vbuf[j][2] += obuf[j][2] / 50.0;
 	}
 	//say("\n");
 }

@@ -17,10 +17,21 @@ static void palette_read_pixel(
 {
 	int g,b;
 	int x,y,type;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	int w = win->stride;
 	u32* buf = (u32*)(win->buf);
 	u32 pal;
@@ -48,18 +59,6 @@ static void palette_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	carvesolid_rect(
-		win, 0xffffff,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
 }
 static void palette_read_json(
 	struct arena* win, struct style* sty,

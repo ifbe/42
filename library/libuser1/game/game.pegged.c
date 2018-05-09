@@ -11,10 +11,10 @@ static void pegged_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -51,12 +51,11 @@ static void pegged_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
 	for(y=0;y<7;y++)
 	{
@@ -64,19 +63,31 @@ static void pegged_read_vbo(
 		{
 			if(data[y][x] == 0)continue;
 
-			carveline_rect(
-				win, 0x808080,
-				cx+(2*x-6)*ww/7, cy+(2*y-6)*hh/7, 0.0,
-				ww/7, 0.0, 0.0,
-				0.0, hh/7, 0.0
-			);
-			carvesolid_sphere(
-				win, 0xffffff,
-				cx+(x-3)*ww*2/7, cy+(y-3)*hh*2/7, 0.0,
-				ww/14, 0.0, 0.0,
-				0.0, ww/14, 0.0,
-				0.0, 0.0, ww/14
-			);
+			f[0] = (2*x-6)/7.0;
+			f[1] = (2*y-6)/7.0;
+			f[2] = 0.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+
+			tr[0] = vr[0] / 7;
+			tr[1] = vr[1] / 7;
+			tr[2] = vr[2] / 7;
+			tf[0] = vf[0] / 7;
+			tf[1] = vf[1] / 7;
+			tf[2] = vf[2] / 7;
+			carveline_rect(win, 0x808080, tc, tr, tf);
+
+			tr[0] = vr[0] / 14;
+			tr[1] = vr[1] / 14;
+			tr[2] = vr[2] / 14;
+			tf[0] = vf[0] / 14;
+			tf[1] = vf[1] / 14;
+			tf[2] = vf[2] / 14;
+			tu[0] = vu[0] / 14;
+			tu[1] = vu[1] / 14;
+			tu[2] = vu[2] / 14;
+			carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 		}
 	}
 }

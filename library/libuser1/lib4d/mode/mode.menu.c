@@ -5,7 +5,7 @@ static char* target[2] = {
 };
 static char* name[4] = {
 	"0.overview",
-	"1.adjust  ",
+	"1.layout  ",
 	"2.interact",
 	"3.????????"
 };

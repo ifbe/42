@@ -34,17 +34,26 @@ static void spectrum_read_pixel(
 {
 	float t,cc,ss;
 	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
 	short* pcm;
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	if(0x30 == haha)
 	{
@@ -90,27 +99,30 @@ static void spectrum_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x;
-	float cc,ss;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	float a,c,s;
+	vec3 tc, tr, tf, tu, f;
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
 	for(x=0;x<512;x++)
 	{
-		cc = cosine(x*tau/512);
-		ss = sine(x*tau/512);
-		carveline(
-			win, (255-x/2)+(x<<15),
-			cx + cc, cy + ss, 0.0,
-			cx + cc, cy + ss, amp[x]
-		);
+		a = x*tau/512;
+		c = cosine(a);
+		s = sine(a);
+
+		tc[0] = vc[0] + vr[0]*c + vf[0]*s;
+		tc[1] = vc[1] + vr[1]*c + vf[1]*s;
+		tc[2] = vc[2] + vr[2]*c + vf[2]*s;
+		tr[0] = tc[0] + vu[0]*amp[x]/16;
+		tr[1] = tc[1] + vu[1]*amp[x]/16;
+		tr[2] = tc[2] + vu[2]*amp[x]/16;
+		carveline(win, (255-x/2)+(x<<15), tc, tr);
 	}
 }
 static void spectrum_read_json(

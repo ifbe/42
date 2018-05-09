@@ -43,10 +43,10 @@ void xiangqi_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -163,39 +163,49 @@ static void xiangqi_read_vbo(
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x8d6f25, vc, vr, vf);
 
-	carvesolid_rect(
-		win, 0x8d6f25,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
 	for(y=-5;y<5;y++)
 	{
-		carveline(
-			win, 0x222222,
-			cx-(ww*8/9), cy+(2*y+1)*hh/10, 0.0,
-			cx+(ww*8/9), cy+(2*y+1)*hh/10, 0.0
-		);
+		f[0] = 8.0/9;
+		f[1] = (2*y+1)/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		carveline(win, 0x222222, tc, tr);
 	}
 	for(x=-4;x<5;x++)
 	{
-		carveline(
-			win, 0x222222,
-			cx+x*ww*2/9, cy-hh*1/10, 0.0,
-			cx+x*ww*2/9, cy-hh*9/10, 0.0
-		);
-		carveline(
-			win, 0x222222,
-			cx+x*ww*2/9, cy+hh*1/10, 0.0,
-			cx+x*ww*2/9, cy+hh*9/10, 0.0
-		);
+		f[0] = x*2/9.0;
+		f[1] = -1.0/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		f[1] = -9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		carveline(win, 0x222222, tc, tr);
+
+		f[1] = 1.0/10.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		f[1] = 9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		carveline(win, 0x222222, tc, tr);
 	}
 
 	for(y=0;y<10;y++)
@@ -211,19 +221,30 @@ static void xiangqi_read_vbo(
 			//>0x61
 			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
 
-			carvesolid_cylinder(
-				win, 0xf9d65b,
-				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww/20,
-				ww/9, 0.0, 0.0,
-				0.0, 0.0, ww/20
-			);
-			carveutf8(
-				win, fontcolor,
-				cx+(ww/9)*(2*x-8), cy+(hh/10)*(2*y-9), ww*2/19,
-				ww/18, 0.0, 0.0,
-				0.0, hh/20, 0.0,
-				(u8*)char2hanzi(data[y][x]), 0
-			);
+			f[0] = (x+x-8)/9.0;
+			f[1] = (y+y-9)/10.0;
+			f[2] = 1.0/20;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / 9.1;
+			tr[1] = vr[1] / 9.1;
+			tr[2] = vr[2] / 9.1;
+			tu[0] = vu[0] / 20.0;
+			tu[1] = vu[1] / 20.0;
+			tu[2] = vu[2] / 20.0;
+			carvesolid_cylinder(win, 0xf9d65b, tc, tr, tu);
+			tc[0] += vu[0]*f[2]*1.001;
+			tc[1] += vu[1]*f[2]*1.001;
+			tc[2] += vu[2]*f[2]*1.001;
+			tr[0] = vr[0] / 18;
+			tr[1] = vr[1] / 18;
+			tr[2] = vr[2] / 18;
+			tu[0] = vf[0] / 20;
+			tu[1] = vf[1] / 20;
+			tu[2] = vf[2] / 20;
+			carveutf8(win, fontcolor, tc, tr, tf,
+				(u8*)char2hanzi(data[y][x]), 0);
 		}
 	}
 }

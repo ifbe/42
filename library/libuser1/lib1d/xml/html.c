@@ -77,81 +77,81 @@ void parsestyle(struct style* sty, u8* buf, int len)
 				decstr2double(buf+k+5, &f);
 				//say("l=%f\n", f);
 
-				sty->lx = f;
+				sty->vl[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "right:", 6))
 			{
 				decstr2double(buf+k+6, &f);
 				//say("r=%f\n", f);
 
-				sty->rx = f;
+				sty->vr[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "bottom:", 7))
 			{
 				decstr2double(buf+k+7, &f);
 				//say("b=%f\n", f);
 
-				sty->ny = f;
+				sty->vn[1] = f;
 			}
 			else if(0 == ncmp(buf+k, "top:", 4))
 			{
 				decstr2double(buf+k+4, &f);
 				//say("t=%f\n", f);
 
-				sty->fy = f;
+				sty->vf[1] = f;
 			}
 
 			//
 			else if(0 == ncmp(buf+k, "x:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->cx = f;
+				sty->vc[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "y:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->cy = f;
+				sty->vc[1] = f;
 			}
 			else if(0 == ncmp(buf+k, "z:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->cz = f;
+				sty->vc[2] = f;
 			}
 			else if(0 == ncmp(buf+k, "l:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->lx = f;
+				sty->vl[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "r:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->rx = f;
+				sty->vr[0] = f;
 			}
 			else if(0 == ncmp(buf+k, "n:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->ny = f;
+				sty->vn[1] = f;
 			}
 			else if(0 == ncmp(buf+k, "f:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->fy = f;
+				sty->vf[1] = f;
 			}
 			else if(0 == ncmp(buf+k, "b:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->bz = f;
+				sty->vb[2] = f;
 			}
 			else if(0 == ncmp(buf+k, "u:", 2))
 			{
 				decstr2double(buf+k+2, &f);
-				sty->uz = f;
+				sty->vu[2] = f;
 			}
 			k = j+1;
 		}
 	}
 
-	say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
+	//say("(%f,%f,%f)\n", sty->rx, sty->fy, sty->uz);
 }
 
 

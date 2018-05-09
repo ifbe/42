@@ -13,17 +13,25 @@ void camera_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int j;
-	int w = win->stride;
-	int h = win->height;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
 	u8* src;
 	u8* dst;
+	int cx, cy, ww, hh, j;
+	int w = win->stride;
+	int h = win->height;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 
 	src = (u8*)(act->buf);
 	if(0 == src)return;

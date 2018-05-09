@@ -17,10 +17,10 @@ static void weiqi_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -81,34 +81,40 @@ static void weiqi_read_vbo(
 {
 	int x,y;
 	float m,n;
-	float cx = sty->cx;
-	float cy = sty->cy;
-	float cz = sty->cz;
-	float ww = sty->rx;
-	float hh = sty->fy;
-	float dd = sty->uz;
-	carvesolid_rect(
-		win, 0xf9d65b,
-		cx, cy, cz,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0xf9d65b, vc, vr, vf);
+
 	for(y=-9;y<10;y++)
 	{
-		carveline(
-			win, 0x222222,
-			cx-ww*18/19, cy+(y*hh*2/19), ww/19/4,
-			cx+ww*18/19, cy+(y*hh*2/19), ww/19/4
-		);
+		f[0] = 18.0/19;
+		f[1] = y*2.0/19;
+		f[2] = 1.0/19/4;
+		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		carveline(win, 0x222222, tc, tr);
 	}
 	for(x=-9;x<10;x++)
 	{
-		carveline(
-			win, 0x222222,
-			cx+(x*ww*2/19), cy-hh*18/19, ww/19/4,
-			cx+(x*ww*2/19), cy+hh*18/19, ww/19/4
-		);
+		f[0] = x*2.0/19;
+		f[1] = 18.0/19;
+		f[2] = 1.0/19/4;
+		tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2] + f[2]*vu[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		carveline(win, 0x222222, tc, tr);
 	}
+/*
 	for(n=cy-hh*12/19;n<=cy+hh*12/19;n+=hh*12/19)
 	{
 		for(m=cx-ww*12/19;m<=cx+ww*12/19;m+=ww*12/19)
@@ -121,6 +127,7 @@ static void weiqi_read_vbo(
 			);
 		}
 	}
+*/
 }
 static void weiqi_read_json(
 	struct arena* win, struct style* sty,

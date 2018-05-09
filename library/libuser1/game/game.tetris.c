@@ -39,10 +39,10 @@ static void tetris_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -92,23 +92,31 @@ static void tetris_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
 		{
-			carvesolid_prism4(
-				win, 0xffffff,
-				(cx-ww)+(2*x+1)*ww/WIDTH, (cy-ww)+(2*y+1)*hh/HEIGHT, ww/WIDTH,
-				ww/(WIDTH+1), 0.0, 0.0,
-				0.0, hh/(HEIGHT+1), 0.0,
-				0.0, 0.0, ww/WIDTH
-			);
+			f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+			f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+			f[2] = 1.0/36;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / (WIDTH+1);
+			tr[1] = vr[1] / (WIDTH+1);
+			tr[2] = vr[2] / (WIDTH+1);
+			tf[0] = vf[0] / (HEIGHT+1);
+			tf[1] = vf[1] / (HEIGHT+1);
+			tf[2] = vf[2] / (HEIGHT+1);
+			tu[0] = vu[0] * f[2];
+			tu[1] = vu[1] * f[2];
+			tu[2] = vu[2] * f[2];
+			carvesolid_prism4(win, 0xffffff, tc, tr, tf ,tu);
 		}
 	}
 }

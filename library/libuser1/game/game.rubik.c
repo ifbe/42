@@ -21,10 +21,10 @@ static void rubikscube_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -112,33 +112,45 @@ static void rubikscube_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
-	cz += dd;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 
 	for(y=0;y<level;y++)
 	{
 		for(x=0;x<level;x++)
 		{
 			//left
-			carvesolid_rect(
-				win, 0xff00,
-				cx-ww, cy-hh+(2*x+1)*hh/level, cz-dd+(2*y+1)*dd/level,
-				0.0, -hh/(level+0.5), 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
+			f[0] = -1.0;
+			f[1] = (2.0*x+1.0)/level - 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = -vf[0] / (level+0.5);
+			tr[1] = -vf[1] / (level+0.5);
+			tr[2] = -vf[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			carvesolid_rect(win, 0xff00, tc, tr, tf);
 
 			//right
-			carvesolid_rect(
-				win, 0xff,
-				cx+ww, cy-hh+(2*x+1)*hh/level, cz-dd+(2*y+1)*dd/level,
-				0.0, hh/(level+0.5), 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
+			f[0] = 1.0;
+			f[1] = (2.0*x+1.0)/level - 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vf[0] / (level+0.5);
+			tr[1] = vf[1] / (level+0.5);
+			tr[2] = vf[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			carvesolid_rect(win, 0xff00, tc, tr, tf);
 		}
 	}
 
@@ -147,20 +159,34 @@ static void rubikscube_read_vbo(
 		for(x=0;x<level;x++)
 		{
 			//near
-			carvesolid_rect(
-				win, 0xff0000,
-				cx-ww+(2*x+1)*ww/level, cy-hh, cz-dd+(2*y+1)*dd/level,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = -1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			carvesolid_rect(win, 0xff0000, tc, tr, tf);
 
 			//far
-			carvesolid_rect(
-				win, 0xfa8010,
-				cx-ww+(2*x+1)*ww/level, cy+hh, cz-dd+(2*y+1)*dd/level,
-				-ww/(level+0.5), 0.0, 0.0,
-				0.0, 0.0, dd/(level+0.5)
-			);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = -vr[0] / (level+0.5);
+			tr[1] = -vr[1] / (level+0.5);
+			tr[2] = -vr[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			carvesolid_rect(win, 0xfa8010, tc, tr, tf);
 		}
 	}
 
@@ -169,20 +195,34 @@ static void rubikscube_read_vbo(
 		for(x=0;x<level;x++)
 		{
 			//bottom
-			carvesolid_rect(
-				win, 0xffff00,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, cz-dd,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, -hh/(level+0.5), 0.0
-			);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = (2.0*y+1.0)/level - 1.0;
+			f[2] = -1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = -vf[0] / (level+0.5);
+			tf[1] = -vf[1] / (level+0.5);
+			tf[2] = -vf[2] / (level+0.5);
+			carvesolid_rect(win, 0xffff00, tc, tr, tf);
 
 			//upper
-			carvesolid_rect(
-				win, 0xffffff,
-				cx-ww+(2*x+1)*ww/level, cy-hh+(2*y+1)*hh/level, cz+dd,
-				ww/(level+0.5), 0.0, 0.0,
-				0.0, hh/(level+0.5), 0.0
-			);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = (2.0*y+1.0)/level - 1.0;
+			f[2] = 1.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = vf[0] / (level+0.5);
+			tf[1] = vf[1] / (level+0.5);
+			tf[2] = vf[2] / (level+0.5);
+			carvesolid_rect(win, 0xffffff, tc, tr, tf);
 		}
 	}
 }

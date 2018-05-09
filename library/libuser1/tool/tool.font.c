@@ -21,12 +21,21 @@ static void font_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y,m,n;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 	drawline_rect(win, 0xff, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ww &= 0xfff0;
@@ -74,18 +83,13 @@ static void font_read_vbo(
 {
 	int x,y,dx,dy;
 	int left,right,near,far;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	carveline(win, 0xffffff, cx, cy-hh, 0.0, cx, cy+hh, 0.0);
-	carveline(win, 0xffffff, cx-ww, cy, 0.0, cx+ww, cy, 0.0);
-	carveline_rect(
-		win, 0xffffff,
-		cx, cy, 0.0,
-		ww, 0.0, 0.0,
-		0.0, hh, 0.0
-	);
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carveline_rect(win, 0xffffff, vc, vr, vf);
+
 	for(y=-32;y<32;y++)
 	{
 		for(x=-32;x<32;x++)
@@ -97,22 +101,29 @@ static void font_read_vbo(
 			if(dx > 0xff)continue;
 			if(dy > 0xff)continue;
 
-			carveunicode(
-				win, 0xffffff,
-				cx+(2*x+1)*ww/2/32, cy+(2*y+1)*hh/2/32, 0.0,
-				ww/2/32, 0.0, 0.0,
-				0.0, hh/2/32, 0.0,
-				(dy<<8)+dx
-			);
+			f[0] = (2*x+1)/64;
+			f[1] = (2*y+1)/64;
+			f[2] = 0.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / 64;
+			tr[1] = vr[1] / 64;
+			tr[2] = vr[2] / 64;
+			tf[0] = vf[0] / 64;
+			tf[1] = vf[1] / 64;
+			tf[2] = vf[2] / 64;
+			carveunicode(win, 0xffffff, tc, tr, tf, (dy<<8)+dx);
 		}
 	}
-	carvehexadecimal(
-		win, 0xff,
-		cx, cy, 4.0,
-		ww/4, 0.0, 0.0,
-		0.0, hh/4, 0.0,
-		chosen
-	);
+
+	tr[0] = vr[0]/4;
+	tr[1] = vr[1]/4;
+	tr[2] = vr[2]/4;
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
+	carvehexadecimal(win, 0x0000ff, vc, tr, tf, chosen);
 }
 static void font_read_json(
 	struct arena* win, struct style* sty,

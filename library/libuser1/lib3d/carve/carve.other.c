@@ -9,309 +9,210 @@ u32 getrandom();
 
 
 
-void carvedrone_node(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvedrone_node(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	float j;
-	float up[3];
-	float tt[3];
-	float v0[3];
-	float v1[3];
-	float v2[3];
+	vec3 v0, v1, v2, t0, t1, t2, tt;
 
-	up[0] = ux;
-	up[1] = uy;
-	up[2] = uz;
-	tt[0] = rx;
-	tt[1] = ry;
-	tt[2] = rz;
-	quaternionoperation(tt, up, tau/3);
+	tt[0] = vr[0];
+	tt[1] = vr[1];
+	tt[2] = vr[2];
+	quaternionoperation(tt, vu, tau/3);
 
-	v0[0] = cx + rx;
-	v0[1] = cy + ry;
-	v0[2] = cz + rz;
-	v1[0] = cx + tt[0];
-	v1[1] = cy + tt[1];
-	v1[2] = cz + tt[2];
-	v2[0] = cx - tt[0] - rx;
-	v2[1] = cy - tt[1] - ry;
-	v2[2] = cz - tt[2] - rz;
+	v0[0] = vc[0] + vr[0];
+	v0[1] = vc[1] + vr[1];
+	v0[2] = vc[2] + vr[2];
+	v1[0] = vc[0] + tt[0];
+	v1[1] = vc[1] + tt[1];
+	v1[2] = vc[2] + tt[2];
+	v2[0] = vc[0] - tt[0] - vr[0];
+	v2[1] = vc[1] - tt[1] - vr[1];
+	v2[2] = vc[2] - tt[2] - vr[2];
 
-	carveline_yshape(
-		win, 0x204020,
-		v0[0], v0[1], v0[2],
-		v1[0], v1[1], v1[2],
-		v2[0], v2[1], v2[2]
-	);
-	carveline_yshape(
-		win, 0x204020,
-		v0[0], v0[1], v0[2]+16.0,
-		v1[0], v1[1], v1[2]+16.0,
-		v2[0], v2[1], v2[2]+16.0
-	);
+	t0[0] = v0[0];
+	t0[1] = v0[1];
+	t0[2] = v0[2];
+	t1[0] = v1[0];
+	t1[1] = v1[1];
+	t1[2] = v1[2];
+	t2[0] = v2[0];
+	t2[1] = v2[1];
+	t2[2] = v2[2];
+	carveline_yshape(win, 0x204020, t0, t1, t2);
+	t0[2] += 16.0;
+	t1[2] += 16.0;
+	t2[2] += 16.0;
+	carveline_yshape(win, 0x204020, t0, t1, t2);
 
-	carveline_yshape(
-		win, 0xffffff,
-		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2,
-		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2,
-		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2
-	);
-	carveline_yshape(
-		win, 0xffffff,
-		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2+16.0,
-		(v1[0]+v2[0])/2, (v1[1]+v2[1])/2, (v1[2]+v2[2])/2+16.0,
-		(v2[0]+v0[0])/2, (v2[1]+v0[1])/2, (v2[2]+v0[2])/2+16.0
-	);
+	t0[0] = (v0[0]+v1[0])/2;
+	t0[1] = (v0[1]+v1[1])/2;
+	t0[2] = (v0[2]+v1[2])/2;
+	t1[0] = (v1[0]+v2[0])/2;
+	t1[1] = (v1[1]+v2[1])/2;
+	t1[2] = (v1[2]+v2[2])/2;
+	t2[0] = (v2[0]+v0[0])/2;
+	t2[1] = (v2[1]+v0[1])/2;
+	t2[2] = (v2[2]+v0[2])/2;
+	carveline_yshape(win, 0xffffff, t0, t1, t2);
+	t0[2] += 16.0;
+	t1[2] += 16.0;
+	t2[2] += 16.0;
+	carveline_yshape(win, 0xffffff, t0, t1, t2);
 
-	carveline(
-		win, 0xffffff,
-		cx, cy, cz,
-		cx, cy, cz+16.0
-	);
-	carvesolid_triangle(
-		win, 0x808080,
-		v0[0], v0[1], v0[2],
-		v1[0], v1[1], v1[2],
-		v2[0], v2[1], v2[2]
-	);
-	carvesolid_triangle(
-		win, 0x808080,
-		v0[0], v0[1], v0[2]+16.0,
-		v1[0], v1[1], v1[2]+16.0,
-		v2[0], v2[1], v2[2]+16.0
-	);
+	t0[0] = v0[0];
+	t0[1] = v0[1];
+	t0[2] = v0[2];
+	t1[0] = v1[0];
+	t1[1] = v1[1];
+	t1[2] = v1[2];
+	t2[0] = v2[0];
+	t2[1] = v2[1];
+	t2[2] = v2[2];
+	carvesolid_triangle(win, 0x808080, t0, t1, t2);
+	t0[2] += 16.0;
+	t1[2] += 16.0;
+	t2[2] += 16.0;
+	carvesolid_triangle(win, 0x808080, t0, t1, t2);
 
-	carvesolid_rect(
-		win, 0x604020,
-		(v0[0]+v1[0])/2, (v0[1]+v1[1])/2, (v0[2]+v1[2])/2+8.0,
-		(v0[0]-v1[0])/2, (v0[1]-v1[1])/2, (v0[2]-v1[2])/2,
-		0.0, 0.0, 8.0
-	);
-	carvesolid_rect(
-		win, 0x206040,
-		(v2[0]+v1[0])/2, (v2[1]+v1[1])/2, (v2[2]+v1[2])/2+8.0,
-		(v2[0]-v1[0])/2, (v2[1]-v1[1])/2, (v2[2]-v1[2])/2,
-		0.0, 0.0, 8.0
-	);
-	carvesolid_rect(
-		win, 0x204060,
-		(v0[0]+v2[0])/2, (v0[1]+v2[1])/2, (v0[2]+v2[2])/2+8.0,
-		(v0[0]-v2[0])/2, (v0[1]-v2[1])/2, (v0[2]-v2[2])/2,
-		0.0, 0.0, 8.0
-	);
+	t0[0] = (v0[0]+v1[0])/2;
+	t0[1] = (v0[1]+v1[1])/2;
+	t0[2] = (v0[2]+v1[2])/2+8.0;
+	t1[0] = (v0[0]-v1[0])/2;
+	t1[1] = (v0[1]-v1[1])/2;
+	t1[2] = (v0[2]-v1[2])/2;
+	t2[0] = 0.0;
+	t2[1] = 0.0;
+	t2[2] = 0.8;
+	carvesolid_rect(win, 0x604020, t0, t1, t2);
+	t0[0] = (v2[0]+v1[0])/2;
+	t0[1] = (v2[1]+v1[1])/2;
+	t0[2] = (v2[2]+v1[2])/2+8.0;
+	t1[0] = (v2[0]-v1[0])/2;
+	t1[1] = (v2[1]-v1[1])/2;
+	t1[2] = (v2[2]-v1[2])/2;
+	carvesolid_rect(win, 0x206040, t0, t1, t2);
+	t0[0] = (v0[0]+v2[0])/2;
+	t0[1] = (v0[1]+v2[1])/2;
+	t0[2] = (v0[2]+v2[2])/2+8.0;
+	t1[0] = (v0[0]-v2[0])/2;
+	t1[1] = (v0[1]-v2[1])/2;
+	t1[2] = (v0[2]-v2[2])/2;
+	carvesolid_rect(win, 0x204060, t0, t1, t2);
 }
-void carvedrone(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvedrone(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int x,y;
-	float up[3];
-	float tt[3];
-	float xx[3];
-	float yy[3];
-	float v0[3];
-	float v1[3];
-	float v2[3];
+	vec3 xx, yy, tt;
+	vec3 v0, v1, v2;
+	vec3 tc, tr, tu;
 
-	up[0] = ux;
-	up[1] = uy;
-	up[2] = uz;
-	tt[0] = rx;
-	tt[1] = ry;
-	tt[2] = rz;
-	quaternionoperation(tt, up, tau/3);
-	v0[0] = rx;
-	v0[1] = ry;
-	v0[2] = rz;
+	tt[0] = vr[0];
+	tt[1] = vr[1];
+	tt[2] = vr[2];
+	quaternionoperation(tt, vu, tau/3);
+	v0[0] = vr[0];
+	v0[1] = vr[1];
+	v0[2] = vr[2];
 	v1[0] = tt[0];
 	v1[1] = tt[1];
 	v1[2] = tt[2];
-	v2[0] = -tt[0]-rx;
-	v2[1] = -tt[1]-ry;
-	v2[2] = -tt[2]-rz;
+	v2[0] = -tt[0]-vr[0];
+	v2[1] = -tt[1]-vr[1];
+	v2[2] = -tt[2]-vr[2];
 
 	xx[0] = v1[0]-v2[0];
 	xx[1] = v1[1]-v2[1];
 	xx[2] = v1[2]-v2[2];
-	yy[0] = rx*3/2;
-	yy[1] = ry*3/2;
-	yy[2] = rz*3/2;
+	yy[0] = vr[0]*3/2;
+	yy[1] = vr[1]*3/2;
+	yy[2] = vr[2]*3/2;
 	for(y=-4;y<=4;y++)
 	{
 		for(x=-4;x<=4;x++)
 		{
-			tt[0] = cx+xx[0]*x+yy[0]*y;
-			tt[1] = cy+xx[1]*x+yy[1]*y;
-			tt[2] = cz+xx[2]*x+yy[2]*y;
+			tt[0] = vc[0]+xx[0]*x+yy[0]*y;
+			tt[1] = vc[1]+xx[1]*x+yy[1]*y;
+			tt[2] = vc[2]+xx[2]*x+yy[2]*y;
 			if(y%2)
 			{
 				tt[0] += xx[0]/2;
 				tt[1] += xx[1]/2;
 				tt[2] += xx[2]/2;
 			}
-			carvedrone_node(
-				win, rgb,
-				tt[0], tt[1], tt[2],
-				0.95*rx, 0.95*ry, 0.95*rz,
-				ux, uy, uz
-			);
-			carvedrone_node(
-				win, rgb,
-				tt[0]+(rx-xx[0])/2, tt[1]+(ry-xx[1])/2, tt[2]+(rz-xx[2])/2,
-				-0.95*rx, -0.95*ry, -0.95*rz,
-				ux, uy, uz
-			);
+
+			tr[0] = 0.95*vr[0];
+			tr[1] = 0.95*vr[1];
+			tr[2] = 0.95*vr[2];
+			carvedrone_node(win, rgb, tt, tr, vu);
+
+			tc[0] = tt[0]+(vr[0]-xx[0])/2;
+			tc[1] = tt[1]+(vr[1]-xx[1])/2;
+			tc[2] = tt[2]+(vr[2]-xx[2])/2;
+			tr[0] = -0.95*vr[0];
+			tr[1] = -0.95*vr[1];
+			tr[2] = -0.95*vr[2];
+			carvedrone_node(win, rgb, tc, tr, vu);
 		}
 	}
-/*
-	//0
-	carvedrone_node(
-		win, rgb,
-		cx, cy, cz,
-		rx, ry, rz,
-		ux, uy, uz
-	);
-
-	//123
-	carvedrone_node(
-		win, rgb,
-		cx+v0[0]*2, cy+v0[1]*2, cz+v0[2]*2,
-		-v0[0], -v0[1], -v0[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v1[0]*2, cy+v1[1]*2, cz+v1[2]*2,
-		-v1[0], -v1[1], -v1[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v2[0]*2, cy+v2[1]*2, cz+v2[2]*2,
-		-v2[0], -v2[1], -v2[2],
-		ux, uy, uz
-	);
-
-	//456
-	carvedrone_node(
-		win, rgb,
-		cx+v0[0]+v1[0], cy+v0[1]+v1[1], cz+v0[2]+v1[2],
-		-v2[0], -v2[1], -v2[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v1[0]+v2[0], cy+v1[1]+v2[1], cz+v1[2]+v2[2],
-		-v0[0], -v0[1], -v0[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v2[0]+v0[0], cy+v2[1]+v0[1], cz+v2[2]+v0[2],
-		-v1[0], -v1[1], -v1[2],
-		ux, uy, uz
-	);
-
-	//789abc
-	carvedrone_node(
-		win, rgb,
-		cx+v1[0]-v0[0], cy+v1[1]-v0[1], cz+v1[2]-v0[2],
-		v0[0], v0[1], v0[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v2[0]-v0[0], cy+v2[1]-v0[1], cz+v2[2]-v0[2],
-		v0[0], v0[1], v0[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v0[0]-v1[0], cy+v0[1]-v1[1], cz+v0[2]-v1[2],
-		v1[0], v1[1], v1[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v2[0]-v1[0], cy+v2[1]-v1[1], cz+v2[2]-v1[2],
-		v1[0], v1[1], v1[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v0[0]-v2[0], cy+v0[1]-v2[1], cz+v0[2]-v2[2],
-		v2[0], v2[1], v2[2],
-		ux, uy, uz
-	);
-	carvedrone_node(
-		win, rgb,
-		cx+v1[0]-v2[0], cy+v1[1]-v2[1], cz+v1[2]-v2[2],
-		v2[0], v2[1], v2[2],
-		ux, uy, uz
-	);
-*/
 }
-void carvesnowman(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz)
+void carvesnowman(struct arena* win, u32 rgb, vec3 vc)
 {
+	vec3 tc;
+	vec3 tr;
+	vec3 tf;
+	vec3 tu;
+
 	//head
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx, cy, cz+80.0,
-		16.0, 0.0, 0.0,
-		0.0, 16.0, 0.0,
-		0.0, 0.0, 16.0
-	);
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = vc[2]+80.0;
+	tr[0] = 16.0;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 16.0;
+	tf[2] = 0.0;
+	tu[0] = 0.0;
+	tu[1] = 0.0;
+	tu[2] = 16.0;
+	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	//body
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx, cy, cz+32.0,
-		32.0, 0.0, 0.0,
-		0.0, 32.0, 0.0,
-		0.0, 0.0, 32.0
-	);
+	tc[2] = vc[2]+32.0;
+	tr[0] = 32.0;
+	tf[1] = 32.0;
+	tu[2] = 32.0;
+	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	//left hand
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx-28.0, cy, cz+28.0+32.0,
-		8.0, 0.0, 0.0,
-		0.0, 8.0, 0.0,
-		0.0, 0.0, 8.0
-	);
+	tc[0] = vc[0]-28.0;
+	tc[1] = vc[1];
+	tc[2] = vc[2]+28.0+32.0;
+	tr[0] = 8.0;
+	tf[1] = 8.0;
+	tu[2] = 8.0;
+	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	//right hand
-	carvesolid_sphere(
-		win, 0xffffff,
-		cx+28.0, cy, cz+28.0+32.0,
-		8.0, 0.0, 0.0,
-		0.0, 8.0, 0.0,
-		0.0, 0.0, 8.0
-	);
+	tc[0] = vc[0]+28.0;
+	tc[1] = vc[1];
+	tc[2] = vc[2]+28.0+32.0;
+	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 }
 
 
 
 
-void carvestarry_random(struct arena* win)
-{
-}
-void carveneural_random(struct arena* win)
-{
-}
 void carvestl(
 	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float sx, float sy, float sz,
-	void* stlbuf, int stllen, float f)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu,
+	struct actor* act, int flag)
 {
+/*
+	void* stlbuf, int stllen, float f)
+
 	float* p;
 	int j, k, ret;
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -331,8 +232,8 @@ void carvestl(
 		p = (void*)stlbuf + 84 + j*50;
 		k = j*27;
 
-		vbuf[k+ 0] = cx + (p[3]-sx)*f;
-		vbuf[k+ 1] = cy + (p[4]-sy)*f;
+		vbuf[k+ 0] = vc[0] + (p[3]-sx)*f;
+		vbuf[k+ 1] = vc[1] + (p[4]-sy)*f;
 		vbuf[k+ 2] = (p[5]-sz)*f;
 		vbuf[k+ 3] = 1.0;
 		vbuf[k+ 4] = 1.0;
@@ -341,8 +242,8 @@ void carvestl(
 		vbuf[k+ 7] = p[1];
 		vbuf[k+ 8] = p[2];
 
-		vbuf[k+ 9] = cx + (p[6]-sx)*f;
-		vbuf[k+10] = cy + (p[7]-sy)*f;
+		vbuf[k+ 9] = vc[0] + (p[6]-sx)*f;
+		vbuf[k+10] = vc[1] + (p[7]-sy)*f;
 		vbuf[k+11] = (p[8]-sz)*f;
 		vbuf[k+12] = 1.0;
 		vbuf[k+13] = 1.0;
@@ -351,8 +252,8 @@ void carvestl(
 		vbuf[k+16] = p[1];
 		vbuf[k+17] = p[2];
 
-		vbuf[k+18] = cx + (p[9]-sx)*f;
-		vbuf[k+19] = cy + (p[10]-sy)*f;
+		vbuf[k+18] = vc[0] + (p[9]-sx)*f;
+		vbuf[k+19] = vc[1] + (p[10]-sy)*f;
 		vbuf[k+20] = (p[11]-sz)*f;
 		vbuf[k+21] = 1.0;
 		vbuf[k+22] = 1.0;
@@ -361,4 +262,5 @@ void carvestl(
 		vbuf[k+25] = p[1];
 		vbuf[k+26] = p[2];
 	}
+*/
 }

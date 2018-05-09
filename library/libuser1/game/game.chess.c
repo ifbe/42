@@ -17,10 +17,10 @@ static void chess_read_pixel(
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->cx;
-		cy = sty->cy;
-		ww = sty->rx;
-		hh = sty->fy;
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
 	}
 	else
 	{
@@ -54,37 +54,37 @@ static void chess_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 color;
+	u32 rgb;
 	int x,y;
-	float xxx, yyy;
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
 		{
-			if(((x+y+32)%2) != 0)color = 0x111111;
-			else color = 0xffffff;
+			f[0] = (x+x-7)/8.0;
+			f[1] = (7-y-y)/8.0;
+			f[2] = 0.01;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 
-			xxx = cx + (x+x-7)*ww/8;
-			yyy = cy - (y+y-7)*hh/8;
-			carvesolid_prism4(
-				win, color,
-				xxx, yyy, 0.0,
-				ww/8, 0.0, 0.0,
-				0.0, hh/8, 0.0,
-				0.0, 0.0, 0.0
-			);
-			carvesolid_cone(
-				win, 0xffff00,
-				xxx, yyy, 0.0,
-				ww/16, 0.0, 0.0,
-				0.0, 0.0, ww/8
-			);
+			tr[0] = vr[0]/8.1;
+			tr[1] = vr[1]/8.1;
+			tr[2] = vr[2]/8.1;
+			tf[0] = vf[0]/8.1;
+			tf[1] = vf[1]/8.1;
+			tf[2] = vf[2]/8.1;
+			tu[0] = vu[0]*f[2];
+			tu[1] = vu[1]*f[2];
+			tu[2] = vu[2]*f[2];
+
+			if(((x+y+32)%2) != 0)rgb = 0x111111;
+			else rgb = 0xffffff;
+			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
 		}
 	}
 }

@@ -19,12 +19,10 @@ static void algorithm_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int cx = sty->cx;
-	int cy = sty->cy;
-	int cz = sty->cz;
-	int ww = sty->rx;
-	int hh = sty->fy;
-	int dd = sty->uz;
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
 
 	//left: origin
 	drawsolid_rect(win, 0x0000ff,
