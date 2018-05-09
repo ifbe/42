@@ -27,18 +27,27 @@ void actoroutput_menu_json(struct arena* win)
 }
 void actoroutput_menu_vbo(struct arena* win)
 {
-	vec4 va;
-	vec4 vb;
+	vec3 vc;
+	vec3 vr;
+	vec3 vf;
 	int j,k,x,y,c;
 
-	carveline2d(win, 0xffffff, 0.0, -1.0, -0.2, 0.0, 1.0, -0.2);
+	vc[0] = 0.0;
+	vc[1] = -1.0;
+	vc[2] = -0.2;
+	vr[0] = 0.0;
+	vr[1] = 1.0;
+	vr[2] = -0.2;
+	carveline2d(win, 0xffffff, vc, vr);
 	for(j=-3;j<4;j+=2)
 	{
-		va[0] = -0.5;
-		va[1] = 0.25*j;
-		vb[0] = 0.5;
-		vb[1] = 0.25*j;
-		carveline2d(win, 0xffffff, va[0], va[1], -0.2, vb[0], vb[1], -0.2);
+		vc[0] = -0.5;
+		vc[1] = 0.25*j;
+		vc[2] = -0.2;
+		vr[0] = 0.5;
+		vr[1] = 0.25*j;
+		vr[2] = -0.2;
+		carveline2d(win, 0xffffff, vc, vr);
 	}
 
 	k = win->menutype & 7;
@@ -48,26 +57,26 @@ void actoroutput_menu_vbo(struct arena* win)
 		y = j/2;
 		if(j == k)c = 0xff00ff;
 		else c = 0x404040;
-		carvesolid2d_rect(
-			win, c,
-			x-0.5, (3-2*y)*0.25, -0.4,
-			0.4, 0.0, 0.0,
-			0.0, 0.2, 0.0
-		);
-		carvestring2d_center(
-			win, ~c,
-			x-0.5, (13-8*y)/16.0, -0.6,
-			1.0/8, 0.0, 0.0,
-			0.0, 1.0/16, 0.0,
-			(u8*)name[y], 0
-		);
-		carvestring2d_center(
-			win, ~c,
-			x-0.5, (11-8*y)/16.0, -0.6,
-			1.0/8, 0.0, 0.0,
-			0.0, 1.0/16, 0.0,
-			(u8*)target[x], 0
-		);
+
+		vc[0] = x-0.5;
+		vc[1] = (3-2*y)*0.25;
+		vc[2] = -0.4;
+		vr[0] = 0.4;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = 0.2;
+		vf[2] = 0.0;
+		carvesolid2d_rect(win, c, vc, vr, vf);
+
+		vc[1] = (13-8*y)/16.0;
+		vc[2] = -0.6;
+		vr[0] = 1.0/8;
+		vf[1] = 1.0/16;
+		carvestring2d_center(win, ~c, vc, vr, vf, (u8*)name[y], 0);
+
+		vc[1] = (11-8*y)/16.0;
+		carvestring2d_center(win, ~c, vc, vr, vf, (u8*)target[x], 0);
 	}
 }
 void actoroutput_menu_pixel(struct arena* win)

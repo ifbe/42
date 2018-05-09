@@ -269,36 +269,44 @@ void foreground_pixel(struct arena* win)
 void foreground_vbo(struct arena* win)
 {
 	int j;
-	float x0,y0,z0;
-	float x1,y1,z1;
+	float x,y;
+	vec3 va;
+	vec3 vb;
 
 	for(j=0;j<11;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
 
-		x0 = (float)(win->touchdown[j].x) / (float)(win->width);
-		x0 = x0*2 - 1.0;
-		y0 = (float)(win->touchdown[j].y) / (float)(win->height);
-		y0 = 1.0 - y0*2;
-		x1 = (float)(win->touchmove[j].x) / (float)(win->width);
-		x1 = x1*2 - 1.0;
-		y1 = (float)(win->touchmove[j].y) / (float)(win->height);
-		y1 = 1.0 - y1*2;
-		carveline2d(win, 0xff00ff, x0, y0, -0.99, x1, y1, -0.99);
+		va[0] = (float)(win->touchdown[j].x) / (float)(win->width);
+		va[0] = va[0]*2 - 1.0;
+		va[1] = (float)(win->touchdown[j].y) / (float)(win->height);
+		va[1] = 1.0 - va[1]*2;
+		va[2] = -0.99;
+		vb[0] = (float)(win->touchmove[j].x) / (float)(win->width);
+		vb[0] = vb[0]*2 - 1.0;
+		vb[1] = (float)(win->touchmove[j].y) / (float)(win->height);
+		vb[1] = 1.0 - vb[1]*2;
+		vb[2] = -0.99;
+		carveline2d(win, 0xff00ff, va, vb);
 	}
 
 	if(1)
 	{
-		x0 = win->target.cx;
-		y0 = win->target.cy;
-		z0 = win->target.cz;
-		carvepoint(win, 0xff0000, x0, y0, z0);
-
 		j = (win->width + win->height) / 128;
-		x0 = (float)j / (float)(win->width);
-		y0 = (float)j / (float)(win->height);
-		carveline2d(win, 0xffffff, -x0, 0.0, -0.99, x0, 0.0, -0.99);
-		carveline2d(win, 0xffffff, 0.0, -y0, -0.99, 0.0, y0, -0.99);
+		x = (float)j / (float)(win->width);
+		y = (float)j / (float)(win->height);
+		va[0] = -x;
+		va[1] = 0.0;
+		va[2] = -0.99;
+		vb[0] = x;
+		vb[1] = 0.0;
+		vb[2] = -0.99;
+		carveline2d(win, 0xffffff, va, vb);
+		va[0] = 0.0;
+		va[1] = -y;
+		vb[0] = 0.0;
+		vb[1] = y;
+		carveline2d(win, 0xffffff, va, vb);
 	}
 }
 void foreground_json(struct arena* win)

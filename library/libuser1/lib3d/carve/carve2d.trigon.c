@@ -3,16 +3,12 @@
 #define tau (PI*2)
 #define acc 24
 #define trigonv 0x86
-void quaternionoperation(float*, float*, float);
 
 
 
 
-void carvesolid2d_triangle(
-	struct arena* win, u32 rgb,
-	float x1, float y1, float z1,
-	float x2, float y2, float z2,
-	float x3, float y3, float z3)
+void carvesolid2d_triangle(struct arena* win, u32 rgb,
+	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -26,23 +22,23 @@ void carvesolid2d_triangle(
 	mod[trigonv].ilen += 1;
 	mod[trigonv].vlen += 3;
 
-	vbuf[ 0] = x1;
-	vbuf[ 1] = y1;
-	vbuf[ 2] = 0.0;
+	vbuf[ 0] = v0[0];
+	vbuf[ 1] = v0[1];
+	vbuf[ 2] = v0[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 
-	vbuf[ 6] = x2;
-	vbuf[ 7] = y2;
-	vbuf[ 8] = 0.0;
+	vbuf[ 6] = v1[0];
+	vbuf[ 7] = v1[1];
+	vbuf[ 8] = v1[2];
 	vbuf[ 9] = rr;
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
-	vbuf[12] = x3;
-	vbuf[13] = y3;
-	vbuf[14] = 0.0;
+	vbuf[12] = v2[0];
+	vbuf[13] = v2[1];
+	vbuf[14] = v2[2];
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
@@ -51,11 +47,8 @@ void carvesolid2d_triangle(
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carvesolid2d_rect(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz)
+void carvesolid2d_rect(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -69,30 +62,30 @@ void carvesolid2d_rect(
 	mod[trigonv].ilen += 2;
 	mod[trigonv].vlen += 4;
 
-	vbuf[ 0] = cx - rx - fx;
-	vbuf[ 1] = cy - ry - fy;
-	vbuf[ 2] = cz;
+	vbuf[ 0] = vc[0] - vr[0] - vf[0];
+	vbuf[ 1] = vc[1] - vr[1] - vf[1];
+	vbuf[ 2] = vc[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 
-	vbuf[ 6] = cx + rx - fx;
-	vbuf[ 7] = cy + ry - fy;
-	vbuf[ 8] = cz;
+	vbuf[ 6] = vc[0] + vr[0] - vf[0];
+	vbuf[ 7] = vc[1] + vr[1] - vf[1];
+	vbuf[ 8] = vc[2];
 	vbuf[ 9] = rr;
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
-	vbuf[12] = cx - rx + fx;
-	vbuf[13] = cy - ry + fy;
-	vbuf[14] = cz;
+	vbuf[12] = vc[0] - vr[0] + vf[0];
+	vbuf[13] = vc[1] - vr[1] + vf[1];
+	vbuf[14] = vc[2];
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
 
-	vbuf[18] = cx + rx + fx;
-	vbuf[19] = cy + ry + fy;
-	vbuf[20] = cz;
+	vbuf[18] = vc[0] + vr[0] + vf[0];
+	vbuf[19] = vc[1] + vr[1] + vf[1];
+	vbuf[20] = vc[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
@@ -106,11 +99,8 @@ void carvesolid2d_rect(
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carvesolid2d_circle(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float fx, float fy, float fz)
+void carvesolid2d_circle(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
 {
 	int a,b,j;
 	float c,s;
@@ -133,9 +123,9 @@ void carvesolid2d_circle(
 
 		c = cosine(j*tau/acc);
 		s = sine(j*tau/acc);
-		vbuf[a+0] = cx + rx*c + fx*s;
-		vbuf[a+1] = cy + ry*c + fy*s;
-		vbuf[a+2] = cz;
+		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
+		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
+		vbuf[a+2] = vc[2];
 
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
@@ -147,8 +137,8 @@ void carvesolid2d_circle(
 	}
 
 	a = acc*6;
-	vbuf[a+0] = cx;
-	vbuf[a+1] = cy;
+	vbuf[a+0] = vc[0];
+	vbuf[a+1] = vc[1];
 	vbuf[a+2] = 0.0;
 	vbuf[a+3] = rr;
 	vbuf[a+4] = gg;

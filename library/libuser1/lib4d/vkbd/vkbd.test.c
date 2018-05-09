@@ -1,16 +1,6 @@
 #include "actor.h"
-void carvearrorkey2d(
-	void*, u32,
-	float, float, float,
-	float, float, float,
-	float, float, float,
-	u8*, int
-);
-void drawarrorkey2d(
-	struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1,
-	u8* buf, int t
-);
+void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
+void carvearrorkey2d(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 static u16 joyl[8]={_dl_, _dr_, _dn_, _df_, _lt_, _lb_, _ls_, _ll_};
 static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
@@ -134,6 +124,9 @@ haha:
 }
 void vkbd_read_vbo(struct arena* win)
 {
+	vec3 vc;
+	vec3 vr;
+	vec3 vf;
 	u8 ch[8];
 	float j,k;
 	int x,y,c,rgb;
@@ -142,19 +135,26 @@ void vkbd_read_vbo(struct arena* win)
 	if(win->vkbdtype < 0)goto haha;
 
 	c = ((win->vkbdtype)>>16)&0xff;
+	if(('j' == c)|('k' == c))
+	{
+		vc[0] = 0.0;
+		vc[1] = -0.75;
+		vc[2] = -0.5;
+		vr[0] = 1.0;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = 0.25;
+		vf[2] = 0.0;
+		carvesolid2d_rect(win, 0x202020, vc, vr, vf);
+	}
+
 	if('k' == c)
 	{
 		if(w<h)x = w/17;
 		else x = h/17;
 		j = (float)x / (float)w;
 		k = (float)x / (float)h;
-
-		carvesolid2d_rect(
-			win, 0x202020,
-			0.0, -0.75, -0.1,
-			1.0, 0.0, 0.0,
-			0.0, 0.25, 0.0
-		);
 
 		for(y=0;y<8;y++)
 		{
@@ -164,24 +164,21 @@ void vkbd_read_vbo(struct arena* win)
 				if(c == (win->vkbdtype&0xffff))rgb = 0xff00ff;
 				else rgb = 0x808080;
 
-				carvesolid2d_rect(
-					win, rgb,
-					(x-7.5)/8.0, (y-15.5)/16.0, -0.2,
-					1.0/17, 0.0, 0.0,
-					0.0, 0.5/17, 0.0
-				);
+				vc[0] = (x-7.5)/8.0;
+				vc[1] = (y-15.5)/16.0;
+				vc[2] = -0.9;
+				vr[0] = 1.0/17;
+				vr[1] = 0.0;
+				vr[2] = 0.0;
+				vf[0] = 0.0;
+				vf[1] = 0.5/17;
+				vf[2] = 0.0;
+				carvesolid2d_rect(win, rgb, vc, vr, vf);
 
-				if((0!=c)&&(7!=c)&&(8!=c)&&(9!=c)&&(0xa!=c)&&(0xd!=c))
-				{
-					carve2d_ascii(
-						win, 0xffffff,
-						(x-7.5)/8.0, (y-15.5)/16.0, -0.3,
-						j, 0.0, 0.0,
-						0.0, k/2, 0.0,
-						c
-					);
-				}
-				else
+				vc[2] = -0.91;
+				vr[0] = j;
+				vf[1] = k/2;
+				if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
 				{
 					if(0x0 == c)c = '0';
 					else if(0x7 == c)c = 'a';
@@ -189,21 +186,15 @@ void vkbd_read_vbo(struct arena* win)
 					else if(0x9 == c)c = 't';
 					else if(0xa == c)c = 'n';
 					else if(0xd == c)c = 'r';
-					carve2d_ascii(
-						win, 0xffffff,
-						(x-7.5)/8.0, (y-15.5)/16.0, -0.3,
-						j, 0.0, 0.0,
-						0.0, k/2, 0.0,
-						'\\'
-					);
-					carve2d_ascii(
-						win, 0xffffff,
-						(x-7.5)/8.0+j, (y-15.5)/16.0, -0.3,
-						j, 0.0, 0.0,
-						0.0, k/2, 0.0,
-						c
-					);
+					vc[0] = (x-7.5)/8.0+j;
+					vc[1] = (y-15.5)/16.0;
+					carve2d_ascii(win, 0xffffff, vc, vr, vf, c);
+					c = '\\';
 				}
+
+				vc[0] = (x-7.5)/8.0;
+				vc[1] = (y-15.5)/16.0;
+				carve2d_ascii(win, 0xffffff, vc, vr, vf, c);
 			}
 		}
 	}
@@ -213,13 +204,6 @@ void vkbd_read_vbo(struct arena* win)
 		j = (float)y / (float)w;
 		k = (float)y / (float)h;
 
-		carvesolid2d_rect(
-			win, 0x202020,
-			0.0, -0.75, -0.1,
-			1.0, 0.0, 0.0,
-			0.0, 0.25, 0.0
-		);
-
 		ch[0] = 'l';
 		ch[1] = 'r';
 		ch[2] = 'n';
@@ -228,16 +212,19 @@ void vkbd_read_vbo(struct arena* win)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '-';
-
 		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
-		carvearrorkey2d(
-			win, 0xff00ff,
-			j-1.0, k-1.0, -0.1,
-			j, 0.0, 0.0,
-			0.0, k, 0.0,
-			ch, 1
-		);
+
+		vc[0] = j-1.0;
+		vc[1] = k-1.0;
+		vc[2] = -0.7;
+		vr[0] = j;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = k;
+		vf[2] = 0.0;
+		carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, 1);
 
 		ch[0] = 'x';
 		ch[1] = 'b';
@@ -247,16 +234,19 @@ void vkbd_read_vbo(struct arena* win)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '+';
-
 		y = (win->vkbdtype)&0xffff;
 		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
-		carvearrorkey2d(
-			win, 0xff00ff,
-			1.0-j, k-1.0, -0.1,
-			j, 0.0, 0.0,
-			0.0, k, 0.0,
-			ch, -1
-		);
+
+		vc[0] = 1.0-j;
+		vc[1] = k-1.0;
+		vc[2] = -0.7;
+		vr[0] = j;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = k;
+		vf[2] = 0.0;
+		carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, -1);
 	}
 /*
 	else
@@ -275,19 +265,19 @@ haha:
 	else x = h>>4;
 	j = (float)x / (float)w;
 	k = (float)x / (float)h;
+	vr[0] = j/2;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = k/2;
+	vf[2] = 0.0;
 
-	carvesolid2d_circle(
-		win, 0x0000ff,
-		1.0-j, k-1.0, -0.9,
-		j/2, 0.0, 0.0,
-		0.0, k/2, 0.0
-	);
-	carvesolid2d_circle(
-		win, 0xff0000,
-		j-1.0, k-1.0, -0.9,
-		j/2, 0.0, 0.0,
-		0.0, k/2, 0.0
-	);
+	vc[0] = 1.0-j;
+	vc[1] = k-1.0;
+	vc[2] = -0.99;
+	carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
+	vc[0] = j-1.0;
+	carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
 }
 void vkbd_read_html(struct arena* win)
 {

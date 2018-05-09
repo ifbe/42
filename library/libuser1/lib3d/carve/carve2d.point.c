@@ -8,9 +8,7 @@ void quaternionoperation(float*, float*, float);
 
 
 
-void carvepoint2d(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz)
+void carvepoint2d(struct arena* win, u32 rgb, vec3 vc)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -20,18 +18,15 @@ void carvepoint2d(
 	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
 	mod[pointv].vlen += 1;
 
-	vbuf[0] = cx;
-	vbuf[1] = cy;
-	vbuf[2] = 0.0;
+	vbuf[0] = vc[0];
+	vbuf[1] = vc[1];
+	vbuf[2] = vc[2];
 	vbuf[3] = rr;
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void carvepoint2d_bezier(
-	struct arena* win, u32 rgb,
-	float x1, float y1, float z1,
-	float x2, float y2, float z2,
-	float xc, float yc, float zc)
+void carvepoint2d_bezier(struct arena* win, u32 rgb,
+	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
 	float t;
@@ -47,9 +42,9 @@ void carvepoint2d_bezier(
 	{
 		t = (float)j / acc;
 
-		vbuf[6*j+0] = (1.0-t)*(1.0-t)*x1 + 2*t*(1.0-t)*xc + t*t*x2;
-		vbuf[6*j+1] = (1.0-t)*(1.0-t)*y1 + 2*t*(1.0-t)*yc + t*t*y2;
-		vbuf[6*j+2] = 0.0;
+		vbuf[6*j+0] = (1.0-t)*(1.0-t)*va[0] + 2*t*(1.0-t)*vt[0] + t*t*vb[0];
+		vbuf[6*j+1] = (1.0-t)*(1.0-t)*va[1] + 2*t*(1.0-t)*vt[1] + t*t*vb[1];
+		vbuf[6*j+2] = vt[2];
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;
 		vbuf[6*j+5] = bb;
@@ -59,25 +54,20 @@ void carvepoint2d_bezier(
 
 
 
-void carvepoint2d_triangle(
-	struct arena* win, u32 rgb,
-	float x0, float y0, float z0,
-	float x1, float y1, float z1,
-	float x2, float y2, float z2)
+void carvepoint2d_triangle(struct arena* win, u32 rgb,
+	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint2d_rect(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint2d_yshape(struct arena* win, u32 rgb,
+	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint2d_circle(
-	struct arena* win, u32 rgb,
-	float cx, float cy, float cz,
-	float rx, float ry, float rz,
-	float ux, float uy, float uz)
+void carvepoint2d_rect(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+}
+void carvepoint2d_circle(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
 {
 	int j,k;
 	float s,t;
@@ -97,14 +87,14 @@ void carvepoint2d_circle(
 	q[2] = 1.0;
 	for(j=0;j<acc;j++)
 	{
-		r[0] = rx;
-		r[1] = ry;
+		r[0] = vr[0];
+		r[1] = vr[1];
 		r[2] = 0.0;
 		quaternionoperation(r, q, j*tau/acc);
 
-		vbuf[6*j+0] = cx + r[0];
-		vbuf[6*j+1] = cy + r[1];
-		vbuf[6*j+2] = 0.0;
+		vbuf[6*j+0] = vc[0] + r[0];
+		vbuf[6*j+1] = vc[1] + r[1];
+		vbuf[6*j+2] = vc[2] + r[2];
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;
 		vbuf[6*j+5] = bb;

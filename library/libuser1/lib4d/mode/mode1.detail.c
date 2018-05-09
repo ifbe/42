@@ -5,54 +5,50 @@
 
 int actoroutput_detail_vbo(struct arena* win)
 {
+	vec3 vc;
+	vec3 vr;
+	vec3 vf;
 	int j;
 	struct relation* rel;
-	carveline2d_rect(
-		win, 0xffffff,
-		0.0, 0.0, -0.5,
-		0.25, 0.0, 0.0,
-		0.0, 0.5, 0.0
-	);
 
-	carvesolid2d_rect(
-		win, 0xffffff,
-		-0.125, 7.0/16, -0.5,
-		0.124, 0.0, 0.0,
-		0.0, 1.0/17, 0.0
-	);
-	carvestring2d_center(
-		win, 0,
-		-0.125, 7.0/16, -0.6,
-		0.124, 0.0, 0.0,
-		0.0, 1.0/17, 0.0,
-		(void*)&win->tier, 4
-	);
-	carvesolid2d_rect(
-		win, 0xffffff,
-		0.125, 7.0/16, -0.5,
-		0.124, 0.0, 0.0,
-		0.0, 1.0/17, 0.0
-	);
-	carvestring2d_center(
-		win, 0,
-		0.125, 7.0/16, -0.6,
-		0.124, 0.0, 0.0,
-		0.0, 1.0/17, 0.0,
-		(void*)&win->type, 4
-	);
-	carvesolid2d_rect(
-		win, 0xffffff,
-		0.0, 5.0/16, -0.5,
-		0.24, 0.0, 0.0,
-		0.0, 1.0/17, 0.0
-	);
-	carvestring2d_center(
-		win, 0,
-		0.0, 5.0/16, -0.6,
-		0.248, 0.0, 0.0,
-		0.0, 1.0/17, 0.0,
-		(void*)&win->fmt, 8
-	);
+	vc[0] = 0.0;
+	vc[1] = 0.0;
+	vc[2] = -0.5;
+	vr[0] = 0.25;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = 0.5;
+	vf[2] = 0.0;
+	carveline2d_rect(win, 0xffffff, vc, vr, vf);
+
+	vr[0] = 0.124;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = 1.0/17;
+	vf[2] = 0.0;
+
+	vc[0] = -0.125;
+	vc[1] = 7.0/16;
+	vc[2] = -0.5;
+	carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
+	vc[2] = -0.6;
+	carvestring2d_center(win, 0, vc, vr, vf, (void*)&win->tier, 4);
+
+	vc[0] = 0.125;
+	vc[1] = 7.0/16;
+	vc[2] = -0.5;
+	carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
+	vc[2] = -0.6;
+	carvestring2d_center(win, 0, vc, vr, vf, (void*)&win->type, 4);
+
+	vc[0] = 0.0;
+	vc[1] = 5.0/16;
+	vc[2] = -0.5;
+	carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
+	vc[2] = -0.6;
+	carvestring2d_center(win, 0, vc, vr, vf, (void*)&win->fmt, 8);
 
 
 	j = 0;
@@ -62,39 +58,36 @@ int actoroutput_detail_vbo(struct arena* win)
 		if(j >= 8)break;
 		if(0 == rel)break;
 
-		carvesolid2d_rect(
-			win, 0xffffff,
-			-7.0/8, (7-j*2)/16.0, -0.5,
-			2.0/17, 0.0, 0.0,
-			0.0, 1.0/17, 0.0
-		);
-		carvestring2d_center(
-			win, 0,
-			-7.0/8, (7-j*2)/16.0, -0.6,
-			2.0/17, 0.0, 0.0,
-			0.0, 1.0/17, 0.0,
-			(void*)"123", 0
-		);
+		vr[0] = 2.0/17;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = 1.0/17;
+		vf[2] = 0.0;
 
-		carveline2d_arrow(
-			win, 0x00ff00,
-			-6.0/8, (7-j*2)/16.0, -0.5,
-			-2.0/8, (7-j*2)/16.0, -0.5
-		);
-		carve2d_ascii(
-			win, 0x00ff00,
-			-9.0/16, (7-j*2)/16.0, -0.5,
-			1.0/8, 0.0, 0.0,
-			0.0, 1.0/17, 0.0,
-			'o'
-		);
-		carve2d_ascii(
-			win, 0x00ff00,
-			-5.0/16, (7-j*2)/16.0, -0.5,
-			1.0/8, 0.0, 0.0,
-			0.0, 1.0/17, 0.0,
-			'i'
-		);
+		vc[0] = -7.0/8;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
+		vc[2] = -0.6;
+		carvestring2d_center(win, 0, vc, vr, vf, (void*)"123", 0);
+
+		vc[0] = -9.0/16;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		vr[0] = 1.0/8;
+		vf[1] = 1.0/17;
+		carve2d_ascii(win, 0x00ff00, vc, vr, vf, 'o');
+		vc[0] = -5.0/16;
+		carve2d_ascii(win, 0x00ff00, vc, vr, vf, 'i');
+
+		vc[0] = -6.0/8;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		vr[0] = -2.0/8;
+		vr[1] = (7-j*2)/16.0;
+		vr[2] = -0.5;
+		carveline2d_arrow(win, 0x00ff00, vc, vr);
 
 		j++;
 		rel = samedstnextsrc(rel);
@@ -107,25 +100,36 @@ int actoroutput_detail_vbo(struct arena* win)
 		if(j >= 8)break;
 		if(0 == rel)break;
 
-		carvesolid2d_rect(
-			win, 0xffffff,
-			7.0/8, (7-j*2)/16.0, -0.5,
-			2.0/17, 0.0, 0.0,
-			0.0, 1.0/17, 0.0
-		);
-		carvestring2d_center(
-			win, 0,
-			7.0/8, (7-j*2)/16.0, -0.6,
-			2.0/17, 0.0, 0.0,
-			0.0, 1.0/17, 0.0,
-			(void*)"123", 0
-		);
+		vr[0] = 2.0/17;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = 1.0/17;
+		vf[2] = 0.0;
 
-		carveline2d_arrow(
-			win, 0x00ff00,
-			2.0/8, (7-j*2)/16.0, -0.5,
-			6.0/8, (7-j*2)/16.0, -0.5
-		);
+		vc[0] = 7.0/8;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
+		vc[2] = -0.6;
+		carvestring2d_center(win, 0, vc, vr, vf, (void*)"123", 0);
+
+		vc[0] = 7.0/16;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		vr[0] = 1.0/8;
+		vf[1] = 1.0/17;
+		carve2d_ascii(win, 0x00ff00, vc, vr, vf, 'o');
+		vc[0] = 11.0/16;
+		carve2d_ascii(win, 0x00ff00, vc, vr, vf, 'i');
+
+		vc[0] = 2.0/8;
+		vc[1] = (7-j*2)/16.0;
+		vc[2] = -0.5;
+		vr[0] = 6.0/8;
+		vr[1] = (7-j*2)/16.0;
+		vr[2] = -0.5;
+		carveline2d_arrow(win, 0x00ff00, vc, vr);
 
 		j++;
 		rel = samesrcnextdst(rel);
