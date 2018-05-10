@@ -44,7 +44,10 @@ void carveline2d(struct arena* win, u32 rgb,
 void carveline2d_arrow(struct arena* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
-	float x,y,a;
+	vec3 v0;
+	vec3 v1;
+	vec3 vv;
+	float x,y,w,h,t;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -71,21 +74,32 @@ void carveline2d_arrow(struct arena* win, u32 rgb,
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
-	x = va[0]-vb[0];
-	y = va[1]-vb[1];
-	a = squareroot(x*x+y*y);
-	x = x/a/32;
-	y = y/a/32;
+	w = (float)(win->width);
+	h = (float)(win->height);
+	v0[0] = (va[0]+1.0)*w/2.0;
+	v0[1] = (1.0-va[1])*h/2.0;
+	v1[0] = (vb[0]+1.0)*w/2.0;
+	v1[1] = (1.0-vb[1])*h/2.0;
 
-	vbuf[12] = vb[0] + halfsqrt3*x + 0.5*y;
-	vbuf[13] = vb[1] - 0.5*x + halfsqrt3*y;
+	x = v0[0]-v1[0];
+	y = v0[1]-v1[1];
+	t = squareroot(x*x+y*y);
+	x = 16*x/t;
+	y = 16*y/t;
+
+	vv[0] = v1[0] + halfsqrt3*x + 0.5*y;
+	vv[1] = v1[1] + halfsqrt3*y - 0.5*x;
+	vbuf[12] = (vv[0]*2.0/w)-1.0;
+	vbuf[13] = 1.0-(vv[1]*2.0/h);
 	vbuf[14] = vb[2];
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
 
-	vbuf[18] = vb[0] + halfsqrt3*x - 0.5*y;
-	vbuf[19] = vb[1] + 0.5*x + halfsqrt3*y;
+	vv[0] = v1[0] + halfsqrt3*x - 0.5*y;
+	vv[1] = v1[1] + halfsqrt3*y + 0.5*x;
+	vbuf[18] = (vv[0]*2.0/w)-1.0;
+	vbuf[19] = 1.0-(vv[1]*2.0/h);
 	vbuf[20] = vb[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;

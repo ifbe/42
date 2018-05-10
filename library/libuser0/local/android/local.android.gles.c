@@ -11,6 +11,7 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
 #include "arena.h"
+#define PI 3.1415926535897932384626433832795028841971693993151
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 void* getandroidapp();
@@ -22,8 +23,9 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 //
 void matrixmultiply_4(float*, float*);
 double squareroot(double);
-double cosine(double);
 double sine(double);
+double cosine(double);
+double tangent(double);
 
 
 
@@ -891,14 +893,14 @@ void fixview()
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
-	float cx = win->camera.cx;
-	float cy = win->camera.cy;
-	float cz = win->camera.cz;
+	float cx = win->camera.vc[0];
+	float cy = win->camera.vc[1];
+	float cz = win->camera.vc[2];
 
 	//uvn.n = front
-	float nx = win->camera.fx;
-	float ny = win->camera.fy;
-	float nz = win->camera.fz;
+	float nx = win->camera.vf[0];
+	float ny = win->camera.vf[1];
+	float nz = win->camera.vf[2];
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
@@ -944,17 +946,29 @@ void fixview()
 }
 void fixprojection()
 {
-/*
-	cot45, 0, 0, 0,
-	0, cot45, 0, 0,
-	0, 0, (f+n)/(f-n), -1,
-	0, 0, (2*f*n)/(f-n), 0
-*/
-	float w = (float)width;
-	float h = (float)height;
-	projmatrix[0] = h / w;
+	float a = PI/2;
+	float n = 1.0;
 	glViewport(0, 0, width, height);
-	//say("width=%d,height=%d\n",width,height);
+
+	projmatrix[ 0] = 1.0 / tangent(a/2);
+	projmatrix[ 1] = 0.0;
+	projmatrix[ 2] = 0.0;
+	projmatrix[ 3] = 0.0;
+
+	projmatrix[ 4] = 0.0;
+	projmatrix[ 5] = projmatrix[0] * (float)width / (float)height;
+	projmatrix[ 6] = 0.0;
+	projmatrix[ 7] = 0.0;
+
+	projmatrix[ 8] = 0.0;
+	projmatrix[ 9] = 0.0;
+	projmatrix[10] = -1.0;	//	(n+f) / (n-f);
+	projmatrix[11] = -1.0;
+
+	projmatrix[12] = 0.0;
+	projmatrix[13] = 0.0;
+	projmatrix[14] = -2*n;	//	2*n*f / (n-f);
+	projmatrix[15] = 0.0;
 }
 void fixmatrix(GLfloat* cameramvp)
 {
@@ -973,10 +987,6 @@ void fixlight()
 	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
-	GLfloat camera[3];
-	camera[0] = win->camera.cx;
-	camera[1] = win->camera.cy;
-	camera[2] = win->camera.cz;
 
 	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -988,7 +998,7 @@ void fixlight()
 	glUniform3fv(dp, 1, light0);
 
 	GLint ep = glGetUniformLocation(prettyprogram, "eyeposition");
-	glUniform3fv(ep, 1, camera);
+	glUniform3fv(ep, 1, win->camera.vc);
 }
 void callback_display()
 {

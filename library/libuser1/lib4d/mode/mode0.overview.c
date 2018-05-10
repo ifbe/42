@@ -438,11 +438,12 @@ void overview_read_pixel(struct arena* win)
 }
 void overview_read_vbo(struct arena* win)
 {
+	struct relation* rel;
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
-	struct relation* rel;
-	int x,y,j,k,c;
+	u32 bg,fg;
+	int x,y,j,k;
 	int w = win->width;
 	int h = win->height;
 
@@ -471,11 +472,19 @@ void overview_read_vbo(struct arena* win)
 	//actor
 	for(j=0;j<64;j++)
 	{
-		c = actor[j].type & 0xff;
-		if(0 == c)break;
-		else if(j == win->menudata)c = 0xffff00ff;
-		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
-		else c = 0x80ffffff;
+		k = actor[j].type & 0xff;
+		if(0 == k)break;
+		else if(j == win->menudata)
+		{
+			bg = 0xffffff;
+			fg = 0xff00ff;
+		}
+		else
+		{
+			bg = 0x404040;
+			if((k >= 'a')&&(k <= 'z'))fg = 0x808080;
+			else fg = 0xffffff;
+		}
 
 		x = j%8;
 		y = j/8;
@@ -488,20 +497,21 @@ void overview_read_vbo(struct arena* win)
 		vf[0] = 0.0;
 		vf[1] = 1.0/34;
 		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+		carvesolid2d_rect(win, bg, vc, vr, vf);
+
 		vc[2] = -0.01;
 		vr[0] = 1.0/16;
 		vf[1] = 1.0/32;
-		carvestring2d_center(win, c, vc, vr, vf, (u8*)&actor[j].name, 8);
+		carvestring2d_center(win, fg, vc, vr, vf, (u8*)&actor[j].name, 8);
 	}
 
 	//arena
 	for(j=0;j<64;j++)
 	{
-		c = arena[j].type;
-		if(0 == c)break;
-		else if(win == &arena[j])c = 0xffff00ff;
-		else c = 0x80ffffff;
+		k = arena[j].type;
+		if(0 == k)break;
+		else if(win == &arena[j])fg = 0xffff00ff;
+		else fg = 0x80ffffff;
 
 		x = j%8;
 		y = j/8;
@@ -518,7 +528,7 @@ void overview_read_vbo(struct arena* win)
 		vc[2] = -0.01;
 		vr[0] = 1.0/16;
 		vf[1] = 1.0/32;
-		carvestring2d_center(win, c, vc, vr, vf, (u8*)&arena[j].fmt, 8);
+		carvestring2d_center(win, fg, vc, vr, vf, (u8*)&arena[j].fmt, 8);
 	}
 
 	//artery

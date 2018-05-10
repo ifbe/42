@@ -260,7 +260,7 @@ void foreground_pixel(struct arena* win)
 	{
 		if(0 == win->touchdown[j].z)continue;
 
-		drawline(win, 0xff00ff,
+		drawline_arrow(win, 0xff00ff,
 			win->touchdown[j].x, win->touchdown[j].y,
 			win->touchmove[j].x, win->touchmove[j].y
 		);
@@ -287,7 +287,7 @@ void foreground_vbo(struct arena* win)
 		vb[1] = (float)(win->touchmove[j].y) / (float)(win->height);
 		vb[1] = 1.0 - vb[1]*2;
 		vb[2] = -0.99;
-		carveline2d(win, 0xff00ff, va, vb);
+		carveline2d_arrow(win, 0xff00ff, va, vb);
 	}
 
 	if(1)

@@ -9,14 +9,14 @@
 
 
 
-int lowlevel_input();
-int fixarg(void* dst, void* src);
-//
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 //
 void matrixmultiply_4(float*, float*);
 double squareroot(double);
+double sine(double);
+double cosine(double);
+double tangent(double);
 
 
 
@@ -942,16 +942,29 @@ void fixview()
 }
 void fixprojection()
 {
-/*
-	cot45, 0, 0, 0,
-	0, cot45, 0, 0,
-	0, 0, (f+n)/(f-n), -1,
-	0, 0, (2*f*n)/(f-n), 0
-*/
-	float w = (float)width;
-	float h = (float)height;
-	projmatrix[0] = h / w;
+	float a = PI/2;
+	float n = 1.0;
 	glViewport(0, 0, width, height);
+
+	projmatrix[ 0] = 1.0 / tangent(a/2);
+	projmatrix[ 1] = 0.0;
+	projmatrix[ 2] = 0.0;
+	projmatrix[ 3] = 0.0;
+
+	projmatrix[ 4] = 0.0;
+	projmatrix[ 5] = projmatrix[0] * (float)width / (float)height;
+	projmatrix[ 6] = 0.0;
+	projmatrix[ 7] = 0.0;
+
+	projmatrix[ 8] = 0.0;
+	projmatrix[ 9] = 0.0;
+	projmatrix[10] = -1.0;	//	(n+f) / (n-f);
+	projmatrix[11] = -1.0;
+
+	projmatrix[12] = 0.0;
+	projmatrix[13] = 0.0;
+	projmatrix[14] = -2*n;	//	2*n*f / (n-f);
+	projmatrix[15] = 0.0;
 }
 void fixmatrix(GLfloat* cameramvp)
 {
