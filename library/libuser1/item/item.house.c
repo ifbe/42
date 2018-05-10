@@ -63,15 +63,15 @@ static void house_read_vbo(
 
 	//right
 	tc[0] = vc[0]+vr[0]+vu[0]*3/4;
-	tc[1] = vc[1]+vr[1]*vu[1]*3/4;
+	tc[1] = vc[1]+vr[1]+vu[1]*3/4;
 	tc[2] = vc[2]+vr[2]+vu[2]*3/4;
 	tr[0] = -vf[0];
 	tr[1] = -vf[1];
 	tr[2] = -vf[2];
-	tf[0] = vu[0]*3/4;
-	tf[1] = vu[1]*3/4;
-	tf[2] = vu[2]*3/4;
-	carvesolid_rect(win, 0xc0c0c0, tc, tr, tf);
+	tu[0] = vu[0]*3/4;
+	tu[1] = vu[1]*3/4;
+	tu[2] = vu[2]*3/4;
+	carvesolid_rect(win, 0xc0c0c0, tc, tr, tu);
 
 	tr[0] = vc[0]+vr[0]+vu[0]*2;
 	tr[1] = vc[1]+vr[1]+vu[1]*2;

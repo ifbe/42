@@ -152,34 +152,34 @@ void* arenacreate(u64 type, u8* addr)
 		win->menutype = 0;
 
 		//target
-		win->target.cx = 0.0;
-		win->target.cy = 0.0;
-		win->target.cz = 0.0;
+		win->target.vc[0] = 0.0;
+		win->target.vc[1] = 0.0;
+		win->target.vc[2] = 0.0;
 
-		win->target.rx = 256.0;
-		win->target.ry = 0.0;
-		win->target.rz = 0.0;
+		win->target.vr[0] = 256.0;
+		win->target.vr[1] = 0.0;
+		win->target.vr[2] = 0.0;
 
-		win->target.fx = 0.0;
-		win->target.fy = 256.0;
-		win->target.fz = 0.0;
+		win->target.vf[0] = 0.0;
+		win->target.vf[1] = 256.0;
+		win->target.vf[2] = 0.0;
 
-		win->target.ux = 0.0;
-		win->target.uy = 0.0;
-		win->target.uz = 256.0;
+		win->target.vu[0] = 0.0;
+		win->target.vu[1] = 0.0;
+		win->target.vu[2] = 256.0;
 
 		//camera
-		win->camera.cx = 0.0;
-		win->camera.cy = -1024.0;
-		win->camera.cz = 1024.0;
+		win->camera.vc[0] = 0.0;
+		win->camera.vc[1] = -1024.0;
+		win->camera.vc[2] = 1024.0;
 
-		win->camera.fx = (win->target.cx)-(win->camera.cx);
-		win->camera.fy = (win->target.cy)-(win->camera.cy);
-		win->camera.fz = (win->target.cz)-(win->camera.cz);
+		win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
+		win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
+		win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
 
-		win->camera.ux = 0.0;
-		win->camera.uy = 0.0;
-		win->camera.uz = 1.0;
+		win->camera.vu[0] = 0.0;
+		win->camera.vu[1] = 0.0;
+		win->camera.vu[2] = 1.0;
 	}
 	else if(_cam_ == type)
 	{

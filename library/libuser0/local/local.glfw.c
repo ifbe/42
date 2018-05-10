@@ -889,14 +889,14 @@ void fixview()
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
-	float cx = win->camera.cx;
-	float cy = win->camera.cy;
-	float cz = win->camera.cz;
+	float cx = win->camera.vc[0];
+	float cy = win->camera.vc[1];
+	float cz = win->camera.vc[2];
 
 	//uvn.n = front
-	float nx = win->camera.fx;
-	float ny = win->camera.fy;
-	float nz = win->camera.fz;
+	float nx = win->camera.vf[0];
+	float ny = win->camera.vf[1];
+	float nz = win->camera.vf[2];
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
@@ -970,10 +970,6 @@ void fixlight()
 	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
 	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
 	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
-	GLfloat cam[3];
-	cam[0] = win->camera.cx;
-	cam[1] = win->camera.cy;
-	cam[2] = win->camera.cz;
 
 	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
 	glUniform3fv(ac, 1, ambientcolor);
@@ -985,7 +981,7 @@ void fixlight()
 	glUniform3fv(dp, 1, light0);
 
 	GLint ep = glGetUniformLocation(prettyprogram, "eyeposition");
-	glUniform3fv(ep, 1, cam);
+	glUniform3fv(ep, 1, win->camera.vc);
 }
 void callback_display()
 {

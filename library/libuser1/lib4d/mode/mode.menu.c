@@ -141,6 +141,12 @@ int actorinput_menu(struct arena* win, struct event* ev)
 		win->menutype = tmp;
 		return 0;
 	}
+	else if(_char_ == ret)
+	{
+		ret = ev->why;
+		if((0xd == ret)|(0xa == ret))win->menutype &= 0xffff;
+		return 0;
+	}
 	else if(_joy_ == ret)x = ((ev->why)>>32)&0xffff;
 	else if(_kbd_ == ret)x = ev->why;
 	else return 0;

@@ -84,21 +84,21 @@ static void sudoku_read_vbo(
 			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-			tr[0] = vr[0] / 9.1;
-			tr[1] = vr[1] / 9.1;
-			tr[2] = vr[2] / 9.1;
-			tf[0] = vf[0] / 9.1;
-			tf[1] = vf[1] / 9.1;
-			tf[2] = vf[2] / 9.1;
+			tr[0] = vr[0] / 10;
+			tr[1] = vr[1] / 10;
+			tr[2] = vr[2] / 10;
+			tf[0] = vf[0] / 10;
+			tf[1] = vf[1] / 10;
+			tf[2] = vf[2] / 10;
 			tu[0] = vu[0] * f[2];
 			tu[1] = vu[1] * f[2];
 			tu[2] = vu[2] * f[2];
 			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
 			if(data[y][x] != 0)
 			{
-				tc[0] += vu[0]*1.001;
-				tc[1] += vu[1]*1.001;
-				tc[2] += vu[2]*1.001;
+				tc[0] += tu[0] + vu[0]*0.01;
+				tc[1] += tu[1] + vu[1]*0.01;
+				tc[2] += tu[2] + vu[2]*0.01;
 				tr[0] = vr[0] / 18;
 				tr[1] = vr[1] / 18;
 				tr[2] = vr[2] / 18;

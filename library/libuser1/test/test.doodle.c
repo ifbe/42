@@ -78,14 +78,14 @@ static void doodle_read_vbo(
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
 
-	tc[0] = vc[0]-vr[0]/2+tu[0]/8;
-	tc[1] = vc[1]-vr[1]/2+tu[1]/8;
-	tc[2] = vc[2]-vr[2]/2+tu[2]/8,
+	tc[0] = vc[0]-vr[0]/2+vu[0]/8;
+	tc[1] = vc[1]-vr[1]/2+vu[1]/8;
+	tc[2] = vc[2]-vr[2]/2+vu[2]/8,
 	carvesolid_circle(win, 0x404040, tc, tr, tf);
 
-	tc[0] = vc[0]+vr[0]/2+tu[0]/8;
-	tc[1] = vc[1]+vr[1]/2+tu[1]/8;
-	tc[2] = vc[2]+vr[2]/2+tu[2]/8;
+	tc[0] = vc[0]+vr[0]/2+vu[0]/8;
+	tc[1] = vc[1]+vr[1]/2+vu[1]/8;
+	tc[2] = vc[2]+vr[2]/2+vu[2]/8;
 	carvesolid_circle(win, 0x404040, tc, tr, tf);
 
 	tr[0] = vr[0]/4;
@@ -98,9 +98,9 @@ static void doodle_read_vbo(
 	a = arctan2(py-vc[1]+vr[1], px-vc[0]+vr[0]);
 	c = cosine(a);
 	s = sine(a);
-	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+tu[0]/4;
-	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+tu[1]/4;
-	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+tu[2]/4;
+	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
+	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
+	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
 	carvesolid_circle(win, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;
@@ -111,9 +111,9 @@ static void doodle_read_vbo(
 	a = arctan2(py-vc[1]-vr[0], px-vc[0]-vr[1]);
 	c = cosine(a);
 	s = sine(a);
-	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+tu[0]/4;
-	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+tu[1]/4;
-	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+tu[2]/4;
+	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
+	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
+	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
 	carvesolid_circle(win, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;

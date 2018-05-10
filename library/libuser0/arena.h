@@ -63,46 +63,53 @@ struct style
 	u64 name;
 
 	//[10,1f]: center
-	float cx;
-	float cy;
-	float cz;
-	float cw;
+	//float cx;
+	//float cy;
+	//float cz;
+	//float cw;
+	vec4 vc;
 
 	//[20,2f]: right
-	float rx;
-	float ry;
-	float rz;
-	float rw;
+	//float rx;
+	//float ry;
+	//float rz;
+	//float rw;
+	vec4 vr;
 
 	//[30,3f]: far
-	float fx;
-	float fy;
-	float fz;
-	float fw;
+	//float fx;
+	//float fy;
+	//float fz;
+	//float fw;
+	vec4 vf;
 
 	//[40,4f]: upper
-	float ux;
-	float uy;
-	float uz;
-	float uw;
+	//float ux;
+	//float uy;
+	//float uz;
+	//float uw;
+	vec4 vu;
 
 	//[50,5f]: left
-	float lx;
-	float ly;
-	float lz;
-	float lw;
+	//float lx;
+	//float ly;
+	//float lz;
+	//float lw;
+	vec4 vl;
 
 	//[60,6f]: near
-	float nx;
-	float ny;
-	float nz;
-	float nw;
+	//float nx;
+	//float ny;
+	//float nz;
+	//float nw;
+	vec4 vn;
 
 	//[70,7f]: bottom
-	float bx;
-	float by;
-	float bz;
-	float bw;
+	//float bx;
+	//float by;
+	//float bz;
+	//float bw;
+	vec4 vb;
 };
 struct pinid
 {
