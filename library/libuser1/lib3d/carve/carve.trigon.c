@@ -3,7 +3,6 @@
 #define tau (PI*2)
 #define acc 18
 #define trigonv 0x83
-void quaternionoperation(float*, float*, float);
 
 
 
@@ -228,7 +227,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 		r[0] = vr[0];
 		r[1] = vr[1];
 		r[2] = vr[2];
-		quaternionoperation(r, vu, j*tau/acc);
+		quaternion_operation(r, vu, j*tau/acc);
 
 		a = j*9;
 		b = j*6;
@@ -491,7 +490,7 @@ void carvesolid_cask(struct arena* win, u32 rgb,
 		r[0] = vr[0];
 		r[1] = vr[1];
 		r[2] = vr[2];
-		quaternionoperation(r, vu, j*tau/acc);
+		quaternion_operation(r, vu, j*tau/acc);
 
 		a = j*18;
 		b = j*6;
@@ -533,7 +532,7 @@ void carvesolid_cylinder(struct arena* win, u32 rgb,
 	f[0] = vr[0];
 	f[1] = vr[1];
 	f[2] = vr[2];
-	quaternionoperation(f, vu, PI/2);
+	quaternion_operation(f, vu, PI/2);
 
 	tc[0] = vc[0]+vu[0];
 	tc[1] = vc[1]+vu[1];

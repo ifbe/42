@@ -208,12 +208,12 @@ static void stl_write(
 	u64 type = ev->what;
 	u64 key = ev->why;
 
-	if(type == 0x2d70)
+	if(0x2d70 == type)
 	{
 		int x = key&0xffff;
 		int y = (key>>16)&0xffff;
 	}
-	else if(_drop_ == type)
+	else if(_drag_ == type)
 	{
 		char buffer[0x1000];
 		ret = windowread(type, buffer);

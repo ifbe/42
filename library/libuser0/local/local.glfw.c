@@ -3,20 +3,14 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "arena.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
 #define _drop_ hex32('d','r','o','p')
 
 
 
 
+void fixmatrix(float*, void*);
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
-//
-void matrixmultiply_4(float*, float*);
-double squareroot(double);
-double sine(double);
-double cosine(double);
-double tangent(double);
 
 
 
@@ -32,29 +26,7 @@ static GLuint simpleprogram;
 static GLuint prettyprogram;
 static GLuint directprogram;
 static GLuint glsl2dprogram;
-/*
-static float camera[4] = {100.0f, -100.0f, 100.0f};
-static float center[4] = {0.0f, 0.0f, 0.0f};
-static float above[4] = {0.0f, 0.0f, 1.0f};
-*/
-static GLfloat modelmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-};
-static GLfloat viewmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-};
-static GLfloat projmatrix[4*4] = {  
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, -1.0f, -1.0f,
-	0.0f, 0.0f, -0.2f, 0.0f
-};
+//
 struct texandobj
 {
 	GLuint program;
@@ -881,103 +853,6 @@ void inittexture()
 
 
 
-void fixmodel()
-{
-	//matrix = movematrix * rotatematrix * scalematrix
-}
-void fixview()
-{
-	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
-	float norm;
-	float cx = win->camera.vc[0];
-	float cy = win->camera.vc[1];
-	float cz = win->camera.vc[2];
-
-	//uvn.n = front
-	float nx = win->camera.vf[0];
-	float ny = win->camera.vf[1];
-	float nz = win->camera.vf[2];
-	norm = squareroot(nx*nx + ny*ny + nz*nz);
-	nx /= norm;
-	ny /= norm;
-	nz /= norm;
-
-	//uvn.u = right = cross(front,(0,0,1))
-	float ux = ny*1 - nz*0;
-	float uy = nz*0 - nx*1;
-	float uz = nx*0 - ny*0;
-	norm = squareroot(ux*ux + uy*uy + uz*uz);
-	ux /= norm;
-	uy /= norm;
-	uz /= norm;
-
-	//uvn.v = above cross(right, front)
-	float vx = uy*nz - uz*ny;
-	float vy = uz*nx - ux*nz;
-	float vz = ux*ny - uy*nx;
-	norm = squareroot(vx*vx + vy*vy + vz*vz);
-	vx /= norm;
-	vy /= norm;
-	vz /= norm;
-
-	viewmatrix[0] = ux;
-	viewmatrix[1] = vx;
-	viewmatrix[2] = -nx;
-	viewmatrix[3] = 0.0f;
-
-	viewmatrix[4] = uy;
-	viewmatrix[5] = vy;
-	viewmatrix[6] = -ny;
-	viewmatrix[7] = 0.0f;
-
-	viewmatrix[8] = uz;
-	viewmatrix[9] = vz;
-	viewmatrix[10] = -nz;
-	viewmatrix[11] = 0.0f;
-
-	viewmatrix[12] = -cx*ux - cy*uy - cz*uz;
-	viewmatrix[13] = -cx*vx - cy*vy - cz*vz;
-	viewmatrix[14] = cx*nx + cy*ny + cz*nz;
-	viewmatrix[15] = 1.0f;
-}
-void fixprojection()
-{
-	float a = PI/2;
-	float n = 1.0;
-	glViewport(0, 0, width, height);
-
-	projmatrix[ 0] = 1.0 / tangent(a/2);
-	projmatrix[ 1] = 0.0;
-	projmatrix[ 2] = 0.0;
-	projmatrix[ 3] = 0.0;
-
-	projmatrix[ 4] = 0.0;
-	projmatrix[ 5] = projmatrix[0] * (float)width / (float)height;
-	projmatrix[ 6] = 0.0;
-	projmatrix[ 7] = 0.0;
-
-	projmatrix[ 8] = 0.0;
-	projmatrix[ 9] = 0.0;
-	projmatrix[10] = -1.0;	//	(n+f) / (n-f);
-	projmatrix[11] = -1.0;
-
-	projmatrix[12] = 0.0;
-	projmatrix[13] = 0.0;
-	projmatrix[14] = -2*n;	//	2*n*f / (n-f);
-	projmatrix[15] = 0.0;
-}
-void fixmatrix(GLfloat* cameramvp)
-{
-	int x;
-
-	fixmodel();
-	fixview();
-	fixprojection();
-
-	for(x=0;x<16;x++)cameramvp[x] = modelmatrix[x];
-	matrixmultiply_4(cameramvp, viewmatrix);
-	matrixmultiply_4(cameramvp, projmatrix);
-}
 void fixlight()
 {
 	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
@@ -999,7 +874,8 @@ void fixlight()
 void callback_display()
 {
 	GLfloat cameramvp[4*4];
-	fixmatrix(cameramvp);
+	fixmatrix(cameramvp, win);
+	glViewport(0, 0, width, height);
 
 	//set
 	glEnable(GL_DEPTH_TEST);
@@ -1365,14 +1241,18 @@ static void callback_scroll(GLFWwindow* window, double x, double y)
 }
 static void callback_drop(GLFWwindow* window, int count, const char** paths)
 {
+	struct event e;
     int j,ret=0;
     for(j=0;j<count;j++)
 	{
-		//printf("%s\n", paths[j]);
 		ret += snprintf((void*)dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
+		//printf("%s\n", paths[j]);
 	}
 
-	eventwrite(0, _drop_, (u64)win, 0);
+	e.why = (u64)dragdata;
+	e.what = _drag_;
+	e.where = (u64)win;
+	actorwrite(0, 0, win, 0, &e, 0x20);
 }
 static void callback_reshape(GLFWwindow* window, int w, int h)
 {

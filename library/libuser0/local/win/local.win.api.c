@@ -9,8 +9,6 @@
 #include<winuser.h>
 #include<commctrl.h>
 #include "arena.h"
-#define _drop_ hex32('d','r','o','p')
-#define _size_ hex32('s','i','z','e')
 int fixarg(void* dst, void* src);
 
 
@@ -23,7 +21,6 @@ static int alivecount = 0;
 static char* AppTitle="haha";
 static HANDLE hStartEvent;
 static WNDCLASS wc;
-static HDROP hDrop;
 //temp
 static int leftdown=0;
 static int rightdown=0;
@@ -35,25 +32,6 @@ static RECT rt, re;
 
 int windowread(void* dc,void* df,void* sc,void* sf)
 {
-/*
-	int j,ret=0;
-	char temp[0x1000];
-
-	UINT nNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-	for(j=0;j<nNum;j++)  
-	{
-		DragQueryFile(hDrop, j, temp, MAX_PATH);
-		//printf("%d,%s\n", ret, buf);
-
-		ret += fixarg(buf+ret, temp);
-		buf[ret] = '\n';
-		ret++;
-	}
-	DragFinish(hDrop);
-
-	buf[ret] = 0;
-	return ret;
-*/
 	BITMAPINFO info;
 	struct arena* win = sc;
 	int w = win->width;
@@ -461,8 +439,28 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case WM_DROPFILES:
 		{
-			hDrop = (HDROP)wparam;
-			eventwrite(0, _drop_, addr, 0);
+			int j,ret=0;
+			char tmp[0x1000];
+			char buf[0x1000];
+			HDROP hDrop = (HDROP)wparam;
+
+			UINT nNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			for(j=0;j<nNum;j++)  
+			{
+				DragQueryFile(hDrop, j, tmp, MAX_PATH);
+				//printf("%d,%s\n", ret, buf);
+
+				ret += fixarg(buf+ret, tmp);
+				buf[ret] = '\n';
+				ret++;
+			}
+			DragFinish(hDrop);
+			buf[ret] = 0;
+
+			ev.why = (u64)buf;
+			ev.what = _drag_;
+			ev.where = addr;
+			actorwrite(0, 0, win, 0, &ev, 0x20);
 			return 0;
 		}
 

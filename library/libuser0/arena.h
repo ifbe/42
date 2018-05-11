@@ -18,6 +18,7 @@ typedef float mat4[4][4];
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _size_ hex32('s','i','z','e')
+#define _drag_ hex32('d','r','a','g')
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
 

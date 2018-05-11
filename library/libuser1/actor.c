@@ -121,7 +121,14 @@ int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		else win = &arena[0];
 
 		ev = buf;
-		actorinput(win, ev);
+		if(_drag_ == ev->what)
+		{
+			say("%s\n", (void*)(ev->why));
+		}
+		else
+		{
+			actorinput(win, ev);
+		}
 	}
 	return 0;
 }

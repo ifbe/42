@@ -4,7 +4,6 @@
 #define tau (PI*2)
 #define acc 24
 #define linev 0x85
-void quaternionoperation(float*, float*, float);
 
 
 
@@ -334,7 +333,7 @@ void carveline2d_hexagon(struct arena* win, u32 rgb,
 	q[0] = 0.0;
 	q[1] = 0.0;
 	q[2] = 1.0;
-	quaternionoperation(v, q, PI/3);
+	quaternion_operation(v, q, PI/3);
 
 	//60
 	vbuf[ 6] = vc[0] + v[0];
@@ -412,7 +411,7 @@ void carveline2d_circle(struct arena* win, u32 rgb,
 		vbuf[6*j+0] = vr[0];
 		vbuf[6*j+1] = vr[1];
 		vbuf[6*j+2] = 0.0;
-		quaternionoperation(&vbuf[6*j], q, j*tau/lineacc);
+		quaternion_operation(&vbuf[6*j], q, j*tau/lineacc);
 
 		vbuf[6*j+0] += vc[0];
 		vbuf[6*j+1] += vc[1];

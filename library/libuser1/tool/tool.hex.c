@@ -155,7 +155,7 @@ static void hex_write(
 	u64 key = ev->why;
 	//say("%x,%x\n",type,key);
 
-	if(_drop_ == type)
+	if(_drag_ == type)
 	{
 		ret = windowread(type, databuf);
 		say("%s", databuf);

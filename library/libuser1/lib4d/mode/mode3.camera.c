@@ -1,8 +1,106 @@
 #include "actor.h"
-void quaternionoperation(float*, float*, float);
+#define PI 3.1415926535897932384626433832795028841971693993151
 int arenaprev(struct arena* win);
 int arenanext(struct arena* win);
 int arenalogin(struct arena* win);
+//
+void quaternion_operation(float*, float*, float);
+void matrixmultiply_4(float*, float*);
+
+
+
+
+void fixview(mat4 viewmatrix, struct arena* win)
+{
+	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
+	float norm;
+	float cx = win->camera.vc[0];
+	float cy = win->camera.vc[1];
+	float cz = win->camera.vc[2];
+
+	//uvn.n = front
+	float nx = win->camera.vf[0];
+	float ny = win->camera.vf[1];
+	float nz = win->camera.vf[2];
+	norm = squareroot(nx*nx + ny*ny + nz*nz);
+	nx /= norm;
+	ny /= norm;
+	nz /= norm;
+
+	//uvn.u = right = cross(front,(0,0,1))
+	float ux = ny*1 - nz*0;
+	float uy = nz*0 - nx*1;
+	float uz = nx*0 - ny*0;
+	norm = squareroot(ux*ux + uy*uy + uz*uz);
+	ux /= norm;
+	uy /= norm;
+	uz /= norm;
+
+	//uvn.v = above cross(right, front)
+	float vx = uy*nz - uz*ny;
+	float vy = uz*nx - ux*nz;
+	float vz = ux*ny - uy*nx;
+	norm = squareroot(vx*vx + vy*vy + vz*vz);
+	vx /= norm;
+	vy /= norm;
+	vz /= norm;
+
+	viewmatrix[0][0] = ux;
+	viewmatrix[0][1] = vx;
+	viewmatrix[0][2] = -nx;
+	viewmatrix[0][3] = 0.0f;
+
+	viewmatrix[1][0] = uy;
+	viewmatrix[1][1] = vy;
+	viewmatrix[1][2] = -ny;
+	viewmatrix[1][3] = 0.0f;
+
+	viewmatrix[2][0] = uz;
+	viewmatrix[2][1] = vz;
+	viewmatrix[2][2] = -nz;
+	viewmatrix[2][3] = 0.0f;
+
+	viewmatrix[3][0] = -cx*ux - cy*uy - cz*uz;
+	viewmatrix[3][1] = -cx*vx - cy*vy - cz*vz;
+	viewmatrix[3][2] = cx*nx + cy*ny + cz*nz;
+	viewmatrix[3][3] = 1.0f;
+}
+void fixprojection(mat4 projmatrix, struct arena* win)
+{
+	float a = PI/2;
+	float n = 1.0;
+	float w = (float)(win->width);
+	float h = (float)(win->height);
+
+	projmatrix[0][0] = 1.0 / tangent(a/2);
+	projmatrix[0][1] = 0.0;
+	projmatrix[0][2] = 0.0;
+	projmatrix[0][3] = 0.0;
+
+	projmatrix[1][0] = 0.0;
+	projmatrix[1][1] = projmatrix[0][0] * w / h;
+	projmatrix[1][2] = 0.0;
+	projmatrix[1][3] = 0.0;
+
+	projmatrix[2][0] = 0.0;
+	projmatrix[2][1] = 0.0;
+	projmatrix[2][2] = -1.0;	//	(n+f) / (n-f);
+	projmatrix[2][3] = -1.0;
+
+	projmatrix[3][0] = 0.0;
+	projmatrix[3][1] = 0.0;
+	projmatrix[3][2] = -2*n;	//	2*n*f / (n-f);
+	projmatrix[3][3] = 0.0;
+}
+void fixmatrix(mat4 cameramvp, struct arena* win)
+{
+	int x;
+	mat4 projmatrix;
+
+	fixview(cameramvp, win);
+	fixprojection(projmatrix, win);
+	mat4_multiply(cameramvp, projmatrix);
+}
 
 
 
@@ -83,7 +181,7 @@ void camera_deltay(struct arena* win, float delta)
 	q[0] = v[1]*1 - v[2]*0;
 	q[1] = v[2]*0 - v[0]*1;
 	q[2] = v[0]*0 - v[1]*0;
-	quaternionoperation(v, q, delta);
+	quaternion_operation(v, q, delta);
 
 	//camera = target+vector
 	win->camera.vc[0] = tx+v[0];
@@ -479,7 +577,7 @@ int camera_event_2d(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int camera_event(struct arena* win, struct event* ev)
+int actorinput_camera(struct arena* win, struct event* ev)
 {
 	if(_vbo_ == win->fmt)camera_event_3d(win, ev);
 	else camera_event_2d(win, ev);

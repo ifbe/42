@@ -11,9 +11,10 @@ int actoroutput_overview(struct arena*);
 int actorinput_overview(struct arena* win, struct event* ev);
 //mode1
 int actoroutput_detail(struct arena*);
+int actorinput_detail(struct arena* win, struct event* ev);
 //mode2
 int actoroutput_posture(struct arena*);
-int camera_event(struct arena* win, struct event* ev);
+int actorinput_camera(struct arena* win, struct event* ev);
 //mode3
 int actoroutput_edit(struct arena*);
 int playwith2d(struct arena* win, struct event* ev);
@@ -145,6 +146,7 @@ void actorinput(struct arena* win, struct event* ev)
 	}
 	else if(1 == l16)
 	{
+		actorinput_detail(win, ev);
 	}
 	else if(2 == l16)
 	{
@@ -153,7 +155,7 @@ void actorinput(struct arena* win, struct event* ev)
 	}
 	else if(3 == l16)
 	{
-		camera_event(win, ev);
+		actorinput_camera(win, ev);
 	}
 	else if(4 == l16)
 	{

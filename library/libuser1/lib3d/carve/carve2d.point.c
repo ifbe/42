@@ -3,7 +3,6 @@
 #define tau (PI*2)
 #define acc 18
 #define pointv 0x84
-void quaternionoperation(float*, float*, float);
 
 
 
@@ -90,7 +89,7 @@ void carvepoint2d_circle(struct arena* win, u32 rgb,
 		r[0] = vr[0];
 		r[1] = vr[1];
 		r[2] = 0.0;
-		quaternionoperation(r, q, j*tau/acc);
+		quaternion_operation(r, q, j*tau/acc);
 
 		vbuf[6*j+0] = vc[0] + r[0];
 		vbuf[6*j+1] = vc[1] + r[1];

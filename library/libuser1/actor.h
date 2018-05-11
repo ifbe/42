@@ -25,7 +25,7 @@ typedef float mat4[4][4];
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
 //
-#define _drop_ hex32('d','r','o','p')
+#define _drag_ hex32('d','r','a','g')
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
@@ -661,32 +661,40 @@ int hexstr2double(void* dst, void* src, int len);
 
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
-
+//
 int md5sum(void*, void*, int);
 int sha1sum(void*, void*, int);
 int sha256sum(void*, void*, int);
 int sha384sum(void*, void*, int);
 int sha512sum(void*, void*, int);
-
-void matrixtranspose_2(float* u);
-void matrixtranspose_3(float* u);
-void matrixtranspose_4(float* u);
-void matrixmultiply_2(float* d, float* s);
-void matrixmultiply_3(float* d, float* s);
-void matrixmultiply_4(float* d, float* s);
-int matrixinverse_2(float* d, float* s);
-int matrixinverse_3(float* d, float* s);
-int matrixinverse_4(float* d, float* s);
-
-void quaternionnormalize(float* q);
-void quaternionmultiply(float* l, float* r);
-void quaternionrotate(float* v, float* q);
-
-void vectornormalize(float* v);
-void vectorcross(float* d, float* s);
-float vectordot(float*, float*);
-float vectorcosine(float*, float*);
-
+//
+void vec2_normalize(vec2 v);
+void vec2_cross(vec2 d, vec2 s);
+float vec2_dot(vec2, vec2);
+float vec2_cosine(vec2, vec2);
+//
+void vec3_normalize(vec3 v);
+void vec3_cross(vec3 d, vec3 s);
+float vec3_dot(vec3, vec3);
+float vec3_cosine(vec3, vec3);
+//
+void quaternion_normalize(vec4 q);
+void quaternion_multiply(vec4 l, vec4 r);
+void quaternion_rotate(vec3 v, vec4 q);
+void quaternion_operation(vec3 v, vec3 a, float delta);
+//
+void mat2_transpose(mat2 u);
+void mat2_multiply(mat2 d, mat2 s);
+int mat2_inverse(mat2 d, mat2 s);
+//
+void mat3_transpose(mat3 u);
+void mat3_multiply(mat3 d, mat3 s);
+int mat3_inverse(mat3 d, mat3 s);
+//
+void mat4_transpose(mat4 u);
+void mat4_multiply(mat4 d, mat4 s);
+int mat4_inverse(mat4 d, mat4 s);
+//
 //
 int actorread(void* dc,void* df,void* sc,void* sf);
 int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);

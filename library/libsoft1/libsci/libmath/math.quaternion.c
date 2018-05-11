@@ -96,7 +96,7 @@ void quaternion2matrix(float* q, float* matrix)
 
 
 
-void quaternionnormalize(float* p)
+void quaternion_normalize(float* p)
 {
 	float norm = squareroot(p[0]*p[0] + p[1]*p[1] + p[2]*p[2] + p[3]*p[3]);
 	p[0] /= norm;
@@ -106,7 +106,7 @@ void quaternionnormalize(float* p)
 }
 //in:	left, right
 //out:	left = left*right
-void quaternionmultiply(float* l, float* r)
+void quaternion_multiply(float* l, float* r)
 {
 	float t[4];
 	t[0] = l[0];
@@ -121,7 +121,7 @@ void quaternionmultiply(float* l, float* r)
 }
 //in:	vector, quaternion
 //out:	vector
-void quaternionrotate(float* v, float* q)
+void quaternion_rotate(float* v, float* q)
 {
 	//t = 2 * cross(q.xyz, v)
 	//v' = v + q.w * t + cross(q.xyz, t)
@@ -140,7 +140,7 @@ void quaternionrotate(float* v, float* q)
 	v[1] += q[3]*j[1] + k[1];
 	v[2] += q[3]*j[2] + k[2];
 }
-void quaternionoperation(float* v, float* a, float delta)
+void quaternion_operation(float* v, float* a, float delta)
 {
 	float c,s,norm;
 	float q[4];
@@ -154,5 +154,5 @@ void quaternionoperation(float* v, float* a, float delta)
 	q[2] = a[2]*s/norm;
 	q[3] = c;
 
-	quaternionrotate(v, q);
+	quaternion_rotate(v, q);
 }

@@ -8,15 +8,15 @@ double sine(double);
 
 
 
-float complexmodulus(float* d)
+float complex_modulus(float* d)
 {
 	return squareroot(d[0]*d[0] + d[1]*d[1]);
 }
-float complexangle(float* d)
+float complex_angle(float* d)
 {
 	return arctan2(d[1], d[0]);
 }
-void complexpower_real(float* d, float e)
+void complex_power_real(float* d, float e)
 {
 	float mod = complexmodulus(d);
 	float ang = complexangle(d);
@@ -24,7 +24,7 @@ void complexpower_real(float* d, float e)
 	d[0] = ppp * cosine(ang * e);
 	d[1] = ppp * sine(ang * e);
 }
-void complexpower_complex(float* d, float* s)
+void complex_power_complex(float* d, float* s)
 {
 /*
 =(R*exp(i(θ+2kπ))) ^ (a+ib)
@@ -44,17 +44,17 @@ void complexpower_complex(float* d, float* s)
 
 
 
-void complexaddition(float* d, float* s)
+void complex_add(float* d, float* s)
 {
 	d[0] += s[0];
 	d[1] += s[1];
 }
-void complexsubtraction(float* d, float* s)
+void complex_sub(float* d, float* s)
 {
 	d[0] -= s[0];
 	d[1] -= s[1];
 }
-void complexmulply(float* d, float* s)
+void complex_mul(float* d, float* s)
 {
 	float t[2];
 	t[0] = d[0];
@@ -63,7 +63,7 @@ void complexmulply(float* d, float* s)
 	d[0] = t[0]*s[0] - t[1]*s[1];
 	d[1] = t[0]*s[1] + t[1]*s[0];
 }
-void complexdivision(float* d, float* s)
+void complex_div(float* d, float* s)
 {
 	float a;
 	float t[2];

@@ -102,7 +102,7 @@ static void fs_write(
 {
 	int j,ret;
 	u64 type = ev->what;
-	if(_drop_ == type)
+	if(_drag_ == type)
 	{
 		ret = windowread(type, buffer);
 		say("%s", buffer);

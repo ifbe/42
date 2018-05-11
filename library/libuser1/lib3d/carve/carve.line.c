@@ -3,7 +3,6 @@
 #define tau (PI*2)
 #define acc 32
 #define linev 0x81
-void quaternionoperation(float*, float*, float);
 
 
 
@@ -298,7 +297,7 @@ void carveline_hexagon(struct arena* win, u32 rgb,
 	v[0] = vr[0];
 	v[1] = vr[1];
 	v[2] = vr[2];
-	quaternionoperation(v, vu, PI/3);
+	quaternion_operation(v, vu, PI/3);
 
 	//60
 	vbuf[ 6] = vc[0] + v[0];
@@ -373,7 +372,7 @@ void carveline_circle(struct arena* win, u32 rgb,
 		vbuf[6*j+0] = vr[0];
 		vbuf[6*j+1] = vr[1];
 		vbuf[6*j+2] = vr[2];
-		quaternionoperation(&vbuf[6*j], vu, j*tau/lineacc);
+		quaternion_operation(&vbuf[6*j], vu, j*tau/lineacc);
 
 		vbuf[6*j+0] += vc[0];
 		vbuf[6*j+1] += vc[1];
@@ -427,7 +426,7 @@ void carveline_cone(struct arena* win, u32 rgb,
 		r[0] = vr[0];
 		r[1] = vr[1];
 		r[2] = vr[2];
-		quaternionoperation(r, vu, j*tau/acc);
+		quaternion_operation(r, vu, j*tau/acc);
 
 		a = j*6;
 
@@ -606,7 +605,7 @@ void carveline_cylinder(struct arena* win, u32 rgb,
 		r[0] = vr[0];
 		r[1] = vr[1];
 		r[2] = vr[2];
-		quaternionoperation(r, vu, j*tau/acc);
+		quaternion_operation(r, vu, j*tau/acc);
 
 		a = j*12;
 		b = j*6;

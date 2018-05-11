@@ -3,8 +3,6 @@
 #define tau (PI*2)
 #define acc 18
 #define stlv 0x82
-void quaternionoperation(float*, float*, float);
-u32 getrandom();
 
 
 
@@ -18,7 +16,7 @@ void carvedrone_node(struct arena* win, u32 rgb,
 	tt[0] = vr[0];
 	tt[1] = vr[1];
 	tt[2] = vr[2];
-	quaternionoperation(tt, vu, tau/3);
+	quaternion_operation(tt, vu, tau/3);
 
 	v0[0] = vc[0] + vr[0];
 	v0[1] = vc[1] + vr[1];
@@ -111,7 +109,7 @@ void carvedrone(struct arena* win, u32 rgb,
 	tt[0] = vr[0];
 	tt[1] = vr[1];
 	tt[2] = vr[2];
-	quaternionoperation(tt, vu, tau/3);
+	quaternion_operation(tt, vu, tau/3);
 	v0[0] = vr[0];
 	v0[1] = vr[1];
 	v0[2] = vr[2];
