@@ -13,18 +13,20 @@ int actorinput_overview(struct arena* win, struct event* ev);
 int actoroutput_detail(struct arena*);
 int actorinput_detail(struct arena* win, struct event* ev);
 //mode2
-int actoroutput_posture(struct arena*);
-int actorinput_camera(struct arena* win, struct event* ev);
-//mode3
 int actoroutput_edit(struct arena*);
 int playwith2d(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
+//mode3
+int actoroutput_posture(struct arena*);
+int actorinput_camera(struct arena* win, struct event* ev);
 //mode4
 int actoroutput_deliver(struct arena* win);
 int actorinput_deliver(struct arena* win, struct event* ev);
 //mode5
 int actoroutput_oneonone(struct arena* win);
 int actorinput_oneonone(struct arena* win, struct event* ev);
+//
+void invmvp(vec3 v, struct arena* win);
 
 
 
@@ -274,8 +276,9 @@ void foreground_vbo(struct arena* win)
 	float x,y;
 	vec3 va;
 	vec3 vb;
+	vec3 vv;
 
-	for(j=0;j<11;j++)
+	for(j=0;j<12;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
 
@@ -291,7 +294,7 @@ void foreground_vbo(struct arena* win)
 		vb[2] = -0.99;
 		carveline2d_arrow(win, 0xff00ff, va, vb);
 	}
-
+/*
 	if(1)
 	{
 		j = (win->width + win->height) / 128;
@@ -310,6 +313,28 @@ void foreground_vbo(struct arena* win)
 		vb[1] = y;
 		carveline2d(win, 0xffffff, va, vb);
 	}
+*/
+	x = (float)(win->width);
+	y = (float)(win->height);
+	va[0] = (win->touchmove[10].x)*2/x - 1.0;
+	va[1] = 1.0 - (win->touchmove[10].y)*2/y;
+	va[2] = -0.5;
+	vb[0] = (win->touchmove[10].x)*2/x - 1.0;
+	vb[1] = 1.0 - (win->touchmove[10].y)*2/y;
+	vb[2] = 0.5;
+	invmvp(va, win);
+	invmvp(vb, win);
+	say("va=%f,%f,%f\n",va[0],va[1],va[2]);
+	say("vb=%f,%f,%f\n",vb[0],vb[1],vb[2]);
+
+	vv[0] = va[0] - va[2]*(vb[0]-va[0])/(vb[2]-va[2]);
+	vv[1] = va[1] - va[2]*(vb[1]-va[1])/(vb[2]-va[2]);
+	vv[2] = 0.0;
+	say("vv=%f,%f,%f\n",vv[0],vv[1],vv[2]);
+	va[0] = 0.0;
+	va[1] = 0.0;
+	va[2] = 0.0;
+	carveline(win, 0xff0000, vv, va);
 }
 void foreground_json(struct arena* win)
 {

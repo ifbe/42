@@ -8,9 +8,11 @@
 
 
 
-void fixmatrix(float*, void*);
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
+//
+void fixmatrix(float*, void*);
+void mat4_transpose(float*);
 
 
 
@@ -874,8 +876,10 @@ void fixlight()
 void callback_display()
 {
 	GLfloat cameramvp[4*4];
-	fixmatrix(cameramvp, win);
 	glViewport(0, 0, width, height);
+
+	fixmatrix(cameramvp, win);
+	mat4_transpose(cameramvp);
 
 	//set
 	glEnable(GL_DEPTH_TEST);

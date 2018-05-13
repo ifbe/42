@@ -128,7 +128,7 @@ void mat4_transpose(float* u)
 
 	t = u[3];
 	u[3] = u[12];
-	u[12] = u[3];
+	u[12] = t;
 
 	t = u[6];
 	u[6] = u[9];
