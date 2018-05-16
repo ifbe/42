@@ -390,7 +390,7 @@ extern "C" {
 #endif
 
 int actorread_all(void* win);
-int actorwrite_ev(void* win, void* ev);
+int actorwrite_ev(void* ev);
 int actorread(    void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int actorwrite(   void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int arenaread(    void* dc,void* df,void* sc,void* sf,void* buf,int len);

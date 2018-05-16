@@ -49,8 +49,9 @@ void* allocpinid()
 
 	return pin;
 }
-int actorwrite_ev(struct arena* win, struct event* ev)
+int actorwrite_ev(struct event* ev)
 {
+	struct arena* win = (void*)(ev->where);
 	if(0 == win)win = &arena[0];
 
 	if(_drag_ == ev->what)
@@ -75,10 +76,9 @@ int actorread_all(struct arena* win)
 int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct relation* rel;
-	struct event* ev;
 	struct actor* act;
 	struct arena* win;
-	if(0 == dc)return actorwrite_ev(sc, buf);
+	if(0 == dc)return actorwrite_ev(buf);
 
 	act = dc;
 	act->onwrite(act, df, sc, sf, buf, len);
