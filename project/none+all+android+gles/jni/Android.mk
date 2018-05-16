@@ -148,6 +148,7 @@ library/libsoft1/libalgo/transform/trfm.laplace.c \
 library/libsoft1/libalgo/tree/tree.binary.c \
 library/libsoft1/libalgo/tree/tree.redblack.c \
 library/libsoft1/libalgo/tree/tree.bplus.c \
+library/libsoft1/libchem/chem.equation.c \
 library/libsoft1/libfile/audio/audio.ape.c \
 library/libsoft1/libfile/audio/audio.mp3.c \
 library/libsoft1/libfile/audio/audio.ogg.c \
@@ -206,6 +207,12 @@ library/libsoft1/libfile/video/video.mkv.c \
 library/libsoft1/libfile/video/video.mp4.c \
 library/libsoft1/libfile/video/video.rmvb.c \
 library/libsoft1/libfile/file.c \
+library/libsoft1/libmath/math.bigint.c \
+library/libsoft1/libmath/math.matrix.c \
+library/libsoft1/libmath/math.notation.c \
+library/libsoft1/libmath/math.prime.c \
+library/libsoft1/libmath/math.quaternion.c \
+library/libsoft1/libmath/math.vector.c \
 library/libsoft1/libnet/0.phy/phy.bt.c \
 library/libsoft1/libnet/0.phy/phy.eth.c \
 library/libsoft1/libnet/0.phy/phy.raw.c \
@@ -235,16 +242,8 @@ library/libsoft1/libnet/4.tcp/tcp.vnc.c \
 library/libsoft1/libnet/4.tcp/tcp.ssh.c \
 library/libsoft1/libnet/4.tcp/tcp.tls.c \
 library/libsoft1/libnet/4.tcp/tcp.ws.c \
-library/libsoft1/libsci/libbio/bio.chance.c \
-library/libsoft1/libsci/libchem/chem.equation.c \
-library/libsoft1/libsci/libmath/math.bigint.c \
-library/libsoft1/libsci/libmath/math.matrix.c \
-library/libsoft1/libsci/libmath/math.notation.c \
-library/libsoft1/libsci/libmath/math.prime.c \
-library/libsoft1/libsci/libmath/math.quaternion.c \
-library/libsoft1/libsci/libmath/math.vector.c \
-library/libsoft1/libsci/libphys/phys.elec.c \
-library/libsoft1/libsci/libphys/phys.mech.c \
+library/libsoft1/libphys/phys.elec.c \
+library/libsoft1/libphys/phys.mech.c \
 library/libsoft1/artery.c
 
 #libuser0
@@ -335,6 +334,9 @@ library/libuser1/lib3d/carve/carve2d.point.c \
 library/libuser1/lib3d/carve/carve2d.line.c \
 library/libuser1/lib3d/carve/carve2d.trigon.c \
 library/libuser1/lib3d/carve/carve2d.other.c \
+library/libuser1/lib3d/intersect/intersect.obb.c \
+library/libuser1/lib3d/intersect/intersect.ray.c \
+library/libuser1/lib3d/intersect/intersect.sphere.c \
 library/libuser1/lib3d/model/model.magnify.c \
 library/libuser1/lib3d/model/model.minify.c \
 library/libuser1/lib3d/model/model.rotate.c \

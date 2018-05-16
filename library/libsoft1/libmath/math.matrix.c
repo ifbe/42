@@ -1,3 +1,15 @@
+#include "artery.h"
+
+
+
+
+void mat2_transpose(float* u)
+{
+	float t;
+	t = u[1];
+	u[1] = u[2];
+	u[2] = t;
+}
 void mat2_multiply(float* u, float* v)
 {
 	int j;
@@ -10,13 +22,6 @@ void mat2_multiply(float* u, float* v)
 	u[2] = w[2]*v[0] + w[3]*v[2];
 	u[3] = w[2]*v[1] + w[3]*v[3];
 }
-void mat2_transpose(float* u)
-{
-	float t;
-	t = u[1];
-	u[1] = u[2];
-	u[2] = t;
-}
 int mat2_inverse(float* d, float* s)
 {
 	float t = s[0]*s[3] - s[1]*s[2];
@@ -28,10 +33,30 @@ int mat2_inverse(float* d, float* s)
 	d[3] = s[0] / t;
 	return 0;
 }
+float mat2_det(mat2 m)
+{
+	return m[0][0]*m[1][1] - m[0][1]*m[1][0];
+}
 
 
 
 
+void mat3_transpose(float* u)
+{
+	float t;
+
+	t = u[1];
+	u[1] = u[3];
+	u[3] = t;
+
+	t = u[2];
+	u[2] = u[6];
+	u[6] = t;
+
+	t = u[5];
+	u[5] = u[7];
+	u[7] = t;
+}
 void mat3_multiply(float* u, float* v)
 {
 	int j;
@@ -50,22 +75,6 @@ void mat3_multiply(float* u, float* v)
 	u[7] = w[6]*v[1] + w[7]*v[4] + w[8]*v[7];
 	u[8] = w[6]*v[2] + w[7]*v[5] + w[8]*v[8];
 }
-void mat3_transpose(float* u)
-{
-	float t;
-
-	t = u[1];
-	u[1] = u[3];
-	u[3] = t;
-
-	t = u[2];
-	u[2] = u[6];
-	u[6] = t;
-
-	t = u[5];
-	u[5] = u[7];
-	u[7] = t;
-}
 int mat3_inverse(float* d, float* s)
 {
 	float t = s[0]*(s[4]*s[8]-s[5]*s[7])
@@ -83,6 +92,16 @@ int mat3_inverse(float* d, float* s)
 	d[8] = (s[0]*s[4] - s[3]*s[1])/t;
 
 	return 0;
+}
+float mat3_det(mat3 m)
+{
+	return 0 +
+	m[0][0]*m[1][1]*m[2][2] +
+	m[0][2]*m[1][0]*m[2][1] +
+	m[0][1]*m[1][2]*m[2][0] -
+	m[0][0]*m[1][2]*m[2][1] -
+	m[0][1]*m[1][0]*m[2][2] -
+	m[0][2]*m[1][1]*m[2][0];
 }
 
 
@@ -145,4 +164,48 @@ void mat4_transpose(float* u)
 int mat4_inverse(float* d, float* s)
 {
 	return 0;
+}
+float mat4_det(mat4 m)
+{
+	mat3 n;
+	int j;
+	float t = 0.0;
+
+	//m[3][0]
+	for(j=0;j<3;j++)
+	{
+		n[j][0] = m[j][1];
+		n[j][1] = m[j][2];
+		n[j][2] = m[j][3];
+	}
+	t -= m[3][0]*mat3_det(n);
+
+	//m[3][1]
+	for(j=0;j<3;j++)
+	{
+		n[j][0] = m[j][0];
+		n[j][1] = m[j][2];
+		n[j][2] = m[j][3];
+	}
+	t += m[3][1]*mat3_det(n);
+
+	//m[3][2]
+	for(j=0;j<3;j++)
+	{
+		n[j][0] = m[j][0];
+		n[j][1] = m[j][1];
+		n[j][2] = m[j][3];
+	}
+	t -= m[3][2]*mat3_det(n);
+
+	//m[3][3]
+	for(j=0;j<3;j++)
+	{
+		n[j][0] = m[j][0];
+		n[j][1] = m[j][1];
+		n[j][2] = m[j][2];
+	}
+	t += m[3][3]*mat3_det(n);
+
+	return t;
 }
