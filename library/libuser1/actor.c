@@ -49,10 +49,70 @@ void* allocpinid()
 
 	return pin;
 }
+int actorwrite_ev(struct arena* win, struct event* ev)
+{
+	if(0 == win)win = &arena[0];
+
+	if(_drag_ == ev->what)
+	{
+		say("%s\n", (void*)(ev->why));
+	}
+	else
+	{
+		actorinput(win, ev);
+	}
+	return 0;
+}
+int actorread_all(struct arena* win)
+{
+	actoroutput(win);
+	return 0;
+}
 
 
 
 
+int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	struct relation* rel;
+	struct event* ev;
+	struct actor* act;
+	struct arena* win;
+	if(0 == dc)return actorwrite_ev(sc, buf);
+
+	act = dc;
+	act->onwrite(act, df, sc, sf, buf, len);
+
+	rel = act->orel;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype)
+		{
+			win = (void*)(rel->dstchip);
+			win->enq += 1;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int actorread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	actorread_all(dc);
+	return 0;
+}
+int actorstop(struct actor* act, struct pinid* pin)
+{
+	if(0 == act)return 0;
+	act->onstop(act, pin);
+	return 0;
+}
+int actorstart(struct actor* act, struct pinid* pin)
+{
+	if(0 == act)return 0;
+	act->onstart(act, pin);
+	return 0;
+}
 int actordelete(struct actor* act, u8* buf)
 {
 	if(0 == act)return 0;
@@ -73,92 +133,6 @@ int actorcreate(struct actor* act, u8* buf)
 	act->oncreate(act, buf);
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
-	return 0;
-}
-int actorstop(struct actor* act, struct pinid* pin)
-{
-	if(0 == act)return 0;
-	act->onstop(act, pin);
-	return 0;
-}
-int actorstart(struct actor* act, struct pinid* pin)
-{
-	if(0 == act)return 0;
-	act->onstart(act, pin);
-	return 0;
-}
-int actorread(void* dc,void* df,void* sc,void* sf)
-{
-	actoroutput(dc);
-	return 0;
-}
-int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct relation* rel;
-	struct event* ev;
-	struct actor* act;
-	struct arena* win;
-	if(dc != 0)
-	{
-		act = dc;
-		act->onwrite(act, df, sc, sf, buf, len);
-
-		rel = act->orel;
-		while(1)
-		{
-			if(0 == rel)break;
-			if(_win_ == rel->dsttype)
-			{
-				win = (void*)(rel->dstchip);
-				win->enq += 1;
-			}
-			rel = samesrcnextdst(rel);
-		}
-	}
-	else
-	{
-		if(sc != 0)win = sc;
-		else win = &arena[0];
-
-		ev = buf;
-		if(_drag_ == ev->what)
-		{
-			say("%s\n", (void*)(ev->why));
-		}
-		else
-		{
-			actorinput(win, ev);
-		}
-	}
-	return 0;
-}
-void* actorlist(u8* buf, int len)
-{
-	int j,k;
-	u8* p;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == actor[j].name)break;
-			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
-		}
-		if(0 == j)say("empty actor\n");
-	}
-	else
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == actor[j].name)break;
-			p = (void*)(&actor[j].name);
-
-			for(k=0;k<8;k++)
-			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
-				if(buf[k] != p[k])break;
-			}
-		}
-	}
 	return 0;
 }
 void* actorchoose(u8* buf, int len)
@@ -193,6 +167,35 @@ void* actorchoose(u8* buf, int len)
 		}
 	}
 
+	return 0;
+}
+void* actorlist(u8* buf, int len)
+{
+	int j,k;
+	u8* p;
+	if(0 == buf)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
+		}
+		if(0 == j)say("empty actor\n");
+	}
+	else
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			p = (void*)(&actor[j].name);
+
+			for(k=0;k<8;k++)
+			{
+				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
+				if(buf[k] != p[k])break;
+			}
+		}
+	}
 	return 0;
 }
 

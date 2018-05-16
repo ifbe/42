@@ -79,11 +79,11 @@ int wsserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 int vncclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 int vncserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 //
-int actorread(void*, void*, void*, void*);
-int parsexml_detail(void*, int, void*, void*, void*, void*);
-int ncmp(void*, void*, int);
 int cmp(void*, void*);
+int ncmp(void*, void*, int);
+int parsexml_detail(void*, int, void*, void*, void*, void*);
 int sleep_us(int);
+int arenadelete(struct arena* win);
 
 
 
@@ -112,10 +112,102 @@ void* allocstyle()
 	for(j=0;j<sizeof(struct style);j++)sty[j] = 0;
 	return sty;
 }
+int arenawrite_ev(struct event* ev)
+{
+	int j;
+	void* ret;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
+
+	if(_win_ == what)
+	{
+		return 42;
+	}
+	else if(hex32('w','+',0,0) == what)
+	{/*
+		ret = arenacreate(why, where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return 0;
+		}*/
+	}
+	else if(hex32('w','-',0,0) == what)
+	{
+		ret = (void*)where;
+		arenadelete(ret);
+	}
+	return 0;
+}
+int arenaread_all()
+{
+	int j;
+	u64 time;
+	struct relation* rel;
+	struct arena* win;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
+
+	for(j=0;j<16;j++)
+	{
+		win = &arena[j];
+		if(0 == win->type)continue;
+		if(_win_ == win->type)
+		{
+			if(win->enq == win->deq)
+			{
+				sleep_us(1000);
+				continue;
+			}
+			win->deq = win->enq;
+
+			time = gettime();
+			windowread(0, 0, win, 0);
+			time = gettime() - time;
+			//say("delta=%d\n",time);
+		}
+	}
+	return 0;
+}
 
 
 
 
+int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	struct arena* win;
+	if(0 == dc)return arenawrite_ev(buf);
+
+	win = dc;
+	if(_HTTP_ == win->type)
+	{
+		httpserver_write(dc,df,sc,sf,buf,len);
+	}
+	else if(_http_ == win->type)
+	{
+		httpclient_write(dc,df,sc,sf,buf,len);
+	}
+	else if(_WS_ == win->type)
+	{
+		wsserver_write(dc,df,sc,sf,buf,len);
+	}
+	return 0;
+}
+int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int arenastop()
+{
+	return 0;
+}
+int arenastart()
+{
+	return 0;
+}
 int arenadelete(struct arena* win)
 {
 	if(win == 0)return 0;
@@ -222,60 +314,29 @@ void* arenacreate(u64 type, u8* addr)
 
 	return win;
 }
-int arenastop()
+void* arenachoose(u8* buf, int len)
 {
-	return 0;
-}
-int arenastart()
-{
-	return 0;
-}
-int arenaread(void* dc,void* df,void* sc,void* sf)
-{
-	int j;
-	u64 time;
-	struct relation* rel;
-	struct arena* win;
-	struct actor* act;
-	struct style* sty;
-	struct pinid* pin;
+	u64 name = 0;
+	int id = 0;
+	u8* data = 0;
+	int dl = 0;
 
-	for(j=0;j<16;j++)
+	parsexml_detail(buf, len, &name, &id, &data, &dl);
+	say("%.*s\n", len, buf);
+	say("%llx, %x\n", name, id);
+	say("%.*s\n", dl, data);
+
+	if(_win_ == name)
 	{
-		win = &arena[j];
-		if(0 == win->type)continue;
-		if(_win_ == win->type)
+		if((id>0)&&(id<0x1000))
 		{
-			if(win->enq == win->deq)
+			if(0 == arena[id].type)
 			{
-				sleep_us(1000);
-				continue;
+				arenacreate(_win_, 0);
 			}
-			win->deq = win->enq;
-
-			time = gettime();
-			windowread(0, 0, win, 0);
-			time = gettime() - time;
-			//say("delta=%d\n",time);
 		}
 	}
-	return 0;
-}
-int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct arena* win = dc;
-	if(_HTTP_ == win->type)
-	{
-		httpserver_write(dc,df,sc,sf,buf,len);
-	}
-	else if(_http_ == win->type)
-	{
-		httpclient_write(dc,df,sc,sf,buf,len);
-	}
-	else if(_WS_ == win->type)
-	{
-		wsserver_write(dc,df,sc,sf,buf,len);
-	}
+
 	return 0;
 }
 void* arenalist(u8* buf, int len)
@@ -302,65 +363,11 @@ void* arenalist(u8* buf, int len)
 	}
 	return 0;
 }
-void* arenachoose(u8* buf, int len)
-{
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	say("%.*s\n", len, buf);
-	say("%llx, %x\n", name, id);
-	say("%.*s\n", dl, data);
-
-	if(_win_ == name)
-	{
-		if((id>0)&&(id<0x1000))
-		{
-			if(0 == arena[id].type)
-			{
-				arenacreate(_win_, 0);
-			}
-		}
-	}
-
-	return 0;
-}
 
 
 
 
 
-int arenaevent(struct event* ev)
-{
-	int j;
-	void* ret;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
-
-	if(_win_ == what)
-	{
-		return 42;
-	}
-	else if(hex32('w','+',0,0) == what)
-	{/*
-		ret = arenacreate(why, where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return 0;
-		}*/
-	}
-	else if(hex32('w','-',0,0) == what)
-	{
-		ret = (void*)where;
-		arenadelete(ret);
-	}
-	return 0;
-}
 void freearena()
 {
 	//say("[c,f):freeing arena\n");

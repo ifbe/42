@@ -33,7 +33,7 @@ void windowread(void* dc,void* df,void* sc,void* sf)
 	win->height = buffer.height;
 	win->stride = buffer.stride;
 
-	actorread(win,0,0,0);
+	actorread_all(win);
 
 	ANativeWindow_unlockAndPost(native);
 }

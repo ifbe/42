@@ -37,7 +37,7 @@ int wsserver_write(
 	say("@wsserver_write:%.*s\n", readlen, buffer);
 
 	//get current
-	actorread(win,0,0,0);
+	actorread_all(win);
 
 	//send message
 	headlen = websocket_write(win->buf, win->len, headbuf, 16);

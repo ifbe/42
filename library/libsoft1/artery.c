@@ -28,10 +28,40 @@ void* allocelement()
 	elelen += 1;
 	return addr;
 }
+int arterywrite_ev(struct event* ev)
+{
+	return 0;
+}
+int arteryread_all()
+{
+	return 0;
+}
 
 
 
 
+int arteryread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == sc)return arteryread_all();
+	return 0;
+}
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+{
+	struct element* ele;
+	if(0 == dc)return arterywrite_ev(buf);
+
+	ele = dc;
+	if(_http_ == ele->type)httpclient_write(dc, df, sc, sf, buf, len);
+	return 0;
+}
+int arterystop()
+{
+	return 0;
+}
+int arterystart()
+{
+	return 0;
+}
 int arterydelete(void* ele)
 {
 	return 0;
@@ -203,42 +233,6 @@ void* arterycreate(u64 type, u8* name)
 
 	return 0;
 }
-int arterystop()
-{
-	return 0;
-}
-int arterystart()
-{
-	return 0;
-}
-int arteryread(void* dc,void* df,void* sc,void* sf)
-{
-	return 0;
-}
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
-{
-	struct element* ele = dc;
-	//say("%llx,%llx,%llx,%llx{\n%.*s}\n", dc, df, sc, sf, len, buf);
-
-	if(_http_ == ele->type)httpclient_write(dc, df, sc, sf, buf, len);
-	return 0;
-}
-int arterylist(u8* buf, int len)
-{
-	int j,k=0;
-	void* addr;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == ele[j].type)continue;
-
-		k++;
-		addr = (void*)(&ele[j]);
-		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
-	}
-
-	if(0 == k)say("empth artery\n");
-	return 0;
-}
 int arterychoose(u8* buf, int len)
 {
 	int j;
@@ -260,14 +254,26 @@ int arterychoose(u8* buf, int len)
 	}
 	return 0;
 }
-
-
-
-
-int arteryevent(struct event* ev)
+int arterylist(u8* buf, int len)
 {
+	int j,k=0;
+	void* addr;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ele[j].type)continue;
+
+		k++;
+		addr = (void*)(&ele[j]);
+		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+	}
+
+	if(0 == k)say("empth artery\n");
 	return 0;
 }
+
+
+
+
 void freeartery()
 {
 	//say("[8,c):freeing artery\n");

@@ -9,39 +9,39 @@
 #define _char_ hex32('c','h','a','r')
 void freeactor();
 void initactor(void*);
-int actorread();
-int actorevent(void*);
+int actorread_all();
+int actorwrite_ev(void*);
 //libuser0
 #define _win_ hex32('w','i','n',0)
 void freearena();
 void initarena(void*);
-int arenaread();
-int arenaevent(void*);
+int arenaread_all();
+int arenawrite_ev(void*);
 //libsoft1
 #define _art_ hex32('a','r','t',0)
 void freeartery();
 void initartery(void*);
-int arteryread();
-int arteryevent(void*);
+int arteryread_all();
+int arterywrite_ev(void*);
 //libsoft0
 #define _fd_ hex32('f','d',0,0)
 void freesystem();
 void initsystem(void*);
-int systemread();
-int systemevent(void*);
+int systemread_all();
+int systemwrite_ev(void*);
 int sleep_us(int);
 //libhard1
 #define _dri_ hex32('d','r','v',0)
 void freedriver();
 void initdriver(void*);
-int driverread();
-int driverevent(void*);
+int driverread_all();
+int driverwrite_ev(void*);
 //libhard0
 #define _dev_ hex32('d','e','v',0)
 void freedevice();
 void initdevice(void*);
-int deviceread();
-int deviceevent(void*);
+int deviceread_all();
+int devicewrite_ev(void*);
 //libboot1
 #define _hash_ hex32('h','a','s','h')
 void freestdin();
@@ -143,17 +143,17 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 		//force redraw
-		//actorread();
-		arenaread();
-		//arteryread();
-		//systemread();
+		//actorread_all();
+		arenaread_all();
+		//arteryread_all();
+		//systemread_all();
 
 again:
 		ev = eventread();
 		if(0 == ev)continue;
 		if(0 == ev->what)break;
 
-		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
+		say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 		if((_char_ == ev->what)&&(0 == ev->where))
 		{
 			term_write(ev);
@@ -163,21 +163,21 @@ again:
 		//libhard0
 		if(_dev_ == ev->what)
 		{
-			ret = deviceevent(ev);
+			ret = devicewrite_ev(ev);
 			if(ret != 42)goto again;
 		}
 
 		//libhard1
 		if(_dri_ == ev->what)
 		{
-			ret = driverevent(ev);
+			ret = driverwrite_ev(ev);
 			if(ret != 42)goto again;
 		}
 */
 		//libsoft0
 		if(_fd_ == ev->what)
 		{
-			ret = systemevent(ev);
+			ret = systemwrite_ev(ev);
 			if(42 == ret)continue;
 			else goto again;
 		}
@@ -185,7 +185,7 @@ again:
 		//libsoft1
 		if(_art_ == ev->what)
 		{
-			ret = arteryevent(ev);
+			ret = arterywrite_ev(ev);
 			if(42 == ret)continue;
 			else goto again;
 		}
@@ -194,12 +194,12 @@ again:
 		ret = (ev->what)&0xff;
 		if('w' == ret)
 		{
-			ret = arenaevent(ev);
+			ret = arenawrite_ev(ev);
 			continue;
 		}
 
 		//libuser1
-		actorevent(ev);
+		actorwrite_ev(ev);
 	}
 
 	openwriteclose("universe.bin",0,addr,0x1000000);

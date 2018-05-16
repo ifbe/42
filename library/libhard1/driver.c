@@ -7,12 +7,26 @@ void say(char*,...);
 
 
 
-int driverdelete()
+int driverwrite_ev(void* ev)
 {
 	return 0;
 }
-int drivercreate()
+int driverread_all()
 {
+	return 0;
+}
+
+
+
+
+int driverwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == dc)return driverwrite_ev(buf);
+	return 0;
+}
+int driverread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == sc)return driverread_all();
 	return 0;
 }
 int driverstop()
@@ -23,22 +37,22 @@ int driverstart()
 {
 	return 0;
 }
-int driverread()
+int driverdelete()
 {
 	return 0;
 }
-int driverwrite()
+int drivercreate()
 {
-	return 0;
-}
-int driverlist(u8* buf)
-{
-	say("empth driver\n");
 	return 0;
 }
 int driverchoose(u8* buf)
 {
 	say("@driver: %s\n", buf);
+	return 0;
+}
+int driverlist(u8* buf)
+{
+	say("empth driver\n");
 	return 0;
 }
 

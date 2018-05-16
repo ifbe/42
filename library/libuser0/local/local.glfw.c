@@ -1005,7 +1005,7 @@ void callback_update()
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
 	win->height = 1024;
 	win->width = win->stride = 1024;
-	actorread(win, 0, 0, 0);
+	actorread_all(win);
 
 	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
 	glTexImage2D(GL_TEXTURE_2D, 0,
@@ -1017,7 +1017,7 @@ void callback_update()
 	win->fmt = hex32('v','b','o',0);
 	win->height = height;
 	win->width = win->stride = width;
-	actorread(win, 0, 0, 0);
+	actorread_all(win);
 
 
 //----------------------font3d---------------------

@@ -38,7 +38,7 @@ int windowread(void* dc,void* df,void* sc,void* sf)
 	int h = win->height;
 	HDC hdc = (void*)(win->dc);
 	void* buf = (void*)(win->buf);
-	actorread(win, 0, 0, 0);
+	actorread_all(win);
 
 	//
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);

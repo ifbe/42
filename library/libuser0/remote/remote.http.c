@@ -75,7 +75,7 @@ int httpserver_write(
 	else if(0 != GET)
 	{
 		win->fmt = hex32('h','t','m','l');
-		actorread(win,0,0,0);
+		actorread_all(win);
 
 		hp[0].len = mysnprintf(
 			hp[0].buf, 0x1000,

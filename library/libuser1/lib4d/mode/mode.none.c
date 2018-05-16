@@ -138,6 +138,7 @@ void actorinput(struct arena* win, struct event* ev)
 	ret = win->menutype;
 	h16 = ret >> 16;
 	l16 = ret & 0xffff;
+//say("%d,%d,%llx,%llx\n",h16,l16,ev->why,ev->what);
 	if(0 != h16)
 	{
 		actorinput_menu(win, ev);
@@ -260,7 +261,7 @@ void background(struct arena* win)
 void foreground_pixel(struct arena* win)
 {
 	int j;
-	for(j=0;j<11;j++)
+	for(j=0;j<12;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
 
@@ -397,6 +398,7 @@ int actoroutput(struct arena* win)
 	ret = win->menutype;
 	l16 = ret&0xffff;
 	h16 = (ret>>16)&0xffff;
+//say("%d,%d\n",h16,l16);
 	if(0 != h16)actoroutput_menu(win);
 	else if(0 == l16)actoroutput_overview(win);
 	else if(1 == l16)actoroutput_detail(win);

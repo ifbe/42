@@ -7,12 +7,26 @@ void say(char*,...);
 
 
 
-int devicedelete()
+int devicewrite_ev(void* ev)
 {
 	return 0;
 }
-int devicecreate()
+int deviceread_all()
 {
+	return 0;
+}
+
+
+
+
+int devicewrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == dc)return devicewrite_ev(buf);
+	return 0;
+}
+int deviceread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == sc)return deviceread_all();
 	return 0;
 }
 int devicestop()
@@ -23,22 +37,22 @@ int devicestart()
 {
 	return 0;
 }
-int deviceread()
+int devicedelete()
 {
 	return 0;
 }
-int devicewrite()
+int devicecreate()
 {
-	return 0;
-}
-int devicelist(u8* buf)
-{
-	say("empth device\n");
 	return 0;
 }
 int devicechoose(u8* buf)
 {
 	say("@device: %s\n", buf);
+	return 0;
+}
+int devicelist(u8* buf)
+{
+	say("empth device\n");
 	return 0;
 }
 

@@ -7,6 +7,31 @@
 
 
 
+void carveaxis(struct arena* win)
+{
+	vec3 va, vb;
+	va[0] = -10000.0;
+	va[1] = 0.0;
+	va[2] = 0.0;
+	vb[0] = 10000.0;
+	vb[1] = 0.0;
+	vb[2] = 0.0;
+	carveline(win, 0xff0000, va, vb);
+	va[0] = 0.0;
+	va[1] = -10000.0;
+	va[2] = 0.0;
+	vb[0] = 0.0;
+	vb[1] = 10000.0;
+	vb[2] = 0.0;
+	carveline(win, 0x00ff00, va, vb);
+	va[0] = 0.0;
+	va[1] = 0.0;
+	va[2] = -10000.0;
+	vb[0] = 0.0;
+	vb[1] = 0.0;
+	vb[2] = 10000.0;
+	carveline(win, 0x0000ff, va, vb);
+}
 void carvedrone_node(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {

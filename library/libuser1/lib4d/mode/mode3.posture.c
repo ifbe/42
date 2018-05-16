@@ -22,31 +22,6 @@ void posture_create(void* addr)
 
 
 
-void postureaxis3d(struct arena* win)
-{
-	vec3 va, vb;
-	va[0] = -10000.0;
-	va[1] = 0.0;
-	va[2] = 0.0;
-	vb[0] = 10000.0;
-	vb[1] = 0.0;
-	vb[2] = 0.0;
-	carveline(win, 0xff0000, va, vb);
-	va[0] = 0.0;
-	va[1] = -10000.0;
-	va[2] = 0.0;
-	vb[0] = 0.0;
-	vb[1] = 10000.0;
-	vb[2] = 0.0;
-	carveline(win, 0x00ff00, va, vb);
-	va[0] = 0.0;
-	va[1] = 0.0;
-	va[2] = -10000.0;
-	vb[0] = 0.0;
-	vb[1] = 0.0;
-	vb[2] = 10000.0;
-	carveline(win, 0x0000ff, va, vb);
-}
 void actoroutput_posture_vbo(struct arena* win)
 {
 	int j;
@@ -55,7 +30,7 @@ void actoroutput_posture_vbo(struct arena* win)
 	float* vr = win->target.vr;
 	float* vf = win->target.vf;
 	float* vu = win->target.vu;
-	postureaxis3d(win);
+	carveaxis(win);
 
 	j = win->menudata;
 	if(j < 0)goto skip;

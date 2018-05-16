@@ -56,6 +56,121 @@ static int ppplen = 0;
 
 
 
+int systemwrite_ev(struct event* ev)
+{
+	int ret;
+	u64 type,name;
+	struct relation* irel;
+	struct relation* orel;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+	say("%llx,%llx,%llx\n",why,what,where);
+
+	if(why == '+')
+	{
+		say("come:%x(from:%x)\n", where, obj[where].thatfd);
+		return 0;
+	}
+	else if(why == '-')
+	{
+		say("gone:%x\n", where);
+		irel = obj[where].irel;
+		orel = obj[where].orel;
+		relationdelete(irel);
+		relationdelete(orel);
+		return 0;
+	}
+
+	type = obj[where].type;
+	name = obj[where].name;
+	irel = obj[where].irel;
+	orel = obj[where].orel;
+	if((0 == name)&&(0 == irel)&&(0 == orel))
+	{
+		ret = obj[where].thatfd;
+		irel = obj[ret].irel;
+		orel = obj[ret].orel;
+	}
+	//say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
+
+	if(0 == orel)
+	{
+		ret = readsocket(where, 0, ppp, 0x100000);
+		if(ret == 0)return 0;
+		if(ret < 0)
+		{
+			stopsocket(where);
+			return 0;
+		}
+
+		printmemory(ppp, ret);
+		return 0;
+	}
+
+	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
+	ret = readsocket(where, 0, ppp, 0x100000);
+	if(ret <= 0)return 0;
+
+	while(1)
+	{
+		if(0 == orel)break;
+		if(_act_ == orel->dsttype)
+		{
+			actorwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				&obj[where], 0,
+				ppp, ret
+			);
+		}
+		else if(_win_ == orel->dsttype)
+		{
+			arenawrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				&obj[where], 0,
+				ppp, ret
+			);
+		}
+		else if(_art_ == orel->dsttype)
+		{
+			arterywrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				&obj[where], 0,
+				ppp, ret
+			);
+		}
+		orel = samesrcnextdst(orel);
+	}
+	return 42;
+}
+int systemread_all()
+{
+	return 0;
+}
+
+
+
+
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == dc)return systemwrite_ev(buf);
+
+	int fd = (dc - (void*)obj) / sizeof(struct object);
+	return writesocket(fd, 0, buf, len);
+}
+int systemread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == sc)return systemread_all();
+	return 0;
+}
+int systemstop()
+{
+	return 0;
+}
+int systemstart()
+{
+	return 0;
+}
 int systemdelete(struct object* addr)
 {
 	int fd = ((void*)addr - (void*)obj) / sizeof(struct object);
@@ -184,39 +299,6 @@ void* systemcreate(u64 type, u8* name)
 success:
 	return &obj[fd];
 }
-int systemstop()
-{
-	return 0;
-}
-int systemstart()
-{
-	return 0;
-}
-int systemread(void* dc,void* df,void* sc,void* sf)
-{
-	return 0;
-}
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
-{
-	int fd = (dc - (void*)obj) / sizeof(struct object);
-	return writesocket(fd, 0, buf, len);
-}
-int systemlist(u8* buf, int len)
-{
-	int j,k=0;
-	void* addr;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == obj[j].type)continue;
-
-		k++;
-		addr = (void*)(&obj[j]);
-		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
-	}
-
-	if(0 == k)say("empth system\n");
-	return 0;
-}
 int systemchoose(u8* buf, int len)
 {
 	int j;
@@ -238,97 +320,26 @@ int systemchoose(u8* buf, int len)
 	}
 	return 0;
 }
-
-
-
-
-int systemevent(struct event* ev)
+int systemlist(u8* buf, int len)
 {
-	int ret;
-	struct relation* irel;
-	struct relation* orel;
-	u64 type,name;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	say("%llx,%llx,%llx\n",why,what,where);
+	int j,k=0;
+	void* addr;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].type)continue;
 
-	if(why == '+')
-	{
-		say("come:%x(from:%x)\n", where, obj[where].thatfd);
-		return 0;
-	}
-	else if(why == '-')
-	{
-		say("gone:%x\n", where);
-		irel = obj[where].irel;
-		orel = obj[where].orel;
-		relationdelete(irel);
-		relationdelete(orel);
-		return 0;
+		k++;
+		addr = (void*)(&obj[j]);
+		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
 	}
 
-	type = obj[where].type;
-	name = obj[where].name;
-	irel = obj[where].irel;
-	orel = obj[where].orel;
-	if((0 == name)&&(0 == irel)&&(0 == orel))
-	{
-		ret = obj[where].thatfd;
-		irel = obj[ret].irel;
-		orel = obj[ret].orel;
-	}
-	//say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
-
-	if(0 == orel)
-	{
-		ret = readsocket(where, 0, ppp, 0x100000);
-		if(ret == 0)return 0;
-		if(ret < 0)
-		{
-			stopsocket(where);
-			return 0;
-		}
-
-		printmemory(ppp, ret);
-		return 0;
-	}
-
-	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
-	ret = readsocket(where, 0, ppp, 0x100000);
-	if(ret <= 0)return 0;
-
-	while(1)
-	{
-		if(0 == orel)break;
-		if(_act_ == orel->dsttype)
-		{
-			actorwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
-		}
-		else if(_win_ == orel->dsttype)
-		{
-			arenawrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
-		}
-		else if(_art_ == orel->dsttype)
-		{
-			arterywrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
-		}
-		orel = samesrcnextdst(orel);
-	}
-	return 42;
+	if(0 == k)say("empth system\n");
+	return 0;
 }
+
+
+
+
 void freesystem()
 {
 	//say("[8,c):freeing system\n");

@@ -55,8 +55,10 @@ void drawline_arrow(struct arena* win, u32 rgb,
 	float x,y,a,b;
 	drawline(win, rgb, x0, y0, x1, y1);
 
+	if((x0==x1)&&(y0==y1))return;
 	x = (float)(x0-x1);
 	y = (float)(y0-y1);
+
 	a = squareroot(x*x+y*y);
 	x = 16*x/a;
 	y = 16*y/a;

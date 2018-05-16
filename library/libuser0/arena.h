@@ -389,14 +389,16 @@ struct actor
 extern "C" {
 #endif
 
-int actorread(void* dc,void* df,void* sc,void* sf);
-int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-int arenaread(void* dc,void* df,void* sc,void* sf);
-int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-int arteryread(void* dc,void* df,void* sc,void* sf);
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
-int systemread(void* dc,void* df,void* sc,void* sf);
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len);
+int actorread_all(void* win);
+int actorwrite_ev(void* win, void* ev);
+int actorread(    void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actorwrite(   void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenaread(    void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenawrite(   void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arteryread(   void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arterywrite(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int systemread(   void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int systemwrite(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
 int ncmp(void*,void*,int);
 int cmp(void*,void*);

@@ -26,38 +26,14 @@ void select_3d(struct arena* win, struct style* sty)
 	tc[2] = vc[2] + vu[2];
 	carveline_prism4(win, 0xff0000, tc, vr, vf, vu);
 }
-void axis3d(struct arena* win)
-{
-	vec3 va, vb;
-	va[0] = -10000.0;
-	va[1] = 0.0;
-	va[2] = 0.0;
-	vb[0] = 10000.0;
-	vb[1] = 0.0;
-	vb[2] = 0.0;
-	carveline(win, 0xff0000, va, vb);
-	va[0] = 0.0;
-	va[1] = -10000.0;
-	va[2] = 0.0;
-	vb[0] = 0.0;
-	vb[1] = 10000.0;
-	vb[2] = 0.0;
-	carveline(win, 0x00ff00, va, vb);
-	va[0] = 0.0;
-	va[1] = 0.0;
-	va[2] = -10000.0;
-	vb[0] = 0.0;
-	vb[1] = 0.0;
-	vb[2] = 10000.0;
-	carveline(win, 0x0000ff, va, vb);
-}
 int actoroutput_edit(struct arena* win)
 {
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	axis3d(win);
+	u64 fmt = win->fmt;
+	if(_vbo_ == fmt)carveaxis(win);
 
 	rel = win->irel;
 	while(1)
@@ -74,7 +50,7 @@ int actoroutput_edit(struct arena* win)
 
 			act->onread(win, sty, act, pin);
 
-			if(win->fmt == _vbo_)select_3d(win, sty);
+			if(_vbo_ == fmt)select_3d(win, sty);
 			else select_2d(win, sty);
 		}
 
