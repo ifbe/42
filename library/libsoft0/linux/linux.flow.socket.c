@@ -147,16 +147,9 @@ int startsocket(char* addr, int port, int type)
 	int fd;
 	int ret;
 	struct hostent* host;
-	for(ret=0;ret<256;ret++)
-	{
-		if((addr[ret]>='a')&&(addr[ret]<='z'))
-		{
-			host = gethostbyname(addr);
-			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
-			break;
-		}
-	}
-	if(type == 'R')		//RAW
+
+	//RAW
+	if(type == 'R')
 	{
 		int ret;
 		int len;
@@ -181,8 +174,11 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//setup
-		len = strlen(addr);
-		strncpy(ifopts.ifr_name, addr, len);
+		for(ret=0;ret<IFNAMSIZ;ret++)
+		{
+			if(addr[ret] < 0x20){ifopts.ifr_name[ret] = 0;break;}
+			else ifopts.ifr_name[ret] = addr[ret];
+		}
 		ioctl(rawfd, SIOCGIFFLAGS, &ifopts);
 		ifopts.ifr_flags |= IFF_PROMISC;
 		ioctl(rawfd, SIOCSIFFLAGS, &ifopts);
@@ -202,11 +198,25 @@ int startsocket(char* addr, int port, int type)
 		epoll_add(rawfd);
 		return rawfd;
 	}
-	if(type == 'r')		//raw
+
+	//raw client
+	if(type == 'r')
 	{
 		return 0;
 	}
-	else if(type == 'U')	//UDP
+
+	for(ret=0;ret<256;ret++)
+	{
+		if((addr[ret]>='a')&&(addr[ret]<='z'))
+		{
+			host = gethostbyname(addr);
+			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+			break;
+		}
+	}
+
+	//udp server
+	if(type == 'U')
 	{
 		int ret;
 		struct sockaddr_in* self;
@@ -253,7 +263,9 @@ int startsocket(char* addr, int port, int type)
 		epoll_add(udpfd);
 		return udpfd;
 	}
-	else if(type == 'u')	//udp
+
+	//udp client
+	if(type == 'u')
 	{
 		struct sockaddr_in* self;
 		struct sockaddr_in* peer;
@@ -309,7 +321,9 @@ udpnext:
 		epoll_add(udpfd);
 		return udpfd;
 	}
-	else if(type == 'T')	//TCP
+
+	//tcp server
+	if(type == 'T')
 	{
 		int ret;
 		struct sockaddr_in* self;
@@ -359,7 +373,9 @@ udpnext:
 		epoll_add(tcpfd);
 		return tcpfd;
 	}
-	else if(type == 't')	//tcp
+
+	//tcp client
+	if(type == 't')
 	{
 		int ret;
 		struct sockaddr_in* peer;
@@ -402,15 +418,20 @@ udpnext:
 		epoll_add(fd);
 		return fd;
 	}
-	else if(type == 'B')	//BT
+
+	//bt server
+	if(type == 'B')
 	{
 		return 0;
 	}
-	else if(type == 'b')	//bt
+
+	//bt client
+	if(type == 'b')
 	{
 		return 0;
 	}
-	else printf("error@type\n");
+
+	printf("error@type\n");
 	return 0;
 }
 void deletesocket(int num)

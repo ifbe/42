@@ -136,7 +136,10 @@ linuxglfw:
 	rm -f *.o
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
-	$(compiler) $(cflag) local/local.glfw.c
+	$(compiler) $(cflag) local/linux/local.linux.tray.c
+	$(compiler) $(cflag) local/glfw/glfw.common.c
+	$(compiler) $(cflag) local/glfw/glfw.shader.c
+	$(compiler) $(cflag) local/glfw/glfw.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c
