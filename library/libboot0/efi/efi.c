@@ -87,9 +87,6 @@ void* pollenv()
 	ev[1] = hex32('c','h','a','r');
 	return ev;
 }
-void* waitenv()
-{
-}
 void fixarg(u8* dst, u8* src)
 {
 	int j = 0;

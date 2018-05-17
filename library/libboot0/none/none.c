@@ -53,10 +53,7 @@ void lowlevel_output(char* buf, int len)
 
 void* pollenv()
 {
-	return 0;
-}
-void* waitenv()
-{
+	usleep(1000);
 	return 0;
 }
 void fixarg(char* dst, char* src)

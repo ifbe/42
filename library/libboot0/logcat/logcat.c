@@ -13,7 +13,7 @@
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 void eventwrite(u64,u64,u64,u64);
-int actorwrite(void*,void*,void*,void*,void*,int);
+int actorwrite_ev(void*);
 
 
 
@@ -50,12 +50,9 @@ int lowlevel_output(char* buf, int len)
 
 
 
-void* waitenv()
-{
-	return 0;
-}
 void* pollenv()
 {
+	usleep(1000);
 	return 0;
 }
 void fixarg(char* dst, char* src)
@@ -218,7 +215,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					actorwrite(0,0,thewin,0,why,0x20);
+					actorwrite_ev(why);
 				}
 			}
 			else
@@ -230,11 +227,9 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				y = AMotionEvent_getY(ev, j);
 				why[0] = AMotionEvent_getPointerId(ev, j);
 				why[0] = x+(y<<16)+(why[0]<<48);
-				//eventwrite(why, a, (u64)thewin, 0);
-
 				why[1] = a;
 				why[2] = (u64)thewin;
-				actorwrite(0,0,thewin,0,why,0x20);
+				actorwrite_ev(why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)

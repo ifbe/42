@@ -18,24 +18,42 @@ void setandroidapp(void*);
 
 static struct android_app* app;
 static ANativeWindow* native;
-static ANativeWindow_Buffer buffer;
+
+static void windowthread(struct arena* win)
+{
+	ANativeWindow_Buffer buffer;
+	while(1)
+	{
+		//wait or not
+		if(win->deq == win->enq)
+		{
+			sleep_us(1000);
+			continue;
+		}
+		win->deq = win->enq;
+
+		//get addr and size
+		ANativeWindow_lock(native, &buffer, NULL);
+
+		//set addr and size
+		win->buf = buffer.bits;
+		win->width = buffer.width;
+		win->height = buffer.height;
+		win->stride = buffer.stride;
+
+		//read data
+		actorread_all(win);
+
+		//write screen
+		ANativeWindow_unlockAndPost(native);
+	}
+}
 
 
 
 
 void windowread(void* dc,void* df,void* sc,void* sf)
 {
-	struct arena* win = sc;
-	ANativeWindow_lock(native, &buffer, NULL);
-
-	win->buf = buffer.bits;
-	win->width = buffer.width;
-	win->height = buffer.height;
-	win->stride = buffer.stride;
-
-	actorread_all(win);
-
-	ANativeWindow_unlockAndPost(native);
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -53,12 +71,7 @@ void windowstart(struct arena* win)
 
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
-
-	ANativeWindow_lock(native, &buffer, NULL);
-	win->buf = buffer.bits;
-	win->width = buffer.width;
-	win->height = buffer.height;
-	win->stride = buffer.stride;
+	threadcreate(windowthread, win);
 }
 void windowstop()
 {

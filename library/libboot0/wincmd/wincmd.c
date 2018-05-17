@@ -494,10 +494,7 @@ int lowlevel_input()
 }
 void* pollenv()
 {
-	return 0;
-}
-void* waitenv()
-{
+	Sleep(1);
 	return 0;
 }
 int fixarg(u8* dst, u8* src)

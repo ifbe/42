@@ -248,7 +248,7 @@ library/libsoft1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
-library/libuser0/local/android/local.android.native.c \
+library/libuser0/local/android/android.native.c \
 library/libuser0/remote/remote.http.c \
 library/libuser0/remote/remote.ws.c \
 library/libuser0/sound/sound.c \

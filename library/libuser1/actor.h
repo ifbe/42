@@ -594,7 +594,6 @@ void carvestring2d_center(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec
 
 
 //-----------------------------3d--------------------------
-void carveaxis(              struct arena* win);
 void carvepoint(             struct arena* win, u32 rgb, vec3 vc);
 void carvepoint_bezier(      struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carvepoint_triangle(    struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
@@ -632,6 +631,9 @@ void carvesolid_cylinder(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carvesolid_dodecahedron(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_icosahedron( struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_sphere(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+
+void carveaxis(              struct arena* win);
+void carvecamera(            struct arena* win, struct arena* w);
 
 void carveascii(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
 void carvedecimal(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);

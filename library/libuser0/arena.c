@@ -82,7 +82,6 @@ int vncserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 int cmp(void*, void*);
 int ncmp(void*, void*, int);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
-int sleep_us(int);
 int arenadelete(struct arena* win);
 
 
@@ -143,6 +142,7 @@ int arenawrite_ev(struct event* ev)
 }
 int arenaread_all()
 {
+/*
 	int j;
 	u64 time;
 	struct relation* rel;
@@ -170,6 +170,7 @@ int arenaread_all()
 			//say("delta=%d\n",time);
 		}
 	}
+*/
 	return 0;
 }
 
@@ -394,7 +395,5 @@ void initarena(u8* addr)
 	initwindow(arena);
 	//initremote(arena);
 
-	arenacreate(_win_, 0);
-	arenacreate(_HTTP_, 0);
 	//say("[c,f):inited arena\n");
 }

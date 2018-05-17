@@ -17,6 +17,8 @@ void freearena();
 void initarena(void*);
 int arenaread_all();
 int arenawrite_ev(void*);
+void* arenacreate(u64, void*);
+void arenadelete(void*);
 //libsoft1
 #define _art_ hex32('a','r','t',0)
 void freeartery();
@@ -129,10 +131,10 @@ void afterdusk()
 int main(int argc, char* argv[])
 {
 	int ret;
-	void* addr;
 	struct event* ev;
+	void* addr = beforedawn();
 
-	addr = beforedawn();
+	//args
 	for(ret=1;ret<argc;ret++)
 	{
 		fixarg(addr, argv[ret]);
@@ -140,11 +142,15 @@ int main(int argc, char* argv[])
 	}
 	term_write("\n");
 
+	//win0
+	arenacreate(_win_, 0);
+	//arenacreate(_HTTP_, 0);
+
 	while(1)
 	{
 		//force redraw
 		//actorread_all();
-		arenaread_all();
+		//arenaread_all();
 		//arteryread_all();
 		//systemread_all();
 

@@ -13,36 +13,8 @@
 #include "arena.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-void* getandroidapp();
-void setandroidapp(void*);
-//
-void asset_create();
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
-//
-void fixmatrix(float*, void*);
-void mat4_transpose(float*);
-
-
-
-
-//
-static struct android_app* app = 0;
-static struct arena* win;
-static int32_t width = 512;
-static int32_t height = 512;
-//
-static EGLDisplay display = EGL_NO_DISPLAY;
-static EGLContext context = EGL_NO_CONTEXT;
-static EGLSurface surface = EGL_NO_SURFACE;
-//
-static GLuint font3dprogram;
-static GLuint font2dprogram;
-static GLuint simpleprogram;
-static GLuint prettyprogram;
-static GLuint directprogram;
-static GLuint glsl2dprogram;
-//
 struct texandobj
 {
 	GLuint program;
@@ -60,285 +32,14 @@ struct texandobj
 	GLuint vlen;
 	void* vbuf;
 };
-static struct texandobj mod[256];
 
 
 
 
-char glsl2dvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = colour;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n"
-};
-char glsl2dfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
-	"}\n"
-};
-char simplevert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"uniform mat4 simplemvp;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = colour;\n"
-		"gl_Position = simplemvp * vec4(vertex,1.0);\n"
-	"}\n"
-};
-char simplefrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
-	"}\n"
-};
-char prettyvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec3 normal;\n"
-	"uniform mat4 prettymvp;\n"
-	"uniform mediump vec3 ambientcolor;\n"
-	"uniform mediump vec3 lightcolor;\n"
-	"uniform mediump vec3 lightposition;\n"
-	"uniform mediump vec3 eyeposition;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec3 N = normalize(normal);\n"
-		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
-		"mediump vec3 E = normalize(eyeposition-vertex);\n"
-		"mediump vec3 R = reflect(-L, N);\n"
-		"mediump float SN = max(dot(N, L), 0.0);\n"
-		"mediump float RV = max(dot(R, E), 0.0);\n"
-		"mediump vec3 ambient = ambientcolor;\n"
-		"mediump vec3 diffuse = lightcolor * SN;\n"
-		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = colour*(ambient + diffuse + specular);\n"
-		"gl_Position = prettymvp * vec4(vertex,1.0);\n"
-	"}\n"
-};
-char prettyfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
-	"}\n"
-};
-char font3dvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoord;\n"
-	"uniform mat4 prettymvp;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = prettymvp * vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoord;\n"
-	"}\n"
-};
-char font3dfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D texdata;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(texdata, texuv).aaaa;\n"
-	"}\n"
-};
-char font2dvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoo;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoo;\n"
-	"}\n"
-};
-char font2dfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex2d;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).aaaa;\n"
-	"}\n"
-};
-char directvert[] = {
-	"#version 300 es\n"
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoo;\n"
-	"uniform mat4 prettymvp;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = prettymvp * vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoo;\n"
-	"}\n"
-};
-char directfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex2d;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv);\n"
-	"}\n"
-};
-
-
-
-
-GLuint compileShader(GLenum type, const char* source)
+void initobject(struct arena* w)
 {
-	GLuint shader = glCreateShader(type);
-	if(!shader)return 0;
+	struct texandobj* mod = w->mod;
 
-	glShaderSource(shader, 1, &source, NULL);
-	glCompileShader(shader);
-
-	GLint compileStatus;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-	if (GL_TRUE == compileStatus)return shader;
-
-	GLint infoLogLength = 0;
-	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-	if (infoLogLength)
-	{
-		char* infoLog = (char*)malloc(infoLogLength);
-		if (infoLog)
-		{
-			glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog);
-			LOGI("Could not compile shader %d:\n%s", type, infoLog);
-			free(infoLog);
-		}
-		glDeleteShader(shader);
-	}
-	return 0;
-}
-GLuint createProgram(const char* v, const char* f)
-{
-	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, v);
-	if (!vertexShader)return 0;
-
-	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, f);
-	if (!fragmentShader)return 0;
-
-	GLuint program = glCreateProgram();
-	if (!program)return 0;
-
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-	glLinkProgram(program);
-
-	glDetachShader(program, vertexShader);
-	glDetachShader(program, fragmentShader);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	GLint linkStatus;
-	glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
-	if(GL_TRUE == linkStatus)return program;
-
-	GLint infoLogLength = 0;
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-	if (infoLogLength)
-	{
-		char* infoLog = (char*)malloc(infoLogLength);
-		if(infoLog)
-		{
-			glGetProgramInfoLog(program, infoLogLength, NULL, infoLog);
-			LOGI("Could not link program:\n%s", infoLog);
-			free(infoLog);
-		}
-	}
-	glDeleteProgram(program);
-	return 0;
-}
-void initshader()
-{
-	font3dprogram = createProgram(font3dvert, font3dfrag);
-	if (!font3dprogram) {
-		LOGI("Could not create program");
-		return;
-	}
-	mod[0].program = font3dprogram;
-	mod[1].program = font3dprogram;
-	mod[2].program = font3dprogram;
-	mod[3].program = font3dprogram;
-
-	font2dprogram = createProgram(font2dvert, font2dfrag);
-	if (!font3dprogram) {
-		LOGI("Could not create program");
-		return;
-	}
-	mod[4].program = font3dprogram;
-	mod[5].program = font3dprogram;
-	mod[6].program = font3dprogram;
-	mod[7].program = font3dprogram;
-
-	simpleprogram = createProgram(simplevert, simplefrag);
-	if (!simpleprogram) {
-		LOGI("Could not create program");
-		return;
-	}
-	mod[0x80].program = simpleprogram;
-	mod[0x81].program = simpleprogram;
-
-	prettyprogram = createProgram(prettyvert, prettyfrag);
-	if (!prettyprogram) {
-		LOGI("Could not create program");
-		return;
-	}
-	mod[0x82].program = prettyprogram;
-	mod[0x83].program = prettyprogram;
-
-	glsl2dprogram = createProgram(glsl2dvert, glsl2dfrag);
-	if (!glsl2dprogram) {
-		LOGI("Could not create program");
-		return;
-	}
-	mod[0x84].program = glsl2dprogram;
-	mod[0x85].program = glsl2dprogram;
-	mod[0x86].program = glsl2dprogram;
-	mod[0x87].program = glsl2dprogram;
-}
-void initobject()  
-{
 //---------------------0--------------------------
 	//vao
 	glGenVertexArrays(1, &mod[0].vao);
@@ -727,10 +428,11 @@ void initobject()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
 	glEnableVertexAttribArray(1);
 }
-void inittexture()
+void inittexture(struct arena* w)
 {
 	int j;
-	u8* buf = win->buf;
+	u8* buf = w->buf;
+	struct texandobj* mod = w->mod;
 
 	//[0000,3fff]
 	for(j=0;j<0x400000;j++)buf[j] = 0;
@@ -859,152 +561,108 @@ void inittexture()
 	}
 */
 }
-
-
-
-
-void fixlight()
+void initmodbuf(struct arena* w)
 {
-	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
-	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
-	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
+	struct texandobj* mod;
+	w->mod = malloc(0x10000);
+	w->buf = malloc(0x400000);
+	mod = w->mod;
 
-	GLint ac = glGetUniformLocation(prettyprogram, "ambientcolor");
-	glUniform3fv(ac, 1, ambientcolor);
+//--------------------font3d-------------------
+	//[0000,3fff]
+	mod[0].vbuf = malloc(0x200000);
+	mod[0].vlen = 0;
+	mod[0].ibuf = malloc(0x100000);
+	mod[0].ilen = 0;
 
-	GLint dc = glGetUniformLocation(prettyprogram, "lightcolor");
-	glUniform3fv(dc, 1, lightcolor);
+	//[4000,7fff]
+	mod[1].vbuf = malloc(0x200000);
+	mod[1].vlen = 0;
+	mod[1].ibuf = malloc(0x100000);
+	mod[1].ilen = 0;
 
-	GLint dp = glGetUniformLocation(prettyprogram, "lightposition");
-	glUniform3fv(dp, 1, light0);
+	//[8000,bfff]
+	mod[2].vbuf = malloc(0x200000);
+	mod[2].vlen = 0;
+	mod[2].ibuf = malloc(0x100000);
+	mod[2].ilen = 0;
 
-	GLint ep = glGetUniformLocation(prettyprogram, "eyeposition");
-	glUniform3fv(ep, 1, win->camera.vc);
-}
-void callback_display()
-{
-	GLfloat cameramvp[4*4];
-	glViewport(0, 0, width, height);
+	//[c000,ffff]
+	mod[3].vbuf = malloc(0x200000);
+	mod[3].vlen = 0;
+	mod[3].ibuf = malloc(0x100000);
+	mod[3].ilen = 0;
 
-	fixmatrix(cameramvp, win);
-	mat4_transpose(cameramvp);
+//--------------------font2d-------------------
+	//[0000,3fff]
+	mod[4].vbuf = malloc(0x200000);
+	mod[4].vlen = 0;
+	mod[4].ibuf = malloc(0x100000);
+	mod[4].ilen = 0;
 
-	//set
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	//[4000,7fff]
+	mod[5].vbuf = malloc(0x200000);
+	mod[5].vlen = 0;
+	mod[5].ibuf = malloc(0x100000);
+	mod[5].ilen = 0;
 
+	//[8000,bfff]
+	mod[6].vbuf = malloc(0x200000);
+	mod[6].vlen = 0;
+	mod[6].ibuf = malloc(0x100000);
+	mod[6].ilen = 0;
 
-//--------------------glsl2dprogram------------------
-	//point,line
-	glUseProgram(glsl2dprogram);
-
-	glBindVertexArray(mod[0x84].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x84].vlen);
-
-	glBindVertexArray(mod[0x85].vao);
-	glDrawElements(GL_LINES, 2*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glBindVertexArray(mod[0x86].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x86].ilen, GL_UNSIGNED_SHORT, 0);
-
-
-//--------------------simpleprogram------------------
-	//point,line
-	glUseProgram(simpleprogram);
-	glUniformMatrix4fv(glGetUniformLocation(simpleprogram, "simplemvp"), 1, GL_FALSE, cameramvp);
-
-	glBindVertexArray(mod[0x80].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
-
-	glBindVertexArray(mod[0x81].vao);
-	glDrawElements(GL_LINES, 2*mod[0x81].ilen, GL_UNSIGNED_SHORT, 0);
-
-
-//--------------------prettyprogram------------------
-	//stl,triangle
-	glUseProgram(prettyprogram);
-	glUniformMatrix4fv(glGetUniformLocation(prettyprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	fixlight();
-
-	glBindVertexArray(mod[0x82].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[0x82].vlen);
-
-	glBindVertexArray(mod[0x83].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x83].ilen, GL_UNSIGNED_SHORT, 0);
-
-
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-//--------------------font3dprogram------------------
-	//font0000,4000,8000,c000
-	glUseProgram(font3dprogram);
-	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	glUniform1i(glGetUniformLocation(font3dprogram, "texdata"), 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-	glBindVertexArray(mod[0].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[0].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-	glBindVertexArray(mod[1].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[1].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-	glBindVertexArray(mod[2].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[2].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-	glBindVertexArray(mod[3].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
-
-
-//--------------------font2dprogram------------------
-	glUseProgram(font2dprogram);
-	glUniform1i(glGetUniformLocation(font2dprogram, "tex2d"), 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-	glBindVertexArray(mod[4].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[4].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-	glBindVertexArray(mod[5].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[5].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-	glBindVertexArray(mod[6].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[6].ilen, GL_UNSIGNED_SHORT, 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-	glBindVertexArray(mod[7].vao);
-	glDrawElements(GL_TRIANGLES, 3*mod[7].ilen, GL_UNSIGNED_SHORT, 0);
-
+	//[c000,ffff]
+	mod[7].vbuf = malloc(0x200000);
+	mod[7].vlen = 0;
+	mod[7].ibuf = malloc(0x100000);
+	mod[7].ilen = 0;
 /*
-	glUseProgram(directprogram);
-	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
-	glUniform1i(glGetUniformLocation(font3dprogram, "tex2d"), 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
-	glBindVertexArray(mod[4].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[4].vlen);
+	//2d screen
+	mod[4].vbuf = malloc(0x100000);
+	mod[4].vlen = 0;
 */
-	glDisable(GL_BLEND);
-	glDepthMask(GL_TRUE);
+//--------------------3d-------------------
+	//drawarray.point
+	mod[0x80].vbuf = malloc(0x100000);
+	mod[0x80].vlen = 0;
+
+	//drawelement.line
+	mod[0x81].ibuf = malloc(0x100000);
+	mod[0x81].ilen = 0;
+	mod[0x81].vbuf = malloc(0x100000);
+	mod[0x81].vlen = 0;
+
+	//drawarray.trigon
+	mod[0x82].vbuf = malloc(0x1000000);
+	mod[0x82].vlen = 0;
+
+	//drawelement.trigon
+	mod[0x83].ibuf = malloc(0x100000);
+	mod[0x83].ilen = 0;
+	mod[0x83].vbuf = malloc(0x1000000);
+	mod[0x83].vlen = 0;
+
+//----------------------2d--------------------
+	//drawarray.point
+	mod[0x84].vbuf = malloc(0x100000);
+	mod[0x84].vlen = 0;
+
+	//drawelement.line
+	mod[0x85].ibuf = malloc(0x100000);
+	mod[0x85].ilen = 0;
+	mod[0x85].vbuf = malloc(0x100000);
+	mod[0x85].vlen = 0;
+
+	//drawelement.trigon
+	mod[0x86].ibuf = malloc(0x100000);
+	mod[0x86].ilen = 0;
+	mod[0x86].vbuf = malloc(0x100000);
+	mod[0x86].vlen = 0;
 }
-void callback_update()
+void callback_update(struct arena* win)
 {
+	struct texandobj* mod = win->mod;
 //--------------------------------
 /*
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
@@ -1020,8 +678,6 @@ void callback_update()
 */
 //--------------------------------
 	win->fmt = hex32('v','b','o',0);
-	win->height = height;
-	win->width = win->stride = width;
 	actorread_all(win);
 
 	//font0000
@@ -1125,217 +781,4 @@ void callback_update()
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[0x86].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[0x86].vlen, mod[0x86].vbuf);
-}
-void windowread(void* dc,void* df,void* sc,void* sf)
-{
-	callback_update();
-	callback_display();
-	eglSwapBuffers(display, surface);
-}
-void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-}
-void windowstop()
-{
-	if (EGL_NO_DISPLAY != display)
-	{
-		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-		if (context != EGL_NO_CONTEXT)eglDestroyContext(display, context);
-		if (surface != EGL_NO_SURFACE)eglDestroySurface(display, surface);
-		eglTerminate(display);
-	}
-	display = EGL_NO_DISPLAY;
-	context = EGL_NO_CONTEXT;
-	surface = EGL_NO_SURFACE;
-}
-void windowstart(struct arena* w)
-{
-	win = w;
-	setandroidapp(win);
-
-	//
-	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-	eglInitialize(display, 0, 0);
-
-	const EGLint configAttribs[] = {
-		//		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-		//		EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-		EGL_BLUE_SIZE, 8,
-		EGL_GREEN_SIZE, 8,
-		EGL_RED_SIZE, 8,
-		EGL_ALPHA_SIZE, 8,
-		EGL_DEPTH_SIZE, 24,
-		EGL_NONE
-	};
-	EGLConfig config;
-	EGLint numConfigs;
-	eglChooseConfig(display, configAttribs, &config, 1, &numConfigs);
-
-	EGLint format;
-	eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
-
-	width = ANativeWindow_getWidth(app->window);
-	height = ANativeWindow_getHeight(app->window);
-	ANativeWindow_setBuffersGeometry(app->window, 0, 0, format);
-
-	surface = eglCreateWindowSurface(display, config, app->window, NULL);
-
-	EGLint contextAttribs[] = {
-		EGL_CONTEXT_CLIENT_VERSION, 3,
-		EGL_NONE
-	};
-	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-	if (context == EGL_NO_CONTEXT) {
-		LOGI("eglCreateContext failed with error 0x%04x", eglGetError());
-		return;
-	}
-
-	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-		LOGI("eglMakeCurrent failed with error 0x%04x", eglGetError());
-		return;
-	}
-
-	LOGI("GL Version = %s\n", glGetString(GL_VERSION));
-	LOGI("GL Vendor = %s\n", glGetString(GL_VENDOR));
-	LOGI("GL Renderer = %s\n", glGetString(GL_RENDERER));
-	LOGI("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
-
-	w->type = hex32('w','i','n',0);
-	w->fmt = hex32('v','b','o',0);
-	w->irel = 0;
-	w->orel = 0;
-
-	w->mod = mod;
-	w->buf = malloc(0x400000);
-
-	w->width = width;
-	w->height = height;
-	w->depth = (width+height)/2;
-
-//--------------------font3d-------------------
-	//[0000,3fff]
-	mod[0].vbuf = malloc(0x200000);
-	mod[0].vlen = 0;
-	mod[0].ibuf = malloc(0x100000);
-	mod[0].ilen = 0;
-
-	//[4000,7fff]
-	mod[1].vbuf = malloc(0x200000);
-	mod[1].vlen = 0;
-	mod[1].ibuf = malloc(0x100000);
-	mod[1].ilen = 0;
-
-	//[8000,bfff]
-	mod[2].vbuf = malloc(0x200000);
-	mod[2].vlen = 0;
-	mod[2].ibuf = malloc(0x100000);
-	mod[2].ilen = 0;
-
-	//[c000,ffff]
-	mod[3].vbuf = malloc(0x200000);
-	mod[3].vlen = 0;
-	mod[3].ibuf = malloc(0x100000);
-	mod[3].ilen = 0;
-/*
-	//2d screen
-	mod[4].vbuf = malloc(0x100000);
-	mod[4].vlen = 0;
-*/
-
-//--------------------font2d-------------------
-	//[0000,3fff]
-	mod[4].vbuf = malloc(0x200000);
-	mod[4].vlen = 0;
-	mod[4].ibuf = malloc(0x100000);
-	mod[4].ilen = 0;
-
-	//[4000,7fff]
-	mod[5].vbuf = malloc(0x200000);
-	mod[5].vlen = 0;
-	mod[5].ibuf = malloc(0x100000);
-	mod[5].ilen = 0;
-
-	//[8000,bfff]
-	mod[6].vbuf = malloc(0x200000);
-	mod[6].vlen = 0;
-	mod[6].ibuf = malloc(0x100000);
-	mod[6].ilen = 0;
-
-	//[c000,ffff]
-	mod[7].vbuf = malloc(0x200000);
-	mod[7].vlen = 0;
-	mod[7].ibuf = malloc(0x100000);
-	mod[7].ilen = 0;
-
-
-//--------------------3d-------------------
-	//drawarray.point
-	mod[0x80].vbuf = malloc(0x100000);
-	mod[0x80].vlen = 0;
-
-	//drawelement.line
-	mod[0x81].ibuf = malloc(0x100000);
-	mod[0x81].ilen = 0;
-	mod[0x81].vbuf = malloc(0x100000);
-	mod[0x81].vlen = 0;
-
-	//drawarray.trigon
-	mod[0x82].vbuf = malloc(0x1000000);
-	mod[0x82].vlen = 0;
-
-	//drawelement.trigon
-	mod[0x83].ibuf = malloc(0x100000);
-	mod[0x83].ilen = 0;
-	mod[0x83].vbuf = malloc(0x1000000);
-	mod[0x83].vlen = 0;
-
-
-//----------------------2d--------------------
-	//drawarray.point
-	mod[0x84].vbuf = malloc(0x100000);
-	mod[0x84].vlen = 0;
-
-	//drawelement.line
-	mod[0x85].ibuf = malloc(0x100000);
-	mod[0x85].ilen = 0;
-	mod[0x85].vbuf = malloc(0x100000);
-	mod[0x85].vlen = 0;
-
-	//drawelement.trigon
-	mod[0x86].ibuf = malloc(0x100000);
-	mod[0x86].ilen = 0;
-	mod[0x86].vbuf = malloc(0x100000);
-	mod[0x86].vlen = 0;
-
-	//
-	initshader();
-	initobject();
-
-	//
-	asset_create();
-	inittexture();
-}
-void windowcreate()
-{
-}
-void windowdelete()
-{
-}
-
-
-
-
-void initwindow()
-{
-	app = getandroidapp();
-}
-void freewindow()
-{
-}
-void inittray()
-{
-}
-void freetray()
-{
 }

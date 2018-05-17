@@ -24,10 +24,6 @@ void fixarg(u8* dst, u8* src)
 	}
 	dst[j] = 0;
 }
-void* waitenv()
-{
-	return 0;
-}
 void* pollenv()
 {
 	return 0;

@@ -135,6 +135,7 @@ static void codeimg_read_pixel(
 {
 	int x,y;
 	int width = win->width;
+	int stride = win->stride;
 	int height = win->height;
 	int cx, cy, ww, hh;
 	if(sty)
@@ -156,7 +157,7 @@ static void codeimg_read_pixel(
 
 	scale_image(src, dst,
 		1024, 1024, 0, 0, 1024, 1024,
-		width, height, cx-ww, cy-hh, cx+ww, cy+hh
+		stride, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
 static void codeimg_read_vbo(

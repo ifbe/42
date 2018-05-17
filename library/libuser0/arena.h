@@ -245,7 +245,7 @@ struct arena
 	int flag60;
 	int flag61;
 	int flag62;
-	int flag6;
+	int time;
 
 	//[f0,ff]
 	int flag70;
@@ -406,10 +406,10 @@ int cmp(void*,void*);
 u32 getrandom();
 u64 getdate();
 u64 gettime();
+void sleep_us(int);
 //
 u64 threadcreate(void*, void*);
-void threaddelete(u64);
-//
+int threaddelete(u64);
 void* memorycreate(int);
 int memorydelete(void*);
 //
