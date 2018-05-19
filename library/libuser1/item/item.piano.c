@@ -57,8 +57,8 @@ static void piano_read_pixel(
 	{
 		drawsolid_rect(
 			win, 0xffffff,
-			(cx-ww+4)+(2*j+0)*ww/7, (cy-hh+4),
-			(cx-ww-4)+(2*j+2)*ww/7, (cy+hh-4)
+			(cx-ww+4)+(2*j+0)*ww/7, (cy+4-hh),
+			(cx-ww-4)+(2*j+2)*ww/7, (cy-4+hh)
 		);
 	}
 	for(j=0;j<6;j++)
@@ -66,8 +66,8 @@ static void piano_read_pixel(
 		if(2 == j)continue;
 		drawsolid_rect(
 			win, 0x111111,
-			(cx-ww+4)+(2*j+1)*ww/7, (cy-hh+4),
-			(cx-ww-4)+(2*j+3)*ww/7, (cy-4)
+			(cx-ww)+(4*j+3)*ww/14, (cy+4-hh),
+			(cx-ww)+(4*j+5)*ww/14, (cy-4)
 		);
 	}
 }

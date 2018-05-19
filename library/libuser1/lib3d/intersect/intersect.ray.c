@@ -74,6 +74,19 @@ int ray_trigon(vec3 ray[], vec3 trigon[], vec3 out[])
 
 
 //0: 0 intersection
+//1: 1 intersections
+//-1: infinite intersections
+int ray_rect(vec3 ray[], vec3 rect, vec3 out[])
+{
+	float* o = ray[0];
+	float* d = ray[1];
+	return 0;
+}
+
+
+
+
+//0: 0 intersection
 //n: n intersections
 //-1: infinite intersections
 int ray_obb(vec3 ray[], struct style* sty, vec3 out[])
