@@ -1,5 +1,7 @@
 #include "actor.h"
 int relation_swap(void*, void*);
+int invmvp(vec3 v, struct arena* win);
+int ray_obb(vec3 ray[], struct style* sty, vec3 out[]);
 
 
 
@@ -429,89 +431,108 @@ int keyboard2style(struct style* sty, short tmp)
 	}
 	return 0;
 }
+int playwith3d_pick(struct arena* win, struct relation* top, int x, int y)
+{
+	int ret;
+	vec3 ray[2];
+	vec3 out[2];
+	struct style* sty = 0;
+	struct relation* rel = top;
+
+	ray[0][0] = win->camera.vc[0];
+	ray[0][1] = win->camera.vc[1];
+	ray[0][2] = win->camera.vc[2];
+	ray[1][0] = (float)(x*2) / (win->width) - 1.0;
+	ray[1][1] = 1.0 - (float)(y*2) / (win->height);
+	ray[1][2] = 0.0;
+
+	invmvp(ray[1], win);
+	ray[1][0] -= ray[0][0];
+	ray[1][1] -= ray[0][1];
+	ray[1][2] -= ray[0][2];
+
+	while(1)
+	{
+		if(rel == 0)break;
+		sty = (void*)(rel->dstfoot);
+
+		ret = ray_obb(ray, sty, out);
+		say("ret=%d\n", ret);
+		if(ret > 0)break;
+
+		rel = samedstprevsrc(rel);
+		sty = 0;
+	}
+	if(sty != 0)relation_swap(top, rel);
+	return 0;
+}
 int playwith3d(struct arena* win, struct event* ev)
 {
-	float c,s,tx,ty;
-	struct relation* reltop;
-	struct relation* relwow;
-	struct style* stytop;
-	struct style* stywow;
-	int absx, absy, aaa, bbb;
+	float c,s,tx,ty,norm;
+	struct relation* rel;
+	struct relation* tmp;
+	struct style* sty;
+	int ax, ay, aaa, bbb;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
 
-	reltop = win->irel;
-	if(reltop == 0)return 1;
+	rel = win->irel;
+	if(rel == 0)return 1;
 	while(1)
 	{
-		relwow = samedstnextsrc(reltop);
-		if(relwow == 0)break;
+		tmp = samedstnextsrc(rel);
+		if(0 == tmp)break;
 
-		reltop = relwow;
+		rel = tmp;
 	}
-	stytop = (void*)(reltop->dstfoot);
-
-	stywow = 0;
-	relwow = reltop;
-	while(1)
-	{
-		if(relwow == 0)break;
-		stywow = (void*)(relwow->dstfoot);
-
-		if(x > stywow->vc[0])absx = x - (stywow->vc[0]);
-		else absx = (stywow->vc[0]) - x;
-		if(y > stywow->vc[1])absy = y - (stywow->vc[1]);
-		else absy = (stywow->vc[1]) - y;
-
-		if((absx <= stywow->vr[0])&&(absy <= stywow->vf[1]))break;
-
-		relwow = samedstprevsrc(relwow);
-		stywow = 0;
-	}
-	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
-	//printmemovr[1](ev,0x20);
+	sty = (void*)(rel->dstfoot);
 
 	if(_char_ == ev->what)
 	{
-		if(8 == ev->why)relationdelete(reltop);
-		else keyboard2style(stytop, (ev->why)&0xff);
+		if(8 == ev->why)relationdelete(rel);
+		else keyboard2style(sty, (ev->why)&0xff);
 		return 0;
 	}
 	if(_joy_ == ev->what)
 	{
-		joystick2style(stytop, (void*)ev);
+		joystick2style(sty, (void*)ev);
 		return 0;
 	}
 	if('f' == id)
 	{
-		stytop->vr[0] = (stytop->vr[0])*17/16;
-		stytop->vr[1] = (stytop->vr[1])*17/16;
-		stytop->vr[2] = (stytop->vr[2])*17/16;
+		sty->vr[0] = (sty->vr[0])*17/16;
+		sty->vr[1] = (sty->vr[1])*17/16;
+		sty->vr[2] = (sty->vr[2])*17/16;
 
-		stytop->vf[0] = (stytop->vf[0])*17/16;
-		stytop->vf[1] = (stytop->vf[1])*17/16;
-		stytop->vf[2] = (stytop->vf[2])*17/16;
+		sty->vf[0] = (sty->vf[0])*17/16;
+		sty->vf[1] = (sty->vf[1])*17/16;
+		sty->vf[2] = (sty->vf[2])*17/16;
 
-		stytop->vu[0] = (stytop->vu[0])*17/16;
-		stytop->vu[1] = (stytop->vu[1])*17/16;
-		stytop->vu[2] = (stytop->vu[2])*17/16;
+		sty->vu[0] = (sty->vu[0])*17/16;
+		sty->vu[1] = (sty->vu[1])*17/16;
+		sty->vu[2] = (sty->vu[2])*17/16;
 		return 0;
 	}
 	if('b' == id)
 	{
-		stytop->vr[0] = (stytop->vr[0])*15/16;
-		stytop->vr[1] = (stytop->vr[1])*15/16;
-		stytop->vr[2] = (stytop->vr[2])*15/16;
+		sty->vr[0] = (sty->vr[0])*15/16;
+		sty->vr[1] = (sty->vr[1])*15/16;
+		sty->vr[2] = (sty->vr[2])*15/16;
 
-		stytop->vf[0] = (stytop->vf[0])*15/16;
-		stytop->vf[1] = (stytop->vf[1])*15/16;
-		stytop->vf[2] = (stytop->vf[2])*15/16;
+		sty->vf[0] = (sty->vf[0])*15/16;
+		sty->vf[1] = (sty->vf[1])*15/16;
+		sty->vf[2] = (sty->vf[2])*15/16;
 
-		stytop->vu[0] = (stytop->vu[0])*15/16;
-		stytop->vu[1] = (stytop->vu[1])*15/16;
-		stytop->vu[2] = (stytop->vu[2])*15/16;
+		sty->vu[0] = (sty->vu[0])*15/16;
+		sty->vu[1] = (sty->vu[1])*15/16;
+		sty->vu[2] = (sty->vu[2])*15/16;
+		return 0;
+	}
+	if(hex32('p','+',0,0) == ev->what)
+	{
+		playwith3d_pick(win, rel, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)
@@ -536,30 +557,40 @@ int playwith3d(struct arena* win, struct event* ev)
 				y -= (win->touchmove[0].y);
 			}
 
-			absx = (win->touchmove[0].x) - (win->touchmove[1].x);
-			absy = (win->touchmove[0].y) - (win->touchmove[1].y);
+			ax = (win->touchmove[0].x) - (win->touchmove[1].x);
+			ay = (win->touchmove[0].y) - (win->touchmove[1].y);
 
 			aaa = x*x+y*y;
-			bbb = absx*absx + absy*absy;
+			bbb = ax*ax + ay*ay;
 
-			stytop->vr[0] = (stytop->vr[0]) * aaa / bbb;
-			stytop->vr[1] = (stytop->vr[1]) * aaa / bbb;
-			stytop->vr[2] = (stytop->vr[2]) * aaa / bbb;
+			sty->vr[0] = (sty->vr[0]) * aaa / bbb;
+			sty->vr[1] = (sty->vr[1]) * aaa / bbb;
+			sty->vr[2] = (sty->vr[2]) * aaa / bbb;
 
-			stytop->vf[0] = (stytop->vf[0]) * aaa / bbb;
-			stytop->vf[1] = (stytop->vf[1]) * aaa / bbb;
-			stytop->vf[2] = (stytop->vf[2]) * aaa / bbb;
+			sty->vf[0] = (sty->vf[0]) * aaa / bbb;
+			sty->vf[1] = (sty->vf[1]) * aaa / bbb;
+			sty->vf[2] = (sty->vf[2]) * aaa / bbb;
 
-			stytop->vu[0] = (stytop->vu[0]) * aaa / bbb;
-			stytop->vu[1] = (stytop->vu[1]) * aaa / bbb;
-			stytop->vu[2] = (stytop->vu[2]) * aaa / bbb;
+			sty->vu[0] = (sty->vu[0]) * aaa / bbb;
+			sty->vu[1] = (sty->vu[1]) * aaa / bbb;
+			sty->vu[2] = (sty->vu[2]) * aaa / bbb;
 		}
 		else if(10 == id)
 		{
 			if(0 == win->touchdown[id].z)return 0;
-			stytop->vc[0] += x - (win->touchmove[id].x);
-			stytop->vc[1] -= y - (win->touchmove[id].y);
-			//say("%x,%x\n", stytop->vc[0], stytop->vc[1]);
+
+			tx = win->camera.vf[0];
+			ty = win->camera.vf[1];
+			norm = squareroot(tx*tx+ty*ty);
+			tx *= 2.0 / norm;
+			ty *= 2.0 / norm;
+
+			ax = x - (win->touchmove[id].x);
+			ay = y - (win->touchmove[id].y);
+
+			sty->vc[0] += ty*ax - tx*ay;
+			sty->vc[1] -= tx*ax + ty*ay;
+			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 		else if(11 == id)
 		{
@@ -576,20 +607,16 @@ int playwith3d(struct arena* win, struct event* ev)
 			}
 			else return 0;
 
-			tx = stytop->vr[0];
-			ty = stytop->vr[1];
-			stytop->vr[0] = tx*c - ty*s;
-			stytop->vr[1] = tx*s + ty*c;
+			tx = sty->vr[0];
+			ty = sty->vr[1];
+			sty->vr[0] = tx*c - ty*s;
+			sty->vr[1] = tx*s + ty*c;
 
-			tx = stytop->vf[0];
-			ty = stytop->vf[1];
-			stytop->vf[0] = tx*c - ty*s;
-			stytop->vf[1] = tx*s + ty*c;
+			tx = sty->vf[0];
+			ty = sty->vf[1];
+			sty->vf[0] = tx*c - ty*s;
+			sty->vf[1] = tx*s + ty*c;
 		}
-	}
-	else if(hex32('p','+',0,0) == ev->what)
-	{
-		if(stywow != 0)relation_swap(reltop, relwow);
 	}
 	return 1;
 }

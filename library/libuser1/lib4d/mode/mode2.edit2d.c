@@ -487,76 +487,80 @@ int keyboard2style_2d(struct style* sty, u8 tmp)
 	}
 	return 0;
 }
+int playwith2d_pick(struct relation* top, int x, int y)
+{
+	int ax,ay;
+	struct style* sty = 0;
+	struct relation* rel = top;
+	while(1)
+	{
+		if(rel == 0)break;
+		sty = (void*)(rel->dstfoot);
+
+		if(x > sty->vc[0])ax = x - (sty->vc[0]);
+		else ax = (sty->vc[0]) - x;
+		if(y > sty->vc[1])ay = y - (sty->vc[1]);
+		else ay = (sty->vc[1]) - y;
+
+		if((ax <= sty->vr[0])&&(ay <= sty->vf[1]))break;
+
+		rel = samedstprevsrc(rel);
+		sty = 0;
+	}
+
+	if(sty != 0)relation_swap(top, rel);
+	return 0;
+}
 int playwith2d(struct arena* win, struct event* ev)
 {
-	struct relation* reltop;
-	struct relation* relwow;
-	struct style* stytop;
-	struct style* stywow;
-	int absx, absy;
+	struct relation* rel;
+	struct relation* tmp;
+	struct style* sty;
+	int ax, ay;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
 	int btn = ((ev->why)>>48)&0xffff;
 
-	reltop = win->irel;
-	if(reltop == 0)return 1;
+	rel = win->irel;
+	if(rel == 0)return 1;
 	while(1)
 	{
-		relwow = samedstnextsrc(reltop);
-		if(relwow == 0)break;
+		tmp = samedstnextsrc(rel);
+		if(0 == tmp)break;
 
-		reltop = relwow;
+		rel = tmp;
 	}
-	stytop = (void*)(reltop->dstfoot);
-
-	stywow = 0;
-	relwow = reltop;
-	while(1)
-	{
-		if(relwow == 0)break;
-		stywow = (void*)(relwow->dstfoot);
-
-		if(x > stywow->vc[0])absx = x - (stywow->vc[0]);
-		else absx = (stywow->vc[0]) - x;
-		if(y > stywow->vc[1])absy = y - (stywow->vc[1]);
-		else absy = (stywow->vc[1]) - y;
-
-		if((absx <= stywow->vr[0])&&(absy <= stywow->vf[1]))break;
-
-		relwow = samedstprevsrc(relwow);
-		stywow = 0;
-	}
-	//say("%x,%x,%x,%x\n",reltop,stytop,stytop,stywow);
+	sty = (void*)(rel->dstfoot);
 
 	if(_char_ == ev->what)
 	{
-		if(8 == ev->why)relationdelete(reltop);
-		else keyboard2style_2d(stytop, (ev->why)&0xff);
+		if(8 == ev->why)relationdelete(rel);
+		else keyboard2style_2d(sty, (ev->why)&0xff);
 		return 0;
 	}
 	if(_joy_ == ev->what)
 	{
-		joystick2style_2d(stytop, (void*)ev);
+		joystick2style_2d(sty, (void*)ev);
 		return 0;
 	}
 	if('f' == btn)
 	{
-		stytop->vr[0] = (stytop->vr[0])*17/16;
-		stytop->vf[1] = (stytop->vf[1])*17/16;
-		stytop->vu[2] = (stytop->vu[2])*17/16;
+		sty->vr[0] = (sty->vr[0])*17/16;
+		sty->vf[1] = (sty->vf[1])*17/16;
+		sty->vu[2] = (sty->vu[2])*17/16;
 		return 0;
 	}
 	if('b' == btn)
 	{
-		stytop->vr[0] = (stytop->vr[0])*15/16;
-		stytop->vf[1] = (stytop->vf[1])*15/16;
-		stytop->vu[2] = (stytop->vu[2])*15/16;
+		sty->vr[0] = (sty->vr[0])*15/16;
+		sty->vf[1] = (sty->vf[1])*15/16;
+		sty->vu[2] = (sty->vu[2])*15/16;
 		return 0;
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		if(stywow != 0)relation_swap(reltop, relwow);
+		playwith2d_pick(rel, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)
@@ -564,9 +568,9 @@ int playwith2d(struct arena* win, struct event* ev)
 		if(btn > 10)btn = 10;
 		if(0 != win->touchdown[btn].z)
 		{
-			stytop->vc[0] += x - (win->touchmove[btn].x);
-			stytop->vc[1] += y - (win->touchmove[btn].y);
-			//say("%x,%x\n", stytop->vc[0], stytop->vc[1]);
+			sty->vc[0] += x - (win->touchmove[btn].x);
+			sty->vc[1] += y - (win->touchmove[btn].y);
+			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 		if(1 >= btn)
 		{
@@ -584,11 +588,11 @@ int playwith2d(struct arena* win, struct event* ev)
 				y -= (win->touchmove[0].y);
 			}
 
-			absx = (win->touchmove[0].x) - (win->touchmove[1].x);
-			absy = (win->touchmove[0].y) - (win->touchmove[1].y);
-			stytop->vr[0] = (stytop->vr[0]) * (x*x+y*y) / (absx*absx+absy*absy);
-			stytop->vf[1] = (stytop->vf[1]) * (x*x+y*y) / (absx*absx+absy*absy);
-			stytop->vu[2] = (stytop->vu[2]) * (x*x+y*y) / (absx*absx+absy*absy);
+			ax = (win->touchmove[0].x) - (win->touchmove[1].x);
+			ay = (win->touchmove[0].y) - (win->touchmove[1].y);
+			sty->vr[0] = (sty->vr[0]) * (x*x+y*y) / (ax*ax+ay*ay);
+			sty->vf[1] = (sty->vf[1]) * (x*x+y*y) / (ax*ax+ay*ay);
+			sty->vu[2] = (sty->vu[2]) * (x*x+y*y) / (ax*ax+ay*ay);
 		}
 	}
 	return 1;

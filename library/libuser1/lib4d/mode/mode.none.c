@@ -273,24 +273,35 @@ void foreground_vbo(struct arena* win)
 {
 	int j;
 	float x,y;
-	vec3 va;
-	vec3 vb;
-
+	vec3 vc;
+	vec3 vr;
+/*
+	vec3 vf;
+	vec3 vu;
+	vc[0] = win->target.vc[0];
+	vc[1] = win->target.vc[1];
+	vc[2] = win->target.vc[2];
+	vr[0] = 1000000.0;
+	vf[1] = 1000000.0;
+	vu[2] = 1000000.0;
+	vr[1] = vr[2] = vf[0] = vf[2] = vu[0] = vu[1] = 0.0;
+	carvesolid_sphere(win, 0x808080, vc, vr, vf, vu);
+*/
 	for(j=0;j<12;j++)
 	{
 		if(0 == win->touchdown[j].z)continue;
 
-		va[0] = (float)(win->touchdown[j].x) / (float)(win->width);
-		va[0] = va[0]*2 - 1.0;
-		va[1] = (float)(win->touchdown[j].y) / (float)(win->height);
-		va[1] = 1.0 - va[1]*2;
-		va[2] = -0.99;
-		vb[0] = (float)(win->touchmove[j].x) / (float)(win->width);
-		vb[0] = vb[0]*2 - 1.0;
-		vb[1] = (float)(win->touchmove[j].y) / (float)(win->height);
-		vb[1] = 1.0 - vb[1]*2;
-		vb[2] = -0.99;
-		carveline2d_arrow(win, 0xff00ff, va, vb);
+		vc[0] = (float)(win->touchdown[j].x) / (float)(win->width);
+		vc[0] = vc[0]*2 - 1.0;
+		vc[1] = (float)(win->touchdown[j].y) / (float)(win->height);
+		vc[1] = 1.0 - vc[1]*2;
+		vc[2] = -0.99;
+		vr[0] = (float)(win->touchmove[j].x) / (float)(win->width);
+		vr[0] = vr[0]*2 - 1.0;
+		vr[1] = (float)(win->touchmove[j].y) / (float)(win->height);
+		vr[1] = 1.0 - vr[1]*2;
+		vr[2] = -0.99;
+		carveline2d_arrow(win, 0xff00ff, vc, vr);
 	}
 /*
 	if(1)
@@ -298,18 +309,18 @@ void foreground_vbo(struct arena* win)
 		j = (win->width + win->height) / 128;
 		x = (float)j / (float)(win->width);
 		y = (float)j / (float)(win->height);
-		va[0] = -x;
-		va[1] = 0.0;
-		va[2] = -0.99;
-		vb[0] = x;
-		vb[1] = 0.0;
-		vb[2] = -0.99;
-		carveline2d(win, 0xffffff, va, vb);
-		va[0] = 0.0;
-		va[1] = -y;
-		vb[0] = 0.0;
-		vb[1] = y;
-		carveline2d(win, 0xffffff, va, vb);
+		vc[0] = -x;
+		vc[1] = 0.0;
+		vc[2] = -0.99;
+		vr[0] = x;
+		vr[1] = 0.0;
+		vr[2] = -0.99;
+		carveline2d(win, 0xffffff, vc, vr);
+		vc[0] = 0.0;
+		vc[1] = -y;
+		vr[0] = 0.0;
+		vr[1] = y;
+		carveline2d(win, 0xffffff, vc, vr);
 	}
 */
 	if(win != &arena[0])carvecamera(win, &arena[0]);
