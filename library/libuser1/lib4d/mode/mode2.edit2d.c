@@ -520,7 +520,7 @@ int playwith2d(struct arena* win, struct event* ev)
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
-	int btn = ((ev->why)>>48)&0xffff;
+	int id = ((ev->why)>>48)&0xffff;
 
 	rel = win->irel;
 	if(rel == 0)return 1;
@@ -544,14 +544,14 @@ int playwith2d(struct arena* win, struct event* ev)
 		joystick2style_2d(sty, (void*)ev);
 		return 0;
 	}
-	if('f' == btn)
+	if('f' == id)
 	{
 		sty->vr[0] = (sty->vr[0])*17/16;
 		sty->vf[1] = (sty->vf[1])*17/16;
 		sty->vu[2] = (sty->vu[2])*17/16;
 		return 0;
 	}
-	if('b' == btn)
+	if('b' == id)
 	{
 		sty->vr[0] = (sty->vr[0])*15/16;
 		sty->vf[1] = (sty->vf[1])*15/16;
@@ -565,24 +565,20 @@ int playwith2d(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		if(btn > 10)btn = 10;
-		if(0 != win->touchdown[btn].z)
-		{
-			sty->vc[0] += x - (win->touchmove[btn].x);
-			sty->vc[1] += y - (win->touchmove[btn].y);
-			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
-		}
-		if(1 >= btn)
-		{
-			if(0==win->touchdown[0].z)return 0;
-			if(0==win->touchdown[1].z)return 0;
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
+		if(0 == win->touchdown[id].z)return 0;
 
-			if(0 == btn)
+		if(	(0 != win->touchdown[0].z)&&
+			(0 != win->touchdown[1].z) )
+		{
+			if(0 == id)
 			{
 				x -= (win->touchmove[1].x);
 				y -= (win->touchmove[1].y);
 			}
-			if(1 == btn)
+			if(1 == id)
 			{
 				x -= (win->touchmove[0].x);
 				y -= (win->touchmove[0].y);
@@ -593,6 +589,15 @@ int playwith2d(struct arena* win, struct event* ev)
 			sty->vr[0] = (sty->vr[0]) * (x*x+y*y) / (ax*ax+ay*ay);
 			sty->vf[1] = (sty->vf[1]) * (x*x+y*y) / (ax*ax+ay*ay);
 			sty->vu[2] = (sty->vu[2]) * (x*x+y*y) / (ax*ax+ay*ay);
+		}
+		else if((0 == id)|(10 == id))
+		{
+			sty->vc[0] += x - (win->touchmove[id].x);
+			sty->vc[1] += y - (win->touchmove[id].y);
+			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
+		}
+		else if(11 == id)
+		{
 		}
 	}
 	return 1;

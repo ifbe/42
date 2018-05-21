@@ -540,12 +540,11 @@ int playwith3d(struct arena* win, struct event* ev)
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
+		if(0 == win->touchdown[id].z)return 0;
 
-		if(1 >= id)
+		if(	(0 != win->touchdown[0].z)&&
+			(0 != win->touchdown[1].z) )
 		{
-			if(0 == win->touchdown[0].z)return 0;
-			if(0 == win->touchdown[1].z)return 0;
-
 			if(0 == id)
 			{
 				x -= (win->touchmove[1].x);
@@ -575,10 +574,8 @@ int playwith3d(struct arena* win, struct event* ev)
 			sty->vu[1] = (sty->vu[1]) * aaa / bbb;
 			sty->vu[2] = (sty->vu[2]) * aaa / bbb;
 		}
-		else if(10 == id)
+		else if((0 == id)|(10 == id))
 		{
-			if(0 == win->touchdown[id].z)return 0;
-
 			tx = win->camera.vf[0];
 			ty = win->camera.vf[1];
 			norm = squareroot(tx*tx+ty*ty);
@@ -594,7 +591,6 @@ int playwith3d(struct arena* win, struct event* ev)
 		}
 		else if(11 == id)
 		{
-			if(0 == win->touchdown[id].z)return 0;
 			if(x > win->touchdown[id].x)
 			{
 				c = cosine(0.05);
