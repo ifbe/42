@@ -99,10 +99,34 @@ int ray_trigon(vec3 ray[], vec3 trigon[], vec3 out[])
 //0: 0 intersection
 //1: 1 intersections
 //-1: infinite intersections
-int ray_rect(vec3 ray[], vec3 rect, vec3 out[])
+int ray_rect(vec3 ray[], vec3 rect[], vec3 out)
 {
-	float* o = ray[0];
-	float* d = ray[1];
+	int ret;
+	vec3 v;
+	vec3 plane[2];
+	float vx,vy,xx,yy;
+	float* c = rect[0];
+	float* r = rect[1];
+	float* f = rect[2];
+	float* u = rect[3];
+
+	plane[0][0] = c[0];
+	plane[0][1] = c[1];
+	plane[0][2] = c[2];
+	plane[1][0] = u[0];
+	plane[1][1] = u[1];
+	plane[1][2] = u[2];
+	ret = ray_plane(ray, plane, out);
+	if(ret <= 0)return ret;
+
+	v[0] = out[0] - c[0];
+	v[1] = out[1] - c[1];
+	v[2] = out[2] - c[2];
+	vx= v[0]*r[0] + v[1]*r[1] + v[2]*r[2];
+	vy= v[0]*f[0] + v[1]*f[1] + v[2]*f[2];
+	xx= r[0]*r[0] + r[1]*r[1] + r[2]*r[2];
+	yy= f[0]*f[0] + f[1]*f[1] + f[2]*f[2];
+	if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
 	return 0;
 }
 
@@ -115,185 +139,96 @@ int ray_rect(vec3 ray[], vec3 rect, vec3 out[])
 int ray_obb(vec3 ray[], struct style* sty, vec3 out[])
 {
 	int ret;
-	float vx,vy,xx,yy;
-	vec3 v;
-	vec3 plane[2];
-	float* o = ray[0];
-	float* d = ray[1];
+	vec3 c;
+	vec3 rect[4];
+	float* u = sty->vu;
+	float* f = sty->vf;
+	float* r = sty->vr;
+	float* t = sty->vc;
+	c[0] = t[0] + u[0];
+	c[1] = t[1] + u[1];
+	c[2] = t[2] + u[2];
 
-	//left
-	plane[1][0] = - sty->vr[0];
-	plane[1][1] = - sty->vr[1];
-	plane[1][2] = - sty->vr[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vf[0]) +
-			v[1]*(sty->vf[1]) +
-			v[2]*(sty->vf[2]);
-		vy= v[0]*(sty->vu[0]) +
-			v[1]*(sty->vu[1]) +
-			v[2]*(sty->vu[2]);
-		xx= (sty->vf[0])*(sty->vf[0]) +
-			(sty->vf[1])*(sty->vf[1]) +
-			(sty->vf[2])*(sty->vf[2]);
-		yy= (sty->vu[0])*(sty->vu[0]) +
-			(sty->vu[1])*(sty->vu[1]) +
-			(sty->vu[2])*(sty->vu[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
 
-	//right
-	plane[1][0] = sty->vr[0];
-	plane[1][1] = sty->vr[1];
-	plane[1][2] = sty->vr[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vf[0]) +
-			v[1]*(sty->vf[1]) +
-			v[2]*(sty->vf[2]);
-		vy= v[0]*(sty->vu[0]) +
-			v[1]*(sty->vu[1]) +
-			v[2]*(sty->vu[2]);
-		xx= (sty->vf[0])*(sty->vf[0]) +
-			(sty->vf[1])*(sty->vf[1]) +
-			(sty->vf[2])*(sty->vf[2]);
-		yy= (sty->vu[0])*(sty->vu[0]) +
-			(sty->vu[1])*(sty->vu[1]) +
-			(sty->vu[2])*(sty->vu[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
+	//left,right
+	rect[1][0] = f[0];
+	rect[1][1] = f[1];
+	rect[1][2] = f[2];
+	rect[2][0] = u[0];
+	rect[2][1] = u[1];
+	rect[2][2] = u[2];
 
-	//near
-	plane[1][0] = - sty->vf[0];
-	plane[1][1] = - sty->vf[1];
-	plane[1][2] = - sty->vf[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vr[0]) +
-			v[1]*(sty->vr[1]) +
-			v[2]*(sty->vr[2]);
-		vy= v[0]*(sty->vu[0]) +
-			v[1]*(sty->vu[1]) +
-			v[2]*(sty->vu[2]);
-		xx= (sty->vr[0])*(sty->vr[0]) +
-			(sty->vr[1])*(sty->vr[1]) +
-			(sty->vr[2])*(sty->vr[2]);
-		yy= (sty->vu[0])*(sty->vu[0]) +
-			(sty->vu[1])*(sty->vu[1]) +
-			(sty->vu[2])*(sty->vu[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
+	rect[3][0] = -r[0];
+	rect[3][1] = -r[1];
+	rect[3][2] = -r[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
 
-	//far
-	plane[1][0] = sty->vf[0];
-	plane[1][1] = sty->vf[1];
-	plane[1][2] = sty->vf[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vr[0]) +
-			v[1]*(sty->vr[1]) +
-			v[2]*(sty->vr[2]);
-		vy= v[0]*(sty->vu[0]) +
-			v[1]*(sty->vu[1]) +
-			v[2]*(sty->vu[2]);
-		xx= (sty->vr[0])*(sty->vr[0]) +
-			(sty->vr[1])*(sty->vr[1]) +
-			(sty->vr[2])*(sty->vr[2]);
-		yy= (sty->vu[0])*(sty->vu[0]) +
-			(sty->vu[1])*(sty->vu[1]) +
-			(sty->vu[2])*(sty->vu[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
+	rect[3][0] = r[0];
+	rect[3][1] = r[1];
+	rect[3][2] = r[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
 
-	//bot
-	plane[1][0] = - sty->vu[0];
-	plane[1][1] = - sty->vu[1];
-	plane[1][2] = - sty->vu[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vr[0]) +
-			v[1]*(sty->vr[1]) +
-			v[2]*(sty->vr[2]);
-		vy= v[0]*(sty->vf[0]) +
-			v[1]*(sty->vf[1]) +
-			v[2]*(sty->vf[2]);
-		xx= (sty->vr[0])*(sty->vr[0]) +
-			(sty->vr[1])*(sty->vr[1]) +
-			(sty->vr[2])*(sty->vr[2]);
-		yy= (sty->vf[0])*(sty->vf[0]) +
-			(sty->vf[1])*(sty->vf[1]) +
-			(sty->vf[2])*(sty->vf[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
 
-	//top
-	plane[1][0] = sty->vu[0];
-	plane[1][1] = sty->vu[1];
-	plane[1][2] = sty->vu[2];
-	plane[0][0] = sty->vc[0] + plane[1][0];
-	plane[0][1] = sty->vc[1] + plane[1][1];
-	plane[0][2] = sty->vc[2] + plane[1][2];
-	ret = ray_plane(ray, plane, out[0]);
-	if(ret < 0)return -1;
-	if(ret > 0)
-	{
-		v[0] = out[0][0] - plane[0][0];
-		v[1] = out[0][1] - plane[0][1];
-		v[2] = out[0][2] - plane[0][2];
-		vx= v[0]*(sty->vr[0]) +
-			v[1]*(sty->vr[1]) +
-			v[2]*(sty->vr[2]);
-		vy= v[0]*(sty->vf[0]) +
-			v[1]*(sty->vf[1]) +
-			v[2]*(sty->vf[2]);
-		xx= (sty->vr[0])*(sty->vr[0]) +
-			(sty->vr[1])*(sty->vr[1]) +
-			(sty->vr[2])*(sty->vr[2]);
-		yy= (sty->vf[0])*(sty->vf[0]) +
-			(sty->vf[1])*(sty->vf[1]) +
-			(sty->vf[2])*(sty->vf[2]);
-		if((vx>-xx)&&(vx<xx)&&(vy>-yy)&&(vy<yy))return 1;
-	}
+	//near,far
+	rect[1][0] = r[0];
+	rect[1][1] = r[1];
+	rect[1][2] = r[2];
+	rect[2][0] = u[0];
+	rect[2][1] = u[1];
+	rect[2][2] = u[2];
+
+	rect[3][0] = -f[0];
+	rect[3][1] = -f[1];
+	rect[3][2] = -f[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
+
+	rect[3][0] = f[0];
+	rect[3][1] = f[1];
+	rect[3][2] = f[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
+
+
+	//bot, top
+	rect[1][0] = r[0];
+	rect[1][1] = r[1];
+	rect[1][2] = r[2];
+	rect[2][0] = f[0];
+	rect[2][1] = f[1];
+	rect[2][2] = f[2];
+
+	rect[3][0] = -u[0];
+	rect[3][1] = -u[1];
+	rect[3][2] = -u[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
+
+	rect[3][0] = u[0];
+	rect[3][1] = u[1];
+	rect[3][2] = u[2];
+	rect[0][0] = c[0] + rect[3][0];
+	rect[0][1] = c[1] + rect[3][1];
+	rect[0][2] = c[2] + rect[3][2];
+	ret = ray_rect(ray, rect, out[0]);
+	if(ret != 0)return ret;
 
 	return 0;
 }
