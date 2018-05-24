@@ -310,10 +310,10 @@ library/libuser1/lib1d/xml/html.c \
 library/libuser1/lib1d/xml/xaml.c \
 library/libuser1/lib1d/xml/xml.c \
 library/libuser1/lib1d/lib1d.c \
-library/libuser1/lib2d/draw/draw.ascii.c \
-library/libuser1/lib2d/draw/draw.icon.c \
+library/libuser1/lib2d/draw/draw.line.c \
+library/libuser1/lib2d/draw/draw.solid.c \
 library/libuser1/lib2d/draw/draw.shape.c \
-library/libuser1/lib2d/draw/draw.ttf.c \
+library/libuser1/lib2d/draw/draw.ascii.c \
 library/libuser1/lib2d/draw/draw.utf8.c \
 library/libuser1/lib2d/draw/draw.vt100.c \
 library/libuser1/lib2d/photo/photo.blur.c \

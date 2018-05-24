@@ -1,5 +1,5 @@
-#include "actor.h"
-#define halfsqrt3 0.8660254037844386
+#include<actor.h>
+u32 getrandom();
 
 
 
@@ -19,267 +19,77 @@ void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
 
 
 
-
-void drawline(struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1)
+void drawicon_1(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
-	int dx,dy,sx,sy,e1,e2;
+	u32 r,g,b,a;
+	int x,y,m,n;
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
+	u32* fb = (u32*)(win->buf);
 
-	if(x0 < x1){dx = x1-x0;sx = 1;}
-	else {dx = x0-x1;sx = -1;}
-	if(y0 < y1){dy = y1-y0;sy = 1;}
-	else {dy = y0-y1;sy = -1;}
-	if(dx > dy){e1 = dx/2;}
-	else {e1 = -dy/2;}
-
-	rgb |= 0xff000000;
-	while(1)
+	for(y=y0;y<y1;y++)
 	{
-		if((x0 == x1)&&(y0 == y1))break;
-
-		if((x0 >= 0)&&(x0 < width)&&(y0 >= 0)&&(y0 < height))
-		{buf[(y0*stride) + x0] = rgb;}
-
-		e2 = e1;
-		if(e2 >-dx){e1 -= dy;x0 += sx;}
-		if(e2 < dy){e1 += dx;y0 += sy;}
-	}
-}
-void drawline_arrow(struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1)
-{
-	float x,y,a,b;
-	drawline(win, rgb, x0, y0, x1, y1);
-
-	if((x0==x1)&&(y0==y1))return;
-	x = (float)(x0-x1);
-	y = (float)(y0-y1);
-
-	a = squareroot(x*x+y*y);
-	x = 16*x/a;
-	y = 16*y/a;
-
-	a = x1 + halfsqrt3*x + 0.5*y;
-	b = y1 - 0.5*x + halfsqrt3*y;
-	drawline(win, rgb, x1, y1, (int)a, (int)b);
-
-	a = x1 + halfsqrt3*x - 0.5*y;
-	b = y1 + 0.5*x + halfsqrt3*y;
-	drawline(win, rgb, x1, y1, (int)a, (int)b);
-}
-void drawbezier(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2, int xc, int yc)
-{
-	int x,y,t;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
-
-	for(t=0;t<1000;t++)
-	{
-		x = (1000-t)*(1000-t)*x1 + 2*t*(1000-t)*xc + t*t*x2;
-		x /= 1000*1000;
-		if(x<0|x>=width)continue;
-
-		y = (1000-t)*(1000-t)*y1 + 2*t*(1000-t)*yc + t*t*y2;
-		y /= 1000*1000;
-		if(y<0|y>=height)continue;
-
-		buf[y*stride + x] = rgb;
-	}
-}
-
-
-
-
-void drawline_triangle(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2, int x3, int y3)
-{
-	drawline(win, rgb, x1, y1, x2, y2);
-	drawline(win, rgb, x1, y1, x3, y3);
-	drawline(win, rgb, x2, y2, x3, y3);
-}
-void drawline_rect(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2)
-{
-	int x,y,n;
-	int startx,endx,starty,endy;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
-
-	if(x1<x2){startx=x1;endx=x2;}
-	else{startx=x2;endx=x1;}
-	if(y1<y2){starty=y1;endy=y2;}
-	else{starty=y2;endy=y1;}
-	//say("(%x,%x),(%x,%x)\n",startx,starty,endx,endy);
-
-	rgb |= 0xff000000;
-	for(n=0;n<2;n++)
-	{
-		for(x=startx;x<endx;x++)
+		if(y < 0)continue;
+		if(y >= height)continue;
+		for(x=x0;x<x1;x++)
 		{
-			if(starty < 0)break;
-			if(starty >= width)break;
-			if(x > width-1)break;
-			if(x < 0)x=0;
-			buf[((starty+n)*stride) + x] = rgb;
-		}
-		for(x=startx;x<endx;x++)
-		{
-			if(endy < n)break;
-			if(endy > height-1)break;
-			if(x > width-1)break;
-			if(x < 0)x=0;
-			buf[((endy-n)*stride) + x] = rgb;
-		}
-		for(y=starty;y<endy;y++)
-		{
-			if(startx < 0)break;
-			if(startx >= width)break;
-			if(y > height-1)break;
-			if(y < 0)y = 0;
-			buf[(y*stride) + startx+n] = rgb;
-		}
-		for(y=starty;y<endy;y++)
-		{
-			if(endx < n)break;
-			if(endx > width-1)break;
-			if(y > height-1)break;
-			if(y < 0)y = 0;
-			buf[(y*stride) + endx-n] = rgb;
+			if(x < 0)continue;
+			if(x >= width)continue;
+/*
+			if(x-x0+y-y0 < 4)continue;
+			else if(x-x0+y1-y < 4)continue;
+			else if(x1-x+y-y0 < 4)continue;
+			else if(x1-x+y1-y < 4)continue;
+*/
+			m = fb[y*stride+x];
+			a = (rgb>>24)&0xff;
+
+			r = (m&0xff)*(0x100-a) + 0xff*a;
+			r = (r>>8)&0xff;
+
+			g = ((m>> 8)&0xff)*(0x100-a) + 0xff*a;
+			g = (g>>8)&0xff;
+
+			b = ((m>>16)&0xff)*(0x100-a) + 0xff*a;
+			b = (b>>8)&0xff;
+
+			m = r | (g<<8) | (b<<16) | 0xff000000;
+			fb[y*stride+x] = m;
 		}
 	}
-}
-void drawline_circle(struct arena* win, u32 rgb,
-	int cx, int cy, int radius)
-{
-	int x, y, ret;
-	int x1, y1, x2, y2;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
 
-	y1=cy-radius;
-	if(y1<0)y1=0;
-	if(y1>=height)y1=height-1;
-
-	y2=cy+radius;
-	if(y2<0)y2=0;
-	if(y2>=height)y2=height-1;
-
-	rgb |= 0xff000000;
-	for(y=y1;y<=y2;y++)
+	if(buf == 0)return;
+	if(len == 0)
 	{
-		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
-
-		x1 = cx - ret;
-		if(x1<0)x1=0;
-		if(x1>=width)x1=width-1;
-
-		x2 = cx + ret;
-		if(x2<0)x2=0;
-		if(x2>=width)x2=width-1;
-
-		buf[ (y*stride) + x1 ] = rgb;
-		buf[ (y*stride) + x2 ] = rgb;
+		while(buf[len] > 0x20)len++;
 	}
-}
-void drawline_oval(struct arena* win, u32 rgb,
-	int cx, int cy, int rx, int ry, int fx, int fy)
-{
-}
-void drawline_sector(struct arena* win, u32 rgb,
-	int cx, int cy, int radius, int start, int end)
-{
-}
-
-
-
-
-void drawsolid_triangle(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2, int x3, int y3)
-{
-}
-void drawsolid_rect(struct arena* win, u32 rgb,
-	int x1, int y1, int x2, int y2)
-{
-	int x,y;
-	int startx,endx,starty,endy;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
-
-	if(x1<=x2){startx=x1;endx=x2;}
-	else{startx=x2;endx=x1;}
-	if(startx < 0)startx = 0;
-	if(endx >= width)endx = width-1;
-
-	if(y1<=y2){starty=y1;endy=y2;}
-	else{starty=y2;endy=y1;}
-	if(starty < 0)starty = 0;
-	if(endy >= height)endy = height-1;
-
-	rgb |= 0xff000000;
-	for(y=starty;y<=endy;y++)
+	else
 	{
-		for(x=startx;x<=endx;x++)
+		for(x=0;x<len;x++)
 		{
-			buf[ (y*stride) + x ] = rgb;
+			if(buf[x] < 0x20){len = x;break;}
 		}
 	}
+	if(len == 0)return;
+
+	drawstring_fit(win, rgb, x0, y0, x1, y1, buf, len);
 }
-void drawsolid_circle(struct arena* win, u32 rgb,
-	int cx, int cy, int radius)
-{
-	int x, y, ret;
-	int x1, y1, x2, y2;
-	int width = win->width;
-	int height = win->height;
-	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
-
-	y1=cy-radius;
-	if(y1<0)y1=0;
-	if(y1>=height)y1=height-1;
-
-	y2=cy+radius;
-	if(y2<0)y2=0;
-	if(y2>=height)y2=height-1;
-
-	rgb |= 0xff000000;
-	for(y=y1;y<=y2;y++)
-	{
-		ret = (int)squareroot(radius*radius - (y-cy)*(y-cy));
-
-		x1 = cx - ret;
-		if(x1<0)x1=0;
-		if(x1>=width)x1=width-1;
-
-		x2 = cx + ret;
-		if(x2<0)x2=0;
-		if(x2>=width)x2=width-1;
-
-		for(x=x1;x<=x2;x++)
-		{
-			buf[ (y*stride) + x ] = rgb;
-		}
-	}
-}
-void drawsolid_oval(struct arena* win, u32 rgb,
-	int cx, int cy, int rx, int ry, int fx, int fy)
+void drawicon_normal(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawsolid_sector(struct arena* win, u32 rgb,
-	int cx, int cy, int radius, int start, int end)
+void drawicon_focused(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1, u8* buf, int len)
+{
+}
+void drawicon_pressed(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1, u8* buf, int len)
+{
+}
+void drawicon_disabled(struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
 

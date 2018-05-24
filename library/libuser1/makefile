@@ -56,10 +56,10 @@ lib1d/xml/html.c \
 lib1d/xml/xaml.c \
 lib1d/xml/xml.c \
 lib1d/lib1d.c \
-lib2d/draw/draw.ascii.c \
-lib2d/draw/draw.icon.c \
+lib2d/draw/draw.line.c \
+lib2d/draw/draw.solid.c \
 lib2d/draw/draw.shape.c \
-lib2d/draw/draw.ttf.c \
+lib2d/draw/draw.ascii.c \
 lib2d/draw/draw.utf8.c \
 lib2d/draw/draw.vt100.c \
 lib2d/photo/photo.blur.c \

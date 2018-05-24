@@ -10,7 +10,8 @@ static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 void vkbd_read_pixel(struct arena* win)
 {
 	u8 ch[8];
-	int x,y,c,l,rgb;
+	int c,l,rgb;
+	int x,y,m,n;
 	int w = win->width;
 	int h = win->height;
 	if(win->vkbdtype < 0)goto haha;
@@ -110,17 +111,41 @@ void vkbd_read_pixel(struct arena* win)
 	}
 */
 haha:
-	if(w<h)x = w>>5;
-	else x = h>>5;
+	if(w<h)m = w>>5;
+	else m = h>>5;
 
 	drawsolid_circle(
 		win, 0x0000ff,
-		x, h-x, x/2
+		m, h-m, m
 	);
 	drawsolid_circle(
 		win, 0xff0000,
-		w-x, h-x, x/2
+		w-m, h-m, m
 	);
+
+	m *= 2;
+	if(win->touchdown[0].z)
+	{
+		x = win->touchdown[0].x;
+		y = win->touchdown[0].y;
+		if((x+m < w) | (y+m < h))return;
+		x = win->touchmove[0].x;
+		y = win->touchmove[0].y;
+	}
+	else if(win->touchdown[10].z)
+	{
+		x = win->touchdown[10].x;
+		y = win->touchdown[10].y;
+		if((x+m < w) | (y+m < h))return;
+		x = win->touchmove[10].x;
+		y = win->touchmove[10].y;
+	}
+	else return;
+
+	m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
+	n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
+	drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
+	drawsolid_triangle(win, 0x404040, m, h, w, n, w, h);
 }
 void vkbd_read_vbo(struct arena* win)
 {
@@ -261,15 +286,15 @@ void vkbd_read_vbo(struct arena* win)
 	}
 */
 haha:
-	if(w<h)x = w>>4;
-	else x = h>>4;
-	j = (float)x / (float)w;
-	k = (float)x / (float)h;
-	vr[0] = j/2;
+	if(w<h)c = w>>4;
+	else c = h>>4;
+	j = (float)c / (float)w;
+	k = (float)c / (float)h;
+	vr[0] = j;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
 	vf[0] = 0.0;
-	vf[1] = k/2;
+	vf[1] = k;
 	vf[2] = 0.0;
 
 	vc[0] = 1.0-j;
@@ -278,6 +303,43 @@ haha:
 	carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
 	vc[0] = j-1.0;
 	carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
+
+	c *= 2;
+	if(win->touchdown[0].z)
+	{
+		x = win->touchdown[0].x;
+		y = win->touchdown[0].y;
+		if((x+c < w) | (y+c < h))return;
+		x = win->touchmove[0].x;
+		y = win->touchmove[0].y;
+	}
+	else if(win->touchdown[10].z)
+	{
+		x = win->touchdown[10].x;
+		y = win->touchdown[10].y;
+		if((x+c < w) | (y+c < h))return;
+		x = win->touchmove[10].x;
+		y = win->touchmove[10].y;
+	}
+	else return;
+
+	j = ((h-y)*(h-y)/(x-w) + (w+x)) / 2.0;
+	j = 2*j/w - 1.0;
+	k = ((x-w)*(x-w)/(y-h) + (y+h)) / 2.0;
+	k = 1.0 - 2*k/h;
+	vr[0] = j;
+	vr[1] = -1.0;
+	vr[2] = -0.9;
+	vf[0] = 1.0;
+	vf[1] = k;
+	vf[2] = -0.9;
+	vc[0] = 2.0*x/w - 1.0;
+	vc[1] = 1.0 - 2.0*y/h;
+	vc[2] = -0.9;
+	carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
+	vc[0] = 1.0;
+	vc[1] = -1.0;
+	carvesolid2d_triangle(win, 0x404040, vc, vr, vf);
 }
 void vkbd_read_html(struct arena* win)
 {
@@ -374,9 +436,9 @@ byebye:
 }
 int actorinput_vkbd(struct arena* win, struct event* ev)
 {
-	int x,y,ret;
-	int why = ev->why;
-	int what = ev->what;
+	int x,y,id,ret;
+	u64 why = ev->why;
+	u64 what = ev->what;
 	if('p' == (what&0xff))
 	{
 		if(0x2d70 == what)
@@ -401,6 +463,21 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 				{
 					if(win->vkbdtype > 0)win->vkbdtype = 0;
 					else win->vkbdtype = (int)'k'<<16;
+					return 1;
+				}
+			}
+			if(x*2 < win->width)
+			{
+				id = (why>>48)&0xffff;
+				if('l' == id)id = 10;
+				if((0 != id)&&(10 != id))return 0;
+
+				x = win->touchdown[id].x;
+				y = win->touchdown[id].y;
+//say("fuck:%d,%d,%d\n",x,y,id);
+				if((y+ret > win->height)&&(x+ret > win->width))
+				{
+					win->menutype |= 0xffff0000;
 					return 1;
 				}
 			}
