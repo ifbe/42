@@ -7,7 +7,7 @@ static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
 
 
-void vkbd_read_pixel(struct arena* win)
+void vkbd_read_pixel(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -111,49 +111,58 @@ void vkbd_read_pixel(struct arena* win)
 	}
 */
 haha:
-	if(w<h)m = w>>5;
-	else m = h>>5;
+	if(w<h)c = w>>5;
+	else c = h>>5;
 
 	drawsolid_circle(
 		win, 0x0000ff,
-		m, h-m, m
+		c, h-c, c
 	);
 	drawsolid_circle(
 		win, 0xff0000,
-		w-m, h-m, m
+		w-c, h-c, c
 	);
 
-	m *= 2;
+	c *= 2;
 	if(win->touchdown[0].z)
 	{
-		x = win->touchdown[0].x;
-		y = win->touchdown[0].y;
-		if((x+m < w) | (y+m < h))return;
+		m = win->touchdown[0].x;
+		n = win->touchdown[0].y;
 		x = win->touchmove[0].x;
 		y = win->touchmove[0].y;
 	}
 	else if(win->touchdown[10].z)
 	{
-		x = win->touchdown[10].x;
-		y = win->touchdown[10].y;
-		if((x+m < w) | (y+m < h))return;
+		m = win->touchdown[10].x;
+		n = win->touchdown[10].y;
 		x = win->touchmove[10].x;
 		y = win->touchmove[10].y;
 	}
 	else return;
 
-	m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
-	n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
-	drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
-	drawsolid_triangle(win, 0x404040, m, h, w, n, w, h);
+	if(n+c > h)
+	{
+		if(m+c > w)
+		{
+			m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
+			n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
+			drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
+			drawsolid_triangle(win, 0x404040, m, h, w, n, w, h);
+		}
+		else if(m < c)
+		{
+			drawsolid_rect(win, 0x404040, 0, 0, x, h);
+			drawsolid_rect(win, 0x404040, 0, y, w, h);
+		}
+	}
 }
-void vkbd_read_vbo(struct arena* win)
+void vkbd_read_vbo(struct arena* win, struct style* sty)
 {
+	u8 ch[8];
+	float j,k;
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
-	u8 ch[8];
-	float j,k;
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
@@ -307,58 +316,84 @@ haha:
 	c *= 2;
 	if(win->touchdown[0].z)
 	{
-		x = win->touchdown[0].x;
-		y = win->touchdown[0].y;
-		if((x+c < w) | (y+c < h))return;
+		j = win->touchdown[0].x;
+		k = win->touchdown[0].y;
 		x = win->touchmove[0].x;
 		y = win->touchmove[0].y;
 	}
 	else if(win->touchdown[10].z)
 	{
-		x = win->touchdown[10].x;
-		y = win->touchdown[10].y;
-		if((x+c < w) | (y+c < h))return;
+		j = win->touchdown[10].x;
+		k = win->touchdown[10].y;
 		x = win->touchmove[10].x;
 		y = win->touchmove[10].y;
 	}
 	else return;
 
-	j = ((h-y)*(h-y)/(x-w) + (w+x)) / 2.0;
-	j = 2*j/w - 1.0;
-	k = ((x-w)*(x-w)/(y-h) + (y+h)) / 2.0;
-	k = 1.0 - 2*k/h;
-	vr[0] = j;
-	vr[1] = -1.0;
-	vr[2] = -0.9;
-	vf[0] = 1.0;
-	vf[1] = k;
-	vf[2] = -0.9;
-	vc[0] = 2.0*x/w - 1.0;
-	vc[1] = 1.0 - 2.0*y/h;
-	vc[2] = -0.9;
-	carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
-	vc[0] = 1.0;
-	vc[1] = -1.0;
-	carvesolid2d_triangle(win, 0x404040, vc, vr, vf);
+	if(k+c > h)
+	{
+		if(j+c > w)
+		{
+			j = ((h-y)*(h-y)/(x-w) + (w+x)) / 2.0;
+			j = 2*j/w - 1.0;
+			k = ((x-w)*(x-w)/(y-h) + (y+h)) / 2.0;
+			k = 1.0 - 2*k/h;
+			vr[0] = j;
+			vr[1] = -1.0;
+			vr[2] = -0.9;
+			vf[0] = 1.0;
+			vf[1] = k;
+			vf[2] = -0.9;
+			vc[0] = 2.0*x/w - 1.0;
+			vc[1] = 1.0 - 2.0*y/h;
+			vc[2] = -0.9;
+			carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
+			vc[0] = 1.0;
+			vc[1] = -1.0;
+			carvesolid2d_triangle(win, 0x404040, vc, vr, vf);
+		}
+		else if(j < c)
+		{
+			j = (float)x;
+			k = (float)y;
+			vc[0] = j/w - 1.0;
+			vc[1] = 0.0;
+			vc[2] = -0.9;
+			vr[0] = 1.0+vc[0];
+			vr[1] = 0.0;
+			vr[2] = 0.0;
+			vf[0] = 0.0;
+			vf[1] = 1.0;
+			vf[2] = 0.0;
+			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+			vc[0] = 0.0;
+			vc[1] = 1.0-(h+k)/h;
+			vr[0] = 1.0;
+			vr[1] = 0.0;
+			vf[0] = 0.0;
+			vf[1] = 1.0+vc[1];
+			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+		}
+	}
 }
-void vkbd_read_html(struct arena* win)
+void vkbd_read_html(struct arena* win, struct style* sty)
 {
 }
-void vkbd_read_tui(struct arena* win)
+void vkbd_read_tui(struct arena* win, struct style* sty)
 {
 }
-void vkbd_read_cli(struct arena* win)
+void vkbd_read_cli(struct arena* win, struct style* sty)
 {
 }
-void vkbd_read(struct arena* win)
+void vkbd_read(struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)vkbd_read_cli(win);
-	else if(fmt == _tui_)vkbd_read_tui(win);
-	else if(fmt == _html_)vkbd_read_html(win);
-	else if(fmt == _vbo_)vkbd_read_vbo(win);
-	else vkbd_read_pixel(win);
+	if(fmt == _cli_)vkbd_read_cli(win, sty);
+	else if(fmt == _tui_)vkbd_read_tui(win, sty);
+	else if(fmt == _html_)vkbd_read_html(win, sty);
+	else if(fmt == _vbo_)vkbd_read_vbo(win, sty);
+	else vkbd_read_pixel(win, sty);
 }
 
 
@@ -436,24 +471,31 @@ byebye:
 }
 int actorinput_vkbd(struct arena* win, struct event* ev)
 {
-	int x,y,id,ret;
+	int j,k,x,y;
+	int w,h,id,ret;
 	u64 why = ev->why;
 	u64 what = ev->what;
 	if('p' == (what&0xff))
 	{
+		w = win->width;
+		h = win->height;
+		if(w<h)ret = w>>4;
+		else ret = h>>4;
+
+		id = (why>>48)&0xffff;
+		if('l' == id)id = 10;
+		if((0 != id)&&(10 != id))return 0;
+		j = win->touchdown[id].x;
+		k = win->touchdown[id].y;
+
 		if(0x2d70 == what)
 		{
-			x = win->width;
-			y = win->height;
-			if(x<y)ret = x>>4;
-			else ret = y>>4;
-
 			//open or close vkbd
 			x = why&0xffff;
 			y = (why>>16)&0xffff;
-			if(y+ret > win->height)
+			if(y+ret > h)
 			{
-				if(x+ret > win->width)
+				if(x+ret > w)
 				{
 					if(win->vkbdtype > 0)win->vkbdtype = 0;
 					else win->vkbdtype = (int)'j'<<16;
@@ -466,20 +508,26 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 					return 1;
 				}
 			}
-			if(x*2 < win->width)
+			if(k+ret > h)
 			{
-				id = (why>>48)&0xffff;
-				if('l' == id)id = 10;
-				if((0 != id)&&(10 != id))return 0;
-
-				x = win->touchdown[id].x;
-				y = win->touchdown[id].y;
-//say("fuck:%d,%d,%d\n",x,y,id);
-				if((y+ret > win->height)&&(x+ret > win->width))
+				if(j+ret > w)
 				{
-					win->menutype |= 0xffff0000;
+					if(x*2 < w)win->menutype |= 0xffff0000;
 					return 1;
 				}
+				else if(j < ret)
+				{
+					if(x*2 > w)win->menutype |= 0xffff0000;
+					return 1;
+				}
+			}
+		}
+		else if(0x4070 == what)
+		{
+			if(k+ret > h)
+			{
+				if(j+ret > w)return 1;
+				if(j-ret < 0)return 1;
 			}
 		}
 

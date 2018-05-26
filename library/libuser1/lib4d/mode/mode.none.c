@@ -1,30 +1,30 @@
 #include "actor.h"
 int term_write(void*);
 //vkbd
-int vkbd_read(void*);
+int vkbd_read(      struct arena* win, struct style* sty);
 int actorinput_vkbd(struct arena* win, struct event* ev);
 //menu
-int actoroutput_menu(struct arena*);
-int actorinput_menu(struct arena* win, struct event* ev);
+int actoroutput_menu(struct arena* win, struct style* sty);
+int actorinput_menu( struct arena* win, struct event* ev);
 //mode0
-int actoroutput_overview(struct arena*);
-int actorinput_overview(struct arena* win, struct event* ev);
+int actoroutput_overview(struct arena* win, struct style* sty);
+int actorinput_overview( struct arena* win, struct event* ev);
 //mode1
-int actoroutput_detail(struct arena*);
-int actorinput_detail(struct arena* win, struct event* ev);
+int actoroutput_detail(struct arena* win, struct style* sty);
+int actorinput_detail( struct arena* win, struct event* ev);
 //mode2
-int actoroutput_edit(struct arena*);
+int actoroutput_edit(struct arena* win, struct style* sty);
 int playwith2d(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
 //mode3
-int actoroutput_posture(struct arena*);
-int actorinput_camera(struct arena* win, struct event* ev);
+int actoroutput_posture(struct arena* win, struct style* sty);
+int actorinput_camera( struct arena* win, struct event* ev);
 //mode4
-int actoroutput_deliver(struct arena* win);
-int actorinput_deliver(struct arena* win, struct event* ev);
+int actoroutput_deliver(struct arena* win, struct style* sty);
+int actorinput_deliver( struct arena* win, struct event* ev);
 //mode5
-int actoroutput_oneonone(struct arena* win);
-int actorinput_oneonone(struct arena* win, struct event* ev);
+int actoroutput_oneonone(struct arena* win, struct style* sty);
+int actorinput_oneonone( struct arena* win, struct event* ev);
 
 
 
@@ -387,16 +387,16 @@ int actoroutput(struct arena* win)
 	l16 = ret&0xffff;
 	h16 = (ret>>16)&0xffff;
 //say("%d,%d\n",h16,l16);
-	if(0 != h16)actoroutput_menu(win);
-	else if(0 == l16)actoroutput_overview(win);
-	else if(1 == l16)actoroutput_detail(win);
-	else if(2 == l16)actoroutput_edit(win);
-	else if(3 == l16)actoroutput_posture(win);
-	else if(4 == l16)actoroutput_deliver(win);
-	else if(5 == l16)actoroutput_oneonone(win);
+	if(0 != h16)actoroutput_menu(win, 0);
+	else if(0 == l16)actoroutput_overview(win, 0);
+	else if(1 == l16)actoroutput_detail(win, 0);
+	else if(2 == l16)actoroutput_edit(win, 0);
+	else if(3 == l16)actoroutput_posture(win, 0);
+	else if(4 == l16)actoroutput_deliver(win, 0);
+	else if(5 == l16)actoroutput_oneonone(win, 0);
 
 	//vkbd
-	vkbd_read(win);
+	vkbd_read(win, 0);
 
 	//fg
 	foreground(win);

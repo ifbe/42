@@ -26,7 +26,7 @@ void select_3d(struct arena* win, struct style* sty)
 	tc[2] = vc[2] + vu[2];
 	carveline_prism4(win, 0xff0000, tc, vr, vf, vu);
 }
-int actoroutput_edit(struct arena* win)
+int actoroutput_edit(struct arena* win, struct style* st)
 {
 	struct relation* rel;
 	struct actor* act;

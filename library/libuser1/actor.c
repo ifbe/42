@@ -25,17 +25,29 @@ static int actlen = 0;
 static int pinlen = 0;
 void* allocactor()
 {
-	int j;
+	int j,max;
 	struct actor* act;
-	while(1)
+
+	max = 0x100000 / sizeof(struct actor);
+	for(j=0;j<max;j++)
 	{
 		act = &actor[j];
-		if(0 == act->type)break;
-
-		j++;
-		if(j >= 0x100)return 0;
+		if(0 == act->type)return act;
 	}
-	return act;
+	return 0;
+}
+void* allocactor_reverse()
+{
+	int j,max;
+	struct actor* act;
+
+	max = 0x100000 / sizeof(struct actor);
+	for(j=max-1;j>=0;j--)
+	{
+		act = &actor[j];
+		if(0 == act->type)return act;
+	}
+	return 0;
 }
 void* allocpinid()
 {

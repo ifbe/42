@@ -3,7 +3,7 @@
 
 
 
-int actoroutput_deliver(struct arena* win)
+int actoroutput_deliver(struct arena* win, struct style* st)
 {
 	struct relation* rel;
 	struct actor* act;

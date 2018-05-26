@@ -122,7 +122,7 @@ int arenanext(struct arena* win)
 
 
 
-void overview_read_pixel(struct arena* win)
+void overview_read_pixel(struct arena* win, struct style* sty)
 {
 	struct relation* rel;
 	u32 c,d;
@@ -436,7 +436,7 @@ void overview_read_pixel(struct arena* win)
 	}
 */
 }
-void overview_read_vbo(struct arena* win)
+void overview_read_vbo(struct arena* win, struct style* sty)
 {
 	struct relation* rel;
 	vec3 vc;
@@ -700,7 +700,7 @@ void overview_read_vbo(struct arena* win)
 		}
 	}
 }
-void overview_read_8bit(struct arena* win)
+void overview_read_8bit(struct arena* win, struct style* sty)
 {
 	int x,y;
 	int j,c;
@@ -718,10 +718,10 @@ void overview_read_8bit(struct arena* win)
 		);
 	}
 }
-void overview_read_html(struct arena* win)
+void overview_read_html(struct arena* win, struct style* sty)
 {
 }
-void overview_read_tui(struct arena* win)
+void overview_read_tui(struct arena* win, struct style* sty)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -745,17 +745,17 @@ void overview_read_tui(struct arena* win)
 		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
 	}
 }
-void overview_read_cli(struct arena* win)
+void overview_read_cli(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_overview(struct arena* win)
+void actoroutput_overview(struct arena* win, struct style* sty)
 {
-	if(win->fmt == _cli_)overview_read_cli(win);
-	else if(win->fmt == _tui_)overview_read_tui(win);
-	else if(win->fmt == _vbo_)overview_read_vbo(win);
-	else if(win->fmt == _html_)overview_read_html(win);
-	else if(win->fmt == _8bit_)overview_read_8bit(win);
-	else overview_read_pixel(win);
+	if(win->fmt == _cli_)overview_read_cli(win, sty);
+	else if(win->fmt == _tui_)overview_read_tui(win, sty);
+	else if(win->fmt == _vbo_)overview_read_vbo(win, sty);
+	else if(win->fmt == _html_)overview_read_html(win, sty);
+	else if(win->fmt == _8bit_)overview_read_8bit(win, sty);
+	else overview_read_pixel(win, sty);
 }
 
 

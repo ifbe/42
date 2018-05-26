@@ -107,37 +107,41 @@ void drawline_rect(struct arena* win, u32 rgb,
 	rgb |= 0xff000000;
 	for(n=0;n<2;n++)
 	{
-		for(x=startx;x<endx;x++)
+		if((starty+n >= 0) && (starty+n < height))
 		{
-			if(starty < 0)break;
-			if(starty >= width)break;
-			if(x > width-1)break;
-			if(x < 0)x=0;
-			buf[((starty+n)*stride) + x] = rgb;
+			for(x=startx;x<endx;x++)
+			{
+				if(x >= width)break;
+				if(x < 0)x=0;
+				buf[((starty+n)*stride) + x] = rgb;
+			}
 		}
-		for(x=startx;x<endx;x++)
+		if((endy-n >= 0) && (endy-n < height))
 		{
-			if(endy < n)break;
-			if(endy > height-1)break;
-			if(x > width-1)break;
-			if(x < 0)x=0;
-			buf[((endy-n)*stride) + x] = rgb;
+			for(x=startx;x<endx;x++)
+			{
+				if(x > width-1)break;
+				if(x < 0)x=0;
+				buf[((endy-n)*stride) + x] = rgb;
+			}
 		}
-		for(y=starty;y<endy;y++)
+		if((startx+n >= 0) && (startx+n < width))
 		{
-			if(startx < 0)break;
-			if(startx >= width)break;
-			if(y > height-1)break;
-			if(y < 0)y = 0;
-			buf[(y*stride) + startx+n] = rgb;
+			for(y=starty;y<endy;y++)
+			{
+				if(y >= height)break;
+				if(y < 0)y = 0;
+				buf[(y*stride) + startx+n] = rgb;
+			}
 		}
-		for(y=starty;y<endy;y++)
+		if((endx-n >= 0) && (endx-n < width))
 		{
-			if(endx < n)break;
-			if(endx > width-1)break;
-			if(y > height-1)break;
-			if(y < 0)y = 0;
-			buf[(y*stride) + endx-n] = rgb;
+			for(y=starty;y<endy;y++)
+			{
+				if(y >= height)break;
+				if(y < 0)y = 0;
+				buf[(y*stride) + endx-n] = rgb;
+			}
 		}
 	}
 }

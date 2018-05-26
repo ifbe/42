@@ -22,7 +22,7 @@ void posture_create(void* addr)
 
 
 
-void actoroutput_posture_vbo(struct arena* win)
+void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 {
 	int j;
 	vec3 tc, tr, tf;
@@ -52,7 +52,7 @@ skip:
 	carvestring_center(win, 0x00ff00, tc, tr, tf,
 		(u8*)&actor[j].name, 8);
 }
-void actoroutput_posture_pixel(struct arena* win)
+void actoroutput_posture_pixel(struct arena* win, struct style* sty)
 {
 	int j;
 	int cx = win->target.vc[0];
@@ -81,7 +81,7 @@ skip:
 	drawline(win, 0x00ff00, cx-rx+fx, cy-ry+fy, cx+rx+fx, cy+ry+fy);
 	drawstring_fit(win, 0x00ff00, cx-16, cy-32, cx+16, cy+32, (u8*)&actor[j].name, 8);
 }
-int actoroutput_posture(struct arena* win)
+int actoroutput_posture(struct arena* win, struct style* st)
 {
 	struct relation* rel;
 	struct actor* act;
@@ -109,7 +109,7 @@ int actoroutput_posture(struct arena* win)
 	}
 
 	//chosen actor
-	if(_vbo_ == win->fmt)actoroutput_posture_vbo(win);
-	else actoroutput_posture_pixel(win);
+	if(_vbo_ == win->fmt)actoroutput_posture_vbo(win, sty);
+	else actoroutput_posture_pixel(win, sty);
 	return 0;
 }
