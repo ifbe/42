@@ -147,7 +147,7 @@ haha:
 			m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
 			n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
 			drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
-			drawsolid_triangle(win, 0x404040, m, h, w, n, w, h);
+			drawsolid_triangle(win, 0x000000, m, h, w, n, w, h);
 		}
 		else if(m < c)
 		{
@@ -350,7 +350,7 @@ haha:
 			carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
 			vc[0] = 1.0;
 			vc[1] = -1.0;
-			carvesolid2d_triangle(win, 0x404040, vc, vr, vf);
+			carvesolid2d_triangle(win, 0x000000, vc, vr, vf);
 		}
 		else if(j < c)
 		{
@@ -512,12 +512,24 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 			{
 				if(j+ret > w)
 				{
-					if(x*2 < w)win->menutype |= 0xffff0000;
+					if(x*2 < w)
+					{
+						x = win->voidtype;
+						if(x <= 0)x = 0;
+						else x = x-1;
+						win->voidtype = x;
+					}
 					return 1;
 				}
 				else if(j < ret)
 				{
-					if(x*2 > w)win->menutype |= 0xffff0000;
+					if(x*2 > w)
+					{
+						x = win->voidtype;
+						if(x <= 0)x = 0;
+						else x = x-1;
+						win->voidtype = x;
+					}
 					return 1;
 				}
 			}

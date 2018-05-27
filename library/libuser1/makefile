@@ -98,7 +98,7 @@ lib4d/mode/mode3.posture.c \
 lib4d/mode/mode4.deliver.c \
 lib4d/mode/mode5.oneonone.c \
 lib4d/mode/mode.menu.c \
-lib4d/mode/mode.none.c \
+lib4d/mode/mode.void.c \
 lib4d/vkbd/vkbd.test.c \
 lib4d/vkbd/vkbd.full.c \
 lib4d/lib4d.c \

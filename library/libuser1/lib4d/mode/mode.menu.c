@@ -112,24 +112,7 @@ void actoroutput_menu_pixel(struct arena* win)
 		drawline(win, 0xffffff, va[0], va[1], vb[0], vb[1]);
 	}
 */
-	if(win->touchdown[10].z)
-	{
-		pa[0] = win->touchdown[10].x;
-		pa[1] = win->touchdown[10].y;
-		pb[0] = win->touchmove[10].x;
-		pb[1] = win->touchmove[10].y;
-		j = pb[0] - pa[0];
-	}
-	else if(win->touchdown[0].z)
-	{
-		pa[0] = win->touchdown[0].x;
-		pa[1] = win->touchdown[0].y;
-		pb[0] = win->touchmove[0].x;
-		pb[1] = win->touchmove[0].y;
-		j = pb[0] - pa[0];
-	}
-	else j = 0;
-
+	j = win->menux;
 	k = j;
 	if(k < -s)k = -s;
 	if(k > s)k = s;
@@ -252,8 +235,6 @@ int actorinput_menu(struct arena* win, struct event* ev)
 
 	if('p' == (ret&0xff))
 	{
-		if(0x2d70 != ret)return 0;
-
 		pb[0] = (ev->why)&0xffff;
 		pb[1] = ((ev->why)>>16)&0xffff;
 		if(win->touchdown[10].z)
@@ -261,27 +242,39 @@ int actorinput_menu(struct arena* win, struct event* ev)
 			pa[0] = win->touchdown[10].x;
 			pa[1] = win->touchdown[10].y;
 			x = pb[0] - pa[0];
+			y = pb[1] - pa[1];
 		}
 		else if(win->touchdown[0].z)
 		{
 			pa[0] = win->touchdown[0].x;
 			pa[1] = win->touchdown[0].y;
 			x = pb[0] - pa[0];
+			y = pb[1] - pa[1];
 		}
-		else x = 0;
+		else x = y = 0;
 
-		if(x*8 < -win->width)x = 0x4d;
-		else if(x*8 > win->width)x = 0x4b;
-		else if((x>-16)&&(x<16))
+		if(0x2d70 == ret)
 		{
-			win->menutype &= 0xffff;
-			return 0;
+			win->menux = 0;
+			win->menuy = 0;
+			if(x*8 < -win->width)x = 0x4d;
+			else if(x*8 > win->width)x = 0x4b;
+			else if((x>-16)&&(x<16))
+			{
+				win->voidtype = 2;
+				return 0;
+			}
+		}
+		else
+		{
+			win->menux = x;
+			win->menuy = y;
 		}
 	}
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
-		if((0xd == ret)|(0xa == ret))win->menutype &= 0xffff;
+		if((0xd == ret)|(0xa == ret))win->voidtype = 2;
 		return 0;
 	}
 	else if(_joy_ == ret)x = ((ev->why)>>32)&0xffff;
@@ -291,14 +284,12 @@ int actorinput_menu(struct arena* win, struct event* ev)
 	if((_dl_ == x) | (0x4b == x))
 	{
 		y = win->menutype & 7;
-		y = (y+7)%8;
-		win->menutype = y | 0xffff0000;
+		win->menutype = (y+7)%8;
 	}
 	else if((_dr_ == x) | (0x4d == x))
 	{
 		y = win->menutype & 7;
-		y = (y+1)%8;
-		win->menutype = y | 0xffff0000;
+		win->menutype = (y+1)%8;
 	}
 	return 0;
 }

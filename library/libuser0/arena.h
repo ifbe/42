@@ -220,20 +220,20 @@ struct arena
 	//[a0,af]
 	int flag20;
 	int flag21;
-	int flag22;
 	int enq;
+	int deq;
 
 	//[b0,bf]
 	int flag30;
 	int flag31;
-	int flag32;
-	int deq;
+	int time;
+	int fps;
 
 	//[c0,cf]
 	int flag40;
 	int flag41;
-	int vkbddata;
-	int vkbdtype;
+	int voiddata;
+	int voidtype;
 
 	//[d0,df]
 	int flag50;
@@ -244,14 +244,14 @@ struct arena
 	//[e0,ef]
 	int flag60;
 	int flag61;
-	int flag62;
-	int time;
+	int xxxxdata;
+	int xxxxtype;
 
 	//[f0,ff]
 	int flag70;
 	int flag71;
-	int flag72;
-	int flag7;
+	int vkbddata;
+	int vkbdtype;
 
 	//[100,1ff]
 	struct style target;

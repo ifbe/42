@@ -241,8 +241,17 @@ void* arenacreate(u64 type, u8* addr)
 
 		win->enq = 1;
 		win->deq = 0;
+		win->time = 0;
+		win->fps = 60;
+
+		win->voiddata = 0;
+		win->voidtype = 0;
+		win->menudata = 0;
+		win->menutype = 0;
+		win->xxxxdata = 0;
+		win->xxxxtype = 0;
+		win->vkbddata = 0;
 		win->vkbdtype = 0;
-		win->menutype = 0xffff0000;
 
 		//target
 		win->target.vc[0] = 0.0;
