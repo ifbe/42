@@ -353,10 +353,10 @@ struct arena
 	int fps;
 
 	//[c0,cf]
-	int voidx;
-	int voidy;
-	int voiddata;
-	int voidtype;
+	int modex;
+	int modey;
+	int modedata;
+	int modetype;
 
 	//[d0,df]
 	int menux;

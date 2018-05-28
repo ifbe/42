@@ -9,15 +9,15 @@ int actoroutput_oneonone(struct arena* win, struct style* sty);
 
 
 
-static char* target[2] = {
-	"all",
-	"one"
-};
-static char* name[4] = {
-	"0.overview",
-	"1.layout  ",
-	"2.interact",
-	"3.????????"
+static void* nametab[8] = {
+	"  0: testland   ",
+	"  1: console    ",
+	"  2: overview   ",
+	"  3: detail     ",
+	"  4: adjust     ",
+	"  5: freeview   ",
+	"  6: playgame   ",
+	"  7: onetoone   "
 };
 
 
@@ -40,8 +40,85 @@ void actoroutput_menu_vbo(struct arena* win)
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
-	int j,k,x,y,rgb;
+	int j,k,x,y;
+	int rgb,tmp;
+	int w = win->width;
+	int s = w*2/3;
 
+	j = win->menux;
+	k = j;
+	if(k < -s)k = -s;
+	if(k > s)k = s;
+
+	tmp = win->menutype&7;
+	for(x=0;x<8;x++)
+	{
+		vc[0] = (x-tmp)*4.0/3 + (float)k*2.0/w;
+		vc[1] = 0.0;
+		vc[2] = -0.5;
+		vr[0] = 0.5;
+		vr[1] = 0.0;
+		vr[2] = 0.0;
+		vf[0] = 0.0;
+		vf[1] = 0.5;
+		vf[2] = 0.0;
+		if(x == tmp)
+		{
+			if(j<0)
+			{
+				vc[1] += (s+k)/12.0/s;
+				vr[0] += (s+k)/12.0/s;
+				vf[1] += (s+k)/12.0/s;
+				rgb = 0x80*(s+k)/s;
+				rgb = 0x404040 + (rgb<<16) + (rgb<<8) + rgb;
+			}
+			else
+			{
+				vc[1] += (s-k)/12.0/s;
+				vr[0] += (s-k)/12.0/s;
+				vf[1] += (s-k)/12.0/s;
+				rgb = 0x80*(s-k)/s;
+				rgb = 0x404040 + (rgb<<16) + (rgb<<8) + rgb;
+			}
+		}
+		else
+		{
+			rgb = 0x404040;
+			if((j<0)&&(x == tmp+1))
+			{
+				vc[1] -= k/12.0/s;
+				vr[0] -= k/12.0/s;
+				vf[1] -= k/12.0/s;
+				rgb = 0x80*(-k)/s;
+				rgb = 0x404040 + (rgb<<16) + (rgb<<8) + rgb;
+			}
+			if((j>0)&&(x+1 == tmp))
+			{
+				vc[1] += k/12.0/s;
+				vr[0] += k/12.0/s;
+				vf[1] += k/12.0/s;
+				rgb = 0x80*k/s;
+				rgb = 0x404040 + (rgb<<16) + (rgb<<8) + rgb;
+			}
+		}
+		carvesolid2d_rect(win, rgb, vc, vr, vf);
+		vc[2] = -0.51;
+		carveline2d_rect(win, 0xff00ff, vc, vr, vf);
+	}
+
+	vc[0] = 0.0;
+	vc[1] = 13.0/16;
+	vc[2] = -0.5;
+	vr[0] = 0.5;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = 1.0/16;
+	vf[2] = 0.0;
+	carveline2d_rect(win, 0xffffff, vc, vr, vf);
+	vr[0] /= 4.0;
+	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 16);
+/*
 	vc[0] = 0.0;
 	vc[1] = -1.0;
 	vc[2] = -0.2;
@@ -88,6 +165,7 @@ void actoroutput_menu_vbo(struct arena* win)
 		vc[1] = (11-8*y)/16.0;
 		carvestring2d_center(win, ~rgb, vc, vr, vf, (u8*)target[x], 0);
 	}
+*/
 }
 void actoroutput_menu_pixel(struct arena* win)
 {
@@ -178,7 +256,7 @@ void actoroutput_menu_pixel(struct arena* win)
 */
 		if(tmp == x)
 		{
-			if(1 == x)
+			if(3 == x)
 			{
 				sty.vc[0] = (va[0] + vb[0])/2;
 				sty.vc[1] = (va[1] + vb[1])/2;
@@ -194,7 +272,7 @@ void actoroutput_menu_pixel(struct arena* win)
 	}
 
 	drawline_rect(win, 0xffffff, w/4, h/16, w*3/4, h/8);
-	drawascii_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, 0x30+tmp);
+	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 16);
 /*
 	k = win->menutype & 7;
 	for(j=0;j<8;j++)
@@ -253,31 +331,35 @@ int actorinput_menu(struct arena* win, struct event* ev)
 		}
 		else x = y = 0;
 
-		if(0x2d70 == ret)
-		{
-			win->menux = 0;
-			win->menuy = 0;
-			if(x*8 < -win->width)x = 0x4d;
-			else if(x*8 > win->width)x = 0x4b;
-			else if((x>-16)&&(x<16))
-			{
-				win->voidtype = 2;
-				return 0;
-			}
-		}
-		else
+		if(0x2d70 != ret)
 		{
 			win->menux = x;
 			win->menuy = y;
+			return 0;
 		}
+
+		win->menux = 0;
+		win->menuy = 0;
+		if((x>-16)&&(x<16)&&(y>-16)&&(y<16))
+		{
+			win->modetype = 1;
+			return 0;
+		}
+		else if(x*8 < -win->width)x = 0x4d;
+		else if(x*8 > win->width)x = 0x4b;
+		else return 0;
 	}
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
-		if((0xd == ret)|(0xa == ret))win->voidtype = 2;
+		if((0xd == ret)|(0xa == ret))win->modetype = 1;
 		return 0;
 	}
-	else if(_joy_ == ret)x = ((ev->why)>>32)&0xffff;
+	else if(_joy_ == ret)
+	{
+		x = ((ev->why)>>32)&0xffff;
+		if(_ka_ == x){win->modetype = 1;return 0;}
+	}
 	else if(_kbd_ == ret)x = ev->why;
 	else return 0;
 

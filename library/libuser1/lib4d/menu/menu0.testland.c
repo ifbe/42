@@ -220,15 +220,15 @@ void foreground(struct arena* win)
 
 void actoroutput_void_pixel(struct arena* win)
 {
-	drawline(win, 0xffffff, 0, win->voidy, win->width, win->voidy);
-	drawline(win, 0xffffff, win->voidx, 0, win->voidx, win->height);
+	drawline(win, 0xffffff, 0, win->modey, win->width, win->modey);
+	drawline(win, 0xffffff, win->modex, 0, win->modex, win->height);
 }
 void actoroutput_void_vbo(struct arena* win)
 {
 	vec3 va;
 	vec3 vb;
-	float x = (float)(win->voidx);
-	float y = (float)(win->voidy);
+	float x = (float)(win->modex);
+	float y = (float)(win->modey);
 	x = 2*x/(win->width) - 1.0;
 	y = 1.0 - 2*y/(win->height);
 
@@ -272,19 +272,9 @@ void actoroutput_void(struct arena* win, struct style* sty)
 }
 void actorinput_void(struct arena* win, struct event* ev)
 {
-	if(_char_ == ev->what)
-	{
-		win->voidtype = 1;
-		win->voiddata = ev->why;
-		return;
-	}
 	if('p' == (ev->what&0xff))
 	{
-		if(0x2d70 == ev->what)win->voidtype = 1;
-		else
-		{
-			win->voidx = (ev->why)&0xffff;
-			win->voidy = ((ev->why)>>16)&0xffff;
-		}
+		win->modex = (ev->why)&0xffff;
+		win->modey = ((ev->why)>>16)&0xffff;
 	}
 }

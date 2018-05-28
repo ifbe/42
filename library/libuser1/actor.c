@@ -14,29 +14,32 @@ int background(struct arena* win);
 int foreground(struct arena* win);
 int vkbd_read(      struct arena* win, struct style* sty);
 int actorinput_vkbd(struct arena* win, struct event* ev);
-//
-int actoroutput_void(struct arena* win, struct style* sty);
-int actorinput_void( struct arena* win, struct event* ev);
 //menu
 int actoroutput_menu(struct arena* win, struct style* sty);
 int actorinput_menu( struct arena* win, struct event* ev);
-//mode0
+//0
+int actoroutput_void(struct arena* win, struct style* sty);
+int actorinput_void( struct arena* win, struct event* ev);
+//1
+int actoroutput_term(struct arena* win, struct style* sty);
+int actorinput_term( struct arena* win, struct event* ev);
+//2
 int actoroutput_overview(struct arena* win, struct style* sty);
 int actorinput_overview( struct arena* win, struct event* ev);
-//mode1
+//3
 int actoroutput_detail(struct arena* win, struct style* sty);
 int actorinput_detail( struct arena* win, struct event* ev);
-//mode2
+//4
 int actoroutput_edit(struct arena* win, struct style* sty);
 int playwith2d(struct arena* win, struct event* ev);
 int playwith3d(struct arena* win, struct event* ev);
-//mode3
+//5
 int actoroutput_posture(struct arena* win, struct style* sty);
 int actorinput_camera( struct arena* win, struct event* ev);
-//mode4
+//6
 int actoroutput_deliver(struct arena* win, struct style* sty);
 int actorinput_deliver( struct arena* win, struct event* ev);
-//mode5
+//7
 int actoroutput_oneonone(struct arena* win, struct style* sty);
 int actorinput_oneonone( struct arena* win, struct event* ev);
 //
@@ -112,7 +115,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 
 	if(('l' == val)|('r' == val))
 	{
-		win->voidtype = 1;
+		win->modetype = 0;
 		return 1;
 	}
 	return 0;
@@ -168,20 +171,21 @@ int actorwrite_ev(struct event* ev)
 	if(0 != ret)goto theend;
 
 	//
-	ttt = win->voidtype;
+	ttt = win->modetype;
 	ret = win->menutype;
-	if(0 == ttt)actorinput_void(win, ev);
-	else if(1 == ttt)actorinput_menu(win, ev);
-	else if(0 == ret)actorinput_overview(win, ev);
-	else if(1 == ret)actorinput_detail(win, ev);
-	else if(2 == ret)
+	if(0 == ttt)actorinput_menu(win, ev);
+	else if(0 == ret)actorinput_void(win, ev);
+	else if(1 == ret)actorinput_term(win, ev);
+	else if(2 == ret)actorinput_overview(win, ev);
+	else if(3 == ret)actorinput_detail(win, ev);
+	else if(4 == ret)
 	{
 		if(_vbo_ == win->fmt)playwith3d(win, ev);
 		else playwith2d(win, ev);
 	}
-	else if(3 == ret)actorinput_camera(win, ev);
-	else if(4 == ret)actorinput_deliver(win, ev);
-	else if(5 == ret)actorinput_oneonone(win, ev);
+	else if(5 == ret)actorinput_camera(win, ev);
+	else if(6 == ret)actorinput_deliver(win, ev);
+	else if(7 == ret)actorinput_oneonone(win, ev);
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
@@ -203,16 +207,17 @@ int actorread_all(struct arena* win)
 	background(win);
 
 	//context
-	ttt = win->voidtype;
+	ttt = win->modetype;
 	ret = win->menutype;
-	if(0 == ttt)actoroutput_void(win, 0);
-	else if(1 == ttt)actoroutput_menu(win, 0);
-	else if(0 == ret)actoroutput_overview(win, 0);
-	else if(1 == ret)actoroutput_detail(win, 0);
-	else if(2 == ret)actoroutput_edit(win, 0);
-	else if(3 == ret)actoroutput_posture(win, 0);
-	else if(4 == ret)actoroutput_deliver(win, 0);
-	else if(5 == ret)actoroutput_oneonone(win, 0);
+	if(0 == ttt)actoroutput_menu(win, 0);
+	else if(0 == ret)actoroutput_void(win, 0);
+	else if(1 == ret)actoroutput_term(win, 0);
+	else if(2 == ret)actoroutput_overview(win, 0);
+	else if(3 == ret)actoroutput_detail(win, 0);
+	else if(4 == ret)actoroutput_edit(win, 0);
+	else if(5 == ret)actoroutput_posture(win, 0);
+	else if(6 == ret)actoroutput_deliver(win, 0);
+	else if(7 == ret)actoroutput_oneonone(win, 0);
 
 	//vkbd
 	vkbd_read(win, 0);

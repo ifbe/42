@@ -230,14 +230,14 @@ struct arena
 	int fps;
 
 	//[c0,cf]
-	int flag40;
-	int flag41;
-	int voiddata;
-	int voidtype;
+	int modex;
+	int modey;
+	int modedata;
+	int modetype;
 
 	//[d0,df]
-	int flag50;
-	int flag51;
+	int menux;
+	int menuy;
 	int menudata;
 	int menutype;
 
@@ -248,8 +248,8 @@ struct arena
 	int xxxxtype;
 
 	//[f0,ff]
-	int flag70;
-	int flag71;
+	int vkbdx;
+	int vkbdy;
 	int vkbddata;
 	int vkbdtype;
 

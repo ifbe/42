@@ -5,11 +5,26 @@
 
 int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 {
+	struct relation* rel;
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
 	int j;
-	struct relation* rel;
+	int cx,cy,ww,hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = 0.0;
+		cy = 0.0;
+		ww = 1.0;
+		hh = 1.0;
+	}
 
 	vc[0] = 0.0;
 	vc[1] = 0.0;
@@ -139,9 +154,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 {
 	struct relation* rel;
-	int j,m,n;
-	int w = win->width;
-	int h = win->height;
+	int j;
 	int cx,cy,ww,hh;
 	if(sty)
 	{
@@ -199,24 +212,21 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	drawstring_fit(win, 0, w*1/4, h*5/16, w*3/4, h*6/16, (void*)&win->fmt, 8);
 	drawsolid_rect(win, 0xffffff, w*1/4+1, h*6/16+1, w*3/4-1, h*12/16-1);
 */
-	n = win->height/32-2;
-
 	j = 0;
 	rel = win->irel;
 	while(1)
 	{
 		if(j >= 8)break;
 		if(0 == rel)break;
-		m = h*(j*2+9)/32;
 
 		//ichip
-		drawsolid_rect(win, 0xffffff, 0, m-n, w/8, m+n);
-		drawstring_fit(win, 0, 0, m-n, w/8, m+n, (void*)"1234", 0);
+		drawsolid_rect(win, 0xffffff, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8);
+		drawstring_fit(win, 0x000000, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8, (void*)"1234", 0);
 
 		//ofoot, ifoot
-		drawline_arrow(win, 0x00ff00, w*2/16, m, w*4/16, m);
-		drawascii_fit(win, 0x00ff00, w*2/16, m-8, w*3/16, m+8, 'o');
-		drawascii_fit(win, 0x00ff00, w*3/16, m-8, w*4/16, m+8, 'i');
+		drawline_arrow(win,0x00ff00, cx-ww*6/8, cy+hh*(j+j-7)/16, cx-ww*4/8, cy+hh*(j+j-7)/16);
+		drawascii_fit(win, 0x00ff00, cx-ww*6/8, cy+hh*(j+j-8)/16, cx-ww*5/8, cy+hh*(j+j-6)/16, 'o');
+		drawascii_fit(win, 0x00ff00, cx-ww*5/8, cy+hh*(j+j-8)/16, cx-ww*4/8, cy+hh*(j+j-6)/16, 'i');
 
 		j++;
 		rel = samedstnextsrc(rel);
@@ -228,16 +238,15 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	{
 		if(j >= 8)break;
 		if(0 == rel)break;
-		m = h*(j*2+9)/32;
 
 		//ochip
-		drawsolid_rect(win, 0xffffff, w*7/8, m-n, w, m+n);
-		drawstring_fit(win, 0, w*7/8, m-n, w, m+n, (void*)"1234", 0);
+		drawsolid_rect(win, 0xffffff, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8);
+		drawstring_fit(win, 0x000000, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8, (void*)"1234", 0);
 
 		//ofoot, ifoot
-		drawline_arrow(win, 0x00ff00, w*12/16, m, w*14/16, m);
-		drawascii_fit(win, 0x00ff00, w*12/16, m-8, w*13/16, m+8, 'o');
-		drawascii_fit(win, 0x00ff00, w*13/16, m-8, w*14/16, m+8, 'i');
+		drawline_arrow(win,0x00ff00, cx+ww*4/8, cy+hh*(j+j-7)/16, cx+ww*6/8, cy+hh*(j+j-7)/16);
+		drawascii_fit(win, 0x00ff00, cx+ww*4/8, cy+hh*(j+j-8)/16, cx+ww*5/8, cy+hh*(j+j-6)/16, 'o');
+		drawascii_fit(win, 0x00ff00, cx+ww*5/8, cy+hh*(j+j-8)/16, cx+ww*6/8, cy+hh*(j+j-6)/16, 'i');
 
 		j++;
 		rel = samesrcnextdst(rel);

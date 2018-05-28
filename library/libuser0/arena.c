@@ -244,8 +244,8 @@ void* arenacreate(u64 type, u8* addr)
 		win->time = 0;
 		win->fps = 60;
 
-		win->voiddata = 0;
-		win->voidtype = 0;
+		win->modedata = 0;
+		win->modetype = 0;
 		win->menudata = 0;
 		win->menutype = 0;
 		win->xxxxdata = 0;
