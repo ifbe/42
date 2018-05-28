@@ -11,14 +11,40 @@ void carvestl(void*, u32, vec3, vec3, vec3, vec3, void*, int);
 void stl_prep(struct actor* act, void* name)
 {
 	float* p;
+	float* vl = act->sty.vl;	//left
+	float* vr = act->sty.vr;	//right
+	float* vn = act->sty.vn;	//near
+	float* vf = act->sty.vf;	//far
+	float* vb = act->sty.vb;	//bot
+	float* vu = act->sty.vu;	//top
+	float* vv = act->sty.vv;	//info
+	float* vc = act->sty.vc;	//center
 	int j,ret;
 	
 	act->len = openreadclose(name, 0, act->buf, 0x800000);
 	say("stllen=%x\n", (act->len));
 	if((act->len) <= 0)return;
 
-	act->lx = act->nx = act->bx = 100000.0;
-	act->rx = act->fx = act->ux = -100000.0;
+	vl[0] = 100000.0;
+	vl[1] = 0.0;
+	vl[2] = 0.0;
+	vr[0] = -100000.0;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+
+	vn[0] = 0.0;
+	vn[1] = 100000.0;
+	vn[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = -100000.0;
+	vf[2] = 0.0;
+
+	vb[0] = 0.0;
+	vb[1] = 0.0;
+	vb[2] = 100000.0;
+	vu[0] = 0.0;
+	vu[1] = 0.0;
+	vu[0] = -100000.0;
 
 	ret = *(u32*)((act->buf)+80);
 	say("len=%x, count=%x\n", (act->len), ret);
@@ -28,61 +54,41 @@ void stl_prep(struct actor* act, void* name)
 	{
 		p = (void*)(act->buf) + 84 + j*50;
 
-		if(p[3] < act->lx)act->lx = p[3];
-		if(p[3] > act->rx)act->rx = p[3];
-		if(p[4] < act->nx)act->nx = p[4];
-		if(p[4] > act->fx)act->fx = p[4];
-		if(p[5] < act->bx)act->bx = p[5];
-		if(p[5] > act->ux)act->ux = p[5];
+		if(p[ 3] < vl[0])vl[0] = p[3];
+		if(p[ 3] > vr[0])vr[0] = p[3];
+		if(p[ 4] < vn[1])vn[1] = p[4];
+		if(p[ 4] > vf[1])vf[1] = p[4];
+		if(p[ 5] < vb[2])vb[2] = p[5];
+		if(p[ 5] > vu[2])vu[2] = p[5];
 
-		if(p[6] < act->lx)act->lx = p[6];
-		if(p[6] > act->rx)act->rx = p[6];
-		if(p[7] < act->nx)act->nx = p[7];
-		if(p[7] > act->fx)act->fx = p[7];
-		if(p[8] < act->bx)act->bx = p[8];
-		if(p[8] > act->ux)act->ux = p[8];
+		if(p[ 6] < vl[0])vl[0] = p[6];
+		if(p[ 6] > vr[0])vr[0] = p[6];
+		if(p[ 7] < vn[1])vn[1] = p[7];
+		if(p[ 7] > vf[1])vf[1] = p[7];
+		if(p[ 8] < vb[2])vb[2] = p[8];
+		if(p[ 8] > vu[2])vu[2] = p[8];
 
-		if(p[9] < act->lx)act->lx = p[9];
-		if(p[9] > act->rx)act->rx = p[9];
-		if(p[10] < act->nx)act->nx = p[10];
-		if(p[10] > act->fx)act->fx = p[10];
-		if(p[11] < act->bx)act->bx = p[11];
-		if(p[11] > act->ux)act->ux = p[11];
+		if(p[ 9] < vl[0])vl[0] = p[9];
+		if(p[ 9] > vr[0])vr[0] = p[9];
+		if(p[10] < vn[1])vn[1] = p[10];
+		if(p[10] > vf[1])vf[1] = p[10];
+		if(p[11] < vb[2])vb[2] = p[11];
+		if(p[11] > vu[2])vu[2] = p[11];
 	}
 	say(
-		"l=%f\n"
-		"r=%f\n"
-		"n=%f\n"
-		"f=%f\n"
-		"b=%f\n"
-		"u=%f\n",
-		act->lx,
-		act->rx,
-		act->nx,
-		act->fx,
-		act->bx,
-		act->ux
+		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
+		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
 	);
 
-	act->cx = ((act->lx) + (act->rx))/2;
-	act->cy = ((act->nx) + (act->fx))/2;
-	act->cz = ((act->bx) + (act->ux))/2;
-	act->width = (act->rx) - (act->lx);
-	act->height = (act->fx) - (act->nx);
-	act->depth = (act->ux) - (act->bx);
+	vv[0] = vr[0] - vl[0];
+	vv[1] = vf[1] - vn[1];
+	vv[2] = vu[2] - vb[2];
+	vc[0] = (vl[0] + vr[0])/2;
+	vc[1] = (vn[1] + vf[1])/2;
+	vc[2] = (vb[2] + vu[2])/2;
 	say(
-		"cx=%f\n"
-		"cy=%f\n"
-		"cz=%f\n"
-		"w=%f\n"
-		"h=%f\n"
-		"d=%f\n",
-		act->cx,
-		act->cy,
-		act->cz,
-		act->width,
-		act->height,
-		act->depth
+		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
+		vv[0], vv[0], vv[1], vc[1], vc[2], vc[2]
 	);
 }
 
@@ -112,7 +118,7 @@ static void stl_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-
+/*
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	if(0 == (act->buf))return;
 	if(0 == (act->len))return;
@@ -137,6 +143,7 @@ static void stl_read_pixel(
 		drawline(win, 0xffffff, v[0][0], v[0][1], v[2][0], v[2][1]);
 		drawline(win, 0xffffff, v[1][0], v[1][1], v[2][0], v[2][1]);
 	}
+*/
 }
 static void stl_read_vbo(
 	struct arena* win, struct style* sty,

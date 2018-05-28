@@ -59,58 +59,14 @@ struct relation
 };
 struct style
 {
-	//[00,0f]:
-	u64 type;
-	u64 name;
-
-	//[10,1f]: center
-	//float cx;
-	//float cy;
-	//float cz;
-	//float cw;
-	vec4 vc;
-
-	//[20,2f]: right
-	//float rx;
-	//float ry;
-	//float rz;
-	//float rw;
-	vec4 vr;
-
-	//[30,3f]: far
-	//float fx;
-	//float fy;
-	//float fz;
-	//float fw;
-	vec4 vf;
-
-	//[40,4f]: upper
-	//float ux;
-	//float uy;
-	//float uz;
-	//float uw;
-	vec4 vu;
-
-	//[50,5f]: left
-	//float lx;
-	//float ly;
-	//float lz;
-	//float lw;
-	vec4 vl;
-
-	//[60,6f]: near
-	//float nx;
-	//float ny;
-	//float nz;
-	//float nw;
-	vec4 vn;
-
-	//[70,7f]: bottom
-	//float bx;
-	//float by;
-	//float bz;
-	//float bw;
-	vec4 vb;
+	vec4 vl;	//[00,0f]: left
+	vec4 vr;	//[10,1f]: right
+	vec4 vn;	//[20,2f]: near
+	vec4 vf;	//[30,3f]: far
+	vec4 vb;	//[40,4f]: bottom
+	vec4 vu;	//[50,5f]: upper
+	vec4 vv;	//[60,6f]: info
+	vec4 vc;	//[70,7f]: center
 };
 struct pinid
 {
@@ -331,53 +287,8 @@ struct actor
 		char padding7[8];
 	};
 
-	//[+00,+0f]: center
-	int width;
-	int height;
-	int depth;
-	int stride;
-
-	//[+10,+1f]: center
-	int cx;
-	int cy;
-	int cz;
-	int dirty;
-
-	//[+20,+2f]: right
-	int rx;
-	int ry;
-	int rz;
-	int rw;
-
-	//[+30,+3f]: far
-	int fx;
-	int fy;
-	int fz;
-	int fw;
-
-	//[+40,+4f]: upper
-	int ux;
-	int uy;
-	int uz;
-	int uw;
-
-	//[+50,+5f]: left
-	int lx;
-	int ly;
-	int lz;
-	int ltype;
-
-	//[+60,+6f]: near
-	int nx;
-	int ny;
-	int nz;
-	int ntype;
-
-	//[+70,+7f]: bottom
-	int bx;
-	int by;
-	int bz;
-	int btype;
+	//[80,ff]
+	struct style sty;
 
 	//[100,1ff]
 	u8 detail[0x100];
