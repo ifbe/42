@@ -185,25 +185,25 @@ struct arena
 	int time;
 	int fps;
 
-	//[c0,cf]
+	//[c0,cf]: layer0
+	int backx;
+	int backy;
+	int backdata;
+	int backtype;
+
+	//[d0,df]: layer1
 	int modex;
 	int modey;
 	int modedata;
 	int modetype;
 
-	//[d0,df]
+	//[e0,ef]: layer2
 	int menux;
 	int menuy;
 	int menudata;
 	int menutype;
 
-	//[e0,ef]
-	int flag60;
-	int flag61;
-	int xxxxdata;
-	int xxxxtype;
-
-	//[f0,ff]
+	//[f0,ff]: layer3
 	int vkbdx;
 	int vkbdy;
 	int vkbddata;
