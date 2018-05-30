@@ -247,9 +247,9 @@ void* arenacreate(u64 type, u8* addr)
 		win->backdata = 0;
 		win->backtype = 0;
 		win->modedata = 0;
-		win->modetype = 0;
+		win->modetype = 2;	//mode2: overview
 		win->menudata = 0;
-		win->menutype = 0;
+		win->menutype = 1;	//menu1: select
 		win->vkbddata = 0;
 		win->vkbdtype = 0;
 

@@ -115,7 +115,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 
 	if(('l' == val)|('r' == val))
 	{
-		win->modetype = 0;
+		win->modetype = 1;
 		return 1;
 	}
 	return 0;
@@ -152,7 +152,7 @@ void actorinput_touch(struct arena* win, struct event* ev)
 }
 int actorwrite_ev(struct event* ev)
 {
-	int ttt,ret;
+	int mode,menu,ret;
 	struct arena* win = (void*)(ev->where);
 	if(0 == win)win = &arena[0];
 
@@ -171,21 +171,27 @@ int actorwrite_ev(struct event* ev)
 	if(0 != ret)goto theend;
 
 	//
-	ttt = win->modetype;
-	ret = win->menutype;
-	if(0 == ttt)actorinput_menu(win, ev);
-	else if(0 == ret)actorinput_void(win, ev);
-	else if(1 == ret)actorinput_term(win, ev);
-	else if(2 == ret)actorinput_overview(win, ev);
-	else if(3 == ret)actorinput_detail(win, ev);
-	else if(4 == ret)
+	mode = win->modetype;
+	menu = win->menutype;
+	if(0 != menu)
 	{
-		if(_vbo_ == win->fmt)playwith3d(win, ev);
-		else playwith2d(win, ev);
+		if(1 == menu)actorinput_menu(win, ev);
 	}
-	else if(5 == ret)actorinput_camera(win, ev);
-	else if(6 == ret)actorinput_deliver(win, ev);
-	else if(7 == ret)actorinput_oneonone(win, ev);
+	else
+	{
+		if(0 == mode)actorinput_void(win, ev);
+		else if(1 == mode)actorinput_term(win, ev);
+		else if(2 == mode)actorinput_overview(win, ev);
+		else if(3 == mode)actorinput_detail(win, ev);
+		else if(4 == mode)
+		{
+			if(_vbo_ == win->fmt)playwith3d(win, ev);
+			else playwith2d(win, ev);
+		}
+		else if(5 == mode)actorinput_camera(win, ev);
+		else if(6 == mode)actorinput_deliver(win, ev);
+		else if(7 == mode)actorinput_oneonone(win, ev);
+	}
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
@@ -201,23 +207,29 @@ int actorread_all(struct arena* win)
 		if(win->edit)return 0;
 	}
 */
-	int ttt, ret;
+	int mode, menu;
 
 	//bg
 	background(win);
 
 	//context
-	ttt = win->modetype;
-	ret = win->menutype;
-	if(0 == ttt)actoroutput_menu(win, 0);
-	else if(0 == ret)actoroutput_void(win, 0);
-	else if(1 == ret)actoroutput_term(win, 0);
-	else if(2 == ret)actoroutput_overview(win, 0);
-	else if(3 == ret)actoroutput_detail(win, 0);
-	else if(4 == ret)actoroutput_edit(win, 0);
-	else if(5 == ret)actoroutput_posture(win, 0);
-	else if(6 == ret)actoroutput_deliver(win, 0);
-	else if(7 == ret)actoroutput_oneonone(win, 0);
+	mode = win->modetype;
+	menu = win->menutype;
+	if(0 == menu)
+	{
+		if(0 == mode)actoroutput_void(win, 0);
+		else if(1 == mode)actoroutput_term(win, 0);
+		else if(2 == mode)actoroutput_overview(win, 0);
+		else if(3 == mode)actoroutput_detail(win, 0);
+		else if(4 == mode)actoroutput_edit(win, 0);
+		else if(5 == mode)actoroutput_posture(win, 0);
+		else if(6 == mode)actoroutput_deliver(win, 0);
+		else if(7 == mode)actoroutput_oneonone(win, 0);
+	}
+
+	if(1 == menu)actoroutput_menu(win, 0);
+	else if(2 == menu)say("menu=2\n");
+	else if(3 == menu)say("menu=3\n");
 
 	//vkbd
 	vkbd_read(win, 0);

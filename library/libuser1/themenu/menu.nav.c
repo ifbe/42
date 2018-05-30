@@ -50,7 +50,7 @@ void actoroutput_menu_vbo(struct arena* win)
 	if(k < -s)k = -s;
 	if(k > s)k = s;
 
-	tmp = win->menutype&7;
+	tmp = win->modetype&7;
 	for(x=0;x<8;x++)
 	{
 		vc[0] = (x-tmp)*4.0/3 + (float)k*2.0/w;
@@ -195,7 +195,7 @@ void actoroutput_menu_pixel(struct arena* win)
 	if(k < -s)k = -s;
 	if(k > s)k = s;
 
-	tmp = win->menutype&7;
+	tmp = win->modetype&7;
 	for(x=0;x<8;x++)
 	{
 		va[0] = w/2 - w/4 + k + (x-tmp)*s;
@@ -342,7 +342,7 @@ int actorinput_menu(struct arena* win, struct event* ev)
 		win->menuy = 0;
 		if((x>-16)&&(x<16)&&(y>-16)&&(y<16))
 		{
-			win->modetype = 1;
+			win->menutype = 0;
 			return 0;
 		}
 		else if(x*8 < -win->width)x = 0x4d;
@@ -352,26 +352,26 @@ int actorinput_menu(struct arena* win, struct event* ev)
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
-		if((0xd == ret)|(0xa == ret))win->modetype = 1;
+		if((0xd == ret)|(0xa == ret))win->menutype = 0;
 		return 0;
 	}
 	else if(_joy_ == ret)
 	{
 		x = ((ev->why)>>32)&0xffff;
-		if(_ka_ == x){win->modetype = 1;return 0;}
+		if(_ka_ == x){win->menutype = 0;return 0;}
 	}
 	else if(_kbd_ == ret)x = ev->why;
 	else return 0;
 
 	if((_dl_ == x) | (0x4b == x))
 	{
-		y = win->menutype & 7;
-		win->menutype = (y+7)%8;
+		y = win->modetype & 7;
+		win->modetype = (y+7)%8;
 	}
 	else if((_dr_ == x) | (0x4d == x))
 	{
-		y = win->menutype & 7;
-		win->menutype = (y+1)%8;
+		y = win->modetype & 7;
+		win->modetype = (y+1)%8;
 	}
 	return 0;
 }

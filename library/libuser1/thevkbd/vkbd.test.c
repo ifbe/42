@@ -512,12 +512,12 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 			{
 				if(j+ret > w)
 				{
-					if(x*2 < w)win->modetype = 0;
+					if(x*2 < w)win->menutype = 1;
 					return 1;
 				}
 				else if(j < ret)
 				{
-					if(x*2 > w)win->modetype = 0;
+					if(x*2 > w)win->menutype = 1;
 					return 1;
 				}
 			}
