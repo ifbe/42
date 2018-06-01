@@ -348,6 +348,7 @@ library/libuser1/iamtool/tool.stl.c \
 library/libuser1/iamtool/tool.terminal.c \
 library/libuser1/thebgfg/bgfg.gif.c \
 library/libuser1/thebgfg/bgfg.jpg.c \
+library/libuser1/thebgfg/bgfg.c \
 library/libuser1/themode/mode0.testland.c \
 library/libuser1/themode/mode1.console.c \
 library/libuser1/themode/mode2.overview.c \
@@ -358,11 +359,14 @@ library/libuser1/themode/mode5.camera.c \
 library/libuser1/themode/mode5.posture.c \
 library/libuser1/themode/mode6.deliver.c \
 library/libuser1/themode/mode7.oneonone.c \
+library/libuser1/themode/mode.c \
 library/libuser1/themenu/menu.list.c \
 library/libuser1/themenu/menu.nav.c \
 library/libuser1/themenu/menu.tag.c \
-library/libuser1/thevkbd/vkbd.test.c \
-library/libuser1/thevkbd/vkbd.full.c \
+library/libuser1/themenu/menu.c \
+library/libuser1/thevkbd/vkbd.joystick.c \
+library/libuser1/thevkbd/vkbd.keyboard.c \
+library/libuser1/thevkbd/vkbd.c \
 library/libuser1/actor.c
 
 

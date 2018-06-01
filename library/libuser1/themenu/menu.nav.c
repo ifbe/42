@@ -23,19 +23,19 @@ static void* nametab[8] = {
 
 
 
-void actoroutput_menu_cli(struct arena* win)
+void actoroutput_navmenu_cli(struct arena* win)
 {
 }
-void actoroutput_menu_tui(struct arena* win)
+void actoroutput_navmenu_tui(struct arena* win)
 {
 }
-void actoroutput_menu_html(struct arena* win)
+void actoroutput_navmenu_html(struct arena* win)
 {
 }
-void actoroutput_menu_json(struct arena* win)
+void actoroutput_navmenu_json(struct arena* win)
 {
 }
-void actoroutput_menu_vbo(struct arena* win)
+void actoroutput_navmenu_vbo(struct arena* win)
 {
 	vec3 vc;
 	vec3 vr;
@@ -167,7 +167,7 @@ void actoroutput_menu_vbo(struct arena* win)
 	}
 */
 }
-void actoroutput_menu_pixel(struct arena* win)
+void actoroutput_navmenu_pixel(struct arena* win)
 {
 	struct style sty;
 	int va[2];
@@ -294,17 +294,17 @@ void actoroutput_menu_pixel(struct arena* win)
 	}
 */
 }
-void actoroutput_menu(struct arena* win, struct style* sty)
+void actoroutput_navmenu(struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(_cli_ == fmt)actoroutput_menu_cli(win);
-	else if(_tui_ == fmt)actoroutput_menu_tui(win);
-	else if(_html_ == fmt)actoroutput_menu_html(win);
-	else if(_json_ == fmt)actoroutput_menu_json(win);
-	else if(_vbo_ == fmt)actoroutput_menu_vbo(win);
-	else actoroutput_menu_pixel(win);
+	if(_cli_ == fmt)actoroutput_navmenu_cli(win);
+	else if(_tui_ == fmt)actoroutput_navmenu_tui(win);
+	else if(_html_ == fmt)actoroutput_navmenu_html(win);
+	else if(_json_ == fmt)actoroutput_navmenu_json(win);
+	else if(_vbo_ == fmt)actoroutput_navmenu_vbo(win);
+	else actoroutput_navmenu_pixel(win);
 }
-int actorinput_menu(struct arena* win, struct event* ev)
+int actorinput_navmenu(struct arena* win, struct event* ev)
 {
 	int pa[2];
 	int pb[2];

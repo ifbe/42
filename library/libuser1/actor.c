@@ -9,39 +9,18 @@ void lib3d_create(void*, void*);
 void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
-//vkbd
+//
 int background(struct arena* win);
 int foreground(struct arena* win);
+//vkbd
 int vkbd_read(      struct arena* win, struct style* sty);
 int actorinput_vkbd(struct arena* win, struct event* ev);
 //menu
 int actoroutput_menu(struct arena* win, struct style* sty);
 int actorinput_menu( struct arena* win, struct event* ev);
-//0
-int actoroutput_void(struct arena* win, struct style* sty);
-int actorinput_void( struct arena* win, struct event* ev);
-//1
-int actoroutput_term(struct arena* win, struct style* sty);
-int actorinput_term( struct arena* win, struct event* ev);
-//2
-int actoroutput_overview(struct arena* win, struct style* sty);
-int actorinput_overview( struct arena* win, struct event* ev);
-//3
-int actoroutput_detail(struct arena* win, struct style* sty);
-int actorinput_detail( struct arena* win, struct event* ev);
-//4
-int actoroutput_edit(struct arena* win, struct style* sty);
-int playwith2d(struct arena* win, struct event* ev);
-int playwith3d(struct arena* win, struct event* ev);
-//5
-int actoroutput_posture(struct arena* win, struct style* sty);
-int actorinput_camera( struct arena* win, struct event* ev);
-//6
-int actoroutput_deliver(struct arena* win, struct style* sty);
-int actorinput_deliver( struct arena* win, struct event* ev);
-//7
-int actoroutput_oneonone(struct arena* win, struct style* sty);
-int actorinput_oneonone( struct arena* win, struct event* ev);
+//mode
+int actoroutput_mode(struct arena* win, struct style* sty);
+int actorinput_mode( struct arena* win, struct event* ev);
 //
 int parsexml_detail(void*, int, void*, void*, void*, void*);
 int touch_explain(struct arena* win, struct event* ev);
@@ -115,7 +94,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 
 	if(('l' == val)|('r' == val))
 	{
-		win->modetype = 1;
+		win->menutype = 1;
 		return 1;
 	}
 	return 0;
@@ -152,7 +131,7 @@ void actorinput_touch(struct arena* win, struct event* ev)
 }
 int actorwrite_ev(struct event* ev)
 {
-	int mode,menu,ret;
+	int ret;
 	struct arena* win = (void*)(ev->where);
 	if(0 == win)win = &arena[0];
 
@@ -162,36 +141,21 @@ int actorwrite_ev(struct event* ev)
 		return 0;
 	}
 
-	//check vkbd
+	//vkbd
 	ret = actorinput_vkbd(win, ev);
 	if(0 != ret)goto theend;
 
-	//check menu
+	//special
 	ret = actorinput_special(win, ev);
 	if(0 != ret)goto theend;
 
-	//
-	mode = win->modetype;
-	menu = win->menutype;
-	if(0 != menu)
-	{
-		if(1 == menu)actorinput_menu(win, ev);
-	}
-	else
-	{
-		if(0 == mode)actorinput_void(win, ev);
-		else if(1 == mode)actorinput_term(win, ev);
-		else if(2 == mode)actorinput_overview(win, ev);
-		else if(3 == mode)actorinput_detail(win, ev);
-		else if(4 == mode)
-		{
-			if(_vbo_ == win->fmt)playwith3d(win, ev);
-			else playwith2d(win, ev);
-		}
-		else if(5 == mode)actorinput_camera(win, ev);
-		else if(6 == mode)actorinput_deliver(win, ev);
-		else if(7 == mode)actorinput_oneonone(win, ev);
-	}
+	//menu
+	ret = actorinput_menu(win, ev);
+	if(0 != ret)goto theend;
+
+	//mode
+	ret = actorinput_mode(win, ev);
+	if(0 != ret)goto theend;
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
@@ -207,35 +171,21 @@ int actorread_all(struct arena* win)
 		if(win->edit)return 0;
 	}
 */
-	int mode, menu;
-
 	//bg
 	background(win);
 
 	//context
-	mode = win->modetype;
-	menu = win->menutype;
-	if(0 == menu)
-	{
-		if(0 == mode)actoroutput_void(win, 0);
-		else if(1 == mode)actoroutput_term(win, 0);
-		else if(2 == mode)actoroutput_overview(win, 0);
-		else if(3 == mode)actoroutput_detail(win, 0);
-		else if(4 == mode)actoroutput_edit(win, 0);
-		else if(5 == mode)actoroutput_posture(win, 0);
-		else if(6 == mode)actoroutput_deliver(win, 0);
-		else if(7 == mode)actoroutput_oneonone(win, 0);
-	}
+	actoroutput_mode(win, 0);
 
-	if(1 == menu)actoroutput_menu(win, 0);
-	else if(2 == menu)say("menu=2\n");
-	else if(3 == menu)say("menu=3\n");
+	//menu
+	actoroutput_menu(win, 0);
 
 	//vkbd
 	vkbd_read(win, 0);
 
 	//fg
 	foreground(win);
+
 	return 0;
 }
 

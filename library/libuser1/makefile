@@ -92,6 +92,7 @@ iamtool/tool.stl.c \
 iamtool/tool.terminal.c \
 thebgfg/bgfg.gif.c \
 thebgfg/bgfg.jpg.c \
+thebgfg/bgfg.c \
 themode/mode0.testland.c \
 themode/mode1.console.c \
 themode/mode2.overview.c \
@@ -102,11 +103,14 @@ themode/mode5.camera.c \
 themode/mode5.posture.c \
 themode/mode6.deliver.c \
 themode/mode7.oneonone.c \
+themode/mode.c \
 themenu/menu.list.c \
 themenu/menu.nav.c \
 themenu/menu.tag.c \
-thevkbd/vkbd.test.c \
-thevkbd/vkbd.full.c \
+themenu/menu.c \
+thevkbd/vkbd.joystick.c \
+thevkbd/vkbd.keyboard.c \
+thevkbd/vkbd.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
