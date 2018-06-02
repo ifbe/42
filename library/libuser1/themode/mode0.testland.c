@@ -218,12 +218,28 @@ void foreground(struct arena* win)
 
 
 
-void actoroutput_void_pixel(struct arena* win)
+void actoroutput_void_pixel(struct arena* win, struct style* sty)
 {
-	drawline(win, 0xffffff, 0, win->modey, win->width, win->modey);
-	drawline(win, 0xffffff, win->modex, 0, win->modex, win->height);
+	int cx,cy,ww,hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+
+	drawline(win, 0xffffff, cx-ww, win->modey, cx+ww, win->modey);
+	drawline(win, 0xffffff, win->modex, cy-hh, win->modex, cy+hh);
 }
-void actoroutput_void_vbo(struct arena* win)
+void actoroutput_void_vbo(struct arena* win, struct style* sty)
 {
 	vec3 va;
 	vec3 vb;
@@ -248,27 +264,27 @@ void actoroutput_void_vbo(struct arena* win)
 	vb[2] = -0.5;
 	carveline2d(win, 0xffffff, va, vb);
 }
-void actoroutput_void_json(struct arena* win)
+void actoroutput_void_json(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_void_html(struct arena* win)
+void actoroutput_void_html(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_void_tui(struct arena* win)
+void actoroutput_void_tui(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_void_cli(struct arena* win)
+void actoroutput_void_cli(struct arena* win, struct style* sty)
 {
 }
 void actoroutput_void(struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(_cli_ == fmt)actoroutput_void_cli(win);
-	else if(_tui_ == fmt)actoroutput_void_tui(win);
-	else if(_html_ == fmt)actoroutput_void_html(win);
-	else if(_json_ == fmt)actoroutput_void_json(win);
-	else if(_vbo_ == fmt)actoroutput_void_vbo(win);
-	else actoroutput_void_pixel(win);
+	if(_cli_ == fmt)actoroutput_void_cli(win, sty);
+	else if(_tui_ == fmt)actoroutput_void_tui(win, sty);
+	else if(_html_ == fmt)actoroutput_void_html(win, sty);
+	else if(_json_ == fmt)actoroutput_void_json(win, sty);
+	else if(_vbo_ == fmt)actoroutput_void_vbo(win, sty);
+	else actoroutput_void_pixel(win, sty);
 }
 void actorinput_void(struct arena* win, struct event* ev)
 {

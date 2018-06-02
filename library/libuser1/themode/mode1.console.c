@@ -3,11 +3,27 @@
 
 
 
-void actoroutput_term_pixel(struct arena* win)
+void actoroutput_console_pixel(struct arena* win, struct style* sty)
 {
-	drawsolid_rect(win, 0x404040, 16, 16, win->width-16, win->height-16);
+	int cx,cy,ww,hh;
+	if(sty)
+	{
+		cx = sty->vc[0];
+		cy = sty->vc[1];
+		ww = sty->vr[0];
+		hh = sty->vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+	drawsolid_rect(win, 0xffffff, cx-ww+16, cy-hh+16, cx+ww-16, cy+hh-16);
+	drawsolid_rect(win, 0xe0e0e0, cx+ww-32, cy-hh+16, cx+ww-16, cy+hh-16);
 }
-void actoroutput_term_vbo(struct arena* win)
+void actoroutput_console_vbo(struct arena* win, struct style* sty)
 {
 	vec3 vc;
 	vec3 vr;
@@ -24,29 +40,29 @@ void actoroutput_term_vbo(struct arena* win)
 	vf[2] = 0.0;
 	carvesolid2d_rect(win, 0x404040, vc, vr, vf);
 }
-void actoroutput_term_json(struct arena* win)
+void actoroutput_console_json(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_term_html(struct arena* win)
+void actoroutput_console_html(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_term_tui(struct arena* win)
+void actoroutput_console_tui(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_term_cli(struct arena* win)
+void actoroutput_console_cli(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_term(struct arena* win, struct style* sty)
+void actoroutput_console(struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(_cli_ == fmt)actoroutput_term_cli(win);
-	else if(_tui_ == fmt)actoroutput_term_tui(win);
-	else if(_html_ == fmt)actoroutput_term_html(win);
-	else if(_json_ == fmt)actoroutput_term_json(win);
-	else if(_vbo_ == fmt)actoroutput_term_vbo(win);
-	else actoroutput_term_pixel(win);
+	if(_cli_ == fmt)actoroutput_console_cli(win, sty);
+	else if(_tui_ == fmt)actoroutput_console_tui(win, sty);
+	else if(_html_ == fmt)actoroutput_console_html(win, sty);
+	else if(_json_ == fmt)actoroutput_console_json(win, sty);
+	else if(_vbo_ == fmt)actoroutput_console_vbo(win, sty);
+	else actoroutput_console_pixel(win, sty);
 }
-void actorinput_term(struct arena* win, struct event* ev)
+void actorinput_console(struct arena* win, struct event* ev)
 {
 	if('p' == (ev->what&0xff))
 	{

@@ -1,9 +1,10 @@
 #include "actor.h"
+int actoroutput_console( struct arena* win, struct style* sty);
 int actoroutput_overview(struct arena* win, struct style* sty);
-int actoroutput_detail(struct arena* win, struct style* sty);
-int actoroutput_edit(struct arena* win, struct style* sty);
-int actoroutput_posture(struct arena* win, struct style* sty);
-int actoroutput_deliver(struct arena* win, struct style* sty);
+int actoroutput_detail(  struct arena* win, struct style* sty);
+int actoroutput_edit(    struct arena* win, struct style* sty);
+int actoroutput_posture( struct arena* win, struct style* sty);
+int actoroutput_deliver( struct arena* win, struct style* sty);
 int actoroutput_oneonone(struct arena* win, struct style* sty);
 
 
@@ -172,10 +173,8 @@ void actoroutput_navmenu_pixel(struct arena* win)
 	struct style sty;
 	int va[2];
 	int vb[2];
-	int pa[2];
-	int pb[2];
 	int j,k,x,y;
-	int tmp,rgb,factor;
+	int tmp,rgb;
 	int w = win->width;
 	int h = win->height;
 	int s = w*2/3;
@@ -254,20 +253,20 @@ void actoroutput_navmenu_pixel(struct arena* win)
 		drawline(win, 0xffffff, vb[0], vb[1], 0, h);
 		drawline(win, 0xffffff, vb[0], vb[1], w, h);
 */
-		if(tmp == x)
+		if((x >= tmp-1)&&(x <= tmp+1))
 		{
-			if(3 == x)
-			{
-				sty.vc[0] = (va[0] + vb[0])/2;
-				sty.vc[1] = (va[1] + vb[1])/2;
-				sty.vc[2] = 0;
-				sty.vr[0] = (vb[0] - va[0])/2;
-				sty.vr[1] = 0;
-				sty.vr[2] = 0;
-				sty.vf[0] = 0;
-				sty.vf[1] = (vb[1] - va[1])/2;
-				actoroutput_detail(win, &sty);
-			}
+			sty.vc[0] = (va[0] + vb[0])/2;
+			sty.vc[1] = (va[1] + vb[1])/2;
+			sty.vc[2] = 0;
+			sty.vr[0] = (vb[0] - va[0])/2;
+			sty.vr[1] = 0;
+			sty.vr[2] = 0;
+			sty.vf[0] = 0;
+			sty.vf[1] = (vb[1] - va[1])/2;
+
+			if(1 == x)actoroutput_console(win, &sty);
+			else if(2 == x)actoroutput_overview(win, &sty);
+			else if(3 == x)actoroutput_detail(win, &sty);
 		}
 	}
 
