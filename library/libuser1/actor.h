@@ -15,6 +15,13 @@ typedef float mat4[4][4];
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
+#define mousel 10
+#define mouser 11
+#define gamepad0 12
+#define gamepad1 13
+#define gamepad2 14
+#define gamepad3 15
+//
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
@@ -59,12 +66,26 @@ typedef float mat4[4][4];
 
 
 
-struct point
+struct xyzw
 {
 	u16 x;
 	u16 y;
 	u16 z;
 	u16 id;
+};
+struct xyzwpair
+{
+	//touchdown, pointdown, gamepadleft
+	u16 x0;
+	u16 y0;
+	u16 z0;
+	u16 id;
+
+	//touchmove, pointmove, gamepadright
+	u16 x1;
+	u16 y1;
+	u16 z1;
+	u16 nn;
 };
 struct event
 {
@@ -337,8 +358,7 @@ struct arena
 	struct style camera;
 
 	//[200,2ff]
-	struct point touchdown[16];
-	struct point touchmove[16];
+	struct xyzwpair input[16];
 
 	//[300,3ff]
 	u8 detail[0x100];
@@ -409,55 +429,7 @@ struct actor
 		int (*onwrite)(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 		char padding7[8];
 	};
-/*
-	//[+00,+0f]: center
-	float width;
-	float height;
-	float depth;
-	int stride;
 
-	//[+10,+1f]: center
-	float cx;
-	float cy;
-	float cz;
-	int dirty;
-
-	//[+20,+2f]: right
-	float rx;
-	float ry;
-	float rz;
-	int rw;
-
-	//[+30,+3f]: far
-	float fx;
-	float fy;
-	float fz;
-	int fw;
-
-	//[+40,+4f]: upper
-	float ux;
-	float uy;
-	float uz;
-	int uw;
-
-	//[+50,+5f]: left
-	float lx;
-	float ly;
-	float lz;
-	int ltype;
-
-	//[+60,+6f]: near
-	float nx;
-	float ny;
-	float nz;
-	int ntype;
-
-	//[+70,+7f]: bottom
-	float bx;
-	float by;
-	float bz;
-	int btype;
-*/
 	//[80,ff]
 	struct style sty;
 

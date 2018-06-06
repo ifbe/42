@@ -124,19 +124,19 @@ haha:
 	);
 
 	c *= 2;
-	if(win->touchdown[0].z)
+	if(win->input[0].z0)
 	{
-		m = win->touchdown[0].x;
-		n = win->touchdown[0].y;
-		x = win->touchmove[0].x;
-		y = win->touchmove[0].y;
+		m = win->input[0].x0;
+		n = win->input[0].y0;
+		x = win->input[0].x1;
+		y = win->input[0].y1;
 	}
-	else if(win->touchdown[10].z)
+	else if(win->input[10].z0)
 	{
-		m = win->touchdown[10].x;
-		n = win->touchdown[10].y;
-		x = win->touchmove[10].x;
-		y = win->touchmove[10].y;
+		m = win->input[10].x0;
+		n = win->input[10].y0;
+		x = win->input[10].x1;
+		y = win->input[10].y1;
 	}
 	else return;
 
@@ -314,19 +314,19 @@ haha:
 	carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
 
 	c *= 2;
-	if(win->touchdown[0].z)
+	if(win->input[0].z0)
 	{
-		j = win->touchdown[0].x;
-		k = win->touchdown[0].y;
-		x = win->touchmove[0].x;
-		y = win->touchmove[0].y;
+		j = win->input[0].x0;
+		k = win->input[0].y0;
+		x = win->input[0].x1;
+		y = win->input[0].y1;
 	}
-	else if(win->touchdown[10].z)
+	else if(win->input[10].z0)
 	{
-		j = win->touchdown[10].x;
-		k = win->touchdown[10].y;
-		x = win->touchmove[10].x;
-		y = win->touchmove[10].y;
+		j = win->input[10].x0;
+		k = win->input[10].y0;
+		x = win->input[10].x1;
+		y = win->input[10].y1;
 	}
 	else return;
 
@@ -485,8 +485,8 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 		id = (why>>48)&0xffff;
 		if('l' == id)id = 10;
 		if((0 != id)&&(10 != id))return 0;
-		j = win->touchdown[id].x;
-		k = win->touchdown[id].y;
+		j = win->input[id].x0;
+		k = win->input[id].y0;
 
 		if(0x2d70 == what)
 		{

@@ -121,11 +121,11 @@ void carvecamera(struct arena* win, struct arena* w)
 
 
 
-	va[0] = (w->touchmove[10].x)*2/x - 1.0;
-	va[1] = 1.0 - (w->touchmove[10].y)*2/y;
+	va[0] = (w->input[10].x1)*2/x - 1.0;
+	va[1] = 1.0 - (w->input[10].y1)*2/y;
 	va[2] = -1.0;
-	vb[0] = (w->touchmove[10].x)*2/x - 1.0;
-	vb[1] = 1.0 - (w->touchmove[10].y)*2/y;
+	vb[0] = (w->input[10].x1)*2/x - 1.0;
+	vb[1] = 1.0 - (w->input[10].y1)*2/y;
 	vb[2] = 0.5;
 	invmvp(va, w);
 	invmvp(vb, w);

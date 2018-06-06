@@ -485,33 +485,34 @@ int camera_event_3d(struct arena* win, struct event* ev)
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
-		if(0 == win->touchdown[id].z)return 0;
+		if(0 == win->input[id].z0)return 0;
 
-		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
+		if(	(0 != win->input[0].z0)&&
+			(0 != win->input[1].z0))
 		{
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 			if(0 == id)
 			{
-				x1 -= (win->touchmove[1].x);
-				y1 -= (win->touchmove[1].y);
+				x1 -= (win->input[1].x1);
+				y1 -= (win->input[1].y1);
 			}
 			if(1 == id)
 			{
-				x1 -= (win->touchmove[0].x);
-				y1 -= (win->touchmove[0].y);
+				x1 -= (win->input[0].x1);
+				y1 -= (win->input[0].y1);
 			}
 
-			x0 = (win->touchmove[0].x) - (win->touchmove[1].x);
-			y0 = (win->touchmove[0].y) - (win->touchmove[1].y);
+			x0 = (win->input[0].x1) - (win->input[1].x1);
+			y0 = (win->input[0].y1) - (win->input[1].y1);
 
 			if((x0*x0+y0*y0) < (x1*x1+y1*y1))camera_zoom(win, 0.05);
 			else camera_zoom(win, -0.05);
 		}
 		else
 		{
-			x0 = win->touchmove[id].x;
-			y0 = win->touchmove[id].y;
+			x0 = win->input[id].x1;
+			y0 = win->input[id].y1;
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 
@@ -623,25 +624,26 @@ int camera_event_2d(struct arena* win, struct event* ev)
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
-		if(0 == win->touchdown[id].z)return 0;
+		if(0 == win->input[id].z0)return 0;
 
-		if((0 != win->touchdown[0].z)&&(0 != win->touchdown[1].z))
+		if(	(0 != win->input[0].z0)&&
+			(0 != win->input[1].z0))
 		{
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 			if(0 == id)
 			{
-				x1 -= (win->touchmove[1].x);
-				y1 -= (win->touchmove[1].y);
+				x1 -= (win->input[1].x1);
+				y1 -= (win->input[1].y1);
 			}
 			if(1 == id)
 			{
-				x1 -= (win->touchmove[0].x);
-				y1 -= (win->touchmove[0].y);
+				x1 -= (win->input[0].x1);
+				y1 -= (win->input[0].y1);
 			}
 
-			x0 = (win->touchmove[0].x) - (win->touchmove[1].x);
-			y0 = (win->touchmove[0].y) - (win->touchmove[1].y);
+			x0 = (win->input[0].x1) - (win->input[1].x1);
+			y0 = (win->input[0].y1) - (win->input[1].y1);
 
 			if((x0*x0+y0*y0) > (x1*x1+y1*y1))
 			{
@@ -660,8 +662,8 @@ int camera_event_2d(struct arena* win, struct event* ev)
 		}
 		else
 		{
-			x0 = win->touchmove[id].x;
-			y0 = win->touchmove[id].y;
+			x0 = win->input[id].x1;
+			y0 = win->input[id].y1;
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 

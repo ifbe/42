@@ -540,24 +540,24 @@ int playwith3d(struct arena* win, struct event* ev)
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
-		if(0 == win->touchdown[id].z)return 0;
+		if(0 == win->input[id].z0)return 0;
 
-		if(	(0 != win->touchdown[0].z)&&
-			(0 != win->touchdown[1].z) )
+		if(	(0 != win->input[0].z0)&&
+			(0 != win->input[1].z0) )
 		{
 			if(0 == id)
 			{
-				x -= (win->touchmove[1].x);
-				y -= (win->touchmove[1].y);
+				x -= (win->input[1].x1);
+				y -= (win->input[1].y1);
 			}
 			if(1 == id)
 			{
-				x -= (win->touchmove[0].x);
-				y -= (win->touchmove[0].y);
+				x -= (win->input[0].x1);
+				y -= (win->input[0].y1);
 			}
 
-			ax = (win->touchmove[0].x) - (win->touchmove[1].x);
-			ay = (win->touchmove[0].y) - (win->touchmove[1].y);
+			ax = (win->input[0].x1) - (win->input[1].x1);
+			ay = (win->input[0].y1) - (win->input[1].y1);
 
 			aaa = x*x+y*y;
 			bbb = ax*ax + ay*ay;
@@ -582,8 +582,8 @@ int playwith3d(struct arena* win, struct event* ev)
 			tx *= 2.0 / norm;
 			ty *= 2.0 / norm;
 
-			ax = x - (win->touchmove[id].x);
-			ay = y - (win->touchmove[id].y);
+			ax = x - (win->input[id].x1);
+			ay = y - (win->input[id].y1);
 
 			sty->vc[0] += ty*ax - tx*ay;
 			sty->vc[1] -= tx*ax + ty*ay;
@@ -591,12 +591,12 @@ int playwith3d(struct arena* win, struct event* ev)
 		}
 		else if(11 == id)
 		{
-			if(x > win->touchdown[id].x)
+			if(x > win->input[id].x0)
 			{
 				c = cosine(0.05);
 				s = sine(0.05);
 			}
-			else if(x < win->touchdown[id].x)
+			else if(x < win->input[id].x0)
 			{
 				c = cosine(-0.05);
 				s = sine(-0.05);

@@ -922,7 +922,7 @@ void actorinput_overview(struct arena* win, struct event* ev)
 	short* t;
 	struct actor* act;
 	int j, k;
-	int x, y, z;
+	int x, y, id;
 	int width = win->width;
 	int height = win->height;
 
@@ -935,8 +935,8 @@ void actorinput_overview(struct arena* win, struct event* ev)
 		x = (x*8) / width;
 		y = ((ev->why)>>16)&0xffff;
 		y = (y*32) / height;
-		z = ((ev->why)>>48)&0xffff;
-		if(z > 10)z = 10;
+		id = ((ev->why)>>48)&0xffff;
+		if(id > 10)id = 10;
 
 		if('@' == k)
 		{
@@ -948,9 +948,9 @@ void actorinput_overview(struct arena* win, struct event* ev)
 		}
 		else if('-' == k)
 		{
-			j = win->touchdown[z].x;
+			j = win->input[id].x0;
 			j = (j*8) / width;
-			k = win->touchdown[z].y;
+			k = win->input[id].y0;
 			k = (k*32) / height;
 
 			if((j<0)|(j>=8))return;

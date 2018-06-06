@@ -115,18 +115,18 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		win->touchmove[btn].x = x;
-		win->touchmove[btn].y = y;
+		win->input[btn].x1 = x;
+		win->input[btn].y1 = y;
 	}
 	else if(hex32('p','+',0,0) == ev->what)
 	{
-		win->touchdown[btn].x = win->touchmove[btn].x = x;
-		win->touchdown[btn].y = win->touchmove[btn].y = y;
-		win->touchdown[btn].z = 1;
+		win->input[btn].x0 = win->input[btn].x1 = x;
+		win->input[btn].y0 = win->input[btn].y1 = y;
+		win->input[btn].z0 = 1;
 	}
 	else if(hex32('p','-',0,0) == ev->what)
 	{
-		win->touchdown[btn].z = 0;
+		win->input[btn].z0 = 0;
 	}
 }
 int actorwrite_ev(struct event* ev)

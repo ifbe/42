@@ -314,17 +314,17 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 	{
 		pb[0] = (ev->why)&0xffff;
 		pb[1] = ((ev->why)>>16)&0xffff;
-		if(win->touchdown[10].z)
+		if(win->input[10].z0)
 		{
-			pa[0] = win->touchdown[10].x;
-			pa[1] = win->touchdown[10].y;
+			pa[0] = win->input[10].x0;
+			pa[1] = win->input[10].y0;
 			x = pb[0] - pa[0];
 			y = pb[1] - pa[1];
 		}
-		else if(win->touchdown[0].z)
+		else if(win->input[0].z0)
 		{
-			pa[0] = win->touchdown[0].x;
-			pa[1] = win->touchdown[0].y;
+			pa[0] = win->input[0].x0;
+			pa[1] = win->input[0].y0;
 			x = pb[0] - pa[0];
 			y = pb[1] - pa[1];
 		}

@@ -13,6 +13,14 @@ typedef float mat4[4][4];
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+//
+#define mousel 10
+#define mouser 11
+#define gamepad0 12
+#define gamepad1 13
+#define gamepad2 14
+#define gamepad3 15
+//
 #define _win_ hex32('w','i','n',0)
 #define _act_ hex32('a','c','t',0)
 #define _kbd_ hex32('k','b','d',0)
@@ -25,12 +33,26 @@ typedef float mat4[4][4];
 
 
 
-struct point
+struct xyzw
 {
 	u16 x;
 	u16 y;
 	u16 z;
 	u16 id;
+};
+struct xyzwpair
+{
+	//touchdown, pointdown, gamepadleft
+	u16 x0;
+	u16 y0;
+	u16 z0;
+	u16 id;
+
+	//touchmove, pointmove, gamepadright
+	u16 x1;
+	u16 y1;
+	u16 z1;
+	u16 nn;
 };
 struct event
 {
@@ -57,6 +79,10 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
+
+
+
+
 struct style
 {
 	vec4 vl;	//[00,0f]: left
@@ -109,6 +135,28 @@ struct pinid
 	int flag1d;
 	int flag1e;
 	int flag1f;
+};
+struct glinfo
+{
+	int vshader;
+	int gshader;
+	int fshader;
+	int shader;
+
+	int tex;
+	int ibo;
+	int vbo;
+	int vao;
+
+	char* vs;
+	char* gs;
+	char* fs;
+	char* pad0;
+
+	char* rgb;
+	char* ibuf;
+	char* vbuf;
+	char* pad1;
 };
 
 
@@ -214,8 +262,7 @@ struct arena
 	struct style camera;
 
 	//[200,2ff]
-	struct point touchdown[16];
-	struct point touchmove[16];
+	struct xyzwpair input[16];
 
 	//[300,3ff]
 	u8 detail[0x100];

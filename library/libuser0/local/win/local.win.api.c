@@ -200,11 +200,7 @@ int windowstart(struct arena* win)
 	win->mod = 0;
 	win->buf = malloc(2048*2048*4);
 
-	for(j=0;j<16;j++)
-	{
-		win->touchdown[j].id = 0xffff;
-		win->touchmove[j].id = 0xffff;
-	}
+	for(j=0;j<16;j++)win->input[j].id = 0xffff;
 
 	//j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)win);
 	threadcreate(windowthread, win);
@@ -332,15 +328,15 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if((u16)wparam == win->touchdown[k].id)
+				if((u16)wparam == win->input[k].id)
 				{
 					//find self
 					break;
 				}
-				if(0xffff == win->touchdown[k].id)
+				if(0xffff == win->input[k].id)
 				{
 					//find empty
-					win->touchdown[k].id = (u16)wparam;
+					win->input[k].id = (u16)wparam;
 					break;
 				}
 			}
@@ -364,10 +360,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if( win->touchdown[k].id == (u16)wparam )
+				if((u16)wparam == win->input[k].id)
 				{
 					//find self
-					win->touchdown[k].id = 0xffff;
+					win->input[k].id = 0xffff;
 					break;
 				}
 			}
@@ -391,7 +387,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if( win->touchdown[k].id == (u16)wparam )break;
+				if((u16)wparam == win->input[k].id)break;
 			}
 			if(k >= 10)return 0;
 

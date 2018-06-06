@@ -568,32 +568,32 @@ int playwith2d(struct arena* win, struct event* ev)
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
-		if(0 == win->touchdown[id].z)return 0;
+		if(0 == win->input[id].z0)return 0;
 
-		if(	(0 != win->touchdown[0].z)&&
-			(0 != win->touchdown[1].z) )
+		if(	(0 != win->input[0].z0)&&
+			(0 != win->input[1].z0) )
 		{
 			if(0 == id)
 			{
-				x -= (win->touchmove[1].x);
-				y -= (win->touchmove[1].y);
+				x -= (win->input[1].x1);
+				y -= (win->input[1].y1);
 			}
 			if(1 == id)
 			{
-				x -= (win->touchmove[0].x);
-				y -= (win->touchmove[0].y);
+				x -= (win->input[0].x1);
+				y -= (win->input[0].y1);
 			}
 
-			ax = (win->touchmove[0].x) - (win->touchmove[1].x);
-			ay = (win->touchmove[0].y) - (win->touchmove[1].y);
+			ax = (win->input[0].x1) - (win->input[1].x1);
+			ay = (win->input[0].y1) - (win->input[1].y1);
 			sty->vr[0] = (sty->vr[0]) * (x*x+y*y) / (ax*ax+ay*ay);
 			sty->vf[1] = (sty->vf[1]) * (x*x+y*y) / (ax*ax+ay*ay);
 			sty->vu[2] = (sty->vu[2]) * (x*x+y*y) / (ax*ax+ay*ay);
 		}
 		else if((0 == id)|(10 == id))
 		{
-			sty->vc[0] += x - (win->touchmove[id].x);
-			sty->vc[1] += y - (win->touchmove[id].y);
+			sty->vc[0] += x - (win->input[id].x1);
+			sty->vc[1] += y - (win->input[id].y1);
 			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 		else if(11 == id)
