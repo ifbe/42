@@ -5,62 +5,63 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s dll
 	make -s program
 libboot0:
-	make -s -C $(library)/libboot0 wincmd \
+	make -s -C $(library)/libboot/0 wincmd \
 	cflag="-c -O2"
 libboot1:
-	make -s -C $(library)/libboot1 \
+	make -s -C $(library)/libboot/1 \
 	cflag="-c -O2"
 libhard0:
-	make -s -C $(library)/libhard0 winx64 \
+	make -s -C $(library)/libhard/0 winx64 \
 	cflag="-c -O2"
 libhard1:
-	make -s -C $(library)/libhard1 \
+	make -s -C $(library)/libhard/1 \
 	cflag="-c -O2"
 libsoft0:
-	make -s -C $(library)/libsoft0 win \
-	cflag="-c -O2 -I."
+	make -s -C $(library)/libsoft/0 win \
+	cflag="-c -O2 -I.."
 libsoft1:
-	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -I."
+	make -s -C $(library)/libsoft/1 \
+	cflag="-c -O2 -I.."
 libuser0:
-	make -s -C $(library)/libuser0 winglfw \
-	cflag="-c -O2 -I."
+	make -s -C $(library)/libuser/0 winglfw \
+	cflag="-c -O2 -I.."
 libuser1:
-	make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -I."
+	make -s -C $(library)/libuser/1 \
+	cflag="-c -O2 -I.."
 a:
 	ar crs 42.a \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
+	$(library)/libboot/0/*.o \
+	$(library)/libboot/1/*.o \
+	$(library)/libhard/0/*.o \
+	$(library)/libhard/1/*.o \
+	$(library)/libsoft/0/*.o \
+	$(library)/libsoft/1/*.o \
+	$(library)/libuser/0/*.o \
+	$(library)/libuser/1/*.o
 dll:
 	g++ -shared -o 42.dll \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o \
+	$(library)/libboot/0/*.o \
+	$(library)/libboot/1/*.o \
+	$(library)/libhard/0/*.o \
+	$(library)/libhard/1/*.o \
+	$(library)/libsoft/0/*.o \
+	$(library)/libsoft/1/*.o \
+	$(library)/libuser/0/*.o \
+	$(library)/libuser/1/*.o \
 	-lglfw3 -lglew32 -lglu32 -lole32 -lopengl32 -lstrmiids -lxinput -lwinmm -lws2_32 -lgdi32
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
 	$(datafile)/42.res \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o \
+	$(library)/libboot/0/*.o \
+	$(library)/libboot/1/*.o \
+	$(library)/libhard/0/*.o \
+	$(library)/libhard/1/*.o \
+	$(library)/libsoft/0/*.o \
+	$(library)/libsoft/1/*.o \
+	$(library)/libuser/0/*.o \
+	$(library)/libuser/1/*.o \
 	-lglfw3 -lglew32 -lglu32 -lole32 -lopengl32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.dll
+	make -C $(library) clean
