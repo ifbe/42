@@ -22,7 +22,6 @@
 #define _rr_ hex16('r','r')
 #define _joy_ hex32('j','o','y',0)
 int lowlevel_input();
-void sleep_us(int);
 
 
 

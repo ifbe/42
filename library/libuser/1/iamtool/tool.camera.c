@@ -9,6 +9,34 @@ void* arenacreate(u64, void*);
 
 
 
+//opengl shader
+char* camera_glsl_v =
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 colour;\n"
+	"out mediump vec3 vcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vcolor = colour;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
+char* camera_glsl_g = 0;
+char* camera_glsl_f = 
+	"#version 300 es\n"
+	"in mediump vec3 vcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vcolor,1.0);\n"
+	"}\n";
+//directx shader
+char* camera_hlsl_v = 0;
+char* cmaera_hlsl_g = 0;
+char* cmaera_hlsl_f = 0;
+
+
+
+
 void camera_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
