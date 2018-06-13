@@ -143,6 +143,49 @@ struct texandobj
 	u32 vlen;
 	void* vbuf;
 };
+struct ofoot
+{
+	u32 deq_shader;
+	u32 deq_ibuf;
+	u32 deq_vbuf;
+	u32 deq_tex0;
+
+	u32 shader;
+	u32 fbo;
+
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
+
+	u32 tex0;
+	u32 tex1;
+	u32 tex2;
+	u32 tex3;
+};
+struct ifoot
+{
+	u32 enq_shader;
+	u32 enq_ibuf;
+	u32 enq_vbuf;
+	u32 enq_tex0;
+
+	void* vs;
+	void* ts;
+	void* gs;
+	void* fs;
+
+	void* ibuf;
+	void* vbuf;
+
+	void* tex0;
+	void* tex1;
+	void* tex2;
+	void* tex3;
+};
+
+
+
+
 struct style
 {
 	vec4 vl;	//[00,0f]: left

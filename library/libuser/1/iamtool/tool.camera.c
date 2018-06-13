@@ -20,6 +20,7 @@ char* camera_glsl_v =
 		"vcolor = colour;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n";
+char* camera_glsl_t = 0;
 char* camera_glsl_g = 0;
 char* camera_glsl_f = 
 	"#version 300 es\n"
@@ -31,6 +32,7 @@ char* camera_glsl_f =
 	"}\n";
 //directx shader
 char* camera_hlsl_v = 0;
+char* cmaera_hlsl_t = 0;
 char* cmaera_hlsl_g = 0;
 char* cmaera_hlsl_f = 0;
 
