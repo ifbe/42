@@ -145,42 +145,54 @@ struct texandobj
 };
 struct ofoot
 {
-	u32 deq_shader;
-	u32 deq_ibuf;
-	u32 deq_vbuf;
-	u32 deq_tex0;
-
-	u32 shader;
+	//target
 	u32 fbo;
 
-	u32 vao;
-	u32 vbo;
-	u32 ibo;
+	//shader
+	u32 shader;
+	u32 shader_deq;
 
-	u32 tex0;
-	u32 tex1;
-	u32 tex2;
-	u32 tex3;
+	//texture
+	u32 tex[4];
+	u32 tex_len[4];
+	u32 tex_deq[4];
+
+	//vertex
+	u32 vao[4];
+
+	u32 vbo[4];
+	u32 vbo_len[4];
+	u32 vbo_deq[4];
+
+	u32 ibo[4];
+	u32 ibo_len[4];
+	u32 ibo_deq[4];
 };
 struct ifoot
 {
-	u32 enq_shader;
-	u32 enq_ibuf;
-	u32 enq_vbuf;
-	u32 enq_tex0;
+	//target: 0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
+	u32 target;
 
-	void* vs;
-	void* ts;
-	void* gs;
-	void* fs;
+	//shader
+	u64 vs;
+	u64 ts;
+	u64 gs;
+	u64 fs;
+	u32 shader_enq;
 
-	void* ibuf;
-	void* vbuf;
+	//texture
+	u64 tex[4];
+	u32 tex_len[4];
+	u32 tex_enq[4];
 
-	void* tex0;
-	void* tex1;
-	void* tex2;
-	void* tex3;
+	//vertex
+	u64 ibuf[4];
+	u32 ibuf_len[4];
+	u32 ibuf_enq[4];
+
+	u64 vbuf[4];
+	u32 vbuf_len[4];
+	u32 vbuf_enq[4];
 };
 
 
