@@ -9,6 +9,14 @@ void scale_image(void* src, void* dst,
 #define DIM 1024
 #define _sq(x) ((x)*(x))
 #define r(n)(getrandom()%n)
+static float vbuf[6][5] = {
+	{0.0, 0.0, 0.0, 0.0, 0.0},
+	{0.0, 0.0, 0.0, 1.0, 0.0},
+	{0.0, 0.0, 0.0, 0.0, 1.0},
+	{0.0, 0.0, 0.0, 1.0, 1.0},
+	{0.0, 0.0, 0.0, 0.0, 1.0},
+	{0.0, 0.0, 0.0, 1.0, 0.0}
+};
 
 
 
@@ -264,8 +272,6 @@ void codeimg_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;

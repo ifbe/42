@@ -65,7 +65,7 @@ static void graph_traverse(struct arena* this)
 	struct relation* rel;
 
 	j = graph_add(_win_, this);
-	rel = this->irel;
+	rel = this->irel0;
 	while(1)
 	{
 		if(rel == 0)return;
@@ -124,7 +124,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 	struct actor* act;
 
 	k = 0;
-	rel = haha->irel;
+	rel = haha->irel0;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -135,7 +135,7 @@ static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 
 	j = 0;
 	k *= 2;
-	rel = haha->irel;
+	rel = haha->irel0;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -381,8 +381,6 @@ void graph_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;

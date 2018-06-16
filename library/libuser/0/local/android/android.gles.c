@@ -135,8 +135,6 @@ void windowstart(struct arena* win)
 
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex32('v','b','o',0);
-	win->irel = 0;
-	win->orel = 0;
 
 	win->width = 1024;
 	win->height = 1024;

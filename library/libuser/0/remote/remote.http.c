@@ -97,7 +97,7 @@ int httpserver_write(
 	}
 	else if(0 != POST)
 	{
-		rel = win->orel;
+		rel = win->orel0;
 		while(1)
 		{
 			if(0 == rel)break;

@@ -10,6 +10,7 @@ static void rawdump_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int j;
 	int cx, cy, ww, hh;
 	if(sty)
 	{
@@ -25,11 +26,7 @@ static void rawdump_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	int len = act->len;
-	u8* buf = act->buf;
-
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
-	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1, buf, len);
 }
 static void rawdump_read_vbo(
 	struct arena* win, struct style* sty,
@@ -82,28 +79,10 @@ static void rawdump_read(
 
 
 
-void queuepacket(u8* dst, int max, u8* buf, int len)
+void queuepacket(u8* dst, int* idx, u8* buf, int len)
 {
-	int j,k;
-	int* pp = (int*)dst;
-	u8* bb = dst+0x1000;
-
-	j = pp[0];
-	if(j > 0)
-	{
-		
-	}
-	else
-	{
-		pp[0] = 1;
-		pp[1] = len;
-		k = 0;
-	}
-
-	for(j=0;j<len;j++)
-	{
-		bb[k+j] = buf[j];
-	}
+	int j;
+	for(j=0;j<len;j++)dst[j] = buf[j];
 }
 static void rawdump_write(
 	struct actor* act, struct pinid* pin,
@@ -113,31 +92,10 @@ static void rawdump_write(
 	int j;
 	u8* dst;
 	struct actor* tmp;
+	if(0 == win)return;
 
-	if(0 != win)
-	{
-		say("@rawdump_write\n");
-/*
-		queuepacket(
-			act->buf, 0x400,
-			act->buf+0x1000, 0xff000,
-			tmp->buf, tmp->len
-		);
-*/
-		if((act->len)+len > 0x100000)
-		{
-			dst = act->buf;
-			act->len = len;
-		}
-		else
-		{
-			dst = (act->buf)+(act->len);
-			act->len += len;
-		}
-
-		for(j=0;j<len;j++)dst[j] = buf[j];
-		dst[j] = 0;
-	}
+	//writefile();
+	queuepacket(act->buf, act->idx, buf, len);
 }
 static void rawdump_stop(struct actor* act, struct pinid* pin)
 {
@@ -155,7 +113,8 @@ static void rawdump_create(struct actor* act, u8* buf)
 {
 	void* addr;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = memorycreate(0x100000);
+	act->idx = memorycreate(0x10000);
+	act->buf = memorycreate(0x100000);
 
 	addr = systemcreate(_UDP_, "127.0.0.1:2222");
 	if(0 == addr)return;
@@ -176,8 +135,6 @@ void rawdump_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('r','a','w','d','u','m','p',0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)rawdump_create;
 	p->ondelete = (void*)rawdump_delete;

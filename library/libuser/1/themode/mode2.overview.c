@@ -223,7 +223,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		if(0 == actor[j].name)continue;
 
-		rel = actor[j].irel;
+		rel = actor[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -281,7 +281,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		if(0 == arena[j].type)break;
 
-		rel = arena[j].irel;
+		rel = arena[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -340,7 +340,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		if(0 == ele[j].type)break;
 
-		rel = ele[j].irel;
+		rel = ele[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -398,7 +398,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		if(0 == obj[j].type)break;
 
-		rel = obj[j].irel;
+		rel = obj[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -596,7 +596,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	{
 		if(0 == actor[j].name)continue;
 
-		rel = actor[j].irel;
+		rel = actor[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -658,7 +658,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	{
 		if(0 == arena[j].type)break;
 
-		rel = arena[j].irel;
+		rel = arena[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;

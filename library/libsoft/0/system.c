@@ -60,8 +60,8 @@ int systemwrite_ev(struct event* ev)
 	else if(why == '-')
 	{
 		say("gone:%x\n", where);
-		irel = obj[where].irel;
-		orel = obj[where].orel;
+		irel = obj[where].irel0;
+		orel = obj[where].orel0;
 		relationdelete(irel);
 		relationdelete(orel);
 		return 0;
@@ -69,13 +69,13 @@ int systemwrite_ev(struct event* ev)
 
 	type = obj[where].type;
 	name = obj[where].name;
-	irel = obj[where].irel;
-	orel = obj[where].orel;
+	irel = obj[where].irel0;
+	orel = obj[where].orel0;
 	if((0 == name)&&(0 == irel)&&(0 == orel))
 	{
 		ret = obj[where].thatfd;
-		irel = obj[ret].irel;
-		orel = obj[ret].orel;
+		irel = obj[ret].irel0;
+		orel = obj[ret].orel0;
 	}
 	//say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
 
@@ -167,8 +167,8 @@ int systemdelete(void* addr)
 	else
 	{
 		o = addr;
-		if(0 != o->irel)relationdelete(o->irel);
-		if(0 != o->orel)relationdelete(o->orel);
+		if(0 != o->irel0)relationdelete(o->irel0);
+		if(0 != o->orel0)relationdelete(o->orel0);
 		stopsocket(fd);
 	}
 	return 0;

@@ -170,8 +170,6 @@ void klotski_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('k', 'l', 'o', 't', 's', 'k', 'i', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)klotski_create;
 	p->ondelete = (void*)klotski_delete;

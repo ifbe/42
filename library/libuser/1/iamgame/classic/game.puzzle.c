@@ -49,8 +49,6 @@ void puzzle_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('p', 'u', 'z', 'z', 'l', 'e', 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)puzzle_create;
 	p->ondelete = (void*)puzzle_delete;

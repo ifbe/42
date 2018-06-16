@@ -44,7 +44,7 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 		{
 			//printf("from %d to %d\n", info.enq, (info.enq + count)%0x200);
 
-			orel = obj[1].orel;
+			orel = obj[1].orel0;
 			while(1)
 			{
 				if(0 == orel)break;

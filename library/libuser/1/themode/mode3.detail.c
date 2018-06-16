@@ -67,7 +67,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 
 
 	j = 0;
-	rel = win->irel;
+	rel = win->irel0;
 	while(1)
 	{
 		if(j >= 8)break;
@@ -109,7 +109,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 	}
 
 	j = 0;
-	rel = win->orel;
+	rel = win->orel0;
 	while(1)
 	{
 		if(j >= 8)break;
@@ -213,7 +213,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	drawsolid_rect(win, 0xffffff, w*1/4+1, h*6/16+1, w*3/4-1, h*12/16-1);
 */
 	j = 0;
-	rel = win->irel;
+	rel = win->irel0;
 	while(1)
 	{
 		if(j >= 8)break;
@@ -233,7 +233,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	}
 
 	j = 0;
-	rel = win->orel;
+	rel = win->orel0;
 	while(1)
 	{
 		if(j >= 8)break;

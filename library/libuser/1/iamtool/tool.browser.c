@@ -24,7 +24,7 @@ static void browser_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	struct mystring* str = (void*)(act->detail);
+	struct mystring* str = act->idx;
 	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 	drawstring(win, 0xffffff, cx-ww, cy-hh, str->buf, str->len);
 	drawtext(win, 0xffffff, cx-ww, cy-hh+16, cx+ww-1, cy+hh-1, act->buf, act->len);
@@ -43,16 +43,6 @@ static void browser_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"browser\" style=\"width:50%%;height:100px;float:left;background-color:#87c9da;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void browser_read_tui(
 	struct arena* win, struct style* sty,
@@ -93,7 +83,7 @@ static void browser_write_event(
 	struct mystring* haha;
 	if(_char_ != ev->what)return;
 
-	haha = (void*)(act->detail);
+	haha = act->idx;
 	len = haha->len;
 	buf = haha->buf;
 	if(0xd == ev->why)
@@ -168,16 +158,15 @@ static void browser_start(struct actor* act, struct pinid* pin)
 static void browser_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	memorydelete(act->buf);
 }
 static void browser_create(struct actor* act)
 {
 	int j;
 	if(0 == act)return;
 
-	act->len = 0;
+	act->idx = memorycreate(0x1000);;
 	act->buf = memorycreate(0x100000);
-	for(j=0;j<0x100;j++)act->detail[j] = 0;
 }
 
 
@@ -187,8 +176,6 @@ void browser_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;

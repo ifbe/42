@@ -101,8 +101,8 @@ static void* epollthread(void* p)
 						memcpy(obj[cc].peer, &haha, 8);
 						obj[cc].type = 't';
 						obj[cc].name = 0;
-						obj[cc].irel = 0;
-						obj[cc].orel = 0;
+						obj[cc].irel0 = obj[cc].ireln = 0;
+						obj[cc].orel0 = obj[cc].oreln = 0;
 						obj[cc].selffd = cc;
 						obj[cc].thatfd = fd;
 						epoll_add(cc);

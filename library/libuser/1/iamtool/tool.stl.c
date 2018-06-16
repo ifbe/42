@@ -11,14 +11,14 @@ void carvestl(void*, u32, vec3, vec3, vec3, vec3, void*, int);
 void stl_prep(struct actor* act, void* name)
 {
 	float* p;
-	float* vl = act->sty.vl;	//left
-	float* vr = act->sty.vr;	//right
-	float* vn = act->sty.vn;	//near
-	float* vf = act->sty.vf;	//far
-	float* vb = act->sty.vb;	//bot
-	float* vu = act->sty.vu;	//top
-	float* vv = act->sty.vv;	//info
-	float* vc = act->sty.vc;	//center
+	float* vl = act->target.vl;	//left
+	float* vr = act->target.vr;	//right
+	float* vn = act->target.vn;	//near
+	float* vf = act->target.vf;	//far
+	float* vb = act->target.vb;	//bot
+	float* vu = act->target.vu;	//top
+	float* vv = act->target.vv;	//info
+	float* vc = act->target.vc;	//center
 	int j,ret;
 	
 	act->len = openreadclose(name, 0, act->buf, 0x800000);
@@ -274,8 +274,6 @@ void stl_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex32('s', 't', 'l', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)stl_create;
 	p->ondelete = (void*)stl_delete;

@@ -205,8 +205,6 @@ void doodle_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)doodle_create;
 	p->ondelete = (void*)doodle_delete;

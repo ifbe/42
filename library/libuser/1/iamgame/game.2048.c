@@ -364,8 +364,6 @@ void the2048_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex32('2','0','4','8');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;

@@ -560,8 +560,6 @@ void xiangqi_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)xiangqi_create;
 	p->ondelete = (void*)xiangqi_delete;

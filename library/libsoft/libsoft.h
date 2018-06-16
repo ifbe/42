@@ -137,61 +137,116 @@ struct relation
 };
 struct object
 {
-	//[0x00,0x0f]
-	u32 tier;
-	u32 type;	//raw, bt, udp, tcp?
-	u64 name;
+	//[0x00,0x1f]
 	union{
-		void* irel;
-		u64 pad0;
+		void* irel0;
+		u64 ipad0;
 	};
 	union{
-		void* orel;
-		u64 pad1;
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
 	};
 
-	//[0x20,0x3f]
+	//[20,3f]data
 	u64 selffd;
 	u64 thatfd;
-	u64 len;
+	u64 dc;
 	union{
 		u64 addr;
 		void* buf;
 	};
 
-	//[0x40,0x7f]
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[0x80,0xbf]
 	u8 self[0x20];
 	u8 peer[0x20];
 
-	//[0x80,0xff]
-	u8 data[0x80];
+	//[0xc0,0xff]
+	u8 data[0x40];
 };
 struct element
 {
-	//[00,20]
-	u32 tier;
-	u32 type;	//http, tls, ssh
-	u64 stage1;
+	//[0x00,0x1f]
 	union{
-		void* irel;
-		u64 pad0;
+		void* irel0;
+		u64 ipad0;
 	};
 	union{
-		void* orel;
-		u64 pad1;
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
 	};
 
-	//[20,3f]
-	u64 fd;
-	u64 flag;
-	u64 len;
+	//[20,3f]data
+	union{
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 len;
+		void* hp;
+		void* mod;
+		void* ximage;
+		void* texture;
+	};
 	union{
 		u64 addr;
 		void* buf;
 	};
 
-	//[40,ff]
-	u8 data[0xc0];
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 stage1;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[80,ff]
+	u8 data[0x80];
 };
 
 

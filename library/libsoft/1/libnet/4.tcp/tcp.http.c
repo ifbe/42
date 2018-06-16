@@ -102,7 +102,7 @@ int httpclient_write(
 	printmemory(buf, len);
 	if(len <= 0)return 0;
 
-	orel = ele->orel;
+	orel = ele->orel0;
 	while(1)
 	{
 		if(0 == orel)break;

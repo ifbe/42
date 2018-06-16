@@ -273,8 +273,6 @@ static void spectrum_create(struct actor* act)
 	if(0 == win)return;
 
 	relationcreate(act, 0, _act_, win, 0, _win_);
-	say("%llx,%llx\n", win->irel, win->orel);
-	say("%llx,%llx\n", act->irel, act->orel);
 }
 
 
@@ -284,8 +282,6 @@ void spectrum_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;

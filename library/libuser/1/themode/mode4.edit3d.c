@@ -478,7 +478,7 @@ int playwith3d(struct arena* win, struct event* ev)
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
 
-	rel = win->irel;
+	rel = win->irel0;
 	if(rel == 0)return 1;
 	while(1)
 	{

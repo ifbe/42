@@ -208,8 +208,6 @@ void ooxx_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex32('o', 'o', 'x', 'x');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;

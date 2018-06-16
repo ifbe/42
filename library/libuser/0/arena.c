@@ -217,12 +217,14 @@ int arenadelete(struct arena* win)
 	windowstop(win);
 
 	//2.unlink
+	win->irel0 = 0;
+	win->ireln = 0;
+	win->orel0 = 0;
+	win->oreln = 0;
 
 	//3.cleanup
 	win->type = 0;
 	win->fmt = 0;
-	win->irel = 0;
-	win->orel = 0;
 	return 0;
 }
 void* arenacreate(u64 type, u8* addr)
@@ -231,12 +233,12 @@ void* arenacreate(u64 type, u8* addr)
 	struct arena* win = allocarena();
 	if(0 == win)return 0;
 
+	win->irel0 = win->ireln = 0;
+	win->orel0 = win->oreln = 0;
 	if(_win_ == type)
 	{
 		win->type = _win_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		win->irel = 0;
-		win->orel = 0;
 		windowstart(win);
 
 		win->enq = 1;
@@ -288,8 +290,6 @@ void* arenacreate(u64 type, u8* addr)
 		if(0 == addr)return 0;
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
-		win->irel = 0;
-		win->orel = 0;
 		videostart(win);
 	}
 	else if(_mic_ == type)
@@ -297,16 +297,12 @@ void* arenacreate(u64 type, u8* addr)
 		if(0 == addr)return 0;
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		win->irel = 0;
-		win->orel = 0;
 		soundstart(win);
 	}
 	else if(_HTTP_ == type)
 	{
 		win->type = _HTTP_;
 		win->fmt = hex32('h','t','m','l');
-		win->irel = 0;
-		win->orel = 0;
 
 		//be server, output data
 		httpserver_create(win, addr);
@@ -315,8 +311,6 @@ void* arenacreate(u64 type, u8* addr)
 	{
 		win->type = _WS_;
 		win->fmt = hex32('j','s','o','n');
-		win->irel = 0;
-		win->orel = 0;
 
 		//be server, output data
 		wsserver_create(win, addr);

@@ -12,15 +12,21 @@ void say(void*, ...);
 
 struct item
 {
-	u64 type;
-	u64 fmt;
 	union{
-		void* irel;
-		u64 pad0;
+		void* irel0;
+		u64 ipad0;
 	};
 	union{
-		void* orel;
-		u64 pad1;
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
 	};
 };
 struct relation
@@ -41,10 +47,22 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
+
+
+
+
 static struct relation* recycle = 0;
 static struct relation* wirebuf = 0;
 static int wirecur = 0x40;
 static int wirelen = 0x100000;
+void initstdrel(void* addr)
+{
+	wirebuf = addr;
+}
+void freestdrel()
+{
+}
+
 
 
 
@@ -83,8 +101,8 @@ void relation_swap(struct relation* m, struct relation* n)
 	uchip = (void*)(m->destchip);
 //relation_debug(uchip->irel);
 //say("uchip:%x,%x,%x,%x\n",uchip,uchip->irel,m,n);
-	if(uchip->irel == m)uchip->irel = n;
-	else if(uchip->irel == n)uchip->irel = m;
+	if(uchip->irel0 == m)uchip->irel0 = n;
+	else if(uchip->irel0 == n)uchip->irel0 = m;
 
 	if(m->samedstprevsrc != 0)
 	{mprev = (void*)wirebuf + (m->samedstprevsrc);}
@@ -150,7 +168,7 @@ void relation_swap(struct relation* m, struct relation* n)
 		//say("4:%x->%x\n",nnext,m);
 	}
 
-	//relation_debug(uchip->irel);
+	//relation_debug(uchip->irel0);
 }
 void relation_recycle(struct relation* rel)
 {
@@ -288,7 +306,7 @@ void relationdelete(struct relation* this)
 	}
 
 	uchip = (void*)(this->destchip);
-	if(this == uchip->irel)uchip->irel = next;
+	if(this == uchip->irel0)uchip->irel0 = next;
 
 	relation_recycle(this);
 }
@@ -311,35 +329,24 @@ void* relationcreate(
 
 	//dest wire
 	h1 = uchip;
-	if(h1->irel == 0)h1->irel = ww;
+	if(h1->irel0 == 0)h1->irel0 = ww;
 	else
 	{
-		wc = h1->irel;
+		wc = h1->irel0;
 		while(wc->samedstnextsrc != 0)wc = (void*)wirebuf + (wc->samedstnextsrc);
 		wc->samedstnextsrc = (void*)ww - (void*)wirebuf;
 		ww->samedstprevsrc = (void*)wc - (void*)wirebuf;
 	}
 
 	h2 = bchip;
-	if(h2->orel == 0)h2->orel = ww;
+	if(h2->orel0 == 0)h2->orel0 = ww;
 	else
 	{
-		wc = h2->orel;
+		wc = h2->orel0;
 		while(wc->samesrcnextdst != 0)wc = (void*)wirebuf + (wc->samesrcnextdst);
 		wc->samesrcnextdst = (void*)ww - (void*)wirebuf;
 		ww->samesrcprevdst = (void*)wc - (void*)wirebuf;
 	}
 
 	return ww;
-}
-
-
-
-
-void initstdrel(void* addr)
-{
-	wirebuf = addr;
-}
-void freestdrel()
-{
 }

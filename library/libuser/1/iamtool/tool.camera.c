@@ -161,8 +161,6 @@ static void camera_create(struct actor* act)
 	if(0 == win)return;
 
 	relationcreate(act, 0, _act_, win, 0, _win_);
-	say("%llx,%llx\n", win->irel, win->orel);
-	say("%llx,%llx\n", act->irel, act->orel);
 }
 
 
@@ -172,8 +170,6 @@ void camera_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)camera_create;
 	p->ondelete = (void*)camera_delete;

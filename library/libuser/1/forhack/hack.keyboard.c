@@ -148,8 +148,6 @@ void keyboard_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('k', 'e', 'y', 'b', 'o', 'a', 'r', 'd');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)keyboard_create;
 	p->ondelete = (void*)keyboard_delete;

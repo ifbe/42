@@ -49,8 +49,6 @@ void minesweep_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('m', 'i', 'n', 'e', 's', 0, 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)minesweep_create;
 	p->ondelete = (void*)minesweep_delete;

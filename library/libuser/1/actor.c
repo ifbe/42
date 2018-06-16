@@ -202,7 +202,7 @@ int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	act = dc;
 	act->onwrite(act, df, sc, sf, buf, len);
 
-	rel = act->orel;
+	rel = act->orel0;
 	while(1)
 	{
 		if(0 == rel)break;

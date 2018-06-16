@@ -89,7 +89,7 @@ int actoroutput_posture(struct arena* win, struct style* st)
 	struct pinid* pin;
 
 	//origin world
-	rel = win->irel;
+	rel = win->irel0;
 	while(1)
 	{
 		if(rel == 0)break;

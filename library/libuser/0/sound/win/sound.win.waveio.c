@@ -30,7 +30,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 	if(WIM_DATA == uMsg)
 	{
 		//printf("WIM_DATA:%d\n", icur);
-		struct relation* orel = working->orel;
+		struct relation* orel = (struct relation*)(working->orel0);
 		while(1)
 		{
 			if(0 == orel)break;

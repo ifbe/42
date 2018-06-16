@@ -315,8 +315,6 @@ void weiqi_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)weiqi_create;
 	p->ondelete = (void*)weiqi_delete;

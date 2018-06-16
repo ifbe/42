@@ -29,11 +29,7 @@ static void switch_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	int len = act->len;
-	u8* buf = act->buf;
-
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
-	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1, buf, len);
 }
 static void switch_read_vbo(
 	struct arena* win, struct style* sty,
@@ -93,26 +89,25 @@ static void switch_write(
 {
 	int j;
 	u8* dst;
-	if(0 != win)
-	{
-		dst = act->buf;
-		for(j=0;j<len;j++)dst[j] = buf[j];
-		dst[j] = 0;
+	if(0 == win)return;
 
-		struct relation* orel = act->orel;
-		while(1)
+	dst = act->buf;
+	for(j=0;j<len;j++)dst[j] = buf[j];
+	dst[j] = 0;
+
+	struct relation* orel = act->orel0;
+	while(1)
+	{
+		if(0 == orel)break;
+		if(_fd_ == orel->dsttype)
 		{
-			if(0 == orel)break;
-			if(_fd_ == orel->dsttype)
-			{
-				systemwrite(
-					(void*)(orel->dstchip), (void*)(orel->dstfoot),
-					(void*)(orel->srcchip), (void*)(orel->srcfoot),
-					act->buf, len
-				);
-			}
-			orel = samesrcnextdst(orel);
+			systemwrite(
+				(void*)(orel->dstchip), (void*)(orel->dstfoot),
+				(void*)(orel->srcchip), (void*)(orel->srcfoot),
+				act->buf, len
+			);
 		}
+		orel = samesrcnextdst(orel);
 	}
 }
 static void switch_stop(struct actor* act, struct pinid* pin)
@@ -131,7 +126,7 @@ static void switch_create(struct actor* act, u8* buf)
 {
 	void* addr;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = memorycreate(0x100000);
+	act->buf = memorycreate(0x100000);
 
 	addr = systemcreate(_udp_, "127.0.0.1:2222");
 	if(0 == addr)return;
@@ -152,8 +147,6 @@ void switch_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('s','w','i','t','c','h',0,0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)switch_create;
 	p->ondelete = (void*)switch_delete;

@@ -316,8 +316,6 @@ void rubikscube_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;

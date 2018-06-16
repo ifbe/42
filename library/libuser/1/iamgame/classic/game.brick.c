@@ -49,8 +49,6 @@ void brick_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('b', 'r', 'i', 'c', 'k', 0, 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)brick_create;
 	p->ondelete = (void*)brick_delete;

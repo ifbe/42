@@ -91,7 +91,7 @@ public:
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
 		working->width = working->stride = 640;
 		working->height = 480;
-		struct relation* orel = working->orel;
+		struct relation* orel = (struct relation*)(working->orel0);
 		while(1)
 		{
 			if(0 == orel)break;

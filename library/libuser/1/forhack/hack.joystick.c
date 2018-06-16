@@ -114,8 +114,6 @@ void joystick_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('j', 'o', 'y', 's', 't', 'i', 'c', 'k');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)joystick_create;
 	p->ondelete = (void*)joystick_delete;

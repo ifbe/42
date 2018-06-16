@@ -195,8 +195,6 @@ void palette_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('p', 'a', 'l', 'e', 't', 't', 'e', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)palette_create;
 	p->ondelete = (void*)palette_delete;

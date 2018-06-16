@@ -10,7 +10,7 @@ int actoroutput_oneonone(struct arena* win, struct style* st)
 	struct style* sty;
 	struct pinid* pin;
 
-	rel = win->irel;
+	rel = win->irel0;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -38,7 +38,7 @@ int actorinput_oneonone(struct arena* win, struct event* ev)
 	struct relation* rel;
 	struct relation* tmp;
 
-	rel = win->irel;
+	rel = win->irel0;
 	if(0 == rel)return 0;
 
 	while(1)

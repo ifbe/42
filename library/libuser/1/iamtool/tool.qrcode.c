@@ -159,8 +159,6 @@ void qrcode_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('q', 'r', 'c', 'o', 'd', 'e', 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)qrcode_create;
 	p->ondelete = (void*)qrcode_delete;

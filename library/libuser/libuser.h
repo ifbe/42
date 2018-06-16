@@ -251,81 +251,24 @@ struct pinid
 	int flag1e;
 	int flag1f;
 };
-
-
-
-
-struct object
+struct stdhead
 {
-	//[0x00,0x0f]
-	u32 tier;
-	u32 type;	//raw, bt, udp, tcp?
-	u64 name;
+	//[0x00,0x1f]
 	union{
-		void* irel;
-		u64 pad0;
+		void* irel0;
+		u64 ipad0;
 	};
 	union{
-		void* orel;
-		u64 pad1;
-	};
-
-	//[0x20,0x3f]
-	u64 fd;
-	u64 flag;
-	u64 len;
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[0x40,0x7f]
-	u8 self[0x20];
-	u8 peer[0x20];
-
-	//[0x80,0xff]
-	u8 data[0x80];
-};
-struct element
-{
-	//[00,20]
-	u32 tier;
-	u32 type;	//http, tls, ssh
-	u64 stage1;
-	union{
-		void* irel;
-		u64 pad0;
+		void* ireln;
+		u64 ipadn;
 	};
 	union{
-		void* orel;
-		u64 pad1;
-	};
-
-	//[20,3f]
-	u64 fd;
-	u64 flag;
-	u64 len;
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[40,ff]
-	u8 data[0xc0];
-};
-struct arena
-{
-	//[00,1f]
-	u32 tier;
-	u32 type;
-	u64 fmt;
-	union{
-		struct relation* irel;
-		char pad0[8];
+		void* orel0;
+		u64 opad0;
 	};
 	union{
-		struct relation* orel;
-		char pad1[8];
+		void* oreln;
+		u64 opadn;
 	};
 
 	//[20,3f]data
@@ -350,27 +293,221 @@ struct arena
 		void* buf;
 	};
 
-	//[40,7f]func
-	u64 oncreate;
-	u64 ondelete;
-	u64 onstart;
-	u64 onstop;
-	u64 onread;
-	u64 onwrite;
-	u64 onlist;
-	u64 onchoose;
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
 
-	//[80,ff]
+	//[60,7f]
 	int width;
 	int height;
 	int depth;
 	int stride;
-
-	//[90,9f]
 	int fwidth;
 	int fheight;
 	int fdepth;
 	int fstride;
+};
+
+
+
+
+struct object
+{
+	//[0x00,0x1f]
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	//[20,3f]data
+	union{
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 len;
+		void* hp;
+		void* mod;
+		void* ximage;
+		void* texture;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[0x80,0xbf]
+	u8 self[0x20];
+	u8 peer[0x20];
+
+	//[0xc0,0xff]
+	u8 data[0x40];
+};
+struct element
+{
+	//[0x00,0x1f]
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	//[20,3f]data
+	union{
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 len;
+		void* hp;
+		void* mod;
+		void* ximage;
+		void* texture;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[80,ff]
+	u8 data[0x80];
+};
+struct arena
+{
+	//[0x00,0x1f]
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	//[20,3f]data
+	union{
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 len;
+		void* hp;
+		void* mod;
+		void* ximage;
+		void* texture;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[80,ff]
+	int flag00;
+	int flag01;
+	int flag02;
+	int flag03;
+
+	//[b0,bf]
+	int flag10;
+	int flag11;
+	int flag12;
+	int flag13;
 
 	//[a0,af]
 	int flag20;
@@ -420,38 +557,60 @@ struct arena
 };
 struct actor
 {
-	//[0,1f]
-	u32 tier;
-	u32 type;
-	u64 name;
+	//[0x00,0x1f]
 	union{
-		struct relation* irel;
-		char pad0[8];
+		void* irel0;
+		u64 ipad0;
 	};
 	union{
-		struct relation* orel;
-		char pad1[8];
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
 	};
 
-	//[20,3f]
+	//[20,3f]data
 	union{
 		u64 fd;
-		void* what0;
+		void* win;
 	};
 	union{
-		u64 abc;
-		void* what1;
+		u64 dc;
+		u64 gc;
+		void* er;
 	};
 	union{
 		u64 len;
-		void* unique;
+		void* idx;
 	};
 	union{
 		u64 addr;
 		void* buf;
 	};
 
-	//[40,7f]vec
+	//[40,5f]
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[60,7f]
+	int width;
+	int height;
+	int depth;
+	int stride;
+	int fwidth;
+	int fheight;
+	int fdepth;
+	int fstride;
+
+	//[80,bf]vec
 	union{
 		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
@@ -485,11 +644,19 @@ struct actor
 		char padding7[8];
 	};
 
-	//[80,ff]
-	struct style sty;
+	//[c0,ff]
+	u64 onfunc0;
+	u64 onfunc1;
+	u64 onfunc2;
+	u64 onfunc3;
+	u64 onfunc4;
+	u64 onfunc5;
+	u64 onfunc6;
+	u64 onfunc7;
 
 	//[100,1ff]
-	u8 detail[0x100];
+	struct style target;
+	struct style camera;
 };
 
 

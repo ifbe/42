@@ -93,8 +93,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			ret = cc/4;
 			obj[ret].type = 't';
 			obj[ret].name = 0;
-			obj[ret].irel = 0;
-			obj[ret].orel = 0;
+			obj[ret].irel0 = obj[ret].ireln = 0;
+			obj[ret].orel0 = obj[ret].oreln = 0;
 			obj[ret].selffd = ret;
 			obj[ret].thatfd = tmp;
 

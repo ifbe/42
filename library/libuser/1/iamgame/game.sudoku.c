@@ -294,8 +294,6 @@ void sudoku_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;

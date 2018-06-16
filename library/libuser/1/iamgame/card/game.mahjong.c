@@ -49,8 +49,6 @@ void mahjong_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)mahjong_create;
 	p->ondelete = (void*)mahjong_delete;

@@ -207,8 +207,6 @@ void calculator_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->name = hex32('c', 'a', 'l', 'c');
-	p->irel = 0;
-	p->orel = 0;
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;

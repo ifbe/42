@@ -35,7 +35,7 @@ int actoroutput_edit(struct arena* win, struct style* st)
 	u64 fmt = win->fmt;
 	if(_vbo_ == fmt)carveaxis(win);
 
-	rel = win->irel;
+	rel = win->irel0;
 	while(1)
 	{
 		if(rel == 0)break;
@@ -522,7 +522,7 @@ int playwith2d(struct arena* win, struct event* ev)
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
 
-	rel = win->irel;
+	rel = win->irel0;
 	if(rel == 0)return 1;
 	while(1)
 	{
