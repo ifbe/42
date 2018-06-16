@@ -183,10 +183,14 @@ static void piano_list()
 static void piano_into()
 {
 }
-static void piano_stop(struct actor* act, struct pinid* pin)
+static void piano_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void piano_start(struct actor* act, struct pinid* pin)
+static void piano_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void piano_delete(struct actor* act)

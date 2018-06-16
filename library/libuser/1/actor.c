@@ -33,6 +33,7 @@ static struct style* style = 0;
 static struct pinid* pinid = 0;
 static int actlen = 0;
 static int pinlen = 0;
+static int foolen = 0;
 void* allocactor()
 {
 	int j,max;
@@ -61,15 +62,27 @@ void* allocactor_reverse()
 }
 void* allocpinid()
 {
-	struct pinid* pin = (void*)pinid + pinlen;
-	pinlen += sizeof(struct pinid);
+	int j,len;
+	u8* buf;
 
-	pin->flag00 = 0;
-	pin->flag01 = 1;
-	pin->flag02 = 2;
-	pin->flag03 = 3;
+	len = 0x100;	//sizeof(struct pinid);
+	buf = (void*)pinid + pinlen;
+	pinlen += len;
 
-	return pin;
+	for(j=0;j<len;j++)buf[j] = 0;
+	return buf;
+}
+void* allocofoot()
+{
+	int j,len;
+	u8* buf;
+
+	len = 0x80;
+	buf = (void*)pinid + 0x100000 - len - foolen;
+	foolen += len;
+
+	for(j=0;j<len;j++)buf[j] = 0;
+	return buf;
 }
 
 
@@ -220,16 +233,20 @@ int actorread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	actorread_all(dc);
 	return 0;
 }
-int actorstop(struct actor* act, struct pinid* pin)
+int actorstop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	if(0 == act)return 0;
-	act->onstop(act, pin);
+	act->onstop(win, sty, act, pin);
 	return 0;
 }
-int actorstart(struct actor* act, struct pinid* pin)
+int actorstart(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	if(0 == act)return 0;
-	act->onstart(act, pin);
+	act->onstart(win, sty, act, pin);
 	return 0;
 }
 int actordelete(struct actor* act, u8* buf)

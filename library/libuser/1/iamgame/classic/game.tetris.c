@@ -249,10 +249,14 @@ static void tetris_list()
 static void tetris_choose()
 {
 }
-static void tetris_stop(struct actor* act, struct pinid* pin)
+static void tetris_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void tetris_start(struct actor* act, struct pinid* pin)
+static void tetris_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	tetris_generate(data, WIDTH, HEIGHT);
 }

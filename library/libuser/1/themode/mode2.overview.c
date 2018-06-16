@@ -8,8 +8,8 @@ void* allocstyle();
 void* allocpinid();
 void* actorcreate(void*, u8*);
 void* actordelete(void*, u8*);
-void* actorstart(void*, void*);
-void* actorstop(void*, void*);
+void* actorstart(void*, void*, void*, void*);
+void* actorstop(void*, void*, void*, void*);
 //
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
@@ -91,7 +91,7 @@ int arenaactor(struct arena* win, struct actor* act)
 	}
 
 	actorcreate(act, 0);
-	actorstart(act, pin);
+	actorstart(win, sty, act, pin);
 	relationcreate(win, sty, _win_, act, pin, _act_);
 	return 0;
 }

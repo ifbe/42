@@ -112,10 +112,14 @@ static void poker_list()
 static void poker_choose()
 {
 }
-static void poker_stop(struct actor* act, struct pinid* pin)
+static void poker_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void poker_start(struct actor* act, struct pinid* pin)
+static void poker_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void poker_delete(struct actor* act)

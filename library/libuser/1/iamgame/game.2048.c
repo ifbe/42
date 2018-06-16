@@ -312,10 +312,14 @@ static void the2048_write(
 		else if(_dn_ == k)the2048_move(act, 'n');
 	}
 }
-static void the2048_stop(struct actor* act, struct pinid* pin)
+static void the2048_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void the2048_start(struct actor* act, struct pinid* pin)
+static void the2048_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int j;
 	if(0 == act->len)new2048((act->buf));

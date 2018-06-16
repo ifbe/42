@@ -281,10 +281,14 @@ static void weiqi_list()
 static void weiqi_choose()
 {
 }
-static void weiqi_stop(struct actor* act, struct pinid* pin)
+static void weiqi_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void weiqi_start(struct actor* act, struct pinid* pin)
+static void weiqi_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int x,y;
 

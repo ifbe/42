@@ -146,10 +146,14 @@ static void algorithm_list()
 static void algorithm_choose()
 {
 }
-static void algorithm_stop(struct actor* act, struct pinid* pin)
+static void algorithm_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void algorithm_start(struct actor* act, struct pinid* pin)
+static void algorithm_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void algorithm_delete(struct actor* act)

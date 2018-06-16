@@ -290,10 +290,14 @@ static void rubikscube_list()
 static void rubikscube_choose()
 {
 }
-static void rubikscube_stop(struct actor* act, struct pinid* pin)
+static void rubikscube_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void rubikscube_start(struct actor* act, struct pinid* pin)
+static void rubikscube_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	rubikscube_generate(buffer, level);
 }

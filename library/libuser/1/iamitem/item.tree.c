@@ -157,10 +157,14 @@ static void tree_list()
 static void tree_change()
 {
 }
-static void tree_stop(struct actor* act, struct pinid* pin)
+static void tree_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void tree_start(struct actor* act, struct pinid* pin)
+static void tree_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void tree_delete(struct actor* act)

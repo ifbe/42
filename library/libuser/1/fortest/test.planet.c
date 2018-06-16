@@ -161,10 +161,14 @@ static void planet_list()
 static void planet_change()
 {
 }
-static void planet_stop(struct actor* act, struct pinid* pin)
+static void planet_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void planet_start(struct actor* act, struct pinid* pin)
+static void planet_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void planet_delete(struct actor* act)

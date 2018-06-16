@@ -24,10 +24,14 @@ static void minesweep_list()
 static void minesweep_choose()
 {
 }
-static void minesweep_stop(struct actor* act, struct pinid* pin)
+static void minesweep_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void minesweep_start(struct actor* act, struct pinid* pin)
+static void minesweep_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void minesweep_delete(struct actor* act)

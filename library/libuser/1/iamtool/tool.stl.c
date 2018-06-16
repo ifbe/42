@@ -247,10 +247,14 @@ static void stl_list()
 static void stl_change()
 {
 }
-static void stl_stop(struct actor* act, struct pinid* pin)
+static void stl_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void stl_start(struct actor* act, struct pinid* pin)
+static void stl_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	stl_prep(act, "42.stl");
 }

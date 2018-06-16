@@ -356,10 +356,14 @@ static void graph_list()
 static void graph_change()
 {
 }
-static void graph_stop(struct actor* act, struct pinid* pin)
+static void graph_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void graph_start(struct actor* act, struct pinid* pin)
+static void graph_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void graph_delete(struct actor* act)

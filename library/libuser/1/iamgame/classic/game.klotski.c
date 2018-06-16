@@ -134,10 +134,14 @@ static void klotski_list()
 static void klotski_change()
 {
 }
-static void klotski_stop(struct actor* act, struct pinid* pin)
+static void klotski_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void klotski_start(struct actor* act, struct pinid* pin)
+static void klotski_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;

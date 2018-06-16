@@ -165,10 +165,14 @@ static void chess_write(
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
-static void chess_stop(struct actor* act, struct pinid* pin)
+static void chess_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void chess_start(struct actor* act, struct pinid* pin)
+static void chess_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int j,k;
 	for(k=0;k<8;k++)

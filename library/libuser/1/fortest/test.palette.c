@@ -170,10 +170,14 @@ static void palette_list()
 static void palette_into()
 {
 }
-static void palette_stop(struct actor* act, struct pinid* pin)
+static void palette_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void palette_start(struct actor* act, struct pinid* pin)
+static void palette_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void palette_delete(struct actor* act)

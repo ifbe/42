@@ -132,10 +132,14 @@ static void qrcode_list()
 static void qrcode_into()
 {
 }
-static void qrcode_stop(struct actor* act, struct pinid* pin)
+static void qrcode_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void qrcode_start(struct actor* act, struct pinid* pin)
+static void qrcode_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	slen=49;
 	qrcode_generate("haha",databuf,slen);

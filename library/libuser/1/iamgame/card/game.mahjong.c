@@ -24,10 +24,14 @@ static void mahjong_list()
 static void mahjong_choose()
 {
 }
-static void mahjong_stop(struct actor* act, struct pinid* pin)
+static void mahjong_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void mahjong_start(struct actor* act, struct pinid* pin)
+static void mahjong_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void mahjong_delete(struct actor* act)

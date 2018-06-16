@@ -149,10 +149,14 @@ static void fractal_list()
 static void fractal_change()
 {
 }
-static void fractal_stop(struct actor* act, struct pinid* pin)
+static void fractal_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void fractal_start(struct actor* act, struct pinid* pin)
+static void fractal_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void fractal_delete(struct actor* act)

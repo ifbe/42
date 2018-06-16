@@ -24,10 +24,14 @@ static void puzzle_list()
 static void puzzle_choose()
 {
 }
-static void puzzle_stop(struct actor* act, struct pinid* pin)
+static void puzzle_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void puzzle_start(struct actor* act, struct pinid* pin)
+static void puzzle_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void puzzle_delete(struct actor* act)

@@ -838,10 +838,14 @@ static void terminal_list()
 static void terminal_change()
 {
 }
-static void terminal_stop()
+static void terminal_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void terminal_start(struct actor* act, struct pinid* pin)
+static void terminal_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	listlen = listuart(listbuf, 0x100);
 	if(listlen != 0)say("%.*s", listlen, listbuf);

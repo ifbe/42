@@ -165,10 +165,14 @@ static void snake_list()
 static void snake_choose()
 {
 }
-static void snake_stop(struct actor* act, struct pinid* pin)
+static void snake_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void snake_start(struct actor* act, struct pinid* pin)
+static void snake_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	snake_generate(buf, WIDTH, HEIGHT);
 }

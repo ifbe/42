@@ -18,10 +18,14 @@ static void brick_write(
 	struct event* ev, int len)
 {
 }
-static void brick_stop(struct actor* act, struct pinid* pin)
+static void brick_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void brick_start(struct actor* act, struct pinid* pin)
+static void brick_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void brick_delete(struct actor* act)

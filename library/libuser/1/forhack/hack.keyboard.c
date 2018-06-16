@@ -126,10 +126,14 @@ static void keyboard_list()
 static void keyboard_change()
 {
 }
-static void keyboard_stop(struct actor* act, struct pinid* pin)
+static void keyboard_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void keyboard_start(struct actor* act, struct pinid* pin)
+static void keyboard_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void keyboard_delete(struct actor* act)

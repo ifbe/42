@@ -156,10 +156,14 @@ static void pegged_list()
 static void pegged_change()
 {
 }
-static void pegged_stop(struct actor* act, struct pinid* pin)
+static void pegged_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void pegged_start(struct actor* act, struct pinid* pin)
+static void pegged_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int x,y;
 	for(y=0;y<7;y++)

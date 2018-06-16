@@ -124,10 +124,14 @@ static void fs_list()
 static void fs_into()
 {
 }
-static void fs_stop(struct actor* act, struct pinid* pin)
+static void fs_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void fs_start(struct actor* act, struct pinid* pin)
+static void fs_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void fs_delete(struct actor* act)

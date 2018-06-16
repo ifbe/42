@@ -480,10 +480,14 @@ static void xiangqi_list()
 static void xiangqi_choose()
 {
 }
-static void xiangqi_stop(struct actor* act, struct pinid* pin)
+static void xiangqi_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void xiangqi_start(struct actor* act, struct pinid* pin)
+static void xiangqi_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int j;
 	char* p = (char*)data;

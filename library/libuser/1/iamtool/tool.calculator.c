@@ -176,10 +176,14 @@ static void calculator_list()
 static void calculator_change()
 {
 }
-static void calculator_stop(struct actor* act, struct pinid* pin)
+static void calculator_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void calculator_start(struct actor* act, struct pinid* pin)
+static void calculator_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int j;
 	buffer[0] = '1';

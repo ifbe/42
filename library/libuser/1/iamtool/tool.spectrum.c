@@ -249,10 +249,14 @@ static void spectrum_list()
 static void spectrum_into()
 {
 }
-static void spectrum_stop(struct actor* act, struct pinid* pin)
+static void spectrum_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void spectrum_start(struct actor* act, struct pinid* pin)
+static void spectrum_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void spectrum_delete(struct actor* act)

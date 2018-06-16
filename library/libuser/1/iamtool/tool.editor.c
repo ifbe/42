@@ -73,10 +73,14 @@ static void editor_list()
 static void editor_choose()
 {
 }
-static void editor_stop(struct actor* act, struct pinid* pin)
+static void editor_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void editor_start(struct actor* act, struct pinid* pin)
+static void editor_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void editor_delete(struct actor* act)

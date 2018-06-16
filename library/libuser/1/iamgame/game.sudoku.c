@@ -240,10 +240,14 @@ static void sudoku_list()
 static void sudoku_choose()
 {
 }
-static void sudoku_stop(struct actor* act, struct pinid* pin)
+static void sudoku_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void sudoku_start(struct actor* act, struct pinid* pin)
+static void sudoku_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	u8* p;
 	int j;

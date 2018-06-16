@@ -134,10 +134,14 @@ static void example_list()
 static void example_change()
 {
 }
-static void example_stop(struct actor* act, struct pinid* pin)
+static void example_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void example_start(struct actor* act, struct pinid* pin)
+static void example_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void example_delete(struct actor* act)

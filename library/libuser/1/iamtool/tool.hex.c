@@ -181,10 +181,14 @@ static void hex_list()
 static void hex_into()
 {
 }
-static void hex_stop(struct actor* act, struct pinid* pin)
+static void hex_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void hex_start(struct actor* act, struct pinid* pin)
+static void hex_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void hex_delete(struct actor* act)

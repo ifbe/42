@@ -229,10 +229,14 @@ static void bintree_list()
 static void bintree_into()
 {
 }
-static void bintree_start(struct actor* act, struct pinid* pin)
+static void bintree_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void bintree_stop(struct actor* act, struct pinid* pin)
+static void bintree_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void bintree_delete(struct actor* act)

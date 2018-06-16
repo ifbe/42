@@ -225,10 +225,14 @@ static void font_list()
 static void font_change()
 {
 }
-static void font_stop(struct actor* act, struct pinid* pin)
+static void font_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void font_start(struct actor* act, struct pinid* pin)
+static void font_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void font_delete(struct actor* act)

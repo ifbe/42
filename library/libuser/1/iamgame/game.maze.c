@@ -294,10 +294,14 @@ static void maze_list()
 static void maze_choose()
 {
 }
-static void maze_stop(struct actor* act, struct pinid* pin)
+static void maze_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void maze_start(struct actor* act, struct pinid* pin)
+static void maze_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	maze_generate(buffer, WIDTH, HEIGHT);
 	maze_solve(buffer, WIDTH, HEIGHT);

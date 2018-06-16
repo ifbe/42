@@ -143,7 +143,7 @@ struct texandobj
 	u32 vlen;
 	void* vbuf;
 };
-struct ofoot
+struct ifoot
 {
 	//target
 	u32 fbo;
@@ -168,7 +168,7 @@ struct ofoot
 	u32 ibo_len[4];
 	u32 ibo_deq[4];
 };
-struct ifoot
+struct ofoot
 {
 	//target: 0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
 	u32 target;
@@ -620,11 +620,11 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* actor, void* pinid);
+		int (*onstart)(void* dc,void* df,void* sc,void* sf);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* actor, void* pinid);
+		int (*onstop)(void* dc,void* df,void* sc,void* sf);
 		char padding3[8];
 	};
 	union{

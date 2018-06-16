@@ -92,10 +92,14 @@ static void joystick_list()
 static void joystick_change()
 {
 }
-static void joystick_stop(struct actor* act, struct pinid* pin)
+static void joystick_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void joystick_start(struct actor* act, struct pinid* pin)
+static void joystick_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void joystick_delete(struct actor* act)

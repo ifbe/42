@@ -97,10 +97,14 @@ static void rawdump_write(
 	//writefile();
 	queuepacket(act->buf, act->idx, buf, len);
 }
-static void rawdump_stop(struct actor* act, struct pinid* pin)
+static void rawdump_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void rawdump_start(struct actor* act, struct pinid* pin)
+static void rawdump_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void rawdump_delete(struct actor* act, u8* buf)

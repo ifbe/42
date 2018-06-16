@@ -24,10 +24,14 @@ static void gobang_list()
 static void gobang_choose()
 {
 }
-static void gobang_stop(struct actor* act, struct pinid* pin)
+static void gobang_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void gobang_start(struct actor* act, struct pinid* pin)
+static void gobang_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void gobang_delete(struct actor* act)

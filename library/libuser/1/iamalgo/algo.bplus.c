@@ -196,10 +196,14 @@ static void bplus_list()
 static void bplus_into()
 {
 }
-static void bplus_stop(struct actor* act, struct pinid* pin)
+static void bplus_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void bplus_start(struct actor* act, struct pinid* pin)
+static void bplus_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void bplus_delete(struct actor* act)

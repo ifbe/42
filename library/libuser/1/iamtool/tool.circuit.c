@@ -165,10 +165,14 @@ static void circuit_list()
 static void circuit_change()
 {
 }
-static void circuit_stop(struct actor* act, struct pinid* pin)
+static void circuit_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void circuit_start(struct actor* act, struct pinid* pin)
+static void circuit_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int x,y;
 	for(y=0;y<HEIGHT;y++)

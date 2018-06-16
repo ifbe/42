@@ -228,10 +228,14 @@ static void codeimg_list()
 static void codeimg_change()
 {
 }
-static void codeimg_stop(struct actor* act, struct pinid* pin)
+static void codeimg_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void codeimg_start(struct actor* act, struct pinid* pin)
+static void codeimg_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void codeimg_delete(struct actor* act)

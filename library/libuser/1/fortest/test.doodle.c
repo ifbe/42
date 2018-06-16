@@ -183,10 +183,14 @@ static void doodle_list()
 static void doodle_change()
 {
 }
-static void doodle_stop(struct actor* act, struct pinid* pin)
+static void doodle_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void doodle_start(struct actor* act, struct pinid* pin)
+static void doodle_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void doodle_delete(struct actor* act)

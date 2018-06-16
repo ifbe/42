@@ -177,7 +177,7 @@ void parsexml_relation(u8* buf, int len)
 		parsepinid(pin, buf+m, n-m);
 
 		act->oncreate(act, 0);
-		act->onstart(act, pin);
+		act->onstart(win, css, act, pin);
 		relationcreate(win, css, _win_, act, pin, _act_);
 	}
 	else

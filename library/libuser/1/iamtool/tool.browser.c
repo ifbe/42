@@ -149,10 +149,14 @@ static void browser_list()
 static void browser_change()
 {
 }
-static void browser_stop(struct actor* act, struct pinid* pin)
+static void browser_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void browser_start(struct actor* act, struct pinid* pin)
+static void browser_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void browser_delete(struct actor* act)

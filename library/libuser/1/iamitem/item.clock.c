@@ -133,10 +133,14 @@ static void clock_list()
 static void clock_change()
 {
 }
-static void clock_stop(struct actor* act, struct pinid* pin)
+static void clock_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void clock_start(struct actor* act, struct pinid* pin)
+static void clock_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void clock_delete(struct actor* act)

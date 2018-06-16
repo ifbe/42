@@ -165,10 +165,14 @@ static void house_list()
 static void house_change()
 {
 }
-static void house_stop(struct actor* act, struct pinid* pin)
+static void house_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void house_start(struct actor* act, struct pinid* pin)
+static void house_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void house_delete(struct actor* act)

@@ -445,10 +445,14 @@ static void sketchpad_list()
 static void sketchpad_change()
 {
 }
-static void sketchpad_stop(struct actor* act, struct pinid* pin)
+static void sketchpad_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void sketchpad_start(struct actor* act, struct pinid* pin)
+static void sketchpad_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	centerx = 0.00;
 	centery = 0.00;

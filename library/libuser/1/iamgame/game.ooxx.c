@@ -176,10 +176,14 @@ static void ooxx_list()
 static void ooxx_choose()
 {
 }
-static void ooxx_stop(struct actor* act, struct pinid* pin)
+static void ooxx_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void ooxx_start(struct actor* act, struct pinid* pin)
+static void ooxx_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int x,y;
 

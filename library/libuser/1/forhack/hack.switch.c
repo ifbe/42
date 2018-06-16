@@ -110,10 +110,14 @@ static void switch_write(
 		orel = samesrcnextdst(orel);
 	}
 }
-static void switch_stop(struct actor* act, struct pinid* pin)
+static void switch_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void switch_start(struct actor* act, struct pinid* pin)
+static void switch_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void switch_delete(struct actor* act, u8* buf)
