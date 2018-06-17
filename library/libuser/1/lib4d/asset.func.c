@@ -1,13 +1,29 @@
 #include "libuser.h"
+//hack
+void joystick_register(void*);
+void keyboard_register(void*);
+void rawdump_register(void*);
+void switch_register(void*);
+//algo
+void algorithm_register(void*);
+void bintree_register(void*);
+void bplus_register(void*);
+void fs_register(void*);
+void graph_register(void*);
+void hex_register(void*);
 //test
-void clock_register(void*);
 void codeimg_register(void*);
 void doodle_register(void*);
 void example_register(void*);
 void fractal_register(void*);
-void house_register(void*);
 void palette_register(void*);
 void planet_register(void*);
+//item
+void clock_register(void*);
+void house_register(void*);
+void model_register(void*);
+void piano_register(void*);
+void picture_register(void*);
 void tree_register(void*);
 //game
 void the2048_register(void*);
@@ -29,23 +45,10 @@ void calculator_register(void*);
 void camera_register(void*);
 void circuit_register(void*);
 void font_register(void*);
-void piano_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
-void stl_register(void*);
 void terminal_register(void*);
-//hack
-void algorithm_register(void*);
-void bintree_register(void*);
-void bplus_register(void*);
-void fs_register(void*);
-void graph_register(void*);
-void hex_register(void*);
-void joystick_register(void*);
-void keyboard_register(void*);
-void rawdump_register(void*);
-void switch_register(void*);
 
 
 
@@ -177,8 +180,12 @@ void content_create(void* addr)
 	sketchpad_register(temp);
 	temp += sizeof(struct actor);
 
-	//tool.stl
-	stl_register(temp);
+	//model
+	model_register(temp);
+	temp += sizeof(struct actor);
+
+	//picture
+	picture_register(temp);
 	temp += sizeof(struct actor);
 
 	//tool.spectrum

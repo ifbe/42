@@ -332,7 +332,9 @@ library/libuser/1/iamgame/game.rubik.c \
 library/libuser/1/iamgame/game.sudoku.c \
 library/libuser/1/iamitem/item.clock.c \
 library/libuser/1/iamitem/item.house.c \
+library/libuser/1/iamitem/item.model.c \
 library/libuser/1/iamitem/item.piano.c \
+library/libuser/1/iamitem/item.picture.c \
 library/libuser/1/iamitem/item.tree.c \
 library/libuser/1/iamtool/tool.browser.c \
 library/libuser/1/iamtool/tool.calculator.c \
@@ -344,7 +346,6 @@ library/libuser/1/iamtool/tool.hex.c \
 library/libuser/1/iamtool/tool.qrcode.c \
 library/libuser/1/iamtool/tool.sketchpad.c \
 library/libuser/1/iamtool/tool.spectrum.c \
-library/libuser/1/iamtool/tool.stl.c \
 library/libuser/1/iamtool/tool.terminal.c \
 library/libuser/1/thebgfg/bgfg.gif.c \
 library/libuser/1/thebgfg/bgfg.jpg.c \

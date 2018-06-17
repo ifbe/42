@@ -62,6 +62,10 @@ typedef float mat4[4][4];
 #define _rs_ hex16('r','s')
 #define _ll_ hex16('l','l')
 #define _rr_ hex16('r','r')
+#define vbuffmt_32 0x23
+#define vbuffmt_33 0x33
+#define vbuffmt_333 0x333
+#define vbuffmt_332 0x233
 
 
 
@@ -191,6 +195,7 @@ struct ofoot
 	u32 ibuf_enq[4];
 
 	u64 vbuf[4];
+	u32 vbuf_fmt[4];
 	u32 vbuf_len[4];
 	u32 vbuf_enq[4];
 };

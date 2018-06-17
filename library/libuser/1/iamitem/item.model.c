@@ -95,7 +95,7 @@ void stl_prep(struct actor* act, void* name)
 
 
 
-static void stl_read_pixel(
+static void model_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -145,7 +145,7 @@ static void stl_read_pixel(
 	}
 */
 }
-static void stl_read_vbo(
+static void model_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -158,12 +158,12 @@ static void stl_read_vbo(
 
 	carvestl(win, 0xffffff, vc, vr, vf, vu, act, 0);
 }
-static void stl_read_json(
+static void model_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void stl_read_html(
+static void model_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -172,41 +172,41 @@ static void stl_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"stl\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
+		"<div id=\"model\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
 	win->len = len;
 }
-static void stl_read_tui(
+static void model_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void stl_read_cli(
+static void model_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	say("stl(%x,%x,%x)\n",win,act,sty);
+	say("model(%x,%x,%x)\n",win,act,sty);
 }
-static void stl_read(
+static void model_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)stl_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)stl_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)stl_read_html(win, sty, act, pin);
-	else if(fmt == _json_)stl_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)stl_read_vbo(win, sty, act, pin);
-	else stl_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)model_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)model_read_tui(win, sty, act, pin);
+	else if(fmt == _html_)model_read_html(win, sty, act, pin);
+	else if(fmt == _json_)model_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)model_read_vbo(win, sty, act, pin);
+	else model_read_pixel(win, sty, act, pin);
 }
 
 
 
 
-static void stl_write(
+static void model_write(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -241,30 +241,30 @@ static void stl_write(
 
 
 
-static void stl_list()
+static void model_list()
 {
 }
-static void stl_change()
+static void model_change()
 {
 }
-static void stl_stop(
+static void model_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void stl_start(
+static void model_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	stl_prep(act, "42.stl");
 }
-static void stl_delete(struct actor* act)
+static void model_delete(struct actor* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void stl_create(struct actor* act)
+static void model_create(struct actor* act)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(0x800000);
@@ -274,17 +274,17 @@ static void stl_create(struct actor* act)
 
 
 
-void stl_register(struct actor* p)
+void model_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('s', 't', 'l', 0);
+	p->name = hex64('m', 'o', 'd', 'e', 'l', 0, 0, 0);
 
-	p->oncreate = (void*)stl_create;
-	p->ondelete = (void*)stl_delete;
-	p->onstart  = (void*)stl_start;
-	p->onstop   = (void*)stl_stop;
-	p->onlist   = (void*)stl_list;
-	p->onchoose = (void*)stl_change;
-	p->onread   = (void*)stl_read;
-	p->onwrite  = (void*)stl_write;
+	p->oncreate = (void*)model_create;
+	p->ondelete = (void*)model_delete;
+	p->onstart  = (void*)model_start;
+	p->onstop   = (void*)model_stop;
+	p->onlist   = (void*)model_list;
+	p->onchoose = (void*)model_change;
+	p->onread   = (void*)model_read;
+	p->onwrite  = (void*)model_write;
 }

@@ -76,7 +76,9 @@ iamgame/game.rubik.c \
 iamgame/game.sudoku.c \
 iamitem/item.clock.c \
 iamitem/item.house.c \
+iamitem/item.model.c \
 iamitem/item.piano.c \
+iamitem/item.picture.c \
 iamitem/item.tree.c \
 iamtool/tool.browser.c \
 iamtool/tool.calculator.c \
@@ -88,7 +90,6 @@ iamtool/tool.hex.c \
 iamtool/tool.qrcode.c \
 iamtool/tool.sketchpad.c \
 iamtool/tool.spectrum.c \
-iamtool/tool.stl.c \
 iamtool/tool.terminal.c \
 thebgfg/bgfg.gif.c \
 thebgfg/bgfg.jpg.c \
