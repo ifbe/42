@@ -70,10 +70,13 @@ thehack/hack.rawdump.c \
 thehack/hack.switch.c \
 theitem/item.clock.c \
 theitem/item.house.c \
+theitem/item.human.c \
 theitem/item.model.c \
 theitem/item.piano.c \
 theitem/item.picture.c \
+theitem/item.terrian.c \
 theitem/item.tree.c \
+theitem/item.water.c \
 thetest/test.codeimg.c \
 thetest/test.doodle.c \
 thetest/test.example.c \

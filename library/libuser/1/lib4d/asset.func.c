@@ -1,9 +1,4 @@
 #include "libuser.h"
-//hack
-void joystick_register(void*);
-void keyboard_register(void*);
-void rawdump_register(void*);
-void switch_register(void*);
 //algo
 void algorithm_register(void*);
 void bintree_register(void*);
@@ -11,20 +6,21 @@ void bplus_register(void*);
 void fs_register(void*);
 void graph_register(void*);
 void hex_register(void*);
-//test
-void codeimg_register(void*);
-void doodle_register(void*);
-void example_register(void*);
-void fractal_register(void*);
-void palette_register(void*);
-void planet_register(void*);
+//hack
+void joystick_register(void*);
+void keyboard_register(void*);
+void rawdump_register(void*);
+void switch_register(void*);
 //item
 void clock_register(void*);
 void house_register(void*);
+void human_register(void*);
 void model_register(void*);
 void piano_register(void*);
 void picture_register(void*);
+void terrian_register(void*);
 void tree_register(void*);
+void water_register(void*);
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -39,6 +35,13 @@ void sudoku_register(void*);
 void tetris_register(void*);
 void weiqi_register(void*);
 void xiangqi_register(void*);
+//test
+void codeimg_register(void*);
+void doodle_register(void*);
+void example_register(void*);
+void fractal_register(void*);
+void palette_register(void*);
+void planet_register(void*);
 //tool
 void browser_register(void*);
 void calculator_register(void*);
@@ -60,179 +63,168 @@ void content_create(void* addr)
 {
 	void* temp = addr + 0x100000;
 
-	//test.clock
-	clock_register(temp);
-	temp += sizeof(struct actor);
 
-	//test.codeimg
-	codeimg_register(temp);
-	temp += sizeof(struct actor);
 
-	//test.doodle
-	doodle_register(temp);
-	temp += sizeof(struct actor);
 
-	//test.example
-	example_register(temp);
-	temp += sizeof(struct actor);
-
-	//test.fractal
-	fractal_register(temp);
-	temp += sizeof(struct actor);
-
-	//test.house
-	house_register(temp);
-	temp += sizeof(struct actor);
-
-	//test.palette
-	palette_register(temp);
-	temp += sizeof(struct actor);
-
-	//test.planet
-	planet_register(temp);
-	temp += sizeof(struct actor);
-
-	//test.tree
-	tree_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.2048
-	the2048_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.chess
-	chess_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.klotski
-	klotski_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.maze
-	maze_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.ooxx
-	ooxx_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.pegged
-	pegged_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.poker
-	poker_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.rubik
-	rubikscube_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.snake
-	snake_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.sudoku
-	sudoku_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.tetris
-	tetris_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.weiqi
-	weiqi_register(temp);
-	temp += sizeof(struct actor);
-
-	//game.xiangqi
-	xiangqi_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.browser
-	browser_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.calculator
-	calculator_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.camera
-	camera_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.circuit
-	circuit_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.font
-	font_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.piano
-	piano_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.qrcode
-	qrcode_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.sketchpad
-	sketchpad_register(temp);
-	temp += sizeof(struct actor);
-
-	//model
-	model_register(temp);
-	temp += sizeof(struct actor);
-
-	//picture
-	picture_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.spectrum
-	spectrum_register(temp);
-	temp += sizeof(struct actor);
-
-	//tool.terminal
-	terminal_register(temp);
-	temp += sizeof(struct actor);
-
-	//hack.algorithm
+//---------------------algo----------------------
 	algorithm_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.bintree
 	bintree_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.bplus
 	bplus_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.fs
-	fs_register(temp);
-	temp += sizeof(struct actor);
-
-	//hack.graph
 	graph_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.hex
-	hex_register(temp);
+
+
+
+//----------------------game----------------------
+	the2048_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.joystick
+	chess_register(temp);
+	temp += sizeof(struct actor);
+
+	klotski_register(temp);
+	temp += sizeof(struct actor);
+
+	maze_register(temp);
+	temp += sizeof(struct actor);
+
+	ooxx_register(temp);
+	temp += sizeof(struct actor);
+
+	pegged_register(temp);
+	temp += sizeof(struct actor);
+
+	poker_register(temp);
+	temp += sizeof(struct actor);
+
+	rubikscube_register(temp);
+	temp += sizeof(struct actor);
+
+	snake_register(temp);
+	temp += sizeof(struct actor);
+
+	sudoku_register(temp);
+	temp += sizeof(struct actor);
+
+	tetris_register(temp);
+	temp += sizeof(struct actor);
+
+	weiqi_register(temp);
+	temp += sizeof(struct actor);
+
+	xiangqi_register(temp);
+	temp += sizeof(struct actor);
+
+
+
+
+//--------------------hack-------------------------
+	fs_register(temp);
+	temp += sizeof(struct actor);
+
 	joystick_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.keyboard
 	keyboard_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.rawdump
 	rawdump_register(temp);
 	temp += sizeof(struct actor);
 
-	//hack.switch
 	switch_register(temp);
+	temp += sizeof(struct actor);
+
+
+
+
+//----------------------item-----------------------
+	clock_register(temp);
+	temp += sizeof(struct actor);
+
+	house_register(temp);
+	temp += sizeof(struct actor);
+
+	human_register(temp);
+	temp += sizeof(struct actor);
+
+	model_register(temp);
+	temp += sizeof(struct actor);
+
+	piano_register(temp);
+	temp += sizeof(struct actor);
+
+	picture_register(temp);
+	temp += sizeof(struct actor);
+
+	terrian_register(temp);
+	temp += sizeof(struct actor);
+
+	tree_register(temp);
+	temp += sizeof(struct actor);
+
+	water_register(temp);
+	temp += sizeof(struct actor);
+
+
+
+
+//----------------------test----------------------
+	codeimg_register(temp);
+	temp += sizeof(struct actor);
+
+	doodle_register(temp);
+	temp += sizeof(struct actor);
+
+	example_register(temp);
+	temp += sizeof(struct actor);
+
+	fractal_register(temp);
+	temp += sizeof(struct actor);
+
+	palette_register(temp);
+	temp += sizeof(struct actor);
+
+	planet_register(temp);
+	temp += sizeof(struct actor);
+
+
+
+
+//------------------------tool--------------------
+	browser_register(temp);
+	temp += sizeof(struct actor);
+
+	calculator_register(temp);
+	temp += sizeof(struct actor);
+
+	camera_register(temp);
+	temp += sizeof(struct actor);
+
+	circuit_register(temp);
+	temp += sizeof(struct actor);
+
+	font_register(temp);
+	temp += sizeof(struct actor);
+
+	hex_register(temp);
+	temp += sizeof(struct actor);
+
+	qrcode_register(temp);
+	temp += sizeof(struct actor);
+
+	sketchpad_register(temp);
+	temp += sizeof(struct actor);
+
+	spectrum_register(temp);
+	temp += sizeof(struct actor);
+
+	terminal_register(temp);
 	temp += sizeof(struct actor);
 }

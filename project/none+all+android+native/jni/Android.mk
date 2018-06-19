@@ -345,10 +345,13 @@ library/libuser/1/thehack/hack.rawdump.c \
 library/libuser/1/thehack/hack.switch.c \
 library/libuser/1/theitem/item.clock.c \
 library/libuser/1/theitem/item.house.c \
+library/libuser/1/theitem/item.human.c \
 library/libuser/1/theitem/item.model.c \
 library/libuser/1/theitem/item.piano.c \
 library/libuser/1/theitem/item.picture.c \
+library/libuser/1/theitem/item.terrian.c \
 library/libuser/1/theitem/item.tree.c \
+library/libuser/1/theitem/item.water.c \
 library/libuser/1/thetest/test.codeimg.c \
 library/libuser/1/thetest/test.doodle.c \
 library/libuser/1/thetest/test.example.c \
