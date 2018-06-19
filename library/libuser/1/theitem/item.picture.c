@@ -1,16 +1,5 @@
 #include "libuser.h"
-int openreadclose(void*, u64, void*, u64);
-int openwriteclose(void*, u64, void*, u64);
-
-void njInit(void);
-void njDone(void);
-int njDecode(const void* jpeg, const int size);
-
-int njGetWidth(void);
-int njGetHeight(void);
-int njIsColor(void);
-int njGetImageSize(void);
-unsigned char* njGetImage(void);
+void actorcreatefromfile(struct actor* act, char* name);
 
 
 
@@ -155,41 +144,8 @@ static void picture_delete(struct actor* act)
 }
 static void picture_create(struct actor* act)
 {
-	int ret;
-	int len;
-	u8* buf;
-	u8* rgb;
 	if(0 == act)return;
-
-	buf = memorycreate(0x400000);
-	len = openreadclose("wall/wall.jpg", 0, buf, 0x400000);
-	if(len <= 0)
-	{
-		say("len=%d\n", len);
-		return;
-	}
-
-    njInit();
-	ret = njDecode(buf, len);
-	if(0 != ret)
-	{
-		say("error@njDecode:%d\n", ret);
-		return;
-	}
-
-	rgb = njGetImage();
-	len = (njGetImageSize())/3;
-	for(ret=0;ret<len;ret++)
-	{
-		buf[ret*4+0] = rgb[ret*3+2];
-		buf[ret*4+1] = rgb[ret*3+1];
-		buf[ret*4+2] = rgb[ret*3+0];
-		buf[ret*4+3] = 0;
-	}
-
-	act->width = njGetWidth();
-	act->height = njGetHeight();
-	act->buf = buf;
+	actorcreatefromfile(act, "wall/wall.jpg");
 }
 
 

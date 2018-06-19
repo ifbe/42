@@ -4,93 +4,7 @@ int openwriteclose(void*, u64, void*, u64);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
 void carvestl(void*, u32, vec3, vec3, vec3, vec3, void*, int);
-
-
-
-
-void stl_prep(struct actor* act, void* name)
-{
-	float* p;
-	float* vl = act->target.vl;	//left
-	float* vr = act->target.vr;	//right
-	float* vn = act->target.vn;	//near
-	float* vf = act->target.vf;	//far
-	float* vb = act->target.vb;	//bot
-	float* vu = act->target.vu;	//top
-	float* vv = act->target.vv;	//info
-	float* vc = act->target.vc;	//center
-	int j,ret;
-	
-	act->len = openreadclose(name, 0, act->buf, 0x800000);
-	say("stllen=%x\n", (act->len));
-	if((act->len) <= 0)return;
-
-	vl[0] = 100000.0;
-	vl[1] = 0.0;
-	vl[2] = 0.0;
-	vr[0] = -100000.0;
-	vr[1] = 0.0;
-	vr[2] = 0.0;
-
-	vn[0] = 0.0;
-	vn[1] = 100000.0;
-	vn[2] = 0.0;
-	vf[0] = 0.0;
-	vf[1] = -100000.0;
-	vf[2] = 0.0;
-
-	vb[0] = 0.0;
-	vb[1] = 0.0;
-	vb[2] = 100000.0;
-	vu[0] = 0.0;
-	vu[1] = 0.0;
-	vu[0] = -100000.0;
-
-	ret = *(u32*)((act->buf)+80);
-	say("len=%x, count=%x\n", (act->len), ret);
-	ret = ret%(0x200000/36);
-
-	for(j=0;j<ret;j++)
-	{
-		p = (void*)(act->buf) + 84 + j*50;
-
-		if(p[ 3] < vl[0])vl[0] = p[3];
-		if(p[ 3] > vr[0])vr[0] = p[3];
-		if(p[ 4] < vn[1])vn[1] = p[4];
-		if(p[ 4] > vf[1])vf[1] = p[4];
-		if(p[ 5] < vb[2])vb[2] = p[5];
-		if(p[ 5] > vu[2])vu[2] = p[5];
-
-		if(p[ 6] < vl[0])vl[0] = p[6];
-		if(p[ 6] > vr[0])vr[0] = p[6];
-		if(p[ 7] < vn[1])vn[1] = p[7];
-		if(p[ 7] > vf[1])vf[1] = p[7];
-		if(p[ 8] < vb[2])vb[2] = p[8];
-		if(p[ 8] > vu[2])vu[2] = p[8];
-
-		if(p[ 9] < vl[0])vl[0] = p[9];
-		if(p[ 9] > vr[0])vr[0] = p[9];
-		if(p[10] < vn[1])vn[1] = p[10];
-		if(p[10] > vf[1])vf[1] = p[10];
-		if(p[11] < vb[2])vb[2] = p[11];
-		if(p[11] > vu[2])vu[2] = p[11];
-	}
-	say(
-		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
-		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
-	);
-
-	vv[0] = vr[0] - vl[0];
-	vv[1] = vf[1] - vn[1];
-	vv[2] = vu[2] - vb[2];
-	vc[0] = (vl[0] + vr[0])/2;
-	vc[1] = (vn[1] + vf[1])/2;
-	vc[2] = (vb[2] + vu[2])/2;
-	say(
-		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
-		vv[0], vv[0], vv[1], vc[1], vc[2], vc[2]
-	);
-}
+void actorcreatefromfile(struct actor* act, char* name);
 
 
 
@@ -234,7 +148,7 @@ static void model_write(
 				break;
 			}
 		}
-		stl_prep(act, buffer);
+		actorcreatefromfile(act, buffer);
 	}
 }
 
@@ -256,7 +170,6 @@ static void model_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	stl_prep(act, "42.stl");
 }
 static void model_delete(struct actor* act)
 {
@@ -267,8 +180,7 @@ static void model_delete(struct actor* act)
 static void model_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(0x800000);
-	act->len = 0;
+	actorcreatefromfile(act, "42.stl");
 }
 
 
