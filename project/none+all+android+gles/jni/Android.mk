@@ -248,8 +248,10 @@ library/libsoft/1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
+library/libuser/0/local/android/android.gles.modbuf.c \
 library/libuser/0/local/android/android.gles.shader.c \
-library/libuser/0/local/android/android.gles.common.c \
+library/libuser/0/local/android/android.gles.texture.c \
+library/libuser/0/local/android/android.gles.vertex.c \
 library/libuser/0/local/android/android.gles.c \
 library/libuser/0/remote/remote.http.c \
 library/libuser/0/remote/remote.ws.c \

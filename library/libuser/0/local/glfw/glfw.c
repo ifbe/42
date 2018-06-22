@@ -6,7 +6,7 @@
 void initmodbuf(void*);
 void initshader(void*);
 void inittexture(void*);
-void initobject(void*);
+void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*);
 
@@ -179,7 +179,7 @@ static void* windowthread(struct arena* w)
 	initmodbuf(w);
 	initshader(w);
 	inittexture(w);
-	initobject(w);
+	initvertex(w);
 
 	//4.callbacks
 	glfwSetWindowUserPointer(fw, w);

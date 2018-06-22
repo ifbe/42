@@ -138,8 +138,10 @@ linuxglfw:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.tray.c
-	$(compiler) $(cflag) local/glfw/glfw.common.c
+	$(compiler) $(cflag) local/glfw/glfw.modbuf.c
 	$(compiler) $(cflag) local/glfw/glfw.shader.c
+	$(compiler) $(cflag) local/glfw/glfw.texture.c
+	$(compiler) $(cflag) local/glfw/glfw.vertex.c
 	$(compiler) $(cflag) local/glfw/glfw.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
@@ -309,8 +311,10 @@ winglfw:
 	g++ $(cflag) -fno-rtti video/win/video.win.dshow.cpp
 	$(compiler) $(cflag) sound/win/sound.win.waveio.c
 	$(compiler) $(cflag) local/win/local.win.tray.c
-	$(compiler) $(cflag) local/glfw/glfw.common.c
+	$(compiler) $(cflag) local/glfw/glfw.modbuf.c
 	$(compiler) $(cflag) local/glfw/glfw.shader.c
+	$(compiler) $(cflag) local/glfw/glfw.texture.c
+	$(compiler) $(cflag) local/glfw/glfw.vertex.c
 	$(compiler) $(cflag) local/glfw/glfw.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.ws.c

@@ -20,7 +20,7 @@ void asset_create();
 void initmodbuf(void*);
 void initshader(void*);
 void inittexture(void*);
-void initobject(void*);
+void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*);
 
@@ -89,8 +89,8 @@ static void windowthread(struct arena* win)
 	//
 	initmodbuf(win);
 	initshader(win);
-	initobject(win);
 	inittexture(win);
+	initvertex(win);
 
 	while(1)
 	{
