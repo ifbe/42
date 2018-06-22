@@ -6,17 +6,18 @@
 int htmlprintf(struct arena* win, int i, char* fmt, ...)
 {
 	__builtin_va_list arg;
-	struct htmlpiece* hp;
+	struct mystring** hp;
+	void* buf;
+	int len;
 	if(i<1)return 0;
 	if(i>2)return 0;
 
 	__builtin_va_start(arg, fmt);
 
 	hp = win->hp;
-	hp[i].len += myvsnprintf(
-		hp[i].buf+hp[i].len, 0x100000-hp[i].len,
-		fmt, arg
-	);
+	len = hp[i]->len;
+	buf = hp[i]->buf;
+	hp[i]->len += myvsnprintf(buf+len, 0xffff8-len, fmt, arg);
 
 	__builtin_va_end(arg);
 	return 0;

@@ -18,7 +18,7 @@ void parsehtml(u8* buf, int len);
 
 
 
-static struct htmlpiece hp[16];
+static struct mystring* hp[16];
 
 
 
@@ -57,8 +57,8 @@ int httpserver_write(
 	//ws request
 	if((0 != Connection)&&(0 != Upgrade))
 	{
-		ret = websocket_read_handshake(buf, len, hp[1].buf, 0x1000);
-		ret = systemwrite(act, pin, win, sty, hp[1].buf, ret);
+		ret = websocket_read_handshake(buf, len, hp[1]->buf, 0x1000);
+		ret = systemwrite(act, pin, win, sty, hp[1]->buf, ret);
 
 		addr = arenacreate(_WS_, act);
 		if(0 == addr)return 0;
@@ -72,23 +72,23 @@ int httpserver_write(
 		win->fmt = hex32('h','t','m','l');
 		actorread_all(win);
 
-		hp[0].len = mysnprintf(
-			hp[0].buf, 0x1000,
+		hp[0]->len = mysnprintf(
+			hp[0]->buf, 0x1000,
 			"HTTP/1.1 200 OK\r\n"
 			"Content-type: text/html\r\n"
 			"Content-Length: %d\r\n"
 			"\r\n",
-			(hp[1].len)+(hp[2].len)
+			(hp[1]->len)+(hp[2]->len)
 		);
 
 		//send response
-		systemwrite(act, pin, win, sty, hp[0].buf, hp[0].len);
+		systemwrite(act, pin, win, sty, hp[0]->buf, hp[0]->len);
 
 		//send head
-		systemwrite(act, pin, win, sty, hp[1].buf, hp[1].len);
+		systemwrite(act, pin, win, sty, hp[1]->buf, hp[1]->len);
 
 		//send body
-		systemwrite(act, pin, win, sty, hp[2].buf, hp[2].len);
+		systemwrite(act, pin, win, sty, hp[2]->buf, hp[2]->len);
 
 		if(0 != Connection)
 		{
@@ -129,7 +129,7 @@ int httpserver_create(struct arena* win, void* str)
 	void* tmp;
 	for(j=0;j<3;j++)
 	{
-		if(0 == hp[j].buf)hp[j].buf = memorycreate(0x100000);
+		if(0 == hp[j])hp[j] = memorycreate(0x100000);
 	}
 	win->hp = hp;
 

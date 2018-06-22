@@ -31,6 +31,11 @@ int actorinput_oneonone( struct arena* win, struct event* ev);
 int actoroutput_mode(struct arena* win, struct style* sty)
 {
 	int ret = win->menutype;
+	if(_html_ == win->fmt)
+	{
+		actoroutput_deliver(win, 0);
+		return 0;
+	}
 	if(0 != ret)return 0;
 
 	ret = win->modetype;
@@ -48,6 +53,11 @@ int actoroutput_mode(struct arena* win, struct style* sty)
 int actorinput_mode(struct arena* win, struct event* ev)
 {
 	int ret = win->menutype;
+	if(_html_ == win->fmt)
+	{
+		say("html input\n");
+		return 0;
+	}
 	if(0 != ret)return 0;
 
 	ret = win->modetype;

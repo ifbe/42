@@ -349,6 +349,7 @@ library/libuser/1/theitem/item.human.c \
 library/libuser/1/theitem/item.model.c \
 library/libuser/1/theitem/item.piano.c \
 library/libuser/1/theitem/item.picture.c \
+library/libuser/1/theitem/item.skydome.c \
 library/libuser/1/theitem/item.terrian.c \
 library/libuser/1/theitem/item.tree.c \
 library/libuser/1/theitem/item.water.c \

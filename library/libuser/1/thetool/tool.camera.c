@@ -5,7 +5,6 @@ void yuyv2rgba(
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
 void* arenacreate(u64, void*);
-void* allocifoot();
 void* allocofoot();
 
 
@@ -152,27 +151,21 @@ static void camera_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u64* ii;
-	u64* oo;
-	struct ifoot* ipin;
 	struct ofoot* opin;
 	if(0 == sty)return;
 	if(0 == pin)return;
-
-	//recvier
-	ipin = allocifoot();
-	ipin->shader = 0;
-
-	ii = (void*)sty + 0x80;
-	ii[0] = (u64)ipin;
 
 	//sender
 	opin = allocofoot();
 	opin->vs = (u64)camera_glsl_v;
 	opin->fs = (u64)camera_glsl_f;
 
-	oo = (void*)pin + 0x80;
-	oo[0] = (u64)opin;
+	opin->shader_enq = 42;
+	opin->arg_enq[0] = 42;
+	opin->tex_enq[0] = 42;
+	opin->vbuf_enq = 42;
+	opin->ibuf_enq = 42;
+	pin->foot[0] = (u64)opin;
 }
 static void camera_delete(struct actor* act)
 {

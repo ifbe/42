@@ -7,14 +7,7 @@ static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
 static struct pinid* pinid = 0;
-void helpin_create(void* addr)
-{
-	arena = addr + 0x000000;
-	actor = addr + 0x100000;
-	style = addr + 0x000000;
-	pinid = addr + 0x100000;
-}
-void helpout_create(void* addr)
+void bgfg_create(void* addr)
 {
 	arena = addr + 0x000000;
 	actor = addr + 0x100000;
@@ -72,17 +65,17 @@ void background_json(struct arena* win)
 }
 void background_html(struct arena* win)
 {
-	struct htmlpiece* hp = win->hp;
+	struct mystring** hp = win->hp;
 
-	hp[1].len = mysnprintf(
-		hp[1].buf, 0x100000,
+	hp[1]->len = mysnprintf(
+		hp[1]->buf, 0x100000,
 		"<html><head>\n"
 		"<meta charset=\"UTF-8\">\n"
 		"<style type=\"text/css\">\n"
 		"*{margin:0;padding:0;}\n"
 	);
-	hp[2].len = mysnprintf(
-		hp[2].buf, 0x100000,
+	hp[2]->len = mysnprintf(
+		hp[2]->buf, 0x100000,
 		"<body style=\"width:100%%;height:100%%;\">\n"
 	);
 }
@@ -188,15 +181,15 @@ void foreground_html(struct arena* win)
 {
 	int len;
 	u8* buf;
-	struct htmlpiece* hp = win->hp;
+	struct mystring** hp = win->hp;
 
-	len = hp[1].len;
-	buf = hp[1].buf + len;
-	hp[1].len += mysnprintf(buf, 0x100000-len, "</style></head>\n");
+	len = hp[1]->len;
+	buf = hp[1]->buf + len;
+	hp[1]->len += mysnprintf(buf, 0x100000-len, "</style></head>\n");
 
-	len = hp[2].len;
-	buf = hp[2].buf + len;
-	hp[2].len += mysnprintf(buf, 0x100000-len, "</body></html>\n");
+	len = hp[2]->len;
+	buf = hp[2]->buf + len;
+	hp[2]->len += mysnprintf(buf, 0x100000-len, "</body></html>\n");
 }
 void foreground_tui(struct arena* win)
 {

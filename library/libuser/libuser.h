@@ -125,11 +125,6 @@ struct mystring
 	int len;
 	u8 buf[0];
 };
-struct htmlpiece
-{
-	int len;
-	void* buf;
-};
 struct texandobj
 {
 	u32 program;
@@ -153,24 +148,28 @@ struct ifoot
 	u32 fbo;
 
 	//shader
-	u32 shader;
 	u32 shader_deq;
+	u32 shader;
+
+	//argument
+	u32 arg_deq[4];
+	u32 arg[4];
 
 	//texture
-	u32 tex[4];
-	u32 tex_len[4];
 	u32 tex_deq[4];
+	u32 tex_len[4];
+	u32 tex[4];
 
 	//vertex
-	u32 vao[4];
+	u32 vbo_deq;
+	u32 vbo_len;
+	u32 vbo;
 
-	u32 vbo[4];
-	u32 vbo_len[4];
-	u32 vbo_deq[4];
+	u32 ibo_deq;
+	u32 ibo_len;
+	u32 ibo;
 
-	u32 ibo[4];
-	u32 ibo_len[4];
-	u32 ibo_deq[4];
+	u32 vao;
 };
 struct ofoot
 {
@@ -178,26 +177,33 @@ struct ofoot
 	u32 target;
 
 	//shader
+	u32 shader_enq;
 	u64 vs;
 	u64 ts;
 	u64 gs;
 	u64 fs;
-	u32 shader_enq;
+
+	//argument
+	u32 arg_enq[4];
+	u32 arg_fmt[4];
+	u64 arg[4];
 
 	//texture
-	u64 tex[4];
-	u32 tex_len[4];
 	u32 tex_enq[4];
+	u32 tex_fmt[4];
+	u32 tex_len[4];
+	u64 tex[4];
 
 	//vertex
-	u64 ibuf[4];
-	u32 ibuf_len[4];
-	u32 ibuf_enq[4];
+	u32 ibuf_enq;
+	u32 ibuf_fmt;
+	u32 ibuf_len;
+	u64 ibuf;
 
-	u64 vbuf[4];
-	u32 vbuf_fmt[4];
-	u32 vbuf_len[4];
-	u32 vbuf_enq[4];
+	u32 vbuf_enq;
+	u32 vbuf_fmt;
+	u32 vbuf_len;
+	u64 vbuf;
 };
 
 
@@ -205,6 +211,7 @@ struct ofoot
 
 struct style
 {
+	//[00, 7f]
 	vec4 vl;	//[00,0f]: left
 	vec4 vr;	//[10,1f]: right
 	vec4 vn;	//[20,2f]: near
@@ -213,9 +220,13 @@ struct style
 	vec4 vu;	//[50,5f]: upper
 	vec4 vv;	//[60,6f]: info
 	vec4 vc;	//[70,7f]: center
+
+	//[80, ...]
+	u64 foot[0];
 };
 struct pinid
 {
+	//[00, 7f]
 	int flag00;
 	int flag01;
 	int flag02;
@@ -255,6 +266,9 @@ struct pinid
 	int flag1d;
 	int flag1e;
 	int flag1f;
+
+	//[80, ...]
+	u64 foot[0];
 };
 struct stdhead
 {

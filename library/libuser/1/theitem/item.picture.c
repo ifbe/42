@@ -1,5 +1,6 @@
 #include "libuser.h"
 void actorcreatefromfile(struct actor* act, char* name);
+void* allocofoot();
 
 
 
@@ -135,6 +136,18 @@ static void picture_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct ofoot* opin;
+	if(0 == pin)return;
+
+	//recvier
+	opin = allocofoot();
+
+	opin->shader_enq = 42;
+	opin->arg_enq[0] = 42;
+	opin->tex_enq[0] = 42;
+	opin->vbuf_enq = 42;
+	opin->ibuf_enq = 42;
+	pin->foot[0] = (u64)opin;
 }
 static void picture_delete(struct actor* act)
 {

@@ -74,6 +74,7 @@ theitem/item.human.c \
 theitem/item.model.c \
 theitem/item.piano.c \
 theitem/item.picture.c \
+theitem/item.skydome.c \
 theitem/item.terrian.c \
 theitem/item.tree.c \
 theitem/item.water.c \

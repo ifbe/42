@@ -77,7 +77,7 @@ void* allocofoot()
 	int j,len;
 	u8* buf;
 
-	len = 0x80;
+	len = 0x100;
 	buf = (void*)pinid + 0x100000 - len - foolen;
 	foolen += len;
 

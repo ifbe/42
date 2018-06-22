@@ -18,6 +18,7 @@ void human_register(void*);
 void model_register(void*);
 void piano_register(void*);
 void picture_register(void*);
+void skydome_register(void*);
 void terrian_register(void*);
 void tree_register(void*);
 void water_register(void*);
@@ -161,6 +162,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	picture_register(temp);
+	temp += sizeof(struct actor);
+
+	skydome_register(temp);
 	temp += sizeof(struct actor);
 
 	terrian_register(temp);

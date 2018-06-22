@@ -4,6 +4,7 @@
 #include "libuser.h"
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
+void* allocifoot();
 
 
 
@@ -638,6 +639,72 @@ void initmodbuf(struct arena* w)
 
 
 
+void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
+{
+	//say("%llx,%llx\n", fi, fo);
+
+	//shader
+	if(fi->shader_deq != fo->shader_enq)
+	{
+		say("vs=%llx,fs=%llx\n", fo->vs, fo->fs);
+		fi->shader_deq = fo->shader_enq;
+	}
+
+	//argument
+	if(fi->arg_deq[0] != fo->arg_enq[0])
+	{
+		say("arg=%x\n", fo->arg[0]);
+		fi->arg_deq[0] = fo->arg_enq[0];
+	}
+
+	//texture
+	if(fi->tex_deq[0] != fo->tex_enq[0])
+	{
+		say("tex=%llx\n", fo->tex[0]);
+		fi->tex_deq[0] = fo->tex_enq[0];
+	}
+
+	//vertex
+	if(fi->vbo_deq != fo->vbuf_enq)
+	{
+		say("ibuf=%llx,vbuf=%llx\n", fo->ibuf, fo->vbuf);
+		fi->vbo_deq = fo->vbuf_enq;
+	}
+
+	//index
+	if(fi->ibo_deq != fo->ibuf_enq)
+	{
+		say("ibuf=%llx,vbuf=%llx\n", fo->ibuf, fo->vbuf);
+		fi->ibo_deq = fo->ibuf_enq;
+	}
+}
+void callback_update_eachactor(struct arena* w)
+{
+	int j;
+	u64* pi;
+	u64* po;
+	struct relation* rel;
+
+	w->fmt = hex32('v','b','o',0);
+	actorread_all(w);
+
+	rel = w->irel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		pi = (void*)(rel->dstfoot) + 0x80;
+		po = (void*)(rel->srcfoot) + 0x80;
+		for(j=0;j<16;j++)
+		{
+			if(0 == po[j])break;
+			if(0 == pi[j])pi[j] = (u64)allocifoot();
+			callback_update_eachpass((void*)pi[j], (void*)po[j]);
+		}
+
+		rel = samedstnextsrc(rel);
+	}
+}
 void callback_update(struct arena* w)
 {
 /*
@@ -655,9 +722,7 @@ void callback_update(struct arena* w)
 */
 //--------------------------------
 	struct texandobj* mod = w->mod;
-	w->fmt = hex32('v','b','o',0);
-	actorread_all(w);
-
+	callback_update_eachactor(w);
 
 //----------------------font3d---------------------
 	//font0000
