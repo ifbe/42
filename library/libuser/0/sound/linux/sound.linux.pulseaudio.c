@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
-#include "arena.h"
+#include "libuser.h"
 
 
 
@@ -53,7 +53,7 @@ void* soundlistener(void* p)
 		}
 		usleep(1000000*10/441);
 
-		struct relation* orel = working->orel;
+		struct relation* orel = working->orel0;
 		while(1)
 		{
 			if(0 == orel)break;

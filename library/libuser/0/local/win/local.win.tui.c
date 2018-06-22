@@ -1,7 +1,7 @@
 #include <conio.h>
 #include <stdio.h>
 #include <windows.h>
-#include "arena.h"
+#include "libuser.h"
 #ifndef MOUSE_HWHEELED
 #define MOUSE_HWHEELED 0x0008
 #endif

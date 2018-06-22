@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <linux/videodev2.h>
-#include "arena.h"
+#include "libuser.h"
 
 
 
@@ -175,7 +175,7 @@ void* visionlistener(void* p)
 
 		//do
 		//printmemory(info[cur].buf+0xfff, 16);
-		struct relation* orel = working->orel;
+		struct relation* orel = working->orel0;
 		while(1)
 		{
 			if(0 == orel)break;

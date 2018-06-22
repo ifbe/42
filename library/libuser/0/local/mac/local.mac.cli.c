@@ -1,13 +1,9 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include<stdio.h>
 #include<stdlib.h>
 #include<fcntl.h>
 #include<unistd.h>
 #include<termios.h>
-#include"arena.h"
+#include"libuser.h"
 
 
 

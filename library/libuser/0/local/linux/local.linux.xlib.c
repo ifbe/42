@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
-#include "arena.h"
+#include "libuser.h"
 int lowlevel_input();
 
 
@@ -396,8 +396,8 @@ void windowstart(struct arena* win)
 */
 	for(j=0;j<16;j++)
 	{
-		win->touchdown[j].id = 0xffff;
-		win->touchmove[j].id = 0xffff;
+		win->input[j].id = 0xffff;
+		win->input[j].id = 0xffff;
 	}
 	threadcreate(windowthread, win);
 }

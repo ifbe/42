@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include "arena.h"
+#include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 
 

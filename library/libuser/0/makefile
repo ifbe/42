@@ -71,6 +71,7 @@ linuxcli:
 	$(compiler) $(cflag) video/linux/video.linux.v4l2.c
 	$(compiler) $(cflag) sound/linux/sound.linux.pulseaudio.c
 	$(compiler) $(cflag) local/linux/local.linux.cli.c
+	$(compiler) $(cflag) local/linux/local.linux.tray.c
 	$(compiler) $(cflag) remote/remote.http.c
 	$(compiler) $(cflag) remote/remote.vnc.c
 	$(compiler) $(cflag) remote/remote.ws.c

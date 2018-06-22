@@ -5,7 +5,7 @@
 #include <termios.h>		//termios,getchar
 #include <sys/ioctl.h>		//ioctl
 #include <linux/fb.h>		//framebuffer
-#include "arena.h"
+#include "libuser.h"
 int lowlevel_input();
 
 

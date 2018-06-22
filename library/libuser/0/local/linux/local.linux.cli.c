@@ -5,7 +5,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
-#include "arena.h"
+#include "libuser.h"
 int lowlevel_input();
 
 
@@ -77,7 +77,7 @@ void windowstart(struct arena* this)
 	this->width = this->stride = 80;
 	this->height = 25;
 
-	thread = threadcreate(terminalthread, this);
+	thread = threadcreate(terminalthread, 0);
 }
 void windowcreate()
 {

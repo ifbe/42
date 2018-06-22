@@ -6,7 +6,7 @@
 #include<signal.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
-#include"arena.h"
+#include"libuser.h"
 int lowlevel_input();
 
 

@@ -8,7 +8,7 @@
  *  cc OSXWindow.m -o OSXWindow -framework Cocoa
  */
 #import "Cocoa/Cocoa.h"
-#import "arena.h"
+#import "libuser.h"
 CGContextRef  cgcxtref;
 //int main(int argc, const char * argv[])
 

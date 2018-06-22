@@ -1,13 +1,6 @@
 #include <efi.h>
 #include <efilib.h>
-#include "arena.h"
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define __buf__ hex32('b','u','f',0)
-#define __win__ hex32('w','i','n',0)
-#define __bgra8888__ hex64('b','g','r','a','8','8','8','8')
-#define __bgra8880__ hex64('b','g','r','a','8','8','8','0')
+#include "libuser.h"
 void gethandleandtable(void* H, void* T);
 
 

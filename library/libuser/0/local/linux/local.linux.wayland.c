@@ -9,7 +9,7 @@
 #include <wayland-client-protocol.h>
 #include <wayland-server-protocol.h>
 #include <wayland-egl.h>
-#include "arena.h"
+#include "libuser.h"
 
 
 
