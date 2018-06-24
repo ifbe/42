@@ -6,6 +6,14 @@ void yuyv2rgba(
 );
 void* arenacreate(u64, void*);
 void* allocofoot();
+static float vertex[6][6] = {
+	{-1.0, -1.0, 0.0, 0.0, 0.0, 0.0},
+	{ 1.0,  1.0, 0.0, 1.0, 1.0, 0.0},
+	{-1.0,  1.0, 0.0, 0.0, 1.0, 0.0},
+	{ 1.0,  1.0, 0.0, 1.0, 1.0, 0.0},
+	{-1.0, -1.0, 0.0, 0.0, 0.0, 0.0},
+	{ 1.0, -1.0, 0.0, 1.0, 0.0, 0.0}
+};
 
 
 
@@ -14,22 +22,23 @@ void* allocofoot();
 char* camera_glsl_v =
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"out mediump vec3 vcolor;\n"
+	"layout(location = 1)in mediump vec3 texuvw;\n"
+	"out mediump vec3 uv;\n"
 	"void main()\n"
 	"{\n"
-		"vcolor = colour;\n"
+		"uv = texuvw;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n";
 char* camera_glsl_t = 0;
 char* camera_glsl_g = 0;
 char* camera_glsl_f = 
 	"#version 300 es\n"
-	"in mediump vec3 vcolor;\n"
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uv;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
+		"FragColor = vec4(texture(tex0, uv).rgb, 1.0);\n"
 	"}\n";
 //directx shader
 char* camera_hlsl_v = 0;
@@ -160,7 +169,20 @@ static void camera_start(
 	opin->vs = (u64)camera_glsl_v;
 	opin->fs = (u64)camera_glsl_f;
 
-	opin->shader_enq = 42;
+	//texture
+	opin->tex[0] = (u64)(act->buf);
+	opin->tex_fmt[0] = hex32('r','g','b','a');
+	opin->tex_w[0] = act->width;
+	opin->tex_h[0] = act->height;
+
+	//vertex
+	opin->vbuf = (u64)vertex;
+	opin->vbuf_fmt = vbuffmt_33;
+	opin->vbuf_w = 6*4;
+	opin->vbuf_h = 6;
+	opin->method = 'v';
+
+	opin->shader_enq[0] = 42;
 	opin->arg_enq[0] = 42;
 	opin->tex_enq[0] = 42;
 	opin->vbuf_enq = 42;

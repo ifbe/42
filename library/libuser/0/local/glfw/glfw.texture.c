@@ -8,6 +8,21 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 
 
 
+GLuint uploadtexture(void* buf, int fmt, int w, int h)
+{
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0,
+		GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, buf
+	);
+	return tex;
+}
 void inittexture(struct arena* w)  
 {
 	int j;
@@ -104,6 +119,7 @@ void inittexture(struct arena* w)
 		GL_RED, GL_UNSIGNED_BYTE, buf
 	);
 
+	//for(j=0;j<4;j++)say("tex%d=%x\n", j, mod[j].tex);
 /*
 //------------------2d screen--------------------
 	glGenTextures(1, &(mod[4].tex));

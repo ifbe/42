@@ -144,66 +144,71 @@ struct texandobj
 };
 struct ifoot
 {
-	//target
-	u32 fbo;
-
 	//shader
-	u32 shader_deq;
 	u32 shader;
 
 	//argument
-	u32 arg_deq[4];
 	u32 arg[4];
 
 	//texture
-	u32 tex_deq[4];
 	u32 tex_len[4];
 	u32 tex[4];
 
 	//vertex
-	u32 vbo_deq;
-	u32 vbo_len;
 	u32 vbo;
-
-	u32 ibo_deq;
-	u32 ibo_len;
+	u32 vbo_len;
 	u32 ibo;
+	u32 ibo_len;
 
+	//
 	u32 vao;
+	u32 fbo;
+
+	//deq
+	u8 shader_deq;
+	u8 arg_deq[4];
+	u8 tex_deq[4];
+	u8 vbo_deq;
+	u8 ibo_deq;
 };
 struct ofoot
 {
-	//target: 0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
-	u32 target;
-
-	//shader
-	u32 shader_enq;
+	//[00,1f]shader
 	u64 vs;
 	u64 ts;
 	u64 gs;
 	u64 fs;
 
-	//argument
-	u32 arg_enq[4];
-	u32 arg_fmt[4];
+	//[20,4f]argument
 	u64 arg[4];
+	u32 arg_fmt[4];
 
-	//texture
-	u32 tex_enq[4];
-	u32 tex_fmt[4];
-	u32 tex_len[4];
+	//[50,9f]texture
 	u64 tex[4];
+	u32 tex_fmt[4];
+	u32 tex_w[4];
+	u32 tex_h[4];
 
-	//vertex
-	u32 ibuf_enq;
-	u32 ibuf_fmt;
-	u32 ibuf_len;
-	u64 ibuf;
-
-	u32 vbuf_enq;
-	u32 vbuf_fmt;
-	u32 vbuf_len;
+	//[a0,c7]vertex
 	u64 vbuf;
+	u32 vbuf_fmt;
+	u32 vbuf_w;
+	u32 vbuf_h;
+	u64 ibuf;
+	u32 ibuf_fmt;
+	u32 ibuf_w;
+	u32 ibuf_h;
+
+	//[c8,cf]
+	u32 method;	//'v'=glDrawArrays, 'i'=glDrawElements
+	u32 target;	//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
+
+	//[d0,db]enq
+	u8 shader_enq[4];
+	u8 arg_enq[4];
+	u8 tex_enq[4];
+	u8 ibuf_enq;
+	u8 vbuf_enq;
 };
 
 

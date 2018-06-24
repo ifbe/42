@@ -5,6 +5,39 @@ void* allocofoot();
 
 
 
+char* picture_glsl_v =
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
+char* picture_glsl_t = 0;
+char* picture_glsl_g = 0;
+char* picture_glsl_f = 
+	"#version 300 es\n"
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"}\n";
+static float vertex[6][6] = {
+	{-0.5, -0.5, 0.0, 0.0, 0.0, 0.0},
+	{ 0.5,  0.5, 0.0, 1.0, 1.0, 0.0},
+	{-0.5,  0.5, 0.0, 0.0, 1.0, 0.0},
+	{ 0.5,  0.5, 0.0, 1.0, 1.0, 0.0},
+	{-0.5, -0.5, 0.0, 0.0, 0.0, 0.0},
+	{ 0.5, -0.5, 0.0, 1.0, 0.0, 0.0}
+};
+
+
+
+
 static void picture_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -139,10 +172,28 @@ static void picture_start(
 	struct ofoot* opin;
 	if(0 == pin)return;
 
-	//recvier
+	//
 	opin = allocofoot();
 
-	opin->shader_enq = 42;
+	//shader
+	opin->vs = (u64)picture_glsl_v;
+	opin->fs = (u64)picture_glsl_f;
+
+	//texture
+	opin->tex[0] = (u64)(act->buf);
+	opin->tex_fmt[0] = hex32('r','g','b','a');
+	opin->tex_w[0] = act->width;
+	opin->tex_h[0] = act->height;
+
+	//vertex
+	opin->vbuf = (u64)vertex;
+	opin->vbuf_fmt = vbuffmt_33;
+	opin->vbuf_w = 6*4;
+	opin->vbuf_h = 6;
+	opin->method = 'v';
+
+	//send!
+	opin->shader_enq[0] = 42;
 	opin->arg_enq[0] = 42;
 	opin->tex_enq[0] = 42;
 	opin->vbuf_enq = 42;

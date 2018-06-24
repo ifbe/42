@@ -7,6 +7,62 @@ void* allocifoot();
 
 
 
+GLuint uploadvertex(struct ifoot* fi, struct ofoot* fo)
+{
+	void* buf;
+	u32 w,h,fmt;
+
+	//vao
+	if(0 == fi->vao)glGenVertexArrays(1, &fi->vao);
+	glBindVertexArray(fi->vao);
+
+	//idx
+	w = fi->ibo_deq;
+	h = fo->ibuf_enq;
+	buf = (void*)(fo->ibuf);
+	if((w != h) && (0 != buf))
+	{
+		if(0 == fi->ibo)glGenBuffers(1, &fi->ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
+
+		w = fo->ibuf_w;
+		h = fo->ibuf_h;
+		//fmt = fo->ibuf_fmt;
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, w*h, buf, GL_STATIC_DRAW);
+	}
+
+	//vbo
+	w = fi->vbo_deq;
+	h = fo->vbuf_enq;
+	buf = (void*)(fo->vbuf);
+	if((w != h) && (0 != buf))
+	{
+		if(0 == fi->vbo)glGenBuffers(1, &fi->vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, fi->vbo);
+
+		w = fo->vbuf_w;
+		h = fo->vbuf_h;
+		glBufferData(GL_ARRAY_BUFFER, w*h, buf, GL_STATIC_DRAW);
+
+		fmt = fo->vbuf_fmt;
+		if(vbuffmt_33 == fmt)
+		{
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
+			glEnableVertexAttribArray(1);
+		}
+		if(vbuffmt_333 == fmt)
+		{
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, w, (void*)24);
+			glEnableVertexAttribArray(2);
+		}
+	}
+}
 void initvertex(struct arena* w)  
 {
 	struct texandobj* mod = w->mod;

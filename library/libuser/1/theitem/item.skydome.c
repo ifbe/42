@@ -142,7 +142,7 @@ static void skydome_start(
 	//sender
 	opin = allocofoot();
 
-	opin->shader_enq = 42;
+	opin->shader_enq[0] = 42;
 	opin->arg_enq[0] = 42;
 	opin->tex_enq[0] = 42;
 	opin->vbuf_enq = 42;

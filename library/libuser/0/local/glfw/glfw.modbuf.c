@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include "libuser.h"
-void fixmatrix(float*, void*);
 void* allocifoot();
+void fixmatrix(float*, void*);
+GLuint shaderprogram(void* v, void* f);
+GLuint uploadtexture(void* buf, int fmt, int w, int h);
+GLuint uploadvertex(void* i, void* o);
 
 
 
@@ -114,40 +117,60 @@ void initmodbuf(struct arena* w)
 
 void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
 {
+	u32 fd;
+	int w,h,fmt;
+	void* buf0;
+	void* buf1;
 	//say("%llx,%llx\n", fi, fo);
 
-	//shader
-	if(fi->shader_deq != fo->shader_enq)
+	//0: shader
+	if(fi->shader_deq != fo->shader_enq[0])
 	{
-		say("vs=%llx,fs=%llx\n", fo->vs, fo->fs);
-		fi->shader_deq = fo->shader_enq;
+		buf0 = (void*)(fo->vs);
+		buf1 = (void*)(fo->fs);
+		if((0 != buf0)&&(0 != buf1))
+		{
+			fd = shaderprogram(buf0, buf1);
+
+			fi->shader = fd;
+			say("(%llx,%llx)->%x\n", buf0, buf1, fd);
+		}
+
+		fi->shader_deq = fo->shader_enq[0];
 	}
 
-	//argument
+	//1: argument
 	if(fi->arg_deq[0] != fo->arg_enq[0])
 	{
 		say("arg=%x\n", fo->arg[0]);
 		fi->arg_deq[0] = fo->arg_enq[0];
 	}
 
-	//texture
+	//2: texture
 	if(fi->tex_deq[0] != fo->tex_enq[0])
 	{
-		say("tex=%llx\n", fo->tex[0]);
+		buf0 = (void*)(fo->tex[0]);
+		if(0 != buf0)
+		{
+			fmt = fo->tex_fmt[0];
+			w = fo->tex_w[0];
+			h = fo->tex_h[0];
+			fd = uploadtexture(buf0, fmt, w, h);
+
+			fi->tex[0] = fd;
+			say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
+		}
+
 		fi->tex_deq[0] = fo->tex_enq[0];
 	}
 
-	//vertex
-	if(fi->vbo_deq != fo->vbuf_enq)
+	//3: vertex
+	if(	(fi->vbo_deq != fo->vbuf_enq) |
+		(fi->ibo_deq != fo->ibuf_enq) )
 	{
-		say("ibuf=%llx,vbuf=%llx\n", fo->ibuf, fo->vbuf);
+		uploadvertex(fi, fo);
+		say("(%x,%x,%x)\n", fi->vao, fi->vbo, fi->ibo);
 		fi->vbo_deq = fo->vbuf_enq;
-	}
-
-	//index
-	if(fi->ibo_deq != fo->ibuf_enq)
-	{
-		say("ibuf=%llx,vbuf=%llx\n", fo->ibuf, fo->vbuf);
 		fi->ibo_deq = fo->ibuf_enq;
 	}
 }
@@ -308,6 +331,44 @@ void callback_update(struct arena* w)
 
 
 
+void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo)
+{
+	if((fi->shader)&&(fi->tex[0])&&(fi->vao))
+	{
+		glUseProgram(fi->shader);
+		glUniform1i(glGetUniformLocation(fi->shader, "tex0"), 0);
+
+		glActiveTexture(GL_TEXTURE0 + 0);
+		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+
+		glBindVertexArray(fi->vao);
+		glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
+	}
+}
+void callback_display_eachactor(struct arena* w)
+{
+	int j;
+	u64* pi;
+	u64* po;
+	struct relation* rel;
+
+	rel = w->irel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		pi = (void*)(rel->dstfoot) + 0x80;
+		po = (void*)(rel->srcfoot) + 0x80;
+		for(j=0;j<16;j++)
+		{
+			if(0 == po[j])break;
+			if(0 == pi[j])pi[j] = (u64)allocifoot();
+			callback_display_eachpass((void*)pi[j], (void*)po[j]);
+		}
+
+		rel = samedstnextsrc(rel);
+	}
+}
 void fixlight(struct arena* win, u32 program)
 {
 	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
@@ -342,6 +403,10 @@ void callback_display(struct arena* win)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+
+
+	//
+	callback_display_eachactor(win);
 
 
 //--------------------glsl2dprogram------------------
