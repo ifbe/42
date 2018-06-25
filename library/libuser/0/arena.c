@@ -15,10 +15,6 @@
 
 void inittray(void*);
 void freetray();
-void initcam(void*);
-void freecam();
-void initmic(void*);
-void freemic();
 void initwindow(void*);
 void freewindow();
 void initremote(void*);
@@ -396,8 +392,6 @@ void freearena()
 {
 	//say("[c,f):freeing arena\n");
 
-	freecam();
-	freemic();
 	freewindow();
 	//remotedelete();
 }
@@ -412,9 +406,6 @@ void initarena(u8* addr)
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
 	inittray(arena);
-	initmic(arena);
-	initcam(arena);
-
 	initwindow(arena);
 	//initremote(arena);
 
