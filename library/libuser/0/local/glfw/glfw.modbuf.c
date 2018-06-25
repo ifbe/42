@@ -5,7 +5,7 @@
 void* allocifoot();
 void fixmatrix(float*, void*);
 GLuint shaderprogram(void* v, void* f);
-GLuint uploadtexture(void* buf, int fmt, int w, int h);
+GLuint uploadtexture(void* i, void* o, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
 
 
@@ -155,7 +155,7 @@ void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
 			fmt = fo->tex_fmt[0];
 			w = fo->tex_w[0];
 			h = fo->tex_h[0];
-			fd = uploadtexture(buf0, fmt, w, h);
+			fd = uploadtexture(fi, fo, buf0, fmt, w, h);
 
 			fi->tex[0] = fd;
 			say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);

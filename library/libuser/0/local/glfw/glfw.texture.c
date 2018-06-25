@@ -8,20 +8,55 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 
 
 
-GLuint uploadtexture(void* buf, int fmt, int w, int h)
+int ispowerof2(int x)
 {
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, w, h, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, buf
-	);
-	return tex;
+	return (x & (x-1)) == 0;
+}
+GLuint uploadtexture(struct ifoot* fi, struct ofoot* fo,
+	void* buf, int fmt, int w, int h)
+{
+	if(fi->tex[0])
+	{
+		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0,
+			0, 0, w, h,
+			GL_RGBA, GL_UNSIGNED_BYTE, buf
+		);
+	}
+	else
+	{
+		glGenTextures(1, &fi->tex[0]);
+		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+
+		if(hex32('r','g',0,0) == fmt)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0,
+				GL_RG, w, h, 0,
+				GL_RG, GL_UNSIGNED_BYTE, buf
+			);
+		}
+		else if(hex32('r','g','b',0) == fmt)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0,
+				GL_RGB, w, h, 0,
+				GL_RGB, GL_UNSIGNED_BYTE, buf
+			);
+		}
+		else
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0,
+				GL_RGBA, w, h, 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, buf
+			);
+		}
+	}
+
+	return fi->tex[0];
 }
 void inittexture(struct arena* w)  
 {

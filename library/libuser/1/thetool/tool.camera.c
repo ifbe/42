@@ -6,14 +6,6 @@ void yuyv2rgba(
 );
 void* arenacreate(u64, void*);
 void* allocofoot();
-static float vertex[6][6] = {
-	{-1.0, -1.0, 0.0, 0.0, 0.0, 0.0},
-	{ 1.0,  1.0, 0.0, 1.0, 1.0, 0.0},
-	{-1.0,  1.0, 0.0, 0.0, 1.0, 0.0},
-	{ 1.0,  1.0, 0.0, 1.0, 1.0, 0.0},
-	{-1.0, -1.0, 0.0, 0.0, 0.0, 0.0},
-	{ 1.0, -1.0, 0.0, 1.0, 0.0, 0.0}
-};
 
 
 
@@ -22,8 +14,8 @@ static float vertex[6][6] = {
 char* camera_glsl_v =
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 texuvw;\n"
-	"out mediump vec3 uv;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uv;\n"
 	"void main()\n"
 	"{\n"
 		"uv = texuvw;\n"
@@ -38,13 +30,29 @@ char* camera_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(texture(tex0, uv).rgb, 1.0);\n"
+		"mediump vec3 yuv = texture(tex0, uv).rgb;\n"
+		"mediump float y = yuv.r;\n"
+		"mediump float u = yuv.g - 0.5;\n"
+		"mediump float v = yuv.b - 0.5;\n"
+		"mediump float r = y + 1.402*v;\n"
+		"mediump float g = y - 0.34414*u - 0.71414*v;\n"
+		"mediump float b = y + 1.1772*u;\n"
+		"FragColor = vec4(r, g, b, 1.0);\n"
 	"}\n";
 //directx shader
 char* camera_hlsl_v = 0;
 char* cmaera_hlsl_t = 0;
 char* cmaera_hlsl_g = 0;
 char* cmaera_hlsl_f = 0;
+//
+static float vertex[6][6] = {
+	{-1.0, -1.0, 0.0, 0.0, 1.0, 0.0},
+	{ 1.0,  1.0, 0.0, 1.0, 0.0, 0.0},
+	{-1.0,  1.0, 0.0, 0.0, 0.0, 0.0},
+	{ 1.0,  1.0, 0.0, 1.0, 0.0, 0.0},
+	{-1.0, -1.0, 0.0, 0.0, 1.0, 0.0},
+	{ 1.0, -1.0, 0.0, 1.0, 1.0, 0.0}
+};
 
 
 
@@ -73,7 +81,7 @@ void camera_read_pixel(
 		hh = win->height/2;
 	}
 
-	src = (u8*)(act->buf);
+	src = (u8*)(act->idx);
 	if(0 == src)return;
 
 	dst = (u8*)(win->buf);
@@ -88,6 +96,31 @@ void camera_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x,y;
+	u8* dst;
+	u8* src;
+	struct ofoot* opin;
+	if(0 == act->idx)return;
+
+	for(y=0;y<480;y++)
+	{
+		dst = (act->buf) + (y*1024*4);
+		src = (act->idx) + (y*320*4);
+		for(x=0;x<320;x++)
+		{
+			dst[8*x + 0] = src[4*x + 0];
+			dst[8*x + 1] = src[4*x + 1];
+			dst[8*x + 2] = src[4*x + 3];
+
+			dst[8*x + 4] = src[4*x + 2];
+			dst[8*x + 5] = src[4*x + 1];
+			dst[8*x + 6] = src[4*x + 3];
+		}
+	}
+
+	opin = (void*)(pin->foot[0]);
+	opin->tex[0] = (u64)(act->buf);
+	opin->tex_enq[0] += 1;
 }
 void camera_read_json(
 	struct arena* win, struct style* sty,
@@ -98,16 +131,11 @@ void camera_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	//<head>
+	htmlprintf(win, 1, ".camera{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
 
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"camera\" style=\"width:50%%;height:100px;float:left;background-color:#1984ea;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
+	//<body>
+	htmlprintf(win, 2, "<div class=\"camera\">\n");
 }
 void camera_read_tui(
 	struct arena* win, struct style* sty,
@@ -118,7 +146,7 @@ void camera_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8* src = act->buf;
+	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
 static void camera_read(
@@ -139,11 +167,9 @@ static void camera_write(
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
-	if(0 != win)
-	{
-		act->buf = buf;
-		return;
-	}
+	if(0 == win)return;
+
+	act->idx = buf;
 }
 static void camera_list()
 {
@@ -172,8 +198,8 @@ static void camera_start(
 	//texture
 	opin->tex[0] = (u64)(act->buf);
 	opin->tex_fmt[0] = hex32('r','g','b','a');
-	opin->tex_w[0] = act->width;
-	opin->tex_h[0] = act->height;
+	opin->tex_w[0] = 1024;
+	opin->tex_h[0] = 1024;
 
 	//vertex
 	opin->vbuf = (u64)vertex;
@@ -184,7 +210,7 @@ static void camera_start(
 
 	opin->shader_enq[0] = 42;
 	opin->arg_enq[0] = 42;
-	opin->tex_enq[0] = 42;
+	opin->tex_enq[0] = 0;
 	opin->vbuf_enq = 42;
 	opin->ibuf_enq = 42;
 	pin->foot[0] = (u64)opin;
@@ -192,14 +218,20 @@ static void camera_start(
 static void camera_delete(struct actor* act)
 {
 	if(0 == act)return;
+	if(act->buf)
+	{
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
 }
 static void camera_create(struct actor* act)
 {
 	struct arena* win;
 	if(0 == act)return;
 
+	act->buf = memorycreate(0x400000);
+
 	win = arenacreate(_cam_, "0");
-	say("win=%llx\n",win);
 	if(0 == win)return;
 
 	relationcreate(act, 0, _act_, win, 0, _win_);
