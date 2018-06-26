@@ -169,7 +169,7 @@ void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
 		(fi->ibo_deq != fo->ibuf_enq) )
 	{
 		uploadvertex(fi, fo);
-		say("(%x,%x,%x)\n", fi->vao, fi->vbo, fi->ibo);
+		//say("(%x,%x,%x)\n", fi->vao, fi->vbo, fi->ibo);
 		fi->vbo_deq = fo->vbuf_enq;
 		fi->ibo_deq = fo->ibuf_enq;
 	}
@@ -331,21 +331,33 @@ void callback_update(struct arena* w)
 
 
 
-void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo)
+void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp)
 {
 	if((fi->shader)&&(fi->tex[0])&&(fi->vao))
 	{
 		glUseProgram(fi->shader);
 		glUniform1i(glGetUniformLocation(fi->shader, "tex0"), 0);
+		glUniformMatrix4fv(
+			glGetUniformLocation(fi->shader, "cammvp"),
+			1, GL_FALSE, cammvp
+		);
 
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
 
 		glBindVertexArray(fi->vao);
-		glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
+		if('v' == fo->method)
+		{
+			glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
+		}
+		else
+		{
+			//say("glDrawElements:%d\n",3*fo->ibuf_h);
+			glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		}
 	}
 }
-void callback_display_eachactor(struct arena* w)
+void callback_display_eachactor(struct arena* w, float* cammvp)
 {
 	int j;
 	u64* pi;
@@ -363,7 +375,7 @@ void callback_display_eachactor(struct arena* w)
 		{
 			if(0 == po[j])break;
 			if(0 == pi[j])pi[j] = (u64)allocifoot();
-			callback_display_eachpass((void*)pi[j], (void*)po[j]);
+			callback_display_eachpass((void*)pi[j], (void*)po[j], cammvp);
 		}
 
 		rel = samedstnextsrc(rel);
@@ -391,10 +403,10 @@ void callback_display(struct arena* win)
 {
 	u32 program;
 	struct texandobj* mod;
-	GLfloat cameramvp[4*4];
+	GLfloat cammvp[4*4];
 
-	fixmatrix(cameramvp, win);
-	mat4_transpose((void*)cameramvp);
+	fixmatrix(cammvp, win);
+	mat4_transpose((void*)cammvp);
 	mod = win->mod;
 
 
@@ -406,7 +418,7 @@ void callback_display(struct arena* win)
 
 
 	//
-	callback_display_eachactor(win);
+	callback_display_eachactor(win, cammvp);
 
 
 //--------------------glsl2dprogram------------------
@@ -427,7 +439,7 @@ void callback_display(struct arena* win)
 	//point,line
 	program = mod[0x80].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "simplemvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 
 	glBindVertexArray(mod[0x80].vao);
 	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
@@ -440,7 +452,7 @@ void callback_display(struct arena* win)
 	//stl,triangle
 	program = mod[0x82].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	fixlight(win, program);
 
 	glBindVertexArray(mod[0x82].vao);
@@ -459,7 +471,7 @@ void callback_display(struct arena* win)
 //--------------------font3dprogram------------------
 	program = mod[0].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(program, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
@@ -511,7 +523,7 @@ void callback_display(struct arena* win)
 /*
 //------------------directprogram-------------------
 	glUseProgram(directprogram);
-	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(font3dprogram, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);

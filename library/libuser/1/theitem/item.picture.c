@@ -9,11 +9,12 @@ char* picture_glsl_v =
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"uniform mat4 cammvp;\n"
 	"out mediump vec2 uvw;\n"
 	"void main()\n"
 	"{\n"
 		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
 char* picture_glsl_t = 0;
 char* picture_glsl_g = 0;
@@ -26,14 +27,6 @@ char* picture_glsl_f =
 	"{\n"
 		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	"}\n";
-static float vertex[6][6] = {
-	{-0.5, -0.5, 0.0, 0.0, 0.0, 0.0},
-	{ 0.5,  0.5, 0.0, 1.0, 1.0, 0.0},
-	{-0.5,  0.5, 0.0, 0.0, 1.0, 0.0},
-	{ 0.5,  0.5, 0.0, 1.0, 1.0, 0.0},
-	{-0.5, -0.5, 0.0, 0.0, 0.0, 0.0},
-	{ 0.5, -0.5, 0.0, 1.0, 0.0, 0.0}
-};
 
 
 
@@ -91,10 +84,60 @@ static void picture_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float (*vbuf)[6];
+	struct ofoot* opin;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
-	float* vu = sty->vr;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	opin = (void*)(pin->foot[0]);
+	vbuf = (void*)(opin->vbuf);
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 1.0;
+	vbuf[5][5] = 0.0;
+
+	opin->vbuf_enq += 1;
 }
 static void picture_read_json(
 	struct arena* win, struct style* sty,
@@ -186,7 +229,7 @@ static void picture_start(
 	opin->tex_h[0] = act->height;
 
 	//vertex
-	opin->vbuf = (u64)vertex;
+	opin->vbuf = (u64)memorycreate(4*6*6);
 	opin->vbuf_fmt = vbuffmt_33;
 	opin->vbuf_w = 6*4;
 	opin->vbuf_h = 6;
@@ -194,10 +237,10 @@ static void picture_start(
 
 	//send!
 	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 42;
+	opin->arg_enq[0] = 0;
 	opin->tex_enq[0] = 42;
-	opin->vbuf_enq = 42;
-	opin->ibuf_enq = 42;
+	opin->vbuf_enq = 0;
+	opin->ibuf_enq = 0;
 	pin->foot[0] = (u64)opin;
 }
 static void picture_delete(struct actor* act)

@@ -330,6 +330,166 @@ void carvesnowman(struct arena* win, u32 rgb, vec3 vc)
 	tc[2] = vc[2]+28.0+32.0;
 	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
 }
+void carveskydome(float vbuf[][6], u16* ibuf,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	int i,j,k;
+	float a,c,s;
+	vec3 tc, tr, tf;
+
+	vbuf[0][0] = vc[0] + vr[0];
+	vbuf[0][1] = vc[1] + vr[1];
+	vbuf[0][2] = vc[2] + vr[2];
+	vbuf[0][3] = 1.0;
+	vbuf[0][4] = 0.5;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vf[0];
+	vbuf[1][1] = vc[1] + vf[1];
+	vbuf[1][2] = vc[2] + vf[2];
+	vbuf[1][3] = 0.5;
+	vbuf[1][4] = 1.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] + vu[0];
+	vbuf[2][1] = vc[1] + vu[1];
+	vbuf[2][2] = vc[2] + vu[2];
+	vbuf[2][3] = 0.5;
+	vbuf[2][4] = 0.5;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] - vr[0];
+	vbuf[3][1] = vc[1] - vr[1];
+	vbuf[3][2] = vc[2] - vr[2];
+	vbuf[3][3] = 0.0;
+	vbuf[3][4] = 0.5;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] + vf[0];
+	vbuf[4][1] = vc[1] + vf[1];
+	vbuf[4][2] = vc[2] + vf[2];
+	vbuf[4][3] = 0.5;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vu[0];
+	vbuf[5][1] = vc[1] + vu[1];
+	vbuf[5][2] = vc[2] + vu[2];
+	vbuf[5][3] = 0.5;
+	vbuf[5][4] = 0.5;
+	vbuf[5][5] = 0.0;
+
+	vbuf[6][0] = vc[0] - vr[0];
+	vbuf[6][1] = vc[1] - vr[1];
+	vbuf[6][2] = vc[2] - vr[2];
+	vbuf[6][3] = 0.0;
+	vbuf[6][4] = 0.5;
+	vbuf[6][5] = 0.0;
+
+	vbuf[7][0] = vc[0] - vf[0];
+	vbuf[7][1] = vc[1] - vf[1];
+	vbuf[7][2] = vc[2] - vf[2];
+	vbuf[7][3] = 0.5;
+	vbuf[7][4] = 0.0;
+	vbuf[7][5] = 0.0;
+
+	vbuf[8][0] = vc[0] + vu[0];
+	vbuf[8][1] = vc[1] + vu[1];
+	vbuf[8][2] = vc[2] + vu[2];
+	vbuf[8][3] = 0.5;
+	vbuf[8][4] = 0.5;
+	vbuf[8][5] = 0.0;
+
+	vbuf[9][0] = vc[0] + vr[0];
+	vbuf[9][1] = vc[1] + vr[1];
+	vbuf[9][2] = vc[2] + vr[2];
+	vbuf[9][3] = 1.0;
+	vbuf[9][4] = 0.5;
+	vbuf[9][5] = 0.0;
+
+	vbuf[10][0] = vc[0] - vf[0];
+	vbuf[10][1] = vc[1] - vf[1];
+	vbuf[10][2] = vc[2] - vf[2];
+	vbuf[10][3] = 0.5;
+	vbuf[10][4] = 0.0;
+	vbuf[10][5] = 0.0;
+
+	vbuf[11][0] = vc[0] + vu[0];
+	vbuf[11][1] = vc[1] + vu[1];
+	vbuf[11][2] = vc[2] + vu[2];
+	vbuf[11][3] = 0.5;
+	vbuf[11][4] = 0.5;
+	vbuf[11][5] = 0.0;
+
+	ibuf[0] = 0;
+	ibuf[1] = 1;
+	ibuf[2] = 2;
+	ibuf[3] = 3;
+	ibuf[4] = 4;
+	ibuf[5] = 5;
+	ibuf[6] = 6;
+	ibuf[7] = 7;
+	ibuf[8] = 8;
+	ibuf[9] = 9;
+	ibuf[10] = 10;
+	ibuf[11] = 11;
+/*
+	for(k=0;k<5;k++)
+	{
+		a = k*PI/8;
+		c = cosine(a);
+		s = sine(a);
+
+		tc[0] = vc[0] + vu[0]*s;
+		tc[1] = vc[1] + vu[1]*s;
+		tc[2] = vc[2] + vu[2]*s;
+		tr[0] = vr[0]*c;
+		tr[1] = vr[1]*c;
+		tr[2] = vr[2]*c;
+		tf[0] = vf[0]*c;
+		tf[1] = vf[1]*c;
+		tf[2] = vf[2]*c;
+
+		for(j=0;j<8;j++)
+		{
+			a = j*tau/8;
+			c = cosine(a);
+			s = sine(a);
+
+			i = 8*k + j;
+			vbuf[i][0] = tc[0] + tr[0]*c + tf[0]*s;
+			vbuf[i][1] = tc[1] + tr[1]*c + tf[1]*s;
+			vbuf[i][2] = tc[2] + tr[2]*c + tf[2]*s;
+			vbuf[i][3] = 0.5 + (4-k)*c/8.0;
+			vbuf[i][4] = 0.5 + (4-k)*s/8.0;
+			vbuf[i][5] = 0.0;
+		}
+	}
+	vbuf[40][0] = vc[0] + vu[0];
+	vbuf[40][1] = vc[1] + vu[1];
+	vbuf[40][2] = vc[2] + vu[2];
+	vbuf[40][3] = 0.5;
+	vbuf[40][4] = 0.5;
+	vbuf[40][5] = 0.0;
+
+	for(j=0;j<8;j++)
+	{
+		ibuf[j*3+0] = j;
+		ibuf[j*3+1] = (j+1)%8;
+		ibuf[j*3+2] = 0;
+	}
+
+	for(k=0;k<5;k++)
+	{
+		for(j=0;j<8;j++)
+		{
+			i = (k*8+j)*3;
+			ibuf[i+0] = (k*8)+j;
+			ibuf[i+1] = (k*8)+((j+1)%8);
+			ibuf[i+2] = 40;
+		}
+	}*/
+}
 
 
 

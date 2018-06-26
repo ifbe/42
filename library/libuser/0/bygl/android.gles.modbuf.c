@@ -263,10 +263,10 @@ void callback_display(struct arena* win)
 {
 	u32 program;
 	struct texandobj* mod;
-	GLfloat cameramvp[4*4];
+	GLfloat cammvp[4*4];
 
-	fixmatrix(cameramvp, win);
-	mat4_transpose((void*)cameramvp);
+	fixmatrix(cammvp, win);
+	mat4_transpose((void*)cammvp);
 	mod = win->mod;
 
 	//set
@@ -294,7 +294,7 @@ void callback_display(struct arena* win)
 	//point,line
 	program = mod[0x80].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "simplemvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 
 	glBindVertexArray(mod[0x80].vao);
 	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
@@ -307,7 +307,7 @@ void callback_display(struct arena* win)
 	//stl,triangle
 	program = mod[0x82].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	fixlight(win, program);
 
 	glBindVertexArray(mod[0x82].vao);
@@ -326,7 +326,7 @@ void callback_display(struct arena* win)
 	//font0000,4000,8000,c000
 	program = mod[0].program;
 	glUseProgram(program);
-	glUniformMatrix4fv(glGetUniformLocation(program, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(program, "texdata"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
@@ -377,7 +377,7 @@ void callback_display(struct arena* win)
 
 /*
 	glUseProgram(directprogram);
-	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "prettymvp"), 1, GL_FALSE, cameramvp);
+	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(font3dprogram, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);

@@ -15,7 +15,7 @@ static void* nametab[8] = {
 	"  1: console    ",
 	"  2: overview   ",
 	"  3: detail     ",
-	"  4: adjust     ",
+	"  4: layout     ",
 	"  5: freeview   ",
 	"  6: playgame   ",
 	"  7: onetoone   "

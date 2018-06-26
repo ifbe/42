@@ -1,7 +1,33 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
 void* allocofoot();
+void actorcreatefromfile(struct actor* act, char* name);
+void carveskydome(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
+
+
+
+char* skydome_glsl_v =
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"uniform mat4 cammvp;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"}\n";
+char* skydome_glsl_t = 0;
+char* skydome_glsl_g = 0;
+char* skydome_glsl_f = 
+	"#version 300 es\n"
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"}\n";
 
 
 
@@ -58,10 +84,21 @@ static void skydome_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	void* vbuf;
+	void* ibuf;
+	struct ofoot* opin;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
-	float* vu = sty->vr;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	opin = (void*)(pin->foot[0]);
+	vbuf = (void*)(opin->vbuf);
+	ibuf = (void*)(opin->ibuf);
+	carveskydome(vbuf, ibuf, vc, vr, vf, vu);
+	opin->vbuf_enq += 1;
+	opin->ibuf_enq += 1;
 }
 static void skydome_read_json(
 	struct arena* win, struct style* sty,
@@ -139,14 +176,36 @@ static void skydome_start(
 	struct ofoot* opin;
 	if(0 == pin)return;
 
-	//sender
+	//
 	opin = allocofoot();
 
+	//shader
+	opin->vs = (u64)skydome_glsl_v;
+	opin->fs = (u64)skydome_glsl_f;
+
+	//texture
+	opin->tex[0] = (u64)(act->buf);
+	opin->tex_fmt[0] = hex32('r','g','b','a');
+	opin->tex_w[0] = act->width;
+	opin->tex_h[0] = act->height;
+
+	//vertex
+	opin->vbuf = (u64)memorycreate(4*6*41);
+	opin->vbuf_fmt = vbuffmt_33;
+	opin->vbuf_w = 4*6;
+	opin->vbuf_h = 12;
+	opin->ibuf = (u64)memorycreate(2*3*56);
+	opin->ibuf_fmt = 0x222;
+	opin->ibuf_w = 2*3;
+	opin->ibuf_h = 4;
+	opin->method = 'v';
+
+	//send!
 	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 42;
+	opin->arg_enq[0] = 0;
 	opin->tex_enq[0] = 42;
-	opin->vbuf_enq = 42;
-	opin->ibuf_enq = 42;
+	opin->vbuf_enq = 0;
+	opin->ibuf_enq = 0;
 	pin->foot[0] = (u64)opin;
 }
 static void skydome_delete(struct actor* act)
@@ -158,7 +217,7 @@ static void skydome_delete(struct actor* act)
 static void skydome_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "wall/wall.jpg");
+	actorcreatefromfile(act, "skydome/skydome.jpg");
 }
 
 
