@@ -203,20 +203,6 @@ void callback_update_eachactor(struct arena* w)
 }
 void callback_update(struct arena* w)
 {
-/*
-//--------------------------------
-	w->fmt = hex64('r','g','b','a','8','8','8','8');
-	w->height = 1024;
-	w->width = w->stride = 1024;
-	actorread_all(w);
-
-	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
-	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, 1024, 1024, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, w->buf
-	);
-*/
-//--------------------------------
 	struct texandobj* mod = w->mod;
 	callback_update_eachactor(w);
 
@@ -278,11 +264,7 @@ void callback_update(struct arena* w)
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[7].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[7].vlen, mod[7].vbuf);
-/*
-	//2d screen
-	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[4].vlen, mod[4].vbuf);
-*/
+
 
 //----------------------3d---------------------
 	//drawarray: point
@@ -346,14 +328,14 @@ void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp
 		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
 
 		glBindVertexArray(fi->vao);
-		if('v' == fo->method)
+		if('i' == fo->method)
 		{
-			glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
+			glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
-			//say("glDrawElements:%d\n",3*fo->ibuf_h);
-			glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
 		}
 	}
 }

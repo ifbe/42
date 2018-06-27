@@ -190,15 +190,15 @@ static void skydome_start(
 	opin->tex_h[0] = act->height;
 
 	//vertex
-	opin->vbuf = (u64)memorycreate(4*6*41);
+	opin->vbuf = (u64)memorycreate(4*6*129);
 	opin->vbuf_fmt = vbuffmt_33;
 	opin->vbuf_w = 4*6;
-	opin->vbuf_h = 12;
-	opin->ibuf = (u64)memorycreate(2*3*56);
+	opin->vbuf_h = 128+1;
+	opin->ibuf = (u64)memorycreate(2*3*256);
 	opin->ibuf_fmt = 0x222;
 	opin->ibuf_w = 2*3;
-	opin->ibuf_h = 4;
-	opin->method = 'v';
+	opin->ibuf_h = 256;
+	opin->method = 'i';
 
 	//send!
 	opin->shader_enq[0] = 42;
