@@ -1,6 +1,6 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
 void* allocofoot();
+void actorcreatefromfile(struct actor* act, char* name);
 
 
 
@@ -18,7 +18,7 @@ char* picture_glsl_v =
 	"}\n";
 char* picture_glsl_t = 0;
 char* picture_glsl_g = 0;
-char* picture_glsl_f = 
+char* picture_glsl_f =
 	"#version 300 es\n"
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
