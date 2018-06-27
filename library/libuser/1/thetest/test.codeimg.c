@@ -1,4 +1,6 @@
 #include "libuser.h"
+void* allocofoot();
+void actorcreatefromfile(struct actor* act, char* name);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -17,6 +19,30 @@ static float vbuf[6][5] = {
 	{0.0, 0.0, 0.0, 0.0, 1.0},
 	{0.0, 0.0, 0.0, 1.0, 0.0}
 };
+
+
+
+
+char* codeimg_glsl_v =
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"uniform mat4 cammvp;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"}\n";
+char* codeimg_glsl_f =
+	"#version 300 es\n"
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"}\n";
 
 
 
@@ -172,6 +198,60 @@ static void codeimg_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float (*vbuf)[6];
+	struct ofoot* opin;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	opin = (void*)(pin->foot[0]);
+	vbuf = (void*)(opin->vbuf);
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 1.0;
+	vbuf[5][5] = 0.0;
+
+	opin->vbuf_enq += 1;
 }
 static void codeimg_read_json(
 	struct arena* win, struct style* sty,
@@ -182,16 +262,6 @@ static void codeimg_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"codeimg\" style=\"width:50%%;height:100px;float:left;background-color:#0000ff;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void codeimg_read_tui(
 	struct arena* win, struct style* sty,
@@ -237,14 +307,41 @@ static void codeimg_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct ofoot* opin;
+	if(0 == pin)return;
+
+	//
+	opin = allocofoot();
+
+	//shader
+	opin->vs = (u64)codeimg_glsl_v;
+	opin->fs = (u64)codeimg_glsl_f;
+
+	//texture
+	opin->tex[0] = (u64)(act->buf);
+	opin->tex_fmt[0] = hex32('r','g','b','a');
+	opin->tex_w[0] = act->width;
+	opin->tex_h[0] = act->height;
+
+	//vertex
+	opin->vbuf = (u64)memorycreate(4*6*6);
+	opin->vbuf_fmt = vbuffmt_33;
+	opin->vbuf_w = 6*4;
+	opin->vbuf_h = 6;
+	opin->method = 'v';
+
+	//send!
+	opin->shader_enq[0] = 42;
+	opin->arg_enq[0] = 0;
+	opin->tex_enq[0] = 42;
+	opin->vbuf_enq = 0;
+	opin->ibuf_enq = 0;
+	pin->foot[0] = (u64)opin;
 }
 static void codeimg_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if((_COPY_ == act->type)&&(0 != act->buf))
-	{
-		memorydelete(act->buf);
-	}
+	if(0 != act->buf)memorydelete(act->buf);
 	act->buf = 0;
 }
 static void codeimg_create(struct actor* act)
@@ -256,6 +353,8 @@ static void codeimg_create(struct actor* act)
 
 	src = memorycreate(1024*1024*4);
 	act->buf = src;
+	act->width = 1024;
+	act->height = 1024;
 
 	for(y=0;y<1024;y++)
 	{

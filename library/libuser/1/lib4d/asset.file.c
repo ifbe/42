@@ -1,6 +1,8 @@
 #include "libuser.h"
 int openreadclose(void* name, int off, void* buf, int len);
 int openwriteclose(void* name, int off, void* buf, int len);
+int ncmp(void*, void*, int);
+void* getsuffix(void* p);
 //utf8
 void initutf8(void*);
 //nanojpeg
@@ -58,7 +60,10 @@ void asset_delete()
 
 void actorcreatefromstl(struct actor* act, u8* buf, int len)
 {
-	float* p;
+	u8 tmp[0x100];
+	int j,ret;
+	float* src;
+	float* dst;
 	float* vl = act->target.vl;	//left
 	float* vr = act->target.vr;	//right
 	float* vn = act->target.vn;	//near
@@ -67,7 +72,6 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	float* vu = act->target.vu;	//top
 	float* vv = act->target.vv;	//info
 	float* vc = act->target.vc;	//center
-	int j,ret;
 
 	vl[0] = 100000.0;
 	vl[1] = 0.0;
@@ -92,37 +96,33 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 
 	ret = *(u32*)(buf+80);
 	say("len=%x, count=%x\n", len, ret);
-	ret = ret%(0x200000/36);
+	ret = ret%(0x400000/72);
 
-	for(j=0;j<ret;j++)
+	for(j=0;j<250;j++)tmp[j] = buf[84+j];
+	for(j=ret*3-1;j>=0;j--)
 	{
-		p = (void*)buf + 84 + j*50;
+		dst = (void*)buf + 24*j;
+		if(j < 15)src = (void*)tmp + (j/3)*50;
+		else src = (void*)buf + 84 + (j/3)*50;
 
-		if(p[ 3] < vl[0])vl[0] = p[3];
-		if(p[ 3] > vr[0])vr[0] = p[3];
-		if(p[ 4] < vn[1])vn[1] = p[4];
-		if(p[ 4] > vf[1])vf[1] = p[4];
-		if(p[ 5] < vb[2])vb[2] = p[5];
-		if(p[ 5] > vu[2])vu[2] = p[5];
+		dst[3] = src[0];
+		dst[4] = src[1];
+		dst[5] = src[2];
 
-		if(p[ 6] < vl[0])vl[0] = p[6];
-		if(p[ 6] > vr[0])vr[0] = p[6];
-		if(p[ 7] < vn[1])vn[1] = p[7];
-		if(p[ 7] > vf[1])vf[1] = p[7];
-		if(p[ 8] < vb[2])vb[2] = p[8];
-		if(p[ 8] > vu[2])vu[2] = p[8];
+		src = (void*)src + 12 + 12*(j%3);
+		dst[0] = src[0];
+		dst[1] = src[1];
+		dst[2] = src[2];
 
-		if(p[ 9] < vl[0])vl[0] = p[9];
-		if(p[ 9] > vr[0])vr[0] = p[9];
-		if(p[10] < vn[1])vn[1] = p[10];
-		if(p[10] > vf[1])vf[1] = p[10];
-		if(p[11] < vb[2])vb[2] = p[11];
-		if(p[11] > vu[2])vu[2] = p[11];
+		if(vl[0] > dst[0])vl[0] = dst[0];
+		if(vr[0] < dst[0])vr[0] = dst[0];
+		if(vn[1] > dst[1])vn[1] = dst[1];
+		if(vf[1] < dst[1])vf[1] = dst[1];
+		if(vb[2] > dst[2])vb[2] = dst[2];
+		if(vu[2] < dst[2])vu[2] = dst[2];
+
+		//say("%f,%f,%f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3],dst[4],dst[5]);
 	}
-	say(
-		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
-		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
-	);
 
 	vv[0] = vr[0] - vl[0];
 	vv[1] = vf[1] - vn[1];
@@ -131,9 +131,17 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	vc[1] = (vn[1] + vf[1])/2;
 	vc[2] = (vb[2] + vu[2])/2;
 	say(
-		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
-		vv[0], vv[0], vv[1], vc[1], vc[2], vc[2]
+		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
+		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]
 	);
+	say(
+		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
+		vv[0], vv[1], vv[2], vc[0], vc[1], vc[2]
+	);
+
+	act->width = 4*6;
+	act->height = ret*3;
+	act->buf = buf;
 }
 void actorcreatefromjpeg(struct actor* act, u8* buf, int len)
 {
@@ -164,9 +172,13 @@ void actorcreatefromjpeg(struct actor* act, u8* buf, int len)
 }
 void actorcreatefromfile(struct actor* act, char* name)
 {
-	int len;
+	int j,len;
+	u8* tmp;
 	u8* buf;
 	if(0 == act)return;
+
+	tmp = getsuffix(name);
+	if(0 == tmp)return;
 
 	buf = memorycreate(0x400000);
 	len = openreadclose(name, 0, buf, 0x400000);
@@ -176,6 +188,6 @@ void actorcreatefromfile(struct actor* act, char* name)
 		return;
 	}
 
-	actorcreatefromjpeg(act, buf, len);
-	//actorcreatefromstl(act, buf, len);
+	if(0 == ncmp(tmp, "jpg", 3))actorcreatefromjpeg(act, buf, len);
+	if(0 == ncmp(tmp, "stl", 3))actorcreatefromstl(act, buf, len);
 }

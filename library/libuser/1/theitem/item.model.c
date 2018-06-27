@@ -1,10 +1,31 @@
 #include "libuser.h"
-int openreadclose(void*, u64, void*, u64);
-int openwriteclose(void*, u64, void*, u64);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
-void carvestl(void*, u32, vec3, vec3, vec3, vec3, void*, int);
+void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
+
+
+
+
+char* model_glsl_v =
+	"#version 300 es\n"
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 normal;\n"
+	"uniform mat4 cammvp;\n"
+	"out mediump vec3 vcolor;\n"
+	"void main()\n"
+	"{\n"
+		"vcolor = normal;\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"}\n";
+char* model_glsl_f =
+	"#version 300 es\n"
+	"in mediump vec3 vcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"FragColor = vec4(vcolor, 1.0);\n"
+	"}\n";
 
 
 
@@ -68,9 +89,6 @@ static void model_read_vbo(
 	float* vf = sty->vf;
 	float* vu = sty->vr;
 	if(act->buf == 0)return;
-	if(act->len == 0)return;
-
-	carvestl(win, 0xffffff, vc, vr, vf, vu, act, 0);
 }
 static void model_read_json(
 	struct arena* win, struct style* sty,
@@ -81,16 +99,6 @@ static void model_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"model\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void model_read_tui(
 	struct arena* win, struct style* sty,
@@ -170,6 +178,30 @@ static void model_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct ofoot* opin;
+	if(0 == pin)return;
+
+	//
+	opin = allocofoot();
+
+	//shader
+	opin->vs = (u64)model_glsl_v;
+	opin->fs = (u64)model_glsl_f;
+
+	//vertex
+	opin->vbuf = (u64)(act->buf);
+	opin->vbuf_fmt = vbuffmt_33;
+	opin->vbuf_w = act->width;
+	opin->vbuf_h = act->height;
+	opin->method = 'v';
+
+	//send!
+	opin->shader_enq[0] = 42;
+	opin->arg_enq[0] = 0;
+	opin->tex_enq[0] = 0;
+	opin->vbuf_enq = 42;
+	opin->ibuf_enq = 0;
+	pin->foot[0] = (u64)opin;
 }
 static void model_delete(struct actor* act)
 {

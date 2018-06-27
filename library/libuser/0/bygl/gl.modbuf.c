@@ -315,28 +315,31 @@ void callback_update(struct arena* w)
 
 void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp)
 {
-	if((fi->shader)&&(fi->tex[0])&&(fi->vao))
-	{
-		glUseProgram(fi->shader);
-		glUniform1i(glGetUniformLocation(fi->shader, "tex0"), 0);
-		glUniformMatrix4fv(
-			glGetUniformLocation(fi->shader, "cammvp"),
-			1, GL_FALSE, cammvp
-		);
+	if(0 == fi->shader)return;
+	if(0 == fi->vao)return;
 
+	glUseProgram(fi->shader);
+	glUniformMatrix4fv(
+		glGetUniformLocation(fi->shader, "cammvp"),
+		1, GL_FALSE, cammvp
+	);
+
+	if(fi->tex[0])
+	{
+		glUniform1i(glGetUniformLocation(fi->shader, "tex0"), 0);
 		glActiveTexture(GL_TEXTURE0 + 0);
 		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+	}
 
-		glBindVertexArray(fi->vao);
-		if('i' == fo->method)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
-			glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
-		}
-		else
-		{
-			glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
-		}
+	glBindVertexArray(fi->vao);
+	if('i' == fo->method)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
+		glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
+	}
+	else
+	{
+		glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
 	}
 }
 void callback_display_eachactor(struct arena* w, float* cammvp)

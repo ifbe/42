@@ -2,9 +2,6 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void printmemory(char*,int);
-void say(char*,...);
-static char buf[0x1000];
 
 
 
@@ -13,61 +10,42 @@ static char buf[0x1000];
 "1.txt" -> "txt"
 "2.html" -> "html"
 */
-int getsuffix(u8* p,u8** suffix)
+u8* getsuffix(u8* p)
 {
-	int i=0;
-	int tail=0;
-	if(p==0)return 0;
+	int j,k=0;
+	if(0 == p)return 0;
 
-	for(i=0;i<256;i++)
+	for(j=0;j<0x1000;j++)
 	{
-		//all possible '.'
-		if( p[i] == '.' )
-		{
-			tail=i;
-		}
-
-		//finished
-		else if( p[i] == 0 )
-		{
-			//".gitignore" is not an extension
-			if(tail==0)
-			{
-				*suffix=0;
-			}
-			else
-			{
-				*suffix = p + tail;
-			}
-			break;
-		}
+		if(p[j] < 0x20)break;
+		if(p[j] == '.')k = j;
 	}
-
-	//say("suffix=%s\n",(char*)suffix);
-	return 1;
+	if(0 == j)return 0;
+	if(0 == k)return 0;
+	return p+k+1;
 }
 
 
 
 
-char* getfilename(char* p)
+u8* getfilename(u8* p)
 {
-        int j=0;
-        int k=0;
-        while(1)
-        {
-                if(p[j] == 0)break;
-                if(p[j] == '/')k=j+1;
+	int j=0;
+	int k=0;
+	while(1)
+	{
+		if(p[j] == 0)break;
+		if(p[j] == '/')k=j+1;
 
-                j++;
-        }
-        return p+k;
+		j++;
+	}
+	return p+k;
 }
 
 
 
 
-char* getfolder(char* p)
+int getfolder(u8* p)
 {
 	int j = 0;
 	int k = -1;
@@ -76,14 +54,10 @@ char* getfolder(char* p)
 		if(j>0x1000)break;
 		if(p[j] == 0)break;
 		if(p[j] == '/')k=j;
-
-		buf[j]=p[j];
 		j++;
 	}
 
-	if(k<0)return p;
-	if(k==0)return "/";
-
-	buf[k]=0;
-	return buf;
+	if(k < 0)return 0;
+	if(k == 0)return 1;
+	return k;
 }
