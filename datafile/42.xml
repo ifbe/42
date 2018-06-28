@@ -1,9 +1,12 @@
 <system>
-	<fuckyou></fuckyou>
+	<uart@0>pl2303</uart>
+	<net@0>TCP://0.0.0.0:2222</net>
+	<net@1>tcp://example.com:6666</net>
 </system>
 
 <artery>
-	<fuckyou></fuckyou>
+	<HTTP@0></HTTP>
+	<ws@0></ws>
 </artery>
 
 <arena>
