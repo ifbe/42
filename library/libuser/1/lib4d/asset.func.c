@@ -13,6 +13,7 @@ void rawdump_register(void*);
 void switch_register(void*);
 //item
 void clock_register(void*);
+void earth_register(void*);
 void house_register(void*);
 void human_register(void*);
 void model_register(void*);
@@ -147,6 +148,9 @@ void content_create(void* addr)
 
 //----------------------item-----------------------
 	clock_register(temp);
+	temp += sizeof(struct actor);
+
+	earth_register(temp);
 	temp += sizeof(struct actor);
 
 	house_register(temp);

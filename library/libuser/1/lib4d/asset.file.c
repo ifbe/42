@@ -96,7 +96,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 
 	ret = *(u32*)(buf+80);
 	say("len=%x, count=%x\n", len, ret);
-	ret = ret%(0x400000/72);
+	ret = ret%(0x800000/72);
 
 	for(j=0;j<250;j++)tmp[j] = buf[84+j];
 	for(j=ret*3-1;j>=0;j--)
@@ -180,8 +180,8 @@ void actorcreatefromfile(struct actor* act, char* name)
 	tmp = getsuffix(name);
 	if(0 == tmp)return;
 
-	buf = memorycreate(0x400000);
-	len = openreadclose(name, 0, buf, 0x400000);
+	buf = memorycreate(0x800000);
+	len = openreadclose(name, 0, buf, 0x800000);
 	if(len <= 0)
 	{
 		say("len=%d\n", len);

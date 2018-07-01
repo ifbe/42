@@ -971,28 +971,27 @@ void carveline_icosahedron(struct arena* win, u32 rgb,
 void carveline_sphere(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define odd ((acc&0xfffe)+1)
-	int a,b,j,k;
+#define accx (acc)
+#define accy (acc|0x1)
+	int j,k,a,b;
 	float c,s;
-	vec3 tc;
-	vec3 tr;
-	vec3 tf;
+	vec3 tc, tr, tf;
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
 	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
+	int ilen = mod[linev].ilen;
 	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += odd*(odd+odd-3);
-	mod[linev].vlen += odd*(odd-2)+2;
+	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
+	mod[linev].vlen += accx*accy+2;
+	mod[linev].ilen += accx*accy+accx*(accy+1);
 
-	for(k=0;k<(odd-2);k++)
+	for(k=0;k<accy;k++)
 	{
-		s = (k+1-(odd/2))*PI/(odd-1);
+		s = (2*k-accy+1)*PI/(2*accy+2);
 		c = cosine(s);
 		s = sine(s);
 
@@ -1006,13 +1005,15 @@ void carveline_sphere(struct arena* win, u32 rgb,
 		tf[1] = vf[1]*c;
 		tf[2] = vf[2]*c;
 
-		for(j=0;j<odd;j++)
+		for(j=0;j<accx;j++)
 		{
-			a = (k*odd + j)*6;
-			b = (k*odd + j)*2;
+			s = j*tau/accx;
+			c = cosine(s);
+			s = sine(s);
 
-			c = cosine(j*tau/odd);
-			s = sine(j*tau/odd);
+			a = (k*accx + j)*6;
+			b = (k*accx + j)*2;
+
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
@@ -1021,22 +1022,13 @@ void carveline_sphere(struct arena* win, u32 rgb,
 			vbuf[a+4] = gg;
 			vbuf[a+5] = bb;
 
-			ibuf[b+0] = vlen+(k*odd)+j;
-			ibuf[b+1] = vlen+(k*odd)+(j+1)%odd;
+			ibuf[b+0] = vlen+(k*accx)+j;
+			ibuf[b+1] = vlen+(k*accx)+(j+1)%accx;
 		}
 	}
 
-	for(k=0;k<odd;k++)
-	{
-		a = odd*(odd-2)*2 + k*(odd-3)*2;
-		for(j=0;j<(odd-3);j++)
-		{
-			ibuf[a + 2*j + 0] = vlen+k+(j*odd);
-			ibuf[a + 2*j + 1] = vlen+k+(j*odd)+odd;
-		}
-	}
+	a = accx*accy*6;
 
-	a = odd*(odd-2)*6;
 	vbuf[a+ 0] = vc[0]-vu[0];
 	vbuf[a+ 1] = vc[1]-vu[1];
 	vbuf[a+ 2] = vc[2]-vu[2];
@@ -1051,13 +1043,23 @@ void carveline_sphere(struct arena* win, u32 rgb,
 	vbuf[a+10] = gg;
 	vbuf[a+11] = bb;
 
-	b = odd*(odd-2)*2+odd*(odd-3)*2;
-	for(j=0;j<odd;j++)
-	{
-		ibuf[b + 2*j +0] = vlen+odd*(odd-2);
-		ibuf[b + 2*j +1] = vlen+j;
 
-		ibuf[b + 2*j + odd*2 + 0] = vlen+odd*(odd-2)+1;
-		ibuf[b + 2*j + odd*2 + 1] = vlen+odd*(odd-3)+j;
+	for(k=0;k<accx;k++)
+	{
+		a = accy*accx*2 + (accy-1)*k*2;
+		for(j=0;j<accy-1;j++)
+		{
+			ibuf[a + 2*j + 0] = vlen+k+(j*accx);
+			ibuf[a + 2*j + 1] = vlen+k+(j*accx)+accx;
+		}
+	}
+
+	a = accy*accx*2 + (accy-1)*accx*2;
+	for(j=0;j<accx;j++)
+	{
+		ibuf[a + 4*j + 0] = vlen+accx*accy;
+		ibuf[a + 4*j + 1] = vlen+j;
+		ibuf[a + 4*j + 2] = vlen+accx*accy+1;
+		ibuf[a + 4*j + 3] = vlen+accx*(accy-1)+j;
 	}
 }

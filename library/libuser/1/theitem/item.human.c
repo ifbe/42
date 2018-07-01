@@ -68,7 +68,6 @@ static void human_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carveline_prism4(win, 0x6a4b23, vc, vr, vf, vu);
 
 	for(j=0;j<14;j++)
 	{

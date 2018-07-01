@@ -961,7 +961,8 @@ void carvesolid_icosahedron(struct arena* win, u32 rgb,
 void carvesolid_sphere(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define odd ((acc&0xfffe)+1)
+#define accx (acc)
+#define accy (acc|0x1)
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;
@@ -971,16 +972,16 @@ void carvesolid_sphere(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	struct texandobj* mod = win->mod;
-	int ilen = mod[trigonv].ilen;
 	int vlen = mod[trigonv].vlen;
-	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
+	int ilen = mod[trigonv].ilen;
 	float* vbuf = (mod[trigonv].vbuf) + (36*vlen);
-	mod[trigonv].ilen += odd*(odd-2)*2;
-	mod[trigonv].vlen += odd*(odd-2)+2;
+	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
+	mod[trigonv].vlen += accx*accy+2;
+	mod[trigonv].ilen += accx*accy*2;
 
-	for(k=0;k<(odd-2);k++)
+	for(k=0;k<accy;k++)
 	{
-		s = (k+1-(odd/2))*PI/(odd-1);
+		s = (2*k-accy+1)*PI/(2*accy+2);
 		c = cosine(s);
 		s = sine(s);
 
@@ -994,11 +995,13 @@ void carvesolid_sphere(struct arena* win, u32 rgb,
 		tf[1] = vf[1]*c;
 		tf[2] = vf[2]*c;
 
-		for(j=0;j<odd;j++)
+		for(j=0;j<accx;j++)
 		{
-			a = (k*odd + j)*9;
-			c = cosine(j*tau/odd);
-			s = sine(j*tau/odd);
+			s = j*tau/accx;
+			c = cosine(s);
+			s = sine(s);
+
+			a = (k*accx + j)*9;
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
@@ -1008,36 +1011,29 @@ void carvesolid_sphere(struct arena* win, u32 rgb,
 			vbuf[a+6] = vbuf[a+0] - vc[0];
 			vbuf[a+7] = vbuf[a+1] - vc[1];
 			vbuf[a+8] = vbuf[a+2] - vc[2];
-		}
-	}
-	for(k=0;k<(odd-3);k++)
-	{
-		a = k*odd*6;
-		for(j=0;j<odd;j++)
-		{
-			ibuf[a + 6*j + 0] = vlen+(k*odd)+j;
-			ibuf[a + 6*j + 1] = vlen+(k*odd)+(j+1)%odd;
-			ibuf[a + 6*j + 2] = vlen+(k*odd)+odd+j;
 
-			ibuf[a + 6*j + 3] = vlen+(k*odd)+(j+1)%odd;
-			ibuf[a + 6*j + 4] = vlen+(k*odd)+odd+j;
-			ibuf[a + 6*j + 5] = vlen+(k*odd)+odd+(j+1)%odd;
+			if(k >= accy-1)continue;
+			b = k*accx*6;
+			ibuf[b + 6*j + 0] = vlen+(k*accx)+j;
+			ibuf[b + 6*j + 1] = vlen+(k*accx)+(j+1)%accx;
+			ibuf[b + 6*j + 2] = vlen+(k*accx)+accx+j;
+			ibuf[b + 6*j + 3] = vlen+(k*accx)+(j+1)%accx;
+			ibuf[b + 6*j + 4] = vlen+(k*accx)+accx+j;
+			ibuf[b + 6*j + 5] = vlen+(k*accx)+accx+(j+1)%accx;
 		}
 	}
 
-	//
-	a = odd*(odd-2)*9;
-	b = odd*(odd-3)*6;
+	a = accx*accy*9;
 
-	vbuf[a+0] = vc[0]-vu[0];
-	vbuf[a+1] = vc[1]-vu[1];
-	vbuf[a+2] = vc[2]-vu[2];
-	vbuf[a+3] = rr;
-	vbuf[a+4] = gg;
-	vbuf[a+5] = bb;
-	vbuf[a+6] = -vu[0];
-	vbuf[a+7] = -vu[1];
-	vbuf[a+8] = -vu[2];
+	vbuf[a+ 0] = vc[0]-vu[0];
+	vbuf[a+ 1] = vc[1]-vu[1];
+	vbuf[a+ 2] = vc[2]-vu[2];
+	vbuf[a+ 3] = rr;
+	vbuf[a+ 4] = gg;
+	vbuf[a+ 5] = bb;
+	vbuf[a+ 6] = -vu[0];
+	vbuf[a+ 7] = -vu[1];
+	vbuf[a+ 8] = -vu[2];
 
 	vbuf[a+ 9] = vc[0]+vu[0];
 	vbuf[a+10] = vc[1]+vu[1];
@@ -1049,15 +1045,15 @@ void carvesolid_sphere(struct arena* win, u32 rgb,
 	vbuf[a+16] = vu[1];
 	vbuf[a+17] = vu[2];
 
-	for(j=0;j<odd;j++)
+	b = (accy-1)*accx*6;
+	for(j=0;j<accx;j++)
 	{
-		ibuf[b + (3*j) +0] = vlen+odd*(odd-2);
-		ibuf[b + (3*j) +1] = vlen+j;
-		ibuf[b + (3*j) +2] = vlen+(j+1)%odd;
-
-		ibuf[b + (3*j) +(odd*3) + 0] = vlen+odd*(odd-2)+1;
-		ibuf[b + (3*j) +(odd*3) + 1] = vlen+odd*(odd-3)+j;
-		ibuf[b + (3*j) +(odd*3) + 2] = vlen+odd*(odd-3)+(j+1)%odd;
+		ibuf[b + (6*j) + 0] = vlen+accx*accy;
+		ibuf[b + (6*j) + 1] = vlen+j;
+		ibuf[b + (6*j) + 2] = vlen+(j+1)%accx;
+		ibuf[b + (6*j) + 3] = vlen+accx*accy+1;
+		ibuf[b + (6*j) + 4] = vlen+accx*(accy-1)+j;
+		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
 	}
 }
 void carvesolid_tokamak(struct arena* win, u32 rgb,

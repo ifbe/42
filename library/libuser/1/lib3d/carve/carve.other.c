@@ -437,6 +437,89 @@ void carveskydome(float vbuf[][6], u16* ibuf,
 		ibuf[m+2] = ccc*ccc*2;
 	}
 }
+void carveearth(float vbuf[][6], u16* ibuf,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+#define accx 16
+#define accy 15
+	int a,b,j,k;
+	float c,s;
+	vec3 tc, tr, tf;
+
+	for(k=0;k<accy;k++)
+	{
+		s = (2*k-accy+1)*PI/(2*accy+2);
+		c = cosine(s);
+		s = sine(s);
+
+		tc[0] = vc[0] + vu[0]*s;
+		tc[1] = vc[1] + vu[1]*s;
+		tc[2] = vc[2] + vu[2]*s;
+		tr[0] = vr[0]*c;
+		tr[1] = vr[1]*c;
+		tr[2] = vr[2]*c;
+		tf[0] = vf[0]*c;
+		tf[1] = vf[1]*c;
+		tf[2] = vf[2]*c;
+
+		for(j=0;j<accx;j++)
+		{
+			s = j*tau/(accx-1);
+			c = cosine(s);
+			s = sine(s);
+
+			a = k*accx + j;
+			vbuf[a][0] = tc[0] + tr[0]*c + tf[0]*s;
+			vbuf[a][1] = tc[1] + tr[1]*c + tf[1]*s;
+			vbuf[a][2] = tc[2] + tr[2]*c + tf[2]*s;
+			vbuf[a][3] = j/(accx-1.0);
+			vbuf[a][4] = 1.0-(k+1.0)/(accy+1.0);
+			vbuf[a][5] = 0.0;
+
+			if(j >= accx-1)continue;
+			if(k >= accy-1)continue;
+
+			b = ((accx-1)*k+j)*6;
+			ibuf[b+0] = (k*accx)+j;
+			ibuf[b+1] = (k*accx)+j+1;
+			ibuf[b+2] = (k*accx)+accx+j;
+			ibuf[b+3] = (k*accx)+j+1;
+			ibuf[b+4] = (k*accx)+accx+j;
+			ibuf[b+5] = (k*accx)+accx+j+1;
+		}
+	}
+
+	a = accx*accy;
+	b = accx*accy + accx-1;
+	for(j=0;j<accx-1;j++)
+	{
+		vbuf[a+j][0] = vc[0] - vu[0];
+		vbuf[a+j][1] = vc[1] - vu[1];
+		vbuf[a+j][2] = vc[2] - vu[2];
+		vbuf[a+j][3] = (j+0.5)/accx;
+		vbuf[a+j][4] = 1.0;
+		vbuf[a+j][5] = 0.0;
+
+		vbuf[b+j][0] = vc[0] + vu[0];
+		vbuf[b+j][1] = vc[1] + vu[1];
+		vbuf[b+j][2] = vc[2] + vu[2];
+		vbuf[b+j][3] = (j+0.5)/accx;
+		vbuf[b+j][4] = 0.0;
+		vbuf[b+j][5] = 0.0;
+	}
+
+	a = (accy-1)*(accx-1)*6;
+	for(j=0;j<accx-1;j++)
+	{
+		b = a + j*6;
+		ibuf[b + 0] = accx*accy+j;
+		ibuf[b + 1] = j;
+		ibuf[b + 2] = j+1;
+		ibuf[b + 3] = accx*accy+accx-1+j;
+		ibuf[b + 4] = accx*(accy-1)+j;
+		ibuf[b + 5] = accx*(accy-1)+j+1;
+	}
+}
 
 
 

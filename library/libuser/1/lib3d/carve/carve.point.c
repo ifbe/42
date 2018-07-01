@@ -408,7 +408,8 @@ void carvepoint_icosahedron(struct arena* win, u32 rgb,
 void carvepoint_sphere(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define odd ((acc&0xfffe)+1)
+#define accx (acc*2)
+#define accy (acc*2+1)
 	int j,k,a;
 	float c,s;
 	vec3 tc, tr, tf;
@@ -419,11 +420,11 @@ void carvepoint_sphere(struct arena* win, u32 rgb,
 
 	struct texandobj* mod = win->mod;
 	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
-	mod[pointv].vlen += odd*(odd-2)+2;
+	mod[pointv].vlen += accx*accy+2;
 
-	for(k=0;k<(odd-2);k++)
+	for(k=0;k<accy;k++)
 	{
-		s = (k+1-(odd/2))*PI/(odd-1);
+		s = (2*k-accy+1)*PI/(2*accy+2);
 		c = cosine(s);
 		s = sine(s);
 
@@ -437,12 +438,13 @@ void carvepoint_sphere(struct arena* win, u32 rgb,
 		tf[1] = vf[1]*c;
 		tf[2] = vf[2]*c;
 
-		for(j=0;j<odd;j++)
+		for(j=0;j<accx;j++)
 		{
-			a = (k*odd + j)*6;
+			s = j*tau/accx;
+			c = cosine(s);
+			s = sine(s);
 
-			c = cosine(j*tau/odd);
-			s = sine(j*tau/odd);
+			a = (k*accx + j)*6;
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
@@ -453,7 +455,7 @@ void carvepoint_sphere(struct arena* win, u32 rgb,
 		}
 	}
 
-	a = odd*(odd/2)*6;
+	a = accx*accy*6;
 
 	vbuf[a+ 0] = vc[0]-vu[0];
 	vbuf[a+ 1] = vc[1]-vu[1];

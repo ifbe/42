@@ -69,6 +69,7 @@ thehack/hack.keyboard.c \
 thehack/hack.rawdump.c \
 thehack/hack.switch.c \
 theitem/item.clock.c \
+theitem/item.earth.c \
 theitem/item.house.c \
 theitem/item.human.c \
 theitem/item.model.c \
