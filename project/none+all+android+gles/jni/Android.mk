@@ -248,15 +248,15 @@ library/libsoft/1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
-library/libuser/0/local/android/android.gles.modbuf.c \
-library/libuser/0/local/android/android.gles.shader.c \
-library/libuser/0/local/android/android.gles.texture.c \
-library/libuser/0/local/android/android.gles.vertex.c \
-library/libuser/0/local/android/android.gles.c \
-library/libuser/0/remote/remote.http.c \
-library/libuser/0/remote/remote.ws.c \
-library/libuser/0/sound/sound.c \
-library/libuser/0/video/video.c \
+library/libuser/0/osandroid/android.cam.c \
+library/libuser/0/osandroid/android.mic.c \
+library/libuser/0/bygl/android.gles.modbuf.c \
+library/libuser/0/bygl/android.gles.shader.c \
+library/libuser/0/bygl/android.gles.texture.c \
+library/libuser/0/bygl/android.gles.vertex.c \
+library/libuser/0/bygl/android.gles.c \
+library/libuser/0/byremote/remote.http.c \
+library/libuser/0/byremote/remote.ws.c \
 library/libuser/0/arena.c
 
 #libuser1
@@ -348,6 +348,7 @@ library/libuser/1/thehack/hack.keyboard.c \
 library/libuser/1/thehack/hack.rawdump.c \
 library/libuser/1/thehack/hack.switch.c \
 library/libuser/1/theitem/item.clock.c \
+library/libuser/1/theitem/item.earth.c \
 library/libuser/1/theitem/item.house.c \
 library/libuser/1/theitem/item.human.c \
 library/libuser/1/theitem/item.model.c \

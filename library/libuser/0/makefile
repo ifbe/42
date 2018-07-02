@@ -138,10 +138,10 @@ linuxglfw:
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
-	$(compiler) $(cflag) bygl/glfw.modbuf.c
-	$(compiler) $(cflag) bygl/glfw.shader.c
-	$(compiler) $(cflag) bygl/glfw.texture.c
-	$(compiler) $(cflag) bygl/glfw.vertex.c
+	$(compiler) $(cflag) bygl/gl.modbuf.c
+	$(compiler) $(cflag) bygl/gl.shader.c
+	$(compiler) $(cflag) bygl/gl.texture.c
+	$(compiler) $(cflag) bygl/gl.vertex.c
 	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -214,6 +214,10 @@ macquartz:
 .PHONY:macglfw
 macglfw:
 	rm -f *.o
+	$(compiler) $(cflag) bygl/gl.modbuf.c
+	$(compiler) $(cflag) bygl/gl.shader.c
+	$(compiler) $(cflag) bygl/gl.texture.c
+	$(compiler) $(cflag) bygl/gl.vertex.c
 	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
