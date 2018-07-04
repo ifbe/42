@@ -72,9 +72,12 @@ theitem/item.clock.c \
 theitem/item.earth.c \
 theitem/item.house.c \
 theitem/item.human.c \
+theitem/item.light.c \
+theitem/item.mirror.c \
 theitem/item.model.c \
 theitem/item.piano.c \
 theitem/item.picture.c \
+theitem/item.portal.c \
 theitem/item.skydome.c \
 theitem/item.terrian.c \
 theitem/item.tree.c \

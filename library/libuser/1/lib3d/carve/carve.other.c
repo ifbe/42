@@ -520,6 +520,11 @@ void carveearth(float vbuf[][6], u16* ibuf,
 		ibuf[b + 5] = accx*(accy-1)+j+1;
 	}
 }
+void carvelight(float vbuf[][6], u16* ibuf,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	carveearth(vbuf, ibuf, vc, vr, vf, vu);
+}
 
 
 

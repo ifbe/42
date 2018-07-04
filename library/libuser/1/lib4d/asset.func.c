@@ -16,9 +16,12 @@ void clock_register(void*);
 void earth_register(void*);
 void house_register(void*);
 void human_register(void*);
+void light_register(void*);
+void mirror_register(void*);
 void model_register(void*);
 void piano_register(void*);
 void picture_register(void*);
+void portal_register(void*);
 void skydome_register(void*);
 void terrian_register(void*);
 void tree_register(void*);
@@ -159,6 +162,12 @@ void content_create(void* addr)
 	human_register(temp);
 	temp += sizeof(struct actor);
 
+	light_register(temp);
+	temp += sizeof(struct actor);
+
+	mirror_register(temp);
+	temp += sizeof(struct actor);
+
 	model_register(temp);
 	temp += sizeof(struct actor);
 
@@ -166,6 +175,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	picture_register(temp);
+	temp += sizeof(struct actor);
+
+	portal_register(temp);
 	temp += sizeof(struct actor);
 
 	skydome_register(temp);
