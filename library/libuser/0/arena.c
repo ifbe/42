@@ -255,7 +255,7 @@ void* arenacreate(u64 type, u8* addr)
 	{
 		win->type = _win_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		windowstart(win);
+		windowcreate(win);
 
 		win->enq = 1;
 		win->deq = 0;
@@ -301,19 +301,25 @@ void* arenacreate(u64 type, u8* addr)
 		win->camera.vu[1] = 0.0;
 		win->camera.vu[2] = 1.0;
 	}
+	else if(_coop_ == type)
+	{
+		win->type = _coop_;
+		win->fmt = hex64('b','g','r','a','8','8','8','8');
+		windowcreate(win);
+	}
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
-		videostart(win);
+		videocreate(win);
 	}
 	else if(_mic_ == type)
 	{
 		if(0 == addr)return 0;
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		soundstart(win);
+		soundcreate(win);
 	}
 	else if(_HTTP_ == type)
 	{

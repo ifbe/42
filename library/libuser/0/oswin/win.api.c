@@ -187,6 +187,24 @@ int windowchange()
 }
 int windowstart(struct arena* win)
 {
+	return 0;
+}
+int windowstop(struct arena* win)
+{
+	return 0;
+}
+int windowdelete(struct arena* win)
+{/*
+	PostThreadMessage(
+		uithread,
+		WM_USER,
+		hex16('w','-'),
+		(LPARAM)win
+	);*/
+	return 0;
+}
+int windowcreate(struct arena* win)
+{
 	int j;
 	if(0 == win)return 0;
 
@@ -204,24 +222,6 @@ int windowstart(struct arena* win)
 
 	//j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)win);
 	threadcreate(windowthread, win);
-	return 0;
-}
-int windowstop(struct arena* win)
-{/*
-	PostThreadMessage(
-		uithread,
-		WM_USER,
-		hex16('w','-'),
-		(LPARAM)win
-	);*/
-	return 0;
-}
-int windowcreate(struct arena* win)
-{
-	return 0;
-}
-int windowdelete(struct arena* win)
-{
 	return 0;
 }
 

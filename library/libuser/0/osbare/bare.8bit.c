@@ -19,25 +19,25 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct arena* win)
-{
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex32('8','b','i','t');
-
-	this->len = 320*200;
-	this->buf = (void*)(u64)0x2000000;
-
-	this->width = this->stride = 320;
-	this->height = 200;
-}
 void windowstop()
 {
 }
-void windowcreate()
+void windowstart()
 {
 }
-void windowdelete()
+void windowdelete(struct arena* win)
 {
+}
+void windowcreate(struct arena* win)
+{
+	win->type = hex32('w','i','n',0);
+	win->fmt = hex32('8','b','i','t');
+
+	win->width = win->stride = 320;
+	win->height = 200;
+
+	win->len = 320*200;
+	win->buf = (void*)(u64)0x2000000;
 }
 
 

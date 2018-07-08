@@ -326,25 +326,23 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstart(struct arena* p)
+void windowstart()
 {
-	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
-
-	p->len = 0;
-	p->buf = m - (m&0xfffff) + 0x100000;
-
-	p->width = p->stride = 512;
-	p->height = 512;
-	p->thread = startthread(uievent, p);
 }
 void windowstop()
 {
 }
-void windowcreate()
+void windowdelete(struct arena* w)
 {
 }
-void windowdelete()
+void windowcreate(struct arena* w)
 {
+	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
+	w->buf = m - (m&0xfffff) + 0x100000;
+
+	w->width = w->stride = 512;
+	w->height = 512;
+	w->thread = startthread(uievent, w);
 }
 
 

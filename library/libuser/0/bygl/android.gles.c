@@ -118,6 +118,12 @@ void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 void windowstop()
 {
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* win)
+{
 	if (EGL_NO_DISPLAY != display)
 	{
 		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -129,7 +135,7 @@ void windowstop()
 	context = EGL_NO_CONTEXT;
 	surface = EGL_NO_SURFACE;
 }
-void windowstart(struct arena* win)
+void windowcreate(struct arena* win)
 {
 	setandroidapp(win);
 
@@ -142,12 +148,6 @@ void windowstart(struct arena* win)
 
 	asset_create();
 	threadcreate(windowthread, win);
-}
-void windowcreate()
-{
-}
-void windowdelete()
-{
 }
 
 

@@ -155,72 +155,72 @@ int startsound_capture(unsigned int rate, int ch)
 }
 int startsound_playback(unsigned int frequency, int channels)
 {
-        int rc;
+	int rc;
 
-        rc=snd_pcm_open(&playback_handle, "hw:1,0", SND_PCM_STREAM_PLAYBACK, 0);
-        if(rc<0)
-        {
-                perror("\nopen PCM device failed:");
-                return -1;
-        }
+	rc = snd_pcm_open(&playback_handle, "hw:1,0", SND_PCM_STREAM_PLAYBACK, 0);
+	if(rc<0)
+	{
+		perror("\nopen PCM device failed:");
+		return -1;
+	}
 
-        snd_pcm_hw_params_alloca(&playback_params); //分配params结构体
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params_alloca:");
-                return -2;
-        }
+	snd_pcm_hw_params_alloca(&playback_params); //分配params结构体
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params_alloca:");
+		return -2;
+	}
 
-        rc=snd_pcm_hw_params_any(
-		playback_handle, playback_params);//初始化params
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params_any:");
-                return -3;
-        }
+	rc=snd_pcm_hw_params_any(
+	playback_handle, playback_params);//初始化params
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params_any:");
+		return -3;
+	}
 
-        rc=snd_pcm_hw_params_set_access(
-		playback_handle, playback_params, SND_PCM_ACCESS_RW_INTERLEAVED);
-        if(rc<0)
-        {
-                perror("\nsed_pcm_hw_set_access:");
-                return -4;
-        }
+	rc=snd_pcm_hw_params_set_access(
+	playback_handle, playback_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+	if(rc<0)
+	{
+		perror("\nsed_pcm_hw_set_access:");
+		return -4;
+	}
 
-        //采样位数
-        snd_pcm_hw_params_set_format(
-		playback_handle, playback_params, SND_PCM_FORMAT_S16_LE);
+	//采样位数
+	snd_pcm_hw_params_set_format(
+	playback_handle, playback_params, SND_PCM_FORMAT_S16_LE);
 
 	//
-        rc=snd_pcm_hw_params_set_channels(
-		playback_handle, playback_params, channels);
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params_set_channels:");
-                return -5;
-        }
+	rc=snd_pcm_hw_params_set_channels(
+	playback_handle, playback_params, channels);
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params_set_channels:");
+		return -5;
+	}
 
-        rc=snd_pcm_hw_params_set_rate_near(
-		playback_handle, playback_params, &frequency, &dir);
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params_set_rate_near:");
-                return -6;
-        }
+	rc=snd_pcm_hw_params_set_rate_near(
+	playback_handle, playback_params, &frequency, &dir);
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params_set_rate_near:");
+		return -6;
+	}
 
-        rc = snd_pcm_hw_params(playback_handle, playback_params);
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params: ");
-                return -7;
-        }
+	rc = snd_pcm_hw_params(playback_handle, playback_params);
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params: ");
+		return -7;
+	}
 
-        rc=snd_pcm_hw_params_get_period_size(playback_params, &frames, &dir);
-        if(rc<0)
-        {
-                perror("\nsnd_pcm_hw_params_get_period_size:");
-                return -8;
-        }
+	rc=snd_pcm_hw_params_get_period_size(playback_params, &frames, &dir);
+	if(rc<0)
+	{
+		perror("\nsnd_pcm_hw_params_get_period_size:");
+		return -8;
+	}
 	printf("frames = %x, dir = %x\n", (u32)frames, dir);
 
 	return 1;
@@ -249,15 +249,27 @@ int soundwrite(char* buf, int frame)
 }
 int soundstop()
 {
-	alive = 0;
-
+	return 0;
+}
+int soundstart()
+{
+	return 0;
+}
+int sounddelete(struct arena* w)
+{
 	//printf("@snd_pcm_close\n");
 	snd_pcm_close(capture_handle);
 	snd_pcm_close(playback_handle);
+
+	alive = 0;
 	return 0;
 }
-int soundstart(unsigned int rate, int ch, u8* buf, int max)
+int soundcreate(struct arena* w)
 {
+	unsigned int rate = w->width;
+	int ch = w->height;
+	u8* buf;
+
 	if(startsound_capture(rate, ch) < 0)return -1;
 	if(startsound_playback(rate, ch) < 0)return -2;
 
@@ -268,13 +280,7 @@ int soundstart(unsigned int rate, int ch, u8* buf, int max)
 	//thread
 	alive = 1;
 	thread = startthread(soundlistener, 0);
-	return 1;
-}
-void sounddelete()
-{
-}
-void soundcreate()
-{
+	return 0;
 }
 
 

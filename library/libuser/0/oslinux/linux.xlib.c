@@ -350,11 +350,17 @@ void windowlist()
 void windowchange()
 {
 }
-void windowstop(struct arena* win)
+void windowstop()
+{
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* win)
 {
 	XDestroyWindow(dsp, win->fd);
 }
-void windowstart(struct arena* win)
+void windowcreate(struct arena* win)
 {
 	int j;
 	win->type = hex32('w', 'i', 'n', 0);
@@ -400,12 +406,6 @@ void windowstart(struct arena* win)
 		win->input[j].id = 0xffff;
 	}
 	threadcreate(windowthread, win);
-}
-void windowdelete()
-{
-}
-void windowcreate()
-{
 }
 
 

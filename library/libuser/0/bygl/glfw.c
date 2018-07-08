@@ -230,23 +230,41 @@ void windowlist()
 void windowstop()
 {
 }
-void windowstart(struct arena* w)
-{
-	w->type = hex32('w','i','n',0);
-	w->fmt = hex32('v','b','o',0);
-
-	w->width = 512;
-	w->height = 512;
-	w->depth = 512;
-	w->stride = 512;
-
-	threadcreate(windowthread, w);
-}
-void deletewindow()
+void windowstart()
 {
 }
-void createwindow()
+void windowdelete(struct arena* w)
 {
+}
+void windowcreate(struct arena* w)
+{
+	if(_win_ == w->type)
+	{
+		w->type = hex32('w','i','n',0);
+		w->fmt = hex32('v','b','o',0);
+
+		w->width = 512;
+		w->height = 512;
+		w->depth = 512;
+		w->stride = 512;
+
+		threadcreate(windowthread, w);
+		return;
+	}
+
+	if(_coop_ == w->type)
+	{
+		w->type = _coop_;
+		w->fmt = _coop_;
+
+		w->width = 512;
+		w->height = 512;
+		w->depth = 512;
+		w->stride = 512;
+		return;
+	}
+
+	say("error@windowcreate\n");
 }
 
 

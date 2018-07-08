@@ -8,34 +8,29 @@
 
 
 
-static struct arena* src;
-
-
-
-
-void* uievent(struct arena* this)
+void* uievent(struct arena* w)
 {
 	SDL_Event event;
-	this->win = SDL_CreateWindow(
+	w->win = SDL_CreateWindow(
 		"i am groot!",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		this->w, this->h,
+		w->width, w->height,
 		SDL_WINDOW_OPENGL
 	);
 
-	this->er = SDL_CreateRenderer(this->win, -1, 0);
+	w->er = SDL_CreateRenderer(w->win, -1, 0);
 
-	this->texture = SDL_CreateTexture(
-		this->er,
+	w->texture = SDL_CreateTexture(
+		w->er,
 		SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		this->w, this->h
+		w->width, w->height
 	);
 
-	//SDL_SetRenderDrawColor(this->er, 0, 0, 0, 255);
-	//SDL_RenderClear(this->er);
-	//SDL_RenderPresent(this->er);
+	//SDL_SetRenderDrawColor(w->er, 0, 0, 0, 255);
+	//SDL_RenderClear(w->er);
+	//SDL_RenderPresent(w->er);
 
 	while(1)
 	{
@@ -49,12 +44,12 @@ void* uievent(struct arena* this)
 		else if(event.type == SDL_USEREVENT)
 		{
 			SDL_UpdateTexture(
-				this->texture, NULL,
-				src->buf, (this->w)*4
+				w->texture, NULL,
+				w->buf, (w->width)*4
 			);
-			SDL_RenderClear(this->er);
-			SDL_RenderCopy(this->er, this->texture, NULL, NULL);
-			SDL_RenderPresent(this->er);
+			SDL_RenderClear(w->er);
+			SDL_RenderCopy(w->er, w->texture, NULL, NULL);
+			SDL_RenderPresent(w->er);
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
@@ -106,9 +101,9 @@ void* uievent(struct arena* this)
 	}//while(1)
 
 	//释放sdl
-	SDL_DestroyTexture(this->texture);
-	SDL_DestroyRenderer(this->er);
-	SDL_DestroyWindow(this->win); 
+	SDL_DestroyTexture(w->texture);
+	SDL_DestroyRenderer(w->er);
+	SDL_DestroyWindow(w->win); 
 	SDL_Quit(); 
 	return 0;
 }
@@ -138,12 +133,11 @@ void windowchoose()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
+void windowstart(struct arena* w)
 {
-	src = this;
-	this->w = 512;
-        this->h = 512;
-	startthread(uievent, this);
+	w->width= w->stride = 512;
+	w->height = 512;
+	startthread(uievent, w);
 }
 void windowdelete()
 {

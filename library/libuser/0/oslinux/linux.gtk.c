@@ -59,10 +59,10 @@ void windowstop()
 void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 }
-void windowdelete()
+void windowcreate(struct arena* w)
 {
 }
-void windowcreate()
+void windowdelete(struct arena* w)
 {
 }
 

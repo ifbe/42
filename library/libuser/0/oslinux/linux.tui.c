@@ -125,22 +125,22 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
-{
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex32('t','u','i',0);
-
-	this->width = this->stride = width;
-	this->height = height;
-
-	this->buf = malloc(0x100000);
-	this->thread = startthread(terminalthread, this);
-}
-void windowdelete()
+void windowstart()
 {
 }
-void windowcreate()
+void windowdelete(struct arena* w)
 {
+}
+void windowcreate(struct arena* w)
+{
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('t','u','i',0);
+
+	w->width = w->stride = width;
+	w->height = height;
+
+	w->buf = malloc(0x100000);
+	w->thread = startthread(terminalthread, w);
 }
 
 

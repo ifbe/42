@@ -1,25 +1,30 @@
-void listvision()
+
+void videoread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
+	if(0 == act)return;
+}
+void videowrite()
 {
 }
-void choosevision()
+void videolist()
 {
 }
-void readvision()
+void videochoose()
 {
 }
-void writevision()
+void videostop()
 {
 }
-void startvision()
+void videostart()
 {
 }
-void stopvision()
+void videodelete(struct arena* win)
 {
 }
-void createvision()
-{
-}
-void deletevision()
+void videocreate(struct arena* win)
 {
 }
 

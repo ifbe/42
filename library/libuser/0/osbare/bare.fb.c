@@ -24,24 +24,24 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct arena* this)
-{
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex64('b','g','r','a','8','8','8','8');
-
-	this->width = this->stride = 1024;
-	this->height = 768;
-
-	this->buf = (void*)0x2000000;
-}
 void windowstop()
 {
 }
-void windowcreate()
+void windowstart()
 {
 }
-void windowdelete()
+void windowdelete(struct arena* w)
 {
+}
+void windowcreate(struct arena* w)
+{
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex64('b','g','r','a','8','8','8','8');
+
+	w->width = w->stride = 1024;
+	w->height = 768;
+
+	w->buf = (void*)0x2000000;
 }
 
 

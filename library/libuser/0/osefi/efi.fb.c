@@ -38,7 +38,16 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct arena* this)
+void windowstart()
+{
+}
+void windowstop()
+{
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
 {
 	int ret, num, chosen;
 	u64 fmt;
@@ -101,28 +110,15 @@ void windowstart(struct arena* this)
 		if(pix->ReservedMask == 0)fmt = __bgra8880__;
 		else fmt = __bgra8888__;
 
-		this->type = __win__;
-		this->fmt = fmt;
+		w->type = __win__;
+		w->fmt = fmt;
 
-		this->buf = (void*)0x2000000;
-		this->len = gop->Mode->FrameBufferSize;
+		w->width = w->stride = 1024;
+		w->height = 768;
 
-		this->width = this->stride = 1024;
-		this->height = 768;
+		w->buf = (void*)0x2000000;
+		w->len = gop->Mode->FrameBufferSize;
 	}
-}
-void windowstop()
-{
-}
-void windowcreate()
-{
-	EFI_HANDLE H;
-	EFI_SYSTEM_TABLE* T;
-	gethandleandtable(&H, &T);
-	service = T->BootServices;
-}
-void windowdelete()
-{
 }
 
 
@@ -130,6 +126,10 @@ void windowdelete()
 
 void initwindow()
 {
+	EFI_HANDLE H;
+	EFI_SYSTEM_TABLE* T;
+	gethandleandtable(&H, &T);
+	service = T->BootServices;
 }
 void freewindow()
 {

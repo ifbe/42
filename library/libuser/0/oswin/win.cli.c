@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<conio.h>
-#include<windows.h>
+#include <stdio.h>
+#include <conio.h>
+#include <windows.h>
 #include "libuser.h"
 int lowlevel_input();
 
@@ -29,15 +29,21 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
+void windowstart()
 {
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex32('c','l','i',0);
-	this->buf = 0;
-	this->len = 0;
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
+{
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('c','l','i',0);
+	w->buf = 0;
+	w->len = 0;
 
-	this->width = this->stride = 80;
-	this->height = 25;
+	w->width = w->stride = 80;
+	w->height = 25;
 
 	if(termcount != 0)
 	{
@@ -50,12 +56,6 @@ void windowstart(struct arena* this)
 		printf("GetLastError=%d\n",GetLastError());
 	}
 	termcount++;
-}
-void windowdelete()
-{
-}
-void windowcreate()
-{
 }
 
 

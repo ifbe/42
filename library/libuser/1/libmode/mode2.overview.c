@@ -6,10 +6,16 @@
 #define _fd_ hex32('f','d',0,0)
 void* allocstyle();
 void* allocpinid();
+//
 void* actorcreate(void*, u8*);
 void* actordelete(void*, u8*);
 void* actorstart(void*, void*, void*, void*);
 void* actorstop(void*, void*, void*, void*);
+//
+void* arenacreate(u64, u8*);
+void* arenadelete(u8*);
+void* arenastart(void*, void*, void*, void*);
+void* arenastop(void*, void*, void*, void*);
 //
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
@@ -858,6 +864,12 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		{
 			y1 = y1-8;
 			say("arena@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+
+			p = arenacreate(_coop_, 0);
+			if(p)
+			{
+				relationcreate(p, 0, _win_, win, 0, _win_);
+			}
 		}
 		else if(y1 < 24)
 		{

@@ -27,7 +27,16 @@ void windowlist()
 void windowchoose()
 {
 }
-void windowstart(struct arena* this)
+void windowstart()
+{
+}
+void windowstop()
+{
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
 {
 	void* data = malloc(2048*1024*4);
 	CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
@@ -38,13 +47,14 @@ void windowstart(struct arena* this)
 	);
 	CGColorSpaceRelease(colorspace);
 
-	this->width = this->stride = 512;
-	this->height = 512;
+	w->width = w->stride = 512;
+	w->height = 512;
 }
-void windowstop()
-{
-}
-int windowcreate()
+
+
+
+
+void initwindow()
 {
 	// Autorelease Pool:
 	// Objects declared in this scope will be automatically
@@ -91,9 +101,7 @@ int windowcreate()
 	[NSApp run];
 
 	[pool drain];
-
-	return 0;
 }
-void windowdelete()
+void freewindow()
 {
 }

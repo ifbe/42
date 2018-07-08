@@ -491,27 +491,27 @@ void videoread(
 void videowrite()
 {
 }
-void videostop()
-{
-	//shutupdie();
-}
-void videostart(struct arena* win)
-{
-	working = win;
-	letsgo();
-	//Sleep(5000);
-}
 void videolist()
 {
 }
 void videochoose()
 {
 }
-void videodelete()
+void videostop()
 {
 }
-void videocreate()
+void videostart()
 {
+}
+void videodelete(struct arena* win)
+{
+	//shutupdie();
+}
+void videocreate(struct arena* win)
+{
+	working = win;
+	letsgo();
+	//Sleep(5000);
 }
 
 
@@ -523,4 +523,5 @@ void initcam()
 void freecam()
 {
 }
+
 }

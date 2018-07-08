@@ -27,6 +27,7 @@ typedef float mat4[4][4];
 #define _copy_ hex32('c','o','p','y')
 #define _COPY_ hex32('C','O','P','Y')
 //
+#define _coop_ hex32('c','o','o','p')
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)

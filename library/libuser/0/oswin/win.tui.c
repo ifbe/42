@@ -316,7 +316,13 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
+void windowstart()
+{
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
 {
 	int width,height;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
@@ -324,20 +330,14 @@ void windowstart(struct arena* this)
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-	this->type = hex32('w','i','n',0);
-	this->fmt = hex32('t','u','i',0);
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('t','u','i',0);
 
-	this->width = this->stride = width;
-	this->height = height;
+	w->width = w->stride = width;
+	w->height = height;
 
-	this->buf = malloc(0x100000);
-	u64 thread = startthread(terminalthread, this);
-}
-void windowdelete()
-{
-}
-void windowcreate()
-{
+	w->buf = malloc(0x100000);
+	u64 thread = startthread(terminalthread, w);
 }
 
 

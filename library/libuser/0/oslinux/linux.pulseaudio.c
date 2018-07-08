@@ -11,7 +11,6 @@
 
 
 
-static struct arena* working;
 static int alive = 1;
 static u64 thread;
 //
@@ -32,7 +31,7 @@ static const pa_sample_spec ss =
 
 
 
-void* soundlistener(void* p)
+void* soundlistener(struct arena* win)
 {
 	int ret,err;
 	pa_usec_t latency;
@@ -53,7 +52,7 @@ void* soundlistener(void* p)
 		}
 		usleep(1000000*10/441);
 
-		struct relation* orel = working->orel0;
+		struct relation* orel = win->orel0;
 		while(1)
 		{
 			if(0 == orel)break;
@@ -112,22 +111,27 @@ int soundwrite(int dev, int time, u8* buf, int len)
 	}
 
 	if(pa_simple_drain(s_out, &err) < 0)
-        {
-                printf("error@pa_simple_drain:%s\n", pa_strerror(err));
-        }
+	{
+		printf("error@pa_simple_drain:%s\n", pa_strerror(err));
+	}
 finish:
 	return 0;
 }
 void soundstop()
 {
-	alive = 0;
-	if (s_in)pa_simple_free(s_in);
-	if (s_out)pa_simple_free(s_out);
 }
-int soundstart(struct arena* win)
+void soundstart()
+{
+}
+void sounddelete(struct arena* win)
+{
+	alive = 0;
+	if(s_in)pa_simple_free(s_in);
+	if(s_out)pa_simple_free(s_out);
+}
+void soundcreate(struct arena* win)
 {
 	int error;
-	working = win;
 
 	//out
 	s_out = pa_simple_new(NULL, "42", PA_STREAM_PLAYBACK, NULL,
@@ -154,14 +158,7 @@ int soundstart(struct arena* win)
 
 	//thread
 	alive = 1;
-	thread = threadcreate(soundlistener, 0);
-	return 1;
-}
-void sounddelete()
-{
-}
-void soundcreate()
-{
+	thread = threadcreate(soundlistener, win);
 }
 
 

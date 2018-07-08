@@ -113,7 +113,13 @@ void soundstop()
 	waveOutClose(waveout);
 	//waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
 }
-void soundstart(struct arena* win)
+void soundstart()
+{
+}
+void sounddelete(struct arena* win)
+{
+}
+void soundcreate(struct arena* win)
 {
 	int j;
 	working = win;
@@ -154,12 +160,6 @@ void soundstart(struct arena* win)
 	}
 
 	waveInStart(wavein);
-}
-void sounddelete()
-{
-}
-void soundcreate()
-{
 }
 
 

@@ -85,26 +85,37 @@ void windowread()
 void windowwrite()
 {
 }
-void windowstart(struct arena* win)
+void windowstart()
 {
-	win->type = hex32('w','i','n',0);
-	win->fmt = hex32('c','l','i',0);;
-
-	win->len = 0;
-	win->buf = 0;
-
-	win->width = win->stride = 80;
-	win->height = 25;
 }
 void windowstop()
 {
 }
-void windowcreate()
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
+{
+	w->type = hex32('w','i','n',0);
+	w->fmt = hex32('c','l','i',0);;
+
+	w->len = 0;
+	w->buf = 0;
+
+	w->width = w->stride = 80;
+	w->height = 25;
+
+	thread = startthread(uievent, w);
+}
+
+
+
+
+void initwindow()
 {
 	windowchange(1);
-	thread = startthread(uievent, 0);
 }
-void windowdelete()
+void freewindow()
 {
 	windowchange(0);
 }

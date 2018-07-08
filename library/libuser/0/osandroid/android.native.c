@@ -58,7 +58,16 @@ void windowread(void* dc,void* df,void* sc,void* sf)
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 }
-void windowstart(struct arena* win)
+void windowstop()
+{
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* win)
+{
+}
+void windowcreate(struct arena* win)
 {
 	setandroidapp(win);
 	native = app->window;
@@ -72,15 +81,6 @@ void windowstart(struct arena* win)
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
 	threadcreate(windowthread, win);
-}
-void windowstop()
-{
-}
-void windowcreate()
-{
-}
-void windowdelete()
-{
 }
 
 

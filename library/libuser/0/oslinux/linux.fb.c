@@ -88,28 +88,25 @@ void windowchange()
 void windowstop()
 {
 }
-void windowstart(struct arena* this)
+void windowstart()
+{
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
 {
 	int j;
 
-	this->type = hex32('w', 'i', 'n', 0);
-	this->fmt = hex32('f', 'b', 0, 0);
+	w->type = hex32('w', 'i', 'n', 0);
+	w->fmt = hex32('f', 'b', 0, 0);
 
-	this->width = this->stride = xmax;
-	this->height = ymax;
+	w->width = w->stride = xmax;
+	w->height = ymax;
 
-	this->buf = malloc(0x1000000);
+	w->buf = malloc(0x1000000);
 
-	for(j=0;j<16;j++)
-	{
-		(this->touch[j]).id = 0xffff;
-	}
-}
-void windowdelete()
-{
-}
-void windowcreate()
-{
+	for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 
 
