@@ -246,7 +246,7 @@ int videodelete(struct arena* win)
 int videocreate(struct arena* win)
 {
 	alive = 1;
-	threadcreate(visionlistener, 0);
+	threadcreate(visionlistener, win);
 	return 0;
 }
 

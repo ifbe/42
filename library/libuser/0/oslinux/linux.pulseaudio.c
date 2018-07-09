@@ -139,7 +139,7 @@ void soundcreate(struct arena* win)
 	if(!s_out)
 	{
 		printf("error@pa_simple_new:%s\n", pa_strerror(error));
-		return 0;
+		return;
 	}
 
 	//in
@@ -148,7 +148,7 @@ void soundcreate(struct arena* win)
 	if(!s_in)
 	{
 		printf("error@pa_simple_new() failed: %s\n", pa_strerror(error));
-		return 0;
+		return;
 	}
 
 	ibuf = malloc(0x100000);
