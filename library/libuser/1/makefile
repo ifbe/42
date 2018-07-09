@@ -41,8 +41,9 @@ lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
 lib3d/lib3d.c \
 lib4d/asset.file.c \
-lib4d/asset.file.mod.c \
-lib4d/asset.file.pic.c \
+lib4d/asset.file.image.c \
+lib4d/asset.file.model.c \
+lib4d/asset.file.sound.c \
 lib4d/asset.func.c \
 lib4d/lib4d.c \
 thealgo/algo.algo.c \
