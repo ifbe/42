@@ -24,7 +24,7 @@ char* portal_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+		"FragColor = texture(tex0, uvw).bgra;\n"
 	"}\n";
 
 
@@ -34,6 +34,10 @@ static void portal_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	u32 tmp;
+	u32* dst;
+	u32* src;
+	int x,y,xmax,ymax,stride;
 	int cx, cy, ww, hh;
 	if(sty)
 	{
@@ -48,6 +52,31 @@ static void portal_read_pixel(
 		cy = win->height/2;
 		ww = win->width/2;
 		hh = win->height/2;
+	}
+	if(0 == act->buf)return;
+
+	xmax = act->width;
+	if(xmax >= ww*2)xmax = ww*2;
+	ymax = act->height;
+	if(ymax >= hh*2)ymax = hh*2;
+	stride = win->stride;
+	for(y=0;y<ymax;y++)
+	{
+		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
+		src = (act->buf) + 4*y*(act->width);
+		//say("y=%d,%llx,%llx\n",y,dst,src);
+		if('b' == ((win->fmt)&0xff))
+		{
+			for(x=0;x<xmax;x++)dst[x] = src[x];
+		}
+		else
+		{
+			for(x=0;x<xmax;x++)
+			{
+				tmp = src[x];
+				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
+			}
+		}
 	}
 }
 static void portal_read_vbo(
@@ -212,7 +241,7 @@ static void portal_delete(struct actor* act)
 static void portal_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "portal/portal.jpg");
+	actorcreatefromfile(act, "portal/portal.png");
 }
 
 

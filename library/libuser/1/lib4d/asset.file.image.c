@@ -76,6 +76,8 @@ void actorcreatefrompng(struct actor* act, u8* buf, int len)
 	w = upng_get_width(upng);
 	h = upng_get_height(upng);
 	d = upng_get_bpp(upng) / 8;
+	say("%d,%d,%d\n",w,h,d);
+
 	src = upng_get_buffer(upng);
 	dst = buf;
 	for(j=0;j<w*h;j++)

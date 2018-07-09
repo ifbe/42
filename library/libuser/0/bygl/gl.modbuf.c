@@ -403,6 +403,8 @@ void callback_display(struct arena* win)
 
 
 	//
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	callback_display_eachactor(win, cammvp);
 
 
