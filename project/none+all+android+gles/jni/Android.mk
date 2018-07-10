@@ -251,7 +251,7 @@ LOCAL_SRC_FILES += \
 library/libuser/0/osandroid/android.gles.c \
 library/libuser/0/osandroid/android.cam.c \
 library/libuser/0/osandroid/android.mic.c \
-library/libuser/0/bygl/gl.modbuf.c \
+library/libuser/0/bygl/gl.object.c \
 library/libuser/0/bygl/gl.shader.c \
 library/libuser/0/bygl/gl.texture.c \
 library/libuser/0/bygl/gl.vertex.c \

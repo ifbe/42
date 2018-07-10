@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-void initmodbuf(void*);
+void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
@@ -176,7 +176,7 @@ static void* windowthread(struct arena* w)
 	}
 
 	//3.init
-	initmodbuf(w);
+	initobject(w);
 	initshader(w);
 	inittexture(w);
 	initvertex(w);

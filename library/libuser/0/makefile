@@ -138,7 +138,7 @@ linuxglfw:
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
-	$(compiler) $(cflag) bygl/gl.modbuf.c
+	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
@@ -214,7 +214,7 @@ macquartz:
 .PHONY:macglfw
 macglfw:
 	rm -f *.o
-	$(compiler) $(cflag) bygl/gl.modbuf.c
+	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
@@ -301,7 +301,7 @@ winglfw:
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
 	$(compiler) $(cflag) oswin/win.waveio.c
 	$(compiler) $(cflag) oswin/win.tray.c
-	$(compiler) $(cflag) bygl/gl.modbuf.c
+	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c

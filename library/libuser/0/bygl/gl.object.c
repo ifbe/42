@@ -26,7 +26,7 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
-void initmodbuf(struct arena* w)
+void initobject(struct arena* w)
 {
 	struct texandobj* mod;
 	w->mod = malloc(0x10000);

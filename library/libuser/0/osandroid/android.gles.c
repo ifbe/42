@@ -17,7 +17,7 @@ void* getandroidapp();
 void setandroidapp(void*);
 void asset_create();
 //
-void initmodbuf(void*);
+void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
@@ -87,7 +87,7 @@ static void windowthread(struct arena* win)
 	LOGI("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 
 	//
-	initmodbuf(win);
+	initobject(win);
 	initshader(win);
 	inittexture(win);
 	initvertex(win);
