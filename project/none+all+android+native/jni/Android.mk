@@ -297,6 +297,9 @@ library/libuser/1/lib3d/model/model.minify.c \
 library/libuser/1/lib3d/model/model.rotate.c \
 library/libuser/1/lib3d/lib3d.c \
 library/libuser/1/lib4d/asset.file.c \
+library/libuser/1/lib4d/asset.file.image.c \
+library/libuser/1/lib4d/asset.file.model.c \
+library/libuser/1/lib4d/asset.file.sound.c \
 library/libuser/1/lib4d/asset.func.c \
 library/libuser/1/lib4d/lib4d.c \
 library/libuser/1/libbgfg/bgfg.gif.c \
@@ -347,9 +350,12 @@ library/libuser/1/theitem/item.clock.c \
 library/libuser/1/theitem/item.earth.c \
 library/libuser/1/theitem/item.house.c \
 library/libuser/1/theitem/item.human.c \
+library/libuser/1/theitem/item.light.c \
+library/libuser/1/theitem/item.mirror.c \
 library/libuser/1/theitem/item.model.c \
 library/libuser/1/theitem/item.piano.c \
 library/libuser/1/theitem/item.picture.c \
+library/libuser/1/theitem/item.portal.c \
 library/libuser/1/theitem/item.skydome.c \
 library/libuser/1/theitem/item.terrian.c \
 library/libuser/1/theitem/item.tree.c \

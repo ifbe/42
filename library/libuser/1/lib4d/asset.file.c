@@ -9,6 +9,9 @@ void actorcreatefromobj(struct actor* act, u8* buf, int len);
 void actorcreatefromstl(struct actor* act, u8* buf, int len);
 void actorcreatefromjpg(struct actor* act, u8* buf, int len);
 void actorcreatefrompng(struct actor* act, u8* buf, int len);
+void actorcreatefrommp3(struct actor* act, u8* buf, int len);
+void actorcreatefromogg(struct actor* act, u8* buf, int len);
+void actorcreatefromwav(struct actor* act, u8* buf, int len);
 
 
 
@@ -76,4 +79,7 @@ void actorcreatefromfile(struct actor* act, char* name)
 	else if(0 == ncmp(tmp, "png", 3))actorcreatefrompng(act, buf, len);
 	else if(0 == ncmp(tmp, "obj", 3))actorcreatefromobj(act, buf, len);
 	else if(0 == ncmp(tmp, "stl", 3))actorcreatefromstl(act, buf, len);
+	else if(0 == ncmp(tmp, "mp3", 3))actorcreatefrommp3(act, buf, len);
+	else if(0 == ncmp(tmp, "ogg", 3))actorcreatefromogg(act, buf, len);
+	else if(0 == ncmp(tmp, "wav", 3))actorcreatefromwav(act, buf, len);
 }

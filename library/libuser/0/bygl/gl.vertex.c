@@ -1,12 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glew.h>
 #include "libuser.h"
 
+#ifdef __ANDROID__
+	#include <jni.h>
+	#include <errno.h>
+	#include <EGL/egl.h>
+	#include <GLES/gl.h>
+	#include <GLES3/gl3.h>
+	#include <GLES3/gl3ext.h>
+	#include <android/log.h>
+	#include <android_native_app_glue.h>
+#else
+	#include <GL/glew.h>
+#endif
 
 
 
-GLuint uploadvertex(struct ifoot* fi, struct ofoot* fo)
+
+
+void uploadvertex(struct ifoot* fi, struct ofoot* fo)
 {
 	void* buf;
 	u32 w,h,fmt;

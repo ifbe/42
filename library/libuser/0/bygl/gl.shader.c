@@ -1,7 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glew.h>
 #include "libuser.h"
+
+#ifdef __ANDROID__
+	#include <jni.h>
+	#include <errno.h>
+	#include <EGL/egl.h>
+	#include <GLES/gl.h>
+	#include <GLES3/gl3.h>
+	#include <GLES3/gl3ext.h>
+	#include <android/log.h>
+	#include <android_native_app_glue.h>
+	char fontfrag[] = {
+		"#version 300 es\n"
+		"in mediump vec3 origcolor;\n"
+		"in mediump vec2 texuv;\n"
+		"uniform sampler2D tex2d;\n"
+		"out mediump vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+			"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).aaaa;\n"
+		"}\n"
+	};
+#else
+	#include <GL/glew.h>
+	char fontfrag[] = {
+		"#version 300 es\n"
+		"in mediump vec3 origcolor;\n"
+		"in mediump vec2 texuv;\n"
+		"uniform sampler2D tex2d;\n"
+		"out mediump vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+			"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).rrrr;\n"
+		"}\n"
+	};
+#endif
 
 
 
@@ -98,17 +132,6 @@ char font3dvert[] = {
 		"texuv = texcoo;\n"
 	"}\n"
 };
-char font3dfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex2d;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).rrrr;\n"
-	"}\n"
-};
 char font2dvert[] = {
 	"#version 300 es\n"
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -121,17 +144,6 @@ char font2dvert[] = {
 		"gl_Position = vec4(vertex,1.0);\n"
 		"origcolor = colour;\n"
 		"texuv = texcoo;\n"
-	"}\n"
-};
-char font2dfrag[] = {
-	"#version 300 es\n"
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex2d;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).rrrr;\n"
 	"}\n"
 };
 char directvert[] = {
@@ -254,13 +266,13 @@ void initshader(struct arena* w)
 	printf("GLSL Version: %s\n", glslVersion);
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
-	font3dprogram = shaderprogram(font3dvert, font3dfrag);
+	font3dprogram = shaderprogram(font3dvert, fontfrag);
 	mod[0x00].program = font3dprogram;
 	mod[0x01].program = font3dprogram;
 	mod[0x02].program = font3dprogram;
 	mod[0x03].program = font3dprogram;
 
-	font2dprogram = shaderprogram(font2dvert, font2dfrag);
+	font2dprogram = shaderprogram(font2dvert, fontfrag);
 	mod[0x04].program = font2dprogram;
 	mod[0x05].program = font2dprogram;
 	mod[0x06].program = font2dprogram;

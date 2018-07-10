@@ -1,7 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glew.h>
 #include "libuser.h"
+
+#ifdef __ANDROID__
+	#include <jni.h>
+	#include <errno.h>
+	#include <EGL/egl.h>
+	#include <GLES/gl.h>
+	#include <GLES3/gl3.h>
+	#include <GLES3/gl3ext.h>
+	#include <android/log.h>
+	#include <android_native_app_glue.h>
+	#define GL_SINGLE GL_ALPHA
+	#define GL_BORDER GL_REPEAT
+#else
+	#include <GL/glew.h>
+	#define GL_SINGLE GL_RED
+	#define GL_BORDER GL_CLAMP_TO_BORDER
+#endif
+
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
 void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 
@@ -30,8 +47,8 @@ GLuint uploadtexture(struct ifoot* fi, struct ofoot* fo,
 		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_BORDER);
 
 		if(hex32('r','g',0,0) == fmt)
 		{
@@ -84,11 +101,11 @@ void inittexture(struct arena* w)
 	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RED, 2048, 2048, 0,
-		GL_RED, GL_UNSIGNED_BYTE, buf
+		GL_SINGLE, 2048, 2048, 0,
+		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
 
 
@@ -105,11 +122,11 @@ void inittexture(struct arena* w)
 	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RED, 2048, 2048, 0,
-		GL_RED, GL_UNSIGNED_BYTE, buf
+		GL_SINGLE, 2048, 2048, 0,
+		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
 
 
@@ -126,11 +143,11 @@ void inittexture(struct arena* w)
 	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RED, 2048, 2048, 0,
-		GL_RED, GL_UNSIGNED_BYTE, buf
+		GL_SINGLE, 2048, 2048, 0,
+		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
 
 
@@ -147,11 +164,11 @@ void inittexture(struct arena* w)
 	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_BORDER);
 	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RED, 2048, 2048, 0,
-		GL_RED, GL_UNSIGNED_BYTE, buf
+		GL_SINGLE, 2048, 2048, 0,
+		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
 
 	//for(j=0;j<4;j++)say("tex%d=%x\n", j, mod[j].tex);

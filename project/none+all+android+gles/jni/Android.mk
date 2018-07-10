@@ -248,13 +248,13 @@ library/libsoft/1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
+library/libuser/0/osandroid/android.gles.c \
 library/libuser/0/osandroid/android.cam.c \
 library/libuser/0/osandroid/android.mic.c \
-library/libuser/0/bygl/android.gles.modbuf.c \
-library/libuser/0/bygl/android.gles.shader.c \
-library/libuser/0/bygl/android.gles.texture.c \
-library/libuser/0/bygl/android.gles.vertex.c \
-library/libuser/0/bygl/android.gles.c \
+library/libuser/0/bygl/gl.modbuf.c \
+library/libuser/0/bygl/gl.shader.c \
+library/libuser/0/bygl/gl.texture.c \
+library/libuser/0/bygl/gl.vertex.c \
 library/libuser/0/byremote/remote.http.c \
 library/libuser/0/byremote/remote.ws.c \
 library/libuser/0/arena.c
@@ -301,6 +301,9 @@ library/libuser/1/lib3d/model/model.minify.c \
 library/libuser/1/lib3d/model/model.rotate.c \
 library/libuser/1/lib3d/lib3d.c \
 library/libuser/1/lib4d/asset.file.c \
+library/libuser/1/lib4d/asset.file.image.c \
+library/libuser/1/lib4d/asset.file.model.c \
+library/libuser/1/lib4d/asset.file.sound.c \
 library/libuser/1/lib4d/asset.func.c \
 library/libuser/1/lib4d/lib4d.c \
 library/libuser/1/libbgfg/bgfg.gif.c \
@@ -351,9 +354,12 @@ library/libuser/1/theitem/item.clock.c \
 library/libuser/1/theitem/item.earth.c \
 library/libuser/1/theitem/item.house.c \
 library/libuser/1/theitem/item.human.c \
+library/libuser/1/theitem/item.light.c \
+library/libuser/1/theitem/item.mirror.c \
 library/libuser/1/theitem/item.model.c \
 library/libuser/1/theitem/item.piano.c \
 library/libuser/1/theitem/item.picture.c \
+library/libuser/1/theitem/item.portal.c \
 library/libuser/1/theitem/item.skydome.c \
 library/libuser/1/theitem/item.terrian.c \
 library/libuser/1/theitem/item.tree.c \
