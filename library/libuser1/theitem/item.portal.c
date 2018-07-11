@@ -24,7 +24,9 @@ char* portal_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = texture(tex0, uvw).bgra;\n"
+		"mediump vec4 tmp = texture(tex0, uvw);"
+		"if(tmp.a < 0.1)discard;"
+		"FragColor = tmp.bgra;\n"
 	"}\n";
 
 
@@ -67,13 +69,19 @@ static void portal_read_pixel(
 		//say("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->fmt)&0xff))
 		{
-			for(x=0;x<xmax;x++)dst[x] = src[x];
+			for(x=0;x<xmax;x++)
+			{
+				tmp = src[x];
+				if(tmp < 0x10)continue;
+				dst[x] = tmp;
+			}
 		}
 		else
 		{
 			for(x=0;x<xmax;x++)
 			{
 				tmp = src[x];
+				if(tmp < 0x10)continue;
 				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
 			}
 		}

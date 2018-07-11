@@ -398,7 +398,7 @@ void fixlight(struct arena* win, u32 program)
 	GLint ep = glGetUniformLocation(program, "eyeposition");
 	glUniform3fv(ep, 1, win->camera.vc);
 }
-void callback_display(struct arena* win)
+void callback_display(struct arena* win, struct arena* coop)
 {
 	u32 program;
 	struct texandobj* mod;
@@ -421,7 +421,6 @@ void callback_display(struct arena* win)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	callback_display_eachactor(win, cammvp);
 
-
 //--------------------glsl2dprogram------------------
 	//point,line
 	glUseProgram(mod[0x84].program);
@@ -430,9 +429,11 @@ void callback_display(struct arena* win)
 	glDrawArrays(GL_POINTS, 0, mod[0x84].vlen);
 
 	glBindVertexArray(mod[0x85].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
 	glDrawElements(GL_LINES, 2*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glBindVertexArray(mod[0x86].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x86].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x86].ilen, GL_UNSIGNED_SHORT, 0);
 
 
@@ -446,6 +447,7 @@ void callback_display(struct arena* win)
 	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
 
 	glBindVertexArray(mod[0x81].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x81].ibo);
 	glDrawElements(GL_LINES, 2*mod[0x81].ilen, GL_UNSIGNED_SHORT, 0);
 
 
@@ -460,6 +462,7 @@ void callback_display(struct arena* win)
 	glDrawArrays(GL_TRIANGLES, 0, mod[0x82].vlen);
 
 	glBindVertexArray(mod[0x83].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x83].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[0x83].ilen, GL_UNSIGNED_SHORT, 0);
 
 
@@ -478,21 +481,25 @@ void callback_display(struct arena* win)
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
 	glBindVertexArray(mod[0].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[0].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
 	glBindVertexArray(mod[1].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[1].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
 	glBindVertexArray(mod[2].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[2].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
 	glBindVertexArray(mod[3].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
 
 
@@ -504,21 +511,25 @@ void callback_display(struct arena* win)
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
 	glBindVertexArray(mod[4].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[4].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[4].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
 	glBindVertexArray(mod[5].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[5].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[5].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
 	glBindVertexArray(mod[6].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[6].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[6].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
 	glBindVertexArray(mod[7].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[7].ibo);
 	glDrawElements(GL_TRIANGLES, 3*mod[7].ilen, GL_UNSIGNED_SHORT, 0);
 
 /*

@@ -8,7 +8,7 @@ void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
-void callback_display(void*);
+void callback_display(void*, void*);
 
 
 
@@ -153,9 +153,57 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 	win->width = win->stride = w;
 	win->height = h;
 }
+
+
+
+
+static void coopfunc(struct arena* w)
+{
+	GLFWwindow* fw;
+	struct arena* c;
+	struct relation* rel = w->orel0;
+
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_win_ == rel->dsttype)
+		{
+			//printmemory(rel, 0x20);
+			c = (void*)(rel->dstchip);
+			if(0 == c->win)
+			{
+				c->win = glfwCreateWindow(512, 512, "42", NULL, w->win);
+				if(NULL == c->win)
+				{
+					printf("error@glfwCreateWindow\n");
+					return;
+				}
+
+				fw = c->win;
+				glfwSetWindowUserPointer(fw, c);
+				glfwSetDropCallback(fw, callback_drop);
+				glfwSetKeyCallback(fw, callback_keyboard);
+				glfwSetScrollCallback(fw, callback_scroll);
+				glfwSetCursorPosCallback(fw, callback_move);
+				glfwSetMouseButtonCallback(fw, callback_mouse);
+				glfwSetFramebufferSizeCallback(fw, callback_reshape);
+			}
+			if(c->win)
+			{
+				glfwMakeContextCurrent(c->win);
+				callback_display(w, c);
+				glfwSwapBuffers(c->win);
+			}
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+}
 static void* windowthread(struct arena* w)
 {
-	//int j,k;
+	int j;
+	u64 oldtime,newtime;
 
 	//1.glfw
 	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
@@ -165,6 +213,7 @@ static void* windowthread(struct arena* w)
 		glfwTerminate();
 		return 0;
 	}
+	w->win = fw;
 	glfwMakeContextCurrent(fw);
 
 	//2.glew
@@ -191,20 +240,25 @@ static void* windowthread(struct arena* w)
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
 	//5.wait
+	oldtime = newtime = 0;
 	while(1)
 	{
 		if(glfwWindowShouldClose(fw) != 0)break;
-/*
-		j = gettime();
-		k = j - (w->time);
-		if(k>0)say("fps=%d\n", 1000000 / k);
-		w->time = j;
-*/
-		callback_update(w);
-		callback_display(w);
-		sleep_us(10000);
 
+		glfwMakeContextCurrent(fw);
+		callback_update(w);
+
+		callback_display(w, 0);
 		glfwSwapBuffers(fw);
+
+		coopfunc(w);
+
+		oldtime = newtime;
+		newtime = gettime();
+		j = newtime - oldtime;
+		//say("%llx,%llx,%d\n",oldtime,newtime,j);
+		if((j>0)&&(j<16000))sleep_us(16000-j);
+
 		glfwPollEvents();
 	}
 
@@ -243,6 +297,9 @@ void windowcreate(struct arena* w)
 		w->type = hex32('w','i','n',0);
 		w->fmt = hex32('v','b','o',0);
 
+		w->win = 0;
+		w->buf = 0;
+
 		w->width = 512;
 		w->height = 512;
 		w->depth = 512;
@@ -256,6 +313,9 @@ void windowcreate(struct arena* w)
 	{
 		w->type = _coop_;
 		w->fmt = _coop_;
+
+		w->win = 0;
+		w->buf = 0;
 
 		w->width = 512;
 		w->height = 512;

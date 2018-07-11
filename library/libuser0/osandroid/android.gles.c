@@ -22,7 +22,7 @@ void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
-void callback_display(void*);
+void callback_display(void*,void*);
 
 
 
@@ -102,7 +102,7 @@ static void windowthread(struct arena* win)
 		win->deq = win->enq;
 
 		callback_update(win);
-		callback_display(win);
+		callback_display(win,0);
 		eglSwapBuffers(display, surface);
 	}
 }
