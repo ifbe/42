@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
@@ -112,7 +113,7 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
-	printf("%f,%f\n", x, y);
+	printf("%llx: %f,%f\n", win, x, y);
 
 	e.where = (u64)win;
 	e.what = 0x2b70;
@@ -171,16 +172,16 @@ static void coopfunc(struct arena* w)
 		{
 			//printmemory(rel, 0x20);
 			c = (void*)(rel->dstchip);
-			if(0 == c->win)
+			fw = c->win;
+			if(0 == fw)
 			{
-				c->win = glfwCreateWindow(512, 512, "42", NULL, w->win);
-				if(NULL == c->win)
+				fw = glfwCreateWindow(512, 512, "42", NULL, w->win);
+				if(NULL == fw)
 				{
 					printf("error@glfwCreateWindow\n");
 					return;
 				}
 
-				fw = c->win;
 				glfwSetWindowUserPointer(fw, c);
 				glfwSetDropCallback(fw, callback_drop);
 				glfwSetKeyCallback(fw, callback_keyboard);
@@ -188,12 +189,16 @@ static void coopfunc(struct arena* w)
 				glfwSetCursorPosCallback(fw, callback_move);
 				glfwSetMouseButtonCallback(fw, callback_mouse);
 				glfwSetFramebufferSizeCallback(fw, callback_reshape);
+
+				c->win = fw;
+				c->map = malloc(0x100000);
+				memset(c->map, 0, 0x100000);
 			}
-			if(c->win)
+			if(fw)
 			{
-				glfwMakeContextCurrent(c->win);
+				glfwMakeContextCurrent(fw);
 				callback_display(w, c);
-				glfwSwapBuffers(c->win);
+				glfwSwapBuffers(fw);
 			}
 		}
 
@@ -214,6 +219,7 @@ static void* windowthread(struct arena* w)
 		return 0;
 	}
 	w->win = fw;
+	w->map = 0;
 	glfwMakeContextCurrent(fw);
 
 	//2.glew
@@ -294,8 +300,8 @@ void windowcreate(struct arena* w)
 {
 	if(_win_ == w->type)
 	{
-		w->type = hex32('w','i','n',0);
-		w->fmt = hex32('v','b','o',0);
+		w->type = _win_;
+		w->fmt = _vbo_;
 
 		w->win = 0;
 		w->buf = 0;
@@ -312,7 +318,7 @@ void windowcreate(struct arena* w)
 	if(_coop_ == w->type)
 	{
 		w->type = _coop_;
-		w->fmt = _coop_;
+		w->fmt = _vbo_;
 
 		w->win = 0;
 		w->buf = 0;

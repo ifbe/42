@@ -514,6 +514,7 @@ struct arena
 		u64 dc;
 		u64 gc;
 		void* er;
+		void* map;
 	};
 	union{
 		u64 len;

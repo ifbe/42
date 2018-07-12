@@ -315,6 +315,50 @@ void callback_update(struct arena* w)
 
 
 
+u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
+{
+	int j;
+	u32 (*map)[2];
+
+
+	//if master window, return
+	if(0 == win)return vao;
+
+
+	//if found it, return
+	map = win->map;
+	if(0 == map)return 0;
+
+	for(j=0;j<256;j++)
+	{
+		if(map[j][0] == 0)break;
+		if(map[j][0] == vao)return map[j][1];
+	}
+
+	//if unregistered, register first, return
+	map[j][0] = vao;
+	glGenVertexArrays(1, &vao);
+	map[j][1] = vao;
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	if(vbuffmt_333 == fmt)
+	{
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
+		glEnableVertexAttribArray(2);
+	}
+	else if(vbuffmt_33 == fmt)
+	{
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+		glEnableVertexAttribArray(1);
+	}
+}
 void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp)
 {
 	if(0 == fi->shader)return;
@@ -389,19 +433,29 @@ void fixlight(struct arena* win, u32 program)
 void callback_display(struct arena* win, struct arena* coop)
 {
 	u32 program;
+	u32 len;
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
 	struct texandobj* mod;
 	GLfloat cammvp[4*4];
 
-	fixmatrix(cammvp, win);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	if(0 == coop)
+	{
+		glViewport(0, 0, win->width, win->height);
+		fixmatrix(cammvp, win);
+	}
+	else
+	{
+		glViewport(0, 0, coop->width, coop->height);
+		fixmatrix(cammvp, coop);
+	}
 	mat4_transpose((void*)cammvp);
 	mod = win->mod;
 
-
-	//setup
-	glViewport(0, 0, win->width, win->height);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 
 	//
 	callback_display_eachactor(win, cammvp);
@@ -410,16 +464,33 @@ void callback_display(struct arena* win, struct arena* coop)
 	//point,line
 	glUseProgram(mod[vert2da].program);
 
-	glBindVertexArray(mod[vert2da].vao);
-	glDrawArrays(GL_POINTS, 0, mod[vert2da].vlen);
 
-	glBindVertexArray(mod[vert2db].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2db].ibo);
-	glDrawElements(GL_LINES, 2*mod[vert2db].ilen, GL_UNSIGNED_SHORT, 0);
+	len = mod[vert2da].vlen;
+	vbo = mod[vert2da].vbo;
+	vao = mod[vert2da].vao;
+	vao = fixvao(coop, vbuffmt_33, vao, vbo);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_POINTS, 0, len);
 
-	glBindVertexArray(mod[vert2dc].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2dc].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[vert2dc].ilen, GL_UNSIGNED_SHORT, 0);
+
+	len = 2*mod[vert2db].ilen;
+	ibo = mod[vert2db].ibo;
+	vbo = mod[vert2db].vbo;
+	vao = mod[vert2db].vao;
+	vao = fixvao(coop, vbuffmt_33, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_LINES, len, GL_UNSIGNED_SHORT, 0);
+
+
+	len = 3*mod[vert2dc].ilen;
+	ibo = mod[vert2dc].ibo;
+	vbo = mod[vert2dc].vbo;
+	vao = mod[vert2dc].vao;
+	vao = fixvao(coop, vbuffmt_33, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------simpleprogram------------------
@@ -428,12 +499,23 @@ void callback_display(struct arena* win, struct arena* coop)
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 
-	glBindVertexArray(mod[vert3da].vao);
-	glDrawArrays(GL_POINTS, 0, mod[vert3da].vlen);
 
-	glBindVertexArray(mod[vert3db].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3db].ibo);
-	glDrawElements(GL_LINES, 2*mod[vert3db].ilen, GL_UNSIGNED_SHORT, 0);
+	len = mod[vert3da].vlen;
+	vbo = mod[vert3da].vbo;
+	vao = mod[vert3da].vao;
+	vao = fixvao(coop, vbuffmt_33, vao, vbo);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_POINTS, 0, len);
+
+
+	len = 2*mod[vert3db].ilen;
+	ibo = mod[vert3db].ibo;
+	vbo = mod[vert3db].vbo;
+	vao = mod[vert3db].vao;
+	vao = fixvao(coop, vbuffmt_33, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_LINES, len, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------prettyprogram------------------
@@ -443,9 +525,15 @@ void callback_display(struct arena* win, struct arena* coop)
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	fixlight(win, program);
 
-	glBindVertexArray(mod[vert3dc].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3dc].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[vert3dc].ilen, GL_UNSIGNED_SHORT, 0);
+
+	len = 3*mod[vert3dc].ilen;
+	ibo = mod[vert3dc].ibo;
+	vbo = mod[vert3dc].vbo;
+	vao = mod[vert3dc].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
 
 
 	//opaque
@@ -460,29 +548,53 @@ void callback_display(struct arena* win, struct arena* coop)
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(program, "tex2d"), 0);
 
+
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
-	glBindVertexArray(mod[font3d0].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font3d0].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font3d0].ilen;
+	ibo = mod[font3d0].ibo;
+	vao = mod[font3d0].vao;
+	vbo = mod[font3d0].vbo;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
-	glBindVertexArray(mod[font3d1].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d1].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font3d1].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font3d1].ilen;
+	ibo = mod[font3d1].ibo;
+	vbo = mod[font3d1].vbo;
+	vao = mod[font3d1].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
-	glBindVertexArray(mod[font3d2].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d2].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font3d2].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font3d2].ilen;
+	ibo = mod[font3d2].ibo;
+	vbo = mod[font3d2].vbo;
+	vao = mod[font3d2].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
-	glBindVertexArray(mod[font3d3].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d3].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font3d3].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font3d3].ilen;
+	ibo = mod[font3d3].ibo;
+	vbo = mod[font3d3].vbo;
+	vao = mod[font3d3].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------font2dprogram------------------
@@ -490,29 +602,54 @@ void callback_display(struct arena* win, struct arena* coop)
 	glUseProgram(program);
 	glUniform1i(glGetUniformLocation(program, "tex2d"), 0);
 
+
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
-	glBindVertexArray(mod[font2d0].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d0].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font2d0].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font2d0].ilen;
+	ibo = mod[font2d0].ibo;
+	vbo = mod[font2d0].vbo;
+	vao = mod[font2d0].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
-	glBindVertexArray(mod[font2d1].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d1].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font2d1].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font2d1].ilen;
+	ibo = mod[font2d1].ibo;
+	vbo = mod[font2d1].vbo;
+	vao = mod[font2d1].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
-	glBindVertexArray(mod[font2d2].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d2].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font2d2].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font2d2].ilen;
+	ibo = mod[font2d2].ibo;
+	vbo = mod[font2d2].vbo;
+	vao = mod[font2d2].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
-	glBindVertexArray(mod[font2d3].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d3].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[font2d3].ilen, GL_UNSIGNED_SHORT, 0);
+	len = 3*mod[font2d3].ilen;
+	ibo = mod[font2d3].ibo;
+	vbo = mod[font2d3].vbo;
+	vao = mod[font2d3].vao;
+	vao = fixvao(coop, vbuffmt_333, vao, vbo);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
 
 	//
 	glDisable(GL_BLEND);

@@ -306,6 +306,45 @@ void* arenacreate(u64 type, u8* addr)
 		win->type = _coop_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
+
+		win->backdata = 0;
+		win->backtype = 0;
+		win->modedata = 0;
+		win->modetype = 5;	//mode2: overview
+		win->menudata = 0;
+		win->menutype = 0;	//menu1: select
+		win->vkbddata = 0;
+		win->vkbdtype = 0;
+
+		//target
+		win->target.vc[0] = 0.0;
+		win->target.vc[1] = 0.0;
+		win->target.vc[2] = 0.0;
+
+		win->target.vr[0] = 256.0;
+		win->target.vr[1] = 0.0;
+		win->target.vr[2] = 0.0;
+
+		win->target.vf[0] = 0.0;
+		win->target.vf[1] = 256.0;
+		win->target.vf[2] = 0.0;
+
+		win->target.vu[0] = 0.0;
+		win->target.vu[1] = 0.0;
+		win->target.vu[2] = 256.0;
+
+		//camera
+		win->camera.vc[0] = 0.0;
+		win->camera.vc[1] = -1024.0;
+		win->camera.vc[2] = 1024.0;
+
+		win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
+		win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
+		win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
+
+		win->camera.vu[0] = 0.0;
+		win->camera.vu[1] = 0.0;
+		win->camera.vu[2] = 1.0;
 	}
 	else if(_cam_ == type)
 	{
