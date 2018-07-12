@@ -40,12 +40,7 @@ void background_vbo(struct arena* win)
 {
 	int j;
 	struct texandobj* mod = win->mod;
-	for(j=0;j<8;j++)
-	{
-		mod[j].ilen = 0;
-		mod[j].vlen = 0;
-	}
-	for(j=0x80;j<0x88;j++)
+	for(j=0;j<16;j++)
 	{
 		mod[j].ilen = 0;
 		mod[j].vlen = 0;

@@ -63,10 +63,31 @@ typedef float mat4[4][4];
 #define _rs_ hex16('r','s')
 #define _ll_ hex16('l','l')
 #define _rr_ hex16('r','r')
+//
 #define vbuffmt_32 0x23
 #define vbuffmt_33 0x33
 #define vbuffmt_333 0x333
 #define vbuffmt_332 0x233
+#define pcm2 0x2
+#define pcm22 0x22
+//
+#define font3d0 0
+#define font3d1 1
+#define font3d2 2
+#define font3d3 3
+#define font2d0 4
+#define font2d1 5
+#define font2d2 6
+#define font2d3 7
+#define vert3da 8
+#define vert3db 9
+#define vert3dc 10
+//#define vert3dd 11
+#define vert2da 12
+#define vert2db 13
+#define vert2dc 14
+//#define vert2dd 15
+
 
 
 

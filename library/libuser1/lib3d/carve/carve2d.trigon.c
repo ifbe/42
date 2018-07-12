@@ -2,7 +2,7 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 24
-#define trigonv 0x86
+#define trigonv 14
 
 
 

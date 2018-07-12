@@ -267,31 +267,26 @@ void initshader(struct arena* w)
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
 	font3dprogram = shaderprogram(font3dvert, fontfrag);
-	mod[0x00].program = font3dprogram;
-	mod[0x01].program = font3dprogram;
-	mod[0x02].program = font3dprogram;
-	mod[0x03].program = font3dprogram;
+	mod[font3d0].program = font3dprogram;
+	mod[font3d1].program = font3dprogram;
+	mod[font3d2].program = font3dprogram;
+	mod[font3d3].program = font3dprogram;
 
 	font2dprogram = shaderprogram(font2dvert, fontfrag);
-	mod[0x04].program = font2dprogram;
-	mod[0x05].program = font2dprogram;
-	mod[0x06].program = font2dprogram;
-	mod[0x07].program = font2dprogram;
-/*
-	directprogram = shaderprogram(directvert, directfrag);
-	mod[0x04].program = directprogram;
-*/
+	mod[font2d0].program = font2dprogram;
+	mod[font2d1].program = font2dprogram;
+	mod[font2d2].program = font2dprogram;
+	mod[font2d3].program = font2dprogram;
+
 	simpleprogram = shaderprogram(simplevert, simplefrag);
-	mod[0x80].program = simpleprogram;
-	mod[0x81].program = simpleprogram;
+	mod[vert3da].program = simpleprogram;
+	mod[vert3db].program = simpleprogram;
 
 	prettyprogram = shaderprogram(prettyvert, prettyfrag);
-	mod[0x82].program = prettyprogram;
-	mod[0x83].program = prettyprogram;
+	mod[vert3dc].program = prettyprogram;
 
 	glsl2dprogram = shaderprogram(glsl2dvert, glsl2dfrag);
-	mod[0x84].program = glsl2dprogram;
-	mod[0x85].program = glsl2dprogram;
-	mod[0x86].program = glsl2dprogram;
-	mod[0x87].program = glsl2dprogram;
+	mod[vert2da].program = glsl2dprogram;
+	mod[vert2db].program = glsl2dprogram;
+	mod[vert2dc].program = glsl2dprogram;
 }

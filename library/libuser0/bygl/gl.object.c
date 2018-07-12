@@ -35,95 +35,87 @@ void initobject(struct arena* w)
 
 //--------------------font3d-------------------
 	//[0000,3fff]
-	mod[0].vbuf = malloc(0x200000);
-	mod[0].vlen = 0;
-	mod[0].ibuf = malloc(0x100000);
-	mod[0].ilen = 0;
+	mod[font3d0].vbuf = malloc(0x200000);
+	mod[font3d0].vlen = 0;
+	mod[font3d0].ibuf = malloc(0x100000);
+	mod[font3d0].ilen = 0;
 
 	//[4000,7fff]
-	mod[1].vbuf = malloc(0x200000);
-	mod[1].vlen = 0;
-	mod[1].ibuf = malloc(0x100000);
-	mod[1].ilen = 0;
+	mod[font3d1].vbuf = malloc(0x200000);
+	mod[font3d1].vlen = 0;
+	mod[font3d1].ibuf = malloc(0x100000);
+	mod[font3d1].ilen = 0;
 
 	//[8000,bfff]
-	mod[2].vbuf = malloc(0x200000);
-	mod[2].vlen = 0;
-	mod[2].ibuf = malloc(0x100000);
-	mod[2].ilen = 0;
+	mod[font3d2].vbuf = malloc(0x200000);
+	mod[font3d2].vlen = 0;
+	mod[font3d2].ibuf = malloc(0x100000);
+	mod[font3d2].ilen = 0;
 
 	//[c000,ffff]
-	mod[3].vbuf = malloc(0x200000);
-	mod[3].vlen = 0;
-	mod[3].ibuf = malloc(0x100000);
-	mod[3].ilen = 0;
+	mod[font3d3].vbuf = malloc(0x200000);
+	mod[font3d3].vlen = 0;
+	mod[font3d3].ibuf = malloc(0x100000);
+	mod[font3d3].ilen = 0;
 
 //--------------------font2d-------------------
 	//[0000,3fff]
-	mod[4].vbuf = malloc(0x200000);
-	mod[4].vlen = 0;
-	mod[4].ibuf = malloc(0x100000);
-	mod[4].ilen = 0;
+	mod[font2d0].vbuf = malloc(0x200000);
+	mod[font2d0].vlen = 0;
+	mod[font2d0].ibuf = malloc(0x100000);
+	mod[font2d0].ilen = 0;
 
 	//[4000,7fff]
-	mod[5].vbuf = malloc(0x200000);
-	mod[5].vlen = 0;
-	mod[5].ibuf = malloc(0x100000);
-	mod[5].ilen = 0;
+	mod[font2d1].vbuf = malloc(0x200000);
+	mod[font2d1].vlen = 0;
+	mod[font2d1].ibuf = malloc(0x100000);
+	mod[font2d1].ilen = 0;
 
 	//[8000,bfff]
-	mod[6].vbuf = malloc(0x200000);
-	mod[6].vlen = 0;
-	mod[6].ibuf = malloc(0x100000);
-	mod[6].ilen = 0;
+	mod[font2d2].vbuf = malloc(0x200000);
+	mod[font2d2].vlen = 0;
+	mod[font2d2].ibuf = malloc(0x100000);
+	mod[font2d2].ilen = 0;
 
 	//[c000,ffff]
-	mod[7].vbuf = malloc(0x200000);
-	mod[7].vlen = 0;
-	mod[7].ibuf = malloc(0x100000);
-	mod[7].ilen = 0;
-/*
-	//2d screen
-	mod[4].vbuf = malloc(0x100000);
-	mod[4].vlen = 0;
-*/
+	mod[font2d3].vbuf = malloc(0x200000);
+	mod[font2d3].vlen = 0;
+	mod[font2d3].ibuf = malloc(0x100000);
+	mod[font2d3].ilen = 0;
+
 //--------------------3d-------------------
 	//drawarray.point
-	mod[0x80].vbuf = malloc(0x100000);
-	mod[0x80].vlen = 0;
+	mod[vert3da].vbuf = malloc(0x100000);
+	mod[vert3da].vlen = 0;
 
 	//drawelement.line
-	mod[0x81].ibuf = malloc(0x100000);
-	mod[0x81].ilen = 0;
-	mod[0x81].vbuf = malloc(0x100000);
-	mod[0x81].vlen = 0;
-
-	//drawarray.trigon
-	mod[0x82].vbuf = malloc(0x1000000);
-	mod[0x82].vlen = 0;
+	mod[vert3db].ibuf = malloc(0x100000);
+	mod[vert3db].ilen = 0;
+	mod[vert3db].vbuf = malloc(0x100000);
+	mod[vert3db].vlen = 0;
 
 	//drawelement.trigon
-	mod[0x83].ibuf = malloc(0x100000);
-	mod[0x83].ilen = 0;
-	mod[0x83].vbuf = malloc(0x1000000);
-	mod[0x83].vlen = 0;
+	mod[vert3dc].ibuf = malloc(0x100000);
+	mod[vert3dc].ilen = 0;
+	mod[vert3dc].vbuf = malloc(0x1000000);
+	mod[vert3dc].vlen = 0;
 
 //----------------------2d--------------------
 	//drawarray.point
-	mod[0x84].vbuf = malloc(0x100000);
-	mod[0x84].vlen = 0;
+	mod[vert2da].vbuf = malloc(0x100000);
+	mod[vert2da].vlen = 0;
 
 	//drawelement.line
-	mod[0x85].ibuf = malloc(0x100000);
-	mod[0x85].ilen = 0;
-	mod[0x85].vbuf = malloc(0x100000);
-	mod[0x85].vlen = 0;
+	mod[vert2db].ibuf = malloc(0x100000);
+	mod[vert2db].ilen = 0;
+	mod[vert2db].vbuf = malloc(0x100000);
+	mod[vert2db].vlen = 0;
 
 	//drawelement.trigon
-	mod[0x86].ibuf = malloc(0x100000);
-	mod[0x86].ilen = 0;
-	mod[0x86].vbuf = malloc(0x100000);
-	mod[0x86].vlen = 0;
+	mod[vert2dc].ibuf = malloc(0x100000);
+	mod[vert2dc].ilen = 0;
+	mod[vert2dc].vbuf = malloc(0x100000);
+	mod[vert2dc].vlen = 0;
 }
 
 
@@ -222,106 +214,102 @@ void callback_update(struct arena* w)
 
 //----------------------font3d---------------------
 	//font0000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0].ilen, mod[0].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font3d0].ilen, mod[font3d0].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0].vlen,mod[0].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d0].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font3d0].vlen,mod[font3d0].vbuf);
 
 	//font4000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[1].ilen, mod[1].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d1].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font3d1].ilen, mod[font3d1].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[1].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[1].vlen, mod[1].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d1].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font3d1].vlen, mod[font3d1].vbuf);
 
 	//font8000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[2].ilen,mod[2].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d2].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font3d2].ilen,mod[font3d2].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[2].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[2].vlen,mod[2].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d2].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font3d2].vlen,mod[font3d2].vbuf);
 
 	//fontc000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[3].ilen, mod[3].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d3].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font3d3].ilen, mod[font3d3].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[3].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[3].vlen, mod[3].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d3].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font3d3].vlen, mod[font3d3].vbuf);
 
 
 //----------------------font2d---------------------
 	//font0000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[4].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[4].ilen, mod[4].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d0].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font2d0].ilen, mod[font2d0].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[4].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[4].vlen,mod[4].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d0].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font2d0].vlen,mod[font2d0].vbuf);
 
 	//font4000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[5].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[5].ilen, mod[5].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d1].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font2d1].ilen, mod[font2d1].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[5].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[5].vlen, mod[5].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d1].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font2d1].vlen, mod[font2d1].vbuf);
 
 	//font8000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[6].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[6].ilen,mod[6].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d2].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font2d2].ilen,mod[font2d2].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[6].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[6].vlen,mod[6].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d2].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font2d2].vlen,mod[font2d2].vbuf);
 
 	//fontc000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[7].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[7].ilen, mod[7].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d3].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font2d3].ilen, mod[font2d3].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[7].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[7].vlen, mod[7].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d3].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[font2d3].vlen, mod[font2d3].vbuf);
 
 
 //----------------------3d---------------------
 	//drawarray: point
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x80].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x80].vlen, mod[0x80].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3da].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[vert3da].vlen, mod[vert3da].vbuf);
 
 	//drawelement: line
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x81].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x81].ilen, mod[0x81].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3db].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[vert3db].ilen, mod[vert3db].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x81].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x81].vlen, mod[0x81].vbuf);
-
-	//drawarray: trigon
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x82].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 36*mod[0x82].vlen, mod[0x82].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3db].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[vert3db].vlen, mod[vert3db].vbuf);
 
 	//drawelement: trigon
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x83].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x83].ilen, mod[0x83].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3dc].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[vert3dc].ilen, mod[vert3dc].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x83].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER,0, 36*mod[0x83].vlen, mod[0x83].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3dc].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER,0, 36*mod[vert3dc].vlen, mod[vert3dc].vbuf);
 
 
 //----------------------2d---------------------
 	//drawarray: point
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x84].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x84].vlen, mod[0x84].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2da].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[vert2da].vlen, mod[vert2da].vbuf);
 
 	//drawelement: line
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[0x85].ilen, mod[0x85].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2db].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4*mod[vert2db].ilen, mod[vert2db].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x85].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[0x85].vlen, mod[0x85].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2db].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 24*mod[vert2db].vlen, mod[vert2db].vbuf);
 
 	//drawelement: trigon
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x86].ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[0x86].ilen, mod[0x86].ibuf);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2dc].ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[vert2dc].ilen, mod[vert2dc].ibuf);
 
-	glBindBuffer(GL_ARRAY_BUFFER, mod[0x86].vbo);
-	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[0x86].vlen, mod[0x86].vbuf);
+	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2dc].vbo);
+	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[vert2dc].vlen, mod[vert2dc].vbuf);
 }
 
 
@@ -409,140 +397,122 @@ void callback_display(struct arena* win, struct arena* coop)
 	mod = win->mod;
 
 
-	//set
+	//setup
 	glViewport(0, 0, win->width, win->height);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-
 	//
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	callback_display_eachactor(win, cammvp);
 
 //--------------------glsl2dprogram------------------
 	//point,line
-	glUseProgram(mod[0x84].program);
+	glUseProgram(mod[vert2da].program);
 
-	glBindVertexArray(mod[0x84].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x84].vlen);
+	glBindVertexArray(mod[vert2da].vao);
+	glDrawArrays(GL_POINTS, 0, mod[vert2da].vlen);
 
-	glBindVertexArray(mod[0x85].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x85].ibo);
-	glDrawElements(GL_LINES, 2*mod[0x85].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[vert2db].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2db].ibo);
+	glDrawElements(GL_LINES, 2*mod[vert2db].ilen, GL_UNSIGNED_SHORT, 0);
 
-	glBindVertexArray(mod[0x86].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x86].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x86].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[vert2dc].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2dc].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[vert2dc].ilen, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------simpleprogram------------------
 	//point,line
-	program = mod[0x80].program;
+	program = mod[vert3da].program;
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 
-	glBindVertexArray(mod[0x80].vao);
-	glDrawArrays(GL_POINTS, 0, mod[0x80].vlen);
+	glBindVertexArray(mod[vert3da].vao);
+	glDrawArrays(GL_POINTS, 0, mod[vert3da].vlen);
 
-	glBindVertexArray(mod[0x81].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x81].ibo);
-	glDrawElements(GL_LINES, 2*mod[0x81].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[vert3db].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3db].ibo);
+	glDrawElements(GL_LINES, 2*mod[vert3db].ilen, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------prettyprogram------------------
-	//stl,triangle
-	program = mod[0x82].program;
+	//triangle
+	program = mod[vert3dc].program;
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	fixlight(win, program);
 
-	glBindVertexArray(mod[0x82].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[0x82].vlen);
-
-	glBindVertexArray(mod[0x83].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0x83].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[0x83].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(mod[vert3dc].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3dc].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[vert3dc].ilen, GL_UNSIGNED_SHORT, 0);
 
 
-	//
+	//opaque
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
 //--------------------font3dprogram------------------
-	program = mod[0].program;
+	program = mod[font3d0].program;
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform1i(glGetUniformLocation(program, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-	glBindVertexArray(mod[0].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[0].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[0].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
+	glBindVertexArray(mod[font3d0].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font3d0].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-	glBindVertexArray(mod[1].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[1].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[1].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
+	glBindVertexArray(mod[font3d1].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d1].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font3d1].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-	glBindVertexArray(mod[2].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[2].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[2].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
+	glBindVertexArray(mod[font3d2].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d2].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font3d2].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-	glBindVertexArray(mod[3].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[3].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[3].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
+	glBindVertexArray(mod[font3d3].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d3].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font3d3].ilen, GL_UNSIGNED_SHORT, 0);
 
 
 //--------------------font2dprogram------------------
-	program = mod[4].program;
+	program = mod[font2d0].program;
 	glUseProgram(program);
 	glUniform1i(glGetUniformLocation(program, "tex2d"), 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
-	glBindVertexArray(mod[4].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[4].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[4].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
+	glBindVertexArray(mod[font2d0].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d0].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font2d0].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
-	glBindVertexArray(mod[5].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[5].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[5].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
+	glBindVertexArray(mod[font2d1].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d1].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font2d1].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
-	glBindVertexArray(mod[6].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[6].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[6].ilen, GL_UNSIGNED_SHORT, 0);
+	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
+	glBindVertexArray(mod[font2d2].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d2].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font2d2].ilen, GL_UNSIGNED_SHORT, 0);
 
 	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
-	glBindVertexArray(mod[7].vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[7].ibo);
-	glDrawElements(GL_TRIANGLES, 3*mod[7].ilen, GL_UNSIGNED_SHORT, 0);
-
-/*
-//------------------directprogram-------------------
-	glUseProgram(directprogram);
-	glUniformMatrix4fv(glGetUniformLocation(font3dprogram, "cammvp"), 1, GL_FALSE, cammvp);
-	glUniform1i(glGetUniformLocation(font3dprogram, "tex2d"), 0);
-
-	glActiveTexture(GL_TEXTURE0 + 0);
-	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
-	glBindVertexArray(mod[4].vao);
-	glDrawArrays(GL_TRIANGLES, 0, mod[4].vlen);
-*/
+	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
+	glBindVertexArray(mod[font2d3].vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d3].ibo);
+	glDrawElements(GL_TRIANGLES, 3*mod[font2d3].ilen, GL_UNSIGNED_SHORT, 0);
 
 	//
 	glDisable(GL_BLEND);

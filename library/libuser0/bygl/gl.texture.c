@@ -97,8 +97,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[0].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[0].tex);
+	glGenTextures(1, &(mod[font3d0].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -118,8 +118,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[1].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[1].tex);
+	glGenTextures(1, &(mod[font3d1].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -139,8 +139,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[2].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[2].tex);
+	glGenTextures(1, &(mod[font3d2].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -160,8 +160,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[3].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[3].tex);
+	glGenTextures(1, &(mod[font3d3].tex));
+	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);

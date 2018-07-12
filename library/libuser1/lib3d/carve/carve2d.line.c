@@ -3,7 +3,7 @@
 #define halfsqrt3 0.8660254037844386
 #define tau (PI*2)
 #define acc 24
-#define linev 0x85
+#define linev 13
 
 
 
