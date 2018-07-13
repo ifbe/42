@@ -1,4 +1,5 @@
 #include "libuser.h"
+void carvesnowman(struct arena* win, u32 rgb, vec3 vc);
 
 
 
@@ -113,6 +114,7 @@ void foreground_vbo(struct arena* win)
 	float x,y;
 	vec3 vc;
 	vec3 vr;
+	struct arena* coop;
 	struct relation* rel;
 /*
 	vec3 vf;
@@ -166,9 +168,15 @@ void foreground_vbo(struct arena* win)
 	while(1)
 	{
 		if(0 == rel)break;
-		if(_win_ == rel->dsttype)carvecamera(win, (void*)(rel->dstchip));
+		coop = (void*)(rel->dstchip);
+		if(_win_ == rel->dsttype)
+		{
+			carvecamera(win, coop);
+			carvesnowman(win, 0xffffff, coop->target.vc);
+		}
 		rel = samesrcnextdst(rel);
 	}
+	carvesnowman(win, 0xffffff, win->target.vc);
 }
 void foreground_json(struct arena* win)
 {

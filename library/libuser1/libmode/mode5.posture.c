@@ -31,7 +31,7 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	float* vf = win->target.vf;
 	float* vu = win->target.vu;
 	carveaxis(win);
-
+/*
 	j = win->menudata;
 	if(j < 0)goto skip;
 	if(j >= 64)goto skip;
@@ -51,6 +51,7 @@ skip:
 	tf[2] = vf[2]/2;
 	carvestring_center(win, 0x00ff00, tc, tr, tf,
 		(u8*)&actor[j].name, 8);
+*/
 }
 void actoroutput_posture_pixel(struct arena* win, struct style* sty)
 {
