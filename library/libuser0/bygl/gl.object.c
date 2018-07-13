@@ -324,11 +324,11 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 	//if master window, return
 	if(0 == win)return vao;
 
+	map = win->map;
+	if(0 == map)return vao;
+
 
 	//if found it, return
-	map = win->map;
-	if(0 == map)return 0;
-
 	for(j=0;j<256;j++)
 	{
 		if(map[j][0] == 0)break;
@@ -359,8 +359,11 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 		glEnableVertexAttribArray(1);
 	}
 }
-void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp)
+void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp, struct arena* coop)
 {
+	u32 fmt;
+	u32 vbo;
+	u32 vao;
 	if(0 == fi->shader)return;
 	if(0 == fi->vao)return;
 
@@ -377,7 +380,11 @@ void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp
 		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
 	}
 
-	glBindVertexArray(fi->vao);
+	fmt = fo->vbuf_fmt;
+	vbo = fi->vbo;
+	vao = fi->vao;
+	vao = fixvao(coop, fmt, vao, vbo);
+	glBindVertexArray(vao);
 	if('i' == fo->method)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
@@ -388,14 +395,14 @@ void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp
 		glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
 	}
 }
-void callback_display_eachactor(struct arena* w, float* cammvp)
+void callback_display_eachactor(struct arena* win, struct arena* coop, float* cammvp)
 {
 	int j;
 	u64* pi;
 	u64* po;
 	struct relation* rel;
 
-	rel = w->irel0;
+	rel = win->irel0;
 	while(1)
 	{
 		if(0 == rel)break;
@@ -406,7 +413,7 @@ void callback_display_eachactor(struct arena* w, float* cammvp)
 		{
 			if(0 == po[j])break;
 			if(0 == pi[j])pi[j] = (u64)allocifoot();
-			callback_display_eachpass((void*)pi[j], (void*)po[j], cammvp);
+			callback_display_eachpass((void*)pi[j], (void*)po[j], cammvp, coop);
 		}
 
 		rel = samedstnextsrc(rel);
@@ -458,7 +465,7 @@ void callback_display(struct arena* win, struct arena* coop)
 
 
 	//
-	callback_display_eachactor(win, cammvp);
+	callback_display_eachactor(win, coop, cammvp);
 
 //--------------------glsl2dprogram------------------
 	//point,line

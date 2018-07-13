@@ -113,6 +113,7 @@ void foreground_vbo(struct arena* win)
 	float x,y;
 	vec3 vc;
 	vec3 vr;
+	struct relation* rel;
 /*
 	vec3 vf;
 	vec3 vu;
@@ -161,7 +162,13 @@ void foreground_vbo(struct arena* win)
 		carveline2d(win, 0xffffff, vc, vr);
 	}
 */
-	if(win != &arena[0])carvecamera(win, &arena[0]);
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype)carvecamera(win, (void*)(rel->dstchip));
+		rel = samesrcnextdst(rel);
+	}
 }
 void foreground_json(struct arena* win)
 {
