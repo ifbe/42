@@ -38,6 +38,7 @@ void actoroutput_navmenu_json(struct arena* win)
 }
 void actoroutput_navmenu_vbo(struct arena* win)
 {
+	struct style sty;
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
@@ -105,6 +106,23 @@ void actoroutput_navmenu_vbo(struct arena* win)
 		carvesolid2d_rect(win, rgb, vc, vr, vf);
 		vc[2] = -0.51;
 		carveline2d_rect(win, 0xff00ff, vc, vr, vf);
+
+		if((x >= tmp-1)&&(x <= tmp+1))
+		{
+			sty.vc[0] = vc[0];
+			sty.vc[1] = vc[1];
+			sty.vc[2] = vc[2];
+			sty.vr[0] = vr[0];
+			sty.vr[1] = vr[1];
+			sty.vr[2] = vr[2];
+			sty.vf[0] = vf[0];
+			sty.vf[1] = vf[1];
+			sty.vf[2] = vf[2];
+
+			if(1 == x)actoroutput_console(win, &sty);
+			else if(2 == x)actoroutput_overview(win, &sty);
+			else if(3 == x)actoroutput_detail(win, &sty);
+		}
 	}
 
 	vc[0] = 0.0;

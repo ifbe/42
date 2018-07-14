@@ -25,20 +25,38 @@ void actoroutput_console_pixel(struct arena* win, struct style* sty)
 }
 void actoroutput_console_vbo(struct arena* win, struct style* sty)
 {
-	vec3 vc;
-	vec3 vr;
-	vec3 vf;
+	vec3 tc, tr, tf;
+	struct style tmp;
+	float* vc;
+	float* vr;
+	float* vf;
+	if(0 == sty)
+	{
+		sty = &tmp;
+		sty->vc[0] = 0.0;
+		sty->vc[1] = 0.0;
+		sty->vc[2] = -0.9;
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0.0;
+		sty->vr[2] = 0.0;
+		sty->vf[0] = 0.0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0.0;
+	}
+	vc = sty->vc;
+	vr = sty->vr;
+	vf = sty->vf;
 
-	vc[0] = 0.0;
-	vc[1] = 0.0;
-	vc[2] = -0.5;
-	vr[0] = 0.95;
-	vr[1] = 0.0;
-	vr[2] = 0.0;
-	vf[0] = 0.0;
-	vf[1] = 0.95;
-	vf[2] = 0.0;
-	carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = -0.7;
+	tr[0] = vr[0]*0.99;
+	tr[1] = vr[1]*0.99;
+	tr[2] = vr[2]*0.99;
+	tf[0] = vf[0]*0.99;
+	tf[1] = vf[1]*0.99;
+	tf[2] = vf[2]*0.99;
+	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
 }
 void actoroutput_console_json(struct arena* win, struct style* sty)
 {

@@ -5,27 +5,31 @@
 
 int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 {
-	struct relation* rel;
-	vec3 vc;
-	vec3 vr;
-	vec3 vf;
 	int j;
-	int cx,cy,ww,hh;
-	if(sty)
+	vec3 tc,tr,tf,tu;
+	struct style tmp;
+	float* vc;
+	float* vr;
+	float* vf;
+	void* buf;
+	struct relation* rel;
+	if(0 == sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		sty = &tmp;
+		sty->vc[0] = 0.0;
+		sty->vc[1] = 0.0;
+		sty->vc[2] = -0.9;
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0.0;
+		sty->vr[2] = 0.0;
+		sty->vf[0] = 0.0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0.0;
 	}
-	else
-	{
-		cx = 0.0;
-		cy = 0.0;
-		ww = 1.0;
-		hh = 1.0;
-	}
-
+	vc = sty->vc;
+	vr = sty->vr;
+	vf = sty->vf;
+/*
 	vc[0] = 0.0;
 	vc[1] = 0.0;
 	vc[2] = -0.5;
@@ -64,8 +68,29 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 	carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
 	vc[2] = -0.6;
 	carvestring2d_center(win, 0, vc, vr, vf, (void*)&win->fmt, 8);
+*/
+	for(j=0;j<12;j++)
+	{
+		tc[0] = vc[0] + vr[0]*((j%2)-0.5)/2;
+		tc[1] = vc[1] + vf[1]*(8-j/2)/16.0;
+		tc[2] = -0.7;
+		tr[0] = vr[0]/4.1;
+		tr[1] = 0.0;
+		tr[2] = 0.0;
+		tf[0] = 0.0;
+		tf[1] = vf[1]/34.0;
+		tf[2] = 0.0;
+		carvesolid2d_rect(win, 0xffffff, tc, tr, tf);
 
-
+		if(8 == j)buf = (void*)&win->tier;
+		else if(9 == j)buf = (void*)&win->type;
+		else if(10 == j)buf = (void*)&win->fmt;
+		else if(11 == j)buf = (void*)&win->name;
+		else continue;
+		tc[2] = -0.8;
+		carvestring2d_center(win, 0x000000, tc, tr, tf, buf, 8);
+	}
+/*
 	j = 0;
 	rel = win->irel0;
 	while(1)
@@ -149,12 +174,14 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		j++;
 		rel = samesrcnextdst(rel);
 	}
+*/
 	return 0;
 }
 int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 {
+	void* buf;
 	struct relation* rel;
-	int j;
+	int x0,y0,x1,y1,j;
 	int cx,cy,ww,hh;
 	if(sty)
 	{
@@ -170,48 +197,24 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
+	drawline_rect(win, 0x808080, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2);
 
-	drawsolid_rect(win, 0xffffff,
-		cx+1-ww/2, cy+1-hh*8/16,
-		cx-1     , cy-1-hh*7/16
-	);
-	drawstring_fit(win, 0x000000,
-		cx+1-ww/2, cy+1-hh*8/16,
-		cx-1     , cy-1-hh*7/16,
-		(void*)&win->tier, 4
-	);
-	drawsolid_rect(win, 0xffffff,
-		cx+1     , cy+1-hh*8/16,
-		cx-1+ww/2, cy-1-hh*7/16
-	);
-	drawstring_fit(win, 0x000000,
-		cx+1     , cy+1-hh*8/16,
-		cx-1+ww/2, cy-1-hh*7/16,
-		(void*)&win->type, 4
-	);
-	drawsolid_rect(win, 0xffffff,
-		cx+1-ww/2, cy+1-hh*7/16,
-		cx-1+ww/2, cy-1-hh*6/16
-	);
-	drawstring_fit(win, 0x000000,
-		cx+1-ww/2, cy+1-hh*7/16,
-		cx-1+ww/2, cy-1-hh*6/16,
-		(void*)&win->fmt, 8
-	);
-	drawsolid_rect(win, 0xffffff,
-		cx+1-ww/2, cy+1-hh*6/16,
-		cx-1+ww/2, cy-1+hh/2
-	);
-/*
-	//self
-	drawsolid_rect(win, 0xffffff, w*1/4+1, h*4/16+1, w*2/4-1, h*5/16-1);
-	drawstring_fit(win, 0, w*1/4, h*4/16, w*2/4, h*5/16, (void*)&win->tier, 4);
-	drawsolid_rect(win, 0xffffff, w*2/4+1, h*4/16+1, w*3/4-1, h*5/16-1);
-	drawstring_fit(win, 0, w*2/4, h*4/16, w*3/4, h*5/16, (void*)&win->type, 4);
-	drawsolid_rect(win, 0xffffff, w*1/4+1, h*5/16+1, w*3/4-1, h*6/16-1);
-	drawstring_fit(win, 0, w*1/4, h*5/16, w*3/4, h*6/16, (void*)&win->fmt, 8);
-	drawsolid_rect(win, 0xffffff, w*1/4+1, h*6/16+1, w*3/4-1, h*12/16-1);
-*/
+	for(j=0;j<12;j++)
+	{
+		x0 = cx+2+(ww/2)*(j%2-1);
+		y0 = cy+2+hh*(j/2-8)/16;
+		x1 = cx-2+(ww/2)*(j%2);
+		y1 = cy-2+hh*(j/2-7)/16;
+		drawsolid_rect(win, 0xffffff, x0, y0, x1, y1);
+
+		if(8 == j)buf = (void*)&win->tier;
+		else if(9 == j)buf = (void*)&win->type;
+		else if(10 == j)buf = (void*)&win->fmt;
+		else if(11 == j)buf = (void*)&win->name;
+		else continue;
+		drawstring_fit(win, 0x000000, x0, y0, x1, y1, buf, 8);
+	}
+
 	j = 0;
 	rel = win->irel0;
 	while(1)

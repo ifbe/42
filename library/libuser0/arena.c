@@ -246,11 +246,21 @@ int arenadelete(struct arena* win)
 void* arenacreate(u64 type, u8* addr)
 {
 	int j = 0;
-	struct arena* win = allocarena();
-	if(0 == win)return 0;
+	struct arena* win;
 
+	//default
+	if(0 == type)
+	{
+		if(arena[0].type)return 0;
+		type = _win_;
+	}
+
+	//alloc
+	win = allocarena();
+	if(0 == win)return 0;
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
+
 	if(_win_ == type)
 	{
 		win->type = _win_;

@@ -358,6 +358,7 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
 		glEnableVertexAttribArray(1);
 	}
+	return vao;
 }
 void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp, struct arena* coop)
 {

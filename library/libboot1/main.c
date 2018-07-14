@@ -143,9 +143,8 @@ int main(int argc, char* argv[])
 	}
 	term_write("\n");
 
-	//win0
-	arenacreate(_win_, 0);
-	arenacreate(_HTTP_, 0);
+	//default
+	arenacreate(0, 0);
 
 	while(1)
 	{
