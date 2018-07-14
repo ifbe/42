@@ -140,7 +140,7 @@ void windowcreate(struct arena* w)
 	w->height = height;
 
 	w->buf = malloc(0x100000);
-	w->thread = startthread(terminalthread, w);
+	threadcreate(terminalthread, w);
 }
 
 

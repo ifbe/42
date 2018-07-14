@@ -155,7 +155,7 @@ void initwindow()
 	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
 	//
-	thread = startthread(terminalthread, 0);
+	thread = threadcreate(terminalthread, 0);
 }
 //__attribute__((destructor)) void destoryfb()
 void freewindow()
@@ -165,4 +165,10 @@ void freewindow()
 
 	//
 	if(fbfd!=-1)close(fbfd);
+}
+void inittray()
+{
+}
+void freetray()
+{
 }
