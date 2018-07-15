@@ -18,16 +18,16 @@ libhard1:
 	cflag="-c -O2"
 libsoft0:
 	make -s -C $(library)/libsoft0 win \
-	cflag="-c -O2 -I."
+	cflag="-c -O2 -I.."
 libsoft1:
 	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -I."
+	cflag="-c -O2 -I.."
 libuser0:
 	make -s -C $(library)/libuser0 wincli \
-	cflag="-c -O2 -I."
+	cflag="-c -O2 -I.."
 libuser1:
 	make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -I."
+	cflag="-c -O2 -I.."
 a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \

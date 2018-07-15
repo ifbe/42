@@ -137,7 +137,7 @@ void windowstart(struct arena* w)
 {
 	w->width= w->stride = 512;
 	w->height = 512;
-	startthread(uievent, w);
+	threadcreate(uievent, w);
 }
 void windowdelete()
 {

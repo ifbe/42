@@ -5,13 +5,7 @@
 #ifndef MOUSE_HWHEELED
 #define MOUSE_HWHEELED 0x0008
 #endif
-//
-u64 startthread(void*, void*);
-void stopthread();
-//
 int lowlevel_input();
-void eventwrite(u64,u64,u64,u64);
-void say(void*, ...);
 
 
 
@@ -22,7 +16,7 @@ static HANDLE output;
 
 
 
-DWORD WINAPI terminalthread(struct arena* win)
+DWORD WINAPI windowthread(struct arena* win)
 {
 	int j,ret,tmp;
 	u64 x,y,w;
@@ -95,7 +89,7 @@ DWORD WINAPI terminalthread(struct arena* win)
 
 					if((ret < 0x25) | (ret > 0x28))
 					{
-						eventwrite(ret, __kbd__, 0, 0);
+						eventwrite(ret, _kbd_, 0, 0);
 					}
 					else
 					{
@@ -103,7 +97,7 @@ DWORD WINAPI terminalthread(struct arena* win)
 						else if(ret == 0x28)ret = 0x425b1b;
 						else if(ret == 0x27)ret = 0x435b1b;
 						else if(ret == 0x25)ret = 0x445b1b;
-						eventwrite(ret, __char__, 0, 0);
+						eventwrite(ret, _char_, 0, 0);
 					}
 				}
 				else
@@ -133,7 +127,7 @@ DWORD WINAPI terminalthread(struct arena* win)
 						);
 						//printf("%x\n", ret);
 					}
-					eventwrite(ret, __char__, 0, 0);
+					eventwrite(ret, _char_, 0, 0);
 				}
 			}
 			else if(MOUSE_EVENT == ret)
@@ -188,7 +182,7 @@ DWORD WINAPI terminalthread(struct arena* win)
 				y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 				win->width = win->stride = x;
 				win->height = y;
-				eventwrite(x+(y<<16), __size__, 0, 0);
+				//eventwrite(x+(y<<16), _size_, 0, 0);
 			}
 			else if(MENU_EVENT == ret)
 			{
@@ -337,7 +331,7 @@ void windowcreate(struct arena* w)
 	w->height = height;
 
 	w->buf = malloc(0x100000);
-	u64 thread = startthread(terminalthread, w);
+	threadcreate(windowthread, w);
 }
 
 

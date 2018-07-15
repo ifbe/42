@@ -1,25 +1,33 @@
 library?=../../library
 datafile?=../../datafile
-all:
-	make -s -C $(library)/libboot0 wincmd \
-	cflag="-c -O2"
-	make -s -C $(library)/libboot1 \
-	cflag="-c -O2"
-	make -s -C $(library)/libhard0 winx64 \
-	cflag="-c -O2"
-	make -s -C $(library)/libhard1 \
-	cflag="-c -O2"
-	make -s -C $(library)/libsoft0 win \
-	cflag="-c -O2 -I."
-	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -I."
-	make -s -C $(library)/libuser0 winsdl \
-	cflag="-c -O2 -I."
-	make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -I."
+all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s a
 	make -s dll
 	make -s program
+libboot0:
+	make -s -C $(library)/libboot0 wincmd \
+	cflag="-c -O2"
+libboot1:
+	make -s -C $(library)/libboot1 \
+	cflag="-c -O2"
+libhard0:
+	make -s -C $(library)/libhard0 winx64 \
+	cflag="-c -O2"
+libhard1:
+	make -s -C $(library)/libhard1 \
+	cflag="-c -O2"
+libsoft0:
+	make -s -C $(library)/libsoft0 win \
+	cflag="-c -O2 -I.."
+libsoft1:
+	make -s -C $(library)/libsoft1 \
+	cflag="-c -O2 -I.."
+libuser0:
+	make -s -C $(library)/libuser0 winsdl \
+	cflag="-c -O2 -I.."
+libuser1:
+	make -s -C $(library)/libuser1 \
+	cflag="-c -O2 -I.."
 a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \
@@ -43,7 +51,7 @@ dll:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid -lws2_32 -lstrmiids
+	-lshell32 -lversion -luuid -lws2_32 -lstrmiids -lxinput
 program:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
 	g++ -mwindows \
@@ -60,6 +68,6 @@ program:
 	-lmingw32 -lSDL2main -lSDL2 \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
-	-lshell32 -lversion -luuid -lws2_32 -lstrmiids
+	-lshell32 -lversion -luuid -lws2_32 -lstrmiids -lxinput
 clean:
 	rm -f *.o *.a *.so
