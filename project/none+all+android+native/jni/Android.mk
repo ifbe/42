@@ -353,6 +353,7 @@ library/libuser1/theitem/item.human.c \
 library/libuser1/theitem/item.light.c \
 library/libuser1/theitem/item.mirror.c \
 library/libuser1/theitem/item.model.c \
+library/libuser1/theitem/item.ocean.c \
 library/libuser1/theitem/item.piano.c \
 library/libuser1/theitem/item.picture.c \
 library/libuser1/theitem/item.portal.c \

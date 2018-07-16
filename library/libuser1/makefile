@@ -78,6 +78,7 @@ theitem/item.human.c \
 theitem/item.light.c \
 theitem/item.mirror.c \
 theitem/item.model.c \
+theitem/item.ocean.c \
 theitem/item.piano.c \
 theitem/item.picture.c \
 theitem/item.portal.c \

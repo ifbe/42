@@ -594,7 +594,7 @@ void* birth()
 
 	//0.chdir
 	createserial();
-	_chdir("datafile/");
+	//_chdir("datafile/");
 
 
 

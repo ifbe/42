@@ -19,6 +19,7 @@ void human_register(void*);
 void light_register(void*);
 void mirror_register(void*);
 void model_register(void*);
+void ocean_register(void*);
 void piano_register(void*);
 void picture_register(void*);
 void portal_register(void*);
@@ -169,6 +170,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	model_register(temp);
+	temp += sizeof(struct actor);
+
+	ocean_register(temp);
 	temp += sizeof(struct actor);
 
 	piano_register(temp);

@@ -75,7 +75,7 @@ void* birth()
 
 
 	//0.chdir
-	j = chdir("datafile/");
+	//j = chdir("datafile/");
 
 
 	//1.alloc
