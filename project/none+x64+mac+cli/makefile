@@ -10,13 +10,13 @@ all:
 	make -s -C $(library)/libhard1 \
 	compiler="clang" cflag="-c -O2 -fno-stack-protector"
 	make -s -C $(library)/libsoft0 mac \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
 	make -s -C $(library)/libsoft1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
 	make -s -C $(library)/libuser0 maccli \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
 	make -s -C $(library)/libuser1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I."
+	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
 	make -s a
 	make -s dylib
 	make -s program
@@ -31,7 +31,7 @@ a:
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o
 dylib:
-	libtool -dynamic -macosx_version_min 10.12 \
+	libtool -dynamic -macosx_version_min 10.13 \
 	-o 42.dylib \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \

@@ -1,13 +1,15 @@
-#include "system.h"
+#include "libsoft.h"
 
 
 
 
-void readsocket(int fd, int pos, u8* buf, int len)
+int readsocket(int fd, int pos, void* buf, int len)
 {
+	return 0;
 }
-void writesocket(int fd, int pos, u8* buf, int len)
+int writesocket(int fd, int pos, void* buf, int len)
 {
+	return 0;
 }
 void listsocket()
 {

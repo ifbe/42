@@ -178,6 +178,8 @@ linuxsdl:
 .PHONY:maccli
 maccli:
 	rm -f *.o
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c

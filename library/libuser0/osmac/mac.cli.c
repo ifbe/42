@@ -9,7 +9,6 @@
 
 
 static int mode = 0;
-static u64 thread;
 
 
 
@@ -105,7 +104,7 @@ void windowcreate(struct arena* w)
 	w->width = w->stride = 80;
 	w->height = 25;
 
-	thread = startthread(uievent, w);
+	threadcreate(uievent, w);
 }
 
 
@@ -118,4 +117,10 @@ void initwindow()
 void freewindow()
 {
 	windowchange(0);
+}
+void inittray()
+{
+}
+void freetray()
+{
 }
