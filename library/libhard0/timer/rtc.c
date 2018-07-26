@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void setdate(u64);
+void datewrite(u64);
 //
 void enableirq(int);
 void disableirq(int);
@@ -55,7 +55,7 @@ void isr_rtc()
 	p[0] = in8(0x71);
 
 	for(j=0;j<7;j++)p[j] = (p[j]&0xf) + (p[j]>>4)*10;
-	setdate(date);
+	datewrite(date);
 }
 void initrtc()
 {

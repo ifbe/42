@@ -273,8 +273,8 @@ int readfile(int,int,void*,int);
 int writefile(int,int,void*,int);
 //
 u32 getrandom();
-u64 getdate();
-u64 gettime();
+u64 dateread();
+u64 timeread();
 //
 u64 threadcreate(void*, void*);
 void threaddelete(u64);

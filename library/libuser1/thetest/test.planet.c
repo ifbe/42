@@ -30,7 +30,7 @@ static void planet_read_pixel(
 	u32 c;
 	int x,y,l,r,j;
 	int cx, cy, ww, hh;
-	u64 t = gettime() / 10000;
+	u64 t = timeread() / 10000;
 	if(sty)
 	{
 		cx = sty->vc[0];
@@ -73,7 +73,7 @@ static void planet_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	u64 t = gettime() / 10000;
+	u64 t = timeread() / 10000;
 
 	for(j=0;j<9;j++)
 	{

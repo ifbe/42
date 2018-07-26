@@ -915,9 +915,9 @@ double squareroot(double);
 double power(double, double);
 
 //
+u64 dateread();
+u64 timeread();
 u32 getrandom();
-u64 getdate();
-u64 gettime();
 int sleep_us(int);
 //
 u64 threadcreate(void*, void*);

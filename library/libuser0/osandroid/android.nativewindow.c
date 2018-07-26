@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 	struct event* ev;
 	while(1)
 	{
-		time = gettime();
+		time = timeread();
 		if(ANativeWindow_lock(native, &buffer, NULL) != 0)
 		{
 			LOGI("error@read\n");
@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		//
 		ANativeWindow_unlockAndPost(native);
 
-		time = gettime() - time;
+		time = timeread() - time;
 		say("delta=%d\n",time);
 again:
 		ev = eventread();

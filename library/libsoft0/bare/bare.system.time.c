@@ -13,20 +13,12 @@ static u64 date = 0;
 
 
 
-void sleep_us(int t)
-{
-}
-
-
-
-
-void setdate(u64 x)
+void datewrite(u64 x)
 {
 	date = x;
 	eventwrite(x, __date__, 0, 0);
-
 }
-u64 getdate()
+u64 dateread()
 {
 	return date;
 }
@@ -34,10 +26,13 @@ u64 getdate()
 
 
 
-void settime(u64 time)
+void sleep_us(int t)
 {
 }
-u64 gettime()
+void timewrite(u64 time)
+{
+}
+u64 timeread()
 {
 	return 0;
 }

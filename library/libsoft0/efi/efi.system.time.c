@@ -3,17 +3,10 @@
 
 
 
-void sleep_us(int t)
+void datewrite(u64 date)
 {
 }
-
-
-
-
-void setdate(u64 date)
-{
-}
-u64 getdate()
+u64 dateread()
 {
 	return 0;
 }
@@ -21,10 +14,13 @@ u64 getdate()
 
 
 
-void settime(u64 time)
+void sleep_us(int t)
 {
 }
-u64 gettime()
+void timewrite(u64 time)
+{
+}
+u64 timeread()
 {
 	return 0;
 }

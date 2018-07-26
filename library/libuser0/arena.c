@@ -180,9 +180,9 @@ int arenaread_all()
 			}
 			win->deq = win->enq;
 
-			time = gettime();
+			time = timeread();
 			windowread(0, 0, win, 0);
-			time = gettime() - time;
+			time = timeread() - time;
 			//say("delta=%d\n",time);
 		}
 	}

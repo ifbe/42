@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #define u64 unsigned long long
-u64 gettime();
+u64 timeread();
 void eventwrite(u64,u64,u64,u64);
 
 
@@ -20,7 +20,7 @@ static void sig_int(int a)
 {
 	die = old;
 	old = new;
-	new = gettime();
+	new = timeread();
 
 	if(new-old < 500*1000)	//0.5 s
 	{

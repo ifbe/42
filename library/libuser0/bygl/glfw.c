@@ -266,7 +266,7 @@ static void* windowthread(struct arena* w)
 		coopfunc(w);
 
 		oldtime = newtime;
-		newtime = gettime();
+		newtime = timeread();
 		j = newtime - oldtime;
 		//say("%llx,%llx,%d\n",oldtime,newtime,j);
 		if((j>0)&&(j<16000))sleep_us(16000-j);

@@ -8,35 +8,10 @@
 
 
 
-void sleep_us(int t)
-{
-	usleep(t);
-}
-u64 since1970()
-{
-	return time(0);
-}
-
-
-
-
-void settime(u64 time)
+void datewrite(u64 date)
 {
 }
-u64 gettime()
-{
-	struct timeval t;
-	gettimeofday(&t,0);
-	return (t.tv_sec)*1000*1000 + (t.tv_usec);
-}
-
-
-
-
-void setdate(u64 date)
-{
-}
-u64 getdate()
+u64 dateread()
 {
 	u64 temp;
 	time_t timep;
@@ -67,4 +42,25 @@ u64 getdate()
 
 	//
 	return temp;
+}
+
+
+
+
+u64 since1970()
+{
+	return time(0);
+}
+void sleep_us(int t)
+{
+	usleep(t);
+}
+void timewrite(u64 time)
+{
+}
+u64 timeread()
+{
+	struct timeval t;
+	gettimeofday(&t,0);
+	return (t.tv_sec)*1000*1000 + (t.tv_usec);
 }

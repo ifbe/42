@@ -8,33 +8,10 @@ u64 GetTickCount64();
 
 
 
-void sleep_us(int t)
-{
-	Sleep(t/1000);
-}
-u64 since1970()
-{
-	return time(0);
-}
-
-
-
-
-void settime()
+void datewrite()
 {
 }
-u64 gettime()
-{
-	return 1000 * GetTickCount64();
-}
-
-
-
-
-void setdate()
-{
-}
-u64 getdate()
+u64 dateread()
 {
 	u64 temp;
 	time_t timep;
@@ -64,4 +41,23 @@ u64 getdate()
 	temp = (temp<<8) + (p->tm_sec);
 
 	return temp;
+}
+
+
+
+
+void sleep_us(int t)
+{
+	Sleep(t/1000);
+}
+u64 since1970()
+{
+	return time(0);
+}
+void timewrite(u64 x)
+{
+}
+u64 timeread()
+{
+	return 1000 * GetTickCount64();
 }

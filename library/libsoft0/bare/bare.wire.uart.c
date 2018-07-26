@@ -2,7 +2,6 @@
 #define u32 unsigned int
 #define u16 unsigned short
 #define u8 unsigned char
-u64 gettime();
 void say(char*,...);
 
 

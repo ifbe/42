@@ -25,7 +25,7 @@ static void clock_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	u64 date = getdate();
+	u64 date = dateread();
 	u8* p = (u8*)&date;
 
 	if(ww < hh)j = ww;
@@ -46,7 +46,7 @@ static void clock_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	u64 date = getdate();
+	u64 date = dateread();
 	u8* p = (u8*)&date;
 	carvesolid_circle(win, 0xc0c0c0, vc, vr, vf);
 
@@ -103,7 +103,7 @@ static void clock_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u64 date = getdate();
+	u64 date = dateread();
 	u8* p = (u8*)&date;
 
 	say(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
