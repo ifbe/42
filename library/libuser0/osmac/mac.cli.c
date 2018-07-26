@@ -118,9 +118,3 @@ void freewindow()
 {
 	windowchange(0);
 }
-void inittray()
-{
-}
-void freetray()
-{
-}

@@ -181,6 +181,7 @@ maccli:
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.cli.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -189,7 +190,10 @@ maccli:
 .PHONY:mactui
 mactui:
 	rm -f *.o
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.tui.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -198,7 +202,10 @@ mactui:
 .PHONY:maccocoa
 maccocoa:
 	rm -f *.o
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.cocoa.m
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -207,7 +214,10 @@ maccocoa:
 .PHONY:macquartz
 macquartz:
 	rm -f *.o
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.quartz.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -221,6 +231,9 @@ macglfw:
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
 	$(compiler) $(cflag) bygl/glfw.c
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -230,6 +243,9 @@ macglfw:
 macglut:
 	rm -f *.o
 	$(compiler) $(cflag) bygl/glut.c
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -239,6 +255,9 @@ macglut:
 macsdl:
 	rm -f *.o
 	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
+	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c

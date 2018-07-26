@@ -1,0 +1,6 @@
+void inittray()
+{
+}
+void freetray()
+{
+}

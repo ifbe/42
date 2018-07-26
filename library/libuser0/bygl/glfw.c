@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glew.h>
+#ifdef __APPLE__
+	#include <OpenGL/gl3.h>
+#else
+	#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
 #include "libuser.h"
 void initobject(void*);
@@ -222,6 +226,7 @@ static void* windowthread(struct arena* w)
 	w->map = 0;
 	glfwMakeContextCurrent(fw);
 
+#ifndef __APPLE__
 	//2.glew
 	glewExperimental = 1;
 	if(glewInit() != GLEW_OK)
@@ -229,6 +234,7 @@ static void* windowthread(struct arena* w)
 		printf("error@glewInit\n");
 		return 0;
 	}
+#endif
 
 	//3.init
 	initobject(w);

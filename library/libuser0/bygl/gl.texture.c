@@ -14,7 +14,11 @@
 	#define GL_SINGLE GL_ALPHA
 	#define GL_BORDER GL_REPEAT
 #else
-	#include <GL/glew.h>
+	#ifdef __APPLE__
+		#include <OpenGL/gl3.h>
+	#else
+		#include <GL/glew.h>
+	#endif
 	#define GL_SINGLE GL_RED
 	#define GL_BORDER GL_CLAMP_TO_BORDER
 #endif

@@ -23,7 +23,11 @@
 		"}\n"
 	};
 #else
-	#include <GL/glew.h>
+	#ifdef __APPLE__
+		#include <OpenGL/gl3.h>
+	#else
+		#include <GL/glew.h>
+	#endif
 	char fontfrag[] = {
 		"#version 300 es\n"
 		"in mediump vec3 origcolor;\n"
