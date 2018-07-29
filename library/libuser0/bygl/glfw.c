@@ -14,6 +14,13 @@ void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*, void*);
+void arenacreate(u64,u64);
+
+
+
+
+static struct arena* root = 0;
+static int alive = 1;
 
 
 
@@ -162,7 +169,7 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 
 
-static void coopfunc(struct arena* w)
+void coopfunc(struct arena* w)
 {
 	GLFWwindow* fw;
 	struct arena* c;
@@ -209,7 +216,7 @@ static void coopfunc(struct arena* w)
 		rel = samesrcnextdst(rel);
 	}
 }
-static void* windowthread(struct arena* w)
+void* rootfunc(struct arena* w)
 {
 	int j;
 	u64 oldtime,newtime;
@@ -253,7 +260,7 @@ static void* windowthread(struct arena* w)
 
 	//5.wait
 	oldtime = newtime = 0;
-	while(1)
+	while(alive)
 	{
 		if(glfwWindowShouldClose(fw) != 0)break;
 
@@ -273,9 +280,17 @@ static void* windowthread(struct arena* w)
 
 		glfwPollEvents();
 	}
-
-	eventwrite(0,0,0,0);
 	return 0;
+}
+void windowthread()
+{
+	if(0 == root)arenacreate(0, 0);
+	while(0 == root)sleep_us(10000);
+	rootfunc(root);
+}
+void windowsignal(int arg)
+{
+        alive = arg;
 }
 
 
@@ -304,39 +319,17 @@ void windowdelete(struct arena* w)
 }
 void windowcreate(struct arena* w)
 {
-	if(_win_ == w->type)
-	{
-		w->type = _win_;
-		w->fmt = _vbo_;
+	w->fmt = _vbo_;
 
-		w->win = 0;
-		w->buf = 0;
+	w->win = 0;
+	w->buf = 0;
 
-		w->width = 512;
-		w->height = 512;
-		w->depth = 512;
-		w->stride = 512;
+	w->width = 512;
+	w->height = 512;
+	w->depth = 512;
+	w->stride = 512;
 
-		threadcreate(windowthread, w);
-		return;
-	}
-
-	if(_coop_ == w->type)
-	{
-		w->type = _coop_;
-		w->fmt = _vbo_;
-
-		w->win = 0;
-		w->buf = 0;
-
-		w->width = 512;
-		w->height = 512;
-		w->depth = 512;
-		w->stride = 512;
-		return;
-	}
-
-	say("error@windowcreate\n");
+	if(_win_ == w->type)root = w;
 }
 
 

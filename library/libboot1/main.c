@@ -1,52 +1,44 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define _HTTP_ hex32('H','T','T','P')
-//libuser1
 #define _char_ hex32('c','h','a','r')
+#define _dev_  hex32('d','e','v', 0)
+#define _dri_  hex32('d','r','i', 0)
+#define _fd_   hex32('f','d', 0 , 0)
+#define _art_  hex32('a','r','t', 0)
+//libuser1
 void freeactor();
 void initactor(void*);
 int actorread_all();
 int actorwrite_ev(void*);
 //libuser0
-#define _win_ hex32('w','i','n',0)
 void freearena();
 void initarena(void*);
 int arenaread_all();
 int arenawrite_ev(void*);
-void* arenacreate(u64, void*);
-void arenadelete(void*);
 //libsoft1
-#define _art_ hex32('a','r','t',0)
 void freeartery();
 void initartery(void*);
 int arteryread_all();
 int arterywrite_ev(void*);
 //libsoft0
-#define _fd_ hex32('f','d',0,0)
 void freesystem();
 void initsystem(void*);
 int systemread_all();
 int systemwrite_ev(void*);
-int sleep_us(int);
 //libhard1
-#define _dri_ hex32('d','r','v',0)
 void freedriver();
 void initdriver(void*);
 int driverread_all();
 int driverwrite_ev(void*);
 //libhard0
-#define _dev_ hex32('d','e','v',0)
 void freedevice();
 void initdevice(void*);
 int deviceread_all();
 int devicewrite_ev(void*);
 //libboot1
-#define _hash_ hex32('h','a','s','h')
 void freestdin();
 void initstdin(void*);
 void freestdout();
@@ -55,16 +47,21 @@ void freestdev();
 void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
-int term_read(void*);
-int term_write(void*);
 //libboot0
-#define _0101_ hex32('0','1','0','1')
 void* death();
 void* birth();
-void* eventwrite(u64,u64,u64,u64);
-void* eventread();
+//
 void* threadcreate(void*, void*);
 void* threaddelete(u64);
+void* eventread();
+void eventwrite(u64,u64,u64,u64);
+//
+int term_read(void*);
+int term_write(void*);
+int lowlevel_input();
+//
+int windowsignal(void*);
+int windowthread();
 //
 void openwriteclose(void*,int,void*,int);
 void fixarg(void*, void*);
@@ -81,14 +78,98 @@ struct event
 	u64 where;
 	u64 when;
 };
+void eventloopthread()
+{
+	int ret;
+	struct event* ev;
+	while(1)
+	{
+		//force redraw
+		//actorread_all();
+		//arenaread_all();
+		//arteryread_all();
+		//systemread_all();
+
+again:
+		ev = eventread();
+		if(0 == ev)continue;
+		if(0 == ev->what)
+		{
+			windowsignal(0);
+			continue;
+		}
+
+		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
+		if((_char_ == ev->what)&&(0 == ev->where))
+		{
+			term_write(ev);
+			continue;
+		}
+
+		//libhard0
+		if(_dev_ == ev->what)
+		{
+			ret = devicewrite_ev(ev);
+			if(ret != 42)goto again;
+		}
+
+		//libhard1
+		if(_dri_ == ev->what)
+		{
+			ret = driverwrite_ev(ev);
+			if(ret != 42)goto again;
+		}
+
+		//libsoft0
+		if(_fd_ == ev->what)
+		{
+			ret = systemwrite_ev(ev);
+			if(42 == ret)continue;
+			else goto again;
+		}
+
+		//libsoft1
+		if(_art_ == ev->what)
+		{
+			ret = arterywrite_ev(ev);
+			if(42 == ret)continue;
+			else goto again;
+		}
+
+		//libuser0
+		ret = (ev->what)&0xff;
+		if('w' == ret)
+		{
+			ret = arenawrite_ev(ev);
+			continue;
+		}
+
+		//libuser1
+		actorwrite_ev(ev);
+	}
+}
+void* terminalthread(void* win)
+{
+	u64 why, what, where;
+	while(1)
+	{
+		why = lowlevel_input();
+		what = _char_;
+		where = (u64)win;
+		eventwrite(why, what, where, 0);
+	}
+}
+
 
 
 
 
 void* beforedawn()
 {
-	//libboot
+	//allocate
 	void* addr = birth();
+
+	//libboot
 	initstdin( addr+0x000000);
 	initstdout(addr+0x100000);
 	initstdev( addr+0x200000);
@@ -127,91 +208,38 @@ void afterdusk()
 	freestdrel();
 	freestdout();
 	freestdin();
+
+	//cleanup
 	death();
 }
 int main(int argc, char* argv[])
 {
-	int ret;
-	struct event* ev;
+	//before
+	int j;
 	void* addr = beforedawn();
 
-	//args
-	for(ret=1;ret<argc;ret++)
+	//cmdline
+	for(j=1;j<argc;j++)
 	{
-		fixarg(addr, argv[ret]);
+		fixarg(addr, argv[j]);
 		term_read(addr);
 	}
 	term_write("\n");
 
-	//default
-	arenacreate(0, 0);
+	//help thread
+	threadcreate(terminalthread, 0);
+	threadcreate(eventloopthread, 0);
 
-	while(1)
-	{
-		//force redraw
-		//actorread_all();
-		//arenaread_all();
-		//arteryread_all();
-		//systemread_all();
+	//main thread
+	windowthread();
 
-again:
-		ev = eventread();
-		if(0 == ev)continue;
-		if(0 == ev->what)break;
-
-		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
-		if((_char_ == ev->what)&&(0 == ev->where))
-		{
-			term_write(ev);
-			continue;
-		}
-/*
-		//libhard0
-		if(_dev_ == ev->what)
-		{
-			ret = devicewrite_ev(ev);
-			if(ret != 42)goto again;
-		}
-
-		//libhard1
-		if(_dri_ == ev->what)
-		{
-			ret = driverwrite_ev(ev);
-			if(ret != 42)goto again;
-		}
-*/
-		//libsoft0
-		if(_fd_ == ev->what)
-		{
-			ret = systemwrite_ev(ev);
-			if(42 == ret)continue;
-			else goto again;
-		}
-
-		//libsoft1
-		if(_art_ == ev->what)
-		{
-			ret = arterywrite_ev(ev);
-			if(42 == ret)continue;
-			else goto again;
-		}
-
-		//libuser0
-		ret = (ev->what)&0xff;
-		if('w' == ret)
-		{
-			ret = arenawrite_ev(ev);
-			continue;
-		}
-
-		//libuser1
-		actorwrite_ev(ev);
-	}
-
+	//after
 	openwriteclose("universe.bin",0,addr,0x1000000);
 	afterdusk();
 	return 0;
 }
+
+
 
 
 /*
@@ -228,6 +256,8 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
 }
 void atexit(){}
 */
+
+
 
 
 #ifdef __ANDROID__

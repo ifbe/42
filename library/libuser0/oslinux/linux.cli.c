@@ -12,22 +12,15 @@ int lowlevel_input();
 
 
 //
+static int alive = 1;
 static int mode = 0;
-static u64 thread;
-
-
-
-
-void* terminalthread(void* win)
+void windowsignal(int arg)
 {
-	u64 why, what, where;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = hex32('c', 'h', 'a', 'r');
-		where = (u64)win;
-		eventwrite(why, what, where, 0);
-	}
+	alive = arg;
+}
+void windowthread()
+{
+	while(alive)usleep(100*1000);
 }
 
 
@@ -82,8 +75,6 @@ void windowcreate(struct arena* w)
 
 	w->width = w->stride = 80;
 	w->height = 25;
-
-	thread = threadcreate(terminalthread, 0);
 }
 
 
