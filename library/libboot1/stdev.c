@@ -9,10 +9,17 @@ void say(char*, ...);
 
 
 //
+static void* eventqueue;
+static int lock = 0;
 static int enq = 0;
 static int deq = 0;
-static int lock = 0;
-static void* eventqueue;
+void initstdev(void* addr)
+{
+	eventqueue = addr;
+}
+void freestdev()
+{
+}
 
 
 
@@ -55,15 +62,4 @@ void* eventread()
 	ret = deq;
 	deq = (deq+0x20)%0x100000;
 	return eventqueue + ret;
-}
-
-
-
-
-void initstdev(void* addr)
-{
-	eventqueue = addr;
-}
-void freestdev()
-{
 }

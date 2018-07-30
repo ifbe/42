@@ -55,9 +55,9 @@ void* pollenv()
 	usleep(1000);
 	return 0;
 }
-void fixarg(char* dst, char* src)
+int argv2line(char* src, char* dst)
 {
-	snprintf(dst, 0x1000, "%s", src);
+	return snprintf(dst, 0x1000, "%s\n", src);
 }
 
 

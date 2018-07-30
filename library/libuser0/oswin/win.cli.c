@@ -10,6 +10,15 @@ int lowlevel_input();
 static STARTUPINFO si;
 static PROCESS_INFORMATION pi;
 static int termcount = 0;
+static int alive = 1;
+void windowsignal(int sig)
+{
+	alive = sig;
+}
+void windowthread()
+{
+	while(alive)sleep_us(100*1000);
+}
 
 
 

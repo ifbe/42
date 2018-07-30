@@ -55,16 +55,14 @@ void* threadcreate(void*, void*);
 void* threaddelete(u64);
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
-//
-int term_read(void*);
-int term_write(void*);
-int lowlevel_input();
-//
-int windowsignal(void*);
+int termread();
+int termwrite(void*, int);
 int windowthread();
+int windowsignal(void*);
 //
-void openwriteclose(void*,int,void*,int);
-void fixarg(void*, void*);
+int lowlevel_input();
+int argv2line(void*, void*);
+int openwriteclose(void*,int,void*,int);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -102,7 +100,7 @@ again:
 		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 		if((_char_ == ev->what)&&(0 == ev->where))
 		{
-			term_write(ev);
+			termwrite(ev, 0);
 			continue;
 		}
 
@@ -215,16 +213,13 @@ void afterdusk()
 int main(int argc, char* argv[])
 {
 	//before
-	int j;
-	void* addr = beforedawn();
+	int j,k;
+	u8* addr = beforedawn();
 
 	//cmdline
-	for(j=1;j<argc;j++)
-	{
-		fixarg(addr, argv[j]);
-		term_read(addr);
-	}
-	term_write("\n");
+	k = 0;
+	for(j=1;j<argc;j++){k += argv2line(argv[j], addr+k);}
+	termwrite(addr, k);
 
 	//help thread
 	threadcreate(terminalthread, 0);

@@ -497,7 +497,7 @@ void* pollenv()
 	Sleep(1);
 	return 0;
 }
-int fixarg(u8* dst, u8* src)
+int argv2line(u8* src, u8* dst)
 {
 	int j,k;
 	u32 ret,tmp;
@@ -541,6 +541,8 @@ int fixarg(u8* dst, u8* src)
 		}
 	}
 
+	dst[k] = '\n';
+	k++;
 	dst[k] = 0;
 	return k;
 }

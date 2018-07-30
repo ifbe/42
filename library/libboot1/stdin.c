@@ -41,8 +41,24 @@ void say(void*, ...);
 
 static u64 path[8];
 static int pos = 0;
+//
 static u8* input = 0;
+static int dx = 0;
+static int dy = 0;
 static int enq = 0;
+static int deq = 0;
+void initstdin(void* addr)
+{
+	input = addr;
+	dx = 0;
+	dy = 0;
+	enq = 0;
+	deq = 0;
+}
+void freestdin()
+{
+}
+
 
 
 
@@ -136,9 +152,7 @@ void term_cmd0(u8* buf)
 	}
 	else
 	{
-		for(ret=0;ret<0x1000;ret++){if(buf[ret] < 0x20)break;}
-
-		parsexml_relation(buf, ret);
+		say("unknown:%s", buf);
 	}
 }
 void term_cmdn(u8* buf)
@@ -162,16 +176,17 @@ void term_prompt()
 	int j;
 	if(0 != pos)
 	{
-		say("[");
+		say("[term@");
 		for(j=0;j<pos;j++)say("%s/", &path[j]);
 		say("]");
 	}
-	else say("[void]");
+	else say("[term@void]");
 }
-void term_read(u8* buf)
+void term_parse(u8* buf, int len)
 {
 	int j;
 	if(0 == buf)return;
+
 	if(('q' == buf[0])&&(0x20 > buf[1]))goto byebye;
 	if(0 == ncmp(buf, "exit", 4))goto byebye;
 
@@ -193,14 +208,121 @@ void term_read(u8* buf)
 	}
 
 finish:
-	enq = 0;
+	term_prompt();
 	return;
 
 byebye:
 	eventwrite(0,0,0,0);
 	return;
 }
-void term_write(u8* p)
+void termread(int flag)
+{
+	int j;
+	if(deq > enq)deq = 0;
+	if(enq == deq)return;
+
+	for(j=deq;j<enq;j++)
+	{
+		if('\n' == input[j])
+		{
+			if(flag)say("%.*s\n", j-deq, input+deq);
+			term_parse(input+deq, j-deq);
+			deq = j+1;
+		}
+	}
+}
+void termwrite(u8* buf, int len)
+{
+	int j,k,t;
+	if(buf == input)
+	{
+		enq = len;
+		term_prompt();
+		termread(1);
+		return;
+	}
+
+	for(j=0;j<0x1000;j++)
+	{
+		k = buf[j];
+		if(k < 8)return;
+
+		if((0x8 == k)|(0x7f == k))
+		{
+			while(1)
+			{
+				if(enq <= 0)break;
+				if(enq <= deq)break;
+				say("\b \b");
+
+				enq--;
+				k = input[enq];
+				input[enq] = 0;
+				if((k < 0x80)|(k > 0xc0))break;
+			}
+		}
+		else if((0x1b == k)&&(0x5b == buf[j+1]))
+		{
+			k = buf[j+2];
+			if((0x41 == k)|(0x42 == k))
+			{
+				if(0x41 == k)dy++;
+				if(0x42 == k)
+				{
+					if(0 == dy)return;
+					dy--;
+				}
+
+				//clear line
+				while(1)
+				{
+					if(enq <= 0)break;
+					if('\n' == input[enq-1])break;
+					enq--;
+					input[enq] = 0;
+					say("\b \b");
+				}
+				if(0 == dy)return;
+
+				//print history-dy
+				t = 0;
+				for(j=enq-1;j>=0;j--)
+				{
+					if((j>0)&&('\n' != input[j]))continue;
+
+					if(t == dy)
+					{
+						if(j)j++;
+						say("%.*s", k-j, input+j);
+						for(t=0;t<k-j;t++)input[enq+t] = input[j+t];
+
+						deq = enq;
+						enq += k-j;
+						return;
+					}
+
+					t++;
+					k = j;
+				}
+			}
+			return;
+		}
+		else
+		{
+			if(0xd == k)k = 0xa;
+			say("%c", k);
+
+			if(enq > 0xf0000)enq = 0;
+			input[enq] = k;
+			enq++;
+
+			if(0xa == k)termread(0);
+			dy = 0;
+		}
+	}
+}
+/*
+void termwrite(u8* p)
 {
 	int j;
 	if(p == 0)return;
@@ -228,13 +350,11 @@ void term_write(u8* p)
 		}
 		else if((*p==0xa)|(*p==0xd))	//enter
 		{
-			say("\n");
-			input[enq] = 0;
-			term_read(input);
-			term_prompt();
+			input[enq] = '\n';
+			enq++;
 
-			for(j=0;j<0x100;j++)input[j] = 0;
-			enq = 0;
+			say("\n");
+			termread();
 		}
 		else
 		{
@@ -245,16 +365,4 @@ void term_write(u8* p)
 		//////////////////
 		p++;
 	}
-}
-
-
-
-
-void initstdin(void* addr)
-{
-	input = addr;
-	enq = 0;
-}
-void freestdin()
-{
-}
+}*/

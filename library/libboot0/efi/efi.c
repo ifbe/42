@@ -87,7 +87,7 @@ void* pollenv()
 	ev[1] = hex32('c','h','a','r');
 	return ev;
 }
-void fixarg(u8* dst, u8* src)
+int argv2line(u8* src, u8* dst)
 {
 	int j = 0;
 	while(src[j] >= 0x20)
@@ -95,7 +95,11 @@ void fixarg(u8* dst, u8* src)
 		dst[j] = src[j];
 		j++;
 	}
+
+	dst[j] = '\n';
+	j++;
 	dst[j] = 0;
+	return j;
 }
 
 
