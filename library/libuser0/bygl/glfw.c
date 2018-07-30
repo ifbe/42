@@ -158,6 +158,10 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
 	struct arena* win = glfwGetWindowUserPointer(fw);
+	win->fwidth = win->fstride = w;
+	win->fheight = h;
+
+	glfwGetWindowSize(fw, &w, &h);
 	win->width = win->stride = w;
 	win->height = h;
 }
@@ -167,6 +171,7 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 void coopfunc(struct arena* w)
 {
+	int x,y;
 	GLFWwindow* fw;
 	struct arena* c;
 	struct relation* rel = w->orel0;
@@ -188,6 +193,9 @@ void coopfunc(struct arena* w)
 					printf("error@glfwCreateWindow\n");
 					return;
 				}
+				glfwGetFramebufferSize(fw, &x, &y);
+				w->fwidth = w->fstride = x;
+				w->fheight = y;
 
 				glfwSetWindowUserPointer(fw, c);
 				glfwSetDropCallback(fw, callback_drop);
@@ -214,7 +222,7 @@ void coopfunc(struct arena* w)
 }
 void* rootfunc(struct arena* w)
 {
-	int j;
+	int x,y,j;
 	u64 oldtime,newtime;
 
 	//1.glfw
@@ -225,6 +233,9 @@ void* rootfunc(struct arena* w)
 		glfwTerminate();
 		return 0;
 	}
+	glfwGetFramebufferSize(fw, &x, &y);
+	w->fwidth = w->fstride = x;
+	w->fheight = y;
 	w->win = fw;
 	w->map = 0;
 	glfwMakeContextCurrent(fw);

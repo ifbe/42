@@ -453,12 +453,12 @@ void callback_display(struct arena* win, struct arena* coop)
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	if(0 == coop)
 	{
-		glViewport(0, 0, win->width, win->height);
+		glViewport(0, 0, win->fwidth, win->fheight);
 		fixmatrix(cammvp, win);
 	}
 	else
 	{
-		glViewport(0, 0, coop->width, coop->height);
+		glViewport(0, 0, coop->fwidth, coop->fheight);
 		fixmatrix(cammvp, coop);
 	}
 	mat4_transpose((void*)cammvp);
