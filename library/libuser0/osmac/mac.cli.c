@@ -9,6 +9,15 @@
 
 
 static int mode = 0;
+static int alive = 1;
+void windowsignal(int arg)
+{
+	alive = arg;
+}
+void windowthread()
+{
+	while(alive)usleep(100*1000);
+}
 
 
 
@@ -103,8 +112,6 @@ void windowcreate(struct arena* w)
 
 	w->width = w->stride = 80;
 	w->height = 25;
-
-	threadcreate(uievent, w);
 }
 
 
