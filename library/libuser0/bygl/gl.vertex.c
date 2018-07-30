@@ -11,8 +11,6 @@
 	#include <GLES3/gl3ext.h>
 	#include <android/log.h>
 	#include <android_native_app_glue.h>
-#elif __APPLE__
-	#include <OpenGL/gl3.h>
 #else
 	#include <GL/glew.h>
 #endif

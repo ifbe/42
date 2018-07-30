@@ -7,7 +7,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 char* ocean_glsl_v =
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
 	"uniform mat4 cammvp;\n"
@@ -18,7 +18,7 @@ char* ocean_glsl_v =
 		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
 char* ocean_glsl_f =
-	"#version 300 es\n"
+	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
 	"out mediump vec4 FragColor;\n"

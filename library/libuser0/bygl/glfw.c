@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __APPLE__
-	#include <OpenGL/gl3.h>
-#else
-	#include <GL/glew.h>
-#endif
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
 void initobject(void*);
@@ -124,7 +120,7 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
-	printf("%llx: %f,%f\n", win, x, y);
+	printf("%llx: %f,%f\n", (u64)win, x, y);
 
 	e.where = (u64)win;
 	e.what = 0x2b70;
@@ -233,7 +229,6 @@ void* rootfunc(struct arena* w)
 	w->map = 0;
 	glfwMakeContextCurrent(fw);
 
-#ifndef __APPLE__
 	//2.glew
 	glewExperimental = 1;
 	if(glewInit() != GLEW_OK)
@@ -241,7 +236,6 @@ void* rootfunc(struct arena* w)
 		printf("error@glewInit\n");
 		return 0;
 	}
-#endif
 
 	//3.init
 	initobject(w);
@@ -286,7 +280,22 @@ void windowthread()
 {
 	if(0 == root)arenacreate(0, 0);
 	while(0 == root)sleep_us(10000);
+
+	if(glfwInit() == 0)
+	{
+		printf("error@glfwInit\n");
+		return;
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);	//4x antialiasing
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);	//must 3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);	//must 2
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
+
 	rootfunc(root);
+
+	glfwTerminate();
 }
 void windowsignal(int arg)
 {
@@ -296,7 +305,7 @@ void windowsignal(int arg)
 
 
 
-int windowread(void* dc,void* df,void* sc,void* sf)
+void windowread(void* dc,void* df,void* sc,void* sf)
 {
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
@@ -337,19 +346,7 @@ void windowcreate(struct arena* w)
 
 void freewindow()
 {
-	glfwTerminate();
 }
 void initwindow()
 {
-	if(glfwInit() == 0)
-	{
-		printf("error@glfwInit\n");
-		return;
-	}
-
-	glfwWindowHint(GLFW_SAMPLES, 4);	//4x antialiasing
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);	//3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	//MacOS
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }

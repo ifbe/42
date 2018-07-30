@@ -7,7 +7,7 @@ void carveearth(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
 char* earth_glsl_v =
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
 	"uniform mat4 cammvp;\n"
@@ -20,7 +20,7 @@ char* earth_glsl_v =
 char* earth_glsl_t = 0;
 char* earth_glsl_g = 0;
 char* earth_glsl_f = 
-	"#version 300 es\n"
+	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
 	"out mediump vec4 FragColor;\n"

@@ -12,7 +12,7 @@
 	#include <android/log.h>
 	#include <android_native_app_glue.h>
 	char fontfrag[] = {
-		"#version 300 es\n"
+		GLSL_VERSION
 		"in mediump vec3 origcolor;\n"
 		"in mediump vec2 texuv;\n"
 		"uniform sampler2D tex2d;\n"
@@ -23,13 +23,9 @@
 		"}\n"
 	};
 #else
-	#ifdef __APPLE__
-		#include <OpenGL/gl3.h>
-	#else
-		#include <GL/glew.h>
-	#endif
+	#include <GL/glew.h>
 	char fontfrag[] = {
-		"#version 300 es\n"
+		GLSL_VERSION
 		"in mediump vec3 origcolor;\n"
 		"in mediump vec2 texuv;\n"
 		"uniform sampler2D tex2d;\n"
@@ -45,7 +41,7 @@
 
 
 char glsl2dvert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"out mediump vec3 vcolor;\n"
@@ -56,7 +52,7 @@ char glsl2dvert[] = {
 	"}\n"
 };
 char glsl2dfrag[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
@@ -65,7 +61,7 @@ char glsl2dfrag[] = {
 	"}\n"
 };
 char simplevert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"uniform mat4 cammvp;\n"
@@ -77,7 +73,7 @@ char simplevert[] = {
 	"}\n"
 };
 char simplefrag[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
@@ -86,7 +82,7 @@ char simplefrag[] = {
 	"}\n"
 };
 char prettyvert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec3 normal;\n"
@@ -113,7 +109,7 @@ char prettyvert[] = {
 	"}\n"
 };
 char prettyfrag[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
@@ -122,7 +118,7 @@ char prettyfrag[] = {
 	"}\n"
 };
 char font3dvert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec2 texcoo;\n"
@@ -137,7 +133,7 @@ char font3dvert[] = {
 	"}\n"
 };
 char font2dvert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec2 texcoo;\n"
@@ -151,7 +147,7 @@ char font2dvert[] = {
 	"}\n"
 };
 char directvert[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec2 texcoo;\n"
@@ -166,7 +162,7 @@ char directvert[] = {
 	"}\n"
 };
 char directfrag[] = {
-	"#version 300 es\n"
+	GLSL_VERSION
 	"in mediump vec3 origcolor;\n"
 	"in mediump vec2 texuv;\n"
 	"uniform sampler2D tex2d;\n"

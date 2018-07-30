@@ -15,6 +15,9 @@ typedef float mat4[4][4];
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
+#define GLSL_VERSION "#version 330 core\n"
+#define HLSL_VERSION "#version 330 core\n"
+//
 #define mousel 10
 #define mouser 11
 #define gamepad0 12

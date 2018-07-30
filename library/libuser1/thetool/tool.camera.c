@@ -12,7 +12,7 @@ void* allocofoot();
 
 //opengl shader
 char* camera_glsl_v =
-	"#version 300 es\n"
+	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
 	"uniform mat4 cammvp;\n"
@@ -25,7 +25,7 @@ char* camera_glsl_v =
 char* camera_glsl_t = 0;
 char* camera_glsl_g = 0;
 char* camera_glsl_f = 
-	"#version 300 es\n"
+	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uv;\n"
 	"out mediump vec4 FragColor;\n"

@@ -49,7 +49,7 @@ dylib:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lglfw -lc -lm -framework OpenGL
+	-lGLEW -lglfw -lc -lm -framework OpenGL
 program:
 	clang \
 	$(library)/libboot0/*.o \
@@ -60,6 +60,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lglfw -lm -framework OpenGL
+	-lGLEW -lglfw -lm -framework OpenGL
 clean:
 	rm -f *.o *.a *.dylib
