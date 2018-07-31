@@ -4,13 +4,17 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
+void* arenacreate(u64,u64);
 
 
 
 
-void* uievent(struct arena* w)
+static int alive = 1;
+void windowworker(struct arena* w)
 {
 	SDL_Event event;
+	SDL_Init(SDL_INIT_EVERYTHING);
+
 	w->win = SDL_CreateWindow(
 		"i am groot!",
 		SDL_WINDOWPOS_UNDEFINED,
@@ -32,10 +36,15 @@ void* uievent(struct arena* w)
 	//SDL_RenderClear(w->er);
 	//SDL_RenderPresent(w->er);
 
-	while(1)
+	while(alive)
 	{
-		if(!SDL_WaitEvent(&event))continue;
+		actorread_all(w);
+		SDL_UpdateTexture(w->texture, NULL, w->buf, (w->width)*4);
+		SDL_RenderClear(w->er);
+		SDL_RenderCopy(w->er, w->texture, NULL, NULL);
+		SDL_RenderPresent(w->er);
 
+		if(!SDL_WaitEvent(&event))continue;
 		if(event.type == SDL_QUIT)
 		{
 			eventwrite(0,0,0,0);
@@ -43,13 +52,6 @@ void* uievent(struct arena* w)
 		}
 		else if(event.type == SDL_USEREVENT)
 		{
-			SDL_UpdateTexture(
-				w->texture, NULL,
-				w->buf, (w->width)*4
-			);
-			SDL_RenderClear(w->er);
-			SDL_RenderCopy(w->er, w->texture, NULL, NULL);
-			SDL_RenderPresent(w->er);
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
@@ -105,12 +107,16 @@ void* uievent(struct arena* w)
 	SDL_DestroyRenderer(w->er);
 	SDL_DestroyWindow(w->win); 
 	SDL_Quit(); 
-	return 0;
 }
-
-
-
-
+void windowthread()
+{
+	void* win = arenacreate(0, 0);
+	windowworker(win);
+}
+void windowsignal(int sig)
+{
+	alive = sig;
+}
 
 
 
@@ -133,17 +139,20 @@ void windowchoose()
 void windowstop()
 {
 }
-void windowstart(struct arena* w)
+void windowstart()
 {
-	w->width= w->stride = 512;
-	w->height = 512;
-	threadcreate(uievent, w);
 }
 void windowdelete()
 {
 }
-void windowcreate()
+void windowcreate(struct arena* w)
 {
+	w->fmt = hex64('r','g','b','a','8','8','8','8');
+
+	w->width= w->stride = 512;
+	w->height = 512;
+
+	w->buf = malloc(2048*1024*4);
 }
 
 
@@ -151,7 +160,6 @@ void windowcreate()
 
 void initwindow()
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
 }
 void freewindow()
 {
