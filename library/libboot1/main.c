@@ -259,14 +259,13 @@ void atexit(){}
 #include <stdio.h>
 #include <stdlib.h>
 void app_dummy();
-void android_loop(void* app);
+void setapp(void*);
 void android_main(void* app)
 {
 	app_dummy();
 
-	threadcreate(main, 0);
-
-	android_loop(app);
+	setapp(app);
+	main(0, 0);
 
 	exit(0);
 }

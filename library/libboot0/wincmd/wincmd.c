@@ -441,7 +441,7 @@ int lowlevel_input()
 		k0 = irInBuf[0].Event.KeyEvent;
 		k1 = irInBuf[1].Event.KeyEvent;
 		if(0 == k0.bKeyDown)continue;
-//printf("%x,%x,%x,%x\n", k0.wVirtualKeyCode, k0.uChar.UnicodeChar, k1.wVirtualKeyCode, k1.uChar.UnicodeChar);
+printf("%x,%x,%x,%x\n", k0.wVirtualKeyCode, k0.uChar.UnicodeChar, k1.wVirtualKeyCode, k1.uChar.UnicodeChar);
 
 		if((2 == num)&&(0x10 == k0.wVirtualKeyCode))
 		{

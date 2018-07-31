@@ -63,7 +63,7 @@ void freestdin()
 
 
 
-void term_ls0(u8* buf)
+void term_ls0(u8* buf, int len)
 {
 	say("----------------\n");
 	devicelist(0, 0);
@@ -78,7 +78,7 @@ void term_ls0(u8* buf)
 	say("----------------\n");
 	actorlist(0, 0);
 }
-void term_lsn(u8* buf)
+void term_lsn(u8* buf, int len)
 {
 	int j;
 	if(buf[2] < 0x20)
@@ -101,7 +101,7 @@ void term_lsn(u8* buf)
 	else if(0 == ncmp(buf+j, "actor", 5))actorlist(0, 0);
 	else say("ls(%s)\n", buf+j);
 }
-void term_cd0(u8* buf)
+void term_cd0(u8* buf, int len)
 {
 	int j,k;
 	u8* pp;
@@ -124,12 +124,12 @@ void term_cd0(u8* buf)
 fail:
 	pos = 0;
 }
-void term_cdn(u8* buf)
+void term_cdn(u8* buf, int len)
 {
 	if(0 == buf)pos = 0;
 	else if(buf[2] < 0x20)pos = 0;
 }
-void term_cmd0(u8* buf)
+void term_cmd0(u8* buf, int len)
 {
 	int ret;
 	u8 data[0x10000];
@@ -152,10 +152,10 @@ void term_cmd0(u8* buf)
 	}
 	else
 	{
-		say("unknown:%s", buf);
+		say("unknown:%.*s\n", len, buf);
 	}
 }
-void term_cmdn(u8* buf)
+void term_cmdn(u8* buf, int len)
 {
 	if(0 == buf)return;
 	if(buf[0] < 0x20)return;
@@ -193,18 +193,18 @@ void term_parse(u8* buf, int len)
 	//
 	if(0 == ncmp(buf, "ls", 2))
 	{
-		if(0 == pos)term_ls0(buf);
-		else term_lsn(buf);
+		if(0 == pos)term_ls0(buf, len);
+		else term_lsn(buf, len);
 	}
 	else if(0 == ncmp(buf, "cd", 2))
 	{
-		if(0 == pos)term_cd0(buf);
-		else term_cdn(buf);
+		if(0 == pos)term_cd0(buf, len);
+		else term_cdn(buf, len);
 	}
 	else
 	{
-		if(0 == pos)term_cmd0(buf);
-		else term_cmdn(buf);
+		if(0 == pos)term_cmd0(buf, len);
+		else term_cmdn(buf, len);
 	}
 
 finish:

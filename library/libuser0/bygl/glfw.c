@@ -10,7 +10,7 @@ void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*, void*);
-void arenacreate(u64,u64);
+void* arenacreate(u64,u64);
 
 
 
@@ -289,9 +289,6 @@ void* rootfunc(struct arena* w)
 }
 void windowthread()
 {
-	if(0 == root)arenacreate(0, 0);
-	while(0 == root)sleep_us(10000);
-
 	if(glfwInit() == 0)
 	{
 		printf("error@glfwInit\n");
@@ -304,6 +301,7 @@ void windowthread()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	if(0 == root)root = arenacreate(0, 0);
 	rootfunc(root);
 
 	glfwTerminate();
