@@ -8,7 +8,6 @@
 
 
 
-static int mode = 0;
 static int alive = 1;
 void windowsignal(int arg)
 {
@@ -16,47 +15,12 @@ void windowsignal(int arg)
 }
 void windowthread()
 {
-	while(alive)usleep(100*1000);
-}
-
-
-
-
-void* uievent(void* p)
-{
-	u8 buf[8];
-	while(1)
+	u64 why,what;
+	what = _char_;
+	while(alive)
 	{
-		buf[0] = getchar(); 
-		if( (buf[0] == 0) | (buf[0]==0xff) )
-		{
-			usleep(10000);
-			continue;
-		}
-
-		if(buf[0] == 0x1b)
-		{
-			buf[1] = getchar();
-			if(buf[1] == 0xff)
-			{
-				eventwrite(buf[0], 0x72616863, 0, 0);
-			}
-			
-			if(buf[1] == 0x5b)
-			{
-				buf[2] = getchar();
-				
-				if( (buf[2]>=0x41) && (buf[2]<=0x44) )
-				{
-					eventwrite((buf[2]<<16)+0x5b1b,	0x72616863, 0, 0);
-				}
-			}//5b
-		}//1b
-		
-		else
-		{
-			eventwrite(buf[0], 0x72616863, 0, 0);
-		}
+		why = lowlevel_input();
+		eventwrite(why, what, 0, 0);
 	}
 }
 
@@ -65,24 +29,6 @@ void* uievent(void* p)
 
 void windowchange(int what)
 {
-	struct termios t;
-	tcgetattr(STDIN_FILENO, &t);
-	mode = what;
-	
-	if(mode == 0)
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
-		t.c_lflag |= ICANON|ECHO;
-	}
-	else if(mode == 1)
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-		t.c_lflag &= ~(ICANON|ECHO);
-		t.c_cc[VTIME] = 0;
-		t.c_cc[VMIN] = 1;
-	}
-
-	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
 void windowlist()
 {
@@ -119,9 +65,23 @@ void windowcreate(struct arena* w)
 
 void initwindow()
 {
-	windowchange(1);
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+	
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+	t.c_lflag &= ~(ICANON|ECHO);
+	t.c_cc[VTIME] = 0;
+	t.c_cc[VMIN] = 1;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
 void freewindow()
 {
-	windowchange(0);
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+	
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
+	t.c_lflag |= ICANON|ECHO;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }

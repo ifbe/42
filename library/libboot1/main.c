@@ -60,7 +60,6 @@ int termwrite(void*, int);
 int windowthread();
 int windowsignal(void*);
 //
-int lowlevel_input();
 int argv2line(void*, void*);
 int openwriteclose(void*,int,void*,int);
 void printmemory(void*, int);
@@ -76,7 +75,59 @@ struct event
 	u64 where;
 	u64 when;
 };
-void eventloopthread()
+
+
+
+
+void* beforedawn()
+{
+	//allocate
+	void* addr = birth();
+
+	//libboot
+	initstdin( addr+0x000000);
+	initstdout(addr+0x100000);
+	initstdev( addr+0x200000);
+	initstdrel(addr+0x300000);
+
+	//libsoft
+	initdevice(addr+0x400000);
+	initdriver(addr+0x400000);
+
+	//libsoft
+	initsystem(addr+0x800000);
+	initartery(addr+0x800000);
+
+	//libuser
+	initarena(addr+0xc00000);
+	initactor(addr+0xc00000);
+
+	return addr;
+}
+void afterdusk()
+{
+	//libuser
+	freeactor();
+	freearena();
+
+	//libsoft
+	freeartery();
+	freesystem();
+
+	//libhard
+	freedriver();
+	freedevice();
+
+	//libboot
+	freestdev();
+	freestdrel();
+	freestdout();
+	freestdin();
+
+	//cleanup
+	death();
+}
+void aide()
 {
 	int ret;
 	struct event* ev;
@@ -146,70 +197,6 @@ again:
 		actorwrite_ev(ev);
 	}
 }
-void* terminalthread(void* win)
-{
-	u64 why, what, where;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = _char_;
-		where = (u64)win;
-		eventwrite(why, what, where, 0);
-	}
-}
-
-
-
-
-
-void* beforedawn()
-{
-	//allocate
-	void* addr = birth();
-
-	//libboot
-	initstdin( addr+0x000000);
-	initstdout(addr+0x100000);
-	initstdev( addr+0x200000);
-	initstdrel(addr+0x300000);
-
-	//libsoft
-	initdevice(addr+0x400000);
-	initdriver(addr+0x400000);
-
-	//libsoft
-	initsystem(addr+0x800000);
-	initartery(addr+0x800000);
-
-	//libuser
-	initarena(addr+0xc00000);
-	initactor(addr+0xc00000);
-
-	return addr;
-}
-void afterdusk()
-{
-	//libuser
-	freeactor();
-	freearena();
-
-	//libsoft
-	freeartery();
-	freesystem();
-
-	//libhard
-	freedriver();
-	freedevice();
-
-	//libboot
-	freestdev();
-	freestdrel();
-	freestdout();
-	freestdin();
-
-	//cleanup
-	death();
-}
 int main(int argc, char* argv[])
 {
 	//before
@@ -222,8 +209,7 @@ int main(int argc, char* argv[])
 	termwrite(addr, k);
 
 	//help thread
-	threadcreate(terminalthread, 0);
-	threadcreate(eventloopthread, 0);
+	threadcreate(aide, 0);
 
 	//main thread
 	windowthread();

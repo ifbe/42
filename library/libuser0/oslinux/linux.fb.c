@@ -7,118 +7,32 @@
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
 int lowlevel_input();
+void* arenacreate(u64,u64);
 
 
-
-
-//输入
-static u64 thread;
-static int signal=-1;
-static struct termios old;
-static struct termios new;
 
 //physical info
-static int fbfd=-1;
 static u64 fbaddr=0;
+static int fbfd=-1;
 static int fbtotalbyte=0;
 static int fboneline=0;
-
 //virtual info
 static int xmax=0;
 static int ymax=0;
 static int bpp=0;
+//
+static int alive = 1;
 
 
 
 
-void* terminalthread(void* win)
-{
-	u64 why, what, where;
-	while(1)
-	{
-		why = lowlevel_input();
-		what = hex32('c', 'h', 'a', 'r');
-		where = (u64)win;
-		eventwrite(why, what, where, 0);
-	}//while
-}
-
-
-
-
-
-
-
-
-void windowwrite(struct arena* win)
-{
-	//
-	int x,y,ret;
-	u8* buf = (void*)(win->buf);
-
-	//5,6,5
-	if(bpp==16)
-	{
-		for(x=0;x<xmax*ymax;x++)
-		{
-			*(u16*)(buf+x*2) =
-				    (buf[x*4+0]>>3)
-				+ ( (buf[x*4+1]>>2) <<  5 )
-				+ ( (buf[x*4+2]>>3) << 11 );
-		}
-	}
-
-	//
-	x = xmax*bpp/8;
-	for(y=0;y<ymax;y++)
-	{
-		ret=lseek(fbfd, y*fboneline, SEEK_SET);
-		ret=write(fbfd, buf + y*x, x);
-	}
-}
-void windowread()
-{
-}
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
-void windowdelete(struct arena* w)
-{
-}
-void windowcreate(struct arena* w)
-{
-	int j;
-
-	w->type = hex32('w', 'i', 'n', 0);
-	w->fmt = hex32('f', 'b', 0, 0);
-
-	w->width = w->stride = xmax;
-	w->height = ymax;
-
-	w->buf = malloc(0x1000000);
-
-	for(j=0;j<16;j++)w->input[j].id = 0xffff;
-}
-
-
-
-
-void initwindow()
+static void windowprepare()
 {
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
 	if(fbfd<0)
 	{
-		printf("error1(plese sudo)\n");
+		printf("chmod /dev/fb0, or sudo!\n");
 		exit(-1);
 	}
 
@@ -146,29 +60,138 @@ void initwindow()
 	ymax=vinfo.yres;
 	bpp=vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
-
-	//输入方法2
-	signal=tcgetattr(STDIN_FILENO,&old);
-	new=old;
-	new.c_lflag&=~(ICANON|ECHO);
-	tcsetattr(STDIN_FILENO,TCSANOW,&new);
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-
-	//
-	thread = threadcreate(terminalthread, 0);
 }
-//__attribute__((destructor)) void destoryfb()
+void windowunload()
+{
+	if(fbfd != -1)close(fbfd);
+}
+void terminalthread(void* win)
+{
+	struct event ev;
+	ev.where = (u64)win;
+	ev.what = _char_;
+	while(1)
+	{
+		ev.why = lowlevel_input();
+		actorwrite_ev(&ev);
+	}
+}
+void windowthread()
+{
+	int x,y,ret;
+	struct arena* win;
+	u8* buf;
+
+	//1
+	windowprepare();
+
+	//2
+	win = arenacreate(0, 0);
+	threadcreate(terminalthread, win);
+
+	//3
+	buf = (void*)(win->buf);
+	while(alive)
+	{
+		actorread_all(win);
+
+		if(16 == bpp)
+		{
+			for(x=0;x<xmax*ymax;x++)
+			{
+				*(u16*)(buf+x*2) =
+				    (buf[x*4+0]>>3)
+				+ ( (buf[x*4+1]>>2) <<  5 )
+				+ ( (buf[x*4+2]>>3) << 11 );
+			}
+		}
+		else if(24 == bpp)
+		{
+			x = xmax*bpp/8;
+			for(y=0;y<ymax;y++)
+			{
+				ret=lseek(fbfd, y*fboneline, SEEK_SET);
+				ret=write(fbfd, buf + y*x, x);
+			}
+		}
+		else if(32 == bpp)
+		{
+			lseek(fbfd, 0, SEEK_SET);
+			write(fbfd, buf, fbtotalbyte);
+		}
+	}
+
+	//4
+	windowunload();
+}
+void windowsignal(int sig)
+{
+	alive = sig;
+}
+
+
+
+
+
+void windowwrite(struct arena* win)
+{
+}
+void windowread()
+{
+}
+void windowlist()
+{
+}
+void windowchange()
+{
+}
+void windowstop()
+{
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* w)
+{
+}
+void windowcreate(struct arena* w)
+{
+	int j;
+
+	w->type = _win_;
+	w->fmt = hex64('b','g','r','a','8','8','8','8');
+
+	w->width  = xmax;
+	w->height = ymax;
+	w->stride = fboneline/4;
+
+	w->buf = malloc(2048*1024*4);
+
+	for(j=0;j<16;j++)w->input[j].id = 0xffff;
+}
+
+
+
+
+void initwindow()
+{
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+	t.c_lflag &= ~(ICANON|ECHO);
+	t.c_cc[VTIME] = 0;
+	t.c_cc[VMIN] = 1;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
+}
 void freewindow()
 {
-	//close(inputfp);
-	if(signal!=-1)tcsetattr(STDIN_FILENO,TCSANOW,&old);
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
 
-	//
-	if(fbfd!=-1)close(fbfd);
-}
-void inittray()
-{
-}
-void freetray()
-{
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
+	t.c_lflag |= ICANON|ECHO;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }

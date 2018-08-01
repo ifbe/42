@@ -70,8 +70,8 @@ linuxcli:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) oslinux/linux.cli.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
+	$(compiler) $(cflag) oslinux/linux.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
@@ -82,6 +82,7 @@ linuxtui:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.tui.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -93,6 +94,7 @@ linuxfb:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.fb.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -104,6 +106,7 @@ linuxgtk:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` oslinux/linux.gtk.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -115,6 +118,7 @@ linuxwayland:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.wayland.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -126,6 +130,7 @@ linuxxlib:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.xlib.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -153,6 +158,7 @@ linuxglut:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
@@ -164,6 +170,7 @@ linuxsdl:
 	rm -f *.o
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) byremote/remote.http.c
 	$(compiler) $(cflag) byremote/remote.vnc.c

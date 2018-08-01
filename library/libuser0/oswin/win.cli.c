@@ -17,7 +17,13 @@ void windowsignal(int sig)
 }
 void windowthread()
 {
-	while(alive)sleep_us(100*1000);
+	u64 why,what;
+	what = _char_;
+	while(alive)
+	{
+		why = lowlevel_input();
+		eventwrite(why, what, 0, 0);
+	}
 }
 
 

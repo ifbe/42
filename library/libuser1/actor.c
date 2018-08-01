@@ -93,10 +93,14 @@ int actorinput_special(struct arena* win, struct event* ev)
 	int ret, val;
 
 	val = 0;
-	if(_kbd_ == ev->what)
+	if(_char_ == ev->what)
 	{
-		if(ev->why == 0xfb)val = 'l';
-		else if(ev->why == 0xfc)val = 'r';
+		if(0x1b == ev->why)val = 'r';
+	}
+	else if(_kbd_ == ev->what)
+	{
+		if(0xfb == ev->why)val = 'l';
+		else if(0xfc == ev->why)val = 'r';
 	}
 	else if(_joy_ == ev->what)
 	{

@@ -369,8 +369,14 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
-		if((0xd == ret)|(0xa == ret))win->menutype = 0;
-		return 0;
+		say("%x\n",ret);
+		if(0x445b1b == ret)x = _dl_;
+		else if(0x435b1b == ret)x = _dr_;
+		else
+		{
+			if((0xd == ret)|(0xa == ret))win->menutype = 0;
+			return 0;
+		}
 	}
 	else if(_joy_ == ret)
 	{
