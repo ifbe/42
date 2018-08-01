@@ -53,8 +53,8 @@ void* birth();
 //
 void* arenacreate(u64,u64);
 void arenadelete(void*);
-void windowread(void*);
-void windowwrite(void*);
+void arenaread(void*);
+void arenawrite(void*);
 //
 void* threadcreate(void*, void*);
 void* threaddelete(u64);
@@ -216,11 +216,8 @@ int main(int argc, char* argv[])
 	win = arenacreate(0, 0);
 	while(alive)
 	{
-		//process events until free
-		windowread(win);
-
-		//draw frame
-		windowwrite(win);
+		//draw frame, cleanup events
+		arenaread(win);
 	}
 	arenadelete(win);
 

@@ -10,27 +10,13 @@ int lowlevel_input();
 static STARTUPINFO si;
 static PROCESS_INFORMATION pi;
 static int termcount = 0;
-static int alive = 1;
-void windowsignal(int sig)
+
+
+
+
+void windowread(struct arena* win)
 {
-	alive = sig;
-}
-void windowthread()
-{
-	u64 why,what;
-	what = _char_;
-	while(alive)
-	{
-		why = lowlevel_input();
-		eventwrite(why, what, 0, 0);
-	}
-}
-
-
-
-
-void windowread()
-{
+	eventwrite(lowlevel_input(), _char_, 0, 0);
 }
 void windowwrite(struct arena* win)
 {

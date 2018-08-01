@@ -42,7 +42,7 @@ int windowcreate(void*);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
-int windowread(void* win, void* sty, void* act, void* pin);
+int windowread(void*);
 int windowwrite(void*);
 int windowlist();
 int windowchoose();
@@ -215,6 +215,7 @@ int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	windowread(dc);
 	return 0;
 }
 int arenastop()

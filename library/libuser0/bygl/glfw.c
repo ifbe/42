@@ -265,6 +265,8 @@ void* rootfunc(struct arena* w)
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw = w->win;
+
+	//draw frame
 	glfwMakeContextCurrent(fw);
 	callback_update(w);
 
@@ -272,16 +274,17 @@ void windowread(struct arena* w)
 	glfwSwapBuffers(fw);
 
 	coopfunc(w);
-}
-void windowwrite(struct arena* w)
-{
-	GLFWwindow* fw = w->win;
+
+	//cleanup events
 	if(glfwWindowShouldClose(fw))
 	{
 		eventwrite(0,0,0,0);
 		return;
 	}
 	glfwPollEvents();
+}
+void windowwrite(struct arena* w)
+{
 }
 void windowchange()
 {

@@ -9,7 +9,7 @@
 #include <winuser.h>
 #include <commctrl.h>
 #include "libuser.h"
-int fixarg(void* dst, void* src);
+int argv2line(void*, void*);
 
 
 
@@ -28,8 +28,79 @@ static RECT rt, re;
 
 
 
-void windowclose(struct arena* win)
+int windowread(struct arena* win)
 {
+	MSG msg;
+	BITMAPINFO info;
+	int w = win->width;
+	int h = win->height;
+
+	//draw frame
+	actorread_all(win);
+	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	info.bmiHeader.biPlanes = 1;
+	info.bmiHeader.biBitCount = 32;
+	info.bmiHeader.biCompression = 0;
+	info.bmiHeader.biXPelsPerMeter = 0;
+	info.bmiHeader.biYPelsPerMeter = 0;
+	info.bmiHeader.biClrUsed = 0;
+	info.bmiHeader.biClrImportant = 0;
+	info.bmiColors[0].rgbBlue = 255;
+	info.bmiColors[0].rgbGreen = 255;
+	info.bmiColors[0].rgbRed = 255;
+	info.bmiColors[0].rgbReserved = 255;
+	info.bmiHeader.biWidth = w;
+	info.bmiHeader.biHeight = -h;
+	info.bmiHeader.biSizeImage = w*h*4;
+	SetDIBitsToDevice(
+		(void*)(win->dc),
+		0, 0,w, h,		//dst: x,y,w,h
+		0, 0,0, h,		//src: x,y,0,h
+		win->buf, &info, DIB_RGB_COLORS
+	);
+
+	//cleanup events
+	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return 0;
+}
+int windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+{
+	return 0;
+}
+int windowlist()
+{
+	return 0;
+}
+int windowchange()
+{
+	//RECT rc;
+	//GetWindowRect(win, &rc);
+	//MoveWindow(win, rc.left, rc.top, width+16, height+39, 0);
+
+	//窗口标题
+	//SetWindowText(win, "hahahaha");
+	return 0;
+}
+int windowstart(struct arena* win)
+{
+	return 0;
+}
+int windowstop(struct arena* win)
+{
+	return 0;
+}
+int windowdelete(struct arena* win)
+{/*
+	PostThreadMessage(
+		uithread,
+		WM_USER,
+		hex16('w','-'),
+		(LPARAM)win
+	);*/
 	HWND wnd = (void*)(win->fd);
 	HDC dc = (void*)(win->dc);
 
@@ -41,11 +112,29 @@ void windowclose(struct arena* win)
 
 	alivecount--;
 	if(alivecount == 0)eventwrite(0,0,0,0);
+	return 0;
 }
-void windowopen(struct arena* win)
+int windowcreate(struct arena* win)
 {
 	HWND wnd;
 	HDC dc;
+	int j;
+	if(0 == win)return 0;
+
+	win->type = hex32('w','i','n',0);
+	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	win->width = win->stride = 512;
+	win->height = 512;
+
+	win->fd = 0;
+	win->dc = 0;
+	win->mod = 0;
+	win->buf = malloc(2048*2048*4);
+
+	for(j=0;j<16;j++)win->input[j].id = 0xffff;
+
+
+
 
 	//创建窗口
 	wnd = CreateWindow(
@@ -89,139 +178,9 @@ void windowopen(struct arena* win)
 	win->dc = (u64)dc;
 	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)win);
 	alivecount++;
-}
-void windowredraw(struct arena* win)
-{
-	int w = win->width;
-	int h = win->height;
-	BITMAPINFO info;
-	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	info.bmiHeader.biPlanes = 1;
-	info.bmiHeader.biBitCount = 32;
-	info.bmiHeader.biCompression = 0;
-	info.bmiHeader.biXPelsPerMeter = 0;
-	info.bmiHeader.biYPelsPerMeter = 0;
-	info.bmiHeader.biClrUsed = 0;
-	info.bmiHeader.biClrImportant = 0;
-	info.bmiColors[0].rgbBlue = 255;
-	info.bmiColors[0].rgbGreen = 255;
-	info.bmiColors[0].rgbRed = 255;
-	info.bmiColors[0].rgbReserved = 255;
-	info.bmiHeader.biWidth = w;
-	info.bmiHeader.biHeight = -h;
-	info.bmiHeader.biSizeImage = w*h*4;
 
-	actorread_all(win);
-	SetDIBitsToDevice(
-		(void*)(win->dc),
-		0, 0,w, h,		//dst: x,y,w,h
-		0, 0,0, h,		//src: x,y,0,h
-		win->buf, &info, DIB_RGB_COLORS
-	);
-}
-DWORD WINAPI windowthread(struct arena* win)
-{
 	MSG msg;
 	PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
-
-
-	//fire event
-	//SetEvent(hStartEvent);
-/*
-		if(msg.message == WM_USER)
-		{
-			if(msg.wParam == hex32('w','+',0,0))
-			{
-				windowopen((void*)(msg.lParam));
-			}
-			else
-			{
-				windowclose((void*)(msg.lParam));
-			}
-		}
-		else
-		{
-*/
-	windowopen(win);
-
-	while(GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-
-		if(win->deq != win->enq)
-		{
-			windowredraw(win);
-			win->deq = win->enq;
-		}
-	}
-
-	windowclose(win);
-	return 0;
-}
-
-
-
-
-int windowread(void* dc,void* df,void* sc,void* sf)
-{
-	return 0;
-}
-int windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
-{
-	return 0;
-}
-int windowlist()
-{
-	return 0;
-}
-int windowchange()
-{
-	//RECT rc;
-	//GetWindowRect(win, &rc);
-	//MoveWindow(win, rc.left, rc.top, width+16, height+39, 0);
-
-	//窗口标题
-	//SetWindowText(win, "hahahaha");
-	return 0;
-}
-int windowstart(struct arena* win)
-{
-	return 0;
-}
-int windowstop(struct arena* win)
-{
-	return 0;
-}
-int windowdelete(struct arena* win)
-{/*
-	PostThreadMessage(
-		uithread,
-		WM_USER,
-		hex16('w','-'),
-		(LPARAM)win
-	);*/
-	return 0;
-}
-int windowcreate(struct arena* win)
-{
-	int j;
-	if(0 == win)return 0;
-
-	win->type = hex32('w','i','n',0);
-	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-	win->width = win->stride = 512;
-	win->height = 512;
-
-	win->fd = 0;
-	win->dc = 0;
-	win->mod = 0;
-	win->buf = malloc(2048*2048*4);
-
-	for(j=0;j<16;j++)win->input[j].id = 0xffff;
-
-	//j = PostThreadMessage(uithread, WM_USER, hex16('w','+'), (LPARAM)win);
-	threadcreate(windowthread, win);
 	return 0;
 }
 
@@ -551,7 +510,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				DragQueryFile(hDrop, j, tmp, MAX_PATH);
 				//printf("%d,%s\n", ret, buf);
 
-				ret += fixarg(buf+ret, tmp);
+				ret += argv2line(tmp, buf+ret);
 				buf[ret] = '\n';
 				ret++;
 			}
@@ -589,6 +548,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case WM_CLOSE:
 		{
+			eventwrite(0,0,0,0);
 			PostQuitMessage(0);
 			return 0;
 		}
