@@ -10,13 +10,6 @@ void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*, void*);
-void* arenacreate(u64,u64);
-
-
-
-
-static struct arena* root = 0;
-static int alive = 1;
 
 
 
@@ -263,64 +256,34 @@ void* rootfunc(struct arena* w)
 	glfwSetMouseButtonCallback(fw, callback_mouse);
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
-	//5.wait
-	oldtime = newtime = 0;
-	while(alive)
-	{
-		if(glfwWindowShouldClose(fw) != 0)break;
-
-		glfwMakeContextCurrent(fw);
-		callback_update(w);
-
-		callback_display(w, 0);
-		glfwSwapBuffers(fw);
-
-		coopfunc(w);
-
-		oldtime = newtime;
-		newtime = timeread();
-		j = newtime - oldtime;
-		//say("%llx,%llx,%d\n",oldtime,newtime,j);
-		if((j>0)&&(j<16000))sleep_us(16000-j);
-
-		glfwPollEvents();
-	}
 	return 0;
 }
-void windowthread()
+
+
+
+
+void windowread(struct arena* w)
 {
-	if(glfwInit() == 0)
+	GLFWwindow* fw = w->win;
+	glfwMakeContextCurrent(fw);
+	callback_update(w);
+
+	callback_display(w, 0);
+	glfwSwapBuffers(fw);
+
+	coopfunc(w);
+}
+void windowwrite(struct arena* w)
+{
+	GLFWwindow* fw = w->win;
+	if(glfwWindowShouldClose(fw))
 	{
-		printf("error@glfwInit\n");
+		eventwrite(0,0,0,0);
 		return;
 	}
-
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	if(0 == root)root = arenacreate(0, 0);
-	rootfunc(root);
-
-	glfwTerminate();
+	glfwPollEvents();
 }
-void windowsignal(int arg)
-{
-        alive = arg;
-}
-
-
-
-
-void windowread(void* dc,void* df,void* sc,void* sf)
-{
-}
-void windowwrite(void* dc,void* df,void* sc,void* sf,u8* buf,int len)
-{
-}
-void windowchange(int what)
+void windowchange()
 {
 }
 void windowlist()
@@ -334,6 +297,7 @@ void windowstart()
 }
 void windowdelete(struct arena* w)
 {
+	glfwTerminate();
 }
 void windowcreate(struct arena* w)
 {
@@ -347,7 +311,19 @@ void windowcreate(struct arena* w)
 	w->depth = 512;
 	w->stride = 512;
 
-	if(_win_ == w->type)root = w;
+	if(glfwInit() == 0)
+	{
+		printf("error@glfwInit\n");
+		return;
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	rootfunc(w);
 }
 
 

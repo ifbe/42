@@ -51,14 +51,17 @@ void initstdrel(void*);
 void* death();
 void* birth();
 //
+void* arenacreate(u64,u64);
+void arenadelete(void*);
+void windowread(void*);
+void windowwrite(void*);
+//
 void* threadcreate(void*, void*);
 void* threaddelete(u64);
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
 int termread();
 int termwrite(void*, int);
-int windowthread();
-int windowsignal(void*);
 //
 int argv2line(void*, void*);
 int openwriteclose(void*,int,void*,int);
@@ -75,6 +78,7 @@ struct event
 	u64 where;
 	u64 when;
 };
+static int alive = 1;
 
 
 
@@ -142,11 +146,7 @@ void aide()
 again:
 		ev = eventread();
 		if(0 == ev)continue;
-		if(0 == ev->what)
-		{
-			windowsignal(0);
-			continue;
-		}
+		if(0 == ev->what){alive = 0;return;}
 
 		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 		if((_char_ == ev->what)&&(0 == ev->where))
@@ -201,6 +201,7 @@ int main(int argc, char* argv[])
 {
 	//before
 	int j,k;
+	void* win;
 	u8* addr = beforedawn();
 
 	//cmdline
@@ -212,7 +213,16 @@ int main(int argc, char* argv[])
 	threadcreate(aide, 0);
 
 	//main thread
-	windowthread();
+	win = arenacreate(0, 0);
+	while(alive)
+	{
+		//process events until free
+		windowread(win);
+
+		//draw frame
+		windowwrite(win);
+	}
+	arenadelete(win);
 
 	//after
 	openwriteclose("universe.bin",0,addr,0x1000000);

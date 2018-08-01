@@ -4,30 +4,12 @@
 #include<unistd.h>
 #include<termios.h>
 #include"libuser.h"
+int lowlevel_input();
 
 
 
 
-static int alive = 1;
-void windowsignal(int arg)
-{
-	alive = arg;
-}
-void windowthread()
-{
-	u64 why,what;
-	what = _char_;
-	while(alive)
-	{
-		why = lowlevel_input();
-		eventwrite(why, what, 0, 0);
-	}
-}
-
-
-
-
-void windowchange(int what)
+void windowchange()
 {
 }
 void windowlist()
@@ -35,9 +17,11 @@ void windowlist()
 }
 void windowread()
 {
+	eventwrite(lowlevel_input(), _char_, 0, 0);
 }
 void windowwrite()
 {
+	//actorread_all(win);
 }
 void windowstart()
 {
