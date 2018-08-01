@@ -181,13 +181,8 @@ theend:
 }
 int actorread_all(struct arena* win)
 {
-/*
-	//cli silent
-	if(win->fmt == _cli_)
-	{
-		if(win->edit)return 0;
-	}
-*/
+	if(_cli_ == win->fmt)return 0;
+
 	//bg
 	background(win);
 

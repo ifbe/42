@@ -185,12 +185,7 @@ void callback_update_eachactor(struct arena* w)
 	int j;
 	u64* pi;
 	u64* po;
-	struct relation* rel;
-
-	w->fmt = hex32('v','b','o',0);
-	actorread_all(w);
-
-	rel = w->irel0;
+	struct relation* rel = w->irel0;
 	while(1)
 	{
 		if(0 == rel)break;

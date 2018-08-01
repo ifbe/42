@@ -21,7 +21,6 @@ void windowread()
 }
 void windowwrite()
 {
-	//actorread_all(win);
 }
 void windowstart()
 {

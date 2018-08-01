@@ -5,7 +5,6 @@
 #include <X11/Xlib.h>
 #include "libuser.h"
 int lowlevel_input();
-void* arenacreate(u64,u64);
 
 
 
@@ -73,7 +72,6 @@ static Atom wmCreate;
 //static void* winmap[0x100];
 //static Window fdmap[0x100];
 static int fuckyou = 0;
-static int alive = 1;
 
 
 
@@ -210,27 +208,79 @@ void windowevent(struct arena* win, XEvent xev)
 		//eventwrite(why, what, where, 0);
 	}//KeyPress
 }
-void windowworker(struct arena* win)
+
+
+
+
+void windowread(struct arena* win)
 {
 	XEvent xev;
-	while(alive)
-	{
-		actorread_all(win);
-		XPutImage(
-			dsp, win->fd, (void*)(win->gc), win->ximage,
-			0, 0, 0, 0,
-			win->width, win->height
-		); 
+	XPutImage(
+		dsp, win->fd, (void*)(win->gc), win->ximage,
+		0, 0, 0, 0,
+		win->width, win->height
+	); 
 
-		while(XPending(dsp))
-		{
-			XNextEvent(dsp, &xev);
-			windowevent(win, xev);
-		}
+	while(XPending(dsp))
+	{
+		XNextEvent(dsp, &xev);
+		windowevent(win, xev);
 	}//while
 }
-void windowopen(struct arena* win)
+void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
+/*
+	XEvent xev;
+	memset(&xev,0,sizeof(XEvent));
+	xev.type = Expose;
+	xev.xexpose.display = dsp;
+	xev.xexpose.window = win->fd;
+	XSendEvent(dsp, win->fd, False, ExposureMask, &xev);
+	XFlush(dsp);	//must
+*/
+}
+void windowlist()
+{
+}
+void windowchange()
+{
+}
+void windowstop()
+{
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* win)
+{
+	XDestroyWindow(dsp, win->fd);
+	fuckyou--;
+
+	if(0 == fuckyou)
+	{
+		XCloseDisplay(dsp);
+		eventwrite(0,0,0,0);
+	}
+}
+void windowcreate(struct arena* win)
+{
+	int j;
+	win->type = hex32('w', 'i', 'n', 0);
+	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+
+	win->width = win->stride = 512;
+	win->height = 512;
+
+	for(j=0;j<16;j++)
+	{
+		win->input[j].id = 0xffff;
+		win->input[j].id = 0xffff;
+	}
+
+
+
+
+	//
 	win->buf = malloc(0x1000000);
 	win->ximage = XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
@@ -263,83 +313,6 @@ void windowopen(struct arena* win)
 	//fdmap[j] = win->fd;
 	XMapWindow(dsp, win->fd);
 	fuckyou++;
-}
-void windowclose(struct arena* win)
-{
-	XDestroyWindow(dsp, win->fd);
-	fuckyou--;
-
-	if(0 == fuckyou)
-	{
-		XCloseDisplay(dsp);
-		eventwrite(0,0,0,0);
-	}
-}
-void windowthread()
-{
-	void* win = arenacreate(0, 0);
-
-	windowopen(win);
-
-	windowworker(win);
-
-	windowclose(win);
-}
-void windowsignal(int sig)
-{
-	alive = sig;
-}
-
-
-
-
-void windowread(void* dc,void* df,void* sc,void* sf)
-{
-/*
-	XEvent xev;
-	struct arena* win = sc;
-	actorread_all(win);
-
-	memset(&xev,0,sizeof(XEvent));
-	xev.type = Expose;
-	xev.xexpose.display = dsp;
-	xev.xexpose.window = win->fd;
-	XSendEvent(dsp, win->fd, False, ExposureMask, &xev);
-	XFlush(dsp);	//must
-*/
-}
-void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
-{
-}
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
-void windowdelete(struct arena* win)
-{
-}
-void windowcreate(struct arena* win)
-{
-	int j;
-	win->type = hex32('w', 'i', 'n', 0);
-	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
-
-	win->width = win->stride = 512;
-	win->height = 512;
-
-	for(j=0;j<16;j++)
-	{
-		win->input[j].id = 0xffff;
-		win->input[j].id = 0xffff;
-	}
 }
 
 

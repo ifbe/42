@@ -36,7 +36,6 @@ int windowread(struct arena* win)
 	int h = win->height;
 
 	//draw frame
-	actorread_all(win);
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biPlanes = 1;
 	info.bmiHeader.biBitCount = 32;

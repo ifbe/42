@@ -14,7 +14,6 @@ void windowread(struct arena* w)
 	u64 why;
 	u64 where = (u64)w;
 
-	actorread_all(w);
 	SDL_UpdateTexture(w->texture, NULL, w->buf, (w->width)*4);
 	SDL_RenderClear(w->er);
 	SDL_RenderCopy(w->er, w->texture, NULL, NULL);

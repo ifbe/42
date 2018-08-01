@@ -11,32 +11,32 @@ typedef unsigned long long u64;
 //libuser1
 void freeactor();
 void initactor(void*);
-int actorread_all();
+int actorread_all(void*);
 int actorwrite_ev(void*);
 //libuser0
 void freearena();
 void initarena(void*);
-int arenaread_all();
+int arenaread_all(void*);
 int arenawrite_ev(void*);
 //libsoft1
 void freeartery();
 void initartery(void*);
-int arteryread_all();
+int arteryread_all(void*);
 int arterywrite_ev(void*);
 //libsoft0
 void freesystem();
 void initsystem(void*);
-int systemread_all();
+int systemread_all(void*);
 int systemwrite_ev(void*);
 //libhard1
 void freedriver();
 void initdriver(void*);
-int driverread_all();
+int driverread_all(void*);
 int driverwrite_ev(void*);
 //libhard0
 void freedevice();
 void initdevice(void*);
-int deviceread_all();
+int deviceread_all(void*);
 int devicewrite_ev(void*);
 //libboot1
 void freestdin();
@@ -216,7 +216,12 @@ int main(int argc, char* argv[])
 	win = arenacreate(0, 0);
 	while(alive)
 	{
-		//draw frame, cleanup events
+		//actor->opin
+		actorread_all(win);
+
+		//opin->ipin
+
+		//ipin->arena, cleanup events
 		arenaread(win);
 	}
 	arenadelete(win);

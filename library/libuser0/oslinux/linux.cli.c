@@ -11,36 +11,17 @@ int lowlevel_input();
 
 
 
-//
-static int alive = 1;
-void windowsignal(int arg)
+void windowread(struct arena* win)
 {
-	alive = arg;
+	eventwrite(lowlevel_input(), _char_, 0, 0);
 }
-void windowthread()
+void windowwrite()
 {
-	u64 why,what;
-	what = _char_;
-	while(alive)
-	{
-		why = lowlevel_input();
-		eventwrite(why, what, 0, 0);
-	}
 }
-
-
-
-
-void windowchange(int what)
+void windowchange()
 {
 }
 void windowlist()
-{
-}
-void windowread(char* where)
-{
-}
-void windowwrite()
 {
 }
 void windowstop()

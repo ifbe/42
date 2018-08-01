@@ -20,14 +20,86 @@ static int fboneline=0;
 static int xmax=0;
 static int ymax=0;
 static int bpp=0;
-//
-static int alive = 1;
-
-
-
-
-static void windowprepare()
+void terminalthread(void* win)
 {
+	struct event ev;
+	ev.where = (u64)win;
+	ev.what = _char_;
+	while(1)
+	{
+		ev.why = lowlevel_input();
+		actorwrite_ev(&ev);
+	}
+}
+
+
+
+
+
+void windowread(struct arena* win)
+{
+	buf = (void*)(win->buf);
+	if(16 == bpp)
+	{
+		for(x=0;x<xmax*ymax;x++)
+		{
+			*(u16*)(buf+x*2) =
+			    (buf[x*4+0]>>3)
+			+ ( (buf[x*4+1]>>2) <<  5 )
+			+ ( (buf[x*4+2]>>3) << 11 );
+		}
+	}
+	else if(24 == bpp)
+	{
+		x = xmax*bpp/8;
+		for(y=0;y<ymax;y++)
+		{
+			ret=lseek(fbfd, y*fboneline, SEEK_SET);
+			ret=write(fbfd, buf + y*x, x);
+		}
+	}
+	else if(32 == bpp)
+	{
+		lseek(fbfd, 0, SEEK_SET);
+		write(fbfd, buf, fbtotalbyte);
+	}
+}
+void windowwrite(struct arena* win)
+{
+}
+void windowlist()
+{
+}
+void windowchange()
+{
+}
+void windowstop()
+{
+}
+void windowstart()
+{
+}
+void windowdelete(struct arena* w)
+{
+	if(fbfd != -1)close(fbfd);
+}
+void windowcreate(struct arena* w)
+{
+	int j;
+
+	w->type = _win_;
+	w->fmt = hex64('b','g','r','a','8','8','8','8');
+
+	w->width  = xmax;
+	w->height = ymax;
+	w->stride = fboneline/4;
+
+	w->buf = malloc(2048*1024*4);
+	for(j=0;j<16;j++)w->input[j].id = 0xffff;
+
+
+
+
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
 	if(fbfd<0)
@@ -60,114 +132,8 @@ static void windowprepare()
 	ymax=vinfo.yres;
 	bpp=vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
-}
-void windowunload()
-{
-	if(fbfd != -1)close(fbfd);
-}
-void terminalthread(void* win)
-{
-	struct event ev;
-	ev.where = (u64)win;
-	ev.what = _char_;
-	while(1)
-	{
-		ev.why = lowlevel_input();
-		actorwrite_ev(&ev);
-	}
-}
-void windowthread()
-{
-	int x,y,ret;
-	struct arena* win;
-	u8* buf;
 
-	//1
-	windowprepare();
-
-	//2
-	win = arenacreate(0, 0);
 	threadcreate(terminalthread, win);
-
-	//3
-	buf = (void*)(win->buf);
-	while(alive)
-	{
-		actorread_all(win);
-
-		if(16 == bpp)
-		{
-			for(x=0;x<xmax*ymax;x++)
-			{
-				*(u16*)(buf+x*2) =
-				    (buf[x*4+0]>>3)
-				+ ( (buf[x*4+1]>>2) <<  5 )
-				+ ( (buf[x*4+2]>>3) << 11 );
-			}
-		}
-		else if(24 == bpp)
-		{
-			x = xmax*bpp/8;
-			for(y=0;y<ymax;y++)
-			{
-				ret=lseek(fbfd, y*fboneline, SEEK_SET);
-				ret=write(fbfd, buf + y*x, x);
-			}
-		}
-		else if(32 == bpp)
-		{
-			lseek(fbfd, 0, SEEK_SET);
-			write(fbfd, buf, fbtotalbyte);
-		}
-	}
-
-	//4
-	windowunload();
-}
-void windowsignal(int sig)
-{
-	alive = sig;
-}
-
-
-
-
-
-void windowwrite(struct arena* win)
-{
-}
-void windowread()
-{
-}
-void windowlist()
-{
-}
-void windowchange()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
-void windowdelete(struct arena* w)
-{
-}
-void windowcreate(struct arena* w)
-{
-	int j;
-
-	w->type = _win_;
-	w->fmt = hex64('b','g','r','a','8','8','8','8');
-
-	w->width  = xmax;
-	w->height = ymax;
-	w->stride = fboneline/4;
-
-	w->buf = malloc(2048*1024*4);
-
-	for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 
 
