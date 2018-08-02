@@ -265,6 +265,7 @@ void* rootfunc(struct arena* w)
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw = w->win;
+	actorread_all(w);
 
 	//draw frame
 	glfwMakeContextCurrent(fw);

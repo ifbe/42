@@ -38,8 +38,7 @@ void windowdelete(struct arena* w)
 }
 void windowcreate(struct arena* w)
 {
-	w->type = hex32('w','i','n',0);
-	w->fmt = hex32('c','l','i',0);
+	w->fmt = _cli_;
 	w->buf = 0;
 	w->len = 0;
 

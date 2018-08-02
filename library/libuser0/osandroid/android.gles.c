@@ -13,7 +13,6 @@
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-void* arenacreate(u64,u64);
 void asset_create();
 //
 void initobject(void*);
@@ -32,7 +31,6 @@ static EGLContext context = EGL_NO_CONTEXT;
 static EGLSurface surface = EGL_NO_SURFACE;
 static struct android_app* theapp = 0;
 static struct arena* thewin = 0;
-static int alive = 1;
 static int status = 0;
 void setapp(void* addr)
 {
@@ -245,41 +243,24 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowthread()
+void windowread(struct arena* win)
 {
-	theapp->onAppCmd = handle_cmd;
-	theapp->onInputEvent = handle_input;
-
-	thewin = arenacreate(0, 0);
-	while(alive)
+	int ident;
+	int events;
+	struct android_poll_source* source;
+	if(status)
 	{
-		int ident;
-		int events;
-		struct android_poll_source* source;
-		while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-		{
-			if(source)source->process(theapp, source);
-			if(theapp->destroyRequested)return;
-		}
-
-		if(status)
-		{
-			callback_update(thewin);
-			callback_display(thewin, 0);
-			eglSwapBuffers(display, surface);
-		}
+		actorread_all(win);
+		callback_update(win);
+		callback_display(win, 0);
+		eglSwapBuffers(display, surface);
 	}
-}
-void windowsignal(int sig)
-{
-	alive = sig;
-}
 
-
-
-
-void windowread(void* dc,void* df,void* sc,void* sf)
-{
+	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
+	{
+		if(source)source->process(theapp, source);
+		if(theapp->destroyRequested)return;
+	}
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -295,13 +276,15 @@ void windowdelete(struct arena* win)
 }
 void windowcreate(struct arena* win)
 {
-	win->type = _win_;
 	win->fmt = _vbo_;
-
 	win->width  = win->fwidth  = 1024;
 	win->stride = win->fstride = 1024;
 	win->height = win->fheight = 1024;
 	win->depth  = win->fdepth  = 1024;
+
+	thewin = win;
+	theapp->onAppCmd = handle_cmd;
+	theapp->onInputEvent = handle_input;
 }
 
 

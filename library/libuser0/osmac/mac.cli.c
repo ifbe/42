@@ -9,17 +9,17 @@ int lowlevel_input();
 
 
 
-void windowchange()
-{
-}
-void windowlist()
-{
-}
 void windowread()
 {
 	eventwrite(lowlevel_input(), _char_, 0, 0);
 }
 void windowwrite()
+{
+}
+void windowlist()
+{
+}
+void windowchange()
 {
 }
 void windowstart()

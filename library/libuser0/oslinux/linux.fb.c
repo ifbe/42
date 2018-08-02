@@ -40,6 +40,8 @@ void windowread(struct arena* win)
 {
 	int x,y,ret;
 	u8* buf = (void*)(win->buf);
+	actorread_all(win);
+
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)

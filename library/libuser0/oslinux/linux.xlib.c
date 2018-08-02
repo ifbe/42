@@ -215,6 +215,7 @@ void windowevent(struct arena* win, XEvent xev)
 void windowread(struct arena* win)
 {
 	XEvent xev;
+	actorread_all(win);
 	XPutImage(
 		dsp, win->fd, (void*)(win->gc), win->ximage,
 		0, 0, 0, 0,

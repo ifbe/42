@@ -34,6 +34,7 @@ int windowread(struct arena* win)
 	BITMAPINFO info;
 	int w = win->width;
 	int h = win->height;
+	actorread_all(win);
 
 	//draw frame
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -120,7 +121,6 @@ int windowcreate(struct arena* win)
 	int j;
 	if(0 == win)return 0;
 
-	win->type = hex32('w','i','n',0);
 	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 	win->width = win->stride = 512;
 	win->height = 512;

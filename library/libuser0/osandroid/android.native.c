@@ -10,15 +10,13 @@
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-void* arenacreate(u64,u64);
 
 
 
 
 static ANativeWindow* native;
-static struct arena* thewin = 0;
 static struct android_app* theapp = 0;
-static int alive = 1;
+static struct arena* thewin = 0;
 static int status = 0;
 void setapp(void* addr)
 {
@@ -160,53 +158,36 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowthread()
+void windowread(struct arena* win)
 {
 	ANativeWindow_Buffer buffer;
-	thewin = arenacreate(0, 0);
+	struct android_poll_source* source;
+	int ident;
+	int events;
 
-	theapp->onAppCmd = handle_cmd;
-	theapp->onInputEvent = handle_input;
-	while(alive)
+	if(status)
 	{
-		int ident;
-		int events;
-		struct android_poll_source* source;
-		while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-		{
-			if(source)source->process(theapp, source);
-			if(theapp->destroyRequested)return;
-		}
+		//get addr and size
+		ANativeWindow_lock(native, &buffer, NULL);
 
-		if(status)
-		{
-			//get addr and size
-			ANativeWindow_lock(native, &buffer, NULL);
+		//set addr and size
+		thewin->buf = buffer.bits;
+		thewin->width = buffer.width;
+		thewin->height = buffer.height;
+		thewin->stride = buffer.stride;
 
-			//set addr and size
-			thewin->buf = buffer.bits;
-			thewin->width = buffer.width;
-			thewin->height = buffer.height;
-			thewin->stride = buffer.stride;
+		//read data
+		actorread_all(thewin);
 
-			//read data
-			actorread_all(thewin);
-
-			//write screen
-			ANativeWindow_unlockAndPost(native);
-		}
+		//write screen
+		ANativeWindow_unlockAndPost(native);
 	}
-}
-void windowsignal(int sig)
-{
-	alive = sig;
-}
 
-
-
-
-void windowread(void* dc,void* df,void* sc,void* sf)
-{
+	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
+	{
+		if(source)source->process(theapp, source);
+		if(theapp->destroyRequested)return;
+	}
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -222,8 +203,11 @@ void windowdelete(struct arena* win)
 }
 void windowcreate(struct arena* win)
 {
-	win->type = hex32('w','i','n',0);
 	win->fmt = hex64('r','g','b','a','8','8','8','8');
+	thewin = win;
+
+	theapp->onAppCmd = handle_cmd;
+	theapp->onInputEvent = handle_input;
 }
 
 

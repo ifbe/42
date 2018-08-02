@@ -216,12 +216,7 @@ int main(int argc, char* argv[])
 	win = arenacreate(0, 0);
 	while(alive)
 	{
-		//actor->opin
-		actorread_all(win);
-
-		//opin->ipin
-
-		//ipin->arena, cleanup events
+		//draw frame, cleanup events
 		arenaread(win);
 	}
 	arenadelete(win);
