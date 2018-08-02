@@ -38,7 +38,8 @@ void terminalthread(void* win)
 
 void windowread(struct arena* win)
 {
-	buf = (void*)(win->buf);
+	int x,y,ret;
+	u8* buf = (void*)(win->buf);
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)
@@ -87,19 +88,6 @@ void windowcreate(struct arena* w)
 {
 	int j;
 
-	w->type = _win_;
-	w->fmt = hex64('b','g','r','a','8','8','8','8');
-
-	w->width  = xmax;
-	w->height = ymax;
-	w->stride = fboneline/4;
-
-	w->buf = malloc(2048*1024*4);
-	for(j=0;j<16;j++)w->input[j].id = 0xffff;
-
-
-
-
 	//目的地
 	fbfd=open("/dev/fb0",O_RDWR);
 	if(fbfd<0)
@@ -133,7 +121,21 @@ void windowcreate(struct arena* w)
 	bpp=vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
 
-	threadcreate(terminalthread, win);
+
+
+
+	//
+	w->type = _win_;
+	w->fmt = hex64('b','g','r','a','8','8','8','8');
+
+	w->width  = xmax;
+	w->height = ymax;
+	w->stride = fboneline/4;
+
+	w->buf = malloc(2048*1024*4);
+	for(j=0;j<16;j++)w->input[j].id = 0xffff;
+
+	threadcreate(terminalthread, w);
 }
 
 
