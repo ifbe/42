@@ -30,7 +30,7 @@ void asset_create()
 		utf8data = memorycreate(0x200000);
 		if(0 != utf8data)
 		{
-			j = openreadclose("unicode.raw", 0, utf8data, 0x200000);
+			j = openreadclose("datafile/unicode.raw", 0, utf8data, 0x200000);
 			if(j < 0x200000)say("error@unicode\n");
 
 			for(j=0;j<0x200000;j++)
