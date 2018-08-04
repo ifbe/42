@@ -17,7 +17,7 @@ libsoft0:
 libsoft1:
 	+make -s -C $(library)/libsoft1 cflag=$(flag)
 libuser0:
-	+make -s -C $(library)/libuser0 cflag=$(flag) linuxfb
+	+make -s -C $(library)/libuser0 cflag=$(flag) linuxsdl
 libuser1:
 	+make -s -C $(library)/libuser1 cflag=$(flag)
 a:
@@ -39,9 +39,10 @@ so:
 	$(library)/libsoft0/*.o \
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
+	$(library)/libuser1/*.o \
+	-lSDL2 -lm
 program:
-	gcc -o a.out \
+	gcc \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \
@@ -50,7 +51,6 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lpulse -lpulse-simple -lpthread -lm
-	#-lasound -lpthread -lm
+	-lpulse -lpulse-simple -lpthread -lSDL2 -lm
 clean:
 	rm -f *.o *.a *.so
