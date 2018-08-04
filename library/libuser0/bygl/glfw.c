@@ -265,7 +265,14 @@ void* rootfunc(struct arena* w)
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw = w->win;
+//u64 oldtime,newtime;
+//oldtime = timeread();
+
+	//read world
 	actorread_all(w);
+//newtime = timeread();
+//say("actorread:%d\n", newtime-oldtime);
+//oldtime = newtime;
 
 	//draw frame
 	glfwMakeContextCurrent(fw);
@@ -275,6 +282,9 @@ void windowread(struct arena* w)
 	glfwSwapBuffers(fw);
 
 	coopfunc(w);
+//newtime = timeread();
+//say("drawframe:%d\n", newtime-oldtime);
+//oldtime = newtime;
 
 	//cleanup events
 	if(glfwWindowShouldClose(fw))
@@ -283,6 +293,9 @@ void windowread(struct arena* w)
 		return;
 	}
 	glfwPollEvents();
+//newtime = timeread();
+//say("pollevents:%d\n", newtime-oldtime);
+//oldtime = newtime;
 }
 void windowwrite(struct arena* w)
 {
