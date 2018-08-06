@@ -1,11 +1,9 @@
 .fuse_hidden*
 .DS_Store
 .Trash
-.hash
-.seed
-.tree
-.42
+.vscode
 .git
+.42
 
 *~
 *.bin

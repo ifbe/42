@@ -162,46 +162,106 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 
 
-void coopfunc(struct arena* w)
+void windowclose(struct arena* w)
 {
-	int x,y;
-	GLFWwindow* fw;
-	struct arena* c;
-	struct relation* rel = w->orel0;
+	glfwTerminate();
+}
+void windowopen(struct arena* w, int type)
+{
+	int x,y,j;
+	u64 oldtime,newtime;
 
+	//1.glfw
+	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
+	if(fw == NULL)
+	{
+		printf("error@glfwCreateWindow\n");
+		return;
+	}
+
+	//2.setup
+	glfwSetWindowUserPointer(fw, w);
+	w->win = fw;
+	w->map = 0;
+	glfwGetFramebufferSize(fw, &x, &y);
+	w->fwidth = w->fstride = x;
+	w->fheight = y;
+
+	//3.callback
+	glfwSetDropCallback(fw, callback_drop);
+	glfwSetKeyCallback(fw, callback_keyboard);
+	glfwSetScrollCallback(fw, callback_scroll);
+	glfwSetCursorPosCallback(fw, callback_move);
+	glfwSetMouseButtonCallback(fw, callback_mouse);
+	glfwSetFramebufferSizeCallback(fw, callback_reshape);
+
+	if(_win_ == type)
+	{
+		//2.glew
+		glfwMakeContextCurrent(fw);
+		glewExperimental = 1;
+		if(glewInit() != GLEW_OK)
+		{
+			printf("error@glewInit\n");
+			return;
+		}
+
+		//3.init
+		initobject(w);
+		initshader(w);
+		inittexture(w);
+		initvertex(w);
+	}
+	else	//_coop_
+	{
+		w->map = malloc(0x100000);
+		memset(w->map, 0, 0x100000);
+
+		w->win = fw;
+		w->map = 0;
+	}
+}
+
+
+
+
+void windowread(struct arena* w)
+{
+	GLFWwindow* fw = w->win;
+	struct relation* rel = w->orel0;
+	struct arena* c;
+//u64 oldtime,newtime;
+//oldtime = timeread();
+
+
+	//read world
+	actorread_all(w);
+//newtime = timeread();
+//say("actorread:%d\n", newtime-oldtime);
+//oldtime = newtime;
+
+
+	//draw master
+	glfwMakeContextCurrent(fw);
+	callback_update(w);
+	callback_display(w, 0);
+	glfwSwapBuffers(fw);
+//newtime = timeread();
+//say("drawmaster:%d\n", newtime-oldtime);
+//oldtime = newtime;
+
+
+	//draw slave
 	while(1)
 	{
 		if(0 == rel)break;
 
 		if(_win_ == rel->dsttype)
 		{
-			//printmemory(rel, 0x20);
 			c = (void*)(rel->dstchip);
 			fw = c->win;
-			if(0 == fw)
-			{
-				fw = glfwCreateWindow(512, 512, "42", NULL, w->win);
-				if(NULL == fw)
-				{
-					printf("error@glfwCreateWindow\n");
-					return;
-				}
-				glfwGetFramebufferSize(fw, &x, &y);
-				w->fwidth = w->fstride = x;
-				w->fheight = y;
+			if(0 == fw)windowopen(c, _coop_);
 
-				glfwSetWindowUserPointer(fw, c);
-				glfwSetDropCallback(fw, callback_drop);
-				glfwSetKeyCallback(fw, callback_keyboard);
-				glfwSetScrollCallback(fw, callback_scroll);
-				glfwSetCursorPosCallback(fw, callback_move);
-				glfwSetMouseButtonCallback(fw, callback_mouse);
-				glfwSetFramebufferSizeCallback(fw, callback_reshape);
-
-				c->win = fw;
-				c->map = malloc(0x100000);
-				memset(c->map, 0, 0x100000);
-			}
 			if(fw)
 			{
 				glfwMakeContextCurrent(fw);
@@ -212,79 +272,10 @@ void coopfunc(struct arena* w)
 
 		rel = samesrcnextdst(rel);
 	}
-}
-void* rootfunc(struct arena* w)
-{
-	int x,y,j;
-	u64 oldtime,newtime;
-
-	//1.glfw
-	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
-	if(fw == NULL)
-	{
-		printf("error@glfwCreateWindow\n");
-		glfwTerminate();
-		return 0;
-	}
-	glfwGetFramebufferSize(fw, &x, &y);
-	w->fwidth = w->fstride = x;
-	w->fheight = y;
-	w->win = fw;
-	w->map = 0;
-	glfwMakeContextCurrent(fw);
-
-	//2.glew
-	glewExperimental = 1;
-	if(glewInit() != GLEW_OK)
-	{
-		printf("error@glewInit\n");
-		return 0;
-	}
-
-	//3.init
-	initobject(w);
-	initshader(w);
-	inittexture(w);
-	initvertex(w);
-
-	//4.callbacks
-	glfwSetWindowUserPointer(fw, w);
-	glfwSetDropCallback(fw, callback_drop);
-	glfwSetKeyCallback(fw, callback_keyboard);
-	glfwSetScrollCallback(fw, callback_scroll);
-	glfwSetCursorPosCallback(fw, callback_move);
-	glfwSetMouseButtonCallback(fw, callback_mouse);
-	glfwSetFramebufferSizeCallback(fw, callback_reshape);
-
-	return 0;
-}
-
-
-
-
-void windowread(struct arena* w)
-{
-	GLFWwindow* fw = w->win;
-//u64 oldtime,newtime;
-//oldtime = timeread();
-
-	//read world
-	actorread_all(w);
 //newtime = timeread();
-//say("actorread:%d\n", newtime-oldtime);
+//say("drawslave:%d\n", newtime-oldtime);
 //oldtime = newtime;
 
-	//draw frame
-	glfwMakeContextCurrent(fw);
-	callback_update(w);
-
-	callback_display(w, 0);
-	glfwSwapBuffers(fw);
-
-	coopfunc(w);
-//newtime = timeread();
-//say("drawframe:%d\n", newtime-oldtime);
-//oldtime = newtime;
 
 	//cleanup events
 	if(glfwWindowShouldClose(fw))
@@ -340,7 +331,7 @@ void windowcreate(struct arena* w)
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	rootfunc(w);
+	windowopen(w, _win_);
 }
 
 
