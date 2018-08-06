@@ -166,14 +166,15 @@ void windowclose(struct arena* w)
 {
 	glfwTerminate();
 }
-void windowopen(struct arena* w, int type)
+void windowopen(struct arena* r, struct arena* w)
 {
 	int x,y,j;
-	u64 oldtime,newtime;
+	GLFWwindow* rw = 0;
 
 	//1.glfw
-	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, NULL);
-	if(fw == NULL)
+	if(r)rw = r->win;
+	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, rw);
+	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
 		return;
@@ -195,7 +196,7 @@ void windowopen(struct arena* w, int type)
 	glfwSetMouseButtonCallback(fw, callback_mouse);
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
-	if(_win_ == type)
+	if(0 == r)
 	{
 		//2.glew
 		glfwMakeContextCurrent(fw);
@@ -216,9 +217,6 @@ void windowopen(struct arena* w, int type)
 	{
 		w->map = malloc(0x100000);
 		memset(w->map, 0, 0x100000);
-
-		w->win = fw;
-		w->map = 0;
 	}
 }
 
@@ -227,11 +225,13 @@ void windowopen(struct arena* w, int type)
 
 void windowread(struct arena* w)
 {
-	GLFWwindow* fw = w->win;
-	struct relation* rel = w->orel0;
+	GLFWwindow* fw;
 	struct arena* c;
+	struct relation* rel;
 //u64 oldtime,newtime;
 //oldtime = timeread();
+
+
 
 
 	//read world
@@ -241,17 +241,10 @@ void windowread(struct arena* w)
 //oldtime = newtime;
 
 
-	//draw master
-	glfwMakeContextCurrent(fw);
-	callback_update(w);
-	callback_display(w, 0);
-	glfwSwapBuffers(fw);
-//newtime = timeread();
-//say("drawmaster:%d\n", newtime-oldtime);
-//oldtime = newtime;
 
 
 	//draw slave
+	rel = w->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
@@ -260,7 +253,7 @@ void windowread(struct arena* w)
 		{
 			c = (void*)(rel->dstchip);
 			fw = c->win;
-			if(0 == fw)windowopen(c, _coop_);
+			if(0 == fw)windowopen(w, c);
 
 			if(fw)
 			{
@@ -275,6 +268,21 @@ void windowread(struct arena* w)
 //newtime = timeread();
 //say("drawslave:%d\n", newtime-oldtime);
 //oldtime = newtime;
+
+
+
+
+	//draw master
+	fw = w->win;
+	glfwMakeContextCurrent(fw);
+	callback_update(w);
+	callback_display(w, 0);
+	glfwSwapBuffers(fw);
+//newtime = timeread();
+//say("drawmaster:%d\n", newtime-oldtime);
+//oldtime = newtime;
+
+
 
 
 	//cleanup events
@@ -309,29 +317,27 @@ void windowdelete(struct arena* w)
 }
 void windowcreate(struct arena* w)
 {
-	w->fmt = _vbo_;
-
-	w->win = 0;
-	w->buf = 0;
-
 	w->width = 512;
 	w->height = 512;
 	w->depth = 512;
 	w->stride = 512;
 
-	if(glfwInit() == 0)
+	w->fmt = _vbo_;
+	if(_win_ == w->type)
 	{
-		printf("error@glfwInit\n");
-		return;
+		if(glfwInit() == 0)
+		{
+			printf("error@glfwInit\n");
+			return;
+		}
+		glfwWindowHint(GLFW_SAMPLES, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		windowopen(0, w);
 	}
-
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	windowopen(w, _win_);
 }
 
 
