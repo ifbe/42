@@ -243,6 +243,20 @@ void windowread(struct arena* w)
 
 
 
+	//draw master
+	fw = w->win;
+	glfwMakeContextCurrent(fw);
+	callback_update(w);
+	callback_display(w, 0);
+	glfwSwapBuffers(fw);
+	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+//newtime = timeread();
+//say("drawmaster:%d\n", newtime-oldtime);
+//oldtime = newtime;
+
+
+
+
 	//draw slave
 	rel = w->orel0;
 	while(1)
@@ -260,6 +274,7 @@ void windowread(struct arena* w)
 				glfwMakeContextCurrent(fw);
 				callback_display(w, c);
 				glfwSwapBuffers(fw);
+				if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 			}
 		}
 
@@ -272,25 +287,7 @@ void windowread(struct arena* w)
 
 
 
-	//draw master
-	fw = w->win;
-	glfwMakeContextCurrent(fw);
-	callback_update(w);
-	callback_display(w, 0);
-	glfwSwapBuffers(fw);
-//newtime = timeread();
-//say("drawmaster:%d\n", newtime-oldtime);
-//oldtime = newtime;
-
-
-
-
 	//cleanup events
-	if(glfwWindowShouldClose(fw))
-	{
-		eventwrite(0,0,0,0);
-		return;
-	}
 	glfwPollEvents();
 //newtime = timeread();
 //say("pollevents:%d\n", newtime-oldtime);
