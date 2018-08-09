@@ -103,6 +103,8 @@ thetool/tool.qrcode.c \
 thetool/tool.sketchpad.c \
 thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
+thetool/tool.terminal.client.c \
+thetool/tool.terminal.server.c \
 libbgfg/bgfg.gif.c \
 libbgfg/bgfg.jpg.c \
 libbgfg/bgfg.c \
