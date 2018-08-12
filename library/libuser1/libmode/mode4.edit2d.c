@@ -1,5 +1,5 @@
 #include "libuser.h"
-int relation_swap(void*, void*);
+int relation_choose(void*, void*);
 
 
 
@@ -487,13 +487,16 @@ int keyboard2style_2d(struct style* sty, u8 tmp)
 	}
 	return 0;
 }
-int playwith2d_pick(struct relation* top, int x, int y)
+int playwith2d_pick(struct arena* win, int x, int y)
 {
 	int ax,ay;
-	struct style* sty = 0;
-	struct relation* rel = top;
+	struct style* sty;
+	struct relation* rel;
+
+	rel = win->ireln;
 	while(1)
 	{
+		sty = 0;
 		if(rel == 0)break;
 		sty = (void*)(rel->dstfoot);
 
@@ -505,10 +508,9 @@ int playwith2d_pick(struct relation* top, int x, int y)
 		if((ax <= sty->vr[0])&&(ay <= sty->vf[1]))break;
 
 		rel = samedstprevsrc(rel);
-		sty = 0;
 	}
 
-	if(sty != 0)relation_swap(top, rel);
+	if(sty != 0)relation_choose(win, rel);
 	return 0;
 }
 int playwith2d(struct arena* win, struct event* ev)
@@ -560,7 +562,7 @@ int playwith2d(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith2d_pick(rel, x, y);
+		playwith2d_pick(win, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)

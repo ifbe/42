@@ -86,89 +86,50 @@ void relation_debug(struct relation* rel)
 	}
 	say("\n");
 }
-void relation_swap(struct relation* m, struct relation* n)
+void relation_choose(struct item* item, struct relation* rel)
 {
-	u64 temp;
-	struct item* uchip;
-	struct relation* mprev = 0;
-	struct relation* mnext = 0;
-	struct relation* nprev = 0;
-	struct relation* nnext = 0;
-	if(m == 0)return;
-	if(n == 0)return;
-	if(m == n)return;
+	struct relation* prev;
+	struct relation* next;
+	struct relation* tmp;
 
-	uchip = (void*)(m->destchip);
-//relation_debug(uchip->irel);
-//say("uchip:%x,%x,%x,%x\n",uchip,uchip->irel,m,n);
-	if(uchip->irel0 == m)uchip->irel0 = n;
-	else if(uchip->irel0 == n)uchip->irel0 = m;
+	if(0 == rel->samedstprevsrc)prev = 0;
+	else prev = (void*)wirebuf + rel->samedstprevsrc;
+	if(0 == rel->samedstnextsrc)next = 0;
+	else next = (void*)wirebuf + rel->samedstnextsrc;
 
-	if(m->samedstprevsrc != 0)
-	{mprev = (void*)wirebuf + (m->samedstprevsrc);}
-	if(m->samedstnextsrc != 0)
-	{mnext = (void*)wirebuf + (m->samedstnextsrc);}
-	if(n->samedstprevsrc != 0)
-	{nprev = (void*)wirebuf + (n->samedstprevsrc);}
-	if(n->samedstnextsrc != 0)
-	{nnext = (void*)wirebuf + (n->samedstnextsrc);}
-//say("%x,%x,%x,%x\n",mprev,mnext,nprev,nnext);
+	if((0 != prev)&&(0 != next))
+	{say("fuck1\n");
+		prev->samedstnextsrc = (void*)next - (void*)wirebuf;
+		next->samedstprevsrc = (void*)prev - (void*)wirebuf;
 
-	if(mnext == n)
-	{
-//say("case1\n");
-		m->samedstnextsrc = n->samedstnextsrc;
-		n->samedstprevsrc = m->samedstprevsrc;
-		m->samedstprevsrc = (void*)n - (void*)wirebuf;
-		n->samedstnextsrc = (void*)m - (void*)wirebuf;
-		mnext = 0;
-		nprev = 0;
-	}
-	else if(mprev == n)
-	{
-//say("case2\n");
-		m->samedstprevsrc = n->samedstprevsrc;
-		n->samedstnextsrc = m->samedstnextsrc;
-		n->samedstprevsrc = (void*)m - (void*)wirebuf;
-		m->samedstnextsrc = (void*)n - (void*)wirebuf;
-		mprev = 0;
-		nnext = 0;
-	}
-	else
-	{
-//say("case3\n");
-		temp = m->samedstprevsrc;
-		m->samedstprevsrc = n->samedstprevsrc;
-		n->samedstprevsrc = temp;
+		rel->samedstprevsrc = (void*)(item->ireln) - (void*)wirebuf;
+		rel->samedstnextsrc = 0;
 
-		temp = m->samedstnextsrc;
-		m->samedstnextsrc = n->samedstnextsrc;
-		n->samedstnextsrc = temp;
+		tmp = item->ireln;
+		tmp->samedstnextsrc = (void*)rel - (void*)wirebuf;
+
+		item->ireln = rel;
+		return;
 	}
 
-	//say("!!!!%x,%x,%x,%x\n",mprev,mnext,nprev,nnext);
-	if(mprev != 0)
-	{
-		mprev->samedstnextsrc = (void*)n - (void*)wirebuf;
-		//say("1:%x->%x\n",mprev,n);
-	}
-	if(mnext != 0)
-	{
-		mnext->samedstprevsrc = (void*)n - (void*)wirebuf;
-		//say("2:%x->%x\n",mnext,n);
-	}
-	if(nprev != 0)
-	{
-		nprev->samedstnextsrc = (void*)m - (void*)wirebuf;
-		//say("3:%x->%x\n",nprev,m);
-	}
-	if(nnext != 0)
-	{
-		nnext->samedstprevsrc = (void*)m - (void*)wirebuf;
-		//say("4:%x->%x\n",nnext,m);
+	//if((0 != prev)&&(0 == next))	//change nothing
+
+	if((0 == prev)&&(0 != next))
+	{say("fuck2\n");
+		next->samedstprevsrc = 0;
+
+		rel->samedstprevsrc = (void*)(item->ireln) - (void*)wirebuf;
+		rel->samedstnextsrc = 0;
+
+		tmp = item->ireln;
+		tmp->samedstnextsrc = (void*)rel - (void*)wirebuf;
+
+		item->irel0 = next;
+		item->ireln = rel;
+		return;
 	}
 
-	//relation_debug(uchip->irel0);
+	//if((0 == prev)&&(0 == next))	//change nothing
 }
 void relation_recycle(struct relation* rel)
 {
@@ -329,24 +290,24 @@ void* relationcreate(
 
 	//dest wire
 	h1 = uchip;
-	if(h1->irel0 == 0)h1->irel0 = ww;
-	else
+	if(0 != h1->ireln)
 	{
-		wc = h1->irel0;
-		while(wc->samedstnextsrc != 0)wc = (void*)wirebuf + (wc->samedstnextsrc);
+		wc = h1->ireln;
 		wc->samedstnextsrc = (void*)ww - (void*)wirebuf;
 		ww->samedstprevsrc = (void*)wc - (void*)wirebuf;
 	}
+	h1->ireln = ww;
+	if(0 == h1->irel0)h1->irel0 = ww;
 
 	h2 = bchip;
-	if(h2->orel0 == 0)h2->orel0 = ww;
-	else
+	if(0 != h2->oreln)
 	{
-		wc = h2->orel0;
-		while(wc->samesrcnextdst != 0)wc = (void*)wirebuf + (wc->samesrcnextdst);
+		wc = h2->oreln;
 		wc->samesrcnextdst = (void*)ww - (void*)wirebuf;
 		ww->samesrcprevdst = (void*)wc - (void*)wirebuf;
 	}
+	h2->oreln = ww;
+	if(0 == h2->orel0)h2->orel0 = ww;
 
 	return ww;
 }

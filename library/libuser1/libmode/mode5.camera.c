@@ -1,9 +1,5 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-int arenaprev(struct arena* win);
-int arenanext(struct arena* win);
-int arenalogin(struct arena* win);
-//
 void quaternion_operation(float*, float*, float);
 void matrixmultiply_4(float*, float*);
 
@@ -370,49 +366,64 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 
 
 
-int camera_event_3d(struct arena* win, struct event* ev)
+int actorinput_cameraevent(struct arena* win, struct event* ev)
 {
 	short* t;
 	float x,y,z,w;
 	int x0,y0,x1,y1,id;
 
-	if(_char_ == ev->what)
-	{
-		if((0xa == ev->why)|(0xd == ev->why))
-		{
-			arenalogin(win);
-			return 0;
-		}
-	}
-	else if(_kbd_ == ev->what)
+	if(_kbd_ == ev->what)
 	{
 		if(0x4b == ev->why)
 		{
-			arenaprev(win);
+			win->target.vc[0] -= 10;
+			win->camera.vc[0] -= 10;
 			return 0;
 		}
 		else if(0x4d == ev->why)
 		{
-			arenanext(win);
+			win->target.vc[0] += 10;
+			win->camera.vc[0] += 10;
+			return 0;
+		}
+		else if(0x50 == ev->why)
+		{
+			win->target.vc[1] -= 10;
+			win->camera.vc[1] -= 10;
+			return 0;
+		}
+		else if(0x48 == ev->why)
+		{
+			win->target.vc[1] += 10;
+			win->camera.vc[1] += 10;
 			return 0;
 		}
 	}
-	if(_joy_ == ev->what)
+	else if(_joy_ == ev->what)
 	{
 		t = (short*)&ev->why;
-		if(_ka_ == t[2])
+		if(_dl_ == t[2])
 		{
-			arenalogin(win);
-			return 0;
-		}
-		else if(_dl_ == t[2])
-		{
-			arenaprev(win);
+			win->target.vc[0] -= 10;
+			win->camera.vc[0] -= 10;
 			return 0;
 		}
 		else if(_dr_ == t[2])
 		{
-			arenanext(win);
+			win->target.vc[0] += 10;
+			win->camera.vc[0] += 10;
+			return 0;
+		}
+		else if(_dn_ == t[2])
+		{
+			win->target.vc[1] -= 10;
+			win->camera.vc[1] -= 10;
+			return 0;
+		}
+		else if(_df_ == t[2])
+		{
+			win->target.vc[1] += 10;
+			win->camera.vc[1] += 10;
 			return 0;
 		}
 		else if(_lb_ == t[2])
@@ -516,25 +527,7 @@ int camera_event_3d(struct arena* win, struct event* ev)
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 
-			if(0 == id)
-			{
-				if(x1*2 < win->width)
-				{
-					target_deltaxyz(win, x1-x0, y0-y1, 0);
-				}
-				else
-				{
-					camera_deltaxy(win, x1-x0, y1-y0);
-				}
-			}
-			else if(10 == id)
-			{
-				target_deltaxyz(win, x1-x0, y0-y1, 0);
-			}
-			else if(11 == id)
-			{
-				camera_deltaxy(win, x1-x0, y1-y0);
-			}
+			camera_deltaxy(win, x1-x0, y1-y0);
 		}
 	}
 	else if(0x2b70 == ev->what)
@@ -544,155 +537,25 @@ int camera_event_3d(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int camera_event_2d(struct arena* win, struct event* ev)
-{
-	short* t;
-	float x,y,z,w;
-	int x0,y0,x1,y1,id;
-
-	if(_char_ == ev->what)
-	{
-		if((0xa == ev->why)|(0xd == ev->why))
-		{
-			arenalogin(win);
-			return 0;
-		}
-	}
-	else if(_kbd_ == ev->what)
-	{
-		if(0x4b == ev->why)
-		{
-			arenaprev(win);
-			return 0;
-		}
-		else if(0x4d == ev->why)
-		{
-			arenanext(win);
-			return 0;
-		}
-	}
-	if(_joy_ == ev->what)
-	{
-		t = (short*)&ev->why;
-		if(_ka_ == t[2])
-		{
-			arenalogin(win);
-			return 0;
-		}
-		else if(_dl_ == t[2])
-		{
-			arenaprev(win);
-			return 0;
-		}
-		else if(_dr_ == t[2])
-		{
-			arenanext(win);
-			return 0;
-		}
-		else if(_ls_ == t[2])
-		{
-			win->target.vc[0] = win->width/2;
-			win->target.vc[1] = win->height/2;
-			win->target.vr[0] = win->width/3;
-			win->target.vr[1] = 0;
-			win->target.vf[0] = win->height/3;
-			win->target.vf[1] = 0;
-			return 0;
-		}
-
-		x0 = t[0];
-		if(x0 < -8192)x0 = -1;
-		else if(x0 > 8192)x0 = 1;
-		else x0 = 0;
-
-		y0 = t[1];
-		if(y0 < -8192)y0 = -1;
-		else if(y0 > 8192)y0 = 1;
-		else y0 = 0;
-
-		if('l' == t[2])
-		{
-			win->target.vc[0] += x0*16;
-			win->target.vc[1] += y0*16;
-		}
-		return 0;
-	}
-
-	id = (ev->why)>>48;
-	if(0x4070 == ev->what)
-	{
-		if('l' == id)id = 10;
-		else if('r' == id)id = 11;
-		else if(id > 10)return 0;
-		if(0 == win->input[id].z0)return 0;
-
-		if(	(0 != win->input[0].z0)&&
-			(0 != win->input[1].z0))
-		{
-			x1 = (ev->why)&0xffff;
-			y1 = ((ev->why)>>16)&0xffff;
-			if(0 == id)
-			{
-				x1 -= (win->input[1].x1);
-				y1 -= (win->input[1].y1);
-			}
-			if(1 == id)
-			{
-				x1 -= (win->input[0].x1);
-				y1 -= (win->input[0].y1);
-			}
-
-			x0 = (win->input[0].x1) - (win->input[1].x1);
-			y0 = (win->input[0].y1) - (win->input[1].y1);
-
-			if((x0*x0+y0*y0) > (x1*x1+y1*y1))
-			{
-				win->target.vr[0] = win->target.vr[0]*15/16;
-				win->target.vr[1] = win->target.vr[1]*15/16;
-				win->target.vf[0] = win->target.vf[0]*15/16;
-				win->target.vf[1] = win->target.vf[1]*15/16;
-			}
-			else
-			{
-				win->target.vr[0] = win->target.vr[0]*17/16;
-				win->target.vr[1] = win->target.vr[1]*17/16;
-				win->target.vf[0] = win->target.vf[0]*17/16;
-				win->target.vf[1] = win->target.vf[1]*17/16;
-			}
-		}
-		else
-		{
-			x0 = win->input[id].x1;
-			y0 = win->input[id].y1;
-			x1 = (ev->why)&0xffff;
-			y1 = ((ev->why)>>16)&0xffff;
-
-			win->target.vc[0] += x1-x0;
-			win->target.vc[1] += y1-y0;
-		}
-	}
-	else if(0x2b70 == ev->what)
-	{
-		if('f' == id)
-		{
-			win->target.vr[0] = win->target.vr[0]*17/16;
-			win->target.vr[1] = win->target.vr[1]*17/16;
-			win->target.vf[0] = win->target.vf[0]*17/16;
-			win->target.vf[1] = win->target.vf[1]*17/16;
-		}
-		if('b' == id)
-		{
-			win->target.vr[0] = win->target.vr[0]*15/16;
-			win->target.vr[1] = win->target.vr[1]*15/16;
-			win->target.vf[0] = win->target.vf[0]*15/16;
-			win->target.vf[1] = win->target.vf[1]*15/16;
-		}
-	}
-	return 0;
-}
 int actorinput_camera(struct arena* win, struct event* ev)
 {
-	if(_vbo_ == win->fmt)camera_event_3d(win, ev);
-	else camera_event_2d(win, ev);
+	struct style* sty;
+	struct relation* rel;
+	actorinput_cameraevent(win, ev);
+
+	rel = win->ireln;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_act_ == rel->srctype)
+		{
+			sty = (void*)(rel->dstfoot);
+			sty->vc[0] = win->target.vc[0];
+			sty->vc[1] = win->target.vc[1];
+			sty->vc[2] = win->target.vc[2];
+			break;
+		}
+		rel = samedstprevsrc(rel);
+	}
 	return 0;
 }

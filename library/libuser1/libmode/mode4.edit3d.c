@@ -1,5 +1,5 @@
 #include "libuser.h"
-int relation_swap(void*, void*);
+int relation_choose(void*, void*);
 int invmvp(vec3 v, struct arena* win);
 int ray_obb(vec3 ray[], struct style* sty, vec3 out[]);
 
@@ -431,13 +431,13 @@ int keyboard2style(struct style* sty, short tmp)
 	}
 	return 0;
 }
-int playwith3d_pick(struct arena* win, struct relation* top, int x, int y)
+int playwith3d_pick(struct arena* win, int x, int y)
 {
 	int ret;
 	vec3 ray[2];
 	vec3 out[2];
-	struct style* sty = 0;
-	struct relation* rel = top;
+	struct style* sty;
+	struct relation* rel;
 
 	ray[0][0] = win->camera.vc[0];
 	ray[0][1] = win->camera.vc[1];
@@ -451,19 +451,20 @@ int playwith3d_pick(struct arena* win, struct relation* top, int x, int y)
 	ray[1][1] -= ray[0][1];
 	ray[1][2] -= ray[0][2];
 
+	rel = win->ireln;
 	while(1)
 	{
+		sty = 0;
 		if(rel == 0)break;
 		sty = (void*)(rel->dstfoot);
 
 		ret = ray_obb(ray, sty, out);
-		say("ret=%d\n", ret);
+		say("rel=%llx, ret=%d\n", rel, ret);
 		if(ret > 0)break;
 
 		rel = samedstprevsrc(rel);
-		sty = 0;
 	}
-	if(sty != 0)relation_swap(top, rel);
+	if(rel)relation_choose(win, rel);
 	return 0;
 }
 int playwith3d(struct arena* win, struct event* ev)
@@ -532,7 +533,7 @@ int playwith3d(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, rel, x, y);
+		playwith3d_pick(win, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)

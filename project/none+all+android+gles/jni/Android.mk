@@ -374,6 +374,8 @@ library/libuser1/thetest/test.planet.c \
 library/libuser1/thetool/tool.browser.c \
 library/libuser1/thetool/tool.calculator.c \
 library/libuser1/thetool/tool.camera.c \
+library/libuser1/thetool/tool.camera.carrier.c \
+library/libuser1/thetool/tool.camera.thinker.c \
 library/libuser1/thetool/tool.circuit.c \
 library/libuser1/thetool/tool.editor.c \
 library/libuser1/thetool/tool.font.c \
@@ -382,6 +384,8 @@ library/libuser1/thetool/tool.qrcode.c \
 library/libuser1/thetool/tool.sketchpad.c \
 library/libuser1/thetool/tool.spectrum.c \
 library/libuser1/thetool/tool.terminal.c \
+library/libuser1/thetool/tool.terminal.carrier.c \
+library/libuser1/thetool/tool.terminal.thinker.c \
 library/libuser1/actor.c
 
 
