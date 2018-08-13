@@ -311,7 +311,6 @@ library/libuser1/libmode/mode2.overview.c \
 library/libuser1/libmode/mode3.detail.c \
 library/libuser1/libmode/mode4.layout.c \
 library/libuser1/libmode/mode5.camera.c \
-library/libuser1/libmode/mode5.posture.c \
 library/libuser1/libmode/mode6.deliver.c \
 library/libuser1/libmode/mode7.oneonone.c \
 library/libuser1/libmode/mode.c \

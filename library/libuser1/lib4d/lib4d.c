@@ -3,7 +3,6 @@ void content_create(void*);
 void bgfg_create(void*);
 void helpout_create(void*);
 void overview_create(void*);
-void posture_create(void*);
 
 
 
@@ -15,7 +14,6 @@ void lib4d_create(void* addr)
 	content_create(addr);
 
 	overview_create(addr);
-	posture_create(addr);
 }
 void lib4d_delete()
 {

@@ -116,7 +116,6 @@ libmode/mode2.overview.c \
 libmode/mode3.detail.c \
 libmode/mode4.layout.c \
 libmode/mode5.camera.c \
-libmode/mode5.posture.c \
 libmode/mode6.deliver.c \
 libmode/mode7.oneonone.c \
 libmode/mode.c \
