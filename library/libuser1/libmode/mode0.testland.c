@@ -58,7 +58,7 @@ void actoroutput_void_vbo(struct arena* win, struct style* sty)
 	y = 16.0 / (win->height);
 	vc[0] = 0.0;
 	vc[1] = 0.0;
-	vc[2] = 0.8;
+	vc[2] = -0.8;
 	va[0] = x;
 	va[1] = 0.0;
 	va[2] = 0.0;

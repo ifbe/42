@@ -12,9 +12,8 @@ int actorinput_overview( struct arena* win, struct event* ev);
 int actoroutput_detail(struct arena* win, struct style* sty);
 int actorinput_detail( struct arena* win, struct event* ev);
 //4
-int actoroutput_edit(struct arena* win, struct style* sty);
-int playwith2d(struct arena* win, struct event* ev);
-int playwith3d(struct arena* win, struct event* ev);
+int actoroutput_layout(struct arena* win, struct style* sty);
+int actorinput_layout( struct arena* win, struct event* ev);
 //5
 int actoroutput_posture(struct arena* win, struct style* sty);
 int actorinput_camera( struct arena* win, struct event* ev);
@@ -43,7 +42,7 @@ int actoroutput_mode(struct arena* win, struct style* sty)
 	else if(1 == ret)actoroutput_console(win, 0);
 	else if(2 == ret)actoroutput_overview(win, 0);
 	else if(3 == ret)actoroutput_detail(win, 0);
-	else if(4 == ret)actoroutput_edit(win, 0);
+	else if(4 == ret)actoroutput_layout(win, 0);
 	else if(5 == ret)actoroutput_posture(win, 0);
 	else if(6 == ret)actoroutput_deliver(win, 0);
 	else if(7 == ret)actoroutput_oneonone(win, 0);
@@ -65,11 +64,7 @@ int actorinput_mode(struct arena* win, struct event* ev)
 	else if(1 == ret)actorinput_console(win, ev);
 	else if(2 == ret)actorinput_overview(win, ev);
 	else if(3 == ret)actorinput_detail(win, ev);
-	else if(4 == ret)
-	{
-		if(_vbo_ == win->fmt)playwith3d(win, ev);
-		else playwith2d(win, ev);
-	}
+	else if(4 == ret)actorinput_layout(win, ev);
 	else if(5 == ret)actorinput_camera(win, ev);
 	else if(6 == ret)actorinput_deliver(win, ev);
 	else if(7 == ret)actorinput_oneonone(win, ev);

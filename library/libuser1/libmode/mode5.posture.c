@@ -31,6 +31,30 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	float* vf = win->target.vf;
 	float* vu = win->target.vu;
 	carveaxis(win);
+
+	tc[0] = -0.75;
+	tc[1] = 1.0-1.0/16;
+	tc[2] = 0.0;
+	tr[0] = 0.25;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 1.0/16;
+	tf[2] = 0.0;
+	carvesolid2d_rect(win, 0xff0000, tc, tr, tf);
+
+	tc[0] = -tc[0];
+	carvesolid2d_rect(win, 0x0000ff, tc, tr, tf);
+
+	tc[0] = 0.125-1.0;
+	tc[1] = 1.0-0.125;
+	tc[2] = -0.5;
+	tr[0] = 0.125;
+	tf[1] = 0.125;
+	carvesolid2d_circle(win, 0xff0000, tc, tr, tf);
+
+	tc[0] = -tc[0];
+	carvesolid2d_circle(win, 0x0000ff, tc, tr, tf);
 /*
 	j = win->menudata;
 	if(j < 0)goto skip;

@@ -309,8 +309,7 @@ library/libuser1/libmode/mode0.testland.c \
 library/libuser1/libmode/mode1.console.c \
 library/libuser1/libmode/mode2.overview.c \
 library/libuser1/libmode/mode3.detail.c \
-library/libuser1/libmode/mode4.edit2d.c \
-library/libuser1/libmode/mode4.edit3d.c \
+library/libuser1/libmode/mode4.layout.c \
 library/libuser1/libmode/mode5.camera.c \
 library/libuser1/libmode/mode5.posture.c \
 library/libuser1/libmode/mode6.deliver.c \

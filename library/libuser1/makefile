@@ -114,8 +114,7 @@ libmode/mode0.testland.c \
 libmode/mode1.console.c \
 libmode/mode2.overview.c \
 libmode/mode3.detail.c \
-libmode/mode4.edit2d.c \
-libmode/mode4.edit3d.c \
+libmode/mode4.layout.c \
 libmode/mode5.camera.c \
 libmode/mode5.posture.c \
 libmode/mode6.deliver.c \
