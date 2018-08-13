@@ -97,15 +97,32 @@ int actoroutput_layout(struct arena* win, struct style* st)
 
 
 
-int joystick2style(struct style* sty, short* tmp)
+int joystick2style(struct arena* win, struct style* sty, short* tmp)
 {
-	int x0,y0;
 	float c,s;
 	float tx,ty,tz;
+	int x0,y0,sign = -1;
+	if(_vbo_ == win->fmt)sign = 1;
 
 	if(_dl_ == tmp[2])
 	{
 		//dpad left
+		tx = (sty->vr[0])/16;
+		ty = (sty->vr[1])/16;
+		tz = (sty->vr[2])/16;
+
+		sty->vr[0] += tx;
+		sty->vr[1] += ty;
+		sty->vr[2] += tz;
+
+		sty->vc[0] -= tx;
+		sty->vc[1] -= ty;
+		sty->vc[2] -= tz;
+		return 0;
+	}
+	else if(_kx_ == tmp[2])
+	{
+		//key x
 		tx = (sty->vr[0])/16;
 		ty = (sty->vr[1])/16;
 		tz = (sty->vr[2])/16;
@@ -126,6 +143,22 @@ int joystick2style(struct style* sty, short* tmp)
 		ty = (sty->vr[1])/16;
 		tz = (sty->vr[2])/16;
 
+		sty->vr[0] += tx;
+		sty->vr[1] += ty;
+		sty->vr[2] += tz;
+
+		sty->vc[0] += tx;
+		sty->vc[1] += ty;
+		sty->vc[2] += tz;
+		return 0;
+	}
+	else if(_kb_ == tmp[2])
+	{
+		//key b
+		tx = (sty->vr[0])/16;
+		ty = (sty->vr[1])/16;
+		tz = (sty->vr[2])/16;
+
 		sty->vr[0] -= tx;
 		sty->vr[1] -= ty;
 		sty->vr[2] -= tz;
@@ -142,13 +175,29 @@ int joystick2style(struct style* sty, short* tmp)
 		ty = (sty->vf[1])/16;
 		tz = (sty->vf[2])/16;
 
+		sty->vf[0] += tx;
+		sty->vf[1] += ty;
+		sty->vf[2] += tz;
+
+		sty->vc[0] -= sign*tx;
+		sty->vc[1] -= sign*ty;
+		sty->vc[2] -= sign*tz;
+		return 0;
+	}
+	else if(_ka_ == tmp[2])
+	{
+		//key a
+		tx = (sty->vf[0])/16;
+		ty = (sty->vf[1])/16;
+		tz = (sty->vf[2])/16;
+
 		sty->vf[0] -= tx;
 		sty->vf[1] -= ty;
 		sty->vf[2] -= tz;
 
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
+		sty->vc[0] += sign*tx;
+		sty->vc[1] += sign*ty;
+		sty->vc[2] += sign*tz;
 		return 0;
 	}
 	else if(_df_ == tmp[2])
@@ -158,16 +207,48 @@ int joystick2style(struct style* sty, short* tmp)
 		ty = (sty->vf[1])/16;
 		tz = (sty->vf[2])/16;
 
+		sty->vf[0] += tx;
+		sty->vf[1] += ty;
+		sty->vf[2] += tz;
+
+		sty->vc[0] += sign*tx;
+		sty->vc[1] += sign*ty;
+		sty->vc[2] += sign*tz;
+		return 0;
+	}
+	else if(_ky_ == tmp[2])
+	{
+		//key y
+		tx = (sty->vf[0])/16;
+		ty = (sty->vf[1])/16;
+		tz = (sty->vf[2])/16;
+
 		sty->vf[0] -= tx;
 		sty->vf[1] -= ty;
 		sty->vf[2] -= tz;
 
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
+		sty->vc[0] -= sign*tx;
+		sty->vc[1] -= sign*ty;
+		sty->vc[2] -= sign*tz;
 		return 0;
 	}
 	else if(_lt_ == tmp[2])
+	{
+		//right trigger
+		tx = (sty->vu[0])/16;
+		ty = (sty->vu[1])/16;
+		tz = (sty->vu[2])/16;
+
+		sty->vu[0] += tx;
+		sty->vu[1] += ty;
+		sty->vu[2] += tz;
+
+		sty->vc[0] -= tx*2;
+		sty->vc[1] -= ty*2;
+		sty->vc[2] -= tz*2;
+		return 0;
+	}
+	else if(_rt_ == tmp[2])
 	{
 		//left trigger
 		tx = (sty->vu[0])/16;
@@ -185,98 +266,6 @@ int joystick2style(struct style* sty, short* tmp)
 	}
 	else if(_lb_ == tmp[2])
 	{
-		//left bumper
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] -= tx;
-		sty->vu[1] -= ty;
-		sty->vu[2] -= tz;
-		return 0;
-	}
-	else if(_kx_ == tmp[2])
-	{
-		//key x
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] += tx;
-		sty->vr[1] += ty;
-		sty->vr[2] += tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
-		return 0;
-	}
-	else if(_kb_ == tmp[2])
-	{
-		//key b
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] += tx;
-		sty->vr[1] += ty;
-		sty->vr[2] += tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
-		return 0;
-	}
-	else if(_ka_ == tmp[2])
-	{
-		//key a
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] += tx;
-		sty->vf[1] += ty;
-		sty->vf[2] += tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
-		return 0;
-	}
-	else if(_ky_ == tmp[2])
-	{
-		//key y
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] += tx;
-		sty->vf[1] += ty;
-		sty->vf[2] += tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
-		return 0;
-	}
-	else if(_rt_ == tmp[2])
-	{
-		//right trigger
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] += tx;
-		sty->vu[1] += ty;
-		sty->vu[2] += tz;
-
-		sty->vc[0] -= tx*2;
-		sty->vc[1] -= ty*2;
-		sty->vc[2] -= tz*2;
-		return 0;
-	}
-	else if(_rb_ == tmp[2])
-	{
 		//right bumper
 		tx = (sty->vu[0])/16;
 		ty = (sty->vu[1])/16;
@@ -285,6 +274,18 @@ int joystick2style(struct style* sty, short* tmp)
 		sty->vu[0] += tx;
 		sty->vu[1] += ty;
 		sty->vu[2] += tz;
+		return 0;
+	}
+	else if(_rb_ == tmp[2])
+	{
+		//left bumper
+		tx = (sty->vu[0])/16;
+		ty = (sty->vu[1])/16;
+		tz = (sty->vu[2])/16;
+
+		sty->vu[0] -= tx;
+		sty->vu[1] -= ty;
+		sty->vu[2] -= tz;
 		return 0;
 	}
 
@@ -300,9 +301,12 @@ int joystick2style(struct style* sty, short* tmp)
 
 	if('l' == tmp[2])
 	{
-		sty->vc[0] += (sty->vr[0])*x0/16 + (sty->vf[0])*y0/16;
-		sty->vc[1] += (sty->vr[1])*x0/16 + (sty->vf[1])*y0/16;
-		sty->vc[2] += (sty->vr[2])*x0/16 + (sty->vf[2])*y0/16;
+		tx = sign*(sty->vf[0])*y0/16;
+		ty = sign*(sty->vf[1])*y0/16;
+		tz = sign*(sty->vf[2])*y0/16;
+		sty->vc[0] += (sty->vr[0])*x0/16 + tx;
+		sty->vc[1] += (sty->vr[1])*x0/16 + ty;
+		sty->vc[2] += (sty->vr[2])*x0/16 + tz;
 	}
 	else if('r' == tmp[2])
 	{
@@ -330,197 +334,43 @@ int joystick2style(struct style* sty, short* tmp)
 	}
 	return 0;
 }
-int keyboard2style(struct style* sty, short tmp)
+int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 {
-	int x0,y0;
-	float c,s;
-	float tx,ty,tz;
-
-	if('s' == tmp)
+	int j = -1;
+	if(0x4b == tmp[0])
 	{
-		//dpad left
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] -= tx;
-		sty->vr[1] -= ty;
-		sty->vr[2] -= tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
+		//left
+		sty->vc[0] -= (sty->vr[0])/16;
+		sty->vc[1] -= (sty->vr[1])/16;
+		sty->vc[2] -= (sty->vr[2])/16;
 		return 0;
 	}
-	else if('f' == tmp)
+	else if(0x4d == tmp[0])
 	{
-		//dpad right
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] -= tx;
-		sty->vr[1] -= ty;
-		sty->vr[2] -= tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
+		//right
+		sty->vc[0] += (sty->vr[0])/16;
+		sty->vc[1] += (sty->vr[1])/16;
+		sty->vc[2] += (sty->vr[2])/16;
 		return 0;
 	}
-	else if('d' == tmp)
+	else if(0x50 == tmp[0])
 	{
-		//dpad down
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] -= tx;
-		sty->vf[1] -= ty;
-		sty->vf[2] -= tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
+		//down
+		if(_vbo_ == win->fmt)j = 1;
+		sty->vc[0] -= j*(sty->vf[0])/16;
+		sty->vc[1] -= j*(sty->vf[1])/16;
+		sty->vc[2] -= j*(sty->vf[2])/16;
 		return 0;
 	}
-	else if('e' == tmp)
+	else if(0x48 == tmp[0])
 	{
-		//dpad up
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] -= tx;
-		sty->vf[1] -= ty;
-		sty->vf[2] -= tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
+		//up
+		if(_vbo_ == win->fmt)j = 1;
+		sty->vc[0] += j*(sty->vf[0])/16;
+		sty->vc[1] += j*(sty->vf[1])/16;
+		sty->vc[2] += j*(sty->vf[2])/16;
 		return 0;
 	}
-	else if('w' == tmp)
-	{
-		//left trigger
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] -= tx;
-		sty->vu[1] -= ty;
-		sty->vu[2] -= tz;
-
-		sty->vc[0] += tx*2;
-		sty->vc[1] += ty*2;
-		sty->vc[2] += tz*2;
-		return 0;
-	}
-	else if('r' == tmp)
-	{
-		//left bumper
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] -= tx;
-		sty->vu[1] -= ty;
-		sty->vu[2] -= tz;
-		return 0;
-	}
-	else if('j' == tmp)
-	{
-		//key x
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] += tx;
-		sty->vr[1] += ty;
-		sty->vr[2] += tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
-		return 0;
-	}
-	else if('l' == tmp)
-	{
-		//key b
-		tx = (sty->vr[0])/16;
-		ty = (sty->vr[1])/16;
-		tz = (sty->vr[2])/16;
-
-		sty->vr[0] += tx;
-		sty->vr[1] += ty;
-		sty->vr[2] += tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
-		return 0;
-	}
-	else if('k' == tmp)
-	{
-		//key a
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] += tx;
-		sty->vf[1] += ty;
-		sty->vf[2] += tz;
-
-		sty->vc[0] -= tx;
-		sty->vc[1] -= ty;
-		sty->vc[2] -= tz;
-		return 0;
-	}
-	else if('i' == tmp)
-	{
-		//key y
-		tx = (sty->vf[0])/16;
-		ty = (sty->vf[1])/16;
-		tz = (sty->vf[2])/16;
-
-		sty->vf[0] += tx;
-		sty->vf[1] += ty;
-		sty->vf[2] += tz;
-
-		sty->vc[0] += tx;
-		sty->vc[1] += ty;
-		sty->vc[2] += tz;
-		return 0;
-	}
-	else if('u' == tmp)
-	{
-		//right trigger
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] += tx;
-		sty->vu[1] += ty;
-		sty->vu[2] += tz;
-
-		sty->vc[0] -= tx*2;
-		sty->vc[1] -= ty*2;
-		sty->vc[2] -= tz*2;
-		return 0;
-	}
-	else if('o' == tmp)
-	{
-		//right bumper
-		tx = (sty->vu[0])/16;
-		ty = (sty->vu[1])/16;
-		tz = (sty->vu[2])/16;
-
-		sty->vu[0] += tx;
-		sty->vu[1] += ty;
-		sty->vu[2] += tz;
-		return 0;
-	}
-	return 0;
 }
 int playwith3d_pick(struct arena* win, int x, int y)
 {
@@ -584,14 +434,19 @@ int actorinput_layout(struct arena* win, struct event* ev)
 	if(_char_ == ev->what)
 	{
 		if(8 == ev->why)relationdelete(rel);
-		else keyboard2style(sty, (ev->why)&0xff);
 		return 0;
 	}
 	if(_joy_ == ev->what)
 	{
-		joystick2style(sty, (void*)ev);
+		joystick2style(win, sty, (void*)ev);
 		return 0;
 	}
+	if(_kbd_ == ev->what)
+	{
+		keyboard2style(win, sty, (void*)ev);
+		return 0;
+	}
+
 	if('f' == id)
 	{
 		sty->vr[0] = (sty->vr[0])*17/16;

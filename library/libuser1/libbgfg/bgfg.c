@@ -176,7 +176,6 @@ void foreground_vbo(struct arena* win)
 		}
 		rel = samesrcnextdst(rel);
 	}
-	carvesnowman(win, 0xffffff, win->target.vc);
 }
 void foreground_json(struct arena* win)
 {

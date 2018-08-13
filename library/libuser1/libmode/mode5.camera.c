@@ -370,7 +370,8 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 {
 	short* t;
 	float x,y,z,w;
-	int x0,y0,x1,y1,id;
+	int x0,y0,x1,y1,id,sign = -1;
+	if(_vbo_ == win->fmt)sign = 1;
 
 	if(_kbd_ == ev->what)
 	{
@@ -388,14 +389,14 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 		}
 		else if(0x50 == ev->why)
 		{
-			win->target.vc[1] -= 10;
-			win->camera.vc[1] -= 10;
+			win->target.vc[1] -= sign*10;
+			win->camera.vc[1] -= sign*10;
 			return 0;
 		}
 		else if(0x48 == ev->why)
 		{
-			win->target.vc[1] += 10;
-			win->camera.vc[1] += 10;
+			win->target.vc[1] += sign*10;
+			win->camera.vc[1] += sign*10;
 			return 0;
 		}
 	}
@@ -416,14 +417,14 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 		}
 		else if(_dn_ == t[2])
 		{
-			win->target.vc[1] -= 10;
-			win->camera.vc[1] -= 10;
+			win->target.vc[1] -= sign*10;
+			win->camera.vc[1] -= sign*10;
 			return 0;
 		}
 		else if(_df_ == t[2])
 		{
-			win->target.vc[1] += 10;
-			win->camera.vc[1] += 10;
+			win->target.vc[1] += sign*10;
+			win->camera.vc[1] += sign*10;
 			return 0;
 		}
 		else if(_lb_ == t[2])
@@ -481,7 +482,7 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 
 		if('l' == t[2])
 		{
-			target_deltaxyz(win, x0, y0, 0);
+			target_deltaxyz(win, x0, sign*y0, 0);
 		}
 		else if('r' == t[2])
 		{
@@ -539,10 +540,10 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 }
 int actorinput_camera(struct arena* win, struct event* ev)
 {
-	struct style* sty;
-	struct relation* rel;
-	actorinput_cameraevent(win, ev);
+	struct style* sty = 0;
+	struct relation* rel = 0;
 
+	//find the chosen actor
 	rel = win->ireln;
 	while(1)
 	{
@@ -550,12 +551,23 @@ int actorinput_camera(struct arena* win, struct event* ev)
 		if(_act_ == rel->srctype)
 		{
 			sty = (void*)(rel->dstfoot);
-			sty->vc[0] = win->target.vc[0];
-			sty->vc[1] = win->target.vc[1];
-			sty->vc[2] = win->target.vc[2];
 			break;
 		}
 		rel = samedstprevsrc(rel);
+	}
+
+	//move it
+	if(sty)
+	{
+		win->target.vc[0] = sty->vc[0];
+		win->target.vc[1] = sty->vc[1];
+		win->target.vc[2] = sty->vc[2];
+
+		actorinput_cameraevent(win, ev);
+
+		sty->vc[0] = win->target.vc[0];
+		sty->vc[1] = win->target.vc[1];
+		sty->vc[2] = win->target.vc[2];
 	}
 	return 0;
 }
