@@ -336,7 +336,8 @@ int joystick2style(struct arena* win, struct style* sty, short* tmp)
 }
 int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 {
-	int j = -1;
+	int sign = -1;
+	if(_vbo_ == win->fmt)sign = 1;
 	if(0x4b == tmp[0])
 	{
 		//left
@@ -356,21 +357,20 @@ int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 	else if(0x50 == tmp[0])
 	{
 		//down
-		if(_vbo_ == win->fmt)j = 1;
-		sty->vc[0] -= j*(sty->vf[0])/16;
-		sty->vc[1] -= j*(sty->vf[1])/16;
-		sty->vc[2] -= j*(sty->vf[2])/16;
+		sty->vc[0] -= sign*(sty->vf[0])/16;
+		sty->vc[1] -= sign*(sty->vf[1])/16;
+		sty->vc[2] -= sign*(sty->vf[2])/16;
 		return 0;
 	}
 	else if(0x48 == tmp[0])
 	{
 		//up
-		if(_vbo_ == win->fmt)j = 1;
-		sty->vc[0] += j*(sty->vf[0])/16;
-		sty->vc[1] += j*(sty->vf[1])/16;
-		sty->vc[2] += j*(sty->vf[2])/16;
+		sty->vc[0] += sign*(sty->vf[0])/16;
+		sty->vc[1] += sign*(sty->vf[1])/16;
+		sty->vc[2] += sign*(sty->vf[2])/16;
 		return 0;
 	}
+	return 0;
 }
 int playwith3d_pick(struct arena* win, int x, int y)
 {
