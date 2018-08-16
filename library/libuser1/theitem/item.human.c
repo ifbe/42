@@ -1,36 +1,36 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 static vec3 bonenode[15] = {
-	{  0.0, 0.0, 0.8},	//00.head
-	{  0.0, 0.0, 0.6},	//01.neck
-	{  0.0, 0.0, 0.0},	//02.center
-	{-0.25, 0.0, 0.6},	//03.scapula l
-	{ 0.25, 0.0, 0.6},	//04.scapula r
-	{-0.25, 0.0, 0.0},	//05.hipbone l
-	{ 0.25, 0.0, 0.0},	//06.hipbone r
-	{-0.25, 0.1, 0.3},	//07.elbow l
-	{ 0.25,-0.1, 0.3},	//08.elbow r
-	{-0.25, 0.3, 0.0},	//09.hand l
-	{ 0.25,-0.3, 0.0},	//10.hand r
-	{-0.25,-0.1, -0.4},	//11.knee l
-	{ 0.25, 0.1, -0.4},	//12.knee r
-	{-0.25,-0.3, -0.8},	//13.foot l
-	{ 0.25, 0.3, -0.8}	//14.foot r
+	{ 0.0, 0.0, 0.8},	//00.head
+	{ 0.0, 0.0, 0.6},	//01.neck
+	{ 0.0, 0.0, 0.0},	//02.center
+	{-0.2, 0.0, 0.6},	//03.scapula l
+	{ 0.2, 0.0, 0.6},	//04.scapula r
+	{-0.2, 0.1, 0.3},	//05.elbow l
+	{ 0.2,-0.1, 0.3},	//06.elbow r
+	{-0.2, 0.3, 0.0},	//07.hand l
+	{ 0.2,-0.3, 0.0},	//08.hand r
+	{-0.1, 0.0, 0.0},	//09.hipbone l
+	{ 0.1, 0.0, 0.0},	//10.hipbone r
+	{-0.1,-0.1, -0.5},	//11.knee l
+	{ 0.1, 0.1, -0.5},	//12.knee r
+	{-0.1,-0.3, -1.0},	//13.foot l
+	{ 0.1, 0.3, -1.0}	//14.foot r
 };
 static u8 bonepair[14][2] = {
 	{ 0,  1},	//00.neck
 	{ 1,  2},	//01.body
 	{ 1,  3},	//02.l shoulder
 	{ 1,  4},	//03.r shoulder
-	{ 2,  5},	//04.l butt
-	{ 2,  6},	//05.r butt
-	{ 3,  7},	//06.l upper arm
-	{ 7,  9},	//07.l fore arm
-	{ 4,  8},	//08.r upper arm
-	{ 8, 10},	//09.r fore arm
-	{ 5, 11},	//10.l thigh
+	{ 3,  5},	//04.l upper arm
+	{ 5,  7},	//05.l fore arm
+	{ 4,  6},	//06.r upper arm
+	{ 6,  8},	//07.r fore arm
+	{ 2,  9},	//08.l butt
+	{ 2, 10},	//09.r butt
+	{ 9, 11},	//10.l thigh
 	{11, 13},	//11.l shank
-	{ 6, 12},	//12.r thigh
+	{10, 12},	//12.r thigh
 	{12, 14}	//13.r shank
 };
 
@@ -63,6 +63,7 @@ static void human_read_vbo(
 {
 	int j,k;
 	float x,y,z;
+	vec3 t0, t1;
 	vec3 tc, tr, tf, tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -74,18 +75,31 @@ static void human_read_vbo(
 		k = bonepair[j][0];
 		x = bonenode[k][0];
 		y = bonenode[k][1];
-		z = bonenode[k][2];
-		tc[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
-		tc[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
-		tc[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
+		z = 1.0+bonenode[k][2];
+		t0[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
+		t0[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
+		t0[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 		k = bonepair[j][1];
 		x = bonenode[k][0];
 		y = bonenode[k][1];
-		z = bonenode[k][2];
-		tr[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
-		tr[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
-		tr[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
-		carveline(win, 0xffffff, tc, tr);
+		z = 1.0+bonenode[k][2];
+		t1[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
+		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
+		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
+
+		tc[0] = (t0[0]+t1[0])/2;
+		tc[1] = (t0[1]+t1[1])/2;
+		tc[2] = (t0[2]+t1[2])/2;
+		tu[0] = t0[0] - tc[0];
+		tu[1] = t0[1] - tc[1];
+		tu[2] = t0[2] - tc[2];
+		tr[0] = vr[0]/16.0;
+		tr[1] = vr[1]/16.0;
+		tr[2] = vr[2]/16.0;
+		tf[0] = vf[0]/16.0;
+		tf[1] = vf[1]/16.0;
+		tf[2] = vf[2]/16.0;
+		carvesolid_prism4(win, 0xffffff, tc, tr, tf, tu);
 	}
 }
 static void human_read_json(
@@ -125,6 +139,45 @@ static void human_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	float c,s;
+	int sec = timeread() % 1000000;
+
+	//arm
+	c = cosine(PI/6.0*sec/1000000.0);
+	s = sine(PI*2.0*sec/1000000.0);
+	bonenode[5][1] = -s * 0.3;
+	bonenode[5][2] = 0.6 - c * 0.3;
+	bonenode[6][1] = s * 0.3;
+	bonenode[6][2] = 0.6 - c * 0.3;
+
+	c = cosine(PI/6.0*sec/1000000.0);
+	s = sine(PI*2.0*sec/1000000.0);
+	bonenode[7][1] = bonenode[5][1] - s * 0.3;
+	bonenode[7][2] = bonenode[5][2] - c * 0.3;
+	bonenode[8][1] = bonenode[6][1] + s * 0.3;
+	bonenode[8][2] = bonenode[6][2] - c * 0.3;
+
+	//leg
+	c = cosine(PI/12.0*sec/1000000.0);
+	s = sine(PI*2.0*sec/1000000.0);
+	if(s > 0.0)
+	{
+		bonenode[11][1] =  s * 0.5;
+		bonenode[11][2] = -c * 0.5;
+		bonenode[12][1] = 0.0;
+		bonenode[12][2] = -0.5;
+	}
+	else
+	{
+		bonenode[11][1] = 0.0;
+		bonenode[11][2] = -0.5;
+		bonenode[12][1] = -s * 0.5;
+		bonenode[12][2] = -c * 0.5;
+	}
+	bonenode[13][1] = bonenode[11][1];
+	bonenode[13][2] = bonenode[11][2] - 0.5;
+	bonenode[14][1] = bonenode[12][1];
+	bonenode[14][2] = bonenode[12][2] - 0.5;
 }
 static void human_list()
 {
