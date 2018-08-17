@@ -10,6 +10,7 @@ barecli:
 	rm -f *.o
 	$(compiler) $(cflag) osbare/bare.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -18,6 +19,7 @@ baretui:
 	rm -f *.o
 	$(compiler) $(cflag) osbare/bare.tui.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -26,6 +28,7 @@ bare8bit:
 	rm -f *.o
 	$(compiler) $(cflag) osbare/bare.8bit.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -34,6 +37,7 @@ barefb:
 	rm -f *.o
 	$(compiler) $(cflag) osbare/bare.fb.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -48,6 +52,7 @@ eficli:
 	rm -f *.o
 	$(compiler) $(cflag) osefi/efi.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -56,6 +61,7 @@ efifb:
 	rm -f *.o
 	$(compiler) $(cflag) osefi/efi.fb.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -73,6 +79,7 @@ linuxcli:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -85,6 +92,7 @@ linuxtui:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.tui.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -97,6 +105,7 @@ linuxfb:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.fb.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -109,6 +118,7 @@ linuxgtk:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` oslinux/linux.gtk.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -121,6 +131,7 @@ linuxwayland:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.wayland.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -133,6 +144,7 @@ linuxxlib:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.xlib.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -149,6 +161,7 @@ linuxglfw:
 	$(compiler) $(cflag) bygl/gl.vertex.c
 	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -161,6 +174,7 @@ linuxglut:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -173,6 +187,7 @@ linuxsdl:
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -190,6 +205,7 @@ maccli:
 	$(compiler) $(cflag) osmac/mac.cli.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -202,6 +218,7 @@ mactui:
 	$(compiler) $(cflag) osmac/mac.tui.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -214,6 +231,7 @@ maccocoa:
 	$(compiler) $(cflag) osmac/mac.cocoa.m
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -226,6 +244,7 @@ macquartz:
 	$(compiler) $(cflag) osmac/mac.quartz.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -242,6 +261,7 @@ macglfw:
 	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -254,6 +274,7 @@ macglut:
 	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -266,6 +287,7 @@ macsdl:
 	$(compiler) $(cflag) osmac/mac.mic.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -283,6 +305,7 @@ wincli:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.cli.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -295,6 +318,7 @@ wintui:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.tui.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -307,6 +331,7 @@ winapi:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.api.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -319,6 +344,7 @@ wind3d:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.d3d.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -335,6 +361,8 @@ winglfw:
 	$(compiler) $(cflag) bygl/gl.vertex.c
 	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
+	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
 
@@ -346,6 +374,7 @@ winglut:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c
@@ -358,6 +387,7 @@ winsdl:
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) bysdl/sdl2.c
 	$(compiler) $(cflag) byremote/remote.http.c
+	$(compiler) $(cflag) byremote/remote.tty.c
 	$(compiler) $(cflag) byremote/remote.vnc.c
 	$(compiler) $(cflag) byremote/remote.ws.c
 	$(compiler) $(cflag) arena.c

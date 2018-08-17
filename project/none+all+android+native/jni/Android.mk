@@ -252,6 +252,8 @@ library/libuser0/osandroid/android.cam.c \
 library/libuser0/osandroid/android.mic.c \
 library/libuser0/osandroid/android.native.c \
 library/libuser0/byremote/remote.http.c \
+library/libuser0/byremote/remote.tty.c \
+library/libuser0/byremote/remote.vnc.c \
 library/libuser0/byremote/remote.ws.c \
 library/libuser0/arena.c
 

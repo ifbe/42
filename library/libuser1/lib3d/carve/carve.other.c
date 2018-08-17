@@ -528,6 +528,47 @@ void carvelight(float vbuf[][6], u16* ibuf,
 
 
 
+void carvesolid_bodypart(struct arena* win, u32 rgb, vec3 t0, vec3 t1)
+{
+	float n;
+	vec3 tc, tr, tf, tu;
+
+	tc[0] = (t0[0]+t1[0])/2;
+	tc[1] = (t0[1]+t1[1])/2;
+	tc[2] = (t0[2]+t1[2])/2;
+
+	tu[0] = t0[0] - tc[0];
+	tu[1] = t0[1] - tc[1];
+	tu[2] = t0[2] - tc[2];
+
+	n = tu[0]*tu[0] + tu[1]*tu[1] + tu[2]*tu[2];
+	n = squareroot(n);
+
+	if(tu[2] < 0.9*n)
+	{
+		tr[0] = tu[1]*1.0 - tu[2]*0.0;
+		tr[1] = tu[2]*0.0 - tu[0]*1.0;
+		tr[2] = tu[0]*0.0 - tu[1]*0.0;
+	}
+	else
+	{
+		tr[0] = tu[1]*0.0 - tu[2]*0.0;
+		tr[1] = tu[2]*1.0 - tu[0]*0.0;
+		tr[2] = tu[0]*0.0 - tu[1]*1.0;
+	}
+	tr[0] /= 3;
+	tr[1] /= 3;
+	tr[2] /= 3;
+
+	tf[0] = tu[1]*tr[2] - tu[2]*tr[1];
+	tf[1] = tu[2]*tr[0] - tu[0]*tr[2];
+	tf[2] = tu[0]*tr[1] - tu[1]*tr[0];
+	tf[0] /= n;
+	tf[1] /= n;
+	tf[2] /= n;
+
+	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+}
 void carvestl(
 	struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu,

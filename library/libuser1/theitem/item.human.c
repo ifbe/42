@@ -1,5 +1,10 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
+void carvesolid_bodypart(struct arena*, u32, vec3, vec3);
+
+
+
+
 static vec3 bonenode[15] = {
 	{ 0.0, 0.0, 0.8},	//00.head
 	{ 0.0, 0.0, 0.6},	//01.neck
@@ -17,21 +22,23 @@ static vec3 bonenode[15] = {
 	{-0.1,-0.3, -1.0},	//13.foot l
 	{ 0.1, 0.3, -1.0}	//14.foot r
 };
-static u8 bonepair[14][2] = {
+static u8 bonepair[16][2] = {
 	{ 0,  1},	//00.neck
 	{ 1,  2},	//01.body
-	{ 1,  3},	//02.l shoulder
-	{ 1,  4},	//03.r shoulder
-	{ 3,  5},	//04.l upper arm
-	{ 5,  7},	//05.l fore arm
-	{ 4,  6},	//06.r upper arm
-	{ 6,  8},	//07.r fore arm
-	{ 2,  9},	//08.l butt
-	{ 2, 10},	//09.r butt
-	{ 9, 11},	//10.l thigh
-	{11, 13},	//11.l shank
-	{10, 12},	//12.r thigh
-	{12, 14}	//13.r shank
+	{ 3,  4},	//02.shoulder
+	{ 9, 10},	//03.hipbone
+	{ 1,  3},	//04.l shoulder
+	{ 1,  4},	//05.r shoulder
+	{ 3,  5},	//06.l upper arm
+	{ 5,  7},	//07.l fore arm
+	{ 4,  6},	//08.r upper arm
+	{ 6,  8},	//09.r fore arm
+	{ 2,  9},	//10.l butt
+	{ 2, 10},	//11.r butt
+	{ 9, 11},	//12.l thigh
+	{11, 13},	//13.l shank
+	{10, 12},	//14.r thigh
+	{12, 14}	//15.r shank
 };
 
 
@@ -62,15 +69,14 @@ static void human_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int j,k;
-	float x,y,z;
 	vec3 t0, t1;
-	vec3 tc, tr, tf, tu;
+	float x,y,z;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
-	for(j=0;j<14;j++)
+	for(j=0;j<16;j++)
 	{
 		k = bonepair[j][0];
 		x = bonenode[k][0];
@@ -87,19 +93,7 @@ static void human_read_vbo(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		tc[0] = (t0[0]+t1[0])/2;
-		tc[1] = (t0[1]+t1[1])/2;
-		tc[2] = (t0[2]+t1[2])/2;
-		tu[0] = t0[0] - tc[0];
-		tu[1] = t0[1] - tc[1];
-		tu[2] = t0[2] - tc[2];
-		tr[0] = vr[0]/16.0;
-		tr[1] = vr[1]/16.0;
-		tr[2] = vr[2]/16.0;
-		tf[0] = vf[0]/16.0;
-		tf[1] = vf[1]/16.0;
-		tf[2] = vf[2]/16.0;
-		carvesolid_prism4(win, 0xffffff, tc, tr, tf, tu);
+		carvesolid_bodypart(win, 0xffffff, t0, t1);
 	}
 }
 static void human_read_json(
