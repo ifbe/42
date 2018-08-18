@@ -133,28 +133,31 @@ static void human_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	float c,s;
-	int sec = timeread() % 1000000;
+	float a,c,s;
+	float sec = (timeread() % 2000000) / 2000000.0;
 
 	//arm
-	c = cosine(PI/6.0*sec/1000000.0);
-	s = sine(PI*2.0*sec/1000000.0);
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
 	bonenode[5][1] = -s * 0.3;
 	bonenode[5][2] = 0.6 - c * 0.3;
 	bonenode[6][1] = s * 0.3;
 	bonenode[6][2] = 0.6 - c * 0.3;
 
-	c = cosine(PI/6.0*sec/1000000.0);
-	s = sine(PI*2.0*sec/1000000.0);
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
 	bonenode[7][1] = bonenode[5][1] - s * 0.3;
 	bonenode[7][2] = bonenode[5][2] - c * 0.3;
 	bonenode[8][1] = bonenode[6][1] + s * 0.3;
 	bonenode[8][2] = bonenode[6][2] - c * 0.3;
 
 	//leg
-	c = cosine(PI/12.0*sec/1000000.0);
-	s = sine(PI*2.0*sec/1000000.0);
-	if(s > 0.0)
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
+	if(a > 0.0)
 	{
 		bonenode[11][1] =  s * 0.5;
 		bonenode[11][2] = -c * 0.5;

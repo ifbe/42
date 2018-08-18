@@ -1,3 +1,7 @@
+typedef char s8;
+typedef short s16;
+typedef int s32;
+typedef long long s64;
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -108,6 +112,11 @@ typedef float mat4[4][4];
 
 
 
+struct mystring
+{
+	int len;
+	u8 buf[0];
+};
 struct xyzw
 {
 	u16 x;
@@ -158,11 +167,6 @@ struct relation
 
 
 
-struct mystring
-{
-	int len;
-	u8 buf[0];
-};
 struct texandobj
 {
 	u32 program;
@@ -312,64 +316,6 @@ struct pinid
 
 	//[80, ...]
 	u64 foot[0];
-};
-struct stdhead
-{
-	//[0x00,0x1f]
-	union{
-		void* irel0;
-		u64 ipad0;
-	};
-	union{
-		void* ireln;
-		u64 ipadn;
-	};
-	union{
-		void* orel0;
-		u64 opad0;
-	};
-	union{
-		void* oreln;
-		u64 opadn;
-	};
-
-	//[20,3f]data
-	union{
-		u64 fd;
-		void* win;
-	};
-	union{
-		u64 dc;
-		u64 gc;
-		void* er;
-	};
-	union{
-		u64 len;
-		void* hp;
-		void* mod;
-		void* ximage;
-		void* texture;
-	};
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 name;
-
-	//[60,7f]
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
 };
 
 
