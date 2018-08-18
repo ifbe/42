@@ -6,16 +6,8 @@
 #define _fd_ hex32('f','d',0,0)
 void* allocstyle();
 void* allocpinid();
-//
-void* actorcreate(void*, u8*);
-void* actordelete(void*, u8*);
 void* actorstart(void*, void*, void*, void*);
 void* actorstop(void*, void*, void*, void*);
-//
-void* arenacreate(u64, u8*);
-void* arenadelete(u8*);
-void* arenastart(void*, void*, void*, void*);
-void* arenastop(void*, void*, void*, void*);
 //
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
@@ -96,7 +88,7 @@ int arenaactor(struct arena* win, struct actor* act)
 		sty->vu[2] = min;
 	}
 
-	actorcreate(act, 0);
+	actorcreate(0, act);
 	actorstart(win, sty, act, pin);
 	relationcreate(win, sty, _win_, act, pin, _act_);
 	return 0;
@@ -797,7 +789,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		{
 			q = &actor[win->menudata];
 			if(0 == q->type)return;
-			actorcreate(q, 0);
+			actorcreate(0, q);
 		}
 		else if(y1<16)
 		{
@@ -857,7 +849,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			q = &actor[x1 + (y1*8)];
 			if(0 == q->type)return;
 
-			actorcreate(q, 0);
+			actorcreate(0, q);
 			relationcreate(q, 0, _act_, p, 0, _win_);
 		}
 		else if(y1 < 16)

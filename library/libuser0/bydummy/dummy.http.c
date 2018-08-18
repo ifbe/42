@@ -1,16 +1,4 @@
 #include "libuser.h"
-#define _TCP_ hex32('T','C','P',0)
-#define _WS_ hex32('W','S',0,0)
-#define _fd_ hex32('f','d',0,0)
-void* actorcreate(u64, void*);
-int actordelete(void*);
-void* arenacreate(u64, void*);
-int arenadelete(void*);
-void* arterycreate(u64, void*);
-int arterydelete(void*);
-void* systemcreate(u64, void*);
-int systemdelete(void*);
-//
 int websocket_write_handshake(u8* buf, int len);
 int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
 void parsehtml(u8* buf, int len);

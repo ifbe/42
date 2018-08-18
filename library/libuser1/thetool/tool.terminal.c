@@ -27,7 +27,6 @@ int listshell(void*, int);
 int startshell();
 int writeshell(int fd, int off, char* buf, int len);
 //
-void* systemcreate(u64 type, u8* name);
 void queue_copy(struct uartterm* term, u8* buf, int len);
 void drawterm(struct arena* win, void* term, int x0, int y0, int x1, int y1);
 
@@ -295,8 +294,12 @@ static void terminal_delete(struct actor* act)
 }
 static void terminal_create(struct actor* act)
 {
+	void* tty;
 	struct uartterm* term;
 	if(0 == act)return;
+
+	tty = arenacreate(_uart_, 0);
+	relationcreate(act, 0, _act_, tty, 0, _win_);
 
 	act->idx = memorycreate(sizeof(struct uartterm));
 	act->buf = memorycreate(0x100000);

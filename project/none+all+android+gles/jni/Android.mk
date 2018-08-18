@@ -255,10 +255,11 @@ library/libuser0/bygl/gl.object.c \
 library/libuser0/bygl/gl.shader.c \
 library/libuser0/bygl/gl.texture.c \
 library/libuser0/bygl/gl.vertex.c \
-library/libuser0/byremote/remote.http.c \
-library/libuser0/byremote/remote.tty.c \
-library/libuser0/byremote/remote.vnc.c \
-library/libuser0/byremote/remote.ws.c \
+library/libuser0/bydummy/dummy.http.c \
+library/libuser0/bydummy/dummy.rgba.c \
+library/libuser0/bydummy/dummy.tty.c \
+library/libuser0/bydummy/dummy.vbo.c \
+library/libuser0/bydummy/dummy.ws.c \
 library/libuser0/arena.c
 
 #libuser1

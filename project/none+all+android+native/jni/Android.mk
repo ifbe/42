@@ -251,10 +251,11 @@ LOCAL_SRC_FILES += \
 library/libuser0/osandroid/android.cam.c \
 library/libuser0/osandroid/android.mic.c \
 library/libuser0/osandroid/android.native.c \
-library/libuser0/byremote/remote.http.c \
-library/libuser0/byremote/remote.tty.c \
-library/libuser0/byremote/remote.vnc.c \
-library/libuser0/byremote/remote.ws.c \
+library/libuser0/bydummy/dummy.http.c \
+library/libuser0/bydummy/dummy.rgba.c \
+library/libuser0/bydummy/dummy.tty.c \
+library/libuser0/bydummy/dummy.vbo.c \
+library/libuser0/bydummy/dummy.ws.c \
 library/libuser0/arena.c
 
 #libuser1

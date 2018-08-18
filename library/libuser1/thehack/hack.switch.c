@@ -1,11 +1,4 @@
 #include "libuser.h"
-#define _UDP_ hex32('U','D','P',0)
-#define _udp_ hex32('u','d','p',0)
-#define _tcp_ hex32('t','c','p',0)
-#define _cam_ hex32('c','a','m',0)
-#define _fd_ hex32('f','d',0,0)
-void* arenacreate(int, void*);
-void* systemcreate(u64, void*);
 
 
 

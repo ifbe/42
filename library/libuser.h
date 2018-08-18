@@ -40,19 +40,28 @@ typedef float mat4[4][4];
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
 //
-#define _drag_ hex32('d','r','a','g')
-#define _joy_ hex32('j','o','y',0)
-#define _kbd_ hex32('k','b','d',0)
-#define _char_ hex32('c','h','a','r')
-#define _i2c_ hex32('i','2','c',0)
-#define _uart_ hex32('u','a','r','t')
-//
+#define _cam_ hex32('c','a','m',0)
+#define _mic_ hex32('m','i','c',0)
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
 #define _html_ hex32('h','t','m','l')
 #define _json_ hex32('j','s','o','n')
 #define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
+//
+#define _TCP_ hex32('T','C','P',0)
+#define _tcp_ hex32('t','c','p',0)
+#define _UDP_ hex32('U','D','P',0)
+#define _udp_ hex32('u','d','p',0)
+#define _WS_ hex32('W','S',0,0)
+#define _ws_ hex32('w','s',0,0)
+//
+#define _drag_ hex32('d','r','a','g')
+#define _joy_ hex32('j','o','y',0)
+#define _kbd_ hex32('k','b','d',0)
+#define _char_ hex32('c','h','a','r')
+#define _i2c_ hex32('i','2','c',0)
+#define _uart_ hex32('u','a','r','t')
 //
 #define _dl_ hex16('d','l')
 #define _dr_ hex16('d','r')
@@ -670,7 +679,7 @@ struct actor
 		char padding0[8];
 	};
 	union{
-		int (*ondelete)(void* actor, void* buf);
+		int (*ondelete)(void* actor);
 		char padding1[8];
 	};
 	union{
@@ -943,6 +952,15 @@ void* eventwrite(u64,u64,u64,u64);
 extern "C" {
 #endif
 
+void* actorcreate(u64, void*);
+int actordelete(struct actor*);
+void* arenacreate(u64, void*);
+int arenadelete(struct arena*);
+void* arterycreate(u64, void*);
+int arterydelete(void*);
+void* systemcreate(u64, void*);
+int systemdelete(void*);
+//
 int actorread_all(struct arena*);
 int actorwrite_ev(struct event*);
 int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);

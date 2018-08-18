@@ -248,19 +248,21 @@ int actorstart(
 	act->onstart(win, sty, act, pin);
 	return 0;
 }
-int actordelete(struct actor* act, u8* buf)
+int actordelete(struct actor* act)
 {
 	if(0 == act)return 0;
 	if(_orig_ == act->type)return 0;
 	if(_copy_ == act->type)return 0;
-	act->ondelete(act, buf);
+	act->ondelete(act);
 
 	if(_ORIG_ == act->type)act->type = _orig_;
 	else if(_COPY_ == act->type)act->type = _copy_;
 	return 0;
 }
-int actorcreate(struct actor* act, u8* buf)
+void* actorcreate(u64 type, void* buf)
 {
+	struct actor* act;
+	if(0 == type)act = buf;
 	if(0 == act)return 0;
 	if(_ORIG_ == act->type)return 0;
 	if(_COPY_ == act->type)return 0;
@@ -296,7 +298,7 @@ void* actorchoose(u8* buf, int len)
 			if(0 == id)
 			{
 				act = &actor[j];
-				actorcreate(act, data);
+				actorcreate(0, act);
 				break;
 			}
 		}

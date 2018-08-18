@@ -17,8 +17,6 @@ void inittray(void*);
 void freetray();
 void initwindow(void*);
 void freewindow();
-void initremote(void*);
-void freeremote();
 //cam
 int videocreate(void*);
 int videodelete(void*);
@@ -54,6 +52,8 @@ int wsserver_create(void* win, u8* str);
 int vncclient_create(void* win, u8* str);
 int vncserver_create(void* win, u8* str);
 //
+int uartnode_create(void*, void*);
+int uartnode_delete(void*);
 int httpclient_delete(void* win);
 int httpserver_delete(void* win);
 int wsclient_delete(void* win);
@@ -116,7 +116,7 @@ void* allocifoot()
 	int j,len;
 	u8* buf;
 
-	len = 0x80;
+	len = 0x100;
 	buf = (void*)style + 0x100000 - len - foolen;
 	foolen += len;
 
@@ -244,7 +244,7 @@ int arenadelete(struct arena* win)
 	win->fmt = 0;
 	return 0;
 }
-void* arenacreate(u64 type, u8* addr)
+void* arenacreate(u64 type, void* addr)
 {
 	int j = 0;
 	struct arena* win;
@@ -387,6 +387,13 @@ void* arenacreate(u64 type, u8* addr)
 		//be server, output data
 		wsserver_create(win, addr);
 	}
+	else if(_uart_ == type)
+	{
+		win->type = _uart_;
+		win->fmt = _cli_;
+
+		uartnode_create(win, addr);
+	}
 
 	return win;
 }
@@ -449,7 +456,6 @@ void freearena()
 	//say("[c,f):freeing arena\n");
 
 	freewindow();
-	//remotedelete();
 }
 void initarena(u8* addr)
 {
@@ -463,7 +469,6 @@ void initarena(u8* addr)
 
 	inittray(arena);
 	initwindow(arena);
-	//initremote(arena);
 
 	//say("[c,f):inited arena\n");
 }
