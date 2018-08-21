@@ -341,14 +341,9 @@ void windowcreate(struct arena* w)
 
 
 
-void terminalthread(void* win)
-{
-	while(1)eventwrite(lowlevel_input(), _char_, 0, 0);
-}
 void freewindow()
 {
 }
 void initwindow()
 {
-	threadcreate(terminalthread, 0);
 }

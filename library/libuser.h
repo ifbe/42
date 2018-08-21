@@ -38,12 +38,14 @@ typedef float mat4[4][4];
 #define _copy_ hex32('c','o','p','y')
 #define _COPY_ hex32('C','O','P','Y')
 //
-#define _coop_ hex32('c','o','o','p')
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
 //
+#define _coop_ hex32('c','o','o','p')
+#define _uart_ hex32('u','a','r','t')
+#define _dbg_ hex32('d','b','g',0)
 #define _cam_ hex32('c','a','m',0)
 #define _mic_ hex32('m','i','c',0)
 #define _cli_ hex32('c','l','i',0)
@@ -65,7 +67,6 @@ typedef float mat4[4][4];
 #define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _i2c_ hex32('i','2','c',0)
-#define _uart_ hex32('u','a','r','t')
 //
 #define _dl_ hex16('d','l')
 #define _dr_ hex16('d','r')

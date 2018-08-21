@@ -4,14 +4,17 @@
 #include<unistd.h>
 #include<termios.h>
 #include"libuser.h"
-int lowlevel_input();
 
 
 
 
 void windowread()
 {
-	eventwrite(lowlevel_input(), _char_, 0, 0);
+	//draw frame
+	actorread_all(win);
+
+	//cleanup events(window event)
+	sleep_us(1000*1000);
 }
 void windowwrite()
 {

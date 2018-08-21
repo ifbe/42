@@ -35,7 +35,7 @@ int soundread(void* win, void* sty, void* act, void* pin);
 int soundwrite(void*);
 int soundlist();
 int soundchoose();
-//local
+//window
 int windowcreate(void*);
 int windowdelete(void*);
 int windowstart(void*);
@@ -52,6 +52,8 @@ int wsserver_create(void* win, u8* str);
 int vncclient_create(void* win, u8* str);
 int vncserver_create(void* win, u8* str);
 //
+int traycreate(void*, void*);
+int traydelete(void*);
 int uartnode_create(void*, void*);
 int uartnode_delete(void*);
 int httpclient_delete(void* win);
@@ -189,6 +191,38 @@ int arenaread_all()
 */
 	return 0;
 }
+void arenavertex(struct arena* win)
+{
+	//target
+	win->target.vc[0] = 0.0;
+	win->target.vc[1] = 0.0;
+	win->target.vc[2] = 0.0;
+
+	win->target.vr[0] = 256.0;
+	win->target.vr[1] = 0.0;
+	win->target.vr[2] = 0.0;
+
+	win->target.vf[0] = 0.0;
+	win->target.vf[1] = 256.0;
+	win->target.vf[2] = 0.0;
+
+	win->target.vu[0] = 0.0;
+	win->target.vu[1] = 0.0;
+	win->target.vu[2] = 256.0;
+
+	//camera
+	win->camera.vc[0] = 0.0;
+	win->camera.vc[1] = -1024.0;
+	win->camera.vc[2] = 1024.0;
+
+	win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
+	win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
+	win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = 0.0;
+	win->camera.vu[2] = 1.0;
+}
 
 
 
@@ -268,11 +302,6 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
 
-		win->enq = 1;
-		win->deq = 0;
-		win->time = 0;
-		win->fps = 60;
-
 		win->backdata = 0;
 		win->backtype = 0;
 		win->modedata = 0;
@@ -281,36 +310,7 @@ void* arenacreate(u64 type, void* addr)
 		win->menutype = 1;	//menu1: select
 		win->vkbddata = 0;
 		win->vkbdtype = 0;
-
-		//target
-		win->target.vc[0] = 0.0;
-		win->target.vc[1] = 0.0;
-		win->target.vc[2] = 0.0;
-
-		win->target.vr[0] = 256.0;
-		win->target.vr[1] = 0.0;
-		win->target.vr[2] = 0.0;
-
-		win->target.vf[0] = 0.0;
-		win->target.vf[1] = 256.0;
-		win->target.vf[2] = 0.0;
-
-		win->target.vu[0] = 0.0;
-		win->target.vu[1] = 0.0;
-		win->target.vu[2] = 256.0;
-
-		//camera
-		win->camera.vc[0] = 0.0;
-		win->camera.vc[1] = -1024.0;
-		win->camera.vc[2] = 1024.0;
-
-		win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
-		win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
-		win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
-
-		win->camera.vu[0] = 0.0;
-		win->camera.vu[1] = 0.0;
-		win->camera.vu[2] = 1.0;
+		arenavertex(win);
 	}
 	else if(_coop_ == type)
 	{
@@ -326,42 +326,28 @@ void* arenacreate(u64 type, void* addr)
 		win->menutype = 0;	//menu1: select
 		win->vkbddata = 0;
 		win->vkbdtype = 0;
+		arenavertex(win);
+	}
+	else if(_dbg_ == type)
+	{
+		win->type = _dbg_;
+		win->fmt = _cli_;
 
-		//target
-		win->target.vc[0] = 0.0;
-		win->target.vc[1] = 0.0;
-		win->target.vc[2] = 0.0;
+		traycreate(win, addr);
+	}
+	else if(_uart_ == type)
+	{
+		win->type = _uart_;
+		win->fmt = _cli_;
 
-		win->target.vr[0] = 256.0;
-		win->target.vr[1] = 0.0;
-		win->target.vr[2] = 0.0;
-
-		win->target.vf[0] = 0.0;
-		win->target.vf[1] = 256.0;
-		win->target.vf[2] = 0.0;
-
-		win->target.vu[0] = 0.0;
-		win->target.vu[1] = 0.0;
-		win->target.vu[2] = 256.0;
-
-		//camera
-		win->camera.vc[0] = 0.0;
-		win->camera.vc[1] = -1024.0;
-		win->camera.vc[2] = 1024.0;
-
-		win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
-		win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
-		win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
-
-		win->camera.vu[0] = 0.0;
-		win->camera.vu[1] = 0.0;
-		win->camera.vu[2] = 1.0;
+		uartnode_create(win, addr);
 	}
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
+
 		videocreate(win);
 	}
 	else if(_mic_ == type)
@@ -369,6 +355,7 @@ void* arenacreate(u64 type, void* addr)
 		if(0 == addr)return 0;
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
+
 		soundcreate(win);
 	}
 	else if(_HTTP_ == type)
@@ -386,13 +373,6 @@ void* arenacreate(u64 type, void* addr)
 
 		//be server, output data
 		wsserver_create(win, addr);
-	}
-	else if(_uart_ == type)
-	{
-		win->type = _uart_;
-		win->fmt = _cli_;
-
-		uartnode_create(win, addr);
 	}
 
 	return win;
@@ -456,6 +436,7 @@ void freearena()
 	//say("[c,f):freeing arena\n");
 
 	freewindow();
+	freetray();
 }
 void initarena(u8* addr)
 {

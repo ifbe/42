@@ -20,18 +20,6 @@ static int fboneline=0;
 static int xmax=0;
 static int ymax=0;
 static int bpp=0;
-void terminalthread(void* win)
-{
-	struct event ev;
-	ev.where = (u64)win;
-	ev.what = _char_;
-	while(1)
-	{
-		ev.why = lowlevel_input();
-		actorwrite_ev(&ev);
-	}
-}
-
 
 
 
@@ -136,8 +124,6 @@ void windowcreate(struct arena* w)
 
 	w->buf = malloc(2048*1024*4);
 	for(j=0;j<16;j++)w->input[j].id = 0xffff;
-
-	threadcreate(terminalthread, w);
 }
 
 

@@ -176,7 +176,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 			ev.why = *(u64*)t;
 			ev.what = _joy_;
 			ev.where = 0;
-			actorwrite(0, 0, 0, 0, &ev, 0x20);
+			actorwrite_ev(&ev);
 		}
 	}
 	btn = g.wButtons;
@@ -190,7 +190,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		ev.why = *(u64*)t;
 		ev.what = _joy_;
 		ev.where = 0;
-		actorwrite(0, 0, 0, 0, &ev, 0x20);
+		actorwrite_ev(&ev);
 	}
 
 	if(g.bRightTrigger > 8)
@@ -202,7 +202,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		ev.why = *(u64*)t;
 		ev.what = _joy_;
 		ev.where = 0;
-		actorwrite(0, 0, 0, 0, &ev, 0x20);
+		actorwrite_ev(&ev);
 	}
 
 	if(	(g.sThumbLX < -2048) | (g.sThumbLX > 2048) | (g.sThumbLY < -2048) | (g.sThumbLY > 2048) )
@@ -214,7 +214,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		ev.why = *(u64*)t;
 		ev.what = _joy_;
 		ev.where = 0;
-		actorwrite(0, 0, 0, 0, &ev, 0x20);
+		actorwrite_ev(&ev);
 	}
 
 	if(	(g.sThumbRX < -2048) | (g.sThumbRX > 2048) | (g.sThumbRY < -2048) | (g.sThumbRY > 2048) )
@@ -226,7 +226,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		ev.why = *(u64*)t;
 		ev.what = _joy_;
 		ev.where = 0;
-		actorwrite(0, 0, 0, 0, &ev, 0x20);
+		actorwrite_ev(&ev);
 	}
 }
 void* joystickthread(void* win)
@@ -260,12 +260,25 @@ void* joystickthread(void* win)
 
 
 
+void terminalthread(void* win)
+{
+	while(1)
+	{
+		eventwrite(lowlevel_input(), _char_, 0, 0);
+	}
+}
+void traycreate(struct arena* win)
+{
+	threadcreate(terminalthread, 0);
+}
+
+
+
+
 void inittray()
 {
 	console = GetConsoleWindow();
 	threadcreate(joystickthread, 0);
-
-	//threadcreate(trayworker, 0);
 }
 void freetray()
 {

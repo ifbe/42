@@ -2,7 +2,6 @@
 #include <conio.h>
 #include <windows.h>
 #include "libuser.h"
-int lowlevel_input();
 
 
 
@@ -16,7 +15,11 @@ static int termcount = 0;
 
 void windowread(struct arena* win)
 {
-	eventwrite(lowlevel_input(), _char_, 0, 0);
+	//draw frame
+	actorread_all(win);
+
+	//cleanup events(window event)
+	sleep_us(1000*1000);
 }
 void windowwrite(struct arena* win)
 {

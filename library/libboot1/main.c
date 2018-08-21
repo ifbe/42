@@ -4,6 +4,8 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define _char_ hex32('c','h','a','r')
+#define _dbg_  hex32('d','b','g', 0)
+#define _win_  hex32('w','i','n', 0)
 #define _dev_  hex32('d','e','v', 0)
 #define _dri_  hex32('d','r','i', 0)
 #define _fd_   hex32('f','d', 0 , 0)
@@ -201,6 +203,7 @@ int main(int argc, char* argv[])
 {
 	//before
 	int j,k;
+	void* dbg;
 	void* win;
 	u8* addr = beforedawn();
 
@@ -213,7 +216,8 @@ int main(int argc, char* argv[])
 	threadcreate(aide, 0);
 
 	//main thread
-	win = arenacreate(0, 0);
+	dbg = arenacreate(_dbg_, 0);
+	win = arenacreate(_win_,  0);
 	while(alive)
 	{
 		//draw frame, cleanup events
