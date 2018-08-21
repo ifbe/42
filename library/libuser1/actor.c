@@ -261,11 +261,51 @@ int actordelete(struct actor* act)
 }
 void* actorcreate(u64 type, void* buf)
 {
+	int j,k;
+	u8* src;
+	u8* dst;
 	struct actor* act;
-	if(0 == type)act = buf;
-	if(0 == act)return 0;
-	if(_ORIG_ == act->type)return 0;
-	if(_COPY_ == act->type)return 0;
+
+	if(0 == type)
+	{
+		act = buf;
+		if(0 == act)return 0;
+
+		if(_ORIG_ == act->type)return 0;
+		if(_COPY_ == act->type)return 0;
+	}
+	else
+	{
+		k = 0;
+		for(j=0;j<256;j++)
+		{
+			if(0 == actor[j].type)
+			{
+				if(0 == k)return 0;
+				break;
+			}
+			else if(type == actor[j].name)k = j;
+			else if(type == actor[j].name)k = j;
+		}
+
+		src = (void*)&actor[k];
+		dst = (void*)&actor[j];
+		for(j=0;j<sizeof(struct actor);j++)dst[j] = src[j];
+
+		act = (void*)dst;
+		act->irel0 = act->ireln = 0;
+		act->orel0 = act->oreln = 0;
+
+		act->fd = 0;
+		act->dc = 0;
+		act->idx = 0;
+		act->buf = 0;
+
+		//act->tier
+		act->type = _copy_;
+		//act->fmt
+		//act->name
+	}
 
 	act->oncreate(act, buf);
 	if(_orig_ == act->type)act->type = _ORIG_;

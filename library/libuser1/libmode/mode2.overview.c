@@ -815,6 +815,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		if(y1 < 8)
 		{
 			say("actor@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+			actorcreate(actor[x0+(y0*8)].name, 0);
 		}
 		else if(y1 < 16)
 		{
