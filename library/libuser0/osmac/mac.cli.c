@@ -1,14 +1,14 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<termios.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
 #include"libuser.h"
 
 
 
 
-void windowread()
+void windowread(struct arena* win)
 {
 	//draw frame
 	actorread_all(win);
@@ -51,23 +51,7 @@ void windowcreate(struct arena* w)
 
 void initwindow()
 {
-	struct termios t;
-	tcgetattr(STDIN_FILENO, &t);
-	
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-	t.c_lflag &= ~(ICANON|ECHO);
-	t.c_cc[VTIME] = 0;
-	t.c_cc[VMIN] = 1;
-
-	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
 void freewindow()
 {
-	struct termios t;
-	tcgetattr(STDIN_FILENO, &t);
-	
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
-	t.c_lflag |= ICANON|ECHO;
-
-	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
