@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
+int lowlevel_input();
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
@@ -340,9 +341,14 @@ void windowcreate(struct arena* w)
 
 
 
+void terminalthread(void* win)
+{
+	while(1)eventwrite(lowlevel_input(), _char_, 0, 0);
+}
 void freewindow()
 {
 }
 void initwindow()
 {
+	threadcreate(terminalthread, 0);
 }

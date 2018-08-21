@@ -27,8 +27,8 @@ int listshell(void*, int);
 int startshell();
 int writeshell(int fd, int off, char* buf, int len);
 //
-void queue_copy(struct uartterm* term, u8* buf, int len);
 void drawterm(struct arena* win, void* term, int x0, int y0, int x1, int y1);
+void terminal_serverinput(struct uartterm* term, u8* buf, int len);
 
 
 
@@ -255,7 +255,7 @@ static void terminal_write_data(
 	u8* buf, int len)
 {
 	say("%.*s", len, buf);
-	queue_copy(act->idx, buf, len);
+	terminal_serverinput(act->idx, buf, len);
 }
 static void terminal_write(
 	struct actor* act, struct pinid* pin,

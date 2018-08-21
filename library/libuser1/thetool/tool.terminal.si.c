@@ -493,7 +493,12 @@ static int queue_1b(struct uartterm* term, u8* p)
 	printmemory(p, 16);
 	return 2;
 }
-void queue_copy(struct uartterm* term, u8* buf, int len)
+
+
+
+
+//measured context
+void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 {
 	int j,k;
 	int x,y;

@@ -95,8 +95,8 @@ thetest/test.planet.c \
 thetool/tool.browser.c \
 thetool/tool.calculator.c \
 thetool/tool.camera.c \
-thetool/tool.camera.carrier.c \
-thetool/tool.camera.thinker.c \
+thetool/tool.camera.ci.c \
+thetool/tool.camera.si.c \
 thetool/tool.circuit.c \
 thetool/tool.editor.c \
 thetool/tool.font.c \
@@ -105,8 +105,8 @@ thetool/tool.qrcode.c \
 thetool/tool.sketchpad.c \
 thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
-thetool/tool.terminal.carrier.c \
-thetool/tool.terminal.thinker.c \
+thetool/tool.terminal.ci.c \
+thetool/tool.terminal.si.c \
 libbgfg/bgfg.gif.c \
 libbgfg/bgfg.jpg.c \
 libbgfg/bgfg.c \

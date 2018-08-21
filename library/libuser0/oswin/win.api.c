@@ -9,6 +9,7 @@
 #include <winuser.h>
 #include <commctrl.h>
 #include "libuser.h"
+int lowlevel_input();
 int argv2line(void*, void*);
 
 
@@ -562,8 +563,19 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 theend:
 	return DefWindowProc(wnd, msg, wparam, lparam);
 }
+void terminalthread(void* win)
+{
+	while(1)eventwrite(lowlevel_input(), _char_, 0, 0);
+}
+void freewindow()
+{
+}
 void initwindow()
 {
+	//
+	threadcreate(terminalthread, 0);
+
+	//
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = WindowProc;
 	wc.cbClsExtra = 0;
@@ -592,7 +604,4 @@ void initwindow()
 	//deleteevent
 	CloseHandle(hStartEvent);
 */
-}
-void freewindow()
-{
 }
