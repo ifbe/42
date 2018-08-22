@@ -247,3 +247,17 @@ void carvestring2d_center(struct arena* win, u32 rgb,
 		carve2d_ascii(win, rgb, tc, tr, vf, buf[j]);
 	}
 }
+
+
+
+
+void carvetext2d(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf,
+	u8* buf, int len)
+{
+}
+void carvetext2d_reverse(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf,
+	u8* buf, int len)
+{
+}

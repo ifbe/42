@@ -219,9 +219,3 @@ void initwindow()
 void freewindow()
 {
 }
-void inittray()
-{
-}
-void freetray()
-{
-}

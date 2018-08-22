@@ -36,11 +36,13 @@ void actoroutput_console_pixel(struct arena* win, struct style* sty)
 }
 void actoroutput_console_vbo(struct arena* win, struct style* sty)
 {
-	vec3 tc, tr, tf;
-	struct style tmp;
+	int ocur;
+	void* obuf;
 	float* vc;
 	float* vr;
 	float* vf;
+	vec3 tc, tr, tf;
+	struct style tmp;
 	if(0 == sty)
 	{
 		sty = &tmp;
@@ -68,6 +70,10 @@ void actoroutput_console_vbo(struct arena* win, struct style* sty)
 	tf[1] = vf[1]*0.99;
 	tf[2] = vf[2]*0.99;
 	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+
+	obuf = getstdout();
+	ocur = getcurout();
+	carvetext2d_reverse(win, 0xffffff, tc, tr, tf, obuf, ocur);
 }
 void actoroutput_console_json(struct arena* win, struct style* sty)
 {

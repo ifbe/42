@@ -754,6 +754,9 @@ void carve2d_utf8(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec
 void carve2d_string(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvestring2d_center(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 
+void carvetext2d(              struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvetext2d_reverse(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+
 
 
 

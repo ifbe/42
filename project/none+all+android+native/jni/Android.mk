@@ -248,9 +248,10 @@ library/libsoft1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
+library/libuser0/osandroid/android.native.c \
+library/libuser0/osandroid/android.tray.c \
 library/libuser0/osandroid/android.cam.c \
 library/libuser0/osandroid/android.mic.c \
-library/libuser0/osandroid/android.native.c \
 library/libuser0/bydummy/dummy.http.c \
 library/libuser0/bydummy/dummy.rgba.c \
 library/libuser0/bydummy/dummy.tty.c \
