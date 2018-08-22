@@ -277,10 +277,11 @@ static void the2048_write(
 	struct event* ev, int len)
 {
 	int k;
+	short* s;
 	//say("%llx,%llx,%llx\n", act, pin, ev);
 	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
-	if(ev->what == _char_)
+	if(_char_ == ev->what)
 	{
 		k = ev->why;
 		if(k == 0x8)
@@ -295,7 +296,7 @@ static void the2048_write(
 		else if(0x43 == k)the2048_move(act, 'r');
 		else if(0x44 == k)the2048_move(act, 'l');
 	}
-	else if(ev->what == _kbd_)
+	else if(_kbd_ == ev->what)
 	{
 		k = (ev->why)&0xff;
 		if(0x48 == k)the2048_move(act, 'f');
@@ -303,13 +304,13 @@ static void the2048_write(
 		else if(0x4d == k)the2048_move(act, 'r');
 		else if(0x50 == k)the2048_move(act, 'n');
 	}
-	else if(ev->what == _joy_)
+	else if(joy_left == (ev->what & joy_mask))
 	{
-		k = ((ev->why)>>32)&0xffff;
-		if(_df_ == k)the2048_move(act, 'f');
-		else if(_dl_ == k)the2048_move(act, 'l');
-		else if(_dr_ == k)the2048_move(act, 'r');
-		else if(_dn_ == k)the2048_move(act, 'n');
+		s = (void*)ev;
+		if(s[3] & joyl_left) the2048_move(act, 'l');
+		if(s[3] & joyl_right)the2048_move(act, 'r');
+		if(s[3] & joyl_down) the2048_move(act, 'n');
+		if(s[3] & joyl_up)   the2048_move(act, 'f');
 	}
 }
 static void the2048_stop(

@@ -400,60 +400,81 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			return 0;
 		}
 	}
-	else if(_joy_ == ev->what)
+	if(joy_left == (ev->what & joy_mask))
 	{
-		t = (short*)&ev->why;
-		if(_dl_ == t[2])
+		t = (void*)ev;
+		if(t[3] & joyl_left)
 		{
 			win->target.vc[0] -= 10;
 			win->camera.vc[0] -= 10;
 			return 0;
 		}
-		else if(_dr_ == t[2])
+		if(t[3] & joyl_right)
 		{
 			win->target.vc[0] += 10;
 			win->camera.vc[0] += 10;
 			return 0;
 		}
-		else if(_dn_ == t[2])
+		if(t[3] & joyl_down)
 		{
 			win->target.vc[1] -= sign*10;
 			win->camera.vc[1] -= sign*10;
 			return 0;
 		}
-		else if(_df_ == t[2])
+		if(t[3] & joyl_up)
 		{
 			win->target.vc[1] += sign*10;
 			win->camera.vc[1] += sign*10;
 			return 0;
 		}
-		else if(_lb_ == t[2])
-		{
-			target_deltaxyz(win, 0, 0, 1);
-			return 0;
-		}
-		else if(_lt_ == t[2])
+		if(t[3] & joyl_trigger)
 		{
 			target_deltaxyz(win, 0, 0, -1);
 			return 0;
 		}
-		else if(_ls_ == t[2])
+		if(t[3] & joyl_bumper)
+		{
+			target_deltaxyz(win, 0, 0, 1);
+			return 0;
+		}
+		if(t[3] & joyl_stick)
 		{
 			win->camera.vc[2] -= win->target.vc[2];
 			win->target.vc[2] = 0;
 			return 0;
 		}
-		else if(_rb_ == t[2])
+		if(t[3] & joyl_select)
 		{
-			camera_zoom(win, -0.1);
 			return 0;
 		}
-		else if(_rt_ == t[2])
+
+		x0 = t[0];
+		if(x0 < -8192)x0 = -1;
+		else if(x0 > 8192)x0 = 1;
+		else x0 = 0;
+
+		y0 = t[1];
+		if(y0 < -8192)y0 = -1;
+		else if(y0 > 8192)y0 = 1;
+		else y0 = 0;
+
+		target_deltaxyz(win, x0, sign*y0, 0);
+		return 0;
+	}
+	if(joy_right == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		if(t[3] & joyr_trigger)
 		{
 			camera_zoom(win, 0.1);
 			return 0;
 		}
-		else if(_rs_ == t[2])
+		if(t[3] & joyr_bumper)
+		{
+			camera_zoom(win, -0.1);
+			return 0;
+		}
+		if(t[3] & joyr_stick)
 		{
 			x = win->camera.vc[0] - win->target.vc[0];
 			y = win->camera.vc[1] - win->target.vc[1];
@@ -469,6 +490,10 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			win->camera.vc[2] = win->target.vc[2] - win->camera.vf[2];
 			return 0;
 		}
+		if(t[3] & joyr_start)
+		{
+			return 0;
+		}
 
 		x0 = t[0];
 		if(x0 < -8192)x0 = -1;
@@ -480,15 +505,7 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 		else if(y0 > 8192)y0 = 1;
 		else y0 = 0;
 
-		if('l' == t[2])
-		{
-			target_deltaxyz(win, x0, sign*y0, 0);
-		}
-		else if('r' == t[2])
-		{
-			camera_deltaxy(win, x0, -y0);
-		}
-		return 0;
+		camera_deltaxy(win, x0, -y0);
 	}
 
 	id = (ev->why)>>48;

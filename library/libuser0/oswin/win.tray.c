@@ -4,52 +4,11 @@
 #define WM_TRAY (WM_USER + 1)
 #define menu1 0x1111
 #define menu2 0x2222
-#define _dl_ hex16('d','l')
-#define _dr_ hex16('d','r')
-#define _dn_ hex16('d','n')
-#define _df_ hex16('d','f')
-#define _ka_ hex16('k','a')
-#define _kb_ hex16('k','b')
-#define _kx_ hex16('k','x')
-#define _ky_ hex16('k','y')
-#define _lt_ hex16('l','t')
-#define _rt_ hex16('r','t')
-#define _lb_ hex16('l','b')
-#define _rb_ hex16('r','b')
-#define _ls_ hex16('l','s')
-#define _rs_ hex16('r','s')
-#define _ll_ hex16('l','l')
-#define _rr_ hex16('r','r')
-#define _joy_ hex32('j','o','y',0)
 int lowlevel_input();
 
 
 
 
-struct xxxx
-{
-	u16 val;
-	char* name;
-};
-static struct xxxx xtab[16] = {
-	_df_, "XINPUT_GAMEPAD_DPAD_UP",		//0x0001
-	_dn_, "XINPUT_GAMEPAD_DPAD_DOWN",		//0x0002
-	_dl_, "XINPUT_GAMEPAD_DPAD_LEFT",		//0x0004
-	_dr_, "XINPUT_GAMEPAD_DPAD_RIGHT",	//0x0008
-	_rr_, "XINPUT_GAMEPAD_START",			//0x0010
-	_ll_, "XINPUT_GAMEPAD_BACK",			//0x0020
-	_ls_, "XINPUT_GAMEPAD_LEFT_THUMB",	//0x0040
-	_rs_, "XINPUT_GAMEPAD_RIGHT_THUMB",	//0x0080
-	_lb_, "XINPUT_GAMEPAD_LEFT_SHOULDER",		//0x0100
-	_rb_, "XINPUT_GAMEPAD_RIGHT_SHOULDER",	//0x0200
-	0, "????1",	//0x0400
-	0, "????2",	//0x0800
-	_ka_, "XINPUT_GAMEPAD_A",		//0x1000
-	_kb_, "XINPUT_GAMEPAD_B",		//0x2000
-	_kx_, "XINPUT_GAMEPAD_X",		//0x4000
-	_ky_, "XINPUT_GAMEPAD_Y"		//0x8000
-};
-static int btn = 0;
 //
 static HWND console;		//console window
 static HWND dummy;
@@ -153,7 +112,7 @@ DWORD WINAPI trayworker()
 
 
 
-
+/*
 void joyprint(int id, XINPUT_GAMEPAD g)
 {
 	int j,k;
@@ -228,6 +187,76 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		ev.where = 0;
 		actorwrite_ev(&ev);
 	}
+}*/
+void joyprint(int id, XINPUT_GAMEPAD g)
+{
+	//0x0001	XINPUT_GAMEPAD_DPAD_UP
+	//0x0002	XINPUT_GAMEPAD_DPAD_DOWN
+	//0x0004	XINPUT_GAMEPAD_DPAD_LEFT
+	//0x0008	XINPUT_GAMEPAD_DPAD_RIGHT
+	//0x0010	XINPUT_GAMEPAD_START
+	//0x0020	XINPUT_GAMEPAD_BACK
+	//0x0040	XINPUT_GAMEPAD_LEFT_THUMB
+	//0x0080	XINPUT_GAMEPAD_RIGHT_THUMB
+	//0x0100	XINPUT_GAMEPAD_LEFT_SHOULDER
+	//0x0200	XINPUT_GAMEPAD_RIGHT_SHOULDER
+	//0x0400
+	//0x0800
+	//0x1000	XINPUT_GAMEPAD_A
+	//0x2000	XINPUT_GAMEPAD_B
+	//0x4000	XINPUT_GAMEPAD_X
+	//0x8000	XINPUT_GAMEPAD_Y
+
+	struct event ev;
+	short* s;
+	u8* t;
+
+	ev.why = 0;
+	ev.what = 0;
+	ev.where = 0;
+	ev.when = 0;
+	s = (void*)&(ev.why);
+	t = (void*)&(ev.what);
+
+	//left
+	s[0] = g.sThumbLX;
+	s[1] = g.sThumbLY;
+	s[2] = g.bLeftTrigger;
+	s[3] = 0;
+	if(g.wButtons & 0x0004)s[3] |= joyl_left;
+	if(g.wButtons & 0x0008)s[3] |= joyl_right;
+	if(g.wButtons & 0x0002)s[3] |= joyl_down;
+	if(g.wButtons & 0x0001)s[3] |= joyl_up;
+	if(s[2] > 9)           s[3] |= joyl_trigger;
+	if(g.wButtons & 0x0100)s[3] |= joyl_bumper;
+	if(g.wButtons & 0x0040)s[3] |= joyl_stick;
+	if(g.wButtons & 0x0020)s[3] |= joyl_select;
+
+	t[0] = 'j';
+	t[1] = 0x30 + id;
+	t[2] = 'l';
+	t[3] = '0';
+	actorwrite_ev(&ev);
+
+	//right
+	s[0] = g.sThumbRX;
+	s[1] = g.sThumbRY;
+	s[2] = g.bRightTrigger;
+	s[3] = 0;
+	if(g.wButtons & 0x4000)s[3] |= joyr_left;
+	if(g.wButtons & 0x2000)s[3] |= joyr_right;
+	if(g.wButtons & 0x1000)s[3] |= joyr_down;
+	if(g.wButtons & 0x8000)s[3] |= joyr_up;
+	if(s[2] > 9)           s[3] |= joyr_trigger;
+	if(g.wButtons & 0x0200)s[3] |= joyr_bumper;
+	if(g.wButtons & 0x0080)s[3] |= joyr_stick;
+	if(g.wButtons & 0x0010)s[3] |= joyr_start;
+
+	t[0] = 'j';
+	t[1] = 0x30 + id;
+	t[2] = 'r';
+	t[3] = '0';
+	actorwrite_ev(&ev);
 }
 void* joystickthread(void* win)
 {

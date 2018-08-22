@@ -26,13 +26,6 @@ typedef float mat4[4][4];
 	#define HLSL_VERSION "#version 330 core\n"
 #endif
 //
-#define mousel 10
-#define mouser 11
-#define gamepad0 12
-#define gamepad1 13
-#define gamepad2 14
-#define gamepad3 15
-//
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
@@ -68,22 +61,38 @@ typedef float mat4[4][4];
 #define _char_ hex32('c','h','a','r')
 #define _i2c_ hex32('i','2','c',0)
 //
-#define _dl_ hex16('d','l')
-#define _dr_ hex16('d','r')
-#define _dn_ hex16('d','n')
-#define _df_ hex16('d','f')
-#define _ka_ hex16('k','a')
-#define _kb_ hex16('k','b')
-#define _kx_ hex16('k','x')
-#define _ky_ hex16('k','y')
-#define _lt_ hex16('l','t')
-#define _rt_ hex16('r','t')
-#define _lb_ hex16('l','b')
-#define _rb_ hex16('r','b')
-#define _ls_ hex16('l','s')
-#define _rs_ hex16('r','s')
-#define _ll_ hex16('l','l')
-#define _rr_ hex16('r','r')
+#define touch0 0
+#define touch1 1
+#define touch2 2
+#define touch3 3
+#define mousel 10
+#define mouser 11
+#define gamepad0 12
+#define gamepad1 13
+#define gamepad2 14
+#define gamepad3 15
+//
+#define joy_mask  0xff00ff
+#define joy_left  hex32('j', 0 ,'l', 0 )
+#define joy_right hex32('j', 0 ,'r', 0 )
+//
+#define joyl_left    0x0001
+#define joyl_right   0x0002
+#define joyl_down    0x0004
+#define joyl_up      0x0008
+#define joyl_trigger 0x0010
+#define joyl_bumper  0x0020
+#define joyl_stick   0x0040
+#define joyl_select  0x0080
+//
+#define joyr_left    0x0001
+#define joyr_right   0x0002
+#define joyr_down    0x0004
+#define joyr_up      0x0008
+#define joyr_trigger 0x0010
+#define joyr_bumper  0x0020
+#define joyr_stick   0x0040
+#define joyr_start   0x0080
 //
 #define vbuffmt_32 0x23
 #define vbuffmt_33 0x33

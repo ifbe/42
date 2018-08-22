@@ -981,25 +981,6 @@ void actorinput_overview(struct arena* win, struct event* ev)
 			arenaprev(win);
 		}
 	}
-	if(_joy_ == ev->what)
-	{
-		t = (short*)&ev->why;
-		if(_ka_ == t[2])
-		{
-			arenalogin(win);
-			return;
-		}
-		else if(_dl_ == t[2])
-		{
-			arenaprev(win);
-			return;
-		}
-		else if(_dr_ == t[2])
-		{
-			arenanext(win);
-			return;
-		}
-	}
 	else if(_kbd_ == ev->what)
 	{
 		if(0x4b == ev->why)
@@ -1009,6 +990,29 @@ void actorinput_overview(struct arena* win, struct event* ev)
 		else if(0x4d == ev->why)
 		{
 			arenanext(win);
+		}
+	}
+	else if(joy_left == (ev->what & joy_mask))
+	{
+		t = (short*)&ev->why;
+		if(t[3] & joyl_left)
+		{
+			arenaprev(win);
+			return;
+		}
+		if(t[3] & joyl_right)
+		{
+			arenanext(win);
+			return;
+		}
+	}
+	else if(joy_right == (ev->what & joy_mask))
+	{
+		t = (short*)&ev->why;
+		if(t[3] & joyr_down)
+		{
+			arenalogin(win);
+			return;
 		}
 	}
 }

@@ -1,8 +1,6 @@
 #include "libuser.h"
 void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
 void carvearrorkey2d(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
-static u16 joyl[8]={_dl_, _dr_, _dn_, _df_, _lt_, _lb_, _ls_, _ll_};
-static u16 joyr[8]={_kx_, _kb_, _ka_, _ky_, _rt_, _rb_, _rs_, _rr_};
 
 
 
@@ -86,9 +84,6 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '-';
-
-		y = (win->vkbdtype)&0xffff;
-		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, 0, h*13/16, h*3/16, h, ch, 1);
 
 		ch[0] = 'x';
@@ -99,9 +94,6 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '+';
-
-		y = (win->vkbdtype)&0xffff;
-		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 		drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 	}
 /*
@@ -246,8 +238,6 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '-';
-		y = (win->vkbdtype)&0xffff;
-		for(x=0;x<8;x++){if(joyl[x] == y)ch[x] |= 0x80;}
 
 		vc[0] = j-1.0;
 		vc[1] = k-1.0;
@@ -268,8 +258,6 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 		ch[5] = 'b';
 		ch[6] = 's';
 		ch[7] = '+';
-		y = (win->vkbdtype)&0xffff;
-		for(x=0;x<8;x++){if(joyr[x] == y)ch[x] |= 0x80;}
 
 		vc[0] = 1.0-j;
 		vc[1] = k-1.0;
@@ -429,40 +417,45 @@ int vkbd_write(struct arena* win, struct event* ev)
 			if(x*2 < w)
 			{
 				x = x*16/h;
-				if((0==x)&&(1==y))ret = _dl_;
-				else if((2==x)&&(1==y))ret = _dr_;
-				else if((1==x)&&(0==y))ret = _dn_;
-				else if((1==x)&&(2==y))ret = _df_;
-				else if((0==x)&&(3==y))ret = _lt_;
-				else if((2==x)&&(3==y))ret = _lb_;
-				else if((1==x)&&(1==y))ret = _ls_;
-				else if((3==x)&&(2==y))ret = _ll_;
+				if((0==x)&&(1==y))ret = joyl_left;
+				else if((2==x)&&(1==y))ret = joyl_right;
+				else if((1==x)&&(0==y))ret = joyl_down;
+				else if((1==x)&&(2==y))ret = joyl_up;
+				else if((0==x)&&(3==y))ret = joyl_trigger;
+				else if((2==x)&&(3==y))ret = joyl_bumper;
+				else if((1==x)&&(1==y))ret = joyl_stick;
+				else if((3==x)&&(2==y))ret = joyl_select;
 				else ret = 0;
+
+				if(ret)
+				{
+					tmp[0] = tmp[1] = tmp[2] = 0;
+					tmp[3] = ret;
+					eventwrite(*(u64*)tmp, joy_left, 0, 0);
+				}
 			}
 			else
 			{
 				x = w-x;
 				x = x*16/h;
-				if((0==x)&&(1==y))ret = _kb_;
-				else if((2==x)&&(y==1))ret = _kx_;
-				else if((1==x)&&(y==0))ret = _ka_;
-				else if((1==x)&&(y==2))ret = _ky_;
-				else if((2==x)&&(y==3))ret = _rt_;
-				else if((0==x)&&(y==3))ret = _rb_;
-				else if((1==x)&&(y==1))ret = _rs_;
-				else if((3==x)&&(y==2))ret = _rr_;
+				if((2==x)&&(y==1))ret = joyr_left;
+				else if((0==x)&&(1==y))ret = joyr_right;
+				else if((1==x)&&(y==0))ret = joyr_down;
+				else if((1==x)&&(y==2))ret = joyr_up;
+				else if((2==x)&&(y==3))ret = joyr_trigger;
+				else if((0==x)&&(y==3))ret = joyr_bumper;
+				else if((1==x)&&(y==1))ret = joyr_stick;
+				else if((3==x)&&(y==2))ret = joyr_start;
 				else ret = 0;
+
+				if(ret)
+				{
+					tmp[0] = tmp[1] = tmp[2] = 0;
+					tmp[3] = ret;
+					eventwrite(*(u64*)tmp, joy_right, 0, 0);
+				}
 			}
 			win->vkbdtype = ((int)'j'<<16) + ret;
-
-			if(0 != ret)
-			{
-				tmp[0] = 0;
-				tmp[1] = 0;
-				tmp[2] = ret;
-				tmp[3] = 0;
-				eventwrite(*(u64*)tmp, _joy_, (u64)win, 0);
-			}
 		}
 	}
 

@@ -323,6 +323,7 @@ void actoroutput_navmenu(struct arena* win, struct style* sty)
 }
 int actorinput_navmenu(struct arena* win, struct event* ev)
 {
+	short* t;
 	int pa[2];
 	int pb[2];
 	int x, y, ret;
@@ -366,35 +367,51 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 		else if(x*8 > win->width)x = 0x4b;
 		else return 0;
 	}
+	else if(_kbd_ == ret)
+	{
+		x = ev->why;
+	}
 	else if(_char_ == ret)
 	{
 		ret = ev->why;
 		say("%x\n",ret);
-		if(0x445b1b == ret)x = _dl_;
-		else if(0x435b1b == ret)x = _dr_;
+		if(0x445b1b == ret)x = 0x4b;
+		else if(0x435b1b == ret)x = 0x4d;
 		else
 		{
 			if((0xd == ret)|(0xa == ret))win->menutype = 0;
 			return 0;
 		}
 	}
-	else if(_joy_ == ret)
+	else if(joy_left == (ev->what & joy_mask))
 	{
-		x = ((ev->why)>>32)&0xffff;
-		if(_ka_ == x){win->menutype = 0;return 0;}
+		t = (void*)ev;
+		if(t[3] & joyl_left)x = 0x4b;
+		else if(t[3] & joyl_right)x = 0x4d;
+		else return 0;
 	}
-	else if(_kbd_ == ret)x = ev->why;
+	else if(joy_right == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		if(t[3] & joyr_down)win->menutype = 0;
+		return 0;
+	}
 	else return 0;
 
-	if((_dl_ == x) | (0x4b == x))
+	//left
+	if(0x4b == x)
 	{
 		y = win->modetype & 7;
 		win->modetype = (y+7)%8;
+		return 0;
 	}
-	else if((_dr_ == x) | (0x4d == x))
+
+	//right
+	if(0x4d == x)
 	{
 		y = win->modetype & 7;
 		win->modetype = (y+1)%8;
+		return 0;
 	}
 	return 0;
 }
