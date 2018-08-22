@@ -720,6 +720,7 @@ void drawdec_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int 
 void drawhex_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u64);
 
 void drawtext(          struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawtext_reverse(  struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 void drawvt100(         struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 void drawicon_1(        struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 

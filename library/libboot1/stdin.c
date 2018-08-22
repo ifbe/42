@@ -58,6 +58,14 @@ void initstdin(void* addr)
 void freestdin()
 {
 }
+void* getstdin()
+{
+	return input;
+}
+int getcurin()
+{
+	return enq;
+}
 
 
 

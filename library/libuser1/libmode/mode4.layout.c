@@ -414,11 +414,14 @@ int actorinput_layout(struct arena* win, struct event* ev)
 	struct relation* rel;
 	struct relation* tmp;
 	struct style* sty;
-	int ax, ay, aaa, bbb;
+	int ax, ay, aaa, bbb, sign;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
 	int z = ((ev->why)>>32)&0xffff;
 	int id = ((ev->why)>>48)&0xffff;
+
+	if(_vbo_ == win->fmt)sign = 1;
+	else sign = -1;
 
 	rel = win->irel0;
 	if(rel == 0)return 1;
@@ -533,7 +536,7 @@ int actorinput_layout(struct arena* win, struct event* ev)
 			ay = y - (win->input[id].y1);
 
 			sty->vc[0] += ty*ax - tx*ay;
-			sty->vc[1] -= tx*ax + ty*ay;
+			sty->vc[1] -= sign*(tx*ax + ty*ay);
 			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 		else if(11 == id)

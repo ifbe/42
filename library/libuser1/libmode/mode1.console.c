@@ -1,10 +1,17 @@
 #include "libuser.h"
+void* getstdin();
+int getcurin();
+void* getstdout();
+int getcurout();
+void termwrite(u8* buf, int len);
 
 
 
 
 void actoroutput_console_pixel(struct arena* win, struct style* sty)
 {
+	void* obuf;
+	int ocur;
 	int cx,cy,ww,hh;
 	if(sty)
 	{
@@ -20,8 +27,12 @@ void actoroutput_console_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	drawsolid_rect(win, 0xffffff, cx-ww+16, cy-hh+16, cx+ww-16, cy+hh-16);
-	drawsolid_rect(win, 0xe0e0e0, cx+ww-32, cy-hh+16, cx+ww-16, cy+hh-16);
+	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(win, 0xe0e0e0, cx+ww-16, cy-hh, cx+ww, cy+hh);
+
+	obuf = getstdout();
+	ocur = getcurout();
+	drawtext_reverse(win, 0xffffff, cx-ww, cy-hh, cx+ww-16, cy+hh, obuf, ocur);
 }
 void actoroutput_console_vbo(struct arena* win, struct style* sty)
 {
@@ -82,9 +93,21 @@ void actoroutput_console(struct arena* win, struct style* sty)
 }
 void actorinput_console(struct arena* win, struct event* ev)
 {
+	int len;
+	u8* buf;
+
 	if('p' == (ev->what&0xff))
 	{
 		win->modex = (ev->why)&0xffff;
 		win->modey = ((ev->why)>>16)&0xffff;
+	}
+	else if(_char_ == ev->what)
+	{
+		buf = (void*)ev;
+		for(len=0;len<4;len++)
+		{
+			if(buf[len] < 0x8)break;
+		}
+		termwrite(buf, len);
 	}
 }

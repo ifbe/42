@@ -318,6 +318,28 @@ void drawtext(
 		}
 	}
 }
+void drawtext_reverse(
+	struct arena* win, u32 rgb,
+	int x0, int y0, int x1, int y1,
+	u8* buf, int len)
+{
+	int j,k;
+	if(0 == buf)return;
+	if(0 == len)return;
+
+	k = len;
+	for(j=len-1;j>=0;j--)
+	{
+		if('\n' == buf[j])
+		{
+			if(y0+16 > y1)break;
+
+			drawstring(win, rgb, x0, y1-16, buf+j, k-j);
+			y1 -= 16;
+			k = j;
+		}
+	}
+}
 
 
 
