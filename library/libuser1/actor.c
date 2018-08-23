@@ -315,7 +315,7 @@ void* actorcreate(u64 type, void* buf)
 	return 0;
 }
 void* actorchoose(u8* buf, int len)
-{
+{/*
 	//say("%.*s\n", len, buf);
 	int j;
 	struct actor* act = 0;
@@ -345,7 +345,7 @@ void* actorchoose(u8* buf, int len)
 			}
 		}
 	}
-
+*/
 	return 0;
 }
 void* actorlist(u8* buf, int len)
