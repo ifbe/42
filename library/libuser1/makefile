@@ -1,6 +1,6 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
-SRC = \
+SRC = actor.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/json/json.c \
@@ -125,8 +125,7 @@ libmenu/menu.tag.c \
 libmenu/menu.c \
 libvkbd/vkbd.joystick.c \
 libvkbd/vkbd.keyboard.c \
-libvkbd/vkbd.c \
-actor.c
+libvkbd/vkbd.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

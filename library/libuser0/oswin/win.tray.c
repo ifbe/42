@@ -231,12 +231,16 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	if(g.wButtons & 0x0100)s[3] |= joyl_bumper;
 	if(g.wButtons & 0x0040)s[3] |= joyl_stick;
 	if(g.wButtons & 0x0020)s[3] |= joyl_select;
-
-	t[0] = 'j';
-	t[1] = 0x30 + id;
-	t[2] = 'l';
-	t[3] = '0';
-	actorwrite_ev(&ev);
+	if(	(s[3] != 0) |
+		(s[1] < -2048) | (s[1] > 2048) |
+		(s[0] < -2048) | (s[0] > 2048) )
+	{
+		t[0] = 'j';
+		t[1] = 0x30 + id;
+		t[2] = 'l';
+		t[3] = '0';
+		actorwrite_ev(&ev);
+	}
 
 	//right
 	s[0] = g.sThumbRX;
@@ -251,12 +255,16 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	if(g.wButtons & 0x0200)s[3] |= joyr_bumper;
 	if(g.wButtons & 0x0080)s[3] |= joyr_stick;
 	if(g.wButtons & 0x0010)s[3] |= joyr_start;
-
-	t[0] = 'j';
-	t[1] = 0x30 + id;
-	t[2] = 'r';
-	t[3] = '0';
-	actorwrite_ev(&ev);
+	if(	(s[3] != 0) |
+		(s[1] < -2048) | (s[1] > 2048) |
+		(s[0] < -2048) | (s[0] > 2048) )
+	{
+		t[0] = 'j';
+		t[1] = 0x30 + id;
+		t[2] = 'r';
+		t[3] = '0';
+		actorwrite_ev(&ev);
+	}
 }
 void* joystickthread(void* win)
 {

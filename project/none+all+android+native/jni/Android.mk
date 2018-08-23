@@ -252,11 +252,15 @@ library/libuser0/osandroid/android.native.c \
 library/libuser0/osandroid/android.tray.c \
 library/libuser0/osandroid/android.cam.c \
 library/libuser0/osandroid/android.mic.c \
-library/libuser0/bydummy/dummy.http.c \
+library/libuser0/bydummy/dummy.func.c \
+library/libuser0/bydummy/dummy.html.c \
+library/libuser0/bydummy/dummy.json.c \
 library/libuser0/bydummy/dummy.rgba.c \
 library/libuser0/bydummy/dummy.tty.c \
 library/libuser0/bydummy/dummy.vbo.c \
+library/libuser0/bydummy/dummy.vpin.c \
 library/libuser0/bydummy/dummy.ws.c \
+library/libuser0/bydummy/dummy.xml.c \
 library/libuser0/arena.c
 
 #libuser1

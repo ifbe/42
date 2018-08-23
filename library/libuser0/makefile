@@ -1,50 +1,37 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
+SRC = arena.c \
+bydummy/dummy.func.c \
+bydummy/dummy.html.c \
+bydummy/dummy.json.c \
+bydummy/dummy.rgba.c \
+bydummy/dummy.tty.c \
+bydummy/dummy.vbo.c \
+bydummy/dummy.vpin.c \
+bydummy/dummy.ws.c \
+bydummy/dummy.xml.c
+OBJ = $(patsubst %.c,%.o,$(SRC))
+
+target: $(OBJ)
+%.o: %.c
+	$(compiler) $(cflag) $<
 
 
 
 
 ############################bare#########################
 .PHONY:barecli
-barecli:
-	rm -f *.o
+barecli:target
 	$(compiler) $(cflag) osbare/bare.cli.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 .PHONY:baretui
-baretui:
-	rm -f *.o
+baretui:target
 	$(compiler) $(cflag) osbare/bare.tui.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 .PHONY:bare8bit
-bare8bit:
-	rm -f *.o
+bare8bit:target
 	$(compiler) $(cflag) osbare/bare.8bit.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 .PHONY:barefb
-barefb:
-	rm -f *.o
+barefb:target
 	$(compiler) $(cflag) osbare/bare.fb.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 ##########################################################
 
 
@@ -52,25 +39,11 @@ barefb:
 
 ############################efi#########################
 .PHONY:eficli
-eficli:
-	rm -f *.o
+eficli:target
 	$(compiler) $(cflag) osefi/efi.cli.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 .PHONY:efifb
-efifb:
-	rm -f *.o
+efifb:target
 	$(compiler) $(cflag) osefi/efi.fb.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 #########################################################
 
 
@@ -78,134 +51,71 @@ efifb:
 
 ############################linux#########################
 .PHONY:linuxcli
-linuxcli:
-	rm -f *.o
+linuxcli:target
 	$(compiler) $(cflag) oslinux/linux.cli.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxtui
-linuxtui:
-	rm -f *.o
+linuxtui:target
 	$(compiler) $(cflag) oslinux/linux.tui.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxfb
-linuxfb:
-	rm -f *.o
+linuxfb:target
 	$(compiler) $(cflag) oslinux/linux.fb.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxgtk
-linuxgtk:
-	rm -f *.o
+linuxgtk:target
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` oslinux/linux.gtk.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxwayland
-linuxwayland:
-	rm -f *.o
+linuxwayland:target
 	$(compiler) $(cflag) oslinux/linux.wayland.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxxlib
-linuxxlib:
-	rm -f *.o
+linuxxlib:target
 	$(compiler) $(cflag) oslinux/linux.xlib.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxglfw
-linuxglfw:
-	rm -f *.o
-	$(compiler) $(cflag) oslinux/linux.tray.c
-	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
+linuxglfw:target
+	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
-	$(compiler) $(cflag) bygl/glfw.c
-	$(compiler) $(cflag) arena.c
+	$(compiler) $(cflag) oslinux/linux.tray.c
+	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) oslinux/linux.v4l2.c
 
 .PHONY:linuxglut
-linuxglut:
-	rm -f *.o
+linuxglut:target
+	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bygl/glut.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:linuxsdl
-linuxsdl:
-	rm -f *.o
+linuxsdl:target
+	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) oslinux/linux.tray.c
 	$(compiler) $(cflag) oslinux/linux.pulseaudio.c
 	$(compiler) $(cflag) oslinux/linux.v4l2.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	$(compiler) $(cflag) arena.c
 #########################################################
 
 
@@ -213,106 +123,57 @@ linuxsdl:
 
 #############################mac##########################
 .PHONY:maccli
-maccli:
-	rm -f *.o
+maccli:target
 	$(compiler) $(cflag) osmac/mac.cli.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:mactui
-mactui:
-	rm -f *.o
+mactui:target
 	$(compiler) $(cflag) osmac/mac.tui.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:maccocoa
-maccocoa:
-	rm -f *.o
+maccocoa:target
 	$(compiler) $(cflag) osmac/mac.cocoa.m
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:macquartz
-macquartz:
-	rm -f *.o
+macquartz:target
 	$(compiler) $(cflag) osmac/mac.quartz.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:macglfw
-macglfw:
-	rm -f *.o
-	$(compiler) $(cflag) osmac/mac.tray.c
-	$(compiler) $(cflag) osmac/mac.cam.c
-	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
+macglfw:target
+	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
-	$(compiler) $(cflag) bygl/glfw.c
-	$(compiler) $(cflag) arena.c
+	$(compiler) $(cflag) osmac/mac.tray.c
+	$(compiler) $(cflag) osmac/mac.cam.c
+	$(compiler) $(cflag) osmac/mac.mic.c
 
 .PHONY:macglut
-macglut:
-	rm -f *.o
+macglut:target
+	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bygl/glut.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:macsdl
-macsdl:
-	rm -f *.o
+macsdl:target
+	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 	$(compiler) $(cflag) osmac/mac.tray.c
 	$(compiler) $(cflag) osmac/mac.cam.c
 	$(compiler) $(cflag) osmac/mac.mic.c
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	$(compiler) $(cflag) arena.c
 #########################################################
 
 
@@ -320,106 +181,57 @@ macsdl:
 
 ###########################windows#######################
 .PHONY:wincli
-wincli:
-	rm -f *.o
+wincli:target
 	$(compiler) $(cflag) oswin/win.cli.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:wintui
-wintui:
-	rm -f *.o
+wintui:target
 	$(compiler) $(cflag) oswin/win.tui.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:winapi
-winapi:
-	rm -f *.o
+winapi:target
 	$(compiler) $(cflag) oswin/win.api.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:wind3d
-wind3d:
-	rm -f *.o
+wind3d:target
 	$(compiler) $(cflag) oswin/win.d3d.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:winglfw
-winglfw:
-	rm -f *.o
-	$(compiler) $(cflag) oswin/win.tray.c
-	$(compiler) $(cflag) oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
+winglfw:target
+	$(compiler) $(cflag) bygl/glfw.c
 	$(compiler) $(cflag) bygl/gl.object.c
 	$(compiler) $(cflag) bygl/gl.shader.c
 	$(compiler) $(cflag) bygl/gl.texture.c
 	$(compiler) $(cflag) bygl/gl.vertex.c
-	$(compiler) $(cflag) bygl/glfw.c
-	$(compiler) $(cflag) arena.c
+	$(compiler) $(cflag) oswin/win.tray.c
+	$(compiler) $(cflag) oswin/win.waveio.c
+	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
 
 .PHONY:winglut
-winglut:
-	rm -f *.o
+winglut:target
+	$(compiler) $(cflag) bygl/glut.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bygl/glut.c
-	$(compiler) $(cflag) arena.c
 
 .PHONY:winsdl
-winsdl:
-	rm -f *.o
+winsdl:target
+	$(compiler) $(cflag) bysdl/sdl2.c
 	$(compiler) $(cflag) oswin/win.tray.c
 	$(compiler) $(cflag) oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti oswin/win.dshow.cpp
-	$(compiler) $(cflag) bydummy/dummy.http.c
-	$(compiler) $(cflag) bydummy/dummy.rgba.c
-	$(compiler) $(cflag) bydummy/dummy.tty.c
-	$(compiler) $(cflag) bydummy/dummy.vbo.c
-	$(compiler) $(cflag) bydummy/dummy.ws.c
-	$(compiler) $(cflag) bysdl/sdl2.c
-	$(compiler) $(cflag) arena.c
 ##########################################################
 
 

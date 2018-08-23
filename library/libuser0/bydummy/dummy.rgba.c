@@ -3,23 +3,19 @@
 
 
 
-int vncclient_create(struct arena* win, u8* str)
+int rgbanode_read(struct arena* win)
 {
 	return 0;
 }
-int vncclient_delete()
+int rgbanode_write(struct arena* win)
 {
 	return 0;
 }
-
-
-
-
-int vncserver_create(struct arena* win, u8* str)
+int rgbanode_delete(struct arena* win)
 {
 	return 0;
 }
-int vncserver_delete()
+int rgbanode_create(struct arena* win, void* str)
 {
 	return 0;
 }

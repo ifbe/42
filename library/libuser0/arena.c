@@ -1,7 +1,14 @@
 #include "libuser.h"
-#define _cam_ hex32('c','a','m',0)
-#define _mic_ hex32('m','i','c',0)
-#define _win_ hex32('w','i','n',0)
+#define _cam_  hex32('c','a','m',0)
+#define _mic_  hex32('m','i','c',0)
+#define _win_  hex32('w','i','n',0)
+//
+#define _node_ hex32('n','o','d','e')
+#define _func_ hex32('f','u','n','c')
+#define _rgba_ hex32('r','g','b','a')
+#define _tty_  hex32('t','t','y',0)
+#define _vpin_ hex32('v','p','i','n')
+#define _xml_  hex32('x','m','l',0)
 //
 #define _HTTP_ hex32('H','T','T','P')
 #define _http_ hex32('h','t','t','p')
@@ -15,9 +22,22 @@
 
 void inittray(void*);
 void freetray();
+int traycreate(void*, void*);
+int traydelete(void*);
+//window
 void initwindow(void*);
 void freewindow();
+int windowcreate(void*);
+int windowdelete(void*);
+int windowstart(void*);
+int windowstop(void*);
+int windowread(void*);
+int windowwrite(void*);
+int windowlist();
+int windowchoose();
 //cam
+void initcam(void*);
+void freecam();
 int videocreate(void*);
 int videodelete(void*);
 int videostart(void*);
@@ -27,6 +47,8 @@ int videowrite(void*);
 int videolist();
 int videochoose();
 //mic
+void initmic(void*);
+void freemic();
 int soundcreate(void*);
 int sounddelete(void*);
 int soundstart(void*);
@@ -35,15 +57,25 @@ int soundread(void* win, void* sty, void* act, void* pin);
 int soundwrite(void*);
 int soundlist();
 int soundchoose();
-//window
-int windowcreate(void*);
-int windowdelete(void*);
-int windowstart(void*);
-int windowstop(void*);
-int windowread(void*);
-int windowwrite(void*);
-int windowlist();
-int windowchoose();
+//dummy
+int funcnode_create(void*, void*);
+int funcnode_delete(void*);
+int htmlnode_create(void*, void*);
+int htmlnode_delete(void*);
+int jsonnode_create(void*, void*);
+int jsonnode_delete(void*);
+int rgbanode_create(void*, void*);
+int rgbanode_delete(void*);
+int ttynode_create(void*, void*);
+int ttynode_delete(void*);
+int vbonode_create(void*, void*);
+int vbonode_delete(void*);
+int vpinnode_create(void*, void*);
+int vpinnode_delete(void*);
+int wsnode_create(void*, void*);
+int wsnode_delete(void*);
+int xmlnode_create(void*, void*);
+int xmlnode_delete(void*);
 //remote
 int httpclient_create(void* win, u8* str);
 int httpserver_create(void* win, u8* str);
@@ -51,25 +83,18 @@ int wsclient_create(void* win, u8* str);
 int wsserver_create(void* win, u8* str);
 int vncclient_create(void* win, u8* str);
 int vncserver_create(void* win, u8* str);
-//
-int traycreate(void*, void*);
-int traydelete(void*);
-int uartnode_create(void*, void*);
-int uartnode_delete(void*);
 int httpclient_delete(void* win);
 int httpserver_delete(void* win);
 int wsclient_delete(void* win);
 int wsserver_delete(void* win);
 int vncclient_delete(void* win);
 int vncserver_delete(void* win);
-//
 int httpclient_read(void* dc,void* df,void* sc,void* sf);
 int httpserver_read(void* dc,void* df,void* sc,void* sf);
 int wsclient_read(void* dc, void* df, void* act, void* pin);
 int wsserver_read(void* dc, void* df, void* act, void* pin);
 int vncclient_read(void* dc);
 int vncserver_read(void* dc);
-//
 int httpclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 int httpserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 int wsclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
@@ -296,7 +321,14 @@ void* arenacreate(u64 type, void* addr)
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
 
-	if(_win_ == type)
+	if(_dbg_ == type)
+	{
+		win->type = _dbg_;
+		win->fmt = _cli_;
+
+		traycreate(win, addr);
+	}
+	else if(_win_ == type)
 	{
 		win->type = _win_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
@@ -328,20 +360,6 @@ void* arenacreate(u64 type, void* addr)
 		win->vkbdtype = 0;
 		arenavertex(win);
 	}
-	else if(_dbg_ == type)
-	{
-		win->type = _dbg_;
-		win->fmt = _cli_;
-
-		traycreate(win, addr);
-	}
-	else if(_uart_ == type)
-	{
-		win->type = _uart_;
-		win->fmt = _cli_;
-
-		uartnode_create(win, addr);
-	}
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
@@ -358,21 +376,68 @@ void* arenacreate(u64 type, void* addr)
 
 		soundcreate(win);
 	}
-	else if(_HTTP_ == type)
+	else if(_func_ == type)
 	{
-		win->type = _HTTP_;
-		win->fmt = hex32('h','t','m','l');
+		win->type = _node_;
+		win->fmt = _func_;
 
-		//be server, output data
-		httpserver_create(win, addr);
+		traycreate(win, addr);
 	}
-	else if(_WS_ == type)
+	else if(_html_ == type)
 	{
-		win->type = _WS_;
-		win->fmt = hex32('j','s','o','n');
+		win->type = _node_;
+		win->fmt = _html_;
 
-		//be server, output data
-		wsserver_create(win, addr);
+		traycreate(win, addr);
+	}
+	else if(_json_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _json_;
+
+		traycreate(win, addr);
+	}
+	else if(_rgba_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _rgba_;
+
+		traycreate(win, addr);
+	}
+	else if(_tty_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _tty_;
+
+		ttynode_create(win, addr);
+	}
+	else if(_vbo_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _vbo_;
+
+		traycreate(win, addr);
+	}
+	else if(_vpin_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _vpin_;
+
+		traycreate(win, addr);
+	}
+	else if(_ws_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _ws_;
+
+		traycreate(win, addr);
+	}
+	else if(_xml_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _xml_;
+
+		traycreate(win, addr);
 	}
 
 	return win;

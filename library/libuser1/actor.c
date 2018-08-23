@@ -90,7 +90,8 @@ void* allocofoot()
 
 int actorinput_special(struct arena* win, struct event* ev)
 {
-	int ret, val;
+	int val;
+	short* t;
 
 	val = 0;
 	if(_char_ == ev->what)
@@ -102,11 +103,15 @@ int actorinput_special(struct arena* win, struct event* ev)
 		if(0xfb == ev->why)val = 'l';
 		else if(0xfc == ev->why)val = 'r';
 	}
-	else if(_joy_ == ev->what)
+	else if(joy_left == (ev->what & joy_mask))
 	{
-		ret = ((ev->why)>>32)&0xffff;
-		if(_ll_ == ret)val = 'l';
-		else if(_rr_ == ret)val = 'r';
+		t = (short*)ev;
+		if(t[3] & joyl_select)val = 'l';
+	}
+	else if(joy_right == (ev->what & joy_mask))
+	{
+		t = (short*)ev;
+		if(t[3] & joyr_start)val = 'r';
 	}
 
 	if(('l' == val)|('r' == val))

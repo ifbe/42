@@ -256,11 +256,15 @@ library/libuser0/bygl/gl.object.c \
 library/libuser0/bygl/gl.shader.c \
 library/libuser0/bygl/gl.texture.c \
 library/libuser0/bygl/gl.vertex.c \
-library/libuser0/bydummy/dummy.http.c \
+library/libuser0/bydummy/dummy.func.c \
+library/libuser0/bydummy/dummy.html.c \
+library/libuser0/bydummy/dummy.json.c \
 library/libuser0/bydummy/dummy.rgba.c \
 library/libuser0/bydummy/dummy.tty.c \
 library/libuser0/bydummy/dummy.vbo.c \
+library/libuser0/bydummy/dummy.vpin.c \
 library/libuser0/bydummy/dummy.ws.c \
+library/libuser0/bydummy/dummy.xml.c \
 library/libuser0/arena.c
 
 #libuser1

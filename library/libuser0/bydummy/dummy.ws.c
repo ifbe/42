@@ -56,3 +56,23 @@ int wsserver_create(struct arena* win)
 	win->buf = buffer;
 	return 0;
 }
+
+
+
+
+int wsnode_read(struct arena* win)
+{
+	return 0;
+}
+int wsnode_write(struct arena* win)
+{
+	return 0;
+}
+int wsnode_delete(struct arena* win)
+{
+	return 0;
+}
+int wsnode_create(struct arena* win, void* str)
+{
+	return 0;
+}

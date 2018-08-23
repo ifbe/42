@@ -3,19 +3,19 @@
 
 
 
-int uartnode_read(struct arena* win)
+int ttynode_read(struct arena* win)
 {
 	return 0;
 }
-int uartnode_write(struct arena* win)
+int ttynode_write(struct arena* win)
 {
 	return 0;
 }
-int uartnode_delete(struct arena* win)
+int ttynode_delete(struct arena* win)
 {
 	return 0;
 }
-int uartnode_create(struct arena* win, void* str)
+int ttynode_create(struct arena* win, void* str)
 {
 	int j;
 	void* tmp;
