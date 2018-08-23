@@ -27,7 +27,7 @@ int actorinput_oneonone( struct arena* win, struct event* ev);
 
 
 
-int actoroutput_mode(struct arena* win, struct style* sty)
+int mode_read(struct arena* win, struct style* sty)
 {
 	int ret = win->menutype;
 	if(_html_ == win->fmt)
@@ -49,7 +49,7 @@ int actoroutput_mode(struct arena* win, struct style* sty)
 
 	return 1;
 }
-int actorinput_mode(struct arena* win, struct event* ev)
+int mode_write(struct arena* win, struct event* ev)
 {
 	int ret = win->menutype;
 	if(_html_ == win->fmt)

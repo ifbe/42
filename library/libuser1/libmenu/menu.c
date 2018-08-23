@@ -5,7 +5,7 @@ int actorinput_navmenu( struct arena* win, struct event* ev);
 
 
 
-int actoroutput_menu(struct arena* win, struct style* sty)
+int menu_read(struct arena* win, struct style* sty)
 {
 	int ret = win->menutype;
 	if(0 == ret)return 0;
@@ -16,7 +16,7 @@ int actoroutput_menu(struct arena* win, struct style* sty)
 
 	return 1;
 }
-int actorinput_menu(struct arena* win, struct event* ev)
+int menu_write(struct arena* win, struct event* ev)
 {
 	int ret = win->menutype;
 	if(0 == ret)return 0;

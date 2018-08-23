@@ -13,17 +13,14 @@ void lib4d_delete();
 int background(struct arena* win);
 int foreground(struct arena* win);
 //vkbd
-int vkbd_read(      struct arena* win, struct style* sty);
-int actorinput_vkbd(struct arena* win, struct event* ev);
+int vkbd_read( struct arena* win, struct style* sty);
+int vkbd_write(struct arena* win, struct event* ev);
 //menu
-int actoroutput_menu(struct arena* win, struct style* sty);
-int actorinput_menu( struct arena* win, struct event* ev);
+int menu_read( struct arena* win, struct style* sty);
+int menu_write(struct arena* win, struct event* ev);
 //mode
-int actoroutput_mode(struct arena* win, struct style* sty);
-int actorinput_mode( struct arena* win, struct event* ev);
-//
-int parsexml_detail(void*, int, void*, void*, void*, void*);
-int touch_explain(struct arena* win, struct event* ev);
+int mode_read( struct arena* win, struct style* sty);
+int mode_write(struct arena* win, struct event* ev);
 
 
 
@@ -155,7 +152,7 @@ int actorwrite_ev(struct event* ev)
 {
 	int ret;
 	struct arena* win = (void*)(ev->where);
-	if(0 == win)win = &arena[0];
+	if(0 == win)win = &arena[1];
 
 	if(_drag_ == ev->what)
 	{
@@ -164,7 +161,7 @@ int actorwrite_ev(struct event* ev)
 	}
 
 	//vkbd
-	ret = actorinput_vkbd(win, ev);
+	ret = vkbd_write(win, ev);
 	if(0 != ret)goto theend;
 
 	//special
@@ -172,11 +169,11 @@ int actorwrite_ev(struct event* ev)
 	if(0 != ret)goto theend;
 
 	//menu
-	ret = actorinput_menu(win, ev);
+	ret = menu_write(win, ev);
 	if(0 != ret)goto theend;
 
 	//mode
-	ret = actorinput_mode(win, ev);
+	ret = mode_write(win, ev);
 	if(0 != ret)goto theend;
 
 theend:
@@ -192,10 +189,10 @@ int actorread_all(struct arena* win)
 	background(win);
 
 	//context
-	actoroutput_mode(win, 0);
+	mode_read(win, 0);
 
 	//menu
-	actoroutput_menu(win, 0);
+	menu_read(win, 0);
 
 	//vkbd
 	vkbd_read(win, 0);

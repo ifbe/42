@@ -387,7 +387,7 @@ void vkbd_read(struct arena* win, struct style* sty)
 
 
 
-int vkbd_write(struct arena* win, struct event* ev)
+int vkbd_event(struct arena* win, struct event* ev)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
@@ -462,7 +462,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 byebye:
 	return 1;
 }
-int actorinput_vkbd(struct arena* win, struct event* ev)
+int vkbd_write(struct arena* win, struct event* ev)
 {
 	int j,k,x,y;
 	int w,h,id,ret;
@@ -527,7 +527,7 @@ int actorinput_vkbd(struct arena* win, struct event* ev)
 		//call vkbd
 		if(win->vkbdtype >= 0)
 		{
-			ret = vkbd_write(win, ev);
+			ret = vkbd_event(win, ev);
 			if(0 != ret)return 1;
 		}
 	}
