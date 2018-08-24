@@ -127,19 +127,17 @@ int httpclient_delete(struct element* ele)
 {
 	return 0;
 }
-int httpclient_create(struct element* ele, u8* buf, u8* host, u8* url)
+int httpclient_create(struct element* ele, u8* url, u8* buf, int len)
 {
 	int ret;
-	void* obj = systemcreate(_tcp_, host);
+	void* obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	if(0 == url)url = (u8*)"/";
-	else if(0 == url[0])url = (u8*)"/";
 	ret = mysnprintf(buf, 0x1000,
 		"GET %s HTTP/1.1\r\n"
 		"Host: %s\r\n"
 		"\r\n",
-		url, host
+		"/", url
 	);
 
 	ret = systemwrite(obj, 0, ele, 0, buf, ret);
@@ -154,6 +152,30 @@ int httpclient_create(struct element* ele, u8* buf, u8* host, u8* url)
 
 
 
+int httpserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int httpserver_read()
+{
+	return 0;
+}
+int httpserver_delete(struct element* ele)
+{
+	return 0;
+}
+int httpserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_TCP_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
 /*
 static u8* Connection = 0;
 static u8* Upgrade = 0;

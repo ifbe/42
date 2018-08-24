@@ -233,12 +233,7 @@ void* systemcreate(u64 type, u8* name)
 	//decode ipaddr
 	port = 80;
 	url = name + parseurl(name, 0x100, host, &port);
-	say(
-		"host=%s:%d\n"
-		"url=%s\n",
-		host, port,
-		url
-	);
+	say("systemcreate: %.8s://%s:%d/%s\n", &type, host, port, url);
 
 	if(_RAW_ == type)		//raw server
 	{
@@ -310,14 +305,12 @@ int systemchoose(u8* buf, int len)
 int systemlist(u8* buf, int len)
 {
 	int j,k=0;
-	void* addr;
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == obj[j].type)continue;
 
 		k++;
-		addr = (void*)(&obj[j]);
-		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+		say("[%03x]: %.8s\n", j, &obj[j].name);
 	}
 
 	if(0 == k)say("empth system\n");
@@ -355,5 +348,6 @@ void initsystem(u8* addr)
 	createshell(addr);
 	createuart(addr);
 
+	systemcreate(0, (u8*)"UDP://127.0.0.1:2222");
 	//say("[8,c):inited system\n");
 }

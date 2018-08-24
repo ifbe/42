@@ -225,21 +225,19 @@ int wsclient_delete(struct element* ele)
 	//delete
 	return 0;
 }
-int wsclient_create(struct element* ele, u8* buf, u8* host, u8* url)
+int wsclient_create(struct element* ele, u8* url, u8* buf, int len)
 {
 	int ret;
-	void* obj = systemcreate(_tcp_, host);
+	void* obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	if(0 == url)url = (u8*)"/";
-	else if(0 == url[0])url = (u8*)"/";
 	ret = mysnprintf(buf, 0x1000,
 		"GET %s HTTP/1.1\r\n"
 		"Upgrade: websocket\r\n"
 		"Connection: Upgrade\r\n"
 		"Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==\r\n"
 		"\r\n",
-		url
+		"/"
 	);
 
 	ret = systemwrite(obj, 0, ele, 0, buf, ret);

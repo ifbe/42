@@ -1,12 +1,17 @@
 #include "libsoft.h"
-int httpclient_create(struct element* ele, void* buf, void* host, void* url);
-int wsclient_create(struct element* ele, void* buf, void* host, void* url);
-int sshclient_create(struct element* ele, void* buf, void* host, void* url);
-int tlslient_create(struct element* ele, void* buf, void* host, void* url);
-//
+int httpserver_create(struct element* ele, void* url, void* buf, int len);
+int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
+int wsserver_create(  struct element* ele, void* url, void* buf, int len);
+int wsclient_create(  struct element* ele, void* url, void* buf, int len);
 int wsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshserver_create( struct element* ele, void* url, void* buf, int len);
+int sshclient_create( struct element* ele, void* url, void* buf, int len);
 int sshclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
+int tlsserver_create( struct element* ele, void* url, void* buf, int len);
+int tlsclient_create( struct element* ele, void* url, void* buf, int len);
 int tlsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
@@ -28,12 +33,30 @@ void* allocelement()
 	elelen += 1;
 	return addr;
 }
+
+
+
+
 int arterywrite_ev(struct event* ev)
 {
 	return 0;
 }
 int arteryread_all()
 {
+	return 0;
+}
+int parsetypefromurl(u8* url, u8* type)
+{
+	int j,k;
+	for(k=0;k<8;k++)type[k] = 0;
+	for(j=0;j<16;j++)
+	{
+		if(0 == ncmp(url+j, "://", 3))
+		{
+			for(k=0;k<j;k++)type[k] = url[k];
+			return j+3;
+		}
+	}
 	return 0;
 }
 
@@ -66,11 +89,53 @@ int arterydelete(void* ele)
 {
 	return 0;
 }
-void* arterycreate(u64 type, u8* name)
+void* arterycreate(u64 type, u8* url)
 {
 	int j,fd,ret,port;
 	struct element* e;
+	if(0 == type)
+	{
+		ret = parsetypefromurl(url, (void*)&type);
+		if(0 == ret)return 0;	//unknown
 
+		url += ret;
+	}
+
+	if(_HTTP_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _HTTP_;
+		httpserver_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	if(_http_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _http_;
+		httpclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	if(_ws_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ws_;
+		wsclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	return 0;
+}
+/*
 	u8 host[0x100];	//127.0.0.1
 	u8* url;	//dir/file.html
 	u8* t;		//http
@@ -108,12 +173,30 @@ void* arterycreate(u64 type, u8* name)
 	ret = parseurl(name, 0x100, host, &port);
 
 	mysnprintf(host, 80, "%.*s", ret, name);
-	say("host=%s\n", host);
+	say("artery: host=%s\n", host);
 
 	url = name + ret;
-	say("url=%s\n", url);
+	say("artery: url=%s\n", url);
 
-/*
+	if(_http_ == type)	//http client
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _http_;
+		httpclient_create(e, datahome, host, url);
+		return e;
+	}
+	else if(_ws_ == type)	//ws client
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ws_;
+		wsclient_create(e, datahome, host, url);
+		return e;
+	}
+
 	//raw family
 	if(_ICMP_ == type)
 	{
@@ -213,26 +296,9 @@ void* arterycreate(u64 type, u8* name)
 
 		obj[fd].name = _sql_;
 	}
-*/
-	if(_http_ == type)	//http client
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		httpclient_create(e, datahome, host, url);
-		return e;
-	}
-	else if(_ws_ == type)	//ws client
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		wsclient_create(e, datahome, host, url);
-		return e;
-	}
 
 	return 0;
-}
+}*/
 int arterychoose(u8* buf, int len)
 {
 	int j;
@@ -257,14 +323,12 @@ int arterychoose(u8* buf, int len)
 int arterylist(u8* buf, int len)
 {
 	int j,k=0;
-	void* addr;
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == ele[j].type)continue;
 
 		k++;
-		addr = (void*)(&ele[j]);
-		say("[%03x]: %.8s,%.8s\n", j, addr, addr+8);
+		say("[%03x]: %.8s\n", j, &ele[j].type);
 	}
 
 	if(0 == k)say("empth artery\n");
@@ -294,5 +358,6 @@ void initartery(void* addr)
 #define max (0x100000/sizeof(struct element))
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
+	arterycreate(0, (u8*)"HTTP://127.0.0.1:2222");
 	//say("[8,c):inited artery\n");
 }

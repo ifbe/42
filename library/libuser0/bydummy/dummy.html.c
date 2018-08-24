@@ -11,6 +11,7 @@ static struct mystring* hp[16];
 
 
 
+/*
 int httpserver_write(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin,
@@ -103,14 +104,6 @@ int httpserver_write(
 
 	return 0;
 }
-int httpserver_read()
-{
-	return 0;
-}
-int httpserver_delete(struct arena* win)
-{
-	return 0;
-}
 int httpserver_create(struct arena* win, void* str)
 {
 	int j;
@@ -127,7 +120,7 @@ int httpserver_create(struct arena* win, void* str)
 
 	relationcreate(win, 0, _win_, tmp, 0, _fd_);
 	return 0;
-}
+}*/
 
 
 

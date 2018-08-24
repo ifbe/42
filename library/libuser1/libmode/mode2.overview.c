@@ -332,7 +332,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 			rel = samedstnextsrc(rel);
 		}
 	}
-/*
+
 	//element.irel
 	for(j=0;j<64;j++)
 	{
@@ -347,44 +347,44 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				k %= 64;
-				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
-					(2*(j/8)+1+32)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+48)*h/64
+				drawline_arrow(win, 0xc0ffc0,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)+17)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+ 1)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				drawline(win, 0xffffff,
-					(2*(j%8)+1)*w/16,
-					(2*(j/8)+1+32)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+32)*h/64
+				drawline_arrow(win, 0xc0ffc0,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)+ 1)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+ 1)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				drawline(win, 0xc0ffc0,
-					(2*(j%8)+1)*w/16,
-					(2*(j/8)+1+32)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+16)*h/64
+				drawline_arrow(win, 0xffffff,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)-15)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+ 1)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				drawline(win, 0xffc0ff,
-					(2*(j%8)+1)*w/16,
-					(2*(j/8)+1+32)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1)*h/64
+				drawline_arrow(win, 0xffc0ff,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)-31)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+ 1)*hh/32
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -405,84 +405,102 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				k %= 64;
-				drawline(win, 0xffffff,
-					(2*((j%64)%8)+1)*w/16,
-					(2*((j%64)/8)+1+48)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+48)*h/64
+				drawline_arrow(win, 0xc0ffc0,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)+17)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+17)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				drawline(win, 0xffc0ff,
-					(2*((j%64)%8)+1)*w/16,
-					(2*((j%64)/8)+1+48)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+32)*h/64
+				drawline_arrow(win, 0xc0ffc0,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)+ 1)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+17)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				drawline(win, 0xffc0ff,
-					(2*((j%64)%8)+1)*w/16,
-					(2*((j%64)/8)+1+48)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1+16)*h/64
+				drawline_arrow(win, 0xffffff,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)-15)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+17)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				drawline(win, 0xffc0ff,
-					(2*((j%64)%8)+1)*w/16,
-					(2*((j%64)/8)+1+48)*h/64,
-					(2*(k%8)+1)*w/16,
-					(2*(k/8)+1)*h/64
+				drawline_arrow(win, 0xffc0ff,
+					cx+(4*(k%8)-13)*ww/16,
+					cy+(2*(k/8)-31)*hh/32,
+					cx+(4*(j%8)-15)*ww/16,
+					cy+(2*(j/8)+17)*hh/32
 				);
 			}
 			rel = samedstnextsrc(rel);
 		}
 	}
-*/
 }
 void overview_read_vbo(struct arena* win, struct style* sty)
 {
-	struct relation* rel;
-	vec3 vc;
-	vec3 vr;
-	vec3 vf;
 	u32 bg,fg;
+	float r,f;
 	int x,y,j,k;
-	int w = win->width;
-	int h = win->height;
-
-	vc[0] = -1.0;
-	vc[1] = 0.5;
-	vc[2] = 0.0;
-	vr[0] = 1.0;
-	vr[1] = 0.5;
-	vr[2] = 0.0;
-	carveline2d(win, 0x0000ff, vc, vr);
-	vc[0] = -1.0;
-	vc[1] = 0.0;
-	vc[2] = 0.0;
-	vr[0] = 1.0;
-	vr[1] = 0.0;
-	vr[2] = 0.0;
-	carveline2d(win, 0x00ff00, vc, vr);
-	vc[0] = -1.0;
-	vc[1] = -0.5;
-	vc[2] = 0.0;
-	vr[0] = 1.0;
-	vr[1] = -0.5;
-	vr[2] = 0.0;
-	carveline2d(win, 0xff0000, vc, vr);
-
+	struct relation* rel;
+	struct style tmp;
+	float* vc;
+	float* vr;
+	float* vf;
+	vec3 tc;
+	vec3 tr;
+	vec3 tf;
+	if(0 == sty)
+	{
+		sty = &tmp;
+		sty->vc[0] = 0.0;
+		sty->vc[1] = 0.0;
+		sty->vc[2] = -0.5;
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0.0;
+		sty->vr[2] = 0.0;
+		sty->vf[0] = 0.0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0.0;
+	}
+	vc = sty->vc;
+	vr = sty->vr;
+	vf = sty->vf;
+/*
+	tc[0] = -1.0;
+	tc[1] = 0.5;
+	tc[2] = 0.0;
+	tr[0] = 1.0;
+	tr[1] = 0.5;
+	tr[2] = 0.0;
+	carveline2d(win, 0x0000ff, tc, tr);
+	tc[0] = -1.0;
+	tc[1] = 0.0;
+	tc[2] = 0.0;
+	tr[0] = 1.0;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+	carveline2d(win, 0x00ff00, tc, tr);
+	tc[0] = -1.0;
+	tc[1] = -0.5;
+	tc[2] = 0.0;
+	tr[0] = 1.0;
+	tr[1] = -0.5;
+	tr[2] = 0.0;
+	carveline2d(win, 0xff0000, tc, tr);
+*/
 	//actor
 	for(j=0;j<64;j++)
 	{
@@ -502,21 +520,27 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 
 		x = j%8;
 		y = j/8;
-		vc[0] = (x*2-7)/8.0;
-		vc[1] = (31-y*2)/32.0;
-		vc[2] = 0.0;
-		vr[0] = 4.0/33;
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0/34;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, bg, vc, vr, vf);
+		r = (x*2-7)/8.0;
+		f = (31-y*2)/32.0;
+		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
+		tr[0] = vr[0]*4.0/33;
+		tr[1] = vr[1]*4.0/33;
+		tr[2] = vr[2]*4.0/33;
+		tf[0] = vf[0]*1.0/34;
+		tf[1] = vf[1]*1.0/34;
+		tf[2] = vf[2]*1.0/34;
+		carvesolid2d_rect(win, bg, tc, tr, tf);
 
-		vc[2] = -0.01;
-		vr[0] = 1.0/16;
-		vf[1] = 1.0/32;
-		carvestring2d_center(win, fg, vc, vr, vf, (u8*)&actor[j].name, 8);
+		tc[2] -= 0.01;
+		tr[0] = vr[0]*1.0/16;
+		tr[1] = vr[1]*1.0/16;
+		tr[2] = vr[2]*1.0/16;
+		tf[0] = vf[0]*1.0/32;
+		tf[1] = vf[1]*1.0/32;
+		tf[2] = vf[2]*1.0/32;
+		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&actor[j].name, 8);
 	}
 
 	//arena
@@ -529,20 +553,27 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 
 		x = j%8;
 		y = j/8;
-		vc[0] = (x*2-7)/8.0;
-		vc[1] = (15-y*2)/32.0;
-		vc[2] = 0.0;
-		vr[0] = 4.0/33;
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0/34;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-		vc[2] = -0.01;
-		vr[0] = 1.0/16;
-		vf[1] = 1.0/32;
-		carvestring2d_center(win, fg, vc, vr, vf, (u8*)&arena[j].fmt, 8);
+		r = (x*2-7)/8.0;
+		f = (15-y*2)/32.0;
+		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
+		tr[0] = vr[0]*4.0/33;
+		tr[1] = vr[1]*4.0/33;
+		tr[2] = vr[2]*4.0/33;
+		tf[0] = vf[0]*1.0/34;
+		tf[1] = vf[1]*1.0/34;
+		tf[2] = vf[2]*1.0/34;
+		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+
+		tc[2] -= 0.01;
+		tr[0] = vr[0]*1.0/16;
+		tr[1] = vr[1]*1.0/16;
+		tr[2] = vr[2]*1.0/16;
+		tf[0] = vf[0]*1.0/32;
+		tf[1] = vf[1]*1.0/32;
+		tf[2] = vf[2]*1.0/32;
+		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&arena[j].fmt, 8);
 	}
 
 	//artery
@@ -551,20 +582,27 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		if(0 == ele[j].type)continue;
 		x = j%8;
 		y = j/8;
-		vc[0] = (x*2-7)/8.0;
-		vc[1] = (-1-y*2)/32.0;
-		vc[2] = 0.0;
-		vr[0] = 4.0/33;
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0/34;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-		vc[2] = -0.01;
-		vr[0] = 1.0/16;
-		vf[1] = 1.0/32;
-		carvestring2d_center(win, 0xffffff, vc, vr, vf, (u8*)&ele[j].type, 8);
+		r = (x*2-7)/8.0;
+		f = (-1-y*2)/32.0;
+		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
+		tr[0] = vr[0]*4.0/33;
+		tr[1] = vr[1]*4.0/33;
+		tr[2] = vr[2]*4.0/33;
+		tf[0] = vf[0]*1.0/34;
+		tf[1] = vf[1]*1.0/34;
+		tf[2] = vf[2]*1.0/34;
+		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+
+		tc[2] -= 0.01;
+		tr[0] = vr[0]*1.0/16;
+		tr[1] = vr[1]*1.0/16;
+		tr[2] = vr[2]*1.0/16;
+		tf[0] = vf[0]*1.0/32;
+		tf[1] = vf[1]*1.0/32;
+		tf[2] = vf[2]*1.0/32;
+		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
 	//system
@@ -573,20 +611,27 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		if(0 == obj[j].type)continue;
 		x = (j%64)%8;
 		y = (j%64)/8;
-		vc[0] = (x*2-7)/8.0;
-		vc[1] = (-17-y*2)/32.0;
-		vc[2] = 0.0;
-		vr[0] = 4.0/33;
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0/34;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-		vc[2] = -0.01;
-		vr[0] = 1.0/16;
-		vf[1] = 1.0/32;
-		carvestring2d_center(win, 0xffffff, vc, vr, vf, (u8*)&obj[j].name, 8);
+		r = (x*2-7)/8.0;
+		f = (-17-y*2)/32.0;
+		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
+		tr[0] = vr[0]*4.0/33;
+		tr[1] = vr[1]*4.0/33;
+		tr[2] = vr[2]*4.0/33;
+		tf[0] = vf[0]*1.0/34;
+		tf[1] = vf[1]*1.0/34;
+		tf[2] = vf[2]*1.0/34;
+		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+
+		tc[2] -= 0.01;
+		tr[0] = vr[0]*1.0/16;
+		tr[1] = vr[1]*1.0/16;
+		tr[2] = vr[2]*1.0/16;
+		tf[0] = vf[0]*1.0/32;
+		tf[1] = vf[1]*1.0/32;
+		tf[2] = vf[2]*1.0/32;
+		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&obj[j].name, 8);
 	}
 
 	//actor.irel
@@ -603,49 +648,73 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				k %= 64;
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (-17-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (31-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xc0ffc0, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-17-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (31-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (-1-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (31-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xc0ffc0, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-1-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (31-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (15-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (31-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xc0ffc0, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (15-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (31-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (31-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (31-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xffffff, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (31-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (31-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffffff, tc, tr);
 			}
 			rel = samedstnextsrc(rel);
 		}
@@ -665,49 +734,247 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
 				k %= 64;
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (-17-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (15-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xc0ffc0, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-17-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (15-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (-1-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (15-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xc0ffc0, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-1-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (15-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (15-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (15-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xffffff, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (15-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (15-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffffff, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
-				vc[0] = ((k%8)*4-13)/16.0;
-				vc[1] = (31-(k/8)*2)/32.0;
-				vc[2] = -0.01;
-				vr[0] = ((j%8)*4-15)/16.0;
-				vr[1] = (15-(j/8)*2)/32.0;
-				vr[2] = -0.01;
-				carveline2d_arrow(win, 0xffc0ff, vc, vr);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (31-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (15-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffc0ff, tc, tr);
+			}
+
+			rel = samedstnextsrc(rel);
+		}
+	}
+
+	//element.irel
+	for(j=0;j<64;j++)
+	{
+		if(0 == ele[j].type)break;
+
+		rel = ele[j].irel0;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_fd_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-17-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-1-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+			}
+			else if(_art_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)ele;
+				k = k / sizeof(struct element);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-1-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-1-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+			}
+			else if(_win_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (15-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-1-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffffff, tc, tr);
+			}
+			else if(_act_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (31-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-1-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffc0ff, tc, tr);
+			}
+
+			rel = samedstnextsrc(rel);
+		}
+	}
+
+	//object.irel
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].type)break;
+
+		rel = obj[j].irel0;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_fd_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)obj;
+				k = k / sizeof(struct object);
+				k %= 64;
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-17-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-17-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+			}
+			else if(_art_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)ele;
+				k = k / sizeof(struct element);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (-1-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-17-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+			}
+			else if(_win_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)arena;
+				k = k / sizeof(struct arena);
+
+				r = vr[0]*((k%8)*4-13)/16.0;
+				f = vf[1]*(15-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-17-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffffff, tc, tr);
+			}
+			else if(_act_ == rel->srctype)
+			{
+				k = (void*)(rel->srcchip) - (void*)actor;
+				k = k / sizeof(struct actor);
+
+				r = ((k%8)*4-13)/16.0;
+				f = (31-(k/8)*2)/32.0;
+				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+
+				r = ((j%8)*4-15)/16.0;
+				f = (-17-(j/8)*2)/32.0;
+				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
+				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
+				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
+				carveline2d_arrow(win, 0xffc0ff, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
