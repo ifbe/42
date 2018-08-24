@@ -97,7 +97,8 @@ linux:
 .PHONY:mac
 mac:
 	rm -f *.o
-	$(compiler) $(cflag) mac/mac.flow.net.socket.c
+	$(compiler) $(cflag) mac/mac.flow.kqueue.c
+	$(compiler) $(cflag) mac/mac.flow.socket.c
 	$(compiler) $(cflag) mac/mac.memory.file.c
 	$(compiler) $(cflag) mac/mac.memory.folder.c
 	$(compiler) $(cflag) mac/mac.memory.managed.c
