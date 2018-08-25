@@ -13,6 +13,7 @@ static void* buffer = 0;
 
 
 
+/*
 int wsserver_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -56,6 +57,7 @@ int wsserver_create(struct arena* win)
 	win->buf = buffer;
 	return 0;
 }
+*/
 
 
 

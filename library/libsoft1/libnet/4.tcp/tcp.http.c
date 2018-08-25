@@ -169,7 +169,7 @@ int httpserver_write(
 	{
 		if((j<len)&&(0xd != buf[j])&&(0xa != buf[j]))continue;
 
-		say("%.*s\n", j-k, buf+k);
+		//say("%.*s\n", j-k, buf+k);
 		if(ncmp(buf+k, "Connection: ", 12) == 0)Connection = buf+k+12;
 		else if(ncmp(buf+k, "Upgrade: ", 9) == 0)Upgrade = buf+k+9;
 		else if(ncmp(buf+k, "POST ", 5) == 0)POST = buf+k+5;
@@ -226,8 +226,11 @@ int httpserver_write(
 	//POST / HTTP/1.1
 	if(POST)
 	{
+		say("%.*s\n", len, buf);
 		return 0;
 	}
+
+	say("@httpserver_write: %.*s\n",len,buf);
 	return 0;
 }
 int httpserver_read()

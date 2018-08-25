@@ -12,48 +12,6 @@ u8* findstr(void* src, int max, void* target, int tarlen);
 
 
 
-int websocket_read_handshake(u8* buf, int len, u8* dst, int max)
-{
-	int j;
-	u8 sha1buf[0x100];
-	u8 base64buf[0x100];
-	u8* Sec_WebSocket_Key;
-
-	//
-	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
-	if(Sec_WebSocket_Key == 0)return 0;
-	Sec_WebSocket_Key += 19;
-
-	//在Sec_WebSocket_Key尾巴上添加一个固定的字符串
-	j = findtail(Sec_WebSocket_Key);
-	j += mysnprintf(Sec_WebSocket_Key + j, 256,
-		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
-
-	//对这个字符串做一次sha1
-	sha1sum(sha1buf, Sec_WebSocket_Key, j);
-	say("sha1=");
-	for(j=0;j<20;j++)say("%02x", sha1buf[j]);
-	say("\n");
-
-	//把sha1的结果以base64格式编码
-	base64_encode(base64buf, sha1buf, 20);
-	say("base64=%s\n", base64buf);
-
-	//把base64的结果作为accept密钥
-	return mysnprintf(dst, 256,
-		"HTTP/1.1 101 Switching Protocols\r\n"
-		"Upgrade: websocket\r\n"
-		"Connection: Upgrade\r\n"
-		"Sec-WebSocket-Accept: %s\r\n"
-		"\r\n",
-		base64buf
-	);
-}
-
-
-
-
 int websocket_read(u8* buf, int len, u8* dst, int max)
 {
 //#define dbg say
@@ -247,6 +205,86 @@ int wsclient_create(struct element* ele, u8* url, u8* buf, int len)
 	ele->stage1 = 0;
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 1;
+}
+
+
+
+
+
+
+
+
+int websocket_read_handshake(u8* buf, int len, u8* dst, int max)
+{
+	int j;
+	u8 sha1buf[0x100];
+	u8 base64buf[0x100];
+	u8* Sec_WebSocket_Key;
+
+	//
+	Sec_WebSocket_Key = findstr(buf, len, "Sec-WebSocket-Key", 17);
+	if(Sec_WebSocket_Key == 0)return 0;
+	Sec_WebSocket_Key += 19;
+
+	//在Sec_WebSocket_Key尾巴上添加一个固定的字符串
+	j = findtail(Sec_WebSocket_Key);
+	j += mysnprintf(Sec_WebSocket_Key + j, 256,
+		"258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+	say("Sec_WebSocket_Key=%s\n", Sec_WebSocket_Key);
+
+	//对这个字符串做一次sha1
+	sha1sum(sha1buf, Sec_WebSocket_Key, j);
+	say("sha1=");
+	for(j=0;j<20;j++)say("%02x", sha1buf[j]);
+	say("\n");
+
+	//把sha1的结果以base64格式编码
+	base64_encode(base64buf, sha1buf, 20);
+	say("base64=%s\n", base64buf);
+
+	//把base64的结果作为accept密钥
+	return mysnprintf(dst, 256,
+		"HTTP/1.1 101 Switching Protocols\r\n"
+		"Upgrade: websocket\r\n"
+		"Connection: Upgrade\r\n"
+		"Sec-WebSocket-Accept: %s\r\n"
+		"\r\n",
+		base64buf
+	);
+}
+int wsserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	u8 tmp[0x1000];
+	if(0 == ele->stage1)
+	{
+		ret = websocket_read_handshake(buf, len, tmp, 256);
+		ret = systemwrite(obj, pin, ele, sty, tmp, ret);
+
+		ele->stage1 = 1;
+		return 0;
+	}
+
+	ret = websocket_read(buf, len, tmp, 0x1000);
+	say("%.*s\n", ret, tmp);
+	return 0;
+}
+int wsserver_read(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin)
+{
+	return 0;
+}
+int wsserver_delete(struct element* ele)
+{
+	return 0;
+}
+int wsserver_create(struct element* ele)
+{
+	return 0;
 }
 /*
 #define ws 0x7377

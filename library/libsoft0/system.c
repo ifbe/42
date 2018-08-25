@@ -45,12 +45,14 @@ int systemwrite_ev(struct event* ev)
 {
 	int ret;
 	u64 type,name;
+	void* dc;
+	void* df;
 	struct relation* irel;
 	struct relation* orel;
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
-	say("%llx,%llx,%llx\n",why,what,where);
+	//say("%llx,%llx,%llx\n",why,what,where);
 
 	if(why == '+')
 	{
@@ -100,30 +102,22 @@ int systemwrite_ev(struct event* ev)
 	while(1)
 	{
 		if(0 == orel)break;
+
+		dc = (void*)(orel->dstchip);
+		df = (void*)(orel->dstfoot);
 		if(_act_ == orel->dsttype)
 		{
-			actorwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
+			actorwrite(dc, df, &obj[where], 0, ppp, ret);
 		}
 		else if(_win_ == orel->dsttype)
 		{
-			arenawrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
+			arenawrite(dc, df, &obj[where], 0, ppp, ret);
 		}
 		else if(_art_ == orel->dsttype)
 		{
-			arterywrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				&obj[where], 0,
-				ppp, ret
-			);
+			arterywrite(dc, df, &obj[where], 0, ppp, ret);
 		}
+
 		orel = samesrcnextdst(orel);
 	}
 	return 42;

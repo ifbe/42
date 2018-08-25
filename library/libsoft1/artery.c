@@ -70,12 +70,16 @@ int arteryread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 {
+	u64 type;
 	struct element* ele;
 	if(0 == dc)return arterywrite_ev(buf);
 
 	ele = dc;
-	if(_HTTP_ == ele->type)httpserver_write(dc, df, sc, sf, buf, len);
-	if(_http_ == ele->type)httpclient_write(dc, df, sc, sf, buf, len);
+	type = ele->type;
+	if(_HTTP_ == type)return httpserver_write(dc, df, sc, sf, buf, len);
+	if(_http_ == type)return httpclient_write(dc, df, sc, sf, buf, len);
+	if(_WS_   == type)return wsserver_write(dc, df, sc, sf, buf, len);
+	if(_ws_   == type)return wsclient_write(dc, df, sc, sf, buf, len);
 	return 0;
 }
 int arterystop()
