@@ -85,6 +85,9 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 	if(_http_ == type)return httpclient_write(dc, df, sc, sf, buf, len);
 	if(_WS_   == type)return wsserver_write(dc, df, sc, sf, buf, len);
 	if(_ws_   == type)return wsclient_write(dc, df, sc, sf, buf, len);
+
+	say("@arterywrite\n");
+	printmemory(buf, len);
 	return 0;
 }
 int arterystop()

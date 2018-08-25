@@ -129,8 +129,30 @@ int htmlnode_read(struct arena* win)
 {
 	return 0;
 }
-int htmlnode_write(struct arena* win)
+int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
+	void* dc;
+	void* df;
+	struct relation* orel = win->orel0;
+	if(0 == orel)
+	{
+		say("@htmlnode_write: %.*s\n", len, buf);
+		return 0;
+	}
+
+	while(1)
+	{
+		if(0 == orel)break;
+
+		dc = (void*)(orel->dstchip);
+		df = (void*)(orel->dstfoot);
+		if(_act_ == orel->dsttype)
+		{
+			actorwrite(dc, df, win, 0, buf, len);
+		}
+
+		orel = samesrcnextdst(orel);
+	}
 	return 0;
 }
 int htmlnode_delete(struct arena* win)
@@ -139,5 +161,11 @@ int htmlnode_delete(struct arena* win)
 }
 int htmlnode_create(struct arena* win, void* str)
 {
+	void* art;
+	if(str)
+	{
+		art = arterycreate(0, str);
+		if(art)relationcreate(win, 0, _win_, art, 0, _art_);
+	}
 	return 0;
 }

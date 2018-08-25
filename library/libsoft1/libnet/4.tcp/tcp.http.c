@@ -72,6 +72,8 @@ int httpclient_write(
 	u8* buf, int len)
 {
 	int j,k;
+	void* dc;
+	void* df;
 	struct relation* orel;
 	if(0 == ele)return 0;
 	if(0 == obj)return 0;
@@ -98,23 +100,32 @@ int httpclient_write(
 			}
 		}
 	}
-
 	ele->stage1 += 1;
-	printmemory(buf, len);
-	if(len <= 0)return 0;
 
+	//if no o rel
 	orel = ele->orel0;
+	if(0 == orel)
+	{
+		printmemory(buf, len);
+		return 0;
+	}
+
+	//send to o rel
 	while(1)
 	{
 		if(0 == orel)break;
-		if(_act_ == orel->dsttype)
+
+		dc = (void*)(orel->dstchip);
+		df = (void*)(orel->dstfoot);
+		if(_win_ == orel->dsttype)
 		{
-			actorwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				ele, 0,
-				buf, len
-			);
+			arenawrite(dc, df, ele, 0, buf, len);
 		}
+		else if(_act_ == orel->dsttype)
+		{
+			actorwrite(dc, df, ele, 0, buf, len);
+		}
+
 		orel = samesrcnextdst(orel);
 	}
 
@@ -144,7 +155,7 @@ int httpclient_create(struct element* ele, u8* url, u8* buf, int len)
 	ret = systemwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
 
-	ele->type = hex32('h','t','t','p');
+	ele->type = _http_;
 	ele->stage1 = 0;
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 1;

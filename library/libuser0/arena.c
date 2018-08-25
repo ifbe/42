@@ -1,21 +1,13 @@
 #include "libuser.h"
-#define _cam_  hex32('c','a','m',0)
-#define _mic_  hex32('m','i','c',0)
-#define _win_  hex32('w','i','n',0)
-//
 #define _node_ hex32('n','o','d','e')
 #define _func_ hex32('f','u','n','c')
+#define _html_ hex32('h','t','m','l')
 #define _rgba_ hex32('r','g','b','a')
 #define _tty_  hex32('t','t','y',0)
 #define _vpin_ hex32('v','p','i','n')
 #define _xml_  hex32('x','m','l',0)
-//
-#define _HTTP_ hex32('H','T','T','P')
-#define _http_ hex32('h','t','t','p')
-#define _WS_ hex32('W','S',0,0)
-#define _ws_ hex32('w','s',0,0)
-#define _VNC_ hex32('V','N','C',0)
-#define _vnc_ hex32('v','n','c',0)
+#define _cam_  hex32('c','a','m',0)
+#define _mic_  hex32('m','i','c',0)
 
 
 
@@ -62,6 +54,7 @@ int funcnode_create(void*, void*);
 int funcnode_delete(void*);
 int htmlnode_create(void*, void*);
 int htmlnode_delete(void*);
+int htmlnode_write(void*,void*,void*,void*,void*,int);
 int jsonnode_create(void*, void*);
 int jsonnode_delete(void*);
 int rgbanode_create(void*, void*);
@@ -76,31 +69,6 @@ int wsnode_create(void*, void*);
 int wsnode_delete(void*);
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
-//remote
-int httpclient_create(void* win, u8* str);
-int httpserver_create(void* win, u8* str);
-int wsclient_create(void* win, u8* str);
-int wsserver_create(void* win, u8* str);
-int vncclient_create(void* win, u8* str);
-int vncserver_create(void* win, u8* str);
-int httpclient_delete(void* win);
-int httpserver_delete(void* win);
-int wsclient_delete(void* win);
-int wsserver_delete(void* win);
-int vncclient_delete(void* win);
-int vncserver_delete(void* win);
-int httpclient_read(void* dc,void* df,void* sc,void* sf);
-int httpserver_read(void* dc,void* df,void* sc,void* sf);
-int wsclient_read(void* dc, void* df, void* act, void* pin);
-int wsserver_read(void* dc, void* df, void* act, void* pin);
-int vncclient_read(void* dc);
-int vncserver_read(void* dc);
-int httpclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
-int httpserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
-int wsclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
-int wsserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
-int vncclient_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
-int vncserver_write(void* dc,void* df,void* sc,void* sf,u8* buf,int len);
 //
 int cmp(void*, void*);
 int ncmp(void*, void*, int);
@@ -254,22 +222,17 @@ void arenavertex(struct arena* win)
 
 int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	u64 fmt;
 	struct arena* win;
 	if(0 == dc)return arenawrite_ev(buf);
 
 	win = dc;
-	if(_HTTP_ == win->type)
-	{
-		httpserver_write(dc,df,sc,sf,buf,len);
-	}
-	else if(_http_ == win->type)
-	{
-		httpclient_write(dc,df,sc,sf,buf,len);
-	}
-	else if(_WS_ == win->type)
-	{
-		wsserver_write(dc,df,sc,sf,buf,len);
-	}
+	fmt = win->fmt;
+	if(_html_ == fmt)return htmlnode_write(dc, df, sc, sf, buf, len);
+	if(_ws_   == fmt)return wsnode_write(dc, df, sc, sf, buf, len);
+
+	say("@arenawrite\n");
+	printmemory(buf, len);
 	return 0;
 }
 int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
@@ -381,28 +344,28 @@ void* arenacreate(u64 type, void* addr)
 		win->type = _node_;
 		win->fmt = _func_;
 
-		traycreate(win, addr);
+		funcnode_create(win, addr);
 	}
 	else if(_html_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _html_;
 
-		traycreate(win, addr);
+		htmlnode_create(win, addr);
 	}
 	else if(_json_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _json_;
 
-		traycreate(win, addr);
+		jsonnode_create(win, addr);
 	}
 	else if(_rgba_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _rgba_;
 
-		traycreate(win, addr);
+		rgbanode_create(win, addr);
 	}
 	else if(_tty_ == type)
 	{
@@ -416,28 +379,28 @@ void* arenacreate(u64 type, void* addr)
 		win->type = _node_;
 		win->fmt = _vbo_;
 
-		traycreate(win, addr);
+		vbonode_create(win, addr);
 	}
 	else if(_vpin_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _vpin_;
 
-		traycreate(win, addr);
+		vpinnode_create(win, addr);
 	}
 	else if(_ws_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _ws_;
 
-		traycreate(win, addr);
+		wsnode_create(win, addr);
 	}
 	else if(_xml_ == type)
 	{
 		win->type = _node_;
 		win->fmt = _xml_;
 
-		traycreate(win, addr);
+		xmlnode_create(win, addr);
 	}
 
 	return win;

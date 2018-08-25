@@ -214,19 +214,8 @@ int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	if(0 == dc)return actorwrite_ev(buf);
 
 	act = dc;
-	act->onwrite(act, df, sc, sf, buf, len);
+	act->onwrite(dc, df, sc, sf, buf, len);
 
-	rel = act->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-		if(_win_ == rel->dsttype)
-		{
-			win = (void*)(rel->dstchip);
-			win->enq += 1;
-		}
-		rel = samesrcnextdst(rel);
-	}
 	return 0;
 }
 int actorread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
