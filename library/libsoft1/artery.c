@@ -74,6 +74,7 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 	if(0 == dc)return arterywrite_ev(buf);
 
 	ele = dc;
+	if(_HTTP_ == ele->type)httpserver_write(dc, df, sc, sf, buf, len);
 	if(_http_ == ele->type)httpclient_write(dc, df, sc, sf, buf, len);
 	return 0;
 }
@@ -107,8 +108,7 @@ void* arterycreate(u64 type, u8* url)
 		if(0 == e)return 0;
 
 		e->type = _HTTP_;
-		httpserver_create(e, url, datahome, 0x100000);
-
+		if(url)httpserver_create(e, url, datahome, 0x100000);
 		return e;
 	}
 
@@ -118,7 +118,18 @@ void* arterycreate(u64 type, u8* url)
 		if(0 == e)return 0;
 
 		e->type = _http_;
-		httpclient_create(e, url, datahome, 0x100000);
+		if(url)httpclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	if(_WS_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _WS_;
+		if(url)wsserver_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
@@ -129,7 +140,7 @@ void* arterycreate(u64 type, u8* url)
 		if(0 == e)return 0;
 
 		e->type = _ws_;
-		wsclient_create(e, url, datahome, 0x100000);
+		if(url)wsclient_create(e, url, datahome, 0x100000);
 
 		return e;
 	}

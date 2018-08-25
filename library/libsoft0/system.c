@@ -169,7 +169,18 @@ int systemdelete(void* addr)
 		o = addr;
 		if(0 != o->irel0)relationdelete(o->irel0);
 		if(0 != o->orel0)relationdelete(o->orel0);
+
 		stopsocket(fd);
+
+		o->type = 0;
+		o->fmt = 0;
+		o->name = 0;
+
+		o->selffd = 0;
+		o->thatfd = 0;
+
+		o->irel0 = o->ireln = 0;
+		o->orel0 = o->oreln = 0;
 	}
 	return 0;
 }

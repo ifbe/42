@@ -157,6 +157,77 @@ int httpserver_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	int j,k,ret;
+	u8* GET = 0;
+	u8* POST = 0;
+	u8* Upgrade = 0;
+	u8* Connection = 0;
+	struct element* e;
+
+	k = 0;
+	for(j=0;j<=len;j++)
+	{
+		if((j<len)&&(0xd != buf[j])&&(0xa != buf[j]))continue;
+
+		say("%.*s\n", j-k, buf+k);
+		if(ncmp(buf+k, "Connection: ", 12) == 0)Connection = buf+k+12;
+		else if(ncmp(buf+k, "Upgrade: ", 9) == 0)Upgrade = buf+k+9;
+		else if(ncmp(buf+k, "POST ", 5) == 0)POST = buf+k+5;
+		else if(ncmp(buf+k, "GET ", 4) == 0)GET = buf+k+4;
+
+		if(0xa == buf[j+1])j++;
+		k = j+1;
+	}
+
+	//websocket
+	if((0 != Connection)&&(0 != Upgrade))
+	{
+		e = arterycreate(_WS_, 0);
+		if(e)
+		{
+			relationcreate(e, 0, _art_, obj, 0, _fd_);
+			wsserver_write(e, sty, obj, pin, buf, len);
+		}
+		return 0;
+	}
+
+	//GET / HTTP/1.1
+	if(GET)
+	{
+		if(0 == ncmp(GET, "/favicon.ico", 12))
+		{
+			systemdelete(obj);
+			return 0;
+		}
+
+		ret = mysnprintf(buf+len, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: text/plain\r\n"	//"Content-type: text/html\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			len
+		);
+
+		//send response
+		systemwrite(obj, pin, ele, sty, buf+len, ret);
+
+		//send context
+		systemwrite(obj, pin, ele, sty, buf, len);
+
+		if(0 != Connection)
+		{
+			if(0 == ncmp(Connection, "keep-alive", 10))return 0;
+		}
+
+		systemdelete(obj);
+		return 0;
+	}
+
+	//POST / HTTP/1.1
+	if(POST)
+	{
+		return 0;
+	}
 	return 0;
 }
 int httpserver_read()

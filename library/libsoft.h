@@ -261,6 +261,8 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
+void* arterycreate(u64 type, u8* name);
+int arterydelete(void*);
 void* systemcreate(u64 type, u8* name);
 int systemdelete(void*);
 //
