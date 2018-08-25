@@ -7,6 +7,7 @@ int ncmp(void*, void*, int);
 int cmp(void*, void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
+int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 

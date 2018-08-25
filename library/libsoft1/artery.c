@@ -1,18 +1,23 @@
 #include "libsoft.h"
-int httpserver_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_create(struct element* ele, void* url, void* buf, int len);
+int httpserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int wsserver_create(  struct element* ele, void* url, void* buf, int len);
 int wsclient_create(  struct element* ele, void* url, void* buf, int len);
 int wsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int sshserver_create( struct element* ele, void* url, void* buf, int len);
+int wsserver_create(  struct element* ele, void* url, void* buf, int len);
+int wsserver_write(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+//
 int sshclient_create( struct element* ele, void* url, void* buf, int len);
 int sshclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshserver_create( struct element* ele, void* url, void* buf, int len);
+int sshserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int tlsserver_create( struct element* ele, void* url, void* buf, int len);
 int tlsclient_create( struct element* ele, void* url, void* buf, int len);
 int tlsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tlsserver_create( struct element* ele, void* url, void* buf, int len);
+int tlsserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);

@@ -43,8 +43,7 @@ static int ppplen = 0;
 
 int systemwrite_ev(struct event* ev)
 {
-	int ret;
-	u64 type,name;
+	int ret,cnt;
 	void* dc;
 	void* df;
 	struct relation* irel;
@@ -69,11 +68,9 @@ int systemwrite_ev(struct event* ev)
 		return 0;
 	}
 
-	type = obj[where].type;
-	name = obj[where].name;
 	irel = obj[where].irel0;
 	orel = obj[where].orel0;
-	if((0 == name)&&(0 == irel)&&(0 == orel))
+	if((0 == irel)&&(0 == orel))
 	{
 		ret = obj[where].thatfd;
 		irel = obj[ret].irel0;
@@ -99,6 +96,7 @@ int systemwrite_ev(struct event* ev)
 	ret = readsocket(where, 0, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
+	cnt = 0;
 	while(1)
 	{
 		if(0 == orel)break;
@@ -118,8 +116,11 @@ int systemwrite_ev(struct event* ev)
 			arterywrite(dc, df, &obj[where], 0, ppp, ret);
 		}
 
+		cnt++;
 		orel = samesrcnextdst(orel);
 	}
+
+	if(0 == cnt)printmemory(ppp, ret);
 	return 42;
 }
 int systemread_all()
