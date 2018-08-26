@@ -78,16 +78,19 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
 	u64 type;
 	struct element* ele;
 	if(0 == dc)return arterywrite_ev(buf);
+say("arterywrite@{\n");
 
 	ele = dc;
 	type = ele->type;
-	if(_HTTP_ == type)return httpserver_write(dc, df, sc, sf, buf, len);
-	if(_http_ == type)return httpclient_write(dc, df, sc, sf, buf, len);
-	if(_WS_   == type)return wsserver_write(dc, df, sc, sf, buf, len);
-	if(_ws_   == type)return wsclient_write(dc, df, sc, sf, buf, len);
+	if(_HTTP_ == type)httpserver_write(dc, df, sc, sf, buf, len);
+	else if(_http_ == type)httpclient_write(dc, df, sc, sf, buf, len);
+	else if(_SSH_  == type)sshserver_write(dc, df, sc, sf, buf, len);
+	else if(_ssh_  == type)sshclient_write(dc, df, sc, sf, buf, len);
+	else if(_WS_   == type)wsserver_write(dc, df, sc, sf, buf, len);
+	else if(_ws_   == type)wsclient_write(dc, df, sc, sf, buf, len);
+	else printmemory(buf, len);
 
-	say("@arterywrite\n");
-	printmemory(buf, len);
+say("}@arterywrite\n");
 	return 0;
 }
 int arterystop()
@@ -131,6 +134,28 @@ void* arterycreate(u64 type, u8* url)
 
 		e->type = _http_;
 		if(url)httpclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	if(_SSH_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _SSH_;
+		if(url)sshserver_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	if(_ssh_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ssh_;
+		if(url)sshclient_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
@@ -381,6 +406,7 @@ void initartery(void* addr)
 #define max (0x100000/sizeof(struct element))
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
-	arterycreate(0, (u8*)"HTTP://127.0.0.1:2222");
+	arterycreate(0, (u8*)"SSH://127.0.0.1:2222");
+	arterycreate(0, (u8*)"HTTP://127.0.0.1:4444");
 	//say("[8,c):inited artery\n");
 }

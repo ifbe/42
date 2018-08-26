@@ -96,6 +96,8 @@ int systemwrite_ev(struct event* ev)
 	ret = readsocket(where, 0, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
+//printmemory(ppp, ret);
+say("systemwrite_ev@%x{\n", ret);
 	cnt = 0;
 	while(1)
 	{
@@ -119,8 +121,9 @@ int systemwrite_ev(struct event* ev)
 		cnt++;
 		orel = samesrcnextdst(orel);
 	}
-
 	if(0 == cnt)printmemory(ppp, ret);
+
+say("}@systemwrite_ev\n");
 	return 42;
 }
 int systemread_all()
@@ -161,11 +164,11 @@ int systemdelete(void* addr)
 	}
 	else
 	{
+		stopsocket(fd);
+
 		o = addr;
 		if(0 != o->irel0)relationdelete(o->irel0);
 		if(0 != o->orel0)relationdelete(o->orel0);
-
-		stopsocket(fd);
 
 		o->type = 0;
 		o->fmt = 0;

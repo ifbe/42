@@ -212,10 +212,12 @@ int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	struct actor* act;
 	struct arena* win;
 	if(0 == dc)return actorwrite_ev(buf);
+say("actorwrite@{\n");
 
 	act = dc;
 	act->onwrite(dc, df, sc, sf, buf, len);
 
+say("}@actorwrite\n");
 	return 0;
 }
 int actorread(void* dc,void* df,void* sc,void* sf,void* buf,int len)

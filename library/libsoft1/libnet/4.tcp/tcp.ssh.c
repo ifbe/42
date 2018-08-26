@@ -8,10 +8,6 @@ int cmp(void*, void*);
 
 
 static u8 version[]="SSH-2.0-finalanswer_42\r\n";
-
-
-
-
 static void printalgorithm(u8* buf, int len)
 {
 	int j,k;
@@ -44,99 +40,6 @@ static void printalgorithm(u8* buf, int len)
 		j++;
 		if(j>len)break;
 	}
-}
-static int secureshell_read_0x14(u8* buf, int len)
-{
-	u32 j;
-	int off;
-
-	//cookie
-	say("[6,15]cookie\n	");
-	for(j=0;j<16;j++)say("%02x ", buf[6+j]);
-	say("\n");
-	off = 0x16;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]key_exchange_algorithm\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]server_host_key_algorithm\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]enc_alg_c2s\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]enc_alg_s2c\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]mac_alg_c2s\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]mac_alg_s2c\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]comp_alg_c2s\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	say("[%x,%x]comp_alg_s2c\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	if(j <= 0)goto byebye;
-	say("[%x,%x]lang_c2s\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	if(j <= 0)goto byebye;
-	say("[%x,%x]lang_s2c\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-	off += 4 + j;
-
-	//
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	if(j <= 0)goto byebye;
-	say("[%x,%x]first_kex\n", off, off+j-1);
-	printalgorithm(buf+off, j+4);
-
-byebye:
-	return 0x14;
 }
 static int secureshell_read_0x1e(u8* buf, int len)
 {
@@ -223,102 +126,6 @@ int secureshell_write_head(u8* buf, int len)
 	buf[4] = temp;
 
 	return len;
-}
-static int secureshell_write_0x14(u8* buf, int len)
-{
-	int j;
-	int off;
-
-	//cookie unchanged
-	for(j=0;j<16;j++)buf[off+j] = j;
-	off = 0x16;
-
-	//key_exchange_algorithm
-	j = mysnprintf(buf+off+4, 999,
-		"diffie-hellman-group-exchange-sha256,"
-		"diffie-hellman-group-exchange-sha1"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//server_host_key_algorithm
-	j = mysnprintf(buf+off+4, 999,
-		"ssh-rsa,"
-		"rsa-sha2-256,"
-		"rsa-sha2-512"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//encryption_algorithms_client_to_server
-	j = mysnprintf(buf+off+4, 999,
-		"aes128-cbc,"
-		"aes256-cbc,"
-		"3des-cbc"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//encryption_algorithms_server_to_client
-	j = mysnprintf(buf+off+4, 999,
-		"aes128-cbc,"
-		"aes256-cbc,"
-		"3des-cbc"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//mac_algorithms_client_to_server
-	j = mysnprintf(buf+off+4, 999,
-		"hmac-sha1,"
-		"hmac-sha2-256,"
-		"hmac-sha2-512"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//mac_algorithms_server_to_client
-	j = mysnprintf(buf+off+4, 999,
-		"hmac-sha1,"
-		"hmac-sha2-256,"
-		"hmac-sha2-512"
-	);
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//compression_algorithms_client_to_server
-	j = mysnprintf(buf+off+4, 999, "none");
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//compression_algorithms_server_to_client
-	j = mysnprintf(buf+off+4, 999, "none");
-	buf[off+0] = buf[off+1] = 0;
-	buf[off+2] = (j>>8)&0xff;
-	buf[off+3] = j&0xff;
-	off += 4 + j;
-
-	//other
-	for(j=off;j<off+32;j++)buf[j] = 0;
-	off += 4+4+5;
-
-	//
-	buf[5] = 0x14;
-	return secureshell_write_head(buf, off);
 }
 static int secureshell_write_0x1e(u8* buf, int len)
 {
@@ -434,7 +241,6 @@ static int secureshell_read(u8* buf, int len)
 			"	type=%x\n",
 			j, buf[4], buf[5]
 		);
-		secureshell_read_0x14(buf,len);
 	}
 	else if(buf[5] == 0x1e)
 	{
@@ -518,12 +324,12 @@ int ssh_client(struct object* obj, int fd, u8* buf, int len)
 	if(ret == 0x14)
 	{
 		//protocol
-		ret = secureshell_write_0x14(buf, len);
-		writesocket(fd, 0, buf, ret);
+		//ret = secureshell_write_0x14(buf, len);
+		//writesocket(fd, 0, buf, ret);
 
 		//keyexch
-		ret = secureshell_write_0x1e(buf, len);
-		writesocket(fd, 0, buf, ret);
+		//ret = secureshell_write_0x1e(buf, len);
+		//writesocket(fd, 0, buf, ret);
 	}
 	else printmemory(buf,len);
 
@@ -535,8 +341,8 @@ int ssh_server(struct object* obj, int fd, u8* buf, int len)
 	if(ret == 0x14)
 	{
 		//secureshell_write(buf, len);
-		ret = secureshell_write_0x14(buf, len);
-		writesocket(fd, 0, buf, ret);
+		//ret = secureshell_write_0x14(buf, len);
+		//writesocket(fd, 0, buf, ret);
 	}
 	else if(ret == 0x1e)
 	{
@@ -556,13 +362,308 @@ int ssh_server(struct object* obj, int fd, u8* buf, int len)
 
 	return SSH;
 }
-int ssh_check(void* p, int fd, u8* buf, int len)
+
+
+
+
+int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int max)
+{
+	return 0;
+}
+int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int max)
+{
+	return mysnprintf(dst, max, version);
+}
+int sshclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	u8 tmp[0x100];
+	if(0 == ele->stage1)
+	{
+	}
+
+	ele->stage1 += 1;
+	printmemory(buf, len);
+	return 0;
+}
+int sshclient_read()
+{
+	return 0;
+}
+int sshclient_delete(struct element* ele)
+{
+	return 0;
+}
+int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_tcp_, url);
+	if(0 == obj)return 0;
+
+	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
+
+	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	if(ret <= 0)return 0;
+
+	ele->type = _ws_;
+	ele->stage1 = 0;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
+
+
+
+
+int secureshell_serverread_handshake(u8* buf, int len, u8* dst, int max)
 {
 	if(ncmp(buf, "SSH-2.0-", 8) == 0)
 	{
-		writesocket(fd, 0, version, sizeof(version)-1);
-		return SSH;
+		return mysnprintf(dst, max, version);
 	}
+	return 0;
+}
+int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int max)
+{
+	u32 j, off;
+	if(0x14 != buf[5])return 0;
 
+	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say(
+		"[0,5]SSH_MSG_KEXINIT\n"
+		"	total=%x\n"
+		"	plen=%x\n"
+		"	type=%x\n",
+		j, buf[4], buf[5]
+	);
+
+	//cookie
+	say("[6,15]cookie\n	");
+	for(j=0;j<16;j++)say("%02x ", buf[6+j]);
+	say("\n");
+	off = 0x16;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]key_exchange_algorithm\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]server_host_key_algorithm\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]enc_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]enc_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]mac_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]mac_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]comp_alg_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	say("[%x,%x]comp_alg_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]lang_c2s\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]lang_s2c\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+	off += 4 + j;
+
+	//
+	j = buf[off+2];
+	j = (j<<8) + buf[off+3];
+	if(j <= 0)goto byebye;
+	say("[%x,%x]first_kex\n", off, off+j-1);
+	printalgorithm(buf+off, j+4);
+
+byebye:
+	return 0x14;
+}
+int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int max)
+{
+	return 0;
+}
+int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int max)
+{
+	int j;
+	int off;
+
+	//cookie unchanged
+	for(j=0;j<16;j++)dst[off+j] = j;
+	off = 0x16;
+
+	//key_exchange_algorithm
+	j = mysnprintf(dst+off+4, 999,
+		"diffie-hellman-group-exchange-sha256,"
+		"diffie-hellman-group-exchange-sha1"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//server_host_key_algorithm
+	j = mysnprintf(dst+off+4, 999,
+		"ssh-rsa,"
+		"rsa-sha2-256,"
+		"rsa-sha2-512"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//encryption_algorithms_client_to_server
+	j = mysnprintf(dst+off+4, 999,
+		"aes128-cbc,"
+		"aes256-cbc,"
+		"3des-cbc"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//encryption_algorithms_server_to_client
+	j = mysnprintf(dst+off+4, 999,
+		"aes128-cbc,"
+		"aes256-cbc,"
+		"3des-cbc"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//mac_algorithms_client_to_server
+	j = mysnprintf(dst+off+4, 999,
+		"hmac-sha1,"
+		"hmac-sha2-256,"
+		"hmac-sha2-512"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//mac_algorithms_server_to_client
+	j = mysnprintf(dst+off+4, 999,
+		"hmac-sha1,"
+		"hmac-sha2-256,"
+		"hmac-sha2-512"
+	);
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//compression_algorithms_client_to_server
+	j = mysnprintf(dst+off+4, 999, "none");
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//compression_algorithms_server_to_client
+	j = mysnprintf(dst+off+4, 999, "none");
+	dst[off+0] = dst[off+1] = 0;
+	dst[off+2] = (j>>8)&0xff;
+	dst[off+3] = j&0xff;
+	off += 4 + j;
+
+	//other
+	for(j=off;j<off+32;j++)dst[j] = 0;
+	off += 4+4+5;
+
+	//
+	dst[5] = 0x14;
+	return secureshell_write_head(dst, off);
+}
+int sshserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	u8 tmp[0x1000];
+	if(0 == ele->stage1)
+	{
+		ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
+		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+	}
+	else if(1 == ele->stage1)
+	{
+		secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
+
+		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
+		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+	}
+	else printmemory(buf, len);
+
+	ele->stage1 += 1;
+	return 0;
+}
+int sshserver_read()
+{
+	return 0;
+}
+int sshserver_delete(struct element* ele)
+{
+	return 0;
+}
+int sshserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_TCP_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 0;
 }

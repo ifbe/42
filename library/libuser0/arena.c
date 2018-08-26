@@ -226,14 +226,15 @@ int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	u64 fmt;
 	struct arena* win;
 	if(0 == dc)return arenawrite_ev(buf);
+say("arenawrite@{\n");
 
 	win = dc;
 	fmt = win->fmt;
-	if(_html_ == fmt)return htmlnode_write(dc, df, sc, sf, buf, len);
-	if(_ws_   == fmt)return wsnode_write(dc, df, sc, sf, buf, len);
+	if(_html_ == fmt)htmlnode_write(dc, df, sc, sf, buf, len);
+	else if(_ws_   == fmt)wsnode_write(dc, df, sc, sf, buf, len);
+	else printmemory(buf, len);
 
-	say("@arenawrite\n");
-	printmemory(buf, len);
+say("}@arenawrite\n");
 	return 0;
 }
 int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)

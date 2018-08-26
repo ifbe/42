@@ -206,11 +206,7 @@ int httpserver_write(
 	//GET / HTTP/1.1
 	if(GET)
 	{
-		if(0 == ncmp(GET, "/favicon.ico", 12))
-		{
-			systemdelete(obj);
-			return 0;
-		}
+		if(0 == ncmp(GET, "/favicon.ico", 12))len = 0;
 
 		ret = mysnprintf(buf+len, 0x1000,
 			"HTTP/1.1 200 OK\r\n"
@@ -220,11 +216,14 @@ int httpserver_write(
 			len
 		);
 
-		//send response
-		systemwrite(obj, pin, ele, sty, buf+len, ret);
+		if(ret)
+		{
+			//send response
+			systemwrite(obj, pin, ele, sty, buf+len, ret);
 
-		//send context
-		systemwrite(obj, pin, ele, sty, buf, len);
+			//send context
+			if(len)systemwrite(obj, pin, ele, sty, buf, len);
+		}
 
 		if(0 != Connection)
 		{
