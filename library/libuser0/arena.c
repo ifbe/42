@@ -67,6 +67,7 @@ int vpinnode_create(void*, void*);
 int vpinnode_delete(void*);
 int wsnode_create(void*, void*);
 int wsnode_delete(void*);
+int wsnode_write(void*,void*,void*,void*,void*,int);
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //

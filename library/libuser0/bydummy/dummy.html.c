@@ -125,10 +125,6 @@ int httpserver_create(struct arena* win, void* str)
 
 
 
-int htmlnode_read(struct arena* win)
-{
-	return 0;
-}
 int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	void* dc;
@@ -153,6 +149,10 @@ int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, i
 
 		orel = samesrcnextdst(orel);
 	}
+	return 0;
+}
+int htmlnode_read(struct arena* win)
+{
 	return 0;
 }
 int htmlnode_delete(struct arena* win)
