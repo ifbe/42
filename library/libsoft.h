@@ -31,6 +31,16 @@ typedef float mat4[4][4];
 #define _CHAT_ hex32('C','H','A','T')
 #define _chat_ hex32('c','h','a','t')
 //
+#define _HTTP_ hex32('H','T','T','P')
+#define _Http_ hex32('H','t','t','p')
+#define _http_ hex32('h','t','t','p')
+#define _SSH_  hex32('S','S','H',0)
+#define _Ssh_  hex32('S','s','h',0)
+#define _ssh_  hex32('s','s','h',0)
+#define _WS_   hex32('W','S',0,0)
+#define _Ws_   hex32('W','s',0,0)
+#define _ws_   hex32('w','s',0,0)
+//
 #define _ARP_ hex32('A','R','P',0)
 #define _arp_ hex32('a','r','p',0)
 #define _EAP_ hex32('E','A','P',0)
@@ -51,8 +61,6 @@ typedef float mat4[4][4];
 #define _quic_ 0x63697571		//c
 #define _SOCKS5_ 0x35534b434f53	//s
 #define _socks5_ 0x35736b636f73	//c
-#define _SSH_ 0x485353		//s
-#define _ssh_ 0x687373		//c
 #define _TLS_ 0x534c54		//s
 #define _tls_ 0x736c74		//c
 //udp
@@ -74,12 +82,8 @@ typedef float mat4[4][4];
 #define _ICE_ 0x454349		//s
 #define _ice_ 0x656369		//c
 //http family
-#define _HTTP_ 0x50545448		//parse, reply
-#define _http_ 0x70747468		//req url, get reply
 #define _HTTPS_ 0x5350545448	//parse, reply
 #define _https_ 0x7370747468	//req url, get reply
-#define _WS_ 0x5357		//s 
-#define _ws_ 0x7377		//c
 #define _WSS_ 0x535357		//s
 #define _wss_ 0x737377		//c
 //live stream

@@ -169,6 +169,29 @@ int httpserver_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	return 0;
+}
+int httpserver_read()
+{
+	return 0;
+}
+int httpserver_delete(struct element* ele)
+{
+	return 0;
+}
+int httpserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int httpmaster_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
 	int j,k,ret;
 	u8* GET = 0;
 	u8* POST = 0;
@@ -194,7 +217,7 @@ int httpserver_write(
 	//websocket
 	if((0 != Connection)&&(0 != Upgrade))
 	{
-		e = arterycreate(_WS_, 0);
+		e = arterycreate(_Ws_, 0);
 		if(e)
 		{
 			relationcreate(e, 0, _art_, obj, 0, _fd_);
@@ -241,18 +264,18 @@ int httpserver_write(
 		return 0;
 	}
 
-	say("@httpserver_write: %.*s\n",len,buf);
+	say("@httpmaster_write: %.*s\n",len,buf);
 	return 0;
 }
-int httpserver_read()
+int httpmaster_read()
 {
 	return 0;
 }
-int httpserver_delete(struct element* ele)
+int httpmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int httpserver_create(struct element* ele, u8* url, u8* buf, int len)
+int httpmaster_create(struct element* ele, u8* url, u8* buf, int len)
 {
 	int ret;
 	void* obj = systemcreate(_TCP_, url);

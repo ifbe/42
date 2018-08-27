@@ -76,34 +76,14 @@ static int secureshell_read_0x1f(u8* buf, int len)
 
 	return j;
 }
-static int secureshell_read_0x22(u8* buf, int len)
+
+
+
+
+
+int secureshell_read_head(u8* buf, int len)
 {
-	int min;
-	int prefer;
-	int max;
-
-	min = (buf[8]<<8) + buf[9];
-	prefer = (buf[0xc]<<8) + buf[0xd];
-	max = (buf[0x10]<<8) + buf[0x11];
-
-	say("[6,11]DH GEX\n");
-	say("	min=%d\n", min);
-	say("	prefer=%d\n", prefer);
-	say("	max=%d\n", max);
-
-	return prefer;
-}
-
-
-
-
-
-int secureshell_write_handshake(u8* buf, int len)
-{
-	int j;
-	len = sizeof(version)-1;
-	for(j=0;j<len;j++)buf[j] = version[j];
-	return len;
+	return 0;
 }
 int secureshell_write_head(u8* buf, int len)
 {
@@ -127,252 +107,35 @@ int secureshell_write_head(u8* buf, int len)
 
 	return len;
 }
-static int secureshell_write_0x1e(u8* buf, int len)
-{
-	int ret;
-	int off=6;
-
-	buf[off+0] = 0;
-	buf[off+1] = 0;
-	buf[off+2] = 0;
-	buf[off+3] = 0x20;
-	for(ret=0;ret<0x20;ret++)
-	{
-		buf[off+4+ret] = ret;
-	}
-	off += 4+0x20;
-
-	buf[5] = 0x1e;
-	return secureshell_write_head(buf, off);
-}
-static int secureshell_write_0x1f(u8* buf, int len)
-{
-	u8* Pbuf;
-	u8* Gbuf;
-	u8* Sbuf;
-	int Plen;
-	int Glen;
-	int Slen;
-	int off=6;
-
-	//P.len, P.val
-	Plen = 0x68;
-	Pbuf = buf + off + 4;
-	buf[off+0] = 0;
-	buf[off+1] = 0;
-	buf[off+2] = (Plen>>8)&0xff;
-	buf[off+3] = Plen&0xff;
-	off += 4 + Plen;
-
-	//G.len, G.val
-	Glen = 0x20;
-	Gbuf = buf + off + 4;
-	buf[off+0] = 0;
-	buf[off+1] = 0;
-	buf[off+2] = (Glen>>8)&0xff;
-	buf[off+3] = Glen&0xff;
-	off += 4 + Glen;
-
-	//sig.len, sig.val
-	Slen = 0x64;
-	Sbuf = buf + off + 4;
-	buf[off+0] = 0;
-	buf[off+1] = 0;
-	buf[off+2] = (Slen>>8)&0xff;
-	buf[off+3] = Slen&0xff;
-	off += 4 + Slen;
-
-	//
-	generatePG(Pbuf, Plen, Gbuf, Glen);
-
-	//
-	buf[5] = 0x1f;
-	return secureshell_write_head(buf, off);
-}
-static int secureshell_write_0x15(u8* buf, int len)
-{
-	int j;
-	int off=6;
-
-	//
-	for(j=off+4;j<off+4+10;j++)
-	{
-		buf[j] = j;
-	}
-	buf[off+0] = 0;
-	buf[off+1] = 0;
-	buf[off+2] = 0;
-	buf[off+3] = 10;
-	off += 4 + 10;
-
-	//
-	for(j=off;j<off+0x54;j++)
-	{
-		buf[j] = j;
-	}
-	off += 0x54;
-
-	//
-	buf[5] = 0x15;
-	return secureshell_write_head(buf, off);
-}
 
 
 
 
-
-
-//why,what,where,when
-static int secureshell_read(u8* buf, int len)
-{
-	u32 j;
-	int off;
-
-	j = buf[0];
-	j = (j<<8) + buf[1];
-	j = (j<<8) + buf[2];
-	j = (j<<8) + buf[3];
-	if(buf[5] == 0x14)
-	{
-		say(
-			"[0,5]SSH_MSG_KEXINIT\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			j, buf[4], buf[5]
-		);
-	}
-	else if(buf[5] == 0x1e)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST_OLD\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			j, buf[4], buf[5]
-		);
-		secureshell_read_0x1e(buf,len);
-	}
-	else if(buf[5] == 0x1f)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_GROUP\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			j, buf[4], buf[5]
-		);
-		secureshell_read_0x1f(buf,len);
-	}
-	else if(buf[5] == 0x22)
-	{
-		say(
-			"[0,5]SSH_MSG_KEX_DH_GEX_REQUEST\n"
-			"	total=%x\n"
-			"	plen=%x\n"
-			"	type=%x\n",
-			j, buf[4], buf[5]
-		);
-		secureshell_read_0x22(buf,len);
-	}
-	else
-	{
-		printmemory(buf,j);
-	}
-
-	say("\n\n\n\n");
-	return buf[5];
-}
-void ssh_start()
-{
-}
-void ssh_stop()
-{
-}
-
-
-
-
-
-
-
-
-#define SSH 0x485353
-#define ssh 0x687373
-int ssh_client(struct object* obj, int fd, u8* buf, int len)
-{
-	int ret;
-	if(ncmp(buf, "SSH-2.0-", 8) == 0)
-	{
-		for(ret=0;ret<len;ret++)
-		{
-			if( (buf[ret] == 0xd) && (buf[ret+1] == 0xa) )
-			{
-				buf[ret] = buf[ret+1] = 0;
-				say("%s\n",buf);
-
-				break;
-			}
-		}
-		if(ret+2 >= len)return ssh;
-
-		buf += ret+2;
-		len -= ret+2;
-	}
-
-	ret = secureshell_read(buf, len);
-	if(ret == 0x14)
-	{
-		//protocol
-		//ret = secureshell_write_0x14(buf, len);
-		//writesocket(fd, 0, buf, ret);
-
-		//keyexch
-		//ret = secureshell_write_0x1e(buf, len);
-		//writesocket(fd, 0, buf, ret);
-	}
-	else printmemory(buf,len);
-
-	return ssh;
-}
-int ssh_server(struct object* obj, int fd, u8* buf, int len)
-{
-	int ret = secureshell_read(buf, len);
-	if(ret == 0x14)
-	{
-		//secureshell_write(buf, len);
-		//ret = secureshell_write_0x14(buf, len);
-		//writesocket(fd, 0, buf, ret);
-	}
-	else if(ret == 0x1e)
-	{
-		//try
-		ret = secureshell_write_0x1f(buf, len);
-		ret += secureshell_write_0x15(buf+ret, len);
-		writesocket(fd, 0, buf, ret);
-	}
-	else if(ret == 0x22)
-	{
-		//try
-		ret = secureshell_write_0x1f(buf, len);
-		ret += secureshell_write_0x15(buf+ret, len);
-		writesocket(fd, 0, buf, ret);
-	}
-	else printmemory(buf,len);
-
-	return SSH;
-}
-
-
-
-
-int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int max)
+int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int cnt)
 {
 	return 0;
 }
-int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int max)
+int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int cnt)
 {
-	return mysnprintf(dst, max, version);
+	return mysnprintf(dst, cnt, version);
+}
+int secureshell_clientwrite_handshake0x1e(u8* buf, int len, u8* dst, int cnt)
+{
+	int ret;
+	int off=6;
+
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = 0;
+	dst[off+3] = 0x20;
+	for(ret=0;ret<0x20;ret++)
+	{
+		dst[off+4+ret] = ret;
+	}
+	off += 4+0x20;
+
+	dst[5] = 0x1e;
+	return secureshell_write_head(dst, off);
 }
 int sshclient_write(
 	struct element* ele, void* sty,
@@ -416,15 +179,7 @@ int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
 
 
 
-int secureshell_serverread_handshake(u8* buf, int len, u8* dst, int max)
-{
-	if(ncmp(buf, "SSH-2.0-", 8) == 0)
-	{
-		return mysnprintf(dst, max, version);
-	}
-	return 0;
-}
-int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int max)
+int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int cnt)
 {
 	u32 j, off;
 	if(0x14 != buf[5])return 0;
@@ -526,11 +281,33 @@ int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int max)
 byebye:
 	return 0x14;
 }
-int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int max)
+int secureshell_serverread_handshake0x22(u8* buf, int len, u8* dst, int cnt)
 {
+	int min,max,prefer;
+	u32 j, off;
+	if(0x14 != buf[5])return 0;
+
+	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say(
+		"[0,5]SSH_MSG_KEXINIT\n"
+		"	total=%x\n"
+		"	plen=%x\n"
+		"	type=%x\n",
+		j, buf[4], buf[5]
+	);
+
+	min = (buf[8]<<8) + buf[9];
+	max = (buf[0x10]<<8) + buf[0x11];
+	prefer = (buf[0xc]<<8) + buf[0xd];
+
+	say("[6,11]DH GEX\n");
+	say("	min=%d\n", min);
+	say("	max=%d\n", max);
+	say("	prefer=%d\n", prefer);
+
 	return 0;
 }
-int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int max)
+int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
 	int off;
@@ -626,6 +403,71 @@ int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int max)
 	dst[5] = 0x14;
 	return secureshell_write_head(dst, off);
 }
+int secureshell_serverwrite_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
+{
+	u8* Pbuf;
+	u8* Gbuf;
+	u8* Sbuf;
+	int Plen;
+	int Glen;
+	int Slen;
+	int off=6;
+
+	//P.len, P.val
+	Plen = 0x68;
+	Pbuf = dst + off + 4;
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = (Plen>>8)&0xff;
+	dst[off+3] = Plen&0xff;
+	off += 4 + Plen;
+
+	//G.len, G.val
+	Glen = 0x20;
+	Gbuf = dst + off + 4;
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = (Glen>>8)&0xff;
+	dst[off+3] = Glen&0xff;
+	off += 4 + Glen;
+
+	//sig.len, sig.val
+	Slen = 0x64;
+	Sbuf = dst + off + 4;
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = (Slen>>8)&0xff;
+	dst[off+3] = Slen&0xff;
+	off += 4 + Slen;
+
+	//
+	generatePG(Pbuf, Plen, Gbuf, Glen);
+
+	//
+	dst[5] = 0x1f;
+	return secureshell_write_head(dst, off);
+}
+int secureshell_serverwrite_handshake0x15(u8* buf, int len, u8* dst, int cnt)
+{
+	int j;
+	int off=6;
+
+	//
+	for(j=off+4;j<off+4+10;j++)dst[j] = j;
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = 0;
+	dst[off+3] = 10;
+	off += 4 + 10;
+
+	//
+	for(j=off;j<off+0x54;j++)dst[j] = j;
+	off += 0x54;
+
+	//
+	dst[5] = 0x15;
+	return secureshell_write_head(dst, off);
+}
 int sshserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
@@ -633,16 +475,20 @@ int sshserver_write(
 {
 	int ret;
 	u8 tmp[0x1000];
+
 	if(0 == ele->stage1)
 	{
-		ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
+		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
+
+		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
 		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(1 == ele->stage1)
 	{
-		secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
+		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
 
-		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
+		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
+		if(ret)ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
 		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else printmemory(buf, len);
@@ -659,6 +505,50 @@ int sshserver_delete(struct element* ele)
 	return 0;
 }
 int sshserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int secureshell_serverread_handshake(u8* buf, int len, u8* dst, int cnt)
+{
+	if(ncmp(buf, "SSH-2.0-", 8) == 0)
+	{
+		return mysnprintf(dst, cnt, version);
+	}
+	return 0;
+}
+int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int cnt)
+{
+	return 0;
+}
+int sshmaster_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	u8 tmp[0x1000];
+	struct element* e;
+
+	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
+	if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+
+	e = arterycreate(_Ssh_, 0);
+	if(e)relationcreate(e, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
+int sshmaster_read()
+{
+	return 0;
+}
+int sshmaster_delete(struct element* ele)
+{
+	return 0;
+}
+int sshmaster_create(struct element* ele, u8* url, u8* buf, int len)
 {
 	int ret;
 	void* obj = systemcreate(_TCP_, url);

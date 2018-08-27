@@ -366,3 +366,28 @@ int wsserver_create(struct element* ele)
 {
 	return 0;
 }
+
+
+
+
+int wsmaster_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int wsmaster_read(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin)
+{
+	return 0;
+}
+int wsmaster_delete(struct element* ele)
+{
+	return 0;
+}
+int wsmaster_create(struct element* ele)
+{
+	return 0;
+}
