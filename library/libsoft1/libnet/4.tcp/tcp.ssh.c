@@ -107,79 +107,7 @@ int secureshell_write_head(u8* buf, int len)
 
 	return len;
 }
-
-
-
-
-int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int cnt)
-{
-	return 0;
-}
-int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int cnt)
-{
-	return mysnprintf(dst, cnt, version);
-}
-int secureshell_clientwrite_handshake0x1e(u8* buf, int len, u8* dst, int cnt)
-{
-	int ret;
-	int off=6;
-
-	dst[off+0] = 0;
-	dst[off+1] = 0;
-	dst[off+2] = 0;
-	dst[off+3] = 0x20;
-	for(ret=0;ret<0x20;ret++)
-	{
-		dst[off+4+ret] = ret;
-	}
-	off += 4+0x20;
-
-	dst[5] = 0x1e;
-	return secureshell_write_head(dst, off);
-}
-int sshclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	u8 tmp[0x100];
-	if(0 == ele->stage1)
-	{
-	}
-
-	ele->stage1 += 1;
-	printmemory(buf, len);
-	return 0;
-}
-int sshclient_read()
-{
-	return 0;
-}
-int sshclient_delete(struct element* ele)
-{
-	return 0;
-}
-int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
-{
-	int ret;
-	void* obj = systemcreate(_tcp_, url);
-	if(0 == obj)return 0;
-
-	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
-
-	ret = systemwrite(obj, 0, ele, 0, buf, ret);
-	if(ret <= 0)return 0;
-
-	ele->type = _ws_;
-	ele->stage1 = 0;
-	relationcreate(ele, 0, _art_, obj, 0, _fd_);
-	return 0;
-}
-
-
-
-
-int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 {
 	u32 j, off;
 	if(0x14 != buf[5])return 0;
@@ -281,33 +209,7 @@ int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int cnt)
 byebye:
 	return 0x14;
 }
-int secureshell_serverread_handshake0x22(u8* buf, int len, u8* dst, int cnt)
-{
-	int min,max,prefer;
-	u32 j, off;
-	if(0x14 != buf[5])return 0;
-
-	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
-	say(
-		"[0,5]SSH_MSG_KEXINIT\n"
-		"	total=%x\n"
-		"	plen=%x\n"
-		"	type=%x\n",
-		j, buf[4], buf[5]
-	);
-
-	min = (buf[8]<<8) + buf[9];
-	max = (buf[0x10]<<8) + buf[0x11];
-	prefer = (buf[0xc]<<8) + buf[0xd];
-
-	say("[6,11]DH GEX\n");
-	say("	min=%d\n", min);
-	say("	max=%d\n", max);
-	say("	prefer=%d\n", prefer);
-
-	return 0;
-}
-int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+int secureshell_write_0x14(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
 	int off;
@@ -403,6 +305,133 @@ int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
 	dst[5] = 0x14;
 	return secureshell_write_head(dst, off);
 }
+
+
+
+
+int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int cnt)
+{
+	if(ncmp(buf, "SSH-2.0-", 8) == 0)
+	{
+		return mysnprintf(dst, cnt, version);
+	}
+	return 0;
+}
+int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int cnt)
+{
+	return mysnprintf(dst, cnt, version);
+}
+int secureshell_clientread_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+{
+	return secureshell_read_0x14(buf, len, dst, cnt);
+}
+int secureshell_clientwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+{
+	return secureshell_write_0x14(buf, len, dst, cnt);
+}
+int secureshell_clientwrite_handshake0x1e(u8* buf, int len, u8* dst, int cnt)
+{
+	int ret;
+	int off=6;
+
+	dst[off+0] = 0;
+	dst[off+1] = 0;
+	dst[off+2] = 0;
+	dst[off+3] = 0x20;
+	for(ret=0;ret<0x20;ret++)
+	{
+		dst[off+4+ret] = ret;
+	}
+	off += 4+0x20;
+
+	dst[5] = 0x1e;
+	return secureshell_write_head(dst, off);
+}
+int sshclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	u8 tmp[0x1000];
+	if(0 == ele->stage1)
+	{
+		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
+
+		ret = secureshell_clientwrite_handshake0x14(buf, len, tmp, 0x1000);
+		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+	}
+	else if(1 == ele->stage1)
+	{
+		ret = secureshell_clientread_handshake0x14(buf, len, tmp, 0x1000);
+	}
+	else printmemory(buf, len);
+
+	ele->stage1 += 1;
+	return 0;
+}
+int sshclient_read()
+{
+	return 0;
+}
+int sshclient_delete(struct element* ele)
+{
+	return 0;
+}
+int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_tcp_, url);
+	if(0 == obj)return 0;
+
+	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
+
+	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	if(ret <= 0)return 0;
+
+	ele->type = _ssh_;
+	ele->stage1 = 0;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
+
+
+
+
+int secureshell_serverread_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+{
+	return secureshell_read_0x14(buf, len, dst, cnt);
+}
+int secureshell_serverwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
+{
+	return secureshell_write_0x14(buf, len, dst, cnt);
+}
+int secureshell_serverread_handshake0x22(u8* buf, int len, u8* dst, int cnt)
+{
+	int min,max,prefer;
+	u32 j, off;
+	if(0x14 != buf[5])return 0;
+
+	j = (buf[0]<<24) + (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say(
+		"[0,5]SSH_MSG_KEXINIT\n"
+		"	total=%x\n"
+		"	plen=%x\n"
+		"	type=%x\n",
+		j, buf[4], buf[5]
+	);
+
+	min = (buf[8]<<8) + buf[9];
+	max = (buf[0x10]<<8) + buf[0x11];
+	prefer = (buf[0xc]<<8) + buf[0xd];
+
+	say("[6,11]DH GEX\n");
+	say("	min=%d\n", min);
+	say("	max=%d\n", max);
+	say("	prefer=%d\n", prefer);
+
+	return 0;
+}
 int secureshell_serverwrite_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
 {
 	u8* Pbuf;
@@ -485,7 +514,7 @@ int sshserver_write(
 	}
 	else if(1 == ele->stage1)
 	{
-		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
+		ret = secureshell_serverread_handshake0x22(buf, len, tmp, 0x100);
 
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
 		if(ret)ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
