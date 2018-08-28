@@ -65,6 +65,9 @@ void eventwrite(u64,u64,u64,u64);
 int termread();
 int termwrite(void*, int);
 //
+u64 timeread();
+void sleep_us();
+//
 int argv2line(void*, void*);
 int openwriteclose(void*,int,void*,int);
 void printmemory(void*, int);
@@ -81,6 +84,7 @@ struct event
 	u64 when;
 };
 static int alive = 1;
+static u64 delta = 0;
 
 
 
@@ -202,7 +206,7 @@ again:
 int main(int argc, char* argv[])
 {
 	//before
-	int j,k;
+	u64 j,k;
 	void* dbg;
 	void* win;
 	u8* addr = beforedawn();
@@ -221,7 +225,14 @@ int main(int argc, char* argv[])
 	while(alive)
 	{
 		//draw frame, cleanup events
+		j = timeread();
 		arenaread(win);
+		k = timeread();
+
+		//max fps
+		delta = k-j;
+		//say("dt=%d\n", delta);
+		if(delta < 16000)sleep_us(16000-delta);
 	}
 	arenadelete(win);
 
