@@ -8,6 +8,7 @@ int cmp(void*, void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
 int wsserver_write(void*, void*, void*, void*, void* buf, int len);
+int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 
@@ -169,6 +170,7 @@ int httpserver_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	printmemory(buf,len);
 	return 0;
 }
 int httpserver_read()
@@ -199,6 +201,19 @@ int httpmaster_write(
 	u8* Connection = 0;
 	struct element* e;
 
+	//https
+	if(0x16 == buf[0])
+	{
+		e = arterycreate(_Tls_, 0);
+		if(e)
+		{
+			relationcreate(e, 0, _art_, obj, 0, _fd_);
+			tlsserver_write(e, sty, obj, pin, buf, len);
+		}
+		return 0;
+	}
+
+	//parse
 	k = 0;
 	for(j=0;j<=len;j++)
 	{
@@ -264,7 +279,8 @@ int httpmaster_write(
 		return 0;
 	}
 
-	say("@httpmaster_write: %.*s\n",len,buf);
+	//unknown
+	printmemory(buf,len);
 	return 0;
 }
 int httpmaster_read()

@@ -28,15 +28,19 @@ typedef float mat4[4][4];
 #define _udp_ hex32('u','d','p',0)
 #define _TCP_ hex32('T','C','P',0)
 #define _tcp_ hex32('t','c','p',0)
-#define _CHAT_ hex32('C','H','A','T')
-#define _chat_ hex32('c','h','a','t')
 //
+#define _CHAT_ hex32('C','H','A','T')
+#define _Chat_ hex32('C','h','a','t')
+#define _chat_ hex32('c','h','a','t')
 #define _HTTP_ hex32('H','T','T','P')
 #define _Http_ hex32('H','t','t','p')
 #define _http_ hex32('h','t','t','p')
 #define _SSH_  hex32('S','S','H',0)
 #define _Ssh_  hex32('S','s','h',0)
 #define _ssh_  hex32('s','s','h',0)
+#define _TLS_  hex32('T','L','S',0)
+#define _Tls_  hex32('T','l','s',0)
+#define _tls_  hex32('t','l','s',0)
 #define _WS_   hex32('W','S',0,0)
 #define _Ws_   hex32('W','s',0,0)
 #define _ws_   hex32('w','s',0,0)
@@ -61,8 +65,6 @@ typedef float mat4[4][4];
 #define _quic_ 0x63697571		//c
 #define _SOCKS5_ 0x35534b434f53	//s
 #define _socks5_ 0x35736b636f73	//c
-#define _TLS_ 0x534c54		//s
-#define _tls_ 0x736c74		//c
 //udp
 #define _BOOTP_ 0x50544f4f42	//s
 #define _bootp_ 0x70746f6f62	//c

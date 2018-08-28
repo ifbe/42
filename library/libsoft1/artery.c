@@ -1,31 +1,31 @@
 #include "libsoft.h"
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
-int httpclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
-int httpserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url, void* buf, int len);
-int httpmaster_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int sshclient_create( struct element* ele, void* url, void* buf, int len);
-int sshclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int sshserver_create( struct element* ele, void* url, void* buf, int len);
-int sshserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int sshmaster_create( struct element* ele, void* url, void* buf, int len);
-int sshmaster_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshclient_create(struct element* ele, void* url, void* buf, int len);
+int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshserver_create(struct element* ele, void* url, void* buf, int len);
+int sshserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshmaster_create(struct element* ele, void* url, void* buf, int len);
+int sshmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int tlsclient_create( struct element* ele, void* url, void* buf, int len);
-int tlsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int tlsserver_create( struct element* ele, void* url, void* buf, int len);
-int tlsserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int tlsmaster_create( struct element* ele, void* url, void* buf, int len);
-int tlsmaster_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tlsclient_create(struct element* ele, void* url, void* buf, int len);
+int tlsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tlsserver_create(struct element* ele, void* url, void* buf, int len);
+int tlsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tlsmaster_create(struct element* ele, void* url, void* buf, int len);
+int tlsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int wsclient_create(  struct element* ele, void* url, void* buf, int len);
-int wsclient_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int wsserver_create(  struct element* ele, void* url, void* buf, int len);
-int wsserver_write(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-int wsmaster_create(  struct element* ele, void* url, void* buf, int len);
-int wsmaster_write(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsclient_create(struct element* ele, void* url, void* buf, int len);
+int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int wsserver_create(struct element* ele, void* url, void* buf, int len);
+int wsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsmaster_create(struct element* ele, void* url, void* buf, int len);
+int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -97,6 +97,9 @@ say("arterywrite@{\n");
 	else if(_SSH_  == type)sshmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Ssh_  == type)sshserver_write(dc, df, sc, sf, buf, len);
 	else if(_ssh_  == type)sshclient_write(dc, df, sc, sf, buf, len);
+	else if(_TLS_  == type)tlsmaster_write(dc, df, sc, sf, buf, len);
+	else if(_Tls_  == type)tlsserver_write(dc, df, sc, sf, buf, len);
+	else if(_tls_  == type)tlsclient_write(dc, df, sc, sf, buf, len);
 	else if(_WS_   == type)wsmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Ws_   == type)wsserver_write(dc, df, sc, sf, buf, len);
 	else if(_ws_   == type)wsclient_write(dc, df, sc, sf, buf, len);
@@ -191,7 +194,39 @@ void* arterycreate(u64 type, u8* url)
 		return e;
 	}
 
-	//ssh: master,server,client
+	//tls: master,server,client
+	if(_TLS_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _TLS_;
+		if(url)tlsmaster_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_Tls_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Tls_;
+		if(url)tlsserver_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_tls_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _tls_;
+		if(url)tlsclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	//ws: master,server,client
 	if(_WS_ == type)
 	{
 		e = allocelement();

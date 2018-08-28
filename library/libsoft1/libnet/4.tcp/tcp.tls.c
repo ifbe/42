@@ -32,286 +32,49 @@ static u8 dh[] = {
 	0x70,0x61,0x1f,0x49,0xb2,0x8d,0x22,0x8f,
 	0x61
 };
+int tls_parse_cert(u8* buf, int len)
+{
+	printmemory(buf, len);
+}
+
+
+
+
+struct tlshead
+{
+	u8 msgtype;
+	u8 version[2];
+	u8 length[2];
+};
+int tls_read_head(u8* buf, int len)
+{
+	len = (buf[3]<<8)+buf[4];
+	say("head{ctx=%x,ver=%02x%02x,len=%x}\n",
+		buf[0],
+		buf[1],buf[2],
+		len
+	);
+	return len;
+}
 
 
 
 
 struct bothhello
 {
-	u8 msgtype;
-	u8 version[2];
-	u8 length[2];
-
-	u8 thistype;
-	u8 thislen[3];
-	u8 thisver[2];
-
-	u32 random0;
-	u32 random1;
-	u32 random2;
-	u32 random3;
-	u32 random4;
-	u32 random5;
-	u32 random6;
-	u32 random7;
+	u8 msg;
+	u8 len[3];
+	u8 ver[2];
 };
-int tls_read_server_hello(u8* buf, int len)
+int tls_read_hello(u8* buf, int len)
 {
-	int innerlength;
 	struct bothhello* p = (void*)buf;
-	say("serverhello{\n");
-
-	//
-	len = ((p->length[0])<<8) + p->length[1];
-	say("%x, %02x%02x, %x\n",
-		p->msgtype,
-		p->version[0], p->version[1],
-		len
+	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say("hello{msg=%x, len=%x, ver=%02x%02x}\n",
+		p->msg,
+		len,
+		p->ver[0], p->ver[1]
 	);
-
-	//
-	innerlength = ((p->thislen[0])<<16) + ((p->thislen[1])<<8) + (p->thislen[2]);
-	say("%x, %x, %02x%02x\n",
-		p->thistype,
-		innerlength,
-		p->thisver[0], p->thisver[1]
-	);
-
-	//random
-	printmemory(buf+11, 0x20);
-
-	//other
-	printmemory(buf+43, len+5-43);
-
-	//
-	say("}serverhello\n\n");
-	return len+5;
-}
-int tls_read_client_hello(struct element* ele, int fd, u8* buf, int len)
-{
-	int j, k;
-	struct bothhello* p = (void*)buf;
-	u8* q;
-	say("clienthello{\n");
-
-	//
-	len = ((p->length[0])<<8) + p->length[1];
-	say("%x, %02x%02x, %x\n",
-		p->msgtype,
-		p->version[0], p->version[1],
-		len
-	);
-
-	//
-	j = ((p->thislen[0])<<16) + ((p->thislen[1])<<8) + (p->thislen[2]);
-	say("%x, %x, %02x%02x\n",
-		p->thistype, j,
-		p->thisver[0], p->thisver[1]
-	);
-
-	//random
-	q = buf+11;
-	for(j=0;j<0x20;j++)ele[fd].data[j] = q[j];
-	//printmemory(buf+11, 0x20);
-
-	//sessionid
-	j = q[0];
-	say("sessionid(len=%x)\n", j);
-	//printmemory(q+1, j);
-	q += 1 + j;
-
-	//cipher
-	j = (q[0]<<8) + q[1];
-	say("ciphersites(len=%x)\n", j);
-	//printmemory(q+2, j);
-	q += 2 + j;
-
-	//compression
-	j = q[0];
-	say("compression(len=%x)\n", j);
-	//printmemory(q+1, j);
-	q += 1 + j;
-
-	//extension
-	j = (q[0]<<8) + q[1];
-	say("extension(len=%x)\n", j);
-	//printmemory(q+2, j);
-	q += 2;
-
-	//
-	while(1)
-	{
-		if(q-buf >= len)break;
-		if(q-buf >= len+5)break;
-
-		j = (q[0]<<8) + q[1];
-		k = (q[2]<<8) + q[3];
-		say("type=%04x, len=%x\n", j, k);
-
-		q += 4 + k;
-	}
-
-	say("}clienthello\n\n");
-	return len + 5;
-}
-int tls_write_client_hello(u8* buf, int len)
-{
-	u8* p = buf + 9;
-	u16* q;
-	u32* r;
-
-	//version
-	p[0] = p[1] = 0x3;
-	p += 2;
-
-	//random
-	r = (u32*)p;
-	r[0] = getrandom();
-	r[1] = getrandom();
-	r[2] = getrandom();
-	r[3] = getrandom();
-	r[4] = getrandom();
-	r[5] = getrandom();
-	r[6] = getrandom();
-	r[7] = getrandom();
-	p += 0x20;
-
-	//sessionid length
-	p[0] = 0;
-	p++;
-
-	//ciphersuites
-	p[0] = 0;
-	p[1] = 0x26;
-	p += 2;
-
-	q = (u16*)p;
-	q[0] = 0x0a0a;
-	q[1] = 0x0113;
-	q[2] = 0x0213;
-	q[3] = 0x0313;
-	q[4] = 0x2bc0;
-	q[5] = 0x2fc0;
-	q[6] = 0x2cc0;
-	q[7] = 0x30c0;
-	q[8] = 0xa9cc;
-	q[9] = 0xa8cc;
-	q[10] = 0x14cc;
-	q[11] = 0x13cc;
-	q[12] = 0x13c0;
-	q[13] = 0x14c0;
-	q[14] = 0x9c00;
-	q[15] = 0x9d00;
-	q[16] = 0x2f00;
-	q[17] = 0x3500;
-	q[18] = 0x0a00;
-	p += 0x26;
-
-	//compress
-	p[0] = 1;
-	p[1] = 0;
-	p += 2;
-
-	//extensions
-	p[0] = 0;
-	p[1] = 0xa9;
-	p += 2;
-
-	r = (u32*)p;
-	r[0] = 0x00007a7a;	//unknown 31354
-	r[1] = 0x010001ff;	//renegotiation info
-	p[8] = 0;
-	p += 9;
-
-	r = (u32*)p;
-	r[0] = 0x00001700;	//extended master secret
-	r[1] = 0x00002300;	//sessionticket tls
-	p += 8;
-
-	r = (u32*)p;
-	r[0] = 0x14000d00;	//signature algorithms
-	r[1] = 0x03041200;
-	r[2] = 0x01040408;
-	r[3] = 0x05080305;
-	r[4] = 0x06080105;
-	r[5] = 0x01020106;
-	p += 24;
-
-	r = (u32*)p;
-	r[0] = 0x05000500;
-	r[1] = 0x00000001;
-	p[8] = 0;
-	p += 9;
-
-	r = (u32*)p;
-	r[0] = 0x00001200;	//signed certificate timestamp
-	r[1] = 0x0e001000;	//application layer protocol negotiation
-	r[2] = 0x68020c00;
-	r[3] = 0x74680832;
-	r[4] = 0x312f7074;
-	p[20] = 0x2e;
-	p[21] = 0x31;
-	p += 22;
-
-	r = (u32*)p;
-	r[0] = 0x00005075;	//channel id
-	r[1] = 0x02000b00;
-	p[8] = 1;
-	p[9] = 0;
-	p += 10;
-
-	r = (u32*)p;
-	r[0] = 0x2b002800;	//unknown 40
-	r[1] = 0xaaaa2900;
-	r[2] = 0x00000100;
-	r[3] = 0xa920001d;
-	r[4] = 0xb5d22cec;
-	r[5] = 0xaeffd3a6;
-	r[6] = 0x4c9c560e;
-	r[7] = 0x31b91be7;
-	r[8] = 0xb11f15c7;
-	r[9] = 0x51a2a5f2;
-	r[10] = 0xc12a37d9;
-	r[11] = 0x004347e0;
-	p += 0x2f;
-
-	r = (u32*)p;
-	r[0] = 0x02002d00;	//unknown 45
-	p[4] = 1;
-	p[5] = 1;
-	p += 6;
-
-	r = (u32*)p;
-	r[0] = 0x0b002b00;	//unknown 43
-	r[1] = 0x7f1a1a0a;
-	r[2] = 0x03030312;
-	r[3] = 0x00010302;
-	p += 15;
-
-	r = (u32*)p;
-	r[0] = 0x0a000a00;
-	r[1] = 0xaaaa0800;
-	r[2] = 0x17001d00;
-	r[3] = 0xfafa1800;
-	p += 14;
-
-	r = (u32*)p;
-	r[0] = 0x0100fafa;
-	p[4] = 0;
-	p += 5;
-
-	//5+4byte
-	len = p - buf;
-	buf[0] = 0x16;
-	buf[1] = 0x3;
-	buf[2] = 0x1;
-	buf[3] = ((len-5)>>8)&0xff;
-	buf[4] = (len-5)&0xff;
-
-	buf[5] = 1;
-	buf[6] = ((len-9)>>16)&0xff;
-	buf[7] = ((len-9)>>8)&0xff;
-	buf[8] = (len-9)&0xff;
 	return len;
 }
 int tls_write_server_hello(struct element* ele, int fd, u8* buf, int len)
@@ -398,44 +161,23 @@ int tls_write_server_hello(struct element* ele, int fd, u8* buf, int len)
 
 struct servercert
 {
-	u8 msgtype;
-	u8 version[2];
-	u8 length[2];
-
-	u8 thistype;
-	u8 thislen[3];
+	u8 msg;
+	u8 len[3];
 	u8 certlen[3];
 };
-int tls_read_server_certificate(u8* buf, int len)
+int tls_read_cert(u8* buf, int len)
 {
-	int thislen;
 	int certlen;
 	struct servercert* p = (void*)buf;
-	say("servercert{\n");
 
-	//
-	len = ((p->length[0])<<8) + p->length[1];
-	say("%x, %02x%02x, %x\n",
-		p->msgtype,
-		p->version[0], p->version[1],
-		len
-	);
-
-	//
-	thislen = ((p->thislen[0])<<16) + ((p->thislen[1])<<8) + (p->thislen[2]);
-	certlen = ((p->certlen[0])<<16) + ((p->certlen[1])<<8) + (p->certlen[2]);
-	say("%x, %x, %x\n",
-		p->thistype,
-		thislen,
+	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	certlen = (buf[4]<<16) + (buf[5]<<8) + buf[6];
+	say("certi{msg=%x, len=%x, certlen=%x}\n",
+		p->msg,
+		len,
 		certlen
 	);
-
-	//cert
-	//printmemory(buf+11, len+5-11);
-
-	//
-	say("}servercert\n\n");
-	return len+5;
+	return len;
 }
 int tls_write_server_certificate(u8* buf, int len)
 {
@@ -485,59 +227,22 @@ int tls_write_server_certificate(u8* buf, int len)
 
 struct serverkeyexch
 {
-	u8 msgtype;
-	u8 version[2];
-	u8 length[2];
-
-	u8 thistype;
-	u8 thislen[3];
+	u8 msg;
+	u8 len[3];
 
 	u8 curvetype;
 	u8 namedcurve[2];
 };
-int tls_read_server_keyexch(u8* buf, int len)
+int tls_read_keyex(u8* buf, int len)
 {
-	int temp;
-	int thislen;
 	struct serverkeyexch* p = (void*)buf;
-	u8* q;
-	say("serverkeyexch{\n");
 
-	//
-	len = ((p->length[0])<<8) + p->length[1];
-	say("%x, %02x%02x, %x\n",
-		p->msgtype,
-		p->version[0], p->version[1],
+	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say("keyex{msg=%x, len=%x}\n",
+		p->msg,
 		len
 	);
-
-	//
-	thislen = ((p->thislen[0])<<16) + ((p->thislen[1])<<8) + (p->thislen[2]);
-	say("%x, %x\n",
-		p->thistype,
-		thislen
-	);
-
-	//
-	say("%x,%02x%02x\n", p->curvetype, p->namedcurve[0], p->namedcurve[1]);
-
-	//
-	q = buf + sizeof(struct serverkeyexch);
-	temp = q[0];
-	printmemory(q+1, temp);
-	q += 1+temp;
-
-	//
-	temp = (q[2]<<8) + q[3];
-	say("%02x%02x,%x\n", q[0], q[1], temp);
-	q += 4;
-
-	//
-	printmemory(q, len+5-(q-buf));
-
-byebye:
-	say("}serverkeyexch\n\n");
-	return len+5;
+	return len;
 }
 int tls_read_client_keyexch(u8* buf, int len)
 {
@@ -669,33 +374,19 @@ int tls_write_server_keyexch(struct element* ele, int fd, u8* buf, int len)
 
 struct serverdone
 {
-	u8 msgtype;
-	u8 version[2];
-	u8 length[2];
-
-	u8 data[4];
+	u8 msg;
+	u8 len[3];
 };
-int tls_read_server_done(u8* buf, int len)
+int tls_read_sdone(u8* buf, int len)
 {
 	struct serverdone* p = (void*)buf;
-	u8* q;
-	say("serverdone{\n");
 
-	//
-	len = ((p->length[0])<<8) + p->length[1];
-	say("%x, %02x%02x, %x\n",
-		p->msgtype,
-		p->version[0], p->version[1],
+	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
+	say("sdone{msg=%x, len=%x}\n",
+		p->msg,
 		len
 	);
-
-	//
-	q = p->data;
-	say("%02x %02x %02x %02x\n", q[0], q[1], q[2], q[3]);
-
-	//
-	say("}serverdone\n\n");
-	return 0;
+	return len;
 }
 int tls_write_server_done(u8* buf, int len)
 {
@@ -880,15 +571,15 @@ int tls_read(struct element* ele, int fd, u8* buf, int len)
 	{
 		if(buf[5] == 1)
 		{
-			ret = tls_read_client_hello(ele, fd, buf, len);
+			//ret = tls_read_client_hello(ele, fd, buf, len);
 			ele[fd].stage1 = 1;
 		}
 		else if(buf[5] == 2)
 		{
-			ret = tls_read_server_hello(buf, len);
-			ret += tls_read_server_certificate(buf+ret, len);
-			ret += tls_read_server_keyexch(buf+ret, len);
-			ret += tls_read_server_done(buf+ret, len);
+			//ret = tls_read_server_hello(buf, len);
+			//ret += tls_read_server_certificate(buf+ret, len);
+			//ret += tls_read_server_keyexch(buf+ret, len);
+			//ret += tls_read_server_done(buf+ret, len);
 			ele[fd].stage1 = 2;
 		}
 		else if(buf[5] == 16)
@@ -921,7 +612,7 @@ int tls_write(struct element* ele, int fd, u8* buf, int len)
 
 	if(stage == 0)
 	{
-		ret = tls_write_client_hello(buf, len);
+		//ret = tls_write_client_hello(buf, len);
 	}
 	else if(stage == 1)
 	{
@@ -1036,5 +727,497 @@ error:
 int tls_check(struct element* ele, int fd, u8* buf, int len)
 {
 	if(buf[0] == 0x16)return TLS;
+	return 0;
+}
+
+
+
+
+int tls_clientread_serverhello(u8* buf, int len)
+{
+	u8* t;
+	int j,k;
+
+	//hello
+	say("serverhello{\n");
+	len = tls_read_hello(buf, len);
+
+
+	//random
+	t = buf+6;
+	say("random(20):\n");
+	printmemory(t, 0x20);
+	t += 0x20;
+
+
+	//sessid
+	j = t[0];
+	t += 1;
+
+	if(j)say("sessid(%x)\n", j);
+	t += j;
+
+
+	//cipher
+	j = (t[0]<<8)+t[1];
+	say("cipher=%04x\n", j);
+	t += 2;
+
+
+	//compress
+	j = t[0];
+	t += 1;
+
+	if(j)say("compress(%x)\n", j);
+	t += j;
+
+
+	//extension
+	j = (t[0]<<8) + t[1];
+	t += 2;
+
+	say("extension(len=%x)\n", j);
+	printmemory(t, j);
+	while(1)
+	{
+		if(t-buf >= len)break;
+		if(t-buf >= len+5)break;
+
+		j = (t[0]<<8) + t[1];
+		k = (t[2]<<8) + t[3];
+		say("type=%04x, len=%x\n", j, k);
+
+		t += 4 + k;
+	}
+
+
+	say("}serverhello\n\n");
+	return len;
+}
+int tls_clientread_servercertificate(u8* buf, int len)
+{
+	int j,total;
+	u8* q;
+	say("servercert{\n");
+	len = tls_read_cert(buf, len);
+
+
+
+	//total
+	q = buf+4;
+	total = (q[0]<<16)+(q[1]<<8)+q[2];
+	say("total=%x\n", total);
+	q += 3;
+
+
+	//cert
+	while(1)
+	{
+		if(total <= 0)break;
+
+		j = (q[0]<<16)+(q[1]<<8)+q[2];
+		q += 3;
+
+		say("cert(%x):\n", j);
+		tls_parse_cert(q, j);
+		q += j;
+
+		total -= 3+j;
+	}
+
+
+	//
+	say("}servercert\n\n");
+	return len;
+}
+int tls_clientread_serverkeyexch(u8* buf, int len)
+{
+	int j;
+	u8* q;
+	say("serverkeyexch{\n");
+	len = tls_read_keyex(buf, len);
+
+
+	//curve
+	q = buf + 4;
+	say("curvetype=%x,namecurve=%02x%02x\n",
+		q[0],
+		q[1],q[2]
+	);
+	q += 3;
+
+
+	//pubkey
+	j = q[0];
+	q += 1;
+
+	say("pubkey(%x)\n",j);
+	printmemory(q, j);
+	q += j;
+
+
+	//signature algorithm
+	say("sig alg: %02x%02x\n", q[0], q[1]);
+	q += 2;
+
+
+	//signature context
+	j = (q[0]<<8)+q[1];
+	q += 2;
+
+	say("sig ctx(%02x):\n", j);
+	printmemory(q, j);
+
+
+	//
+	say("}serverkeyexch\n\n");
+	return len;
+}
+int tls_clientread_serverdone(u8* buf, int len)
+{
+	struct serverdone* p = (void*)buf;
+	u8* q;
+
+	say("serverdone{\n");
+	len = tls_read_sdone(buf, len);
+
+	//
+	say("}serverdone\n\n");
+	return len;
+}
+int tls_clientwrite_clienthello(u8* buf, int len, u8* dst, int cnt)
+{
+	u8* p = dst + 9;
+	u16* q;
+	u32* r;
+
+	//version
+	p[0] = p[1] = 0x3;
+	p += 2;
+
+	//random
+	r = (u32*)p;
+	r[0] = getrandom();
+	r[1] = getrandom();
+	r[2] = getrandom();
+	r[3] = getrandom();
+	r[4] = getrandom();
+	r[5] = getrandom();
+	r[6] = getrandom();
+	r[7] = getrandom();
+	p += 0x20;
+
+	//sessionid length
+	p[0] = 0;
+	p++;
+
+	//ciphersuites
+	p[0] = 0;
+	p[1] = 0x26;
+	p += 2;
+
+	q = (u16*)p;
+	q[0] = 0x0a0a;
+	q[1] = 0x0113;
+	q[2] = 0x0213;
+	q[3] = 0x0313;
+	q[4] = 0x2bc0;
+	q[5] = 0x2fc0;
+	q[6] = 0x2cc0;
+	q[7] = 0x30c0;
+	q[8] = 0xa9cc;
+	q[9] = 0xa8cc;
+	q[10] = 0x14cc;
+	q[11] = 0x13cc;
+	q[12] = 0x13c0;
+	q[13] = 0x14c0;
+	q[14] = 0x9c00;
+	q[15] = 0x9d00;
+	q[16] = 0x2f00;
+	q[17] = 0x3500;
+	q[18] = 0x0a00;
+	p += 0x26;
+
+	//compress
+	p[0] = 1;
+	p[1] = 0;
+	p += 2;
+
+	//extensions
+	p[0] = 0;
+	p[1] = 0xa9;
+	p += 2;
+
+	r = (u32*)p;
+	r[0] = 0x00007a7a;	//unknown 31354
+	r[1] = 0x010001ff;	//renegotiation info
+	p[8] = 0;
+	p += 9;
+
+	r = (u32*)p;
+	r[0] = 0x00001700;	//extended master secret
+	r[1] = 0x00002300;	//sessionticket tls
+	p += 8;
+
+	r = (u32*)p;
+	r[0] = 0x14000d00;	//signature algorithms
+	r[1] = 0x03041200;
+	r[2] = 0x01040408;
+	r[3] = 0x05080305;
+	r[4] = 0x06080105;
+	r[5] = 0x01020106;
+	p += 24;
+
+	r = (u32*)p;
+	r[0] = 0x05000500;
+	r[1] = 0x00000001;
+	p[8] = 0;
+	p += 9;
+
+	r = (u32*)p;
+	r[0] = 0x00001200;	//signed certificate timestamp
+	r[1] = 0x0e001000;	//application layer protocol negotiation
+	r[2] = 0x68020c00;
+	r[3] = 0x74680832;
+	r[4] = 0x312f7074;
+	p[20] = 0x2e;
+	p[21] = 0x31;
+	p += 22;
+
+	r = (u32*)p;
+	r[0] = 0x00005075;	//channel id
+	r[1] = 0x02000b00;
+	p[8] = 1;
+	p[9] = 0;
+	p += 10;
+
+	r = (u32*)p;
+	r[0] = 0x2b002800;	//unknown 40
+	r[1] = 0xaaaa2900;
+	r[2] = 0x00000100;
+	r[3] = 0xa920001d;
+	r[4] = 0xb5d22cec;
+	r[5] = 0xaeffd3a6;
+	r[6] = 0x4c9c560e;
+	r[7] = 0x31b91be7;
+	r[8] = 0xb11f15c7;
+	r[9] = 0x51a2a5f2;
+	r[10] = 0xc12a37d9;
+	r[11] = 0x004347e0;
+	p += 0x2f;
+
+	r = (u32*)p;
+	r[0] = 0x02002d00;	//unknown 45
+	p[4] = 1;
+	p[5] = 1;
+	p += 6;
+
+	r = (u32*)p;
+	r[0] = 0x0b002b00;	//unknown 43
+	r[1] = 0x7f1a1a0a;
+	r[2] = 0x03030312;
+	r[3] = 0x00010302;
+	p += 15;
+
+	r = (u32*)p;
+	r[0] = 0x0a000a00;
+	r[1] = 0xaaaa0800;
+	r[2] = 0x17001d00;
+	r[3] = 0xfafa1800;
+	p += 14;
+
+	r = (u32*)p;
+	r[0] = 0x0100fafa;
+	p[4] = 0;
+	p += 5;
+
+	//5+4byte
+	len = p - dst;
+	dst[0] = 0x16;
+	dst[1] = 0x3;
+	dst[2] = 0x1;
+	dst[3] = ((len-5)>>8)&0xff;
+	dst[4] = (len-5)&0xff;
+
+	dst[5] = 1;
+	dst[6] = ((len-9)>>16)&0xff;
+	dst[7] = ((len-9)>>8)&0xff;
+	dst[8] = (len-9)&0xff;
+	return len;
+}
+int tlsclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	if(0 == ele->stage1)
+	{
+		ret = 5 + tls_read_head(buf, len);
+		tls_clientread_serverhello(buf+5, len-5);
+		buf += ret;
+		len -= ret;
+
+		ret = 5 + tls_read_head(buf, len);
+		tls_clientread_servercertificate(buf+5, len-5);
+		buf += ret;
+		len -= ret;
+
+		ret = 5 + tls_read_head(buf, len);
+		tls_clientread_serverkeyexch(buf+5, len-5);
+		buf += ret;
+		len -= ret;
+
+		ret = 5 + tls_read_head(buf, len);
+		tls_clientread_serverdone(buf+5, len-5);
+
+		//ret = 
+	}
+	else printmemory(buf,len);
+
+	ele->stage1 += 1;
+	return 0;
+}
+int tlsclient_read()
+{
+	return 0;
+}
+int tlsclient_delete(struct element* ele)
+{
+	return 0;
+}
+int tlsclient_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_tcp_, url);
+	if(0 == obj)return 0;
+
+	ret = tls_clientwrite_clienthello(url, 0, buf, len);
+
+	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	if(ret <= 0)return 0;
+
+	ele->type = _tls_;
+	ele->stage1 = 0;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
+
+
+
+
+int tls_serverread_clienthello(u8* buf, int len, u8* dst, int cnt)
+{
+	int j, k;
+	struct bothhello* p = (void*)buf;
+	u8* q;
+
+	//hello
+	say("clienthello{\n");
+	len = tls_read_hello(buf, len);
+
+
+	//random
+	q = buf+6;
+
+	say("random(len=20)\n");
+	printmemory(q, 0x20);
+	q += 0x20;
+
+
+	//sessionid
+	j = q[0];
+	q += 1;
+
+	say("sessionid(len=%x)\n", j);
+	printmemory(q, j);
+	q += j;
+
+
+	//cipher
+	j = (q[0]<<8) + q[1];
+	q += 2;
+
+	say("ciphersites(len=%x)\n", j);
+	printmemory(q, j);
+	q += j;
+
+
+	//compression
+	j = q[0];
+	q += 1;
+
+	say("compression(len=%x)\n", j);
+	if(j)printmemory(q, j);
+	q += j;
+
+
+	//extension
+	j = (q[0]<<8) + q[1];
+	q += 2;
+
+	say("extension(len=%x)\n", j);
+	printmemory(q, j);
+	while(1)
+	{
+		if(q-buf >= len)break;
+		if(q-buf >= len+5)break;
+
+		j = (q[0]<<8) + q[1];
+		k = (q[2]<<8) + q[3];
+		say("type=%04x, len=%x\n", j, k);
+
+		q += 4 + k;
+	}
+
+	say("}clienthello\n");
+	return len + 5;
+}
+int tlsserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	if(0 == ele->stage1)
+	{
+		tls_read_head(buf,len);
+		tls_serverread_clienthello(buf+5, len-5, 0, 0);
+	}
+	else printmemory(buf,len);
+	return 0;
+}
+int tlsserver_read()
+{
+	return 0;
+}
+int tlsserver_delete(struct element* ele)
+{
+	return 0;
+}
+int tlsserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+int tlsmaster_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int tlsmaster_read()
+{
+	return 0;
+}
+int tlsmaster_delete(struct element* ele)
+{
+	return 0;
+}
+int tlsmaster_create(struct element* ele, u8* url, u8* buf, int len)
+{
 	return 0;
 }
