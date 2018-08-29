@@ -46,15 +46,42 @@ void iocp_add(SOCKET fd)
 void iocp_del(SOCKET fd)
 {
 	struct per_io_data* pio = (void*)(obj[fd/4].data);
-	if(pio->bufing.buf)free(pio->bufing.buf);
+	if(pio->bufing.buf)
+	{
+		free(pio->bufing.buf);
+		pio->bufing.buf = 0;
+	}
 }
 void iocp_mod(SOCKET fd)
 {
 	int ret;
 	DWORD tran = 0;
 	DWORD flag = 0;
-	struct per_io_data* pio = (void*)(obj[fd/4].data);
-	ret = WSARecv(fd, &(pio->bufing), 1, &tran, &flag, (void*)pio, NULL);
+	struct per_io_data* pio;
+	void* peer;
+
+	ret = obj[fd/4].type;
+	pio = (void*)(obj[fd/4].data);
+	peer = (void*)(obj[fd/4].peer);
+
+	if((_UDP_ == ret) | (_udp_ == ret))
+	{
+		ret = sizeof(struct sockaddr_in);
+		ret = WSARecvFrom(fd,
+			&(pio->bufing), 1,
+			&tran, &flag,
+			peer, &ret,
+			(void*)pio, NULL
+		);
+	}
+	else
+	{
+		ret = WSARecv(fd,
+			&(pio->bufing), 1,
+			&tran, &flag,
+			(void*)pio, NULL
+		);
+	}
 }
 DWORD WINAPI iocpthread(LPVOID pM)
 {

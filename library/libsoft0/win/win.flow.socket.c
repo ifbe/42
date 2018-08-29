@@ -53,46 +53,54 @@ void peername(u64 fd, u32* buf)
 
 int readsocket(int fd, void* tmp, void* buf, int len)
 {
-	int c,j;
+	int j,ret;
 	char* src;
-	char* dst = buf;
-	struct per_io_data* pio = (void*)(obj[fd].data);
-	c = pio->count;
-	if(c == 0)return 0;	//disconnect
+	char* dst;
+	struct per_io_data* pio;
 
+	//pio
+	pio = (void*)(obj[fd].data);
+	ret = pio->count;
+	if(0 == ret)return 0;	//disconnect
+
+	//data
 	src = pio->bufing.buf;
-	for(j=0;j<c;j++)dst[j] = src[j];
+	dst = buf;
+	for(j=0;j<ret;j++)dst[j] = src[j];
+
+	//peer
+	j = obj[fd].type;
+	if((_UDP_ == j) | (_udp_ == j))
+	{
+		dst = tmp;
+		src = obj[fd].peer;
+		for(j=0;j<8;j++)dst[j] = src[j];
+	}
 
 	pio->count = 0;
 	iocp_mod(fd*4);
-	return c;
+	return ret;
 }
 int writesocket(int fd, void* tmp, void* buf, int len)
 {
-	int j,ret;
+	int ret;
 	DWORD dwret;
 	WSABUF wbuf;
 
 	ret = obj[fd].type;
 	if((_UDP_ == ret) | (_udp_ == ret))
 	{
-		while(1)
-		{
-			if(len <= 1024)break;
-
-			wbuf.buf = buf;
-			wbuf.len = 1024;
-
-			buf += 1024;
-			len -= 1024;
-		}
+		wbuf.buf = buf;
+		wbuf.len = len;
+		ret = sizeof(struct sockaddr_in);
+		ret = WSASendTo(fd*4, &wbuf, 1, &dwret, 0, tmp, ret, 0, 0);
+		return len;
 	}
 
 	wbuf.buf = buf;
 	wbuf.len = len;
 	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
-
-	printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
+	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
 int listsocket()
