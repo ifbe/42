@@ -35,6 +35,7 @@ static u8 dh[] = {
 int tls_parse_cert(u8* buf, int len)
 {
 	printmemory(buf, len);
+	return 0;
 }
 
 

@@ -11,10 +11,10 @@ void peername(u64 fd, u32* buf)
 
 
 
-void writesocket(u64 fd, void* tmp, void* buf, int len)
+void writesocket(int fd, void* tmp, void* buf, int len)
 {
 }
-void readsocket(u64 fd, void* tmp, void* buf, int len)
+void readsocket(int fd, void* tmp, void* buf, int len)
 {
 }
 void listsocket()

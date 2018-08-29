@@ -49,7 +49,7 @@ void peername(u64 fd, u32* buf)
 
 
 
-int readsocket(u64 fd, void* tmp, void* buf, int len)
+int readsocket(int fd, void* tmp, void* buf, int len)
 {
 	int c,j;
 	char* src;
@@ -65,7 +65,7 @@ int readsocket(u64 fd, void* tmp, void* buf, int len)
 	iocp_mod(fd*4);
 	return c;
 }
-int writesocket(u64 fd, void* tmp, void* buf, int len)
+int writesocket(int fd, void* tmp, void* buf, int len)
 {
 	int j,ret;
 	DWORD dwret;

@@ -4,9 +4,7 @@ cflag ?= -c -O2 -fPIC -I.
 .PHONY:bare
 bare:
 	rm -f *.o
-	$(compiler) $(cflag) bare/bare.flow.net.socket.c
-	$(compiler) $(cflag) bare/bare.flow.sound.c
-	$(compiler) $(cflag) bare/bare.flow.vision.c
+	$(compiler) $(cflag) bare/bare.flow.socket.c
 	$(compiler) $(cflag) bare/bare.memory.file.c
 	$(compiler) $(cflag) bare/bare.memory.folder.c
 	$(compiler) $(cflag) bare/bare.memory.managed.c
@@ -30,9 +28,7 @@ bare:
 .PHONY:efi
 efi:
 	rm -f *.o
-	$(compiler) $(cflag) efi/efi.flow.net.socket.c
-	$(compiler) $(cflag) efi/efi.flow.sound.c
-	$(compiler) $(cflag) efi/efi.flow.vision.c
+	$(compiler) $(cflag) efi/efi.flow.socket.c
 	$(compiler) $(cflag) efi/efi.memory.file.c
 	$(compiler) $(cflag) efi/efi.memory.folder.c
 	$(compiler) $(cflag) efi/efi.memory.managed.c

@@ -51,7 +51,7 @@ void peername(u64 fd, u32* buf)
 
 
 
-int writesocket(u64 fd, void* tmp, void* buf, int len)
+int writesocket(int fd, void* tmp, void* buf, int len)
 {
 	u64 type;
 	int ret;
@@ -71,7 +71,7 @@ int writesocket(u64 fd, void* tmp, void* buf, int len)
 	ret = write(fd, buf, len);
 	return ret;
 }
-int readsocket(u64 fd, void* tmp, void* buf, int len)
+int readsocket(int fd, void* tmp, void* buf, int len)
 {
 	u64 type;
 	int ret, cnt=0;
