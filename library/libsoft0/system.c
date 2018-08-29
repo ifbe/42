@@ -119,7 +119,7 @@ int systemwrite_ev(struct event* ev)
 	ret = readsocket(where, tmp, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
-	return systemwrite_in(&obj[where], tmp, ppp, 0x100000);
+	return systemwrite_in(&obj[where], tmp, ppp, ret);
 }
 int systemread_all()
 {
