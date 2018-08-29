@@ -94,6 +94,36 @@ static u8 modulus_rsa[] = {
 
 
 static u8 version[]="SSH-2.0-finalanswer_42\r\n";
+int secureshell_read_head(u8* buf, int len)
+{
+	return 0;
+}
+int secureshell_write_head(u8* buf, int len)
+{
+	int j,temp;
+
+	//padding
+	if((len&7) < 4)temp = 8-(len&7);
+	else temp = 16-(len&7);
+	for(j=0;j<temp;j++)
+	{
+		buf[len+j] = 0;
+	}
+	len += temp;
+
+	//head
+	buf[0] = 0;
+	buf[1] = 0;
+	buf[2] = ((len-4)>>8)&0xff;
+	buf[3] = (len-4)&0xff;
+	buf[4] = temp;
+
+	return len;
+}
+
+
+
+
 static void printalgorithm(u8* buf, int len)
 {
 	int j,k;
@@ -126,46 +156,6 @@ static void printalgorithm(u8* buf, int len)
 		j++;
 		if(j>len)break;
 	}
-}
-static int secureshell_read_0x1e(u8* buf, int len)
-{
-	u32 j;
-	int off = 6;
-
-	j = buf[off+2];
-	j = (j<<8) + buf[off+3];
-	printmemory(buf+off+4, j);
-	return j;
-}
-
-
-
-
-int secureshell_read_head(u8* buf, int len)
-{
-	return 0;
-}
-int secureshell_write_head(u8* buf, int len)
-{
-	int j,temp;
-
-	//padding
-	if((len&7) < 4)temp = 8-(len&7);
-	else temp = 16-(len&7);
-	for(j=0;j<temp;j++)
-	{
-		buf[len+j] = 0;
-	}
-	len += temp;
-
-	//head
-	buf[0] = 0;
-	buf[1] = 0;
-	buf[2] = ((len-4)>>8)&0xff;
-	buf[3] = (len-4)&0xff;
-	buf[4] = temp;
-
-	return len;
 }
 int secureshell_read_0x14(u8* buf, int len, u8* dst, int cnt)
 {
@@ -304,6 +294,8 @@ int secureshell_write_0x14(u8* buf, int len, u8* dst, int cnt)
 	j = mysnprintf(dst+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
+		"aes128-ctr,"
+		"aes256-ctr,"
 		"3des-cbc"
 	);
 	dst[off+0] = dst[off+1] = 0;
@@ -315,6 +307,8 @@ int secureshell_write_0x14(u8* buf, int len, u8* dst, int cnt)
 	j = mysnprintf(dst+off+4, 999,
 		"aes128-cbc,"
 		"aes256-cbc,"
+		"aes128-ctr,"
+		"aes256-ctr,"
 		"3des-cbc"
 	);
 	dst[off+0] = dst[off+1] = 0;
