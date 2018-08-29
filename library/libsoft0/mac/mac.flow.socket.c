@@ -15,6 +15,9 @@
 #include <sys/types.h>
 #include "libsoft.h"
 #define MAXSIZE 4096
+void kqueue_add(int);
+void kqueue_del(int);
+void kqueue_mod(int);
 
 
 
@@ -188,6 +191,7 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//done
+		kqueue_add(udpfd);
 		return udpfd;
 	}
 
@@ -196,24 +200,23 @@ int startsocket(char* addr, int port, int type)
 	{
 		struct sockaddr_in* self;
 		struct sockaddr_in* peer;
-		if(udpfd > 0)goto udpnext;
 
 		//create
-		udpfd = socket(AF_INET, SOCK_DGRAM, 0);
-		if(udpfd == -1)
+		fd = socket(AF_INET, SOCK_DGRAM, 0);
+		if(fd == -1)
 		{
-			printf("error%d@socket:%d\n",errno,udpfd);
+			printf("error%d@socket:%d\n",errno,fd);
 			return 0;
 		}
-		if(udpfd > MAXSIZE)
+		if(fd > MAXSIZE)
 		{
-			printf("udpfd>4096\n");
+			printf("fd>4096\n");
 			return 0;
 		}
 
 		//reuse
 		ret = 1;
-		ret = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 		if(ret<0)
 		{
 			printf("error@setsockopet\n");
@@ -221,28 +224,28 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//self
-		self = (void*)obj[udpfd].self;
+		self = (void*)obj[fd].self;
 		memset(self, 0, sizeof(struct sockaddr_in));
 		self->sin_family = AF_INET;
 		self->sin_port = htons(2222);
 		self->sin_addr.s_addr = htons(INADDR_ANY);
-		ret = bind(udpfd, (void*)self, sizeof(struct sockaddr_in));
+		ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
 		if(ret == -1)
 		{
 			printf("error@bind\n");
-			close(udpfd);
+			close(fd);
 			return 0;
 		}
 
-udpnext:
 		//peer
-		peer = (void*)obj[udpfd].peer;
+		peer = (void*)obj[fd].peer;
 		memset(peer, 0, sizeof(struct sockaddr_in));
 		peer->sin_family = AF_INET;
 		peer->sin_port = htons(port);
 		peer->sin_addr.s_addr = inet_addr(addr);
 
 		//done
+		kqueue_add(fd);
 		return udpfd;
 	}
 
@@ -292,6 +295,7 @@ udpnext:
 		listen(tcpfd, 5);
 
 		//done
+		kqueue_add(tcpfd);
 		return tcpfd;
 	}
 
@@ -334,6 +338,7 @@ udpnext:
 		}
 
 		//done
+		kqueue_add(fd);
 		return fd;
 	}
 

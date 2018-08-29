@@ -13,60 +13,6 @@ int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 
-int http_help(void* act, void* pin, u8* buf, int len)
-{
-	char temp[0x1000];
-	int j,k = 0;
-	u8* GET = 0;
-	u8* POST = 0;
-	u8* Upgrade = 0;
-	u8* Connection = 0;
-	for(j=0;j<=len;j++)
-	{
-		if((j<len)&&(0xd != buf[j])&&(0xa != buf[j]))continue;
-
-		say("%.*s\n", j-k, buf+k);
-		if(ncmp(buf+k, "Connection: ", 12) == 0)Connection = buf+k+12;
-		else if(ncmp(buf+k, "Upgrade: ", 9) == 0)Upgrade = buf+k+9;
-		else if(ncmp(buf+k, "POST ", 5) == 0)POST = buf+k+5;
-		else if(ncmp(buf+k, "GET ", 4) == 0)GET = buf+k+4;
-
-		if(0xa == buf[j+1])j++;
-		k = j+1;
-	}
-
-	//websocket
-	if((0 != Connection)&&(0 != Upgrade))
-	{
-		return hex32('w','s',0,0);
-	}
-	else if(0 != GET)
-	{
-		k = mysnprintf(temp,0x1000,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n",
-			len
-		);
-		systemwrite(act, pin, 0, 0, temp, k);
-		systemwrite(act, pin, 0, 0, buf, len);
-		if(0 != Connection)
-		{
-			if(0 == ncmp(Connection, "keep-alive", 10))return 0;
-		}
-	}
-	else if(0 != POST)
-	{
-	}
-
-	systemdelete(act);
-	return 0;
-}
-
-
-
-
 int httpclient_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,

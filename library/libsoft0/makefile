@@ -5,6 +5,7 @@ cflag ?= -c -O2 -fPIC -I.
 bare:
 	rm -f *.o
 	$(compiler) $(cflag) bare/bare.flow.socket.c
+	$(compiler) $(cflag) bare/bare.flow.watcher.c
 	$(compiler) $(cflag) bare/bare.memory.file.c
 	$(compiler) $(cflag) bare/bare.memory.folder.c
 	$(compiler) $(cflag) bare/bare.memory.managed.c
@@ -16,7 +17,6 @@ bare:
 	$(compiler) $(cflag) bare/bare.system.shell.c
 	$(compiler) $(cflag) bare/bare.system.thread.c
 	$(compiler) $(cflag) bare/bare.system.time.c
-	$(compiler) $(cflag) bare/bare.system.watcher.c
 	$(compiler) $(cflag) bare/bare.wire.bt.c
 	$(compiler) $(cflag) bare/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/bare.wire.spi.c
@@ -29,6 +29,7 @@ bare:
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) efi/efi.flow.socket.c
+	$(compiler) $(cflag) efi/efi.flow.watcher.c
 	$(compiler) $(cflag) efi/efi.memory.file.c
 	$(compiler) $(cflag) efi/efi.memory.folder.c
 	$(compiler) $(cflag) efi/efi.memory.managed.c
@@ -40,7 +41,6 @@ efi:
 	$(compiler) $(cflag) efi/efi.system.shell.c
 	$(compiler) $(cflag) efi/efi.system.thread.c
 	$(compiler) $(cflag) efi/efi.system.time.c
-	$(compiler) $(cflag) efi/efi.system.watcher.c
 	$(compiler) $(cflag) efi/efi.wire.bt.c
 	$(compiler) $(cflag) efi/efi.wire.i2c.c
 	$(compiler) $(cflag) efi/efi.wire.spi.c
@@ -106,7 +106,6 @@ mac:
 	$(compiler) $(cflag) mac/mac.system.signal.c
 	$(compiler) $(cflag) mac/mac.system.thread.c
 	$(compiler) $(cflag) mac/mac.system.time.c
-	$(compiler) $(cflag) mac/mac.system.watcher.c
 	$(compiler) $(cflag) mac/mac.wire.bt.c
 	$(compiler) $(cflag) mac/mac.wire.i2c.c
 	$(compiler) $(cflag) mac/mac.wire.gpio.c

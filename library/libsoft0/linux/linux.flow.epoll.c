@@ -22,8 +22,6 @@
 
 
 struct object* obj;
-//
-static u64 thread;
 static int alive = 0;
 static int epollfd = 0;
 
@@ -63,6 +61,9 @@ static void* epollthread(void* p)
 	int i, ret;
 	int fd, cc;
 	struct epoll_event epollevent[16];
+
+	epollfd = epoll_create(MAXSIZE);
+	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);
 
 	while(alive)
 	{
@@ -143,9 +144,6 @@ void createwatcher(void* addr)
 {
 	obj = addr;
 
-	epollfd = epoll_create(MAXSIZE);
-	if(epollfd <= 0)printf("%d,%d@epoll_create\n", epollfd, errno);
-
 	alive = 1;
-	thread = threadcreate(epollthread, 0);
+	threadcreate(epollthread, 0);
 }

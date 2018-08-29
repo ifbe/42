@@ -41,13 +41,64 @@ static int ppplen = 0;
 
 
 
-int systemwrite_ev(struct event* ev)
+int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 {
 	int ret;
 	void* dc;
 	void* df;
 	struct relation* irel;
 	struct relation* orel;
+
+	irel = chip->irel0;
+	orel = chip->orel0;
+	if((0 == irel)&&(0 == orel))
+	{
+		ret = chip->thatfd;
+		irel = obj[ret].irel0;
+		orel = obj[ret].orel0;
+	}
+
+	if(0 == orel)
+	{
+		ret = chip->type;
+		if((_UDP_ == ret)|(_udp_ == ret))
+		{
+			say("%d,%d,%d,%d:%d\n",
+				foot[4], foot[5], foot[6], foot[7],
+				(foot[2]<<8)+foot[3]
+			);
+		}
+		printmemory(buf, len);
+		return 0;
+	}
+
+	while(1)
+	{
+		if(0 == orel)break;
+
+		dc = (void*)(orel->dstchip);
+		df = (void*)(orel->dstfoot);
+		if(_act_ == orel->dsttype)
+		{
+			actorwrite(dc, df, chip, foot, buf, len);
+		}
+		else if(_win_ == orel->dsttype)
+		{
+			arenawrite(dc, df, chip, foot, buf, len);
+		}
+		else if(_art_ == orel->dsttype)
+		{
+			arterywrite(dc, df, chip, foot, buf, len);
+		}
+
+		orel = samesrcnextdst(orel);
+	}
+
+	return 42;
+}
+int systemwrite_ev(struct event* ev)
+{
+	int ret;
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
@@ -62,74 +113,13 @@ int systemwrite_ev(struct event* ev)
 	else if(why == '-')
 	{
 		say("gone:%x\n", where);
-		irel = obj[where].irel0;
-		orel = obj[where].orel0;
-		relationdelete(irel);
-		relationdelete(orel);
 		return 0;
 	}
 
-	irel = obj[where].irel0;
-	orel = obj[where].orel0;
-	if((0 == irel)&&(0 == orel))
-	{
-		ret = obj[where].thatfd;
-		irel = obj[ret].irel0;
-		orel = obj[ret].orel0;
-	}
-
-	if(0 == orel)
-	{
-		ret = readsocket(where, tmp, ppp, 0x100000);
-		if(ret == 0)return 0;
-		if(ret < 0)
-		{
-			stopsocket(where);
-			return 0;
-		}
-
-		what = obj[where].type;
-		if((_UDP_ == what)|(_udp_ == what))
-		{
-			say("%d,%d,%d,%d:%d\n",
-				tmp[4],tmp[5],tmp[6],tmp[7],
-				(tmp[2]<<8)+tmp[3]
-			);
-		}
-		printmemory(ppp, ret);
-		return 0;
-	}
-
-	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
 	ret = readsocket(where, tmp, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
-//printmemory(ppp, ret);
-say("systemwrite_ev@%x{\n", ret);
-	while(1)
-	{
-		if(0 == orel)break;
-
-		dc = (void*)(orel->dstchip);
-		df = (void*)(orel->dstfoot);
-		if(_act_ == orel->dsttype)
-		{
-			actorwrite(dc, df, &obj[where], tmp, ppp, ret);
-		}
-		else if(_win_ == orel->dsttype)
-		{
-			arenawrite(dc, df, &obj[where], tmp, ppp, ret);
-		}
-		else if(_art_ == orel->dsttype)
-		{
-			arterywrite(dc, df, &obj[where], tmp, ppp, ret);
-		}
-
-		orel = samesrcnextdst(orel);
-	}
-
-say("}@systemwrite_ev\n");
-	return 42;
+	return systemwrite_in(&obj[where], tmp, ppp, 0x100000);
 }
 int systemread_all()
 {
@@ -142,9 +132,17 @@ int systemread_all()
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == dc)return systemwrite_ev(buf);
+	if(0 != sc)
+	{
+		int fd = (dc - (void*)obj) / sizeof(struct object);
+		return writesocket(fd, df, buf, len);
+	}
 
-	int fd = (dc - (void*)obj) / sizeof(struct object);
-	return writesocket(fd, df, buf, len);
+	say("systemwrite@{\n");
+	systemwrite_in(dc, df, buf, len);
+	say("}@systemwrite\n");
+
+	return 0;
 }
 int systemread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
