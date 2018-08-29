@@ -1,4 +1,7 @@
 #include "libsoft.h"
+int chatserver_create(struct element* ele, void* url, void* buf, int len);
+int chatserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
@@ -90,7 +93,7 @@ say("arterywrite@{\n");
 
 	ele = dc;
 	type = ele->type;
-	if('?' == type)say("?????????????@arterywrite\n");
+	if(_CHAT_ == type)chatserver_write(dc, df, sc, sf, buf, len);
 	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Http_ == type)httpserver_write(dc, df, sc, sf, buf, len);
 	else if(_http_ == type)httpclient_write(dc, df, sc, sf, buf, len);
@@ -130,6 +133,15 @@ void* arterycreate(u64 type, u8* url)
 		if(0 == ret)return 0;	//unknown
 
 		url += ret;
+	}
+	if(_CHAT_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _CHAT_;
+		if(url)chatserver_create(e, url, datahome, 0x100000);
+		return e;
 	}
 
 	//http: master,server,client
@@ -482,6 +494,7 @@ void initartery(void* addr)
 #define max (0x100000/sizeof(struct element))
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
+	arterycreate(0, (u8*)"CHAT://127.0.0.1:2222");
 	arterycreate(0, (u8*)"SSH://127.0.0.1:2222");
 	arterycreate(0, (u8*)"HTTP://127.0.0.1:4444");
 	//say("[8,c):inited artery\n");

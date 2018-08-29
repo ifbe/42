@@ -43,7 +43,7 @@ static int ppplen = 0;
 
 int systemwrite_ev(struct event* ev)
 {
-	int ret,cnt;
+	int ret;
 	void* dc;
 	void* df;
 	struct relation* irel;
@@ -51,6 +51,7 @@ int systemwrite_ev(struct event* ev)
 	u64 why = ev->why;
 	u64 what = ev->what;
 	u64 where = ev->where;
+	u8 tmp[0x40];
 	//say("%llx,%llx,%llx\n",why,what,where);
 
 	if(why == '+')
@@ -76,11 +77,10 @@ int systemwrite_ev(struct event* ev)
 		irel = obj[ret].irel0;
 		orel = obj[ret].orel0;
 	}
-	//say("type=%llx,name=%llx,irel=%llx,orel=%llx\n", type, name, irel, orel);
 
 	if(0 == orel)
 	{
-		ret = readsocket(where, 0, ppp, 0x100000);
+		ret = readsocket(where, tmp, ppp, 0x100000);
 		if(ret == 0)return 0;
 		if(ret < 0)
 		{
@@ -88,17 +88,24 @@ int systemwrite_ev(struct event* ev)
 			return 0;
 		}
 
+		what = obj[where].type;
+		if((_UDP_ == what)|(_udp_ == what))
+		{
+			say("%d,%d,%d,%d:%d\n",
+				tmp[4],tmp[5],tmp[6],tmp[7],
+				(tmp[2]<<8)+tmp[3]
+			);
+		}
 		printmemory(ppp, ret);
 		return 0;
 	}
 
 	//say("%llx,%llx,%llx\n", orel->dstchip, orel->dstfoot, orel->dsttype);
-	ret = readsocket(where, 0, ppp, 0x100000);
+	ret = readsocket(where, tmp, ppp, 0x100000);
 	if(ret <= 0)return 0;
 
 //printmemory(ppp, ret);
 say("systemwrite_ev@%x{\n", ret);
-	cnt = 0;
 	while(1)
 	{
 		if(0 == orel)break;
@@ -107,21 +114,19 @@ say("systemwrite_ev@%x{\n", ret);
 		df = (void*)(orel->dstfoot);
 		if(_act_ == orel->dsttype)
 		{
-			actorwrite(dc, df, &obj[where], 0, ppp, ret);
+			actorwrite(dc, df, &obj[where], tmp, ppp, ret);
 		}
 		else if(_win_ == orel->dsttype)
 		{
-			arenawrite(dc, df, &obj[where], 0, ppp, ret);
+			arenawrite(dc, df, &obj[where], tmp, ppp, ret);
 		}
 		else if(_art_ == orel->dsttype)
 		{
-			arterywrite(dc, df, &obj[where], 0, ppp, ret);
+			arterywrite(dc, df, &obj[where], tmp, ppp, ret);
 		}
 
-		cnt++;
 		orel = samesrcnextdst(orel);
 	}
-	if(0 == cnt)printmemory(ppp, ret);
 
 say("}@systemwrite_ev\n");
 	return 42;
@@ -139,7 +144,7 @@ int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	if(0 == dc)return systemwrite_ev(buf);
 
 	int fd = (dc - (void*)obj) / sizeof(struct object);
-	return writesocket(fd, 0, buf, len);
+	return writesocket(fd, df, buf, len);
 }
 int systemread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -215,8 +220,7 @@ void* systemcreate(u64 type, u8* name)
 		fd = startfile(name, 'w');
 		if(fd <= 0)return 0;
 
-		obj[fd].type = _file_;
-		obj[fd].name = _FILE_;
+		obj[fd].type = _FILE_;
 		goto success;
 	}
 	else if(_file_ == type)
@@ -225,7 +229,6 @@ void* systemcreate(u64 type, u8* name)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _file_;
-		obj[fd].name = _file_;
 		goto success;
 	}
 	else if(_uart_ == type)
@@ -234,9 +237,7 @@ void* systemcreate(u64 type, u8* name)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _uart_;
-		obj[fd].name = _uart_;
 		goto success;
-		return 0;
 	}
 
 	//decode ipaddr
@@ -249,42 +250,42 @@ void* systemcreate(u64 type, u8* name)
 		fd = startsocket(host, port, 'R');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _RAW_;
+		obj[fd].type = _RAW_;
 	}
 	else if(_raw_ == type)	//raw client
 	{
 		fd = startsocket(host, port, 'r');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _raw_;
+		obj[fd].type = _raw_;
 	}
 	else if(_UDP_ == type)	//udp server
 	{
 		fd = startsocket(host, port, 'U');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _UDP_;
+		obj[fd].type = _UDP_;
 	}
 	else if(_udp_ == type)	//udp client
 	{
 		fd = startsocket(host, port, 'u');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _udp_;
+		obj[fd].type = _udp_;
 	}
 	else if(_TCP_ == type)	//tcp server
 	{
 		fd = startsocket(host, port, 'T');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _TCP_;
+		obj[fd].type = _TCP_;
 	}
 	else if(_tcp_ == type)	//tcp client
 	{
 		fd = startsocket(host, port, 't');
 		if(0 >= fd)return 0;
 
-		obj[fd].name = _tcp_;
+		obj[fd].type = _tcp_;
 	}
 
 success:
@@ -319,7 +320,7 @@ int systemlist(u8* buf, int len)
 		if(0 == obj[j].type)continue;
 
 		k++;
-		say("[%03x]: %.8s\n", j, &obj[j].name);
+		say("[%03x]: %.8s\n", j, &obj[j].type);
 	}
 
 	if(0 == k)say("empth system\n");
@@ -357,6 +358,5 @@ void initsystem(u8* addr)
 	createshell(addr);
 	createuart(addr);
 
-	systemcreate(0, (u8*)"UDP://127.0.0.1:2222");
 	//say("[8,c):inited system\n");
 }

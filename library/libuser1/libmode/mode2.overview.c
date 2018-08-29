@@ -156,12 +156,6 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 
 		x = j%8;
 		y = j/8;
-/*		drawicon_1(
-			win, c,
-			(x+0)*w/8+1, (y+0)*h/32+1,
-			(x+1)*w/8-1, (y+1)*h/32-1,
-			(u8*)&actor[j].name, 8
-		);*/
 		drawicon_1(
 			win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y-16)*hh/16,
@@ -212,7 +206,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 			win, 0x80ffffff,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y+8)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y+9)*hh/16,
-			(u8*)&obj[j].name, 8
+			(u8*)&obj[j].type, 8
 		);
 	}
 
@@ -631,7 +625,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/32;
 		tf[1] = vf[1]*1.0/32;
 		tf[2] = vf[2]*1.0/32;
-		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&obj[j].name, 8);
+		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
 	//actor.irel

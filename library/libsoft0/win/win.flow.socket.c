@@ -49,7 +49,7 @@ void peername(u64 fd, u32* buf)
 
 
 
-int readsocket(int fd, int off, void* buf, int len)
+int readsocket(u64 fd, void* tmp, void* buf, int len)
 {
 	int c,j;
 	char* src;
@@ -65,14 +65,14 @@ int readsocket(int fd, int off, void* buf, int len)
 	iocp_mod(fd*4);
 	return c;
 }
-int writesocket(int fd, int off, void* buf, int len)
+int writesocket(u64 fd, void* tmp, void* buf, int len)
 {
 	int j,ret;
 	DWORD dwret;
 	WSABUF wbuf;
 
 	ret = obj[fd].type;
-	if(('u' == ret) | ('U' == ret))
+	if((_UDP_ == ret) | (_udp_ == ret))
 	{
 		while(1)
 		{
@@ -180,8 +180,6 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;
@@ -217,8 +215,6 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;
@@ -251,8 +247,6 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;
@@ -346,8 +340,6 @@ u64 startsocket(char* addr, int port, int type)
 			);
 		}
 
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		return fd/4;
 	}
@@ -377,8 +369,6 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;
@@ -400,8 +390,6 @@ u64 startsocket(char* addr, int port, int type)
 		}
 
 		//
-		obj[fd/4].type = type;
-		obj[fd/4].name = 0;
 		iocp_add(fd);
 		iocp_mod(fd);
 		return fd/4;

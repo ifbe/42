@@ -51,7 +51,7 @@ void peername(u64 fd, u32* buf)
 
 
 
-int writesocket(int fd, int off, void* buf, int len)
+int writesocket(u64 fd, void* tmp, void* buf, int len)
 {
 	u64 type;
 	int ret;
@@ -59,11 +59,11 @@ int writesocket(int fd, int off, void* buf, int len)
 	if(buf == 0)return 0;
 
 	type = obj[fd].type;
-	if( (type == 'U') | (type == 'u') )
+	if((_UDP_ == type)|(_udp_ == type))
 	{
 		ret = sendto(
 			fd, buf, len, 0,
-			(void*)(obj[fd].peer), sizeof(struct sockaddr_in)
+			tmp, sizeof(struct sockaddr_in)
 		);
 		return ret;
 	}
@@ -71,7 +71,7 @@ int writesocket(int fd, int off, void* buf, int len)
 	ret = write(fd, buf, len);
 	return ret;
 }
-int readsocket(int fd, int off, void* buf, int len)
+int readsocket(u64 fd, void* tmp, void* buf, int len)
 {
 	u64 type;
 	int ret, cnt=0;
@@ -79,31 +79,16 @@ int readsocket(int fd, int off, void* buf, int len)
 	if(buf == 0)return 0;
 
 	type = obj[fd].type;
-	if( (type == 'U') | (type == 'u') )
+	if((_UDP_ == type)|(_udp_ == type))
 	{
 		ret = sizeof(struct sockaddr_in);
 		ret = recvfrom(
 			fd, buf, len, 0,
-			(void*)(obj[fd].peer), (void*)&ret
+			tmp, (void*)&ret
 		);
 		return ret;
 	}
-/*
-	cnt = read(fd, buf, len);
-	if(cnt <= 0)return 0;
 
-	while(1)
-	{
-		ret = read(fd, buf+cnt, len-cnt);
-		if(ret == -1)
-		{
-			if(errno != EAGAIN)return 0;
-			else break;
-		}
-		else if(ret == 0)return 0;
-		else cnt += ret;
-	}
-*/
 	while(1)
 	{
 		ret = read(fd, buf, len);
@@ -203,8 +188,6 @@ int startsocket(char* addr, int port, int type)
 		}
 
 		//done
-		obj[udpfd].type = type;
-		obj[udpfd].name = 0;
 		return udpfd;
 	}
 
@@ -260,8 +243,6 @@ udpnext:
 		peer->sin_addr.s_addr = inet_addr(addr);
 
 		//done
-		obj[udpfd].type = type;
-		obj[udpfd].name = 0;
 		return udpfd;
 	}
 
@@ -311,8 +292,6 @@ udpnext:
 		listen(tcpfd, 5);
 
 		//done
-		obj[tcpfd].type = type;
-		obj[tcpfd].name = 0;
 		return tcpfd;
 	}
 
@@ -355,8 +334,6 @@ udpnext:
 		}
 
 		//done
-		obj[fd].type = type;
-		obj[fd].name = 0;
 		return fd;
 	}
 

@@ -275,8 +275,8 @@ int systemdelete(void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int readsocket(int,int,void*,int);
-int writesocket(int,int,void*,int);
+int readsocket(int,void*,void*,int);
+int writesocket(int,void*,void*,int);
 int readfile(int,int,void*,int);
 int writefile(int,int,void*,int);
 //
