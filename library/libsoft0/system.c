@@ -247,42 +247,42 @@ void* systemcreate(u64 type, u8* name)
 
 	if(_RAW_ == type)		//raw server
 	{
-		fd = startsocket(host, port, 'R');
+		fd = startsocket(host, port, _RAW_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _RAW_;
 	}
 	else if(_raw_ == type)	//raw client
 	{
-		fd = startsocket(host, port, 'r');
+		fd = startsocket(host, port, _raw_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _raw_;
 	}
 	else if(_UDP_ == type)	//udp server
 	{
-		fd = startsocket(host, port, 'U');
+		fd = startsocket(host, port, _UDP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _UDP_;
 	}
 	else if(_udp_ == type)	//udp client
 	{
-		fd = startsocket(host, port, 'u');
+		fd = startsocket(host, port, _udp_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _udp_;
 	}
 	else if(_TCP_ == type)	//tcp server
 	{
-		fd = startsocket(host, port, 'T');
+		fd = startsocket(host, port, _TCP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _TCP_;
 	}
 	else if(_tcp_ == type)	//tcp client
 	{
-		fd = startsocket(host, port, 't');
+		fd = startsocket(host, port, _tcp_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _tcp_;

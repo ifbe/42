@@ -82,7 +82,7 @@ static void* epollthread(void* p)
 			else if(epollevent[i].events & EPOLLIN)
 			{
 				//accept
-				if(obj[fd].type == 'T')
+				if(_TCP_ == obj[fd].type)
 				{
 					while(1)
 					{
@@ -99,7 +99,7 @@ static void* epollthread(void* p)
 						}
 
 						memcpy(obj[cc].peer, &haha, 8);
-						obj[cc].type = 't';
+						obj[cc].type = _Tcp_;
 						obj[cc].name = 0;
 						obj[cc].irel0 = obj[cc].ireln = 0;
 						obj[cc].orel0 = obj[cc].oreln = 0;

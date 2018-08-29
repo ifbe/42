@@ -37,7 +37,7 @@ void iocp_add(SOCKET fd)
 		(ULONG_PTR)pfd,
 		0
 	);
-	if('T' == obj[fd/4].type)return;
+	if(_TCP_ == obj[fd/4].type)return;
 
 	pio->stage = 1;
 	pio->bufing.buf = malloc(4096);
@@ -91,7 +91,7 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			eventwrite('+', _fd_, ret, 0);
 
 			ret = cc/4;
-			obj[ret].type = 't';
+			obj[ret].type = _Tcp_;
 			obj[ret].name = 0;
 			obj[ret].irel0 = obj[ret].ireln = 0;
 			obj[ret].orel0 = obj[ret].oreln = 0;

@@ -7,6 +7,8 @@
 #include <mswsock.h>
 #include <windows.h>
 #include "libsoft.h"
+#define _BT_ hex16('B','T')
+#define _bt_ hex16('b','t')
 void iocp_add(SOCKET);
 void iocp_del(SOCKET);
 void iocp_mod(SOCKET);
@@ -138,7 +140,7 @@ u64 startsocket(char* addr, int port, int type)
 		}
 	}
 
-	if(type == 'R')		//RAW
+	if(_RAW_ == type)
 	{
 		SOCKET fd = WSASocket(
 			PF_INET, SOCK_RAW, IPPROTO_IP,
@@ -184,11 +186,11 @@ u64 startsocket(char* addr, int port, int type)
 		iocp_mod(fd);
 		return fd/4;
 	}
-	else if(type == 'r')	//raw
+	else if(_raw_ == type)
 	{
 		return 0;
 	}
-	else if(type == 'U')	//UDP
+	else if(_UDP_ == type)
 	{
 		int ret;
 		int addrlen = sizeof(SOCKADDR_IN);
@@ -219,7 +221,7 @@ u64 startsocket(char* addr, int port, int type)
 		iocp_mod(fd);
 		return fd/4;
 	}
-	else if(type == 'u')	//udp client
+	else if(_udp_ == type)
 	{
 		//
 		SOCKET fd = WSASocket(
@@ -251,7 +253,7 @@ u64 startsocket(char* addr, int port, int type)
 		iocp_mod(fd);
 		return fd/4;
 	}
-	else if(type == 'T')	//tcp server
+	else if(_TCP_ == type)
 	{
 		int ret;
 		int addrlen = sizeof(SOCKADDR_IN);
@@ -343,7 +345,7 @@ u64 startsocket(char* addr, int port, int type)
 		iocp_add(fd);
 		return fd/4;
 	}
-	else if(type == 't')	//tcp client
+	else if(_tcp_ == type)
 	{
 		//
 		SOCKET fd = WSASocket(
@@ -373,11 +375,11 @@ u64 startsocket(char* addr, int port, int type)
 		iocp_mod(fd);
 		return fd/4;
 	}
-	else if(type == 'B')	//bluetooth server
+	else if(_BT_ == type)
 	{
 		return 0;
 	}
-	else if(type == 'b')	//bluetooth client
+	else if(_bt_ == type)
 	{
 		SOCKET fd = WSASocket(
 			AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM,

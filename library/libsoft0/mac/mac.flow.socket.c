@@ -124,13 +124,13 @@ int startsocket(char* addr, int port, int type)
 	struct hostent* host;
 
 	//RAW
-	if(type == 'R')
+	if(_RAW_ == type)
 	{
 		return 0;
 	}
 
 	//raw client
-	if(type == 'r')
+	if(_raw_ == type)
 	{
 		return 0;
 	}
@@ -146,7 +146,7 @@ int startsocket(char* addr, int port, int type)
 	}
 
 	//udp server
-	if(type == 'U')
+	if(_UDP_  == type)
 	{
 		int ret;
 		struct sockaddr_in* self;
@@ -192,7 +192,7 @@ int startsocket(char* addr, int port, int type)
 	}
 
 	//udp client
-	if(type == 'u')
+	if(_udp_ == type)
 	{
 		struct sockaddr_in* self;
 		struct sockaddr_in* peer;
@@ -247,7 +247,7 @@ udpnext:
 	}
 
 	//tcp server
-	if(type == 'T')
+	if(_TCP_ == type)
 	{
 		int ret;
 		struct sockaddr_in* self;
@@ -296,7 +296,7 @@ udpnext:
 	}
 
 	//tcp client
-	if(type == 't')
+	if(_tcp_ == type)
 	{
 		int ret;
 		struct sockaddr_in* peer;
@@ -335,18 +335,6 @@ udpnext:
 
 		//done
 		return fd;
-	}
-
-	//bt server
-	if(type == 'B')
-	{
-		return 0;
-	}
-
-	//bt client
-	if(type == 'b')
-	{
-		return 0;
 	}
 
 	printf("error@type\n");

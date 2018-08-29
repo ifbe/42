@@ -23,10 +23,13 @@ typedef float mat4[4][4];
 #define _file_ hex32('f','i','l','e')
 //
 #define _RAW_ hex32('R','A','W',0)
+#define _Raw_ hex32('R','a','w',0)
 #define _raw_ hex32('r','a','w',0)
 #define _UDP_ hex32('U','D','P',0)
+#define _Udp_ hex32('U','d','p',0)
 #define _udp_ hex32('u','d','p',0)
 #define _TCP_ hex32('T','C','P',0)
+#define _Tcp_ hex32('T','c','p',0)
 #define _tcp_ hex32('t','c','p',0)
 //
 #define _CHAT_ hex32('C','H','A','T')
