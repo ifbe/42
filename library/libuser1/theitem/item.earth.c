@@ -219,7 +219,7 @@ static void earth_delete(struct actor* act)
 static void earth_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "earth/earth.jpg");
+	actorcreatefromfile(act, "jpg/earth.jpg");
 }
 
 

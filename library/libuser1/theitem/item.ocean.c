@@ -202,7 +202,7 @@ static void ocean_delete(struct actor* act)
 static void ocean_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "ocean/ocean.jpg");
+	actorcreatefromfile(act, "jpg/ocean.jpg");
 }
 
 

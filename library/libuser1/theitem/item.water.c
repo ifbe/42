@@ -202,7 +202,7 @@ static void water_delete(struct actor* act)
 static void water_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "water/water.jpg");
+	actorcreatefromfile(act, "jpg/water.jpg");
 }
 
 

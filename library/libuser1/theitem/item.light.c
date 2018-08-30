@@ -219,7 +219,7 @@ static void light_delete(struct actor* act)
 static void light_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "light/light.jpg");
+	actorcreatefromfile(act, "jpg/thesun.jpg");
 }
 
 

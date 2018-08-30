@@ -202,7 +202,7 @@ static void terrian_delete(struct actor* act)
 static void terrian_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "terrian/terrian.jpg");
+	actorcreatefromfile(act, "jpg/terrian.jpg");
 }
 
 

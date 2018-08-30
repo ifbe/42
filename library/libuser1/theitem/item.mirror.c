@@ -202,7 +202,7 @@ static void mirror_delete(struct actor* act)
 static void mirror_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "mirror/mirror.jpg");
+	actorcreatefromfile(act, "jpg/mirror.jpg");
 }
 
 

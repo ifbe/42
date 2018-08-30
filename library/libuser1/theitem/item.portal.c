@@ -249,7 +249,7 @@ static void portal_delete(struct actor* act)
 static void portal_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "portal/portal.png");
+	actorcreatefromfile(act, "png/portal.png");
 }
 
 

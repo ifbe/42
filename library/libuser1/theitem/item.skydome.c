@@ -217,7 +217,7 @@ static void skydome_delete(struct actor* act)
 static void skydome_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "skydome/skydome.jpg");
+	actorcreatefromfile(act, "jpg/skydome.jpg");
 }
 
 

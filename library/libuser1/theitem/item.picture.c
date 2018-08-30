@@ -242,7 +242,7 @@ static void picture_delete(struct actor* act)
 static void picture_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "wall/wall.jpg");
+	actorcreatefromfile(act, "jpg/wall.jpg");
 }
 
 
