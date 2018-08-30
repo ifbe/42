@@ -61,17 +61,17 @@ void background_json(struct arena* win)
 }
 void background_html(struct arena* win)
 {
-	struct mystring** hp = win->hp;
+	struct str** ctx = win->ctx;
 
-	hp[1]->len = mysnprintf(
-		hp[1]->buf, 0x100000,
+	ctx[1]->len = mysnprintf(
+		ctx[1]->buf, 0x100000,
 		"<html><head>\n"
 		"<meta charset=\"UTF-8\">\n"
 		"<style type=\"text/css\">\n"
 		"*{margin:0;padding:0;}\n"
 	);
-	hp[2]->len = mysnprintf(
-		hp[2]->buf, 0x100000,
+	ctx[2]->len = mysnprintf(
+		ctx[2]->buf, 0x100000,
 		"<body style=\"width:100%%;height:100%%;\">\n"
 	);
 }
@@ -190,15 +190,15 @@ void foreground_html(struct arena* win)
 {
 	int len;
 	u8* buf;
-	struct mystring** hp = win->hp;
+	struct str** ctx = win->ctx;
 
-	len = hp[1]->len;
-	buf = hp[1]->buf + len;
-	hp[1]->len += mysnprintf(buf, 0x100000-len, "</style></head>\n");
+	len = ctx[1]->len;
+	buf = ctx[1]->buf + len;
+	ctx[1]->len += mysnprintf(buf, 0x100000-len, "</style></head>\n");
 
-	len = hp[2]->len;
-	buf = hp[2]->buf + len;
-	hp[2]->len += mysnprintf(buf, 0x100000-len, "</body></html>\n");
+	len = ctx[2]->len;
+	buf = ctx[2]->buf + len;
+	ctx[2]->len += mysnprintf(buf, 0x100000-len, "</body></html>\n");
 }
 void foreground_tui(struct arena* win)
 {

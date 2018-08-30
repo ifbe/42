@@ -3,21 +3,21 @@
 
 
 
-int htmlprintf(struct arena* win, int i, char* fmt, ...)
+int htmlprintf(struct arena* win, int j, char* fmt, ...)
 {
 	__builtin_va_list arg;
-	struct mystring** hp;
+	struct str** ctx;
 	void* buf;
 	int len;
-	if(i<1)return 0;
-	if(i>2)return 0;
+	if(j<1)return 0;
+	if(j>2)return 0;
 
 	__builtin_va_start(arg, fmt);
 
-	hp = win->hp;
-	len = hp[i]->len;
-	buf = hp[i]->buf;
-	hp[i]->len += myvsnprintf(buf+len, 0xffff8-len, fmt, arg);
+	ctx = win->ctx;
+	len = ctx[j]->len;
+	buf = ctx[j]->buf;
+	ctx[j]->len += myvsnprintf(buf+len, 0xffff8-len, fmt, arg);
 
 	__builtin_va_end(arg);
 	return 0;

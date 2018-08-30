@@ -121,32 +121,10 @@ typedef float mat4[4][4];
 
 
 
-
-struct mystring
+struct str
 {
 	int len;
 	u8 buf[0];
-};
-struct xyzw
-{
-	u16 x;
-	u16 y;
-	u16 z;
-	u16 id;
-};
-struct xyzwpair
-{
-	//touchdown, pointdown, gamepadleft
-	u16 x0;
-	u16 y0;
-	u16 z0;
-	u16 id;
-
-	//touchmove, pointmove, gamepadright
-	u16 x1;
-	u16 y1;
-	u16 z1;
-	u16 nn;
 };
 struct event
 {
@@ -172,6 +150,31 @@ struct relation
 	u32 srcflag;
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
+};
+
+
+
+
+struct xyzw
+{
+	u16 x;
+	u16 y;
+	u16 z;
+	u16 id;
+};
+struct xyzwpair
+{
+	//touchdown, pointdown, gamepadleft
+	u16 x0;
+	u16 y0;
+	u16 z0;
+	u16 id;
+
+	//touchmove, pointmove, gamepadright
+	u16 x1;
+	u16 y1;
+	u16 z1;
+	u16 nn;
 };
 
 
@@ -363,8 +366,6 @@ struct object
 	};
 	union{
 		u64 len;
-		void* hp;
-		void* mod;
 		void* ximage;
 		void* texture;
 	};
@@ -428,8 +429,6 @@ struct element
 	};
 	union{
 		u64 len;
-		void* hp;
-		void* mod;
 		void* ximage;
 		void* texture;
 	};
@@ -490,7 +489,7 @@ struct arena
 	};
 	union{
 		u64 len;
-		void* hp;
+		void* ctx;
 		void* mod;
 		void* ximage;
 		void* texture;

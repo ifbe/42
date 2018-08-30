@@ -8,8 +8,8 @@ static void browser_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 	int cx, cy, ww, hh;
-	struct mystring* str = act->idx;
-	struct mystring* dat = act->buf;
+	struct str* str = act->idx;
+	struct str* dat = act->buf;
 	if(sty)
 	{
 		cx = sty->vc[0];
@@ -79,7 +79,7 @@ static void browser_write_event(
 	int len;
 	u8* buf;
 	void* www;
-	struct mystring* str;
+	struct str* str;
 	if(_char_ != ev->what)return;
 
 	str = act->idx;
@@ -122,7 +122,7 @@ static void browser_write_data(
 {
 	int j,cnt;
 	u8* tmp;
-	struct mystring* dat;
+	struct str* dat;
 
 	dat = act->buf;
 	cnt = dat->len;

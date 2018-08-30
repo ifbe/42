@@ -1,24 +1,20 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "libuser.h"
 void movsb(u8* rdi, u8* rsi, int rcx);
 void printbigint(u8* p, int i);
 
 
 
 
-//
-int bigdup(		//src -> dst
-	u8* srcbuf, int srclen,
-	u8* dstbuf, int dstlen)
+//copy src into dst
+int bigdup(struct str* src, struct str* dst)
 {
-	int j;
-	for(j=0;j<srclen;j++)
-	{
-		dstbuf[j] = srcbuf[j];
-	}
-	return srclen;
+	int j,len = src->len;
+	u8* srcbuf = src->buf;
+	u8* dstbuf = dst->buf;
+
+	for(j=0;j<len;j++)dstbuf[j] = srcbuf[j];
+	dst->len = len;
+	return len;
 }
 int bigcmp(			//(a-b)
 	u8* abuf, int alen,

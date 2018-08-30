@@ -119,6 +119,11 @@ typedef float mat4[4][4];
 
 
 
+struct str
+{
+	int len;
+	u8 buf[0];
+};
 struct event
 {
 	u64 why;
@@ -144,6 +149,10 @@ struct relation
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
+
+
+
+
 struct object
 {
 	//[0x00,0x1f]
