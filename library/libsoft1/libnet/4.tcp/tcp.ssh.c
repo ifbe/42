@@ -413,13 +413,13 @@ int secureshell_clientread_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
 
 	//P
 	j = (p[2]<<8)+p[3];
-	say("P(%x):\n", j);
+	say("(%04x)dh.P=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 	//G
 	j = (p[2]<<8)+p[3];
-	say("G(%x):\n", j);
+	say("(%04x)dh.G=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
@@ -472,16 +472,37 @@ int secureshell_clientread_handshake0x21(u8* buf, int len, u8* dst, int cnt)
 	u8 t[0x1000];
 	u8* p = buf+6;
 
+	p += 4;
+
+	//ssh-rsa
+	j = (p[2]<<8)+p[3];
+	p += 4;
+	say("(%04x)server.alg=\n", j);
+	say("%.*s\n", j, p);
+	p += 7;
+
+	//e
+	j = (p[2]<<8)+p[3];
+	say("(%04x)server.rsa.E=\n", j);
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
+
+	//n
+	j = (p[2]<<8)+p[3];
+	say("(%04x)server.rsa.N=\n", j);
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
+
 	//f
 	j = (p[2]<<8)+p[3];
-	say("f(%x):\n", j);
+	say("(%04x)server.dhval=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
 
 	//h
 	j = (p[2]<<8)+p[3];
-	say("h(%x):\n", j);
+	say("(%04x)signature=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += 4+j;
 
@@ -641,7 +662,7 @@ int secureshell_serverread_handshake0x20(u8* buf, int len, u8* dst, int cnt)
 
 	//E
 	j = (p[0]<<24)+(p[1]<<16)+(p[2]<<8)+p[3];
-	say("E(%x):\n", j);
+	say("(%04x)client.dhval=\n", j);
 	sshstr2bigint((void*)p, (void*)t);
 	p += j;
 
