@@ -3,6 +3,11 @@
 void generatePG(void*, int, void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
+void bigint_print(struct str* src);
+
+
+
+
 static u8 modulus_dh[] = {
 0x00,0xd8,0x4b,0x8e,0x9b,0x72,0x59,0xf3,0x4a,0xa4,0x60,0x62,0x68,0x4a,0xd0,0x58,
 0x73,0xfd,0x40,0x7c,0x5f,0xa8,0x04,0xff,0xbc,0x42,0x9d,0x0d,0xed,0x5b,0x49,0x72,
@@ -89,6 +94,22 @@ static u8 modulus_rsa[] = {
 0xec,0x92,0x58,0xa5,0xde,0x34,0x82,0xb5,0x3d,0xc4,0x53,0x21,0x65,0x5b,0x8e,0xe5,
 0xa7
 };
+void sshstr2bigint(struct str* src, struct str* dst)
+{
+	int j,len;
+	u8* tmp;
+	u8* buf;
+
+	buf = (u8*)src;
+	len = (buf[0]<<24)+(buf[1]<<16)+(buf[2]<<8)+buf[3];
+
+	buf = src->buf;
+	tmp = dst->buf;
+	for(j=0;j<len;j++)tmp[len-1-j] = buf[j];
+	dst->len = len;
+
+	bigint_print(dst);
+}
 
 
 
@@ -387,26 +408,20 @@ int secureshell_clientwrite_handshake0x14(u8* buf, int len, u8* dst, int cnt)
 int secureshell_clientread_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
+	u8 t[0x1000];
 	u8* p = buf+6;
-
 
 	//P
 	j = (p[2]<<8)+p[3];
-	p += 4;
-
 	say("P(%x):\n", j);
-	printmemory(p, j);
-	p += j;
-
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
 
 	//G
 	j = (p[2]<<8)+p[3];
-	p += 4;
-
 	say("G(%x):\n", j);
-	printmemory(p, j);
-	p += j;
-
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
 
 	return (buf[0]<<8)+buf[1];
 }
@@ -454,22 +469,21 @@ int secureshell_clientwrite_handshake0x22(u8* buf, int len, u8* dst, int cnt)
 int secureshell_clientread_handshake0x21(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
+	u8 t[0x1000];
 	u8* p = buf+6;
 
 	//f
 	j = (p[2]<<8)+p[3];
-	p += 4;
-
 	say("f(%x):\n", j);
-	printmemory(p, j);
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
 
 
 	//h
 	j = (p[2]<<8)+p[3];
-	p += 4;
-
 	say("h(%x):\n", j);
-	printmemory(p, j);
+	sshstr2bigint((void*)p, (void*)t);
+	p += 4+j;
 
 	return 0;
 }
@@ -622,17 +636,14 @@ int secureshell_serverwrite_handshake0x1f(u8* buf, int len, u8* dst, int cnt)
 int secureshell_serverread_handshake0x20(u8* buf, int len, u8* dst, int cnt)
 {
 	int j;
+	u8 t[0x1000];
 	u8* p = buf+6;
-
 
 	//E
 	j = (p[0]<<24)+(p[1]<<16)+(p[2]<<8)+p[3];
-	p += 4;
-
 	say("E(%x):\n", j);
-	printmemory(p, j);
+	sshstr2bigint((void*)p, (void*)t);
 	p += j;
-
 
 	return 0;
 }

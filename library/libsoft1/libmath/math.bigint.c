@@ -1,6 +1,30 @@
 #include "libuser.h"
 void movsb(u8* rdi, u8* rsi, int rcx);
-void printbigint(u8* p, int i);
+
+
+
+
+void bigint_print(struct str* src)
+{
+	int j;
+	int len = src->len;
+	u8* buf = src->buf;
+
+	j = len-1;
+	if(buf[j] < 0x80)
+	{
+		say("0x");
+		while((j>0)&&(0==buf[j]))j--;
+		for(;j>=0;j--)say("%02x", buf[j]);
+		say("\n");
+		return;
+	}
+
+	say("-0x");
+	for(j=len-1;j>0;j--)say("%02x", 0xff-buf[j]);
+	say("%02x", 0x100-buf[0]);
+	say("\n");
+}
 
 
 
