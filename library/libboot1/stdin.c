@@ -39,6 +39,7 @@ void say(void*, ...);
 
 
 
+static u8 knowncmd[] = {'e','x','i','t'};
 static u64 path[8];
 static int pos = 0;
 //
@@ -67,6 +68,34 @@ int getcurin()
 	return enq;
 }
 
+
+
+
+int autocomplete_subcmd(u8* buf, int len)
+{
+	return 0;
+}
+int autocomplete(u8* buf, int len)
+{
+	u8 tmp;
+	if((len < 4)&&(0 == ncmp(buf, knowncmd, len)))
+	{
+		for(;len<4;len++)
+		{
+			tmp = knowncmd[len];
+			say("%c", tmp);
+
+			input[enq] = tmp;
+			enq++;
+		}
+		return 1;
+	}
+
+	say("(matching: %.*s*)\n", len, buf);
+	say("	0101	haha	device	driver\n");
+	say("	system	artery	arena	actor\n");
+	return 0;
+}
 
 
 
@@ -315,6 +344,16 @@ void termwrite(u8* buf, int len)
 			}
 			return;
 		}
+		else if(0x9 == k)
+		{
+			t = autocomplete(input+deq, enq-deq);
+			if(0 == t)	//failed
+			{
+				say("\n");
+				term_prompt();
+				say("%.*s", enq-deq, input+deq);
+			}
+		}
 		else
 		{
 			if(0xd == k)k = 0xa;
@@ -329,48 +368,3 @@ void termwrite(u8* buf, int len)
 		}
 	}
 }
-/*
-void termwrite(u8* p)
-{
-	int j;
-	if(p == 0)return;
-	if(p[0] >= 0x20)say("%s", p);
-
-	//myself
-	while(1)
-	{
-		if(*p < 8)return;
-		if(*p == 0x9)	//tab
-		{
-			say("\n");
-			for(j=0;j<4;j++)say("tab%d\n",j);
-
-			term_prompt();
-			say("%s", input);
-		}
-		else if((*p==0x8)|(*p==0x7f))		//backspace
-		{
-			if(enq <= 0)return;
-			say("\b \b");
-
-			enq--;
-			input[enq] = 0;
-		}
-		else if((*p==0xa)|(*p==0xd))	//enter
-		{
-			input[enq] = '\n';
-			enq++;
-
-			say("\n");
-			termread();
-		}
-		else
-		{
-			input[enq] = *p;
-			enq++;
-		}
-
-		//////////////////
-		p++;
-	}
-}*/
