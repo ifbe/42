@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "libsoft.h"
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 0x100000
 
 
 

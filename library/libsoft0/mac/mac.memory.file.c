@@ -66,22 +66,24 @@ int readfile(u64 fd, u64 off, char* buf, u64 len)
 
 	return ret;
 }
-int startfile(char* path)
+int stopfile(int fd)
+{
+	return close(fd);
+}
+int startfile(char* path, int flag)
 {
 	//检查
 	if(path == 0)return -3;
 	if(path[0] == 0)return -2;
 
 	//打开
-	return open(path, O_RDWR, S_IRWXU|S_IRWXG|S_IRWXO);
-}
-void stopfile(int fd)
-{
-	close(fd);
-}
-void createfile()
-{
+	if('w' == flag)flag = O_CREAT;
+	flag |= O_RDWR;
+	return open(path, flag, S_IRWXU|S_IRWXG|S_IRWXO);
 }
 void deletefile()
+{
+}
+void createfile()
 {
 }

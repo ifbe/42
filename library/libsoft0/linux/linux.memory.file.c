@@ -146,6 +146,10 @@ int readfile(u64 fd, u64 off, char* buf, u64 len)
 
 	return ret;
 }
+int stopfile(int fd)
+{
+	return close(fd);
+}
 int startfile(char* path)
 {
 	//检查
@@ -153,18 +157,13 @@ int startfile(char* path)
 	if(path[0] == 0)return -2;
 
 	//打开
-	return open(path,
-		O_RDWR | O_LARGEFILE,
-		S_IRWXU|S_IRWXG|S_IRWXO
-	);
-}
-void stopfile(int fd)
-{
-	close(fd);
-}
-void createfile()
-{
+	if('w' == flag)flag = O_CREAT;
+	flag |= O_RDWR | O_LARGEFILE;
+	return open(path, flag, S_IRWXU|S_IRWXG|S_IRWXO);
 }
 void deletefile()
+{
+}
+void createfile()
 {
 }

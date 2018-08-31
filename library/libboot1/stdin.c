@@ -91,7 +91,7 @@ int autocomplete(u8* buf, int len)
 		return 1;
 	}
 
-	say("(matching: %.*s*)\n", len, buf);
+	say("\n(matching: %.*s*)\n", len, buf);
 	say("	0101	haha	device	driver\n");
 	say("	system	artery	arena	actor\n");
 	return 0;
@@ -349,7 +349,6 @@ void termwrite(u8* buf, int len)
 			t = autocomplete(input+deq, enq-deq);
 			if(0 == t)	//failed
 			{
-				say("\n");
 				term_prompt();
 				say("%.*s", enq-deq, input+deq);
 			}
