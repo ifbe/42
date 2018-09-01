@@ -46,7 +46,6 @@ static int trythis(char* src,char* dest)
 	int ret;
 	struct stat st;
 
-	//使用stat去得到是否存在以及文件大小
 	//say("%s\n",src);
 	ret=stat(src , &st);
 	if(ret<0)return 0;
@@ -150,13 +149,11 @@ int stopfile(int fd)
 {
 	return close(fd);
 }
-int startfile(char* path)
+int startfile(char* path, int flag)
 {
-	//检查
 	if(path == 0)return -3;
 	if(path[0] == 0)return -2;
 
-	//打开
 	if('w' == flag)flag = O_CREAT;
 	flag |= O_RDWR | O_LARGEFILE;
 	return open(path, flag, S_IRWXU|S_IRWXG|S_IRWXO);

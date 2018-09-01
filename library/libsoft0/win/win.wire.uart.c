@@ -8,44 +8,36 @@
 
 
 
-struct uartinfo
-{
-	char* buf;
-	int len;
-	int enq;
-	int deq;
-};
-static struct uartinfo info;
 //
 static struct object* obj = 0;
 static HANDLE hcom = 0;
-//
-static u64 thread = 0;
 static int alive = 0;
 
 
 
 
-DWORD WINAPI systemuart_thread(LPVOID pM)
+DWORD WINAPI systemuart_thread(struct object* oo)
 {
-	int ret, count=0;
+	int ret;
+	int enq;
+	int cnt=0;
+	u8 buf[0x10000];
 	struct relation* orel;
-	u8* buf;
+	if(0 == oo)return 0;
 
 	while(alive == 1)
 	{
-		ret = 0x100000 - (info.enq);
+		ret = 0x100000 - enq;
 		if(ret > 256)ret = 256;
 
-		buf = (info.buf)+(info.enq);
-		ret = ReadFile(hcom, buf, ret, (void*)&count, 0);
-
-		if( (ret > 0) && (count > 0) )
+		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
+		if( (ret > 0) && (cnt > 0) )
 		{
-			//printf("from %d to %d\n", info.enq, (info.enq + count)%0x200);
+			//printf("from %d to %d\n", info.enq, (info.enq + cnt)%0x200);
 
-			orel = obj[1].orel0;
-			while(1)
+			orel = oo->orel0;
+			if(0 == orel)printmemory(buf+enq, cnt);
+			else while(1)
 			{
 				if(0 == orel)break;
 				if(_act_ == orel->dsttype)
@@ -53,17 +45,14 @@ DWORD WINAPI systemuart_thread(LPVOID pM)
 					actorwrite(
 						(void*)(orel->dstchip), (void*)(orel->dstfoot),
 						(void*)(orel->srcchip), (void*)(orel->srcfoot),
-						buf, count
+						buf+enq, cnt
 					);
 				}
-				orel = (struct relation*)samesrcnextdst(orel);
+				orel = samesrcnextdst(orel);
 			}
 
-			//eventwrite((u64)&info, _uart_, 0, 0);
-			info.enq = (info.enq + count)%0x100000;
+			enq = (enq + cnt)%0x10000;
 		}
-
-		Sleep(10);
 	}
 	return 0;
 }
@@ -77,17 +66,17 @@ int readuart(int fd, int off, char* buf, int len)
 }
 int writeuart(int fd, int off, char* buf, int len)
 {
-	u32 count=0;
+	u32 cnt=0;
 	int ret;
 
 	ret = WriteFile(
 		hcom,
 		buf,
 		len,
-		(void*)&count,
+		(void*)&cnt,
 		0
 	);
-	//say("write:ret=%d,count=%d,errno=%d\n", ret, count, GetLastError());
+	//say("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
 	return ret;
 }
 int listuart(u8* p)
@@ -139,7 +128,8 @@ int startuart(char* p, int speed)
 	if(p == 0)return 0;
 
 	//
-	snprintf(buf, 20, "\\\\.\\%s", p);
+	for(ret=0;ret<20;ret++)if(p[ret] < 0x20)break;
+	snprintf(buf, 20, "\\\\.\\%.*s", ret, p);
 	hcom = CreateFile(
 		buf,
 		GENERIC_READ | GENERIC_WRITE,
@@ -149,7 +139,7 @@ int startuart(char* p, int speed)
 		0,
 		NULL
 	);
-	say("hcom=%x\n",hcom);
+	say("name=%s, hcom=%llx\n", buf, hcom);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
 		say("err:%d@open\n",GetLastError());
@@ -191,20 +181,12 @@ int startuart(char* p, int speed)
 	say("PurgeComm:%d\n", ret);
 
 	//
-	if(info.buf == 0)
-	{
-		info.enq = 0;
-		info.deq = 0;
-		info.len = 0x100000;
-		info.buf = (char*)malloc(info.len);
-	}
-
-	//
 	alive = 1;
-	thread = threadcreate(systemuart_thread, 0);
+	ret = (u64)hcom/4;
+	threadcreate(systemuart_thread, &obj[ret]);
 
 	//success
-	return 1;
+	return ret;
 }
 int deleteuart()
 {

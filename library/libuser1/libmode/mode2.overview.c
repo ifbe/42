@@ -1038,6 +1038,7 @@ void actoroutput_overview(struct arena* win, struct style* sty)
 
 void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 {
+	int j;
 	struct object* o;
 	struct element* e;
 	struct arena* p;
@@ -1164,7 +1165,16 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		y0 = y0-24;
 		if(y1 < 8)
 		{
-			say("object@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+			j = x0+(y0*8);
+			for(;j<0x1000;j+=64)
+			{
+				o = &obj[x0+(y0*8)];
+				if(o->type)break;
+			}
+
+			say("object@%d -> actor@%d\n", j, x1+(y1*8));
+			q = &actor[x1+(y1*8)];
+			relationcreate(q, 0, _act_, o, 0, _fd_);
 		}
 		else if(y1 < 16)
 		{

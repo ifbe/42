@@ -33,12 +33,8 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len);
 
 
 
-static u8 listbuf[0x100];
-static int listlen = 0;
 static u8 charbuf[0x100];
 static int charlen = 0;
-static int status = 0;
-static int theone = 0;
 
 
 
@@ -63,16 +59,6 @@ static void terminal_read_pixel(
 		hh = win->height/2;
 	}
 	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
-
-	if(status == 0)
-	{
-		drawtext(win, 0xffffff,
-			cx-ww, cy-hh, cx+ww, cy+hh,
-			listbuf, listlen
-		);
-		return;
-	}
-
 	drawterm(win, act->idx, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void terminal_read_vbo(
@@ -104,17 +90,13 @@ static void terminal_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x, y, w, h, enq,deq;
+	int x, y, w, h;
 	u32* p;
 	u32* q;
 	u8* buf;
-	struct uartterm* term = act->idx;
-	if((status == 0)&&(charlen == 0))
-	{
-		gentui_text(win, 7, 0, 0, listbuf, listlen);
-		return;
-	}
+	struct uartterm* term;
 
+	term = act->idx;
 	w = win->width;
 	h = win->height;
 	if(w > term->width)w = term->width;
@@ -137,18 +119,6 @@ static void terminal_read_cli(
 	u8* p;
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
-
-	if((status == 0)&&(charlen == 0))return;
-/*
-	p = old->buf;
-	enq = old->enq;
-	deq = old->deq;
-	old->deq = enq;
-	if(enq == deq)return;
-
-	if(enq > deq)say("%.*s", enq-deq, p+deq);
-	else say("%.*s%.*s", 0x100000-deq, p+deq, enq, p);
-*/
 }
 static void terminal_read(
 	struct arena* win, struct style* sty,
@@ -171,82 +141,40 @@ static void terminal_write_event(
 	struct arena* win, struct style* sty,
 	struct event* ev)
 {
-	void* addr;
 	int j;
-	u64 tmp;
-	u64 why = ev->why;
+	u64 why;
+	void* dc;
+	void* df;
+	struct relation* irel;
 
+	why = ev->why;
 	if(ev->what == _kbd_)
 	{
-		if(status != 0)
-		{
-			j = 3;
-			if(why == 0x1b){tmp = 0x1b;j=1;}
-			else if(why == 0x25)tmp = 0x445b1b;
-			else if(why == 0x26)tmp = 0x415b1b;
-			else if(why == 0x27)tmp = 0x435b1b;
-			else if(why == 0x28)tmp = 0x425b1b;
-			else return;
-
-			if(status == 1)
-			{
-				writeuart(theone, 0, (void*)&tmp, j);
-			}
-			else
-			{
-				writeshell(theone, 0, (void*)&tmp, j);
-			}
-		}
-		return;
+		j = 3;
+		if(why == 0x1b)j = 1;
+		else if(why == 0x25)why = 0x445b1b;
+		else if(why == 0x26)why = 0x415b1b;
+		else if(why == 0x27)why = 0x435b1b;
+		else if(why == 0x28)why = 0x425b1b;
+		else return;
 	}
+	else if(ev->what == _char_)j = 1;
 
-	if(ev->what == _char_)
+	irel = act->irel0;
+	if(0 == irel)return;
+
+	while(1)
 	{
-		if(status != 0)
+		if(0 == irel)break;
+
+		dc = (void*)(irel->srcchip);
+		df = (void*)(irel->srcfoot);
+		if(_fd_ == irel->srctype)
 		{
-			if(status == 1)
-			{
-				writeuart(theone, 0, (void*)ev, 1);
-			}
-			else
-			{
-				writeshell(theone, 0, (void*)ev, 1);
-			}
-			return;
-		}
-		if(why == 0x8)
-		{
-			if(charlen > 0)
-			{
-				say("\b \b");
-				charlen--;
-				charbuf[charlen] = 0;
-			}
-			return;
+			systemwrite(dc, df, act, pin, &why, j);
 		}
 
-		say("%c",why);
-		if((why == 0xd)|(why == 0xa))
-		{
-			if(charlen == 0)
-			{
-				theone = startshell();
-				status = 2;
-			}
-			else
-			{
-				//theone = startuart(charbuf, 115200);
-				addr = systemcreate(_uart_, charbuf);
-				relationcreate(act, 0, _act_, addr, 0, _fd_);
-				status = 1;
-			}
-			return;
-		}
-		if(charlen < 31)
-		{
-			charbuf[charlen] = why;
-			charlen++;
-		}
+		irel = samedstnextsrc(irel);
 	}
 }
 static void terminal_write_data(
@@ -284,8 +212,6 @@ static void terminal_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	listlen = listuart(listbuf, 0x100);
-	if(listlen != 0)say("%.*s", listlen, listbuf);
 }
 static void terminal_delete(struct actor* act)
 {
@@ -294,12 +220,8 @@ static void terminal_delete(struct actor* act)
 }
 static void terminal_create(struct actor* act)
 {
-	void* tty;
 	struct uartterm* term;
 	if(0 == act)return;
-
-	tty = arenacreate(_uart_, 0);
-	relationcreate(act, 0, _act_, tty, 0, _win_);
 
 	act->idx = memorycreate(sizeof(struct uartterm));
 	act->buf = memorycreate(0x100000);

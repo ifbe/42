@@ -17,6 +17,7 @@ int deleteshell();
 //uart
 int createuart(void*);
 int deleteuart();
+int writeuart(int fd, int off, char* buf, int len);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
@@ -129,13 +130,22 @@ int systemread_all()
 
 
 
+//df==0: throw upward
+//df!=0: throw down
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == dc)return systemwrite_ev(buf);
 	if(0 != sc)
 	{
 		int fd = (dc - (void*)obj) / sizeof(struct object);
-		return writesocket(fd, df, buf, len);
+		if(_uart_ == obj[fd].type)
+		{
+			return writeuart(fd, 0, buf, len);
+		}
+		else
+		{
+			return writesocket(fd, df, buf, len);
+		}
 	}
 
 	say("systemwrite@{\n");
