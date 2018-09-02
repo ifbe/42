@@ -123,10 +123,11 @@ int arterydelete(void* ele)
 {
 	return 0;
 }
-void* arterycreate(u64 type, u8* url)
+void* arterycreate(u64 type, void* argstr)
 {
 	int j,fd,ret,port;
 	struct element* e;
+	u8* url = argstr;
 	if(0 == type)
 	{
 		ret = parsetypefromurl(url, (void*)&type);
@@ -271,170 +272,6 @@ void* arterycreate(u64 type, u8* url)
 	}
 	return 0;
 }
-/*
-	u8 host[0x100];	//127.0.0.1
-	u8* url;	//dir/file.html
-	u8* t;		//http
-
-	if(0 == type)
-	{
-		for(j=0;j<0x1000;j++)
-		{
-			if(0 == ncmp(name+j, "://", 3))
-			{
-				t = (u8*)&type;
-				for(ret=0;ret<j;ret++)
-				{
-					if(ret >= 8)break;
-					t[ret] = name[ret];
-				}
-				name += j+3;
-				break;
-			}
-		}
-	}
-	if(0 == type)return 0;
-	if(_uart_ == type)return systemcreate(_uart_, name);
-	else if(_FILE_ == type)return systemcreate(_FILE_, name);
-	else if(_file_ == type)return systemcreate(_file_, name);
-	else if(_RAW_ == type)return systemcreate(_RAW_, name);
-	else if(_raw_ == type)return systemcreate(_raw_, name);
-	else if(_UDP_ == type)return systemcreate(_UDP_, name);
-	else if(_udp_ == type)return systemcreate(_udp_, name);
-	else if(_TCP_ == type)return systemcreate(_TCP_, name);
-	else if(_tcp_ == type)return systemcreate(_tcp_, name);
-
-	//decode ipaddr
-	port = 80;
-	ret = parseurl(name, 0x100, host, &port);
-
-	mysnprintf(host, 80, "%.*s", ret, name);
-	say("artery: host=%s\n", host);
-
-	url = name + ret;
-	say("artery: url=%s\n", url);
-
-	if(_http_ == type)	//http client
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _http_;
-		httpclient_create(e, datahome, host, url);
-		return e;
-	}
-	else if(_ws_ == type)	//ws client
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _ws_;
-		wsclient_create(e, datahome, host, url);
-		return e;
-	}
-
-	//raw family
-	if(_ICMP_ == type)
-	{
-	}
-	else if(_icmp_ == type)
-	{
-	}
-
-	//udp family
-	else if(_DNS_ == type)	//DNS server
-	{
-		fd = startsocket(host, port, 'U');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _DNS_;
-	}
-	else if(_dns_ == type)	//DNS client
-	{
-		fd = startsocket(host, port, 'u');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _dns_;
-		ret = dns_write_query(datahome, 666, url+1, 666);
-		writesocket(fd, 0, datahome, ret);
-	}
-	else if(_HOLE_ == type)	//p2p server
-	{
-		fd = startsocket(host, port, 'U');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _HOLE_;
-	}
-	else if(_hole_ == type)	//p2p client
-	{
-		fd = startsocket(host, port, 'u');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _hole_;
-		writesocket(fd, 0, url+1, 16);
-	}
-	else if(_TFTP_ == type)	//tftp server
-	{
-		fd = startsocket(host, port, 'U');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _TFTP_;
-	}
-	else if(_tftp_ == type)	//tftp client
-	{
-		fd = startsocket(host, port, 'u');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _tftp_;
-		ret = tftp_write(datahome, 0x100000);
-		ret = writesocket(fd, 0, datahome, ret);
-	}
-
-	//tcp family
-	else if(_SSH_ == type)	//ssh server
-	{
-		ssh_start();
-		fd = startsocket(host, port, 'T');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _SSH_;
-	}
-	else if(_ssh_ == type)	//ssh client
-	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _ssh_;
-		ret = secureshell_write_handshake(datahome, 0x100000);
-		ret = writesocket(fd, 0, datahome, ret);
-	}
-	else if(_TLS_ == type)	//tls server
-	{
-		tls_start();
-		fd = startsocket(host, port, 'T');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _TLS_;
-	}
-	else if(_tls_ == type)	//tls client
-	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _tls_;
-		ret = tls_write_client_hello(datahome, 0x100000);
-		ret = writesocket(fd, 0, datahome, ret);
-	}
-	else if(_sql_ == type)	//sql client
-	{
-		fd = startsocket(host, port, 't');
-		if(0 >= fd)return 0;
-
-		obj[fd].name = _sql_;
-	}
-
-	return 0;
-}*/
 int arterychoose(u8* buf, int len)
 {
 	int j;

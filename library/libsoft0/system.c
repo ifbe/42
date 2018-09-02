@@ -17,7 +17,6 @@ int deleteshell();
 //uart
 int createuart(void*);
 int deleteuart();
-int writeuart(int fd, int off, char* buf, int len);
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
@@ -195,7 +194,7 @@ int systemdelete(void* addr)
 	}
 	return 0;
 }
-void* systemcreate(u64 type, u8* name)
+void* systemcreate(u64 type, void* argstr)
 {
 	int j,k,fd,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -203,6 +202,7 @@ void* systemcreate(u64 type, u8* name)
 	u8* url;	//dir/file.html
 	u8* t;		//http
 
+	u8* name = argstr;
 	if(0 == type)
 	{
 		for(j=0;j<0x1000;j++)

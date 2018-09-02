@@ -270,6 +270,21 @@ struct element
 
 
 
+//
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
+//
+int readsocket( int,void*,void*, int);
+int writesocket(int,void*,void*, int);
+int readuart(   int, int, void*, int);
+int writeuart(  int, int, void*, int);
+int readfile(   int, int, void*, int);
+int writefile(  int, int, void*, int);
+//
+u32 getrandom();
+u64 dateread();
+u64 timeread();
+//
 int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int actorwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int arenaread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
@@ -279,35 +294,26 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
-void* arterycreate(u64 type, u8* name);
+int actordelete(void*);
+void* actorcreate(u64, void*);
+int arenadelete(void*);
+void* arenacreate(u64, void*);
 int arterydelete(void*);
-void* systemcreate(u64 type, u8* name);
+void* arterycreate(u64, void*);
 int systemdelete(void*);
+void* systemcreate(u64, void*);
 //
-int ncmp(void*, void*, int);
-int cmp(void*, void*);
-//
-int readsocket(int,void*,void*,int);
-int writesocket(int,void*,void*,int);
-int readfile(int,int,void*,int);
-int writefile(int,int,void*,int);
-//
-u32 getrandom();
-u64 dateread();
-u64 timeread();
-//
+int threaddelete(u64);
 u64 threadcreate(void*, void*);
-void threaddelete(u64);
-//
-void* memorycreate(int);
 int memorydelete(void*);
+void* memorycreate(int);
+int relationdelete(void*);
+void* relationcreate(void*,void*,int,void*,void*,int);
 //
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
-void* relationcreate(void*,void*,int,void*,void*,int);
-int relationdelete(void*);
 //
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);

@@ -890,19 +890,10 @@ double squareroot(double);
 double power(double, double);
 
 //
-u64 dateread();
-u64 timeread();
 u32 getrandom();
 int sleep_us(int);
-//
-u64 threadcreate(void*, void*);
-void threaddelete(u64);
-//
-void* memorycreate(int);
-int memorydelete(void*);
-//
-void* eventread();
-void* eventwrite(u64,u64,u64,u64);
+u64 dateread();
+u64 timeread();
 
 
 
@@ -911,15 +902,6 @@ void* eventwrite(u64,u64,u64,u64);
 extern "C" {
 #endif
 
-void* actorcreate(u64, void*);
-int actordelete(struct actor*);
-void* arenacreate(u64, void*);
-int arenadelete(struct arena*);
-void* arterycreate(u64, void*);
-int arterydelete(void*);
-void* systemcreate(u64, void*);
-int systemdelete(void*);
-//
 int actorread_all(struct arena*);
 int actorwrite_ev(struct event*);
 int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
@@ -931,12 +913,29 @@ int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
+int actordelete(struct actor*);
+void* actorcreate(u64, void*);
+int arenadelete(struct arena*);
+void* arenacreate(u64, void*);
+int arterydelete(void*);
+void* arterycreate(u64, void*);
+int systemdelete(void*);
+void* systemcreate(u64, void*);
+//
+int threaddelete(u64);
+u64 threadcreate(void*, void*);
+int memorydelete(void*);
+void* memorycreate(int);
+int relationdelete(void*);
+void* relationcreate(void*,void*,int,void*,void*,int);
+//
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
-void* relationcreate(void*,void*,int,void*,void*,int);
-int relationdelete(void*);
+//
+void* eventread();
+void* eventwrite(u64,u64,u64,u64);
 //
 int htmlprintf(struct arena*, int, char*, ...);
 int mysnprintf(void*, int, void*, ...);

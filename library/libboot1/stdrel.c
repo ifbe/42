@@ -2,9 +2,25 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#define _act_ hex32('a','c','t',0)
+#define _win_ hex32('w','i','n',0)
+#define _art_ hex32('a','r','t',0)
+#define _fd_ hex32('f','d',0,0)
 #define maxlen 0x100000
-#define __act__ hex32('a','c','t',0)
-#define __win__ hex32('w','i','n',0)
+
+
+
+
+int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actorwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenaread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenawrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arteryread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -32,18 +48,18 @@ struct item
 struct relation
 {
 	//[0x00,0x1f]
-	u64 destchip;
-	u64 destfoot;
-	u32 desttype;
-	u32 destflag;
+	u64 dstchip;
+	u64 dstfoot;
+	u32 dsttype;
+	u32 dstflag;
 	u32 samedstprevsrc;
 	u32 samedstnextsrc;
 
 	//0x20,0x3f
-	u64 selfchip;
-	u64 selffoot;
-	u32 selftype;
-	u32 selfflag;
+	u64 srcchip;
+	u64 srcfoot;
+	u32 srctype;
+	u32 srcflag;
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
 };
@@ -98,7 +114,7 @@ void relation_choose(struct item* item, struct relation* rel)
 	else next = (void*)wirebuf + rel->samedstnextsrc;
 
 	if((0 != prev)&&(0 != next))
-	{say("fuck1\n");
+	{
 		prev->samedstnextsrc = (void*)next - (void*)wirebuf;
 		next->samedstprevsrc = (void*)prev - (void*)wirebuf;
 
@@ -115,7 +131,7 @@ void relation_choose(struct item* item, struct relation* rel)
 	//if((0 != prev)&&(0 == next))	//change nothing
 
 	if((0 == prev)&&(0 != next))
-	{say("fuck2\n");
+	{
 		next->samedstprevsrc = 0;
 
 		rel->samedstprevsrc = (void*)(item->ireln) - (void*)wirebuf;
@@ -184,22 +200,22 @@ void* relation_generate(
 	struct relation* w = relation_grow();
 	if(w == 0)return 0;
 
-	//1.dest
-	w->destchip = (u64)uchip;
-	w->destfoot = (u64)ufoot;
+	//1.dst
+	w->dstchip = (u64)uchip;
+	w->dstfoot = (u64)ufoot;
 
-	w->desttype = utype;
-	w->destflag = 0;
+	w->dsttype = utype;
+	w->dstflag = 0;
 
 	w->samedstprevsrc = 0;
 	w->samedstnextsrc = 0;
 
-	//2.self
-	w->selfchip = (u64)bchip;
-	w->selffoot = (u64)bfoot;
+	//2.src
+	w->srcchip = (u64)bchip;
+	w->srcfoot = (u64)bfoot;
 
-	w->selftype = btype;
-	w->selfflag = 0;
+	w->srctype = btype;
+	w->srcflag = 0;
 
 	w->samesrcprevdst = 0;
 	w->samesrcnextdst = 0;
@@ -243,6 +259,44 @@ void* relationwrite()
 {
 	return 0;
 }
+int systemwrite_dispatch(void* sc, void* sf, u8* buf, int len)
+{
+	void* dc;
+	void* df;
+	struct item* chip;
+	struct relation* orel;
+
+	chip = sc;
+	if(0 == sc)return 0;
+
+	orel = chip->orel0;
+	if(0 == orel)
+	{
+		printmemory(buf, len);
+		return 0;
+	}
+
+	while(1)
+	{
+		if(0 == orel)break;
+
+		dc = (void*)(orel->dstchip);
+		df = (void*)(orel->dstfoot);
+
+		if(0 == orel->dsttype)break;
+		else if(_fd_  == orel->dsttype)systemwrite(dc, df, sc, sf, buf, len);
+		else if(_art_ == orel->dsttype)arterywrite(dc, df, sc, sf, buf, len);
+		else if(_win_ == orel->dsttype)arenawrite( dc, df, sc, sf, buf, len);
+		else if(_act_ == orel->dsttype)actorwrite( dc, df, sc, sf, buf, len);
+
+		orel = samesrcnextdst(orel);
+	}
+	return 0;
+}
+
+
+
+
 void relationdelete(struct relation* this)
 {
 	struct item* uchip;
@@ -266,7 +320,7 @@ void relationdelete(struct relation* this)
 		else next->samedstprevsrc = (void*)prev - (void*)wirebuf;
 	}
 
-	uchip = (void*)(this->destchip);
+	uchip = (void*)(this->dstchip);
 	if(this == uchip->irel0)uchip->irel0 = next;
 
 	relation_recycle(this);
@@ -288,7 +342,7 @@ void* relationcreate(
 	//
 	ww = relation_generate(uchip, ufoot, utype, bchip, bfoot, btype);
 
-	//dest wire
+	//dst wire
 	h1 = uchip;
 	if(0 != h1->ireln)
 	{

@@ -22,37 +22,21 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 	int enq;
 	int cnt=0;
 	u8 buf[0x10000];
-	struct relation* orel;
 	if(0 == oo)return 0;
 
 	while(alive == 1)
 	{
-		ret = 0x100000 - enq;
+		ret = 0x10000 - enq;
 		if(ret > 256)ret = 256;
 
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			//printf("from %d to %d\n", info.enq, (info.enq + cnt)%0x200);
-
-			orel = oo->orel0;
-			if(0 == orel)printmemory(buf+enq, cnt);
-			else while(1)
-			{
-				if(0 == orel)break;
-				if(_act_ == orel->dsttype)
-				{
-					actorwrite(
-						(void*)(orel->dstchip), (void*)(orel->dstfoot),
-						(void*)(orel->srcchip), (void*)(orel->srcfoot),
-						buf+enq, cnt
-					);
-				}
-				orel = samesrcnextdst(orel);
-			}
+			systemwrite_dispatch(oo, 0, buf+enq, cnt);
 
 			enq = (enq + cnt)%0x10000;
-			sleep_us(1000*10);
+
+			sleep_us(1000*100);
 		}
 	}
 	return 0;
@@ -61,11 +45,11 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 
 
 
-int readuart(int fd, int off, char* buf, int len)
+int readuart(int fd, int off, void* buf, int len)
 {
 	return 0;
 }
-int writeuart(int fd, int off, char* buf, int len)
+int writeuart(int fd, int off, void* buf, int len)
 {
 	u32 cnt=0;
 	int ret;
@@ -151,9 +135,9 @@ int startuart(char* p, int speed)
 	COMMTIMEOUTS timeouts;
 	ret = GetCommTimeouts(hcom, &timeouts);
 	say("GetCommTimeouts:%d\n", ret);
-	timeouts.ReadIntervalTimeout = 0;
+	timeouts.ReadIntervalTimeout = 0xffffffff;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
-	timeouts.ReadTotalTimeoutConstant = 100;
+	timeouts.ReadTotalTimeoutConstant = 0;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
 	timeouts.WriteTotalTimeoutConstant = 100;
 	ret = SetCommTimeouts(hcom, &timeouts);

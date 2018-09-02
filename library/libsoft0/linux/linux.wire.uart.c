@@ -17,13 +17,13 @@ static struct object* obj;
 
 
 
-int readuart(int fd, char* buf, int off, int len)
+int readuart(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = read(fd, buf, len);
 	return ret;
 }
-int writeuart(int fd, char* buf, int off, int len)
+int writeuart(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = write(fd, buf, len);
@@ -70,7 +70,7 @@ int startuart(char* p, int speed)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
-	obj[fd].type = hex32('u','a','r','t');
+	obj[fd].type = _uart_;
 	obj[fd].buf = (void*)malloc(0x100000);
 	epoll_add(fd);
 
