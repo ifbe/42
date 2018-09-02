@@ -159,6 +159,7 @@ static void terminal_write_event(
 		else return;
 	}
 	else if(ev->what == _char_)j = 1;
+	else return;
 
 	irel = act->irel0;
 	if(0 == irel)return;
@@ -182,7 +183,7 @@ static void terminal_write_data(
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
-	say("%.*s", len, buf);
+	printmemory(buf,len);
 	terminal_serverinput(act->idx, buf, len);
 }
 static void terminal_write(

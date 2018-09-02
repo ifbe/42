@@ -52,6 +52,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 			}
 
 			enq = (enq + cnt)%0x10000;
+			sleep_us(1000*10);
 		}
 	}
 	return 0;
@@ -182,11 +183,10 @@ int startuart(char* p, int speed)
 
 	//
 	alive = 1;
-	ret = (u64)hcom/4;
-	threadcreate(systemuart_thread, &obj[ret]);
+	threadcreate(systemuart_thread, &obj[1]);
 
 	//success
-	return ret;
+	return 1;
 }
 int deleteuart()
 {
