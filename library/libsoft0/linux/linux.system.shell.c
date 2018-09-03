@@ -33,6 +33,7 @@ void systemshell_child(char* p)
 	dup2(slave, 1);
 	dup2(slave, 2);
 	execl("/bin/bash", "/bin/bash", NULL);
+	execl("/system/bin/sh", "/system/bin/sh", NULL);
 }
 
 

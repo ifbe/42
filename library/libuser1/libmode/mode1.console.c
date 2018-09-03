@@ -23,9 +23,17 @@ void actoroutput_console_pixel(struct arena* win, struct style* sty)
 	else
 	{
 		cx = win->width/2;
-		cy = win->height/2;
 		ww = win->width/2;
-		hh = win->height/2;
+		if(win->vkbdtype)
+		{
+			cy = win->height*3/8;
+			hh = win->height*3/8;
+		}
+		else
+		{
+			cy = win->height/2;
+			hh = win->height/2;
+		}
 	}
 	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawsolid_rect(win, 0xe0e0e0, cx+ww-16, cy-hh, cx+ww, cy+hh);

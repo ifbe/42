@@ -84,3 +84,32 @@ int chatserver_create(struct element* ele, u8* url, u8* buf, int len)
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 0;
 }
+
+
+
+int termwrite(void*, int);
+int hackserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	termwrite(buf, len);
+	return 0;
+}
+int hackserver_read()
+{
+	return 0;
+}
+int hackserver_delete(struct element* ele)
+{
+	return 0;
+}
+int hackserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	void* obj = systemcreate(_UDP_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}
