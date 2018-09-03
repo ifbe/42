@@ -330,11 +330,17 @@ void drawtext_reverse(
 	k = len;
 	for(j=len-1;j>=0;j--)
 	{
+		if(y0+16 > y1)break;
+
+		if(0 == j)
+		{
+			drawstring(win, rgb, x0, y1-16, buf, k);
+			break;
+		}
+
 		if('\n' == buf[j])
 		{
-			if(y0+16 > y1)break;
-
-			drawstring(win, rgb, x0, y1-16, buf+j, k-j);
+			drawstring(win, rgb, x0, y1-16, buf+j+1, k-j-1);
 			y1 -= 16;
 			k = j;
 		}
