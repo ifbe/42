@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "libsoft.h"
 #define BUFFER_SIZE 0x100000
+int readsocket(int, void*, void*, int);
 
 
 
