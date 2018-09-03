@@ -106,7 +106,7 @@ int sql_client(struct element* ele, int fd, u8* buf, int len)
 		ret = sql_write_loginrequest(buf, len);
 		if(ret <= 0)return 0;
 
-		writesocket(fd, 0, buf, ret);
+		//writesocket(fd, 0, buf, ret);
 		ele[fd].stage1 = 1;
 	}
 	else

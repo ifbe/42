@@ -17,11 +17,7 @@ int epoll_add(int);
 
 
 static struct object* obj;
-
-
-
-
-void systemshell_process(char* p)
+void systemshell_child(char* p)
 {
 	int ret;
 	int slave = open(p, O_RDWR);
@@ -38,13 +34,17 @@ void systemshell_process(char* p)
 	dup2(slave, 2);
 	execl("/bin/bash", "/bin/bash", NULL);
 }
-int readshell(int fd, char* buf, int off, int len)
+
+
+
+
+int readshell(int fd, int off, char* buf, int len)
 {
 	int ret;
 	ret = read(fd, buf, len);
 	return ret;
 }
-int writeshell(int fd, char* buf, int off, int len)
+int writeshell(int fd, int off, char* buf, int len)
 {
 	int ret;
 	ret = write(fd, buf, len);
@@ -100,17 +100,11 @@ int startshell(char* p)
 
 	ret = fork();
 	if(ret < 0)return -5;
-	else if(ret == 0)systemshell_process(name);
-	else
-	{
-		ret = write(fd, "unset PROMPT_COMMAND\n", 21);
+	else if(ret == 0)systemshell_child(name);
 
-		obj[fd].type = hex32('u','a','r','t');
-		obj[fd].buf = (void*)malloc(0x100000);
-		epoll_add(fd);
-		return fd;
-	}
-	return 0;
+	ret = write(fd, "unset PROMPT_COMMAND\n", 21);
+	epoll_add(fd);
+	return fd;
 }
 void createshell(void* addr)
 {

@@ -701,39 +701,6 @@ void tls_delete()
 
 
 
-#define TLS 0x534c54
-#define tls 0x736c74
-int tls_client(struct element* ele, int fd, u8* buf, int len)
-{
-	//printmemory(buf, len);
-	tls_read(ele, fd, buf, len);
-	return tls;
-}
-int tls_server(struct element* ele, int fd, u8* buf, int len)
-{
-	//tls >>>> ascii
-	len = tls_read(ele, fd, buf, len);
-	if(len < 0)goto error;
-
-	//bin >>>> tls
-	len = tls_write(ele, fd, buf, len);
-	if(len <= 0)goto error;
-
-good:
-	writesocket(fd, 0, buf, len);
-	return TLS;
-error:
-	return 0;
-}
-int tls_check(struct element* ele, int fd, u8* buf, int len)
-{
-	if(buf[0] == 0x16)return TLS;
-	return 0;
-}
-
-
-
-
 int tls_clientread_serverhello(u8* buf, int len)
 {
 	u8* t;

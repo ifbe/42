@@ -274,13 +274,6 @@ struct element
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int readsocket( int,void*,void*, int);
-int writesocket(int,void*,void*, int);
-int readuart(   int, int, void*, int);
-int writeuart(  int, int, void*, int);
-int readfile(   int, int, void*, int);
-int writefile(  int, int, void*, int);
-//
 u32 getrandom();
 u64 dateread();
 u64 timeread();

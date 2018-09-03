@@ -1,4 +1,5 @@
 #include "libsoft.h"
+#define _ptmx_ hex32('p','t','m','x')
 //random
 int createrandom(void*);
 int deleterandom();
@@ -20,10 +21,21 @@ int deleteuart();
 //
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
+int startshell(void*, int);
+int stopshell(int);
 int startuart(void*, int);
 int stopuart(int);
 int startfile(void*, int);
 int stopfile(int);
+//
+int readsocket( int,void*,void*, int);
+int writesocket(int,void*,void*, int);
+int readshell(  int, int, void*, int);
+int writeshell( int, int, void*, int);
+int readuart(   int, int, void*, int);
+int writeuart(  int, int, void*, int);
+int readfile(   int, int, void*, int);
+int writefile(  int, int, void*, int);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -141,6 +153,10 @@ int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		{
 			return writeuart(fd, 0, buf, len);
 		}
+		if(_ptmx_ == obj[fd].type)
+		{
+			return writeshell(fd, 0, buf, len);
+		}
 		else
 		{
 			return writesocket(fd, df, buf, len);
@@ -252,6 +268,21 @@ void* systemcreate(u64 type, void* argstr)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _uart_;
+		goto success;
+	}
+	else if(_ptmx_ == type)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(name[j] < 0x20)break;
+			host[j] = name[j];
+		}
+		host[j] = 0;
+
+		fd = startshell(host, 115200);
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _ptmx_;
 		goto success;
 	}
 

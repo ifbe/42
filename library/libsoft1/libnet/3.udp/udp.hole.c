@@ -17,8 +17,8 @@ int hole_client(struct object* obj, int fd, u8* buf, int len)
 		say("target=%llx\n",bb[0]);
 		aa[0] = bb[0];
 
-		writesocket(fd, 0, "hole\n", 5);
-		writesocket(fd, 0, "hole\n", 5);
+		//writesocket(fd, 0, "hole\n", 5);
+		//writesocket(fd, 0, "hole\n", 5);
 	}
 
 	printmemory(buf, len);
@@ -43,10 +43,10 @@ int hole_server(struct object* obj, int fd, u8* buf, int len)
 
 		if(aa[0] != 0)
 		{
-			writesocket(fd, 0, aa, 8);
+			//writesocket(fd, 0, aa, 8);
 
 			bb[0] = aa[0];
-			writesocket(fd, 0, aa+1, 8);
+			//writesocket(fd, 0, aa+1, 8);
 
 			aa[0] = aa[1] = 0;
 		}
@@ -59,10 +59,10 @@ int hole_server(struct object* obj, int fd, u8* buf, int len)
 
 		if(aa[1] != 0)
 		{
-			writesocket(fd, 0, aa+1, 8);
+			//writesocket(fd, 0, aa+1, 8);
 
 			bb[0] = aa[1];
-			writesocket(fd, 0, aa, 8);
+			//writesocket(fd, 0, aa, 8);
 
 			aa[0] = aa[1] = 0;
 		}
