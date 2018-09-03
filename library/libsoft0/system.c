@@ -241,7 +241,14 @@ void* systemcreate(u64 type, void* argstr)
 	}
 	else if(_uart_ == type)
 	{
-		fd = startuart(name, 115200);
+		for(j=0;j<0x100;j++)
+		{
+			if(name[j] < 0x20)break;
+			host[j] = name[j];
+		}
+		host[j] = 0;
+
+		fd = startuart(host, 115200);
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _uart_;
