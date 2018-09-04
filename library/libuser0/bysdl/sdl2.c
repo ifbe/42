@@ -4,6 +4,20 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
+static u8 uppercase[] = {
+	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
+	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
+	')', '!', '@', '#', '$', '%', '^', '&',		//30,37
+	'*', '(', ':', ':', '<', '+', '>', '?',		//38,3f
+	'@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',		//40,47
+	'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',		//48,4f
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//50,57
+	'X', 'Y', 'Z', '{', '|', '}', '^', '_',		//58,5f
+	'~', 'A', 'B', 'C', 'D', 'E', 'F', 'G',		//60,67
+	'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',		//68,6f
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//70,77
+	'X', 'Y', 'Z', '{', '|', '}', '~', ' ',		//78,7f
+};
 
 
 
@@ -11,6 +25,7 @@
 void windowread(struct arena* w)
 {
 	SDL_Event ev;
+	SDL_Keysym key;
 	u64 why;
 	u64 where = (u64)w;
 	actorread_all(w);
@@ -49,7 +64,8 @@ void windowread(struct arena* w)
 		}
 		else if (SDL_KEYDOWN == ev.type)
 		{
-			why = ev.key.keysym.sym;
+			key = ev.key.keysym;
+			why = key.sym;
 			//say("%llx\n",why);
 
 			if(why >= 0xff)
@@ -66,14 +82,30 @@ void windowread(struct arena* w)
 			}
 			else
 			{
-				if(why==0x1b)why = 0x1b;
-				else if(why==0x8)why = 0x8;
-				else if(why==0xd)why = 0xd;
-				else if((why>=0x20)&&(why<=0x7e))why = why;
-				else continue;
-
+				if((why >= 0x20)&&(why <= 0x7f))
+				{
+					if((key.mod & KMOD_LSHIFT) | (key.mod & KMOD_CAPS))
+					{
+						why = uppercase[why-0x20];
+					}
+				}
 				eventwrite(why, _char_, where, 0);
 			}
+		}
+		else if(SDL_MOUSEWHEEL == ev.type)
+		{
+			if(ev.wheel.y > 0) // scroll up
+			{
+				why = 'f';
+			}
+			else if(ev.wheel.y < 0) // scroll down
+			{
+				why = 'b';
+			}
+			int x = ev.button.x;
+			int y = ev.button.y;
+			why = x+(y<<16)+(why<<48);
+			eventwrite(why, 0x2b70, where, 0);
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
 		{
