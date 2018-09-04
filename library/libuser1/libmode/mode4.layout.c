@@ -32,62 +32,79 @@ void select_3d(struct arena* win, struct style* sty)
 
 
 
+void actoroutput_panel3d(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf)
+{
+	float j;
+	vec3 ta;
+	vec3 tb;
+	carvesolid2d_rect(win, rgb, vc, vr, vf);
+
+	for(j=-0.75;j<1.0;j+=0.25)
+	{
+		ta[0] = vc[0] + j*vr[0] - 0.8*vf[0];
+		ta[1] = vc[1] + j*vr[1] - 0.8*vf[1];
+		ta[2] = vc[2] + j*vr[2] - 0.8*vf[2];
+		tb[0] = vc[0] + j*vr[0] + 0.8*vf[0];
+		tb[1] = vc[1] + j*vr[1] + 0.8*vf[1];
+		tb[2] = vc[2] + j*vr[2] + 0.8*vf[2];
+		carveline2d(win, 0xffffff, ta, tb);
+	}
+}
 void actoroutput_layout_vbo(struct arena* win, struct style* st)
 {
 	vec3 vc, vr, vf;
 	carveaxis(win);
 
-	vc[0] = 1.0-0.1;
+	vc[0] = 1.0-0.05;
 	vc[1] = 0.0;
 	vc[2] = -0.8;
-	vr[0] = 0.1;
+	vr[0] = 0.05;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
 	vf[0] = 0.0;
 	vf[1] = 0.75;
 	vf[2] = 0.0;
-	carvesolid2d_rect(win, 0x000040, vc, vr, vf);
+	actoroutput_panel3d(win, 0x400000, vc, vf, vr);
 
 	vc[0] = -vc[0];
-	carvesolid2d_rect(win, 0x400000, vc, vr, vf);
+	actoroutput_panel3d(win, 0x000040, vc, vf, vr);
 
 	vc[0] = 0.0;
-	vc[1] = 1.0-0.1;
+	vc[1] = 1.0-0.05;
 	vr[0] = 0.75;
-	vf[1] = 0.1;
-	carvesolid2d_rect(win, 0x004040, vc, vr, vf);
+	vf[1] = 0.05;
+	actoroutput_panel3d(win, 0x404000, vc, vr, vf);
 
 	vc[1] = -vc[1];
-	carvesolid2d_rect(win, 0x404000, vc, vr, vf);
+	actoroutput_panel3d(win, 0x004040, vc, vr, vf);
 }
 int actoroutput_layout(struct arena* win, struct style* st)
 {
-	struct relation* rel;
+	struct relation* orel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
 	u64 fmt = win->fmt;
 
-	rel = win->irel0;
+	orel = win->orel0;
 	while(1)
 	{
-		if(rel == 0)break;
+		if(0 == orel)break;
 
-		if(rel->srctype == _act_)
+		if(_act_ == orel->dsttype)
 		{
-			act = (void*)(rel->srcchip);
-			sty = (void*)(rel->dstfoot);
-			pin = (void*)(rel->srcfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, pin);
-			//say("%x\n", rel);
+			act = (void*)(orel->dstchip);
+			pin = (void*)(orel->dstfoot);
+			sty = (void*)(orel->srcfoot);
 
+			//say("%x,%x,%x,%x\n", win, act, sty, pin);
 			act->onread(win, sty, act, pin);
 
 			if(_vbo_ == fmt)select_3d(win, sty);
 			else select_2d(win, sty);
 		}
 
-		rel = samedstnextsrc(rel);
+		orel = samesrcnextdst(orel);
 	}
 
 	if(_vbo_ == fmt)actoroutput_layout_vbo(win, st);
@@ -402,13 +419,13 @@ int playwith3d_pick(struct arena* win, int x, int y)
 	{
 		sty = 0;
 		if(rel == 0)break;
-		sty = (void*)(rel->dstfoot);
+		sty = (void*)(rel->srcfoot);
 
 		ret = ray_obb(ray, sty, out);
 		say("rel=%llx, ret=%d\n", rel, ret);
 		if(ret > 0)break;
 
-		rel = samedstprevsrc(rel);
+		rel = samesrcprevdst(rel);
 	}
 	if(rel)relation_choose(win, rel);
 	return 0;
@@ -416,8 +433,7 @@ int playwith3d_pick(struct arena* win, int x, int y)
 int actorinput_layout(struct arena* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
-	struct relation* rel;
-	struct relation* tmp;
+	struct relation* orel;
 	struct style* sty;
 	int ax, ay, aaa, bbb, sign;
 	int x = (ev->why)&0xffff;
@@ -428,20 +444,13 @@ int actorinput_layout(struct arena* win, struct event* ev)
 	if(_vbo_ == win->fmt)sign = 1;
 	else sign = -1;
 
-	rel = win->irel0;
-	if(rel == 0)return 1;
-	while(1)
-	{
-		tmp = samedstnextsrc(rel);
-		if(0 == tmp)break;
+	orel = win->oreln;
+	if(0 == orel)return 1;
 
-		rel = tmp;
-	}
-	sty = (void*)(rel->dstfoot);
-
+	sty = (void*)(orel->srcfoot);
 	if(_char_ == ev->what)
 	{
-		if(8 == ev->why)relationdelete(rel);
+		if(8 == ev->why)relationdelete(orel);
 		return 0;
 	}
 	if(_kbd_ == ev->what)

@@ -558,19 +558,19 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 int actorinput_camera(struct arena* win, struct event* ev)
 {
 	struct style* sty = 0;
-	struct relation* rel = 0;
+	struct relation* orel = 0;
 
 	//find the chosen actor
-	rel = win->ireln;
+	orel = win->oreln;
 	while(1)
 	{
-		if(0 == rel)break;
-		if(_act_ == rel->srctype)
+		if(0 == orel)break;
+		if(_act_ == orel->dsttype)
 		{
-			sty = (void*)(rel->dstfoot);
+			sty = (void*)(orel->srcfoot);
 			break;
 		}
-		rel = samedstprevsrc(rel);
+		orel = samesrcprevdst(orel);
 	}
 
 	//move it
@@ -621,10 +621,10 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	tc[2] = -0.5;
 	tr[0] = 0.125;
 	tf[1] = 0.125;
-	carvesolid2d_circle(win, 0xff0000, tc, tr, tf);
+	carvesolid2d_circle(win, 0x800000, tc, tr, tf);
 
 	tc[0] = -tc[0];
-	carvesolid2d_circle(win, 0x0000ff, tc, tr, tf);
+	carvesolid2d_circle(win, 0x000080, tc, tr, tf);
 /*
 	j = win->menudata;
 	if(j < 0)goto skip;
@@ -680,29 +680,29 @@ skip:
 }
 int actoroutput_posture(struct arena* win, struct style* st)
 {
-	struct relation* rel;
+	struct relation* orel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
 
 	//origin world
-	rel = win->irel0;
+	orel = win->orel0;
 	while(1)
 	{
-		if(rel == 0)break;
+		if(orel == 0)break;
 
-		if(rel->srctype == _act_)
+		if(orel->dsttype == _act_)
 		{
-			act = (void*)(rel->srcchip);
-			sty = (void*)(rel->dstfoot);
-			pin = (void*)(rel->srcfoot);
+			act = (void*)(orel->dstchip);
+			pin = (void*)(orel->dstfoot);
 			//say("%x,%x,%x,%x\n", win, act, sty, pin);
 			//say("%x\n", rel);
 
+			sty = (void*)(orel->srcfoot);
 			act->onread(win, sty, act, pin);
 		}
 
-		rel = samedstnextsrc(rel);
+		orel = samesrcnextdst(orel);
 	}
 
 	//chosen actor

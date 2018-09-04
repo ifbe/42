@@ -90,7 +90,7 @@ int arenaactor(struct arena* win, struct actor* act)
 
 	actorcreate(0, act);
 	actorstart(win, sty, act, pin);
-	relationcreate(win, sty, _win_, act, pin, _act_);
+	relationcreate(act, pin, _act_, win, sty, _win_);
 	return 0;
 }
 int arenalogin(struct arena* win)
@@ -1082,13 +1082,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 16)
 		{
 			y1 = y1-8;
-			p = &arena[x1 + (y1*8)];
-			if(0 == p->type)return;
-
-			q = &actor[x0 + (y0*8)];
-			if(0 == q->type)return;
-
-			arenaactor(p, q);
+			say("actor@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 		else if(y1 < 24)
 		{
@@ -1112,8 +1106,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			q = &actor[x1 + (y1*8)];
 			if(0 == q->type)return;
 
-			actorcreate(0, q);
-			relationcreate(q, 0, _act_, p, 0, _win_);
+			arenaactor(p, q);
 		}
 		else if(y1 < 16)
 		{

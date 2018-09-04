@@ -322,8 +322,8 @@ static void the2048_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int j;
-	if(0 == act->len)new2048((act->buf));
+	void* buf = act->buf;
+	new2048(buf);
 }
 static void the2048_delete(struct actor* act, u8* buf)
 {
@@ -332,28 +332,14 @@ static void the2048_delete(struct actor* act, u8* buf)
 }
 static void the2048_create(struct actor* act, u8* buf)
 {
+	int j;
 	u8* p;
-	int j,k;
 	if(0 == act)return;
-	act->buf = ((void*)act) + 0x100;
-	act->len = 0;
 
-	if(0 == buf)return;
-	p = act->buf;
-	k = 0;
-	for(j=0;j<16;j++)p[j] = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if((buf[j]>=0x30)&&(buf[j]<=0x39))
-		{
-			//say("%c", buf[j]);
-			p[k] = buf[j]-0x30;
-			k++;
-		}
-		if(k >= 16)break;
-	}
-	say("\n");
-	act->len = 16;
+	p = (u8*)act + 0x100;
+	for(j=0;j<0x100;j++)p[j] = 0;
+	act->buf = p;
+	act->len = 0;
 }
 static void the2048_list(u8* buf)
 {
