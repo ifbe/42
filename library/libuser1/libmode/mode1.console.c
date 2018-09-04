@@ -63,6 +63,11 @@ void actoroutput_console_vbo(struct arena* win, struct style* sty)
 		sty->vf[0] = 0.0;
 		sty->vf[1] = 1.0;
 		sty->vf[2] = 0.0;
+		if(win->vkbdtype)
+		{
+			sty->vc[1] = 0.25;
+			sty->vf[1] = 0.75;
+		}
 	}
 	vc = sty->vc;
 	vr = sty->vr;
@@ -70,7 +75,7 @@ void actoroutput_console_vbo(struct arena* win, struct style* sty)
 
 	tc[0] = vc[0];
 	tc[1] = vc[1];
-	tc[2] = -0.7;
+	tc[2] = -0.5;
 	tr[0] = vr[0]*0.99;
 	tr[1] = vr[1]*0.99;
 	tr[2] = vr[2]*0.99;
@@ -79,6 +84,7 @@ void actoroutput_console_vbo(struct arena* win, struct style* sty)
 	tf[2] = vf[2]*0.99;
 	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
 
+	tc[2] = -0.8;
 	obuf = getstdout();
 	ocur = getcurout();
 	carvetext2d_reverse(win, 0xffffff, tc, tr, tf, obuf, ocur);

@@ -260,4 +260,47 @@ void carvetext2d_reverse(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
+	int j,k;
+	float f;
+	vec3 tc;
+	vec3 tr;
+	vec3 tf;
+	if(0 == buf)return;
+	if(0 == len)return;
+
+	f = 16.0 / (float)(win->fheight);
+	tf[0] = vf[0] * f;
+	tf[1] = vf[1] * f;
+	tf[2] = vf[2] * f;
+
+	tc[0] = vc[0] - vr[0] - vf[0] + tf[0];
+	tc[1] = vc[1] - vr[1] - vf[1] + tf[1];
+	tc[2] = vc[2] - vr[2] - vf[2] + tf[2];
+
+	k = len;
+	for(j=len-1;j>=0;j--)
+	{
+		if(tc[1] >= 1.0)break;
+
+		f = 32.0 / (float)(win->fwidth);
+		tr[0] = vr[0] * f;
+		tr[1] = vr[1] * f;
+		tr[2] = vr[2] * f;
+
+		if(0 == j)
+		{
+			carve2d_string(win, rgb, tc, tr, tf, buf, k);
+			break;
+		}
+
+		if('\n' == buf[j])
+		{
+			carve2d_string(win, rgb, tc, tr, tf, buf+j+1, k-j-1);
+			tc[0] += 2*tf[0];
+			tc[1] += 2*tf[1];
+			tc[2] += 2*tf[2];
+
+			k = j;
+		}
+	}
 }
