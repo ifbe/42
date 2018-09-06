@@ -568,20 +568,18 @@ int actorinput_camera(struct arena* win, struct event* ev)
 		if(_act_ == orel->dsttype)
 		{
 			sty = (void*)(orel->srcfoot);
+			win->target.vc[0] = sty->vc[0];
+			win->target.vc[1] = sty->vc[1];
+			win->target.vc[2] = sty->vc[2];
 			break;
 		}
 		orel = samesrcprevdst(orel);
 	}
 
 	//move it
+	actorinput_cameraevent(win, ev);
 	if(sty)
 	{
-		win->target.vc[0] = sty->vc[0];
-		win->target.vc[1] = sty->vc[1];
-		win->target.vc[2] = sty->vc[2];
-
-		actorinput_cameraevent(win, ev);
-
 		sty->vc[0] = win->target.vc[0];
 		sty->vc[1] = win->target.vc[1];
 		sty->vc[2] = win->target.vc[2];
@@ -601,7 +599,9 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	float* vf = win->target.vf;
 	float* vu = win->target.vu;
 	carveaxis(win);
+	carveline_prism4(win, 0xff00ff, vc, vr, vf, vu);
 
+	//rpg.hp.bg
 	tc[0] = -0.75;
 	tc[1] = 1.0-1.0/16;
 	tc[2] = 0.0;
@@ -613,9 +613,11 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	tf[2] = 0.0;
 	carvesolid2d_rect(win, 0xff0000, tc, tr, tf);
 
+	//rpg.mp.bg
 	tc[0] = -tc[0];
 	carvesolid2d_rect(win, 0x0000ff, tc, tr, tf);
 
+	//rpg.hp.fg
 	tc[0] = 0.125-1.0;
 	tc[1] = 1.0-0.125;
 	tc[2] = -0.5;
@@ -623,66 +625,42 @@ void actoroutput_posture_vbo(struct arena* win, struct style* sty)
 	tf[1] = 0.125;
 	carvesolid2d_circle(win, 0x800000, tc, tr, tf);
 
+	//rpg.mp.fg
 	tc[0] = -tc[0];
 	carvesolid2d_circle(win, 0x000080, tc, tr, tf);
-/*
-	j = win->menudata;
-	if(j < 0)goto skip;
-	if(j >= 64)goto skip;
-	if(0 == actor[j].type)goto skip;
-	actor[j].onread(win, &win->target, &actor[j], 0);
-
-skip:
-	tc[0] = vc[0] + vu[0];
-	tc[1] = vc[1] + vu[1];
-	tc[2] = vc[2] + vu[2];
-	carveline_prism4(win, 0x00ff00, tc, vr, vf, vu);
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
-	tf[0] = vf[0]/2;
-	tf[1] = vf[1]/2;
-	tf[2] = vf[2]/2;
-	carvestring_center(win, 0x00ff00, tc, tr, tf,
-		(u8*)&actor[j].name, 8);
-*/
 }
 void actoroutput_posture_pixel(struct arena* win, struct style* sty)
 {
-/*
-	int j;
-	int cx = win->target.vc[0];
-	int cy = win->target.vc[1];
-	int cz = win->target.vc[2];
-	int rx = win->target.vr[0];
-	int ry = win->target.vr[1];
-	int rz = win->target.vr[2];
-	int fx = win->target.vf[0];
-	int fy = win->target.vf[1];
-	int fz = win->target.vf[2];
-	int ux = win->target.vu[0];
-	int uy = win->target.vu[1];
-	int uz = win->target.vu[2];
+	int x0,y0,x1,y1;
+	float* vc = win->target.vc;
+	float* vr = win->target.vr;
+	float* vf = win->target.vf;
+	float* vu = win->target.vu;
+	drawaxis(win);
 
-	j = win->menudata;
-	if(j < 0)goto skip;
-	if(j >= 64)goto skip;
-	if(0 == actor[j].type)goto skip;
-	actor[j].onread(win, &win->target, &actor[j], 0);
+	x0 = vc[0] - vr[0];
+	y0 = vc[1] - vf[1];
+	x1 = vc[0] + vr[0];
+	y1 = vc[1] + vf[1];
+	drawline_rect(win, 0xff00ff, x0, y0, x1, y1);
 
-skip:
-	drawline(win, 0x00ff00, cx-rx-fx, cy-ry-fy, cx-rx+fx, cy-ry+fy);
-	drawline(win, 0x00ff00, cx+rx-fx, cy+ry-fy, cx+rx+fx, cy+ry+fy);
-	drawline(win, 0x00ff00, cx-rx-fx, cy-ry-fy, cx+rx-fx, cy+ry-fy);
-	drawline(win, 0x00ff00, cx-rx+fx, cy-ry+fy, cx+rx+fx, cy+ry+fy);
-	drawstring_fit(win, 0x00ff00, cx-16, cy-32, cx+16, cy+32, (u8*)&actor[j].name, 8);
-*/
+	//rpg.hp.bg
+	drawsolid_rect(win, 0xff0000, 0, 0, win->width/4, win->height/16);
+
+	//rpg.mp.bg
+	drawsolid_rect(win, 0x0000ff, win->width*3/4, 0, win->width, win->height/16);
+
+	//rpg.hp.fg
+	drawsolid_circle(win, 0x800000, win->height/16, win->height/16, win->height/16);
+
+	//rpg.mp.fg
+	drawsolid_circle(win, 0x000080, (win->width)-(win->height/16), win->height/16, win->height/16);
 }
 int actoroutput_posture(struct arena* win, struct style* st)
 {
 	struct relation* orel;
-	struct actor* act;
 	struct style* sty;
+	struct actor* act;
 	struct pinid* pin;
 
 	//origin world
@@ -691,7 +669,7 @@ int actoroutput_posture(struct arena* win, struct style* st)
 	{
 		if(orel == 0)break;
 
-		if(orel->dsttype == _act_)
+		if(_act_ == orel->dsttype)
 		{
 			act = (void*)(orel->dstchip);
 			pin = (void*)(orel->dstfoot);

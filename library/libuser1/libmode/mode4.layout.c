@@ -55,6 +55,7 @@ void actoroutput_layout_vbo(struct arena* win, struct style* st)
 	vec3 vc, vr, vf;
 	carveaxis(win);
 
+	//right
 	vc[0] = 1.0-0.05;
 	vc[1] = 0.0;
 	vc[2] = -0.8;
@@ -66,17 +67,38 @@ void actoroutput_layout_vbo(struct arena* win, struct style* st)
 	vf[2] = 0.0;
 	actoroutput_panel3d(win, 0x400000, vc, vf, vr);
 
+	//left
 	vc[0] = -vc[0];
 	actoroutput_panel3d(win, 0x000040, vc, vf, vr);
 
+	//upper
 	vc[0] = 0.0;
 	vc[1] = 1.0-0.05;
 	vr[0] = 0.75;
 	vf[1] = 0.05;
 	actoroutput_panel3d(win, 0x404000, vc, vr, vf);
 
+	//bottom
 	vc[1] = -vc[1];
 	actoroutput_panel3d(win, 0x004040, vc, vr, vf);
+}
+void actoroutput_layout_pixel(struct arena* win, struct style* st)
+{
+	int w = win->width;
+	int h = win->height;
+	drawaxis(win);
+
+	//left
+	drawsolid_rect(win, 0x000040, 0, h/8, w/20, h*7/8);
+
+	//right
+	drawsolid_rect(win, 0x400000, w*19/20, h/8, w, h*7/8);
+
+	//upper
+	drawsolid_rect(win, 0x404000, w/8, 0, w*7/8, h/20);
+
+	//bottom
+	drawsolid_rect(win, 0x004040, w/8, h*19/20, w*7/8, h);
 }
 int actoroutput_layout(struct arena* win, struct style* st)
 {
@@ -108,6 +130,7 @@ int actoroutput_layout(struct arena* win, struct style* st)
 	}
 
 	if(_vbo_ == fmt)actoroutput_layout_vbo(win, st);
+	else actoroutput_layout_pixel(win, st);
 	return 0;
 }
 

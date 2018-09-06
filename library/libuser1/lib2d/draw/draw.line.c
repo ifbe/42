@@ -77,6 +77,13 @@ void drawbezier(struct arena* win, u32 rgb,
 		buf[y*stride + x] = rgb;
 	}
 }
+void drawaxis(struct arena* win)
+{
+	int w = win->width;
+	int h = win->height;
+	drawline(win, 0xffffff, w/2, 0, w/2, h);
+	drawline(win, 0xffffff, 0, h/2, w, h/2);
+}
 
 
 
