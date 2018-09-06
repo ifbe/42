@@ -1039,150 +1039,121 @@ void actoroutput_overview(struct arena* win, struct style* sty)
 void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 {
 	int j;
-	struct object* o;
-	struct element* e;
-	struct arena* p;
-	struct actor* q;
+	struct object* obj_s;
+	struct object* obj_d;
+	struct element* ele_s;
+	struct element* ele_d;
+	struct arena* win_s;
+	struct arena* win_d;
+	struct actor* act_s;
+	struct actor* act_d;
+	say("(%d,%d)->(%d,%d)\n", x0, y0, x1, y1);
 
-	if((x0==x1)&&(y0==y1))
+	if(y0 < 8)
 	{
-		win->menudata = x1 + (y1*8);
-		if(y1<8)
+		act_s = &actor[x0+(y0*8)];
+
+		if((x0==x1)&&(y0==y1))
 		{
-			q = &actor[win->menudata];
-			if(0 == q->type)return;
-			actorcreate(0, q);
+			if(0 == act_s->type)return;
+			actorcreate(0, act_s);
 		}
-		else if(y1<16)
+		else if(y1 < 8)
+		{
+			act_d = &actor[x1+(y1*8)];
+			if((act_d->type) && (act_s->type))relationcreate(act_d, 0, _act_, act_s, 0, _act_);
+			else if(0 == act_s->type)actorcreate(act_d->name, 0);
+			else if(0 == act_d->type)actorcreate(act_s->name, 0);
+		}
+		else if(y1 < 16)
+		{
+		}
+		else if(y1 < 24)
+		{
+		}
+		else if(y1 < 32)
+		{
+		}
+	}
+	else if(y0 < 16)
+	{
+		win_s = &arena[x0 + (y0-8)*8];
+
+		if((x0==x1)&&(y0==y1))
 		{
 			y1 = y1-8;
 			say("@arena:%d\n", (y1*8)+x1);
 			//arenacreate(0,0);
 		}
-		else if(y1<24)
+		else if(y1 < 8)
 		{
-			y1 = y1-16;
-			say("@element:%d\n", (y1*8)+x1);
-		}
-		else if(y1<32)
-		{
-			y1 = y1-24;
-			say("@object:%d\n", (y1*8)+x1);
-		}
-		return;
-	}
+			act_d = &actor[x1 + (y1*8)];
+			if(0 == act_d->type)return;
 
-	if(y0 < 8)
-	{
-		if(y1 < 8)
-		{
-			say("actor@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
-			actorcreate(actor[x0+(y0*8)].name, 0);
+			arenaactor(win_s, act_d);
 		}
 		else if(y1 < 16)
 		{
-			y1 = y1-8;
-			say("actor@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+			win_d = &arena[x1 + (y1-8)*8];
+			if((win_d->type) && (win_s->type))relationcreate(win_d, 0, _win_, win_s, 0, _win_);
+			else if(win_d->type)win_d = arenacreate(_coop_, 0);
+			else if(win_s->type)win_s = arenacreate(_coop_, 0);
 		}
 		else if(y1 < 24)
 		{
-			y1 = y1-16;
-			say("actor@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 		else if(y1 < 32)
 		{
-			y1 = y1-24;
-			say("actor@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
-		}
-	}
-	else if(y0 < 16)
-	{
-		y0 = y0-8;
-		if(y1 < 8)
-		{
-			p = &arena[x0 + (y0*8)];
-			if(0 == p->type)return;
-
-			q = &actor[x1 + (y1*8)];
-			if(0 == q->type)return;
-
-			arenaactor(p, q);
-		}
-		else if(y1 < 16)
-		{
-			y1 = y1-8;
-			say("arena@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
-
-			p = arenacreate(_coop_, 0);
-			if(p)
-			{
-				relationcreate(p, 0, _win_, win, 0, _win_);
-			}
-		}
-		else if(y1 < 24)
-		{
-			y1 = y1-16;
-			say("arena@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
-		}
-		else if(y1 < 32)
-		{
-			y1 = y1-24;
-			say("arena@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 	}
 	else if(y0 < 24)
 	{
-		y0 = y0-16;
-		if(y1 < 8)
+		ele_s = &ele[x0 + (y0-16)*8];
+		if((x0==x1)&&(y0==y1))
 		{
-			say("element@%d -> actor@%d\n", x0+(y0*8), x1+(y1*8));
+		}
+		else if(y1 < 8)
+		{
+			act_d = &actor[x1 + (y1*8)];
+			relationcreate(act_d, 0, _act_, ele_s, 0, _art_);
 		}
 		else if(y1 < 16)
 		{
-			y1 = y1-8;
-			say("element@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
+			win_d = &arena[x1 + (y1-8)*8];
+			relationcreate(win_d, 0, _win_, ele_s, 0, _art_);
 		}
 		else if(y1 < 24)
 		{
-			y1 = y1-16;
-			say("element@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 		else if(y1 < 32)
 		{
-			y1 = y1-24;
-			say("element@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 	}
 	else if(y0 < 32)
 	{
-		y0 = y0-24;
-		if(y1 < 8)
+		j = x0 + (y0-24)*8;
+		for(;j<0x1000;j+=64)
 		{
-			j = x0+(y0*8);
-			for(;j<0x1000;j+=64)
-			{
-				o = &obj[x0+(y0*8)];
-				if(o->type)break;
-			}
+			obj_s = &obj[x0+(y0*8)];
+			if(obj_s->type)break;
+		}
 
-			say("object@%d -> actor@%d\n", j, x1+(y1*8));
-			q = &actor[x1+(y1*8)];
-			relationcreate(q, 0, _act_, o, 0, _fd_);
+		if((x0==x1)&&(y0==y1))
+		{
+		}
+		else if(y1 < 8)
+		{
+			act_d = &actor[x1+(y1*8)];
+			relationcreate(act_d, 0, _act_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 16)
 		{
-			y1 = y1-8;
-			say("object@%d -> arena@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 		else if(y1 < 24)
 		{
-			y1 = y1-16;
-			say("object@%d -> element@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 		else if(y1 < 32)
 		{
-			y1 = y1-24;
-			say("object@%d -> object@%d\n", x0+(y0*8), x1+(y1*8));
 		}
 	}
 }
