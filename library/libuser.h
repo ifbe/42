@@ -692,6 +692,8 @@ void gentui_decstr(struct arena* win, u32 rgb, int cx, int cy, int data);
 
 //----------------------------------2d------------------------------------
 void drawaxis(          struct arena* win);
+void select_2d(         struct arena* win, struct style* sty);
+
 void drawline(          struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
 void drawline_arrow(    struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
 void drawbezier(        struct arena* win, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
@@ -769,6 +771,10 @@ void carvetext2d_reverse(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec
 
 
 //-----------------------------3d--------------------------
+void carveaxis(              struct arena* win);
+void carvecamera(            struct arena* win, struct arena* w);
+void select_3d(              struct arena* win, struct style* sty);
+
 void carvepoint(             struct arena* win, u32 rgb, vec3 vc);
 void carvepoint_bezier(      struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carvepoint_triangle(    struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
@@ -806,9 +812,6 @@ void carvesolid_cylinder(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carvesolid_dodecahedron(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_icosahedron( struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_sphere(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carveaxis(              struct arena* win);
-void carvecamera(            struct arena* win, struct arena* w);
 
 void carveascii(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
 void carvedecimal(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);

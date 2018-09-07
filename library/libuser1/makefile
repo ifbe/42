@@ -114,9 +114,11 @@ libmode/mode0.testland.c \
 libmode/mode1.console.c \
 libmode/mode2.overview.c \
 libmode/mode3.detail.c \
-libmode/mode4.layout.c \
-libmode/mode5.camera.c \
-libmode/mode6.deliver.c \
+libmode/mode4.editor.c \
+libmode/mode4.editor.camera.c \
+libmode/mode4.editor.target.c \
+libmode/mode5.player.c \
+libmode/mode6.unknown.c \
 libmode/mode7.oneonone.c \
 libmode/mode.c \
 libmenu/menu.list.c \

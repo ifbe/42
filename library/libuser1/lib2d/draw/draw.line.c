@@ -77,13 +77,6 @@ void drawbezier(struct arena* win, u32 rgb,
 		buf[y*stride + x] = rgb;
 	}
 }
-void drawaxis(struct arena* win)
-{
-	int w = win->width;
-	int h = win->height;
-	drawline(win, 0xffffff, w/2, 0, w/2, h);
-	drawline(win, 0xffffff, 0, h/2, w, h/2);
-}
 
 
 
@@ -194,4 +187,24 @@ void drawline_oval(struct arena* win, u32 rgb,
 void drawline_sector(struct arena* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end)
 {
+}
+
+
+
+
+void drawaxis(struct arena* win)
+{
+	int w = win->width;
+	int h = win->height;
+	drawline(win, 0xffffff, w/2, 0, w/2, h);
+	drawline(win, 0xffffff, 0, h/2, w, h/2);
+}
+void select_2d(struct arena* win, struct style* sty)
+{
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
+
+	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }

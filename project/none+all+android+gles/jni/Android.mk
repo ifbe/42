@@ -321,9 +321,11 @@ library/libuser1/libmode/mode0.testland.c \
 library/libuser1/libmode/mode1.console.c \
 library/libuser1/libmode/mode2.overview.c \
 library/libuser1/libmode/mode3.detail.c \
-library/libuser1/libmode/mode4.layout.c \
-library/libuser1/libmode/mode5.camera.c \
-library/libuser1/libmode/mode6.deliver.c \
+library/libuser1/libmode/mode4.editor.c \
+library/libuser1/libmode/mode4.editor.camera.c \
+library/libuser1/libmode/mode4.editor.target.c \
+library/libuser1/libmode/mode5.player.c \
+library/libuser1/libmode/mode6.unknown.c \
 library/libuser1/libmode/mode7.oneonone.c \
 library/libuser1/libmode/mode.c \
 library/libuser1/libmenu/menu.list.c \

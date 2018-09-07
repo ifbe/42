@@ -6,137 +6,6 @@ int ray_obb(vec3 ray[], struct style* sty, vec3 out[]);
 
 
 
-void select_2d(struct arena* win, struct style* sty)
-{
-	int cx = sty->vc[0];
-	int cy = sty->vc[1];
-	int ww = sty->vr[0];
-	int hh = sty->vf[1];
-
-	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
-}
-void select_3d(struct arena* win, struct style* sty)
-{
-	vec3 tc;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-
-	tc[0] = vc[0] + vu[0];
-	tc[1] = vc[1] + vu[1];
-	tc[2] = vc[2] + vu[2];
-	carveline_prism4(win, 0xff0000, tc, vr, vf, vu);
-}
-
-
-
-
-void actoroutput_panel3d(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf)
-{
-	float j;
-	vec3 ta;
-	vec3 tb;
-	carvesolid2d_rect(win, rgb, vc, vr, vf);
-
-	for(j=-0.75;j<1.0;j+=0.25)
-	{
-		ta[0] = vc[0] + j*vr[0] - 0.8*vf[0];
-		ta[1] = vc[1] + j*vr[1] - 0.8*vf[1];
-		ta[2] = vc[2] + j*vr[2] - 0.8*vf[2];
-		tb[0] = vc[0] + j*vr[0] + 0.8*vf[0];
-		tb[1] = vc[1] + j*vr[1] + 0.8*vf[1];
-		tb[2] = vc[2] + j*vr[2] + 0.8*vf[2];
-		carveline2d(win, 0xffffff, ta, tb);
-	}
-}
-void actoroutput_layout_vbo(struct arena* win, struct style* st)
-{
-	vec3 vc, vr, vf;
-	carveaxis(win);
-
-	//right
-	vc[0] = 1.0-0.05;
-	vc[1] = 0.0;
-	vc[2] = -0.8;
-	vr[0] = 0.05;
-	vr[1] = 0.0;
-	vr[2] = 0.0;
-	vf[0] = 0.0;
-	vf[1] = 0.75;
-	vf[2] = 0.0;
-	actoroutput_panel3d(win, 0x400000, vc, vf, vr);
-
-	//left
-	vc[0] = -vc[0];
-	actoroutput_panel3d(win, 0x000040, vc, vf, vr);
-
-	//upper
-	vc[0] = 0.0;
-	vc[1] = 1.0-0.05;
-	vr[0] = 0.75;
-	vf[1] = 0.05;
-	actoroutput_panel3d(win, 0x404000, vc, vr, vf);
-
-	//bottom
-	vc[1] = -vc[1];
-	actoroutput_panel3d(win, 0x004040, vc, vr, vf);
-}
-void actoroutput_layout_pixel(struct arena* win, struct style* st)
-{
-	int w = win->width;
-	int h = win->height;
-	drawaxis(win);
-
-	//left
-	drawsolid_rect(win, 0x000040, 0, h/8, w/20, h*7/8);
-
-	//right
-	drawsolid_rect(win, 0x400000, w*19/20, h/8, w, h*7/8);
-
-	//upper
-	drawsolid_rect(win, 0x404000, w/8, 0, w*7/8, h/20);
-
-	//bottom
-	drawsolid_rect(win, 0x004040, w/8, h*19/20, w*7/8, h);
-}
-int actoroutput_layout(struct arena* win, struct style* st)
-{
-	struct relation* orel;
-	struct actor* act;
-	struct style* sty;
-	struct pinid* pin;
-	u64 fmt = win->fmt;
-
-	orel = win->orel0;
-	while(1)
-	{
-		if(0 == orel)break;
-
-		if(_act_ == orel->dsttype)
-		{
-			act = (void*)(orel->dstchip);
-			pin = (void*)(orel->dstfoot);
-			sty = (void*)(orel->srcfoot);
-
-			//say("%x,%x,%x,%x\n", win, act, sty, pin);
-			act->onread(win, sty, act, pin);
-
-			if(_vbo_ == fmt)select_3d(win, sty);
-			else select_2d(win, sty);
-		}
-
-		orel = samesrcnextdst(orel);
-	}
-
-	if(_vbo_ == fmt)actoroutput_layout_vbo(win, st);
-	else actoroutput_layout_pixel(win, st);
-	return 0;
-}
-
-
-
-
 int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 {
 	float c,s;
@@ -453,7 +322,7 @@ int playwith3d_pick(struct arena* win, int x, int y)
 	if(rel)relation_choose(win, rel);
 	return 0;
 }
-int actorinput_layout(struct arena* win, struct event* ev)
+int actorinput_editor_target(struct arena* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
 	struct relation* orel;

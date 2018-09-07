@@ -555,7 +555,7 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int actorinput_camera(struct arena* win, struct event* ev)
+int actorinput_editor_camera(struct arena* win, struct event* ev)
 {
 	struct style* sty = 0;
 	struct relation* orel = 0;
@@ -584,107 +584,5 @@ int actorinput_camera(struct arena* win, struct event* ev)
 		sty->vc[1] = win->target.vc[1];
 		sty->vc[2] = win->target.vc[2];
 	}
-	return 0;
-}
-
-
-
-
-void actoroutput_posture_vbo(struct arena* win, struct style* sty)
-{
-	int j;
-	vec3 tc, tr, tf;
-	float* vc = win->target.vc;
-	float* vr = win->target.vr;
-	float* vf = win->target.vf;
-	float* vu = win->target.vu;
-	carveaxis(win);
-	carveline_prism4(win, 0xff00ff, vc, vr, vf, vu);
-
-	//rpg.hp.bg
-	tc[0] = -0.75;
-	tc[1] = 1.0-1.0/16;
-	tc[2] = 0.0;
-	tr[0] = 0.25;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 1.0/16;
-	tf[2] = 0.0;
-	carvesolid2d_rect(win, 0xff0000, tc, tr, tf);
-
-	//rpg.mp.bg
-	tc[0] = -tc[0];
-	carvesolid2d_rect(win, 0x0000ff, tc, tr, tf);
-
-	//rpg.hp.fg
-	tc[0] = 0.125-1.0;
-	tc[1] = 1.0-0.125;
-	tc[2] = -0.5;
-	tr[0] = 0.125;
-	tf[1] = 0.125;
-	carvesolid2d_circle(win, 0x800000, tc, tr, tf);
-
-	//rpg.mp.fg
-	tc[0] = -tc[0];
-	carvesolid2d_circle(win, 0x000080, tc, tr, tf);
-}
-void actoroutput_posture_pixel(struct arena* win, struct style* sty)
-{
-	int x0,y0,x1,y1;
-	float* vc = win->target.vc;
-	float* vr = win->target.vr;
-	float* vf = win->target.vf;
-	float* vu = win->target.vu;
-	drawaxis(win);
-
-	x0 = vc[0] - vr[0];
-	y0 = vc[1] - vf[1];
-	x1 = vc[0] + vr[0];
-	y1 = vc[1] + vf[1];
-	drawline_rect(win, 0xff00ff, x0, y0, x1, y1);
-
-	//rpg.hp.bg
-	drawsolid_rect(win, 0xff0000, 0, 0, win->width/4, win->height/16);
-
-	//rpg.mp.bg
-	drawsolid_rect(win, 0x0000ff, win->width*3/4, 0, win->width, win->height/16);
-
-	//rpg.hp.fg
-	drawsolid_circle(win, 0x800000, win->height/16, win->height/16, win->height/16);
-
-	//rpg.mp.fg
-	drawsolid_circle(win, 0x000080, (win->width)-(win->height/16), win->height/16, win->height/16);
-}
-int actoroutput_posture(struct arena* win, struct style* st)
-{
-	struct relation* orel;
-	struct style* sty;
-	struct actor* act;
-	struct pinid* pin;
-
-	//origin world
-	orel = win->orel0;
-	while(1)
-	{
-		if(orel == 0)break;
-
-		if(_act_ == orel->dsttype)
-		{
-			act = (void*)(orel->dstchip);
-			pin = (void*)(orel->dstfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, pin);
-			//say("%x\n", rel);
-
-			sty = (void*)(orel->srcfoot);
-			act->onread(win, sty, act, pin);
-		}
-
-		orel = samesrcnextdst(orel);
-	}
-
-	//chosen actor
-	if(_vbo_ == win->fmt)actoroutput_posture_vbo(win, sty);
-	else actoroutput_posture_pixel(win, sty);
 	return 0;
 }
