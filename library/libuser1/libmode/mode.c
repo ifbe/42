@@ -26,7 +26,7 @@ int mode_read(struct arena* win, struct style* sty)
 	int ret = win->menutype;
 	if(0 != ret)return 0;
 
-	ret = win->modetype;
+	ret = (win->modetype) & 0xff;
 	if(0 == ret)actoroutput_void(win, 0);
 	else if(1 == ret)actoroutput_console(win, 0);
 	else if(2 == ret)actoroutput_overview(win, 0);
@@ -39,14 +39,9 @@ int mode_read(struct arena* win, struct style* sty)
 int mode_write(struct arena* win, struct event* ev)
 {
 	int ret = win->menutype;
-	if(_html_ == win->fmt)
-	{
-		say("html input\n");
-		return 0;
-	}
 	if(0 != ret)return 0;
 
-	ret = win->modetype;
+	ret = (win->modetype) & 0xff;
 	if(0 == ret)actorinput_void(win, ev);
 	else if(1 == ret)actorinput_console(win, ev);
 	else if(2 == ret)actorinput_overview(win, ev);
