@@ -303,6 +303,7 @@ library/libuser1/lib3d/carve/carve2d.trigon.c \
 library/libuser1/lib3d/carve/carve2d.other.c \
 library/libuser1/lib3d/intersect/intersect.obb.c \
 library/libuser1/lib3d/intersect/intersect.ray.c \
+library/libuser1/lib3d/intersect/intersect.rect.c \
 library/libuser1/lib3d/intersect/intersect.sphere.c \
 library/libuser1/lib3d/model/model.magnify.c \
 library/libuser1/lib3d/model/model.minify.c \

@@ -1,7 +1,8 @@
 #include "libuser.h"
 int relation_choose(void*, void*);
 int invmvp(vec3 v, struct arena* win);
-int ray_obb(vec3 ray[], struct style* sty, vec3 out[]);
+int rect_point(vec3 crf[], vec3 xyz, vec3 out[]);
+int obb_ray(struct style* obb, vec3 ray[], vec3 out[]);
 
 
 
@@ -286,6 +287,45 @@ int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 	}
 	return 0;
 }
+
+
+
+
+int playwith2d_pick(struct arena* win, int x, int y)
+{
+	int ret;
+	vec3 out;
+	vec3 xyz;
+	vec3 crf[3];
+	struct style* sty;
+	struct relation* rel;
+
+	xyz[0] = (float)x;
+	xyz[1] = (float)y;
+
+	rel = win->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		sty = (void*)(rel->srcfoot);
+		crf[0][0] = sty->vc[0];
+		crf[0][1] = sty->vc[1];
+		crf[0][2] = sty->vc[2];
+		crf[1][0] = sty->vr[0];
+		crf[1][1] = sty->vr[1];
+		crf[1][2] = sty->vr[2];
+		crf[2][0] = sty->vf[0];
+		crf[2][1] = sty->vf[1];
+		crf[2][2] = sty->vf[2];
+		ret = rect_point(crf, xyz, &out);
+		if(ret > 0)break;
+
+		rel = samesrcprevdst(rel);
+	}
+	if(rel)relation_choose(win, rel);
+	return 0;
+}
 int playwith3d_pick(struct arena* win, int x, int y)
 {
 	int ret;
@@ -306,14 +346,13 @@ int playwith3d_pick(struct arena* win, int x, int y)
 	ray[1][1] -= ray[0][1];
 	ray[1][2] -= ray[0][2];
 
-	rel = win->ireln;
+	rel = win->oreln;
 	while(1)
 	{
-		sty = 0;
-		if(rel == 0)break;
-		sty = (void*)(rel->srcfoot);
+		if(0 == rel)break;
 
-		ret = ray_obb(ray, sty, out);
+		sty = (void*)(rel->srcfoot);
+		ret = obb_ray(sty, ray, out);
 		say("rel=%llx, ret=%d\n", rel, ret);
 		if(ret > 0)break;
 
@@ -393,7 +432,8 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, x, y);
+		if(_vbo_ == win->fmt)playwith3d_pick(win, x, y);
+		else playwith2d_pick(win, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)

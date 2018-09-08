@@ -35,6 +35,7 @@ lib3d/carve/carve2d.trigon.c \
 lib3d/carve/carve2d.other.c \
 lib3d/intersect/intersect.obb.c \
 lib3d/intersect/intersect.ray.c \
+lib3d/intersect/intersect.rect.c \
 lib3d/intersect/intersect.sphere.c \
 lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \

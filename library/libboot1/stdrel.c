@@ -108,44 +108,42 @@ void relation_choose(struct item* item, struct relation* rel)
 	struct relation* next;
 	struct relation* tmp;
 
-	if(0 == rel->samedstprevsrc)prev = 0;
-	else prev = (void*)wirebuf + rel->samedstprevsrc;
-	if(0 == rel->samedstnextsrc)next = 0;
-	else next = (void*)wirebuf + rel->samedstnextsrc;
+	//no next: do nothing
+	if(0 == rel->samesrcnextdst)next = 0;
+	else next = (void*)wirebuf + rel->samesrcnextdst;
+	if(0 == next)return;
 
-	if((0 != prev)&&(0 != next))
+	//prev
+	if(0 == rel->samesrcprevdst)prev = 0;
+	else prev = (void*)wirebuf + rel->samesrcprevdst;
+	if(prev)
 	{
-		prev->samedstnextsrc = (void*)next - (void*)wirebuf;
-		next->samedstprevsrc = (void*)prev - (void*)wirebuf;
+		prev->samesrcnextdst = (void*)next - (void*)wirebuf;
+		next->samesrcprevdst = (void*)prev - (void*)wirebuf;
 
-		rel->samedstprevsrc = (void*)(item->ireln) - (void*)wirebuf;
-		rel->samedstnextsrc = 0;
+		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
+		rel->samesrcnextdst = 0;
 
-		tmp = item->ireln;
-		tmp->samedstnextsrc = (void*)rel - (void*)wirebuf;
+		tmp = item->oreln;
+		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
 
-		item->ireln = rel;
+		item->oreln = rel;
 		return;
 	}
-
-	//if((0 != prev)&&(0 == next))	//change nothing
-
-	if((0 == prev)&&(0 != next))
+	else
 	{
-		next->samedstprevsrc = 0;
+		next->samesrcprevdst = 0;
 
-		rel->samedstprevsrc = (void*)(item->ireln) - (void*)wirebuf;
-		rel->samedstnextsrc = 0;
+		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
+		rel->samesrcnextdst = 0;
 
-		tmp = item->ireln;
-		tmp->samedstnextsrc = (void*)rel - (void*)wirebuf;
+		tmp = item->oreln;
+		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
 
-		item->irel0 = next;
-		item->ireln = rel;
+		item->orel0 = next;
+		item->oreln = rel;
 		return;
 	}
-
-	//if((0 == prev)&&(0 == next))	//change nothing
 }
 void relation_recycle(struct relation* rel)
 {

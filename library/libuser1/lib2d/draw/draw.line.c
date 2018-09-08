@@ -201,10 +201,27 @@ void drawaxis(struct arena* win)
 }
 void select_2d(struct arena* win, struct style* sty)
 {
+	int lb[2];
+	int lu[2];
+	int rb[2];
+	int ru[2];
 	int cx = sty->vc[0];
 	int cy = sty->vc[1];
-	int ww = sty->vr[0];
-	int hh = sty->vf[1];
+	int rx = sty->vr[0];
+	int ry = sty->vr[1];
+	int fx = sty->vf[0];
+	int fy = sty->vf[1];
 
-	drawline_rect(win, 0xff00ff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
+	lb[0] = cx-rx-fx;
+	lb[1] = cy-ry-fy;
+	lu[0] = cx-rx+fx;
+	lu[1] = cy-ry+fy;
+	rb[0] = cx+rx-fx;
+	rb[1] = cy+ry-fy;
+	ru[0] = cx+rx+fx;
+	ru[1] = cy+ry+fy;
+	drawline(win, 0xff00ff, lb[0], lb[1], lu[0], lu[1]);
+	drawline(win, 0xff00ff, rb[0], rb[1], ru[0], ru[1]);
+	drawline(win, 0xff00ff, lb[0], lb[1], rb[0], rb[1]);
+	drawline(win, 0xff00ff, lu[0], lu[1], ru[0], ru[1]);
 }
