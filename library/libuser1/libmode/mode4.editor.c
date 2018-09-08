@@ -56,6 +56,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 	vc[1] = -vc[1];
 	actoroutput_panel3d(win, 0x004040, vc, vr, vf);
 
+	//selected
 	if((0 == win->modex)|(7 == win->modex))
 	{
 		vr[0] = 0.05;
@@ -87,21 +88,42 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 }
 void actoroutput_editor_pixel(struct arena* win, struct style* st)
 {
+	int x, y;
 	int w = win->width;
 	int h = win->height;
 	drawaxis(win);
 
 	//left
 	drawsolid_rect(win, 0x000040, 0, h/8, w/20, h*7/8);
+	for(y=1;y<8;y++)drawline(win, 0xffffff, 0, y*h/8, w/20, y*h/8);
 
 	//right
 	drawsolid_rect(win, 0x400000, w*19/20, h/8, w, h*7/8);
+	for(y=1;y<8;y++)drawline(win, 0xffffff, w*19/20, y*h/8, w, y*h/8);
 
 	//upper
 	drawsolid_rect(win, 0x404000, w/8, 0, w*7/8, h/20);
+	for(x=1;x<8;x++)drawline(win, 0xffffff, x*w/8, 0, x*w/8, h/20);
 
 	//bottom
 	drawsolid_rect(win, 0x004040, w/8, h*19/20, w*7/8, h);
+	for(x=1;x<8;x++)drawline(win, 0xffffff, x*w/8, h*19/20, x*w/8, h);
+
+	//selected
+	if((0 == win->modex)|(7 == win->modex))
+	{
+		if(0 == win->modex)x = 0;
+		else x = w*19/20;
+		y = (win->modey)*h/8;
+		drawsolid_rect(win, 0xffffff, x, y, x+(w/20), y+(h/8));
+	}
+	else if((0 == win->modey)|(7 == win->modey))
+	{
+		x = (win->modex)*w/8;
+		if(0 == win->modey)y = 0;
+		else y = h*19/20;
+		drawsolid_rect(win, 0xffffff, x, y, x+(w/8), y+(h/20));
+	}
 }
 
 
