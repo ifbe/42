@@ -535,25 +535,29 @@ struct arena
 	float fardepth;
 	float farstride;
 
-	//[c0,cf]: layer0
-	int backx;
-	int backy;
-	int backdata;
-	int backtype;
+	//[c0,cf]: layer0: background
+	u64 backtype;
+	u64 backdata;
 
-	//[d0,df]: layer1
+	//[d0,df]: layer1: foreground
+	//u64 foretype;
+	//u64 foredata;
 	int modex;
 	int modey;
 	int modedata;
 	int modetype;
 
-	//[e0,ef]: layer2
+	//[e0,ef]: layer2: menu
+	//u64 menutype;
+	//u64 menudata;
 	int menux;
 	int menuy;
 	int menudata;
 	int menutype;
 
-	//[f0,ff]: layer3
+	//[f0,ff]: layer3: vkbd
+	//u64 vkbdtype;
+	//u64 vkbddata;
 	int vkbdx;
 	int vkbdy;
 	int vkbddata;

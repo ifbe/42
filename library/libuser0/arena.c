@@ -303,8 +303,10 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
 
-		win->backdata = 0;
 		win->backtype = 0;
+		win->backdata = 0;
+		//win->foretype = 0;
+		//win->foredata = 0;
 		win->modedata = 0;
 		win->modetype = 2;	//mode2: overview
 		win->menudata = 0;
@@ -319,8 +321,10 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
 
-		win->backdata = 0;
 		win->backtype = 0;
+		win->backdata = 0;
+		//win->foretype = 0;
+		//win->foredata = 0;
 		win->modedata = 0;
 		win->modetype = 5;	//mode2: overview
 		win->menudata = 0;
