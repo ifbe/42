@@ -506,38 +506,34 @@ struct arena
 	u64 name;
 
 	//[60,7f]
+	u64 haha0;
+	u64 haha1;
+	u64 haha2;
+	u64 haha3;
+
+	//[80,8f]: win geom
 	int width;
 	int height;
 	int depth;
 	int stride;
+
+	//[90,9f]: fb geom
 	int fwidth;
 	int fheight;
 	int fdepth;
 	int fstride;
 
-	//[80,ff]
-	int flag00;
-	int flag01;
-	int flag02;
-	int flag03;
+	//[a0,af]: near plane
+	float nearwidth;
+	float nearheight;
+	float neardepth;
+	float nearstride;
 
-	//[b0,bf]
-	int flag10;
-	int flag11;
-	int flag12;
-	int flag13;
-
-	//[a0,af]
-	int flag20;
-	int flag21;
-	int enq;
-	int deq;
-
-	//[b0,bf]
-	int flag30;
-	int flag31;
-	int time;
-	int fps;
+	//[b0,bf]: far plane
+	float farwidth;
+	float farheight;
+	float fardepth;
+	float farstride;
 
 	//[c0,cf]: layer0
 	int backx;

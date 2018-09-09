@@ -33,6 +33,8 @@ lib3d/carve/carve2d.point.c \
 lib3d/carve/carve2d.line.c \
 lib3d/carve/carve2d.trigon.c \
 lib3d/carve/carve2d.other.c \
+lib3d/camera/camera.matrix.c \
+lib3d/camera/camera.rotate.c \
 lib3d/intersect/intersect.obb.c \
 lib3d/intersect/intersect.ray.c \
 lib3d/intersect/intersect.rect.c \

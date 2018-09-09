@@ -125,10 +125,6 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 		drawsolid_rect(win, 0xffffff, x, y, x+(w/8), y+(h/32));
 	}
 }
-
-
-
-
 int actoroutput_editor(struct arena* win, struct style* stack)
 {
 	struct relation* orel;
@@ -162,6 +158,20 @@ int actoroutput_editor(struct arena* win, struct style* stack)
     else actoroutput_editor_pixel(win, stack);
     return 0;
 }
+
+
+
+
+void actorinput_editor_fov(struct arena* win, struct event* ev)
+{
+	int id;
+	if(0x2b70 == ev->what)
+	{
+		id = (ev->why)>>48;
+		if('f' == id)win->nearstride *= 0.9;
+		if('b' == id)win->nearstride *= 1.1;
+	}
+}
 int actorinput_editor(struct arena* win, struct event* ev)
 {
 	int x,y,w,h;
@@ -180,6 +190,10 @@ int actorinput_editor(struct arena* win, struct event* ev)
 	}
 
 	if(0 == win->modex)actorinput_editor_target(win, ev);
-	if((7 == win->modex)&&(_vbo_ == win->fmt))actorinput_editor_camera(win, ev);
+	if((7 == win->modex)&&(_vbo_ == win->fmt))
+	{
+		if(2 == win->modey)actorinput_editor_fov(win, ev);
+		else actorinput_editor_camera(win, ev);
+	}
     return 0;
 }

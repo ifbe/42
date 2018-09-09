@@ -301,6 +301,8 @@ library/libuser1/lib3d/carve/carve2d.point.c \
 library/libuser1/lib3d/carve/carve2d.line.c \
 library/libuser1/lib3d/carve/carve2d.trigon.c \
 library/libuser1/lib3d/carve/carve2d.other.c \
+library/libuser1/lib3d/camera/camera.matrix.c \
+library/libuser1/lib3d/camera/camera.rotate.c \
 library/libuser1/lib3d/intersect/intersect.obb.c \
 library/libuser1/lib3d/intersect/intersect.ray.c \
 library/libuser1/lib3d/intersect/intersect.rect.c \

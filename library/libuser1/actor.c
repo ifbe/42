@@ -178,7 +178,6 @@ int actorwrite_ev(struct event* ev)
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
-	win->enq += 1;
 	return 0;
 }
 int actorread_all(struct arena* win)

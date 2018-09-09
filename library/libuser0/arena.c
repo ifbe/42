@@ -187,6 +187,10 @@ int arenaread_all()
 }
 void arenavertex(struct arena* win)
 {
+	//fov
+	win->neardepth = 1.0;
+	win->nearstride = 1.0;
+
 	//target
 	win->target.vc[0] = 0.0;
 	win->target.vc[1] = 0.0;
