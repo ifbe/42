@@ -688,7 +688,7 @@ void gentui_decstr(struct arena* win, u32 rgb, int cx, int cy, int data);
 
 //----------------------------------2d------------------------------------
 void drawaxis(          struct arena* win);
-void select_2d(         struct arena* win, struct style* sty);
+void select_2d(         struct arena* win, u32 rgb, struct style* sty, u32 flag);
 
 void drawline(          struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
 void drawline_arrow(    struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
@@ -769,7 +769,7 @@ void carvetext2d_reverse(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec
 //-----------------------------3d--------------------------
 void carveaxis(              struct arena* win);
 void carvecamera(            struct arena* win, struct arena* w);
-void select_3d(              struct arena* win, struct style* sty);
+void select_3d(              struct arena* win, u32 rgb, struct style* sty, u32 flag);
 
 void carvepoint(             struct arena* win, u32 rgb, vec3 vc);
 void carvepoint_bezier(      struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);

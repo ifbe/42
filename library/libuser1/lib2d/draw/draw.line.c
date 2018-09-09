@@ -199,7 +199,7 @@ void drawaxis(struct arena* win)
 	drawline(win, 0xffffff, w/2, 0, w/2, h);
 	drawline(win, 0xffffff, 0, h/2, w, h/2);
 }
-void select_2d(struct arena* win, struct style* sty)
+void select_2d(struct arena* win, u32 rgb, struct style* sty, u32 flag)
 {
 	int lb[2];
 	int lu[2];

@@ -1,60 +1,127 @@
 #include "libuser.h"
 int actorinput_editor_camera(struct arena* win, struct event* ev);
 int actorinput_editor_target(struct arena* win, struct event* ev);
+static u8* str_left[8] = {
+	"",		//0
+	"target",		//1
+	"chosen",		//2
+	"",		//3
+	"",		//4
+	"",		//5
+	""		//6
+};
+static u8* str_right[8] = {
+	"",		//0
+	"pos",		//1
+	"fov",		//2
+	"",		//3
+	"",		//4
+	"",		//5
+	""		//6
+};
 
 
 
 
-void actoroutput_panel3d(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf)
-{
-	float j;
-	vec3 ta;
-	vec3 tb;
-	carvesolid2d_rect(win, rgb, vc, vr, vf);
-
-	for(j=-1.0;j<1.0;j+=1.0/3)
-	{
-		ta[0] = vc[0] + j*vr[0] - 0.8*vf[0];
-		ta[1] = vc[1] + j*vr[1] - 0.8*vf[1];
-		ta[2] = vc[2] + j*vr[2] - 0.8*vf[2];
-		tb[0] = vc[0] + j*vr[0] + 0.8*vf[0];
-		tb[1] = vc[1] + j*vr[1] + 0.8*vf[1];
-		tb[2] = vc[2] + j*vr[2] + 0.8*vf[2];
-
-		carveline2d(win, 0xffffff, ta, tb);
-	}
-}
 void actoroutput_editor_vbo(struct arena* win, struct style* st)
 {
+	int j;
 	vec3 vc, vr, vf;
+
 	carveaxis(win);
+	select_3d(win, 0x404040, &win->target, 0);
 
 	//right
-	vc[0] = 1.0*31/32;
-	vc[1] = 0.0;
-	vc[2] = -0.8;
-	vr[0] = 1.0/32;
+	vc[1] = 1.0 - 0.125;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
 	vf[0] = 0.0;
-	vf[1] = 0.75;
 	vf[2] = 0.0;
-	actoroutput_panel3d(win, 0x400000, vc, vf, vr);
+	for(j=1;j<8;j++)
+	{
+		vc[0] = 31/32.0;
+		vc[1] -= 0.25;
+		vc[2] = -0.5;
+		vr[0] = 1.0/32;
+		vf[1] = 0.12;
+		carvesolid2d_rect(win, 0x400000, vc, vr, vf);
+
+		vc[0] = 30/32.0;
+		vc[2] = -0.75;
+		vr[0] = 1.0/64;
+		vf[1] = 1.0/16;
+		carve2d_string(win, 0xffffff, vc, vr, vf, str_right[j], 0);
+	}
 
 	//left
-	vc[0] = -vc[0];
-	actoroutput_panel3d(win, 0x000040, vc, vf, vr);
+	vc[1] = 1.0 - 0.125;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[2] = 0.0;
+	for(j=1;j<8;j++)
+	{
+		vc[0] = -31/32.0;
+		vc[1] -= 0.25;
+		vc[2] = -0.5;
+		vr[0] = 1.0/32;
+		vf[1] = 0.12;
+		carvesolid2d_rect(win, 0x000040, vc, vr, vf);
+
+		vc[0] = -1.0;
+		vc[2] = -0.75;
+		vr[0] = 1.0/64;
+		vf[1] = 1.0/16;
+		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+	}
 
 	//upper
-	vc[0] = 0.0;
-	vc[1] = 1.0*31/32;
-	vr[0] = 0.75;
+	vc[0] = -1.0;
+	vc[1] = 31/32.0;
+	vr[0] = 0.12;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
 	vf[1] = 1.0/32;
-	actoroutput_panel3d(win, 0x404000, vc, vr, vf);
+	vf[2] = 0.0;
+	for(j=1;j<8;j++)
+	{
+		vc[0] += 0.375;
+		vc[2] = -0.5;
+		vr[0] = 0.12;
+		vf[1] = 1.0/32;
+		carvesolid2d_rect(win, 0x404000, vc, vr, vf);
+
+		vc[0] -= 0.125;
+		vc[2] = -0.75;
+		vr[0] = 1.0/16;
+		vf[1] = 1.0/64;
+		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+	}
 
 	//bottom
-	vc[1] = -vc[1];
-	actoroutput_panel3d(win, 0x004040, vc, vr, vf);
+	vc[0] = -1.0;
+	vc[1] = -31/32.0;
+	vr[0] = 0.12;
+	vr[1] = 0.0;
+	vr[2] = 0.0;
+	vf[0] = 0.0;
+	vf[1] = 1.0/32;
+	vf[2] = 0.0;
+	for(j=1;j<8;j++)
+	{
+		vc[0] += 0.375;
+		vc[2] = -0.5;
+		vr[0] = 0.12;
+		vf[1] = 1.0/32;
+		carvesolid2d_rect(win, 0x004040, vc, vr, vf);
+
+		vc[0] -= 0.125;
+		vc[2] = -0.75;
+		vr[0] = 1.0/16;
+		vf[1] = 1.0/64;
+		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+	}
 
 	//selected
 	if((0 == win->modex)|(7 == win->modex))
@@ -91,15 +158,25 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	int x, y;
 	int w = win->width;
 	int h = win->height;
+
 	drawaxis(win);
+	select_2d(win, 0x404040, &win->target, 0);
 
 	//left
 	drawsolid_rect(win, 0x000040, 0, h/8, w/32, h*7/8);
-	for(y=1;y<8;y++)drawline(win, 0xffffff, 0, y*h/8, w/32, y*h/8);
+	for(y=1;y<8;y++)
+	{
+		drawline(win, 0xffffff, 0, y*h/8, w/32, y*h/8);
+		drawstring(win, 0xffffff, 0, (2*y+1)*h/16, str_left[y], 0);
+	}
 
 	//right
 	drawsolid_rect(win, 0x400000, w*31/32, h/8, w, h*7/8);
-	for(y=1;y<8;y++)drawline(win, 0xffffff, w*31/32, y*h/8, w, y*h/8);
+	for(y=1;y<8;y++)
+	{
+		drawline(win, 0xffffff, w*31/32, y*h/8, w, y*h/8);
+		drawstring(win, 0xffffff, w-32, (2*y+1)*h/16, str_right[y], 0);
+	}
 
 	//upper
 	drawsolid_rect(win, 0x404000, w/8, 0, w*7/8, h/32);
@@ -146,8 +223,8 @@ int actoroutput_editor(struct arena* win, struct style* stack)
 			sty = (void*)(orel->srcfoot);
 			act->onread(win, sty, act, pin);
 
-			if(_vbo_ == fmt)select_3d(win, sty);
-			else select_2d(win, sty);
+			if(_vbo_ == fmt)select_3d(win, 0xff00ff, sty, 0);
+			else select_2d(win, 0xff00ff, sty, 0);
 		}
 
 		orel = samesrcnextdst(orel);
@@ -189,7 +266,10 @@ int actorinput_editor(struct arena* win, struct event* ev)
 		}
 	}
 
-	if(0 == win->modex)actorinput_editor_target(win, ev);
+	if(0 == win->modex)
+	{
+		actorinput_editor_target(win, ev);
+	}
 	if((7 == win->modex)&&(_vbo_ == win->fmt))
 	{
 		if(2 == win->modey)actorinput_editor_fov(win, ev);

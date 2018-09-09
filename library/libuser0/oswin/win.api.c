@@ -534,7 +534,6 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				win->width = win->stride = w;
 				win->height = h;
-				win->enq += 1;
 			}
 
 			//eventwrite(0x657a6973, 0x4077, addr, 0);

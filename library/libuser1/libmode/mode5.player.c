@@ -151,12 +151,12 @@ int actoroutput_player(struct arena* win, struct style* stack)
 
     if(_vbo_ == win->fmt)
 	{
-		if(sty)select_3d(win, sty);
+		if(sty)select_3d(win, 0x004000, sty, 0);
 		actoroutput_player_vbo(win, stack);
 	}
     else
 	{
-		if(sty)select_2d(win, sty);
+		if(sty)select_2d(win, 0x004000, sty, 0);
 		actoroutput_player_pixel(win, stack);
 	}
 	return 0;
