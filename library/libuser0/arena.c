@@ -304,7 +304,7 @@ void* arenacreate(u64 type, void* addr)
 		windowcreate(win);
 
 		win->backw = 0;
-		win->forew = 0;
+		win->forew = 0x10;
 		win->tempw = 0;
 		win->vkbdw = 0;
 		arenavertex(win);
@@ -316,7 +316,7 @@ void* arenacreate(u64 type, void* addr)
 		windowcreate(win);
 
 		win->backw = 0;
-		win->forew = 0;
+		win->forew = 0x10;
 		win->tempw = 0;
 		win->vkbdw = 0;
 		arenavertex(win);

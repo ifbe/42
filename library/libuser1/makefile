@@ -117,6 +117,7 @@ libback/back.jpg.c \
 libfore/fore.c \
 libfore/menu.list.c \
 libfore/menu.nav.c \
+libfore/menu.tab.c \
 libfore/menu.tag.c \
 libfore/mode0.testland.c \
 libfore/mode1.console.c \

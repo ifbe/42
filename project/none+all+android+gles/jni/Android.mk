@@ -334,6 +334,7 @@ library/libuser1/libfore/mode6.unknown.c \
 library/libuser1/libfore/mode7.oneonone.c \
 library/libuser1/libfore/menu.list.c \
 library/libuser1/libfore/menu.nav.c \
+library/libuser1/libfore/menu.tab.c \
 library/libuser1/libfore/menu.tag.c \
 library/libuser1/libtemp/popup.c \
 library/libuser1/libvkbd/vkbd.c \

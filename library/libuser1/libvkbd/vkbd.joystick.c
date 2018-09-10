@@ -103,8 +103,8 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 	}
 */
 haha:
-	if(w<h)c = w>>5;
-	else c = h>>5;
+	if(w<h)c = w>>6;
+	else c = h>>6;
 
 	drawsolid_circle(
 		win, 0x0000ff,
@@ -283,8 +283,8 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 	}
 */
 haha:
-	if(w<h)c = w>>4;
-	else c = h>>4;
+	if(w<h)c = w>>5;
+	else c = h>>5;
 	j = (float)c / (float)w;
 	k = (float)c / (float)h;
 	vr[0] = j;
@@ -508,12 +508,20 @@ int vkbd_write(struct arena* win, struct event* ev)
 			{
 				if(j+ret > w)
 				{
-					if(x*2 < w)win->forew |= 0x80;
+					if(x*2 < w)
+					{
+						j = win->forew;
+						win->forew = (j & 0xf) | 0x10;
+					}
 					return 1;
 				}
 				else if(j < ret)
 				{
-					if(x*2 > w)win->forew |= 0x80;
+					if(x*2 > w)
+					{
+						j = win->forew;
+						win->forew = (j & 0xf) | 0x20;
+					}
 					return 1;
 				}
 			}

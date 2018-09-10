@@ -1,11 +1,10 @@
 #include "libuser.h"
+int actoroutput_void(    struct arena* win, struct style* sty);
 int actoroutput_console( struct arena* win, struct style* sty);
 int actoroutput_overview(struct arena* win, struct style* sty);
 int actoroutput_detail(  struct arena* win, struct style* sty);
-int actoroutput_edit(    struct arena* win, struct style* sty);
-int actoroutput_posture( struct arena* win, struct style* sty);
-int actoroutput_deliver( struct arena* win, struct style* sty);
-int actoroutput_oneonone(struct arena* win, struct style* sty);
+int actoroutput_editor(  struct arena* win, struct style* sty);
+int actoroutput_player( struct arena* win, struct style* sty);
 
 
 
@@ -16,7 +15,7 @@ static void* nametab[8] = {
 	"  2: overview   ",
 	"  3: detail     ",
 	"  4: editor     ",
-	"  5: player   ",
+	"  5: player     ",
 	"  6: playgame   ",
 	"  7: onetoone   "
 };
@@ -119,7 +118,8 @@ void actoroutput_navmenu_vbo(struct arena* win)
 			sty.vf[1] = vf[1];
 			sty.vf[2] = vf[2];
 
-			if(1 == x)actoroutput_console(win, &sty);
+			if(0 == x)actoroutput_void(win, &sty);
+			else if(1 == x)actoroutput_console(win, &sty);
 			else if(2 == x)actoroutput_overview(win, &sty);
 			else if(3 == x)actoroutput_detail(win, &sty);
 		}

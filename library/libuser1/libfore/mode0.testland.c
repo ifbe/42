@@ -20,13 +20,10 @@ void actoroutput_void_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
+	drawsolid_rect(win, 0xff00ff, cx-16, cy-16, cx+16, cy+16);
 
 	drawline(win, 0xffffff, cx-ww, win->forey, cx+ww, win->forey);
 	drawline(win, 0xffffff, win->forex, cy-hh, win->forex, cy+hh);
-
-	cx = win->width/2;
-	cy = win->height/2;
-	drawsolid_rect(win, 0xff00ff, cx-16, cy-16, cx+16, cy+16);
 }
 void actoroutput_void_vbo(struct arena* win, struct style* sty)
 {
@@ -40,25 +37,25 @@ void actoroutput_void_vbo(struct arena* win, struct style* sty)
 
 	va[0] = -1.0;
 	va[1] = y;
-	va[2] = -0.5;
+	va[2] = -0.9;
 	vb[0] = 1.0;
 	vb[1] = y;
-	vb[2] = -0.5;
+	vb[2] = -0.9;
 	carveline2d(win, 0xffffff, va, vb);
 
 	va[0] = x;
 	va[1] = 1.0;
-	va[2] = -0.5;
+	va[2] = -0.9;
 	vb[0] = x;
 	vb[1] = -1.0;
-	vb[2] = -0.5;
+	vb[2] = -0.9;
 	carveline2d(win, 0xffffff, va, vb);
 
 	x = 16.0 / (win->width);
 	y = 16.0 / (win->height);
 	vc[0] = 0.0;
 	vc[1] = 0.0;
-	vc[2] = -0.8;
+	vc[2] = -0.9;
 	va[0] = x;
 	va[1] = 0.0;
 	va[2] = 0.0;
