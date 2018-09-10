@@ -9,18 +9,22 @@ void lib3d_create(void*, void*);
 void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
-//
-int background(struct arena* win);
-int foreground(struct arena* win);
+//pre
+int preprocess(struct arena* win);
+//back
+int back_read( struct arena* win, struct style* sty);
+int back_write(struct arena* win, struct event* ev);
+//fore
+int fore_read( struct arena* win, struct style* sty);
+int fore_write(struct arena* win, struct event* ev);
+//temp
+int temp_read( struct arena* win, struct style* sty);
+int temp_write(struct arena* win, struct event* ev);
 //vkbd
 int vkbd_read( struct arena* win, struct style* sty);
 int vkbd_write(struct arena* win, struct event* ev);
-//menu
-int menu_read( struct arena* win, struct style* sty);
-int menu_write(struct arena* win, struct event* ev);
-//mode
-int mode_read( struct arena* win, struct style* sty);
-int mode_write(struct arena* win, struct event* ev);
+//post
+int postprocess(struct arena* win);
 
 
 
@@ -113,7 +117,7 @@ int actorinput_special(struct arena* win, struct event* ev)
 
 	if(('l' == val)|('r' == val))
 	{
-		win->menutype = 1;
+		win->forew = 0x80;
 		return 1;
 	}
 	return 0;
@@ -162,19 +166,23 @@ int actorwrite_ev(struct event* ev)
 
 	//vkbd
 	ret = vkbd_write(win, ev);
-	if(0 != ret)goto theend;
+	if(ret)goto theend;
 
 	//special
 	ret = actorinput_special(win, ev);
-	if(0 != ret)goto theend;
+	if(ret)goto theend;
 
-	//menu
-	ret = menu_write(win, ev);
-	if(0 != ret)goto theend;
+	//temp
+	ret = temp_write(win, ev);
+	if(ret)goto theend;
 
-	//mode
-	ret = mode_write(win, ev);
-	if(0 != ret)goto theend;
+	//fore
+	ret = fore_write(win, ev);
+	if(ret)goto theend;
+
+	//back
+	ret = back_write(win, ev);
+	if(ret)goto theend;
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
@@ -185,19 +193,22 @@ int actorread_all(struct arena* win)
 	if(_cli_ == win->fmt)return 0;
 
 	//bg
-	background(win);
+	preprocess(win);
 
-	//context
-	mode_read(win, 0);
+	//background
+	back_read(win, 0);
 
-	//menu
-	menu_read(win, 0);
+	//foreground
+	fore_read(win, 0);
 
-	//vkbd
+	//popup layer
+	temp_read(win, 0);
+
+	//virtual kbd
 	vkbd_read(win, 0);
 
 	//fg
-	foreground(win);
+	postprocess(win);
 
 	return 0;
 }

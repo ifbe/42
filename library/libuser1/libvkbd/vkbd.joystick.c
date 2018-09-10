@@ -12,9 +12,9 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 	int x,y,m,n;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdtype < 0)goto haha;
+	if(win->vkbdw < 0)goto haha;
 
-	c = ((win->vkbdtype)>>16)&0xff;
+	c = win->vkbdw;
 	if('k' == c)
 	{
 		//bg
@@ -26,7 +26,7 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 			{
 				l = 2;
 				c = x+(y<<4);
-				if(c == (win->vkbdtype&0xffff))rgb = 0xffff00ff;
+				if(c == (win->vkbdz))rgb = 0xffff00ff;
 				else rgb = 0x20808080;
 
 				//joystick area
@@ -158,9 +158,9 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdtype < 0)goto haha;
+	if(win->vkbdw < 0)goto haha;
 
-	c = ((win->vkbdtype)>>16)&0xff;
+	c = win->vkbdw;
 	if(('j' == c)|('k' == c))
 	{
 		vc[0] = 0.0;
@@ -187,7 +187,7 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 			for(x=0;x<16;x++)
 			{
 				c = x+(y<<4);
-				if(c == (win->vkbdtype&0xffff))rgb = 0xff00ff;
+				if(c == (win->vkbdz))rgb = 0xff00ff;
 				else rgb = 0x808080;
 
 				vc[0] = (x-7.5)/8.0;
@@ -391,7 +391,7 @@ int vkbd_event(struct arena* win, struct event* ev)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-	if(win->vkbdtype <= 0)return 0;
+	if(win->vkbdw <= 0)return 0;
 
 	w = win->width;
 	h = win->height;
@@ -401,14 +401,15 @@ int vkbd_event(struct arena* win, struct event* ev)
 
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		ret = ((win->vkbdtype)>>16)&0xff;
+		ret = win->vkbdw;
 		if('k' == ret)
 		{
 			x = x*16/w;
 			y = 31 - (y*32/h);
 			ret = x + (y*16);
 
-			win->vkbdtype = ((int)'k'<<16) + ret;
+			win->vkbdz = ret;
+			win->vkbdw = 'k';
 			eventwrite(ret, _char_, (u64)win, 0);
 		}
 		else if('j' == ret)
@@ -455,7 +456,9 @@ int vkbd_event(struct arena* win, struct event* ev)
 					eventwrite(*(u64*)tmp, joy_right, 0, 0);
 				}
 			}
-			win->vkbdtype = ((int)'j'<<16) + ret;
+
+			win->vkbdz = ret;
+			win->vkbdw = 'j';
 		}
 	}
 
@@ -490,14 +493,14 @@ int vkbd_write(struct arena* win, struct event* ev)
 			{
 				if(x+ret > w)
 				{
-					if(win->vkbdtype > 0)win->vkbdtype = 0;
-					else win->vkbdtype = (int)'j'<<16;
+					if(win->vkbdw > 0)win->vkbdw = 0;
+					else win->vkbdw = 'j';
 					return 1;
 				}
 				else if(x < ret)
 				{
-					if(win->vkbdtype > 0)win->vkbdtype = 0;
-					else win->vkbdtype = (int)'k'<<16;
+					if(win->vkbdw > 0)win->vkbdw = 0;
+					else win->vkbdw = 'k';
 					return 1;
 				}
 			}
@@ -505,12 +508,12 @@ int vkbd_write(struct arena* win, struct event* ev)
 			{
 				if(j+ret > w)
 				{
-					if(x*2 < w)win->menutype = 1;
+					if(x*2 < w)win->forew |= 0x80;
 					return 1;
 				}
 				else if(j < ret)
 				{
-					if(x*2 > w)win->menutype = 1;
+					if(x*2 > w)win->forew |= 0x80;
 					return 1;
 				}
 			}
@@ -525,7 +528,7 @@ int vkbd_write(struct arena* win, struct event* ev)
 		}
 
 		//call vkbd
-		if(win->vkbdtype >= 0)
+		if(win->vkbdw >= 0)
 		{
 			ret = vkbd_event(win, ev);
 			if(0 != ret)return 1;

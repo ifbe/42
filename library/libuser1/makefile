@@ -49,6 +49,7 @@ lib4d/asset.file.model.c \
 lib4d/asset.file.sound.c \
 lib4d/asset.func.c \
 lib4d/lib4d.c \
+lib4d/prepost.c \
 thealgo/algo.algo.c \
 thealgo/algo.bintree.c \
 thealgo/algo.bplus.c \
@@ -110,27 +111,27 @@ thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
 thetool/tool.terminal.ci.c \
 thetool/tool.terminal.si.c \
-libbgfg/bgfg.gif.c \
-libbgfg/bgfg.jpg.c \
-libbgfg/bgfg.c \
-libmode/mode0.testland.c \
-libmode/mode1.console.c \
-libmode/mode2.overview.c \
-libmode/mode3.detail.c \
-libmode/mode4.editor.c \
-libmode/mode4.editor.camera.c \
-libmode/mode4.editor.target.c \
-libmode/mode5.player.c \
-libmode/mode6.unknown.c \
-libmode/mode7.oneonone.c \
-libmode/mode.c \
-libmenu/menu.list.c \
-libmenu/menu.nav.c \
-libmenu/menu.tag.c \
-libmenu/menu.c \
+libback/back.c \
+libback/back.gif.c \
+libback/back.jpg.c \
+libfore/fore.c \
+libfore/menu.list.c \
+libfore/menu.nav.c \
+libfore/menu.tag.c \
+libfore/mode0.testland.c \
+libfore/mode1.console.c \
+libfore/mode2.overview.c \
+libfore/mode3.detail.c \
+libfore/mode4.editor.c \
+libfore/mode4.editor.camera.c \
+libfore/mode4.editor.target.c \
+libfore/mode5.player.c \
+libfore/mode6.unknown.c \
+libfore/mode7.oneonone.c \
+libtemp/popup.c \
+libvkbd/vkbd.c \
 libvkbd/vkbd.joystick.c \
-libvkbd/vkbd.keyboard.c \
-libvkbd/vkbd.c
+libvkbd/vkbd.keyboard.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

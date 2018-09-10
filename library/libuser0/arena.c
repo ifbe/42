@@ -303,16 +303,10 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
 
-		win->backtype = 0;
-		win->backdata = 0;
-		//win->foretype = 0;
-		//win->foredata = 0;
-		win->modedata = 0;
-		win->modetype = 2;	//mode2: overview
-		win->menudata = 0;
-		win->menutype = 1;	//menu1: select
-		win->vkbddata = 0;
-		win->vkbdtype = 0;
+		win->backw = 0;
+		win->forew = 0;
+		win->tempw = 0;
+		win->vkbdw = 0;
 		arenavertex(win);
 	}
 	else if(_coop_ == type)
@@ -321,16 +315,10 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win);
 
-		win->backtype = 0;
-		win->backdata = 0;
-		//win->foretype = 0;
-		//win->foredata = 0;
-		win->modedata = 0;
-		win->modetype = 5;	//mode2: overview
-		win->menudata = 0;
-		win->menutype = 0;	//menu1: select
-		win->vkbddata = 0;
-		win->vkbdtype = 0;
+		win->backw = 0;
+		win->forew = 0;
+		win->tempw = 0;
+		win->vkbdw = 0;
 		arenavertex(win);
 	}
 	else if(_cam_ == type)

@@ -81,7 +81,7 @@ void background_tui(struct arena* win)
 void background_cli(struct arena* win)
 {
 }
-void background(struct arena* win)
+void preprocess(struct arena* win)
 {
 	u64 fmt = win->fmt;
 	if(_cli_ == fmt)background_cli(win);
@@ -97,84 +97,23 @@ void background(struct arena* win)
 
 void foreground_pixel(struct arena* win)
 {
-	int j;
-	for(j=0;j<12;j++)
-	{
-		if(0 == win->input[j].z0)continue;
-
-		drawline_arrow(win, 0xff00ff,
-			win->input[j].x0, win->input[j].y0,
-			win->input[j].x1, win->input[j].y1
-		);
-	}
 }
 void foreground_vbo(struct arena* win)
 {
-	int j;
-	float x,y;
-	vec3 vc;
-	vec3 vr;
 	struct arena* coop;
 	struct relation* rel;
-/*
-	vec3 vf;
-	vec3 vu;
-	vc[0] = win->target.vc[0];
-	vc[1] = win->target.vc[1];
-	vc[2] = win->target.vc[2];
-	vr[0] = 1000000.0;
-	vf[1] = 1000000.0;
-	vu[2] = 1000000.0;
-	vr[1] = vr[2] = vf[0] = vf[2] = vu[0] = vu[1] = 0.0;
-	carvesolid_sphere(win, 0x808080, vc, vr, vf, vu);
-*/
-	for(j=0;j<12;j++)
-	{
-		if(0 == win->input[j].z0)continue;
 
-		vc[0] = (float)(win->input[j].x0) / (float)(win->width);
-		vc[0] = vc[0]*2 - 1.0;
-		vc[1] = (float)(win->input[j].y0) / (float)(win->height);
-		vc[1] = 1.0 - vc[1]*2;
-		vc[2] = -0.99;
-		vr[0] = (float)(win->input[j].x1) / (float)(win->width);
-		vr[0] = vr[0]*2 - 1.0;
-		vr[1] = (float)(win->input[j].y1) / (float)(win->height);
-		vr[1] = 1.0 - vr[1]*2;
-		vr[2] = -0.99;
-		carveline2d_arrow(win, 0xff00ff, vc, vr);
-	}
-/*
-	if(1)
-	{
-		j = (win->width + win->height) / 128;
-		x = (float)j / (float)(win->width);
-		y = (float)j / (float)(win->height);
-		vc[0] = -x;
-		vc[1] = 0.0;
-		vc[2] = -0.99;
-		vr[0] = x;
-		vr[1] = 0.0;
-		vr[2] = -0.99;
-		carveline2d(win, 0xffffff, vc, vr);
-		vc[0] = 0.0;
-		vc[1] = -y;
-		vr[0] = 0.0;
-		vr[1] = y;
-		carveline2d(win, 0xffffff, vc, vr);
-	}
-*/
-	rel = win->orel0;
+	rel = win->irel0;
 	while(1)
 	{
 		if(0 == rel)break;
-		coop = (void*)(rel->dstchip);
-		if(_win_ == rel->dsttype)
+		coop = (void*)(rel->srcchip);
+		if(_win_ == rel->srctype)
 		{
 			carvecamera(win, coop);
 			carvesnowman(win, 0xffffff, coop->target.vc);
 		}
-		rel = samesrcnextdst(rel);
+		rel = samedstnextsrc(rel);
 	}
 }
 void foreground_json(struct arena* win)
@@ -206,7 +145,7 @@ void foreground_tui(struct arena* win)
 void foreground_cli(struct arena* win)
 {
 }
-void foreground(struct arena* win)
+void postprocess(struct arena* win)
 {
 	u64 fmt = win->fmt;
 	if(_cli_ == fmt)foreground_cli(win);

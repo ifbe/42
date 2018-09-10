@@ -23,17 +23,9 @@ void actoroutput_console_pixel(struct arena* win, struct style* sty)
 	else
 	{
 		cx = win->width/2;
+		cy = win->height/2;
 		ww = win->width/2;
-		if(win->vkbdtype)
-		{
-			cy = win->height*3/8;
-			hh = win->height*3/8;
-		}
-		else
-		{
-			cy = win->height/2;
-			hh = win->height/2;
-		}
+		hh = win->height/2;
 	}
 	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawsolid_rect(win, 0xe0e0e0, cx+ww-16, cy-hh, cx+ww, cy+hh);
@@ -63,11 +55,6 @@ void actoroutput_console_vbo(struct arena* win, struct style* sty)
 		sty->vf[0] = 0.0;
 		sty->vf[1] = 1.0;
 		sty->vf[2] = 0.0;
-		if(win->vkbdtype)
-		{
-			sty->vc[1] = 0.25;
-			sty->vf[1] = 0.75;
-		}
 	}
 	vc = sty->vc;
 	vr = sty->vr;
@@ -118,8 +105,8 @@ void actorinput_console(struct arena* win, struct event* ev)
 
 	if('p' == (ev->what&0xff))
 	{
-		win->modex = (ev->why)&0xffff;
-		win->modey = ((ev->why)>>16)&0xffff;
+		win->forex = (ev->why)&0xffff;
+		win->forey = ((ev->why)>>16)&0xffff;
 	}
 	else if(_char_ == ev->what)
 	{

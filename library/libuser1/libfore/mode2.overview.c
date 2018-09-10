@@ -96,7 +96,7 @@ int arenaactor(struct arena* win, struct actor* act)
 int arenalogin(struct arena* win)
 {
 	struct actor* act;
-	int j = win->menudata;
+	int j = win->forez;
 	if(j<0)return 0;
 
 	act = &actor[j];
@@ -107,13 +107,13 @@ int arenalogin(struct arena* win)
 }
 int arenaprev(struct arena* win)
 {
-	if(win->menudata > 0)win->menudata -= 1;
+	if(win->forez > 0)win->forez -= 1;
 	return 0;
 }
 int arenanext(struct arena* win)
 {
-	int j = win->menudata + 1;
-	if(0 != actor[j].type)win->menudata += 1;
+	int j = win->forez + 1;
+	if(0 != actor[j].type)win->forez += 1;
 	return 0;
 }
 
@@ -150,7 +150,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
-		else if(j == win->menudata)c = 0xffff00ff;
+		else if(j == win->forez)c = 0xffff00ff;
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
@@ -500,7 +500,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	{
 		k = actor[j].type & 0xff;
 		if(0 == k)break;
-		else if(j == win->menudata)
+		else if(j == win->forez)
 		{
 			bg = 0xffffff;
 			fg = 0xff00ff;
@@ -981,7 +981,7 @@ void overview_read_8bit(struct arena* win, struct style* sty)
 	int j,c;
 	for(j=0;j<64;j++)
 	{
-		if(j == win->menudata)c = 0x80;
+		if(j == win->forez)c = 0x80;
 		else c = 0x42;
 
 		x = j%4;
@@ -1008,7 +1008,7 @@ void overview_read_tui(struct arena* win, struct style* sty)
 	{
 		if(0 == actor[j].name)break;
 
-		if(j == win->menudata)k=1;
+		if(j == win->forez)k=1;
 		else k=2;
 
 		x = j%4;
@@ -1180,11 +1180,11 @@ void actorinput_overview(struct arena* win, struct event* ev)
 
 		if('@' == k)
 		{
-			if(y < 8)win->menudata = x + (y*8);
+			if(y < 8)win->forez = x + (y*8);
 		}
 		else if('+' == k)
 		{
-			if(y < 8)win->menudata = x + (y*8);
+			if(y < 8)win->forez = x + (y*8);
 		}
 		else if('-' == k)
 		{

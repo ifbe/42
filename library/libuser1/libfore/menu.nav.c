@@ -47,12 +47,12 @@ void actoroutput_navmenu_vbo(struct arena* win)
 	int w = win->width;
 	int s = w*2/3;
 
-	j = win->menux;
+	j = win->forex;
 	k = j;
 	if(k < -s)k = -s;
 	if(k > s)k = s;
 
-	tmp = win->modetype&7;
+	tmp = win->forew & 7;
 	for(x=0;x<8;x++)
 	{
 		vc[0] = (x-tmp)*4.0/3 + (float)k*2.0/w;
@@ -207,12 +207,12 @@ void actoroutput_navmenu_pixel(struct arena* win)
 		drawline(win, 0xffffff, va[0], va[1], vb[0], vb[1]);
 	}
 */
-	j = win->menux;
+	j = win->forex;
 	k = j;
 	if(k < -s)k = -s;
 	if(k > s)k = s;
 
-	tmp = win->modetype&7;
+	tmp = win->forew & 7;
 	for(x=0;x<8;x++)
 	{
 		va[0] = w/2 - w/4 + k + (x-tmp)*s;
@@ -351,16 +351,16 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 
 		if(0x2d70 != ret)
 		{
-			win->menux = x;
-			win->menuy = y;
+			win->forex = x;
+			win->forey = y;
 			return 0;
 		}
 
-		win->menux = 0;
-		win->menuy = 0;
+		win->forex = 0;
+		win->forey = 0;
 		if((x>-16)&&(x<16)&&(y>-16)&&(y<16))
 		{
-			win->menutype = 0;
+			win->forew &= 0xf;
 			return 0;
 		}
 		else if(x*8 < -win->width)x = 0x4d;
@@ -379,7 +379,7 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 		else if(0x435b1b == ret)x = 0x4d;
 		else
 		{
-			if((0xd == ret)|(0xa == ret))win->menutype = 0;
+			if((0xd == ret)|(0xa == ret))win->forew &= 0xf;
 			return 0;
 		}
 	}
@@ -393,7 +393,7 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 	else if(joy_right == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
-		if(t[3] & joyr_down)win->menutype = 0;
+		if(t[3] & joyr_down)win->forew &= 0xf;
 		return 0;
 	}
 	else return 0;
@@ -401,16 +401,20 @@ int actorinput_navmenu(struct arena* win, struct event* ev)
 	//left
 	if(0x4b == x)
 	{
-		y = win->modetype & 7;
-		win->modetype = (y+7)%8;
+		x = win->forew & 7;
+		x = (x+7)%8;
+		y = win->forew & 0xf0;
+		win->forew = y | x;
 		return 0;
 	}
 
 	//right
 	if(0x4d == x)
 	{
-		y = win->modetype & 7;
-		win->modetype = (y+1)%8;
+		x = win->forew & 7;
+		x = (x+1)%8;
+		y = win->forew & 0xf0;
+		win->forew = y | x;
 		return 0;
 	}
 	return 0;

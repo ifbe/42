@@ -1,7 +1,7 @@
 #include "libuser.h"
 int actorinput_editor_camera(struct arena* win, struct event* ev);
 int actorinput_editor_target(struct arena* win, struct event* ev);
-static u8* str_left[8] = {
+static char* str_left[8] = {
 	"",		//0
 	"target",		//1
 	"chosen",		//2
@@ -10,7 +10,7 @@ static u8* str_left[8] = {
 	"",		//5
 	""		//6
 };
-static u8* str_right[8] = {
+static char* str_right[8] = {
 	"",		//0
 	"pos",		//1
 	"fov",		//2
@@ -50,7 +50,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vc[2] = -0.75;
 		vr[0] = 1.0/64;
 		vf[1] = 1.0/16;
-		carve2d_string(win, 0xffffff, vc, vr, vf, str_right[j], 0);
+		carve2d_string(win, 0xffffff, vc, vr, vf, (u8*)str_right[j], 0);
 	}
 
 	//left
@@ -72,7 +72,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vc[2] = -0.75;
 		vr[0] = 1.0/64;
 		vf[1] = 1.0/16;
-		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+		carve2d_string(win, 0xffffff, vc, vr, vf, (u8*)str_left[j], 0);
 	}
 
 	//upper
@@ -96,7 +96,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vc[2] = -0.75;
 		vr[0] = 1.0/16;
 		vf[1] = 1.0/64;
-		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+		carve2d_string(win, 0xffffff, vc, vr, vf, (u8*)str_left[j], 0);
 	}
 
 	//bottom
@@ -120,11 +120,11 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vc[2] = -0.75;
 		vr[0] = 1.0/16;
 		vf[1] = 1.0/64;
-		carve2d_string(win, 0xffffff, vc, vr, vf, str_left[j], 0);
+		carve2d_string(win, 0xffffff, vc, vr, vf, (u8*)str_left[j], 0);
 	}
 
 	//selected
-	if((0 == win->modex)|(7 == win->modex))
+	if((0 == win->forex)|(7 == win->forex))
 	{
 		vr[0] = 1.0/32;
 		vr[1] = 0.0;
@@ -133,12 +133,12 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vf[1] = 0.125;
 		vf[2] = 0.0;
 		vc[0] = 1.0*31/32;
-		vc[1] = (7.0 - win->modey*2) / 8.0;
+		vc[1] = (7.0 - win->forey*2) / 8.0;
 		vc[2] = -0.9;
-		if(0 == win->modex)vc[0] = -vc[0];
+		if(0 == win->forex)vc[0] = -vc[0];
 		carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
 	}
-	else if((0 == win->modey)|(7 == win->modey))
+	else if((0 == win->forey)|(7 == win->forey))
 	{
 		vr[0] = 0.125;
 		vr[1] = 0.0;
@@ -146,10 +146,10 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vf[0] = 0.0;
 		vf[1] = 1.0/32;
 		vf[2] = 0.0;
-		vc[0] = (win->modex*2 - 7.0) / 8.0;
+		vc[0] = (win->forex*2 - 7.0) / 8.0;
 		vc[1] = 1.0*31/32;
 		vc[2] = -0.9;
-		if(7 == win->modey)vc[1] = -vc[1];
+		if(7 == win->forey)vc[1] = -vc[1];
 		carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
 	}
 }
@@ -167,7 +167,7 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	for(y=1;y<8;y++)
 	{
 		drawline(win, 0xffffff, 0, y*h/8, w/32, y*h/8);
-		drawstring(win, 0xffffff, 0, (2*y+1)*h/16, str_left[y], 0);
+		drawstring(win, 0xffffff, 0, (2*y+1)*h/16, (u8*)str_left[y], 0);
 	}
 
 	//right
@@ -175,7 +175,7 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	for(y=1;y<8;y++)
 	{
 		drawline(win, 0xffffff, w*31/32, y*h/8, w, y*h/8);
-		drawstring(win, 0xffffff, w-32, (2*y+1)*h/16, str_right[y], 0);
+		drawstring(win, 0xffffff, w-32, (2*y+1)*h/16, (u8*)str_right[y], 0);
 	}
 
 	//upper
@@ -187,17 +187,17 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	for(x=1;x<8;x++)drawline(win, 0xffffff, x*w/8, h*31/32, x*w/8, h);
 
 	//selected
-	if((0 == win->modex)|(7 == win->modex))
+	if((0 == win->forex)|(7 == win->forex))
 	{
-		if(0 == win->modex)x = 0;
+		if(0 == win->forex)x = 0;
 		else x = w*31/32;
-		y = (win->modey)*h/8;
+		y = (win->forey)*h/8;
 		drawsolid_rect(win, 0xffffff, x, y, x+(w/32), y+(h/8));
 	}
-	else if((0 == win->modey)|(7 == win->modey))
+	else if((0 == win->forey)|(7 == win->forey))
 	{
-		x = (win->modex)*w/8;
-		if(0 == win->modey)y = 0;
+		x = (win->forex)*w/8;
+		if(0 == win->forey)y = 0;
 		else y = h*31/32;
 		drawsolid_rect(win, 0xffffff, x, y, x+(w/8), y+(h/32));
 	}
@@ -260,19 +260,19 @@ int actorinput_editor(struct arena* win, struct event* ev)
 		h = win->height;
 		if((x < w/32)|(x > w*31/32)|(y < h/32)|(y > h*31/32))
 		{
-			win->modex = x*8/w;
-			win->modey = y*8/h;
-			say("%d,%d\n", win->modex, win->modey);
+			win->forex = x*8/w;
+			win->forey = y*8/h;
+			say("%d,%d\n", win->forex, win->forey);
 		}
 	}
 
-	if(0 == win->modex)
+	if(0 == win->forex)
 	{
 		actorinput_editor_target(win, ev);
 	}
-	if((7 == win->modex)&&(_vbo_ == win->fmt))
+	if((7 == win->forex)&&(_vbo_ == win->fmt))
 	{
-		if(2 == win->modey)actorinput_editor_fov(win, ev);
+		if(2 == win->forey)actorinput_editor_fov(win, ev);
 		else actorinput_editor_camera(win, ev);
 	}
     return 0;

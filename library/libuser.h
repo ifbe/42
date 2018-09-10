@@ -536,32 +536,32 @@ struct arena
 	float farstride;
 
 	//[c0,cf]: layer0: background
-	u64 backtype;
+	short backx;
+	short backy;
+	short backz;
+	short backw;
 	u64 backdata;
 
 	//[d0,df]: layer1: foreground
-	//u64 foretype;
-	//u64 foredata;
-	int modex;
-	int modey;
-	int modedata;
-	int modetype;
+	short forex;
+	short forey;
+	short forez;
+	short forew;
+	u64 foredata;
 
-	//[e0,ef]: layer2: menu
-	//u64 menutype;
-	//u64 menudata;
-	int menux;
-	int menuy;
-	int menudata;
-	int menutype;
+	//[e0,ef]: layer2: popup
+	short tempx;
+	short tempy;
+	short tempz;
+	short tempw;
+	u64 tempdata;
 
 	//[f0,ff]: layer3: vkbd
-	//u64 vkbdtype;
-	//u64 vkbddata;
-	int vkbdx;
-	int vkbdy;
-	int vkbddata;
-	int vkbdtype;
+	short vkbdx;
+	short vkbdy;
+	short vkbdz;
+	short vkbdw;
+	u64 vkbddata;
 
 	//[100,1ff]
 	struct style target;
