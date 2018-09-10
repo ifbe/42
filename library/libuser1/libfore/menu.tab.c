@@ -88,8 +88,23 @@ void actoroutput_tabbar_pixel(struct arena* win)
 }
 void actoroutput_tabbar(struct arena* win, struct style* sty)
 {
+    struct style tmp;
     int sel = (win->forew)&0x7;
 	u64 fmt = win->fmt;
+    if(0 == sty)
+    {
+        sty = &tmp;
+        sty->vc[0] = 0.0;
+        sty->vc[1] = 1.0/20;
+        sty->vc[2] = 0.0;
+        sty->vr[0] = 1.0;
+        sty->vr[1] = 0.0;
+        sty->vr[2] = 0.0;
+        sty->vf[0] = 0.0;
+        sty->vf[1] = 19/20.0;
+        sty->vf[2] = 0.0;
+    }
+
     if(0 == sel)actoroutput_void(win, sty);
     else if(1 == sel)actoroutput_console(win, sty);
     else if(2 == sel)actoroutput_overview(win, sty);
