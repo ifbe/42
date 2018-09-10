@@ -5,7 +5,9 @@
 
 void actoroutput_void_pixel(struct arena* win, struct style* sty)
 {
-	int cx,cy,ww,hh;
+	int x,y,cx,cy,ww,hh;
+	int w = win->width;
+	int h = win->height;
 	if(sty)
 	{
 		cx = sty->vc[0];
@@ -20,49 +22,80 @@ void actoroutput_void_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
+
+	//red point
+	x = 32 * (ww+hh) / (w+h);
 	drawsolid_rect(win, 0xff00ff, cx-16, cy-16, cx+16, cy+16);
 
-	drawline(win, 0xffffff, cx-ww, win->forey, cx+ww, win->forey);
-	drawline(win, 0xffffff, win->forex, cy-hh, win->forex, cy+hh);
+	//heng shu
+	x = cx-ww + (win->forex)*2*ww/w;
+	y = cy-hh + (win->forey)*2*hh/h;
+	drawline(win, 0xffffff, cx-ww, y, cx+ww, y);
+	drawline(win, 0xffffff, x, cy-hh, x, cy+hh);
 }
 void actoroutput_void_vbo(struct arena* win, struct style* sty)
 {
-	vec3 va;
-	vec3 vb;
-	vec3 vc;
-	float x = (float)(win->forex);
-	float y = (float)(win->forey);
-	x = 2*x/(win->width) - 1.0;
-	y = 1.0 - 2*y/(win->height);
+	float x;
+	float y;
+	float* vc;
+	float* vr;
+	float* vf;
+	vec3 tc;
+	vec3 tr;
+	vec3 tf;
+	struct style tmp;
+	if(0 == sty)
+	{
+		sty = &tmp;
+		sty->vc[0] = 0.0;
+		sty->vc[1] = 0.0;
+		sty->vc[2] = -0.5;
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0.0;
+		sty->vr[2] = 0.0;
+		sty->vf[0] = 0.0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0.0;
+	}
+	vc = sty->vc;
+	vr = sty->vr;
+	vf = sty->vf;
 
-	va[0] = -1.0;
-	va[1] = y;
-	va[2] = -0.9;
-	vb[0] = 1.0;
-	vb[1] = y;
-	vb[2] = -0.9;
-	carveline2d(win, 0xffffff, va, vb);
-
-	va[0] = x;
-	va[1] = 1.0;
-	va[2] = -0.9;
-	vb[0] = x;
-	vb[1] = -1.0;
-	vb[2] = -0.9;
-	carveline2d(win, 0xffffff, va, vb);
-
+	//red point
 	x = 16.0 / (win->width);
 	y = 16.0 / (win->height);
-	vc[0] = 0.0;
-	vc[1] = 0.0;
-	vc[2] = -0.9;
-	va[0] = x;
-	va[1] = 0.0;
-	va[2] = 0.0;
-	vb[0] = 0.0;
-	vb[1] = y;
-	vb[2] = 0.0;
-	carvesolid2d_rect(win, 0xff00ff, vc, va, vb);
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = vc[2] - 0.2;
+	tr[0] = vr[0]*x;
+	tr[1] = vr[1];
+	tr[2] = vr[2];
+	tf[0] = vf[0];
+	tf[1] = vf[1]*y;
+	tf[2] = vf[2];
+	carvesolid2d_rect(win, 0xff00ff, tc, tr, tf);
+
+	//heng shu
+	x = (float)(win->forex);
+	x = 2*x/(win->width) - 1.0;
+	y = (float)(win->forey);
+	y = 1.0 - 2*y/(win->height);
+
+	tc[0] = -1.0;
+	tc[1] = y;
+	tc[2] = -0.9;
+	tr[0] = 1.0;
+	tr[1] = y;
+	tr[2] = -0.9;
+	carveline2d(win, 0xffffff, tc, tr);
+
+	tc[0] = x;
+	tc[1] = 1.0;
+	tc[2] = -0.9;
+	tr[0] = x;
+	tr[1] = -1.0;
+	tr[2] = -0.9;
+	carveline2d(win, 0xffffff, tc, tr);
 }
 void actoroutput_void_json(struct arena* win, struct style* sty)
 {

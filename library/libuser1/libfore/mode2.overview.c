@@ -449,13 +449,13 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	float r,f;
 	int x,y,j,k;
 	struct relation* rel;
-	struct style tmp;
 	float* vc;
 	float* vr;
 	float* vf;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
+	struct style tmp;
 	if(0 == sty)
 	{
 		sty = &tmp;

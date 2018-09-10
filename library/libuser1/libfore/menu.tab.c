@@ -16,14 +16,14 @@ int actoroutput_player(  struct arena* win, struct style* sty);
 
 
 static void* nametab[8] = {
-	"0.test",
-	"1.term",
-	"2.wire",
-	"3.node",
-	"4.edit",
-	"5.play",
-	"6.????",
-	"7.????"
+	"test",
+	"term",
+	"wire",
+	"node",
+	"edit",
+	"play",
+	"????",
+	"????"
 };
 
 
@@ -51,7 +51,7 @@ void actoroutput_tabbar_vbo(struct arena* win)
     vr[1] = 0.0;
     vr[2] = 0.0;
     vf[0] = 0.0;
-    vf[1] = 32.0/h;
+    vf[1] = 1.0/20;
     vf[2] = 0.0;
     for(j=0;j<8;j++)
     {
@@ -61,8 +61,9 @@ void actoroutput_tabbar_vbo(struct arena* win)
         vc[0] = (2*j-7) / 8.0;
         vc[1] = -1.0 + vf[1];
         vc[2] = -0.8;
-        vr[0] = 1.0/8;
+        vr[0] = 1.0/8.5;
         carvesolid2d_rect(win, c, vc, vr, vf);
+        carveline2d_rect(win, 0xffffff, vc, vr, vf);
 
         vc[2] = -0.9;
         vr[0] = 1.0/16;
@@ -80,8 +81,9 @@ void actoroutput_tabbar_pixel(struct arena* win)
     {
         c = 0x404040;
         if(j == sel)c = 0xc0c0c0;
-        drawsolid_rect(win, c, j*w/8+2, h-32, (j+1)*w/8-2, h);
-        drawstring_fit(win, 0xffffff, j*w/8, h-32, (j+1)*w/8, h, nametab[j], 0);
+        drawsolid_rect(win, c, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
+        drawline_rect(win, 0xffffff, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
+        drawstring_fit(win, 0xffffff, j*w/8, h*19/20, (j+1)*w/8, h, nametab[j], 0);
     }
 }
 void actoroutput_tabbar(struct arena* win, struct style* sty)
@@ -112,7 +114,7 @@ int actorinput_tabbar(struct arena* win, struct event* ev)
     if(0x2d70 == ev->what)
     {
         y = ((ev->why)>>16)&0xffff;
-        if(y > h-32)
+        if(y > h*19/20)
         {
             x = (ev->why)&0xffff;
             x = x * 8 / w;
