@@ -1,6 +1,7 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = actor.c \
+lib1d/lib1d.c \
 lib1d/cli/print.cli.c \
 lib1d/tui/print.tui.c \
 lib1d/json/json.c \
@@ -8,7 +9,7 @@ lib1d/latex/latex.c \
 lib1d/xml/html.c \
 lib1d/xml/xaml.c \
 lib1d/xml/xml.c \
-lib1d/lib1d.c \
+lib2d/lib2d.c \
 lib2d/draw/draw.line.c \
 lib2d/draw/draw.solid.c \
 lib2d/draw/draw.shape.c \
@@ -22,7 +23,7 @@ lib2d/photo/photo.gray.c \
 lib2d/photo/photo.mosaic.c \
 lib2d/photo/photo.rotate.c \
 lib2d/photo/photo.scale.c \
-lib2d/lib2d.c \
+lib3d/lib3d.c \
 lib3d/carve/carve.ascii.c \
 lib3d/carve/carve.point.c \
 lib3d/carve/carve.line.c \
@@ -42,14 +43,19 @@ lib3d/intersect/intersect.sphere.c \
 lib3d/model/model.magnify.c \
 lib3d/model/model.minify.c \
 lib3d/model/model.rotate.c \
-lib3d/lib3d.c \
-lib4d/asset.file.c \
-lib4d/asset.file.image.c \
-lib4d/asset.file.model.c \
-lib4d/asset.file.sound.c \
-lib4d/asset.func.c \
 lib4d/lib4d.c \
-lib4d/prepost.c \
+lib4d/asset.circuit.c \
+lib4d/asset.function.c \
+lib4d/asset.html.c \
+lib4d/asset.image.c \
+lib4d/asset.model.c \
+lib4d/asset.sound.c \
+lib4d/nodeunit.extra.c \
+lib4d/nodeunit.inner.c \
+lib4d/nodeunit.outer.c \
+lib4d/operate.backuprecover.c \
+lib4d/operate.beforeafter.c \
+lib4d/operate.transform.c \
 thealgo/algo.algo.c \
 thealgo/algo.bintree.c \
 thealgo/algo.bplus.c \
