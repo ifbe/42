@@ -41,12 +41,32 @@ void actoroutput_tabbar_html(struct arena* win)
 void actoroutput_tabbar_json(struct arena* win)
 {
 }
-void actoroutput_tabbar_vbo(struct arena* win)
+void actoroutput_tabbar_vbo(struct arena* win, struct style* sty)
 {
+    int j,c,sel;
     vec3 vc,vr,vf;
-    int j,c;
-    int h = win->height;
-    int sel = (win->forew)&0x7;
+    struct style tmp;
+    if(0 == sty)
+    {
+        sty = &tmp;
+        sty->vc[0] = 0.0;
+        sty->vc[1] = 1.0/20;
+        sty->vc[2] = 0.0;
+        sty->vr[0] = 1.0;
+        sty->vr[1] = 0.0;
+        sty->vr[2] = 0.0;
+        sty->vf[0] = 0.0;
+        sty->vf[1] = 19/20.0;
+        sty->vf[2] = 0.0;
+    }
+
+    sel = (win->forew)&0x7;
+    if(0 == sel)actoroutput_void(win, sty);
+    else if(1 == sel)actoroutput_console(win, sty);
+    else if(2 == sel)actoroutput_overview(win, sty);
+    else if(3 == sel)actoroutput_detail(win, sty);
+    else if(4 == sel)actoroutput_editor(win, sty);
+    else if(5 == sel)actoroutput_player(win, sty);
 
     vr[1] = 0.0;
     vr[2] = 0.0;
@@ -70,12 +90,34 @@ void actoroutput_tabbar_vbo(struct arena* win)
         carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[j], 0);
     }
 }
-void actoroutput_tabbar_pixel(struct arena* win)
+void actoroutput_tabbar_pixel(struct arena* win, struct style* sty)
 {
     int j,c;
-    int w = win->width;
-    int h = win->height;
-    int sel = (win->forew)&0x7;
+    int w,h,sel;
+    struct style tmp;
+    w = win->width;
+    h = win->height;
+    sel = (win->forew)&0x7;
+    if(0 == sty)
+    {
+        sty = &tmp;
+        sty->vc[0] = w/2;
+        sty->vc[1] = h*19/40;
+        sty->vc[2] = 0.0;
+        sty->vr[0] = w/2;
+        sty->vr[1] = 0.0;
+        sty->vr[2] = 0.0;
+        sty->vf[0] = 0.0;
+        sty->vf[1] = h*19/40;
+        sty->vf[2] = 0.0;
+    }
+
+    if(0 == sel)actoroutput_void(win, sty);
+    else if(1 == sel)actoroutput_console(win, sty);
+    else if(2 == sel)actoroutput_overview(win, sty);
+    else if(3 == sel)actoroutput_detail(win, sty);
+    else if(4 == sel)actoroutput_editor(win, sty);
+    else if(5 == sel)actoroutput_player(win, sty);
 
     for(j=0;j<8;j++)
     {
@@ -88,36 +130,14 @@ void actoroutput_tabbar_pixel(struct arena* win)
 }
 void actoroutput_tabbar(struct arena* win, struct style* sty)
 {
-    struct style tmp;
-    int sel = (win->forew)&0x7;
 	u64 fmt = win->fmt;
-    if(0 == sty)
-    {
-        sty = &tmp;
-        sty->vc[0] = 0.0;
-        sty->vc[1] = 1.0/20;
-        sty->vc[2] = 0.0;
-        sty->vr[0] = 1.0;
-        sty->vr[1] = 0.0;
-        sty->vr[2] = 0.0;
-        sty->vf[0] = 0.0;
-        sty->vf[1] = 19/20.0;
-        sty->vf[2] = 0.0;
-    }
-
-    if(0 == sel)actoroutput_void(win, sty);
-    else if(1 == sel)actoroutput_console(win, sty);
-    else if(2 == sel)actoroutput_overview(win, sty);
-    else if(3 == sel)actoroutput_detail(win, sty);
-    else if(4 == sel)actoroutput_editor(win, sty);
-    else if(5 == sel)actoroutput_player(win, sty);
 
 	if(_cli_ == fmt)actoroutput_tabbar_cli(win);
 	else if(_tui_ == fmt)actoroutput_tabbar_tui(win);
 	else if(_html_ == fmt)actoroutput_tabbar_html(win);
 	else if(_json_ == fmt)actoroutput_tabbar_json(win);
-	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win);
-	else actoroutput_tabbar_pixel(win);
+	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, sty);
+	else actoroutput_tabbar_pixel(win, sty);
 }
 int actorinput_tabbar(struct arena* win, struct event* ev)
 {

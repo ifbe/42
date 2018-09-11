@@ -25,6 +25,12 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
+GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
+GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
+GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
+
+
+
 
 void initobject(struct arena* w)
 {
@@ -202,10 +208,10 @@ void callback_update_eachactor(struct arena* w)
 		rel = samedstnextsrc(rel);
 	}
 }
-void callback_update(struct arena* w)
+void callback_update_eachdata(struct arena* w)
 {
 	struct texandobj* mod = w->mod;
-	callback_update_eachactor(w);
+
 
 //----------------------font3d---------------------
 	//font0000
@@ -305,6 +311,11 @@ void callback_update(struct arena* w)
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2dc].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[vert2dc].vlen, mod[vert2dc].vbuf);
+}
+void callback_update(struct arena* w)
+{
+	callback_update_eachactor(w);
+	callback_update_eachdata(w);
 }
 
 
@@ -415,53 +426,14 @@ void callback_display_eachactor(struct arena* win, struct arena* coop, float* ca
 		rel = samedstnextsrc(rel);
 	}
 }
-void fixlight(struct arena* win, u32 program)
-{
-	GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
-	GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
-	GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
-
-	GLint ac = glGetUniformLocation(program, "ambientcolor");
-	glUniform3fv(ac, 1, ambientcolor);
-
-	GLint dc = glGetUniformLocation(program, "lightcolor");
-	glUniform3fv(dc, 1, lightcolor);
-
-	GLint dp = glGetUniformLocation(program, "lightposition");
-	glUniform3fv(dp, 1, light0);
-
-	GLint ep = glGetUniformLocation(program, "eyeposition");
-	glUniform3fv(ep, 1, win->camera.vc);
-}
-void callback_display(struct arena* win, struct arena* coop)
+void callback_display_eachdata(struct arena* win, struct arena* coop, float* cammvp)
 {
 	u32 program;
 	u32 len;
 	u32 vao;
 	u32 vbo;
 	u32 ibo;
-	struct texandobj* mod;
-	GLfloat cammvp[4*4];
-
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	if(0 == coop)
-	{
-		glViewport(0, 0, win->fwidth, win->fheight);
-		fixmatrix(cammvp, win);
-	}
-	else
-	{
-		glViewport(0, 0, coop->fwidth, coop->fheight);
-		fixmatrix(cammvp, coop);
-	}
-	mat4_transpose((void*)cammvp);
-	mod = win->mod;
-
-
-	//
-	callback_display_eachactor(win, coop, cammvp);
+	struct texandobj* mod = win->mod;
 
 //--------------------glsl2dprogram------------------
 	//point,line
@@ -526,7 +498,10 @@ void callback_display(struct arena* win, struct arena* coop)
 	program = mod[vert3dc].program;
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "cammvp"), 1, GL_FALSE, cammvp);
-	fixlight(win, program);
+	glUniform3fv(glGetUniformLocation(program, "ambientcolor" ), 1, ambientcolor);
+	glUniform3fv(glGetUniformLocation(program, "lightcolor"   ), 1, lightcolor);
+	glUniform3fv(glGetUniformLocation(program, "lightposition"), 1, light0);
+	glUniform3fv(glGetUniformLocation(program, "eyeposition"  ), 1, win->camera.vc);
 
 
 	len = 3*mod[vert3dc].ilen;
@@ -652,6 +627,35 @@ void callback_display(struct arena* win, struct arena* coop)
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+}
+
+
+
+
+void callback_display(struct arena* win, struct arena* coop)
+{
+	GLfloat cammvp[4*4];
+	if(0 == coop)
+	{
+		fixmatrix(cammvp, win);
+		glViewport(0, 0, win->fwidth, win->fheight);
+	}
+	else
+	{
+		fixmatrix(cammvp, coop);
+		glViewport(0, 0, coop->fwidth, coop->fheight);
+	}
+
+
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+
+	//
+	mat4_transpose((void*)cammvp);
+	callback_display_eachdata(win, coop, cammvp);
+	callback_display_eachactor(win, coop, cammvp);
 
 
 	//

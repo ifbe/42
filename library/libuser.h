@@ -265,6 +265,16 @@ struct ofoot
 	u8 ibuf_enq;
 	u8 vbuf_enq;
 };
+struct datapair
+{
+	//[000,0ff]
+	struct ifoot ifoot;
+	u8 ipadd[0x100 - sizeof(struct ifoot)];
+
+	//[100,1ff]
+	struct ofoot ofoot;
+	u8 opadd[0x100 - sizeof(struct ofoot)];
+};
 
 
 
