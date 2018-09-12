@@ -25,14 +25,11 @@ int driverchoose(void*, int);
 void* devicelist(void*, int);
 int devicechoose(void*, int);
 //
-int parsexml_relation(void*, int);
-int parsexml(void*, int);
-int parsejson(void*, int);
+int scene_recover(void*, int);
+int scene_backup(void*, int);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
-int openreadclose(void*, u64, void*, u64);
-int openwriteclose(void*, u64, void*, u64);
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -169,22 +166,19 @@ void term_cdn(u8* buf, int len)
 void term_cmd0(u8* buf, int len)
 {
 	int ret;
-	u8 data[0x10000];
 	if(0 == buf)return;
 	if(buf[0] < 0x20)return;
 
 	if(0 == ncmp(buf, "--", 2))
 	{
 		buf += 2;
-		if(0 == ncmp(buf, "json=", 5))
+		if(0 == ncmp(buf, "backup=", 7))
 		{
-			ret = openreadclose(buf+5, 0, data, 0x10000);
-			parsejson(data, ret);
+			scene_backup(buf+7, 0);
 		}
-		else if(0 == ncmp(buf, "xml=", 4))
+		else if(0 == ncmp(buf, "recover=", 8))
 		{
-			ret = openreadclose(buf+4, 0, data, 0x10000);
-			parsexml(data, ret);
+			scene_recover(buf+8, 0);
 		}
 	}
 	else
