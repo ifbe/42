@@ -151,11 +151,11 @@ int stopfile(int fd)
 }
 int startfile(char* path, int flag)
 {
-	if(path == 0)return -3;
-	if(path[0] == 0)return -2;
+	if(0 == path)return -3;
+	if(0 == path[0])return -2;
 
-	if('w' == flag)flag = O_CREAT;
-	flag |= O_RDWR | O_LARGEFILE;
+	flag = O_RDWR | O_LARGEFILE;
+	if('w' == flag)flag |= O_CREAT;
 	return open(path, flag, S_IRWXU|S_IRWXG|S_IRWXO);
 }
 void deletefile()
