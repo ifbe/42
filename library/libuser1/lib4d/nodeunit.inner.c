@@ -7,8 +7,6 @@ void fs_register(void*);
 void graph_register(void*);
 void hex_register(void*);
 //hack
-void joystick_register(void*);
-void keyboard_register(void*);
 void rawdump_register(void*);
 void switch_register(void*);
 //item
@@ -133,12 +131,6 @@ void content_create(void* addr)
 
 //--------------------hack-------------------------
 	fs_register(temp);
-	temp += sizeof(struct actor);
-
-	joystick_register(temp);
-	temp += sizeof(struct actor);
-
-	keyboard_register(temp);
 	temp += sizeof(struct actor);
 
 	rawdump_register(temp);

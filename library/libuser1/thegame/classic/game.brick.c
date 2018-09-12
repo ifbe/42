@@ -31,7 +31,7 @@ static void brick_start(
 static void brick_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)stopmemory(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void brick_create(struct actor* act)
 {

@@ -63,5 +63,5 @@ program:
 	$(library)/libuser1/*.o \
 	-lglfw3 -lglew32 -lglu32 -lole32 -lopengl32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
-	rm -f *.o *.a *.dll
+	rm -f *.o *.a
 	make -C $(library) clean
