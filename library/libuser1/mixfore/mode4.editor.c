@@ -28,7 +28,6 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 	int j;
 	vec3 vc, vr, vf;
 
-	carveaxis(win);
 	select_3d(win, 0x404040, &win->target, 0);
 
 	//right
@@ -159,7 +158,6 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	int w = win->width;
 	int h = win->height;
 
-	drawaxis(win);
 	select_2d(win, 0x404040, &win->target, 0);
 
 	//left

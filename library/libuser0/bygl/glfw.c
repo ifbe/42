@@ -11,6 +11,20 @@ void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*, void*);
+static u8 uppercase[] = {
+	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
+	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
+	')', '!', '@', '#', '$', '%', '^', '&',		//30,37
+	'*', '(', ':', ':', '<', '+', '>', '?',		//38,3f
+	'@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',		//40,47
+	'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',		//48,4f
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//50,57
+	'X', 'Y', 'Z', '{', '|', '}', '^', '_',		//58,5f
+	'~', 'A', 'B', 'C', 'D', 'E', 'F', 'G',		//60,67
+	'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',		//68,6f
+	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//70,77
+	'X', 'Y', 'Z', '{', '|', '}', '~', ' ',		//78,7f
+};
 
 
 
@@ -22,20 +36,13 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
     printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
+	if(0x118 == key)return;		//capslock
+	if((key >= 0x154)&&(key <= 0x15b))return;	//ctrl,alt...
+
 	if(0x100 == key)
 	{
 		e.why = 0x1b;
-		e.what = hex32('k','b','d',0);
-	}
-	else if(0x101 == key)
-	{
-		e.why = 0xd;
-		e.what = hex32('c','h','a','r');
-	}
-	else if(0x103 == key)
-	{
-		e.why = 0x8;
-		e.what = hex32('c','h','a','r');
+		e.what = _kbd_;
 	}
 	else if((key >= 0x106)&&(key <= 0x109))
 	{
@@ -43,18 +50,34 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 		else if(key == 0x108)e.why = 0x50;	//down
 		else if(key == 0x107)e.why = 0x4b;	//left
 		else if(key == 0x106)e.why = 0x4d;	//right
-		e.what = hex32('k','b','d',0);
+		e.what = _kbd_;
 	}
 	else if((key >= 0x122)&&(key <= 0x12d))
 	{
-		e.why = 0xf1 + key - 0x122;
-		e.what = hex32('k','b','d',0);
+		e.why = key + 0xf1 - 0x122;
+		e.what = _kbd_;
+	}
+	else if(0x101 == key)
+	{
+		e.why = 0xd;
+		e.what = _char_;
+	}
+	else if(0x103 == key)
+	{
+		e.why = 0x8;
+		e.what = _char_;
+	}
+	else if((key >= 'A')&&(key <= 'Z'))
+	{
+		if(0 == (mods&1))key += 0x20;
+		e.why = key;
+		e.what = _char_;
 	}
 	else
 	{
-		if((key >= 'A')|(key <= 'Z'))key += 0x20;
+		if(mods&1)key = uppercase[key-0x20];
 		e.why = key;
-		e.what = hex32('c','h','a','r');
+		e.what = _char_;
 	}
 
 	e.where = (u64)win;

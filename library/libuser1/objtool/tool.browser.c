@@ -1,4 +1,5 @@
 #include "libuser.h"
+void printhtmlbody(u8* buf, int len);
 
 
 
@@ -7,6 +8,7 @@ static void browser_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
 	struct str* str = act->idx;
 	struct str* dat = act->buf;
@@ -24,14 +26,56 @@ static void browser_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
-	drawstring(win, 0xffffff, cx-ww, cy-hh, str->buf, str->len);
-	drawtext(win, 0xffffff, cx-ww, cy-hh+16, cx+ww-1, cy+hh-1, dat->buf, dat->len);
+	drawsolid_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	//address
+	x0 = cx-ww+32;
+	y0 = cy-hh+8;
+	x1 = cx+ww-32;
+	y1 = cy-hh+24;
+	drawsolid_rect(win, 0xc0c0c0, x0, y0-4, x1, y1+4);
+	drawstring(win, 0x000000, x0, y0, str->buf, str->len);
+
+	//context
+	x0 = cx-ww;
+	y0 = cy-hh+32;
+	x1 = cx+ww;
+	y1 = cy+hh;
+	drawline_rect(win, 0x404040, x0, y0, x1, y1);
+	drawtext(win, 0x000000, x0, y0, x1, y1, dat->buf, dat->len);
 }
 static void browser_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tc,tr,tf,tu;
+	struct str* str = act->idx;
+	struct str* dat = act->buf;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0xffffff, vc, vr, vf);
+
+	//address
+	tc[0] = vc[0] + vf[0]*0.95 + vu[0]*0.001;
+	tc[1] = vc[1] + vf[1]*0.95 + vu[1]*0.001;
+	tc[2] = vc[2] + vf[2]*0.95 + vu[2]*0.001;
+	tf[0] = vf[0]*0.02;
+	tf[1] = vf[1]*0.02;
+	tf[2] = vf[2]*0.02;
+	carvesolid_rect(win, 0xc0c0c0, tc, vr, tf);
+
+	tc[0] = vc[0] - vr[0] + vf[0]*0.95 + vu[0]*0.002;
+	tc[1] = vc[1] - vr[1] + vf[1]*0.95 + vu[1]*0.002;
+	tc[2] = vc[2] - vr[2] + vf[2]*0.95 + vu[2]*0.002;
+	tr[0] = vr[0]/32;
+	tr[1] = vr[1]/32;
+	tr[2] = vr[2]/32;
+	tf[0] = vf[0]*0.02;
+	tf[1] = vf[1]*0.02;
+	tf[2] = vf[2]*0.02;
+	carvestring(win, 0x000000, tc, tr, tf, str->buf, str->len);
 }
 static void browser_read_json(
 	struct arena* win, struct style* sty,
@@ -80,6 +124,7 @@ static void browser_write_event(
 	u8* buf;
 	void* www;
 	struct str* str;
+	struct str* dat;
 	if(_char_ != ev->what)return;
 
 	str = act->idx;
@@ -89,8 +134,18 @@ static void browser_write_event(
 	{
 		str->len = 0;
 
-		www = arenacreate(_html_, buf);
-		relationcreate(act, 0, _act_, www, 0, _win_);
+		if(0 == ncmp(buf, "file://", 7))
+		{
+			dat = act->buf;
+			dat->len = openreadclose(str->buf+7, 0, dat->buf, 0xf0000);
+			printhtmlbody(dat->buf, dat->len);
+			return;
+		}
+		else
+		{
+			www = arterycreate(0, buf);
+			relationcreate(act, 0, _act_, www, 0, _art_);
+		}
 	}
 	else if(0x8 == ev->why)
 	{
@@ -130,6 +185,8 @@ static void browser_write_data(
 
 	for(j=0;j<len;j++)tmp[cnt+j] = buf[j];
 	dat->len += len;
+
+	printhtmlbody(dat->buf, dat->len);
 }
 static void browser_write(
 	struct actor* act, struct pinid* pin,

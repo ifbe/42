@@ -158,17 +158,69 @@ void parsestyle(struct style* sty, u8* buf, int len)
 
 
 
-void parsehtml(u8* buf, int len)
+void printhtmlbody(u8* buf, int len)
 {
-	int j,k=0;
-	for(j=0;j<=len;j++)
-	{
-		if((j == len)|(0xa == buf[j])|(0xd == buf[j]))
-		{
-			say("[%.*s]\n", j-k, buf+k);
+	int j,k,t;
+	int sp,flag;
+	int stack[256][2];
+	char* space = "                                                           ";
 
-			if(0xd == buf[j])j++;
-			k = j+1;
+	sp = 0;
+	for(j=0;j<len;j++)
+	{
+		if('<' != buf[j])continue;
+		if('!' == buf[j+1])continue;
+
+		t = 0;
+		flag = 0;
+		for(k=1;k<16;k++)
+		{
+			if(('/' == buf[j+k])&&('>' == buf[j+k+1]))flag = 1;
+			if('>' == buf[j+k])break;
+			if(' ' == buf[j+k])
+			{
+				for(t=k+1;t<len;t++)
+				{
+					if(('/' == buf[j+t])&&('>' == buf[j+t+1]))flag = 1;
+					if('>' == buf[j+t])break;
+				}
+				break;
+			}
+		}
+		//say("%.*s\n", k-1, buf+j+1);
+
+		if('/' == buf[j+1])
+		{
+			sp--;
+			if(sp < 0)break;
+		}
+		else
+		{
+			if(sp>1)say("%.*s", (sp-1)*4, space);
+			if(sp>0)say("└───");
+			say("%.*s", k-1, buf+j+1);
+			if(t)say(" %.*s", t-k-1, buf+j+k+1);
+			say("\n");
+
+			if(flag)continue;
+			if(0 == ncmp(buf+j+1, "meta", 4))continue;
+			if(0 == ncmp(buf+j+1, "br", 2))continue;
+			if(0 == ncmp(buf+j+1, "script", 6))
+			{
+				for(k=j+7;k<len;k++)
+				{
+					if('<' != buf[k])continue;
+					if(0 == ncmp(buf+k, "</script", 8))
+					{
+						j = k+7;
+						break;
+					}
+				}
+				continue;
+			}
+			stack[sp][0] = j+1;
+			stack[sp][1] = k;
+			sp++;
 		}
 	}
 }

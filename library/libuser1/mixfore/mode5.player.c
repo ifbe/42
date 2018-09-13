@@ -7,7 +7,6 @@ void actoroutput_player_vbo(struct arena* win, struct style* sty)
 {
 	int j;
 	vec3 tc, tr, tf;
-	carveaxis(win);
 
 	//rpg.hp.bg
 	tc[0] = -0.75;
@@ -39,19 +38,20 @@ void actoroutput_player_vbo(struct arena* win, struct style* sty)
 }
 void actoroutput_player_pixel(struct arena* win, struct style* sty)
 {
-	drawaxis(win);
+	int w = win->width;
+	int h = win->height;
 
 	//rpg.hp.bg
-	drawsolid_rect(win, 0xff0000, 0, 0, win->width/4, win->height/16);
+	drawsolid_rect(win, 0xff0000, 0, 0, w/4, h/16);
 
 	//rpg.mp.bg
-	drawsolid_rect(win, 0x0000ff, win->width*3/4, 0, win->width, win->height/16);
+	drawsolid_rect(win, 0x0000ff, w*3/4, 0, w, h/16);
 
 	//rpg.hp.fg
-	drawsolid_circle(win, 0x800000, win->height/16, win->height/16, win->height/16);
+	drawsolid_circle(win, 0x800000, h/16, h/16, h/16);
 
 	//rpg.mp.fg
-	drawsolid_circle(win, 0x000080, (win->width)-(win->height/16), win->height/16, win->height/16);
+	drawsolid_circle(win, 0x000080, w-(h/16), h/16, h/16);
 }
 
 
