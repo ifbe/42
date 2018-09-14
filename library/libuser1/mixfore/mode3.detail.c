@@ -262,7 +262,11 @@ int actoroutput_detail(struct arena* win, struct style* sty)
 	else actoroutput_detail_pixel(win, sty);
 	return 0;
 }
-int actorinput_detail(struct arena* win, struct event* ev)
+
+
+
+
+int actorinput_detail(struct arena* win, struct style* sty, struct event* ev)
 {
 	return 0;
 }

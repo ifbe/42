@@ -189,23 +189,23 @@ void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
 void callback_update_eachactor(struct arena* w)
 {
 	int j;
-	u64* pi;
-	u64* po;
-	struct relation* rel = w->irel0;
+	u64* recver;
+	u64* sender;
+	struct relation* orel = w->orel0;
 	while(1)
 	{
-		if(0 == rel)break;
+		if(0 == orel)break;
 
-		pi = (void*)(rel->dstfoot) + 0x80;
-		po = (void*)(rel->srcfoot) + 0x80;
+		sender = (void*)(orel->dstfoot) + 0x80;
+		recver = (void*)(orel->srcfoot) + 0x80;
 		for(j=0;j<16;j++)
 		{
-			if(0 == po[j])break;
-			if(0 == pi[j])pi[j] = (u64)allocifoot();
-			callback_update_eachpass((void*)pi[j], (void*)po[j]);
+			if(0 == sender[j])break;
+			if(0 == recver[j])recver[j] = (u64)allocifoot();
+			callback_update_eachpass((void*)recver[j], (void*)sender[j]);
 		}
 
-		rel = samedstnextsrc(rel);
+		orel = samesrcnextdst(orel);
 	}
 }
 void callback_update_eachdata(struct arena* w)
@@ -405,25 +405,25 @@ void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp
 void callback_display_eachactor(struct arena* win, struct arena* coop, float* cammvp)
 {
 	int j;
-	u64* pi;
-	u64* po;
-	struct relation* rel;
+	u64* sender;
+	u64* recver;
+	struct relation* orel;
 
-	rel = win->irel0;
+	orel = win->orel0;
 	while(1)
 	{
-		if(0 == rel)break;
+		if(0 == orel)break;
 
-		pi = (void*)(rel->dstfoot) + 0x80;
-		po = (void*)(rel->srcfoot) + 0x80;
+		sender = (void*)(orel->dstfoot) + 0x80;
+		recver = (void*)(orel->srcfoot) + 0x80;
 		for(j=0;j<16;j++)
 		{
-			if(0 == po[j])break;
-			if(0 == pi[j])pi[j] = (u64)allocifoot();
-			callback_display_eachpass((void*)pi[j], (void*)po[j], cammvp, coop);
+			if(0 == sender[j])break;
+			if(0 == recver[j])recver[j] = (u64)allocifoot();
+			callback_display_eachpass((void*)recver[j], (void*)sender[j], cammvp, coop);
 		}
 
-		rel = samedstnextsrc(rel);
+		orel = samesrcnextdst(orel);
 	}
 }
 void callback_display_eachdata(struct arena* win, struct arena* coop, float* cammvp)

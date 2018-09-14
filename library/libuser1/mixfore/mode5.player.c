@@ -161,7 +161,7 @@ int actoroutput_player(struct arena* win, struct style* stack)
 	}
 	return 0;
 }
-int actorinput_player(struct arena* win, struct event* ev)
+int actorinput_player(struct arena* win, struct style* sty, struct event* ev)
 {
 	struct actor* act;
 	struct pinid* pin;

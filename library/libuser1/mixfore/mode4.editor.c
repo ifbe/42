@@ -247,7 +247,7 @@ void actorinput_editor_fov(struct arena* win, struct event* ev)
 		if('b' == id)win->nearstride *= 1.1;
 	}
 }
-int actorinput_editor(struct arena* win, struct event* ev)
+int actorinput_editor(struct arena* win, struct style* sty, struct event* ev)
 {
 	int x,y,w,h;
 	if(0x2d70 == ev->what)

@@ -235,7 +235,7 @@ void actoroutput_navmenu(struct arena* win, struct style* sty)
 	else if(_vbo_ == fmt)actoroutput_navmenu_vbo(win);
 	else actoroutput_navmenu_pixel(win);
 }
-int actorinput_navmenu(struct arena* win, struct event* ev)
+int actorinput_navmenu(struct arena* win, struct style* sty, struct event* ev)
 {
 	short* t;
 	int pa[2];

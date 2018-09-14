@@ -1157,7 +1157,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-void actorinput_overview(struct arena* win, struct event* ev)
+void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 {
 	short* t;
 	struct actor* act;

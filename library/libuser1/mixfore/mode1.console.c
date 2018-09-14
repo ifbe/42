@@ -98,7 +98,11 @@ void actoroutput_console(struct arena* win, struct style* sty)
 	else if(_vbo_ == fmt)actoroutput_console_vbo(win, sty);
 	else actoroutput_console_pixel(win, sty);
 }
-void actorinput_console(struct arena* win, struct event* ev)
+
+
+
+
+void actorinput_console(struct arena* win, struct style* sty, struct event* ev)
 {
 	int len;
 	u8* buf;

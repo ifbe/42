@@ -1,15 +1,15 @@
 #include "libuser.h"
-int actorinput_void(     struct arena* win, struct event* ev);
+int actorinput_void(     struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_void(    struct arena* win, struct style* sty);
-int actorinput_console(  struct arena* win, struct event* ev);
+int actorinput_console(  struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_console( struct arena* win, struct style* sty);
-int actorinput_overview( struct arena* win, struct event* ev);
+int actorinput_overview( struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_overview(struct arena* win, struct style* sty);
-int actorinput_detail(   struct arena* win, struct event* ev);
+int actorinput_detail(   struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_detail(  struct arena* win, struct style* sty);
-int actorinput_editor(   struct arena* win, struct event* ev);
+int actorinput_editor(   struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_editor(  struct arena* win, struct style* sty);
-int actorinput_player(   struct arena* win, struct event* ev);
+int actorinput_player(   struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_player(  struct arena* win, struct style* sty);
 
 
@@ -139,7 +139,11 @@ void actoroutput_tabbar(struct arena* win, struct style* sty)
 	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, sty);
 	else actoroutput_tabbar_pixel(win, sty);
 }
-int actorinput_tabbar(struct arena* win, struct event* ev)
+
+
+
+
+int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
 {
     int x,y,t;
     int w = win->width;
@@ -160,11 +164,11 @@ int actorinput_tabbar(struct arena* win, struct event* ev)
         }
     }
 
-    if(0 == sel)actorinput_void(win, ev);
-    else if(1 == sel)actorinput_console(win, ev);
-    else if(2 == sel)actorinput_overview(win, ev);
-    else if(3 == sel)actorinput_detail(win, ev);
-    else if(4 == sel)actorinput_editor(win, ev);
-    else if(5 == sel)actorinput_player(win, ev);
+    if(0 == sel)actorinput_void(win, 0, ev);
+    else if(1 == sel)actorinput_console(win, 0, ev);
+    else if(2 == sel)actorinput_overview(win, 0, ev);
+    else if(3 == sel)actorinput_detail(win, 0, ev);
+    else if(4 == sel)actorinput_editor(win, 0, ev);
+    else if(5 == sel)actorinput_player(win, 0, ev);
     return 1;
 }

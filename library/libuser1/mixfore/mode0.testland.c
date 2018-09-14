@@ -119,7 +119,11 @@ void actoroutput_void(struct arena* win, struct style* sty)
 	else if(_vbo_ == fmt)actoroutput_void_vbo(win, sty);
 	else actoroutput_void_pixel(win, sty);
 }
-void actorinput_void(struct arena* win, struct event* ev)
+
+
+
+
+void actorinput_void(struct arena* win, struct style* sty, struct event* ev)
 {
 	int x,y;
 	if('p' == (ev->what&0xff))
