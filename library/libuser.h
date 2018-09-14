@@ -851,7 +851,10 @@ int decstr2double(void* src, void* dst);
 int hexstr2data(void* str, u64 data);
 int hexstr2datastr(void* dst, void* src, int len);
 int hexstr2double(void* dst, void* src, int len);
-
+//
+int openreadclose(void*, int, void*, int);
+int openwriteclose(void*, int, void*, int);
+//
 int cmp(void*,void*);
 int ncmp(void*,void*,int);
 //

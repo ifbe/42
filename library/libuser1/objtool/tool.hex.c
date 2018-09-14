@@ -1,6 +1,4 @@
 #include "libuser.h"
-int openreadclose(void*, u64, void*, u64);
-int openwriteclose(void*, u64, void*, u64);
 int utf2unicode(u8* src,u32* dst);
 int windowread(int type, void* buf);
 
