@@ -154,6 +154,7 @@ theitem/item.picture.c \
 theitem/item.planet.c \
 theitem/item.portal.c \
 theitem/item.skydome.c \
+theitem/item.skysphere.c \
 theitem/item.terrian.c \
 theitem/item.tree.c \
 theitem/item.water.c \

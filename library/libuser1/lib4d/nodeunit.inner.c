@@ -22,6 +22,7 @@ void piano_register(void*);
 void picture_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
+void skysphere_register(void*);
 void terrian_register(void*);
 void tree_register(void*);
 void water_register(void*);
@@ -177,6 +178,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	skydome_register(temp);
+	temp += sizeof(struct actor);
+
+	skysphere_register(temp);
 	temp += sizeof(struct actor);
 
 	terrian_register(temp);

@@ -403,6 +403,7 @@ library/libuser1/theitem/item.picture.c \
 library/libuser1/theitem/item.planet.c \
 library/libuser1/theitem/item.portal.c \
 library/libuser1/theitem/item.skydome.c \
+library/libuser1/theitem/item.skysphere.c \
 library/libuser1/theitem/item.terrian.c \
 library/libuser1/theitem/item.tree.c \
 library/libuser1/theitem/item.water.c \

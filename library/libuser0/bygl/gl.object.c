@@ -627,6 +627,10 @@ void callback_display_eachdata(struct arena* win, struct arena* coop, float* cam
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glDrawElements(GL_TRIANGLES, len, GL_UNSIGNED_SHORT, 0);
+
+
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
 }
 
 
@@ -656,9 +660,4 @@ void callback_display(struct arena* win, struct arena* coop)
 	mat4_transpose((void*)cammvp);
 	callback_display_eachdata(win, coop, cammvp);
 	callback_display_eachactor(win, coop, cammvp);
-
-
-	//
-	glDisable(GL_BLEND);
-	glDepthMask(GL_TRUE);
 }
