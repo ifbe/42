@@ -268,7 +268,7 @@ void carvetext2d_reverse(struct arena* win, u32 rgb,
 	if(0 == buf)return;
 	if(0 == len)return;
 
-	f = 16.0 / (float)(win->fheight);
+	f = 16.0 / (float)(win->fbheight);
 	tf[0] = vf[0] * f;
 	tf[1] = vf[1] * f;
 	tf[2] = vf[2] * f;
@@ -282,7 +282,7 @@ void carvetext2d_reverse(struct arena* win, u32 rgb,
 	{
 		if(tc[1] >= 1.0)break;
 
-		f = 32.0 / (float)(win->fwidth);
+		f = 32.0 / (float)(win->fbwidth);
 		tr[0] = vr[0] * f;
 		tr[1] = vr[1] * f;
 		tr[2] = vr[2] * f;

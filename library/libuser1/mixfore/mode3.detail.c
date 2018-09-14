@@ -85,7 +85,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		if(8 == j)buf = (void*)&win->tier;
 		else if(9 == j)buf = (void*)&win->type;
 		else if(10 == j)buf = (void*)&win->fmt;
-		else if(11 == j)buf = (void*)&win->name;
+		else if(11 == j)buf = (void*)&win->vfmt;
 		else continue;
 		tc[2] = -0.8;
 		carvestring2d_center(win, 0x000000, tc, tr, tf, buf, 8);
@@ -210,7 +210,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		if(8 == j)buf = (void*)&win->tier;
 		else if(9 == j)buf = (void*)&win->type;
 		else if(10 == j)buf = (void*)&win->fmt;
-		else if(11 == j)buf = (void*)&win->name;
+		else if(11 == j)buf = (void*)&win->vfmt;
 		else continue;
 		drawstring_fit(win, 0x000000, x0, y0, x1, y1, buf, 8);
 	}

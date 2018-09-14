@@ -642,12 +642,12 @@ void callback_display(struct arena* win, struct arena* coop)
 	if(0 == coop)
 	{
 		fixmatrix(cammvp, win);
-		glViewport(0, 0, win->fwidth, win->fheight);
+		glViewport(0, 0, win->fbwidth, win->fbheight);
 	}
 	else
 	{
 		fixmatrix(cammvp, coop);
-		glViewport(0, 0, coop->fwidth, coop->fheight);
+		glViewport(0, 0, coop->fbwidth, coop->fbheight);
 	}
 
 

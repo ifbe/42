@@ -66,10 +66,10 @@ void windowprepare(struct arena* win)
 	x = ANativeWindow_getWidth(theapp->window);
 	y = ANativeWindow_getHeight(theapp->window);
 	z = (x+y)/2;
-	win->width  = win->fwidth  = x;
-	win->stride = win->fstride = x;
-	win->height = win->fheight = y;
-	win->depth  = win->fdepth  = z;
+	win->width  = win->fbwidth  = x;
+	win->stride = win->fbstride = x;
+	win->height = win->fbheight = y;
+	win->depth  = win->fbdepth  = z;
 	ANativeWindow_setBuffersGeometry(theapp->window, 0, 0, format);
 
 	surface = eglCreateWindowSurface(display, config, theapp->window, NULL);
@@ -277,10 +277,10 @@ void windowdelete(struct arena* win)
 void windowcreate(struct arena* win)
 {
 	win->fmt = _vbo_;
-	win->width  = win->fwidth  = 1024;
-	win->stride = win->fstride = 1024;
-	win->height = win->fheight = 1024;
-	win->depth  = win->fdepth  = 1024;
+	win->width  = win->fbwidth  = 1024;
+	win->stride = win->fbstride = 1024;
+	win->height = win->fbheight = 1024;
+	win->depth  = win->fbdepth  = 1024;
 
 	thewin = win;
 	theapp->onAppCmd = handle_cmd;

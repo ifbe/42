@@ -395,10 +395,10 @@ struct object
 	int height;
 	int depth;
 	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[0x80,0xbf]
 	u8 self[0x20];
@@ -458,10 +458,10 @@ struct element
 	int height;
 	int depth;
 	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[80,ff]
 	u8 data[0x80];
@@ -513,7 +513,7 @@ struct arena
 	u64 tier;
 	u64 type;
 	u64 fmt;
-	u64 name;
+	u64 vfmt;
 
 	//[60,7f]
 	u64 haha0;
@@ -528,10 +528,10 @@ struct arena
 	int stride;
 
 	//[90,9f]: fb geom
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[a0,af]: near plane
 	float nearwidth;
@@ -633,10 +633,10 @@ struct actor
 	int height;
 	int depth;
 	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[80,bf]vec
 	union{

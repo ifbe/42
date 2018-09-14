@@ -193,10 +193,10 @@ struct object
 	int height;
 	int depth;
 	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[0x80,0xbf]
 	u8 self[0x20];
@@ -258,10 +258,10 @@ struct element
 	int height;
 	int depth;
 	int stride;
-	int fwidth;
-	int fheight;
-	int fdepth;
-	int fstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[80,ff]
 	u8 data[0x80];

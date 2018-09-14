@@ -175,8 +175,8 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
 	struct arena* win = glfwGetWindowUserPointer(fw);
-	win->fwidth = win->fstride = w;
-	win->fheight = h;
+	win->fbwidth = win->fbstride = w;
+	win->fbheight = h;
 
 	glfwGetWindowSize(fw, &w, &h);
 	win->width = win->stride = w;
@@ -209,8 +209,8 @@ void windowopen(struct arena* r, struct arena* w)
 	w->win = fw;
 	w->map = 0;
 	glfwGetFramebufferSize(fw, &x, &y);
-	w->fwidth = w->fstride = x;
-	w->fheight = y;
+	w->fbwidth = w->fbstride = x;
+	w->fbheight = y;
 
 	//3.callback
 	glfwSetDropCallback(fw, callback_drop);
