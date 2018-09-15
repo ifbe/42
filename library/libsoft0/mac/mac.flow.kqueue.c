@@ -96,6 +96,11 @@ int kqueuethread(int argc, const char * argv[])
 			}
 
 			cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
+			if(cnt >= 0)
+			{
+				//printmemory(buf, cnt);
+				systemwrite(&obj[fd], obj[fd].peer, 0, 0, buf, cnt);
+			}
 			if(cnt <= 0)
 			{
 				kqueue_del(fd);
@@ -106,8 +111,6 @@ int kqueuethread(int argc, const char * argv[])
 				obj[fd].thatfd = 0;
 				continue;
 			}
-
-			systemwrite(&obj[fd], obj[fd].peer, 0, 0, buf, cnt);
 		}//for
 	}//while1
 	return 0;
