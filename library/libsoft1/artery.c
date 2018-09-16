@@ -131,6 +131,7 @@ void* arterycreate(u64 type, void* argstr)
 {
 	int j,fd,ret,port;
 	struct element* e;
+	struct element* f;
 	u8* url = argstr;
 	if(0 == type)
 	{
@@ -184,6 +185,20 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _http_;
 		if(url)httpclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_https_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _http_;
+		if(url)
+		{
+			f = arterycreate(_tls_, url);
+			relationcreate(e, 0, _art_, f, 0, _art_);
+		}
 
 		return e;
 	}
