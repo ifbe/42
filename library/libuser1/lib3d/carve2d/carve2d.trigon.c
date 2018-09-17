@@ -3,6 +3,20 @@
 #define tau (PI*2)
 #define acc 24
 #define trigonv 14
+int trigon2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+{
+	struct datapair* mod = win->mod;
+	struct glsrc* src = &mod[id].src;
+	int vlen = src->vbuf_h;
+	int ilen = src->ibuf_h;
+
+	*vbuf = (src->vbuf) + (24*vlen);
+	*ibuf = (src->ibuf) + (6*ilen);
+	src->vbuf_h += vcnt;
+	src->ibuf_h += icnt;
+
+	return vlen;
+}
 
 
 
@@ -14,13 +28,9 @@ void carvesolid2d_triangle(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[trigonv].ilen;
-	int vlen = mod[trigonv].vlen;
-	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
-	float* vbuf = (mod[trigonv].vbuf) + (24*vlen);
-	mod[trigonv].ilen += 1;
-	mod[trigonv].vlen += 3;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, 3, 1);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -54,13 +64,9 @@ void carvesolid2d_rect(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[trigonv].ilen;
-	int vlen = mod[trigonv].vlen;
-	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
-	float* vbuf = (mod[trigonv].vbuf) + (24*vlen);
-	mod[trigonv].ilen += 2;
-	mod[trigonv].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -108,13 +114,9 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[trigonv].ilen;
-	int vlen = mod[trigonv].vlen;
-	u16* ibuf = (mod[trigonv].ibuf) + (6*ilen);
-	float* vbuf = (mod[trigonv].vbuf) + (24*vlen);
-	mod[trigonv].ilen += acc;
-	mod[trigonv].vlen += acc+1;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, acc+1, acc);
 
 	for(j=0;j<acc;j++)
 	{

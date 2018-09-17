@@ -4,6 +4,20 @@
 #define tau (PI*2)
 #define acc 24
 #define linev 13
+int line2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+{
+	struct datapair* mod = win->mod;
+	struct glsrc* src = &mod[id].src;
+	int vlen = src->vbuf_h;
+	int ilen = src->ibuf_h;
+
+	*vbuf = (src->vbuf) + (24*vlen);
+	*ibuf = (src->ibuf) + (4*ilen);
+	src->vbuf_h += vcnt;
+	src->ibuf_h += icnt;
+
+	return vlen;
+}
 
 
 
@@ -15,13 +29,9 @@ void carveline2d(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 1;
-	mod[linev].vlen += 2;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 2, 1);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -51,13 +61,9 @@ void carveline2d_arrow(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 3;
-	mod[linev].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -120,13 +126,9 @@ void carveline2d_bezier(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += acc;
-	mod[linev].vlen += acc + 1;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, acc + 1, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -156,13 +158,9 @@ void carveline2d_yshape(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 3;
-	mod[linev].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -206,13 +204,9 @@ void carveline2d_triangle(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 3;
-	mod[linev].vlen += 3;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 3, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -249,13 +243,9 @@ void carveline2d_rect(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 4;
-	mod[linev].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 4, 4);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -303,13 +293,9 @@ void carveline2d_hexagon(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += 6;
-	mod[linev].vlen += 6;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, 6, 6);
 
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
@@ -395,13 +381,9 @@ void carveline2d_circle(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[linev].ilen;
-	int vlen = mod[linev].vlen;
-	u16* ibuf = (mod[linev].ibuf) + (4*ilen);
-	float* vbuf  = (mod[linev].vbuf) + (24*vlen);
-	mod[linev].ilen += lineacc;
-	mod[linev].vlen += lineacc;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line2d_vars(win, linev, &vbuf, &ibuf, lineacc, lineacc);
 
 	q[0] = 0.0;
 	q[1] = 0.0;

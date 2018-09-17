@@ -32,160 +32,114 @@ GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
 
 
 
-void initobject(struct arena* w)
+void initobject(struct arena* win)
 {
-	struct texandobj* mod;
-	w->mod = malloc(0x10000);
-	w->buf = malloc(0x400000);
-	mod = w->mod;
+	int j;
+	u8* buf = malloc(0x10000);
 
-//--------------------font3d-------------------
-	//[0000,3fff]
-	mod[font3d0].vbuf = malloc(0x200000);
-	mod[font3d0].vlen = 0;
-	mod[font3d0].ibuf = malloc(0x100000);
-	mod[font3d0].ilen = 0;
-
-	//[4000,7fff]
-	mod[font3d1].vbuf = malloc(0x200000);
-	mod[font3d1].vlen = 0;
-	mod[font3d1].ibuf = malloc(0x100000);
-	mod[font3d1].ilen = 0;
-
-	//[8000,bfff]
-	mod[font3d2].vbuf = malloc(0x200000);
-	mod[font3d2].vlen = 0;
-	mod[font3d2].ibuf = malloc(0x100000);
-	mod[font3d2].ilen = 0;
-
-	//[c000,ffff]
-	mod[font3d3].vbuf = malloc(0x200000);
-	mod[font3d3].vlen = 0;
-	mod[font3d3].ibuf = malloc(0x100000);
-	mod[font3d3].ilen = 0;
-
-//--------------------font2d-------------------
-	//[0000,3fff]
-	mod[font2d0].vbuf = malloc(0x200000);
-	mod[font2d0].vlen = 0;
-	mod[font2d0].ibuf = malloc(0x100000);
-	mod[font2d0].ilen = 0;
-
-	//[4000,7fff]
-	mod[font2d1].vbuf = malloc(0x200000);
-	mod[font2d1].vlen = 0;
-	mod[font2d1].ibuf = malloc(0x100000);
-	mod[font2d1].ilen = 0;
-
-	//[8000,bfff]
-	mod[font2d2].vbuf = malloc(0x200000);
-	mod[font2d2].vlen = 0;
-	mod[font2d2].ibuf = malloc(0x100000);
-	mod[font2d2].ilen = 0;
-
-	//[c000,ffff]
-	mod[font2d3].vbuf = malloc(0x200000);
-	mod[font2d3].vlen = 0;
-	mod[font2d3].ibuf = malloc(0x100000);
-	mod[font2d3].ilen = 0;
-
-//--------------------3d-------------------
-	//drawarray.point
-	mod[vert3da].vbuf = malloc(0x100000);
-	mod[vert3da].vlen = 0;
-
-	//drawelement.line
-	mod[vert3db].ibuf = malloc(0x100000);
-	mod[vert3db].ilen = 0;
-	mod[vert3db].vbuf = malloc(0x100000);
-	mod[vert3db].vlen = 0;
-
-	//drawelement.trigon
-	mod[vert3dc].ibuf = malloc(0x100000);
-	mod[vert3dc].ilen = 0;
-	mod[vert3dc].vbuf = malloc(0x1000000);
-	mod[vert3dc].vlen = 0;
-
-//----------------------2d--------------------
-	//drawarray.point
-	mod[vert2da].vbuf = malloc(0x100000);
-	mod[vert2da].vlen = 0;
-
-	//drawelement.line
-	mod[vert2db].ibuf = malloc(0x100000);
-	mod[vert2db].ilen = 0;
-	mod[vert2db].vbuf = malloc(0x100000);
-	mod[vert2db].vlen = 0;
-
-	//drawelement.trigon
-	mod[vert2dc].ibuf = malloc(0x100000);
-	mod[vert2dc].ilen = 0;
-	mod[vert2dc].vbuf = malloc(0x100000);
-	mod[vert2dc].vlen = 0;
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+	win->mod = buf;
 }
 
 
 
 
-void callback_update_eachpass(struct ifoot* fi, struct ofoot* fo)
+void update_eachpass(struct gldst* dst, struct glsrc* src)
 {
 	u32 fd;
 	int w,h,fmt;
 	void* buf0;
 	void* buf1;
-	//say("%llx,%llx\n", fi, fo);
+	//say("%llx,%llx\n", dst, src);
 
 	//0: shader
-	if(fi->shader_deq != fo->shader_enq[0])
+	if(dst->shader_deq != src->shader_enq[0])
 	{
-		buf0 = (void*)(fo->vs);
-		buf1 = (void*)(fo->fs);
+		//say("@1\n");
+		buf0 = (void*)(src->vs);
+		buf1 = (void*)(src->fs);
 		if((0 != buf0)&&(0 != buf1))
 		{
 			fd = shaderprogram(buf0, buf1);
 
-			fi->shader = fd;
+			dst->shader = fd;
 			say("(%llx,%llx)->%x\n", buf0, buf1, fd);
 		}
 
-		fi->shader_deq = fo->shader_enq[0];
+		dst->shader_deq = src->shader_enq[0];
 	}
 
 	//1: argument
-	if(fi->arg_deq[0] != fo->arg_enq[0])
+	if(dst->arg_deq[0] != src->arg_enq[0])
 	{
-		say("arg=%x\n", fo->arg[0]);
-		fi->arg_deq[0] = fo->arg_enq[0];
+		say("arg=%x\n", src->arg[0]);
+		dst->arg_deq[0] = src->arg_enq[0];
 	}
 
 	//2: texture
-	if(fi->tex_deq[0] != fo->tex_enq[0])
+	if(dst->tex_deq[0] != src->tex_enq[0])
 	{
-		buf0 = (void*)(fo->tex[0]);
+		//say("@3\n");
+		buf0 = (void*)(src->tex[0]);
 		if(0 != buf0)
 		{
-			fmt = fo->tex_fmt[0];
-			w = fo->tex_w[0];
-			h = fo->tex_h[0];
-			fd = uploadtexture(fi, fo, buf0, fmt, w, h);
+			fmt = src->tex_fmt[0];
+			w = src->tex_w[0];
+			h = src->tex_h[0];
+			fd = uploadtexture(dst, src, buf0, fmt, w, h);
 
-			fi->tex[0] = fd;
+			dst->tex[0] = fd;
 			say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
-		fi->tex_deq[0] = fo->tex_enq[0];
+		dst->tex_deq[0] = src->tex_enq[0];
 	}
 
 	//3: vertex
-	if(	(fi->vbo_deq != fo->vbuf_enq) |
-		(fi->ibo_deq != fo->ibuf_enq) )
+	if(	(dst->vbo_deq != src->vbuf_enq) |
+		(dst->ibo_deq != src->ibuf_enq) )
 	{
-		uploadvertex(fi, fo);
-		//say("(%x,%x,%x)\n", fi->vao, fi->vbo, fi->ibo);
-		fi->vbo_deq = fo->vbuf_enq;
-		fi->ibo_deq = fo->ibuf_enq;
+		//say("@4\n");
+		uploadvertex(dst, src);
+		//say("(%x,%x,%x)\n", dst->vao, dst->vbo, dst->ibo);
+		dst->vbo_deq = src->vbuf_enq;
+		dst->ibo_deq = src->ibuf_enq;
 	}
 }
+void callback_update(struct arena* win)
+{
+	int j;
+	u64* recver;
+	u64* sender;
+	struct relation* orel;
+	struct datapair* mod;
+
+	//test
+	//
+
+	//local
+	mod = win->mod;
+	for(j=0;j<16;j++)update_eachpass(&mod[j].dst, &mod[j].src);
+
+	//actor
+	orel = win->orel0;
+	while(1)
+	{
+		if(0 == orel)break;
+
+		sender = (void*)(orel->dstfoot) + 0x80;
+		recver = (void*)(orel->srcfoot) + 0x80;
+		for(j=0;j<16;j++)
+		{
+			if(0 == sender[j])break;
+			if(0 == recver[j])recver[j] = (u64)allocifoot();
+			update_eachpass((void*)recver[j], (void*)sender[j]);
+		}
+
+		orel = samesrcnextdst(orel);
+	}
+}
+/*
 void callback_update_eachactor(struct arena* w)
 {
 	int j;
@@ -210,12 +164,11 @@ void callback_update_eachactor(struct arena* w)
 }
 void callback_update_eachdata(struct arena* w)
 {
-	struct texandobj* mod = w->mod;
-
+	struct datapair* mod = w->mod;
 
 //----------------------font3d---------------------
 	//font0000
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].dst.ibo);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 6*mod[font3d0].ilen, mod[font3d0].ibuf);
 
 	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d0].vbo);
@@ -312,11 +265,7 @@ void callback_update_eachdata(struct arena* w)
 	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2dc].vbo);
 	glBufferSubData(GL_ARRAY_BUFFER,0, 24*mod[vert2dc].vlen, mod[vert2dc].vbuf);
 }
-void callback_update(struct arena* w)
-{
-	callback_update_eachactor(w);
-	callback_update_eachdata(w);
-}
+*/
 
 
 
@@ -366,42 +315,117 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 	}
 	return vao;
 }
-void callback_display_eachpass(struct ifoot* fi, struct ofoot* fo, float* cammvp, struct arena* coop)
+void display_eachpass(struct gldst* dst, struct glsrc* src, float* cammvp, struct arena* coop)
 {
+	int j;
 	u32 fmt;
 	u32 vbo;
 	u32 vao;
-	if(0 == fi->shader)return;
-	if(0 == fi->vao)return;
+	if(0 == dst->shader)return;
+	if(0 == dst->vao)return;
 
-	glUseProgram(fi->shader);
-	glUniformMatrix4fv(
-		glGetUniformLocation(fi->shader, "cammvp"),
-		1, GL_FALSE, cammvp
-	);
+	//0.shader
+	glUseProgram(dst->shader);
 
-	if(fi->tex[0])
+	//1.argument
+	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
+	if(0)
 	{
-		glUniform1i(glGetUniformLocation(fi->shader, "tex0"), 0);
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+		//glUniform3fv(glGetUniformLocation(program, "ambientcolor" ), 1, ambientcolor);
+		//glUniform3fv(glGetUniformLocation(program, "lightcolor"   ), 1, lightcolor);
+		//glUniform3fv(glGetUniformLocation(program, "lightposition"), 1, light0);
+		//glUniform3fv(glGetUniformLocation(program, "eyeposition"  ), 1, win->camera.vc);
 	}
 
-	fmt = fo->vbuf_fmt;
-	vbo = fi->vbo;
-	vao = fi->vao;
+	//2.texture
+	for(j=0;j<1;j++)
+	{
+		if(0 == dst->tex[j])continue;
+		//say("tex:%d\n", dst->tex[j]);
+		glUniform1i(glGetUniformLocation(dst->shader, "tex0"), j);
+		glActiveTexture(GL_TEXTURE0 + j);
+		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
+	}
+
+	//3.vertex
+	fmt = src->vbuf_fmt;
+	vbo = dst->vbo;
+	vao = dst->vao;
 	vao = fixvao(coop, fmt, vao, vbo);
 	glBindVertexArray(vao);
-	if('i' == fo->method)
+//say("%d,%d,%d,%d,%d,%d\n", dst->shader, dst->tex[0], vao, vbo, src->ibuf_h, src->vbuf_h);
+
+	if('i' == src->method)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
-		glDrawElements(GL_TRIANGLES, 3*fo->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
+		if(1 == src->geometry)glDrawElements(GL_POINTS, src->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		else if(2 == src->geometry)glDrawElements(GL_LINES, 2*src->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		else glDrawElements(GL_TRIANGLES, 3*src->ibuf_h, GL_UNSIGNED_SHORT, 0);
 	}
 	else
 	{
-		glDrawArrays(GL_TRIANGLES, 0, fo->vbuf_h);
+		if(1 == src->geometry)glDrawArrays(GL_POINTS, 0, src->vbuf_h);
+		else if(2 == src->geometry)glDrawArrays(GL_LINES, 0, src->vbuf_h);
+		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
+	}
+	
+}
+void callback_display(struct arena* win, struct arena* coop)
+{
+	int j;
+	u64* sender;
+	u64* recver;
+	struct relation* orel;
+	struct datapair* mod;
+	GLfloat cammvp[4*4];
+
+	//matrix
+	if(0 == coop)
+	{
+		fixmatrix(cammvp, win);
+		glViewport(0, 0, win->fbwidth, win->fbheight);
+	}
+	else
+	{
+		fixmatrix(cammvp, coop);
+		glViewport(0, 0, coop->fbwidth, coop->fbheight);
+	}
+	mat4_transpose((void*)cammvp);
+
+	//prepare
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	//local
+	mod = win->mod;
+	for(j=8;j<15;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	for(j=0;j<8;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
+
+	//actor
+	orel = win->orel0;
+	while(1)
+	{
+		if(0 == orel)break;
+
+		sender = (void*)(orel->dstfoot) + 0x80;
+		recver = (void*)(orel->srcfoot) + 0x80;
+		for(j=0;j<16;j++)
+		{
+			if(0 == sender[j])break;
+			if(0 == recver[j])recver[j] = (u64)allocifoot();
+			display_eachpass((void*)recver[j], (void*)sender[j], cammvp, coop);
+		}
+
+		orel = samesrcnextdst(orel);
 	}
 }
+/*
 void callback_display_eachactor(struct arena* win, struct arena* coop, float* cammvp)
 {
 	int j;
@@ -632,32 +656,4 @@ void callback_display_eachdata(struct arena* win, struct arena* coop, float* cam
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-
-
-
-
-void callback_display(struct arena* win, struct arena* coop)
-{
-	GLfloat cammvp[4*4];
-	if(0 == coop)
-	{
-		fixmatrix(cammvp, win);
-		glViewport(0, 0, win->fbwidth, win->fbheight);
-	}
-	else
-	{
-		fixmatrix(cammvp, coop);
-		glViewport(0, 0, coop->fbwidth, coop->fbheight);
-	}
-
-
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-
-	//
-	mat4_transpose((void*)cammvp);
-	callback_display_eachdata(win, coop, cammvp);
-	callback_display_eachactor(win, coop, cammvp);
-}
+*/

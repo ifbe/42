@@ -4,16 +4,8 @@ void carvesnowman(struct arena* win, u32 rgb, vec3 vc);
 
 
 
-static struct arena* arena = 0;
-static struct actor* actor = 0;
-static struct style* style = 0;
-static struct pinid* pinid = 0;
 void bgfg_create(void* addr)
 {
-	arena = addr + 0x000000;
-	actor = addr + 0x100000;
-	style = addr + 0x200000;
-	pinid = addr + 0x300000;
 }
 
 
@@ -40,11 +32,11 @@ void background_pixel(struct arena* win)
 void background_vbo(struct arena* win)
 {
 	int j;
-	struct texandobj* mod = win->mod;
-	for(j=0;j<16;j++)
+	struct datapair* mod = win->mod;
+	for(j=0;j<15;j++)
 	{
-		mod[j].ilen = 0;
-		mod[j].vlen = 0;
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
 	}
 /*
 	if((win->edit) | (0 <= win->theone) | (0 == win->irel))
@@ -100,8 +92,10 @@ void foreground_pixel(struct arena* win)
 }
 void foreground_vbo(struct arena* win)
 {
+	int j;
 	struct arena* coop;
 	struct relation* rel;
+	struct datapair* mod;
 
 	rel = win->irel0;
 	while(1)
@@ -114,6 +108,13 @@ void foreground_vbo(struct arena* win)
 			carvesnowman(win, 0xffffff, coop->target.vc);
 		}
 		rel = samedstnextsrc(rel);
+	}
+
+	mod = win->mod;
+	for(j=0;j<15;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
 	}
 }
 void foreground_json(struct arena* win)

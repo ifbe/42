@@ -16,7 +16,7 @@
 #else
 	#include <GL/glew.h>
 	#define GL_SINGLE GL_RED
-	#define GL_BORDER GL_CLAMP_TO_BORDER
+	#define GL_BORDER GL_REPEAT		//GL_CLAMP_TO_BORDER
 #endif
 
 void drawascii_alpha(void* buf, int w, int h, int x, int y, u8 c);
@@ -29,12 +29,12 @@ int ispowerof2(int x)
 {
 	return (x & (x-1)) == 0;
 }
-GLuint uploadtexture(struct ifoot* fi, struct ofoot* fo,
+GLuint uploadtexture(struct gldst* dst, struct glsrc* src,
 	void* buf, int fmt, int w, int h)
 {
-	if(fi->tex[0])
+	if(dst->tex[0])
 	{
-		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+		glBindTexture(GL_TEXTURE_2D, dst->tex[0]);
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0,
 			0, 0, w, h,
@@ -43,8 +43,8 @@ GLuint uploadtexture(struct ifoot* fi, struct ofoot* fo,
 	}
 	else
 	{
-		glGenTextures(1, &fi->tex[0]);
-		glBindTexture(GL_TEXTURE_2D, fi->tex[0]);
+		glGenTextures(1, &dst->tex[0]);
+		glBindTexture(GL_TEXTURE_2D, dst->tex[0]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -73,13 +73,17 @@ GLuint uploadtexture(struct ifoot* fi, struct ofoot* fo,
 		}
 	}
 
-	return fi->tex[0];
+	return dst->tex[0];
 }
-void inittexture(struct arena* w)  
+void inittexture(struct arena* win)  
 {
 	int j;
-	u8* buf = w->buf;
-	struct texandobj* mod = w->mod;
+	GLuint tex;
+	struct datapair* mod;
+
+	//prepare
+	mod = win->mod;
+	u8* buf = malloc(0x400000);
 
 
 //---------------------[0000,3fff]------------------------
@@ -97,8 +101,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[font3d0].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[font3d0].tex);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -107,6 +111,9 @@ void inittexture(struct arena* w)
 		GL_SINGLE, 2048, 2048, 0,
 		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
+
+	mod[font3d0].dst.tex[0] = tex;
+	mod[font2d0].dst.tex[0] = tex;
 
 
 //---------------------[4000,7fff]----------------------
@@ -118,8 +125,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[font3d1].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[font3d1].tex);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -128,6 +135,9 @@ void inittexture(struct arena* w)
 		GL_SINGLE, 2048, 2048, 0,
 		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
+
+	mod[font3d1].dst.tex[0] = tex;
+	mod[font2d1].dst.tex[0] = tex;
 
 
 //------------------[8000,bfff]---------------------
@@ -139,8 +149,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[font3d2].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[font3d2].tex);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -149,6 +159,9 @@ void inittexture(struct arena* w)
 		GL_SINGLE, 2048, 2048, 0,
 		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
+
+	mod[font3d2].dst.tex[0] = tex;
+	mod[font2d2].dst.tex[0] = tex;
 
 
 //----------------[c000,ffff]--------------------
@@ -160,8 +173,8 @@ void inittexture(struct arena* w)
 		);
 	}
 
-	glGenTextures(1, &(mod[font3d3].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[font3d3].tex);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -171,7 +184,9 @@ void inittexture(struct arena* w)
 		GL_SINGLE, GL_UNSIGNED_BYTE, buf
 	);
 
-	//for(j=0;j<4;j++)say("tex%d=%x\n", j, mod[j].tex);
+	mod[font3d3].dst.tex[0] = tex;
+	mod[font2d3].dst.tex[0] = tex;
+
 /*
 //------------------2d screen--------------------
 	glGenTextures(1, &(mod[4].tex));

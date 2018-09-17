@@ -178,30 +178,30 @@ static void model_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct ofoot* opin;
+	struct glsrc* src;
 	if(0 == pin)return;
 
 	//
-	opin = allocofoot();
+	src = allocofoot();
 
 	//shader
-	opin->vs = (u64)model_glsl_v;
-	opin->fs = (u64)model_glsl_f;
+	src->vs = model_glsl_v;
+	src->fs = model_glsl_f;
 
 	//vertex
-	opin->vbuf = (u64)(act->buf);
-	opin->vbuf_fmt = vbuffmt_33;
-	opin->vbuf_w = act->width;
-	opin->vbuf_h = act->height;
-	opin->method = 'v';
+	src->vbuf = act->buf;
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = act->width;
+	src->vbuf_h = act->height;
+	src->method = 'v';
 
 	//send!
-	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 0;
-	opin->tex_enq[0] = 0;
-	opin->vbuf_enq = 42;
-	opin->ibuf_enq = 0;
-	pin->foot[0] = (u64)opin;
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->tex_enq[0] = 0;
+	src->vbuf_enq = 42;
+	src->ibuf_enq = 0;
+	pin->foot[0] = (u64)src;
 }
 static void model_delete(struct actor* act)
 {

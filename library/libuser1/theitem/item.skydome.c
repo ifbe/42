@@ -86,19 +86,19 @@ static void skydome_read_vbo(
 {
 	void* vbuf;
 	void* ibuf;
-	struct ofoot* opin;
+	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->buf)return;
 
-	opin = (void*)(pin->foot[0]);
-	vbuf = (void*)(opin->vbuf);
-	ibuf = (void*)(opin->ibuf);
+	src = (void*)(pin->foot[0]);
+	vbuf = (void*)(src->vbuf);
+	ibuf = (void*)(src->ibuf);
 	carveskydome(vbuf, ibuf, vc, vr, vf, vu);
-	opin->vbuf_enq += 1;
-	opin->ibuf_enq += 1;
+	src->vbuf_enq += 1;
+	src->ibuf_enq += 1;
 }
 static void skydome_read_json(
 	struct arena* win, struct style* sty,
@@ -173,40 +173,40 @@ static void skydome_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct ofoot* opin;
+	struct glsrc* src;
 	if(0 == pin)return;
 
 	//
-	opin = allocofoot();
+	src = allocofoot();
 
 	//shader
-	opin->vs = (u64)skydome_glsl_v;
-	opin->fs = (u64)skydome_glsl_f;
+	src->vs = skydome_glsl_v;
+	src->fs = skydome_glsl_f;
 
 	//texture
-	opin->tex[0] = (u64)(act->buf);
-	opin->tex_fmt[0] = hex32('r','g','b','a');
-	opin->tex_w[0] = act->width;
-	opin->tex_h[0] = act->height;
+	src->tex[0] = act->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 
 	//vertex
-	opin->vbuf = (u64)memorycreate(4*6*129);
-	opin->vbuf_fmt = vbuffmt_33;
-	opin->vbuf_w = 4*6;
-	opin->vbuf_h = 128+1;
-	opin->ibuf = (u64)memorycreate(2*3*256);
-	opin->ibuf_fmt = 0x222;
-	opin->ibuf_w = 2*3;
-	opin->ibuf_h = 256;
-	opin->method = 'i';
+	src->vbuf = memorycreate(4*6*129);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = 128+1;
+	src->ibuf = memorycreate(2*3*256);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 256;
+	src->method = 'i';
 
 	//send!
-	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 0;
-	opin->tex_enq[0] = 42;
-	opin->vbuf_enq = 0;
-	opin->ibuf_enq = 0;
-	pin->foot[0] = (u64)opin;
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->tex_enq[0] = 42;
+	src->vbuf_enq = 0;
+	src->ibuf_enq = 0;
+	pin->foot[0] = (u64)src;
 }
 static void skydome_delete(struct actor* act)
 {

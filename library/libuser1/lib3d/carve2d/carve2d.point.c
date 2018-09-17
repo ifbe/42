@@ -3,6 +3,17 @@
 #define tau (PI*2)
 #define acc 18
 #define pointv 12
+int point2d_vars(struct arena* win, int id, float** vbuf, int vcnt)
+{
+	struct datapair* mod = win->mod;
+	struct glsrc* src = &mod[id].src;
+	int vlen = src->vbuf_h;
+
+	*vbuf = (src->vbuf) + (24*vlen);
+	src->vbuf_h += vcnt;
+
+	return vlen;
+}
 
 
 
@@ -13,9 +24,8 @@ void carvepoint2d(struct arena* win, u32 rgb, vec3 vc)
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
-	mod[pointv].vlen += 1;
+	float* vbuf;
+	point2d_vars(win, pointv, &vbuf, 1);
 
 	vbuf[0] = vc[0];
 	vbuf[1] = vc[1];
@@ -33,9 +43,8 @@ void carvepoint2d_bezier(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
-	mod[pointv].vlen += acc;
+	float* vbuf;
+	point2d_vars(win, pointv, &vbuf, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -77,9 +86,8 @@ void carvepoint2d_circle(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	float* vbuf  = (mod[pointv].vbuf) + (24*mod[pointv].vlen);
-	mod[pointv].vlen += acc;
+	float* vbuf;
+	point2d_vars(win, pointv, &vbuf, acc);
 
 	q[0] = 0.0;
 	q[1] = 0.0;

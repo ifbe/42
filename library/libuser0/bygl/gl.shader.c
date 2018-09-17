@@ -15,11 +15,11 @@
 		GLSL_VERSION
 		"in mediump vec3 origcolor;\n"
 		"in mediump vec2 texuv;\n"
-		"uniform sampler2D tex2d;\n"
+		"uniform sampler2D tex0;\n"
 		"out mediump vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"
-			"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).aaaa;\n"
+			"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv).aaaa;\n"
 		"}\n"
 	};
 #else
@@ -28,11 +28,11 @@
 		GLSL_VERSION
 		"in mediump vec3 origcolor;\n"
 		"in mediump vec2 texuv;\n"
-		"uniform sampler2D tex2d;\n"
+		"uniform sampler2D tex0;\n"
 		"out mediump vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"
-			"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv).rrrr;\n"
+			"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv).rrrr;\n"
 		"}\n"
 	};
 #endif
@@ -165,23 +165,17 @@ char directfrag[] = {
 	GLSL_VERSION
 	"in mediump vec3 origcolor;\n"
 	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex2d;\n"
+	"uniform sampler2D tex0;\n"
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex2d, texuv);\n"
+		"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv);\n"
 	"}\n"
 };
 
 
 
 
-static GLuint font3dprogram;
-static GLuint font2dprogram;
-static GLuint simpleprogram;
-static GLuint prettyprogram;
-static GLuint directprogram;
-static GLuint glsl2dprogram;
 GLuint compileShader(GLenum type, const char* source)
 {
 	GLuint shader = glCreateShader(type);
@@ -247,9 +241,10 @@ GLuint shaderprogram(void* v, void* f)
 	glDeleteProgram(prog);
 	return 0;
 }
-void initshader(struct arena* w)  
+void initshader(struct arena* win)  
 {
-	struct texandobj* mod = w->mod;
+	GLuint tmp;
+	struct datapair* mod = win->mod;
 
 	//1.check version
 	const GLubyte *renderer = glGetString( GL_RENDERER );
@@ -266,27 +261,27 @@ void initshader(struct arena* w)
 	printf("GLSL Version: %s\n", glslVersion);
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
-	font3dprogram = shaderprogram(font3dvert, fontfrag);
-	mod[font3d0].program = font3dprogram;
-	mod[font3d1].program = font3dprogram;
-	mod[font3d2].program = font3dprogram;
-	mod[font3d3].program = font3dprogram;
+	tmp = shaderprogram(font3dvert, fontfrag);
+	mod[font3d0].dst.shader = tmp;
+	mod[font3d1].dst.shader = tmp;
+	mod[font3d2].dst.shader = tmp;
+	mod[font3d3].dst.shader = tmp;
 
-	font2dprogram = shaderprogram(font2dvert, fontfrag);
-	mod[font2d0].program = font2dprogram;
-	mod[font2d1].program = font2dprogram;
-	mod[font2d2].program = font2dprogram;
-	mod[font2d3].program = font2dprogram;
+	tmp = shaderprogram(font2dvert, fontfrag);
+	mod[font2d0].dst.shader = tmp;
+	mod[font2d1].dst.shader = tmp;
+	mod[font2d2].dst.shader = tmp;
+	mod[font2d3].dst.shader = tmp;
 
-	simpleprogram = shaderprogram(simplevert, simplefrag);
-	mod[vert3da].program = simpleprogram;
-	mod[vert3db].program = simpleprogram;
+	tmp = shaderprogram(simplevert, simplefrag);
+	mod[vert3da].dst.shader = tmp;
+	mod[vert3db].dst.shader = tmp;
 
-	prettyprogram = shaderprogram(prettyvert, prettyfrag);
-	mod[vert3dc].program = prettyprogram;
+	tmp = shaderprogram(prettyvert, prettyfrag);
+	mod[vert3dc].dst.shader = tmp;
 
-	glsl2dprogram = shaderprogram(glsl2dvert, glsl2dfrag);
-	mod[vert2da].program = glsl2dprogram;
-	mod[vert2db].program = glsl2dprogram;
-	mod[vert2dc].program = glsl2dprogram;
+	tmp = shaderprogram(glsl2dvert, glsl2dfrag);
+	mod[vert2da].dst.shader = tmp;
+	mod[vert2db].dst.shader = tmp;
+	mod[vert2dc].dst.shader = tmp;
 }

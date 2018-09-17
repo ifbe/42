@@ -92,15 +92,15 @@ void camera_read_vbo(
 	u8* dst;
 	u8* src;
 	float (*vbuf)[6];
-	struct ofoot* opin;
+	struct glsrc* data;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->idx)return;
 
-	opin = (void*)(pin->foot[0]);
-	vbuf = (void*)(opin->vbuf);
+	data = (void*)(pin->foot[0]);
+	vbuf = data->vbuf;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -144,7 +144,7 @@ void camera_read_vbo(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	opin->tex[0] = (u64)(act->buf);
+	data->tex[0] = act->buf;
 	for(y=0;y<480;y++)
 	{
 		dst = (act->buf) + (y*1024*4);
@@ -161,8 +161,8 @@ void camera_read_vbo(
 		}
 	}
 
-	opin->vbuf_enq += 1;
-	opin->tex_enq[0] += 1;
+	data->vbuf_enq += 1;
+	data->tex_enq[0] += 1;
 }
 void camera_read_json(
 	struct arena* win, struct style* sty,
@@ -223,50 +223,48 @@ static void camera_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	void* buf;
-	struct ofoot* opin;
+	struct glsrc* src;
 	if(0 == pin)return;
 
-	opin = (void*)(pin->foot[0]);
-	buf = (void*)(opin->vbuf);
-	if(buf)
+	src = (void*)(pin->foot[0]);
+	if(src->vbuf)
 	{
-		memorydelete(buf);
-		opin->vbuf = 0;
+		memorydelete(src->vbuf);
+		src->vbuf = 0;
 	}
 }
 static void camera_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct ofoot* opin;
+	struct glsrc* src;
 	if(0 == sty)return;
 	if(0 == pin)return;
 
 	//sender
-	opin = allocofoot();
-	opin->vs = (u64)camera_glsl_v;
-	opin->fs = (u64)camera_glsl_f;
+	src = allocofoot();
+	src->vs = camera_glsl_v;
+	src->fs = camera_glsl_f;
 
 	//texture
-	opin->tex[0] = (u64)(act->buf);
-	opin->tex_fmt[0] = hex32('r','g','b','a');
-	opin->tex_w[0] = 1024;
-	opin->tex_h[0] = 1024;
+	src->tex[0] = act->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = 1024;
+	src->tex_h[0] = 1024;
 
 	//vertex
-	opin->vbuf = (u64)memorycreate(4*6*6);
-	opin->vbuf_fmt = vbuffmt_33;
-	opin->vbuf_w = 6*4;
-	opin->vbuf_h = 6;
-	opin->method = 'v';
+	src->vbuf = memorycreate(4*6*6);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->method = 'v';
 
-	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 0;
-	opin->tex_enq[0] = 0;
-	opin->vbuf_enq = 0;
-	opin->ibuf_enq = 0;
-	pin->foot[0] = (u64)opin;
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->tex_enq[0] = 0;
+	src->vbuf_enq = 0;
+	src->ibuf_enq = 0;
+	pin->foot[0] = (u64)src;
 }
 static void camera_delete(struct actor* act)
 {

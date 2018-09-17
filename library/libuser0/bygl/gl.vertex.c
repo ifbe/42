@@ -19,51 +19,53 @@
 
 
 
-void uploadvertex(struct ifoot* fi, struct ofoot* fo)
+void uploadvertex(struct gldst* dst, struct glsrc* src)
 {
 	void* buf;
 	u32 w,h,fmt;
 
 	//vao
-	if(0 == fi->vao)glGenVertexArrays(1, &fi->vao);
-	glBindVertexArray(fi->vao);
+	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);
+	glBindVertexArray(dst->vao);
 
 	//idx
-	w = fi->ibo_deq;
-	h = fo->ibuf_enq;
-	buf = (void*)(fo->ibuf);
+	w = dst->ibo_deq;
+	h = src->ibuf_enq;
+	buf = (void*)(src->ibuf);
 	if((w != h) && (0 != buf))
 	{
-		w = fo->ibuf_w;
-		h = fo->ibuf_h;
-		if(0 == fi->ibo)
+		//say("@1: %d\n", dst->vao);
+		w = src->ibuf_w;
+		h = src->ibuf_h;
+		if(0 == dst->ibo)
 		{
-			glGenBuffers(1, &fi->ibo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
+			glGenBuffers(1, &dst->ibo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, w*h, buf, GL_STATIC_DRAW);
 		}
 		else
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fi->ibo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
 			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, w*h, buf);
 		}
 	}
 
 	//vbo
-	w = fi->vbo_deq;
-	h = fo->vbuf_enq;
-	buf = (void*)(fo->vbuf);
+	w = dst->vbo_deq;
+	h = src->vbuf_enq;
+	buf = (void*)(src->vbuf);
 	if((w != h) && (0 != buf))
 	{
-		w = fo->vbuf_w;
-		h = fo->vbuf_h;
-		if(0 == fi->vbo)
+		//say("@2: %d\n", dst->vao);
+		w = src->vbuf_w;
+		h = src->vbuf_h;
+		if(0 == dst->vbo)
 		{
-			glGenBuffers(1, &fi->vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, fi->vbo);
+			glGenBuffers(1, &dst->vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
 			glBufferData(GL_ARRAY_BUFFER, w*h, buf, GL_STATIC_DRAW);
 
-			fmt = fo->vbuf_fmt;
+			fmt = src->vbuf_fmt;
 			if(vbuffmt_33 == fmt)
 			{
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
@@ -83,14 +85,307 @@ void uploadvertex(struct ifoot* fi, struct ofoot* fo)
 		}
 		else
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, fi->vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, w*h, buf);
 		}
 	}
 }
-void initvertex(struct arena* w)  
+void initvertex(struct arena* win)
 {
-	struct texandobj* mod = w->mod;
+	struct datapair* mod;
+	struct glsrc* src;
+	mod = win->mod;
+
+
+//--------------------font3d-------------------
+	//[0000,3fff]
+	src = &mod[font3d0].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font3d0].dst, src);
+
+
+	//[4000,7fff]
+	src = &mod[font3d1].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font3d1].dst, src);
+
+
+	//[8000,bfff]
+	src = &mod[font3d2].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font3d2].dst, src);
+
+
+	//[c000,ffff]
+	src = &mod[font3d3].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font3d3].dst, src);
+
+
+//--------------------font2d-------------------
+	//[0000,3fff]
+	src = &mod[font2d0].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font2d0].dst, src);
+
+
+	//[4000,7fff]
+	src = &mod[font2d1].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font2d1].dst, src);
+
+
+	//[8000,bfff]
+	src = &mod[font2d2].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font2d2].dst, src);
+
+
+	//[c000,ffff]
+	src = &mod[font2d3].src;
+
+	src->vbuf = malloc(0x200000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x200000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[font2d3].dst, src);
+
+
+//--------------------3d-------------------
+	//drawarray.point
+	src = &mod[vert3da].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
+
+	src->method = 'v';
+	src->geometry = 1;
+
+	src->vbuf_enq = 1;
+	uploadvertex(&mod[vert3da].dst, src);
+
+
+	//drawelement.line
+	src = &mod[vert3db].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x22;
+	src->ibuf_w = 2*2;
+	src->ibuf_h = 0x100000/4;
+
+	src->method = 'i';
+	src->geometry = 2;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[vert3db].dst, src);
+
+
+	//drawelement.trigon
+	src = &mod[vert3dc].src;
+
+	src->vbuf = malloc(0x1000000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x100000/36;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[vert3dc].dst, src);
+
+
+//----------------------2d--------------------
+	//drawarray.point
+	src = &mod[vert2da].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
+
+	src->method = 'v';
+	src->geometry = 1;
+
+	src->vbuf_enq = 1;
+	uploadvertex(&mod[vert2da].dst, src);
+
+
+	//drawelement.line
+	src = &mod[vert2db].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x22;
+	src->ibuf_w = 2*2;
+	src->ibuf_h = 0x100000/4;
+
+	src->method = 'i';
+	src->geometry = 2;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[vert2db].dst, src);
+
+
+	//drawelement.trigon
+	src = &mod[vert2dc].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[vert2dc].dst, src);
+}
+/*
+void initvertex(struct arena* win)
+{
+	struct texandobj* mod = win->mod;
 
 //---------------------font3d0--------------------------
 	//vao
@@ -388,3 +683,4 @@ void initvertex(struct arena* w)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
 	glEnableVertexAttribArray(1);
 }
+*/

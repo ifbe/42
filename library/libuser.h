@@ -94,10 +94,8 @@ typedef float mat4[4][4];
 #define joyr_stick   0x0040
 #define joyr_start   0x0080
 //
-#define vbuffmt_32 0x23
 #define vbuffmt_33 0x33
 #define vbuffmt_333 0x333
-#define vbuffmt_332 0x233
 #define pcm2 0x2
 #define pcm22 0x22
 //
@@ -179,7 +177,7 @@ struct xyzwpair
 
 
 
-
+/*
 struct texandobj
 {
 	u32 program;
@@ -196,8 +194,49 @@ struct texandobj
 	u32 vbo;
 	u32 vlen;
 	void* vbuf;
+};*/
+struct glsrc
+{
+	//[00,1f]shader
+	void* vs;
+	void* ts;
+	void* gs;
+	void* fs;
+
+	//[20,4f]argument
+	void* arg[4];
+	u32 arg_fmt[4];
+
+	//[50,9f]texture
+	void* tex[4];
+	u32 tex_fmt[4];
+	u32 tex_w[4];
+	u32 tex_h[4];
+
+	//[a0,c7]vertex
+	void* vbuf;
+	u32 vbuf_fmt;
+	u32 vbuf_w;
+	u32 vbuf_h;
+	void* ibuf;
+	u32 ibuf_fmt;
+	u32 ibuf_w;
+	u32 ibuf_h;
+
+	//[c8,cf]
+	u32 method;		//'v'=glDrawArrays, 'i'=glDrawElements
+	u32 geometry;	//1=point, 2=line, *=trigon
+	u32 opaque;		//0=nothing, 1=blend
+	u32 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
+
+	//[d0,db]enq
+	u8 shader_enq[4];
+	u8 arg_enq[4];
+	u8 tex_enq[4];
+	u8 ibuf_enq;
+	u8 vbuf_enq;
 };
-struct ifoot
+struct gldst
 {
 	//shader
 	u32 shader;
@@ -226,54 +265,15 @@ struct ifoot
 	u8 vbo_deq;
 	u8 ibo_deq;
 };
-struct ofoot
-{
-	//[00,1f]shader
-	u64 vs;
-	u64 ts;
-	u64 gs;
-	u64 fs;
-
-	//[20,4f]argument
-	u64 arg[4];
-	u32 arg_fmt[4];
-
-	//[50,9f]texture
-	u64 tex[4];
-	u32 tex_fmt[4];
-	u32 tex_w[4];
-	u32 tex_h[4];
-
-	//[a0,c7]vertex
-	u64 vbuf;
-	u32 vbuf_fmt;
-	u32 vbuf_w;
-	u32 vbuf_h;
-	u64 ibuf;
-	u32 ibuf_fmt;
-	u32 ibuf_w;
-	u32 ibuf_h;
-
-	//[c8,cf]
-	u32 method;	//'v'=glDrawArrays, 'i'=glDrawElements
-	u32 target;	//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
-
-	//[d0,db]enq
-	u8 shader_enq[4];
-	u8 arg_enq[4];
-	u8 tex_enq[4];
-	u8 ibuf_enq;
-	u8 vbuf_enq;
-};
 struct datapair
 {
 	//[000,0ff]
-	struct ifoot ifoot;
-	u8 ipadd[0x100 - sizeof(struct ifoot)];
+	struct glsrc src;
+	u8 ipadd[0x100 - sizeof(struct glsrc)];
 
 	//[100,1ff]
-	struct ofoot ofoot;
-	u8 opadd[0x100 - sizeof(struct ofoot)];
+	struct gldst dst;
+	u8 opadd[0x100 - sizeof(struct gldst)];
 };
 
 

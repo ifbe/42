@@ -1,6 +1,20 @@
 #include "libuser.h"
 #define font2d 4
 int utf2unicode(u8* src,u32* dst);
+int ascii2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+{
+	struct datapair* mod = win->mod;
+	struct glsrc* src = &mod[id].src;
+	int vlen = src->vbuf_h;
+	int ilen = src->ibuf_h;
+
+	*vbuf = (src->vbuf) + (36*vlen);
+	*ibuf = (src->ibuf) + (6*ilen);
+	src->vbuf_h += vcnt;
+	src->ibuf_h += icnt;
+
+	return vlen;
+}
 
 
 
@@ -12,13 +26,9 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[font2d].ilen;
-	int vlen = mod[font2d].vlen;
-	u16* ibuf = (mod[font2d].ibuf) + (6*ilen);
-	float* vbuf = (mod[font2d].vbuf) + (36*vlen);
-	mod[font2d].ilen += 2;
-	mod[font2d].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = ascii2d_vars(win, font2d, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0]-vr[0]-vf[0];
 	vbuf[ 1] = vc[1]-vr[1]-vf[1];
@@ -70,14 +80,10 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
+	float* vbuf;
+	u16* ibuf;
 	int vvv = (unicode&0xffff)/0x4000;
-	struct texandobj* mod = win->mod;
-	int ilen = mod[font2d+vvv].ilen;
-	int vlen = mod[font2d+vvv].vlen;
-	u16* ibuf = (mod[font2d+vvv].ibuf) + (6*ilen);
-	float* vbuf = (mod[font2d+vvv].vbuf) + (36*vlen);
-	mod[font2d+vvv].ilen += 2;
-	mod[font2d+vvv].vlen += 4;
+	int vlen = ascii2d_vars(win, font2d+vvv, &vbuf, &ibuf, 4, 2);
 
 	unicode = unicode&0x3fff;
 	vbuf[ 0] = vc[0]-vr[0]-vf[0];

@@ -1,5 +1,19 @@
 #include "libuser.h"
 int utf2unicode(u8* src,u32* dst);
+int ascii3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+{
+	struct datapair* mod = win->mod;
+	struct glsrc* src = &mod[id].src;
+	int ilen = src->ibuf_h;
+	int vlen = src->vbuf_h;
+
+	*vbuf = (src->vbuf) + (36*vlen);
+	*ibuf = (src->ibuf) + (6*ilen);
+	src->vbuf_h += vcnt;
+	src->ibuf_h += icnt;
+
+	return vlen;
+}
 
 
 
@@ -11,13 +25,9 @@ void carveascii(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
-	struct texandobj* mod = win->mod;
-	int ilen = mod[0].ilen;
-	int vlen = mod[0].vlen;
-	u16* ibuf = (mod[0].ibuf) + (6*ilen);
-	float* vbuf = (mod[0].vbuf) + (36*vlen);
-	mod[0].ilen += 2;
-	mod[0].vlen += 4;
+	float* vbuf;
+	u16* ibuf;
+	int vlen = ascii3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0]-vr[0]-vf[0];
 	vbuf[ 1] = vc[1]-vr[1]-vf[1];
@@ -69,14 +79,10 @@ void carveunicode(struct arena* win, u32 rgb,
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
+	float* vbuf;
+	u16* ibuf;
 	int vvv = (unicode&0xffff)/0x4000;
-	struct texandobj* mod = win->mod;
-	int ilen = mod[vvv].ilen;
-	int vlen = mod[vvv].vlen;
-	u16* ibuf = (mod[vvv].ibuf) + (6*ilen);
-	float* vbuf = (mod[vvv].vbuf) + (36*vlen);
-	mod[vvv].ilen += 2;
-	mod[vvv].vlen += 4;
+	int vlen = ascii3d_vars(win, vvv, &vbuf, &ibuf, 4, 2);
 
 	unicode = unicode&0x3fff;
 	vbuf[ 0] = vc[0]-vr[0]-vf[0];

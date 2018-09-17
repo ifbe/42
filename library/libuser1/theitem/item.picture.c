@@ -85,15 +85,15 @@ static void picture_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	float (*vbuf)[6];
-	struct ofoot* opin;
+	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->buf)return;
 
-	opin = (void*)(pin->foot[0]);
-	vbuf = (void*)(opin->vbuf);
+	src = (void*)(pin->foot[0]);
+	vbuf = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -137,7 +137,7 @@ static void picture_read_vbo(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	opin->vbuf_enq += 1;
+	src->vbuf_enq += 1;
 }
 static void picture_read_json(
 	struct arena* win, struct style* sty,
@@ -202,36 +202,36 @@ static void picture_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct ofoot* opin;
+	struct glsrc* src;
 	if(0 == pin)return;
 
 	//
-	opin = allocofoot();
+	src = allocofoot();
 
 	//shader
-	opin->vs = (u64)picture_glsl_v;
-	opin->fs = (u64)picture_glsl_f;
+	src->vs = picture_glsl_v;
+	src->fs = picture_glsl_f;
 
 	//texture
-	opin->tex[0] = (u64)(act->buf);
-	opin->tex_fmt[0] = hex32('r','g','b','a');
-	opin->tex_w[0] = act->width;
-	opin->tex_h[0] = act->height;
+	src->tex[0] = act->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 
 	//vertex
-	opin->vbuf = (u64)memorycreate(4*6*6);
-	opin->vbuf_fmt = vbuffmt_33;
-	opin->vbuf_w = 6*4;
-	opin->vbuf_h = 6;
-	opin->method = 'v';
+	src->vbuf = memorycreate(4*6*6);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->method = 'v';
 
 	//send!
-	opin->shader_enq[0] = 42;
-	opin->arg_enq[0] = 0;
-	opin->tex_enq[0] = 42;
-	opin->vbuf_enq = 0;
-	opin->ibuf_enq = 0;
-	pin->foot[0] = (u64)opin;
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->tex_enq[0] = 42;
+	src->vbuf_enq = 0;
+	src->ibuf_enq = 0;
+	pin->foot[0] = (u64)src;
 }
 static void picture_delete(struct actor* act)
 {
