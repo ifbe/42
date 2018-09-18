@@ -16,7 +16,6 @@
 	#include <GL/glew.h>
 #endif
 
-void* allocifoot();
 void fixmatrix(float*, void*);
 GLuint shaderprogram(void* v, void* f);
 GLuint uploadtexture(void* i, void* o, void* buf, int fmt, int w, int h);
@@ -109,35 +108,14 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 void callback_update(struct arena* win)
 {
 	int j;
-	u64* recver;
-	u64* sender;
-	struct relation* orel;
 	struct datapair* mod;
-
-	//test
-	//
 
 	//local
 	mod = win->mod;
-	update_eachpass(&mod[16].dst, &mod[16].src);
-	for(j=0;j<16;j++)update_eachpass(&mod[j].dst, &mod[j].src);
-
-	//actor
-	orel = win->orel0;
-	while(1)
+	for(j=0;j<64;j++)
 	{
-		if(0 == orel)break;
-
-		sender = (void*)(orel->dstfoot) + 0x80;
-		recver = (void*)(orel->srcfoot) + 0x80;
-		for(j=0;j<16;j++)
-		{
-			if(0 == sender[j])break;
-			if(0 == recver[j])recver[j] = (u64)allocifoot();
-			update_eachpass((void*)recver[j], (void*)sender[j]);
-		}
-
-		orel = samesrcnextdst(orel);
+		if(0 == mod[j].src.vbuf)continue;
+		update_eachpass(&mod[j].dst, &mod[j].src);
 	}
 }
 /*
@@ -374,9 +352,6 @@ void display_eachpass(struct gldst* dst, struct glsrc* src, float* cammvp, struc
 void callback_display(struct arena* win, struct arena* coop)
 {
 	int j;
-	u64* sender;
-	u64* recver;
-	struct relation* orel;
 	struct datapair* mod;
 	GLfloat cammvp[4*4];
 
@@ -398,13 +373,13 @@ void callback_display(struct arena* win, struct arena* coop)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	mod = win->mod;
-
-	//sky
-	display_eachpass(&mod[16].dst, &mod[16].src, cammvp, coop);
-
 	//geom
-	for(j=8;j<15;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+	mod = win->mod;
+	for(j=8;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+	}
 
 	//font
 	glDepthMask(GL_FALSE);
@@ -413,24 +388,6 @@ void callback_display(struct arena* win, struct arena* coop)
 	for(j=0;j<8;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
-
-	//actor
-	orel = win->orel0;
-	while(1)
-	{
-		if(0 == orel)break;
-
-		sender = (void*)(orel->dstfoot) + 0x80;
-		recver = (void*)(orel->srcfoot) + 0x80;
-		for(j=0;j<16;j++)
-		{
-			if(0 == sender[j])break;
-			if(0 == recver[j])recver[j] = (u64)allocifoot();
-			display_eachpass((void*)recver[j], (void*)sender[j], cammvp, coop);
-		}
-
-		orel = samesrcnextdst(orel);
-	}
 }
 /*
 void callback_display_eachactor(struct arena* win, struct arena* coop, float* cammvp)

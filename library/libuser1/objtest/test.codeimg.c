@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
@@ -311,7 +310,7 @@ static void codeimg_start(
 	if(0 == pin)return;
 
 	//
-	src = allocofoot();
+	src = alloc_winobj(win);
 
 	//shader
 	src->vs = codeimg_glsl_v;

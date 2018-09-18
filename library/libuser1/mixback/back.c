@@ -7,9 +7,6 @@ void* allocpinid();
 
 int back_read(struct arena* win, struct style* sty)
 {
-	int j;
-	u8* aa;
-	u8* bb;
 	struct datapair* mod;
 	struct actor* act;
 	struct style* tmp;
@@ -47,16 +44,11 @@ int back_read(struct arena* win, struct style* sty)
 
 		//start
 		act->onstart(win, tmp, act, pin);
-		aa = (void*)pin->foot[0];
-		bb = (void*)&mod[16].src;
-		for(j=0;j<0x100;j++)bb[j] = aa[j];
 	}
 
 	tmp->vc[0] = win->camera.vc[0];
 	tmp->vc[1] = win->camera.vc[1];
 	tmp->vc[2] = win->camera.vc[2];
-
-	pin->foot[0] = (u64)(&mod[16].src);
 	act->onread(win, tmp, act, pin);
 	return 0;
 }

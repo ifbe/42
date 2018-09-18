@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
 void carvelight(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
@@ -177,7 +176,7 @@ static void light_start(
 	if(0 == pin)return;
 
 	//
-	src = allocofoot();
+	src = alloc_winobj(win);
 
 	//shader
 	src->vs = light_glsl_v;

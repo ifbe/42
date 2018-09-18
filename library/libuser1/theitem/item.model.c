@@ -1,7 +1,6 @@
 #include "libuser.h"
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
-void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
 
 
@@ -182,7 +181,7 @@ static void model_start(
 	if(0 == pin)return;
 
 	//
-	src = allocofoot();
+	src = alloc_winobj(win);
 
 	//shader
 	src->vs = model_glsl_v;

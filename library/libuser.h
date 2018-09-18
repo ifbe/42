@@ -808,6 +808,8 @@ void carveutf8(              struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carvestring(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvestring_center(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 
+void* alloc_winobj(struct arena*);
+
 
 
 

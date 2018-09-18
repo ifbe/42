@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
 
 
@@ -206,7 +205,7 @@ static void picture_start(
 	if(0 == pin)return;
 
 	//
-	src = allocofoot();
+	src = alloc_winobj(win);
 
 	//shader
 	src->vs = picture_glsl_v;

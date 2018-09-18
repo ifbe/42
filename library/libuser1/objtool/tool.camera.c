@@ -5,7 +5,6 @@ void yuyv2rgba(
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
 void* arenacreate(u64, void*);
-void* allocofoot();
 
 
 
@@ -242,7 +241,7 @@ static void camera_start(
 	if(0 == pin)return;
 
 	//sender
-	src = allocofoot();
+	src = alloc_winobj(win);
 	src->vs = camera_glsl_v;
 	src->fs = camera_glsl_f;
 

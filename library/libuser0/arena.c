@@ -84,7 +84,6 @@ static struct arena* arena = 0;
 static struct style* style = 0;
 static int winlen = 0;
 static int stylen = 0;
-static int foolen = 0;
 void* allocarena()
 {
 	int j;
@@ -103,18 +102,6 @@ void* allocstyle()
 	len = 0x100;	//sizeof(struct style);
 	buf = (void*)style + stylen;
 	stylen += len;
-
-	for(j=0;j<len;j++)buf[j] = 0;
-	return buf;
-}
-void* allocifoot()
-{
-	int j,len;
-	u8* buf;
-
-	len = 0x100;
-	buf = (void*)style + 0x100000 - len - foolen;
-	foolen += len;
 
 	for(j=0;j<len;j++)buf[j] = 0;
 	return buf;

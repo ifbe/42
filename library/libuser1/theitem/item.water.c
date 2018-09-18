@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void* allocofoot();
 void actorcreatefromfile(struct actor* act, char* name);
 
 
@@ -166,7 +165,7 @@ static void water_start(
 	if(0 == pin)return;
 
 	//
-	src = allocofoot();
+	src = alloc_winobj(win);
 
 	//shader
 	src->vs = water_glsl_v;

@@ -34,7 +34,6 @@ static struct style* style = 0;
 static struct pinid* pinid = 0;
 static int actlen = 0;
 static int pinlen = 0;
-static int foolen = 0;
 void* allocactor()
 {
 	int j,max;
@@ -69,18 +68,6 @@ void* allocpinid()
 	len = 0x100;	//sizeof(struct pinid);
 	buf = (void*)pinid + pinlen;
 	pinlen += len;
-
-	for(j=0;j<len;j++)buf[j] = 0;
-	return buf;
-}
-void* allocofoot()
-{
-	int j,len;
-	u8* buf;
-
-	len = 0x100;
-	buf = (void*)pinid + 0x100000 - len - foolen;
-	foolen += len;
 
 	for(j=0;j<len;j++)buf[j] = 0;
 	return buf;
