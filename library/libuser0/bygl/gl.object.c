@@ -119,6 +119,7 @@ void callback_update(struct arena* win)
 
 	//local
 	mod = win->mod;
+	update_eachpass(&mod[16].dst, &mod[16].src);
 	for(j=0;j<16;j++)update_eachpass(&mod[j].dst, &mod[j].src);
 
 	//actor
@@ -397,9 +398,15 @@ void callback_display(struct arena* win, struct arena* coop)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	//local
 	mod = win->mod;
+
+	//sky
+	display_eachpass(&mod[16].dst, &mod[16].src, cammvp, coop);
+
+	//geom
 	for(j=8;j<15;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+
+	//font
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

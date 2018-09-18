@@ -313,7 +313,7 @@ void* actorcreate(u64 type, void* buf)
 	act->oncreate(act, buf);
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
-	return 0;
+	return act;
 }
 void* actorchoose(u8* buf, int len)
 {/*

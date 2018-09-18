@@ -155,7 +155,7 @@ struct relation
 
 struct object
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -173,7 +173,13 @@ struct object
 		u64 opadn;
 	};
 
-	//[20,3f]data
+	//[20,3f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[40,5f]: data
 	u64 selffd;
 	u64 thatfd;
 	u64 dc;
@@ -182,13 +188,7 @@ struct object
 		void* buf;
 	};
 
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 name;
-
-	//[60,7f]
+	//[60,7f]: prop
 	int width;
 	int height;
 	int depth;
@@ -207,7 +207,7 @@ struct object
 };
 struct element
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -225,7 +225,13 @@ struct element
 		u64 opadn;
 	};
 
-	//[20,3f]data
+	//[20,3f]: type
+	u64 tier;
+	u64 type;
+	u64 stage1;
+	u64 name;
+
+	//[40,5f]: data
 	union{
 		u64 fd;
 		void* win;
@@ -247,13 +253,7 @@ struct element
 		void* buf;
 	};
 
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 stage1;
-	u64 name;
-
-	//[60,7f]
+	//[60,7f]: prop
 	int width;
 	int height;
 	int depth;

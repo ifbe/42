@@ -177,24 +177,7 @@ struct xyzwpair
 
 
 
-/*
-struct texandobj
-{
-	u32 program;
-	u32 vao;
 
-	u32 tex;
-	u32 tlen;
-	void* tbuf;
-
-	u32 ibo;
-	u32 ilen;
-	void* ibuf;
-
-	u32 vbo;
-	u32 vlen;
-	void* vbuf;
-};*/
 struct glsrc
 {
 	//[00,1f]shader
@@ -203,17 +186,18 @@ struct glsrc
 	void* gs;
 	void* fs;
 
-	//[20,4f]argument
+	//[20,6f]argument
 	void* arg[4];
 	u32 arg_fmt[4];
+	u64 arg_data[4];
 
-	//[50,9f]texture
+	//[70,bf]texture
 	void* tex[4];
 	u32 tex_fmt[4];
 	u32 tex_w[4];
 	u32 tex_h[4];
 
-	//[a0,c7]vertex
+	//[c0,e7]vertex
 	void* vbuf;
 	u32 vbuf_fmt;
 	u32 vbuf_w;
@@ -223,13 +207,13 @@ struct glsrc
 	u32 ibuf_w;
 	u32 ibuf_h;
 
-	//[c8,cf]
-	u32 method;		//'v'=glDrawArrays, 'i'=glDrawElements
-	u32 geometry;	//1=point, 2=line, *=trigon
-	u32 opaque;		//0=nothing, 1=blend
-	u32 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
+	//[e8,eb]
+	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
+	u8 geometry;	//1=point, 2=line, *=trigon
+	u8 opaque;		//0=nothing, 1=blend
+	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
 
-	//[d0,db]enq
+	//[ec,fa]enq
 	u8 shader_enq[4];
 	u8 arg_enq[4];
 	u8 tex_enq[4];
@@ -346,7 +330,7 @@ struct pinid
 
 struct object
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -364,33 +348,22 @@ struct object
 		u64 opadn;
 	};
 
-	//[20,3f]data
-	union{
-		u64 fd;
-		void* win;
-	};
-	union{
-		u64 dc;
-		u64 gc;
-		void* er;
-	};
-	union{
-		u64 len;
-		void* ximage;
-		void* texture;
-	};
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[40,5f]
+	//[20,3f]: type
 	u64 tier;
 	u64 type;
 	u64 fmt;
 	u64 name;
 
-	//[60,7f]
+	//[40,5f]: data
+	u64 selffd;
+	u64 thatfd;
+	u64 dc;
+	union{
+		u64 addr;
+		void* buf;
+	};
+
+	//[60,7f]: prop
 	int width;
 	int height;
 	int depth;
@@ -409,7 +382,7 @@ struct object
 };
 struct element
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -427,7 +400,13 @@ struct element
 		u64 opadn;
 	};
 
-	//[20,3f]data
+	//[20,3f]: type
+	u64 tier;
+	u64 type;
+	u64 stage1;
+	u64 name;
+
+	//[40,5f]: data
 	union{
 		u64 fd;
 		void* win;
@@ -439,6 +418,8 @@ struct element
 	};
 	union{
 		u64 len;
+		void* hp;
+		void* mod;
 		void* ximage;
 		void* texture;
 	};
@@ -447,13 +428,7 @@ struct element
 		void* buf;
 	};
 
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 name;
-
-	//[60,7f]
+	//[60,7f]: prop
 	int width;
 	int height;
 	int depth;
@@ -468,7 +443,7 @@ struct element
 };
 struct arena
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -486,7 +461,13 @@ struct arena
 		u64 opadn;
 	};
 
-	//[20,3f]data
+	//[20,3f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 vfmt;
+
+	//[40,5f]: data
 	union{
 		u64 fd;
 		void* win;
@@ -509,69 +490,65 @@ struct arena
 		void* buf;
 	};
 
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 vfmt;
+	//[60,67]: win geom
+	short width;
+	short height;
+	short depth;
+	short stride;
 
-	//[60,7f]
-	u64 haha0;
-	u64 haha1;
-	u64 haha2;
-	u64 haha3;
+	//[68,6f]: fb geom
+	short fbwidth;
+	short fbheight;
+	short fbdepth;
+	short fbstride;
 
-	//[80,8f]: win geom
-	int width;
-	int height;
-	int depth;
-	int stride;
+	//[70,77]: near plane
+	short nearwidth;
+	short nearheight;
+	short neardepth;
+	short nearstride;
 
-	//[90,9f]: fb geom
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
+	//[78,7f]: far plane
+	short farwidth;
+	short farheight;
+	short fardepth;
+	short farstride;
 
-	//[a0,af]: near plane
-	float nearwidth;
-	float nearheight;
-	float neardepth;
-	float nearstride;
-
-	//[b0,bf]: far plane
-	float farwidth;
-	float farheight;
-	float fardepth;
-	float farstride;
-
-	//[c0,cf]: layer0: background
+	//[80,9f]: layer0: background
 	short backx;
 	short backy;
 	short backz;
 	short backw;
 	u64 backdata;
+	u64 backstyle;
+	u64 backpinid;
 
-	//[d0,df]: layer1: foreground
+	//[a0,bf]: layer1: foreground
 	short forex;
 	short forey;
 	short forez;
 	short forew;
 	u64 foredata;
+	u64 forestyle;
+	u64 forepinid;
 
-	//[e0,ef]: layer2: popup
+	//[c0,df]: layer2: popup
 	short tempx;
 	short tempy;
 	short tempz;
 	short tempw;
 	u64 tempdata;
+	u64 tempstyle;
+	u64 temppinid;
 
-	//[f0,ff]: layer3: vkbd
+	//[e0,ff]: layer3: vkbd
 	short vkbdx;
 	short vkbdy;
 	short vkbdz;
 	short vkbdw;
 	u64 vkbddata;
+	u64 vkbdstyle;
+	u64 vkbdpinid;
 
 	//[100,1ff]
 	struct style target;
@@ -585,7 +562,7 @@ struct arena
 };
 struct actor
 {
-	//[0x00,0x1f]
+	//[00,1f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -603,7 +580,13 @@ struct actor
 		u64 opadn;
 	};
 
-	//[20,3f]data
+	//[20,3f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[40,5f]: data
 	union{
 		u64 fd;
 		void* win;
@@ -622,13 +605,7 @@ struct actor
 		void* buf;
 	};
 
-	//[40,5f]
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 name;
-
-	//[60,7f]
+	//[60,7f]: prop
 	int width;
 	int height;
 	int depth;
