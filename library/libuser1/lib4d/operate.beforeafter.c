@@ -4,13 +4,6 @@ void carvesnowman(struct arena* win, u32 rgb, vec3 vc);
 
 
 
-void bgfg_create(void* addr)
-{
-}
-
-
-
-
 void background_pixel(struct arena* win)
 {
 	int x;

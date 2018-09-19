@@ -1,7 +1,6 @@
 #include "libuser.h"
 void content_create(void*);
-void bgfg_create(void*);
-void helpout_create(void*);
+void backuper_create(void*);
 void overview_create(void*);
 //
 void* getsuffix(void* p);
@@ -99,8 +98,10 @@ void* alloc_winobj(struct arena* win)
 void lib4d_create(void* addr)
 {
 	asset_create(addr);
-	bgfg_create(addr);
+
 	content_create(addr);
+
+	backuper_create(addr);
 
 	overview_create(addr);
 }
