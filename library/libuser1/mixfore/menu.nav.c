@@ -10,14 +10,14 @@ int actoroutput_player( struct arena* win, struct style* sty);
 
 
 static void* nametab[8] = {
-	"  0: testland   ",
-	"  1: console    ",
-	"  2: overview   ",
-	"  3: detail     ",
-	"  4: editor     ",
-	"  5: player     ",
-	"  6: playgame   ",
-	"  7: onetoone   "
+	"test",
+	"term",
+	"wire",
+	"node",
+	"cad ",
+	"rpg ",
+	"rts ",
+	"    "
 };
 
 
@@ -136,7 +136,7 @@ void actoroutput_navmenu_vbo(struct arena* win)
 	vf[2] = 0.0;
 	carveline2d_rect(win, 0xffffff, vc, vr, vf);
 	vr[0] /= 4.0;
-	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 16);
+	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
 }
 void actoroutput_navmenu_pixel(struct arena* win)
 {
@@ -223,7 +223,7 @@ void actoroutput_navmenu_pixel(struct arena* win)
 	}
 
 	drawline_rect(win, 0xffffff, w/4, h/16, w*3/4, h/8);
-	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 16);
+	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 0);
 }
 void actoroutput_navmenu(struct arena* win, struct style* sty)
 {

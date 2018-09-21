@@ -1,4 +1,5 @@
 #include "libuser.h"
+int actorinput_editor_camera(struct arena* win, struct event* ev);
 
 
 
@@ -166,6 +167,7 @@ int actorinput_player(struct arena* win, struct style* sty, struct event* ev)
 	struct actor* act;
 	struct pinid* pin;
 	struct relation* orel;
+    if('p' == (ev->what&0xff))actorinput_editor_camera(win, ev);
 
 	orel = win->oreln;
 	if(0 == orel)return 0;
