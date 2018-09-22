@@ -55,3 +55,4 @@ program:
 	-lGLEW -lglfw -lm -framework OpenGL
 clean:
 	rm -f *.o *.a *.dylib
+	make -C $(library) clean

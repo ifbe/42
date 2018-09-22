@@ -15,31 +15,59 @@ void init8042();
 void initrtc();
 void initpci();
 //
-void say(char*,...);
+void createserial();
+void main(int, char**);
 
 
 
 
-void driverread()
+void start()
+{
+	main(0, 0);
+}
+
+
+
+
+int argv2line(u8* src, u8* dst)
+{
+	int j = 0;
+	while(src[j] >= 0x20)
+	{
+		dst[j] = src[j];
+		j++;
+	}
+
+	dst[j] = '\n';
+	j++;
+	dst[j] = 0;
+	return j;
+}
+void* pollenv()
+{
+	return 0;
+}
+
+
+
+
+void death()
 {
 }
-void driverwrite()
+void* birth()
 {
+	int j;
+	u8* mem = (u8*)0x1000000;
+	createserial();
+
+	for(j=0;j<0x1000000;j++)mem[j] = 0;
+	return mem;
 }
-void driverlist()
-{
-	say("empty driver\n");
-}
-void driverchoose()
-{
-}
-void driverstart()
-{
-}
-void driverstop()
-{
-}
-void drivercreate(void* addr)
+
+
+
+/*
+void baseenvcreate(void* addr)
 {
 	//say("[4,8):createed driver\n");
 	initpage();
@@ -57,7 +85,8 @@ void drivercreate(void* addr)
 
 	asm("sti");
 }
-void driverdelete()
+void baseenvdelete()
 {
 	//say("[4,8):deleteing driver\n");
 }
+*/
