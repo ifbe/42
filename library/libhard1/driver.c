@@ -1,8 +1,6 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-void say(char*,...);
+#include "libhard.h"
+static struct device* dev;
+static struct driver* dri;
 
 
 
@@ -41,8 +39,17 @@ int driverdelete()
 {
 	return 0;
 }
-int drivercreate()
+void* drivercreate(u64 type, void* name)
 {
+	int j;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dri[j].type)
+		{
+			dri[j].type = type;
+			return &dri[j];
+		}
+	}
 	return 0;
 }
 int driverchoose(u8* buf)
@@ -52,7 +59,12 @@ int driverchoose(u8* buf)
 }
 int driverlist(u8* buf)
 {
-	say("empth driver\n");
+	int j;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dri[j].type)continue;
+		say("[%03x]: %.8s\n", j, &dri[j].type);
+	}
 	return 0;
 }
 
@@ -63,7 +75,15 @@ void freedriver()
 {
 	//say("[4,8):freeing driver\n");
 }
-void initdriver(void* addr)
+void initdriver(u8* addr)
 {
+	int j;
+	dev = (void*)(addr+0x000000);
+	dri = (void*)(addr+0x100000);
+
+#define max (0x100000/sizeof(struct driver))
+	for(j=0;j<max;j++)dri[j].tier = _dri_;
+
+	drivercreate(_usb_, 0);
 	//say("[4,8):inited driver\n");
 }

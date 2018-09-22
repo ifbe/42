@@ -1,33 +1,34 @@
 library?=../../library
 datafile?=../../datafile
+flag="-c -O2 -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s a
 	make -s dll
 	make -s program
 libboot0:
 	make -s -C $(library)/libboot0 wincmd \
-	cflag="-c -O2"
+	cflag=$(flag)
 libboot1:
 	make -s -C $(library)/libboot1 \
-	cflag="-c -O2"
+	cflag=$(flag)
 libhard0:
 	make -s -C $(library)/libhard0 winx64 \
-	cflag="-c -O2"
+	cflag=$(flag)
 libhard1:
 	make -s -C $(library)/libhard1 \
-	cflag="-c -O2"
+	cflag=$(flag)
 libsoft0:
 	make -s -C $(library)/libsoft0 win \
-	cflag="-c -O2 -I.."
+	cflag=$(flag)
 libsoft1:
 	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -I.."
+	cflag=$(flag)
 libuser0:
 	make -s -C $(library)/libuser0 winapi \
-	cflag="-c -O2 -I.."
+	cflag=$(flag)
 libuser1:
 	make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -I.."
+	cflag=$(flag)
 a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \

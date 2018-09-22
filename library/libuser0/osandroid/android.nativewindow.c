@@ -29,7 +29,7 @@ void freesystem();
 void initsystem(void*);
 int systemevent();
 //libhard1
-#define _drv_ hex32('d','r','v',0)
+#define _dri_ hex32('d','r','i',0)
 void freedriver();
 void initdriver(void*);
 int driverevent(void*);
