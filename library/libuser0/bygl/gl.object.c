@@ -24,13 +24,6 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
-GLfloat light0[4] = {0.0f, 0.0f, 1000.0f};
-GLfloat ambientcolor[3] = {0.5f, 0.5f, 0.5f};
-GLfloat lightcolor[3] = {0.5f, 0.5f, 0.5f};
-
-
-
-
 void initobject(struct arena* win)
 {
 	int j;
@@ -294,7 +287,10 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 	}
 	return vao;
 }
-void display_eachpass(struct gldst* dst, struct glsrc* src, float* cammvp, struct arena* coop)
+void display_eachpass(
+	struct arena* win, struct arena* coop, 
+	struct gldst* dst, struct glsrc* src,
+	float* cammvp)
 {
 	int j;
 	u32 fmt;
@@ -308,13 +304,7 @@ void display_eachpass(struct gldst* dst, struct glsrc* src, float* cammvp, struc
 
 	//1.argument
 	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
-	if(0)
-	{
-		//glUniform3fv(glGetUniformLocation(program, "ambientcolor" ), 1, ambientcolor);
-		//glUniform3fv(glGetUniformLocation(program, "lightcolor"   ), 1, lightcolor);
-		//glUniform3fv(glGetUniformLocation(program, "lightposition"), 1, light0);
-		//glUniform3fv(glGetUniformLocation(program, "eyeposition"  ), 1, win->camera.vc);
-	}
+	glUniform3fv(glGetUniformLocation(dst->shader, "eyepos"  ), 1, win->camera.vc);
 
 	//2.texture
 	for(j=0;j<1;j++)
@@ -378,14 +368,14 @@ void callback_display(struct arena* win, struct arena* coop)
 	for(j=8;j<64;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
-		display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
 	}
 
 	//font
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	for(j=0;j<8;j++)display_eachpass(&mod[j].dst, &mod[j].src, cammvp, coop);
+	for(j=0;j<8;j++)display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
