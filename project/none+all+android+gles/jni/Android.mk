@@ -6,7 +6,10 @@ include $(CLEAR_VARS)
 
 #libboot0
 LOCAL_SRC_FILES += \
-library/libboot0/logcat/logcat.c
+library/libboot0/logcat/start.c \
+library/libboot0/logcat/serial.c \
+library/libboot0/logcat/memory.c \
+library/libboot0/logcat/thread.c \
 
 #libboot1
 LOCAL_SRC_FILES += \
@@ -63,13 +66,11 @@ library/libsoft0/linux/linux.flow.epoll.c \
 library/libsoft0/linux/linux.flow.socket.c \
 library/libsoft0/linux/linux.memory.file.c \
 library/libsoft0/linux/linux.memory.folder.c \
-library/libsoft0/linux/linux.memory.managed.c \
 library/libsoft0/linux/linux.system.process.c \
 library/libsoft0/linux/linux.system.random.c \
 library/libsoft0/linux/linux.system.shell.c \
 library/libsoft0/linux/linux.system.signal.c \
 library/libsoft0/linux/linux.system.time.c \
-library/libsoft0/linux/linux.system.thread.c \
 library/libsoft0/linux/linux.wire.bt.c \
 library/libsoft0/linux/linux.wire.gpio.c \
 library/libsoft0/linux/linux.wire.i2c.c \
