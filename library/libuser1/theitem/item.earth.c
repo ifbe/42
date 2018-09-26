@@ -1,6 +1,6 @@
 #include "libuser.h"
 void actorcreatefromfile(struct actor* act, char* name);
-void carveearth(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
 
@@ -95,7 +95,7 @@ static void earth_read_vbo(
 	src = (void*)(pin->foot[0]);
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
-	carveearth(vbuf, ibuf, vc, vr, vf, vu);
+	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
