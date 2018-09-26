@@ -172,13 +172,13 @@ void term_cmd0(u8* buf, int len)
 	if(0 == ncmp(buf, "--", 2))
 	{
 		buf += 2;
-		if(0 == ncmp(buf, "backup=", 7))
+		if(0 == ncmp(buf, "backup", 6))
 		{
-			scene_backup(buf+7, 0);
+			scene_backup(buf+6, 0);
 		}
-		else if(0 == ncmp(buf, "recover=", 8))
+		else if(0 == ncmp(buf, "recover", 7))
 		{
-			scene_recover(buf+8, 0);
+			scene_recover(buf+7, 0);
 		}
 	}
 	else

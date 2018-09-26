@@ -11,9 +11,11 @@ void printhtmlbody(u8* buf, int len);
 
 
 struct arena* arena;
+struct actor* actor;
 void backuper_create(void* addr)
 {
 	arena = (void*)addr;
+	actor = (void*)(addr+0x100000);
 }
 
 
@@ -69,18 +71,42 @@ void scene_backup_vbo(struct arena* win)
 		);
 	}
 }
-void scene_backup(u8* buf, int len)
-{/*
-	if(0 == len)
+void scene_backup_world()
+{
+	int j;
+	struct arena* win;
+	struct actor* act;
+	say("backup world!\n");
+
+	//arena
+	say("<arena>\n");
+	for(j=0;j<16;j++)
 	{
-		while(1)
-		{
-			if(buf[len] < 0x20)break;
-			len++;
-		}
+		win = &arena[j];
+		if(0 == win->type)break;
+		say("<win type=%.8s fmt=%.8s></win>\n", &win->type, &win->fmt);
 	}
-	say("%.*s\n", len, buf);
-*/
+	say("</arena>\n");
+
+	//actor
+	say("<actor>\n");
+	for(j=0;j<64;j++)
+	{
+		act = &actor[j];
+		if(0 == act->type)break;
+		say("<act type=%.8s name=%.8s></act>\n", &act->type, &act->name);
+	}
+	say("</actor>\n");
+}
+void scene_backup(u8* buf, int len)
+{
+	if('=' != buf[0])
+	{
+		scene_backup_world();
+		return;
+	}
+	buf++;
+
 	int j;
 	struct arena* win;
 	for(j=0;j<16;j++)
@@ -100,35 +126,66 @@ void scene_backup(u8* buf, int len)
 		}
 	}
 }
-void scene_recover(u8* buf, int len)
+
+
+
+
+void scene_recover_html(struct str* name)
 {
-	int j,k,ret;
+	int j;
+	void* buf;
 	struct arena* win;
-	u8* mem;
-	u8 tmp[256];
+	struct str* data;
 
-	ret = 0;
-	while(1)
-	{
-		if(buf[ret] < 0x20)break;
-		tmp[ret] = buf[ret];
-		ret++;
-	}
-	tmp[ret] = 0;
-	say("name: %.*s\n", ret, tmp);
-
+	//register arena
 	win = arenacreate(_html_, 0);
 	if(0 == win)return;
 	say("win: %llx\n", win);
 
-	mem = memorycreate(0x100000);
-	if(0 == mem)return;
-	say("mem: %llx\n", mem);
+	//alloc memory
+	buf = memorycreate(0x100000);
+	if(0 == buf)return;
+	say("buf: %llx\n", buf);
+	win->buf = buf;
 
-	win->buf = mem;
-	ret = openreadclose(tmp, 0, mem, 0x100000);
-	if(0 >= ret)return;
-	say("read:%d\n", ret);
+	//read file
+	data = win->buf;
+	j = openreadclose(name->buf, 0, data->buf, 0xf0000);
+	if(j <= 0)return;
+	say("read:%d\n", j);
+	data->len = j;
 
-	printhtmlbody(mem, ret);
+	printhtmlbody(data->buf, data->len);
+}
+void scene_recover_world()
+{
+	say("recover world!\n");
+}
+void scene_recover(u8* buf, int len)
+{
+	int j;
+	u8 tmp[256];
+	struct str* name;
+
+	if('=' != buf[0])
+	{
+		scene_recover_world();
+		return;
+	}
+	buf++;
+
+	//copy into local buf, because '\n'
+	j = 0;
+	name = (void*)tmp;
+	while(1)
+	{
+		if(buf[j] < 0x20)break;
+		name->buf[j] = buf[j];
+		j++;
+	}
+	name->buf[j] = 0;
+	name->len = j;
+	say("name: %.*s\n", name->len, name->buf);
+
+	scene_recover_html(name);
 }
