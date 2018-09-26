@@ -84,7 +84,9 @@ void scene_backup_world()
 	{
 		win = &arena[j];
 		if(0 == win->type)break;
-		say("<win type=%.8s fmt=%.8s></win>\n", &win->type, &win->fmt);
+		say("    <win type=%.8s fmt=%.8s>\n", &win->type, &win->fmt);
+		say("        haha\n");
+		say("    </win>\n");
 	}
 	say("</arena>\n");
 
@@ -94,7 +96,9 @@ void scene_backup_world()
 	{
 		act = &actor[j];
 		if(0 == act->type)break;
-		say("<act type=%.8s name=%.8s></act>\n", &act->type, &act->name);
+		say("    <act type=%.8s name=%.8s>\n", &act->type, &act->name);
+		say("        haha\n");
+		say("    </act>\n");
 	}
 	say("</actor>\n");
 }

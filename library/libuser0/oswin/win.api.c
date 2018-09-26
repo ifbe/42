@@ -141,7 +141,7 @@ int windowcreate(struct arena* win)
 		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
 		100, 100, (win->width)+16, (win->height)+39,
 		NULL, NULL, 0, NULL);
-	if(!wnd)return;
+	if(!wnd)return 0;
 
 	//dc
 	dc = GetDC(wnd);

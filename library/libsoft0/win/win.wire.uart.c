@@ -4,6 +4,8 @@
 #include <windows.h>
 #include "libsoft.h"
 #define _uart_ hex32('u','a','r','t')
+void sleep_us(int);
+void systemwrite_dispatch(void*, void*, void*, int);
 
 
 
