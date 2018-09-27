@@ -61,13 +61,6 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 		dst->shader_deq = src->shader_enq[0];
 	}
 
-	//1: argument
-	if(dst->arg_deq[0] != src->arg_enq[0])
-	{
-		say("arg=%x\n", src->arg[0]);
-		dst->arg_deq[0] = src->arg_enq[0];
-	}
-
 	//2: texture
 	if(dst->tex_deq[0] != src->tex_enq[0])
 	{
@@ -305,6 +298,10 @@ void display_eachpass(
 	//1.argument
 	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
 	glUniform3fv(glGetUniformLocation(dst->shader, "eyepos"  ), 1, win->camera.vc);
+	if(dst->arg_deq[0] != src->arg_enq[0])
+	{
+		glUniformMatrix4fv(glGetUniformLocation(dst->shader, src->arg[0]), 1, GL_FALSE, (void*)src->arg_data[0]);
+	}
 
 	//2.texture
 	for(j=0;j<1;j++)

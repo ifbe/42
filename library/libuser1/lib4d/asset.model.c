@@ -78,6 +78,9 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	vc[0] = (vl[0] + vr[0])/2;
 	vc[1] = (vn[1] + vf[1])/2;
 	vc[2] = (vb[2] + vu[2])/2;
+	vr[0] -= vc[0];
+	vf[1] -= vc[1];
+	vu[2] -= vc[2];
 	say(
 		"l=%f, r=%f, n=%f, f=%f, b=%f, u=%f\n",
 		vl[0], vr[0], vn[1], vf[1], vb[2], vu[2]

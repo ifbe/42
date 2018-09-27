@@ -10,12 +10,13 @@ char* model_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 normal;\n"
+	"uniform mat4 objmat;\n"
 	"uniform mat4 cammvp;\n"
 	"out mediump vec3 vcolor;\n"
 	"void main()\n"
 	"{\n"
 		"vcolor = normal;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+		"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
 	"}\n";
 char* model_glsl_f =
 	GLSL_VERSION
@@ -25,7 +26,68 @@ char* model_glsl_f =
 	"{\n"
 		"FragColor = vec4(vcolor, 1.0);\n"
 	"}\n";
+void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
+{
+	mat4 tmp;
 
+	//move
+	mat[0][0] = 1.0;
+	mat[0][1] = 0.0;
+	mat[0][2] = 0.0;
+	mat[0][3] = dst->vc[0];
+	mat[1][0] = 0.0;
+	mat[1][1] = 1.0;
+	mat[1][2] = 0.0;
+	mat[1][3] = dst->vc[1];
+	mat[2][0] = 0.0;
+	mat[2][1] = 0.0;
+	mat[2][2] = 1.0;
+	mat[2][3] = dst->vc[2];
+	mat[3][0] = 0.0;
+	mat[3][1] = 0.0;
+	mat[3][2] = 0.0;
+	mat[3][3] = 1.0;
+
+	//scale
+	tmp[0][0] = (dst->vr[0]) / (src->vr[0]);
+	tmp[0][1] = 0.0;
+	tmp[0][2] = 0.0;
+	tmp[0][3] = 1.0;
+	tmp[1][0] = 0.0;
+	tmp[1][1] = (dst->vf[1]) / (src->vf[1]);
+	tmp[1][2] = 0.0;
+	tmp[1][3] = 1.0;
+	tmp[2][0] = 0.0;
+	tmp[2][1] = 0.0;
+	tmp[2][2] = (dst->vu[2]) / (src->vu[2]);
+	tmp[2][3] = 1.0;
+	tmp[3][0] = 0.0;
+	tmp[3][1] = 0.0;
+	tmp[3][2] = 0.0;
+	tmp[3][3] = 1.0;
+	mat4_multiply(mat, tmp);
+
+	//move
+	tmp[0][0] = 1.0;
+	tmp[0][1] = 0.0;
+	tmp[0][2] = 0.0;
+	tmp[0][3] = - src->vc[0];
+	tmp[1][0] = 0.0;
+	tmp[1][1] = 1.0;
+	tmp[1][2] = 0.0;
+	tmp[1][3] = - src->vc[1];
+	tmp[2][0] = 0.0;
+	tmp[2][1] = 0.0;
+	tmp[2][2] = 1.0;
+	tmp[2][3] = - src->vc[2];
+	tmp[3][0] = 0.0;
+	tmp[3][1] = 0.0;
+	tmp[3][2] = 0.0;
+	tmp[3][3] = 1.0;
+	mat4_multiply(mat, tmp);
+
+	mat4_transpose(mat);
+}
 
 
 
@@ -83,11 +145,12 @@ static void model_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vr;
+	struct glsrc* src;
 	if(act->buf == 0)return;
+
+	src = (void*)(pin->foot[0]);
+	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
+	src->arg_enq[0] += 1;
 }
 static void model_read_json(
 	struct arena* win, struct style* sty,
@@ -186,6 +249,10 @@ static void model_start(
 	//shader
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
+
+	//
+	src->arg[0] = "objmat";
+	src->arg_data[0] = (u64)memorycreate(4*4*4);
 
 	//vertex
 	src->vbuf = act->buf;

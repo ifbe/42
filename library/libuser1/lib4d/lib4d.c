@@ -62,7 +62,7 @@ void actorcreatefromfile(struct actor* act, char* name)
 	tmp = getsuffix(name);
 	if(0 == tmp)return;
 
-	mysnprintf(str, 256, "%s/%s", "datafile/", name);
+	mysnprintf(str, 256, "%s/%s", "datafile", name);
 
 	buf = memorycreate(0x800000);
 	len = openreadclose(str, 0, buf, 0x800000);
