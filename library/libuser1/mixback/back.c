@@ -2,7 +2,7 @@
 void* allocstyle();
 void* allocpinid();
 u64 want[2] = {
-	hex64('l','i','g','h','t',0,0,0),//hex64('s','k','y','s','p','h','.','.'),
+	hex64('s','k','y','s','p','h','.','.'),
 	hex64('t','e','r','r','i','a','n', 0)
 };
 
