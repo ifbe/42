@@ -26,7 +26,7 @@ void background_vbo(struct arena* win)
 {
 	int j;
 	struct datapair* mod = win->mod;
-	for(j=0;j<15;j++)
+	for(j=0;j<16;j++)
 	{
 		mod[j].src.vbuf_h = 0;
 		mod[j].src.ibuf_h = 0;
@@ -104,7 +104,7 @@ void foreground_vbo(struct arena* win)
 	}
 
 	mod = win->mod;
-	for(j=0;j<15;j++)
+	for(j=0;j<16;j++)
 	{
 		mod[j].src.vbuf_enq += 1;
 		mod[j].src.ibuf_enq += 1;

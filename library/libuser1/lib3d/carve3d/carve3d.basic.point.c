@@ -2,7 +2,6 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 18
-#define pointv 8
 int point3d_vars(struct arena* win, int id, float** vbuf, int vcnt)
 {
 	struct datapair* mod = win->mod;
@@ -25,7 +24,7 @@ void carvepoint(struct arena* win, u32 rgb, vec3 vc)
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, 1);
+	point3d_vars(win, point3d, &vbuf, 1);
 
 	vbuf[0] = vc[0];
 	vbuf[1] = vc[1];
@@ -44,7 +43,7 @@ void carvepoint_bezier(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, acc);
+	point3d_vars(win, point3d, &vbuf, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -82,7 +81,7 @@ void carvepoint_circle(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, acc);
+	point3d_vars(win, point3d, &vbuf, acc);
 
 	for(j=0;j<acc;j++)
 	{
@@ -127,7 +126,7 @@ void carvepoint_cone(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, acc+2);
+	point3d_vars(win, point3d, &vbuf, acc+2);
 
 	for(j=0;j<acc;j++)
 	{
@@ -193,7 +192,7 @@ void carvepoint_cylinder(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, acc*2);
+	point3d_vars(win, point3d, &vbuf, acc*2);
 
 	for(j=0;j<acc;j++)
 	{
@@ -244,7 +243,7 @@ void carvepoint_dodecahedron(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, 20);
+	point3d_vars(win, point3d, &vbuf, 20);
 
 	for(j=0;j<20*6;j+=6)
 	{
@@ -349,7 +348,7 @@ void carvepoint_icosahedron(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, 12);
+	point3d_vars(win, point3d, &vbuf, 12);
 
 	for(j=0;j<12*6;j+=6)
 	{
@@ -423,7 +422,7 @@ void carvepoint_sphere(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point3d_vars(win, pointv, &vbuf, accx*accy+2);
+	point3d_vars(win, point3d, &vbuf, accx*accy+2);
 
 	for(k=0;k<accy;k++)
 	{

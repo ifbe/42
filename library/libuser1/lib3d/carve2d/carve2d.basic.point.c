@@ -2,7 +2,6 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 18
-#define pointv 12
 int point2d_vars(struct arena* win, int id, float** vbuf, int vcnt)
 {
 	struct datapair* mod = win->mod;
@@ -25,7 +24,7 @@ void carvepoint2d(struct arena* win, u32 rgb, vec3 vc)
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point2d_vars(win, pointv, &vbuf, 1);
+	point2d_vars(win, point2d, &vbuf, 1);
 
 	vbuf[0] = vc[0];
 	vbuf[1] = vc[1];
@@ -44,7 +43,7 @@ void carvepoint2d_bezier(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point2d_vars(win, pointv, &vbuf, acc);
+	point2d_vars(win, point2d, &vbuf, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -87,7 +86,7 @@ void carvepoint2d_circle(struct arena* win, u32 rgb,
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	float* vbuf;
-	point2d_vars(win, pointv, &vbuf, acc);
+	point2d_vars(win, point2d, &vbuf, acc);
 
 	q[0] = 0.0;
 	q[1] = 0.0;

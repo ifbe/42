@@ -268,8 +268,8 @@ void initvertex(struct arena* win)
 
 
 //--------------------3d-------------------
-	//drawarray.point
-	src = &mod[vert3da].src;
+	//drawarray.point3d
+	src = &mod[point3d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;
@@ -280,11 +280,11 @@ void initvertex(struct arena* win)
 	src->geometry = 1;
 
 	src->vbuf_enq = 1;
-	uploadvertex(&mod[vert3da].dst, src);
+	uploadvertex(&mod[point3d].dst, src);
 
 
-	//drawelement.line
-	src = &mod[vert3db].src;
+	//drawelement.line3d
+	src = &mod[line3d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;
@@ -301,11 +301,11 @@ void initvertex(struct arena* win)
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
-	uploadvertex(&mod[vert3db].dst, src);
+	uploadvertex(&mod[line3d].dst, src);
 
 
-	//drawelement.trigon
-	src = &mod[vert3dc].src;
+	//drawelement.trigon3d
+	src = &mod[trigon3d].src;
 
 	src->vbuf = malloc(0x1000000);
 	src->vbuf_fmt = vbuffmt_333;
@@ -322,12 +322,21 @@ void initvertex(struct arena* win)
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
-	uploadvertex(&mod[vert3dc].dst, src);
+	uploadvertex(&mod[trigon3d].dst, src);
+
+
+	//light3d
+	src = &mod[light3d].src;
+
+	src->vbuf = malloc(0x1000000);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*3*3;
+	src->vbuf_h = 0x100000/36;
 
 
 //----------------------2d--------------------
-	//drawarray.point
-	src = &mod[vert2da].src;
+	//drawarray.point2d
+	src = &mod[point2d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;
@@ -338,11 +347,11 @@ void initvertex(struct arena* win)
 	src->geometry = 1;
 
 	src->vbuf_enq = 1;
-	uploadvertex(&mod[vert2da].dst, src);
+	uploadvertex(&mod[point2d].dst, src);
 
 
-	//drawelement.line
-	src = &mod[vert2db].src;
+	//drawelement.line2d
+	src = &mod[line2d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;
@@ -359,11 +368,11 @@ void initvertex(struct arena* win)
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
-	uploadvertex(&mod[vert2db].dst, src);
+	uploadvertex(&mod[line2d].dst, src);
 
 
-	//drawelement.trigon
-	src = &mod[vert2dc].src;
+	//drawelement.trigon2d
+	src = &mod[trigon2d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;
@@ -380,7 +389,16 @@ void initvertex(struct arena* win)
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
-	uploadvertex(&mod[vert2dc].dst, src);
+	uploadvertex(&mod[trigon2d].dst, src);
+
+
+	//light2d
+	src = &mod[light2d].src;
+
+	src->vbuf = malloc(0x100000);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*3*2;
+	src->vbuf_h = 0x100000/24;
 }
 /*
 void initvertex(struct arena* win)

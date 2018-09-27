@@ -2,7 +2,6 @@
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau (PI*2)
 #define acc 24
-#define trigonv 14
 int trigon2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->mod;
@@ -30,7 +29,7 @@ void carvesolid2d_triangle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, 3, 1);
+	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, 3, 1);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -66,7 +65,7 @@ void carvesolid2d_rect(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, 4, 2);
+	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -116,7 +115,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigonv, &vbuf, &ibuf, acc+1, acc);
+	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, acc+1, acc);
 
 	for(j=0;j<acc;j++)
 	{

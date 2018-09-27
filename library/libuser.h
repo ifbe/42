@@ -103,18 +103,21 @@ typedef float mat4[4][4];
 #define font3d1 1
 #define font3d2 2
 #define font3d3 3
+
 #define font2d0 4
 #define font2d1 5
 #define font2d2 6
 #define font2d3 7
-#define vert3da 8
-#define vert3db 9
-#define vert3dc 10
-//#define vert3dd 11
-#define vert2da 12
-#define vert2db 13
-#define vert2dc 14
-//#define vert2dd 15
+
+#define point3d  8
+#define line3d   9
+#define trigon3d 10
+#define light3d  11
+
+#define point2d  12
+#define line2d   13
+#define trigon2d 14
+#define light2d  15
 
 
 
@@ -490,75 +493,98 @@ struct arena
 		void* buf;
 	};
 
-	//[60,67]: win geom
+	//[60,7f]
+	u64 backdata;
+	u64 foredata;
+	u64 tempdata;
+	u64 vkbddata;
+
+	//[80,8f]: win geom
+	short x0;
+	short y0;
+	short z0;
+	short w0;
 	short width;
 	short height;
 	short depth;
 	short stride;
 
-	//[68,6f]: fb geom
+	//[90,9f]: fb geom
+	short x1;
+	short y1;
+	short z1;
+	short w1;
 	short fbwidth;
 	short fbheight;
 	short fbdepth;
 	short fbstride;
 
-	//[70,77]: near plane
+	//[a0,af]: near plane
+	short x2;
+	short y2;
+	short z2;
+	short w2;
 	short nearwidth;
 	short nearheight;
 	short neardepth;
 	short nearstride;
 
-	//[78,7f]: far plane
+	//[b0,bf]: far plane
+	short x3;
+	short y3;
+	short z3;
+	short w3;
 	short farwidth;
 	short farheight;
 	short fardepth;
 	short farstride;
 
-	//[80,9f]: layer0: background
+	//[c0,cf]: layer0: background
+	short x4;
+	short y4;
+	short z4;
+	short w4;
 	short backx;
 	short backy;
 	short backz;
 	short backw;
-	u64 backdata;
-	u64 backstyle;
-	u64 backpinid;
 
-	//[a0,bf]: layer1: foreground
+	//[d0,df]: layer1: foreground
+	short x5;
+	short y5;
+	short z5;
+	short w5;
 	short forex;
 	short forey;
 	short forez;
 	short forew;
-	u64 foredata;
-	u64 forestyle;
-	u64 forepinid;
 
-	//[c0,df]: layer2: popup
+	//[e0,ef]: layer2: popup
+	short x6;
+	short y6;
+	short z6;
+	short w6;
 	short tempx;
 	short tempy;
 	short tempz;
 	short tempw;
-	u64 tempdata;
-	u64 tempstyle;
-	u64 temppinid;
 
-	//[e0,ff]: layer3: vkbd
+	//[f0,ff]: layer3: vkbd
+	short x7;
+	short y7;
+	short z7;
+	short w7;
 	short vkbdx;
 	short vkbdy;
 	short vkbdz;
 	short vkbdw;
-	u64 vkbddata;
-	u64 vkbdstyle;
-	u64 vkbdpinid;
 
 	//[100,1ff]
 	struct style target;
 	struct style camera;
 
-	//[200,2ff]
-	struct xyzwpair input[16];
-
-	//[300,3ff]
-	u8 detail[0x100];
+	//[200,3ff]
+	struct xyzwpair input[32];
 };
 struct actor
 {

@@ -273,14 +273,14 @@ void initshader(struct arena* win)
 	mod[font2d3].dst.shader = tmp;
 
 	tmp = shaderprogram(simplevert, simplefrag);
-	mod[vert3da].dst.shader = tmp;
-	mod[vert3db].dst.shader = tmp;
+	mod[point3d].dst.shader = tmp;
+	mod[line3d].dst.shader = tmp;
 
 	tmp = shaderprogram(prettyvert, prettyfrag);
-	mod[vert3dc].dst.shader = tmp;
+	mod[trigon3d].dst.shader = tmp;
 
 	tmp = shaderprogram(glsl2dvert, glsl2dfrag);
-	mod[vert2da].dst.shader = tmp;
-	mod[vert2db].dst.shader = tmp;
-	mod[vert2dc].dst.shader = tmp;
+	mod[point2d].dst.shader = tmp;
+	mod[line2d].dst.shader = tmp;
+	mod[trigon2d].dst.shader = tmp;
 }
