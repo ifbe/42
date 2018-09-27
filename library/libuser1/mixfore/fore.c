@@ -1,4 +1,5 @@
 #include "libuser.h"
+int actorinput_editor_camera(struct arena* win, struct event* ev);
 //>0x10
 int actoroutput_navmenu(struct arena* win, struct style* sty);
 int actorinput_navmenu( struct arena* win, struct style* sty, struct event* ev);
@@ -44,7 +45,10 @@ int fore_read(struct arena* win, struct style* sty)
 }
 int fore_write(struct arena* win, struct event* ev)
 {
-	int ret = win->forew;
+	int ret;
+	if(_coop_ == win->type)return actorinput_editor_camera(win, ev);
+
+	ret = win->forew;
 	if(ret > 0xff)say("ret=%x\n",ret);
 	else if(ret >= 0x20)actorinput_navmenu(win, 0, ev);
 	else if(ret >= 0x10)actorinput_tabbar(win, 0, ev);

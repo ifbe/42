@@ -282,14 +282,14 @@ void windowread(struct arena* w)
 
 
 	//draw slave
-	rel = w->orel0;
+	rel = w->irel0;
 	while(1)
 	{
 		if(0 == rel)break;
 
-		if(_win_ == rel->dsttype)
+		if(_win_ == rel->srctype)
 		{
-			c = (void*)(rel->dstchip);
+			c = (void*)(rel->srcchip);
 			fw = c->win;
 			if(0 == fw)windowopen(w, c);
 
@@ -302,7 +302,7 @@ void windowread(struct arena* w)
 			}
 		}
 
-		rel = samesrcnextdst(rel);
+		rel = samedstnextsrc(rel);
 	}
 //newtime = timeread();
 //say("drawslave:%d\n", newtime-oldtime);
