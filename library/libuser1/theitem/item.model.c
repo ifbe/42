@@ -28,9 +28,11 @@ char* model_glsl_f =
 	"}\n";
 void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 {
+	float x,y,z;
+	float nr, nf, nu;
 	mat4 tmp;
 
-	//move
+	//move: (0,0,0) -> dst
 	mat[0][0] = 1.0;
 	mat[0][1] = 0.0;
 	mat[0][2] = 0.0;
@@ -48,26 +50,82 @@ void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 	mat[3][2] = 0.0;
 	mat[3][3] = 1.0;
 
-	//scale
-	tmp[0][0] = (dst->vr[0]) / (src->vr[0]);
-	tmp[0][1] = 0.0;
-	tmp[0][2] = 0.0;
-	tmp[0][3] = 1.0;
-	tmp[1][0] = 0.0;
-	tmp[1][1] = (dst->vf[1]) / (src->vf[1]);
-	tmp[1][2] = 0.0;
-	tmp[1][3] = 1.0;
-	tmp[2][0] = 0.0;
-	tmp[2][1] = 0.0;
-	tmp[2][2] = (dst->vu[2]) / (src->vu[2]);
-	tmp[2][3] = 1.0;
+	//norm
+	x = dst->vr[0];
+	y = dst->vr[1];
+	z = dst->vr[2];
+	nr = squareroot(x*x+y*y+z*z);
+
+	x = dst->vf[0];
+	y = dst->vf[1];
+	z = dst->vf[2];
+	nf = squareroot(x*x+y*y+z*z);
+
+	x = dst->vu[0];
+	y = dst->vu[1];
+	z = dst->vu[2];
+	nu = squareroot(x*x+y*y+z*z);
+
+	//rotate: 1 -> dst
+	tmp[0][0] = dst->vr[0] / nr;
+	tmp[0][1] = dst->vf[0] / nf;
+	tmp[0][2] = dst->vu[0] / nu;
+	tmp[0][3] = 0.0;
+	tmp[1][0] = dst->vr[1] / nr;
+	tmp[1][1] = dst->vf[1] / nf;
+	tmp[1][2] = dst->vu[1] / nu;
+	tmp[1][3] = 0.0;
+	tmp[2][0] = dst->vr[2] / nr;
+	tmp[2][1] = dst->vf[2] / nf;
+	tmp[2][2] = dst->vu[2] / nu;
+	tmp[2][3] = 0.0;
 	tmp[3][0] = 0.0;
 	tmp[3][1] = 0.0;
 	tmp[3][2] = 0.0;
 	tmp[3][3] = 1.0;
 	mat4_multiply(mat, tmp);
 
-	//move
+	//scale: 1 -> dst
+	tmp[0][0] = nr;
+	tmp[0][1] = 0.0;
+	tmp[0][2] = 0.0;
+	tmp[0][3] = 0.0;
+	tmp[1][0] = 0.0;
+	tmp[1][1] = nf;
+	tmp[1][2] = 0.0;
+	tmp[1][3] = 0.0;
+	tmp[2][0] = 0.0;
+	tmp[2][1] = 0.0;
+	tmp[2][2] = nu;
+	tmp[2][3] = 0.0;
+	tmp[3][0] = 0.0;
+	tmp[3][1] = 0.0;
+	tmp[3][2] = 0.0;
+	tmp[3][3] = 1.0;
+	mat4_multiply(mat, tmp);
+
+	//scale: src -> 1
+	tmp[0][0] = 1.0 / (src->vr[0]);
+	tmp[0][1] = 0.0;
+	tmp[0][2] = 0.0;
+	tmp[0][3] = 0.0;
+	tmp[1][0] = 0.0;
+	tmp[1][1] = 1.0 / (src->vf[1]);
+	tmp[1][2] = 0.0;
+	tmp[1][3] = 0.0;
+	tmp[2][0] = 0.0;
+	tmp[2][1] = 0.0;
+	tmp[2][2] = 1.0 / (src->vu[2]);
+	tmp[2][3] = 0.0;
+	tmp[3][0] = 0.0;
+	tmp[3][1] = 0.0;
+	tmp[3][2] = 0.0;
+	tmp[3][3] = 1.0;
+	mat4_multiply(mat, tmp);
+
+	//rotate: src -> 1
+
+	//move: src -> (0,0,0)
 	tmp[0][0] = 1.0;
 	tmp[0][1] = 0.0;
 	tmp[0][2] = 0.0;
