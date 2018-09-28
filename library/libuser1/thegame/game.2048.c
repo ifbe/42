@@ -87,7 +87,63 @@ static void the2048_read_pixel(
 		}
 	}
 }
-static void the2048_read_vbo(
+static void the2048_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 rgb;
+	int x,y,w,h;
+	u8 (*tab)[4];
+	vec3 tc, tr, tf, tu, f;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	w = win->width;
+	h = win->height;
+	tc[0] = vc[0] / w;
+	tc[1] = vc[1] / h;
+	tc[2] = 0.0;
+	tr[0] = vr[0] / w;
+	tr[1] = vr[1] / h;
+	tr[2] = 0.0;
+	tf[0] = vf[0] / w;
+	tf[1] = vf[1] / h;
+	tf[2] = 0.0;
+	carvesolid2d_rect(win, 0x444444, tc, tr, tf);
+
+	if(0 == act->buf)tab = ((void*)act) + 0x100;
+	else tab = (void*)(act->buf) + (act->len)*16;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			rgb = color2048[tab[y][x]];
+			//say("%x\n", rgb);
+
+			f[0] = (x+x-3) / 4.0;
+			f[1] = (3-y-y) / 4.0;
+			tc[0] = (vc[0] + f[0]*vr[0] + f[1]*vf[0])/w;
+			tc[1] = (vc[1] + f[0]*vr[1] + f[1]*vf[1])/h;
+			tc[2] = -0.1;
+
+			tr[0] = vr[0]/5/w;
+			tr[1] = vr[1]/5/h;
+			tr[2] = 0.0;
+			tf[0] = vf[0]/5/w;
+			tf[1] = vf[1]/5/h;
+			tf[2] = 0.0;
+			carvesolid2d_rect(win, rgb, tc, tr, tf);
+
+			tr[0] /= 4;
+			tf[1] /= 4;
+			tc[2] = -0.2;
+			carve2d_decimal(win, 0, tc, tr, tf, val2048[tab[y][x]]);
+		}
+	}
+}
+static void the2048_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -246,7 +302,7 @@ static void the2048_read(
 	else if(fmt == _tui_)the2048_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)the2048_read_html(win, sty, act, pin);
 	else if(fmt == _json_)the2048_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)the2048_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)the2048_read_vbo2d(win, sty, act, pin);
 	else the2048_read_pixel(win, sty, act, pin);
 }
 
