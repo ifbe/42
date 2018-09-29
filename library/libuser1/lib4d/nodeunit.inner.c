@@ -7,10 +7,13 @@ void fs_register(void*);
 void graph_register(void*);
 void hex_register(void*);
 //hack
+void browser_register(void*);
+void circuit_register(void*);
 void rawdump_register(void*);
 void switch_register(void*);
 //item
 void clock_register(void*);
+void drone_register(void*);
 void earth_register(void*);
 void house_register(void*);
 void human_register(void*);
@@ -48,10 +51,8 @@ void fractal_register(void*);
 void palette_register(void*);
 void planet_register(void*);
 //tool
-void browser_register(void*);
 void calculator_register(void*);
 void camera_register(void*);
-void circuit_register(void*);
 void font_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
@@ -131,6 +132,12 @@ void content_create(void* addr)
 
 
 //--------------------hack-------------------------
+	browser_register(temp);
+	temp += sizeof(struct actor);
+
+	circuit_register(temp);
+	temp += sizeof(struct actor);
+
 	fs_register(temp);
 	temp += sizeof(struct actor);
 
@@ -145,6 +152,9 @@ void content_create(void* addr)
 
 //----------------------item-----------------------
 	clock_register(temp);
+	temp += sizeof(struct actor);
+
+	drone_register(temp);
 	temp += sizeof(struct actor);
 
 	earth_register(temp);
@@ -218,16 +228,10 @@ void content_create(void* addr)
 
 
 //------------------------tool--------------------
-	browser_register(temp);
-	temp += sizeof(struct actor);
-
 	calculator_register(temp);
 	temp += sizeof(struct actor);
 
 	camera_register(temp);
-	temp += sizeof(struct actor);
-
-	circuit_register(temp);
 	temp += sizeof(struct actor);
 
 	font_register(temp);
