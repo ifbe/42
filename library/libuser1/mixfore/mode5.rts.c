@@ -64,8 +64,8 @@ int actoroutput_rts(struct arena* win, struct style* stack)
 		orel = samesrcnextdst(orel);
 	}
 
-    if(_vbo_ == win->fmt)actoroutput_rts_vbo(win, stack);
-    else actoroutput_rts_pixel(win, stack);
+	if(_vbo_ == win->fmt)actoroutput_rts_vbo(win, stack);
+	else actoroutput_rts_pixel(win, stack);
 	return 0;
 }
 int actorinput_rts(struct arena* win, struct style* sty, struct event* ev)

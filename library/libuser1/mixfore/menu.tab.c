@@ -36,7 +36,7 @@ void tabbar_actors(struct arena* win, struct style* sty)
     else if(1 == sel)actoroutput_console(win, sty);
     else if(2 == sel)actoroutput_overview(win, sty);
     else if(3 == sel)actoroutput_detail(win, sty);
-    else if(4 == sel)actoroutput_rts(win, sty);
+    else if(4 == sel)actoroutput_win(win, sty);
     else if(5 == sel)actoroutput_rts(win, sty);
     else if(6 == sel)actoroutput_editor(win, sty);
     else if(7 == sel)actoroutput_player(win, sty);
@@ -172,7 +172,7 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
     else if(1 == sel)actorinput_console(win, 0, ev);
     else if(2 == sel)actorinput_overview(win, 0, ev);
     else if(3 == sel)actorinput_detail(win, 0, ev);
-    else if(4 == sel)actorinput_rts(win, 0, ev);
+    else if(4 == sel)actorinput_win(win, 0, ev);
     else if(5 == sel)actorinput_rts(win, 0, ev);
     else if(6 == sel)actorinput_editor(win, 0, ev);
     else if(7 == sel)actorinput_player(win, 0, ev);
