@@ -158,6 +158,7 @@ thehack/hack.circuit.c \
 thehack/hack.editor.c \
 thehack/hack.filesystem.c \
 thehack/hack.monitor.c \
+thehack/hack.pwmtool.c \
 thehack/hack.sketchpad.c \
 thehack/hack.switcher.c \
 thehack/hack.wireshark.c \

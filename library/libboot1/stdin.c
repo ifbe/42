@@ -181,6 +181,14 @@ void term_cmd0(u8* buf, int len)
 			scene_recover(buf+7, 0);
 		}
 	}
+	else if(0 == ncmp(buf, "from", 4))
+	{
+		say("%.*s\n", len, buf);
+	}
+	else if(0 == ncmp(buf, "event", 5))
+	{
+		say("%.*s\n", len, buf);
+	}
 	else
 	{
 		say("unknown:%.*s\n", len, buf);

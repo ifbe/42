@@ -421,6 +421,7 @@ library/libuser1/thehack/hack.circuit.c \
 library/libuser1/thehack/hack.editor.c \
 library/libuser1/thehack/hack.filesystem.c \
 library/libuser1/thehack/hack.monitor.c \
+library/libuser1/thehack/hack.pwmtool.c \
 library/libuser1/thehack/hack.sketchpad.c \
 library/libuser1/thehack/hack.switcher.c \
 library/libuser1/thehack/hack.wireshark.c \

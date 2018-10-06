@@ -9,6 +9,7 @@ void border_pixel(struct arena* win, struct style* sty, void* name)
 	int cy = sty->vc[1];
 	int ww = sty->vr[0];
 	int hh = sty->vf[1];
+	drawline_rect(win, 0x400040, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawsolid_rect(win, 0xff00ff, cx-ww, cy-hh-16, cx+ww, cy-hh);
 	drawstring_fit(win, 0, cx-ww, cy-hh-16, cx+ww, cy-hh, name, 8);
 }

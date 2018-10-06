@@ -9,6 +9,7 @@ void hex_register(void*);
 //hack
 void browser_register(void*);
 void circuit_register(void*);
+void pwmtool_register(void*);
 void rawdump_register(void*);
 void switch_register(void*);
 //item
@@ -139,6 +140,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	fs_register(temp);
+	temp += sizeof(struct actor);
+
+	pwmtool_register(temp);
 	temp += sizeof(struct actor);
 
 	rawdump_register(temp);
