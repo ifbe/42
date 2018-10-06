@@ -321,6 +321,7 @@ library/libuser1/lib4d/nodeunit.inner.c \
 library/libuser1/lib4d/nodeunit.outer.c \
 library/libuser1/lib4d/operate.backuprecover.c \
 library/libuser1/lib4d/operate.beforeafter.c \
+library/libuser1/lib4d/operate.relation.c \
 library/libuser1/lib4d/operate.transform.c \
 library/libuser1/mixback/back.c \
 library/libuser1/mixback/back.gif.c \

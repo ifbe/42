@@ -58,6 +58,7 @@ lib4d/nodeunit.inner.c \
 lib4d/nodeunit.outer.c \
 lib4d/operate.backuprecover.c \
 lib4d/operate.beforeafter.c \
+lib4d/operate.relation.c \
 lib4d/operate.transform.c \
 mixback/back.c \
 mixback/back.gif.c \
