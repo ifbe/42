@@ -6,8 +6,6 @@
 #include <sys/ioctl.h>		//ioctl
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
-int lowlevel_input();
-void* arenacreate(u64,u64);
 
 
 
