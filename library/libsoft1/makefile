@@ -118,6 +118,11 @@ libfile/picture/pic.heif.c \
 libfile/picture/pic.jpg.c \
 libfile/picture/pic.png.c \
 libfile/picture/pic.webp.c \
+libfile/sensor/sensor.accel.c \
+libfile/sensor/sensor.baro.c \
+libfile/sensor/sensor.gyro.c \
+libfile/sensor/sensor.mag.c \
+libfile/sensor/sensor.gps.c \
 libfile/vdisk/disk.raw.c \
 libfile/vdisk/disk.vhd.c \
 libfile/vdisk/disk.vmdk.c \

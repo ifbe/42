@@ -1,5 +1,8 @@
 #include "libsoft.h"
 #define _HACK_ hex32('H','A','C','K')
+#define _gps_ hex32('g','p','s',0)
+int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
 int chatserver_create(struct element* ele, void* url, void* buf, int len);
 int chatserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int hackserver_create(struct element* ele, void* url, void* buf, int len);
@@ -96,7 +99,8 @@ say("arterywrite@{\n");
 
 	ele = dc;
 	type = ele->type;
-	if(_CHAT_ == type)chatserver_write(dc, df, sc, sf, buf, len);
+	if(_gps_ == type)gpsclient_write(dc, df, sc, sf, buf, len);
+	else if(_CHAT_ == type)chatserver_write(dc, df, sc, sf, buf, len);
 	else if(_HACK_ == type)hackserver_write(dc, df, sc, sf, buf, len);
 	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Http_ == type)httpserver_write(dc, df, sc, sf, buf, len);
@@ -139,6 +143,14 @@ void* arterycreate(u64 type, void* argstr)
 		if(0 == ret)return 0;	//unknown
 
 		url += ret;
+	}
+	if(_gps_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _gps_;
+		return e;
 	}
 	if(_CHAT_ == type)
 	{

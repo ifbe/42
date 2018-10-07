@@ -1065,6 +1065,8 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 24)
 		{
+			ele_d = &ele[x1 + (y1-16)*8];
+			relationcreate(ele_d, 0, _art_, ele_s, 0, _art_);
 		}
 		else if(y1 < 32)
 		{
@@ -1075,7 +1077,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		j = x0 + (y0-24)*8;
 		for(;j<0x1000;j+=64)
 		{
-			obj_s = &obj[x0+(y0*8)];
+			obj_s = &obj[j];
 			if(obj_s->type)break;
 		}
 
@@ -1089,9 +1091,13 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 16)
 		{
+			win_d = &arena[x1 + (y1-8)*8];
+			relationcreate(win_d, 0, _win_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 24)
 		{
+			ele_d = &ele[x1 + (y1-16)*8];
+			relationcreate(ele_d, 0, _art_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 32)
 		{
