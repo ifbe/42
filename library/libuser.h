@@ -35,6 +35,9 @@ typedef float mat4[4][4];
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
+#define _1d_ hex32('1','d',0,0)
+#define _2d_ hex32('2','d',0,0)
+#define _3d_ hex32('3','d',0,0)
 //
 #define _coop_ hex32('c','o','o','p')
 #define _uart_ hex32('u','a','r','t')

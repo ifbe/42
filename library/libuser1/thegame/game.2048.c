@@ -302,7 +302,11 @@ static void the2048_read(
 	else if(fmt == _tui_)the2048_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)the2048_read_html(win, sty, act, pin);
 	else if(fmt == _json_)the2048_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)the2048_read_vbo2d(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)the2048_read_vbo2d(win, sty, act, pin);
+		else the2048_read_vbo3d(win, sty, act, pin);
+	}
 	else the2048_read_pixel(win, sty, act, pin);
 }
 

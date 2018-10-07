@@ -118,11 +118,7 @@ int actorinput_player_recursion(
 {
 	return 0;
 }
-
-
-
-
-int actoroutput_player(struct arena* win, struct style* stack)
+int actoroutput_3d(struct arena* win, struct style* stack)
 {
 	struct relation* orel;
 	struct actor* act;
@@ -152,17 +148,59 @@ int actoroutput_player(struct arena* win, struct style* stack)
 
     if(_vbo_ == win->fmt)
 	{
-		if(sty)select_3d(win, 0x004000, sty, 0);
+		//if(sty)select_3d(win, 0x004000, sty, 0);
 		actoroutput_player_vbo(win, stack);
 	}
     else
 	{
-		if(sty)select_2d(win, 0x004000, sty, 0);
+		//if(sty)select_2d(win, 0x004000, sty, 0);
 		actoroutput_player_pixel(win, stack);
 	}
 	return 0;
 }
-int actorinput_player(struct arena* win, struct style* sty, struct event* ev)
+
+
+
+
+int actorinput_rts(struct arena* win, struct style* sty, struct event* ev)
+{
+    float x,y;
+    float dx,dy,dz,len;
+    float* tar;
+    float* cam;
+    float* tmp;
+
+    if('p' == (ev->what&0xff))
+    {
+        tar = win->target.vc;
+        cam = win->camera.vc;
+        tmp = win->camera.vf;
+
+        x = (ev->why)&0xffff;
+        y = ((ev->why)>>16)&0xffff;
+        //say("x=%f,y=%f\n",x,y);
+
+        if(x <= 9){tar[0] -= 9.0;cam[0] -= 9.0;}
+        else if(x+9 >= win->width){tar[0] += 9.0;cam[0] += 9.0;}
+        else if(y <= 9){tar[1] += 9.0;cam[1] += 9.0;}
+        else if(y+9 >= win->height){tar[1] -= 9.0;cam[1] -= 9.0;}
+        else return 0;
+
+        dx = tar[0] - cam[0];
+        dy = tar[1] - cam[1];
+        dz = tar[2] - cam[2];
+        len = squareroot(dx*dx + dy*dy + dz*dz) * 0.70710678118655;
+
+        cam[0] = tar[0];
+        cam[1] = tar[1] - len;
+        cam[2] = tar[2] + len;
+        tmp[0] = 0;
+        tmp[1] = len;
+        tmp[2] = -len;
+    }
+    return 0;
+}
+int actorinput_3d(struct arena* win, struct style* sty, struct event* ev)
 {
 	struct actor* act;
 	struct pinid* pin;

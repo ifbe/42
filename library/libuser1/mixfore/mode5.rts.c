@@ -40,7 +40,7 @@ void actoroutput_rts_pixel(struct arena* win, struct style* sty)
     drawsolid_rect(win, 0x804000, w*1/4, h*5/6, w*3/4, h);
     drawsolid_rect(win, 0x004080, w*3/4, h*3/4, w, h);
 }
-int actoroutput_rts(struct arena* win, struct style* stack)
+int actoroutput_2d(struct arena* win, struct style* stack)
 {
 	struct relation* orel;
 	struct style* sty;
@@ -68,41 +68,11 @@ int actoroutput_rts(struct arena* win, struct style* stack)
 	else actoroutput_rts_pixel(win, stack);
 	return 0;
 }
-int actorinput_rts(struct arena* win, struct style* sty, struct event* ev)
+
+
+
+
+int actorinput_2d(struct arena* win, struct style* sty, struct event* ev)
 {
-    float x,y;
-    float dx,dy,dz,len;
-    float* tar;
-    float* cam;
-    float* tmp;
-
-    if('p' == (ev->what&0xff))
-    {
-        tar = win->target.vc;
-        cam = win->camera.vc;
-        tmp = win->camera.vf;
-
-        x = (ev->why)&0xffff;
-        y = ((ev->why)>>16)&0xffff;
-        //say("x=%f,y=%f\n",x,y);
-
-        if(x <= 9){tar[0] -= 9.0;cam[0] -= 9.0;}
-        else if(x+9 >= win->width){tar[0] += 9.0;cam[0] += 9.0;}
-        else if(y <= 9){tar[1] += 9.0;cam[1] += 9.0;}
-        else if(y+9 >= win->height){tar[1] -= 9.0;cam[1] -= 9.0;}
-        else return 0;
-
-        dx = tar[0] - cam[0];
-        dy = tar[1] - cam[1];
-        dz = tar[2] - cam[2];
-        len = squareroot(dx*dx + dy*dy + dz*dz) * 0.70710678118655;
-
-        cam[0] = tar[0];
-        cam[1] = tar[1] - len;
-        cam[2] = tar[2] + len;
-        tmp[0] = 0;
-        tmp[1] = len;
-        tmp[2] = -len;
-    }
     return 0;
 }

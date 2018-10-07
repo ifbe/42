@@ -9,12 +9,12 @@ int actorinput_detail(   struct arena* win, struct style* sty, struct event* ev)
 int actoroutput_detail(  struct arena* win, struct style* sty);
 int actorinput_win(      struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_win(     struct arena* win, struct style* sty);
-int actorinput_rts(      struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_rts(     struct arena* win, struct style* sty);
-int actorinput_editor(   struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_editor(  struct arena* win, struct style* sty);
-int actorinput_player(   struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_player(  struct arena* win, struct style* sty);
+int actorinput_2d(      struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_2d(     struct arena* win, struct style* sty);
+int actorinput_cad(   struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_cad(  struct arena* win, struct style* sty);
+int actorinput_3d(   struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_3d(  struct arena* win, struct style* sty);
 
 
 
@@ -25,9 +25,9 @@ static void* nametab[8] = {
 	"wire",
 	"node",
 	"win ",
-	"rts ",
+	" 2d ",
 	"cad ",
-	"rpg "
+	" 3d "
 };
 void tabbar_actors(struct arena* win, struct style* sty)
 {
@@ -37,9 +37,9 @@ void tabbar_actors(struct arena* win, struct style* sty)
     else if(2 == sel)actoroutput_overview(win, sty);
     else if(3 == sel)actoroutput_detail(win, sty);
     else if(4 == sel)actoroutput_win(win, sty);
-    else if(5 == sel)actoroutput_rts(win, sty);
-    else if(6 == sel)actoroutput_editor(win, sty);
-    else if(7 == sel)actoroutput_player(win, sty);
+    else if(5 == sel)actoroutput_2d(win, sty);
+    else if(6 == sel)actoroutput_cad(win, sty);
+    else if(7 == sel)actoroutput_3d(win, sty);
 }
 
 
@@ -164,6 +164,12 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
 
             t = win->forew;
             win->forew = (t & 0xf0) | x;
+
+            if(_vbo_ == win->fmt)
+            {
+                if((4==x)|(5==x))win->vfmt = _2d_;
+                else win->vfmt = _3d_;
+            }
             return 1;
         }
     }
@@ -173,8 +179,8 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
     else if(2 == sel)actorinput_overview(win, 0, ev);
     else if(3 == sel)actorinput_detail(win, 0, ev);
     else if(4 == sel)actorinput_win(win, 0, ev);
-    else if(5 == sel)actorinput_rts(win, 0, ev);
-    else if(6 == sel)actorinput_editor(win, 0, ev);
-    else if(7 == sel)actorinput_player(win, 0, ev);
+    else if(5 == sel)actorinput_2d(win, 0, ev);
+    else if(6 == sel)actorinput_cad(win, 0, ev);
+    else if(7 == sel)actorinput_3d(win, 0, ev);
     return 1;
 }

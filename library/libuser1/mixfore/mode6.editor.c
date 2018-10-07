@@ -200,7 +200,7 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 		drawsolid_rect(win, 0xffffff, x, y, x+(w/8), y+(h/32));
 	}
 }
-int actoroutput_editor(struct arena* win, struct style* stack)
+int actoroutput_cad(struct arena* win, struct style* stack)
 {
 	struct relation* orel;
 	struct style* sty;
@@ -247,7 +247,7 @@ void actorinput_editor_fov(struct arena* win, struct event* ev)
 		if('b' == id)win->nearstride *= 1.1;
 	}
 }
-int actorinput_editor(struct arena* win, struct style* sty, struct event* ev)
+int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
 {
 	int x,y,w,h;
 	if(0x2d70 == ev->what)
