@@ -15,27 +15,38 @@ int deletesocket();
 //shell
 int createshell(void*);
 int deleteshell();
+int startshell(void*, int);
+int stopshell(int);
 //uart
 int createuart(void*);
 int deleteuart();
-//
-int startsocket(void* addr, int port, int type);
-int stopsocket(int);
-int startshell(void*, int);
-int stopshell(int);
 int startuart(void*, int);
 int stopuart(int);
+//i2c
+int createi2c(void*, int);
+int deletei2c(int);
+int starti2c(int, int, int, int);
+//spi
+int createspi(void*, int);
+int deletespi(int);
+//
 int startfile(void*, int);
 int stopfile(int);
+int startsocket(void* addr, int port, int type);
+int stopsocket(int);
 //
-int readsocket( int,void*,void*, int);
-int writesocket(int,void*,void*, int);
-int readshell(  int, int, void*, int);
-int writeshell( int, int, void*, int);
-int readuart(   int, int, void*, int);
-int writeuart(  int, int, void*, int);
 int readfile(   int, int, void*, int);
 int writefile(  int, int, void*, int);
+int readi2c(    int, int, void*, int);
+int writei2c(   int, int, void*, int);
+int readspi(    int, int, void*, int);
+int writespi(   int, int, void*, int);
+int readuart(   int, int, void*, int);
+int writeuart(  int, int, void*, int);
+int readshell(  int, int, void*, int);
+int writeshell( int, int, void*, int);
+int readsocket( int,void*,void*, int);
+int writesocket(int,void*,void*, int);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -253,6 +264,24 @@ void* systemcreate(u64 type, void* argstr)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _file_;
+		goto success;
+	}
+	else if(_i2c_ == type)
+	{
+		fd = createi2c(name, 0);
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _i2c_;
+		starti2c(fd, 0x68, 0, 256);
+
+		goto success;
+	}
+	else if(_spi_ == type)
+	{
+		fd = createspi(name, 0);
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _spi_;
 		goto success;
 	}
 	else if(_uart_ == type)

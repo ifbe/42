@@ -11,23 +11,38 @@ void say(char*,...);
 
 
 
-//
+int systemspi_read(int fd, int addr, u8* buf, int len)
+{
+	return 0;
+}
+int systemspi_write(int fd, int addr, u8* buf, int len)
+{
+	return 0;
+}
+int stopspi(int fd, int dev, int reg, int len)
+{
+	return 0;
+}
+int startspi(int fd, int dev, int reg, int len)
+{
+	return 0;
+}
+int deletespi(int fd)
+{
+	return 0;
+}
+int createspi(char* buf, int len)
+{
+	return 0;
+}
+
+
+
+
+/*
 static int fp=-1;
 static int where[4];
 static char name[16];
-
-
-
-
-//
-int systemspi_read()
-{
-	return 0;
-}
-int systemspi_write()
-{
-	return 0;
-}
 
 
 
@@ -117,3 +132,4 @@ void systemspi_create()
 void systemspi_delete()
 {
 }
+*/

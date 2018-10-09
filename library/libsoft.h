@@ -19,6 +19,8 @@ typedef float mat4[4][4];
 #define _act_ hex32('a','c','t',0)
 //
 #define _uart_ hex32('u','a','r','t')
+#define _spi_  hex32('s','p','i',0)
+#define _i2c_  hex32('i','2','c',0)
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
 //

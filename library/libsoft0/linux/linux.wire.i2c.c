@@ -9,12 +9,143 @@
 #include<sys/ioctl.h>
 #include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
-void say(char*,...);
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
 
-//
+struct i2cjob{
+	int fd;
+	int dev;
+	int reg;
+	int len;
+};
+static struct i2cjob job[16];
+
+
+
+
+int systemi2c_read(int fd, int addr, u8* buf, u8 len)
+{
+	struct i2c_msg messages[2];
+	struct i2c_rdwr_ioctl_data packets;
+	u8 dev = addr>>16;
+	u8 reg = addr&0xffff;
+
+	//out
+	messages[0].addr  = dev;
+	messages[0].flags = 0;
+	messages[0].len   = 1;
+	messages[0].buf   = &reg;
+
+	//in
+	messages[1].addr  = dev;
+	messages[1].flags = I2C_M_RD;
+	messages[1].len   = len;
+	messages[1].buf   = buf;
+
+	//send
+	packets.msgs      = messages;
+	packets.nmsgs     = 2; 
+	if(ioctl(fd, I2C_RDWR, &packets) < 0)
+	{
+		//perror("Unable to send data");
+		return -1;
+	}
+
+	return 1;
+}
+int systemi2c_write(int fd, int addr, u8* buf, u8 len)
+{
+	int j;
+	u8 out[512];
+	struct i2c_msg messages[1];
+	struct i2c_rdwr_ioctl_data packets;
+	u8 dev = addr>>16;
+	u8 reg = addr&0xffff;
+
+	//which,what0,what1,what2......
+	out[0] = reg;
+	for(j=0;j<len;j++)out[j+1] = buf[j];
+
+	//message
+	messages[0].addr  = dev;
+	messages[0].flags = 0;
+	messages[0].len   = len+1;
+	messages[0].buf   = out;
+
+	//transfer
+	packets.msgs  = messages;
+	packets.nmsgs = 1;
+	j = ioctl(fd, I2C_RDWR, &packets);
+	if(j < 0)
+	{
+		//perror("Unable to send data");
+		return -1;
+	}
+
+	return 1;
+}
+
+
+
+
+static systemi2c_thread()
+{
+	int j,fd,addr;
+	u8 buf[256];
+	while(1)
+	{
+		fd = job[0].fd;
+		addr = (job[0].dev<<16) | job[0].reg;
+		systemi2c_read(fd, addr, buf, job[0].len);
+printmemory(buf, job[0].len);
+	}
+}
+
+
+
+
+int stopi2c(int fd, int dev, int reg, int len)
+{
+	return 0;
+}
+int starti2c(int fd, int dev, int reg, int len)
+{
+	job[0].fd = fd;
+	job[0].dev = dev;
+	job[0].reg = reg;
+	job[0].len = len;
+	threadcreate(systemi2c_thread, 0);
+	return 0;
+}
+int deletei2c(int fd)
+{
+	return close(fd);
+}
+int createi2c(char* name, int flag)
+{
+	int j;
+	u8 buf[256];
+
+	for(j=0;j<128;j++)
+	{
+		if(name[j] <= 0x20)
+		{
+			buf[j] = 0;
+			break;
+		}
+		else
+		{
+			buf[j] = name[j];
+		}
+	}
+
+	say("i2c: %s\n", buf);
+	return open(buf, O_RDWR);
+}
+/*
 static int fp=-1;
 static int where[4]={-1,-1,-1,-1};
 static char that[16];
@@ -23,66 +154,6 @@ static unsigned char outbuf[16];
 
 
 
-int systemi2c_read(u8 dev,u8 reg,u8* buf,u8 count)
-{
-	struct i2c_msg messages[2];
-	struct i2c_rdwr_ioctl_data packets;
-
-	//out
-	outbuf[0] = reg;  
-	messages[0].addr  = dev;
-	messages[0].flags = 0;
-	messages[0].len   = 1;
-	messages[0].buf   = outbuf;
-
-	//in
-	messages[1].addr  = dev;
-	messages[1].flags = I2C_M_RD;
-	messages[1].len   = count;
-	messages[1].buf   = buf;
-
-	//send
-	packets.msgs      = messages;
-	packets.nmsgs     = 2; 
-	if(ioctl(fp, I2C_RDWR, &packets) < 0)
-	{
-		//perror("Unable to send data");
-		return -1;
-	}
-
-	return 1;
-}
-int systemi2c_write(u8 dev,u8 reg,u8* buf,u8 count)
-{
-	int ret;
-	struct i2c_msg messages[1];
-	struct i2c_rdwr_ioctl_data packets;
-
-	//which,what0,what1,what2......
-	outbuf[0] = reg;
-	for(ret=0;ret<count;ret++)
-	{
-		outbuf[ret+1] = buf[ret];
-	}
-
-	//message
-	messages[0].addr  = dev;
-	messages[0].flags = 0;
-	messages[0].len   = count+1;
-	messages[0].buf   = outbuf;
-
-	//transfer
-	packets.msgs  = messages;
-	packets.nmsgs = 1;
-	ret=ioctl(fp, I2C_RDWR, &packets);
-	if(ret<0)
-	{
-		//perror("Unable to send data");
-		return -1;
-	}
-
-	return 1;
-}
 
 
 
@@ -248,3 +319,4 @@ void systemi2c_delete()
 		where[0]=where[1]=where[2]=where[3]=-1;
 	}
 }
+*/
