@@ -25,7 +25,6 @@ int stopuart(int);
 //i2c
 int createi2c(void*, int);
 int deletei2c(int);
-int starti2c(int, int, int, int);
 //spi
 int createspi(void*, int);
 int deletespi(int);
@@ -37,10 +36,6 @@ int stopsocket(int);
 //
 int readfile(   int, int, void*, int);
 int writefile(  int, int, void*, int);
-int readi2c(    int, int, void*, int);
-int writei2c(   int, int, void*, int);
-int readspi(    int, int, void*, int);
-int writespi(   int, int, void*, int);
 int readuart(   int, int, void*, int);
 int writeuart(  int, int, void*, int);
 int readshell(  int, int, void*, int);
@@ -272,7 +267,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _i2c_;
-		starti2c(fd, 0x68, 0, 256);
+		obj[fd].selffd = fd;
 
 		goto success;
 	}

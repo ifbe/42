@@ -50,7 +50,7 @@ int systemi2c_read(int fd, int addr, u8* buf, u8 len)
 	packets.nmsgs     = 2; 
 	if(ioctl(fd, I2C_RDWR, &packets) < 0)
 	{
-		//perror("Unable to send data");
+		perror("Unable to send data");
 		return -1;
 	}
 
@@ -93,12 +93,13 @@ int systemi2c_write(int fd, int addr, u8* buf, u8 len)
 
 static systemi2c_thread()
 {
-	int j,fd,addr;
+	int fd,addr;
 	u8 buf[256];
 	while(1)
 	{
 		fd = job[0].fd;
 		addr = (job[0].dev<<16) | job[0].reg;
+say("%x,%x\n",fd,addr);
 		systemi2c_read(fd, addr, buf, job[0].len);
 printmemory(buf, job[0].len);
 	}
