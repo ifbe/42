@@ -29,7 +29,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 	while(alive == 1)
 	{
 		ret = 0x10000 - enq;
-		if(ret > 256)ret = 256;
+		if(ret > 0x1000)ret = 0x1000;
 
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )

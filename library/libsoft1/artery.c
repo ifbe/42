@@ -2,6 +2,7 @@
 #define _HACK_ hex32('H','A','C','K')
 #define _gps_ hex32('g','p','s',0)
 #define _mpu_ hex32('m','p','u',0)
+int gpsclient_create(struct element* ele, void* url, void* buf, int len);
 int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int mpuclient_create(struct element* ele, void* url, void* buf, int len);
@@ -155,6 +156,7 @@ void* arterycreate(u64 type, void* argstr)
 		if(0 == e)return 0;
 
 		e->type = _gps_;
+		gpsclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
 	if(_mpu_ == type)

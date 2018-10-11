@@ -19,19 +19,19 @@ int systemspi_write(int fd, int addr, u8* buf, int len)
 {
 	return 0;
 }
-int stopspi(int fd, int dev, int reg, int len)
+int systemspi_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int startspi(int fd, int dev, int reg, int len)
+int systemspi_start(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int deletespi(int fd)
+int systemspi_delete(int fd)
 {
 	return 0;
 }
-int createspi(char* buf, int len)
+int systemspi_create(char* buf, int len)
 {
 	return 0;
 }

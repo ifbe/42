@@ -108,11 +108,11 @@ printmemory(buf, job[0].len);
 
 
 
-int stopi2c(int fd, int dev, int reg, int len)
+int systemi2c_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int starti2c(int fd, int dev, int reg, int len)
+int systemi2c_start(int fd, int dev, int reg, int len)
 {
 	job[0].fd = fd;
 	job[0].dev = dev;
@@ -121,11 +121,11 @@ int starti2c(int fd, int dev, int reg, int len)
 	threadcreate(systemi2c_thread, 0);
 	return 0;
 }
-int deletei2c(int fd)
+int systemi2c_delete(int fd)
 {
 	return close(fd);
 }
-int createi2c(char* name, int flag)
+int systemi2c_create(char* name, int flag)
 {
 	int j;
 	u8 buf[256];
