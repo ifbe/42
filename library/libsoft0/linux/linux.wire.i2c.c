@@ -9,6 +9,7 @@
 #include<sys/ioctl.h>
 #include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
+void threadcreate(void*, void*);
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -91,7 +92,7 @@ int systemi2c_write(int fd, int addr, u8* buf, u8 len)
 
 
 
-static systemi2c_thread()
+static void systemi2c_thread()
 {
 	int fd,addr;
 	u8 buf[256];
