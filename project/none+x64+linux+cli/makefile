@@ -61,3 +61,4 @@ program:
 	#-lasound -lpthread
 clean:
 	rm -f *.o *.a *.so
+	make -C $(library) clean

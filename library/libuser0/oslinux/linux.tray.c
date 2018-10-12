@@ -14,6 +14,8 @@ int lowlevel_input();
 
 void joystickthread()
 {
+	u8 flag;
+	int value[6];
 	int fd;
 	int ret;
 	char* str;
@@ -32,6 +34,7 @@ void joystickthread()
 	}
 
 	//keep reading
+	flag = 0;
 	while(1)
 	{
 		ret = read(fd, &ev, sizeof(ev));
@@ -54,7 +57,26 @@ void joystickthread()
 				(8 == ev.number) |
 				(11== ev.number) |
 				(12== ev.number) |
-				(13== ev.number) )continue;
+				(13== ev.number) )
+			{
+				if(6 == ev.number)ret = 0;
+				else if(7 == ev.number)ret = 1;
+				else if(8 == ev.number)ret = 2;
+				else if(11== ev.number)ret = 3;
+				else if(12== ev.number)ret = 4;
+				else if(13== ev.number)ret = 5;
+				value[ret] = ev.value;
+
+				flag |= (1 << ret);
+				if(0x3f == flag)
+				{
+					printf("g=(%d,%d,%d), a=(%d,%d,%d)\n",
+						value[0], value[1], value[2],
+						value[3], value[4], value[5]
+					);
+					flag = 0;
+				}
+			}
 			else if(0 == ev.number)printf("lx=%d\n", ev.value);
 			else if(1 == ev.number)printf("ly=%d\n", -ev.value);
 			else if(2 == ev.number)printf("rx=%d\n", ev.value);

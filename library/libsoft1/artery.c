@@ -2,11 +2,15 @@
 #define _HACK_ hex32('H','A','C','K')
 #define _gps_ hex32('g','p','s',0)
 #define _mpu_ hex32('m','p','u',0)
+#define _ahrs_ hex32('a','h','r','s')
 int gpsclient_create(struct element* ele, void* url, void* buf, int len);
 int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int mpuclient_create(struct element* ele, void* url, void* buf, int len);
 int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
+int ahrsclient_create(struct element* ele, void* url, void* buf, int len);
+int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int chatserver_create(struct element* ele, void* url, void* buf, int len);
 int chatserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -106,6 +110,7 @@ say("arterywrite@{\n");
 	type = ele->type;
 	if(_gps_ == type)gpsclient_write(dc, df, sc, sf, buf, len);
 	else if(_mpu_ == type)mpuclient_write(dc, df, sc, sf, buf, len);
+	else if(_ahrs_ == type)ahrsclient_write(dc, df, sc, sf, buf, len);
 	else if(_CHAT_ == type)chatserver_write(dc, df, sc, sf, buf, len);
 	else if(_HACK_ == type)hackserver_write(dc, df, sc, sf, buf, len);
 	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
@@ -166,6 +171,15 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _mpu_;
 		mpuclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_ahrs_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ahrs_;
+		ahrsclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
 	if(_CHAT_ == type)
