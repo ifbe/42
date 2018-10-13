@@ -14,8 +14,9 @@ int lowlevel_input();
 
 void joystickthread()
 {
-	u8 flag;
-	int value[6];
+	u8 af,gf;
+	int av[3];
+	int gv[3];
 	int fd;
 	int ret;
 	char* str;
@@ -34,7 +35,8 @@ void joystickthread()
 	}
 
 	//keep reading
-	flag = 0;
+	af = 0;
+	gf = 0;
 	while(1)
 	{
 		ret = read(fd, &ev, sizeof(ev));
@@ -46,35 +48,32 @@ void joystickthread()
 
 		if(ev.type & 2)
 		{
-			//if(6 == ev.number)printf("gyro.x\n");
-			//else if(7 == ev.number)printf("gyro.y\n");
-			//else if(8 == ev.number)printf("gyro.z\n");
-			//else if(11 == ev.number)printf("accel.x\n");
-			//else if(12 == ev.number)printf("accel.y\n");
-			//else if(13 == ev.number)printf("accel.z\n");
 			if(     (6 == ev.number) |
 				(7 == ev.number) |
-				(8 == ev.number) |
-				(11== ev.number) |
-				(12== ev.number) |
-				(13== ev.number) )
+				(8 == ev.number) )	//accel
 			{
-				if(6 == ev.number)ret = 0;
-				else if(7 == ev.number)ret = 1;
-				else if(8 == ev.number)ret = 2;
-				else if(11== ev.number)ret = 3;
-				else if(12== ev.number)ret = 4;
-				else if(13== ev.number)ret = 5;
-				value[ret] = ev.value;
+				ret = ev.number-6;
+				av[ret] = ev.value;
 
-				flag |= (1 << ret);
-				if(0x3f == flag)
+				af |= (1 << ret);
+				if(7 == af)
 				{
-					printf("g=(%d,%d,%d), a=(%d,%d,%d)\n",
-						value[0], value[1], value[2],
-						value[3], value[4], value[5]
-					);
-					flag = 0;
+					printf("ac=(%d,%d,%d)\n",av[0],av[1],av[2]);
+					af = 0;
+				}
+			}
+			else if((11== ev.number) |
+				(12== ev.number) |
+				(13== ev.number) )	//gyro
+			{
+				ret = ev.number-11;
+				gv[ret] = ev.value;
+
+				gf |= (1 << ret);
+				if(7 == gf)
+				{
+					printf("gy=(%d,%d,%d)\n",gv[0],gv[1],gv[2]);
+					gf = 0;
 				}
 			}
 			else if(0 == ev.number)printf("lx=%d\n", ev.value);
