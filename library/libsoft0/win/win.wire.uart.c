@@ -13,6 +13,8 @@ void systemwrite_dispatch(void*, void*, void*, int);
 //
 static struct object* obj = 0;
 static HANDLE hcom = 0;
+//
+static int curid = 0;
 static int alive = 0;
 
 
@@ -42,6 +44,13 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 		}
 	}
 	return 0;
+}
+static int systemuart_designate()
+{
+	//designedated fakeid: [8,f]
+	int id = curid;
+	curid = (curid+1)%8;
+	return 8 + id;
 }
 
 
@@ -169,10 +178,11 @@ int startuart(char* p, int speed)
 
 	//
 	alive = 1;
-	threadcreate(systemuart_thread, &obj[1]);
+	ret = systemuart_designate();
+	threadcreate(systemuart_thread, &obj[ret]);
 
 	//success
-	return 1;
+	return ret;
 }
 int deleteuart()
 {
