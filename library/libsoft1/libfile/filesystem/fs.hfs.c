@@ -1,19 +1,10 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "libsoft.h"
 #define	BSWAP_8(x)	((x) & 0xff)
 #define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
-//
 int cleverread(u64,u64,u64,	u8*,u64,u64);
 int cleverwrite(u64,u64,u64,	u8*,u64,u64);
-int readfile(u8* file, u64 off, u8* mem, u64 len);
-int writefile(u8* file, u64 off, u8* mem, u64 len);
-//用了别人的
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
@@ -673,4 +664,23 @@ void hfs_create(void* base, u64* this)
 }
 void hfs_delete()
 {
+}
+
+
+
+
+int hfsclient_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int hfsclient_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	struct object* obj = systemcreate(_file_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
 }

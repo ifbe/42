@@ -1,8 +1,13 @@
 #include "libsoft.h"
 #define _HACK_ hex32('H','A','C','K')
+#define _gcode_ hex64('g','c','o','d','e',0,0,0)
 #define _gps_ hex32('g','p','s',0)
 #define _mpu_ hex32('m','p','u',0)
 #define _ahrs_ hex32('a','h','r','s')
+#define _fat_ hex32('f','a','t',0)
+#define _ntfs_ hex32('n','t','f','s')
+#define _hfs_ hex32('h','f','s',0)
+#define _ext_ hex32('e','x','t',0)
 int gpsclient_create(struct element* ele, void* url, void* buf, int len);
 int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
@@ -11,6 +16,9 @@ int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* p
 //
 int ahrsclient_create(struct element* ele, void* url, void* buf, int len);
 int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
+int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
+int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int chatserver_create(struct element* ele, void* url, void* buf, int len);
 int chatserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -155,6 +163,35 @@ void* arterycreate(u64 type, void* argstr)
 
 		url += ret;
 	}
+	if(_CHAT_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _CHAT_;
+		if(url)chatserver_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_HACK_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _HACK_;
+		if(url)hackserver_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_gcode_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _gcode_;
+		gcodeclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//ahrs
 	if(_gps_ == type)
 	{
 		e = allocelement();
@@ -182,22 +219,42 @@ void* arterycreate(u64 type, void* argstr)
 		ahrsclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
-	if(_CHAT_ == type)
+
+	//filesystem
+	if(_fat_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _CHAT_;
-		if(url)chatserver_create(e, url, datahome, 0x100000);
+		e->type = _fat_;
+		fatclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
-	if(_HACK_ == type)
+	if(_ntfs_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _HACK_;
-		if(url)hackserver_create(e, url, datahome, 0x100000);
+		e->type = _ntfs_;
+		ntfsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_hfs_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _hfs_;
+		hfsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_ext_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ext_;
+		extclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
 
