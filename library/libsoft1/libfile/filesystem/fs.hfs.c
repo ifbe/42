@@ -3,6 +3,8 @@
 #define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
+int readfile(u64 file, u64 off, u8* mem, u64 len);
+int writefile(u64 file, u64 off, u8* mem, u64 len);
 int cleverread(u64,u64,u64,	u8*,u64,u64);
 int cleverwrite(u64,u64,u64,	u8*,u64,u64);
 

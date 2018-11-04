@@ -36,6 +36,7 @@ int mpuclient_write(
 		gyro[0],gyro[1],gyro[2],
 		temp
 	);
+	return 0;
 }
 
 

@@ -1,4 +1,6 @@
 #include "libsoft.h"
+int readfile(u64 file, u64 off, u8* mem, u64 len);
+int writefile(u64 file, u64 off, u8* mem, u64 len);
 
 
 

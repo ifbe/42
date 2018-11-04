@@ -1,4 +1,6 @@
 #include "libsoft.h"
+int readfile(u64 file, u64 off, u8* mem, u64 len);
+int writefile(u64 file, u64 off, u8* mem, u64 len);
 int cleverread(u64,u64,u64, u8*,u64,u64);
 int cleverwrite(u64,u64,u64, u8*,u64,u64);
 

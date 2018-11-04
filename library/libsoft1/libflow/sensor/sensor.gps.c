@@ -125,6 +125,7 @@ int gpsclient_parse(u8* buf, int len)
 	{
 		say("unknown: %.*s", len, buf);
 	}
+	return 0;
 }
 int gpsclient_write(
 	struct element* ele, void* sty,
