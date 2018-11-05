@@ -189,6 +189,7 @@ theitem/item.ocean.c \
 theitem/item.piano.c \
 theitem/item.picture.c \
 theitem/item.planet.c \
+theitem/item.rccar.c \
 theitem/item.tree.c \
 theitem/item.water.c \
 actor.c

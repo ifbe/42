@@ -1,14 +1,13 @@
 #include "libsoft.h"
-//
 int findzero(void*);
 int findhead(void*);
 int findtail(void*);
-int ncmp(void*, void*, int);
-int cmp(void*, void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
 int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
+int systemread_dispatch(void*, void*, void*, int);
+int systemwrite_dispatch(void*, void*, void*, int);
 
 
 
@@ -190,32 +189,47 @@ int httpmaster_write(
 	//GET / HTTP/1.1
 	if(GET)
 	{
-		if(0 == ncmp(GET, "/favicon.ico", 12))len = 0;
+		if(0 == ncmp(GET, "/favicon.ico", 12))goto byebye;
 
-		ret = mysnprintf(buf+len, 0x1000,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"	//"Content-type: text/html\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n",
-			len
-		);
-
-		if(ret)
+		if(ele->orel0)
 		{
+			//read data
+			len = systemread_dispatch(ele, sty, buf, len);
+			if(len <= 0)goto byebye;
+
+			//text html?
+			ret = mysnprintf(buf+len, 0x1000,
+				"HTTP/1.1 200 OK\r\n"
+				"Content-type: text/html\r\n"
+				"Content-Length: %d\r\n"
+				"\r\n",
+				len
+			);
+
 			//send response
 			systemwrite(obj, pin, ele, sty, buf+len, ret);
 
 			//send context
-			if(len)systemwrite(obj, pin, ele, sty, buf, len);
+			systemwrite(obj, pin, ele, sty, buf, len);
 		}
-
-		if(0 != Connection)
+		else
 		{
-			if(0 == ncmp(Connection, "keep-alive", 10))return 0;
+			//send back
+			ret = mysnprintf(buf+len, 0x1000,
+				"HTTP/1.1 200 OK\r\n"
+				"Content-type: text/plain\r\n"
+				"Content-Length: %d\r\n"
+				"\r\n",
+				len
+			);
+
+			//send response
+			systemwrite(obj, pin, ele, sty, buf+len, ret);
+
+			//send context
+			systemwrite(obj, pin, ele, sty, buf, len);
 		}
 
-		systemdelete(obj);
-		return 0;
 	}
 
 	//POST / HTTP/1.1
@@ -227,6 +241,14 @@ int httpmaster_write(
 
 	//unknown
 	printmemory(buf,len);
+
+byebye:
+	//close or not
+	if(0 != Connection)
+	{
+		if(0 == ncmp(Connection, "keep-alive", 10))return 0;
+	}
+	systemdelete(obj);
 	return 0;
 }
 int httpmaster_read()

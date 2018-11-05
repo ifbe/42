@@ -27,6 +27,7 @@ void picture_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
 void skysphere_register(void*);
+void rccar_register(void*);
 void terrian_register(void*);
 void tree_register(void*);
 void water_register(void*);
@@ -189,6 +190,9 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	portal_register(temp);
+	temp += sizeof(struct actor);
+
+	rccar_register(temp);
 	temp += sizeof(struct actor);
 
 	skydome_register(temp);
