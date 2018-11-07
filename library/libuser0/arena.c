@@ -230,7 +230,24 @@ say("}@arenawrite\n");
 }
 int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	windowread(dc);
+	int j;
+	struct arena* win;
+/*
+	//0 == stack[0]: read all
+	for(j=0;j<0x100;j++)
+	{
+		win = &arena[j];
+		if(0 == win->type)continue;
+
+		windowread(win);
+	}
+	return 0;
+*/
+/*
+	//0 != stack[0]: read stack[0].ctx to stack[-1].buf
+	win = stack[0];
+	return windowread();
+*/
 	return 0;
 }
 int arenastop()

@@ -6,8 +6,8 @@ int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
 int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
-int systemread_dispatch(void*, void*, void*, int);
-int systemwrite_dispatch(void*, void*, void*, int);
+int nodetree_read(void*, void*, void*, int);
+int nodetree_write(void*, void*, void*, int);
 
 
 
@@ -194,7 +194,7 @@ int httpmaster_write(
 		if(ele->orel0)
 		{
 			//read data
-			len = systemread_dispatch(ele, sty, buf, len);
+			len = nodetree_read(ele, sty, buf, len);
 			if(len <= 0)goto byebye;
 
 			//text html?

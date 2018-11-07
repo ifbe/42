@@ -5,7 +5,7 @@
 #include "libsoft.h"
 #define _uart_ hex32('u','a','r','t')
 void sleep_us(int);
-void systemwrite_dispatch(void*, void*, void*, int);
+void nodetree_write(void*, void*, void*, int);
 
 
 
@@ -36,7 +36,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			systemwrite_dispatch(oo, 0, buf+enq, cnt);
+			nodetree_write(oo, 0, buf+enq, cnt);
 
 			enq = (enq + cnt)%0x10000;
 

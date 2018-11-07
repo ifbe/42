@@ -53,20 +53,21 @@ void initstdrel(void*);
 void* death();
 void* birth();
 //
+int termread();
+int termwrite(void*, int);
+//
 void* arenacreate(u64,u64);
 void arenadelete(void*);
-void arenaread(void*);
-void arenawrite(void*);
+void windowread(void*);
+//
+u64 timeread();
+void timewrite(u64);
+void sleep_us();
 //
 void* threadcreate(void*, void*);
 void* threaddelete(u64);
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
-int termread();
-int termwrite(void*, int);
-//
-u64 timeread();
-void sleep_us();
 //
 int argv2line(void*, void*);
 int openwriteclose(void*,int,void*,int);
@@ -226,7 +227,7 @@ int main(int argc, char* argv[])
 	{
 		//draw frame, cleanup events
 		j = timeread();
-		arenaread(win);
+		windowread(win);
 		k = timeread();
 
 		//max fps
