@@ -110,6 +110,42 @@ int httpclient_create(struct element* ele, u8* url, u8* buf, int len)
 
 
 
+void httpserver_post(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* POST)
+{
+	say("%.*s\n", len, buf);
+}
+void httpserver_get(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* GET)
+{
+	int ret;
+	if(0 == ncmp(GET, "/favicon.ico", 12))return;
+
+	//read data
+	len = nodetree_read(ele, sty, buf, len);
+	if(len <= 0)return;
+
+	//text html?
+	ret = mysnprintf(buf+len, 0x1000,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/html\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+		len
+	);
+
+	//send response
+	systemwrite(obj, pin, ele, sty, buf+len, ret);
+
+	//send context
+	systemwrite(obj, pin, ele, sty, buf, len);
+}
 int httpserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
@@ -186,63 +222,29 @@ int httpmaster_write(
 		return 0;
 	}
 
-	//GET / HTTP/1.1
-	if(GET)
+	if((0 == ele->orel0) | ((0 == GET)&&(0 == POST)))
 	{
-		if(0 == ncmp(GET, "/favicon.ico", 12))goto byebye;
+		//debug
+		printmemory(buf, len);
 
-		if(ele->orel0)
-		{
-			//read data
-			len = nodetree_read(ele, sty, buf, len);
-			if(len <= 0)goto byebye;
+		//response
+		ret = mysnprintf(buf+len, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: text/plain\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			len
+		);
 
-			//text html?
-			ret = mysnprintf(buf+len, 0x1000,
-				"HTTP/1.1 200 OK\r\n"
-				"Content-type: text/html\r\n"
-				"Content-Length: %d\r\n"
-				"\r\n",
-				len
-			);
+		//send response
+		systemwrite(obj, pin, ele, sty, buf+len, ret);
 
-			//send response
-			systemwrite(obj, pin, ele, sty, buf+len, ret);
-
-			//send context
-			systemwrite(obj, pin, ele, sty, buf, len);
-		}
-		else
-		{
-			//send back
-			ret = mysnprintf(buf+len, 0x1000,
-				"HTTP/1.1 200 OK\r\n"
-				"Content-type: text/plain\r\n"
-				"Content-Length: %d\r\n"
-				"\r\n",
-				len
-			);
-
-			//send response
-			systemwrite(obj, pin, ele, sty, buf+len, ret);
-
-			//send context
-			systemwrite(obj, pin, ele, sty, buf, len);
-		}
-
+		//send context
+		systemwrite(obj, pin, ele, sty, buf, len);
 	}
+	else if(GET)httpserver_get(ele,sty, obj,pin, buf+len,0, GET);
+	else if(POST)httpserver_post(ele,sty, obj,pin, buf+len,0, POST);
 
-	//POST / HTTP/1.1
-	if(POST)
-	{
-		say("%.*s\n", len, buf);
-		return 0;
-	}
-
-	//unknown
-	printmemory(buf,len);
-
-byebye:
 	//close or not
 	if(0 != Connection)
 	{

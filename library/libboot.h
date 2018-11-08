@@ -61,6 +61,11 @@ struct item
 		void* oreln;
 		u64 opadn;
 	};
+
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
 };
 
 
