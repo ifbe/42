@@ -6,6 +6,7 @@ int mysnprintf(void*, int, void*, ...);
 
 
 
+//root -> leaf: traverse read whole tree
 //stack[-n]: caller's caller's caller's caller...
 //stack[-1]: caller
 //stack[ 0]: root
@@ -53,6 +54,11 @@ int nodetree_read(void* sc, void* sf, u8* buf, int len)
 
 	return j+mysnprintf(buf+j, 0x10000-j, "}");
 }
+
+
+
+
+//root -> leaf, throw data deeper into the tree
 int nodetree_write(void* sc, void* sf, u8* buf, int len)
 {
 	void* dc;
@@ -85,5 +91,27 @@ int nodetree_write(void* sc, void* sf, u8* buf, int len)
 
 		orel = samesrcnextdst(orel);
 	}
+	return 0;
+}
+
+
+
+
+//leaf -> root: example: tcpip data pack until ethernet layer
+int nodetree_leaf2root(void* sc, void* sf, u8* buf, int len)
+{
+	struct item* chip;
+	struct relation* irel;
+
+	chip = sc;
+	if(0 == chip)return 0;
+
+	irel = chip->irel0;
+	if(0 == irel)
+	{
+		printmemory(buf, len);
+		return 0;
+	}
+
 	return 0;
 }

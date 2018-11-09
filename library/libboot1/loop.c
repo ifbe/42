@@ -10,6 +10,18 @@ typedef unsigned long long u64;
 #define _dri_  hex32('d','r','i', 0)
 #define _fd_   hex32('f','d', 0 , 0)
 #define _art_  hex32('a','r','t', 0)
+int actorread_all(void*);
+int actorwrite_ev(void*);
+int arenaread_all(void*);
+int arenawrite_ev(void*);
+int arteryread_all(void*);
+int arterywrite_ev(void*);
+int systemread_all(void*);
+int systemwrite_ev(void*);
+int driverread_all(void*);
+int driverwrite_ev(void*);
+int deviceread_all(void*);
+int devicewrite_ev(void*);
 //
 int termread();
 int termwrite(void*, int);

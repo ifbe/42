@@ -25,6 +25,11 @@ int chatserver_write( struct element* ele, void* sty, struct object* obj, void* 
 int hackserver_create(struct element* ele, void* url, void* buf, int len);
 int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
+int fatclient_create(struct element* ele, void* url, void* buf, int len);
+int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
+int hfsclient_create(struct element* ele, void* url, void* buf, int len);
+int extclient_create(struct element* ele, void* url, void* buf, int len);
+//
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);

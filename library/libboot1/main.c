@@ -5,28 +5,18 @@ typedef unsigned long long u64;
 //libuser1
 void freeactor();
 void initactor(void*);
-int actorread_all(void*);
-int actorwrite_ev(void*);
 //libuser0
 void freearena();
 void initarena(void*);
-int arenaread_all(void*);
-int arenawrite_ev(void*);
 //libsoft1
 void freeartery();
 void initartery(void*);
-int arteryread_all(void*);
-int arterywrite_ev(void*);
 //libsoft0
 void freesystem();
 void initsystem(void*);
-int systemread_all(void*);
-int systemwrite_ev(void*);
 //libhard1
 void freedriver();
 void initdriver(void*);
-int driverread_all(void*);
-int driverwrite_ev(void*);
 //libhard0
 void freedevice();
 void initdevice(void*);
