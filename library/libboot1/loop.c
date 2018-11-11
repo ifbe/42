@@ -34,8 +34,6 @@ u64 timeread();
 void timewrite(u64);
 void sleep_us();
 //
-void* threadcreate(void*, void*);
-void* threaddelete(u64);
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
 //
@@ -53,101 +51,56 @@ struct event
 	u64 when;
 };
 static int alive = 1;
-static u64 delta = 0;
 
 
 
 
-void aide()
+void eventhandler(struct event* ev)
 {
 	int ret;
-	struct event* ev;
-	while(1)
-	{
-		//force redraw
-		//actorread_all();
-		//arenaread_all();
-		//arteryread_all();
-		//systemread_all();
+	//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 
-again:
-		ev = eventread();
-		if(0 == ev)continue;
-		if(0 == ev->what){alive = 0;return;}
-
-		//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
-		if((_char_ == ev->what)&&(0 == ev->where))
-		{
-			termwrite(ev, 0);
-			continue;
-		}
-
-		//libhard0
-		if(_dev_ == ev->what)
-		{
-			ret = devicewrite_ev(ev);
-			if(ret != 42)goto again;
-		}
-
-		//libhard1
-		if(_dri_ == ev->what)
-		{
-			ret = driverwrite_ev(ev);
-			if(ret != 42)goto again;
-		}
-
-		//libsoft0
-		if(_fd_ == ev->what)
-		{
-			ret = systemwrite_ev(ev);
-			if(42 == ret)continue;
-			else goto again;
-		}
-
-		//libsoft1
-		if(_art_ == ev->what)
-		{
-			ret = arterywrite_ev(ev);
-			if(42 == ret)continue;
-			else goto again;
-		}
-
-		//libuser0
-		ret = (ev->what)&0xff;
-		if('w' == ret)
-		{
-			ret = arenawrite_ev(ev);
-			continue;
-		}
-
-		//libuser1
-		actorwrite_ev(ev);
-	}
+	if((_char_ == ev->what)&&(0 == ev->where))termwrite(ev, 0);
+	else if(_dev_ == ev->what)devicewrite_ev(ev);
+	else if(_dri_ == ev->what)driverwrite_ev(ev);
+	else if(_fd_  == ev->what)systemwrite_ev(ev);
+	else if(_art_ == ev->what)arterywrite_ev(ev);
+	else if(_win_ == ret)arenawrite_ev(ev);
+	else actorwrite_ev(ev);
 }
 void loop()
 {
 	//before
-	u64 j,k;
+	u64 t0;
+	u64 dt;
 	void* dbg;
 	void* win;
-
-	//help thread
-	threadcreate(aide, 0);
+	struct event* ev;
 
 	//main thread
 	dbg = arenacreate(_dbg_, 0);
 	win = arenacreate(_win_,  0);
 	while(alive)
 	{
-		//draw frame, cleanup events
-		j = timeread();
+		//draw frame
+		t0 = timeread();
 		windowread(win);
-		k = timeread();
+
+		//cleanup events
+		while(1)
+		{
+			ev = eventread();
+			if(0 == ev)break;
+			if(0 == ev->what)return;
+
+			eventhandler(ev);
+		}
 
 		//max fps
-		delta = k-j;
+		dt = timeread() - t0;
 		//say("dt=%d\n", delta);
-		if(delta < 16000)sleep_us(16000-delta);
+		if(dt < 16000)sleep_us(16000-dt);
 	}
 	arenadelete(win);
+	//arenadelete(dbg);
 }

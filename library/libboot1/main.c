@@ -108,12 +108,14 @@ int main(int argc, char* argv[])
 	k = 0;
 	for(j=1;j<argc;j++){k += argv2line(argv[j], addr+k);}
 	termwrite(addr, k);
+	//if(noloop)goto byebye;
 
 	//loop
 	loop();
-
-	//after
 	openwriteclose("universe.bin",0,addr,0x1000000);
+
+byebye:
+	//after
 	afterdusk();
 	return 0;
 }
