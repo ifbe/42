@@ -31,7 +31,7 @@ a:
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o
 dylib:
-	libtool -dynamic -macosx_version_min 10.13 \
+	libtool -dynamic -macosx_version_min 10.14 \
 	-o 42.dylib \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \

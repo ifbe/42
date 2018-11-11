@@ -5,29 +5,21 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s dylib
 	make -s program
 libboot0:
-	make -s -C $(library)/libboot0 none \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libboot0 compiler="clang" cflag=$(flag) none
 libboot1:
-	make -s -C $(library)/libboot1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libboot1 compiler="clang" cflag=$(flag)
 libhard0:
-	make -s -C $(library)/libhard0 x64 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) x64
 libhard1:
-	make -s -C $(library)/libhard1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector"
+	make -s -C $(library)/libhard1 compiler="clang" cflag=$(flag)
 libsoft0:
-	make -s -C $(library)/libsoft0 mac \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
+	make -s -C $(library)/libsoft0 compiler="clang" cflag=$(flag) mac
 libsoft1:
-	make -s -C $(library)/libsoft1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
+	make -s -C $(library)/libsoft1 compiler="clang" cflag=$(flag)
 libuser0:
-	make -s -C $(library)/libuser0 macsdl \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
+	make -s -C $(library)/libuser0 compiler="clang" cflag=$(flag) macsdl
 libuser1:
-	make -s -C $(library)/libuser1 \
-	compiler="clang" cflag="-c -O2 -fno-stack-protector -I.."
+	make -s -C $(library)/libuser1 compiler="clang" cflag=$(flag)
 a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \
@@ -39,7 +31,7 @@ a:
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o
 dylib:
-	libtool -dynamic -macosx_version_min 10.13 \
+	libtool -dynamic -macosx_version_min 10.14 \
         -o 42.dylib \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
@@ -62,4 +54,5 @@ program:
 	$(library)/libuser1/*.o \
 	-lSDL2 -lm
 clean:
+	make -C $(library) clean
 	rm -f *.o
