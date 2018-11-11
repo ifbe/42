@@ -77,9 +77,21 @@ void loop()
 	void* win;
 	struct event* ev;
 
-	//main thread
+	//+libhard
+	//ahci = devicecreate()
+	//xhci = devicecreate()
+
+	//+libsoft
+	//hack = arterycreate("HACK://127.0.0.1:2222");
+	//hack = arterycreate("CHAT://127.0.0.1:4444");
+	//sshd = arterycreate( "SSH://127.0.0.1:2222");
+	//http = arterycreate("HTTP://127.0.0.1:4444");
+
+	//+libuser
 	dbg = arenacreate(_dbg_, 0);
 	win = arenacreate(_win_,  0);
+
+	//forever
 	while(alive)
 	{
 		//draw frame
@@ -101,6 +113,12 @@ void loop()
 		//say("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}
+
+	//-libuser
 	arenadelete(win);
 	//arenadelete(dbg);
+
+	//-libsoft
+
+	//-libhard
 }

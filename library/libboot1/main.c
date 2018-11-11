@@ -100,8 +100,6 @@ int main(int argc, char* argv[])
 {
 	//before
 	u64 j,k;
-	void* dbg;
-	void* win;
 	u8* addr = beforedawn();
 
 	//cmdline
@@ -110,8 +108,16 @@ int main(int argc, char* argv[])
 	termwrite(addr, k);
 	//if(noloop)goto byebye;
 
-	//loop
+	//before mainloop: load file as ui
+	//if(0 == srcctx)srcctx =
+	//if(0 == loadctx(srcctx))emptyctx();
+
+	//mainloop
 	loop();
+
+	//after mainloop: backup world
+	//if(0 == dstctx)dstctx =
+	//if(0 == storectx(dstctx))dump();
 	openwriteclose("universe.bin",0,addr,0x1000000);
 
 byebye:
