@@ -3,38 +3,7 @@
 
 
 
-int tftp_read(u8* buf, int len)
-{
-	return 0;
-}
-int tftp_write(u8* buf, int len)
-{
-	buf[0] = 0xd;
-	buf[1] = 0xa;
-	buf[2] = 0;
-	return 3;
-}
-
-
-
-
-#define tftp 0x70746674
-#define TFTP 0x50544654
-int tftp_client(struct object* obj, int fd, u8* buf, int len)
-{
-	printmemory(buf, len);
-	return 0;
-}
-int tftp_server(struct object* obj, int fd, u8* buf, int len)
-{
-	printmemory(buf, len);
-	return 0;
-}
-
-
-
-
-int chatserver_write(
+int tftpserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -67,44 +36,15 @@ int chatserver_write(
 	systemwrite(obj,pin,ele,sty,buf,len);
 	return 0;
 }
-int chatserver_read()
+int tftpserver_read()
 {
 	return 0;
 }
-int chatserver_delete(struct element* ele)
+int tftpserver_delete(struct element* ele)
 {
 	return 0;
 }
-int chatserver_create(struct element* ele, u8* url, u8* buf, int len)
-{
-	int ret;
-	void* obj = systemcreate(_UDP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, obj, 0, _fd_);
-	return 0;
-}
-
-
-
-int termwrite(void*, int);
-int hackserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	termwrite(buf, len);
-	return 0;
-}
-int hackserver_read()
-{
-	return 0;
-}
-int hackserver_delete(struct element* ele)
-{
-	return 0;
-}
-int hackserver_create(struct element* ele, u8* url, u8* buf, int len)
+int tftpserver_create(struct element* ele, u8* url, u8* buf, int len)
 {
 	int ret;
 	void* obj = systemcreate(_UDP_, url);

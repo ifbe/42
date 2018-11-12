@@ -34,9 +34,6 @@ typedef float mat4[4][4];
 #define _Tcp_ hex32('T','c','p',0)
 #define _tcp_ hex32('t','c','p',0)
 //
-#define _CHAT_ hex32('C','H','A','T')
-#define _Chat_ hex32('C','h','a','t')
-#define _chat_ hex32('c','h','a','t')
 #define _HTTP_ hex32('H','T','T','P')
 #define _Http_ hex32('H','t','t','p')
 #define _http_ hex32('h','t','t','p')
@@ -49,6 +46,14 @@ typedef float mat4[4][4];
 #define _WS_   hex32('W','S',0,0)
 #define _Ws_   hex32('W','s',0,0)
 #define _ws_   hex32('w','s',0,0)
+//tran
+#define _HACK_ hex32('H','A','C','K')
+#define _hack_ hex32('h','a','c','k')
+#define _QUIC_ hex32('Q','U','I','C')
+#define _Quic_ hex32('Q','u','i','c')
+#define _quic_ hex32('q','u','i','c')
+#define _SOCKS5_ 0x35534b434f53	//s
+#define _socks5_ 0x35736b636f73	//c
 //
 #define _ARP_ hex32('A','R','P',0)
 #define _arp_ hex32('a','r','p',0)
@@ -65,11 +70,6 @@ typedef float mat4[4][4];
 #define _icmp_ 0x706d6369		//c
 #define _IGMP_ 0x504d4749		//s
 #define _igmp_ 0x706d6769		//c
-//tran
-#define _QUIC_ 0x43495551		//s
-#define _quic_ 0x63697571		//c
-#define _SOCKS5_ 0x35534b434f53	//s
-#define _socks5_ 0x35736b636f73	//c
 //udp
 #define _BOOTP_ 0x50544f4f42	//s
 #define _bootp_ 0x70746f6f62	//c

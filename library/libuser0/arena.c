@@ -141,35 +141,15 @@ int arenawrite_ev(struct event* ev)
 }
 int arenaread_all()
 {
-/*
 	int j;
-	u64 time;
-	struct relation* rel;
 	struct arena* win;
-	struct actor* act;
-	struct style* sty;
-	struct pinid* pin;
 
 	for(j=0;j<16;j++)
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
-		if(_win_ == win->type)
-		{
-			if(win->enq == win->deq)
-			{
-				sleep_us(1000);
-				continue;
-			}
-			win->deq = win->enq;
-
-			time = timeread();
-			windowread(0, 0, win, 0);
-			time = timeread() - time;
-			//say("delta=%d\n",time);
-		}
+		if(_win_ == win->type)windowread(win);
 	}
-*/
 	return 0;
 }
 void arenavertex(struct arena* win)

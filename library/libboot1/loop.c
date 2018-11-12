@@ -10,17 +10,17 @@ typedef unsigned long long u64;
 #define _dri_  hex32('d','r','i', 0)
 #define _fd_   hex32('f','d', 0 , 0)
 #define _art_  hex32('a','r','t', 0)
-int actorread_all(void*);
+int actorread_all();
 int actorwrite_ev(void*);
-int arenaread_all(void*);
+int arenaread_all();
 int arenawrite_ev(void*);
-int arteryread_all(void*);
+int arteryread_all();
 int arterywrite_ev(void*);
-int systemread_all(void*);
+int systemread_all();
 int systemwrite_ev(void*);
-int driverread_all(void*);
+int driverread_all();
 int driverwrite_ev(void*);
-int deviceread_all(void*);
+int deviceread_all();
 int devicewrite_ev(void*);
 //
 int termread();
@@ -28,7 +28,6 @@ int termwrite(void*, int);
 //
 void* arenacreate(u64,u64);
 void arenadelete(void*);
-void windowread(void*);
 //
 u64 timeread();
 void timewrite(u64);
@@ -94,9 +93,12 @@ void loop()
 	//forever
 	while(alive)
 	{
-		//draw frame
+		//cur time
 		t0 = timeread();
-		windowread(win);
+
+		//draw frame
+		//actorread_all();
+		arenaread_all();
 
 		//cleanup events
 		while(1)

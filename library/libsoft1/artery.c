@@ -1,5 +1,4 @@
 #include "libsoft.h"
-#define _HACK_ hex32('H','A','C','K')
 #define _gcode_ hex64('g','c','o','d','e',0,0,0)
 #define _gps_ hex32('g','p','s',0)
 #define _mpu_ hex32('m','p','u',0)
@@ -20,15 +19,22 @@ int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* 
 int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
 int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
-int chatserver_create(struct element* ele, void* url, void* buf, int len);
-int chatserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int hackserver_create(struct element* ele, void* url, void* buf, int len);
-int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
 int fatclient_create(struct element* ele, void* url, void* buf, int len);
 int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
 int hfsclient_create(struct element* ele, void* url, void* buf, int len);
 int extclient_create(struct element* ele, void* url, void* buf, int len);
+//
+int hackclient_create(struct element* ele, void* url, void* buf, int len);
+int hackclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int hackserver_create(struct element* ele, void* url, void* buf, int len);
+int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//
+int quicclient_create(struct element* ele, void* url, void* buf, int len);
+int quicclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int quicserver_create(struct element* ele, void* url, void* buf, int len);
+int quicserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int quicmaster_create(struct element* ele, void* url, void* buf, int len);
+int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -124,20 +130,30 @@ say("arterywrite@{\n");
 	if(_gps_ == type)gpsclient_write(dc, df, sc, sf, buf, len);
 	else if(_mpu_ == type)mpuclient_write(dc, df, sc, sf, buf, len);
 	else if(_ahrs_ == type)ahrsclient_write(dc, df, sc, sf, buf, len);
-	else if(_CHAT_ == type)chatserver_write(dc, df, sc, sf, buf, len);
+
 	else if(_HACK_ == type)hackserver_write(dc, df, sc, sf, buf, len);
+	else if(_hack_ == type)hackclient_write(dc, df, sc, sf, buf, len);
+
+	else if(_QUIC_ == type)quicmaster_write(dc, df, sc, sf, buf, len);
+	else if(_Quic_ == type)quicserver_write(dc, df, sc, sf, buf, len);
+	else if(_quic_ == type)quicclient_write(dc, df, sc, sf, buf, len);
+
 	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Http_ == type)httpserver_write(dc, df, sc, sf, buf, len);
 	else if(_http_ == type)httpclient_write(dc, df, sc, sf, buf, len);
+
 	else if(_SSH_  == type)sshmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Ssh_  == type)sshserver_write(dc, df, sc, sf, buf, len);
 	else if(_ssh_  == type)sshclient_write(dc, df, sc, sf, buf, len);
+
 	else if(_TLS_  == type)tlsmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Tls_  == type)tlsserver_write(dc, df, sc, sf, buf, len);
 	else if(_tls_  == type)tlsclient_write(dc, df, sc, sf, buf, len);
+
 	else if(_WS_   == type)wsmaster_write(dc, df, sc, sf, buf, len);
 	else if(_Ws_   == type)wsserver_write(dc, df, sc, sf, buf, len);
 	else if(_ws_   == type)wsclient_write(dc, df, sc, sf, buf, len);
+
 	else printmemory(buf, len);
 
 say("}@arterywrite\n");
@@ -168,24 +184,8 @@ void* arterycreate(u64 type, void* argstr)
 
 		url += ret;
 	}
-	if(_CHAT_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
 
-		e->type = _CHAT_;
-		if(url)chatserver_create(e, url, datahome, 0x100000);
-		return e;
-	}
-	if(_HACK_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _HACK_;
-		if(url)hackserver_create(e, url, datahome, 0x100000);
-		return e;
-	}
+	//file parser
 	if(_gcode_ == type)
 	{
 		e = allocelement();
@@ -196,36 +196,7 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//ahrs
-	if(_gps_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _gps_;
-		gpsclient_create(e, url, datahome, 0x100000);
-		return e;
-	}
-	if(_mpu_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _mpu_;
-		mpuclient_create(e, url, datahome, 0x100000);
-		return e;
-	}
-	if(_ahrs_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _ahrs_;
-		ahrsclient_create(e, url, datahome, 0x100000);
-		return e;
-	}
-
-	//filesystem
+	//file system
 	if(_fat_ == type)
 	{
 		e = allocelement();
@@ -260,6 +231,84 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _ext_;
 		extclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//ahrs
+	if(_gps_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _gps_;
+		gpsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_mpu_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _mpu_;
+		mpuclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_ahrs_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ahrs_;
+		ahrsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//simple control over message
+	if(_HACK_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _HACK_;
+		if(url)hackserver_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_hack_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _hack_;
+		if(url)hackclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//quic: master,server,client
+	if(_QUIC_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _QUIC_;
+		if(url)quicmaster_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_Quic_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Quic_;
+		if(url)quicserver_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_quic_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _quic_;
+		if(url)quicclient_create(e, url, datahome, 0x100000);
 		return e;
 	}
 
@@ -307,34 +356,34 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//ssh: master,server,client
-	if(_SSH_ == type)
+	//ws: master,server,client
+	if(_WS_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _SSH_;
-		if(url)sshmaster_create(e, url, datahome, 0x100000);
+		e->type = _WS_;
+		if(url)wsmaster_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
-	if(_Ssh_ == type)
+	if(_Ws_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _Ssh_;
-		if(url)sshserver_create(e, url, datahome, 0x100000);
+		e->type = _Ws_;
+		if(url)wsserver_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
-	if(_ssh_ == type)
+	if(_ws_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _ssh_;
-		if(url)sshclient_create(e, url, datahome, 0x100000);
+		e->type = _ws_;
+		if(url)wsclient_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
@@ -371,37 +420,38 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//ws: master,server,client
-	if(_WS_ == type)
+	//ssh: master,server,client
+	if(_SSH_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _WS_;
-		if(url)wsmaster_create(e, url, datahome, 0x100000);
+		e->type = _SSH_;
+		if(url)sshmaster_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
-	if(_Ws_ == type)
+	if(_Ssh_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _Ws_;
-		if(url)wsserver_create(e, url, datahome, 0x100000);
+		e->type = _Ssh_;
+		if(url)sshserver_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
-	if(_ws_ == type)
+	if(_ssh_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _ws_;
-		if(url)wsclient_create(e, url, datahome, 0x100000);
+		e->type = _ssh_;
+		if(url)sshclient_create(e, url, datahome, 0x100000);
 
 		return e;
 	}
+
 	return 0;
 }
 int arterychoose(u8* buf, int len)
@@ -464,7 +514,7 @@ void initartery(void* addr)
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
 	arterycreate(0, (u8*)"HACK://127.0.0.1:2222");
-	arterycreate(0, (u8*)"CHAT://127.0.0.1:4444");
+	arterycreate(0, (u8*)"QUIC://127.0.0.1:4444");
 	arterycreate(0, (u8*)"SSH://127.0.0.1:2222");
 	arterycreate(0, (u8*)"HTTP://127.0.0.1:4444");
 	//say("[8,c):inited artery\n");
