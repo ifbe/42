@@ -28,7 +28,6 @@ int postprocess(struct arena* win);
 
 
 
-static struct arena* last = 0;
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;
@@ -144,7 +143,6 @@ int actorwrite_ev(struct event* ev)
 {
 	int ret;
 	struct arena* win = (void*)(ev->where);
-	if(0 == win)win = last;
 
 	if(_drag_ == ev->what)
 	{
@@ -179,7 +177,6 @@ theend:
 int actorread_all(struct arena* win)
 {
 	if(_cli_ == win->fmt)return 0;
-	last = win;
 
 	//bg
 	preprocess(win);

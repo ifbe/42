@@ -3,7 +3,7 @@ void* getstdin();
 int getcurin();
 void* getstdout();
 int getcurout();
-void termwrite(u8* buf, int len);
+void input(u8* buf, int len);
 
 
 
@@ -119,6 +119,6 @@ void actorinput_console(struct arena* win, struct style* sty, struct event* ev)
 		{
 			if(buf[len] < 0x8)break;
 		}
-		termwrite(buf, len);
+		input(buf, len);
 	}
 }

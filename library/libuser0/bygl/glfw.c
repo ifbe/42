@@ -33,7 +33,7 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 {
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
-    printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
+    //printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
 	if(0x118 == key)return;		//capslock

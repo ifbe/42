@@ -34,14 +34,14 @@ void initstdrel(void*);
 //libboot0
 void* death();
 void* birth();
+//
 void loop();
-//
-int termread();
-int termwrite(void*, int);
-//
-int argv2line(void*, void*);
+int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
-//
+//i
+int arg2utf8(void*, void*);
+int termwrite(void*, int);
+//o
 void printmemory(void*, int);
 void say(void*, ...);
 
@@ -103,10 +103,14 @@ int main(int argc, char* argv[])
 	u8* addr = beforedawn();
 
 	//cmdline
-	k = 0;
-	for(j=1;j<argc;j++){k += argv2line(argv[j], addr+k);}
-	termwrite(addr, k);
-	//if(noloop)goto byebye;
+	termwrite("\n@42@\n", 1);
+	for(j=1;j<argc;j++)
+	{
+		k = arg2utf8(argv[j], addr);
+		say("%.*s\n", k, addr);
+
+		if(termwrite(addr, k) < 0)goto byebye;
+	}
 
 	//before mainloop: load file as ui
 	//if(0 == srcctx)srcctx =

@@ -29,7 +29,7 @@ void start()
 
 
 
-int argv2line(u8* src, u8* dst)
+int arg2utf8(u8* src, u8* dst)
 {
 	int j = 0;
 	while(src[j] >= 0x20)
@@ -38,12 +38,18 @@ int argv2line(u8* src, u8* dst)
 		j++;
 	}
 
-	dst[j] = '\n';
-	j++;
 	dst[j] = 0;
 	return j;
 }
+
+
+
+
 void* pollenv()
+{
+	return 0;
+}
+void* waitenv()
 {
 	return 0;
 }

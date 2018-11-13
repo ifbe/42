@@ -10,7 +10,7 @@
 #include <commctrl.h>
 #include "libuser.h"
 int lowlevel_input();
-int argv2line(void*, void*);
+int arg2utf8(void*, void*);
 
 
 
@@ -510,7 +510,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				DragQueryFile(hDrop, j, tmp, MAX_PATH);
 				//printf("%d,%s\n", ret, buf);
 
-				ret += argv2line(tmp, buf+ret);
+				ret += arg2utf8(tmp, buf+ret);
 				buf[ret] = '\n';
 				ret++;
 			}

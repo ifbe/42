@@ -9,7 +9,15 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+
+
+
+
 static u8* rawuniverse;
+int arg2utf8(char* src, char* dst)
+{
+	return snprintf(dst, 0x1000, "%s", src);
+}
 
 
 
@@ -19,9 +27,9 @@ void* pollenv()
 	usleep(1000);
 	return 0;
 }
-int argv2line(char* src, char* dst)
+void waitenv()
 {
-	return snprintf(dst, 0x1000, "%s\n", src);
+	return 0;
 }
 
 

@@ -71,10 +71,12 @@ int wsnode_write(void*,void*,void*,void*,void*,int);
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //
+int actorwrite_ev(struct event* ev);
+int input(void*, int);
+//
 int cmp(void*, void*);
 int ncmp(void*, void*, int);
 int parsexml_detail(void*, int, void*, void*, void*, void*);
-int arenadelete(struct arena* win);
 
 
 
@@ -110,33 +112,59 @@ void* allocstyle()
 
 
 
-int arenawrite_ev(struct event* ev)
+int arenawrite_ev(struct event* e)
 {
 	int j;
-	void* ret;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	//say("@arenawrite:%llx,%llx,%llx\n", why, what, where);
+	struct event ev;
+	struct arena* win;
 
+	ev.why = e->why;
+	ev.what = e->what;
+	ev.where = e->where;
+	ev.when = e->when;
+
+	if(0 == ev.where)
+	{
+		//from cmd
+		if(_char_ == ev.what)
+		{
+			input(&ev.why, 0);
+			return 0;
+		}
+
+		//maybe gamepad
+		for(j=0;j<16;j++)
+		{
+			win = &arena[j];
+			if(_win_ == win->type)
+			{
+				ev.where = (u64)win;
+				break;
+			}
+		}
+	}
+
+	if(ev.where)actorwrite_ev(&ev);
+/*
 	if(_win_ == what)
 	{
 		return 42;
 	}
 	else if(hex32('w','+',0,0) == what)
-	{/*
+	{
 		ret = arenacreate(why, where);
 		if(ret == 0)
 		{
 			say("error@w+\n");
 			return 0;
-		}*/
+		}
 	}
 	else if(hex32('w','-',0,0) == what)
 	{
 		ret = (void*)where;
 		arenadelete(ret);
 	}
+*/
 	return 0;
 }
 int arenaread_all()

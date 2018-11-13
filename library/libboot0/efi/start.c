@@ -18,6 +18,22 @@ static EFI_SYSTEM_TABLE* T;
 
 
 
+int arg2utf8(u8* src, u8* dst)
+{
+	int j = 0;
+	while(src[j] >= 0x20)
+	{
+		dst[j] = src[j];
+		j++;
+	}
+
+	dst[j] = 0;
+	return j;
+}
+
+
+
+
 int lowlevel_input(void* buf)
 {
 	int ret;
@@ -87,19 +103,9 @@ void* pollenv()
 	ev[1] = hex32('c','h','a','r');
 	return ev;
 }
-int argv2line(u8* src, u8* dst)
+void* waitenv()
 {
-	int j = 0;
-	while(src[j] >= 0x20)
-	{
-		dst[j] = src[j];
-		j++;
-	}
-
-	dst[j] = '\n';
-	j++;
-	dst[j] = 0;
-	return j;
+	return 0;
 }
 
 

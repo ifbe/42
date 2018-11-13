@@ -17,16 +17,7 @@ void createserial();
 
 //
 static u8* rawuniverse = 0;
-
-
-
-
-void* pollenv()
-{
-	Sleep(1);
-	return 0;
-}
-int argv2line(u8* src, u8* dst)
+int arg2utf8(u8* src, u8* dst)
 {
 	int j,k;
 	u32 ret,tmp;
@@ -70,10 +61,21 @@ int argv2line(u8* src, u8* dst)
 		}
 	}
 
-	dst[k] = '\n';
-	k++;
 	dst[k] = 0;
 	return k;
+}
+
+
+
+
+void* pollenv()
+{
+	Sleep(1);
+	return 0;
+}
+void* waitenv()
+{
+	return 0;
 }
 
 
