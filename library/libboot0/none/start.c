@@ -27,7 +27,7 @@ void* pollenv()
 	usleep(1000);
 	return 0;
 }
-void waitenv()
+void* waitenv()
 {
 	return 0;
 }

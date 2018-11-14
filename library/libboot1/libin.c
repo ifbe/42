@@ -2,10 +2,9 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-//
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-void eventwrite(u64,u64,u64,u64);
+int termwrite(void*, int);
 void say(void*, ...);
 
 
