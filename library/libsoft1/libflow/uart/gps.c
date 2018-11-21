@@ -196,3 +196,24 @@ int gpsclient_create(struct element* ele, u8* url, u8* buf, int len)
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 0;
 }
+
+
+
+
+int gpsserver_write(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int gpsserver_create(struct element* ele, u8* url, u8* buf, int len)
+{
+	int ret;
+	struct str* str;
+	struct object* obj = systemcreate(_uart_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	return 0;
+}

@@ -18,22 +18,60 @@ typedef float mat4[4][4];
 #define _win_ hex32('w','i','n',0)
 #define _act_ hex32('a','c','t',0)
 //
-#define _uart_ hex32('u','a','r','t')
 #define _spi_  hex32('s','p','i',0)
 #define _i2c_  hex32('i','2','c',0)
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
-//
+//uart family
+#define _uart_ hex32('u','a','r','t')
+#define _Uart_ hex32('U','a','r','t')
+#define _gcode_ hex64('g','c','o','d','e',0,0,0)
+#define _Gcode_ hex64('G','c','o','d','e',0,0,0)
+#define _gps_ hex32('g','p','s',0)
+#define _Gps_ hex32('G','p','s',0)
+//raw family
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)
 #define _raw_ hex32('r','a','w',0)
+#define _ICMP_ 0x504d4349		//s
+#define _icmp_ 0x706d6369		//c
+#define _IGMP_ 0x504d4749		//s
+#define _igmp_ 0x706d6769		//c
+#define _ARP_ hex32('A','R','P',0)
+#define _arp_ hex32('a','r','p',0)
+#define _EAP_ hex32('E','A','P',0)
+#define _eap_ hex32('e','a','p',0)
+#define _IPX_ hex32('I','P','X',0)
+#define _ipx_ hex32('i','p','x',0)
+#define _PPPOE_ hex64('P','P','P','O','E',0,0,0)
+#define _pppoe_ hex64('p','p','p','o','e',0,0,0)
+#define _WOL_ hex32('W','O','L',0)
+#define _wol_ hex32('w','o','l',0)
+//udp family
 #define _UDP_ hex32('U','D','P',0)
 #define _Udp_ hex32('U','d','p',0)
 #define _udp_ hex32('u','d','p',0)
+#define _HACK_ hex32('H','A','C','K')
+#define _hack_ hex32('h','a','c','k')
+#define _bootp_ hex64('b','o','o','t','p',0,0,0)
+#define _Bootp_ hex64('B','o','o','t','p',0,0,0)
+#define _dns_ hex32('d','n','s',0)
+#define _Dns_ hex32('D','n','s',0)
+#define _tftp_ hex32('t','f','t','p')
+#define _Tftp_ hex32('T','f','t','p')
+#define _webrtc_ hex64('w','e','b','r','t','c',0,0)
+#define _Webrtc_ hex64('W','e','b','r','t','c',0,0)
+#define _WEBRTC_ hex64('W','E','B','R','T','C',0,0)
+#define _quic_ hex32('q','u','i','c')
+#define _Quic_ hex32('Q','u','i','c')
+#define _QUIC_ hex32('Q','U','I','C')
+#define _socks5_ hex64('s','o','c','k','s','5')
+#define _Socks5_ hex64('S','o','c','k','s','5')
+#define _SOCKS5_ hex64('S','O','C','K','S','5')
+//tcp family
 #define _TCP_ hex32('T','C','P',0)
 #define _Tcp_ hex32('T','c','p',0)
 #define _tcp_ hex32('t','c','p',0)
-//
 #define _HTTP_ hex32('H','T','T','P')
 #define _Http_ hex32('H','t','t','p')
 #define _http_ hex32('h','t','t','p')
@@ -46,39 +84,6 @@ typedef float mat4[4][4];
 #define _WS_   hex32('W','S',0,0)
 #define _Ws_   hex32('W','s',0,0)
 #define _ws_   hex32('w','s',0,0)
-//tran
-#define _HACK_ hex32('H','A','C','K')
-#define _hack_ hex32('h','a','c','k')
-#define _QUIC_ hex32('Q','U','I','C')
-#define _Quic_ hex32('Q','u','i','c')
-#define _quic_ hex32('q','u','i','c')
-#define _SOCKS5_ 0x35534b434f53	//s
-#define _socks5_ 0x35736b636f73	//c
-//
-#define _ARP_ hex32('A','R','P',0)
-#define _arp_ hex32('a','r','p',0)
-#define _EAP_ hex32('E','A','P',0)
-#define _eap_ hex32('e','a','p',0)
-#define _IPX_ hex32('I','P','X',0)
-#define _ipx_ hex32('i','p','x',0)
-#define _PPPOE_ hex64('P','P','P','O','E',0,0,0)
-#define _pppoe_ hex64('p','p','p','o','e',0,0,0)
-#define _WOL_ hex32('W','O','L',0)
-#define _wol_ hex32('w','o','l',0)
-//ip
-#define _ICMP_ 0x504d4349		//s
-#define _icmp_ 0x706d6369		//c
-#define _IGMP_ 0x504d4749		//s
-#define _igmp_ 0x706d6769		//c
-//udp
-#define _BOOTP_ 0x50544f4f42	//s
-#define _bootp_ 0x70746f6f62	//c
-#define _DNS_ 0x534e44		//s
-#define _dns_ 0x736e64		//c
-#define _TFTP_ 0x50544654		//s
-#define _tftp_ 0x70746674		//c
-#define _WEBRTC_ 0x435452424557	//s
-#define _webrtc_ 0x637472626577	//c
 //hole
 #define _HOLE_ 0x454c4f48		//s
 #define _hole_ 0x656c6f68		//c

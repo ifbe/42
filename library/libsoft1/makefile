@@ -163,12 +163,12 @@ libflow/4.tcp/tcp.rtmp.c \
 libflow/4.tcp/tcp.sql.c \
 libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
-libflow/gcode/gcode.c \
-libflow/sensor/sensor.accel.c \
-libflow/sensor/sensor.baro.c \
-libflow/sensor/sensor.gyro.c \
-libflow/sensor/sensor.mag.c \
-libflow/sensor/sensor.gps.c \
+libflow/i2c/sensor.accel.c \
+libflow/i2c/sensor.baro.c \
+libflow/i2c/sensor.gyro.c \
+libflow/i2c/sensor.mag.c \
+libflow/uart/gcode.c \
+libflow/uart/gps.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

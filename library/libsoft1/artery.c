@@ -1,62 +1,70 @@
 #include "libsoft.h"
-#define _gcode_ hex64('g','c','o','d','e',0,0,0)
-#define _gps_ hex32('g','p','s',0)
 #define _mpu_ hex32('m','p','u',0)
 #define _ahrs_ hex32('a','h','r','s')
 #define _fat_ hex32('f','a','t',0)
 #define _ntfs_ hex32('n','t','f','s')
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
-int gpsclient_create(struct element* ele, void* url, void* buf, int len);
-int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//i2c
 int mpuclient_create(struct element* ele, void* url, void* buf, int len);
 int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//i2c
 int ahrsclient_create(struct element* ele, void* url, void* buf, int len);
 int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
-int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
-int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//file
 int fatclient_create(struct element* ele, void* url, void* buf, int len);
 int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
 int hfsclient_create(struct element* ele, void* url, void* buf, int len);
 int extclient_create(struct element* ele, void* url, void* buf, int len);
-//
+//uart
+int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
+int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gcodeserver_create(struct element* ele, void* url, void* buf, int len);
+int gcodeserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//uart
+int gpsclient_create(struct element* ele, void* url, void* buf, int len);
+int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gpsserver_create(struct element* ele, void* url, void* buf, int len);
+int gpsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//socket
 int hackclient_create(struct element* ele, void* url, void* buf, int len);
 int hackclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int hackserver_create(struct element* ele, void* url, void* buf, int len);
 int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//udp
+int tftpclient_create(struct element* ele, void* url, void* buf, int len);
+int tftpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int tftpserver_create(struct element* ele, void* url, void* buf, int len);
+int tftpserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//udp
 int quicclient_create(struct element* ele, void* url, void* buf, int len);
 int quicclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicserver_create(struct element* ele, void* url, void* buf, int len);
 int quicserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicmaster_create(struct element* ele, void* url, void* buf, int len);
 int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//tcp
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
 int httpserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url, void* buf, int len);
 int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//tcp
 int sshclient_create(struct element* ele, void* url, void* buf, int len);
 int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int sshserver_create(struct element* ele, void* url, void* buf, int len);
 int sshserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int sshmaster_create(struct element* ele, void* url, void* buf, int len);
 int sshmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//tcp
 int tlsclient_create(struct element* ele, void* url, void* buf, int len);
 int tlsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tlsserver_create(struct element* ele, void* url, void* buf, int len);
 int tlsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tlsmaster_create(struct element* ele, void* url, void* buf, int len);
 int tlsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//
+//tcp
 int wsclient_create(struct element* ele, void* url, void* buf, int len);
 int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int wsserver_create(struct element* ele, void* url, void* buf, int len);
@@ -185,17 +193,6 @@ void* arterycreate(u64 type, void* argstr)
 		url += ret;
 	}
 
-	//file parser
-	if(_gcode_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _gcode_;
-		gcodeclient_create(e, url, datahome, 0x100000);
-		return e;
-	}
-
 	//file system
 	if(_fat_ == type)
 	{
@@ -235,15 +232,6 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//ahrs
-	if(_gps_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _gps_;
-		gpsclient_create(e, url, datahome, 0x100000);
-		return e;
-	}
 	if(_mpu_ == type)
 	{
 		e = allocelement();
@@ -260,6 +248,46 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _ahrs_;
 		ahrsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//gcode: client,server
+	if(_gcode_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _gcode_;
+		gcodeclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_Gcode_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Gcode_;
+		gcodeserver_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//gps: client,server
+	if(_gps_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _gps_;
+		gpsclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_Gps_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Gps_;
+		gpsserver_create(e, url, datahome, 0x100000);
 		return e;
 	}
 
@@ -280,6 +308,26 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _hack_;
 		if(url)hackclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+
+	//tftp: client,server
+	if(_tftp_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _tftp_;
+		if(url)tftpclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
+	if(_Tftp_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Tftp_;
+		if(url)tftpserver_create(e, url, datahome, 0x100000);
 		return e;
 	}
 
