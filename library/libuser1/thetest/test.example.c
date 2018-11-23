@@ -128,10 +128,10 @@ static void example_write(
 	struct event* ev, int len)
 {
 }
-static void example_list()
+static void example_get()
 {
 }
-static void example_change()
+static void example_post()
 {
 }
 static void example_stop(
@@ -165,8 +165,8 @@ void example_register(struct actor* p)
 	p->ondelete = (void*)example_delete;
 	p->onstart  = (void*)example_start;
 	p->onstop   = (void*)example_stop;
-	p->onlist   = (void*)example_list;
-	p->onchoose = (void*)example_change;
+	p->onget    = (void*)example_get;
+	p->onpost   = (void*)example_post;
 	p->onread   = (void*)example_read;
 	p->onwrite  = (void*)example_write;
 }

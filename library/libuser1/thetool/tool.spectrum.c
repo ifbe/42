@@ -243,10 +243,10 @@ static void spectrum_write(
 		if((k>='0')&&(k<='9'))haha=k;
 	}
 }
-static void spectrum_list()
+static void spectrum_get()
 {
 }
-static void spectrum_into()
+static void spectrum_post()
 {
 }
 static void spectrum_stop(
@@ -291,8 +291,8 @@ void spectrum_register(struct actor* p)
 	p->ondelete = (void*)spectrum_delete;
 	p->onstart  = (void*)spectrum_start;
 	p->onstop   = (void*)spectrum_stop;
-	p->onlist   = (void*)spectrum_list;
-	p->onchoose = (void*)spectrum_into;
+	p->onget    = (void*)spectrum_get;
+	p->onpost   = (void*)spectrum_post;
 	p->onread   = (void*)spectrum_read;
 	p->onwrite  = (void*)spectrum_write;
 }

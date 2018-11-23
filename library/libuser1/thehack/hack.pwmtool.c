@@ -118,10 +118,10 @@ static void pwmtool_write(
 	u8* buf, int len)
 {
 }
-static void pwmtool_list()
+static void pwmtool_get()
 {
 }
-static void pwmtool_change()
+static void pwmtool_post()
 {
 }
 static void pwmtool_stop(
@@ -161,8 +161,8 @@ void pwmtool_register(struct actor* p)
 	p->ondelete = (void*)pwmtool_delete;
 	p->onstart  = (void*)pwmtool_start;
 	p->onstop   = (void*)pwmtool_stop;
-	p->onlist   = (void*)pwmtool_list;
-	p->onchoose = (void*)pwmtool_change;
+	p->onget    = (void*)pwmtool_get;
+	p->onpost   = (void*)pwmtool_post;
 	p->onread   = (void*)pwmtool_read;
 	p->onwrite  = (void*)pwmtool_write;
 }

@@ -164,10 +164,10 @@ static void palette_write(
 		}
 	}
 }
-static void palette_list()
+static void palette_get()
 {
 }
-static void palette_into()
+static void palette_post()
 {
 }
 static void palette_stop(
@@ -204,8 +204,8 @@ void palette_register(struct actor* p)
 	p->ondelete = (void*)palette_delete;
 	p->onstart  = (void*)palette_start;
 	p->onstop   = (void*)palette_stop;
-	p->onlist   = (void*)palette_list;
-	p->onchoose = (void*)palette_into;
+	p->onget    = (void*)palette_get;
+	p->onpost   = (void*)palette_post;
 	p->onread   = (void*)palette_read;
 	p->onwrite  = (void*)palette_write;
 }

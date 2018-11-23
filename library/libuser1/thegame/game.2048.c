@@ -373,6 +373,12 @@ static void the2048_write(
 		if(s[3] & joyl_up)   the2048_move(act, 'f');
 	}
 }
+static void the2048_post(u8* buf, int len)
+{
+}
+static void the2048_get(u8* buf, int len)
+{
+}
 static void the2048_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -401,12 +407,6 @@ static void the2048_create(struct actor* act, u8* buf)
 	act->buf = p;
 	act->len = 0;
 }
-static void the2048_list(u8* buf)
-{
-}
-static void the2048_choose(u8* buf)
-{
-}
 
 
 
@@ -420,8 +420,8 @@ void the2048_register(struct actor* p)
 	p->ondelete = (void*)the2048_delete;
 	p->onstart  = (void*)the2048_start;
 	p->onstop   = (void*)the2048_stop;
-	p->onlist   = (void*)the2048_list;
-	p->onchoose = (void*)the2048_choose;
+	p->onget    = (void*)the2048_get;
+	p->onpost   = (void*)the2048_post;
 	p->onread   = (void*)the2048_read;
 	p->onwrite  = (void*)the2048_write;
 }

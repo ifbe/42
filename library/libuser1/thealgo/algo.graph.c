@@ -350,10 +350,10 @@ static void graph_write(
 		if(ev->why == '1')redo = '1';
 	}
 }
-static void graph_list()
+static void graph_get()
 {
 }
-static void graph_change()
+static void graph_post()
 {
 }
 static void graph_stop(
@@ -390,8 +390,8 @@ void graph_register(struct actor* p)
 	p->ondelete = (void*)graph_delete;
 	p->onstart  = (void*)graph_start;
 	p->onstop   = (void*)graph_stop;
-	p->onlist   = (void*)graph_list;
-	p->onchoose = (void*)graph_change;
+	p->onget    = (void*)graph_get;
+	p->onpost   = (void*)graph_post;
 	p->onread   = (void*)graph_read;
 	p->onwrite  = (void*)graph_write;
 }

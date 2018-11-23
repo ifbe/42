@@ -141,10 +141,10 @@ static void drone_write(
 	struct event* ev, int len)
 {
 }
-static void drone_list()
+static void drone_get()
 {
 }
-static void drone_change()
+static void drone_post()
 {
 }
 static void drone_stop(
@@ -181,8 +181,8 @@ void drone_register(struct actor* p)
 	p->ondelete = (void*)drone_delete;
 	p->onstart  = (void*)drone_start;
 	p->onstop   = (void*)drone_stop;
-	p->onlist   = (void*)drone_list;
-	p->onchoose = (void*)drone_change;
+	p->onget    = (void*)drone_get;
+	p->onpost   = (void*)drone_post;
 	p->onread   = (void*)drone_read;
 	p->onwrite  = (void*)drone_write;
 }

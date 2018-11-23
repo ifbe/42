@@ -186,10 +186,10 @@ static void picture_write(
 
 
 
-static void picture_list()
+static void picture_get()
 {
 }
-static void picture_change()
+static void picture_post()
 {
 }
 static void picture_stop(
@@ -256,8 +256,8 @@ void picture_register(struct actor* p)
 	p->ondelete = (void*)picture_delete;
 	p->onstart  = (void*)picture_start;
 	p->onstop   = (void*)picture_stop;
-	p->onlist   = (void*)picture_list;
-	p->onchoose = (void*)picture_change;
+	p->onget    = (void*)picture_get;
+	p->onpost   = (void*)picture_post;
 	p->onread   = (void*)picture_read;
 	p->onwrite  = (void*)picture_write;
 }

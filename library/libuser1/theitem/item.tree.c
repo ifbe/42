@@ -151,10 +151,10 @@ static void tree_write(
 	struct event* ev, int len)
 {
 }
-static void tree_list()
+static void tree_get()
 {
 }
-static void tree_change()
+static void tree_post()
 {
 }
 static void tree_stop(
@@ -191,8 +191,8 @@ void tree_register(struct actor* p)
 	p->ondelete = (void*)tree_delete;
 	p->onstart  = (void*)tree_start;
 	p->onstop   = (void*)tree_stop;
-	p->onlist   = (void*)tree_list;
-	p->onchoose = (void*)tree_change;
+	p->onget    = (void*)tree_get;
+	p->onpost   = (void*)tree_post;
 	p->onread   = (void*)tree_read;
 	p->onwrite  = (void*)tree_write;
 }

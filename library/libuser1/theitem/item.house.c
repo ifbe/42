@@ -159,10 +159,10 @@ static void house_write(
 	struct event* ev, int len)
 {
 }
-static void house_list()
+static void house_get()
 {
 }
-static void house_change()
+static void house_post()
 {
 }
 static void house_stop(
@@ -199,8 +199,8 @@ void house_register(struct actor* p)
 	p->ondelete = (void*)house_delete;
 	p->onstart  = (void*)house_start;
 	p->onstop   = (void*)house_stop;
-	p->onlist   = (void*)house_list;
-	p->onchoose = (void*)house_change;
+	p->onget    = (void*)house_get;
+	p->onpost   = (void*)house_post;
 	p->onread   = (void*)house_read;
 	p->onwrite  = (void*)house_write;
 }

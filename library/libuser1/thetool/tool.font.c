@@ -219,10 +219,10 @@ static void font_write(
 		}
 	}
 }
-static void font_list()
+static void font_get()
 {
 }
-static void font_change()
+static void font_post()
 {
 }
 static void font_stop(
@@ -259,8 +259,8 @@ void font_register(struct actor* p)
 	p->ondelete = (void*)font_delete;
 	p->onstart  = (void*)font_start;
 	p->onstop   = (void*)font_stop;
-	p->onlist   = (void*)font_list;
-	p->onchoose = (void*)font_change;
+	p->onget    = (void*)font_get;
+	p->onpost   = (void*)font_post;
 	p->onread   = (void*)font_read;
 	p->onwrite  = (void*)font_write;
 }

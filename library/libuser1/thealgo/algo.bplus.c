@@ -190,10 +190,10 @@ static void bplus_write(
 		bplus_debug(node);
 	}
 }
-static void bplus_list()
+static void bplus_get()
 {
 }
-static void bplus_into()
+static void bplus_post()
 {
 }
 static void bplus_stop(
@@ -230,8 +230,8 @@ void bplus_register(struct actor* p)
 	p->ondelete = (void*)bplus_delete;
 	p->onstart  = (void*)bplus_start;
 	p->onstop   = (void*)bplus_stop;
-	p->onlist   = (void*)bplus_list;
-	p->onchoose = (void*)bplus_into;
+	p->onget   = (void*)bplus_get;
+	p->onpost   = (void*)bplus_post;
 	p->onread   = (void*)bplus_read;
 	p->onwrite  = (void*)bplus_write;
 }

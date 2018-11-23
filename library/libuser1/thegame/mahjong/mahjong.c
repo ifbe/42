@@ -18,10 +18,10 @@ static void mahjong_write(
 	struct event* ev, int len)
 {
 }
-static void mahjong_list()
+static void mahjong_get()
 {
 }
-static void mahjong_choose()
+static void mahjong_post()
 {
 }
 static void mahjong_stop(
@@ -58,8 +58,8 @@ void mahjong_register(struct actor* p)
 	p->ondelete = (void*)mahjong_delete;
 	p->onstart  = (void*)mahjong_start;
 	p->onstop   = (void*)mahjong_stop;
-	p->onlist   = (void*)mahjong_list;
-	p->onchoose = (void*)mahjong_choose;
+	p->onget    = (void*)mahjong_get;
+	p->onpost   = (void*)mahjong_post;
 	p->onread   = (void*)mahjong_read;
 	p->onwrite  = (void*)mahjong_write;
 }

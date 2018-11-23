@@ -234,10 +234,10 @@ static void sudoku_write(
 		}
 	}
 }
-static void sudoku_list()
+static void sudoku_get()
 {
 }
-static void sudoku_choose()
+static void sudoku_post()
 {
 }
 static void sudoku_stop(
@@ -303,8 +303,8 @@ void sudoku_register(struct actor* p)
 	p->ondelete = (void*)sudoku_delete;
 	p->onstart  = (void*)sudoku_start;
 	p->onstop   = (void*)sudoku_stop;
-	p->onlist   = (void*)sudoku_list;
-	p->onchoose = (void*)sudoku_choose;
+	p->onget    = (void*)sudoku_get;
+	p->onpost   = (void*)sudoku_post;
 	p->onread   = (void*)sudoku_read;
 	p->onwrite  = (void*)sudoku_write;
 }

@@ -212,10 +212,10 @@ static void camera_write(
 
 	act->idx = buf;
 }
-static void camera_list()
+static void camera_get()
 {
 }
-static void camera_into()
+static void camera_post()
 {
 }
 static void camera_stop(
@@ -299,8 +299,8 @@ void camera_register(struct actor* p)
 	p->ondelete = (void*)camera_delete;
 	p->onstart  = (void*)camera_start;
 	p->onstop   = (void*)camera_stop;
-	p->onlist   = (void*)camera_list;
-	p->onchoose = (void*)camera_into;
+	p->onget    = (void*)camera_get;
+	p->onpost   = (void*)camera_post;
 	p->onread   = (void*)camera_read;
 	p->onwrite  = (void*)camera_write;
 }

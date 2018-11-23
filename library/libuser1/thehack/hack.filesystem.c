@@ -116,10 +116,10 @@ static void fs_write(
 		fs_prep(buffer);
 	}
 }
-static void fs_list()
+static void fs_get()
 {
 }
-static void fs_into()
+static void fs_post()
 {
 }
 static void fs_stop(
@@ -156,8 +156,8 @@ void fs_register(struct actor* p)
 	p->ondelete = (void*)fs_delete;
 	p->onstart  = (void*)fs_start;
 	p->onstop   = (void*)fs_stop;
-	p->onlist   = (void*)fs_list;
-	p->onchoose = (void*)fs_into;
+	p->onget    = (void*)fs_get;
+	p->onpost   = (void*)fs_post;
 	p->onread   = (void*)fs_read;
 	p->onwrite  = (void*)fs_write;
 }

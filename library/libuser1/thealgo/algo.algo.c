@@ -138,10 +138,10 @@ static void algorithm_write(
 */
 	}
 }
-static void algorithm_list()
+static void algorithm_get()
 {
 }
-static void algorithm_choose()
+static void algorithm_post()
 {
 }
 static void algorithm_stop(
@@ -178,8 +178,8 @@ void algorithm_register(struct actor* p)
 	p->ondelete = (void*)algorithm_delete;
 	p->onstart  = (void*)algorithm_start;
 	p->onstop   = (void*)algorithm_stop;
-	p->onlist   = (void*)algorithm_list;
-	p->onchoose = (void*)algorithm_choose;
+	p->onget    = (void*)algorithm_get;
+	p->onpost   = (void*)algorithm_post;
 	p->onread   = (void*)algorithm_read;
 	p->onwrite  = (void*)algorithm_write;
 }

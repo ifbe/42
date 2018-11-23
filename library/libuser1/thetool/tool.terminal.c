@@ -198,10 +198,10 @@ static void terminal_write(
 
 
 
-static void terminal_list()
+static void terminal_get()
 {
 }
-static void terminal_change()
+static void terminal_post()
 {
 }
 static void terminal_stop(
@@ -256,8 +256,8 @@ void terminal_register(struct actor* p)
 	p->ondelete = (void*)terminal_delete;
 	p->onstart  = (void*)terminal_start;
 	p->onstop   = (void*)terminal_stop;
-	p->onlist   = (void*)terminal_list;
-	p->onchoose = (void*)terminal_change;
+	p->onget    = (void*)terminal_get;
+	p->onpost   = (void*)terminal_post;
 	p->onread   = (void*)terminal_read;
 	p->onwrite  = (void*)terminal_write;
 }

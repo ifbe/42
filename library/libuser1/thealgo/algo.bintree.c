@@ -223,10 +223,10 @@ static void bintree_write(
 		}
 	}//'char'
 }
-static void bintree_list()
+static void bintree_get()
 {
 }
-static void bintree_into()
+static void bintree_post()
 {
 }
 static void bintree_start(
@@ -263,8 +263,8 @@ void bintree_register(struct actor* p)
 	p->ondelete = (void*)bintree_delete;
 	p->onstart  = (void*)bintree_start;
 	p->onstop   = (void*)bintree_stop;
-	p->onlist   = (void*)bintree_list;
-	p->onchoose = (void*)bintree_into;
+	p->onget    = (void*)bintree_get;
+	p->onpost   = (void*)bintree_post;
 	p->onread   = (void*)bintree_read;
 	p->onwrite  = (void*)bintree_write;
 }

@@ -143,10 +143,10 @@ static void fractal_write(
 		else if(why == 0x50)centery += height*0.1;
 	}
 }
-static void fractal_list()
+static void fractal_get()
 {
 }
-static void fractal_change()
+static void fractal_post()
 {
 }
 static void fractal_stop(
@@ -183,8 +183,8 @@ void fractal_register(struct actor* p)
 	p->ondelete = (void*)fractal_delete;
 	p->onstart  = (void*)fractal_start;
 	p->onstop   = (void*)fractal_stop;
-	p->onlist   = (void*)fractal_list;
-	p->onchoose = (void*)fractal_change;
+	p->onget    = (void*)fractal_get;
+	p->onpost   = (void*)fractal_post;
 	p->onread   = (void*)fractal_read;
 	p->onwrite  = (void*)fractal_write;
 }

@@ -173,10 +173,10 @@ static void hex_write(
 		if('	' == key)printmethod ^= 1;
 	}
 }
-static void hex_list()
+static void hex_get()
 {
 }
-static void hex_into()
+static void hex_post()
 {
 }
 static void hex_stop(
@@ -213,8 +213,8 @@ void hex_register(struct actor* p)
 	p->ondelete = (void*)hex_delete;
 	p->onstart  = (void*)hex_start;
 	p->onstop   = (void*)hex_stop;
-	p->onlist   = (void*)hex_list;
-	p->onchoose = (void*)hex_into;
+	p->onget    = (void*)hex_get;
+	p->onpost   = (void*)hex_post;
 	p->onread   = (void*)hex_read;
 	p->onwrite  = (void*)hex_write;
 }

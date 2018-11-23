@@ -150,10 +150,10 @@ static void pegged_write(
 	struct event* ev, int len)
 {
 }
-static void pegged_list()
+static void pegged_get()
 {
 }
-static void pegged_change()
+static void pegged_post()
 {
 }
 static void pegged_stop(
@@ -200,8 +200,8 @@ void pegged_register(struct actor* p)
 	p->ondelete = (void*)pegged_delete;
 	p->onstart  = (void*)pegged_start;
 	p->onstop   = (void*)pegged_stop;
-	p->onlist   = (void*)pegged_list;
-	p->onchoose = (void*)pegged_change;
+	p->onget    = (void*)pegged_get;
+	p->onpost   = (void*)pegged_post;
 	p->onread   = (void*)pegged_read;
 	p->onwrite  = (void*)pegged_write;
 }

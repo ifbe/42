@@ -474,10 +474,10 @@ void xiangqi_write(
 		px = py = -1;
 	}
 }
-static void xiangqi_list()
+static void xiangqi_get()
 {
 }
-static void xiangqi_choose()
+static void xiangqi_post()
 {
 }
 static void xiangqi_stop(
@@ -569,8 +569,8 @@ void xiangqi_register(struct actor* p)
 	p->ondelete = (void*)xiangqi_delete;
 	p->onstart  = (void*)xiangqi_start;
 	p->onstop   = (void*)xiangqi_stop;
-	p->onlist   = (void*)xiangqi_list;
-	p->onchoose = (void*)xiangqi_choose;
+	p->onget    = (void*)xiangqi_get;
+	p->onpost   = (void*)xiangqi_post;
 	p->onread   = (void*)xiangqi_read;
 	p->onwrite  = (void*)xiangqi_write;
 }

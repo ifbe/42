@@ -662,11 +662,11 @@ struct actor
 		char padding3[8];
 	};
 	union{
-		int (*onlist)(void* actor, void* pinid, void* buf, int len);
+		int (*onget)(void* actor, void* pinid, void* buf, int len);
 		char padding4[8];
 	};
 	union{
-		int (*onchoose)(void* actor, void* pinid, void* buf, int len);
+		int (*onpost)(void* actor, void* pinid, void* buf, int len);
 		char padding5[8];
 	};
 	union{

@@ -355,10 +355,10 @@ static void maze_write(
 	struct event* ev, int len)
 {
 }
-static void maze_list()
+static void maze_get()
 {
 }
-static void maze_choose()
+static void maze_post()
 {
 }
 static void maze_stop(
@@ -401,8 +401,8 @@ void maze_register(struct actor* p)
 	p->ondelete = (void*)maze_delete;
 	p->onstart  = (void*)maze_start;
 	p->onstop   = (void*)maze_stop;
-	p->onlist   = (void*)maze_list;
-	p->onchoose = (void*)maze_choose;
+	p->onget    = (void*)maze_get;
+	p->onpost   = (void*)maze_post;
 	p->onread   = (void*)maze_read;
 	p->onwrite  = (void*)maze_write;
 }

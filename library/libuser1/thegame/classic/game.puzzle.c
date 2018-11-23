@@ -18,10 +18,10 @@ static void puzzle_write(
 	struct event* ev, int len)
 {
 }
-static void puzzle_list()
+static void puzzle_get()
 {
 }
-static void puzzle_choose()
+static void puzzle_post()
 {
 }
 static void puzzle_stop(
@@ -58,8 +58,8 @@ void puzzle_register(struct actor* p)
 	p->ondelete = (void*)puzzle_delete;
 	p->onstart  = (void*)puzzle_start;
 	p->onstop   = (void*)puzzle_stop;
-	p->onlist   = (void*)puzzle_list;
-	p->onchoose = (void*)puzzle_choose;
+	p->onget    = (void*)puzzle_get;
+	p->onpost   = (void*)puzzle_post;
 	p->onread   = (void*)puzzle_read;
 	p->onwrite  = (void*)puzzle_write;
 }

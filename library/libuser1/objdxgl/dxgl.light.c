@@ -157,10 +157,10 @@ static void light_write(
 
 
 
-static void light_list()
+static void light_get()
 {
 }
-static void light_change()
+static void light_post()
 {
 }
 static void light_stop(
@@ -234,8 +234,8 @@ void light_register(struct actor* p)
 	p->ondelete = (void*)light_delete;
 	p->onstart  = (void*)light_start;
 	p->onstop   = (void*)light_stop;
-	p->onlist   = (void*)light_list;
-	p->onchoose = (void*)light_change;
+	p->onget    = (void*)light_get;
+	p->onpost   = (void*)light_post;
 	p->onread   = (void*)light_read;
 	p->onwrite  = (void*)light_write;
 }

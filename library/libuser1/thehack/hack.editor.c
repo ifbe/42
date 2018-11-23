@@ -67,10 +67,10 @@ static void editor_write(
 	u8* buf, int len)
 {
 }
-static void editor_list()
+static void editor_get()
 {
 }
-static void editor_choose()
+static void editor_post()
 {
 }
 static void editor_stop(
@@ -107,8 +107,8 @@ void editor_register(struct actor* p)
 	p->ondelete = (void*)editor_delete;
 	p->onstart  = (void*)editor_start;
 	p->onstop   = (void*)editor_stop;
-	p->onlist   = (void*)editor_list;
-	p->onchoose = (void*)editor_choose;
+	p->onget    = (void*)editor_get;
+	p->onpost   = (void*)editor_post;
 	p->onread   = (void*)editor_read;
 	p->onwrite  = (void*)editor_write;
 }

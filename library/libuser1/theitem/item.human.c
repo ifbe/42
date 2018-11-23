@@ -176,10 +176,10 @@ static void human_write(
 	bonenode[14][1] = bonenode[12][1];
 	bonenode[14][2] = bonenode[12][2] - 0.5;
 }
-static void human_list()
+static void human_get()
 {
 }
-static void human_change()
+static void human_post()
 {
 }
 static void human_stop(
@@ -216,8 +216,8 @@ void human_register(struct actor* p)
 	p->ondelete = (void*)human_delete;
 	p->onstart  = (void*)human_start;
 	p->onstop   = (void*)human_stop;
-	p->onlist   = (void*)human_list;
-	p->onchoose = (void*)human_change;
+	p->onget    = (void*)human_get;
+	p->onpost   = (void*)human_post;
 	p->onread   = (void*)human_read;
 	p->onwrite  = (void*)human_write;
 }

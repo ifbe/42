@@ -157,10 +157,10 @@ static void skydome_write(
 
 
 
-static void skydome_list()
+static void skydome_get()
 {
 }
-static void skydome_change()
+static void skydome_post()
 {
 }
 static void skydome_stop(
@@ -231,8 +231,8 @@ void skydome_register(struct actor* p)
 	p->ondelete = (void*)skydome_delete;
 	p->onstart  = (void*)skydome_start;
 	p->onstop   = (void*)skydome_stop;
-	p->onlist   = (void*)skydome_list;
-	p->onchoose = (void*)skydome_change;
+	p->onget    = (void*)skydome_get;
+	p->onpost   = (void*)skydome_post;
 	p->onread   = (void*)skydome_read;
 	p->onwrite  = (void*)skydome_write;
 }

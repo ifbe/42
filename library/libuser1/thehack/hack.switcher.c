@@ -103,6 +103,12 @@ static void switch_write(
 		orel = samesrcnextdst(orel);
 	}
 }
+static void switch_get(u8* buf, int len)
+{
+}
+static void switch_post(u8* buf, int len)
+{
+}
 static void switch_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -130,12 +136,6 @@ static void switch_create(struct actor* act, u8* buf)
 
 	relationcreate(addr, 0, _fd_, act, 0, _act_);
 }
-static void switch_list(u8* buf)
-{
-}
-static void switch_choose(u8* buf)
-{
-}
 
 
 
@@ -149,8 +149,8 @@ void switch_register(struct actor* p)
 	p->ondelete = (void*)switch_delete;
 	p->onstart  = (void*)switch_start;
 	p->onstop   = (void*)switch_stop;
-	p->onlist   = (void*)switch_list;
-	p->onchoose = (void*)switch_choose;
+	p->onget    = (void*)switch_get;
+	p->onpost   = (void*)switch_post;
 	p->onread   = (void*)switch_read;
 	p->onwrite  = (void*)switch_write;
 }

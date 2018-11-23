@@ -170,10 +170,10 @@ static void calculator_write(
 		}
 	}
 }
-static void calculator_list()
+static void calculator_get()
 {
 }
-static void calculator_change()
+static void calculator_post()
 {
 }
 static void calculator_stop(
@@ -216,8 +216,8 @@ void calculator_register(struct actor* p)
 	p->ondelete = (void*)calculator_delete;
 	p->onstart  = (void*)calculator_start;
 	p->onstop   = (void*)calculator_stop;
-	p->onlist   = (void*)calculator_list;
-	p->onchoose = (void*)calculator_change;
+	p->onget    = (void*)calculator_get;
+	p->onpost   = (void*)calculator_post;
 	p->onread   = (void*)calculator_read;
 	p->onwrite  = (void*)calculator_write;
 }

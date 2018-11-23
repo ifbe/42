@@ -146,10 +146,10 @@ static void terrian_write(
 	struct event* ev, int len)
 {
 }
-static void terrian_list()
+static void terrian_get()
 {
 }
-static void terrian_change()
+static void terrian_post()
 {
 }
 static void terrian_stop(
@@ -216,8 +216,8 @@ void terrian_register(struct actor* p)
 	p->ondelete = (void*)terrian_delete;
 	p->onstart  = (void*)terrian_start;
 	p->onstop   = (void*)terrian_stop;
-	p->onlist   = (void*)terrian_list;
-	p->onchoose = (void*)terrian_change;
+	p->onget    = (void*)terrian_get;
+	p->onpost   = (void*)terrian_post;
 	p->onread   = (void*)terrian_read;
 	p->onwrite  = (void*)terrian_write;
 }

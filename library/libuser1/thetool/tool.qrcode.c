@@ -126,10 +126,10 @@ static void qrcode_write(
 	struct event* ev, int len)
 {
 }
-static void qrcode_list()
+static void qrcode_get()
 {
 }
-static void qrcode_into()
+static void qrcode_post()
 {
 }
 static void qrcode_stop(
@@ -168,8 +168,8 @@ void qrcode_register(struct actor* p)
 	p->ondelete = (void*)qrcode_delete;
 	p->onstart  = (void*)qrcode_start;
 	p->onstop   = (void*)qrcode_stop;
-	p->onlist   = (void*)qrcode_list;
-	p->onchoose = (void*)qrcode_into;
+	p->onget    = (void*)qrcode_get;
+	p->onpost   = (void*)qrcode_post;
 	p->onread   = (void*)qrcode_read;
 	p->onwrite  = (void*)qrcode_write;
 }

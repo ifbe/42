@@ -159,10 +159,10 @@ static void circuit_write(
 	u8* buf, int len)
 {
 }
-static void circuit_list()
+static void circuit_get()
 {
 }
-static void circuit_change()
+static void circuit_post()
 {
 }
 static void circuit_stop(
@@ -213,8 +213,8 @@ void circuit_register(struct actor* p)
 	p->ondelete = (void*)circuit_delete;
 	p->onstart  = (void*)circuit_start;
 	p->onstop   = (void*)circuit_stop;
-	p->onlist   = (void*)circuit_list;
-	p->onchoose = (void*)circuit_change;
+	p->onget    = (void*)circuit_get;
+	p->onpost   = (void*)circuit_post;
 	p->onread   = (void*)circuit_read;
 	p->onwrite  = (void*)circuit_write;
 }

@@ -193,10 +193,10 @@ static void portal_write(
 	struct event* ev, int len)
 {
 }
-static void portal_list()
+static void portal_get()
 {
 }
-static void portal_change()
+static void portal_post()
 {
 }
 static void portal_stop(
@@ -264,8 +264,8 @@ void portal_register(struct actor* p)
 	p->ondelete = (void*)portal_delete;
 	p->onstart  = (void*)portal_start;
 	p->onstop   = (void*)portal_stop;
-	p->onlist   = (void*)portal_list;
-	p->onchoose = (void*)portal_change;
+	p->onget    = (void*)portal_get;
+	p->onpost   = (void*)portal_post;
 	p->onread   = (void*)portal_read;
 	p->onwrite  = (void*)portal_write;
 }

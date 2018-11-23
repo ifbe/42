@@ -128,10 +128,10 @@ static void klotski_write(
 
 
 
-static void klotski_list()
+static void klotski_get()
 {
 }
-static void klotski_change()
+static void klotski_post()
 {
 }
 static void klotski_stop(
@@ -179,8 +179,8 @@ void klotski_register(struct actor* p)
 	p->ondelete = (void*)klotski_delete;
 	p->onstart  = (void*)klotski_start;
 	p->onstop   = (void*)klotski_stop;
-	p->onlist   = (void*)klotski_list;
-	p->onchoose = (void*)klotski_change;
+	p->onget    = (void*)klotski_get;
+	p->onpost   = (void*)klotski_post;
 	p->onread   = (void*)klotski_read;
 	p->onwrite  = (void*)klotski_write;
 }

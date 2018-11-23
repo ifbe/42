@@ -200,10 +200,10 @@ static void browser_write(
 
 
 
-static void browser_list()
+static void browser_get()
 {
 }
-static void browser_change()
+static void browser_post()
 {
 }
 static void browser_stop(
@@ -248,8 +248,8 @@ void browser_register(struct actor* p)
 	p->ondelete = (void*)browser_delete;
 	p->onstart  = (void*)browser_start;
 	p->onstop   = (void*)browser_stop;
-	p->onlist   = (void*)browser_list;
-	p->onchoose = (void*)browser_change;
+	p->onget    = (void*)browser_get;
+	p->onpost   = (void*)browser_post;
 	p->onread   = (void*)browser_read;
 	p->onwrite  = (void*)browser_write;
 }

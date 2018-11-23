@@ -275,10 +275,10 @@ void weiqi_write(
 		turn++;
 	}
 }
-static void weiqi_list()
+static void weiqi_get()
 {
 }
-static void weiqi_choose()
+static void weiqi_post()
 {
 }
 static void weiqi_stop(
@@ -324,8 +324,8 @@ void weiqi_register(struct actor* p)
 	p->ondelete = (void*)weiqi_delete;
 	p->onstart  = (void*)weiqi_start;
 	p->onstop   = (void*)weiqi_stop;
-	p->onlist   = (void*)weiqi_list;
-	p->onchoose = (void*)weiqi_choose;
+	p->onget    = (void*)weiqi_get;
+	p->onpost   = (void*)weiqi_post;
 	p->onread   = (void*)weiqi_read;
 	p->onwrite  = (void*)weiqi_write;
 }

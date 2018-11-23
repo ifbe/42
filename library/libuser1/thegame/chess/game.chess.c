@@ -165,6 +165,12 @@ static void chess_write(
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
+static void chess_get()
+{
+}
+static void chess_post()
+{
+}
 static void chess_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -221,12 +227,6 @@ static void chess_create(struct actor* act)
 	if(_orig_ == act->type)act->buf = buffer;
 	if(_copy_ == act->type)act->buf = memorycreate(64);
 }
-static void chess_list()
-{
-}
-static void chess_choose()
-{
-}
 
 
 
@@ -240,8 +240,8 @@ void chess_register(struct actor* p)
 	p->ondelete = (void*)chess_delete;
 	p->onstart  = (void*)chess_start;
 	p->onstop   = (void*)chess_stop;
-	p->onlist   = (void*)chess_list;
-	p->onchoose = (void*)chess_choose;
+	p->onget    = (void*)chess_get;
+	p->onpost   = (void*)chess_post;
 	p->onread   = (void*)chess_read;
 	p->onwrite  = (void*)chess_write;
 }

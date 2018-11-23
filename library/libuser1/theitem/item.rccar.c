@@ -141,10 +141,10 @@ static void rccar_write(
 	struct event* ev, int len)
 {
 }
-static void rccar_list()
+static void rccar_get()
 {
 }
-static void rccar_change()
+static void rccar_post()
 {
 }
 static void rccar_stop(
@@ -181,8 +181,8 @@ void rccar_register(struct actor* p)
 	p->ondelete = (void*)rccar_delete;
 	p->onstart  = (void*)rccar_start;
 	p->onstop   = (void*)rccar_stop;
-	p->onlist   = (void*)rccar_list;
-	p->onchoose = (void*)rccar_change;
+	p->onget    = (void*)rccar_get;
+	p->onpost   = (void*)rccar_post;
 	p->onread   = (void*)rccar_read;
 	p->onwrite  = (void*)rccar_write;
 }

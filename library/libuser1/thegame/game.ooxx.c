@@ -170,10 +170,10 @@ say("%d,%d\n",x,y);
 		turn++;
 	}
 }
-static void ooxx_list()
+static void ooxx_get()
 {
 }
-static void ooxx_choose()
+static void ooxx_post()
 {
 }
 static void ooxx_stop(
@@ -217,8 +217,8 @@ void ooxx_register(struct actor* p)
 	p->ondelete = (void*)ooxx_delete;
 	p->onstart  = (void*)ooxx_start;
 	p->onstop   = (void*)ooxx_stop;
-	p->onlist   = (void*)ooxx_list;
-	p->onchoose = (void*)ooxx_choose;
+	p->onget    = (void*)ooxx_get;
+	p->onpost   = (void*)ooxx_post;
 	p->onread   = (void*)ooxx_read;
 	p->onwrite  = (void*)ooxx_write;
 }

@@ -243,10 +243,10 @@ static void tetris_write(
 		}
 	}
 }
-static void tetris_list()
+static void tetris_get()
 {
 }
-static void tetris_choose()
+static void tetris_post()
 {
 }
 static void tetris_stop(
@@ -284,8 +284,8 @@ void tetris_register(struct actor* p)
 	p->ondelete = (void*)tetris_delete;
 	p->onstart  = (void*)tetris_start;
 	p->onstop   = (void*)tetris_stop;
-	p->onlist   = (void*)tetris_list;
-	p->onchoose = (void*)tetris_choose;
+	p->onget    = (void*)tetris_get;
+	p->onpost   = (void*)tetris_post;
 	p->onread   = (void*)tetris_read;
 	p->onwrite  = (void*)tetris_write;
 }

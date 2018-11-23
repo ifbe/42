@@ -106,10 +106,10 @@ static void poker_write(
 	struct event* ev, int len)
 {
 }
-static void poker_list()
+static void poker_get()
 {
 }
-static void poker_choose()
+static void poker_post()
 {
 }
 static void poker_stop(
@@ -146,8 +146,8 @@ void poker_register(struct actor* p)
 	p->ondelete = (void*)poker_delete;
 	p->onstart  = (void*)poker_start;
 	p->onstop   = (void*)poker_stop;
-	p->onlist   = (void*)poker_list;
-	p->onchoose = (void*)poker_choose;
+	p->onget    = (void*)poker_get;
+	p->onpost   = (void*)poker_post;
 	p->onread   = (void*)poker_read;
 	p->onwrite  = (void*)poker_write;
 }

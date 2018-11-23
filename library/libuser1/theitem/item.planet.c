@@ -155,10 +155,10 @@ static void planet_write(
 	struct event* ev, int len)
 {
 }
-static void planet_list()
+static void planet_get()
 {
 }
-static void planet_change()
+static void planet_post()
 {
 }
 static void planet_stop(
@@ -192,8 +192,8 @@ void planet_register(struct actor* p)
 	p->ondelete = (void*)planet_delete;
 	p->onstart  = (void*)planet_start;
 	p->onstop   = (void*)planet_stop;
-	p->onlist   = (void*)planet_list;
-	p->onchoose = (void*)planet_change;
+	p->onget    = (void*)planet_get;
+	p->onpost   = (void*)planet_post;
 	p->onread   = (void*)planet_read;
 	p->onwrite  = (void*)planet_write;
 }

@@ -284,10 +284,10 @@ static void rubikscube_write(
 	{
 	}
 }
-static void rubikscube_list()
+static void rubikscube_get()
 {
 }
-static void rubikscube_choose()
+static void rubikscube_post()
 {
 }
 static void rubikscube_stop(
@@ -325,8 +325,8 @@ void rubikscube_register(struct actor* p)
 	p->ondelete = (void*)rubikscube_delete;
 	p->onstart  = (void*)rubikscube_start;
 	p->onstop   = (void*)rubikscube_stop;
-	p->onlist   = (void*)rubikscube_list;
-	p->onchoose = (void*)rubikscube_choose;
+	p->onget    = (void*)rubikscube_get;
+	p->onpost   = (void*)rubikscube_post;
 	p->onread   = (void*)rubikscube_read;
 	p->onwrite  = (void*)rubikscube_write;
 }

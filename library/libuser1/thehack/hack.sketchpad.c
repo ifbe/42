@@ -439,10 +439,10 @@ static void sketchpad_write(
 		int y = (key>>16)&0xffff;
 	}
 }
-static void sketchpad_list()
+static void sketchpad_get()
 {
 }
-static void sketchpad_change()
+static void sketchpad_post()
 {
 }
 static void sketchpad_stop(
@@ -481,8 +481,8 @@ void sketchpad_register(struct actor* p)
 	p->ondelete = (void*)sketchpad_delete;
 	p->onstart  = (void*)sketchpad_start;
 	p->onstop   = (void*)sketchpad_stop;
-	p->onlist   = (void*)sketchpad_list;
-	p->onchoose = (void*)sketchpad_change;
+	p->onget    = (void*)sketchpad_get;
+	p->onpost   = (void*)sketchpad_post;
 	p->onread   = (void*)sketchpad_read;
 	p->onwrite  = (void*)sketchpad_write;
 }

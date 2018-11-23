@@ -157,10 +157,10 @@ static void earth_write(
 
 
 
-static void earth_list()
+static void earth_get()
 {
 }
-static void earth_change()
+static void earth_post()
 {
 }
 static void earth_stop(
@@ -234,8 +234,8 @@ void earth_register(struct actor* p)
 	p->ondelete = (void*)earth_delete;
 	p->onstart  = (void*)earth_start;
 	p->onstop   = (void*)earth_stop;
-	p->onlist   = (void*)earth_list;
-	p->onchoose = (void*)earth_change;
+	p->onget    = (void*)earth_get;
+	p->onpost   = (void*)earth_post;
 	p->onread   = (void*)earth_read;
 	p->onwrite  = (void*)earth_write;
 }

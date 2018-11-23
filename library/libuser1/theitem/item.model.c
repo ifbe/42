@@ -283,10 +283,10 @@ static void model_write(
 
 
 
-static void model_list()
+static void model_get()
 {
 }
-static void model_change()
+static void model_post()
 {
 }
 static void model_stop(
@@ -351,8 +351,8 @@ void model_register(struct actor* p)
 	p->ondelete = (void*)model_delete;
 	p->onstart  = (void*)model_start;
 	p->onstop   = (void*)model_stop;
-	p->onlist   = (void*)model_list;
-	p->onchoose = (void*)model_change;
+	p->onget    = (void*)model_get;
+	p->onpost   = (void*)model_post;
 	p->onread   = (void*)model_read;
 	p->onwrite  = (void*)model_write;
 }

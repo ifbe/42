@@ -18,6 +18,12 @@ static void brick_write(
 	struct event* ev, int len)
 {
 }
+static void brick_get()
+{
+}
+static void brick_post()
+{
+}
 static void brick_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -39,12 +45,6 @@ static void brick_create(struct actor* act)
 	if(_orig_ == act->type)act->buf = buffer;
 	if(_copy_ == act->type)act->buf = memorycreate(16);
 }
-static void brick_list()
-{
-}
-static void brick_choose()
-{
-}
 
 
 
@@ -58,8 +58,8 @@ void brick_register(struct actor* p)
 	p->ondelete = (void*)brick_delete;
 	p->onstart  = (void*)brick_start;
 	p->onstop   = (void*)brick_stop;
-	p->onlist   = (void*)brick_list;
-	p->onchoose = (void*)brick_choose;
+	p->onget    = (void*)brick_get;
+	p->onpost   = (void*)brick_post;
 	p->onread   = (void*)brick_read;
 	p->onwrite  = (void*)brick_write;
 }

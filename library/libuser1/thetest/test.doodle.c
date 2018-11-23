@@ -177,10 +177,10 @@ static void doodle_write(
 		py = (why>>16)&0xffff;
 	}
 }
-static void doodle_list()
+static void doodle_get()
 {
 }
-static void doodle_change()
+static void doodle_post()
 {
 }
 static void doodle_stop(
@@ -214,8 +214,8 @@ void doodle_register(struct actor* p)
 	p->ondelete = (void*)doodle_delete;
 	p->onstart  = (void*)doodle_start;
 	p->onstop   = (void*)doodle_stop;
-	p->onlist   = (void*)doodle_list;
-	p->onchoose = (void*)doodle_change;
+	p->onget    = (void*)doodle_get;
+	p->onpost   = (void*)doodle_post;
 	p->onread   = (void*)doodle_read;
 	p->onwrite  = (void*)doodle_write;
 }

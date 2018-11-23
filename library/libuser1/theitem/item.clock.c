@@ -127,10 +127,10 @@ static void clock_write(
 	struct event* ev, int len)
 {
 }
-static void clock_list()
+static void clock_get()
 {
 }
-static void clock_change()
+static void clock_post()
 {
 }
 static void clock_stop(
@@ -167,8 +167,8 @@ void clock_register(struct actor* p)
 	p->ondelete = (void*)clock_delete;
 	p->onstart  = (void*)clock_start;
 	p->onstop   = (void*)clock_stop;
-	p->onlist   = (void*)clock_list;
-	p->onchoose = (void*)clock_change;
+	p->onget    = (void*)clock_get;
+	p->onpost   = (void*)clock_post;
 	p->onread   = (void*)clock_read;
 	p->onwrite  = (void*)clock_write;
 }

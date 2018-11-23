@@ -177,10 +177,10 @@ static void piano_write(
 		soundwrite(0, 0, pcmout, 4096*2);
 	}
 }
-static void piano_list()
+static void piano_get()
 {
 }
-static void piano_into()
+static void piano_post()
 {
 }
 static void piano_stop(
@@ -217,8 +217,8 @@ void piano_register(struct actor* p)
 	p->ondelete = (void*)piano_delete;
 	p->onstart  = (void*)piano_start;
 	p->onstop   = (void*)piano_stop;
-	p->onlist   = (void*)piano_list;
-	p->onchoose = (void*)piano_into;
+	p->onget    = (void*)piano_get;
+	p->onpost   = (void*)piano_post;
 	p->onread   = (void*)piano_read;
 	p->onwrite  = (void*)piano_write;
 }

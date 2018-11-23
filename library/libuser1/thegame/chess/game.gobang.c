@@ -18,10 +18,10 @@ static void gobang_write(
 	struct event* ev, int len)
 {
 }
-static void gobang_list()
+static void gobang_get()
 {
 }
-static void gobang_choose()
+static void gobang_post()
 {
 }
 static void gobang_stop(
@@ -58,8 +58,8 @@ void gobang_register(struct actor* p)
 	p->ondelete = (void*)gobang_delete;
 	p->onstart  = (void*)gobang_start;
 	p->onstop   = (void*)gobang_stop;
-	p->onlist   = (void*)gobang_list;
-	p->onchoose = (void*)gobang_choose;
+	p->onget    = (void*)gobang_get;
+	p->onpost   = (void*)gobang_post;
 	p->onread   = (void*)gobang_read;
 	p->onwrite  = (void*)gobang_write;
 }

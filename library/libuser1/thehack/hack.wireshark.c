@@ -97,6 +97,12 @@ static void rawdump_write(
 	//writefile();
 	queuepacket(act->buf, act->idx, buf, len);
 }
+static void rawdump_get(u8* buf)
+{
+}
+static void rawdump_post(u8* buf)
+{
+}
 static void rawdump_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -125,12 +131,6 @@ static void rawdump_create(struct actor* act, u8* buf)
 
 	relationcreate(act, 0, _act_, addr, 0, _fd_);
 }
-static void rawdump_list(u8* buf)
-{
-}
-static void rawdump_choose(u8* buf)
-{
-}
 
 
 
@@ -144,8 +144,8 @@ void rawdump_register(struct actor* p)
 	p->ondelete = (void*)rawdump_delete;
 	p->onstart  = (void*)rawdump_start;
 	p->onstop   = (void*)rawdump_stop;
-	p->onlist   = (void*)rawdump_list;
-	p->onchoose = (void*)rawdump_choose;
+	p->onget    = (void*)rawdump_get;
+	p->onpost   = (void*)rawdump_post;
 	p->onread   = (void*)rawdump_read;
 	p->onwrite  = (void*)rawdump_write;
 }

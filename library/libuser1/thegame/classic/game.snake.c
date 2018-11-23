@@ -159,10 +159,10 @@ void snake_write(
 		else if(key == 0x50)snake_down(buf, WIDTH, HEIGHT);
 	}
 }
-static void snake_list()
+static void snake_get()
 {
 }
-static void snake_choose()
+static void snake_post()
 {
 }
 static void snake_stop(
@@ -200,8 +200,8 @@ void snake_register(struct actor* p)
 	p->ondelete = (void*)snake_delete;
 	p->onstart  = (void*)snake_start;
 	p->onstop   = (void*)snake_stop;
-	p->onlist   = (void*)snake_list;
-	p->onchoose = (void*)snake_choose;
+	p->onget    = (void*)snake_get;
+	p->onpost   = (void*)snake_post;
 	p->onread   = (void*)snake_read;
 	p->onwrite  = (void*)snake_write;
 }

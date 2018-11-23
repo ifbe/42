@@ -146,10 +146,10 @@ static void ocean_write(
 	struct event* ev, int len)
 {
 }
-static void ocean_list()
+static void ocean_get()
 {
 }
-static void ocean_change()
+static void ocean_post()
 {
 }
 static void ocean_stop(
@@ -217,8 +217,8 @@ void ocean_register(struct actor* p)
 	p->ondelete = (void*)ocean_delete;
 	p->onstart  = (void*)ocean_start;
 	p->onstop   = (void*)ocean_stop;
-	p->onlist   = (void*)ocean_list;
-	p->onchoose = (void*)ocean_change;
+	p->onget    = (void*)ocean_get;
+	p->onpost   = (void*)ocean_post;
 	p->onread   = (void*)ocean_read;
 	p->onwrite  = (void*)ocean_write;
 }

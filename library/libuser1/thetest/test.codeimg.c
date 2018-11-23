@@ -291,10 +291,10 @@ static void codeimg_write(
 	struct event* ev, int len)
 {
 }
-static void codeimg_list()
+static void codeimg_get()
 {
 }
-static void codeimg_change()
+static void codeimg_post()
 {
 }
 static void codeimg_stop(
@@ -379,8 +379,8 @@ void codeimg_register(struct actor* p)
 	p->ondelete = (void*)codeimg_delete;
 	p->onstart  = (void*)codeimg_start;
 	p->onstop   = (void*)codeimg_stop;
-	p->onlist   = (void*)codeimg_list;
-	p->onchoose = (void*)codeimg_change;
+	p->onget    = (void*)codeimg_get;
+	p->onpost   = (void*)codeimg_post;
 	p->onread   = (void*)codeimg_read;
 	p->onwrite  = (void*)codeimg_write;
 }

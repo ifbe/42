@@ -146,10 +146,10 @@ static void mirror_write(
 	struct event* ev, int len)
 {
 }
-static void mirror_list()
+static void mirror_get()
 {
 }
-static void mirror_change()
+static void mirror_post()
 {
 }
 static void mirror_stop(
@@ -216,8 +216,8 @@ void mirror_register(struct actor* p)
 	p->ondelete = (void*)mirror_delete;
 	p->onstart  = (void*)mirror_start;
 	p->onstop   = (void*)mirror_stop;
-	p->onlist   = (void*)mirror_list;
-	p->onchoose = (void*)mirror_change;
+	p->onget    = (void*)mirror_get;
+	p->onpost   = (void*)mirror_post;
 	p->onread   = (void*)mirror_read;
 	p->onwrite  = (void*)mirror_write;
 }

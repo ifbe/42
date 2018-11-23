@@ -157,10 +157,10 @@ static void skysphere_write(
 
 
 
-static void skysphere_list()
+static void skysphere_get()
 {
 }
-static void skysphere_change()
+static void skysphere_post()
 {
 }
 static void skysphere_stop(
@@ -233,8 +233,8 @@ void skysphere_register(struct actor* p)
 	p->ondelete = (void*)skysphere_delete;
 	p->onstart  = (void*)skysphere_start;
 	p->onstop   = (void*)skysphere_stop;
-	p->onlist   = (void*)skysphere_list;
-	p->onchoose = (void*)skysphere_change;
+	p->onget    = (void*)skysphere_get;
+	p->onpost   = (void*)skysphere_post;
 	p->onread   = (void*)skysphere_read;
 	p->onwrite  = (void*)skysphere_write;
 }

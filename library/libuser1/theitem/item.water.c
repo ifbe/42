@@ -146,10 +146,10 @@ static void water_write(
 	struct event* ev, int len)
 {
 }
-static void water_list()
+static void water_get()
 {
 }
-static void water_change()
+static void water_post()
 {
 }
 static void water_stop(
@@ -216,8 +216,8 @@ void water_register(struct actor* p)
 	p->ondelete = (void*)water_delete;
 	p->onstart  = (void*)water_start;
 	p->onstop   = (void*)water_stop;
-	p->onlist   = (void*)water_list;
-	p->onchoose = (void*)water_change;
+	p->onget    = (void*)water_get;
+	p->onpost   = (void*)water_post;
 	p->onread   = (void*)water_read;
 	p->onwrite  = (void*)water_write;
 }
