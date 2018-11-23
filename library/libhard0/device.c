@@ -16,6 +16,21 @@ int deviceread_all()
 
 
 
+int devicepost(u8* buf)
+{
+	say("@device: %s\n", buf);
+	return 0;
+}
+int deviceget(u8* buf)
+{
+	int j;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dev[j].type)continue;
+		say("[%03x]: %.8s\n", j, &dev[j].type);
+	}
+	return 0;
+}
 int devicewrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == dc)return devicewrite_ev(buf);
@@ -48,21 +63,6 @@ void* devicecreate(u64 type, void* name)
 			dev[j].type = type;
 			return &dev[j];
 		}
-	}
-	return 0;
-}
-int devicechoose(u8* buf)
-{
-	say("@device: %s\n", buf);
-	return 0;
-}
-int devicelist(u8* buf)
-{
-	int j;
-	for(j=0;j<64;j++)
-	{
-		if(0 == dev[j].type)continue;
-		say("[%03x]: %.8s\n", j, &dev[j].type);
 	}
 	return 0;
 }

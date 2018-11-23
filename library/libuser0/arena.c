@@ -220,6 +220,55 @@ void arenavertex(struct arena* win)
 
 
 
+void* arenapost(u8* buf, int len)
+{
+	u64 name = 0;
+	int id = 0;
+	u8* data = 0;
+	int dl = 0;
+
+	parsexml_detail(buf, len, &name, &id, &data, &dl);
+	say("%.*s\n", len, buf);
+	say("%llx, %x\n", name, id);
+	say("%.*s\n", dl, data);
+
+	if(_win_ == name)
+	{
+		if((id>0)&&(id<0x1000))
+		{
+			if(0 == arena[id].type)
+			{
+				arenacreate(_win_, 0);
+			}
+		}
+	}
+
+	return 0;
+}
+void* arenaget(u8* buf, int len)
+{
+	int j;
+	if(0 == buf)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == arena[j].type)break;
+			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+		}
+		if(0 == j)say("empty arena\n");
+	}
+	else
+	{
+		for(j=0;j<len;j++){if('@' == buf[j])break;}
+
+		j = buf[j+1]-0x30;
+		if(j >= 10)j = 0;
+
+		if(0 == arena[j].type)return 0;
+		return &arena[j];
+	}
+	return 0;
+}
 int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 fmt;
@@ -414,55 +463,6 @@ void* arenacreate(u64 type, void* addr)
 	}
 
 	return win;
-}
-void* arenachoose(u8* buf, int len)
-{
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	say("%.*s\n", len, buf);
-	say("%llx, %x\n", name, id);
-	say("%.*s\n", dl, data);
-
-	if(_win_ == name)
-	{
-		if((id>0)&&(id<0x1000))
-		{
-			if(0 == arena[id].type)
-			{
-				arenacreate(_win_, 0);
-			}
-		}
-	}
-
-	return 0;
-}
-void* arenalist(u8* buf, int len)
-{
-	int j;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == arena[j].type)break;
-			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
-		}
-		if(0 == j)say("empty arena\n");
-	}
-	else
-	{
-		for(j=0;j<len;j++){if('@' == buf[j])break;}
-
-		j = buf[j+1]-0x30;
-		if(j >= 10)j = 0;
-
-		if(0 == arena[j].type)return 0;
-		return &arena[j];
-	}
-	return 0;
 }
 
 

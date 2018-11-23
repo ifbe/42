@@ -17,6 +17,21 @@ int driverread_all()
 
 
 
+int driverpost(u8* buf)
+{
+	say("@driver: %s\n", buf);
+	return 0;
+}
+int driverget(u8* buf)
+{
+	int j;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dri[j].type)continue;
+		say("[%03x]: %.8s\n", j, &dri[j].type);
+	}
+	return 0;
+}
 int driverwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == dc)return driverwrite_ev(buf);
@@ -49,21 +64,6 @@ void* drivercreate(u64 type, void* name)
 			dri[j].type = type;
 			return &dri[j];
 		}
-	}
-	return 0;
-}
-int driverchoose(u8* buf)
-{
-	say("@driver: %s\n", buf);
-	return 0;
-}
-int driverlist(u8* buf)
-{
-	int j;
-	for(j=0;j<64;j++)
-	{
-		if(0 == dri[j].type)continue;
-		say("[%03x]: %.8s\n", j, &dri[j].type);
 	}
 	return 0;
 }

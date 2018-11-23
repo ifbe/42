@@ -147,8 +147,41 @@ int systemread_all()
 
 
 
-//df==0: throw upward
-//df!=0: throw down
+int systempost(u8* buf, int len)
+{
+	int j;
+	u8 data[0x1000];
+	if(0 == len)
+	{
+		systemcreate(0, buf);
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(0 == buf[j])break;
+			data[j] = buf[j];
+		}
+		data[j] = 0;
+
+		systemcreate(0, data);
+	}
+	return 0;
+}
+int systemget(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == obj[j].type)continue;
+
+		k++;
+		say("[%03x]: %.8s\n", j, &obj[j].type);
+	}
+
+	if(0 == k)say("empth system\n");
+	return 0;
+}
 int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == dc)return systemwrite_ev(buf);
@@ -360,41 +393,6 @@ void* systemcreate(u64 type, void* argstr)
 
 success:
 	return &obj[fd];
-}
-int systemchoose(u8* buf, int len)
-{
-	int j;
-	u8 data[0x1000];
-	if(0 == len)
-	{
-		systemcreate(0, buf);
-	}
-	else
-	{
-		for(j=0;j<len;j++)
-		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
-		}
-		data[j] = 0;
-
-		systemcreate(0, data);
-	}
-	return 0;
-}
-int systemlist(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == obj[j].type)continue;
-
-		k++;
-		say("[%03x]: %.8s\n", j, &obj[j].type);
-	}
-
-	if(0 == k)say("empth system\n");
-	return 0;
 }
 
 

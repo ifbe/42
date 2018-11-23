@@ -121,6 +121,41 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
+int arterypost(u8* buf, int len)
+{
+	int j;
+	u8 data[0x1000];
+	if(0 == len)
+	{
+		arterycreate(0, buf);
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(0 == buf[j])break;
+			data[j] = buf[j];
+		}
+		data[j] = 0;
+
+		arterycreate(0, data);
+	}
+	return 0;
+}
+int arteryget(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ele[j].type)continue;
+
+		k++;
+		say("[%03x]: %.8s\n", j, &ele[j].type);
+	}
+
+	if(0 == k)say("empth artery\n");
+	return 0;
+}
 int arteryread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == sc)return arteryread_all();
@@ -500,41 +535,6 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	return 0;
-}
-int arterychoose(u8* buf, int len)
-{
-	int j;
-	u8 data[0x1000];
-	if(0 == len)
-	{
-		arterycreate(0, buf);
-	}
-	else
-	{
-		for(j=0;j<len;j++)
-		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
-		}
-		data[j] = 0;
-
-		arterycreate(0, data);
-	}
-	return 0;
-}
-int arterylist(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == ele[j].type)continue;
-
-		k++;
-		say("[%03x]: %.8s\n", j, &ele[j].type);
-	}
-
-	if(0 == k)say("empth artery\n");
 	return 0;
 }
 

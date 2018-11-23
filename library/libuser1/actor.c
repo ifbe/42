@@ -202,6 +202,69 @@ int actorread_all(struct arena* win)
 
 
 
+void* actorpost(u8* buf, int len)
+{/*
+	//say("%.*s\n", len, buf);
+	int j;
+	struct actor* act = 0;
+	u64 name = 0;
+	int id = 0;
+	u8* data = 0;
+	int dl = 0;
+
+	parsexml_detail(buf, len, &name, &id, &data, &dl);
+	//say("%.*s\n", len, buf);
+	//say("%llx, %x\n", name, id);
+	//say("%.*s\n", dl, data);
+
+	act = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if(0 == actor[j].name)break;
+		if(0 > id)break;
+
+		if(name == actor[j].name)
+		{
+			if(0 == id)
+			{
+				act = &actor[j];
+				actorcreate(0, act);
+				break;
+			}
+		}
+	}
+*/
+	return 0;
+}
+void* actorget(u8* buf, int len)
+{
+	int j,k;
+	u8* p;
+	if(0 == buf)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
+		}
+		if(0 == j)say("empty actor\n");
+	}
+	else
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == actor[j].name)break;
+			p = (void*)(&actor[j].name);
+
+			for(k=0;k<8;k++)
+			{
+				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
+				if(buf[k] != p[k])break;
+			}
+		}
+	}
+	return 0;
+}
 int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct relation* rel;
@@ -300,69 +363,6 @@ void* actorcreate(u64 type, void* buf)
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return act;
-}
-void* actorchoose(u8* buf, int len)
-{/*
-	//say("%.*s\n", len, buf);
-	int j;
-	struct actor* act = 0;
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	//say("%.*s\n", len, buf);
-	//say("%llx, %x\n", name, id);
-	//say("%.*s\n", dl, data);
-
-	act = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if(0 == actor[j].name)break;
-		if(0 > id)break;
-
-		if(name == actor[j].name)
-		{
-			if(0 == id)
-			{
-				act = &actor[j];
-				actorcreate(0, act);
-				break;
-			}
-		}
-	}
-*/
-	return 0;
-}
-void* actorlist(u8* buf, int len)
-{
-	int j,k;
-	u8* p;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == actor[j].name)break;
-			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
-		}
-		if(0 == j)say("empty actor\n");
-	}
-	else
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == actor[j].name)break;
-			p = (void*)(&actor[j].name);
-
-			for(k=0;k<8;k++)
-			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
-				if(buf[k] != p[k])break;
-			}
-		}
-	}
-	return 0;
 }
 
 
