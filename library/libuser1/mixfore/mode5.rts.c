@@ -74,5 +74,14 @@ int actoroutput_2d(struct arena* win, struct style* stack)
 
 int actorinput_2d(struct arena* win, struct style* sty, struct event* ev)
 {
-    return 0;
+	struct actor* act;
+	struct pinid* pin;
+	struct relation* orel;
+
+	orel = win->oreln;
+	if(0 == orel)return 0;
+
+	act = (void*)(orel->dstchip);
+	pin = (void*)(orel->dstfoot);
+	return act->onwrite(act, pin, 0, 0, ev, 0);
 }

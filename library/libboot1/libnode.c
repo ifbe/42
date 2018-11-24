@@ -12,7 +12,7 @@ int mysnprintf(void*, int, void*, ...);
 //stack[ 0]: root
 //stack[+1]: target
 //stack[+n]: target's target's target's target...
-int nodetree_read(void* sc, void* sf, u8* buf, int len)
+int nodetree_get(void* sc, void* sf, u8* buf, int len)
 {
 	int j;
 	struct relation* orel;
@@ -44,10 +44,10 @@ int nodetree_read(void* sc, void* sf, u8* buf, int len)
 		j += mysnprintf(buf+j, 0x10000-j, "%.8s,%.8s\n", &dc->tier, &dc->type);
 
 		if(0 == orel->dsttype)break;
-		else if(_fd_  == orel->dsttype)systemread(dc, df, sc, sf, buf, len);
-		else if(_art_ == orel->dsttype)arteryread(dc, df, sc, sf, buf, len);
-		else if(_win_ == orel->dsttype)arenaread( dc, df, sc, sf, buf, len);
-		else if(_act_ == orel->dsttype)actorread( dc, df, sc, sf, buf, len);
+		else if(_fd_  == orel->dsttype)systemget(dc, df, sc, sf, buf, len);
+		else if(_art_ == orel->dsttype)arteryget(dc, df, sc, sf, buf, len);
+		else if(_win_ == orel->dsttype)arenaget( dc, df, sc, sf, buf, len);
+		else if(_act_ == orel->dsttype)actorget( dc, df, sc, sf, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}
@@ -59,7 +59,7 @@ int nodetree_read(void* sc, void* sf, u8* buf, int len)
 
 
 //root -> leaf, throw data deeper into the tree
-int nodetree_write(void* sc, void* sf, u8* buf, int len)
+int nodetree_post(void* sc, void* sf, u8* buf, int len)
 {
 	void* dc;
 	void* df;
@@ -84,10 +84,10 @@ int nodetree_write(void* sc, void* sf, u8* buf, int len)
 		df = (void*)(orel->dstfoot);
 
 		if(0 == orel->dsttype)break;
-		else if(_fd_  == orel->dsttype)systemwrite(dc, df, sc, sf, buf, len);
-		else if(_art_ == orel->dsttype)arterywrite(dc, df, sc, sf, buf, len);
-		else if(_win_ == orel->dsttype)arenawrite( dc, df, sc, sf, buf, len);
-		else if(_act_ == orel->dsttype)actorwrite( dc, df, sc, sf, buf, len);
+		else if(_fd_  == orel->dsttype)systempost(dc, df, sc, sf, buf, len);
+		else if(_art_ == orel->dsttype)arterypost(dc, df, sc, sf, buf, len);
+		else if(_win_ == orel->dsttype)arenapost( dc, df, sc, sf, buf, len);
+		else if(_act_ == orel->dsttype)actorpost( dc, df, sc, sf, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}
@@ -98,7 +98,7 @@ int nodetree_write(void* sc, void* sf, u8* buf, int len)
 
 
 //leaf -> root: example: tcpip data pack until ethernet layer
-int nodetree_leaf2root(void* sc, void* sf, u8* buf, int len)
+int nodetree_read(void* sc, void* sf, u8* buf, int len)
 {
 	struct item* chip;
 	struct relation* irel;
@@ -113,5 +113,13 @@ int nodetree_leaf2root(void* sc, void* sf, u8* buf, int len)
 		return 0;
 	}
 
+	return 0;
+}
+
+
+
+
+int nodetree_write(void* sc, void* sf, u8* buf, int len)
+{
 	return 0;
 }

@@ -6,8 +6,8 @@ int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
 int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
-int nodetree_read(void*, void*, void*, int);
-int nodetree_write(void*, void*, void*, int);
+int nodetree_get(void*, void*, void*, int);
+int nodetree_post(void*, void*, void*, int);
 
 
 
@@ -128,7 +128,7 @@ void httpserver_get(
 	if(0 == ncmp(GET, "/favicon.ico", 12))return;
 
 	//read data
-	len = nodetree_read(ele, sty, buf, len);
+	len = nodetree_get(ele, sty, buf, len);
 	if(len <= 0)return;
 
 	//text html?

@@ -239,6 +239,7 @@ static void camera_start(
 	struct glsrc* src;
 	if(0 == sty)return;
 	if(0 == pin)return;
+	if(_vbo_ != win->fmt)return;
 
 	//sender
 	src = alloc_winobj(win);
