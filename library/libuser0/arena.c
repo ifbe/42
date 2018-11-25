@@ -148,132 +148,6 @@ void arenavertex(struct arena* win)
 
 
 
-int arenaevent(struct event* e)
-{
-	int j;
-	struct event ev;
-	struct arena* win;
-
-	ev.why = e->why;
-	ev.what = e->what;
-	ev.where = e->where;
-	ev.when = e->when;
-
-	if(0 == ev.where)
-	{
-		//from cmd
-		if(_char_ == ev.what)
-		{
-			input(&ev.why, 0);
-			return 0;
-		}
-
-		//maybe gamepad
-		for(j=0;j<16;j++)
-		{
-			win = &arena[j];
-			if(_win_ == win->type)
-			{
-				ev.where = (u64)win;
-				break;
-			}
-		}
-	}
-
-	if(ev.where)actorevent(&ev);
-/*
-	if(_win_ == what)
-	{
-		return 42;
-	}
-	else if(hex32('w','+',0,0) == what)
-	{
-		ret = arenacreate(why, where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return 0;
-		}
-	}
-	else if(hex32('w','-',0,0) == what)
-	{
-		ret = (void*)where;
-		arenadelete(ret);
-	}
-*/
-	return 0;
-}
-void* arenacommand(u8* buf, int len)
-{
-/*
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	say("%.*s\n", len, buf);
-	say("%llx, %x\n", name, id);
-	say("%.*s\n", dl, data);
-
-	if(_win_ == name)
-	{
-		if((id>0)&&(id<0x1000))
-		{
-			if(0 == arena[id].type)
-			{
-				arenacreate(_win_, 0);
-			}
-		}
-	}
-*/
-	return 0;
-}
-
-
-
-
-int arenaread_all()
-{
-	int j;
-	struct arena* win;
-
-	for(j=0;j<16;j++)
-	{
-		win = &arena[j];
-		if(0 == win->type)continue;
-		if(_win_ == win->type)windowread(win);
-	}
-	return 0;
-}
-void* arenalist(u8* buf, int len)
-{
-	int j;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == arena[j].type)break;
-			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
-		}
-		if(0 == j)say("empty arena\n");
-	}
-	else
-	{
-		for(j=0;j<len;j++){if('@' == buf[j])break;}
-
-		j = buf[j+1]-0x30;
-		if(j >= 10)j = 0;
-
-		if(0 == arena[j].type)return 0;
-		return &arena[j];
-	}
-	return 0;
-}
-
-
-
-
 int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 fmt;
@@ -477,6 +351,141 @@ void* arenacreate(u64 type, void* addr)
 	return win;
 }
 
+
+
+
+int arenaevent(struct event* e)
+{
+	int j;
+	struct event ev;
+	struct arena* win;
+
+	ev.why = e->why;
+	ev.what = e->what;
+	ev.where = e->where;
+	ev.when = e->when;
+
+	if(0 == ev.where)
+	{
+		//from cmd
+		if(_char_ == ev.what)
+		{
+			input(&ev.why, 0);
+			return 0;
+		}
+
+		//maybe gamepad
+		for(j=0;j<16;j++)
+		{
+			win = &arena[j];
+			if(_win_ == win->type)
+			{
+				ev.where = (u64)win;
+				break;
+			}
+		}
+	}
+
+	if(ev.where)actorevent(&ev);
+/*
+	if(_win_ == what)
+	{
+		return 42;
+	}
+	else if(hex32('w','+',0,0) == what)
+	{
+		ret = arenacreate(why, where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return 0;
+		}
+	}
+	else if(hex32('w','-',0,0) == what)
+	{
+		ret = (void*)where;
+		arenadelete(ret);
+	}
+*/
+	return 0;
+}
+void* arenacommand(u8* buf, int len)
+{
+/*
+	u64 name = 0;
+	int id = 0;
+	u8* data = 0;
+	int dl = 0;
+
+	parsexml_detail(buf, len, &name, &id, &data, &dl);
+	say("%.*s\n", len, buf);
+	say("%llx, %x\n", name, id);
+	say("%.*s\n", dl, data);
+
+	if(_win_ == name)
+	{
+		if((id>0)&&(id<0x1000))
+		{
+			if(0 == arena[id].type)
+			{
+				arenacreate(_win_, 0);
+			}
+		}
+	}
+*/
+	int j;
+	u64 type = 0;
+	u8* tmp = (u8*)&type;
+	for(j=0;j<8;j++)
+	{
+		if(buf[j] <= 0x20)break;
+		tmp[j] = buf[j];
+	}
+
+	arenacreate(type, 0);
+	return 0;
+}
+
+
+
+
+int arenaread_all()
+{
+	int j;
+	struct arena* win;
+
+	for(j=0;j<16;j++)
+	{
+		win = &arena[j];
+		if(0 == win->type)continue;
+		if(_win_ == win->type)windowread(win);
+	}
+	return 0;
+}
+void* arenalist(u8* buf, int len)
+{
+	int j;
+	if(0 == buf)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == arena[j].type)break;
+			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+		}
+		if(0 == j)say("empty arena\n");
+	}
+	else
+	{
+		for(j=0;j<len;j++){if('@' == buf[j])break;}
+
+		j = buf[j+1]-0x30;
+		if(j >= 10)j = 0;
+
+		if(0 == arena[j].type)return 0;
+		return &arena[j];
+	}
+	return 0;
+}
 
 
 
