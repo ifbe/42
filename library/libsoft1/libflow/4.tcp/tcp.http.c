@@ -6,8 +6,8 @@ int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
 int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
-int nodetree_get(void*, void*, void*, int);
-int nodetree_post(void*, void*, void*, int);
+int nodetree_rootread(void*, void*, void*, int);
+int nodetree_rootwrite(void*, void*, void*, int);
 
 
 

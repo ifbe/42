@@ -99,7 +99,7 @@ int kqueuethread(int argc, const char * argv[])
 			if(cnt >= 0)
 			{
 				//printmemory(buf, cnt);
-				systemwrite(&obj[fd], obj[fd].peer, 0, 0, buf, cnt);
+				system_rootwrite(&obj[fd], obj[fd].peer, 0, 0, buf, cnt);
 			}
 			if(cnt <= 0)
 			{

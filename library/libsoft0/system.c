@@ -190,6 +190,10 @@ void* systemlist(u8* buf, int len)
 
 int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	say("systemwrite@{\n");
+	systemwrite_in(dc, df, buf, len);
+	say("}@systemwrite\n");
+
 	return 0;
 }
 int system_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
@@ -198,26 +202,22 @@ int system_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 != sc)
-	{
-		int fd = (dc - (void*)obj) / sizeof(struct object);
-		if(_uart_ == obj[fd].type)
-		{
-			return writeuart(fd, 0, buf, len);
-		}
-		if(_ptmx_ == obj[fd].type)
-		{
-			return writeshell(fd, 0, buf, len);
-		}
-		else
-		{
-			return writesocket(fd, df, buf, len);
-		}
-	}
+	int fd;
+	if(0 == dc)return 0;
 
-	say("systemwrite@{\n");
-	systemwrite_in(dc, df, buf, len);
-	say("}@systemwrite\n");
+	fd = (dc - (void*)obj) / sizeof(struct object);
+	if(_uart_ == obj[fd].type)
+	{
+		return writeuart(fd, 0, buf, len);
+	}
+	if(_ptmx_ == obj[fd].type)
+	{
+		return writeshell(fd, 0, buf, len);
+	}
+	else
+	{
+		return writesocket(fd, df, buf, len);
+	}
 
 	return 0;
 }
