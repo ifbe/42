@@ -36,7 +36,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actorwrite(
+				actor_rootwrite(
 					(void*)(orel->dstchip), (void*)(orel->dstfoot),
 					(void*)(orel->srcchip), (void*)(orel->srcfoot),
 					ibuf + (1024*2*icur), 1024*2

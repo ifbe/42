@@ -216,7 +216,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					actorwrite_ev((void*)why);
+					actorevent((void*)why);
 				}
 			}
 			else
@@ -230,7 +230,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
 				why[2] = (u64)thewin;
-				actorwrite_ev((void*)why);
+				actorevent((void*)why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)

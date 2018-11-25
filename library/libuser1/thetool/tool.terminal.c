@@ -172,7 +172,7 @@ static void terminal_write_event(
 		df = (void*)(irel->srcfoot);
 		if(_fd_ == irel->srctype)
 		{
-			systemwrite(dc, df, act, pin, &why, j);
+			system_leafwrite(dc, df, act, pin, &why, j);
 		}
 
 		irel = samedstnextsrc(irel);

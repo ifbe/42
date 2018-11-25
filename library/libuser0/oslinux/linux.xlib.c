@@ -137,7 +137,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '+', 0, 0);
 		myev.where = (u64)win;
-		actorwrite_ev(&myev);
+		actorevent(&myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonPress
 	else if(ButtonRelease == xev.type)
@@ -154,7 +154,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '-', 0, 0);
 		myev.where = (u64)win;
-		actorwrite_ev(&myev);
+		actorevent(&myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonRelease
 	else if(MotionNotify == xev.type)
@@ -166,7 +166,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '@', 0, 0);
 		myev.where = (u64)win;
-		actorwrite_ev(&myev);
+		actorevent(&myev);
 		//eventwrite(why, what, where, 0);
 	}//MotionNotify
 	else if(KeyPress == xev.type)
@@ -184,7 +184,7 @@ void windowevent(struct arena* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				actorwrite_ev(&myev);
+				actorevent(&myev);
 				return;
 			}
 		}
@@ -195,7 +195,7 @@ void windowevent(struct arena* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				actorwrite_ev(&myev);
+				actorevent(&myev);
 				return;
 			}
 		}
@@ -204,7 +204,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = xlib2kbd[xev.xkey.keycode];
 		myev.what = hex32('k','b','d',0);
 		myev.where = (u64)win;
-		actorwrite_ev(&myev);
+		actorevent(&myev);
 		//eventwrite(why, what, where, 0);
 	}//KeyPress
 }

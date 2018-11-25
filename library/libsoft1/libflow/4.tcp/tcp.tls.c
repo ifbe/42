@@ -1062,7 +1062,7 @@ int tlsclient_create(struct element* ele, u8* url, u8* buf, int len)
 
 	ret = tls_clientwrite_clienthello(url, 0, buf, len);
 
-	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
 
 	ele->type = _tls_;

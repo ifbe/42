@@ -71,7 +71,7 @@ int wsnode_write(void*,void*,void*,void*,void*,int);
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //
-int actorwrite_ev(struct event* ev);
+int actorevent(struct event* ev);
 int input(void*, int);
 //
 int cmp(void*, void*);
@@ -107,78 +107,6 @@ void* allocstyle()
 
 	for(j=0;j<len;j++)buf[j] = 0;
 	return buf;
-}
-
-
-
-
-int arenawrite_ev(struct event* e)
-{
-	int j;
-	struct event ev;
-	struct arena* win;
-
-	ev.why = e->why;
-	ev.what = e->what;
-	ev.where = e->where;
-	ev.when = e->when;
-
-	if(0 == ev.where)
-	{
-		//from cmd
-		if(_char_ == ev.what)
-		{
-			input(&ev.why, 0);
-			return 0;
-		}
-
-		//maybe gamepad
-		for(j=0;j<16;j++)
-		{
-			win = &arena[j];
-			if(_win_ == win->type)
-			{
-				ev.where = (u64)win;
-				break;
-			}
-		}
-	}
-
-	if(ev.where)actorwrite_ev(&ev);
-/*
-	if(_win_ == what)
-	{
-		return 42;
-	}
-	else if(hex32('w','+',0,0) == what)
-	{
-		ret = arenacreate(why, where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return 0;
-		}
-	}
-	else if(hex32('w','-',0,0) == what)
-	{
-		ret = (void*)where;
-		arenadelete(ret);
-	}
-*/
-	return 0;
-}
-int arenaread_all()
-{
-	int j;
-	struct arena* win;
-
-	for(j=0;j<16;j++)
-	{
-		win = &arena[j];
-		if(0 == win->type)continue;
-		if(_win_ == win->type)windowread(win);
-	}
-	return 0;
 }
 void arenavertex(struct arena* win)
 {
@@ -220,8 +148,64 @@ void arenavertex(struct arena* win)
 
 
 
-void* arenapost(u8* buf, int len)
+int arenaevent(struct event* e)
 {
+	int j;
+	struct event ev;
+	struct arena* win;
+
+	ev.why = e->why;
+	ev.what = e->what;
+	ev.where = e->where;
+	ev.when = e->when;
+
+	if(0 == ev.where)
+	{
+		//from cmd
+		if(_char_ == ev.what)
+		{
+			input(&ev.why, 0);
+			return 0;
+		}
+
+		//maybe gamepad
+		for(j=0;j<16;j++)
+		{
+			win = &arena[j];
+			if(_win_ == win->type)
+			{
+				ev.where = (u64)win;
+				break;
+			}
+		}
+	}
+
+	if(ev.where)actorevent(&ev);
+/*
+	if(_win_ == what)
+	{
+		return 42;
+	}
+	else if(hex32('w','+',0,0) == what)
+	{
+		ret = arenacreate(why, where);
+		if(ret == 0)
+		{
+			say("error@w+\n");
+			return 0;
+		}
+	}
+	else if(hex32('w','-',0,0) == what)
+	{
+		ret = (void*)where;
+		arenadelete(ret);
+	}
+*/
+	return 0;
+}
+void* arenacommand(u8* buf, int len)
+{
+/*
 	u64 name = 0;
 	int id = 0;
 	u8* data = 0;
@@ -242,10 +226,27 @@ void* arenapost(u8* buf, int len)
 			}
 		}
 	}
-
+*/
 	return 0;
 }
-void* arenaget(u8* buf, int len)
+
+
+
+
+int arenaread_all()
+{
+	int j;
+	struct arena* win;
+
+	for(j=0;j<16;j++)
+	{
+		win = &arena[j];
+		if(0 == win->type)continue;
+		if(_win_ == win->type)windowread(win);
+	}
+	return 0;
+}
+void* arenalist(u8* buf, int len)
 {
 	int j;
 	if(0 == buf)
@@ -269,11 +270,14 @@ void* arenaget(u8* buf, int len)
 	}
 	return 0;
 }
-int arenawrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+
+
+
+
+int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 fmt;
 	struct arena* win;
-	if(0 == dc)return arenawrite_ev(buf);
 say("arenawrite@{\n");
 
 	win = dc;
@@ -285,7 +289,15 @@ say("arenawrite@{\n");
 say("}@arenawrite\n");
 	return 0;
 }
-int arenaread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int arena_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int arena_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	int j;
 	struct arena* win;

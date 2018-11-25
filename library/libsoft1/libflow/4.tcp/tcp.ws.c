@@ -88,7 +88,7 @@ int wsclient_write(
 
 		dc = (void*)(orel->dstchip);
 		df = (void*)(orel->dstfoot);
-		if(_win_ == orel->dsttype)arenawrite(dc, df, ele, sty, buf, len);
+		if(_win_ == orel->dsttype)arena_rootwrite(dc, df, ele, sty, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}
@@ -108,7 +108,7 @@ int wsclient_create(struct element* ele, u8* url, u8* buf, int len)
 
 	ret = websocket_clientwrite_handshake(url, 0, buf, len);
 
-	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
 
 	ele->type = _ws_;
@@ -336,7 +336,7 @@ int wsserver_write(
 
 		//parse clienthello
 		ret = websocket_serverread_handshake(buf, len, body, 256);
-		ret = systemwrite(obj, pin, ele, sty, body, ret);
+		ret = system_leafwrite(obj, pin, ele, sty, body, ret);
 
 		//on clienthello do something
 		blen = mysnprintf(body, 0x1000, "Who dare summon me ?!");
@@ -348,8 +348,8 @@ int wsserver_write(
 	say("%.*s\n", blen, body);
 
 	hlen = websocket_serverwrite(body, blen, head, 0x100);
-	systemwrite(obj, pin, ele, sty, head, hlen);
-	systemwrite(obj, pin, ele, sty, body, blen);
+	system_leafwrite(obj, pin, ele, sty, head, hlen);
+	system_leafwrite(obj, pin, ele, sty, body, blen);
 	return 0;
 }
 int wsserver_read(

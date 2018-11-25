@@ -11,17 +11,17 @@ typedef unsigned long long u64;
 #define _fd_   hex32('f','d', 0 , 0)
 #define _art_  hex32('a','r','t', 0)
 int actorread_all();
-int actorwrite_ev(void*);
+int actorevent(void*);
 int arenaread_all();
-int arenawrite_ev(void*);
+int arenaevent(void*);
 int arteryread_all();
-int arterywrite_ev(void*);
+int arteryevent(void*);
 int systemread_all();
-int systemwrite_ev(void*);
+int systemevent(void*);
 int driverread_all();
-int driverwrite_ev(void*);
+int driverevent(void*);
 int deviceread_all();
-int devicewrite_ev(void*);
+int deviceevent(void*);
 //
 void* arenacreate(u64,u64);
 void arenadelete(void*);
@@ -58,11 +58,11 @@ void eventhandler(struct event* ev)
 	int ret;
 	//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 
-	if(_dev_ == ev->what)devicewrite_ev(ev);
-	else if(_dri_ == ev->what)driverwrite_ev(ev);
-	else if(_fd_  == ev->what)systemwrite_ev(ev);
-	else if(_art_ == ev->what)arterywrite_ev(ev);
-	else arenawrite_ev(ev);
+	if(_dev_ == ev->what)deviceevent(ev);
+	else if(_dri_ == ev->what)driverevent(ev);
+	else if(_fd_  == ev->what)systemevent(ev);
+	else if(_art_ == ev->what)arteryevent(ev);
+	else arenaevent(ev);
 }
 void loop()
 {

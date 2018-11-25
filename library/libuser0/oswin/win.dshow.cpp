@@ -97,7 +97,7 @@ public:
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actorwrite(
+				actor_rootwrite(
 					(void*)(orel->dstchip), (void*)(orel->dstfoot),
 					(void*)(orel->srcchip), (void*)(orel->srcfoot),
 					obj[enq].buf, 640*480*3/2

@@ -65,11 +65,11 @@ int httpclient_write(
 		df = (void*)(orel->dstfoot);
 		if(_win_ == orel->dsttype)
 		{
-			arenawrite(dc, df, ele, 0, buf, len);
+			arena_rootwrite(dc, df, ele, 0, buf, len);
 		}
 		else if(_act_ == orel->dsttype)
 		{
-			actorwrite(dc, df, ele, 0, buf, len);
+			actor_rootwrite(dc, df, ele, 0, buf, len);
 		}
 
 		orel = samesrcnextdst(orel);
@@ -98,7 +98,7 @@ int httpclient_create(struct element* ele, u8* url, u8* buf, int len)
 		"/", url
 	);
 
-	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
 
 	ele->type = _http_;
@@ -128,7 +128,7 @@ void httpserver_get(
 	if(0 == ncmp(GET, "/favicon.ico", 12))return;
 
 	//read data
-	len = nodetree_get(ele, sty, buf, len);
+	len = nodetree_rootread(ele, sty, buf, len);
 	if(len <= 0)return;
 
 	//text html?
@@ -141,10 +141,10 @@ void httpserver_get(
 	);
 
 	//send response
-	systemwrite(obj, pin, ele, sty, buf+len, ret);
+	system_leafwrite(obj, pin, ele, sty, buf+len, ret);
 
 	//send context
-	systemwrite(obj, pin, ele, sty, buf, len);
+	system_leafwrite(obj, pin, ele, sty, buf, len);
 }
 int httpserver_write(
 	struct element* ele, void* sty,
@@ -237,10 +237,10 @@ int httpmaster_write(
 		);
 
 		//send response
-		systemwrite(obj, pin, ele, sty, buf+len, ret);
+		system_leafwrite(obj, pin, ele, sty, buf+len, ret);
 
 		//send context
-		systemwrite(obj, pin, ele, sty, buf, len);
+		system_leafwrite(obj, pin, ele, sty, buf, len);
 	}
 	else if(GET)httpserver_get(ele,sty, obj,pin, buf+len,0, GET);
 	else if(POST)httpserver_post(ele,sty, obj,pin, buf+len,0, POST);

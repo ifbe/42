@@ -528,28 +528,28 @@ int sshclient_write(
 		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(1 == ele->stage1)
 	{
 		ret = secureshell_clientread_handshake0x14(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x22(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(2 == ele->stage1)
 	{
 		ret = secureshell_clientread_handshake0x1f(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x20(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(3 == ele->stage1)
 	{
 		ret = secureshell_clientread_handshake0x21(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_data(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else printmemory(buf, len);
 
@@ -572,7 +572,7 @@ int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
 
 	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
 
-	ret = systemwrite(obj, 0, ele, 0, buf, ret);
+	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
 
 	ele->type = _ssh_;
@@ -759,14 +759,14 @@ int sshserver_write(
 		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
 
 		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(1 == ele->stage1)
 	{
 		ret = secureshell_serverread_handshake0x22(buf, len, tmp, 0x100);
 
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else if(2 == ele->stage1)
 	{
@@ -774,7 +774,7 @@ int sshserver_write(
 
 		ret = secureshell_serverwrite_handshake0x21(buf, len, tmp, 0x1000);
 		ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
-		if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+		if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 	}
 	else printmemory(buf, len);
 
@@ -819,7 +819,7 @@ int sshmaster_write(
 	struct element* e;
 
 	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
-	if(ret)systemwrite(obj, pin, ele, sty, tmp, ret);
+	if(ret)system_leafwrite(obj, pin, ele, sty, tmp, ret);
 
 	e = arterycreate(_Ssh_, 0);
 	if(e)relationcreate(e, 0, _art_, obj, 0, _fd_);

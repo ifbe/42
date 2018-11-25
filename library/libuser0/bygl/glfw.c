@@ -81,7 +81,7 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 	}
 
 	e.where = (u64)win;
-	actorwrite_ev(&e);
+	actorevent(&e);
 	//eventwrite(why, what, where, 0);
 }
 static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
@@ -103,7 +103,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2b70;
 		e.where = (u64)win;
-		actorwrite_ev(&e);
+		actorevent(&e);
 	}
 	else if(0 == action)
 	{
@@ -113,7 +113,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2d70;
 		e.where = (u64)win;
-		actorwrite_ev(&e);
+		actorevent(&e);
 	}
 }
 static void callback_move(GLFWwindow* fw, double xpos, double ypos)
@@ -131,7 +131,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 	e.why = x + (y<<16) + (temp<<48);
 	e.what = 0x4070;
 	e.where = (u64)win;
-	actorwrite_ev(&e);
+	actorevent(&e);
 }
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
@@ -144,13 +144,13 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 	if(y > 0.0)	//wheel_up
 	{
 		e.why = ((u64)'f')<<48;
-		actorwrite_ev(&e);
+		actorevent(&e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 	else	//wheel_down
 	{
 		e.why = ((u64)'b')<<48;
-		actorwrite_ev(&e);
+		actorevent(&e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 }
@@ -170,7 +170,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 	e.why = (u64)dragdata;
 	e.what = _drag_;
 	e.where = (u64)win;
-	actorwrite_ev(&e);
+	actorevent(&e);
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {

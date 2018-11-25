@@ -91,18 +91,6 @@ void* allocelement()
 	elelen += 1;
 	return addr;
 }
-
-
-
-
-int arterywrite_ev(struct event* ev)
-{
-	return 0;
-}
-int arteryread_all()
-{
-	return 0;
-}
 int parsetypefromurl(u8* url, u8* type)
 {
 	int j,k;
@@ -121,7 +109,11 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
-int arterypost(u8* buf, int len)
+int arteryevent(struct event* ev)
+{
+	return 0;
+}
+void* arterycommand(u8* buf, int len)
 {
 	int j;
 	u8 data[0x1000];
@@ -142,7 +134,15 @@ int arterypost(u8* buf, int len)
 	}
 	return 0;
 }
-int arteryget(u8* buf, int len)
+
+
+
+
+int arteryread_all()
+{
+	return 0;
+}
+void* arterylist(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<0x1000;j++)
@@ -156,16 +156,14 @@ int arteryget(u8* buf, int len)
 	if(0 == k)say("empth artery\n");
 	return 0;
 }
-int arteryread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	if(0 == sc)return arteryread_all();
-	return 0;
-}
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+
+
+
+
+int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 type;
 	struct element* ele;
-	if(0 == dc)return arterywrite_ev(buf);
 say("arterywrite@{\n");
 
 	ele = dc;
@@ -200,6 +198,19 @@ say("arterywrite@{\n");
 	else printmemory(buf, len);
 
 say("}@arterywrite\n");
+	return 0;
+}
+int artery_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	if(0 == sc)return arteryread_all();
 	return 0;
 }
 int arterystop()

@@ -94,7 +94,7 @@ static void switch_write(
 		if(0 == orel)break;
 		if(_fd_ == orel->dsttype)
 		{
-			systemwrite(
+			system_leafwrite(
 				(void*)(orel->dstchip), (void*)(orel->dstfoot),
 				(void*)(orel->srcchip), (void*)(orel->srcfoot),
 				act->buf, len

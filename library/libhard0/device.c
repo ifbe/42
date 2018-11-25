@@ -4,24 +4,24 @@ static struct device* dev;
 
 
 
-int devicewrite_ev(void* ev)
+int deviceevent(void* ev)
 {
 	return 0;
 }
-int deviceread_all()
-{
-	return 0;
-}
-
-
-
-
-int devicepost(u8* buf)
+void* devicecommand(u8* buf)
 {
 	say("@device: %s\n", buf);
 	return 0;
 }
-int deviceget(u8* buf)
+
+
+
+
+int deviceread_all()
+{
+	return 0;
+}
+void* devicelist(u8* buf)
 {
 	int j;
 	for(j=0;j<64;j++)
@@ -31,12 +31,23 @@ int deviceget(u8* buf)
 	}
 	return 0;
 }
-int devicewrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+
+
+
+
+int device_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == dc)return devicewrite_ev(buf);
 	return 0;
 }
-int deviceread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int device_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int device_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int device_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == sc)return deviceread_all();
 	return 0;

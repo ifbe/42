@@ -59,9 +59,9 @@ int tftpserver_write(
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		systemwrite(obj,pin,ele,sty,str,ret+2);
+		system_leafwrite(obj,pin,ele,sty,str,ret+2);
 	}
-	systemwrite(obj,pin,ele,sty,buf,len);
+	system_leafwrite(obj,pin,ele,sty,buf,len);
 	return 0;
 }
 int tftpserver_read()

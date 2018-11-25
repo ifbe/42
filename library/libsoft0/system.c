@@ -98,15 +98,15 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 		df = (void*)(orel->dstfoot);
 		if(_act_ == orel->dsttype)
 		{
-			actorwrite(dc, df, chip, foot, buf, len);
+			actor_rootwrite(dc, df, chip, foot, buf, len);
 		}
 		else if(_win_ == orel->dsttype)
 		{
-			arenawrite(dc, df, chip, foot, buf, len);
+			arena_rootwrite(dc, df, chip, foot, buf, len);
 		}
 		else if(_art_ == orel->dsttype)
 		{
-			arterywrite(dc, df, chip, foot, buf, len);
+			artery_rootwrite(dc, df, chip, foot, buf, len);
 		}
 
 		orel = samesrcnextdst(orel);
@@ -114,7 +114,7 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 
 	return 42;
 }
-int systemwrite_ev(struct event* ev)
+int systemevent(struct event* ev)
 {
 	int ret;
 	u64 why = ev->why;
@@ -139,17 +139,10 @@ int systemwrite_ev(struct event* ev)
 
 	return systemwrite_in(&obj[where], tmp, ppp, ret);
 }
-int systemread_all()
-{
-	return 0;
-}
-
-
-
-
-int systempost(u8* buf, int len)
+void* systemcommand(u8* buf, int len)
 {
 	int j;
+	u8* src;
 	u8 data[0x1000];
 	if(0 == len)
 	{
@@ -157,10 +150,11 @@ int systempost(u8* buf, int len)
 	}
 	else
 	{
+		src = buf;
 		for(j=0;j<len;j++)
 		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
+			if(0 == src[j])break;
+			data[j] = src[j];
 		}
 		data[j] = 0;
 
@@ -168,7 +162,15 @@ int systempost(u8* buf, int len)
 	}
 	return 0;
 }
-int systemget(u8* buf, int len)
+
+
+
+
+int systemread_all()
+{
+	return 0;
+}
+void* systemlist(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<0x1000;j++)
@@ -182,9 +184,20 @@ int systemget(u8* buf, int len)
 	if(0 == k)say("empth system\n");
 	return 0;
 }
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+
+
+
+
+int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == dc)return systemwrite_ev(buf);
+	return 0;
+}
+int system_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
 	if(0 != sc)
 	{
 		int fd = (dc - (void*)obj) / sizeof(struct object);
@@ -208,7 +221,7 @@ int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 
 	return 0;
 }
-int systemread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	if(0 == sc)return systemread_all();
 	return 0;

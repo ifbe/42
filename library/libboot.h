@@ -71,13 +71,25 @@ struct item
 
 
 
-int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actorwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenaread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenawrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arteryread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int arena_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
 void printmemory(void*, int);
 void say(void*, ...);

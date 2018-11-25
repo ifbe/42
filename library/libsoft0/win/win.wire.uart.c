@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "libsoft.h"
 void sleep_us(int);
-void nodetree_post(void*, void*, void*, int);
+void nodetree_rootwrite(void*, void*, void*, int);
 
 
 
@@ -35,7 +35,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			nodetree_post(oo, 0, buf+enq, cnt);
+			nodetree_rootwrite(oo, 0, buf+enq, cnt);
 
 			enq = (enq + cnt)%0x10000;
 

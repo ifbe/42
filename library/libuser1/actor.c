@@ -126,7 +126,11 @@ void actorinput_touch(struct arena* win, struct event* ev)
 		win->input[btn].z0 = 0;
 	}
 }
-int actorwrite_ev(struct event* ev)
+
+
+
+
+int actorevent(struct event* ev)
 {
 	int ret;
 	struct arena* win = (void*)(ev->where);
@@ -161,36 +165,9 @@ theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return 0;
 }
-int actorread_all(struct arena* win)
+void* actorcommand()
 {
-	if(_cli_ == win->fmt)return 0;
-
-	//bg
-	preprocess(win);
-
-	//background
-	back_read(win, 0);
-
-	//foreground
-	fore_read(win, 0);
-
-	//popup layer
-	temp_read(win, 0);
-
-	//virtual kbd
-	vkbd_read(win, 0);
-
-	//fg
-	postprocess(win);
-
-	return 0;
-}
-
-
-
-
-void* actorpost(u8* buf, int len)
-{/*
+	/*
 	//say("%.*s\n", len, buf);
 	int j;
 	struct actor* act = 0;
@@ -223,7 +200,35 @@ void* actorpost(u8* buf, int len)
 */
 	return 0;
 }
-void* actorget(u8* buf, int len)
+
+
+
+
+int actorread_all(struct arena* win)
+{
+	if(_cli_ == win->fmt)return 0;
+
+	//bg
+	preprocess(win);
+
+	//background
+	back_read(win, 0);
+
+	//foreground
+	fore_read(win, 0);
+
+	//popup layer
+	temp_read(win, 0);
+
+	//virtual kbd
+	vkbd_read(win, 0);
+
+	//fg
+	postprocess(win);
+
+	return 0;
+}
+void* actorlist(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
@@ -252,12 +257,15 @@ void* actorget(u8* buf, int len)
 	}
 	return 0;
 }
-int actorwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+
+
+
+
+int actor_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct relation* rel;
 	struct actor* act;
 	struct arena* win;
-	if(0 == dc)return actorwrite_ev(buf);
 say("actorwrite@{\n");
 
 	act = dc;
@@ -266,7 +274,15 @@ say("actorwrite@{\n");
 say("}@actorwrite\n");
 	return 0;
 }
-int actorread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int actor_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int actor_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int actor_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	actorread_all(dc);
 	return 0;

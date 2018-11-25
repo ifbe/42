@@ -5,24 +5,24 @@ static struct driver* dri;
 
 
 
-int driverwrite_ev(void* ev)
+int driverevent(void* ev)
 {
 	return 0;
 }
-int driverread_all()
-{
-	return 0;
-}
-
-
-
-
-int driverpost(u8* buf)
+void* drivercommand(void* buf, int len)
 {
 	say("@driver: %s\n", buf);
 	return 0;
 }
-int driverget(u8* buf)
+
+
+
+
+int driverread_all()
+{
+	return 0;
+}
+void* driverlist(u8* buf, int len)
 {
 	int j;
 	for(j=0;j<64;j++)
@@ -32,14 +32,24 @@ int driverget(u8* buf)
 	}
 	return 0;
 }
-int driverwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+
+
+
+
+int driver_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == dc)return driverwrite_ev(buf);
 	return 0;
 }
-int driverread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int driver_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == sc)return driverread_all();
+	return 0;
+}
+int driver_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
+	return 0;
+}
+int driver_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+{
 	return 0;
 }
 int driverstop()

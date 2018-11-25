@@ -278,30 +278,40 @@ struct element
 
 
 //
+int actordelete(void*);
+void* actorcreate(u64, void*);
+int actor_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int arenadelete(void*);
+void* arenacreate(u64, void*);
+int arena_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arena_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int arterydelete(void*);
+void* arterycreate(u64, void*);
+int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int systemdelete(void*);
+void* systemcreate(u64, void*);
+int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 u32 getrandom();
 u64 dateread();
 u64 timeread();
-//
-int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actorwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenaread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenawrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arteryread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-//
-int actordelete(void*);
-void* actorcreate(u64, void*);
-int arenadelete(void*);
-void* arenacreate(u64, void*);
-int arterydelete(void*);
-void* arterycreate(u64, void*);
-int systemdelete(void*);
-void* systemcreate(u64, void*);
 //
 int threaddelete(u64);
 u64 threadcreate(void*, void*);

@@ -144,7 +144,7 @@ int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, i
 		df = (void*)(orel->dstfoot);
 		if(_act_ == orel->dsttype)
 		{
-			actorwrite(dc, df, win, 0, buf, len);
+			actor_rootwrite(dc, df, win, 0, buf, len);
 		}
 
 		orel = samesrcnextdst(orel);

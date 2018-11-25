@@ -4,15 +4,6 @@
 
 
 
-void* systemget(void*, int);
-void* arteryget(void*, int);
-void* arenaget(void*, int);
-void* actorget(void*, int);
-void* systempost(u8* buf, int len);
-void* arterypost(u8* buf, int len);
-void* arenapost(u8* buf, int len);
-void* actorpost(u8* buf, int len);
-//
 void* allocpinid();
 void* allocstyle();
 int parsestyle(void*, void*, int);
@@ -20,7 +11,7 @@ int parsepinid(void*, void*, int);
 
 
 
-
+/*
 void parsexml_detail(
 	u8* buf, int len,
 	u64* name, int* id,
@@ -279,3 +270,4 @@ void parsexml(u8* buf, int len)
 		}
 	}
 }
+*/
