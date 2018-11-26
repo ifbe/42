@@ -199,3 +199,13 @@ void drawarrorkey2d(struct arena* win, u32 rgb,
 	drawsolid_circle(win, c, cx+r*t*4/3, cy-r*2/3, r/3);
 	drawascii_fit(win, 0xffffff, cx+r*t*4/3-r/3, cy-r, cx+r*t*4/3+r/3, cy-r/3, buf[7]&0x7f);
 }
+void drawborder2d(struct arena* win, struct style* sty, void* name)
+{
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
+	drawline_rect(win, 0x400040, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(win, 0xff00ff, cx-ww, cy-hh-16, cx+ww, cy-hh);
+	drawstring_fit(win, 0, cx-ww, cy-hh-16, cx+ww, cy-hh, name, 8);
+}

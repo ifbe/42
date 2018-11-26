@@ -291,41 +291,6 @@ int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 
 
 
-int playwith2d_pick(struct arena* win, int x, int y)
-{
-	int ret;
-	vec3 out;
-	vec3 xyz;
-	vec3 crf[3];
-	struct style* sty;
-	struct relation* rel;
-
-	xyz[0] = (float)x;
-	xyz[1] = (float)y;
-
-	rel = win->oreln;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		sty = (void*)(rel->srcfoot);
-		crf[0][0] = sty->vc[0];
-		crf[0][1] = sty->vc[1];
-		crf[0][2] = sty->vc[2];
-		crf[1][0] = sty->vr[0];
-		crf[1][1] = sty->vr[1];
-		crf[1][2] = sty->vr[2];
-		crf[2][0] = sty->vf[0];
-		crf[2][1] = sty->vf[1];
-		crf[2][2] = sty->vf[2];
-		ret = rect_point(crf, xyz, &out);
-		if(ret > 0)break;
-
-		rel = samesrcprevdst(rel);
-	}
-	if(rel)relation_choose(win, rel);
-	return 0;
-}
 int playwith3d_pick(struct arena* win, int x, int y)
 {
 	int ret;
@@ -379,6 +344,8 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 	if(0 == orel)return 1;
 
 	sty = (void*)(orel->srcfoot);
+	if(0 == sty)return 1;
+
 	if(_char_ == ev->what)
 	{
 		if(8 == ev->why)relationdelete(orel);
@@ -432,8 +399,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		if(_vbo_ == win->fmt)playwith3d_pick(win, x, y);
-		else playwith2d_pick(win, x, y);
+		playwith3d_pick(win, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)
@@ -443,6 +409,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 		else if(id > 10)return 0;
 		if(0 == win->input[id].z0)return 0;
 
+		//two finger
 		if(	(0 != win->input[0].z0)&&
 			(0 != win->input[1].z0) )
 		{

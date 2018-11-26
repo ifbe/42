@@ -1,4 +1,6 @@
 #include "libuser.h"
+void drawborder2d(struct arena* win, struct style* sty, void* name);
+void carveborder2d(struct arena* win, struct style* sty, void* name);
 
 
 
@@ -16,7 +18,7 @@ void actoroutput_rts_vbo(struct arena* win, struct style* sty)
     vf[0] = 0.0;
     vf[1] = 1.0/6;
     vf[2] = 0.0;
-    carvesolid2d_rect(win, 0x804000, vc, vr, vf);
+    carveline2d_rect(win, 0x804000, vc, vr, vf);
 
     vc[0] = -0.75;
     vc[1] = -3.0/4;
@@ -27,18 +29,18 @@ void actoroutput_rts_vbo(struct arena* win, struct style* sty)
     vf[0] = 0.0;
     vf[1] = 1.0/4;
     vf[2] = 0.0;
-    carvesolid2d_rect(win, 0x004080, vc, vr, vf);
+    carveline2d_rect(win, 0x004080, vc, vr, vf);
 
     vc[0] = 0.75;
-    carvesolid2d_rect(win, 0x004080, vc, vr, vf);
+    carveline2d_rect(win, 0x004080, vc, vr, vf);
 }
 void actoroutput_rts_pixel(struct arena* win, struct style* sty)
 {
     int w = win->width;
     int h = win->height;
-    drawsolid_rect(win, 0x004080, w*0/4, h*3/4, w/4, h);
-    drawsolid_rect(win, 0x804000, w*1/4, h*5/6, w*3/4, h);
-    drawsolid_rect(win, 0x004080, w*3/4, h*3/4, w, h);
+    drawline_rect(win, 0x004080, w*0/4, h*3/4, w/4, h);
+    drawline_rect(win, 0x804000, w*1/4, h*5/6, w*3/4, h);
+    drawline_rect(win, 0x004080, w*3/4, h*3/4, w, h);
 }
 int actoroutput_2d(struct arena* win, struct style* stack)
 {
@@ -61,6 +63,8 @@ int actoroutput_2d(struct arena* win, struct style* stack)
 			act->onread(win, sty, act, pin);
 		}
 
+		if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+		else drawborder2d(win, sty, &act->name);
 		orel = samesrcnextdst(orel);
 	}
 

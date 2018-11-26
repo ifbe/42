@@ -1,51 +1,10 @@
 #include "libuser.h"
+void drawborder2d(struct arena* win, struct style* sty, void* name);
+void carveborder2d(struct arena* win, struct style* sty, void* name);
 
 
 
 
-void border_pixel(struct arena* win, struct style* sty, void* name)
-{
-	int cx = sty->vc[0];
-	int cy = sty->vc[1];
-	int ww = sty->vr[0];
-	int hh = sty->vf[1];
-	drawline_rect(win, 0x400040, cx-ww, cy-hh, cx+ww, cy+hh);
-	drawsolid_rect(win, 0xff00ff, cx-ww, cy-hh-16, cx+ww, cy-hh);
-	drawstring_fit(win, 0, cx-ww, cy-hh-16, cx+ww, cy-hh, name, 8);
-}
-void border_vbo(struct arena* win, struct style* sty, void* name)
-{
-	vec3 tc,tr,tf;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-	int w = win->width;
-	int h = win->height;
-
-	tc[0] = vc[0] / w;
-	tc[1] = vc[1] / h;
-	tc[2] = -0.5;
-	tr[0] = vr[0] / w;
-	tr[1] = vr[1] / h;
-	tr[2] = 0.0;
-	tf[0] = vf[0] / w;
-	tf[1] = vf[1] / h;
-	tf[2] = 0.0;
-	carveline2d_rect(win, 0xff00ff, tc, tr, tf);
-
-	tc[0] = vc[0] / w;
-	tc[1] = (vc[1]+vf[1]+16.0) / h;
-	tc[2] = -0.5;
-	tf[0] = 0.0;
-	tf[1] = 16.0 / h;
-	tf[2] = 0.0;
-	carvesolid2d_rect(win, 0xff00ff, tc, tr, tf);
-
-	tc[2] = -0.6;
-	tr[0] = 64.0 / w;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, name, 0);
-}
 int actoroutput_win(struct arena* win, struct style* stack)
 {
 	struct relation* orel;
@@ -67,14 +26,149 @@ int actoroutput_win(struct arena* win, struct style* stack)
 			act->onread(win, sty, act, pin);
 		}
 
-		if(_vbo_ == win->fmt)border_vbo(win, sty, &act->name);
-		else border_pixel(win, sty, &act->name);
+		if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+		else drawborder2d(win, sty, &act->name);
 		orel = samesrcnextdst(orel);
 	}
 
 	return 0;
 }
-int actorinput_win(struct arena* win, struct style* sty, struct event* ev)
+
+
+
+
+int playwith2d_pick(struct arena* win, int x, int y)
 {
+	int ret;
+	vec3 out;
+	vec3 xyz;
+	vec3 crf[3];
+	struct style* sty;
+	struct relation* rel;
+
+	xyz[0] = (float)x;
+	xyz[1] = (float)y;
+
+	rel = win->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		sty = (void*)(rel->srcfoot);
+		crf[0][0] = sty->vc[0];
+		crf[0][1] = sty->vc[1];
+		crf[0][2] = sty->vc[2];
+		crf[1][0] = sty->vr[0];
+		crf[1][1] = sty->vr[1];
+		crf[1][2] = sty->vr[2];
+		crf[2][0] = sty->vf[0];
+		crf[2][1] = sty->vf[1];
+		crf[2][2] = sty->vf[2];
+		ret = rect_point(crf, xyz, &out);
+		if(ret > 0)break;
+
+		rel = samesrcprevdst(rel);
+	}
+	if(rel)relation_choose(win, rel);
+	return 0;
+}
+int actorinput_win(struct arena* win, struct style* stack, struct event* ev)
+{
+	struct relation* orel;
+	struct style* sty;
+	int ax, ay, aaa, bbb;
+	int x = (ev->why)&0xffff;
+	int y = ((ev->why)>>16)&0xffff;
+	int z = ((ev->why)>>32)&0xffff;
+	int id = ((ev->why)>>48)&0xffff;
+
+	orel = win->oreln;
+	if(0 == orel)return 1;
+
+	sty = (void*)(orel->srcfoot);
+	if(0 == sty)return 1;
+
+	if('f' == id)
+	{
+		sty->vr[0] = (sty->vr[0])*17/16;
+		sty->vr[1] = (sty->vr[1])*17/16;
+		sty->vr[2] = (sty->vr[2])*17/16;
+
+		sty->vf[0] = (sty->vf[0])*17/16;
+		sty->vf[1] = (sty->vf[1])*17/16;
+		sty->vf[2] = (sty->vf[2])*17/16;
+
+		sty->vu[0] = (sty->vu[0])*17/16;
+		sty->vu[1] = (sty->vu[1])*17/16;
+		sty->vu[2] = (sty->vu[2])*17/16;
+		return 0;
+	}
+	if('b' == id)
+	{
+		sty->vr[0] = (sty->vr[0])*15/16;
+		sty->vr[1] = (sty->vr[1])*15/16;
+		sty->vr[2] = (sty->vr[2])*15/16;
+
+		sty->vf[0] = (sty->vf[0])*15/16;
+		sty->vf[1] = (sty->vf[1])*15/16;
+		sty->vf[2] = (sty->vf[2])*15/16;
+
+		sty->vu[0] = (sty->vu[0])*15/16;
+		sty->vu[1] = (sty->vu[1])*15/16;
+		sty->vu[2] = (sty->vu[2])*15/16;
+		return 0;
+	}
+	if(hex32('p','+',0,0) == ev->what)
+	{
+		playwith2d_pick(win, x, y);
+		return 0;
+	}
+	if(hex32('p','@',0,0) == ev->what)
+	{
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
+		if(0 == win->input[id].z0)return 0;
+
+		//two finger
+		if(	(0 != win->input[0].z0)&&
+			(0 != win->input[1].z0) )
+		{
+			if(0 == id)
+			{
+				x -= (win->input[1].x1);
+				y -= (win->input[1].y1);
+			}
+			if(1 == id)
+			{
+				x -= (win->input[0].x1);
+				y -= (win->input[0].y1);
+			}
+
+			ax = (win->input[0].x1) - (win->input[1].x1);
+			ay = (win->input[0].y1) - (win->input[1].y1);
+
+			aaa = x*x+y*y;
+			bbb = ax*ax + ay*ay;
+
+			sty->vr[0] = (sty->vr[0]) * aaa / bbb;
+			sty->vr[1] = (sty->vr[1]) * aaa / bbb;
+			sty->vr[2] = (sty->vr[2]) * aaa / bbb;
+
+			sty->vf[0] = (sty->vf[0]) * aaa / bbb;
+			sty->vf[1] = (sty->vf[1]) * aaa / bbb;
+			sty->vf[2] = (sty->vf[2]) * aaa / bbb;
+
+			sty->vu[0] = (sty->vu[0]) * aaa / bbb;
+			sty->vu[1] = (sty->vu[1]) * aaa / bbb;
+			sty->vu[2] = (sty->vu[2]) * aaa / bbb;
+		}
+		else if((0 == id)|(10 == id))
+		{
+			sty->vc[0] += x - (win->input[id].x1);
+			sty->vc[1] += y - (win->input[id].y1);
+			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
+		}
+	}
 	return 0;
 }
