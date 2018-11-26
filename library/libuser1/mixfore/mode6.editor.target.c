@@ -1,7 +1,6 @@
 #include "libuser.h"
 int relation_choose(void*, void*);
 int invmvp(vec3 v, struct arena* win);
-int rect_point(vec3 crf[], vec3 xyz, vec3 out[]);
 int obb_ray(struct style* obb, vec3 ray[], vec3 out[]);
 
 

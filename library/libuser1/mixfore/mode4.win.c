@@ -1,4 +1,6 @@
 #include "libuser.h"
+int relation_choose(void*, void*);
+int rect_point(vec3 crf[], vec3 xyz, vec3 out[]);
 void drawborder2d(struct arena* win, struct style* sty, void* name);
 void carveborder2d(struct arena* win, struct style* sty, void* name);
 

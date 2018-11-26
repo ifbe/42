@@ -109,7 +109,7 @@ void windowread(struct arena* w)
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
 		{
-			//say("l+:%d,%d\n", ev.button.x, ev.button.y);
+			//say("+%d,%d\n", ev.button.x, ev.button.y);
 			if(SDL_BUTTON_LEFT == ev.button.button)
 			{
 				int x = ev.button.x;
@@ -120,7 +120,7 @@ void windowread(struct arena* w)
 		}
 		else if(SDL_MOUSEBUTTONUP == ev.type)
 		{
-			//say("l-:%d,%d\n", ev.button.x, ev.button.y);
+			//say("-%d,%d\n", ev.button.x, ev.button.y);
 			if(SDL_BUTTON_LEFT == ev.button.button)
 			{
 				int x = ev.button.x;
@@ -131,6 +131,7 @@ void windowread(struct arena* w)
 		}
 		else if(SDL_MOUSEMOTION == ev.type)
 		{
+			//say("@%d,%d\n", ev.button.x, ev.button.y);
 			int x = ev.button.x;
 			int y = ev.button.y;
 			why = x+(y<<16)+((u64)'l'<<48);
@@ -170,6 +171,9 @@ void windowcreate(struct arena* w)
 
 	w->width= w->stride = 512;
 	w->height = 512;
+
+	w->fbwidth= w->fbstride = 512;
+	w->fbheight = 512;
 
 	w->buf = malloc(2048*1024*4);
 

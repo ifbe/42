@@ -1119,11 +1119,20 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 	if(j == 'p')
 	{
 		x = (ev->why)&0xffff;
-		x = (x*8) / width;
 		y = ((ev->why)>>16)&0xffff;
-		y = (y*32) / height;
 		id = ((ev->why)>>48)&0xffff;
 		if(id > 10)id = 10;
+
+		if(0 == sty)
+		{
+			x = (x*8) / width;
+			y = (y*32) / height;
+		}
+		else
+		{
+			x = 4 + 4 * (x - (sty->vc[0])) / (sty->vr[0]);
+			y = 16 + 16 * (y - (sty->vc[1])) / (sty->vf[1]);
+		}
 
 		if('@' == k)
 		{
@@ -1136,9 +1145,18 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 		else if('-' == k)
 		{
 			j = win->input[id].x0;
-			j = (j*8) / width;
 			k = win->input[id].y0;
-			k = (k*32) / height;
+
+			if(0 == sty)
+			{
+				j = (j*8) / width;
+				k = (k*32) / height;
+			}
+			else
+			{
+				j = 4 + 4 * (j - (sty->vc[0])) / (sty->vr[0]);
+				k = 16 + 16 * (k - (sty->vc[1])) / (sty->vf[1]);
+			}
 
 			if((j<0)|(j>=8))return;
 			if((k<0)|(k>=32))return;
