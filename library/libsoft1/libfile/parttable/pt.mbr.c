@@ -1,16 +1,9 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
+#include "libsoft.h"
 #define _mbr_ hex32('m','b','r',0)
 #define _ext_ hex32('e','x','t',0)
 #define _fat_ hex32('f','a','t',0)
 #define _hfs_ hex32('h','f','s',0)
 #define _ntfs_ hex32('n','t','f','s')
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
@@ -122,4 +115,14 @@ void parse_mbr(u8* src, u8* dst)
 
 	ret = mbrrecord(src+0x1ee,dst);
 	if(ret > 0)dst += 0x80;
+}
+
+
+
+
+int mbrclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len)
+{
+	u8 tmp[0x4000];
+	parse_mbr(buf, tmp);
+	return 0;
 }

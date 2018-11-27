@@ -1,6 +1,6 @@
 #include "libuser.h"
 int windowread(int type, void* buf);
-u64 file_read(void*, int);
+u64 file_check(void*, int);
 
 
 
@@ -16,7 +16,7 @@ void fs_prep(void* name)
 	if(ret <= 0)return;
 	fsbuf[ret] = 0;
 
-	type = file_read(fsbuf, ret);
+	type = file_check(fsbuf, ret);
 	say("type=%.8s\n", &type);
 }
 

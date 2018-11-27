@@ -18,10 +18,13 @@ typedef float mat4[4][4];
 #define _win_ hex32('w','i','n',0)
 #define _act_ hex32('a','c','t',0)
 //
-#define _spi_  hex32('s','p','i',0)
-#define _i2c_  hex32('i','2','c',0)
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
+#define _mbr_ hex32('m','b','r',0)
+#define _gpt_ hex32('g','p','t',0)
+//
+#define _spi_  hex32('s','p','i',0)
+#define _i2c_  hex32('i','2','c',0)
 //uart family
 #define _uart_ hex32('u','a','r','t')
 #define _Uart_ hex32('U','a','r','t')

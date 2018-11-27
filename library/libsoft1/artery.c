@@ -1,21 +1,24 @@
 #include "libsoft.h"
-#define _mpu_ hex32('m','p','u',0)
-#define _ahrs_ hex32('a','h','r','s')
 #define _fat_ hex32('f','a','t',0)
 #define _ntfs_ hex32('n','t','f','s')
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
+#define _mpu_ hex32('m','p','u',0)
+#define _ahrs_ hex32('a','h','r','s')
+//file
+int fileclient_create(struct element* ele, void* url, void* buf, int len);
+int mbrclient_create(struct element* ele, void* url, void* buf, int len);
+int gptclient_create(struct element* ele, void* url, void* buf, int len);
+int fatclient_create(struct element* ele, void* url, void* buf, int len);
+int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
+int hfsclient_create(struct element* ele, void* url, void* buf, int len);
+int extclient_create(struct element* ele, void* url, void* buf, int len);
 //i2c
 int mpuclient_create(struct element* ele, void* url, void* buf, int len);
 int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //i2c
 int ahrsclient_create(struct element* ele, void* url, void* buf, int len);
 int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//file
-int fatclient_create(struct element* ele, void* url, void* buf, int len);
-int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
-int hfsclient_create(struct element* ele, void* url, void* buf, int len);
-int extclient_create(struct element* ele, void* url, void* buf, int len);
 //uart
 int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
 int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -109,57 +112,6 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
-int arteryevent(struct event* ev)
-{
-	return 0;
-}
-void* arterycommand(u8* buf, int len)
-{
-	int j;
-	u8 data[0x1000];
-	if(0 == len)
-	{
-		arterycreate(0, buf);
-	}
-	else
-	{
-		for(j=0;j<len;j++)
-		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
-		}
-		data[j] = 0;
-
-		arterycreate(0, data);
-	}
-	return 0;
-}
-
-
-
-
-int arteryread_all()
-{
-	return 0;
-}
-void* arterylist(u8* buf, int len)
-{
-	int j,k=0;
-	for(j=0;j<0x1000;j++)
-	{
-		if(0 == ele[j].type)continue;
-
-		k++;
-		say("[%03x]: %.8s\n", j, &ele[j].type);
-	}
-
-	if(0 == k)say("empth artery\n");
-	return 0;
-}
-
-
-
-
 int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 type;
@@ -210,7 +162,6 @@ int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == sc)return arteryread_all();
 	return 0;
 }
 int arterystop()
@@ -240,6 +191,15 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//file system
+	if(_file_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _fat_;
+		fileclient_create(e, url, datahome, 0x100000);
+		return e;
+	}
 	if(_fat_ == type)
 	{
 		e = allocelement();
@@ -546,6 +506,57 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
+	return 0;
+}
+
+
+
+
+int arteryevent(struct event* ev)
+{
+	return 0;
+}
+void* arterycommand(u8* buf, int len)
+{
+	int j;
+	u8 data[0x1000];
+	if(0 == len)
+	{
+		arterycreate(0, buf);
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(0 == buf[j])break;
+			data[j] = buf[j];
+		}
+		data[j] = 0;
+
+		arterycreate(0, data);
+	}
+	return 0;
+}
+
+
+
+
+int arteryread_all()
+{
+	return 0;
+}
+void* arterylist(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<0x1000;j++)
+	{
+		if(0 == ele[j].type)continue;
+
+		k++;
+		say("[%03x]: %.8s\n", j, &ele[j].type);
+	}
+
+	if(0 == k)say("empth artery\n");
 	return 0;
 }
 

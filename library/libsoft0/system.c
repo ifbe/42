@@ -291,20 +291,13 @@ void* systemcreate(u64 type, void* argstr)
 	if(0 == type)return 0;
 
 	//file family
-	if(_FILE_ == type)
-	{
-		fd = startfile(name, 'w');
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _FILE_;
-		goto success;
-	}
-	else if(_file_ == type)
+	if(_file_ == type)
 	{
 		fd = startfile(name, 'r');
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _file_;
+		obj[fd].selffd = fd;
 		goto success;
 	}
 	else if(_i2c_ == type)

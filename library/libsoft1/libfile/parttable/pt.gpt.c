@@ -1,19 +1,15 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define _gpt_ hex32('m','b','r',0)
+#include "libsoft.h"
 #define _EFI_PART_ hex64('E','F','I',' ','P','A','R','T')
 #define _ext_ hex32('e','x','t',0)
 #define _fat_ hex32('f','a','t',0)
 #define _hfs_ hex32('h','f','s',0)
 #define _ntfs_ hex32('n','t','f','s')
 u32 crc32(u32 crc, u8* buf, u32 len);
-void printmemory(void*, int);
-void say(void*, ...);
+//
+int startfile(void*, int);
+int stopfile(int);
+int readfile(u64 file, u64 off, u8* mem, u64 len);
+int writefile(u64 file, u64 off, u8* mem, u64 len);
 
 
 
@@ -133,4 +129,22 @@ void parse_gpt(u8* src, u8* dst)
 		src += 0x80;
 		dst += 0x80;
 	}
+}
+
+
+
+
+int gptclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len)
+{
+	int ret;
+	u8* src = memorycreate(0x10000);
+	u8* dst = memorycreate(0x10000);
+	ele->mod = src;
+	ele->buf = dst;
+
+	ret = readfile(obj->selffd, 0, src, 0x4800);
+	if(ret != 0x4800)return 0;
+
+	parse_gpt(src, dst);
+	return 0;
 }

@@ -1,11 +1,10 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#define _file_ hex32('f','i','l','e')
-#define _FILE_ hex32('F','I','L','E')
+#include "libsoft.h"
+int mbrclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len);
+int gptclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len);
+
+
+
+
 //compress
 #define _7z_ hex32('7','z',0,0)
 int check_7z(void*);
@@ -102,9 +101,6 @@ int startfile(void*, int);
 int stopfile(int);
 int readfile(u64 file, u64 off, u8* mem, u64 len);
 int writefile(u64 file, u64 off, u8* mem, u64 len);
-//
-void printmemory(void*, int);
-void say(void*, ...);
 
 
 
@@ -221,77 +217,139 @@ void cleverwrite(
 
 
 
-int file_read(u8* buf, int len, u8* dst, int max)
+int file_check(u8* buf, int len)
 {
 	u64 type;
 
 	//picture
-	if(check_bmp(buf) != 0)type = _bmp_;
-	else if(check_flif(buf) != 0)type = _flif_;
-	else if(check_jpg(buf) != 0)type = _jpg_;
-	else if(check_png(buf) != 0)type = _png_;
-	else if(check_webp(buf) != 0)type = _webp_;
+	if(check_bmp(buf) != 0){
+		type = _bmp_;
+		parse_bmp(buf, len);
+	}
+	else if(check_flif(buf) != 0){
+		type = _flif_;
+		parse_flif(buf, len);
+	}
+	else if(check_jpg(buf) != 0){
+		type = _jpg_;
+		parse_jpg(buf, len);
+	}
+	else if(check_png(buf) != 0){
+		type = _png_;
+		parse_png(buf, len);
+	}
+	else if(check_webp(buf) != 0){
+		type = _webp_;
+		parse_webp(buf, len);
+	}
 
 	//compress
-	else if(check_7z(buf) != 0)type = _7z_;
-	else if(check_cpio(buf) != 0)type = _cpio_;
-	else if(check_gz(buf) != 0)type = _gz_;
-	else if(check_tar(buf) != 0)type = _tar_;
-	else if(check_zip(buf) != 0)type = _zip_;
+	else if(check_7z(buf) != 0){
+		type = _7z_;
+		parse_7z(buf);
+	}
+	else if(check_cpio(buf) != 0){
+		type = _cpio_;
+		parse_cpio(buf);
+	}
+	else if(check_gz(buf) != 0){
+		type = _gz_;
+		parse_gz(buf);
+	}
+	else if(check_tar(buf) != 0){
+		type = _tar_;
+		parse_tar(buf);
+	}
+	else if(check_zip(buf) != 0){
+		type = _zip_;
+		parse_zip(buf);
+	}
 
 	//executable
-	else if(check_elf(buf) != 0)type = _elf_;
-	else if(check_macho(buf) != 0)type = _macho_;
-	else if(check_pe(buf) != 0)type = _pe_;
+	else if(check_elf(buf) != 0){
+		type = _elf_;
+		parse_elf(buf);
+	}
+	else if(check_macho(buf) != 0){
+		type = _macho_;
+		parse_macho(buf);
+	}
+	else if(check_pe(buf) != 0){
+		type = _pe_;
+		parse_pe(buf);
+	}
 
 	//filesystem
-	else if(check_ext(buf) != 0)type = _ext_;
-	else if(check_fat(buf) != 0)type = _fat_;
-	else if(check_hfs(buf) != 0)type = _hfs_;
-	else if(check_ntfs(buf) != 0)type = _ntfs_;
+	else if(check_ext(buf) != 0){
+		type = _ext_;
+		say("ext\n");
+	}
+	else if(check_fat(buf) != 0){
+		type = _fat_;
+		say("fat\n");
+	}
+	else if(check_hfs(buf) != 0){
+		type = _hfs_;
+		say("hfs\n");
+	}
+	else if(check_ntfs(buf) != 0){
+		type = _ntfs_;
+		say("ntfs\n");
+	}
 
 	//parttable
-	else if(check_gpt(buf) != 0)type = _gpt_;
-	else if(check_mbr(buf) != 0)type = _mbr_;
-
-	//picture
-	if(_bmp_ == type)parse_bmp(buf, len);
-	else if(_flif_ == type)parse_flif(buf, len);
-	else if(_jpg_ == type)parse_jpg(buf, len);
-	else if(_png_ == type)parse_png(buf, len);
-	else if(_webp_ == type)parse_webp(buf, len);
-
-	//compress
-	else if(_7z_ == type)parse_7z(buf);
-	else if(_cpio_ == type)parse_cpio(buf);
-	else if(_gz_ == type)parse_gz(buf);
-	else if(_tar_ == type)parse_tar(buf);
-	else if(_zip_ == type)parse_zip(buf);
-
-	//executable
-	else if(_elf_ == type)parse_elf(buf);
-	else if(_macho_ == type)parse_macho(buf);
-	else if(_pe_ == type)parse_pe(buf);
-
-	//filesystem
-	else if(_ext_ == type)say("ext\n");
-	else if(_fat_ == type)say("fat\n");
-	else if(_hfs_ == type)say("hfs\n");
-	else if(_ntfs_ == type)say("ntfs\n");
-
-	//model
-	else if(_stl_ == type)parse_stl(buf);
-
-	//parttable
-	//else if(_gpt_ == type)parse_gpt(buf, dirhome);
-	//else if(_mbr_ == type)parse_mbr(buf, dirhome);
+	else if(check_gpt(buf) != 0){
+		type = _gpt_;
+		//parse_gpt(buf);
+	}
+	else if(check_mbr(buf) != 0){
+		type = _mbr_;
+		//parse_mbr(buf, dirhome);
+	}
 
 	//unknown
-	else printmemory(buf, 0x200);
+	else
+	{
+		type = 0;
+		printmemory(buf, 0x200);
+	}
 
-	return 0;
+	return type;
 }
-int file_write(u8* buf, int len, u8* dst, u8* max)
+
+
+
+
+int fileclient_create(struct element* ele, u8* url, u8* buf, int len)
 {
+	int ret;
+	u64 type;
+	struct object* obj;
+
+	ret = 0;
+	for(ret=0;ret<0x1000;ret++){
+		if(url[ret] < 0x20)break;
+		buf[ret] = url[ret];
+	}
+	buf[ret] = 0;
+
+	obj = systemcreate(_file_, buf);
+	if(0 == obj)return 0;
+
+	ret = readfile(obj->selffd, 0, buf, 0x1000);
+	if(ret != 0x1000)goto fail;
+
+	type = file_check(buf, 0x1000);
+	if(0 == type)goto fail;
+
+	ele->type = type;
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+
+	if(_mbr_ == type)mbrclient_start(obj, 0, ele, 0, buf, ret);
+	if(_gpt_ == type)gptclient_start(obj, 0, ele, 0, buf, ret);
+	return 0;
+
+fail:
+	systemdelete(obj);
 	return 0;
 }
