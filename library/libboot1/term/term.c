@@ -13,6 +13,7 @@ void* actorlist(void*, int);
 void* actorcommand(void*, int);
 //
 int event(void*, int);
+int node(void*, int);
 int relation(void*, int);
 int role(void*, int);
 int scene(void*, int);
@@ -78,6 +79,10 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "ev", 2))
 	{
 		event(buf, len);
+	}
+	else if(0 == ncmp(buf, "node", 4))
+	{
+		node(buf, len);
 	}
 	else if(0 == ncmp(buf, "rel", 3))
 	{
