@@ -28,8 +28,8 @@ void actoroutput_void_pixel(struct arena* win, struct style* sty)
 	drawsolid_rect(win, 0xff00ff, cx-16, cy-16, cx+16, cy+16);
 
 	//heng shu
-	x = cx-ww + (win->forex)*2*ww/w;
-	y = cy-hh + (win->forey)*2*hh/h;
+	x = win->forex;
+	y = win->forey;
 	drawline(win, 0xffffff, cx-ww, y, cx+ww, y);
 	drawline(win, 0xffffff, x, cy-hh, x, cy+hh);
 }

@@ -56,10 +56,11 @@ lib4d/asset.sound.c \
 lib4d/nodeunit.extra.c \
 lib4d/nodeunit.inner.c \
 lib4d/nodeunit.outer.c \
-lib4d/operate.backuprecover.c \
 lib4d/operate.beforeafter.c \
+lib4d/operate.event.c \
 lib4d/operate.relation.c \
-lib4d/operate.transform.c \
+lib4d/operate.role.c \
+lib4d/operate.scene.c \
 mixback/back.c \
 mixback/back.gif.c \
 mixback/back.jpg.c \

@@ -8,60 +8,31 @@ void say(void*, ...);
 
 
 
-/*
-(buf,size) -> (argc,argv)
-*/
-void buf2arg(u8* buf, int len, int* argc, u8** argv)
+int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max)
 {
-	int j;
-	int count=0;
-	int splited=0;
-	argv[0]=0;
-
-	//
+	int j,k,n;
+	k = 0;
+	n = 0;
 	for(j=0;j<len;j++)
 	{
-		//finished
-		if( buf[j] == 0 )break;
-
-		//blank
-		if( buf[j] <= 0x20 )
+		if(buf[j] > 0x20)
 		{
-			buf[j]=0;
-			splited=1;
-			continue;
+			argv[n] = tmp+k;
+			n++;
+
+			while(buf[j] > 0x20)
+			{
+				tmp[k] = buf[j];
+				j++;
+				k++;
+			}
+
+			tmp[k] = 0;
+			k++;
 		}
-
-		//new?
-		if(splited != 0)
-		{
-			count++;
-			if(count>=7)break;
-
-			argv[count]=0;
-			splited=0;
-		}
-
-		//new!
-		if( argv[count]==0 )
-		{
-			argv[count]=buf+j;
-		}
-	}//for
-
-	//result
-	count+=1;
-	argv[count]=0;
-	*argc=count;
-
-/*
-	//debug
-	say("count=%x\n",count);
-	for(j=0;j<count;j++)
-	{
-		say("%x=%s\n",j,argv[j]);
 	}
-*/
+
+	return n;
 }
 
 

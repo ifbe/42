@@ -12,10 +12,10 @@ void* arenacommand(void*, int);
 void* actorlist(void*, int);
 void* actorcommand(void*, int);
 //
-int scene_recover(void*, int);
-int scene_backup(void*, int);
-int wire_add(void*, int);
-int wire_del(void*, int);
+int event(void*, int);
+int relation(void*, int);
+int role(void*, int);
+int scene(void*, int);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -75,25 +75,21 @@ int termwrite(u8* buf, int len)
 	{
 		term_ls(buf, len);
 	}
-	else if(0 == ncmp(buf, "event", 5))
+	else if(0 == ncmp(buf, "ev", 2))
 	{
-		say("%.*s\n", len, buf);
+		event(buf, len);
 	}
-	else if(0 == ncmp(buf, "backup", 6))
+	else if(0 == ncmp(buf, "rel", 3))
 	{
-		scene_backup(buf+6, 0);
+		relation(buf, len);
 	}
-	else if(0 == ncmp(buf, "recover", 7))
+	else if(0 == ncmp(buf, "role", 4))
 	{
-		scene_recover(buf+7, 0);
+		role(buf, len);
 	}
-	else if(0 == ncmp(buf, "wireadd", 7))
+	else if(0 == ncmp(buf, "scene", 5))
 	{
-		wire_add(buf+7, 0);
-	}
-	else if(0 == ncmp(buf, "wiredel", 7))
-	{
-		wire_add(buf+7, 0);
+		scene(buf, len);
 	}
 	else if(0 == ncmp(buf, "device", 6))devicecommand(buf+7, 0);
 	else if(0 == ncmp(buf, "driver", 6))drivercommand(buf+7, 0);

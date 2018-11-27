@@ -464,7 +464,8 @@ int arenaread_all()
 }
 void* arenalist(u8* buf, int len)
 {
-	int j;
+	int j,k;
+	u8* p;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
@@ -476,6 +477,7 @@ void* arenalist(u8* buf, int len)
 	}
 	else
 	{
+/*
 		for(j=0;j<len;j++){if('@' == buf[j])break;}
 
 		j = buf[j+1]-0x30;
@@ -483,6 +485,18 @@ void* arenalist(u8* buf, int len)
 
 		if(0 == arena[j].type)return 0;
 		return &arena[j];
+*/
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == arena[j].type)break;
+			p = (void*)(&arena[j].type);
+
+			for(k=0;k<8;k++)
+			{
+				if((0 == p[k])|(0x20 >= buf[k]))return &arena[j];
+				if(buf[k] != p[k])break;
+			}
+		}
 	}
 	return 0;
 }
