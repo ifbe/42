@@ -153,7 +153,26 @@ static void control_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	if((_char_ == ev->what) | (_kbd_ == ev->what))say("%x\n", ev->why);
+	void* dc;
+	void* df;
+	struct relation* irel;
+	if((_char_ != ev->what)&&(_kbd_ != ev->what))return;
+	say("%x\n", ev->why);
+
+	irel = act->irel0;
+	while(1)
+	{
+		if(0 == irel)break;
+
+		dc = (void*)(irel->srcchip);
+		df = (void*)(irel->srcfoot);
+		if(_fd_ == irel->srctype)
+		{
+			system_leafwrite(dc, df, act, pin, &ev->why, 1);
+		}
+
+		irel = samedstnextsrc(irel);
+	}
 }
 static void control_get()
 {
