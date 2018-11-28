@@ -14,6 +14,7 @@ void rawdump_register(void*);
 void switch_register(void*);
 //item
 void clock_register(void*);
+void control_register(void*);
 void drone_register(void*);
 void earth_register(void*);
 void house_register(void*);
@@ -157,6 +158,9 @@ void content_create(void* addr)
 
 //----------------------item-----------------------
 	clock_register(temp);
+	temp += sizeof(struct actor);
+
+	control_register(temp);
 	temp += sizeof(struct actor);
 
 	drone_register(temp);

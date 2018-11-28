@@ -177,6 +177,7 @@ thetool/tool.terminal.c \
 thetool/tool.terminal.ci.c \
 thetool/tool.terminal.si.c \
 theitem/item.clock.c \
+theitem/item.control.c \
 theitem/item.drone.c \
 theitem/item.earth.c \
 theitem/item.house.c \
