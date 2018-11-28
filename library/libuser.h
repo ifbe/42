@@ -14,6 +14,8 @@ typedef float mat1[1][1];
 typedef float mat2[2][2];
 typedef float mat3[3][3];
 typedef float mat4[4][4];
+#define PI 3.1415926535897932384626433832795028841971693993151
+#define tau PI*2
 //
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))

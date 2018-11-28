@@ -85,6 +85,8 @@ objchip/chip.diode.c \
 objchip/chip.ff.c \
 objchip/chip.and.c \
 objchip/chip.xor.c \
+objchip/chip.hbridge.c \
+objchip/chip.rectifier.c \
 objcode/code.call.c \
 objcode/code.for.c \
 objcode/code.if.c \

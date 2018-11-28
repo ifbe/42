@@ -1,6 +1,4 @@
 #include "libuser.h"
-#define PI 3.14159265358979323846264338327950288419716939937510582097494459230
-#define tau PI*2
 #define _mic_ hex32('m','i','c',0)
 //libsoft1
 void fft(float* real, float* imag, int k);

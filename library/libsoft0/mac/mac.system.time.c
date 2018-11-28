@@ -1,4 +1,6 @@
-#include<unistd.h>
+#include<stdio.h>
+#include <unistd.h>
+#include <mach/mach_time.h>
 typedef unsigned long long u64;
 
 
@@ -24,5 +26,5 @@ void timewrite(u64 x)
 }
 u64 timeread()
 {
-	return 0;
+	return mach_absolute_time() / 1000;
 }

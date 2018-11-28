@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
 void carvesolid_bodypart(struct arena*, u32, vec3, vec3);
 
 

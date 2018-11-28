@@ -61,6 +61,9 @@ void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
+//
+void hbridge_register(void*);
+void rectify_register(void*);
 
 
 
@@ -262,5 +265,14 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	terminal_register(temp);
+	temp += sizeof(struct actor);
+
+
+
+	//-------------------chip-----------------
+	hbridge_register(temp);
+	temp += sizeof(struct actor);
+
+	rectify_register(temp);
 	temp += sizeof(struct actor);
 }

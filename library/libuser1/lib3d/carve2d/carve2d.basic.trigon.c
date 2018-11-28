@@ -1,6 +1,4 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
-#define tau (PI*2)
 #define acc 24
 int trigon2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
