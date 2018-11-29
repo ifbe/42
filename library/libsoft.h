@@ -244,6 +244,7 @@ struct element
 	//[40,5f]: data
 	union{
 		u64 fd;
+		void* obj;
 		void* win;
 	};
 	union{

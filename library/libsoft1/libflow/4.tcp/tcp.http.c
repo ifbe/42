@@ -128,25 +128,39 @@ void httpserver_get(
 	if(0 == ncmp(GET, "/favicon.ico", 12))return;
 
 	//read data
+	ele->obj = obj;
 	len = nodetree_rootread(ele, sty, buf, len);
 	if(len <= 0)return;
-
-	//text html?
-	ret = mysnprintf(buf+len, 0x1000,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: text/html\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-		len
-	);
-
-	//send response
-	system_leafwrite(obj, pin, ele, sty, buf+len, ret);
-
-	//send context
-	system_leafwrite(obj, pin, ele, sty, buf, len);
 }
-int httpserver_write(
+int httpserver_leafwrite(
+	struct element* ele, void* sty,
+	struct object* sc, void* sf,
+	u8* buf, int len)
+{
+	u8 tmp[0x1000];
+	if(0 == buf)
+	{
+		len = mysnprintf(tmp, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: text/html\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			len
+		);
+		buf = tmp;
+	}
+
+	system_leafwrite(ele->obj, 0, ele, sty, buf, len);
+	return 0;
+}
+int httpserver_leafread(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int httpserver_rootwrite(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -154,7 +168,10 @@ int httpserver_write(
 	printmemory(buf,len);
 	return 0;
 }
-int httpserver_read()
+int httpserver_rootread(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
 {
 	return 0;
 }

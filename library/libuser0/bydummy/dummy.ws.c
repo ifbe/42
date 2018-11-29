@@ -62,7 +62,15 @@ int wsserver_create(struct arena* win)
 
 
 
-int wsnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int wsnode_leafwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+{
+	return 0;
+}
+int wsnode_leafread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+{
+	return 0;
+}
+int wsnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	void* dc;
 	void* df;
@@ -88,7 +96,7 @@ int wsnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, int
 	}
 	return 0;
 }
-int wsnode_read(struct arena* win)
+int wsnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	return 0;
 }

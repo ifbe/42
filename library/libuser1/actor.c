@@ -327,22 +327,49 @@ void* actorcommand(u8* buf, int len)
 
 int actorread_all(struct arena* win)
 {
+	struct relation* orel;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
 	if(_cli_ == win->fmt)return 0;
 
 	//bg
 	preprocess(win);
 
-	//background
-	back_read(win, 0);
+	if(	(_json_ == win->fmt) |
+		(_html_ == win->fmt) )
+	{
+		sty = 0;
+		orel = win->orel0;
+		while(1)
+		{
+			if(orel == 0)break;
 
-	//foreground
-	fore_read(win, 0);
+			if(_act_ == orel->dsttype)
+			{
+				act = (void*)(orel->dstchip);
+				pin = (void*)(orel->dstfoot);
+				sty = (void*)(orel->srcfoot);
+				act->onread(win, sty, act, pin);
+			}
 
-	//popup layer
-	temp_read(win, 0);
+			orel = samesrcnextdst(orel);
+		}
+	}
+	else
+	{
+		//background
+		back_read(win, 0);
 
-	//virtual kbd
-	vkbd_read(win, 0);
+		//foreground
+		fore_read(win, 0);
+
+		//popup layer
+		temp_read(win, 0);
+
+		//virtual kbd
+		vkbd_read(win, 0);
+	}
 
 	//fg
 	postprocess(win);

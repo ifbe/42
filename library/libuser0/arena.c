@@ -52,22 +52,32 @@ int soundchoose();
 //dummy
 int funcnode_create(void*, void*);
 int funcnode_delete(void*);
+//
 int htmlnode_create(void*, void*);
 int htmlnode_delete(void*);
-int htmlnode_write(void*,void*,void*,void*,void*,int);
+int htmlnode_rootread(void*,void*,void*,void*,void*,int);
+int htmlnode_rootwrite(void*,void*,void*,void*,void*,int);
+//
 int jsonnode_create(void*, void*);
 int jsonnode_delete(void*);
+//
 int rgbanode_create(void*, void*);
 int rgbanode_delete(void*);
+//
 int ttynode_create(void*, void*);
 int ttynode_delete(void*);
+//
 int vbonode_create(void*, void*);
 int vbonode_delete(void*);
+//
 int vpinnode_create(void*, void*);
 int vpinnode_delete(void*);
+//
 int wsnode_create(void*, void*);
 int wsnode_delete(void*);
-int wsnode_write(void*,void*,void*,void*,void*,int);
+int wsnode_rootread(void*,void*,void*,void*,void*,int);
+int wsnode_rootwrite(void*,void*,void*,void*,void*,int);
+//
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //
@@ -152,19 +162,24 @@ int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 fmt;
 	struct arena* win;
-say("arenawrite@{\n");
+//say("arenawrite@{\n");
 
 	win = dc;
 	fmt = win->fmt;
-	if(_html_ == fmt)htmlnode_write(dc, df, sc, sf, buf, len);
-	else if(_ws_   == fmt)wsnode_write(dc, df, sc, sf, buf, len);
+	if(_html_ == fmt)htmlnode_rootwrite(dc, df, sc, sf, buf, len);
+	else if(_ws_ == fmt)wsnode_rootwrite(dc, df, sc, sf, buf, len);
 	else printmemory(buf, len);
 
-say("}@arenawrite\n");
+//say("}@arenawrite\n");
 	return 0;
 }
 int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	struct arena* win;
+
+	win = dc;
+	if(_html_ == win->fmt)htmlnode_rootread(dc, df, sc, sf, buf, len);
+	else if(_ws_ == win->fmt)wsnode_rootwrite(dc, df, sc, sf, buf, len);
 	return 0;
 }
 int arena_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)

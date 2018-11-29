@@ -50,7 +50,7 @@ int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* 
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
-int httpserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url, void* buf, int len);
 int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //tcp
@@ -132,7 +132,7 @@ say("arterywrite@{\n");
 	else if(_quic_ == type)quicclient_write(dc, df, sc, sf, buf, len);
 
 	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Http_ == type)httpserver_write(dc, df, sc, sf, buf, len);
+	else if(_Http_ == type)httpserver_rootwrite(dc, df, sc, sf, buf, len);
 	else if(_http_ == type)httpclient_write(dc, df, sc, sf, buf, len);
 
 	else if(_SSH_  == type)sshmaster_write(dc, df, sc, sf, buf, len);

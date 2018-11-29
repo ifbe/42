@@ -1,12 +1,8 @@
 #include "libuser.h"
 int websocket_write_handshake(u8* buf, int len);
 int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
-void parsehtml(u8* buf, int len);
-
-
-
-
-static struct mystring* hp[16];
+int httpserver_leafread(void*, void*, void*, void*, void*, int);
+int httpserver_leafwrite(void*, void*, void*, void*, void*, int);
 
 
 
@@ -125,7 +121,15 @@ int httpserver_create(struct arena* win, void* str)
 
 
 
-int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_leafwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+{
+	return 0;
+}
+int htmlnode_leafread(struct arena* win)
+{
+	return 0;
+}
+int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	void* dc;
 	void* df;
@@ -151,8 +155,20 @@ int htmlnode_write(struct arena* win, void* wf, void* sc, void* sf, void* buf, i
 	}
 	return 0;
 }
-int htmlnode_read(struct arena* win)
+int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
+	int l1,l2;
+	struct str** ctx;
+	//say("@htmlnode_rootread.readall\n");
+	actorread_all(win);
+
+	ctx = win->ctx;
+	l1 = ctx[1]->len;
+	l2 = ctx[2]->len;
+	//say("@htmlnode_rootread:%llx,%x,%x\n",ctx,l1,l2);
+	httpserver_leafwrite(sc, sf, win, wf, 0, l1+l2);
+	httpserver_leafwrite(sc, sf, win, wf, ctx[1]->buf, l1);
+	httpserver_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);
 	return 0;
 }
 int htmlnode_delete(struct arena* win)
@@ -160,12 +176,21 @@ int htmlnode_delete(struct arena* win)
 	return 0;
 }
 int htmlnode_create(struct arena* win, void* str)
-{
+{/*
 	void* art;
 	if(str)
 	{
 		art = arterycreate(0, str);
 		if(art)relationcreate(win, 0, _win_, art, 0, _art_);
-	}
+	}*/
+	void** ctx = memorycreate(0x1000);
+	void*  buf = memorycreate(0x200000);
+
+	ctx[0] = 0;
+	ctx[1] = buf;
+	ctx[2] = buf+0x100000;
+
+	win->ctx = ctx;
+	win->buf = buf;
 	return 0;
 }

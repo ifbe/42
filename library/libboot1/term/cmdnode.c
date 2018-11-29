@@ -65,14 +65,14 @@ int nodetree_rootread(void* sc, void* sf, u8* buf, int len)
 	}
 
 	//search name
-	j = mysnprintf(buf, 0x10000, "%.8s,%.8s{\n", &chip->tier, &chip->type);
+	//j = mysnprintf(buf, 0x10000, "%.8s,%.8s{\n", &chip->tier, &chip->type);
 	while(1)
 	{
 		if(0 == orel)break;
 
 		dc = (void*)(orel->dstchip);
 		df = (void*)(orel->dstfoot);
-		j += mysnprintf(buf+j, 0x10000-j, "%.8s,%.8s\n", &dc->tier, &dc->type);
+		//j += mysnprintf(buf+j, 0x10000-j, "%.8s,%.8s\n", &dc->tier, &dc->type);
 
 		if(0 == orel->dsttype)break;
 		else if(_fd_  == orel->dsttype)system_rootread(dc, df, sc, sf, buf, len);
@@ -83,7 +83,8 @@ int nodetree_rootread(void* sc, void* sf, u8* buf, int len)
 		orel = samesrcnextdst(orel);
 	}
 
-	return j+mysnprintf(buf+j, 0x10000-j, "}");
+	//return j+mysnprintf(buf+j, 0x10000-j, "}");
+	return 0;
 }
 
 
