@@ -43,24 +43,25 @@ static void hbridge_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+	u8 gate[3][2] = {{0,1},{1,0},{0,0}};
 
 	//frame
+	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+
+	//board
+	tc[0] = vc[0] - vu[0];
+	tc[1] = vc[1] - vu[1];
+	tc[2] = vc[2] - vu[2];
+	carvesolid_rect(win, 0x0000ff, tc, vr, vf);
 	tc[0] = vc[0] + vu[0];
 	tc[1] = vc[1] + vu[1];
 	tc[2] = vc[2] + vu[2];
-	carveline_prism4(win, 0xffffff, tc, vr, vf, vu);
-
-	//board
-	tc[0] = vc[0] + vu[0]*2;
-	tc[1] = vc[1] + vu[1]*2;
-	tc[2] = vc[2] + vu[2]*2;
-	carvesolid_rect(win, 0x101010, vc, vr, vf);
 	carvesolid_rect(win, 0xff0000, tc, vr, vf);
 
 	//6 mosfets
-	for(z=1;z<4;z+=2)
+	for(z=-1;z<2;z+=2)
 	{
-		if(z>2)s = 1;
+		if(z > 0)s = 1;
 		else s = -1;
 		for(y=-1;y<2;y++)
 		{
@@ -86,7 +87,9 @@ static void hbridge_read_vbo3d(
 			tu[0] = tc[0] - vr[0]/2;
 			tu[1] = tc[1] - vr[1]/2;
 			tu[2] = tc[2] - vr[2]/2;
-			carveline(win, 0xffffff, tc, tu);
+			if(gate[y+1][(z+1)/2] == 1)rgb = 0xff0000;
+			else rgb = 0xffffff;
+			carveline(win, rgb, tc, tu);
 
 			//d,s
 			tu[0] = tc[0] - s*vu[0]/2;
@@ -100,20 +103,24 @@ static void hbridge_read_vbo3d(
 			tu[2] = tc[2] + s*vu[2]/2;
 
 			if(s>0.0)rgb = 0xff0000;
-			else rgb = 0x101010;
+			else rgb = 0x0000ff;
 			carveline(win, rgb, tc, tu);
 		}
 	}
 
 	for(y=-1;y<2;y++)
 	{
-		tc[0] = vc[0] + y*vf[0]/2 + vu[0];
-		tc[1] = vc[1] + y*vf[1]/2 + vu[1];
-		tc[2] = vc[2] + y*vf[2]/2 + vu[2];
-		tu[0] = tc[0] + vr[0];
-		tu[1] = tc[1] + vr[1];
-		tu[2] = tc[2] + vr[2];
-		carveline(win, 0xffffff, tc, tu);
+		tc[0] = vc[0] + y*vf[0]/2;
+		tc[1] = vc[1] + y*vf[1]/2;
+		tc[2] = vc[2] + y*vf[2]/2;
+		tu[0] = tc[0] + vr[0]/2;
+		tu[1] = tc[1] + vr[1]/2;
+		tu[2] = tc[2] + vr[2]/2;
+
+		rgb = 0xffffff;
+		if((gate[y+1][0] > 0)&&(gate[y+1][1] < 1))rgb = 0x0000ff;
+		if((gate[y+1][0] < 1)&&(gate[y+1][1] > 0))rgb = 0xff0000;
+		carveline(win, rgb, tc, tu);
 	}
 }
 static void hbridge_read_json(

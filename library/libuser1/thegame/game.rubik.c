@@ -112,15 +112,12 @@ static void rubikscube_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	vec3 vc, f;
+	vec3 f;
 	vec3 tc, tr, tf, tu;
-	float* c = sty->vc;
+	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	vc[0] = c[0] + vu[0];
-	vc[1] = c[1] + vu[1];
-	vc[2] = c[2] + vu[2];
 
 	for(y=0;y<level;y++)
 	{

@@ -5,21 +5,21 @@ void carvesolid_bodypart(struct arena*, u32, vec3, vec3);
 
 
 static vec3 bonenode[15] = {
-	{ 0.0, 0.0, 0.8},	//00.head
-	{ 0.0, 0.0, 0.6},	//01.neck
-	{ 0.0, 0.0, 0.0},	//02.center
-	{-0.2, 0.0, 0.6},	//03.scapula l
-	{ 0.2, 0.0, 0.6},	//04.scapula r
-	{-0.3, 0.1, 0.3},	//05.elbow l
-	{ 0.3,-0.1, 0.3},	//06.elbow r
-	{-0.3, 0.3, 0.0},	//07.hand l
-	{ 0.3,-0.3, 0.0},	//08.hand r
-	{-0.2, 0.0, 0.0},	//09.hipbone l
-	{ 0.2, 0.0, 0.0},	//10.hipbone r
-	{-0.2,-0.1, -0.5},	//11.knee l
-	{ 0.2, 0.1, -0.5},	//12.knee r
-	{-0.2,-0.3, -1.0},	//13.foot l
-	{ 0.2, 0.3, -1.0}	//14.foot r
+	{ 0.0, 0.0, 1.0},	//00.head
+	{ 0.0, 0.0, 0.8},	//01.neck
+	{ 0.0, 0.0, 0.5},	//02.center
+	{-0.2, 0.0, 0.8},	//03.scapula l
+	{ 0.2, 0.0, 0.8},	//04.scapula r
+	{-0.3, 0.1, 0.6},	//05.elbow l
+	{ 0.3,-0.1, 0.6},	//06.elbow r
+	{-0.3, 0.3, 0.5},	//07.hand l
+	{ 0.3,-0.3, 0.5},	//08.hand r
+	{-0.2, 0.0, 0.5},	//09.hipbone l
+	{ 0.2, 0.0, 0.5},	//10.hipbone r
+	{-0.2,-0.1, 0.3},	//11.knee l
+	{ 0.2, 0.1, 0.3},	//12.knee r
+	{-0.2,-0.3, 0.0},	//13.foot l
+	{ 0.2, 0.3, 0.0}	//14.foot r
 };
 static u8 bonepair[16][2] = {
 	{ 0,  1},	//00.neck
@@ -74,20 +74,21 @@ static void human_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+	carvesolid_rect(win, 0x808080, vc, vr, vf);
 
 	for(j=0;j<16;j++)
 	{
 		k = bonepair[j][0];
 		x = bonenode[k][0];
 		y = bonenode[k][1];
-		z = 1.0+bonenode[k][2];
+		z = bonenode[k][2];
 		t0[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
 		t0[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t0[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 		k = bonepair[j][1];
 		x = bonenode[k][0];
 		y = bonenode[k][1];
-		z = 1.0+bonenode[k][2];
+		z = bonenode[k][2];
 		t1[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
@@ -134,7 +135,7 @@ static void human_write(
 {
 	float a,c,s;
 	float sec = (timeread() % 2000000) / 2000000.0;
-
+/*
 	//arm
 	a = PI/3*sine(2.0*PI*sec);
 	c = cosine(a);
@@ -174,6 +175,7 @@ static void human_write(
 	bonenode[13][2] = bonenode[11][2] - 0.5;
 	bonenode[14][1] = bonenode[12][1];
 	bonenode[14][2] = bonenode[12][2] - 0.5;
+*/
 }
 static void human_get()
 {

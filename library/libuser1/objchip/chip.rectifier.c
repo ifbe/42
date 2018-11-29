@@ -1,4 +1,27 @@
 #include "libuser.h"
+void rectify_chosen(float* v, int* t)
+{
+	int j;
+	float hi,lo;
+
+	//highest
+	t[0] = t[1] = 0;
+	hi = v[0];
+	lo = v[0];
+	for(j=1;j<3;j++)
+	{
+		if(hi < v[j])
+		{
+			t[0] = j;
+			hi = v[j];
+		}
+		if(lo > v[j])
+		{
+			t[1] = j;
+			lo = v[j];
+		}
+	}
+}
 
 
 
@@ -36,9 +59,10 @@ static void rectify_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y,z,rgb;
 	u64 time;
-	float a,s;
+	int chosen[2];
+	int x,y,z,rgb;
+	float a,s[3];
 	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -46,15 +70,14 @@ static void rectify_read_vbo3d(
 	float* vu = sty->vu;
 
 	time = timeread() / 1000;
-	say("%f\n",time);
 	a = time * PI / 1000;
-	say("%f\n",a);
+	s[0] = sine(a - PI*2.0/3.0);
+	s[1] = sine(a);
+	s[2] = sine(a + PI*2.0/3.0);
+	rectify_chosen(s, chosen);
 
 	//frame
-	tc[0] = vc[0] + vu[0];
-	tc[1] = vc[1] + vu[1];
-	tc[2] = vc[2] + vu[2];
-	carveline_prism4(win, 0xffffff, tc, vr, vf, vu);
+	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
 
 	//board
 	tr[0] = vr[0]/2;
@@ -63,7 +86,10 @@ static void rectify_read_vbo3d(
 	tf[0] = vf[0]/2;
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
-	carvesolid_rect(win, 0x444444, tc, tr, tf);
+	tu[0] = vu[0]/16;
+	tu[1] = vu[1]/16;
+	tu[2] = vu[2]/16;
+	carvesolid_prism4(win, 0x444444, vc, tr, tf, tu);
 
 	//3 inputs
 	tr[0] = vr[0]/8;
@@ -77,20 +103,20 @@ static void rectify_read_vbo3d(
 	tu[2] = vu[2]/8;
 	for(y=-1;y<2;y++)
 	{
-		s = sine(a + y*PI*2.0/3.0);
-		tc[0] = vc[0] - vr[0]/2 + y*vf[0]/2 + (2.0+s)*vu[0]/2;
-		tc[1] = vc[1] - vr[1]/2 + y*vf[1]/2 + (2.0+s)*vu[1]/2;
-		tc[2] = vc[2] - vr[2]/2 + y*vf[2]/2 + (2.0+s)*vu[2]/2;
-
-		if(s > 0.0)rgb = 0xff0000;
+		a = s[y+1];
+		if(a > 0.0)rgb = 0xff0000;
 		else rgb = 0xff;
+
+		tc[0] = vc[0] - vr[0]/2 + y*vf[0]/2 + a*vu[0]/2;
+		tc[1] = vc[1] - vr[1]/2 + y*vf[1]/2 + a*vu[1]/2;
+		tc[2] = vc[2] - vr[2]/2 + y*vf[2]/2 + a*vu[2]/2;
 		carvesolid_sphere(win, rgb, tc, tr, tf, tu);
 	}
 	for(y=-1;y<2;y++)
 	{
-		tc[0] = vc[0] - vr[0]/2 + y*vf[0]/2 + vu[0]/2;
-		tc[1] = vc[1] - vr[1]/2 + y*vf[1]/2 + vu[1]/2;
-		tc[2] = vc[2] - vr[2]/2 + y*vf[2]/2 + vu[2]/2;
+		tc[0] = vc[0] - vr[0]/2 + y*vf[0]/2 - vu[0]/2;
+		tc[1] = vc[1] - vr[1]/2 + y*vf[1]/2 - vu[1]/2;
+		tc[2] = vc[2] - vr[2]/2 + y*vf[2]/2 - vu[2]/2;
 		tu[0] = tc[0] + vu[0];
 		tu[1] = tc[1] + vu[1];
 		tu[2] = tc[2] + vu[2];
@@ -101,27 +127,38 @@ static void rectify_read_vbo3d(
 	tr[0] = vu[0]/8;
 	tr[1] = vu[1]/8;
 	tr[2] = vu[2]/8;
-	for(z=1;z<4;z+=2)
+	for(z=-1;z<2;z+=2)
 	{
 		for(y=-1;y<2;y++)
 		{
 			//+
-			tc[0] = vc[0] + (z-2)*vr[0]/16 + y*vf[0]/2 + z*vu[0]/2;
-			tc[1] = vc[1] + (z-2)*vr[1]/16 + y*vf[1]/2 + z*vu[1]/2;
-			tc[2] = vc[2] + (z-2)*vr[2]/16 + y*vf[2]/2 + z*vu[2]/2;
+			tc[0] = vc[0] + z*vr[0]/16 + y*vf[0]/2 + z*vu[0]/2;
+			tc[1] = vc[1] + z*vr[1]/16 + y*vf[1]/2 + z*vu[1]/2;
+			tc[2] = vc[2] + z*vr[2]/16 + y*vf[2]/2 + z*vu[2]/2;
 			tu[0] = vr[0]/4;
 			tu[1] = vr[1]/4;
 			tu[2] = vr[2]/4;
 			carvesolid_cylinder(win, 0xe0e0e0, tc, tr, tu);
 
 			//-
-			tc[0] -= (z-2)*vr[0]/3.6;
-			tc[1] -= (z-2)*vr[1]/3.6;
-			tc[2] -= (z-2)*vr[2]/3.6;
+			tc[0] -= z*vr[0]/3.6;
+			tc[1] -= z*vr[1]/3.6;
+			tc[2] -= z*vr[2]/3.6;
 			tu[0] = vr[0]/32;
 			tu[1] = vr[1]/32;
 			tu[2] = vr[2]/32;
 			carvesolid_cylinder(win, 0x202020, tc, tr, tu);
+
+			a = s[y+1];
+			rgb = 0xffffff;
+			if(z>0)		//if highest
+			{
+				if(y+1 == chosen[0])rgb = 0xff0000;
+			}
+			else		//if lowest
+			{
+				if(y+1 == chosen[1])rgb = 0xff;
+			}
 
 			//wire
 			tc[0] = vc[0] - vr[0]/2 + y*vf[0]/2 + z*vu[0]/2;
@@ -130,12 +167,30 @@ static void rectify_read_vbo3d(
 			tu[0] = tc[0] + vr[0];
 			tu[1] = tc[1] + vr[1];
 			tu[2] = tc[2] + vr[2];
-			carveline(win, 0xffffff, tc, tu);
+			carveline(win, rgb, tc, tu);
 		}
 	}
 
 	//2 outputs
-	for(z=1;z<4;z+=2)
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	tu[0] = vu[0]/8;
+	tu[1] = vu[1]/8;
+	tu[2] = vu[2]/8;
+	tc[0] = vc[0] + vr[0]/2 + s[chosen[0]]*vu[0]/2;
+	tc[1] = vc[1] + vr[1]/2 + s[chosen[0]]*vu[1]/2;
+	tc[2] = vc[2] + vr[2]/2 + s[chosen[0]]*vu[2]/2;
+	carvesolid_sphere(win, 0xff0000, tc, tr, tf, tu);
+	tc[0] = vc[0] + vr[0]/2 + s[chosen[1]]*vu[0]/2;
+	tc[1] = vc[1] + vr[1]/2 + s[chosen[1]]*vu[1]/2;
+	tc[2] = vc[2] + vr[2]/2 + s[chosen[1]]*vu[2]/2;
+	carvesolid_sphere(win, 0x0000ff, tc, tr, tf, tu);
+
+	for(z=-1;z<2;z+=2)
 	{
 		tc[0] = vc[0] + vr[0]/2 - vf[0]/2 + z*vu[0]/2;
 		tc[1] = vc[1] + vr[1]/2 - vf[1]/2 + z*vu[1]/2;

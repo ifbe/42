@@ -28,6 +28,7 @@ int postprocess(struct arena* win);
 
 
 
+
 static struct arena* arena = 0;
 static struct actor* actor = 0;
 static struct style* style = 0;

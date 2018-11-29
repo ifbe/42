@@ -9,12 +9,12 @@ int actorinput_detail(   struct arena* win, struct style* sty, struct event* ev)
 int actoroutput_detail(  struct arena* win, struct style* sty);
 int actorinput_win(      struct arena* win, struct style* sty, struct event* ev);
 int actoroutput_win(     struct arena* win, struct style* sty);
-int actorinput_2d(      struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_2d(     struct arena* win, struct style* sty);
-int actorinput_cad(   struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_cad(  struct arena* win, struct style* sty);
-int actorinput_3d(   struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_3d(  struct arena* win, struct style* sty);
+int actorinput_2d(       struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_2d(      struct arena* win, struct style* sty);
+int actorinput_cad(      struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_cad(     struct arena* win, struct style* sty);
+int actorinput_3d(       struct arena* win, struct style* sty, struct event* ev);
+int actoroutput_3d(      struct arena* win, struct style* sty);
 
 
 

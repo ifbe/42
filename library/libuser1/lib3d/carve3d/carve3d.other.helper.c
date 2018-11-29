@@ -6,16 +6,11 @@ void invmvp(vec3 v, struct arena* win);
 
 void select_3d(struct arena* win, u32 rgb, struct style* sty, u32 flag)
 {
-	vec3 tc;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-
-	tc[0] = vc[0] + vu[0];
-	tc[1] = vc[1] + vu[1];
-	tc[2] = vc[2] + vu[2];
-	carveline_prism4(win, rgb, tc, vr, vf, vu);
+	carveline_prism4(win, rgb, vc, vr, vf, vu);
 }
 void carveaxis(struct arena* win)
 {

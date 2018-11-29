@@ -249,17 +249,6 @@ static void sudoku_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u8* p;
-	int j;
-	px = py = 0;
-
-	p = (u8*)data;
-	for(j=0;j<81;j++)
-	{
-		if(0 != p[j])break;
-	}
-	if(j >= 81)sudoku_generate(data);
-	else sudoku_solve(data);
 }
 static void sudoku_delete(struct actor* act, u8* buf)
 {
@@ -271,13 +260,16 @@ static void sudoku_create(struct actor* act, u8* buf)
 	u8* p;
 	int j,k;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = data;
-	else if(_copy_ == act->type)act->buf = memorycreate(81);
 
+	if(_orig_ == act->type)p = (void*)data;
+	else if(_copy_ == act->type)p = memorycreate(81);
+	if(0 == p)return;
+
+	act->buf = p;
+	sudoku_generate(p);
+/*
 	if(0 == buf)return;
-	p = act->buf;
 	k = 0;
-	for(j=0;j<81;j++)p[j] = 0;
 	for(j=0;j<0x100;j++)
 	{
 		if((buf[j]>=0x30)&&(buf[j]<=0x39))
@@ -288,7 +280,8 @@ static void sudoku_create(struct actor* act, u8* buf)
 		}
 		if(k >= 81)break;
 	}
-	say("\n");
+	//say("\n");
+*/
 }
 
 
