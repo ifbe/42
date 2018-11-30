@@ -190,9 +190,9 @@ void* systemlist(u8* buf, int len)
 
 int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	say("systemwrite@{\n");
+	//say("systemwrite@{\n");
 	systemwrite_in(dc, df, buf, len);
-	say("}@systemwrite\n");
+	//say("}@systemwrite\n");
 
 	return 0;
 }

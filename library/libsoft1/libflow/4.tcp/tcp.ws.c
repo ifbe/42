@@ -1,13 +1,15 @@
 #include "libsoft.h"
-void sha1sum(u8* out, u8* in, int len);
-void base64_encode(u8* out,u8* in, int len);
-void datastr2hexstr(void* o, void* i, int len);
-void decstr2data(void* i, void* o);
-//
 int findzero(void* p);
 int findhead(void* p);
 int findtail(void* p);
 u8* findstr(void* src, int max, void* target, int tarlen);
+//
+void sha1sum(u8* out, u8* in, int len);
+void base64_encode(u8* out,u8* in, int len);
+void datastr2hexstr(void* o, void* i, int len);
+void decstr2data(void* i, void* o);
+int nodetree_rootread(void*, void*, void*, int);
+int nodetree_rootwrite(void*, void*, void*, int);
 
 
 
@@ -168,7 +170,7 @@ int websocket_serverwrite_handshake(u8* buf, int len, u8* dst, int max)
 	//already replyed in websocket_serverread_handshake()
 	return 0;
 }
-int websocket_serverread(u8* buf, int len, u8* dst, int max)
+int websocket_serverread_head(u8* buf, int len, u8* dst, int max)
 {
 //#define dbg say
 #define dbg(fmt,...) do{}while(0)
@@ -284,7 +286,7 @@ int websocket_serverread(u8* buf, int len, u8* dst, int max)
 	dbg("%s\n",dst);
 	return count;
 }
-int websocket_serverwrite(u8* buf, int len, u8* dst, int max)
+int websocket_serverwrite_head(u8* buf, int len, u8* dst, int max)
 {
 	int ret;
 
@@ -318,13 +320,34 @@ int websocket_serverwrite(u8* buf, int len, u8* dst, int max)
 
 	return ret;
 }
-int wsserver_write(
+int wsserver_leafwrite(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	//head
+	int hlen;
+	u8 head[0x100];
+	hlen = websocket_serverwrite_head(buf, len, head, 0x100);
+	system_leafwrite(ele->obj, pin, ele, sty, head, hlen);
+
+	//body, unchanged
+	system_leafwrite(ele->obj, pin, ele, sty, buf, len);
+	return 0;
+}
+int wsserver_leafread(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	return 0;
+}
+int wsserver_rootwrite(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	int hlen,blen,ret;
-	u8 head[0x100];
 	u8 body[0x1000];
 	if(0 == ele->stage1)
 	{
@@ -337,24 +360,28 @@ int wsserver_write(
 		//parse clienthello
 		ret = websocket_serverread_handshake(buf, len, body, 256);
 		ret = system_leafwrite(obj, pin, ele, sty, body, ret);
-
+		return 0;
 		//on clienthello do something
-		blen = mysnprintf(body, 0x1000, "Who dare summon me ?!");
+		//blen = mysnprintf(body, 0x1000, "Who dare summon me ?!");
+	}
+
+	//decompress
+	blen = websocket_serverread_head(buf, len, body, 0x1000);
+	if(0 == ele->orel0)
+	{
+		say("%.*s\n", blen, body);
 	}
 	else
 	{
-		blen = websocket_serverread(buf, len, body, 0x1000);
+		ele->obj = obj;
+		nodetree_rootwrite(ele, sty, body, blen);
 	}
-	say("%.*s\n", blen, body);
-
-	hlen = websocket_serverwrite(body, blen, head, 0x100);
-	system_leafwrite(obj, pin, ele, sty, head, hlen);
-	system_leafwrite(obj, pin, ele, sty, body, blen);
 	return 0;
 }
-int wsserver_read(
+int wsserver_rootread(
 	struct element* ele, void* sty,
-	struct object* obj, void* pin)
+	struct object* obj, void* pin,
+	u8* buf, int len)
 {
 	return 0;
 }

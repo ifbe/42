@@ -4,10 +4,11 @@ int findhead(void*);
 int findtail(void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
-int wsserver_write(void*, void*, void*, void*, void* buf, int len);
-int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 int nodetree_rootread(void*, void*, void*, int);
 int nodetree_rootwrite(void*, void*, void*, int);
+int wsserver_rootread(void*, void*, void*, void*, void* buf, int len);
+int wsserver_rootwrite(void*, void*, void*, void*, void* buf, int len);
+int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 
@@ -234,7 +235,7 @@ int httpmaster_write(
 		if(e)
 		{
 			relationcreate(e, 0, _art_, obj, 0, _fd_);
-			wsserver_write(e, sty, obj, pin, buf, len);
+			wsserver_rootwrite(e, sty, obj, pin, buf, len);
 		}
 		return 0;
 	}

@@ -3,6 +3,8 @@ int websocket_write_handshake(u8* buf, int len);
 int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
 int httpserver_leafread(void*, void*, void*, void*, void*, int);
 int httpserver_leafwrite(void*, void*, void*, void*, void*, int);
+int wsserver_leafread(void*, void*, void*, void*, void*, int);
+int wsserver_leafwrite(void*, void*, void*, void*, void*, int);
 
 
 
@@ -137,6 +139,7 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 	if(0 == orel)
 	{
 		say("@htmlnode_write: %.*s\n", len, buf);
+		wsserver_leafwrite(sc, sf, win, wf, "OK", 2);
 		return 0;
 	}
 
@@ -153,6 +156,8 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 
 		orel = samesrcnextdst(orel);
 	}
+
+	wsserver_leafwrite(sc, sf, win, wf, "actor!", 6);
 	return 0;
 }
 int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)

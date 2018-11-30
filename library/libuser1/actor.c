@@ -136,12 +136,12 @@ int actor_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	struct relation* rel;
 	struct actor* act;
 	struct arena* win;
-say("actorwrite@{\n");
+//say("actorwrite@{\n");
 
 	act = dc;
 	act->onwrite(dc, df, sc, sf, buf, len);
 
-say("}@actorwrite\n");
+//say("}@actorwrite\n");
 	return 0;
 }
 int actor_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)

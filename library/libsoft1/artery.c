@@ -13,18 +13,18 @@ int fatclient_create(struct element* ele, void* url, void* buf, int len);
 int ntfsclient_create(struct element* ele, void* url, void* buf, int len);
 int hfsclient_create(struct element* ele, void* url, void* buf, int len);
 int extclient_create(struct element* ele, void* url, void* buf, int len);
-//i2c
+//i2c.mpu
 int mpuclient_create(struct element* ele, void* url, void* buf, int len);
 int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//i2c
+//i2c.ahrs
 int ahrsclient_create(struct element* ele, void* url, void* buf, int len);
 int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//uart
+//uart.gcode
 int gcodeclient_create(struct element* ele, void* url, void* buf, int len);
 int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int gcodeserver_create(struct element* ele, void* url, void* buf, int len);
 int gcodeserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//uart
+//uart.gps
 int gpsclient_create(struct element* ele, void* url, void* buf, int len);
 int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int gpsserver_create(struct element* ele, void* url, void* buf, int len);
@@ -34,46 +34,46 @@ int hackclient_create(struct element* ele, void* url, void* buf, int len);
 int hackclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int hackserver_create(struct element* ele, void* url, void* buf, int len);
 int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//udp
+//udp.tftp
 int tftpclient_create(struct element* ele, void* url, void* buf, int len);
 int tftpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tftpserver_create(struct element* ele, void* url, void* buf, int len);
 int tftpserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//udp
+//udp.quic
 int quicclient_create(struct element* ele, void* url, void* buf, int len);
 int quicclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicserver_create(struct element* ele, void* url, void* buf, int len);
 int quicserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicmaster_create(struct element* ele, void* url, void* buf, int len);
 int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//tcp
+//tcp.http
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
 int httpserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url, void* buf, int len);
 int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//tcp
+//tcp.ws
+int wsclient_create(struct element* ele, void* url, void* buf, int len);
+int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int wsserver_create(struct element* ele, void* url, void* buf, int len);
+int wsserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsmaster_create(struct element* ele, void* url, void* buf, int len);
+int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+//tcp.ssh
 int sshclient_create(struct element* ele, void* url, void* buf, int len);
 int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int sshserver_create(struct element* ele, void* url, void* buf, int len);
 int sshserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int sshmaster_create(struct element* ele, void* url, void* buf, int len);
 int sshmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//tcp
+//tcp.tls
 int tlsclient_create(struct element* ele, void* url, void* buf, int len);
 int tlsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tlsserver_create(struct element* ele, void* url, void* buf, int len);
 int tlsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tlsmaster_create(struct element* ele, void* url, void* buf, int len);
 int tlsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//tcp
-int wsclient_create(struct element* ele, void* url, void* buf, int len);
-int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int wsserver_create(struct element* ele, void* url, void* buf, int len);
-int wsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-int wsmaster_create(struct element* ele, void* url, void* buf, int len);
-int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -116,7 +116,7 @@ int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	u64 type;
 	struct element* ele;
-say("arterywrite@{\n");
+//say("arterywrite@{\n");
 
 	ele = dc;
 	type = ele->type;
@@ -144,12 +144,12 @@ say("arterywrite@{\n");
 	else if(_tls_  == type)tlsclient_write(dc, df, sc, sf, buf, len);
 
 	else if(_WS_   == type)wsmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Ws_   == type)wsserver_write(dc, df, sc, sf, buf, len);
+	else if(_Ws_   == type)wsserver_rootwrite(dc, df, sc, sf, buf, len);
 	else if(_ws_   == type)wsclient_write(dc, df, sc, sf, buf, len);
 
 	else printmemory(buf, len);
 
-say("}@arterywrite\n");
+//say("}@arterywrite\n");
 	return 0;
 }
 int artery_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
