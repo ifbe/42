@@ -237,22 +237,7 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 
 
 
-/*
-void drawutf8_temp(
-	struct arena* win, u32 rgb,
-	int x, int y, u8* buf, int len)
-{
-	u8 ch;
-	drawsolid_rect(win, 0x888888, x, y, x+16, y+16);
 
-	ch = 0x30 + ((buf[0]>>4)&0xf);
-	if(ch > 0x39)ch += 7;
-	drawascii(win, rgb, x, y, ch);
-
-	ch = 0x30 + (buf[0]&0xf);
-	if(ch > 0x39)ch += 7;
-	drawascii(win, rgb, x+8, y, ch);
-}*/
 void drawvt100(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1,

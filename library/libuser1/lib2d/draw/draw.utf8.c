@@ -19,9 +19,12 @@ void drawunicode_alpha(u8* buf, int w, int h, int xx, int yy, u32 unicode)
 	u16* points;
 	int x,y,offset;
 
-	if(0 == utf8table)return;
-	points = utf8table + 32*(unicode&0xffff);
+	if(0 == utf8table)
+	{
+		return;
+	}
 
+	points = utf8table + 32*(unicode&0xffff);
 	for(y=0;y<16;y++)
 	{
 		temp = points[y];
@@ -36,6 +39,31 @@ void drawunicode_alpha(u8* buf, int w, int h, int xx, int yy, u32 unicode)
 		}//x
 	}//y
 }
+
+
+
+
+void drawunicode_error(struct arena* win, u32 rgb, int x, int y, u32 unicode)
+{
+	u8 ch;
+	drawsolid_rect(win, 0x888888, x, y, x+16, y+16);
+
+	ch = 0x30 + ((unicode >> 12) & 0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, 0xff00ff, x, y, ch);
+
+	ch = 0x30 + ((unicode >> 8) & 0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, 0x0000ff, x+3, y, ch);
+
+	ch = 0x30 + ((unicode >> 4) & 0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, 0x00ff00, x+6, y, ch);
+
+	ch = 0x30 + (unicode  & 0xf);
+	if(ch > 0x39)ch += 7;
+	drawascii(win, 0xff0000, x+9, y, ch);
+}
 void drawunicode(struct arena* win, u32 rgb, int xx, int yy, u32 unicode)
 {
 	u16 temp;
@@ -46,9 +74,13 @@ void drawunicode(struct arena* win, u32 rgb, int xx, int yy, u32 unicode)
 	int stride = win->stride;
 	u32* buf = (u32*)(win->buf);
 
-	if(0 == utf8table)return;
-	points = utf8table + 32*(unicode&0xffff);
+	if(0 == utf8table)
+	{
+		drawunicode_error(win, rgb, xx, yy, unicode);
+		return;
+	}
 
+	points = utf8table + 32*(unicode&0xffff);
 	rgb |= 0xff000000;
 	for(y=0;y<16;y++)
 	{
