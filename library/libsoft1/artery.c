@@ -50,6 +50,9 @@ int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* 
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url, void* buf, int len);
+int httpserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_leafwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url, void* buf, int len);
 int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -57,6 +60,9 @@ int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* 
 int wsclient_create(struct element* ele, void* url, void* buf, int len);
 int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int wsserver_create(struct element* ele, void* url, void* buf, int len);
+int wsserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsserver_leafwrite( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 int wsserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 int wsmaster_create(struct element* ele, void* url, void* buf, int len);
 int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
@@ -114,42 +120,43 @@ int parsetypefromurl(u8* url, u8* type)
 
 int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	u64 type;
-	struct element* ele;
+	struct element* ele = dc;
+	if(0 == ele)return 0;
+
 //say("arterywrite@{\n");
+	switch(ele->type)
+	{
+		case _gps_: gpsclient_write(dc, df, sc, sf, buf, len);break;
+		case _mpu_: mpuclient_write(dc, df, sc, sf, buf, len);break;
+		case _ahrs_:ahrsclient_write(dc, df, sc, sf, buf, len);break;
 
-	ele = dc;
-	type = ele->type;
-	if(_gps_ == type)gpsclient_write(dc, df, sc, sf, buf, len);
-	else if(_mpu_ == type)mpuclient_write(dc, df, sc, sf, buf, len);
-	else if(_ahrs_ == type)ahrsclient_write(dc, df, sc, sf, buf, len);
+		case _HACK_:hackserver_write(dc, df, sc, sf, buf, len);break;
+		case _hack_:hackclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_HACK_ == type)hackserver_write(dc, df, sc, sf, buf, len);
-	else if(_hack_ == type)hackclient_write(dc, df, sc, sf, buf, len);
+		case _QUIC_:quicmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Quic_:quicserver_write(dc, df, sc, sf, buf, len);break;
+		case _quic_:quicclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_QUIC_ == type)quicmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Quic_ == type)quicserver_write(dc, df, sc, sf, buf, len);
-	else if(_quic_ == type)quicclient_write(dc, df, sc, sf, buf, len);
+		case _HTTP_:httpmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Http_:httpserver_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _http_:httpclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_HTTP_ == type)httpmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Http_ == type)httpserver_rootwrite(dc, df, sc, sf, buf, len);
-	else if(_http_ == type)httpclient_write(dc, df, sc, sf, buf, len);
+		case _SSH_ :sshmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Ssh_ :sshserver_write(dc, df, sc, sf, buf, len);break;
+		case _ssh_ :sshclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_SSH_  == type)sshmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Ssh_  == type)sshserver_write(dc, df, sc, sf, buf, len);
-	else if(_ssh_  == type)sshclient_write(dc, df, sc, sf, buf, len);
+		case _TLS_ :tlsmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Tls_ :tlsserver_write(dc, df, sc, sf, buf, len);break;
+		case _tls_ :tlsclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_TLS_  == type)tlsmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Tls_  == type)tlsserver_write(dc, df, sc, sf, buf, len);
-	else if(_tls_  == type)tlsclient_write(dc, df, sc, sf, buf, len);
+		case _WS_  :wsmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Ws_  :wsserver_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _ws_  :wsclient_write(dc, df, sc, sf, buf, len);break;
 
-	else if(_WS_   == type)wsmaster_write(dc, df, sc, sf, buf, len);
-	else if(_Ws_   == type)wsserver_rootwrite(dc, df, sc, sf, buf, len);
-	else if(_ws_   == type)wsclient_write(dc, df, sc, sf, buf, len);
-
-	else printmemory(buf, len);
-
+		dafault: printmemory(buf, len);
+	}
 //say("}@arterywrite\n");
+
 	return 0;
 }
 int artery_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
@@ -158,6 +165,18 @@ int artery_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	struct element* ele = dc;
+	if(0 == ele)return 0;
+
+	switch(ele->type)
+	{
+		case _HTTP_:
+		case _Http_:httpserver_leafwrite(dc, df, sc, sf, buf, len);break;
+		case _WS_:
+		case _Ws_:wsserver_leafwrite(dc, df, sc, sf, buf, len);break;
+
+		default: say("%llx\n", ele->type);
+	}
 	return 0;
 }
 int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)

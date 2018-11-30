@@ -3,8 +3,7 @@
 #define _func_ hex32('f','u','n','c')
 #define _html_ hex32('h','t','m','l')
 #define _rgba_ hex32('r','g','b','a')
-#define _tty_  hex32('t','t','y',0)
-#define _vpin_ hex32('v','p','i','n')
+#define _pcb_  hex32('p','c','b',0)
 #define _xml_  hex32('x','m','l',0)
 #define _cam_  hex32('c','a','m',0)
 #define _mic_  hex32('m','i','c',0)
@@ -60,23 +59,17 @@ int htmlnode_rootwrite(void*,void*,void*,void*,void*,int);
 //
 int jsonnode_create(void*, void*);
 int jsonnode_delete(void*);
+int jsonnode_rootread(void*,void*,void*,void*,void*,int);
+int jsonnode_rootwrite(void*,void*,void*,void*,void*,int);
 //
 int rgbanode_create(void*, void*);
 int rgbanode_delete(void*);
 //
-int ttynode_create(void*, void*);
-int ttynode_delete(void*);
-//
 int vbonode_create(void*, void*);
 int vbonode_delete(void*);
 //
-int vpinnode_create(void*, void*);
-int vpinnode_delete(void*);
-//
-int wsnode_create(void*, void*);
-int wsnode_delete(void*);
-int wsnode_rootread(void*,void*,void*,void*,void*,int);
-int wsnode_rootwrite(void*,void*,void*,void*,void*,int);
+int pcbnode_create(void*, void*);
+int pcbnode_delete(void*);
 //
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
@@ -160,26 +153,30 @@ void arenavertex(struct arena* win)
 
 int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	u64 fmt;
-	struct arena* win;
+	struct arena* win = dc;
+	if(0 == win)return 0;
+
 //say("arenawrite@{\n");
-
-	win = dc;
-	fmt = win->fmt;
-	if(_html_ == fmt)htmlnode_rootwrite(dc, df, sc, sf, buf, len);
-	else if(_ws_ == fmt)wsnode_rootwrite(dc, df, sc, sf, buf, len);
-	else printmemory(buf, len);
-
+	switch(win->fmt)
+	{
+		case _html_: htmlnode_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _json_: jsonnode_rootwrite(dc, df, sc, sf, buf, len);break;
+		default: printmemory(buf, len);
+	}
 //say("}@arenawrite\n");
 	return 0;
 }
 int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	struct arena* win;
+	struct arena* win = dc;
+	if(0 == win)return 0;
 
-	win = dc;
-	if(_html_ == win->fmt)htmlnode_rootread(dc, df, sc, sf, buf, len);
-	else if(_ws_ == win->fmt)wsnode_rootwrite(dc, df, sc, sf, buf, len);
+	switch(win->fmt)
+	{
+		case _html_: htmlnode_rootread(dc, df, sc, sf, buf, len);break;
+		case _json_: jsonnode_rootread(dc, df, sc, sf, buf, len);break;
+		default: printmemory(buf, len);
+	}
 	return 0;
 }
 int arena_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
@@ -327,13 +324,6 @@ void* arenacreate(u64 type, void* addr)
 
 		rgbanode_create(win, addr);
 	}
-	else if(_tty_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _tty_;
-
-		ttynode_create(win, addr);
-	}
 	else if(_vbo_ == type)
 	{
 		win->type = _node_;
@@ -341,19 +331,12 @@ void* arenacreate(u64 type, void* addr)
 
 		vbonode_create(win, addr);
 	}
-	else if(_vpin_ == type)
+	else if(_pcb_ == type)
 	{
 		win->type = _node_;
-		win->fmt = _vpin_;
+		win->fmt = _pcb_;
 
-		vpinnode_create(win, addr);
-	}
-	else if(_ws_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _ws_;
-
-		wsnode_create(win, addr);
+		pcbnode_create(win, addr);
 	}
 	else if(_xml_ == type)
 	{
@@ -543,10 +526,8 @@ void initarena(u8* addr)
 	arenacreate(_html_, 0);
 	arenacreate(_json_, 0);
 	arenacreate(_rgba_, 0);
-	arenacreate(_tty_,  0);
 	arenacreate(_vbo_,  0);
-	arenacreate(_vpin_, 0);
-	arenacreate(_ws_,   0);
+	arenacreate(_pcb_, 0);
 	arenacreate(_xml_,  0);
 	//say("[c,f):inited arena\n");
 }

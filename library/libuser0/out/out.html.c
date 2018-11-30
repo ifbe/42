@@ -1,10 +1,4 @@
 #include "libuser.h"
-int websocket_write_handshake(u8* buf, int len);
-int websocket_read_handshake(u8* buf, int len, u8* dst, int max);
-int httpserver_leafread(void*, void*, void*, void*, void*, int);
-int httpserver_leafwrite(void*, void*, void*, void*, void*, int);
-int wsserver_leafread(void*, void*, void*, void*, void*, int);
-int wsserver_leafwrite(void*, void*, void*, void*, void*, int);
 
 
 
@@ -136,10 +130,11 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 	void* dc;
 	void* df;
 	struct relation* orel = win->orel0;
+
 	if(0 == orel)
 	{
 		say("@htmlnode_write: %.*s\n", len, buf);
-		wsserver_leafwrite(sc, sf, win, wf, "OK", 2);
+		artery_leafwrite(sc, sf, win, wf, "OK", 2);
 		return 0;
 	}
 
@@ -157,7 +152,7 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 		orel = samesrcnextdst(orel);
 	}
 
-	wsserver_leafwrite(sc, sf, win, wf, "actor!", 6);
+	artery_leafwrite(sc, sf, win, wf, "actor!", 6);
 	return 0;
 }
 int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
@@ -171,9 +166,9 @@ int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf
 	l1 = ctx[1]->len;
 	l2 = ctx[2]->len;
 	//say("@htmlnode_rootread:%llx,%x,%x\n",ctx,l1,l2);
-	httpserver_leafwrite(sc, sf, win, wf, 0, l1+l2);
-	httpserver_leafwrite(sc, sf, win, wf, ctx[1]->buf, l1);
-	httpserver_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);
+	artery_leafwrite(sc, sf, win, wf, 0, l1+l2);
+	artery_leafwrite(sc, sf, win, wf, ctx[1]->buf, l1);
+	artery_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);
 	return 0;
 }
 int htmlnode_delete(struct arena* win)
