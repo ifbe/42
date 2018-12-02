@@ -182,6 +182,41 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 	win->width = win->stride = w;
 	win->height = h;
 }
+static void callback_joystick(int id, int ev)
+{
+	say("joystick: %d,%d\n", id, ev);
+}/*
+static void thread_joystick()
+{
+	int j, k;
+	int c1, c2;
+	const float* f;
+	const unsigned char* u;
+	struct event ev;
+	ev.where = 0;
+	ev.when = 0;
+	while(1)
+	{
+		for(j=0;j<16;j++)
+		{
+			if(0 == glfwJoystickPresent(GLFW_JOYSTICK_1 + j))continue;
+
+			f = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + j, &c1);
+			if(0 == f)continue;
+			if(0 == c1)continue;
+
+			u = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + j, &c2);
+			if(0 == u)continue;
+			if(0 == c2)continue;
+
+			for(k=0;k<c1;k++)say("a%d:%f\n", k, f[k]);
+			for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
+
+			for(k=0;k<c1;k++)if(f[k]>-0.1&&f[k]<0.1)continue;
+		}
+		sleep_us(10000);
+	}
+}*/
 
 
 
@@ -344,21 +379,7 @@ void windowcreate(struct arena* w)
 	w->stride = 512;
 
 	w->fmt = _vbo_;
-	if(_win_ == w->type)
-	{
-		if(glfwInit() == 0)
-		{
-			printf("error@glfwInit\n");
-			return;
-		}
-		glfwWindowHint(GLFW_SAMPLES, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-		windowopen(0, w);
-	}
+	if(_win_ == w->type)windowopen(0, w);
 }
 
 
@@ -369,4 +390,18 @@ void freewindow()
 }
 void initwindow()
 {
+	if(glfwInit() == 0)
+	{
+		printf("error@glfwInit\n");
+		return;
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	glfwSetJoystickCallback(callback_joystick);
+	//threadcreate(thread_joystick, 0);
 }

@@ -304,6 +304,7 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 
 		camera_deltaxy(win, x0, -y0);
 	}
+	return 0;
 }
 int actorinput_cameraevent(struct arena* win, struct event* ev)
 {
