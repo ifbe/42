@@ -237,16 +237,6 @@ int actoroutput_cad(struct arena* win, struct style* stack)
 
 
 
-void actorinput_editor_fov(struct arena* win, struct event* ev)
-{
-	int id;
-	if(0x2b70 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('f' == id)win->nearstride *= 0.9;
-		if('b' == id)win->nearstride *= 1.1;
-	}
-}
 int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
 {
 	int x,y,w,h;
@@ -270,8 +260,7 @@ int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
 	}
 	if((7 == win->forex)&&(_vbo_ == win->fmt))
 	{
-		if(2 == win->forey)actorinput_editor_fov(win, ev);
-		else actorinput_editor_camera(win, ev);
+		actorinput_editor_camera(win, ev);
 	}
     return 0;
 }

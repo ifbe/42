@@ -114,8 +114,8 @@ void* allocstyle()
 void arenavertex(struct arena* win)
 {
 	//fov
-	win->neardepth = 1.0;
-	win->nearstride = 1.0;
+	win->neardepth = 1000;
+	win->nearstride = 1000;
 
 	//target
 	win->target.vc[0] = 0.0;

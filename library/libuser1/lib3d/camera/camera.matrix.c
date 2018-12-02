@@ -72,8 +72,8 @@ void fixview(mat4 viewmatrix, struct arena* win)
 }
 void fixproj(mat4 projmatrix, struct arena* win)
 {
-	float n = win->neardepth;
-	float t = win->nearstride;
+	float n = (float)(win->neardepth) / 1000.0;
+	float t = (float)(win->nearstride) / 1000.0;
 	float w = (float)(win->width);
 	float h = (float)(win->height);
 
@@ -114,8 +114,8 @@ void fixmatrix(mat4 mvp, struct arena* win)
 
 void invproj(mat4 projmatrix, struct arena* win)
 {
-	float n = win->neardepth;
-	float t = win->nearstride;
+	float n = (float)(win->neardepth) / 1000.0;
+	float t = (float)(win->nearstride) / 1000.0;
 	float w = (float)(win->width);
 	float h = (float)(win->height);
 

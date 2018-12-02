@@ -157,15 +157,162 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 
 
 
-int actorinput_cameraevent(struct arena* win, struct event* ev)
+int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 {
 	short* t;
 	float x,y,z,w;
-	int x0,y0,x1,y1,id,sign = -1;
+	int x0,y0,sign;
+
+	sign = -1;
 	if(_vbo_ == win->fmt)sign = 1;
+	if(joy_left == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		if(t[3] & joyl_left)		//x-
+		{
+			win->target.vc[0] -= 10;
+			win->camera.vc[0] -= 10;
+			return 0;
+		}
+		if(t[3] & joyl_right)		//x+
+		{
+			win->target.vc[0] += 10;
+			win->camera.vc[0] += 10;
+			return 0;
+		}
+		if(t[3] & joyl_down)		//y-
+		{
+			win->target.vc[1] -= sign*10;
+			win->camera.vc[1] -= sign*10;
+			return 0;
+		}
+		if(t[3] & joyl_up)			//y+
+		{
+			win->target.vc[1] += sign*10;
+			win->camera.vc[1] += sign*10;
+			return 0;
+		}
+		if(t[3] & joyl_trigger)		//z-
+		{
+			target_deltaxyz(win, 0, 0, -1);
+			return 0;
+		}
+		if(t[3] & joyl_bumper)		//z+
+		{
+			target_deltaxyz(win, 0, 0, 1);
+			return 0;
+		}
+		if(t[3] & joyl_stick)		//w-
+		{
+			win->camera.vc[2] -= win->target.vc[2];
+			win->target.vc[2] = 0;
+			return 0;
+		}
+		if(t[3] & joyl_select)		//w+
+		{
+			return 0;
+		}
+
+		x0 = t[0];
+		if(x0 < -8192)x0 = -1;
+		else if(x0 > 8192)x0 = 1;
+		else x0 = 0;
+
+		y0 = t[1];
+		if(y0 < -8192)y0 = -1;
+		else if(y0 > 8192)y0 = 1;
+		else y0 = 0;
+
+		target_deltaxyz(win, x0, sign*y0, 0);
+		return 0;
+	}
+	if(joy_right == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		if(t[3] & joyr_left)		//x-
+		{
+			if(win->nearstride > 1)win->nearstride--;
+			x = win->nearstride;
+			z = win->neardepth;
+			say("%f,%f,fov=%f\n", x, z, arctan2(x, z)*180/PI);
+			return 0;
+		}
+		if(t[3] & joyr_right)		//x+
+		{
+			if(win->nearstride < 9999)win->nearstride++;
+			x = win->nearstride;
+			z = win->neardepth;
+			say("%f,%f,fov=%f\n", x, z, arctan2(x, z)*180/PI);
+			return 0;
+		}
+		if(t[3] & joyr_down)		//y-
+		{
+			if(win->neardepth > 1)win->neardepth--;
+			x = win->nearstride;
+			z = win->neardepth;
+			say("%f,%f,fov=%f\n", x, z, arctan2(x, z)*180/PI);
+			return 0;
+		}
+		if(t[3] & joyr_up)			//y+
+		{
+			if(win->neardepth < 9999)win->neardepth++;
+			x = win->nearstride;
+			z = win->neardepth;
+			say("%f,%f,fov=%f\n", x, z, arctan2(x, z)*180/PI);
+			return 0;
+		}
+		if(t[3] & joyr_trigger)		//z-
+		{
+			camera_zoom(win, 0.1);
+			return 0;
+		}
+		if(t[3] & joyr_bumper)		//z+
+		{
+			camera_zoom(win, -0.1);
+			return 0;
+		}
+		if(t[3] & joyr_stick)		//w-
+		{
+			x = win->camera.vc[0] - win->target.vc[0];
+			y = win->camera.vc[1] - win->target.vc[1];
+			z = win->camera.vc[2] - win->target.vc[2];
+			w = squareroot(x*x + y*y + z*z);
+
+			win->camera.vf[0] = 0.0;
+			win->camera.vf[1] = w*0.7071067811865476;
+			win->camera.vf[2] = -w*0.7071067811865476;
+
+			win->camera.vc[0] = win->target.vc[0];
+			win->camera.vc[1] = win->target.vc[1] - win->camera.vf[1];
+			win->camera.vc[2] = win->target.vc[2] - win->camera.vf[2];
+			return 0;
+		}
+		if(t[3] & joyr_start)		//w+
+		{
+			return 0;
+		}
+
+		x0 = t[0];
+		if(x0 < -8192)x0 = -1;
+		else if(x0 > 8192)x0 = 1;
+		else x0 = 0;
+
+		y0 = t[1];
+		if(y0 < -8192)y0 = -1;
+		else if(y0 > 8192)y0 = 1;
+		else y0 = 0;
+
+		camera_deltaxy(win, x0, -y0);
+	}
+}
+int actorinput_cameraevent(struct arena* win, struct event* ev)
+{
+	int x0,y0,x1,y1,id,sign;
 
 	if(_kbd_ == ev->what)
 	{
+		sign = -1;
+		if(_vbo_ == win->fmt)sign = 1;
 		if(0x4b == ev->why)
 		{
 			win->target.vc[0] -= 10;
@@ -191,117 +338,13 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			return 0;
 		}
 	}
-	if(joy_left == (ev->what & joy_mask))
+	else if(joy_event == (ev->what & 0xff))
 	{
-		t = (void*)ev;
-		if(t[3] & joyl_left)
-		{
-			win->target.vc[0] -= 10;
-			win->camera.vc[0] -= 10;
-			return 0;
-		}
-		if(t[3] & joyl_right)
-		{
-			win->target.vc[0] += 10;
-			win->camera.vc[0] += 10;
-			return 0;
-		}
-		if(t[3] & joyl_down)
-		{
-			win->target.vc[1] -= sign*10;
-			win->camera.vc[1] -= sign*10;
-			return 0;
-		}
-		if(t[3] & joyl_up)
-		{
-			win->target.vc[1] += sign*10;
-			win->camera.vc[1] += sign*10;
-			return 0;
-		}
-		if(t[3] & joyl_trigger)
-		{
-			target_deltaxyz(win, 0, 0, -1);
-			return 0;
-		}
-		if(t[3] & joyl_bumper)
-		{
-			target_deltaxyz(win, 0, 0, 1);
-			return 0;
-		}
-		if(t[3] & joyl_stick)
-		{
-			win->camera.vc[2] -= win->target.vc[2];
-			win->target.vc[2] = 0;
-			return 0;
-		}
-		if(t[3] & joyl_select)
-		{
-			return 0;
-		}
-
-		x0 = t[0];
-		if(x0 < -8192)x0 = -1;
-		else if(x0 > 8192)x0 = 1;
-		else x0 = 0;
-
-		y0 = t[1];
-		if(y0 < -8192)y0 = -1;
-		else if(y0 > 8192)y0 = 1;
-		else y0 = 0;
-
-		target_deltaxyz(win, x0, sign*y0, 0);
-		return 0;
+		actorinput_cameraevent_gamepad(win, ev);
 	}
-	if(joy_right == (ev->what & joy_mask))
+	else if(0x4070 == ev->what)
 	{
-		t = (void*)ev;
-		if(t[3] & joyr_trigger)
-		{
-			camera_zoom(win, 0.1);
-			return 0;
-		}
-		if(t[3] & joyr_bumper)
-		{
-			camera_zoom(win, -0.1);
-			return 0;
-		}
-		if(t[3] & joyr_stick)
-		{
-			x = win->camera.vc[0] - win->target.vc[0];
-			y = win->camera.vc[1] - win->target.vc[1];
-			z = win->camera.vc[2] - win->target.vc[2];
-			w = squareroot(x*x + y*y + z*z);
-
-			win->camera.vf[0] = 0.0;
-			win->camera.vf[1] = w*0.7071067811865476;
-			win->camera.vf[2] = -w*0.7071067811865476;
-
-			win->camera.vc[0] = win->target.vc[0];
-			win->camera.vc[1] = win->target.vc[1] - win->camera.vf[1];
-			win->camera.vc[2] = win->target.vc[2] - win->camera.vf[2];
-			return 0;
-		}
-		if(t[3] & joyr_start)
-		{
-			return 0;
-		}
-
-		x0 = t[0];
-		if(x0 < -8192)x0 = -1;
-		else if(x0 > 8192)x0 = 1;
-		else x0 = 0;
-
-		y0 = t[1];
-		if(y0 < -8192)y0 = -1;
-		else if(y0 > 8192)y0 = 1;
-		else y0 = 0;
-
-		camera_deltaxy(win, x0, -y0);
-	}
-
-	id = (ev->why)>>48;
-	if(0x4070 == ev->what)
-	{
+		id = (ev->why)>>48;
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
 		else if(id > 10)return 0;
@@ -341,13 +384,14 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 	}
 	else if(0x2b70 == ev->what)
 	{
+		id = (ev->why)>>48;
 		if('f' == id)camera_zoom(win, 0.1);
 		if('b' == id)camera_zoom(win, -0.1);
 	}
 	return 0;
 }
 int actorinput_editor_camera(struct arena* win, struct event* ev)
-{
+{/*
 	struct style* sty = 0;
 	struct relation* orel = 0;
 
@@ -366,14 +410,15 @@ int actorinput_editor_camera(struct arena* win, struct event* ev)
 		}
 		orel = samesrcprevdst(orel);
 	}
-
+*/
 	//move it
 	actorinput_cameraevent(win, ev);
-	if(sty)
+/*	if(sty)
 	{
 		sty->vc[0] = win->target.vc[0];
 		sty->vc[1] = win->target.vc[1];
 		sty->vc[2] = win->target.vc[2];
 	}
+*/
 	return 0;
 }
