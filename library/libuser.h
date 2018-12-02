@@ -78,6 +78,7 @@ typedef float mat4[4][4];
 #define gamepad3 15
 //
 #define joy_mask  0xff00ff
+#define joy_event hex32('j', 0 , 0 , 0 )
 #define joy_left  hex32('j', 0 ,'l', 0 )
 #define joy_right hex32('j', 0 ,'r', 0 )
 //

@@ -205,7 +205,11 @@ int actorinput_3d(struct arena* win, struct style* sty, struct event* ev)
 	struct actor* act;
 	struct pinid* pin;
 	struct relation* orel;
-    if('p' == (ev->what&0xff))actorinput_editor_camera(win, ev);
+    if(	('p' == (ev->what&0xff)) |
+		(joy_event == (ev->what&joy_mask)) )
+	{
+		return actorinput_editor_camera(win, ev);
+	}
 
 	orel = win->oreln;
 	if(0 == orel)return 0;

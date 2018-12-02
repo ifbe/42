@@ -5,6 +5,7 @@
 #define menu1 0x1111
 #define menu2 0x2222
 int lowlevel_input();
+int arenaevent(void*);
 
 
 
@@ -112,82 +113,7 @@ DWORD WINAPI trayworker()
 
 
 
-/*
-void joyprint(int id, XINPUT_GAMEPAD g)
-{
-	int j,k;
-	short t[4]; 
-	struct event ev;
 
-	for(j=0;j<16;j++)
-	{
-		if(0 == xtab[j].val)continue;
-
-		k = 1<<j;
-		if((0 != (g.wButtons&k)) && (0 == (btn&k)))
-		{
-			//say("	%x:%s\n", k, xtab[j].name);
-
-			t[0] = 0;
-			t[1] = 0;
-			t[2] = xtab[j].val;
-			t[3] = id;
-			ev.why = *(u64*)t;
-			ev.what = _joy_;
-			ev.where = 0;
-			actorevent(&ev);
-		}
-	}
-	btn = g.wButtons;
-
-	if(g.bLeftTrigger > 8)
-	{
-		t[0] = g.bLeftTrigger;
-		t[1] = 0;
-		t[2] = _lt_;
-		t[3] = id;
-		ev.why = *(u64*)t;
-		ev.what = _joy_;
-		ev.where = 0;
-		actorevent(&ev);
-	}
-
-	if(g.bRightTrigger > 8)
-	{
-		t[0] = g.bRightTrigger;
-		t[1] = 0;
-		t[2] = _rt_;
-		t[3] = id;
-		ev.why = *(u64*)t;
-		ev.what = _joy_;
-		ev.where = 0;
-		actorevent(&ev);
-	}
-
-	if(	(g.sThumbLX < -2048) | (g.sThumbLX > 2048) | (g.sThumbLY < -2048) | (g.sThumbLY > 2048) )
-	{
-		t[0] = g.sThumbLX;
-		t[1] = g.sThumbLY;
-		t[2] = 'l';
-		t[3] = id;
-		ev.why = *(u64*)t;
-		ev.what = _joy_;
-		ev.where = 0;
-		actorevent(&ev);
-	}
-
-	if(	(g.sThumbRX < -2048) | (g.sThumbRX > 2048) | (g.sThumbRY < -2048) | (g.sThumbRY > 2048) )
-	{
-		t[0] = g.sThumbRX;
-		t[1] = g.sThumbRY;
-		t[2] = 'r';
-		t[3] = id;
-		ev.why = *(u64*)t;
-		ev.what = _joy_;
-		ev.where = 0;
-		actorevent(&ev);
-	}
-}*/
 void joyprint(int id, XINPUT_GAMEPAD g)
 {
 	//0x0001	XINPUT_GAMEPAD_DPAD_UP
@@ -239,7 +165,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		t[1] = 0x30 + id;
 		t[2] = 'l';
 		t[3] = '0';
-		actorevent(&ev);
+		arenaevent(&ev);
 	}
 
 	//right
@@ -263,7 +189,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		t[1] = 0x30 + id;
 		t[2] = 'r';
 		t[3] = '0';
-		actorevent(&ev);
+		arenaevent(&ev);
 	}
 }
 void* joystickthread(void* win)
