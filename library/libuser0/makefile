@@ -152,62 +152,69 @@ linuxsdl:target
 .PHONY:maccli
 maccli:target
 	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os/osmac/mac.cli.c
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
+	$(compiler) $(cflag) os/osmac/mac.1.cli.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:mactui
 mactui:target
 	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os/osmac/mac.tui.c
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
+	$(compiler) $(cflag) os/osmac/mac.1.tui.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:maccocoa
 maccocoa:target
 	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os/osmac/mac.cocoa.m
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
+	$(compiler) $(cflag) os/osmac/mac.1.cocoa.m
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:macquartz
 macquartz:target
 	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os/osmac/mac.quartz.c
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
+	$(compiler) $(cflag) os/osmac/mac.1.quartz.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:macglfw
 macglfw:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
 	$(compiler) $(cflag) 3rd/bygl/gl.object.c
 	$(compiler) $(cflag) 3rd/bygl/gl.shader.c
 	$(compiler) $(cflag) 3rd/bygl/gl.texture.c
 	$(compiler) $(cflag) 3rd/bygl/gl.vertex.c
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:macglut
 macglut:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 
 .PHONY:macsdl
 macsdl:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.term.c
+	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	$(compiler) $(cflag) os/osmac/mac.tray.c
-	$(compiler) $(cflag) os/osmac/mac.cam.c
-	$(compiler) $(cflag) os/osmac/mac.mic.c
+	$(compiler) $(cflag) os/osmac/mac.2.mic.c
+	$(compiler) $(cflag) os/osmac/mac.3.cam.c
 #########################################################
 
 

@@ -30,7 +30,7 @@ void termcreate(struct arena* win)
 
 
 
-void inittray()
+void initterm()
 {
 	struct termios t;
 	tcgetattr(STDIN_FILENO, &t);
@@ -41,7 +41,7 @@ void inittray()
 	t.c_cc[VMIN] = 1;
 	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
-void freetray()
+void freeterm()
 {
 	struct termios t;
 	tcgetattr(STDIN_FILENO, &t);

@@ -13,12 +13,15 @@
 
 
 
+void initterm(void*);
+void freeterm();
+int termcreate(void*, void*);
+int termdelete(void*);
+//
 void inittray(void*);
 void freetray();
 int traycreate(void*, void*);
 int traydelete(void*);
-int termcreate(void*, void*);
-int termdelete(void*);
 //window
 void initwindow(void*);
 void freewindow();
@@ -519,6 +522,7 @@ void freearena()
 
 	freewindow();
 	freetray();
+	freeterm();
 }
 void initarena(u8* addr)
 {
@@ -530,6 +534,7 @@ void initarena(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j]=0;
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
+	initterm(arena);
 	inittray(arena);
 	initwindow(arena);
 
