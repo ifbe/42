@@ -959,6 +959,8 @@ int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
+int nodetree_rootread(void*, void*, void*, int);
+int nodetree_rootwrite(void*, void*, void*, int);
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 int memorydelete(void*);

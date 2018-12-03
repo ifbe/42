@@ -126,7 +126,8 @@ void terminalthread(struct arena* win)
 			eventwrite(ret, _char_, 0, 0);
 		}
 		else {
-			say("%x\n", ret);
+			//say("%x\n", ret);
+			nodetree_rootwrite(win, 0, &ret, 1);
 		}
 	}
 }
@@ -134,4 +135,14 @@ void termcreate(struct arena* win)
 {
 	threadcreate(joystickthread, win);
 	threadcreate(terminalthread, win);
+}
+
+
+
+
+void initterm()
+{
+}
+void freeterm()
+{
 }
