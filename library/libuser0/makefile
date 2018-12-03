@@ -62,78 +62,87 @@ efifb:target
 .PHONY:linuxcli
 linuxcli:target
 	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os/oslinux/linux.cli.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
+	$(compiler) $(cflag) os/oslinux/linux.1.cli.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxtui
 linuxtui:target
 	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os/oslinux/linux.tui.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
+	$(compiler) $(cflag) os/oslinux/linux.1.tui.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxfb
 linuxfb:target
 	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os/oslinux/linux.fb.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
+	$(compiler) $(cflag) os/oslinux/linux.1.fb.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxgtk
 linuxgtk:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` os/oslinux/linux.gtk.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxwayland
 linuxwayland:target
 	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os/oslinux/linux.wayland.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
+	$(compiler) $(cflag) os/oslinux/linux.1.wayland.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxxlib
 linuxxlib:target
 	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os/oslinux/linux.xlib.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
+	$(compiler) $(cflag) os/oslinux/linux.1.xlib.c
+	$(compiler) $(cflag) os/oslinux/linux.2.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.3.pulseaudio.c
 
 .PHONY:linuxglfw
 linuxglfw:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
 	$(compiler) $(cflag) 3rd/bygl/gl.object.c
 	$(compiler) $(cflag) 3rd/bygl/gl.shader.c
 	$(compiler) $(cflag) 3rd/bygl/gl.texture.c
 	$(compiler) $(cflag) 3rd/bygl/gl.vertex.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxglut
 linuxglut:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 
 .PHONY:linuxsdl
 linuxsdl:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.term.c
+	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	$(compiler) $(cflag) os/oslinux/linux.tray.c
-	$(compiler) $(cflag) os/oslinux/linux.pulseaudio.c
-	$(compiler) $(cflag) os/oslinux/linux.v4l2.c
+	$(compiler) $(cflag) os/oslinux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/oslinux/linux.3.v4l2.c
 #########################################################
 
 
@@ -208,62 +217,69 @@ macsdl:target
 .PHONY:wincli
 wincli:target
 	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os/oswin/win.cli.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
+	$(compiler) $(cflag) os/oswin/win.1.cli.c
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 
 .PHONY:wintui
 wintui:target
 	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os/oswin/win.tui.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
+	$(compiler) $(cflag) os/oswin/win.1.tui.c
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 
 .PHONY:winapi
 winapi:target
 	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os/oswin/win.api.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
+	$(compiler) $(cflag) os/oswin/win.1.api.c
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 
 .PHONY:wind3d
 wind3d:target
 	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os/oswin/win.d3d.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
+	$(compiler) $(cflag) os/oswin/win.1.d3d.c
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 
 .PHONY:winglfw
 winglfw:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
 	$(compiler) $(cflag) 3rd/bygl/gl.object.c
 	$(compiler) $(cflag) 3rd/bygl/gl.shader.c
 	$(compiler) $(cflag) 3rd/bygl/gl.texture.c
 	$(compiler) $(cflag) 3rd/bygl/gl.vertex.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 
 .PHONY:winglut
 winglut:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
 	$(compiler) $(cflag) os/oswin/win.waveio.c
 	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
 
 .PHONY:winsdl
 winsdl:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.term.c
+	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c
-	$(compiler) $(cflag) os/oswin/win.tray.c
-	$(compiler) $(cflag) os/oswin/win.waveio.c
-	g++ $(cflag) -fno-rtti os/oswin/win.dshow.cpp
+	$(compiler) $(cflag) os/oswin/win.2.waveio.c
+	g++ $(cflag) -fno-rtti os/oswin/win.3.dshow.cpp
 ##########################################################
 
 

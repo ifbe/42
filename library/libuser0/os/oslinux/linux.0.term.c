@@ -123,7 +123,7 @@ void terminalthread(struct arena* win)
 		}
 	}
 }
-void traycreate(struct arena* win)
+void termcreate(struct arena* win)
 {
 	threadcreate(joystickthread, win);
 	threadcreate(terminalthread, win);
@@ -132,7 +132,7 @@ void traycreate(struct arena* win)
 
 
 
-void inittray()
+void initterm()
 {
 	struct termios t;
 	tcgetattr(STDIN_FILENO, &t);
@@ -144,7 +144,7 @@ void inittray()
 
 	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
-void freetray()
+void freetterm()
 {
 	struct termios t;
 	tcgetattr(STDIN_FILENO, &t);

@@ -1,12 +1,14 @@
 #include "libuser.h"
+#define _term_ hex32('t','e','r','m')
+#define _tray_ hex32('t','r','a','y')
+#define _mic_  hex32('m','i','c',0)
+#define _cam_  hex32('c','a','m',0)
 #define _node_ hex32('n','o','d','e')
 #define _func_ hex32('f','u','n','c')
 #define _html_ hex32('h','t','m','l')
 #define _rgba_ hex32('r','g','b','a')
 #define _pcb_  hex32('p','c','b',0)
 #define _xml_  hex32('x','m','l',0)
-#define _cam_  hex32('c','a','m',0)
-#define _mic_  hex32('m','i','c',0)
 
 
 
@@ -15,6 +17,8 @@ void inittray(void*);
 void freetray();
 int traycreate(void*, void*);
 int traydelete(void*);
+int termcreate(void*, void*);
+int termdelete(void*);
 //window
 void initwindow(void*);
 void freewindow();
@@ -249,10 +253,17 @@ void* arenacreate(u64 type, void* addr)
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
 
-	if(_dbg_ == type)
+	if(_term_ == type)
 	{
-		win->type = _dbg_;
-		win->fmt = _cli_;
+		win->type = _term_;
+		win->fmt = _term_;
+
+		termcreate(win, addr);
+	}
+	else if(_tray_ == type)
+	{
+		win->type = _tray_;
+		win->fmt = _tray_;
 
 		traycreate(win, addr);
 	}
@@ -522,7 +533,8 @@ void initarena(u8* addr)
 	inittray(arena);
 	initwindow(arena);
 
-	arenacreate(_dbg_,  0);
+	arenacreate(_term_, 0);
+	arenacreate(_tray_, 0);
 	arenacreate(_func_, 0);
 	arenacreate(_html_, 0);
 	arenacreate(_json_, 0);
