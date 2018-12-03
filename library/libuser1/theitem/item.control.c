@@ -1,5 +1,6 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+int boardread( int,int,void*,int);
+int boardwrite(int,int,void*,int);
 
 
 

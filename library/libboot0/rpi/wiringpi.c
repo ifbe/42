@@ -1,11 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<wiringPi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <wiringPi.h>
+#include "libboot.h"
+#define _gpio_ hex32('g','p','i','o')
+#define _pwm_  hex32('p','w','m',0)
+#define _car_  hex32('c','a','r',0)
 
 
 
 
-void motorwrite(int L, int R)
+void carmove(int L, int R)
 {
 	digitalWrite( 3, HIGH);
 	digitalWrite(21, L);
@@ -21,57 +25,107 @@ void motorwrite(int L, int R)
 	digitalWrite(28, !R);
 	digitalWrite(29, HIGH);
 }
-void motorstop()
+void carstart()
 {
-	digitalWrite( 3, 0);
-	digitalWrite(25, 0);
-
-	digitalWrite( 5, 0);
-	digitalWrite(29, 0);
-}
-void main(int argc, char** argv)
-{
-	int L,R;
-	if(argc < 3)
-	{
-		printf("./a.out 1 0\n");
-		return;
-	}
-
 	wiringPiSetup();
 
-	pinMode( 3,OUTPUT);
-	pinMode(21,OUTPUT);
-	pinMode(22,OUTPUT);
-	pinMode(23,OUTPUT);
-	pinMode(24,OUTPUT);
-	pinMode(25,OUTPUT);
+	pinMode( 3, OUTPUT);
+	pinMode(21, OUTPUT);
+	pinMode(22, OUTPUT);
+	pinMode(23, OUTPUT);
+	pinMode(24, OUTPUT);
+	pinMode(25, OUTPUT);
 
-	pinMode( 5,OUTPUT);
-	pinMode( 6,OUTPUT);
-	pinMode(26,OUTPUT);
-	pinMode(27,OUTPUT);
-	pinMode(28,OUTPUT);
-	pinMode(29,OUTPUT);
+	pinMode( 5, OUTPUT);
+	pinMode( 6, OUTPUT);
+	pinMode(26, OUTPUT);
+	pinMode(27, OUTPUT);
+	pinMode(28, OUTPUT);
+	pinMode(29, OUTPUT);
+}
+void carstop()
+{
+	digitalWrite( 3, LOW);
+	digitalWrite(21, LOW);
+	digitalWrite(22, LOW);
+	digitalWrite(23, LOW);
+	digitalWrite(24, LOW);
+	digitalWrite(25, LOW);
 
-	L = argv[1][0] - 0x30;
-	R = argv[2][0] - 0x30;
-	motorwrite(L, R);
+	digitalWrite( 5, LOW);
+	digitalWrite( 6, LOW);
+	digitalWrite(26, LOW);
+	digitalWrite(27, LOW);
+	digitalWrite(28, LOW);
+	digitalWrite(29, LOW);
 
-	usleep(2000*1000);
-	motorstop();
+	pinMode( 3, INPUT);
+	pinMode(21, INPUT);
+	pinMode(22, INPUT);
+	pinMode(23, INPUT);
+	pinMode(24, INPUT);
+	pinMode(25, INPUT);
 
-	pinMode( 3,INPUT);
-	pinMode(21,INPUT);
-	pinMode(22,INPUT);
-	pinMode(23,INPUT);
-	pinMode(24,INPUT);
-	pinMode(25,INPUT);
+	pinMode( 5, INPUT);
+	pinMode( 6, INPUT);
+	pinMode(26, INPUT);
+	pinMode(27, INPUT);
+	pinMode(28, INPUT);
+	pinMode(29, INPUT);
+}
 
-	pinMode( 5,INPUT);
-	pinMode( 6,INPUT);
-	pinMode(26,INPUT);
-	pinMode(27,INPUT);
-	pinMode(28,INPUT);
-	pinMode(29,INPUT);
+
+
+
+int boardread(int type, int addr, u8* buf, int len)
+{
+	switch(type)
+	{
+		case _gpio_:
+		{
+			return digitalread(addr);
+			break;
+		}
+		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	}
+	return 0;
+}
+int boardwrite(int type, int addr, u8* buf, int len)
+{
+	switch(type)
+	{
+		case _gpio_:
+		{
+			//_gpio_, 29, "o,1"
+			switch(buf[0])
+			{
+				case 'i':pinMode(addr, INPUT);break;
+				case 'o':pinMode(addr, OUTPUT);break;
+				case '1':digitalWrite(addr, HIGH);break;
+				case '0':digitalWrite(addr, LOW);break;
+			}
+			break;
+		}
+		case _pwm_:
+		{
+			//_pwm_, 18, "1ms/2ms"
+			break;
+		}
+		case _car_:
+		{
+			//_car_, 0, "start, farward"
+			switch(buf[0])
+			{
+				case 'l':carmove(1, 0);break;
+				case 'r':carmove(0, 1);break;
+				case 'n':carmove(0, 0);break;
+				case 'f':carmove(1, 1);break;
+				case '+':carstart();break;
+				case '-':carstop();break;
+			}
+			break;
+		}
+		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	}
+	return 0;
 }
