@@ -83,7 +83,7 @@ int boardread(int type, int addr, u8* buf, int len)
 	{
 		case _gpio_:
 		{
-			return digitalread(addr);
+			return digitalRead(addr);
 			break;
 		}
 		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
