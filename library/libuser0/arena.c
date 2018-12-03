@@ -522,12 +522,13 @@ void initarena(u8* addr)
 	inittray(arena);
 	initwindow(arena);
 
+	arenacreate(_dbg_,  0);
 	arenacreate(_func_, 0);
 	arenacreate(_html_, 0);
 	arenacreate(_json_, 0);
 	arenacreate(_rgba_, 0);
 	arenacreate(_vbo_,  0);
-	arenacreate(_pcb_, 0);
+	arenacreate(_pcb_,  0);
 	arenacreate(_xml_,  0);
 	//say("[c,f):inited arena\n");
 }

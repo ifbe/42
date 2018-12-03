@@ -109,17 +109,24 @@ void joystickthread()
 
 	close(fd);
 }
-void terminalthread(void* win)
+void terminalthread(struct arena* win)
 {
+	int ret;
 	while(1)
 	{
-		eventwrite(lowlevel_input(), _char_, 0, 0);
+		ret = lowlevel_input();
+		if(0 == win->orel0){
+			eventwrite(ret, _char_, 0, 0);
+		}
+		else {
+			say("%x\n", ret);
+		}
 	}
 }
 void traycreate(struct arena* win)
 {
-	threadcreate(joystickthread, 0);
-	threadcreate(terminalthread, 0);
+	threadcreate(joystickthread, win);
+	threadcreate(terminalthread, win);
 }
 
 

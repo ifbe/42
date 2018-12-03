@@ -69,7 +69,6 @@ void loop()
 	//before
 	u64 t0;
 	u64 dt;
-	void* dbg;
 	void* win;
 	struct event* ev;
 
@@ -84,7 +83,6 @@ void loop()
 	//http = arterycreate("HTTP://127.0.0.1:4444");
 
 	//+libuser
-	dbg = arenacreate(_dbg_, 0);
 	win = arenacreate(_win_,  0);
 
 	//forever
@@ -115,7 +113,6 @@ void loop()
 
 	//-libuser
 	arenadelete(win);
-	//arenadelete(dbg);
 
 	//-libsoft
 

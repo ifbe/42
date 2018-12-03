@@ -7,6 +7,29 @@ int lowlevel_input();
 
 
 
+void terminalthread(struct arena* win)
+{
+	int ret;
+	while(1)
+	{
+		ret = lowlevel_input();
+		if(0 == win->orel0){
+			eventwrite(ret, _char_, 0, 0);
+		}
+		else {
+			say("%x\n", ret);
+		}
+	}
+}
+void traycreate(struct arena* win)
+{
+	//threadcreate(joystickthread, win);
+	threadcreate(terminalthread, win);
+}
+
+
+
+
 void inittray()
 {
         struct termios t;
@@ -26,21 +49,4 @@ void freetray()
         fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
         t.c_lflag |= ICANON|ECHO;
         tcsetattr(STDIN_FILENO, TCSANOW, &t);
-}
-
-
-
-
-void terminalthread(void* win)
-{
-	inittray();
-	while(1)
-	{
-		eventwrite(lowlevel_input(), _char_, 0, 0);
-	}
-	freetray();
-}
-void traycreate(struct arena* win)
-{
-	threadcreate(terminalthread, 0);
 }
