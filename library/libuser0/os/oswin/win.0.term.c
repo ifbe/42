@@ -21,7 +21,6 @@ void terminalthread(struct arena* win)
 }
 void termcreate(struct arena* win)
 {
-	threadcreate(joystickthread, win);
 	threadcreate(terminalthread, win);
 }
 

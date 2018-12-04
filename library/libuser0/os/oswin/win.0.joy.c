@@ -84,7 +84,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		arenaevent(&ev);
 	}
 }
-void* joystickthread(void* win)
+void* gamepadthread(void* win)
 {
 	XINPUT_STATE s;
 	Sleep(1);
@@ -113,7 +113,7 @@ void* joystickthread(void* win)
 }
 void joycreate(struct arena* win)
 {
-	threadcreate(joystickthread, win);
+	threadcreate(gamepadthread, win);
 }
 
 
