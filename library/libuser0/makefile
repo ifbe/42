@@ -3,16 +3,16 @@ cflag ?= -c -O2 -fPIC -I.
 SRC = arena.c \
 in/in.ev.c \
 in/in.data.c \
-out/out.cli.c \
-out/out.func.c \
-out/out.html.c \
-out/out.json.c \
-out/out.pcb.c \
-out/out.rgba.c \
-out/out.sch.c \
-out/out.tui.c \
-out/out.vbo.c \
-out/out.xml.c
+out/cli/out.cli.c \
+out/func/out.func.c \
+out/html/out.html.c \
+out/json/out.json.c \
+out/pcb/out.pcb.c \
+out/rgba/out.rgba.c \
+out/sch/out.sch.c \
+out/tui/out.tui.c \
+out/vbo/out.vbo.c \
+out/xml/out.xml.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
