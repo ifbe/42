@@ -9,7 +9,7 @@
 
 
 
-void carmove(int L, int R)
+void carstart(int L, int R)
 {
 	digitalWrite( 3, HIGH);
 	digitalWrite(21, L);
@@ -24,24 +24,6 @@ void carmove(int L, int R)
 	digitalWrite(27, R);
 	digitalWrite(28, !R);
 	digitalWrite(29, HIGH);
-}
-void carstart()
-{
-	wiringPiSetup();
-
-	pinMode( 3, OUTPUT);
-	pinMode(21, OUTPUT);
-	pinMode(22, OUTPUT);
-	pinMode(23, OUTPUT);
-	pinMode(24, OUTPUT);
-	pinMode(25, OUTPUT);
-
-	pinMode( 5, OUTPUT);
-	pinMode( 6, OUTPUT);
-	pinMode(26, OUTPUT);
-	pinMode(27, OUTPUT);
-	pinMode(28, OUTPUT);
-	pinMode(29, OUTPUT);
 }
 void carstop()
 {
@@ -58,6 +40,10 @@ void carstop()
 	digitalWrite(27, LOW);
 	digitalWrite(28, LOW);
 	digitalWrite(29, LOW);
+}
+void cardelete()
+{
+	carstop();
 
 	pinMode( 3, INPUT);
 	pinMode(21, INPUT);
@@ -72,6 +58,26 @@ void carstop()
 	pinMode(27, INPUT);
 	pinMode(28, INPUT);
 	pinMode(29, INPUT);
+}
+void carcreate()
+{
+	wiringPiSetup();
+
+	pinMode( 3, OUTPUT);
+	pinMode(21, OUTPUT);
+	pinMode(22, OUTPUT);
+	pinMode(23, OUTPUT);
+	pinMode(24, OUTPUT);
+	pinMode(25, OUTPUT);
+
+	pinMode( 5, OUTPUT);
+	pinMode( 6, OUTPUT);
+	pinMode(26, OUTPUT);
+	pinMode(27, OUTPUT);
+	pinMode(28, OUTPUT);
+	pinMode(29, OUTPUT);
+
+	carstop();
 }
 
 
@@ -116,12 +122,13 @@ int boardwrite(int type, int addr, u8* buf, int len)
 			//_car_, 0, "start, farward"
 			switch(buf[0])
 			{
-				case 'l':carmove(1, 0);break;
-				case 'r':carmove(0, 1);break;
-				case 'n':carmove(0, 0);break;
-				case 'f':carmove(1, 1);break;
-				case '+':carstart();break;
-				case '-':carstop();break;
+				case 'l':carstart(1, 0);break;
+				case 'r':carstart(0, 1);break;
+				case 'n':carstart(0, 0);break;
+				case 'f':carstart(1, 1);break;
+				case ' ':carstop();break;
+				case '+':carcreate();break;
+				case '-':cardelete();break;
 			}
 			break;
 		}

@@ -23,15 +23,15 @@ int driverevent(void*);
 int deviceread_all();
 int deviceevent(void*);
 //
-void* arenacreate(u64,u64);
-void arenadelete(void*);
-//
 u64 timeread();
 void timewrite(u64);
 void sleep_us();
 //
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
+//
+void role_create();
+void role_delete();
 //i
 int input(void*, int);
 //o
@@ -69,21 +69,9 @@ void loop()
 	//before
 	u64 t0;
 	u64 dt;
-	void* win;
 	struct event* ev;
 
-	//+libhard
-	//ahci = devicecreate()
-	//xhci = devicecreate()
-
-	//+libsoft
-	//hack = arterycreate("HACK://127.0.0.1:2222");
-	//hack = arterycreate("CHAT://127.0.0.1:4444");
-	//sshd = arterycreate( "SSH://127.0.0.1:2222");
-	//http = arterycreate("HTTP://127.0.0.1:4444");
-
-	//+libuser
-	win = arenacreate(_win_,  0);
+	role_create();
 
 	//forever
 	while(alive)
@@ -111,10 +99,5 @@ void loop()
 		if(dt < 16000)sleep_us(16000-dt);
 	}
 
-	//-libuser
-	arenadelete(win);
-
-	//-libsoft
-
-	//-libhard
+	role_delete();
 }

@@ -1,5 +1,7 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+#define _car_ hex32('c','a','r',0)
+int boardread(int,int,void*,int);
+int boardwrite(int,int,void*,int);
 
 
 
@@ -140,6 +142,63 @@ static void rccar_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	u8* p;
+	short* t;
+	if(len > 0)
+	{
+		p = (void*)ev;
+		switch(p[0])
+		{
+			case 'a':boardwrite(_car_, 0, "l", 0);break;
+			case 'd':boardwrite(_car_, 0, "r", 0);break;
+			case 's':boardwrite(_car_, 0, "n", 0);break;
+			case 'w':boardwrite(_car_, 0, "f", 0);break;
+			default:boardwrite(_car_, 0, " ", 0);
+		}
+		return;
+	}
+
+	if(_char_ == ev->what)
+	{
+		switch(ev->why)
+		{
+			case 'a':boardwrite(_car_, 0, "l", 0);break;
+			case 'd':boardwrite(_car_, 0, "r", 0);break;
+			case 's':boardwrite(_car_, 0, "n", 0);break;
+			case 'w':boardwrite(_car_, 0, "f", 0);break;
+			default:boardwrite(_car_, 0, " ", 0);
+		}
+		return;
+	}
+
+	if(joy_event == (ev->what & 0xff))
+	{
+		if(joy_left == (ev->what & joy_mask))
+		{
+			t = (void*)ev;
+			if(t[3] & joyl_left)		//x-
+			{
+				boardwrite(_car_, 0, "l", 0);
+				return;
+			}
+			if(t[3] & joyl_right)		//x+
+			{
+				boardwrite(_car_, 0, "r", 0);
+				return;
+			}
+			if(t[3] & joyl_down)		//y-
+			{
+				boardwrite(_car_, 0, "n", 0);
+				return;
+			}
+			if(t[3] & joyl_up)			//y+
+			{
+				boardwrite(_car_, 0, "f", 0);
+				return;
+			}
+			boardwrite(_car_, 0, " ", 0);
+		}
+	}
 }
 static void rccar_get()
 {
@@ -160,11 +219,13 @@ static void rccar_start(
 static void rccar_delete(struct actor* act)
 {
 	if(0 == act)return;
+	boardwrite(_car_, 0, "-", 0);
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void rccar_create(struct actor* act)
 {
 	if(0 == act)return;
+	boardwrite(_car_, 0, "+", 0);
 	//if(_orig_ == act->type)act->buf = buffer;
 	//if(_copy_ == act->type)act->buf = memorycreate(256);
 }
