@@ -7,20 +7,12 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
 static int roletype = 0;
+void role_delete()
+{
+}
 void role_create()
 {
-	void* win;
-	void* act;
-	if(roletype)
-	{
-		win = arenacreate(_win_, 0);
-		act = actorcreate(_rccar_, 0);
-		arenaactor(win, act);
-
-		win = arenalist("term", 0);
-		relationcreate(act, 0, _act_, win, 0, _win_);
-		return;
-	}
+	if(roletype)return;
 
 	//+libhard
 	//ahci = devicecreate()
@@ -35,20 +27,54 @@ void role_create()
 	//+libuser
 	arenacreate(_win_,  0);
 }
-void role_delete()
+
+
+
+
+void role_rccar(int argc, u8** argv)
+{
+	void* win;
+	void* act;
+
+	win = arenacreate(_win_, 0);
+	act = actorcreate(_rccar_, 0);
+	arenaactor(win, act);
+
+	win = arenalist("term", 0);
+	relationcreate(act, 0, _act_, win, 0, _win_);
+	return;
+}
+void role_control(int argc, u8** argv)
+{
+}
+void role_uarthelp(int argc, u8** argv)
 {
 }
 void role(u8* buf, int len)
 {
-	int j,k;
+	int j,argc;
 	u8* argv[8];
 	u8 tmp[0x1000];
 
 	//if(buf[len-1] <= 0xa)len--;
 	//say("%.*s\n", len, buf);
 
-	k = str2arg(buf, len, tmp, 0x1000, argv, 8);
-	if(k < 2)return;
+	argc = str2arg(buf, len, tmp, 0x1000, argv, 8);
+	if(argc < 2)return;
 
-	if(0 == ncmp(argv[1], "rccar", 5))roletype = 1;
+	if(0 == ncmp(argv[1], "rccar", 5))
+	{
+		roletype = 1;
+		role_rccar(argc-1, &argv[1]);
+	}
+	else if(0 == ncmp(argv[1], "control", 7))
+	{
+		roletype = 2;
+		role_control(argc-1, &argv[1]);
+	}
+	else if(0 == ncmp(argv[1], "uart", 4))
+	{
+		roletype = 3;
+		role_uarthelp(argc-1, &argv[1]);
+	}
 }
