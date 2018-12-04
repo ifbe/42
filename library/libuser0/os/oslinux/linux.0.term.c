@@ -145,7 +145,7 @@ void initterm()
 
 	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
-void freetterm()
+void freeterm()
 {
 	struct termios t;
 	tcgetattr(STDIN_FILENO, &t);
