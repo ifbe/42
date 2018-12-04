@@ -62,6 +62,7 @@ efifb:target
 .PHONY:linuxcli
 linuxcli:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) os/oslinux/linux.1.cli.c
@@ -71,6 +72,7 @@ linuxcli:target
 .PHONY:linuxtui
 linuxtui:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) os/oslinux/linux.1.tui.c
@@ -80,6 +82,7 @@ linuxtui:target
 .PHONY:linuxfb
 linuxfb:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) os/oslinux/linux.1.fb.c
@@ -89,6 +92,7 @@ linuxfb:target
 .PHONY:linuxgtk
 linuxgtk:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` os/oslinux/linux.gtk.c
@@ -98,6 +102,7 @@ linuxgtk:target
 .PHONY:linuxwayland
 linuxwayland:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) os/oslinux/linux.1.wayland.c
@@ -107,6 +112,7 @@ linuxwayland:target
 .PHONY:linuxxlib
 linuxxlib:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) os/oslinux/linux.1.xlib.c
@@ -116,6 +122,7 @@ linuxxlib:target
 .PHONY:linuxglfw
 linuxglfw:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
@@ -129,6 +136,7 @@ linuxglfw:target
 .PHONY:linuxglut
 linuxglut:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
@@ -138,6 +146,7 @@ linuxglut:target
 .PHONY:linuxsdl
 linuxsdl:target
 	rm -f linux.*.o gl*.o
+	$(compiler) $(cflag) os/oslinux/linux.0.joy.c
 	$(compiler) $(cflag) os/oslinux/linux.0.term.c
 	$(compiler) $(cflag) os/oslinux/linux.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
@@ -152,6 +161,7 @@ linuxsdl:target
 .PHONY:maccli
 maccli:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) os/osmac/mac.1.cli.c
@@ -161,6 +171,7 @@ maccli:target
 .PHONY:mactui
 mactui:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) os/osmac/mac.1.tui.c
@@ -170,6 +181,7 @@ mactui:target
 .PHONY:maccocoa
 maccocoa:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) os/osmac/mac.1.cocoa.m
@@ -179,6 +191,7 @@ maccocoa:target
 .PHONY:macquartz
 macquartz:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) os/osmac/mac.1.quartz.c
@@ -188,6 +201,7 @@ macquartz:target
 .PHONY:macglfw
 macglfw:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
@@ -201,6 +215,7 @@ macglfw:target
 .PHONY:macglut
 macglut:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
@@ -210,6 +225,7 @@ macglut:target
 .PHONY:macsdl
 macsdl:target
 	rm -f mac.*.o gl*.o
+	$(compiler) $(cflag) os/osmac/mac.0.joy.c
 	$(compiler) $(cflag) os/osmac/mac.0.term.c
 	$(compiler) $(cflag) os/osmac/mac.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
@@ -224,6 +240,7 @@ macsdl:target
 .PHONY:wincli
 wincli:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) os/oswin/win.1.cli.c
@@ -233,6 +250,7 @@ wincli:target
 .PHONY:wintui
 wintui:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) os/oswin/win.1.tui.c
@@ -242,6 +260,7 @@ wintui:target
 .PHONY:winapi
 winapi:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) os/oswin/win.1.api.c
@@ -251,6 +270,7 @@ winapi:target
 .PHONY:wind3d
 wind3d:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) os/oswin/win.1.d3d.c
@@ -260,6 +280,7 @@ wind3d:target
 .PHONY:winglfw
 winglfw:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glfw.c
@@ -273,6 +294,7 @@ winglfw:target
 .PHONY:winglut
 winglut:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bygl/glut.c
@@ -282,6 +304,7 @@ winglut:target
 .PHONY:winsdl
 winsdl:target
 	rm -f win.*.o gl*.o
+	$(compiler) $(cflag) os/oswin/win.0.joy.c
 	$(compiler) $(cflag) os/oswin/win.0.term.c
 	$(compiler) $(cflag) os/oswin/win.0.tray.c
 	$(compiler) $(cflag) 3rd/bysdl/sdl2.c
