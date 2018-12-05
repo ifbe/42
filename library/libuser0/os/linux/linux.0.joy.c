@@ -11,6 +11,7 @@
 void joystick_event(struct arena* win, void* p)
 {
 	struct event ev;
+//printf("orel=%llx\n",win->orel0);
 	if(0 == win->orel0)
 	{
 		eventwrite(*(u64*)(p+0), joy_left, 0, 0);
@@ -60,7 +61,6 @@ void joystickthread(struct arena* win)
 		ret = read(fd, &ev, sizeof(ev));
 		if(ret <= 0)
 		{
-			joystick_event(struct arena* win, &pair);
 			usleep(1000*10);
 			continue;
 		}
@@ -127,11 +127,33 @@ void joystickthread(struct arena* win)
 			}
 			else if(9 == ev.number)
 			{
-				printf("lk=%d\n", ev.value);
+				if(0 == ev.value){
+					printf("l=0,r=0\n");
+					pair.id &= ~(joyl_left | joyl_right);
+				}
+				else if(ev.value < 0){
+					printf("l\n");
+					pair.id |= joyl_left;
+				}
+				else if(ev.value > 0){
+					printf("r\n");
+					pair.id |= joyl_right;
+				}
 			}
 			else if(10== ev.number)
 			{
-				printf("rk=%d\n", -ev.value);
+				if(0 == ev.value){
+					printf("n=0,f=0\n");
+					pair.id &= ~(joyl_up | joyl_down);
+				}
+				else if(ev.value < 0){
+					printf("f\n");
+					pair.id |= joyl_up;
+				}
+				else if(ev.value > 0){
+					printf("n\n");
+					pair.id |= joyl_down;
+				}
 			}
 			else printf("axis%d=%d\n", ev.number, ev.value);
 		}
@@ -202,6 +224,8 @@ void joystickthread(struct arena* win)
 			printf("%s=%x\n", str, ev.value);
 		}
 		else printf("init\n");
+
+		joystick_event(win, &pair);
 	}
 
 	close(fd);
