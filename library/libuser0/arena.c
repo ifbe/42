@@ -535,6 +535,7 @@ void freearena()
 	freewindow();
 	freetray();
 	freeterm();
+	freejoy();
 }
 void initarena(u8* addr)
 {
