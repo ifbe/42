@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <termios.h>
 #include "libuser.h"
 int lowlevel_input();
 

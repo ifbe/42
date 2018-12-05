@@ -10,14 +10,23 @@ library/libboot0/logcat/start.c \
 library/libboot0/logcat/serial.c \
 library/libboot0/logcat/memory.c \
 library/libboot0/logcat/thread.c \
+library/libboot0/none/board.c
 
 #libboot1
 LOCAL_SRC_FILES += \
 library/libboot1/main.c \
-library/libboot1/stdin.c \
-library/libboot1/stdout.c \
-library/libboot1/stdev.c \
-library/libboot1/stdrel.c
+library/libboot1/loop.c \
+library/libboot1/std/stdin.c \
+library/libboot1/std/stdout.c \
+library/libboot1/std/stdev.c \
+library/libboot1/std/stdrel.c \
+library/libboot1/term/cmdev.c \
+library/libboot1/term/cmdnode.c \
+library/libboot1/term/cmdrel.c \
+library/libboot1/term/cmdrole.c \
+library/libboot1/term/cmdscene.c \
+library/libboot1/term/term.c
+
 
 #libhard0
 ifeq ($(TARGET_ARCH),x86)
@@ -214,58 +223,70 @@ library/libsoft1/libmath/math.notation.c \
 library/libsoft1/libmath/math.prime.c \
 library/libsoft1/libmath/math.quaternion.c \
 library/libsoft1/libmath/math.vector.c \
-library/libsoft1/libnet/0.phy/phy.bt.c \
-library/libsoft1/libnet/0.phy/phy.eth.c \
-library/libsoft1/libnet/0.phy/phy.raw.c \
-library/libsoft1/libnet/0.phy/phy.wlan.c \
-library/libsoft1/libnet/1.link/link.arp.c \
-library/libsoft1/libnet/1.link/link.ipv4.c \
-library/libsoft1/libnet/1.link/link.ipv6.c \
-library/libsoft1/libnet/1.link/link.ipx.c \
-library/libsoft1/libnet/1.link/link.pppoe.c \
-library/libsoft1/libnet/1.link/link.slip.c \
-library/libsoft1/libnet/2.ip/ip46.icmp.c \
-library/libsoft1/libnet/2.ip/ip46.tcp.c \
-library/libsoft1/libnet/2.ip/ip46.udp.c \
-library/libsoft1/libnet/2.ip/ipx.spx.c \
-library/libsoft1/libnet/3.udp/udp.dns.c \
-library/libsoft1/libnet/3.udp/udp.hole.c \
-library/libsoft1/libnet/3.udp/udp.quic.c \
-library/libsoft1/libnet/3.udp/udp.tftp.c \
-library/libsoft1/libnet/4.tcp/tcp.dl.c \
-library/libsoft1/libnet/4.tcp/tcp.ftp.c \
-library/libsoft1/libnet/4.tcp/tcp.http.c \
-library/libsoft1/libnet/4.tcp/tcp.proxy.c \
-library/libsoft1/libnet/4.tcp/tcp.rdp.c \
-library/libsoft1/libnet/4.tcp/tcp.rtmp.c \
-library/libsoft1/libnet/4.tcp/tcp.sql.c \
-library/libsoft1/libnet/4.tcp/tcp.vnc.c \
-library/libsoft1/libnet/4.tcp/tcp.ssh.c \
-library/libsoft1/libnet/4.tcp/tcp.tls.c \
-library/libsoft1/libnet/4.tcp/tcp.ws.c \
+library/libsoft1/libflow/0.phy/phy.bt.c \
+library/libsoft1/libflow/0.phy/phy.eth.c \
+library/libsoft1/libflow/0.phy/phy.raw.c \
+library/libsoft1/libflow/0.phy/phy.wlan.c \
+library/libsoft1/libflow/1.link/link.arp.c \
+library/libsoft1/libflow/1.link/link.ipv4.c \
+library/libsoft1/libflow/1.link/link.ipv6.c \
+library/libsoft1/libflow/1.link/link.ipx.c \
+library/libsoft1/libflow/1.link/link.pppoe.c \
+library/libsoft1/libflow/1.link/link.slip.c \
+library/libsoft1/libflow/2.ip/ip46.icmp.c \
+library/libsoft1/libflow/2.ip/ip46.tcp.c \
+library/libsoft1/libflow/2.ip/ip46.udp.c \
+library/libsoft1/libflow/2.ip/ipx.spx.c \
+library/libsoft1/libflow/3.udp/udp.dns.c \
+library/libsoft1/libflow/3.udp/udp.hack.c \
+library/libsoft1/libflow/3.udp/udp.hole.c \
+library/libsoft1/libflow/3.udp/udp.quic.c \
+library/libsoft1/libflow/3.udp/udp.tftp.c \
+library/libsoft1/libflow/4.tcp/tcp.dl.c \
+library/libsoft1/libflow/4.tcp/tcp.ftp.c \
+library/libsoft1/libflow/4.tcp/tcp.http.c \
+library/libsoft1/libflow/4.tcp/tcp.proxy.c \
+library/libsoft1/libflow/4.tcp/tcp.rdp.c \
+library/libsoft1/libflow/4.tcp/tcp.rtmp.c \
+library/libsoft1/libflow/4.tcp/tcp.sql.c \
+library/libsoft1/libflow/4.tcp/tcp.vnc.c \
+library/libsoft1/libflow/4.tcp/tcp.ssh.c \
+library/libsoft1/libflow/4.tcp/tcp.tls.c \
+library/libsoft1/libflow/4.tcp/tcp.ws.c \
+library/libsoft1/libflow/i2c/sensor.accel.c \
+library/libsoft1/libflow/i2c/sensor.baro.c \
+library/libsoft1/libflow/i2c/sensor.gyro.c \
+library/libsoft1/libflow/i2c/sensor.mag.c \
+library/libsoft1/libflow/uart/gcode.c \
+library/libsoft1/libflow/uart/gps.c \
 library/libsoft1/libphys/phys.elec.c \
 library/libsoft1/libphys/phys.mech.c \
 library/libsoft1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
-library/libuser0/osandroid/android.gles.c \
-library/libuser0/osandroid/android.tray.c \
-library/libuser0/osandroid/android.cam.c \
-library/libuser0/osandroid/android.mic.c \
-library/libuser0/bygl/gl.object.c \
-library/libuser0/bygl/gl.shader.c \
-library/libuser0/bygl/gl.texture.c \
-library/libuser0/bygl/gl.vertex.c \
-library/libuser0/bydummy/dummy.func.c \
-library/libuser0/bydummy/dummy.html.c \
-library/libuser0/bydummy/dummy.json.c \
-library/libuser0/bydummy/dummy.rgba.c \
-library/libuser0/bydummy/dummy.tty.c \
-library/libuser0/bydummy/dummy.vbo.c \
-library/libuser0/bydummy/dummy.vpin.c \
-library/libuser0/bydummy/dummy.ws.c \
-library/libuser0/bydummy/dummy.xml.c \
+library/libuser0/os/android/android.0.joy.c \
+library/libuser0/os/android/android.0.term.c \
+library/libuser0/os/android/android.0.tray.c \
+library/libuser0/os/android/android.1.gles.c \
+library/libuser0/os/android/android.2.mic.c \
+library/libuser0/os/android/android.3.cam.c \
+library/libuser0/3rd/bygl/gl.object.c \
+library/libuser0/3rd/bygl/gl.shader.c \
+library/libuser0/3rd/bygl/gl.texture.c \
+library/libuser0/3rd/bygl/gl.vertex.c \
+library/libuser0/out/cli/out.cli.c \
+library/libuser0/out/func/out.func.c \
+library/libuser0/out/html/out.html.c \
+library/libuser0/out/json/out.json.c \
+library/libuser0/out/pcb/out.pcb.c \
+library/libuser0/out/rgba/out.rgba.c \
+library/libuser0/out/sch/out.sch.c \
+library/libuser0/out/tui/out.tui.c \
+library/libuser0/out/vbo/out.vbo.c \
+library/libuser0/out/xml/out.xml.c \
+library/libuser0/in/in.ev.c \
+library/libuser0/in/in.data.c \
 library/libuser0/arena.c
 
 #libuser1
@@ -314,15 +335,16 @@ library/libuser1/lib3d/intersect/intersect.ray.c \
 library/libuser1/lib3d/intersect/intersect.rect.c \
 library/libuser1/lib3d/intersect/intersect.sphere.c \
 library/libuser1/lib4d/lib4d.c \
+library/libuser1/lib4d/asset.circuit.c \
+library/libuser1/lib4d/asset.function.c \
 library/libuser1/lib4d/asset.html.c \
 library/libuser1/lib4d/asset.image.c \
 library/libuser1/lib4d/asset.model.c \
 library/libuser1/lib4d/asset.sound.c \
-library/libuser1/lib4d/nodeunit.inner.c \
-library/libuser1/lib4d/operate.backuprecover.c \
-library/libuser1/lib4d/operate.beforeafter.c \
-library/libuser1/lib4d/operate.relation.c \
-library/libuser1/lib4d/operate.transform.c \
+library/libuser1/lib4d/help.unit.inner.c \
+library/libuser1/lib4d/help.unit.outer.c \
+library/libuser1/lib4d/help.unit.extra.c \
+library/libuser1/lib4d/help.beforeafter.c \
 library/libuser1/mixback/back.c \
 library/libuser1/mixback/back.gif.c \
 library/libuser1/mixback/back.jpg.c \
@@ -351,6 +373,8 @@ library/libuser1/objchip/chip.diode.c \
 library/libuser1/objchip/chip.ff.c \
 library/libuser1/objchip/chip.and.c \
 library/libuser1/objchip/chip.xor.c \
+library/libuser1/objchip/chip.hbridge.c \
+library/libuser1/objchip/chip.rectifier.c \
 library/libuser1/objcode/code.call.c \
 library/libuser1/objcode/code.for.c \
 library/libuser1/objcode/code.if.c \
@@ -443,6 +467,7 @@ library/libuser1/thetool/tool.terminal.c \
 library/libuser1/thetool/tool.terminal.ci.c \
 library/libuser1/thetool/tool.terminal.si.c \
 library/libuser1/theitem/item.clock.c \
+library/libuser1/theitem/item.control.c \
 library/libuser1/theitem/item.drone.c \
 library/libuser1/theitem/item.earth.c \
 library/libuser1/theitem/item.house.c \
@@ -452,6 +477,7 @@ library/libuser1/theitem/item.ocean.c \
 library/libuser1/theitem/item.piano.c \
 library/libuser1/theitem/item.picture.c \
 library/libuser1/theitem/item.planet.c \
+library/libuser1/theitem/item.rccar.c \
 library/libuser1/theitem/item.tree.c \
 library/libuser1/theitem/item.water.c \
 library/libuser1/actor.c

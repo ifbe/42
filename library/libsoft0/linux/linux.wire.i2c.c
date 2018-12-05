@@ -126,7 +126,7 @@ int systemi2c_delete(int fd)
 {
 	return close(fd);
 }
-int systemi2c_create(char* name, int flag)
+int systemi2c_create(u8* name, int flag)
 {
 	int j;
 	u8 buf[256];
@@ -145,7 +145,7 @@ int systemi2c_create(char* name, int flag)
 	}
 
 	say("i2c: %s\n", buf);
-	return open(buf, O_RDWR);
+	return open((void*)buf, O_RDWR);
 }
 /*
 static int fp=-1;
