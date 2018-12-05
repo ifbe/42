@@ -29,6 +29,75 @@ static u8 uppercase[] = {
 
 
 
+void glfw_joystick(void* p)
+{
+	eventwrite(*(u64*)(p+0), joy_left, 0, 0);
+	eventwrite(*(u64*)(p+8), joy_right, 0, 0);
+}
+static void thread_joystick(struct arena* win)
+{
+	int j, k;
+	int c1, c2;
+	const float* f;
+	const unsigned char* u;
+	struct xyzwpair pair;
+	struct event ev;
+	ev.where = 0;
+	ev.when = 0;
+	while(1)
+	{
+		for(j=0;j<16;j++)
+		{
+			if(0 == glfwJoystickPresent(GLFW_JOYSTICK_1 + j))continue;
+
+			f = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + j, &c1);
+			if(0 == f)continue;
+			if(0 == c1)continue;
+
+			u = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + j, &c2);
+			if(0 == u)continue;
+			if(0 == c2)continue;
+
+			//for(k=0;k<c1;k++)say("a%d:%f\n", k, f[k]);
+			//for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
+			pair.x0 = (int)( 32767*f[0]);
+			pair.y0 = (int)(-32767*f[1]);
+			pair.z0 = (int)(127*(1.0+f[4]));
+			pair.id = 0;
+			switch(u[10] | (u[11]<<1) | (u[12]<<2) | (u[13]<<3))
+			{
+				case  9:pair.id |= joyl_left;break;
+				case  6:pair.id |= joyl_right;break;
+				case 12:pair.id |= joyl_down;break;
+				case  3:pair.id |= joyl_up;break;
+				case  8:pair.id |= joyl_down|joyl_left;break;
+				case  4:pair.id |= joyl_down|joyl_right;break;
+				case  2:pair.id |= joyl_up|joyl_right;break;
+				case  0:pair.id |= joyl_up|joyl_left;break;
+			}
+			if(u[4])pair.id |= joyl_bumper;
+			if(f[4]>0.0)pair.id |= joyl_trigger;
+			if(u[8])pair.id |= joyl_stick;
+			if(u[6])pair.id |= joyl_select;
+
+			pair.x1 = (int)( 32767*f[2]);
+			pair.y1 = (int)(-32767*f[3]);
+			pair.z1 = (int)(127*(1.0+f[5]));
+			pair.nn = 0;
+			if(u[0])pair.nn |= joyr_down;
+			if(u[1])pair.nn |= joyr_right;
+			if(u[2])pair.nn |= joyr_left;
+			if(u[3])pair.nn |= joyr_up;
+			if(u[5])pair.nn |= joyr_bumper;
+			if(f[5]>0.0)pair.nn |= joyr_trigger;
+			if(u[9])pair.nn |= joyr_stick;
+			if(u[7])pair.nn |= joyr_start;
+
+			glfw_joystick(&pair);
+		}
+		sleep_us(10000);
+	}
+}
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {
 	struct event e;
@@ -185,38 +254,7 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 static void callback_joystick(int id, int ev)
 {
 	say("joystick: %d,%d\n", id, ev);
-}/*
-static void thread_joystick()
-{
-	int j, k;
-	int c1, c2;
-	const float* f;
-	const unsigned char* u;
-	struct event ev;
-	ev.where = 0;
-	ev.when = 0;
-	while(1)
-	{
-		for(j=0;j<16;j++)
-		{
-			if(0 == glfwJoystickPresent(GLFW_JOYSTICK_1 + j))continue;
-
-			f = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + j, &c1);
-			if(0 == f)continue;
-			if(0 == c1)continue;
-
-			u = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + j, &c2);
-			if(0 == u)continue;
-			if(0 == c2)continue;
-
-			for(k=0;k<c1;k++)say("a%d:%f\n", k, f[k]);
-			for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
-
-			for(k=0;k<c1;k++)if(f[k]>-0.1&&f[k]<0.1)continue;
-		}
-		sleep_us(10000);
-	}
-}*/
+}
 
 
 
@@ -403,5 +441,5 @@ void initwindow()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	glfwSetJoystickCallback(callback_joystick);
-	//threadcreate(thread_joystick, 0);
+	threadcreate(thread_joystick, 0);
 }
