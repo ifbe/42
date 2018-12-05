@@ -37,9 +37,12 @@ void role_rccar(int argc, u8** argv)
 {
 	void* win;
 	void* act;
-
 	act = actorcreate(_rccar_, 0);
+
 	win = arenalist("term", 0);
+	relationcreate(act, 0, _act_, win, 0, _win_);
+
+	win = arenalist("joy", 0);
 	relationcreate(act, 0, _act_, win, 0, _win_);
 	return;
 }
