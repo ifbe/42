@@ -86,11 +86,11 @@ void carvecamera(struct arena* win, struct arena* w)
 	vd1[2] = 0.5;
 
 	//ray
-	va[0] = (w->input[10].x1)*2/x - 1.0;
-	va[1] = 1.0 - (w->input[10].y1)*2/y;
+	va[0] = (w->input[10].xn)*2/x - 1.0;
+	va[1] = 1.0 - (w->input[10].yn)*2/y;
 	va[2] = -1.0;
-	vb[0] = (w->input[10].x1)*2/x - 1.0;
-	vb[1] = 1.0 - (w->input[10].y1)*2/y;
+	vb[0] = (w->input[10].xn)*2/x - 1.0;
+	vb[1] = 1.0 - (w->input[10].yn)*2/y;
 	vb[2] = 0.5;
 
 	invmvp(va0, w);

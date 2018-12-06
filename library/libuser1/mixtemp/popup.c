@@ -30,9 +30,9 @@ void popup_read_vbo(struct arena* win, struct style* sty)
 		x0 = x0*2 - 1.0;
 		y0 = (float)(win->input[j].y0) / (float)(win->height);
 		y0 = 1.0 - y0*2;
-		x1 = (float)(win->input[j].x1) / (float)(win->width);
+		x1 = (float)(win->input[j].xn) / (float)(win->width);
 		x1 = x1*2 - 1.0;
-		y1 = (float)(win->input[j].y1) / (float)(win->height);
+		y1 = (float)(win->input[j].yn) / (float)(win->height);
 		y1 = 1.0 - y1*2;
 
 		vc[0] = x0;
@@ -66,8 +66,8 @@ void popup_read_pixel(struct arena* win, struct style* sty)
 
 		x0 = win->input[j].x0;
 		y0 = win->input[j].y0;
-		x1 = win->input[j].x1;
-		y1 = win->input[j].y1;
+		x1 = win->input[j].xn;
+		y1 = win->input[j].yn;
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
 		drawline_rect(win, 0x00ff00, x0, y0, x1, y1);
 	}

@@ -358,25 +358,25 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			y1 = ((ev->why)>>16)&0xffff;
 			if(0 == id)
 			{
-				x1 -= (win->input[1].x1);
-				y1 -= (win->input[1].y1);
+				x1 -= (win->input[1].xn);
+				y1 -= (win->input[1].yn);
 			}
 			if(1 == id)
 			{
-				x1 -= (win->input[0].x1);
-				y1 -= (win->input[0].y1);
+				x1 -= (win->input[0].xn);
+				y1 -= (win->input[0].yn);
 			}
 
-			x0 = (win->input[0].x1) - (win->input[1].x1);
-			y0 = (win->input[0].y1) - (win->input[1].y1);
+			x0 = (win->input[0].xn) - (win->input[1].xn);
+			y0 = (win->input[0].yn) - (win->input[1].yn);
 
 			if((x0*x0+y0*y0) < (x1*x1+y1*y1))camera_zoom(win, 0.05);
 			else camera_zoom(win, -0.05);
 		}
 		else
 		{
-			x0 = win->input[id].x1;
-			y0 = win->input[id].y1;
+			x0 = win->input[id].xn;
+			y0 = win->input[id].yn;
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 

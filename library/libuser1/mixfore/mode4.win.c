@@ -138,17 +138,17 @@ int actorinput_win(struct arena* win, struct style* stack, struct event* ev)
 		{
 			if(0 == id)
 			{
-				x -= (win->input[1].x1);
-				y -= (win->input[1].y1);
+				x -= (win->input[1].xn);
+				y -= (win->input[1].yn);
 			}
 			if(1 == id)
 			{
-				x -= (win->input[0].x1);
-				y -= (win->input[0].y1);
+				x -= (win->input[0].xn);
+				y -= (win->input[0].yn);
 			}
 
-			ax = (win->input[0].x1) - (win->input[1].x1);
-			ay = (win->input[0].y1) - (win->input[1].y1);
+			ax = (win->input[0].xn) - (win->input[1].xn);
+			ay = (win->input[0].yn) - (win->input[1].yn);
 
 			aaa = x*x+y*y;
 			bbb = ax*ax + ay*ay;
@@ -167,8 +167,8 @@ int actorinput_win(struct arena* win, struct style* stack, struct event* ev)
 		}
 		else if((0 == id)|(10 == id))
 		{
-			sty->vc[0] += x - (win->input[id].x1);
-			sty->vc[1] += y - (win->input[id].y1);
+			sty->vc[0] += x - (win->input[id].xn);
+			sty->vc[1] += y - (win->input[id].yn);
 			//say("%x,%x\n", sty->vc[0], sty->vc[1]);
 		}
 	}

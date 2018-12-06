@@ -120,15 +120,15 @@ haha:
 	{
 		m = win->input[0].x0;
 		n = win->input[0].y0;
-		x = win->input[0].x1;
-		y = win->input[0].y1;
+		x = win->input[0].xn;
+		y = win->input[0].yn;
 	}
 	else if(win->input[10].z0)
 	{
 		m = win->input[10].x0;
 		n = win->input[10].y0;
-		x = win->input[10].x1;
-		y = win->input[10].y1;
+		x = win->input[10].xn;
+		y = win->input[10].yn;
 	}
 	else return;
 
@@ -306,15 +306,15 @@ haha:
 	{
 		j = win->input[0].x0;
 		k = win->input[0].y0;
-		x = win->input[0].x1;
-		y = win->input[0].y1;
+		x = win->input[0].xn;
+		y = win->input[0].yn;
 	}
 	else if(win->input[10].z0)
 	{
 		j = win->input[10].x0;
 		k = win->input[10].y0;
-		x = win->input[10].x1;
-		y = win->input[10].y1;
+		x = win->input[10].xn;
+		y = win->input[10].yn;
 	}
 	else return;
 

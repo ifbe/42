@@ -175,13 +175,13 @@ struct xyzwpair
 	u16 x0;
 	u16 y0;
 	u16 z0;
-	u16 id;
+	u16 w0;
 
 	//touchmove, pointmove, gamepadright
-	u16 x1;
-	u16 y1;
-	u16 z1;
-	u16 nn;
+	u16 xn;
+	u16 yn;
+	u16 zn;
+	u16 wn;
 };
 
 

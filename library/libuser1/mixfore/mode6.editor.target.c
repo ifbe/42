@@ -414,17 +414,17 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 		{
 			if(0 == id)
 			{
-				x -= (win->input[1].x1);
-				y -= (win->input[1].y1);
+				x -= (win->input[1].xn);
+				y -= (win->input[1].yn);
 			}
 			if(1 == id)
 			{
-				x -= (win->input[0].x1);
-				y -= (win->input[0].y1);
+				x -= (win->input[0].xn);
+				y -= (win->input[0].yn);
 			}
 
-			ax = (win->input[0].x1) - (win->input[1].x1);
-			ay = (win->input[0].y1) - (win->input[1].y1);
+			ax = (win->input[0].xn) - (win->input[1].xn);
+			ay = (win->input[0].yn) - (win->input[1].yn);
 
 			aaa = x*x+y*y;
 			bbb = ax*ax + ay*ay;
@@ -449,8 +449,8 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 			tx *= 2.0 / norm;
 			ty *= 2.0 / norm;
 
-			ax = x - (win->input[id].x1);
-			ay = y - (win->input[id].y1);
+			ax = x - (win->input[id].xn);
+			ay = y - (win->input[id].yn);
 
 			sty->vc[0] += ty*ax - tx*ay;
 			sty->vc[1] -= sign*(tx*ax + ty*ay);

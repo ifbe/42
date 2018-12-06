@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
 #define _json_ hex32('j','s','o','n')
 #define _xml_ hex32('x','m','l',0)
 #define _art_ hex32('a','r','t',0)
@@ -64,7 +63,7 @@ int arenanext(struct arena* win)
 void overview_read_pixel(struct arena* win, struct style* sty)
 {
 	struct relation* rel;
-	u32 c;
+	u32 c,cursor;
 	int x,y,j,k;
 	int cx,cy,ww,hh;
 	if(sty)
@@ -81,6 +80,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
+	cursor = (win->forex) + (win->forey)*8;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
@@ -91,14 +91,14 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
-		else if(j == win->forez)c = 0xffff00ff;
+
+		if(j == cursor)c = 0xffff00ff;
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
 		x = j%8;
 		y = j/8;
-		drawicon_1(
-			win, c,
+		drawicon_1(win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y-16)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y-15)*hh/16,
 			(u8*)&actor[j].name, 8
@@ -108,15 +108,15 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	//arena
 	for(j=0;j<64;j++)
 	{
-		c = arena[j].type;
-		if(0 == c)break;
-		else if(win == &arena[j])c = 0xffff00ff;
+		if(0 == arena[j].type)break;
+
+		if(j+64 == cursor)c = 0xffff00ff;
+		else if(win == &arena[j])c = 0xff808080;
 		else c = 0x80ffffff;
 
 		x = j%8;
 		y = j/8;
-		drawicon_1(
-			win, c,
+		drawicon_1(win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y-8)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y-7)*hh/16,
 			(u8*)&arena[j].fmt, 8
@@ -127,10 +127,13 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	for(j=0;j<64;j++)
 	{
 		if(0 == ele[j].type)continue;
+
+		if(j+128 == cursor)c = 0xffff00ff;
+		else c = 0x80ffffff;
+
 		x = j%8;
 		y = j/8;
-		drawicon_1(
-			win, 0x80ffffff,
+		drawicon_1(win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y+0)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y+1)*hh/16,
 			(u8*)&ele[j].type, 8
@@ -141,10 +144,13 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == obj[j].type)continue;
+
+		if((j%64)+192 == cursor)c = 0xffff00ff;
+		else c = 0x80ffffff;
+
 		x = (j%64)%8;
 		y = (j%64)/8;
-		drawicon_1(
-			win, 0x80ffffff,
+		drawicon_1(win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y+8)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y+9)*hh/16,
 			(u8*)&obj[j].type, 8
@@ -386,7 +392,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 }
 void overview_read_vbo(struct arena* win, struct style* sty)
 {
-	u32 bg,fg;
+	u32 bg,fg,cursor;
 	float r,f;
 	int x,y,j,k;
 	struct relation* rel;
@@ -413,6 +419,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	vc = sty->vc;
 	vr = sty->vr;
 	vf = sty->vf;
+	cursor = (win->forex) + (win->forey)*8;
 /*
 	tc[0] = -1.0;
 	tc[1] = 0.5;
@@ -441,7 +448,8 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	{
 		k = actor[j].type & 0xff;
 		if(0 == k)break;
-		else if(j == win->forez)
+
+		if(j == cursor)
 		{
 			bg = 0xffffff;
 			fg = 0xff00ff;
@@ -483,8 +491,17 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	{
 		k = arena[j].type;
 		if(0 == k)break;
-		else if(win == &arena[j])fg = 0xffff00ff;
-		else fg = 0x80ffffff;
+		if(j+64 == cursor)
+		{
+			bg = 0xffffff;
+			fg = 0xff00ff;
+		}
+		else
+		{
+			bg = 0x404040;
+			if(win == &arena[j])fg = 0xffff00ff;
+			else fg = 0x80ffffff;
+		}
 
 		x = j%8;
 		y = j/8;
@@ -499,7 +516,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/34;
 		tf[1] = vf[1]*1.0/34;
 		tf[2] = vf[2]*1.0/34;
-		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
 		tr[0] = vr[0]*1.0/16;
@@ -515,6 +532,17 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	for(j=0;j<64;j++)
 	{
 		if(0 == ele[j].type)continue;
+		if(j+128 == cursor)
+		{
+			bg = 0xffffff;
+			fg = 0xff00ff;
+		}
+		else
+		{
+			bg = 0x404040;
+			fg = 0x80ffffff;
+		}
+
 		x = j%8;
 		y = j/8;
 		r = (x*2-7)/8.0;
@@ -528,7 +556,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/34;
 		tf[1] = vf[1]*1.0/34;
 		tf[2] = vf[2]*1.0/34;
-		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
 		tr[0] = vr[0]*1.0/16;
@@ -537,13 +565,24 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/32;
 		tf[1] = vf[1]*1.0/32;
 		tf[2] = vf[2]*1.0/32;
-		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&ele[j].type, 8);
+		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
 	//system
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == obj[j].type)continue;
+		if((j%64)+192 == cursor)
+		{
+			bg = 0xffffff;
+			fg = 0xff00ff;
+		}
+		else
+		{
+			bg = 0x404040;
+			fg = 0x80ffffff;
+		}
+
 		x = (j%64)%8;
 		y = (j%64)/8;
 		r = (x*2-7)/8.0;
@@ -557,7 +596,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/34;
 		tf[1] = vf[1]*1.0/34;
 		tf[2] = vf[2]*1.0/34;
-		carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
 		tr[0] = vr[0]*1.0/16;
@@ -566,7 +605,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		tf[0] = vf[0]*1.0/32;
 		tf[1] = vf[1]*1.0/32;
 		tf[2] = vf[2]*1.0/32;
-		carvestring2d_center(win, 0xffffff, tc, tr, tf, (u8*)&obj[j].type, 8);
+		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
 	//actor.irel
@@ -917,7 +956,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	}
 }
 void overview_read_8bit(struct arena* win, struct style* sty)
-{
+{/*
 	int x,y;
 	int j,c;
 	for(j=0;j<64;j++)
@@ -933,6 +972,7 @@ void overview_read_8bit(struct arena* win, struct style* sty)
 			118+x*40, 68+y*10
 		);
 	}
+*/
 }
 void overview_read_html(struct arena* win, struct style* sty)
 {
@@ -944,7 +984,7 @@ void overview_read_tui(struct arena* win, struct style* sty)
 	int hh = (win->height)/2;
 
 	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);
-
+/*
 	for(j=0;j<64;j++)
 	{
 		if(0 == actor[j].name)break;
@@ -960,6 +1000,7 @@ void overview_read_tui(struct arena* win, struct style* sty)
 		gentui_rect(win, k, x, y, x+7, y);
 		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
 	}
+*/
 }
 void overview_read_cli(struct arena* win, struct style* sty)
 {
@@ -1133,7 +1174,9 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 			x = 4 + 4 * (x - (sty->vc[0])) / (sty->vr[0]);
 			y = 16 + 16 * (y - (sty->vc[1])) / (sty->vf[1]);
 		}
-
+		win->forex = x;
+		win->forey = y;
+/*
 		if('@' == k)
 		{
 			if(y < 8)win->forez = x + (y*8);
@@ -1142,7 +1185,8 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 		{
 			if(y < 8)win->forez = x + (y*8);
 		}
-		else if('-' == k)
+*/
+		if('-' == k)
 		{
 			j = win->input[id].x0;
 			k = win->input[id].y0;
