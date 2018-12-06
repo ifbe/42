@@ -116,8 +116,8 @@ linuxxlib:target
 	$(compiler) $(cflag) os/linux/linux.0.term.c
 	$(compiler) $(cflag) os/linux/linux.0.tray.c
 	$(compiler) $(cflag) os/linux/linux.1.xlib.c
-	$(compiler) $(cflag) os/linux/linux.2.v4l2.c
-	$(compiler) $(cflag) os/linux/linux.3.pulseaudio.c
+	$(compiler) $(cflag) os/linux/linux.2.pulseaudio.c
+	$(compiler) $(cflag) os/linux/linux.3.v4l2.c
 
 .PHONY:linuxglfw
 linuxglfw:target
