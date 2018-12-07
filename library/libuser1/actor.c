@@ -358,17 +358,8 @@ int actorread_all(struct arena* win)
 	}
 	else
 	{
-		//background
-		back_read(win, 0);
-
 		//foreground
 		fore_read(win, 0);
-
-		//popup layer
-		temp_read(win, 0);
-
-		//virtual kbd
-		vkbd_read(win, 0);
 	}
 
 	//fg

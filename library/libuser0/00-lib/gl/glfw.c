@@ -4,6 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
+#define _bg_ hex32('b','g',0,0)
+#define _fg_ hex32('f','g',0,0)
+#define _menu_ hex32('m','e','n','u')
+#define _vkbd_ hex32('v','k','b','d')
 int lowlevel_input();
 void initobject(void*);
 void initshader(void*);
@@ -411,6 +415,7 @@ void windowdelete(struct arena* w)
 }
 void windowcreate(struct arena* w)
 {
+	struct arena* c;
 	w->width = 512;
 	w->height = 512;
 	w->depth = 512;
@@ -418,6 +423,22 @@ void windowcreate(struct arena* w)
 
 	w->fmt = _vbo_;
 	if(_win_ == w->type)windowopen(0, w);
+
+	//bg
+	c = arenacreate(_bg_, 0);
+	relationcreate(c, 0, _win_, w, 0, _win_);
+
+	//fg
+	c = arenacreate(_fg_, 0);
+	relationcreate(c, 0, _win_, w, 0, _win_);
+
+	//menu
+	c = arenacreate(_menu_, 0);
+	relationcreate(c, 0, _win_, w, 0, _win_);
+
+	//vkbd
+	c = arenacreate(_vkbd_, 0);
+	relationcreate(c, 0, _win_, w, 0, _win_);
 }
 
 

@@ -3,12 +3,21 @@
 #define _tray_ hex32('t','r','a','y')
 #define _mic_  hex32('m','i','c',0)
 #define _cam_  hex32('c','a','m',0)
+//
 #define _node_ hex32('n','o','d','e')
 #define _func_ hex32('f','u','n','c')
 #define _html_ hex32('h','t','m','l')
 #define _rgba_ hex32('r','g','b','a')
 #define _pcb_  hex32('p','c','b',0)
 #define _xml_  hex32('x','m','l',0)
+//
+#define _bg_ hex32('b','g',0,0)
+#define _fg_ hex32('f','g',0,0)
+#define _menu_ hex32('m','e','n','u')
+#define _vkbd_ hex32('v','k','b','d')
+//
+#define _light_ hex32('l','i','g','h')
+#define _mirror_ hex32('m','i','r','r')
 
 
 
@@ -85,6 +94,9 @@ int pcbnode_delete(void*);
 //
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
+//
+int background_create(void*, void*);
+int foreground_create(void*, void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -261,6 +273,7 @@ void* arenacreate(u64 type, void* addr)
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
 
+	//00: sys
 	if(_joy_ == type)
 	{
 		win->type = _joy_;
@@ -281,6 +294,22 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = _tray_;
 
 		traycreate(win, addr);
+	}
+	else if(_cam_ == type)
+	{
+		if(0 == addr)return 0;
+		win->type = _cam_;
+		win->fmt = hex32('y','u','v',0);
+
+		videocreate(win);
+	}
+	else if(_mic_ == type)
+	{
+		if(0 == addr)return 0;
+		win->type = _mic_;
+		win->fmt = hex32('p','c','m',0);
+
+		soundcreate(win);
 	}
 	else if(_win_ == type)
 	{
@@ -306,22 +335,8 @@ void* arenacreate(u64 type, void* addr)
 		win->vkbdw = 0;
 		arenavertex(win);
 	}
-	else if(_cam_ == type)
-	{
-		if(0 == addr)return 0;
-		win->type = _cam_;
-		win->fmt = hex32('y','u','v',0);
 
-		videocreate(win);
-	}
-	else if(_mic_ == type)
-	{
-		if(0 == addr)return 0;
-		win->type = _mic_;
-		win->fmt = hex32('p','c','m',0);
-
-		soundcreate(win);
-	}
+	//10
 	else if(_func_ == type)
 	{
 		win->type = _node_;
@@ -370,6 +385,42 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = _xml_;
 
 		xmlnode_create(win, addr);
+	}
+
+	//20
+	else if(_bg_ == type)
+	{
+		win->type = _bg_;
+		win->fmt = _bg_;
+		background_create(win, 0);
+	}
+	else if(_fg_ == type)
+	{
+		win->type = _fg_;
+		win->fmt = _fg_;
+		foreground_create(win, 0);
+	}
+	else if(_menu_ == type)
+	{
+		win->type = _menu_;
+		win->fmt = _menu_;
+	}
+	else if(_vkbd_ == type)
+	{
+		win->type = _vkbd_;
+		win->fmt = _vkbd_;
+	}
+
+	//30
+	else if(_light_ == type)
+	{
+		win->type = _light_;
+		win->fmt = _light_;
+	}
+	else if(_mirror_ == type)
+	{
+		win->type = _mirror_;
+		win->fmt = _mirror_;
 	}
 
 	return win;
@@ -555,12 +606,5 @@ void initarena(u8* addr)
 	arenacreate(_joy_,  0);
 	arenacreate(_term_, 0);
 	arenacreate(_tray_, 0);
-	arenacreate(_func_, 0);
-	arenacreate(_html_, 0);
-	arenacreate(_json_, 0);
-	arenacreate(_rgba_, 0);
-	arenacreate(_vbo_,  0);
-	arenacreate(_pcb_,  0);
-	arenacreate(_xml_,  0);
 	//say("[c,f):inited arena\n");
 }

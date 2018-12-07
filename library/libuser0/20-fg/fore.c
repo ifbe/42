@@ -71,3 +71,11 @@ int fore_write(struct arena* win, struct event* ev)
 
 	return 1;
 }
+
+
+
+
+int foreground_create(struct arena* win, u8* str)
+{
+	return 0;
+}
