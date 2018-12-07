@@ -113,13 +113,13 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		win->input[btn].x1 = x;
-		win->input[btn].y1 = y;
+		win->input[btn].xn = x;
+		win->input[btn].yn = y;
 	}
 	else if(hex32('p','+',0,0) == ev->what)
 	{
-		win->input[btn].x0 = win->input[btn].x1 = x;
-		win->input[btn].y0 = win->input[btn].y1 = y;
+		win->input[btn].x0 = win->input[btn].xn = x;
+		win->input[btn].y0 = win->input[btn].yn = y;
 		win->input[btn].z0 = 1;
 	}
 	else if(hex32('p','-',0,0) == ev->what)
