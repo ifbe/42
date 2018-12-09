@@ -93,7 +93,9 @@ void* alloc_winobj(struct arena* win)
 	struct datapair* mod = win->mod;
 	for(j=16;j<128;j++)
 	{
-		if((0 == mod[j].src.vs)&&(0 == mod[j].src.vbuf))return &mod[j].src;
+		if(mod[j].src.vs)continue;
+		if(mod[j].src.vbuf)continue;
+		return &mod[j].src;
 	}
 	return 0;
 }

@@ -1,10 +1,14 @@
 #include "libuser.h"
+#define _perm_ hex32('p','e','r','m')
+#define _node_ hex32('n','o','d','e')
+#define _twig_ hex32('t','w','i','g')
+#define _view_ hex32('v','i','e','w')
+//
 #define _term_ hex32('t','e','r','m')
 #define _tray_ hex32('t','r','a','y')
 #define _mic_  hex32('m','i','c',0)
 #define _cam_  hex32('c','a','m',0)
 //
-#define _node_ hex32('n','o','d','e')
 #define _func_ hex32('f','u','n','c')
 #define _html_ hex32('h','t','m','l')
 #define _rgba_ hex32('r','g','b','a')
@@ -276,21 +280,21 @@ void* arenacreate(u64 type, void* addr)
 	//00: sys
 	if(_joy_ == type)
 	{
-		win->type = _joy_;
+		win->type = _perm_;
 		win->fmt = _joy_;
 
 		joycreate(win, addr);
 	}
 	else if(_term_ == type)
 	{
-		win->type = _term_;
+		win->type = _perm_;
 		win->fmt = _term_;
 
 		termcreate(win, addr);
 	}
 	else if(_tray_ == type)
 	{
-		win->type = _tray_;
+		win->type = _perm_;
 		win->fmt = _tray_;
 
 		traycreate(win, addr);
@@ -298,7 +302,7 @@ void* arenacreate(u64 type, void* addr)
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
-		win->type = _cam_;
+		win->type = _perm_;
 		win->fmt = hex32('y','u','v',0);
 
 		videocreate(win);
@@ -306,7 +310,7 @@ void* arenacreate(u64 type, void* addr)
 	else if(_mic_ == type)
 	{
 		if(0 == addr)return 0;
-		win->type = _mic_;
+		win->type = _perm_;
 		win->fmt = hex32('p','c','m',0);
 
 		soundcreate(win);
@@ -390,36 +394,36 @@ void* arenacreate(u64 type, void* addr)
 	//20
 	else if(_bg_ == type)
 	{
-		win->type = _bg_;
+		win->type = _twig_;
 		win->fmt = _bg_;
 		background_create(win, 0);
 	}
 	else if(_fg_ == type)
 	{
-		win->type = _fg_;
+		win->type = _twig_;
 		win->fmt = _fg_;
 		foreground_create(win, 0);
 	}
 	else if(_menu_ == type)
 	{
-		win->type = _menu_;
+		win->type = _twig_;
 		win->fmt = _menu_;
 	}
 	else if(_vkbd_ == type)
 	{
-		win->type = _vkbd_;
+		win->type = _twig_;
 		win->fmt = _vkbd_;
 	}
 
 	//30
 	else if(_light_ == type)
 	{
-		win->type = _light_;
+		win->type = _view_;
 		win->fmt = _light_;
 	}
 	else if(_mirror_ == type)
 	{
-		win->type = _mirror_;
+		win->type = _view_;
 		win->fmt = _mirror_;
 	}
 
@@ -541,12 +545,15 @@ void* arenalist(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
+	struct arena* win;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == arena[j].type)break;
-			say("[%03x]: %.4s,%.8s\n", j, &arena[j].type, &arena[j].fmt);
+			win = &arena[j];
+			if(0 == win->type)break;
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&win->tier, &win->type, &win->fmt, &win->vfmt);
 		}
 		if(0 == j)say("empty arena\n");
 	}

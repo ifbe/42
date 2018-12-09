@@ -567,12 +567,15 @@ int arteryread_all()
 void* arterylist(u8* buf, int len)
 {
 	int j,k=0;
+	struct element* art;
 	for(j=0;j<0x1000;j++)
 	{
-		if(0 == ele[j].type)continue;
+		art = &ele[j];
+		if(0 == art->type)continue;
 
 		k++;
-		say("[%03x]: %.8s\n", j, &ele[j].type);
+		say("[%04x]: %.8s, %.8s\n", j,
+			&art->tier, &art->type);
 	}
 
 	if(0 == k)say("empth artery\n");

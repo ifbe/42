@@ -209,27 +209,33 @@ void* actorcreate(u64 type, void* buf)
 				if(0 == k)return 0;
 				break;
 			}
-			else if(type == actor[j].name)k = j;
-			else if(type == actor[j].name)k = j;
+			if(type == actor[j].name)
+			{
+				k = j;
+				if(_orig_ == actor[j].type)break;
+			}
 		}
 
-		src = (void*)&actor[k];
-		dst = (void*)&actor[j];
-		for(j=0;j<sizeof(struct actor);j++)dst[j] = src[j];
+		if(j != k)
+		{
+			src = (void*)&actor[k];
+			dst = (void*)&actor[j];
+			for(j=0;j<sizeof(struct actor);j++)dst[j] = src[j];
 
-		act = (void*)dst;
-		act->irel0 = act->ireln = 0;
-		act->orel0 = act->oreln = 0;
+			act = (void*)dst;
+			act->irel0 = act->ireln = 0;
+			act->orel0 = act->oreln = 0;
 
-		act->fd = 0;
-		act->dc = 0;
-		act->idx = 0;
-		act->buf = 0;
+			act->fd = 0;
+			act->dc = 0;
+			act->idx = 0;
+			act->buf = 0;
 
-		//act->tier
-		act->type = _copy_;
-		//act->fmt
-		//act->name
+			//act->tier
+			act->type = _copy_;
+			//act->fmt
+			//act->name
+		}
 	}
 
 	act->oncreate(act, buf);
@@ -371,12 +377,15 @@ void* actorlist(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
+	struct actor* act;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == actor[j].name)break;
-			say("[%03x]: %.4s,%.8s\n", j, &actor[j].type, &actor[j].name);
+			act = &actor[j];
+			if(0 == act->name)break;
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&act->tier, &act->type, &act->fmt, &act->name);
 		}
 		if(0 == j)say("empty actor\n");
 	}

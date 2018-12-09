@@ -173,12 +173,15 @@ int systemread_all()
 void* systemlist(u8* buf, int len)
 {
 	int j,k=0;
+	struct object* tmp;
 	for(j=0;j<0x1000;j++)
 	{
-		if(0 == obj[j].type)continue;
+		tmp = &obj[j];
+		if(0 == tmp->type)continue;
 
 		k++;
-		say("[%03x]: %.8s\n", j, &obj[j].type);
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
 	}
 
 	if(0 == k)say("empth system\n");

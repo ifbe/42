@@ -172,11 +172,17 @@ static void skysphere_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == pin)return;
 
 	//
-	src = alloc_winobj(win);
+	pair = alloc_winobj(win);
+	src = &pair->src;
+	dst = &pair->dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//shader
 	src->vs = skysphere_glsl_v;
@@ -207,7 +213,6 @@ static void skysphere_start(
 	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	pin->foot[0] = (u64)src;
 }
 static void skysphere_delete(struct actor* act)
 {
