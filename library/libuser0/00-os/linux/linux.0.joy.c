@@ -108,7 +108,7 @@ void joystickthread(struct arena* win)
 			else if(2 == ev.number)
 			{
 				printf("rx=%d\n", ev.value);
-				pair.x1 = ev.value;
+				pair.xn = ev.value;
 			}
 			else if(3 == ev.number)
 			{
@@ -118,41 +118,41 @@ void joystickthread(struct arena* win)
 			else if(4 == ev.number)
 			{
 				printf("rt=%d\n", ev.value+32767);
-				pair.z1 = ev.value+32767;
+				pair.zn = ev.value+32767;
 			}
 			else if(5 == ev.number)
 			{
 				printf("ry=%d\n", -ev.value);
-				pair.y1 = -ev.value;
+				pair.yn = -ev.value;
 			}
 			else if(9 == ev.number)
 			{
 				if(0 == ev.value){
 					printf("l=0,r=0\n");
-					pair.id &= ~(joyl_left | joyl_right);
+					pair.w0 &= ~(joyl_left | joyl_right);
 				}
 				else if(ev.value < 0){
 					printf("l\n");
-					pair.id |= joyl_left;
+					pair.w0 |= joyl_left;
 				}
 				else if(ev.value > 0){
 					printf("r\n");
-					pair.id |= joyl_right;
+					pair.w0 |= joyl_right;
 				}
 			}
 			else if(10== ev.number)
 			{
 				if(0 == ev.value){
 					printf("n=0,f=0\n");
-					pair.id &= ~(joyl_up | joyl_down);
+					pair.w0 &= ~(joyl_up | joyl_down);
 				}
 				else if(ev.value < 0){
 					printf("f\n");
-					pair.id |= joyl_up;
+					pair.w0 |= joyl_up;
 				}
 				else if(ev.value > 0){
 					printf("n\n");
-					pair.id |= joyl_down;
+					pair.w0 |= joyl_down;
 				}
 			}
 			else printf("axis%d=%d\n", ev.number, ev.value);
@@ -162,62 +162,62 @@ void joystickthread(struct arena* win)
 			if(0 == ev.number)
 			{
 				str = "x";
-				pair.nn |= joyr_left;
+				pair.wn |= joyr_left;
 			}
 			else if(1 == ev.number)
 			{
 				str = "a";
-				pair.nn |= joyr_down;
+				pair.wn |= joyr_down;
 			}
 			else if(2 == ev.number)
 			{
 				str = "b";
-				pair.nn |= joyr_right;
+				pair.wn |= joyr_right;
 			}
 			else if(3 == ev.number)
 			{
 				str = "y";
-				pair.nn |= joyr_up;
+				pair.wn |= joyr_up;
 			}
 			else if(4 == ev.number)
 			{
 				str = "lb";
-				pair.id |= joyl_bumper;
+				pair.w0 |= joyl_bumper;
 			}
 			else if(5 == ev.number)
 			{
 				str = "rb";
-				pair.nn |= joyr_bumper;
+				pair.wn |= joyr_bumper;
 			}
 			else if(6 == ev.number)
 			{
 				str = "lt";
-				pair.id |= joyl_trigger;
+				pair.w0 |= joyl_trigger;
 			}
 			else if(7 == ev.number)
 			{
 				str = "rt";
-				pair.nn |= joyr_trigger;
+				pair.wn |= joyr_trigger;
 			}
 			else if(8 == ev.number)
 			{
 				str = "share";
-				pair.id |= joyl_select;
+				pair.w0 |= joyl_select;
 			}
 			else if(9 == ev.number)
 			{
 				str = "option";
-				pair.nn |= joyr_start;
+				pair.wn |= joyr_start;
 			}
 			else if(10== ev.number)
 			{
 				str = "ls";
-				pair.id |= joyl_stick;
+				pair.w0 |= joyl_stick;
 			}
 			else if(11== ev.number)
 			{
 				str = "rs";
-				pair.nn |= joyr_stick;
+				pair.wn |= joyr_stick;
 			}
 			else if(12== ev.number)str = "!";
 			else str = "?";

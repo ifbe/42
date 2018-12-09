@@ -1,8 +1,4 @@
 #include "libuser.h"
-#define _perm_ hex32('p','e','r','m')
-#define _node_ hex32('n','o','d','e')
-#define _twig_ hex32('t','w','i','g')
-#define _view_ hex32('v','i','e','w')
 //
 #define _term_ hex32('t','e','r','m')
 #define _tray_ hex32('t','r','a','y')
@@ -100,7 +96,13 @@ int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //
 int background_create(void*, void*);
+int background_start(void*, void*, void*, void*);
 int foreground_create(void*, void*);
+int foreground_start(void*, void*, void*, void*);
+int menu_create(void*, void*);
+int menu_start(void*, void*, void*, void*);
+int vkbd_create(void*, void*);
+int vkbd_start(void*, void*, void*, void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -237,8 +239,18 @@ int arenastop()
 {
 	return 0;
 }
-int arenastart()
+int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
 {
+	if(0 == c)return 0;
+
+	switch(c->fmt)
+	{
+		case _bg_:  background_start(c, 0, r, 0);break;
+		case _fg_:  foreground_start(c, 0, r, 0);break;
+		case _menu_:menu_start(c, 0, r, 0);break;
+		case _vkbd_:vkbd_start(c, 0, r, 0);break;
+	}
+
 	return 0;
 }
 int arenadelete(struct arena* win)

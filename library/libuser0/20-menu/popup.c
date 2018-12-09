@@ -87,3 +87,15 @@ int temp_write(struct arena* win, struct event* ev)
 {
 	return 0;
 }
+
+
+
+
+int menu_start(struct arena* c, void* cf, struct arena* r, void* rf)
+{
+	return 0;
+}
+int menu_create(struct arena* win, void* str)
+{
+	return 0;
+}

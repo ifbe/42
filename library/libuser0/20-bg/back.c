@@ -1,6 +1,12 @@
 #include "libuser.h"
 #define _bg_ hex32('b','g',0,0)
 void* allocstyle();
+void* allocpinid();
+int actorstart(void*, void*, void*, void*);
+
+
+
+
 u64 want[2] = {
 	hex64('s','k','y','s','p','h','.','.'),
 	hex64('t','e','r','r','i','a','n', 0)
@@ -41,14 +47,36 @@ int back_write(struct arena* win, struct event* ev)
 
 
 
+int background_start(struct arena* c, void* cf, struct arena* r, void* rf)
+{
+	struct relation* rel;
+	struct style* sty;
+	struct actor* act;
+	struct pinid* pin;
+
+       	rel = c->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		sty = (void*)(rel->srcfoot);
+		act = (void*)(rel->dstchip);
+		pin = (void*)(rel->dstfoot);
+		actorstart(r, sty, act, pin);
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
 int background_create(struct arena* win, u8* str)
 {
 	int j,k;
-	struct actor* act;
 	struct style* sty;
+	struct actor* act;
+	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<1;j++)
+	for(j=0;j<2;j++)
 	{
 		act = actorcreate(want[j], 0);
 		if(0 == act)continue;
@@ -60,6 +88,12 @@ int background_create(struct arena* win, u8* str)
 
 		sty = allocstyle();
 		if(0 == sty)continue;
+
+		pin = allocpinid();
+		if(0 == pin)continue;
+
+		rel->srcfoot = (u64)sty;
+		rel->dstfoot = (u64)pin;
 
 		sty->vc[0] = 0;
 		sty->vc[1] = 0;
@@ -76,8 +110,6 @@ int background_create(struct arena* win, u8* str)
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
 		sty->vu[2] = 1000000;
-
-		rel->srcfoot = (u64)sty;
 	}
 	return 0;
 }

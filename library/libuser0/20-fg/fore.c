@@ -75,6 +75,10 @@ int fore_write(struct arena* win, struct event* ev)
 
 
 
+int foreground_start(struct arena* c, void* cf, struct arena* r, void* rf)
+{
+	return 0;
+}
 int foreground_create(struct arena* win, u8* str)
 {
 	return 0;

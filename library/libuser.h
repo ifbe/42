@@ -33,6 +33,11 @@ typedef float mat4[4][4];
 #define _copy_ hex32('c','o','p','y')
 #define _COPY_ hex32('C','O','P','Y')
 //
+#define _perm_ hex32('p','e','r','m')
+#define _node_ hex32('n','o','d','e')
+#define _twig_ hex32('t','w','i','g')
+#define _view_ hex32('v','i','e','w')
+//
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)

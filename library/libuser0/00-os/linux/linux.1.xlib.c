@@ -274,8 +274,8 @@ void windowcreate(struct arena* win)
 
 	for(j=0;j<16;j++)
 	{
-		win->input[j].id = 0xffff;
-		win->input[j].id = 0xffff;
+		win->input[j].w0 = 0xffff;
+		win->input[j].w0 = 0xffff;
 	}
 
 

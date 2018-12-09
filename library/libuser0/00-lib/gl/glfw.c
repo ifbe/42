@@ -9,6 +9,10 @@
 #define _menu_ hex32('m','e','n','u')
 #define _vkbd_ hex32('v','k','b','d')
 int lowlevel_input();
+int arenastart(void*, void*, void*, void*);
+int preprocess(void*);
+int postprocess(void*);
+//
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
@@ -230,11 +234,11 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
 	char dragdata[0x1000];
-    int j,ret=0;
+	int j,ret=0;
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
 
-    for(j=0;j<count;j++)
+	for(j=0;j<count;j++)
 	{
 		ret += snprintf(dragdata+ret, 0x1000-ret, "%s\n", paths[j]);
 		//printf("%s\n", paths[j]);
@@ -323,7 +327,7 @@ void windowopen(struct arena* r, struct arena* w)
 
 
 
-
+/*
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw;
@@ -393,6 +397,61 @@ void windowread(struct arena* w)
 //newtime = timeread();
 //say("pollevents:%d\n", newtime-oldtime);
 //oldtime = newtime;
+}*/
+void windowread(struct arena* w)
+{
+	GLFWwindow* fw;
+	struct arena* c;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
+	struct relation* rel;
+	struct relation* r;
+
+	//
+	preprocess(w);
+
+	rel = w->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_win_ == rel->dsttype)
+		{
+			c = (void*)(rel->dstchip);
+			r = c->orel0;
+			while(1)
+			{
+				if(0 == r)break;
+
+				if(_act_ == r->dsttype)
+				{
+					act = (void*)(r->dstchip);
+					sty = (void*)(r->srcfoot);
+					pin = (void*)(r->dstfoot);
+					actor_rootread(act, pin, w, sty, 0, 0);
+				}
+
+				r = samesrcnextdst(r);
+			}
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+
+	fore_read(w);
+	postprocess(w);
+
+	//
+	fw = w->win;
+	glfwMakeContextCurrent(fw);
+	callback_update(w);
+	callback_display(w, 0);
+	glfwSwapBuffers(fw);
+	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+
+	//cleanup events
+	glfwPollEvents();
 }
 void windowwrite(struct arena* w)
 {
@@ -403,11 +462,24 @@ void windowchange()
 void windowlist()
 {
 }
-void windowstop()
+void windowstop(struct arena* w)
 {
 }
-void windowstart()
+void windowstart(struct arena* w)
 {
+	struct relation* rel;
+	struct arena* c;
+
+	rel = w->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		c = (void*)(rel->dstchip);
+		arenastart(c, 0, w, 0);
+
+		rel = samesrcnextdst(rel);
+	}
 }
 void windowdelete(struct arena* w)
 {
@@ -439,6 +511,8 @@ void windowcreate(struct arena* w)
 	//vkbd
 	c = arenacreate(_vkbd_, 0);
 	relationcreate(c, 0, _win_, w, 0, _win_);
+
+	windowstart(w);
 }
 
 
