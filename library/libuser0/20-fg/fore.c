@@ -34,7 +34,7 @@ int actorinput_3d( struct arena* win, struct style* sty, struct event* ev);
 
 
 
-int fore_read(struct arena* win, struct style* sty)
+int fore_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	int ret = win->forew;
 	if(ret > 0xff)say("ret=%x\n",ret);

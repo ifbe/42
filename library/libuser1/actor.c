@@ -12,16 +12,16 @@ void lib4d_delete();
 //pre
 int preprocess(struct arena* win);
 //back
-int back_read( struct arena* win, struct style* sty);
+int back_read( void*, void*, struct arena* win, struct style* sty);
 int back_write(struct arena* win, struct event* ev);
 //fore
-int fore_read( struct arena* win, struct style* sty);
+int fore_read( void*, void*, struct arena* win, struct style* sty);
 int fore_write(struct arena* win, struct event* ev);
 //temp
-int temp_read( struct arena* win, struct style* sty);
+int temp_read( void*, void*, struct arena* win, struct style* sty);
 int temp_write(struct arena* win, struct event* ev);
 //vkbd
-int vkbd_read( struct arena* win, struct style* sty);
+int vkbd_read( void*, void*, struct arena* win, struct style* sty);
 int vkbd_write(struct arena* win, struct event* ev);
 //post
 int postprocess(struct arena* win);
@@ -371,7 +371,7 @@ int actorread_all(struct arena* win)
 	else
 	{
 		//foreground
-		fore_read(win, 0);
+		fore_read(0, 0, win, 0);
 	}
 
 	//fg

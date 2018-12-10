@@ -53,6 +53,7 @@ static void terrian_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x,y,t;
 	float (*vbuf)[6];
 	struct glsrc* src;
 	float* vc = sty->vc;
@@ -63,50 +64,56 @@ static void terrian_read_vbo(
 
 	src = (void*)(pin->foot[0]);
 	vbuf = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
 	src->vbuf_enq += 1;
+
+	for(y=-2;y<=2;y++)
+	{
+		for(x=-2;x<=2;x++)
+		{
+			t = (y+2)*30 + (x+2)*6;
+			vbuf[t+0][0] = 1000*x - 450;
+			vbuf[t+0][1] = 1000*y - 450;
+			vbuf[t+0][2] = 0;
+			vbuf[t+0][3] = 0.0;
+			vbuf[t+0][4] = 1.0;
+			vbuf[t+0][5] = 0.0;
+
+			vbuf[t+1][0] = 1000*x + 450;
+			vbuf[t+1][1] = 1000*y + 450;
+			vbuf[t+1][2] = 0;
+			vbuf[t+1][3] = 1.0;
+			vbuf[t+1][4] = 0.0;
+			vbuf[t+1][5] = 0.0;
+
+			vbuf[t+2][0] = 1000*x - 450;
+			vbuf[t+2][1] = 1000*y + 450;
+			vbuf[t+2][2] = 0;
+			vbuf[t+2][3] = 0.0;
+			vbuf[t+2][4] = 0.0;
+			vbuf[t+2][5] = 0.0;
+
+			vbuf[t+3][0] = 1000*x + 450;
+			vbuf[t+3][1] = 1000*y + 450;
+			vbuf[t+3][2] = 0;
+			vbuf[t+3][3] = 1.0;
+			vbuf[t+3][4] = 0.0;
+			vbuf[t+3][5] = 0.0;
+
+			vbuf[t+4][0] = 1000*x - 450;
+			vbuf[t+4][1] = 1000*y - 450;
+			vbuf[t+4][2] = 0;
+			vbuf[t+4][3] = 0.0;
+			vbuf[t+4][4] = 1.0;
+			vbuf[t+4][5] = 0.0;
+
+			vbuf[t+5][0] = 1000*x + 450;
+			vbuf[t+5][1] = 1000*y - 450;
+			vbuf[t+5][2] = 0;
+			vbuf[t+5][3] = 1.0;
+			vbuf[t+5][4] = 1.0;
+			vbuf[t+5][5] = 0.0;
+		}
+	}
 }
 static void terrian_read_json(
 	struct arena* win, struct style* sty,
@@ -161,11 +168,17 @@ static void terrian_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == pin)return;
 
 	//
-	src = alloc_winobj(win);
+	pair = alloc_winobj(win);
+	src = &pair->src;
+	dst = &pair->dst;
+	sty->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
 
 	//shader
 	src->vs = terrian_glsl_v;
@@ -178,10 +191,10 @@ static void terrian_start(
 	src->tex_h[0] = act->height;
 
 	//vertex
-	src->vbuf = memorycreate(4*6*6);
+	src->vbuf = memorycreate(4*6 * 6*25);
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
+	src->vbuf_w = 6*4;		//sizeof(float) * 6info
+	src->vbuf_h = 6*25;		//6vert * 25blocks
 	src->method = 'v';
 
 	//send!
@@ -190,7 +203,6 @@ static void terrian_start(
 	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	pin->foot[0] = (u64)src;
 }
 static void terrian_delete(struct actor* act)
 {

@@ -373,7 +373,7 @@ void vkbd_read_tui(struct arena* win, struct style* sty)
 void vkbd_read_cli(struct arena* win, struct style* sty)
 {
 }
-void vkbd_read(struct arena* win, struct style* sty)
+void vkbd_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 

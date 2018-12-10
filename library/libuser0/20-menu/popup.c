@@ -72,7 +72,7 @@ void popup_read_pixel(struct arena* win, struct style* sty)
 		drawline_rect(win, 0x00ff00, x0, y0, x1, y1);
 	}
 }
-int temp_read(struct arena* win, struct style* sty)
+int temp_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)popup_read_cli(win, sty);

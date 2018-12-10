@@ -402,11 +402,7 @@ void windowread(struct arena* w)
 {
 	GLFWwindow* fw;
 	struct arena* c;
-	struct actor* act;
-	struct style* sty;
-	struct pinid* pin;
 	struct relation* rel;
-	struct relation* r;
 
 	//
 	preprocess(w);
@@ -419,27 +415,16 @@ void windowread(struct arena* w)
 		if(_win_ == rel->dsttype)
 		{
 			c = (void*)(rel->dstchip);
-			r = c->orel0;
-			while(1)
+			switch(c->fmt)
 			{
-				if(0 == r)break;
-
-				if(_act_ == r->dsttype)
-				{
-					act = (void*)(r->dstchip);
-					sty = (void*)(r->srcfoot);
-					pin = (void*)(r->dstfoot);
-					actor_rootread(act, pin, w, sty, 0, 0);
-				}
-
-				r = samesrcnextdst(r);
+				case _bg_:back_read(c, 0, w, 0);break;
+				case _fg_:fore_read(c, 0, w, 0);break;
 			}
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 
-	fore_read(w);
 	postprocess(w);
 
 	//

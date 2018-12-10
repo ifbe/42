@@ -15,27 +15,25 @@ u64 want[2] = {
 
 
 
-int back_read(struct arena* win, struct style* stack)
+int back_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	int j;
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	if(_bg_ != win->type)return 0;
 
-	rel = win->orel0;
-	if(0 == rel)return 0;
-
-	for(j=0;j<1;j++)
+	rel = cc->orel0;
+	while(1)
 	{
-		act = (void*)(rel->dstchip);
-		if(0 == act)continue;
+		if(0 == rel)break;
 
+		act = (void*)(rel->dstchip);
 		sty = (void*)(rel->srcfoot);
 		pin = (void*)(rel->dstfoot);
-
 		act->onread(win, sty, act, pin);
+
+		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
@@ -99,17 +97,17 @@ int background_create(struct arena* win, u8* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 1000000;
+		sty->vr[0] = 1000*1000;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 1000000;
+		sty->vf[1] = 1000*1000;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 1000000;
+		sty->vu[2] = 1000*1000;
 	}
 	return 0;
 }
