@@ -61,10 +61,11 @@ int actoroutput_2d(struct arena* win, struct style* stack)
 			pin = (void*)(orel->dstfoot);
 			sty = (void*)(orel->srcfoot);
 			act->onread(win, sty, act, pin);
+
+			if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+			else drawborder2d(win, sty, &act->name);
 		}
 
-		if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
-		else drawborder2d(win, sty, &act->name);
 		orel = samesrcnextdst(orel);
 	}
 

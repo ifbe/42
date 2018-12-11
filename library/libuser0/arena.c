@@ -590,8 +590,8 @@ void* arenalist(u8* buf, int len)
 */
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == arena[j].type)break;
-			p = (void*)(&arena[j].type);
+			if(0 == arena[j].fmt)break;
+			p = (void*)(&arena[j].fmt);
 
 			for(k=0;k<8;k++)
 			{
