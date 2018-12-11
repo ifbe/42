@@ -401,7 +401,6 @@ void windowread(struct arena* w)
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw;
-	struct arena* c;
 	struct relation* rel;
 
 	//
@@ -414,12 +413,14 @@ void windowread(struct arena* w)
 
 		if(_win_ == rel->dsttype)
 		{
-			c = (void*)(rel->dstchip);
-			switch(c->fmt)
-			{
-				case _bg_:back_read(c, 0, w, 0);break;
-				case _fg_:fore_read(c, 0, w, 0);break;
-			}
+			arena_rootread(
+				(void*)(rel->dstchip),
+				(void*)(rel->dstfoot),
+				w,
+				(void*)(rel->srcfoot),
+				0,
+				0
+			);
 		}
 
 		rel = samesrcnextdst(rel);

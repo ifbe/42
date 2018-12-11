@@ -97,12 +97,16 @@ int xmlnode_delete(void*);
 //
 int background_create(void*, void*);
 int background_start(void*, void*, void*, void*);
+int back_read(void*, void*, void*, void*);
 int foreground_create(void*, void*);
 int foreground_start(void*, void*, void*, void*);
+int fore_read(void*, void*, void*, void*);
 int menu_create(void*, void*);
 int menu_start(void*, void*, void*, void*);
+int menu_read(void*, void*, void*, void*);
 int vkbd_create(void*, void*);
 int vkbd_start(void*, void*, void*, void*);
+int vkbd_read(void*, void*, void*, void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -205,6 +209,10 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	{
 		case _html_: htmlnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _json_: jsonnode_rootread(dc, df, sc, sf, buf, len);break;
+		case _bg_:back_read(dc, df, sc, sf);break;
+		case _fg_:fore_read(dc, df, sc, sf);break;
+		case _menu_:menu_read(dc, df, sc, sf);break;
+		case _vkbd_:vkbd_read(dc, df, sc, sf);break;
 		default: printmemory(buf, len);
 	}
 	return 0;
