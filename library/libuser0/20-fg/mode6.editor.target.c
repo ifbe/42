@@ -315,10 +315,13 @@ int playwith3d_pick(struct arena* win, int x, int y)
 	{
 		if(0 == rel)break;
 
-		sty = (void*)(rel->srcfoot);
-		ret = obb_ray(sty, ray, out);
-		say("rel=%llx, ret=%d\n", rel, ret);
-		if(ret > 0)break;
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			ret = obb_ray(sty, ray, out);
+			say("rel=%llx, ret=%d\n", rel, ret);
+			if(ret > 0)break;
+		}
 
 		rel = samesrcprevdst(rel);
 	}

@@ -57,18 +57,21 @@ int playwith2d_pick(struct arena* win, int x, int y)
 	{
 		if(0 == rel)break;
 
-		sty = (void*)(rel->srcfoot);
-		crf[0][0] = sty->vc[0];
-		crf[0][1] = sty->vc[1];
-		crf[0][2] = sty->vc[2];
-		crf[1][0] = sty->vr[0];
-		crf[1][1] = sty->vr[1];
-		crf[1][2] = sty->vr[2];
-		crf[2][0] = sty->vf[0];
-		crf[2][1] = sty->vf[1];
-		crf[2][2] = sty->vf[2];
-		ret = rect_point(crf, xyz, &out);
-		if(ret > 0)break;
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			crf[0][0] = sty->vc[0];
+			crf[0][1] = sty->vc[1];
+			crf[0][2] = sty->vc[2];
+			crf[1][0] = sty->vr[0];
+			crf[1][1] = sty->vr[1];
+			crf[1][2] = sty->vr[2];
+			crf[2][0] = sty->vf[0];
+			crf[2][1] = sty->vf[1];
+			crf[2][2] = sty->vf[2];
+			ret = rect_point(crf, xyz, &out);
+			if(ret > 0)break;
+		}
 
 		rel = samesrcprevdst(rel);
 	}
@@ -86,7 +89,12 @@ int actorinput_win(struct arena* win, struct style* stack, struct event* ev)
 	int id = ((ev->why)>>48)&0xffff;
 
 	orel = win->oreln;
-	if(0 == orel)return 1;
+	while(1)
+	{
+		if(0 == orel)return 1;
+		if(_act_ == orel->dsttype)break;
+		orel = samesrcprevdst(orel);
+	}
 
 	sty = (void*)(orel->srcfoot);
 	if(0 == sty)return 1;

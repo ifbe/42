@@ -74,7 +74,7 @@ static void human_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carvesolid_rect(win, 0x808080, vc, vr, vf);
+	//carvesolid_rect(win, 0x808080, vc, vr, vf);
 
 	for(j=0;j<16;j++)
 	{

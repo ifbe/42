@@ -84,9 +84,18 @@ int actorinput_2d(struct arena* win, struct style* sty, struct event* ev)
 	struct relation* orel;
 
 	orel = win->oreln;
-	if(0 == orel)return 0;
+	while(1)
+	{
+		if(0 == orel)break;
 
-	act = (void*)(orel->dstchip);
-	pin = (void*)(orel->dstfoot);
-	return act->onwrite(act, pin, 0, 0, ev, 0);
+		if(_act_ == orel->dsttype)
+		{
+			act = (void*)(orel->dstchip);
+			pin = (void*)(orel->dstfoot);
+			return act->onwrite(act, pin, 0, 0, ev, 0);
+		}
+
+		orel = samesrcprevdst(orel);
+	}
+	return 0;
 }

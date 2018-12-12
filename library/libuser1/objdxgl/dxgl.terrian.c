@@ -66,48 +66,48 @@ static void terrian_read_vbo(
 	vbuf = (void*)(src->vbuf);
 	src->vbuf_enq += 1;
 
-	for(y=-2;y<=2;y++)
+	for(y=-4;y<=4;y++)
 	{
-		for(x=-2;x<=2;x++)
+		for(x=-4;x<=4;x++)
 		{
-			t = (y+2)*30 + (x+2)*6;
-			vbuf[t+0][0] = 1000*x - 450;
-			vbuf[t+0][1] = 1000*y - 450;
+			t = 9*(y+4)*6 + (x+4)*6;
+			vbuf[t+0][0] = 1000*x - 500;
+			vbuf[t+0][1] = 1000*y - 500;
 			vbuf[t+0][2] = 0;
 			vbuf[t+0][3] = 0.0;
 			vbuf[t+0][4] = 1.0;
 			vbuf[t+0][5] = 0.0;
 
-			vbuf[t+1][0] = 1000*x + 450;
-			vbuf[t+1][1] = 1000*y + 450;
+			vbuf[t+1][0] = 1000*x + 500;
+			vbuf[t+1][1] = 1000*y + 500;
 			vbuf[t+1][2] = 0;
 			vbuf[t+1][3] = 1.0;
 			vbuf[t+1][4] = 0.0;
 			vbuf[t+1][5] = 0.0;
 
-			vbuf[t+2][0] = 1000*x - 450;
-			vbuf[t+2][1] = 1000*y + 450;
+			vbuf[t+2][0] = 1000*x - 500;
+			vbuf[t+2][1] = 1000*y + 500;
 			vbuf[t+2][2] = 0;
 			vbuf[t+2][3] = 0.0;
 			vbuf[t+2][4] = 0.0;
 			vbuf[t+2][5] = 0.0;
 
-			vbuf[t+3][0] = 1000*x + 450;
-			vbuf[t+3][1] = 1000*y + 450;
+			vbuf[t+3][0] = 1000*x + 500;
+			vbuf[t+3][1] = 1000*y + 500;
 			vbuf[t+3][2] = 0;
 			vbuf[t+3][3] = 1.0;
 			vbuf[t+3][4] = 0.0;
 			vbuf[t+3][5] = 0.0;
 
-			vbuf[t+4][0] = 1000*x - 450;
-			vbuf[t+4][1] = 1000*y - 450;
+			vbuf[t+4][0] = 1000*x - 500;
+			vbuf[t+4][1] = 1000*y - 500;
 			vbuf[t+4][2] = 0;
 			vbuf[t+4][3] = 0.0;
 			vbuf[t+4][4] = 1.0;
 			vbuf[t+4][5] = 0.0;
 
-			vbuf[t+5][0] = 1000*x + 450;
-			vbuf[t+5][1] = 1000*y - 450;
+			vbuf[t+5][0] = 1000*x + 500;
+			vbuf[t+5][1] = 1000*y - 500;
 			vbuf[t+5][2] = 0;
 			vbuf[t+5][3] = 1.0;
 			vbuf[t+5][4] = 1.0;
@@ -191,10 +191,10 @@ static void terrian_start(
 	src->tex_h[0] = act->height;
 
 	//vertex
-	src->vbuf = memorycreate(4*6 * 6*25);
+	src->vbuf = memorycreate(4*6 * 6*81);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;		//sizeof(float) * 6info
-	src->vbuf_h = 6*25;		//6vert * 25blocks
+	src->vbuf_h = 6*81;		//6vert * 81blocks
 	src->method = 'v';
 
 	//send!

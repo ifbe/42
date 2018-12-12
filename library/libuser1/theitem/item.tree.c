@@ -40,7 +40,7 @@ static void tree_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
+	//carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
 
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
