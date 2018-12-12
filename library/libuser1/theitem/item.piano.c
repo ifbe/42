@@ -75,6 +75,52 @@ static void piano_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x;
+	vec3 tc,tr,tf,tu;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	tc[0] = vc[0] + vf[0]/2 + vu[0]/2;
+	tc[1] = vc[1] + vf[1]/2 + vu[1]/2;
+	tc[2] = vc[2] + vf[2]/2 + vu[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	tu[0] = vu[0]/2;
+	tu[1] = vu[1]/2;
+	tu[2] = vu[2]/2;
+    carvesolid_prism4(win, 0x202020, tc, vr, tf, tu);
+
+	tr[0] = vr[0] / 7 / 11;
+	tr[1] = vr[1] / 7 / 11;
+	tr[2] = vr[2] / 7 / 11;
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
+	for(x=0;x<7*10;x++)
+	{
+		tc[0] = vc[0] + vr[0]*(x-34.5)/35 - vf[0]/4 + vu[0]/2;
+		tc[1] = vc[1] + vr[1]*(x-34.5)/35 - vf[1]/4 + vu[1]/2;
+		tc[2] = vc[2] + vr[2]*(x-34.5)/35 - vf[2]/4 + vu[2]/2;
+		carvesolid_rect(win, 0xfffffff, tc, tr, tf);
+	}
+
+	tr[0] = vr[0] / 7 / 20;
+	tr[1] = vr[1] / 7 / 20;
+	tr[2] = vr[2] / 7 / 20;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	for(x=0;x<7*10;x++)
+	{
+		if((x%7) == 0)continue;
+		if((x%7) == 3)continue;
+		tc[0] = vc[0] + vr[0]*(x-35)/35 - vf[0]/8 + vu[0]*0.51;
+		tc[1] = vc[1] + vr[1]*(x-35)/35 - vf[1]/8 + vu[1]*0.51;
+		tc[2] = vc[2] + vr[2]*(x-35)/35 - vf[2]/8 + vu[2]*0.51;
+		carvesolid_rect(win, 0x202020, tc, tr, tf);
+	}
 }
 static void piano_read_json(
 	struct arena* win, struct style* sty,

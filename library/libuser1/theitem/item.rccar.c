@@ -30,80 +30,44 @@ static void rccar_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x,y;
     vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
-    tu[0] = vu[0] / 64;
-    tu[1] = vu[1] / 64;
-    tu[2] = vu[2] / 64;
+    tr[0] = vr[0] * 3 / 4;
+    tr[1] = vr[1] * 3 / 4;
+    tr[2] = vr[2] * 3 / 4;
+    tf[0] = vf[0] * 3 / 4;
+    tf[1] = vf[1] * 3 / 4;
+    tf[2] = vf[2] * 3 / 4;
+	tu[0] = vu[0] / 8;
+	tu[1] = vu[1] / 8;
+	tu[2] = vu[2] / 8;
+	tc[0] = vc[0] + vu[0]/4;
+	tc[1] = vc[1] + vu[1]/4;
+	tc[2] = vc[2] + vu[2]/4;
+    carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
 
-    //center
-    tr[0] = vr[0] / 4;
-    tr[1] = vr[1] / 4;
-    tr[2] = vr[2] / 4;
-    tf[0] = vf[0] / 4;
-    tf[1] = vf[1] / 4;
-    tf[2] = vf[2] / 4;
-    carvesolid_prism4(win, 0xffffff, vc, tr, tf, tu);
+	tr[0] = vf[0] / 4;
+	tr[1] = vf[1] / 4;
+	tr[2] = vf[2] / 4;
+	tu[0] = vr[0] / 4;
+	tu[1] = vr[1] / 4;
+	tu[2] = vr[2] / 4;
 
-    //pie
-    tr[0] = vr[0] + vf[0];
-    tr[1] = vr[1] + vf[1];
-    tr[2] = vr[2] + vf[2];
-    tf[0] = (vf[0] - vr[0]) / 16;
-    tf[1] = (vf[1] - vr[1]) / 16;
-    tf[2] = (vf[2] - vr[2]) / 16;
-    carvesolid_prism4(win, 0xfedcba, vc, tr, tf, tu);
-
-    //na
-    tr[0] = (vr[0] + vf[0]) / 16;
-    tr[1] = (vr[1] + vf[1]) / 16;
-    tr[2] = (vr[2] + vf[2]) / 16;
-    tf[0] = vf[0] - vr[0];
-    tf[1] = vf[1] - vr[1];
-    tf[2] = vf[2] - vr[2];
-    carvesolid_prism4(win, 0xfedcba, vc, tr, tf, tu);
-
-
-    tr[0] = vr[0] / 32;
-    tr[1] = vr[1] / 32;
-    tr[2] = vr[2] / 32;
-    tu[0] = vu[0] / 32;
-    tu[1] = vu[1] / 32;
-    tu[2] = vu[2] / 32;
-#define rr0 (vr[0]*31/32)
-#define rr1 (vr[1]*31/32)
-#define rr2 (vr[2]*31/32)
-#define ff0 (vf[0]*31/32)
-#define ff1 (vf[1]*31/32)
-#define ff2 (vf[2]*31/32)
-
-    //lb
-    tc[0] = vc[0] - rr0 - ff0 + tu[0];
-    tc[1] = vc[1] - rr1 - ff1 + tu[1];
-    tc[2] = vc[2] - rr2 - ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
-
-    //rb
-    tc[0] = vc[0] + rr0 - ff0 + tu[0];
-    tc[1] = vc[1] + rr1 - ff1 + tu[1];
-    tc[2] = vc[2] + rr2 - ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
-
-    //lf
-    tc[0] = vc[0] - rr0 + ff0 + tu[0];
-    tc[1] = vc[1] - rr1 + ff1 + tu[1];
-    tc[2] = vc[2] - rr2 + ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
-
-    //rf
-    tc[0] = vc[0] + rr0 + ff0 + tu[0];
-    tc[1] = vc[1] + rr1 + ff1 + tu[1];
-    tc[2] = vc[2] + rr2 + ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
+	for(y=-1;y<2;y+=2)
+	{
+		for(x=-1;x<2;x+=2)
+		{
+			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4 + vu[0]/4;
+			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4 + vu[1]/4;
+			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4 + vu[2]/4;
+			carvesolid_cylinder(win, 0x202020, tc, tr, tu);
+		}
+	}
 }
 static void rccar_read_json(
 	struct arena* win, struct style* sty,
