@@ -61,9 +61,12 @@ void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
-//
+//chip
 void hbridge_register(void*);
 void rectify_register(void*);
+//geom
+void cube_register(void*);
+void sphere_register(void*);
 
 
 
@@ -274,5 +277,12 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	rectify_register(temp);
+	temp += sizeof(struct actor);
+
+	//-------------------geom------------------
+	cube_register(temp);
+	temp += sizeof(struct actor);
+
+	sphere_register(temp);
 	temp += sizeof(struct actor);
 }
