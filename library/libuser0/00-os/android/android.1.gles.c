@@ -144,7 +144,6 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 		//initDisplay(appState);
 		windowprepare(thewin);
 
-		initobject(thewin);
 		initshader(thewin);
 		inittexture(thewin);
 		initvertex(thewin);
@@ -281,6 +280,7 @@ void windowcreate(struct arena* win)
 	win->stride = win->fbstride = 1024;
 	win->height = win->fbheight = 1024;
 	win->depth  = win->fbdepth  = 1024;
+	initobject(win);
 
 	thewin = win;
 	theapp->onAppCmd = handle_cmd;

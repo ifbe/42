@@ -283,6 +283,7 @@ void* arenacreate(u64 type, void* addr)
 {
 	int j = 0;
 	struct arena* win;
+	struct arena* sub;
 
 	//default
 	if(0 == type)
@@ -346,18 +347,29 @@ void* arenacreate(u64 type, void* addr)
 		win->tempw = 0;
 		win->vkbdw = 0;
 		arenavertex(win);
-	}
-	else if(_coop_ == type)
-	{
-		win->type = _coop_;
-		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		windowcreate(win);
 
-		win->backw = 0;
-		win->forew = 0x10;
-		win->tempw = 0;
-		win->vkbdw = 0;
-		arenavertex(win);
+		if(_vbo_ == win->fmt)
+		{
+			//bg
+			sub = arenacreate(_bg_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+
+			//fg
+			sub = arenacreate(_fg_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+
+			//menu
+			sub = arenacreate(_menu_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+
+			//vkbd
+			sub = arenacreate(_vkbd_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+		}
 	}
 
 	//10

@@ -453,19 +453,6 @@ void windowstop(struct arena* w)
 }
 void windowstart(struct arena* w)
 {
-	struct relation* rel;
-	struct arena* c;
-
-	rel = w->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		c = (void*)(rel->dstchip);
-		arenastart(c, 0, w, 0);
-
-		rel = samesrcnextdst(rel);
-	}
 }
 void windowdelete(struct arena* w)
 {
@@ -481,24 +468,6 @@ void windowcreate(struct arena* w)
 
 	w->fmt = _vbo_;
 	if(_win_ == w->type)windowopen(0, w);
-
-	//bg
-	c = arenacreate(_bg_, 0);
-	relationcreate(c, 0, _win_, w, 0, _win_);
-
-	//fg
-	c = arenacreate(_fg_, 0);
-	relationcreate(c, 0, _win_, w, 0, _win_);
-
-	//menu
-	c = arenacreate(_menu_, 0);
-	relationcreate(c, 0, _win_, w, 0, _win_);
-
-	//vkbd
-	c = arenacreate(_vkbd_, 0);
-	relationcreate(c, 0, _win_, w, 0, _win_);
-
-	windowstart(w);
 }
 
 
