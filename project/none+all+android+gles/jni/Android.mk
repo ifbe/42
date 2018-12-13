@@ -15,6 +15,7 @@ library/libboot0/none/board.c
 #libboot1
 LOCAL_SRC_FILES += \
 library/libboot1/main.c \
+library/libboot1/init.c \
 library/libboot1/loop.c \
 library/libboot1/std/stdin.c \
 library/libboot1/std/stdout.c \
@@ -23,7 +24,6 @@ library/libboot1/std/stdrel.c \
 library/libboot1/term/cmdev.c \
 library/libboot1/term/cmdnode.c \
 library/libboot1/term/cmdrel.c \
-library/libboot1/term/cmdrole.c \
 library/libboot1/term/cmdscene.c \
 library/libboot1/term/term.c
 
@@ -265,28 +265,52 @@ library/libsoft1/artery.c
 
 #libuser0
 LOCAL_SRC_FILES += \
-library/libuser0/os/android/android.0.joy.c \
-library/libuser0/os/android/android.0.term.c \
-library/libuser0/os/android/android.0.tray.c \
-library/libuser0/os/android/android.1.gles.c \
-library/libuser0/os/android/android.2.mic.c \
-library/libuser0/os/android/android.3.cam.c \
-library/libuser0/3rd/bygl/gl.object.c \
-library/libuser0/3rd/bygl/gl.shader.c \
-library/libuser0/3rd/bygl/gl.texture.c \
-library/libuser0/3rd/bygl/gl.vertex.c \
-library/libuser0/out/cli/out.cli.c \
-library/libuser0/out/func/out.func.c \
-library/libuser0/out/html/out.html.c \
-library/libuser0/out/json/out.json.c \
-library/libuser0/out/pcb/out.pcb.c \
-library/libuser0/out/rgba/out.rgba.c \
-library/libuser0/out/sch/out.sch.c \
-library/libuser0/out/tui/out.tui.c \
-library/libuser0/out/vbo/out.vbo.c \
-library/libuser0/out/xml/out.xml.c \
-library/libuser0/in/in.ev.c \
-library/libuser0/in/in.data.c \
+library/libuser0/00-lib/gl/gl.object.c \
+library/libuser0/00-lib/gl/gl.shader.c \
+library/libuser0/00-lib/gl/gl.texture.c \
+library/libuser0/00-lib/gl/gl.vertex.c \
+library/libuser0/00-os/android/android.0.joy.c \
+library/libuser0/00-os/android/android.0.term.c \
+library/libuser0/00-os/android/android.0.tray.c \
+library/libuser0/00-os/android/android.1.gles.c \
+library/libuser0/00-os/android/android.2.mic.c \
+library/libuser0/00-os/android/android.3.cam.c \
+library/libuser0/10-mem/cli/out.cli.c \
+library/libuser0/10-mem/func/out.func.c \
+library/libuser0/10-mem/html/out.html.c \
+library/libuser0/10-mem/json/out.json.c \
+library/libuser0/10-mem/pcb/out.pcb.c \
+library/libuser0/10-mem/rgba/out.rgba.c \
+library/libuser0/10-mem/sch/out.sch.c \
+library/libuser0/10-mem/tui/out.tui.c \
+library/libuser0/10-mem/vbo/out.vbo.c \
+library/libuser0/10-mem/xml/out.xml.c \
+library/libuser0/20-bg/back.c \
+library/libuser0/20-bg/back.gif.c \
+library/libuser0/20-bg/back.jpg.c \
+library/libuser0/20-fg/fore.c \
+library/libuser0/20-fg/menu.list.c \
+library/libuser0/20-fg/menu.nav.c \
+library/libuser0/20-fg/menu.tab.c \
+library/libuser0/20-fg/menu.tag.c \
+library/libuser0/20-fg/mode0.testland.c \
+library/libuser0/20-fg/mode1.console.c \
+library/libuser0/20-fg/mode2.overview.c \
+library/libuser0/20-fg/mode3.detail.c \
+library/libuser0/20-fg/mode4.win.c \
+library/libuser0/20-fg/mode5.rts.c \
+library/libuser0/20-fg/mode6.editor.c \
+library/libuser0/20-fg/mode6.editor.camera.c \
+library/libuser0/20-fg/mode6.editor.target.c \
+library/libuser0/20-fg/mode7.player.c \
+library/libuser0/20-menu/popup.c \
+library/libuser0/20-vkbd/vkbd.c \
+library/libuser0/20-vkbd/vkbd.joystick.c \
+library/libuser0/20-vkbd/vkbd.keyboard.c \
+library/libuser0/30-glass/view.glass.c \
+library/libuser0/30-light/view.light.c \
+library/libuser0/30-mirror/view.mirror.c \
+library/libuser0/30-portal/view.portal.c \
 library/libuser0/arena.c
 
 #libuser1
@@ -345,28 +369,6 @@ library/libuser1/lib4d/help.unit.inner.c \
 library/libuser1/lib4d/help.unit.outer.c \
 library/libuser1/lib4d/help.unit.extra.c \
 library/libuser1/lib4d/help.beforeafter.c \
-library/libuser1/mixback/back.c \
-library/libuser1/mixback/back.gif.c \
-library/libuser1/mixback/back.jpg.c \
-library/libuser1/mixfore/fore.c \
-library/libuser1/mixfore/menu.list.c \
-library/libuser1/mixfore/menu.nav.c \
-library/libuser1/mixfore/menu.tab.c \
-library/libuser1/mixfore/menu.tag.c \
-library/libuser1/mixfore/mode0.testland.c \
-library/libuser1/mixfore/mode1.console.c \
-library/libuser1/mixfore/mode2.overview.c \
-library/libuser1/mixfore/mode3.detail.c \
-library/libuser1/mixfore/mode4.win.c \
-library/libuser1/mixfore/mode5.rts.c \
-library/libuser1/mixfore/mode6.editor.c \
-library/libuser1/mixfore/mode6.editor.camera.c \
-library/libuser1/mixfore/mode6.editor.target.c \
-library/libuser1/mixfore/mode7.player.c \
-library/libuser1/mixtemp/popup.c \
-library/libuser1/mixvkbd/vkbd.c \
-library/libuser1/mixvkbd/vkbd.joystick.c \
-library/libuser1/mixvkbd/vkbd.keyboard.c \
 library/libuser1/objchip/chip.bjt.c \
 library/libuser1/objchip/chip.mos.c \
 library/libuser1/objchip/chip.diode.c \
