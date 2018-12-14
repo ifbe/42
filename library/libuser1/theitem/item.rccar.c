@@ -54,6 +54,9 @@ static void rccar_read_vbo(
 	tr[0] = vf[0] / 4;
 	tr[1] = vf[1] / 4;
 	tr[2] = vf[2] / 4;
+	tf[0] = vu[0] / 4;
+	tf[1] = vu[1] / 4;
+	tf[2] = vu[2] / 4;
 	tu[0] = vr[0] / 4;
 	tu[1] = vr[1] / 4;
 	tu[2] = vr[2] / 4;
@@ -65,7 +68,7 @@ static void rccar_read_vbo(
 			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4 + vu[0]/4;
 			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4 + vu[1]/4;
 			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4 + vu[2]/4;
-			carvesolid_cylinder(win, 0x202020, tc, tr, tu);
+			carvesolid_cylinder(win, 0x202020, tc, tr, tf, tu);
 		}
 	}
 }

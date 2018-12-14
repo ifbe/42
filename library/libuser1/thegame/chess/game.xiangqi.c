@@ -230,10 +230,13 @@ static void xiangqi_read_vbo(
 			tr[0] = vr[0] / 9.1;
 			tr[1] = vr[1] / 9.1;
 			tr[2] = vr[2] / 9.1;
+			tf[0] = vf[0] / 9.1;
+			tf[1] = vf[1] / 9.1;
+			tf[2] = vf[2] / 9.1;
 			tu[0] = vu[0] / 20.0;
 			tu[1] = vu[1] / 20.0;
 			tu[2] = vu[2] / 20.0;
-			carvesolid_cylinder(win, 0xf9d65b, tc, tr, tu);
+			carvesolid_cylinder(win, 0xf9d65b, tc, tr, tf, tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;

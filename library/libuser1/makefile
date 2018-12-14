@@ -58,7 +58,7 @@ lib4d/help.unit.inner.c \
 lib4d/help.unit.outer.c \
 lib4d/help.beforeafter.c \
 objchip/chip.bjt.c \
-objchip/chip.mos.c \
+objchip/chip.finfet.c \
 objchip/chip.diode.c \
 objchip/chip.ff.c \
 objchip/chip.and.c \

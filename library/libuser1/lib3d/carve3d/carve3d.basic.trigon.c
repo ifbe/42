@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define acc 18
+#define acc 32
 int trigon3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->mod;
@@ -458,11 +458,11 @@ void carvesolid_prism6()
 {
 }
 void carvesolid_cask(struct arena* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int a,b,j;
-	float s,t;
-	float r[4];
+	float c,s;
+	vec3 vv;
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -474,17 +474,18 @@ void carvesolid_cask(struct arena* win, u32 rgb,
 
 	for(j=0;j<acc;j++)
 	{
-		r[0] = vr[0];
-		r[1] = vr[1];
-		r[2] = vr[2];
-		quaternion_operation(r, vu, j*tau/acc);
-
 		a = j*18;
 		b = j*6;
+		c = cosine(j*tau/acc);
+		s = sine(j*tau/acc);
 
-		vbuf[a+0] = vc[0] - vu[0] + r[0];
-		vbuf[a+1] = vc[1] - vu[1] + r[1];
-		vbuf[a+2] = vc[2] - vu[2] + r[2];
+		vv[0] = c*vr[0] - s*vf[0];
+		vv[1] = c*vr[1] - s*vf[1];
+		vv[2] = c*vr[2] - s*vf[2];
+
+		vbuf[a+0] = vc[0] - vu[0] + vv[0];
+		vbuf[a+1] = vc[1] - vu[1] + vv[1];
+		vbuf[a+2] = vc[2] - vu[2] + vv[2];
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
 		vbuf[a+5] = bb;
@@ -492,9 +493,9 @@ void carvesolid_cask(struct arena* win, u32 rgb,
 		vbuf[a+7] = vbuf[a+1] - vc[1];
 		vbuf[a+8] = vbuf[a+2] - vc[2];
 
-		vbuf[a+ 9] = vc[0] + vu[0] + r[0];
-		vbuf[a+10] = vc[1] + vu[1] + r[1];
-		vbuf[a+11] = vc[2] + vu[2] + r[2];
+		vbuf[a+ 9] = vc[0] + vu[0] + vv[0];
+		vbuf[a+10] = vc[1] + vu[1] + vv[1];
+		vbuf[a+11] = vc[2] + vu[2] + vv[2];
 		vbuf[a+12] = rr;
 		vbuf[a+13] = gg;
 		vbuf[a+14] = bb;
@@ -512,29 +513,24 @@ void carvesolid_cask(struct arena* win, u32 rgb,
 	}
 }
 void carvesolid_cylinder(struct arena* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
-	vec3 f;
-	f[0] = vr[0];
-	f[1] = vr[1];
-	f[2] = vr[2];
-	quaternion_operation(f, vu, PI/2);
+	vec3 tf;
+	carvesolid_cask(win, rgb, vc, vr, vf, vu);
 
 	tc[0] = vc[0]+vu[0];
 	tc[1] = vc[1]+vu[1];
 	tc[2] = vc[2]+vu[2];
-	carvesolid_circle(win, rgb, tc, vr, f);
+	carvesolid_circle(win, rgb, tc, vr, vf);
 
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
 	tc[2] = vc[2]-vu[2];
-	f[0] = -f[0];
-	f[1] = -f[1];
-	f[2] = -f[2];
-	carvesolid_circle(win, rgb, tc, vr, f);
-
-	carvesolid_cask(win, rgb, vc, vr, vu);
+	tf[0] = -vf[0];
+	tf[1] = -vf[1];
+	tf[2] = -vf[2];
+	carvesolid_circle(win, rgb, tc, vr, tf);
 }
 
 

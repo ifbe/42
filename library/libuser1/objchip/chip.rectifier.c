@@ -127,6 +127,9 @@ static void rectify_read_vbo3d(
 	tr[0] = vu[0]/8;
 	tr[1] = vu[1]/8;
 	tr[2] = vu[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
 	for(z=-1;z<2;z+=2)
 	{
 		for(y=-1;y<2;y++)
@@ -138,7 +141,7 @@ static void rectify_read_vbo3d(
 			tu[0] = vr[0]/4;
 			tu[1] = vr[1]/4;
 			tu[2] = vr[2]/4;
-			carvesolid_cylinder(win, 0xe0e0e0, tc, tr, tu);
+			carvesolid_cylinder(win, 0xe0e0e0, tc, tr, tf, tu);
 
 			//-
 			tc[0] -= z*vr[0]/3.6;
@@ -147,7 +150,7 @@ static void rectify_read_vbo3d(
 			tu[0] = vr[0]/32;
 			tu[1] = vr[1]/32;
 			tu[2] = vr[2]/32;
-			carvesolid_cylinder(win, 0x202020, tc, tr, tu);
+			carvesolid_cylinder(win, 0x202020, tc, tr, tf, tu);
 
 			a = s[y+1];
 			rgb = 0xffffff;

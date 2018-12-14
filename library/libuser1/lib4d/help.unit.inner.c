@@ -62,10 +62,12 @@ void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
 //chip
+void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 //geom
 void cube_register(void*);
+void cylinder_register(void*);
 void sphere_register(void*);
 
 
@@ -273,6 +275,9 @@ void content_create(void* addr)
 
 
 	//-------------------chip-----------------
+	finfet_register(temp);
+	temp += sizeof(struct actor);
+
 	hbridge_register(temp);
 	temp += sizeof(struct actor);
 
@@ -281,6 +286,9 @@ void content_create(void* addr)
 
 	//-------------------geom------------------
 	cube_register(temp);
+	temp += sizeof(struct actor);
+
+	cylinder_register(temp);
 	temp += sizeof(struct actor);
 
 	sphere_register(temp);

@@ -69,6 +69,9 @@ static void drone_read_vbo(
     tr[0] = vr[0] / 32;
     tr[1] = vr[1] / 32;
     tr[2] = vr[2] / 32;
+    tf[0] = vf[0] / 32;
+    tf[1] = vf[1] / 32;
+    tf[2] = vf[2] / 32;
     tu[0] = vu[0] / 32;
     tu[1] = vu[1] / 32;
     tu[2] = vu[2] / 32;
@@ -83,25 +86,25 @@ static void drone_read_vbo(
     tc[0] = vc[0] - rr0 - ff0 + tu[0];
     tc[1] = vc[1] - rr1 - ff1 + tu[1];
     tc[2] = vc[2] - rr2 - ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
+    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
 
     //rb
     tc[0] = vc[0] + rr0 - ff0 + tu[0];
     tc[1] = vc[1] + rr1 - ff1 + tu[1];
     tc[2] = vc[2] + rr2 - ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
+    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
 
     //lf
     tc[0] = vc[0] - rr0 + ff0 + tu[0];
     tc[1] = vc[1] - rr1 + ff1 + tu[1];
     tc[2] = vc[2] - rr2 + ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
+    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
 
     //rf
     tc[0] = vc[0] + rr0 + ff0 + tu[0];
     tc[1] = vc[1] + rr1 + ff1 + tu[1];
     tc[2] = vc[2] + rr2 + ff2 + tu[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tu);
+    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
 }
 static void drone_read_json(
 	struct arena* win, struct style* sty,

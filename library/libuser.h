@@ -831,8 +831,8 @@ void carvesolid_rect(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carvesolid_circle(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void carvesolid_cone(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
 void carvesolid_prism4(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_cask(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvesolid_cylinder(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carvesolid_cask(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_cylinder(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_dodecahedron(struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_icosahedron( struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_sphere(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);

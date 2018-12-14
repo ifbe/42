@@ -70,22 +70,27 @@ static void control_read_vbo(
 	tu[1] = vu[1]/64;
 	tu[2] = vu[2]/64;
 
-	//tr = vr/2
+	//tr = vr/4
 	tr[0] = vr[0]/4;
-	tr[0] = vr[0]/4;
-	tr[0] = vr[0]/4;
+	tr[1] = vr[1]/4;
+	tr[2] = vr[2]/4;
+
+	//tr = vr/4
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
 
 	//tc = vc-vr/2-vf/2
 	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
 	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
 	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
-	carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tu);
+	carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tf, tu);
 
 	//tc = vc+vr/2-vf/2
 	tc[0] = vc[0] + vr[0]/2 - vf[0]/2;
 	tc[1] = vc[1] + vr[1]/2 - vf[1]/2;
 	tc[2] = vc[2] + vr[2]/2 - vf[2]/2;
-	carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tu);
+	carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tf, tu);
 
 	//tr = vr/8
 	tr[0] = vr[0]/8;
@@ -108,7 +113,7 @@ static void control_read_vbo(
 			tc[0] = vc[0] + (2*x-7)*vr[0]/8 + (7-2*y)*vf[0]/8;
 			tc[1] = vc[1] + (2*x-7)*vr[1]/8 + (7-2*y)*vf[1]/8;
 			tc[2] = vc[2] + (2*x-7)*vr[2]/8 + (7-2*y)*vf[2]/8;
-			carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tu);
+			carvesolid_cylinder(win, 0xc0c0c0, tc, tr, tf, tu);
 
 			tc[0] += tr[0]/2 + tu[0]*2;
 			tc[1] += tr[1]/2 + tu[1]*2;
