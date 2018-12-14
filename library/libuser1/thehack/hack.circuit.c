@@ -1,8 +1,13 @@
 #include "libuser.h"
-#define WIDTH 32
-#define HEIGHT 32
 u32 getrandom();
-static u8 data[HEIGHT][WIDTH];
+int solve_pcbwire(u8* buf, int w, int h, int l);
+
+
+
+
+#define WIDTH 64
+#define HEIGHT 64
+#define LAYER 2
 
 
 
@@ -11,10 +16,11 @@ static void circuit_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 c;
-	int x,y;
-	int xxx,yyy;
+	u32 c,val;
+	int x,y,z;
 	int cx, cy, ww, hh;
+	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+
 	if(sty)
 	{
 		cx = sty->vc[0];
@@ -29,6 +35,8 @@ static void circuit_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
+
+	z = 0;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -41,13 +49,14 @@ static void circuit_read_pixel(
 				cy-hh + (y+y+2)*hh/HEIGHT
 			);
 
-			if(1 == data[y][x])c = 0xffffff;
-			else if(2 == data[y][x])c = 0xffff00;
-			else if(4 == data[y][x])c = 0xff00ff;
-			else if(8 == data[y][x])c = 0xff0000;
-			else if(16 == data[y][x])c = 0xffff;
-			else if(32 == data[y][x])c = 0xff00;
-			else if(64 == data[y][x])c = 0xff;
+			val = data[z][y][x];
+			if(1 == val)c = 0xffffff;
+			else if(2 == val)c = 0xffff00;
+			else if(4 == val)c = 0xff00ff;
+			else if(8 == val)c = 0xff0000;
+			else if(16 == val)c = 0xffff;
+			else if(32 == val)c = 0xff00;
+			else if(64 == val)c = 0xff;
 			else continue;
 
 			drawsolid_rect(
@@ -64,48 +73,63 @@ static void circuit_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 c;
-	int x,y;
+	u32 c,val;
+	int x,y,z;
 	vec3 tc, tr, tf, tu, f;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+	u8 (*data)[HEIGHT][WIDTH] = act->buf;
 
-	for(y=0;y<HEIGHT;y++)
+	carveline_rect(win, 0x808080, vc, vr, vf);
+	for(z=0;z<2;z++)
 	{
-		for(x=0;x<WIDTH;x++)
+		for(y=0;y<HEIGHT;y++)
 		{
-			f[0] = (x+x+1)/WIDTH - 1.0;
-			f[1] = (y+y+1)/HEIGHT - 1.0;
-			f[2] = 1.0/36;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-			tr[0] = vr[0] / WIDTH;
-			tr[1] = vr[1] / WIDTH;
-			tr[2] = vr[2] / WIDTH;
-			tf[0] = vf[0] / HEIGHT;
-			tf[1] = vf[1] / HEIGHT;
-			tf[2] = vf[2] / HEIGHT;
-			carveline_rect(win, 0x404040, tc, tr, tf);
+			for(x=0;x<WIDTH;x++)
+			{
+				f[0] = (x+x+1-WIDTH)  / (float)WIDTH;
+				f[1] = (y+y+1-HEIGHT) / (float)HEIGHT;
+				f[2] = 1.0/32;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+				tr[0] = vr[0] / WIDTH;
+				tr[1] = vr[1] / WIDTH;
+				tr[2] = vr[2] / WIDTH;
+				tf[0] = vf[0] / HEIGHT;
+				tf[1] = vf[1] / HEIGHT;
+				tf[2] = vf[2] / HEIGHT;
+				carveline_rect(win, 0x808080, tc, tr, tf);
 
-			if(1 == data[y][x])c = 0xffffff;
-			else if(2 == data[y][x])c = 0xffff00;
-			else if(4 == data[y][x])c = 0xff00ff;
-			else if(8 == data[y][x])c = 0xff0000;
-			else if(16 == data[y][x])c = 0xffff;
-			else if(32 == data[y][x])c = 0xff00;
-			else if(64 == data[y][x])c = 0xff;
-			else continue;
+				val = data[z][y][x];
+				if(1 == val)c = 0xffffff;
+				else if(2 == val)c = 0xffff00;
+				else if(4 == val)c = 0xff00ff;
+				else if(8 == val)c = 0xff0000;
+				else if(16 == val)c = 0xffff;
+				else if(32 == val)c = 0xff00;
+				else if(64 == val)c = 0xff;
+				else continue;
 
-			tu[0] = vu[0]/64;
-			tu[1] = vu[1]/64;
-			tu[2] = vu[2]/64;
-			tc[0] += tu[0];
-			tc[1] += tu[1];
-			tc[2] += tu[2];
-			carvesolid_prism4(win, c, tc, tr, tf, tu);
+				tu[0] = vu[0]/64;
+				tu[1] = vu[1]/64;
+				tu[2] = vu[2]/64;
+				tc[0] += (z*2-1)*tu[0];
+				tc[1] += (z*2-1)*tu[1];
+				tc[2] += (z*2-1)*tu[2];
+				tr[0] *= 0.5;
+				tr[1] *= 0.5;
+				tr[2] *= 0.5;
+				tf[0] *= 0.5;
+				tf[1] *= 0.5;
+				tf[2] *= 0.5;
+				tu[0] *= 0.5;
+				tu[1] *= 0.5;
+				tu[2] *= 0.5;
+				carvesolid_prism4(win, c, tc, tr, tf, tu);
+			}
 		}
 	}
 }
@@ -174,31 +198,44 @@ static void circuit_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
-	for(y=0;y<HEIGHT;y++)
+	int x,y,z,w;
+	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+
+	for(z=0;z<LAYER;z++)
 	{
-		for(x=0;x<WIDTH;x++)
+		for(y=0;y<HEIGHT;y++)
 		{
-			data[y][x] = 0;
+			for(x=0;x<WIDTH;x++)
+			{
+				data[z][y][x] = 0;
+			}
 		}
 	}
 
-	for(x=0;x<7;x++)
+	for(w=0;w<8;w++)
 	{
-		data[getrandom()%HEIGHT][getrandom()%WIDTH] = 1<<x;
-		data[getrandom()%HEIGHT][getrandom()%WIDTH] = 1<<x;
+		x = getrandom()%WIDTH;
+		y = getrandom()%HEIGHT;
+		z = getrandom()%LAYER;
+		data[z][y][x] = 1<<w;
+
+		x = getrandom()%WIDTH;
+		y = getrandom()%HEIGHT;
+		z = getrandom()%LAYER;
+		data[z][y][x] = 1<<w;
 	}
+
+	solve_pcbwire((void*)data, WIDTH, HEIGHT, LAYER);
 }
 static void circuit_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf)memorydelete(act->buf);
 }
 static void circuit_create(struct actor* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT);
+	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
 }
 
 

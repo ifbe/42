@@ -50,6 +50,7 @@ libalgo/notation/nota.prefix.c \
 libalgo/solve/solve.2048.c \
 libalgo/solve/solve.chess.c \
 libalgo/solve/solve.maze.c \
+libalgo/solve/solve.pcbwire.c \
 libalgo/solve/solve.rubik.c \
 libalgo/solve/solve.snake.c \
 libalgo/solve/solve.sudoku.c \

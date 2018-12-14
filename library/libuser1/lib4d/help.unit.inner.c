@@ -1,37 +1,24 @@
 #include "libuser.h"
+//chip
+void finfet_register(void*);
+void hbridge_register(void*);
+void rectify_register(void*);
+//dxgl
+void light_register(void*);
+void mirror_register(void*);
+void portal_register(void*);
+void skydome_register(void*);
+void skysphere_register(void*);
+void terrian_register(void*);
+//geom
+void cube_register(void*);
+void cylinder_register(void*);
+void sphere_register(void*);
 //algo
 void algorithm_register(void*);
 void bintree_register(void*);
 void bplus_register(void*);
-void fs_register(void*);
 void graph_register(void*);
-void hex_register(void*);
-//hack
-void browser_register(void*);
-void circuit_register(void*);
-void pwmtool_register(void*);
-void rawdump_register(void*);
-void switch_register(void*);
-//item
-void clock_register(void*);
-void control_register(void*);
-void drone_register(void*);
-void earth_register(void*);
-void house_register(void*);
-void human_register(void*);
-void light_register(void*);
-void mirror_register(void*);
-void model_register(void*);
-void ocean_register(void*);
-void piano_register(void*);
-void picture_register(void*);
-void portal_register(void*);
-void skydome_register(void*);
-void skysphere_register(void*);
-void rccar_register(void*);
-void terrian_register(void*);
-void tree_register(void*);
-void water_register(void*);
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -46,6 +33,27 @@ void sudoku_register(void*);
 void tetris_register(void*);
 void weiqi_register(void*);
 void xiangqi_register(void*);
+//hack
+void browser_register(void*);
+void circuit_register(void*);
+void fs_register(void*);
+void pwmtool_register(void*);
+void rawdump_register(void*);
+void switch_register(void*);
+//item
+void clock_register(void*);
+void control_register(void*);
+void drone_register(void*);
+void earth_register(void*);
+void house_register(void*);
+void human_register(void*);
+void model_register(void*);
+void ocean_register(void*);
+void piano_register(void*);
+void picture_register(void*);
+void rccar_register(void*);
+void tree_register(void*);
+void water_register(void*);
 //test
 void codeimg_register(void*);
 void doodle_register(void*);
@@ -57,18 +65,11 @@ void planet_register(void*);
 void calculator_register(void*);
 void camera_register(void*);
 void font_register(void*);
+void hex_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
-//chip
-void finfet_register(void*);
-void hbridge_register(void*);
-void rectify_register(void*);
-//geom
-void cube_register(void*);
-void cylinder_register(void*);
-void sphere_register(void*);
 
 
 
