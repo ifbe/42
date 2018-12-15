@@ -4,9 +4,9 @@ int readfile(u64 file, u64 off, u8* mem, u64 len);
 int writefile(u64 file, u64 off, u8* mem, u64 len);
 int stopfile(int);
 //
+u8* getsuffix(u8* p);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 int openreadclose(void*, int, void*, int);
-void printhtmlbody(u8* buf, int len);
 
 
 
@@ -128,36 +128,13 @@ void scene_export_stdio()
 
 
 
-void scene_import_html(u8* name)
-{
-	int j;
-	void* buf;
-	struct arena* win;
-	struct str* data;
-
-	//register arena
-	win = arenacreate(_html_, 0);
-	if(0 == win)return;
-	say("win: %llx\n", win);
-
-	//alloc memory
-	buf = memorycreate(0x100000);
-	if(0 == buf)return;
-	say("buf: %llx\n", buf);
-	win->buf = buf;
-
-	//read file
-	data = win->buf;
-	j = openreadclose(name, 0, data->buf, 0xf0000);
-	if(j <= 0)return;
-	say("read:%d\n", j);
-	data->len = j;
-
-	printhtmlbody(data->buf, data->len);
-}
 void scene_import_file(u8* buf, int len)
 {
-	scene_import_html(buf);
+	u8* suf = getsuffix(buf);
+	if(0 == suf)return;
+
+	if(0 == ncmp(suf, "htm", 3))arenacreate(_html_, buf);
+	if(0 == ncmp(suf, "sch", 3))arenacreate(_sch_ , buf);
 }
 void scene_import_stdio()
 {

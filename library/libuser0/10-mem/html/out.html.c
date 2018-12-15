@@ -1,4 +1,5 @@
 #include "libuser.h"
+void printhtmlbody(u8* buf, int len);
 
 
 
@@ -113,6 +114,17 @@ int httpserver_create(struct arena* win, void* str)
 	relationcreate(win, 0, _win_, tmp, 0, _fd_);
 	return 0;
 }*/
+void scene_import_html(struct arena* win, u8* str)
+{
+	int len;
+	u8* buf= win->buf;
+
+	len = openreadclose(str, 0, buf, 0x100000);
+	if(len <= 0)return;
+
+	say("read:%d\n", len);
+	printhtmlbody(buf, len);
+}
 
 
 
@@ -176,13 +188,7 @@ int htmlnode_delete(struct arena* win)
 	return 0;
 }
 int htmlnode_create(struct arena* win, void* str)
-{/*
-	void* art;
-	if(str)
-	{
-		art = arterycreate(0, str);
-		if(art)relationcreate(win, 0, _win_, art, 0, _art_);
-	}*/
+{
 	void** ctx = memorycreate(0x1000);
 	void*  buf = memorycreate(0x200000);
 
@@ -192,5 +198,7 @@ int htmlnode_create(struct arena* win, void* str)
 
 	win->ctx = ctx;
 	win->buf = buf;
+
+	if(str)scene_import_html(win, str);
 	return 0;
 }

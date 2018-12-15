@@ -1,4 +1,15 @@
 #include "libuser.h"
+void scene_import_schematic(struct arena* win, u8* str)
+{
+	int len;
+	u8* buf= win->buf;
+
+	len = openreadclose(str, 0, buf, 0x100000);
+	if(len <= 0)return;
+
+	buf[len] = 0;
+	say("%d\n%s\n", len, buf);
+}
 
 
 
@@ -25,5 +36,7 @@ int schnode_delete(struct arena* win)
 }
 int schnode_create(struct arena* win, void* str)
 {
+	win->buf = memorycreate(1000*1000);
+	if(str)scene_import_schematic(win, str);
 	return 0;
 }

@@ -51,12 +51,31 @@ typedef float mat4[4][4];
 #define _dbg_ hex32('d','b','g',0)
 #define _cam_ hex32('c','a','m',0)
 #define _mic_ hex32('m','i','c',0)
+//
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
+#define _func_ hex32('f','u','n','c')
 #define _html_ hex32('h','t','m','l')
 #define _json_ hex32('j','s','o','n')
+#define _rgba_ hex32('r','g','b','a')
+#define _pcb_  hex32('p','c','b',0)
+#define _sch_  hex32('s','c','h',0)
+#define _xml_  hex32('x','m','l',0)
 #define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
+//
+#define _term_ hex32('t','e','r','m')
+#define _tray_ hex32('t','r','a','y')
+#define _mic_  hex32('m','i','c',0)
+#define _cam_  hex32('c','a','m',0)
+//
+#define _bg_ hex32('b','g',0,0)
+#define _fg_ hex32('f','g',0,0)
+#define _menu_ hex32('m','e','n','u')
+#define _vkbd_ hex32('v','k','b','d')
+//
+#define _light_ hex32('l','i','g','h')
+#define _mirror_ hex32('m','i','r','r')
 //
 #define _TCP_ hex32('T','C','P',0)
 #define _tcp_ hex32('t','c','p',0)

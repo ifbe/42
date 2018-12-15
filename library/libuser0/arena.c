@@ -1,23 +1,4 @@
 #include "libuser.h"
-//
-#define _term_ hex32('t','e','r','m')
-#define _tray_ hex32('t','r','a','y')
-#define _mic_  hex32('m','i','c',0)
-#define _cam_  hex32('c','a','m',0)
-//
-#define _func_ hex32('f','u','n','c')
-#define _html_ hex32('h','t','m','l')
-#define _rgba_ hex32('r','g','b','a')
-#define _pcb_  hex32('p','c','b',0)
-#define _xml_  hex32('x','m','l',0)
-//
-#define _bg_ hex32('b','g',0,0)
-#define _fg_ hex32('f','g',0,0)
-#define _menu_ hex32('m','e','n','u')
-#define _vkbd_ hex32('v','k','b','d')
-//
-#define _light_ hex32('l','i','g','h')
-#define _mirror_ hex32('m','i','r','r')
 
 
 
@@ -91,6 +72,9 @@ int vbonode_delete(void*);
 //
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
+//
+int schnode_create(void*, void*);
+int schnode_delete(void*);
 //
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
@@ -414,6 +398,13 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = _pcb_;
 
 		pcbnode_create(win, addr);
+	}
+	else if(_sch_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _sch_;
+
+		schnode_create(win, addr);
 	}
 	else if(_xml_ == type)
 	{
