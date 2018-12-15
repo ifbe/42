@@ -40,7 +40,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	vb[2] = 100000.0;
 	vu[0] = 0.0;
 	vu[1] = 0.0;
-	vu[0] = -100000.0;
+	vu[2] = -100000.0;
 
 	ret = *(u32*)(buf+80);
 	say("len=%x, count=%x\n", len, ret);

@@ -7,7 +7,7 @@ int solve_pcbwire(u8* buf, int w, int h, int l);
 
 #define WIDTH 64
 #define HEIGHT 64
-#define LAYER 2
+#define LAYER 4
 
 
 
@@ -82,27 +82,19 @@ static void circuit_read_vbo(
 	float* vu = sty->vu;
 	u8 (*data)[HEIGHT][WIDTH] = act->buf;
 
-	carveline_rect(win, 0x808080, vc, vr, vf);
+	tu[0] = vu[0]/64;
+	tu[1] = vu[1]/64;
+	tu[2] = vu[2]/64;
+	tc[0] = vc[0] + 3*tu[0];
+	tc[1] = vc[1] + 3*tu[1];
+	tc[2] = vc[2] + 3*tu[2];
+	carvesolid_prism4(win, 0x808080, tc, vr, vf, tu);
 	for(z=0;z<2;z++)
 	{
 		for(y=0;y<HEIGHT;y++)
 		{
 			for(x=0;x<WIDTH;x++)
 			{
-				f[0] = (x+x+1-WIDTH)  / (float)WIDTH;
-				f[1] = (y+y+1-HEIGHT) / (float)HEIGHT;
-				f[2] = 1.0/32;
-				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-				tr[0] = vr[0] / WIDTH;
-				tr[1] = vr[1] / WIDTH;
-				tr[2] = vr[2] / WIDTH;
-				tf[0] = vf[0] / HEIGHT;
-				tf[1] = vf[1] / HEIGHT;
-				tf[2] = vf[2] / HEIGHT;
-				carveline_rect(win, 0x808080, tc, tr, tf);
-
 				val = data[z][y][x];
 				if(1 == val)c = 0xffffff;
 				else if(2 == val)c = 0xffff00;
@@ -113,21 +105,23 @@ static void circuit_read_vbo(
 				else if(64 == val)c = 0xff;
 				else continue;
 
+				f[0] = (x+x+1-WIDTH)  / (float)WIDTH;
+				f[1] = (y+y+1-HEIGHT) / (float)HEIGHT;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vr[0] / WIDTH;
+				tr[1] = vr[1] / WIDTH;
+				tr[2] = vr[2] / WIDTH;
+				tf[0] = vf[0] / HEIGHT;
+				tf[1] = vf[1] / HEIGHT;
+				tf[2] = vf[2] / HEIGHT;
 				tu[0] = vu[0]/64;
 				tu[1] = vu[1]/64;
 				tu[2] = vu[2]/64;
-				tc[0] += (z*2-1)*tu[0];
-				tc[1] += (z*2-1)*tu[1];
-				tc[2] += (z*2-1)*tu[2];
-				tr[0] *= 0.5;
-				tr[1] *= 0.5;
-				tr[2] *= 0.5;
-				tf[0] *= 0.5;
-				tf[1] *= 0.5;
-				tf[2] *= 0.5;
-				tu[0] *= 0.5;
-				tu[1] *= 0.5;
-				tu[2] *= 0.5;
+				tc[0] += (z*4+1)*tu[0];
+				tc[1] += (z*4+1)*tu[1];
+				tc[2] += (z*4+1)*tu[2];
 				carvesolid_prism4(win, c, tc, tr, tf, tu);
 			}
 		}
