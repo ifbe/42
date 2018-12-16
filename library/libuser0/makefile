@@ -89,7 +89,7 @@ efifb:target
 linuxcli:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.1.cli.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -99,7 +99,7 @@ linuxcli:target
 linuxtui:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.1.tui.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -109,7 +109,7 @@ linuxtui:target
 linuxfb:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.1.fb.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -119,7 +119,7 @@ linuxfb:target
 linuxgtk:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` 00-os/linux/linux.gtk.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -129,7 +129,7 @@ linuxgtk:target
 linuxwayland:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.1.wayland.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -139,7 +139,7 @@ linuxwayland:target
 linuxxlib:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.1.xlib.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
@@ -149,7 +149,7 @@ linuxxlib:target
 linuxglfw:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) 00-os/linux/linux.3.v4l2.c
@@ -163,7 +163,7 @@ linuxglfw:target
 linuxglut:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) 00-os/linux/linux.3.v4l2.c
@@ -173,7 +173,7 @@ linuxglut:target
 linuxsdl:target
 	rm -f linux.*.o gl*.o
 	$(compiler) $(cflag) 00-os/linux/linux.0.joy.c
-	$(compiler) $(cflag) 00-os/linux/linux.0.term.c
+	$(compiler) $(cflag) 00-os/linux/linux.0.std.c
 	$(compiler) $(cflag) 00-os/linux/linux.0.tray.c
 	$(compiler) $(cflag) 00-os/linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) 00-os/linux/linux.3.v4l2.c
@@ -188,7 +188,7 @@ linuxsdl:target
 maccli:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.1.cli.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
@@ -198,7 +198,7 @@ maccli:target
 mactui:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.1.tui.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
@@ -208,7 +208,7 @@ mactui:target
 maccocoa:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.1.cocoa.m
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
@@ -218,7 +218,7 @@ maccocoa:target
 macquartz:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.1.quartz.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
@@ -228,7 +228,7 @@ macquartz:target
 macglfw:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
 	$(compiler) $(cflag) 00-os/mac/mac.3.cam.c
@@ -242,7 +242,7 @@ macglfw:target
 macglut:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
 	$(compiler) $(cflag) 00-os/mac/mac.3.cam.c
@@ -252,7 +252,7 @@ macglut:target
 macsdl:target
 	rm -f mac.*.o gl*.o
 	$(compiler) $(cflag) 00-os/mac/mac.0.joy.c
-	$(compiler) $(cflag) 00-os/mac/mac.0.term.c
+	$(compiler) $(cflag) 00-os/mac/mac.0.std.c
 	$(compiler) $(cflag) 00-os/mac/mac.0.tray.c
 	$(compiler) $(cflag) 00-os/mac/mac.2.mic.c
 	$(compiler) $(cflag) 00-os/mac/mac.3.cam.c
@@ -267,7 +267,7 @@ macsdl:target
 wincli:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-os/win/win.1.cli.c
 	$(compiler) $(cflag) 00-os/win/win.2.waveio.c
@@ -277,7 +277,7 @@ wincli:target
 wintui:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-os/win/win.1.tui.c
 	$(compiler) $(cflag) 00-os/win/win.2.waveio.c
@@ -287,7 +287,7 @@ wintui:target
 winapi:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-os/win/win.1.api.c
 	$(compiler) $(cflag) 00-os/win/win.2.waveio.c
@@ -297,7 +297,7 @@ winapi:target
 wind3d:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-os/win/win.1.d3d.c
 	$(compiler) $(cflag) 00-os/win/win.2.waveio.c
@@ -307,7 +307,7 @@ wind3d:target
 winglfw:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-lib/gl/glfw.c
 	$(compiler) $(cflag) 00-lib/gl/gl.object.c
@@ -321,7 +321,7 @@ winglfw:target
 winglut:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-lib/gl/glut.c
 	$(compiler) $(cflag) 00-os/win/win.waveio.c
@@ -331,7 +331,7 @@ winglut:target
 winsdl:target
 	rm -f win.*.o gl*.o
 	$(compiler) $(cflag) 00-os/win/win.0.joy.c
-	$(compiler) $(cflag) 00-os/win/win.0.term.c
+	$(compiler) $(cflag) 00-os/win/win.0.std.c
 	$(compiler) $(cflag) 00-os/win/win.0.tray.c
 	$(compiler) $(cflag) 00-lib/sdl/sdl2.c
 	$(compiler) $(cflag) 00-os/win/win.2.waveio.c

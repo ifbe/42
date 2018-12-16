@@ -8,10 +8,10 @@ void freejoy();
 int joycreate(void*, void*);
 int joydelete(void*);
 //
-void initterm(void*);
-void freeterm();
-int termcreate(void*, void*);
-int termdelete(void*);
+void initstd(void*);
+void freestd();
+int stdcreate(void*, void*);
+int stddelete(void*);
 //
 void inittray(void*);
 void freetray();
@@ -290,12 +290,12 @@ void* arenacreate(u64 type, void* addr)
 
 		joycreate(win, addr);
 	}
-	else if(_term_ == type)
+	else if(_std_ == type)
 	{
 		win->type = _perm_;
-		win->fmt = _term_;
+		win->fmt = _std_;
 
-		termcreate(win, addr);
+		stdcreate(win, addr);
 	}
 	else if(_tray_ == type)
 	{
@@ -615,7 +615,7 @@ void freearena()
 
 	freewindow();
 	freetray();
-	freeterm();
+	freestd();
 	freejoy();
 }
 void initarena(u8* addr)
@@ -629,12 +629,12 @@ void initarena(u8* addr)
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
 	initjoy(arena);
-	initterm(arena);
+	initstd(arena);
 	inittray(arena);
 	initwindow(arena);
 
 	arenacreate(_joy_,  0);
-	arenacreate(_term_, 0);
+	arenacreate(_std_, 0);
 	arenacreate(_tray_, 0);
 	//say("[c,f):inited arena\n");
 }

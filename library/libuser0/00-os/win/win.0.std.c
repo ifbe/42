@@ -19,7 +19,7 @@ void terminalthread(struct arena* win)
 		}
 	}
 }
-void termcreate(struct arena* win)
+void stdcreate(struct arena* win)
 {
 	threadcreate(terminalthread, win);
 }
@@ -27,9 +27,9 @@ void termcreate(struct arena* win)
 
 
 
-void initterm()
+void initstd()
 {
 }
-void freeterm()
+void freestd()
 {
 }

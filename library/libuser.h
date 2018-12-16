@@ -64,7 +64,7 @@ typedef float mat4[4][4];
 #define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
 //
-#define _term_ hex32('t','e','r','m')
+#define _std_ hex32('s','t','d', 0)
 #define _tray_ hex32('t','r','a','y')
 #define _mic_  hex32('m','i','c',0)
 #define _cam_  hex32('c','a','m',0)

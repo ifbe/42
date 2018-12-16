@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define _term_ hex32('t','e','r','m')
+#define _std_ hex32('s','t','d', 0)
 #define _rccar_ hex64('r','c','c','a','r',0,0,0)
 void* arenalist(void*, int);
 void* actorlist(void*, int);
@@ -39,7 +39,7 @@ void role_rccar(int argc, u8** argv)
 	void* act;
 	act = actorcreate(_rccar_, 0);
 
-	win = arenalist("term", 0);
+	win = arenalist("std", 0);
 	relationcreate(act, 0, _act_, win, 0, _win_);
 
 	win = arenalist("joy", 0);
@@ -53,10 +53,10 @@ void role_uarthelp(int argc, u8** argv)
 {
 	if(argc < 2)return;
 	void* sys = systemcreate(_uart_, argv[1]);
-	void* act = actorcreate(_term_, 0);
+	void* act = actorcreate(_std_, 0);
 	relationcreate(act, 0, _act_, sys, 0, _fd_);
 
-	void* win = arenalist("term", 0);
+	void* win = arenalist("std", 0);
 	relationcreate(act, 0, _act_, win, 0, _win_);
 
 	win = arenacreate(_win_, 0);
