@@ -1175,6 +1175,7 @@ int tlsmaster_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	tlsserver_write(ele, sty, obj, pin, buf, len);
 	return 0;
 }
 int tlsmaster_read()
@@ -1187,5 +1188,9 @@ int tlsmaster_delete(struct element* ele)
 }
 int tlsmaster_create(struct element* ele, u8* url, u8* buf, int len)
 {
+	void* obj = systemcreate(_TCP_, url);
+	if(0 == obj)return 0;
+
+	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 0;
 }
