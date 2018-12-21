@@ -605,9 +605,9 @@ void initartery(void* addr)
 #define max (0x100000/sizeof(struct element))
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
-	arterycreate(0, (u8*)"HACK://127.0.0.1:2222");
-	arterycreate(0, (u8*)"QUIC://127.0.0.1:4444");
-	arterycreate(0, (u8*)"SSH://127.0.0.1:2222");
-	arterycreate(0, (u8*)"HTTP://127.0.0.1:4444");
+	//arterycreate(0, (u8*)"HACK://0.0.0.0:2222");
+	//arterycreate(0, (u8*)"QUIC://0.0.0.0:4444");
+	//arterycreate(0,  (u8*)"SSH://0.0.0.0:2222");
+	//arterycreate(0, (u8*)"HTTP://0.0.0.0:4444");
 	//say("[8,c):inited artery\n");
 }

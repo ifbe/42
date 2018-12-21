@@ -94,7 +94,7 @@ void initdevice(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 
-	devicecreate(_ahci_, 0);
-	devicecreate(_xhci_, 0);
+	//devicecreate(_ahci_, 0);
+	//devicecreate(_xhci_, 0);
 	//say("[4,8):inited device\n");
 }

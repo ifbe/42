@@ -94,6 +94,6 @@ void initdriver(u8* addr)
 #define max (0x100000/sizeof(struct driver))
 	for(j=0;j<max;j++)dri[j].tier = _dri_;
 
-	drivercreate(_usb_, 0);
+	//drivercreate(_usb_, 0);
 	//say("[4,8):inited driver\n");
 }

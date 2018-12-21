@@ -62,9 +62,6 @@ static void* epollthread(void* p)
 	int fd, cc;
 	struct epoll_event epollevent[16];
 
-	epollfd = epoll_create(MAXSIZE);
-	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);
-
 	while(alive)
 	{
 		ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
@@ -143,6 +140,9 @@ void deletewatcher(int num)
 void createwatcher(void* addr)
 {
 	obj = addr;
+
+	epollfd = epoll_create(MAXSIZE);
+	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);
 
 	alive = 1;
 	threadcreate(epollthread, 0);
