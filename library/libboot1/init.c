@@ -29,11 +29,12 @@ void role_create()
 	//systemcreate(_uart_, "/dev/ttyACM0");
 
 	//+libsoft1
-	arterycreate(0, "HACK://0.0.0.0:2222");
-	arterycreate(0, "QUIC://0.0.0.0:4444");
-	arterycreate(0, "HTTP://0.0.0.0:8080");
-	arterycreate(0,  "SSH://0.0.0.0:8022");
-	arterycreate(0,  "TLS://0.0.0.0:8443");
+	arterycreate(0,   "HACK://0.0.0.0:2222");
+	arterycreate(0,   "QUIC://0.0.0.0:4444");
+	arterycreate(0,    "SSH://0.0.0.0:2022");
+	arterycreate(0, "TELNET://0.0.0.0:2023");
+	arterycreate(0,   "HTTP://0.0.0.0:2080");
+	arterycreate(0,    "TLS://0.0.0.0:2443");
 
 	//+libuser0
 	arenacreate(_win_,  0);

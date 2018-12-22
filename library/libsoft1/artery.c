@@ -46,6 +46,20 @@ int quicserver_create(struct element* ele, void* url, void* buf, int len);
 int quicserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicmaster_create(struct element* ele, void* url, void* buf, int len);
 int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//tcp.ssh
+int sshclient_create(struct element* ele, void* url, void* buf, int len);
+int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshserver_create(struct element* ele, void* url, void* buf, int len);
+int sshserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int sshmaster_create(struct element* ele, void* url, void* buf, int len);
+int sshmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//tcp.telnet
+int telnetclient_create(struct element* ele, void* url, void* buf, int len);
+int telnetclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int telnetserver_create(struct element* ele, void* url, void* buf, int len);
+int telnetserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int telnetmaster_create(struct element* ele, void* url, void* buf, int len);
+int telnetmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //tcp.http
 int httpclient_create(struct element* ele, void* url, void* buf, int len);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -66,13 +80,6 @@ int wsserver_rootread( struct element* ele, void* sty, struct object* obj, void*
 int wsserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 int wsmaster_create(struct element* ele, void* url, void* buf, int len);
 int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-//tcp.ssh
-int sshclient_create(struct element* ele, void* url, void* buf, int len);
-int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int sshserver_create(struct element* ele, void* url, void* buf, int len);
-int sshserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int sshmaster_create(struct element* ele, void* url, void* buf, int len);
-int sshmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //tcp.tls
 int tlsclient_create(struct element* ele, void* url, void* buf, int len);
 int tlsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -137,21 +144,25 @@ int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		case _Quic_:quicserver_write(dc, df, sc, sf, buf, len);break;
 		case _quic_:quicclient_write(dc, df, sc, sf, buf, len);break;
 
+		case _SSH_:sshmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Ssh_:sshserver_write(dc, df, sc, sf, buf, len);break;
+		case _ssh_:sshclient_write(dc, df, sc, sf, buf, len);break;
+
+		case _TELNET_:telnetmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Telnet_:telnetserver_write(dc, df, sc, sf, buf, len);break;
+		case _telnet_:telnetclient_write(dc, df, sc, sf, buf, len);break;
+
 		case _HTTP_:httpmaster_write(dc, df, sc, sf, buf, len);break;
 		case _Http_:httpserver_rootwrite(dc, df, sc, sf, buf, len);break;
 		case _http_:httpclient_write(dc, df, sc, sf, buf, len);break;
 
-		case _SSH_ :sshmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Ssh_ :sshserver_write(dc, df, sc, sf, buf, len);break;
-		case _ssh_ :sshclient_write(dc, df, sc, sf, buf, len);break;
+		case _WS_:wsmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Ws_:wsserver_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _ws_:wsclient_write(dc, df, sc, sf, buf, len);break;
 
-		case _TLS_ :tlsmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Tls_ :tlsserver_write(dc, df, sc, sf, buf, len);break;
-		case _tls_ :tlsclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _WS_  :wsmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Ws_  :wsserver_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _ws_  :wsclient_write(dc, df, sc, sf, buf, len);break;
+		case _TLS_:tlsmaster_write(dc, df, sc, sf, buf, len);break;
+		case _Tls_:tlsserver_write(dc, df, sc, sf, buf, len);break;
+		case _tls_:tlsclient_write(dc, df, sc, sf, buf, len);break;
 
 		dafault: printmemory(buf, len);
 	}
@@ -385,6 +396,70 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
+	//ssh: master,server,client
+	if(_SSH_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _SSH_;
+		if(url)sshmaster_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_Ssh_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Ssh_;
+		if(url)sshserver_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_ssh_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _ssh_;
+		if(url)sshclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
+	//telnet: master,server,client
+	if(_TELNET_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _TELNET_;
+		if(url)telnetmaster_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_Telnet_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Telnet_;
+		if(url)telnetserver_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+	if(_telnet_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _telnet_;
+		if(url)telnetclient_create(e, url, datahome, 0x100000);
+
+		return e;
+	}
+
 	//http: master,server,client
 	if(_HTTP_ == type)
 	{
@@ -411,20 +486,6 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _http_;
 		if(url)httpclient_create(e, url, datahome, 0x100000);
-
-		return e;
-	}
-	if(_https_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _http_;
-		if(url)
-		{
-			f = arterycreate(_tls_, url);
-			relationcreate(e, 0, _art_, f, 0, _art_);
-		}
 
 		return e;
 	}
@@ -493,38 +554,20 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//ssh: master,server,client
-	if(_SSH_ == type)
+	if(_https_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _SSH_;
-		if(url)sshmaster_create(e, url, datahome, 0x100000);
+		e->type = _http_;
+		if(url)
+		{
+			f = arterycreate(_tls_, url);
+			relationcreate(e, 0, _art_, f, 0, _art_);
+		}
 
 		return e;
 	}
-	if(_Ssh_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _Ssh_;
-		if(url)sshserver_create(e, url, datahome, 0x100000);
-
-		return e;
-	}
-	if(_ssh_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _ssh_;
-		if(url)sshclient_create(e, url, datahome, 0x100000);
-
-		return e;
-	}
-
 	return 0;
 }
 

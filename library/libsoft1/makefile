@@ -154,6 +154,7 @@ libflow/3.udp/udp.hole.c \
 libflow/3.udp/udp.quic.c \
 libflow/3.udp/udp.tftp.c \
 libflow/4.tcp/tcp.ssh.c \
+libflow/4.tcp/tcp.telnet.c \
 libflow/4.tcp/tcp.tls.c \
 libflow/4.tcp/tcp.dl.c \
 libflow/4.tcp/tcp.ftp.c \
