@@ -32,6 +32,46 @@ static u8 dh[] = {
 	0x70,0x61,0x1f,0x49,0xb2,0x8d,0x22,0x8f,
 	0x61
 };
+void tls_prep_cert()
+{
+	int j,fl;
+	u8 buf[0x2000];
+
+	//cert1,2,3......
+	fl = openreadclose("fullchain.pem", 0, buf, 0x2000);
+	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
+
+	j = pem2bin(cert_first+3, buf, 0, fl);
+	if(j<=0){say("err@cert1:%d\n",j);return;}
+	cert_first[0] = 0;
+	cert_first[1] = (j>>8)&0xff;
+	cert_first[2] = j&0xff;
+	say("cert1:\n");
+	printmemory(cert_first, j+3);
+
+	j = pem2bin(cert_second+3, buf, 1, fl);
+	if(j<=0){say("err@cert2:%d\n",j);return;}
+	cert_second[0] = 0;
+	cert_second[1] = (j>>8)&0xff;
+	cert_second[2] = j&0xff;
+	say("cert2:\n");
+	printmemory(cert_second, j+3);
+
+	//private and modulus
+	j = openreadclose("privkey.pem", 0, buf, 0x2000);
+	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
+
+	j = pem2bin(buf, buf, 0, j);
+	if(j<=0){say("err@pvk:%d\n",j);return;}
+
+	for(j=0;j<0x100;j++)cert_modulus[j] = buf[0xff-j+0x26];
+	say("modulus:\n");
+	printmemory(cert_modulus, 0x100);
+
+	for(j=0;j<0x100;j++)cert_private[j] = buf[0xff-j+0x130];
+	say("private:\n");
+	printmemory(cert_private, 0x100);
+}
 int tls_parse_cert(u8* buf, int len)
 {
 	printmemory(buf, len);
@@ -96,7 +136,7 @@ int tls_write_server_hello(struct element* ele, int fd, u8* buf, int len)
 	*(u32*)(p+20) = getrandom();
 	*(u32*)(p+24) = getrandom();
 	*(u32*)(p+28) = getrandom();
-	for(j=0;j<0x20;j++)p[j] = ele[fd].data[j+0x20] = p[j];
+	for(j=0;j<0x20;j++)ele->data[j+0x20] = p[j];
 	p += 0x20;
 
 	//sessionid length
@@ -180,7 +220,7 @@ int tls_read_cert(u8* buf, int len)
 	);
 	return len;
 }
-int tls_write_server_certificate(u8* buf, int len)
+int tls_write_server_certificate(struct element* ele, int foot, u8* buf, int len)
 {
 	int j,k;
 	u8* p = buf + 5 + 4 + 3;
@@ -323,8 +363,8 @@ int tls_write_server_keyexch(struct element* ele, int fd, u8* buf, int len)
 	)//with cert's private key
 */
 	//put all @ [0,0x84]
-	for(j=0;j<0x20;j++)p[0x00+j] = ele[fd].data[j];
-	for(j=0;j<0x20;j++)p[0x20+j] = ele[fd].data[j+0x20];
+	for(j=0;j<0x20;j++)p[0x00+j] = ele->data[j];
+	for(j=0;j<0x20;j++)p[0x20+j] = ele->data[j+0x20];
 	for(j=0;j<0x45;j++)p[0x40+j] = buf[9+j];
 	say("c+s+p:\n");
 	printmemory(p, 0x85);
@@ -389,7 +429,7 @@ int tls_read_sdone(u8* buf, int len)
 	);
 	return len;
 }
-int tls_write_server_done(u8* buf, int len)
+int tls_write_server_done(struct element* ele, int foot, u8* buf, int len)
 {
 	//5+4byte
 	buf[0] = 0x16;
@@ -553,149 +593,6 @@ int tls_read_both_data(u8* buf, int len)
 int tls_write_both_data(u8* buf, int len)
 {
 	return 0;
-}
-
-
-
-
-int tls_read(struct element* ele, int fd, u8* buf, int len)
-{
-	int ret=0;
-	int stage;
-
-	if(buf[0] == 0x17)
-	{
-		ret = tls_read_both_data(buf,len);
-		ele[fd].stage1 = 0xff;
-	}
-	else if(buf[0] == 0x16)
-	{
-		if(buf[5] == 1)
-		{
-			//ret = tls_read_client_hello(ele, fd, buf, len);
-			ele[fd].stage1 = 1;
-		}
-		else if(buf[5] == 2)
-		{
-			//ret = tls_read_server_hello(buf, len);
-			//ret += tls_read_server_certificate(buf+ret, len);
-			//ret += tls_read_server_keyexch(buf+ret, len);
-			//ret += tls_read_server_done(buf+ret, len);
-			ele[fd].stage1 = 2;
-		}
-		else if(buf[5] == 16)
-		{
-			ret = tls_read_client_keyexch(buf, len);
-			ret += tls_read_client_cipherspec(buf+ret, len);
-			ret += tls_read_client_hellorequest(buf+ret, len);
-			ele[fd].stage1 = 16;
-		}
-		else if(buf[5] == 4)
-		{
-			ret = tls_read_server_newsession(buf, len);
-			ret += tls_read_server_cipherspec(buf+ret, len);
-			ret += tls_read_server_encrypthandshake(buf+ret, len);
-			ele[fd].stage1 = 4;
-		}
-	}
-	else
-	{
-		printmemory(buf, len);
-		ret = -1;
-	}
-
-	return ret;
-}
-int tls_write(struct element* ele, int fd, u8* buf, int len)
-{
-	int ret;
-	int stage = ele[fd].stage1;
-
-	if(stage == 0)
-	{
-		//ret = tls_write_client_hello(buf, len);
-	}
-	else if(stage == 1)
-	{
-		ret = tls_write_server_hello(ele, fd, buf, len);
-		ret += tls_write_server_certificate(buf+ret, len);
-		ret += tls_write_server_keyexch(ele, fd, buf+ret, len);
-		ret += tls_write_server_done(buf+ret, len);
-	}
-	else if(stage == 2)
-	{
-		ret = tls_write_client_keyexch(buf, len);
-		ret += tls_write_client_cipherspec(buf+ret, len);
-		ret += tls_write_client_hellorequest(buf+ret, len);
-	}
-	else if(stage == 16)
-	{
-		ret = tls_write_server_newsession(buf, len);
-		ret += tls_write_server_cipherspec(buf+ret, len);
-		ret += tls_write_server_encrypthandshake(buf+ret, len);
-		printmemory(buf,ret);
-	}
-	else if(stage == 0xff)
-	{
-		ret = tls_write_both_data(buf, len);
-	}
-
-	return ret;
-}
-
-
-
-
-void tls_start()
-{
-	int j,fl;
-	u8 buf[0x2000];
-
-	//cert1,2,3......
-	fl = openreadclose("fullchain.pem", 0, buf, 0x2000);
-	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
-
-	j = pem2bin(cert_first+3, buf, 0, fl);
-	if(j<=0){say("err@cert1:%d\n",j);return;}
-	cert_first[0] = 0;
-	cert_first[1] = (j>>8)&0xff;
-	cert_first[2] = j&0xff;
-	say("cert1:\n");
-	printmemory(cert_first, j+3);
-
-	j = pem2bin(cert_second+3, buf, 1, fl);
-	if(j<=0){say("err@cert2:%d\n",j);return;}
-	cert_second[0] = 0;
-	cert_second[1] = (j>>8)&0xff;
-	cert_second[2] = j&0xff;
-	say("cert2:\n");
-	printmemory(cert_second, j+3);
-
-	//private and modulus
-	j = openreadclose("privkey.pem", 0, buf, 0x2000);
-	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
-
-	j = pem2bin(buf, buf, 0, j);
-	if(j<=0){say("err@pvk:%d\n",j);return;}
-
-	for(j=0;j<0x100;j++)cert_modulus[j] = buf[0xff-j+0x26];
-	say("modulus:\n");
-	printmemory(cert_modulus, 0x100);
-
-	for(j=0;j<0x100;j++)cert_private[j] = buf[0xff-j+0x130];
-	say("private:\n");
-	printmemory(cert_private, 0x100);
-}
-void tls_stop()
-{
-}
-void tls_create()
-{
-	
-}
-void tls_delete()
-{
-	
 }
 
 
@@ -1019,29 +916,52 @@ int tlsclient_write(
 	u8* buf, int len)
 {
 	int ret;
-	if(0 == ele->stage1)
+	u8 tmp[0x1000];
+
+	switch(ele->stage1)
 	{
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverhello(buf+5, len-5);
-		buf += ret;
-		len -= ret;
+		case 0:
+		{
+			//first write
+			ret = tls_clientwrite_clienthello(buf, 0, tmp, 0);
+			if(ret <= 0)break;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_servercertificate(buf+5, len-5);
-		buf += ret;
-		len -= ret;
+			ret = system_leafwrite(obj, 0, ele, 0, tmp, ret);
+			if(ret <= 0)break;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverkeyexch(buf+5, len-5);
-		buf += ret;
-		len -= ret;
+			break;
+		}
+		case 1:
+		{
+			//second read
+			ret = 5 + tls_read_head(buf, len);
+			tls_clientread_serverhello(buf+5, len-5);
+			buf += ret;
+			len -= ret;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverdone(buf+5, len-5);
+			ret = 5 + tls_read_head(buf, len);
+			tls_clientread_servercertificate(buf+5, len-5);
+			buf += ret;
+			len -= ret;
 
-		//ret = 
+			ret = 5 + tls_read_head(buf, len);
+			tls_clientread_serverkeyexch(buf+5, len-5);
+			buf += ret;
+			len -= ret;
+
+			ret = 5 + tls_read_head(buf, len);
+			tls_clientread_serverdone(buf+5, len-5);
+
+			//second write
+			ret = tls_write_client_keyexch(tmp, len);
+			ret += tls_write_client_cipherspec(tmp+ret, len);
+			ret += tls_write_client_hellorequest(tmp+ret, len);
+
+			ret = system_leafwrite(obj, 0, ele, 0, tmp, ret);
+			break;
+		}
+		default:printmemory(buf,len);
 	}
-	else printmemory(buf,len);
 
 	ele->stage1 += 1;
 	return 0;
@@ -1058,26 +978,21 @@ int tlsclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj;
-	u8 buf[0x1000];
 
 	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	ret = tls_clientwrite_clienthello(url, 0, buf, 0);
-
-	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
-	if(ret <= 0)return 0;
-
-	ele->type = _tls_;
-	ele->stage1 = 0;
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+
+	ele->stage1 = 0;
+	tlsclient_write(ele, 0, obj, 0, url, 0);
 	return 0;
 }
 
 
 
 
-int tls_serverread_clienthello(u8* buf, int len, u8* dst, int cnt)
+int tls_serverread_clienthello(struct element* ele, int foot, u8* buf, int len)
 {
 	int j, k;
 	struct bothhello* p = (void*)buf;
@@ -1093,6 +1008,8 @@ int tls_serverread_clienthello(u8* buf, int len, u8* dst, int cnt)
 
 	say("random(len=20)\n");
 	printmemory(q, 0x20);
+	for(j=0;j<0x20;j++)ele->data[j] = q[j];
+
 	q += 0x20;
 
 
@@ -1149,12 +1066,43 @@ int tlsserver_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
-	if(0 == ele->stage1)
+	int ret;
+	switch(ele->stage1)
 	{
-		tls_read_head(buf,len);
-		tls_serverread_clienthello(buf+5, len-5, 0, 0);
+		case 0:
+		{
+			//first read: client(hello)
+			tls_read_head(buf,len);
+			tls_serverread_clienthello(ele, 0, buf+5, len-5);
+
+			//first write: server(hello+cert+keyexch+done)
+			ret = tls_write_server_hello(       ele, 0, buf, len);
+			ret += tls_write_server_certificate(ele, 0, buf+ret, len);
+			ret += tls_write_server_keyexch(    ele, 0, buf+ret, len);
+			ret += tls_write_server_done(       ele, 0, buf+ret, len);
+			system_leafwrite(obj, 0, ele, 0, buf, ret);
+
+			break;
+		}
+		case 1:
+		{
+			//second read: client(keyexch+cipher+request)
+			ret = tls_read_client_keyexch(buf, len);
+			ret += tls_read_client_cipherspec(buf+ret, len);
+			ret += tls_read_client_hellorequest(buf+ret, len);
+
+			//second write: server(newsession+cipher+encrypted)
+			ret = tls_write_server_newsession(buf, len);
+			ret += tls_write_server_cipherspec(buf+ret, len);
+			ret += tls_write_server_encrypthandshake(buf+ret, len);
+			system_leafwrite(obj, 0, ele, 0, buf, ret);
+
+			break;
+		}
+		default:printmemory(buf,len);
 	}
-	else printmemory(buf,len);
+
+	ele->stage1 += 1;
 	return 0;
 }
 int tlsserver_read()
@@ -1178,7 +1126,11 @@ int tlsmaster_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
-	tlsserver_write(ele, sty, obj, pin, buf, len);
+	struct element* e = arterycreate(_Tls_, 0);
+	if(e)relationcreate(e, 0, _art_, obj, 0, _fd_);
+
+	e->stage1 = 0;
+	tlsserver_write(e, 0, obj, 0, buf, len);
 	return 0;
 }
 int tlsmaster_read()
@@ -1191,9 +1143,100 @@ int tlsmaster_delete(struct element* ele)
 }
 int tlsmaster_create(struct element* ele, u8* url)
 {
-	void* obj = systemcreate(_TCP_, url);
+	void* obj;
+	tls_prep_cert();
+
+	obj = systemcreate(_TCP_, url);
 	if(0 == obj)return 0;
 
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
 	return 0;
 }
+
+
+
+/*
+int tls_read(struct element* ele, int fd, u8* buf, int len)
+{
+	int ret=0;
+	int stage;
+
+	if(buf[0] == 0x17)
+	{
+		ret = tls_read_both_data(buf,len);
+		ele[fd].stage1 = 0xff;
+	}
+	else if(buf[0] == 0x16)
+	{
+		if(buf[5] == 1)
+		{
+			//ret = tls_read_client_hello(ele, fd, buf, len);
+			ele[fd].stage1 = 1;
+		}
+		else if(buf[5] == 2)
+		{
+			//ret = tls_read_server_hello(buf, len);
+			//ret += tls_read_server_certificate(buf+ret, len);
+			//ret += tls_read_server_keyexch(buf+ret, len);
+			//ret += tls_read_server_done(buf+ret, len);
+			ele[fd].stage1 = 2;
+		}
+		else if(buf[5] == 16)
+		{
+			ret = tls_read_client_keyexch(buf, len);
+			ret += tls_read_client_cipherspec(buf+ret, len);
+			ret += tls_read_client_hellorequest(buf+ret, len);
+			ele[fd].stage1 = 16;
+		}
+		else if(buf[5] == 4)
+		{
+			ret = tls_read_server_newsession(buf, len);
+			ret += tls_read_server_cipherspec(buf+ret, len);
+			ret += tls_read_server_encrypthandshake(buf+ret, len);
+			ele[fd].stage1 = 4;
+		}
+	}
+	else
+	{
+		printmemory(buf, len);
+		ret = -1;
+	}
+
+	return ret;
+}
+int tls_write(struct element* ele, int fd, u8* buf, int len)
+{
+	int ret;
+	int stage = ele[fd].stage1;
+
+	if(stage == 0)
+	{
+		//ret = tls_write_client_hello(buf, len);
+	}
+	else if(stage == 1)
+	{
+		ret = tls_write_server_hello(ele, fd, buf, len);
+		ret += tls_write_server_certificate(buf+ret, len);
+		ret += tls_write_server_keyexch(ele, fd, buf+ret, len);
+		ret += tls_write_server_done(buf+ret, len);
+	}
+	else if(stage == 2)
+	{
+		ret = tls_write_client_keyexch(buf, len);
+		ret += tls_write_client_cipherspec(buf+ret, len);
+		ret += tls_write_client_hellorequest(buf+ret, len);
+	}
+	else if(stage == 16)
+	{
+		ret = tls_write_server_newsession(buf, len);
+		ret += tls_write_server_cipherspec(buf+ret, len);
+		ret += tls_write_server_encrypthandshake(buf+ret, len);
+		printmemory(buf,ret);
+	}
+	else if(stage == 0xff)
+	{
+		ret = tls_write_both_data(buf, len);
+	}
+
+	return ret;
+}*/

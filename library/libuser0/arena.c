@@ -633,7 +633,6 @@ void initarena(u8* addr)
 	inittray(arena);
 	initwindow(arena);
 
-	arenacreate(_joy_,  0);
 	arenacreate(_std_, 0);
 	arenacreate(_tray_, 0);
 	//say("[c,f):inited arena\n");
