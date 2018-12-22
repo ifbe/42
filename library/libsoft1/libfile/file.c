@@ -320,11 +320,12 @@ int file_check(u8* buf, int len)
 
 
 
-int fileclient_create(struct element* ele, u8* url, u8* buf, int len)
+int fileclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	u64 type;
 	struct object* obj;
+	u8 buf[0x1000];
 
 	ret = 0;
 	for(ret=0;ret<0x1000;ret++){

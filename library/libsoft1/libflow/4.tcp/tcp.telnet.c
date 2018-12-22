@@ -94,7 +94,7 @@ int telnetclient_delete(struct element* ele)
 {
 	return 0;
 }
-int telnetclient_create(struct element* ele, u8* url, u8* buf, int len)
+int telnetclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_tcp_, url);
@@ -137,7 +137,7 @@ int telnetserver_delete(struct element* ele)
 {
 	return 0;
 }
-int telnetserver_create(struct element* ele, u8* url, u8* buf, int len)
+int telnetserver_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -165,7 +165,7 @@ int telnetmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int telnetmaster_create(struct element* ele, u8* url, u8* buf, int len)
+int telnetmaster_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_TCP_, url);

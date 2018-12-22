@@ -564,10 +564,13 @@ int sshclient_delete(struct element* ele)
 {
 	return 0;
 }
-int sshclient_create(struct element* ele, u8* url, u8* buf, int len)
+int sshclient_create(struct element* ele, u8* url)
 {
 	int ret;
-	void* obj = systemcreate(_tcp_, url);
+	void* obj;
+	u8 buf[0x1000];
+
+	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
 	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
@@ -789,7 +792,7 @@ int sshserver_delete(struct element* ele)
 {
 	return 0;
 }
-int sshserver_create(struct element* ele, u8* url, u8* buf, int len)
+int sshserver_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -833,7 +836,7 @@ int sshmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int sshmaster_create(struct element* ele, u8* url, u8* buf, int len)
+int sshmaster_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_TCP_, url);

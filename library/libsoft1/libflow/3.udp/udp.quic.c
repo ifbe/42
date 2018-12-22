@@ -18,7 +18,7 @@ int quicclient_delete(struct element* ele)
 {
 	return 0;
 }
-int quicclient_create(struct element* ele, u8* url, u8* buf, int len)
+int quicclient_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -41,7 +41,7 @@ int quicserver_delete(struct element* ele)
 {
 	return 0;
 }
-int quicserver_create(struct element* ele, u8* url, u8* buf, int len)
+int quicserver_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -90,7 +90,7 @@ int quicmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int quicmaster_create(struct element* ele, u8* url, u8* buf, int len)
+int quicmaster_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_UDP_, url);

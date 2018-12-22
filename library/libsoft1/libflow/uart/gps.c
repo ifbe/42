@@ -182,7 +182,7 @@ freshframe:
 	}
 	return 0;
 }
-int gpsclient_create(struct element* ele, u8* url, u8* buf, int len)
+int gpsclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	struct str* str;
@@ -207,7 +207,7 @@ int gpsserver_write(
 {
 	return 0;
 }
-int gpsserver_create(struct element* ele, u8* url, u8* buf, int len)
+int gpsserver_create(struct element* ele, u8* url)
 {
 	int ret;
 	struct str* str;

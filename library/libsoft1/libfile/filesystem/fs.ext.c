@@ -382,7 +382,7 @@ int extclient_write(
 {
 	return 0;
 }
-int extclient_create(struct element* ele, u8* url, u8* buf, int len)
+int extclient_create(struct element* ele, u8* url)
 {
 	struct object* obj = systemcreate(_file_, url);
 	if(0 == obj)return 0;

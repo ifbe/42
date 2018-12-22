@@ -67,7 +67,7 @@ static void mpuclient_thread(struct element* ele)
 
 
 
-int mpuclient_create(struct element* ele, u8* url, u8* buf, int len)
+int mpuclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	struct object* obj = systemcreate(_i2c_, url);

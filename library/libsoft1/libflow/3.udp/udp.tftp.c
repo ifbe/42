@@ -18,7 +18,7 @@ int tftpclient_delete(struct element* ele)
 {
 	return 0;
 }
-int tftpclient_create(struct element* ele, u8* url, u8* buf, int len)
+int tftpclient_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_UDP_, url);
@@ -72,7 +72,7 @@ int tftpserver_delete(struct element* ele)
 {
 	return 0;
 }
-int tftpserver_create(struct element* ele, u8* url, u8* buf, int len)
+int tftpserver_create(struct element* ele, u8* url)
 {
 	int ret;
 	void* obj = systemcreate(_UDP_, url);

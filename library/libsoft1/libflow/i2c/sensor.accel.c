@@ -11,7 +11,7 @@ int ahrsclient_write(
 	printmemory(buf, len);
 	return 0;
 }
-int ahrsclient_create(struct element* ele, u8* url, u8* buf, int len)
+int ahrsclient_create(struct element* ele, u8* url)
 {
 	return 1;
 }

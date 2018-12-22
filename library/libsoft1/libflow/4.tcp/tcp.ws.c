@@ -102,13 +102,16 @@ int wsclient_delete(struct element* ele)
 	//delete
 	return 0;
 }
-int wsclient_create(struct element* ele, u8* url, u8* buf, int len)
+int wsclient_create(struct element* ele, u8* url)
 {
 	int ret;
-	void* obj = systemcreate(_tcp_, url);
+	void* obj;
+	u8 buf[0x1000];
+
+	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	ret = websocket_clientwrite_handshake(url, 0, buf, len);
+	ret = websocket_clientwrite_handshake(url, 0, buf, 0);
 
 	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
@@ -389,7 +392,7 @@ int wsserver_delete(struct element* ele)
 {
 	return 0;
 }
-int wsserver_create(struct element* ele)
+int wsserver_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -414,7 +417,7 @@ int wsmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int wsmaster_create(struct element* ele)
+int wsmaster_create(struct element* ele, u8* url)
 {
 	return 0;
 }

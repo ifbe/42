@@ -1054,13 +1054,16 @@ int tlsclient_delete(struct element* ele)
 {
 	return 0;
 }
-int tlsclient_create(struct element* ele, u8* url, u8* buf, int len)
+int tlsclient_create(struct element* ele, u8* url)
 {
 	int ret;
-	void* obj = systemcreate(_tcp_, url);
+	void* obj;
+	u8 buf[0x1000];
+
+	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	ret = tls_clientwrite_clienthello(url, 0, buf, len);
+	ret = tls_clientwrite_clienthello(url, 0, buf, 0);
 
 	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
 	if(ret <= 0)return 0;
@@ -1162,7 +1165,7 @@ int tlsserver_delete(struct element* ele)
 {
 	return 0;
 }
-int tlsserver_create(struct element* ele, u8* url, u8* buf, int len)
+int tlsserver_create(struct element* ele, u8* url)
 {
 	return 0;
 }
@@ -1186,7 +1189,7 @@ int tlsmaster_delete(struct element* ele)
 {
 	return 0;
 }
-int tlsmaster_create(struct element* ele, u8* url, u8* buf, int len)
+int tlsmaster_create(struct element* ele, u8* url)
 {
 	void* obj = systemcreate(_TCP_, url);
 	if(0 == obj)return 0;
