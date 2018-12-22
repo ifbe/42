@@ -77,6 +77,9 @@ int servemaster_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	if(0 == obj->orel0)relationcreate(ele, 0, _art_, obj, 0, _fd_);
+
+	printmemory(buf, len);
 	return 0;
 }
 int servemaster_read()

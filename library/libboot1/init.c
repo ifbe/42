@@ -35,6 +35,7 @@ void role_create()
 	arterycreate(0, "TELNET://0.0.0.0:2023");
 	arterycreate(0,   "HTTP://0.0.0.0:2080");
 	arterycreate(0,    "TLS://0.0.0.0:2443");
+	arterycreate(0,  "SERVE://0.0.0.0:2099");
 
 	//+libuser0
 	arenacreate(_win_,  0);

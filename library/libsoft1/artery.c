@@ -46,13 +46,6 @@ int quicserver_create(struct element* ele, void* url);
 int quicserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int quicmaster_create(struct element* ele, void* url);
 int quicmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-//tcp.serve
-int serveclient_create(struct element* ele, void* url);
-int serveclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int serveserver_create(struct element* ele, void* url);
-int serveserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int servemaster_create(struct element* ele, void* url);
-int servemaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //tcp.ssh
 int sshclient_create(struct element* ele, void* url);
 int sshclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -94,6 +87,16 @@ int tlsserver_create(struct element* ele, void* url);
 int tlsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int tlsmaster_create(struct element* ele, void* url);
 int tlsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//tcp.serve
+int serveclient_create(struct element* ele, void* url);
+int serveclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_create(struct element* ele, void* url);
+int serveserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_leafwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int servemaster_create(struct element* ele, void* url);
+int servemaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -170,6 +173,10 @@ int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		case _TLS_:tlsmaster_write(dc, df, sc, sf, buf, len);break;
 		case _Tls_:tlsserver_write(dc, df, sc, sf, buf, len);break;
 		case _tls_:tlsclient_write(dc, df, sc, sf, buf, len);break;
+
+		case _SERVE_:servemaster_write(dc, df, sc, sf, buf, len);break;
+		case _Serve_:serveserver_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _serve_:serveclient_write(dc, df, sc, sf, buf, len);break;
 
 		dafault: printmemory(buf, len);
 	}
