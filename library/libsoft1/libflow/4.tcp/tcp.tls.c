@@ -10,6 +10,17 @@ int pem2bin(  void* dest, void* mem, int off, int len);
 //
 int openreadclose(void* name, int off, void* mem, int len);
 int openwriteclose(void* name, int off, void* mem, int len);
+
+
+
+
+static char response[] = {
+	"HTTP/1.1 200 OK\r\n"
+	"Content-type: text/html\r\n"
+	"Content-Length: 11\r\n"
+	"\r\n"
+	"fuck off!\r\n"
+};
 //letsencrypt
 static u8 cert_first[0x1000];
 static u8 cert_second[0x1000];
@@ -37,6 +48,7 @@ void tls_prep_cert()
 	int j,fl;
 	u8 buf[0x2000];
 
+
 	//cert1,2,3......
 	fl = openreadclose("fullchain.pem", 0, buf, 0x2000);
 	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
@@ -57,18 +69,22 @@ void tls_prep_cert()
 	say("cert2:\n");
 	printmemory(cert_second, j+3);
 
+
 	//private and modulus
 	j = openreadclose("privkey.pem", 0, buf, 0x2000);
 	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
 
 	j = pem2bin(buf, buf, 0, j);
 	if(j<=0){say("err@pvk:%d\n",j);return;}
+	say("pkcs8:\n");
+	printmemory(buf, j);
 
+	//openssl rsa -in privkey.pem -noout -text
 	for(j=0;j<0x100;j++)cert_modulus[j] = buf[0xff-j+0x26];
 	say("modulus:\n");
 	printmemory(cert_modulus, 0x100);
 
-	for(j=0;j<0x100;j++)cert_private[j] = buf[0xff-j+0x130];
+	for(j=0;j<0x100;j++)cert_private[j] = buf[0xff-j+0x12f];
 	say("private:\n");
 	printmemory(cert_private, 0x100);
 }
@@ -328,12 +344,11 @@ int tls_write_server_keyexch(struct element* ele, int fd, u8* buf, int len)
 	p += 3;
 
 	//pubkey(p + g + Y)
-	for(j=0;j<0x41;j++)
-	{
-		p[1+j] = dh[j];
-	}
 	p[0] = 0x41;
-	p += 1 + 0x41;
+	p += 1;
+
+	for(j=0;j<0x41;j++)p[j] = dh[j];
+	p += 0x41;
 
 
 
@@ -387,10 +402,9 @@ int tls_write_server_keyexch(struct element* ele, int fd, u8* buf, int len)
 		cert_private, 256,
 		cert_modulus, 256
 	);
+
 	say("rsa2048:\n");
 	printmemory(p, 256);
-
-	//
 	p += 0x100;
 
 
@@ -1126,7 +1140,14 @@ int tlsmaster_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
-	struct element* e = arterycreate(_Tls_, 0);
+	struct element* e;
+	if(0x16 != buf[0])
+	{
+		system_leafwrite(obj, 0, ele, 0, response, sizeof(response));
+		return 0;
+	}
+
+	e = arterycreate(_Tls_, 0);
 	if(e)relationcreate(e, 0, _art_, obj, 0, _fd_);
 
 	e->stage1 = 0;
