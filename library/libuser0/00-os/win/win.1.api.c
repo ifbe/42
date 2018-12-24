@@ -131,7 +131,7 @@ int windowcreate(struct arena* win)
 	win->mod = 0;
 	win->buf = malloc(2048*2048*4);
 
-	for(j=0;j<16;j++)win->input[j].id = 0xffff;
+	for(j=0;j<16;j++)win->input[j].w0 = 0xffff;
 
 
 
@@ -287,15 +287,15 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if((u16)wparam == win->input[k].id)
+				if((u16)wparam == win->input[k].w0)
 				{
 					//find self
 					break;
 				}
-				if(0xffff == win->input[k].id)
+				if(0xffff == win->input[k].w0)
 				{
 					//find empty
-					win->input[k].id = (u16)wparam;
+					win->input[k].w0 = (u16)wparam;
 					break;
 				}
 			}
@@ -319,10 +319,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if((u16)wparam == win->input[k].id)
+				if((u16)wparam == win->input[k].w0)
 				{
 					//find self
-					win->input[k].id = 0xffff;
+					win->input[k].w0 = 0xffff;
 					break;
 				}
 			}
@@ -346,7 +346,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			u64 x,y,k;
 			for(k=0;k<10;k++)
 			{
-				if((u16)wparam == win->input[k].id)break;
+				if((u16)wparam == win->input[k].w0)break;
 			}
 			if(k >= 10)return 0;
 
