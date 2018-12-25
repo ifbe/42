@@ -1,4 +1,5 @@
 #include "libuser.h"
+void carvesnowman(struct arena* win, u32 rgb, vec3 vc);
 int actorinput_editor_camera(struct arena* win, struct event* ev);
 int actorinput_editor_target(struct arena* win, struct event* ev);
 static char* str_left[8] = {
@@ -28,7 +29,8 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 	int j;
 	vec3 vc, vr, vf;
 
-	select_3d(win, 0x404040, &win->target, 0);
+	//select_3d(win, 0x404040, &win->target, 0);
+	carvesnowman(win, 0xffffff, win->target.vc);
 
 	//right
 	vc[1] = 1.0 - 0.125;
