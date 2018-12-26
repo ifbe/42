@@ -22,6 +22,7 @@ int serveclient_write(
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
+	printmemory(buf, len);
 	return 0;
 }
 int serveclient_read()
@@ -32,13 +33,32 @@ int serveclient_delete(struct element* ele)
 {
 	return 0;
 }
-int serveclient_create(struct element* ele, u8* url, u8* buf, int len)
+int serveclient_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_tcp_, url);
+	int j,k;
+	void* obj;
+	u8* tmp[0x100];
+
+	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
 	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	//if()return 0;
+
+	k = 0;
+	for(j=0;j<0xfff;j++)
+	{
+		if(0x20 >= url[j])break;
+		if('/' == url[j])
+		{
+			if(0 == k)k = j;
+		}
+	}
+	if(k)
+	{
+		k = mysnprintf(tmp, 0xff, "SERVE %.*s\n", j-k, url+k);
+		system_leafwrite(obj, 0, ele, 0, tmp, k);
+	}
 	return 1;
 }
 

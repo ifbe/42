@@ -54,3 +54,4 @@ program:
 	$(library)/libuser1/*.o
 clean:
 	rm -f *.o *.a *.dylib
+	make -C $(library) clean
