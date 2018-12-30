@@ -282,7 +282,7 @@ void* arenacreate(u64 type, void* addr)
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
 
-	//00: sys
+	//0: system object
 	if(_joy_ == type)
 	{
 		win->type = _perm_;
@@ -320,6 +320,8 @@ void* arenacreate(u64 type, void* addr)
 
 		soundcreate(win);
 	}
+
+	//1: root window
 	else if(_win_ == type)
 	{
 		win->type = _win_;
@@ -355,8 +357,6 @@ void* arenacreate(u64 type, void* addr)
 			arenastart(sub, 0, win, 0);
 		}
 	}
-
-	//10
 	else if(_func_ == type)
 	{
 		win->type = _node_;
@@ -414,12 +414,22 @@ void* arenacreate(u64 type, void* addr)
 		xmlnode_create(win, addr);
 	}
 
-	//20
+	//2: render pass
 	else if(_bg_ == type)
 	{
 		win->type = _twig_;
 		win->fmt = _bg_;
 		background_create(win, 0);
+	}
+	else if(_light_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _light_;
+	}
+	else if(_mirror_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _mirror_;
 	}
 	else if(_fg_ == type)
 	{
@@ -436,18 +446,6 @@ void* arenacreate(u64 type, void* addr)
 	{
 		win->type = _twig_;
 		win->fmt = _vkbd_;
-	}
-
-	//30
-	else if(_light_ == type)
-	{
-		win->type = _view_;
-		win->fmt = _light_;
-	}
-	else if(_mirror_ == type)
-	{
-		win->type = _view_;
-		win->fmt = _mirror_;
 	}
 
 	return win;
