@@ -29,6 +29,26 @@ char table[16];
 
 
 
+void toycar_delete(struct arena* win)
+{
+    int j;
+    for(j=0;j<12;j++)boardstop(table[j]);
+}
+void toycar_create(struct arena* win)
+{
+    int j;
+    for(j=0;j<12;j++)table[j] = boardstart(name[j], 'o');
+}
+void toycar_stop(struct arena* win)
+{
+    int j;
+    for(j=8;j<12;j++)boardwrite(_gpio_, table[j], 0, 0);
+}
+void toycar_start(struct arena* win)
+{
+    int j;
+    for(j=8;j<12;j++)boardwrite(_gpio_, table[j], 0, 1);
+}
 void toycar_rootread(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
 {
 }
@@ -43,7 +63,8 @@ void toycar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
         case 'r':L = 0;R = 1;break;
         case 'f':L = 1;R = 1;break;
         case 'n':L = 0;R = 0;break;
-        default:return;
+        case 0x20:toycar_stop(win);return;
+        default:  toycar_stop(win);return;
     }
 
 	boardwrite(_gpio_, table[0], 0, L);
@@ -55,24 +76,4 @@ void toycar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
 	boardwrite(_gpio_, table[5], 0, !R);
 	boardwrite(_gpio_, table[6], 0, R);
 	boardwrite(_gpio_, table[7], 0, !R);
-}
-void toycar_stop(struct arena* win)
-{
-    int j;
-    for(j=8;j<12;j++)boardwrite(_gpio_, table[j], 0, 0);
-}
-void toycar_start(struct arena* win)
-{
-    int j;
-    for(j=8;j<12;j++)boardwrite(_gpio_, table[j], 0, 1);
-}
-void toycar_delete(struct arena* win)
-{
-    int j;
-    for(j=0;j<12;j++)boardstop(table[j]);
-}
-void toycar_create(struct arena* win)
-{
-    int j;
-    for(j=0;j<12;j++)table[j] = boardstart(name[j], 'o');
 }
