@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _std_ hex32('s','t','d', 0)
-#define _rccar_ hex64('r','c','c','a','r',0,0,0)
+#define _bdc_ hex32('b','d','c', 0)
 void* arenalist(void*, int);
 void* actorlist(void*, int);
 int arenaactor(struct arena* win, struct actor* act);
@@ -47,17 +47,20 @@ void role_create()
 
 
 
-void role_rccar(int argc, u8** argv)
+void role_toycar(int argc, u8** argv)
 {
-	void* win;
-	void* act;
-	act = actorcreate(_rccar_, 0);
+	void* src;
+	void* dst;
+	dst = arenacreate(_bdc_, 0);
+	if(0 == dst)return;
 
-	win = arenalist("std", 0);
-	relationcreate(act, 0, _act_, win, 0, _win_);
+	src = arenalist("std", 0);
+	if(0 == src)return;
+	relationcreate(dst, 0, _win_, src, 0, _win_);
 
-	win = arenalist("joy", 0);
-	relationcreate(act, 0, _act_, win, 0, _win_);
+	src = arenalist("joy", 0);
+	if(0 == src)return;
+	relationcreate(dst, 0, _win_, src, 0, _win_);
 	return;
 }
 void role_control(int argc, u8** argv)
@@ -88,10 +91,10 @@ void role(u8* buf, int len)
 	argc = str2arg(buf, len, tmp, 0x1000, argv, 8);
 	if(argc < 2)return;
 
-	if(0 == ncmp(argv[1], "rccar", 5))
+	if(0 == ncmp(argv[1], "toycar", 6))
 	{
 		roletype = 1;
-		role_rccar(argc-1, &argv[1]);
+		role_toycar(argc-1, &argv[1]);
 	}
 	else if(0 == ncmp(argv[1], "control", 7))
 	{

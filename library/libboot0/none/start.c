@@ -9,6 +9,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void boardcreate();
 
 
 
@@ -67,4 +68,7 @@ void* birth()
 	temp = ( (u64)rawuniverse ) & 0xfff;
 	if(0 != temp)temp = 0x1000 - temp;
 	return rawuniverse + temp;
+
+
+	boardcreate();
 }

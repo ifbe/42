@@ -4,81 +4,6 @@
 #include "libboot.h"
 #define _gpio_ hex32('g','p','i','o')
 #define _pwm_  hex32('p','w','m',0)
-#define _car_  hex32('c','a','r',0)
-
-
-
-
-void carstart(int L, int R)
-{
-	digitalWrite( 3, HIGH);
-	digitalWrite(21, L);
-	digitalWrite(22, !L);
-	digitalWrite(23, L);
-	digitalWrite(24, !L);
-	digitalWrite(25, HIGH);
-
-	digitalWrite( 5, HIGH);
-	digitalWrite( 6, R);
-	digitalWrite(26, !R);
-	digitalWrite(27, R);
-	digitalWrite(28, !R);
-	digitalWrite(29, HIGH);
-}
-void carstop()
-{
-	digitalWrite( 3, LOW);
-	digitalWrite(21, LOW);
-	digitalWrite(22, LOW);
-	digitalWrite(23, LOW);
-	digitalWrite(24, LOW);
-	digitalWrite(25, LOW);
-
-	digitalWrite( 5, LOW);
-	digitalWrite( 6, LOW);
-	digitalWrite(26, LOW);
-	digitalWrite(27, LOW);
-	digitalWrite(28, LOW);
-	digitalWrite(29, LOW);
-}
-void cardelete()
-{
-	carstop();
-
-	pinMode( 3, INPUT);
-	pinMode(21, INPUT);
-	pinMode(22, INPUT);
-	pinMode(23, INPUT);
-	pinMode(24, INPUT);
-	pinMode(25, INPUT);
-
-	pinMode( 5, INPUT);
-	pinMode( 6, INPUT);
-	pinMode(26, INPUT);
-	pinMode(27, INPUT);
-	pinMode(28, INPUT);
-	pinMode(29, INPUT);
-}
-void carcreate()
-{
-	wiringPiSetup();
-
-	pinMode( 3, OUTPUT);
-	pinMode(21, OUTPUT);
-	pinMode(22, OUTPUT);
-	pinMode(23, OUTPUT);
-	pinMode(24, OUTPUT);
-	pinMode(25, OUTPUT);
-
-	pinMode( 5, OUTPUT);
-	pinMode( 6, OUTPUT);
-	pinMode(26, OUTPUT);
-	pinMode(27, OUTPUT);
-	pinMode(28, OUTPUT);
-	pinMode(29, OUTPUT);
-
-	carstop();
-}
 
 
 
@@ -102,14 +27,7 @@ int boardwrite(int type, int addr, u8* buf, int len)
 	{
 		case _gpio_:
 		{
-			//_gpio_, 29, "o,1"
-			switch(buf[0])
-			{
-				case 'i':pinMode(addr, INPUT);break;
-				case 'o':pinMode(addr, OUTPUT);break;
-				case '1':digitalWrite(addr, HIGH);break;
-				case '0':digitalWrite(addr, LOW);break;
-			}
+			digitalWrite(addr, len);
 			break;
 		}
 		case _pwm_:
@@ -117,22 +35,63 @@ int boardwrite(int type, int addr, u8* buf, int len)
 			//_pwm_, 18, "1ms/2ms"
 			break;
 		}
-		case _car_:
-		{
-			//_car_, 0, "start, farward"
-			switch(buf[0])
-			{
-				case 'l':carstart(1, 0);break;
-				case 'r':carstart(0, 1);break;
-				case 'n':carstart(0, 0);break;
-				case 'f':carstart(1, 1);break;
-				case ' ':carstop();break;
-				case '+':carcreate();break;
-				case '-':cardelete();break;
-			}
-			break;
-		}
 		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
 	}
 	return 0;
+}
+
+
+
+
+int boardstop(int pin)
+{
+	pinMode(pin, INPUT);
+	return 0;
+}
+int boardstart(int name, int mode)
+{
+	int pin = -1;
+	switch(name)
+	{
+		case hex32('l','f','e',0):pin =  3;break;
+		case hex32('l','f','p',0):pin = 21;break;
+		case hex32('l','f','n',0):pin = 22;break;
+		case hex32('l','n','p',0):pin = 23;break;
+		case hex32('l','n','n',0):pin = 24;break;
+		case hex32('l','n','e',0):pin = 25;break;
+		case hex32('r','f','e',0):pin =  5;break;
+		case hex32('r','f','p',0):pin =  6;break;
+		case hex32('r','f','n',0):pin = 26;break;
+		case hex32('r','n','p',0):pin = 27;break;
+		case hex32('r','n','n',0):pin = 28;break;
+		case hex32('r','n','e',0):pin = 29;break;
+		default:return -1;
+	}
+	switch(mode)
+	{
+		case 'i':
+		{
+			pinMode(pin, INPUT);
+			break;
+		}
+		case 'o':
+		{
+			pinMode(pin, OUTPUT);
+			break;
+		}
+		case hex32('p','w','m','o'):
+		{
+			pinMode(pin, PWM_OUTPUT);
+			break;
+		}
+	}
+	return 0;
+}
+int boarddelete()
+{
+	return 0;
+}
+int boardcreate()
+{
+	return wiringPiSetup();
 }

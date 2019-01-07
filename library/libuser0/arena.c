@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define _bdc_ hex32('b','d','c',0)
+#define _step_ hex32('s','t','e','p')
 
 
 
@@ -17,17 +19,6 @@ void inittray(void*);
 void freetray();
 int traycreate(void*, void*);
 int traydelete(void*);
-//window
-void initwindow(void*);
-void freewindow();
-int windowcreate(void*);
-int windowdelete(void*);
-int windowstart(void*);
-int windowstop(void*);
-int windowread(void*);
-int windowwrite(void*);
-int windowlist();
-int windowchoose();
 //cam
 void initcam(void*);
 void freecam();
@@ -50,6 +41,27 @@ int soundread(void* win, void* sty, void* act, void* pin);
 int soundwrite(void*);
 int soundlist();
 int soundchoose();
+//
+int toycar_create(void*, void*);
+int toycar_delete(void*);
+int toycar_rootread(void*,void*,void*,void*,void*,int);
+int toycar_rootwrite(void*,void*,void*,void*,void*,int);
+//
+int stepcar_create(void*, void*);
+int stepcar_delete(void*, void*);
+int stepcar_rootread(void*,void*,void*,void*,void*,int);
+int stepcar_rootwrite(void*,void*,void*,void*,void*,int);
+//window
+void initwindow(void*);
+void freewindow();
+int windowcreate(void*);
+int windowdelete(void*);
+int windowstart(void*);
+int windowstop(void*);
+int windowread(void*);
+int windowwrite(void*);
+int windowlist();
+int windowchoose();
 //dummy
 int funcnode_create(void*, void*);
 int funcnode_delete(void*);
@@ -177,8 +189,10 @@ int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 //say("arenawrite@{\n");
 	switch(win->fmt)
 	{
-		case _html_: htmlnode_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _json_: jsonnode_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _html_:htmlnode_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _json_:jsonnode_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _bdc_ :  toycar_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _step_: stepcar_rootwrite(dc, df, sc, sf, buf, len);break;
 		default: printmemory(buf, len);
 	}
 //say("}@arenawrite\n");
@@ -319,6 +333,20 @@ void* arenacreate(u64 type, void* addr)
 		win->fmt = hex32('p','c','m',0);
 
 		soundcreate(win);
+	}
+	else if(_bdc_ == type)
+	{
+		win->type = _perm_;
+		win->fmt = _bdc_;
+
+		toycar_create(win, 0);
+	}
+	else if(_step_ == type)
+	{
+		win->type = _perm_;
+		win->fmt = _step_;
+
+		stepcar_create(win, 0);
 	}
 
 	//1: root window
