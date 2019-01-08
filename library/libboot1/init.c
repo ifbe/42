@@ -55,29 +55,32 @@ void role_toycar(int argc, u8** argv)
 	if(0 == dst)return;
 
 	src = arenalist("std", 0);
-	if(0 == src)return;
-	relationcreate(dst, 0, _win_, src, 0, _win_);
+	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
 
 	src = arenalist("joy", 0);
-	if(0 == src)return;
-	relationcreate(dst, 0, _win_, src, 0, _win_);
-	return;
+	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
 }
 void role_control(int argc, u8** argv)
 {
 }
 void role_uarthelp(int argc, u8** argv)
 {
+	void* sys;
+	void* act;
+	void* win;
 	if(argc < 2)return;
-	void* sys = systemcreate(_uart_, argv[1]);
-	void* act = actorcreate(_std_, 0);
-	relationcreate(act, 0, _act_, sys, 0, _fd_);
 
-	void* win = arenalist("std", 0);
-	relationcreate(act, 0, _act_, win, 0, _win_);
+	sys = systemcreate(_uart_, argv[1]);
+	if(0 == sys)return;
+
+	act = actorcreate(_std_, 0);
+	if(act)relationcreate(act, 0, _act_, sys, 0, _fd_);
+
+	win = arenalist("std", 0);
+	if(win)relationcreate(act, 0, _act_, win, 0, _win_);
 
 	win = arenacreate(_win_, 0);
-	arenaactor(win, act);
+	if(win)arenaactor(win, act);
 }
 void role(u8* buf, int len)
 {
