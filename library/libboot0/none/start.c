@@ -48,6 +48,7 @@ void* birth()
 
 	//0.chdir
 	//j = chdir("datafile/");
+	boardcreate();
 
 
 	//1.alloc
@@ -68,7 +69,4 @@ void* birth()
 	temp = ( (u64)rawuniverse ) & 0xfff;
 	if(0 != temp)temp = 0x1000 - temp;
 	return rawuniverse + temp;
-
-
-	boardcreate();
 }
