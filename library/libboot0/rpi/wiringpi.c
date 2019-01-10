@@ -65,6 +65,16 @@ int boardstart(int name, int mode)
 		case hex32('r','n','p',0):pin = 27;break;
 		case hex32('r','n','n',0):pin = 28;break;
 		case hex32('r','n','e',0):pin = 29;break;
+
+		case hex32('e','n', 0, 0):pin = 21;break;
+		case hex32('x','d', 0, 0):pin = 22;break;
+		case hex32('x','s', 0, 0):pin = 23;break;
+		case hex32('y','d', 0, 0):pin = 24;break;
+		case hex32('y','s', 0, 0):pin = 25;break;
+		case hex32('z','d', 0, 0):pin = 26;break;
+		case hex32('z','s', 0, 0):pin = 27;break;
+		case hex32('w','d', 0, 0):pin = 28;break;
+		case hex32('w','s', 0, 0):pin = 29;break;
 		default:return -1;
 	}
 	switch(mode)
@@ -85,7 +95,7 @@ int boardstart(int name, int mode)
 			break;
 		}
 	}
-	return 0;
+	return pin;
 }
 int boarddelete()
 {
