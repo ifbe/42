@@ -54,7 +54,7 @@ int stepcar_rootread(struct arena* win, struct style* sty, void* sc, void* sf, u
 }
 int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
 {
-	int j;
+	int j,k;
 	u8 v[4];
 	switch(buf[0])
 	{
@@ -72,9 +72,13 @@ int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
 	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, v[j/2]);
 
 	//step
-	for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
-	sleep_us(1000);
-	for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 0);
+	for(k=0;k<50;k++)
+	{
+		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
+		sleep_us(10000);
+		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 0);
+		sleep_us(10000);
+	}
 
 	return 0;
 }
