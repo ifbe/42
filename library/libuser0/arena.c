@@ -91,12 +91,18 @@ int schnode_delete(void*);
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
 //
-int background_create(void*, void*);
-int background_start(void*, void*, void*, void*);
-int back_read(void*, void*, void*, void*);
-int foreground_create(void*, void*);
-int foreground_start(void*, void*, void*, void*);
-int fore_read(void*, void*, void*, void*);
+int bg3d_create(void*, void*);
+int bg3d_start(void*, void*, void*, void*);
+int bg3d_read(void*, void*, void*, void*);
+int fg3d_create(void*, void*);
+int fg3d_start(void*, void*, void*, void*);
+int fg3d_read(void*, void*, void*, void*);
+int bg2d_create(void*, void*);
+int bg2d_start(void*, void*, void*, void*);
+int bg2d_read(void*, void*, void*, void*);
+int fg2d_create(void*, void*);
+int fg2d_start(void*, void*, void*, void*);
+int fg2d_read(void*, void*, void*, void*);
 int menu_create(void*, void*);
 int menu_start(void*, void*, void*, void*);
 int menu_read(void*, void*, void*, void*);
@@ -207,8 +213,8 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	{
 		case _html_: htmlnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _json_: jsonnode_rootread(dc, df, sc, sf, buf, len);break;
-		case _bg_:back_read(dc, df, sc, sf);break;
-		case _fg_:fore_read(dc, df, sc, sf);break;
+		case _bg3d_:bg3d_read(dc, df, sc, sf);break;
+		case _fg3d_:fg3d_read(dc, df, sc, sf);break;
 		case _menu_:menu_read(dc, df, sc, sf);break;
 		case _vkbd_:vkbd_read(dc, df, sc, sf);break;
 		default: printmemory(buf, len);
@@ -251,8 +257,8 @@ int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
 
 	switch(c->fmt)
 	{
-		case _bg_:  background_start(c, 0, r, 0);break;
-		case _fg_:  foreground_start(c, 0, r, 0);break;
+		case _bg3d_:bg3d_start(c, 0, r, 0);break;
+		case _fg3d_:fg3d_start(c, 0, r, 0);break;
 		case _menu_:menu_start(c, 0, r, 0);break;
 		case _vkbd_:vkbd_start(c, 0, r, 0);break;
 	}
@@ -364,13 +370,23 @@ void* arenacreate(u64 type, void* addr)
 
 		if(_vbo_ == win->fmt)
 		{
-			//bg
-			sub = arenacreate(_bg_, 0);
+			//bg3d
+			sub = arenacreate(_bg3d_, 0);
 			relationcreate(sub, 0, _win_, win, 0, _win_);
 			arenastart(sub, 0, win, 0);
 
-			//fg
-			sub = arenacreate(_fg_, 0);
+			//fg3d
+			sub = arenacreate(_fg3d_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+
+			//bg2d
+			sub = arenacreate(_bg2d_, 0);
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+
+			//fg2d
+			sub = arenacreate(_fg2d_, 0);
 			relationcreate(sub, 0, _win_, win, 0, _win_);
 			arenastart(sub, 0, win, 0);
 
@@ -443,12 +459,6 @@ void* arenacreate(u64 type, void* addr)
 	}
 
 	//2: render pass
-	else if(_bg_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _bg_;
-		background_create(win, 0);
-	}
 	else if(_light_ == type)
 	{
 		win->type = _twig_;
@@ -459,11 +469,29 @@ void* arenacreate(u64 type, void* addr)
 		win->type = _twig_;
 		win->fmt = _mirror_;
 	}
-	else if(_fg_ == type)
+	else if(_bg3d_ == type)
 	{
 		win->type = _twig_;
-		win->fmt = _fg_;
-		foreground_create(win, 0);
+		win->fmt = _bg3d_;
+		bg3d_create(win, 0);
+	}
+	else if(_fg3d_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _fg3d_;
+		fg3d_create(win, 0);
+	}
+	else if(_bg2d_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _bg2d_;
+		bg2d_create(win, 0);
+	}
+	else if(_fg2d_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _fg2d_;
+		fg2d_create(win, 0);
 	}
 	else if(_menu_ == type)
 	{

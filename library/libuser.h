@@ -68,8 +68,10 @@ typedef float mat4[4][4];
 #define _mic_  hex32('m','i','c',0)
 #define _cam_  hex32('c','a','m',0)
 //
-#define _bg_ hex32('b','g',0,0)
-#define _fg_ hex32('f','g',0,0)
+#define _bg3d_ hex32('b','g','3','d')
+#define _fg3d_ hex32('f','g','3','d')
+#define _bg2d_ hex32('b','g','2','d')
+#define _fg2d_ hex32('f','g','2','d')
 #define _menu_ hex32('m','e','n','u')
 #define _vkbd_ hex32('v','k','b','d')
 //

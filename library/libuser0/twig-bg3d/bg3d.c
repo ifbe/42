@@ -15,7 +15,7 @@ u64 want[2] = {
 
 
 
-int back_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	int j;
 	struct relation* rel;
@@ -37,7 +37,7 @@ int back_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int back_write(struct arena* win, struct event* ev)
+int bg3d_write(struct arena* win, struct event* ev)
 {
 	return 0;
 }
@@ -45,7 +45,7 @@ int back_write(struct arena* win, struct event* ev)
 
 
 
-int background_start(struct arena* c, void* cf, struct arena* r, void* rf)
+int bg3d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 {
 	struct relation* rel;
 	struct style* sty;
@@ -66,7 +66,7 @@ int background_start(struct arena* c, void* cf, struct arena* r, void* rf)
 	}
 	return 0;
 }
-int background_create(struct arena* win, u8* str)
+int bg3d_create(struct arena* win, u8* str)
 {
 	int j,k;
 	struct style* sty;

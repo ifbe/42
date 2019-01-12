@@ -34,7 +34,7 @@ int actorinput_3d( struct arena* win, struct style* sty, struct event* ev);
 
 
 
-int fore_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
+int fg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	int ret = win->forew;
 	if(ret > 0xff)say("ret=%x\n",ret);
@@ -51,7 +51,7 @@ int fore_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 
 	return 1;
 }
-int fore_write(struct arena* win, struct event* ev)
+int fg3d_write(struct arena* win, struct event* ev)
 {
 	int ret;
 	if(_coop_ == win->type)return actorinput_editor_camera(win, ev);
@@ -75,11 +75,11 @@ int fore_write(struct arena* win, struct event* ev)
 
 
 
-int foreground_start(struct arena* c, void* cf, struct arena* r, void* rf)
+int fg3d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 {
 	return 0;
 }
-int foreground_create(struct arena* win, u8* str)
+int fg3d_create(struct arena* win, u8* str)
 {
 	return 0;
 }

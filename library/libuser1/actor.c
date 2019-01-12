@@ -1,6 +1,4 @@
 #include "libuser.h"
-#define _WS_ hex32('W','S',0,0)
-#define _ws_ hex32('w','s',0,0)
 void lib1d_create(void*, void*);
 void lib1d_delete();
 void lib2d_create(void*, void*);
@@ -12,11 +10,11 @@ void lib4d_delete();
 //pre
 int preprocess(struct arena* win);
 //back
-int back_read( void*, void*, struct arena* win, struct style* sty);
-int back_write(struct arena* win, struct event* ev);
+int bg3d_read( void*, void*, struct arena* win, struct style* sty);
+int bg3d_write(struct arena* win, struct event* ev);
 //fore
-int fore_read( void*, void*, struct arena* win, struct style* sty);
-int fore_write(struct arena* win, struct event* ev);
+int fg3d_read( void*, void*, struct arena* win, struct style* sty);
+int fg3d_write(struct arena* win, struct event* ev);
 //temp
 int temp_read( void*, void*, struct arena* win, struct style* sty);
 int temp_write(struct arena* win, struct event* ev);
@@ -277,11 +275,11 @@ int actorevent(struct event* ev)
 	if(ret)goto theend;
 
 	//fore
-	ret = fore_write(win, ev);
+	ret = fg3d_write(win, ev);
 	if(ret)goto theend;
 
 	//back
-	ret = back_write(win, ev);
+	ret = bg3d_write(win, ev);
 	if(ret)goto theend;
 
 theend:
@@ -371,7 +369,7 @@ int actorread_all(struct arena* win)
 	else
 	{
 		//foreground
-		fore_read(0, 0, win, 0);
+		fg3d_read(0, 0, win, 0);
 	}
 
 	//fg
