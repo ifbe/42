@@ -58,12 +58,40 @@ int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
 	u8 v[4];
 	switch(buf[0])
 	{
-		case 'a':v[0] = v[1] = 1;v[2] = v[3] = 0;break;
-		case 'd':v[0] = v[1] = 0;v[2] = v[3] = 1;break;
-		case 'w':v[0] = v[2] = 1;v[1] = v[3] = 0;break;
-		case 's':v[0] = v[2] = 0;v[1] = v[3] = 1;break;
-		case 'q':v[0] = v[2] = 0;v[1] = v[3] = 1;break;
-		case 'e':v[0] = v[2] = 1;v[1] = v[3] = 0;break;
+		case 'w':v[0] = 0;v[1] = 1;v[2] = 1;v[3] = 0;break;
+		case 's':v[0] = 1;v[1] = 0;v[2] = 0;v[3] = 1;break;
+		case 'a':v[0] = 1;v[1] = 1;v[2] = 0;v[3] = 0;break;
+		case 'd':v[0] = 0;v[1] = 0;v[2] = 1;v[3] = 1;break;
+		case 'j':v[0] = 1;v[1] = 1;v[2] = 1;v[3] = 1;break;
+		case 'k':v[0] = 0;v[1] = 0;v[2] = 0;v[3] = 0;break;
+		case '1':{
+			boardwrite(_gpio_, table[0], 0, 1);
+			boardwrite(_gpio_, table[1], 0, 1);
+			sleep_us(1000);
+			boardwrite(_gpio_, table[1], 0, 0);
+			return 0;
+		}
+		case '2':{
+			boardwrite(_gpio_, table[2], 0, 1);
+			boardwrite(_gpio_, table[3], 0, 1);
+			sleep_us(1000);
+			boardwrite(_gpio_, table[3], 0, 0);
+			return 0;
+		}
+		case '3':{
+			boardwrite(_gpio_, table[4], 0, 1);
+			boardwrite(_gpio_, table[5], 0, 1);
+			sleep_us(1000);
+			boardwrite(_gpio_, table[5], 0, 0);
+			return 0;
+		}
+		case '4':{
+			boardwrite(_gpio_, table[6], 0, 1);
+			boardwrite(_gpio_, table[7], 0, 1);
+			sleep_us(1000);
+			boardwrite(_gpio_, table[7], 0, 0);
+			return 0;
+		}
 		case ' ':stepcar_start(win,0);return 0;
 		default: stepcar_stop(win, 0);return 0;
 	}
@@ -72,12 +100,12 @@ int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
 	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, v[j/2]);
 
 	//step
-	for(k=0;k<50;k++)
+	for(k=0;k<800;k++)
 	{
 		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
-		sleep_us(10000);
+		sleep_us(1000);
 		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 0);
-		sleep_us(10000);
+		sleep_us(1000);
 	}
 
 	return 0;
