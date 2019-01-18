@@ -6,10 +6,10 @@ include $(CLEAR_VARS)
 
 #libboot0
 LOCAL_SRC_FILES += \
-library/libboot0/logcat/start.c \
-library/libboot0/logcat/serial.c \
-library/libboot0/logcat/memory.c \
-library/libboot0/logcat/thread.c \
+library/libboot0/ndk/start.c \
+library/libboot0/ndk/serial.c \
+library/libboot0/ndk/memory.c \
+library/libboot0/ndk/thread.c \
 library/libboot0/none/board.c
 
 #libboot1
@@ -300,25 +300,25 @@ library/libuser0/root-robot/robot-arm.c \
 library/libuser0/root-robot/robot-dog.c \
 library/libuser0/root-robot/robot-man.c \
 library/libuser0/root-robot/robot-snake.c \
-library/libuser0/twig-bg/back.c \
-library/libuser0/twig-bg/back.gif.c \
-library/libuser0/twig-bg/back.jpg.c \
-library/libuser0/twig-fg/fore.c \
-library/libuser0/twig-fg/menu.list.c \
-library/libuser0/twig-fg/menu.nav.c \
-library/libuser0/twig-fg/menu.tab.c \
-library/libuser0/twig-fg/menu.tag.c \
-library/libuser0/twig-fg/mode0.testland.c \
-library/libuser0/twig-fg/mode1.console.c \
-library/libuser0/twig-fg/mode2.overview.c \
-library/libuser0/twig-fg/mode3.detail.c \
-library/libuser0/twig-fg/mode4.win.c \
-library/libuser0/twig-fg/mode5.rts.c \
-library/libuser0/twig-fg/mode6.editor.c \
-library/libuser0/twig-fg/mode6.editor.camera.c \
-library/libuser0/twig-fg/mode6.editor.target.c \
-library/libuser0/twig-fg/mode7.player.c \
-library/libuser0/twig-menu/popup.c \
+library/libuser0/twig-bg3d/bg3d.c \
+library/libuser0/twig-fg3d/fg3d.c \
+library/libuser0/twig-fg3d/mode0.testland.c \
+library/libuser0/twig-fg3d/mode1.console.c \
+library/libuser0/twig-fg3d/mode2.overview.c \
+library/libuser0/twig-fg3d/mode3.detail.c \
+library/libuser0/twig-fg3d/mode4.win.c \
+library/libuser0/twig-fg3d/mode5.rts.c \
+library/libuser0/twig-fg3d/mode6.editor.c \
+library/libuser0/twig-fg3d/mode6.editor.camera.c \
+library/libuser0/twig-fg3d/mode6.editor.target.c \
+library/libuser0/twig-fg3d/mode7.player.c \
+library/libuser0/twig-bg2d/bg2d.c \
+library/libuser0/twig-fg2d/fg2d.c \
+library/libuser0/twig-menu/menu.c \
+library/libuser0/twig-menu/menu.list.c \
+library/libuser0/twig-menu/menu.nav.c \
+library/libuser0/twig-menu/menu.tab.c \
+library/libuser0/twig-menu/menu.tag.c \
 library/libuser0/twig-vkbd/vkbd.c \
 library/libuser0/twig-vkbd/vkbd.joystick.c \
 library/libuser0/twig-vkbd/vkbd.keyboard.c \

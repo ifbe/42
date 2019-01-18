@@ -13,14 +13,14 @@
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-void asset_create();
-//
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
 void callback_update(void*);
 void callback_display(void*,void*);
+void* getapp();
+void* pollenv();
 
 
 
@@ -32,10 +32,6 @@ static EGLSurface surface = EGL_NO_SURFACE;
 static struct android_app* theapp = 0;
 static struct arena* thewin = 0;
 static int status = 0;
-void setapp(void* addr)
-{
-	theapp = addr;
-}
 
 
 
@@ -141,12 +137,15 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	else if(APP_CMD_INIT_WINDOW == cmd)
 	{
 		LOGI("APP_CMD_INIT_WINDOW");
-		//initDisplay(appState);
+		while(!thewin);
+
 		windowprepare(thewin);
 
+		initobject(thewin);
 		initshader(thewin);
 		inittexture(thewin);
 		initvertex(thewin);
+
 		status = 1;
 	}
 	else if(APP_CMD_WINDOW_RESIZED == cmd)
@@ -244,22 +243,18 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 void windowread(struct arena* win)
 {
-	int ident;
-	int events;
-	struct android_poll_source* source;
 	if(status)
 	{
-		actorread_all(win);
+		arena_rootread(win, 0, 0, 0, 0, 0);
+
 		callback_update(win);
 		callback_display(win, 0);
+
 		eglSwapBuffers(display, surface);
 	}
 
-	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-	{
-		if(source)source->process(theapp, source);
-		if(theapp->destroyRequested)return;
-	}
+	//events
+	pollenv();
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -275,16 +270,16 @@ void windowdelete(struct arena* win)
 }
 void windowcreate(struct arena* win)
 {
+	thewin = win;
 	win->fmt = _vbo_;
+
 	win->width  = win->fbwidth  = 1024;
 	win->stride = win->fbstride = 1024;
 	win->height = win->fbheight = 1024;
 	win->depth  = win->fbdepth  = 1024;
-	initobject(win);
 
-	thewin = win;
-	theapp->onAppCmd = handle_cmd;
-	theapp->onInputEvent = handle_input;
+	say("@windowcreate\n");
+	while(!status)pollenv();
 }
 
 
@@ -292,6 +287,9 @@ void windowcreate(struct arena* win)
 
 void initwindow()
 {
+	theapp = getapp();
+	theapp->onAppCmd = handle_cmd;
+	theapp->onInputEvent = handle_input;
 }
 void freewindow()
 {

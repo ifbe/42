@@ -10,18 +10,16 @@
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+void* getapp();
+void* pollenv();
 
 
 
 
-static ANativeWindow* native;
 static struct android_app* theapp = 0;
-static struct arena* thewin = 0;
 static int status = 0;
-void setapp(void* addr)
-{
-	theapp = addr;
-}
+static struct arena* thewin = 0;
+static ANativeWindow* native;
 
 
 
@@ -183,11 +181,8 @@ void windowread(struct arena* win)
 		ANativeWindow_unlockAndPost(native);
 	}
 
-	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-	{
-		if(source)source->process(theapp, source);
-		if(theapp->destroyRequested)return;
-	}
+	//events
+	pollenv();
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -203,11 +198,11 @@ void windowdelete(struct arena* win)
 }
 void windowcreate(struct arena* win)
 {
-	win->fmt = hex64('r','g','b','a','8','8','8','8');
 	thewin = win;
+	win->fmt = hex64('r','g','b','a','8','8','8','8');
 
-	theapp->onAppCmd = handle_cmd;
-	theapp->onInputEvent = handle_input;
+	say("@windowcreate\n");
+	while(!status)pollenv();
 }
 
 
@@ -215,6 +210,9 @@ void windowcreate(struct arena* win)
 
 void initwindow()
 {
+	theapp = getapp();
+	theapp->onAppCmd = handle_cmd;
+	theapp->onInputEvent = handle_input;
 }
 void freewindow()
 {

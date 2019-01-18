@@ -9,9 +9,6 @@
 #define _menu_ hex32('m','e','n','u')
 #define _vkbd_ hex32('v','k','b','d')
 int lowlevel_input();
-int arenastart(void*, void*, void*, void*);
-int preprocess(void*);
-int postprocess(void*);
 //
 void initobject(void*);
 void initshader(void*);
@@ -401,32 +398,7 @@ void windowread(struct arena* w)
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw;
-	struct relation* rel;
-
-	//
-	preprocess(w);
-
-	rel = w->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_win_ == rel->dsttype)
-		{
-			arena_rootread(
-				(void*)(rel->dstchip),
-				(void*)(rel->dstfoot),
-				w,
-				(void*)(rel->srcfoot),
-				0,
-				0
-			);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-
-	postprocess(w);
+	arena_rootread(w, 0, 0, 0, 0, 0);
 
 	//
 	fw = w->win;

@@ -2,31 +2,34 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <android/log.h>
+#include <android_native_app_glue.h>
+#define LOG_TAG "finalanswer"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+int main(int argc, char** argv);
 
 
 
 
 static u8* rawuniverse;
-int arg2utf8(char* src, char* dst)
+static struct android_app* APP;
+void android_main(struct android_app* app)
 {
-	return snprintf(dst, 0x1000, "%s", src);
+	//app_dummy();
+
+	APP = app;
+
+	main(0, 0);
+
+	exit(0);
 }
-
-
-
-
-void* pollenv()
+void* getapp()
 {
-	usleep(1000);
-	return 0;
-}
-void* waitenv()
-{
-	return 0;
+	return APP;
 }
 
 
@@ -67,4 +70,33 @@ void* birth()
 	temp = ( (u64)rawuniverse ) & 0xfff;
 	if(0 != temp)temp = 0x1000 - temp;
 	return rawuniverse + temp;
+}
+
+
+
+
+void* pollenv()
+{
+	int ident;
+	int events;
+	struct android_poll_source* source;
+
+	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
+	{
+		if(source)source->process(APP, source);
+		if(APP->destroyRequested)return 0;
+	}
+	return 0;
+}
+void* waitenv()
+{
+	return 0;
+}
+
+
+
+
+int arg2utf8(char* src, char* dst)
+{
+	return snprintf(dst, 0x1000, "%s", src);
 }

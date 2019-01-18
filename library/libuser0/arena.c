@@ -1,6 +1,8 @@
 #include "libuser.h"
 #define _bdc_ hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
+int preprocess(void*);
+int postprocess(void*);
 
 
 
@@ -206,18 +208,44 @@ int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
+	struct relation* rel;
 	struct arena* win = dc;
 	if(0 == win)return 0;
 
 	switch(win->fmt)
 	{
-		case _html_: htmlnode_rootread(dc, df, sc, sf, buf, len);break;
-		case _json_: jsonnode_rootread(dc, df, sc, sf, buf, len);break;
+		case _html_:htmlnode_rootread(dc, df, sc, sf, buf, len);break;
+		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _bg3d_:bg3d_read(dc, df, sc, sf);break;
 		case _fg3d_:fg3d_read(dc, df, sc, sf);break;
 		case _menu_:menu_read(dc, df, sc, sf);break;
 		case _vkbd_:vkbd_read(dc, df, sc, sf);break;
-		default: printmemory(buf, len);
+		default:
+		{
+			preprocess(win);
+
+			rel = win->orel0;
+			while(1)
+			{
+				if(0 == rel)break;
+
+				if(_win_ == rel->dsttype)
+				{
+					arena_rootread(
+						(void*)(rel->dstchip),
+						(void*)(rel->dstfoot),
+						win,
+						(void*)(rel->srcfoot),
+						0,
+						0
+					);
+				}
+
+				rel = samesrcnextdst(rel);
+			}
+
+			postprocess(win);
+		}
 	}
 	return 0;
 }

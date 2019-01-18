@@ -15,23 +15,6 @@ void boardcreate();
 
 
 static u8* rawuniverse;
-int arg2utf8(char* src, char* dst)
-{
-	return snprintf(dst, 0x1000, "%s", src);
-}
-
-
-
-
-void* pollenv()
-{
-	usleep(1000);
-	return 0;
-}
-void* waitenv()
-{
-	return 0;
-}
 
 
 
@@ -69,4 +52,25 @@ void* birth()
 	temp = ( (u64)rawuniverse ) & 0xfff;
 	if(0 != temp)temp = 0x1000 - temp;
 	return rawuniverse + temp;
+}
+
+
+
+
+void* pollenv()
+{
+	usleep(1000);
+	return 0;
+}
+void* waitenv()
+{
+	return 0;
+}
+
+
+
+
+int arg2utf8(char* src, char* dst)
+{
+	return snprintf(dst, 0x1000, "%s", src);
 }

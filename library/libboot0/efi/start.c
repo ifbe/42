@@ -6,7 +6,7 @@
 #define u64 unsigned long long
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-void say(void*, ...);
+void main(int argc, void* argv);
 
 
 
@@ -14,22 +14,26 @@ void say(void*, ...);
 static u64 ev[4];
 static EFI_HANDLE H;
 static EFI_SYSTEM_TABLE* T;
-
-
-
-
-int arg2utf8(u8* src, u8* dst)
+EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
 {
-	int j = 0;
-	while(src[j] >= 0x20)
-	{
-		dst[j] = src[j];
-		j++;
-	}
+	H = handle;
+	T = table;
 
-	dst[j] = 0;
-	return j;
+	ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
+	if(EFI_ERROR(ret))return ret;
+
+	ret = table->ConIn->Reset(table->ConIn, FALSE);
+	if(EFI_ERROR(ret))return ret;
+
+	main(0, 0);
+	return EFI_SUCCESS;
 }
+void gethandleandtable(void** handle, void** table)
+{
+	*handle = H;
+	*table = T;
+}
+void atexit(){}
 
 
 
@@ -59,6 +63,21 @@ void lowlevel_output(char* buf, int len)
 			T->ConOut->OutputString(T->ConOut, temp);
 		}
 	}
+}
+
+
+
+
+void* birth()
+{
+	int j;
+	u8* mem = (u8*)0x1000000;
+
+	for(j=0;j<0x1000000;j++)mem[j] = 0;
+	return mem;
+}
+void death()
+{
 }
 
 
@@ -94,7 +113,7 @@ void* pollenv()
 		}
 		else
 		{
-			say("%x\n",ev[0]);
+			//say("%x\n",ev[0]);
 			return 0;
 		}
 	}
@@ -111,39 +130,15 @@ void* waitenv()
 
 
 
-void* birth()
+int arg2utf8(u8* src, u8* dst)
 {
-	int j;
-	u8* mem = (u8*)0x1000000;
-	
-	for(j=0;j<0x1000000;j++)mem[j] = 0;
-	return mem;
+	int j = 0;
+	while(src[j] >= 0x20)
+	{
+		dst[j] = src[j];
+		j++;
+	}
+
+	dst[j] = 0;
+	return j;
 }
-void death()
-{
-}
-
-
-
-
-void gethandleandtable(void** handle, void** table)
-{
-	*handle = H;
-	*table = T;
-}
-EFI_STATUS efi_hack(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
-{
-	int ret;
-	H = handle;
-	T = table;
-
-	ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
-	if(EFI_ERROR(ret))return ret;
-
-	ret = table->ConIn->Reset(table->ConIn, FALSE);
-	if(EFI_ERROR(ret))return ret;
-
-	main(0, 0);
-	return EFI_SUCCESS;
-}
-void atexit(){}
