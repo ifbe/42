@@ -218,6 +218,8 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _bg3d_:bg3d_read(dc, df, sc, sf);break;
 		case _fg3d_:fg3d_read(dc, df, sc, sf);break;
+		case _bg2d_:bg2d_read(dc, df, sc, sf);break;
+		case _fg2d_:fg2d_read(dc, df, sc, sf);break;
 		case _menu_:menu_read(dc, df, sc, sf);break;
 		case _vkbd_:vkbd_read(dc, df, sc, sf);break;
 		default:
@@ -287,6 +289,8 @@ int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
 	{
 		case _bg3d_:bg3d_start(c, 0, r, 0);break;
 		case _fg3d_:fg3d_start(c, 0, r, 0);break;
+		case _bg2d_:bg3d_start(c, 0, r, 0);break;
+		case _fg2d_:fg3d_start(c, 0, r, 0);break;
 		case _menu_:menu_start(c, 0, r, 0);break;
 		case _vkbd_:vkbd_start(c, 0, r, 0);break;
 	}

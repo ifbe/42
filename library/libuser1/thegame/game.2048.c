@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 //
 void new2048(void*);
 void left2048(void*);
@@ -95,6 +96,8 @@ static void the2048_read_vbo2d(
 	int x,y,w,h;
 	u8 (*tab)[4];
 	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;

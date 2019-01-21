@@ -22,6 +22,7 @@ int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
+	win->vfmt = _3d_;
 
 	rel = cc->orel0;
 	while(1)
@@ -52,7 +53,7 @@ int bg3d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 	struct actor* act;
 	struct pinid* pin;
 
-       	rel = c->orel0;
+	rel = c->orel0;
 	while(1)
 	{
 		if(0 == rel)break;

@@ -21,6 +21,7 @@ void actorcreatefromwav(struct actor* act, u8* buf, int len);
 
 static u8* utf8data = 0;
 static u16* bgmdata = 0;
+static struct style def_vbo;
 
 
 
@@ -103,6 +104,14 @@ void* alloc_winobj(struct arena* win)
 
 
 
+void* defaultstyle_vbo3d()
+{
+	return &def_vbo;
+}
+void* defaultstyle_vbo2d()
+{
+	return &def_vbo;
+}
 void lib4d_create(void* addr)
 {
 	asset_create(addr);
@@ -112,6 +121,22 @@ void lib4d_create(void* addr)
 	backuper_create(addr);
 
 	overview_create(addr);
+
+	def_vbo.vc[0] = 0.0;
+	def_vbo.vc[1] = 0.0;
+	def_vbo.vc[2] = 0.0;
+
+	def_vbo.vr[0] = 512.0;
+	def_vbo.vr[1] = 0.0;
+	def_vbo.vr[2] = 0.0;
+
+	def_vbo.vf[0] = 0.0;
+	def_vbo.vf[1] = 512.0;
+	def_vbo.vf[2] = 0.0;
+
+	def_vbo.vu[0] = 0.0;
+	def_vbo.vu[1] = 0.0;
+	def_vbo.vu[2] = 512.0;
 }
 void lib4d_delete()
 {
