@@ -1,6 +1,8 @@
 #include "libuser.h"
-#define _bdc_ hex32('b','d','c',0)
+#define _bdc_  hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
+#define _pin_  hex32('p','i','n',0)
+#define _chip_ hex32('c','h','i','p')
 int preprocess(void*);
 int postprocess(void*);
 
@@ -387,7 +389,7 @@ void* arenacreate(u64 type, void* addr)
 		stepcar_create(win, 0);
 	}
 
-	//1: root window
+	//1: gles
 	else if(_win_ == type)
 	{
 		win->type = _win_;
@@ -433,64 +435,6 @@ void* arenacreate(u64 type, void* addr)
 			arenastart(sub, 0, win, 0);
 		}
 	}
-	else if(_func_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _func_;
-
-		funcnode_create(win, addr);
-	}
-	else if(_html_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _html_;
-
-		htmlnode_create(win, addr);
-	}
-	else if(_json_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _json_;
-
-		jsonnode_create(win, addr);
-	}
-	else if(_rgba_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _rgba_;
-
-		rgbanode_create(win, addr);
-	}
-	else if(_vbo_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _vbo_;
-
-		vbonode_create(win, addr);
-	}
-	else if(_pcb_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _pcb_;
-
-		pcbnode_create(win, addr);
-	}
-	else if(_sch_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _sch_;
-
-		schnode_create(win, addr);
-	}
-	else if(_xml_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _xml_;
-
-		xmlnode_create(win, addr);
-	}
-
-	//2: render pass
 	else if(_light_ == type)
 	{
 		win->type = _twig_;
@@ -534,6 +478,82 @@ void* arenacreate(u64 type, void* addr)
 	{
 		win->type = _twig_;
 		win->fmt = _vkbd_;
+	}
+
+	//pcbdoc
+	else if(_sch_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _sch_;
+
+		schnode_create(win, addr);
+
+		sub = arenacreate(_pin_, 0);
+		relationcreate(sub, 0, _win_, win, 0, _win_);
+
+		sub = arenacreate(_chip_, 0);
+		relationcreate(sub, 0, _win_, win, 0, _win_);
+	}
+	else if(_pin_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _pin_;
+	}
+	else if(_chip_ == type)
+	{
+		win->type = _twig_;
+		win->fmt = _chip_;
+	}
+
+	//else
+	else if(_func_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _func_;
+
+		funcnode_create(win, addr);
+	}
+	else if(_html_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _html_;
+
+		htmlnode_create(win, addr);
+	}
+	else if(_json_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _json_;
+
+		jsonnode_create(win, addr);
+	}
+	else if(_rgba_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _rgba_;
+
+		rgbanode_create(win, addr);
+	}
+	else if(_vbo_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _vbo_;
+
+		vbonode_create(win, addr);
+	}
+	else if(_pcb_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _pcb_;
+
+		pcbnode_create(win, addr);
+	}
+	else if(_xml_ == type)
+	{
+		win->type = _node_;
+		win->fmt = _xml_;
+
+		xmlnode_create(win, addr);
 	}
 
 	return win;

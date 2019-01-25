@@ -170,6 +170,22 @@ theitem/item.planet.c \
 theitem/item.rccar.c \
 theitem/item.tree.c \
 theitem/item.water.c \
+menu/mode0.testland.c \
+menu/mode1.console.c \
+menu/mode2.overview.c \
+menu/mode3.detail.c \
+menu/mode4.win.c \
+menu/mode5.rts.c \
+menu/mode6.editor.c \
+menu/mode6.editor.camera.c \
+menu/mode6.editor.target.c \
+menu/mode7.player.c \
+menu/menu.list.c \
+menu/menu.nav.c \
+menu/menu.tab.c \
+menu/menu.tag.c \
+menu/vkbd.joystick.c \
+menu/vkbd.keyboard.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

@@ -60,9 +60,9 @@ int bg2d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 }
 int bg2d_create(struct arena* win, u8* str)
 {
-	struct actor* act = actorcreate(hex32('2','0','4','8'), 0);
-	if(0 == act)return 0;
+	//struct actor* act = actorcreate(hex32('2','0','4','8'), 0);
+	//if(0 == act)return 0;
 
-	relationcreate(act, 0, _act_, win, 0, _win_);
+	//relationcreate(act, 0, _act_, win, 0, _win_);
 	return 0;
 }

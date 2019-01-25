@@ -21,9 +21,11 @@ twig-html/out.html.c \
 twig-json/out.json.c \
 twig-pcb/out.pcb.c \
 twig-rgba/out.rgba.c \
-twig-sch/out.sch.c \
 twig-tui/out.tui.c \
 twig-xml/out.xml.c \
+twig-sch/out.sch.c \
+twig-sch/sch.pin.c \
+twig-sch/sch.chip.c \
 twig-gles/out.vbo.c \
 twig-gles/00-light.c \
 twig-gles/01-mirror.c \
@@ -34,23 +36,7 @@ twig-gles/11-fg3d.c \
 twig-gles/12-bg2d.c \
 twig-gles/13-fg2d.c \
 twig-gles/20-menu.c \
-twig-gles/21-vkbd.c \
-twig-gles/fg3d/mode0.testland.c \
-twig-gles/fg3d/mode1.console.c \
-twig-gles/fg3d/mode2.overview.c \
-twig-gles/fg3d/mode3.detail.c \
-twig-gles/fg3d/mode4.win.c \
-twig-gles/fg3d/mode5.rts.c \
-twig-gles/fg3d/mode6.editor.c \
-twig-gles/fg3d/mode6.editor.camera.c \
-twig-gles/fg3d/mode6.editor.target.c \
-twig-gles/fg3d/mode7.player.c \
-twig-gles/menu/menu.list.c \
-twig-gles/menu/menu.nav.c \
-twig-gles/menu/menu.tab.c \
-twig-gles/menu/menu.tag.c \
-twig-gles/vkbd/vkbd.joystick.c \
-twig-gles/vkbd/vkbd.keyboard.c
+twig-gles/21-vkbd.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
