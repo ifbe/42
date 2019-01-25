@@ -1,5 +1,8 @@
 #include "libuser.h"
 //chip
+void chippin_register(void*);
+void vsrc_register(void*);
+void resistor_register(void*);
 void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
@@ -276,6 +279,15 @@ void content_create(void* addr)
 
 
 	//-------------------chip-----------------
+	chippin_register(temp);
+	temp += sizeof(struct actor);
+
+	vsrc_register(temp);
+	temp += sizeof(struct actor);
+
+	resistor_register(temp);
+	temp += sizeof(struct actor);
+
 	finfet_register(temp);
 	temp += sizeof(struct actor);
 

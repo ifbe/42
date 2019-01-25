@@ -66,7 +66,7 @@ int windowread(void*);
 int windowwrite(void*);
 int windowlist();
 int windowchoose();
-//dummy
+//
 int funcnode_create(void*, void*);
 int funcnode_delete(void*);
 //
@@ -89,12 +89,18 @@ int vbonode_delete(void*);
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
 //
-int schnode_create(void*, void*);
-int schnode_delete(void*);
-//
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
-//
+//pcb
+int schnode_create(void*, void*);
+int schnode_delete(void*);
+int ppin_create(void*, void*);
+int ppin_start(void*, void*, void*, void*);
+int ppin_read(void*, void*, void*, void*);
+int pchip_create(void*, void*);
+int pchip_start(void*, void*, void*, void*);
+int pchip_read(void*, void*, void*, void*);
+//gl
 int bg3d_create(void*, void*);
 int bg3d_start(void*, void*, void*, void*);
 int bg3d_read(void*, void*, void*, void*);
@@ -295,6 +301,8 @@ int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
 		case _fg2d_:fg3d_start(c, 0, r, 0);break;
 		case _menu_:menu_start(c, 0, r, 0);break;
 		case _vkbd_:vkbd_start(c, 0, r, 0);break;
+		case _pin_ :ppin_start(c, 0, r, 0);break;
+		case _chip_:pchip_start(c, 0, r, 0);break;
 	}
 
 	return 0;
@@ -406,33 +414,51 @@ void* arenacreate(u64 type, void* addr)
 		{
 			//bg3d
 			sub = arenacreate(_bg3d_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 
 			//fg3d
 			sub = arenacreate(_fg3d_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 
 			//bg2d
 			sub = arenacreate(_bg2d_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 
 			//fg2d
 			sub = arenacreate(_fg2d_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 
 			//menu
 			sub = arenacreate(_menu_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 
 			//vkbd
 			sub = arenacreate(_vkbd_, 0);
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 		}
 	}
 	else if(_light_ == type)
@@ -489,20 +515,30 @@ void* arenacreate(u64 type, void* addr)
 		schnode_create(win, addr);
 
 		sub = arenacreate(_pin_, 0);
-		relationcreate(sub, 0, _win_, win, 0, _win_);
+		if(sub)
+		{
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+		}
 
 		sub = arenacreate(_chip_, 0);
-		relationcreate(sub, 0, _win_, win, 0, _win_);
+		if(sub)
+		{
+			relationcreate(sub, 0, _win_, win, 0, _win_);
+			arenastart(sub, 0, win, 0);
+		}
 	}
 	else if(_pin_ == type)
 	{
 		win->type = _twig_;
 		win->fmt = _pin_;
+		ppin_create(win, addr);
 	}
 	else if(_chip_ == type)
 	{
 		win->type = _twig_;
 		win->fmt = _chip_;
+		pchip_create(win, addr);
 	}
 
 	//else
