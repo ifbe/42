@@ -16,8 +16,8 @@ int bg3d_write(struct arena* win, struct event* ev);
 int fg3d_read( void*, void*, struct arena* win, struct style* sty);
 int fg3d_write(struct arena* win, struct event* ev);
 //temp
-int temp_read( void*, void*, struct arena* win, struct style* sty);
-int temp_write(struct arena* win, struct event* ev);
+int menu_read( void*, void*, struct arena* win, struct style* sty);
+int menu_write(struct arena* win, struct event* ev);
 //vkbd
 int vkbd_read( void*, void*, struct arena* win, struct style* sty);
 int vkbd_write(struct arena* win, struct event* ev);
@@ -271,7 +271,7 @@ int actorevent(struct event* ev)
 	if(ret)goto theend;
 
 	//temp
-	ret = temp_write(win, ev);
+	ret = menu_write(win, ev);
 	if(ret)goto theend;
 
 	//fore

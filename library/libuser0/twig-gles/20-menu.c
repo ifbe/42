@@ -83,7 +83,7 @@ int menu_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 	else popup_read_pixel(win, sty);
 	return 0;
 }
-int temp_write(struct arena* win, struct event* ev)
+int menu_write(struct arena* win, struct event* ev)
 {
 	return 0;
 }
