@@ -3,19 +3,19 @@
 
 
 
-void popup_read_cli(struct arena* win, struct style* sty)
+void menu_read_cli(struct arena* win, struct style* sty)
 {
 }
-void popup_read_tui(struct arena* win, struct style* sty)
+void menu_read_tui(struct arena* win, struct style* sty)
 {
 }
-void popup_read_html(struct arena* win, struct style* sty)
+void menu_read_html(struct arena* win, struct style* sty)
 {
 }
-void popup_read_json(struct arena* win, struct style* sty)
+void menu_read_json(struct arena* win, struct style* sty)
 {
 }
-void popup_read_vbo(struct arena* win, struct style* sty)
+void menu_read_vbo(struct arena* win, struct style* sty)
 {
 	int j;
 	float x0,y0,x1,y1;
@@ -56,7 +56,7 @@ void popup_read_vbo(struct arena* win, struct style* sty)
 	}
 
 }
-void popup_read_pixel(struct arena* win, struct style* sty)
+void menu_read_pixel(struct arena* win, struct style* sty)
 {
 	int j;
 	int x0,y0,x1,y1;
@@ -75,12 +75,12 @@ void popup_read_pixel(struct arena* win, struct style* sty)
 int menu_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)popup_read_cli(win, sty);
-	else if(fmt == _tui_)popup_read_tui(win, sty);
-	else if(fmt == _html_)popup_read_html(win, sty);
-	else if(fmt == _json_)popup_read_json(win, sty);
-	else if(fmt == _vbo_)popup_read_vbo(win, sty);
-	else popup_read_pixel(win, sty);
+	if(fmt == _cli_)menu_read_cli(win, sty);
+	else if(fmt == _tui_)menu_read_tui(win, sty);
+	else if(fmt == _html_)menu_read_html(win, sty);
+	else if(fmt == _json_)menu_read_json(win, sty);
+	else if(fmt == _vbo_)menu_read_vbo(win, sty);
+	else menu_read_pixel(win, sty);
 	return 0;
 }
 int menu_write(struct arena* win, struct event* ev)

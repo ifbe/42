@@ -12,7 +12,7 @@ void vkbd_joystick_read_pixel(struct arena* win, struct style* sty)
 	int x,y,m,n;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdw < 0)goto haha;
+	if(win->vkbdw < 0)return;
 
 	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
@@ -35,52 +35,6 @@ void vkbd_joystick_read_pixel(struct arena* win, struct style* sty)
 	ch[6] = 's';
 	ch[7] = '+';
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
-
-haha:
-	if(w<h)c = w>>6;
-	else c = h>>6;
-
-	drawsolid_circle(
-		win, 0x0000ff,
-		c, h-c, c
-	);
-	drawsolid_circle(
-		win, 0xff0000,
-		w-c, h-c, c
-	);
-
-	c *= 2;
-	if(win->input[0].z0)
-	{
-		m = win->input[0].x0;
-		n = win->input[0].y0;
-		x = win->input[0].xn;
-		y = win->input[0].yn;
-	}
-	else if(win->input[10].z0)
-	{
-		m = win->input[10].x0;
-		n = win->input[10].y0;
-		x = win->input[10].xn;
-		y = win->input[10].yn;
-	}
-	else return;
-
-	if(n+c > h)
-	{
-		if(m+c > w)
-		{
-			m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
-			n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
-			drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
-			drawsolid_triangle(win, 0x000000, m, h, w, n, w, h);
-		}
-		else if(m < c)
-		{
-			drawsolid_rect(win, 0x404040, 0, 0, x, h);
-			drawsolid_rect(win, 0x404040, 0, y, w, h);
-		}
-	}
 }
 void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 {
@@ -92,7 +46,7 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdw < 0)goto haha;
+	if(win->vkbdw < 0)return;
 
 	c = win->vkbdw;
 	if(('j' == c)|('k' == c))
@@ -152,88 +106,6 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 	vf[1] = k;
 	vf[2] = 0.0;
 	carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, -1);
-
-haha:
-	if(w<h)c = w>>5;
-	else c = h>>5;
-	j = (float)c / (float)w;
-	k = (float)c / (float)h;
-	vr[0] = j;
-	vr[1] = 0.0;
-	vr[2] = 0.0;
-	vf[0] = 0.0;
-	vf[1] = k;
-	vf[2] = 0.0;
-
-	vc[0] = 1.0-j;
-	vc[1] = k-1.0;
-	vc[2] = -0.99;
-	carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
-	vc[0] = j-1.0;
-	carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
-
-	c *= 2;
-	if(win->input[0].z0)
-	{
-		j = win->input[0].x0;
-		k = win->input[0].y0;
-		x = win->input[0].xn;
-		y = win->input[0].yn;
-	}
-	else if(win->input[10].z0)
-	{
-		j = win->input[10].x0;
-		k = win->input[10].y0;
-		x = win->input[10].xn;
-		y = win->input[10].yn;
-	}
-	else return;
-
-	if(k+c > h)
-	{
-		if(j+c > w)
-		{
-			j = ((h-y)*(h-y)/(x-w) + (w+x)) / 2.0;
-			j = 2*j/w - 1.0;
-			k = ((x-w)*(x-w)/(y-h) + (y+h)) / 2.0;
-			k = 1.0 - 2*k/h;
-			vr[0] = j;
-			vr[1] = -1.0;
-			vr[2] = -0.9;
-			vf[0] = 1.0;
-			vf[1] = k;
-			vf[2] = -0.9;
-			vc[0] = 2.0*x/w - 1.0;
-			vc[1] = 1.0 - 2.0*y/h;
-			vc[2] = -0.9;
-			carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
-			vc[0] = 1.0;
-			vc[1] = -1.0;
-			carvesolid2d_triangle(win, 0x000000, vc, vr, vf);
-		}
-		else if(j < c)
-		{
-			j = (float)x;
-			k = (float)y;
-			vc[0] = j/w - 1.0;
-			vc[1] = 0.0;
-			vc[2] = -0.9;
-			vr[0] = 1.0+vc[0];
-			vr[1] = 0.0;
-			vr[2] = 0.0;
-			vf[0] = 0.0;
-			vf[1] = 1.0;
-			vf[2] = 0.0;
-			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-			vc[0] = 0.0;
-			vc[1] = 1.0-(h+k)/h;
-			vr[0] = 1.0;
-			vr[1] = 0.0;
-			vf[0] = 0.0;
-			vf[1] = 1.0+vc[1];
-			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-		}
-	}
 }
 void vkbd_joystick_read_html(struct arena* win, struct style* sty)
 {
@@ -262,7 +134,7 @@ int vkbd_joystick_write(struct arena* win, struct event* ev)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-    say("vkbd_joystick_write\n");
+    //say("vkbd_joystick_write\n");
 	if(win->vkbdw <= 0)return 0;
 
 	w = win->width;
