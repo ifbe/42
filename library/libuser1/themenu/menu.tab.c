@@ -30,7 +30,7 @@ static void* nametab[8] = {
 	" 3d "
 };
 void tabbar_actors(struct arena* win, struct style* sty)
-{
+{/*
     int sel = (win->forew)&0x7;
     if(0 == sel)actoroutput_void(win, sty);
     else if(1 == sel)actoroutput_console(win, sty);
@@ -39,7 +39,7 @@ void tabbar_actors(struct arena* win, struct style* sty)
     else if(4 == sel)actoroutput_win(win, sty);
     else if(5 == sel)actoroutput_2d(win, sty);
     else if(6 == sel)actoroutput_cad(win, sty);
-    else if(7 == sel)actoroutput_3d(win, sty);
+    else if(7 == sel)actoroutput_3d(win, sty);*/
 }
 
 
@@ -187,7 +187,7 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
             return 1;
         }
     }
-
+/*
     if(0 == sel)actorinput_void(         win, sty, ev);
     else if(1 == sel)actorinput_console( win, sty, ev);
     else if(2 == sel)actorinput_overview(win, sty, ev);
@@ -195,6 +195,6 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
     else if(4 == sel)actorinput_win(     win, sty, ev);
     else if(5 == sel)actorinput_2d(      win, sty, ev);
     else if(6 == sel)actorinput_cad(     win, sty, ev);
-    else if(7 == sel)actorinput_3d(      win, sty, ev);
+    else if(7 == sel)actorinput_3d(      win, sty, ev);*/
     return 1;
 }

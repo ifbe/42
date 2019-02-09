@@ -157,7 +157,7 @@ int vkbd_read(struct arena* cc, struct style* cf, struct arena* win, struct styl
 	}
 	return 0;
 }
-int vkbd_write(struct arena* win, struct event* ev)
+int vkbd_write(struct arena* win, struct style* stack, struct event* ev)
 {
 	int j,k,x,y;
 	int w,h,id,ret;

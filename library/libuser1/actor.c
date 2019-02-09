@@ -11,16 +11,16 @@ void lib4d_delete();
 int preprocess(struct arena* win);
 //back
 int bg3d_read( void*, void*, struct arena* win, struct style* sty);
-int bg3d_write(struct arena* win, struct event* ev);
+int bg3d_write(struct arena* win, struct style* sty, struct event* ev);
 //fore
 int fg3d_read( void*, void*, struct arena* win, struct style* sty);
-int fg3d_write(struct arena* win, struct event* ev);
+int fg3d_write(struct arena* win, struct style* sty, struct event* ev);
 //temp
 int menu_read( void*, void*, struct arena* win, struct style* sty);
-int menu_write(struct arena* win, struct event* ev);
+int menu_write(struct arena* win, struct style* sty, struct event* ev);
 //vkbd
 int vkbd_read( void*, void*, struct arena* win, struct style* sty);
-int vkbd_write(struct arena* win, struct event* ev);
+int vkbd_write(struct arena* win, struct style* sty, struct event* ev);
 //post
 int postprocess(struct arena* win);
 
@@ -62,7 +62,7 @@ void* allocpinid()
 
 
 
-int actorinput_special(struct arena* win, struct event* ev)
+int actorinput_special(struct arena* win, struct style* sty, struct event* ev)
 {
 	int val;
 	short* t;
@@ -263,23 +263,23 @@ int actorevent(struct event* ev)
 	}
 
 	//vkbd
-	ret = vkbd_write(win, ev);
+	ret = vkbd_write(win, 0, ev);
 	if(ret)goto theend;
 
 	//special
-	ret = actorinput_special(win, ev);
+	ret = actorinput_special(win, 0, ev);
 	if(ret)goto theend;
 
 	//temp
-	ret = menu_write(win, ev);
+	ret = menu_write(win, 0, ev);
 	if(ret)goto theend;
 
 	//fore
-	ret = fg3d_write(win, ev);
+	ret = fg3d_write(win, 0, ev);
 	if(ret)goto theend;
 
 	//back
-	ret = bg3d_write(win, ev);
+	ret = bg3d_write(win, 0, ev);
 	if(ret)goto theend;
 
 theend:

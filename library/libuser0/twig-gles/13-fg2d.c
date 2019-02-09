@@ -7,7 +7,7 @@ int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	return 0;
 }
-int fg2d_write(struct arena* win, struct event* ev)
+int fg2d_write(struct arena* win, struct style* stack, struct event* ev)
 {
 	return 0;
 }

@@ -38,7 +38,7 @@ int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int bg3d_write(struct arena* win, struct event* ev)
+int bg3d_write(struct arena* win, struct style* stack, struct event* ev)
 {
 	return 0;
 }
