@@ -254,7 +254,7 @@ int fg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 
 		orel = samesrcnextdst(orel);
 	}
-
+/*
     if(_vbo_ == win->fmt)
 	{
 		//if(sty)select_3d(win, 0x004000, sty, 0);
@@ -264,7 +264,7 @@ int fg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	{
 		//if(sty)select_2d(win, 0x004000, sty, 0);
 		actoroutput_player_pixel(win, st);
-	}
+	}*/
 	return 1;
 }
 int fg3d_write(struct arena* win, struct style* sty, struct event* ev)

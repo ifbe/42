@@ -196,5 +196,5 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
     else if(5 == sel)actorinput_2d(      win, sty, ev);
     else if(6 == sel)actorinput_cad(     win, sty, ev);
     else if(7 == sel)actorinput_3d(      win, sty, ev);*/
-    return 1;
+    return 0;
 }

@@ -10,14 +10,31 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
 
-int arenaactor(struct arena* win, struct actor* act)
+void defaultstyle(struct style* sty, struct style* tar)
 {
-	int min;
-	int w = win->width;
-	int h = win->height;
-	int d = (w+h) / 2;
+	sty->vc[0] = tar->vc[0];
+	sty->vc[1] = tar->vc[1];
+	sty->vc[2] = tar->vc[2];
+
+	sty->vr[0] = tar->vr[0];
+	sty->vr[1] = tar->vr[1];
+	sty->vr[2] = tar->vr[2];
+
+	sty->vf[0] = tar->vf[0];
+	sty->vf[1] = tar->vf[1];
+	sty->vf[2] = tar->vf[2];
+
+	sty->vu[0] = tar->vu[0];
+	sty->vu[1] = tar->vu[1];
+	sty->vu[2] = tar->vu[2];
+}
+int arenaactor(struct arena* ccc, struct actor* act)
+{
+	int w,h,d,min;
 	struct style* sty;
 	struct pinid* pin;
+	struct arena* win;
+	struct relation* rel;
 
 	sty = allocstyle();
 	if(0 == sty)return 0;
@@ -25,26 +42,25 @@ int arenaactor(struct arena* win, struct actor* act)
 	pin = allocpinid();
 	if(0 == pin)return 0;
 
-	if(_vbo_ == win->fmt)
+	win = ccc;
+	if(_vbo_ == ccc->fmt)
 	{
-		sty->vc[0] = win->target.vc[0];
-		sty->vc[1] = win->target.vc[1];
-		sty->vc[2] = win->target.vc[2];
+		defaultstyle(sty, &ccc->target);
+	}
+	if(_fg3d_ == ccc->fmt)
+	{
+		rel = ccc->irel0;
+		if(0 == rel)return 0;
 
-		sty->vr[0] = win->target.vr[0];
-		sty->vr[1] = win->target.vr[1];
-		sty->vr[2] = win->target.vr[2];
-
-		sty->vf[0] = win->target.vf[0];
-		sty->vf[1] = win->target.vf[1];
-		sty->vf[2] = win->target.vf[2];
-
-		sty->vu[0] = win->target.vu[0];
-		sty->vu[1] = win->target.vu[1];
-		sty->vu[2] = win->target.vu[2];
+		win = (void*)(rel->srcchip);
+		defaultstyle(sty, &win->target);
 	}
 	else
 	{
+		w = ccc->width;
+		h = ccc->height;
+		d = (w+h) / 2;
+
 		sty->vc[0] = w/2;
 		sty->vc[1] = h/2;
 		sty->vc[2] = 0.0;
@@ -58,7 +74,8 @@ int arenaactor(struct arena* win, struct actor* act)
 
 	actorcreate(0, act);
 	actorstart(win, sty, act, pin);
-	relationcreate(act, pin, _act_, win, sty, _win_);
+
+	relationcreate(act, pin, _act_, ccc, sty, _win_);
 	return 0;
 }
 

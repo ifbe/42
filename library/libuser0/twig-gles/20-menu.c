@@ -1,4 +1,6 @@
 #include "libuser.h"
+void actoroutput_overview(struct arena* win, struct style* sty);
+int actorinput_overview(struct arena* win, struct style* sty, struct event* ev);
 void actoroutput_tabbar(struct arena* win, struct style* sty);
 int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev);
 
@@ -77,6 +79,7 @@ void menu_read_pixel(struct arena* win, struct style* sty)
 int menu_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 {
 	u64 fmt;
+	actoroutput_overview(win, sty);
 	actoroutput_tabbar(win, sty);
 
 	fmt = win->fmt;
@@ -90,7 +93,14 @@ int menu_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
 }
 int menu_write(struct arena* win, struct style* sty, struct event* ev)
 {
-	return actorinput_tabbar(win, sty, ev);
+	int ret;
+	ret = actorinput_tabbar(win, sty, ev);
+	if(ret)return 1;
+
+	ret = actorinput_overview(win, sty, ev);
+	if(ret)return 1;
+
+	return 0;
 }
 
 
