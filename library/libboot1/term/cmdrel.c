@@ -10,7 +10,25 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
 
-void defaultstyle(struct style* sty, struct style* tar)
+void defaultstyle_2d(struct style* sty, int w, int h, int d)
+{
+	sty->vc[0] = w/2;
+	sty->vc[1] = h/2;
+	sty->vc[2] = 0.0;
+
+	sty->vr[0] = w/2;
+	sty->vr[1] = 0;
+	sty->vr[2] = 0;
+
+	sty->vf[0] = 0;
+	sty->vf[1] = h/2;
+	sty->vf[2] = 0;
+
+	sty->vu[0] = 0;
+	sty->vu[1] = 0;
+	sty->vu[2] = (w+h)/4;
+}
+void defaultstyle_3d(struct style* sty, struct style* tar)
 {
 	sty->vc[0] = tar->vc[0];
 	sty->vc[1] = tar->vc[1];
@@ -30,7 +48,7 @@ void defaultstyle(struct style* sty, struct style* tar)
 }
 int arenaactor(struct arena* ccc, struct actor* act)
 {
-	int w,h,d,min;
+	int w,h;
 	struct style* sty;
 	struct pinid* pin;
 	struct arena* win;
@@ -43,33 +61,43 @@ int arenaactor(struct arena* ccc, struct actor* act)
 	if(0 == pin)return 0;
 
 	win = ccc;
-	if(_vbo_ == ccc->fmt)
+	switch(ccc->fmt)
 	{
-		defaultstyle(sty, &ccc->target);
-	}
-	if(_fg3d_ == ccc->fmt)
-	{
-		rel = ccc->irel0;
-		if(0 == rel)return 0;
+		case _bg3d_:
+		case _fg3d_:
+		{
+			rel = ccc->irel0;
+			if(0 == rel)return 0;
 
-		win = (void*)(rel->srcchip);
-		defaultstyle(sty, &win->target);
-	}
-	else
-	{
-		w = ccc->width;
-		h = ccc->height;
-		d = (w+h) / 2;
+			win = (void*)(rel->srcchip);
+			defaultstyle_3d(sty, &win->target);
 
-		sty->vc[0] = w/2;
-		sty->vc[1] = h/2;
-		sty->vc[2] = 0.0;
+			break;
+		}
+		case _bg2d_:
+		case _fg2d_:
+		{
+			rel = ccc->irel0;
+			if(0 == rel)return 0;
 
-		if(w<h)min = w/2;
-		else min = h/2;
-		sty->vr[0] = min;
-		sty->vf[1] = min;
-		sty->vu[2] = min;
+			win = (void*)(rel->srcchip);
+			w = win->width;
+			h = win->height;
+			defaultstyle_2d(sty, w, h, (w+h)/2);
+
+			break;
+		}
+		case _vbo_:
+		{
+			defaultstyle_3d(sty, &win->target);
+			break;
+		}
+		default:
+		{
+			w = win->width;
+			h = win->height;
+			defaultstyle_2d(sty, w, h, (w+h)/2);
+		}
 	}
 
 	actorcreate(0, act);
