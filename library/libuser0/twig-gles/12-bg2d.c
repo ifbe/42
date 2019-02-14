@@ -60,9 +60,46 @@ int bg2d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 }
 int bg2d_create(struct arena* win, u8* str)
 {
-	//struct actor* act = actorcreate(hex32('2','0','4','8'), 0);
-	//if(0 == act)return 0;
+	int j;
+	struct style* sty;
+	struct actor* act;
+	struct pinid* pin;
+	struct relation* rel;
 
-	//relationcreate(act, 0, _act_, win, 0, _win_);
+	for(j=0;j<1;j++)
+	{
+		act = actorcreate(hex64('q','r','c','o','d','e', 0, 0), 0);
+		if(0 == act)continue;
+
+		relationcreate(act, 0, _act_, win, 0, _win_);
+
+		rel = act->irel0;
+		if(0 == rel)continue;
+
+		sty = allocstyle();
+		if(0 == sty)continue;
+
+		pin = allocpinid();
+		if(0 == pin)continue;
+
+		rel->srcfoot = (u64)sty;
+		rel->dstfoot = (u64)pin;
+
+		sty->vc[0] = 250;
+		sty->vc[1] = 250;
+		sty->vc[2] = 0;
+
+		sty->vr[0] = 250;
+		sty->vr[1] = 0;
+		sty->vr[2] = 0;
+
+		sty->vf[0] = 0;
+		sty->vf[1] = 250;
+		sty->vf[2] = 0;
+
+		sty->vu[0] = 0;
+		sty->vu[1] = 0;
+		sty->vu[2] = 0;
+	}
 	return 0;
 }

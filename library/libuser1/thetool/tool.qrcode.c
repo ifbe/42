@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 int qrcode_generate(void* src, void* dst, int len);
 
 
@@ -52,10 +53,63 @@ static void qrcode_read_pixel(
 //say("\n");
 	}
 }
-static void qrcode_read_vbo(
+static void qrcode_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	u32 rgb;
+	int x,y,w,h;
+	u8 (*tab)[4];
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	w = win->width;
+	h = win->height;
+	tc[0] = vc[0] / w;
+	tc[1] = vc[1] / h;
+	tc[2] = 0.0;
+	tr[0] = vr[0] / w;
+	tr[1] = vr[1] / h;
+	tr[2] = 0.0;
+	tf[0] = vf[0] / w;
+	tf[1] = vf[1] / h;
+	tf[2] = 0.0;
+	carvesolid2d_rect(win, 0x444444, tc, tr, tf);
+
+	tr[0] = vr[0] / w / 49;
+	tr[1] = vr[1] / h / 49;
+	tr[2] = 0.0;
+	tf[0] = vf[0] / w / 49;
+	tf[1] = vf[1] / h / 49;
+	tf[2] = 0.0;
+	for(y=0;y<49;y++)
+	{
+		for(x=0;x<49;x++)
+		{
+			if( databuf[(y*slen)+x] == 0 )rgb = 0;
+			else rgb = 0xffffffff;
+
+			tc[0] = (vc[0] + (x-24)*vr[0]*2/49) / w;
+			tc[1] = (vc[1] + (y-24)*vf[1]*2/49) / h;
+			tc[2] = -0.5;
+			carvesolid2d_rect(win, rgb, tc, tr, tf);
+		}
+	}
+}
+static void qrcode_read_vbo3d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x444444, vc, vr, vf);
 }
 static void qrcode_read_json(
 	struct arena* win, struct style* sty,
@@ -117,7 +171,11 @@ static void qrcode_read(
 	else if(fmt == _tui_)qrcode_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)qrcode_read_html(win, sty, act, pin);
 	else if(fmt == _json_)qrcode_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)qrcode_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)qrcode_read_vbo2d(win, sty, act, pin);
+		else qrcode_read_vbo3d(win, sty, act, pin);
+	}
 	else qrcode_read_pixel(win, sty, act, pin);
 }
 static void qrcode_write(
