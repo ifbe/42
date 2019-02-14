@@ -419,7 +419,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	vc = sty->vc;
 	vr = sty->vr;
 	vf = sty->vf;
-	cursor = (win->forex) + (win->forey)*8;
+	cursor = (win->forex) + (win->forey)*16;
 /*
 	tc[0] = -1.0;
 	tc[1] = 0.5;
@@ -444,7 +444,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	carveline2d(win, 0xff0000, tc, tr);
 */
 	//actor
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		k = actor[j].type & 0xff;
 		if(0 == k)break;
@@ -461,37 +461,37 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			else fg = 0xffffff;
 		}
 
-		x = j%8;
-		y = j/8;
-		r = (x*2-7)/8.0;
-		f = (31-y*2)/32.0;
+		x = j % 16;
+		y = j / 16;
+		r = (x*2-15) / 16.0;
+		f = (31-y*2) / 32.0;
 		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0]*4.0/33;
-		tr[1] = vr[1]*4.0/33;
-		tr[2] = vr[2]*4.0/33;
-		tf[0] = vf[0]*1.0/34;
-		tf[1] = vf[1]*1.0/34;
-		tf[2] = vf[2]*1.0/34;
+		tr[0] = vr[0] / 16.3;
+		tr[1] = vr[1] / 16.3;
+		tr[2] = vr[2] / 16.3;
+		tf[0] = vf[0] / 33.0;
+		tf[1] = vf[1] / 33.0;
+		tf[2] = vf[2] / 33.0;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
-		tr[0] = vr[0]*1.0/16;
-		tr[1] = vr[1]*1.0/16;
-		tr[2] = vr[2]*1.0/16;
-		tf[0] = vf[0]*1.0/32;
-		tf[1] = vf[1]*1.0/32;
-		tf[2] = vf[2]*1.0/32;
+		tr[0] = vr[0] / 32;
+		tr[1] = vr[1] / 32;
+		tr[2] = vr[2] / 32;
+		tf[0] = vf[0] / 32;
+		tf[1] = vf[1] / 32;
+		tf[2] = vf[2] / 32;
 		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&actor[j].name, 8);
 	}
 
 	//arena
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		k = arena[j].type;
 		if(0 == k)break;
-		if(j+64 == cursor)
+		if(j+128 == cursor)
 		{
 			bg = 0xffffff;
 			fg = 0xff00ff;
@@ -503,36 +503,36 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			else fg = 0x80ffffff;
 		}
 
-		x = j%8;
-		y = j/8;
-		r = (x*2-7)/8.0;
-		f = (15-y*2)/32.0;
+		x = j % 16;
+		y = j / 16;
+		r = (x*2-15) / 16.0;
+		f = (15-y*2) / 32.0;
 		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0]*4.0/33;
-		tr[1] = vr[1]*4.0/33;
-		tr[2] = vr[2]*4.0/33;
-		tf[0] = vf[0]*1.0/34;
-		tf[1] = vf[1]*1.0/34;
-		tf[2] = vf[2]*1.0/34;
+		tr[0] = vr[0] / 16.3;
+		tr[1] = vr[1] / 16.3;
+		tr[2] = vr[2] / 16.3;
+		tf[0] = vf[0] / 33;
+		tf[1] = vf[1] / 33;
+		tf[2] = vf[2] / 33;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
-		tr[0] = vr[0]*1.0/16;
-		tr[1] = vr[1]*1.0/16;
-		tr[2] = vr[2]*1.0/16;
-		tf[0] = vf[0]*1.0/32;
-		tf[1] = vf[1]*1.0/32;
-		tf[2] = vf[2]*1.0/32;
+		tr[0] = vr[0] / 32;
+		tr[1] = vr[1] / 32;
+		tr[2] = vr[2] / 32;
+		tf[0] = vf[0] / 32;
+		tf[1] = vf[1] / 32;
+		tf[2] = vf[2] / 32;
 		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&arena[j].fmt, 8);
 	}
 
 	//artery
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == ele[j].type)continue;
-		if(j+128 == cursor)
+		if(j+256 == cursor)
 		{
 			bg = 0xffffff;
 			fg = 0xff00ff;
@@ -543,28 +543,28 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			fg = 0x80ffffff;
 		}
 
-		x = j%8;
-		y = j/8;
-		r = (x*2-7)/8.0;
-		f = (-1-y*2)/32.0;
+		x = j % 16;
+		y = j / 16;
+		r = (x*2-15) / 16.0;
+		f = (-1-y*2) / 32.0;
 		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0]*4.0/33;
-		tr[1] = vr[1]*4.0/33;
-		tr[2] = vr[2]*4.0/33;
-		tf[0] = vf[0]*1.0/34;
-		tf[1] = vf[1]*1.0/34;
-		tf[2] = vf[2]*1.0/34;
+		tr[0] = vr[0] / 16.3;
+		tr[1] = vr[1] / 16.3;
+		tr[2] = vr[2] / 16.3;
+		tf[0] = vf[0] / 33.0;
+		tf[1] = vf[1] / 33.0;
+		tf[2] = vf[2] / 33.0;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
-		tr[0] = vr[0]*1.0/16;
-		tr[1] = vr[1]*1.0/16;
-		tr[2] = vr[2]*1.0/16;
-		tf[0] = vf[0]*1.0/32;
-		tf[1] = vf[1]*1.0/32;
-		tf[2] = vf[2]*1.0/32;
+		tr[0] = vr[0] / 32.0;
+		tr[1] = vr[1] / 32.0;
+		tr[2] = vr[2] / 32.0;
+		tf[0] = vf[0] / 32.0;
+		tf[1] = vf[1] / 32.0;
+		tf[2] = vf[2] / 32.0;
 		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
@@ -572,7 +572,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	for(j=0;j<0x1000;j++)
 	{
 		if(0 == obj[j].type)continue;
-		if((j%64)+192 == cursor)
+		if((j%128)+384 == cursor)
 		{
 			bg = 0xffffff;
 			fg = 0xff00ff;
@@ -583,33 +583,33 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			fg = 0x80ffffff;
 		}
 
-		x = (j%64)%8;
-		y = (j%64)/8;
-		r = (x*2-7)/8.0;
-		f = (-17-y*2)/32.0;
+		x = (j % 128) % 16;
+		y = (j % 128) / 16;
+		r = (x*2-15) / 16.0;
+		f = (-17-y*2) / 32.0;
 		tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 		tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 		tc[2] = vc[2] + vr[2]*r + vf[2]*f;
-		tr[0] = vr[0]*4.0/33;
-		tr[1] = vr[1]*4.0/33;
-		tr[2] = vr[2]*4.0/33;
-		tf[0] = vf[0]*1.0/34;
-		tf[1] = vf[1]*1.0/34;
-		tf[2] = vf[2]*1.0/34;
+		tr[0] = vr[0] / 16.3;
+		tr[1] = vr[1] / 16.3;
+		tr[2] = vr[2] / 16.3;
+		tf[0] = vf[0] / 33;
+		tf[1] = vf[1] / 33;
+		tf[2] = vf[2] / 33;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
 		tc[2] -= 0.01;
-		tr[0] = vr[0]*1.0/16;
-		tr[1] = vr[1]*1.0/16;
-		tr[2] = vr[2]*1.0/16;
-		tf[0] = vf[0]*1.0/32;
-		tf[1] = vf[1]*1.0/32;
-		tf[2] = vf[2]*1.0/32;
+		tr[0] = vr[0] / 32.0;
+		tr[1] = vr[1] / 32.0;
+		tr[2] = vr[2] / 32.0;
+		tf[0] = vf[0] / 32.0;
+		tf[1] = vf[1] / 32.0;
+		tf[2] = vf[2] / 32.0;
 		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
 	//actor.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == actor[j].name)continue;
 
@@ -621,16 +621,16 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-17-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-17-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (31-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (31-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -641,14 +641,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-1-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-1-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (31-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (31-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -659,14 +659,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (15-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (15-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (31-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (31-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -677,14 +677,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (31-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (31-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (31-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (31-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -695,7 +695,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	}
 
 	//arena.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == arena[j].type)break;
 
@@ -707,16 +707,16 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-17-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-17-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (15-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (15-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -727,14 +727,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-1-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-1-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (15-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (15-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -745,14 +745,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (15-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (15-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (15-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (15-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -763,14 +763,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (31-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (31-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (15-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (15-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -782,7 +782,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	}
 
 	//element.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == ele[j].type)break;
 
@@ -794,16 +794,16 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-17-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-17-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-1-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-1-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -814,14 +814,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-1-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-1-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-1-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-1-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -832,14 +832,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (15-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (15-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-1-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-1-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -850,14 +850,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (31-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (31-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-1-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-1-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -881,16 +881,16 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-17-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-17-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-17-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-17-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -901,14 +901,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (-1-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (-1-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-17-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-17-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -919,14 +919,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 
-				r = vr[0]*((k%8)*4-13)/16.0;
-				f = vf[1]*(15-(k/8)*2)/32.0;
+				r = vr[0]*((k%16)*4-29)/32.0;
+				f = vf[1]*(15-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-17-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-17-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -937,14 +937,14 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 
-				r = ((k%8)*4-13)/16.0;
-				f = (31-(k/8)*2)/32.0;
+				r = ((k%16)*4-29)/32.0;
+				f = (31-(k/16)*2)/32.0;
 				tc[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tc[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tc[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
 
-				r = ((j%8)*4-15)/16.0;
-				f = (-17-(j/8)*2)/32.0;
+				r = ((j%16)*4-31)/32.0;
+				f = (-17-(j/16)*2)/32.0;
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
@@ -1033,7 +1033,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 
 	if(y0 < 8)
 	{
-		act_s = &actor[x0+(y0*8)];
+		act_s = &actor[x0+(y0*16)];
 
 		if((x0==x1)&&(y0==y1))
 		{
@@ -1042,7 +1042,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1+(y1*8)];
+			act_d = &actor[x1+(y1*16)];
 			if((act_d->type) && (act_s->type))relationcreate(act_d, 0, _act_, act_s, 0, _act_);
 			else if(0 == act_s->type)actorcreate(act_d->name, 0);
 			else if(0 == act_d->type)actorcreate(act_s->name, 0);
@@ -1059,24 +1059,24 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 	}
 	else if(y0 < 16)
 	{
-		win_s = &arena[x0 + (y0-8)*8];
+		win_s = &arena[x0 + (y0-8)*16];
 
 		if((x0==x1)&&(y0==y1))
 		{
 			y1 = y1-8;
-			say("@arena:%d\n", (y1*8)+x1);
+			say("@arena:%d\n", (y1*16)+x1);
 			//arenacreate(0,0);
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1 + (y1*8)];
+			act_d = &actor[x1 + (y1*16)];
 			if(0 == act_d->type)return;
 
 			arenaactor(win_s, act_d);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*8];
+			win_d = &arena[x1 + (y1-8)*16];
 			if((win_d->type) && (win_s->type))relationcreate(win_d, 0, _win_, win_s, 0, _win_);
 			else if(win_d->type)win_d = arenacreate(_coop_, 0);
 			else if(win_s->type)win_s = arenacreate(_coop_, 0);
@@ -1090,23 +1090,23 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 	}
 	else if(y0 < 24)
 	{
-		ele_s = &ele[x0 + (y0-16)*8];
+		ele_s = &ele[x0 + (y0-16)*16];
 		if((x0==x1)&&(y0==y1))
 		{
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1 + (y1*8)];
+			act_d = &actor[x1 + (y1*16)];
 			relationcreate(act_d, 0, _act_, ele_s, 0, _art_);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*8];
+			win_d = &arena[x1 + (y1-8)*16];
 			relationcreate(win_d, 0, _win_, ele_s, 0, _art_);
 		}
 		else if(y1 < 24)
 		{
-			ele_d = &ele[x1 + (y1-16)*8];
+			ele_d = &ele[x1 + (y1-16)*16];
 			relationcreate(ele_d, 0, _art_, ele_s, 0, _art_);
 		}
 		else if(y1 < 32)
@@ -1115,7 +1115,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 	}
 	else if(y0 < 32)
 	{
-		j = x0 + (y0-24)*8;
+		j = x0 + (y0-24)*16;
 		for(;j<0x1000;j+=64)
 		{
 			obj_s = &obj[j];
@@ -1127,17 +1127,17 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1+(y1*8)];
+			act_d = &actor[x1+(y1*16)];
 			relationcreate(act_d, 0, _act_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*8];
+			win_d = &arena[x1 + (y1-8)*16];
 			relationcreate(win_d, 0, _win_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 24)
 		{
-			ele_d = &ele[x1 + (y1-16)*8];
+			ele_d = &ele[x1 + (y1-16)*16];
 			relationcreate(ele_d, 0, _art_, obj_s, 0, _fd_);
 		}
 		else if(y1 < 32)
@@ -1166,7 +1166,7 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 
 		if(0 == sty)
 		{
-			x = (x*8) / width;
+			x = (x*16) / width;
 			y = (y*32) / height;
 		}
 		else
@@ -1193,7 +1193,7 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 
 			if(0 == sty)
 			{
-				j = (j*8) / width;
+				j = (j*16) / width;
 				k = (k*32) / height;
 			}
 			else
@@ -1202,9 +1202,9 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 				k = 16 + 16 * (k - (sty->vc[1])) / (sty->vf[1]);
 			}
 
-			if((j<0)|(j>=8))return;
+			if((j<0)|(j>=16))return;
 			if((k<0)|(k>=32))return;
-			if((x<0)|(x>=8))return;
+			if((x<0)|(x>=16))return;
 			if((y<0)|(y>=32))return;
 
 			overview_drag(win, j, k, x, y);
