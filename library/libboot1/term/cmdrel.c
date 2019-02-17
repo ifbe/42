@@ -28,6 +28,24 @@ void defaultstyle_2d(struct style* sty, int w, int h, int d)
 	sty->vu[1] = 0;
 	sty->vu[2] = (w+h)/4;
 }
+void defaultstyle_2in3(struct style* sty)
+{
+	sty->vc[0] = 0.0;
+	sty->vc[1] = 0.0;
+	sty->vc[2] = 0.0;
+
+	sty->vr[0] = 0.999;
+	sty->vr[1] = 0.0;
+	sty->vr[2] = 0.0;
+
+	sty->vf[0] = 0.0;
+	sty->vf[1] = 0.999;
+	sty->vf[2] = 0.0;
+
+	sty->vu[0] = 0.0;
+	sty->vu[1] = 0.0;
+	sty->vu[2] = 0.999;
+}
 void defaultstyle_3d(struct style* sty, struct style* tar)
 {
 	sty->vc[0] = tar->vc[0];
@@ -81,9 +99,7 @@ int arenaactor(struct arena* ccc, struct actor* act)
 			if(0 == rel)return 0;
 
 			win = (void*)(rel->srcchip);
-			w = win->width;
-			h = win->height;
-			defaultstyle_2d(sty, w, h, (w+h)/2);
+			defaultstyle_2in3(sty);
 
 			break;
 		}

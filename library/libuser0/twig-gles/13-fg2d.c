@@ -1,4 +1,6 @@
 #include "libuser.h"
+void drawborder2d(struct arena* win, struct style* sty, void* name);
+void carveborder2d(struct arena* win, struct style* sty, void* name);
 
 
 
@@ -17,10 +19,16 @@ int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	{
 		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
-		sty = (void*)(rel->srcfoot);
-		pin = (void*)(rel->dstfoot);
-		act->onread(win, sty, act, pin);
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			sty = (void*)(rel->srcfoot);
+			pin = (void*)(rel->dstfoot);
+			act->onread(win, sty, act, pin);
+
+			if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+			else drawborder2d(win, sty, &act->name);
+		}
 
 		rel = samesrcnextdst(rel);
 	}

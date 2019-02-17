@@ -12,6 +12,11 @@ static void cube_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carveline2d_rect(win, 0x00ff00, vc, vr, vf);
 }
 static void cube_read_vbo3d(
 	struct arena* win, struct style* sty,
