@@ -100,12 +100,12 @@ int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
 	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, v[j/2]);
 
 	//step
-	for(k=0;k<800;k++)
+	for(k=0;k<200*32;k++)
 	{
 		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
-		sleep_us(1000);
+		sleep_us(100);
 		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 0);
-		sleep_us(1000);
+		sleep_us(100);
 	}
 
 	return 0;

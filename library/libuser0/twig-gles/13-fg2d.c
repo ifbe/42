@@ -34,8 +34,30 @@ int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int fg2d_write(struct arena* win, struct style* stack, struct event* ev)
+int fg2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
+	struct relation* rel;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
+	rel = cc->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			sty = (void*)(rel->srcfoot);
+			pin = (void*)(rel->dstfoot);
+			act->onwrite(act, pin, win, sty, ev, 0);
+
+			if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+			else drawborder2d(win, sty, &act->name);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 	return 0;
 }
 

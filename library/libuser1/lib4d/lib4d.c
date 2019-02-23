@@ -1,7 +1,7 @@
 #include "libuser.h"
 void content_create(void*);
 void backuper_create(void*);
-void overview_create(void*);
+void overview_init(void*);
 //
 void* getsuffix(void* p);
 void initutf8(void*);
@@ -120,7 +120,7 @@ void lib4d_create(void* addr)
 
 	backuper_create(addr);
 
-	overview_create(addr);
+	overview_init(addr);
 
 	def_vbo.vc[0] = 0.0;
 	def_vbo.vc[1] = 0.0;

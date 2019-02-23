@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _bg_ hex32('b','g',0,0)
 void* allocstyle();
 void* allocpinid();
 int actorstart(void*, void*, void*, void*);
@@ -17,7 +16,6 @@ u64 want[2] = {
 
 int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
-	int j;
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;

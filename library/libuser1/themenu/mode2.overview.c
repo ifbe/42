@@ -19,20 +19,6 @@ static struct actor* actor = 0;
 
 
 
-void overview_create(void* addr)
-{
-	obj = addr - 0x400000;
-	ele = addr - 0x300000;
-	arena = addr + 0x000000;
-	actor = addr + 0x100000;
-}
-void overview_delete()
-{
-}
-
-
-
-
 int arenalogin(struct arena* win)
 {
 	struct actor* act;
@@ -1005,15 +991,6 @@ void overview_read_tui(struct arena* win, struct style* sty)
 void overview_read_cli(struct arena* win, struct style* sty)
 {
 }
-void actoroutput_overview(struct arena* win, struct style* sty)
-{
-	if(win->fmt == _cli_)overview_read_cli(win, sty);
-	else if(win->fmt == _tui_)overview_read_tui(win, sty);
-	else if(win->fmt == _vbo_)overview_read_vbo(win, sty);
-	else if(win->fmt == _html_)overview_read_html(win, sty);
-	else if(win->fmt == _8bit_)overview_read_8bit(win, sty);
-	else overview_read_pixel(win, sty);
-}
 
 
 
@@ -1259,4 +1236,79 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 			return;
 		}
 	}
+}
+
+
+
+
+static void overview_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void overview_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void overview_sread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	if(win->fmt == _cli_)overview_read_cli(win, 0);
+	else if(win->fmt == _tui_)overview_read_tui(win, 0);
+	else if(win->fmt == _vbo_)overview_read_vbo(win, 0);
+	else if(win->fmt == _html_)overview_read_html(win, 0);
+	else if(win->fmt == _8bit_)overview_read_8bit(win, 0);
+	else overview_read_pixel(win, 0);
+}
+static void overview_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void overview_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void overview_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+    say("@overview_start\n");
+}
+void overview_delete()
+{
+}
+void overview_create(void* addr)
+{
+    say("@overview_create\n");
+}
+
+
+
+
+void overview_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
+
+	p->oncreate = (void*)overview_create;
+	p->ondelete = (void*)overview_delete;
+	p->onstart  = (void*)overview_start;
+	p->onstop   = (void*)overview_stop;
+	p->onget    = (void*)overview_cread;
+	p->onpost   = (void*)overview_cwrite;
+	p->onread   = (void*)overview_sread;
+	p->onwrite  = (void*)overview_swrite;
+}
+void overview_init(void* addr)
+{
+	obj = addr - 0x400000;
+	ele = addr - 0x300000;
+	arena = addr + 0x000000;
+	actor = addr + 0x100000;
 }

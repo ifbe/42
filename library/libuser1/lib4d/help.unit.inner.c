@@ -51,6 +51,7 @@ void earth_register(void*);
 void house_register(void*);
 void human_register(void*);
 void model_register(void*);
+void motor_register(void*);
 void ocean_register(void*);
 void piano_register(void*);
 void picture_register(void*);
@@ -73,6 +74,9 @@ void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
+//
+void overview_register(void*);
+void tabbar_register(void*);
 
 
 
@@ -196,6 +200,9 @@ void content_create(void* addr)
 	model_register(temp);
 	temp += sizeof(struct actor);
 
+	motor_register(temp);
+	temp += sizeof(struct actor);
+
 	ocean_register(temp);
 	temp += sizeof(struct actor);
 
@@ -305,5 +312,12 @@ void content_create(void* addr)
 	temp += sizeof(struct actor);
 
 	sphere_register(temp);
+	temp += sizeof(struct actor);
+
+	//-------------------menu------------------
+	overview_register(temp);
+	temp += sizeof(struct actor);
+
+	tabbar_register(temp);
 	temp += sizeof(struct actor);
 }

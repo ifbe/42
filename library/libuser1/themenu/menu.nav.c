@@ -120,7 +120,7 @@ void actoroutput_navmenu_vbo(struct arena* win)
 
 			if(0 == x)actoroutput_void(win, &sty);
 			else if(1 == x)actoroutput_console(win, &sty);
-			else if(2 == x)actoroutput_overview(win, &sty);
+			//else if(2 == x)actoroutput_overview(win, &sty);
 			else if(3 == x)actoroutput_detail(win, &sty);
 		}
 	}
@@ -217,7 +217,7 @@ void actoroutput_navmenu_pixel(struct arena* win)
 
 			if(0 == x)actoroutput_void(win, &sty);
 			else if(1 == x)actoroutput_console(win, &sty);
-			else if(2 == x)actoroutput_overview(win, &sty);
+			//else if(2 == x)actoroutput_overview(win, &sty);
 			else if(3 == x)actoroutput_detail(win, &sty);
 		}
 	}

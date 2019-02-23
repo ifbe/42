@@ -150,6 +150,7 @@ theitem/item.earth.c \
 theitem/item.house.c \
 theitem/item.human.c \
 theitem/item.model.c \
+theitem/item.motor.c \
 theitem/item.ocean.c \
 theitem/item.piano.c \
 theitem/item.picture.c \

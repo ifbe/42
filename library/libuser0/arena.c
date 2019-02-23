@@ -182,7 +182,7 @@ void arenavertex(struct arena* win)
 
 	//camera
 	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -1024.0;
+	win->camera.vc[1] = -1.0;
 	win->camera.vc[2] = 1024.0;
 
 	win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
@@ -499,11 +499,13 @@ void* arenacreate(u64 type, void* addr)
 	{
 		win->type = _twig_;
 		win->fmt = _menu_;
+		menu_create(win, 0);
 	}
 	else if(_vkbd_ == type)
 	{
 		win->type = _twig_;
 		win->fmt = _vkbd_;
+		vkbd_create(win, 0);
 	}
 
 	//pcbdoc

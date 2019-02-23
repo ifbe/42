@@ -83,10 +83,10 @@ static void planet_read_vbo(
 		tr[0] = vr[0]*l;
 		tr[1] = vr[1]*l;
 		tr[2] = vr[2]*l;
-		tu[0] = vu[0]*l;
-		tu[1] = vu[1]*l;
-		tu[2] = vu[2]*l;
-		carveline_circle(win, 0x404040, vc, tr, tu);
+		tf[0] = vf[0]*l;
+		tf[1] = vf[1]*l;
+		tf[2] = vf[2]*l;
+		carveline_circle(win, 0x404040, vc, tr, tf);
 
 		r = data[j].diameter/data[8].distance;
 		if(j>0)r *= 1024;

@@ -332,10 +332,11 @@ void carveline_hexagon(struct arena* win, u32 rgb,
 	ibuf[11] = vlen+0;
 }
 void carveline_circle(struct arena* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu)
+	vec3 vc, vec3 vr, vec3 vf)
 {
 #define lineacc (acc*2)
 	int j;
+	float c,s;
 	float q[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -348,14 +349,11 @@ void carveline_circle(struct arena* win, u32 rgb,
 
 	for(j=0;j<lineacc;j++)
 	{
-		vbuf[6*j+0] = vr[0];
-		vbuf[6*j+1] = vr[1];
-		vbuf[6*j+2] = vr[2];
-		quaternion_operation(&vbuf[6*j], vu, j*tau/lineacc);
-
-		vbuf[6*j+0] += vc[0];
-		vbuf[6*j+1] += vc[1];
-		vbuf[6*j+2] += vc[2];
+		c = cosine(j*tau/lineacc);
+		s = sine(j*tau/lineacc);
+		vbuf[6*j+0] = vc[0] + vr[0]*c + vf[0]*s;
+		vbuf[6*j+1] = vc[1] + vr[1]*c + vf[1]*s;
+		vbuf[6*j+2] = vc[2] + vr[2]*c + vf[2]*s;
 
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;

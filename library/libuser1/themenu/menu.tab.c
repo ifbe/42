@@ -131,7 +131,7 @@ void actoroutput_tabbar_pixel(struct arena* win, struct style* sty)
         drawline_rect(win, 0xffffff, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
         drawstring_fit(win, 0xffffff, j*w/8, h*19/20, (j+1)*w/8, h, nametab[j], 0);
     }
-}
+}/*
 void actoroutput_tabbar(struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -142,7 +142,7 @@ void actoroutput_tabbar(struct arena* win, struct style* sty)
 	else if(_json_ == fmt)actoroutput_tabbar_json(win);
 	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, sty);
 	else actoroutput_tabbar_pixel(win, sty);
-}
+}*/
 
 
 
@@ -197,4 +197,74 @@ int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
     else if(6 == sel)actorinput_cad(     win, sty, ev);
     else if(7 == sel)actorinput_3d(      win, sty, ev);*/
     return 0;
+}
+
+
+
+
+static void tabbar_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void tabbar_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void tabbar_sread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u64 fmt = win->fmt;
+
+	if(_cli_ == fmt)actoroutput_tabbar_cli(win);
+	else if(_tui_ == fmt)actoroutput_tabbar_tui(win);
+	else if(_html_ == fmt)actoroutput_tabbar_html(win);
+	else if(_json_ == fmt)actoroutput_tabbar_json(win);
+	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, 0);
+	else actoroutput_tabbar_pixel(win, 0);
+}
+static void tabbar_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void tabbar_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void tabbar_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+    say("@tabbar_start\n");
+}
+void tabbar_delete()
+{
+}
+void tabbar_create(void* addr)
+{
+    say("@tabbar_create\n");
+}
+
+
+
+
+void tabbar_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);
+
+	p->oncreate = (void*)tabbar_create;
+	p->ondelete = (void*)tabbar_delete;
+	p->onstart  = (void*)tabbar_start;
+	p->onstop   = (void*)tabbar_stop;
+	p->onget    = (void*)tabbar_cread;
+	p->onpost   = (void*)tabbar_cwrite;
+	p->onread   = (void*)tabbar_sread;
+	p->onwrite  = (void*)tabbar_swrite;
 }
