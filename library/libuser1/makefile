@@ -126,6 +126,7 @@ thegame/classic/game.brick.c \
 thegame/classic/game.klotski.c \
 thegame/classic/game.puzzle.c \
 thegame/classic/game.snake.c \
+thegame/classic/game.sokoban.c \
 thegame/classic/game.tetris.c \
 thegame/mahjong/mahjong.c \
 thegame/poker/poker.c \

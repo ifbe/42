@@ -33,10 +33,16 @@ twig-gles/02-glass.c \
 twig-gles/03-portal.c \
 twig-gles/10-bg3d.c \
 twig-gles/11-fg3d.c \
-twig-gles/12-bg2d.c \
-twig-gles/13-fg2d.c \
-twig-gles/20-menu.c \
-twig-gles/21-vkbd.c
+twig-gles/12-ev3d.c \
+twig-gles/20-bg2d.c \
+twig-gles/21-fg2d.c \
+twig-gles/22-ev2d.c \
+twig-gles/30-menu.c \
+twig-gles/31-vkbd.c \
+twig-gles/40-blur.c \
+twig-gles/41-rgb.c \
+twig-gles/42-rain.c \
+twig-gles/43-snow.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
