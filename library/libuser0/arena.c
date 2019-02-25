@@ -3,8 +3,6 @@
 #define _step_ hex32('s','t','e','p')
 #define _pin_  hex32('p','i','n',0)
 #define _chip_ hex32('c','h','i','p')
-int preprocess(void*);
-int postprocess(void*);
 
 
 
@@ -83,8 +81,11 @@ int jsonnode_rootwrite(void*,void*,void*,void*,void*,int);
 int rgbanode_create(void*, void*);
 int rgbanode_delete(void*);
 //
-int vbonode_create(void*, void*);
+void* vbonode_create(u64, void*);
 int vbonode_delete(void*);
+int vbonode_start(void*, void*, void*, void*);
+int vbonode_stop(void*, void*);
+int vbonode_sread(struct arena* win);
 //
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
@@ -100,25 +101,6 @@ int ppin_read(void*, void*, void*, void*);
 int pchip_create(void*, void*);
 int pchip_start(void*, void*, void*, void*);
 int pchip_read(void*, void*, void*, void*);
-//gl
-int bg3d_create(void*, void*);
-int bg3d_start(void*, void*, void*, void*);
-int bg3d_read(void*, void*, void*, void*);
-int fg3d_create(void*, void*);
-int fg3d_start(void*, void*, void*, void*);
-int fg3d_read(void*, void*, void*, void*);
-int bg2d_create(void*, void*);
-int bg2d_start(void*, void*, void*, void*);
-int bg2d_read(void*, void*, void*, void*);
-int fg2d_create(void*, void*);
-int fg2d_start(void*, void*, void*, void*);
-int fg2d_read(void*, void*, void*, void*);
-int menu_create(void*, void*);
-int menu_start(void*, void*, void*, void*);
-int menu_read(void*, void*, void*, void*);
-int vkbd_create(void*, void*);
-int vkbd_start(void*, void*, void*, void*);
-int vkbd_read(void*, void*, void*, void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -138,12 +120,17 @@ static int stylen = 0;
 void* allocarena()
 {
 	int j;
+	struct arena* win;
 	for(j=0;j<0x100;j++)
 	{
 		if(0 == arena[j].type)break;
 	}
 	if(j >= 0x100)return 0;
-	return &arena[j];
+
+	win = &arena[j];
+	win->irel0 = win->ireln = 0;
+	win->orel0 = win->oreln = 0;
+	return win;
 }
 void* allocstyle()
 {
@@ -224,38 +211,7 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	{
 		case _html_:htmlnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
-		case _bg3d_:bg3d_read(dc, df, sc, sf);break;
-		case _fg3d_:fg3d_read(dc, df, sc, sf);break;
-		case _bg2d_:bg2d_read(dc, df, sc, sf);break;
-		case _fg2d_:fg2d_read(dc, df, sc, sf);break;
-		case _menu_:menu_read(dc, df, sc, sf);break;
-		case _vkbd_:vkbd_read(dc, df, sc, sf);break;
-		default:
-		{
-			preprocess(win);
-
-			rel = win->orel0;
-			while(1)
-			{
-				if(0 == rel)break;
-
-				if(_win_ == rel->dsttype)
-				{
-					arena_rootread(
-						(void*)(rel->dstchip),
-						(void*)(rel->dstfoot),
-						win,
-						(void*)(rel->srcfoot),
-						0,
-						0
-					);
-				}
-
-				rel = samesrcnextdst(rel);
-			}
-
-			postprocess(win);
-		}
+		case  _vbo_:vbonode_sread(win);break;
 	}
 	return 0;
 }
@@ -291,20 +247,21 @@ int arenastop()
 }
 int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
 {
+	int ret;
 	if(0 == c)return 0;
 
+	//try root
 	switch(c->fmt)
 	{
-		case _bg3d_:bg3d_start(c, 0, r, 0);break;
-		case _fg3d_:fg3d_start(c, 0, r, 0);break;
-		case _bg2d_:bg3d_start(c, 0, r, 0);break;
-		case _fg2d_:fg3d_start(c, 0, r, 0);break;
-		case _menu_:menu_start(c, 0, r, 0);break;
-		case _vkbd_:vkbd_start(c, 0, r, 0);break;
-		case _pin_ :ppin_start(c, 0, r, 0);break;
-		case _chip_:pchip_start(c, 0, r, 0);break;
+		case _pin_ :ppin_start(c, 0, r, 0);return 1;
+		case _chip_:pchip_start(c, 0, r, 0);return 1;
 	}
 
+	//try twig-gles
+	ret = vbonode_start(c, cf, r, rf);
+	if(ret)return 1;
+
+	//try twig-?
 	return 0;
 }
 int arenadelete(struct arena* win)
@@ -338,263 +295,227 @@ void* arenacreate(u64 type, void* addr)
 		type = _win_;
 	}
 
-	//alloc
-	win = allocarena();
-	if(0 == win)return 0;
-	win->irel0 = win->ireln = 0;
-	win->orel0 = win->oreln = 0;
-
 	//0: system object
 	if(_joy_ == type)
 	{
-		win->type = _perm_;
-		win->fmt = _joy_;
-
-		joycreate(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = _joy_;
+			joycreate(win, addr);
+		}
+		return win;
 	}
 	else if(_std_ == type)
 	{
-		win->type = _perm_;
-		win->fmt = _std_;
-
-		stdcreate(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = _std_;
+			stdcreate(win, addr);
+		}
+		return win;
 	}
 	else if(_tray_ == type)
 	{
-		win->type = _perm_;
-		win->fmt = _tray_;
-
-		traycreate(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = _tray_;
+			traycreate(win, addr);
+		}
+		return win;
 	}
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
-		win->type = _perm_;
-		win->fmt = hex32('y','u','v',0);
-
-		videocreate(win);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = hex32('y','u','v',0);
+			videocreate(win);
+		}
+		return win;
 	}
 	else if(_mic_ == type)
 	{
 		if(0 == addr)return 0;
-		win->type = _perm_;
-		win->fmt = hex32('p','c','m',0);
-
-		soundcreate(win);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = hex32('p','c','m',0);
+			soundcreate(win);
+		}
+		return win;
 	}
 	else if(_bdc_ == type)
 	{
-		win->type = _perm_;
-		win->fmt = _bdc_;
-
-		toycar_create(win, 0);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = _bdc_;
+			toycar_create(win, 0);
+		}
+		return win;
 	}
 	else if(_step_ == type)
 	{
-		win->type = _perm_;
-		win->fmt = _step_;
-
-		stepcar_create(win, 0);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _perm_;
+			win->fmt = _step_;
+			stepcar_create(win, 0);
+		}
+		return win;
 	}
 
 	//1: gles
 	else if(_win_ == type)
 	{
-		win->type = _win_;
-		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		windowcreate(win);
-
-		win->backw = 0;
-		win->forew = 0x10;
-		win->tempw = 0;
-		win->vkbdw = 0;
-		arenavertex(win);
-
-		if(_vbo_ == win->fmt)
+		win = allocarena();
+		if(win)
 		{
-			//bg3d
-			sub = arenacreate(_bg3d_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
+			win->type = _win_;
+			win->fmt = hex64('b','g','r','a','8','8','8','8');
+			windowcreate(win);
 
-			//fg3d
-			sub = arenacreate(_fg3d_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
+			win->backw = 0;
+			win->forew = 0x10;
+			win->tempw = 0;
+			win->vkbdw = 0;
+			arenavertex(win);
 
-			//bg2d
-			sub = arenacreate(_bg2d_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
-
-			//fg2d
-			sub = arenacreate(_fg2d_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
-
-			//menu
-			sub = arenacreate(_menu_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
-
-			//vkbd
-			sub = arenacreate(_vkbd_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
+			if(_vbo_ == win->fmt)vbonode_create(_vbo_, win);
 		}
-	}
-	else if(_light_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _light_;
-	}
-	else if(_mirror_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _mirror_;
-	}
-	else if(_bg3d_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _bg3d_;
-		bg3d_create(win, 0);
-	}
-	else if(_fg3d_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _fg3d_;
-		fg3d_create(win, 0);
-	}
-	else if(_bg2d_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _bg2d_;
-		bg2d_create(win, 0);
-	}
-	else if(_fg2d_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _fg2d_;
-		fg2d_create(win, 0);
-	}
-	else if(_menu_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _menu_;
-		menu_create(win, 0);
-	}
-	else if(_vkbd_ == type)
-	{
-		win->type = _twig_;
-		win->fmt = _vkbd_;
-		vkbd_create(win, 0);
+
+		return win;
 	}
 
 	//pcbdoc
 	else if(_sch_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _sch_;
-
-		schnode_create(win, addr);
-
-		sub = arenacreate(_pin_, 0);
-		if(sub)
+		win = allocarena();
+		if(win)
 		{
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
-		}
+			win->type = _node_;
+			win->fmt = _sch_;
+			schnode_create(win, addr);
 
-		sub = arenacreate(_chip_, 0);
-		if(sub)
-		{
-			relationcreate(sub, 0, _win_, win, 0, _win_);
-			arenastart(sub, 0, win, 0);
+			sub = arenacreate(_pin_, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
+
+			sub = arenacreate(_chip_, 0);
+			if(sub)
+			{
+				relationcreate(sub, 0, _win_, win, 0, _win_);
+				arenastart(sub, 0, win, 0);
+			}
 		}
+		return win;
 	}
 	else if(_pin_ == type)
 	{
-		win->type = _twig_;
-		win->fmt = _pin_;
-		ppin_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _pin_;
+			ppin_create(win, addr);
+		}
+		return win;
 	}
 	else if(_chip_ == type)
 	{
-		win->type = _twig_;
-		win->fmt = _chip_;
-		pchip_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _chip_;
+			pchip_create(win, addr);
+		}
+		return win;
 	}
 
 	//else
 	else if(_func_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _func_;
-
-		funcnode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _func_;
+			funcnode_create(win, addr);
+		}
+		return win;
 	}
 	else if(_html_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _html_;
-
-		htmlnode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _html_;
+			htmlnode_create(win, addr);
+		}
+		return win;
 	}
 	else if(_json_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _json_;
-
-		jsonnode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _json_;
+			jsonnode_create(win, addr);
+		}
+		return win;
 	}
 	else if(_rgba_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _rgba_;
-
-		rgbanode_create(win, addr);
-	}
-	else if(_vbo_ == type)
-	{
-		win->type = _node_;
-		win->fmt = _vbo_;
-
-		vbonode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _rgba_;
+			rgbanode_create(win, addr);
+		}
+		return win;
 	}
 	else if(_pcb_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _pcb_;
-
-		pcbnode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _pcb_;
+			pcbnode_create(win, addr);
+		}
+		return win;
 	}
 	else if(_xml_ == type)
 	{
-		win->type = _node_;
-		win->fmt = _xml_;
-
-		xmlnode_create(win, addr);
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _xml_;
+			xmlnode_create(win, addr);
+		}
+		return win;
 	}
 
-	return win;
+	return 0;
 }
 
 

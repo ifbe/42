@@ -34,9 +34,11 @@ twig-gles/03-portal.c \
 twig-gles/10-bg3d.c \
 twig-gles/11-fg3d.c \
 twig-gles/12-ev3d.c \
+twig-gles/13-ui3d.c \
 twig-gles/20-bg2d.c \
 twig-gles/21-fg2d.c \
 twig-gles/22-ev2d.c \
+twig-gles/23-ui2d.c \
 twig-gles/30-menu.c \
 twig-gles/31-vkbd.c \
 twig-gles/40-blur.c \
