@@ -77,6 +77,7 @@ void terminal_register(void*);
 //
 void overview_register(void*);
 void tabbar_register(void*);
+void vkbd_register(void*);
 
 
 
@@ -86,238 +87,241 @@ void content_delete()
 }
 void content_create(void* addr)
 {
-	void* temp = addr + 0x100000;
+	void* tmp = addr + 0x100000;
 
 
 
 
 //---------------------algo----------------------
-	algorithm_register(temp);
-	temp += sizeof(struct actor);
+	algorithm_register(tmp);
+	tmp += sizeof(struct actor);
 
-	bintree_register(temp);
-	temp += sizeof(struct actor);
+	bintree_register(tmp);
+	tmp += sizeof(struct actor);
 
-	bplus_register(temp);
-	temp += sizeof(struct actor);
+	bplus_register(tmp);
+	tmp += sizeof(struct actor);
 
-	graph_register(temp);
-	temp += sizeof(struct actor);
+	graph_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 
 //----------------------game----------------------
-	the2048_register(temp);
-	temp += sizeof(struct actor);
+	the2048_register(tmp);
+	tmp += sizeof(struct actor);
 
-	chess_register(temp);
-	temp += sizeof(struct actor);
+	chess_register(tmp);
+	tmp += sizeof(struct actor);
 
-	klotski_register(temp);
-	temp += sizeof(struct actor);
+	klotski_register(tmp);
+	tmp += sizeof(struct actor);
 
-	maze_register(temp);
-	temp += sizeof(struct actor);
+	maze_register(tmp);
+	tmp += sizeof(struct actor);
 
-	ooxx_register(temp);
-	temp += sizeof(struct actor);
+	ooxx_register(tmp);
+	tmp += sizeof(struct actor);
 
-	pegged_register(temp);
-	temp += sizeof(struct actor);
+	pegged_register(tmp);
+	tmp += sizeof(struct actor);
 
-	poker_register(temp);
-	temp += sizeof(struct actor);
+	poker_register(tmp);
+	tmp += sizeof(struct actor);
 
-	rubikscube_register(temp);
-	temp += sizeof(struct actor);
+	rubikscube_register(tmp);
+	tmp += sizeof(struct actor);
 
-	snake_register(temp);
-	temp += sizeof(struct actor);
+	snake_register(tmp);
+	tmp += sizeof(struct actor);
 
-	sudoku_register(temp);
-	temp += sizeof(struct actor);
+	sudoku_register(tmp);
+	tmp += sizeof(struct actor);
 
-	tetris_register(temp);
-	temp += sizeof(struct actor);
+	tetris_register(tmp);
+	tmp += sizeof(struct actor);
 
-	weiqi_register(temp);
-	temp += sizeof(struct actor);
+	weiqi_register(tmp);
+	tmp += sizeof(struct actor);
 
-	xiangqi_register(temp);
-	temp += sizeof(struct actor);
+	xiangqi_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 
 //--------------------hack-------------------------
-	browser_register(temp);
-	temp += sizeof(struct actor);
+	browser_register(tmp);
+	tmp += sizeof(struct actor);
 
-	circuit_register(temp);
-	temp += sizeof(struct actor);
+	circuit_register(tmp);
+	tmp += sizeof(struct actor);
 
-	fs_register(temp);
-	temp += sizeof(struct actor);
+	fs_register(tmp);
+	tmp += sizeof(struct actor);
 
-	pwmtool_register(temp);
-	temp += sizeof(struct actor);
+	pwmtool_register(tmp);
+	tmp += sizeof(struct actor);
 
-	rawdump_register(temp);
-	temp += sizeof(struct actor);
+	rawdump_register(tmp);
+	tmp += sizeof(struct actor);
 
-	switch_register(temp);
-	temp += sizeof(struct actor);
+	switch_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 
 //----------------------item-----------------------
-	clock_register(temp);
-	temp += sizeof(struct actor);
+	clock_register(tmp);
+	tmp += sizeof(struct actor);
 
-	control_register(temp);
-	temp += sizeof(struct actor);
+	control_register(tmp);
+	tmp += sizeof(struct actor);
 
-	drone_register(temp);
-	temp += sizeof(struct actor);
+	drone_register(tmp);
+	tmp += sizeof(struct actor);
 
-	earth_register(temp);
-	temp += sizeof(struct actor);
+	earth_register(tmp);
+	tmp += sizeof(struct actor);
 
-	house_register(temp);
-	temp += sizeof(struct actor);
+	house_register(tmp);
+	tmp += sizeof(struct actor);
 
-	human_register(temp);
-	temp += sizeof(struct actor);
+	human_register(tmp);
+	tmp += sizeof(struct actor);
 
-	light_register(temp);
-	temp += sizeof(struct actor);
+	light_register(tmp);
+	tmp += sizeof(struct actor);
 
-	mirror_register(temp);
-	temp += sizeof(struct actor);
+	mirror_register(tmp);
+	tmp += sizeof(struct actor);
 
-	model_register(temp);
-	temp += sizeof(struct actor);
+	model_register(tmp);
+	tmp += sizeof(struct actor);
 
-	motor_register(temp);
-	temp += sizeof(struct actor);
+	motor_register(tmp);
+	tmp += sizeof(struct actor);
 
-	ocean_register(temp);
-	temp += sizeof(struct actor);
+	ocean_register(tmp);
+	tmp += sizeof(struct actor);
 
-	piano_register(temp);
-	temp += sizeof(struct actor);
+	piano_register(tmp);
+	tmp += sizeof(struct actor);
 
-	picture_register(temp);
-	temp += sizeof(struct actor);
+	picture_register(tmp);
+	tmp += sizeof(struct actor);
 
-	portal_register(temp);
-	temp += sizeof(struct actor);
+	portal_register(tmp);
+	tmp += sizeof(struct actor);
 
-	rccar_register(temp);
-	temp += sizeof(struct actor);
+	rccar_register(tmp);
+	tmp += sizeof(struct actor);
 
-	skydome_register(temp);
-	temp += sizeof(struct actor);
+	skydome_register(tmp);
+	tmp += sizeof(struct actor);
 
-	skysphere_register(temp);
-	temp += sizeof(struct actor);
+	skysphere_register(tmp);
+	tmp += sizeof(struct actor);
 
-	terrian_register(temp);
-	temp += sizeof(struct actor);
+	terrian_register(tmp);
+	tmp += sizeof(struct actor);
 
-	tree_register(temp);
-	temp += sizeof(struct actor);
+	tree_register(tmp);
+	tmp += sizeof(struct actor);
 
-	water_register(temp);
-	temp += sizeof(struct actor);
+	water_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 
 //----------------------test----------------------
-	codeimg_register(temp);
-	temp += sizeof(struct actor);
+	codeimg_register(tmp);
+	tmp += sizeof(struct actor);
 
-	doodle_register(temp);
-	temp += sizeof(struct actor);
+	doodle_register(tmp);
+	tmp += sizeof(struct actor);
 
-	example_register(temp);
-	temp += sizeof(struct actor);
+	example_register(tmp);
+	tmp += sizeof(struct actor);
 
-	fractal_register(temp);
-	temp += sizeof(struct actor);
+	fractal_register(tmp);
+	tmp += sizeof(struct actor);
 
-	palette_register(temp);
-	temp += sizeof(struct actor);
+	palette_register(tmp);
+	tmp += sizeof(struct actor);
 
-	planet_register(temp);
-	temp += sizeof(struct actor);
+	planet_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 
 //------------------------tool--------------------
-	calculator_register(temp);
-	temp += sizeof(struct actor);
+	calculator_register(tmp);
+	tmp += sizeof(struct actor);
 
-	camera_register(temp);
-	temp += sizeof(struct actor);
+	camera_register(tmp);
+	tmp += sizeof(struct actor);
 
-	font_register(temp);
-	temp += sizeof(struct actor);
+	font_register(tmp);
+	tmp += sizeof(struct actor);
 
-	hex_register(temp);
-	temp += sizeof(struct actor);
+	hex_register(tmp);
+	tmp += sizeof(struct actor);
 
-	qrcode_register(temp);
-	temp += sizeof(struct actor);
+	qrcode_register(tmp);
+	tmp += sizeof(struct actor);
 
-	sketchpad_register(temp);
-	temp += sizeof(struct actor);
+	sketchpad_register(tmp);
+	tmp += sizeof(struct actor);
 
-	spectrum_register(temp);
-	temp += sizeof(struct actor);
+	spectrum_register(tmp);
+	tmp += sizeof(struct actor);
 
-	terminal_register(temp);
-	temp += sizeof(struct actor);
+	terminal_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
 	//-------------------chip-----------------
-	chippin_register(temp);
-	temp += sizeof(struct actor);
+	chippin_register(tmp);
+	tmp += sizeof(struct actor);
 
-	vsrc_register(temp);
-	temp += sizeof(struct actor);
+	vsrc_register(tmp);
+	tmp += sizeof(struct actor);
 
-	resistor_register(temp);
-	temp += sizeof(struct actor);
+	resistor_register(tmp);
+	tmp += sizeof(struct actor);
 
-	finfet_register(temp);
-	temp += sizeof(struct actor);
+	finfet_register(tmp);
+	tmp += sizeof(struct actor);
 
-	hbridge_register(temp);
-	temp += sizeof(struct actor);
+	hbridge_register(tmp);
+	tmp += sizeof(struct actor);
 
-	rectify_register(temp);
-	temp += sizeof(struct actor);
+	rectify_register(tmp);
+	tmp += sizeof(struct actor);
 
 	//-------------------geom------------------
-	cube_register(temp);
-	temp += sizeof(struct actor);
+	cube_register(tmp);
+	tmp += sizeof(struct actor);
 
-	cylinder_register(temp);
-	temp += sizeof(struct actor);
+	cylinder_register(tmp);
+	tmp += sizeof(struct actor);
 
-	sphere_register(temp);
-	temp += sizeof(struct actor);
+	sphere_register(tmp);
+	tmp += sizeof(struct actor);
 
 	//-------------------menu------------------
-	overview_register(temp);
-	temp += sizeof(struct actor);
+	overview_register(tmp);
+	tmp += sizeof(struct actor);
 
-	tabbar_register(temp);
-	temp += sizeof(struct actor);
+	tabbar_register(tmp);
+	tmp += sizeof(struct actor);
+
+	vkbd_register(tmp);
+	tmp += sizeof(struct actor);
 }

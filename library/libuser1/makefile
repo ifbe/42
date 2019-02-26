@@ -189,6 +189,7 @@ thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
 thetool/tool.terminal.ci.c \
 thetool/tool.terminal.si.c \
+thevkbd/vkbd.c \
 thevkbd/vkbd.joystick.c \
 thevkbd/vkbd.keyboard.c \
 actor.c

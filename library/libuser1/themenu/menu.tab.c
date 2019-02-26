@@ -243,10 +243,10 @@ static void tabbar_start(
 {
     say("@tabbar_start\n");
 }
-void tabbar_delete()
+static void tabbar_delete()
 {
 }
-void tabbar_create(void* addr)
+static void tabbar_create(void* addr)
 {
     say("@tabbar_create\n");
 }

@@ -70,10 +70,11 @@ typedef float mat4[4][4];
 //
 #define _bg3d_ hex32('b','g','3','d')
 #define _fg3d_ hex32('f','g','3','d')
+#define _ui3d_ hex32('u','i','3','d')
+//
 #define _bg2d_ hex32('b','g','2','d')
 #define _fg2d_ hex32('f','g','2','d')
-#define _menu_ hex32('m','e','n','u')
-#define _vkbd_ hex32('v','k','b','d')
+#define _ui2d_ hex32('u','i','2','d')
 //
 #define _light_ hex32('l','i','g','h')
 #define _mirror_ hex32('m','i','r','r')
@@ -955,6 +956,7 @@ extern "C" {
 #endif
 int actorread_all(struct arena*);
 int actorevent(struct event*);
+int arenaevent(struct event*);
 
 int actor_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int actor_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);

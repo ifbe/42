@@ -85,7 +85,8 @@ void* vbonode_create(u64, void*);
 int vbonode_delete(void*);
 int vbonode_start(void*, void*, void*, void*);
 int vbonode_stop(void*, void*);
-int vbonode_sread(struct arena* win);
+int vbonode_sread(struct arena* win, struct style* sty);
+int vbonode_swrite(struct arena* win, struct style* sty, struct event* ev);
 //
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
@@ -211,7 +212,7 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	{
 		case _html_:htmlnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
-		case  _vbo_:vbonode_sread(win);break;
+		case  _vbo_:vbonode_sread(win, 0);break;
 	}
 	return 0;
 }
@@ -553,7 +554,11 @@ int arenaevent(struct event* e)
 		}
 	}
 
-	if(ev.where)actorevent(&ev);
+	win = (void*)(ev.where);
+	if(win)
+	{
+		if(_vbo_ == win->fmt)vbonode_swrite(win, 0, &ev);
+	}
 /*
 	if(_win_ == what)
 	{

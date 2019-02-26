@@ -1,9 +1,8 @@
 #include "libuser.h"
-#define _json_ hex32('j','s','o','n')
-#define _xml_ hex32('x','m','l',0)
-#define _art_ hex32('a','r','t',0)
-#define _fd_ hex32('f','d',0,0)
-int arenaactor(struct arena* win, struct actor* act);
+void* allocstyle();
+void* allocpinid();
+void* actorstart(void*, void*, void*, void*);
+void* actorstop(void*, void*, void*, void*);
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -15,6 +14,124 @@ static struct object* obj = 0;
 static struct element* ele = 0;
 static struct arena* arena = 0;
 static struct actor* actor = 0;
+
+
+
+
+void defaultstyle_2d(struct style* sty, int w, int h, int d)
+{
+	sty->vc[0] = w/2;
+	sty->vc[1] = h/2;
+	sty->vc[2] = 0.0;
+
+	sty->vr[0] = w/2;
+	sty->vr[1] = 0;
+	sty->vr[2] = 0;
+
+	sty->vf[0] = 0;
+	sty->vf[1] = h/2;
+	sty->vf[2] = 0;
+
+	sty->vu[0] = 0;
+	sty->vu[1] = 0;
+	sty->vu[2] = (w+h)/4;
+}
+void defaultstyle_2in3(struct style* sty)
+{
+	sty->vc[0] = 0.0;
+	sty->vc[1] = 0.0;
+	sty->vc[2] = 0.0;
+
+	sty->vr[0] = 0.999;
+	sty->vr[1] = 0.0;
+	sty->vr[2] = 0.0;
+
+	sty->vf[0] = 0.0;
+	sty->vf[1] = 0.999;
+	sty->vf[2] = 0.0;
+
+	sty->vu[0] = 0.0;
+	sty->vu[1] = 0.0;
+	sty->vu[2] = 0.999;
+}
+void defaultstyle_3d(struct style* sty, struct style* tar)
+{
+	sty->vc[0] = tar->vc[0];
+	sty->vc[1] = tar->vc[1];
+	sty->vc[2] = tar->vc[2];
+
+	sty->vr[0] = tar->vr[0];
+	sty->vr[1] = tar->vr[1];
+	sty->vr[2] = tar->vr[2];
+
+	sty->vf[0] = tar->vf[0];
+	sty->vf[1] = tar->vf[1];
+	sty->vf[2] = tar->vf[2];
+
+	sty->vu[0] = tar->vu[0];
+	sty->vu[1] = tar->vu[1];
+	sty->vu[2] = tar->vu[2];
+}
+int arenaactor(struct arena* ccc, struct actor* act)
+{
+	int w,h;
+	struct style* sty;
+	struct pinid* pin;
+	struct arena* win;
+	struct relation* rel;
+
+	sty = allocstyle();
+	if(0 == sty)return 0;
+
+	pin = allocpinid();
+	if(0 == pin)return 0;
+
+	win = ccc;
+	switch(ccc->fmt)
+	{
+		case _bg3d_:
+		case _fg3d_:
+		case _ui3d_:
+		{
+			rel = ccc->irel0;
+			if(0 == rel)return 0;
+
+			win = (void*)(rel->srcchip);
+			defaultstyle_3d(sty, &win->target);
+
+			break;
+		}
+		case _bg2d_:
+		case _fg2d_:
+		case _ui2d_:
+		{
+			rel = ccc->irel0;
+			if(0 == rel)return 0;
+
+			win = (void*)(rel->srcchip);
+			defaultstyle_2in3(sty);
+
+			break;
+		}
+		case _vbo_:
+		{
+			defaultstyle_3d(sty, &win->target);
+			break;
+		}
+		default:
+		{
+			w = win->width;
+			h = win->height;
+			defaultstyle_2d(sty, w, h, (w+h)/2);
+		}
+	}
+
+	actorcreate(0, act);
+	actorstart(win, sty, act, pin);
+
+	relationcreate(act, pin, _act_, ccc, sty, _win_);
+	return 0;
+}
 
 
 

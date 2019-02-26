@@ -39,12 +39,10 @@ twig-gles/20-bg2d.c \
 twig-gles/21-fg2d.c \
 twig-gles/22-ev2d.c \
 twig-gles/23-ui2d.c \
-twig-gles/30-menu.c \
-twig-gles/31-vkbd.c \
-twig-gles/40-blur.c \
-twig-gles/41-rgb.c \
-twig-gles/42-rain.c \
-twig-gles/43-snow.c
+twig-gles/30-blur.c \
+twig-gles/31-rgb.c \
+twig-gles/32-rain.c \
+twig-gles/33-snow.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

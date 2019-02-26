@@ -1,7 +1,6 @@
 #include <windows.h>
 #include <xinput.h>
 #include "libuser.h"
-int arenaevent(void*);
 
 
 

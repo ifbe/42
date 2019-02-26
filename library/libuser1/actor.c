@@ -252,7 +252,7 @@ void* actorcreate(u64 type, void* buf)
 
 
 int actorevent(struct event* ev)
-{
+{/*
 	int ret;
 	struct arena* win = (void*)(ev->where);
 
@@ -284,7 +284,7 @@ int actorevent(struct event* ev)
 
 theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
-	return 0;
+*/	return 0;
 }
 void* actorcommand(u8* buf, int len)
 {
