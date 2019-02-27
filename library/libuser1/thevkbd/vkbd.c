@@ -14,14 +14,8 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 	if(w<h)c = w>>6;
 	else c = h>>6;
 
-	drawsolid_circle(
-		win, 0x0000ff,
-		c, h-c, c
-	);
-	drawsolid_circle(
-		win, 0xff0000,
-		w-c, h-c, c
-	);
+	drawsolid_circle(win, 0x0000ff, c, h-c, c);
+	drawsolid_circle(win, 0xff0000, w-c, h-c, c);
 
 	c *= 2;
 	if(win->input[0].z0)
@@ -40,18 +34,24 @@ void vkbd_read_pixel(struct arena* win, struct style* sty)
 	}
 	else return;
 
-	if(n+c < h)return;
-	if(m+c > w)
+	if(n < h)
 	{
-		m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
-		n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
-		drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
-		drawsolid_triangle(win, 0x000000, m, h, w, n, w, h);
+
 	}
-	else if(m < c)
+	else if(n+c > h)
 	{
-		drawsolid_rect(win, 0x404040, 0, 0, x, h);
-		drawsolid_rect(win, 0x404040, 0, y, w, h);
+		if(m < c)
+		{
+			drawsolid_rect(win, 0x404040, 0, 0, x, h);
+			drawsolid_rect(win, 0x404040, 0, y, w, h);
+		}
+		else if(m+c > w)
+		{
+			m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
+			n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
+			drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
+			drawsolid_triangle(win, 0x000000, m, h, w, n, w, h);
+		}
 	}
 }
 void vkbd_read_vbo(struct arena* win, struct style* sty)
@@ -60,87 +60,181 @@ void vkbd_read_vbo(struct arena* win, struct style* sty)
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
-	float j,k,x,y;
+	float x0,y0,xn,yn;
 	float w = win->width;
 	float h = win->height;
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
-	j = (float)c / (float)w;
-	k = (float)c / (float)h;
-	vr[0] = j;
+	x0 = win->input[10].x0;
+	y0 = win->input[10].y0;
+	xn = win->input[10].xn;
+	yn = win->input[10].yn;
+
+	vr[0] = 2*(float)c / (float)w;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
 	vf[0] = 0.0;
-	vf[1] = k;
+	vf[1] = 2*(float)c / (float)h;
 	vf[2] = 0.0;
 
-	vc[0] = 1.0-j;
-	vc[1] = k-1.0;
+	vc[0] = 1.0;
+	vc[1] = -1.0;
 	vc[2] = -0.99;
-	carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
-	vc[0] = j-1.0;
-	carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
+	if((xn+c > w)&&(yn+c > h)){
+		vr[0] *= 4;
+		vf[1] *= 4;
+		carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
+		vr[0] /= 4;
+		vf[1] /= 4;
+	}
+	else{
+		carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
+	}
 
-	c *= 2;
+	vc[0] = -1.0;
+	if((xn < c)&&(yn+c > h)){
+		vr[0] *= 4;
+		vf[1] *= 4;
+		carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
+		vr[0] /= 4;
+		vf[1] /= 4;
+	}
+	else{
+		carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
+	}
+
+	vc[1] = 1.0;
+	if((xn < c)&&(yn < c)){
+		vr[0] *= 4;
+		vf[1] *= 4;
+		carvesolid2d_circle(win, 0x00ffff, vc, vr, vf);
+		vr[0] /= 4;
+		vf[1] /= 4;
+	}
+	else{
+		carvesolid2d_circle(win, 0x00ffff, vc, vr, vf);
+	}
+
+	vc[0] = 1.0;
+	if((xn+c > w)&&(yn < c)){
+		vr[0] *= 4;
+		vf[1] *= 4;
+		carvesolid2d_circle(win, 0xffff00, vc, vr, vf);
+		vr[0] /= 4;
+		vf[1] /= 4;
+	}
+	else{
+		carvesolid2d_circle(win, 0xffff00, vc, vr, vf);
+	}
+
 	if(win->input[0].z0)
 	{
-		j = win->input[0].x0;
-		k = win->input[0].y0;
-		x = win->input[0].xn;
-		y = win->input[0].yn;
+		x0 = win->input[0].x0;
+		y0 = win->input[0].y0;
+		xn = win->input[0].xn;
+		yn = win->input[0].yn;
 	}
 	else if(win->input[10].z0)
 	{
-		j = win->input[10].x0;
-		k = win->input[10].y0;
-		x = win->input[10].xn;
-		y = win->input[10].yn;
+		//do nothing
 	}
 	else return;
 
-	if(k+c < h)return;
-	if(j+c > w)
+	if(y0 < c)
 	{
-		j = ((h-y)*(h-y)/(x-w) + (w+x)) / 2.0;
-		j = 2*j/w - 1.0;
-		k = ((x-w)*(x-w)/(y-h) + (y+h)) / 2.0;
-		k = 1.0 - 2*k/h;
-		vr[0] = j;
-		vr[1] = -1.0;
-		vr[2] = -0.9;
-		vf[0] = 1.0;
-		vf[1] = k;
-		vf[2] = -0.9;
-		vc[0] = 2.0*x/w - 1.0;
-		vc[1] = 1.0 - 2.0*y/h;
-		vc[2] = -0.9;
-		carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
-		vc[0] = 1.0;
-		vc[1] = -1.0;
-		carvesolid2d_triangle(win, 0x000000, vc, vr, vf);
+		if(x0 < c)
+		{
+			x0 = (float)xn;
+			y0 = (float)yn;
+			vc[0] = x0/w - 1.0;
+			vc[1] = 1.0 - y0/h;
+			vc[2] = -0.99;
+			vr[0] = 1.0+vc[0];
+			vr[1] = 0.0;
+			vr[2] = 0.0;
+			vf[0] = 0.0;
+			vf[1] = vc[1]-1.0;
+			vf[2] = 0.0;
+			carveline2d_rect(win, 0xffffff, vc, vr, vf);
+			carvesolid2d_circle(win, 0xffffff, vc, vr, vf);
+		}
+		else if(x0+c > w)
+		{
+			x0 = (float)xn;
+			y0 = (float)yn;
+			vc[0] = 2*x0/w - 1.0;
+			vc[1] = 1.0 - 2*y0/h;
+			vc[2] = -0.99;
+
+			vr[0] = -1.0;
+			vr[1] = -1.0;
+			vr[2] = -0.99;
+			vf[0] = 1.0;
+			vf[1] = -1.0;
+			vf[2] = -0.99;
+			carvesolid2d_triangle(win, 0x0000ff, vc, vr, vf);
+
+			vf[0] = -1.0;
+			vf[1] = 1.0;
+			vf[2] = -0.99;
+			carvesolid2d_triangle(win, 0x00ffff, vc, vr, vf);
+
+			vr[0] = 1.0;
+			vr[1] = 1.0;
+			vr[2] = -0.99;
+			carvesolid2d_triangle(win, 0xff0000, vc, vr, vf);
+
+			vf[0] = 1.0;
+			vf[1] = -1.0;
+			vf[2] = -0.99;
+			carvesolid2d_triangle(win, 0xffff00, vc, vr, vf);
+		}
 	}
-	else if(j < c)
+	else if(y0+c > h)
 	{
-		j = (float)x;
-		k = (float)y;
-		vc[0] = j/w - 1.0;
-		vc[1] = 0.0;
-		vc[2] = -0.9;
-		vr[0] = 1.0+vc[0];
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
-		vc[0] = 0.0;
-		vc[1] = 1.0-(h+k)/h;
-		vr[0] = 1.0;
-		vr[1] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 1.0+vc[1];
-		carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+		if(x0 < c)
+		{
+			x0 = (float)xn;
+			y0 = (float)yn;
+			vc[0] = x0/w - 1.0;
+			vc[1] = 0.0;
+			vc[2] = -0.9;
+			vr[0] = 1.0+vc[0];
+			vr[1] = 0.0;
+			vr[2] = 0.0;
+			vf[0] = 0.0;
+			vf[1] = 1.0;
+			vf[2] = 0.0;
+			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+			vc[0] = 0.0;
+			vc[1] = 1.0-(h+y0)/h;
+			vr[0] = 1.0;
+			vr[1] = 0.0;
+			vf[0] = 0.0;
+			vf[1] = 1.0+vc[1];
+			carvesolid2d_rect(win, 0x404040, vc, vr, vf);
+		}
+		else if(x0+c > w)
+		{
+			x0 = ((h-yn)*(h-yn)/(xn-w) + (w+xn)) / 2.0;
+			x0 = 2*x0/w - 1.0;
+			y0 = ((xn-w)*(xn-w)/(yn-h) + (yn+h)) / 2.0;
+			y0 = 1.0 - 2*y0/h;
+			vr[0] = x0;
+			vr[1] = -1.0;
+			vr[2] = -0.9;
+			vf[0] = 1.0;
+			vf[1] = y0;
+			vf[2] = -0.9;
+			vc[0] = 2.0*xn/w - 1.0;
+			vc[1] = 1.0 - 2.0*yn/h;
+			vc[2] = -0.9;
+			carvesolid2d_triangle(win, 0x808080, vc, vr, vf);
+			vc[0] = 1.0;
+			vc[1] = -1.0;
+			carvesolid2d_triangle(win, 0x000000, vc, vr, vf);
+		}
 	}
 }
 

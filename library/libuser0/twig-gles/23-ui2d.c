@@ -58,7 +58,7 @@ void ui2d_read_vbo(struct arena* win, struct style* sty)
 		vr[1] = y1;
 		vr[2] = -0.99;
 		carveline2d_arrow(win, 0xff00ff, vc, vr);
-
+/*
 		vc[0] = (x0+x1)/2;
 		vc[1] = (y0+y1)/2;
 		vc[2] = -0.99;
@@ -69,8 +69,8 @@ void ui2d_read_vbo(struct arena* win, struct style* sty)
 		vf[1] = (y1-y0)/2;
 		vf[2] = -0.99;
 		carveline2d_rect(win, 0x00ff00, vc, vr, vf);
+*/
 	}
-
 }
 void ui2d_read_pixel(struct arena* win, struct style* sty)
 {

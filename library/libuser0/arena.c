@@ -170,7 +170,7 @@ void arenavertex(struct arena* win)
 
 	//camera
 	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -1.0;
+	win->camera.vc[1] = -1024.0;
 	win->camera.vc[2] = 1024.0;
 
 	win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);

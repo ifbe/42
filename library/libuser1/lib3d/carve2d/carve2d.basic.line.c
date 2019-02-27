@@ -372,7 +372,7 @@ void carveline2d_circle(struct arena* win, u32 rgb,
 {
 #define lineacc (acc*2)
 	int j;
-	float q[4];
+	float a,c,s;
 
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -382,19 +382,15 @@ void carveline2d_circle(struct arena* win, u32 rgb,
 	u16* ibuf;
 	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, lineacc, lineacc);
 
-	q[0] = 0.0;
-	q[1] = 0.0;
-	q[2] = 1.0;
 	for(j=0;j<lineacc;j++)
 	{
-		vbuf[6*j+0] = vr[0];
-		vbuf[6*j+1] = vr[1];
-		vbuf[6*j+2] = 0.0;
-		quaternion_operation(&vbuf[6*j], q, j*tau/lineacc);
+		a = j*tau/lineacc;
+		c = cosine(a);
+		s = sine(a);
 
-		vbuf[6*j+0] += vc[0];
-		vbuf[6*j+1] += vc[1];
-		vbuf[6*j+2] += vc[2];
+		vbuf[6*j+0] = vc[0] + vr[0]*c + vf[0]*s;
+		vbuf[6*j+1] = vc[1] + vr[1]*c + vf[1]*s;
+		vbuf[6*j+2] = vc[2] + vr[2]*c + vf[2]*s;
 
 		vbuf[6*j+3] = rr;
 		vbuf[6*j+4] = gg;

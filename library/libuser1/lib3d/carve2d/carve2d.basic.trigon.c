@@ -124,7 +124,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 		s = sine(j*tau/acc);
 		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
-		vbuf[a+2] = vc[2];
+		vbuf[a+2] = vc[2] + vr[2]*c + vf[2]*s;
 
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
@@ -138,7 +138,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 	a = acc*6;
 	vbuf[a+0] = vc[0];
 	vbuf[a+1] = vc[1];
-	vbuf[a+2] = 0.0;
+	vbuf[a+2] = vc[2];
 	vbuf[a+3] = rr;
 	vbuf[a+4] = gg;
 	vbuf[a+5] = bb;
