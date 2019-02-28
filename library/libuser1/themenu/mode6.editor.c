@@ -260,9 +260,5 @@ int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
 	{
 		actorinput_editor_target(win, ev);
 	}
-	if((7 == win->forex)&&(_vbo_ == win->fmt))
-	{
-		actorinput_editor_camera(win, ev);
-	}
     return 0;
 }

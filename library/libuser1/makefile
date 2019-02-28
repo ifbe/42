@@ -157,6 +157,7 @@ theitem/item.piano.c \
 theitem/item.picture.c \
 theitem/item.planet.c \
 theitem/item.rccar.c \
+theitem/item.stair.c \
 theitem/item.tree.c \
 theitem/item.water.c \
 themenu/mode0.testland.c \
@@ -179,9 +180,6 @@ thetest/test.example.c \
 thetest/test.fractal.c \
 thetest/test.palette.c \
 thetool/tool.calculator.c \
-thetool/tool.camera.c \
-thetool/tool.camera.ci.c \
-thetool/tool.camera.si.c \
 thetool/tool.font.c \
 thetool/tool.hex.c \
 thetool/tool.qrcode.c \
@@ -189,6 +187,8 @@ thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
 thetool/tool.terminal.ci.c \
 thetool/tool.terminal.si.c \
+thetool/tool.video.c \
+thevkbd/pointer.c \
 thevkbd/corner.c \
 thevkbd/vkbd.c \
 thevkbd/vkbd.joystick.c \

@@ -7,14 +7,6 @@ int vkbd_keyboard_write(struct arena* win,struct event* ev);
 
 
 
-static int vkbd_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
-{
-	return 0;
-}
-static int vkbd_cwrite(struct arena* win, struct style* stack, struct event* ev)
-{
-	return 0;
-}
 static int vkbd_sread(struct arena* win, struct style* sty, struct arena* cc, struct style* cf)
 {
 	switch(win->vkbdw)
@@ -39,6 +31,14 @@ static int vkbd_swrite(
 		case 'k':ret = vkbd_keyboard_write(win, ev);break;
 	}
 	return ret;
+}
+static int vkbd_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
+{
+	return 0;
+}
+static int vkbd_cwrite(struct arena* win, struct style* stack, struct event* ev)
+{
+	return 0;
 }
 static int vkbd_stop(struct arena* c, void* cf, struct arena* r, void* rf)
 {

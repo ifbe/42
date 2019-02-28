@@ -6,7 +6,7 @@ int actorstart(void*, void*, void*, void*);
 
 
 
-u64 want[2] = {
+static u64 want[2] = {
 	hex64('s','k','y','s','p','h','.','.'),
 	hex64('t','e','r','r','i','a','n', 0)
 };

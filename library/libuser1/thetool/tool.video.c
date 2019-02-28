@@ -10,7 +10,7 @@ void* arenacreate(u64, void*);
 
 
 //opengl shader
-char* camera_glsl_v =
+char* video_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
@@ -21,9 +21,9 @@ char* camera_glsl_v =
 		"uv = texuvw;\n"
 		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
-char* camera_glsl_t = 0;
-char* camera_glsl_g = 0;
-char* camera_glsl_f = 
+char* video_glsl_t = 0;
+char* video_glsl_g = 0;
+char* video_glsl_f = 
 	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uv;\n"
@@ -40,15 +40,15 @@ char* camera_glsl_f =
 		"FragColor = vec4(r, g, b, 1.0);\n"
 	"}\n";
 //directx shader
-char* camera_hlsl_v = 0;
-char* cmaera_hlsl_t = 0;
-char* cmaera_hlsl_g = 0;
-char* cmaera_hlsl_f = 0;
+char* video_hlsl_v = 0;
+char* video_hlsl_t = 0;
+char* video_hlsl_g = 0;
+char* video_hlsl_f = 0;
 
 
 
 
-void camera_read_pixel(
+void video_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -83,7 +83,7 @@ void camera_read_pixel(
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-void camera_read_vbo(
+void video_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -163,47 +163,47 @@ void camera_read_vbo(
 	data->vbuf_enq += 1;
 	data->tex_enq[0] += 1;
 }
-void camera_read_json(
+void video_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-void camera_read_html(
+void video_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	//<head>
-	htmlprintf(win, 1, ".camera{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
+	htmlprintf(win, 1, ".video{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
 
 	//<body>
-	htmlprintf(win, 2, "<div class=\"camera\">\n");
+	htmlprintf(win, 2, "<div class=\"video\">\n");
 }
-void camera_read_tui(
+void video_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-void camera_read_cli(
+void video_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
-static void camera_read(
+static void video_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)camera_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)camera_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)camera_read_html(win, sty, act, pin);
-	else if(fmt == _json_)camera_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)camera_read_vbo(win, sty, act, pin);
-	else camera_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)video_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)video_read_tui(win, sty, act, pin);
+	else if(fmt == _html_)video_read_html(win, sty, act, pin);
+	else if(fmt == _json_)video_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)video_read_vbo(win, sty, act, pin);
+	else video_read_pixel(win, sty, act, pin);
 }
-static void camera_write(
+static void video_write(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
@@ -212,13 +212,13 @@ static void camera_write(
 
 	act->idx = buf;
 }
-static void camera_get()
+static void video_get()
 {
 }
-static void camera_post()
+static void video_post()
 {
 }
-static void camera_stop(
+static void video_stop(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -232,7 +232,7 @@ static void camera_stop(
 		src->vbuf = 0;
 	}
 }
-static void camera_start(
+static void video_start(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -243,8 +243,8 @@ static void camera_start(
 
 	//sender
 	src = alloc_winobj(win);
-	src->vs = camera_glsl_v;
-	src->fs = camera_glsl_f;
+	src->vs = video_glsl_v;
+	src->fs = video_glsl_f;
 
 	//texture
 	src->tex[0] = act->buf;
@@ -266,7 +266,7 @@ static void camera_start(
 	src->ibuf_enq = 0;
 	pin->foot[0] = (u64)src;
 }
-static void camera_delete(struct actor* act)
+static void video_delete(struct actor* act)
 {
 	if(0 == act)return;
 	if(act->buf)
@@ -275,7 +275,7 @@ static void camera_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void camera_create(struct actor* act)
+static void video_create(struct actor* act)
 {
 	struct arena* win;
 	if(0 == act)return;
@@ -291,17 +291,17 @@ static void camera_create(struct actor* act)
 
 
 
-void camera_register(struct actor* p)
+void video_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
+	p->name = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);
 
-	p->oncreate = (void*)camera_create;
-	p->ondelete = (void*)camera_delete;
-	p->onstart  = (void*)camera_start;
-	p->onstop   = (void*)camera_stop;
-	p->onget    = (void*)camera_get;
-	p->onpost   = (void*)camera_post;
-	p->onread   = (void*)camera_read;
-	p->onwrite  = (void*)camera_write;
+	p->oncreate = (void*)video_create;
+	p->ondelete = (void*)video_delete;
+	p->onstart  = (void*)video_start;
+	p->onstop   = (void*)video_stop;
+	p->onget    = (void*)video_get;
+	p->onpost   = (void*)video_post;
+	p->onread   = (void*)video_read;
+	p->onwrite  = (void*)video_write;
 }

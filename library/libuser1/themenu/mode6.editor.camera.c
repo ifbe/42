@@ -391,35 +391,66 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 	}
 	return 0;
 }
-int actorinput_editor_camera(struct arena* win, struct event* ev)
-{/*
-	struct style* sty = 0;
-	struct relation* orel = 0;
 
-	//find the chosen actor
-	orel = win->oreln;
-	while(1)
-	{
-		if(0 == orel)break;
-		if(_act_ == orel->dsttype)
-		{
-			sty = (void*)(orel->srcfoot);
-			win->target.vc[0] = sty->vc[0];
-			win->target.vc[1] = sty->vc[1];
-			win->target.vc[2] = sty->vc[2];
-			break;
-		}
-		orel = samesrcprevdst(orel);
-	}
-*/
-	//move it
+
+
+
+static void camera_sread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void camera_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
 	actorinput_cameraevent(win, ev);
-/*	if(sty)
-	{
-		sty->vc[0] = win->target.vc[0];
-		sty->vc[1] = win->target.vc[1];
-		sty->vc[2] = win->target.vc[2];
-	}
-*/
-	return 0;
+}
+static void camera_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void camera_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void camera_stop(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void camera_start(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+    say("@camera_start\n");
+}
+static void camera_delete()
+{
+}
+static void camera_create(void* addr)
+{
+    say("@camera_create\n");
+}
+
+
+
+
+void camera_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
+
+	p->oncreate = (void*)camera_create;
+	p->ondelete = (void*)camera_delete;
+	p->onstart  = (void*)camera_start;
+	p->onstop   = (void*)camera_stop;
+	p->onget    = (void*)camera_cread;
+	p->onpost   = (void*)camera_cwrite;
+	p->onread   = (void*)camera_sread;
+	p->onwrite  = (void*)camera_swrite;
 }

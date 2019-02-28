@@ -56,6 +56,7 @@ void ocean_register(void*);
 void piano_register(void*);
 void picture_register(void*);
 void rccar_register(void*);
+void stair_register(void*);
 void tree_register(void*);
 void water_register(void*);
 //test
@@ -75,10 +76,13 @@ void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
 //
+void camera_register(void*);
+//
 void overview_register(void*);
 void tabbar_register(void*);
 void vkbd_register(void*);
 void corner_register(void*);
+void pointer_register(void*);
 
 
 
@@ -220,6 +224,9 @@ void content_create(void* addr)
 	rccar_register(tmp);
 	tmp += sizeof(struct actor);
 
+	stair_register(tmp);
+	tmp += sizeof(struct actor);
+
 	skydome_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -316,6 +323,10 @@ void content_create(void* addr)
 	sphere_register(tmp);
 	tmp += sizeof(struct actor);
 
+	//-------------------????------------------
+	camera_register(tmp);
+	tmp += sizeof(struct actor);
+
 	//-------------------menu------------------
 	overview_register(tmp);
 	tmp += sizeof(struct actor);
@@ -327,5 +338,8 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	corner_register(tmp);
+	tmp += sizeof(struct actor);
+
+	pointer_register(tmp);
 	tmp += sizeof(struct actor);
 }

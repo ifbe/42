@@ -284,7 +284,7 @@ int fg3d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty,
 	else if(5 == ret)actorinput_2d(win, 0, ev);
 	else if(6 == ret)actorinput_cad(win, 0, ev);
 	else if(7 == ret)actorinput_3d(win, 0, ev);
-*/
+
 	struct actor* act;
 	struct pinid* pin;
 	struct relation* orel;
@@ -299,7 +299,7 @@ int fg3d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty,
 
 	act = (void*)(orel->dstchip);
 	pin = (void*)(orel->dstfoot);
-	return act->onwrite(act, pin, 0, 0, ev, 0);
+	return act->onwrite(act, pin, 0, 0, ev, 0);*/
 	return 1;
 }
 
