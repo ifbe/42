@@ -2,9 +2,6 @@
 void* allocstyle();
 void* allocpinid();
 int actorstart(void*, void*, void*, void*);
-//
-int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev);
-int actorinput_overview(struct arena* win, struct style* sty, struct event* ev);
 int actorinput_touch(struct arena* win, struct event* ev);
 
 
@@ -13,7 +10,8 @@ int actorinput_touch(struct arena* win, struct event* ev);
 static u64 want[] = {
 	hex64('o','v','e','r','v','i','e','w'),
 	hex64('t','a','b','b','a','r', 0, 0),
-	hex32('v','k','b','d')
+	hex32('v','k','b','d'),
+	hex64('c','o','r','n','e','r', 0, 0)
 };
 
 
@@ -124,12 +122,31 @@ int ui2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	else ui2d_read_pixel(win, sty);
 	return 0;
 }
-int ui2d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
+int ui2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
-	int ret=0;
+	int ret;
+	struct relation* rel;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
 
-	if(0 == ret)ret = actorinput_tabbar(win, sty, ev);
-	if(0 == ret)ret = actorinput_overview(win, sty, ev);
+	ret = 0;
+	rel = cc->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			sty = (void*)(rel->srcfoot);
+			pin = (void*)(rel->dstfoot);
+			ret = act->onwrite(act, pin, win, 0, ev, 0);
+			if(ret)break;
+		}
+
+		rel = samesrcprevdst(rel);
+	}
 
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
@@ -167,7 +184,7 @@ int ui2d_create(struct arena* win, void* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<3;j++)
+	for(j=0;j<4;j++)
 	{
 		act = actorcreate(want[j], 0);
 		if(0 == act)continue;

@@ -78,6 +78,7 @@ void terminal_register(void*);
 void overview_register(void*);
 void tabbar_register(void*);
 void vkbd_register(void*);
+void corner_register(void*);
 
 
 
@@ -323,5 +324,8 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	vkbd_register(tmp);
+	tmp += sizeof(struct actor);
+
+	corner_register(tmp);
 	tmp += sizeof(struct actor);
 }

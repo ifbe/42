@@ -131,87 +131,6 @@ void actoroutput_tabbar_pixel(struct arena* win, struct style* sty)
         drawline_rect(win, 0xffffff, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
         drawstring_fit(win, 0xffffff, j*w/8, h*19/20, (j+1)*w/8, h, nametab[j], 0);
     }
-}/*
-void actoroutput_tabbar(struct arena* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(_cli_ == fmt)actoroutput_tabbar_cli(win);
-	else if(_tui_ == fmt)actoroutput_tabbar_tui(win);
-	else if(_html_ == fmt)actoroutput_tabbar_html(win);
-	else if(_json_ == fmt)actoroutput_tabbar_json(win);
-	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, sty);
-	else actoroutput_tabbar_pixel(win, sty);
-}*/
-
-
-
-
-int actorinput_tabbar(struct arena* win, struct style* sty, struct event* ev)
-{
-    int x,y,t;
-    struct style tmp;
-    int w = win->width;
-    int h = win->height;
-    int sel = (win->forew)&0x7;
-    if(0 == sty)
-    {
-        sty = &tmp;
-        sty->vc[0] = w/2;
-        sty->vc[1] = h*19/40;
-        sty->vc[2] = 0.0;
-        sty->vr[0] = w/2;
-        sty->vr[1] = 0.0;
-        sty->vr[2] = 0.0;
-        sty->vf[0] = 0.0;
-        sty->vf[1] = h*19/40;
-        sty->vf[2] = 0.0;
-    }
-
-    if(0x2d70 == ev->what)
-    {
-        y = ((ev->why)>>16)&0xffff;
-        if(y > h*19/20)
-        {
-            x = (ev->why)&0xffff;
-            x = x * 8 / w;
-
-            t = win->forew;
-            win->forew = (t & 0xf0) | x;
-
-            if(_vbo_ == win->fmt)
-            {
-                if((4==x)|(5==x))win->vfmt = _2d_;
-                else win->vfmt = _3d_;
-            }
-            return 1;
-        }
-    }
-/*
-    if(0 == sel)actorinput_void(         win, sty, ev);
-    else if(1 == sel)actorinput_console( win, sty, ev);
-    else if(2 == sel)actorinput_overview(win, sty, ev);
-    else if(3 == sel)actorinput_detail(  win, sty, ev);
-    else if(4 == sel)actorinput_win(     win, sty, ev);
-    else if(5 == sel)actorinput_2d(      win, sty, ev);
-    else if(6 == sel)actorinput_cad(     win, sty, ev);
-    else if(7 == sel)actorinput_3d(      win, sty, ev);*/
-    return 0;
-}
-
-
-
-
-static void tabbar_cread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-static void tabbar_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
-{
 }
 static void tabbar_sread(
 	struct arena* win, struct style* sty,
@@ -226,7 +145,35 @@ static void tabbar_sread(
 	else if(_vbo_ == fmt)actoroutput_tabbar_vbo(win, 0);
 	else actoroutput_tabbar_pixel(win, 0);
 }
-static void tabbar_swrite(
+static int tabbar_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+    int x,y,t;
+    int w = win->width;
+    int h = win->height;
+    int sel = (win->forew)&0x7;
+
+    if(0x2d70 == ev->what)
+    {
+        y = ((ev->why)>>16)&0xffff;
+        if(y > h*19/20)
+        {
+            x = (ev->why)&0xffff;
+            win->forew = x * 8 / w;
+
+            return 1;
+        }
+    }
+    return 0;
+}
+static void tabbar_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void tabbar_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)

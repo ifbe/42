@@ -53,7 +53,7 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 	{
 		vc[0] = 0.0;
 		vc[1] = -0.75;
-		vc[2] = -0.5;
+		vc[2] = -0.75;
 		vr[0] = 1.0;
 		vr[1] = 0.0;
 		vr[2] = 0.0;
@@ -78,7 +78,7 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 
 	vc[0] = j-1.0;
 	vc[1] = k-1.0;
-	vc[2] = -0.7;
+	vc[2] = -0.8;
 	vr[0] = j;
 	vr[1] = 0.0;
 	vr[2] = 0.0;
@@ -98,7 +98,7 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 
 	vc[0] = 1.0-j;
 	vc[1] = k-1.0;
-	vc[2] = -0.7;
+	vc[2] = -0.8;
 	vr[0] = j;
 	vr[1] = 0.0;
 	vr[2] = 0.0;

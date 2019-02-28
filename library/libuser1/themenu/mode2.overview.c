@@ -1108,6 +1108,17 @@ void overview_read_tui(struct arena* win, struct style* sty)
 void overview_read_cli(struct arena* win, struct style* sty)
 {
 }
+static void overview_sread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	if(win->fmt == _cli_)overview_read_cli(win, 0);
+	else if(win->fmt == _tui_)overview_read_tui(win, 0);
+	else if(win->fmt == _vbo_)overview_read_vbo(win, 0);
+	else if(win->fmt == _html_)overview_read_html(win, 0);
+	else if(win->fmt == _8bit_)overview_read_8bit(win, 0);
+	else overview_read_pixel(win, 0);
+}
 
 
 
@@ -1239,10 +1250,12 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
+static int overview_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	short* t;
-	struct actor* act;
 	int j, k;
 	int x, y, id;
 	int width = win->width;
@@ -1296,12 +1309,13 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 				k = 16 + 16 * (k - (sty->vc[1])) / (sty->vf[1]);
 			}
 
-			if((j<0)|(j>=16))return;
-			if((k<0)|(k>=32))return;
-			if((x<0)|(x>=16))return;
-			if((y<0)|(y>=32))return;
+			if((j<0)|(j>=16))return 0;
+			if((k<0)|(k>=32))return 0;
+			if((x<0)|(x>=16))return 0;
+			if((y<0)|(y>=32))return 0;
 
 			overview_drag(win, j, k, x, y);
+			return 1;
 		}
 	}
 	else if(_char_ == ev->what)
@@ -1336,12 +1350,12 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 		if(t[3] & joyl_left)
 		{
 			arenaprev(win);
-			return;
+			return 1;
 		}
 		if(t[3] & joyl_right)
 		{
 			arenanext(win);
-			return;
+			return 1;
 		}
 	}
 	else if(joy_right == (ev->what & joy_mask))
@@ -1350,37 +1364,17 @@ void actorinput_overview(struct arena* win, struct style* sty, struct event* ev)
 		if(t[3] & joyr_down)
 		{
 			arenalogin(win);
-			return;
+			return 1;
 		}
 	}
+	return 0;
 }
-
-
-
-
 static void overview_cread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
 static void overview_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
-{
-}
-static void overview_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	if(win->fmt == _cli_)overview_read_cli(win, 0);
-	else if(win->fmt == _tui_)overview_read_tui(win, 0);
-	else if(win->fmt == _vbo_)overview_read_vbo(win, 0);
-	else if(win->fmt == _html_)overview_read_html(win, 0);
-	else if(win->fmt == _8bit_)overview_read_8bit(win, 0);
-	else overview_read_pixel(win, 0);
-}
-static void overview_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
