@@ -26,8 +26,8 @@ int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 			pin = (void*)(rel->dstfoot);
 			act->onread(win, sty, act, pin);
 
-			if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
-			else drawborder2d(win, sty, &act->name);
+			//if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
+			//else drawborder2d(win, sty, &act->name);
 		}
 
 		rel = samesrcnextdst(rel);

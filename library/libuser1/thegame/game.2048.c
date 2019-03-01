@@ -95,26 +95,15 @@ static void the2048_read_vbo2d(
 	u32 rgb;
 	int x,y,w,h;
 	u8 (*tab)[4];
-	vec3 tc, tr, tf, tu, f;
+	float j,k;
+	vec3 tc, tr, tf, tu;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-
-	w = win->width;
-	h = win->height;
-	tc[0] = vc[0] / w;
-	tc[1] = vc[1] / h;
-	tc[2] = 0.0;
-	tr[0] = vr[0] / w;
-	tr[1] = vr[1] / h;
-	tr[2] = 0.0;
-	tf[0] = vf[0] / w;
-	tf[1] = vf[1] / h;
-	tf[2] = 0.0;
-	carvesolid2d_rect(win, 0x444444, tc, tr, tf);
+	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
 
 	if(0 == act->buf)tab = ((void*)act) + 0x100;
 	else tab = (void*)(act->buf) + (act->len)*16;
@@ -125,23 +114,22 @@ static void the2048_read_vbo2d(
 			rgb = color2048[tab[y][x]];
 			//say("%x\n", rgb);
 
-			f[0] = (x+x-3) / 4.0;
-			f[1] = (3-y-y) / 4.0;
-			tc[0] = (vc[0] + f[0]*vr[0] + f[1]*vf[0])/w;
-			tc[1] = (vc[1] + f[0]*vr[1] + f[1]*vf[1])/h;
-			tc[2] = -0.1;
-
-			tr[0] = vr[0]/5/w;
-			tr[1] = vr[1]/5/h;
-			tr[2] = 0.0;
-			tf[0] = vf[0]/5/w;
-			tf[1] = vf[1]/5/h;
-			tf[2] = 0.0;
+			j = (x+x-3) / 4.0;
+			k = (3-y-y) / 4.0;
+			tc[0] = vc[0] + j*vr[0] + k*vf[0];
+			tc[1] = vc[1] + j*vr[1] + k*vf[1];
+			tc[2] = vc[2] + j*vr[2] + k*vf[2] - 0.1;
+			tr[0] = vr[0] / 5;
+			tr[1] = vr[1] / 5;
+			tr[2] = vr[2] / 5;
+			tf[0] = vf[0] / 5;
+			tf[1] = vf[1] / 5;
+			tf[2] = vf[2] / 5;
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
 
 			tr[0] /= 4;
 			tf[1] /= 4;
-			tc[2] = -0.2;
+			tc[2] -= 0.1;
 			carve2d_decimal(win, 0, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}

@@ -137,6 +137,7 @@ static void tabbar_sread(
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
+    return;
 
 	if(_cli_ == fmt)actoroutput_tabbar_cli(win);
 	else if(_tui_ == fmt)actoroutput_tabbar_tui(win);

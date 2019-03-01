@@ -67,26 +67,14 @@ static void qrcode_read_vbo2d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
 
-	w = win->width;
-	h = win->height;
-	tc[0] = vc[0] / w;
-	tc[1] = vc[1] / h;
-	tc[2] = 0.0;
-	tr[0] = vr[0] / w;
-	tr[1] = vr[1] / h;
-	tr[2] = 0.0;
-	tf[0] = vf[0] / w;
-	tf[1] = vf[1] / h;
-	tf[2] = 0.0;
-	carvesolid2d_rect(win, 0x444444, tc, tr, tf);
-
-	tr[0] = vr[0] / w / 49;
-	tr[1] = vr[1] / h / 49;
-	tr[2] = 0.0;
-	tf[0] = vf[0] / w / 49;
-	tf[1] = vf[1] / h / 49;
-	tf[2] = 0.0;
+	tr[0] = vr[0] / 49;
+	tr[1] = vr[1] / 49;
+	tr[2] = vr[2] / 49;
+	tf[0] = vf[0] / 49;
+	tf[1] = vf[1] / 49;
+	tf[2] = vf[2] / 49;
 	for(y=0;y<49;y++)
 	{
 		for(x=0;x<49;x++)
@@ -94,9 +82,9 @@ static void qrcode_read_vbo2d(
 			if( databuf[(y*slen)+x] == 0 )rgb = 0;
 			else rgb = 0xffffffff;
 
-			tc[0] = (vc[0] + (x-24)*vr[0]*2/49) / w;
-			tc[1] = (vc[1] + (y-24)*vf[1]*2/49) / h;
-			tc[2] = -0.5;
+			tc[0] = vc[0] + (x-24)*vr[0]*2/49 + (y-24)*vf[0]*2/49;
+			tc[1] = vc[1] + (x-24)*vr[1]*2/49 + (y-24)*vf[1]*2/49;
+			tc[2] = vc[2] + (x-24)*vr[2]*2/49 + (y-24)*vf[2]*2/49 - 0.1;
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
 		}
 	}

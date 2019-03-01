@@ -42,17 +42,17 @@ void defaultstyle_2in3(struct style* sty)
 	sty->vc[1] = 0.0;
 	sty->vc[2] = 0.0;
 
-	sty->vr[0] = 0.5;
+	sty->vr[0] = 1.0;
 	sty->vr[1] = 0.0;
 	sty->vr[2] = 0.0;
 
 	sty->vf[0] = 0.0;
-	sty->vf[1] = 0.5;
+	sty->vf[1] = 1.0;
 	sty->vf[2] = 0.0;
 
 	sty->vu[0] = 0.0;
 	sty->vu[1] = 0.0;
-	sty->vu[2] = 0.5;
+	sty->vu[2] = 1.0;
 }
 void defaultstyle_3d(struct style* sty, struct style* tar)
 {
@@ -91,6 +91,7 @@ int arenaactor(struct arena* ccc, struct actor* act)
 	{
 		case _bg3d_:
 		case _fg3d_:
+		case _ev3d_:
 		case _ui3d_:
 		{
 			rel = ccc->irel0;
@@ -103,6 +104,7 @@ int arenaactor(struct arena* ccc, struct actor* act)
 		}
 		case _bg2d_:
 		case _fg2d_:
+		case _ev2d_:
 		case _ui2d_:
 		{
 			rel = ccc->irel0;

@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define _car_ hex32('c','a','r',0)
+void* defaultstyle_vbo2d();
 int boardread(int,int,void*,int);
 int boardwrite(int,int,void*,int);
 
@@ -24,6 +25,44 @@ static void rccar_read_pixel(
 		cy = win->height/2;
 		ww = win->width/2;
 		hh = win->height/2;
+	}
+}
+static void rccar_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+    vec3 tc,tr,tf,tu;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+    tr[0] = vr[0] * 3 / 4;
+    tr[1] = vr[1] * 3 / 4;
+    tr[2] = vr[2] * 3 / 4;
+    tf[0] = vf[0] * 3 / 4;
+    tf[1] = vf[1] * 3 / 4;
+    tf[2] = vf[2] * 3 / 4;
+    carvesolid2d_rect(win, 0x808080, vc, tr, tf);
+
+	tr[0] = vr[0] / 4;
+	tr[1] = vr[1] / 4;
+	tr[2] = vr[2] / 4;
+	tf[0] = vf[0] / 4;
+	tf[1] = vf[1] / 4;
+	tf[2] = vf[2] / 4;
+	for(y=-1;y<2;y+=2)
+	{
+		for(x=-1;x<2;x+=2)
+		{
+			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4;
+			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4;
+			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4;
+			carvesolid2d_rect(win, 0x202020, tc, tr, tf);
+		}
 	}
 }
 static void rccar_read_vbo(
@@ -101,7 +140,11 @@ static void rccar_read(
 	else if(fmt == _tui_)rccar_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)rccar_read_html(win, sty, act, pin);
 	else if(fmt == _json_)rccar_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)rccar_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)rccar_read_vbo2d(win, sty, act, pin);
+		else rccar_read_vbo(win, sty, act, pin);
+	}
 	else rccar_read_pixel(win, sty, act, pin);
 }
 static void rccar_write(

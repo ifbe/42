@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 
 
 
@@ -73,6 +74,48 @@ static void weiqi_read_pixel(
 				ww/19
 			);
 		}
+	}
+}
+static void weiqi_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	float m,n;
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid2d_rect(win, 0xf9d65b, vc, vr, vf);
+
+	for(y=-9;y<10;y++)
+	{
+		f[0] = 18.0/19;
+		f[1] = y*2.0/19;
+		f[2] = 1.0/19/4;
+		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0];
+		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1];
+		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		carveline2d(win, 0x222222, tc, tr);
+	}
+	for(x=-9;x<10;x++)
+	{
+		f[0] = x*2.0/19;
+		f[1] = 18.0/19;
+		f[2] = 1.0/19/4;
+		tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0];
+		tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1];
+		tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		carveline2d(win, 0x222222, tc, tr);
 	}
 }
 static void weiqi_read_vbo(
@@ -206,7 +249,11 @@ static void weiqi_read(
 	else if(fmt == _tui_)weiqi_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)weiqi_read_html(win, sty, act, pin);
 	else if(fmt == _json_)weiqi_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)weiqi_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)weiqi_read_vbo2d(win, sty, act, pin);
+		else weiqi_read_vbo(win, sty, act, pin);
+	}
 	else weiqi_read_pixel(win, sty, act, pin);
 }
 

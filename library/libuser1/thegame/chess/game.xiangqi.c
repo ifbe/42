@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
@@ -156,6 +157,100 @@ void xiangqi_read_pixel(
 			);
 		}//forx
 	}//fory
+}
+static void xiangqi_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	u32 chesscolor, fontcolor, temp;
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid2d_rect(win, 0x8d6f25, vc, vr, vf);
+
+	for(y=-5;y<5;y++)
+	{
+		f[0] = 8.0/9;
+		f[1] = (2*y+1)/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0];
+		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1];
+		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		carveline2d(win, 0x222222, tc, tr);
+	}
+	for(x=-4;x<5;x++)
+	{
+		f[0] = x*2/9.0;
+		f[1] = -1.0/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		f[1] = -9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		carveline2d(win, 0x222222, tc, tr);
+
+		f[1] = 1.0/10.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		f[1] = 9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+		carveline2d(win, 0x222222, tc, tr);
+	}
+
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			//empty
+			if(data[y][x] < 'A')continue;
+
+			//>0x41
+			else if(data[y][x] <= 'Z')fontcolor = 0;
+
+			//>0x61
+			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
+
+			f[0] = (x+x-8)/9.0;
+			f[1] = (y+y-9)/10.0;
+			f[2] = 1.0/20;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2]-0.1;
+			tr[0] = vr[0] / 9.1;
+			tr[1] = vr[1] / 9.1;
+			tr[2] = vr[2] / 9.1;
+			tf[0] = vf[0] / 9.1;
+			tf[1] = vf[1] / 9.1;
+			tf[2] = vf[2] / 9.1;
+			carvesolid2d_circle(win, 0xf9d65b, tc, tr, tf);
+
+			tc[0] += tu[0] + vu[0]*0.01;
+			tc[1] += tu[1] + vu[1]*0.01;
+			tc[2] += tu[2] + vu[2]*0.01;
+			tr[0] = vr[0] / 18;
+			tr[1] = vr[1] / 18;
+			tr[2] = vr[2] / 18;
+			tf[0] = vf[0] / 20;
+			tf[1] = vf[1] / 20;
+			tf[2] = vf[2] / 20;
+			carve2d_utf8(win, fontcolor, tc, tr, tf,
+				(u8*)char2hanzi(data[y][x]), 0);
+		}
+	}
 }
 static void xiangqi_read_vbo(
 	struct arena* win, struct style* sty,
@@ -348,7 +443,11 @@ static void xiangqi_read(
 	else if(fmt == _tui_)xiangqi_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)xiangqi_read_html(win, sty, act, pin);
 	else if(fmt == _json_)xiangqi_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)xiangqi_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)xiangqi_read_vbo2d(win, sty, act, pin);
+		else xiangqi_read_vbo(win, sty, act, pin);
+	}
 	else xiangqi_read_pixel(win, sty, act, pin);
 }
 
