@@ -75,6 +75,7 @@ void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
+void video_register(void*);
 //
 void camera_register(void*);
 //
@@ -271,9 +272,6 @@ void content_create(void* addr)
 	calculator_register(tmp);
 	tmp += sizeof(struct actor);
 
-	camera_register(tmp);
-	tmp += sizeof(struct actor);
-
 	font_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -290,6 +288,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	terminal_register(tmp);
+	tmp += sizeof(struct actor);
+
+	video_register(tmp);
 	tmp += sizeof(struct actor);
 
 

@@ -16,7 +16,7 @@ static void cube_read_vbo2d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carveline2d_rect(win, 0x00ff00, vc, vr, vf);
+	carvesolid2d_prism4(win, 0xc0c0c0, vc, vr, vf, vu);
 }
 static void cube_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -48,7 +48,7 @@ static void cube_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void cube_read(
+static void cube_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -64,20 +64,21 @@ static void cube_read(
 	}
 	else cube_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void cube_write(
+static void cube_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void cube_post(u8* buf, int len)
+static void cube_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void cube_get(u8* buf, int len)
+static void cube_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void cube_stop(
@@ -109,8 +110,8 @@ void cube_register(struct actor* p)
 	p->ondelete = (void*)cube_delete;
 	p->onstart  = (void*)cube_start;
 	p->onstop   = (void*)cube_stop;
-	p->onget    = (void*)cube_get;
-	p->onpost   = (void*)cube_post;
-	p->onread   = (void*)cube_read;
-	p->onwrite  = (void*)cube_write;
+	p->onget    = (void*)cube_cread;
+	p->onpost   = (void*)cube_cwrite;
+	p->onread   = (void*)cube_sread;
+	p->onwrite  = (void*)cube_swrite;
 }

@@ -8,7 +8,7 @@ int actorstart(void*, void*, void*, void*);
 
 #define COUNT 1
 static u64 want[COUNT] = {
-	hex64('r','c','c','a','r', 0, 0, 0)
+	hex64('c','a','m','e','r','a', 0, 0)
 };
 
 
@@ -39,8 +39,29 @@ int ev3d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	}
 	return 1;
 }
-int ev3d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
+int ev3d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
+	struct relation* rel;
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
+	//say("@ev3d_write\n");
+
+	rel = cc->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			sty = (void*)(rel->srcfoot);
+			pin = (void*)(rel->dstfoot);
+			act->onwrite(act, pin, win, sty, ev, 0);
+		}
+
+		rel = samesrcprevdst(rel);
+	}
 	return 0;
 }
 

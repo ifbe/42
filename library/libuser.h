@@ -785,34 +785,36 @@ void drawicon_1(        struct arena* win, u32 rgb, int x0, int y0, int x1, int 
 
 
 //-----------------------------fake2d--------------------------
-void carvepoint2d(             struct arena* win, u32 rgb, vec3 vc);
-void carvepoint2d_bezier(      struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carvepoint2d_triangle(    struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvepoint2d_rect(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint2d_circle(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvepoint2d(           struct arena* win, u32 rgb, vec3 vc);
+void carvepoint2d_bezier(    struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void carvepoint2d_triangle(  struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carvepoint2d_rect(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvepoint2d_circle(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
-void carveline2d(              struct arena* win, u32 rgb, vec3 va, vec3 vb);
-void carveline2d_arrow(        struct arena* win, u32 rgb, vec3 va, vec3 vb);
-void carveline2d_bezier(       struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carveline2d_yshape(       struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline2d_triangle(     struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline2d_rect(         struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline2d_circle(       struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline2d(            struct arena* win, u32 rgb, vec3 va, vec3 vb);
+void carveline2d_arrow(      struct arena* win, u32 rgb, vec3 va, vec3 vb);
+void carveline2d_bezier(     struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void carveline2d_yshape(     struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carveline2d_triangle(   struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carveline2d_rect(       struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline2d_circle(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
-void carvesolid2d_triangle(    struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvesolid2d_rect(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid2d_circle(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvesolid2d_triangle(  struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carvesolid2d_rect(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvesolid2d_circle(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvesolid2d_prism4(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid2d_sphere(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
-void carve2d_ascii(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carve2d_decimal(          struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carve2d_hexadecimal(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carve2d_unicode(          struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carve2d_utf8(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void carve2d_string(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvestring2d_center(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carve2d_ascii(          struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void carve2d_decimal(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void carve2d_hexadecimal(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void carve2d_unicode(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void carve2d_utf8(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void carve2d_string(         struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvestring2d_center(   struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 
-void carvetext2d(              struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext2d_reverse(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvetext2d(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvetext2d_reverse(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 
 
 

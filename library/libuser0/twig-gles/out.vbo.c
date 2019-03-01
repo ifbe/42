@@ -2,6 +2,7 @@
 int preprocess(void*);
 int postprocess(void*);
 void* allocarena();
+int actorinput_touch(struct arena* win, struct event* ev);
 //
 int bg3d_create(void*, void*);
 int bg3d_start(void*, void*, void*, void*);
@@ -91,6 +92,7 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 	struct arena* tmp;
 	struct relation* rel;
 
+	ret = 0;
 	rel = win->oreln;
 	while(1)
 	{
@@ -112,12 +114,14 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 				case _ev2d_:ret = ev2d_write(tmp, pin, win, sty, ev);break;
 				case _ui2d_:ret = ui2d_write(tmp, pin, win, sty, ev);break;
 			}
-			if(ret)return 1;
+			if(ret)break;
 		}
 
 		rel = samesrcprevdst(rel);
 	}
-	return 0;
+
+	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
+	return ret;
 }
 
 

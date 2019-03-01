@@ -9,6 +9,7 @@ int ui3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 }
 int ui3d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
 {
+	//say("@ui3d_write\n");
 	return 0;
 }
 int ui3d_stop(struct arena* c, void* cf, struct arena* r, void* rf)

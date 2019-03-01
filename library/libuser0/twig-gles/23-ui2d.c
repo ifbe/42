@@ -2,7 +2,6 @@
 void* allocstyle();
 void* allocpinid();
 int actorstart(void*, void*, void*, void*);
-int actorinput_touch(struct arena* win, struct event* ev);
 
 
 
@@ -70,7 +69,6 @@ int ui2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stac
 		rel = samesrcprevdst(rel);
 	}
 
-	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
 }
 

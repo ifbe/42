@@ -14,8 +14,8 @@ int bg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	win->vfmt = _2d_;
 
+	win->vfmt = _2d_;
 	rel = cc->orel0;
 	while(1)
 	{
@@ -32,6 +32,7 @@ int bg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 }
 int bg2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
+	//say("@bg2d_write\n");
 	return 0;
 }
 
@@ -67,9 +68,9 @@ int bg2d_create(struct arena* win, u8* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<1;j++)
+	for(j=0;j<0;j++)
 	{
-		act = actorcreate(hex64('s','p','h','e','r','e', 0, 0), 0);
+		act = actorcreate(hex32('c','u','b','e'), 0);
 		if(0 == act)continue;
 
 		relationcreate(act, 0, _act_, win, 0, _win_);

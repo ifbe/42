@@ -39,7 +39,7 @@
 
 
 
-
+/*
 char glsl2dvert[] = {
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -49,6 +49,31 @@ char glsl2dvert[] = {
 	"{\n"
 		"vcolor = colour;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n"
+};*/
+char glsl2dvert[] = {
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 colour;\n"
+	"mediump vec3 normal = vec3(0.0, 0.0, -1.0);\n"
+	"mediump vec3 eyepos = vec3(0.0, 0.0, -1.0);\n"
+	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
+	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+	"mediump vec3 lightposition = vec3(1.0, 1.0, -2.0);\n"
+	"out mediump vec3 vcolor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump vec3 N = normalize(normal);\n"
+		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+		"mediump vec3 E = normalize(eyepos-vertex);\n"
+		"mediump vec3 R = reflect(-L, N);\n"
+		"mediump float SN = max(dot(N, L), 0.0);\n"
+		"mediump float RV = max(dot(R, E), 0.0);\n"
+		"mediump vec3 diffuse = lightcolor * SN;\n"
+		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+		"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
+		"vcolor = colour*(ambient + diffuse + specular);\n"
+		"gl_Position = vec4(vertex,1.0);\n"
 	"}\n"
 };
 char glsl2dfrag[] = {
@@ -86,14 +111,14 @@ char prettyvert[] = {
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec3 normal;\n"
+	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
+	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+	"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
 	"uniform mat4 cammvp;\n"
 	"uniform mediump vec3 eyepos;\n"
 	"out mediump vec3 vcolor;\n"
 	"void main()\n"
 	"{\n"
-		"mediump vec3 ambient = vec3(0.5, 0.5, 0.5);\n"
-		"mediump vec3 lightcolor = vec3(0.5, 0.5, 0.5);\n"
-		"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
 		"mediump vec3 N = normalize(normal);\n"
 		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
 		"mediump vec3 E = normalize(eyepos-vertex);\n"

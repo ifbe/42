@@ -42,17 +42,17 @@ void defaultstyle_2in3(struct style* sty)
 	sty->vc[1] = 0.0;
 	sty->vc[2] = 0.0;
 
-	sty->vr[0] = 0.999;
+	sty->vr[0] = 0.5;
 	sty->vr[1] = 0.0;
 	sty->vr[2] = 0.0;
 
 	sty->vf[0] = 0.0;
-	sty->vf[1] = 0.999;
+	sty->vf[1] = 0.5;
 	sty->vf[2] = 0.0;
 
 	sty->vu[0] = 0.0;
 	sty->vu[1] = 0.0;
-	sty->vu[2] = 0.999;
+	sty->vu[2] = 0.5;
 }
 void defaultstyle_3d(struct style* sty, struct style* tar)
 {
@@ -1283,16 +1283,7 @@ static int overview_swrite(
 		}
 		win->forex = x;
 		win->forey = y;
-/*
-		if('@' == k)
-		{
-			if(y < 8)win->forez = x + (y*8);
-		}
-		else if('+' == k)
-		{
-			if(y < 8)win->forez = x + (y*8);
-		}
-*/
+
 		if('-' == k)
 		{
 			j = win->input[id].x0;

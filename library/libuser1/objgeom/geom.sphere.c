@@ -16,7 +16,7 @@ static void sphere_read_vbo2d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carveline2d_circle(win, 0xffffff, vc, vr, vf);
+	carvesolid2d_sphere(win, 0xc0c0c0, vc, vr, vf, vu);
 }
 static void sphere_read_vbo3d(
 	struct arena* win, struct style* sty,

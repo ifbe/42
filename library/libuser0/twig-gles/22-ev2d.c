@@ -30,6 +30,7 @@ int ev2d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 }
 int ev2d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
 {
+	//say("@ev2d_write\n");
 	return 0;
 }
 

@@ -296,9 +296,6 @@ void carvesolid_prism4(struct arena* win, u32 rgb,
 		vbuf[j+5] = bb;
 	}
 
-	vbuf[2*9+0] = vbuf[1*9+0] = vbuf[0*9+0] = - vr[0] - vf[0] - vu[0];
-	vbuf[2*9+1] = vbuf[1*9+1] = vbuf[0*9+1] = - vr[1] - vf[1] - vu[1];
-	vbuf[2*9+2] = vbuf[1*9+2] = vbuf[0*9+2] = - vr[2] - vf[2] - vu[2];
 	vbuf[2*9+0] = vbuf[1*9+0] = vbuf[0*9+0] = vc[0] - vr[0] - vf[0] - vu[0];
 	vbuf[2*9+1] = vbuf[1*9+1] = vbuf[0*9+1] = vc[1] - vr[1] - vf[1] - vu[1];
 	vbuf[2*9+2] = vbuf[1*9+2] = vbuf[0*9+2] = vc[2] - vr[2] - vf[2] - vu[2];
