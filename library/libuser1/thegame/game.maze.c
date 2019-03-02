@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 void maze_generate(void* buf, int w, int h);
 void maze_solve(void* buf, int w, int h);
 
@@ -134,7 +135,144 @@ static void maze_read_pixel(
 		}
 	}
 }
-static void maze_read_vbo(
+static void maze_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y,z,w;
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	u8* buf = act->buf;
+
+	for(y=0;y<HEIGHT;y++)
+	{
+		for(x=0;x<WIDTH;x++)
+		{
+			w = buf[WIDTH*y+x];
+			if((w&1) == 1)	//left
+			{
+				f[0] = (2.0*x+0.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+0)/HEIGHT - 1.0;
+				f[1] = (2.0*y+2)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vc[0] + f[0]*vr[0] + f[2]*vf[0];
+				tr[1] = vc[1] + f[0]*vr[1] + f[2]*vf[1];
+				tr[2] = vc[2] + f[0]*vr[2] + f[2]*vf[2];
+				carveline2d(win, 0x808080, tc, tr);
+			}
+			else if((w&0x80) == 0x80)
+			{
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vr[0] / WIDTH/2;
+				tr[1] = vr[1] / WIDTH/2;
+				tr[2] = vr[2] / WIDTH/2;
+				tf[0] = vf[0] / HEIGHT/2;
+				tf[1] = vf[1] / HEIGHT/2;
+				tf[2] = vf[2] / HEIGHT/2;
+				carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+			}
+
+			if((w&2) == 2)	//right
+			{
+				f[0] = (2.0*x+2.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+0)/HEIGHT - 1.0;
+				f[2] = (2.0*y+2)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vc[0] + f[0]*vr[0] + f[2]*vf[0];
+				tr[1] = vc[1] + f[0]*vr[1] + f[2]*vf[1];
+				tr[2] = vc[2] + f[0]*vr[2] + f[2]*vf[2];
+				carveline2d(win, 0x909090, tc, tr);
+			}
+			else if((w&0x80) == 0x80)
+			{
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vr[0] / WIDTH/2;
+				tr[1] = vr[1] / WIDTH/2;
+				tr[2] = vr[2] / WIDTH/2;
+				tf[0] = vf[0] / HEIGHT/2;
+				tf[1] = vf[1] / HEIGHT/2;
+				tf[2] = vf[2] / HEIGHT/2;
+				carvesolid_rect(win, 0x808080, tc, tr, tf);
+			}
+
+			if((w&4) == 4)	//down	//careful,different
+			{
+				f[0] = (2.0*x+0.0)/WIDTH - 1.0;
+				f[1] = (2.0*x+2.0)/WIDTH - 1.0;
+				f[2] = (2.0*y+2.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[2]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[2]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[2]*vf[2];
+				tr[0] = vc[0] + f[1]*vr[0] + f[2]*vf[0];
+				tr[1] = vc[1] + f[1]*vr[1] + f[2]*vf[1];
+				tr[2] = vc[2] + f[1]*vr[2] + f[2]*vf[2];
+				carveline2d(win, 0x707070, tc, tr);
+			}
+			else if((w&0x80) == 0x80)
+			{
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vr[0] / WIDTH/2;
+				tr[1] = vr[1] / WIDTH/2;
+				tr[2] = vr[2] / WIDTH/2;
+				tf[0] = vf[0] / HEIGHT/2;
+				tf[1] = vf[1] / HEIGHT/2;
+				tf[2] = vf[2] / HEIGHT/2;
+				carvesolid_rect(win, 0x808080, tc, tr, tf);
+			}
+
+			if((w&8) == 8)	//up	//careful,different
+			{
+				f[0] = (2.0*x+0.0)/WIDTH - 1.0;
+				f[1] = (2.0*x+2.0)/WIDTH - 1.0;
+				f[2] = (2.0*y+2.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[2]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[2]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[2]*vf[2];
+				tr[0] = vc[0] + f[1]*vr[0] + f[2]*vf[0];
+				tr[1] = vc[1] + f[1]*vr[1] + f[2]*vf[1];
+				tr[2] = vc[2] + f[1]*vr[2] + f[2]*vf[2];
+				carveline2d(win, 0x606060, tc, tr);
+			}
+			else if((w&0x80) == 0x80)
+			{
+				f[0] = (2.0*x+1.0)/WIDTH - 1.0;
+				f[1] = (2.0*y+1.0)/HEIGHT - 1.0;
+				tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+				tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+				tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+				tr[0] = vr[0] / WIDTH/2;
+				tr[1] = vr[1] / WIDTH/2;
+				tr[2] = vr[2] / WIDTH/2;
+				tf[0] = vf[0] / HEIGHT/2;
+				tf[1] = vf[1] / HEIGHT/2;
+				tf[2] = vf[2] / HEIGHT/2;
+				carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+			}
+		}
+	}
+}
+static void maze_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -346,7 +484,11 @@ static void maze_read(
 	else if(fmt == _tui_)maze_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)maze_read_html(win, sty, act, pin);
 	else if(fmt == _json_)maze_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)maze_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)maze_read_vbo2d(win, sty, act, pin);
+		else maze_read_vbo3d(win, sty, act, pin);
+	}
 	else maze_read_pixel(win, sty, act, pin);
 }
 static void maze_write(

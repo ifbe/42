@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 void sudoku_generate(void*);
 void sudoku_solve(void*);
 
@@ -56,7 +57,58 @@ static void sudoku_read_pixel(
 		}
 	}
 }
-static void sudoku_read_vbo(
+static void sudoku_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 rgb;
+	int x,y;
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	for(y=0;y<9;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
+			else if((x<3)&&(y<3))rgb = 0x444444;
+			else if((x<3)&&(y>5))rgb = 0x444444;
+			else if((x>5)&&(y<3))rgb = 0x444444;
+			else if((x>5)&&(y>5))rgb = 0x444444;
+			else rgb = 0x888888;
+
+			f[0] = (x+x+1)/9.0 - 1.0;
+			f[1] = (y+y+1)/9.0 - 1.0;
+			f[2] = 1.0/36;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+			tr[0] = vr[0] / 10;
+			tr[1] = vr[1] / 10;
+			tr[2] = vr[2] / 10;
+			tf[0] = vf[0] / 10;
+			tf[1] = vf[1] / 10;
+			tf[2] = vf[2] / 10;
+			carvesolid2d_rect(win, rgb, tc, tr, tf);
+			if(data[y][x] != 0)
+			{
+				tc[2] -= 0.1;
+				tr[0] = vr[0] / 18;
+				tr[1] = vr[1] / 18;
+				tr[2] = vr[2] / 18;
+				tf[0] = vf[0] / 18;
+				tf[1] = vf[1] / 18;
+				tf[2] = vf[2] / 18;
+				carve2d_ascii(win, ~rgb, tc, tr, tf, 0x30+data[y][x]);
+			}
+		}
+	}
+}
+static void sudoku_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -188,7 +240,7 @@ static void sudoku_read_cli(
 		say("\n");
 	}
 }
-static void sudoku_read(
+static void sudoku_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -198,10 +250,14 @@ static void sudoku_read(
 	else if(fmt == _tui_)sudoku_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)sudoku_read_html(win, sty, act, pin);
 	else if(fmt == _json_)sudoku_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)sudoku_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)sudoku_read_vbo2d(win, sty, act, pin);
+		else sudoku_read_vbo3d(win, sty, act, pin);
+	}
 	else sudoku_read_pixel(win, sty, act, pin);
 }
-static void sudoku_write(
+static void sudoku_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -234,10 +290,15 @@ static void sudoku_write(
 		}
 	}
 }
-static void sudoku_get()
+static void sudoku_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void sudoku_post()
+static void sudoku_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void sudoku_stop(
@@ -296,8 +357,8 @@ void sudoku_register(struct actor* p)
 	p->ondelete = (void*)sudoku_delete;
 	p->onstart  = (void*)sudoku_start;
 	p->onstop   = (void*)sudoku_stop;
-	p->onget    = (void*)sudoku_get;
-	p->onpost   = (void*)sudoku_post;
-	p->onread   = (void*)sudoku_read;
-	p->onwrite  = (void*)sudoku_write;
+	p->onget    = (void*)sudoku_cread;
+	p->onpost   = (void*)sudoku_cwrite;
+	p->onread   = (void*)sudoku_sread;
+	p->onwrite  = (void*)sudoku_swrite;
 }

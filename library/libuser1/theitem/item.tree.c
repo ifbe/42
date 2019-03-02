@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 
 
 
@@ -31,7 +32,67 @@ static void tree_read_pixel(
 	drawsolid_rect(win, 0x00ff00, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
 	drawsolid_rect(win, 0x00ff00, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }
-static void tree_read_vbo(
+static void tree_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	//carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
+
+	tc[0] = vc[0]-vf[0]/2;
+	tc[1] = vc[1]-vf[1]/2;
+	tc[2] = vc[2]-vf[2]/2;
+	tr[0] = vr[0]/16;
+	tr[1] = vr[1]/16;
+	tr[2] = vr[2]/16;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+
+	tc[0] = vc[0]+vf[0]*1/8;
+	tc[1] = vc[1]+vf[1]*1/8;
+	tc[2] = vc[2]+vf[2]*1/8;
+	tr[0] = vr[0]*4/4;
+	tr[1] = vr[1]*4/4;
+	tr[2] = vr[2]*4/4;
+	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+
+	tc[0] = vc[0]+vf[0]*3/8;
+	tc[1] = vc[1]+vf[1]*3/8;
+	tc[2] = vc[2]+vf[2]*3/8;
+	tr[0] = vr[0]*3/4;
+	tr[1] = vr[1]*3/4;
+	tr[2] = vr[2]*3/4;
+	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+
+	tc[0] = vc[0]+vf[0]*5/8;
+	tc[1] = vc[1]+vf[1]*5/8;
+	tc[2] = vc[2]+vf[2]*5/8;
+	tr[0] = vr[0]*2/4;
+	tr[1] = vr[1]*2/4;
+	tr[2] = vr[2]*2/4;
+	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+
+	tc[0] = vc[0]+vf[0]*7/8;
+	tc[1] = vc[1]+vf[1]*7/8;
+	tc[2] = vc[2]+vf[2]*7/8;
+	tr[0] = vr[0]*1/4;
+	tr[1] = vr[1]*1/4;
+	tr[2] = vr[2]*1/4;
+	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+}
+static void tree_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -146,7 +207,11 @@ static void tree_read(
 	else if(fmt == _tui_)tree_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)tree_read_html(win, sty, act, pin);
 	else if(fmt == _json_)tree_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)tree_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)tree_read_vbo2d(win, sty, act, pin);
+		else tree_read_vbo3d(win, sty, act, pin);
+	}
 	else tree_read_pixel(win, sty, act, pin);
 }
 static void tree_write(

@@ -119,12 +119,12 @@ static void the2048_read_vbo2d(
 			tc[0] = vc[0] + j*vr[0] + k*vf[0];
 			tc[1] = vc[1] + j*vr[1] + k*vf[1];
 			tc[2] = vc[2] + j*vr[2] + k*vf[2] - 0.1;
-			tr[0] = vr[0] / 5;
-			tr[1] = vr[1] / 5;
-			tr[2] = vr[2] / 5;
-			tf[0] = vf[0] / 5;
-			tf[1] = vf[1] / 5;
-			tf[2] = vf[2] / 5;
+			tr[0] = vr[0] / 4.1;
+			tr[1] = vr[1] / 4.1;
+			tr[2] = vr[2] / 4.1;
+			tf[0] = vf[0] / 4.1;
+			tf[1] = vf[1] / 4.1;
+			tf[2] = vf[2] / 4.1;
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
 
 			tr[0] /= 4;
@@ -284,7 +284,7 @@ static void the2048_read_cli(
 		val2048[tab[3][3]]
 	);
 }
-static void the2048_read(
+static void the2048_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -322,7 +322,7 @@ static void the2048_move(struct actor* act, int op)
 
 	new2048(q);
 }
-static void the2048_write(
+static void the2048_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -364,10 +364,15 @@ static void the2048_write(
 		if(s[3] & joyl_up)   the2048_move(act, 'f');
 	}
 }
-static void the2048_post(u8* buf, int len)
+static void the2048_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void the2048_get(u8* buf, int len)
+static void the2048_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void the2048_stop(
@@ -411,8 +416,8 @@ void the2048_register(struct actor* p)
 	p->ondelete = (void*)the2048_delete;
 	p->onstart  = (void*)the2048_start;
 	p->onstop   = (void*)the2048_stop;
-	p->onget    = (void*)the2048_get;
-	p->onpost   = (void*)the2048_post;
-	p->onread   = (void*)the2048_read;
-	p->onwrite  = (void*)the2048_write;
+	p->onget    = (void*)the2048_cread;
+	p->onpost   = (void*)the2048_cwrite;
+	p->onread   = (void*)the2048_sread;
+	p->onwrite  = (void*)the2048_swrite;
 }

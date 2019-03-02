@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* defaultstyle_vbo2d();
 
 
 
@@ -50,7 +51,44 @@ static void chess_read_pixel(
 		}
 	}
 }
-static void chess_read_vbo(
+static void chess_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u32 rgb;
+	int x,y;
+	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			f[0] = (x+x-7)/8.0;
+			f[1] = (7-y-y)/8.0;
+			f[2] = 0.01;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
+
+			tr[0] = vr[0]/8.1;
+			tr[1] = vr[1]/8.1;
+			tr[2] = vr[2]/8.1;
+			tf[0] = vf[0]/8.1;
+			tf[1] = vf[1]/8.1;
+			tf[2] = vf[2]/8.1;
+
+			if(((x+y+32)%2) != 0)rgb = 0x111111;
+			else rgb = 0xffffff;
+			carvesolid2d_rect(win, rgb, tc, tr, tf);
+		}
+	}
+}
+static void chess_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -146,7 +184,7 @@ static void chess_read_cli(
 		say("\n");
 	}
 }
-static void chess_read(
+static void chess_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -155,20 +193,29 @@ static void chess_read(
 	else if(fmt == _tui_)chess_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)chess_read_html(win, sty, act, pin);
 	else if(fmt == _json_)chess_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)chess_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)chess_read_vbo2d(win, sty, act, pin);
+		else chess_read_vbo3d(win, sty, act, pin);
+	}
 	else chess_read_pixel(win, sty, act, pin);
 }
-static void chess_write(
+static void chess_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
-static void chess_get()
+static void chess_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void chess_post()
+static void chess_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void chess_stop(
@@ -240,8 +287,8 @@ void chess_register(struct actor* p)
 	p->ondelete = (void*)chess_delete;
 	p->onstart  = (void*)chess_start;
 	p->onstop   = (void*)chess_stop;
-	p->onget    = (void*)chess_get;
-	p->onpost   = (void*)chess_post;
-	p->onread   = (void*)chess_read;
-	p->onwrite  = (void*)chess_write;
+	p->onget    = (void*)chess_cread;
+	p->onpost   = (void*)chess_cwrite;
+	p->onread   = (void*)chess_sread;
+	p->onwrite  = (void*)chess_swrite;
 }
