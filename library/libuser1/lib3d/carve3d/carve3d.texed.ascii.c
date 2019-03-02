@@ -18,6 +18,7 @@ int ascii3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, 
 
 
 
+//ascii is 8x16, but in 16x16, so move right 1/2
 void carveascii(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
@@ -29,36 +30,36 @@ void carveascii(struct arena* win, u32 rgb,
 	u16* ibuf;
 	int vlen = ascii3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 
-	vbuf[ 0] = vc[0]-vr[0]-vf[0];
-	vbuf[ 1] = vc[1]-vr[1]-vf[1];
-	vbuf[ 2] = vc[2]-vr[2]-vf[2];
+	vbuf[ 0] = vc[0]+vr[0]/2-vr[0]-vf[0];
+	vbuf[ 1] = vc[1]+vr[1]/2-vr[1]-vf[1];
+	vbuf[ 2] = vc[2]+vr[2]/2-vr[2]-vf[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 	vbuf[ 6] = (dat+0.0)/128.0;
 	vbuf[ 7] = 1.0/128.0;
 
-	vbuf[ 9] = vc[0]+vr[0]-vf[0];
-	vbuf[10] = vc[1]+vr[1]-vf[1];
-	vbuf[11] = vc[2]+vr[2]-vf[2];
+	vbuf[ 9] = vc[0]+vr[0]/2+vr[0]-vf[0];
+	vbuf[10] = vc[1]+vr[1]/2+vr[1]-vf[1];
+	vbuf[11] = vc[2]+vr[2]/2+vr[2]-vf[2];
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
 	vbuf[15] = (dat+1.0)/128.0;
 	vbuf[16] = 1.0/128.0;
 
-	vbuf[18] = vc[0]-vr[0]+vf[0];
-	vbuf[19] = vc[1]-vr[1]+vf[1];
-	vbuf[20] = vc[2]-vr[2]+vf[2];
+	vbuf[18] = vc[0]+vr[0]/2-vr[0]+vf[0];
+	vbuf[19] = vc[1]+vr[1]/2-vr[1]+vf[1];
+	vbuf[20] = vc[2]+vr[2]/2-vr[2]+vf[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
 	vbuf[24] = (dat+0.0)/128.0;
 	vbuf[25] = 0.0;
 
-	vbuf[27] = vc[0]+vr[0]+vf[0];
-	vbuf[28] = vc[1]+vr[1]+vf[1];
-	vbuf[29] = vc[2]+vr[2]+vf[2];
+	vbuf[27] = vc[0]+vr[0]/2+vr[0]+vf[0];
+	vbuf[28] = vc[1]+vr[1]/2+vr[1]+vf[1];
+	vbuf[29] = vc[2]+vr[2]/2+vr[2]+vf[2];
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;

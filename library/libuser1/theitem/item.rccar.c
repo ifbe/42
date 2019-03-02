@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define _car_ hex32('c','a','r',0)
-void* defaultstyle_vbo2d();
 int boardread(int,int,void*,int);
 int boardwrite(int,int,void*,int);
 

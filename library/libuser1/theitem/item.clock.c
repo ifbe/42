@@ -36,21 +36,80 @@ static void clock_read_pixel(
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
 	}
 }
-static void clock_read_vbo(
+static void clock_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	u8 j;
 	float a,c,s;
 	vec3 tc, tr, tf, tu, f;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	u64 date = dateread();
 	u8* p = (u8*)&date;
-	carvesolid_circle(win, 0xc0c0c0, vc, vr, vf);
+	carvesolid2d_circle(win, 0x404040, vc, vr, vf);
 
-	a = PI/4 - (p[0]*PI*2.0/60.0);
+	a = PI/2 - (p[0]*PI*2.0/60.0);
+	c = cosine(a);
+	s = sine(a);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
+	carveline2d(win, 0xff0000, vc, tr);
+
+	a = PI/2 - (p[1]*PI*2.0/60.0);
+	c = cosine(a);
+	s = sine(a);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
+	carveline2d(win, 0x00ff00, vc, tr);
+
+	a = PI/2 - (p[2]*PI*2.0/12.0);
+	c = cosine(a);
+	s = sine(a);
+	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
+	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
+	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
+	carveline2d(win, 0x0000ff, vc, tr);
+
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	for(j=0;j<12;j++)
+	{
+		a = PI/2 - j*PI/6;
+		c = cosine(a);
+		s = sine(a);
+		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
+		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
+		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 - 0.1;
+		carve2d_ascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
+	}
+}
+static void clock_read_vbo3d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	u8 j;
+	float a,c,s;
+	vec3 tc, tr, tf, tu;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	u64 date = dateread();
+	u8* p = (u8*)&date;
+	carvesolid_circle(win, 0x404040, vc, vr, vf);
+
+	a = PI/2 - (p[0]*PI*2.0/60.0);
 	c = cosine(a);
 	s = sine(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
@@ -58,7 +117,7 @@ static void clock_read_vbo(
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
 	carveline(win, 0xff0000, vc, tr);
 
-	a = PI/4 - (p[1]*PI*2.0/60.0);
+	a = PI/2 - (p[1]*PI*2.0/60.0);
 	c = cosine(a);
 	s = sine(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
@@ -66,13 +125,30 @@ static void clock_read_vbo(
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
 	carveline(win, 0x00ff00, vc, tr);
 
-	a = PI/4 - (p[2]*PI*2.0/12.0);
+	a = PI/2 - (p[2]*PI*2.0/12.0);
 	c = cosine(a);
 	s = sine(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
 	carveline(win, 0x0000ff, vc, tr);
+
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	for(j=0;j<12;j++)
+	{
+		a = PI/2 - j*PI/6;
+		c = cosine(a);
+		s = sine(a);
+		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
+		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
+		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 + 1;
+		carveascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
+	}
 }
 static void clock_read_json(
 	struct arena* win, struct style* sty,
@@ -109,7 +185,7 @@ static void clock_read_cli(
 	say(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
 		p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 }
-static void clock_read(
+static void clock_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -118,19 +194,23 @@ static void clock_read(
 	else if(fmt == _tui_)clock_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)clock_read_html(win, sty, act, pin);
 	else if(fmt == _json_)clock_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)clock_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)clock_read_vbo2d(win, sty, act, pin);
+		else clock_read_vbo3d(win, sty, act, pin);
+	}
 	else clock_read_pixel(win, sty, act, pin);
 }
-static void clock_write(
+static void clock_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void clock_get()
+static void clock_cread()
 {
 }
-static void clock_post()
+static void clock_cwrite()
 {
 }
 static void clock_stop(
@@ -167,8 +247,8 @@ void clock_register(struct actor* p)
 	p->ondelete = (void*)clock_delete;
 	p->onstart  = (void*)clock_start;
 	p->onstop   = (void*)clock_stop;
-	p->onget    = (void*)clock_get;
-	p->onpost   = (void*)clock_post;
-	p->onread   = (void*)clock_read;
-	p->onwrite  = (void*)clock_write;
+	p->onget    = (void*)clock_cread;
+	p->onpost   = (void*)clock_cwrite;
+	p->onread   = (void*)clock_sread;
+	p->onwrite  = (void*)clock_swrite;
 }

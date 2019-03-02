@@ -63,10 +63,28 @@ static void ooxx_read_pixel(
 		}//forx
 	}//fory
 }
-static void ooxx_read_vbo(
+static void ooxx_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tc,tr,tf;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
+}
+static void ooxx_read_vbo3d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carvesolid_rect(win, 0x444444, vc, vr, vf);
 }
 static void ooxx_read_json(
 	struct arena* win, struct style* sty,
@@ -125,7 +143,7 @@ static void ooxx_read_cli(
 		say("\n");
 	}
 }
-static void ooxx_read(
+static void ooxx_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -134,10 +152,14 @@ static void ooxx_read(
 	else if(fmt == _tui_)ooxx_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)ooxx_read_html(win, sty, act, pin);
 	else if(fmt == _json_)ooxx_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)ooxx_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)ooxx_read_vbo2d(win, sty, act, pin);
+		else ooxx_read_vbo3d(win, sty, act, pin);
+	}
 	else ooxx_read_pixel(win, sty, act, pin);
 }
-void ooxx_write(
+void ooxx_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -170,10 +192,10 @@ say("%d,%d\n",x,y);
 		turn++;
 	}
 }
-static void ooxx_get()
+static void ooxx_cread()
 {
 }
-static void ooxx_post()
+static void ooxx_cwrite()
 {
 }
 static void ooxx_stop(
@@ -217,8 +239,8 @@ void ooxx_register(struct actor* p)
 	p->ondelete = (void*)ooxx_delete;
 	p->onstart  = (void*)ooxx_start;
 	p->onstop   = (void*)ooxx_stop;
-	p->onget    = (void*)ooxx_get;
-	p->onpost   = (void*)ooxx_post;
-	p->onread   = (void*)ooxx_read;
-	p->onwrite  = (void*)ooxx_write;
+	p->onget    = (void*)ooxx_cread;
+	p->onpost   = (void*)ooxx_cwrite;
+	p->onread   = (void*)ooxx_sread;
+	p->onwrite  = (void*)ooxx_swrite;
 }

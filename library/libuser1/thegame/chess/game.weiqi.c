@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* defaultstyle_vbo2d();
 
 
 

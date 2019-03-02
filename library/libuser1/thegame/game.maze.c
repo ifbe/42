@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* defaultstyle_vbo2d();
 void maze_generate(void* buf, int w, int h);
 void maze_solve(void* buf, int w, int h);
 

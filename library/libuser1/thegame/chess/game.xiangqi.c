@@ -1,5 +1,4 @@
 #include "libuser.h"
-void* defaultstyle_vbo2d();
 void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 

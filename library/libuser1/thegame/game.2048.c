@@ -1,6 +1,4 @@
 #include "libuser.h"
-void* defaultstyle_vbo2d();
-//
 void new2048(void*);
 void left2048(void*);
 void right2048(void*);

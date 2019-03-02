@@ -1,10 +1,8 @@
 #include "libuser.h"
-void* defaultstyle_vbo2d();
 
 
 
 
-//
 static u8 buffer[8][8];
 
 
